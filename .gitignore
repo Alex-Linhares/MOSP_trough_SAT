@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+benchmarks/instances/*.mosp
+benchmarks/results/*.csv
+*.egg-info/
+
+# Lean 4 build artifacts
+lean/.lake/build/
+lean/.lake/config/
+lean/.lake/packages/
