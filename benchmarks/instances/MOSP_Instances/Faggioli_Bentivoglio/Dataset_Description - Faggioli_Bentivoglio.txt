@@ -1,0 +1,18 @@
+DATASET NAME: Faggioli & Bentivoglio
+
+AVAILABLE WITH AUTHOR: bentivoglio@server.mercurio.it
+
+DESCRIPTION:
+Set of 300 instances created by a pseudorandom instance generator with m = 10, 15, 20, 25, 30, 40 and n = 10, 20, 30, 40, 50. Each m x n combination has 10 instances.
+ 
+FILE FORMAT:
+- Each file represents a single instance.
+- First line: number of patterns (m) and number of pieces (n)
+- In the following lines, a binary matrix m x n is described.
+
+HOW TO CITE:
+Faggioli E, Bentivoglio CA. Heuristic and exact methods for the cutting sequencing problem, European Journal of Operational Research, Elsevier, v. 110,
+n. 3, p. 564-575, 1998.
+
+ADDITIONAL INFORMATION:
+The original files have been obtained directly with authors. Not an original instance, the matrix orientation changed to patterns x pieces and values changed to contain only 0s and 1s. Empty rows and columns removed.

@@ -1,0 +1,17 @@
+DATASET NAME: SCOOP
+
+AVAILABLE IN: http://www.scoop-project.net/DOCUMENTI/File/scoop_large_instances_data_set.zip
+
+DESCRIPTION:
+The instances are collected by the industrial partners of SCOOP Project. This set, provided by the Sheet Cutting and Process Optimization for Furniture Industry (SCOOP) Consortium, contains 187 realworld MOSP instances from two European woodcutting companies. However, most of these instances are too small, implying trivial solutions. Therefore, 24 instances with significant dimensions, ranging from 10 pieces and patterns to 49 pieces and 134 patterns, were selected for the experiments.
+ 
+FILE FORMAT:
+- Each file represents a single instance.
+- First line: number of patterns (m) and number of pieces (n)
+- In the following lines, a binary matrix m x n is described.
+
+HOW TO CITE:
+SCOOP Project - Sheet Cutting and Process Optimization for Furniture Industry Consortium (SCOOP), www.scoop-project.net
+
+ADDITIONAL INFORMATION:
+The files have been downloaded directly from the project's website. Not an original instance, the values changed to contain only 0s and 1s. The original files can be downloaded in the SCOOP Projects site.
