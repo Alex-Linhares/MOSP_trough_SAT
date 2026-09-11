@@ -16,7 +16,7 @@ from typing import Optional
 from mosp.instance import MOSPInstance
 from mosp.reduction import mosp_to_pathwidth, pathwidth_to_mosp, MOSPSolution
 from mosp.verify import max_open_stacks
-from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+from fixed_parameter_algorithm.pathwidth_fpt import compute_pathwidth_fpt
 
 
 def solve_mosp(instance: MOSPInstance) -> MOSPSolution:
@@ -40,7 +40,7 @@ def solve_mosp(instance: MOSPInstance) -> MOSPSolution:
     pw_problem = mosp_to_pathwidth(instance)
 
     # Step 2: Solve pathwidth exactly
-    pathwidth, ordering = compute_pathwidth(pw_problem.graph)
+    pathwidth, ordering = compute_pathwidth_fpt(pw_problem.graph)
 
     # Step 3: Compute actual MOSP value by simulation
     actual_mosp = max_open_stacks(instance, ordering)
