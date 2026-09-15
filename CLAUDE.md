@@ -14,10 +14,11 @@ The key equivalence chain (Kinnersley 1992, Yanasse 1997):
 VS(G) = PW(G) = IT(G) = SN(G) - 1 = GML(G) + 1
 ```
 
-For MOSP specifically:
-- Build the **agreement graph** G(M): nodes = patterns (products), edge between two patterns iff they share at least one common customer
-- **Optimal MOSP value** = pathwidth(G) + 1 (with the caveat that actual open stacks cannot exceed the number of customers)
-- A linear vertex ordering achieving optimal pathwidth directly gives the optimal production sequence
+For MOSP specifically, two graph formulations exist:
+- **Agreement graph** G_a(M): nodes = patterns, edge iff two patterns share a customer. Built via `M^T @ M`.
+- **Customer intersection graph** G_c(M): nodes = customers, edge iff two customers share a pattern. Built via `M @ M^T`.
+
+Empirical testing against published optimal values shows that **MOSP(M) = pathwidth(G_c) + 1** (customer graph) gives correct results, while pathwidth(G_a) + 1 (agreement graph) gives a lower bound that can undercount. Both solvers are provided for comparison.
 
 ### Key References
 
@@ -32,48 +33,68 @@ For MOSP specifically:
 ## Architecture
 
 ```
-mosp/
-    instance.py             → Parse/represent MOSP instances (binary matrix)
-    agreement_graph.py      → Build MOSP graph via M^T @ M overlap
-    reduction.py            → Formal reduction: MOSP ↔ pathwidth
-    solver.py               → End-to-end pipeline: parse → graph → pathwidth → ordering
-    verify.py               → Simulate production sequence to count open stacks
+mosp/                           → Agreement graph approach (patterns as vertices)
+    instance.py                     Parse/represent MOSP instances (binary matrix)
+    agreement_graph.py              Build MOSP graph via M^T @ M overlap
+    reduction.py                    Formal reduction: MOSP ↔ pathwidth
+    solver.py                       End-to-end pipeline: parse → graph → pathwidth → ordering
+    verify.py                       Simulate production sequence to count open stacks
+
+customer_inter/                 → Customer intersection graph approach (customers as vertices)
+    customer_graph.py               Build customer graph via M @ M^T overlap
+    reduction.py                    MOSP ↔ customer-graph pathwidth reduction
+    solver.py                       End-to-end pipeline using customer graph
+    compare.py                      Side-by-side comparison of both approaches
 
 fixed_parameter_algorithm/
-    pathwidth.py            → Exact DP over vertex subsets (n ≤ 25)
-    pathwidth_fpt.py        → FPT branch-and-bound with iterative deepening (n ≤ 100+)
-    path_decomposition.py   → Extract path decomposition from ordering
+    pathwidth.py                    Exact DP over vertex subsets (n ≤ 18)
+    pathwidth_fpt.py                Branch-and-bound with iterative deepening (n ≤ 100+)
+    path_decomposition.py           Extract path decomposition from ordering
 
 benchmarks/
-    generator.py            → Random/structured instance generation
-    run_benchmarks.py       → Batch solver with CSV output
+    generator.py                    Random/structured instance generation
+    run_benchmarks.py               Batch solver with CSV output
+    solve_all.py                    Batch solver for published benchmark files
 
 lean/
-    MOSPFormalization/      → Lean 4 proofs of the MOSP-pathwidth reduction
-        LinearLayout.lean         Linear vertex orderings
-        VertexSeparation.lean     Vertex separation number
-        PathDecomposition.lean    Path decomposition structure
-        Pathwidth.lean            Pathwidth definitions
-        LayoutToDecomposition.lean   Layout → decomposition construction
-        DecompositionToLayout.lean   Decomposition → layout construction
-        VSEquivPW.lean            VS = PW proof (Kinnersley 1992)
-        MOSPInstance.lean         MOSP instance formalization
-        OpenStacks.lean           Open stacks counting
-        Reduction.lean            MOSP ↔ pathwidth reduction proof
-        Examples.lean             Verified example instances
-        ForMathlib/               Candidates for Mathlib contribution
+    MOSPFormalization/              Lean 4 proofs of the MOSP-pathwidth reduction
+        LinearLayout.lean               Linear vertex orderings
+        VertexSeparation.lean           Vertex separation number
+        PathDecomposition.lean          Path decomposition structure
+        Pathwidth.lean                  Pathwidth definitions
+        LayoutToDecomposition.lean      Layout → decomposition construction
+        DecompositionToLayout.lean      Decomposition → layout construction
+        VSEquivPW.lean                  VS = PW proof (Kinnersley 1992)
+        MOSPInstance.lean               MOSP instance formalization
+        OpenStacks.lean                 Open stacks counting
+        Reduction.lean                  MOSP ↔ pathwidth reduction proof
+        Examples.lean                   Verified example instances
+        ForMathlib/                     Candidates for Mathlib contribution
 
-tests/                      → 59 tests across 6 test modules
-literature/                 → Reference papers (PDFs)
+reports/                        → Analysis documents
+tests/                          → 59 tests across 6 test modules
+literature/                     → Reference papers (PDFs)
 ```
 
-## Two Solvers
+## Two Graph Formulations
 
-### Exact DP (n ≤ 25)
+### Agreement Graph (`mosp/solver.py`)
+
+Nodes = patterns, edges between patterns sharing a customer (`M^T @ M`). This was the original approach. Pathwidth gives a lower bound on MOSP but can undercount on some instances.
+
+### Customer Intersection Graph (`customer_inter/solver.py`)
+
+Nodes = customers, edges between customers sharing a pattern (`M @ M^T`). Pathwidth(G_c) + 1 matches published optimal values. The pattern ordering is derived from the customer ordering by assigning each pattern the position of its earliest customer.
+
+Both solvers share the same pathwidth backend. The customer graph often has more nodes (customers > patterns), but SCOOP benchmarks show it solves faster via branch-and-bound due to lower pathwidth.
+
+## Pathwidth Computation
+
+### Exact DP (n ≤ 18)
 
 O(2^n · n²) Held-Karp style subset DP with bitmask adjacency. Guaranteed optimal. Used automatically for small graphs.
 
-### FPT Branch-and-Bound (n ≤ 100+)
+### Branch-and-Bound (n ≤ 100+)
 
 For larger graphs with small pathwidth k. The algorithm:
 1. **Preprocesses**: removes degree-1 (pendant) vertices iteratively, decomposes into connected components
@@ -83,19 +104,23 @@ For larger graphs with small pathwidth k. The algorithm:
 5. **Memoization**: bitmask cache for n ≤ 30; pruning-only for larger graphs
 6. **Vertex selection**: prioritizes active suffix vertices (already "open") sorted by remaining neighbor count
 
-The solver (`mosp/solver.py`) calls `compute_pathwidth_fpt()` which automatically delegates to exact DP for n ≤ 25.
+Note: despite the filename `pathwidth_fpt.py`, this is not a true FPT algorithm. It is branch-and-bound that works well when pathwidth is small, but has no proven f(k) · poly(n) guarantee. The theoretical FPT algorithm (Bodlaender-Kloks, 2^(32k³) · n) has constants too large for practical use. See `reports/fpt_theory_practice_gap.md`.
+
+`compute_pathwidth_fpt()` delegates to exact DP for n ≤ 18. The threshold was lowered from 25 to 18 because branch-and-bound is faster than DP for n=19-25 when pathwidth is small (test suite: 114s → 5s).
 
 ## Design Decisions
 
-**Two-tier solver.** Exact DP is faster for small instances (no heuristic/pruning overhead), so the FPT solver delegates to it for n ≤ 25. For larger instances, preprocessing and pruning keep the search tractable when pathwidth is small.
+**Two graph formulations.** The agreement graph (patterns as vertices) and customer intersection graph (customers as vertices) provide complementary approaches. The customer graph matches published optimal values; the agreement graph is retained for comparison and because the Lean formalization proves its properties.
 
-**Verify by simulation, not formula alone.** The solver computes the ordering from pathwidth but determines the actual MOSP value by simulating the production sequence on the original instance. This is necessary because `pathwidth + 1` can exceed the number of customers (the agreement graph encodes pattern relationships but not the customer count bound).
+**Two-tier pathwidth solver.** Exact DP is faster for small instances (no heuristic/pruning overhead), so the branch-and-bound delegates to it for n ≤ 18. For larger instances, preprocessing and pruning keep the search tractable when pathwidth is small.
 
-**Agreement graph via matrix multiplication.** `M^T @ M` gives the overlap matrix in one operation — entry (i,j) counts shared customers between patterns i and j. An edge exists wherever this count is positive. Simple and fast via numpy.
+**Verify by simulation, not formula alone.** Both solvers compute the ordering from pathwidth but determine the actual MOSP value by simulating the production sequence on the original instance.
+
+**Customer ordering to pattern ordering.** Given a customer ordering, each pattern is assigned priority (first_customer_position, last_customer_position) and sorted. This produces the pattern sequence that processes patterns as their earliest customer arrives.
 
 **Convention: rows = customers, columns = patterns.** The binary matrix M[i][j] = 1 means customer i requires pattern/product j. This matches the standard MOSP file format.
 
-**Bitmask adjacency.** Both solvers represent graph adjacency as Python ints with bitwise operations, making neighbor queries O(1).
+**Bitmask adjacency.** Both pathwidth solvers represent graph adjacency as Python ints with bitwise operations, making neighbor queries O(1).
 
 ## File Format
 
@@ -115,41 +140,41 @@ pip install -r requirements.txt
 # Run tests
 python -m pytest tests/ -v
 
-# Solve a single instance
-python -c "
-from mosp.solver import solve_mosp_from_file
-sol = solve_mosp_from_file('path/to/instance.mosp')
-print(f'Optimal: {sol.max_open_stacks}, Ordering: {sol.ordering}')
-"
-
-# Solve from a matrix
+# Solve via customer intersection graph (recommended)
 python -c "
 from mosp.instance import MOSPInstance
-from mosp.solver import solve_mosp
+from customer_inter.solver import solve_mosp
 matrix = [[1,1,0,0],[0,1,1,0],[0,0,1,1]]
 instance = MOSPInstance.from_matrix(matrix, name='example')
 sol = solve_mosp(instance)
 print(f'Optimal: {sol.max_open_stacks}, Ordering: {sol.ordering}')
 "
 
-# Generate benchmark instances and run them
+# Solve via agreement graph (original approach)
 python -c "
-from benchmarks.generator import generate_benchmark_suite
-generate_benchmark_suite('benchmarks/instances', sizes=[(10,10),(15,15)], densities=[0.3])
+from mosp.solver import solve_mosp_from_file
+sol = solve_mosp_from_file('path/to/instance.mosp')
+print(f'Value: {sol.max_open_stacks}, Ordering: {sol.ordering}')
 "
-python -m benchmarks.run_benchmarks benchmarks/instances benchmarks/results/output.csv
+
+# Compare both approaches on SCOOP benchmarks
+python -m customer_inter.compare
+
+# Run all published benchmarks with timeout
+python -m benchmarks.solve_all --timeout 120
 ```
 
 ## Known Limitations
 
-- **Exact DP ceiling at n = 25**: The subset DP uses O(2^n) space/time. This is inherent to the algorithm, not a bug.
-- **FPT solver depends on pathwidth**: Handles n = 100+ when k ≤ 5, but slows down for moderate pathwidth (k ≥ 10) on large graphs. No proven worst-case polynomial bound for fixed k — the theoretical O(2^{O(k²)} · n) algorithm (Bodlaender-Kloks) is not implemented due to extreme complexity.
+- **Exact DP ceiling at n = 18**: The subset DP uses O(2^n) space/time. This is inherent to the algorithm, not a bug.
+- **Branch-and-bound depends on pathwidth**: Handles n = 100+ when k ≤ 5, but slows down for moderate pathwidth (k ≥ 10) on large graphs. Not a true FPT algorithm — no proven f(k) · poly(n) guarantee.
+- **220 benchmark instances out of reach**: Instances where both n_customers > 30 and n_patterns > 30 (mostly Chu & Stuckey 40x40 through 125x125) cannot be solved by either graph formulation with the current branch-and-bound. These need SAT/ILP methods.
 - **No heuristic fallback**: For instances beyond both solvers' reach, there is currently no approximate/heuristic mode.
 
 ## Future Directions
 
+- SAT/ILP encoding for pathwidth to handle the 220 large benchmark instances
+- Better greedy upper bounds (random restarts, local search) to improve branch-and-bound pruning
 - Integration with SageMath's pathwidth solvers as a reference oracle
-- Heuristic mode for large instances (greedy, local search)
-- Import published benchmark instances from Chu & Stuckey, Faggioli & Bentivoglio
-- Comparison tables against published optimal values
-- Bodlaender-Kloks FPT algorithm for proven worst-case guarantees
+- Comparison tables against published optimal values across all datasets
+- Populate `KNOWN_OPTIMA` in compare.py with published results from Chu & Stuckey
