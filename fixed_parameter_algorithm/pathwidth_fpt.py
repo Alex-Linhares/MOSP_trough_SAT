@@ -2,7 +2,7 @@
 
 For graphs with small pathwidth k, this algorithm runs in f(k) * poly(n) time
 in practice, enabling computation on graphs with 100+ vertices when k is small
-(k <= 5-8). For small graphs (n <= 25), it delegates to the exact DP solver.
+(k <= 5-8). For small graphs (n <= 18), it delegates to the exact DP solver.
 
 Algorithm overview:
   1. Preprocessing: remove degree-1 vertices, decompose into components
@@ -29,7 +29,7 @@ def compute_pathwidth_fpt(
 ) -> tuple[int, list[int]]:
     """Compute the exact pathwidth and a witness linear ordering using FPT techniques.
 
-    For small graphs (n <= 25), delegates to the exact DP solver.
+    For small graphs (n <= 18), delegates to the exact DP solver.
     For larger graphs, uses branch-and-bound with iterative deepening on the
     target width k.
 
@@ -50,8 +50,8 @@ def compute_pathwidth_fpt(
     if n == 1:
         return 0, list(nodes)
 
-    # For small graphs, use the exact DP (faster for n <= 25)
-    if n <= 25:
+    # For small graphs, use the exact DP (faster for n <= 18)
+    if n <= 18:
         return compute_pathwidth(G)
 
     # Handle disconnected graphs: pathwidth = max over components
@@ -67,7 +67,7 @@ def compute_pathwidth_fpt(
             return 0, nodes
         return 1, _tree_ordering(G)
 
-    if core_graph.number_of_nodes() <= 25:
+    if core_graph.number_of_nodes() <= 18:
         core_pw, core_ordering = compute_pathwidth(core_graph)
     else:
         core_pw, core_ordering = _solve_core(core_graph, max_width)
