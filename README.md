@@ -1,81 +1,95 @@
-# MOSP via Pathwidth Reduction
+# MOSP via SAT-based Pathwidth Reduction
 
-Optimal solver for the **Minimization of Open Stacks Problem (MOSP)** by reduction to **pathwidth** on the agreement graph, with a formal proof of correctness in Lean 4.
+Optimal solver for the **Minimization of Open Stacks Problem (MOSP)** by reduction to **pathwidth** on the customer intersection graph, solved via **SAT encoding** with CaDiCaL. Includes a formal proof of correctness in Lean 4.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence that minimizes the maximum number of simultaneously open customer stacks. A stack is "open" from the moment the first product a customer needs is produced until the last one is produced.
 
-This problem is NP-hard (Linhares & Yanasse 2002), but pathwidth is fixed-parameter tractable -- instances with small pathwidth can be solved efficiently regardless of total input size.
+This problem is NP-hard (Linhares & Yanasse 2002). We reduce it to pathwidth computation on the customer intersection graph, then solve pathwidth optimally using a position-based SAT encoding.
 
-## Theoretical Foundation
+## Approach
 
-The solver rests on a chain of equivalences established by Kinnersley (1992) and Yanasse (1997):
+Given a MOSP instance with binary matrix M (rows = customers, columns = products):
 
-```
-VS(G) = PW(G) = IT(G) = SN(G) - 1 = GML(G) + 1
-```
+1. Build the **customer intersection graph** G_c(M): vertices are customers, with an edge between two customers iff they share at least one common product (`M @ M^T`).
+2. Encode the pathwidth decision problem ("is pathwidth(G_c) <= k?") as a **CNF formula** and solve with CaDiCaL.
+3. Use **iterative deepening** over k to find the exact pathwidth.
+4. Derive the optimal production sequence from the witness ordering; the optimal MOSP value equals `pathwidth(G_c) + 1`.
 
-where VS = vertex separation, PW = pathwidth, IT = interval thickness, SN = node search number, GML = gate matrix layout.
+### SAT Encoding
 
-For a MOSP instance with binary matrix M (rows = customers, columns = products):
+Position-based formulation with three variable families:
 
-1. Build the **agreement graph** G(M): vertices are products, with an edge between two products iff they share at least one common customer.
-2. Compute `pathwidth(G(M))` and the witness linear ordering.
-3. The ordering gives the optimal production sequence; the optimal MOSP value equals `pathwidth(G(M)) + 1`.
+| Variable | Meaning |
+|---|---|
+| `x[v,t]` | Vertex v is placed at position t |
+| `y[v,t]` | Vertex v is placed by step t (prefix membership) |
+| `s[v,t]` | Vertex v is separated at step t (not placed, but has a placed neighbor) |
 
-The agreement graph is constructed via the overlap matrix M^T M -- entry (i,j) counts shared customers between products i and j, and an edge exists wherever this count is positive.
+**Constraints:**
+- **Permutation**: each vertex gets exactly one position, each position gets exactly one vertex (at-least-one + ladder at-most-one)
+- **Prefix linking**: `x[v,t] -> y[v,t]`, monotonicity `y[v,t] -> y[v,t+1]`, converse `y[v,t] -> y[v,t-1] OR x[v,t]`
+- **Separation**: for each edge (u,v): `y[u,t] AND NOT y[v,t] -> s[v,t]`; also `y[v,t] -> NOT s[v,t]`
+- **Width bound**: at most k vertices separated per step (totalizer cardinality constraint)
+- **Symmetry breaking**: fix vertex 0 at position 0
 
-## Two Solvers
+The encoding produces O(n^2) variables and O(n^2 * degree) clauses. For n=100, this is roughly 100K variables and 500K clauses.
 
-### Exact DP (n <= 25)
+## Benchmark Results
 
-Held-Karp style dynamic programming over vertex subsets: O(2^n * n^2) time and O(2^n * n) space with bitmask adjacency. Guaranteed optimal for graphs up to 25 vertices.
+Tested on 220 published benchmark instances that were previously unsolvable (both n_customers > 30 and n_patterns > 30), with a 300-second per-instance timeout:
 
-### FPT Branch-and-Bound (n <= 100+)
+| Instance Size | Solved | Avg Time | Notes |
+|---|---|---|---|
+| 40x40 | 35/35 (100%) | 5s | All Chu & Stuckey densities |
+| 50x50 | 25/25 (100%) | 8s | All densities |
+| 50x100 | 25/25 (100%) | 11s | Customer graph has 50 nodes |
+| 75x75 | 27/27 (100%) | 37s | Including density 10 |
+| 100x50 | 25/25 (100%) | 84s | Customer graph has 100 nodes |
+| 100x100 | 23/25 (92%) | 140s | 2 timeout at density 8, 10 |
+| 125x125 | 7/25 (28%) | 109s | Density 2 + two density 4 |
+| Challenge/Wilson | 22/22 (100%) | 11s | Up to 100x100 |
+| Faggioli/SCOOP | 23/23 (100%) | 5s | Real-world manufacturing |
+| **Total** | **200/220 (91%)** | **44s** | **All provably optimal** |
 
-For larger graphs with small pathwidth (k <= 5-8), a branch-and-bound algorithm with iterative deepening on target width k:
-
-1. **Preprocessing**: iteratively remove degree-1 (pendant) vertices, decompose into connected components
-2. **Bounds**: greedy heuristic upper bound, max-clique lower bound
-3. **Search**: DFS building orderings left-to-right, pruning when vertex separation exceeds k
-4. **Memoization**: bitmask-based cache for n <= 30; pruning-only for larger graphs
-5. **Vertex selection**: prioritizes vertices already in the active suffix to reduce branching
-
-The solver automatically delegates to exact DP for n <= 25 and uses the FPT algorithm for larger instances.
-
-## Formal Verification in Lean 4
-
-The `lean/` directory contains a Lean 4 formalization of the core theoretical results:
-
-- **Vertex separation = pathwidth** (Kinnersley 1992): proven via explicit constructions in both directions (linear layout -> path decomposition and back)
-- **MOSP reduction**: formal proof that optimal MOSP value = pathwidth of the agreement graph + 1
-- **Verified examples**: concrete MOSP instances solved and checked within the proof assistant
-
-The formalization includes candidates for contribution to Mathlib (`ForMathlib/` modules for path decomposition, vertex separation, and pathwidth).
+All solved instances produce provably optimal results: the SAT solver certifies pathwidth = k by proving UNSAT at k-1 and SAT at k. Results are in `benchmarks/results/`.
 
 ## Project Structure
 
 ```
-mosp/
-    instance.py             MOSP instance representation (binary matrix)
-    agreement_graph.py      Build agreement graph via M^T M
-    reduction.py            Formal reduction: MOSP <-> pathwidth
-    solver.py               End-to-end pipeline: parse -> graph -> pathwidth -> ordering
-    verify.py               Simulate production sequence to count open stacks
+satisfiability/                 -> SAT-based pathwidth solver (primary)
+    encoding.py                     Position-based CNF encoding with cardinality constraints
+    solver.py                       Solver wrapper: preprocessing, iterative deepening, CaDiCaL
 
-fixed_parameter_algorithm/
-    pathwidth.py             Exact DP over vertex subsets (n <= 25)
-    pathwidth_fpt.py         FPT branch-and-bound with iterative deepening
-    path_decomposition.py    Extract path decomposition from linear ordering
+customer_inter/                 -> Customer intersection graph reduction
+    customer_graph.py               Build customer graph via M @ M^T overlap
+    reduction.py                    MOSP <-> customer-graph pathwidth reduction
+    solver.py                       End-to-end pipeline using customer graph
+    compare.py                      Side-by-side comparison of graph formulations
+
+mosp/                           -> MOSP instance handling and agreement graph
+    instance.py                     Parse/represent MOSP instances (binary matrix)
+    agreement_graph.py              Build agreement graph via M^T @ M overlap
+    reduction.py                    Formal reduction: MOSP <-> pathwidth
+    solver.py                       End-to-end pipeline (agreement graph approach)
+    verify.py                       Simulate production sequence to count open stacks
+
+fixed_parameter_algorithm/      -> Alternative pathwidth solvers (small instances)
+    pathwidth.py                    Exact DP over vertex subsets (n <= 18)
+    pathwidth_fpt.py                Branch-and-bound with iterative deepening (n <= 100+)
+    path_decomposition.py           Extract path decomposition from ordering
 
 benchmarks/
-    generator.py             Random/structured instance generation
-    run_benchmarks.py        Batch solver with CSV output
+    solve_all_sat.py                Batch SAT solver for large benchmark instances
+    solve_all.py                    Batch solver for published benchmark files
+    generator.py                    Random/structured instance generation
+    run_benchmarks.py               Batch solver with CSV output
 
 lean/
-    MOSPFormalization/       Lean 4 proofs (vertex separation, pathwidth, reduction)
+    MOSPFormalization/              Lean 4 proofs of the MOSP-pathwidth reduction
 
-tests/                       Comprehensive test suite (59 tests)
-literature/                  Reference papers
+tests/                          85 tests across 7 test modules
+literature/                     Reference papers
+reports/                        Analysis documents
 ```
 
 ## Usage
@@ -86,24 +100,30 @@ literature/                  Reference papers
 pip install -r requirements.txt
 ```
 
-Requires Python 3.9+ with `networkx`, `numpy`, `matplotlib`, and `pytest`.
+Requires Python 3.9+ with `networkx`, `numpy`, `python-sat`, `matplotlib`, and `pytest`.
 
-### Solve a MOSP instance
+### Solve a MOSP instance with SAT
 
 ```python
-from mosp.solver import solve_mosp_from_file
+from mosp.instance import MOSPInstance
+from customer_inter.reduction import mosp_to_pathwidth, pathwidth_to_mosp
+from satisfiability.solver import compute_pathwidth_sat
+from mosp.verify import max_open_stacks
 
-solution = solve_mosp_from_file("path/to/instance.mosp")
-print(f"Optimal open stacks: {solution.max_open_stacks}")
+instance = MOSPInstance.from_benchmark_file("path/to/instance.txt")[0]
+pw_problem = mosp_to_pathwidth(instance)
+pathwidth, customer_ordering = compute_pathwidth_sat(pw_problem.graph)
+solution = pathwidth_to_mosp(pw_problem, pathwidth, customer_ordering)
+actual_mosp = max_open_stacks(instance, solution.ordering)
+print(f"Optimal open stacks: {actual_mosp}")
 print(f"Production sequence: {solution.ordering}")
-print(f"Pathwidth: {solution.pathwidth}")
 ```
 
 ### Solve from a matrix directly
 
 ```python
 from mosp.instance import MOSPInstance
-from mosp.solver import solve_mosp
+from customer_inter.solver import solve_mosp
 
 # Rows = customers, columns = products
 # M[i][j] = 1 means customer i needs product j
@@ -117,6 +137,25 @@ solution = solve_mosp(instance)
 print(f"Optimal: {solution.max_open_stacks}, Ordering: {solution.ordering}")
 ```
 
+### Run benchmarks
+
+```bash
+# Solve large instances with SAT solver
+python -m benchmarks.solve_all_sat --timeout 300
+
+# Solve all published benchmarks (agreement graph, branch-and-bound)
+python -m benchmarks.solve_all --timeout 120
+
+# Compare agreement vs customer graph approaches
+python -m customer_inter.compare
+```
+
+### Run tests
+
+```bash
+python -m pytest tests/ -v
+```
+
 ### Instance file format
 
 Standard `.mosp` files:
@@ -127,39 +166,46 @@ n_customers n_patterns
 <n_customers rows of n_patterns space-separated 0/1 values>
 ```
 
-### Generate and run benchmarks
+## Theoretical Foundation
 
-```bash
-# Generate instances
-python -c "
-from benchmarks.generator import generate_benchmark_suite
-generate_benchmark_suite('benchmarks/instances', sizes=[(10,10),(15,15)], densities=[0.3])
-"
+The solver rests on a chain of equivalences (Kinnersley 1992, Yanasse 1997):
 
-# Run benchmarks
-python -m benchmarks.run_benchmarks benchmarks/instances benchmarks/results/output.csv
+```
+VS(G) = PW(G) = IT(G) = SN(G) - 1 = GML(G) + 1
 ```
 
-### Run tests
+Two graph formulations exist for MOSP:
+- **Customer intersection graph** G_c(M): nodes = customers, edge iff two customers share a product. `MOSP(M) = pathwidth(G_c) + 1`. This is the formulation used by the SAT solver.
+- **Agreement graph** G_a(M): nodes = products, edge iff two products share a customer. Pathwidth gives a lower bound but can undercount on some instances.
 
-```bash
-python -m pytest tests/ -v
-```
+### Formal Verification in Lean 4
 
-## Design Decisions
+The `lean/` directory contains a Lean 4 formalization of the core theoretical results:
 
-**Verify by simulation, not formula alone.** The solver computes the ordering from pathwidth but determines the actual MOSP value by simulating the production sequence on the original instance. This handles the edge case where `pathwidth + 1` exceeds the number of customers.
+- **Vertex separation = pathwidth** (Kinnersley 1992): proven via explicit constructions in both directions
+- **MOSP reduction**: formal proof that optimal MOSP value = pathwidth of the agreement graph + 1
+- **Verified examples**: concrete MOSP instances solved and checked within the proof assistant
 
-**Two-tier solver.** The exact DP is faster for small instances (no overhead from heuristics or iterative deepening), so the FPT solver delegates to it for n <= 25. For larger instances, the preprocessing (pendant removal, component decomposition) and pruning of the FPT algorithm keep the search tractable when pathwidth is small.
+Includes candidates for contribution to Mathlib (`ForMathlib/` modules).
 
-**Bitmask adjacency.** Both solvers represent adjacency as integer bitmasks, making neighbor queries O(1) via bitwise AND.
+## Pathwidth Solvers
+
+The project includes three pathwidth solvers, each optimal for different regimes:
+
+| Solver | File | Range | Method |
+|---|---|---|---|
+| Exact DP | `pathwidth.py` | n <= 18 | Held-Karp subset DP, O(2^n * n^2) |
+| Branch-and-bound | `pathwidth_fpt.py` | n <= 100+ (small k) | Iterative deepening with DFS/backtracking |
+| **SAT** | `satisfiability/` | **n <= 125** | **Position-based CNF + CaDiCaL** |
+
+The SAT solver (`compute_pathwidth_sat()`) is a drop-in replacement for `compute_pathwidth_fpt()` — same interface, same preprocessing (pendant removal, component decomposition), same bounds (greedy upper, clique lower). It delegates to exact DP for n <= 18 automatically.
 
 ## Known Limitations
 
-- The exact DP is limited to n <= 25 vertices (exponential in n).
-- The FPT solver's practical reach depends on pathwidth: it handles n = 100+ when k <= 5, but may be slow for moderate pathwidth (k >= 10) on large graphs.
-- No heuristic fallback for instances beyond the exact/FPT solvers' reach.
-- No implementation of the theoretical O(2^{O(k^2)} * n) algorithm (Bodlaender-Kloks), which has better worst-case guarantees but is extremely complex.
+- **SAT solver ceiling around n = 125**: The position-based encoding produces O(n^2) variables and O(n^2 * degree) clauses. Instances with 125 vertices and density >= 4 (pathwidth >= 50) exceed 300s. The 20 remaining unsolved benchmark instances are all 125x125 Chu & Stuckey with density 4-10.
+- **Exact DP ceiling at n = 18**: The subset DP uses O(2^n) space/time.
+- **Branch-and-bound depends on pathwidth**: Handles n = 100+ when k <= 5, but slows down for moderate pathwidth (k >= 10) on large graphs.
+- **No heuristic fallback**: For instances beyond all three solvers' reach, there is currently no approximate/heuristic mode.
 
 ## References
 
