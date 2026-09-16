@@ -83,7 +83,10 @@ def test_parallel_k_returns_none_on_timeout():
     Needs an instance whose bounds do not already meet, otherwise the solver
     answers from the bounds alone and never reaches the deadline check.
     """
-    rng = random.Random(11)
+    # Seed chosen so the bounds do not meet even with the clique lower
+    # bound; otherwise the solver answers from bounds alone and never reaches
+    # the deadline check.
+    rng = random.Random(0)
     matrix = [[rng.randint(0, 1) for _ in range(9)] for _ in range(9)]
     inst = MOSPInstance.from_matrix(matrix, name="timeout")
 

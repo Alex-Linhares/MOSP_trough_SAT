@@ -16,32 +16,78 @@ from __future__ import annotations
 
 import json
 import random
+import time
 from pathlib import Path
 
 from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
 from satisfiability.mosp_encoding import encode_mosp_decision, extract_ordering
 
+# SAT backend for the decision calls. Chosen by measurement, not default:
+# across 6 hard instances x 19 pysat backends (benchmarks/solver_portfolio.py),
+# Kissat404 was the only one to close all six refutations at k-1, against 2 for
+# cd195 and 3 for cd153. Refutations dominate runtime -- the satisfiable call at
+# k is comparatively cheap -- so the UNSAT column decides this. Kissat was also
+# the fastest on the satisfiable calls it closed (13.6s against cd195's 19.1s),
+# though it missed one of six there.
+#
+# Re-run benchmarks/solver_portfolio.py before changing this.
+SAT_BACKEND = "kissat404"
+
 # Default directory for cached solutions
 SOLUTIONS_DIR = Path(__file__).parent.parent / "solutions"
 
 
-def _lower_bound(instance: MOSPInstance) -> int:
-    """Compute a lower bound on MOSP.
+def _lower_bound(instance: MOSPInstance, clique_budget: float = 5.0) -> int:
+    """Compute a lower bound on MOSP from the largest clique found.
 
-    For any pattern p, when p is produced, all customers requiring p have
-    their stacks open (their first pattern has been produced — possibly p
-    itself — and their last pattern hasn't been produced yet — possibly p
-    itself). So at minimum, len(pattern_customers(p)) stacks are open.
+    In the MOSP graph (nodes are customers, an edge iff some pattern is
+    required by both — Yanasse 1997c), any clique C forces |C| simultaneously
+    open stacks:
 
-    Actually, this counts customers whose *only* pattern is p as having
-    open stacks too (they open and close at the same step). The true
-    lower bound is max over all patterns of |customers(p)|.
+        Let c be the customer of C that closes earliest. Every other c' in C
+        shares some pattern p with c. Since c closes at step t, all of c's
+        patterns including p are produced by t, so c' has opened by t; and c'
+        closes after c. So every customer of C is open at step t.
+
+    Hence MOSP >= omega(G). This argument is direct and does not rely on the
+    MOSP = pathwidth + 1 equality.
+
+    Each pattern is itself a clique, so the maximum patterns-per-customer count
+    is the special case of this bound over single-pattern cliques — that is the
+    trivial bound of Yuen & Richardson (1995), and the starting point here.
+    Maximal cliques are then enumerated for at most `clique_budget` seconds and
+    the largest kept; since any clique is valid, stopping early is sound.
+
+    Stronger bounds exist — notably the arc contraction bound of Yanasse,
+    Becceneri & Soma (1999), reported to dominate all earlier ones.
     """
     m = instance.n_patterns
     if m == 0:
         return 0
-    return max(len(instance.pattern_customers(p)) for p in range(m))
+
+    # Trivial bound: the largest pattern, which is a clique by construction.
+    best = max(len(instance.pattern_customers(p)) for p in range(m))
+
+    if instance.n_customers <= best:
+        return best  # cannot do better than the number of customers
+
+    try:
+        import networkx as nx
+
+        from customer_inter.customer_graph import build_customer_graph
+
+        graph = build_customer_graph(instance)
+        deadline = time.time() + clique_budget
+        for clique in nx.find_cliques(graph):
+            if len(clique) > best:
+                best = len(clique)
+            if time.time() > deadline:
+                break
+    except Exception:  # noqa: BLE001 - a bound is an optimisation, never required
+        pass
+
+    return best
 
 
 def _upper_bound(instance: MOSPInstance, n_random: int = 10, seed: int = 42) -> tuple[int, list[int]]:
@@ -310,7 +356,7 @@ def _sat_decision(
 
     cnf, pool, m = encode_mosp_decision(instance, k)
 
-    with Solver(name="cd195", bootstrap_with=cnf) as solver:
+    with Solver(name=SAT_BACKEND, bootstrap_with=cnf) as solver:
         if solver.solve():
             model = solver.get_model()
             return extract_ordering(model, pool, m)

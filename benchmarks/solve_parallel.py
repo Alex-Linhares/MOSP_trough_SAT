@@ -296,9 +296,10 @@ def _decision_worker(
     import numpy as np
 
     try:
-        from pysat.solvers import Cadical153
+        from pysat.solvers import Solver
 
         from satisfiability.mosp_encoding import encode_mosp_decision, extract_ordering
+        from satisfiability.mosp_solver import SAT_BACKEND
 
         instance = MOSPInstance(
             matrix=np.array(matrix_list, dtype=np.int8),
@@ -307,7 +308,7 @@ def _decision_worker(
             name=name,
         )
         cnf, pool, m = encode_mosp_decision(instance, k)
-        with Cadical153(bootstrap_with=cnf.clauses) as solver:
+        with Solver(name=SAT_BACKEND, bootstrap_with=cnf.clauses) as solver:
             if solver.solve():
                 ordering = extract_ordering(solver.get_model(), pool, m)
                 result_queue.put({"k": k, "sat": True, "ordering": ordering, "error": None})
