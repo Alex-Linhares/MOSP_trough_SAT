@@ -121,7 +121,8 @@ def test_sweep_solves_every_instance(tmp_path):
     _write_instance(tmp_path / "a.txt", "a", [[1, 1, 0], [0, 1, 1]])
     _write_instance(tmp_path / "b.txt", "b", [[1, 0, 1], [0, 1, 1]])
 
-    results = sweep(base_dir=tmp_path, workers=2, timeout=120.0)
+    results = sweep(base_dir=tmp_path, workers=2, timeout=120.0,
+                    solutions_dir=tmp_path / "solutions")
 
     assert len(results) == 2
     assert all(r["status"] == "solved" for r in results), results
@@ -134,7 +135,8 @@ def test_sweep_writes_csv(tmp_path):
     _write_instance(tmp_path / "a.txt", "a", [[1, 1, 0], [0, 1, 1]])
     out = tmp_path / "out" / "results.csv"
 
-    sweep(base_dir=tmp_path, workers=2, timeout=120.0, output_csv=out)
+    sweep(base_dir=tmp_path, workers=2, timeout=120.0, output_csv=out,
+          solutions_dir=tmp_path / "solutions")
 
     assert out.exists()
     lines = out.read_text().strip().splitlines()
@@ -149,12 +151,45 @@ def test_sweep_respects_size_filters(tmp_path):
         tmp_path / "big.txt", "big", [[1] * 6 for _ in range(6)]
     )
 
-    only_big = sweep(base_dir=tmp_path, workers=2, timeout=120.0, min_size=5)
+    only_big = sweep(base_dir=tmp_path, workers=2, timeout=120.0, min_size=5,
+                     solutions_dir=tmp_path / "solutions")
     assert [r["instance_name"] for r in only_big] == ["big"]
 
-    only_small = sweep(base_dir=tmp_path, workers=2, timeout=120.0, max_size=5)
+    only_small = sweep(base_dir=tmp_path, workers=2, timeout=120.0, max_size=5,
+                       solutions_dir=tmp_path / "solutions")
     assert [r["instance_name"] for r in only_small] == ["small"]
 
 
 def test_sweep_on_empty_directory(tmp_path):
-    assert sweep(base_dir=tmp_path, workers=2, timeout=10.0) == []
+    assert sweep(base_dir=tmp_path, workers=2, timeout=10.0,
+                 solutions_dir=tmp_path / "solutions") == []
+
+
+def test_sweep_persists_witness_orderings(tmp_path):
+    """The ordering is the result of a solve and must survive the run."""
+    import json
+
+    _write_instance(tmp_path / "a.txt", "keepme", [[1, 1, 0], [0, 1, 1]])
+    solutions = tmp_path / "solutions"
+
+    results = sweep(base_dir=tmp_path, workers=2, timeout=120.0,
+                    solutions_dir=solutions)
+
+    saved = list(solutions.glob("*.json"))
+    assert len(saved) == 1, f"expected one cached solution, got {saved}"
+    payload = json.loads(saved[0].read_text())
+    assert payload["instance_name"] == "keepme"
+    assert sorted(payload["ordering"]) == [0, 1, 2]
+    assert payload["mosp_value"] == results[0]["mosp_value"]
+
+
+def test_sweep_reuses_cached_solutions(tmp_path):
+    """A second pass verifies from disk instead of re-solving."""
+    _write_instance(tmp_path / "a.txt", "cached", [[1, 1, 0], [0, 1, 1]])
+    solutions = tmp_path / "solutions"
+
+    first = sweep(base_dir=tmp_path, workers=2, timeout=120.0, solutions_dir=solutions)
+    second = sweep(base_dir=tmp_path, workers=2, timeout=120.0, solutions_dir=solutions)
+
+    assert first[0]["mosp_value"] == second[0]["mosp_value"]
+    assert second[0]["status"] == "solved"

@@ -35,6 +35,7 @@ from typing import Optional
 from mosp.instance import MOSPInstance
 
 DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
+SOLUTIONS_DIR = Path("solutions")
 
 # Files in the benchmark tree that are documentation, not instances.
 SKIP_PATTERNS = ("Dataset_Description", "README", "S1. Dataset")
@@ -74,9 +75,15 @@ def _instance_worker(
     n_customers: int,
     n_patterns: int,
     name: str,
+    solutions_dir: Path,
     result_queue: multiprocessing.Queue,
 ) -> None:
-    """Solve one instance with the direct MOSP-to-SAT encoding."""
+    """Solve one instance with the direct MOSP-to-SAT encoding.
+
+    The witness ordering is cached to JSON and a cached solution is verified
+    and reused instead of re-solved. Instance names are unique across the
+    benchmark tree, so concurrent workers never contend for the same file.
+    """
     import numpy as np
 
     try:
@@ -89,7 +96,7 @@ def _instance_worker(
             n_patterns=n_patterns,
             name=name,
         )
-        value, ordering = solve_mosp_sat(instance, solutions_dir=None)
+        value, ordering = solve_mosp_sat(instance, solutions_dir=solutions_dir)
         result_queue.put(
             {
                 "mosp_value": value,
@@ -140,11 +147,19 @@ def sweep(
     output_csv: Optional[Path] = None,
     min_size: int = 1,
     max_size: Optional[int] = None,
+    solutions_dir: Path = SOLUTIONS_DIR,
 ) -> list[dict]:
     """Solve every matching benchmark instance, `workers` at a time.
 
     Results are written to CSV as they complete, so a long run that is
     interrupted still leaves behind everything solved up to that point.
+
+    Witness orderings are always cached under `solutions_dir`. A solve is
+    expensive and its ordering is the actual result -- the MOSP value alone
+    cannot be checked or reused -- so it is never discarded. This also makes a
+    re-run cheap: anything already solved is verified from disk rather than
+    re-solved, so raising the timeout only costs time on instances that
+    previously timed out.
     """
     workers = workers or min(32, os.cpu_count() or 1)
 
@@ -164,7 +179,9 @@ def sweep(
                 continue
             pending.append(_Job(dataset=filepath.parent.name, filename=filepath.name, instance=inst))
 
-    print(f"{len(pending)} instances, {workers} workers, {timeout:.0f}s timeout")
+    solutions_dir.mkdir(parents=True, exist_ok=True)
+    print(f"{len(pending)} instances, {workers} workers, {timeout:.0f}s timeout, "
+          f"solutions -> {solutions_dir}")
     if unparseable:
         print(f"WARNING: {len(unparseable)} file(s) could not be parsed:")
         for filename, reason in unparseable[:10]:
@@ -200,7 +217,8 @@ def sweep(
                 job.proc = multiprocessing.Process(
                     target=_instance_worker,
                     args=(job.instance.matrix.tolist(), job.instance.n_customers,
-                          job.instance.n_patterns, job.instance.name, job.queue),
+                          job.instance.n_patterns, job.instance.name,
+                          solutions_dir, job.queue),
                 )
                 job.started = time.time()
                 job.proc.start()
@@ -456,6 +474,8 @@ def main() -> None:
     p_sweep.add_argument("--output", type=Path, default=None)
     p_sweep.add_argument("--min-size", type=int, default=1)
     p_sweep.add_argument("--max-size", type=int, default=None)
+    p_sweep.add_argument("--solutions-dir", type=Path, default=SOLUTIONS_DIR,
+                         help="where witness orderings are cached (default: solutions/)")
 
     p_one = sub.add_parser("one", help="solve one instance, parallel over k")
     p_one.add_argument("name", help="instance name, e.g. GP5")
@@ -467,7 +487,8 @@ def main() -> None:
 
     if args.mode == "sweep":
         sweep(base_dir=args.dir, workers=args.workers, timeout=args.timeout,
-              output_csv=args.output, min_size=args.min_size, max_size=args.max_size)
+              output_csv=args.output, min_size=args.min_size, max_size=args.max_size,
+              solutions_dir=args.solutions_dir)
         return
 
     instance = _find_named_instance(args.name, args.dir)
