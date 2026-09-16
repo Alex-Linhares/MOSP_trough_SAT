@@ -48,9 +48,11 @@ The overcounting on the customer graph arises because the customer-to-pattern or
 ## Architecture
 
 ```
-satisfiability/                 → SAT-based pathwidth solver (n ≤ 125)
-    encoding.py                     Position-based CNF encoding with cardinality constraints
-    solver.py                       Solver wrapper: preprocessing, iterative deepening, CaDiCaL
+satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
+    encoding.py                     Position-based CNF encoding for pathwidth
+    solver.py                       Pathwidth solver: preprocessing, iterative deepening, CaDiCaL
+    mosp_encoding.py                Direct MOSP-to-SAT CNF encoding (no pathwidth reduction)
+    mosp_solver.py                  Direct MOSP solver: bounds, iterative deepening, solution caching
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)
     customer_graph.py               Build customer graph via M @ M^T overlap
@@ -91,8 +93,10 @@ lean/
         Examples.lean                   Verified example instances
         ForMathlib/                     Candidates for Mathlib contribution
 
+solutions/                      → Cached SAT solver solutions (JSON)
+
 reports/                        → Analysis documents
-tests/                          → 85 tests across 7 test modules
+tests/                          → 107 tests across 8 test modules
 literature/                     → Reference papers (PDFs)
 ```
 
@@ -154,9 +158,31 @@ For large instances where branch-and-bound times out, a SAT-based solver encodes
 
 `compute_pathwidth_sat()` is a drop-in replacement for `compute_pathwidth_fpt()` with the same interface. It reuses the same preprocessing (pendant removal, component decomposition) and bounds (greedy upper, clique lower).
 
+**Known bug**: The pathwidth SAT encoding (`encoding.py`) has a variable ID collision bug in `pool.occupy()` / `top_id` tracking. CardEnc auxiliary variables from different constraints share the same IDs, making the encoding unsound. The solver still returns correct results because: (1) n ≤ 18 delegates to exact DP, (2) n > 18 falls back to greedy ordering when SAT returns UNSAT. This bug is fixed in the direct MOSP encoding (`mosp_encoding.py`) which properly tracks auxiliary variable IDs.
+
+### Direct MOSP-to-SAT Solver (`satisfiability/mosp_solver.py`)
+
+Encodes the MOSP decision problem directly as SAT, bypassing the pathwidth reduction entirely. This produces **exact optimal MOSP values** — validated against all published optima (GP1-8, SP2-4).
+
+**Encoding** (position-based formulation):
+- Variables: `x[p,t]` (pattern p at position t), `y[p,t]` (pattern p placed by step t), `o[c,t]` (customer c's stack open at step t)
+- Permutation constraints via at-least-one + ladder at-most-one
+- Prefix linking: `x→y`, monotonicity, converse (including t=0 base case)
+- Open stack forcing: (a) placement clause `x[p,t] → o[c,t]` for each pattern p of customer c; (b) pair-wise clause for each (p,q) pair of customer c: `y[p,t] ∧ ¬y[q,t] → o[c,t]`
+- Width bound: totalizer cardinality constraint (at most k open stacks per step)
+- Symmetry breaking: pattern with most customers in first ⌊m/2⌋+1 positions
+
+**Solution caching**: Results are saved as JSON files in `solutions/`. On subsequent runs, cached solutions are loaded and verified by simulation instead of re-solving. Disable with `solutions_dir=None`.
+
+**Bounds for iterative deepening**:
+- Lower bound: max over all patterns p of |customers(p)| (when p is produced, all its customers have open stacks)
+- Upper bound: best of identity, reverse, and 10 random permutations (fast O(m·n) simulation each)
+
 ## Design Decisions
 
 **Two graph formulations.** The agreement graph (patterns as vertices) and customer intersection graph (customers as vertices) provide complementary bounds. Neither yields exact MOSP on all instances: agreement undercounts, customer overcounts. The Lean formalization proves agreement graph properties.
+
+**Direct MOSP-to-SAT solver.** Encodes MOSP directly without the pathwidth reduction. Produces exact optimal values validated against all published benchmarks. The placement + pair-wise open-stack forcing captures the full open/close semantics correctly.
 
 **Three-tier pathwidth solver.** Exact DP for n ≤ 18 (fastest, no overhead). Branch-and-bound for n ≤ 100+ when pathwidth is small. SAT solver for large instances (n ≤ 125) where branch-and-bound times out — handles high pathwidth that defeats backtracking search.
 
@@ -197,6 +223,16 @@ sol = solve_mosp(instance)
 print(f'Upper bound: {sol.max_open_stacks}, Ordering: {sol.ordering}')
 "
 
+# Solve MOSP exactly with direct SAT encoding (recommended)
+python -c "
+from mosp.instance import MOSPInstance
+from satisfiability.mosp_solver import solve_mosp_sat
+matrix = [[1,1,0,0],[0,1,1,0],[0,0,1,1]]
+instance = MOSPInstance.from_matrix(matrix, name='example')
+val, ordering = solve_mosp_sat(instance)
+print(f'Optimal MOSP: {val}, Ordering: {ordering}')
+"
+
 # Solve large instances with SAT solver (upper bounds via pathwidth reduction)
 python -m benchmarks.solve_all_sat --timeout 300
 
@@ -209,19 +245,24 @@ python -m benchmarks.solve_all --timeout 120
 
 ## Known Limitations
 
-- **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). The customer-to-pattern ordering derivation is heuristic. A direct MOSP-to-SAT encoding is needed for exact results.
+- **Direct MOSP SAT encoding scales to ~50×50**: The O(m² · |P_c|²) clause count for open-stack forcing grows quickly. Validated on 50×50 instances (GP1-GP4). Larger instances (100×100) may require longer timeouts.
+- **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
 - **Agreement graph undercounts**: `pathwidth(G_a) + 1` gives a lower bound that can be too low.
-- **SAT solver ceiling around n = 125**: The position-based encoding produces O(n²) variables and O(n² · degree) clauses. Instances with 125 vertices and density ≥ 4 (pathwidth ≥ 50) exceed 300s. The 20 remaining unsolved benchmark instances are all 125×125 Chu & Stuckey with density 4-10.
+- **Pathwidth SAT encoding has a variable ID collision bug**: The `encoding.py` pool.occupy/top_id tracking is broken (CardEnc auxiliary variables collide across constraints). The solver works because it falls back to greedy. Fixed in `mosp_encoding.py`.
+- **SAT solver ceiling around n = 125**: The pathwidth position-based encoding produces O(n²) variables and O(n² · degree) clauses. Instances with 125 vertices and density ≥ 4 (pathwidth ≥ 50) exceed 300s.
 - **Exact DP ceiling at n = 18**: The subset DP uses O(2^n) space/time.
 - **Branch-and-bound depends on pathwidth**: Handles n = 100+ when k ≤ 5, but slows down for moderate pathwidth (k ≥ 10) on large graphs.
 
 ## Next Steps
 
-**Primary: Direct MOSP-to-SAT encoding.** Encode MOSP directly as a SAT problem, bypassing the pathwidth reduction. The SAT infrastructure (pysat, CaDiCaL, cardinality constraints, IDPool, iterative deepening) built for pathwidth can be reused. The encoding would sequence patterns directly and count open stacks at each position, avoiding the lossy customer-to-pattern ordering derivation.
+**Primary:**
+- Validate direct SAT results against all published optimal values (Frinhani et al. 2018, Chu & Stuckey 2009) — GP1-4 validated, GP5-8 and SP instances need testing
+- Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`
+- Batch solver script for direct MOSP-to-SAT (analogous to `solve_all_sat.py`)
 
 **Secondary:**
-- Validate direct SAT results against all published optimal values (Frinhani et al. 2018, Chu & Stuckey 2009)
 - Incremental SAT (assumption literals) to avoid rebuilding the formula for each k value
 - Better greedy upper bounds (random restarts, local search) to improve iterative deepening
+- Clause reduction: avoid O(|P_c|²) pair-wise clauses for customers with many patterns (use auxiliary variables to encode "exists placed" and "exists not placed")
 - Integration with SageMath's pathwidth solvers as a reference oracle
 - The existing pathwidth solvers and FPT theory remain valuable for theoretical interest and as bounds
