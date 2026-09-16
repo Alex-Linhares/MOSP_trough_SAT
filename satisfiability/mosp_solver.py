@@ -45,10 +45,10 @@ def _lower_bound(instance: MOSPInstance) -> int:
 
 
 def _upper_bound(instance: MOSPInstance, n_random: int = 10, seed: int = 42) -> tuple[int, list[int]]:
-    """Compute an upper bound on MOSP via greedy orderings.
+    """Compute an upper bound on MOSP via random permutations + tabu search.
 
-    Tries identity, reverse, and random permutations, returning the best
-    (lowest max open stacks) ordering found.
+    Starts with identity, reverse, and random permutations, then improves
+    the best one with a short tabu search (insert moves).
 
     Returns:
         (upper_bound_value, best_ordering)
@@ -72,9 +72,93 @@ def _upper_bound(instance: MOSPInstance, n_random: int = 10, seed: int = 42) -> 
         val = max_open_stacks(instance, perm)
         if val < best_val:
             best_val = val
-            best_ord = perm
+            best_ord = list(perm)
+
+    # Tabu search to improve the best ordering found
+    best_val, best_ord = _tabu_search(instance, best_ord, best_val, seed=seed)
 
     return best_val, best_ord
+
+
+def _tabu_search(
+    instance: MOSPInstance,
+    init_ordering: list[int],
+    init_val: int,
+    seed: int = 42,
+    max_iterations: int = 500,
+    tabu_tenure: int = 7,
+    n_neighbors: int = 200,
+) -> tuple[int, list[int]]:
+    """Tabu search over pattern orderings using swap moves.
+
+    Neighborhood: swap patterns at positions i and j.
+    Tabu list: recently swapped positions (can't be swapped again for tabu_tenure steps).
+    Uses sampled neighborhood for scalability on large instances.
+    """
+    m = len(init_ordering)
+    if m <= 2:
+        return init_val, init_ordering
+
+    rng = random.Random(seed + 1)
+
+    current = list(init_ordering)
+    current_val = init_val
+    best = list(init_ordering)
+    best_val = init_val
+
+    # Tabu list: position -> iteration when it becomes non-tabu
+    tabu = {}
+
+    stale = 0  # iterations without improvement
+
+    for iteration in range(max_iterations):
+        best_move_val = float("inf")
+        best_move_i = -1
+        best_move_j = -1
+
+        # Sample neighborhood: random swaps
+        for _ in range(min(n_neighbors, m * (m - 1) // 2)):
+            i = rng.randint(0, m - 1)
+            j = rng.randint(0, m - 2)
+            if j >= i:
+                j += 1
+
+            i_tabu = tabu.get(i, 0) > iteration
+            j_tabu = tabu.get(j, 0) > iteration
+
+            # Apply swap
+            current[i], current[j] = current[j], current[i]
+            val = max_open_stacks(instance, current)
+            current[i], current[j] = current[j], current[i]
+
+            # Aspiration: accept tabu moves if they improve global best
+            if (i_tabu or j_tabu) and val >= best_val:
+                continue
+
+            if val < best_move_val:
+                best_move_val = val
+                best_move_i = i
+                best_move_j = j
+
+        if best_move_i < 0:
+            break
+
+        # Apply the best move
+        current[best_move_i], current[best_move_j] = current[best_move_j], current[best_move_i]
+        current_val = best_move_val
+        tabu[best_move_i] = iteration + tabu_tenure
+        tabu[best_move_j] = iteration + tabu_tenure
+
+        if current_val < best_val:
+            best_val = current_val
+            best = list(current)
+            stale = 0
+        else:
+            stale += 1
+            if stale > 100:
+                break  # Early termination if stuck
+
+    return best_val, best
 
 
 def _solution_path(instance: MOSPInstance, solutions_dir: Path) -> Path:
@@ -188,19 +272,24 @@ def solve_mosp_sat(
     if k_lower >= k_upper_val:
         val, ordering = k_upper_val, best_ordering
     else:
-        val, ordering = None, None
-        # Iterative deepening with SAT
-        for k in range(k_lower, k_upper_val):
-            result = _sat_decision(instance, k)
-            if result is not None:
-                # Verify by simulation
-                actual = max_open_stacks(instance, result)
-                val, ordering = actual, result
-                break
+        # Binary search: find the smallest k where MOSP <= k is SAT.
+        # Invariant: UNSAT at lo-1, SAT at hi. We want the smallest SAT k.
+        lo = k_lower
+        hi = k_upper_val  # known SAT (greedy achieves this)
+        best_sat_ordering = best_ordering
 
-        if val is None:
-            # Fallback: the greedy ordering achieves k_upper_val
-            val, ordering = k_upper_val, best_ordering
+        while lo < hi:
+            mid = (lo + hi) // 2
+            result = _sat_decision(instance, mid)
+            if result is not None:
+                hi = mid
+                best_sat_ordering = result
+            else:
+                lo = mid + 1
+
+        # lo == hi == optimal k
+        actual = max_open_stacks(instance, best_sat_ordering)
+        val, ordering = actual, best_sat_ordering
 
     # Save solution
     if solutions_dir is not None and instance.name:
