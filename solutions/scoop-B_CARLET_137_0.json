@@ -1,0 +1,20 @@
+{
+  "instance_name": "scoop-B_CARLET_137_0",
+  "n_customers": 13,
+  "n_patterns": 12,
+  "mosp_value": 5,
+  "ordering": [
+    2,
+    3,
+    9,
+    8,
+    10,
+    11,
+    7,
+    6,
+    5,
+    0,
+    1,
+    4
+  ]
+}

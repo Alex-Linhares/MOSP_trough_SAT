@@ -1,0 +1,33 @@
+{
+  "instance_name": "NWRS3 15 customers  25 products",
+  "n_customers": 15,
+  "n_patterns": 25,
+  "mosp_value": 7,
+  "ordering": [
+    6,
+    5,
+    10,
+    4,
+    12,
+    20,
+    14,
+    15,
+    2,
+    21,
+    22,
+    8,
+    9,
+    23,
+    0,
+    16,
+    24,
+    11,
+    13,
+    3,
+    17,
+    1,
+    7,
+    19,
+    18
+  ]
+}

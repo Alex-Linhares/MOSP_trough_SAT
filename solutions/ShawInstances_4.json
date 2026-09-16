@@ -1,0 +1,28 @@
+{
+  "instance_name": "ShawInstances_4",
+  "n_customers": 20,
+  "n_patterns": 20,
+  "mosp_value": 14,
+  "ordering": [
+    12,
+    16,
+    14,
+    11,
+    5,
+    7,
+    3,
+    1,
+    9,
+    6,
+    0,
+    13,
+    10,
+    18,
+    15,
+    17,
+    8,
+    4,
+    2,
+    19
+  ]
+}

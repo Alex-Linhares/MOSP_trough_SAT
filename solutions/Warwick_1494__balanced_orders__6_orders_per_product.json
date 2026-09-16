@@ -1,0 +1,23 @@
+{
+  "instance_name": "Warwick 1494: balanced orders, 6 orders per product",
+  "n_customers": 30,
+  "n_patterns": 15,
+  "mosp_value": 15,
+  "ordering": [
+    13,
+    2,
+    4,
+    6,
+    0,
+    12,
+    11,
+    9,
+    5,
+    10,
+    1,
+    7,
+    14,
+    3,
+    8
+  ]
+}

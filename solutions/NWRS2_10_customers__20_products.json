@@ -1,0 +1,28 @@
+{
+  "instance_name": "NWRS2 10 customers  20 products",
+  "n_customers": 10,
+  "n_patterns": 20,
+  "mosp_value": 4,
+  "ordering": [
+    0,
+    5,
+    4,
+    12,
+    6,
+    14,
+    13,
+    2,
+    11,
+    9,
+    3,
+    8,
+    15,
+    17,
+    10,
+    7,
+    18,
+    19,
+    16,
+    1
+  ]
+}

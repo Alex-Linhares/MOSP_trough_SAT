@@ -1,0 +1,18 @@
+{
+  "instance_name": "HS problem 108 size 10 10 density  0.30",
+  "n_customers": 10,
+  "n_patterns": 10,
+  "mosp_value": 6,
+  "ordering": [
+    1,
+    5,
+    7,
+    3,
+    0,
+    9,
+    8,
+    6,
+    4,
+    2
+  ]
+}

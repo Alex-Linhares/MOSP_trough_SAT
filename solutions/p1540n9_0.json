@@ -1,0 +1,23 @@
+{
+  "instance_name": "p1540n9_0",
+  "n_customers": 40,
+  "n_patterns": 15,
+  "mosp_value": 7,
+  "ordering": [
+    3,
+    10,
+    11,
+    0,
+    4,
+    9,
+    14,
+    1,
+    2,
+    7,
+    6,
+    13,
+    12,
+    5,
+    8
+  ]
+}

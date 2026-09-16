@@ -1,0 +1,18 @@
+{
+  "instance_name": "p1010n2_0",
+  "n_customers": 9,
+  "n_patterns": 10,
+  "mosp_value": 6,
+  "ordering": [
+    3,
+    5,
+    0,
+    2,
+    4,
+    9,
+    1,
+    6,
+    7,
+    8
+  ]
+}
