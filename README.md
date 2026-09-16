@@ -1,6 +1,6 @@
 # MOSP Solver — Direct SAT Encoding
 
-Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with CaDiCaL. Includes a formal proof of the MOSP-pathwidth equivalence in Lean 4.
+Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with CaDiCaL, with a quick tabu search supplying the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence that minimizes the maximum number of simultaneously open customer stacks. This problem is NP-hard (Linhares & Yanasse 2002).
 
@@ -10,9 +10,9 @@ The solver encodes the MOSP decision problem ("can patterns be sequenced with at
 
 Given a MOSP instance with binary matrix M (rows = customers, columns = patterns):
 
-1. Compute **bounds**: lower bound from max customers per pattern, upper bound via **tabu search** over random permutations.
+1. Compute **bounds**. Lower bound: the largest number of customers requiring any single pattern. Upper bound: a **quick tabu search** -- the best of identity, reverse, and 10 random permutations, improved by tabu search over swap moves (500 iterations, tenure 7, 200 sampled neighbours per step, with an aspiration criterion).
 2. **Binary search** over k in [lower, upper]: at each step, encode "MOSP <= k?" as CNF and solve with CaDiCaL.
-3. The smallest satisfiable k is the exact optimal MOSP value.
+3. The smallest satisfiable k is the exact optimal MOSP value. If the bounds already meet (`lower >= upper`), the tabu ordering is optimal and no SAT call is made.
 4. **Verify** by simulating the production sequence on the witness ordering.
 
 Solutions are cached as JSON in `solutions/` — subsequent runs verify cached solutions instead of re-solving.
@@ -54,6 +54,8 @@ Validated against all published optimal values from Frinhani et al. (2018) / Chu
 
 SP2 is notable: the earlier pathwidth-based approach gave 21 (+2 overcounting). The direct SAT encoding finds the exact optimal of 19.
 
+"Exact" means the binary search certified optimality: SAT at k with a witness ordering, UNSAT at k-1. The witness orderings are cached in `solutions/` and can be re-checked independently of the SAT solver by simulating them with `mosp.verify.max_open_stacks` -- all five reproduce the published value.
+
 ## Project Structure
 
 ```
@@ -88,6 +90,12 @@ benchmarks/
     solve_all.py                    Batch solver for published benchmark files
     generator.py                    Random/structured instance generation
     run_benchmarks.py               Batch solver with CSV output
+    instances/                      Published MOSP benchmark collections
+        ChallengeInstances2005/         2005 Constraint Modelling Challenge
+            Harvey/ Miller/ Shaw/ Simonis/ Wilson/
+        MOSP_Instances/                 SCOOP dataset collection
+            Challenge/ Chu_Stuckey/ Faggioli_Bentivoglio/ SCOOP/
+    results/                        Benchmark result CSVs (tracked for regression)
 
 lean/
     MOSPFormalization/              Lean 4 proofs of the MOSP-pathwidth reduction
@@ -134,15 +142,27 @@ python validate_published_optima.py
 python -m pytest tests/ -v
 ```
 
-### Instance file format
+### Instance file formats
 
-Standard `.mosp` files:
+`MOSPInstance.from_file` reads this project's own single-instance `.mosp` format:
 
 ```
 instance_name
 n_customers n_patterns
 <n_customers rows of n_patterns space-separated 0/1 values>
 ```
+
+`MOSPInstance.from_benchmark_file` reads the published collections in
+`benchmarks/instances/` and returns a **list** of instances, since many of those
+files concatenate several instances (`Harvey/wbp_10_10.txt` holds 40). It handles
+both layouts found there:
+
+- **Format A** (`MOSP_Instances/`) -- one instance per file, leading `m n` line,
+  matrix transposed to customers x patterns.
+- **Format B** (`ChallengeInstances2005/`) -- multiple instances per file, optional
+  description lines before each `m n` line, matrix already customers x patterns.
+
+The format is auto-detected from the path; pass `transpose=` to override.
 
 ## Theoretical Foundation
 
@@ -160,11 +180,36 @@ Neither is exact on all instances. The direct SAT encoding bypasses these reduct
 
 ### Formal Verification in Lean 4
 
-The `lean/` directory contains a Lean 4 formalization of the core theoretical results:
+The `lean/` directory contains a Lean 4 formalization of the pathwidth theory. It is a work in progress, and it formalizes the *pathwidth* side of the story -- not the direct SAT encoding, and not an exact-MOSP claim.
 
-- **Vertex separation = pathwidth** (Kinnersley 1992): proven via explicit constructions in both directions
-- **MOSP reduction**: formal proof that optimal MOSP value = pathwidth of the agreement graph + 1
-- **Verified examples**: concrete MOSP instances solved and checked within the proof assistant
+**Complete (no `sorry`):**
+
+- **Vertex separation = pathwidth** (Kinnersley 1992), in `VSEquivPW.lean`: proven in both directions via explicit constructions (`LayoutToDecomposition.lean` and `DecompositionToLayout.lean`).
+- Supporting definitions and lemmas: linear layouts, vertex separation, path decompositions, pathwidth, MOSP instances, open-stack counting.
+- `Examples.lean`: small concrete instances checking that the agreement-graph and open-stack *definitions* behave as intended. No instance is solved inside the proof assistant -- pathwidth is defined via `sInf` and is noncomputable.
+
+**Incomplete (2 `sorry`s, both in `Reduction.lean`):**
+
+- `openStacksAt_le_bag_card` (line 61) -- the core injection step, which needs Hall's marriage theorem under the `IsReduced` hypothesis.
+- `exists_instance_achieving_equality` (line 111) -- the tightness direction.
+
+What is stated in Lean is the one-sided bound `mospValue <= pathwidth + 1` (`mosp_le_pathwidth_add_one`, for `IsReduced` instances), and it currently rests on the first `sorry`. **Equality is not proven, and is not expected to hold in general** -- the empirical results above show `pathwidth(G_a) + 1` undercounting and `pathwidth(G_c) + 1` overcounting on real instances. Closing the tightness `sorry` would require the reduced-instance hypothesis to do real work.
+
+The formalization includes candidates for contribution to Mathlib (`ForMathlib/`).
+
+Building requires `elan`/`lake` with the toolchain pinned in `lean/lean-toolchain`:
+
+```bash
+cd lean && lake build
+```
+
+## Known Limitations
+
+- **Six of the eleven published instances are still unsolved** (GP5-GP8, SP3, SP4 -- the 100x100 and 75x75 cases). The encoding grows with `n_patterns * n_customers`, and the binary search needs a full UNSAT proof at k-1 to certify optimality.
+- **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
+- **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`, but neither graph formulation yields exact MOSP values on all instances.
+- **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.
+- **There is no `LICENSE` file**, although this README states MIT and the Lean sources carry Apache 2.0 headers.
 
 ## References
 
