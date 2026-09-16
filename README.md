@@ -26,13 +26,27 @@ Position-based formulation with three variable families:
 | `x[p,t]` | Pattern p is placed at position t |
 | `y[p,t]` | Pattern p is placed by step t (prefix) |
 | `o[c,t]` | Customer c's stack is open at step t |
+| `any[c,t]`, `all[c,t]` | Auxiliaries for the open-stack condition |
 
 **Constraints:**
 - **Permutation**: each pattern exactly one position, each position exactly one pattern (at-least-one + ladder at-most-one)
 - **Prefix linking**: `x[p,t] -> y[p,t]`, monotonicity, converse (including t=0 base case)
-- **Open stack forcing**: (a) `x[p,t] -> o[c,t]` for each pattern p of customer c; (b) `y[p,t] AND NOT y[q,t] -> o[c,t]` for each pair (p,q) of customer c
+- **Open stack forcing**: (a) `x[p,t] -> o[c,t]` for each pattern p of customer c; (b) `y[p,t] -> any[c,t]`, `all[c,t] -> y[p,t]`, and `any[c,t] AND NOT all[c,t] -> o[c,t]`
 - **Width bound**: at most k open stacks per step (totalizer cardinality constraint)
 - **Symmetry breaking**: pattern with most customers in first half of positions
+
+Constraint (b) costs `2|P_c| + 1` clauses per (customer, step). Writing it
+directly over pairs of c's patterns instead -- `y[p,t] AND NOT y[q,t] -> o[c,t]`
+-- costs `|P_c|(|P_c| - 1)`, which on dense instances dominates the entire
+formula: GP5 (100x100, customers needing nearly every pattern) encoded to 76.7M
+clauses and cost 10.3 GB and 60s to build, against 3.25M clauses, 461 MB and
+2.3s now. Only the polarities above are needed; neither auxiliary is pinned to
+its full definition, but `any` occurs negatively in the forcing clause so it
+stays false unless some `y[p,t]` forces it true, and `all` occurs positively so
+it goes true whenever every `y[p,t]` allows. So `o[c,t]` is forced exactly when
+the customer is genuinely open, never spuriously -- which would over-tighten the
+width bound. The pairwise form is retained behind `pairwise_open_stacks=True`
+and both are tested against exhaustive search.
 
 ## Validation Against Published Optima
 
@@ -86,6 +100,7 @@ fixed_parameter_algorithm/      -> Pathwidth solvers (used as subroutines)
 solutions/                      Cached optimal solutions (JSON)
 
 benchmarks/
+    solve_parallel.py               Parallel solving: across instances, and across k
     solve_all_sat.py                Batch SAT solver for large benchmark instances
     solve_all.py                    Batch solver for published benchmark files
     generator.py                    Random/structured instance generation
@@ -102,7 +117,7 @@ lean/
 
 validate_published_optima.py    Batch validation against published optima
 
-tests/                          107 tests across 8 test modules
+tests/                          147 tests across 9 test modules
 literature/                     Reference papers
 reports/                        Analysis documents
 ```
@@ -128,6 +143,32 @@ val, ordering = solve_mosp_sat(instance)
 print(f"Optimal MOSP: {val}")
 print(f"Ordering: {ordering}")
 ```
+
+### Solve in parallel
+
+Two axes of parallelism, both in `benchmarks/solve_parallel.py`:
+
+```bash
+# Fan out across instances (defaults to min(32, cores) workers)
+python -m benchmarks.solve_parallel sweep --workers 30 --timeout 300 \
+    --output benchmarks/results/sweep.csv
+
+# Parallelise the binary search over k for one hard instance
+python -m benchmarks.solve_parallel one GP5 --workers 28
+```
+
+`sweep` gives near-linear speedup: the benchmark tree holds 6,376 instances and
+they are completely independent. Each instance still runs in its own process, so
+a hung or memory-hungry solve is killed without taking the run down, and rows are
+flushed to CSV as they complete.
+
+`one` attacks a single instance. The sequential binary search issues `log2(gap)`
+CaDiCaL calls strictly in order, and its hardest call is almost always the UNSAT
+proof at the optimum minus one -- which it reaches *last*. Probing many k at once
+starts that proof immediately. Since SAT at k implies SAT at k+1, every answer
+shrinks the live interval, so each round cuts it by a factor of `workers + 1`
+rather than 2, and probes whose result can no longer move either endpoint are
+killed rather than awaited.
 
 ### Validate against published optima
 
@@ -205,7 +246,7 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **Six of the eleven published instances are still unsolved** (GP5-GP8, SP3, SP4 -- the 100x100 and 75x75 cases). The encoding grows with `n_patterns * n_customers`, and the binary search needs a full UNSAT proof at k-1 to certify optimality.
+- **Six of the eleven published instances are still unsolved** (GP5-GP8, SP3, SP4 -- the 100x100 and 75x75 cases). These now encode in 0.4-3.3M clauses rather than tens of millions, so the obstacle is no longer building the formula but the UNSAT proof at k-1 that certifies optimality.
 - **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`, but neither graph formulation yields exact MOSP values on all instances.
 - **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.
