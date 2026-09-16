@@ -213,11 +213,26 @@ The MOSP-pathwidth connection (Kinnersley 1992, Yanasse 1997):
 VS(G) = PW(G) = IT(G) = SN(G) - 1 = GML(G) + 1
 ```
 
-Two graph formulations provide bounds on MOSP:
-- **Agreement graph** G_a(M): `pathwidth(G_a) + 1` gives a lower bound
-- **Customer intersection graph** G_c(M): `pathwidth(G_c) + 1` gives an upper bound
+Two graph formulations appear in this repository, and it is worth being precise
+about which one the literature's equivalence concerns. Yanasse & Senne (2010)
+defines both and calls them "completely different":
 
-Neither is exact on all instances. The direct SAT encoding bypasses these reductions entirely, encoding MOSP as a self-contained decision problem.
+- **MOSP graph** -- nodes are *item types* (customers), an arc between two iff
+  some pattern contains both (`M @ M^T`). A pattern with k items is a clique of
+  size k. **This is the graph of the pathwidth equivalence**, due to Yanasse
+  (1997c). Here: `customer_inter/customer_graph.py`.
+- **Pattern connection graph** -- nodes are *patterns*, an arc between two iff
+  they share an item type (`M^T @ M`). The literature uses it only to decompose
+  an instance into independent clusters. Here: `mosp/agreement_graph.py`; the
+  name "agreement graph" is this project's, not the literature's.
+
+Earlier versions of this README attached the `pathwidth + 1` equality to the
+agreement graph, which is the wrong object -- the undercounting measured there
+is not a counterexample to Yanasse's result. Whether the equality is tight on the
+MOSP graph is a question this project has not yet answered properly.
+
+The direct SAT encoding bypasses both reductions, encoding MOSP as a
+self-contained decision problem, and does not depend on the resolution.
 
 ### Formal Verification in Lean 4
 
@@ -248,7 +263,9 @@ cd lean && lake build
 
 - **Six of the eleven published instances are still unsolved** (GP5-GP8, SP3, SP4 -- the 100x100 and 75x75 cases). These now encode in 0.4-3.3M clauses rather than tens of millions, so the obstacle is no longer building the formula but the UNSAT proof at k-1 that certifies optimality.
 - **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
-- **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`, but neither graph formulation yields exact MOSP values on all instances.
+- **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
+- **The lower bound is the weakest one in the literature.** `_lower_bound` returns the maximum customers per pattern, which Yanasse & Senne (2010) attribute to Yuen & Richardson (1995) and call trivial. Clique, minimum-degree and arc-contraction bounds are all stronger. On SP4 ours gives 13 against a true optimum of 53, and the binary search burns its budget on refutations far below the optimum.
+- **No preprocessing.** Six operations are on record in the literature; none are implemented on the SAT path.
 - **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.
 - **There is no `LICENSE` file**, although this README states MIT and the Lean sources carry Apache 2.0 headers.
 
@@ -259,6 +276,7 @@ cd lean && lake build
 - **Linhares, A. & Yanasse, H.H.** (2002). Connections between cutting-pattern sequencing, VLSI design, and flexible machines. *Computers & Operations Research*, 29, 1759-1772.
 - **Chu, G. & Stuckey, P.J.** (2009). Minimizing the maximum number of open stacks by customer search. *CP 2009*, LNCS 5732, 242-257.
 - **Frinhani, R.M.D. et al.** (2018). A PageRank-based heuristic for the minimization of open stacks problem. *PLOS ONE*, 13(8), e0203076.
+- **Yanasse, H.H. & Senne, E.L.F.** (2010). The minimization of open stacks problem: A review of some properties and their use in pre-processing operations. *European Journal of Operational Research*, 203(3), 559-567. (*)
 - **Martin, M., Yanasse, H.H. & Pinto, M.J.** (2022). Mathematical models for the minimization of open stacks problem. *International Transactions in Operational Research*.
 
 ## License

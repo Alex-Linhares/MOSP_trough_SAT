@@ -6,9 +6,37 @@ This project tackles the **Minimization of Open Stacks Problem (MOSP)** by reduc
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence for the products that minimizes the maximum number of simultaneously "open" customer stacks. A stack opens when the first product a customer needs is produced and closes when the last one is done.
 
-## Critical Finding: Pathwidth Reduction Gives Upper Bounds, Not Exact MOSP
+## Terminology Correction: We Had the Two Graphs Swapped
 
-Validation against published optimal values (from Frinhani et al. 2018, computed using Chu & Stuckey 2009) reveals that **neither graph formulation yields exact MOSP values on all instances**:
+Yanasse & Senne (2010, `literature/yanasse_senne_2010_properties_preprocessing.pdf`)
+defines both graphs this literature uses, and says they are "completely different":
+
+- **MOSP graph** — nodes are *item types* (customers), with an arc between two
+  nodes iff some pattern contains both. `M @ M^T`. A pattern with k items becomes
+  a clique of size k, so the graph is a union of cliques. **This is the graph the
+  pathwidth equivalence is about**, due to Yanasse (1997c). In this repository it
+  is `customer_inter/customer_graph.py`.
+- **Pattern connection graph** — nodes are *patterns*, with an arc between two
+  iff they share an item type. `M^T @ M`. The literature uses this for exactly
+  one purpose: decomposing an instance into independent clusters (pre-processing
+  1). In this repository it is `mosp/agreement_graph.py`, and the name
+  "agreement graph" is ours, not the literature's.
+
+So the claim recorded below — that `pathwidth(agreement graph) + 1` should equal
+the optimum — attached the theorem to the graph the literature uses only for
+decomposition. The undercounting we measured is not a counterexample to
+Yanasse's result; it is a consequence of testing the wrong graph. Note also that
+the graph result is **Yanasse (1997c)**, a different paper from the EJOR
+"On a pattern sequencing problem..." (1997b) cited elsewhere in this repository;
+there are at least three distinct Yanasse 1997 papers.
+
+## Earlier Finding: Neither Graph Formulation Gave Exact MOSP Values
+
+Recorded as measured. Read it in light of the correction above: the agreement
+graph column was never expected to be exact, and the customer graph column is
+confounded by a heuristic ordering derivation.
+
+Validation against published optimal values (from Frinhani et al. 2018, computed using Chu & Stuckey 2009):
 
 | Instance | Published OPT | Agreement graph (pw+1) | Customer graph (pw+1) |
 |---|---|---|---|
@@ -33,10 +61,42 @@ The overcounting on the customer graph arises because the customer-to-pattern or
 
 **The correct approach is to encode MOSP directly as SAT**, bypassing the pathwidth reduction entirely. The SAT infrastructure (encoding, solver wrapper, CaDiCaL backend) built for pathwidth can be reused for a direct MOSP encoding.
 
+## Bounds: Ours Is the Weakest One in the Literature
+
+`satisfiability/mosp_solver.py::_lower_bound` returns the maximum number of
+customers requiring any single pattern. Yanasse & Senne (2010) attribute exactly
+this to Yuen & Richardson (1995) and call it **the trivial lower bound**. Three
+stronger ones are on record:
+
+1. **maximal clique of the MOSP graph** (Yanasse 1997c) — dominates the trivial
+   bound, since every pattern is already a clique there
+2. **smallest node degree** of the MOSP graph (Yanasse 1997c)
+3. **arc contraction bound** (Yanasse et al. 1999) — "dominates all previous
+   lower bounds proposed in the literature"
+
+Plus a general principle: any subgraph of the MOSP graph yields a valid lower
+bound, so bounds can be obtained by solving smaller subinstances.
+
+This matters concretely. On SP4 our bound is 13 against a true optimum of 53, and
+SP4 is still unsolved. The binary search spends its budget on refutations at k
+values far below the optimum, which are both hopeless and expensive.
+
+## Preprocessing: Six Operations Exist, We Implement None
+
+The SAT path does no preprocessing. Yanasse & Senne (2010) review six
+operations: cluster decomposition, pattern dominance, item reduction from pattern
+simplicity, and reductions from equivalent nodes and adjacent degree-2 nodes.
+A measurement in this repository found pattern and item dominance nearly useless
+on the Chu & Stuckey random instances (0 dominated customers), but that covered
+only two of the six — the others are untested here.
+
 ### Key References
 
 - **Kinnersley (1992)** — Established vertex separation = pathwidth. *Information Processing Letters*, 42(6), 345-350.
-- **Yanasse (1997)** — Formulated MOSP in terms of the agreement graph. *European Journal of Operational Research*, 100(3), 454-463.
+- **Yanasse (1997b)** — Mathematical formulation, branch and bound, greedy heuristic. *European Journal of Operational Research*, 100(3), 454-463. Note: this is *not* the paper that introduces the MOSP graph.
+- **Yanasse (1997c)** — Introduced the MOSP graph (nodes = item types) and the clique / minimum-degree lower bounds. Cited via Yanasse & Senne (2010); exact venue still to be confirmed.
+- **Yanasse, Becceneri & Soma (1999)** — Arc contraction lower bound, which dominates all earlier bounds. *Pesquisa Operacional*, 19, 249-277. Open access (SciELO).
+- **Yanasse & Senne (2010)** — Review of MOSP properties and six pre-processing operations. *European Journal of Operational Research*, 203(3), 559-567.
 - **Linhares & Yanasse (2002)** — Proved MOSP is NP-hard. *Computers & Operations Research*, 29, 1759-1772.
 - **Chu & Stuckey (2009)** — Benchmark instances and exact solver via customer search with nogood recording. *CP 2009*, LNCS 5732, 242-257.
 - **Frinhani et al. (2018)** — PageRank heuristic; published optimal values for Challenge/SCOOP instances using Chu & Stuckey's algorithm. *PLOS ONE*, 13(8), e0203076.

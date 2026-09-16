@@ -15,6 +15,14 @@ None of it ships anything a reader can check. If a solver had a bug, the
 literature would inherit the error silently, and the only recourse would be to
 write another solver and hope the two agree.
 
+This is not hypothetical. Yanasse & Senne (2010) record that Linhares (2001) and
+Oliveira & Lorena (2002a) found *better* solutions than the values reported by
+Faggioli & Bentivoglio's (1998) **exact** method, and conclude that its
+implementation "was faulty". A published exact method reported non-optimal
+values, and the field noticed only because someone later happened to beat them.
+That is precisely the failure mode certificates rule out, and it is a documented
+precedent in this literature rather than an argument we have to construct.
+
 We propose to make MOSP optima *checkable*: for each instance, a certificate
 that a sceptical reader can verify without trusting our solver, our encoding, or
 our hardware.
@@ -127,8 +135,9 @@ proven sorry-free in both directions. *(measured)* `Reduction.lean` carries 2
    reusable artifact.
 3. **A linear open-stack encoding** that makes SAT competitive on dense
    instances, with the measured effect above.
-4. **An empirical account of the pathwidth reduction's tightness** (§6), turning
-   a folklore equality into a measured claim.
+4. **An empirical account of the pathwidth reduction's tightness on the MOSP
+   graph** (§6) — open, not yet measured, and demoted from a headline claim
+   after the premise behind it turned out to be a terminology error.
 
 ---
 
@@ -198,23 +207,38 @@ complicates proof emission — **defer until the certificate pipeline works.**
 
 ---
 
-## 6. The pathwidth-tightness experiment
+## 6. The pathwidth-tightness experiment — premise corrected
 
-`MOSP = pathwidth(G) + 1` is cited throughout this literature. This repository
-already found it failing in both directions: the agreement graph undercounting,
-the customer graph overcounting (SP2 at 21 against a true 19).
+The previous version of this section proposed measuring where
+`MOSP = pathwidth(G) + 1` fails, on the strength of this repository having seen
+it fail in both directions. **That premise was wrong, and the section is kept as
+a record of the error.**
 
-With ~5,900 certified optima we can measure this properly: compute exact
-agreement-graph pathwidth where tractable and report the distribution of
-`MOSP − (pw + 1)` against instance density, size, and patterns-per-customer.
+Yanasse & Senne (2010), now in `literature/`, defines both graphs and calls them
+"completely different":
 
-Care required: the customer-graph overcounting is partly an artifact of a
-*heuristic* customer-to-pattern ordering derivation, not of the theory. The
-agreement-graph undercounting is the interesting direction, since pathwidth there
-is computed exactly. **Do not claim a counterexample to a theorem until it is
-clear which is being contradicted — the published claim, or our reading of it.**
-Read Yanasse (1997) and Linhares & Yanasse (2002) closely on exactly what is
-asserted, under what hypotheses.
+- the **MOSP graph** has *item types* as nodes, an arc iff some pattern contains
+  both (`M @ M^T`), so each pattern is a clique. This is the graph of Yanasse
+  (1997c)'s result, and the one the equivalence concerns.
+- the **pattern connection graph** has *patterns* as nodes, an arc iff they share
+  an item (`M^T @ M`). The literature uses it only for cluster decomposition.
+
+This project's "agreement graph" is the second. The undercounting measured there
+is therefore not a counterexample to anything published — it is the result of
+testing the wrong object. The warning the old section gave itself ("do not claim
+a counterexample until it is clear which is being contradicted") was the right
+instinct, and the answer turned out to be *our reading*.
+
+**What remains worth doing:** measure tightness on the *MOSP graph*, which this
+project has never done properly. The customer-graph numbers we have are
+confounded by a heuristic customer-to-pattern ordering derivation, so they do not
+settle it either. With ~5,900 certified optima this is answerable, but it is now
+an open question rather than a finding in hand, and it should be demoted from a
+headline contribution until measured.
+
+Still to read on what exactly is asserted and under what hypotheses: Yanasse
+(1997c) for the graph result, and Yanasse (1997a) — *Pesquisa Operacional* 17,
+57-70, open access — which Martin et al. (2022) credit with the graph model.
 
 ---
 
@@ -237,6 +261,22 @@ asserted, under what hypotheses.
   a spot-check of a sample against the original files.
 
 ---
+
+## 7a. Bounds and preprocessing — cheaper wins than certification
+
+Independent of the paper, two measured gaps are worth closing because they gate
+how many instances can be solved at all:
+
+- **The lower bound is the literature's trivial one.** `_lower_bound` returns max
+  customers per pattern, which Yanasse & Senne attribute to Yuen & Richardson
+  (1995) and call trivial. Stronger: maximal clique of the MOSP graph and minimum
+  node degree (Yanasse 1997c), and the arc contraction bound (Yanasse et al.
+  1999), said to dominate all earlier ones. On SP4 ours gives 13 against a true
+  optimum of 53 — the search wastes its budget on refutations far below the
+  answer.
+- **No preprocessing is implemented.** Six operations are on record. A
+  measurement here found two of them nearly useless on the Chu & Stuckey randoms;
+  the other four are untested.
 
 ## 8. Before writing
 
