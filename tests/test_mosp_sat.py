@@ -383,3 +383,106 @@ def test_gp4_published_optimal(wilson_gp50):
     actual = max_open_stacks(inst, ordering)
     assert actual == val
     assert val <= 30, f"GP4: got {val}, published optimal is 30"
+
+
+# -------------------------------------------------------
+# Open-stack encoding: linear vs pairwise
+# -------------------------------------------------------
+
+
+def _sat_optimum(inst, pairwise):
+    """Smallest k for which the decision encoding is satisfiable."""
+    from pysat.solvers import Cadical153
+
+    from satisfiability.mosp_encoding import encode_mosp_decision
+
+    for k in range(inst.n_customers + 1):
+        cnf, _, _ = encode_mosp_decision(inst, k, pairwise_open_stacks=pairwise)
+        with Cadical153(bootstrap_with=cnf.clauses) as solver:
+            if solver.solve():
+                return k
+    return None
+
+
+def _brute_force(inst):
+    """Optimal MOSP by exhaustive search over all orderings."""
+    import itertools
+
+    return min(
+        max_open_stacks(inst, list(perm))
+        for perm in itertools.permutations(range(inst.n_patterns))
+    )
+
+
+@pytest.mark.parametrize("seed", range(12))
+def test_linear_encoding_matches_pairwise_and_brute_force(seed):
+    """The O(|P_c|) open-stack encoding agrees with the O(|P_c|^2) one.
+
+    Both are checked against exhaustive search, so this pins the encodings to
+    the actual optimum rather than merely to each other.
+    """
+    rng = random.Random(seed)
+    n_customers = rng.randint(2, 5)
+    n_patterns = rng.randint(2, 5)
+    matrix = [
+        [rng.randint(0, 1) for _ in range(n_patterns)] for _ in range(n_customers)
+    ]
+    if not any(any(row) for row in matrix):
+        pytest.skip("degenerate all-zero instance")
+
+    inst = MOSPInstance.from_matrix(matrix, name=f"rand{seed}")
+    expected = _brute_force(inst)
+    assert _sat_optimum(inst, pairwise=False) == expected
+    assert _sat_optimum(inst, pairwise=True) == expected
+
+
+@pytest.mark.parametrize("density", [0.8, 1.0])
+def test_linear_encoding_on_dense_instances(density):
+    """Dense instances are where the two encodings diverge most in size."""
+    rng = random.Random(int(density * 100))
+    n_patterns = 6
+    matrix = [
+        [1 if rng.random() < density else 0 for _ in range(n_patterns)]
+        for _ in range(5)
+    ]
+    if not any(any(row) for row in matrix):
+        pytest.skip("degenerate all-zero instance")
+
+    inst = MOSPInstance.from_matrix(matrix, name="dense")
+    expected = _brute_force(inst)
+    assert _sat_optimum(inst, pairwise=False) == expected
+    assert _sat_optimum(inst, pairwise=True) == expected
+
+
+def _clause_counts(n):
+    """Clause counts for both encodings on the complete n x n instance."""
+    from satisfiability.mosp_encoding import encode_mosp_decision
+
+    # Every customer requires every pattern: the worst case for pairwise.
+    inst = MOSPInstance.from_matrix([[1] * n for _ in range(n)], name="complete")
+    linear, _, _ = encode_mosp_decision(inst, 5, pairwise_open_stacks=False)
+    pairwise, _, _ = encode_mosp_decision(inst, 5, pairwise_open_stacks=True)
+    return len(linear.clauses), len(pairwise.clauses)
+
+
+def test_linear_encoding_is_smaller_on_dense_instances():
+    """The linear encoding must actually be smaller, not just correct."""
+    linear, pairwise = _clause_counts(30)
+    assert linear < pairwise / 5
+
+
+def test_linear_encoding_advantage_grows_with_size():
+    """The saving is asymptotic: the pairwise term is the one that blows up.
+
+    Pairwise emits |P_c| * (|P_c| - 1) clauses per (customer, step) against the
+    linear encoding's 2 * |P_c| + 1, so the ratio should grow roughly linearly
+    in the number of patterns. This is what makes dense 100x100 instances such
+    as GP5 tractable to encode at all.
+    """
+    ratios = []
+    for n in (10, 20, 40):
+        linear, pairwise = _clause_counts(n)
+        ratios.append(pairwise / linear)
+
+    assert ratios == sorted(ratios), f"ratio should grow with n, got {ratios}"
+    assert ratios[-1] > 2 * ratios[0]

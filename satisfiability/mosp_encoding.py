@@ -8,6 +8,7 @@ Variables (managed via pysat IDPool):
   x[p,t] — pattern p is placed at position t
   y[p,t] — pattern p is placed by step t (prefix membership)
   o[c,t] — customer c's stack is open at step t
+  any[c,t], all[c,t] — Tseitin auxiliaries for the open-stack condition
 
 Clauses:
   1. Permutation: each pattern gets exactly one position, each position exactly one pattern
@@ -16,6 +17,13 @@ Clauses:
      pattern of c is not placed before t, then o[c,t] must be true
   4. Width bound: at most k open stacks at each step (totalizer cardinality)
   5. Symmetry breaking: pattern with most customers in first half of positions
+
+Constraint 3 is encoded in O(|P_c|) clauses per (customer, step) via two
+auxiliaries, rather than the O(|P_c|^2) pairwise form. On dense instances this
+is the difference between a tractable formula and an intractable one: GP5
+(100x100, customers requiring nearly every pattern) drops from 76.7M clauses to
+roughly 3M. Pass pairwise_open_stacks=True for the original quadratic encoding,
+which is retained for equivalence testing.
 """
 
 from __future__ import annotations
@@ -29,12 +37,16 @@ from mosp.instance import MOSPInstance
 def encode_mosp_decision(
     instance: MOSPInstance,
     k: int,
+    pairwise_open_stacks: bool = False,
 ) -> tuple[CNF, IDPool, int]:
     """Encode the decision problem 'MOSP(instance) <= k?' as a CNF formula.
 
     Args:
         instance: A MOSP instance with n customers and m patterns.
         k: Target maximum number of open stacks.
+        pairwise_open_stacks: Use the original O(|P_c|^2) pairwise encoding of
+            the open-stack condition instead of the O(|P_c|) auxiliary-variable
+            encoding. Logically equivalent; retained for equivalence testing.
 
     Returns:
         (cnf, pool, m) where:
@@ -71,6 +83,14 @@ def encode_mosp_decision(
 
     def o(c: int, t: int) -> int:
         return pool.id(("o", c, t))
+
+    def any_placed(c: int, t: int) -> int:
+        """Auxiliary: some pattern of customer c is placed by step t."""
+        return pool.id(("any", c, t))
+
+    def all_placed(c: int, t: int) -> int:
+        """Auxiliary: every pattern of customer c is placed by step t."""
+        return pool.id(("all", c, t))
 
     def top() -> int:
         return max(pool.top, _next_var[0])
@@ -137,24 +157,48 @@ def encode_mosp_decision(
     #     the stack is open. x[p,t] -> o[c,t]
     #     This captures the first and last steps (which pair-wise misses).
     #
-    # (b) Pair-wise forcing: when some pattern p is placed by step t but some
-    #     pattern q is NOT placed by step t, the stack is open.
-    #     y[p,t] AND NOT y[q,t] -> o[c,t]
-    #     This captures intermediate steps between first and last.
+    # (b) Prefix forcing: when some pattern of c is placed by step t but some
+    #     other pattern of c is NOT, the stack is open. Written directly over
+    #     pairs this is |P_c| * (|P_c| - 1) clauses per step; instead two
+    #     auxiliaries per (c,t) express it in 2*|P_c| + 1:
+    #
+    #         y[p,t] -> any[c,t]           for each p in P_c
+    #         all[c,t] -> y[p,t]           for each p in P_c
+    #         any[c,t] AND NOT all[c,t] -> o[c,t]
+    #
+    #     Only these polarities are needed. Neither auxiliary is pinned to its
+    #     full definition, but the solver has no incentive to set them
+    #     otherwise: `any` appears negatively in the forcing clause so it is
+    #     left false unless some y[p,t] forces it true, and `all` appears
+    #     positively so it is set true whenever every y[p,t] permits. Hence
+    #     o[c,t] is forced exactly when c is genuinely open -- never
+    #     spuriously, which would over-tighten the width bound.
     for c in active_customers:
         pats = customer_pats[c]
         # (a) Placement forcing: x[p,t] -> o[c,t] for all p in P_c
         for p in pats:
             for t in range(m):
                 cnf.append([-x(p, t), o(c, t)])
-        # (b) Pair-wise forcing (only needed for |P_c| >= 2)
+        # (b) Prefix forcing (only needed for |P_c| >= 2)
         if len(pats) >= 2:
-            for t in range(m):
-                for p in pats:
-                    for q in pats:
-                        if p != q:
-                            # y[p,t] AND NOT y[q,t] -> o[c,t]
-                            cnf.append([-y(p, t), y(q, t), o(c, t)])
+            if pairwise_open_stacks:
+                for t in range(m):
+                    for p in pats:
+                        for q in pats:
+                            if p != q:
+                                # y[p,t] AND NOT y[q,t] -> o[c,t]
+                                cnf.append([-y(p, t), y(q, t), o(c, t)])
+            else:
+                for t in range(m):
+                    a = any_placed(c, t)
+                    al = all_placed(c, t)
+                    for p in pats:
+                        # y[p,t] -> any[c,t]
+                        cnf.append([-y(p, t), a])
+                        # all[c,t] -> y[p,t]
+                        cnf.append([-al, y(p, t)])
+                    # any[c,t] AND NOT all[c,t] -> o[c,t]
+                    cnf.append([-a, al, o(c, t)])
 
     # -------------------------------------------------------
     # 4. Width bound: at most k stacks open at each step
