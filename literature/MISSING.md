@@ -10,7 +10,7 @@ These papers are referenced in the project but could not be downloaded due to pa
 
 - **Faggioli, E. & Bentivoglio, C.A.** (1998). Heuristic and exact methods for the cutting sequencing problem. *European Journal of Operational Research*, 110(3), 564-575. DOI: 10.1016/S0377-2217(97)00269-7 — Elsevier paywall.
 
-- **Chu, G. & Stuckey, P.J.** (2009). Minimizing the maximum number of open stacks by customer search. *CP 2009*, LNCS 5732, 242-257. DOI: 10.1007/978-3-642-04244-7_21 — Springer paywall. Author PDF at people.eng.unimelb.edu.au blocked by Imperva CDN.
+- ~~**Chu, G. & Stuckey, P.J.** (2009)~~ — NOW AVAILABLE as `chu_stuckey_2009.pdf`.
 
 - **Yanasse, H.H. & Senne, E.L.F.** (2010). The minimization of open stacks problem: A review of some properties and their use in pre-processing operations. *European Journal of Operational Research*, 203(3), 559-567. DOI: 10.1016/S0377-2217(09)00632-8 — Elsevier paywall.
 
