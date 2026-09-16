@@ -133,7 +133,7 @@ For large instances where branch-and-bound times out, a SAT-based solver encodes
 - 100×50: 100% solved, avg 84s
 - 50×100: 100% solved, avg 11s
 - 125×125: 28% solved (only density-2 and 2 density-4; density ≥ 4 mostly timeout)
-- **Overall: 200 of 220 previously-unreachable instances solved (91%)**
+- **Overall: 200 of 220 instances solved that were previously out of reach for the branch-and-bound solver (91%)**
 
 `compute_pathwidth_sat()` is a drop-in replacement for `compute_pathwidth_fpt()` with the same interface. It reuses the same preprocessing (pendant removal, component decomposition) and bounds (greedy upper, clique lower).
 

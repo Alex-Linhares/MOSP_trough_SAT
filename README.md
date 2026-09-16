@@ -36,7 +36,7 @@ The encoding produces O(n^2) variables and O(n^2 * degree) clauses. For n=100, t
 
 ## Benchmark Results
 
-Tested on 220 published benchmark instances that were previously unsolvable (both n_customers > 30 and n_patterns > 30), with a 300-second per-instance timeout:
+Tested on 220 published benchmark instances that were previously out of reach for this project's branch-and-bound solver (both n_customers > 30 and n_patterns > 30), with a 300-second per-instance timeout:
 
 | Instance Size | Solved | Avg Time | Notes |
 |---|---|---|---|
