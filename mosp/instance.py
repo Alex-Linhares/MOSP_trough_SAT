@@ -148,6 +148,12 @@ class MOSPInstance:
                 parts = lines[i].split()
                 dim1, dim2 = int(parts[0]), int(parts[1])
 
+            if dim1 <= 0 or dim2 <= 0:
+                # Not a dimension line after all (a 2-column matrix row can
+                # masquerade as one). Skip it rather than dividing by zero.
+                i += 1
+                continue
+
             i += 1  # advance past the dimension line
 
             # Read matrix rows: collect lines until we have dim1 complete rows
