@@ -51,10 +51,15 @@ fixed_parameter_algorithm/
     pathwidth_fpt.py                Branch-and-bound with iterative deepening (n ≤ 100+)
     path_decomposition.py           Extract path decomposition from ordering
 
+satisfiability/                 → SAT-based pathwidth solver (n ≤ 125)
+    encoding.py                     Position-based CNF encoding with cardinality constraints
+    solver.py                       Solver wrapper: preprocessing, iterative deepening, CaDiCaL
+
 benchmarks/
     generator.py                    Random/structured instance generation
     run_benchmarks.py               Batch solver with CSV output
     solve_all.py                    Batch solver for published benchmark files
+    solve_all_sat.py                Batch SAT solver for large benchmark instances
 
 lean/
     MOSPFormalization/              Lean 4 proofs of the MOSP-pathwidth reduction
@@ -72,7 +77,7 @@ lean/
         ForMathlib/                     Candidates for Mathlib contribution
 
 reports/                        → Analysis documents
-tests/                          → 59 tests across 6 test modules
+tests/                          → 85 tests across 7 test modules
 literature/                     → Reference papers (PDFs)
 ```
 
@@ -108,11 +113,35 @@ Note: despite the filename `pathwidth_fpt.py`, this is not a true FPT algorithm.
 
 `compute_pathwidth_fpt()` delegates to exact DP for n ≤ 18. The threshold was lowered from 25 to 18 because branch-and-bound is faster than DP for n=19-25 when pathwidth is small (test suite: 114s → 5s).
 
+### SAT Solver (n ≤ 125)
+
+For large instances where branch-and-bound times out, a SAT-based solver encodes the pathwidth decision problem ("is pathwidth ≤ k?") as a CNF formula and solves it with CaDiCaL. This is the most powerful solver in the project, handling instances up to 125 vertices.
+
+**Encoding** (position-based formulation):
+- Variables: `x[v,t]` (vertex v at position t), `y[v,t]` (vertex v placed by step t), `s[v,t]` (vertex v separated at step t)
+- Permutation constraints via at-least-one + ladder at-most-one
+- Prefix linking: `x→y`, monotonicity, converse
+- Separation: if a neighbor is placed but v is not, v is separated
+- Width bound: totalizer cardinality constraint (at most k separated per step)
+- Symmetry breaking: fix vertex 0 at position 0
+
+**Performance** (with 300s timeout, customer intersection graph):
+- 40×40: 100% solved, avg 5s
+- 50×50: 100% solved, avg 8s
+- 75×75: 100% solved, avg 37s
+- 100×100: 92% solved, avg 140s (2 of 25 Chu & Stuckey timeout)
+- 100×50: 100% solved, avg 84s
+- 50×100: 100% solved, avg 11s
+- 125×125: 28% solved (only density-2 and 2 density-4; density ≥ 4 mostly timeout)
+- **Overall: 200 of 220 previously-unreachable instances solved (91%)**
+
+`compute_pathwidth_sat()` is a drop-in replacement for `compute_pathwidth_fpt()` with the same interface. It reuses the same preprocessing (pendant removal, component decomposition) and bounds (greedy upper, clique lower).
+
 ## Design Decisions
 
 **Two graph formulations.** The agreement graph (patterns as vertices) and customer intersection graph (customers as vertices) provide complementary approaches. The customer graph matches published optimal values; the agreement graph is retained for comparison and because the Lean formalization proves its properties.
 
-**Two-tier pathwidth solver.** Exact DP is faster for small instances (no heuristic/pruning overhead), so the branch-and-bound delegates to it for n ≤ 18. For larger instances, preprocessing and pruning keep the search tractable when pathwidth is small.
+**Three-tier pathwidth solver.** Exact DP for n ≤ 18 (fastest, no overhead). Branch-and-bound for n ≤ 100+ when pathwidth is small. SAT solver for large instances (n ≤ 125) where branch-and-bound times out — handles high pathwidth that defeats backtracking search.
 
 **Verify by simulation, not formula alone.** Both solvers compute the ordering from pathwidth but determine the actual MOSP value by simulating the production sequence on the original instance.
 
@@ -140,7 +169,7 @@ pip install -r requirements.txt
 # Run tests
 python -m pytest tests/ -v
 
-# Solve via customer intersection graph (recommended)
+# Solve via customer intersection graph + branch-and-bound (small/medium instances)
 python -c "
 from mosp.instance import MOSPInstance
 from customer_inter.solver import solve_mosp
@@ -150,12 +179,8 @@ sol = solve_mosp(instance)
 print(f'Optimal: {sol.max_open_stacks}, Ordering: {sol.ordering}')
 "
 
-# Solve via agreement graph (original approach)
-python -c "
-from mosp.solver import solve_mosp_from_file
-sol = solve_mosp_from_file('path/to/instance.mosp')
-print(f'Value: {sol.max_open_stacks}, Ordering: {sol.ordering}')
-"
+# Solve large instances with SAT solver (recommended for n > 30)
+python -m benchmarks.solve_all_sat --timeout 300
 
 # Compare both approaches on SCOOP benchmarks
 python -m customer_inter.compare
@@ -168,13 +193,14 @@ python -m benchmarks.solve_all --timeout 120
 
 - **Exact DP ceiling at n = 18**: The subset DP uses O(2^n) space/time. This is inherent to the algorithm, not a bug.
 - **Branch-and-bound depends on pathwidth**: Handles n = 100+ when k ≤ 5, but slows down for moderate pathwidth (k ≥ 10) on large graphs. Not a true FPT algorithm — no proven f(k) · poly(n) guarantee.
-- **220 benchmark instances out of reach**: Instances where both n_customers > 30 and n_patterns > 30 (mostly Chu & Stuckey 40x40 through 125x125) cannot be solved by either graph formulation with the current branch-and-bound. These need SAT/ILP methods.
-- **No heuristic fallback**: For instances beyond both solvers' reach, there is currently no approximate/heuristic mode.
+- **SAT solver ceiling around n = 125**: The position-based encoding produces O(n²) variables and O(n² · degree) clauses. Instances with 125 vertices and density ≥ 4 (pathwidth ≥ 50) exceed 300s. The 20 remaining unsolved benchmark instances are all 125×125 Chu & Stuckey with density 4-10.
+- **No heuristic fallback**: For instances beyond all three solvers' reach, there is currently no approximate/heuristic mode.
 
 ## Future Directions
 
-- SAT/ILP encoding for pathwidth to handle the 220 large benchmark instances
-- Better greedy upper bounds (random restarts, local search) to improve branch-and-bound pruning
+- Incremental SAT (assumption literals) to avoid rebuilding the formula for each k value
+- Better greedy upper bounds (random restarts, local search) to improve both branch-and-bound and SAT iterative deepening
 - Integration with SageMath's pathwidth solvers as a reference oracle
 - Comparison tables against published optimal values across all datasets
 - Populate `KNOWN_OPTIMA` in compare.py with published results from Chu & Stuckey
+- Solve the remaining 20 instances (125×125 density ≥ 4) with longer timeouts or ILP encoding
