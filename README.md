@@ -97,16 +97,27 @@ No backend gave a wrong answer in 228 trials. The choice is a named constant,
 
 ## Visualising a solution
 
-`mosp/visualize.py` draws a solution as the packed gate matrix layout of
-Linhares & Yanasse (2002): permute the columns by the production sequence, then
-fill each row's zeros between its first and last 1. Every filled run is one
-customer's stack from opening to closing, so a column's height *is* the number of
-stacks open at that step, and the tallest column is the MOSP value.
+`mosp/visualize.py` draws a solution two ways.
+
+**`plot_gate_matrix`** is the packed gate matrix layout of Linhares & Yanasse
+(2002), Fig. 2(c). Gates are vertical wires, one per pattern in production order;
+nets are horizontal wires, one per customer, running from the first gate it needs
+to the last, with a dot at each gate it actually connects to. Nets are **packed
+into tracks**, so customers whose stacks never overlap share a physical row.
+Their Proposition 2 is that open stacks equal tracks, which makes the count
+immediate: the number of rows *is* the answer. Per-gate open-stack counts run
+along the bottom, pattern indices along the top.
+
+**`plot_solution`** is the unpacked fill-in matrix — one row per customer, each
+row's zeros filled between its first and last 1 — which shows the staircase
+structure rather than the compressed circuit.
 
 ```bash
 python -m mosp.visualize SP2 --out sp2.png      # any cached solution
 python -m mosp.visualize GP5 --colors 5         # 5 or 10 cycling colours
 ```
+
+`figures/*_gatematrix.png` holds the packed layouts for the published instances.
 
 Rows cycle through a small palette and are drawn with a gap between them, so
 open stacks in a column can be counted by eye. Rows are sorted by opening step

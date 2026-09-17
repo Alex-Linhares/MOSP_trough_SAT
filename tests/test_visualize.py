@@ -101,3 +101,75 @@ def test_figure_handles_customers_with_no_patterns():
     figure = plot_solution(inst, [0, 1])
     assert figure is not None
     matplotlib.pyplot.close(figure)
+
+
+# -------------------------------------------------------
+# Packed gate matrix layout
+# -------------------------------------------------------
+
+
+def test_packing_never_puts_overlapping_spans_on_one_track():
+    """Two stacks open at the same moment cannot share a physical track."""
+    from mosp.visualize import pack_into_tracks
+
+    rng = random.Random(3)
+    for _ in range(30):
+        spans = []
+        for _ in range(rng.randint(1, 12)):
+            start = rng.randint(0, 20)
+            spans.append((start, start + rng.randint(0, 8)))
+        tracks = pack_into_tracks(spans)
+
+        by_track = {}
+        for (start, stop), track in zip(spans, tracks):
+            for other_start, other_stop in by_track.get(track, []):
+                assert stop < other_start or start > other_stop, (
+                    f"({start},{stop}) overlaps ({other_start},{other_stop}) "
+                    f"on track {track}"
+                )
+            by_track.setdefault(track, []).append((start, stop))
+
+
+@pytest.mark.parametrize("seed", range(15))
+def test_track_count_equals_open_stacks(seed):
+    """Proposition 2 of Linhares & Yanasse: open stacks equal tracks.
+
+    The greedy packing is optimal for intervals, so the number of tracks it
+    uses must come out equal to the maximum number of simultaneously open
+    stacks. If these ever diverged the figure would be captioned with a number
+    the picture does not show.
+    """
+    from mosp.visualize import pack_into_tracks
+
+    rng = random.Random(seed)
+    n_patterns = rng.randint(1, 7)
+    matrix = [
+        [rng.randint(0, 1) for _ in range(n_patterns)]
+        for _ in range(rng.randint(1, 7))
+    ]
+    inst = MOSPInstance.from_matrix(matrix, name=f"t{seed}")
+    ordering = list(range(n_patterns))
+    rng.shuffle(ordering)
+
+    position = {p: i for i, p in enumerate(ordering)}
+    spans = []
+    for customer in range(inst.n_customers):
+        steps = sorted(position[p] for p in inst.customer_patterns(customer))
+        if steps:
+            spans.append((steps[0], steps[-1]))
+
+    expected = max_open_stacks(inst, ordering)
+    if not spans:
+        assert expected == 0
+        return
+    assert max(pack_into_tracks(spans)) + 1 == expected
+
+
+def test_gate_matrix_figure_renders():
+    from mosp.visualize import plot_gate_matrix
+
+    matrix = [[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1]]
+    inst = MOSPInstance.from_matrix(matrix, name="gm")
+    figure = plot_gate_matrix(inst, [0, 1, 2, 3])
+    assert "2 tracks = 2 open stacks" in figure.axes[0].get_title()
+    matplotlib.pyplot.close(figure)

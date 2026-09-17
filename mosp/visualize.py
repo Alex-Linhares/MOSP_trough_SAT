@@ -175,6 +175,145 @@ def plot_solution(
     return fig
 
 
+def pack_into_tracks(
+    spans: Sequence[tuple[int, int]]
+) -> list[int]:
+    """Assign each span a track so that overlapping spans never share one.
+
+    This is interval partitioning: sort by opening step and give each span the
+    first track whose previous occupant has already closed. The greedy is
+    optimal, and the number of tracks it uses equals the maximum number of
+    spans open at once — which is the MOSP value. That is Proposition 2 of
+    Linhares & Yanasse (2002): open stacks equal tracks.
+
+    Args:
+        spans: (first_step, last_step) per net, inclusive.
+
+    Returns:
+        A track index per span, in the order given.
+    """
+    import heapq
+
+    order = sorted(range(len(spans)), key=lambda i: (spans[i][0], spans[i][1]))
+    track_of = [0] * len(spans)
+    free: list[tuple[int, int]] = []  # (last_step_used, track_index)
+    n_tracks = 0
+
+    for index in order:
+        start, stop = spans[index]
+        if free and free[0][0] < start:
+            _, track = heapq.heappop(free)
+        else:
+            track = n_tracks
+            n_tracks += 1
+        track_of[index] = track
+        heapq.heappush(free, (stop, track))
+    return track_of
+
+
+def plot_gate_matrix(
+    instance: MOSPInstance,
+    ordering: Sequence[int],
+    n_colors: int = 10,
+    show_gate_labels: bool = True,
+    show_column_sums: bool = True,
+    title: Optional[str] = None,
+):
+    """Draw the solution as a packed gate matrix layout, after Fig. 2(c) of
+    Linhares & Yanasse (2002).
+
+    Gates are vertical wires, one per pattern, ordered by the production
+    sequence. Nets are horizontal wires, one per customer, running from the
+    first gate it needs to the last; a dot marks each gate the net actually
+    connects to, so the original matrix entries stay visible inside the span.
+    Nets are packed into tracks, so non-overlapping customers share a physical
+    row.
+
+    The packing is what makes the figure answer the question it is drawn for:
+    the number of tracks *is* the number of open stacks, so the reader counts
+    rows rather than inspecting columns. Tracks cycle through a small palette to
+    make that count easy.
+
+    Returns:
+        A matplotlib Figure.
+    """
+    import matplotlib.pyplot as plt
+
+    palette = PALETTE_5 if n_colors == 5 else PALETTE_10
+    order = list(ordering)
+    position = {pattern: index for index, pattern in enumerate(order)}
+    n_gates = len(order)
+
+    nets: list[tuple[int, int, list[int]]] = []
+    for customer in range(instance.n_customers):
+        steps = sorted(position[p] for p in instance.customer_patterns(customer)
+                       if p in position)
+        if steps:
+            nets.append((steps[0], steps[-1], steps))
+
+    spans = [(start, stop) for start, stop, _ in nets]
+    tracks = pack_into_tracks(spans) if spans else []
+    n_tracks = (max(tracks) + 1) if tracks else 0
+
+    counts = open_counts(packed_matrix(instance, order))
+    peak = int(counts.max()) if counts.size else 0
+
+    width = max(5.0, min(22.0, 0.22 * n_gates + 2.0))
+    height = max(2.2, min(13.0, 0.30 * n_tracks + 2.0))
+    fig, ax = plt.subplots(figsize=(width, height), layout="constrained")
+
+    # Gates: vertical wires spanning every track.
+    for gate in range(n_gates):
+        ax.plot([gate, gate], [-0.6, n_tracks - 0.4], color="#B0B0B0",
+                lw=0.7, zorder=1)
+
+    # Nets: one horizontal wire per customer, on its assigned track, with a dot
+    # at each gate it connects to.
+    for (start, stop, steps), track in zip(nets, tracks):
+        colour = palette[track % len(palette)]
+        ax.plot([start, stop], [track, track], color=colour, lw=2.6,
+                solid_capstyle="round", zorder=2)
+        ax.plot(steps, [track] * len(steps), "o", color=colour,
+                markersize=4.2, markeredgecolor="white", markeredgewidth=0.5,
+                zorder=3)
+
+    ax.set_ylim(n_tracks - 0.4, -0.9)
+    ax.set_xlim(-0.8, n_gates - 0.2)
+    ax.set_ylabel(f"tracks ({n_tracks})")
+    ax.set_yticks(range(n_tracks))
+    ax.set_yticklabels([str(t + 1) for t in range(n_tracks)], fontsize=7)
+
+    # Linhares & Yanasse put gate numbers above the circuit and the per-gate
+    # totals below. Keeping that split matters here because both are per-gate
+    # numbers: printed on the same edge they interleave and neither can be read.
+    label_size = 6 if n_gates > 30 else 7
+
+    if show_column_sums and n_gates <= 80:
+        ax.set_xticks(range(n_gates))
+        ax.set_xticklabels([str(int(counts[g])) for g in range(n_gates)],
+                           fontsize=label_size, color="#444444")
+        ax.set_xlabel("open stacks at each gate (maximum = track count)")
+    else:
+        ax.set_xticks([])
+        ax.set_xlabel("gates, in production order")
+
+    if show_gate_labels and n_gates <= 80:
+        top = ax.secondary_xaxis("top")
+        top.set_xticks(range(n_gates))
+        top.set_xticklabels([str(order[i]) for i in range(n_gates)],
+                            fontsize=label_size)
+        top.set_xlabel("gates, in production order (pattern index)", fontsize=9)
+        top.tick_params(length=2)
+
+    if title is None:
+        title = (f"{instance.name or 'instance'} — packed gate matrix layout, "
+                 f"{n_tracks} tracks = {peak} open stacks")
+    ax.set_title(title, fontsize=11, pad=26)
+    for spine in ("right", "left"):
+        ax.spines[spine].set_visible(False)
+    return fig
+
+
 def plot_comparison(
     entries: Sequence[tuple[MOSPInstance, Sequence[int]]],
     n_colors: int = 10,
