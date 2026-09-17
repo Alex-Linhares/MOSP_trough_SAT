@@ -83,18 +83,28 @@ def test_parallel_k_returns_none_on_timeout():
     Needs an instance whose bounds do not already meet, otherwise the solver
     answers from the bounds alone and never reaches the deadline check.
     """
-    # A sparse 12x12 leaves a gap of 2 between the bounds. Denser or smaller
-    # fixtures keep getting closed as the lower bound improves, and then the
-    # solver answers from bounds alone and never reaches the deadline check.
-    rng = random.Random(0)
-    matrix = [
-        [1 if rng.random() < 0.35 else 0 for _ in range(12)] for _ in range(12)
-    ]
-    inst = MOSPInstance.from_matrix(matrix, name="timeout")
-
+    # The instance is searched for rather than hard-coded. Every time the bounds
+    # improve, a fixed fixture stops having a gap, the solver answers from the
+    # bounds alone, and this test fails for a reason unrelated to timeouts --
+    # which happened three times. Searching keeps it honest against future
+    # improvements.
     from satisfiability.mosp_solver import _lower_bound, _upper_bound
 
-    assert _lower_bound(inst) < _upper_bound(inst)[0], "fixture must need a SAT call"
+    inst = None
+    for seed in range(60):
+        rng = random.Random(seed)
+        matrix = [
+            [1 if rng.random() < 0.35 else 0 for _ in range(12)] for _ in range(12)
+        ]
+        if not any(any(row) for row in matrix):
+            continue
+        candidate = MOSPInstance.from_matrix(matrix, name="timeout")
+        if _lower_bound(candidate) < _upper_bound(candidate)[0]:
+            inst = candidate
+            break
+
+    if inst is None:
+        pytest.skip("no instance found whose bounds leave a gap to search")
 
     value, ordering = solve_one_parallel(inst, workers=2, timeout=0.0, verbose=False)
     assert value is None
