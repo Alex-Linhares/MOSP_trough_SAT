@@ -62,11 +62,22 @@ Yanasse & Senne (2010) review the bounds in the literature:
 - **Yanasse, Becceneri & Soma (1999)**: an arc contraction bound, reported to
   *"dominate all previous lower bounds proposed in the literature"*.
 
-The last is the natural comparison for this work and we have not obtained it —
-it is in *Pesquisa Operacional* 19, 249–277, an open-access journal, and listed
-in `literature/MISSING.md`. The bound developed below is arrived at from the
-treewidth literature rather than from that paper, and the two may well coincide;
-**this should be checked before any novelty is claimed for it.**
+The last is the natural comparison for this work and we have not obtained it.
+It is in *Pesquisa Operacional* 19, 249–277 (1999). That journal is on SciELO,
+but **only from 2001 onward**, so the 1999 paper is not available there despite
+the journal being open access — nor is Yanasse (1997a), for the same reason.
+Yanasse & Senne (2010), which we do hold, cites the arc contraction bound and
+states that it dominates all earlier bounds, but does not give the algorithm, so
+the comparison cannot be made from our holdings.
+
+The bound developed below is arrived at from the treewidth literature rather than
+from that paper. Given that "arc contraction" and "contraction degeneracy" both
+contract edges of the same graph, **the two may well be the same bound, and no
+novelty should be claimed for §5 until this is settled.** Acquisition routes
+worth trying: the INPE digital library (Yanasse is at INPE/LAC, and institutional
+repositories commonly hold pre-digitisation work), Becceneri's 1999 thesis which
+presents the same operation, Becceneri et al. (2004) in *Computers & Operations
+Research* which reports an implementation of it, or writing to the authors.
 
 ---
 
@@ -267,7 +278,9 @@ Implementation: `satisfiability/mosp_solver.py::_lower_bound` and
 1. **Obtain Yanasse, Becceneri & Soma (1999)** and determine whether its arc
    contraction bound is this bound, a weaker one, or a stronger one. No novelty
    should be claimed for §5 until this is settled — the names are suggestively
-   similar and the paper is open access.
+   similar and both contract edges of the MOSP graph. Note that *Pesquisa
+   Operacional* is digitised on SciELO only from 2001, so this is not the easy
+   download it first appeared to be; see §3 for routes.
 2. **Ablate the bound against the Kissat404 switch**, so the corpus gains can be
    attributed.
 3. **Re-run the 146 unsolved instances** with the strengthened bound; they are

@@ -20,10 +20,16 @@ These papers are referenced in the project but could not be downloaded due to pa
 
 - **Poldi, K.C. et al.** (2025). On formulations for the one-dimensional cutting stock with a limited number of open stacks problem. *International Journal of Production Research*, 64(4), 1358-1385. DOI: 10.1080/00207543.2025.2568739 — Taylor & Francis paywall.
 
-## Highest priority — likely open access (SciELO)
+## Highest priority — harder to obtain than they look
 
 These were identified from the reference lists of papers we hold. *Pesquisa
-Operacional* is open access, so both should be obtainable free.
+Operacional* is open access on SciELO, but **only digitised from 2001 onward**,
+so the two 1990s papers below are not downloadable there despite the journal
+being free. Routes worth trying instead: the INPE digital library (Yanasse is at
+INPE/LAC and institutional repositories often hold pre-digitisation work),
+Becceneri's 1999 thesis, Becceneri et al. (2004) in *Computers & Operations
+Research* which implements the same arc contraction operation, or writing to the
+authors.
 
 - **Yanasse, H.H.** (1997a). A transformation for solving a pattern sequencing problem in the wood cut industry. *Pesquisa Operacional*, 17, 57-70. — Martin et al. (2022) credit this with the MOSP graph model. Needed to settle which graph the pathwidth equivalence concerns.
 
