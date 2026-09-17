@@ -23,7 +23,7 @@ This report evaluates three bounds on the MOSP graph:
 | **contraction degeneracy (MMD+)** | **0.54** | **63.4%** | **5** |
 
 *(900 benchmark instances with known optima, sampled uniformly at random from
-the 6,230-instance solved corpus.)*
+the 6,226-instance solved corpus.)*
 
 Contraction degeneracy is tight on nearly two thirds of instances and never more
 than 5 below the optimum, against a trivial bound that is tight on one instance
@@ -217,6 +217,12 @@ assumed.
 - **Full corpus.** The bound was computed for all **6,226** benchmark instances
   with a known optimum and compared against it. **Zero violations** — the bound
   never exceeded an optimum.
+
+  (`solutions/` holds 6,230 files, four of which — `GP1.json` through
+  `GP4.json` — are duplicates written by `validate_published_optima.py` under a
+  bare naming convention that `from_benchmark_file` does not produce. 6,226 is
+  the number of distinct benchmark instances with a solution, and the figure to
+  quote.)
 - **Exhaustive small instances.** `tests/test_lower_bounds.py` compares the
   bound against optima obtained by brute-force enumeration over all orderings,
   on random instances across a range of sizes and densities.
