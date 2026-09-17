@@ -6,6 +6,12 @@ Retrieved 2026-09-17. All sources are author-hosted or repository copies.
      Authors' own project page, Institut fuer Wirtschaftsinformatik, Univ. Hamburg.
      Author preprint of Computers & Operations Research 26 (1999) 17-34.
 
+[9]  09_kirousis_papadimitriou_1985.pdf
+     https://doi.org/10.1016/0012-365X(85)90046-9  (ScienceDirect PII 0012365X85900469)
+     Elsevier open archive, free to read. Downloaded manually in a browser on
+     2026-09-17 because ScienceDirect returns HTTP 403 to non-browser clients.
+     Published version, Discrete Mathematics 55 (1985) 181-184, 4 pp.
+
 [10] 10_kirousis_papadimitriou_1986.pdf
      Copied from ../../literature/kirousis_papadimitriou_1986.pdf (already held).
      Published version, Theoretical Computer Science 47 (1986) 205-218.
@@ -21,7 +27,7 @@ Retrieved 2026-09-17. All sources are author-hosted or repository copies.
      snapshot of 2010-02-22. Retrieved as PostScript, converted with ps2pdf.
      Author preprint of Discrete Applied Mathematics 85 (1998) 59-70.
 
-Sources checked and found to have nothing for the other eight:
+Sources checked and found to have nothing for the other seven:
   OpenAlex (api.openalex.org)          - OA status per DOI
   Semantic Scholar (api.semanticscholar.org) - openAccessPdf per DOI
   CORE (api.core.ac.uk)                - rate-limited without an API key
@@ -29,4 +35,6 @@ Sources checked and found to have nothing for the other eight:
   ScienceDirect                        - HTTP 403 to non-browser clients
   Academia.edu                         - HTTP 403 / login wall
   NTUA DSpace                          - connection timed out
+(The ScienceDirect and Academia.edu blocks are what stood between us and [9];
+ a browser got past them.)
   pure.mpg.de                          - metadata only, no full text

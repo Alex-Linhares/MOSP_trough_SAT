@@ -27,19 +27,20 @@ Two references are cited twice, so the table rests on **twelve distinct papers**
 
 ## Acquisition status
 
-**Held: 4 of 12.** All four are legitimate open copies — author-hosted
+**Held: 5 of 12.** All five are legitimate open copies — author-hosted
 preprints or publisher open-archive copies. No paywall was circumvented.
 
 | Ref | Paper | File | Version | Source |
 |---|---|---|---|---|
 | [4] | Fink & Voss 1999 | `04_fink_voss_1999.pdf` | author preprint, 20 pp. | Univ. Hamburg IWI project page |
+| [9] | Kirousis & Papadimitriou 1985 | `09_kirousis_papadimitriou_1985.pdf` | published, 4 pp. | Elsevier open archive, downloaded in a browser |
 | [10] | Kirousis & Papadimitriou 1986 | `10_kirousis_papadimitriou_1986.pdf` | published, 14 pp. | already in `../../literature/` |
 | [11] | Kornai & Tuza 1992 | `11_kornai_tuza_1992.pdf` | author copy, 6 pp. | kornai.com/Papers/kortuz.pdf |
 | [12] | Fomin 1998 | `12_fomin_1998.pdf` | author preprint (PostScript, converted), 14 pp. | Fomin's UiB page via Wayback Machine |
 
 Exact retrieval URLs are in `SOURCES.txt`.
 
-**Not obtained: 8 of 12.** Each was checked against OpenAlex, Semantic Scholar,
+**Not obtained: 7 of 12.** Each was checked against OpenAlex, Semantic Scholar,
 CORE, the publisher, the authors' own pages, and (where the author page is dead)
 the Wayback Machine.
 
@@ -50,20 +51,16 @@ the Wayback Machine.
 | [6] | Möhring 1990, Computing Suppl. 7 | Springer paywall. His TU Berlin publication pages have all been retired and redirect to a group landing page; no archived copy found. TU Berlin Technical Report 223 (1989) is the version to chase next. |
 | [7] | Ohtsuki et al. 1979, IEEE TCAS | IEEE Xplore paywall. |
 | [8] | Wing, Huang & Wang 1985, IEEE TCAD | IEEE Xplore paywall. |
-| [9] | Kirousis & Papadimitriou 1985, Discrete Math | Elsevier "open archive" — free to read on ScienceDirect, but ScienceDirect returns HTTP 403 to non-browser clients. Kirousis has uploaded it to Academia.edu (login-walled) and the NTUA DSpace repository was unreachable on every attempt. **Most likely of the eight to be recoverable.** |
 | [13] | Kinnersley 1992, IPL | Elsevier paywall. Already tracked in `../../literature/MISSING.md`. |
 | [14] | Lengauer 1981, Acta Informatica | Springer paywall. A metadata-only record exists in the Max Planck repository (MPG.PuRe) with no attached full text. |
 
-### Routes still worth trying for the eight
+### Routes still worth trying for the seven
 
 1. **Interlibrary loan / institutional access** — [1], [7], [8], [13], [14] are all
    ordinary ILL requests. [6] is a Springer book chapter, also ordinary ILL.
-2. **[9] from ScienceDirect in a real browser.** The article is in Elsevier's open
-   archive, so it should download with no subscription; only the bot check blocks us.
-   Same for [11] and [12], but we already hold author copies of those.
-3. **[6] as TU Berlin Technical Report 223 (1989)** — write to TU Berlin's
+2. **[6] as TU Berlin Technical Report 223 (1989)** — write to TU Berlin's
    mathematics library, or to Möhring directly (emeritus, still contactable).
-4. **[5]** — the 1979 ISCAS proceedings exist as a physical volume; IEEE has not
+3. **[5]** — the 1979 ISCAS proceedings exist as a physical volume; IEEE has not
    digitised it. A university library holding IEEE conference records is the route.
 
 ## Full references, as printed in Linhares & Yanasse (2002)
@@ -113,3 +110,14 @@ the Wayback Machine.
 - **[6] journal name.** "Computing 1990;7:17–51" is a compressed citation of
   *Computing Supplementum* 7, a Springer book series, not volume 7 of the journal
   *Computing*.
+
+## Retrieval note: how [9] was obtained
+
+Ref [9] was the prediction that paid off. It was never paywalled — Elsevier's
+open archive carries it free — and the only obstacle was ScienceDirect returning
+HTTP 403 to every non-browser client we tried. Opening the DOI in an ordinary
+browser fetched it immediately, as the published 4-page scan Elsevier produced
+in 2001 (the PDF's own title is its PII, `0012-365X(85)90046-9`).
+
+The same trick should work for any other Elsevier open-archive item in this
+corpus. It does **not** help with [1] or [13], which are genuinely closed.

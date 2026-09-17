@@ -59,9 +59,9 @@ authors.
 
 Table 1 of `Linhares and Yanasse - 2002 - Connections between cutting-pattern
 sequencing, VL.pdf` asserts twelve problems equivalent up to ±1, resting on
-twelve distinct references. Four are held (see `../paper2/literature/`), eight
-are not. Two of the eight — Kinnersley [13] and Yanasse [1] — are listed under
-**Paywalled** above and are not repeated here. The other six:
+twelve distinct references. Five are held (see `../paper2/literature/`), seven
+are not. Two of the seven — Kinnersley [13] and Yanasse [1] — are listed under
+**Paywalled** above and are not repeated here. The other five:
 
 - **Kashiwabara, T. & Fujisawa, T.** (1979). NP-completeness of the problem of finding a minimum clique number interval graph containing a given graph as a subgraph. *Proc. 1979 IEEE International Symposium on Circuits and Systems*, Tokyo, 657-660. No DOI — Table 1 ref [5], *interval thickness*. **The hardest of the twelve**: 1979 conference proceedings, not indexed by OpenAlex at all, never digitised by IEEE. Needs a library holding physical IEEE conference records.
 
@@ -71,11 +71,18 @@ are not. Two of the eight — Kinnersley [13] and Yanasse [1] — are listed und
 
 - **Wing, O., Huang, S. & Wang, R.** (1985). Gate matrix layout. *IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems*, 4(3), 220-231. DOI: 10.1109/TCAD.1985.1270118 — Table 1 ref [8], *gate matrix layout*. IEEE Xplore paywall.
 
-- **Kirousis, L.M. & Papadimitriou, C.H.** (1985). Interval graphs and searching. *Discrete Mathematics*, 55(2), 181-184. DOI: 10.1016/0012-365X(85)90046-9 — Table 1 ref [9], *node search game*; the interval-thickness = node-search-number link, which we also work from secondary statements of. **Not actually paywalled** — it sits in Elsevier's open archive and is free to read, but ScienceDirect returns HTTP 403 to non-browser clients. Kirousis has uploaded it to Academia.edu (login wall) and the NTUA DSpace repository timed out on every attempt. **The most likely of the eight to be recovered**, simply by opening the DOI in a browser. Searching by title fails because ScienceDirect carries it under the typo "Interval graphs and seatching".
-
 - **Lengauer, T.** (1981). Black-white pebbles and graph separation. *Acta Informatica*, 16(4), 465-475. DOI: 10.1007/BF00264496 — Table 1 ref [14], *edge separation*. Springer paywall. A metadata-only record exists in the Max Planck repository (MPG.PuRe) with no attached full text.
 
-Sources checked for all eight and found to hold nothing: OpenAlex, Semantic
+Obtained since: **Kirousis, L.M. & Papadimitriou, C.H.** (1985). Interval graphs
+and searching. *Discrete Mathematics*, 55(2), 181-184. DOI:
+10.1016/0012-365X(85)90046-9 — Table 1 ref [9], *node search game*; the
+interval-thickness = node-search-number link. Now in
+`../paper2/literature/09_kirousis_papadimitriou_1985.pdf`. It was never
+paywalled — Elsevier's open archive carries it free — and only ScienceDirect's
+block on non-browser clients stood in the way; a browser fetched it at once.
+Worth remembering for any other Elsevier open-archive item.
+
+Sources checked for the remaining seven and found to hold nothing: OpenAlex, Semantic
 Scholar, CORE (rate-limited without an API key), Internet Archive Scholar
 (`api.fatcat.wiki` unreachable throughout), the publishers, the authors' own
 pages, and the Wayback Machine where an author page is dead.
