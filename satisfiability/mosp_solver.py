@@ -78,15 +78,57 @@ def _lower_bound(instance: MOSPInstance, clique_budget: float = 5.0) -> int:
         from customer_inter.customer_graph import build_customer_graph
 
         graph = build_customer_graph(instance)
+
         deadline = time.time() + clique_budget
         for clique in nx.find_cliques(graph):
             if len(clique) > best:
                 best = len(clique)
             if time.time() > deadline:
                 break
+
+        best = max(best, _contraction_degeneracy(graph) + 1)
     except Exception:  # noqa: BLE001 - a bound is an optimisation, never required
         pass
 
+    return best
+
+
+def _contraction_degeneracy(graph, max_nodes: int = 400) -> int:
+    """Contraction degeneracy (MMD+, least-c) of the MOSP graph.
+
+    Repeatedly records the minimum degree, then contracts that vertex into the
+    neighbour it shares fewest neighbours with. The largest minimum degree seen
+    over the sequence is a lower bound on treewidth, hence on pathwidth.
+
+    **This bound rests on Yanasse's MOSP = pathwidth(MOSP graph) + 1**, unlike
+    the clique bound above, which is provable directly. A lower bound that is
+    too high does not merely slow the search -- it makes the binary search start
+    above the true optimum and return a wrong answer, which simulating the
+    witness would not catch, because the witness does achieve the value
+    reported. So this is a correctness dependency, not a tuning knob.
+
+    It is checked against every known optimum in the corpus by
+    tests/test_lower_bounds.py, which fails on any instance where the bound
+    exceeds the optimum.
+    """
+    import networkx as nx
+
+    if graph.number_of_nodes() > max_nodes:
+        return 0  # contraction is O(n^3)-ish; skip rather than stall a solve
+
+    working = nx.Graph(graph)
+    best = 0
+    while working.number_of_nodes() > 1:
+        vertex = min(working.nodes, key=lambda x: working.degree(x))
+        degree = working.degree(vertex)
+        if degree == 0:
+            working.remove_node(vertex)
+            continue
+        best = max(best, degree)
+        neighbours = set(working[vertex])
+        target = min(neighbours,
+                     key=lambda x: len(neighbours & set(working[x])))
+        working = nx.contracted_nodes(working, target, vertex, self_loops=False)
     return best
 
 

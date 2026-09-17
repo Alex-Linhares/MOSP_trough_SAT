@@ -83,11 +83,13 @@ def test_parallel_k_returns_none_on_timeout():
     Needs an instance whose bounds do not already meet, otherwise the solver
     answers from the bounds alone and never reaches the deadline check.
     """
-    # Seed chosen so the bounds do not meet even with the clique lower
-    # bound; otherwise the solver answers from bounds alone and never reaches
-    # the deadline check.
+    # A sparse 12x12 leaves a gap of 2 between the bounds. Denser or smaller
+    # fixtures keep getting closed as the lower bound improves, and then the
+    # solver answers from bounds alone and never reaches the deadline check.
     rng = random.Random(0)
-    matrix = [[rng.randint(0, 1) for _ in range(9)] for _ in range(9)]
+    matrix = [
+        [1 if rng.random() < 0.35 else 0 for _ in range(12)] for _ in range(12)
+    ]
     inst = MOSPInstance.from_matrix(matrix, name="timeout")
 
     from satisfiability.mosp_solver import _lower_bound, _upper_bound
