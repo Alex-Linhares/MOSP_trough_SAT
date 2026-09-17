@@ -39,21 +39,35 @@ Strategy = Callable[..., UpperBound]
 
 
 def least_cost_node(instance: MOSPInstance, **_: object) -> UpperBound:
-    """Least cost node: repeatedly close whichever customer is cheapest.
+    """Minimal cost node: repeatedly close the cheapest customer to close.
 
-    Yanasse & Senne (2010) describe the rule as choosing "the next arcs of the
-    MOSP graph to be traversed ... by closing the node with the least number of
-    arcs incident to it". Closing a customer traverses every arc incident to it,
-    so the cost of closing is its degree among the customers still open, and the
-    heuristic repeatedly closes the cheapest such node. Producing the patterns
-    that customer still needs is what performs the closure.
+    Yanasse & Senne (2010) state the rule as choosing "the next arcs of the MOSP
+    graph to be traversed ... by closing the node with the least number of arcs
+    incident to it". Closing a customer means cutting every pattern it still
+    needs, which traverses all its incident arcs; the cost of doing so is its
+    degree among the customers still open, and its neighbours become open as a
+    side effect. So the construction is a minimum-degree elimination ordering on
+    the MOSP graph.
 
-    Ties break towards the customer needing fewest not-yet-produced patterns,
-    then by index for determinism.
+    Three readings of this were implemented and measured on SP2/SP3/SP4 (optima
+    19/34/53), because the rule is only ever stated in one sentence:
 
-    An earlier version of this function selected on missing patterns rather than
-    degree, and was measurably worse than plain tabu search (31/51/64 against
-    22/42/63 on SP2/SP3/SP4). Degree is the rule the literature describes.
+        selecting on missing patterns rather than degree   31/51/64
+        this version, minimum degree among the open        26/49/74
+        Poliquit (2008) §3 verbatim, growing a connected
+          open region from the frontier                    30/57/80
+
+    The third is the published algorithm written out in full, and it scores
+    worst here, because that statement is explicitly "for an MOSP with at most
+    two piece types a pattern" -- patterns are arcs there, whereas a pattern with
+    k piece types is a clique of size k in general, so traversing "the arcs
+    incident to a node" is not the same operation. Adapting it properly needs
+    Becceneri, Yanasse & Soma (2004), which we do not have.
+
+    None of the three reproduces the published MCNh, which Frinhani et al. report
+    at 23/37/57. This version is kept because it seeds tabu best (`mcn+tabu`
+    reaches 21/39/62, against 22/42/63 for tabu alone), not because it is a
+    faithful MCNh.
     """
     n_customers = instance.n_customers
     n_patterns = instance.n_patterns
@@ -63,38 +77,32 @@ def least_cost_node(instance: MOSPInstance, **_: object) -> UpperBound:
     customer_patterns = [set(instance.customer_patterns(c)) for c in range(n_customers)]
     remaining = {c for c in range(n_customers) if customer_patterns[c]}
 
-    # Adjacency in the MOSP graph: customers are neighbours when some pattern is
-    # required by both. Closing a node traverses every arc incident to it, so the
-    # degree within the not-yet-closed set is what the selection rule costs.
     neighbours: list[set[int]] = [set() for _ in range(n_customers)]
-    pattern_customers = [set(instance.pattern_customers(p)) for p in range(n_patterns)]
-    for holders in pattern_customers:
-        for c in holders:
-            neighbours[c] |= holders
-    for c in range(n_customers):
-        neighbours[c].discard(c)
+    for pattern in range(n_patterns):
+        holders = set(instance.pattern_customers(pattern))
+        for customer in holders:
+            neighbours[customer] |= holders
+    for customer in range(n_customers):
+        neighbours[customer].discard(customer)
 
     produced: list[int] = []
     produced_set: set[int] = set()
 
     while remaining:
-        best_customer = min(
+        closing = min(
             remaining,
             key=lambda c: (len(neighbours[c] & remaining),
                            len(customer_patterns[c] - produced_set),
                            c),
         )
-        for pattern in sorted(customer_patterns[best_customer] - produced_set):
+        for pattern in sorted(customer_patterns[closing] - produced_set):
             produced.append(pattern)
             produced_set.add(pattern)
-        remaining.remove(best_customer)
+        remaining.remove(closing)
 
-    # Patterns no customer requires never affect the count; append them so the
-    # result is a full permutation.
     for pattern in range(n_patterns):
         if pattern not in produced_set:
             produced.append(pattern)
-            produced_set.add(pattern)
 
     return max_open_stacks(instance, produced), produced
 

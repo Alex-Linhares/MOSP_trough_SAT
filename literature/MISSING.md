@@ -41,7 +41,9 @@ authors.
 
 - **De La Banda, M.G. & Stuckey, P.J.** (2007). Dynamic programming to minimize the maximum number of open stacks. *INFORMS Journal on Computing*, 19, 607-617. DOI: 10.1287/ijoc.1060.0205 — the DP that Chu & Stuckey (2009) extends.
 
-- **Becceneri, J.C., Yanasse, H.H. & Soma, N.Y.** (2004). A method for solving the minimization of the maximum number of open stacks problem within a cutting process. *Computers and Operations Research*, 31, 2315-2332. DOI: 10.1016/S0305-0548(03)00189-8
+- **Becceneri, J.C., Yanasse, H.H. & Soma, N.Y.** (2004). A method for solving the minimization of the maximum number of open stacks problem within a cutting process. *Computers & Operations Research*, 31(14), 2315-2332. DOI: 10.1016/S0305-0548(03)00189-8 — **the most valuable missing reference.** Cited for three separate things we need: the modified least-cost-node heuristic (the MCNh that Frinhani benchmarks, and which our implementation does not reproduce), the arc contraction operation behind the 1999 lower bound, and the pattern dominance pre-processing. A 2004 Elsevier paper is ordinary interlibrary-loan territory, unlike the 1990s Pesquisa Operacional issues.
+
+  Partially substituted by Poliquit (2008), a Master's thesis of the same title now in `literature/`, which states the MCN algorithm in full (§3) and covers arc contraction (§4.2) and a lower bound implementation (§4.4). Its statement is explicitly for instances with at most two piece types per pattern, so it does not transfer directly to the general case.
 
 - **Yanasse, H.H. & Limeira, M.S.** (2004). Refinements on an enumeration scheme for solving a pattern sequencing problem. *International Transactions in Operational Research*, 11, 277-292. DOI: 10.1111/j.1475-3995.2004.00458.x
 
