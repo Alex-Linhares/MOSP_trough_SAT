@@ -269,10 +269,20 @@ def plot_gate_matrix(
 
     # Nets: one horizontal wire per customer, on its assigned track, with a dot
     # at each gate it connects to.
+    # A track usually carries several nets — packing is the point — and they
+    # share its colour, so without end markers a row of separate nets reads as
+    # one broken wire. The caps make each net's extent explicit, and they also
+    # distinguish a single-gate net (a customer needing one pattern, whose stack
+    # opens and closes at the same step) from a stray transistor dot.
+    cap = 0.22
     for (start, stop, steps), track in zip(nets, tracks):
         colour = palette[track % len(palette)]
-        ax.plot([start, stop], [track, track], color=colour, lw=2.6,
-                solid_capstyle="round", zorder=2)
+        if stop > start:
+            ax.plot([start, stop], [track, track], color=colour, lw=2.6,
+                    solid_capstyle="butt", zorder=2)
+        for edge in (start, stop):
+            ax.plot([edge, edge], [track - cap, track + cap], color=colour,
+                    lw=2.0, solid_capstyle="butt", zorder=2)
         ax.plot(steps, [track] * len(steps), "o", color=colour,
                 markersize=4.2, markeredgecolor="white", markeredgewidth=0.5,
                 zorder=3)
