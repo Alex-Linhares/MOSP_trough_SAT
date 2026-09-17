@@ -73,6 +73,10 @@ Position-based formulation with three variable families:
 | `o[c,t]` | Customer c's stack is open at step t |
 | `any[c,t]`, `all[c,t]` | Auxiliaries for the open-stack condition |
 
+Full formulation with the constraints in LaTeX, the reasoning behind the
+auxiliary variables, and measured formula sizes:
+[`reports/encoding.md`](reports/encoding.md).
+
 **Constraints:**
 - **Permutation**: each pattern exactly one position, each position exactly one pattern (at-least-one + ladder at-most-one)
 - **Prefix linking**: `x[p,t] -> y[p,t]`, monotonicity, converse (including t=0 base case)
@@ -344,6 +348,7 @@ validate_published_optima.py    Batch validation against published optima
 
 tests/                          184 tests across 11 test modules
 reports/
+    encoding.md                     The CNF formulation, and what is proved of it
     lower_bounds.md                 The clique and contraction degeneracy bounds
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 literature/                     Reference papers
@@ -482,7 +487,8 @@ The `lean/` directory contains a Lean 4 formalization of the pathwidth theory. I
 
 **Complete (no `sorry`):**
 
-- **The SAT encoding is faithful** (`Encoding.lean`):
+- **The SAT encoding is faithful** (`Encoding.lean`, stated in full in
+  [`reports/encoding.md`](reports/encoding.md)):
   `(∃ a, Encodes M k a) ↔ M.mospValue ≤ k`. Left to right is what licenses
   reporting a refutation as a proof of optimality — if the formula is
   unsatisfiable then no production sequence achieves `k`. Right to left says the
