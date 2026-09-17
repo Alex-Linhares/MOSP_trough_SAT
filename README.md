@@ -1,6 +1,8 @@
 # MOSP Solver — Direct SAT Encoding
 
-Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with CaDiCaL, with a quick tabu search supplying the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
+Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with Kissat, graph-theoretic lower bounds, and a quick tabu search for the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
+
+**6,226 of 6,376 published benchmark instances solved to certified optimality**, each with a witness ordering in `solutions/` that can be checked without trusting the solver.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence that minimizes the maximum number of simultaneously open customer stacks. This problem is NP-hard (Linhares & Yanasse 2002).
 
@@ -10,8 +12,8 @@ The solver encodes the MOSP decision problem ("can patterns be sequenced with at
 
 Given a MOSP instance with binary matrix M (rows = customers, columns = patterns):
 
-1. Compute **bounds**. Lower bound: the largest number of customers requiring any single pattern. Upper bound: a **quick tabu search** -- the best of identity, reverse, and 10 random permutations, improved by tabu search over swap moves (500 iterations, tenure 7, 200 sampled neighbours per step, with an aspiration criterion).
-2. **Binary search** over k in [lower, upper]: at each step, encode "MOSP <= k?" as CNF and solve with CaDiCaL.
+1. Compute **bounds**. Lower bound: the largest clique found in the MOSP graph, and its contraction degeneracy (see [Lower bounds](#lower-bounds)). Upper bound: a **quick tabu search** -- the best of identity, reverse, and 10 random permutations, improved by tabu search over swap moves (500 iterations, tenure 7, 200 sampled neighbours per step, with an aspiration criterion).
+2. **Binary search** over k in [lower, upper]: at each step, encode "MOSP <= k?" as CNF and solve with **Kissat404** (see [SAT backend](#sat-backend)).
 3. The smallest satisfiable k is the exact optimal MOSP value. If the bounds already meet (`lower >= upper`), the tabu ordering is optimal and no SAT call is made.
 4. **Verify** by simulating the production sequence on the witness ordering.
 
@@ -48,6 +50,51 @@ the customer is genuinely open, never spuriously -- which would over-tighten the
 width bound. The pairwise form is retained behind `pairwise_open_stacks=True`
 and both are tested against exhaustive search.
 
+## Lower bounds
+
+The lower bound decides which decision problems the solver poses, and the
+expensive ones are refutations at values *below* the optimum -- exactly what a
+weak bound fails to rule out. Two bounds are computed on the MOSP graph (nodes
+are customers, an arc iff some pattern is required by both):
+
+- **Maximum clique.** Any clique forces that many simultaneously open stacks:
+  take the member that closes earliest; every other member shares a pattern with
+  it, that pattern is produced by the time it closes, so all of them are open at
+  that step. Proved directly, with no appeal to pathwidth. Subsumes the
+  "maximum customers per pattern" bound, since each pattern is itself a clique.
+- **Contraction degeneracy** (MMD+, least-c). Stronger, but rests on
+  `MOSP = pathwidth + 1` rather than a direct argument, so it is validated
+  against every known optimum rather than assumed.
+
+Measured over 900 solved instances:
+
+| bound | mean gap to optimum | tight | max gap |
+|---|---|---|---|
+| max customers per pattern (Yuen & Richardson 1995) | 5.58 | 1.2% | 19 |
+| maximum clique | 2.02 | 36.9% | 13 |
+| **contraction degeneracy** | **0.54** | **63.4%** | **5** |
+
+The two are complementary by density: clique carries the dense instances,
+contraction the sparse ones. On GP5-GP8 both are exactly tight, so no refutation
+is needed at all. Full analysis in [`reports/lower_bounds.md`](reports/lower_bounds.md).
+
+## SAT backend
+
+`benchmarks/solver_portfolio.py` times all 19 working pysat backends on hard
+instances, in both directions separately, with known optima as ground truth.
+On the refutation at k-1, which is what decides an instance's runtime:
+
+| backend | refutations closed |
+|---|---|
+| **Kissat404** (in use) | **6/6** |
+| Cadical300 | 4/6 |
+| Cadical153 | 3/6 |
+| cd195 (previously in use) | 2/6 |
+| Glucose / Minisat family | mostly 1/6 |
+
+No backend gave a wrong answer in 228 trials. The choice is a named constant,
+`satisfiability.mosp_solver.SAT_BACKEND`; re-run the portfolio before changing it.
+
 ## Validation Against Published Optima
 
 Validated against all published optimal values from Frinhani et al. (2018) / Chu & Stuckey (2009):
@@ -59,16 +106,24 @@ Validated against all published optimal values from Frinhani et al. (2018) / Chu
 | GP3 | 50×50 | 40 | 40 | exact |
 | GP4 | 50×50 | 30 | 30 | exact |
 | SP2 | 50×50 | 19 | 19 | exact |
-| GP5 | 100×100 | 95 | — | in progress |
-| GP6 | 100×100 | 75 | — | in progress |
-| GP7 | 100×100 | 75 | — | in progress |
-| GP8 | 100×100 | 60 | — | in progress |
-| SP3 | 75×75 | 34 | — | in progress |
-| SP4 | 100×100 | 53 | — | in progress |
+| GP5 | 100×100 | 95 | 95 | exact |
+| GP6 | 100×100 | 75 | 75 | exact |
+| GP7 | 100×100 | 75 | — | unsolved |
+| GP8 | 100×100 | 60 | — | unsolved |
+| SP3 | 75×75 | 34 | — | unsolved |
+| SP4 | 100×100 | 53 | — | unsolved |
+
+Seven of eleven, and every one we finish agrees with the published value.
 
 SP2 is notable: the earlier pathwidth-based approach gave 21 (+2 overcounting). The direct SAT encoding finds the exact optimal of 19.
 
-"Exact" means the binary search certified optimality: SAT at k with a witness ordering, UNSAT at k-1. The witness orderings are cached in `solutions/` and can be re-checked independently of the SAT solver by simulating them with `mosp.verify.max_open_stacks` -- all five reproduce the published value.
+GP5 is the other one worth noting: it needed 76.7M clauses before the linear open-stack encoding and could not be built in practice, and now solves in 285s.
+
+"Exact" means the binary search certified optimality: SAT at k with a witness ordering, UNSAT at k-1 -- or, where the lower bound already equals the optimum, a satisfiable call alone. The witness orderings are cached in `solutions/` and can be re-checked independently of the SAT solver by simulating them with `mosp.verify.max_open_stacks`.
+
+### Corpus
+
+The full benchmark tree has been swept: **6,226 of 6,376 instances solved**, each verified by simulating its own witness ordering, with **zero disagreements** between the reported value and the simulation across every instance and every pass. The 150 still open are concentrated -- 144 of them are Chu & Stuckey, the collection built to be harder than its predecessors.
 
 ## Project Structure
 
@@ -101,6 +156,8 @@ solutions/                      Cached optimal solutions (JSON)
 
 benchmarks/
     solve_parallel.py               Parallel solving: across instances, and across k
+    overnight.py                    Escalating-budget driver for unattended runs
+    solver_portfolio.py             Times every pysat backend on the hard calls
     solve_all_sat.py                Batch SAT solver for large benchmark instances
     solve_all.py                    Batch solver for published benchmark files
     generator.py                    Random/structured instance generation
@@ -117,7 +174,10 @@ lean/
 
 validate_published_optima.py    Batch validation against published optima
 
-tests/                          147 tests across 9 test modules
+tests/                          184 tests across 11 test modules
+reports/
+    lower_bounds.md                 The clique and contraction degeneracy bounds
+    fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 literature/                     Reference papers
 reports/                        Analysis documents
 ```
@@ -169,6 +229,20 @@ starts that proof immediately. Since SAT at k implies SAT at k+1, every answer
 shrinks the live interval, so each round cuts it by a factor of `workers + 1`
 rather than 2, and probes whose result can no longer move either endpoint are
 killed rather than awaited.
+
+### Unattended runs
+
+```bash
+# Escalating budgets against whatever is still unsolved
+python -m benchmarks.overnight --rounds 3600,12000 --workers 30
+```
+
+The solution cache is the state, so this needs no bookkeeping between runs:
+anything already solved is verified from disk in milliseconds and skipped, and
+each run spends its budget only on what is still open. Killing it loses at most
+the instances in flight. A round whose per-instance budget exceeds the time left
+(`--hours`) is skipped rather than run, so a reported timeout always means the
+solver failed and never that the clock ran out.
 
 ### Validate against published optima
 
@@ -261,11 +335,14 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **Six of the eleven published instances are still unsolved** (GP5-GP8, SP3, SP4 -- the 100x100 and 75x75 cases). These now encode in 0.4-3.3M clauses rather than tens of millions, so the obstacle is no longer building the formula but the UNSAT proof at k-1 that certifies optimality.
+- **Four of the eleven published instances are still unsolved** (GP7, GP8, SP3, SP4). The obstacle is not building the formula -- these encode in 0.4-3.3M clauses -- but the refutation at k-1 that certifies optimality. GP7 and GP8 have tight lower bounds and need only a satisfiable call; SP3 and SP4 do not, and are the harder pair.
+- **150 of 6,376 benchmark instances remain unsolved**, 144 of them from the Chu & Stuckey set. They are sparse, which is the regime where the bounds are weakest.
 - **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
-- **The lower bound is the weakest one in the literature.** `_lower_bound` returns the maximum customers per pattern, which Yanasse & Senne (2010) attribute to Yuen & Richardson (1995) and call trivial. Clique, minimum-degree and arc-contraction bounds are all stronger. On SP4 ours gives 13 against a true optimum of 53, and the binary search burns its budget on refutations far below the optimum.
-- **No preprocessing.** Six operations are on record in the literature; none are implemented on the SAT path.
+- **The contraction degeneracy bound is validated, not proved.** It rests on `MOSP = pathwidth + 1`, so a bound that were too high would make the search start above the true optimum and return a wrong answer that still passes witness verification. It is checked against all 6,226 known optima (zero violations) and re-checked by `tests/test_lower_bounds.py`, but that is evidence rather than proof.
+- **The arc contraction bound of Yanasse, Becceneri & Soma (1999) is unobtained**, and may be the same bound as contraction degeneracy. *Pesquisa Operacional* is digitised only from 2001, so it is not the easy download it appears to be. No novelty should be claimed until this is settled.
+- **No preprocessing.** Six operations are on record in Yanasse & Senne (2010); none are implemented on the SAT path. Two of them were measured as nearly useless on the Chu & Stuckey instances; the other four are untested here.
+- **The binary search discards learning between k values**, re-encoding and re-solving from scratch at each step. Incremental SAT with assumptions would carry learned clauses across the search.
 - **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.
 - **There is no `LICENSE` file**, although this README states MIT and the Lean sources carry Apache 2.0 headers.
 
