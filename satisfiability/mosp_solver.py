@@ -132,14 +132,14 @@ def _contraction_degeneracy(graph, max_nodes: int = 400) -> int:
     return best
 
 
-def _upper_bound(instance: MOSPInstance, n_random: int = 10, seed: int = 42) -> tuple[int, list[int]]:
-    """Compute an upper bound on MOSP via random permutations + tabu search.
+def _random_restarts(
+    instance: MOSPInstance, n_random: int = 10, seed: int = 42
+) -> tuple[int, list[int]]:
+    """Best of identity, reverse, and `n_random` random permutations.
 
-    Starts with identity, reverse, and random permutations, then improves
-    the best one with a short tabu search (insert moves).
-
-    Returns:
-        (upper_bound_value, best_ordering)
+    Split out from `_upper_bound` so that the strategies in
+    `satisfiability.heuristics` can share it — MCN, for instance, uses these
+    restarts as a fallback start when its own construction happens to be worse.
     """
     m = instance.n_patterns
     if m == 0:
@@ -162,10 +162,31 @@ def _upper_bound(instance: MOSPInstance, n_random: int = 10, seed: int = 42) -> 
             best_val = val
             best_ord = list(perm)
 
-    # Tabu search to improve the best ordering found
-    best_val, best_ord = _tabu_search(instance, best_ord, best_val, seed=seed)
-
     return best_val, best_ord
+
+
+def _upper_bound(
+    instance: MOSPInstance,
+    n_random: int = 10,
+    seed: int = 42,
+    strategy: str | None = None,
+) -> tuple[int, list[int]]:
+    """Compute an upper bound on MOSP.
+
+    Delegates to a named strategy from `satisfiability.heuristics`; the default
+    constructs with least cost node and improves with tabu search. Pass
+    `strategy="tabu"` for the original behaviour, which is retained unchanged.
+
+    Returns:
+        (upper_bound_value, best_ordering)
+    """
+    m = instance.n_patterns
+    if m == 0:
+        return 0, []
+
+    from satisfiability.heuristics import upper_bound as _strategy_upper_bound
+
+    return _strategy_upper_bound(instance, strategy=strategy, seed=seed)
 
 
 def _tabu_search(
