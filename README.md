@@ -310,17 +310,16 @@ close even that, and neither is done:
   puts the easy 94% of the corpus at about 7.5 GB and the whole of it past a
   terabyte. Shelved on those grounds.
 - **the Lean formalization** — prove the CNF satisfiable iff `MOSP(I) <= k`.
-  `lean/` currently formalizes the pathwidth theory, not the encoding.
+  **Done**, in `lean/MOSPFormalization/Encoding.lean`, with no `sorry` and no
+  axioms beyond `propext`, `Classical.choice` and `Quot.sound`. What remains is
+  narrower than it was: that `mosp_encoding.py` emits the clauses the Lean
+  development describes, and that the ladder and totalizer cardinality encodings
+  it states by meaning are faithfully implemented.
 
-So the honest summary: the upper bounds are already checkable by anyone, the
-lower bounds are reproducible and independently re-refutable, and full
-certification of the lower bounds remains open.
-
-The Lean route is now partly travelled. `lean/MOSPFormalization/Encoding.lean`
-proves the encoding faithful — satisfiable exactly when a sequence achieving `k`
-exists — so what remains between a refutation and a machine-checked lower bound
-is that `mosp_encoding.py` emits the clauses the Lean development describes, and
-a proof log for the refutation itself.
+So the honest summary: the upper bounds are already checkable by anyone; the
+lower bounds are reproducible, independently re-refutable, and rest on an
+encoding now proved faithful; and what is still uncertified is the step from that
+proof to this particular Python and this particular solver run.
 
 ## Project Structure
 

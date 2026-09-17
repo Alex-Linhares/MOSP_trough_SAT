@@ -166,23 +166,38 @@ story. Report per-instance: proof size, emission time, checking time. Expect
 proofs on hard instances to be very large; **this is a headline measurement, not
 a failure** — "certifying MOSP optimality costs X GB at 50×50" is a result.
 
-### 5.3 Lean: encoding faithfulness
+### 5.3 Lean: encoding faithfulness — **done**
 
-The new theorem, in a new `MOSPFormalization/Encoding.lean`:
+`MOSPFormalization/Encoding.lean` proves
 
-> for an instance `M` and bound `k`, the CNF produced by the encoding is
-> satisfiable iff `M.mospValue ≤ k`.
+> `(∃ a, Encodes M k a) ↔ M.mospValue ≤ k`
 
-Forward direction: from a satisfying assignment extract an ordering and show it
-has ≤ k open stacks at every step. Backward: from an ordering construct the
-assignment. The permutation and prefix-linking constraints are routine; the work
-is the open-stack constraint, where the argument is exactly the polarity argument
-in §3.1 — `any` false unless forced, `all` true whenever permitted — which must
-become a real lemma rather than a comment.
+with no `sorry`, depending on no axioms beyond `propext`, `Classical.choice` and
+`Quot.sound`. The polarity argument that was a code comment — `any` false unless
+forced, `all` true whenever permitted — is now the pair of lemmas
+`isActive_of_placed` and `isActive_of_split`, with `placed_or_split_of_isActive`
+for the converse.
 
-This is the highest-risk, highest-value item. **Scope control:** formalize the
-encoding as a function over finite types and prove the equivalence; do *not*
-attempt to verify the Python implementation. State that gap explicitly (§7).
+Two things came out of doing it that the plan did not anticipate.
+
+**It found a bug in the existing formalization.** `isActive` required a pattern
+*strictly* after position `i`, so a stack closed one step before its last pattern
+was produced; on one customer needing one pattern Lean gave 0 where the
+implementation and the literature give 1. The theorem above is *false* under that
+reading, because the forcing case where a pattern sits exactly at `t` needs one
+witness to serve both sides of the definition. Fixing it also broke a downstream
+lemma in `Reduction.lean`, whose proof had derived two distinct patterns from the
+strict inequality — the single-pattern degenerate case again, which had already
+broken the dominance constraints in the Python encoding.
+
+**The permutation constraints needed a conjunct the plan did not mention.** As
+first written they allowed `x p t` to hold beyond the last position, which the
+encoder has no variable for.
+
+**Scope, as planned and held to:** the encoding is formalized as a function over
+finite types; the Python implementation is not verified, and §7 states that gap.
+Two constraint families — at-most-one and at-most-`k` — are stated by their
+meaning rather than their ladder and totalizer clause forms.
 
 Deciding whether to close the two existing `sorry`s in `Reduction.lean` is
 separate — they concern the pathwidth reduction, which the SAT solver no longer
@@ -191,7 +206,12 @@ for this paper.
 
 ### 5.4 Finish the open instances
 
-GP7, GP8, SP3, SP4. Route: `solve_parallel one --workers 28` with a multi-hour
+GP7 and GP8 are **done**, both closed by a single satisfiable call once their
+clique bound turned out to equal the optimum, after resisting hours of binary
+search. SP3 and SP4 remain: SP3 has a solution of 35 against a published 34, SP4
+one of 61 against 53, neither with optimality proven.
+
+Superseded route (kept for the record): `solve_parallel one --workers 28`. Route: `solve_parallel one --workers 28` with a multi-hour
 budget, which starts the expensive UNSAT proof immediately rather than reaching
 it last. GP6's 875 s single-core result is the encouraging precedent.
 
