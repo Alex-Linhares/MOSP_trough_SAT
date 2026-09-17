@@ -10,8 +10,9 @@ engineering. Those live in the rest of the repository.
   Yanasse (2002). `literature/MANIFEST.md` is the index and status record;
   `literature/SOURCES.txt` records where each file came from.
 - `table1.bib` — BibTeX for Table 1's twelve references, keyed `LY2002ref<n>`.
-- `popularity.md` — how much literature each of the twelve problems has, and how
-  much each defining paper is cited. The two measures disagree sharply.
+- `popularity.md` — the full popularity measurement: method, the contaminated
+  raw counts that were discarded, and the caveats. The table itself is
+  reproduced under Step 2 below.
 
 ## Step 1 (done): the Table 1 corpus
 
@@ -60,6 +61,55 @@ hand and one is not. [9] Kirousis & Papadimitriou 1985, the interval-thickness =
 node-search-number link, is held. [13] Kinnersley, the vertex-separation =
 pathwidth theorem the Lean formalization proves, is still missing, and we
 continue to work from secondary statements of it.
+
+## Step 2 (done): how popular is each of the twelve problems?
+
+Measured against OpenAlex, 2026-09-17. Two measures, because they disagree
+sharply: works using the problem's *name* in title or abstract (restricted to
+computer science, mathematics, engineering and decision sciences), and citations
+of the Table 1 paper attached to that problem. Method and caveats are in
+`popularity.md`.
+
+| Problem | Works using the name | Table 1 ref | Citations of that paper |
+|---|---:|---|---:|
+| Graph path-width | **1,609** | [13] Kinnersley 1992 | 215 |
+| Node search game | 127 | [9] Kirousis & Papadimitriou 1985 | 124 |
+| Gate matrix layout | 126 | [6] Möhring 1990 / [8] Wing et al. 1985 | 134 / 89 |
+| Vertex separation | 105 | [13] Kinnersley 1992 | 215 |
+| Edge search game | 94 | [10] Kirousis & Papadimitriou 1986 | **294** |
+| PLA folding | 74 | [6] Möhring 1990 | 134 |
+| MOSP | 60 | [1] Yanasse 1997 / [4] Fink & Voss 1999 | 74 / 71 |
+| Narrowness | 35 | [11] Kornai & Tuza 1992 | 44 |
+| Split bandwidth | 35 | [12] Fomin 1998 | 19 |
+| Edge separation | 22 | [14] Lengauer 1981 | 77 |
+| One-dimensional logic | 18 | [7] Ohtsuki et al. 1979 | 107 |
+| Interval thickness | 10 | [5] Kashiwabara & Fujisawa 1979 | not indexed |
+
+For scale, outside Table 1: **treewidth** 6,222 works, **bandwidth
+minimization** 306.
+
+Four things worth carrying into the mathematics:
+
+- **Pathwidth has absorbed the family** — 1,609 works, 27× MOSP, more than the
+  other eleven names combined. Whatever is known about this equivalence class
+  was most likely published under "pathwidth", not under any other name here.
+- **Citations do not track name usage.** Kirousis & Papadimitriou 1986 is the
+  most-cited paper in the table (294) while "edge search game" is only the fifth
+  most-used name; it is cited as a foundational graph-searching result, not as a
+  problem people work on. Ohtsuki et al. 1979 is starker: 107 citations against
+  18 works using "one-dimensional logic".
+- **MOSP is smaller than most of its own synonyms**, below node search, gate
+  matrix layout, vertex separation, edge search and PLA folding.
+- **Four names are effectively dead**: interval thickness, one-dimensional
+  logic, edge separation and split bandwidth. Split bandwidth is Fomin's own
+  coinage in the paper Table 1 cites, has 19 citations, and was never adopted.
+  Edge separation in Lengauer's pebbling sense returns *zero* works — the phrase
+  survives in the literature only as aerodynamics.
+
+Counts are lower bounds: a paper can work on pathwidth without putting the word
+in its abstract, and OpenAlex's thin abstract coverage of older material biases
+against exactly the 1979–85 VLSI entries. `popularity.md` records which raw
+counts were discarded as contaminated and why.
 
 ## A caution carried over from the main project
 
