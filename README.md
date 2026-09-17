@@ -6,6 +6,49 @@ Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a dire
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence that minimizes the maximum number of simultaneously open customer stacks. This problem is NP-hard (Linhares & Yanasse 2002).
 
+## The same problem is a VLSI layout problem
+
+Linhares & Yanasse (2002) show MOSP *is* the **gate matrix layout problem** from
+VLSI design. A gate matrix circuit is a set of gates — vertical wires — carrying
+transistors, with horizontal *nets* joining the gates that share a transistor.
+Permuting the gates does not change the logic, but it changes how many physical
+rows, or **tracks**, the nets need, and tracks are what determine circuit area.
+Their Proposition 2: **the number of open stacks equals the number of tracks.**
+
+So every solution here can be drawn as a packed circuit. Customers become nets,
+patterns become gates in production order, and nets whose stacks never overlap
+share a track:
+
+![SP1 as a packed gate matrix layout](figures/SP1_gatematrix.png)
+
+Nine tracks, so nine open stacks — the answer is the height of the picture. Dots
+are transistors, marking the gates a net actually connects to; a net spanning a
+single gate is a customer needing one pattern, whose stack opens and closes at
+the same step.
+
+### Why some instances are hard and others are not
+
+The same drawing explains why instance density dominates everything about this
+problem. These three are all 50x50, so only density varies:
+
+![Sparse to dense: SP2, GP4, GP1](figures/density_contrast.png)
+
+Same track scale in all three, so the height each fills is its optimum. Sparse
+instances leave slack a sequence can exploit: SP2's nets are short, several share
+a track, and 50 customers pack into 19. Dense ones do not — in GP1 almost every
+net spans the whole circuit, so no two can share a track and 50 customers need
+45. No permutation can help, which is why its optimum is 45 rather than anything
+a better search might find.
+
+That split runs through the whole project. It is why the maximum-clique lower
+bound is exactly tight on the dense instances and useless on the sparse ones, why
+contraction degeneracy is needed for the latter (see [Lower bounds](#lower-bounds)),
+and why the instances still unsolved are overwhelmingly sparse.
+
+(Two quantities get called "density" in this literature: the fill rate of `M`,
+and the edge density of the MOSP graph. The figures report both; Frinhani et
+al.'s tabulated `D` is the second.)
+
 ## Approach
 
 The solver encodes the MOSP decision problem ("can patterns be sequenced with at most k open stacks?") directly as a SAT formula, then uses **binary search** over k to find the exact optimum.

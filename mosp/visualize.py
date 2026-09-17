@@ -431,6 +431,84 @@ def plot_comparison(
     return fig
 
 
+def plot_track_comparison(
+    entries: Sequence[tuple[MOSPInstance, Sequence[int]]],
+    n_colors: int = 10,
+    labels: Optional[Sequence[str]] = None,
+    suptitle: Optional[str] = None,
+):
+    """Compare packed gate matrix layouts on a shared track scale.
+
+    Each panel is a packed circuit, and every panel is drawn with the same
+    number of track rows on the y axis. Since open stacks equal tracks, the
+    height a panel fills *is* its objective value, so the comparison reads
+    directly: a sparse instance packs short, a dense one fills the frame.
+
+    Returns:
+        A matplotlib Figure.
+    """
+    import matplotlib.pyplot as plt
+
+    palette = PALETTE_5 if n_colors == 5 else PALETTE_10
+    n_panels = len(entries)
+
+    packings = []
+    for instance, ordering in entries:
+        order = list(ordering)
+        position = {pattern: index for index, pattern in enumerate(order)}
+        spans, gate_counts = [], len(order)
+        for customer in range(instance.n_customers):
+            steps = sorted(position[p] for p in instance.customer_patterns(customer)
+                           if p in position)
+            if steps:
+                spans.append((steps[0], steps[-1]))
+        tracks = pack_into_tracks(spans) if spans else []
+        packings.append((spans, tracks, gate_counts,
+                         (max(tracks) + 1) if tracks else 0))
+
+    max_tracks = max(p[3] for p in packings)
+
+    fig, axes = plt.subplots(
+        1, n_panels, figsize=(4.9 * n_panels, 5.4), layout="constrained",
+    )
+    if n_panels == 1:
+        axes = [axes]
+
+    for index, (axis, (instance, _), (spans, tracks, n_gates, n_tracks)) in enumerate(
+            zip(axes, entries, packings)):
+        for (start, stop), track in zip(spans, tracks):
+            colour = palette[track % len(palette)]
+            if stop > start:
+                axis.plot([start, stop], [track, track], color=colour, lw=2.2,
+                          solid_capstyle="butt", zorder=2)
+            for edge in (start, stop):
+                axis.plot([edge, edge], [track - 0.22, track + 0.22],
+                          color=colour, lw=1.6, zorder=2)
+
+        axis.axhline(n_tracks - 0.5, color="#C44E52", lw=1.3, ls="--", zorder=4)
+        axis.set_xlim(-0.8, n_gates - 0.2)
+        axis.set_ylim(max_tracks - 0.5, -0.8)
+        axis.set_yticks([])
+        axis.set_xticks([])
+
+        fill = float(instance.matrix.sum()) / (instance.n_customers
+                                               * instance.n_patterns)
+        caption = labels[index] if labels else (instance.name or "instance")
+        axis.set_title(
+            f"{caption}  —  {n_tracks} tracks\n"
+            f"{instance.n_customers}x{instance.n_patterns}, matrix density {fill:.2f}",
+            fontsize=10,
+        )
+        axis.set_xlabel("gates, in production order")
+        for spine in ("top", "right", "left"):
+            axis.spines[spine].set_visible(False)
+
+    axes[0].set_ylabel(f"tracks — shared scale, 0 to {max_tracks}")
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=12)
+    return fig
+
+
 def load_cached_solution(
     name: str,
     solutions_dir: Path = Path("solutions"),

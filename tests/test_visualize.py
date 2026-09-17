@@ -173,3 +173,22 @@ def test_gate_matrix_figure_renders():
     figure = plot_gate_matrix(inst, [0, 1, 2, 3])
     assert "2 tracks = 2 open stacks" in figure.axes[0].get_title()
     matplotlib.pyplot.close(figure)
+
+
+def test_track_comparison_renders_and_shares_scale():
+    from mosp.visualize import plot_track_comparison
+
+    sparse = MOSPInstance.from_matrix([[1, 1, 0, 0], [0, 0, 1, 1]], name="sparse")
+    dense = MOSPInstance.from_matrix(
+        [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]], name="dense"
+    )
+    figure = plot_track_comparison(
+        [(sparse, [0, 1, 2, 3]), (dense, [0, 1, 2, 3])], labels=["s", "d"]
+    )
+
+    # Both panels must use the taller instance's scale, or the comparison of
+    # heights — which is the entire point — would be meaningless.
+    assert figure.axes[0].get_ylim() == figure.axes[1].get_ylim()
+    assert "1 tracks" in figure.axes[0].get_title()
+    assert "3 tracks" in figure.axes[1].get_title()
+    matplotlib.pyplot.close(figure)
