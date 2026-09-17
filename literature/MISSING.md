@@ -37,6 +37,14 @@ authors.
 
 - **Yanasse, H.H.** (1997c). — Introduces the MOSP graph (nodes = item types) and the clique / minimum-degree lower bounds. Cited throughout Yanasse & Senne (2010); **exact venue not yet identified**, and distinct from both 1997a and 1997b.
 
+## Obtained since
+
+- **Yanasse, H.H., Becceneri, J.C. & Soma, N.Y.** (2007). Um algoritmo exato com ordenamento parcial para solução de um problema de programação da produção: experimentos computacionais. *Gestão & Produção*, 14(2), 353-361. — in `literature/` as `yanasse_becceneri_soma_2007_algoritmo_exato.pdf`. In Portuguese. States the partial-ordering rules precisely, which Yanasse & Senne only reference:
+  - **Type I**: adjacent nodes i, j both of degree 2 — some optimal solution labels them consecutively.
+  - **Type II**: if `A_j ⊆ A_i ∪ {i}` then i dominates j, and some optimal solution labels j before i. If `A_j = A_i`, they are equivalent, and Becceneri et al. (2004) reduce the graph keeping only one.
+
+  Measured on our instances: the *reduction* rules essentially never fire (0 type-I pairs and 0 equivalences on SP2/SP3/SP4), but *dominance* relations are common — 28, 21 and 27 pairs respectively. Those are symmetry-breaking constraints rather than reductions, and are unexploited by our encoding.
+
 ## Also missing, newly identified
 
 - **De La Banda, M.G. & Stuckey, P.J.** (2007). Dynamic programming to minimize the maximum number of open stacks. *INFORMS Journal on Computing*, 19, 607-617. DOI: 10.1287/ijoc.1060.0205 — the DP that Chu & Stuckey (2009) extends.
