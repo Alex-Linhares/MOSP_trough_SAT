@@ -28,6 +28,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import multiprocessing
 import time
 from pathlib import Path
 from typing import Optional
@@ -47,15 +48,68 @@ from satisfiability.mosp_solver import (
 DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
 
 
-def _sat_at(instance: MOSPInstance, k: int) -> Optional[list[int]]:
-    """Return a witness ordering with at most k open stacks, or None."""
+def _decision_worker(matrix_list, n_customers, n_patterns, name, k, queue):
+    """Decide 'MOSP <= k?' in a child process and post the answer."""
+    import numpy as np
     from pysat.solvers import Solver
 
-    cnf, pool, n_patterns = encode_mosp_decision(instance, k)
-    with Solver(name=SAT_BACKEND, bootstrap_with=cnf.clauses) as solver:
-        if solver.solve():
-            return extract_ordering(solver.get_model(), pool, n_patterns)
-    return None
+    try:
+        instance = MOSPInstance(
+            matrix=np.array(matrix_list, dtype=np.int8),
+            n_customers=n_customers,
+            n_patterns=n_patterns,
+            name=name,
+        )
+        cnf, pool, m = encode_mosp_decision(instance, k)
+        with Solver(name=SAT_BACKEND, bootstrap_with=cnf.clauses) as solver:
+            if solver.solve():
+                queue.put(("sat", extract_ordering(solver.get_model(), pool, m)))
+            else:
+                queue.put(("unsat", None))
+    except Exception as exc:  # noqa: BLE001
+        queue.put(("error", f"{type(exc).__name__}: {exc}"))
+
+
+def _sat_at(
+    instance: MOSPInstance, k: int, budget: Optional[float] = None
+) -> tuple[str, Optional[list[int]]]:
+    """Decide "MOSP(instance) <= k?" under a wall-clock budget.
+
+    Returns ("sat", ordering), ("unsat", None) or ("timeout", None).
+
+    The call runs in a child process that is killed when the budget expires,
+    rather than in-process under `solve_limited` with an interrupt. Kissat
+    accepts pysat's interrupt API but does not honour it: on a genuinely hard
+    refutation the call ran past a 15-second interrupt without stopping. A
+    budget that the solver may ignore is worse than none, because it reads as a
+    bound in the results while not being one -- which is exactly how an
+    unbounded first call spent more than an hour beyond the budget it was given.
+    """
+    queue: multiprocessing.Queue = multiprocessing.Queue()
+    proc = multiprocessing.Process(
+        target=_decision_worker,
+        args=(instance.matrix.tolist(), instance.n_customers,
+              instance.n_patterns, instance.name, k, queue),
+    )
+    proc.start()
+    proc.join(timeout=budget)
+
+    if proc.is_alive():
+        proc.terminate()
+        proc.join(timeout=5)
+        if proc.is_alive():
+            proc.kill()
+            proc.join()
+        return "timeout", None
+
+    proc.join()
+    if queue.empty():
+        return "timeout", None
+
+    status, payload = queue.get_nowait()
+    if status == "error":
+        raise RuntimeError(f"decision worker failed: {payload}")
+    return status, payload
 
 
 def ratchet(
@@ -84,11 +138,20 @@ def ratchet(
         print(f"{instance.name}: lb={lower} starting at k={start}", flush=True)
 
     if best_ordering is None:
-        found = _sat_at(instance, best)
-        if found is None:
+        # The opening call gets the same budget as any other. It used to get
+        # none at all, which made `--timeout` a bound on every call except the
+        # first -- usually the hardest, since `--start` is often set to a value
+        # near the optimum.
+        remaining = (deadline - time.time()) if deadline else None
+        status, found = _sat_at(instance, best, budget=remaining)
+        if status == "unsat":
             if verbose:
                 print(f"  k={best}: UNSAT — start value is below the optimum",
                       flush=True)
+            return None, None, False
+        if status == "timeout":
+            if verbose:
+                print(f"  k={best}: timed out; no solution found", flush=True)
             return None, None, False
         best_ordering = found
 
@@ -103,15 +166,25 @@ def ratchet(
 
         target = best - 1
         started = time.time()
-        found = _sat_at(instance, target)
+        remaining = (deadline - time.time()) if deadline else None
+        status, found = _sat_at(instance, target, budget=remaining)
         elapsed = time.time() - started
 
-        if found is None:
+        if status == "unsat":
             # A refutation, which also proves the current best is optimal.
             if verbose:
                 print(f"  k={target}: UNSAT in {elapsed:.0f}s — {best} is optimal",
                       flush=True)
             return best, best_ordering, True
+
+        if status == "timeout":
+            # Distinct from a refutation: the solver did not answer, so nothing
+            # is proved about `target`. Reporting this as UNSAT would silently
+            # claim the current best is optimal when it may not be.
+            if verbose:
+                print(f"  k={target}: timed out after {elapsed:.0f}s, "
+                      f"best stays {best}", flush=True)
+            break
 
         actual = max_open_stacks(instance, found)
         best, best_ordering = min(actual, target), found
