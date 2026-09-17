@@ -95,6 +95,28 @@ On the refutation at k-1, which is what decides an instance's runtime:
 No backend gave a wrong answer in 228 trials. The choice is a named constant,
 `satisfiability.mosp_solver.SAT_BACKEND`; re-run the portfolio before changing it.
 
+## Visualising a solution
+
+`mosp/visualize.py` draws a solution as the packed gate matrix layout of
+Linhares & Yanasse (2002): permute the columns by the production sequence, then
+fill each row's zeros between its first and last 1. Every filled run is one
+customer's stack from opening to closing, so a column's height *is* the number of
+stacks open at that step, and the tallest column is the MOSP value.
+
+```bash
+python -m mosp.visualize SP2 --out sp2.png      # any cached solution
+python -m mosp.visualize GP5 --colors 5         # 5 or 10 cycling colours
+```
+
+Rows cycle through a small palette and are drawn with a gap between them, so
+open stacks in a column can be counted by eye. Rows are sorted by opening step
+into the staircase form the gate-matrix literature draws; that is cosmetic, since
+reordering rows cannot change a column sum. Steps attaining the peak are shaded.
+
+Figures for the published instances are in `figures/`. The contrast is
+instructive: SP2 (density 0.21) is a clean staircase, while GP5 (density 0.995)
+is a near-solid block — which is why its optimum is 95 of 100 customers.
+
 ## Validation Against Published Optima
 
 Validated against all published optimal values from Frinhani et al. (2018) / Chu & Stuckey (2009):
@@ -136,6 +158,7 @@ satisfiability/                 -> SAT-based solvers
 
 mosp/                           -> MOSP instance handling
     instance.py                     Parse/represent MOSP instances (binary matrix)
+    visualize.py                    Packed gate matrix layout drawing
     agreement_graph.py              Build agreement graph via M^T @ M overlap
     reduction.py                    Formal reduction: MOSP <-> pathwidth
     solver.py                       End-to-end pipeline (agreement graph approach)
