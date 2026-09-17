@@ -181,29 +181,60 @@ whose matrix is only 7% full.
 
 ## Validation Against Published Optima
 
-Validated against all published optimal values from Frinhani et al. (2018) / Chu & Stuckey (2009):
+**Why only these instances.** Per-instance optimal values are barely published in
+this literature. Frinhani et al. (2018) tabulate 21 of them; Chu & Stuckey (2009)
+confirm SP2, SP3 and SP4. For their 200 random instances, Chu & Stuckey state
+that their method "finds and proves the optimal in all cases" but report node
+counts, times and average deviations rather than the values themselves. So for
+the other ~6,200 instances we solve, **there is nothing published to compare
+against** — not because nobody solved them, but because nobody tabulated them.
+That is the gap the witness orderings in `solutions/` are meant to fill.
 
-| Instance | Size | Published OPT | Our result | Status |
+| Instance | Size | Published | Ours | Status |
 |---|---|---|---|---|
 | GP1 | 50×50 | 45 | 45 | exact |
 | GP2 | 50×50 | 40 | 40 | exact |
 | GP3 | 50×50 | 40 | 40 | exact |
 | GP4 | 50×50 | 30 | 30 | exact |
-| SP2 | 50×50 | 19 | 19 | exact |
 | GP5 | 100×100 | 95 | 95 | exact |
 | GP6 | 100×100 | 75 | 75 | exact |
-| GP7 | 100×100 | 75 | — | unsolved |
-| GP8 | 100×100 | 60 | — | unsolved |
-| SP3 | 75×75 | 34 | — | unsolved |
-| SP4 | 100×100 | 53 | — | unsolved |
+| GP7 | 100×100 | 75 | 75 | exact |
+| GP8 | 100×100 | 60 | 60 | exact |
+| Miller | 20×40 | 13 | 13 | exact |
+| NWRS1 | 10×20 | 3 | 3 | exact |
+| NWRS2 | 10×20 | 4 | 4 | exact |
+| NWRS3 | 15×25 | 7 | 7 | exact |
+| NWRS4 | 15×25 | 7 | 7 | exact |
+| NWRS5 | 20×30 | 12 | 12 | exact |
+| NWRS6 | 20×30 | 12 | 12 | exact |
+| NWRS7 | 25×60 | 10 | 10 | exact |
+| NWRS8 | 25×60 | 16 | 16 | exact |
+| SP1 | 25×25 | — | 9 | exact (no published value) |
+| SP2 | 50×50 | 19 | 19 | exact |
+| SP3 | 75×75 | 34 | 36 | in progress — descending |
+| SP4 | 100×100 | 53 | — | in progress |
 
-Seven of eleven, and every one we finish agrees with the published value.
+**Eighteen of the twenty published values match, and none disagrees.** SP3 and SP4
+are being worked by the descending ratchet, which improves a solution without
+ever asking for a refutation; SP3's best is 36 and still falling.
 
-SP2 is notable: the earlier pathwidth-based approach gave 21 (+2 overcounting). The direct SAT encoding finds the exact optimal of 19.
+A caution on what this establishes: the published values are themselves
+uncertified, so agreement is mutual corroboration rather than proof that either
+side is right — which is the argument for shipping checkable witnesses. The
+literature records a case in point: Yanasse & Senne (2010) note that later
+authors found *better* solutions than Faggioli & Bentivoglio's (1998) **exact**
+method reported, and conclude its implementation was faulty.
 
-GP5 is the other one worth noting: it needed 76.7M clauses before the linear open-stack encoding and could not be built in practice, and now solves in 285s.
+Two results are worth singling out. SP2 is where the earlier pathwidth approach
+gave 21, overcounting by 2; the direct SAT encoding finds 19. GP5 needed 76.7M
+clauses before the linear open-stack encoding and could not be built in practice;
+it now solves in 285s.
 
-"Exact" means the binary search certified optimality: SAT at k with a witness ordering, UNSAT at k-1 -- or, where the lower bound already equals the optimum, a satisfiable call alone. The witness orderings are cached in `solutions/` and can be re-checked independently of the SAT solver by simulating them with `mosp.verify.max_open_stacks`.
+"Exact" means optimality was certified: satisfiable at k with a witness ordering
+and unsatisfiable at k-1 — or, where the lower bound already equals the optimum,
+a satisfiable call alone, which is how GP7 and GP8 were settled. Witness orderings
+are cached in `solutions/` and can be re-checked independently of the SAT solver
+by simulating them with `mosp.verify.max_open_stacks`.
 
 ### Corpus
 
@@ -420,7 +451,7 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **Four of the eleven published instances are still unsolved** (GP7, GP8, SP3, SP4). The obstacle is not building the formula -- these encode in 0.4-3.3M clauses -- but the refutation at k-1 that certifies optimality. GP7 and GP8 have tight lower bounds and need only a satisfiable call; SP3 and SP4 do not, and are the harder pair.
+- **Two of the twenty published values are not yet matched** (SP3, SP4). The obstacle is not building the formula -- these encode in 0.4-3.3M clauses -- but the refutation at k-1 that certifies optimality. Both have loose lower bounds, unlike GP7 and GP8, which were closed by a single satisfiable call once their bound turned out to be tight.
 - **150 of 6,376 benchmark instances remain unsolved**, 144 of them from the Chu & Stuckey set. They are sparse, which is the regime where the bounds are weakest.
 - **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
