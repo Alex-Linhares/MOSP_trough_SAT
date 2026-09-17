@@ -105,6 +105,57 @@ only two of the six — the others are untested here.
 - **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218.
 - **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512.
 
+## Certified Optima vs Best Known Solutions
+
+`solutions/` now holds two different kinds of result and **the files do not say
+which**. A solution file carries `instance_name`, `n_customers`, `n_patterns`,
+`mosp_value` and `ordering` — nothing about how the value was established. Since
+both kinds are present, adding them into one total overstates what has been
+proved.
+
+- **Certified optimum**: satisfiable at `k` with a witness *and* unsatisfiable at
+  `k-1`; or satisfiable at `k` where the lower bound already equals `k`, which
+  needs no refutation.
+- **Best known solution**: a witness of value `k` and nothing more. Produced by
+  `benchmarks/ratchet.py`, which only ever asks satisfiable questions.
+
+Both are equally checkable as *upper* bounds — the witness verifies either way
+via `mosp/certify.py`. Only the first is an optimality claim.
+
+### Recovering the split
+
+Until a provenance field exists, the split is recoverable from other records:
+
+1. Any instance appearing as `status=solved` in `benchmarks/results/sweep_*.csv`
+   or `overnight_*round*.csv` was solved by the binary search, which certifies
+   optimality by construction.
+2. Any cached value equal to its `_lower_bound` is certified by the bound,
+   whatever produced it.
+3. Everything else is a best known solution with optimality unproven.
+
+Measured on 2026-09-17 with 6,263 cached solutions:
+
+| | count |
+|---|---|
+| certified via binary search | 6,226 |
+| proven by a tight lower bound | 2 (GP8, both copies) |
+| **optimality unproven** | **31** |
+
+(Four further files are orphans — `GP1.json` through `GP4.json`, written by
+`validate_published_optima.py` under a bare naming convention that
+`from_benchmark_file` does not produce, and matching no enumerated instance.)
+
+### Outstanding: add a provenance field
+
+`_save_solution` in `satisfiability/mosp_solver.py` should record how each value
+was established — certified by refutation, certified by bound, or unproven — so
+the split stops depending on reconstruction from CSVs. **Do not change the file
+format while a run is writing to `solutions/`.** Both the sweep runners and the
+ratchet write there concurrently; wait for the machine to be idle.
+
+This matters beyond bookkeeping: the corpus is intended as a published artifact,
+and an artifact that cannot distinguish a proof from a good guess is a liability.
+
 ## Architecture
 
 ```
