@@ -2,7 +2,11 @@
 
 Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with Kissat, graph-theoretic lower bounds, and a quick tabu search for the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
 
-**6,226 of 6,376 published benchmark instances solved to certified optimality**, each with a witness ordering in `solutions/` that can be checked without trusting the solver.
+**6,226 of 6,376 published benchmark instances solved to certified optimality**,
+each with a witness ordering in `solutions/` that can be checked without trusting
+the solver. Work since that sweep adds *solutions* for further instances whose
+optimality is not yet proven; the two are distinguished below and should not be
+added together.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence that minimizes the maximum number of simultaneously open customer stacks. This problem is NP-hard (Linhares & Yanasse 2002).
 
@@ -215,7 +219,7 @@ That is the gap the witness orderings in `solutions/` are meant to fill.
 | NWRS8 | 25×60 | 16 | 16 | exact |
 | SP1 | 25×25 | — | 9 | exact (no published value) |
 | SP2 | 50×50 | 19 | 19 | exact |
-| SP3 | 75×75 | 34 | 36 | in progress — descending |
+| SP3 | 75×75 | 34 | 35 | in progress — descending |
 | SP4 | 100×100 | 53 | — | in progress |
 
 **Eighteen of the twenty published values match, and none disagrees.** SP3 and SP4
@@ -242,7 +246,30 @@ by simulating them with `mosp.verify.max_open_stacks`.
 
 ### Corpus
 
-The full benchmark tree has been swept: **6,226 of 6,376 instances solved**, each verified by simulating its own witness ordering, with **zero disagreements** between the reported value and the simulation across every instance and every pass. The 150 still open are concentrated -- 144 of them are Chu & Stuckey, the collection built to be harder than its predecessors.
+The full benchmark tree has been swept: **6,226 of 6,376 instances solved with
+optimality certified**, each verified by simulating its own witness ordering, with
+**zero disagreements** between the reported value and the simulation across every
+instance and every pass. What remained open was concentrated -- overwhelmingly
+Chu & Stuckey, the collection built to be harder than its predecessors.
+
+Those remaining instances are now being worked by the descending ratchet
+(`benchmarks/ratchet.py`), which asks only satisfiable questions and so produces
+a solution of known value without proving it optimal. That distinction matters
+and the corpus is now mixed:
+
+- a **certified optimum** means satisfiable at `k` with a witness *and*
+  unsatisfiable at `k-1`, or satisfiable at `k` where the lower bound already
+  equals `k`;
+- a **best known solution** means a witness of value `k` and nothing more.
+
+Both are equally checkable as upper bounds — the witness verifies either way —
+but only the first is an optimality claim.
+
+Instances that had resisted hours of binary search have turned out to be easy to
+*solve* and hard only to *prove optimal*: thirty Chu & Stuckey `Random-100-100`
+instances, each of which survived a 900s sweep, a 3600s round and part of a
+12000s round with nothing recorded, produced first solutions within three minutes
+of being asked a satisfiable question instead of a refutation.
 
 ## Checking the claims without trusting this code
 
@@ -329,6 +356,7 @@ solutions/                      Cached optimal solutions (JSON)
 benchmarks/
     solve_parallel.py               Parallel solving: across instances, and across k
     overnight.py                    Escalating-budget driver for unattended runs
+    ratchet.py                      Descending satisfiable-call search
     solver_portfolio.py             Times every pysat backend on the hard calls
     solve_all_sat.py                Batch SAT solver for large benchmark instances
     solve_all.py                    Batch solver for published benchmark files
@@ -346,7 +374,7 @@ lean/
 
 validate_published_optima.py    Batch validation against published optima
 
-tests/                          184 tests across 11 test modules
+tests/                          314 tests across 14 test modules
 reports/
     encoding.md                     The CNF formulation, and what is proved of it
     lower_bounds.md                 The clique and contraction degeneracy bounds
@@ -537,6 +565,13 @@ cd lean && lake build
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
 - **The contraction degeneracy bound is validated, not proved.** It rests on `MOSP = pathwidth + 1`, so a bound that were too high would make the search start above the true optimum and return a wrong answer that still passes witness verification. It is checked against all 6,226 known optima (zero violations) and re-checked by `tests/test_lower_bounds.py`, but that is evidence rather than proof.
 - **The arc contraction bound of Yanasse, Becceneri & Soma (1999) is unobtained**, and may be the same bound as contraction degeneracy. *Pesquisa Operacional* is digitised only from 2001, so it is not the easy download it appears to be. No novelty should be claimed until this is settled.
+- **Cached solutions record no provenance.** A file in `solutions/` gives the
+  value and the ordering, but nothing saying whether optimality was certified or
+  the value is merely the best found. Since the corpus now contains both, the
+  split cannot be recovered from the files — only inferred where the value
+  happens to equal its lower bound. A field recording how each value was
+  established would fix this, and should be added before the corpus is published
+  as an artifact.
 - **No preprocessing.** Six operations are on record in Yanasse & Senne (2010); none are implemented on the SAT path. Two of them were measured as nearly useless on the Chu & Stuckey instances; the other four are untested here.
 - **The binary search discards learning between k values**, re-encoding and re-solving from scratch at each step. Incremental SAT with assumptions would carry learned clauses across the search.
 - **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.
