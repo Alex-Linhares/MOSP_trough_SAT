@@ -240,6 +240,51 @@ by simulating them with `mosp.verify.max_open_stacks`.
 
 The full benchmark tree has been swept: **6,226 of 6,376 instances solved**, each verified by simulating its own witness ordering, with **zero disagreements** between the reported value and the simulation across every instance and every pass. The 150 still open are concentrated -- 144 of them are Chu & Stuckey, the collection built to be harder than its predecessors.
 
+## Checking the claims without trusting this code
+
+An optimality claim here is two statements, and they are not equally easy for
+someone else to check.
+
+**`MOSP(I) <= k`** is witnessed by an ordering. Checking it means simulating that
+ordering against the instance file and counting open stacks — no SAT solver, no
+encoding, none of this code. `mosp/certify.py` does it with an implementation
+deliberately sharing nothing with the solver, because a checker built on the same
+code checks less than it appears to:
+
+```bash
+python -m mosp.certify check SP2     # one instance
+python -m mosp.certify check         # every cached solution
+```
+
+All **6,229** cached witnesses pass. Re-implementing this checker in another
+language is an afternoon's work, and doing so would remove us from the trust
+chain entirely for this half of the claim.
+
+**`MOSP(I) > k-1`** is harder. It rests on a solver reporting the CNF
+unsatisfiable, so re-running our code reproduces our result *including any bug in
+our encoding* — that is reproducibility, not verification. What can be done today
+is to export the formula and have it refuted by somebody else's solver:
+
+```bash
+python -m mosp.certify export SP2 --k 18 --out sp2_k18.cnf
+```
+
+UNSAT at `k-1` from an independent solver, plus a witness at `k`, is the
+optimality claim. That narrows what has to be trusted from our whole pipeline to
+one question: whether the encoding faithfully expresses MOSP. Two routes would
+close even that, and neither is done:
+
+- **proof logging** — emit a DRAT refutation checkable by a verified checker such
+  as `cake_lpr`. Measured at roughly 10 MB of proof per second of solving, which
+  puts the easy 94% of the corpus at about 7.5 GB and the whole of it past a
+  terabyte. Shelved on those grounds.
+- **the Lean formalization** — prove the CNF satisfiable iff `MOSP(I) <= k`.
+  `lean/` currently formalizes the pathwidth theory, not the encoding.
+
+So the honest summary: the upper bounds are already checkable by anyone, the
+lower bounds are reproducible and independently re-refutable, and full
+certification of the lower bounds remains open.
+
 ## Project Structure
 
 ```
@@ -252,6 +297,7 @@ satisfiability/                 -> SAT-based solvers
 mosp/                           -> MOSP instance handling
     instance.py                     Parse/represent MOSP instances (binary matrix)
     visualize.py                    Packed gate matrix layout drawing
+    certify.py                      Independent witness checking, CNF export
     agreement_graph.py              Build agreement graph via M^T @ M overlap
     reduction.py                    Formal reduction: MOSP <-> pathwidth
     solver.py                       End-to-end pipeline (agreement graph approach)
