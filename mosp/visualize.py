@@ -175,6 +175,113 @@ def plot_solution(
     return fig
 
 
+def plot_comparison(
+    entries: Sequence[tuple[MOSPInstance, Sequence[int]]],
+    n_colors: int = 10,
+    sort_rows: bool = True,
+    labels: Optional[Sequence[str]] = None,
+    suptitle: Optional[str] = None,
+):
+    """Draw several solutions side by side on a shared vertical scale.
+
+    Comparing instances is only meaningful if the panels are commensurate, so
+    every panel is drawn with the same number of customer rows on the y axis.
+    Without that, a sparse instance and a dense one of the same size look alike,
+    because each fills its own axes.
+
+    Args:
+        entries: (instance, ordering) pairs, left to right.
+        labels: captions; defaults to the instance names.
+
+    Returns:
+        A matplotlib Figure.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import to_rgba
+
+    palette = PALETTE_5 if n_colors == 5 else PALETTE_10
+    n_panels = len(entries)
+    max_rows = max(inst.n_customers for inst, _ in entries)
+
+    fig, axes = plt.subplots(
+        1, n_panels, figsize=(5.4 * n_panels, 5.6), layout="constrained",
+    )
+    if n_panels == 1:
+        axes = [axes]
+
+    for axis, (instance, ordering), index in zip(axes, entries, range(n_panels)):
+        packed = packed_matrix(instance, ordering)
+        counts = open_counts(packed)
+        peak = int(counts.max()) if counts.size else 0
+
+        rows = list(range(packed.shape[0]))
+        if sort_rows:
+            def opens_at(row: int, pk=packed) -> tuple[int, int]:
+                nonzero = np.flatnonzero(pk[row])
+                if nonzero.size == 0:
+                    return (pk.shape[1] + 1, 0)
+                return (int(nonzero[0]), int(nonzero[-1]))
+            rows.sort(key=opens_at)
+
+        n_cols = packed.shape[1]
+        for drawn_index, row in enumerate(rows):
+            nonzero = np.flatnonzero(packed[row])
+            if nonzero.size == 0:
+                continue
+            start, stop = int(nonzero[0]), int(nonzero[-1])
+            axis.broken_barh(
+                [(start - 0.5, stop - start + 1)],
+                (drawn_index - 0.37, 0.74),
+                facecolors=to_rgba(palette[drawn_index % len(palette)]),
+                edgecolors="none",
+            )
+
+        for step in np.flatnonzero(counts == peak) if peak else []:
+            axis.axvspan(step - 0.5, step + 0.5, color="#000000", alpha=0.07,
+                         zorder=0, lw=0)
+
+        # The peak as a horizontal rule: its height against the panel is the
+        # fraction of customers open at once, which is the quantity being
+        # compared across panels.
+        axis.axhline(peak - 0.5, color="#C44E52", lw=1.2, ls="--", zorder=4)
+        axis.text(n_cols * 0.99, peak - 1.2, f"peak {peak}", ha="right",
+                  va="bottom", fontsize=9, color="#C44E52", zorder=5,
+                  bbox=dict(facecolor="white", edgecolor="none", alpha=0.85,
+                            pad=1.5))
+
+        # Two densities, because the literature quotes the second. Frinhani et
+        # al. (2018) tabulate D for GP1 as 0.98 where its matrix is 0.81 full:
+        # their D is the edge density of the MOSP graph, not the fill rate of M.
+        fill = float(instance.matrix.sum()) / (instance.n_customers
+                                               * instance.n_patterns)
+        neighbours: list[set[int]] = [set() for _ in range(instance.n_customers)]
+        for pattern in range(instance.n_patterns):
+            holders = set(instance.pattern_customers(pattern))
+            for customer in holders:
+                neighbours[customer] |= holders
+        for customer in range(instance.n_customers):
+            neighbours[customer].discard(customer)
+        edges = sum(len(adj) for adj in neighbours) / 2
+        possible = instance.n_customers * (instance.n_customers - 1) / 2
+        graph_density = edges / possible if possible else 0.0
+
+        caption = labels[index] if labels else (instance.name or "instance")
+        axis.set_title(
+            f"{caption}\n{instance.n_customers}x{instance.n_patterns}, "
+            f"matrix {fill:.2f} / graph {graph_density:.2f}, optimum {peak}",
+            fontsize=10,
+        )
+        axis.set_xlim(-0.5, n_cols - 0.5)
+        axis.set_ylim(max_rows - 0.5, -0.5)
+        axis.set_yticks([])
+        axis.set_xlabel("production step")
+    axes[0].set_ylabel(f"customers (shared scale, {max_rows} rows)")
+
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=12)
+    return fig
+
+
 def load_cached_solution(
     name: str,
     solutions_dir: Path = Path("solutions"),
@@ -185,26 +292,34 @@ def load_cached_solution(
 
     from benchmarks.solve_parallel import find_benchmark_files
 
-    candidates = sorted(solutions_dir.glob("*.json"))
-    payload = None
-    for path in candidates:
+    payloads = {}
+    for path in sorted(solutions_dir.glob("*.json")):
         data = json.loads(path.read_text())
-        if data["instance_name"] == name or path.stem == name:
-            payload = data
-            break
-    if payload is None:
-        raise SystemExit(f"no cached solution named {name!r} in {solutions_dir}")
+        payloads[data["instance_name"]] = data
 
+    if not payloads:
+        raise SystemExit(f"no cached solutions in {solutions_dir}")
+
+    # Exact name first, then prefix. The prefix fallback matters because some
+    # solutions are stored under a bare name such as "GP4" while the benchmark
+    # files name the same instance descriptively ("GP4:  50 customers, ..."),
+    # and a handful of bare-named files correspond to no enumerated instance at
+    # all, being leftovers from an earlier script. Matching only on the exact
+    # name finds those orphans and then fails to find their instance.
     for filepath in find_benchmark_files(instance_dir):
         try:
             instances = MOSPInstance.from_benchmark_file(filepath)
         except Exception:  # noqa: BLE001
             continue
         for inst in instances:
-            if inst.name == payload["instance_name"]:
-                return inst, payload["ordering"]
+            if inst.name in payloads and (
+                inst.name == name or inst.name.strip().startswith(name)
+            ):
+                return inst, payloads[inst.name]["ordering"]
 
-    raise SystemExit(f"cached solution {name!r} found, but its instance was not")
+    raise SystemExit(
+        f"no cached solution for an instance named or starting with {name!r}"
+    )
 
 
 def main() -> None:

@@ -113,9 +113,17 @@ open stacks in a column can be counted by eye. Rows are sorted by opening step
 into the staircase form the gate-matrix literature draws; that is cosmetic, since
 reordering rows cannot change a column sum. Steps attaining the peak are shaded.
 
-Figures for the published instances are in `figures/`. The contrast is
-instructive: SP2 (density 0.21) is a clean staircase, while GP5 (density 0.995)
-is a near-solid block — which is why its optimum is 95 of 100 customers.
+`plot_comparison` draws several solutions side by side on a shared vertical
+scale, so the fraction of customers open at once is comparable between panels.
+`figures/density_contrast.png` uses it on SP2, GP4 and GP1 — all 50x50, so only
+density varies — and the progression from a sparse staircase to a near-solid
+block is the visual reason dense instances have so little to optimise, their
+optima running 19, 30, 45 of 50 customers.
+
+Note that two different densities get called "density" in this literature. The
+figures report both: the fill rate of M, and the edge density of the MOSP graph.
+Frinhani et al. (2018) tabulate the latter — their D of 0.21 for SP2 is the graph,
+whose matrix is only 7% full.
 
 ## Validation Against Published Optima
 
