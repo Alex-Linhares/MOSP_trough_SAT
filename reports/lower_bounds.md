@@ -211,12 +211,41 @@ quickly while every probe in `k = 10..36` ran for an hour without answering. A
 bound that rules those out a priori removes work that no amount of solver
 improvement would have made cheap.
 
-Effect on the corpus is not isolated in these numbers, because the bound landed
-together with a switch of SAT backend to Kissat404. Of 346 instances solved in
-the subsequent overnight round, only 109 required more time than the previous
-900 s budget, implying roughly two thirds were unlocked by the two changes rather
-than by a longer clock — but the report cannot apportion that between them. **An
-ablation isolating the bound from the backend switch is outstanding.**
+### 7.1 The ablation: no instances converted *(measured)*
+
+The bound landed together with a switch of SAT backend to Kissat404, so the
+corpus gains could not initially be apportioned between them. They now can, and
+the result does not favour the bound.
+
+Round 1 of an overnight run used Kissat404 with the clique bound only, at 3600 s
+per instance, and solved 346 instances. Rerunning its 150 survivors at the
+**same** budget and the **same** backend, with contraction degeneracy added,
+converted **0 of the 60** reached before the run was stopped. Not one instance
+that had resisted the clique bound fell to the stronger one.
+
+So the corpus gains attributed to "the bound and the backend" belong to the
+backend. The measurement is clean precisely because nothing else changed: same
+instances, same budget, same solver, one variable.
+
+### 7.2 Where the bound does pay
+
+This is not the same as the bound being worthless, and the distinction matters
+for how it should be described.
+
+- It does **not** make hard refutations tractable. §7.1 is the evidence, and the
+  mechanism is visible in the numbers: SP4's bound rose from 13 to 27 while its
+  optimum is 53, so the refutations that remain are still far below the answer
+  and still do not return.
+- It **does** make refutations unnecessary where it is tight. GP7 and GP8 were
+  both settled by a single satisfiable call, because ω equalled the optimum and
+  nothing had to be refuted at all. Both had resisted hours of binary search, and
+  no additional budget would have closed either.
+
+The bound's contribution is therefore in its *quality* — tight on 63.4% of
+instances, mean gap 0.54 — realised through the descending ratchet
+(`benchmarks/ratchet.py`), which closes an instance outright whenever the value
+it reaches meets the bound. It is not measurable as instances-solved-per-CPU-hour
+by a binary search, which is where §7 originally implied it would show up.
 
 ---
 
@@ -281,8 +310,8 @@ Implementation: `satisfiability/mosp_solver.py::_lower_bound` and
    similar and both contract edges of the MOSP graph. Note that *Pesquisa
    Operacional* is digitised on SciELO only from 2001, so this is not the easy
    download it first appeared to be; see §3 for routes.
-2. **Ablate the bound against the Kissat404 switch**, so the corpus gains can be
-   attributed.
+2. ~~Ablate the bound against the Kissat404 switch~~ — done, §7.1. The gains
+   belong to the backend; the bound pays through §7.2 instead.
 3. **Re-run the 146 unsolved instances** with the strengthened bound; they are
    sparse and Chu & Stuckey-dominated, the regime where MMD+ contributes most.
 4. **Consider an exact maximum clique** on the instances where enumeration is
