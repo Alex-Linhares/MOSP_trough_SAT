@@ -4,9 +4,9 @@ These papers are referenced in the project but could not be downloaded due to pa
 
 ## Paywalled
 
-- **Kinnersley, N.G.** (1992). The vertex separation number of a graph equals its path-width. *Information Processing Letters*, 42(6), 345-350. DOI: 10.1016/0020-0190(92)90234-M — Elsevier paywall. Semantic Scholar status: BRONZE (DOI redirects to ScienceDirect).
+- **Kinnersley, N.G.** (1992). The vertex separation number of a graph equals its path-width. *Information Processing Letters*, 42(6), 345-350. DOI: 10.1016/0020-0190(92)90234-M — Elsevier paywall. Semantic Scholar status: BRONZE (DOI redirects to ScienceDirect). **= reference [13] of Table 1 in Linhares & Yanasse (2002)**, cited there for both *graph path-width* and *vertex separation*. This is the theorem the Lean development proves; we work from secondary statements of it.
 
-- **Yanasse, H.H.** (1997). On a pattern sequencing problem to minimize the maximum number of open stacks. *European Journal of Operational Research*, 100(3), 454-463. DOI: 10.1016/S0377-2217(97)84107-0 — Elsevier paywall. Semantic Scholar status: CLOSED.
+- **Yanasse, H.H.** (1997). On a pattern sequencing problem to minimize the maximum number of open stacks. *European Journal of Operational Research*, 100(3), 454-463. DOI: 10.1016/S0377-2217(97)84107-0 — Elsevier paywall. Semantic Scholar status: CLOSED. **= reference [1] of Table 1 in Linhares & Yanasse (2002)**, cited there for MOSP itself. This is Yanasse 1997b, not the 1997c paper that introduces the MOSP graph.
 
 - **Faggioli, E. & Bentivoglio, C.A.** (1998). Heuristic and exact methods for the cutting sequencing problem. *European Journal of Operational Research*, 110(3), 564-575. DOI: 10.1016/S0377-2217(97)00269-7 — Elsevier paywall.
 
@@ -54,6 +54,31 @@ authors.
   Partially substituted by Poliquit (2008), a Master's thesis of the same title now in `literature/`, which states the MCN algorithm in full (§3) and covers arc contraction (§4.2) and a lower bound implementation (§4.4). Its statement is explicitly for instances with at most two piece types per pattern, so it does not transfer directly to the general case.
 
 - **Yanasse, H.H. & Limeira, M.S.** (2004). Refinements on an enumeration scheme for solving a pattern sequencing problem. *International Transactions in Operational Research*, 11, 277-292. DOI: 10.1111/j.1475-3995.2004.00458.x
+
+## Table 1 of Linhares & Yanasse (2002) — the equivalent problems
+
+Table 1 of `Linhares and Yanasse - 2002 - Connections between cutting-pattern
+sequencing, VL.pdf` asserts twelve problems equivalent up to ±1, resting on
+twelve distinct references. Four are held (see `../paper2/literature/`), eight
+are not. Two of the eight — Kinnersley [13] and Yanasse [1] — are listed under
+**Paywalled** above and are not repeated here. The other six:
+
+- **Kashiwabara, T. & Fujisawa, T.** (1979). NP-completeness of the problem of finding a minimum clique number interval graph containing a given graph as a subgraph. *Proc. 1979 IEEE International Symposium on Circuits and Systems*, Tokyo, 657-660. No DOI — Table 1 ref [5], *interval thickness*. **The hardest of the twelve**: 1979 conference proceedings, not indexed by OpenAlex at all, never digitised by IEEE. Needs a library holding physical IEEE conference records.
+
+- **Möhring, R.H.** (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer-Verlag Wien, 17-51. DOI: 10.1007/978-3-7091-9076-0_2 — Table 1 refs [6], *gate matrix layout* and *PLA folding*. Springer paywall; his TU Berlin publication pages have been retired and no archived copy was found. Note Linhares & Yanasse cite this as "Computing 1990;7:17-51", which is the Springer *book series* Computing Supplementum, not volume 7 of the journal *Computing*. Route worth trying: **TU Berlin Technical Report 223 (1989)**, the earlier version, via the TU Berlin mathematics library or Möhring directly (emeritus, still contactable).
+
+- **Ohtsuki, T., Mori, H., Kuh, E.S., Kashiwabara, T. & Fujisawa, T.** (1979). One-dimensional logic gate assignment and interval graphs. *IEEE Transactions on Circuits and Systems*, 26(9), 675-684. DOI: 10.1109/TCS.1979.1084695 — Table 1 ref [7], *one-dimensional logic*. IEEE Xplore paywall.
+
+- **Wing, O., Huang, S. & Wang, R.** (1985). Gate matrix layout. *IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems*, 4(3), 220-231. DOI: 10.1109/TCAD.1985.1270118 — Table 1 ref [8], *gate matrix layout*. IEEE Xplore paywall.
+
+- **Kirousis, L.M. & Papadimitriou, C.H.** (1985). Interval graphs and searching. *Discrete Mathematics*, 55(2), 181-184. DOI: 10.1016/0012-365X(85)90046-9 — Table 1 ref [9], *node search game*; the interval-thickness = node-search-number link, which we also work from secondary statements of. **Not actually paywalled** — it sits in Elsevier's open archive and is free to read, but ScienceDirect returns HTTP 403 to non-browser clients. Kirousis has uploaded it to Academia.edu (login wall) and the NTUA DSpace repository timed out on every attempt. **The most likely of the eight to be recovered**, simply by opening the DOI in a browser. Searching by title fails because ScienceDirect carries it under the typo "Interval graphs and seatching".
+
+- **Lengauer, T.** (1981). Black-white pebbles and graph separation. *Acta Informatica*, 16(4), 465-475. DOI: 10.1007/BF00264496 — Table 1 ref [14], *edge separation*. Springer paywall. A metadata-only record exists in the Max Planck repository (MPG.PuRe) with no attached full text.
+
+Sources checked for all eight and found to hold nothing: OpenAlex, Semantic
+Scholar, CORE (rate-limited without an API key), Internet Archive Scholar
+(`api.fatcat.wiki` unreachable throughout), the publishers, the authors' own
+pages, and the Wayback Machine where an author page is dead.
 
 ## Server issues
 

@@ -1,0 +1,32 @@
+Retrieval record for paper2/literature — Table 1 of Linhares & Yanasse (2002).
+Retrieved 2026-09-17. All sources are author-hosted or repository copies.
+
+[4]  04_fink_voss_1999.pdf
+     https://www.bwl.uni-hamburg.de/iwi/forschung/projekte/psp.pdf
+     Authors' own project page, Institut fuer Wirtschaftsinformatik, Univ. Hamburg.
+     Author preprint of Computers & Operations Research 26 (1999) 17-34.
+
+[10] 10_kirousis_papadimitriou_1986.pdf
+     Copied from ../../literature/kirousis_papadimitriou_1986.pdf (already held).
+     Published version, Theoretical Computer Science 47 (1986) 205-218.
+
+[11] 11_kornai_tuza_1992.pdf
+     http://kornai.com/Papers/kortuz.pdf
+     Andras Kornai's own publications page (kornai.com/pub.html).
+     Author copy, paginated as Discrete Applied Mathematics 36 (1992) 87-92.
+
+[12] 12_fomin_1998.pdf
+     https://web.archive.org/web/20100222171805/http://www.ii.uib.no/~fomin/fedor/articles1/hel.ps
+     Fedor Fomin's University of Bergen page (now dead) via the Wayback Machine,
+     snapshot of 2010-02-22. Retrieved as PostScript, converted with ps2pdf.
+     Author preprint of Discrete Applied Mathematics 85 (1998) 59-70.
+
+Sources checked and found to have nothing for the other eight:
+  OpenAlex (api.openalex.org)          - OA status per DOI
+  Semantic Scholar (api.semanticscholar.org) - openAccessPdf per DOI
+  CORE (api.core.ac.uk)                - rate-limited without an API key
+  Internet Archive Scholar (fatcat)    - api.fatcat.wiki unreachable
+  ScienceDirect                        - HTTP 403 to non-browser clients
+  Academia.edu                         - HTTP 403 / login wall
+  NTUA DSpace                          - connection timed out
+  pure.mpg.de                          - metadata only, no full text
