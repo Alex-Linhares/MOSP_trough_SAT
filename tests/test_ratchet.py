@@ -101,3 +101,51 @@ def test_ratchet_honours_its_deadline_from_the_first_call(tmp_path):
 
     assert not proven
     assert elapsed < 60.0, f"deadline not honoured: took {elapsed:.0f}s"
+
+
+# -------------------------------------------------------
+# Fan-out across instances
+# -------------------------------------------------------
+
+
+def test_ratchet_many_solves_every_instance(tmp_path):
+    from benchmarks.ratchet import ratchet_many
+
+    instances = [
+        MOSPInstance.from_matrix([[1, 1, 0], [0, 1, 1]], name=f"m{i}")
+        for i in range(4)
+    ]
+    results = ratchet_many(instances, timeout=120.0, solutions_dir=tmp_path,
+                           workers=2)
+
+    assert len(results) == len(instances)
+    assert all(value == 2 for value, _, _ in results)
+    assert len(list(tmp_path.glob("*.json"))) == len(instances)
+
+
+def test_ratchet_many_matches_sequential(tmp_path):
+    """Worker count is a resource knob and must not change any answer."""
+    from benchmarks.ratchet import ratchet_many
+
+    rng = random.Random(5)
+    instances = []
+    for i in range(4):
+        matrix = [[rng.randint(0, 1) for _ in range(4)] for _ in range(4)]
+        if not any(any(row) for row in matrix):
+            continue
+        instances.append(MOSPInstance.from_matrix(matrix, name=f"p{i}"))
+    if not instances:
+        pytest.skip("no usable instances")
+
+    parallel = ratchet_many(instances, timeout=120.0,
+                            solutions_dir=tmp_path / "par", workers=3)
+    serial = ratchet_many(instances, timeout=120.0,
+                          solutions_dir=tmp_path / "ser", workers=1)
+
+    assert [v for v, _, _ in parallel] == [v for v, _, _ in serial]
+
+
+def test_ratchet_many_survives_an_empty_list(tmp_path):
+    from benchmarks.ratchet import ratchet_many
+
+    assert ratchet_many([], timeout=10.0, solutions_dir=tmp_path, workers=2) == []

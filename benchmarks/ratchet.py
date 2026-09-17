@@ -233,6 +233,116 @@ def find_unsolved(instance_dir: Path, solutions_dir: Path) -> list[MOSPInstance]
     return pending
 
 
+def _ratchet_worker(matrix_list, n_customers, n_patterns, name, start, timeout,
+                    solutions_dir, queue):
+    """Run the ratchet on one instance in a child process."""
+    import numpy as np
+
+    try:
+        instance = MOSPInstance(
+            matrix=np.array(matrix_list, dtype=np.int8),
+            n_customers=n_customers, n_patterns=n_patterns, name=name,
+        )
+        value, ordering, proven = ratchet(
+            instance, start=start, timeout=timeout,
+            solutions_dir=solutions_dir, verbose=False,
+        )
+        queue.put((value, ordering, proven, None))
+    except Exception as exc:  # noqa: BLE001
+        queue.put((None, None, False, f"{type(exc).__name__}: {exc}"))
+
+
+def ratchet_many(
+    instances: list[MOSPInstance],
+    start: Optional[int] = None,
+    timeout: Optional[float] = None,
+    solutions_dir: Path = SOLUTIONS_DIR,
+    workers: int = 0,
+) -> list[tuple[Optional[int], Optional[list[int]], bool]]:
+    """Ratchet many instances at once, `workers` in flight.
+
+    Instances are independent, so this is a plain fan-out, but it is what makes
+    a night's budget usable: run sequentially, sixteen hours across a hundred
+    and fifty instances leaves each about six minutes, which does not reach the
+    part of the descent where the interesting values are. Fanned out over thirty
+    cores the same budget gives each instance hours.
+
+    Each instance runs in its own process, so one that wedges or exhausts memory
+    is killed without taking the run down, and every improvement is cached as it
+    is found.
+    """
+    import os
+
+    workers = workers or min(30, os.cpu_count() or 1)
+    pending = list(instances)
+    running: list[tuple] = []
+    results: list[tuple] = []
+    index = 0
+    done = 0
+
+    print(f"{len(pending)} instances, {workers} workers, "
+          f"{('%.0fs' % timeout) if timeout else 'no'} budget each", flush=True)
+
+    while index < len(pending) or running:
+        while len(running) < workers and index < len(pending):
+            inst = pending[index]
+            index += 1
+            queue: multiprocessing.Queue = multiprocessing.Queue()
+            proc = multiprocessing.Process(
+                target=_ratchet_worker,
+                args=(inst.matrix.tolist(), inst.n_customers, inst.n_patterns,
+                      inst.name, start, timeout, solutions_dir, queue),
+            )
+            proc.start()
+            running.append((inst, proc, queue, time.time()))
+
+        still = []
+        for inst, proc, queue, started in running:
+            if proc.is_alive():
+                # Each child already honours its own budget; this only catches
+                # one wedged well past it, with enough slack that a live solve
+                # is never cut short.
+                if timeout and time.time() - started > timeout * 2 + 300:
+                    proc.kill()
+                    proc.join()
+                    results.append((None, None, False))
+                    done += 1
+                    print(f"[{done}/{len(pending)}] {inst.name[:40]}: "
+                          f"killed, overran its budget", flush=True)
+                    continue
+                still.append((inst, proc, queue, started))
+                continue
+
+            proc.join()
+            if queue.empty():
+                results.append((None, None, False))
+                done += 1
+                print(f"[{done}/{len(pending)}] {inst.name[:40]}: "
+                      f"worker exited with no result", flush=True)
+                continue
+
+            value, ordering, proven, error = queue.get_nowait()
+            results.append((value, ordering, proven))
+            done += 1
+            elapsed = time.time() - started
+            if error:
+                label = f"ERROR {error}"
+            elif proven:
+                label = f"MOSP={value} PROVEN OPTIMAL"
+            elif value is not None:
+                label = f"best={value} (optimality unproven)"
+            else:
+                label = "no solution found"
+            print(f"[{done}/{len(pending)}] {inst.name[:40]}: {label} "
+                  f"{elapsed:.0f}s", flush=True)
+
+        running = still
+        if running:
+            time.sleep(0.2)
+
+    return results
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--instances", type=str, default=None,
@@ -245,6 +355,8 @@ def main() -> None:
                         help="first k to try (default: the tabu upper bound)")
     parser.add_argument("--timeout", type=float, default=None,
                         help="per-instance budget in seconds")
+    parser.add_argument("--workers", type=int, default=1,
+                        help="instances to run at once (default 1; 0 = min(30, cores))")
     args = parser.parse_args()
 
     if args.unsolved:
@@ -257,16 +369,20 @@ def main() -> None:
     if not targets:
         raise SystemExit("no matching instances")
 
-    closed = improved = 0
-    for inst in targets:
-        value, _, proven = ratchet(inst, start=args.start, timeout=args.timeout,
-                                   solutions_dir=args.solutions_dir)
-        if proven:
-            closed += 1
-        elif value is not None:
-            improved += 1
-        print(flush=True)
+    if args.workers == 1:
+        results = []
+        for inst in targets:
+            results.append(ratchet(inst, start=args.start, timeout=args.timeout,
+                                   solutions_dir=args.solutions_dir))
+            print(flush=True)
+    else:
+        results = ratchet_many(targets, start=args.start, timeout=args.timeout,
+                               solutions_dir=args.solutions_dir,
+                               workers=args.workers)
 
+    closed = sum(1 for _, _, proven in results if proven)
+    improved = sum(1 for value, _, proven in results
+                   if not proven and value is not None)
     print(f"closed {closed}, improved without proof {improved}, "
           f"of {len(targets)} instances")
 
