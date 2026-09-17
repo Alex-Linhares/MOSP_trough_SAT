@@ -480,6 +480,14 @@ The `lean/` directory contains a Lean 4 formalization of the pathwidth theory. I
 - Supporting definitions and lemmas: linear layouts, vertex separation, path decompositions, pathwidth, MOSP instances, open-stack counting.
 - `Examples.lean`: small concrete instances checking that the agreement-graph and open-stack *definitions* behave as intended. No instance is solved inside the proof assistant -- pathwidth is defined via `sInf` and is noncomputable.
 
+`MOSPFormalization/Check.lean` cross-checks the open-stack definition against
+what `mosp/verify.py` reports on small instances, by `decide`. That check earned
+its place immediately: `isActive` required a pattern *strictly* after position
+`i`, so a stack closed one step before its last pattern was produced, and on one
+customer needing one pattern Lean gave 0 where the implementation, the
+independent checker and the literature all give 1. The definition is now
+inclusive at both ends, matching Yanasse & Senne's fill-in matrix.
+
 **Incomplete (2 `sorry`s, both in `Reduction.lean`):**
 
 - `openStacksAt_le_bag_card` (line 61) -- the core injection step, which needs Hall's marriage theorem under the `IsReduced` hypothesis.

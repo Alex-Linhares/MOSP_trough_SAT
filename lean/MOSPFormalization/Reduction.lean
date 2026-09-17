@@ -33,13 +33,20 @@ namespace MOSPInstance
 
 variable (M : MOSPInstance C Pt) [DecidableRel M.requires]
 
-/-- Each active customer has a pattern in the active suffix of the agreement graph. -/
+/-- A customer with a pattern at or before `i` and one strictly after `i` has a
+    pattern in the active suffix of the agreement graph.
+
+    The strict hypothesis is stated explicitly rather than taken from
+    `isActive`, which no longer implies it. `isActive` is inclusive at both
+    ends, so a customer requiring a single pattern is active at that pattern's
+    own position while having nothing strictly beyond it — and the argument
+    below needs two distinct patterns, one on each side. Such a customer opens
+    and closes in one step and never contributes to a separator, so nothing is
+    lost; it simply is not this lemma's business. -/
 theorem active_customer_has_activeSuffix_pattern (σ : LinearLayout Pt) (c : C) (i : ℕ)
-    (hactive : M.isActive σ c i) :
+    (hpre : ((M.patterns c).filter (fun p => (σ p).val ≤ i)).Nonempty)
+    (hsuf : ((M.patterns c).filter (fun p => (σ p).val > i)).Nonempty) :
     ∃ p, M.requires c p ∧ p ∈ activeSuffix M.agreementGraph σ i := by
-  obtain ⟨hpre, hsuf⟩ := hactive
-  -- hpre : (M.patterns c).filter(σ ≤ i) is nonempty
-  -- hsuf : (M.patterns c).filter(σ > i) is nonempty
   obtain ⟨p, hp⟩ := hsuf
   obtain ⟨q, hq⟩ := hpre
   have hp_mem := Finset.mem_filter.mp hp

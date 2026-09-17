@@ -25,11 +25,21 @@ namespace MOSPInstance
 variable (M : MOSPInstance C P) [DecidableRel M.requires]
 
 /-- Customer `c` is active at position `i` under ordering `σ` if `c` has at least
-    one required pattern in the prefix (at or before i) and at least one in the
-    suffix (after i). -/
+    one required pattern at or before `i` and at least one at or after `i`.
+
+    Both bounds are inclusive, so the stack is open at the step its last pattern
+    is produced. That matches the standard definition of MOSP: Yanasse & Senne
+    (2010) define the objective through the fill-in matrix, where a row's zeros
+    between two ones become ones while the original ones remain, so the column
+    holding a customer's final pattern still counts it.
+
+    This previously required a pattern *strictly* after `i`, which closed a
+    stack one step early and disagreed with `mosp/verify.py`. On one customer
+    needing one pattern it gave 0 where the implementation, the independent
+    checker and the literature all give 1. -/
 def isActive (σ : LinearLayout P) (c : C) (i : ℕ) : Prop :=
   ((M.patterns c).filter (fun p => (σ p).val ≤ i)).Nonempty ∧
-  ((M.patterns c).filter (fun p => (σ p).val > i)).Nonempty
+  ((M.patterns c).filter (fun p => (σ p).val ≥ i)).Nonempty
 
 instance decIsActive (σ : LinearLayout P) (c : C) (i : ℕ) :
     Decidable (M.isActive σ c i) := by

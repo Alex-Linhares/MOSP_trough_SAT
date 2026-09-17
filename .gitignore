@@ -8,3 +8,6 @@ benchmarks/instances/*.mosp
 lean/.lake/build/
 lean/.lake/config/
 lean/.lake/packages/
+
+# Lean build outputs and fetched dependencies
+lean/.lake/
