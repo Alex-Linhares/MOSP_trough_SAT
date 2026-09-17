@@ -284,9 +284,25 @@ def _save_solution(
     ordering: list[int],
     solutions_dir: Path,
 ) -> Path:
-    """Save a solution to a JSON file."""
+    """Save a solution, refusing to replace a better one already on disk.
+
+    Saves are monotone in the value. Several things write here at once — the
+    parallel runners, the ratchet, and any deduplication across instances that
+    share a matrix — and without this a later worker could overwrite a better
+    result with its own, silently losing the best value found. A cached solution
+    is only ever replaced by one at least as good.
+    """
     solutions_dir.mkdir(parents=True, exist_ok=True)
     path = _solution_path(instance, solutions_dir)
+
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text())
+            if existing.get("mosp_value") is not None and existing["mosp_value"] < val:
+                return path
+        except (json.JSONDecodeError, OSError):
+            pass  # unreadable or truncated: overwrite it
+
     data = {
         "instance_name": instance.name,
         "n_customers": instance.n_customers,
