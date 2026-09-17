@@ -285,6 +285,12 @@ So the honest summary: the upper bounds are already checkable by anyone, the
 lower bounds are reproducible and independently re-refutable, and full
 certification of the lower bounds remains open.
 
+The Lean route is now partly travelled. `lean/MOSPFormalization/Encoding.lean`
+proves the encoding faithful — satisfiable exactly when a sequence achieving `k`
+exists — so what remains between a refutation and a machine-checked lower bound
+is that `mosp_encoding.py` emits the clauses the Lean development describes, and
+a proof log for the refutation itself.
+
 ## Project Structure
 
 ```
@@ -475,6 +481,20 @@ self-contained decision problem, and does not depend on the resolution.
 The `lean/` directory contains a Lean 4 formalization of the pathwidth theory. It is a work in progress, and it formalizes the *pathwidth* side of the story -- not the direct SAT encoding, and not an exact-MOSP claim.
 
 **Complete (no `sorry`):**
+
+- **The SAT encoding is faithful** (`Encoding.lean`):
+  `(∃ a, Encodes M k a) ↔ M.mospValue ≤ k`. Left to right is what licenses
+  reporting a refutation as a proof of optimality — if the formula is
+  unsatisfiable then no production sequence achieves `k`. Right to left says the
+  encoding never excludes a sequence that exists. Depends on no axioms beyond
+  `propext`, `Classical.choice` and `Quot.sound`.
+
+  Two constraint families are stated by their meaning rather than their clause
+  form: at-most-one for positions, and at-most-`k` for open stacks. Both are
+  standard cardinality encodings whose correctness is independent of MOSP. What
+  *is* modelled in full is the open-stack forcing, which is the MOSP-specific
+  part and the part our implementation has actually got wrong before.
+
 
 - **Vertex separation = pathwidth** (Kinnersley 1992), in `VSEquivPW.lean`: proven in both directions via explicit constructions (`LayoutToDecomposition.lean` and `DecompositionToLayout.lean`).
 - Supporting definitions and lemmas: linear layouts, vertex separation, path decompositions, pathwidth, MOSP instances, open-stack counting.
