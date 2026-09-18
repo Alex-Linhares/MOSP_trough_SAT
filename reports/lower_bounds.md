@@ -117,6 +117,13 @@ neighbours. The largest minimum degree observed over the sequence is the bound.
 lower-bounds pathwidth, and — by Yanasse's equivalence on the MOSP graph —
 `MOSP = pathwidth + 1`. Hence `MOSP >= delta_C(G) + 1`.
 
+A shorter route may exist. Chu & Stuckey (2009) state as their Lemma 1 that any
+*contraction* of the customer graph is a **relaxation** of the instance, which
+would bound the original directly with no appeal to the pathwidth equality —
+moving this bound from validated to proved. They attribute it to Becceneri,
+Yanasse & Soma (2004), noting that only informal arguments are given there, and
+that paper is still unobtained. See `reports/chu_stuckey_transferable.md` §4.
+
 **This chain is weaker than the clique argument and the difference matters.**
 Unlike §4, it depends on the `MOSP = pathwidth + 1` equality. A lower bound that
 is too high does not merely slow a solver down: it makes the search start above
