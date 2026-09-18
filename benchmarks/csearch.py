@@ -61,8 +61,23 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
         cached = _load_solution(instance, solutions_dir)
         before = cached[0] if cached else None
 
+        # Checkpoint every improvement rather than only the final answer: on a
+        # multi-day budget an interrupted descent would otherwise lose
+        # everything it found. Saved as a bare solution, since it is a witness
+        # and not yet a proof; `_save_solution` is monotone, so a later
+        # certified value is never displaced by one of these.
+        def checkpoint(value: int, closing: list[int]) -> None:
+            ordering = product_order_from_customers(instance, closing)
+            achieved = max_open_stacks(instance, ordering)
+            if achieved != value:
+                return          # a witness that does not hold up is not saved
+            _save_solution(instance, achieved, ordering, solutions_dir)
+            print(f"    {name}: {achieved} "
+                  f"({(time.time() - started) / 3600:.1f}h in)", flush=True)
+
         result = solve(instance, upper=before, lower=_lower_bound(instance),
-                       time_budget=timeout, max_nodes=max_nodes)
+                       time_budget=timeout, max_nodes=max_nodes,
+                       on_improve=checkpoint)
 
         if result.order:
             ordering = product_order_from_customers(instance, result.order)

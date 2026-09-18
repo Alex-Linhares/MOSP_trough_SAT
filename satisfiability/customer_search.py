@@ -57,6 +57,7 @@ enabling `old_move` turns `memo` off, and `decide` raises if both are asked for.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from mosp.instance import MOSPInstance
@@ -336,6 +337,7 @@ def solve(
     lower: int = 0,
     max_nodes: int | None = None,
     time_budget: float | None = None,
+    on_improve: "Callable[[int, list[int]], None] | None" = None,
     **kwargs: object,
 ) -> Solution:
     """Descend `k` with the complete search until it refutes or runs out.
@@ -352,6 +354,11 @@ def solve(
             and no refutation, since nothing below it can be satisfiable.
         max_nodes, time_budget: per-`k` budgets. An exhausted budget stops the
             descent with `proved` false.
+        on_improve: called with `(value, closing order)` each time the descent
+            lowers its bound. Without it a long run holds everything it has
+            found in memory until it returns, so an interrupted descent loses
+            all of it -- on a multi-day budget that is the difference between a
+            crash costing minutes and costing days.
 
     Returns:
         A `Solution` whose `order` is a customer closing order; pass it through
@@ -399,6 +406,8 @@ def solve(
             instance, product_order_from_customers(instance, found))
         if achieved < value:
             value, order = achieved, found
+            if on_improve is not None:
+                on_improve(value, order)
         k = min(k, achieved) - 1
 
     # The descent walked down to the lower bound: nothing below it can be

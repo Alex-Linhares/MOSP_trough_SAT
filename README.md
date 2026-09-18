@@ -577,7 +577,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          442 tests across 23 test modules
+tests/                          445 tests across 23 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima
