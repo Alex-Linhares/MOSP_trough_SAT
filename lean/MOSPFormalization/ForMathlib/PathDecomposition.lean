@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 MOSP Formalization Project. All rights reserved.
+Copyright (c) 2024 Alexandre Linhares. All rights reserved.
 Released under the MIT license as described in the file LICENSE.
-Authors: MOSP Formalization Project
+Authors: Alexandre Linhares
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Finset.Basic
