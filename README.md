@@ -1,6 +1,6 @@
 # MOSP Solver — Direct SAT Encoding
 
-Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct SAT encoding with Kissat, graph-theoretic lower bounds, and a quick tabu search for the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
+Exact solver for the **Minimization of Open Stacks Problem (MOSP)** using a direct [SAT encoding](reports/encoding.md) with [Kissat](https://github.com/arminbiere/kissat), graph-theoretic lower bounds, and a quick tabu search for the upper bound. Includes an in-progress Lean 4 formalization of the underlying pathwidth theory.
 
 **6,226 of 6,376 published benchmark instances solved to certified optimality**,
 each with a witness ordering in `solutions/` that can be checked without trusting
