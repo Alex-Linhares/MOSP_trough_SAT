@@ -107,14 +107,20 @@ def sweep(
         proc.start()
         return proc
 
-    while pending and len(running) < workers:
+    # Slots are counted rather than inferred from `is_alive()`: a worker that
+    # has posted its result is still alive for a moment afterwards, so testing
+    # liveness loses a slot per completion and deadlocks at `workers=1`.
+    in_flight = 0
+    while pending and in_flight < workers:
         running.append(_launch(pending.pop(0)))
+        in_flight += 1
 
     done = 0
     total = len(instances)
     while done < total:
         name, before, after, elapsed, note = queue.get()
         done += 1
+        in_flight -= 1
         if verbose:
             if note and note not in ("closed",):
                 print(f"[{done}/{total}] {name}: {note}", flush=True)
@@ -124,9 +130,10 @@ def sweep(
                       f" ({elapsed:.0f}s){tag}", flush=True)
         results.append((name, before, after, elapsed, note))
 
-        running = [p for p in running if p.is_alive()]
-        while pending and len(running) < workers:
+        multiprocessing.active_children()  # reap whatever has exited
+        while pending and in_flight < workers:
             running.append(_launch(pending.pop(0)))
+            in_flight += 1
 
     for proc in running:
         proc.join()
