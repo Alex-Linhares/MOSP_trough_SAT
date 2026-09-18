@@ -37,6 +37,7 @@ from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
 from satisfiability.mosp_encoding import encode_mosp_decision, extract_ordering
 from satisfiability.mosp_solver import (
+    _load_solution,
     PROVENANCE_BOUND,
     PROVENANCE_REFUTATION,
     PROVENANCE_SOLUTION,
@@ -121,6 +122,7 @@ def ratchet(
     timeout: Optional[float] = None,
     solutions_dir: Path = SOLUTIONS_DIR,
     verbose: bool = True,
+    strategy: Optional[str] = None,
 ) -> tuple[Optional[int], Optional[list[int]], bool]:
     """Step k downwards, one satisfiable call at a time.
 
@@ -132,7 +134,12 @@ def ratchet(
 
     lower = _lower_bound(instance)
     if start is None:
-        start, best_ordering = _upper_bound(instance)
+        start, best_ordering = _upper_bound(instance, strategy=strategy)
+        # A previous run may already have beaten the heuristic. Starting above a
+        # cached value would redo descent steps that are already paid for.
+        cached = _load_solution(instance, solutions_dir)
+        if cached is not None and cached[0] < start:
+            start, best_ordering = cached
     else:
         best_ordering = None
 
@@ -227,6 +234,40 @@ def find_instances(names: list[str], instance_dir: Path) -> list[MOSPInstance]:
     return found
 
 
+def find_unproven(instance_dir: Path, solutions_dir: Path) -> list[MOSPInstance]:
+    """Instances with a cached solution whose optimality is not established.
+
+    Distinct from `find_unsolved`: these already have a value, so they are
+    invisible to a run that looks only for missing files, yet they are exactly
+    the ones a better upper bound can still help — a lower start may reach the
+    lower bound and close the instance outright.
+    """
+    import json
+
+    from satisfiability.mosp_solver import CERTIFIED
+    from benchmarks.solve_parallel import find_benchmark_files
+
+    unproven = set()
+    for path in solutions_dir.glob("*.json"):
+        try:
+            payload = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            continue
+        if payload.get("provenance") not in CERTIFIED:
+            unproven.add(payload["instance_name"])
+
+    pending = []
+    for filepath in find_benchmark_files(instance_dir):
+        try:
+            instances = MOSPInstance.from_benchmark_file(filepath)
+        except Exception:  # noqa: BLE001
+            continue
+        for inst in instances:
+            if inst.name in unproven:
+                pending.append(inst)
+    return pending
+
+
 def find_unsolved(instance_dir: Path, solutions_dir: Path) -> list[MOSPInstance]:
     from benchmarks.solve_parallel import find_benchmark_files
 
@@ -243,7 +284,7 @@ def find_unsolved(instance_dir: Path, solutions_dir: Path) -> list[MOSPInstance]
 
 
 def _ratchet_worker(matrix_list, n_customers, n_patterns, name, start, timeout,
-                    solutions_dir, queue):
+                    solutions_dir, queue, strategy=None):
     """Run the ratchet on one instance in a child process."""
     import numpy as np
 
@@ -254,7 +295,7 @@ def _ratchet_worker(matrix_list, n_customers, n_patterns, name, start, timeout,
         )
         value, ordering, proven = ratchet(
             instance, start=start, timeout=timeout,
-            solutions_dir=solutions_dir, verbose=False,
+            solutions_dir=solutions_dir, verbose=False, strategy=strategy,
         )
         queue.put((value, ordering, proven, None))
     except Exception as exc:  # noqa: BLE001
@@ -267,6 +308,7 @@ def ratchet_many(
     timeout: Optional[float] = None,
     solutions_dir: Path = SOLUTIONS_DIR,
     workers: int = 0,
+    strategy: Optional[str] = None,
 ) -> list[tuple[Optional[int], Optional[list[int]], bool]]:
     """Ratchet many instances at once, `workers` in flight.
 
@@ -300,7 +342,7 @@ def ratchet_many(
             proc = multiprocessing.Process(
                 target=_ratchet_worker,
                 args=(inst.matrix.tolist(), inst.n_customers, inst.n_patterns,
-                      inst.name, start, timeout, solutions_dir, queue),
+                      inst.name, start, timeout, solutions_dir, queue, strategy),
             )
             proc.start()
             running.append((inst, proc, queue, time.time()))
@@ -358,6 +400,10 @@ def main() -> None:
                         help="comma-separated name prefixes, e.g. GP8,SP3")
     parser.add_argument("--unsolved", action="store_true",
                         help="run against every instance with no cached solution")
+    parser.add_argument("--unproven", action="store_true",
+                        help="run against every instance whose optimality is unproven")
+    parser.add_argument("--strategy", type=str, default=None,
+                        help="upper bound strategy, e.g. customer-tabu")
     parser.add_argument("--dir", type=Path, default=DEFAULT_INSTANCE_DIR)
     parser.add_argument("--solutions-dir", type=Path, default=SOLUTIONS_DIR)
     parser.add_argument("--start", type=int, default=None,
@@ -368,12 +414,14 @@ def main() -> None:
                         help="instances to run at once (default 1; 0 = min(30, cores))")
     args = parser.parse_args()
 
-    if args.unsolved:
+    if args.unproven:
+        targets = find_unproven(args.dir, args.solutions_dir)
+    elif args.unsolved:
         targets = find_unsolved(args.dir, args.solutions_dir)
     elif args.instances:
         targets = find_instances(args.instances.split(","), args.dir)
     else:
-        raise SystemExit("pass --instances or --unsolved")
+        raise SystemExit("pass --instances, --unsolved or --unproven")
 
     if not targets:
         raise SystemExit("no matching instances")
@@ -382,12 +430,13 @@ def main() -> None:
         results = []
         for inst in targets:
             results.append(ratchet(inst, start=args.start, timeout=args.timeout,
-                                   solutions_dir=args.solutions_dir))
+                                   solutions_dir=args.solutions_dir,
+                                   strategy=args.strategy))
             print(flush=True)
     else:
         results = ratchet_many(targets, start=args.start, timeout=args.timeout,
                                solutions_dir=args.solutions_dir,
-                               workers=args.workers)
+                               workers=args.workers, strategy=args.strategy)
 
     closed = sum(1 for _, _, proven in results if proven)
     improved = sum(1 for value, _, proven in results
