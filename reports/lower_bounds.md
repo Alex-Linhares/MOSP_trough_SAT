@@ -131,11 +131,31 @@ rather than relying on the derivation.
 **Domination.** Contraction degeneracy subsumes the clique bound. A clique
 `K_k` is a subgraph of minimum degree `k-1`, so degeneracy `>= k-1`, hence
 `degeneracy + 1 >= omega`; and contraction degeneracy is at least degeneracy.
-This is borne out exactly in the data: across all 900 sampled instances the
-combined bound `max(clique, MMD+)` is identical to MMD+ alone, so MMD+ was never
-worse. The clique bound is nevertheless retained in the implementation, because
-it is cheap and because it is provable without the pathwidth equality — it is the
-bound that still stands if that equality is ever found wanting.
+
+The practical consequence is worth stating plainly, because the implementation
+time-boxes its clique enumeration and that invites the reasonable question of
+whether a longer search would find a better bound. **It would not.** MMD+ already
+dominates the *true maximum clique*, not merely the largest one found within the
+budget, so an exact maximum-clique solver given unlimited time could not
+contribute a single unit. Nothing is being traded away for speed.
+
+*(measured)* Across all 900 sampled instances:
+
+| | count |
+|---|---|
+| clique strictly better than MMD+ | **0** |
+| equal | 359 |
+| MMD+ strictly better | 541 |
+
+The time-box is not what limits it either: clique enumeration takes a median of
+0.1 ms and a maximum of 4 ms against a 5 s budget, so the cutoff has never fired
+on a benchmark instance.
+
+The clique bound is nevertheless retained, and not as a contributor — it has
+never supplied a value MMD+ did not. It is kept because it is the only one of the
+two provable directly, without the `MOSP = pathwidth + 1` equality this project
+has reason to treat carefully (§5, §8). If that equality were ever found wanting,
+the clique bound still stands and the solver remains sound. It costs 0.1 ms.
 
 ---
 
