@@ -788,8 +788,6 @@ cd lean && lake build
 - **The binary search discards learning between k values**, re-encoding and
   re-solving from scratch at each step. Incremental SAT with assumptions would
   carry learned clauses across the search.
-- **There is no `LICENSE` file**, although this README states MIT and the Lean
-  sources carry Apache 2.0 headers.
 
 ## References
 
@@ -803,4 +801,7 @@ cd lean && lake build
 
 ## License
 
-MIT
+MIT, for everything here including the Lean development — see
+[`LICENSE`](LICENSE). Note that Mathlib requires Apache 2.0 on contributions, so
+the three files under `lean/MOSPFormalization/ForMathlib/` would need that header
+restored before being offered upstream.

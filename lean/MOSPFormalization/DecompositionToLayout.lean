@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2024 MOSP Formalization Project. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Released under the MIT license as described in the file LICENSE.
 
 # Path Decomposition to Layout (VS ≤ PW direction)
 
