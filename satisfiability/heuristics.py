@@ -107,6 +107,141 @@ def least_cost_node(instance: MOSPInstance, **_: object) -> UpperBound:
     return max_open_stacks(instance, produced), produced
 
 
+def product_order_from_customers(
+    instance: MOSPInstance, customer_order: Sequence[int]
+) -> list[int]:
+    """Build a production sequence from a customer closing order.
+
+    Chu & Stuckey (2009), §2: schedule every product needed by the first
+    customer, then those still needed by the second, and so on. Their result is
+    that this loses nothing — for any product ordering there is a customer order
+    whose construction is at least as good — so a search over customer orders
+    covers an optimum.
+
+    That claim was checked here against exhaustive search on 118 random
+    instances, with no loss. What could *not* be reconstructed is a closed-form
+    cost in customer-order terms; four attempts each failed (see
+    `reports/chu_stuckey_transferable.md` §2.1). A local search does not need
+    one: it builds the sequence and counts, which is exactly what this does.
+    """
+    produced: list[int] = []
+    seen: set[int] = set()
+    for customer in customer_order:
+        for pattern in sorted(instance.customer_patterns(customer)):
+            if pattern not in seen:
+                produced.append(pattern)
+                seen.add(pattern)
+    for pattern in range(instance.n_patterns):
+        if pattern not in seen:
+            produced.append(pattern)
+    return produced
+
+
+def customer_tabu(
+    instance: MOSPInstance,
+    seed: int = 42,
+    max_iterations: int = 500,
+    tabu_tenure: int = 7,
+    n_neighbors: int = 200,
+    **_: object,
+) -> UpperBound:
+    """Tabu search over *customer closing orders* rather than product orders.
+
+    The existing `tabu` strategy permutes products directly, which knows nothing
+    about the problem: most of the orderings it moves between differ only in the
+    arrangement of products inside one customer's block and score identically,
+    so its neighbourhood is largely wasted.
+
+    Searching customer orders instead moves through a space that provably
+    contains an optimum and in which every move changes the objective for a
+    reason. Each candidate is scored by constructing its production sequence and
+    counting open stacks, so no closed-form cost is needed.
+    """
+    import random
+
+    n_customers = instance.n_customers
+    active = [c for c in range(n_customers) if instance.customer_patterns(c)]
+    if not active or instance.n_patterns == 0:
+        order = list(range(instance.n_patterns))
+        return max_open_stacks(instance, order), order
+
+    def evaluate(customer_order: Sequence[int]) -> int:
+        return max_open_stacks(
+            instance, product_order_from_customers(instance, customer_order))
+
+    # Seed from MCN's closing order, which is already a good construction, and
+    # fall back on random restarts if it is not.
+    rng = random.Random(seed)
+    best_order = _mcn_customer_order(instance)
+    best_value = evaluate(best_order)
+
+    for _ in range(3):
+        candidate = list(active)
+        rng.shuffle(candidate)
+        value = evaluate(candidate)
+        if value < best_value:
+            best_value, best_order = value, candidate
+
+    current, current_value = list(best_order), best_value
+    tabu: dict[int, int] = {}
+    size = len(current)
+
+    for iteration in range(max_iterations):
+        move = None
+        move_value = None
+        for _ in range(min(n_neighbors, size * size)):
+            i, j = rng.randrange(size), rng.randrange(size)
+            if i == j:
+                continue
+            trial = list(current)
+            trial[i], trial[j] = trial[j], trial[i]
+            value = evaluate(trial)
+            blocked = tabu.get(i, 0) > iteration or tabu.get(j, 0) > iteration
+            # Aspiration: a tabu move that beats the incumbent is taken anyway.
+            if blocked and value >= best_value:
+                continue
+            if move_value is None or value < move_value:
+                move, move_value = (i, j), value
+
+        if move is None:
+            break
+
+        i, j = move
+        current[i], current[j] = current[j], current[i]
+        current_value = move_value
+        tabu[i] = iteration + tabu_tenure
+        tabu[j] = iteration + tabu_tenure
+
+        if current_value < best_value:
+            best_value, best_order = current_value, list(current)
+
+    return best_value, product_order_from_customers(instance, best_order)
+
+
+def _mcn_customer_order(instance: MOSPInstance) -> list[int]:
+    """The closing order implied by least cost node (minimum remaining degree)."""
+    n_customers = instance.n_customers
+    customer_patterns = [set(instance.customer_patterns(c)) for c in range(n_customers)]
+    remaining = {c for c in range(n_customers) if customer_patterns[c]}
+
+    neighbours: list[set[int]] = [set() for _ in range(n_customers)]
+    for pattern in range(instance.n_patterns):
+        holders = set(instance.pattern_customers(pattern))
+        for customer in holders:
+            neighbours[customer] |= holders
+    for customer in range(n_customers):
+        neighbours[customer].discard(customer)
+
+    order: list[int] = []
+    while remaining:
+        chosen = min(remaining,
+                     key=lambda c: (len(neighbours[c] & remaining),
+                                    len(customer_patterns[c]), c))
+        order.append(chosen)
+        remaining.remove(chosen)
+    return order
+
+
 def tabu(instance: MOSPInstance, seed: int = 42, **_: object) -> UpperBound:
     """Random restarts improved by swap-move tabu search."""
     from satisfiability.mosp_solver import _tabu_search, _random_restarts
@@ -140,6 +275,7 @@ STRATEGIES: dict[str, Strategy] = {
     "tabu": tabu,
     "mcn": least_cost_node,
     "mcn+tabu": mcn_then_tabu,
+    "customer-tabu": customer_tabu,
 }
 
 DEFAULT_STRATEGY = "mcn+tabu"

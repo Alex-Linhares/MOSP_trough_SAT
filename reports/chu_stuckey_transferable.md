@@ -160,11 +160,40 @@ the lower bounds report already flags as blocking any novelty claim.
 
 ---
 
+## 4a. Where the reduction did land: local search
+
+The obstacle in §2.1 is specific to the SAT encoding, which needs a *closed-form*
+cost in customer-order terms. A local search needs no such thing — it only needs
+to score a candidate, and the construction itself does that: build the production
+sequence from the customer order and count open stacks. The formula that could
+not be reconstructed is simply not required.
+
+`satisfiability/heuristics.py::customer_tabu` searches customer closing orders on
+that basis. *(measured)*
+
+| | tabu | mcn+tabu | **customer-tabu** | MCNh | HBF2r | optimum |
+|---|---|---|---|---|---|---|
+| SP2 | 22 | 21 | **21** | 23 | 19 | 19 |
+| SP3 | 42 | 39 | **37** | 37 | 35 | 34 |
+| SP4 | 63 | 62 | **59** | 57 | 53 | 53 |
+
+Better than anything previously implemented here on SP3 and SP4, and the first
+time one of our heuristics has equalled a published one — MCNh's 37 on SP3.
+
+The reason is the one §1 gives. Permuting products moves mostly between orderings
+that differ only inside a single customer's block and score identically, so the
+neighbourhood is largely wasted; every move in customer-order space changes the
+objective for a reason. The same structural insight that a position-indexed CNF
+cannot express turns out to be straightforward to exploit in a search that
+evaluates candidates directly.
+
 ## 5. What to do
 
-1. **Implement §2's canonical form as symmetry breaking**, validated against
-   exhaustive search before being enabled by default. It is the only item here
-   that is both transferable and plausibly large.
+1. ~~Implement §2's canonical form as symmetry breaking~~ — attempted and
+   abandoned for the SAT encoding (§2.1), but the same reduction drives
+   `customer-tabu` (§4a), where no closed-form cost is needed. Returning to the
+   encoding would need their "playable" semantics derived properly, not
+   reconstructed.
 2. **Do not attempt Theorems 1–3 as clauses.** They are search-state dominance;
    encoding them is what went wrong last time, in a milder form.
 3. **Chase Becceneri, Yanasse & Soma (2004)** for Lemma 1's proof. It would give
