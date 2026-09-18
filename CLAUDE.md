@@ -166,6 +166,7 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     solver.py                       Pathwidth solver: preprocessing, iterative deepening, CaDiCaL
     mosp_encoding.py                Direct MOSP-to-SAT CNF encoding (no pathwidth reduction)
     mosp_solver.py                  Direct MOSP solver: bounds, iterative deepening, solution caching
+    heuristics.py                   Upper bound strategies behind one signature
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)
     customer_graph.py               Build customer graph via M @ M^T overlap
@@ -179,6 +180,8 @@ mosp/                           → Agreement graph approach (patterns as vertic
     reduction.py                    Formal reduction: MOSP ↔ pathwidth
     solver.py                       End-to-end pipeline: parse → graph → pathwidth → ordering
     verify.py                       Simulate production sequence to count open stacks
+    certify.py                      Independent verification of a witness ordering
+    preprocess.py                   Pattern dominance, decomposition, edge contraction
 
 fixed_parameter_algorithm/      → Pathwidth solvers (exact DP and branch-and-bound)
     pathwidth.py                    Exact DP over vertex subsets (n ≤ 18)
@@ -194,6 +197,8 @@ benchmarks/
     ratchet.py                      Descending satisfiable-call search
     overnight.py                    Escalating-budget driver for unattended runs
     solver_portfolio.py             Times every pysat backend on the hard calls
+    portfolio.py                    Races several backends on one decision call
+    reheuristic.py                  Re-runs an upper bound strategy over solved instances
     dedupe.py                       Shares solutions between identical instances
 
 lean/
@@ -214,7 +219,7 @@ lean/
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
-tests/                          → 320 tests across 17 test modules
+tests/                          → 399 tests across 18 test modules
 literature/                     → Reference papers (PDFs)
 ```
 
@@ -373,14 +378,40 @@ python -m benchmarks.solve_all --timeout 120
 
 ## Next Steps
 
-**Primary:**
-- Validate direct SAT results against all published optimal values (Frinhani et al. 2018, Chu & Stuckey 2009) — GP1-4 validated, GP5-8 and SP instances need testing
-- Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`
-- Batch solver script for direct MOSP-to-SAT (analogous to `solve_all_sat.py`)
+Sequenced by `reports/chu_stuckey_plan.md` §7, which supersedes the earlier list
+here. Items 1, 3 and 6 are done (2026-09-18).
 
-**Secondary:**
-- Incremental SAT (assumption literals) to avoid rebuilding the formula for each k value
-- Better greedy upper bounds (random restarts, local search) to improve iterative deepening
-- Clause reduction: avoid O(|P_c|²) pair-wise clauses for customers with many patterns (use auxiliary variables to encode "exists placed" and "exists not placed")
-- Integration with SageMath's pathwidth solvers as a reference oracle
-- The existing pathwidth solvers and FPT theory remain valuable for theoretical interest and as bounds
+**Done, with reports:**
+- **Item 1**, `ub_MOSP` restricted DFS — `satisfiability/heuristics.py`, strategy
+  `cs-dfs`. Improved 25 of the 148 unproven instances in 3 seconds, on top of
+  what two hours of seeded tabu had already taken. `reports/ub_mosp_search.md`.
+- **Item 3**, contract + column dedupe, with the formula shrink measured. The
+  finding is that item 5 does **not** need item 4 first, and that item 4's
+  remaining argument is weaker than it looked.
+  `reports/preprocessing_measurements.md`.
+- **Item 6**, component decomposition and pattern dominance —
+  `mosp/preprocess.py`, applied on every SAT call through
+  `satisfiability.mosp_solver.decide_mosp`.
+
+**Next, in order:**
+- **Item 2**: the dominance rules of Chu & Stuckey §4 *inside* `cs-dfs` — subset
+  filter on candidates, "better move" as a forced branch, "old move" as
+  memoisation over `Q(S)`. They report 1-2 orders of magnitude each. Do not
+  build a nogood table; CDCL already gives that.
+- **Item 5**: the relaxation driver. Contract until the instance is small enough
+  to solve outright, then unmerge; its optimum is a certified lower bound. This
+  is the only tool on offer for the lower bounds, which is where the gap lives
+  (mean 18.3 stacks across the 144 unproven Random instances).
+- **Item 7**: the end-to-end certificate chain — contraction sequence, DRAT
+  refutation on the contracted instance, witness ordering. This is the
+  publishable claim.
+- **Item 4** (customer-order encoding) is no longer a prerequisite for item 5.
+  Keep the kill criterion: within 2× of the current encoding on the certified
+  corpus, or abandon.
+
+**Unrelated to the plan:**
+- Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
+- Becceneri, Yanasse & Soma (2004) is still missing and still blocking: it
+  carries Lemma 1's proof and would settle whether the contraction degeneracy
+  bound is already the arc contraction bound of Yanasse et al. (1999). See
+  `literature/MISSING.md`.
