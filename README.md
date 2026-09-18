@@ -518,7 +518,7 @@ fixed_parameter_algorithm/      -> Pathwidth solvers (used as subroutines)
 
 benchmarks/
     csearch.py                      Parallel descent with the customer search
-    marathon.py                     Escalating budgets for long unattended runs
+    marathon.py                     Deadline-sized budgets for long unattended runs
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus
     solve_parallel.py               Parallel solving: across instances, and across k
@@ -611,8 +611,8 @@ python -m benchmarks.reheuristic --unproven --strategy cs-dfs --workers 16
 # Escalating budgets against whatever is still open (SAT path)
 python -m benchmarks.overnight --rounds 3600,12000 --workers 30
 
-# The same idea for the customer search, deadline-aware: rounds escalate, each
-# re-reads what is still open, and budgets shrink to fit the time left
+# The customer search under a wall-clock deadline: one round, sized so that
+# ceil(instances / workers) waves fill exactly the time given
 python -m benchmarks.marathon --days 5 --workers 25
 ```
 

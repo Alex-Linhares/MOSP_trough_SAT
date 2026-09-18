@@ -1,16 +1,28 @@
-"""Escalating-budget customer search against whatever is still unproven.
+"""Deadline-aware customer search against whatever is still unproven.
 
-`benchmarks/csearch.py` runs one budget over one set of instances. A long
-unattended run wants something else: most of what survives a short budget falls
-to a medium one, and spending the whole night on the first instance in the list
-is how a budget gets wasted. So rounds escalate, and each round re-reads what is
-still open -- anything closed in an earlier round drops out by itself, because
-the solution cache is the state.
+Wraps `benchmarks/csearch.py` with one thing it lacks: a wall-clock deadline.
+Given "five days and 25 workers" it works out the per-instance budget that fills
+exactly that -- `ceil(instances / workers)` waves at the budget -- and runs it.
 
-The deadline is honoured rather than hoped for. Before each round the driver
-works out how long that round can take -- `ceil(instances / workers)` waves of
-the per-instance budget -- and shrinks the budget to fit the time left instead of
-overrunning. A round with no time for even one wave is skipped.
+**One round by default, and the reason is worth stating, because escalating
+rounds look attractive and are usually wrong here.** A round that ends without
+closing an instance kills its search. The upper bound survives, since the
+solution cache holds it, but the search state does not, and for these instances
+nearly all the time goes into a single refutation at a fixed `k` behind a memo
+of millions of states. That memo is what makes a refutation land at all: on SP3,
+without it the search burns 12M nodes and never returns, with it 3.9M nodes and
+134 seconds. Restarting rebuilds it from nothing, so every round after the first
+pays again for what the last one already knew.
+
+The usual argument for escalating -- close the easy instances early and the
+survivors get bigger budgets -- does not need rounds at all. The pool already
+does it: when an instance closes, its slot immediately starts a waiting one,
+which then gets the full remaining budget. The adaptivity is free.
+
+Several rounds are still available through `--rounds`, for the case where
+restarts are genuinely cheap: an instance whose descent is still improving its
+*upper* bound loses little by starting again from the better bound. Nothing in
+this corpus has looked like that, so it is not the default.
 
 Usage:
     python -m benchmarks.marathon --days 5 --workers 25
@@ -27,10 +39,8 @@ from satisfiability.mosp_solver import SOLUTIONS_DIR
 
 DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
 
-# Per-instance budgets, in seconds. Each round is a fresh descent from whatever
-# upper bound the last one left behind, so the work is not repeated: a descent
-# that timed out still ratcheted its bound down, and the next round starts there.
-DEFAULT_ROUNDS = (6 * 3600, 18 * 3600, 48 * 3600, 96 * 3600)
+# One round, sized from the deadline. `None` means "whatever fills the time".
+DEFAULT_ROUNDS = (None,)
 
 # Below this a round is not worth starting: the search spends the first seconds
 # on bounds and heuristics before its first decision call.
@@ -58,6 +68,10 @@ def marathon(
             break
 
         waves = math.ceil(len(targets) / workers)
+        if budget is None and deadline is None:
+            raise ValueError("a round needs either a budget or a deadline")
+        if budget is None:
+            budget = float("inf")   # the deadline below decides it
         if deadline is not None:
             left = deadline - time.time()
             if left <= 0:
@@ -111,8 +125,9 @@ def main() -> None:
     started = time.time()
     deadline = started + args.days * 86400
 
+    shown = [("deadline-sized" if r is None else f"{r / 3600:.1f}h") for r in rounds]
     print(f"marathon: {args.days} days, {args.workers} workers, "
-          f"rounds {[round(r / 3600, 1) for r in rounds]}h", flush=True)
+          f"rounds {shown}", flush=True)
     print(f"deadline {time.strftime('%Y-%m-%d %H:%M', time.localtime(deadline))}",
           flush=True)
 

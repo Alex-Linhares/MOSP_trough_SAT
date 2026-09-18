@@ -89,3 +89,31 @@ def test_it_stops_when_the_deadline_has_already_passed(monkeypatch):
     marathon(rounds=(60,), workers=25, deadline=time.time() - 1, verbose=False)
 
     assert record == []
+
+
+def test_the_default_is_a_single_deadline_sized_round(monkeypatch):
+    """Escalating rounds throw away the memo that makes a refutation land, so
+    the default runs once and fills the whole deadline."""
+    record = []
+    clock = {"now": 1_000_000.0}
+    _stub(monkeypatch, [36, 36], record, clock)
+
+    start = clock["now"]
+    marathon(workers=25, deadline=start + 120 * 3600, verbose=False)
+
+    assert len(record) == 1, "the default must not restart instances"
+    instances, budget, workers = record[0]
+    # 36 instances over 25 workers is two waves, so each gets about half the run.
+    assert 55 * 3600 < budget < 60 * 3600, budget
+    assert clock["now"] <= start + 120 * 3600 + 1
+
+
+def test_a_budget_of_none_is_sized_from_the_deadline(monkeypatch):
+    record = []
+    clock = {"now": 0.0}
+    _stub(monkeypatch, [25], record, clock)
+
+    marathon(rounds=(None,), workers=25, deadline=10 * 3600, verbose=False)
+
+    assert len(record) == 1
+    assert 9 * 3600 < record[0][1] <= 10 * 3600
