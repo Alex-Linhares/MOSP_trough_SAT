@@ -9,8 +9,8 @@ and the pathwidth theory the project started from is partly formalized.
 
 **6,340 of 6,376 cached solutions are certified optimal — 99.44% of the
 corpus**, each with a witness ordering in `solutions/` that can be checked
-without trusting this code, for **588 core-hours (24.5 core-days)** of recorded
-solver time. What remains open is 35 instances (0.56%): 34 sparse Chu & Stuckey
+without trusting this code, for **about a day of solving on 25 cores** (588
+core-hours). What remains open is 35 instances (0.56%): 34 sparse Chu & Stuckey
 `Random` instances and SP4. Every file records how its value was established, so
 proofs and good guesses are never added together.
 
@@ -411,18 +411,22 @@ across every instance and every pass.
 
 ### What it cost
 
-**588 core-hours — 24.5 core-days** of recorded solver time, totalled from the
-result CSVs and the ledger the parallel drivers append to:
+**About a day on 25 cores** — 588 core-hours, 24.5 core-days of recorded solver
+time, totalled from the result CSVs and the ledger the parallel drivers append
+to:
 
 ```bash
 python -m benchmarks.compute          # the breakdown
 python -m benchmarks.compute --quote  # the line quoted here
 ```
 
-Quote core-hours, not wall clock: the same work is 23.5 hours at 25 workers and
-a week on one core, so wall clock describes the machine rather than the problem.
-The figure counts only instances a run wrote a row for, so it is a lower bound
-on compute spent — the right direction for a cost figure to err in.
+Quote it in that order and never the days alone: "about a day" is what a reader
+wants, and is meaningless without the core count beside it, since the same work
+is a day on 25 cores and 24.5 days on one. The core-hours are the invariant, and
+the figure to compare between runs.
+
+It counts only instances a run wrote a row for, so it is a lower bound on
+compute spent — the right direction for a cost figure to err in.
 
 Where it went is the more interesting part. The largest single line is 223
 core-hours on one overnight SAT round; the customer search closed 111 instances
@@ -573,7 +577,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          441 tests across 23 test modules
+tests/                          442 tests across 23 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima

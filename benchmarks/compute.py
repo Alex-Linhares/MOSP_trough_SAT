@@ -10,10 +10,13 @@ by hand:
 - **the ledger**, `benchmarks/results/compute_ledger.csv`, which the parallel
   drivers append to as they finish, one row per instance.
 
-Both measure the same thing: seconds of one core working on one instance. The
-sum is **core-hours**, which is what to quote -- wall clock says more about how
-many workers were free than about the problem, and the two differ by a factor of
-25 or 30 here.
+Both measure the same thing: seconds of one core working on one instance.
+
+Quote it in two parts, in this order: **roughly how many days it takes, with the
+core count in brackets**, then the core-hours. The first is what a reader wants
+-- it answers "how long would this take me" -- and is meaningless without the
+cores beside it, since the same work is a day on 25 cores and a month on one.
+The second is the invariant, and the one that can be compared between runs.
 
 What it does not count: time spent on instances that were abandoned without a
 row being written, the Lean build, and any run whose log was never parsed into
@@ -93,24 +96,34 @@ def main() -> None:
     parser.add_argument("--results-dir", type=Path, default=RESULTS_DIR)
     parser.add_argument("--quote", action="store_true",
                         help="print only the sentence the documents quote")
+    parser.add_argument("--cores", type=int, default=25,
+                        help="cores to express the wall-clock estimate against")
     args = parser.parse_args()
 
     rows = totals(args.results_dir)
     core_hours = sum(r[1] for r in rows)
 
+    days = core_hours / args.cores / 24
+    cores = f"{args.cores} core" + ("s" if args.cores != 1 else "")
+    rough = (f"{days:.1f} days" if days >= 1.5
+             else "about a day" if days >= 0.7
+             else f"about {days * 24:.0f} hours")
+
     if args.quote:
-        print(f"{core_hours:.0f} core-hours ({core_hours / 24:.1f} core-days) "
-              f"of recorded solver time, as of "
-              f"{time.strftime('%Y-%m-%d')}")
+        print(f"{rough} on {cores} "
+              f"({core_hours:.0f} core-hours, {core_hours / 24:.1f} core-days) "
+              f"of recorded solver time, as of {time.strftime('%Y-%m-%d')}")
         return
 
     print(f"{'core-hours':>12s} {'rows':>8s}  source")
     for name, hours, count in rows:
         print(f"{hours:12.1f} {count:8d}  {name}")
     print(f"{core_hours:12.1f} {sum(r[2] for r in rows):8d}  TOTAL")
-    print(f"\n{core_hours / 24:.1f} core-days. At 25 workers that is "
-          f"{core_hours / 25:.1f} hours of wall clock; the two are not the same "
-          f"number and the core-hours figure is the one to quote.")
+    print(f"\n{rough} on {cores} "
+          f"({core_hours:.0f} core-hours, {core_hours / 24:.1f} core-days).")
+    print("Quote the days with the core count beside them, then the core-hours: "
+          "the first says how long it takes, the second is what compares "
+          "between runs.")
 
 
 if __name__ == "__main__":

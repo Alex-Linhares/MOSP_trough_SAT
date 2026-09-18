@@ -174,12 +174,17 @@ themselves rather than reconstructed:
 | `certified:bound` | 2 |
 | `solution` (optimality open) | 36 |
 
-**Compute cost: 588 core-hours (24.5 core-days)**, from `python -m
+**Compute cost: about a day on 25 cores (588 core-hours)**, from `python -m
 benchmarks.compute`, which totals the result CSVs and the ledger `csearch` and
-`reheuristic` append to. Quote core-hours rather than wall clock, and never
-maintain the number by hand -- it is regenerated, because several hand-carried
-figures in these documents drifted before this existed. It counts only runs that
-wrote a row, so it is a lower bound.
+`reheuristic` append to.
+
+Quote it in that order -- rough days with the core count beside them, then
+core-hours. The days are what a reader wants and are meaningless without the
+cores, since the same work is a day on 25 cores and 24.5 days on one; the
+core-hours are the invariant that compares between runs. Never maintain the
+number by hand: it is regenerated, because several hand-carried figures in these
+documents drifted before this existed. It counts only runs that wrote a row, so
+it is a lower bound.
 
 *(Updated 2026-09-18 after the customer-search sweep closed 111 of the 147 then
 open: `reports/customer_search.md`. Every one of the 111 was re-verified by an

@@ -55,3 +55,27 @@ def test_unreadable_and_timeless_files_are_skipped(tmp_path):
     rows = totals(tmp_path)
     assert [name for name, _, _ in rows] == ["compute_ledger.csv"]
     assert rows[0][1] == 1.0
+
+
+def test_the_quoted_line_leads_with_days_and_names_the_cores(tmp_path, capsys,
+                                                             monkeypatch):
+    """The figure is quoted days-first with the core count beside it: days alone
+    are meaningless, since the same work is a day on 25 cores and 24.5 on one."""
+    import benchmarks.compute as compute
+
+    record("csearch", [("a", 25 * 24 * 3600.0)], ledger=tmp_path / "compute_ledger.csv")
+    monkeypatch.setattr("sys.argv",
+                        ["compute", "--quote", "--results-dir", str(tmp_path)])
+    compute.main()
+    line = capsys.readouterr().out
+
+    assert line.index("day") < line.index("core-hours"), "days must come first"
+    assert "25 cores" in line
+
+    monkeypatch.setattr("sys.argv",
+                        ["compute", "--quote", "--cores", "1",
+                         "--results-dir", str(tmp_path)])
+    compute.main()
+    single = capsys.readouterr().out
+    assert "1 core " in single and "1 cores" not in single
+    assert "25.0 days" in single
