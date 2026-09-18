@@ -37,6 +37,9 @@ from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
 from satisfiability.mosp_encoding import encode_mosp_decision, extract_ordering
 from satisfiability.mosp_solver import (
+    PROVENANCE_BOUND,
+    PROVENANCE_REFUTATION,
+    PROVENANCE_SOLUTION,
     SAT_BACKEND,
     SOLUTIONS_DIR,
     _lower_bound,
@@ -155,8 +158,10 @@ def ratchet(
             return None, None, False
         best_ordering = found
 
-    _save_solution(instance, max_open_stacks(instance, best_ordering),
-                   best_ordering, solutions_dir)
+    opening = max_open_stacks(instance, best_ordering)
+    _save_solution(instance, opening, best_ordering, solutions_dir,
+                   provenance=(PROVENANCE_BOUND if opening <= lower
+                               else PROVENANCE_SOLUTION))
 
     while best > lower:
         if deadline and time.time() > deadline:
@@ -172,6 +177,8 @@ def ratchet(
 
         if status == "unsat":
             # A refutation, which also proves the current best is optimal.
+            _save_solution(instance, best, best_ordering, solutions_dir,
+                           provenance=PROVENANCE_REFUTATION)
             if verbose:
                 print(f"  k={target}: UNSAT in {elapsed:.0f}s — {best} is optimal",
                       flush=True)
@@ -188,7 +195,9 @@ def ratchet(
 
         actual = max_open_stacks(instance, found)
         best, best_ordering = min(actual, target), found
-        _save_solution(instance, best, best_ordering, solutions_dir)
+        _save_solution(instance, best, best_ordering, solutions_dir,
+                       provenance=(PROVENANCE_BOUND if best <= lower
+                                   else PROVENANCE_SOLUTION))
         if verbose:
             print(f"  k={target}: SAT in {elapsed:.0f}s -> best={best}", flush=True)
 

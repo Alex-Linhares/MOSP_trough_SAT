@@ -133,25 +133,27 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-17 with 6,263 cached solutions:
+Measured on 2026-09-18 with 6,380 cached solutions, now read from the files
+themselves rather than reconstructed:
 
-| | count |
+| provenance | count |
 |---|---|
-| certified via binary search | 6,226 |
-| proven by a tight lower bound | 2 (GP8, both copies) |
-| **optimality unproven** | **31** |
+| `certified:refutation` | 6,226 |
+| `certified:bound` | 2 |
+| `solution` (optimality open) | 152 |
 
 (Four further files are orphans — `GP1.json` through `GP4.json`, written by
 `validate_published_optima.py` under a bare naming convention that
 `from_benchmark_file` does not produce, and matching no enumerated instance.)
 
-### Outstanding: add a provenance field
+### The provenance field — done
 
-`_save_solution` in `satisfiability/mosp_solver.py` should record how each value
-was established — certified by refutation, certified by bound, or unproven — so
-the split stops depending on reconstruction from CSVs. **Do not change the file
-format while a run is writing to `solutions/`.** Both the sweep runners and the
-ratchet write there concurrently; wait for the machine to be idle.
+`_save_solution` records a `provenance` field: `certified:refutation`,
+`certified:bound`, or `solution`. Existing files were backfilled using the two
+recovery rules above. Saves are monotone in the value and never demote a
+certified value to a bare solution, which matters because the ratchet re-derives
+values earlier runs had proved — without that guard a night of re-solving would
+quietly downgrade proofs to guesses.
 
 This matters beyond bookkeeping: the corpus is intended as a published artifact,
 and an artifact that cannot distinguish a proof from a good guess is a liability.

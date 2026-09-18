@@ -258,9 +258,14 @@ a solution of known value without proving it optimal. That distinction matters
 and the corpus is now mixed:
 
 - a **certified optimum** means satisfiable at `k` with a witness *and*
-  unsatisfiable at `k-1`, or satisfiable at `k` where the lower bound already
-  equals `k`;
-- a **best known solution** means a witness of value `k` and nothing more.
+  unsatisfiable at `k-1` (`provenance: certified:refutation`), or satisfiable at
+  `k` where the lower bound already equals `k` (`certified:bound`);
+- a **best known solution** means a witness of value `k` and nothing more
+  (`provenance: solution`).
+
+Every file in `solutions/` records which it is. As of 2026-09-18, across 6,380
+cached solutions: **6,226 certified by refutation, 2 by a tight bound, and 152
+best known solutions** whose optimality is open.
 
 Both are equally checkable as upper bounds — the witness verifies either way —
 but only the first is an optimality claim.
@@ -564,13 +569,6 @@ cd lean && lake build
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
 - **The contraction degeneracy bound is validated, not proved.** It rests on `MOSP = pathwidth + 1`, so a bound that were too high would make the search start above the true optimum and return a wrong answer that still passes witness verification. It is checked against all 6,226 known optima (zero violations) and re-checked by `tests/test_lower_bounds.py`, but that is evidence rather than proof.
 - **The arc contraction bound of Yanasse, Becceneri & Soma (1999) is unobtained**, and may be the same bound as contraction degeneracy. *Pesquisa Operacional* is digitised only from 2001, so it is not the easy download it appears to be. No novelty should be claimed until this is settled.
-- **Cached solutions record no provenance.** A file in `solutions/` gives the
-  value and the ordering, but nothing saying whether optimality was certified or
-  the value is merely the best found. Since the corpus now contains both, the
-  split cannot be recovered from the files — only inferred where the value
-  happens to equal its lower bound. A field recording how each value was
-  established would fix this, and should be added before the corpus is published
-  as an artifact.
 - **No preprocessing.** Six operations are on record in Yanasse & Senne (2010); none are implemented on the SAT path. Two of them were measured as nearly useless on the Chu & Stuckey instances; the other four are untested here.
 - **The binary search discards learning between k values**, re-encoding and re-solving from scratch at each step. Incremental SAT with assumptions would carry learned clauses across the search.
 - **`matplotlib` is listed as a dependency but imported nowhere** in the codebase.

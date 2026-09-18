@@ -278,11 +278,21 @@ def _solution_path(instance: MOSPInstance, solutions_dir: Path) -> Path:
     return solutions_dir / f"{safe_name}.json"
 
 
+# How a cached value was established. A corpus that cannot tell a proof from a
+# good guess is a liability, and both kinds are now present.
+PROVENANCE_REFUTATION = "certified:refutation"  # SAT at k, UNSAT at k-1
+PROVENANCE_BOUND = "certified:bound"            # SAT at k, and lower bound = k
+PROVENANCE_SOLUTION = "solution"                # witness only; optimality open
+
+CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND})
+
+
 def _save_solution(
     instance: MOSPInstance,
     val: int,
     ordering: list[int],
     solutions_dir: Path,
+    provenance: str = PROVENANCE_SOLUTION,
 ) -> Path:
     """Save a solution, refusing to replace a better one already on disk.
 
@@ -298,8 +308,15 @@ def _save_solution(
     if path.exists():
         try:
             existing = json.loads(path.read_text())
-            if existing.get("mosp_value") is not None and existing["mosp_value"] < val:
-                return path
+            if existing.get("mosp_value") is not None:
+                if existing["mosp_value"] < val:
+                    return path
+                # An equal value that is already certified must not be demoted
+                # to a bare solution by a later run that merely re-found it.
+                if (existing["mosp_value"] == val
+                        and existing.get("provenance") in CERTIFIED
+                        and provenance not in CERTIFIED):
+                    return path
         except (json.JSONDecodeError, OSError):
             pass  # unreadable or truncated: overwrite it
 
@@ -309,6 +326,7 @@ def _save_solution(
         "n_patterns": instance.n_patterns,
         "mosp_value": val,
         "ordering": ordering,
+        "provenance": provenance,
     }
     path.write_text(json.dumps(data, indent=2) + "\n")
     return path
@@ -416,9 +434,11 @@ def solve_mosp_sat(
         actual = max_open_stacks(instance, best_sat_ordering)
         val, ordering = actual, best_sat_ordering
 
-    # Save solution
+    # Save solution. The binary search returns only once the interval has
+    # closed, which means k-1 was refuted, so this is a certified optimum.
     if solutions_dir is not None and instance.name:
-        _save_solution(instance, val, ordering, solutions_dir)
+        _save_solution(instance, val, ordering, solutions_dir,
+                       provenance=PROVENANCE_REFUTATION)
 
     return val, ordering
 

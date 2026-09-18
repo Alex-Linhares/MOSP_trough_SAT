@@ -99,3 +99,35 @@ def test_a_mismatched_ordering_is_refused(twin_instances, tmp_path):
 
     assert dedupe(twin_instances, solutions) == []
     assert json.loads((solutions / "twinB.json").read_text())["mosp_value"] == 3
+
+
+def test_provenance_is_recorded(tmp_path):
+    from satisfiability.mosp_solver import (
+        PROVENANCE_REFUTATION, PROVENANCE_SOLUTION)
+
+    inst = MOSPInstance.from_matrix([[1, 1, 0], [0, 1, 1]], name="prov")
+    _save_solution(inst, 2, [0, 1, 2], tmp_path, provenance=PROVENANCE_SOLUTION)
+    assert json.loads((tmp_path / "prov.json").read_text())["provenance"] == \
+        PROVENANCE_SOLUTION
+
+    _save_solution(inst, 2, [0, 1, 2], tmp_path, provenance=PROVENANCE_REFUTATION)
+    assert json.loads((tmp_path / "prov.json").read_text())["provenance"] == \
+        PROVENANCE_REFUTATION
+
+
+def test_a_certified_value_is_not_demoted(tmp_path):
+    """A later run re-finding the same value must not erase the proof.
+
+    The ratchet writes `solution` for any value it has not certified, and it
+    re-derives values that earlier runs proved optimal. Without this, a night of
+    re-solving would quietly downgrade certified optima to best-known guesses.
+    """
+    from satisfiability.mosp_solver import (
+        PROVENANCE_REFUTATION, PROVENANCE_SOLUTION)
+
+    inst = MOSPInstance.from_matrix([[1, 1, 0], [0, 1, 1]], name="keep")
+    _save_solution(inst, 2, [0, 1, 2], tmp_path, provenance=PROVENANCE_REFUTATION)
+    _save_solution(inst, 2, [2, 1, 0], tmp_path, provenance=PROVENANCE_SOLUTION)
+
+    assert json.loads((tmp_path / "keep.json").read_text())["provenance"] == \
+        PROVENANCE_REFUTATION
