@@ -7,11 +7,11 @@ plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
 and the pathwidth theory the project started from is partly formalized.
 
-**6,340 of 6,376 cached solutions are certified optimal**, each with a witness
-ordering in `solutions/` that can be checked without trusting this code. What
-remains open is 35 instances: 34 sparse Chu & Stuckey `Random` instances and
-SP4. Every file records how its value was established, so proofs and good
-guesses are never added together.
+**6,340 of 6,376 cached solutions are certified optimal — 99.44% of the
+corpus**, each with a witness ordering in `solutions/` that can be checked
+without trusting this code. What remains open is 35 instances (0.56%): 34 sparse
+Chu & Stuckey `Random` instances and SP4. Every file records how its value was
+established, so proofs and good guesses are never added together.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some
 subset of products), find a production sequence that minimizes the maximum number
@@ -381,11 +381,12 @@ solver by simulating them with `mosp.verify.max_open_stacks`.
 The full benchmark tree has been swept. Of 6,376 cached solutions — one per
 instance, with no file matching none:
 
-| provenance | count | meaning |
-|---|---|---|
-| `certified:refutation` | 6,338 | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
-| `certified:bound` | 2 | satisfiable at `k`, and the lower bound already equals `k` |
-| `solution` | 36 | a witness of value `k` and nothing more; optimality open |
+| provenance | count | share | meaning |
+|---|---|---|---|
+| `certified:refutation` | 6,338 | 99.40% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
+| `certified:bound` | 2 | 0.03% | satisfiable at `k`, and the lower bound already equals `k` |
+| **certified, either way** | **6,340** | **99.44%** | **an optimality claim** |
+| `solution` | 36 | 0.56% | a witness of value `k` and nothing more; optimality open |
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
@@ -517,6 +518,7 @@ fixed_parameter_algorithm/      -> Pathwidth solvers (used as subroutines)
 
 benchmarks/
     csearch.py                      Parallel descent with the customer search
+    marathon.py                     Escalating budgets for long unattended runs
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus
     solve_parallel.py               Parallel solving: across instances, and across k
@@ -549,7 +551,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          431 tests across 21 test modules
+tests/                          435 tests across 22 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima
@@ -606,8 +608,12 @@ python -m benchmarks.solve_parallel one GP5 --workers 28
 # Improve upper bounds without re-solving anything
 python -m benchmarks.reheuristic --unproven --strategy cs-dfs --workers 16
 
-# Escalating budgets against whatever is still open
+# Escalating budgets against whatever is still open (SAT path)
 python -m benchmarks.overnight --rounds 3600,12000 --workers 30
+
+# The same idea for the customer search, deadline-aware: rounds escalate, each
+# re-reads what is still open, and budgets shrink to fit the time left
+python -m benchmarks.marathon --days 5 --workers 25
 ```
 
 The solution cache is the state, so these need no bookkeeping between runs:
