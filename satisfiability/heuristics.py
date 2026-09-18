@@ -20,6 +20,11 @@ Available strategies:
   close. Yanasse & Senne (2010) describe its solution quality as "the best or
   among the best of the literature".
 - `mcn+tabu` — MCN to construct, tabu to improve. The default.
+- `customer-tabu` — tabu search over customer closing orders rather than
+  product orders.
+- `cs-dfs` — Chu & Stuckey's `ub_MOSP`: depth-first search over customer
+  closing orders, branching only on customers already open.
+- `customer-tabu+cs-dfs` — tabu first, then the DFS pruning against it.
 
 Measured on the SP instances, our tabu search returns 22/42/63 against optima of
 19/34/53, while Frinhani et al. (2018) report HBF2r reaching 19/35/53 in under a
@@ -29,6 +34,7 @@ here.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Callable, Optional
 
 from mosp.instance import MOSPInstance
@@ -242,6 +248,177 @@ def _mcn_customer_order(instance: MOSPInstance) -> list[int]:
     return order
 
 
+def _neighbour_masks(instance: MOSPInstance) -> list[int]:
+    """Self-inclusive customer neighbourhoods of the MOSP graph, as bitmasks.
+
+    `N(c)` in Chu & Stuckey's notation: every customer sharing a product with
+    `c`, including `c` itself. A customer with no products gets an empty mask
+    and never appears in a search state.
+    """
+    masks = [0] * instance.n_customers
+    for pattern in range(instance.n_patterns):
+        holders = sorted(instance.pattern_customers(pattern))
+        mask = 0
+        for customer in holders:
+            mask |= 1 << customer
+        for customer in holders:
+            masks[customer] |= mask
+    return masks
+
+
+def _cs_cost(masks: Sequence[int], order: Sequence[int]) -> int:
+    """Chu & Stuckey's cost of a customer closing order: `max_i |O(S_i) - S_{i-1}|`.
+
+    This is an upper estimate of the value of the product order the closing
+    order builds, not an equality — it over-charges orders that are not
+    realisable as product orders. Measured at 313/400 agreement per order, but
+    400/400 as a minimum over all orders (`reports/chu_stuckey_plan.md` §0.1),
+    which is the property the search below relies on.
+    """
+    opened = closed = peak = 0
+    for customer in order:
+        opened |= masks[customer]
+        peak = max(peak, (opened & ~closed).bit_count())
+        closed |= 1 << customer
+    return peak
+
+
+def restricted_dfs(
+    instance: MOSPInstance,
+    max_nodes: int = 200_000,
+    seed_order: Optional[Sequence[int]] = None,
+    **_: object,
+) -> UpperBound:
+    """Chu & Stuckey's `ub_MOSP` (2009, §3.4): DFS over customer closings,
+    branching only on customers whose stack is already open.
+
+    Their complete search branches on every remaining customer, `for c in R`.
+    The incomplete one branches on `R ∩ O(S)` instead: a customer nobody has
+    opened yet can only add its whole neighbourhood at once, so closing it early
+    is rarely part of a good order, and forbidding it cuts the branching factor
+    to the frontier. The restriction is a heuristic — it can exclude every
+    optimal order — and they report speedups of 104× and 3010× on 100-100-2 and
+    125-125-2 for a bound that is almost always optimal anyway.
+
+    Two consequences of searching in `_cs_cost` space rather than simulating:
+
+    - pruning is monotone. The cost of a prefix never falls as the prefix grows,
+      so a branch whose running peak has already reached the incumbent cannot
+      beat it and is cut. Candidates are expanded cheapest-first, which makes
+      that cut fire on the whole rest of the fan at once.
+    - the number returned is *not* the search's own score. `_cs_cost` can
+      over-charge, so the winning closing order is turned into a product order
+      and simulated, which can only come out lower.
+
+    `seed_order` supplies the incumbent to prune against; without one the MCN
+    closing order is used. Passing `customer_tabu`'s best order composes the two
+    — the DFS then only ever reports something tabu could not find.
+
+    `max_nodes` caps the search. It is anytime: on exhausting the budget it
+    returns the best order found so far, which is never worse than the seed.
+    """
+    n_patterns = instance.n_patterns
+    active = [c for c in range(instance.n_customers) if instance.customer_patterns(c)]
+    if not active or n_patterns == 0:
+        order = list(range(n_patterns))
+        return max_open_stacks(instance, order), order
+
+    masks = _neighbour_masks(instance)
+
+    seed = list(seed_order) if seed_order is not None else _mcn_customer_order(instance)
+    best_order = seed
+    best_cs = _cs_cost(masks, seed)
+
+    remaining_all = 0
+    for customer in active:
+        remaining_all |= 1 << customer
+
+    budget = [max_nodes]
+    path: list[int] = []
+
+    def descend(closed: int, opened: int, remaining: int, peak: int) -> None:
+        nonlocal best_cs, best_order
+
+        if remaining == 0:
+            if peak < best_cs:
+                best_cs, best_order = peak, list(path)
+            return
+
+        # The restriction. At the root, and whenever the frontier runs dry
+        # because the customer graph is disconnected, every remaining customer
+        # is a candidate — some stack has to be opened first.
+        candidates = remaining & opened
+        if candidates == 0:
+            candidates = remaining
+
+        scored: list[tuple[int, int, int, int]] = []
+        bits = candidates
+        while bits:
+            bit = bits & -bits
+            bits ^= bit
+            customer = bit.bit_length() - 1
+            now_open = opened | masks[customer]
+            scored.append(((now_open & ~closed).bit_count(), customer, bit, now_open))
+        scored.sort()
+
+        for cost, customer, bit, now_open in scored:
+            # `peak` is below the incumbent by the caller's own check, so
+            # max(peak, cost) clears it exactly when cost does; and the rest of
+            # the fan costs at least as much.
+            if cost >= best_cs:
+                break
+            if budget[0] <= 0:
+                return
+            budget[0] -= 1
+            path.append(customer)
+            descend(closed | bit, now_open, remaining ^ bit, max(peak, cost))
+            path.pop()
+
+    descend(0, 0, remaining_all, 0)
+
+    ordering = product_order_from_customers(instance, best_order)
+    return max_open_stacks(instance, ordering), ordering
+
+
+def mcn_tabu_then_dfs(
+    instance: MOSPInstance,
+    seed: int = 42,
+    max_nodes: int = 200_000,
+    **kwargs: object,
+) -> UpperBound:
+    """`customer-tabu` to find an incumbent, then the restricted DFS under it.
+
+    The DFS prunes against whatever it starts from, so a good seed is worth more
+    to it than extra nodes: a tabu incumbent that is one stack lower cuts every
+    branch that touches that stack count. The two searches also fail
+    differently — tabu samples a neighbourhood at random, the DFS enumerates a
+    frontier — so what one leaves on the table the other often takes.
+    """
+    tabu_value, tabu_ordering = customer_tabu(instance, seed=seed, **kwargs)
+    order = _customer_order_from_products(instance, tabu_ordering)
+    dfs_value, dfs_ordering = restricted_dfs(
+        instance, max_nodes=max_nodes, seed_order=order)
+    if dfs_value <= tabu_value:
+        return dfs_value, dfs_ordering
+    return tabu_value, tabu_ordering
+
+
+def _customer_order_from_products(
+    instance: MOSPInstance, ordering: Sequence[int]
+) -> list[int]:
+    """The closing order a product sequence induces: customers by last product.
+
+    Inverse in spirit to `product_order_from_customers`, and not an exact
+    inverse — a product order can close two customers at the same step, and the
+    tie is broken by index.
+    """
+    position = {pattern: i for i, pattern in enumerate(ordering)}
+    active = [c for c in range(instance.n_customers) if instance.customer_patterns(c)]
+    return sorted(
+        active,
+        key=lambda c: (max(position[p] for p in instance.customer_patterns(c)), c),
+    )
+
 def tabu(instance: MOSPInstance, seed: int = 42, **_: object) -> UpperBound:
     """Random restarts improved by swap-move tabu search."""
     from satisfiability.mosp_solver import _tabu_search, _random_restarts
@@ -276,6 +453,8 @@ STRATEGIES: dict[str, Strategy] = {
     "mcn": least_cost_node,
     "mcn+tabu": mcn_then_tabu,
     "customer-tabu": customer_tabu,
+    "cs-dfs": restricted_dfs,
+    "customer-tabu+cs-dfs": mcn_tabu_then_dfs,
 }
 
 DEFAULT_STRATEGY = "mcn+tabu"

@@ -151,3 +151,104 @@ def test_customer_tabu_is_a_genuine_upper_bound(seed):
     assert sorted(ordering) == list(range(inst.n_patterns))
     assert value == max_open_stacks(inst, ordering)
     assert value >= _brute_force(inst)
+
+
+def test_cs_cost_matches_its_set_definition():
+    """`max_i |O(S_i) - S_{i-1}|`, computed with sets rather than bitmasks."""
+    from satisfiability.heuristics import _cs_cost, _neighbour_masks
+
+    rng = random.Random(11)
+    for _ in range(60):
+        n_patterns = rng.randint(1, 6)
+        matrix = [[rng.randint(0, 1) for _ in range(n_patterns)]
+                  for _ in range(rng.randint(1, 6))]
+        inst = MOSPInstance.from_matrix(matrix, name="cs")
+        neighbours = [set() for _ in range(inst.n_customers)]
+        for pattern in range(inst.n_patterns):
+            holders = set(inst.pattern_customers(pattern))
+            for customer in holders:
+                neighbours[customer] |= holders
+
+        masks = _neighbour_masks(inst)
+        order = list(range(inst.n_customers))
+        rng.shuffle(order)
+
+        opened, closed, peak = set(), set(), 0
+        for customer in order:
+            opened |= neighbours[customer]
+            peak = max(peak, len(opened - closed))
+            closed.add(customer)
+        assert _cs_cost(masks, order) == peak
+
+
+@pytest.mark.parametrize("seed", range(4))
+def test_restricted_dfs_finds_the_optimum_almost_always(seed):
+    """Chu & Stuckey report `ub_MOSP` finding the optimum nearly always. It is
+    a heuristic — the `R ∩ O(S)` restriction can exclude every optimal order —
+    so this pins the rate rather than demanding exactness."""
+    from satisfiability.heuristics import restricted_dfs
+
+    rng = random.Random(200 + seed)
+    exact = total = 0
+    for _ in range(40):
+        n_patterns = rng.randint(2, 7)
+        matrix = [[1 if rng.random() < rng.choice([0.3, 0.6]) else 0
+                   for _ in range(n_patterns)]
+                  for _ in range(rng.randint(2, 7))]
+        if not any(any(row) for row in matrix):
+            continue
+        inst = MOSPInstance.from_matrix(matrix, name="dfs")
+        value, ordering = restricted_dfs(inst)
+        optimum = _brute_force(inst)
+
+        assert value == max_open_stacks(inst, ordering)
+        assert value >= optimum
+        total += 1
+        exact += value == optimum
+    assert exact >= 0.9 * total, f"only {exact}/{total} optimal"
+
+
+def test_restricted_dfs_never_loses_to_its_seed():
+    """The seed is the incumbent, so the search can only improve on it."""
+    from satisfiability.heuristics import (
+        _cs_cost, _neighbour_masks, restricted_dfs)
+
+    rng = random.Random(12)
+    for _ in range(40):
+        n_patterns = rng.randint(2, 6)
+        matrix = [[rng.randint(0, 1) for _ in range(n_patterns)]
+                  for _ in range(rng.randint(2, 6))]
+        if not any(any(row) for row in matrix):
+            continue
+        inst = MOSPInstance.from_matrix(matrix, name="seeded")
+        active = [c for c in range(inst.n_customers) if inst.customer_patterns(c)]
+        rng.shuffle(active)
+
+        value, _ = restricted_dfs(inst, seed_order=active)
+        assert value <= _cs_cost(_neighbour_masks(inst), active)
+
+
+def test_restricted_dfs_is_anytime():
+    """Out of budget at the first node, it still returns the seed's ordering."""
+    from satisfiability.heuristics import restricted_dfs
+
+    matrix = [[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [1, 0, 0, 1]]
+    inst = MOSPInstance.from_matrix(matrix, name="budget")
+
+    value, ordering = restricted_dfs(inst, max_nodes=0)
+    assert sorted(ordering) == list(range(inst.n_patterns))
+    assert value == max_open_stacks(inst, ordering)
+    assert value >= _brute_force(inst)
+
+
+def test_restricted_dfs_crosses_disconnected_components():
+    """With the frontier empty every remaining customer is a candidate, so a
+    disconnected instance is still ordered rather than abandoned."""
+    from satisfiability.heuristics import restricted_dfs
+
+    matrix = [[1, 1, 0, 0], [0, 0, 1, 1]]
+    inst = MOSPInstance.from_matrix(matrix, name="split")
+
+    value, ordering = restricted_dfs(inst)
+    assert sorted(ordering) == list(range(4))
+    assert value == 1
