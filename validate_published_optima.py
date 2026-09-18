@@ -148,11 +148,16 @@ def main():
             continue
         insts = MOSPInstance.from_benchmark_file(path)
         if insts:
-            inst = insts[0]
-            inst.name = name
-            instances.append(inst)
+            # The short key ("GP1") is carried alongside rather than written
+            # over `inst.name`. Overwriting it made `_save_solution` file the
+            # result under a name `from_benchmark_file` never produces, so the
+            # solution matched no enumerated instance: no sweep could find it,
+            # no later run could upgrade its provenance, and it sat in the
+            # corpus as a permanent uncertified duplicate of an instance that
+            # was in fact certified under its real name.
+            instances.append((name, insts[0]))
 
-    instances.sort(key=lambda inst: (inst.n_patterns, inst.n_customers))
+    instances.sort(key=lambda pair: (pair[1].n_patterns, pair[1].n_customers))
 
     print(f"Loaded {len(instances)} instances")
     print()
@@ -161,11 +166,11 @@ def main():
     passed = 0
     failed = 0
 
-    for i, inst in enumerate(instances, 1):
-        published = PUBLISHED_OPTIMA[inst.name]
+    for i, (name, inst) in enumerate(instances, 1):
+        published = PUBLISHED_OPTIMA[name]
         size_str = f"{inst.n_customers}x{inst.n_patterns}"
 
-        print(f"[{i}/{len(instances)}] {inst.name} ({size_str}), published optimal = {published}")
+        print(f"[{i}/{len(instances)}] {name} ({size_str}), published optimal = {published}")
         sys.stdout.flush()
 
         total_start = time.time()

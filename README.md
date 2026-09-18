@@ -7,7 +7,7 @@ plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
 and the pathwidth theory the project started from is partly formalized.
 
-**6,340 of 6,380 cached solutions are certified optimal**, each with a witness
+**6,340 of 6,376 cached solutions are certified optimal**, each with a witness
 ordering in `solutions/` that can be checked without trusting this code. What
 remains open is 35 instances: 34 sparse Chu & Stuckey `Random` instances and
 SP4. Every file records how its value was established, so proofs and good
@@ -378,25 +378,31 @@ solver by simulating them with `mosp.verify.max_open_stacks`.
 
 ### Corpus
 
-The full benchmark tree has been swept. Of 6,380 cached solutions:
+The full benchmark tree has been swept. Of 6,376 cached solutions — one per
+instance, with no file matching none:
 
 | provenance | count | meaning |
 |---|---|---|
 | `certified:refutation` | 6,338 | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
 | `certified:bound` | 2 | satisfiable at `k`, and the lower bound already equals `k` |
-| `solution` | 40 | a witness of value `k` and nothing more; optimality open |
+| `solution` | 36 | a witness of value `k` and nothing more; optimality open |
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
 bounds — the witness verifies either way — but only the first is an optimality
 claim, and they must not be added together.
 
-The 40 uncertified files are 34 Chu & Stuckey `Random` instances, SP4 (stored
-under two names), and four orphan `GP1.json`–`GP4.json` files written under a
-bare naming convention by `validate_published_optima.py`, duplicating instances
-already certified under their full names. So **35 distinct instances remain
-open**, and they are sparse: densities 2 and 4 account for 24 of the 34 Random
-ones, density 6 for 8, density 8 for 2, and density 10 for none at all.
+The 36 uncertified files are 34 Chu & Stuckey `Random` instances and SP4, stored
+under two names — so **35 distinct instances remain open**, and they are sparse:
+densities 2 and 4 account for 24 of the 34 Random ones, density 6 for 8, density
+8 for 2, and density 10 for none at all.
+
+Four further files used to sit here: `GP1.json`–`GP4.json`, written by
+`validate_published_optima.py` under a name `from_benchmark_file` never
+produces. Matching no enumerated instance, they were invisible to every sweep,
+so no later run could upgrade their provenance, and they read as four open
+problems that were in fact certified twice over under their real names. They are
+deleted and the script no longer creates them.
 
 All 6,376 witnesses re-simulate to their recorded value, with zero disagreements
 across every instance and every pass.

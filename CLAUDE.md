@@ -133,23 +133,32 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-18 with 6,380 cached solutions, now read from the files
+Measured on 2026-09-18 with 6,376 cached solutions, now read from the files
 themselves rather than reconstructed:
 
 | provenance | count |
 |---|---|
 | `certified:refutation` | 6,338 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 40 |
+| `solution` (optimality open) | 36 |
 
 *(Updated 2026-09-18 after the customer-search sweep closed 111 of the 147 then
 open: `reports/customer_search.md`. Every one of the 111 was re-verified by an
 independent refutation, and all 6,376 witnesses re-simulate to their recorded
 value.)*
 
-(Four further files are orphans — `GP1.json` through `GP4.json`, written by
-`validate_published_optima.py` under a bare naming convention that
-`from_benchmark_file` does not produce, and matching no enumerated instance.)
+The 36 open files are 34 Chu & Stuckey `Random` instances plus SP4 under two
+names, so **35 distinct instances**. There is now one file per enumerated
+instance and no file that matches none.
+
+That last property had to be restored. Four orphans — `GP1.json` through
+`GP4.json` — were written by `validate_published_optima.py`, which overwrote
+`inst.name` with the short key before saving, producing a filename
+`from_benchmark_file` never generates. Matching no enumerated instance, they
+were invisible to every sweep, so nothing could ever upgrade their provenance
+and they sat permanently as uncertified duplicates of instances that were in
+fact certified twice over under their real names. The files are deleted and the
+script now carries the short key alongside the instance instead of over it.
 
 ### The provenance field — done
 
