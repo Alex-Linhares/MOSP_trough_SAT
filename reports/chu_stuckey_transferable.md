@@ -57,6 +57,45 @@ i.e. the product at `t` belongs to `P_c` for the `c` with the earliest close at
 or after `t`. Products needed by no still-open customer are forced to positions
 where they complete a closure.
 
+### 2.1 Four failed formalisations *(measured)*
+
+Attempting to build this revealed that the reduction is subtler than the prose
+suggests. Each attempt below was checked against exhaustive search on ~80-120
+small random instances, and each failed:
+
+| formalisation | result |
+|---|---|
+| "every product is required by the next stack to close", read as a property of product orderings | loses the optimum on **35 of 118** |
+| stage-level count: customers touched by `prod(S_k)` but not finished by it | wrong on **20 of 60** |
+| same, counting customers that close at stage `k` | wrong on **19 of 80** |
+| their own cost `\|(O(S) - S) ∪ o(c,S)\|` with `N` self-inclusive | wrong on **21 of 80** |
+
+What *does* verify, on 0 of 118 failures, is the construction itself: take a
+customer order `T`, schedule all of `c_1`'s products, then `c_2`'s remaining
+ones, and so on. Searching over customer orders that way never loses the
+optimum.
+
+The gap between those two facts is the difficulty. The construction orders
+products by *block*, but the customers do not necessarily close in the order `T`
+— a customer can close inside an earlier customer's block. On
+`M = [[1,0],[1,1],[0,1]]` with `T = [c_2, c_1, c_3]`, the construction yields
+`[p_1, p_2]`, in which `c_1` closes first, not `c_2`. Their cost formula charges
+3 for closing `c_2` first, because `N(c_2)` contains all three customers, while
+the ordering actually achieves 2.
+
+The resolution is in their own framing: adjacency in the customer graph forces
+intervals to *overlap*, but two customers both adjacent to `c` need not overlap
+each other. So the cost of closing `c` is not `|N(c)|` but the peak over `c`'s
+interval, which depends on the arrangement. Reconstructing that correctly needs
+their notion of "playable" applied to genuine closing orders, not to the block
+construction.
+
+**Conclusion.** The reduction is real and worth having, but it should be
+implemented from their definitions with their semantics, not reconstructed from
+the prose. Anyone attempting it should validate against exhaustive search at
+every step — all four errors above were caught that way in minutes, and none was
+visible by inspection.
+
 **Caveats, learned the hard way.** The dominance rules from Yanasse, Becceneri &
 Soma were implemented here as symmetry-breaking clauses and were *unsound as
 encoded* — 53 of 250 random instances came back wrong, mostly by making the
