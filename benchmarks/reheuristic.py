@@ -88,6 +88,7 @@ def sweep(
     seeds: tuple[int, ...] = (42,),
     workers: int = 8,
     solutions_dir: Path = SOLUTIONS_DIR,
+    ledger: Path | None = None,
     verbose: bool = True,
     **kwargs: object,
 ) -> list[tuple[str, Optional[int], Optional[int], float, Optional[str]]]:
@@ -138,8 +139,9 @@ def sweep(
     for proc in running:
         proc.join()
 
-    from benchmarks.compute import record
-    record("reheuristic", [(r[0], r[3]) for r in results if r[3]])
+    from benchmarks.compute import LEDGER, record
+    record("reheuristic", [(r[0], r[3]) for r in results if r[3]],
+           ledger=LEDGER if ledger is None else ledger)
     return results
 
 

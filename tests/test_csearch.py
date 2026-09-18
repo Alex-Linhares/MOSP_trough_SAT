@@ -53,7 +53,8 @@ def test_the_pool_drains_with_fewer_workers_than_instances(workers, tmp_path):
     one worker, where the slot-freeing bug deadlocked immediately."""
     instances = _instances()
     results = _sweep_within(120, instances, timeout=30, workers=workers,
-                            solutions_dir=tmp_path, verbose=False)
+                            solutions_dir=tmp_path,
+                            ledger=tmp_path / "ledger.csv", verbose=False)
 
     assert len(results) == len(instances)
     assert {r[0] for r in results} == {i.name for i in instances}
@@ -64,7 +65,8 @@ def test_it_writes_a_checkable_witness_with_its_provenance(tmp_path):
     """What lands on disk has to be the proof the driver claims it is."""
     instances = _instances()
     _sweep_within(120, instances, timeout=30, workers=2,
-                  solutions_dir=tmp_path, verbose=False)
+                  solutions_dir=tmp_path, ledger=tmp_path / 'ledger.csv',
+                  verbose=False)
 
     for instance in instances:
         payload = json.loads((tmp_path / f"{instance.name}.json").read_text())
@@ -153,5 +155,6 @@ def test_a_checkpoint_never_saves_a_witness_that_does_not_hold_up(monkeypatch,
                                         name="liar")
     monkeypatch.setattr(csearch, "max_open_stacks", lambda *_: 999)
     _sweep_within(120, [instance], timeout=10, workers=1,
-                  solutions_dir=tmp_path, verbose=False)
+                  solutions_dir=tmp_path, ledger=tmp_path / 'ledger.csv',
+                  verbose=False)
     assert not (tmp_path / "liar.json").exists()

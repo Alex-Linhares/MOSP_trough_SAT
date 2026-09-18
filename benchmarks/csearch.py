@@ -109,9 +109,16 @@ def sweep(
     workers: int = 8,
     max_nodes: int | None = None,
     solutions_dir: Path = SOLUTIONS_DIR,
+    ledger: Path | None = None,
     verbose: bool = True,
 ) -> list[tuple]:
-    """Descend every instance, at most `workers` at a time. One row each."""
+    """Descend every instance, at most `workers` at a time. One row each.
+
+    `ledger` defaults to the project's compute ledger. Tests must pass their
+    own: a test run that appends to the real one puts fabricated rows into a
+    tracked artifact, which is how 78 zero-second entries for instances named
+    "a", "b" and "liar" got there once.
+    """
     queue: multiprocessing.Queue = multiprocessing.Queue()
     pending = list(instances)
     running: list[multiprocessing.Process] = []
@@ -163,8 +170,9 @@ def sweep(
 
     # One ledger write per sweep, not per worker: concurrent appends to the same
     # file would interleave. `benchmarks/compute.py` totals what lands here.
-    from benchmarks.compute import record
-    record("csearch", [(r[0], r[3]) for r in results if r[3]])
+    from benchmarks.compute import LEDGER, record
+    record("csearch", [(r[0], r[3]) for r in results if r[3]],
+           ledger=LEDGER if ledger is None else ledger)
     return results
 
 

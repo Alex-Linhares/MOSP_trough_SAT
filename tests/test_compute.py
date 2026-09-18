@@ -79,3 +79,27 @@ def test_the_quoted_line_leads_with_days_and_names_the_cores(tmp_path, capsys,
     single = capsys.readouterr().out
     assert "1 core " in single and "1 cores" not in single
     assert "25.0 days" in single
+
+
+def test_a_sweep_writes_only_the_ledger_it_was_given(tmp_path):
+    """A test run must not append to the project's tracked ledger.
+
+    Fabricated rows in a published cost record are worse than a wrong total:
+    they are indistinguishable from real ones after the fact. This pins the
+    seam that let 78 zero-second rows for instances named "a" and "liar" into
+    the real file once.
+    """
+    from benchmarks.csearch import sweep
+    from benchmarks.compute import LEDGER
+    from mosp.instance import MOSPInstance
+
+    before = LEDGER.read_text() if LEDGER.exists() else None
+    mine = tmp_path / "ledger.csv"
+
+    sweep([MOSPInstance.from_matrix([[1, 1], [0, 1]], name="tiny")],
+          timeout=10, workers=1, solutions_dir=tmp_path, ledger=mine,
+          verbose=False)
+
+    assert mine.exists(), "the given ledger was not written"
+    after = LEDGER.read_text() if LEDGER.exists() else None
+    assert after == before, "the project ledger was modified by a test"
