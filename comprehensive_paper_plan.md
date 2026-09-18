@@ -85,17 +85,25 @@ change and now solves in 285 s.
 
 ### 3.2 A corpus of certified-by-simulation optima
 
-*(measured)* Full sweep of the benchmark tree, 6,376 instances, 30 workers:
+*(measured)* Sweeps of the benchmark tree, 6,376 instances, 30 workers:
 
 - 60 s budget: 5,499 solved, 877 timeout, 0 errors
-- 900 s budget: in progress, 5,855 solved / 457 timeout at instance 6,312
-- **0 value/simulation mismatches across every solved instance in both passes**
+- 900 s budget: 5,878 solved, 498 timeout, 0 errors
+- 3600 s budget: 6,224 solved
+- descending ratchet on the remainder: **every instance now has a solution**
 
-Each solved instance has its witness ordering persisted in `solutions/` (5,881
-files at time of writing). The "0 mismatches" figure is meaningful because the
-verification path (`mosp/verify.py`, simulate the sequence and count) shares no
-code with the SAT encoding — agreement is evidence that the encoding means what
-we think it means.
+**0 value/simulation mismatches across every solved instance in every pass.**
+
+The corpus stands at 6,380 cached solutions, each recording how its value was
+established: **6,226 certified by refutation, 2 by a tight lower bound, and 152
+best known solutions with optimality open.** That distinction is machine-readable
+in the files, not reconstructed.
+
+The "0 mismatches" figure is meaningful because the verification path
+(`mosp/verify.py`, simulate the sequence and count) shares no code with the SAT
+encoding — agreement is evidence that the encoding means what we think it means.
+`mosp/certify.py` re-checks every witness with a third, independent
+implementation.
 
 ### 3.3 Agreement with published optima
 
@@ -110,10 +118,19 @@ we think it means.
 | GP5 | 100×100 | 95 | 95 | 284.8 s |
 | GP6 | 100×100 | 75 | 75 | 875.4 s |
 | SP2 | 50×50 | 19 | 19 | — |
-| GP7, GP8, SP3, SP4 | | 75, 60, 34, 53 | unsolved at 900 s | |
+| GP7 | 100×100 | 75 | 75 | 1108 s |
+| GP8 | 100×100 | 60 | 60 | 369 s |
+| SP3 | 75×75 | 34 | **35** | solution only |
+| SP4 | 100×100 | 53 | **60** | solution only |
 
-Eleven for eleven where we finish. GP6 finishing at 875 s against a 900 s cap
-suggests the remaining four sit just past the wall rather than out of reach.
+Eighteen of the twenty published values match and none disagrees. GP7 and GP8
+were closed by a single satisfiable call once their clique bound turned out to
+equal the optimum — neither needed a refutation, and no additional budget would
+have closed them by binary search.
+
+SP3 and SP4 are not matched, and the shape of the failure is worth reporting: a
+satisfiable call on SP3 at `k=34` ran **12.5 hours without returning**, after the
+descent had reached 35 through calls of 42 s, 404 s and 3,084 s.
 
 ### 3.4 A partial Lean 4 formalization
 
@@ -328,7 +345,8 @@ the former.
    happen before any writing.**
 2. Scale certificate generation across the corpus; measure proof size and
    checking time by instance size.
-3. In parallel: attack GP7, GP8, SP3, SP4 with `solve_parallel one`.
+3. ~~Attack GP7, GP8, SP3, SP4~~ — GP7 and GP8 closed; SP3 and SP4 have
+   solutions but resist their published values (§3.3).
 4. In parallel: the pathwidth-tightness experiment (§6) — independent of the
    certificate work and the most likely source of a genuine scientific finding.
 5. Lean encoding proof (§5.3) — start early, it is the long pole.

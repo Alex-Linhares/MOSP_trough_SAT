@@ -312,8 +312,11 @@ Implementation: `satisfiability/mosp_solver.py::_lower_bound` and
    download it first appeared to be; see §3 for routes.
 2. ~~Ablate the bound against the Kissat404 switch~~ — done, §7.1. The gains
    belong to the backend; the bound pays through §7.2 instead.
-3. **Re-run the 146 unsolved instances** with the strengthened bound; they are
-   sparse and Chu & Stuckey-dominated, the regime where MMD+ contributes most.
+3. ~~Re-run the unsolved instances with the strengthened bound~~ — done, twice.
+   By binary search it converted nothing (§7.1). By the descending ratchet all
+   147 gained a solution and **6 closed outright** on reaching their bound, which
+   is §7.2's mechanism at scale: the bound closes instances that no refutation
+   budget would have.
 4. **Consider an exact maximum clique** on the instances where enumeration is
    time-boxed out, though §5's domination result suggests little is available
    there.

@@ -190,6 +190,11 @@ benchmarks/
     run_benchmarks.py               Batch solver with CSV output
     solve_all.py                    Batch solver for published benchmark files
     solve_all_sat.py                Batch SAT solver for large benchmark instances
+    solve_parallel.py               Parallel solving: across instances, and across k
+    ratchet.py                      Descending satisfiable-call search
+    overnight.py                    Escalating-budget driver for unattended runs
+    solver_portfolio.py             Times every pysat backend on the hard calls
+    dedupe.py                       Shares solutions between identical instances
 
 lean/
     MOSPFormalization/              Lean 4 proofs of the MOSP-pathwidth reduction
@@ -209,7 +214,7 @@ lean/
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
-tests/                          → 107 tests across 8 test modules
+tests/                          → 320 tests across 17 test modules
 literature/                     → Reference papers (PDFs)
 ```
 

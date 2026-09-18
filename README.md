@@ -47,7 +47,7 @@ a better search might find.
 That split runs through the whole project. It is why the maximum-clique lower
 bound is exactly tight on the dense instances and useless on the sparse ones, why
 contraction degeneracy is needed for the latter (see [Lower bounds](#lower-bounds)),
-and why the instances still unsolved are overwhelmingly sparse.
+and why the instances whose optimality is still open are overwhelmingly sparse.
 
 (Two quantities get called "density" in this literature: the fill rate of `M`,
 and the edge density of the MOSP graph. The figures report both; Frinhani et
@@ -219,12 +219,17 @@ That is the gap the witness orderings in `solutions/` are meant to fill.
 | NWRS8 | 25×60 | 16 | 16 | exact |
 | SP1 | 25×25 | — | 9 | exact (no published value) |
 | SP2 | 50×50 | 19 | 19 | exact |
-| SP3 | 75×75 | 34 | 35 | in progress — descending |
-| SP4 | 100×100 | 53 | — | in progress |
+| SP3 | 75×75 | 34 | 35 | solution, optimality unproven |
+| SP4 | 100×100 | 53 | 60 | solution, optimality unproven |
 
 **Eighteen of the twenty published values match, and none disagrees.** SP3 and SP4
-are being worked by the descending ratchet, which improves a solution without
-ever asking for a refutation; SP3's best is 36 and still falling.
+now have solutions too — 35 against a published 34, and 60 against 53 — but
+neither is proved optimal, and neither reached its published value.
+
+SP3 is the sharper of the two. A single satisfiable call at `k=34` ran for
+**45,071 seconds — 12.5 hours — without returning**, after the descent had
+reached 35 through calls of 42s, 404s and 3,084s. The cheap direction becomes
+unaffordable exactly at the optimum.
 
 A caution on what this establishes: the published values are themselves
 uncertified, so agreement is mutual corroboration rather than proof that either
@@ -378,7 +383,7 @@ lean/
 
 validate_published_optima.py    Batch validation against published optima
 
-tests/                          314 tests across 14 test modules
+tests/                          320 tests across 17 test modules
 reports/
     encoding.md                     The CNF formulation, and what is proved of it
     lower_bounds.md                 The clique and contraction degeneracy bounds
@@ -515,7 +520,10 @@ self-contained decision problem, and does not depend on the resolution.
 
 ### Formal Verification in Lean 4
 
-The `lean/` directory contains a Lean 4 formalization of the pathwidth theory. It is a work in progress, and it formalizes the *pathwidth* side of the story -- not the direct SAT encoding, and not an exact-MOSP claim.
+The `lean/` directory contains a Lean 4 formalization covering two things: the
+pathwidth theory this project started from, and — since the solver no longer
+relies on that reduction — the SAT encoding it actually uses. It is a work in
+progress; what is complete and what is not is set out below.
 
 **Complete (no `sorry`):**
 
@@ -563,8 +571,8 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **Two of the twenty published values are not yet matched** (SP3, SP4). The obstacle is not building the formula -- these encode in 0.4-3.3M clauses -- but the refutation at k-1 that certifies optimality. Both have loose lower bounds, unlike GP7 and GP8, which were closed by a single satisfiable call once their bound turned out to be tight.
-- **150 of 6,376 benchmark instances remain unsolved**, 144 of them from the Chu & Stuckey set. They are sparse, which is the regime where the bounds are weakest.
+- **Two of the twenty published values are not matched** (SP3 at 35 against 34, SP4 at 60 against 53). The obstacle is not building the formula -- these encode in 0.4-3.3M clauses -- but reaching the optimum at all: SP3 spent 12.5 hours on a single satisfiable call at 34 without returning. Both have loose lower bounds, unlike GP7 and GP8, which were closed by one satisfiable call once their bound turned out to be tight.
+- **152 of 6,376 instances have a solution but no proof of optimality.** Every instance now has a solution; what is missing is the refutation that would certify 152 of them. They are overwhelmingly sparse Chu & Stuckey instances, the regime where the bounds are weakest.
 - **The Lean formalization is incomplete** (2 `sorry`s) and covers the pathwidth reduction, which the SAT solver no longer relies on. Only VS = PW is fully proven.
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`, `fixed_parameter_algorithm/`, and `satisfiability/solver.py` are retained for comparison and for the analysis in `reports/`. Their measured disagreement with published optima should be read against the graph correction above.
 - **The contraction degeneracy bound is validated, not proved.** It rests on `MOSP = pathwidth + 1`, so a bound that were too high would make the search start above the true optimum and return a wrong answer that still passes witness verification. It is checked against all 6,226 known optima (zero violations) and re-checked by `tests/test_lower_bounds.py`, but that is evidence rather than proof.
