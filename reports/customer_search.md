@@ -34,6 +34,38 @@ reason it gave.
 
 ---
 
+## 1a. The corpus sweep
+
+`python -m benchmarks.csearch --unproven --timeout 900 --workers 20`, over the
+147 instances whose optimality was open. **111 closed, in 45 minutes.**
+
+| | proved | stacks saved |
+|---|---|---|
+| density 10 | **30 / 30** | 22 |
+| density 8 | **29 / 31** | 31 |
+| density 6 | 24 / 32 | 35 |
+| density 4 | 15 / 29 | 38 |
+| density 2 | 11 / 21 | 28 |
+| SP and other | 2 / 4 | 10 |
+| **total** | **111 / 147** | **164** |
+
+The gradient is Chu & Stuckey's Table 1 reproduced on our corpus: everything at
+density 10, almost everything at 8, and the sparse end resisting. 87 instances
+also had their upper bound improved along the way, 164 stacks in total, because
+a descent that fails to close still ratchets. SP4 fell from 57 to 53 — the
+published optimum — without being proved.
+
+The corpus went from 152 instances of unproven optimality to 40.
+
+**Every one of the 111 was then re-verified independently**: its witness
+re-simulated on the original instance, and the refutation at `value - 1` asked
+again from scratch. 111 checked, 0 failed. The first twenty forked before the
+guard in §4 landed, which is what prompted the pass; it is worth having for the
+rest regardless, since the corpus is meant to be a published artifact and a
+proof it cannot re-derive is a proof on trust.
+
+---
+
 ## 2. The measure, and the one detail holding it up
 
 A state is the set `S` of closed customers; `O(S) = ⋃_{c∈S} N(c)` with `N`

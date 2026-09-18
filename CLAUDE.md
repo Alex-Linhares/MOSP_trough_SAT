@@ -138,9 +138,14 @@ themselves rather than reconstructed:
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,226 |
+| `certified:refutation` | 6,338 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 152 |
+| `solution` (optimality open) | 40 |
+
+*(Updated 2026-09-18 after the customer-search sweep closed 111 of the 147 then
+open: `reports/customer_search.md`. Every one of the 111 was re-verified by an
+independent refutation, and all 6,376 witnesses re-simulate to their recorded
+value.)*
 
 (Four further files are orphans — `GP1.json` through `GP4.json`, written by
 `validate_published_optima.py` under a bare naming convention that
@@ -385,6 +390,15 @@ Sequenced by `reports/chu_stuckey_plan.md` §7, which supersedes the earlier lis
 here. Items 1, 3 and 6 are done (2026-09-18).
 
 **Done, with reports:**
+- **Item 2**, the dominance rules — built into a *complete* customer search
+  rather than the heuristic, because their Table 1 shows the complete search
+  closing the dense instances in seconds. It refutes, so it certifies optima
+  with no SAT solver. `satisfiability/customer_search.py`,
+  `reports/customer_search.md`.
+- **Item 5**, contraction relaxation. `prove` closes nothing — it can only
+  succeed when the upper bound is already optimal — but partial relaxation
+  lifts SP4's certified lower bound from 27 to 45.
+  `satisfiability/relaxation.py`, `reports/relaxation.md`.
 - **Item 1**, `ub_MOSP` restricted DFS — `satisfiability/heuristics.py`, strategy
   `cs-dfs`. Improved 25 of the 148 unproven instances in 3 seconds, on top of
   what two hours of seeded tabu had already taken. `reports/ub_mosp_search.md`.
@@ -397,20 +411,23 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   `satisfiability.mosp_solver.decide_mosp`.
 
 **Next, in order:**
-- **Item 2**: the dominance rules of Chu & Stuckey §4 *inside* `cs-dfs` — subset
-  filter on candidates, "better move" as a forced branch, "old move" as
-  memoisation over `Q(S)`. They report 1-2 orders of magnitude each. Do not
-  build a nogood table; CDCL already gives that.
-- **Item 5**: the relaxation driver. Contract until the instance is small enough
-  to solve outright, then unmerge; its optimum is a certified lower bound. This
-  is the only tool on offer for the lower bounds, which is where the gap lives
-  (mean 18.3 stacks across the 144 unproven Random instances).
 - **Item 7**: the end-to-end certificate chain — contraction sequence, DRAT
-  refutation on the contracted instance, witness ordering. This is the
-  publishable claim.
-- **Item 4** (customer-order encoding) is no longer a prerequisite for item 5.
-  Keep the kill criterion: within 2× of the current encoding on the certified
-  corpus, or abandon.
+  refutation, witness ordering, each checkable by a third party without
+  trusting our code. This is the publishable claim, and the customer search
+  changes what it has to cover: a refutation from `customer_search` is not a
+  DRAT proof, so either the refuted instances are re-refuted through SAT for
+  their certificates, or the search's own proof object has to be defined.
+- **A portfolio decision procedure.** `satisfiability.customer_search` and the
+  SAT encoding fail on disjoint sets of instances — dense versus sparse — and
+  nothing yet runs both. Racing them per decision call is a small change with a
+  large expected gain.
+- **Old move on large sparse instances.** It prunes 27% more nodes than the memo
+  on SP3 and still loses on the clock. Its advantage is in nodes, so it should
+  win exactly where the memo degrades, which is where we are now stuck. Not yet
+  measured there.
+- **Item 4** (customer-order encoding) is no longer a prerequisite for anything.
+  The customer search now covers the space that encoding was meant to reach,
+  without a SAT solver. Keep the kill criterion if it is ever built.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
