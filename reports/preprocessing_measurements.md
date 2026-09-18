@@ -4,6 +4,11 @@
 `satisfiability.mosp_solver.decide_mosp`. Items 3 and 6 of
 `reports/chu_stuckey_plan.md` §7.
 
+*Every `ub` below is the cached upper bound on the morning of the measurement.
+SP3's was 35; the customer search closed it at 34 later the same day, so a re-run
+encodes at `k=34` and the SP3 rows shift slightly. The contraction room `|C| - ub`
+moves with it. Nothing about the conclusions depends on that one column.*
+
 ---
 
 ## 1. What this had to decide
@@ -84,7 +89,8 @@ Over the 6,376 instances in `benchmarks/instances`:
 | pattern dominance | 3,409 (53%) | 17,699 columns removed in total |
 | component decomposition | 154 (2.4%) | mostly SCOOP and Warwick |
 
-Restricted to the 148 unproven Random instances — the ones that matter — the
+Restricted to the 148 instances whose optimality was open when this was measured
+— the ones that mattered, and now 35 after the customer-search sweep — the
 rates are 93 for dominance (348 columns, under 3% of their width) and **zero**
 for decomposition. That zero is not an accident of our corpus: Chu & Stuckey
 (2009) say they discard decomposable instances from their generator's output to

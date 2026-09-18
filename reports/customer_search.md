@@ -55,7 +55,9 @@ also had their upper bound improved along the way, 164 stacks in total, because
 a descent that fails to close still ratchets. SP4 fell from 57 to 53 — the
 published optimum — without being proved.
 
-The corpus went from 152 instances of unproven optimality to 40.
+The corpus went from 152 open files to 40 — and to 36 once four orphan
+duplicates were deleted the same day, covering **35 distinct instances**, since
+SP4 is stored under two names.
 
 **Every one of the 111 was then re-verified independently**: its witness
 re-simulated on the original instance, and the refutation at `value - 1` asked

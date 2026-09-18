@@ -3,6 +3,11 @@
 **Status:** implemented and measured, 2026-09-18. `satisfiability/heuristics.py`,
 strategy `cs-dfs`. Item 1 of `reports/chu_stuckey_plan.md` §7.
 
+*The "148 unproven" this report measures against is the corpus as it stood that
+morning. The complete customer search closed 111 of them later the same day
+(`reports/customer_search.md`), leaving 35; the figures below are left as
+measured rather than restated against a corpus they were not drawn from.*
+
 ---
 
 ## 1. Summary

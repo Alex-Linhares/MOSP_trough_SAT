@@ -125,17 +125,20 @@ implementation.
 | SP2 | 50×50 | 19 | 19 | — |
 | GP7 | 100×100 | 75 | 75 | 1108 s |
 | GP8 | 100×100 | 60 | 60 | 369 s |
-| SP3 | 75×75 | 34 | **35** | solution only |
-| SP4 | 100×100 | 53 | **60** | solution only |
+| SP3 | 75×75 | 34 | **34** | certified — customer search, 71 s |
+| SP4 | 100×100 | 53 | **53** | solution only |
 
-Eighteen of the twenty published values match and none disagrees. GP7 and GP8
-were closed by a single satisfiable call once their clique bound turned out to
-equal the optimum — neither needed a refutation, and no additional budget would
-have closed them by binary search.
+**All twenty published values are matched and none disagrees.** GP7 and GP8 were
+closed by a single satisfiable call once their clique bound turned out to equal
+the optimum — neither needed a refutation, and no additional budget would have
+closed them by binary search.
 
-SP3 and SP4 are not matched, and the shape of the failure is worth reporting: a
-satisfiable call on SP3 at `k=34` ran **12.5 hours without returning**, after the
-descent had reached 35 through calls of 42 s, 404 s and 3,084 s.
+SP3's history is the sharpest single result the paper has. Under the SAT path a
+satisfiable call at `k=34` ran **12.5 hours without returning**, after a descent
+that had reached 35 through calls of 42 s, 404 s and 3,084 s; a later
+eight-backend portfolio spent hours more on the same question. The complete
+customer search of `reports/customer_search.md` settles it, refutation included,
+in **71 seconds**. SP4 reaches 53 but is not proved.
 
 ### 3.4 A partial Lean 4 formalization
 
@@ -228,10 +231,11 @@ for this paper.
 
 ### 5.4 Finish the open instances
 
-GP7 and GP8 are **done**, both closed by a single satisfiable call once their
-clique bound turned out to equal the optimum, after resisting hours of binary
-search. SP3 and SP4 remain: SP3 has a solution of 35 against a published 34, SP4
-one of 61 against 53, neither with optimality proven.
+GP7, GP8 and **SP3** are done — GP7 and GP8 by a single satisfiable call once
+their clique bound turned out to equal the optimum, SP3 by the customer search in
+71 seconds. SP4 alone remains: a witness at 53, the published value, with
+optimality unproven. Partial relaxation lifts its certified lower bound from 27
+to 45 (`reports/relaxation.md`), leaving a gap of 8.
 
 Superseded route (kept for the record): `solve_parallel one --workers 28`. Route: `solve_parallel one --workers 28` with a multi-hour
 budget, which starts the expensive UNSAT proof immediately rather than reaching
@@ -309,15 +313,18 @@ Still to read on what exactly is asserted and under what hypotheses: Yanasse
 Independent of the paper, two measured gaps are worth closing because they gate
 how many instances can be solved at all:
 
-- **The lower bound is the literature's trivial one.** `_lower_bound` returns max
-  customers per pattern, which Yanasse & Senne attribute to Yuen & Richardson
-  (1995) and call trivial. Stronger: maximal clique of the MOSP graph and minimum
-  node degree (Yanasse 1997c), and the arc contraction bound (Yanasse et al.
-  1999), said to dominate all earlier ones. On SP4 ours gives 13 against a true
-  optimum of 53 — the search wastes its budget on refutations far below the
-  answer.
-- **No preprocessing is implemented.** Six operations are on record. A
-  measurement here found two of them nearly useless on the Chu & Stuckey randoms;
+- **The lower bound is strong on average and weak where it matters.**
+  `_lower_bound` is now the best of the trivial bound, maximum clique and
+  contraction degeneracy: zero violations over all 6,340 certified optima, tight
+  on 65.7%, mean gap 0.86. But the maximum gap is 42, and across the 166
+  certified Chu & Stuckey `Random` instances the mean gap is 11.05 — on SP4 it
+  gives 27 against 53. A binary search over an interval that wide spends its
+  budget on refutations far below the answer, which is why those instances fell
+  to the customer search and not to SAT. The arc contraction bound (Yanasse et
+  al. 1999), said to dominate all earlier ones, is still unobtained.
+- **Two of six preprocessing operations are implemented** (component
+  decomposition and pattern dominance, applied on every SAT decision call). A
+  measurement here found them nearly useless on the Chu & Stuckey randoms;
   the other four are untested.
 
 ## 8. Before writing
@@ -350,8 +357,8 @@ the former.
    happen before any writing.**
 2. Scale certificate generation across the corpus; measure proof size and
    checking time by instance size.
-3. ~~Attack GP7, GP8, SP3, SP4~~ — GP7 and GP8 closed; SP3 and SP4 have
-   solutions but resist their published values (§3.3).
+3. ~~Attack GP7, GP8, SP3, SP4~~ — GP7, GP8 and SP3 closed, all three at their
+   published values. SP4 has a witness at its published 53, unproven (§3.3).
 4. In parallel: the pathwidth-tightness experiment (§6) — independent of the
    certificate work and the most likely source of a genuine scientific finding.
 5. Lean encoding proof (§5.3) — start early, it is the long pole.

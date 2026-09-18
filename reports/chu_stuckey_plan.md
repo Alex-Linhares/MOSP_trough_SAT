@@ -15,6 +15,28 @@ Read against `literature/chu_stuckey_2009.pdf`.
 
 ---
 
+**Status, 2026-09-18 evening — the plan has been executed as far as item 5, and
+the body below is left as written, premises included.** It is a record of the
+reasoning before the work, and restating its figures against the corpus it
+produced would destroy that. Read the numbers in it (6,228 certified, 144
+unproven Random, "six operations we implement none of") as of the morning it was
+written. What happened:
+
+| item | outcome |
+|---|---|
+| 1, `ub_MOSP` | done — `reports/ub_mosp_search.md` |
+| 2, dominance rules | done, and built into a *complete* search rather than the heuristic. It refutes: 111 of the then-147 open instances closed in 45 minutes, SP3 among them. `reports/customer_search.md` |
+| 3, contract + dedupe | done, measured — `reports/preprocessing_measurements.md` |
+| 4, customer-order encoding | **not needed**: item 2 reached that space without a SAT encoding at all |
+| 5, relaxation | done. `prove` closes nothing (it can only succeed when `ub` is already optimal); partial relaxation lifts SP4's certified bound from 27 to 45. `reports/relaxation.md` |
+| 6, decomposition + dominance | done — `mosp/preprocess.py` |
+| 7, certificate chain | open, and now harder: a customer-search refutation is not a DRAT proof |
+
+The corpus stands at 6,340 certified optima with 35 instances open, against
+6,228 and 148 when this was written.
+
+---
+
 ## 0. Two results established before planning anything *(measured)*
 
 Everything below rests on these. Both were checked against exhaustive search

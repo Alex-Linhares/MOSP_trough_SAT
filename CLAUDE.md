@@ -61,34 +61,66 @@ The overcounting on the customer graph arises because the customer-to-pattern or
 
 **The correct approach is to encode MOSP directly as SAT**, bypassing the pathwidth reduction entirely. The SAT infrastructure (encoding, solver wrapper, CaDiCaL backend) built for pathwidth can be reused for a direct MOSP encoding.
 
-## Bounds: Ours Is the Weakest One in the Literature
+## Bounds: No Longer the Weakest, and Still Weak Where It Matters
 
-`satisfiability/mosp_solver.py::_lower_bound` returns the maximum number of
-customers requiring any single pattern. Yanasse & Senne (2010) attribute exactly
-this to Yuen & Richardson (1995) and call it **the trivial lower bound**. Three
-stronger ones are on record:
+*(Rewritten 2026-09-18. This section used to say `_lower_bound` returned the
+trivial bound of Yuen & Richardson (1995) — the maximum customers on any one
+pattern — and that SP4's bound was 13. Both stopped being true when the clique
+and contraction degeneracy bounds landed; see `reports/lower_bounds.md`.)*
 
-1. **maximal clique of the MOSP graph** (Yanasse 1997c) — dominates the trivial
-   bound, since every pattern is already a clique there
-2. **smallest node degree** of the MOSP graph (Yanasse 1997c)
-3. **arc contraction bound** (Yanasse et al. 1999) — "dominates all previous
-   lower bounds proposed in the literature"
+`satisfiability/mosp_solver.py::_lower_bound` now returns the best of three:
+the trivial bound, the largest clique found in the MOSP graph under a 5-second
+budget, and contraction degeneracy (MMD+) plus one. On SP4 that is 27, not 13.
 
-Plus a general principle: any subgraph of the MOSP graph yields a valid lower
-bound, so bounds can be obtained by solving smaller subinstances.
+Validated over all 6,340 certified optima, 2026-09-18: **zero violations**,
+tight on 65.7%, mean gap 0.86. This is a correctness dependency, not an
+optimisation — a bound above a true optimum would make the search start above it
+and return a wrong answer that still passes witness verification — so it is
+re-checked whenever the corpus grows.
 
-This matters concretely. On SP4 our bound is 13 against a true optimum of 53, and
-SP4 is still unsolved. The binary search spends its budget on refutations at k
-values far below the optimum, which are both hopeless and expensive.
+**Where it is still weak is exactly where the instances are hard.** The maximum
+gap over the corpus is 42, and the eight worst are the dense 125-125 Chu &
+Stuckey instances; across the 166 certified `Random` instances the mean gap is
+11.05 against 0.86 corpuswide. A binary search over a 40-wide interval spends
+its budget on refutations far below the optimum, which is why the SAT path never
+closed them and why `satisfiability/customer_search.py` — which descends from
+the *upper* bound instead — does.
 
-## Preprocessing: Six Operations Exist, We Implement None
+Still on record and still unobtained:
 
-The SAT path does no preprocessing. Yanasse & Senne (2010) review six
-operations: cluster decomposition, pattern dominance, item reduction from pattern
-simplicity, and reductions from equivalent nodes and adjacent degree-2 nodes.
-A measurement in this repository found pattern and item dominance nearly useless
-on the Chu & Stuckey random instances (0 dominated customers), but that covered
-only two of the six — the others are untested here.
+- **arc contraction bound** (Yanasse et al. 1999) — "dominates all previous
+  lower bounds proposed in the literature", and may be the same bound as
+  contraction degeneracy. No novelty should be claimed until that is settled.
+- any subgraph of the MOSP graph yields a valid bound, so bounds can be had by
+  solving smaller subinstances — which is what `satisfiability/relaxation.py`
+  now does by contraction, lifting SP4 from 27 to 45.
+
+## Preprocessing: Two of the Six Implemented
+
+*(Rewritten 2026-09-18; this section used to say we implemented none.)*
+
+`mosp/preprocess.py` implements two of the six operations Yanasse & Senne (2010)
+review, and `satisfiability.mosp_solver.decide_mosp` applies both on every SAT
+decision call:
+
+- **component decomposition** — the components of the MOSP graph share no
+  customer and no product, so each is encoded separately;
+- **pattern dominance** — a product whose customers sit inside another's is
+  dropped and reinserted beside its dominator afterwards, at no cost.
+
+Both preserve the optimum, so a refutation on the reduced instance refutes the
+original. Firing rates over the 6,376-instance tree: dominance on 3,409,
+removing 17,699 columns; decomposition on 154. On the instances that are
+actually hard, 93 and **zero** — Chu & Stuckey discard decomposable instances
+from their generator's output by design.
+
+Still unimplemented: item reduction from pattern simplicity, and the reductions
+from equivalent nodes and adjacent degree-2 nodes. Measurements in
+`reports/preprocessing_measurements.md`.
+
+A third operation, **contraction**, does not preserve the optimum and is kept
+separate in the same module: it is a relaxation, and the basis of
+`satisfiability/relaxation.py`.
 
 ### Key References
 
@@ -308,15 +340,15 @@ Encodes the MOSP decision problem directly as SAT, bypassing the pathwidth reduc
 - Variables: `x[p,t]` (pattern p at position t), `y[p,t]` (pattern p placed by step t), `o[c,t]` (customer c's stack open at step t)
 - Permutation constraints via at-least-one + ladder at-most-one
 - Prefix linking: `x→y`, monotonicity, converse (including t=0 base case)
-- Open stack forcing: (a) placement clause `x[p,t] → o[c,t]` for each pattern p of customer c; (b) pair-wise clause for each (p,q) pair of customer c: `y[p,t] ∧ ¬y[q,t] → o[c,t]`
+- Open stack forcing: (a) placement clause `x[p,t] → o[c,t]` for each pattern p of customer c; (b) auxiliary `any[c,t]`/`all[c,t]` at `2|P_c|+1` clauses per (customer, step). The pair-wise form `y[p,t] ∧ ¬y[q,t] → o[c,t]` costs `|P_c|(|P_c|-1)` and is retained behind `pairwise_open_stacks=True` for equivalence testing only — it encoded GP5 to 76.7M clauses against 3.25M now
 - Width bound: totalizer cardinality constraint (at most k open stacks per step)
 - Symmetry breaking: pattern with most customers in first ⌊m/2⌋+1 positions
 
 **Solution caching**: Results are saved as JSON files in `solutions/`. On subsequent runs, cached solutions are loaded and verified by simulation instead of re-solving. Disable with `solutions_dir=None`.
 
 **Bounds for iterative deepening**:
-- Lower bound: max over all patterns p of |customers(p)| (when p is produced, all its customers have open stacks)
-- Upper bound: best of identity, reverse, and 10 random permutations (fast O(m·n) simulation each)
+- Lower bound: `_lower_bound` — trivial, clique and contraction degeneracy, best of the three (see the bounds section above)
+- Upper bound: a named strategy from `satisfiability/heuristics.py`, defaulting to `mcn+tabu`; `cs-dfs` is usually stronger and far faster
 
 ## Design Decisions
 
@@ -385,7 +417,8 @@ python -m benchmarks.solve_all --timeout 120
 
 ## Known Limitations
 
-- **Direct MOSP SAT encoding scales to ~50×50**: The O(m² · |P_c|²) clause count for open-stack forcing grows quickly. Validated on 50×50 instances (GP1-GP4). Larger instances (100×100) may require longer timeouts.
+- **The SAT path does not close dense 125×125 instances.** The ~50×50 ceiling recorded here previously was lifted by the linear open-stack encoding; the corpus now holds certified optima at 125×125. What remains is that SAT *refutations* on the dense Chu & Stuckey instances do not return, which is what `satisfiability/customer_search.py` exists for.
+- **The customer search produces no checkable proof object.** Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
 - **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
 - **Agreement graph undercounts**: `pathwidth(G_a) + 1` gives a lower bound that can be too low.
 - **Pathwidth SAT encoding has a variable ID collision bug**: The `encoding.py` pool.occupy/top_id tracking is broken (CardEnc auxiliary variables collide across constraints). The solver works because it falls back to greedy. Fixed in `mosp_encoding.py`.
