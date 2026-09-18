@@ -37,9 +37,21 @@ branches kept, so a refutation still refutes.
 - *definite move* (their Theorem 1): if `close(q,S) ≥ open(q,S)` and `S ++ [q]`
   is playable, then every solution extending `S` has one extending `S ++ [q]`,
   so **all** other branches go.
+- *old move* (their Theorem 3): if `q` was already searched at an ancestor and
+  inserting `q` back there leaves the sequence playable, that subtree has been
+  seen and `q` goes. Maintained as a set `Q(S)` in `O(|C|)` per node.
 
-Theorem 2 ("better move") and Theorem 3 ("old move") are not implemented; see
-`reports/customer_search.md` for why, and what it would cost to add them.
+Theorem 2 ("better move") is not implemented: its condition ranges over pairs of
+candidates and needs `close(q, S ∪ {r})` for each, which is `O(|R|³)` per node
+where Theorem 1 -- its special case, where `q` beats every `r` at once -- is
+`O(|R|²)`. See `reports/customer_search.md`.
+
+**Old move and the memo do not compose.** A failure reached with old-move
+pruning depends on which branches an *ancestor* had already searched, so it is a
+property of the path, not of `S`, and recording it against `S` alone would
+refute states that are not refuted. Chu & Stuckey report nogood recording worth
+about 1.0x once old move is on, so the two are alternatives rather than a loss:
+enabling `old_move` turns `memo` off, and `decide` raises if both are asked for.
 """
 
 from __future__ import annotations
@@ -75,6 +87,7 @@ def decide(
     restrict: bool = False,
     subset_rule: bool = True,
     definite_move: bool = True,
+    old_move: bool = False,
     memo: bool = True,
     max_nodes: int | None = None,
     deadline: float | None = None,
@@ -87,8 +100,9 @@ def decide(
         restrict: branch only on `R ∩ O(S)`, customers already open. This is
             their `ub_MOSP` (§3.4) and is **not sound** -- it answers "sat" or
             "unknown", never "unsat".
-        subset_rule, definite_move: the dominance relations above. Both default
-            on; the flags exist so the exhaustive tests can vary one at a time.
+        subset_rule, definite_move, old_move: the dominance relations above. The
+            flags exist so the exhaustive tests can vary one at a time.
+            `old_move` cannot be combined with `memo`, for the reason above.
         memo: record states already refuted, their `prob[S]`. The state is
             `S` alone -- `O(S)` is a function of it -- so a failure at `S` is a
             failure by whatever path reached it.
@@ -104,6 +118,12 @@ def decide(
         A `Decision`. The "sat" order closes every customer with a non-empty
         product set; customers needing nothing are omitted, as they never open.
     """
+    if old_move and memo:
+        raise ValueError(
+            "old_move and memo cannot both be on: an old-move failure depends "
+            "on the path taken to the state, and the memo is keyed on the "
+            "state alone")
+
     masks = _neighbour_masks(instance)
     active = [c for c in range(instance.n_customers) if instance.customer_patterns(c)]
 
@@ -134,7 +154,9 @@ def decide(
                 found |= bit
         return found
 
-    def search(closed: int, opened: int) -> bool:
+    def search(closed: int, opened: int, seen: int = 0) -> bool:
+        """`seen` is Q(S): moves an ancestor already searched that could be
+        played here instead, without making the sequence unplayable."""
         mark = len(path)
 
         free = free_moves(closed, opened)
@@ -153,7 +175,8 @@ def decide(
             return False
 
         remaining = full & ~closed
-        candidates = remaining
+        seen &= remaining
+        candidates = remaining & ~seen if old_move else remaining
         if restrict:
             narrowed = remaining & opened
             # An empty frontier means a disconnected remainder, where some
@@ -199,12 +222,31 @@ def decide(
 
             here = len(path)
             path.append(customer)
-            if search(closed | (1 << customer), opened | masks[customer]):
+            inherited = 0
+            if old_move and seen:
+                # Q(S ++ [c]) keeps those q whose reinsertion still leaves this
+                # last move playable; everything earlier is playable already by
+                # q being in Q(S). Auto-closures can only lower that cost, so
+                # checking the move alone is conservative in the safe direction.
+                bits = seen
+                while bits:
+                    bit = bits & -bits
+                    bits ^= bit
+                    other = bit.bit_length() - 1
+                    cost = ((opened | masks[other] | masks[customer])
+                            & ~(closed | bit)).bit_count()
+                    if cost <= k:
+                        inherited |= bit
+            if search(closed | (1 << customer), opened | masks[customer],
+                      inherited):
                 return True
             del path[here:]
             if state["aborted"]:
                 del path[mark:]
                 return False
+            # This branch is now searched, so a later sibling that could play it
+            # instead would be repeating it.
+            seen |= 1 << customer
 
         # Only a genuine exhaustion may be recorded: a budget abort has not
         # refuted anything, and memoising it would turn a timeout into a
@@ -338,14 +380,26 @@ def solve(
         nodes += answer.nodes
 
         if answer.status == "unsat":
-            return Solution(value, order, "refutation", nodes,
-                            time.monotonic() - started)
+            # The refutation says the optimum is above k. Claiming it *is*
+            # k + 1 needs a witness that achieves k + 1, and the witness in
+            # hand is only trusted at the value it simulates to. The search
+            # scores closing orders, not the product sequences they build, and
+            # the two agree on every instance measured -- but a proof that
+            # rests on "measured" rather than "checked here" is the kind this
+            # project has had to retract before.
+            if value == k + 1:
+                return Solution(value, order, "refutation", nodes,
+                                time.monotonic() - started)
+            return Solution(value, order, "", nodes, time.monotonic() - started)
         if answer.status == "unknown":
             return Solution(value, order, "", nodes, time.monotonic() - started)
 
-        order = answer.order
-        value = max_open_stacks(instance, product_order_from_customers(instance, order))
-        k = min(k, value) - 1
+        found = answer.order
+        achieved = max_open_stacks(
+            instance, product_order_from_customers(instance, found))
+        if achieved < value:
+            value, order = achieved, found
+        k = min(k, achieved) - 1
 
     # The descent walked down to the lower bound: nothing below it can be
     # satisfiable, so no refutation is needed.

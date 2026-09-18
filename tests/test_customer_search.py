@@ -28,6 +28,10 @@ COMBINATIONS = [
     pytest.param(dict(subset_rule=True, definite_move=False, memo=False), id="subset"),
     pytest.param(dict(subset_rule=False, definite_move=True, memo=False), id="definite"),
     pytest.param(dict(subset_rule=True, definite_move=True, memo=True), id="all"),
+    pytest.param(dict(subset_rule=False, definite_move=False, memo=False,
+                      old_move=True), id="old-move"),
+    pytest.param(dict(subset_rule=True, definite_move=True, memo=False,
+                      old_move=True), id="old-move+rules"),
 ]
 
 
@@ -73,6 +77,15 @@ def test_every_witness_achieves_its_k(rules):
         ordering = product_order_from_customers(inst, answer.order)
         assert sorted(ordering) == list(range(inst.n_patterns))
         assert max_open_stacks(inst, ordering) <= optimum
+
+
+def test_old_move_and_the_memo_are_refused_together():
+    """A failure found by old-move pruning depends on the path to the state, and
+    the memo is keyed on the state alone. Combining them would refute states
+    that are not refuted, so the combination is rejected rather than risked."""
+    inst = MOSPInstance.from_matrix([[1, 1], [0, 1]], name="clash")
+    with pytest.raises(ValueError, match="cannot both be on"):
+        decide(inst, 1, old_move=True, memo=True)
 
 
 def test_the_restricted_search_never_claims_a_refutation():

@@ -167,6 +167,8 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     mosp_encoding.py                Direct MOSP-to-SAT CNF encoding (no pathwidth reduction)
     mosp_solver.py                  Direct MOSP solver: bounds, iterative deepening, solution caching
     heuristics.py                   Upper bound strategies behind one signature
+    customer_search.py              Complete search over customer closing orders
+    relaxation.py                   Contraction relaxation: certified lower bounds
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)
     customer_graph.py               Build customer graph via M @ M^T overlap
@@ -199,6 +201,7 @@ benchmarks/
     solver_portfolio.py             Times every pysat backend on the hard calls
     portfolio.py                    Races several backends on one decision call
     reheuristic.py                  Re-runs an upper bound strategy over solved instances
+    csearch.py                      Parallel descent with the complete customer search
     dedupe.py                       Shares solutions between identical instances
 
 lean/
@@ -219,7 +222,7 @@ lean/
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
-tests/                          → 399 tests across 18 test modules
+tests/                          → 437 tests across 20 test modules
 literature/                     → Reference papers (PDFs)
 ```
 
