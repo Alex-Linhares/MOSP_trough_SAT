@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Alexandre Linhares. All rights reserved.
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
 Released under the MIT license as described in the file LICENSE.
 
 # The SAT encoding

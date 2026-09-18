@@ -802,6 +802,6 @@ cd lean && lake build
 ## License
 
 MIT, for everything here including the Lean development — see
-[`LICENSE`](LICENSE). Note that Mathlib requires Apache 2.0 on contributions, so
+[`LICENSE`](LICENSE), and 2026 throughout. Note that Mathlib requires Apache 2.0 on contributions, so
 the three files under `lean/MOSPFormalization/ForMathlib/` would need that header
 restored before being offered upstream.
