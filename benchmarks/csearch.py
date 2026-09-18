@@ -145,6 +145,11 @@ def sweep(
 
     for proc in running:
         proc.join()
+
+    # One ledger write per sweep, not per worker: concurrent appends to the same
+    # file would interleave. `benchmarks/compute.py` totals what lands here.
+    from benchmarks.compute import record
+    record("csearch", [(r[0], r[3]) for r in results if r[3]])
     return results
 
 

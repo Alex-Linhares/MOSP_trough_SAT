@@ -174,6 +174,13 @@ themselves rather than reconstructed:
 | `certified:bound` | 2 |
 | `solution` (optimality open) | 36 |
 
+**Compute cost: 588 core-hours (24.5 core-days)**, from `python -m
+benchmarks.compute`, which totals the result CSVs and the ledger `csearch` and
+`reheuristic` append to. Quote core-hours rather than wall clock, and never
+maintain the number by hand -- it is regenerated, because several hand-carried
+figures in these documents drifted before this existed. It counts only runs that
+wrote a row, so it is a lower bound.
+
 *(Updated 2026-09-18 after the customer-search sweep closed 111 of the 147 then
 open: `reports/customer_search.md`. Every one of the 111 was re-verified by an
 independent refutation, and all 6,376 witnesses re-simulate to their recorded

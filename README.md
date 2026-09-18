@@ -9,9 +9,10 @@ and the pathwidth theory the project started from is partly formalized.
 
 **6,340 of 6,376 cached solutions are certified optimal — 99.44% of the
 corpus**, each with a witness ordering in `solutions/` that can be checked
-without trusting this code. What remains open is 35 instances (0.56%): 34 sparse
-Chu & Stuckey `Random` instances and SP4. Every file records how its value was
-established, so proofs and good guesses are never added together.
+without trusting this code, for **588 core-hours (24.5 core-days)** of recorded
+solver time. What remains open is 35 instances (0.56%): 34 sparse Chu & Stuckey
+`Random` instances and SP4. Every file records how its value was established, so
+proofs and good guesses are never added together.
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some
 subset of products), find a production sequence that minimizes the maximum number
@@ -408,6 +409,26 @@ deleted and the script no longer creates them.
 All 6,376 witnesses re-simulate to their recorded value, with zero disagreements
 across every instance and every pass.
 
+### What it cost
+
+**588 core-hours — 24.5 core-days** of recorded solver time, totalled from the
+result CSVs and the ledger the parallel drivers append to:
+
+```bash
+python -m benchmarks.compute          # the breakdown
+python -m benchmarks.compute --quote  # the line quoted here
+```
+
+Quote core-hours, not wall clock: the same work is 23.5 hours at 25 workers and
+a week on one core, so wall clock describes the machine rather than the problem.
+The figure counts only instances a run wrote a row for, so it is a lower bound
+on compute spent — the right direction for a cost figure to err in.
+
+Where it went is the more interesting part. The largest single line is 223
+core-hours on one overnight SAT round; the customer search closed 111 instances
+for 11 core-hours. The cheap wins came from matching the algorithm to the
+instance shape, not from spending more.
+
 ## Checking the claims without trusting this code
 
 An optimality claim here is two statements, and they are not equally easy for
@@ -519,6 +540,7 @@ fixed_parameter_algorithm/      -> Pathwidth solvers (used as subroutines)
 benchmarks/
     csearch.py                      Parallel descent with the customer search
     marathon.py                     Deadline-sized budgets for long unattended runs
+    compute.py                      Totals the corpus's compute cost in core-hours
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus
     solve_parallel.py               Parallel solving: across instances, and across k
@@ -551,7 +573,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          435 tests across 22 test modules
+tests/                          439 tests across 23 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima

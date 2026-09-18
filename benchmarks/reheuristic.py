@@ -137,6 +137,9 @@ def sweep(
 
     for proc in running:
         proc.join()
+
+    from benchmarks.compute import record
+    record("reheuristic", [(r[0], r[3]) for r in results if r[3]])
     return results
 
 

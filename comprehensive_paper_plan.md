@@ -85,7 +85,9 @@ change and now solves in 285 s.
 
 ### 3.2 A corpus of certified-by-simulation optima
 
-*(measured)* Sweeps of the benchmark tree, 6,376 instances, 30 workers:
+*(measured)* **Total cost of the corpus: 588 core-hours, 24.5 core-days**
+(`python -m benchmarks.compute`; regenerate rather than quoting this figure from
+memory). Sweeps of the benchmark tree, 6,376 instances, 30 workers:
 
 - 60 s budget: 5,499 solved, 877 timeout, 0 errors
 - 900 s budget: 5,878 solved, 498 timeout, 0 errors
