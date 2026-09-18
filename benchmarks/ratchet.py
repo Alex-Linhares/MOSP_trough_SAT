@@ -35,14 +35,13 @@ from typing import Optional
 
 from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
-from satisfiability.mosp_encoding import encode_mosp_decision, extract_ordering
 from satisfiability.mosp_solver import (
     _load_solution,
     PROVENANCE_BOUND,
     PROVENANCE_REFUTATION,
     PROVENANCE_SOLUTION,
-    SAT_BACKEND,
     SOLUTIONS_DIR,
+    decide_mosp,
     _lower_bound,
     _save_solution,
     _solution_path,
@@ -55,7 +54,6 @@ DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
 def _decision_worker(matrix_list, n_customers, n_patterns, name, k, queue):
     """Decide 'MOSP <= k?' in a child process and post the answer."""
     import numpy as np
-    from pysat.solvers import Solver
 
     try:
         instance = MOSPInstance(
@@ -64,12 +62,11 @@ def _decision_worker(matrix_list, n_customers, n_patterns, name, k, queue):
             n_patterns=n_patterns,
             name=name,
         )
-        cnf, pool, m = encode_mosp_decision(instance, k)
-        with Solver(name=SAT_BACKEND, bootstrap_with=cnf.clauses) as solver:
-            if solver.solve():
-                queue.put(("sat", extract_ordering(solver.get_model(), pool, m)))
-            else:
-                queue.put(("unsat", None))
+        # decide_mosp, not a raw encode: it decomposes and drops dominated
+        # patterns first, and both reductions preserve the optimum, so an
+        # "unsat" from it refutes the original instance exactly as before.
+        ordering = decide_mosp(instance, k)
+        queue.put(("sat", ordering) if ordering is not None else ("unsat", None))
     except Exception as exc:  # noqa: BLE001
         queue.put(("error", f"{type(exc).__name__}: {exc}"))
 

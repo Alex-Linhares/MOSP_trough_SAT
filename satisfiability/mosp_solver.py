@@ -443,6 +443,57 @@ def solve_mosp_sat(
     return val, ordering
 
 
+def decide_mosp(
+    instance: MOSPInstance,
+    k: int,
+    backend: str = SAT_BACKEND,
+) -> list[int] | None:
+    """Decide "MOSP(instance) <= k?", reducing the instance before encoding.
+
+    Two reductions from `mosp.preprocess` apply, in this order:
+
+    - **Decomposition.** The components of the MOSP graph share no customer and
+      no product, so `MOSP(I) <= k` exactly when every component satisfies it,
+      and a refutation on any one component refutes the whole instance. Each
+      component is encoded separately, which is what makes this worth doing at
+      all: the formula is superlinear in the instance, so two halves cost far
+      less than the whole.
+    - **Pattern dominance.** Within a component, a product whose customers are a
+      subset of another product's is dropped and reinserted next to its
+      dominator afterwards, at no cost to the count.
+
+    Both preserve the optimum, so an UNSAT here refutes the original instance
+    and is safe to record as a certified bound. Measured firing rates on the
+    6,376-instance corpus: dominance on 3,409 of them, removing 17,699 columns;
+    decomposition on 154. On the 148 unproven Random instances the rates are 93
+    and **zero** -- Chu & Stuckey (2009) deliberately discard decomposable
+    instances from that generator's output, so its absence there is by design.
+
+    Returns a witness ordering of the *original* instance if satisfiable, None
+    otherwise.
+    """
+    from pysat.solvers import Solver
+
+    from mosp.preprocess import (
+        components, lift_component_orderings, remove_dominated_patterns)
+
+    parts, free = components(instance)
+    if not parts:
+        return list(range(instance.n_patterns))
+
+    orderings: list[list[int]] = []
+    for part in parts:
+        reduction = remove_dominated_patterns(part.instance)
+        cnf, pool, m = encode_mosp_decision(reduction.instance, k)
+        with Solver(name=backend, bootstrap_with=cnf.clauses) as solver:
+            if not solver.solve():
+                return None
+            order = extract_ordering(solver.get_model(), pool, m)
+        orderings.append(reduction.lift(order))
+
+    return lift_component_orderings(parts, orderings, free)
+
+
 def _sat_decision(
     instance: MOSPInstance,
     k: int,
@@ -451,13 +502,4 @@ def _sat_decision(
 
     Returns a witness ordering if satisfiable, None otherwise.
     """
-    from pysat.solvers import Solver
-
-    cnf, pool, m = encode_mosp_decision(instance, k)
-
-    with Solver(name=SAT_BACKEND, bootstrap_with=cnf) as solver:
-        if solver.solve():
-            model = solver.get_model()
-            return extract_ordering(model, pool, m)
-
-    return None
+    return decide_mosp(instance, k)

@@ -486,3 +486,70 @@ def test_linear_encoding_advantage_grows_with_size():
 
     assert ratios == sorted(ratios), f"ratio should grow with n, got {ratios}"
     assert ratios[-1] > 2 * ratios[0]
+
+
+# -------------------------------------------------------
+# The reducing decision procedure
+# -------------------------------------------------------
+
+
+def _brute_optimum(inst):
+    import itertools
+    return min(max_open_stacks(inst, list(perm))
+               for perm in itertools.permutations(range(inst.n_patterns)))
+
+
+@pytest.mark.parametrize("seed", range(4))
+def test_decide_mosp_agrees_with_brute_force(seed):
+    """`decide_mosp` decomposes and drops dominated patterns before encoding.
+    Both reductions claim to preserve the optimum, so the threshold at which it
+    flips from unsat to sat must be the true optimum, and its witness must
+    achieve the k it was asked for."""
+    from satisfiability.mosp_solver import decide_mosp
+
+    rng = random.Random(500 + seed)
+    for _ in range(12):
+        n_patterns = rng.randint(1, 6)
+        matrix = [[1 if rng.random() < 0.35 else 0 for _ in range(n_patterns)]
+                  for _ in range(rng.randint(1, 6))]
+        inst = MOSPInstance.from_matrix(matrix, name="decide")
+        optimum = _brute_optimum(inst)
+
+        for k in range(0, optimum + 2):
+            ordering = decide_mosp(inst, k)
+            if k < optimum:
+                assert ordering is None, f"k={k} below optimum {optimum} but sat"
+            else:
+                assert ordering is not None, f"k={k} at or above optimum but unsat"
+                assert sorted(ordering) == list(range(inst.n_patterns))
+                assert max_open_stacks(inst, ordering) <= k
+
+
+def test_decide_mosp_handles_a_decomposable_instance():
+    """Two blocks sharing nothing: the answer is the larger block's, and the
+    witness has to cover both components' products."""
+    from satisfiability.mosp_solver import decide_mosp
+
+    matrix = [
+        [1, 1, 0, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 1, 1, 0],
+        [0, 0, 0, 1, 1],
+        [0, 0, 1, 0, 1],
+    ]
+    inst = MOSPInstance.from_matrix(matrix, name="split")
+    optimum = _brute_optimum(inst)
+
+    assert decide_mosp(inst, optimum - 1) is None
+    ordering = decide_mosp(inst, optimum)
+    assert sorted(ordering) == list(range(5))
+    assert max_open_stacks(inst, ordering) <= optimum
+
+
+def test_decide_mosp_covers_products_nobody_needs():
+    """A column of zeros belongs to no component and still has to be scheduled."""
+    from satisfiability.mosp_solver import decide_mosp
+
+    inst = MOSPInstance.from_matrix([[1, 0, 1], [0, 0, 1]], name="free")
+    ordering = decide_mosp(inst, 2)
+    assert sorted(ordering) == [0, 1, 2]
