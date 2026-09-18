@@ -23,11 +23,45 @@ This report evaluates three bounds on the MOSP graph:
 | **contraction degeneracy (MMD+)** | **0.54** | **63.4%** | **5** |
 
 *(900 benchmark instances with known optima, sampled uniformly at random from
-the 6,226-instance solved corpus.)*
+the 6,226-instance solved corpus, measured 2026-09-17. The sample is left as
+measured rather than restated over the larger corpus, since it is a record of
+what was drawn.)*
 
-Contraction degeneracy is tight on nearly two thirds of instances and never more
-than 5 below the optimum, against a trivial bound that is tight on one instance
-in eighty. It costs a median of 1.1 ms.
+Contraction degeneracy is tight on nearly two thirds of instances, against a
+trivial bound tight on one instance in eighty. It costs a median of 1.1 ms.
+
+**The "max gap 5" in that table is an artefact of what had been solved when it
+was drawn, and does not survive the corpus growing.** Re-run 2026-09-18 over
+every certified optimum — 6,340 of them, the combined bound this time rather
+than contraction degeneracy alone:
+
+| | value |
+|---|---|
+| instances checked | 6,340 |
+| violations (bound above a true optimum) | **0** |
+| tight | 4,164 (65.7%) |
+| mean gap | 0.86 |
+| **max gap** | **42** |
+
+The eight worst gaps are all instances the customer search closed that same day:
+
+| instance | optimum | bound | gap |
+|---|---|---|---|
+| Random-125-125-8-2_0 | 93 | 51 | **42** |
+| Random-125-125-8-4_0 | 94 | 53 | 41 |
+| Random-125-125-8-1_0 | 95 | 55 | 40 |
+| Random-125-125-10-5_0 | 99 | 59 | 40 |
+| Random-125-125-10-2_0 | 104 | 65 | 39 |
+
+Across the 166 certified Chu & Stuckey `Random` instances the mean gap is 11.05,
+against 0.86 over the corpus as a whole. That is the whole story of why those
+instances resisted the SAT path: a binary search over a 40-wide interval spends
+its budget on refutations far below the optimum, which is exactly what §1 says a
+weak bound does to a solver. The customer search does not care, because it
+descends from the *upper* bound and refutes there.
+
+So the bound is not weak everywhere — it is weak precisely where the instances
+are hard, and the headline mean of 0.86 is carried by the 6,174 easy ones.
 
 ---
 
@@ -281,15 +315,16 @@ by a binary search, which is where §7 originally implied it would show up.
 Because §5 makes the bound a correctness dependency, it was checked rather than
 assumed.
 
-- **Full corpus.** The bound was computed for all **6,226** benchmark instances
-  with a known optimum and compared against it. **Zero violations** — the bound
-  never exceeded an optimum.
+- **Full corpus.** The bound was computed for all **6,340** benchmark instances
+  with a certified optimum and compared against it. **Zero violations** — the
+  bound never exceeded an optimum. Re-run 2026-09-18, after the customer-search
+  sweep added 114 certified optima that had never been through this check, 111
+  of them from the sweep itself and concentrated in the hard sparse and dense
+  regimes where the bound is loosest.
 
-  (`solutions/` holds 6,230 files, four of which — `GP1.json` through
-  `GP4.json` — are duplicates written by `validate_published_optima.py` under a
-  bare naming convention that `from_benchmark_file` does not produce. 6,226 is
-  the number of distinct benchmark instances with a solution, and the figure to
-  quote.)
+  (`solutions/` holds one file per instance — 6,376 of them — since the four
+  `GP1.json`–`GP4.json` duplicates written under a bare naming convention were
+  deleted and the script that produced them fixed.)
 - **Exhaustive small instances.** `tests/test_lower_bounds.py` compares the
   bound against optima obtained by brute-force enumeration over all orderings,
   on random instances across a range of sizes and densities.
@@ -297,7 +332,7 @@ assumed.
   test run, so a regression in the bound fails the suite rather than silently
   corrupting results.
 
-A caveat on what this establishes: agreement with 6,226 known optima is strong
+A caveat on what this establishes: agreement with 6,340 known optima is strong
 evidence, but those optima were produced by this same solver. The check rules
 out the bound exceeding values the solver found, and it would catch a bound that
 is outright wrong; it does not independently confirm the underlying equality

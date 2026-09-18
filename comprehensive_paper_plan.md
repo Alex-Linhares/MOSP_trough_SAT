@@ -94,10 +94,15 @@ change and now solves in 285 s.
 
 **0 value/simulation mismatches across every solved instance in every pass.**
 
-The corpus stands at 6,380 cached solutions, each recording how its value was
-established: **6,226 certified by refutation, 2 by a tight lower bound, and 152
-best known solutions with optimality open.** That distinction is machine-readable
+The corpus stands at 6,376 cached solutions, one per instance, each recording
+how its value was established: **6,338 certified by refutation, 2 by a tight
+lower bound, and 36 best known solutions with optimality open** — 35 distinct
+instances, SP4 being stored under two names. That distinction is machine-readable
 in the files, not reconstructed.
+
+The jump from 6,226 certified to 6,340 is the customer search of
+`reports/customer_search.md`, which closed 111 of the 147 then open in 45
+minutes, including SP3 at its published optimum of 34.
 
 The "0 mismatches" figure is meaningful because the verification path
 (`mosp/verify.py`, simulate the sequence and count) shares no code with the SAT

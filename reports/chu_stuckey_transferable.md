@@ -144,7 +144,7 @@ This matters for `reports/lower_bounds.md`. Our contraction degeneracy bound is
 currently justified through treewidth — contraction degeneracy lower-bounds
 treewidth, treewidth lower-bounds pathwidth, and `MOSP = pathwidth + 1` — a chain
 whose last link this project has specific reason to treat carefully, which is why
-the bound is validated against 6,226 known optima rather than argued for.
+the bound is validated against 6,340 known optima rather than argued for.
 
 Lemma 1 offers a **MOSP-specific justification instead**: if every contraction of
 the customer graph is a relaxation, a bound computed on a contracted graph bounds
