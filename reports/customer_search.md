@@ -85,6 +85,39 @@ if both are requested.
 
 ---
 
+## 3a. What each rule is actually worth here
+
+SP3's refutation at `k = 33`, the call that settles the instance. Each
+configuration answers the same question; "unknown" means the 600-second cutoff
+came first.
+
+| configuration | result | nodes | time | nodes/s |
+|---|---|---|---|---|
+| memo only, no dominance | unsat | 8,900,666 | 160.5 s | 55,000 |
+| subset + definite, no memo | **unknown** | 11,993,088 | 600 s | 20,000 |
+| subset + definite + memo *(default)* | unsat | 3,942,231 | 134.3 s | 29,000 |
+| subset + definite + old move, no memo | unsat | 2,873,961 | 153.6 s | 19,000 |
+
+Three readings, none of them the one the plan projected:
+
+- **The memo is what makes this instance land.** Without it the dominance rules
+  burn 12 million nodes and do not finish. With it and nothing else, the
+  refutation takes 160 seconds.
+- **The dominance rules cut nodes 2.3× and time 1.2×.** They cost about twice as
+  much per node as they save in nodes visited. The plan expected 1-2 orders of
+  magnitude from their Table 4(a); that is a measurement of a C++ search where
+  the per-node arithmetic is nearly free, and it does not transfer to a Python
+  one. This is the same category of error as reading their Table 1 timings as
+  though they were ours.
+- **Old move prunes hardest and still loses on the clock** — 27% fewer nodes
+  than the default, 14% more time, because maintaining `Q(S)` costs per node
+  what it saves in branches. It stays off by default and stays implemented: its
+  advantage is in nodes, so it should win where the memo degrades, which is
+  exactly the large sparse instances the default cannot finish. That is worth a
+  measurement of its own and has not had one.
+
+---
+
 ## 4. What makes a proof a proof
 
 A refutation at `k` says the optimum is above `k`. Claiming it *is* `k + 1`
