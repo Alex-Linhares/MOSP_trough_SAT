@@ -28,11 +28,13 @@ from mosp.verify import max_open_stacks
 from satisfiability.mosp_solver import (
     PROVENANCE_BOUND,
     PROVENANCE_REFUTATION,
+    PROVENANCE_RELAXATION,
     PROVENANCE_SOLUTION,
     SOLUTIONS_DIR,
     _load_solution,
     _lower_bound,
     _save_solution,
+    load_lower_bound,
 )
 
 DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
@@ -81,7 +83,19 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
         from satisfiability.customer_search import sparse_enough_for_better_move
         better = sparse_enough_for_better_move(instance)
 
-        result = solve(instance, upper=before, lower=_lower_bound(instance),
+        # The floor the descent stops at. A recorded bound -- from
+        # benchmarks/relax_sweep.py -- is usually far above what the cheap
+        # bounds give, and the descent ends the moment its value reaches it,
+        # with no refutation needed. That is how GP7 and GP8 were settled, and
+        # it is the whole point of computing the bounds: it converts an
+        # expensive refutation into a cheap witness search.
+        cheap = _lower_bound(instance)
+        recorded = load_lower_bound(instance, solutions_dir)
+        floor, source = cheap, "degeneracy"
+        if recorded and recorded[0] > cheap:
+            floor, source = recorded
+
+        result = solve(instance, upper=before, lower=floor,
                        time_budget=timeout, max_nodes=max_nodes,
                        on_improve=checkpoint,
                        better_move=better, better_move_dominators=0)
@@ -102,8 +116,15 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
                        f"claimed {result.value}, achieves {achieved}"))
             return
 
+        # A closure that rests on a relaxation bound rests on Lemma 1 as well as
+        # on this search, so it is recorded as a different kind of claim.
+        provenance = PROVENANCE[result.proof]
+        if result.proof == "bound" and source == "relaxation":
+            provenance = PROVENANCE_RELAXATION
+
         _save_solution(instance, achieved, ordering, solutions_dir,
-                       provenance=PROVENANCE[result.proof])
+                       provenance=provenance, lower_bound=floor,
+                       lower_bound_source=source)
         queue.put((name, before, achieved, time.time() - started, result.proof))
     except Exception as exc:  # noqa: BLE001
         queue.put((name, None, None, time.time() - started,

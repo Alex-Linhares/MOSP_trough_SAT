@@ -282,9 +282,22 @@ def _solution_path(instance: MOSPInstance, solutions_dir: Path) -> Path:
 # good guess is a liability, and both kinds are now present.
 PROVENANCE_REFUTATION = "certified:refutation"  # SAT at k, UNSAT at k-1
 PROVENANCE_BOUND = "certified:bound"            # SAT at k, and lower bound = k
+PROVENANCE_RELAXATION = "certified:relaxation"  # as above, but the bound came
+                                                # from a contraction, so the
+                                                # claim also rests on Lemma 1
 PROVENANCE_SOLUTION = "solution"                # witness only; optimality open
 
-CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND})
+CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND,
+                       PROVENANCE_RELAXATION})
+
+# Lower bounds are recorded with where they came from, because they do not all
+# rest on the same thing. `clique` is proved directly here. `degeneracy` rests
+# on MOSP = pathwidth + 1. `relaxation` rests additionally on Chu & Stuckey's
+# Lemma 1 -- that contracting an edge relaxes the instance -- which this project
+# has measured on 3,167 contractions and not proved, from a paper it does not
+# hold. An optimality claim closed by a relaxation bound inherits that, which is
+# why it gets its own provenance rather than being folded into certified:bound.
+BOUND_SOURCES = ("clique", "degeneracy", "relaxation")
 
 
 def _save_solution(
@@ -293,6 +306,8 @@ def _save_solution(
     ordering: list[int],
     solutions_dir: Path,
     provenance: str = PROVENANCE_SOLUTION,
+    lower_bound: int | None = None,
+    lower_bound_source: str | None = None,
 ) -> Path:
     """Save a solution, refusing to replace a better one already on disk.
 
@@ -305,20 +320,37 @@ def _save_solution(
     solutions_dir.mkdir(parents=True, exist_ok=True)
     path = _solution_path(instance, solutions_dir)
 
+    kept_bound, kept_source = lower_bound, lower_bound_source
     if path.exists():
         try:
             existing = json.loads(path.read_text())
+            # Lower bounds are monotone upwards, independently of the value:
+            # a run that improves the witness must not discard a bound an
+            # earlier run proved, and vice versa.
+            previous = existing.get("lower_bound")
+            if previous is not None and (kept_bound is None or previous > kept_bound):
+                kept_bound, kept_source = previous, existing.get("lower_bound_source")
+
             if existing.get("mosp_value") is not None:
                 if existing["mosp_value"] < val:
+                    if kept_bound != previous:      # still worth recording
+                        _rewrite_bound(path, existing, kept_bound, kept_source)
                     return path
                 # An equal value that is already certified must not be demoted
                 # to a bare solution by a later run that merely re-found it.
                 if (existing["mosp_value"] == val
                         and existing.get("provenance") in CERTIFIED
                         and provenance not in CERTIFIED):
+                    if kept_bound != previous:
+                        _rewrite_bound(path, existing, kept_bound, kept_source)
                     return path
         except (json.JSONDecodeError, OSError):
             pass  # unreadable or truncated: overwrite it
+
+    if kept_bound is not None and kept_bound > val:
+        raise ValueError(
+            f"{instance.name}: lower bound {kept_bound} exceeds the value {val}; "
+            "one of them is wrong and the corpus must not record both")
 
     data = {
         "instance_name": instance.name,
@@ -328,8 +360,39 @@ def _save_solution(
         "ordering": ordering,
         "provenance": provenance,
     }
+    if kept_bound is not None:
+        data["lower_bound"] = kept_bound
+        if kept_source:
+            data["lower_bound_source"] = kept_source
     path.write_text(json.dumps(data, indent=2) + "\n")
     return path
+
+
+def _rewrite_bound(path: Path, existing: dict, bound: int | None,
+                   source: str | None) -> None:
+    """Record a better lower bound on a solution whose value is not changing."""
+    if bound is None:
+        return
+    existing["lower_bound"] = bound
+    if source:
+        existing["lower_bound_source"] = source
+    path.write_text(json.dumps(existing, indent=2) + "\n")
+
+
+def load_lower_bound(instance: MOSPInstance,
+                     solutions_dir: Path = SOLUTIONS_DIR) -> tuple[int, str] | None:
+    """The best lower bound recorded for this instance, and where it came from."""
+    path = _solution_path(instance, solutions_dir)
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return None
+    bound = data.get("lower_bound")
+    if bound is None:
+        return None
+    return int(bound), data.get("lower_bound_source", "")
 
 
 def _load_solution(
