@@ -405,9 +405,10 @@ bounds — the witness verifies either way — but only the first is an optimali
 claim, and they must not be added together.
 
 The 27 uncertified files cover **26 distinct
-instances**, all Chu & Stuckey `Random` and all sparse — the densest left open
-is 8 products per customer, and density 10 has none. SP4, long the last
-unproved published instance, is no longer among them.
+instances**, all sparse — the densest left open is 8.2 products per customer,
+and density 10 has none. SP4 is still among them: its value of 53 matches the
+published optimum and its certified lower bound is 46, so the gap is 7, but the
+refutation that would close it has not landed.
 
 Four further files used to sit here: `GP1.json`–`GP4.json`, written by
 `validate_published_optima.py` under a name `from_benchmark_file` never
