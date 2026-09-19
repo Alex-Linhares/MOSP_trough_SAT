@@ -160,7 +160,11 @@ on the partial sequence already committed:
 - **definite move** (their Theorem 1) — if `close(q,S) ≥ open(q,S)`, playing `q`
   now is always at least as good, so *every* sibling branch goes;
 - **old move** (their Theorem 3) — a move already searched at an ancestor, whose
-  reinsertion there stays playable, has been seen.
+  reinsertion there stays playable, has been seen;
+- **better move** (their Theorem 2) — if `S ++ [q]` and `S ++ [r, q]` are
+  playable and `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then `r` goes. This one
+  is `O(|R|³)` per node against Theorem 1's `O(|R|²)` and is switched on **only
+  for sparse instances**, where it is worth up to 300×; see below.
 
 Running it over the instances whose optimality was open — 900 s each, 20 workers
 — **closed 111 of 147 in 45 minutes**:
@@ -182,10 +186,39 @@ an eight-backend SAT portfolio had been running for hours without an answer.
 
 The rules are worth less here than their paper suggests, and the reason is worth
 recording: on SP3's refutation the **memo** is what makes the call land at all,
-while the dominance rules cut nodes 2.3× and time only 1.2×, because they cost
-about twice per node what they save in nodes. Their Table 4(a) measures a C++
-search where per-node arithmetic is nearly free. Full ablation in
+while the subset and definite-move rules cut nodes 2.3× and time only 1.2×,
+because they cost about twice per node what they save in nodes. Their Table 4(a)
+measures a C++ search where per-node arithmetic is nearly free. Full ablation in
 [`reports/customer_search.md`](reports/customer_search.md).
+
+#### The C port, and why Theorem 2 is conditional
+
+`satisfiability/customer_search.c` is the same search in C, called through
+`ctypes`, about **120× faster** — two million branch decisions a second against
+nineteen thousand. It visits *the same nodes in the same order*: the counts match
+the Python instance by instance, which is the sharpest available evidence that it
+is the same search and not merely a similar one. The Python stays the reference,
+`native=False` forces it, and the C declines rather than guessing when it is out
+of range (more than 128 customers, or a rule it does not implement).
+
+Theorem 2 exists only in the C, and whether it pays **inverts with density**:
+
+| products per customer | nodes without | with Theorem 2 | verdict |
+|---|---|---|---|
+| 2.6 (an open instance) | 263,000,000+, unresolved | **885,759** | closed it, in 3 s |
+| 2.3 | 7,327,112 | **55,424** | 15× faster |
+| 6.2 | 11,800,509 | 7,211,993 | 0.44×, a clear loss |
+| 8.3 | 4,407,437 | 3,437,570 | 0.47×, a clear loss |
+
+It ranges over *pairs* of candidates, so it repays its cubic cost only where many
+candidates stay playable at each step — which is exactly what sparsity means
+here. `sparse_enough_for_better_move()` picks it per instance at a measured
+threshold of 5.0 products per customer, and the open instances separate cleanly:
+none sits between 4.85 and 5.70.
+
+The first row is the result that mattered. That instance had consumed 263 million
+branch decisions in 180 seconds without resolving; with Theorem 2 it closed in
+three. Eight more fell in the first 28 seconds of the sweep that followed.
 
 ## Lower bounds
 
@@ -526,6 +559,8 @@ satisfiability/                 -> the two exact engines, and the bounds
     mosp_encoding.py                Direct MOSP-to-SAT CNF encoding
     mosp_solver.py                  SAT engine: binary search, bounds, caching
     customer_search.py              Complete search over customer closing orders
+    customer_search.c               The same search in C, about 120x faster
+    native.py                       Loads the C port, and decides when to trust it
     relaxation.py                   Contraction relaxation: certified lower bounds
     heuristics.py                   Upper bound strategies behind one signature
     encoding.py                     Pathwidth CNF encoding (legacy)
@@ -556,6 +591,7 @@ benchmarks/
     csearch.py                      Parallel descent with the customer search
     marathon.py                     Deadline-sized budgets for long unattended runs
     corpus.py                       What the corpus claims, counted from the files
+    compute.py                      Totals the corpus's compute cost in core-hours
     compute.py                      Totals the corpus's compute cost in core-hours
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus
@@ -589,7 +625,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          445 tests across 23 test modules
+tests/                          459 tests across 24 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima
@@ -807,10 +843,11 @@ cd lean && lake build
   to refute `ub − 1` on a contraction, which can only succeed when `ub` is
   already the true optimum — and on the sparse instances it was being asked about,
   it was not. Partial relaxation (the bounds table above) is the part that works.
-- **Theorem 2 of Chu & Stuckey ("better move") is not implemented.** Its
-  condition ranges over pairs of candidates at `O(|R|³)` per node, where
-  Theorem 1 — its special case — is `O(|R|²)`. Right in a compiled
-  implementation, wrong in this one.
+- **Theorem 2 is off on dense instances, by measurement**, where it costs about
+  2.2×. It is on for everything below 5.0 products per customer, where it is
+  worth up to 300×. The threshold was calibrated on completed refutations;
+  comparing configurations on instances that never finish cannot settle it,
+  since node counts mislead when better pruning visits fewer nodes by design.
 - **Four of the six Yanasse & Senne preprocessing operations are still
   unimplemented**, and decomposition never fires on the instances that are hard.
 - **The contraction degeneracy bound is validated, not proved.** It rests on
