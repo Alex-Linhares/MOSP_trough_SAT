@@ -105,5 +105,7 @@
     94,
     97
   ],
-  "provenance": "solution"
+  "provenance": "solution",
+  "lower_bound": 38,
+  "lower_bound_source": "relaxation"
 }
