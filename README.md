@@ -7,12 +7,16 @@ plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
 and the pathwidth theory the project started from is partly formalized.
 
-**6,340 of 6,376 cached solutions are certified optimal — 99.44% of the
-corpus**, each with a witness ordering in `solutions/` that can be checked
-without trusting this code, for **about a day of solving on 25 cores** (588
-core-hours). What remains open is 35 instances (0.56%): 34 sparse Chu & Stuckey
-`Random` instances and SP4. Every file records how its value was established, so
-proofs and good guesses are never added together.
+**6,349 of 6,376 cached solutions are certified optimal —
+99.58% of the corpus**, each with a witness ordering in `solutions/`
+that can be checked without trusting this code, for **about a day of solving on 25
+cores** (588 core-hours). What remains open is 26
+instances (0.42%), all sparse Chu & Stuckey `Random` instances.
+Every file records how its value was established, so proofs and good guesses are
+never added together.
+
+*(Regenerate with `python -m benchmarks.corpus` and `python -m
+benchmarks.compute`; both move whenever a run closes something.)*
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some
 subset of products), find a production sequence that minimizes the maximum number
@@ -390,20 +394,20 @@ instance, with no file matching none:
 
 | provenance | count | share | meaning |
 |---|---|---|---|
-| `certified:refutation` | 6,338 | 99.40% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
+| `certified:refutation` | 6,347 | 99.55% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
 | `certified:bound` | 2 | 0.03% | satisfiable at `k`, and the lower bound already equals `k` |
-| **certified, either way** | **6,340** | **99.44%** | **an optimality claim** |
-| `solution` | 36 | 0.56% | a witness of value `k` and nothing more; optimality open |
+| **certified, either way** | **6,349** | **99.58%** | **an optimality claim** |
+| `solution` | 27 | 0.42% | a witness of value `k` and nothing more; optimality open |
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
 bounds — the witness verifies either way — but only the first is an optimality
 claim, and they must not be added together.
 
-The 36 uncertified files are 34 Chu & Stuckey `Random` instances and SP4, stored
-under two names — so **35 distinct instances remain open**, and they are sparse:
-densities 2 and 4 account for 24 of the 34 Random ones, density 6 for 8, density
-8 for 2, and density 10 for none at all.
+The 27 uncertified files cover **26 distinct
+instances**, all Chu & Stuckey `Random` and all sparse — the densest left open
+is 8 products per customer, and density 10 has none. SP4, long the last
+unproved published instance, is no longer among them.
 
 Four further files used to sit here: `GP1.json`–`GP4.json`, written by
 `validate_published_optima.py` under a name `from_benchmark_file` never
@@ -550,6 +554,7 @@ fixed_parameter_algorithm/      -> Pathwidth solvers (used as subroutines)
 benchmarks/
     csearch.py                      Parallel descent with the customer search
     marathon.py                     Deadline-sized budgets for long unattended runs
+    corpus.py                       What the corpus claims, counted from the files
     compute.py                      Totals the corpus's compute cost in core-hours
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus

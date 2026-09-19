@@ -165,14 +165,14 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-18 with 6,376 cached solutions, now read from the files
+Measured on 2026-09-19 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
 themselves rather than reconstructed:
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,338 |
+| `certified:refutation` | 6,347 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 36 |
+| `solution` (optimality open) | 27 |
 
 **Compute cost: about a day on 25 cores (588 core-hours)**, from `python -m
 benchmarks.compute`, which totals the result CSVs and the ledger `csearch` and
