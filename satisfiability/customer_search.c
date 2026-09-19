@@ -94,6 +94,8 @@ typedef struct {
     memo_t   memo;
     int      subset_rule;
     int      definite_move;
+    int      better_move;
+    int      better_move_dominators;   /* how many q to try; 0 for all */
     int      use_memo;
     int      restrict_frontier;
     long long nodes;
@@ -153,6 +155,50 @@ static int dominance_filter(search_t *s, mask_t remaining, mask_t candidates,
                 goto sorted;
             }
         }
+    }
+
+    /* Theorem 2, "better move". If S ++ [q] and S ++ [r, q] are both playable
+     * and close(q, S u {r}) >= open(q, S u {r}), then any solution extending
+     * S ++ [r] has one extending S ++ [q], so r can go. Theorem 1 is the case
+     * where one q beats every r at once, which is why it runs first as a fast
+     * path: it is O(R^2) where this is O(R^3).
+     *
+     * Only the cheapest few q are tried as dominators. Using a subset prunes
+     * less but never wrongly -- the theorem justifies each pruning on its own,
+     * so leaving some unfound costs nodes, not correctness. */
+    if (s->better_move && count > 1) {
+        int limit = s->better_move_dominators > 0 &&
+                    s->better_move_dominators < count
+                    ? s->better_move_dominators : count;
+        int kept = 0;
+        for (int ri = 0; ri < count; ri++) {
+            int r = who[ri];
+            mask_t closed_r = closed | BIT(r);
+            mask_t opened_r = opened | s->neighbour[r];
+            mask_t remaining_r = s->full & ~closed_r;
+            int pruned = 0;
+
+            for (int qi = 0; qi < limit && !pruned; qi++) {
+                int q = who[qi];
+                if (q == r) continue;
+
+                /* S ++ [r, q] playable: q's cost once r has been played. */
+                if (popcount128((opened_r | s->neighbour[q]) & ~closed_r) > s->k)
+                    continue;
+
+                mask_t own = s->neighbour[q] & ~opened_r;
+                int opened_by = popcount128(own);
+                int closed_by = 0;
+                for (mask_t bits = remaining_r; bits; ) {
+                    mask_t bit = LOWEST(bits); bits ^= bit;
+                    if (((s->neighbour[lowest_index(bit)] & ~opened_r) & ~own) == 0)
+                        closed_by++;
+                }
+                if (closed_by >= opened_by) pruned = 1;
+            }
+            if (!pruned) { costs[kept] = costs[ri]; who[kept] = r; kept++; }
+        }
+        if (kept) count = kept;
     }
 
     if (s->subset_rule) {
@@ -261,6 +307,7 @@ int cs_decide(int n, int k,
               long long max_nodes, double seconds,
               int subset_rule, int definite_move, int use_memo,
               int restrict_frontier, long long memo_limit,
+              int better_move, int better_move_dominators,
               int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
@@ -272,6 +319,8 @@ int cs_decide(int n, int k,
     s.k = k;
     s.subset_rule = subset_rule;
     s.definite_move = definite_move;
+    s.better_move = better_move;
+    s.better_move_dominators = better_move_dominators;
     s.use_memo = use_memo;
     s.restrict_frontier = restrict_frontier;
     s.max_nodes = max_nodes;

@@ -123,3 +123,55 @@ def test_a_budget_stops_the_c_without_claiming_a_refutation():
             continue
         assert decide_native(instance, 0, max_nodes=1).status == "unknown"
         break
+
+
+@needs_native
+@pytest.mark.parametrize("dominators", [1, 4, 0])
+def test_theorem_two_prunes_without_changing_an_answer(dominators):
+    """Theorem 2 may discard branches. It may not change a single verdict.
+
+    A dominance rule that alters an answer does not slow a search down, it
+    fabricates refutations, so this is checked at every k against the reference
+    rather than only at the optimum. `dominators=0` means every candidate is
+    tried as the dominating q, which is the setting that pays on sparse
+    instances.
+    """
+    rng = random.Random(94)
+    pruned_somewhere = False
+    for _ in range(40):
+        instance = _random(rng)
+        for k in range(0, instance.n_customers + 2):
+            reference = decide(instance, k, native=False)
+            with_rule = decide_native(instance, k, better_move=True,
+                                      better_move_dominators=dominators)
+            assert with_rule.status == reference.status, (
+                f"k={k}: reference {reference.status}, Theorem 2 "
+                f"{with_rule.status}")
+            if with_rule.nodes < reference.nodes:
+                pruned_somewhere = True
+    assert pruned_somewhere, "Theorem 2 never pruned; the test proves nothing"
+
+
+def test_the_better_move_threshold_follows_the_measurement():
+    """Sparse instances get Theorem 2, dense ones do not -- the crossover that
+    was measured, not the one in the instance's filename."""
+    from satisfiability.customer_search import (
+        BETTER_MOVE_DENSITY, sparse_enough_for_better_move)
+
+    sparse = MOSPInstance.from_matrix(
+        [[1, 1, 0, 0, 0, 0, 0, 0]] * 4, name="sparse")      # 2 per customer
+    dense = MOSPInstance.from_matrix(
+        [[1] * 8] * 4, name="dense")                        # 8 per customer
+
+    assert sparse_enough_for_better_move(sparse)
+    assert not sparse_enough_for_better_move(dense)
+    assert BETTER_MOVE_DENSITY == 5.0
+
+    # A degenerate instance must not divide by zero. An instance with no
+    # products counts as sparse, which is harmless: there is nothing to search.
+    import numpy as np
+    empty = MOSPInstance(matrix=np.zeros((0, 0), dtype=np.int8),
+                         n_customers=0, n_patterns=0, name="none")
+    assert not sparse_enough_for_better_move(empty)
+    assert sparse_enough_for_better_move(
+        MOSPInstance.from_matrix([[]], name="no-products"))

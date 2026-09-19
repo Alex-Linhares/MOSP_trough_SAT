@@ -75,9 +75,16 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
             print(f"    {name}: {achieved} "
                   f"({(time.time() - started) / 3600:.1f}h in)", flush=True)
 
+        # Theorem 2 pays on sparse instances and costs on dense ones, by a
+        # factor of hundreds in the first case; the threshold is measured, see
+        # customer_search.BETTER_MOVE_DENSITY.
+        from satisfiability.customer_search import sparse_enough_for_better_move
+        better = sparse_enough_for_better_move(instance)
+
         result = solve(instance, upper=before, lower=_lower_bound(instance),
                        time_budget=timeout, max_nodes=max_nodes,
-                       on_improve=checkpoint)
+                       on_improve=checkpoint,
+                       better_move=better, better_move_dominators=0)
 
         if result.order:
             ordering = product_order_from_customers(instance, result.order)

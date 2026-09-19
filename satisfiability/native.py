@@ -14,6 +14,12 @@ It declines rather than guesses. The Python is used instead when:
   `__int128` the C uses for a customer set;
 - `old_move` is asked for, which the C does not implement.
 
+`better_move` is Theorem 2, which exists only here: it is O(|R|^3) per node
+against Theorem 1's O(|R|^2), which was the wrong trade in Python and may be
+the right one at two million nodes a second. `better_move_dominators` caps how
+many candidates are tried as the dominating `q`; a subset prunes less but never
+wrongly, since the theorem justifies each pruning on its own.
+
 The fallback is silent by design: a caller asking for a decision wants the
 right answer, and both paths give the same one. `native_available()` reports
 which is in use for the benchmarks that care.
@@ -75,6 +81,7 @@ def _load() -> "ctypes.CDLL | None":
             ctypes.c_longlong, ctypes.c_double,         # max_nodes, seconds
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # subset, definite, memo
             ctypes.c_int, ctypes.c_longlong,            # restrict, memo_limit
+            ctypes.c_int, ctypes.c_int,                 # better_move, dominators
             ctypes.POINTER(ctypes.c_int),               # out_path
             ctypes.POINTER(ctypes.c_longlong),          # out_nodes
             ctypes.POINTER(ctypes.c_int),               # out_len
@@ -103,6 +110,8 @@ def decide_native(
     definite_move: bool = True,
     old_move: bool = False,
     memo: bool = True,
+    better_move: bool = False,
+    better_move_dominators: int = 4,
     max_nodes: int | None = None,
     seconds: float | None = None,
     memo_limit: int = 4_000_000,
@@ -144,6 +153,7 @@ def decide_native(
         0.0 if seconds is None else float(seconds),
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
+        int(better_move), int(better_move_dominators),
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated

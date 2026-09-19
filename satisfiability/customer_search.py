@@ -40,11 +40,10 @@ branches kept, so a refutation still refutes.
 - *old move* (their Theorem 3): if `q` was already searched at an ancestor and
   inserting `q` back there leaves the sequence playable, that subtree has been
   seen and `q` goes. Maintained as a set `Q(S)` in `O(|C|)` per node.
-
-Theorem 2 ("better move") is not implemented: its condition ranges over pairs of
-candidates and needs `close(q, S ∪ {r})` for each, which is `O(|R|³)` per node
-where Theorem 1 -- its special case, where `q` beats every `r` at once -- is
-`O(|R|²)`. See `reports/customer_search.md`.
+- *better move* (their Theorem 2): if `S ++ [q]` and `S ++ [r, q]` are playable
+  and `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then `r` goes. `O(|R|³)` per node
+  against Theorem 1's `O(|R|²)`, implemented in the C only, and **worth it only
+  on sparse instances** -- see `sparse_enough_for_better_move`.
 
 **Old move and the memo do not compose.** A failure reached with old-move
 pruning depends on which branches an *ancestor* had already searched, so it is a
@@ -81,6 +80,36 @@ class Decision:
     nodes: int
 
 
+# Products per customer below which Theorem 2 pays. Measured on refutations
+# whose answers were already known, counting branch decisions, which is the one
+# figure a loaded machine cannot distort:
+#
+#   products/customer   nodes without   with Theorem 2   verdict
+#   2.6 (open instance)   263,000,000+        885,759    closed it, in 3s
+#   2.3                     7,327,112         55,424     15x faster
+#   6.1                    13,300,731      7,825,793     0.8x, a slight loss
+#   8.0                    11,902,214      8,652,247     0.45x, a clear loss
+#
+# The rule inverts with density because the theorem ranges over pairs of
+# candidates: sparse instances keep many candidates playable at each step, which
+# is exactly where pruning a pair at a time repays its cubic cost. Dense ones
+# run out of candidates quickly and the cost is wasted.
+BETTER_MOVE_DENSITY = 5.0
+
+
+def sparse_enough_for_better_move(instance: MOSPInstance) -> bool:
+    """Whether Theorem 2 should be used on this instance.
+
+    Chosen by measurement rather than by the instance's name: the Chu & Stuckey
+    generator's density parameter is not recorded in the file, and the ratio
+    below reproduces it closely enough (2.57 for a "-2-" instance, 8.01 for
+    a "-8-").
+    """
+    if instance.n_customers == 0:
+        return False
+    return float(instance.matrix.sum()) / instance.n_customers <= BETTER_MOVE_DENSITY
+
+
 def decide(
     instance: MOSPInstance,
     k: int,
@@ -94,6 +123,7 @@ def decide(
     deadline: float | None = None,
     memo_limit: int = 4_000_000,
     native: bool = True,
+    **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
 
@@ -130,6 +160,8 @@ def decide(
         answer = decide_native(
             instance, k, restrict=restrict, subset_rule=subset_rule,
             definite_move=definite_move, old_move=old_move, memo=memo,
+            better_move=kwargs.pop("better_move", False),
+            better_move_dominators=kwargs.pop("better_move_dominators", 4),
             max_nodes=max_nodes, memo_limit=memo_limit,
             seconds=None if deadline is None else max(0.0, deadline - time.monotonic()))
         if answer is not None:
