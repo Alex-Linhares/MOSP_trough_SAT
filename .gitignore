@@ -11,3 +11,6 @@ lean/.lake/packages/
 
 # Lean build outputs and fetched dependencies
 lean/.lake/
+*.so
+*.drat
+proofs/

@@ -64,20 +64,26 @@ al.'s tabulated `D` is the second.)
 
 ## Two engines, and why both are needed
 
-The project has two exact methods. They fail on disjoint sets of instances, and
-the split is not incidental — it follows from what each one searches.
+The project has two exact methods, and they are not symmetric. Stated as
+measured rather than as it would be nicer to state:
 
 | | **direct SAT** | **customer search** |
 |---|---|---|
 | searches | positions of products, `O(m²)` variables | orders in which customer stacks close |
-| refutation on dense instances (d ≥ 6) | does not return | seconds |
-| refutation on sparse instances (d = 2) | does not return | branching factor explodes |
+| the bulk of the corpus | closed 6,226 instances | not run on them; would likely also close them |
+| hard Random instances, dense (d ≥ 6) | refutations do not return | seconds to minutes |
+| hard Random instances, sparse (d = 2) | refutations do not return | branching factor explodes |
 | proof artifact | a CNF anyone can re-refute | none yet (see [limitations](#known-limitations)) |
 | entry point | `satisfiability.mosp_solver.solve_mosp_sat` | `satisfiability.customer_search.solve` |
 
-SAT wants a small formula; the customer search wants a small branching factor.
-Sparsity shrinks the first and inflates the second. Nothing yet races them
-against each other, which is the obvious next step.
+An earlier version of this section claimed the two "fail on disjoint sets". That
+was an inference from their profiles and it is not what the corpus shows. On the
+hard instances the customer search's failures are a **subset** of SAT's: it
+closed 111 that SAT could not, and **no instance is known that SAT closes and it
+cannot**. So racing them would be a bet, not a demonstrated win, and the
+complementarity that would justify a portfolio has not been measured. What *is*
+measured is that the customer search dominates at the hard end while SAT is the
+only one of the two that emits a checkable proof.
 
 ### The SAT engine
 

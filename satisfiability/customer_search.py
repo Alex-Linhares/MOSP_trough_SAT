@@ -93,6 +93,7 @@ def decide(
     max_nodes: int | None = None,
     deadline: float | None = None,
     memo_limit: int = 4_000_000,
+    native: bool = True,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
 
@@ -114,11 +115,26 @@ def decide(
         memo_limit: stop growing the memo past this many states. The table is
             what bounds memory here, and an unbounded one on a 125-customer
             refutation will take the machine down.
+        native: use the C port when it applies. It visits the same nodes in the
+            same order -- the counts match exactly on every instance measured --
+            about 120x faster. Set False to force the Python, which is the
+            reference implementation and what the exhaustive tests are written
+            against. `satisfiability/native.py` says when the C declines.
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty
         product set; customers needing nothing are omitted, as they never open.
     """
+    if native:
+        from satisfiability.native import decide_native
+        answer = decide_native(
+            instance, k, restrict=restrict, subset_rule=subset_rule,
+            definite_move=definite_move, old_move=old_move, memo=memo,
+            max_nodes=max_nodes, memo_limit=memo_limit,
+            seconds=None if deadline is None else max(0.0, deadline - time.monotonic()))
+        if answer is not None:
+            return answer
+
     if old_move and memo:
         raise ValueError(
             "old_move and memo cannot both be on: an old-move failure depends "
