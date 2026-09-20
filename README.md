@@ -533,6 +533,36 @@ trust chain entirely for this half of the claim.
   That is evidence, not proof. Giving this engine a checkable proof object is
   open work.
 
+### A third solver, as an outside check
+
+Both engines above were written for this project, so their agreement is weaker
+evidence than it looks, and the customer search's refutations carry no proof
+object at all. `benchmarks/oracle_sweep.py` runs a third solver against the
+corpus: Martin, Yanasse & Pinto's (2022) CP model under CP-SAT, in its own
+interpreter (`.venv-cpsat`), importing nothing from this project.
+
+Over **every certified optimum**, 300 seconds each, 25 workers, 4.5 hours:
+
+| | count | share |
+|---|---|---|
+| CP-SAT proved the same optimum | **5,266** | 82.9% |
+| CP-SAT disagreed | **0** | — |
+| CP-SAT could not settle in 300 s | 1,083 | 17.1% |
+
+So five sixths of the corpus is confirmed by three independent solvers — this
+project's SAT encoding, its customer search, and an outside solver running a
+different formulation in a different process. A transcription error, an encoding
+bug or an unsound dominance rule would have to survive all three.
+
+The 1,083 are the large instances, and they are where the confirmation is
+thinnest precisely because they are where our own search is least checkable.
+Its authors predicted this: they report the model as weakest on instances with
+many patterns and strongest on dense MOSP graphs.
+
+This is corroboration, not proof. Three solvers agreeing is not a certificate a
+stranger can check without running anything, which is what the two routes below
+would give.
+
 Two routes would close the remaining gap for the SAT half, and neither is done:
 
 - **proof logging** — emit a DRAT refutation checkable by a verified checker such
@@ -561,6 +591,8 @@ satisfiability/                 -> the two exact engines, and the bounds
     customer_search.py              Complete search over customer closing orders
     customer_search.c               The same search in C, about 120x faster
     native.py                       Loads the C port, and decides when to trust it
+    cpsat.py                        Bridge to the CP-SAT oracle, in its own interpreter
+    cpsat_oracle.py                 The Martin/Yanasse/Pinto CP model (runs in .venv-cpsat)
     relaxation.py                   Contraction relaxation: certified lower bounds
     heuristics.py                   Upper bound strategies behind one signature
     encoding.py                     Pathwidth CNF encoding (legacy)
@@ -591,6 +623,7 @@ benchmarks/
     csearch.py                      Parallel descent with the customer search
     marathon.py                     Deadline-sized budgets for long unattended runs
     corpus.py                       What the corpus claims, counted from the files
+    oracle_sweep.py                 Checks the corpus against CP-SAT, an outside solver
     compute.py                      Totals the corpus's compute cost in core-hours
     compute.py                      Totals the corpus's compute cost in core-hours
     ratchet.py                      Descending satisfiable-call search
@@ -625,7 +658,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          459 tests across 24 test modules
+tests/                          471 tests across 26 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima
