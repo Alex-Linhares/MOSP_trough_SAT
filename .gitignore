@@ -14,3 +14,4 @@ lean/.lake/
 *.so
 *.drat
 proofs/
+.venv-cpsat/
