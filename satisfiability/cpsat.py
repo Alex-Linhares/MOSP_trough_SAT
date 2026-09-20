@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -71,6 +72,7 @@ def solve_cpsat(
     upper: int | None = None,
     lower: int = 0,
     hint: list[int] | None = None,
+    on_improve: "Callable[[int, list[int]], None] | None" = None,
 ) -> OracleAnswer:
     """Ask CP-SAT for the optimum, in a separate process.
 
@@ -98,22 +100,47 @@ def solve_cpsat(
         "lower": lower,
         "hint": hint,
     }
+
+    # Read the child line by line rather than waiting for it. A long solve
+    # reports improvements as it finds them, and a caller that only sees the
+    # final line holds every one of them in the child's memory until it exits,
+    # losing all of them if anything interrupts it.
+    answer = {"status": "ERROR", "error": "no output"}
     try:
-        finished = subprocess.run(
+        child = subprocess.Popen(
             [str(VENV_PYTHON), str(ORACLE)],
-            input=json.dumps(request), capture_output=True, text=True,
-            timeout=max_seconds + 60)
-    except subprocess.SubprocessError as exc:
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True)
+    except OSError as exc:
         return OracleAnswer("ERROR", None, None, None, 0.0, error=str(exc))
 
-    if finished.returncode != 0:
-        return OracleAnswer("ERROR", None, None, None, 0.0,
-                            error=(finished.stderr or "").strip()[:200])
     try:
-        answer = json.loads(finished.stdout)
-    except json.JSONDecodeError:
-        return OracleAnswer("ERROR", None, None, None, 0.0,
-                            error=f"unparseable: {finished.stdout[:200]}")
+        child.stdin.write(json.dumps(request))
+        child.stdin.close()
+        for line in child.stdout:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if record.get("type") == "improvement":
+                if on_improve is not None:
+                    on_improve(record["value"], record["ordering"])
+            else:
+                answer = record
+        child.wait(timeout=60)
+    except subprocess.SubprocessError as exc:
+        child.kill()
+        return OracleAnswer("ERROR", None, None, None, 0.0, error=str(exc))
+    finally:
+        if child.poll() is None:
+            child.kill()
+
+    if child.returncode not in (0, None):
+        stderr = (child.stderr.read() or "").strip()[:200]
+        return OracleAnswer("ERROR", None, None, None, 0.0, error=stderr)
 
     return OracleAnswer(
         status=answer.get("status", "ERROR"),

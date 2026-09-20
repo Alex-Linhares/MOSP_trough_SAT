@@ -53,13 +53,31 @@ def _worker(matrix_list, n_customers, n_patterns, name, seconds, record,
         recorded = load_lower_bound(instance, solutions_dir)
         ours_lb = recorded[0] if recorded else 0
 
+        # Persist every improvement as CP-SAT finds it. A 24-hour solve that
+        # saves only at the end loses everything if it is interrupted, and
+        # shows nothing in the meantime.
+        best = {"value": ours_ub}
+
+        def checkpoint(value: int, ordering: list[int]) -> None:
+            achieved = max_open_stacks(instance, ordering)
+            if achieved != value:
+                return          # a witness that does not hold up is not saved
+            if best["value"] is not None and achieved >= best["value"]:
+                return
+            best["value"] = achieved
+            if record:
+                _save_solution(instance, achieved, ordering, solutions_dir)
+            print(f"    {name}: {achieved} ({(time.time() - started) / 3600:.1f}h in)",
+                  flush=True)
+
         # Start from what is already known: the witness as a hint, and its
         # value as a ceiling. The recorded lower bound is deliberately NOT
         # passed -- it comes from contraction and rests on Lemma 1, and
         # CP-SAT's own bound is worth having precisely because it does not.
         answer = solve_cpsat(instance, max_seconds=seconds, workers=1,
                              upper=ours_ub,
-                             hint=cached[1] if cached else None)
+                             hint=cached[1] if cached else None,
+                             on_improve=checkpoint)
 
         better_ub = better_lb = None
         if answer.value is not None and answer.ordering:
