@@ -25,7 +25,8 @@ import json
 import sys
 
 
-def solve(matrix, n_customers, n_patterns, max_seconds, workers, upper, lower):
+def solve(matrix, n_customers, n_patterns, max_seconds, workers, upper, lower,
+          hint=None):
     from ortools.sat.python import cp_model
 
     model = cp_model.CpModel()
@@ -55,6 +56,13 @@ def solve(matrix, n_customers, n_patterns, max_seconds, workers, upper, lower):
         size = model.NewIntVar(1, horizon, f"il{i}")
         model.Add(size == last - first)
         item_intervals.append(model.NewIntervalVar(first, size, last, f"i{i}"))
+
+    # A known sequence, handed over as a starting point. It costs nothing if
+    # CP-SAT improves on it immediately and saves a great deal when it would
+    # otherwise spend its budget rediscovering a worse one.
+    if hint:
+        for position, pattern in enumerate(hint):
+            model.AddHint(starts[pattern], position)
 
     stacks = model.NewIntVar(lower, upper if upper else n_customers, "C")
     if item_intervals:
@@ -89,7 +97,8 @@ def main():
         answer = solve(
             request["matrix"], request["n_customers"], request["n_patterns"],
             request.get("max_seconds", 60.0), request.get("workers", 1),
-            request.get("upper"), request.get("lower", 0))
+            request.get("upper"), request.get("lower", 0),
+            request.get("hint"))
     except Exception as exc:  # noqa: BLE001
         answer = {"status": "ERROR", "error": f"{type(exc).__name__}: {exc}",
                   "value": None, "ordering": None}

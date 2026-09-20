@@ -70,12 +70,19 @@ def solve_cpsat(
     workers: int = 1,
     upper: int | None = None,
     lower: int = 0,
+    hint: list[int] | None = None,
 ) -> OracleAnswer:
     """Ask CP-SAT for the optimum, in a separate process.
 
-    `upper` and `lower` narrow the objective's domain if they are known. They
-    are an optimisation only: a wrong bound would make the model infeasible or
-    cut off the optimum, so callers that are not certain should omit them.
+    `upper` and `hint` pass on what is already known: a verified witness cannot
+    cut off the optimum, since the optimum is at or below it, and the hint saves
+    CP-SAT from spending its budget rediscovering a worse sequence.
+
+    `lower` is different and should usually be left alone. Feeding in this
+    project's relaxation bounds would make CP-SAT's own `best_bound` rest on
+    Chu & Stuckey's Lemma 1, which is measured here and not proved — and an
+    independent bound is the one thing this solver offers that the others do
+    not. Pass it only when the caller wants speed rather than an opinion.
     """
     if not available():
         return OracleAnswer("UNAVAILABLE", None, None, None, 0.0,
@@ -89,6 +96,7 @@ def solve_cpsat(
         "workers": workers,
         "upper": upper,
         "lower": lower,
+        "hint": hint,
     }
     try:
         finished = subprocess.run(
