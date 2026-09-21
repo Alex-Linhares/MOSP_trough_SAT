@@ -130,7 +130,7 @@
     115,
     97
   ],
-  "provenance": "solution",
-  "lower_bound": 33,
+  "provenance": "certified:refutation",
+  "lower_bound": 39,
   "lower_bound_source": "relaxation"
 }

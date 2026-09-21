@@ -11,9 +11,11 @@ and the pathwidth theory the project started from is partly formalized.
 99.86% of the corpus**, each with a witness ordering in `solutions/`
 that can be checked without trusting this code. **Every optimal value published
 in the literature is among them** — GP1–8, SP1–4, Miller and NWRS1–8, all
-twenty. What remains open is 9 instances, every one of them
-125×125 at density 2 or 4: the two classes Chu & Stuckey (2009) report as their
-own hardest, at 19 and 43 minutes on 2009 hardware.
+twenty. What remains open is 8 instances, every one of them
+125×125 at density 2 or 4 — the two classes Chu & Stuckey (2009) single out as
+their hardest. They solved all 200 of their random instances, so these are
+behind their result, not beyond it; how long their *proofs* took on these they
+do not say.
 
 Each file records how its value was established, so proofs and good guesses are
 never added together.
@@ -456,9 +458,13 @@ claim, and they must not be added together.
 
 The 9 uncertified files cover **9 instances**,
 and they are not a random remainder: every one is 125×125 at density 2 or 4.
-Those are exactly the two classes Chu & Stuckey's Table 1 calls their hardest —
-19 minutes and 43 minutes respectively, in 2009 C++, with all their dominance
-rules on and no relaxation. Everything easier than their frontier has fallen.
+Those are exactly the two classes Chu & Stuckey's Table 1 singles out as
+hardest. A caution on those numbers, since they are easy to misread and were
+misread here: Table 1 reports the time to **find** the optimum — 19 minutes and
+43 minutes for these two classes — **not** the time to prove it. Their proof
+times for these classes are not reported anywhere in the paper, which is itself
+telling, since §3.5 exists to give "several orders of magnitude speedup on the
+proof of optimality for hard problems". They state they proved all 200 optimal.
 
 Four further files used to sit here: `GP1.json`–`GP4.json`, written by
 `validate_published_optima.py` under a name `from_benchmark_file` never
@@ -876,11 +882,18 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **9 instances remain open**, all 125×125 at density 2 or 4 — the classes Chu &
-  Stuckey report at 19 and 43 minutes, which is to say the frontier of the 2009
-  paper rather than a shortfall against it. Their answer for exactly this case is
-  the relaxation of their §3.5, which is built here (`satisfiability/relaxation.py`)
-  but not yet used inside the descent.
+- **8 instances remain open**, all 125×125 at density 2 or 4 — the classes Chu &
+  Stuckey call hardest, and which they did prove optimal. We have not, so this is
+  a shortfall against their result. Their §3.5 relaxation is the technique aimed
+  at exactly this case; it is built here and, tested with their own unmerge
+  driver, unmerges back to 114–125 of 125 customers without holding the bound.
+  That test is not conclusive, because relaxation can only certify an upper bound
+  that is already optimal and ours may not be.
+- **`cs-dfs` is a weaker `ub_MOSP` than theirs.** Theirs is the complete search
+  with branching restricted to `R ∩ O(S)`, keeping every dominance rule; ours is
+  a separate Python search with only the cost filter, and measures 4–5 stacks
+  worse on the open instances. The faithful version exists in the C behind
+  `decide(restrict=True)` and the heuristic does not use it.
 - **The customer search produces no checkable proof object.** Its refutations are
   claims that a pruned space was exhausted, backed by extensive cross-validation
   against the SAT engine, brute force and the published optima — but there is no
