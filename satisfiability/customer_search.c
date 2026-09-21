@@ -96,6 +96,7 @@ typedef struct {
     int      definite_move;
     int      better_move;
     int      better_move_dominators;   /* how many q to try; 0 for all */
+    int      old_move;
     int      use_memo;
     int      restrict_frontier;
     long long nodes;
@@ -232,6 +233,26 @@ sorted:
     return count;
 }
 
+/* Theorem 3, "old move": which of Q(S) survive into the child reached by
+ * playing `customer`.
+ *
+ * q stays if the sequence with q reinserted at its ancestor remains playable,
+ * and everything before the last move is playable already by q being in Q(S) --
+ * so only the last move needs checking. Auto-closures can only lower that cost,
+ * so checking the move alone is conservative in the safe direction. */
+static mask_t inherit_old_moves(search_t *s, mask_t seen, mask_t closed,
+                                mask_t opened, int customer) {
+    mask_t kept = 0;
+    for (mask_t bits = seen; bits; ) {
+        mask_t bit = LOWEST(bits); bits ^= bit;
+        int other = lowest_index(bit);
+        int cost = popcount128((opened | s->neighbour[other] | s->neighbour[customer])
+                               & ~(closed | bit));
+        if (cost <= s->k) kept |= bit;
+    }
+    return kept;
+}
+
 static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
     int mark = s->depth;
 
@@ -253,7 +274,8 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
     if (s->use_memo && memo_has(&s->memo, closed)) { s->depth = mark; return 0; }
 
     mask_t remaining = s->full & ~closed;
-    mask_t candidates = remaining;
+    seen &= remaining;
+    mask_t candidates = s->old_move ? (remaining & ~seen) : remaining;
     if (s->restrict_frontier) {
         mask_t narrowed = remaining & opened;
         if (narrowed) candidates = narrowed;
@@ -276,9 +298,14 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
 
         int here = s->depth;
         s->path[s->depth++] = c;
-        if (search(s, closed | BIT(c), opened | s->neighbour[c], 0)) return 1;
+        mask_t inherited = (s->old_move && seen)
+                         ? inherit_old_moves(s, seen, closed, opened, c) : 0;
+        if (search(s, closed | BIT(c), opened | s->neighbour[c], inherited))
+            return 1;
         s->depth = here;
         if (s->aborted) { s->depth = mark; return 0; }
+        /* This branch is searched now, so a later sibling that could play it
+         * instead would be repeating it. */
         seen |= BIT(c);
     }
 
@@ -299,15 +326,15 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  * to *out_len, never the return value: a satisfiable answer on an empty
  * instance has length zero, which would be indistinguishable from unsat.
  *
- * `old_move` is not implemented here. The caller falls back to the Python for
- * it rather than this returning a wrong answer under a flag it ignores.
+ * All four dominance rules are here, which is what Chu & Stuckey run: they
+ * report "better move", "old move" and nogood recording all on together.
  */
 int cs_decide(int n, int k,
               const uint64_t *neighbours,
               long long max_nodes, double seconds,
               int subset_rule, int definite_move, int use_memo,
               int restrict_frontier, long long memo_limit,
-              int better_move, int better_move_dominators,
+              int better_move, int better_move_dominators, int old_move,
               int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
@@ -321,6 +348,7 @@ int cs_decide(int n, int k,
     s.definite_move = definite_move;
     s.better_move = better_move;
     s.better_move_dominators = better_move_dominators;
+    s.old_move = old_move;
     s.use_memo = use_memo;
     s.restrict_frontier = restrict_frontier;
     s.max_nodes = max_nodes;

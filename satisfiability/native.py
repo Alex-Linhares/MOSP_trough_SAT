@@ -11,9 +11,12 @@ It declines rather than guesses. The Python is used instead when:
 
 - the shared library will not build (no compiler, or a build error);
 - the instance has more than 128 active customers, which is what fits in the
-  `__int128` the C uses for a customer set;
-- `old_move` is asked for, which the C does not implement.
+  `__int128` the C uses for a customer set.
 
+All four dominance rules are now in the C, which is what Chu & Stuckey run:
+they report "better move", "old move" and nogood recording on together. Old
+move lived only in the Python until 2026-09-21, which meant asking for it
+silently gave up the C's 120x -- so nothing used it.
 `better_move` is Theorem 2, which exists only here: it is O(|R|^3) per node
 against Theorem 1's O(|R|^2), which was the wrong trade in Python and may be
 the right one at two million nodes a second. `better_move_dominators` caps how
@@ -81,7 +84,7 @@ def _load() -> "ctypes.CDLL | None":
             ctypes.c_longlong, ctypes.c_double,         # max_nodes, seconds
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # subset, definite, memo
             ctypes.c_int, ctypes.c_longlong,            # restrict, memo_limit
-            ctypes.c_int, ctypes.c_int,                 # better_move, dominators
+            ctypes.c_int, ctypes.c_int, ctypes.c_int,   # better, dominators, old
             ctypes.POINTER(ctypes.c_int),               # out_path
             ctypes.POINTER(ctypes.c_longlong),          # out_nodes
             ctypes.POINTER(ctypes.c_int),               # out_len
@@ -108,7 +111,7 @@ def decide_native(
     restrict: bool = False,
     subset_rule: bool = True,
     definite_move: bool = True,
-    old_move: bool = False,
+    old_move: bool = True,
     memo: bool = True,
     better_move: bool = False,
     better_move_dominators: int = 4,
@@ -123,8 +126,6 @@ def decide_native(
     never means "do not know"; that is `Decision("unknown", ...)`, as in the
     reference.
     """
-    if old_move:
-        return None
     library = _load()
     if library is None:
         return None
@@ -153,7 +154,7 @@ def decide_native(
         0.0 if seconds is None else float(seconds),
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
-        int(better_move), int(better_move_dominators),
+        int(better_move), int(better_move_dominators), int(old_move),
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated

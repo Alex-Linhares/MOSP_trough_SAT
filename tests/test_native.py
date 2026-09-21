@@ -91,11 +91,16 @@ def test_the_c_visits_the_same_nodes_on_a_real_refutation():
         pytest.skip("SP2 benchmark file not found")
     instance = found[0]
 
-    ported = decide_native(instance, 18)          # SP2's optimum is 19
+    # Matched configurations: the C defaults to old move and the Python
+    # reference does not combine it with the memo, so comparing the defaults
+    # would compare two different searches.
+    settings = dict(subset_rule=True, definite_move=True, memo=True,
+                    old_move=False)
+    ported = decide_native(instance, 18, **settings)   # SP2's optimum is 19
     assert ported.status == "unsat"
     assert ported.nodes > 1000, "not enough branching to be evidence"
 
-    reference = decide(instance, 18, native=False)
+    reference = decide(instance, 18, native=False, **settings)
     assert ported.nodes == reference.nodes, (
         f"python visited {reference.nodes}, C {ported.nodes}")
 
@@ -103,9 +108,14 @@ def test_the_c_visits_the_same_nodes_on_a_real_refutation():
 @needs_native
 def test_it_declines_rather_than_guessing():
     """Out of its range it returns None, so the caller falls back to the Python
-    instead of getting an answer from a search that ignored a flag."""
+    instead of getting an answer from a search that ignored a flag.
+
+    Old move used to be such a case and no longer is: it is implemented in the
+    C, which is the only reason anything uses it -- asking for it previously
+    gave up the C's 120x and so was never asked for.
+    """
     instance = MOSPInstance.from_matrix([[1, 1], [0, 1]], name="small")
-    assert decide_native(instance, 1, old_move=True) is None
+    assert decide_native(instance, 1, old_move=True) is not None
 
     wide = MOSPInstance.from_matrix([[1] * 3 for _ in range(129)], name="wide")
     assert decide_native(wide, 129) is None

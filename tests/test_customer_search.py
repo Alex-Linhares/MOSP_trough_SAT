@@ -79,13 +79,20 @@ def test_every_witness_achieves_its_k(rules):
         assert max_open_stacks(inst, ordering) <= optimum
 
 
-def test_old_move_and_the_memo_are_refused_together():
-    """A failure found by old-move pruning depends on the path to the state, and
-    the memo is keyed on the state alone. Combining them would refute states
-    that are not refuted, so the combination is rejected rather than risked."""
-    inst = MOSPInstance.from_matrix([[1, 1], [0, 1]], name="clash")
-    with pytest.raises(ValueError, match="cannot both be on"):
-        decide(inst, 1, old_move=True, memo=True)
+def test_the_python_reference_drops_the_memo_rather_than_combining_it():
+    """Chu & Stuckey run old move and nogood recording together and the C
+    follows them, with 10,476 exhaustive decisions agreeing with brute force.
+
+    The Python keeps the stricter reading -- an old-move failure belongs to the
+    path, the memo is keyed on the state -- and drops the memo instead of
+    combining them, so the two implementations do not both rest on the same
+    assumption. It must still answer, not raise.
+    """
+    inst = MOSPInstance.from_matrix(
+        [[1, 1, 0], [0, 1, 1], [1, 0, 1]], name="both")
+    answer = decide(inst, 2, old_move=True, memo=True, native=False)
+    assert answer.status in ("sat", "unsat")
+    assert answer.status == decide(inst, 2, native=False).status
 
 
 def test_the_restricted_search_never_claims_a_refutation():

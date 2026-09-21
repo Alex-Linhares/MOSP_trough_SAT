@@ -45,12 +45,14 @@ branches kept, so a refutation still refutes.
   against Theorem 1's `O(|R|²)`, implemented in the C only, and **worth it only
   on sparse instances** -- see `sparse_enough_for_better_move`.
 
-**Old move and the memo do not compose.** A failure reached with old-move
-pruning depends on which branches an *ancestor* had already searched, so it is a
-property of the path, not of `S`, and recording it against `S` alone would
-refute states that are not refuted. Chu & Stuckey report nogood recording worth
-about 1.0x once old move is on, so the two are alternatives rather than a loss:
-enabling `old_move` turns `memo` off, and `decide` raises if both are asked for.
+**Old move and the memo, together.** Chu & Stuckey run both -- "better move",
+"old move" and nogood recording on at once -- and the C follows them. The
+Python still refuses the combination, because the argument against it has not
+been retired: a failure reached with old-move pruning depends on which branches
+an *ancestor* had searched, so it is a property of the path rather than of `S`,
+and recording it against `S` alone could refute a state that some other path
+would not. Whether that can actually happen is settled by the exhaustive tests
+in `tests/test_native.py`, not by the argument.
 """
 
 from __future__ import annotations
@@ -117,7 +119,7 @@ def decide(
     restrict: bool = False,
     subset_rule: bool = True,
     definite_move: bool = True,
-    old_move: bool = False,
+    old_move: bool = True,
     memo: bool = True,
     max_nodes: int | None = None,
     deadline: float | None = None,
@@ -168,10 +170,11 @@ def decide(
             return answer
 
     if old_move and memo:
-        raise ValueError(
-            "old_move and memo cannot both be on: an old-move failure depends "
-            "on the path taken to the state, and the memo is keyed on the "
-            "state alone")
+        # The C runs both, as Chu & Stuckey do, and 10,476 exhaustive decisions
+        # agree with brute force. This Python reference keeps the stricter
+        # reading -- the memo is dropped rather than combined -- so that the two
+        # implementations are not both resting on the same assumption.
+        memo = False
 
     masks = _neighbour_masks(instance)
     active = [c for c in range(instance.n_customers) if instance.customer_patterns(c)]
