@@ -7,15 +7,15 @@ plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
 and the pathwidth theory the project started from is partly formalized.
 
-**6,367 of 6,376 cached solutions are certified optimal —
-99.86% of the corpus**, each with a witness ordering in `solutions/`
+**6,370 of 6,376 cached solutions are certified optimal —
+99.91% of the corpus**, each with a witness ordering in `solutions/`
 that can be checked without trusting this code. **Every optimal value published
 in the literature is among them** — GP1–8, SP1–4, Miller and NWRS1–8, all
-twenty. What remains open is 8 instances, every one of them
+twenty. What remains open is 6 instances, every one of them
 125×125 at density 2 or 4 — the two classes Chu & Stuckey (2009) single out as
-their hardest. They solved all 200 of their random instances, so these are
-behind their result, not beyond it; how long their *proofs* took on these they
-do not say.
+hardest. They report proving all 200 of their random instances optimal, so these
+six are a shortfall against their result, not a frontier beyond it; see
+[What we cannot reproduce](#what-we-cannot-reproduce-from-chu--stuckey).
 
 Each file records how its value was established, so proofs and good guesses are
 never added together.
@@ -446,10 +446,10 @@ instance, with no file matching none:
 
 | provenance | count | share | meaning |
 |---|---|---|---|
-| `certified:refutation` | 6,365 | 99.83% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
+| `certified:refutation` | 6,368 | 99.87% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
 | `certified:bound` | 2 | 0.03% | satisfiable at `k`, and the lower bound already equals `k` |
-| **certified, either way** | **6,367** | **99.86%** | **an optimality claim** |
-| `solution` | 9 | 0.14% | a witness of value `k` and nothing more; optimality open |
+| **certified, either way** | **6,370** | **99.91%** | **an optimality claim** |
+| `solution` | 6 | 0.09% | a witness of value `k` and nothing more; optimality open |
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
@@ -493,7 +493,10 @@ is a day on 25 cores and 24.5 days on one. The core-hours are the invariant, and
 the figure to compare between runs.
 
 It counts only instances a run wrote a row for, so it is a lower bound on
-compute spent — the right direction for a cost figure to err in.
+compute spent — the right direction for a cost figure to err in. A run still in
+flight is missing too: a sweep writes its ledger rows when it returns, so a
+marathon that is days into a five-day round contributes nothing to the figure
+until it ends.
 
 Where it went is the more interesting part. The largest single line is 223
 core-hours on one overnight SAT round; the customer search closed 111 instances
@@ -880,29 +883,77 @@ Building requires `elan`/`lake` with the toolchain pinned in `lean/lean-toolchai
 cd lean && lake build
 ```
 
+## What we cannot reproduce from Chu & Stuckey
+
+Their algorithm is the one that closed the hard end of this corpus, and this
+project is a reimplementation of it. Six instances remain open where they report
+having proved all 200 optimal, so the honest position is that we fall short of
+their result — and the reasons are worth setting out, because two of them are
+about what the paper does *not* say.
+
+**Their headline timings are for finding, not proving.** Table 1 gives 19
+minutes for 125-125-2 and 43 for 125-125-4, and it is easy to read those as the
+cost of an optimality proof. The text is explicit that they are not: "the times
+required to **find** the optimal solution". This document quoted them as proof
+times for a day before the error was caught. **Their proof times for these
+classes appear nowhere in the paper.**
+
+**The technique they offer for these instances does not reach here.** Section
+3.5's relaxation is credited with "several orders of magnitude speedup on the
+proof of optimality for hard problems", which is the only claim in the paper
+bearing on how they proved the hard sparse cases. Implemented here
+(`satisfiability/relaxation.py`) and tested with their own unmerge driver, it
+climbs back to 114–125 of 125 customers without ever holding the bound — that
+is, it stops being a relaxation before it becomes tight enough to certify. The
+obvious excuse, that we were feeding it a non-optimal upper bound, does not
+survive: `Random-125-125-4-5_0` failed this test at `ub = 46`, and 46 was
+subsequently proved optimal.
+
+So either their relaxation differs from what §3.5 describes, or these instances
+were slow for them too. The paper cannot settle it, and we have no way to tell
+from what is written down.
+
+**What we did reproduce.** Running their stated configuration — *"better move",
+"old move" and nogood recording turned on* — closed eighteen instances inside half
+an hour, SP4 among them, after that instance had survived a 12.5-hour
+SAT call, an eight-backend portfolio, a 60-hour descent and 24 hours of CP-SAT.
+Every gain this project has made at the hard end came from following the paper
+more exactly, never from more compute.
+
+**Where our implementation is knowingly weaker.** `cs-dfs` in
+`satisfiability/heuristics.py` is our version of their `ub_MOSP`, and it is not
+faithful: theirs is the complete search with branching restricted to `R ∩ O(S)`,
+keeping every dominance rule, while ours is a separate Python search with only
+the cost filter. It measures 4–5 stacks worse on the open instances. The
+faithful version exists in the C behind `decide(restrict=True)`; the heuristic
+does not use it. This costs nothing at present, because the descent ratchets
+past it, but it means the README's claim to implement `ub_MOSP` holds only of
+the C.
+
+**What is not in doubt.** The C reproduces the Python reference's node counts
+instance by instance; the four dominance rules agree with brute force across
+some twenty thousand exhaustive decisions, varied one rule at a time; and CP-SAT
+independently confirmed 5,266 of the certified optima with no disagreement. If a
+misimplementation explains the last six, it has survived all three.
+
 ## Known Limitations
 
-- **8 instances remain open**, all 125×125 at density 2 or 4 — the classes Chu &
-  Stuckey call hardest, and which they did prove optimal. We have not, so this is
-  a shortfall against their result. Their §3.5 relaxation is the technique aimed
-  at exactly this case; it is built here and, tested with their own unmerge
-  driver, unmerges back to 114–125 of 125 customers without holding the bound.
-  That test is not conclusive, because relaxation can only certify an upper bound
-  that is already optimal and ours may not be.
-- **`cs-dfs` is a weaker `ub_MOSP` than theirs.** Theirs is the complete search
-  with branching restricted to `R ∩ O(S)`, keeping every dominance rule; ours is
-  a separate Python search with only the cost filter, and measures 4–5 stacks
-  worse on the open instances. The faithful version exists in the C behind
-  `decide(restrict=True)` and the heuristic does not use it.
+- **6 instances remain open**, all 125×125 at density 2 or 4, and it is the
+  refutation that resists rather than the bounds: their `ub_MOSP` at ten minutes
+  an instance improved none of them, and two were then proved at exactly the
+  value we held. See [What we cannot reproduce](#what-we-cannot-reproduce-from-chu--stuckey).
+- **`cs-dfs` is a weaker `ub_MOSP` than theirs**, by 4–5 stacks on the open
+  instances; the faithful version exists in the C and the heuristic does not use
+  it. See [What we cannot reproduce](#what-we-cannot-reproduce-from-chu--stuckey).
 - **The customer search produces no checkable proof object.** Its refutations are
   claims that a pruned space was exhausted, backed by extensive cross-validation
   against the SAT engine, brute force and the published optima — but there is no
   CNF to re-refute and no proof log. It now accounts for a large share of the
   certified corpus, which makes this the project's biggest open verification gap.
   See [Checking the claims](#checking-the-claims-without-trusting-this-code).
-- **Nothing races the two engines.** They fail on disjoint sets, and a portfolio
-  over one decision call would be a small change with a large expected gain. Not
-  built.
+- **Nothing races the two engines**, and on the hard instances there is no
+  measured reason to: the customer search's failures are a subset of SAT's. A
+  portfolio would be a bet on complementarity nobody has demonstrated here.
 - **The relaxation driver cannot close instances**, only tighten bounds. It tries
   to refute `ub − 1` on a contraction, which can only succeed when `ub` is
   already the true optimum — and on the sparse instances it was being asked about,

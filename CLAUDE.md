@@ -165,14 +165,19 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-19 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
+Measured on 2026-09-21 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
 themselves rather than reconstructed:
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,347 |
+| `certified:refutation` | 6,368 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 27 |
+| `solution` (optimality open) | 6 |
+
+That is **6,370 of 6,376 certified optimal, 99.91%**. The six still open are all
+125×125 at density 2 or 4 — the classes Chu & Stuckey (2009) call hardest, and
+which they report proving. See the README's *What we cannot reproduce from Chu &
+Stuckey* for what the paper does and does not let us check.
 
 **Compute cost: about a day on 25 cores (588 core-hours)**, from `python -m
 benchmarks.compute`, which totals the result CSVs and the ledger `csearch` and
