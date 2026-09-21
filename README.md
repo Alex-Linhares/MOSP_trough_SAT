@@ -7,12 +7,15 @@ plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
 and the pathwidth theory the project started from is partly formalized.
 
-**6,349 of 6,376 cached solutions are certified optimal —
-99.58% of the corpus**, each with a witness ordering in `solutions/`
-that can be checked without trusting this code, for **about a day of solving on 25
-cores** (588 core-hours). What remains open is 26
-instances (0.42%), all sparse Chu & Stuckey `Random` instances.
-Every file records how its value was established, so proofs and good guesses are
+**6,367 of 6,376 cached solutions are certified optimal —
+99.86% of the corpus**, each with a witness ordering in `solutions/`
+that can be checked without trusting this code. **Every optimal value published
+in the literature is among them** — GP1–8, SP1–4, Miller and NWRS1–8, all
+twenty. What remains open is 9 instances, every one of them
+125×125 at density 2 or 4: the two classes Chu & Stuckey (2009) report as their
+own hardest, at 19 and 43 minutes on 2009 hardware.
+
+Each file records how its value was established, so proofs and good guesses are
 never added together.
 
 *(Regenerate with `python -m benchmarks.corpus` and `python -m
@@ -165,6 +168,18 @@ on the partial sequence already committed:
   playable and `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then `r` goes. This one
   is `O(|R|³)` per node against Theorem 1's `O(|R|²)` and is switched on **only
   for sparse instances**, where it is worth up to 300×; see below.
+
+All four run together, which is the configuration Chu & Stuckey state they used:
+*"better move", "old move" and nogood recording turned on (but no relaxation)*.
+Reproducing it exactly is what closed SP4 — the last unproved published
+instance, which had survived a 12.5-hour SAT call, an eight-backend portfolio, a
+60-hour descent and 24 hours of CP-SAT — in **44 seconds**, along with 17 others
+in the following quarter of an hour.
+
+Old move existed only in the Python until it was ported, which meant asking for
+it silently gave up the C's 120× and so nothing ever did. Measured in Python it
+looked like a 14% loss; in C, where per-node cost is small enough for the node
+saving to dominate, it is worth 1.6–2.6× on every instance tried.
 
 Running it over the instances whose optimality was open — 900 s each, 20 workers
 — **closed 111 of 147 in 45 minutes**:
@@ -395,11 +410,13 @@ That is the gap the witness orderings in `solutions/` are meant to fill.
 | SP1 | 25×25 | — | 9 | certified (no published value) |
 | SP2 | 50×50 | 19 | 19 | certified |
 | SP3 | 75×75 | 34 | **34** | **certified** |
-| SP4 | 100×100 | 53 | **53** | solution; optimality unproven |
+| SP4 | 100×100 | 53 | **53** | certified — customer search, 44 s |
 
-**All twenty published values are matched, and none disagrees.** SP3 and SP4 were
-the two long-standing exceptions and both are now resolved in value; SP3 is also
-proved.
+**All twenty published values are matched, certified, and none disagrees.** SP3
+and SP4 were the two long-standing exceptions; both now carry a refutation. SP4
+was the last to fall, and it fell to Chu & Stuckey's own configuration rather
+than to more compute — 44 seconds, after surviving a 12.5-hour SAT call, an
+eight-backend portfolio, a 60-hour descent and 24 hours of CP-SAT.
 
 SP3 is worth recording as a before-and-after. Under the SAT engine a single
 satisfiable call at `k=34` ran for **45,071 seconds — 12.5 hours — without
@@ -427,21 +444,21 @@ instance, with no file matching none:
 
 | provenance | count | share | meaning |
 |---|---|---|---|
-| `certified:refutation` | 6,347 | 99.55% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
+| `certified:refutation` | 6,365 | 99.83% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
 | `certified:bound` | 2 | 0.03% | satisfiable at `k`, and the lower bound already equals `k` |
-| **certified, either way** | **6,349** | **99.58%** | **an optimality claim** |
-| `solution` | 27 | 0.42% | a witness of value `k` and nothing more; optimality open |
+| **certified, either way** | **6,367** | **99.86%** | **an optimality claim** |
+| `solution` | 9 | 0.14% | a witness of value `k` and nothing more; optimality open |
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
 bounds — the witness verifies either way — but only the first is an optimality
 claim, and they must not be added together.
 
-The 27 uncertified files cover **26 distinct
-instances**, all sparse — the densest left open is 8.2 products per customer,
-and density 10 has none. SP4 is still among them: its value of 53 matches the
-published optimum and its certified lower bound is 46, so the gap is 7, but the
-refutation that would close it has not landed.
+The 9 uncertified files cover **9 instances**,
+and they are not a random remainder: every one is 125×125 at density 2 or 4.
+Those are exactly the two classes Chu & Stuckey's Table 1 calls their hardest —
+19 minutes and 43 minutes respectively, in 2009 C++, with all their dominance
+rules on and no relaxation. Everything easier than their frontier has fallen.
 
 Four further files used to sit here: `GP1.json`–`GP4.json`, written by
 `validate_published_optima.py` under a name `from_benchmark_file` never
@@ -859,10 +876,11 @@ cd lean && lake build
 
 ## Known Limitations
 
-- **35 instances remain open** — 34 sparse Chu & Stuckey `Random` instances and
-  SP4. They have witnesses, and in SP4's case a witness at the published optimum
-  of 53; what is missing is the refutation. Densities 2 and 4 account for 24 of
-  the 34, the regime where both engines are weakest and the bounds loosest.
+- **9 instances remain open**, all 125×125 at density 2 or 4 — the classes Chu &
+  Stuckey report at 19 and 43 minutes, which is to say the frontier of the 2009
+  paper rather than a shortfall against it. Their answer for exactly this case is
+  the relaxation of their §3.5, which is built here (`satisfiability/relaxation.py`)
+  but not yet used inside the descent.
 - **The customer search produces no checkable proof object.** Its refutations are
   claims that a pruned space was exhausted, backed by extensive cross-validation
   against the SAT engine, brute force and the published optima — but there is no
