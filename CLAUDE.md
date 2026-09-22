@@ -165,27 +165,35 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-21 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
+Measured on 2026-09-22 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
 themselves rather than reconstructed:
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,368 |
+| `certified:refutation` | 6,374 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 6 |
+| `solution` (optimality open) | 0 |
 
-That is **6,370 of 6,376 certified optimal, 99.91%**. The six still open are all
-125×125 at density 2 or 4 — the classes Chu & Stuckey (2009) call hardest, and
-which they report proving. See the README's *What we cannot reproduce from Chu &
-Stuckey* for what the paper does and does not let us check.
+**The corpus is closed: 6,376 of 6,376 certified optimal, and nothing is open.**
+The last 27 — all 125×125 at density 2 or 4, the classes Chu & Stuckey (2009)
+call hardest — fell in one 19.2-hour round on 25 cores under the configuration
+their paper states ("better move", "old move" and nogood recording, no
+relaxation). Ten of the 27 had their upper bound improved on the way, so ten
+values held here were not optimal when that round began.
 
-**Compute cost: about a day on 25 cores (588 core-hours)**, from `python -m
+Re-verified after closing: all 6,376 witnesses re-simulate to their recorded
+value, none sits below its independently recomputed lower bound, every file
+matches an enumerated instance and every instance has a file. See the README's
+*What Chu & Stuckey's paper does not settle* for what remains uncheckable
+against the literature.
+
+**Compute cost: about a day on 25 cores (667 core-hours)**, from `python -m
 benchmarks.compute`, which totals the result CSVs and the ledger `csearch` and
 `reheuristic` append to.
 
 Quote it in that order -- rough days with the core count beside them, then
 core-hours. The days are what a reader wants and are meaningless without the
-cores, since the same work is a day on 25 cores and 24.5 days on one; the
+cores, since the same work is a day on 25 cores and 27.8 days on one; the
 core-hours are the invariant that compares between runs. Never maintain the
 number by hand: it is regenerated, because several hand-carried figures in these
 documents drifted before this existed. It counts only runs that wrote a row, so
@@ -196,9 +204,8 @@ open: `reports/customer_search.md`. Every one of the 111 was re-verified by an
 independent refutation, and all 6,376 witnesses re-simulate to their recorded
 value.)*
 
-The 36 open files are 34 Chu & Stuckey `Random` instances plus SP4 under two
-names, so **35 distinct instances**. There is now one file per enumerated
-instance and no file that matches none.
+There is one file per enumerated instance and no file that matches none, and as
+of 2026-09-22 none of them is open.
 
 That last property had to be restored. Four orphans — `GP1.json` through
 `GP4.json` — were written by `validate_published_optima.py`, which overwrote
