@@ -951,10 +951,13 @@ machine-checkable proof object for the refutations — see
 
 ## Known Limitations
 
-- **The corpus is closed, which is not the same as the problem being solved.**
-  MOSP is NP-hard and nothing here changes that; what is proved is 6,376
-  particular instances. A larger or differently shaped instance can still be out
-  of reach, and the 19.2 hours the last 27 took says how close the ceiling is.
+- **The corpus is 6,363 of 6,376 certified, not closed** *(2026-09-23)*. A
+  false-refutation bug in `better_move` invalidated the optimality claim behind
+  55 entries; 41 re-certify with the fixed code, 13 are withdrawn pending
+  refutations that take hours each, and one was wrong outright. MOSP is NP-hard
+  and nothing here changes that; what is proved is 6,363 particular instances.
+  A larger or differently shaped instance can still be out of reach, and the
+  19.2 hours the last 27 took says how close the ceiling is.
 - **`cs-dfs` is a weaker `ub_MOSP` than theirs**, by 4–5 stacks on the
   instances that were hard; the faithful version exists in the C and the
   heuristic does not call it. See

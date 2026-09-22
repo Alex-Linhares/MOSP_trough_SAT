@@ -197,18 +197,35 @@ Until a provenance field exists, the split is recoverable from other records:
 Measured on 2026-09-22 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
 themselves rather than reconstructed:
 
+**The corpus was re-opened on 2026-09-23 by a bug, not by a new instance.**
+`better_move` could return a **false refutation** — it let the domination
+relation cycle, so two candidates covered each other and were discarded
+together with the solution they carried (`reports/better_move_bug.md`). Every
+entry `benchmarks.csearch` certified with that rule was suspect: 55 of them.
+
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,374 |
+| `certified:refutation` | 6,361 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 0 |
+| `solution` (optimality open) | 13 |
 
-**The corpus is closed: 6,376 of 6,376 certified optimal, and nothing is open.**
+**6,363 of 6,376 certified optimal; 13 open.** Re-verified with the fixed code
+at `value - 1`: 41 of the 55 re-certify, 13 need hours per refutation and have
+had their optimality claim **withdrawn** until they do, and **one was simply
+wrong** — `Random-100-100-2-2_0`, certified at 21 when the true optimum is
+**20**, now corrected and re-certified (`k = 19` refuted, `k = 20` satisfiable
+with a witness that simulates to 20).
+
+The 13 keep their values, which are still verified upper bounds; what is
+withdrawn is the claim that they are optimal. They have no independent
+certification: the direct SAT path and `csearch` have zero overlap in the
+records, so nothing else ever proved them.
+
 The last 27 — all 125×125 at density 2 or 4, the classes Chu & Stuckey (2009)
 call hardest — fell in one 19.2-hour round on 25 cores under the configuration
 their paper states ("better move", "old move" and nogood recording, no
-relaxation). Ten of the 27 had their upper bound improved on the way, so ten
-values held here were not optimal when that round began.
+relaxation). That is the configuration carrying the bug, which is why most of
+the withdrawn 13 are from that round.
 
 Re-verified after closing: all 6,376 witnesses re-simulate to their recorded
 value, none sits below its independently recomputed lower bound, every file
@@ -508,6 +525,17 @@ python -m benchmarks.solve_all --timeout 120
 ## Known Limitations
 
 - **The SAT path does not close dense 125×125 instances.** The ~50×50 ceiling recorded here previously was lifted by the linear open-stack encoding; the corpus now holds certified optima at 125×125. What remains is that SAT *refutations* on the dense Chu & Stuckey instances do not return, which is what `satisfiability/customer_search.py` exists for.
+- **A dominance rule implemented only in the C had no test and was wrong.**
+  `better_move` returned false refutations; `tests/test_native.py` compares the
+  C against the Python and `better_move` has no Python side, so nothing checked
+  it. One corpus value was certified a stack too high and 13 more had their
+  optimality withdrawn (`reports/better_move_bug.md`). The general lesson: a
+  rule that exists on one side only needs its own invariant, and here it is one
+  line — *a dominance rule may change the cost of a search, never its answer.*
+- **Nothing checks that a refutation is sound.** Witness verification, the
+  corpus audit and the lower-bound guards all confirm a value is *achievable*.
+  A refutation one step too strong is invisible to every one of them, which is
+  how the above survived. Item 7's proof objects are the real fix.
 - **The customer search produces no checkable proof object**, and it is now the
   default, which makes this limitation apply by default too.   Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
 - **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
