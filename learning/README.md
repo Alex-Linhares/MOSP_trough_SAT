@@ -168,19 +168,36 @@ ones — are 25 rows out of 6,376. A model trained here is a model of *this
 collection*. We report results separately on the harder subset throughout, but
 no amount of careful splitting fixes a population that is 93% easy.
 
-## What is not done
+## How you actually use it, and what is still open
 
-The hint is now available as a named strategy — `learned+cs-dfs` — and it is
-written so that the solver still works with no machine learning installed at
-all: only asking for that strategy by name fails, and it fails with a clear
-message rather than quietly falling back to the old method. (A quiet fallback
-would be worse than a crash: a benchmark would report the new method's numbers
-while running the old one.)
+You can now ask for the hinted method by name. Where the code used to say
+`cs-dfs`, it can say `learned+cs-dfs`:
 
-What has *not* happened is making it the default. That would put a machine
-learning library and a trained model file on the critical path of a solver whose
-other dependencies are a SAT solver and numpy, and that is a decision about what
-this project wants to depend on, not a question the measurements can answer.
+```python
+from satisfiability.heuristics import upper_bound
+value, ordering = upper_bound(instance, "learned+cs-dfs")
+```
+
+**The solver still runs without any of this installed.** Someone who clones the
+project and never runs `pip install -r learning/requirements.txt` sees no
+difference: nothing breaks, because the machine learning library is only loaded
+at the moment somebody asks for one of these two methods by name. That is the
+only thing "soft import" means.
+
+**If you ask for it and it isn't there, you get an error, not a shrug.** We
+could have made a missing model fall back quietly to the old method. We
+deliberately didn't, because then a benchmark run would print results labelled
+"learned" that were actually produced by the old method, and nobody would ever
+know. An error message says `no trained policy at ...; run python -m
+learning.policy train`, and you fix it in seven seconds.
+
+**Nothing uses it unless you ask.** Every existing script, sweep and solver call
+behaves exactly as before. Making the hinted method the *default* would mean
+this project, which currently needs only a SAT solver and numpy to run, would
+also need a machine learning library and a trained model file present before it
+could solve anything. That is a decision about what the project wants to depend
+on, and the measurements cannot make it for you — they only say the method is
+better and faster.
 
 `reports/learning.md` §4 lists what to do next. The most promising: use the
 learned scorer *inside* the search rather than only to start it.

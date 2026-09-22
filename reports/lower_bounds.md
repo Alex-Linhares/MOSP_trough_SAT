@@ -96,22 +96,31 @@ Yanasse & Senne (2010) review the bounds in the literature:
 - **Yanasse, Becceneri & Soma (1999)**: an arc contraction bound, reported to
   *"dominate all previous lower bounds proposed in the literature"*.
 
-The last is the natural comparison for this work and we have not obtained it.
-It is in *Pesquisa Operacional* 19, 249–277 (1999). That journal is on SciELO,
-but **only from 2001 onward**, so the 1999 paper is not available there despite
-the journal being open access — nor is Yanasse (1997a), for the same reason.
-Yanasse & Senne (2010), which we do hold, cites the arc contraction bound and
-states that it dominates all earlier bounds, but does not give the algorithm, so
-the comparison cannot be made from our holdings.
+### Settled, 2026-09-22: the arc contraction bound *is* contraction degeneracy
 
-The bound developed below is arrived at from the treewidth literature rather than
-from that paper. Given that "arc contraction" and "contraction degeneracy" both
-contract edges of the same graph, **the two may well be the same bound, and no
-novelty should be claimed for §5 until this is settled.** Acquisition routes
-worth trying: the INPE digital library (Yanasse is at INPE/LAC, and institutional
-repositories commonly hold pre-digitisation work), Becceneri's 1999 thesis which
-presents the same operation, Becceneri et al. (2004) in *Computers & Operations
-Research* which reports an implementation of it, or writing to the authors.
+The 1999 paper is now held, as
+`literature/yanasse_becceneri_soma_1999_bounds_sequencing_patterns.pdf`. It
+names five bounds, and the last two answer the question this section left open:
+
+- **LB4** — "the best possible lower bound LB4 is obtained by finding an induced
+  subgraph whose minimum degree is maximized", computed by "recursively ...
+  select to delete the node with the smallest degree". That is **degeneracy + 1**.
+- **LB5** — `Procedure LBArcContraction`: compute LB4; if the graph has no more
+  nodes than the bound, stop; otherwise contract an arc incident to a node of
+  smallest degree, and repeat, keeping the largest LB4 seen. That is
+  **contraction degeneracy (MMD+) + 1**, which is what §5 below computes.
+
+So the answer is that they are the same bound, reached from two literatures
+thirty years apart. **No novelty is claimed for §5.** The one difference is the
+tie-break: Yanasse et al. contract the arc whose two endpoint degrees sum to the
+least, where `_contraction_degeneracy` contracts into the neighbour sharing the
+fewest neighbours (least-c, from the treewidth literature). Both are heuristics
+for a quantity that is itself NP-hard to compute exactly, so neither dominates.
+Comparing the two tie-breaks on our corpus is an open measurement.
+
+Their LB2 — the minimum, over parts, of the stacks open when that part is
+finished first — is `min_c |N[c]|`, which is LB4 on the original graph and so is
+dominated by LB5. We do not compute it separately, and need not.
 
 ---
 
@@ -366,12 +375,13 @@ Implementation: `satisfiability/mosp_solver.py::_lower_bound` and
 
 ## 10. Open items
 
-1. **Obtain Yanasse, Becceneri & Soma (1999)** and determine whether its arc
-   contraction bound is this bound, a weaker one, or a stronger one. No novelty
-   should be claimed for §5 until this is settled — the names are suggestively
-   similar and both contract edges of the MOSP graph. Note that *Pesquisa
-   Operacional* is digitised on SciELO only from 2001, so this is not the easy
-   download it first appeared to be; see §3 for routes.
+1. ~~**Obtain Yanasse, Becceneri & Soma (1999)**~~ — **done, 2026-09-22.** Its
+   arc contraction bound LB5 is contraction degeneracy + 1, the same bound as
+   §5; see §3. What remains is a measurement, not an acquisition: their
+   tie-break (least degree sum) against ours (least common neighbours).
+   Separately, and unrelated to that paper: over all 6,376 instances the clique
+   bound of §4 never once exceeded contraction degeneracy + 1 under a 1-second
+   budget, while `_lower_bound` allows it five (`reports/learning.md` §1).
 2. ~~Ablate the bound against the Kissat404 switch~~ — done, §7.1. The gains
    belong to the backend; the bound pays through §7.2 instead.
 3. ~~Re-run the unsolved instances with the strengthened bound~~ — done, twice.

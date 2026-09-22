@@ -88,9 +88,13 @@ the *upper* bound instead — does.
 
 Still on record and still unobtained:
 
-- **arc contraction bound** (Yanasse et al. 1999) — "dominates all previous
-  lower bounds proposed in the literature", and may be the same bound as
-  contraction degeneracy. No novelty should be claimed until that is settled.
+- ~~**arc contraction bound** (Yanasse et al. 1999)~~ — **settled 2026-09-22,
+  the paper is now in `literature/`.** Its LB5 repeatedly contracts an arc at a
+  minimum-degree node and keeps the largest (min degree + 1) seen, which *is*
+  contraction degeneracy + 1 — the bound we already compute. **No novelty is
+  claimed.** The only difference is the tie-break: they contract the arc whose
+  endpoint degrees sum to the least, we contract into the neighbour sharing
+  fewest neighbours. Comparing the two is an open measurement.
 - any subgraph of the MOSP graph yields a valid bound, so bounds can be had by
   solving smaller subinstances — which is what `satisfiability/relaxation.py`
   now does by contraction, lifting SP4 from 27 to 45.
@@ -127,7 +131,8 @@ separate in the same module: it is a relaxation, and the basis of
 - **Kinnersley (1992)** — Established vertex separation = pathwidth. *Information Processing Letters*, 42(6), 345-350.
 - **Yanasse (1997b)** — Mathematical formulation, branch and bound, greedy heuristic. *European Journal of Operational Research*, 100(3), 454-463. Note: this is *not* the paper that introduces the MOSP graph.
 - **Yanasse (1997c)** — Introduced the MOSP graph (nodes = item types) and the clique / minimum-degree lower bounds. Cited via Yanasse & Senne (2010); exact venue still to be confirmed.
-- **Yanasse, Becceneri & Soma (1999)** — Arc contraction lower bound, which dominates all earlier bounds. *Pesquisa Operacional*, 19, 249-277. Open access (SciELO).
+- **Yanasse, Becceneri & Soma (1999)** — Arc contraction lower bound, which dominates all earlier bounds and is contraction degeneracy + 1. *Pesquisa Operacional*, 19(2), 249-277. In `literature/`.
+- **Yanasse, Becceneri & Soma (1997)** — Lower bounds for the problem of sequencing cutting patterns, APORS'97. The 1999 bounds in earlier form; a candidate for the elusive "Yanasse (1997c)", though it carries no clique bound. In `literature/`.
 - **Yanasse & Senne (2010)** — Review of MOSP properties and six pre-processing operations. *European Journal of Operational Research*, 203(3), 559-567.
 - **Linhares & Yanasse (2002)** — Proved MOSP is NP-hard. *Computers & Operations Research*, 29, 1759-1772.
 - **Chu & Stuckey (2009)** — Benchmark instances and exact solver via customer search with nogood recording. *CP 2009*, LNCS 5732, 242-257.
@@ -525,7 +530,8 @@ here. Items 1, 3 and 6 are done (2026-09-18).
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
-- Becceneri, Yanasse & Soma (2004) is still missing and still blocking: it
-  carries Lemma 1's proof and would settle whether the contraction degeneracy
-  bound is already the arc contraction bound of Yanasse et al. (1999). See
-  `literature/MISSING.md`.
+- Becceneri, Yanasse & Soma (2004) is still missing, but no longer blocking the
+  bound question: Yanasse et al. (1999) itself arrived on 2026-09-22 and settles
+  it directly — the arc contraction bound is contraction degeneracy + 1. 2004 is
+  still wanted for Lemma 1's proof and for the MCNh our `mcn` does not
+  reproduce. See `literature/MISSING.md`.

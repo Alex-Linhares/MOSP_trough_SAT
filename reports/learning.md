@@ -245,9 +245,10 @@ both and keeping the minimum would remove even that, at the cost of the speedup.
 
 ### One more thing the sweep checked
 
-Not one of the 6,376 orderings produced by either strategy came in *below* the
-certified optimum. That is not a proof of anything — a heuristic beating a
-proved optimum would mean the optimum was wrong — but it is 12,752 independent
+Three sweeps ran — `cs-dfs`, `learned`, `learned+cs-dfs` — each producing one
+ordering per instance, so **19,128 orderings** in all. Not one came in *below*
+the certified optimum. That is not a proof of anything; a heuristic beating a
+proved optimum would mean the optimum was wrong. But it is 19,128 independent
 chances for the corpus to contradict itself, taken and passed.
 
 ## 3. What this is not
