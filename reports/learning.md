@@ -160,6 +160,96 @@ space, which over-charges, so a seed with lower `_cs_cost` can cut a branch
 whose product order would have simulated lower. The proxy mismatch is documented
 in `_cs_cost`; this is it showing up in practice.
 
+## 2.1 The whole corpus, scored against truth
+
+*Added 2026-09-22, after registering the strategies and sweeping.*
+
+The test this was supposed to be was the one `reports/ub_mosp_search.md` ran for
+`cs-dfs`: re-run the heuristic over the corpus and count the upper bounds it
+improves. **That test no longer exists.** The corpus closed on 2026-09-22 — every
+cached value is a certified optimum — so `benchmarks.reheuristic` can improve
+nothing, and `_save_solution` is monotone, so a sweep writes nothing at all:
+
+```
+python -m benchmarks.reheuristic --all --strategy mcn
+6376 instances -> 0/6376 improved, 0 stacks saved, in 36s
+```
+
+What the closed corpus gives instead is better than the original test. Every
+instance's optimum is *known*, so a sweep is an exact scoring run over all 6,376
+rather than a count of improvements over the then-best guess. `reheuristic`
+already reports the cached value beside what the strategy achieved;
+`learning.corpus_sweep` aggregates that, and sweeps fold by fold with the models
+from `learning.policy train-folds` so that no instance is ever scored by a model
+that trained on its own generator configuration.
+
+| strategy | mean overshoot | exact | worst | total overshoot |
+|---|---|---|---|---|
+| `mcn` | — | — | — | (improves nothing; see above) |
+| `cs-dfs` | 0.241 | 84.5% | +10 | 1,538 |
+| `learned` | 0.383 | 77.7% | +34 | 2,439 |
+| **`learned+cs-dfs`** | **0.105** | **93.3%** | **+8** | **670** |
+
+Head to head, `learned+cs-dfs` against `cs-dfs` on the same 6,376 instances:
+
+- **strictly better on 709 instances, 882 stacks saved**
+- strictly worse on 13, 14 stacks lost
+- `cs-dfs` missed the optimum on 988; the seeded version recovers **571** of them
+- 417 are missed by both
+
+This is the analogue of the 25 improvements in `reports/ub_mosp_search.md`, and
+it is much larger — but the two numbers are not comparable, and it would be
+wrong to read this as 28× better. That report counted improvements on 148
+instances that were hard enough to still be open after everything else had run;
+this counts them over the whole corpus, including thousands of small instances
+`cs-dfs` was never run against before. The honest comparison is the head-to-head
+column, and the honest summary is that seeding recovers 58% of the optima
+`cs-dfs` misses.
+
+The largest gains are on the Chu & Stuckey `Random` instances, which is where
+the remaining difficulty is:
+
+| instance | optimum | `cs-dfs` | `learned+cs-dfs` |
+|---|---|---|---|
+| `Random-100-50-6-4_0` | 48 | 58 | 51 |
+| `Random-100-50-8-2_0` | 55 | 62 | 57 |
+| `p4050n10_0` | 14 | 20 | 15 |
+| `Random-125-125-8-1_0` | 95 | 101 | 98 |
+
+### It is also faster
+
+Measured in-process over 300 random instances, so that the process-spawn and
+library-import cost of the sweep harness is excluded:
+
+| strategy | per instance |
+|---|---|
+| `mcn` | 0.3 ms |
+| `learned` | 2.1 ms |
+| `cs-dfs` | 19.3 ms |
+| `learned+cs-dfs` | **11.6 ms** |
+
+Seeding the DFS with the learned order makes it **40% faster as well as more
+accurate**. That is not a surprise once stated: the DFS prunes against its
+incumbent, a better incumbent cuts more of the fan at once, and 2 ms of policy
+buys back 10 ms of search. The 460s wall clock of the corpus sweep is almost
+entirely 6,376 process spawns each importing LightGBM, not the strategy.
+
+### The 13 regressions
+
+All are small instances, all off by exactly one, and all have the same cause —
+the one `_cs_cost`'s docstring names. The DFS prunes in `_cs_cost` space, which
+over-charges relative to simulation, so a seed with lower `_cs_cost` can cut a
+branch whose product order would have simulated *lower*. A better incumbent is
+not monotonically a better search. 13 against 709 is a good trade, and running
+both and keeping the minimum would remove even that, at the cost of the speedup.
+
+### One more thing the sweep checked
+
+Not one of the 6,376 orderings produced by either strategy came in *below* the
+certified optimum. That is not a proof of anything — a heuristic beating a
+proved optimum would mean the optimum was wrong — but it is 12,752 independent
+chances for the corpus to contradict itself, taken and passed.
+
 ## 3. What this is not
 
 **The corpus is not the problem.** 5,938 of 6,376 instances have 30 or fewer
@@ -181,11 +271,12 @@ decision, not a measurement, and it is left open.
 
 ## 4. Next, in order
 
-1. **Register the seeded strategy** behind a soft import, and re-run
-   `benchmarks.reheuristic` with it over the corpus. The claim to test is
-   whether `cs-dfs+learned` improves upper bounds that two hours of seeded tabu
-   and `cs-dfs` did not — the same test `reports/ub_mosp_search.md` ran for
-   `cs-dfs` itself, which found 25 improvements.
+1. ~~**Register the seeded strategy** and sweep the corpus with it.~~ **Done,
+   2026-09-22** — §2.1. `learned` and `learned+cs-dfs` are registered behind a
+   soft import in `satisfiability/heuristics.py`; the seeded strategy is better
+   on 709 instances and worse on 13, and is 40% faster than `cs-dfs` besides.
+   It is still not the *default* for anything: making it one would put LightGBM
+   and a model file on the solver's critical path.
 2. **Use the learned scorer inside the DFS,** not only as its seed: order the
    candidate fan by predicted score rather than by immediate cost. The fan is
    already sorted cheapest-first, which is a one-step-lookahead policy; this

@@ -131,3 +131,53 @@ def test_learned_order_never_beats_the_optimum():
         value = max_open_stacks(instance, product_order_from_customers(instance, order))
         optimum, _ = solve_mosp_sat(instance, solutions_dir=None)
         assert value >= optimum
+
+
+# -------------------------------------------------------
+# The registered strategies
+# -------------------------------------------------------
+
+
+def test_learned_strategies_are_registered():
+    from satisfiability.heuristics import STRATEGIES
+
+    assert "learned" in STRATEGIES
+    assert "learned+cs-dfs" in STRATEGIES
+
+
+def test_missing_model_raises_rather_than_falling_back():
+    """A silent fallback would let a sweep report `cs-dfs` numbers as learned ones."""
+    from satisfiability.heuristics import upper_bound
+
+    instance = _random_instance(7)
+    for strategy in ("learned", "learned+cs-dfs"):
+        with pytest.raises(RuntimeError, match="no trained policy"):
+            upper_bound(instance, strategy, model_path="learning/models/absent.txt")
+
+
+@pytest.mark.skipif(not __import__("pathlib").Path("learning/models/policy.txt").exists(),
+                    reason="no trained policy on disk")
+def test_registered_strategies_return_simulated_values():
+    from mosp.verify import max_open_stacks
+    from satisfiability.heuristics import upper_bound
+
+    for seed in range(4):
+        instance = _random_instance(seed, n_c=10, n_p=8)
+        for strategy in ("learned", "learned+cs-dfs"):
+            value, ordering = upper_bound(instance, strategy)
+            assert sorted(ordering) == list(range(instance.n_patterns))
+            assert value == max_open_stacks(instance, ordering)
+
+
+@pytest.mark.skipif(not __import__("pathlib").Path("learning/models/policy.txt").exists(),
+                    reason="no trained policy on disk")
+def test_seeding_never_makes_the_dfs_report_below_the_optimum():
+    """The seed changes which order the DFS finds, never what simulation says."""
+    from satisfiability.heuristics import restricted_dfs, upper_bound
+    from satisfiability.mosp_solver import solve_mosp_sat
+
+    for seed in range(4):
+        instance = _random_instance(seed, n_c=7, n_p=6)
+        optimum, _ = solve_mosp_sat(instance, solutions_dir=None)
+        assert restricted_dfs(instance)[0] >= optimum
+        assert upper_bound(instance, "learned+cs-dfs")[0] >= optimum

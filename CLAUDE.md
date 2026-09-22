@@ -502,12 +502,21 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   without a SAT solver. Keep the kill criterion if it is ever built.
 
 **From the learning folder** (`reports/learning.md`, 2026-09-22):
-- **Seeding `cs-dfs` with a learned closing order halves its error** — MAE 0.30
-  → 0.14 over the optimum, exact on 92% against 82%, worst case +10 → +6, over
-  2,000 held-out instances in five-fold cross-validation grouped by source file.
-  The policy is trained by imitating the 2.27M closing decisions the certified
-  witnesses contain. Registering it as a strategy would put LightGBM on the
-  solver's critical path, which is a dependency decision left open.
+- **`learned+cs-dfs` is registered, and better than `cs-dfs` on 709 instances
+  against 13 worse.** Swept over all 6,376 fold by fold, each instance scored by
+  a model blind to its own source file: mean overshoot 0.241 → 0.105, exact
+  84.5% → 93.3%, total overshoot 1,538 → 670 stacks. It recovers 571 of the 988
+  optima `cs-dfs` misses, and it is *faster* — 11.6 ms against 19.3 ms per
+  instance, because a better incumbent prunes more than the policy costs. The
+  policy imitates the 2.27M closing decisions the certified witnesses contain.
+  Registered behind a soft import and **not** the default for anything: that
+  would put LightGBM on the solver's critical path, a dependency decision left
+  open. The 13 regressions are all off by one and are the `_cs_cost` proxy
+  mismatch its own docstring predicts.
+- **`benchmarks.reheuristic` can no longer improve anything** — the corpus is
+  closed, so `--all` is a scoring run rather than an improvement run, and
+  `learning.corpus_sweep` wraps it with held-out models. Scoring sweeps write to
+  their own ledger: they are not compute the corpus cost.
 - **The clique bound never improved on contraction degeneracy + 1** anywhere in
   the corpus, under a 1-second budget. `_lower_bound` spends up to 5 seconds per
   call on it. A measurement, not a theorem — and the clique bound is the one

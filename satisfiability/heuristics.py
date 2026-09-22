@@ -35,6 +35,8 @@ here.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from functools import lru_cache
+from pathlib import Path
 from typing import Callable, Optional
 
 from mosp.instance import MOSPInstance
@@ -448,6 +450,73 @@ def mcn_then_tabu(instance: MOSPInstance, seed: int = 42, **_: object) -> UpperB
     return _tabu_search(instance, start_ordering, start_value, seed=seed)
 
 
+@lru_cache(maxsize=4)
+def _load_cached(path: str):
+    from learning.policy import load
+
+    return load(Path(path))
+
+
+def _learned_model(model_path: object = None):
+    """Load the learned closing-order policy, or say precisely what is missing.
+
+    Soft: this module imports with no machine learning installed, and only a
+    *call* to one of the two strategies below fails. It fails loudly rather than
+    falling back to MCN, because a silent fallback would let a benchmark run
+    report `learned+cs-dfs` numbers that are `cs-dfs` numbers.
+    """
+    try:
+        from learning.policy import DEFAULT_MODEL
+    except ImportError as exc:  # pragma: no cover - depends on the environment
+        raise RuntimeError(
+            "the learned strategies need `pip install -r learning/requirements.txt`"
+        ) from exc
+
+    path = Path(model_path) if model_path else DEFAULT_MODEL
+    if not path.exists():
+        raise RuntimeError(
+            f"no trained policy at {path}; run `python -m learning.policy train`"
+        )
+    return _load_cached(str(path))
+
+
+def learned(
+    instance: MOSPInstance, model_path: object = None, **_: object
+) -> UpperBound:
+    """Greedy closing order under the policy of `learning.policy`.
+
+    Trained by imitating the closing orders the certified witnesses induce. The
+    value returned is `max_open_stacks` of the product order it builds, so the
+    model proposes and the simulation decides -- a bad model costs quality and
+    never correctness. See `reports/learning.md` §2.
+    """
+    from learning.policy import learned_closing_order
+
+    order = learned_closing_order(instance, _learned_model(model_path))
+    ordering = product_order_from_customers(instance, order)
+    return max_open_stacks(instance, ordering), ordering
+
+
+def learned_then_dfs(
+    instance: MOSPInstance,
+    max_nodes: int = 200_000,
+    model_path: object = None,
+    **_: object,
+) -> UpperBound:
+    """`restricted_dfs` with the learned order as its incumbent.
+
+    The DFS prunes against whatever it starts from, and a better incumbent is
+    worth more to it than extra nodes -- the argument `mcn_tabu_then_dfs` makes
+    for tabu, with a seed that is better still. Cross-validated over 2,000
+    held-out instances it halves the DFS's error (MAE 0.30 -> 0.14, exact
+    82% -> 92%, worst case +10 -> +6).
+    """
+    from learning.policy import learned_closing_order
+
+    order = learned_closing_order(instance, _learned_model(model_path))
+    return restricted_dfs(instance, max_nodes=max_nodes, seed_order=order)
+
+
 STRATEGIES: dict[str, Strategy] = {
     "tabu": tabu,
     "mcn": least_cost_node,
@@ -455,6 +524,8 @@ STRATEGIES: dict[str, Strategy] = {
     "customer-tabu": customer_tabu,
     "cs-dfs": restricted_dfs,
     "customer-tabu+cs-dfs": mcn_tabu_then_dfs,
+    "learned": learned,
+    "learned+cs-dfs": learned_then_dfs,
 }
 
 DEFAULT_STRATEGY = "mcn+tabu"

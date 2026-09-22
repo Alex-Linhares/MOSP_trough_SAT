@@ -16,8 +16,16 @@ Two things make it worth running on its own rather than inside the ratchet:
 - Otherwise it lowers the ratchet's starting point, so the descent that follows
   skips the steps the heuristic already made.
 
+Against a corpus where every value is already a certified optimum the sweep can
+improve nothing -- which makes `--all` a scoring run rather than an improvement
+run: the row it prints per instance carries the cached optimum beside what the
+strategy achieved. `learning.corpus_sweep` wraps that, and holds the learned
+model out fold by fold so a learned strategy is not scored on its own training
+instances.
+
 Usage:
     python -m benchmarks.reheuristic --unproven --strategy customer-tabu
+    python -m benchmarks.reheuristic --all --strategy cs-dfs
 """
 
 from __future__ import annotations
@@ -149,6 +157,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--instances", type=str, default=None)
     parser.add_argument("--unproven", action="store_true")
+    parser.add_argument("--all", action="store_true",
+                        help="every enumerated instance; against a closed corpus "
+                             "this improves nothing and scores the strategy instead")
+    parser.add_argument("--model", type=str, default=None,
+                        help="model file for the learned strategies")
     parser.add_argument("--strategy", type=str, default="customer-tabu")
     parser.add_argument("--dir", type=Path, default=DEFAULT_INSTANCE_DIR)
     parser.add_argument("--solutions-dir", type=Path, default=SOLUTIONS_DIR)
@@ -161,22 +174,31 @@ def main() -> None:
 
     from benchmarks.ratchet import find_instances, find_unproven
 
-    if args.unproven:
+    if args.all:
+        from learning.dataset import enumerate_instances
+
+        targets = [inst for _, inst in enumerate_instances(args.dir)]
+    elif args.unproven:
         targets = find_unproven(args.dir, args.solutions_dir)
     elif args.instances:
         targets = find_instances(args.instances.split(","), args.dir)
     else:
-        raise SystemExit("pass --instances or --unproven")
+        raise SystemExit("pass --instances, --unproven or --all")
 
     seeds = tuple(int(s) for s in args.seeds.split(","))
     print(f"{len(targets)} instances, strategy={args.strategy}, "
           f"seeds={seeds}, iterations={args.max_iterations}", flush=True)
+
+    extra: dict[str, object] = {}
+    if args.model:
+        extra["model_path"] = args.model
 
     started = time.time()
     results = sweep(
         targets, args.strategy, seeds=seeds, workers=args.workers,
         solutions_dir=args.solutions_dir,
         max_iterations=args.max_iterations, n_neighbors=args.n_neighbors,
+        **extra,
     )
 
     improved = [r for r in results if r[1] is not None and r[2] is not None

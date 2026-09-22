@@ -145,7 +145,10 @@ def learned_closing_order(instance: MOSPInstance, model) -> list[int]:
             [step_features(masks, n, closed, opened, c) for c in candidates],
             dtype=np.float32,
         )
-        scores = model.predict(X, raw_score=True)
+        # Single-threaded on purpose: the matrix is one row per candidate, so
+        # LightGBM's thread pool costs more than it saves, and the sweeps in
+        # `benchmarks` already fan out one process per instance.
+        scores = model.predict(X, raw_score=True, num_threads=1)
         pick = candidates[int(np.argmax(scores))]
         order.append(pick)
         opened |= masks[pick]
@@ -226,6 +229,52 @@ def _fit(corpus, n_estimators: int = 300, learning_rate: float = 0.08):
     model.fit(np.array(X, dtype=np.float32), np.array(y),
               feature_name=STEP_FEATURE_NAMES)
     return model.booster_, len(y)
+
+
+def fold_assignment(folds: int = 5, seed: int = 2) -> dict[str, int]:
+    """Which cross-validation fold each benchmark file belongs to.
+
+    Shared by `evaluate` and `train_folds` so that a model is never asked about
+    an instance from a file it trained on -- the whole point of holding out by
+    file rather than by instance.
+    """
+    corpus = _corpus()
+    files = sorted({f for f, _, _ in corpus})
+    rng = random.Random(seed)
+    rng.shuffle(files)
+    return {name: index % folds for index, name in enumerate(files)}
+
+
+def train_folds(
+    folds: int = 5, seed: int = 2, out_dir: Path = MODEL_DIR, verbose: bool = True
+) -> dict[int, Path]:
+    """Fit one model per fold, each blind to its own fold's files.
+
+    What this buys: a sweep over the *whole* corpus where every instance is
+    scored by a model that never saw its generator configuration. Running the
+    all-data model over the corpus it was fitted on would measure memorisation.
+    """
+    corpus = _corpus()
+    assignment = fold_assignment(folds=folds, seed=seed)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    paths: dict[int, Path] = {}
+    for fold in range(folds):
+        training = [row for row in corpus if assignment[row[0]] != fold]
+        booster, n_rows = _fit(training)
+        path = out_dir / f"fold{fold}.txt"
+        booster.save_model(str(path))
+        paths[fold] = path
+        if verbose:
+            print(f"  fold {fold}: {len(training)} witnesses, "
+                  f"{n_rows:,} rows -> {path}", flush=True)
+
+    manifest = out_dir / "folds.json"
+    manifest.write_text(json.dumps(
+        {"folds": folds, "seed": seed, "assignment": assignment}, indent=2))
+    if verbose:
+        print(f"wrote {manifest}")
+    return paths
 
 
 def load(path: Path = DEFAULT_MODEL):
@@ -334,6 +383,11 @@ def main() -> None:
     fit = sub.add_parser("train", help="fit on every certified witness")
     fit.add_argument("--out", type=Path, default=DEFAULT_MODEL)
 
+    folds = sub.add_parser("train-folds",
+                           help="one model per cross-validation fold")
+    folds.add_argument("--folds", type=int, default=5)
+    folds.add_argument("--seed", type=int, default=2)
+
     ev = sub.add_parser("evaluate", help="grouped cross-validation")
     ev.add_argument("--folds", type=int, default=5)
     ev.add_argument("--per-fold", type=int, default=400)
@@ -342,6 +396,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "train":
         train(args.out)
+    elif args.command == "train-folds":
+        train_folds(folds=args.folds, seed=args.seed)
     else:
         evaluate(folds=args.folds, per_fold=args.per_fold, dfs_nodes=args.dfs_nodes)
 

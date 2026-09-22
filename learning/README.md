@@ -91,20 +91,40 @@ The project already has a stronger method than MCN — a depth-first search from
 Chu & Stuckey's 2009 paper. It takes a starting schedule as a hint, and the
 better the hint, the more of the search tree it can skip.
 
-Give it our learned schedule as the hint instead of MCN's:
+Give it our learned schedule as the hint instead of MCN's, and run that over
+**every one of the 6,376 puzzles** — each one scored by a model that was never
+shown anything from its own generator setting:
 
-| method | average overshoot | exact | worst case |
-|---|---|---|---|
-| MCN (textbook rule) | 1.63 | 51% | +27 |
-| our learned builder | 0.46 | 75% | +34 |
-| the existing search | 0.30 | 82% | +10 |
-| **the search, with our hint** | **0.14** | **92%** | **+6** |
+| method | average overshoot | exact | worst case | total stacks over |
+|---|---|---|---|---|
+| MCN (textbook rule) | 1.63 | 51% | +27 | — |
+| our learned builder | 0.38 | 78% | +34 | 2,439 |
+| the existing search | 0.24 | 85% | +10 | 1,538 |
+| **the search, with our hint** | **0.11** | **93%** | **+8** | **670** |
 
-Error cut in half, and the worst case on 2,000 held-out puzzles drops from 10
-stacks too many to 6. Notice also that our learned builder on its own has a
-*worse* worst case than the search does (+34 vs +10) — it is good on average and
-occasionally falls apart, which is what a method with no search behind it looks
-like. Its value is as the hint, not as the answer.
+Put head to head against the existing search on the same puzzles, the hinted
+version is **better on 709 of them and worse on 13**. Of the 988 puzzles where
+the existing search does not find the best possible answer, the hint recovers
+**571**. The biggest single gain: a 100-customer instance where the best possible
+answer is 48 stacks, the existing search finds 58, and the hinted version finds
+51.
+
+Two things worth noticing. Our learned builder *on its own* has a worse worst
+case than the search (+34 vs +10) — good on average, occasionally falls apart,
+which is what a method with no search behind it looks like. Its value is as the
+hint, not as the answer. And the 13 cases where the hint makes things worse are
+all off by exactly one, for a reason that was already written down in the code:
+the search measures its progress with a formula that slightly over-charges, so a
+better starting point can occasionally lead it to cut off a branch that would
+have turned out well.
+
+### And it is *faster*
+
+This was the surprise. Measured properly, the hinted search takes **11.6
+milliseconds** per puzzle against the unhinted search's **19.3**. Producing the
+hint costs 2 milliseconds and saves 10, because a better starting point lets the
+search throw away more of the tree without looking at it. So it is not a
+trade — it is better and cheaper at the same time.
 
 ### 4. We can predict which puzzles will be easy
 
@@ -150,12 +170,20 @@ no amount of careful splitting fixes a population that is 93% easy.
 
 ## What is not done
 
-Nothing here is plugged into the solver yet. Turning the learned hint into a
-named strategy is a few lines of code, but it would put a machine learning
-library and a trained model file on the solver's critical path, and that is a
-decision about dependencies rather than a question about results. `reports/learning.md`
-§4 lists what to do next, most valuably: run the learned hint over the whole
-corpus and see whether it improves answers that hours of other search did not.
+The hint is now available as a named strategy — `learned+cs-dfs` — and it is
+written so that the solver still works with no machine learning installed at
+all: only asking for that strategy by name fails, and it fails with a clear
+message rather than quietly falling back to the old method. (A quiet fallback
+would be worse than a crash: a benchmark would report the new method's numbers
+while running the old one.)
+
+What has *not* happened is making it the default. That would put a machine
+learning library and a trained model file on the critical path of a solver whose
+other dependencies are a SAT solver and numpy, and that is a decision about what
+this project wants to depend on, not a question the measurements can answer.
+
+`reports/learning.md` §4 lists what to do next. The most promising: use the
+learned scorer *inside* the search rather than only to start it.
 
 ## Running it
 
@@ -166,6 +194,10 @@ python -m learning.dataset          # build the feature table   (~20s)
 python -m learning.study_optimum    # the prediction study      (~2 min)
 python -m learning.policy train     # fit the schedule builder  (~7s)
 python -m learning.policy evaluate  # held-out comparison       (~3 min)
+
+python -m learning.policy train-folds                        # (~40s)
+python -m learning.corpus_sweep --strategy learned+cs-dfs --folds   # (~8 min)
+python -m learning.corpus_sweep --strategy cs-dfs                   # (~20s)
 ```
 
 ```
@@ -174,6 +206,7 @@ learning/
     dataset.py          pairs every instance with its proved answer
     study_optimum.py    findings 1 and 4 above
     policy.py           findings 2 and 3 above
+    corpus_sweep.py     scores a strategy against all 6,376 known answers
     data/instances.csv  the feature table      (not committed; rebuilt in 20s)
     models/policy.txt   the trained model      (not committed; refitted in 7s)
 ```
