@@ -241,6 +241,7 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     solver.py                       Pathwidth solver: preprocessing, iterative deepening, CaDiCaL
     mosp_encoding.py                Direct MOSP-to-SAT CNF encoding (no pathwidth reduction)
     mosp_solver.py                  Direct MOSP solver: bounds, iterative deepening, solution caching
+                                    `solve_mosp_exact` is the entry point; default procedure is csearch
     heuristics.py                   Upper bound strategies behind one signature
     customer_search.py              Complete search over customer closing orders
     relaxation.py                   Contraction relaxation: certified lower bounds
@@ -395,6 +396,21 @@ Encodes the MOSP decision problem directly as SAT, bypassing the pathwidth reduc
 
 **Direct MOSP-to-SAT solver.** Encodes MOSP directly without the pathwidth reduction. Produces exact optimal values validated against all published benchmarks. The placement + pair-wise open-stack forcing captures the full open/close semantics correctly.
 
+**The default decision procedure is the customer search, not SAT** *(changed
+2026-09-22)*. `solve_mosp_exact` runs `satisfiability.customer_search`; the SAT
+encoding is `procedure="sat"`. Raced head to head, the customer search won 63 of
+63 decision calls on hard `Random` instances at densities 2 and 8 with SAT on
+kissat404, and 49 of 49 on a broad corpus sample — where it certified 39 of 40
+instances in 1.1 s against SAT's 36 in 30.3 s, a factor of 38 on the instances
+both settle. The belief that the
+two fail on disjoint instance sets was never measured: the direct SAT path has
+solved rows for 6,226 instances, `csearch` for 147, and the overlap is zero.
+`reports/learned_search.md` §3.
+
+Keep reaching for SAT when a **checkable proof object** matters. A refutation
+from the customer search rests on the dominance rules being sound, with no CNF
+to re-refute and no proof log, which is the open item 7 in Next Steps.
+
 **Three-tier pathwidth solver.** Exact DP for n ≤ 18 (fastest, no overhead). Branch-and-bound for n ≤ 100+ when pathwidth is small. SAT solver for large instances (n ≤ 125) where branch-and-bound times out — handles high pathwidth that defeats backtracking search.
 
 **Verify by simulation, not formula alone.** Both solvers compute the ordering from pathwidth but determine the actual MOSP value by simulating the production sequence on the original instance.
@@ -434,14 +450,24 @@ sol = solve_mosp(instance)
 print(f'Upper bound: {sol.max_open_stacks}, Ordering: {sol.ordering}')
 "
 
-# Solve MOSP exactly with direct SAT encoding (recommended)
+# Solve MOSP exactly (recommended) — the complete customer search by default
 python -c "
 from mosp.instance import MOSPInstance
-from satisfiability.mosp_solver import solve_mosp_sat
+from satisfiability import solve_mosp_exact
 matrix = [[1,1,0,0],[0,1,1,0],[0,0,1,1]]
 instance = MOSPInstance.from_matrix(matrix, name='example')
-val, ordering = solve_mosp_sat(instance)
+val, ordering = solve_mosp_exact(instance)
 print(f'Optimal MOSP: {val}, Ordering: {ordering}')
+"
+
+# The same through the SAT encoding, which is what to use when a checkable
+# proof object matters — a customer-search refutation is not a DRAT proof
+python -c "
+from mosp.instance import MOSPInstance
+from satisfiability import solve_mosp_exact
+matrix = [[1,1,0,0],[0,1,1,0],[0,0,1,1]]
+instance = MOSPInstance.from_matrix(matrix, name='example')
+print(solve_mosp_exact(instance, procedure='sat'))
 "
 
 # Solve large instances with SAT solver (upper bounds via pathwidth reduction)
@@ -457,7 +483,8 @@ python -m benchmarks.solve_all --timeout 120
 ## Known Limitations
 
 - **The SAT path does not close dense 125×125 instances.** The ~50×50 ceiling recorded here previously was lifted by the linear open-stack encoding; the corpus now holds certified optima at 125×125. What remains is that SAT *refutations* on the dense Chu & Stuckey instances do not return, which is what `satisfiability/customer_search.py` exists for.
-- **The customer search produces no checkable proof object.** Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
+- **The customer search produces no checkable proof object**, and it is now the
+  default, which makes this limitation apply by default too.   Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
 - **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
 - **Agreement graph undercounts**: `pathwidth(G_a) + 1` gives a lower bound that can be too low.
 - **Pathwidth SAT encoding has a variable ID collision bug**: The `encoding.py` pool.occupy/top_id tracking is broken (CardEnc auxiliary variables collide across constraints). The solver works because it falls back to greedy. Fixed in `mosp_encoding.py`.

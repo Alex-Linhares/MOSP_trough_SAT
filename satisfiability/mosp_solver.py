@@ -506,6 +506,123 @@ def solve_mosp_sat(
     return val, ordering
 
 
+# Which complete decision procedure solves an instance unless told otherwise.
+#
+# It was the SAT encoding until 2026-09-22, when the two were finally raced
+# against each other: over 20 hard `Random` instances at densities 2 and 8, with
+# SAT on kissat404 -- the backend measured at 6/6 on hard refutations -- the
+# customer search won **63 of 63** decision calls and the SAT path certified
+# none inside a minute. On a broad corpus sample it wins too, by an order of
+# magnitude on instances both settle in under a second.
+#
+# The reason nobody noticed is in the records: the direct SAT path has a solved
+# row for 6,226 instances and `csearch` has a ledger row for 147, and the
+# overlap is **zero**. `csearch` was only ever pointed at what SAT had already
+# failed, so the two had no head-to-head history and the belief that they fail
+# on disjoint instance sets was inherited rather than measured
+# (`reports/learned_search.md` §3).
+DEFAULT_PROCEDURE = "csearch"
+PROCEDURES = ("csearch", "sat")
+
+
+def solve_mosp_exact(
+    instance: MOSPInstance,
+    *,
+    procedure: str = DEFAULT_PROCEDURE,
+    solutions_dir: Path | str | None = SOLUTIONS_DIR,
+    upper_strategy: str = "cs-dfs",
+    time_budget: float | None = None,
+    max_nodes: int | None = None,
+) -> tuple[int, list[int]]:
+    """Solve MOSP to optimality with the project's default decision procedure.
+
+    This is the entry point to reach for. `solve_mosp_sat` remains what its name
+    says -- the SAT encoding, reachable here as `procedure="sat"` -- and is worth
+    running when a checkable proof object matters, since a refutation from the
+    customer search is not a DRAT proof (`CLAUDE.md`, item 7).
+
+    The value returned is `max_open_stacks` of the ordering, re-simulated on the
+    original instance rather than taken from the search's own accounting: the
+    closing-order measure can over-charge, and a witness that does not simulate
+    to its claimed value is a bug that must not reach the corpus.
+
+    Args:
+        procedure: "csearch" (default) or "sat".
+        upper_strategy: the named heuristic supplying the starting upper bound.
+        time_budget: seconds for the descent. Without one the search runs to a
+            refutation, which on the hardest instances is hours.
+        max_nodes: node cap for a single decision call.
+
+    Returns:
+        `(value, pattern_ordering)`. The value is optimal when the descent
+        refuted `value - 1` or met the lower bound; when a budget ran out it is
+        an upper bound, and the provenance recorded on disk says which.
+    """
+    if procedure not in PROCEDURES:
+        raise ValueError(
+            f"unknown procedure {procedure!r}; available: {', '.join(PROCEDURES)}")
+    if procedure == "sat":
+        return solve_mosp_sat(instance, solutions_dir=solutions_dir)
+
+    from satisfiability.customer_search import solve as csearch_solve
+    from satisfiability.heuristics import product_order_from_customers
+
+    if solutions_dir is not None:
+        solutions_dir = Path(solutions_dir)
+        cached = _load_solution(instance, solutions_dir)
+        if cached is not None:
+            return cached
+
+    if instance.n_patterns == 0:
+        return 0, []
+    if instance.n_patterns == 1:
+        return max(len(instance.pattern_customers(0)), 0), [0]
+
+    # The recorded bound can exceed a freshly computed one -- a relaxation may
+    # have proved something this call would not -- and the descent ends the
+    # moment its value reaches the floor, with no refutation needed.
+    cheap = _lower_bound(instance)
+    floor, source = cheap, "degeneracy"
+    if solutions_dir is not None:
+        recorded = load_lower_bound(instance, solutions_dir)
+        if recorded and recorded[0] > cheap:
+            floor, source = recorded
+
+    result = csearch_solve(instance, lower=floor, upper_strategy=upper_strategy,
+                           time_budget=time_budget, max_nodes=max_nodes)
+    if not result.order:
+        # No closing order means the descent never improved on its start, which
+        # only happens when it was handed one; it is not handed one here.
+        _, ordering = upper_bound_ordering(instance, upper_strategy)
+    else:
+        ordering = product_order_from_customers(instance, result.order)
+
+    achieved = max_open_stacks(instance, ordering)
+    if result.order and achieved != result.value:
+        raise AssertionError(
+            f"{instance.name}: search claimed {result.value}, "
+            f"ordering achieves {achieved}")
+
+    if solutions_dir is not None and instance.name:
+        provenance = {"refutation": PROVENANCE_REFUTATION,
+                      "bound": PROVENANCE_BOUND,
+                      "": PROVENANCE_SOLUTION}[result.proof]
+        if result.proof == "bound" and source == "relaxation":
+            provenance = PROVENANCE_RELAXATION
+        _save_solution(instance, achieved, ordering, solutions_dir,
+                       provenance=provenance, lower_bound=floor,
+                       lower_bound_source=source)
+
+    return achieved, ordering
+
+
+def upper_bound_ordering(instance: MOSPInstance, strategy: str):
+    """`(value, ordering)` from a named heuristic, without importing at module scope."""
+    from satisfiability.heuristics import upper_bound
+
+    return upper_bound(instance, strategy)
+
+
 def decide_mosp(
     instance: MOSPInstance,
     k: int,

@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Optional
 
 from mosp.instance import MOSPInstance
+from satisfiability.mosp_solver import DEFAULT_PROCEDURE, PROCEDURES
 
 DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
 SOLUTIONS_DIR = Path("solutions")
@@ -77,8 +78,16 @@ def _instance_worker(
     name: str,
     solutions_dir: Path,
     result_queue: multiprocessing.Queue,
+    procedure: str = DEFAULT_PROCEDURE,
 ) -> None:
-    """Solve one instance with the direct MOSP-to-SAT encoding.
+    """Solve one instance with the project's default decision procedure.
+
+    That default is the complete customer search as of 2026-09-22, not the SAT
+    encoding: raced head to head it won 63 of 63 decision calls on hard
+    instances and every call on a broad corpus sample, including instances the
+    SAT path does not finish in 30 seconds and it settles in under one
+    (`reports/learned_search.md` §3). Pass `procedure="sat"` for the old
+    behaviour.
 
     The witness ordering is cached to JSON and a cached solution is verified
     and reused instead of re-solved. Instance names are unique across the
@@ -88,7 +97,7 @@ def _instance_worker(
 
     try:
         from mosp.verify import max_open_stacks
-        from satisfiability.mosp_solver import solve_mosp_sat
+        from satisfiability.mosp_solver import solve_mosp_exact
 
         instance = MOSPInstance(
             matrix=np.array(matrix_list, dtype=np.int8),
@@ -96,7 +105,8 @@ def _instance_worker(
             n_patterns=n_patterns,
             name=name,
         )
-        value, ordering = solve_mosp_sat(instance, solutions_dir=solutions_dir)
+        value, ordering = solve_mosp_exact(
+            instance, procedure=procedure, solutions_dir=solutions_dir)
         result_queue.put(
             {
                 "mosp_value": value,
@@ -148,6 +158,7 @@ def sweep(
     min_size: int = 1,
     max_size: Optional[int] = None,
     solutions_dir: Path = SOLUTIONS_DIR,
+    procedure: str = DEFAULT_PROCEDURE,
 ) -> list[dict]:
     """Solve every matching benchmark instance, `workers` at a time.
 
@@ -218,7 +229,7 @@ def sweep(
                     target=_instance_worker,
                     args=(job.instance.matrix.tolist(), job.instance.n_customers,
                           job.instance.n_patterns, job.instance.name,
-                          solutions_dir, job.queue),
+                          solutions_dir, job.queue, procedure),
                 )
                 job.started = time.time()
                 job.proc.start()
@@ -473,6 +484,8 @@ def main() -> None:
     p_sweep.add_argument("--workers", type=int, default=0, help="default: min(32, cores)")
     p_sweep.add_argument("--timeout", type=float, default=300.0)
     p_sweep.add_argument("--output", type=Path, default=None)
+    p_sweep.add_argument("--procedure", choices=PROCEDURES, default=DEFAULT_PROCEDURE,
+                         help="decision procedure (default: the customer search)")
     p_sweep.add_argument("--min-size", type=int, default=1)
     p_sweep.add_argument("--max-size", type=int, default=None)
     p_sweep.add_argument("--solutions-dir", type=Path, default=SOLUTIONS_DIR,
@@ -489,7 +502,7 @@ def main() -> None:
     if args.mode == "sweep":
         sweep(base_dir=args.dir, workers=args.workers, timeout=args.timeout,
               output_csv=args.output, min_size=args.min_size, max_size=args.max_size,
-              solutions_dir=args.solutions_dir)
+              solutions_dir=args.solutions_dir, procedure=args.procedure)
         return
 
     instance = _find_named_instance(args.name, args.dir)

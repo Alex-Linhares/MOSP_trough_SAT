@@ -125,6 +125,13 @@ to do that one. What a lower start skips is the satisfiable calls above the
 optimum, which are the cheap ones -- they succeed. So the saving is real and
 worth almost nothing.
 
+Repeated on the harder end — 40 `Random` instances drawn from the same 709, with
+a 300-second budget each — the answer is the same: 37 certified under both,
+208.7 s against 206.7 s, 301,214,668 nodes against 301,207,649, faster on 6 and
+slower on 28. The three that certified under neither are 125x125 at density 2,
+where both configurations exhaust the budget identically. Those are exactly the
+instances a better start was supposed to help.
+
 This is the sharpest thing the learning work has produced about its own limits:
 **the 709 improved upper bounds buy bound quality, not proving time.** A better
 upper bound helps a ratchet, which only ever asks satisfiable questions, and it
@@ -218,11 +225,18 @@ This is that prediction meeting a learned upper bound and holding.
 
 What would follow the evidence instead:
 
-1. **Reverse the default.** `benchmarks.solve_parallel` sweeps with SAT and
-   `benchmarks.csearch` is the fallback. On 63 of 63 decision calls across both
-   density extremes the customer search won, and the two paths have no
-   head-to-head record anywhere in the corpus history. The order should be the
-   other way round, and the sweep that establishes it is one command.
+1. ~~**Reverse the default.**~~ **Done, 2026-09-22.**
+   `satisfiability.mosp_solver.solve_mosp_exact` is the entry point and runs the
+   customer search; `procedure="sat"` selects the encoding, and
+   `benchmarks.solve_parallel sweep --procedure sat` restores the old sweep.
+   Confirmed first on a broad corpus sample, not only the hard `Random` set:
+   40 instances drawn at random, 30-second budget, **csearch won 49 of 49
+   decision calls**. It certified 39 of 40 in 1.1 s total; SAT certified 36 in
+   30.3 s, and on the 36 both settled the times are **0.8 s against 30.3 s, a
+   factor of 38**. Two of the four SAT could not finish in 30 s — `p4050n6_0`
+   and `Warwick 2074` — csearch settles in 0.2 s and 0.0 s. The corpus was
+   re-checked after the change: 6,376 of 6,376 still certified, no solution file
+   touched, 546 tests passing.
 2. **Learn a *lower* bound signal, not an upper one.** §1 of
    `reports/learning.md` found that instance structure alone predicts the
    optimum better than `_lower_bound` does -- exact on 71.2% against 65.3%. A

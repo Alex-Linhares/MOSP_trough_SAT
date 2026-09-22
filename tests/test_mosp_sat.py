@@ -553,3 +553,53 @@ def test_decide_mosp_covers_products_nobody_needs():
     inst = MOSPInstance.from_matrix([[1, 0, 1], [0, 0, 1]], name="free")
     ordering = decide_mosp(inst, 2)
     assert sorted(ordering) == [0, 1, 2]
+
+
+# -------------------------------------------------------
+# The default decision procedure
+# -------------------------------------------------------
+
+
+def test_default_procedure_is_the_customer_search():
+    """Flipped 2026-09-22 on the evidence in reports/learned_search.md §3."""
+    from satisfiability.mosp_solver import DEFAULT_PROCEDURE
+
+    assert DEFAULT_PROCEDURE == "csearch"
+
+
+@pytest.mark.parametrize("seed", range(8))
+def test_exact_agrees_with_the_sat_path(seed):
+    """Two complete procedures must return the same optimum, or one is wrong."""
+    import random
+
+    from satisfiability.mosp_solver import solve_mosp_exact
+
+    rng = random.Random(seed)
+    n_c, n_p = rng.randint(3, 8), rng.randint(3, 7)
+    matrix = [[rng.randint(0, 1) for _ in range(n_p)] for _ in range(n_c)]
+    for row in matrix:
+        if not any(row):
+            row[rng.randrange(n_p)] = 1
+    inst = MOSPInstance.from_matrix(matrix, name=f"exact{seed}")
+
+    value, ordering = solve_mosp_exact(inst, solutions_dir=None)
+    assert sorted(ordering) == list(range(inst.n_patterns))
+    assert value == max_open_stacks(inst, ordering)
+    assert value == solve_mosp_sat(inst, solutions_dir=None)[0]
+
+
+def test_exact_can_still_be_asked_for_the_sat_path():
+    inst = MOSPInstance.from_matrix([[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1]],
+                                    name="viasat")
+    from satisfiability.mosp_solver import solve_mosp_exact
+
+    assert (solve_mosp_exact(inst, procedure="sat", solutions_dir=None)[0]
+            == solve_mosp_sat(inst, solutions_dir=None)[0])
+
+
+def test_unknown_procedure_is_refused_by_name():
+    from satisfiability.mosp_solver import solve_mosp_exact
+
+    inst = MOSPInstance.from_matrix([[1, 0], [0, 1]], name="bad")
+    with pytest.raises(ValueError, match="unknown procedure"):
+        solve_mosp_exact(inst, procedure="dfs", solutions_dir=None)
