@@ -262,3 +262,76 @@ where the hours are. Whether it can be made cheap enough per node is the
 question; the root-level version costs far too much to evaluate at every node, so
 it would need an incremental formulation. That is a real lever and it is
 untested. The root-level floor is not.
+
+---
+
+## 7. The same argument inside the search: also no
+
+§6 closed with one live lever — apply the expansion argument **per node** rather
+than once at the root, so that it prunes the refutation instead of trying to skip
+it. That is now built, proved sound, measured, and it does not work either. It
+took about forty minutes to find out, because this time the measurement came
+first.
+
+### The rule
+
+At a node with closed set `S`, opened set `A = N[S]`, and `open_now = |A| - |S|`,
+let `m(c) = |N[c] \ A|` be the stacks a remaining customer `c` would newly open.
+Closing any `t` of the remaining customers reaches a state costing at least
+`open_now + |N[T] \ A| - t + 1`, and any `t` distinct customers include one whose
+own `m` is at least the `t`-th smallest. So with `m₍₁₎ <= m₍₂₎ <= ...` sorted:
+
+> peak from here >= `open_now + max over t of ( m₍ₜ₎ - t + 1 )`
+
+`t = 1` is exactly the cost cut the search already makes; every `t >= 2` is new.
+The value depends only on `S` (since `A` is a function of it), so a node refuted
+this way is refuted by whatever path reached it and the memo stays sound.
+`decide(..., expansion_prune=True)`, verified against the unpruned search on 200
+instances across every `k`: **zero mismatches**.
+
+### The budget it had to live inside
+
+Measured first, on the refutations that actually cost:
+
+| instance | k | nodes | seconds | per node |
+|---|---|---|---|---|
+| `Random-125-125-6-2_0` | 76 | 626,788,431 | 409.0 | **0.65 µs** |
+| `Random-125-125-6-4_0` | 79 | 400,038,970 | 274.4 | 0.69 µs |
+| `Random-125-125-6-3_0` | 79 | 274,655,344 | 191.0 | 0.70 µs |
+| `Random-125-125-8-3_0` | 94 | 6,153,668 | 4.4 | 0.71 µs |
+
+Two thirds of a microsecond per node. A rule that sorts `|R|` values per node
+would have to cut more than half of all nodes merely to break even.
+
+### It cuts essentially nothing
+
+| population | plain nodes | pruned | ratio | time ratio |
+|---|---|---|---|---|
+| sparse `Random`, 100 customers | 10,000,005 | 10,000,005 | **1.000** | 1.10 |
+| dense `Random`, 40 customers | 1,504 | 1,497 | **0.995** | 1.07 |
+
+Identical node counts on the sparse instances; a 0.5% reduction on the dense
+ones. Both configurations 7-10% slower for the trouble.
+
+### Why, and it is not the reason predicted
+
+The prediction was that sparse graphs would not expand, so the rule would be weak
+exactly where the hours are. That is true but not the binding constraint. The
+binding constraint is that **the search is already pruned to the bone**. By the
+time this rule is evaluated, the subset rule, the definite move, the old move and
+the one-step cost cut have collapsed the node's candidate set, and there is
+almost nothing left for a cleverer bound to catch. Chu & Stuckey's dominance
+relations are doing the work, and a stronger *bound* does not add to a set of
+strong *dominances*.
+
+This is the same lesson as §6 arriving from the other direction. There the gap
+was real and the architecture could not use it; here the argument is sound and
+the search does not need it.
+
+### Status
+
+The flag stays, defaulting off, with the measurement recorded so the idea is not
+rebuilt from the same reasoning. What would be worth attacking instead is the
+node *cost* rather than the node *count*: 0.65 µs across 627 million nodes is
+where the time is, and that is an implementation question, not a mathematical
+one.

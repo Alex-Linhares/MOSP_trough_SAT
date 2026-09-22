@@ -126,6 +126,7 @@ def decide(
     memo_limit: int = 4_000_000,
     native: bool = True,
     branch: "Callable[[int, int, list[tuple[int, int]]], list[tuple[int, int]]] | None" = None,
+    expansion_prune: bool = False,
     **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
@@ -153,6 +154,15 @@ def decide(
             about 120x faster. Set False to force the Python, which is the
             reference implementation and what the exhaustive tests are written
             against. `satisfiability/native.py` says when the C declines.
+        expansion_prune: cut a whole node when even the best continuation must
+            exceed `k`, by the neighbourhood-expansion argument applied to the
+            customers still remaining rather than to the instance as a whole
+            (`reports/expansion_bound.md`). The rule generalises the cost cut
+            this search already makes: that cut is the one-step case, and every
+            further step is new pruning. Costs one pass over data the node has
+            already computed. **Forces the Python path** -- the C does not
+            implement it -- so it is for measuring whether a port is worth
+            writing.
         branch: reorder the surviving candidates at each node. Called with
             `(closed, opened, playable)` where `playable` is the `(cost,
             customer)` list the dominance rules left, and must return a
@@ -168,7 +178,7 @@ def decide(
         A `Decision`. The "sat" order closes every customer with a non-empty
         product set; customers needing nothing are omitted, as they never open.
     """
-    if native and branch is None:
+    if native and branch is None and not expansion_prune:
         from satisfiability.native import decide_native
         answer = decide_native(
             instance, k, restrict=restrict, subset_rule=subset_rule,
@@ -255,6 +265,28 @@ def decide(
             bits ^= bit
             customer = bit.bit_length() - 1
             opens[customer] = masks[customer] & ~opened
+
+        # Expansion cut. Closing any `t` of the remaining customers costs at
+        # least `open_now + m_(t) - t + 1`, where `m_(t)` is the t-th smallest
+        # number of stacks a single remaining customer would newly open: any
+        # `t` distinct customers include one whose own count is at least that.
+        # `t = 1` is the cost cut below; `t >= 2` is what this adds. The value
+        # depends only on `closed` -- `opened` is a function of it -- so a state
+        # refuted here is refuted by whatever path reached it, and the memo
+        # stays sound.
+        if expansion_prune and opens:
+            open_now = (opened & ~closed).bit_count()
+            sizes = sorted(mask.bit_count() for mask in opens.values())
+            floor = 0
+            for step, size in enumerate(sizes, start=1):
+                need = size - step + 1
+                if need > floor:
+                    floor = need
+            if open_now + floor > k:
+                if memo and len(refuted) < memo_limit:
+                    refuted.add(closed)
+                del path[mark:]
+                return False
 
         playable: list[tuple[int, int]] = []
         bits = candidates

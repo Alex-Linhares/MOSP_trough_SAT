@@ -174,3 +174,39 @@ def test_never_exceeds_a_certified_optimum_from_the_corpus(seed):
             checked += 1
     if not checked:
         pytest.skip("no cached solutions to check against")
+
+
+# -------------------------------------------------------
+# The per-node form of the same argument
+# -------------------------------------------------------
+
+
+@pytest.mark.parametrize("seed", range(30))
+def test_expansion_prune_never_changes_a_decision(seed):
+    """The per-node cut must be a pure optimisation.
+
+    It refutes a node when even the cheapest continuation must exceed `k`. If
+    that reasoning were ever wrong it would turn a satisfiable instance into a
+    false refutation, which is the one error nothing downstream would catch.
+    """
+    from satisfiability.customer_search import decide
+
+    instance = _random_instance(seed, max_c=9, max_p=7)
+    if not instance.matrix.any():
+        return
+    for k in range(1, instance.n_customers + 1):
+        assert (decide(instance, k, expansion_prune=True).status
+                == decide(instance, k, native=False).status)
+
+
+def test_expansion_prune_agrees_with_brute_force():
+    for seed in range(12):
+        instance = _random_instance(seed, max_c=6, max_p=5)
+        if not instance.matrix.any():
+            continue
+        optimum = _brute_force(instance)
+        from satisfiability.customer_search import decide
+
+        if optimum > 1:
+            assert decide(instance, optimum - 1, expansion_prune=True).status == "unsat"
+        assert decide(instance, optimum, expansion_prune=True).status == "sat"

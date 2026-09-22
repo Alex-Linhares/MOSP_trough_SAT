@@ -577,6 +577,16 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   The customer search now covers the space that encoding was meant to reach,
   without a SAT solver. Keep the kill criterion if it is ever built.
 
+**The expansion argument, tried twice and rejected twice** (`reports/expansion_bound.md`):
+as a root-level floor it is off by default — it changes the search by 2 seconds
+out of 7,629 and doubles the wall clock (§6). As a *per-node* cut inside
+`decide` (`expansion_prune=True`, also off) it cuts 0.0% of nodes on sparse
+instances and 0.5% on dense, for 7-10% more time (§7). The binding constraint
+there is not the bound's strength but that **Chu & Stuckey's dominance rules
+have already collapsed the node** before it is consulted. Hard refutations visit
+274-627M nodes at **0.65 µs each**, so what is worth attacking is the cost per
+node, not the node count.
+
 **From the learning folder** (`reports/learning.md`, 2026-09-22):
 - **`learned+cs-dfs` is registered, and better than `cs-dfs` on 709 instances
   against 13 worse.** Swept over all 6,376 fold by fold, each instance scored by
