@@ -116,6 +116,51 @@ neighbours without being it. `literature/MISSING.md` carries the question. The
 same discipline as the arc contraction bound, which turned out to be something we
 already had under another name.
 
+## 4a. Where it works, and where it does not at all
+
+The corpus-wide averages hide a clean split. On the 25 125×125 instances, by
+density (cap 8):
+
+| density | mean gap before | after |
+|---|---|---|
+| 2 | 9.8 | **9.8** |
+| 4 | 27.4 | **27.4** |
+| 6 | 39.2 | 26.0 |
+| 8 | 41.8 | 12.2 |
+| 10 | 38.8 | **3.0** |
+
+**Zero gain on density 2 and 4.** Sparse graphs do not expand — `f(t)` stays low,
+`M(i)` stays high, and the argument gives nothing. That is the exact structural
+mirror of why the degree-based bounds fail on dense graphs, and it matters
+because the sparse instances are **97% of the recorded compute** (278,683 s of
+286,895 s). At a deeper cap of 11-12 density 4 does move (27 → 35-37) but
+density 2 stays flat and can even come out *below* the old bound, which costs
+nothing since the best of the two is taken.
+
+Pushed to cap 12 over all 25, **4 reach the optimum exactly** — all at density
+10 — where the descent then exits with `proof="bound"` and the refutation never
+runs.
+
+## 4b. The complement: contraction on the sparse end
+
+`satisfiability/relaxation.py` repairs exactly what the expansion bound cannot,
+because contracting makes an instance smaller *and denser*. Sweeping the
+contraction target on the ten sparse 125×125 instances rather than using a
+single one:
+
+| contract to | 40-80 | 85 | 90 | 95 | 100 |
+|---|---|---|---|---|---|
+| `Random-125-125-4-2_0` (opt 57) | 42 | 44 | 47 | 48 | **50** |
+| `Random-125-125-4-1_0` (opt 57) | 40 | 43 | 46 | 47 | **50** |
+
+**Mean gap over the ten: 18.6 → 6.2**, against an old bound gap of 18.6 and an
+expansion-bound gain of zero. Beyond 100 of 125 customers the contracted
+instance becomes as hard as the original and the call returns nothing, so the
+knee is there.
+
+So the two bounds are complementary and neither is general: expansion for dense,
+contraction for sparse, and the max of the two is free.
+
 ## 5. Next
 
 1. **Settle the prior art** before this is written up anywhere outward-facing.
@@ -127,6 +172,10 @@ already had under another name.
 3. **Push the cap adaptively.** Cost grows steeply but so does the bound; a
    budget-aware schedule that goes deeper only while the bound is still moving
    would get most of t=10 for most of the price of t=8.
-4. **Combine with the relaxation.** `satisfiability/relaxation.py` lifts SP4
-   from 27 to 45 by contraction; the expansion bound gives 37 there at cap 8.
-   They are different arguments and their max is free.
+4. ~~**Combine with the relaxation.**~~ **Measured, §4b.** They are
+   complementary rather than overlapping: expansion carries the dense end,
+   contraction the sparse end, and together the mean gap over the 25 hardest
+   instances falls much further than either alone. What is *not* yet shown is
+   that a smaller gap shortens a proof — `customer_search.solve` only skips the
+   refutation when the floor **equals** the optimum, so a gap of 6 saves nothing
+   in the current descent. That is the question the re-certification run asks.
