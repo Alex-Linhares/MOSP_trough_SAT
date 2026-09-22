@@ -195,3 +195,71 @@ def test_agrees_with_the_sat_solver_beyond_brute_force(seed):
         got = solve(inst)
         assert got.proved
         assert got.value == sat_value
+
+
+# -------------------------------------------------------
+# better_move is a dominance rule: it may change the cost, never the answer
+# -------------------------------------------------------
+
+
+def _bm_instance(seed):
+    import random
+
+    from mosp.instance import MOSPInstance
+
+    rng = random.Random(seed)
+    n_c, n_p = rng.randint(2, 14), rng.randint(2, 12)
+    density = rng.choice([0.15, 0.3, 0.5])
+    matrix = [[1 if rng.random() < density else 0 for _ in range(n_p)]
+              for _ in range(n_c)]
+    return MOSPInstance.from_matrix(matrix, name=f"bm{seed}")
+
+
+@pytest.mark.parametrize("seed", range(40))
+def test_better_move_never_changes_a_decision(seed):
+    """The invariant whose absence hid a false-refutation bug for months.
+
+    `better_move` lives only in the C, so the C-versus-Python tests never
+    covered it: the Python has nothing to compare against. It let any candidate
+    dominate any other, so the relation could cycle -- q dominates r while r
+    dominates q -- and both were discarded together with the solution they
+    carried. `Warwick 1730` was refuted at k = 9 against a true optimum of 9,
+    and one corpus entry was certified one stack too high.
+    """
+    from satisfiability.customer_search import decide
+
+    instance = _bm_instance(seed)
+    if not instance.matrix.any():
+        return
+    for k in range(1, instance.n_customers + 1):
+        reference = decide(instance, k, better_move=False).status
+        for dominators in (0, 1, 2, 4):
+            for memo in (True, False):
+                assert decide(instance, k, better_move=True, memo=memo,
+                              better_move_dominators=dominators).status == reference
+
+
+def test_the_instance_that_exposed_the_cycle():
+    """`Warwick 1730` has optimum 9; every configuration must agree."""
+    from pathlib import Path
+
+    from benchmarks.solve_parallel import find_benchmark_files
+    from mosp.instance import MOSPInstance
+    from satisfiability.customer_search import decide
+
+    name = "Warwick 1730: balanced orders, 3 orders per product"
+    for filepath in find_benchmark_files(Path("benchmarks/instances")):
+        try:
+            instances = MOSPInstance.from_benchmark_file(filepath)
+        except Exception:  # noqa: BLE001
+            continue
+        for instance in instances:
+            if instance.name != name:
+                continue
+            for dominators in (0, 1, 2, 4):
+                assert decide(instance, 8, better_move=True,
+                              better_move_dominators=dominators).status == "unsat"
+                assert decide(instance, 9, better_move=True,
+                              better_move_dominators=dominators).status == "sat"
+            return
+    pytest.skip(f"{name} not present")

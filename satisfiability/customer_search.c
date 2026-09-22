@@ -172,7 +172,17 @@ static int dominance_filter(search_t *s, mask_t candidates,
         int limit = s->better_move_dominators > 0 &&
                     s->better_move_dominators < count
                     ? s->better_move_dominators : count;
-        int kept = 0;
+        /* Survivors are marked, not compacted in place. The dominator loop
+         * below reads `who[qi]` across the candidate list while the compaction
+         * writes survivors back into the same array: once anything is pruned,
+         * `kept < ri`, and `who[kept] = who[ri]` clobbers a slot the loop has
+         * yet to read. With `better_move_dominators = 0` the limit is `count`,
+         * so later candidates were compared against whatever had been written
+         * over their dominators -- pruning branches that held solutions and
+         * returning **false refutations**. Found on `Warwick 1730`, which it
+         * refuted at k = 9 against a true optimum of 9. */
+        int survives[128];
+        for (int i = 0; i < count; i++) survives[i] = 1;
         for (int ri = 0; ri < count; ri++) {
             int r = who[ri];
             mask_t closed_r = closed | BIT(r);
@@ -180,7 +190,15 @@ static int dominance_filter(search_t *s, mask_t candidates,
             mask_t remaining_r = s->full & ~closed_r;
             int pruned = 0;
 
-            for (int qi = 0; qi < limit && !pruned; qi++) {
+            /* Only an *earlier* candidate may dominate a later one. Without
+             * that the relation can cycle -- q dominates r while r dominates q
+             * -- and both are discarded together, taking the solution with
+             * them. Ordering it makes the relation a forest: the first
+             * candidate is never pruned, and whatever covers r is itself
+             * covered by something earlier, transitively. That is what
+             * produced false refutations on `Warwick 1730`, which was refuted
+             * at k = 9 against a true optimum of 9. */
+            for (int qi = 0; qi < limit && qi < ri && !pruned; qi++) {
                 int q = who[qi];
                 if (q == r) continue;
 
@@ -198,9 +216,14 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 }
                 if (closed_by >= opened_by) pruned = 1;
             }
-            if (!pruned) { costs[kept] = costs[ri]; who[kept] = r;
-                           index_of[kept] = index_of[ri]; kept++; }
+            survives[ri] = !pruned;
         }
+        int kept = 0;
+        for (int i = 0; i < count; i++)
+            if (survives[i]) {
+                costs[kept] = costs[i]; who[kept] = who[i];
+                index_of[kept] = index_of[i]; kept++;
+            }
         if (kept) count = kept;
     }
 
