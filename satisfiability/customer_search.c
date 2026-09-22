@@ -117,38 +117,39 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen);
 
 /* Candidates surviving the dominance relations, written into `order` as
  * (cost, customer) pairs sorted by cost. Returns how many. */
-static int dominance_filter(search_t *s, mask_t remaining, mask_t candidates,
+static int dominance_filter(search_t *s, mask_t candidates,
                             mask_t closed, mask_t opened,
+                            const int *ids, const mask_t *opens, const int *sizes,
+                            int n_remaining, int open_now,
                             int *costs, int *who) {
-    mask_t opens[128];
-    int    ids[128];
-    int    n_remaining = 0;
-
-    for (mask_t bits = remaining; bits; ) {
-        mask_t bit = LOWEST(bits); bits ^= bit;
-        int c = lowest_index(bit);
-        ids[n_remaining] = c;
-        opens[n_remaining] = s->neighbour[c] & ~opened;
-        n_remaining++;
-    }
-
+    /* `closed` sits inside `opened`, so (opened | N[c]) & ~closed is the
+     * disjoint union of (opened & ~closed) and (N[c] & ~opened): the cost is
+     * `open_now` plus what the customer newly opens, which the caller counted
+     * in the pass that found the free moves. Checked against the direct form on
+     * 23,392 (state, candidate) pairs. */
+    int index_of[128];
     int count = 0;
-    for (mask_t bits = candidates; bits; ) {
-        mask_t bit = LOWEST(bits); bits ^= bit;
-        int c = lowest_index(bit);
-        int cost = popcount128((opened | s->neighbour[c]) & ~closed);
-        if (cost <= s->k) { costs[count] = cost; who[count] = c; count++; }
+    for (int j = 0; j < n_remaining; j++) {
+        int c = ids[j];
+        if (!((candidates >> c) & 1)) continue;
+        int cost = open_now + sizes[j];
+        if (cost <= s->k) {
+            costs[count] = cost; who[count] = c; index_of[count] = j; count++;
+        }
     }
     if (!count || (!s->subset_rule && !s->definite_move)) goto sorted;
 
     if (s->definite_move) {
         for (int i = 0; i < count; i++) {
             int c = who[i];
-            mask_t own = s->neighbour[c] & ~opened;
-            int opened_by = popcount128(own);
+            int at = index_of[i];
+            mask_t own = opens[at];
+            int opened_by = sizes[at];
             int closed_by = 0;
             for (int j = 0; j < n_remaining; j++)
-                if ((opens[j] & ~own) == 0) closed_by++;
+                /* A larger set cannot sit inside a smaller one; the integer
+                 * test skips most pairs before any 128-bit work. */
+                if (sizes[j] <= opened_by && (opens[j] & ~own) == 0) closed_by++;
             if (closed_by >= opened_by) {
                 /* q is at least as good as anything else here. */
                 costs[0] = costs[i]; who[0] = c;
@@ -197,7 +198,8 @@ static int dominance_filter(search_t *s, mask_t remaining, mask_t candidates,
                 }
                 if (closed_by >= opened_by) pruned = 1;
             }
-            if (!pruned) { costs[kept] = costs[ri]; who[kept] = r; kept++; }
+            if (!pruned) { costs[kept] = costs[ri]; who[kept] = r;
+                           index_of[kept] = index_of[ri]; kept++; }
         }
         if (kept) count = kept;
     }
@@ -206,15 +208,19 @@ static int dominance_filter(search_t *s, mask_t remaining, mask_t candidates,
         int kept = 0;
         for (int i = 0; i < count; i++) {
             int c = who[i];
-            mask_t own = s->neighbour[c] & ~opened;
+            int at = index_of[i];
+            mask_t own = opens[at];
+            int own_size = sizes[at];
             int dominated = 0;
             for (int j = 0; j < n_remaining && !dominated; j++) {
+                if (sizes[j] > own_size) continue;      /* cannot be a subset */
                 int d = ids[j];
                 if (d == c) continue;
                 mask_t other = opens[j];
                 if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
             }
-            if (!dominated) { costs[kept] = costs[i]; who[kept] = c; kept++; }
+            if (!dominated) { costs[kept] = costs[i]; who[kept] = c;
+                              index_of[kept] = index_of[i]; kept++; }
         }
         /* Every candidate dominated by a non-candidate would empty the list;
          * keep the original in that case, as the Python does. */
@@ -256,11 +262,30 @@ static mask_t inherit_old_moves(search_t *s, mask_t seen, mask_t closed,
 static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
     int mark = s->depth;
 
-    /* Free moves: customers whose neighbourhood is wholly opened. */
+    /* One pass over the remaining customers yields everything the node needs:
+     * the stacks each would newly open, how many, and hence the free moves (the
+     * ones that open nothing) and every candidate's cost. Three separate O(R)
+     * passes over 128-bit words became one, and the arrays are built compacted
+     * and in order so the dominance rules read them straight through.
+     *
+     * Closing a free move opens nothing by definition, so `opened` is unchanged
+     * and these stay valid for whoever remains -- which is exactly the entries
+     * kept here, since the free ones are the ones left out. */
+    mask_t opens[128];
+    int    ids[128];
+    int    sizes[128];
+    int    n_remaining = 0;
     mask_t free_now = 0;
     for (mask_t bits = s->full & ~closed; bits; ) {
         mask_t bit = LOWEST(bits); bits ^= bit;
-        if ((s->neighbour[lowest_index(bit)] & ~opened) == 0) free_now |= bit;
+        int c = lowest_index(bit);
+        mask_t own = s->neighbour[c] & ~opened;
+        int size = popcount128(own);
+        if (!size) { free_now |= bit; continue; }
+        ids[n_remaining] = c;
+        opens[n_remaining] = own;
+        sizes[n_remaining] = size;
+        n_remaining++;
     }
     if (free_now) {
         for (mask_t bits = free_now; bits; ) {
@@ -282,7 +307,9 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
     }
 
     int costs[128], who[128];
-    int count = dominance_filter(s, remaining, candidates, closed, opened,
+    int open_now = popcount128(opened & ~closed);
+    int count = dominance_filter(s, candidates, closed, opened,
+                                 ids, opens, sizes, n_remaining, open_now,
                                  costs, who);
 
     for (int i = 0; i < count; i++) {
