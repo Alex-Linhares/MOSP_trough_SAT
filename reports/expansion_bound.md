@@ -213,6 +213,19 @@ Read the middle rows carefully: 217.2 s against 215.8 s, 299.5 against 292.2,
 435.0 against 442.5. The descent is **identical**, exactly as the loop condition
 predicts, and the bound is added cost. **Not one of the 25 instances benefits.**
 
+Totalled over all 25, the result is as clean as it could be:
+
+| | old floor | new floor |
+|---|---|---|
+| **search time** | **7,629 s** | **7,627 s** |
+| bound computation | 0 s | 8,646 s |
+| total | 7,629 s | 16,273 s (**2.13×**) |
+| instances certified | 14 | 14 |
+
+7,629 against 7,627 seconds of actual search. To within 0.03% the bound changes
+the search by *nothing*, certifies the same 14 instances, and doubles the wall
+clock. The four refutations it does skip are worth 0.2-0.4 s each.
+
 ### What went wrong in the reasoning, not the mathematics
 
 The bound is sound and the gap numbers are real: mean gap over these 25 falls
