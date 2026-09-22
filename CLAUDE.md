@@ -86,6 +86,23 @@ its budget on refutations far below the optimum, which is why the SAT path never
 closed them and why `satisfiability/customer_search.py` — which descends from
 the *upper* bound instead — does.
 
+**A fourth bound, and the first that is not about degree** *(2026-09-22)*.
+`satisfiability/expansion_bound.py`: at any prefix `V_i` of a customer ordering
+the finished customers `C_i` satisfy `N[C_i] ⊆ V_i`, so with
+`f(t) = min_{|C|=t} |N[C]|` we get `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})`.
+Validated over all 6,376 certified optima at cap 8: **zero violations**, mean
+gap **0.98 → 0.44**, tight **65.3% → 77.0%**, max gap 44 → 30, better on 1,329
+instances, 196 s for the whole corpus. On the 125×125 instances the cap is a
+dial — `Random-125-125-10-5_0` goes 59 → 98 against an optimum of 99 — and GP5
+comes out exactly at its published 95. It rests on `MOSP = pathwidth + 1`, like
+contraction degeneracy and unlike the clique bound; `BOUND_SOURCES` records
+`expansion`. Prior art unsettled, no novelty claimed. `reports/expansion_bound.md`.
+
+Why the older family could not be pushed further: they are all degree-based and
+saturate at the average degree (bound 47, average degree 43.2, optimum 91 on
+`Random-125-125-8-5_0`). LBN scores 12 points *worse* than contraction
+degeneracy and LBN+ gains exactly zero.
+
 Still on record and still unobtained:
 
 - ~~**arc contraction bound** (Yanasse et al. 1999)~~ — **settled 2026-09-22,
@@ -245,6 +262,7 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     heuristics.py                   Upper bound strategies behind one signature
     customer_search.py              Complete search over customer closing orders
     relaxation.py                   Contraction relaxation: certified lower bounds
+    expansion_bound.py              Neighbourhood-expansion lower bound (not degree-based)
     race.py                         Portfolio: SAT and customer search on one decision call
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)

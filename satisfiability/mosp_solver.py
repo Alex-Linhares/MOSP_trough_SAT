@@ -38,7 +38,12 @@ SAT_BACKEND = "kissat404"
 SOLUTIONS_DIR = Path(__file__).parent.parent / "solutions"
 
 
-def _lower_bound(instance: MOSPInstance, clique_budget: float = 5.0) -> int:
+def _lower_bound(
+    instance: MOSPInstance,
+    clique_budget: float = 5.0,
+    expansion_t: int = 8,
+    expansion_budget: float | None = 3.0,
+) -> int:
     """Compute a lower bound on MOSP from the largest clique found.
 
     In the MOSP graph (nodes are customers, an edge iff some pattern is
@@ -59,8 +64,21 @@ def _lower_bound(instance: MOSPInstance, clique_budget: float = 5.0) -> int:
     Maximal cliques are then enumerated for at most `clique_budget` seconds and
     the largest kept; since any clique is valid, stopping early is sound.
 
-    Stronger bounds exist — notably the arc contraction bound of Yanasse,
-    Becceneri & Soma (1999), reported to dominate all earlier ones.
+    The arc contraction bound of Yanasse, Becceneri & Soma (1999) is the
+    contraction degeneracy below; the 1999 paper settles that they are the same
+    bound (`reports/lower_bounds.md` §3).
+
+    Since 2026-09-22 the best of those three is also taken against
+    `satisfiability.expansion_bound`, which is not degree-based and is the only
+    one of the four that moves on the hardest instances. Over all 6,376
+    certified optima it lowers the mean gap from 0.98 to 0.44 and raises the
+    tight share from 65.3% to 77.0%, with zero violations
+    (`reports/expansion_bound.md`).
+
+    **Trust classes differ and are recorded.** The clique bound above is proved
+    directly from the MOSP semantics. Contraction degeneracy and the expansion
+    bound both rest on Yanasse's `MOSP = pathwidth(MOSP graph) + 1`, so a
+    closure resting on either inherits it.
     """
     m = instance.n_patterns
     if m == 0:
@@ -88,6 +106,14 @@ def _lower_bound(instance: MOSPInstance, clique_budget: float = 5.0) -> int:
 
         best = max(best, _contraction_degeneracy(graph) + 1)
     except Exception:  # noqa: BLE001 - a bound is an optimisation, never required
+        pass
+
+    try:
+        from satisfiability.expansion_bound import mosp_lower_bound
+
+        best = max(best, mosp_lower_bound(instance, max_t=expansion_t,
+                                          time_budget=expansion_budget))
+    except Exception:  # noqa: BLE001 - as above
         pass
 
     return best
@@ -297,7 +323,7 @@ CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND,
 # has measured on 3,167 contractions and not proved, from a paper it does not
 # hold. An optimality claim closed by a relaxation bound inherits that, which is
 # why it gets its own provenance rather than being folded into certified:bound.
-BOUND_SOURCES = ("clique", "degeneracy", "relaxation")
+BOUND_SOURCES = ("clique", "degeneracy", "expansion", "relaxation")
 
 
 def _save_solution(

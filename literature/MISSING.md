@@ -91,6 +91,24 @@ Scholar, CORE (rate-limited without an API key), Internet Archive Scholar
 (`api.fatcat.wiki` unreachable throughout), the publishers, the authors' own
 pages, and the Wayback Machine where an author page is dead.
 
+## Prior art to settle (not missing — unidentified)
+
+- **The neighbourhood-expansion lower bound** of `satisfiability/expansion_bound.py`
+  (2026-09-22): for a prefix `V_i` of a customer ordering, the finished
+  customers `C_i` satisfy `N[C_i] ⊆ V_i`, giving
+  `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})` with `f(t) = min_{|C|=t}|N[C]|`. This
+  is a vertex-isoperimetric argument over the vertex-separation formulation and
+  **may well be known**; nothing outward-facing may claim it until this is
+  settled. Places to look: **Ellis, Sudborough & Turner (1994)**, "The vertex
+  separation and search number of a graph", *Information and Computation* 113,
+  50-79; the graph-searching literature's expansion/isoperimetric lower bounds;
+  and Bodlaender, Koster & Wolle on treewidth lower bounds, which contains
+  nothing of this shape but is where the degree-based family lives. Within the
+  MOSP literature the neighbours are Yanasse et al. (1999) §3.1's LB3 (subgraph)
+  and LB4 (minimum degree over induced subgraphs) — related but not the same
+  quantity. Precedent for caution: the arc contraction bound turned out to be
+  contraction degeneracy under another name.
+
 ## Server issues
 
 - **Lopes, I.C. & De Carvalho, J.M.V.** (2015). Graph properties of minimization of open stacks problems and a new integer programming model. *Pesquisa Operacional*, 35(2), 213-250. DOI: 10.1590/0101-7438.2015.035.02.0213 — SciELO open access, but server returned 502/504 errors. Retry later.
