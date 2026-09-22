@@ -86,7 +86,14 @@ its budget on refutations far below the optimum, which is why the SAT path never
 closed them and why `satisfiability/customer_search.py` — which descends from
 the *upper* bound instead — does.
 
-**A fourth bound, and the first that is not about degree** *(2026-09-22)*.
+**A fourth bound, better on paper and a net loss in practice** *(2026-09-22)*.
+Head to head over the 25 hardest instances it makes the solver **slower on every
+one** and is therefore **off by default** in `_lower_bound`. A floor only
+shortens a descent when it *equals* the optimum -- otherwise the same `k` are
+visited either way -- and where it is exactly tight the refutation it saves costs
+**0.2s** while computing it costs **28s**. The ledger baseline that motivated the
+chase was largely timeouts from an older configuration. `reports/expansion_bound.md`
+§6. What follows is what it is worth as a bound, which is not in dispute:
 `satisfiability/expansion_bound.py`: at any prefix `V_i` of a customer ordering
 the finished customers `C_i` satisfy `N[C_i] ⊆ V_i`, so with
 `f(t) = min_{|C|=t} |N[C]|` we get `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})`.

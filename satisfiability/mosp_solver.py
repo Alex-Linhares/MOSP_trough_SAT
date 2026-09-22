@@ -42,7 +42,7 @@ def _lower_bound(
     instance: MOSPInstance,
     clique_budget: float = 5.0,
     expansion_t: int = 8,
-    expansion_budget: float | None = 3.0,
+    expansion_budget: float | None = None,
 ) -> int:
     """Compute a lower bound on MOSP from the largest clique found.
 
@@ -68,12 +68,15 @@ def _lower_bound(
     contraction degeneracy below; the 1999 paper settles that they are the same
     bound (`reports/lower_bounds.md` §3).
 
-    Since 2026-09-22 the best of those three is also taken against
-    `satisfiability.expansion_bound`, which is not degree-based and is the only
-    one of the four that moves on the hardest instances. Over all 6,376
-    certified optima it lowers the mean gap from 0.98 to 0.44 and raises the
-    tight share from 65.3% to 77.0%, with zero violations
-    (`reports/expansion_bound.md`).
+    `satisfiability.expansion_bound` is available here through
+    `expansion_budget` and is **off by default, deliberately**. It is a real
+    improvement to the bound -- over all 6,376 certified optima it lowers the
+    mean gap from 0.98 to 0.44 with zero violations -- and it makes the solver
+    *slower on every one of the 25 hardest instances*. A floor only shortens a
+    descent when it **equals** the optimum, since otherwise the same `k` are
+    visited either way; and where it is exactly tight, the refutation it saves
+    costs 0.2s while computing it costs 28s. Measured head to head in
+    `reports/expansion_bound.md` §6. Pass a budget to use it for analysis.
 
     **Trust classes differ and are recorded.** The clique bound above is proved
     directly from the MOSP semantics. Contraction degeneracy and the expansion

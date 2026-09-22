@@ -179,3 +179,73 @@ contraction for sparse, and the max of the two is free.
    that a smaller gap shortens a proof — `customer_search.solve` only skips the
    refutation when the floor **equals** the optimum, so a gap of 6 saves nothing
    in the current descent. That is the question the re-certification run asks.
+
+---
+
+## 6. The bound is better and the solver is slower. All of it.
+
+*Added after the re-certification run. This section is the one that matters.*
+
+A better floor was supposed to shorten proofs. It does not, and the reason is
+architectural rather than numerical.
+
+`customer_search.solve` descends `k` from an upper bound and stops at the first
+refutation. The floor appears in one place only — the loop condition `while k >=
+lower` — so it changes the search **only when it truncates the loop**, which
+happens only when `floor >= optimum`. A floor of 50 against an optimum of 57
+leaves the identical sequence of `k` to be visited. It is not a weaker
+improvement; it is no improvement.
+
+And where the floor *is* exactly tight, what it saves turns out to be nothing.
+Controlled A/B over the 25 hardest instances — same code, same budget, only the
+floor differs, bound-computation time charged to the side that pays it:
+
+| instance | optimum | old floor → | new floor → | verdict |
+|---|---|---|---|---|
+| `Random-125-125-10-1_0` | 105 | refutation, **0.2 s** | tight, but **28.0 s** to compute | 140× worse |
+| `Random-125-125-10-5_0` | 99 | refutation, 0.4 s | tight, 47.3 s | 118× worse |
+| `Random-125-125-8-3_0` | 95 | refutation, 4.7 s | 133.3 s, descent **4.7 s** | pure overhead |
+| `Random-125-125-6-2_0` | 77 | refutation, 435.0 s | 66.8 s, descent **442.5 s** | pure overhead |
+| `Random-125-125-6-4_0` | 80 | refutation, 299.5 s | 254.3 s, descent **292.2 s** | pure overhead |
+| `Random-125-125-4-1_0` | 57 | open at 600 s | 369.7 s, still open | pure overhead |
+
+Read the middle rows carefully: 217.2 s against 215.8 s, 299.5 against 292.2,
+435.0 against 442.5. The descent is **identical**, exactly as the loop condition
+predicts, and the bound is added cost. **Not one of the 25 instances benefits.**
+
+### What went wrong in the reasoning, not the mathematics
+
+The bound is sound and the gap numbers are real: mean gap over these 25 falls
+from 31.4 to 5.2, and over the whole corpus from 0.98 to 0.44 with zero
+violations. None of that is retracted.
+
+What was never checked, before the work went in, is **what the refutation
+actually costs**. The baseline used to justify chasing the bound was the compute
+ledger — 286,895 s across these instances, 19.19 hours on the worst. Much of
+that is timeouts recorded by an older configuration. Today's customer search,
+with `better_move` on the sparse instances, refutes the density-10 ones in
+**0.2 seconds**. Avoiding a 0.2-second call was never going to pay for a
+28-second bound, and one measurement of the refutation would have said so before
+any of this was built.
+
+The instances that genuinely cost hours are density 2 and 4, and there the
+expansion bound contributes nothing at all (§4a) — sparse graphs do not expand.
+So the bound is strong exactly where the problem is already easy.
+
+### Consequently: off by default
+
+`_lower_bound` takes `expansion_budget`, and it now defaults to `None`. The
+module stays, the validation stays, and the bound is available for analysis and
+for any future search whose cost profile differs. It is not on the solver's path,
+because on every instance measured it is a tax.
+
+### The use that is still open
+
+The same argument applied **inside** the search rather than at the root. `decide`
+already prunes with a one-step lower bound — it cuts a branch when the immediate
+cost reaches `k`. A per-node version of the expansion argument, on the induced
+subgraph of the customers still open, would prune the refutation itself, which is
+where the hours are. Whether it can be made cheap enough per node is the
+question; the root-level version costs far too much to evaluate at every node, so
+it would need an incremental formulation. That is a real lever and it is
+untested. The root-level floor is not.
