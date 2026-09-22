@@ -15,3 +15,7 @@ lean/.lake/
 *.drat
 proofs/
 .venv-cpsat/
+
+# Regenerated from the corpus in seconds; not worth versioning
+learning/data/
+learning/models/

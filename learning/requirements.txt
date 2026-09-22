@@ -1,0 +1,5 @@
+# Kept separate from the project's requirements.txt on purpose: the solver does
+# not depend on any of this, and nothing in `learning/` is on its critical path.
+pandas
+scikit-learn
+lightgbm

@@ -289,6 +289,12 @@ lean/
         Examples.lean                   Verified example instances
         ForMathlib/                     Candidates for Mathlib contribution
 
+learning/                       → ML over the certified corpus (instance → optimum)
+    features.py                     Instance features: matrix, MOSP graph, bounds
+    dataset.py                      Joins instances with solutions into one table
+    study_optimum.py                Can the optimum be predicted, and better than the bounds?
+    policy.py                       Closing-order policy imitating the certified witnesses
+
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
@@ -494,6 +500,19 @@ here. Items 1, 3 and 6 are done (2026-09-18).
 - **Item 4** (customer-order encoding) is no longer a prerequisite for anything.
   The customer search now covers the space that encoding was meant to reach,
   without a SAT solver. Keep the kill criterion if it is ever built.
+
+**From the learning folder** (`reports/learning.md`, 2026-09-22):
+- **Seeding `cs-dfs` with a learned closing order halves its error** — MAE 0.30
+  → 0.14 over the optimum, exact on 92% against 82%, worst case +10 → +6, over
+  2,000 held-out instances in five-fold cross-validation grouped by source file.
+  The policy is trained by imitating the 2.27M closing decisions the certified
+  witnesses contain. Registering it as a strategy would put LightGBM on the
+  solver's critical path, which is a dependency decision left open.
+- **The clique bound never improved on contraction degeneracy + 1** anywhere in
+  the corpus, under a 1-second budget. `_lower_bound` spends up to 5 seconds per
+  call on it. A measurement, not a theorem — and the clique bound is the one
+  provable without Yanasse's pathwidth equality — but the budget is worth
+  revisiting.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
