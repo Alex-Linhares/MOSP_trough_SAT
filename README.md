@@ -174,7 +174,7 @@ All four run together, which is the configuration Chu & Stuckey state they used:
 *"better move", "old move" and nogood recording turned on (but no relaxation)*.
 Reproducing it exactly is what closed SP4 — the last unproved published
 instance, which had survived a 12.5-hour SAT call, an eight-backend portfolio, a
-60-hour descent and 24 hours of CP-SAT — in **44 seconds**, along with 17 others
+60-hour descent and 24 hours of the CP oracle — in **44 seconds**, along with 17 others
 in the following quarter of an hour.
 
 Old move existed only in the Python until it was ported, which meant asking for
@@ -417,7 +417,7 @@ That is the gap the witness orderings in `solutions/` are meant to fill.
 and SP4 were the two long-standing exceptions; both now carry a refutation. SP4
 was the last to fall, and it fell to Chu & Stuckey's own configuration rather
 than to more compute — 44 seconds, after surviving a 12.5-hour SAT call, an
-eight-backend portfolio, a 60-hour descent and 24 hours of CP-SAT.
+eight-backend portfolio, a 60-hour descent and 24 hours of the CP oracle.
 
 SP3 is worth recording as a before-and-after. Under the SAT engine a single
 satisfiable call at `k=34` ran for **45,071 seconds — 12.5 hours — without
@@ -562,17 +562,25 @@ trust chain entirely for this half of the claim.
 Both engines above were written for this project, so their agreement is weaker
 evidence than it looks, and the customer search's refutations carry no proof
 object at all. `benchmarks/oracle_sweep.py` runs a third solver against the
-corpus: Martin, Yanasse & Pinto's (2022) CP model under CP-SAT, in its own
-interpreter (`.venv-cpsat`), importing nothing from this project.
+corpus: Martin, Yanasse & Pinto's (2022) CP model, solved by **OR-Tools
+CP-SAT**, in its own interpreter (`.venv-cpsat`), importing nothing from this
+project.
+
+*On that name.* "CP-SAT" is Google's product name for the OR-Tools constraint
+solver, not a formulation of ours, and it has nothing to do with the direct SAT
+encoding above — Martin, Yanasse & Pinto's paper contains no SAT at all (they
+ran their models under CPLEX; the choice of OR-Tools is ours, because it
+installs freely). To keep the two apart, everything below calls it **the CP
+oracle**, and "SAT" in this README always means our own encoding.
 
 Over **every optimum certified at the time** — 6,349 of them — 300 seconds
 each, 25 workers, 4.5 hours:
 
 | | count | share |
 |---|---|---|
-| CP-SAT proved the same optimum | **5,266** | 82.9% |
-| CP-SAT disagreed | **0** | — |
-| CP-SAT could not settle in 300 s | 1,083 | 17.1% |
+| the CP oracle proved the same optimum | **5,266** | 82.9% |
+| the CP oracle disagreed | **0** | — |
+| the CP oracle could not settle in 300 s | 1,083 | 17.1% |
 
 So five sixths of the corpus is confirmed by three independent solvers — this
 project's SAT encoding, its customer search, and an outside solver running a
@@ -616,7 +624,7 @@ satisfiability/                 -> the two exact engines, and the bounds
     customer_search.py              Complete search over customer closing orders
     customer_search.c               The same search in C, about 120x faster
     native.py                       Loads the C port, and decides when to trust it
-    cpsat.py                        Bridge to the CP-SAT oracle, in its own interpreter
+    cpsat.py                        Bridge to the CP oracle (OR-Tools CP-SAT), separate interpreter
     cpsat_oracle.py                 The Martin/Yanasse/Pinto CP model (runs in .venv-cpsat)
     relaxation.py                   Contraction relaxation: certified lower bounds
     heuristics.py                   Upper bound strategies behind one signature
@@ -648,7 +656,7 @@ benchmarks/
     csearch.py                      Parallel descent with the customer search
     marathon.py                     Deadline-sized budgets for long unattended runs
     corpus.py                       What the corpus claims, counted from the files
-    oracle_sweep.py                 Checks the corpus against CP-SAT, an outside solver
+    oracle_sweep.py                 Checks the corpus against the CP oracle, an outside solver
     compute.py                      Totals the corpus's compute cost in core-hours
     compute.py                      Totals the corpus's compute cost in core-hours
     ratchet.py                      Descending satisfiable-call search
@@ -895,7 +903,7 @@ move"* and nogood recording together, and no relaxation — closed the last 27
 open instances in a single 19.2-hour round on 25 cores. Eighteen of them went
 inside the first half hour, SP4 among them at 44 seconds, after that instance
 had survived a 12.5-hour SAT call, an eight-backend portfolio, a 60-hour descent
-and 24 hours of CP-SAT. The longest, `Random-125-125-4-2_0`, took the whole
+and 24 hours of the CP oracle. The longest, `Random-125-125-4-2_0`, took the whole
 round and came in at 57 having entered at 60. Every gain this project made at
 the hard end came from following the paper more exactly, never from spending
 more compute.
@@ -934,7 +942,8 @@ corpus now depends on it.
 **What the result rests on.** The C reproduces the Python reference's node
 counts instance by instance; the four dominance rules agree with brute force
 across some twenty thousand exhaustive decisions, varied one rule at a time;
-CP-SAT independently confirmed 5,266 of these optima with no disagreement; and
+the CP oracle — someone else's model under someone else's solver —
+independently confirmed 5,266 of these optima with no disagreement; and
 all 6,376 witnesses re-simulate to their recorded value with zero violations of
 the independently recomputed lower bound. What it does **not** rest on is a
 machine-checkable proof object for the refutations — see

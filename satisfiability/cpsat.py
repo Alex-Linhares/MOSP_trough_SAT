@@ -1,4 +1,9 @@
-"""An independent oracle: CP-SAT, in its own interpreter.
+"""An independent oracle: the CP model of Martin, Yanasse & Pinto (2022), solved
+by OR-Tools CP-SAT, in its own interpreter.
+
+"CP-SAT" is Google's name for that solver, not a SAT encoding of ours -- see the
+note at the top of `cpsat_oracle.py`. Elsewhere this is called "the CP oracle",
+because "SAT" in this project means `satisfiability/mosp_encoding.py`.
 
 Every certified optimum in this corpus currently rests on two solvers written
 here -- the SAT encoding and the customer search -- which agree with each other

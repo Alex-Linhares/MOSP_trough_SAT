@@ -1,4 +1,11 @@
-"""The CP model of Martin, Yanasse & Pinto (2022) §4, run under CP-SAT.
+"""The CP model of Martin, Yanasse & Pinto (2022) §4, run under OR-Tools CP-SAT.
+
+**"CP-SAT" here is Google's product name for the OR-Tools constraint solver.**
+It is not a SAT formulation and has nothing to do with `mosp_encoding.py`: that
+paper contains no SAT at all -- three models (two ILP, one CP), all run under
+CPLEX. Solving their CP model with OR-Tools instead is our choice, because it
+installs freely. Prose in this project calls this "the CP oracle" to keep the
+two apart.
 
 **This file is executed by `.venv-cpsat/bin/python`, not by the project's
 interpreter, and it imports nothing from the project on purpose.** It reads an
