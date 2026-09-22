@@ -305,13 +305,23 @@ would have to cut more than half of all nodes merely to break even.
 
 ### It cuts essentially nothing
 
-| population | plain nodes | pruned | ratio | time ratio |
-|---|---|---|---|---|
-| sparse `Random`, 100 customers | 10,000,005 | 10,000,005 | **1.000** | 1.10 |
-| dense `Random`, 40 customers | 1,504 | 1,497 | **0.995** | 1.07 |
+Only searches that **finish** can be compared by node count. A run that stops on
+the node cap reports the cap, so two capped runs agree at exactly the cap whether
+or not the rule pruned anything — a first pass over twelve 100-customer sparse
+instances produced `24,000,012 -> 24,000,012`, which looks like a perfect
+negative and is really just both sides hitting 2,000,001 nodes twelve times. Its
+one usable number is the clock: the same 2M nodes took 776.4 s plain and 863.7 s
+pruned, **11% slower**, and neither finished.
 
-Identical node counts on the sparse instances; a 0.5% reduction on the dense
-ones. Both configurations 7-10% slower for the trouble.
+Restricted to searches that complete:
+
+| population | searches | plain nodes | pruned | ratio | time ratio |
+|---|---|---|---|---|---|
+| sparse `Random`, 30-40 customers | 16 | 81,431 | 81,390 | **0.9995** | 1.14 |
+| dense `Random`, 40 customers | 10 | 1,504 | 1,497 | **0.995** | 1.07 |
+
+Five nodes in ten thousand on the sparse instances, five in a thousand on the
+dense ones, for 7-14% more time.
 
 ### Why, and it is not the reason predicted
 
