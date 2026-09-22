@@ -244,6 +244,7 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     heuristics.py                   Upper bound strategies behind one signature
     customer_search.py              Complete search over customer closing orders
     relaxation.py                   Contraction relaxation: certified lower bounds
+    race.py                         Portfolio: SAT and customer search on one decision call
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)
     customer_graph.py               Build customer graph via M @ M^T overlap
@@ -299,6 +300,9 @@ learning/                       → ML over the certified corpus (instance → o
     dataset.py                      Joins instances with solutions into one table
     study_optimum.py                Can the optimum be predicted, and better than the bounds?
     policy.py                       Closing-order policy imitating the certified witnesses
+    corpus_sweep.py                 Scores a strategy against all 6,376 known optima
+    guided_search.py                Learned branching inside the complete search
+    descent_bench.py                Does a better starting bound certify faster?
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
@@ -494,10 +498,25 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   changes what it has to cover: a refutation from `customer_search` is not a
   DRAT proof, so either the refuted instances are re-refuted through SAT for
   their certificates, or the search's own proof object has to be defined.
-- **A portfolio decision procedure.** `satisfiability.customer_search` and the
-  SAT encoding fail on disjoint sets of instances — dense versus sparse — and
-  nothing yet runs both. Racing them per decision call is a small change with a
-  large expected gain.
+- ~~**A portfolio decision procedure.**~~ **Built and measured 2026-09-22 —
+  `satisfiability/race.py`, `reports/learned_search.md` §3. It does not pay, and
+  the premise was wrong.** Over 20 hard `Random` instances at densities 2 and 8,
+  with SAT on `kissat404`, the customer search won **63 of 63** decision calls
+  and SAT certified none; the race costs 4% to arrive where `csearch` alone
+  would. The claim that the two "fail on disjoint sets" was never measured: the
+  direct SAT path has solved rows for 6,226 instances, `csearch` for 147, and
+  **the overlap is zero** — `csearch` was only ever pointed at what SAT had
+  already failed. The corollary is actionable: **the SAT path is the wrong
+  default for hard instances**, and `benchmarks.solve_parallel` / `csearch`
+  should swap roles.
+- **Learning does not help certification, only bounds** —
+  `reports/learned_search.md`. Learned branching inside `decide` is neutral
+  except on sparse satisfiable calls (-60% nodes, but a tail that turns 65 nodes
+  into a timeout, so not ported to C); a learned starting bound does not speed
+  the descent, because its cost is the refutation both configurations must do.
+  The gains in `reports/learning.md` are bound *quality*, which is not what the
+  hard instances are short of. The `decide` `branch` hook is proved
+  order-insensitive in `tests/test_learning.py`.
 - **Old move on large sparse instances.** It prunes 27% more nodes than the memo
   on SP3 and still loses on the clock. Its advantage is in nodes, so it should
   win exactly where the memo degrades, which is where we are now stuck. Not yet

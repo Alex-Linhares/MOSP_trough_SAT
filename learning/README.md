@@ -168,6 +168,37 @@ ones — are 25 rows out of 6,376. A model trained here is a model of *this
 collection*. We report results separately on the harder subset throughout, but
 no amount of careful splitting fixes a population that is 93% easy.
 
+## We then tried to make it solve faster. It doesn't.
+
+Finding a good schedule and *proving no better one exists* are different jobs,
+and the second is what the hard instances cost. So the obvious next step was to
+put the learned model inside the proving machinery. Three places, three
+measurements, three negatives — written up in
+[`reports/learned_search.md`](../reports/learned_search.md):
+
+1. **Letting the model choose what the proof search tries first.** No effect on
+   ordinary puzzles — the search's existing rules have already narrowed the
+   choice to almost nothing by the time the model is consulted. On sparse
+   puzzles it cuts the work to find a schedule by 60%, but on one puzzle it
+   turned a 65-step search into a timeout. Too unreliable to ship.
+2. **Starting the proof from the model's better answer.** No effect. The
+   expensive part of a proof is showing that one-better is impossible, and both
+   versions have to do that part. What a better start skips is the easy steps.
+3. **Running the two provers at once and taking whichever finishes first.** No
+   effect, and this one overturned an assumption the project had been carrying:
+   the two provers were believed to fail on different puzzles, so running both
+   should win. They don't. One of them won 63 out of 63 contests. Checking the
+   records showed the belief had never actually been tested — the two provers
+   had never been run on the same puzzle.
+
+The honest summary: our model makes better *answers*, and the hard puzzles are
+not short of answers, they are short of *proofs*. That was predicted in the
+project's own notes before any of this was built; it is now measured.
+
+The most useful thing to come out of it is the third point's corollary. The
+project reaches for the SAT prover first and the other one as a fallback. On
+this evidence that is backwards.
+
 ## How you actually use it, and what is still open
 
 You can now ask for the hinted method by name. Where the code used to say

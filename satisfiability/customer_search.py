@@ -125,6 +125,7 @@ def decide(
     deadline: float | None = None,
     memo_limit: int = 4_000_000,
     native: bool = True,
+    branch: "Callable[[int, int, list[tuple[int, int]]], list[tuple[int, int]]] | None" = None,
     **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
@@ -152,12 +153,22 @@ def decide(
             about 120x faster. Set False to force the Python, which is the
             reference implementation and what the exhaustive tests are written
             against. `satisfiability/native.py` says when the C declines.
+        branch: reorder the surviving candidates at each node. Called with
+            `(closed, opened, playable)` where `playable` is the `(cost,
+            customer)` list the dominance rules left, and must return a
+            permutation of it -- dropping a candidate would make a refutation
+            unsound, and the caller is trusted not to. Default is cheapest
+            first. **Forces the Python path**: the C has no way to call back,
+            so this is for measuring whether a different order is worth porting,
+            not for production. Order affects only *which* branches are visited
+            first: the cost cut, the memo and every dominance rule are
+            properties of the state, not of the order they are reached in.
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty
         product set; customers needing nothing are omitted, as they never open.
     """
-    if native:
+    if native and branch is None:
         from satisfiability.native import decide_native
         answer = decide_native(
             instance, k, restrict=restrict, subset_rule=subset_rule,
@@ -260,6 +271,8 @@ def decide(
                 playable, opens, subset_rule, definite_move)
 
         playable.sort()
+        if branch is not None and len(playable) > 1:
+            playable = branch(closed, opened, playable)
         for _, customer in playable:
             state["nodes"] += 1
             if max_nodes is not None and state["nodes"] > max_nodes:
@@ -385,6 +398,7 @@ def solve(
     instance: MOSPInstance,
     *,
     upper: int | None = None,
+    upper_strategy: str = "cs-dfs",
     lower: int = 0,
     max_nodes: int | None = None,
     time_budget: float | None = None,
@@ -405,6 +419,13 @@ def solve(
             and no refutation, since nothing below it can be satisfiable.
         max_nodes, time_budget: per-`k` budgets. An exhausted budget stops the
             descent with `proved` false.
+        upper_strategy: the named strategy in `satisfiability.heuristics` that
+            supplies the starting upper bound when `upper` is not given. Every
+            stack it saves is a whole `decide` call the descent never makes, and
+            the calls it skips are the cheap ones at the top -- but it also
+            starts the expensive refutation nearer the optimum. `learned+cs-dfs`
+            starts lower than the `cs-dfs` default on 709 of the 6,376 corpus
+            instances (`reports/learning.md` §2.1).
         on_improve: called with `(value, closing order)` each time the descent
             lowers its bound. Without it a long run holds everything it has
             found in memory until it returns, so an interrupted descent loses
@@ -415,15 +436,14 @@ def solve(
         A `Solution` whose `order` is a customer closing order; pass it through
         `product_order_from_customers` for a production sequence.
     """
-    from satisfiability.heuristics import restricted_dfs
+    from satisfiability.heuristics import upper_bound
 
     started = time.monotonic()
     nodes = 0
 
     if upper is None:
-        _, ordering = restricted_dfs(instance)
+        value, ordering = upper_bound(instance, upper_strategy)
         order = _closing_order(instance, ordering)
-        value = max_open_stacks(instance, ordering)
     else:
         value = upper
         order = []

@@ -181,3 +181,67 @@ def test_seeding_never_makes_the_dfs_report_below_the_optimum():
         optimum, _ = solve_mosp_sat(instance, solutions_dir=None)
         assert restricted_dfs(instance)[0] >= optimum
         assert upper_bound(instance, "learned+cs-dfs")[0] >= optimum
+
+
+# -------------------------------------------------------
+# Learned branching inside the complete search
+# -------------------------------------------------------
+
+
+@pytest.mark.parametrize("seed", range(6))
+def test_reordering_the_branch_fan_cannot_change_the_answer(seed):
+    """Soundness of the `branch` hook.
+
+    The cost cut, the memo and every dominance rule are properties of the state,
+    not of the order it is reached in — so any permutation of the surviving
+    candidates must decide the same way. A hook that could flip an answer would
+    make refutations from a guided search worthless.
+    """
+    from satisfiability.customer_search import decide
+
+    instance = _random_instance(seed, n_c=8, n_p=7)
+    rng = random.Random(seed)
+
+    for k in range(1, instance.n_customers + 1):
+        plain = decide(instance, k, native=False)
+        for reorder in (lambda c, o, p: list(reversed(p)),
+                        lambda c, o, p: rng.sample(p, len(p))):
+            assert decide(instance, k, branch=reorder).status == plain.status
+
+
+@pytest.mark.skipif(not __import__("pathlib").Path("learning/models/policy.txt").exists(),
+                    reason="no trained policy on disk")
+@pytest.mark.parametrize("seed", range(4))
+def test_policy_branch_decides_the_same_as_cheapest_first(seed):
+    from learning.guided_search import policy_branch
+    from satisfiability.customer_search import decide
+
+    instance = _random_instance(seed, n_c=9, n_p=7)
+    branch = policy_branch(instance)
+    for k in range(1, instance.n_customers + 1):
+        assert (decide(instance, k, branch=branch).status
+                == decide(instance, k, native=False).status)
+
+
+def test_policy_branch_returns_a_permutation():
+    """Dropping a candidate would turn an exhausted search into a false refutation."""
+    from learning.guided_search import policy_branch
+
+    instance = _random_instance(5, n_c=8, n_p=6)
+    branch = policy_branch(instance)
+    playable = [(3, 0), (1, 4), (2, 2), (5, 7)]
+    assert sorted(branch(0, 0, playable)) == sorted(playable)
+
+
+@pytest.mark.skipif(not __import__("pathlib").Path("learning/models/policy.txt").exists(),
+                    reason="no trained policy on disk")
+def test_upper_strategy_does_not_change_what_is_certified():
+    """A different starting bound changes the cost of the descent, not its answer."""
+    from satisfiability.customer_search import solve
+
+    for seed in range(4):
+        instance = _random_instance(seed, n_c=8, n_p=7)
+        base = solve(instance, upper_strategy="cs-dfs")
+        learned = solve(instance, upper_strategy="learned+cs-dfs")
+        assert base.proved and learned.proved
+        assert base.value == learned.value
