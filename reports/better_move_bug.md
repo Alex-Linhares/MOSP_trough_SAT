@@ -67,6 +67,40 @@ what ruled the theory out and pointed at the cycle. The non-aliasing rewrite is
 kept regardless, because reading dominators out of an array being overwritten is
 indefensible whether or not it was this bug.
 
+## 3a. Chu & Stuckey are not wrong; we misread them
+
+Theorem 2, as stated in the paper:
+
+> Suppose `S ++ [q]` and `S ++ [r, q]` are playable and
+> `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then if `U' = S ++ [r] ++ R` is a
+> solution there exists a solution `U = S ++ [q] ++ R'`.
+
+That is a **pairwise conditional**: if a solution runs through `r`, one runs
+through `q`. It licenses discarding `r` *while `q` is kept*, and says nothing
+that permits discarding both. The paper then makes the usage explicit:
+
+> Although "better move" seems weaker than "definite move" as it **prunes only
+> one branch at a time** rather than all branches but one, it is actually a
+> generalisation…
+
+One branch at a time is exactly the discipline under which a cycle cannot arise.
+`definite_move` is the rule that keeps one candidate and drops all the others;
+we gave `better_move` those sweeping semantics, applying it as a simultaneous
+filter over every pair in a single pass. Each discard was individually justified
+by a candidate that another discard had just removed.
+
+**The codebase already knew this hazard.** `subset_rule` carries an index
+tie-break, in both the C and the Python reference:
+
+```c
+if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
+```
+
+`(other != own || d < c)` exists for one reason: to stop both members of an
+*equal* pair being discarded. The symmetric case of precisely this problem,
+handled deliberately, in two languages — and missed in the one rule that had no
+second language to be handled in.
+
 ## 4. Why it survived
 
 `tests/test_native.py` checks the C against the Python reference, exhaustively,
@@ -115,7 +149,8 @@ Three things worth keeping.
 **The guard was real but had a hole exactly where the unique code was.** Testing
 the C against the Python is an excellent discipline, and it silently covers
 nothing in the parts that exist only in the C. Any rule implemented on one side
-only needs an invariant of its own.
+only needs an invariant of its own — and the acyclicity precaution this rule
+needed was already written, correctly, in the rule right next to it.
 
 **The bug was found by profiling, not by verification.** It surfaced because a
 performance experiment ran `solve` twice with different flags and the two
