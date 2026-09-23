@@ -605,6 +605,15 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   The customer search now covers the space that encoding was meant to reach,
   without a SAT solver. Keep the kill criterion if it is ever built.
 
+**Profiling the C inner loop** (`reports/inner_loop.md`): the dominance rules
+*are* the inner loop — the base search is 0.258 µs of 0.688, and `old_move`
+alone is 42%. Merging three O(R) passes into one gained 1.05×. A flag sweep on
+*dense* instances suggested the memo was a 15-18% net loss; calibrating on
+*sparse* instances with `better_move` on showed it saving 3-7× the nodes
+instead. **The default was not changed, and that near-miss is the lesson**: the
+value of a rule depends on the instance shape and on which other rules run
+beside it.
+
 **The expansion argument, tried twice and rejected twice** (`reports/expansion_bound.md`):
 as a root-level floor it is off by default — it changes the search by 2 seconds
 out of 7,629 and doubles the wall clock (§6). As a *per-node* cut inside

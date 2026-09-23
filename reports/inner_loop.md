@@ -80,3 +80,32 @@ both O(R²) rules now skip a pair on an integer size comparison before doing any
 
 Modest, and honest about why: the passes it merged are in the 0.258 µs base, not
 in the 0.43 µs the rules consume.
+
+## 4. The memo: a measurement that was right about its sample and wrong about the world
+
+The flag sweep suggested the nogood table was a net loss. On dense instances
+with `better_move` off it costs 15-18% and saves ~2% of nodes, and the size
+sweep said the same at every capacity from 128 KB to 134 MB — only the largest
+table found even 2.8% of nodes, for 17% of the time. The conclusion drawn was
+that the memo has almost nothing to catch because `old_move` already catches it.
+
+**That was measured on one corner of the space and does not generalise.**
+Calibrating on *sparse* instances with `better_move` on, for the re-certification
+run, the memo is a large win:
+
+| configuration | total over 4 instances | `Random-100-50-4-1_0` nodes |
+|---|---|---|
+| `better_move` dom=0, memo **on** | **6.4 s** | **7,824,678** |
+| `better_move` dom=0, memo off | 12.1 s | 24,958,207 |
+| no `better_move`, memo on | 20.2 s | 45,265,762 |
+| no `better_move`, memo off | 64.4 s | 216,656,877 |
+
+Three to seven times fewer nodes with the memo, not two percent. The default was
+nearly changed on the strength of the dense-instance measurement; the corpus
+audit interrupted it, which is the only reason it was not.
+
+The honest statement is that **the memo's value depends on the instance shape
+and on which other rules are running**, and a single sweep over one density band
+with one rule disabled cannot see that. The same table also shows the repaired
+`better_move` is worth a 28× node reduction on that instance, which settles the
+question of fixing it versus disabling it.
