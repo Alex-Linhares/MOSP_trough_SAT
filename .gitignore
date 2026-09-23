@@ -19,3 +19,6 @@ proofs/
 # Regenerated from the corpus in seconds; not worth versioning
 learning/data/
 learning/models/
+
+# Unattended re-certification logs and results
+recertify/
