@@ -130,8 +130,8 @@
     115,
     97
   ],
-  "provenance": "solution",
+  "provenance": "certified:refutation",
   "lower_bound": 39,
   "lower_bound_source": "relaxation",
-  "provenance_note": "optimality withdrawn 2026-09-23: the refutation behind it came from csearch with the better_move cycle bug, which could return a false refutation. The value is still a verified upper bound."
+  "recertified": "2026-09-24, after the better_move cycle fix; 48,904,669,193 nodes"
 }
