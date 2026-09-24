@@ -199,6 +199,50 @@ The most useful thing to come out of it is the third point's corollary. The
 project reaches for the SAT prover first and the other one as a fallback. On
 this evidence that is backwards.
 
+## What this folder is for now
+
+The plan changed once the evidence came in, and it is worth saying plainly:
+**this folder is a measuring instrument, not a part of the solver.**
+
+The original idea was that learning from 6,376 solved puzzles would make the
+solver better at solving. It doesn't — three separate attempts, three
+negatives, all in [`reports/learned_search.md`](../reports/learned_search.md).
+The expensive part of proving an answer optimal is showing that one-better is
+impossible, and better guesses don't help with that.
+
+But every time this folder has been pointed at the solver, it has found
+something true that nobody knew:
+
+- an expensive bound the solver computes on every call has **never once helped**
+  in 6,376 instances;
+- instance structure predicts the answer better than our *proved* lower bound
+  does — evidence that a better proof is available and we haven't found it;
+- the solver was reaching for the wrong prover first, by a factor of 38;
+- and a speed experiment here found a **correctness bug** that had been quietly
+  producing wrong "proofs" — one published answer was wrong because of it.
+
+That last one is the clearest statement of the case. The test suite, the witness
+checks and the audit all confirm that a claimed answer is *achievable*; none of
+them can tell whether a claimed *impossibility* is real. A measurement harness
+could, and did.
+
+So the four questions this folder now asks — full version in
+[`reports/learning_plan.md`](../reports/learning_plan.md) — are all of the form
+"what is true about the solver?" rather than "can a model do the solver's job?":
+
+1. **Which settings should this puzzle be solved with?** The setting that
+   matters most is currently chosen by a single hand-picked number, and getting
+   it wrong costs up to 28× the work. Getting it wrong can never cost a wrong
+   answer, which is why this is the safe one to chase.
+2. **How long will this puzzle take?** We are currently giving instances
+   five-day budgets with no idea which need five minutes and which need five
+   weeks.
+3. **Which puzzles would expose a disagreement between two settings that should
+   agree?** That is how the bug was found. Doing it deliberately rather than by
+   accident is the most valuable verification tool the project has.
+4. **What is the answer for puzzles too big to ever prove?** A prediction with
+   honest error bars, always labelled as a prediction.
+
 ## How you actually use it, and what is still open
 
 You can now ask for the hinted method by name. Where the code used to say

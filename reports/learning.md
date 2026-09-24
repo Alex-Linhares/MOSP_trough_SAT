@@ -272,6 +272,16 @@ decision, not a measurement, and it is left open.
 
 ## 4. Next, in order
 
+> **Superseded by `reports/learning_plan.md` (2026-09-24).** The list below was
+> written before three attempts to turn learned answers into faster solving all
+> came back negative. Items 1 and 3 were built and rejected
+> (`reports/learned_search.md`); item 2 became the expansion bound, which is
+> sound and switched off (`reports/expansion_bound.md`). Item 4 stands. The
+> revised plan reorganises the folder around measurement rather than machinery,
+> because every contribution this work has actually made was a finding about the
+> solver rather than a part of it.
+
+
 1. ~~**Register the seeded strategy** and sweep the corpus with it.~~ **Done,
    2026-09-22** — §2.1. `learned` and `learned+cs-dfs` are registered behind a
    soft import in `satisfiability/heuristics.py`; the seeded strategy is better

@@ -207,6 +207,10 @@ that fails. On this evidence the order should be the other way round.
 
 ## 4. What the three answers add up to
 
+*The forward-looking half of this section is superseded by
+`reports/learning_plan.md`.*
+
+
 Three places the learned policy or a portfolio could enter the certification
 path, and three negatives -- but not the same negative:
 

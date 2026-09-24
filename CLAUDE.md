@@ -624,6 +624,28 @@ have already collapsed the node** before it is consulted. Hard refutations visit
 274-627M nodes at **0.65 µs each**, so what is worth attacking is the cost per
 node, not the node count.
 
+**The learning plan, revised** (`reports/learning_plan.md`, 2026-09-24).
+`corpus → model → better answers → better solver` is measured false at the last
+link, three ways. What the work has actually produced every time is a **finding
+about the solver** rather than a component of it: the clique bound never helps,
+structure predicts the optimum better than our proved bound does, the SAT
+default was backwards, and a performance experiment found a false-refutation
+bug the verification machinery was structurally blind to. The plan is now
+measurement-shaped, and asks four questions in order:
+
+1. **which configuration to run** — the selector deciding a 28× choice is one
+   hand-picked threshold on one statistic, and a wrong answer costs time, never
+   correctness;
+2. **how long an instance will take** — five-day budgets are being allocated
+   blind;
+3. **where two sound configurations are most likely to disagree** — the only
+   tool that can see an unsound refutation, and it has already found one;
+4. **what the optimum is where certification is out of reach** — with
+   calibrated uncertainty, labelled as prediction every time.
+
+Closed, do not rebuild: learned upper bounds, learned lower bounds, learned
+branching. Each has a report explaining the mechanism, not just the outcome.
+
 **From the learning folder** (`reports/learning.md`, 2026-09-22):
 - **`learned+cs-dfs` is registered, and better than `cs-dfs` on 709 instances
   against 13 worse.** Swept over all 6,376 fold by fold, each instance scored by
