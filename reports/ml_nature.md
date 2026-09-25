@@ -198,3 +198,251 @@ figures are dominated by `n ≤ 30` (5,938 instances); at `n > 30` they rest on
 
 **Not a bound, not a solver change.** Nothing here touches `_lower_bound` or any
 decision path; `learning.canonical` is analysis only.
+
+## 2. Generator fingerprint and the map of instance space (§2.1b)
+
+*Iteration 2, 2026-09-25. Code: `learning/fingerprint.py`. Regenerate:*
+
+```bash
+pip install umap-learn                   # optional; without it the map falls back to PCA
+python -m learning.dataset               # if learning/data/instances.csv is stale, ~20 s
+python -m learning.canonical --workers 16 --csv learning/data/canonical.csv   # for the leak-free split
+python -m learning.fingerprint --out reports/fingerprint_tables.md
+```
+
+*About 50 s on 16 cores. Writes `reports/figures/instance_space.png`,
+`learning/data/instance_space.csv` (the 2-D coordinates, git-ignored) and the
+raw tables in `reports/fingerprint_tables.md`, from which every number below is
+copied.*
+
+**Question.** Can a classifier tell which collection an instance came from
+using only its structure? If it can, the benchmark families occupy different
+regions of instance space and a result measured on one says nothing about
+another. Its accuracy is the finding; the classifier is used for nothing.
+
+**Method.** The label is the sub-collection, nine of them: Harvey, Simonis,
+Shaw, Wilson and Miller from `ChallengeInstances2005`; Chu & Stuckey,
+Faggioli–Bentivoglio, SCOOP and the `Challenge` copies from `MOSP_Instances`.
+Features are the 28 structure-only columns of `learning.features` (matrix
+shape and degree statistics, MOSP-graph statistics; no bound), and, separately,
+a 19-column *size-free* set in which every count is divided by the dimension it
+scales with (`col_cv = col_std / col_mean`, `g_degeneracy / (n − 1)` and so on)
+and `n`, `m`, `n_ones`, `g_nodes`, `g_edges` are dropped. The model is a random
+forest of 300 trees; gradient boosting was tried first and scored 0.81 on a
+random split where the forest and LightGBM both score 0.98, thrown by the
+classes of one and twenty instances, so it was replaced. Three splits, all
+shuffled: grouped by `source_file` as the loop's rules require; grouped by the
+connected components of files and MOSP-graph isomorphism classes from §1
+(512 groups against 617 files), which is the split that does not leak
+isomorphic copies; and a random split, printed only to show the leak. Plain
+`GroupKFold` had to be replaced by a shuffled `StratifiedGroupKFold`: on the
+Chu & Stuckey files, which sort as `Random-n-m-d-1, -2, …`, its round-robin
+assignment held out exactly one seed index per fold and made the control below
+score exactly zero.
+
+**Baselines.** The majority class (Simonis, 56.9%); the two size columns
+`(n_customers, n_patterns)` alone; and a ceiling: features are constant on a
+matrix-isomorphism class, so where a class holds rows from two collections the
+minority rows are wrong under any model. From §1's classes the ceiling is
+**0.993** (the 46 Challenge copies of Miller, Shaw and Wilson instances).
+
+### The collection from structure
+
+| features | split | accuracy | balanced accuracy | macro F1 |
+|:--|:--|--:|--:|--:|
+| majority class | none (baseline) | 0.569 | 0.111 | — |
+| size only (n, m) | grouped by file | 0.261 | 0.324 | 0.307 |
+| size only (n, m) | grouped by file + graph class | 0.134 | 0.290 | 0.171 |
+| size only (n, m) | random (leaks!) | 0.728 | 0.420 | 0.455 |
+| structure (all) | **grouped by file** | **0.944** | 0.507 | 0.491 |
+| structure (all) | grouped by file + graph class | 0.933 | 0.509 | 0.475 |
+| structure (all) | random (leaks!) | 0.981 | 0.537 | 0.554 |
+| structure, size-free | grouped by file | 0.951 | 0.506 | 0.495 |
+| structure, size-free | grouped by file + graph class | 0.957 | 0.511 | 0.513 |
+| structure, size-free | random (leaks!) | 0.980 | 0.526 | 0.546 |
+
+Size alone is *worse than the majority class* under a grouped split, because
+every file is one `(n, m)` cell: hold the file out and its size has never been
+seen with its label. Structure with the size removed does as well as structure
+with it, so the fingerprint is not the size.
+
+| collection | instances | files | recall, by file | recall, by file + class |
+|:--|--:|--:|--:|--:|
+| Harvey | 2,130 | 30 | **1.000** | 1.000 |
+| Simonis | 3,630 | 10 | 0.934 | 0.913 |
+| Faggioli–Bentivoglio | 300 | 300 | 0.983 | 0.970 |
+| Chu & Stuckey | 200 | 200 | 0.935 | 0.955 |
+| SCOOP | 24 | 24 | 0.583 | 0.625 |
+| Challenge (copies) | 46 | 46 | 0.130 | 0.065 |
+| Wilson | 20 | 5 | 0.000 | 0.050 |
+| Shaw | 25 | 1 | 0.000 | 0.000 |
+| Miller | 1 | 1 | 0.000 | 0.000 |
+
+The balanced accuracy of about 0.5 is these last four rows. Shaw and Miller are
+one file each, so under any grouped split they are never in the training set
+when they are tested; Wilson's five files are five different sizes. All 25 Shaw
+instances and 18 of 20 Wilson are predicted "Challenge", which is where their
+byte-identical copies sit in the training folds: that is the ceiling, and the
+model finds it. These four collections cannot be fingerprinted from this corpus
+because there is nothing to generalise from, not because they are
+indistinguishable.
+
+Confusion among the generators that can be learned (rows true, columns
+predicted, structure (all), grouped by file, 6,376 instances):
+
+| true \ predicted | Harvey | Simonis | Chu & Stuckey | Faggioli–Bentivoglio | SCOOP | other |
+|:--|--:|--:|--:|--:|--:|--:|
+| Harvey | 2,130 | 0 | 0 | 0 | 0 | 0 |
+| Simonis | 17 | 3,390 | 74 | 145 | 0 | 4 |
+| Chu & Stuckey | 0 | 13 | 187 | 0 | 0 | 0 |
+| Faggioli–Bentivoglio | 0 | 5 | 0 | 295 | 0 | 0 |
+| SCOOP | 0 | 4 | 1 | 5 | 14 | 0 |
+
+The Simonis errors are two files: `problem_30_30` and `problem_40_20` lose 74
+instances to Chu & Stuckey, and `problem_10_20` loses 104 to
+Faggioli–Bentivoglio. The 13 Chu & Stuckey errors are all `Random-30-30` at
+densities 6 to 10, the densest of their smallest size, predicted Simonis. SCOOP
+is the only collection of real industrial instances and the only one whose
+errors scatter over three generators.
+
+### What the fingerprint is
+
+Permutation importance on held-out files, accuracy points: `col_std` 0.196,
+`row_std` 0.147, `density` 0.114, `col_max_frac` 0.113, then nothing above
+0.02. A depth-3 tree on the size-free features scores **0.940** grouped by file
+and reads:
+
+```
+col_cv <= 0.017                         -> Harvey
+col_cv >  0.017 and row_cv <= 0.035     -> Harvey
+otherwise, col_max_frac <= 0.290        -> Faggioli–Bentivoglio
+otherwise                               -> Simonis
+```
+
+Checked directly against the files: **every Harvey instance has constant
+column sums, constant row sums, or both**, and no instance of any other
+generator has either. Harvey's three file families are exactly these
+constraints: `wbo_*` (every product has the same number of customers,
+64.3% of Harvey), `wbp_*` (every customer has the same number of products) and
+`wbop_*` (both, a biregular bipartite graph). Faggioli–Bentivoglio's largest
+product covers at most half the customers (`col_max_frac` 0.10 to 0.50, mean
+0.22); Simonis's covers 0.23 to 0.95, mean 0.65, at a mean density of 0.455.
+Chu & Stuckey are recognised by their sparsity at sizes where nothing else is
+sparse. So three of the four large collections are separated by two lines a
+person can state, and the fourth by density and size.
+
+### Collections at the same (n, m)
+
+Restricted to the eleven `(n, m)` cells where at least two collections each
+contribute ten or more instances, so that size cannot help. Grouped by file.
+
+| cell (n×m) | instances | collections | majority | structure (all) | size-free |
+|:--|--:|:--|--:|--:|--:|
+| 10×10 | 670 | Harvey + Simonis | 0.821 | 0.991 | 1.000 |
+| 10×20 | 710 | F–B + Harvey + Simonis | 0.775 | 0.939 | 0.994 |
+| 10×30 | 190 | F–B + Harvey | 0.947 | 1.000 | 1.000 |
+| 15×15 | 730 | Harvey + Simonis | 0.753 | 1.000 | 1.000 |
+| 15×30 | 460 | Harvey + Simonis | 0.522 | 1.000 | 1.000 |
+| 20×10 | 710 | F–B + Harvey + Simonis | 0.775 | 0.996 | 0.996 |
+| 20×20 | 540 | Challenge + Harvey + Shaw + Simonis | 0.500 | 0.917 | 0.917 |
+| 30×10 | 740 | F–B + Harvey + Simonis | 0.743 | 0.999 | 0.999 |
+| 30×15 | 470 | F–B + Harvey + Simonis | 0.511 | 1.000 | 1.000 |
+| 30×30 | 555 | Chu & Stuckey + Harvey + Simonis | 0.757 | 0.908 | 0.964 |
+| 40×20 | 120 | F–B + Simonis | 0.917 | 1.000 | 1.000 |
+| **all shared cells** | **5,895** | | 0.616 | 0.975 | **0.988** |
+
+At equal size the generators are told apart on 98.8% of instances; the 20×20
+cell is the Shaw/Challenge ceiling again, and 30×30 is where dense Chu & Stuckey
+meets Simonis.
+
+### Within Chu & Stuckey: `Random-n-m-d-k`
+
+The data says what the name means: `col_mean` tracks `d` to within 0.3 at
+every size (`d` is the mean number of customers per product), and `k` is a
+seed index. Grouped by file, which is one instance per file, 200 instances.
+
+| target | features | accuracy | balanced accuracy |
+|:--|:--|--:|--:|
+| density class d | majority class | 0.200 | 0.200 |
+| density class d | size only (n, m) | 0.035 | 0.035 |
+| density class d | structure (all) | **0.980** | 0.980 |
+| density class d | structure, size-free | 0.875 | 0.875 |
+| density class d | `col_mean` alone | **0.980** | 0.980 |
+| seed index k (control) | majority class | 0.200 | 0.200 |
+| seed index k (control) | structure (all) | 0.045 | 0.045 |
+| seed index k (control) | structure, size-free | 0.050 | 0.050 |
+| seed index k (control) | `col_mean` alone | 0.200 | 0.200 |
+
+The density class is recovered from `col_mean` alone at 98%, and adding the
+other 27 features adds nothing. The seed index sits at chance, as it must; a
+classifier that could predict `k` would be reading the file, not the instance.
+(The size-only rows below 0.2 are the stratified split's arithmetic on a
+feature that carries no signal, not information.)
+
+### The map
+
+![instance space](figures/instance_space.png)
+
+UMAP (`n_neighbors` 30, `min_dist` 0.1) of the standardised structure features,
+left coloured by collection, middle by number of customers, right the same for
+the size-free features. The map is not a continuum: it is a lattice of streaks,
+one per `(n, m)` cell (74 cells in the corpus), which the middle panel shows
+directly. Within a streak the generators separate; across streaks the layout is
+size. In the size-free panel the cells merge and the collections form their own
+regions, with Chu & Stuckey at the sparse end of the Simonis band and
+Faggioli–Bentivoglio and Wilson beside them.
+
+Neighbourhood purity, the share of an instance's 10 nearest neighbours that
+carry its collection:
+
+| collection | instances | in feature space | on the map | on the size-free map |
+|:--|--:|--:|--:|--:|
+| Harvey | 2,130 | 0.960 | 0.952 | 0.991 |
+| Simonis | 3,630 | 0.987 | 0.971 | 0.984 |
+| Chu & Stuckey | 200 | 0.861 | 0.872 | 0.854 |
+| Faggioli–Bentivoglio | 300 | 0.877 | 0.820 | 0.862 |
+| Shaw | 25 | 0.480 | 0.436 | 0.468 |
+| Challenge (copies) | 46 | 0.393 | 0.339 | 0.352 |
+| Wilson | 20 | 0.225 | 0.210 | 0.235 |
+| SCOOP | 24 | 0.146 | 0.058 | 0.083 |
+| all | 6,376 | 0.957 | 0.942 | 0.964 |
+
+The map keeps what the feature space has. The 24 SCOOP instances, the only
+real-world data, have almost no SCOOP neighbours: they sit inside the sparse
+Harvey and Faggioli–Bentivoglio regions. Of the twelve k-means regions of the
+map (`reports/fingerprint_tables.md`), one holds all 200 Chu & Stuckey
+instances together with 431 Harvey, 161 Faggioli–Bentivoglio, 113 Simonis and 9 SCOOP at
+mean density 0.24 and mean `optimum / n` 0.60: the sparse, low-optimum corner is
+where the hard instances live and where the industrial ones fall too. The
+regions that are pure Simonis (mean density 0.45, `optimum / n` 0.8 to 0.94)
+are the complete and near-complete graphs of §1.
+
+**Finding.** The benchmark families are fingerprintable: 94.4% of instances are
+assigned to their collection from structure alone with the file held out
+(93.3% with every isomorphic copy held out too), and 98.8% at equal size, where
+the baseline is 61.6%. The fingerprint is not size and is not subtle. Harvey is
+a regularity constraint (constant column or row sums, present in all 2,130 of
+its instances and in no other generator's); Faggioli–Bentivoglio caps the
+largest product at half the customers; Simonis is dense with large products;
+Chu & Stuckey is sparse where nothing else is, and within it the density class
+is `col_mean` to within rounding while the seed index is at chance. What cannot
+be fingerprinted is what has no siblings to learn from: Shaw, Miller and Wilson
+are one file or one size each and their copies under the Challenge name set a
+ceiling of 0.993 that the model hits exactly. The consequence for every study
+that follows is the one the plan anticipated: a result on Harvey is a result
+about biregular-ish random bipartite graphs, a result on Simonis is about dense
+random matrices at 10 to 40 customers, and neither transfers to the sparse
+region where Chu & Stuckey, the timeouts and the only industrial instances all
+sit. The instance-space map says the corpus is a lattice of 74 size cells with
+large empty regions between them, not a sample from a distribution over
+instances; §2.4's generated ensembles are what fills it.
+
+**Size range covered.** All 6,376 instances, 9 ≤ n ≤ 134. The fingerprint
+numbers rest on the four large collections (6,260 instances, 9 ≤ n ≤ 125); the
+same-size test covers 10 ≤ n ≤ 40 only; the Chu & Stuckey result covers its
+30 ≤ n ≤ 125. Nothing here has been re-certified because no finding depends on
+any instance's optimum.
+
+**Not a bound, not a solver change.** The classifier and the embedding are
+descriptive; nothing touches `_lower_bound` or any decision path, and nothing
+was written to `solutions/`.

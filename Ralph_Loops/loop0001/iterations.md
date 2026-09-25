@@ -8,7 +8,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       certificate of every MOSP graph. Table: distinct classes per collection and
       per (n_customers, n_patterns); how many instances are exact duplicates of
       another. Check that isomorphic instances have equal optima (a free audit).
-- [ ] 02 · §2.1b **Generator fingerprint and instance-space map.** A classifier
+- [x] 02 · §2.1b **Generator fingerprint and instance-space map.** A classifier
       predicting `collection` (and, within Chu & Stuckey, the density class) from
       structure-only features, grouped by file. Its accuracy is the finding. Plus
       a 2-D embedding (UMAP behind a soft import, else PCA) of the feature table,

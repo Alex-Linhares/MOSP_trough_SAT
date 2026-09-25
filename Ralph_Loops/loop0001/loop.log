@@ -3,3 +3,8 @@
 [2026-09-25 19:03:09] claude session it01 (cap 3.00 h) -> session_it01.log
 [2026-09-25 19:09:46] session it01: ok (exit 0, 22 tool calls)
 [2026-09-25 19:10:52] tests passed: 703 passed, 2 skipped, 1 xfailed, 146 warnings in 65.68s (0:01:05)
+[2026-09-25 19:10:52] committed 58f9a85: 01 · §2.1a Isomorphism classes. `learning/canonical.py`: WL hash (netw
+[2026-09-25 19:10:52] === iteration 2: 02 · §2.1b Generator fingerprint and instance-space map. A classifier
+[2026-09-25 19:10:52] claude session it02 (cap 3.00 h) -> session_it02.log
+[2026-09-25 19:24:02] session it02: ok (exit 0, 27 tool calls)
+[2026-09-25 19:25:15] tests passed: 710 passed, 2 skipped, 1 xfailed, 146 warnings in 72.00s (0:01:11)

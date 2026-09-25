@@ -1,0 +1,89 @@
+# session it02 started 2026-09-25 19:10:52
+
+
+I'll start by reading the plan sections, the existing learning code, and the canonical output from iteration 1.
+  > $ cat reports/ml_nature_plan.md | head -250; echo ----; cat Ralph_Loops/loop0001/iterations.md; echo ----; date; nproc; pgrep -f benchmarks.recertify | wc -l
+  > $ sed -n 1,80p learning/canonical.py; echo ----; sed -n 1,60p learning/study_optimum.py; echo ----; sed -n 1,80p learning/dataset.py; echo ----; ls learning/ lear
+  > $ sed -n 60,200p learning/study_optimum.py; echo ----; sed -n 80,200p learning/dataset.py; echo ----; python - <<'EOF'
+import pandas as pd
+d=pd.read_csv('learning
+  > $ sed -n 60,200p reports/ml_nature.md; echo ----; grep -n "collection" learning/canonical.py | head -20; echo ----; find benchmarks/instances -maxdepth 3 -type d 
+  > $ sed -n 185,215p learning/canonical.py; echo ----; sed -n 1,40p tests/test_canonical.py; echo ----; grep -n "def \|GROUPS\|groups" learning/features.py | head -4
+  > $ (pip install -q umap-learn 2>&1 | tail -2; python -c "import umap; print('umap', umap.__version__)") ; cat .gitignore | head -30; python - <<'EOF'
+import pandas
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.282/d7f3daed086072f3507a07a7f4fccd2c/dataviz && sed -n 1,200p references/palette.md | grep -n -i -A14 "categorical" | hea
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.282/d7f3daed086072f3507a07a7f4fccd2c/dataviz && node scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4
+  > $ sed -n 28,117p learning/features.py; grep -n "canonical\|figures" tests/test_canonical.py | head -3; ls tests | head -30
+
+Now writing the study module.
+  > Write /home/al/dev/MOSP/learning/fingerprint.py
+  > $ python - <<'EOF'
+import re
+p='learning/fingerprint.py'; s=open(p).read()
+s=s.replace("    n_splits = max(2, min(folds, n_groups, len(classes) if False else fold
+  > $ sed -n 1,30p reports/fingerprint_tables.md; python - <<'EOF'
+import warnings; warnings.filterwarnings("ignore")
+import numpy as np, pandas as pd, time
+from lear
+  > $ python - <<'EOF'
+p='learning/fingerprint.py'; s=open(p).read()
+old_split='''def _splitter(name: str, folds: int, seed: int):
+    from sklearn.model_selection im
+  > $ sed -n 120,175p reports/fingerprint_tables.md
+  > Read /home/al/dev/MOSP/reports/figures/instance_space.png
+  > $ python - <<'EOF'
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+from learning.fingerprint import load_table, size_free_feat
+  > $ python - <<'EOF'
+p='learning/fingerprint.py'; s=open(p).read()
+old='''def draw_map(points: np.ndarray, frame: pd.DataFrame, method: str,
+             path: Path
+  > $ python -m pytest tests/test_fingerprint.py -q 2>&1 | grep -B12 "Error" | head -60
+  > $ python - <<'EOF'
+p='learning/fingerprint.py'; s=open(p).read()
+old='''    parts = Path(source_file).parts
+    return "/".join(parts[2:4]) if len(parts) > 3 else
+
+Tests pass and the study reran. I'll now start the full test suite in the background and look at the new figure and the purity table at the same time.
+  > $ python -m pytest tests/ -q -x 2>&1 | tail -4
+  > $ grep -n -A14 "nearest-neighbour purity" reports/fingerprint_tables.md; grep -n -A12 "^## Study 1" reports/fingerprint_tables.md | tail -12; grep -n "ceiling\|gr
+  > Read /home/al/dev/MOSP/reports/figures/instance_space.png
+
+The figure reads well: the corpus is a lattice of size cells, and the size-free panel still separates the generators. Two last checks for the narrative, then the report.
+  > $ python - <<'EOF'
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+from learning.fingerprint import load_table, structure_colu
+  > $ sed -n '/### Depth-3 tree/,/^## Study 2/p' reports/fingerprint_tables.md; sed -n '/### Permutation importance/,/^### Depth/p' reports/fingerprint_tables.md | he
+
+Now writing the report section, while the full test suite finishes in the background.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 2. Generator fingerprint and the map of instance space (§2.1b)
+
+*Iteration 2, 2026-09-25. Code: `learning/fingerprint.py
+
+The full suite passed (710 passed, 2 skipped, 1 xfailed, 72 s). Finishing up: requirements note, a small accuracy fix in the report, git status check, PROGRESS.md and iterations.md.
+  > $ cat >> learning/requirements.txt <<'EOF'
+# Optional, behind a soft import in learning/fingerprint.py: the 2-D map of
+# instance space. Without it the module fal
+
+Item 02 is done. Six items remain unchecked, so no `LOOP_COMPLETE` line.
+
+**What was built.** `learning/fingerprint.py` classifies the sub-collection from structure-only features under three splits, tests the same thing at equal size, predicts Chu & Stuckey's density class with a seed-index control, and draws the UMAP map at `reports/figures/instance_space.png`. Section 2 of `reports/ml_nature.md` records the results, with the raw tables in `reports/fingerprint_tables.md`. Seven new tests pass and the full suite is green (710 passed, 2 skipped, 1 xfailed, 72 s). Nothing was written to `solutions/`, no solver default changed, nothing committed.
+
+**The finding.** The benchmark families are fingerprintable and the fingerprint is not size.
+
+- Structure alone assigns 94.4% of instances to their collection with the file held out, 93.3% with isomorphic copies held out too, and 98.8% at equal size against a 61.6% baseline.
+- Size alone scores below the majority class under a grouped split, and size-free features match the full set.
+- The rule is readable. Every Harvey instance has constant column sums, constant row sums, or both, and no other generator has either. Faggioli–Bentivoglio caps its largest product at half the customers. Simonis is dense with large products. Chu & Stuckey is sparse where nothing else is, and its density class is recovered from mean customers per product alone at 98% while the seed index sits at chance.
+- Shaw, Miller, Wilson and the Challenge copies cannot be fingerprinted because each is one file or one size. Their byte-copies set a ceiling of 0.993 that the model hits exactly.
+- The map is a lattice of 74 size cells, not a continuum. The 24 industrial SCOOP instances have almost no SCOOP neighbours and fall in the sparse region shared with all 200 Chu & Stuckey instances.
+
+**Two method traps caught and documented in the module.** Gradient boosting scored 0.81 on a random split where a random forest scores 0.98, thrown by the one- and twenty-instance classes. Unshuffled GroupKFold on the sorted Chu & Stuckey filenames held out one seed index per fold and made the control score exactly zero. Both were replaced.
+
+**Next.** Item 03, node counts into the ledger. PROGRESS.md notes that later grouped studies should use the file-plus-graph-class grouping now in `learning.fingerprint.union_groups`, and that SCOOP is the natural held-out test for transfer to real instances.
+
+# result: success in 789s, 30 turns, cost $5.83

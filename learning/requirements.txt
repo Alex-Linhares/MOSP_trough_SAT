@@ -6,3 +6,6 @@ lightgbm
 # Optional, behind a soft import in learning/canonical.py: exact canonical forms
 # of the MOSP graph. Without it the module falls back to WL hashes alone.
 pynauty
+# Optional, behind a soft import in learning/fingerprint.py: the 2-D map of
+# instance space. Without it the module falls back to PCA.
+umap-learn
