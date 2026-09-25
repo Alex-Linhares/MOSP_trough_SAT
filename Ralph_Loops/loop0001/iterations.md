@@ -3,7 +3,7 @@
 One item per iteration, in order. Mark `- [x]` when done, `- [!]` when blocked.
 Plan sections refer to `reports/ml_nature_plan.md`.
 
-- [ ] 01 · §2.1a **Isomorphism classes.** `learning/canonical.py`: WL hash (networkx
+- [x] 01 · §2.1a **Isomorphism classes.** `learning/canonical.py`: WL hash (networkx
       `weisfeiler_lehman_graph_hash`) and, behind a soft import, a pynauty
       certificate of every MOSP graph. Table: distinct classes per collection and
       per (n_customers, n_patterns); how many instances are exact duplicates of

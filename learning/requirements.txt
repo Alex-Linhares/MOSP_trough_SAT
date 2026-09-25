@@ -3,3 +3,6 @@
 pandas
 scikit-learn
 lightgbm
+# Optional, behind a soft import in learning/canonical.py: exact canonical forms
+# of the MOSP graph. Without it the module falls back to WL hashes alone.
+pynauty

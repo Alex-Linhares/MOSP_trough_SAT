@@ -1,0 +1,93 @@
+# session it01 started 2026-09-25 19:03:09
+
+
+I'll start by reading the plan documents and the existing learning code, then build `learning/canonical.py`, run the study, write the report section and tests, and update the loop files.
+  > $ sed -n '1,400p' reports/ml_nature_plan.md
+  > $ sed -n '1,200p' learning/dataset.py; echo ----; sed -n '1,80p' learning/study_optimum.py; echo ----; ls learning tests reports | head -80; cat learning/requirem
+  > $ sed -n '1,80p' customer_inter/customer_graph.py; echo ----; grep -n "def \|^class " mosp/instance.py | head -40; echo ----; sed -n '1,60p' learning/features.py;
+  > $ head -c 600 learning/data/instances.csv; echo; python - <<'EOF'
+import pandas as pd
+f=pd.read_csv('learning/data/instances.csv')
+print(len(f)); print(f.collecti
+  > $ find benchmarks/instances -maxdepth 3 -type d | sort; echo ----; python - <<'EOF'
+import pandas as pd
+f=pd.read_csv('learning/data/instances.csv')
+f['sub']=f.so
+  > $ python - <<'EOF'
+import pynauty, inspect
+print(pynauty.__version__ if hasattr(pynauty,'__version__') else '')
+print([n for n in dir(pynauty) if not n.startswith
+
+The pynauty API checks out. Writing the module now: matrix-level, bipartite-isomorphism and MOSP-graph-isomorphism classes, WL hashes, and the equal-optima audit.
+  > Write /home/al/dev/MOSP/learning/canonical.py
+  > $ python -c "import tabulate" 2>&1; python - <<'EOF'
+import numpy as np
+from mosp.instance import MOSPInstance
+from learning.canonical import canonical_record, mo
+
+The invariants behave as intended on the hand-checkable cases. Running the full corpus now while I write the tests.
+  > $ time python -m learning.canonical --workers 16 --out reports/canonical_tables.md 2>&1 | tail -150
+  > $ python -c "import pandas; print(pandas.__version__)"; python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv('learning/data/canonical.csv')
+f['comple
+  > $ python - <<'EOF'
+from learning.dataset import enumerate_instances
+import numpy as np
+want = {}
+for f, inst in enumerate_instances():
+    if inst.name.startswith
+  > Edit /home/al/dev/MOSP/learning/canonical.py
+  > Write /home/al/dev/MOSP/tests/test_canonical.py
+  > $ python -m pytest tests/test_canonical.py -q 2>&1 | tail -5 && python -m learning.canonical --workers 16 --out reports/canonical_tables.md > /tmp/canonical_out.t
+
+Two test failures and the table formatting is still wrong. Let me look at both.
+  > $ python -m pytest tests/test_canonical.py -q 2>&1 | grep -B 15 "Error" | head -60; python - <<'EOF'
+import pandas as pd, numpy as np, tabulate
+print(tabulate.__v
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path('learning/canonical.py'); s = p.read_text()
+s = s.replace("""    plain = frame.map(lambda v: int(v) if isinst
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path('learning/canonical.py'); s = p.read_text()
+old = """    # Cross-collection duplicates: classes that appear i
+
+Full suite in the background while I write the report section and the dependency notes.
+  > $ python -m pytest tests/ -q -x > /tmp/pytest_full.txt 2>&1; echo "exit $?" >> /tmp/pytest_full.txt
+  > $ cat learning/README.md | head -60; git log -1 --format=%cd; date '+%Y-%m-%d %H:%M'
+  > Write /home/al/dev/MOSP/reports/ml_nature.md
+  > $ tail -3 /tmp/pytest_full.txt; cat >> learning/requirements.txt <<'EOF'
+# Optional, behind a soft import in learning/canonical.py: exact canonical forms
+# of the
+
+The full suite passes (703 passed, 2 skipped, 1 xfailed, 66 s) and nothing under `solutions/` changed. Final bookkeeping: the progress log and the item checkbox.
+  > $ git check-ignore learning/data/canonical.csv; python - <<'EOF'
+from pathlib import Path
+p = Path('Ralph_Loops/loop0001/PROGRESS.md'); s = p.read_text()
+s = s.re
+
+Item 01 is done. Nothing left depends on another result, and the loop is not complete, so no `LOOP_COMPLETE` line.
+
+**What I built.** `learning/canonical.py` computes three canonical forms per instance (matrix digest, nauty certificate of the coloured customer–product bipartite graph, nauty certificate of the MOSP graph), the networkx WL hash, and the automorphism group order, with pynauty behind a soft import. It runs in under a second on 16 cores and writes `learning/data/canonical.csv` plus the tables. Seven tests on hand-checkable three-customer instances are in `tests/test_canonical.py`. The full suite passes (703 passed, 2 skipped, 1 xfailed, 66 s). Nothing under `solutions/` changed and no solver default was touched.
+
+**What the corpus turns out to be.**
+
+| level | classes |
+|---|---:|
+| instances | 6,376 |
+| identical matrix | 6,332 |
+| isomorphic matrix | 6,313 |
+| isomorphic MOSP graph | 3,667 |
+
+- **42.5% of the corpus is isomorphic copies.** The redundancy is a small-instance effect (44.6% at n ≤ 30, 13.2% at n > 30) and confined to Harvey and Simonis. Chu & Stuckey, SCOOP, Shaw and Wilson contain no duplicates at any level.
+- **A quarter of the corpus is complete graphs.** 1,669 instances have optimum equal to n_customers with a complete MOSP graph. The four largest classes are K10, K15, K30 and K20.
+- **The Challenge folder is a copy.** All 46 instances in `MOSP_Instances/Challenge` are the Miller, Shaw and Wilson originals, 44 byte-identical and 2 differing by one all-zero product column. Each is certified twice under two names.
+- **File grouping leaks.** 157 graph classes span more than one source file, the largest spanning eleven. A split grouped by file still trains on copies of its test instances. The report recommends grouping by the new graph certificate before any grouped number from the earlier learning report is quoted again.
+- **WL is safe here.** The WL hash merges only 14 of 3,667 classes, all sparse Harvey instances with optimum 3.
+- **The audit passed.** Zero optimum disagreements within any isomorphism class, so no re-certification was needed.
+
+Written up as section 1 of the new `reports/ml_nature.md`, with the regenerate command. `PROGRESS.md` has the iteration entry and the current count is 1/8, and item 01 is marked done in `iterations.md`. Next is item 02, which should use the graph certificate as its grouping key.
+
+# result: success in 396s, 23 turns, cost $3.92

@@ -1,0 +1,5 @@
+[2026-09-25 19:03:09] loop start: up to 10 iterations, cap 3.0 h each, model default
+[2026-09-25 19:03:09] === iteration 1: 01 · §2.1a Isomorphism classes. `learning/canonical.py`: WL hash (networkx
+[2026-09-25 19:03:09] claude session it01 (cap 3.00 h) -> session_it01.log
+[2026-09-25 19:09:46] session it01: ok (exit 0, 22 tool calls)
+[2026-09-25 19:10:52] tests passed: 703 passed, 2 skipped, 1 xfailed, 146 warnings in 65.68s (0:01:05)
