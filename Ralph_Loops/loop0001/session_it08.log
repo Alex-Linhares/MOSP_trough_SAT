@@ -1,0 +1,107 @@
+# session it08 started 2026-09-25 21:24:53
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 8, working on item 06 (§2.3, where the bounds fail). First I'll read the plan sections and the state iteration 6 left behind.
+  > $ date && ls learning/ reports/ | head -80 && echo ---- && git status --short | head && echo ---- && ls Ralph_Loops/loop0001/ && cat Ralph_Loops/loop0001/iteratio
+  > $ sed -n '1,400p' reports/ml_nature_plan.md
+  > $ grep -n '^## ' reports/learning_plan.md && awk '/^## 4/,0' reports/learning_plan.md | head -80
+  > $ wc -l learning/bound_gap.py tests/test_bound_gap.py reports/bound_gap_tables.md && cat learning/bound_gap.py
+  > $ cat tests/test_bound_gap.py && echo ======== && cat reports/bound_gap_tables.md
+  > $ tail -c 6000 Ralph_Loops/loop0001/session_it06.log; echo; echo ====; grep -n '^## \|^### ' reports/ml_nature.md; echo ====; git log --oneline -3 -- learning/bou
+  > $ pgrep -af benchmarks.recertify | head; nproc; python -c "import interpret; print('interpret', interpret.__version__)"; python -c "import lightgbm, sklearn; prin
+
+Iteration 6 left a full module, tests and a tables run but no report section. Let me read all three in full before deciding what to build on.
+  > $ sed -n 1,330p learning/bound_gap.py
+  > $ sed -n 330,660p learning/bound_gap.py
+  > $ sed -n 1,260p reports/bound_gap_tables.md
+  > $ sed -n 260,500p reports/bound_gap_tables.md
+  > $ sed -n 60,182p tests/test_bound_gap.py; echo ----; git diff HEAD --stat -- learning tests reports; echo ----; sed -n 871,900p reports/ml_nature.md; echo; tail -
+  > $ grep -n "^def \|^[A-Z_]* = " learning/fingerprint.py | head -40; echo ----; sed -n '/^def structure_columns/,/^def [a-z_]*(/p' learning/fingerprint.py | head -6
+  > $ head -1 learning/data/instances.csv | tr ',' '\n' | nl | head -70; echo ----; grep -n "def structure_names\|def bound_names\|def matrix_names\|def graph_names\|
+  > $ timeout 600 python -m pytest tests/test_bound_gap.py -q -x 2>&1 | tail -5
+  > $ sed -n 591,660p reports/ml_nature.md
+  > $ grep -n "def feature_columns" -A 14 learning/*.py | head -40; echo ----; sed -n 336,375p learning/features.py; echo ----; grep -n "y_cs\|pw\b" /dev/null; python
+  > $ python - <<'EOF'
+p = 'learning/bound_gap.py'
+s = open(p).read()
+
+# --- docstring: part 6 and the leak note
+s = s.replace('''5. **The ten smallest gap >= 2 insta
+  > $ timeout 300 python - <<'EOF' 2>&1 | tail -30
+import warnings; warnings.filterwarnings("ignore")
+from learning.bound_gap import *
+frame = with_gap(load_table())
+
+  > $ nohup python -m learning.bound_gap --workers 16 --out reports/bound_gap_tables.md > /tmp/bound_gap_it08.log 2>&1 &
+echo started $!
+  > $ python - <<'EOF'
+p = 'tests/test_bound_gap.py'
+s = open(p).read()
+s = s.replace('''from learning.bound_gap import (
+    GAP_THRESHOLD,
+    classification_rows,
+
+
+The study is running in the background; the new leak-guard test failed on the set names because the toy frame lacks some columns. Checking which.
+  > $ timeout 300 python -m pytest tests/test_bound_gap.py -q -x -k never_hold 2>&1 | grep -E "^E " | head -8; echo ----; tail -3 /tmp/bound_gap_it08.log
+
+The toy frame simply lacks three of the matrix/graph columns, so the counts differ from the real table. I'll make the assertion count-agnostic.
+  > $ python - <<'EOF'
+p = 'tests/test_bound_gap.py'
+s = open(p).read()
+s = s.replace('''    sets = feature_sets(rows)
+    assert set(sets) == {"density + size", "str
+  > $ nohup python -m pytest tests/ -q -x > /tmp/full_tests_it08.log 2>&1 &
+echo tests started; sleep 90; grep -n "^## " /tmp/bound_gap_it08.log | tail -3; tail -2 /t
+
+Full suite passes (753 passed, 2 skipped, 1 xfailed, 79 s). The study is on its last section. Let me read the regenerated tables once it finishes.
+  > $ until ! pgrep -f "^python -m learning.bound_gap" > /dev/null; do sleep 5; done; tail -1 /tmp/bound_gap_it08.log; echo; sed -n 1,140p reports/bound_gap_tables.md
+  > $ sed -n 140,300p reports/bound_gap_tables.md
+  > $ grep -n "Re-certified\|^\*\*" reports/bound_gap_tables.md | head -30; echo ----; python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv('learning/dat
+
+I have everything for the write-up. Before writing, two checks: that nothing under `solutions/` changed, and whether the learning README indexes the study modules.
+  > $ git status --short solutions/ | head -3; echo "solutions changes: $(git status --short solutions/ | wc -l)"; git status --short | grep -v Ralph_Loops; echo ----
+
+The README does not index study modules, so nothing to add there. Now I'll write the report section, the PROGRESS entry, and mark the item.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 6. Where the bounds fail (§2.3)
+
+*Iteration 8, 2026-09-25 (iteration 6 wrote `learning/bound_gap.py` and its
+tests and r
+  > $ python - <<'EOF'
+import pandas as pd
+f = pd.read_csv('learning/data/instances.csv'); f['gap']=f.optimum-f.lb_best
+print('tight frac', (f.gap==0).mean().round(4)
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+old='''And exact
+treewidth for the 207 uncertified gap ≥ 2 instances (all n ≤ 30 would be
+cheap with
+  > $ cat >> Ralph_Loops/loop0001/PROGRESS.md <<'EOF'
+## Iteration 8 — 2026-09-25 21:40
+
+Item 06 · §2.3 Where the bounds fail. **SOLVED.** (Iteration 6 wrote
+`learnin
+
+Item 06 is done and marked `[x]`; items 07 and 08 remain, so no `LOOP_COMPLETE`. Nothing committed, nothing written to `solutions/`.
+
+**What iteration 6 had left.** A complete module, tests and a tables run, but the run was never read. Its classifier tables were invalid: every model scored 1.000 because the study's own label columns had been swept into the "structure" feature set by an every-numeric-column selector. The tree split on `y` and the EBM ranked `y` and `gap` as its top two terms.
+
+**What I did.**
+- Fixed the leak in `learning/bound_gap.py`: feature sets are built from the feature-group names, and `feature_sets` now refuses any set holding a label or an upper bound. Added a size-free feature set, a treewidth-ceiling table with two theorem checks, and per-instance simplicial counts and randomised treewidth upper bounds for the ten drawn instances.
+- Tests: 12 in `tests/test_bound_gap.py` (three new). Full suite 753 passed, 2 skipped, 1 xfailed, 79 s.
+- Re-ran the study (122 s), wrote `reports/ml_nature.md` §6, the PROGRESS entry, and marked the item.
+
+**Findings.**
+- Gap ≥ 2 never occurs below 20 customers. Structure beats density-and-size in every row under the file ∪ class grouping, so the kill criterion is not met. The margin is in average precision (EBM 0.35 → 0.77; within fixed-size cells 0.54 → 0.81), not AUC, because a gap of two is first of all a large-and-sparse phenomenon. The lower bounds add nothing to the classifier.
+- At fixed size the gap instances are sparser with more dispersed degrees, and the observed-over-expected graph density sits at chance. Nothing about the graph is anomalous given the matrix; it is the sparsity itself.
+- The mechanism is structural. Three of the four components of the bound are treewidth lower bounds, and on 131 of the 338 gap ≥ 2 instances pathwidth provably exceeds treewidth, so they could not be tight under any budget. Only the expansion bound ever exceeds the treewidth ceiling.
+- The ten smallest (all 20×10, all re-certified) are trees of cliques with branching: ten small product-cliques glued at a few hub customers with a fringe of single-product customers. Warwick 871 is the clean case, with treewidth exactly 3 and pathwidth 5.
+
+**Next** is item 07; an earlier iteration left `learning/distil.py` committed, so it should be read before rebuilding. A note for later studies is in PROGRESS.md: any study that adds a label column must build its feature sets from the group names, not from the every-numeric-column selectors.
+
+# result: success in 683s, 33 turns, cost $4.52

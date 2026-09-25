@@ -13,6 +13,7 @@ import pytest
 
 from learning.bound_gap import (
     GAP_THRESHOLD,
+    LABEL_COLUMNS,
     classification_rows,
     classify,
     cluster_gap_instances,
@@ -20,10 +21,13 @@ from learning.bound_gap import (
     component_shortfall,
     describe_instance,
     draw_instance,
+    feature_sets,
     gap_by_band,
     mixed_cells,
     smallest_gap_instances,
     tree_text,
+    treewidth_ceiling,
+    treewidth_upper_bound,
     with_gap,
     within_cell_contrast,
 )
@@ -80,6 +84,50 @@ def test_with_gap_labels_three_classes_and_refuses_a_bound_violation():
     bad.loc[0, "lb_best"] = 9
     with pytest.raises(ValueError, match="bound violation"):
         with_gap(bad)
+
+
+def test_feature_sets_never_hold_the_label_or_an_upper_bound():
+    """Iteration 6's run scored 1.000 everywhere because `y` had been swept
+    into the structure set; the sets are now built from the group names and
+    refuse a label."""
+    rows = classification_rows(with_gap(_frame([0] * 5 + [2] * 5)))
+    rows["ub_best"] = rows["optimum"]
+    rows["bound_gap"] = 0.0
+    sets = feature_sets(rows)
+    names = sorted(k.split(" (")[0] for k in sets)
+    assert names == ["density + size", "size-free", "structure", "structure + invariants",
+                     "structure + invariants + lower bounds"]
+    for columns in sets.values():
+        assert not set(columns) & set(LABEL_COLUMNS)
+        assert not [c for c in columns if c.startswith(("ub_", "bound_"))]
+        assert all(c in rows.columns for c in columns)
+    assert "lb_best" in sets["structure + invariants + lower bounds"]
+    assert not any("lb_best" in v for k, v in sets.items() if "lower bounds" not in k)
+    free = [v for k, v in sets.items() if k.startswith("size-free")][0]
+    assert "g_deg_cv" in free and "g_deg_cv" in rows.columns and "tw_min_fill_frac" in free
+
+
+def test_treewidth_ceiling_counts_certificates_and_checks_the_theorems():
+    frame = with_gap(_frame([0, 0, 1, 2, 3]))
+    # optimum = 5 + gap; tw_min_fill + 1 = optimum - 1 on the last two rows certifies pw > tw
+    frame["tw_min_fill"] = [4, 6, 5, 5, 6]
+    table = treewidth_ceiling(frame).set_index("rows")
+    assert table.loc["tight", "pw > tw certified"] == 0
+    assert table.loc["gap 1", "pw > tw certified"] == 0
+    assert table.loc["gap >= 2", "pw > tw certified"] == 2 and table.loc["gap >= 2", "frac"] == 1.0
+    assert table.loc["gap >= 2", "lb_best above ceiling"] == 0
+    frame.loc[0, "lb_contraction"] = 9  # a "treewidth bound" above the min-fill width is a code bug
+    with pytest.raises(ValueError, match="feature code is wrong"):
+        treewidth_ceiling(frame)
+
+
+def test_treewidth_upper_bound_on_a_path_a_clique_and_a_cycle():
+    import networkx as nx
+
+    assert treewidth_upper_bound(nx.path_graph(6), restarts=5) == 1
+    assert treewidth_upper_bound(nx.complete_graph(5), restarts=5) == 4
+    assert treewidth_upper_bound(nx.cycle_graph(7), restarts=5) == 2
+    assert treewidth_upper_bound(nx.Graph(), restarts=5) == 0
 
 
 def test_band_and_component_tables_count_by_hand():
@@ -146,19 +194,28 @@ def test_cluster_gap_instances_on_two_planted_groups():
 
 
 def test_describe_instance_on_a_path_and_a_clique():
-    path = describe_instance(MOSPInstance.from_matrix(PATH4, name="path"))
+    path = describe_instance(MOSPInstance.from_matrix(PATH4, name="path"), tw_restarts=3)
     assert path["degrees"] == [2, 2, 1, 1]
+    assert path["simplicial"] == 2 and path["tw_ub"] == 1  # the two end customers; a path is a tree
     assert path["row_sums"] == "2×2, 1×2" and path["col_sums"] == "2×3"
     assert path["lb_trivial"] == 2 and path["lb_clique"] == 2 and path["lb_contraction"] == 2
     assert path["tw_min_fill+1"] == 2 and path["bw_rcm+1"] == 2
     assert path["matrix"] == ["1 0 0", "1 1 0", "0 1 1", "0 0 1"]
-    k4 = describe_instance(MOSPInstance.from_matrix(K4, name="k4"))
+    k4 = describe_instance(MOSPInstance.from_matrix(K4, name="k4"), tw_restarts=3)
     assert k4["degrees"] == [3, 3, 3, 3] and k4["lb_clique"] == 4 and k4["edges"] == 6
+    assert k4["simplicial"] == 4 and k4["tw_ub"] == 3
     row = pd.Series({"source_file": "x/y.txt", "optimum": 2, "lb_best": 2, "gap": 0})
     text = draw_instance(path, row, None)
     assert "degree sequence 2×2, 1×2" in text and "1 1 0" in text
+    assert "2 of 4 customers in exactly one product" in text and "not separated" in text
+    text = draw_instance(path, pd.Series({"source_file": "x/y.txt", "optimum": 3, "lb_best": 2, "gap": 1}), None)
+    assert "pathwidth 2 > treewidth (≤ 1)" in text  # a hypothetical optimum, to exercise the branch
     table = common_structure([path, k4])
     assert table["clique"].tolist() == [2, 4] and table["deg min-max"].tolist() == ["1-2", "3-3"]
+    assert table["simplicial"].tolist() == [2, 4] and table["tw_ub+1"].tolist() == [2, 4]
+    assert "pw > tw" not in table.columns
+    table = common_structure([path, k4], optima=[2, 4])
+    assert table["pw > tw"].tolist() == [False, False] and table["optimum"].tolist() == [2, 4]
 
 
 def test_recertify_on_a_hand_instance_through_a_temporary_directory(tmp_path):

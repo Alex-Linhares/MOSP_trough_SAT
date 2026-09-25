@@ -33,6 +33,20 @@ structure, in five parts:
    re-certified: `solve_mosp_exact` with the solutions directory (a cached
    value is re-verified by simulation) and an independent refutation of
    `optimum - 1` through `learning.node_counts.refute`, which writes nothing.
+6. **The treewidth ceiling.** The trivial bound (a clique), the clique bound
+   and contraction degeneracy + 1 are all lower bounds on *treewidth* + 1,
+   and `tw_min_fill + 1` is an upper bound on it, so `optimum > tw_min_fill + 1`
+   certifies `pathwidth > treewidth` on that instance -- a gap no treewidth
+   bound can close. The table counts those certificates per gap class and
+   checks the two inequalities the theory requires (`lb_trivial` and
+   `lb_contraction` never above `tw_min_fill + 1`), which is a consistency
+   check on the feature code. The expansion bound is a pathwidth argument and
+   is the one component allowed above the ceiling.
+
+The classification frame carries the label (`y`, `gap`, `gap_class`); the
+feature sets are built from the feature-group names, never from "every numeric
+column", and `feature_sets` refuses a set containing a label or an upper bound
+(iteration 6's run leaked `y` into the structure set and scored 1.000 everywhere).
 
 Nothing here is a bound; nothing reaches `_lower_bound` or any decision path;
 nothing is written to `solutions/`.
@@ -55,12 +69,11 @@ import numpy as np
 import pandas as pd
 
 from learning.dataset import DEFAULT_INSTANCE_DIR, DEFAULT_OUT, enumerate_instances
-from learning.features import invariant_names
+from learning.features import feature_names, invariant_names
 from learning.fingerprint import (
     CANONICAL_CSV,
     load_table,
     size_free_features,
-    structure_columns,
     union_groups,
 )
 from mosp.instance import MOSPInstance
@@ -69,7 +82,10 @@ SIZE_BANDS = ((1, 10), (11, 20), (21, 30), (31, 60), (61, 200))
 GAP_THRESHOLD = 2
 MIN_PER_CLASS_IN_CELL = 3
 LOWER_BOUND_COLUMNS = ["lb_trivial", "lb_contraction", "lb_best"]
+LABEL_COLUMNS = ("y", "gap", "gap_class", "optimum")
+LEAK_PREFIXES = ("ub_", "bound_")
 TEN = 10
+TW_RESTARTS = 200
 
 
 # ----------------------------------------------------------------------------
@@ -91,26 +107,48 @@ def with_gap(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def classification_rows(frame: pd.DataFrame) -> pd.DataFrame:
-    """Tight and gap >= 2 rows only, with the binary label `y`."""
+    """Tight and gap >= 2 rows only, with the binary label `y`, plus the
+    size-free columns of `size_free_table` that the table does not already
+    hold (ratios such as `g_deg_cv`), so a tree can split on a ratio."""
     keep = frame["gap_class"] != "gap 1"
     out = frame[keep].reset_index(drop=True)
     out["y"] = (out["gap"] >= GAP_THRESHOLD).astype(int)
+    if all(c in out.columns for c in ("row_mean", "col_mean", "g_deg_mean", "g_deg_std")):
+        free = size_free_table(out)
+        for column in free.columns:
+            if column not in out.columns:
+                out[column] = free[column]
     return out
 
 
+def size_free_columns(frame: pd.DataFrame) -> list[str]:
+    """The size-free column names present in `frame` (after `classification_rows`)."""
+    wanted = list(size_free_features(frame.head(2)).columns) + list(_SIZE_FREE_EXTRA)
+    return [c for c in wanted if c in frame.columns]
+
+
 def feature_sets(frame: pd.DataFrame) -> dict[str, list[str]]:
-    """The four sets the classifier is scored on. No upper bound anywhere:
-    `ub_best` equals the optimum on 85% of the corpus, so `ub - lb` would be
-    the label in disguise."""
-    structure = structure_columns(frame)
+    """The five sets the classifier is scored on, built from the feature-group
+    names rather than from every numeric column, so the label columns the
+    study adds can never slip in. No upper bound anywhere: `ub_best` equals
+    the optimum on 85% of the corpus, so `ub - lb` would be the label in
+    disguise. Raises if a set holds a label or an upper bound."""
+    structure = [c for c in feature_names(groups=("matrix", "graph")) if c in frame.columns]
     inv = [c for c in invariant_names() if c in frame.columns]
     lbs = [c for c in LOWER_BOUND_COLUMNS if c in frame.columns]
-    return {
+    free = size_free_columns(frame)
+    sets = {
         "density + size": ["n_customers", "n_patterns", "density"],
         f"structure ({len(structure)})": structure,
         f"structure + invariants ({len(structure) + len(inv)})": structure + inv,
+        f"size-free ({len(free)})": free,
         "structure + invariants + lower bounds": structure + inv + lbs,
     }
+    for name, columns in sets.items():
+        leaked = [c for c in columns if c in LABEL_COLUMNS or c.startswith(LEAK_PREFIXES)]
+        if leaked:
+            raise ValueError(f"feature set {name!r} would leak the label through {leaked}")
+    return sets
 
 
 def groupings(frame: pd.DataFrame) -> dict[str, np.ndarray]:
@@ -303,6 +341,13 @@ def ebm_terms(rows: pd.DataFrame, columns: list[str], seed: int = 0, top: int = 
 # ----------------------------------------------------------------------------
 
 
+_SIZE_FREE_EXTRA = (
+    "tw_min_fill_frac", "tw_min_degree_frac", "bw_rcm_frac", "spectral_radius_frac",
+    "fiedler", "fiedler_lcc", "cc_products_frac", "cc_greedy_frac", "sep_frac",
+    "rig_edge_prob", "rig_density_ratio", "row_mean_frac", "col_mean_frac",
+)
+
+
 def size_free_table(frame: pd.DataFrame) -> pd.DataFrame:
     """`learning.fingerprint.size_free_features` plus the invariants with
     their size divided out, so a feature means the same thing across cells."""
@@ -324,7 +369,8 @@ def size_free_table(frame: pd.DataFrame) -> pd.DataFrame:
         "row_mean_frac": frame["row_mean"] / m,
         "col_mean_frac": frame["col_mean"] / n,
     }
-    for name, values in extra.items():
+    for name in _SIZE_FREE_EXTRA:
+        values = extra[name]
         if name not in out.columns and values.notna().all():
             out[name] = values.astype(float)
     return out
@@ -361,6 +407,40 @@ def within_cell_contrast(rows: pd.DataFrame, min_per_class: int = MIN_PER_CLASS_
 
 
 # ----------------------------------------------------------------------------
+# 3b. the treewidth ceiling
+# ----------------------------------------------------------------------------
+
+
+def treewidth_ceiling(frame: pd.DataFrame) -> pd.DataFrame:
+    """Per gap class: how many instances have `optimum > tw_min_fill + 1`,
+    which certifies `pathwidth > treewidth` (min-fill is an upper bound on
+    treewidth, the optimum is pathwidth + 1), how many have `lb_best` above
+    the same ceiling (only the expansion bound can), and the two violation
+    counts that must be zero because the trivial bound and contraction
+    degeneracy + 1 are lower bounds on treewidth + 1."""
+    ceiling = frame["tw_min_fill"] + 1
+    rows = []
+    order = {"tight": 0, "gap 1": 1, f"gap >= {GAP_THRESHOLD}": 2}
+    for label, sub in sorted(frame.groupby("gap_class"), key=lambda kv: order[kv[0]]):
+        c = ceiling[sub.index]
+        above = sub["optimum"] > c
+        rows.append({
+            "rows": label, "instances": len(sub),
+            "pw > tw certified": int(above.sum()),
+            "frac": float(above.mean()),
+            "mean optimum − (tw_min_fill + 1)": float((sub["optimum"] - c).mean()),
+            "lb_best above ceiling": int((sub["lb_best"] > c).sum()),
+            "lb_trivial above ceiling (must be 0)": int((sub["lb_trivial"] > c).sum()),
+            "lb_contraction above ceiling (must be 0)": int((sub["lb_contraction"] > c).sum()),
+        })
+    table = pd.DataFrame(rows)
+    if (table["lb_trivial above ceiling (must be 0)"].sum()
+            or table["lb_contraction above ceiling (must be 0)"].sum()):
+        raise ValueError("a treewidth lower bound exceeds the min-fill width: the feature code is wrong")
+    return table
+
+
+# ----------------------------------------------------------------------------
 # 4. clusters of the gap instances
 # ----------------------------------------------------------------------------
 
@@ -369,7 +449,8 @@ def cluster_gap_instances(frame: pd.DataFrame, k_range=range(2, 7), seed: int = 
                           top_features: int = 5) -> tuple[pd.DataFrame, pd.DataFrame, int]:
     """k-means over the standardised size-free features of the gap >= 2
     instances, k by silhouette. Returns the per-cluster description, the
-    labelled rows and the chosen k."""
+    labelled rows and the chosen k; the description table carries the
+    silhouette of every k tried in its `attrs["silhouette"]`."""
     from sklearn.cluster import KMeans
     from sklearn.metrics import silhouette_score
     from sklearn.preprocessing import StandardScaler
@@ -379,11 +460,13 @@ def cluster_gap_instances(frame: pd.DataFrame, k_range=range(2, 7), seed: int = 
     feats = feats.loc[:, feats.std(ddof=0) > 0]
     X = StandardScaler().fit_transform(feats)
     best_k, best_score, best_labels = None, -1.0, None
+    silhouettes: dict[int, float] = {}
     for k in k_range:
         if k >= len(gap):
             break
         labels = KMeans(n_clusters=k, n_init=10, random_state=seed).fit_predict(X)
         score = silhouette_score(X, labels)
+        silhouettes[k] = float(score)
         if score > best_score:
             best_k, best_score, best_labels = k, score, labels
     gap = gap.assign(cluster=best_labels)
@@ -403,7 +486,9 @@ def cluster_gap_instances(frame: pd.DataFrame, k_range=range(2, 7), seed: int = 
             "mean g_density": float(sub["g_density"].mean()),
             "extreme features (z)": ", ".join(f"{f} {v:+.1f}" for f, v in means.head(top_features).items()),
         })
-    return pd.DataFrame(rows), gap, best_k
+    table = pd.DataFrame(rows)
+    table.attrs["silhouette"] = silhouettes
+    return table, gap, best_k
 
 
 # ----------------------------------------------------------------------------
@@ -433,11 +518,33 @@ def find_instances(frame: pd.DataFrame, instance_dir: Path = DEFAULT_INSTANCE_DI
     return [found[(row.instance_name, row.source_file)] for row in frame.itertuples()]
 
 
-def describe_instance(inst: MOSPInstance, expansion_t: int = 8) -> dict:
+def treewidth_upper_bound(graph, restarts: int = TW_RESTARTS, seed: int = 0) -> int:
+    """The smallest elimination width found by min-fill and min-degree over
+    `restarts` random relabellings (networkx breaks ties by label order, so
+    relabelling varies the tie-breaks). An upper bound on treewidth; never a
+    bound on the optimum."""
+    import networkx as nx
+    from networkx.algorithms.approximation import treewidth_min_degree, treewidth_min_fill_in
+
+    if graph.number_of_nodes() == 0:
+        return 0
+    rng = np.random.default_rng(seed)
+    nodes = list(graph.nodes())
+    best = graph.number_of_nodes() - 1
+    for _ in range(max(1, restarts)):
+        perm = rng.permutation(len(nodes))
+        relabelled = nx.relabel_nodes(graph, {v: int(p) for v, p in zip(nodes, perm)})
+        best = min(best, treewidth_min_fill_in(relabelled)[0], treewidth_min_degree(relabelled)[0])
+    return int(best)
+
+
+def describe_instance(inst: MOSPInstance, expansion_t: int = 8, tw_restarts: int = TW_RESTARTS) -> dict:
     """Everything the report draws for one instance: the matrix as text, the
     MOSP graph's degree sequence, the row and column sum multisets, and every
     bound recomputed from the instance rather than read from the table. The
-    clique number is exact (these are small graphs)."""
+    clique number is exact (these are small graphs). `simplicial` counts the
+    customers in exactly one product, whose neighbourhood is that product's
+    clique; `tw_ub` is `treewidth_upper_bound`."""
     import networkx as nx
 
     from customer_inter.customer_graph import build_customer_graph
@@ -459,6 +566,8 @@ def describe_instance(inst: MOSPInstance, expansion_t: int = 8) -> dict:
         "n": inst.n_customers, "m": inst.n_patterns, "ones": int(m.sum()),
         "matrix": [" ".join(str(v) for v in row) for row in m.tolist()],
         "degrees": degrees,
+        "simplicial": int(sum(1 for r in rows_sums if r == 1)),
+        "tw_ub": treewidth_upper_bound(graph, tw_restarts),
         "row_sums": _multiset(rows_sums), "col_sums": _multiset(col_sums),
         "edges": graph.number_of_edges(),
         "components": nx.number_connected_components(graph),
@@ -504,10 +613,15 @@ def draw_instance(desc: dict, row: pd.Series, cert: dict | None) -> str:
                  f"contraction {desc['lb_contraction']}, expansion {desc['lb_expansion']}; "
                  f"`tw_min_fill + 1` {desc['tw_min_fill+1']}, `bw_rcm + 1` {desc['bw_rcm+1']}, "
                  f"separator {desc['sep_size']}, Fiedler {desc['fiedler']:.3f}.")
+    pw = int(row["optimum"]) - 1
+    tw_line = (f"pathwidth {pw} > treewidth (≤ {desc['tw_ub']}), so no treewidth bound reaches the optimum"
+               if pw > desc["tw_ub"] else
+               f"pathwidth {pw}, treewidth ≤ {desc['tw_ub']}: not separated by the heuristic")
     lines.append(f"MOSP graph: {desc['edges']} edges, {desc['components']} component(s), "
                  f"clustering {desc['clustering']:.3f}; degree sequence "
                  f"{_multiset(desc['degrees'])}. Products per customer {desc['row_sums']}; "
-                 f"customers per product {desc['col_sums']}.")
+                 f"customers per product {desc['col_sums']}; {desc['simplicial']} of {desc['n']} "
+                 f"customers in exactly one product (simplicial). {tw_line}.")
     if cert is not None:
         lines.append(f"Re-certified: `solve_mosp_exact` {cert['resolved']} (cached {cert['cached']}), "
                      f"`optimum − 1` {cert['refute status']} in {cert['refute nodes']} nodes.")
@@ -518,20 +632,26 @@ def draw_instance(desc: dict, row: pd.Series, cert: dict | None) -> str:
     return "\n".join(lines)
 
 
-def common_structure(descs: list[dict]) -> pd.DataFrame:
-    """A table of the properties the ten share or do not."""
+def common_structure(descs: list[dict], optima: list[int] | None = None) -> pd.DataFrame:
+    """A table of the properties the ten share or do not. With `optima`, the
+    pathwidth `optimum - 1` and whether it provably exceeds the treewidth."""
     rows = []
-    for d in descs:
+    for i, d in enumerate(descs):
         degs = d["degrees"]
-        rows.append({
+        row = {
             "instance": d["name"][:40], "n": d["n"], "m": d["m"], "ones": d["ones"],
             "products/customer": d["row_sums"], "customers/product": d["col_sums"],
+            "simplicial": d["simplicial"],
             "deg min-max": f"{min(degs)}-{max(degs)}",
             "trivial": d["lb_trivial"], "clique": d["lb_clique"],
             "contraction": d["lb_contraction"], "expansion": d["lb_expansion"],
-            "tw_min_fill+1": d["tw_min_fill+1"], "bw_rcm+1": d["bw_rcm+1"],
+            "tw_min_fill+1": d["tw_min_fill+1"], "tw_ub+1": d["tw_ub"] + 1, "bw_rcm+1": d["bw_rcm+1"],
             "sep": d["sep_size"], "components": d["components"],
-        })
+        }
+        if optima is not None:
+            row["optimum"] = int(optima[i])
+            row["pw > tw"] = bool(int(optima[i]) - 1 > d["tw_ub"])
+        rows.append(row)
     return pd.DataFrame(rows)
 
 
@@ -603,14 +723,20 @@ def main() -> None:
     emit()
 
     key = [k for k in sets if k.startswith("structure + invariants (")][0]
+    free_key = [k for k in sets if k.startswith("size-free (")][0]
     emit("## The depth-3 tree (all rows, structure + invariants)\n")
     emit("```")
     emit(tree_text(rows, sets[key], args.seed).rstrip())
     emit("```")
     emit()
-    emit("## The depth-3 tree within the mixed cells\n")
+    emit("## The depth-3 tree within the mixed cells (structure + invariants)\n")
     emit("```")
     emit(tree_text(sub, sets[key], args.seed).rstrip())
+    emit("```")
+    emit()
+    emit("## The depth-3 tree within the mixed cells (size-free features)\n")
+    emit("```")
+    emit(tree_text(sub, sets[free_key], args.seed).rstrip())
     emit("```")
     emit()
     if not args.no_ebm:
@@ -624,8 +750,13 @@ def main() -> None:
     emit(_md(within_cell_contrast(rows)))
     emit()
 
+    emit("## The treewidth ceiling: where pathwidth provably exceeds treewidth\n")
+    emit(_md(treewidth_ceiling(frame)))
+    emit()
+
     clusters, labelled, k = cluster_gap_instances(frame, seed=args.seed)
     emit(f"## Clusters of the {len(labelled)} gap >= {GAP_THRESHOLD} instances (k = {k} by silhouette)\n")
+    emit("Silhouette by k: " + ", ".join(f"{kk} → {v:.3f}" for kk, v in clusters.attrs["silhouette"].items()) + ".\n")
     emit(_md(clusters))
     emit()
     out_csv = DEFAULT_OUT.parent / "bound_gap.csv"
@@ -637,7 +768,7 @@ def main() -> None:
     descs = [describe_instance(inst) for inst in insts]
     certs = [None if args.no_recertify else recertify(inst, int(row.optimum))
              for inst, row in zip(insts, ten.itertuples())]
-    emit(_md(common_structure(descs)))
+    emit(_md(common_structure(descs, [int(v) for v in ten["optimum"]])))
     emit()
     if not args.no_recertify:
         cert_table = pd.DataFrame([{"instance": d["name"][:40], **c} for d, c in zip(descs, certs)])

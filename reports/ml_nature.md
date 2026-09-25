@@ -1136,3 +1136,330 @@ and `sep_size` beside `rig_edge_prob` and `sep_frac`. For §2.5 (does the optimu
 concentrate on random instances) the sandwich is the natural frame: on
 `G(n, m, p)` the degeneracy and RCM bandwidth have their own concentration
 results, and the question becomes whether λ concentrates at ½.
+
+## 6. Where the bounds fail (§2.3)
+
+*Iteration 8, 2026-09-25 (iteration 6 wrote `learning/bound_gap.py` and its
+tests and ran it, but ended before reading the run; its classifier tables
+scored 1.000 everywhere because the study's own label column `y` had been
+swept into the "structure" feature set by an every-numeric-column selector.
+This iteration fixed the leak, added a guard and a test for it, added the
+size-free feature set, the treewidth ceiling and the per-instance treewidth
+and simplicial counts, re-ran, and wrote this section.) Code:
+`learning/bound_gap.py`. Regenerate:*
+
+```bash
+python -m learning.dataset --workers 16                                    # if the table is stale (~90 s)
+python -m learning.canonical --workers 16                                  # the isomorphism classes (~1 s)
+python -m learning.bound_gap --workers 16 --out reports/bound_gap_tables.md   # ~120 s; --no-recertify skips the re-solve of the ten
+python -m pytest tests/test_bound_gap.py -q
+```
+
+*Writes `reports/bound_gap_tables.md` (every table below in full, plus the ten
+instances drawn) and `learning/data/bound_gap.csv` (git-ignored, the 338 gap
+instances with their cluster). Nothing is written to `solutions/`: the
+re-certification calls `solve_mosp_exact` with the corpus directory, which
+re-verifies the cached witness by simulation, and refutes `optimum − 1` through
+`learning.node_counts.refute`, which writes nothing.*
+
+**Question.** `lb_best` — the best of the trivial bound, the clique bound,
+contraction degeneracy + 1 and the expansion bound — equals the optimum on
+77.0% of the corpus, misses by one on 17.7% and by two or more on 5.3% (338
+instances). Do the instances it misses by two or more share a recognisable
+structure, and which of the four component bounds is blind to it?
+
+**Method.** The label is `gap = optimum − lb_best` from the feature table,
+three-way (tight, gap 1, gap ≥ 2); the classifier sees tight against gap ≥ 2
+with the gap-1 rows left out, 5,247 rows and 338 positives. Three models — a
+depth-3 decision tree (balanced class weight, 20 rows per leaf), an
+explainable boosting machine (`interpret`, soft import, no interactions) and
+`HistGradientBoostingClassifier` as a ceiling — on five feature sets: the
+plan's baseline `n_customers`, `n_patterns`, `density`; the 28 matrix and
+MOSP-graph features; those plus the 13 invariants of §4; a 32-column
+*size-free* set (`learning.fingerprint.size_free_features` plus the invariants
+divided by their dimension, so a tree can split on `g_deg_cv` or `bw_rcm / n`);
+and structure + invariants + the three lower bounds. No upper bound anywhere,
+since `ub_best` equals the optimum on 85% of the corpus and `ub − lb` would be
+the label in disguise. Out-of-fold probabilities under `GroupKFold` grouped by
+file ∪ MOSP-graph isomorphism class (`learning.fingerprint.union_groups`, the
+honest split) with the file-only grouping beside it; AUC, average precision
+and balanced accuracy, whole and per size band. Because gap ≥ 2 never occurs
+below 20 customers and is the norm above 60, the same models are scored again
+on the 2,407 rows in the eleven `(n, m)` cells holding at least three of each
+class, where size cannot be the answer. Then each size-free feature alone,
+z-scored within its cell, as a ranker of gap ≥ 2 against tight over those
+cells (AUC and Cohen's d); the EBM's term importances there; the depth-3
+trees as text; k-means over the standardised size-free features of the 338
+gap instances with k by silhouette; and the ten smallest gap ≥ 2 instances
+(fewest customers, then fewest ones, one per isomorphism class), drawn as
+matrices with their degree sequences, every bound recomputed from the
+instance, the number of customers in exactly one product, and a treewidth
+upper bound from 200 randomised min-fill / min-degree eliminations. Each of
+the ten is re-certified: the exact solver's value and an independent
+refutation of `optimum − 1`.
+
+One table not in the plan came out of a consistency check. The trivial bound
+is a clique, the clique bound is a clique, and contraction degeneracy is a
+lower bound on treewidth (Bodlaender, Koster & Wolle), so three of the four
+components of `lb_best` are lower bounds on **treewidth + 1**, while
+`tw_min_fill + 1` from §4 is an upper bound on it. Hence
+`optimum > tw_min_fill + 1` certifies `pathwidth > treewidth` on that
+instance, with no heuristic in the certificate (min-fill is an upper bound,
+the optimum is exact). The "treewidth ceiling" table counts those
+certificates per gap class and checks the two inequalities the theorems
+require; the module raises if either is violated.
+
+**Baseline.** Density and size alone, as the plan asks; the kill criterion
+is that structure must beat it. Iteration 6's leaked run is not a baseline
+for anything and its numbers are not quoted.
+
+### Where the gap is
+
+| band   | instances | tight | gap 1 | gap ≥ 2 | frac gap ≥ 2 | mean gap | max gap |
+|:-------|----------:|------:|------:|--------:|-------------:|---------:|--------:|
+| 1–10   |     1,614 | 1,566 |    48 |       0 |        0.000 |    0.030 |       1 |
+| 11–20  |     2,508 | 2,051 |   440 |      17 |        0.007 |    0.189 |       2 |
+| 21–30  |     1,816 | 1,134 |   549 |     133 |        0.073 |    0.450 |       3 |
+| 31–60  |       318 |   144 |    73 |     101 |        0.318 |    1.132 |       5 |
+| 61–134 |       120 |    14 |    19 |      87 |        0.725 |    8.708 |      30 |
+
+By collection: Chu & Stuckey 102 of 200 at gap ≥ 2 (51.0%, mean gap 5.4),
+Faggioli–Bentivoglio 83 of 300 (27.7%), Wilson 3 of 20, SCOOP 3 of 24,
+Challenge 3 of 46, Harvey 71 of 2,130 (3.3%), Simonis 73 of 3,630 (2.0%),
+Shaw and Miller none. On the 338 gap ≥ 2 rows the component bounds fall
+short by a mean of 4.8 (`lb_best`, median 2), 7.4 (`lb_contraction`, median
+3) and 14.4 (`lb_trivial`, median 7); on the 4,909 tight rows
+`lb_contraction` alone is tight on 84.8% and the trivial bound on 4.8%.
+
+### The classifier
+
+Grouped by file ∪ class, all 5,247 rows, 338 positives (file-only grouping
+in `reports/bound_gap_tables.md`; it is uniformly higher, by up to 0.07 AUC,
+for the reason §2 gives — the collections are separable regions and a
+held-out file has isomorphic neighbours in the training folds):
+
+| model              | features                    |   AUC | avg precision | bal. acc | AUC 11–20 | 21–30 | 31–60 | 61–134 |
+|:-------------------|:----------------------------|------:|--------------:|---------:|----------:|------:|------:|-------:|
+| tree (depth 3)     | density + size              | 0.884 |         0.263 |    0.851 |     0.746 | 0.804 | 0.730 |  0.786 |
+| tree (depth 3)     | structure (28)              | 0.946 |         0.523 |    0.928 |     0.688 | 0.898 | 0.905 |  0.906 |
+| tree (depth 3)     | size-free (32)              | 0.942 |         0.524 |    0.936 |     0.908 | 0.892 | 0.904 |  0.900 |
+| EBM                | density + size              | 0.920 |         0.349 |    0.632 |     0.950 | 0.918 | 0.724 |  0.611 |
+| EBM                | structure + invariants (41) | 0.983 |         0.768 |    0.756 |     0.958 | 0.960 | 0.974 |  0.979 |
+| EBM                | size-free (32)              | 0.984 |         0.772 |    0.691 |     0.958 | 0.965 | 0.981 |  0.975 |
+| boosting (ceiling) | density + size              | 0.963 |         0.566 |    0.870 |     0.893 | 0.913 | 0.849 |  0.951 |
+| boosting (ceiling) | structure + invariants + lb | 0.977 |         0.794 |    0.801 |     0.933 | 0.954 | 0.971 |  0.926 |
+
+Within the eleven mixed `(n, m)` cells — 2,407 rows, 218 positives; the
+cells are 20×10 (13 positives of 515), 20×20 (4/433), 30×10 (86/478), 30×15
+(35/328), 30×30 (8/444), 40×20 (11/91), 40×40 (6/18), 50×50 (12/28), 50×100
+(5/20), 75×75 (17/22) and 100×100 (21/30):
+
+| model              | features                    |   AUC | avg precision | bal. acc | AUC 11–20 | 21–30 | 31–60 | 61–134 |
+|:-------------------|:----------------------------|------:|--------------:|---------:|----------:|------:|------:|-------:|
+| tree (depth 3)     | density + size              | 0.849 |         0.256 |    0.835 |     0.865 | 0.858 | 0.805 |  0.746 |
+| tree (depth 3)     | size-free (32)              | 0.931 |         0.517 |    0.823 |     0.894 | 0.902 | 0.956 |  0.964 |
+| EBM                | density + size              | 0.947 |         0.538 |    0.802 |     0.878 | 0.918 | 0.982 |  0.989 |
+| EBM                | size-free (32)              | 0.971 |         0.813 |    0.839 |     0.924 | 0.957 | 0.992 |  1.000 |
+| boosting (ceiling) | density + size              | 0.935 |         0.636 |    0.819 |     0.777 | 0.906 | 0.989 |  0.994 |
+| boosting (ceiling) | structure + invariants + lb | 0.962 |         0.802 |    0.840 |     0.891 | 0.945 | 0.987 |  0.996 |
+
+Structure beats density-and-size in every row of both tables, so the kill
+criterion is not met — but the margin is in *average precision*, which
+doubles (0.26 → 0.52 for the tree, 0.35 → 0.77 for the EBM, 0.54 → 0.81
+within cells), not in AUC, where the baseline is already 0.85–0.96 because a
+gap of two is first of all a large-and-sparse phenomenon. Adding the three
+lower bounds to the features changes nothing (structure + invariants 0.983
+→ 0.980 with them; tree identical), which is §4's finding again from the
+other side: the bounds carry no information about their own failure that
+the structure does not. The 11–20 band is the hard one for every model (17
+positives among 2,508) and the one where the size-free set matters most for
+the tree (0.688 → 0.908).
+
+### What the gap instances look like at fixed size
+
+Each size-free feature alone, z-scored within its `(n, m)` cell, ranking
+gap ≥ 2 against tight over the 2,407 rows; AUC below 0.5 means the gap
+instances have *less* of it. The top of the table:
+
+| feature                                 |   AUC |      d |
+|:----------------------------------------|------:|-------:|
+| `g_clustering`                          | 0.097 | −1.47 |
+| `g_density`                             | 0.105 | −1.52 |
+| `rig_edge_prob`                         | 0.105 | −1.54 |
+| `spectral_radius / (n − 1)`             | 0.105 | −1.50 |
+| `g_degeneracy / (n − 1)`                | 0.114 | −1.50 |
+| `g_deg_cv` (= `g_deg_std / g_deg_mean`) | 0.879 | +1.48 |
+| `density`                               | 0.122 | −1.33 |
+| `fiedler`                               | 0.131 | −1.40 |
+| `tw_min_fill / n`                       | 0.133 | −1.42 |
+| `g_deg_min / (n − 1)`                   | 0.134 | −1.39 |
+| ...                                     |       |        |
+| `rig_density_ratio`                     | 0.505 | −0.09 |
+
+At fixed `(n, m)` the gap instances are the sparser ones — fewer edges, a
+smaller degeneracy, a lower Fiedler value, lower clustering — with **more
+dispersed degrees** (`g_deg_cv` is the one feature the gap instances have
+more of, d = +1.48, which is §5's residual variable found independently).
+And `rig_density_ratio`, the observed MOSP-graph density over what a random
+intersection graph of the same `(n, m, p̂)` would have, is at chance (0.505):
+the gap instances are exactly as dense as the random model predicts for
+their matrix density. Nothing about the graph is anomalous given the
+matrix; it is the sparsity itself, and the fringe of low-degree customers
+that sparsity produces, that the bound cannot see. The EBM within the cells
+ranks `g_deg_std` first (0.89), then `g_clustering` (0.71), `row_mean`
+(0.57) and `density` (0.52).
+
+The depth-3 tree on the size-free features within the mixed cells reads:
+
+```
+rig_edge_prob ≤ 0.685 (sparse):
+    one component (g_components/n ≤ 0.042)                    → gap ≥ 2
+    several components: max degree > (n − 1)/2                 → gap ≥ 2, else tight
+rig_edge_prob > 0.685 (dense):
+    min degree ≤ 0.397 (n − 1) and one component               → gap ≥ 2
+    otherwise                                                  → tight
+```
+
+In words: **a connected sparse MOSP graph, or a dense one with a low-degree
+customer**. Both branches say the same thing — the pathwidth is set by the
+connected bulk and the degree-based bounds by the fringe — and the tree
+reaches AUC 0.931 within cells with that rule alone (0.849 for the
+density-and-size tree).
+
+### The treewidth ceiling
+
+| rows    | instances | `pw > tw` certified | frac  | mean `optimum − (tw_min_fill + 1)` | `lb_best` above ceiling | `lb_trivial` above (must be 0) | `lb_contraction` above (must be 0) |
+|:--------|----------:|--------------------:|------:|-----------------------------------:|------------------------:|-------------------------------:|-----------------------------------:|
+| tight   |     4,909 |                  35 | 0.007 |                             −0.038 |                      35 |                              0 |                                  0 |
+| gap 1   |     1,129 |                 315 | 0.279 |                              0.147 |                       1 |                              0 |                                  0 |
+| gap ≥ 2 |       338 |                 131 | 0.388 |                             −0.450 |                       0 |                              0 |                                  0 |
+
+Both theorem checks pass on all 6,376 rows. **On 131 of the 338 gap ≥ 2
+instances, and on 315 of the 1,129 gap-1 instances, pathwidth provably
+exceeds treewidth**, so no lower bound on treewidth — and three of the four
+components of `lb_best` are exactly that — can ever be tight there. The 35
+tight instances above the ceiling are the 35 where `lb_best` exceeds
+`tw_min_fill + 1`: the expansion bound, the one component that argues about
+prefixes of an ordering rather than about degrees, certified an optimum
+strictly above the treewidth. The fraction certified is a floor, since
+min-fill is only an upper bound on treewidth; by band among the gap ≥ 2
+instances it is 58.8% at ≤ 20 customers, 43.6% at 21–30, 57.4% at 31–60 and
+5.7% at 61–134, where min-fill runs far above the pathwidth (mean
+`optimum − (tw_min_fill + 1)` is negative there) and the certificate
+loosens. Whether the *un*certified gap ≥ 2 instances also have `pw > tw` is
+open; exact treewidth at these sizes would settle it.
+
+### Clusters
+
+k-means over the standardised size-free features of the 338 gap instances
+chooses k = 2 by silhouette (0.370; 0.335–0.344 for k = 3–5), and the two
+clusters are the two halves of instance space §2 already drew: a *sparse*
+cluster of 201 (matrix density 0.079, MOSP-graph density 0.181, mean
+optimum/n 0.336, mean gap 6.3, max 30; Chu & Stuckey 85, Faggioli–Bentivoglio
+83, Harvey 23, the three Wilson, Challenge and SCOOP each, one Simonis) and a
+*dense* cluster of 137 (density 0.238, graph density 0.536, optimum/n 0.614,
+mean gap 2.6, max 16; Simonis 72, Harvey 48, Chu & Stuckey 17). The
+silhouette is weak and the split is by collection, so the gap instances are
+not a family of their own in feature space; they are the sparse end of each
+generator's range, which is what the within-cell contrast says with more
+precision.
+
+### The ten smallest
+
+All ten have 20 customers and 10 products — six from Simonis's
+`problem_20_10.dat` (densities 0.20–0.30) and four from Harvey (three
+`wbo_20_10`, "balanced orders, four customers per product", and one
+`wbp_20_10`, "balanced products, three products per customer"); the 17
+gap ≥ 2 instances at n ≤ 20 all come from those two generators' 20×10 and
+20×20 files. Every one has gap exactly 2, and each was re-certified: the
+exact solver returns the cached value and the customer search refutes
+`optimum − 1` in 20–59 nodes. The matrices are in
+`reports/bound_gap_tables.md`; the summary:
+
+| instance                | ones | products/customer          | customers/product | simplicial | degrees | trivial = clique | contraction | expansion | `tw_ub + 1` | opt | `pw > tw` |
+|:------------------------|-----:|:---------------------------|:------------------|-----------:|:--------|-----------------:|------------:|----------:|------------:|----:|:----------|
+| Warwick 871 (`wbo`)     |   40 | 5×1, 4×3, 3×2, 2×3, 1×11   | 4×10              |         11 | 3–10    |                4 |           4 |         4 |           4 |   6 | yes       |
+| Warwick 877 (`wbo`)     |   40 | 4×2, 3×4, 2×6, 1×8         | 4×10              |          8 | 3–12    |                4 |           6 |         6 |           7 |   8 | yes       |
+| Warwick 879 (`wbo`)     |   40 | 4×1, 3×3, 2×11, 1×5        | 4×10              |          5 | 3–10    |                4 |           6 |         6 |           7 |   8 | yes       |
+| HS 590 (density 0.20)   |   43 | 4×1, 3×3, 2×14, 1×2        | 8, 7, 5×2, 4×2, 3×3, 1 |     2 | 4–14    |                8 |           8 |         8 |          10 |  10 | not separated |
+| HS 551 (density 0.20)   |   45 | 6×1, 4×2, 3×4, 2×6, 1×7    | 7, 6, 5×4, 4×2, 3, 1   |     7 | 3–15    |                7 |           7 |         7 |           7 |   9 | yes       |
+| HS 575 (density 0.20)   |   47 | 4×3, 3×5, 2×8, 1×4         | 8, 7, 6×2, 4×2, 3×4    |     4 | 4–15    |                8 |           8 |         8 |           9 |  10 | yes       |
+| HS 640 (density 0.25)   |   49 | 5×1, 4×2, 3×6, 2×7, 1×4    | 8, 7, 6, 5×3, 4×2, 3, 2 |    4 | 1–17    |                8 |           9 |         9 |          10 |  11 | yes       |
+| HS 620 (density 0.25)   |   54 | 5×1, 3×13, 2×4, 1×2        | 9, 8, 6, 5×5, 4, 2     |     2 | 4–16    |                9 |          11 |        10 |          12 |  13 | yes       |
+| HS 678 (density 0.30)   |   54 | 5×1, 4×3, 3×7, 2×7, 1×2    | 7×3, 6×2, 5×2, 4×2, 3  |     2 | 3–16    |                7 |          10 |        10 |          11 |  12 | yes       |
+| Warwick 955 (`wbp`)     |   60 | 3×20                       | 10, 7×4, 6, 5×2, 4, 2  |     0 | 10–16   |               10 |          13 |        13 |          15 |  15 | not separated |
+
+What they have in common, in words. Each is **one connected graph made of
+ten small cliques — the products, 4 to 10 customers each — glued together at
+a few hub customers, with a fringe of customers that belong to one or two
+products only.** The hubs are the customers in four to six products (one to
+four of the twenty); the fringe is the 2–11 customers in exactly one product,
+which are simplicial vertices whose whole neighbourhood is that product's
+clique. The clique bound never exceeds the largest product (trivial = clique
+in all ten), so no two products overlap enough to form a larger clique; the
+expansion bound never exceeds the contraction bound except once, by one; and
+`bw_rcm + 1` is 4 to 6 above the optimum, so the bandwidth heuristic is no
+help either. On eight of the ten the pathwidth provably exceeds the treewidth
+— Warwick 871 is the cleanest: ten 4-cliques on twenty customers, eleven of
+them in a single product, treewidth exactly 3 (a K4 forces ≥ 3, min-fill
+gives ≤ 3), pathwidth 5. That is the structure of a *tree of cliques with
+branching*: the treewidth of a tree of cliques is the largest clique minus
+one, which every degree-based bound sees, while the pathwidth grows with how
+many branches must be held open at once when the tree is swept from one end
+to the other, which none of them sees. The two not separated by the
+heuristic (HS 590 and Warwick 955, the only one with no fringe and degrees
+10–16) may still have `pw > tw`; the 200-restart heuristic could not show
+it. The gap of exactly 2 is the smallest a gap ≥ 2 instance can have; at
+this size the family is a one-in-fifty event (13 of 710 in the 20×10 cell,
+where tight instances have mean MOSP-graph density 0.86 and degree
+coefficient of variation 0.12 against 0.51 and 0.32 for the gap ≥ 2 ones).
+
+**Finding.** The instances the proved bound misses by two or more are
+sparse, connected, degree-dispersed MOSP graphs at the low-density end of
+each generator's range — trees of cliques with branching, glued at hub
+customers and fringed with single-product customers — and the reason the
+bound misses them is structural, not statistical: three of its four
+components are lower bounds on treewidth, and on 131 of the 338 (and on 8 of
+the 10 smallest) the pathwidth is certifiably larger than the treewidth, so
+those components could not be tight under any tie-break or budget. A
+depth-3 tree on size-free features reads that description off the table
+("connected and sparse, or dense with a low-degree customer") and separates
+gap ≥ 2 from tight at AUC 0.931 within fixed `(n, m)` cells against 0.849
+for density and size; the EBM reaches 0.971 with average precision 0.81
+against 0.54. The lower bounds themselves add nothing to the classifier. The
+only component that can exceed the treewidth ceiling is the expansion bound,
+which is a pathwidth argument, and it did so on 36 instances; if the bound
+work is ever resumed, that is the family to strengthen, and the clique and
+degree families are provably the wrong place (§5 said the same about
+degree statistics from the residual side). This does not contradict §4 or
+§5; it explains them.
+
+**Size range covered.** 9–134 customers, 5,938 of 6,376 at n ≤ 30. Gap ≥ 2
+does not occur below 20 customers, so every statement about the gap
+instances covers 20–134 (17 instances at 20, 133 at 21–30, 101 at 31–60, 87
+at 61–134). The within-cell tables rest on eleven cells from 20×10 to
+100×100 and the per-band AUCs are in the tables above; the ten drawn
+instances are all 20×10, so the "tree of cliques" description is established
+at n = 20 and *consistent* with, not certified at, larger sizes: the
+treewidth certificate covers 44–59% of the gap ≥ 2 instances at n ≤ 60 and
+5.7% above, where min-fill is too loose to certify anything. The cluster
+statement covers all 338.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound` and
+every decision path are untouched; nothing was written to `solutions/` (the
+re-certification of the ten read the cache and re-verified it, and `git
+status solutions/` is clean); the running `benchmarks.recertify` was not
+touched. The two theorem checks in the treewidth-ceiling table are the only
+"bound" statements here and both are on record as consistency checks of
+the feature code, not as new bounds. The ten instances the description rests
+on were each re-solved and independently refuted at `optimum − 1`.
+
+**For the next loop.** §2.7 (extremal search) has its objective: maximise
+`optimum − lb_best` at n ≤ 15 starting from trees of cliques, with
+`optimum − (tw_ub + 1)` as a second objective, since a 12-customer instance
+with `pw − tw ≥ 2` and a proof of it is exactly the kind of object one can
+reason about. §2.5 should record `tw_ub` alongside the optimum on
+`G(n, m, p)` to measure how `pw − tw` scales with sparsity. And exact
+treewidth for the 207 uncertified gap ≥ 2 instances (82 of them at n ≤ 30,
+cheap with a proper treewidth solver) would turn the 38.8% floor into a
+number.

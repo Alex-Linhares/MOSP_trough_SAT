@@ -3,7 +3,7 @@
 ## Ralph Loop 0001 Status
 - **Started**: 2026-09-25
 - **Target**: 8 items
-- **Current**: 5/8 SOLVED
+- **Current**: 6/8 SOLVED
 
 ---
 
@@ -322,3 +322,93 @@ and after every process kill in this session).
 
 ---
 
+## Iteration 8 — 2026-09-25 21:40
+
+Item 06 · §2.3 Where the bounds fail. **SOLVED.** (Iteration 6 wrote
+`learning/bound_gap.py`, its tests and a full run, then ended waiting on the
+run without reading it. Its classifier tables were invalid: every model
+scored 1.000 because `learning.fingerprint.structure_columns` selects every
+numeric column that is not a bound, and the study's own label `y` and `gap`
+had been added to the frame before the selector ran — the trees split on
+`y`, and the EBM ranked `y` and `gap` as its top two terms. This iteration
+fixed it and finished the item on the committed code.)
+
+### Completed
+- `learning/bound_gap.py`: feature sets now built from `feature_names`
+  group names, never from every numeric column, and `feature_sets` raises if
+  a set holds a label (`y`, `gap`, `gap_class`, `optimum`) or an `ub_`/`bound_`
+  column; a fifth **size-free** set (32 columns: `learning.fingerprint.size_free_features`
+  plus the §4 invariants divided by their dimension) so the tree can split on
+  ratios; a **treewidth ceiling** table — trivial, clique and contraction
+  degeneracy + 1 are lower bounds on treewidth + 1 and `tw_min_fill + 1` an
+  upper bound, so `optimum > tw_min_fill + 1` certifies `pathwidth > treewidth`;
+  the module raises if either theorem is violated on the table; per-instance
+  simplicial count (customers in exactly one product) and a treewidth upper
+  bound from 200 randomised min-fill / min-degree eliminations; silhouette
+  per k for the clusters; the ten-instance summary carries the optimum and
+  whether `pw > tw`. Full run 122 s with 16 EBM workers; writes
+  `reports/bound_gap_tables.md` and `learning/data/bound_gap.csv` (git-ignored).
+- `tests/test_bound_gap.py`: 12 tests (iteration 6's nine, plus the leak
+  guard, the treewidth ceiling on a hand frame with a planted violation, and
+  the treewidth upper bound on a path, a clique and a cycle; the describe/draw
+  test extended to the simplicial count and the `pw > tw` line). Full suite:
+  753 passed, 2 skipped, 1 xfailed, 79 s.
+- `reports/ml_nature.md` §6 written.
+- Findings: gap ≥ 2 never occurs below 20 customers (17 at 11–20, 133 at
+  21–30, 101 at 31–60, 87 at 61–134; Chu & Stuckey 51%, Faggioli–Bentivoglio
+  28%, Harvey 3%, Simonis 2%). Structure beats density-and-size in every row
+  under the file ∪ class grouping — the kill criterion is not met — but the
+  margin is in average precision (tree 0.26 → 0.52, EBM 0.35 → 0.77; within
+  the eleven mixed `(n, m)` cells 0.54 → 0.81), not AUC (0.88 → 0.95 and
+  0.85 → 0.93 within cells), because a gap of two is first of all a
+  large-and-sparse phenomenon; the lower bounds add nothing to the
+  classifier (§4 from the other side). At fixed `(n, m)` the gap instances
+  are the sparser ones with more dispersed degrees (`g_deg_cv` d = +1.48,
+  `g_density` −1.52, `g_clustering` −1.47) and `rig_density_ratio` sits at
+  chance (AUC 0.505): the graph is exactly as dense as the random
+  intersection model predicts from the matrix density, so nothing about it is
+  anomalous, it is the sparsity itself. The depth-3 size-free tree reads
+  "connected and sparse (`rig_edge_prob ≤ 0.685`), or dense with a customer of
+  degree ≤ 0.4(n − 1)" and scores AUC 0.931 within cells. **The mechanism is
+  structural**: on 131 of the 338 gap ≥ 2 instances (and 315 of the 1,129
+  gap-1) pathwidth provably exceeds treewidth, so three of the four components
+  of `lb_best` could not be tight under any budget; the expansion bound, the
+  only pathwidth-specific component, is the only one above the ceiling (36
+  instances). Both theorem checks pass on all 6,376. Clusters: k = 2 by a
+  weak silhouette (0.370), sparse (201; Chu & Stuckey, Faggioli–Bentivoglio,
+  Harvey) vs dense (137; Simonis, Harvey), which is the §2 map again, so the
+  gap instances are the sparse end of each collection rather than a family
+  of their own. The ten smallest are all 20×10 (six Simonis, four Harvey),
+  all gap exactly 2, all re-certified (exact solver agrees, `optimum − 1`
+  refuted in 20–59 nodes): one connected graph of ten small cliques glued at
+  one to four hub customers with a fringe of 2–11 single-product (simplicial)
+  customers; trivial = clique in all ten, expansion = contraction in nine,
+  `pw > tw` certified on eight. Warwick 871 is the clean example: ten
+  4-cliques on twenty customers, eleven in one product, treewidth exactly 3,
+  pathwidth 5. In words, the bound-defeating family is *trees of cliques with
+  branching*: degree bounds see the clique size, the optimum sees the
+  branching.
+
+### Blockers
+None. Nothing written to `solutions/` (`git status solutions/` clean after the
+run); no solver file touched; the running `benchmarks.recertify` (12
+processes) was not touched.
+
+### Next
+- Item 07 (§2.6a, distil the closing policy): an earlier iteration 7 left
+  `learning/distil.py` committed; read it and `session_it07.log` before
+  rebuilding.
+- Every study that adds a label column to the feature frame must build its
+  feature sets from `learning.features.feature_names` (or filter explicitly),
+  not from `feature_columns`/`structure_columns`, which take every numeric
+  column. `learning.bound_gap.feature_sets` shows the guard; worth lifting
+  into `learning.fingerprint` if a third study needs it.
+- For §2.7 (extremal search, next loop): objective `optimum − lb_best` at
+  n ≤ 15 seeded from trees of cliques, with `optimum − (tw_ub + 1)` as a
+  second objective; `learning.bound_gap.treewidth_upper_bound` and
+  `describe_instance` are the primitives. For §2.5: record `tw_ub` beside the
+  optimum on `G(n, m, p)` to see how `pw − tw` scales with sparsity. Exact
+  treewidth for the 82 uncertified gap ≥ 2 instances at n ≤ 30 would turn the
+  38.8% floor into a number.
+
+---
