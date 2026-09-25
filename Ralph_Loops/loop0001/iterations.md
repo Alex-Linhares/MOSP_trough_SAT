@@ -42,7 +42,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       as `python -m learning.policy evaluate`, sampled if 3 minutes is exceeded).
       Test two direct hypotheses: closing in Fiedler-vector order, and BFS-layer
       order from a minimum-degree root. Deliverable: the best readable rule.
-- [ ] 08 · §2.6b **Degeneracy of the optimum.** For every corpus instance with
+- [x] 08 · §2.6b **Degeneracy of the optimum.** For every corpus instance with
       n_customers ≤ 12 (and a sample of generated ones), enumerate all closing
       orders achieving the optimum by exhaustive search; report the count's
       distribution against n and density, and the fraction of instances whose

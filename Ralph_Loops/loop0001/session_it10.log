@@ -1,0 +1,110 @@
+# session it10 started 2026-09-25 22:20:30
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan (§0, §4, §2.6b), the existing study pattern, and the search primitives, then build `learning/degeneracy.py`.
+  > $ date && grep -n "^## \|^### \|2.6" reports/ml_nature_plan.md | head -60
+  > $ sed -n 11,44p reports/ml_nature_plan.md && echo ------ && sed -n 165,186p reports/ml_nature_plan.md && echo ------ && sed -n 256,300p reports/ml_nature_plan.md
+  > $ ls learning/ tests/ && wc -l learning/*.py && sed -n 1,80p learning/distil.py
+  > $ cat mosp/verify.py | head -120; echo ------DATASET; sed -n 1,167p learning/dataset.py
+  > $ sed -n 1,120p satisfiability/customer_search.py; echo -----POLICY; grep -n "^def \|^class " learning/policy.py; echo -----; grep -n "def product_order_from_cust
+  > $ grep -n "def _neighbour_masks" -A 25 satisfiability/heuristics.py; echo ----PO; grep -n "def product_order_from_customers" -A 30 satisfiability/heuristics.py; e
+
+I've read the plan and the primitives. Now I need the report's section format, the test style, the generator API, and how many corpus instances have n ≤ 12, before designing the enumeration.
+  > $ grep -n "^## \|^### " reports/ml_nature.md | tail -20; echo ----TAIL; tail -60 reports/ml_nature.md; echo ----TESTSTYLE; sed -n 1,60p tests/test_node_counts.py;
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/memory/always-persist-solver-solutions.md; echo ----GEN; sed -n 22,66p benchmarks/generator.py; echo ----CO; gre
+  > $ python -c "
+import pandas as pd; f=pd.read_csv('learning/data/instances.csv'); s=f[f.n_customers<=20]
+print(s.groupby(['n_customers','n_patterns']).size().to_st
+  > $ grep -n "def _customer_order_from_products" -A 22 satisfiability/heuristics.py; echo ----; grep -n "^def \|^    def " mosp/instance.py | head -30; echo ----; se
+  > $ cat > learning/degeneracy.py <<'EOF'
+"""How degenerate is the optimum? Counting every optimal ordering exactly (plan §2.6b)
+
+Question. `learning.policy` imitate
+
+Fixing a leftover expression in the tables writer, then brute-force checking the three lattices against permutation enumeration on random small instances.
+  > $ python - <<'EOF'
+import re
+p="learning/degeneracy.py"; s=open(p).read()
+s=s.replace('_md(degeneracy_by(gen, ["n", "gen_p"], ["n", "p"]) if False else _two_key(g
+  > $ pgrep -f benchmarks.recertify | wc -l && timeout 600 python -m learning.degeneracy --limit 60 --generated 1 --workers 8 --csv /tmp/deg_smoke.csv --out /tmp/deg_
+
+The smoke run passes every audit, including |Aut(G)| dividing the search-measure count on all 60. Launching the full run in the background now, and reading the rest of the smoke tables while it runs.
+  > $ nohup python -m learning.degeneracy --workers 16 > /tmp/degeneracy_full.log 2>&1 &
+echo started $!
+  > $ sed -n 60,140p /tmp/deg_smoke.md
+
+Smoke tables all render, and the imitation ceiling near 0.43 at n = 10 already lines up with §7's 45% ranker imitation rate. Now writing the tests while the full run continues.
+  > $ cat > tests/test_degeneracy.py <<'EOF'
+"""Exact counts of optimal orderings (plan §2.6b, `learning.degeneracy`).
+
+The three lattice counts are checked by hand o
+
+Tests pass and the full run is two-thirds through the corpus in under a minute. I'll tidy two clumsy assertions, then wait for the run and read its tables.
+  > $ python - <<'EOF'
+p="tests/test_degeneracy.py"; s=open(p).read()
+s=s.replace('    assert row["unique_products"] is True or row["unique_products"] == True  # noqa
+  > $ cat reports/degeneracy_tables.md; echo ----DISTIL; head -1 learning/data/distil.csv | cut -c1-600; python -c "
+import pandas as pd; d=pd.read_csv('learning/data
+  > $ sed -n 20,75p reports/degeneracy_tables.md
+  > $ sed -n 75,200p reports/degeneracy_tables.md | cut -c1-400; echo ======EXTRA; python - <<'EOF'
+import pandas as pd, numpy as np
+from scipy.stats import spearmanr
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/dec266e6-6179-4276-aeb1-1b2d1d4d29a0/tool-results/btcvgkl01.txt; sed -n '/======EXTRA/,$p' $F | cut -c1-330
+  > $ date; F=/home/al/.claude/projects/-home-al-dev-MOSP/dec266e6-6179-4276-aeb1-1b2d1d4d29a0/tool-results/btcvgkl01.txt; sed -n '/^## Imitation/,/^## Generated/p' $
+  > $ python - <<'EOF'
+p="learning/degeneracy.py"; s=open(p).read()
+
+# 1. aut_order rounding
+s = s.replace('''        has = frame.aut_order.notna() & (frame.source ==
+  > $ for i in $(seq 1 60); do if ! kill -0 3305323 2>/dev/null && ! kill -0 3305324 2>/dev/null; then break; fi; sleep 5; done; tail -2 /tmp/degeneracy_full.log; tai
+  > $ kill -0 3305323 2>/dev/null && echo study-running || echo study-done; kill -0 3305324 2>/dev/null && echo pytest-running || echo pytest-done; tail -2 /tmp/degen
+
+The study finished. Now I need the new columns from the rerun and the §7 comparison table, none of which depend on the test suite still running.
+  > $ git status --short solutions/ | head -3; pgrep -f benchmarks.recertify | wc -l; echo ====AUDIT; sed -n '/^## Audit/,/^## Closing/p' reports/degeneracy_tables.md
+  > $ python - <<'EOF'
+p="learning/degeneracy.py"; s=open(p).read()
+s = s.replace('''    steps = joined.witness_steps
+    rows = []
+    for col in cols:
+        rate 
+
+Full suite passes (776 passed, 2 skipped, 1 xfailed). Now pulling the final generated-sample and example tables so the report quotes the rerun's numbers.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv("learning/data/degeneracy.csv"); c=d[d.source=="corpus"]; g=d[d.source=="generated"]; nc=c[~c.co
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv("learning/data/degeneracy.csv"); c=d[d.source=="corpus"]; g=d[d.source=="generated"]; nc=c[~c.co
+
+I have all the numbers. Next I need the §7 section's opening lines to match the report's structure, then I'll write §8, PROGRESS.md and iterations.md.
+  > $ sed -n 1467,1500p reports/ml_nature.md | cut -c1-200; echo; grep -n "^\*\*Regenerate\|^Regenerate\|regenerate" reports/ml_nature.md | tail -5; wc -l reports/ml_
+
+All independent now, so in this response I'll append §8 to the report, append the iteration entry to PROGRESS.md with the status line updated, and mark item 08 done in iterations.md.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 8. Degeneracy of the optimum: how many orderings are optimal? (§2.6b)
+
+*Iteration 10, 2026-09-25. Code: `learning/degene
+
+Everything is written. Final sanity checks: the degeneracy tests after the last edits, and confirmation that `solutions/` is untouched.
+  > $ python -m pytest tests/test_degeneracy.py -q 2>&1 | tail -1; git status --short solutions/ | wc -l; grep -n "^## 8\." reports/ml_nature.md; pgrep -f benchmarks.
+
+Item 08 is done and the loop is complete. Nothing further is needed from the environment.
+
+**Outcome.** Item 08 (§2.6b, degeneracy of the optimum) is solved, marked `[x]` in `iterations.md`, PROGRESS.md carries the Iteration 10 entry with the status line at 8/8 and the `LOOP_COMPLETE` line. Nothing was committed, nothing was written to `solutions/`, and the recertify processes were not touched.
+
+**What was built.**
+- `learning/degeneracy.py` counts, exactly, the optimal closing orders under the construction value, the optimal closing orders under Chu & Stuckey's search measure, and the optimal product orders for m ≤ 20, all by path counting over subset lattices rather than enumerating permutations. Each lattice minimum audits the certified optimum. It also computes the number of optimal choices at every step of each witness and the resulting step-accuracy ceiling for imitation. Full run takes 93 s on 16 workers.
+- `tests/test_degeneracy.py` has 12 tests, including a hand-checked three-customer path and six brute-force comparisons. Full suite: 776 passed, 2 skipped, 1 xfailed.
+- `reports/ml_nature.md` §8 and `reports/degeneracy_tables.md` hold the findings and tables.
+
+**Findings.**
+- The optimum is never unique. Zero of 2,812 corpus instances at 9–15 customers have a unique optimal closing order even up to twins, and zero of 2,138 have a unique product order up to identical columns and reversal. The least degenerate instance has 156 optimal closing orders; typical non-complete instances have about 10⁵ at n = 10 and 10¹⁰ at n = 15.
+- Degeneracy tracks optimum/n and density, not the bound gap. The closer the optimum is to n, the larger the share of orders that achieve it, reaching all n! at complete graphs.
+- For imitation, an optimal-but-indifferent policy can match the stored witness at only about 30–38% of steps. Every policy §7 measured sits well above that on the 774 shared instances, so their step agreement reflects the solver's tie-breaks rather than optimality. That explains §7's inverse relation between imitation rate and construction value, and means future imitation objectives must be set-valued or use construction value directly.
+- All audits passed on every instance, so nothing needed re-certification.
+
+**Coverage caveat.** The counts cover 8–15 customers only. The n = 20 band is reachable for the search measure by vectorising in numpy; that and witness-path choice counts at larger sizes are recorded as next steps in PROGRESS.md.
+
+# result: success in 1199s, 33 turns, cost $6.84

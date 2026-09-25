@@ -3,7 +3,7 @@
 ## Ralph Loop 0001 Status
 - **Started**: 2026-09-25
 - **Target**: 8 items
-- **Current**: 7/8 SOLVED
+- **Current**: 8/8 SOLVED
 
 ---
 
@@ -499,3 +499,85 @@ was killed by PID.
   every leaf, so print leaf probabilities.
 
 ---
+## Iteration 10 — 2026-09-25 22:55
+
+Item 08 · §2.6b Degeneracy of the optimum. **SOLVED.**
+
+### Completed
+- `learning/degeneracy.py`: three exact counts per instance by path counting
+  over subset lattices — optimal closing orders under the construction value
+  (the space `learning.policy` builds and is scored in; block simulation per
+  `(S, c)` edge), optimal closing orders under Chu & Stuckey's search measure,
+  and optimal product orders over the `2^m` lattice in numpy (m ≤ 20); each
+  lattice's bottleneck minimum audits the certified optimum and the module
+  raises on disagreement. Symmetries divided out: twins (identical rows),
+  identical columns and reversal, `|Aut(G)|` from `canonical.csv` (rounded
+  first: the CSV holds 15! as 1307674367999.9998). Per-step optimal-choice
+  counts along every witness and over all optimal orders, the step-accuracy
+  ceiling `mean(1/choices)`, the reversed witness's optimality, and a join
+  against §7's per-instance imitation rates. Corpus n ≤ 15 (2,812) plus 256
+  generated `G(n, m, p)` solved into `learning/data/degeneracy_solutions/`
+  (never `solutions/`). 93 s on 16 workers; `--tables-only` rebuilds the
+  tables from the CSV. Writes `reports/degeneracy_tables.md` and
+  `learning/data/degeneracy.csv` (git-ignored).
+- `tests/test_degeneracy.py`: 12 tests — a hand-checked three-customer path
+  (6 optimal closing orders, 4 under the search measure which over-charges
+  closing the middle customer first, 2 product orders so unique up to
+  reversal, witness choices [3, 2, 1], ceiling 11/18), a complete graph, twins
+  and empty rows/columns, a planted wrong optimum failing the audit, six
+  brute-force permutation comparisons of all three lattices, and the table
+  writer. Full suite: 776 passed, 2 skipped, 1 xfailed (146 s with the study
+  running beside it).
+- `reports/ml_nature.md` §8 written. No new dependencies.
+- Findings: the optimum is never unique — 0 of 2,812 instances have a unique
+  optimal closing order even up to twins, 0 of 2,138 a unique product order up
+  to identical columns and reversal; the least degenerate corpus instance
+  (`Warwick 128`, 10×20, optimum 3) has 156 optimal closing orders of 3.6 M
+  and 4,320 product orders up to symmetry; non-complete medians are 4.0 × 10⁵
+  closing orders at n = 10 (11% of 10!) and 2.5 × 10¹⁰ at n = 15 (1.9%);
+  1,090 complete graphs and four 10×40 instances with optimum 9 have every
+  order optimal. The share tracks `optimum / n` (Spearman +0.70; +0.87 within
+  n = 15) and density (+0.60), not the bound gap (+0.02). The search measure
+  under-counts on 62% of non-complete instances (median ratio 0.75, p10
+  0.048). Reversal preserves witness optimality on 17% of non-complete
+  instances in the closing space. Imitation: 4–6 optimal choices per witness
+  step, one step in ten forced, step-accuracy ceiling 0.30–0.38 for an
+  optimal-but-indifferent policy; every §7 policy sits far above it on the
+  774 shared instances (ranker 0.48, MCN 0.59, rules 0.62–0.63 vs 0.32), so
+  step agreement above ~0.3 measures reproduction of the solver's tie-breaks,
+  which explains §7's inverse relation between imitation rate and
+  construction value. Generated sample agrees (non-complete pooled ceiling
+  0.37); p = 0.5 yields complete graphs on 56–81% of instances at n ≥ 10.
+- All audits passed (lattice minima = certified optimum on 2,812 + 2,138 +
+  256; every witness constructs to its optimum and is search-optimal; twin
+  factor and |Aut(G)| divide their counts everywhere), so nothing was
+  re-certified.
+
+### Blockers
+None. Nothing written to `solutions/` (`git status solutions/` clean after
+every run); no solver file touched; the running `benchmarks.recertify` was not
+touched; every background process this session started was its own and
+finished on its own.
+
+### Next
+- This was the last item of loop0001. For the loop's owner and the next loop:
+  - the n = 20 corpus band (1,298 instances) is reachable for the search
+    measure by vectorising `closing_weights`'s first branch in numpy over the
+    `2^20` lattice; the construction measure needs the block simulation and
+    is the harder port;
+  - at 50–125 customers the counts are not enumerable but the witness-path
+    choice counts are (backward counts restricted to the witness's prefixes
+    via a bounded search), which is the measurement that would say whether
+    the ceiling stays near 0.3 at the sizes that matter;
+  - any future imitation study should score a step as right when it lands in
+    `learning.degeneracy.optimal_choices`, or score construction value only,
+    never single-witness step agreement;
+  - the §2.9 question (same graph, different clique cover) has a new
+    quantity: `count_closing` differs between matrix classes of one graph
+    class only through the construction's product order, while
+    `count_search` is a graph invariant.
+- Method note: `pandas` reads 15! from CSV as a float one ulp short; round
+  before integer division whenever `aut_order` is used.
+
+---
+LOOP_COMPLETE

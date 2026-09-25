@@ -53,3 +53,8 @@
 [2026-09-25 21:37:34] claude session it09 (cap 3.00 h) -> session_it09.log
 [2026-09-25 22:19:13] session it09: ok (exit 0, 44 tool calls)
 [2026-09-25 22:20:30] tests passed: 764 passed, 2 skipped, 1 xfailed, 147 warnings in 76.46s (0:01:16)
+[2026-09-25 22:20:30] committed 1c90bcc: 07 · §2.6a Distil the closing policy. Fit a depth-3 tree and a linear
+[2026-09-25 22:20:30] === iteration 10: 08 · §2.6b Degeneracy of the optimum. For every corpus instance with
+[2026-09-25 22:20:30] claude session it10 (cap 3.00 h) -> session_it10.log
+[2026-09-25 22:40:30] session it10: ok (exit 0, 32 tool calls)
+[2026-09-25 22:41:47] tests passed: 776 passed, 2 skipped, 1 xfailed, 147 warnings in 76.74s (0:01:16)

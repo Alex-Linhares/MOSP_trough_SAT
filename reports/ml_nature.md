@@ -1717,3 +1717,192 @@ first should reach the optimum sooner; `restricted_dfs` orders its fan
 cheapest-first with ties by customer index (`scored.sort()` on `(cost,
 customer, ...)`), and `learning.node_counts.refute` is the primitive to
 measure it with.
+
+## 8. Degeneracy of the optimum: how many orderings are optimal? (§2.6b)
+
+*Iteration 10, 2026-09-25. Code: `learning/degeneracy.py`. Regenerate:*
+
+```bash
+python -m learning.degeneracy --workers 16          # ~90 s; corpus n ≤ 15 and 256 generated
+python -m learning.degeneracy --tables-only         # the tables again from learning/data/degeneracy.csv
+python -m pytest tests/test_degeneracy.py -q
+```
+
+*Writes `reports/degeneracy_tables.md` (every table below in full) and
+`learning/data/degeneracy.csv` (git-ignored; one row per instance with every
+count). The generated instances' witnesses are persisted under
+`learning/data/degeneracy_solutions/`, never under `solutions/`; no solver file
+is touched.*
+
+**Question.** `learning/policy.py` imitates "the" witness of each certified
+instance, and §7 found a ranker imitating 45% of witness decisions beating a
+rule imitating 62%. That is only possible if many closing orders are optimal
+and the one in `solutions/` is an arbitrary member. How many are there, how
+does the count depend on size and density, is the optimum ever unique up to
+reversal, and what does that imply for imitation?
+
+**Method.** Three exact counts per instance, each a path count through the
+subset lattice rather than an enumeration of permutations, so the counts are
+exact where `n!` and `m!` are not enumerable: (i) **closing orders,
+construction value** — permutations of the customers whose product order,
+built by `product_order_from_customers` exactly as `learning.policy` builds
+it, simulates on the original instance to the optimum; the cost of closing
+`c` from the closed set `S` depends on `(S, c)` only, by simulating the block
+of `c`'s unproduced products; (ii) **closing orders, search measure** — the
+same under Chu & Stuckey's `max_i |O(S_i) − S_{i−1}|`, which the complete
+search branches on and which over-charges orders that place an already
+finished customer late; (iii) **product orders** — permutations of the
+products with open-stack peak equal to the optimum, over the `2^m` lattice of
+produced sets in numpy, for `m ≤ 20`. Each lattice's bottleneck minimum is a
+free audit of the certified optimum. Reversal is a symmetry only of (iii): it
+reverses the open-stack profile, so the count is even and "unique up to
+reversal" means two orders after dividing by the factorials of identical
+columns; (i) is divided by the factorials of identical rows (twins), (ii) by
+`|Aut(G)|` from `learning/data/canonical.csv`, on which the automorphism group
+acts freely. Along every witness's induced closing order the module counts,
+at every step, the number of remaining customers that begin an optimal
+completion (`choices`); `mean(1 / choices)` is the **step-accuracy ceiling** of
+a policy that is optimal at every step but indifferent among optimal moves,
+and the same statistic is computed over all optimal orders weighted by how
+many pass through each state. Brute-force permutation enumeration agrees with
+all three lattices on 40 random instances up to 7 × 7 (`tests/test_degeneracy.py`
+carries six of them and a hand-checked path). Coverage: every corpus instance
+with `n ≤ 15` — 2,812 instances, of which 1,614 have `n ≤ 12` as the item
+asked (10 at n = 9, 1,604 at n = 10) and 1,198 have 13–15; 1,116 MOSP-graph
+classes, 579 at n ≤ 12 — plus 256 generated `G(n, m, p)` instances at
+n ∈ {8, 10, 12, 15}, m ∈ {n, 2n}, p ∈ {0.1, 0.2, 0.3, 0.5}, 8 seeds each,
+solved with `solve_mosp_exact` into a separate solutions directory and checked
+against the lattice minimum. 93 s on 16 workers, 2.3 s for the slowest instance.
+
+**Baseline.** The trivial answer would be that the optimum is essentially
+unique — one ordering up to reversal and twins — which is what imitating a
+single witness implicitly assumes.
+
+### Audit
+
+Every check passed on every instance: 2,812 of 2,812 construction minima and
+search-measure minima equal the certified optimum, 2,138 of 2,138 product-order
+minima (all instances with m ≤ 20), every witness re-simulates to its value,
+every witness's induced closing order constructs to the optimum *and* is
+optimal under the search measure, the twin factor divides every construction
+count, `|Aut(G)|` divides every search-measure count (the CSV stores 15! as
+1307674367999.9998, which is rounded before dividing), and on the 256
+generated instances the solver's optimum equals the lattice minimum every
+time. Nothing needed re-certification.
+
+### How many optimal orders (corpus, complete graphs excluded)
+
+| n | instances | optimal closing orders, median (p10–p90) | share of n! (median) | optimal product orders up to columns and reversal, median | share of m! (median) |
+|---|---|---|---|---|---|
+| 9 | 10 | 5.3 × 10⁴ (3.6 × 10³ – 8.0 × 10⁴) | 14.7% | 1.5 × 10⁴ | 1.0 × 10⁻² |
+| 10 | 961 | 4.0 × 10⁵ (2.0 × 10⁴ – 1.7 × 10⁶) | 11.1% | 2.0 × 10⁵ (848 with m ≤ 20) | 2.8 × 10⁻³ |
+| 13–14 | 4 | 3.1 × 10⁷ – 1.2 × 10⁹ | 0.5–1.4% | 720 – 2.9 × 10³ | 10⁻⁴ – 10⁻⁶ |
+| 15 | 747 | 2.5 × 10¹⁰ (3.1 × 10⁸ – 3.5 × 10¹¹) | 1.9% | 2.9 × 10⁸ (506 with m = 15) | 4.6 × 10⁻⁴ |
+
+**No instance has a unique optimum.** Zero of 2,812 have a unique optimal
+closing order even after dividing out twins, and zero of 2,138 have a unique
+optimal product order up to identical columns and reversal. The least
+degenerate instance in the corpus is `Warwick 128` (10 × 20, optimum 3): 156
+of its 3,628,800 closing orders are optimal — 24 under the search measure —
+and 4,320 product orders up to symmetry. The next five least degenerate all
+have 180–648 optimal closing orders and are the sparsest instances of their
+size (Warwick "2 orders per product", HS at density 0.20, NWRS2). At the other
+end, four Faggioli–Bentivoglio 10 × 40 instances with optimum 9 have every one
+of the 10! closing orders optimal without being complete graphs, and the 1,090
+complete graphs (40% of the n = 10 instances, 37% of the n = 15) trivially
+have every order optimal. Among 1,116 graph classes the picture is the same
+(median 1.8 × 10⁵ orders at n = 10, 8.6 × 10⁹ at n = 15), so it is not the
+duplicated files of §1 speaking.
+
+**The share of optimal orders tracks how close the optimum is to n.** Over the
+1,722 non-complete instances, Spearman of the log share of optimal closing
+orders with `optimum / n` is +0.70 (+0.73 within n = 10, +0.87 within n = 15),
+with matrix density +0.60, with degree dispersion `g_deg_std` −0.43, with n
+−0.33, and with the bound gap `optimum − lb_best` +0.02: how degenerate the
+optimum is has nothing to do with how hard it is to prove. By density band the
+median share of optimal closing orders is 10⁻³·⁷ below 0.15, 10⁻¹·⁹ at
+0.15–0.30, 10⁻⁰·⁹ at 0.30–0.50 and 10⁻⁰·⁷ above 0.5. The *count* grows with n
+faster than the share shrinks: at p = 0.1 the generated instances go from a
+45% share at n = 8 to 0.3% at n = 15 while the count goes from 1.8 × 10⁴ to
+3.8 × 10⁹. Twice as many products as customers roughly quarters the share
+(median 3.7% against 13.7%) and p = 0.5 gives complete graphs on 56–81% of the
+generated instances at n ≥ 10, so `G(n, m, p)` at that density is a poor test
+of anything.
+
+**The search measure sees fewer of them.** Under Chu & Stuckey's measure the
+count is smaller on 1,069 of the 1,722 non-complete instances, median ratio
+0.75 and a tenth of instances below 0.048: the complete search over-charges up
+to 95% of the optimal closing orders, all of which are still reachable through
+some order it does not over-charge (the minimum is right every time). Reversal
+is not a symmetry of closing orders: the reversed witness closing order is
+optimal on 16.7% of the non-complete instances (22% at n = 10, 10% at n = 15),
+against 100% in the product space where it is a theorem.
+
+### Imitation
+
+| n (non-complete) | optimal choices per witness step | forced steps | step-accuracy ceiling (witness path) | ceiling (all optimal orders) |
+|---|---|---|---|---|
+| 9 | 3.44 | 16.7% | 0.410 | 0.392 |
+| 10 | 4.07 | 14.2% | 0.376 | 0.354 |
+| 15 | 5.86 | 9.8% | 0.295 | 0.275 |
+| all 2,812 (complete included) | 5.53 | 10.5% | 0.303 | 0.297 |
+
+At a typical step of a witness closing order at n = 15, six of the remaining
+customers can be closed next and still finish optimally; only one step in ten
+is forced. A policy that is optimal at every step and indifferent among
+optimal moves therefore agrees with the stored witness at 30–38% of steps, and
+the witness path is no more constrained than a typical optimal order (the
+all-orders ceiling is 0.02 lower). Joined with §7's per-instance rates on the
+774 held-out instances the two studies share at n ≤ 15:
+
+| policy (§7) | imitation rate | ceiling | above the ceiling on |
+|---|---|---|---|
+| LightGBM ranker | 0.483 | 0.316 | 83% of instances |
+| MCN | 0.589 | 0.316 | 90% |
+| fewest new stacks | 0.629 | 0.316 | 95% |
+| fewest new, then most neighbours | 0.616 | 0.316 | 94% |
+
+Every policy §7 measured agrees with the witness far *more* often than an
+optimal-but-indifferent policy could. That excess is not optimality — it is
+agreement with the tie-breaks of the procedure that produced the witness,
+which is a cheapest-first DFS seeded by MCN with index ties. MCN, which
+constructs worst, imitates second best; the ranker, trained on step agreement,
+imitates worst of the four and constructs better than MCN because it learned
+the witness's *value* structure imperfectly and its tie-breaks not at all.
+This is the mechanism behind §7's inverse relation between imitation rate and
+construction value.
+
+**Finding.** The optimum of MOSP is massively degenerate at every size and
+density measured: never unique, at least 156 optimal closing orders on every
+corpus instance up to 15 customers, typically 10⁵ at n = 10 and 10¹⁰ at
+n = 15, and never a unique product order up to reversal. Degeneracy grows with
+density and with `optimum / n`, reaching all `n!` orders at complete graphs
+and on some instances with optimum n − 1, and is unrelated to how far the
+proved bounds sit from the optimum. For imitation this settles the question
+§7 raised: a saved witness is one of 10⁵–10¹¹ equally good orders, step-level
+agreement with it has a ceiling near 0.3 for any policy that does not know the
+solver's tie-breaks, and every rate above that measures reproduction of the
+seeding heuristic's order rather than of optimality. An imitation objective
+has to be set-valued — a step is right if it lands in the optimal-continuation
+set, which this module computes exactly for n ≤ 15 (`lattice_counts` gives the
+backward counts, `optimal_choices` the set) — or has to be the construction
+value itself, as §7 already concluded from the other direction. The 2.27 M
+decisions `learning/policy.py` trains on are therefore about 90% arbitrary
+choices among several optimal ones, labelled as if the solver's pick were the
+only right answer.
+
+**Size range covered.** Corpus 9–15 customers (1,614 instances at n ≤ 12,
+1,198 at 13–15; product-order counts where m ≤ 20, which excludes the n = 15
+instances with 25 or 30 products), generated 8–15. Nothing above 15: the
+`2^n` lattice with block simulation is pure Python and 15 is where it stops
+being cheap; the search-measure lattice vectorises and would reach the 1,298
+instances at n = 20 in numpy, which is the natural next step if the trend
+with n needs a fourth point. Whether the degeneracy persists at 50–125
+customers is not measured and the counts there are not enumerable; the
+witness-path choices are, by the backward count restricted to the witness's
+own prefixes, and that is the measurement to make.
+
+**Not a bound, not a solver change.** Nothing here touches `_lower_bound` or
+any decision path; no default changed; nothing was written to `solutions/`
+(`git status solutions/` clean after every run); the running
+`benchmarks.recertify` was not touched.
