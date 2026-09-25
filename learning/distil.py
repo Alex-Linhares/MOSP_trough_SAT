@@ -6,11 +6,20 @@ greedily, cuts MCN's error over the optimum by two thirds. The ranker is
 opaque. This module asks how much of that gain survives in a rule a person can
 read and try to prove:
 
-  * a depth-3 decision tree and a linear scorer fitted to the same decisions;
-  * every lexicographic rule of depth <= 2 over the per-candidate features
+  * a depth-3 decision tree and a linear scorer fitted to the same decisions
+    (`tree`, `linear`), and the same two fitted instead to the ranker's own
+    scores on those rows (`tree-fid`, `linear-fid`), which is distillation in
+    the strict sense -- imitating the model rather than the witness;
+  * every lexicographic rule of depth <= 3 over the per-candidate features
     (`remaining_degree`, `newly_opened`, `already_open`, `total_degree`,
     `patterns`, each in either direction), MCN's own key as the final
     tie-break -- so MCN itself is the empty rule;
+  * two fixed rules named in every table (`HYPOTHESES`): "open the fewest new
+    stacks", which is the cheapest-first order Chu & Stuckey's `ub_MOSP` DFS
+    expands candidates in, followed greedily -- so it is that search's first
+    leaf -- and the same with the largest remaining degree breaking ties; the
+    second also seeds `restricted_dfs` (`cs-dfs+rule`) beside the MCN seed
+    (`cs-dfs`) and the ranker's order (`cs-dfs+lgbm`), 200,000 nodes each;
   * two static hypotheses from the plan: closing in Fiedler-vector order of the
     MOSP graph, and in BFS layers from a minimum-degree root (Cuthill--McKee,
     which is the ordering behind the `bw_rcm` invariant of §4); plus min-degree
@@ -21,7 +30,10 @@ Method. The protocol of `python -m learning.policy evaluate`: five folds
 grouped by source file with the same seed, up to `--per-fold` held-out
 instances per fold, every construction turned into a product order with
 `product_order_from_customers` and *simulated* on the original instance with
-`mosp.verify.max_open_stacks`. Models are fitted per fold on the training
+`mosp.verify.max_open_stacks`. MCN here is `least_cost_node`'s key exactly --
+remaining degree, then products not yet produced, then index -- and the table
+reports how often the two constructions disagree (`mcn-ref`), which should be
+never. Models are fitted per fold on the training
 files' decision rows. Lexicographic rules are *selected* on a sample of
 training instances and scored held out, so the "best rule" number is honest;
 the full table over the held-out sample is descriptive and says so. The
@@ -43,8 +55,15 @@ Not a bound, not a solver change: nothing here touches `_lower_bound`, no
 default changes, nothing is written to `solutions/`.
 
 Run:
-    python -m learning.distil                    # ~4 min on 16 workers
+    python -m learning.distil                    # ~15 min on 16 workers
+    python -m learning.distil --lex-depth 2      # ~3 min
     python -m learning.distil --per-fold 100     # a quick look
+
+The worker pool uses the `spawn` start method on purpose: forking after the
+parent has fitted a LightGBM model deadlocks the children in libgomp the first
+time they predict (the first run of this module sat for fifteen minutes on
+eight sleeping workers). Models travel to the workers pickled, the booster as
+its string form.
 
 Writes `reports/distil_tables.md` and `learning/data/distil.csv`.
 """
@@ -80,7 +99,8 @@ DATA_OUT = Path("learning/data/distil.csv")
 SIZE_BANDS = ((1, 30), (31, 60), (61, 200))
 
 # Per-candidate columns: the eight step features, then two the hand rules use
-# for tie-breaking (MCN breaks ties by product count, then index).
+# for tie-breaking: `patterns` is the number of the candidate's products not yet
+# produced, which is MCN's second key (`least_cost_node`), then the index.
 AUX_NAMES = ["patterns", "index"]
 COLUMNS = STEP_FEATURE_NAMES + AUX_NAMES
 COL = {name: i for i, name in enumerate(COLUMNS)}
@@ -93,6 +113,18 @@ DISCRIMINATING = ["remaining_degree", "newly_opened", "already_open",
 # MCN's key, minimised: remaining degree, then product count, then index.
 MCN_KEY = ("remaining_degree", "patterns", "index")
 
+# Two fixed rules reported by name in every table, whatever the selection
+# picks: "open the fewest new stacks" -- the cheapest-first order Chu &
+# Stuckey's `ub_MOSP` DFS expands candidates in, followed greedily -- and the
+# same with the largest remaining degree breaking ties. They are named here so
+# their step-level agreement and DFS-seeded values are computed; their
+# held-out numbers are descriptive (the honest selected row is `lex-selected`).
+HYPOTHESIS_RULE = "lex:min newly_opened,max remaining_degree"   # seeds `cs-dfs+rule`
+HYPOTHESES: dict[str, list[tuple[str, int]]] = {
+    "lex:min newly_opened": [("newly_opened", 1)],
+    "lex:min newly_opened,max remaining_degree": [("newly_opened", 1), ("remaining_degree", -1)],
+}
+
 
 # -------------------------------------------------------
 # Greedy construction under a key
@@ -104,10 +136,25 @@ matrix of key columns; the candidate minimising them lexicographically closes
 next (first column most significant)."""
 
 
-def candidate_matrix(masks: Sequence[int], n: int, patterns: Sequence[int],
-                     closed: int, opened: int, candidates: Sequence[int]) -> np.ndarray:
+def _pattern_masks(instance: MOSPInstance) -> list[int]:
+    """Bitmask over products of each customer's patterns."""
+    out = []
+    for c in range(instance.n_customers):
+        m = 0
+        for p in instance.customer_patterns(c):
+            m |= 1 << p
+        out.append(m)
+    return out
+
+
+def candidate_matrix(masks: Sequence[int], n: int, pmasks: Sequence[int],
+                     closed: int, opened: int, produced: int,
+                     candidates: Sequence[int]) -> np.ndarray:
+    """One row per candidate: the eight step features, then the number of its
+    products not yet produced and its index."""
     return np.array(
-        [step_features(masks, n, closed, opened, c) + [float(patterns[c]), float(c)]
+        [step_features(masks, n, closed, opened, c)
+         + [float((pmasks[c] & ~produced).bit_count()), float(c)]
          for c in candidates],
         dtype=np.float64,
     )
@@ -124,16 +171,17 @@ def greedy_closing_order(instance: MOSPInstance, key_fn: KeyFn) -> list[int]:
     """Close, at every step, the candidate with the smallest key."""
     masks = _neighbour_masks(instance)
     n = instance.n_customers
-    patterns = [len(instance.customer_patterns(c)) for c in range(n)]
-    closed = opened = 0
+    pmasks = _pattern_masks(instance)
+    closed = opened = produced = 0
     remaining = [c for c in range(n) if masks[c]]
     order: list[int] = []
     while remaining:
-        X = candidate_matrix(masks, n, patterns, closed, opened, remaining)
+        X = candidate_matrix(masks, n, pmasks, closed, opened, produced, remaining)
         pick = remaining[pick_min(key_fn(X))]
         order.append(pick)
         opened |= masks[pick]
         closed |= 1 << pick
+        produced |= pmasks[pick]
         remaining.remove(pick)
     return order
 
@@ -161,9 +209,10 @@ def lex_name(rule: Sequence[tuple[str, int]]) -> str:
 
 def lex_family(depth: int = 2, features: Sequence[str] = DISCRIMINATING
                ) -> list[list[tuple[str, int]]]:
-    """Every lexicographic rule of length 1..depth over distinct features,
-    each in either direction; MCN's key breaks the remaining ties."""
-    rules: list[list[tuple[str, int]]] = []
+    """Every lexicographic rule of length 0..depth over distinct features,
+    each in either direction; MCN's key breaks the remaining ties, so the
+    empty rule is MCN itself."""
+    rules: list[list[tuple[str, int]]] = [[]]   # the empty rule is MCN
     for length in range(1, depth + 1):
         for feats in itertools.permutations(features, length):
             for signs in itertools.product((1, -1), repeat=length):
@@ -277,15 +326,15 @@ def elimination_order(instance: MOSPInstance) -> list[int]:
     MCN with memory of which customers were open together."""
     masks = list(_neighbour_masks(instance))
     n = instance.n_customers
-    patterns = [len(instance.customer_patterns(c)) for c in range(n)]
+    pmasks = _pattern_masks(instance)
     remaining = {c for c in range(n) if masks[c]}
-    alive = 0
+    alive = produced = 0
     for c in remaining:
         alive |= 1 << c
     order: list[int] = []
     while remaining:
         v = min(remaining, key=lambda c: ((masks[c] & alive).bit_count() - 1,
-                                          patterns[c], c))
+                                          (pmasks[c] & ~produced).bit_count(), c))
         nb = masks[v] & alive & ~(1 << v)
         f = nb
         while f:
@@ -295,6 +344,7 @@ def elimination_order(instance: MOSPInstance) -> list[int]:
         order.append(v)
         remaining.remove(v)
         alive &= ~(1 << v)
+        produced |= pmasks[v]
     return order
 
 
@@ -349,6 +399,31 @@ def fit_linear(X: np.ndarray, y: np.ndarray, rows: int = 600_000, seed: int = 0)
     return model, scaler
 
 
+def fit_tree_to_scores(X: np.ndarray, scores: np.ndarray, depth: int = 3,
+                       min_leaf: int = 2000):
+    """A depth-3 regression tree on the ranker's raw scores: distillation in
+    the strict sense, imitating the model rather than the witness."""
+    from sklearn.tree import DecisionTreeRegressor
+
+    tree = DecisionTreeRegressor(max_depth=depth, min_samples_leaf=min_leaf,
+                                 random_state=0)
+    tree.fit(X, scores)
+    return tree
+
+
+def fit_linear_to_scores(X: np.ndarray, scores: np.ndarray, rows: int = 600_000,
+                         seed: int = 0) -> dict[str, float]:
+    """Least squares on the ranker's raw scores; returns feature-unit weights."""
+    from sklearn.linear_model import LinearRegression
+
+    rng = np.random.default_rng(seed)
+    if len(scores) > rows:
+        keep = rng.choice(len(scores), rows, replace=False)
+        X, scores = X[keep], scores[keep]
+    model = LinearRegression().fit(X, scores)
+    return dict(zip(STEP_FEATURE_NAMES, (float(v) for v in model.coef_)))
+
+
 def linear_weights(model, scaler) -> dict[str, float]:
     """Per-unit weights of the fitted logistic scorer, in feature units."""
     w = model.coef_[0] / scaler.scale_
@@ -366,7 +441,7 @@ def effective_weights(weights: dict[str, float]) -> dict[str, float]:
     }
 
 
-def rounded_weights(weights: dict[str, float], places: int = 1) -> dict[str, float]:
+def rounded_weights(weights: dict[str, float], places: int = 2) -> dict[str, float]:
     scale = max(abs(v) for v in weights.values()) or 1.0
     return {k: round(v / scale, places) for k, v in weights.items()}
 
@@ -387,17 +462,57 @@ def _wkey(idx, w, tie):
 
 
 def tree_rules_text(tree) -> str:
-    from sklearn.tree import export_text
+    """The tree as indented rules, each leaf labelled with the value the
+    greedy ranks by: the fraction of training candidates at that leaf the
+    witness closed (classifier) or the mean ranker score (regressor).
+    `sklearn.tree.export_text` prints the majority class instead, which is 0
+    at every leaf here (8.6% positives), and says nothing."""
+    t = tree.tree_
+    names = STEP_FEATURE_NAMES
+    lines: list[str] = []
 
-    return export_text(tree, feature_names=STEP_FEATURE_NAMES, decimals=2,
-                       show_weights=False)
+    def leaf_value(node: int) -> float:
+        v = t.value[node]
+        if v.shape[-1] == 2:                      # classifier: [neg, pos] counts or fractions
+            return float(v[0, 1] / v[0].sum())
+        return float(v[0, 0])
+
+    def walk(node: int, depth: int) -> None:
+        pad = "|   " * depth
+        if t.children_left[node] == -1:
+            lines.append(f"{pad}|--- value: {leaf_value(node):.3f}  (rows {int(t.n_node_samples[node]):,})")
+            return
+        f, thr = names[t.feature[node]], t.threshold[node]
+        lines.append(f"{pad}|--- {f} <= {thr:.2f}")
+        walk(t.children_left[node], depth + 1)
+        lines.append(f"{pad}|--- {f} >  {thr:.2f}")
+        walk(t.children_right[node], depth + 1)
+
+    walk(0, 0)
+    return "\n".join(lines) + "\n"
+
+
+def tree_key(tree, tie: Sequence[str] = MCN_KEY) -> KeyFn:
+    """Higher leaf value closes first (probability for a classifier, score
+    for a regressor); ties, which a depth-3 tree produces constantly, fall
+    through to `tie`."""
+    if hasattr(tree, "predict_proba"):
+        return score_key(lambda F: tree.predict_proba(F.astype(np.float32))[:, 1], tie)
+    return score_key(lambda F: tree.predict(F.astype(np.float32)), tie)
 
 
 # -------------------------------------------------------
 # Evaluation
 # -------------------------------------------------------
 
-_WORK: dict = {}   # models per fold, set before the pool forks
+_WORK: dict = {}   # lex rules and models per fold; set in each worker
+
+
+def _init_worker(work: dict) -> None:
+    """Pool initializer: the spawned worker receives the rules and the fitted
+    models pickled (see the module docstring on why not `fork`)."""
+    _WORK.clear()
+    _WORK.update(work)
 
 
 def _fold_keys(fold: int) -> dict[str, KeyFn]:
@@ -410,19 +525,19 @@ def _fold_keys(fold: int) -> dict[str, KeyFn]:
 
     models = _WORK["models"][fold]
     booster = lgb.Booster(model_str=models["lgbm"])
-    tree = models["tree"]
     linear, scaler = models["linear"]
     lgbm_scores = lambda F: booster.predict(F.astype(np.float32), raw_score=True,
                                             num_threads=1)
-    tree_scores = lambda F: tree.predict_proba(F.astype(np.float32))[:, 1]
     lin_scores = lambda F: linear.decision_function(scaler.transform(F.astype(np.float32)))
     keys = {
         "lgbm": score_key(lgbm_scores, tie=("index",)),
         "lgbm+mcn-ties": score_key(lgbm_scores),
-        "tree": score_key(tree_scores),
-        "tree+index-ties": score_key(tree_scores, tie=("index",)),
+        "tree": tree_key(models["tree"]),
+        "tree+index-ties": tree_key(models["tree"], tie=("index",)),
+        "tree-fid": tree_key(models["tree_fid"]),
         "linear": score_key(lin_scores),
         "linear-r": weights_key(models["linear_r"]),
+        "linear-fid": weights_key(effective_weights(models["weights_fid"])),
     }
     cache[fold] = keys
     return keys
@@ -434,13 +549,13 @@ def _step_agreement(instance, closing_order, keys: dict[str, KeyFn]
     picked (`imit:`) and what the ranker picked (`fid:`)."""
     masks = _neighbour_masks(instance)
     n = instance.n_customers
-    patterns = [len(instance.customer_patterns(c)) for c in range(n)]
-    closed = opened = 0
+    pmasks = _pattern_masks(instance)
+    closed = opened = produced = 0
     counts = {"steps": 0}
     for chosen in closing_order:
         candidates = [c for c in range(n) if masks[c] and not (closed >> c) & 1]
         if len(candidates) > 1:
-            X = candidate_matrix(masks, n, patterns, closed, opened, candidates)
+            X = candidate_matrix(masks, n, pmasks, closed, opened, produced, candidates)
             picks = {name: candidates[pick_min(key(X))] for name, key in keys.items()}
             counts["steps"] += 1
             ref = picks["lgbm"]
@@ -449,6 +564,7 @@ def _step_agreement(instance, closing_order, keys: dict[str, KeyFn]
                 counts[f"fid:{name}"] = counts.get(f"fid:{name}", 0) + int(pick == ref)
         opened |= masks[chosen]
         closed |= 1 << chosen
+        produced |= pmasks[chosen]
     return counts
 
 
@@ -466,13 +582,26 @@ def _evaluate_one(task) -> dict:
     for rule in lex_rules:
         out[lex_name(rule)] = _value(instance, greedy_closing_order(instance, lex_key(rule)))
     if role == "test":
+        from satisfiability.heuristics import restricted_dfs, upper_bound
+
+        out["mcn-ref"] = upper_bound(instance, "mcn")[0]
         for rname, fn in STATIC_RULES.items():
             out[rname] = _value(instance, fn(instance))
         keys = _fold_keys(fold)
-        for kname, key in keys.items():
-            out[kname] = _value(instance, greedy_closing_order(instance, key))
+        orders = {kname: greedy_closing_order(instance, key) for kname, key in keys.items()}
+        for kname, order in orders.items():
+            out[kname] = _value(instance, order)
+        dfs_nodes = _WORK.get("dfs_nodes", 0)
+        if dfs_nodes:
+            out["cs-dfs"] = restricted_dfs(instance, max_nodes=dfs_nodes)[0]
+            out["cs-dfs+lgbm"] = restricted_dfs(instance, max_nodes=dfs_nodes,
+                                                seed_order=orders["lgbm"])[0]
+            rule = greedy_closing_order(instance, lex_key(HYPOTHESES[HYPOTHESIS_RULE]))
+            out["cs-dfs+rule"] = restricted_dfs(instance, max_nodes=dfs_nodes,
+                                                seed_order=rule)[0]
         witness = _customer_order_from_products(instance, ordering)
-        agree = _step_agreement(instance, witness, {**keys, "mcn": lex_key([])})
+        hyp = {name: lex_key(rule) for name, rule in HYPOTHESES.items()}
+        agree = _step_agreement(instance, witness, {**keys, "mcn": lex_key([]), **hyp})
         out.update({f"agree:{k}": v for k, v in agree.items()})
     return out
 
@@ -485,7 +614,8 @@ def _blocks(corpus, folds: int, seed: int) -> list[set[str]]:
 
 
 def run(folds: int = 5, per_fold: int = 400, seed: int = 2, workers: int = 16,
-        lex_depth: int = 2, verbose: bool = True) -> tuple[pd.DataFrame, dict]:
+        lex_depth: int = 3, dfs_nodes: int = 200_000, verbose: bool = True
+        ) -> tuple[pd.DataFrame, dict]:
     """Fit per fold, evaluate held out, return (per-instance frame, models)."""
     corpus = _corpus()
     blocks = _blocks(corpus, folds, seed)
@@ -510,13 +640,19 @@ def run(folds: int = 5, per_fold: int = 400, seed: int = 2, workers: int = 16,
         tree = fit_tree(X, y)
         linear, scaler = fit_linear(X, y, seed=seed)
         weights = linear_weights(linear, scaler)
+        scores = booster.predict(X, raw_score=True)
+        tree_fid = fit_tree_to_scores(X, scores)
+        weights_fid = fit_linear_to_scores(X, scores, seed=seed)
         _WORK["models"][fold] = {
             "lgbm": booster.model_to_string(),
             "tree": tree,
+            "tree_fid": tree_fid,
             "linear": (linear, scaler),
             "weights": weights,
+            "weights_fid": weights_fid,
             "linear_r": rounded_weights(effective_weights(weights)),
             "tree_text": tree_rules_text(tree),
+            "tree_fid_text": tree_rules_text(tree_fid),
             "rows": n_rows,
             "train_witnesses": len(train_set),
         }
@@ -531,14 +667,17 @@ def run(folds: int = 5, per_fold: int = 400, seed: int = 2, workers: int = 16,
                   for f, inst, sol in train_sample]
 
     started = time.time()
-    with multiprocessing.get_context("fork").Pool(workers) as pool:
+    work = {"lex_rules": lex_rules, "models": _WORK["models"], "dfs_nodes": dfs_nodes}
+    with multiprocessing.get_context("spawn").Pool(
+            workers, initializer=_init_worker, initargs=(work,)) as pool:
         rows = pool.map(_evaluate_one, tasks, chunksize=4)
     if verbose:
-        print(f"  {len(tasks)} instance evaluations x {len(lex_rules) + 12} strategies "
+        print(f"  {len(tasks)} instance evaluations x {len(lex_rules) + 15} strategies "
               f"in {time.time() - started:.0f}s on {workers} workers", flush=True)
     frame = pd.DataFrame(rows)
     meta = {"models": _WORK["models"], "lex_rules": lex_rules, "folds": folds,
             "per_fold": per_fold, "seed": seed, "fit_seconds": fit_seconds,
+            "dfs_nodes": dfs_nodes,
             "eval_seconds": time.time() - started, "corpus": len(corpus)}
     return frame, meta
 
@@ -581,6 +720,34 @@ def by_band(frame: pd.DataFrame, strategies: Sequence[str]) -> pd.DataFrame:
         for s in strategies:
             row[s] = float(np.abs(sub[s].to_numpy() - truth).mean())
         rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def by_collection(frame: pd.DataFrame, strategies: Sequence[str]) -> pd.DataFrame:
+    """MAE over the optimum per benchmark collection (the directory above the
+    source file), held-out instances only."""
+    test = frame[frame["role"] == "test"]
+    coll = test["source_file"].str.split("/").str[-2]
+    rows = []
+    for name, sub in test.groupby(coll):
+        truth = sub["optimum"].to_numpy()
+        row = {"collection": name, "instances": len(sub)}
+        for s in strategies:
+            row[s] = float(np.abs(sub[s].to_numpy() - truth).mean())
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def head_to_head(frame: pd.DataFrame, pairs: Sequence[tuple[str, str]]) -> pd.DataFrame:
+    """Held-out instances on which the first strategy's value is below, equal
+    to and above the second's."""
+    test = frame[frame["role"] == "test"]
+    rows = []
+    for a, b in pairs:
+        rows.append({"first": a, "second": b,
+                     "first better": int((test[a] < test[b]).sum()),
+                     "equal": int((test[a] == test[b]).sum()),
+                     "first worse": int((test[a] > test[b]).sum())})
     return pd.DataFrame(rows)
 
 
@@ -649,17 +816,34 @@ def write_report(frame: pd.DataFrame, meta: dict, out: Path = DEFAULT_OUT) -> No
     selection = select_lex(frame, lex_rules)
     frame = add_selected(frame, selection)
     models = meta["models"]
-    main = ["mcn", "lgbm", "lgbm+mcn-ties", "tree", "tree+index-ties", "linear",
-            "linear-r", "lex-selected"] + list(STATIC_RULES)
-    test_n = int((frame["role"] == "test").sum())
+    main = ["mcn", "lgbm", "lgbm+mcn-ties", "tree", "tree+index-ties", "tree-fid",
+            "linear", "linear-r", "linear-fid", "lex-selected"] + list(HYPOTHESES) \
+        + list(STATIC_RULES)
+    dfs_cols = [c for c in ("cs-dfs", "cs-dfs+lgbm", "cs-dfs+rule") if c in frame.columns]
+    main += dfs_cols
+    test = frame[frame["role"] == "test"]
+    test_n = int(len(test))
+    mcn_disagree = int((test["mcn"] != test["mcn-ref"]).sum())
 
     lines = [f"# Distilling the closing policy — regenerated tables\n",
              f"`python -m learning.distil --folds {meta['folds']} --per-fold "
              f"{meta['per_fold']}`; {meta['corpus']} certified witnesses, {test_n} held-out "
              f"instances, fits {meta['fit_seconds']:.0f} s, evaluation "
-             f"{meta['eval_seconds']:.0f} s.\n",
+             f"{meta['eval_seconds']:.0f} s. The `mcn` construction here and "
+             f"`satisfiability.heuristics.upper_bound(instance, 'mcn')` disagree on "
+             f"{mcn_disagree} of {test_n} held-out instances.\n",
              "## Held-out constructions over the optimum\n", _md(summary(frame, main)),
              "\n## MAE by size band\n", _md(by_band(frame, main)),
+             "\n## MAE by collection\n",
+             _md(by_collection(frame, ["mcn", "lgbm", *HYPOTHESES, "linear", "fiedler"] + dfs_cols)),
+             "\n## Head to head, held out\n",
+             _md(head_to_head(frame, [(HYPOTHESIS_RULE, "lgbm"), (HYPOTHESIS_RULE, "mcn"),
+                                      (HYPOTHESIS_RULE, "lex:min newly_opened"),
+                                      ("lex-selected", "lgbm"), ("linear", "lgbm"),
+                                      ("tree", "lgbm"), ("fiedler", "lgbm")]
+                              + ([(HYPOTHESIS_RULE, "cs-dfs"), ("cs-dfs+rule", "cs-dfs+lgbm"),
+                                  ("cs-dfs+rule", "cs-dfs"), ("cs-dfs+lgbm", "cs-dfs")]
+                                 if dfs_cols else []))),
              "\n## Step-level agreement with the witness and with the ranker\n",
              _md(agreement(frame)),
              "\n## Lexicographic rule selected per fold on training instances\n",
@@ -671,17 +855,23 @@ def write_report(frame: pd.DataFrame, meta: dict, out: Path = DEFAULT_OUT) -> No
     for fold, m in models.items():
         row = {"fold": fold}
         row.update({k: round(v, 3) for k, v in effective_weights(m["weights"]).items()})
-        row["rounded"] = " ".join(f"{v:+.1f}·{k}" for k, v in m["linear_r"].items())
+        row["rounded"] = " ".join(f"{v:+.2f}·{k}" for k, v in m["linear_r"].items())
         wrows.append(row)
     lines.append(_md(pd.DataFrame(wrows)))
     lines.append("\nFull coefficients including the per-step constants:\n")
     lines.append(_md(pd.DataFrame([{"fold": f, **{k: round(v, 3) for k, v in m["weights"].items()}}
+                                   for f, m in models.items()])))
+    lines.append("\n## The linear scorer fitted to the ranker's scores (`linear-fid`), per fold\n")
+    lines.append(_md(pd.DataFrame([{"fold": f, **{k: round(v, 3) for k, v in
+                                    effective_weights(m["weights_fid"]).items()}}
                                    for f, m in models.items()])))
     lines.append("\n## The depth-3 tree of fold 1 (leaf value = probability the candidate closes next)\n")
     lines.append("```\n" + models[1]["tree_text"] + "```")
     for f, m in models.items():
         if f != 1:
             lines.append(f"\n<details><summary>fold {f}</summary>\n\n```\n{m['tree_text']}```\n</details>")
+    lines.append("\n## The depth-3 tree of fold 1 fitted to the ranker's scores (`tree-fid`)\n")
+    lines.append("```\n" + models[1]["tree_fid_text"] + "```")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n")
     DATA_OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -695,17 +885,23 @@ def main() -> None:
     parser.add_argument("--per-fold", type=int, default=400)
     parser.add_argument("--seed", type=int, default=2)
     parser.add_argument("--workers", type=int, default=16)
-    parser.add_argument("--lex-depth", type=int, default=2)
+    parser.add_argument("--lex-depth", type=int, default=3)
+    parser.add_argument("--dfs-nodes", type=int, default=200_000,
+                        help="node budget of the cs-dfs reference columns; 0 skips them")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = parser.parse_args()
     os.environ.setdefault("OMP_NUM_THREADS", str(args.workers))
     warnings.filterwarnings("ignore")
     frame, meta = run(folds=args.folds, per_fold=args.per_fold, seed=args.seed,
-                      workers=args.workers, lex_depth=args.lex_depth)
+                      workers=args.workers, lex_depth=args.lex_depth,
+                      dfs_nodes=args.dfs_nodes)
     write_report(frame, meta, args.out)
     print(_md(summary(add_selected(frame, select_lex(frame, meta["lex_rules"])),
-                      ["mcn", "lgbm", "tree", "linear", "linear-r", "lex-selected",
-                       "fiedler", "cuthill-mckee", "elim-min-degree"])))
+                      ["mcn", "lgbm", "tree", "tree-fid", "linear", "linear-r",
+                       "linear-fid", "lex-selected", *HYPOTHESES, "fiedler",
+                       "cuthill-mckee", "elim-min-degree"]
+                      + [c for c in ("cs-dfs", "cs-dfs+lgbm", "cs-dfs+rule")
+                         if c in frame.columns])))
 
 
 if __name__ == "__main__":

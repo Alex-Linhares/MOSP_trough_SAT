@@ -1,0 +1,147 @@
+# session it09 started 2026-09-25 21:37:34
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, the existing `learning/distil.py` left by the earlier iteration 7, its session log, and `learning/policy.py`.
+  > $ date && ls learning/ && git status --short | head -20 && wc -l learning/distil.py learning/policy.py 2>/dev/null; ls Ralph_Loops/loop0001/; ls tests/ | grep -i 
+  > $ sed -n '/^## *0/,/^## *1/p' reports/ml_nature_plan.md | head -80; echo ======; grep -n "^## \|^### " reports/ml_nature_plan.md
+  > $ sed -n '165,186p;256,300p' reports/ml_nature_plan.md; echo ======; sed -n '/^## *4/,$p' reports/learning_plan.md | head -60
+  > $ cat learning/policy.py
+  > $ cat learning/distil.py
+
+The module is substantial. Now let me check what the earlier iteration 7 got to: its log, any existing tables/tests, the report's current sections, and the machine's load.
+  > $ ls -la reports/distil_tables.md learning/data/distil.csv tests/test_distil.py 2>&1; echo ====; grep -n "^## " reports/ml_nature.md; echo ====; tail -c 6000 Ralp
+  > $ cat Ralph_Loops/loop0001/iterations.md; echo ====; git show --stat afa551e | head -30; echo ====; grep -n "distil\|2.6" Ralph_Loops/loop0001/session_it07.log | 
+
+The earlier item-07 attempt wrote `learning/distil.py` but never ran it and left no tests or tables. I'll smoke-test the module on a tiny sample first, and check dependencies alongside.
+  > $ python -c "import sklearn, lightgbm, pandas; print(sklearn.__version__, lightgbm.__version__, pandas.__version__)"; ls learning/models; grep -n "def upper_bound
+  > $ sed -n 100,140p satisfiability/heuristics.py; echo ....; sed -n 250,290p satisfiability/heuristics.py; echo ....; sed -n 400,440p satisfiability/heuristics.py; 
+  > $ time timeout 1500 python -m learning.distil --per-fold 8 --workers 8 --out /tmp/distil_smoke.md 2>&1 | tail -40
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/5a589f77-2584-4577-8831-52251d2454c1/tasks/b8cq506kv.output; echo ====; pgrep -af "learning.distil" | grep -v grep | head
+  > $ for i in $(seq 1 40); do kill -0 3196977 2>/dev/null || break; sleep 10; done; cat /tmp/claude-1000/-home-al-dev-MOSP/5a589f77-2584-4577-8831-52251d2454c1/tasks
+  > $ pgrep -af "learning.distil" | grep -v grep | wc -l; cat /tmp/claude-1000/-home-al-dev-MOSP/5a589f77-2584-4577-8831-52251d2454c1/tasks/b8cq506kv.output; ls -la /
+
+The smoke test is still in its worker phase after roughly 15 minutes, which is far too slow for 80 instances. I'll profile where the time goes while it runs.
+  > $ top -b -n 1 | head -20; echo ====; timeout 120 python - <<'EOF'
+import time
+from learning.distil import *
+from learning.policy import _corpus
+corpus = _corpus()
+  > $ kill 3196975 3196977 2>/dev/null; sleep 1; for p in $(pgrep -f "^python -m learning.distil"); do kill $p; done; sleep 1; pgrep -af "learning.distil" | grep -v g
+
+Row extraction is cheap (2.24 M rows in under 2 s). Now timing one LightGBM fit, the tree and the logistic fit on a fold-sized sample.
+  > $ OMP_NUM_THREADS=16 timeout 900 python - <<'EOF'
+import time, numpy as np, warnings
+warnings.filterwarnings("ignore")
+from learning.policy import _corpus, STEP_F
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) == count, (s.count(old), old[:80])
+  
+
+Now the second batch: fidelity-fitted models, the spawn pool, the MCN reference check, and report tables.
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) == count, (s.count(old), old[:80])
+  
+
+Now the smoke test again on the patched module.
+  > $ time timeout 580 python -m learning.distil --per-fold 8 --workers 8 --out /tmp/distil_smoke.md 2>&1 | tail -30
+
+The pool works now (65 s). The failure is that the lex family omits the empty rule, so no `mcn` column exists. Fixing that and rerunning.
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+old='''    rules: list[list[tuple[str, int]]] = []
+    for length in range(1, depth + 1):'''
+new='''  
+
+The module works end to end. Let me check the smoke report's MCN reference check, then launch the full run in the background while I write the tests.
+  > $ sed -n 1,6p /tmp/distil_smoke.md; grep -n "^## " /tmp/distil_smoke.md; sed -n '/Lexicographic rule selected/,/^## Every/p' /tmp/distil_smoke.md | head -12; sed 
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+old='def rounded_weights(weights: dict[str, float], places: int = 1) -> dict[str, float]:'
+new='def ro
+
+While the full run proceeds, I'll write the tests. Let me check the test style used by the sibling studies and the generator's helper, then write `tests/test_distil.py`.
+  > $ sed -n 1,40p tests/test_bound_gap.py; grep -n "^def " tests/test_bound_gap.py | head; sed -n 140,150p satisfiability/heuristics.py; tail -3 /tmp/distil_full.log
+  > Write /home/al/dev/MOSP/tests/test_distil.py
+
+I left a stray import block in that file. Removing it and running the new tests, plus checking the full run's progress.
+  > $ python - <<'EOF'
+p='tests/test_distil.py'; s=open(p).read()
+old='''from satisfiability.heuristics import (
+    _neighbour_masks,
+    _pattern_masks_for_test as 
+
+All 11 tests pass. The full run is in its evaluation phase. While it works, I'll check its worker load and re-read the report's section-6 ending so §7 matches the established format.
+  > $ top -b -n 1 | grep -c "python"; pgrep -f benchmarks.recertify | wc -l; sed -n '1140,1175p' reports/ml_nature.md; echo ....; tail -40 reports/ml_nature.md
+
+The report format is clear. I'll wait for the full run to finish, polling in bounded steps.
+  > $ for i in $(seq 1 56); do kill -0 3212097 2>/dev/null || break; sleep 10; done; date; tail -25 /tmp/distil_full.log
+
+The full run took about 3 minutes and the headline is unexpected: a three-key lexicographic rule beats the LightGBM ranker it was meant to approximate. Let me read the full tables.
+  > $ sed -n '/^## Held-out/,/^## The fitted linear/p' reports/distil_tables.md
+  > $ sed -n '/^## The fitted linear/,/^## The depth-3 tree of fold 1 (leaf/p' reports/distil_tables.md; sed -n '/^## The depth-3 tree of fold 1 (leaf/,/<details>/p' 
+  > $ timeout 300 python - <<'EOF'
+import time, numpy as np, pandas as pd
+from learning.policy import _corpus
+from satisfiability.heuristics import restricted_dfs
+cor
+  > $ sed -n 288,345p satisfiability/heuristics.py; grep -n "newly\|new stacks\|fewest\|least" satisfiability/heuristics.py satisfiability/customer_search.py | head -
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) == count, (s.count(old), old[:90])
+  
+  > $ sed -n '/^## The depth-3 tree of fold 1 (leaf/,/<details>/p' /tmp/distil_smoke2.md | head -22; nohup python -m learning.distil --workers 16 > /tmp/distil_full.l
+
+The tree printout now shows leaf probabilities, and the full run is relaunched. While it runs I'll start the full test suite in the background and draft the report section.
+  > $ nohup python -m pytest tests/ -q -x > /tmp/full_tests_it09.log 2>&1 & echo tests $!; git status --short solutions/ | wc -l; date
+  > $ for i in $(seq 1 50); do kill -0 3246013 2>/dev/null || break; sleep 10; done; date; tail -24 /tmp/distil_full.log; echo ====; tail -3 /tmp/full_tests_it09.log
+  > $ sed -n '/^## MAE by size/,/^## Lexicographic rule selected/p' reports/distil_tables.md; sed -n '/^## Lexicographic rule selected/,/^## Every/p' reports/distil_t
+  > $ git status --short solutions/ | wc -l; git status --short | grep -v Ralph_Loops; pgrep -f benchmarks.recertify | wc -l; date; timeout 300 python - <<'EOF'
+impor
+  > $ python - <<'EOF'
+p='learning/distil.py'; s=open(p).read()
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) == count, (s.count(old), old[:90])
+  
+
+While the rerun finishes, I'm drafting the report section from the (deterministic) numbers already in hand, then I'll verify against the regenerated tables before appending.
+  > Write /tmp/section7.md
+  > $ pgrep -f "^python -m learning.distil" | wc -l; tail -4 /tmp/distil_full.log | head -2; grep -n "^## " reports/distil_tables.md; sed -n '/^## MAE by collection/,
+  > $ sed -n 355,375p satisfiability/heuristics.py; echo ==== ; for i in $(seq 1 40); do pgrep -f "^python -m learning.distil" >/dev/null || break; sleep 10; done; da
+  > $ python - <<'EOF'
+s = open('/tmp/section7.md').read()
+def rep(old, new):
+    global s
+    assert s.count(old) == 1, old[:80]
+    s = s.replace(old, new)
+rep('''W
+  > $ python - <<'EOF'
+p='Ralph_Loops/loop0001/PROGRESS.md'; s=open(p).read()
+old='''  Full suite: 764 passed, 2 skipped, 1 xfailed, 85 s (before the last, purely
+  a
+  > $ pgrep -af "pytest tests/" | cut -c1-160
+
+Those two matches are this session's own driver and the shell running the check, not test processes. Nothing is left running from this iteration, and item 08 is still open so the loop is not complete.
+
+Item 07 (§2.6a, distil the closing policy) is **solved**.
+
+**What was wrong with the inherited code.** The earlier attempt's worker pool forked after LightGBM had run in the parent, so the children deadlocked in libgomp and the first run sat 15 minutes on sleeping workers. Its MCN tie-break also used total product count where `least_cost_node` uses products not yet produced. Both are fixed; the module's MCN now agrees with the solver's on all 1,920 held-out instances.
+
+**What was built.** `learning/distil.py` fits, per file-grouped fold, a depth-3 tree and a logistic scorer to the 2.24 M witness decisions, plus the same two fitted to the ranker's own scores, and evaluates all 570 lexicographic rules of up to three keys, Fiedler and BFS orders, and cs-dfs seeded three ways. Full run is about 4 minutes on 16 workers. `tests/test_distil.py` adds 11 hand-checkable tests. Full suite: 764 passed, 2 skipped, 1 xfailed.
+
+**The finding, in one paragraph.** The kill criterion ("no readable rule keeps more than half the ranker's gain") is exceeded in the opposite direction. The rule *close the customer that opens the fewest new stacks; on ties, the one with the most unclosed neighbours* scores held-out MAE 0.348 and exact 80.7% against the ranker's 0.519 and 75.0% and MCN's 1.616 and 50.2%. It keeps 115% of the ranker's gain, beats it in every size band and every collection but Shaw, and is worse on only 109 of 1,920 instances. The first key alone is the cheapest-first expansion order of Chu & Stuckey's own DFS, so the greedy is that search's first leaf. The tie-break is the reverse of MCN's minimum-degree criterion. As a DFS seed the rule also beats the learned order, at MCN's cost with no model. The distilled tree keeps 57%, the logistic scorer 82%, and imitation rate ranks constructions almost inversely to their value, which matters for item 08.
+
+**Files touched.** `learning/distil.py`, `tests/test_distil.py`, `reports/distil_tables.md`, `reports/ml_nature.md` §7, PROGRESS.md (now 7/8), iterations.md. Nothing written to `solutions/`, no solver defaults changed, no commits made, and the running recertify was not touched.
+
+**Next.** Item 08 (degeneracy of the optimum) is the last open item. The loop's owner should decide whether to register the rule as a heuristic in `satisfiability/heuristics.py` and measure it as the DFS seed against `learned+cs-dfs` in a corpus sweep.
+
+# result: success in 2498s, 45 turns, cost $8.05

@@ -1463,3 +1463,257 @@ reason about. §2.5 should record `tw_ub` alongside the optimum on
 treewidth for the 207 uncertified gap ≥ 2 instances (82 of them at n ≤ 30,
 cheap with a proper treewidth solver) would turn the 38.8% floor into a
 number.
+
+## 7. Distilling the closing policy (§2.6a)
+
+*Iteration 9, 2026-09-25 (an earlier iteration wrote `learning/distil.py` and
+ended without running it; this iteration found that its worker pool deadlocked
+— forking after LightGBM has run leaves the children asleep in libgomp — and
+that its MCN tie-break used the total product count where `least_cost_node`
+uses the products not yet produced; fixed both, added the fidelity-fitted
+models, the two named rules, the `cs-dfs` reference columns, the per-collection
+and head-to-head tables, wrote the tests, ran it and wrote this section.)
+Code: `learning/distil.py`. Regenerate:*
+
+```bash
+python -m learning.distil --workers 16                 # ~4 min: fits 60 s, evaluation 140 s
+python -m learning.distil --workers 16 --lex-depth 2   # ~3 min, the 91-rule family only
+python -m pytest tests/test_distil.py -q
+```
+
+*Writes `reports/distil_tables.md` (every table below in full, the fitted
+weights per fold and the trees of every fold) and `learning/data/distil.csv`
+(git-ignored; one row per evaluated instance with every strategy's value).
+Nothing is written to `solutions/`, no solver file is touched.*
+
+**Question.** `learning/policy.py` imitates the 2.24 M closing decisions of the
+certified witnesses with a LightGBM ranker over eight local features and, used
+greedily, cuts MCN's error over the optimum by two thirds. What rule did it
+learn? Does a depth-3 tree or a linear scorer keep most of the gain, does a
+lexicographic rule a person can state, and do the two static hypotheses of the
+plan — Fiedler-vector order, BFS layers from a minimum-degree root — hold?
+
+**Method.** The protocol of `python -m learning.policy evaluate`: five folds
+grouped by source file with the same seed, up to 400 held-out instances per
+fold (1,920 in all; fold 3's files hold 320), the ranker and every distilled
+model fitted per fold on the training files' decision rows (1.6–2.0 M rows per
+fold, 6,372 certified witnesses at run time). Every closing order is turned
+into a product order with `product_order_from_customers` and simulated on the
+original instance with `max_open_stacks`; the statistics are over the optimum.
+Distilled models: a depth-3 classification tree and a logistic scorer fitted
+to the witness decisions (`tree`, `linear`, and `linear-r` with its weights
+rounded to two decimals), and a depth-3 regression tree and least squares
+fitted to the *ranker's own raw scores* on the same rows (`tree-fid`,
+`linear-fid`), which is distillation in the strict sense. Lexicographic rules:
+all 570 orderings of up to three of the five per-candidate features
+(`remaining_degree`, `newly_opened`, `already_open`, `total_degree`, products
+not yet produced), each key in either direction, MCN's own key — minimum
+remaining degree, then fewest products left, then index — breaking every
+remaining tie, so the empty rule is MCN itself (verified: it agrees with
+`upper_bound(instance, "mcn")` on all 1,920). The rule is *selected* per fold on
+400 training instances and scored held out (`lex-selected`); two rules are also
+quoted by name, and their rows are descriptive because they were named after
+seeing the pooled table. Static orders: Fiedler vector of each component
+(sign fixed by the lowest-index customer) and its reverse; BFS from the
+minimum-degree customer in FIFO order, in Cuthill–McKee order and reversed
+(RCM); and minimum-degree elimination with fill-in, which is MCN made to
+remember which open customers were opened together. The summary statistic is
+`gain kept = (MAE_MCN − MAE_rule) / (MAE_MCN − MAE_ranker)`: 1 is the ranker, 0
+is MCN. Reference columns: Chu & Stuckey's restricted DFS at 200,000 nodes
+seeded with MCN (`cs-dfs`), with the ranker's order (`cs-dfs+lgbm`) and with
+the named rule's order (`cs-dfs+rule`).
+
+**Baseline.** MCN, held out: MAE 1.616, exact 50.2%, worst +26. The ranker:
+0.519, 75.0%, worst +34.
+
+**Held-out constructions over the optimum** (1,920 instances, 9–134 customers).
+
+| strategy | MAE | exact | worst | gain kept |
+|---|---|---|---|---|
+| mcn | 1.616 | 50.2% | 26 | 0.000 |
+| lgbm (the ranker) | 0.519 | 75.0% | 34 | 1.000 |
+| lgbm, ties by MCN's key | 0.507 | 75.6% | 34 | 1.010 |
+| tree (depth 3, on decisions) | 0.992 | 60.0% | 18 | 0.569 |
+| tree, ties by index | 1.749 | 35.5% | 23 | −0.121 |
+| tree-fid (depth 3, on ranker scores) | 1.090 | 55.9% | 21 | 0.480 |
+| linear (logistic, on decisions) | 0.719 | 64.0% | 16 | 0.817 |
+| linear-r (weights rounded) | 0.729 | 63.5% | 16 | 0.808 |
+| linear-fid (least squares on ranker scores) | 1.240 | 55.3% | 26 | 0.343 |
+| **lex-selected** (per fold, on training instances) | **0.362** | **79.2%** | **9** | **1.143** |
+| min newly_opened | 0.419 | 79.1% | 11 | 1.091 |
+| min newly_opened, then max remaining_degree | 0.348 | 80.7% | 9 | 1.155 |
+| fiedler | 0.886 | 64.5% | 21 | 0.665 |
+| fiedler, reversed | 1.041 | 61.6% | 25 | 0.524 |
+| bfs from min-degree root, FIFO | 2.063 | 40.7% | 39 | −0.407 |
+| cuthill-mckee | 1.520 | 51.2% | 27 | 0.088 |
+| rcm | 1.113 | 55.4% | 19 | 0.458 |
+| min-degree elimination with fill-in | 1.985 | 49.2% | 34 | −0.336 |
+| cs-dfs (200k nodes, MCN seed) | 0.311 | 81.2% | 7 | 1.189 |
+| cs-dfs + ranker seed | 0.157 | 91.0% | 6 | 1.329 |
+| cs-dfs + rule seed | 0.127 | 92.7% | 6 | 1.357 |
+
+**MAE by size band.**
+
+| customers | instances | mcn | lgbm | tree | linear | lex-selected | min new | min new, max deg | fiedler | cs-dfs | cs-dfs+lgbm | cs-dfs+rule |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 9–30 | 1,768 | 1.069 | 0.282 | 0.662 | 0.466 | 0.221 | 0.239 | 0.207 | 0.548 | 0.194 | 0.065 | 0.051 |
+| 31–60 | 96 | 4.812 | 1.573 | 2.781 | 1.865 | 1.052 | 1.469 | 1.010 | 2.469 | 0.990 | 0.500 | 0.333 |
+| 61–134 | 56 | 13.411 | 6.179 | 8.321 | 6.750 | 3.625 | 4.321 | 3.679 | 8.857 | 2.857 | 2.482 | 2.179 |
+
+**Head to head, held out** (instances where the first is below / equal / above the second).
+
+| first | second | better | equal | worse |
+|---|---|---|---|---|
+| min new, max deg | lgbm | 253 | 1,558 | 109 |
+| min new, max deg | mcn | 896 | 1,016 | 8 |
+| min new, max deg | min new (MCN tie-break) | 159 | 1,675 | 86 |
+| min new, max deg | cs-dfs | 126 | 1,641 | 153 |
+| cs-dfs + rule seed | cs-dfs + ranker seed | 82 | 1,800 | 38 |
+| cs-dfs + rule seed | cs-dfs | 285 | 1,633 | 2 |
+| cs-dfs + ranker seed | cs-dfs | 243 | 1,674 | 3 |
+
+Where the rule loses to the ranker it loses by one on 82 of the 109 and by at
+most five; where it wins it wins by one on 181 of the 253 and by 20 or more on
+four. The ranker's +34 is GP8 (94 against an optimum of 60) and two of its
++20s are GP6 and GP7; the rule is exact on all three. That is the shape
+`learning/policy.py`'s docstring already describes — a greedy with no search
+behind it — and the rule does not have it.
+
+**Step-level agreement** with the witness (imitation) and with the ranker
+(fidelity), over the 43,020 decisions with more than one candidate in the
+1,920 held-out witnesses.
+
+| strategy | imitation | fidelity |
+|---|---|---|
+| min newly_opened | 62.3% | 59.9% |
+| min newly_opened, max remaining_degree | 60.7% | 45.1% |
+| tree | 58.5% | 55.5% |
+| tree-fid | 55.1% | 50.3% |
+| mcn | 52.5% | 46.8% |
+| lgbm, ties by MCN's key | 52.0% | 86.3% |
+| linear-r | 46.5% | 62.0% |
+| lgbm | 45.3% | 100% |
+| linear | 43.5% | 59.5% |
+
+**What the fitted models say.** The logistic scorer is the same in all five
+folds to two decimals: `+1.00·already_open − 0.07·remaining_degree −
+0.03..0.05·newly_opened + 0.01·total_degree` (per-step constants aside; `open_after
+= open_now + newly_opened − 1`, so it has four effective weights). Read as a
+rule: *a customer whose stack is already open; then fewer unclosed neighbours;
+then fewer new stacks* — MCN's criterion with "already open" in front of it —
+and it keeps 82% of the gain. The depth-3 tree splits on `open_after ≤ 6.5`,
+`newly_opened ≤ 1.5`, `remaining_degree ≤ 2.5 / 10.5`, `already_open` and
+`n_customers`, and its leaf probabilities fall with `newly_opened` and with
+`remaining_degree`: *fewest new stacks, then smallest remaining degree*. With
+eight leaves it ties constantly, and the ties are what decide it: broken by
+MCN's key it keeps 57%, broken by index it is worse than MCN. The two models
+fitted to the ranker's scores rather than to the witness keep less (48%, 34%);
+`linear-fid`'s `already_open` weight ranges from −2.3 to +8.9 across folds,
+so the ranker's raw score is not close to linear in the features. And the
+ranker itself imitates the witness at only 45.3% of decisions, below MCN's
+52.5%, while the one-key rule imitates at 62.3% and the tree at 58.5%: the
+imitation rate ranks these constructions almost inversely to their value,
+which is the first thing to know before building another imitation policy.
+
+**The rule.** 64 of the 570 lexicographic rules beat the ranker's MAE: all 57
+whose first key is `min newly_opened` (the worst of them 0.424) and 7 whose
+first key is `max already_open`, and no others; the five per-fold selections
+all carry `min newly_opened` first or second. The two named rules:
+
+- *Open the fewest new stacks.* `newly_opened` is `|N[c] \ opened|`, the
+  stacks closing `c` would open for the first time; minimising it minimises the
+  open stacks after the step. That is the cheapest-first order in which Chu &
+  Stuckey's `ub_MOSP` expands candidates (`restricted_dfs`'s docstring), so
+  followed greedily with MCN's tie-break it is that search's *first leaf*.
+  Held out: 0.419, exact 79.1%, worst +11 — already better than the ranker
+  on every statistic. (Pattern-level heuristics that open the fewest new
+  stacks go back to Yuen; whether this customer-closing form with this
+  tie-break is in the literature is not settled here.)
+- *Open the fewest new stacks; on ties, the customer with the most unclosed
+  neighbours.* The tie-break is the **reverse of MCN's**: MCN closes the
+  lowest remaining degree, this closes the highest. Among candidates that open
+  equally few stacks, the one with many unclosed neighbours is the one whose
+  neighbourhood is already mostly open, so closing it retires the most of the
+  current frontier. Held out: **0.348, exact 80.7%, worst +9**, 115% of the
+  ranker's gain, better than the ranker on 253 instances and worse on 109,
+  better than MCN on 896 and worse on 8, and better than the same rule with
+  MCN's tie-break on 159 against 86. It is the ranker's equal or better in
+  every size band and in every collection but Shaw (0.36 vs 0.32 on 25
+  instances); on the 91 Chu & Stuckey instances it is 2.42 against the
+  ranker's 3.35 and MCN's 9.44. It matches the 200,000-node DFS on exact
+  solutions (80.7% vs 81.2%) though not on MAE (0.348 vs 0.311) or worst case
+  (+9 vs +7). As the DFS's *incumbent* it is worth more than the learned
+  order: `cs-dfs+rule` 0.127 / 92.7% against `cs-dfs+lgbm` 0.157 / 91.0%, 82
+  instances better and 38 worse, and it never does worse than the MCN-seeded
+  DFS on more than 2 of 1,920.
+
+The honest number is the per-fold selection, which does not see the held-out
+instances: 0.362, 79.2%, worst +9, 114% of the gain. The selected rules were
+`min newly_opened, max already_open, max remaining_degree`; `min newly_opened,
+max remaining_degree, min already_open` (twice); `min newly_opened, max
+total_degree, min patterns`; `max already_open, min newly_opened, min patterns`.
+Fold 3's choice generalised worst (train 0.265, held out 0.722, still below the
+ranker's 1.259 on those files).
+
+**The static hypotheses.** Fiedler order — sort the customers of each
+component by the Fiedler vector, no state at all — keeps 66% of the gain (0.886,
+64.5%), more than the depth-3 tree and more than the logistic scorer's rounded
+form loses; reversed it keeps 52%. BFS from a minimum-degree root does not:
+FIFO order is worse than MCN, Cuthill–McKee keeps 9%, RCM 46%. So the plan's
+first hypothesis is partly right and its second is wrong, and both are far from
+the best rule. Minimum-degree elimination with fill-in is worse than MCN
+(−34%): remembering that the open neighbours of a closed customer stay open
+together makes the greedy worse, not better.
+
+**Finding.** The kill criterion — no readable rule keeps more than half the
+ranker's gain — is not met; it is exceeded, and in the direction the plan did
+not anticipate. The ranker did not learn something a rule cannot express; it
+learned, imperfectly, the cheapest-first order of Chu & Stuckey's own DFS, and
+a two-key rule a sentence long — *close the customer that opens the fewest new
+stacks, and among those the one with the most unclosed neighbours* — beats it
+on every statistic, at every size, in every collection but one, with no model,
+no training and no dependency. The distilled tree and scorer are worse than
+the rule because imitation is the wrong objective: the models fitted to the
+witness reproduce MCN's minimum-degree preference, which the witnesses share
+at the level of individual decisions (imitation 52–62%) but which is the wrong
+tie-break for the construction as a whole (159 better / 86 worse for the
+reverse). This is the third time in this report that a learned component has
+resolved into a finding about the solver rather than a component of it
+(`reports/learning_plan.md`): here the finding is a heuristic in the
+literature's sense, and a better DFS seed than the imitation policy that
+`reports/learning.md` measured.
+
+**Size range covered.** 9–134 customers; 1,768 of the 1,920 held-out
+instances have ≤ 30, 96 have 31–60, 56 have 61–134. The rule's lead over the
+ranker holds in each band (0.207 vs 0.282; 1.010 vs 1.573; 3.679 vs 6.179),
+and grows with size, but above 60 customers it rests on 56 instances and the
+rule's own error there is 3.7 stacks with a worst case of +9 (Chu & Stuckey
+100×50, `Random-100-50-4-3_0`, 38 against an optimum of 29); at that size
+neither it nor the ranker is close to the optimum without the search behind
+it. The imitation and fidelity rates are over all 1,920 witnesses and are
+dominated by the small instances.
+
+**Not a bound, not a solver change.** Nothing here touches `_lower_bound` or
+any decision path; every value in every table is an upper bound obtained by
+simulation on the original instance; no default changed; nothing was written
+to `solutions/` (`git status solutions/` clean after the run); the running
+`benchmarks.recertify` (12 processes) was not touched. The rule is not
+registered as a heuristic in `satisfiability/heuristics.py`: that would be a
+solver change, and it is left for the loop's owner.
+
+**For the next loop.** (i) The rule costs what MCN costs and needs no model,
+so it is the natural replacement for `learned+cs-dfs` as the DFS seed:
+`learning.corpus_sweep` over all 6,376 with the rule seeding `restricted_dfs`,
+against the 709-better / 13-worse that `learned+cs-dfs` scored over `cs-dfs`,
+would settle whether the LightGBM dependency decision left open in
+`reports/learning.md` needs deciding at all. (ii) Any future imitation study
+should select by construction value, never by step accuracy; §2.6b (item 08)
+should measure how many optimal closing orders there are before anyone
+imitates "the" witness again, because a 45%-imitation policy beating a
+62%-imitation rule says the witnesses disagree with each other. (iii) The
+tie-break's direction is a small, statable conjecture about the customer
+search: among cheapest candidates, expanding the highest remaining degree
+first should reach the optimum sooner; `restricted_dfs` orders its fan
+cheapest-first with ties by customer index (`scored.sort()` on `(cost,
+customer, ...)`), and `learning.node_counts.refute` is the primitive to
+measure it with.

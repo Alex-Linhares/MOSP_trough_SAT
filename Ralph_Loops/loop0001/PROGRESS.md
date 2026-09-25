@@ -3,7 +3,7 @@
 ## Ralph Loop 0001 Status
 - **Started**: 2026-09-25
 - **Target**: 8 items
-- **Current**: 6/8 SOLVED
+- **Current**: 7/8 SOLVED
 
 ---
 
@@ -410,5 +410,92 @@ processes) was not touched.
   optimum on `G(n, m, p)` to see how `pw − tw` scales with sparsity. Exact
   treewidth for the 82 uncertified gap ≥ 2 instances at n ≤ 30 would turn the
   38.8% floor into a number.
+
+---
+
+## Iteration 9 — 2026-09-25 22:20
+
+Item 07 · §2.6a Distil the closing policy. **SOLVED.** (An earlier iteration
+numbered 7 wrote `learning/distil.py` and ended without running it; this
+iteration found its worker pool deadlocked — forking after LightGBM has run
+leaves the children asleep in libgomp, the first smoke run sat fifteen minutes
+on eight sleeping workers — and its MCN tie-break used the total product count
+where `least_cost_node` uses the products not yet produced. Fixed both and
+finished the item on the committed code.)
+
+### Completed
+- `learning/distil.py`: spawn-context pool with an initializer (models travel
+  pickled, the booster as its string form); MCN's key matched exactly and
+  checked against `upper_bound(instance, "mcn")` on every held-out instance
+  (0 disagreements of 1,920); the lex family includes the empty rule (MCN) and
+  runs at depth 3 (570 rules); depth-3 tree and logistic scorer on the witness
+  decisions plus a regression tree and least squares on the ranker's own
+  scores (`tree-fid`, `linear-fid`); two rules named in every table
+  (`HYPOTHESES`); `cs-dfs` at 200,000 nodes seeded by MCN, by the ranker and
+  by the rule; per-collection and head-to-head tables; a tree printer that
+  shows leaf probabilities (sklearn's `export_text` printed "class: 0" at
+  every leaf); weights rounded to two decimals (one decimal erased the
+  `newly_opened` weight). Full run 4 min on 16 workers (fits 60 s, evaluation
+  140 s); writes `reports/distil_tables.md` and `learning/data/distil.csv`
+  (git-ignored).
+- `tests/test_distil.py`: 11 tests on a 3-customer chain, a 4-path and a
+  star (lexicographic minimum, the unproduced-products column, the empty
+  rule equal to the solver's MCN on 25 random 8×8 instances, key signs and
+  fall-through, family counts, Fiedler / BFS / RCM / elimination orders by
+  hand, idle customers skipped, decision-row counts, step agreement, weight
+  folding and gain arithmetic, selection and summary on a hand frame).
+  Full suite on the final code: 764 passed, 2 skipped, 1 xfailed, 76 s.
+- `reports/ml_nature.md` §7 written.
+- Findings: the kill criterion is exceeded in the direction the plan did not
+  anticipate. A two-key rule — *close the customer that opens the fewest new
+  stacks; on ties, the one with the most unclosed neighbours* — scores held
+  out MAE 0.348, exact 80.7%, worst +9 against the LightGBM ranker's 0.519 /
+  75.0% / +34 and MCN's 1.616 / 50.2% / +26: 115% of the ranker's gain, better
+  than the ranker on 253 instances and worse on 109, in every size band and
+  every collection but Shaw. The honest per-fold selection (570 rules chosen
+  on training instances) scores 0.362 / 79.2% / +9. The first key alone is
+  the cheapest-first order Chu & Stuckey's `ub_MOSP` DFS expands candidates
+  in, so the greedy is that search's first leaf, and it already beats the
+  ranker (0.419 / 79.1% / +11); the tie-break is the *reverse* of MCN's
+  minimum degree (159 better / 86 worse than MCN's direction). As a DFS seed
+  the rule beats the learned order (`cs-dfs+rule` 0.127 / 92.7% vs
+  `cs-dfs+lgbm` 0.157 / 91.0%; 82 better / 38 worse), at MCN's cost and with
+  no model. The distilled models keep less: logistic 82% (it reads
+  `+1.00·already_open − 0.07·remaining_degree − 0.04·newly_opened`, identical
+  across folds), depth-3 tree 57% (and worse than MCN with index ties),
+  fidelity-fitted tree 48%, least squares 34% (weights unstable across folds:
+  the ranker's score is not linear). Imitation rate is inversely related to
+  construction value — the ranker imitates the witness at 45% of decisions,
+  MCN at 52%, the one-key rule at 62% — so step accuracy is the wrong
+  objective for any future imitation. Fiedler order keeps 66% of the gain
+  with no state at all; BFS from a minimum-degree root keeps 9% (Cuthill–McKee)
+  to 46% (RCM) and FIFO is worse than MCN; min-degree elimination with fill-in
+  is worse than MCN. Size range 9–134 customers, 1,768 of 1,920 held out at
+  ≤ 30; the rule's lead holds in each band but rests on 56 instances above 60.
+
+### Blockers
+None. Nothing written to `solutions/` (`git status solutions/` clean after
+every run); no solver file touched; the running `benchmarks.recertify` (12
+processes) was not touched; every background process this session started
+was killed by PID.
+
+### Next
+- Item 08 (§2.6b, degeneracy of the optimum) is the last item. §7 gives it a
+  motive: a policy imitating 45% of witness decisions beats a rule imitating
+  62%, so the witnesses disagree with each other and the count of optimal
+  closing orders is the quantity behind that.
+- For the loop's owner: the rule is not registered in
+  `satisfiability/heuristics.py` (a solver change). The measurement that
+  would decide it is `learning.corpus_sweep` with the rule seeding
+  `restricted_dfs`, against the 709-better / 13-worse `learned+cs-dfs`
+  scored over `cs-dfs` in `reports/learning.md`; if the rule matches it, the
+  LightGBM dependency question is moot.
+- `restricted_dfs` breaks cheapest-first ties by customer index; §7's
+  tie-break (largest remaining degree) is a testable change to the search's
+  fan order, measurable with `learning.node_counts.refute`.
+- Method notes for later iterations: never `fork` a pool after fitting
+  LightGBM in the parent — use `spawn` with an initializer; and sklearn's
+  `export_text` on an imbalanced classifier prints the majority class at
+  every leaf, so print leaf probabilities.
 
 ---

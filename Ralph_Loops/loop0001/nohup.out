@@ -48,3 +48,8 @@
 [2026-09-25 21:24:53] claude session it08 (cap 3.00 h) -> session_it08.log
 [2026-09-25 21:36:16] session it08: ok (exit 0, 32 tool calls)
 [2026-09-25 21:37:34] tests passed: 753 passed, 2 skipped, 1 xfailed, 147 warnings in 77.07s (0:01:17)
+[2026-09-25 21:37:34] committed a4cf1ec: 06 · §2.3 Where the bounds fail. Classifier `gap ≥ 2` vs tight with a
+[2026-09-25 21:37:34] === iteration 9: 07 · §2.6a Distil the closing policy. Fit a depth-3 tree and a linear
+[2026-09-25 21:37:34] claude session it09 (cap 3.00 h) -> session_it09.log
+[2026-09-25 22:19:13] session it09: ok (exit 0, 44 tool calls)
+[2026-09-25 22:20:30] tests passed: 764 passed, 2 skipped, 1 xfailed, 147 warnings in 76.46s (0:01:16)

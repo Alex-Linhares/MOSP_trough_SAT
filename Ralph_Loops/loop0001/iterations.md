@@ -36,7 +36,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       size. Cluster the gap instances. Write out the ten smallest instances with
       gap ≥ 2 as matrices in the report, with their MOSP graphs' degree sequences,
       and say in words what they have in common.
-- [ ] 07 · §2.6a **Distil the closing policy.** Fit a depth-3 tree and a linear
+- [x] 07 · §2.6a **Distil the closing policy.** Fit a depth-3 tree and a linear
       scorer to the same 2.27 M decisions `learning/policy.py` trains on; measure
       how much of the ranker's gain over MCN each keeps (grouped, same protocol
       as `python -m learning.policy evaluate`, sampled if 3 minutes is exceeded).
