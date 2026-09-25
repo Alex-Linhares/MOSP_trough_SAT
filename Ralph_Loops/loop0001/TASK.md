@@ -15,6 +15,14 @@
 - Findings that rest on a handful of instances are re-certified for those
   instances (`solve_mosp_exact`, never `solutions_dir=None`) before being written.
 
+- **Compute**: a `benchmarks.recertify` run is using 4 cores and must not be
+  touched (PIDs under `pgrep -f benchmarks.recertify`). 32 cores total; use up
+  to 16 here. An RTX 5090 with CUDA is available for the GNN check or anything
+  else that benefits (`torch` may be added behind a soft import). Each iteration
+  has a hard 3-hour wall-clock cap enforced by the driver; budget the study so
+  the report section and PROGRESS.md are written well inside it, and sample if
+  the full study would not fit, saying so in the report.
+
 ## Current Focus
 Phases 1, 2 and 4 of `reports/ml_nature_plan.md` §3: corpus hygiene and
 instrumentation, the studies that run on the existing feature table, and the
@@ -50,10 +58,6 @@ An item is DONE when either:
 - **Data**: `solutions/*.json` — 6,376 certified optima with witness orderings
   and a `provenance` field. Instances are enumerated by `learning.dataset.enumerate_instances`.
 - **Testing**: `python -m pytest tests/ -q -x`.
-- **Compute**: a `benchmarks.recertify` run is using 4 cores and must not be
-  touched (PIDs under `pgrep -f benchmarks.recertify`). 32 cores total; use at
-  most 16 for anything here. Nothing in this loop should take more than 30
-  minutes of wall clock per iteration; if a study needs more, sample and say so.
 - **Dependencies**: `learning/requirements.txt`. New packages (pynauty, pysr,
   interpret, umap-learn) may be added there behind soft imports; the core
   package must import without them.
