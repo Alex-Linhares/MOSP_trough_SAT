@@ -231,3 +231,13 @@ None.
   `sep_frac`.
 - `pysr` is not installed; the enumerated fallback is the path unless it is
   added to `learning/requirements.txt` as optional.
+
+## Iteration 5 — 2026-09-25 20:09:14
+### Completed
+- (driver) session ended with outcome `error` without marking the item
+### Blockers
+- see session_it05.log
+### Next
+- revisit or re-open this item
+
+---

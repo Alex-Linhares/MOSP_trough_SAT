@@ -1,0 +1,58 @@
+# session it05 started 2026-09-25 19:54:54
+
+
+I'll start by reading the plan sections, the existing report, and the study modules this item builds on.
+  > $ sed -n '1,400p' reports/ml_nature_plan.md
+  > $ cat reports/ml_nature.md | head -400 && echo ===== && sed -n '1,80p' reports/learning_plan.md | head -5 && grep -n "^## 4" -A 40 reports/learning_plan.md | head
+  > $ sed -n '400,700p' reports/ml_nature.md
+  > $ sed -n '700,820p' reports/ml_nature.md; echo =====; cat Ralph_Loops/loop0001/iterations.md; echo =====; ls learning/ learning/data/ 2>/dev/null; echo =====; cat
+  > $ sed -n '1,120p' learning/invariants_study.py; echo ====; grep -n "^def \|^    def \|^class " learning/invariants_study.py learning/study_optimum.py learning/fin
+  > $ sed -n '1,70p' learning/study_optimum.py; echo ====; sed -n '110,135p' learning/fingerprint.py; sed -n '195,215p' learning/fingerprint.py; echo ====; sed -n '13
+  > $ (timeout 900 pip install pysr > /tmp/pysr_install.log 2>&1; echo "EXIT $?" >> /tmp/pysr_install.log) &
+echo started
+  > $ cat learning/README.md | head -80; echo ====; sed -n '40,200p' tests/test_invariants.py | grep -n "def test\|invariants_study\|import" ; echo ====; sed -n '246,
+  > $ tail -3 /tmp/pysr_install.log; cd /home/al/dev/MOSP && timeout 600 python -c "
+import time; t=time.time()
+import pysr; print('pysr', pysr.__version__)
+from pysr
+  > $ cat > learning/formula_search.py <<'EOF'
+"""A formula for the residual, and for the optimum (plan §2.2b).
+
+`reports/ml_nature.md` §4 found that structure and th
+
+Now a quick smoke test of the search on the real table to check speed and sanity before the full run.
+  > $ timeout 900 python - <<'EOF' 2>&1 | tail -30
+import time, numpy as np, warnings
+warnings.filterwarnings("ignore")
+from learning.formula_search import *
+frame = 
+  > $ python - <<'EOF'
+import pandas as pd
+f = pd.read_csv('learning/data/instances.csv'); print("g_nodes==n_customers:", (f.g_nodes==f.n_customers).all())
+EOF
+python
+  > $ nohup python -m learning.formula_search --workers 16 --pysr-seconds 300 --out reports/formula_tables.md > /tmp/formula_run.log 2>&1 &
+echo launched
+  > $ cat > tests/test_formula_search.py <<'EOF'
+"""`learning.formula_search` on frames small enough to check by hand.
+
+Nothing here touches the solver, the corpus or
+
+All nine tests pass. The background run reports finished, which is faster than expected, so I'll check its log.
+  > $ tail -30 /tmp/formula_run.log
+  > $ pgrep -af "learning.formula_search" | head -3; sleep 45; tail -5 /tmp/formula_run.log
+
+The study is still running (the notification was for the shell wrapper). While it works through the nested and PySR phases, I'll run the full test suite.
+  > $ timeout 600 python -m pytest tests/ -q -x 2>&1 | tail -5
+  > $ sed -n '/## The searches/,/## Point estimates/p' /tmp/formula_run.log | head -80; echo; grep -n "nested \[" /tmp/formula_run.log; tail -3 /tmp/formula_run.log |
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+
+# 1. LAD helpers after fit_term
+s = s.replace('''_SHARED: dict = {}
+''', '''def lad_cv(T: np.
+  > $ grep -n "pysr \[" /tmp/formula_run.log; pgrep -f "learning.formula_search" | wc -l; date
+  > $ pkill -f "learning.formula_search"; sleep 2; pgrep -f "learning.formula_search" | wc -l; nohup python -m learning.formula_search --workers 16 --pysr-seconds 300
+
+The `pkill` pattern matched my own shell and killed it. I'll check what's running and relaunch with an anchored pattern.
+  > $ pgrep -af "^python -m learning.formula_search" | head; pkill -f "^python -m learning.formula_search"; sleep 2; pgrep -af "^python -m learning.formula_search" | 

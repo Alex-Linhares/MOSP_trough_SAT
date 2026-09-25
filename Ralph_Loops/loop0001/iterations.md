@@ -25,7 +25,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       upper bound; report that), a cheap balanced-separator size, and the
       random-intersection parameters `(n, m, p̂)`. Rebuild the table. Report
       grouped permutation importance beside the existing 36.
-- [ ] 05 · §2.2b **A formula for the residual.** Symbolic regression (PySR behind
+- [!] 05 · §2.2b **A formula for the residual.** Symbolic regression (PySR behind
       a soft import; otherwise a small enumerated search over products and ratios
       of ≤ 3 features) for `optimum − lb_best` and for `optimum` from
       structure-only features. Baseline: LightGBM on the same features, grouped.

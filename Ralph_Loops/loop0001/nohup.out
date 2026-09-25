@@ -18,3 +18,9 @@
 [2026-09-25 19:37:24] claude session it04 (cap 3.00 h) -> session_it04.log
 [2026-09-25 19:53:40] session it04: ok (exit 0, 28 tool calls)
 [2026-09-25 19:54:54] tests passed: 728 passed, 2 skipped, 1 xfailed, 147 warnings in 73.39s (0:01:13)
+[2026-09-25 19:54:54] committed ce02cea: 04 · §2.2a Pathwidth-adjacent invariants as features. Add to
+[2026-09-25 19:54:54] === iteration 5: 05 · §2.2b A formula for the residual. Symbolic regression (PySR behind
+[2026-09-25 19:54:54] claude session it05 (cap 3.00 h) -> session_it05.log
+[2026-09-25 20:09:14] session it05: error (exit 143, 22 tool calls)
+[2026-09-25 20:09:14] item not marked by the agent (error); marking - [!] so the loop advances
+[2026-09-25 20:10:27] tests passed: 738 passed, 2 skipped, 1 xfailed, 147 warnings in 72.15s (0:01:12)
