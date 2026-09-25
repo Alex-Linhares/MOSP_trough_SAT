@@ -867,3 +867,272 @@ and this section says which columns to leave out of it: the treewidth
 heuristics track the bound, not the gap. The candidates with any signal on the
 gap are `rig_edge_prob`, `sep_frac`, `fiedler`, `cc_greedy` (ρ = 0.38) and
 `bw_rcm`.
+
+## 5. A formula for the residual, and for the optimum (§2.2b)
+
+*Iteration 7, 2026-09-25 (iteration 5 wrote the search and was cut short before
+its run finished; this iteration finished, fixed the run and wrote it up).
+Code: `learning/formula_search.py`. Regenerate:*
+
+```bash
+python -m learning.dataset --workers 16                                  # if the table is stale (~90 s)
+python -m learning.formula_search --workers 16 --out reports/formula_tables.md   # ~400 s; --no-pysr for the enumerated part alone (~7 min)
+python -m pytest tests/test_formula_search.py -q
+```
+
+*Writes `reports/formula_tables.md` (every table below, in full). The
+enumerated rows regenerate to the digit; the PySR rows do not, because
+multithreaded PySR is not deterministic even with a seed, and see the note on
+Julia crashes under Method.*
+
+**Question.** §4 found that a boosting model on structure and the
+pathwidth-adjacent invariants predicts the optimum as well as the solver's
+bounds do, and that no invariant explains the residual `optimum − lb_best`
+beyond what the bound knows. A boosting model explains nothing. Is there a
+*closed-form* formula in structure-only features for the residual, and one for
+the optimum, and is either clean enough to state as a conjecture?
+
+**Method.** Two feature pools, both without any `lb_*`, `ub_*` or `bound_*`
+column: *structure* (38 columns: the matrix and MOSP-graph features minus
+`g_nodes`, which equals `n_customers`, plus the §4 invariants minus the two
+treewidth heuristics) and *structure + treewidth heuristics* (40). Two
+targets: `optimum − lb_best` (structure pool only, since §4 showed the
+treewidth heuristics track the bound, not the gap) and `optimum` (both pools).
+Two searches. (1) An **enumerated** search over every product and ratio of at
+most three features, `f₁^e₁ · f₂^e₂ · f₃^e₃` with exponents in
+{−2, −1, −½, ½, 1, 2} for one feature, {−1, −½, ½, 1, 2} for two and {−1, 1}
+for three, a negative exponent only on a strictly positive column: 58,221
+terms on the structure pool, 68,690 with the treewidth heuristics. Each term
+`t` is scored as the two-parameter fit `y ≈ a·t + b`, constants fitted on the
+training folds and error measured on the held-out folds of a five-fold grouped
+split: least squares as the first pass over every term, then least absolute
+deviation (the metric is MAE and the target's tail pulls a least-squares line
+off the bulk) for the leading 150, ranked by that. A second stage fits
+`y ≈ a·t₁ + b·t₂ + c` over all pairs of those 150. Splits: grouped by
+`source_file`, grouped by file ∪ MOSP-graph isomorphism class
+(`learning.fingerprint.union_groups`, §1), and random for contrast. Because the
+search *selects* a term by its grouped error, that error is optimistic, so a
+**nested** protocol runs the whole search inside each outer training fold and
+scores its winner on the held-out files; those are the honest numbers.
+(2) **PySR** (`pip install pysr`, optional; Julia bootstraps on first use) with
+`+ − × ÷`, `sqrt`, `square`, `log`, L1 loss, maxsize 20, on every fifth file in
+sorted order held out (124 files, 719 instances), its whole Pareto front scored
+on the held-out rows beside the enumerated winner and boosting fitted on the
+same training rows. Finally the two invariants both searches keep returning
+are tabulated with their **constants fixed by hand** rather than fitted, so
+there is nothing to hold out. *A note on the PySR runs:* PySR 2.5 on this
+machine crashed inside Julia's garbage collector on six of seven fits at 16
+threads and 10,000 iterations (segfault or abort, one of them on the
+wall-clock stop path), whichever process it ran in; at 4 threads and 2,000
+iterations every fit finished. Each fit now runs in a child process with one
+retry, the tables above it are written to disk before PySR starts, and the
+defaults are the ones that survive.
+
+**Baseline.** LightGBM on the same pool and the same grouped folds (the item's
+baseline), the constant formula `residual = 0` (which is `lb_best` itself, MAE
+0.431), and `tw_min_fill + 1`, the best point estimate §4 found (MAE 0.188).
+
+**The searches** (pooled held-out MAE / exact rate of the LAD fit `y ≈ a·t + b`;
+`file` = grouped by file, `class` = grouped by file ∪ isomorphism class,
+`random` leaks isomorphic copies across folds):
+
+| target | pool | split | best monomial | mae | exact | best pair | boosting |
+|---|---|---|---|---|---|---|---|
+| optimum | structure | file | `sqrt(g_degeneracy · bw_rcm)` | 0.672 | 0.671 | 0.576 | 0.390 |
+| optimum | structure | class | same | 0.672 | 0.671 | 0.599 | 1.588 |
+| optimum | structure | random | same | 0.672 | 0.671 | 0.574 | 0.317 |
+| optimum | structure + tw | file | `tw_min_fill` | 0.188 | 0.857 | 0.187 | 0.221 |
+| optimum | structure + tw | class | same | 0.189 | 0.857 | 0.209 | 1.022 |
+| optimum | structure + tw | random | same | 0.188 | 0.857 | 0.186 | 0.200 |
+| optimum − lb_best | structure | file | `g_deg_std · sep_size / g_density` | 0.303 | 0.802 | 0.295 | 0.260 |
+| optimum − lb_best | structure | class | same | 0.302 | 0.803 | 0.307 | 0.428 |
+| optimum − lb_best | structure | random | same | 0.302 | 0.803 | 0.296 | 0.242 |
+
+The formulas do not care which split they are scored under, to three decimals;
+boosting does, badly, under the class grouping (which is a five-region
+hold-out in practice, §4). The LAD constants fitted on all rows are
+
+| target | formula, constants fitted on all 6,376 rows | reads as |
+|---|---|---|
+| optimum | `1.000 · sqrt(g_degeneracy · bw_rcm) + 1.000` | `1 + √(degeneracy × RCM bandwidth)` |
+| optimum | `1.000 · tw_min_fill + 1.000` | `tw_min_fill + 1`, the §4 estimate |
+| optimum − lb_best | `0.0102 · g_deg_std · sep_size / g_density − 0.017` | with `g_density = g_deg_mean / (n − 1)`: `0.01 · (n − 1) · sep_size · (σ_deg / μ_deg)` |
+
+**Nested** (the formula selected on the training files only, scored on the
+held-out files; the honest grouped MAE) and the winners per outer fold:
+
+| target | pool | best monomial | best pair | boosting | winner in the 5 outer folds |
+|---|---|---|---|---|---|
+| optimum | structure | 0.672 | 0.608 | 0.390 | `sqrt(g_degeneracy · bw_rcm)` in 5 of 5 |
+| optimum | structure + tw | 0.188 | 0.187 | 0.221 | `tw_min_fill` in 5 of 5 |
+| optimum − lb_best | structure | 0.304 | 0.300 | 0.260 | `g_deg_std · sep_size / g_density` in 1, `g_deg_std · sep_size / rig_edge_prob` in 4 (MAE 0.3035 vs 0.3034: the same formula, `rig_edge_prob` being the random-model version of `g_density`) |
+
+Selection inflates the monomials' error by at most 0.001, so the grouped
+numbers above are what a fresh file should expect.
+
+**Point estimates of the optimum**, grouped by file, constants refitted per
+fold, the residual formulas added to `lb_best`; `below`/`above` count rounded
+estimates under and over the optimum (a valid lower bound has `above = 0`):
+
+| estimate | mae | exact | below | above | max below | max above |
+|---|---|---|---|---|---|---|
+| `lb_best` (= residual 0) | 0.431 | 0.770 | 1,467 | 0 | 30 | 0 |
+| `ub_best` | 0.239 | 0.846 | 0 | 979 | 0 | 10 |
+| `tw_min_fill + 1` | 0.188 | 0.857 | 481 | 428 | 3 | 7 |
+| `lb_best` + monomial[residual] | 0.303 | 0.802 | 1,024 | 237 | 11 | 10 |
+| `lb_best` + pair[residual] | 0.295 | 0.804 | 909 | 341 | 13 | 11 |
+| `lb_best` + boosting[residual] | 0.260 | 0.814 | 677 | 507 | 9 | 8 |
+| monomial[optimum; structure] | 0.672 | 0.671 | 1,495 | 602 | 34 | 9 |
+| pair[optimum; structure] | 0.576 | 0.667 | 914 | 1,212 | 19 | 9 |
+| boosting[optimum; structure] | 0.390 | 0.738 | 771 | 897 | 7 | 20 |
+| pair[optimum; structure + tw] | 0.187 | 0.860 | 490 | 405 | 3 | 4 |
+| boosting[optimum; structure + tw] | 0.221 | 0.872 | 426 | 388 | 8 | 12 |
+
+By size band (MAE, grouped by file):
+
+| estimate | 1–30 (5,938) | 31–60 (318) | 61–134 (120) |
+|---|---|---|---|
+| `lb_best` | 0.226 | 1.132 | 8.708 |
+| `tw_min_fill + 1` | 0.121 | 0.525 | 2.633 |
+| `lb_best` + monomial[residual] | 0.214 | 0.627 | 3.883 |
+| `lb_best` + boosting[residual] | 0.220 | 0.483 | 1.642 |
+| monomial[optimum; structure] = `1 + √(degeneracy · bw_rcm)` | 0.360 | 1.830 | 13.060 |
+| boosting[optimum; structure] | 0.313 | 1.003 | 2.589 |
+
+By collection the residual monomial beats boosting only on Harvey (0.266 vs
+0.274) and Simonis (0.172 vs 0.184), the two collections that are 90% of the
+corpus and almost all at n ≤ 30; it loses on every other: Faggioli–Bentivoglio
+0.505 vs 0.426, Chu & Stuckey 2.430 vs 1.191, SCOOP 1.245 vs 0.519, Wilson
+1.329 vs 0.286.
+
+**The sandwich**, constants fixed by hand (nothing fitted, nothing held out).
+Degeneracy ≤ treewidth ≤ pathwidth and bandwidth ≥ pathwidth, so
+`g_degeneracy + 1` is a proved lower bound on the optimum and `bw_rcm + 1` a
+proved upper bound; the corpus is checked against both, and the optimum is
+`g_degeneracy + 1 + λ · (bw_rcm − g_degeneracy)` for some λ ∈ [0, 1]:
+
+| estimate | mae | exact | below | above | mae 1–30 | mae 31–60 | mae 61–134 |
+|---|---|---|---|---|---|---|---|
+| `g_degeneracy + 1` | 1.782 | 0.516 | 3,083 | 0 | 1.132 | 4.459 | 26.817 |
+| `bw_rcm + 1` | 1.935 | 0.514 | 0 | 3,097 | 1.302 | 6.566 | 20.983 |
+| `1 + √(g_degeneracy · bw_rcm)` (geometric mean) | 0.672 | 0.671 | 1,495 | 600 | 0.360 | 1.830 | 13.060 |
+| `1 + (g_degeneracy + bw_rcm) / 2` (arithmetic mean) | 0.631 | 0.788 | 930 | 1,146 | 0.374 | 2.239 | 9.125 |
+| `tw_min_fill + 1` | 0.188 | 0.857 | 481 | 428 | 0.121 | 0.525 | 2.633 |
+| `lb_best` | 0.431 | 0.770 | 1,467 | 0 | 0.226 | 1.132 | 8.708 |
+
+| check | value |
+|---|---|
+| `g_degeneracy + 1 > optimum` (must be 0) | 0 |
+| `bw_rcm + 1 < optimum` (must be 0) | 0 |
+| `bw_rcm == g_degeneracy`, so the optimum is forced | 2,823 of 6,376, all with optimum `= g_degeneracy + 1` |
+| λ where the two differ (3,553 instances): quantiles 10/25/50/75/90 | 0 / ⅓ / ½ / ⅔ / 1; mean 0.486 |
+| λ median by band 1–30 / 31–60 / 61–134 | 0.500 / 0.409 / 0.550 |
+| Spearman of λ with `sep_frac`, `g_density`, `rig_edge_prob`, `n_customers` | 0.40, 0.37, 0.36, 0.05 |
+| degree-regular MOSP graphs (`g_deg_std = 0`) | 1,705: 1,669 complete, 34 two-regular Harvey `wbop` (unions of cycles), the 10-regular Miller graph twice |
+| max `optimum − lb_best` on them / mean on the other 4,671 | 0 / 0.588 |
+
+**PySR** on the held-out fifth of the files (719 instances; the enumerated
+monomial and pair selected by grouped CV on the training files only, boosting
+fitted on the same rows):
+
+| target | pool | method | formula | mae | exact |
+|---|---|---|---|---|---|
+| optimum | structure | enumerated monomial | `sqrt(g_degeneracy · bw_rcm)` | 0.820 | 0.680 |
+| optimum | structure | enumerated pair | `0.52 · bw_rcm² / n + 0.48 · sqrt(g_deg_mean · spectral_radius) + 1.47` | 0.618 | 0.677 |
+| optimum | structure | boosting | | 0.358 | 0.783 |
+| optimum | structure | PySR, its own pick (complexity 6) | `distinct_row_frac + sqrt(g_degeneracy · bw_rcm)` | 0.814 | 0.677 |
+| optimum | structure | PySR, best of its front on the held-out rows (18) | `(g_degeneracy / bw_rcm)² + sqrt(bw_rcm · (spectral_radius − g_clustering · sqrt(1.73 · g_deg_std · shape_ratio)))` | 0.525 | 0.745 |
+| optimum | structure + tw | enumerated monomial | `tw_min_fill` | 0.224 | 0.841 |
+| optimum | structure + tw | enumerated pair | `0.91 · tw_min_fill + 0.09 · sqrt(g_deg_mean · tw_min_fill) + 1.02` | 0.208 | 0.844 |
+| optimum | structure + tw | boosting | | 0.229 | 0.869 |
+| optimum | structure + tw | PySR, its own pick (3) | `tw_min_fill + 1` | 0.224 | 0.841 |
+| optimum | structure + tw | PySR, best on held-out (18) | `tw_min_fill + 1 − ((g_deg_mean − 1.04 · tw_min_fill) / (7.1 · (row_std + rig_edge_prob) + 3.2))²` | 0.173 | 0.847 |
+| optimum − lb_best | structure | enumerated monomial | `g_deg_std · sep_size / rig_edge_prob` | 0.345 | 0.772 |
+| optimum − lb_best | structure | enumerated pair | `0.0079 · g_deg_std · sep_size / rig_edge_prob + 0.0041 · bw_rcm / (row_min · col_max_frac) − 0.037` | 0.341 | 0.775 |
+| optimum − lb_best | structure | boosting | | 0.276 | 0.815 |
+| optimum − lb_best | structure | PySR, its own pick (6) | `(0.070 · (bw_rcm − g_deg_mean))²` | 0.321 | 0.787 |
+| optimum − lb_best | structure | PySR, best on held-out (13) | `((g_components · rig_edge_prob · distinct_row_frac − 0.89)² · distinct_row_frac · g_deg_std)²` | 0.235 | 0.801 |
+
+"Best on held-out" picks among the ≤ 20 equations of a Pareto front by their
+score on the test rows, so it is optimistic by that selection; PySR's own pick
+is chosen from training loss alone. The fronts themselves are in
+`reports/formula_tables.md`. For the residual the front reads, in order of
+complexity: `0`, `spectral_radius − g_deg_mean`, `(0.19 · g_deg_std)²`,
+`0.09 · (bw_rcm − g_degeneracy)`, `(0.07 · (bw_rcm − g_deg_mean))²`, then
+`g_deg_std` times a squared sparsity term from complexity 7 on — the degree
+spread, and the width of the sandwich, and nothing else.
+
+**Finding.** There is no clean formula for the residual. The best closed form
+in the structure features is `optimum − lb_best ≈ 0.01 · g_deg_std · sep_size /
+g_density − 0.02`, grouped MAE 0.303 (0.304 nested) against 0.431 for the
+constant zero and 0.260 for LightGBM on the same pool: a formula recovers
+three quarters of what boosting recovers, and its constants are not ones
+anybody would conjecture. What the term says is intelligible even so. Since
+`g_density = g_deg_mean / (n − 1)`, it is `(n − 1) · sep_size · σ_deg / μ_deg`:
+the residual grows with the *dispersion of the degree sequence*, times the
+separator size. That is the same fact §4 reached through correlations and
+`CLAUDE.md` records from the bound side, that the degree-based bounds saturate
+at the average degree, now with the degree spread as the explicit variable:
+on the 1,721 instances where the term is zero the gap is zero on 99.8%, and
+on the 1,705 degree-regular graphs it is zero on every one — but those are
+complete graphs, unions of cycles and one Miller graph, where a tight bound
+is a triviality rather than a finding, so no conjecture is stated for the
+residual. For the *optimum*, the clean formula exists and is the same in both
+searches: with the treewidth heuristics allowed it is `tw_min_fill + 1`, LAD
+constants (1.000, 1.000), MAE 0.188, and nothing the enumerator or the pair
+stage adds improves it beyond 0.187; without them it is
+`1 + √(g_degeneracy · bw_rcm)`, again with constants exactly (1, 1), chosen in
+all five outer folds, MAE 0.672 and exact on 67.1% — the geometric mean of a
+proved lower bound and a proved upper bound on the optimum. That is the
+finding worth keeping: the two invariants the searches converge on sit on
+opposite sides of the optimum, `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1` holds
+on all 6,376 instances (as the two theorems behind it require, a
+whole-corpus consistency check that passed), they coincide and force the
+optimum on 2,823 of them, and where they differ the optimum sits at the
+midpoint on median, with interquartile range ⅓–⅔, its position λ tracking
+sparsity (Spearman 0.40 with the separator fraction) and not size (0.05).
+PySR's whole Pareto front for the optimum is that same statement written out,
+`g_degeneracy + 1 + λ(·) · (bw_rcm − g_degeneracy)` with λ a function of
+`sep_frac`, `row_mean` or `n_ones`; in this run PySR's own pick for the optimum from structure alone is
+`distinct_row_frac + sqrt(g_degeneracy · bw_rcm)`, the enumerated formula
+found by a second method, and with the treewidth heuristics allowed its pick
+is `tw_min_fill + 1`, held-out MAE 0.224 against boosting's 0.229. The one
+place a formula beats boosting is the residual on the held-out files: PySR's
+`((g_components · rig_edge_prob · distinct_row_frac − 0.89)² · distinct_row_frac · g_deg_std)²`
+scores 0.235 against boosting's 0.276, selected on the test rows and so
+optimistic, and it is again the degree standard deviation times a sparsity
+term; its own pick, `(0.07 · (bw_rcm − g_deg_mean))²` at 0.321, says the gap
+grows with the square of how far the bandwidth runs above the mean degree. **None of this is a
+bound.** `1 + √(g_degeneracy · bw_rcm)` is below the optimum on 1,495 instances
+and above it on 600, by up to 34 and 9; the residual formula added to
+`lb_best` overshoots on 237; the geometric mean is *worse* than `lb_best` at
+61–134 customers (13.06 vs 8.71), because on the sparse Chu & Stuckey graphs
+`bw_rcm` runs far above the pathwidth. And the one clean lower bound in it,
+`g_degeneracy + 1`, is dominated by the contraction degeneracy + 1 that
+`_lower_bound` already computes (contraction degeneracy ≥ degeneracy), so
+there is nothing here to hand to the bound work; a conjecture of the form
+"pathwidth ≥ f(·)" would have to come from a different family than degree
+statistics, which is what §4's kill statement already said.
+
+**Size range covered.** 9–134 customers, 5,938 of 6,376 at n ≤ 30. Every
+grouped MAE in the searches is dominated by that band. At 31–60 (318
+instances) the residual formula is at 0.627 against boosting's 0.483 and
+`lb_best`'s 1.132; at 61–134 (120 instances) it is 3.88 against 1.64 and 8.71,
+and no formula here predicts the optimum at that size. The sandwich
+inequalities and the forced-optimum count are whole-corpus properties and
+hold at every size; the λ ≈ ½ statement rests on 3,169 instances at n ≤ 30,
+266 at 31–60 and 118 above, with the same median in each band to within 0.1.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound` and
+every decision path are untouched; nothing was written to `solutions/`. No
+finding rests on a handful of instances: the two inequalities and the forced
+count are corpus-wide, and the 36 non-complete regular graphs are all
+certified by their bound (`lb_best = optimum`), which is a proof independent
+of any search refutation, so nothing was re-certified.
+
+**For §2.3 and the next loop.** The residual's variable is degree dispersion,
+so the gap-vs-tight classifier of §2.3 should start from `g_deg_std / g_deg_mean`
+and `sep_size` beside `rig_edge_prob` and `sep_frac`. For §2.5 (does the optimum
+concentrate on random instances) the sandwich is the natural frame: on
+`G(n, m, p)` the degeneracy and RCM bandwidth have their own concentration
+results, and the question becomes whether λ concentrates at ½.

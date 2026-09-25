@@ -25,6 +25,8 @@ from learning.formula_search import (  # noqa: E402
     nested,
     ols_cv,
     pair_search,
+    pysr_front,
+    sandwich_table,
     search,
 )
 
@@ -136,3 +138,55 @@ def test_lad_constants_follow_the_bulk_not_the_tail():
     assert abs(a_ols - 1.0) > 0.05
     mae, exact = lad_cv(t[None, :], y, folds_of(None, 40, n_splits=4))
     assert exact[0] >= 0.95 and mae[0] < 2.0
+
+
+def test_pysr_child_failure_is_an_exception_not_a_crash(tmp_path):
+    # The child is a separate interpreter; here it is given a single training
+    # row, which the child rejects before Julia boots, and the failure must
+    # come back as an error the study records as one failed row. Runs without
+    # pysr installed too, and never starts Julia.
+    X = np.array([[1.0, 2.0]])
+    y = np.array([3.0])
+    with pytest.raises(RuntimeError, match="PySR child exited"):
+        pysr_front(X, y, X, ["a", "b"], seconds=1, threads=1)
+
+
+def _sandwich_frame():
+    return pd.DataFrame({
+        "g_degeneracy": [2, 1, 1, 2], "bw_rcm": [2, 3, 5, 4], "optimum": [3, 3, 2, 5],
+        "tw_min_fill": [2, 1, 1, 3], "lb_best": [3, 2, 2, 3], "n_customers": [5, 6, 8, 40],
+        "g_deg_std": [0.0, 0.5, 1.0, 1.0], "g_density": [1.0, 0.4, 0.3, 0.2],
+    })
+
+
+def test_sandwich_table_by_hand():
+    res = sandwich_table(_sandwich_frame())
+    checks = res["checks"]
+    assert checks["g_degeneracy + 1 > optimum (must be 0)"] == 0
+    assert checks["bw_rcm + 1 < optimum (must be 0)"] == 0
+    assert checks["bw_rcm == g_degeneracy (optimum forced)"] == 1
+    assert checks["of those with optimum == g_degeneracy + 1"] == 1
+    assert checks["bw_rcm > g_degeneracy"] == 3
+    # λ = (3-1-1)/(3-1), (2-1-1)/(5-1), (5-1-2)/(4-2) = 0.5, 0, 1
+    assert checks["λ mean"] == pytest.approx(0.5)
+    assert checks["λ quantiles 10/25/50/75/90"].split(" / ")[2] == "0.500"
+    assert checks["degree-regular graphs (g_deg_std == 0)"] == 1
+    assert checks["of those complete (g_density == 1)"] == 1
+    assert checks["max gap optimum − lb_best on regular graphs"] == 0.0
+    assert checks["mean gap on the rest"] == pytest.approx((1 + 0 + 2) / 3)
+    table = res["table"].set_index("estimate")
+    lower = table.loc["g_degeneracy + 1"]
+    assert (lower["mae"], lower["exact"], lower["below"], lower["above"]) == pytest.approx((0.75, 0.5, 2, 0))
+    geo = table.loc["1 + sqrt(g_degeneracy · bw_rcm)"]
+    assert geo["mae"] == pytest.approx((0 + (2 - np.sqrt(3)) + (np.sqrt(5) - 1) + (4 - np.sqrt(8))) / 4)
+    assert (geo["below"], geo["above"]) == (1, 1)
+    bands = res["lambda_by_band"].set_index("band")
+    assert bands.loc["1-30", "λ median"] == pytest.approx(0.25)
+    assert bands.loc["31-60", "λ mean"] == pytest.approx(1.0)
+
+
+def test_sandwich_table_sees_a_planted_violation():
+    frame = _sandwich_frame()
+    frame.loc[3, "optimum"] = 2          # below g_degeneracy + 1 = 3
+    checks = sandwich_table(frame)["checks"]
+    assert checks["g_degeneracy + 1 > optimum (must be 0)"] == 1

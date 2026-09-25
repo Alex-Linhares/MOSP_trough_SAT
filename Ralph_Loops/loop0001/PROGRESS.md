@@ -3,7 +3,7 @@
 ## Ralph Loop 0001 Status
 - **Started**: 2026-09-25
 - **Target**: 8 items
-- **Current**: 4/8 SOLVED
+- **Current**: 5/8 SOLVED
 
 ---
 
@@ -251,3 +251,74 @@ None.
 - revisit or re-open this item
 
 ---
+## Iteration 7 — 2026-09-25 21:25
+
+Item 05 · §2.2b A formula for the residual. **SOLVED.** (Iteration 5 wrote
+`learning/formula_search.py` and its tests, then killed its own shell with a
+bare `pkill -f`; the iteration numbered 7 before this one worked on item 07
+and errored. This iteration finished item 05 on the committed code.)
+
+### Completed
+- `learning/formula_search.py`, built on iteration 5's module: enumerated
+  search over 58,221 / 68,690 monomials of ≤ 3 features (LAD constants after
+  an OLS first pass), pair stage, nested protocol, LightGBM baseline, PySR on
+  a held-out fifth of the files, plus a new **sandwich table** with constants
+  fixed by hand (`g_degeneracy + 1`, `bw_rcm + 1`, their geometric and
+  arithmetic means, the distribution of the optimum's position λ between
+  them, the gap on degree-regular graphs). PySR now runs in a child process
+  (`--pysr-child`, internal) with one retry, bounded by iterations on
+  `--pysr-threads 4` (default 2,000): PySR 2.5 / Julia on this machine
+  crashed in the garbage collector on six of seven fits at 16 threads and
+  10,000 iterations, in-process or in a child, on or off the wall-clock stop
+  path; every fit at 4 threads / 2,000 iterations finished. The tables above
+  PySR are flushed to `--out` before it starts. Full run 400 s on 16 workers;
+  writes `reports/formula_tables.md`.
+- `tests/test_formula_search.py`: 13 tests (iteration 5's ten, plus the
+  sandwich table on a four-row hand-computed frame, a planted bound
+  violation, and the PySR child's failure path, which fails before Julia
+  boots). Full suite: see below.
+- `reports/ml_nature.md` §5 written; `pysr` added to
+  `learning/requirements.txt` as optional.
+- Findings: no clean formula for the residual — the best is
+  `0.01 · g_deg_std · sep_size / g_density − 0.02`, grouped MAE 0.303 (0.304
+  nested) vs 0.431 for the constant zero and 0.260 for LightGBM; with
+  `g_density = g_deg_mean / (n − 1)` it reads `(n − 1) · sep_size · σ_deg / μ_deg`,
+  so the residual's variable is degree dispersion, and on the 1,705
+  degree-regular graphs (complete graphs, Harvey's unions of cycles, one
+  Miller graph) the gap is zero every time, which is a triviality, so no
+  conjecture is stated. For the optimum the clean formulas exist and both
+  searches agree: `tw_min_fill + 1` (MAE 0.188, constants exactly 1 and 1)
+  and, from structure alone, `1 + sqrt(g_degeneracy · bw_rcm)` (0.672, exact
+  67.1%, constants exactly 1 and 1, chosen in all five outer folds, and PySR's
+  own pick too): the geometric mean of a proved lower bound and a proved upper
+  bound. `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1` holds on all 6,376 (a
+  consistency check against two theorems), the two coincide and force the
+  optimum on 2,823, and where they differ λ has median ½ and IQR ⅓–⅔ in
+  every size band, tracking sparsity (Spearman 0.40 with `sep_frac`) and not
+  size (0.05). PySR beats boosting only on the residual on the held-out files
+  (0.235 vs 0.276, selected on the test rows), again with `g_deg_std` times
+  a sparsity term. None of it is a bound: the geometric mean is below the
+  optimum on 1,495 instances and above on 600, and worse than `lb_best` at
+  61–134 customers; `g_degeneracy + 1` is dominated by the contraction
+  degeneracy the solver already uses, so nothing goes to the bound work.
+
+### Blockers
+None. Nothing written to `solutions/`; no solver file touched; the running
+`benchmarks.recertify` was not touched (its 12 processes were counted before
+and after every process kill in this session).
+
+### Next
+- Item 06 (§2.3 where the bounds fail): iteration 6 left `learning/bound_gap.py`
+  and `tests/test_bound_gap.py` committed with a `reports/bound_gap_tables.md`
+  run but no report section; read PROGRESS.md's iteration 6 entry and
+  `session_it06.log` first. §5 says the classifier should start from
+  `g_deg_std / g_deg_mean` and `sep_size` beside `rig_edge_prob` and `sep_frac`.
+- Item 07 (§2.6a): an earlier iteration 7 left `learning/distil.py`; check
+  its state before rebuilding.
+- For §2.5 next loop: the sandwich `g_degeneracy + 1 ≤ optimum ≤ bw_rcm + 1`
+  is the frame; the question is whether λ concentrates at ½ on `G(n, m, p)`.
+- PySR caveat for any later symbolic-regression item: keep 4 threads and an
+  iteration bound; do not rely on `timeout_in_seconds`.
+
+---
+

@@ -12,3 +12,7 @@ umap-learn
 # Optional, behind a soft import in learning/bound_gap.py: the explainable
 # boosting machine beside the depth-3 tree. Without it the EBM rows are skipped.
 interpret-core
+# Optional, behind a soft import in learning/formula_search.py: symbolic
+# regression (bootstraps Julia on first use). Without it the enumerated search
+# runs alone and the PySR section of the tables says so.
+pysr

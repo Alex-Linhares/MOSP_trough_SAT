@@ -1,24 +1,163 @@
-# session it07 started 2026-09-25 20:21:22
+# session it07 started 2026-09-25 20:28:58
 
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
 
-I'm iteration 7: distil the closing policy. I'll start by reading the plan, the policy module, and the current state of the loop files.
-  > $ cat Ralph_Loops/loop0001/iterations.md && echo ---- && git status --short | head -30 && echo ---- && date && nproc && pgrep -f benchmarks.recertify | head
-  > $ sed -n '1,80p' reports/ml_nature_plan.md && echo ======= && grep -n "2.6" reports/ml_nature_plan.md | head && echo ====== && grep -n "^## \|^### " reports/ml_na
-  > $ sed -n '165,186p;240,300p' reports/ml_nature_plan.md && echo ===== && grep -n "^## \|^### " reports/learning_plan.md | head -30 && echo ===== && sed -n '/^## 4/
+I'm iteration 7, working on item 05 (a formula for the residual). Let me first read the plan, the existing `learning/formula_search.py` left by iteration 5, and the logs of iterations 5 and 6.
+  > $ ls learning/ && echo ---- && wc -l learning/formula_search.py 2>/dev/null; echo ----; git status --short | head -30; echo ----; git log --oneline -3; echo ----;
+  > $ cat Ralph_Loops/loop0001/iterations.md; echo ----; cat Ralph_Loops/loop0001/status.json; echo ----; tail -60 Ralph_Loops/loop0001/session_it05.log; echo ======;
+  > $ sed -n '1,200p' learning/formula_search.py
+  > $ sed -n '200,520p' learning/formula_search.py
+  > $ sed -n '520,794p' learning/formula_search.py
+  > $ ls -la tests/test_formula_search.py reports/formula_tables.md /tmp/formula_run.log 2>&1; echo ----; grep -n "^## \|^# " reports/ml_nature.md; echo ----; python 
+  > $ head -60 /tmp/formula_run.log; echo ......; grep -n "^  \[\|nested \[\|pysr \[\|^## \|Traceback\|Error" /tmp/formula_run.log | head -40; echo ......; tail -15 /
+  > $ grep -n "^## \|^### " reports/ml_nature_plan.md | head -40; echo ----; sed -n '/^## 0/,/^## 1/p' reports/ml_nature_plan.md | head -60; echo ----; grep -n "2.2b\
+  > $ sed -n '85,108p' reports/ml_nature_plan.md; echo ----; sed -n '256,300p' reports/ml_nature_plan.md; echo ----; grep -n "^## 4" -A 30 reports/learning_plan.md | 
+  > $ cat tests/test_formula_search.py; echo ----; git log --oneline -- learning/formula_search.py tests/test_formula_search.py; git diff --stat HEAD -- learning test
 
-Now the policy module itself, which is the pattern I must follow, plus the report and iteration 5/6 logs in the same pass.
-  > $ wc -l learning/policy.py && cat learning/policy.py
+Tests and the full study are independent, so I'll run the module's tests and launch the full study run at the same time.
+  > $ nohup python -m learning.formula_search --workers 16 --pysr-seconds 300 --out reports/formula_tables.md > /tmp/formula_run_it07.log 2>&1 &
+echo launched $!
+  > $ timeout 600 python -m pytest tests/test_formula_search.py -q 2>&1 | tail -4
 
-Next I need the heuristics helpers the policy uses, the current report's section list and style, what iterations 5 and 6 left behind, and the grouping helper. All independent, so one batch.
-  > $ grep -n "^def \|^class \|^STRATEGIES\|^_STRATEGIES" satisfiability/heuristics.py | head -60 && echo ===== && sed -n '/^def _neighbour_masks/,/^def /p' satisfiab
-  > $ sed -n '229,253p' satisfiability/heuristics.py && echo ===== && sed -n '271,290p' satisfiability/heuristics.py && echo ===== && grep -n "^## \|^### " reports/ml
-  > $ git log --stat -3 --format='%h %s' | head -40 && echo ===== && tail -30 reports/ml_nature.md | cut -c1-200 && echo ===== && grep -n "band\|BANDS" learning/invar
-  > $ (OMP_NUM_THREADS=16 timeout 900 python - > /tmp/fit_timing.log 2>&1 <<'EOF'
-import time
-from learning.policy import _corpus, _fit, training_rows, witness_closin
-  > $ cat /tmp/fit_timing.log; grep -n "Pool\|get_context\|fork\|spawn" learning/corpus_sweep.py learning/invariants_study.py learning/bound_gap.py | head; grep -n "^
+While the study runs, I'll read the style of the existing §4 in the report and check progress on the run.
+  > $ sed -n '591,640p' reports/ml_nature.md; echo .....; tail -40 reports/ml_nature.md; echo ----; tail -5 /tmp/formula_run_it07.log
 
-Now I'll write the study module in one go.
-  > Write /home/al/dev/MOSP/learning/distil.py
+The run is going (LAD is already tighter than iteration 5's OLS pass). I'll load the Monitor tool to wait on it, and meanwhile check the constant-residual baseline that the report needs.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! kill -0 3037639 2>/dev/null; do sleep 10; done; echo "run finished"; tail -3 /tmp/formula_run_it07.log
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv('learning/data/instances.csv')
+gap = f.optimum - f.lb_best
+print("n", len(f), "mean gap (const
+  > $ cat learning/README.md | head -80; echo ----; git show --stat HEAD~2 | head -20; echo ----; tail -4 /tmp/formula_run_it07.log
+  > Monitor {"command": "tail -f /tmp/formula_run_it07.log | grep -E --line-buffered \"nested \\[|pysr \\[|Traceback|Error|wrote |s 
 
-Two fixes before a smoke run: the held-out sample must come from the same random stream as `policy.evaluate` so the ranker's numbers reproduce, and the weights helper is clumsier than it needs to be.
+While waiting, I'll block on the run in the foreground in bounded steps so the session stays alive.
+  > $ for i in $(seq 1 56); do kill -0 3037639 2>/dev/null || break; sleep 10; done; grep -E "nested \[|pysr \[|Traceback|s total" /tmp/formula_run_it07.log | tail; k
+
+The process exited after the first PySR target without writing the tables. Let me see how it ended.
+  > $ grep -n "pysr \[" /tmp/formula_run_it07.log; sed -n "$(grep -n 'pysr \[optimum | structure\]' /tmp/formula_run_it07.log | cut -d: -f1),+60p" /tmp/formula_run_it
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+
+old_pysr = s[s.index('def pysr_search('):s.index('# -----------------------------------------
+
+Next I need a quick smoke test of the child-process path and the relaunched full run; the two are independent, so I'll start both now.
+  > $ nohup python -m learning.formula_search --workers 16 --pysr-seconds 300 --out reports/formula_tables.md > /tmp/formula_run_it07b.log 2>&1 &
+echo launched $!
+  > $ timeout 900 python - <<'EOF' 2>&1 | tail -8
+import numpy as np, time
+from learning.formula_search import pysr_front
+rng = np.random.default_rng(0)
+X = rng.unifo
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('''2. **PySR** (soft import; `pip install pysr`, which bootstraps Julia on first
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('''    data = np.load(inp, allow_pickle=False)
+    names = [str(c) for c in data
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -3
+
+Full suite passes (748 passed; slower than usual because the study is sharing the machine). Now I'll wait for the study run in bounded foreground steps.
+  > $ for i in $(seq 1 57); do kill -0 3042329 2>/dev/null || break; sleep 10; done; grep -E "nested \[|pysr \[|Traceback|s total|wrote" /tmp/formula_run_it07b.log | 
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('''def pysr_search(X: np.ndarray, y: np.ndarray, names: list[str], seconds: int,
+  > $ sed -n '/^## The searches/,/^## Leading monomials — target `optimum`, pool `structure`, grouped/p' reports/formula_tables.md | head -30; echo ======; sed -n '/^
+  > $ sed -n '/^## Leading monomials — target `optimum`, pool `structure`, grouped/,/^## Leading monomials — target `optimum − lb_best`/p' reports/formula_tables.md |
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/12577c41-7101-4638-b007-8765a211c262/tool-results/b2a0ozivo.txt; grep -n "^## \|^### \|^======" $F; echo; sed -n '
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/12577c41-7101-4638-b007-8765a211c262/tool-results/b2a0ozivo.txt; sed -n '82,125p' $F | grep -E "band|lb_best  |ub_
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/12577c41-7101-4638-b007-8765a211c262/tool-results/b2a0ozivo.txt; sed -n '248,330p' $F
+  > $ cat /tmp/probe_a.log /tmp/probe_b.log | grep -E "^OK|^FAIL"; echo; pgrep -af "pysr_probe|pysr-child" | grep -v grep | wc -l
+  > $ timeout 900 python /tmp/pysr_probe.py 100000 100 16 2>&1 | grep -E "^OK|^FAIL"
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('''   Each PySR fit runs in a
+   child process (`--pysr-child`, internal): Julia
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv('learning/data/instances.csv')
+opt = f.optimum; d = f.g_degeneracy; bw = f.bw_rcm; n = f.n_cus
+  > $ PG=$(ps -o pgid= -p 3113954 | tr -d ' '); echo "pgid $PG"; pgrep -af "^python -m learning.formula_search" | wc -l; kill -TERM -- -$PG 2>/dev/null; sleep 3; pgre
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/12577c41-7101-4638-b007-8765a211c262/tool-results/b2a0ozivo.txt; sed -n '126,247p' $F | grep -E "collection|lb_bes
+
+Next I'll add the sandwich table to the module, smoke it on the corpus, and relaunch the full run in one step.
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+
+# 1. the sandwich table, placed before the `_md` helper
+anchor = 'def _md(table: pd.DataFrame
+  > $ python - <<'EOF'
+p='tests/test_formula_search.py'; s=open(p).read()
+s = s.replace('''    pysr_front,
+    search,
+)''', '''    pysr_front,
+    sandwich_table,
+  
+  > $ timeout 300 python -m pytest tests/test_formula_search.py -q -k by_hand 2>&1 | grep -E "^E " | head -6
+
+My hand arithmetic for one row was off (the error on row 1 is `2 − √3`, not `√3 − 1`). Fixing the test and checking the run's progress at the same time.
+  > $ sed -i 's/assert geo\["mae"\] == pytest.approx((0 + (np.sqrt(3) - 1) + (np.sqrt(5) - 1) + (4 - np.sqrt(8))) \/ 4)/assert geo["mae"] == pytest.approx((0 + (2 - n
+  > $ grep -E "^\s+\[|nested \[|pysr \[|Traceback|s total" /tmp/formula_run_it07d.log | tail -5; date
+  > $ grep -n "recertify\|def _recertify\|solve_mosp_exact\|decide" learning/canonical.py | head -20; echo ----; python - <<'EOF'
+import pandas as pd
+f = pd.read_csv(
+
+What I need next is just the finished tables; nothing else is outstanding. I'll wait on the run in bounded steps.
+  > $ for i in $(seq 1 57); do kill -0 3114956 2>/dev/null || break; sleep 10; done; grep -E "nested \[|pysr \[|Traceback|s total|wrote" /tmp/formula_run_it07d.log | 
+  > $ cat > /tmp/pysr_probe2.py <<'EOF'
+import sys, time, numpy as np, warnings
+warnings.filterwarnings("ignore")
+from learning.formula_search import *
+tname, pname, 
+  > $ sed -n '/^## The sandwich/,/^## Nested/p' reports/formula_tables.md | grep -v "^$"
+  > $ cat /tmp/p2a.log /tmp/p2b.log /tmp/p2c.log | grep -E "^OK|^FAIL"; pgrep -af "pysr_probe2|pysr-child" | grep -v grep | wc -l; date
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('"λ mean": float(lam.mean()),', '"λ mean": round(float(lam.mean()), 3),')
+s = s.
+  > $ for i in $(seq 1 54); do [ "$(pgrep -f 'pysr_probe2' | wc -l)" = "0" ] && break; sleep 10; done; cat /tmp/p2a.log /tmp/p2b.log /tmp/p2c.log | grep -E "^OK|^FAIL
+  > $ python - <<'EOF'
+p='learning/formula_search.py'; s=open(p).read()
+s = s.replace('''   The search is bounded by iterations
+   (`--pysr-iterations`, 10,000 ≈ 3-5 
+
+The run is relaunched. While it works through the enumerated stage, I'll draft the report section with placeholders for the PySR rows and total time, which are the only numbers still pending.
+  > Write /tmp/section5.md
+  > $ for i in $(seq 1 57); do kill -0 3128136 2>/dev/null || break; sleep 10; done; grep -E "nested \[|pysr \[|Traceback|s total|wrote" /tmp/formula_run_it07e.log | 
+  > $ sed -n '/^## PySR on a held-out/,$p' reports/formula_tables.md
+  > $ nohup python -m pytest tests/ -q -x > /tmp/full_tests_it07.log 2>&1 &
+cd /home/al/dev/MOSP && git status --short -- solutions/ | wc -l; git status --short | gre
+  > $ python - <<'EOF'
+s = open('/tmp/section5.md').read()
+s = s.replace('{{TOTAL}}', '400')
+pysr_table = '''| target | pool | method | formula | mae | exact |
+|---|-
+  > $ python - <<'EOF'
+p='Ralph_Loops/loop0001/iterations.md'; s=open(p).read()
+s = s.replace('- [ ] 05 · §2.2b **A formula for the residual.**', '- [x] 05 · §2.2b **
+
+The report, PROGRESS.md and iterations.md are written. The only thing left is the full test suite's verdict, which is at 76%, so I'll wait for it and check for stray processes at the same time.
+  > $ for i in $(seq 1 40); do pgrep -f "pytest tests/ -q -x" > /dev/null || break; sleep 5; done; tail -2 /tmp/full_tests_it07.log; echo ----; pgrep -af "learning.fo
+
+Item 05 is done. The full suite passes (750 passed, 2 skipped, 1 xfailed, 77 s), no study or PySR processes remain, the recertify run still has its 12 processes, and nothing was written to `solutions/` or any solver file.
+
+**What this iteration delivered**
+
+- `learning/formula_search.py`, finished from iteration 5's committed module: enumerated monomial and pair search with least-absolute-deviation constants, nested protocol, LightGBM baseline, PySR on a held-out fifth of the files, and a new sandwich table with hand-fixed constants. Full run takes about 400 s on 16 workers and writes `reports/formula_tables.md`.
+- PySR was the reason iteration 5 never produced tables. Julia's garbage collector crashed on six of seven fits at 16 threads and 10,000 iterations, in-process or in a fresh child, with or without hitting the wall-clock stop. Each fit now runs in a child process with one retry at 4 threads and 2,000 iterations, which finished every time, and the enumerated tables are flushed to disk before PySR starts.
+- Three new tests (13 total in the module): the sandwich table on a four-row hand-computed frame, a planted bound violation, and the child's failure path. `pysr` is now an optional entry in `learning/requirements.txt`.
+- Section 5 appended to `reports/ml_nature.md`; PROGRESS.md gained the Iteration 7 entry and now reads 5/8 solved; item 05 is marked done.
+
+**Findings, in brief**
+
+- No clean formula for the residual. The best closed form scores grouped MAE 0.303 against 0.431 for the constant zero and 0.260 for LightGBM. Its variable is degree dispersion times separator size, and on every degree-regular graph in the corpus the gap is zero, but those are complete graphs, unions of cycles and one Miller graph, so no conjecture is stated.
+- The optimum does have a clean formula, and both searches agree on it. With treewidth heuristics allowed it is `tw_min_fill + 1`. From structure alone it is `1 + sqrt(degeneracy · RCM bandwidth)`, constants exactly 1 and 1, chosen in all five outer folds and by PySR independently.
+- That formula is the geometric mean of a proved lower bound and a proved upper bound. The sandwich `degeneracy + 1 ≤ optimum ≤ bandwidth + 1` holds on all 6,376 instances, forces the optimum on 2,823 where the two coincide, and where they differ the optimum sits at the midpoint on median in every size band, tracking sparsity rather than size.
+- None of it is a bound. The geometric mean is below the optimum on 1,495 instances and above on 600, and worse than the solver's bound at 61 to 134 customers. The one clean lower bound in it is dominated by the contraction degeneracy the solver already computes, so nothing goes to the bound work.
+
+**Next iteration** should take item 06, where iteration 6 left `learning/bound_gap.py` and its tests committed with a table run but no report section. Section 5 suggests starting its classifier from the degree coefficient of variation and separator size.
+
+# result: success in 3276s, 60 turns, cost $12.51

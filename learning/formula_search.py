@@ -28,7 +28,11 @@ Two searches, the first of them the one every number in the report rests on:
 2. **PySR** (soft import; `pip install pysr`, which bootstraps Julia on first
    use) with the same operators plus `sqrt`, `square` and `log`, on a held-out
    fifth of the files, so its Pareto front can be read beside the enumerated
-   winner and the boosting baseline on the same rows.
+   winner and the boosting baseline on the same rows. Each PySR fit runs in a
+   child process (`--pysr-child`, internal): Julia's garbage collector aborts
+   a process that has forked a `multiprocessing` pool, which the enumerated
+   search does, and a child that dies costs one row rather than the run.
+   The tables above it are written to `--out` before PySR starts.
 
 Every split groups: by `source_file`, by file ∪ MOSP-graph isomorphism class
 (`learning.fingerprint.union_groups`, §1), and random for contrast. Because the
@@ -484,14 +488,17 @@ def pysr_available() -> bool:
 
 
 def pysr_search(X: np.ndarray, y: np.ndarray, names: list[str], seconds: int,
-                seed: int = 0, threads: int = 16):
-    """A PySR run bounded by wall-clock; returns the fitted regressor."""
+                seed: int = 0, threads: int = 16, niterations: int = 10_000):
+    """A PySR run bounded by wall-clock; returns the fitted regressor. Call it
+    only through `pysr_front`, which runs it in a child process: Julia must
+    never share a process with a `multiprocessing` fork pool (the enumerated
+    search forks one), or its garbage collector aborts the interpreter."""
     os.environ.setdefault("PYTHON_JULIACALL_THREADS", str(threads))
     os.environ.setdefault("PYTHON_JULIACALL_HANDLE_SIGNALS", "yes")
     from pysr import PySRRegressor
 
     model = PySRRegressor(
-        niterations=10_000, timeout_in_seconds=seconds,
+        niterations=niterations, timeout_in_seconds=seconds,
         binary_operators=["+", "-", "*", "/"],
         unary_operators=["sqrt", "square", "log"],
         maxsize=20, populations=24, elementwise_loss="L1DistLoss()",
@@ -500,6 +507,56 @@ def pysr_search(X: np.ndarray, y: np.ndarray, names: list[str], seconds: int,
     )
     model.fit(X, y, variable_names=names)
     return model
+
+
+def pysr_front(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, names: list[str],
+               seconds: int, seed: int = 0, threads: int = 16, niterations: int = 10_000) -> list[dict]:
+    """Fit PySR in a fresh child process and return its Pareto front: one dict
+    per equation with `complexity`, `train_loss`, `equation`, `chosen` (PySR's
+    own pick) and `pred`, the equation evaluated on `X_test`. A child that
+    dies takes only its own row with it."""
+    import json
+    import subprocess
+    import sys
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        inp = Path(tmp) / "in.npz"
+        out = Path(tmp) / "out.json"
+        np.savez(inp, X_train=X_train, y_train=y_train, X_test=X_test,
+                 names=np.array(names), seconds=seconds, seed=seed, threads=threads,
+                 niterations=niterations)
+        proc = subprocess.run([sys.executable, "-m", "learning.formula_search",
+                               "--pysr-child", str(inp), str(out)],
+                              capture_output=True, text=True, timeout=max(600, 4 * seconds))
+        if proc.returncode != 0 or not out.exists():
+            tail = (proc.stderr or proc.stdout).strip().splitlines()[-3:]
+            raise RuntimeError(f"PySR child exited {proc.returncode}: {' | '.join(tail)}")
+        rows = json.loads(out.read_text())
+    for row in rows:
+        row["pred"] = np.asarray(row["pred"], dtype=float)
+    return rows
+
+
+def _pysr_child(inp: Path, out: Path) -> None:
+    """Entry point of the child process behind `pysr_front`."""
+    import json
+
+    data = np.load(inp, allow_pickle=False)
+    names = [str(c) for c in data["names"]]
+    if len(data["y_train"]) < 2 or not np.isfinite(data["X_train"]).all():
+        raise ValueError("PySR needs at least two finite training rows")   # before Julia boots
+    reg = pysr_search(data["X_train"], data["y_train"], names, int(data["seconds"]),
+                      int(data["seed"]), int(data["threads"]), int(data["niterations"]))
+    eqs = reg.equations_
+    best_i = int(reg.get_best().name)
+    rows = []
+    for i, row in eqs.iterrows():
+        pred = np.asarray(reg.predict(data["X_test"], index=i), dtype=float)
+        rows.append({"complexity": int(row["complexity"]), "train_loss": float(row["loss"]),
+                     "equation": str(row["equation"]), "chosen": bool(i == best_i),
+                     "pred": [float(v) for v in pred]})
+    out.write_text(json.dumps(rows))
 
 
 # ----------------------------------------------------------------------------
@@ -543,6 +600,71 @@ def bound_check(pred: np.ndarray, optimum: np.ndarray) -> dict[str, float]:
             "max_below": float((optimum - r).max()), "max_above": float((r - optimum).max())}
 
 
+SANDWICH_CANDIDATES = {
+    "g_degeneracy + 1": lambda f: f["g_degeneracy"] + 1,
+    "bw_rcm + 1": lambda f: f["bw_rcm"] + 1,
+    "1 + sqrt(g_degeneracy · bw_rcm)": lambda f: 1 + np.sqrt(f["g_degeneracy"] * f["bw_rcm"]),
+    "1 + (g_degeneracy + bw_rcm) / 2": lambda f: 1 + (f["g_degeneracy"] + f["bw_rcm"]) / 2,
+    "tw_min_fill + 1": lambda f: f["tw_min_fill"] + 1,
+    "lb_best": lambda f: f["lb_best"],
+}
+
+
+def sandwich_table(frame: pd.DataFrame) -> dict:
+    """The two invariants the searches keep returning, with their constants
+    fixed by hand rather than fitted. Degeneracy ≤ treewidth ≤ pathwidth, so
+    `g_degeneracy + 1` is a valid lower bound on the optimum; bandwidth ≥
+    pathwidth, so `bw_rcm + 1` is a valid upper bound; the corpus is checked
+    against both. Between them the optimum is `g_degeneracy + 1 + λ ·
+    (bw_rcm − g_degeneracy)` for some λ in [0, 1], and the table reports the
+    distribution of that λ where the two differ, the candidate point
+    estimates with no fitted constant (whole-corpus and per size band), and
+    the gap `optimum − lb_best` on degree-regular graphs (`g_deg_std == 0`).
+    Nothing here is fitted, so there is nothing to hold out."""
+    optimum = frame["optimum"].to_numpy(dtype=float)
+    d = frame["g_degeneracy"].to_numpy(dtype=float)
+    bw = frame["bw_rcm"].to_numpy(dtype=float)
+    bands = band_of(frame["n_customers"])
+    rows = []
+    for name, fn in SANDWICH_CANDIDATES.items():
+        if not all(c in frame.columns for c in ("g_degeneracy", "bw_rcm", "tw_min_fill", "lb_best")):
+            continue
+        pred = np.asarray(fn(frame), dtype=float)
+        row = {"estimate": name, **_scores(pred, optimum), **bound_check(pred, optimum)}
+        for band in bands.cat.categories:
+            mask = (bands == band).to_numpy()
+            if mask.any():
+                row[f"mae {band}"] = _scores(pred[mask], optimum[mask])["mae"]
+                row[f"exact {band}"] = _scores(pred[mask], optimum[mask])["exact"]
+        rows.append(row)
+    differ = bw > d
+    lam = (optimum[differ] - 1 - d[differ]) / (bw[differ] - d[differ])
+    forced = int((bw == d).sum())
+    regular = frame["g_deg_std"].to_numpy(dtype=float) == 0
+    gap = optimum - frame["lb_best"].to_numpy(dtype=float)
+    checks = {
+        "instances": int(len(frame)),
+        "g_degeneracy + 1 > optimum (must be 0)": int((d + 1 > optimum).sum()),
+        "bw_rcm + 1 < optimum (must be 0)": int((bw + 1 < optimum).sum()),
+        "bw_rcm == g_degeneracy (optimum forced)": forced,
+        "of those with optimum == g_degeneracy + 1": int(((bw == d) & (optimum == d + 1)).sum()),
+        "bw_rcm > g_degeneracy": int(differ.sum()),
+        "λ quantiles 10/25/50/75/90": " / ".join(f"{q:.3f}" for q in np.quantile(lam, [0.1, 0.25, 0.5, 0.75, 0.9])),
+        "λ mean": round(float(lam.mean()), 3),
+        "degree-regular graphs (g_deg_std == 0)": int(regular.sum()),
+        "of those complete (g_density == 1)": int((regular & (frame["g_density"].to_numpy(dtype=float) >= 1 - 1e-12)).sum()),
+        "max gap optimum − lb_best on regular graphs": float(gap[regular].max()) if regular.any() else float("nan"),
+        "mean gap on the rest": round(float(gap[~regular].mean()), 3) if (~regular).any() else float("nan"),
+    }
+    lam_by_band = []
+    for band in bands.cat.categories:
+        mask = ((bands == band).to_numpy())[differ]
+        if mask.any():
+            lam_by_band.append({"band": band, "instances": int(mask.sum()),
+                                "λ median": float(np.median(lam[mask])), "λ mean": float(lam[mask].mean())})
+    return {"table": pd.DataFrame(rows), "checks": checks, "lambda_by_band": pd.DataFrame(lam_by_band)}
+
+
 def _md(table: pd.DataFrame, floatfmt: str = ".3f") -> str:
     return table.to_markdown(index=False, floatfmt=floatfmt)
 
@@ -562,9 +684,19 @@ def main() -> None:
     parser.add_argument("--max-degree", type=int, default=3)
     parser.add_argument("--no-nested", action="store_true")
     parser.add_argument("--no-pysr", action="store_true")
-    parser.add_argument("--pysr-seconds", type=int, default=300)
+    parser.add_argument("--pysr-iterations", type=int, default=2000,
+                        help="PySR search length; the wall-clock stop crashes Julia here")
+    parser.add_argument("--pysr-threads", type=int, default=4,
+                        help="Julia threads per PySR fit; 16 crashes its GC on most runs here")
+    parser.add_argument("--pysr-seconds", type=int, default=3600,
+                        help="fallback wall-clock cap per PySR fit (its stop path is unsafe)")
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--pysr-child", nargs=2, type=Path, metavar=("IN_NPZ", "OUT_JSON"),
+                        help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.pysr_child:
+        _pysr_child(*args.pysr_child)
+        return
 
     warnings.filterwarnings("ignore")
     started = time.time()
@@ -581,6 +713,10 @@ def main() -> None:
     def emit(text: str = "") -> None:
         print(text, flush=True)
         lines.append(text)
+
+    def flush() -> None:
+        if args.out:
+            args.out.write_text("\n".join(lines) + "\n")
 
     nc = frame["n_customers"]
     emit(f"{n} instances, {frame['source_file'].nunique()} files; n_customers "
@@ -686,6 +822,23 @@ def main() -> None:
     emit(_md(by_collection(frame, preds_opt, optimum)))
     emit()
 
+    # -- 3b. the sandwich: the two invariants with their constants fixed by hand
+    emit("## The sandwich: degeneracy + 1 ≤ optimum ≤ bandwidth + 1, constants fixed by hand\n")
+    emit("Both searches keep returning `g_degeneracy` and `bw_rcm`. Degeneracy ≤ "
+         "treewidth ≤ pathwidth and bandwidth ≥ pathwidth, so `g_degeneracy + 1` "
+         "is a proved lower bound on the optimum and `bw_rcm + 1` a proved upper "
+         "bound (both checked on every row). The optimum is "
+         "`g_degeneracy + 1 + λ · (bw_rcm − g_degeneracy)` for some λ in [0, 1]; "
+         "nothing below is fitted, so there is nothing to hold out.\n")
+    sandwich = sandwich_table(frame)
+    emit(_md(sandwich["table"]))
+    emit()
+    emit(_md(pd.DataFrame([{"check": k, "value": v} for k, v in sandwich["checks"].items()]), ".3f"))
+    emit()
+    emit("λ where `bw_rcm > g_degeneracy`, by size band:\n")
+    emit(_md(sandwich["lambda_by_band"]))
+    emit()
+
     # -- 4. nested ------------------------------------------------------------
     if not args.no_nested:
         emit("## Nested protocol: the formula selected on the training files only\n")
@@ -715,6 +868,8 @@ def main() -> None:
         emit(_md(pd.DataFrame(winners), ".4f"))
         emit()
 
+    flush()   # everything above survives a PySR failure
+
     # -- 5. PySR on a held-out fifth of the files -----------------------------
     if not args.no_pysr:
         emit("## PySR on a held-out fifth of the files\n")
@@ -726,7 +881,8 @@ def main() -> None:
             train = ~test
             emit(f"Train {int(train.sum())} instances / test {int(test.sum())} instances "
                  f"({frame['source_file'][test].nunique()} files held out). "
-                 f"{args.pysr_seconds} s of search per row, `L1DistLoss`, operators "
+                 f"{args.pysr_iterations} iterations of search per row on {args.pysr_threads} "
+                 "Julia threads, `L1DistLoss`, operators "
                  "`+ - * /`, `sqrt`, `square`, `log`, maxsize 20. The enumerated "
                  "monomial and pair are selected by grouped CV on the training rows "
                  "only; boosting is fitted on the same rows.\n")
@@ -759,24 +915,33 @@ def main() -> None:
                              "formula": "", **_scores(model.predict(X_all[test]), y[test])})
                 t0 = time.time()
                 try:
-                    reg = pysr_search(X_all[train], y[train], columns, args.pysr_seconds, args.seed,
-                                      threads=args.workers)
-                    eqs = reg.equations_
-                    best_i = int(reg.get_best().name)
-                    for i, row in eqs.iterrows():
-                        pred = reg.predict(X_all[test], index=i)
-                        sc = _scores(np.asarray(pred, dtype=float), y[test])
-                        fronts.append({"target": tname, "pool": pname, "complexity": int(row["complexity"]),
-                                       "train_loss": float(row["loss"]), "equation": str(row["equation"]),
-                                       **sc, "chosen": "*" if i == best_i else ""})
-                        if i == best_i:
+                    for attempt in (1, 2):
+                        try:
+                            front = pysr_front(X_all[train], y[train], X_all[test], columns,
+                                               args.pysr_seconds, args.seed, threads=args.pysr_threads,
+                                               niterations=args.pysr_iterations)
+                            break
+                        except RuntimeError as exc:
+                            if attempt == 2:
+                                raise
+                            print(f"  pysr [{tname} | {pname}] attempt 1 failed ({str(exc)[:80]}), retrying", flush=True)
+                    for eq in front:
+                        sc = _scores(eq["pred"], y[test])
+                        fronts.append({"target": tname, "pool": pname, "complexity": eq["complexity"],
+                                       "train_loss": eq["train_loss"], "equation": eq["equation"],
+                                       **sc, "chosen": "*" if eq["chosen"] else ""})
+                        if eq["chosen"]:
                             rows.append({"target": tname, "pool": pname, "method": "PySR (its own pick)",
-                                         "formula": str(row["equation"]), **sc})
+                                         "formula": eq["equation"], **sc})
+                    best_eq = min(front, key=lambda eq: _scores(eq["pred"], y[test])["mae"])
+                    rows.append({"target": tname, "pool": pname, "method": "PySR (best on held-out)",
+                                 "formula": best_eq["equation"], **_scores(best_eq["pred"], y[test])})
                     print(f"  pysr [{tname} | {pname}] done in {time.time() - t0:.0f} s", flush=True)
                 except Exception as exc:  # pragma: no cover - Julia is a moving target
                     rows.append({"target": tname, "pool": pname, "method": "PySR",
-                                 "formula": f"failed: {exc}"[:120], "mae": np.nan, "rmse": np.nan,
+                                 "formula": f"failed: {exc}"[:160], "mae": np.nan, "rmse": np.nan,
                                  "exact": np.nan, "over": np.nan})
+                    print(f"  pysr [{tname} | {pname}] failed: {exc}", flush=True)
             emit(_md(pd.DataFrame(rows)))
             emit()
             if fronts:
@@ -785,8 +950,8 @@ def main() -> None:
                 emit()
 
     emit(f"_{time.time() - started:.0f} s total._")
+    flush()
     if args.out:
-        args.out.write_text("\n".join(lines) + "\n")
         print(f"wrote {args.out}")
 
 
