@@ -105,7 +105,8 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
         elif cached:
             ordering = cached[1]
         else:
-            queue.put((name, before, None, time.time() - started, "no witness"))
+            queue.put((name, before, None, time.time() - started, "no witness",
+                       result.nodes))
             return
 
         # The search's claim is never taken on trust: a witness that does not
@@ -113,7 +114,8 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
         achieved = max_open_stacks(instance, ordering)
         if achieved != result.value:
             queue.put((name, before, None, time.time() - started,
-                       f"claimed {result.value}, achieves {achieved}"))
+                       f"claimed {result.value}, achieves {achieved}",
+                       result.nodes))
             return
 
         # A closure that rests on a relaxation bound rests on Lemma 1 as well as
@@ -125,10 +127,11 @@ def _worker(matrix_list, n_customers, n_patterns, name, timeout, max_nodes,
         _save_solution(instance, achieved, ordering, solutions_dir,
                        provenance=provenance, lower_bound=floor,
                        lower_bound_source=source)
-        queue.put((name, before, achieved, time.time() - started, result.proof))
+        queue.put((name, before, achieved, time.time() - started, result.proof,
+                   result.nodes))
     except Exception as exc:  # noqa: BLE001
         queue.put((name, None, None, time.time() - started,
-                   f"{type(exc).__name__}: {exc}"))
+                   f"{type(exc).__name__}: {exc}", None))
 
 
 def sweep(
@@ -141,6 +144,13 @@ def sweep(
     verbose: bool = True,
 ) -> list[tuple]:
     """Descend every instance, at most `workers` at a time. One row each.
+
+    Each row is `(name, before, after, seconds, note, nodes)`: `note` is the
+    proof kind (`"refutation"`, `"bound"`, `""`) or an error message, and
+    `nodes` is the number of branch decisions the search made over the whole
+    descent -- `None` only when the worker failed before it could search. The
+    same `nodes` goes into the ledger, which is how `reports/ml_nature_plan.md`
+    §2.4 gets a hardness measure that does not depend on the machine.
 
     `ledger` defaults to the project's compute ledger. Tests must pass their
     own: a test run that appends to the real one puts fabricated rows into a
@@ -174,7 +184,7 @@ def sweep(
 
     done, total = 0, len(instances)
     while done < total:
-        name, before, after, elapsed, note = queue.get()
+        name, before, after, elapsed, note, nodes = queue.get()
         done += 1
         in_flight -= 1
         if verbose:
@@ -186,7 +196,7 @@ def sweep(
                       f"({elapsed:.0f}s)", flush=True)
             else:
                 print(f"[{done}/{total}] {name}: {note}", flush=True)
-        results.append((name, before, after, elapsed, note))
+        results.append((name, before, after, elapsed, note, nodes))
 
         multiprocessing.active_children()  # reap whatever has exited
         while pending and in_flight < workers:
@@ -199,7 +209,7 @@ def sweep(
     # One ledger write per sweep, not per worker: concurrent appends to the same
     # file would interleave. `benchmarks/compute.py` totals what lands here.
     from benchmarks.compute import LEDGER, record
-    record("csearch", [(r[0], r[3]) for r in results if r[3]],
+    record("csearch", [(r[0], r[3], r[5]) for r in results if r[3]],
            ledger=LEDGER if ledger is None else ledger)
     return results
 

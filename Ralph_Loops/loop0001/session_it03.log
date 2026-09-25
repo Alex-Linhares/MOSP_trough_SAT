@@ -1,0 +1,103 @@
+# session it03 started 2026-09-25 19:25:15
+
+
+I'll start by reading the plan sections named in the task, then map where node counts are produced and where decision calls are logged.
+  > $ sed -n '1,80p' reports/ml_nature_plan.md | head -120; echo ----; grep -n "2.4\|node" reports/ml_nature_plan.md | head -40
+  > $ sed -n '125,150p' reports/ml_nature_plan.md; echo ----; sed -n '238,260p' reports/ml_nature_plan.md; echo ----; grep -rn "nodes" satisfiability/customer_search.
+
+The search already returns a `Decision.nodes`. The gap must be upstream: the solver entry points and the ledger writers. Let me look at all of them at once.
+  > $ grep -rn "compute_ledger" --include=*.py . | grep -v tests/ ; echo ----; head -3 benchmarks/results/compute_ledger.csv; wc -l benchmarks/results/compute_ledger.
+  > $ cat benchmarks/compute.py; echo ======; cat benchmarks/csearch.py
+  > $ echo "=== record( callers"; grep -rn "record(\|from benchmarks.compute\|LEDGER_FIELDS\|compute_ledger\|ledger" --include=*.py . | grep -v "^./benchmarks/compute
+  > $ echo "=== solve_mosp_exact"; sed -n '536,660p' satisfiability/mosp_solver.py; echo; echo "=== customer_search Solution/Decision/native"; sed -n '75,90p' satisfi
+  > $ echo "=== recertify PIDs"; pgrep -af benchmarks.recertify | head; echo; echo "=== native decide return"; grep -n "nodes\|def decide_native\|return Decision\|Dec
+  > $ echo "=== ml_nature.md headers + tail"; grep -n "^#" reports/ml_nature.md; tail -30 reports/ml_nature.md; echo; echo "=== study_optimum head"; sed -n '1,40p' le
+  > $ grep -n "^when,\|,driver," benchmarks/results/compute_ledger.csv; echo; sed -n '1,8p' Ralph_Loops/loop0001/PROGRESS.md; echo; grep -n "customer_search import\|f
+
+Now the edits. First the ledger module: a `nodes` field, rows of two or three values, and a one-time header migration that leaves existing rows with an empty value.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("benchmarks/compute.py")
+s = p.read_text()
+
+old_fields = '''LEDGER_FIELDS = ("when", "driver", "instance", "s
+
+Now csearch: the worker posts the node count and the sweep records it. And recertify: a ledger row per instance as each result lands.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("benchmarks/csearch.py")
+s = p.read_text()
+
+reps = [
+# worker: the three early-return posts and the final pos
+  > $ sed -n '95,112p' benchmarks/marathon.py; grep -n "results\[\|r\[" tests/test_marathon.py benchmarks/marathon.py | head; echo ====; python - <<'EOF'
+from pathlib
+
+Marathon only indexes the first five fields, so the sixth is safe. Now the `learning/` module and tests. First a quick look at the dataset helpers I'll reuse.
+  > $ sed -n '38,80p' learning/dataset.py; grep -n "def collection\|def _collection\|collection" learning/dataset.py | head; grep -n "^CERTIFIED\|^PROVENANCE_" satisf
+  > Write /home/al/dev/MOSP/learning/node_counts.py
+
+Now I'll check which tiny instance gives a positive node count for the test, run the tests already touching these modules, and migrate the real ledger, all independent.
+  > $ python - <<'EOF'
+from mosp.instance import MOSPInstance
+from satisfiability.customer_search import decide, solve
+from satisfiability.mosp_solver import _lower_b
+  > $ python - <<'EOF'
+import sys
+sys.path.insert(0, "tests")
+from test_csearch import STEPWISE
+from mosp.instance import MOSPInstance
+from satisfiability.customer_se
+  > $ ls learning/data/ 2>/dev/null; python - <<'EOF'
+import pandas as pd
+from pathlib import Path
+p = Path("learning/data/instances.csv")
+if p.exists():
+    df = pd.
+  > $ python - <<'EOF'
+import tempfile
+from pathlib import Path
+from mosp.instance import MOSPInstance
+from satisfiability.mosp_solver import solve_mosp_exact, _lower
+  > Write /home/al/dev/MOSP/tests/test_node_counts.py
+  > $ python -m pytest tests/test_node_counts.py -q -x 2>&1 | tail -15
+  > $ time python -m learning.node_counts --max-customers 40 --workers 16 --deadline 10 --out reports/node_count_tables.md > /tmp/nc_full.log 2>&1; tail -5 /tmp/nc_fu
+  > $ time python -m pytest tests/ -q -x 2>&1 | tail -6
+
+Full suite passes: 717 passed, 2 skipped, 1 xfailed in 74 s. The study run also finished. Let me read its tables.
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/ea2087e9-2209-417d-a995-9488c619988b/tasks/byeaw8ob5.output | tail -4; cat reports/node_count_tables.md; echo; echo "=== 
+
+Everything I need for the report is in hand except one number: how many refutations finish at the root with zero nodes. I'll get that and the final change list together.
+  > $ python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/node_counts.csv")
+d = df[df.config=="default"]
+z = (d.nodes==0)
+print("zero-node refutation
+
+Now the report section, the progress log entry and the item checkbox. They don't depend on each other, so I'll write all three in one step.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 3. Node counts into the ledger (§2.4 prerequisite)
+
+**Question.** Can the hardness of a decision call be recorded in a u
+
+Item 03 is complete and marked done. 3 of 8 items are solved.
+
+**What the item found.** The customer search already returned its node count from both the Python and the C path. Every layer above it dropped the count: the csearch worker posted a row without it, `solve_mosp_exact` discarded it, and the ledger had no column for it. Recertify computed it but wrote it only to its own JSON.
+
+**What changed**
+- `benchmarks/compute.py`: the ledger gains a fifth column, `nodes`. Rows may carry two or three values, and a new `ensure_fields` migrates an older file in place once, exposed as `--migrate-ledger`.
+- `benchmarks/results/compute_ledger.csv`: migrated. All 279 existing rows have an empty `nodes` cell, and the compute total is unchanged at 667 core-hours.
+- `benchmarks/csearch.py`: the worker posts the count as a sixth row field and the sweep records it. The first five fields are unchanged, which is all `marathon` reads.
+- `benchmarks/recertify.py`: appends one ledger row per finished entry as it lands, with seconds and nodes.
+- `satisfiability/mosp_solver.py`: `solve_mosp_exact` takes an optional `stats` dict. The return value is unchanged. Cached and SAT answers report `nodes` as `None`, never zero.
+- `learning/node_counts.py`: summarises the ledger's node column and refutes optimum−1 for every certified instance up to 40 customers under both configurations that feed the ledger. It runs in about a second on 16 workers.
+- `tests/test_node_counts.py`: seven tests, including a hand-checkable 7-customer spider tree that refutes with a positive count identical on the Python and C paths. Full suite: 717 passed, 2 skipped, 1 xfailed, 74 s.
+- `reports/ml_nature.md` §3 written; `reports/node_count_tables.md` holds the regenerated tables.
+
+**First look at the data.** All 12,270 calls returned unsat at optimum−1, a second independent refutation of 96% of the corpus. 38.5% of those refutations visit zero nodes, meaning the root is refuted before any branch, almost all on Challenge instances. Among the fifty Chu & Stuckey instances at 30 and 40 customers, median nodes fall monotonically from density 2 to density 10, so any hardness peak at these sizes sits at or below density 2.
+
+**Constraints honoured.** Nothing was written to `solutions/`, no solver default changed, the search itself is untouched, and the running `recertify` process was left alone. It predates the edits, so its rows will not reach the ledger; its counts remain in `recertify/results.json`. Nothing was committed.
+
+# result: success in 654s, 26 turns, cost $4.63

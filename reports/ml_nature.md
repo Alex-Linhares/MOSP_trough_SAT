@@ -446,3 +446,144 @@ any instance's optimum.
 **Not a bound, not a solver change.** The classifier and the embedding are
 descriptive; nothing touches `_lower_bound` or any decision path, and nothing
 was written to `solutions/`.
+
+## 3. Node counts into the ledger (§2.4 prerequisite)
+
+**Question.** Can the hardness of a decision call be recorded in a unit that
+survives a change of hardware, and what does that unit look like on the part of
+the corpus where certification is cheap? §2.4 wants nodes visited by the
+refutation at `optimum − 1`, not seconds; before this item the complete
+customer search counted its branch decisions and no driver stored them
+(`reports/ml_nature_plan.md` §0, "node counts are printed, not stored").
+
+**Method.** Instrumentation, not a study. The search itself is unchanged: its
+`Decision.nodes` and `Solution.nodes` were already returned by both the Python
+and the C path. What changed is every seam above them.
+
+- `satisfiability.mosp_solver.solve_mosp_exact` takes an optional `stats` dict
+  and fills it with `nodes`, `seconds`, `proof` and `procedure`. Its return
+  value is unchanged, so every existing caller keeps unpacking two values.
+  `nodes` is `None`, not 0, for a cached answer and for the SAT procedure, which
+  has none.
+- `benchmarks.compute.record` writes a fifth ledger column, `nodes`, and takes
+  rows of `(instance, seconds)` or `(instance, seconds, nodes)`; a driver with
+  no search behind it (`reheuristic`) leaves the cell empty. A new
+  `ensure_fields` migrates an older ledger in place once, appending the column
+  and leaving every existing row empty; `python -m benchmarks.compute
+  --migrate-ledger` runs it, and `record` runs it before appending.
+- `benchmarks.csearch`: the worker posts `result.nodes` as a sixth element of
+  its row and `sweep` records it; the first five fields are unchanged, which is
+  what `benchmarks.marathon` indexes.
+- `benchmarks.recertify`: already returned `nodes` from its worker and wrote it
+  into `recertify/results.json` and the solution file's `recertified` note; it
+  now also appends one ledger row per finished entry, as it lands, with the
+  seconds and nodes of the call, under `--ledger` (default the project's).
+- `learning/node_counts.py` checks the instrumentation end to end: it
+  summarises the ledger's `nodes` column per driver, then runs `decide` at
+  `optimum − 1` on every certified instance with at most 40 customers under
+  the two configurations whose counts reach the ledger (`decide` defaults, as
+  `solve_mosp_exact` runs; and the `csearch` driver's rule, Theorem 2 on sparse
+  instances with every candidate a dominator), recording status, nodes and
+  seconds. The status is a free audit: `sat` there would mean the stored
+  optimum is wrong.
+
+**Baseline.** The ledger before this item: 279 rows, 174 from `csearch` and 105
+from `reheuristic`, none carrying a node count. That is the row every later
+§2.4 run is compared against, and it is the first table below.
+
+### The compute ledger on the day the column landed
+
+| driver      |   rows |   with_nodes |
+|:------------|-------:|-------------:|
+| csearch     |    174 |            0 |
+| reheuristic |    105 |            0 |
+| TOTAL       |    279 |            0 |
+
+The 279 existing rows now read `""` in `nodes`. The compute total is unchanged
+at 667 core-hours (`python -m benchmarks.compute --quote`), since nodes are not
+compute and are not summed.
+
+### The audit: every stored optimum at n ≤ 40 refutes at optimum − 1
+
+| config   | status   |   instances |
+|:---------|:---------|------------:|
+| csearch  | unsat    |        6135 |
+| default  | unsat    |        6135 |
+
+12,270 decision calls, all `unsat`, none at the 10 s deadline; the whole run
+takes about a second on 16 workers. This is a second independent refutation
+for 6,135 of the 6,376 certified optima, under two configurations, and it
+agrees with the corpus everywhere. It does not touch the 241 instances above
+40 customers, which is where the two known false-refutation incidents were.
+
+### Nodes to refute optimum − 1, by size band
+
+| config   | band   |   instances |   min |   median |    p90 |   max |   seconds_total |
+|:---------|:-------|------------:|------:|---------:|-------:|------:|----------------:|
+| default  | 0-10   |        1614 |     0 |        0 |    4   |    15 |            0.19 |
+| csearch  | 0-10   |        1614 |     0 |        0 |    4   |    13 |            0.16 |
+| default  | 11-20  |        2508 |     0 |        2 |   23   |    90 |            0.29 |
+| csearch  | 11-20  |        2508 |     0 |        1 |   19   |    79 |            0.27 |
+| default  | 21-30  |        1816 |     0 |        7 |  108.5 |  1149 |            0.36 |
+| csearch  | 21-30  |        1816 |     0 |        7 |   88.5 |   945 |            0.36 |
+| default  | 31-40  |         197 |     0 |       38 | 1763.8 | 29138 |            0.2  |
+| csearch  | 31-40  |         197 |     0 |       34 | 1406.6 | 21745 |            0.17 |
+
+### Nodes to refute optimum − 1, by collection
+
+| config   | collection             |   instances |   median |    p90 |   max |
+|:---------|:-----------------------|------------:|---------:|-------:|------:|
+| default  | ChallengeInstances2005 |        5795 |      1   |   31   |   976 |
+| csearch  | ChallengeInstances2005 |        5795 |      1   |   27   |   716 |
+| default  | MOSP_Instances         |         340 |     39.5 | 1152.2 | 29138 |
+| csearch  | MOSP_Instances         |         340 |     34.5 |  877.1 | 21745 |
+
+### The two configurations, nodes per instance
+
+|   instances |   csearch_fewer |   equal |   csearch_more |   median_ratio |   max_ratio |
+|------------:|----------------:|--------:|---------------:|---------------:|------------:|
+|        6135 |            1302 |    4827 |              6 |          0.867 |         1.1 |
+
+**Finding.** The node count now comes back through every path a decision call
+takes and lands in the ledger from both drivers that make decision calls; the
+search itself was not touched and the corpus was not written to. What the
+first look shows is how little of the small corpus is a search problem at all:
+38.5% of the 6,135 refutations at `optimum − 1` visit **zero** nodes (53.7% at
+n ≤ 10, falling to 25% at 31–40), meaning the root is refuted by the search's
+own cost check before any branch, and 2,357 of those 2,360 are Challenge
+instances, where §1 found 1,669 complete graphs. Where the search does branch,
+the count grows about an order of magnitude per ten customers at the tail
+(p90: 4 → 23 → 108 → 1,764) while the median stays in single or double digits,
+and the single worst call, 29,138 nodes on `Random-40-40-2-2_0`, is at Chu &
+Stuckey density 2: over the fifty `Random-30` and `Random-40` instances the
+median nodes fall monotonically with density (1,068 → 428 → 140 → 22 → 6 from
+density 2 to 10), which is the direction §2.4 predicts and the sign that the
+hardness peak, if there is one, sits at or below density 2 for these sizes.
+The `csearch` driver's configuration never costs more than 1.1× the defaults
+and is cheaper on 1,302 instances, so mixing the two in one ledger is a small
+distortion, and the `config` is recorded per row so it can be separated. None
+of this is the §2.4 study: density is confounded with collection here (§2),
+nothing is deduplicated by isomorphism class (§1 says 42.5% of the corpus is
+redundant), and 50 instances at two sizes is not a density sweep.
+
+**Size range covered.** The audit and the tables cover the 6,135 certified
+instances with 2 ≤ optimum and n ≤ 40 (9 ≤ n ≤ 40), which is 96% of the corpus
+by count and none of the instances on which any run has ever taken more than a
+second. The ledger change covers every future row of every size. Nothing was
+re-certified because nothing disagreed; the run itself is a re-refutation of
+every optimum it touched.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound` and
+every decision path are untouched; nothing was written to `solutions/`. The
+running `benchmarks.recertify` process (PIDs under `pgrep -f
+benchmarks.recertify`) predates these edits and was not restarted, so it will
+not write `nodes` rows; its `recertify/results.json` carries the counts for
+those calls.
+
+**Regenerate.** `python -m benchmarks.compute --migrate-ledger` (once;
+idempotent), then `python -m learning.node_counts --max-customers 40 --out
+reports/node_count_tables.md` (about 1 s on 16 workers; writes
+`learning/data/node_counts.csv`). The by-density line: group
+`learning/data/node_counts.csv` rows whose `instance_name` starts with
+`Random-` by the fourth dash-separated field. Tests: `python -m pytest
+tests/test_node_counts.py -q`.

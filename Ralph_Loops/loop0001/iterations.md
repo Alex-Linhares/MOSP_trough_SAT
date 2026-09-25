@@ -13,7 +13,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       structure-only features, grouped by file. Its accuracy is the finding. Plus
       a 2-D embedding (UMAP behind a soft import, else PCA) of the feature table,
       saved as `reports/figures/instance_space.png`, coloured by collection.
-- [ ] 03 · §2.4 prerequisite **Node counts into the ledger.** Make the customer
+- [x] 03 · §2.4 prerequisite **Node counts into the ledger.** Make the customer
       search's node count a returned quantity (not only printed) and record it in
       a `nodes` column wherever a decision call is logged (`benchmarks/results/compute_ledger.csv`
       writers, `csearch`, `recertify`). Existing rows get an empty value. Do not

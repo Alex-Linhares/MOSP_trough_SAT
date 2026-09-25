@@ -562,6 +562,7 @@ def solve_mosp_exact(
     upper_strategy: str = "cs-dfs",
     time_budget: float | None = None,
     max_nodes: int | None = None,
+    stats: dict | None = None,
 ) -> tuple[int, list[int]]:
     """Solve MOSP to optimality with the project's default decision procedure.
 
@@ -581,6 +582,14 @@ def solve_mosp_exact(
         time_budget: seconds for the descent. Without one the search runs to a
             refutation, which on the hardest instances is hours.
         max_nodes: node cap for a single decision call.
+        stats: an optional dict the call fills in with how the answer was
+            reached, so that the search's accounting is a returned quantity
+            rather than something printed and lost: `nodes` (branch decisions
+            over the whole descent; `None` for the SAT procedure, which has
+            none, and for a cached answer, which searched nothing), `seconds`,
+            `proof` (`"refutation"`, `"bound"`, `""` or `"cached"`) and
+            `procedure`. The return value is unchanged; every existing caller
+            keeps unpacking two values.
 
     Returns:
         `(value, pattern_ordering)`. The value is optimal when the descent
@@ -590,6 +599,9 @@ def solve_mosp_exact(
     if procedure not in PROCEDURES:
         raise ValueError(
             f"unknown procedure {procedure!r}; available: {', '.join(PROCEDURES)}")
+    if stats is None:
+        stats = {}
+    stats.update(nodes=None, seconds=0.0, proof="", procedure=procedure)
     if procedure == "sat":
         return solve_mosp_sat(instance, solutions_dir=solutions_dir)
 
@@ -600,11 +612,14 @@ def solve_mosp_exact(
         solutions_dir = Path(solutions_dir)
         cached = _load_solution(instance, solutions_dir)
         if cached is not None:
+            stats["proof"] = "cached"
             return cached
 
     if instance.n_patterns == 0:
+        stats.update(nodes=0, proof="bound")
         return 0, []
     if instance.n_patterns == 1:
+        stats.update(nodes=0, proof="bound")
         return max(len(instance.pattern_customers(0)), 0), [0]
 
     # The recorded bound can exceed a freshly computed one -- a relaxation may
@@ -619,6 +634,7 @@ def solve_mosp_exact(
 
     result = csearch_solve(instance, lower=floor, upper_strategy=upper_strategy,
                            time_budget=time_budget, max_nodes=max_nodes)
+    stats.update(nodes=result.nodes, seconds=result.seconds, proof=result.proof)
     if not result.order:
         # No closing order means the descent never improved on its start, which
         # only happens when it was handed one; it is not handed one here.

@@ -13,7 +13,10 @@ This is meant for unattended runs measured in days. It therefore:
 - writes its log and results under `recertify/`, which is outside git, so they
   survive the session that started them;
 - refuses to touch an entry whose stored value it cannot confirm, and shouts
-  rather than guessing if a value turns out to be wrong.
+  rather than guessing if a value turns out to be wrong;
+- appends one row per finished entry to the compute ledger, with the seconds
+  and the node count of the decision call, so that the hardest refutations in
+  the corpus are on the same record as everything else.
 
 The configuration is the one calibrated in `reports/inner_loop.md` §4:
 `better_move` with every candidate eligible as a dominator, and the memo on.
@@ -90,6 +93,21 @@ def _promote(path: Path, result: dict) -> str:
             f"({result['nodes']:,} nodes, {result['seconds'] / 3600:.2f}h)")
 
 
+def _record(result: dict, ledger: Path | None = None) -> None:
+    """One ledger row for a finished decision call, whatever its outcome.
+
+    Written as each result lands rather than at the end: this driver runs for
+    days, and only the parent process writes, so per-result appends are safe.
+    A call that ran out of budget still cost its seconds and its nodes, and a
+    row that says "unknown after 2e9 nodes" is exactly the censored observation
+    a hardness study has to know about.
+    """
+    from benchmarks.compute import LEDGER, record
+
+    record("recertify", [(result["name"], result["seconds"], result["nodes"])],
+           ledger=LEDGER if ledger is None else ledger)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--days", type=float, default=5.0,
@@ -99,6 +117,8 @@ def main() -> None:
     parser.add_argument("--dir", type=Path, default=Path("benchmarks/instances"))
     parser.add_argument("--solutions-dir", type=Path, default=Path("solutions"))
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--ledger", type=Path, default=None,
+                        help="compute ledger to append to; default the project's")
     args = parser.parse_args()
 
     entries = _open_entries(args.dir, args.solutions_dir)
@@ -128,6 +148,7 @@ def main() -> None:
             print(f"[{time.strftime('%H:%M:%S')}] "
                   f"{_promote(paths[result['name']], result)}", flush=True)
             results_path.write_text(json.dumps(rows, indent=1))
+            _record(result, args.ledger)
 
     certified = sum(1 for r in rows if r["status"] == "unsat")
     wrong = [r["name"] for r in rows if r["status"] == "sat"]

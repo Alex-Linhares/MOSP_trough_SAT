@@ -23,8 +23,15 @@ row being written, the Lean build, and any run whose log was never parsed into
 the ledger. So the total is a **lower bound on compute spent**, which is the
 honest direction for a cost figure to err in.
 
-    python -m benchmarks.compute            # the table and the total
-    python -m benchmarks.compute --quote    # the one line the docs quote
+    python -m benchmarks.compute                   # the table and the total
+    python -m benchmarks.compute --quote           # the one line the docs quote
+    python -m benchmarks.compute --migrate-ledger  # add missing columns, once
+
+The ledger also carries a `nodes` column (added 2026-09-25): branch decisions
+made by the complete customer search on that instance, empty where no search
+ran or where the row predates the column. It is not summed here -- nodes are not
+compute -- but they are the hardness measure `reports/ml_nature_plan.md` §2.4
+needs, and this is the one place every decision call already reports to.
 """
 
 from __future__ import annotations
@@ -36,30 +43,71 @@ from pathlib import Path
 
 RESULTS_DIR = Path("benchmarks/results")
 LEDGER = RESULTS_DIR / "compute_ledger.csv"
-LEDGER_FIELDS = ("when", "driver", "instance", "seconds")
+LEDGER_FIELDS = ("when", "driver", "instance", "seconds", "nodes")
 
 # Columns that different generations of runner used for the same quantity.
 TIME_COLUMNS = ("time_seconds", "seconds", "elapsed")
 
 
-def record(driver: str, rows: list[tuple[str, float]], ledger: Path = LEDGER) -> int:
+def record(driver: str, rows: list[tuple], ledger: Path = LEDGER) -> int:
     """Append one row per instance to the ledger. Returns rows written.
 
     Called by the drivers once a sweep finishes rather than per instance, so
     that concurrent workers never write the same file.
+
+    Each row is `(instance, seconds)` or `(instance, seconds, nodes)`. `nodes`
+    is the number of branch decisions the complete customer search made on that
+    instance -- the hardness measure that survives a change of hardware, which
+    seconds do not (`reports/ml_nature_plan.md` §2.4). Drivers with no search
+    behind them, such as `reheuristic`, leave it out and the cell is empty; so
+    is every row written before the column existed.
     """
     if not rows:
         return 0
     ledger.parent.mkdir(parents=True, exist_ok=True)
     new = not ledger.exists()
+    if not new:
+        ensure_fields(ledger)
     stamp = time.strftime("%Y-%m-%dT%H:%M:%S")
     with ledger.open("a", newline="") as fh:
         writer = csv.writer(fh)
         if new:
             writer.writerow(LEDGER_FIELDS)
-        for instance, seconds in rows:
-            writer.writerow([stamp, driver, instance, f"{float(seconds):.1f}"])
+        for instance, seconds, *rest in rows:
+            nodes = rest[0] if rest else None
+            writer.writerow([stamp, driver, instance, f"{float(seconds):.1f}",
+                             "" if nodes is None else int(nodes)])
     return len(rows)
+
+
+def ensure_fields(ledger: Path = LEDGER) -> int:
+    """Bring an older ledger up to `LEDGER_FIELDS`, in place.
+
+    Columns the file lacks are appended to the header and left empty on every
+    existing row -- a row written before node counts were recorded has no node
+    count, and an empty cell says so where a zero would lie. Returns the number
+    of columns added; 0 means the file was already current or does not exist.
+    Idempotent, and it never reorders or rewrites what the rows already say.
+    """
+    if not ledger.exists():
+        return 0
+    with ledger.open(newline="") as fh:
+        reader = csv.reader(fh)
+        try:
+            header = next(reader)
+        except StopIteration:
+            return 0
+        rows = list(reader)
+    missing = [f for f in LEDGER_FIELDS if f not in header]
+    if not missing:
+        return 0
+    header = header + missing
+    with ledger.open("w", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(header)
+        for row in rows:
+            writer.writerow(row + [""] * (len(header) - len(row)))
+    return len(missing)
 
 
 def _seconds_in(path: Path) -> tuple[float, int]:
@@ -98,7 +146,17 @@ def main() -> None:
                         help="print only the sentence the documents quote")
     parser.add_argument("--cores", type=int, default=25,
                         help="cores to express the wall-clock estimate against")
+    parser.add_argument("--migrate-ledger", action="store_true",
+                        help="add any missing LEDGER_FIELDS column to the "
+                             "ledger, empty on existing rows, and exit")
     args = parser.parse_args()
+
+    if args.migrate_ledger:
+        ledger = args.results_dir / LEDGER.name
+        added = ensure_fields(ledger)
+        print(f"{ledger}: {added} column(s) added" if added
+              else f"{ledger}: already current")
+        return
 
     rows = totals(args.results_dir)
     core_hours = sum(r[1] for r in rows)
