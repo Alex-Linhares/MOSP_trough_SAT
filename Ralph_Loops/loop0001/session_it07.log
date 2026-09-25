@@ -1,0 +1,24 @@
+# session it07 started 2026-09-25 20:21:22
+
+
+I'm iteration 7: distil the closing policy. I'll start by reading the plan, the policy module, and the current state of the loop files.
+  > $ cat Ralph_Loops/loop0001/iterations.md && echo ---- && git status --short | head -30 && echo ---- && date && nproc && pgrep -f benchmarks.recertify | head
+  > $ sed -n '1,80p' reports/ml_nature_plan.md && echo ======= && grep -n "2.6" reports/ml_nature_plan.md | head && echo ====== && grep -n "^## \|^### " reports/ml_na
+  > $ sed -n '165,186p;240,300p' reports/ml_nature_plan.md && echo ===== && grep -n "^## \|^### " reports/learning_plan.md | head -30 && echo ===== && sed -n '/^## 4/
+
+Now the policy module itself, which is the pattern I must follow, plus the report and iteration 5/6 logs in the same pass.
+  > $ wc -l learning/policy.py && cat learning/policy.py
+
+Next I need the heuristics helpers the policy uses, the current report's section list and style, what iterations 5 and 6 left behind, and the grouping helper. All independent, so one batch.
+  > $ grep -n "^def \|^class \|^STRATEGIES\|^_STRATEGIES" satisfiability/heuristics.py | head -60 && echo ===== && sed -n '/^def _neighbour_masks/,/^def /p' satisfiab
+  > $ sed -n '229,253p' satisfiability/heuristics.py && echo ===== && sed -n '271,290p' satisfiability/heuristics.py && echo ===== && grep -n "^## \|^### " reports/ml
+  > $ git log --stat -3 --format='%h %s' | head -40 && echo ===== && tail -30 reports/ml_nature.md | cut -c1-200 && echo ===== && grep -n "band\|BANDS" learning/invar
+  > $ (OMP_NUM_THREADS=16 timeout 900 python - > /tmp/fit_timing.log 2>&1 <<'EOF'
+import time
+from learning.policy import _corpus, _fit, training_rows, witness_closin
+  > $ cat /tmp/fit_timing.log; grep -n "Pool\|get_context\|fork\|spawn" learning/corpus_sweep.py learning/invariants_study.py learning/bound_gap.py | head; grep -n "^
+
+Now I'll write the study module in one go.
+  > Write /home/al/dev/MOSP/learning/distil.py
+
+Two fixes before a smoke run: the held-out sample must come from the same random stream as `policy.evaluate` so the ranker's numbers reproduce, and the weights helper is clumsier than it needs to be.

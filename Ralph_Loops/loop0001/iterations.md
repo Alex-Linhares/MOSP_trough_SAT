@@ -25,13 +25,13 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       upper bound; report that), a cheap balanced-separator size, and the
       random-intersection parameters `(n, m, p̂)`. Rebuild the table. Report
       grouped permutation importance beside the existing 36.
-- [!] 05 · §2.2b **A formula for the residual.** Symbolic regression (PySR behind
+- [ ] 05 · §2.2b **A formula for the residual.** Symbolic regression (PySR behind
       a soft import; otherwise a small enumerated search over products and ratios
       of ≤ 3 features) for `optimum − lb_best` and for `optimum` from
       structure-only features. Baseline: LightGBM on the same features, grouped.
       Deliverable: the best formula, its grouped MAE, and a stated conjecture if
       the formula is a clean one. State plainly that it is not a bound.
-- [!] 06 · §2.3 **Where the bounds fail.** Classifier `gap ≥ 2` vs tight with a
+- [ ] 06 · §2.3 **Where the bounds fail.** Classifier `gap ≥ 2` vs tight with a
       depth-3 tree and, if `interpret` is available, an EBM; baseline density and
       size. Cluster the gap instances. Write out the ten smallest instances with
       gap ≥ 2 as matrices in the report, with their MOSP graphs' degree sequences,

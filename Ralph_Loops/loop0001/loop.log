@@ -30,3 +30,8 @@
 [2026-09-25 20:20:06] session it06: ok (exit 0, 31 tool calls)
 [2026-09-25 20:20:06] item not marked by the agent (ok); marking - [!] so the loop advances
 [2026-09-25 20:21:22] tests passed: 747 passed, 2 skipped, 1 xfailed, 147 warnings in 74.78s (0:01:14)
+[2026-09-25 20:21:22] committed af20fc8: 06 · §2.3 Where the bounds fail. Classifier `gap ≥ 2` vs tight with a
+[2026-09-25 20:21:22] === iteration 7: 07 · §2.6a Distil the closing policy. Fit a depth-3 tree and a linear
+[2026-09-25 20:21:22] claude session it07 (cap 3.00 h) -> session_it07.log
+[2026-09-25 20:27:39] session it07: error (exit 143, 10 tool calls)
+[2026-09-25 20:28:52] tests passed: 747 passed, 2 skipped, 1 xfailed, 147 warnings in 72.40s (0:01:12)

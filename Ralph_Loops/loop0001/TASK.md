@@ -69,3 +69,12 @@ An item is DONE when either:
 - Do NOT rewrite existing report sections; append. If a finding contradicts an
   earlier one, say so in the new section and leave the old one in place.
 - Commit nothing yourself; the driver (or the loop's owner) commits after tests pass.
+- You are running in print mode: **ending your turn ends the session.** Never
+  end a turn waiting on a background job or a wait/monitor. Run studies in the
+  foreground (or poll them in a loop) and do not stop until the report section,
+  PROGRESS.md and iterations.md are written.
+- When stopping a background process, match its PID or an anchored pattern,
+  never a bare `pkill -f <word>` — one iteration killed its own shell that way.
+- Items 05 and 06 were each started once and left committed code without a
+  report section; read `learning/formula_search.py` / the §2.3 module and
+  PROGRESS.md before redoing them, and build on what is there.

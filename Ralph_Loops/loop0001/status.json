@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-25 20:20:06",
+  "updated": "2026-09-25 20:27:39",
   "phase": "tests",
-  "started": "2026-09-25 20:10:27",
-  "item": "06 \u00b7 \u00a72.3 Where the bounds fail. Classifier `gap \u2265 2` vs tight with a"
+  "started": "2026-09-25 20:21:22",
+  "item": "07 \u00b7 \u00a72.6a Distil the closing policy. Fit a depth-3 tree and a linear"
 }
