@@ -18,7 +18,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       a `nodes` column wherever a decision call is logged (`benchmarks/results/compute_ledger.csv`
       writers, `csearch`, `recertify`). Existing rows get an empty value. Do not
       change the search itself. Test: a tiny instance returns a positive count.
-- [ ] 04 · §2.2a **Pathwidth-adjacent invariants as features.** Add to
+- [x] 04 · §2.2a **Pathwidth-adjacent invariants as features.** Add to
       `learning/features.py`, as a new group `invariants`: min-fill and min-degree
       treewidth upper bounds, reverse Cuthill–McKee bandwidth, spectral radius,
       Fiedler value, clique-cover number (the number of distinct products is an

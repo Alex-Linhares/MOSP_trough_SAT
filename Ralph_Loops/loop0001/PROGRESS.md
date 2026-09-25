@@ -3,7 +3,7 @@
 ## Ralph Loop 0001 Status
 - **Started**: 2026-09-25
 - **Target**: 8 items
-- **Current**: 3/8 SOLVED
+- **Current**: 4/8 SOLVED
 
 ---
 
@@ -156,3 +156,78 @@ was not restarted, so its rows will not reach the ledger; its counts are in
   `graph_cert` from `learning/data/canonical.csv`; the small-corpus signal
   says the density peak, if any, is at or below Chu & Stuckey density 2 at
   n = 30–40, so the sweep should extend below it.
+
+## Iteration 4 — 2026-09-25 20:05
+
+Item 04 · §2.2a Pathwidth-adjacent invariants as features. **SOLVED.**
+
+### Completed
+- `learning/features.py`: fourth group `invariants`, 13 columns — min-fill
+  and min-degree elimination widths (`tw_min_fill`, `tw_min_degree`), reverse
+  Cuthill–McKee bandwidth (`bw_rcm`), spectral radius, Fiedler value (whole
+  graph and largest component), two edge clique cover counts (`cc_products`,
+  the distinct products containing an edge, and `cc_greedy` after dropping
+  products every edge of which another covers), a balanced separator from
+  Fiedler and RCM sweeps (`sep_size`, `sep_frac`), and the random
+  intersection quantities (`rig_edge_prob = 1 − (1 − p̂²)^m`,
+  `rig_deg_expected`, `rig_density_ratio`); `p̂`, `n`, `m` are the existing
+  `density`, `n_customers`, `n_patterns` and were not duplicated. The greedy
+  invariants run on a copy relabelled by a label-free key so tie-breaks do
+  not depend on the file's row order. `DEFAULT_GROUPS` and `invariant_names`
+  exported; `learning.dataset` builds 49 features by default (54 columns,
+  ~90 s on 16 cores); `learning.study_optimum` and `learning.fingerprint`
+  leave the group out by default so `reports/learning.md` §1 and
+  `reports/ml_nature.md` §2 regenerate from the columns they report.
+- `learning/invariants_study.py`: point estimates (each invariant + 1 against
+  the optimum, with below/above counts, per size band), the four-set ablation
+  under three splits on the optimum and on the residual, by-band ablation,
+  permutation importance of all 49 on held-out file ∪ class groups (both
+  targets), each invariant alone with the sizes, and a shuffle check of
+  order-dependence on 623 instances. ~140 s on 16 workers. Writes
+  `reports/invariants_tables.md`.
+- `tests/test_invariants.py`: 11 tests on P4, K4 and an over-covered
+  triangle (hand-checked widths, bandwidth, golden-ratio spectral radius,
+  `2 − √2` Fiedler value, clique cover counts, separator sizes, RIG
+  arithmetic), permutation invariance of the exact invariants, the
+  bound-violation counter, and the shuffle check. Full suite: 728 passed,
+  2 skipped, 1 xfailed, 79 s.
+- `reports/ml_nature.md` §4 written. No new dependencies (networkx's
+  treewidth heuristics, numpy eigensolvers).
+- Findings: `tw_min_fill + 1` is a closer point estimate of the optimum than
+  either solver bound — exact on 85.7% vs 84.6% (`ub_best`) and 77.0%
+  (`lb_best`), MAE 0.188 vs 0.239/0.431, leading in every size band including
+  61–134 customers — and a bound on nothing (481 below by ≤ 3, 428 above by
+  ≤ 7). It is the top feature of all 49 (2.01 MAE points, above `ub_cs_dfs`
+  1.21). Structure + invariants with no solver bound predicts the optimum as
+  well as structure + bounds did (grouped-by-file MAE 0.436 → 0.220, exact
+  71.2% → 87.1%; kill criterion 0.02 cleared 10×). On the residual
+  `optimum − lb_best` the group adds nothing (−0.004 / −0.000 / −0.009 MAE):
+  the invariants know what the bound knows, not what it misses. The residual
+  correlates with random-model sparsity (`rig_edge_prob` ρ = −0.52,
+  `sep_frac` −0.42, `fiedler` −0.32). `bw_rcm + 1 ≥ optimum` on all 6,376,
+  as bandwidth ≥ pathwidth requires. The label-free relabelling leaves the
+  treewidth heuristics and separator unchanged on all 623 shuffles; `bw_rcm`
+  changed once, `cc_greedy` on 26 (by ≤ 2), and it carries no importance.
+- Two notes on record: the rebuilt table's `lb_best` includes the expansion
+  bound (higher on 1,329 rows than the September 22 table) and carries the
+  corrected optimum for `Random-100-100-2-2_0`, so the `lb_best` baseline is
+  now MAE 0.431 rather than the 0.979 in `reports/learning.md` §1 — the old
+  CSV was stale, not the code. And the file ∪ class grouping is a five-region
+  hold-out in practice (largest group 1,620 instances, top five 88%), which
+  is why its absolute errors are several times the file-grouped ones.
+
+### Blockers
+None.
+
+### Next
+- Item 05 (§2.2b, a formula for the residual). Aim at `optimum − lb_best`;
+  leave `tw_min_fill`, `tw_min_degree` and `lb_*` out of the formula search
+  since §4 shows they track the bound, not the gap. Candidates with signal on
+  the gap: `rig_edge_prob`, `sep_frac`, `fiedler`, `cc_greedy`, `bw_rcm`,
+  `density`. A formula for the *optimum* should be compared against
+  `tw_min_fill + 1` as the point-estimate baseline, not only against LightGBM.
+- For §2.3: the residual's correlates all point at sparse, weakly connected
+  graphs; start the gap-vs-tight classifier from `rig_edge_prob` and
+  `sep_frac`.
+- `pysr` is not installed; the enumerated fallback is the path unless it is
+  added to `learning/requirements.txt` as optional.

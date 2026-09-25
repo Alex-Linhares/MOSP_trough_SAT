@@ -1,0 +1,100 @@
+# session it04 started 2026-09-25 19:37:24
+
+
+I'll start by reading the plan (§0, §4, §2.2a of `reports/ml_nature_plan.md`), the closed list, and the feature module I need to extend.
+  > $ date && cat Ralph_Loops/loop0001/iterations.md && wc -l reports/ml_nature_plan.md reports/learning_plan.md learning/features.py learning/dataset.py learning/stu
+  > $ sed -n 1,271p reports/ml_nature_plan.md
+  > $ cat learning/features.py && echo ======= && cat learning/dataset.py && echo ====== && cat learning/study_optimum.py
+  > $ sed -n 1,60p reports/ml_nature.md && echo ... && grep -n '^## \|^### ' reports/ml_nature.md && echo ====== && tail -80 reports/ml_nature.md
+  > $ sed -n 1,80p reports/learning.md; echo ====PLAN4; grep -n '^## ' reports/learning_plan.md; sed -n '/^## 4/,/^## 5/p' reports/learning_plan.md | head -40
+  > $ sed -n 80,130p reports/learning.md; echo ====FP; grep -n 'def \|^SIZE_FREE\|^STRUCTURE' learning/fingerprint.py | head -60; echo ====UNION; sed -n '/^def union_
+
+Read the plan and the existing feature/study modules. Now checking the environment (packages, the running recertify job, existing tests and data files) before writing the new feature group.
+  > $ pgrep -f benchmarks.recertify | head; nproc; ls learning/data/ 2>/dev/null; ls tests/ | grep -i 'feat\|learn\|dataset'; python -c "
+import importlib
+for m in ['
+  > $ grep -n 'features\|36\|feature_names' tests/test_learning.py | head -30; echo ====; sed -n 135,190p learning/fingerprint.py; echo ====; grep -rn 'feature_names\
+  > $ python - <<'EOF'
+import time, numpy as np, networkx as nx
+from networkx.algorithms.approximation import treewidth_min_fill_in, treewidth_min_degree
+from mosp.in
+
+Timings are fine (milliseconds per instance even at 100 nodes). Writing the `invariants` feature group now.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/features.py")
+s = p.read_text()
+
+# 1. docstring: add the fourth group
+s = s.replace('''- **bounds**
+  > $ sed -i 's/    L \\ S from R, and both pieces/    L minus S from R, and both pieces/' learning/features.py && python - <<'EOF'
+from pathlib import Path
+# dataset
+
+Table rebuilt: 6,376 rows × 54 columns in 90 s. Quick sanity pass on the new columns before writing the study module.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+new = pd.read_csv("learning/data/instances.csv"); old = pd.read_csv("/tmp/instances_36.csv")
+common = [c for c
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+new = pd.read_csv("learning/data/instances.csv"); old = pd.read_csv("/tmp/instances_36.csv")
+for c in old.colu
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+new = pd.read_csv("learning/data/instances.csv"); old = pd.read_csv("/tmp/instances_36.csv")
+d = new.lb_best -
+
+The old table predated the expansion bound and the one corrected optimum; the rebuilt one matches the current corpus. Now writing the study module and its tests.
+  > Write /home/al/dev/MOSP/learning/invariants_study.py
+  > $ grep -n '^CANONICAL_CSV' learning/fingerprint.py && python -c "import learning.invariants_study" && nohup python -m learning.invariants_study --workers 16 --out
+  > Write /home/al/dev/MOSP/tests/test_invariants.py
+  > $ python -m pytest tests/test_invariants.py tests/test_learning.py -q -x 2>&1 | tail -5; echo ==== STUDY LOG; cat /tmp/inv_study.log | head -60
+  > $ sed -i 's/assert table.loc\["tw_min_degree + 1", "above"\] == 2/assert table.loc["tw_min_degree + 1", "above"] == 1/' tests/test_invariants.py && python -m pyte
+  > $ python -m pytest tests/test_invariants.py -q -k point_estimates 2>&1 | grep -B5 'Error\|assert' | head -30
+
+Fixing my own test arithmetic (round(1.6)+1=3, round(3.4)+1=4, round(3.9)+1=5 all hit the optimum, so exact is 1.0, not 1/3), then waiting on the background study.
+  > $ sed -i 's|"spectral_radius": \[1.6, 3.4, 3.9\],|"spectral_radius": [1.6, 2.4, 3.9],  # rounds to 3, 3, 5 against 3, 4, 5|' tests/test_invariants.py && sed -i 's
+  > $ nohup python -m pytest tests/ -q -x > /tmp/full_tests.log 2>&1 &
+cd /home/al/dev/MOSP && for i in $(seq 1 40); do if [ -f reports/invariants_tables.md ]; then b
+  > $ cat reports/invariants_tables.md; echo ==== TESTS; tail -3 /tmp/full_tests.log
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/invariants_study.py"); s = p.read_text()
+old = '''# -----------------------------------------------
+
+The by-band table shows the min-fill estimate leads in every size band, including 61–200 customers. Writing the report section, PROGRESS.md and the iteration mark now while the rerun finishes.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 4. Pathwidth-adjacent invariants as features (§2.2a)
+
+*Iteration 4, 2026-09-25. Code: `learning/features.py` (group `inv
+  > $ python - <<'EOF'
+# Do the regenerated tables agree with what the report quotes?
+import re
+tab = open("reports/invariants_tables.md").read()
+rep = open("reports/
+  > $ grep -A4 'How unbalanced' reports/invariants_tables.md
+
+All quoted numbers match the regenerated tables (my check string only differed in column padding). Now the bookkeeping: PROGRESS.md, the iteration mark, and a final full test run.
+  > $ sed -i 's/^- \*\*Current\*\*: 3\/8 SOLVED/- **Current**: 4\/8 SOLVED/' Ralph_Loops/loop0001/PROGRESS.md && cat >> Ralph_Loops/loop0001/PROGRESS.md <<'EOF'
+
+## I
+
+Item 04 is done and verified. Recap for a reader who only sees this message:
+
+**What was built**
+- `learning/features.py` gained a fourth group, `invariants`, with 13 columns: min-fill and min-degree elimination widths, reverse Cuthill–McKee bandwidth, spectral radius, Fiedler value (whole graph and largest component), two edge clique cover counts, a balanced separator from spectral and RCM sweeps, and the random-intersection-graph quantities derived from the existing `n`, `m`, `density`. The greedy ones run on a label-free relabelling so tie-breaks do not depend on file row order.
+- The table was rebuilt to 49 features. `learning.study_optimum` and `learning.fingerprint` exclude the new group by default, so the earlier report sections still regenerate from the columns they quote.
+- `learning/invariants_study.py` runs the point-estimate, ablation, by-band, importance, single-invariant and shuffle-invariance tables in about 140 s. `tests/test_invariants.py` adds 11 hand-checkable tests. Full suite: 728 passed, 2 skipped, 1 xfailed.
+- `reports/ml_nature.md` §4 written, PROGRESS.md updated to 4/8, item marked `[x]`. Nothing was committed and nothing under `solutions/` changed.
+
+**What was found**
+- The min-fill treewidth heuristic plus one is a closer point estimate of the optimum than either solver bound, exact on 85.7% of instances against 84.6% for the upper bound and 77.0% for the lower, and it leads in every size band. It is a bound on nothing: below the optimum on 481 instances and above on 428.
+- Structure plus invariants, with no solver bound computed, now predicts the optimum as well as structure plus bounds did. Grouped-by-file MAE fell from 0.436 to 0.220, clearing the plan's 0.02 kill criterion tenfold.
+- On the residual over the proved bound the group adds nothing. The invariants carry the same information as the bound, not what it misses. The residual's only correlates are random-model sparsity and weak connectivity, which points §2.3 at sparse graphs.
+- Two records worth knowing: the previous feature CSV was stale (it predated the expansion bound and one corrected optimum), and the file ∪ class grouping is effectively a five-region hold-out because its largest group holds a quarter of the corpus.
+
+**Next** is item 05, the formula for the residual. The report's closing note says which columns to leave out of that search and which carry signal on the gap.
+
+# result: success in 975s, 29 turns, cost $5.77

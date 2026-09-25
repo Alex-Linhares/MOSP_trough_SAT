@@ -133,10 +133,16 @@ def load_table(
 
 
 def structure_columns(frame: pd.DataFrame) -> list[str]:
-    """Every feature column that is not a bound: the structure-only set."""
+    """Every feature column that is not a bound: the structure-only set.
+
+    The `invariants` group (2026-09-25) is left out so that §2 of
+    `reports/ml_nature.md` regenerates from the same 28 columns it reports.
+    """
+    from learning.features import invariant_names
+
+    skip = set(invariant_names()) | {"graph_cert", "bipartite_cert"}
     return [c for c in feature_columns(frame)
-            if not c.startswith(BOUND_PREFIXES)
-            and c not in ("graph_cert", "bipartite_cert")]
+            if not c.startswith(BOUND_PREFIXES) and c not in skip]
 
 
 def size_free_features(frame: pd.DataFrame) -> pd.DataFrame:

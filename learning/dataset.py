@@ -16,9 +16,13 @@ Two columns exist purely so that a later split cannot lie:
   All 6,376 are certified today, so nothing is dropped, but a corpus that grows
   by ratcheting upper bounds would need the filter.
 
+Since 2026-09-25 the table also carries the `invariants` group of
+`learning.features` (13 columns); `learning.features.invariant_names` lists
+them so a study can put the older 36-column table back.
+
 Usage:
     python -m learning.dataset                  # writes learning/data/instances.csv
-    python -m learning.dataset --no-bounds      # matrix + graph features only, fast
+    python -m learning.dataset --no-bounds      # no bound features, fast
 """
 
 from __future__ import annotations
@@ -33,7 +37,7 @@ import numpy as np
 import pandas as pd
 
 from benchmarks.solve_parallel import find_benchmark_files
-from learning.features import instance_features
+from learning.features import DEFAULT_GROUPS, instance_features
 from mosp.instance import MOSPInstance
 from satisfiability.mosp_solver import _solution_path
 
@@ -85,7 +89,7 @@ def _worker(args):
 def build(
     instance_dir: Path = DEFAULT_INSTANCE_DIR,
     solutions_dir: Path = DEFAULT_SOLUTIONS_DIR,
-    groups: tuple[str, ...] = ("matrix", "graph", "bounds"),
+    groups: tuple[str, ...] = DEFAULT_GROUPS,
     clique_budget: float = 1.0,
     workers: int | None = None,
     verbose: bool = True,
@@ -150,7 +154,7 @@ def main() -> None:
                         help="skip the bound features, which cost most of the time")
     args = parser.parse_args()
 
-    groups = ("matrix", "graph") if args.no_bounds else ("matrix", "graph", "bounds")
+    groups = tuple(g for g in DEFAULT_GROUPS if not (args.no_bounds and g == "bounds"))
     frame = build(args.instance_dir, args.solutions_dir, groups=groups,
                   clique_budget=args.clique_budget, workers=args.workers)
 

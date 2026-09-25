@@ -13,3 +13,8 @@
 [2026-09-25 19:25:15] claude session it03 (cap 3.00 h) -> session_it03.log
 [2026-09-25 19:36:09] session it03: ok (exit 0, 25 tool calls)
 [2026-09-25 19:37:24] tests passed: 717 passed, 2 skipped, 1 xfailed, 147 warnings in 73.96s (0:01:13)
+[2026-09-25 19:37:24] committed bb34607: 03 · §2.4 prerequisite Node counts into the ledger. Make the customer
+[2026-09-25 19:37:24] === iteration 4: 04 · §2.2a Pathwidth-adjacent invariants as features. Add to
+[2026-09-25 19:37:24] claude session it04 (cap 3.00 h) -> session_it04.log
+[2026-09-25 19:53:40] session it04: ok (exit 0, 28 tool calls)
+[2026-09-25 19:54:54] tests passed: 728 passed, 2 skipped, 1 xfailed, 147 warnings in 73.39s (0:01:13)

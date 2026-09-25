@@ -587,3 +587,283 @@ reports/node_count_tables.md` (about 1 s on 16 workers; writes
 `learning/data/node_counts.csv` rows whose `instance_name` starts with
 `Random-` by the fourth dash-separated field. Tests: `python -m pytest
 tests/test_node_counts.py -q`.
+
+## 4. Pathwidth-adjacent invariants as features (§2.2a)
+
+*Iteration 4, 2026-09-25. Code: `learning/features.py` (group `invariants`),
+`learning/invariants_study.py`. Regenerate:*
+
+```bash
+python -m learning.dataset --workers 16                                   # 6,376 x 49 features, ~90 s
+python -m learning.invariants_study --workers 16 --out reports/invariants_tables.md   # ~140 s
+python -m pytest tests/test_invariants.py -q
+```
+
+*Writes `learning/data/instances.csv` (git-ignored) and the tables below.
+`learning.study_optimum` and `learning.fingerprint` leave the new group out by
+default, so `reports/learning.md` §1 and §2 above still regenerate from the
+columns they report.*
+
+**Question.** The optimum is `pathwidth(MOSP graph) + 1`, and §1 of
+`reports/learning.md` found that of the 36 features it is the MOSP graph's
+edge count and mean degree that carry the signal. Which of the invariants
+that pathwidth is known to sit beside carry more of it, and do they explain
+the part of the optimum the proved bound misses?
+
+**Method.** Thirteen new columns in a fourth feature group: the min-fill and
+min-degree elimination widths (`tw_min_fill`, `tw_min_degree`, networkx's
+treewidth heuristics; upper bounds on treewidth, which is at most pathwidth,
+so bounds on nothing here); the bandwidth of the reverse Cuthill–McKee order
+(`bw_rcm`; bandwidth is at least pathwidth, so `bw_rcm + 1` is a valid upper
+bound on the optimum and the corpus is checked against that); the adjacency
+spectral radius and the Laplacian Fiedler value, on the whole graph and on
+its largest component; two edge clique cover counts (`cc_products`, the
+distinct products containing an edge, which is the upper bound the item asks
+for, and `cc_greedy`, after dropping every product all of whose edges another
+product also covers); a balanced separator (`sep_size`, the smallest
+one-sided boundary over the middle-third cuts of the Fiedler order and of the
+RCM order, and `sep_frac = sep_size / n`); and the random intersection graph
+quantities: with `p̂ = density` and `(n, m) = (n_customers, n_patterns)`
+already in the matrix group, the pairwise edge probability
+`1 − (1 − p̂²)^m`, the expected degree `(n − 1)` times it, and the ratio of the
+observed MOSP-graph density to that probability. The four greedy invariants
+run on a copy relabelled by a label-free key (degree, neighbour degrees,
+two-hop degree sums) so tie-breaks do not depend on the file's row order, and
+the residual order-dependence is measured by re-featuring 623 shuffled
+instances (400 at random plus all 241 with `n ≥ 50`, minus overlap). The
+ablation fits the same `HistGradientBoostingRegressor` as `learning.study_optimum`
+on four feature sets under three splits: grouped by file, grouped by file ∪
+MOSP-graph isomorphism class (`learning.fingerprint.union_groups`), and
+random for contrast; on the optimum and on the residual `optimum − lb_best`.
+Permutation importance is on a held-out fifth of the file ∪ class groups.
+
+**Baseline.** The 36-feature model, grouped by file (`reports/learning.md`
+§1), and the solver's own `lb_best` and `ub_best` as point estimates. Note
+that the table was rebuilt: `lb_best` now includes the expansion bound
+(higher on 1,329 rows than the table §1 of `reports/learning.md` was computed
+from) and `Random-100-100-2-2_0` carries its corrected optimum of 20, so the
+baseline rows below are the current corpus, not the September 22 numbers.
+
+### Invariants as point estimates of the optimum
+
+`below`/`above` count instances where the estimate sits under/over the
+optimum. A valid lower bound has `above = 0`; a valid upper bound `below = 0`.
+
+| estimate                   |   mae |   rmse |   exact |   over |   below |   above |   max_below |   max_above |
+|:---------------------------|------:|-------:|--------:|-------:|--------:|--------:|------------:|------------:|
+| lb_best                    | 0.431 |  1.732 |   0.770 |  0.000 |    1467 |       0 |          30 |           0 |
+| ub_best                    | 0.239 |  0.733 |   0.846 |  0.154 |       0 |     979 |           0 |          10 |
+| ub_cs_dfs                  | 0.241 |  0.736 |   0.845 |  0.155 |       0 |     988 |           0 |          10 |
+| **tw_min_fill + 1**        | **0.188** |  **0.606** |   **0.857** |  0.067 |     481 |     428 |           3 |           7 |
+| tw_min_degree + 1          | 0.292 |  0.885 |   0.811 |  0.126 |     401 |     805 |           3 |          11 |
+| bw_rcm + 1                 | 1.935 |  4.422 |   0.514 |  0.486 |       0 |    3097 |           0 |          49 |
+| round(spectral_radius) + 1 | 1.235 |  3.232 |   0.379 |  0.529 |     585 |    3372 |          43 |          26 |
+| g_degeneracy + 1           | 1.782 |  4.965 |   0.516 |  0.000 |    3083 |       0 |          61 |           0 |
+| sep_size + 1               | 8.663 | 10.803 |   0.010 |  0.001 |    6308 |       7 |          63 |           3 |
+
+### The leading estimates by size band
+
+| band   |   instances |   exact lb_best |   mae lb_best |   exact ub_best |   mae ub_best |   exact tw_min_fill+1 |   mae tw_min_fill+1 |
+|:-------|------------:|----------------:|--------------:|----------------:|--------------:|----------------------:|--------------------:|
+| 1-30   |        5938 |           0.800 |         0.226 |           0.880 |         0.155 |                 0.887 |               0.121 |
+| 31-60  |         318 |           0.453 |         1.132 |           0.503 |         0.783 |                 0.582 |               0.525 |
+| 61-200 |         120 |           0.117 |         8.708 |           0.092 |         2.958 |                 0.133 |               2.633 |
+
+### Ablation: the same model with and without the invariants
+
+`delta_mae` is against the same feature set without the group; negative is
+better; the plan's kill criterion is 0.02. `mae_gap_rows` restricts the
+scoring to the 1,467 instances where `ub_best > lb_best`.
+
+| target            | split                   | features                |   mae |   rmse |   exact |   over |   mae_gap_rows |   exact_gap_rows |   delta_mae |
+|:------------------|:------------------------|:------------------------|------:|-------:|--------:|-------:|---------------:|-----------------:|------------:|
+| optimum           | grouped by file         | structure (28)          | 0.436 |  0.857 |   0.712 |  0.175 |          0.778 |            0.484 |             |
+| optimum           | grouped by file         | structure + invariants  | 0.220 |  0.487 |   0.871 |  0.062 |          0.480 |            0.669 |  **−0.216** |
+| optimum           | grouped by file         | structure + bounds (36) | 0.191 |  0.472 |   0.883 |  0.065 |          0.512 |            0.629 |             |
+| optimum           | grouped by file         | all (36 + invariants)   | 0.179 |  0.454 |   0.892 |  0.054 |          0.467 |            0.667 |      −0.012 |
+| optimum           | grouped by file ∪ class | structure (28)          | 1.667 |  5.430 |   0.356 |  0.129 |          2.796 |            0.388 |             |
+| optimum           | grouped by file ∪ class | structure + invariants  | 1.030 |  4.977 |   0.775 |  0.069 |          2.191 |            0.580 |  **−0.637** |
+| optimum           | grouped by file ∪ class | structure + bounds (36) | 0.967 |  4.970 |   0.771 |  0.059 |          2.253 |            0.557 |             |
+| optimum           | grouped by file ∪ class | all (36 + invariants)   | 0.923 |  4.932 |   0.832 |  0.050 |          2.173 |            0.607 |      −0.044 |
+| optimum           | random (leaks!)         | structure (28)          | 0.343 |  0.807 |   0.777 |  0.109 |          0.706 |            0.548 |             |
+| optimum           | random (leaks!)         | structure + invariants  | 0.199 |  0.535 |   0.878 |  0.058 |          0.487 |            0.660 |      −0.144 |
+| optimum           | random (leaks!)         | structure + bounds (36) | 0.176 |  0.505 |   0.889 |  0.063 |          0.511 |            0.638 |             |
+| optimum           | random (leaks!)         | all (36 + invariants)   | 0.165 |  0.494 |   0.900 |  0.054 |          0.465 |            0.680 |      −0.012 |
+| optimum − lb_best | grouped by file         | structure (28)          | 0.273 |  0.500 |   0.810 |  0.078 |          0.617 |            0.467 |             |
+| optimum − lb_best | grouped by file         | structure + invariants  | 0.269 |  0.526 |   0.813 |  0.077 |          0.613 |            0.512 |      −0.004 |
+| optimum − lb_best | grouped by file         | structure + bounds (36) | 0.155 |  0.378 |   0.892 |  0.062 |          0.479 |            0.635 |             |
+| optimum − lb_best | grouped by file         | all (36 + invariants)   | 0.155 |  0.378 |   0.889 |  0.063 |          0.475 |            0.626 |      −0.000 |
+| optimum − lb_best | grouped by file ∪ class | structure (28)          | 0.453 |  1.599 |   0.781 |  0.090 |          1.077 |            0.439 |             |
+| optimum − lb_best | grouped by file ∪ class | structure + invariants  | 0.449 |  1.559 |   0.789 |  0.093 |          1.056 |            0.462 |      −0.004 |
+| optimum − lb_best | grouped by file ∪ class | structure + bounds (36) | 0.306 |  1.510 |   0.878 |  0.065 |          0.940 |            0.590 |             |
+| optimum − lb_best | grouped by file ∪ class | all (36 + invariants)   | 0.298 |  1.496 |   0.883 |  0.063 |          0.927 |            0.606 |      −0.009 |
+| optimum − lb_best | random (leaks!)         | structure (28)          | 0.245 |  0.478 |   0.822 |  0.072 |          0.601 |            0.499 |             |
+| optimum − lb_best | random (leaks!)         | structure + invariants  | 0.237 |  0.463 |   0.827 |  0.071 |          0.586 |            0.512 |      −0.008 |
+| optimum − lb_best | random (leaks!)         | structure + bounds (36) | 0.147 |  0.371 |   0.891 |  0.063 |          0.467 |            0.633 |             |
+| optimum − lb_best | random (leaks!)         | all (36 + invariants)   | 0.144 |  0.357 |   0.894 |  0.062 |          0.457 |            0.643 |      −0.003 |
+
+The file ∪ class grouping is far harsher than the file grouping because it is
+far more unbalanced: its largest group holds 1,620 instances (25.4% of the
+corpus; the complete graphs of §1 chain Harvey and Simonis files together)
+and its five largest hold 88.0%, against 8.6% and 43.1% for the file
+grouping. `GroupKFold` keeps a group whole, so the file ∪ class split is in
+effect a five-region hold-out, and its absolute numbers are extrapolation
+errors between generators; the grouped-by-file rows are the ones comparable
+with `reports/learning.md`.
+
+### By size band (grouped by file ∪ class, target optimum)
+
+| band   |   instances | features                |    mae |   rmse |   exact |   over |
+|:-------|------------:|:------------------------|-------:|-------:|--------:|-------:|
+| 1-30   |        5938 | structure (28)          |  0.875 |  1.090 |   0.377 |  0.121 |
+| 1-30   |        5938 | structure + invariants  |  0.330 |  0.433 |   0.819 |  0.067 |
+| 1-30   |        5938 | structure + bounds (36) |  0.246 |  0.381 |   0.813 |  0.060 |
+| 1-30   |        5938 | all (36 + invariants)   |  0.216 |  0.320 |   0.877 |  0.050 |
+| 31-60  |         318 | structure (28)          |  5.744 |  7.560 |   0.091 |  0.296 |
+| 31-60  |         318 | structure + invariants  |  4.507 |  6.637 |   0.223 |  0.110 |
+| 31-60  |         318 | structure + bounds (36) |  4.492 |  6.566 |   0.261 |  0.057 |
+| 31-60  |         318 | all (36 + invariants)   |  4.401 |  6.509 |   0.277 |  0.060 |
+| 61-200 |         120 | structure (28)          | 30.051 | 36.830 |   0.025 |  0.108 |
+| 61-200 |         120 | structure + invariants  | 26.443 | 34.501 |   0.092 |  0.058 |
+| 61-200 |         120 | structure + bounds (36) | 27.286 | 34.511 |   0.033 |  0.033 |
+| 61-200 |         120 | all (36 + invariants)   | 26.726 | 34.282 |   0.067 |  0.008 |
+
+### Permutation importance, all 49 features, target optimum
+
+MAE points on a held-out fifth of the file ∪ class groups; the top 20, then
+where every invariant landed.
+
+|   rank | feature         | group      |   mae_cost |
+|-------:|:----------------|:-----------|-----------:|
+|      1 | tw_min_fill     | invariants |      2.011 |
+|      2 | ub_cs_dfs       | bounds     |      1.207 |
+|      3 | lb_best         | bounds     |      0.431 |
+|      4 | ub_best         | bounds     |      0.146 |
+|      5 | lb_contraction  | bounds     |      0.076 |
+|      6 | tw_min_degree   | invariants |      0.064 |
+|      7 | ub_mcn          | bounds     |      0.037 |
+|      8 | g_deg_max       | graph      |      0.036 |
+|      9 | g_edges         | graph      |      0.034 |
+|     10 | spectral_radius | invariants |      0.025 |
+|     11 | bw_rcm          | invariants |      0.024 |
+|     12 | g_deg_mean      | graph      |      0.023 |
+|     13 | n_patterns      | matrix     |      0.017 |
+|     14 | g_degeneracy    | graph      |      0.010 |
+|     15 | g_density       | graph      |      0.008 |
+|     16 | n_customers     | matrix     |      0.007 |
+|     17 | g_deg_std       | graph      |      0.005 |
+|     18 | n_ones          | matrix     |      0.005 |
+|     19 | cc_greedy       | invariants |      0.005 |
+|     20 | g_deg_min       | graph      |      0.005 |
+
+Invariants' ranks: `tw_min_fill` #1 (2.011), `tw_min_degree` #6 (0.064),
+`spectral_radius` #10 (0.025), `bw_rcm` #11 (0.024), `cc_greedy` #19
+(0.005), `sep_frac` #21 (0.005), `rig_deg_expected` #24 (0.002),
+`rig_density_ratio` #30 (0.001), `cc_products` #31 (0.000), `rig_edge_prob`
+#34 (0.000), `fiedler` #41 (−0.000), `sep_size` #47 (−0.002), `fiedler_lcc`
+#48 (−0.003).
+
+On the residual `optimum − lb_best` the ranking is `bound_gap` 0.283,
+`bound_gap_frac` 0.229, `ub_cs_dfs` 0.020, then `bw_rcm` 0.017 as the first
+invariant, `density` 0.016, `sep_size` 0.010, `tw_min_fill` 0.007 and
+`fiedler` 0.007: nothing in the group moves the residual by more than two
+hundredths of a stack.
+
+### Each invariant alone, with the two sizes (grouped by file ∪ class)
+
+| feature           |   rho_optimum |   rho_residual |   mae_optimum |   exact_optimum |   mae_residual |
+|:------------------|--------------:|---------------:|--------------:|----------------:|---------------:|
+| tw_min_fill       |         0.998 |          0.070 |         0.997 |           0.737 |          0.550 |
+| lb_best           |         0.993 |          0.002 |         1.081 |           0.686 |          0.445 |
+| tw_min_degree     |         0.997 |          0.080 |         1.106 |           0.659 |          0.552 |
+| g_deg_mean        |         0.972 |         −0.028 |         1.468 |           0.385 |          0.472 |
+| spectral_radius   |         0.980 |          0.027 |         1.637 |           0.345 |          0.490 |
+| g_degeneracy      |         0.949 |         −0.109 |         1.898 |           0.248 |          0.481 |
+| g_edges           |         0.963 |          0.206 |         2.113 |           0.217 |          0.588 |
+| rig_deg_expected  |         0.970 |         −0.011 |         2.129 |           0.197 |          0.473 |
+| bw_rcm            |         0.937 |          0.265 |         2.794 |           0.120 |          0.605 |
+| fiedler           |         0.788 |         −0.320 |         2.987 |           0.139 |          0.486 |
+| fiedler_lcc       |         0.787 |         −0.322 |         3.011 |           0.143 |          0.482 |
+| rig_edge_prob     |         0.355 |         −0.524 |         3.200 |           0.140 |          0.443 |
+| sep_frac          |         0.026 |         −0.418 |         3.715 |           0.112 |          0.506 |
+| sep_size          |         0.930 |          0.259 |         3.784 |           0.093 |          0.532 |
+| rig_density_ratio |         0.252 |         −0.081 |         3.883 |           0.074 |          0.509 |
+| cc_greedy         |         0.186 |          0.381 |         6.030 |           0.115 |          0.518 |
+| cc_products       |         0.198 |          0.002 |         6.851 |           0.035 |          0.619 |
+| (sizes only)      |               |                |         7.053 |           0.044 |          0.625 |
+
+### Order-dependence of the greedy invariants
+
+623 instances re-featured after shuffling customers and products.
+
+| feature           |   instances |   changed |   changed_frac |   max_abs_change |   changed_n_ge_50 |
+|:------------------|------------:|----------:|---------------:|-----------------:|------------------:|
+| tw_min_fill       |         623 |         0 |          0.000 |            0.000 |                 0 |
+| tw_min_degree     |         623 |         0 |          0.000 |            0.000 |                 0 |
+| bw_rcm            |         623 |         1 |          0.002 |            1.000 |                 0 |
+| cc_greedy         |         623 |        26 |          0.042 |            2.000 |                 4 |
+| sep_size          |         623 |         0 |          0.000 |            0.000 |                 0 |
+| every exact invariant |     623 |         0 |          0.000 |            0.000 |                 0 |
+
+**Finding.** One invariant carries almost all of what the group adds, and it
+is the min-fill elimination width. `tw_min_fill + 1` is, on this corpus, a
+closer point estimate of the optimum than either of the solver's own bounds:
+exact on 85.7% of the 6,376 instances against 84.6% for `ub_best` and 77.0%
+for `lb_best`, at MAE 0.188 against 0.239 and 0.431, and it leads in every
+size band, including the 120 instances with 61–134 customers where it is off
+by 2.6 stacks on average against 3.0 for the upper bound and 8.7 for the
+lower. It is a bound on nothing: it sits below the optimum on 481 instances
+(by up to 3) and above it on 428 (by up to 7), and treewidth being at most
+pathwidth does not make a treewidth *heuristic* either. In the model it is
+the single most important feature of all 49 at 2.01 MAE points, above
+`ub_cs_dfs` at 1.21 and `lb_best` at 0.43, and alone with the two sizes it
+predicts the optimum better under the harshest grouping (MAE 0.997, exact
+73.7%) than `lb_best` with the same sizes does (1.081, 68.6%). The plan's
+kill criterion of 0.02 MAE is cleared by an order of magnitude on the
+structure-only set — grouped by file the MAE falls from 0.436 to 0.220 and
+the exact rate rises from 71.2% to 87.1%, which is to say that structure plus
+invariants, with no solver bound computed, now predicts the optimum as well as
+structure plus the bounds did (0.191, 88.3%) — and cleared narrowly or not at
+all once the bounds are already present (−0.012 by file, −0.044 by file ∪
+class). On the **residual over the proved bound the group adds nothing**:
+−0.004, −0.000 and −0.009 MAE, and no invariant moves that target by more than
+0.017 points. So the invariants know what the bound knows, expressed
+differently, and not what it is missing. Where the residual does correlate
+with anything it is with the random-model sparsity: the pairwise edge
+probability `1 − (1 − p̂²)^m` has Spearman −0.52 with the gap, the separator
+fraction −0.42 and the Fiedler value −0.32, so the bound falls short where the
+graph is sparse and weakly connected, which is a direction for §2.3 rather
+than an explanation. Of the rest: `tw_min_degree` (#6), the spectral radius
+(#10) and `bw_rcm` (#11) each add a few hundredths; the Fiedler value, the
+separator, both clique cover counts and the random intersection parameters
+contribute nothing once min-fill is present, and the random-model expected
+degree predicts the optimum worse (MAE 2.13) than the observed mean degree
+(1.47), with the density ratio spanning 0.49–1.38, which says again what §2
+said: these graphs are not random intersection graphs at their own `(n, m,
+p̂)`. `bw_rcm + 1` was never below the optimum on any of the 6,376 instances,
+as bandwidth ≥ pathwidth requires — a corpus-wide consistency check against a
+theorem that cost nothing — and it is exact on 51.4% of them. The relabelling
+by a label-free key makes the greedy invariants order-independent in practice:
+over 623 shuffled instances the two treewidth heuristics and the separator
+never changed, the RCM bandwidth changed once by one, and only `cc_greedy`
+moved (26 instances, by at most 2), which is documented and harmless since it
+carries no importance.
+
+**Size range covered.** 9–134 customers, 5,938 of 6,376 at n ≤ 30. The
+ablation and importance tables are dominated by the small instances; at 31–60
+customers (318 instances) every model's grouped MAE is above 4 and at 61–134
+(120 instances) above 26, so no model here predicts the optimum at those
+sizes and the only claim that reaches them is the point-estimate comparison
+in the by-band table. The order-dependence check covers every instance with
+n ≥ 50.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound` and
+every decision path are untouched; nothing was written to `solutions/`. No
+finding rests on a handful of instances, so nothing was re-certified; the
+`bw_rcm + 1 ≥ optimum` check is a whole-corpus property and it passed.
+
+**For §2.2b.** The residual is the target the formula search should aim at,
+and this section says which columns to leave out of it: the treewidth
+heuristics track the bound, not the gap. The candidates with any signal on the
+gap are `rig_edge_prob`, `sep_frac`, `fiedler`, `cc_greedy` (ρ = 0.38) and
+`bw_rcm`.

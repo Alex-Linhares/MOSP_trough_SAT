@@ -38,13 +38,19 @@ import numpy as np
 import pandas as pd
 
 from learning.dataset import DEFAULT_OUT, feature_columns, load
+from learning.features import invariant_names
 
 BOUND_PREFIXES = ("lb_", "ub_", "bound_")
 
 
 def split_columns(frame: pd.DataFrame) -> tuple[list[str], list[str]]:
-    """(structure, bounds) feature columns."""
-    cols = feature_columns(frame)
+    """(structure, bounds) feature columns.
+
+    The `invariants` group added on 2026-09-25 is left out, so this study keeps
+    reproducing the 36-feature numbers in `reports/learning.md`; the study that
+    adds them is `learning.invariants_study`.
+    """
+    cols = [c for c in feature_columns(frame) if c not in set(invariant_names())]
     bounds = [c for c in cols if c.startswith(BOUND_PREFIXES)]
     return [c for c in cols if c not in bounds], bounds
 
