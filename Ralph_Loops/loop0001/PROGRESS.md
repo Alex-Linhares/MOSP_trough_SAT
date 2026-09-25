@@ -241,3 +241,13 @@ None.
 - revisit or re-open this item
 
 ---
+
+## Iteration 6 — 2026-09-25 20:20:06
+### Completed
+- (driver) session ended with outcome `ok` without marking the item
+### Blockers
+- see session_it06.log
+### Next
+- revisit or re-open this item
+
+---

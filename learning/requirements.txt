@@ -9,3 +9,6 @@ pynauty
 # Optional, behind a soft import in learning/fingerprint.py: the 2-D map of
 # instance space. Without it the module falls back to PCA.
 umap-learn
+# Optional, behind a soft import in learning/bound_gap.py: the explainable
+# boosting machine beside the depth-3 tree. Without it the EBM rows are skipped.
+interpret-core

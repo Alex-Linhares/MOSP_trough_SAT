@@ -31,7 +31,7 @@ Plan sections refer to `reports/ml_nature_plan.md`.
       structure-only features. Baseline: LightGBM on the same features, grouped.
       Deliverable: the best formula, its grouped MAE, and a stated conjecture if
       the formula is a clean one. State plainly that it is not a bound.
-- [ ] 06 · §2.3 **Where the bounds fail.** Classifier `gap ≥ 2` vs tight with a
+- [!] 06 · §2.3 **Where the bounds fail.** Classifier `gap ≥ 2` vs tight with a
       depth-3 tree and, if `interpret` is available, an EBM; baseline density and
       size. Cluster the gap instances. Write out the ten smallest instances with
       gap ≥ 2 as matrices in the report, with their MOSP graphs' degree sequences,
