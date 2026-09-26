@@ -6066,3 +6066,256 @@ folds 125 into it; this module adds a `corpus 101–125` band so the fifteen
 125 × 125 rows are read on their own line. Iteration 7 of loop0003 ran the
 study and ended waiting on the straggler without writing this section; the
 CSV it left is complete and every number here regenerates from it.
+
+## 23. Set-valued imitation: does a policy learn more than the rule when the target is the set of optimal moves? (plan 2 §2.8, loop0003 item 10)
+
+*Iteration 11 of loop0003, 2026-09-26. Code: `learning/set_imitation.py`.
+Regenerate:*
+
+```bash
+python -m learning.set_imitation --stage lattice --workers 8      # 4 min: 2^20 lattices, labels, exact choices
+OMP_NUM_THREADS=8 python -m learning.set_imitation --stage train --workers 8   # folds, models, held-out values
+python -m learning.set_imitation --stage ceiling --workers 6 --nodes 300 --seconds 300   # bounded choices at >= 50
+python -m learning.set_imitation --stage calibration --workers 8  # the bounded procedure against exact counts, 16-20
+python -m learning.set_imitation --stage tables                   # reports/set_imitation_tables.md
+python -m pytest tests/test_set_imitation.py -q
+```
+
+*Writes `reports/set_imitation_tables.md` (every table below in full),
+`learning/data/ensemble/set_imitation_{lattice,eval,ceiling,calibration}.csv[.gz]`
+(committed; one row per instance) and `learning/data/set_imitation/` (the
+1.5 M labelled rows and the per-fold boosters, git-ignored, regenerable in
+four minutes). Nothing is written to `solutions/`; no solver file, default or
+bound is touched.*
+
+**Question.** §7 found a two-key rule — *close the customer that opens the
+fewest new stacks; on ties, the one with the most unclosed neighbours* —
+beating the imitation ranker of `learning.policy` on held-out construction
+value, and §8 found why imitation had lost: the witness a policy imitates is
+one of 10⁵–10¹⁰ optimal closing orders, so agreeing with it at a step measures
+reproduction of the solver's tie-breaks, and roughly 90% of the 2.27 M
+training decisions were arbitrary choices among optimal ones. The plan's last
+question for imitation is whether it works when given the *right* label: the
+set of moves that keep the best achievable value. If a policy trained on that
+label, with the rule's own keys among its features so that it can only add to
+the rule, does not beat the rule by 0.02 MAE grouped, imitation is closed.
+
+**Method.** Four stages, each regenerable by one command above.
+
+- *The lattice, vectorised.* `learning.degeneracy.closing_weights` walks the
+  `2^a · a` closed-set lattice in Python and stopped at n = 15. `Lattice` in
+  `learning/set_imitation.py` holds every array over all `2^a` states at once:
+  `opened[S]`, `made[S]`, `done[S]` in one numpy pass per customer; the
+  construction cost `w[S, c]` — the peak of open stacks while `c`'s unproduced
+  products are made in index order, exactly `mosp.verify.count_open_stacks`
+  on the constructed product order — in one pass per (customer, product,
+  holder) triple; and the bottleneck-to-go `h[S] = min over completions of
+  the max cost`, layer by layer downward, so `h[0]` is the optimum. It agrees
+  with `closing_weights` weight for weight and with `witness_choices` count
+  for count on random instances (`tests/test_set_imitation.py`), and takes
+  0.5–2.7 s at n = 20 (2^20 states, ~60 MB). Run over every certified corpus
+  instance with n ≤ 20: **4,122 instances** (10 at 9, 1,604 at 10, 5 at
+  13–14, 1,194 at 15, 12 at 17–19, **1,298 at 20**), 226 s on 8 workers.
+- *The label.* From a state `S` reached with running peak `P`, closing `c` is
+  **good** iff `max(w[S, c], h[S ∪ {c}]) ≤ max(h[S], P)`: it does not worsen
+  the best construction value still reachable. Along an optimal path this is
+  §8's `optimal_choices` exactly; off it (after the rule or MCN has already
+  made a bad move) it is the natural extension, so every trajectory can be
+  labelled. States labelled per instance: every prefix of the witness's
+  induced closing order, of the two-key rule's order, of MCN's order and of
+  one seeded rollout choosing uniformly among optimal moves; duplicate states
+  and single-candidate steps dropped. **175,687 states, 1,501,721 candidate
+  rows, 84.5% of them good** (87.7% at 9–15, 82.1% at 16–20): the optimal
+  set is not a needle. **The rule's pick is good on 99.71% of the labelled
+  states**, including 97.6% of the states on the 291 instances where the
+  rule's construction misses the optimum.
+- *Features.* `learning.policy.step_features` (8) and `patterns`, plus the
+  rule's two keys relative to the step (`rel_newly_opened`,
+  `rel_remaining_degree`), the rule's own rank of the candidate
+  (`rule_rank`, 0 for its pick), the number of candidates and the running
+  peak. Ties in the learned score fall to the rule's key, so the constant
+  model *is* the rule (tested): the learned policy can only add to it or
+  learn something false.
+- *Models and protocol.* LightGBM binary on good/bad rows (`set-binary`) and
+  LambdaRank with one query per step and relevance = good (`set-rank`); the
+  old ranker refitted per fold on the training groups' witnesses at every
+  size (`learning.policy._fit`, §7's `lgbm` row, ties by index); MCN; the
+  rule. Five folds by **file ∪ MOSP-graph isomorphism class**
+  (`learning.fingerprint.union_groups`, 509 groups, largest first into the
+  smallest fold: 1,620 / 1,573 / 1,190 / 1,120 / 870 instances). The largest
+  group — fold 0 — contains no instance at n ≤ 20, so that fold's set models
+  are fitted on all 1.5 M rows and scored only by transfer; the n ≤ 20
+  held-out sets of folds 1–4 hold 1,573 / 1,190 / 1,120 / 239 instances. Set
+  models are fitted on n ≤ 20 rows only (labels exist only there) and scored
+  held out at every size; every construction is turned into a product order
+  by `product_order_from_customers` and simulated with `max_open_stacks`.
+  Step accuracy *under the correct objective* is also reported: the fraction
+  of a policy's own steps that were good along its own trajectory, and of its
+  picks at the witness's states, both at n ≤ 20 where the label is exact.
+- *The ceiling at 50–125.* Along every witness with n ≥ 50 (238 instances,
+  50–134 customers), at every step and for every alternative `c`, a lower
+  bound on the optimal-choice set: `c` is confirmed if the witness's own
+  suffix with `c` moved to the front still constructs to the optimum — the
+  search "restricted to the witness's own prefixes" — or, failing that, if a
+  300-node restricted DFS (Chu & Stuckey's `ub_MOSP` shape: branch on
+  already-open customers, cheapest first, under the exact block cost) from
+  `S ∪ {c}` finds a completion within the optimum. Confirmed counts are lower
+  bounds on §8's `choices`, so `mean(1 / confirmed)` is an **upper bound on
+  the step-accuracy ceiling**. Per-instance deadline 300 s; a censored
+  instance reports the steps it reached. The same procedure was run on the
+  1,310 instances at 16–20 against the exact counts to calibrate it.
+
+**Baseline.** The two-key rule. On this protocol's held-out sets it scores
+**MAE 0.0805, exact 92.9%, worst +3 at n ≤ 20** (4,122 instances) and
+**0.276 / 83.4% / +10 over the whole corpus** (6,373); §7's 0.348 / 80.7%
+was on a 1,920-instance sample grouped by file. The rule has no parameters,
+so its held-out and in-sample numbers are the same thing.
+
+### (a) Held-out construction value
+
+| strategy | n ≤ 20: MAE | exact | worst | Σ overshoot | whole corpus: MAE | exact | worst | Σ overshoot |
+|---|---|---|---|---|---|---|---|---|
+| mcn | 0.552 | 66.5% | 6 | 2,275 | 1.332 | 54.9% | 32 | 8,487 |
+| rule (§7) | 0.0805 | 92.9% | 3 | 332 | 0.2759 | 83.4% | 10 | 1,758 |
+| old ranker (refit per fold) | 0.189 | 83.5% | 5 | 778 | 0.443 | 74.9% | 16 | 2,823 |
+| **set-binary** | **0.0725** | **93.3%** | 3 | 299 | 0.2694 | 83.8% | 13 | 1,717 |
+| set-rank | 0.0810 | 92.7% | 3 | 334 | **0.2675** | 83.6% | 10 | 1,705 |
+
+**By size band, whole corpus (MAE).**
+
+| customers | instances | mcn | rule | old ranker | set-binary | set-rank |
+|---|---|---|---|---|---|---|
+| 9–15 | 2,812 | 0.324 | 0.035 | 0.135 | 0.034 | 0.033 |
+| 16–20 | 1,310 | 1.040 | 0.178 | 0.303 | 0.155 | 0.184 |
+| 21–40 | 2,013 | 1.909 | 0.420 | 0.550 | 0.403 | 0.393 |
+| 41–75 | 151 | 6.815 | 1.669 | 2.682 | 1.570 | 1.642 |
+| 76–134 | 87 | 15.414 | 3.782 | 6.115 | 4.253 | 3.805 |
+
+**Head to head** (instances where the first is below / equal / above the second).
+
+| first | second | scope | better | equal | worse |
+|---|---|---|---|---|---|
+| set-binary | rule | n ≤ 20 | 83 | 3,975 | 64 |
+| set-rank | rule | n ≤ 20 | 74 | 3,965 | 83 |
+| old ranker | rule | n ≤ 20 | 84 | 3,556 | 482 |
+| set-binary | rule | all | 251 | 5,936 | 186 |
+| set-rank | rule | all | 237 | 5,926 | 210 |
+| old ranker | rule | all | 296 | 5,125 | 952 |
+| set-binary | old ranker | all | 1,012 | 5,073 | 288 |
+
+**Grouped MAE difference against the rule**, with a bootstrap over the
+union groups (2,000 resamples; negative favours the learned policy).
+
+| policy | scope | groups | MAE − MAE(rule) | bootstrap 5% | 95% |
+|---|---|---|---|---|---|
+| set-binary | n ≤ 20 | 110 | **−0.0080** | −0.0254 | −0.0037 |
+| set-rank | n ≤ 20 | 110 | +0.0005 | −0.0176 | +0.0095 |
+| set-binary | all | 509 | −0.0064 | −0.0178 | +0.0074 |
+| set-rank | all | 509 | −0.0083 | −0.0234 | +0.0021 |
+| old ranker | all | 509 | +0.167 | +0.120 | +0.304 |
+
+Per fold at n ≤ 20 (MAE, rule → set-binary): fold 1 0.020 → 0.019, fold 2
+0.055 → 0.053, fold 3 0.143 → 0.132, fold 4 0.310 → 0.243 (239 instances).
+
+### (b) Step accuracy under the correct objective (n ≤ 20, exact labels)
+
+| policy | own trajectory: steps that were good | witness states: picks that were good |
+|---|---|---|
+| mcn | 96.70% | 93.91% |
+| rule | 99.44% | 99.59% |
+| old ranker | 98.75% | 98.94% |
+| set-binary | 99.48% | 99.59% |
+| set-rank | 99.43% | 99.59% |
+
+Over 175,687 labelled states the set-valued model changes the rule's pick
+to a good one at 0.04% of steps on its own path. The old ranker, imitating
+a single witness, is *wrong under the correct objective* twice as often as
+the rule (1.25% vs 0.56% of its steps) — a direct measurement of what §7
+inferred: it learned MCN's tie-break, which is the wrong one.
+
+### (c) The imitation ceiling: exact to 20, bounded at 50–134
+
+Complete graphs excluded (every order is optimal there; 1,340 of the 4,122).
+
+| customers | instances | kind | optimal choices per step (median of instance means) | ceiling `mean(1/choices)`: median | mean | p90 | forced steps |
+|---|---|---|---|---|---|---|---|
+| 9–15 | 1,722 | exact | 4.70 | 0.330 | 0.341 | 0.445 | 12.3% |
+| 16–20 | 1,060 | exact | 7.60 | 0.233 | 0.245 | 0.318 | 7.2% |
+| 20 alone | 1,048 | exact | 7.65 | 0.232 | 0.245 | — | — |
+| 50–75 | 151 | bounded (lower bound on choices) | 14.5 | ≤ 0.142 | 0.146 | 0.205 | ≤ 2.1% |
+| 76–100 | 63 | bounded | 24.2 | ≤ 0.109 | 0.136 | 0.246 | ≤ 4.0% |
+| 101–134 | 24 | bounded | 35.1 | ≤ 0.100 | 0.099 | 0.126 | ≤ 2.0% |
+
+**Calibration of the bounded procedure** on the 1,310 instances at 16–20
+against the exact counts: it confirms **99.92%** of all exact optimal
+choices (203,846 by the suffix test, 5,793 by the DFS, 3,544 left unknown of
+which 165 were real), the confirmed count equals the exact count on 99.57%
+of steps, the ceiling bound averages 0.1926 against the exact 0.1924 on the
+same steps and equals it exactly on 93.0% of instances, in 2 ms per instance.
+So at the sizes where it can be checked the "lower bound" is the count.
+
+**At 50–134 the ceiling falls, it does not hold.** Over the 238 witnesses
+(120 at 50, 29 at 75, 60 at 100, 22 at 125, 7 others; none censored, every
+witness construction-optimal; 362,700 alternatives confirmed by the suffix
+test, 20,192 by the DFS, 95,838 left unknown — 20.0% of the alternatives
+against 1.7% at 16–20, so the bound is looser here than the calibration
+suggests, in the direction that makes the true ceiling *lower* still), the
+median witness has at least 14.5 optimal alternatives per step at 50–75,
+24.2 at 76–100 and 35.1 at 101–134, and the step-accuracy ceiling is at most
+**0.142 / 0.109 / 0.100** at the median, at most 0.35 on any instance (GP8,
+100 × 100, optimum 60; GP4 0.33; every other instance below 0.30), and at
+most 0.141 on the 22 `Random-125-125` witnesses. Fewer than 4% of steps have
+a single optimal move. §8's "~0.3 ceiling" was the n ≤ 15 value; it is 0.23
+at n = 20, 0.14 at 50 and 0.10 at 125. Whatever a policy trained to agree
+with a stored witness at the sizes that matter scores, nine steps in ten of
+the target are arbitrary, and every earlier witness-agreement figure at
+these sizes must be read against a ceiling of about a tenth. 1.8 core-hours
+on 6 workers, 238 s for the slowest instance.
+
+**Finding.** Given the correct label — the exact set of moves that keep the
+best achievable value, on 1.5 M candidate rows across 4,122 instances — and
+the rule's own keys as features so that it could only add to the rule, the
+best learned policy beats the rule by **0.008 MAE grouped at n ≤ 20**
+(0.0805 → 0.0725; bootstrap over groups −0.025 to −0.004), by 0.006–0.008
+over the whole corpus with intervals that include zero, and by 0.04% of
+steps under the objective it was trained on. **The kill criterion — not
+better than the rule by 0.02 MAE grouped — is met, and imitation is closed
+for good.** The reason is now measured rather than inferred: the rule's pick
+is already in the optimal set at 99.7% of states, the optimal set holds 82–88%
+of the candidates, and a policy that is right at every step still lands on
+the stored witness at only 23–34% of them — so the previous ranker's 45%
+witness agreement (§7) was reproduction of tie-breaks, and the ~0.5% of
+steps where the rule is wrong are not where its construction error comes
+from either: on the 291 n ≤ 20 instances the rule misses, its pick is still
+good at 97.6% of states, i.e. a single bad step per instance, made at a state
+the features do not distinguish from its neighbours. The old ranker refit
+on honest groups is 0.443 against the rule's 0.276; the set-valued model
+corrects it to the rule's level and no further. The right objective turns
+imitation from a loss into a tie, and a tie with a one-sentence rule is not
+a component.
+
+**Size range covered.** Labels, ceilings and step accuracies: 9–20
+customers, all 4,122 certified instances (1,298 at n = 20). Construction
+values: 9–134, all 6,373 certified instances, every one held out under a
+model that never saw its file or its isomorphism class; above 75 customers
+the comparison rests on 87 instances and the learned policies are 0.5
+stacks better (set-rank) or 0.5 worse (set-binary) than the rule, i.e.
+undetermined. The bounded ceiling: 50–134 customers, 238 witnesses; it is an
+upper bound on the ceiling and, by the calibration at 16–20, almost surely
+the value.
+
+**Not a bound, not a solver change.** Nothing here touches `_lower_bound`
+or any decision on `k`; no default changes; `learning/data/set_imitation/`
+holds the rows and the per-fold boosters and is git-ignored. The
+`degeneracy` module is unchanged (its counts are the reference the new
+lattice is tested against); the vectorised lattice lives beside it.
+
+**Method notes.** The largest union group (1,620 instances, none at n ≤ 20)
+makes fold 0 a pure transfer fold and leaves fold 4 with 239 lattice
+instances; that is what grouping honestly by isomorphism class costs and
+was left as is. Fitting three LightGBM models per fold took 13 s per fold
+once the machine was quiet and 279 s when 37 processes shared 32 cores
+(item 09's orphaned invariants run was still going): set `OMP_NUM_THREADS`
+to the worker count. The exact `witness_choices` list carries the forced
+last step and the bounded list stops before it; a first draft of the
+calibration compared the two on different step sets.

@@ -52,3 +52,8 @@
 [2026-09-26 18:25:04] session it10: ok (exit 0, 34 tool calls)
 [2026-09-26 18:25:04] item not marked by the agent (ok); marking - [!] so the loop advances
 [2026-09-26 18:27:24] tests passed: 988 passed, 2 skipped, 1 xfailed, 154 warnings in 138.68s (0:02:18)
+[2026-09-26 18:27:24] committed b3de8666: 09 · §2.6 Conjecture mining for a branching-aware lower bound.
+[2026-09-26 18:27:24] === iteration 11: 10 · §2.8 Set-valued imitation. Vectorise
+[2026-09-26 18:27:24] claude session it11 (cap 3.00 h) -> session_it11.log
+[2026-09-26 18:58:34] session it11: ok (exit 0, 59 tool calls)
+[2026-09-26 18:59:56] tests passed: 1008 passed, 2 skipped, 1 xfailed, 156 warnings in 81.18s (0:01:21)

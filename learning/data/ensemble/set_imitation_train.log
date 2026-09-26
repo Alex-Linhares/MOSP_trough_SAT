@@ -1,0 +1,12 @@
+[train] fold 0: 1,501,721 set rows, old ranker on 1,493,776 rows, 13s
+[train] fold 1: 1,283,406 set rows, old ranker on 2,160,514 rows, 13s
+[train] fold 2: 1,090,084 set rows, old ranker on 2,103,846 rows, 13s
+[train] fold 3: 768,781 set rows, old ranker on 2,011,376 rows, 11s
+[train] fold 4: 1,362,892 set rows, old ranker on 1,212,312 rows, 11s
+[eval] 1000/6373 in 6s
+[eval] 2000/6373 in 8s
+[eval] 3000/6373 in 106s
+[eval] 4000/6373 in 183s
+[eval] 5000/6373 in 186s
+[eval] 6000/6373 in 187s
+[eval] 6373/6373 in 187s

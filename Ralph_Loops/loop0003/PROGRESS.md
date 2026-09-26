@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 8/14 SOLVED
+- **Current**: 9/14 SOLVED
 
 ---
 
@@ -656,9 +656,107 @@ threshold at 5 is in the right place. **Recommendation: no change to
 ## Iteration 10 — 2026-09-26 18:25:04
 ### Completed
 - (driver) session ended with outcome `ok` without marking the item
+- (owner, 18:45) The session wrote and committed `learning/conjecture.py` and
+  `tests/test_conjecture.py` (b3de8666), launched the invariants stage
+  (`python -m learning.conjecture --stage invariants --workers 16`, output
+  `learning/data/ensemble/conjecture_invariants.csv.gz`, log
+  `conjecture_run.log`) in the background, drafted a §23 header in /tmp, and
+  then **ended its turn waiting on that run** — the failure mode TASK.md
+  warns about, the second time this loop. **No §23 was written and the
+  mining and adversary stages never ran.** Item 09 has been re-opened
+  (`- [ ]`) so it is redone after item 10: read `session_it10.log`, check
+  whether the invariants CSV is complete (the run log says), reuse it rather
+  than recomputing, run the mining stage and item 08's adversary
+  (`learning/extremal.py`), and write §23. Run stages in the foreground or
+  poll in a bounded loop; never end the turn on a wait.
 ### Blockers
 - see session_it10.log
 ### Next
-- revisit or re-open this item
+- re-opened; see above
 
 ---
+
+## Iteration 11 — 2026-09-26 18:58
+
+**Item 10 · §2.8 Set-valued imitation** — SOLVED. **Kill criterion met:
+imitation is closed for good.** With the exact set of optimal moves as the
+label and the rule's own keys as features, the best learned policy beats the
+two-key rule by 0.008 MAE grouped at n ≤ 20 (0.0805 → 0.0725; bootstrap over
+union groups −0.025 to −0.004), by 0.006–0.008 over the whole corpus with
+intervals including zero, against the plan's threshold of 0.02.
+
+### Completed
+- `learning/set_imitation.py`: the construction-measure lattice of
+  `learning.degeneracy` vectorised in numpy over all `2^a` states
+  (`opened`, `made`, `done`, the block cost `w[S, c]`, the bottleneck-to-go
+  `h[S]`; 0.5–2.7 s at n = 20, tested weight for weight and count for count
+  against `closing_weights` / `witness_choices`); the set-valued label
+  `max(w[S, c], h[S ∪ c]) ≤ max(h[S], peak)` on every prefix of the witness,
+  the rule, MCN and one uniform-optimal rollout; features = the eight step
+  features, `patterns`, the rule's keys relative to the step, the rule's
+  rank, candidates, running peak, with the rule's key breaking score ties
+  (the constant model is the rule, tested); LightGBM binary and LambdaRank
+  per fold; the old ranker refit per fold; five folds by file ∪ isomorphism
+  class; held-out construction values at every size; step accuracy under
+  the correct objective; the bounded per-step optimal-choice search along
+  the 50–134 witnesses (suffix test, then a 300-node restricted DFS under
+  the exact block cost) and its calibration at 16–20.
+- The runs: lattice 4,122 instances (1,298 at n = 20), 0 audit failures,
+  every witness construction-optimal, 175,687 states, 1,501,721 rows, 84.5%
+  good, the rule's pick good on 99.71% of states, 226 s on 8 workers;
+  train/eval 5 folds × 3 models, 6,373 instances held out, 13 s per fold and
+  187 s evaluation once the machine was quiet; ceiling 238 witnesses at
+  50–134, none censored, 1.8 core-hours; calibration 1,310 instances in 2 s.
+- **Findings** (`reports/ml_nature.md` §23, tables `reports/set_imitation_tables.md`):
+  n ≤ 20 held out — rule 0.0805 / 92.9%, set-binary 0.0725 / 93.3%, set-rank
+  0.0810, old ranker 0.189 / 83.5%, MCN 0.552; whole corpus — rule 0.276 /
+  83.4%, set-binary 0.269, set-rank 0.2675, old ranker 0.443. Head to head
+  set-binary vs rule 83 / 3,975 / 64 at n ≤ 20. Under the correct objective
+  the rule's own steps are good 99.44% of the time, set-binary 99.48%, the
+  old ranker 98.75%. On the 291 n ≤ 20 instances the rule misses, its pick is
+  still good at 97.6% of states — one bad step per instance. **The imitation
+  ceiling**: exact 0.330 median at 9–15, 0.233 at 16–20 (complete graphs
+  excluded); bounded above by 0.142 at 50–75, 0.109 at 76–100, 0.100 at
+  101–134 (max 0.35 on GP8), with 14.5 / 24.2 / 35.1 optimal alternatives
+  per step at the median; the bounded procedure recovers 99.92% of exact
+  choices at 16–20.
+- Data: `learning/data/ensemble/set_imitation_{lattice,eval,ceiling,calibration}.csv[.gz]`
+  (1.7 MB; ensemble directory 76 MB apparent), four run logs; rows and
+  boosters under the git-ignored `learning/data/set_imitation/`.
+- `tests/test_set_imitation.py`: 20 tests (popcount, the 3-customer path by
+  hand, lattice vs the degeneracy reference on 8 random instances, block
+  cost vs simulation, greedy rule ≡ distil's rule, constant model ≡ rule,
+  rule rank, labels on the path, bounded choices on the path, budget
+  exhaustion is not an answer, bounded ≤ exact, fold balance, tables on a
+  toy). Full suite: 1,008 passed, 2 skipped, 1 xfailed in 84 s. Nothing
+  written to `solutions/`; no solver default, flag or C changed.
+
+### Blockers
+- None. The largest union group (1,620 instances, none at n ≤ 20) makes
+  fold 0 a pure transfer fold and leaves fold 4 with 239 lattice instances;
+  stated in §23 and left as is. Above 75 customers the comparison rests on 87
+  instances and is undetermined (one learned model 0.5 better, one 0.5
+  worse); the 50–134 ceiling is an upper bound with 20% of alternatives
+  unknown, looser than the 1.7% at 16–20.
+- Process notes: item 09's orphaned `learning.conjecture --stage invariants`
+  run (16 workers) and an unrelated `tools/golden_traces.py` run (10) put the
+  load at 37 on 32 cores for the first 25 minutes; the per-fold fit took
+  279 s then and 13 s after — set `OMP_NUM_THREADS` to the worker count and
+  do not start LightGBM fits on a saturated machine. The conjecture run
+  finished at 18:47 and wrote `learning/data/ensemble/conjecture_invariants.csv.gz`
+  (untracked), which item 14 may use to re-open item 09. A stopped-and-
+  restarted train run cost 6 minutes because the largest fold legitimately
+  held out no lattice rows and looked like a broken join.
+- Observed, not done here: during this session item 09's marker in
+  `iterations.md` changed from `- [!]` (as committed) to `- [ ]`; this
+  iteration edited only item 10's line. Item 09 therefore reads as open
+  again for item 14, with `conjecture_invariants.csv.gz` now complete.
+
+### Next
+- Item 11 · §2.9 why the ridge is where it is (analysis; no kill).
+- Item 12 (Lean): §21's 10-vertex `pw − tw = 2` instance and the sandwich.
+- For the owner: `learning.set_imitation.Lattice` gives exact optimal-choice
+  sets to n = 20 in seconds and is the reference any future policy claim
+  should be checked against; the `learning/policy.py` docstring's
+  step-agreement figures should be read against a ceiling of 0.23 at 20 and
+  about 0.10 at 125.

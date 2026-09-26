@@ -1,0 +1,172 @@
+# session it11 started 2026-09-26 18:27:24
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 11, working item 10 (set-valued imitation). Let me read the plan and relevant sections first.
+  > $ date && cat Ralph_Loops/loop0003/iterations.md && pgrep -af '^python -m benchmarks.recertify' | head; nproc; uptime
+  > $ ps -eo pid,ppid,pcpu,etime,args --sort=-pcpu | head -30; echo ---; tail -40 Ralph_Loops/loop0003/session_it10.log | cut -c1-300
+  > $ grep -n "^## \|^### " reports/ml_nature_plan_2.md | head -60; echo ----; awk '/^### 2.8|^## 2.8|2\.8/{p=1} p&&/^### 2.9|^## 2.9/{exit} p' reports/ml_nature_plan
+  > $ wc -l learning/degeneracy.py learning/distil.py learning/policy.py learning/corpus_sweep.py learning/fingerprint.py satisfiability/heuristics.py && sed -n 1,200
+  > $ sed -n 200,520p learning/degeneracy.py
+  > $ sed -n 1,120p learning/distil.py && grep -n "^def \|^class " learning/distil.py learning/policy.py
+
+Reading the remaining pieces I need in one go: the distil evaluation protocol, the policy's features and old ranker, the grouping helper, and §7/§8 of the report.
+  > $ sed -n 120,240p learning/distil.py && sed -n 505,700p learning/distil.py
+  > $ sed -n 1,135p learning/policy.py && sed -n 185,235p learning/policy.py
+  > $ awk '/^## 7\./{p=1} /^## 9\./{exit} p' reports/ml_nature.md | head -230
+  > $ awk '/^## 8\./{p=1} /^## 9\./{exit} p' reports/ml_nature.md | head -90
+  > $ grep -n "def union_groups" -A 30 learning/fingerprint.py | head -60; echo ---; head -c 600 learning/data/canonical.csv; echo; echo ---; sed -n 1,60p learning/co
+  > $ grep -n "^def \|^    def \|^class " satisfiability/customer_search.py | head -40; echo ---; grep -n "def decide" -A 40 satisfiability/customer_search.py | sed -
+  > $ sed -n 160,260p satisfiability/customer_search.py
+  > $ python -c "import numpy, lightgbm; print(numpy.__version__, lightgbm.__version__); print(hasattr(numpy,'bitwise_count'))"; grep -n "^## " reports/ml_nature.md |
+  > $ grep -n "def enumerate_instances" -A 12 learning/dataset.py | head -30; grep -n "^CERTIFIED\|^def _solution_path" -A 3 satisfiability/mosp_solver.py | head -12;
+  > Write /home/al/dev/MOSP/learning/set_imitation.py
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/set_imitation.py"); s = p.read_text()
+s = s.replace("            steps_all.append(steps + (steps.ma
+  > $ mkdir -p learning/data/set_imitation && nohup python -m learning.set_imitation --stage lattice --workers 8 > learning/data/ensemble/set_imitation_lattice.log 2>
+  > Write /home/al/dev/MOSP/tests/test_set_imitation.py
+  > $ tail -3 learning/data/ensemble/set_imitation_lattice.log; timeout 600 python -m pytest tests/test_set_imitation.py -q -x 2>&1 | tail -15
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_set_imitation.py"); s = p.read_text()
+s = s.replace("        assert len(conf) == len(exact) - (1 
+  > $ grep -q "learning/data/set_imitation/" .gitignore || printf '\n# item 10 labelled rows and models (regenerable, ~100 MB)\nlearning/data/set_imitation/\n' >> .gi
+
+Both background stages are running (lattice at 400 of 4,122; the ceiling stage is on the 125×125 witnesses first). I'll wait on the lattice log with the Monitor tool rather than polling.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -qE "audit failures|Traceback|Error" learning/data/ensemble/set_imitation_lattice.log; do sleep 5; done; tail -2 learning/data/ensemble/set_imitation
+
+Waiting on the lattice stage; the ceiling stage is running alongside it. I'll draft the report skeleton once the numbers land.
+  > $ sleep 240; cd /home/al/dev/MOSP && tail -1 learning/data/ensemble/set_imitation_lattice.log; tail -1 learning/data/ensemble/set_imitation_ceiling.log; uptime
+  > $ tail -1 learning/data/ensemble/set_imitation_lattice.log; tail -1 learning/data/ensemble/set_imitation_ceiling.log; uptime
+
+Both stages are progressing; I'll wait for the lattice waiter to fire before starting training.
+  > Monitor {"command": "cd /home/al/dev/MOSP && tail -f -n 0 learning/data/ensemble/set_imitation_ceiling.log learning/data/ensembl
+
+Nothing further is needed until the runs report; waiting for the monitor events.
+
+# result: success in 717s, 28 turns, cost $5.34
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/deedd79c-b404-47b2-b3ba-1c6c6f0d6c1b/tasks/bneiospg0.output; python - <<'EOF'
+import pandas as pd
+l = pd.read_csv("learni
+
+Lattice stage done: 4,122 instances, zero audit failures, every witness construction-optimal, 1.5 M labelled rows. Starting the training and held-out evaluation stage.
+  > $ OMP_NUM_THREADS=8 nohup python -m learning.set_imitation --stage train --workers 8 --threads 8 > learning/data/ensemble/set_imitation_train.log 2>&1 &
+sleep 1; 
+  > $ until grep -qE "\[eval\] [0-9]+/[0-9]+ in|Traceback|Error" learning/data/ensemble/set_imitation_train.log && (grep -qE "Traceback|Error" learning/data/ensemble/
+  > $ pgrep -fc "set_imitation --stage ceilin[g]"; pgrep -fc "set_imitation --stage trai[n]"; cat learning/data/ensemble/set_imitation_train.log | tail -3; cat learni
+
+Both stages are alive (the ceiling stage is still inside its first 125×125 batch). While they run, I'll draft the report section with the lattice numbers already known and placeholders for the rest.
+  > $ python - <<'EOF'
+import pandas as pd, json, numpy as np
+l = pd.read_csv("learning/data/ensemble/set_imitation_lattice.csv")
+nc = l[l.n_active > l.optimum]
+print
+  > $ cat learning/data/ensemble/set_imitation_train.log; tail -2 learning/data/ensemble/set_imitation_ceiling.log; date
+
+Nothing new to request until the runs report. Drafting the report section's fixed parts now.
+  > $ mkdir -p /tmp/it11 && cat > /tmp/it11/head.md <<'EOF'
+
+## 23. Set-valued imitation: does a policy learn more than the rule when the target is the set of optimal
+  > $ cat learning/data/ensemble/set_imitation_train.log; tail -2 learning/data/ensemble/set_imitation_ceiling.log; date; uptime
+  > $ timeout 580 bash -c 'until grep -qE "\[train\] fold 0|Traceback|Error" learning/data/ensemble/set_imitation_train.log; do sleep 5; done'; cat learning/data/ense
+
+The fold mapping for the lattice rows is broken: fold 0 trained on all 1,501,721 rows, so the held-out set was empty. I'll stop the run by PID, debug the join, fix, and restart.
+  > $ P=$(pgrep -f "^python -m learning.set_imitation --stage trai[n]"); echo "pid $P"; kill $P; sleep 1; pgrep -fc "set_imitation --stage trai[n]" || true; python - 
+
+Not a bug: fold 0 is the largest union group (1,620 instances, all above 20 customers), so it holds out no lattice rows and is evaluated purely by transfer. The run was correct; restarting it.
+  > $ OMP_NUM_THREADS=8 nohup python -m learning.set_imitation --stage train --workers 8 --threads 8 > learning/data/ensemble/set_imitation_train.log 2>&1 &
+sleep 1; 
+  > $ until [ -f learning/data/ensemble/set_imitation_eval.csv.gz ] || grep -qE "Traceback|Error" learning/data/ensemble/set_imitation_train.log; do sleep 10; done; t
+  > $ nohup python -m learning.set_imitation --stage calibration --workers 4 --nodes 300 > learning/data/ensemble/set_imitation_calibration.log 2>&1 &
+sleep 1; pgrep 
+  > $ until grep -qE "\[calibration\]|Traceback|Error" learning/data/ensemble/set_imitation_calibration.log; do sleep 10; done; tail -3 learning/data/ensemble/set_imi
+
+All three remaining inputs are background runs with waiters armed; I'll hold in a bounded foreground wait on the calibration stage so the turn stays alive.
+  > $ timeout 570 bash -c 'until grep -qE "\[calibration\]|Traceback|Error" learning/data/ensemble/set_imitation_calibration.log; do sleep 5; done'; tail -2 learning/
+  > $ python - <<'EOF'
+import pandas as pd, json, numpy as np
+c = pd.read_csv("learning/data/ensemble/set_imitation_calibration.csv")
+print(len(c), c.seconds.sum(), c
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/set_imitation.py"); s = p.read_text()
+old = """        counts = json.loads(exact.loc[(f, name), "wi
+  > $ timeout 120 python - <<'EOF'
+import time
+from learning.policy import _corpus
+from learning.set_imitation import bounded_choices, Masks
+from satisfiability.heuri
+  > $ cat learning/data/ensemble/set_imitation_train.log; ls -la learning/data/ensemble/set_imitation_eval.csv.gz 2>/dev/null; date
+  > $ until grep -qE "\[ceiling\] 238/238|Traceback|Error" learning/data/ensemble/set_imitation_ceiling.log; do sleep 10; done; tail -2 learning/data/ensemble/set_imi
+
+Holding in a bounded foreground wait for the evaluation CSV; the ceiling stage has its own waiter.
+  > $ timeout 570 bash -c 'until [ -f learning/data/ensemble/set_imitation_eval.csv.gz ] || grep -qE "Traceback|Error" learning/data/ensemble/set_imitation_train.log;
+
+Evaluation done. Reading the held-out results now.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+from learning import set_imitation as si
+ev = pd.read_csv(si.EVAL_CSV)
+print(len(ev), ev.fold.value_counts().s
+  > $ tail -1 learning/data/ensemble/set_imitation_ceiling.log; date; ps -eo etime,pcpu,args | grep "multiprocessing.spawn" | grep -v grep | awk '{print $1, $2}'
+  > $ (timeout 900 python -m pytest tests/ -q -x > /tmp/it11/pytest.log 2>&1; echo "exit $?" >> /tmp/it11/pytest.log) &
+du -sh --apparent-size learning/data/ensemble;
+  > $ cat > /tmp/it11/body.md <<'EOF'
+
+**Method.** Four stages, each regenerable by one command above.
+
+- *The lattice, vectorised.* `learning.degeneracy.closing_weig
+  > $ python - <<'EOF'
+import pandas as pd, json
+c = pd.read_csv("learning/data/ensemble/set_imitation_calibration.csv")
+conf = sum(sum(json.loads(s)) for s in c.conf
+
+Full suite passes (1,008 passed, 2 skipped, 1 xfailed, 84 s). Fixing one number in the draft and waiting on the ceiling stage, which is the only input still outstanding.
+  > $ sed -i 's/which 168 were real/which 165 were real/' /tmp/it11/body.md && timeout 570 bash -c 'until grep -qE "\[ceiling\] 238/238|Traceback|Error" learning/data
+  > $ python - <<'EOF'
+import pandas as pd, json, numpy as np
+c = pd.read_csv("learning/data/ensemble/set_imitation_ceiling.csv")
+print(len(c), "censored", c.censored
+  > $ python - <<'EOF'
+from pathlib import Path
+body = Path("/tmp/it11/body.md").read_text()
+table = """| 50–75 | 151 | bounded (lower bound on choices) | 14.5 | ≤ 0.
+  > $ cat >> Ralph_Loops/loop0003/PROGRESS.md <<'EOF'
+
+## Iteration 11 — 2026-09-26 18:58
+
+**Item 10 · §2.8 Set-valued imitation** — SOLVED. **Kill criterion met:
+imi
+  > $ sed -n 94p Ralph_Loops/loop0003/iterations.md | cut -c1-40; git diff Ralph_Loops/loop0003/iterations.md | head -20; pgrep -fc "learning.set_imitatio[n]" || echo
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0003/PROGRESS.md"); s = p.read_text()
+old = "  held out no lattice rows and looked like a br
+
+Item 10 is complete. Summary of the session:
+
+**Verdict.** The kill criterion is met and imitation is closed. Given the exact set of optimal moves as the label on 1.5 M candidate rows, and the two-key rule's own keys as features, the best learned policy beats the rule by 0.008 MAE grouped at n ≤ 20, against the plan's 0.02 threshold. Over the whole corpus the difference is 0.006 to 0.008 with bootstrap intervals that include zero.
+
+**What was built** (`learning/set_imitation.py`, 20 tests in `tests/test_set_imitation.py`):
+- The construction-measure lattice vectorised in numpy to n = 20. It matches `degeneracy.py` weight for weight and takes 0.5 to 2.7 s per instance. All 4,122 corpus instances at n ≤ 20 ran in 226 s with zero audit failures.
+- Set-valued labels on witness, rule, MCN and rollout prefixes: 84.5% of candidate moves are optimal, and the rule's pick is optimal at 99.7% of states.
+- Grouped five-fold training by file ∪ isomorphism class, LightGBM binary and LambdaRank, the old ranker refit per fold, held-out construction values on all 6,373 instances.
+- A bounded per-step optimal-choice search along the 238 witnesses at 50 to 134 customers, calibrated at 16 to 20 where it recovers 99.9% of the exact counts.
+
+**Key numbers** (held out):
+
+| scope | rule | set-binary | old ranker |
+|---|---|---|---|
+| n ≤ 20 MAE / exact | 0.0805 / 92.9% | 0.0725 / 93.3% | 0.189 / 83.5% |
+| whole corpus MAE / exact | 0.276 / 83.4% | 0.269 / 83.8% | 0.443 / 74.9% |
+
+**The imitation ceiling** falls with size rather than holding at 0.3: exact median 0.33 at 9 to 15 and 0.23 at 16 to 20; bounded above by 0.14 at 50 to 75, 0.11 at 76 to 100 and 0.10 at 101 to 134, with 14 to 35 optimal alternatives per step at the median.
+
+**Housekeeping.** §23 appended to `reports/ml_nature.md`, tables in `reports/set_imitation_tables.md`, four CSVs committed under `learning/data/ensemble/` (76 MB apparent total), rows git-ignored. Full suite: 1,008 passed, 2 skipped, 1 xfailed in 84 s. PROGRESS.md has the Iteration 11 entry (9/14 solved) and item 10 is marked done. Nothing was committed and nothing written to `solutions/`.
+
+One observation for the driver, recorded in PROGRESS.md: item 09's marker in `iterations.md` changed from blocked to open during this session without this iteration touching it, and its orphaned invariants run finished at 18:47, so item 14 can pick it up with complete data.
+
+# result: success in 1054s, 33 turns, cost $8.97
