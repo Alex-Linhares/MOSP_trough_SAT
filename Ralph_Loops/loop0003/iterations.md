@@ -4,7 +4,7 @@ One item per iteration, in order. Mark `- [x]` when done, `- [!]` when blocked.
 Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
 `reports/ml_nature.md` §1–§14. Report sections continue from §15.
 
-- [ ] 01 · §2.1a **The differential harness.** `learning/differential.py`: for
+- [x] 01 · §2.1a **The differential harness.** `learning/differential.py`: for
       every instance, `k = 8` random relabellings and one re-covering
       (`learning.graph_story` primitives), `decide(optimum − 1)` and
       `decide(optimum)` under both configurations (`learning.node_counts.refute`

@@ -3810,3 +3810,268 @@ recertify 125s, 0.9 µs at 125 `d = 6` — seconds are still not a hardness
 measure (§9). *A column-key collision* silently overwrote the 15–30 law's
 column with the 15–40 law's in the per-class table's first draft; caught by
 reading the table against the summary, now keyed by full name.
+
+## 15. The differential harness: is every refutation sound under relabelling? (plan 2 §2.1(a), loop0003 item 01)
+
+*loop0003 iteration 1, 2026-09-26. Code: `learning/differential.py`. Regenerate:*
+
+```bash
+python -m learning.differential --workers 16        # 43,935 instances, 878,700 runs, 199 s on 16 workers; writes the CSVs and the tables
+python -m learning.differential --stage tables      # the tables again from the CSVs
+python -m learning.differential --stage drawn       # re-certifies the flagged instances by independent routes, ~10 s
+python -m learning.differential --stage shrink      # the two minimal counterexamples, ~1 s
+python -m pytest tests/test_differential.py -q      # 11 pass, 1 xfail (strict) pinning the finding below
+```
+
+*Writes `learning/data/ensemble/differential.csv.gz` (one row per instance,
+labelling and configuration, 878,700 rows, 5.5 MB; item 04 reads the node
+counts), `differential_summary.csv` (one row per instance with its verdicts),
+`differential_drawn.csv` and `differential_drawn_rules.csv` (the flagged
+instances, and which rule pairing produces each false answer), all committed,
+and every table in full in `reports/differential_tables.md`. Nothing was
+written to `solutions/`.*
+
+**Question.** The certified optima rest on the complete customer search
+saying `unsat` at `optimum − 1`. Above 15 customers nothing outside the
+search checks that answer (finding 9 of plan 2 §0), and the two false
+refutations of `reports/better_move_bug.md` were invisible to every
+witness-based audit, because a witness shows a value is *achievable* and a
+refutation one step too strong leaves the witness intact. §13 supplies two
+symmetries the search must respect: relabelling the customers may change the
+node count and never the answer, and re-covering the same edge set with
+different products changes neither the answer nor, under the default
+configuration, the count. Running the same decision under those symmetries
+is a test the search cannot pass by accident. **Expected: zero
+disagreements. Kill criterion: none stated.**
+
+**Method.** For each of 43,935 certified instances — the campaign's 37,800
+(10–40 customers, regenerated from the manifest and checked by digest) and
+the corpus's 6,135 at `n ≤ 40` (9–40 customers, values from `solutions/`,
+read only) — ten labellings: the identity, eight random relabellings (rows
+and columns permuted, seeded from the name through `graph_story.relabel`),
+and one re-covering (`graph_story.recover`, greedy first; it applied on every
+instance). On each labelling, `decide(optimum − 1)` and `decide(optimum)`
+under both `node_counts` configurations — `default`, what `solve_mosp_exact`
+runs, and `csearch`, Theorem 2 on with every candidate a dominator when the
+instance has ≤ 5 products per customer, what `benchmarks.csearch` and
+`benchmarks.recertify` run — 60 s deadline per call, the `sat` side's closing
+order simulated on the instance. Three verdicts are kept apart: a
+**disagreement** (two decided statuses differ at the same `k` on one
+instance; the minority labellings are named), a **contradiction** (all runs
+agree, against the certificate), an **oracle mismatch** (the subset-lattice
+minimum of `learning.degeneracy`, sharing no code with the search, differs
+from the optimum on the instance or its re-covering, wherever the active
+customers number ≤ 15). A deadline is `unknown`, a censored observation and
+never a disagreement. Every node count is recorded. The planted-fault test
+wraps `decide` in a liar that answers `unsat` at the optimum on one
+relabelling, and the harness names it.
+
+**Baseline.** Zero: no run of this kind existed. `learning.node_counts` (§3)
+compared the two configurations at `optimum − 1` on the identity labelling
+only, and §13 relabelled 1,400 bases at `optimum − 1` only.
+
+### The run: every refutation sound, 88 false answers at the optimum
+
+| source | instances | n | labellings | decision calls | unsat at opt−1 | sat at opt | unknown | witness failures | disagreements | contradictions | oracle instances | oracle mismatches |
+|:--|--:|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| campaign | 37,800 | 10–40 | 10 | 1,511,880 | 755,880 of 755,880 | 755,926 of 756,000 | 0 | 0 | **46** | 46 | 10,800 | 0 |
+| corpus | 6,135 | 9–40 | 10 | 245,400 | 122,700 of 122,700 | 122,686 of 122,700 | 0 | 0 | **10** | 10 | 2,812 | 0 |
+| total | 43,935 | 9–40 | 10 | 1,757,280 | 878,580 of 878,580 | 878,612 of 878,700 | 0 | 0 | **56** | 56 | 13,612 | 0 |
+
+Every call at `optimum − 1` returned `unsat`: **878,580 of 878,580**, on
+every labelling, under both configurations. Every stored optimum at `n ≤ 40`
+is therefore refuted one below by twenty independent searches, and the
+lattice oracle agrees with all 13,612 it reaches, on the instance and on its
+re-covering. **The disagreements are all on the other side.** At `k =
+optimum`, where a witness exists and the search must say `sat`, **88 runs on
+56 instances said `unsat`** — 46 campaign instances and 10 corpus ones,
+sizes 10–40, optima 3–17. All 88 are under the `csearch` configuration with
+Theorem 2 on; none under `default`. On 38 of the 56 a single labelling of the
+ten lies, on 10 two lie, on 8 three to five; on **8 the identity labelling
+itself lies**, and with it the re-covering, which has the same labelled
+graph. The rate is 56 of the 17,527 instances on which `csearch` turns the
+rule on (0.32%), and every one of the 56 is sparse: 1–2 products per
+customer, `m / n` from ½ to 2.
+
+**The 56 stored optima are right; the rule is wrong.** `--stage drawn`
+re-certifies each of the 56 by routes that share nothing with the C
+`better_move`: the stored value equals the optimum on 56 of 56 (campaign:
+cached certified solve; corpus: `certified:refutation`), the Python reference
+search says `unsat` at `optimum − 1` and `sat` at `optimum` with a witness
+simulating to the optimum on 56 of 56, the C default says `unsat` / `sat` on
+56 of 56, and the lattice oracle equals the optimum on all 11 it reaches.
+**56 of 56 independently certified.** So the C with Theorem 2 on answers
+`unsat` to a satisfiable question — the exact failure shape of
+`reports/better_move_bug.md`, after that bug's fix.
+
+### The mechanism: two sound rules composed into a cycle
+
+Every one of the 88 false answers was re-run at its `k` under the four
+pairings of `better_move` (dominator limit 0) with the other two dominance
+rules:
+
+| false answers | `better_move` alone | `better_move` + `subset_rule` | `better_move` + `definite_move` | `better_move` + both |
+|--:|--:|--:|--:|--:|
+| 88 | **0** | 78 | 3 | 88 |
+
+Theorem 2 alone is sound on every one of them; **composed with either other
+rule it is not.** The cross-rule cycle is visible at the root of the drawn
+instance `ens_f_n10_m20_d2_i070` (10 × 20, optimum 4; matrix in
+`tests/test_differential.py`), replicating the C's filter in Python at `k =
+4`: the candidates are customers 1, 3, 6, 8, 9; `better_move` drops 3 and 8
+(covered by 1) and drops 9 (covered by 6); `subset_rule`, which the C runs
+*after* it and which compares each survivor against **every remaining
+customer, including the candidates `better_move` has just discarded**, then
+drops 6 because 9's opening set sits inside 6's. Both 6 and 9 are gone, each
+discard justified by the other — the two-rule form of the two-candidate cycle
+the 2026-09-23 fix removed *within* `better_move`. The root survivor 1 still
+admits a solution here, so the branch is lost at a deeper node of the same
+shape; the flag sweep says which ingredients are necessary. On that instance
+the C fails with dominator limits 0 and 4 and not 1 or 2 (the covering
+candidate is not tried), with the memo and `old_move` on or off, and only
+with `subset_rule` on. On `ens_b_n25_m25_p0.075_i040` (25 × 25, optimum 5,
+2.1 products per customer) **48 of 64 flag combinations fail**, including
+`dominators = 1` with the memo, `old_move` and `subset_rule` all off — the
+survivors are exactly the 16 with both `definite_move` and `subset_rule`
+off. `--stage shrink` delta-debugs the first to a 10-customer, 13-product
+sub-instance and the second to 17 × 9 (greedy deletion, a local minimum),
+and prints both matrices with their neighbourhoods and the dominator-limit
+sweep, appended to `reports/differential_tables.md`; the 10 × 13 one still
+fails at every dominator limit, 1 included.
+
+Why the 2026-09-23 verification did not see it: the invariant test
+`test_better_move_never_changes_a_decision` draws 40 instances of ≤ 14
+customers at densities 0.15–0.5 — dense — and the family that fails is
+sparse, at about two customers per product, where several candidates tie on
+cost and the subset relation has room to point back. And `subset_rule` is
+checked against the Python reference, which has no `better_move` to compose
+it with.
+
+**What is exposed.** A false `unsat` at a satisfiable `k` stops a *descent*
+one stack too high: `benchmarks.csearch` asks `decide(ub − 1), decide(ub −
+2), …` and certifies the first refusal, and `benchmarks.recertify` asks
+`decide(value − 1)` with `better_move=True, better_move_dominators=0` — the
+failing configuration — and calls a refusal a re-certification. **At `n ≤
+40` the harness shows no stored value is affected**: every `optimum − 1` is
+refuted under `default` too, and every `optimum` is satisfiable under
+`default` on every labelling. Above 40 nothing here is evidence. The 147
+corpus values `csearch` certified, and every value `recertify` has confirmed
+or will confirm on the 125 × 125 instances, rest on this rule, and the
+`default` search cannot check them at that size. Whether a wrong value exists
+there is an open question this section cannot close; what it can say is that
+the rule producing them answers `unsat` to satisfiable questions on 0.3% of
+sparse instances at 10–40 customers.
+
+**Proposed, not applied** (a solver change, the owner's): make the rules
+consume one candidate list — run `subset_rule` before `better_move`, or have
+`subset_rule` compare only against candidates still standing — and treat the
+`definite_move` composition the same way; then add the 56 drawn instances,
+or the two minimal ones, to `test_better_move_never_changes_a_decision`, and
+generate that test's instances at 1–3 products per customer where the
+failures live. `tests/test_differential.py` carries a strict `xfail` that
+turns into a failing `XPASS` the moment the C is fixed, so the marker is
+removed then and the assertion stays.
+
+### The relabelling spread (item 04's noise floor), refutation at optimum − 1
+
+Identity and eight relabellings, the re-covering excluded; ratio of `1 +
+nodes`; campaign, 5,400 bases per band (5,394 at 0–10, six trivial):
+
+| band | config | identity nodes median | bases with any change | max/min p90 | max/min max | identity/min p90 | min-of-9 saves ≥ 1.5× | MAD log10 |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| 0–10 | default | 1 | 117 | 1.00 | 1.80 | 1.00 | 1 | 0.0005 |
+| 11–15 | default | 4 | 612 | 1.05 | 1.69 | 1.00 | 0 | 0.0017 |
+| 16–20 | default | 9 | 1,265 | 1.08 | 1.87 | 1.04 | 3 | 0.0027 |
+| 21–25 | default | 15 | 1,794 | 1.09 | 1.78 | 1.04 | 3 | 0.0030 |
+| 26–30 | default | 25 | 2,116 | 1.09 | 1.73 | 1.04 | 3 | 0.0031 |
+| 31–35 | default | 44 | 2,377 | 1.09 | 2.00 | 1.04 | 2 | 0.0032 |
+| 36–40 | default | 78 | 2,619 | 1.09 | 1.77 | 1.04 | 3 | 0.0031 |
+| 0–10 | csearch | 1 | 443 | 1.00 | 4.50 | 1.00 | 51 | 0.0036 |
+| 11–15 | csearch | 4 | 1,215 | 1.27 | 5.29 | 1.12 | 107 | 0.0075 |
+| 16–20 | csearch | 8 | 1,742 | 1.33 | 6.33 | 1.16 | 103 | 0.0090 |
+| 21–25 | csearch | 14 | 2,015 | 1.30 | 9.70 | 1.16 | 110 | 0.0089 |
+| 26–30 | csearch | 24 | 2,186 | 1.27 | 4.63 | 1.13 | 82 | 0.0079 |
+| 31–35 | csearch | 42 | 2,404 | 1.25 | 3.90 | 1.12 | 68 | 0.0073 |
+| 36–40 | csearch | 71 | 2,628 | 1.24 | 3.80 | 1.11 | 64 | 0.0071 |
+
+The median max/min ratio is 1.00 in every band and both configurations, and
+the identity is the minimum at the median everywhere. Under `default` a
+relabelling moves the refutation by 9% at the ninetieth percentile and at
+most 2×; under `csearch` by 24–33% at p90 and up to 9.7×, three to four
+times wider, as §13 found on its 1,400 hard-biased bases (p90 1.11–1.18 and
+1.42–1.73 there; this is the whole campaign, so smaller). **The best of nine
+labellings beats the identity by ≥ 1.5× on 0–3 of 5,400 bases per band under
+`default` and 51–110 under `csearch`**: at `n ≤ 40` a relabelling portfolio
+has nothing to win on refutations, and item 04 has to establish at 50–100
+whether the spread grows with `n` before any core is spent on it. The
+mean absolute deviation of `log10(1 + nodes)` within an instance, 0.0005–0.003
+(`default`) and 0.004–0.009 (`csearch`), is item 05's irreducible floor. The
+corpus bands agree where they are populated (0.0002–0.0026 and 0.003–0.012;
+its 21–25 and 31–35 bands hold 8 and 2 instances, §2's lattice of sizes).
+
+**The witness search is where labels matter.** The same table for
+`decide(optimum)`: the max/min ratio's p90 is 6.6–7.1 at 36–40 with maxima
+of 214× (`csearch`) and 330× (`default`), MAD 0.07, and the best of nine
+labellings saves ≥ 1.5× on 863–945 of 5,400 bases at 36–40 (16–17%). Finding
+a witness at the optimum costs 11 nodes at the median against 78 to refute
+one below, but it exceeds the refutation on 21% of the 36–40 instances and
+its tail is the long one (max 8,982 against 40,579). A descent pays both
+sides at each `k`, so a portfolio's first customer is the satisfiable calls,
+not the refutations — a statement about 9–40 customers only.
+
+### The re-covering, on 43,935 instances instead of §13's 1,400
+
+| source | config | pairs | status equal (both k) | nodes equal (opt−1) | nodes equal (opt) | `better_move` flipped | nodes differ (opt−1) outside flips |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| campaign | default | 37,800 | 37,800 | **37,800** | **37,800** | 0 | 0 |
+| campaign | csearch | 37,800 | 37,800 | 35,722 | 36,973 | 13,020 | **0** |
+| corpus | default | 6,135 | 6,135 | **6,135** | **6,135** | 0 | 0 |
+| corpus | csearch | 6,135 | 6,135 | 5,659 | 5,992 | 3,773 | **0** |
+
+§13's two invariants hold on every instance we have: under `default` the
+re-covering's node count equals the identity's on 43,935 of 43,935 pairs at
+both `k`, and under `csearch` every difference lies inside the 16,793 pairs
+where the greedy cover moved the mean products per customer across Theorem
+2's threshold.
+
+**Finding.** The harness ran 1.76 million decision calls over 43,935
+certified instances at 9–40 customers in 199 s on 16 workers, refuted every
+stored optimum one below on twenty searches each with zero disagreements and
+zero oracle mismatches, and found **56 instances on which the C `better_move`
+composed with `subset_rule` (78) or `definite_move` (3) refutes the optimum
+itself** — a false `unsat` to a satisfiable `k`, the failure the 2026-09-23
+fix was meant to end, now arising *between* rules rather than within one.
+Each rule is sound alone; the composition is not, because `subset_rule`
+measures survivors against candidates `better_move` has already discarded.
+The 56 stored values are correct (56 of 56 re-certified independently) and no
+value at `n ≤ 40` is affected, but the configuration that produced the
+finding is the one `csearch` and `recertify` run at 125 × 125, where no
+independent check reaches. A relabelling portfolio has nothing to gain on
+refutations at `n ≤ 40` (best-of-nine ≥ 1.5× on under 0.1% of instances
+under `default`) and a great deal on witness searches (16–17% at 36–40).
+
+**Size range covered.** 9–40 customers: 37,800 campaign instances at
+`n ∈ {10, …, 40}` and 6,135 corpus instances at 9–40, every certified
+instance at that size. The lattice oracle covered the 13,612 with ≤ 15
+active customers. Nothing above 40 was run; every statement about 125 × 125
+is about which code runs there, not about its answers.
+
+**Kill criterion.** None stated for §2.1(a). The plan's expectation of zero
+disagreements is **not met**: 56, all at `k = optimum`, all under Theorem 2
+composed with another rule.
+
+**Method notes.** *Ask the satisfiable side.* At `k = optimum − 1` an
+unsound pruning rule cannot be caught when the stored value is right: `unsat`
+is the correct answer and pruning too much still yields it. Every one of the
+88 false answers came from `decide(optimum)`, the call no prior audit made;
+a refutation record should carry its `sat` side under the same
+configuration. *Relabel to find it, re-certify to believe it.* 48 of the 56
+lie on relabellings only; on the identity labelling — the only one every
+earlier run used — 8 would have shown. *The invariant test's family was the
+wrong one*: dense random instances never tie enough candidates for the
+subset relation to point backwards. *The C runs three dominance rules on one
+list in sequence*, and a rule that is a partial order on its own input is
+not one on the output of another rule; the `subset_rule`'s index tie-break
+prevents the within-rule cycle and does nothing for the cross-rule one.
+*Partial rows flush every 2,000 instances* to `learning/data/differential_partial.csv`
+so a killed run keeps what it had.

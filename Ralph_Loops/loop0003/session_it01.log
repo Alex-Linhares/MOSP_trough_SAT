@@ -1,0 +1,131 @@
+# session it01 started 2026-09-26 10:23:04
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the cited report sections, and the primitives this item builds on.
+  > $ pgrep -af benchmarks.recertify; nproc; cat reports/ml_nature_plan_2.md
+  > $ pgrep -cf "benchmarks.recertif[y]"; uptime; sed -n 1,200p reports/ml_nature_plan_2.md
+  > $ sed -n 200,420p reports/ml_nature_plan_2.md
+  > $ wc -l learning/node_counts.py learning/graph_story.py learning/degeneracy.py learning/ensemble.py learning/scale_test.py && cat learning/node_counts.py
+  > $ cat learning/graph_story.py
+  > $ grep -n "^def \|^class \|^    def \|^import\|^from" learning/degeneracy.py learning/ensemble.py | head -120; ls learning/data/ensemble/ | head; ls learning/data
+  > $ grep -n "^## \|^### " reports/ml_nature.md | tail -40; awk '/^## 13/,/^## 14/' reports/ml_nature.md | head -150
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/graph_story.py && sed -n '/^def relabel/,/^def [a-z_]*(/p' learning/graph_story.py | head -80 && sed -n '/^def re
+  > $ sed -n 95,160p learning/ensemble.py && sed -n 181,260p learning/ensemble.py && sed -n 282,290p learning/ensemble.py
+  > $ sed -n 1,75p learning/degeneracy.py && sed -n 116,150p learning/degeneracy.py && sed -n 168,245p learning/degeneracy.py && sed -n 399,420p learning/degeneracy.p
+  > $ ls tests/ | head -50 && sed -n 1,60p tests/test_graph_story.py && cat .gitignore && wc -l learning/data/node_counts.csv learning/data/degeneracy.csv && head -2 
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ensemble/results.csv")
+print(len(r), r.certified.sum(), r.n.value_counts().sort
+  > $ sed -n '/^class Decision/,/^def /p' satisfiability/customer_search.py | head -60; sed -n 95,115p satisfiability/customer_search.py; grep -n "def _neighbour_mask
+  > $ cat tests/test_node_counts.py | head -80; grep -n "def enumerate_instances" -A 20 learning/dataset.py | head -40; grep -n "^DATA_DIR\|^DEFAULT_" learning/datase
+  > $ du -sh learning/data/ensemble/* | sort -h | tail -5; git ls-files learning/data/ensemble | xargs du -ch 2>/dev/null | tail -1; python -c "
+from mosp.instance im
+  > $ python - <<'EOF'
+import time, numpy as np
+from learning.ensemble import Cell, generate
+from learning.degeneracy import Compact, closing_weights, lattice_minimum
+  > Write /home/al/dev/MOSP/learning/differential.py
+  > $ time python -m learning.differential --limit 60 --workers 8 --rows-csv /tmp/diff_rows.csv.gz --summary-csv /tmp/diff_summary.csv --out /tmp/diff_tables.md 2>&1 
+  > $ mkdir -p learning/data && nohup python -m learning.differential --workers 16 > learning/data/differential_run.log 2>&1 &
+echo started $!; sleep 5; cat learning/
+  > Write /home/al/dev/MOSP/tests/test_differential.py
+
+The full run is going, and it has already flagged 3 instances in the first 2,000. I'm running the new tests and checking the run's progress at the same time.
+  > $ python -m pytest tests/test_differential.py -q 2>&1 | tail -15
+  > $ cat learning/data/differential_run.log; ls -la learning/data/differential_partial.csv 2>/dev/null; wc -l learning/data/differential_partial.csv 2>/dev/null
+  > $ python - <<'EOF'
+import pandas as pd
+r = pd.read_csv("learning/data/differential_partial.csv")
+print(len(r), r.status_lo.value_counts().to_dict(), r.status_hi.v
+  > $ python - <<'EOF'
+from learning.ensemble import Cell, generate
+from satisfiability.customer_search import decide, sparse_enough_for_better_move
+from learning.dif
+  > $ grep -n "better_move" satisfiability/customer_search.py | head -60; sed -n 1,80p reports/better_move_bug.md
+  > $ tail -3 learning/data/differential_run.log
+  > $ tail -2 learning/data/differential_run.log; ps -o pid,etime,pcpu,cmd -p 4077282 | tail -1; pgrep -cf "learning.differential"
+  > $ sed -n 80,200p reports/better_move_bug.md; sed -n 160,250p satisfiability/customer_search.py; ls satisfiability/*.c satisfiability/native* 2>/dev/null; grep -rn
+  > $ python - <<'EOF'
+import itertools
+from learning.ensemble import Cell, generate
+from satisfiability.customer_search import decide
+inst = generate(Cell("fixed",10
+  > $ sed -n 100,260p satisfiability/customer_search.c
+  > $ grep -n "better_move\|def test_" tests/test_customer_search.py | head -40; grep -n "better_move" -B3 -A30 tests/test_customer_search.py | sed -n 1,90p
+  > $ tail -2 learning/data/differential_run.log; grep -n "better_move\|sparse_enough" benchmarks/recertify.py benchmarks/csearch.py | head; ls -la recertify/ | head;
+  > $ python - <<'EOF'
+# Replicate the C dominance filter at the root of ens_f_n10_m20_d2_i070 at k = 4
+# to see which rule drops which candidate, and whether every o
+  > $ cat >> tests/test_differential.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# What the harness found on its first
+  > $ for i in $(seq 1 60); do if ! pgrep -f "python -m learning.differential" >/dev/null; then break; fi; sleep 10; done; tail -4 learning/data/differential_run.log;
+  > $ tail -3 learning/data/differential_run.log; pgrep -cf "python -m learning.differential"; ps -o pid,etime,pcpu,rss,cmd -C python | grep differential | head -3; w
+  > $ grep -n "runs on\|flagged" learning/data/differential_run.log | tail -3; ls -la learning/data/ensemble/differential*; cat reports/differential_tables.md
+  > $ sed -n 1,200p reports/differential_tables.md | cut -c1-400
+  > $ python - <<'EOF'
+import pandas as pd
+s = pd.read_csv("learning/data/ensemble/differential_summary.csv")
+r = pd.read_csv("learning/data/ensemble/differential.csv
+  > $ python - <<'EOF' 2>&1 | tail -70
+# Re-certify every drawn instance by routes that do not use the C better_move:
+# the cached/independent solve, the Python refer
+  > $ python - <<'EOF'
+import itertools
+from learning.ensemble import Cell, generate
+from satisfiability.customer_search import decide
+inst = generate(Cell("bernoulli
+  > $ awk '/^### Relabelling spread of the refutation/,0' reports/differential_tables.md | cut -c1-330
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -6
+  > $ python - <<'EOF' 2>&1 | grep -v DtypeWarning
+import pandas as pd, numpy as np
+from learning.differential import _materialise, campaign_targets, corpus_targets, 
+  > $ python - <<'EOF'
+# Delta-debug the two drawn instances down to the smallest sub-matrix on which
+# the C better_move composed with one other rule still refutes a
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/differential.py")
+src = p.read_text()
+
+new_funcs = '''
+
+# -----------------------------------------
+  > $ grep -A3 "^| *flagged instances" reports/differential_tables.md | head -4 | cut -c1-600; du -ch learning/data/ensemble/differential* | tail -1; tail -60 reports
+  > $ python -m pytest tests/test_differential.py tests/test_node_counts.py tests/test_graph_story.py -q 2>&1 | tail -3; cat Ralph_Loops/loop0003/iterations.md | head
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 15. The differential harness: is every refutation sound under relabelling? (plan 2 §2.1(a), loop0003 item 01)
+
+*loop0003
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -2
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/differential.py")
+src = p.read_text()
+shrink_code = '''
+
+# ----------------------------------------
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("reports/ml_nature.md")
+s = p.read_text()
+old = ("off. Delta-debugging shrinks the first to a 10-customer, 13
+
+Item 01 is done. Everything is written: the harness, the run, the report section, the tests, PROGRESS.md and iterations.md. No commit was made, nothing was written to `solutions/`, and no solver default or C code changed.
+
+**The harness found what it was built to find.** Over 43,935 certified instances at 9 to 40 customers, ten labellings each, both configurations and both sides of the optimum, every refutation at `optimum − 1` held on all 878,580 calls and the lattice oracle agreed on all 13,612 instances it reaches. But at `k = optimum`, where a witness exists, the C search with Theorem 2 on answered `unsat` 88 times on 56 instances. All 56 stored optima re-certify by independent routes, so the values are right and the rule is wrong.
+
+**Mechanism.** `better_move` alone is sound on all 88 cases. Composed with `subset_rule` (78) or `definite_move` (3) it forms a cross-rule dominance cycle: `subset_rule` runs after `better_move` and measures survivors against candidates `better_move` has just discarded, so two customers each get dropped on the strength of the other. This is the same failure shape as the 2026-09-23 `better_move` bug, now arising between rules rather than within one. The report proposes a fix and does not apply it.
+
+**Alert for the owner.** The failing configuration is what `benchmarks.csearch` used and what the running `benchmarks.recertify` uses on the 125×125 instances. At `n ≤ 40` no stored value is affected. Above 40 nothing here is evidence, and the `default` search cannot check those sizes. I did not stop recertify.
+
+**Other deliverables.** The relabelling spread by size band and configuration is recorded for item 04: at `n ≤ 40` a best-of-nine portfolio gains nothing on refutations and 16 to 17% on witness searches. The §13 re-covering invariants hold on all 43,935 instances.
+
+Files: `learning/differential.py`, `tests/test_differential.py` (11 pass, one strict xfail that flips when the C is fixed), `reports/ml_nature.md` §15, `reports/differential_tables.md`, four CSVs under `learning/data/ensemble/` (11 MB). Full suite: 824 passed, 2 skipped, 2 xfailed.
+
+# result: success in 1682s, 53 turns, cost $8.41

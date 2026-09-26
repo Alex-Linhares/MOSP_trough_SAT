@@ -1,0 +1,5 @@
+[2026-09-26 10:23:04] loop start: up to 16 iterations, cap 3.0 h each, model default
+[2026-09-26 10:23:04] === iteration 1: 01 · §2.1a The differential harness. `learning/differential.py`: for
+[2026-09-26 10:23:04] claude session it01 (cap 3.00 h) -> session_it01.log
+[2026-09-26 10:51:07] session it01: ok (exit 0, 52 tool calls)
+[2026-09-26 10:52:26] tests passed: 824 passed, 2 skipped, 2 xfailed, 149 warnings in 78.08s (0:01:18)

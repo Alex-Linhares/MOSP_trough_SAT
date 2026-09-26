@@ -1,0 +1,57 @@
+source,base_name,n,m,optimum,disagreeing,stored_value,stored_proof,python_lo,python_hi,python_witness,c_default_lo,c_default_hi,oracle_search,oracle_construction,independently_certified
+campaign,ens_b_n10_m10_p0.2_i034,10,10,4,relabel6/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_f_n20_m20_d3_i034,20,20,7,relabel3/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_f_n20_m20_d3_i070,20,20,7,relabel3/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n40_m40_p0.05_i047,40,40,10,relabel5/csearch@hi,10,cached,unsat,sat,10,unsat,sat,,,True
+campaign,ens_b_n40_m40_p0.05_i080,40,40,6,relabel5/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_f_n10_m20_d2_i070,10,20,4,identity/csearch@hi;greedy0/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_f_n10_m20_d2_i132,10,20,4,relabel1/csearch@hi;relabel2/csearch@hi;relabel6/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_f_n10_m20_d2_i130,10,20,4,identity/csearch@hi;relabel1/csearch@hi;relabel6/csearch@hi;relabel7/csearch@hi;greedy0/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_f_n15_m15_d4_i089,15,15,8,relabel5/csearch@hi,8,cached,unsat,sat,8,unsat,sat,8.0,8.0,True
+campaign,ens_b_n15_m15_p0.15_i128,15,15,8,identity/csearch@hi;greedy0/csearch@hi,8,cached,unsat,sat,8,unsat,sat,8.0,8.0,True
+campaign,ens_b_n15_m30_p0.075_i089,15,30,4,relabel5/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_b_n15_m30_p0.075_i128,15,30,3,relabel6/csearch@hi,3,cached,unsat,sat,3,unsat,sat,3.0,3.0,True
+campaign,ens_b_n15_m30_p0.1_i061,15,30,4,relabel2/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_b_n15_m30_p0.1_i114,15,30,4,relabel1/csearch@hi;relabel2/csearch@hi;relabel5/csearch@hi;relabel6/csearch@hi,4,cached,unsat,sat,4,unsat,sat,4.0,4.0,True
+campaign,ens_b_n20_m20_p0.075_i073,20,20,5,relabel4/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n20_m20_p0.1_i102,20,20,4,relabel5/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n20_m20_p0.1_i103,20,20,4,relabel6/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n20_m20_p0.1_i129,20,20,7,relabel7/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n20_m20_p0.15_i040,20,20,7,relabel1/csearch@hi;relabel4/csearch@hi;relabel6/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n20_m20_p0.15_i057,20,20,7,relabel4/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n20_m40_p0.075_i017,20,40,6,relabel3/csearch@hi;relabel4/csearch@hi;relabel5/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_b_n20_m40_p0.1_i128,20,40,7,relabel0/csearch@hi;relabel2/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_f_n25_m25_d2_i070,25,25,3,relabel6/csearch@hi,3,cached,unsat,sat,3,unsat,sat,,,True
+campaign,ens_f_n25_m25_d2_i148,25,25,4,relabel3/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_f_n25_m25_d3_i083,25,25,7,relabel0/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.075_i002,25,25,4,relabel1/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.075_i040,25,25,5,identity/csearch@hi;relabel5/csearch@hi;greedy0/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.075_i092,25,25,6,relabel3/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.075_i124,25,25,6,relabel4/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.1_i102,25,25,9,relabel3/csearch@hi,9,cached,unsat,sat,9,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.1_i116,25,25,7,relabel6/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n25_m25_p0.1_i124,25,25,6,relabel0/csearch@hi;relabel7/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_b_n25_m50_p0.05_i112,25,50,5,relabel2/csearch@hi;relabel3/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n25_m50_p0.075_i035,25,50,5,identity/csearch@hi;greedy0/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n25_m50_p0.075_i111,25,50,6,identity/csearch@hi;relabel2/csearch@hi;relabel3/csearch@hi;relabel7/csearch@hi;greedy0/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_f_n30_m30_d2_i106,30,30,4,relabel7/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_f_n30_m30_d3_i132,30,30,9,relabel3/csearch@hi,9,cached,unsat,sat,9,unsat,sat,,,True
+campaign,ens_b_n30_m30_p0.05_i118,30,30,4,relabel7/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n30_m30_p0.075_i022,30,30,6,relabel6/csearch@hi,6,cached,unsat,sat,6,unsat,sat,,,True
+campaign,ens_b_n30_m60_p0.05_i145,30,60,5,relabel1/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_f_n35_m35_d2_i021,35,35,4,relabel2/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n35_m35_p0.05_i031,35,35,7,identity/csearch@hi;relabel0/csearch@hi;relabel1/csearch@hi;greedy0/csearch@hi,7,cached,unsat,sat,7,unsat,sat,,,True
+campaign,ens_b_n35_m35_p0.05_i020,35,35,4,relabel6/csearch@hi,4,cached,unsat,sat,4,unsat,sat,,,True
+campaign,ens_b_n35_m35_p0.05_i057,35,35,5,relabel6/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n35_m70_p0.025_i147,35,70,5,relabel4/csearch@hi,5,cached,unsat,sat,5,unsat,sat,,,True
+campaign,ens_b_n35_m70_p0.05_i100,35,70,9,relabel0/csearch@hi,9,cached,unsat,sat,9,unsat,sat,,,True
+corpus,"Warwick 895: balanced orders, 6 orders per product",20,10,12,relabel4/csearch@hi;relabel7/csearch@hi,12,certified:refutation,unsat,sat,12,unsat,sat,,,True
+corpus,"Warwick 1024: balanced orders, 2 orders per product",20,20,3,relabel0/csearch@hi,3,certified:refutation,unsat,sat,3,unsat,sat,,,True
+corpus,"Warwick 1712: balanced orders, 2 orders per product",30,30,3,relabel3/csearch@hi,3,certified:refutation,unsat,sat,3,unsat,sat,,,True
+corpus,"Warwick 533: balanced products, 4 products per order",15,15,10,relabel2/csearch@hi;relabel4/csearch@hi,10,certified:refutation,unsat,sat,10,unsat,sat,10.0,10.0,True
+corpus,"Warwick 941: balanced products, 2 products per order",20,10,8,relabel6/csearch@hi,8,certified:refutation,unsat,sat,8,unsat,sat,,,True
+corpus,"Warwick 1852: balanced products, 2 products per order",30,30,4,relabel6/csearch@hi,4,certified:refutation,unsat,sat,4,unsat,sat,,,True
+corpus,HS problem 564 size 20 10 density  0.20,20,10,9,relabel4/csearch@hi,9,certified:refutation,unsat,sat,9,unsat,sat,,,True
+corpus,HS problem 645 size 20 10 density  0.25,20,10,9,identity/csearch@hi;greedy0/csearch@hi,9,certified:refutation,unsat,sat,9,unsat,sat,,,True
+corpus,HS problem 2423 size 30 15 density  0.20,30,15,17,relabel1/csearch@hi;relabel6/csearch@hi,17,certified:refutation,unsat,sat,17,unsat,sat,,,True
+corpus,p2030n10_0,30,20,7,relabel2/csearch@hi,7,certified:refutation,unsat,sat,7,unsat,sat,,,True
