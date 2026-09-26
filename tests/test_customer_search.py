@@ -215,8 +215,49 @@ def _bm_instance(seed):
     return MOSPInstance.from_matrix(matrix, name=f"bm{seed}")
 
 
-@pytest.mark.parametrize("seed", range(40))
-def test_better_move_never_changes_a_decision(seed):
+def _sparse_bm_instance(seed):
+    """One to three products per customer, half to twice as many products as
+    customers: the family where the second `better_move` bug lived. Dense
+    instances rarely tie enough candidates for a dominance relation to point
+    backwards; at about two customers per product they do."""
+    import random
+
+    from mosp.instance import MOSPInstance
+
+    rng = random.Random(seed)
+    n_c = rng.randint(6, 20)
+    n_p = rng.randint(max(2, n_c // 2), 2 * n_c)
+    matrix = [[0] * n_p for _ in range(n_c)]
+    for row in matrix:
+        for j in rng.sample(range(n_p), rng.randint(1, min(3, n_p))):
+            row[j] = 1
+    return MOSPInstance.from_matrix(matrix, name=f"sparse_bm{seed}")
+
+
+# The two minimal counterexamples `python -m learning.differential --stage
+# shrink` cut from the campaign instances the harness drew (reports/ml_nature.md
+# §15, reports/differential_tables.md). Each has a certified optimum the C
+# default, the Python reference and (for the first) the lattice oracle agree on,
+# and each was refuted at that optimum by the C with `better_move` on: the
+# first through the subset rule citing a candidate better move had discarded,
+# the second by better move alone, whose close count took the customers r
+# finishes by itself for stacks q would close.
+MINIMAL_10x13 = ([[0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0],
+                  [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+                  [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]], 4)
+MINIMAL_17x9 = ([[1, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1],
+                 [0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 1, 0],
+                 [1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1],
+                 [0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 1],
+                 [1, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                 [0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 1, 0, 0]], 5)
+
+
+@pytest.mark.parametrize("family, seed", [("dense", s) for s in range(40)]
+                         + [("sparse", s) for s in range(60)])
+def test_better_move_never_changes_a_decision(family, seed):
     """The invariant whose absence hid a false-refutation bug for months.
 
     `better_move` lives only in the C, so the C-versus-Python tests never
@@ -225,18 +266,51 @@ def test_better_move_never_changes_a_decision(seed):
     dominates q -- and both were discarded together with the solution they
     carried. `Warwick 1730` was refuted at k = 9 against a true optimum of 9,
     and one corpus entry was certified one stack too high.
+
+    The dense family alone missed the second bug (reports/ml_nature.md §15):
+    the sparse family is where candidates tie on cost and the subset relation
+    has room to point back at a candidate better move has discarded. Every
+    rule pairing is tried, because a rule sound on its own input is not
+    thereby sound on the output of another rule.
     """
     from satisfiability.customer_search import decide
 
-    instance = _bm_instance(seed)
+    instance = _bm_instance(seed) if family == "dense" else _sparse_bm_instance(seed)
     if not instance.matrix.any():
         return
+    pairings = [(True, True)] if family == "dense" else [(True, True), (True, False),
+                                                          (False, True), (False, False)]
     for k in range(1, instance.n_customers + 1):
         reference = decide(instance, k, better_move=False).status
-        for dominators in (0, 1, 2, 4):
-            for memo in (True, False):
-                assert decide(instance, k, better_move=True, memo=memo,
-                              better_move_dominators=dominators).status == reference
+        for subset_rule, definite_move in pairings:
+            for dominators in (0, 1, 2, 4):
+                for memo in (True, False):
+                    assert decide(instance, k, better_move=True, memo=memo,
+                                  subset_rule=subset_rule, definite_move=definite_move,
+                                  better_move_dominators=dominators).status == reference
+
+
+@pytest.mark.parametrize("matrix, optimum", [MINIMAL_10x13, MINIMAL_17x9])
+def test_the_minimal_instances_from_the_differential_harness(matrix, optimum):
+    """Both refuted their optimum under some flag combination before the fix
+    (all 32 with `subset_rule` on for the first; 48 of 64 for the second,
+    including better move with the memo, old move and the subset rule all off).
+    Every combination must now agree with the Python reference at the optimum
+    and one below it."""
+    import itertools
+
+    from mosp.instance import MOSPInstance
+    from satisfiability.customer_search import decide
+
+    instance = MOSPInstance.from_matrix(matrix, name="minimal")
+    assert decide(instance, optimum, native=False).status == "sat"
+    assert decide(instance, optimum - 1, native=False).status == "unsat"
+    for subset_rule, definite_move, old_move, memo, dominators in itertools.product(
+            (True, False), (True, False), (True, False), (True, False), (0, 1, 2, 4)):
+        flags = dict(better_move=True, subset_rule=subset_rule, definite_move=definite_move,
+                     old_move=old_move, memo=memo, better_move_dominators=dominators)
+        assert decide(instance, optimum, **flags).status == "sat", flags
+        assert decide(instance, optimum - 1, **flags).status == "unsat", flags
 
 
 def test_the_instance_that_exposed_the_cycle():

@@ -137,8 +137,29 @@ static int dominance_filter(search_t *s, mask_t candidates,
             costs[count] = cost; who[count] = c; index_of[count] = j; count++;
         }
     }
-    if (!count || (!s->subset_rule && !s->definite_move)) goto sorted;
+    if (!count || (!s->subset_rule && !s->definite_move && !s->better_move))
+        goto sorted;
 
+    /* Three dominance rules share this one list, and a rule is sound only
+     * when every candidate it discards is *covered*: some candidate still
+     * standing when the filter returns -- or a customer outside the candidate
+     * set whose subtree an ancestor already searched, which is what `seen`
+     * holds under old move -- admits a solution whenever the discarded one
+     * does. Each rule is acyclic on its own input: definite move keeps one
+     * candidate and stops; the subset relation with its index tie-break is a
+     * strict partial order on the remaining customers; better move lets only
+     * an earlier candidate cover a later one, so its first input survives.
+     * Composition breaks that as soon as a later rule cites a candidate an
+     * earlier rule has discarded. Better move used to run *before* the subset
+     * rule: `r` went because `q` covered it, then `q` went because the subset
+     * rule measured it against `r`, which it still saw among the remaining
+     * customers -- a two-rule cycle, both gone and the solution with them,
+     * 56 false refutations on sparse instances at 10-40 customers
+     * (reports/ml_nature.md §15). So the subset rule now runs first, over the
+     * remaining customers, none of which anything has discarded yet, and
+     * better move runs last over the subset survivors alone. Every chain of
+     * coverings then ends at a better-move survivor or at a `seen` customer,
+     * and the answer cannot change -- only the cost. */
     if (s->definite_move) {
         for (int i = 0; i < count; i++) {
             int c = who[i];
@@ -157,6 +178,29 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 goto sorted;
             }
         }
+    }
+
+    if (s->subset_rule) {
+        int kept = 0;
+        for (int i = 0; i < count; i++) {
+            int c = who[i];
+            int at = index_of[i];
+            mask_t own = opens[at];
+            int own_size = sizes[at];
+            int dominated = 0;
+            for (int j = 0; j < n_remaining && !dominated; j++) {
+                if (sizes[j] > own_size) continue;      /* cannot be a subset */
+                int d = ids[j];
+                if (d == c) continue;
+                mask_t other = opens[j];
+                if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
+            }
+            if (!dominated) { costs[kept] = costs[i]; who[kept] = c;
+                              index_of[kept] = index_of[i]; kept++; }
+        }
+        /* Every candidate dominated by a non-candidate would empty the list;
+         * keep the original in that case, as the Python does. */
+        if (kept) count = kept;
     }
 
     /* Theorem 2, "better move". If S ++ [q] and S ++ [r, q] are both playable
@@ -202,7 +246,16 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 int q = who[qi];
                 if (q == r) continue;
 
-                /* S ++ [r, q] playable: q's cost once r has been played. */
+                /* S ++ [r, q] playable: q's cost once r has been played,
+                 * measured as the paper measures it, with r closed and
+                 * nothing else -- *not* the cheaper cost this search would
+                 * charge q in the child, after r's free moves have closed.
+                 * The theorem's proof plays q first and r second, and the
+                 * paper's cost of r after q is this same number, so it is
+                 * this check that keeps S ++ [q, r] playable. Brute force
+                 * on 320 sparse instances at 12-15 customers found 726
+                 * false prunings in 125M applications with the exact cost
+                 * here, and none in 124M with this one. */
                 if (popcount128((opened_r | s->neighbour[q]) & ~closed_r) > s->k)
                     continue;
 
@@ -211,8 +264,20 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 int closed_by = 0;
                 for (mask_t bits = remaining_r; bits; ) {
                     mask_t bit = LOWEST(bits); bits ^= bit;
-                    if (((s->neighbour[lowest_index(bit)] & ~opened_r) & ~own) == 0)
-                        closed_by++;
+                    mask_t left = s->neighbour[lowest_index(bit)] & ~opened_r;
+                    /* close(q, S u {r}) counts the stacks q closes that r has
+                     * not closed already. A customer with nothing left to
+                     * open once r is played is finished by r alone -- a free
+                     * move in the child, gone before q is played -- and the
+                     * proof of Theorem 1 needs stacks closed *in addition* to
+                     * those. Counting them made close(q, S u {r}) come out one
+                     * too high and pruned r wrongly: the same brute force
+                     * found 57 false prunings in 126M applications of the
+                     * old count, every one an over-count of exactly this
+                     * kind, and none in 124M once they are left out.
+                     * `definite_move` and `subset_rule` never counted them:
+                     * their `ids` skip size-0 customers. */
+                    if (left && (left & ~own) == 0) closed_by++;
                 }
                 if (closed_by >= opened_by) pruned = 1;
             }
@@ -224,29 +289,6 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 costs[kept] = costs[i]; who[kept] = who[i];
                 index_of[kept] = index_of[i]; kept++;
             }
-        if (kept) count = kept;
-    }
-
-    if (s->subset_rule) {
-        int kept = 0;
-        for (int i = 0; i < count; i++) {
-            int c = who[i];
-            int at = index_of[i];
-            mask_t own = opens[at];
-            int own_size = sizes[at];
-            int dominated = 0;
-            for (int j = 0; j < n_remaining && !dominated; j++) {
-                if (sizes[j] > own_size) continue;      /* cannot be a subset */
-                int d = ids[j];
-                if (d == c) continue;
-                mask_t other = opens[j];
-                if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
-            }
-            if (!dominated) { costs[kept] = costs[i]; who[kept] = c;
-                              index_of[kept] = index_of[i]; kept++; }
-        }
-        /* Every candidate dominated by a non-candidate would empty the list;
-         * keep the original in that case, as the Python does. */
         if (kept) count = kept;
     }
 

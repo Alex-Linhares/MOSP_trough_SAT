@@ -4076,6 +4076,24 @@ prevents the within-rule cycle and does nothing for the cross-rule one.
 *Partial rows flush every 2,000 instances* to `learning/data/differential_partial.csv`
 so a killed run keeps what it had.
 
+**Resolution, 2026-09-26, after this section was written** (`reports/better_move_bug.md` §7).
+The fix landed in `satisfiability/customer_search.c` and the harness now
+reports 0 disagreements and 0 contradictions on the same 43,935 instances
+(878,580 `unsat` at `optimum − 1`, 878,700 `sat` at the optimum). Two
+corrections to the account above. The control "`better_move` alone is sound
+on all 88" was vacuous: the filter's early exit skipped `better_move` whenever
+`subset_rule` and `definite_move` were both off, so that pairing never ran the
+rule (its node counts equal the rule-off counts). Run alone, `better_move`
+refutes the 17 × 9 minimal instance by itself, and the cause is inside the
+rule: `close(q, S ∪ {r})` counted the customers `r` finishes on its own, which
+the child closes as free moves before `q` is played. The cross-rule cycle
+described above is real and is the whole story on the 10 × 13 instance; the
+"`better_move + definite_move`" failures were the within-rule bug, since
+`definite_move` short-circuits before `better_move` at a node. The cost of
+the fix at `n ≤ 40`: `csearch` refutation nodes on the identity labelling,
+where Theorem 2 runs, median ratio 1.00, p90 1.18, max 6.5, +7.3% in total;
+no `default` count changed.
+
 ## 16. The campaign upward: does the ridge law hold at 50–100, and at what rate? (plan 2 §2.2, loop0003 item 02)
 
 *loop0003 iteration 2, 2026-09-26. Code: `learning/ensemble.py` (`--upward`,

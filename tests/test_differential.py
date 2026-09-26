@@ -176,14 +176,17 @@ def test_spread_table_reads_the_identity_against_the_minimum():
 
 # ----------------------------------------------------------------------------
 # What the harness found on its first run (2026-09-26): a false refutation at
-# the optimum from the C `better_move` composed with `subset_rule`.
+# the optimum from the C `better_move` composed with `subset_rule`. Fixed the
+# same day in `satisfiability/customer_search.c` (the subset rule now runs
+# before better move, and better move's close count no longer counts the
+# customers r finishes on its own); these tests keep the instance as a guard.
 # ----------------------------------------------------------------------------
 
 # `ens_f_n10_m20_d2_i070` of the campaign (Chu & Stuckey generator, 10
 # customers, 20 products, 2 customers per product), certified optimum 4: the
 # lattice oracle says 4 under both measures, the default search finds a
 # witness at k = 4 that simulates to 4, and the Python reference agrees. The C
-# with `better_move=True` and `subset_rule=True` answers `unsat` at k = 4.
+# with `better_move=True` and `subset_rule=True` answered `unsat` at k = 4.
 DRAWN_10x20 = [
     [1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -216,21 +219,21 @@ def test_the_drawn_instance_has_optimum_four_by_three_independent_routes():
     assert decide(inst, 4, native=False, better_move=True, better_move_dominators=0).status == "sat"
 
 
-def test_the_harness_draws_the_drawn_instance():
-    """The harness's own report of the finding: a disagreement between the two
-    configurations at the optimum, on the identity labelling and others."""
+def test_the_harness_raises_no_flag_on_the_drawn_instance():
+    """The harness's report on the instance it first drew, after the fix: no
+    disagreement between the two configurations at either k, on any of the
+    ten labellings. Before the fix `identity/csearch@hi` was among the liars,
+    and this test asserted that it was."""
     rows, summary = differential(_drawn(), DRAWN_OPTIMUM)
-    assert summary["disagreement"] and summary["contradiction"]
-    assert "identity/csearch@hi" in summary["disagreeing"]
-    assert all(r["status_hi"] == "sat" for r in rows if r["config"] == "default")
+    assert not summary["disagreement"] and not summary["contradiction"]
+    assert summary["disagreeing"] == ""
+    assert all(r["status_hi"] == "sat" and r["witness_ok"] for r in rows)
     assert all(r["status_lo"] == "unsat" for r in rows)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "Open finding of reports/ml_nature.md §15: the C better_move composed with "
-    "subset_rule refutes a satisfiable k. Passes (XPASS, strict) once the C is "
-    "fixed, at which point delete the marker and keep the assertion."))
 def test_c_better_move_with_subset_rule_is_sound_on_the_drawn_instance():
+    """Pinned as a strict `xfail` on 2026-09-26 while the finding was open; the
+    marker went when the C was fixed and the assertion stayed."""
     inst = _drawn()
     for dominators in (0, 4):
         assert decide(inst, 4, native=True, better_move=True, subset_rule=True,
@@ -238,9 +241,9 @@ def test_c_better_move_with_subset_rule_is_sound_on_the_drawn_instance():
 
 
 def test_either_rule_alone_is_sound_on_the_drawn_instance():
-    """The composition is what fails: each rule alone answers correctly, and so
-    does the C with the dominator limit at 1 or 2, where the covering
-    candidate is never tried."""
+    """What failed was the composition: each rule alone answered correctly
+    before the fix, and so did the C with the dominator limit at 1 or 2, where
+    the covering candidate was never tried. Kept as the control."""
     inst = _drawn()
     assert decide(inst, 4, native=True, better_move=True, subset_rule=False,
                   better_move_dominators=0).status == "sat"
