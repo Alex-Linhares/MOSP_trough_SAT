@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 7/14 SOLVED
+- **Current**: 8/14 SOLVED
 
 ---
 
@@ -578,3 +578,77 @@ at 15); met for `disagree` (zero in 25,583 adversarial evaluations and in all
 - Item 12 (Lean): the 10-vertex graph is a concrete instance for any
   `pathwidth > treewidth` statement.
 
+
+## Iteration 9 — 2026-09-26 18:20
+
+**Item 07 · §2.5b Theorem 2's switch** — SOLVED (re-opened from iteration 7,
+whose run finished but whose section was never written). **Kill criterion
+not met**: the learned boundary is "always on" and agrees with the hand
+threshold on 41.2% of instances (0 hand-on/learned-off, 29,920
+hand-off/learned-on). The nodes say always on; the clock says the hand
+threshold at 5 is in the right place. **Recommendation: no change to
+`sparse_enough_for_better_move`.**
+
+### Completed
+- **Nothing re-run.** Iteration 7's `python -m learning.theorem2 --workers 16`
+  had completed at 17:25 (the straggler `Random-125-125-6-5_0` took 3,203 s
+  for its four calls): 50,911 instances (campaign 44,547 at 10–75; corpus
+  6,349 at 9–100 plus the fifteen dense 125 × 125 with settled `default`
+  refutations), 203,632 decision calls, 5.3 core-hours, about an hour on 16
+  workers. The committed `theorem2.csv.gz` (swept into iteration 8's commit)
+  is the complete run; every number in §22 regenerates from it in 6 s with
+  `--stage tables`.
+- `learning/theorem2.py`: a `corpus 101–125` size band (the fifteen 125 × 125
+  rows were being folded into `fan_order`'s band named for 99–100),
+  `hand_threshold_sweep(metric="seconds")` so the clock sweep quoted in the
+  section is a regenerated table, the section number. Tables regenerated:
+  `reports/theorem2_tables.md`, `learning/data/ensemble/theorem2_tree.txt`
+  (the committed tables predated the clock analysis the module already
+  carried).
+- **Audit, all clean**: 0 status disagreements on 50,861 refutation and
+  50,909 witness pairs, 0 contradictions, 0 of 101,818 witnesses above the
+  optimum; off arm equals every recorded `default` count (50,772 / 50,772;
+  item 06's 50,843 / 50,843), on arm equals item 06's post-fix `csearch`
+  count wherever the hand rule was on (20,938 / 20,938). The new information
+  is the on arm on the 29,920 instances the hand rule leaves off, where
+  Theorem 2 had never run.
+- **Findings** (`reports/ml_nature.md` §22): (a) in nodes, where the hand
+  rule is off, forced on saves on 8,810, ties on 21,109 and costs on **one**
+  (405 → 410); total saving 6.6%, 3–7% by size from 50 up, 100% of the
+  125 × 125 refutations change and all fifteen save (median 0.933 on `-6`).
+  Where it is on, post-fix saving 27% total / 8% median, 174 costs (0.8%),
+  none heavy, worst 1.27×, 0.001% of the study's nodes; no cost above 7
+  products per customer in 22,205 pairs. Always on is the node oracle to
+  four decimals; the hand threshold leaves 4% (1.07 at 100–125). (b) The
+  depth-3 tree is all-on: agreement 41.2%, the same with `n` and on decided
+  pairs; kill not met. (c) On the 1,146 heavy refutations (≥ 10⁵ off-nodes,
+  50–125 customers), Theorem 2 costs **1.167× per node** (p10 1.10, p90
+  1.23, flat in `n`), break-even node ratio 0.857; where the hand rule is
+  off, on is slower on 347 of 350 (1.13× median, 1.05× total); the seconds
+  sweep is flat at regret 1.025–1.029 for thresholds 4.5–6 and rises to 1.06
+  at 6.5 and for always on, which is *slower than always off* in seconds; a
+  tree fitted to the seconds sign agrees with the hand rule on 48% and only
+  ever turns it off where the hand has it on. (d) Witness search: total 0.83
+  but 1,253 costs, max 184×; not where the switch matters.
+- Proposed and not applied: always on if nodes are the currency; keep 5 if
+  seconds are (recertify's five-day budgets); the threshold should rise only
+  if the C's per-node overhead falls below ~1.03.
+- `tests/test_theorem2.py`: 9 tests (two new: the 125 band, the seconds
+  sweep by hand). Full suite: 970 passed, 2 skipped, 1 xfailed in 82 s.
+  Nothing written to `solutions/`; no solver default, flag or C changed.
+
+### Blockers
+- None for the item. Not covered: the 125 × 125 `-2` and `-4` classes (the
+  hand rule is on there; `default` censors at 1,500 s), stated in §22.
+- Process notes: iteration 7 ended its turn with the run alive and its
+  draft body at `/tmp/it07/body.md` carrying `xx` placeholders — the
+  driver's commit after iteration 8 swept the finished data in, which is
+  why this iteration had nothing to run; heaviest-first left one 125 × 125
+  instance running alone for 35 of ~60 minutes.
+
+### Next
+- Item 09 · §2.6 conjecture mining (`learning.extremal.local_search` as the
+  adversary, cliques glued at hubs as the target family).
+- For the owner: the C `better_move` pass is the lever — its 17% per-node
+  overhead is what keeps the hand threshold at 5; cheaper by a factor of six
+  and always on wins the clock everywhere measured.

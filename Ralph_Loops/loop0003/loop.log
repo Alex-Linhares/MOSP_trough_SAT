@@ -41,3 +41,8 @@
 [2026-09-26 17:07:55] claude session it08 (cap 3.00 h) -> session_it08.log
 [2026-09-26 17:57:47] session it08: ok (exit 0, 60 tool calls)
 [2026-09-26 17:59:08] tests passed: 968 passed, 2 skipped, 1 xfailed, 156 warnings in 80.66s (0:01:20)
+[2026-09-26 17:59:08] committed 3f0851de: 08 · §2.7 Extremal search and exact treewidth. `learning/extremal.py`:
+[2026-09-26 17:59:08] === iteration 9: 07 · §2.5b Theorem 2's switch. With nodes under both configurations
+[2026-09-26 17:59:08] claude session it09 (cap 3.00 h) -> session_it09.log
+[2026-09-26 18:09:38] session it09: ok (exit 0, 30 tool calls)
+[2026-09-26 18:10:59] tests passed: 970 passed, 2 skipped, 1 xfailed, 156 warnings in 80.10s (0:01:20)

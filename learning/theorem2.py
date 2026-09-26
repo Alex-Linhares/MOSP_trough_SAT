@@ -1,6 +1,6 @@
 """Theorem 2's switch: when should the complete search turn `better_move` on?
 
-Plan 2 §2.5(b) (`reports/ml_nature_plan_2.md`), loop0003 item 07. Section 21
+Plan 2 §2.5(b) (`reports/ml_nature_plan_2.md`), loop0003 item 07. Section 22
 of `reports/ml_nature.md`.
 
 **The question.** The `csearch` configuration turns Chu & Stuckey's Theorem 2
@@ -60,11 +60,11 @@ import numpy as np
 import pandas as pd
 
 from learning.fan_order import (
-    BAND_ORDER as FAN_BAND_ORDER,
+    BAND_ORDER as _FAN_BAND_ORDER,
     RESULTS_CSV,
     RESULTS_UPWARD_CSV,
     SCALE_NODES_CSV,
-    band as fan_band,
+    band as _fan_band,
     campaign_targets,
     corpus_targets,
     density_band,
@@ -113,6 +113,20 @@ SIZE_FREE = {
     "row_cv": lambda f: f["row_std"] / f["row_mean"].replace(0, np.nan),
     "col_cv": lambda f: f["col_std"] / f["col_mean"].replace(0, np.nan),
 }
+
+
+def band(n: int, source: str) -> str:
+    """Item 06's size bands plus one for the corpus above 100: the fifteen
+    125 × 125 instances this study adds would otherwise fall into
+    `fan_order`'s top band, which is named for 99–100."""
+    if source == "corpus" and n > 100:
+        return "corpus 101–125"
+    return _fan_band(n, source)
+
+
+FAN_BAND_ORDER = list(_FAN_BAND_ORDER) + ["corpus 101–125"]
+fan_band = band
+
 FEATURE_COLUMNS = ["row_mean", "col_mean", "density", "g_density", "g_deg_mean", "g_deg_std",
                    "g_degeneracy", "tw_min_fill", "g_largest_comp_frac", "g_components",
                    "g_clustering", "dominated_col_frac", "distinct_col_frac", "row_std", "col_std"]
@@ -543,17 +557,24 @@ def kill_verdict(p: pd.DataFrame, learned_on: np.ndarray, threshold: float = KIL
             "hand_off_learned_on": int((~hand & learned).sum())}
 
 
-def hand_threshold_sweep(p: pd.DataFrame, thresholds=None) -> pd.DataFrame:
-    """Nodes spent by the one-statistic rule `products per customer ≤ t` for a
-    range of `t`, decided pairs only: is 5 the right place for the threshold?"""
+def hand_threshold_sweep(p: pd.DataFrame, thresholds=None, metric: str = "nodes") -> pd.DataFrame:
+    """Cost of the one-statistic rule `products per customer ≤ t` for a range of
+    `t`, decided pairs only: is 5 the right place for the threshold? `metric`
+    is `"nodes"` (regret against the node oracle's spend) or `"seconds"`
+    (regret against the seconds floor, the cheaper arm on the clock per pair;
+    meaningful only on pairs heavy enough to time, see `clock_table`). The
+    `agree` column is always agreement with the node oracle."""
     d = p[p.decided]
     thresholds = np.arange(0.0, 20.5, 0.5) if thresholds is None else thresholds
-    floor = rule_nodes(d, (d.oracle > 0).to_numpy()).sum()
+    if metric == "nodes":
+        floor = rule_nodes(d, (d.oracle > 0).to_numpy()).sum()
+    else:
+        floor = np.minimum(d[f"{metric}_on"], d[f"{metric}_off"]).sum()
     out = []
     for t in thresholds:
         choose = (d.products_per_customer <= t).to_numpy()
-        total = rule_nodes(d, choose).sum()
-        out.append({"threshold": float(t), "on_fraction": float(choose.mean()), "nodes": float(total),
+        total = rule_nodes(d, choose, metric).sum()
+        out.append({"threshold": float(t), "on_fraction": float(choose.mean()), metric: float(total),
                     "regret": float(total / floor) if floor else np.nan,
                     "agree": agreement_with_oracle(d, choose)})
     return pd.DataFrame(out)
@@ -654,6 +675,9 @@ def analyse(rows: pd.DataFrame, out: Path = TABLES, tree_txt: Path = TREE_TXT,
               "By hand switch:", "", _md(clock_table(p, by="hand_on")), "",
               "By size band:", "", _md(clock_table(p, by="band")), ""]
     heavy = p[p.decided & (p.nodes_off >= 1e5)]
+    lines += ["## The one-statistic threshold swept on the clock (refutations with ≥ 10⁵ off-nodes; "
+              "`seconds` is what the rule would have spent, regret against the per-pair cheaper arm)", "",
+              _md(hand_threshold_sweep(heavy, thresholds=np.arange(0.0, 12.5, 0.5), metric="seconds")), ""]
     lines += ["## Rules on the clock (seconds, same instances; regret against the seconds floor)", "",
               _md(rules_table(heavy, learned[heavy.index.get_indexer(heavy.index)] if False else
                               np.asarray(learned)[p.index.get_indexer(heavy.index)], by="hand_on",

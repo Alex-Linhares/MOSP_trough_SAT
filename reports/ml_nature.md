@@ -5784,3 +5784,285 @@ customers are exactly where §6's certificate rate collapsed to 5.7%. (iii)
 Item 09's conjecture mining now has its adversary (`local_search` with any
 callable objective) and a family to target: cliques glued pairwise at hubs,
 which defeat every degree bound and the min-fill ceiling alike.
+
+## 22. Theorem 2's switch: where should `better_move` be on? (plan 2 §2.5(b), loop0003 item 07)
+
+*2026-09-26 (the run in loop0003 iteration 7, the section in iteration 9).
+Code: `learning/theorem2.py`. No flag was added and no default changed: the
+two arms are `decide`'s defaults and `decide(better_move=True,
+better_move_dominators=0)`, both of which already exist. Regenerate:*
+
+```bash
+python -m learning.theorem2 --workers 16          # the study: 50,911 instances, 5.3 core-hours, ~1 h on 16 cores
+python -m learning.theorem2 --stage tables        # reports/theorem2_tables.md and theorem2_tree.txt from the CSV
+python -m pytest tests/test_theorem2.py -q
+```
+
+*Writes `learning/data/ensemble/theorem2.csv.gz` (one wide row per instance:
+status, nodes and seconds of the four decision calls, both witness values,
+the hand statistic; 1.5 MB, committed), `learning/data/ensemble/theorem2_tree.txt`
+(the fitted boundary) and `reports/theorem2_tables.md` (every table below in
+full, and the ones only summarised here). Nothing is written to `solutions/`.*
+
+**Question.** The `csearch` configuration turns Chu & Stuckey's Theorem 2
+(`better_move`, every candidate a dominator) on when the mean number of
+products per customer is at most 5 — `sparse_enough_for_better_move`, a hand
+threshold chosen to reproduce the Chu & Stuckey density parameter from the
+matrix — and `default` never turns it on. §13 measured the rule saving 10–13%
+of a refutation's nodes at n ≤ 40 and §14 up to 83% at n = 100, never costing
+a node; §16 (b) found the switch on for nearly every `m = n/2` instance and
+saving about 15% wherever it is on. Plan 2 finding 8 turned that into a
+hypothesis: *it should simply always be on*. Three things were never
+measured. Every one of those counts predates the 2026-09-26 fix of the C
+`better_move` (§18 (e)), which changed the rule's pruning; the rule was only
+ever run *where the hand threshold turns it on*, so nothing was known about
+the instances it leaves off — `csearch` *is* `default` there, so item 06's
+29,920 `nodes_lo_csearch_index` counts on those instances carry no information
+about Theorem 2; and the threshold itself was never fitted. This item runs
+Theorem 2 on against off on every instance, paired, under the fixed C, fits
+the boundary where on wins, and scores the rules in nodes and on the clock.
+
+**Method.** For every certified campaign instance at 10–75 customers
+(44,547: `results.csv` at 10–40, `results_upward.csv` at 50–75), every
+certified corpus instance at 9–100 (6,349) and the fifteen 125 × 125 corpus
+instances whose `default` refutation is on record as settled
+(`Random-125-125-6/8/10`; the `-2` and `-4` classes need a day each and are
+out of scope): `decide(optimum − 1)` (the refutation) and `decide(optimum)`
+(the witness search) under two arms, back to back in one process — **off**
+(`decide`'s defaults, the `default` configuration) and **on**
+(`better_move=True, better_move_dominators=0`, the `csearch` configuration
+with its switch forced) — the `sat` side's closing order simulated; deadlines
+60 s per call on the campaign and the corpus to 40, 120 s at 41–100, 2,400 s
+at 125. Every count is a **post-fix** count. The paired statistic is
+`(nodes_on + 1) / (nodes_off + 1)`; a censored call is a lower bound and its
+pair is counted but not pooled. Five rules are scored by what they would have
+spent — *always off*, *always on*, the *hand threshold* (on iff mean products
+per customer ≤ 5), a *learned boundary* (a depth-3 decision tree on seventeen
+size-free features — products per customer, customers per product, matrix
+density, `log(m/n)`, graph density, mean degree over `n`, degree dispersion,
+degeneracy over `n`, min-fill treewidth over `n`, `optimum / n`, largest
+component fraction, log components, clustering, dominated- and
+distinct-column fractions, row and column dispersion — fitted to the *sign*
+of the paired difference with `|log10 ratio|` as the sample weight, predicted
+out of fold with folds grouped by file ∪ MOSP-graph isomorphism class), and
+the *oracle* (the cheaper arm, the floor). The one-statistic threshold is
+swept from 0 to 20. The clock is measured where it can be — the 1,146
+refutations with ≥ 10⁵ off-nodes, at 50–125 customers: per-node overhead of
+the on arm, seconds ratio, the same rules and the same sweep scored in
+seconds, and a second tree fitted to the sign of the seconds difference.
+**Baseline**: the hand threshold, which is what `csearch` and `recertify`
+run today, and `default`.
+
+### The run
+
+50,911 instances, 203,632 decision calls, **5.3 core-hours**, about an hour
+on 16 workers — the last 35 minutes of it one instance,
+`Random-125-125-6-5_0`, whose two refutations take 1,100–1,200 s each and
+whose four calls took 3,203 s. **Audit, all clean**: the two arms agree on
+the status of every one of the 50,861 refutation pairs and 50,909 witness
+pairs where both settled (0 disagreements), no contradiction between the
+sides, every `sat` witness under either arm simulates to at most the optimum
+(0 bad of 101,818); 44 refutations censored under off and 39 under on (all
+44 hand-on: 33 campaign instances at n = 75, the ten `Random-100-100-2/4`
+corpus instances and `Random-100-50-4-4_0`; on 5 of the 44 — four campaign
+ridge instances at 75 and that `Random-100-50-4` — the on arm refuted inside
+the deadline the off arm ran out of, in 52–107 s). **The off arm equals the recorded `default` count on
+50,772 of 50,772** instances that have one (`results.csv`,
+`results_upward.csv`, `node_counts.csv`, `scale_nodes.csv`) and item 06's
+`nodes_lo_default_index` on 50,843 of 50,843; **the on arm equals item 06's
+post-fix `csearch` count on 20,938 of 20,938** instances where the hand rule
+was on, and the `hi` off counts match on 50,894 of 50,894. So the two arms
+are exactly the two configurations on record, and the new information in
+this study is the on arm on the **29,920 instances the hand threshold leaves
+off**, where Theorem 2 had never been run.
+
+### (a) In nodes, Theorem 2 never costs where the hand rule turns it off, and rarely where it turns it on
+
+Refutation, decided pairs, `(nodes_on + 1) / (nodes_off + 1)`; the full
+tables by size band, realised density and the hand statistic are in
+`reports/theorem2_tables.md`:
+
+| | pairs | saves | ties | costs | median | p10 | p90 | max | total on/off |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| hand on (ppc ≤ 5) | 20,947 | 14,745 | 6,028 | **174** | 0.923 | 0.785 | 1.000 | 1.27 | **0.727** |
+| hand off (ppc > 5) | 29,920 | 8,810 | 21,109 | **1** | 1.000 | 0.933 | 1.000 | 1.012 | **0.934** |
+| all | 50,867 | 23,555 | 27,137 | 175 | 1.000 | 0.846 | 1.000 | 1.27 | 0.831 |
+
+Where the hand rule already turns Theorem 2 on, the fixed rule saves 27% of
+the nodes in total and 8% at the median, and **costs on 174 instances
+(0.8%)** — none of them heavy (median 247 off-nodes; 23 of the 1,882 hand-on
+pairs with ≥ 10⁴ off-nodes; worst 1.27×, `ens_b_n50_m100_p0.025_i033` at
+10,500 → 13,300 nodes); the 174 together lose 97,832 nodes of the study's
+8.2 × 10⁹, 0.001%. §13's "never costs a node" (0 of 622, pre-fix) is no
+longer literally true after the fix, and the p90 of exactly 1.00 is where the
+change shows. Where the hand rule turns it **off**, forced on **saves on
+8,810 instances, ties on 21,109 and costs on one** (`ens_f_n30_m60_d3_i046`,
+405 → 410 nodes, ratio 1.012), for 6.6% of the nodes in total; the saving is
+1–3% at the median instance from 50 customers up (median ratio 0.975 / 0.980
+/ 0.986 / 0.986 / 0.991 at n = 50 / 60 / 75 / 100 / 125) and 3–7% in total
+(0.942 / 0.961 / 0.943 / 0.975 / 0.930), and the fraction of hand-off
+refutations whose count changes at all rises from 0.9% at n = 10 through 14%
+at 20, 45% at 40 and 71% at 50 to 82% at 75 and 100% at 125. On the fifteen
+dense 125 × 125 instances all fifteen save: median ratio 0.933 on
+`Random-125-125-6`, 0.991 on `-8`, 0.994 on `-10`; `Random-125-125-6-5_0`
+goes from 1.52 × 10⁹ to 1.42 × 10⁹ nodes. By products per customer (n ≥ 30)
+the median ratio climbs smoothly — 0.895 at ≤ 2, 0.90 at 2–4, 0.922 at 4–5,
+0.945 at 5–6, 0.968 at 6–8, 0.991 at 8–10 and 1.000 above 10 — and **never
+crosses 1**: costs are 44 / 63 / 23 / 5 / 1 / 0 / 0 / 0 / 0 across those
+bands, and of the 22,205 decided pairs above 7 products per customer none is
+a cost and 17,688 are ties. There is no density at which the rule prunes
+fewer nodes.
+
+**The rules in nodes.** Decided pairs, totals over the whole study
+(8.2 × 10⁹ off-nodes):
+
+| rule | nodes / oracle | agreement with oracle |
+|:--|--:|--:|
+| always off (`default`) | 1.203 | 53.7% |
+| hand threshold (`csearch`) | 1.040 | 82.3% |
+| learned boundary (out of fold) | 1.000 | 99.7% |
+| **always on** | **1.000** | 99.7% |
+| oracle | 1 | 100% |
+
+Always on is the oracle to four decimals in every size band and both
+collections (the 175 instances it loses on cost 0.001% of the nodes), and
+the hand threshold leaves 4% on the table — 1.00–1.02 by campaign band, 1.05
+at corpus 41–60, 1.07 at 99–100 and at 125. The one-statistic sweep says
+where: raising the threshold from 5 to 6 takes the regret from 1.040 to
+1.017, 6.5 to 1.0002, and every threshold from 7 up is indistinguishable
+from always on, because above 7 products per customer every pair is a tie or
+a saving.
+
+### (b) The learned boundary is "always on", and the kill is not met
+
+The depth-3 tree, fitted out of fold on the sign of the difference with the
+magnitude as weight, predicts **on for every one of the 50,911 instances**:
+all eight leaves are class 1, with class weights of 20:1 to 6,400:1 (the
+tree is in `theorem2_tree.txt`; the splits it chose — `optimum / n`,
+customers per product, column dispersion, degree dispersion — separate
+degrees of saving, not sign). Agreement with the hand threshold is therefore
+the hand rule's own on-fraction, **41.2%** (0 instances hand-on/learned-off,
+29,920 hand-off/learned-on), the same with `n` added as a feature and the
+same on decided pairs only. **Kill (plan 2 §2.5b, "the learned boundary
+agrees with the hand threshold on more than 95% of instances"): not met.**
+The hypothesis of plan 2 finding 8 — that Theorem 2 should simply always be
+on — is what the nodes say, on 50,867 decided pairs at 9–125 customers.
+
+### (c) On the clock, the hand threshold is in the right place
+
+Theorem 2 costs per node. On the 1,146 refutations with ≥ 10⁵ off-nodes
+(50–125 customers), the on arm's seconds per node are **1.167× the off
+arm's at the median** (p10 1.10, p90 1.23; 1.18 / 1.16 / 1.17 / 1.17 / 1.21
+at 50 / 60 / 75 / 100 / 125 — flat in `n`; 1.12–1.21 across products per
+customer), so the break-even node ratio is **0.857**: Theorem 2 pays on the
+clock only where it prunes more than 14% of the nodes. Where the hand rule
+is on, it does so in total (seconds on/off **0.909**, node total 0.724; the
+big savers dominate) but not at the median instance (seconds ratio 1.055; on
+is faster on 143 of 796). Where the hand rule is off, it prunes 7% in total
+and costs 17% per node: **on is slower on 347 of 350 heavy instances**,
+1.13× at the median and 1.05× in total (the three exceptions include
+`Random-125-125-6-5_0` at 0.92, a 7% node saving at a per-node rate of 0.99,
+which is the machine's load and not the rule). Scoring the rules and the
+sweep in seconds on these 1,146 pairs (5,130 s under always off):
+
+| rule | seconds | / seconds floor |
+|:--|--:|--:|
+| always off | 5,130 | 1.066 |
+| threshold ≤ 4 | 5,029 | 1.045 |
+| threshold ≤ 4.5 | 4,951 | 1.029 |
+| **hand threshold (≤ 5)** | **4,946** | **1.028** |
+| threshold ≤ 5.5 | 4,947 | 1.029 |
+| threshold ≤ 6 | 4,931 | 1.025 |
+| threshold ≤ 6.5 | 5,091 | 1.058 |
+| always on | 5,104 | 1.061 |
+| floor (cheaper arm per pair) | 4,810 | 1 |
+
+**The best one-statistic threshold on the clock lies between 4.5 and 6**,
+where the regret is flat at 1.025–1.029 (six is nominally best, by 0.3% of
+the seconds, inside the noise of a loaded machine); five is in that window,
+and everything from 6.5 up costs 3% more, because the instances at 6–6.5
+products per customer are where the per-node overhead first exceeds the
+pruning. Always on is *worse than always off* in seconds (1.061 against
+1.066 for off — the two differ by 0.5%), which is the opposite of what the
+nodes say. Split by the switch, the hand rule equals always on where it is
+on (1.02, against 1.13 for off) and equals always off where it is off (1.03,
+against 1.08 for on): it picks the better arm on both halves. A tree fitted
+to the sign of the *seconds* difference on the heavy pairs agrees with the
+hand rule on 48% of them and disagrees only in the other direction (594
+hand-on / learned-off, 0 hand-off / learned-on): it turns Theorem 2 on for
+matrix density ≤ 0.03 (91 instances, all hand-on) and otherwise only where
+the mean degree is under 8.6% of `n` and `optimum / n` above 0.24. It is not
+offered as a rule: the seconds it was fitted on were taken on a machine
+running twenty processes, its 48% is a statement about which hand-on
+instances are within the overhead of break-even rather than about the
+threshold's error, and the hand threshold beats it on the one thing that
+matters, total seconds on the heavy instances.
+
+### (d) The witness search
+
+`decide(optimum)`, 50,909 decided pairs: on saves on 8,293, ties on 41,363,
+costs on 1,253; total on/off 0.826 (0.736 hand-on, 0.929 hand-off). The
+costs are larger and more frequent than on the refutation — 1,135 hand-on
+costs with a maximum of 184× (`ens_f_n75_m37_d6_i007`, 33 → 6,254 nodes) and
+118 hand-off costs with a maximum of 1.5× — because a dominance rule changes
+*which* branch is tried first as well as how many are cut, and on the
+satisfiable side the first branch is what matters (§20 (b) found the same
+for the fan order). In seconds the on arm is 1.10–1.22× per node here too.
+Always on is again the node oracle to 1.00–1.04 by band; the hand rule to
+1.00–1.08 (1.06 at corpus 41–60, 1.08 at 125).
+
+### Proposed rule — stated, not applied
+
+- **For `decide` refutations scored in nodes: always on.** Of 29,920
+  hand-off instances, one loses 1.2% and none more; the rest tie or save, for
+  6.6% of their nodes in total and 3–7% by size from 50 customers up.
+- **For refutations scored in seconds, which is what a five-day `recertify`
+  budget is: keep `sparse_enough_for_better_move` at 5.** It sits inside the
+  flat optimum of the one-statistic sweep on the clock (4.5–6), always on
+  would cost 8% of the wall clock on the dense half, and no learned
+  boundary — in nodes or in seconds — improves on it in seconds. The node
+  and clock answers differ because Theorem 2's per-node overhead (1.17×)
+  exceeds its pruning (3–7%) exactly where the hand rule turns it off.
+  **Recommendation: no change to `sparse_enough_for_better_move`.**
+- If the C's `better_move` were made cheaper — it is one more O(R) pass over
+  data the node already holds, and `reports/inner_loop.md` shows the rules
+  *are* the inner loop — the node result says the threshold should then rise:
+  at a per-node overhead below 1.03 always on wins the clock in every band
+  from 50 customers up, and below 1.07 on the 125 × 125 `-6` class. That is a
+  measurement for whoever touches the C, not a rule.
+- The witness side is not where the switch matters: 1.5% of a descent's
+  nodes at 75 (§18 (b)), with a heavier tail on than off.
+
+**What this changes in the record.** §13's "never cost" and §14's and §16's
+`csearch / default` savings were measured on the pre-fix rule. Post-fix and
+where the hand rule is on, the saving is 27% in total and 8% at the median
+of the refutation (§16 (b) said about 15%, pre-fix), and the rule costs
+nodes on 0.8% of instances, never heavily. The old sections stand as
+measurements of the old rule.
+
+**Size range.** Campaign 10–75 customers (44,547 instances, both generators,
+`m ∈ {n/2, n, 2n}`), corpus 9–100 (6,349) and the three dense 125 × 125
+classes (15). The 125 × 125 `-2` and `-4` classes are not covered: their
+`default` refutations censor at 1,500 s and their `csearch` counts on record
+are pre-fix (§18 (e)); on them the hand rule is on, and the nearest evidence
+is the on-arm saving at 100 on the same ridge (total 0.69 on
+`Random-100-50-4`, with a fifth instance of that class refuted by the on arm
+alone; the ten `Random-100-100-2/4` pairs censored under both arms, where the
+ratio of counts at equal wall clock is the inverse per-node rate and not the
+saving). The clock statements rest on 1,146 pairs at 50–125
+customers timed on a loaded machine; the two arms of a pair ran back to back
+in one process, so the load is shared within a pair but not across pairs.
+
+**Method notes.** The `csearch` configuration *is* `default` on every
+instance the hand rule leaves off, so the `nodes_lo_csearch_index` counts
+item 06 recorded there are `default` counts and the on arm had to be run
+(this is also why §13's `csearch / default` was never measured above 5
+products per customer). A censored pair's node ratio at equal wall clock is
+the inverse per-node rate ratio and must not be read as a saving.
+Heaviest-first ordering left one worker running a 125 × 125 instance alone
+for 35 of the run's ~60 minutes; the large instances in their own pool would
+have finished in 25. `fan_order.band` names its top band for 99–100 and
+folds 125 into it; this module adds a `corpus 101–125` band so the fifteen
+125 × 125 rows are read on their own line. Iteration 7 of loop0003 ran the
+study and ended waiting on the straggler without writing this section; the
+CSV it left is complete and every number here regenerates from it.

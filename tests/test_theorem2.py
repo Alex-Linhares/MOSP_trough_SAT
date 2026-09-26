@@ -168,3 +168,32 @@ def test_targets_keep_only_settled_default_refutations_above_100():
     assert big and all(j["ref_status_default"] == "unsat" for j in big)
     assert all(t2.deadline_for(j) == t2.LARGE_DEADLINE for j in big)
     assert t2.deadline_for({"source": "campaign", "n": 75}) == t2.CAMPAIGN_DEADLINE
+
+
+def test_band_reads_the_125_customer_corpus_on_its_own_line():
+    """`fan_order.band` names its top band for 99–100; the fifteen 125 × 125
+    instances this study adds must not be folded into it."""
+    assert t2.band(125, "corpus") == "corpus 101–125"
+    assert t2.band(100, "corpus") == "corpus 99–100"
+    assert t2.band(75, "campaign") == "campaign 75"
+    assert t2.FAN_BAND_ORDER[-1] == "corpus 101–125"
+    rows = _toy_rows()
+    rows.loc[0, ["source", "n"]] = ["corpus", 125]
+    p = t2.paired(rows, "lo")
+    assert p.band.iloc[0] == "corpus 101–125" and p.band.iloc[1] == "campaign 30"
+
+
+def test_threshold_sweep_in_seconds_scores_the_clock_by_hand():
+    """Seconds spent by `ppc ≤ t`: on arm where on, off arm elsewhere, against
+    the per-pair cheaper arm as floor; agreement stays the node oracle's."""
+    rows = _toy_rows()
+    rows["seconds_lo_off"] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    rows["seconds_lo_on"] = [0.9, 0.6, 1.2, 1.1, 1.5, 0.5]      # on wins the clock on i0, i1 only
+    p = t2.paired(rows, "lo")
+    sweep = t2.hand_threshold_sweep(p, thresholds=[0.0, 4.0, 5.0, 100.0], metric="seconds")
+    # decided pairs i0..i4 (i5 censored). floor = 0.9 + 0.6 + 1 + 1 + 1 = 4.5
+    assert sweep.seconds.tolist() == pytest.approx([5.0, 0.9 + 0.6 + 3.0, 0.9 + 0.6 + 1.0 + 1.0 + 1.5, 0.9 + 0.6 + 1.2 + 1.1 + 1.5])
+    assert sweep.regret.tolist() == pytest.approx([5.0 / 4.5, 1.0, 5.0 / 4.5, 5.3 / 4.5])
+    assert sweep.agree.tolist() == pytest.approx([3 / 5, 1.0, 4 / 5, 4 / 5])   # t = 4 matches the node oracle on all five
+    nodes = t2.hand_threshold_sweep(p, thresholds=[4.0])
+    assert "nodes" in nodes.columns and "seconds" not in nodes.columns

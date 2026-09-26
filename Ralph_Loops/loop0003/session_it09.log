@@ -1,0 +1,85 @@
+# session it09 started 2026-09-26 17:59:08
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 9, redoing item 07 (Theorem 2's switch). First I'll read the plan section, the iteration 7 log, and the committed `learning/theorem2.py` and its data state.
+  > $ date && pgrep -af '^python -m benchmarks.recertify' | head; echo "---"; pgrep -af 'learning.theorem2' | grep -v pgrep | head; echo "--- git status"; git status 
+  > $ git log --oneline -3 -- learning/data/ensemble/theorem2.csv.gz reports/theorem2_tables.md learning/theorem2.py; echo "--- sections in ml_nature"; grep -n '^## §
+  > $ git show --stat 3f0851de | grep -i theorem2; echo "--- plan §2.5"; grep -n '2.5' reports/ml_nature_plan_2.md | head; awk '/^### 2.5/,/^### 2.6/' reports/ml_natu
+  > $ wc -l learning/theorem2.py tests/test_theorem2.py reports/theorem2_tables.md Ralph_Loops/loop0003/session_it07.log && cat learning/theorem2.py
+  > $ sed -n 30,200p learning/theorem2.py
+  > $ sed -n 200,480p learning/theorem2.py
+
+Reading the rest of the committed module, its tables, the iteration 7 log, and the test file, so I know exactly what remains to write.
+  > $ sed -n 480,732p learning/theorem2.py
+  > $ cat reports/theorem2_tables.md | head -250
+  > $ sed -n 36,130p reports/theorem2_tables.md
+  > $ sed -n 130,260p reports/theorem2_tables.md
+  > $ sed -n 260,378p reports/theorem2_tables.md
+  > $ grep -n '^## ' reports/theorem2_tables.md; echo "--- band"; grep -n 'BAND_ORDER\|^def band\|^def density_band\|DENSITY_BINS' learning/fan_order.py | head; sed -
+  > $ tail -60 Ralph_Loops/loop0003/session_it07.log
+  > $ ls -la /tmp/it07/ 2>/dev/null; echo "--- body"; cat /tmp/it07/body.md 2>/dev/null | head -150
+  > $ sed -n 150,400p /tmp/it07/body.md; echo "=== head.md"; cat /tmp/it07/head.md
+  > $ cat tests/test_theorem2.py; echo "--- band usage in theorem2"; grep -n 'fan_band\|FAN_BAND_ORDER\|Section 21\|§21\|section 21' learning/theorem2.py
+  > $ python - <<'EOF'
+p='learning/theorem2.py'; s=open(p).read()
+
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) >= 1, old[:60]
+    s = s.replace(o
+
+The patch is in. Now regenerating the tables from the final CSV and running the module's tests in parallel.
+  > $ time timeout 900 python -m learning.theorem2 --stage tables 2>&1 | tail -8
+  > $ sed -n "$(grep -n '^## The clock' reports/theorem2_tables.md | cut -d: -f1),$(grep -n '^## Where Theorem 2 costs most' reports/theorem2_tables.md | cut -d: -f1)
+  > $ timeout 600 python -m pytest tests/test_theorem2.py -q -x 2>&1 | tail -3
+  > $ grep -n 'corpus 101–125' reports/theorem2_tables.md | head -20; sed -n "$(grep -n '^## Refutation: paired ratio' reports/theorem2_tables.md | cut -d: -f1),+36p"
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np
+import learning.theorem2 as t2
+rows=pd.read_csv(t2.ROWS_CSV, low_memory=False)
+f=t2.wit
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np
+import learning.theorem2 as t2
+rows=pd.read_csv(t2.ROWS_CSV, low_memory=False)
+f=t2.wit
+
+I have every number I need. Next, in parallel: start the full test suite, and append §22 to the report.
+  > $ (timeout 900 python -m pytest tests/ -q -x > /tmp/it09_pytest.log 2>&1; echo "exit $?" >> /tmp/it09_pytest.log) &
+echo started
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 22. Theorem 2's switch: where should `better_move` be on? (plan 2 §2.5(b), loop0003 item 07)
+
+*2026-09-26 (the run in lo
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd
+d=pd.read_csv('learning/data/ensemble/theorem2.csv.gz', low_memory=False)
+co=d.status_lo_off=='unkno
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+old="""44 hand-on: 33 campaign instances at n = 75 and the 11 `Random-100-100-2/4`
+corpus instances;
+  > $ timeout 600 python -m pytest tests/test_theorem2.py -q -x -k seconds 2>&1 | grep -B5 -A25 'def test_threshold_sweep' | grep -A30 'assert\|Error' | head -40
+
+The code is right and my hand-computed expectation was wrong: at threshold 4 the rule matches the node oracle on all five decided pairs. Fixing the expectation and running the full suite.
+  > $ sed -i 's|    assert sweep.agree.tolist() == pytest.approx(\[3 / 5, 4 / 5, 4 / 5, 4 / 5\])|    assert sweep.agree.tolist() == pytest.approx([3 / 5, 1.0, 4 / 5, 
+  > $ sed -i 's/^- \[ \] 07 · §2.5b/- [x] 07 · §2.5b/' Ralph_Loops/loop0003/iterations.md && grep -n '^- \[' Ralph_Loops/loop0003/iterations.md | cut -c1-60 && sed -i
+
+Item 07 is done and the session's deliverables are all written. Nothing was committed, nothing touched `solutions/`, and no solver default changed.
+
+**What I found on arrival.** Iteration 7's study had in fact finished (all 50,911 instances, including the fifteen 125×125 stragglers), and the driver's commit after iteration 8 had swept the complete CSV into the repository. The only things missing were the report section and tables that reflected the clock analysis the module already carried. So nothing was re-run.
+
+**What I did.**
+- Patched `learning/theorem2.py`: a `corpus 101–125` size band (the 125×125 rows were being folded into a band named for 99–100), a seconds-scored version of the threshold sweep so the clock numbers regenerate from a command, and the section number.
+- Regenerated `reports/theorem2_tables.md` and the tree file from the committed CSV, in 6 s.
+- Wrote §22 of `reports/ml_nature.md` with every number recomputed from the final data.
+- Added two tests. The full suite passes: 970 passed, 2 skipped, 1 xfailed in 82 s.
+- Appended Iteration 9 to PROGRESS.md, set the count to 8/14, and marked item 07 done in iterations.md.
+
+**The finding.** Kill criterion not met. The learned boundary is "always on" and agrees with the hand threshold on 41% of instances. In nodes, forcing Theorem 2 on where the hand rule turns it off saves on 8,810 instances, ties on 21,109 and costs on one, and all fifteen dense 125×125 refutations save. But the fixed rule costs 1.17× per node, so on the clock it is slower on 347 of 350 heavy hand-off instances, and the seconds sweep is flat for thresholds between 4.5 and 6. The proposed rule, stated and not applied, is to keep `sparse_enough_for_better_move` at 5 when seconds are the budget, and the lever for changing that is the per-node cost of the C `better_move` pass, not the threshold.
+
+Six items remain unchecked, so no `LOOP_COMPLETE` line was added. Next is item 09, conjecture mining.
+
+# result: success in 629s, 31 turns, cost $4.65
