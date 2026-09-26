@@ -1,0 +1,69 @@
+# session it10 started 2026-09-26 18:10:59
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan (`reports/ml_nature_plan_2.md`), the cited report sections, and the key modules for item 09, then build `learning/conjecture.py`.
+  > $ date && pgrep -af "^python -m benchmarks.recertify" | head; nproc; cat Ralph_Loops/loop0003/iterations.md; wc -l reports/ml_nature_plan_2.md reports/ml_nature.m
+  > $ cat reports/ml_nature_plan_2.md
+  > $ grep -n "^## \|^### " reports/ml_nature.md | head -150
+  > $ sed -n 871,1000p reports/ml_nature.md
+  > $ sed -n 1140,1240p reports/ml_nature.md && echo ------- && sed -n 1329,1370p reports/ml_nature.md
+  > $ sed -n 5505,5600p reports/ml_nature.md; echo ------; sed -n 5635,5720p reports/ml_nature.md
+  > $ grep -n "^def \|^class \|^    def " learning/formula_search.py | head -60; echo ----; sed -n 1,60p learning/formula_search.py
+  > $ sed -n 156,205p learning/formula_search.py; echo ---- EXTREMAL; grep -n "^def \|^class \|^    def " learning/extremal.py; echo ---- TW; grep -n "^def \|^class "
+  > $ sed -n 99,205p learning/extremal.py; echo ---- LS; sed -n 295,360p learning/extremal.py
+  > $ cat satisfiability/expansion_bound.py
+  > $ sed -n 255,370p learning/features.py
+  > $ for f in learning/data/instances.csv learning/data/canonical.csv learning/data/ensemble/results.csv learning/data/ensemble/results_upward.csv learning/data/ense
+  > $ sed -n 1,98p learning/extremal.py | grep -v "^$" | head -90; echo ---- TW; sed -n 138,152p learning/treewidth.py; sed -n 279,331p learning/treewidth.py
+  > $ echo "== ensemble defs"; grep -n "^def " learning/ensemble.py | head -60; echo "== fingerprint"; grep -n "def union_groups" -A 12 learning/fingerprint.py | head
+  > $ echo "== ensemble Cell/generate"; sed -n 100,160p learning/ensemble.py; echo "== dataset enumerate"; sed -n 50,63p learning/dataset.py; echo "== bound_gap find/
+  > $ echo "== bound_features"; sed -n 134,170p learning/features.py; echo "== instance API"; grep -n "    def \|^class \|^def " mosp/instance.py | head -30; echo "==
+  > $ sed -n 41,60p satisfiability/mosp_solver.py; echo "== pathwidth DP"; grep -n "^def " fixed_parameter_algorithm/pathwidth.py | head; echo "== degeneracy"; grep -
+  > $ grep -n "^def load\|^def merged\|finish" learning/upward.py | head -12; grep -n "def masks_from_matrix" -A 16 learning/treewidth.py | head -20; grep -n "^def fi
+
+Writing the module now.
+  > Write /home/al/dev/MOSP/learning/conjecture.py
+  > $ timeout 600 python - <<'EOF'
+import time, numpy as np, networkx as nx
+from learning.conjecture import tree_pathwidth, invariants, all_rows, branching_invariants
+  > $ timeout 900 python - <<'EOF'
+import time, numpy as np, pandas as pd
+from learning.conjecture import all_rows, invariants, _generated_matrix, _corpus_matrices
+f 
+
+Per-instance cost is 0.2–1 s, so the full 50,949 rows are about 4.5 core-hours, roughly 17 minutes on 16 workers. Launching the invariants run in the background and writing the tests while it runs.
+  > $ mkdir -p learning/data/conjecture && nohup python -m learning.conjecture --stage invariants --workers 16 > learning/data/ensemble/conjecture_run.log 2>&1 &
+echo
+  > Write /home/al/dev/MOSP/tests/test_conjecture.py
+  > Write /home/al/dev/MOSP/tests/test_conjecture.py
+  > $ grep -n "extremal\|conjecture\|proofs" .gitignore; grep -q "learning/data/conjecture/" .gitignore || printf '\n# item 09 scratch witnesses (regenerable)\nlearni
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_conjecture.py"); s = p.read_text()
+s = s.replace("""    assert (cands["above"] == 0).all()       
+  > $ sleep 90; tail -2 learning/data/ensemble/conjecture_run.log; ps -o pid,pcpu,etime,rss,args -p 766368 | tail -1; pgrep -P 766368 | wc -l; uptime; date
+
+Waiting on the invariants run. I'll load the Monitor tool to wait on its progress line properly, and check the current state in parallel.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ tail -2 learning/data/ensemble/conjecture_run.log; ps -o pid,pcpu,etime,rss -p 766368 | tail -1; echo "workers: $(pgrep -P 766368 | wc -l)"; uptime; date
+  > $ pgrep -af "learning.conjectur[e] --stage invariants" | head -3; MAIN=$(pgrep -f "^python -m learning.conjectur[e]" | head -1); echo "main=$MAIN workers=$(pgrep 
+
+Run confirmed healthy (16 workers). Arming a background waiter on the log so I'm notified when it finishes or fails.
+  > $ until grep -qE "\] 50949/50949|Traceback|Error" learning/data/ensemble/conjecture_run.log || ! pgrep -f "^python -m learning.conjectur[e] --stage invariants" >/
+
+While the run proceeds, one fix I can see already: `mine` materialises every term over all 51k rows at once, which is about 4.5 GB for the pair terms. Chunking the term evaluation now.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+old = """    terms = enumerate_terms(cols, positive, max_degree=
+  > $ mkdir -p /tmp/it10 && cat > /tmp/it10/head.md <<'EOF'
+
+## 23. Conjecture mining: is there a branching-aware lower bound, and does it survive an adversary? (plan
+
+Next I need the first 5,000-row flush of the invariants CSV to dry-run the mining stage on real columns. Arming a waiter for that file.
+  > $ until [ -f learning/data/ensemble/conjecture_invariants.csv.gz ]; do sleep 10; done; ls -la learning/data/ensemble/conjecture_invariants.csv.gz; tail -1 learnin
+
+Waiting on the first flush; nothing else is independent of it right now.
+
+# result: success in 839s, 35 turns, cost $6.20

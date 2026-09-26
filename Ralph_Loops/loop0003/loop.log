@@ -46,3 +46,9 @@
 [2026-09-26 17:59:08] claude session it09 (cap 3.00 h) -> session_it09.log
 [2026-09-26 18:09:38] session it09: ok (exit 0, 30 tool calls)
 [2026-09-26 18:10:59] tests passed: 970 passed, 2 skipped, 1 xfailed, 156 warnings in 80.10s (0:01:20)
+[2026-09-26 18:10:59] committed afff0804: 07 · §2.5b Theorem 2's switch. With nodes under both configurations
+[2026-09-26 18:10:59] === iteration 10: 09 · §2.6 Conjecture mining for a branching-aware lower bound.
+[2026-09-26 18:10:59] claude session it10 (cap 3.00 h) -> session_it10.log
+[2026-09-26 18:25:04] session it10: ok (exit 0, 34 tool calls)
+[2026-09-26 18:25:04] item not marked by the agent (ok); marking - [!] so the loop advances
+[2026-09-26 18:27:24] tests passed: 988 passed, 2 skipped, 1 xfailed, 154 warnings in 138.68s (0:02:18)

@@ -652,3 +652,13 @@ threshold at 5 is in the right place. **Recommendation: no change to
 - For the owner: the C `better_move` pass is the lever — its 17% per-node
   overhead is what keeps the hand threshold at 5; cheaper by a factor of six
   and always on wins the clock everywhere measured.
+
+## Iteration 10 — 2026-09-26 18:25:04
+### Completed
+- (driver) session ended with outcome `ok` without marking the item
+### Blockers
+- see session_it10.log
+### Next
+- revisit or re-open this item
+
+---

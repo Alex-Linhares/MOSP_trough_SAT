@@ -39,3 +39,6 @@ tools/drat-trim/compress
 tools/drat-trim/decompress
 tools/drat-trim/gapless
 !learning/data/proofs_200k.csv
+
+# item 09 scratch witnesses (regenerable)
+learning/data/conjecture/
