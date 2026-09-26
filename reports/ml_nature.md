@@ -6319,3 +6319,301 @@ once the machine was quiet and 279 s when 37 processes shared 32 cores
 to the worker count. The exact `witness_choices` list carries the forced
 last step and the bounded list stops before it; a first draft of the
 calibration compared the two on different step sets.
+
+## 24. Conjecture mining: is there a branching-aware lower bound, and does it survive an adversary? (plan 2 §2.6, loop0003 item 09)
+
+*Iteration 12 of loop0003, 2026-09-26 (iteration 10 wrote the module and ran
+the invariants; this iteration mined, attacked, found and fixed a bug in one
+invariant, and wrote this). Code: `learning/conjecture.py`. Regenerate:*
+
+```bash
+python -m learning.conjecture --stage invariants --workers 16   # 25 min wall, 6.6 core-hours: 30 invariants on 50,949 instances
+python -m learning.conjecture --stage repair --workers 16       # 1 min; recomputes the branching columns on multi-component rows (a no-op on a fresh run)
+python -m learning.conjecture --stage mine --top 12             # 16 s: 11,589 candidates, constants, hold-out, ranking
+python -m learning.conjecture --stage attack --workers 16 --steps 400 --restarts 2 --top 12        # 3 min: 288,000 oracle evaluations at n = 8..15
+python -m learning.conjecture --stage attack-large --workers 16 --steps 150 --restarts 1 --top 12  # 7 min: 9,000 at n = 20, 25, 30
+python -m learning.conjecture --stage tables                    # reports/conjecture_tables.md
+python -m pytest tests/test_conjecture.py -q
+```
+
+*Writes `reports/conjecture_tables.md` (every table below in full),
+`learning/data/ensemble/conjecture_invariants.csv.gz` (one row per certified
+instance, 30 invariants), `conjecture_candidates.csv` (one row per
+candidate), `conjecture_attack.csv` and `conjecture_attack_large.csv` (one
+row per adversary job) and two empty counterexample files (committed, 3.8 MB
+in all; the ensemble directory is 79 MB apparent). The 405,000 scratch
+witnesses of the adversary's instances live under `learning/data/conjecture/`
+(git-ignored, 114 MB, regenerable). Nothing is written to `solutions/`; no
+solver file, default or bound is touched.*
+
+**Question.** §6 showed that three of the four components of the proved bound
+`lb_best` are lower bounds on treewidth + 1, so they can never be tight where
+pathwidth exceeds treewidth, and §21 found that it does on at least 48.5% of
+the 338 corpus instances where `lb_best` misses by two or more. A bound that
+could be tight there has to see *branching*. Plan 2 §2.6 asks whether such a
+bound can be **mined**: enumerate formulas over invariants that see branching,
+keep every one that is never above the optimum on every certified instance,
+rank by how often it beats `lb_best` on the gap instances, and attack the
+survivors with §21's extremal search using the exact solver as oracle. The
+deliverable is zero or more conjectures `pathwidth ≥ f(G)` for item 12, each
+with its tightness, size range and adversarial record.
+
+**Method.** Thirty invariants of the MOSP graph on all 50,949 certified
+instances (corpus 6,376 at 9–134 customers; campaign 37,800 at 10–40;
+upward 6,773 at 50–100): exact treewidth by the subset DP to n = 26 and by
+`learning.treewidth`'s decision search under a 1-second deadline to n = 64
+(an interval `tw_lo ≤ tw ≤ tw_hi` where it is censored; MMD+ and min-fill
+above 64), the expansion profile `f(1..6)` of `satisfiability.expansion_bound`
+and the bound it proves, articulation points, blocks, bridges, the pathwidth
+of the block–cut tree, the number of cut vertices with three or more branches
+(`hubs3`), the *branch-lemma bound* (over every cut vertex with three or more
+branches, the third-largest treewidth of a branch plus one — a lower bound on
+pathwidth, since a branch's pathwidth is at least its treewidth and three
+branches of pathwidth ≥ k at one vertex force pathwidth ≥ k + 1), the clique
+number, simplicial vertices, the pathwidth of a clique tree of a chordal
+completion (deterministic, so computable, but not an invariant in the strict
+sense), and the degree, degeneracy, contraction-degeneracy, bandwidth and
+separator statistics the feature table already had. Candidates are every
+monomial of at most two invariants from `learning.formula_search`'s exponent
+sets (11,589: 351 raw, 5,619 additive, 5,619 scaled), each turned into an
+integer bound three ways: *raw* (the term itself, for integer terms — its
+count of instances above the optimum is the check that a theorem is one),
+*additive* `⌊t + b⌋` and *scaled* `⌊a · t⌋`, with `b` and `a` the largest
+constants valid on every certified row. A constant chosen on all rows makes
+the candidate valid by construction, so two honest checks follow: the
+constant re-chosen on four fifths of the file ∪ isomorphism-class groups is
+applied to the fifth held out (`holdout_above`), and every survivor is
+attacked. The ranking is `exceed_gap`, the fraction of the 338 gap instances
+where the candidate is strictly above `lb_best`. Beside the plan's
+criterion this section reports an **honest reference**: `max(lb_best, tw + 1)`,
+the best *proved* bound on record once treewidth has been computed. A
+candidate pointwise below it everywhere is a theorem restated; a candidate
+above it somewhere is called *novel*. The adversary is `learning.extremal.
+local_search` with objective `f(G) − optimum`: 400 evaluations per job, 8
+sizes 8–15, three seed families (trees of cliques, Bernoulli, subsets of §6's
+ten smallest gap instances), 2 restarts — 19,200 exact-solver evaluations
+per candidate, 288,000 in all, 22.2 million canonical duplicates skipped;
+plus a supplementary run beyond the plan's range at n ∈ {20, 25, 30} (150
+evaluations per job, two seed families, 900 per candidate, 9,000 in all) for
+every fitted survivor and for the candidates that are vacuous below 30.
+
+### (a) The proved components, recomputed
+
+| bound | above optimum (must be 0) | tight, all | > lb_best, all | tight, gap | > lb_best, gap | mean shortfall, gap |
+|:--|--:|--:|--:|--:|--:|--:|
+| tw + 1 (exact where `tw_exact`, else `tw_lo` + 1) | 0 | 77.9% | 14.8% | 19.8% | **58.9%** | 8.88 |
+| ω (clique) | 0 | 35.4% | 0 | 0 | 0 | 14.15 |
+| contraction degeneracy + 1 | 0 | 48.3% | 0 | 0 | 0 | 7.37 |
+| expansion bound (cap 6, 0.5 s) | 0 | 49.1% | 0 | 0 | 0 | 7.45 |
+| branch lemma + 1 (after the fix) | 0 | 0.8% | 0.05% | 0 | 0 | 22.30 |
+| `lb_best` (the solver's) | 0 | 69.0% | — | 0 | — | 4.78 |
+
+The first row is the finding. **Treewidth + 1 beats the solver's certified
+lower bound on 199 of the 338 gap instances (58.9%) and on 933 of the 6,376
+corpus instances (14.6%)**, and it is a theorem: `tw ≤ pw = optimum − 1`,
+resting on Yanasse's equality exactly as the contraction-degeneracy component
+does. The solver's components are all *heuristic* lower bounds on treewidth;
+computing it — exactly to 26 customers, and to 64 under a one-second budget
+that settles 82% of the 27–64 instances — is what they leave on the table.
+What remains over `max(lb_best, tw + 1)` on the gap instances is 0 on 67,
+1 on 116, 2 on 50 and ≥ 3 on 105 (mean 3.92 against 4.78 for `lb_best`):
+
+| band | gap instances | tw exact | pw > tw (among exact) | tw+1 > lb_best | tw+1 = optimum | mean opt − lb_best | mean opt − max(lb_best, tw+1) |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| 11–20 | 17 | 17 | 12 | 15 | 5 | 2.00 | 0.82 |
+| 21–30 | 133 | 130 | 76 | 123 | 54 | 2.02 | 0.67 |
+| 31–40 | 47 | 38 | 30 | 36 | 8 | 2.34 | 1.15 |
+| 41–60 | 54 | 23 | 23 | 25 | 0 | 3.28 | 2.63 |
+| 61–75 | 17 | 0 | — | 0 | 0 | 7.41 | 7.41 |
+| 76–100 | 45 | 1 | 1 | 0 | 0 | 12.09 | 12.09 |
+| 101–134 | 25 | 0 | — | 0 | 0 | 14.24 | 14.24 |
+| all | 338 | 209 | 142 | 199 | 67 | 4.78 | 3.92 |
+
+At 21–30 customers, where 133 of the 338 gap instances sit, treewidth + 1 is
+*tight* on 40.6% of them and beats `lb_best` on 92.5%. Above 60 customers the
+one-second search settles nothing and the row is unchanged. Among the 209
+gap instances with exact treewidth, pathwidth strictly exceeds it on 142
+(68%) — consistent with §21 (c)'s 164 of 338 under a 60-second budget, of
+which this is a subset.
+
+### (b) The mined candidates: 47 survivors, 36 of them treewidth in disguise
+
+11,250 of the 11,589 candidates are valid (every fitted one by construction;
+12 of the 351 raw ones, among them `tw + 1`, `ω`, the expansion bound, the
+branch lemma, `degeneracy`, `deg_min` and the block–cut and clique-tree
+pathwidths). **47 exceed `lb_best` on more than 5% of the gap instances.**
+Sorted by `exceed_gap`, the first sixteen are `tw_lo + 1`, `tw1`, and `tw1`
+divided by things that are 1 on connected graphs (`components`, `blt1`) —
+the theorem restated fourteen ways, all at 58.0–58.9%. Then come the fitted
+ones:
+
+| formula | kind | const | holdout_above | exceed_gap | tight_gap | beats tw+1 on gap | beats max(lb_best, tw+1) anywhere |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| `⌊0.9428 · sqrt(tw_lo · f6)⌋` | scale | 0.9428 | 0 | 32.3% | 1.8% | 19.0% | **never** (0 of 50,948) |
+| `⌊0.9797 · sqrt(tw_lo · f5)⌋` | scale | 0.9797 | 0 | 28.1% | 3.6% | 15.4% | never |
+| `⌊0.7204 · tw1 · sqrt(ct_pw)⌋` | scale | 0.7204 | 1 | 30.2% | 5.6% | 0 | 1 row |
+| `⌊0.1472 · sqrt(n_cliques) · contraction⌋` | scale | 0.1472 | 2 | 6.5% | 0 | — | 54 rows, 22 gap |
+| `⌊0.5999 · contraction² / tw1⌋` | scale | 0.5999 | 5 | 5.6% | 0 | — | 246 rows, 19 gap |
+| `⌊sqrt(n · contraction) − 21.4⌋` | add | −21.4 | 0 | 8.6% | 0 | — | 29 rows, all gap |
+| `⌊ct_pw · sqrt(edges) − 30.84⌋` | add | −30.84 | 0 | 7.7% | 0 | — | 36 rows, 26 gap |
+| `⌊contraction² / tw1 − 13.81⌋` | add | −13.81 | 1 | 7.1% | 0 | — | 142 rows, 24 gap |
+
+The leading fitted survivor — treewidth times the sixth expansion level,
+scaled — beats `tw + 1` on 19% of the gap instances, yet **never** beats
+`max(lb_best, tw + 1)` on any of the 50,948 instances where it is defined: it
+is a lower envelope of two proved bounds, fitted. **Of the 47 survivors, 36
+are pointwise ≤ tw + 1 on the gap instances and 11 are novel; two of the 11
+are clean on hold-out.** Over the whole table, 77% of the fitted valid
+candidates (8,668 of 11,238) put at least one held-out instance above its
+optimum when their constant is re-chosen on four fifths of the groups: a
+constant fitted on 51,000 instances is not a conjecture, it is the maximum
+of a sample.
+
+### (c) Where novelty lives: only where treewidth is unresolved
+
+| formula | beats the proved bound (rows) | of which tw exact | on gap instances | gap & tw exact | smallest n | rows above `tw_hi + 1` | sources |
+|:--|--:|--:|--:|--:|--:|--:|:--|
+| `sqrt(n · contraction) − 21.4` | 29 | 0 | 29 | 0 | 100 | 1 | corpus 29 (`Random-100/125`) |
+| `ct_pw · sqrt(edges) − 30.84` | 36 | 0 | 26 | 0 | 75 | 0 | corpus 26, upward 10 |
+| `contraction² / tw1 − 13.81` | 142 | 0 | 24 | 0 | 75 | 0 | upward 118, corpus 24 |
+| `0.1472 · sqrt(n_cliques) · contraction` | 54 | 2 | 22 | 0 | 75 | 15 | upward 30, corpus 24 |
+| `0.5999 · contraction² / tw1` | 246 | 0 | 19 | 0 | 60 | 2 | upward 227, corpus 19 |
+
+Every gap instance on which any of the five beats the proved reference has
+60 or more customers and an unresolved treewidth interval. Over all 3,689
+novel candidates: 14,850 beat-rows in total, 5,215 of them on the 44,578
+rows with exact treewidth, spread over 1,161 candidates, **none of which
+beats the proved bound on more than 0.1% of the exact rows** (maximum 28
+rows, median 2 among those that beat it at all) — the signature of a
+constant scraping the maximum of a sample, not of a bound. Three of the five
+never claim more than min-fill treewidth + 1 on the rows where they are
+novel, so what they "know" is that the true treewidth of a dense 100-customer
+graph is above MMD+; that is a statement about a heuristic, not about
+pathwidth. Only `0.1472 · sqrt(n_cliques) · contraction` claims above
+`tw_hi + 1` on more than a single row (15), and it leaks on hold-out twice.
+
+### (d) The adversary: nothing broke, and that means little
+
+All fifteen candidates of the n ≤ 15 attack set (the `tw1` control, the
+fourteen leading attackable distinct survivors, and the two that beat the
+proved reference on more than 5% of the gap instances) **survived 19,200
+exact-solver evaluations each**; 528 of the 720 jobs reached an instance
+where the candidate equals the optimum (violation 0), and none exceeded it.
+The two novel ones never even reached the optimum (best −1): at n ≤ 15 their
+fitted constants make them slack by construction. The supplementary run at
+n ∈ {20, 25, 30} (ten candidates, 900 evaluations each, oracle 0.1–0.6 s
+per call) also found nothing: the treewidth-times-expansion candidate and
+the clique-tree ones touch the optimum (0) and the three additive candidates
+sit 14–18 below it, as their constants of −13.8 to −30.8 dictate. **No
+counterexample was drawn because none was found**; the counterexample files
+are committed empty. The search is duplicate-bound at these sizes — 22.2
+million canonical repeats for 288,000 evaluations — so more steps would buy
+nothing; what would test the five novel candidates is an oracle at 75–125
+customers on dense graphs, which is the corpus itself, and there they are
+valid by construction. Their adversarial record is therefore *vacuous*, not
+*clean*, and the section says so.
+
+### (e) A bug the "must be 0" column caught
+
+The branch-lemma bound as first written counted every component of `G − v`
+as a branch at `v`, including components of `G` that never touched `v`. On a
+forest with a claw and three disjoint edges it took the third-largest
+treewidth over six components (1) and claimed pathwidth ≥ 2 on an instance of
+optimum 2 — **347 rows above the optimum**, all by exactly one, all with
+several components (297 campaign, 48 upward, 2 corpus). The lemma is right;
+the count was wrong. Fixed (`branching_invariants` keeps only the components
+containing a neighbour of `v`), with a regression test, and the 8,292
+multi-component rows recomputed in place by the `repair` stage (6,778 rows
+changed). After the fix the branch lemma is valid on all 50,949, tight on 388
+(0.8%), above `lb_best` on 28 rows (0.05%) and never on a gap instance: only
+10 of the 338 gap instances have a cut vertex with three branches at all, 99
+have any cut vertex, and 31 have a block–cut tree of pathwidth ≥ 2. The
+"trees of cliques with branching" of §6 are branching in the sense of
+*separators*, not of *cut vertices*; the lemma sees the wrong kind.
+
+### The finding, in one paragraph
+
+The family of two-invariant formulas over branching-aware invariants
+produces **no conjecture**. Its 47 survivors are 36 restatements of the
+theorem `optimum ≥ tw + 1`, two fitted lower envelopes of that theorem and
+`lb_best` that never beat their pair, and nine fitted constants that are
+"novel" only on 100–125-customer graphs where treewidth is an unresolved
+interval — 77% of all fitted candidates leak on hold-out, none beats the
+proved bound on more than 0.1% of the instances where treewidth is exact,
+and the adversary cannot reach the sizes where they claim anything. The one
+object the mining put on the table is the theorem it started from: **exact
+treewidth**, which the solver's bound does not compute and which lifts the
+certified lower bound on 933 corpus instances and 199 of the 338 gap
+instances, to tightness on 67. The plan's kill criterion is met in the sense
+that matters — *the bound work needs a new idea, not a new formula* — and
+the new idea has to be a pathwidth argument that sees separators of trees of
+cliques, which none of the thirty invariants here does.
+
+**Kill criterion (plan 2 §2.6: no survivor exceeds `lb_best` on more than 5%
+of the gap instances while surviving the adversary).** *Literally not met*:
+`tw + 1` exceeds `lb_best` on 58.9% and survives, being a theorem, and the
+fitted `⌊0.9428 · sqrt(tw · f6)⌋` exceeds it on 32.3% and survives 20,100
+evaluations at 8–30 customers. *Met against the honest reference*: no
+candidate exceeds `max(lb_best, tw + 1)` on more than 0.1% of the 44,578
+instances with exact treewidth, none on any gap instance below 60
+customers, and the five above 5% on the gap instances do so only where
+treewidth is unresolved. The section's verdict is the second.
+
+**Handed to item 12.** Two theorems and one conjecture, in the deliverable's
+form. (1) *Theorem:* `optimum ≥ tw(G) + 1` — via `optimum = pw + 1` and
+`tw ≤ pw`; tight on 77.9% of 50,949 certified instances at 9–134 customers,
+on 19.8% of the gap instances; beats `lb_best` on 14.8% / 58.9%. (2)
+*Theorem:* if a cut vertex has three branches of treewidth ≥ k then
+`pw ≥ k + 1` (the branch lemma; the proof is the interval argument on a path
+decomposition of width k, in which each branch owns a full bag and the
+middle one separates the other two from `v`); valid on all 50,949, tight on
+0.8%, and it never exceeds `lb_best` on a gap instance, so its value is as a
+statement, not a bound. (3) *Conjecture, stated because the deliverable asks
+for survivors and labelled worthless:* `optimum ≥ ⌊0.9428 · sqrt(tw(G) · f(6))⌋`
+where `f(6) = min_{|C| = 6} |N[C]|` — valid on 50,948 certified instances,
+clean on grouped hold-out, undefeated by 20,100 adversarial evaluations at
+8–30 customers, and pointwise ≤ `max(lb_best, tw + 1)` on every one of them,
+so proving it would prove nothing new. No counterexample to draw.
+
+**Proposed, not applied.** Exact/interval treewidth as a component of
+`_lower_bound`: the subset DP to 26 customers and the decision search to 64
+under a one-second deadline cost 0.2–1 s per instance (39 s at worst over
+the 50,949) and raise the certified floor on 933 corpus instances, making 67
+gap instances bound-certified with no refutation. It rests on Yanasse's
+equality like the contraction component. Against §6's ceiling it changes
+nothing where `pw > tw`, which is 68% of the exact gap instances, so it is a
+better floor, not a different kind of one. The owner's change; nothing here
+touches the solver.
+
+**Size range covered.** Invariants and validity: 9–134 customers, all
+50,949 certified instances (corpus 6,376; campaign 37,800 at 10–40; upward
+6,773 at 50–100). Exact treewidth: to 26 by DP (25,731 rows) and to 64 by a
+one-second decision search (18,680 of 22,825 rows settled); above 64 nothing
+is exact (2,393 rows, heuristics only), and every statement about "where
+treewidth is exact" is a statement about n ≤ 64. The adversary: 8–15 (plan)
+and 20–30 (supplementary); it cannot test a candidate whose fitted constant
+makes it vacuous below 30, and says so per candidate (`attackable`). The
+five novel candidates are supported only at 60–125 customers on the dense
+Chu & Stuckey and upward `m = n/2` cells.
+
+**Not a bound, not a solver change.** No candidate reaches
+`satisfiability/mosp_solver.py::_lower_bound` or any path that decides `k`;
+`learning.treewidth` is called by the study only. The one number that could
+move the solver — exact treewidth beats `lb_best` on 933 corpus instances —
+is a proposal above.
+
+**Method notes.** The "above optimum (must be 0)" column is the cheapest
+theorem-checker in the repository and found a real bug in a lemma
+implementation on the first run: keep it in every table that lists proved
+bounds. A constant fitted as the extreme of 51,000 values leaks on hold-out
+77% of the time; the plan's "valid on all certified instances" is necessary
+and nowhere near sufficient, and an honest reference (`max` of the proved
+bounds) separates theorems-in-disguise from candidates before the adversary
+is spent on them. The adversary at n ≤ 15 exhausts its neighbourhoods —
+77 duplicates per evaluation — so the budget should go to sizes, not steps;
+at n = 30 the oracle (`solve_mosp_exact` plus exact treewidth plus the
+expansion profile) still costs under a second. `kill $!` after
+`nohup python -m …` killed a wrapper and left a 16-worker pool running for
+two minutes: kill the pool by its parent PID (`pgrep -P`) and check with
+`ps` that the tree is gone. `_generated_matrix` takes an `itertuples` row,
+not a `Series` (whose `.index` is the Index).

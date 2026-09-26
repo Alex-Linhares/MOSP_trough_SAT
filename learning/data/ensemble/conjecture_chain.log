@@ -1,0 +1,107 @@
+/home/al/dev/MOSP/learning/conjecture.py:714: RuntimeWarning: divide by zero encountered in divide
+  r = (opt[tr] + 1) / t[tr]
+[conjecture] 11589 candidates, 11250 valid, 47 survivors, 3689 novel, attack set 15 incl. the tw1 control
+       role                        formula   kind   const  exceed_gap  exceed_thm_gap  tight_gap  holdout_above  max_val_small
+0   control                            tw1    raw  0.0000    0.588757        0.000000   0.198225              0           15.0
+1   literal                          tw_lo    add  1.0000    0.588757        0.000000   0.198225              0           15.0
+2   literal                   tw_lo / blt1    add  1.0000    0.582840        0.000000   0.198225              0           15.0
+3   literal             tw_lo / sqrt(blt1)    add  1.0000    0.582840        0.000000   0.198225              0           15.0
+4   literal             tw_lo / components    add  1.0000    0.582840        0.000000   0.198225              0           15.0
+5   literal       tw_lo / sqrt(components)    add  1.0000    0.582840        0.000000   0.198225              0           15.0
+6   literal                     tw1 / blt1    add  0.0000    0.582840        0.000000   0.198225              0           15.0
+7   literal               tw1 / sqrt(blt1)    add  0.0000    0.582840        0.000000   0.198225              0           15.0
+8   literal               tw1 / components    add  0.0000    0.582840        0.000000   0.198225              0           15.0
+9   literal         sqrt(tw_lo) · sqrt(f6)  scale  0.9428    0.323442        0.000000   0.017804              0           13.0
+10  literal              tw1 · sqrt(ct_pw)  scale  0.7204    0.301775        0.000000   0.056213              1           10.0
+11  literal                    tw1 · ct_pw  scale  0.5094    0.301775        0.000000   0.056213              1            9.0
+12  literal                   tw1 · ct_pw²  scale  0.2547    0.301775        0.000000   0.056213              1            9.0
+13   honest  sqrt(n_cliques) · contraction  scale  0.1472    0.065089        0.065089   0.000000              2            3.0
+14   honest             contraction² / tw1  scale  0.5999    0.056213        0.056213   0.000000              5            8.0
+[conjecture] attack 16/720 in 7s
+[conjecture] attack 32/720 in 14s
+[conjecture] attack 48/720 in 19s
+[conjecture] attack 64/720 in 21s
+[conjecture] attack 80/720 in 24s
+[conjecture] attack 96/720 in 28s
+[conjecture] attack 112/720 in 31s
+[conjecture] attack 128/720 in 34s
+[conjecture] attack 144/720 in 38s
+[conjecture] attack 160/720 in 40s
+[conjecture] attack 176/720 in 43s
+[conjecture] attack 192/720 in 48s
+[conjecture] attack 208/720 in 50s
+[conjecture] attack 224/720 in 53s
+[conjecture] attack 240/720 in 56s
+[conjecture] attack 256/720 in 59s
+[conjecture] attack 272/720 in 62s
+[conjecture] attack 288/720 in 66s
+[conjecture] attack 304/720 in 69s
+[conjecture] attack 320/720 in 73s
+[conjecture] attack 336/720 in 75s
+[conjecture] attack 352/720 in 79s
+[conjecture] attack 368/720 in 83s
+[conjecture] attack 384/720 in 85s
+[conjecture] attack 400/720 in 88s
+[conjecture] attack 416/720 in 91s
+[conjecture] attack 432/720 in 94s
+[conjecture] attack 448/720 in 98s
+[conjecture] attack 464/720 in 100s
+[conjecture] attack 480/720 in 103s
+[conjecture] attack 496/720 in 106s
+[conjecture] attack 512/720 in 109s
+[conjecture] attack 528/720 in 113s
+[conjecture] attack 544/720 in 118s
+[conjecture] attack 560/720 in 120s
+[conjecture] attack 576/720 in 123s
+[conjecture] attack 592/720 in 126s
+[conjecture] attack 608/720 in 130s
+[conjecture] attack 624/720 in 133s
+[conjecture] attack 640/720 in 138s
+[conjecture] attack 656/720 in 140s
+[conjecture] attack 672/720 in 143s
+[conjecture] attack 688/720 in 147s
+[conjecture] attack 704/720 in 151s
+[conjecture] attack 720/720 in 155s
+    candidate                        formula  jobs  evaluations  skipped  max_viol  n_min  n_max  counter_n counter_key   verdict
+0           0                            tw1    48        19200  2130635         0      8     15         -1              survived
+1           1                          tw_lo    48        19200  1969678         0      8     15         -1              survived
+2           2                   tw_lo / blt1    48        19200  2048564         0      8     15         -1              survived
+3           3             tw_lo / sqrt(blt1)    48        19200  1815923         0      8     15         -1              survived
+4           4             tw_lo / components    48        19200   105858         0      8     15         -1              survived
+5           5       tw_lo / sqrt(components)    48        19200   135014         0      8     15         -1              survived
+6           6                     tw1 / blt1    48        19200  2096394         0      8     15         -1              survived
+7           7               tw1 / sqrt(blt1)    48        19200  1927509         0      8     15         -1              survived
+8           8               tw1 / components    48        19200    42336         0      8     15         -1              survived
+9           9         sqrt(tw_lo) · sqrt(f6)    48        19200  1469630         0      8     15         -1              survived
+10         10              tw1 · sqrt(ct_pw)    48        19200  1360174         0      8     15         -1              survived
+11         11                    tw1 · ct_pw    48        19200  1550185         0      8     15         -1              survived
+12         12                   tw1 · ct_pw²    48        19200  1667029         0      8     15         -1              survived
+13         13  sqrt(n_cliques) · contraction    48        19200  1904863        -1      8     15         -1              survived
+14         14             contraction² / tw1    48        19200  1933328        -1      8     15         -1              survived
+                        role                        formula   kind    const  exceed_gap  exceed_thm_gap  holdout_above
+0                    control                            tw1    raw   0.0000    0.588757        0.000000              0
+1                    literal         sqrt(tw_lo) · sqrt(f6)  scale   0.9428    0.323442        0.000000              0
+2                    literal              tw1 · sqrt(ct_pw)  scale   0.7204    0.301775        0.000000              1
+3                    literal                    tw1 · ct_pw  scale   0.5094    0.301775        0.000000              1
+4                    literal                   tw1 · ct_pw²  scale   0.2547    0.301775        0.000000              1
+5                     honest  sqrt(n_cliques) · contraction  scale   0.1472    0.065089        0.065089              2
+6                     honest             contraction² / tw1  scale   0.5999    0.056213        0.056213              5
+7  honest, vacuous at n ≤ 15    sqrt(n) · sqrt(contraction)    add -21.4000    0.085799        0.085799              0
+8  honest, vacuous at n ≤ 15            ct_pw · sqrt(edges)    add -30.8400    0.076923        0.076923              0
+9  honest, vacuous at n ≤ 15             contraction² / tw1    add -13.8100    0.071006        0.071006              1
+[conjecture] attack 16/60 in 15s
+[conjecture] attack 32/60 in 121s
+[conjecture] attack 48/60 in 137s
+[conjecture] attack 60/60 in 262s
+   candidate                        formula  jobs  evaluations  skipped  max_viol  n_min  n_max  counter_n counter_key   verdict
+0          0                            tw1     6          900      314         0     20     30         -1              survived
+1          1         sqrt(tw_lo) · sqrt(f6)     6          900      309         0     20     30         -1              survived
+2          2              tw1 · sqrt(ct_pw)     6          900      234         0     20     30         -1              survived
+3          3                    tw1 · ct_pw     6          900      205         0     20     30         -1              survived
+4          4                   tw1 · ct_pw²     6          900      241         0     20     30         -1              survived
+5          5  sqrt(n_cliques) · contraction     6          900      249        -2     20     30         -1              survived
+6          6             contraction² / tw1     6          900      597        -2     20     30         -1              survived
+7          7    sqrt(n) · sqrt(contraction)     6          900     1257       -14     20     30         -1              survived
+8          8            ct_pw · sqrt(edges)     6          900      506       -18     20     30         -1              survived
+9          9             contraction² / tw1     6          900      392       -14     20     30         -1              survived
+[conjecture] wrote /home/al/dev/MOSP/reports/conjecture_tables.md

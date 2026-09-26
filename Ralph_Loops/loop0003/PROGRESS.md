@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 9/14 SOLVED
+- **Current**: 10/14 SOLVED
 
 ---
 
@@ -760,3 +760,95 @@ intervals including zero, against the plan's threshold of 0.02.
   should be checked against; the `learning/policy.py` docstring's
   step-agreement figures should be read against a ceiling of 0.23 at 20 and
   about 0.10 at 125.
+
+## Iteration 12 — 2026-09-26 19:40
+
+**Item 09 · §2.6 Conjecture mining for a branching-aware lower bound** —
+SOLVED (re-opened from iteration 10, which wrote the module and launched the
+invariants run but ended its turn waiting on it). **Zero conjectures worth
+having; the family is closed.** Kill criterion *literally not met* — `tw + 1`
+exceeds `lb_best` on 58.9% of the 338 gap instances and survives, being a
+theorem, and one fitted candidate exceeds it on 32.3% and survives 20,100
+adversarial evaluations — but *met against the honest reference*
+`max(lb_best, tw + 1)`: no candidate beats the proved bound on more than 0.1%
+of the 44,578 instances with exact treewidth, none on any gap instance below
+60 customers, and the five above 5% on the gap instances do so only where
+treewidth is an unresolved interval. Verdict: the bound work needs a new
+idea, not a new formula.
+
+### Completed
+- **Nothing re-run for the invariants.** Iteration 10's
+  `python -m learning.conjecture --stage invariants --workers 16` had finished
+  at 18:47: 50,949 rows (corpus 6,376 at 9–134; campaign 37,800 at 10–40;
+  upward 6,773 at 50–100), 30 invariants each, 6.6 core-hours, 25 min wall;
+  treewidth exact on 87.5% (DP to 26, decision search under 1 s to 64).
+- `learning/conjecture.py`, extended: the honest reference (`exceed_thm_*`,
+  `count_thm_*`, `novel`), `attackable` (a candidate ≤ 1 on every certified
+  instance at n ≤ 15 cannot be tested there), `attack_set` (the `tw1` control
+  first, then the literal survivors, then every survivor above 5% against the
+  proved reference), `attack_set_large` and `--stage attack-large` at
+  n ∈ {20, 25, 30}, `--stage repair`, `residual_table`, `novelty_table`,
+  `novelty_summary`, counterexample drawings in the tables.
+- **Mining**: 11,589 candidates from 30 invariants at degree ≤ 2 (351 raw,
+  5,619 additive, 5,619 scaled), 11,250 valid, **47 survivors** (> 5% of the
+  gap instances above `lb_best`): 36 pointwise ≤ tw + 1 on the gap instances
+  (the theorem restated), 11 novel, 2 of those clean on hold-out. 77% of all
+  fitted valid candidates leak on grouped hold-out.
+- **The finding**: exact/interval treewidth + 1 beats the solver's certified
+  lower bound on 199 of 338 gap instances and 933 of 6,376 corpus instances,
+  is tight on 67 gap instances (40.6% of those at 21–30 customers), and is a
+  theorem the solver does not compute. Residual over `max(lb_best, tw + 1)`
+  on the gap instances: 0 / 1 / 2 / ≥ 3 on 67 / 116 / 50 / 105.
+- **The adversary**: 15 candidates × 19,200 exact-solver evaluations at
+  n = 8–15 (288,000 in all, 22.2 M canonical duplicates skipped, 3 min on 16
+  workers) and 10 candidates × 900 at n ∈ {20, 25, 30} (9,000, 7 min):
+  everything survived, 528 of 720 small jobs reaching a tight instance; the
+  novel candidates never reached the optimum (−1 at ≤ 15, −14 to −18 for the
+  additive ones at 30). No counterexample to draw; the files are committed
+  empty and the record is labelled vacuous, not clean.
+- **A bug found and fixed**: the branch-lemma bound counted components of `G`
+  that never touched the cut vertex as branches, and stood **above the
+  optimum on 347 rows** (all by one, all multi-component) — caught by the
+  theorem table's "must be 0" column. Fixed in `branching_invariants`,
+  regression test added, 8,292 multi-component rows recomputed in place
+  (6,778 changed); after the fix it is valid on all 50,949, tight on 388,
+  and never above `lb_best` on a gap instance (only 10 of 338 have a cut
+  vertex with three branches).
+- `reports/ml_nature.md` §24 (a)–(e); `reports/conjecture_tables.md`;
+  `learning/data/ensemble/conjecture_{candidates,attack,attack_large,
+  counterexamples,counterexamples_large}.csv` and three logs (3.8 MB; the
+  ensemble directory is 79 MB apparent); the repaired
+  `conjecture_invariants.csv.gz`. Scratch witnesses (405,000 files, 114 MB)
+  under the git-ignored `learning/data/conjecture/`.
+- `tests/test_conjecture.py`: 22 tests (4 new: the branch-lemma regression
+  on a claw plus disjoint edges; `novel`/`attackable` recomputed by hand on
+  a toy; the two attack sets' roles and ordering; the residual and novelty
+  tables on a toy). Full suite: 1,012 passed, 2 skipped, 1 xfailed in 118 s.
+  Nothing written to `solutions/`; no solver default, flag, bound or C
+  changed.
+
+### Blockers
+- None for the item. Handed to item 12: two theorems (`optimum ≥ tw + 1`;
+  the branch lemma) and one conjecture stated because the deliverable asks
+  for survivors and labelled worthless (`optimum ≥ ⌊0.9428 · sqrt(tw · f(6))⌋`,
+  valid on 50,948, hold-out clean, undefeated at 8–30, pointwise ≤ the
+  proved pair everywhere).
+- The five novel candidates are supported only at 60–125 customers, where
+  the exact solver is not an affordable oracle; their adversarial record is
+  vacuous by construction, stated in §24 (d).
+- Process notes for the driver: `kill $!` after `nohup python -m …` killed a
+  wrapper and left the 16-worker pool alive for two minutes — kill by the
+  parent PID (`pgrep -P`) and confirm with `ps`; `_generated_matrix` takes an
+  `itertuples` row, not a `Series`; the "above optimum (must be 0)" column
+  should stay in every table of proved bounds.
+
+### Next
+- Item 11 · §2.9 why the ridge is where it is (analysis; no kill).
+- Item 12 (Lean): §24's two theorems are the statements; the treewidth one
+  is the sandwich's lower half and, with §21's 10-vertex `pw − tw = 2`
+  instance, shows the gap is real.
+- For the owner: exact/interval treewidth as a `_lower_bound` component is
+  proposed in §24 (0.2–1 s per instance under a one-second search deadline;
+  933 corpus floors rise, 67 gap instances become bound-certified). Not
+  applied; it is not learned and rests on Yanasse's equality like the
+  contraction component.

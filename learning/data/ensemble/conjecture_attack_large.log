@@ -1,0 +1,26 @@
+                        role                        formula   kind    const  exceed_gap  exceed_thm_gap  holdout_above
+0                    control                            tw1    raw   0.0000    0.588757        0.000000              0
+1                    literal         sqrt(tw_lo) · sqrt(f6)  scale   0.9428    0.323442        0.000000              0
+2                    literal              tw1 · sqrt(ct_pw)  scale   0.7204    0.301775        0.000000              1
+3                    literal                    tw1 · ct_pw  scale   0.5094    0.301775        0.000000              1
+4                    literal                   tw1 · ct_pw²  scale   0.2547    0.301775        0.000000              1
+5                     honest  sqrt(n_cliques) · contraction  scale   0.1472    0.065089        0.065089              2
+6                     honest             contraction² / tw1  scale   0.5999    0.056213        0.056213              5
+7  honest, vacuous at n ≤ 15    sqrt(n) · sqrt(contraction)    add -21.4000    0.085799        0.085799              0
+8  honest, vacuous at n ≤ 15            ct_pw · sqrt(edges)    add -30.8400    0.076923        0.076923              0
+9  honest, vacuous at n ≤ 15             contraction² / tw1    add -13.8100    0.071006        0.071006              1
+[conjecture] attack 16/60 in 163s
+[conjecture] attack 32/60 in 241s
+[conjecture] attack 48/60 in 270s
+[conjecture] attack 60/60 in 445s
+   candidate                        formula  jobs  evaluations  skipped  max_viol  n_min  n_max  counter_n counter_key   verdict
+0          0                            tw1     6          900      314         0     20     30         -1              survived
+1          1         sqrt(tw_lo) · sqrt(f6)     6          900      309         0     20     30         -1              survived
+2          2              tw1 · sqrt(ct_pw)     6          900      234         0     20     30         -1              survived
+3          3                    tw1 · ct_pw     6          900      205         0     20     30         -1              survived
+4          4                   tw1 · ct_pw²     6          900      241         0     20     30         -1              survived
+5          5  sqrt(n_cliques) · contraction     6          900      249        -2     20     30         -1              survived
+6          6             contraction² / tw1     6          900      597        -2     20     30         -1              survived
+7          7    sqrt(n) · sqrt(contraction)     6          900     1257       -14     20     30         -1              survived
+8          8            ct_pw · sqrt(edges)     6          900      506       -18     20     30         -1              survived
+9          9             contraction² / tw1     6          900      392       -14     20     30         -1              survived

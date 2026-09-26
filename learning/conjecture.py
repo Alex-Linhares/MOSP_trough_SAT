@@ -54,7 +54,8 @@ survivor is a *conjecture* (or, for `tw + 1`, `omega`, `exp` and `blt + 1`, a
 theorem restated) and is handed to item 12 as a statement.
 
 Usage:
-    python -m learning.conjecture --stage invariants --workers 16   # ~15 min: every certified instance
+    python -m learning.conjecture --stage invariants --workers 16   # ~25 min: every certified instance
+    python -m learning.conjecture --stage repair --workers 16       # recompute branching on multi-component rows
     python -m learning.conjecture --stage mine                      # ~1 min: candidates, validity, ranking
     python -m learning.conjecture --stage attack --workers 16       # ~10 min: 10⁴ adversarial evaluations per survivor
     python -m learning.conjecture --stage tables                    # reports/conjecture_tables.md
@@ -92,7 +93,9 @@ SCRATCH_SOLUTIONS = DATA / "conjecture" / "solutions"
 INVARIANTS_CSV = ENSEMBLE / "conjecture_invariants.csv.gz"
 CANDIDATES_CSV = ENSEMBLE / "conjecture_candidates.csv"
 ATTACK_CSV = ENSEMBLE / "conjecture_attack.csv"
+ATTACK_LARGE_CSV = ENSEMBLE / "conjecture_attack_large.csv"
 COUNTER_CSV = ENSEMBLE / "conjecture_counterexamples.csv"
+COUNTER_LARGE_CSV = ENSEMBLE / "conjecture_counterexamples_large.csv"
 TABLES = ROOT / "reports" / "conjecture_tables.md"
 INSTANCES_CSV = DATA / "instances.csv"
 CANONICAL_CSV = DATA / "canonical.csv"
@@ -104,6 +107,7 @@ EXPANSION_BUDGET = 0.5
 TW_DEADLINE = 1.0
 KILL_EXCEED = 0.05
 ATTACK_SIZES = tuple(range(8, 16))
+LARGE_SIZES = (20, 25, 30)        # supplementary, beyond the plan's n ≤ 15; oracle 0.1–0.6 s per call
 
 # invariants the mining may raise to a power (strictly positive on connected
 # graphs with an edge; the pool is filtered again on the data)
@@ -225,13 +229,17 @@ def branching_invariants(graph) -> dict:
         if graph.degree(v) == 0:
             adjacency[("i", v)] = []
     out["bct_pw"] = tree_pathwidth(adjacency)
-    # branch lemma: for every vertex with ≥ 3 components in G − v, the
-    # third-largest treewidth of a component + 1 is a lower bound on pathwidth
+    # branch lemma: for every vertex with ≥ 3 *branches* — components of
+    # G − v that contain a neighbour of v — the third-largest treewidth of a
+    # branch + 1 is a lower bound on pathwidth. Components of G that never
+    # touched v are not branches (the first draft counted them, and claimed
+    # pathwidth ≥ 2 on 347 forests; caught by the "above optimum" column).
     blt = 0
     hubs3 = 0
     for v in arts:
         rest = graph.subgraph(set(graph.nodes()) - {v})
-        comps = list(nx.connected_components(rest))
+        nbrs = set(graph.neighbors(v))
+        comps = [c for c in nx.connected_components(rest) if c & nbrs]
         if len(comps) < 3:
             continue
         hubs3 += 1
@@ -508,6 +516,52 @@ def run_invariants(workers: int = 16, out_csv: Path = INVARIANTS_CSV, limit: int
     return pd.read_csv(out_csv)
 
 
+def _branch_job(args) -> dict:
+    name, source, matrix_key = args
+    from learning.extremal import matrix_from_key
+
+    matrix = matrix_from_key(matrix_key)
+    out = branching_invariants(_graph_from_masks(masks_from_matrix(matrix)))
+    out["blt1"] = out["blt"] + 1
+    out["instance_name"] = name
+    out["source"] = source
+    return out
+
+
+def repair_branching(workers: int = 16, inv_csv: Path = INVARIANTS_CSV) -> pd.DataFrame:
+    """Recompute the branching invariants for every row whose MOSP graph has
+    more than one component — the only rows the first draft's branch count
+    could get wrong — and rewrite those columns in place."""
+    inv = pd.read_csv(inv_csv)
+    frame = all_rows()
+    todo = inv[inv["components"] > 1][["instance_name", "source"]].merge(
+        frame, on=["instance_name", "source"], how="left")
+    print(f"[conjecture] repairing branching invariants on {len(todo)} multi-component rows", flush=True)
+    from learning.extremal import matrix_key
+
+    jobs = []
+    corpus_part = todo[todo["source"] == "corpus"]
+    if len(corpus_part):
+        mats = _corpus_matrices(corpus_part)
+        for r in corpus_part.itertuples():
+            jobs.append((r.instance_name, "corpus", matrix_key(mats[(r.instance_name, r.source_file)])))
+    for r in todo[todo["source"] != "corpus"].itertuples():
+        jobs.append((r.instance_name, r.source, matrix_key(_generated_matrix(r))))
+    rows = []
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        for out in pool.map(_branch_job, jobs, chunksize=64):
+            rows.append(out)
+    fix = pd.DataFrame(rows).set_index(["instance_name", "source"])
+    inv = inv.set_index(["instance_name", "source"])
+    cols = ["art", "blocks", "bridges", "bct_pw", "hubs3", "blt", "blt1"]
+    changed = int((inv.loc[fix.index, cols] != fix[cols]).any(axis=1).sum())
+    inv.loc[fix.index, cols] = fix[cols]
+    inv = inv.reset_index()
+    inv.to_csv(inv_csv, index=False)
+    print(f"[conjecture] {changed} rows changed", flush=True)
+    return inv
+
+
 def _append(csv: Path, part: pd.DataFrame) -> None:
     csv.parent.mkdir(parents=True, exist_ok=True)
     if csv.exists():
@@ -586,20 +640,36 @@ def mine(frame: pd.DataFrame, max_degree: int = 2, folds: int = 5,
     fold = np.array([fold_of_group[g] for g in groups])
     integral = {c: bool(np.all(np.nan_to_num(values[c], nan=0.0) == np.round(np.nan_to_num(values[c], nan=0.0))))
                 for c in cols}
+    tw1 = frame["tw1"].to_numpy(dtype=float)
+    # the best *proved* bound on record: the solver's, or exact/interval treewidth + 1
+    thm = np.maximum(lb, tw1)
+    small = (frame["n"].to_numpy() <= ATTACK_SIZES[-1])
     rows = []
     chunk = 400            # terms per evaluation block: 400 × 51k doubles is 160 MB
     for start in range(0, len(terms), chunk):
         block = terms[start:start + chunk]
         rows.extend(_score_block(block, evaluate_terms(values, block), opt, lb, gap_mask, fold,
-                                 folds, integral, frame["tw1"].to_numpy(dtype=float)))
+                                 folds, integral, tw1, thm, small))
     out = pd.DataFrame(rows)
     out["valid"] = out["above"] == 0
     out["survivor"] = out["valid"] & (out["exceed_gap"] > KILL_EXCEED)
+    # novel: valid and strictly above the best proved bound somewhere — a
+    # candidate pointwise ≤ max(lb_best, tw + 1) is a theorem restated
+    out["novel"] = out["valid"] & (out["count_thm_all"] > 0)
+    # attackable: claims at least 2 on some certified instance at n ≤ 15;
+    # a candidate that is ≤ 1 everywhere that small is vacuous there and the
+    # n ≤ 15 adversary cannot test it
+    out["attackable"] = out["max_val_small"] >= 2
     out = out.sort_values(["valid", "exceed_gap", "tight_gap"], ascending=[False, False, False])
     return out.reset_index(drop=True)
 
 
-def _score_block(terms, T, opt, lb, gap_mask, fold, folds, integral, tw1) -> list[dict]:
+def _score_block(terms, T, opt, lb, gap_mask, fold, folds, integral, tw1, thm=None,
+                 small=None) -> list[dict]:
+    if thm is None:
+        thm = np.maximum(lb, tw1)
+    if small is None:
+        small = np.ones(len(opt), dtype=bool)
     from learning.formula_search import format_term
 
     rows = []
@@ -660,19 +730,65 @@ def _score_block(terms, T, opt, lb, gap_mask, fold, folds, integral, tw1) -> lis
                 "tight_all": float(np.mean(val[ok] == opt[ok])),
                 "shortfall_all": float(np.mean(opt[ok] - val[ok])),
                 "beats_tw1_gap": float(np.mean(val[g] > tw1[g])) if g.any() else 0.0,
+                "exceed_thm_gap": float(np.mean(val[g] > thm[g])) if g.any() else 0.0,
+                "exceed_thm_all": float(np.mean(val[ok] > thm[ok])),
+                "count_thm_all": int(np.sum(val[ok] > thm[ok])),
+                "count_thm_gap": int(np.sum(val[g] > thm[g])) if g.any() else 0,
+                "max_val_small": float(np.max(val[ok & small])) if (ok & small).any() else -1e6,
                 "signature": hash(val[g].tobytes()) if g.any() else 0,
             })
     return rows
 
 
-def distinct_survivors(cands: pd.DataFrame, top: int = 10) -> pd.DataFrame:
+def distinct_survivors(cands: pd.DataFrame, top: int = 10, novel_only: bool = False,
+                       attackable_only: bool = False) -> pd.DataFrame:
     """The leading survivors with distinct value vectors on the gap instances,
-    the simplest formula first within a signature."""
+    the simplest formula first within a signature. `novel_only` keeps the ones
+    that beat `max(lb_best, tw + 1)` somewhere; `attackable_only` the ones the
+    n ≤ 15 adversary can test."""
     surv = cands[cands["survivor"]].copy()
+    if novel_only and "novel" in surv.columns:
+        surv = surv[surv["novel"]]
+    if attackable_only and "attackable" in surv.columns:
+        surv = surv[surv["attackable"]]
     surv = surv.sort_values(["exceed_gap", "tight_gap", "degree", "kind"],
                             ascending=[False, False, True, True])
     surv = surv.drop_duplicates("signature", keep="first")
     return surv.head(top).reset_index(drop=True)
+
+
+def attack_set(cands: pd.DataFrame, top: int = 10) -> pd.DataFrame:
+    """What the adversary is pointed at: the raw `tw1` theorem as a control
+    (it must survive); the leading attackable, distinct survivors by `exceed_gap`
+    (the plan's literal criterion, against `lb_best`); and every attackable
+    survivor that beats the proved reference `max(lb_best, tw + 1)` on more
+    than `KILL_EXCEED` of the gap instances (the honest criterion)."""
+    control = cands[(cands["kind"] == "raw") & (cands["formula"] == "tw1")].head(1)
+    literal = distinct_survivors(cands, top=top, attackable_only=True)
+    honest = cands[cands["survivor"] & cands.get("attackable", True)
+                   & (cands["exceed_thm_gap"] > KILL_EXCEED)]
+    honest = honest.sort_values("exceed_thm_gap", ascending=False).drop_duplicates("signature")
+    out = pd.concat([control, literal, honest], ignore_index=True)
+    out["role"] = ["control"] * len(control) + ["literal"] * len(literal) + ["honest"] * len(honest)
+    out = out.drop_duplicates(["formula", "kind"], keep="first").reset_index(drop=True)
+    out.loc[out["role"].ne("control") & (out["exceed_thm_gap"] > KILL_EXCEED), "role"] = "honest"
+    return out
+
+
+def attack_set_large(cands: pd.DataFrame, top: int = 10) -> pd.DataFrame:
+    """The supplementary set for `LARGE_SIZES`: the control, every fitted
+    member of `attack_set` that is not pointwise ≤ tw + 1 on the gap instances
+    (those are theorems restated and need no adversary), and the survivors
+    that beat the proved reference on more than `KILL_EXCEED` of the gap
+    instances but are vacuous at n ≤ 15 (`attackable` False)."""
+    base = attack_set(cands, top=top)
+    keep = (base["role"] == "control") | ((base["kind"] != "raw")
+                                          & (base["novel"] | (base["beats_tw1_gap"] > 0)))
+    vacuous = cands[cands["survivor"] & ~cands["attackable"] & (cands["exceed_thm_gap"] > KILL_EXCEED)]
+    vacuous = vacuous.sort_values("exceed_thm_gap", ascending=False).drop_duplicates("signature").copy()
+    vacuous["role"] = "honest, vacuous at n ≤ 15"
+    out = pd.concat([base[keep], vacuous], ignore_index=True)
+    return out.drop_duplicates(["formula", "kind"], keep="first").reset_index(drop=True)
 
 
 # ----------------------------------------------------------------------------
@@ -735,7 +851,7 @@ def _attack_job(args) -> dict:
 
 
 def run_attack(survivors: pd.DataFrame, workers: int = 16, steps: int = 320,
-               sizes=ATTACK_SIZES, restarts: int = 2, kinds=("tree", "bern"),
+               sizes=ATTACK_SIZES, restarts: int = 2, kinds=("tree", "bern", "gap"),
                solutions_dir: Path = SCRATCH_SOLUTIONS, out_csv: Path = ATTACK_CSV) -> pd.DataFrame:
     """`steps × |sizes| × |kinds| × restarts` oracle evaluations per survivor
     (10,240 at the defaults), the search climbing `f(G) − optimum`."""
@@ -839,8 +955,106 @@ def coverage_table(frame: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def residual_table(frame: pd.DataFrame) -> pd.DataFrame:
+    """On the corpus gap ≥ 2 instances, by size band: how often exact/interval
+    treewidth + 1 beats `lb_best`, is tight, and what is left over the best
+    proved bound `max(lb_best, tw + 1)`."""
+    gap = frame[(frame["source"] == "corpus") & (frame["gap"] >= 2)].copy()
+    gap["thm"] = np.maximum(gap["lb_best"], gap["tw1"])
+    gap["band"] = band_of(gap["n"])
+    rows = []
+    for band, d in list(gap.groupby("band", observed=True)) + [("all", gap)]:
+        ex = d[d["tw_exact"] == True]  # noqa: E712
+        rows.append({"band": str(band), "gap instances": len(d), "tw exact": int(len(ex)),
+                     "pw > tw (among exact)": int(((ex["optimum"] - 1) > ex["tw_lo"]).sum()),
+                     "tw+1 > lb_best": int((d["tw1"] > d["lb_best"]).sum()),
+                     "tw+1 = optimum": int((d["tw1"] == d["optimum"]).sum()),
+                     "mean optimum − lb_best": float((d["optimum"] - d["lb_best"]).mean()),
+                     "mean optimum − max(lb_best, tw+1)": float((d["optimum"] - d["thm"]).mean()),
+                     "residual 0 / 1 / 2 / ≥3": " / ".join(str(int(((d["optimum"] - d["thm"]) == r).sum()))
+                                                          for r in (0, 1, 2)) + f" / {int(((d['optimum'] - d['thm']) >= 3).sum())}"})
+    return pd.DataFrame(rows)
+
+
+def novelty_table(frame: pd.DataFrame, cands: pd.DataFrame, top: int = 12) -> pd.DataFrame:
+    """For the leading novel candidates: where exactly they beat
+    `max(lb_best, tw + 1)` — how many rows, how many of those have exact
+    treewidth, the smallest such n, the sources, and on how many of those rows
+    the claim is above `tw_hi + 1` as well (a candidate that never is could be
+    a treewidth bound in disguise; one that is has to be a pathwidth argument)."""
+    from learning.formula_search import evaluate_terms
+
+    thm = np.maximum(frame["lb_best"].to_numpy(float), frame["tw1"].to_numpy(float))
+    exact = frame["tw_exact"].to_numpy(bool)
+    tw_hi1 = frame["tw_hi"].to_numpy(float) + 1          # min-fill / decision-search upper bound on tw, + 1
+    gap = ((frame["source"] == "corpus") & (frame["gap"] >= 2)).to_numpy()
+    vals = {c: frame[c].astype(float).to_numpy() for c in INVARIANT_NAMES if c in frame.columns}
+    nov = cands[cands["novel"]].sort_values(["exceed_thm_gap", "exceed_thm_all"], ascending=False)
+    nov = nov.drop_duplicates("signature").head(top)
+    rows = []
+    for _, r in nov.iterrows():
+        cand = cand_from_row(r)
+        t = evaluate_terms(vals, [cand["term"]])[0]
+        ok = np.isfinite(t)
+        if cand["kind"] == "raw":
+            v = np.floor(t + 1e-9)
+        elif cand["kind"] == "add":
+            v = np.floor(t + cand["const"] + 1e-9)
+        else:
+            v = np.floor(cand["const"] * t + 1e-9)
+        v = np.where(ok, v, -1e6)
+        b = v > thm
+        rows.append({"formula": r["formula"], "kind": r["kind"], "const": r["const"],
+                     "holdout_above": int(r["holdout_above"]),
+                     "beats proved bound (rows)": int(b.sum()), "of which tw exact": int((b & exact).sum()),
+                     "on gap instances": int((b & gap).sum()), "gap & tw exact": int((b & gap & exact).sum()),
+                     "smallest n": int(frame["n"].to_numpy()[b].min()) if b.any() else -1,
+                     "beat rows above tw_hi + 1": int((b & (v > tw_hi1)).sum()),
+                     "sources": ", ".join(f"{k} {v_}" for k, v_ in frame.loc[b, "source"].value_counts().items()),
+                     "attackable at n ≤ 15": bool(r["attackable"])})
+    return pd.DataFrame(rows)
+
+
+def novelty_summary(frame: pd.DataFrame, cands: pd.DataFrame) -> dict:
+    """Over every novel candidate: rows where it beats the proved bound, split
+    by treewidth exactness; how many candidates ever beat it on an exact row,
+    and on more than 0.1% of the exact rows."""
+    from learning.formula_search import evaluate_terms
+
+    thm = np.maximum(frame["lb_best"].to_numpy(float), frame["tw1"].to_numpy(float))
+    exact = frame["tw_exact"].to_numpy(bool)
+    vals = {c: frame[c].astype(float).to_numpy() for c in INVARIANT_NAMES if c in frame.columns}
+    nov = cands[cands["novel"]]
+    per = []
+    for _, r in nov.iterrows():
+        cand = cand_from_row(r)
+        t = evaluate_terms(vals, [cand["term"]])[0]
+        ok = np.isfinite(t)
+        if cand["kind"] == "raw":
+            v = np.floor(t + 1e-9)
+        elif cand["kind"] == "add":
+            v = np.floor(t + cand["const"] + 1e-9)
+        else:
+            v = np.floor(cand["const"] * t + 1e-9)
+        v = np.where(ok, v, -1e6)
+        b = v > thm
+        per.append((int(b.sum()), int((b & exact).sum())))
+    per = np.array(per) if len(per) else np.zeros((0, 2), dtype=int)
+    n_exact = int(exact.sum())
+    return {"novel_candidates": int(len(nov)), "rows_with_exact_tw": n_exact, "rows": int(len(frame)),
+            "beat_rows_total": int(per[:, 0].sum()) if len(per) else 0,
+            "beat_rows_exact": int(per[:, 1].sum()) if len(per) else 0,
+            "candidates_beating_on_exact": int((per[:, 1] > 0).sum()) if len(per) else 0,
+            "candidates_beating_on_exact_over_0.1pct": int((per[:, 1] > 0.001 * n_exact).sum()) if len(per) else 0,
+            "max_exact_beats_one_candidate": int(per[:, 1].max()) if len(per) else 0,
+            "median_exact_beats_among_beaters": float(np.median(per[per[:, 1] > 0, 1])) if len(per) and (per[:, 1] > 0).any() else 0.0}
+
+
 def write_tables(inv_csv: Path = INVARIANTS_CSV, cands_csv: Path = CANDIDATES_CSV,
-                 attack_csv: Path = ATTACK_CSV, out: Path = TABLES, top: int = 25) -> str:
+                 attack_csv: Path = ATTACK_CSV, out: Path = TABLES, top: int = 25,
+                 attack_large_csv: Path = ATTACK_LARGE_CSV) -> str:
+    from learning.extremal import draw
+
     frame = load_table(inv_csv)
     cands = pd.read_csv(cands_csv)
     lines = ["# Conjecture mining for a branching-aware lower bound — tables (loop0003 item 09)", "",
@@ -859,14 +1073,29 @@ def write_tables(inv_csv: Path = INVARIANTS_CSV, cands_csv: Path = CANDIDATES_CS
     lines += ["## Distinct survivors (value vectors on the gap instances)", ""]
     surv = distinct_survivors(cands, top=top)
     lines += [_md(surv[show]) if len(surv) else "*none*", ""]
-    if attack_csv.exists():
-        attack = pd.read_csv(attack_csv)
-        lines += ["## The adversary", "", _md(attack_summary(attack)), ""]
-        by_n = attack.groupby(["candidate", "n"])["best_viol"].max().unstack("n")
+    lines += ["## The gap instances: what exact treewidth leaves over", "", _md(residual_table(frame)), ""]
+    if "novel" in cands.columns:
+        lines += ["## Novel candidates: where they beat `max(lb_best, tw + 1)`", "",
+                  _md(novelty_table(frame, cands, top=12)), ""]
+        summ_n = novelty_summary(frame, cands)
+        lines += ["Over every novel candidate: " + "; ".join(f"{k} {v}" for k, v in summ_n.items()) + ".", ""]
+    for label, csv, counter in (("The adversary at n ≤ 15", attack_csv, COUNTER_CSV),
+                                ("The supplementary adversary at n ∈ {20, 25, 30}", attack_large_csv,
+                                 COUNTER_LARGE_CSV)):
+        if not csv.exists():
+            continue
+        attack = pd.read_csv(csv)
+        lines += [f"## {label}", "", _md(attack_summary(attack)), ""]
+        by_n = attack.groupby(["candidate", "formula", "n"])["best_viol"].max().unstack("n")
         lines += ["Best violation found by candidate and n (≥ 1 is a counterexample):", "",
                   _md(by_n.reset_index(), floatfmt=".0f"), ""]
-        if COUNTER_CSV.exists():
-            lines += ["## Counterexamples, re-certified", "", _md(pd.read_csv(COUNTER_CSV)), ""]
+        if counter.exists() and counter.stat().st_size > 1:
+            ce = pd.read_csv(counter)
+            lines += ["### Counterexamples, re-certified", "",
+                      _md(ce[[c for c in ce.columns if c not in ("invariants",)]]), ""]
+            for _, r in ce.iterrows():
+                lines += [draw(r["key"], f"Smallest counterexample to `{r['formula']}`"), "",
+                          f"invariants: {r.get('invariants', '')}", ""]
     text = "\n".join(lines)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text)
@@ -880,7 +1109,8 @@ def write_tables(inv_csv: Path = INVARIANTS_CSV, cands_csv: Path = CANDIDATES_CS
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--stage", choices=("invariants", "mine", "attack", "tables", "all"), default="all")
+    parser.add_argument("--stage", choices=("invariants", "repair", "mine", "attack", "attack-large",
+                                            "tables", "all"), default="all")
     parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--sources", nargs="+", default=("corpus", "campaign", "upward"))
@@ -888,25 +1118,31 @@ def main() -> None:
     parser.add_argument("--restarts", type=int, default=2)
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--max-degree", type=int, default=2)
+    parser.add_argument("--kinds", nargs="+", default=("tree", "bern", "gap"))
     args = parser.parse_args()
     os.environ.setdefault("OMP_NUM_THREADS", "1")
 
     if args.stage in ("invariants", "all"):
         run_invariants(workers=args.workers, limit=args.limit, sources=tuple(args.sources))
+    if args.stage == "repair":
+        repair_branching(workers=args.workers)
     if args.stage in ("mine", "all"):
         frame = load_table()
         cands = mine(frame, max_degree=args.max_degree)
         CANDIDATES_CSV.parent.mkdir(parents=True, exist_ok=True)
         cands.to_csv(CANDIDATES_CSV, index=False)
-        surv = distinct_survivors(cands, top=args.top)
+        surv = attack_set(cands, top=args.top)
         print(f"[conjecture] {len(cands)} candidates, {int(cands['valid'].sum())} valid, "
-              f"{int(cands['survivor'].sum())} survivors, {len(surv)} distinct", flush=True)
-        print(surv[["formula", "kind", "const", "exceed_gap", "tight_gap", "holdout_above"]].to_string())
+              f"{int(cands['survivor'].sum())} survivors, {int(cands['novel'].sum())} novel, "
+              f"attack set {len(surv)} incl. the tw1 control", flush=True)
+        print(surv[["role", "formula", "kind", "const", "exceed_gap", "exceed_thm_gap", "tight_gap",
+                    "holdout_above", "max_val_small"]].to_string())
     if args.stage in ("attack", "all"):
         cands = pd.read_csv(CANDIDATES_CSV)
-        surv = distinct_survivors(cands, top=args.top)
+        surv = attack_set(cands, top=args.top)
         if len(surv):
-            attack = run_attack(surv, workers=args.workers, steps=args.steps, restarts=args.restarts)
+            attack = run_attack(surv, workers=args.workers, steps=args.steps, restarts=args.restarts,
+                                kinds=tuple(args.kinds))
             summ = attack_summary(attack)
             print(summ.to_string())
             counters = []
@@ -918,6 +1154,22 @@ def main() -> None:
             pd.DataFrame(counters).to_csv(COUNTER_CSV, index=False)
         else:
             print("[conjecture] no survivors to attack")
+    if args.stage == "attack-large":
+        cands = pd.read_csv(CANDIDATES_CSV)
+        surv = attack_set_large(cands, top=args.top)
+        print(surv[["role", "formula", "kind", "const", "exceed_gap", "exceed_thm_gap", "holdout_above"]].to_string())
+        attack = run_attack(surv, workers=args.workers, steps=args.steps, restarts=args.restarts,
+                            kinds=tuple(k for k in args.kinds if k != "gap"), sizes=LARGE_SIZES,
+                            out_csv=ATTACK_LARGE_CSV)
+        summ = attack_summary(attack)
+        print(summ.to_string())
+        counters = []
+        for _, r in summ[summ["verdict"] == "broken"].iterrows():
+            cand = cand_from_row(surv.iloc[int(r["candidate"])])
+            cert = recertify_counterexample(r["counter_key"], cand)
+            counters.append({"candidate": int(r["candidate"]), "formula": r["formula"],
+                             "key": r["counter_key"], **{k: v for k, v in cert.items()}})
+        pd.DataFrame(counters).to_csv(COUNTER_LARGE_CSV, index=False)
     if args.stage in ("tables", "all"):
         write_tables()
         print(f"[conjecture] wrote {TABLES}")

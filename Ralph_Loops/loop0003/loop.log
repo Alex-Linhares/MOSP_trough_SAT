@@ -57,3 +57,8 @@
 [2026-09-26 18:27:24] claude session it11 (cap 3.00 h) -> session_it11.log
 [2026-09-26 18:58:34] session it11: ok (exit 0, 59 tool calls)
 [2026-09-26 18:59:56] tests passed: 1008 passed, 2 skipped, 1 xfailed, 156 warnings in 81.18s (0:01:21)
+[2026-09-26 18:59:56] committed d76029f7: 10 · §2.8 Set-valued imitation. Vectorise
+[2026-09-26 18:59:56] === iteration 12: 09 · §2.6 Conjecture mining for a branching-aware lower bound.
+[2026-09-26 18:59:56] claude session it12 (cap 3.00 h) -> session_it12.log
+[2026-09-26 19:36:12] session it12: ok (exit 0, 51 tool calls)
+[2026-09-26 19:37:35] tests passed: 1012 passed, 2 skipped, 1 xfailed, 156 warnings in 82.20s (0:01:22)

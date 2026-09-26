@@ -91,7 +91,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       `pw − tw` per n and whether it grows, the smallest instance with
       `pw − tw ≥ 2` with its proof, and §6's floor turned into a number.
       **Kill**: nothing beats the corpus's worst at the same size.
-- [ ] 09 · §2.6 **Conjecture mining for a branching-aware lower bound.**
+- [x] 09 · §2.6 **Conjecture mining for a branching-aware lower bound.**
       `learning/conjecture.py`: candidate invariants that can see branching —
       the expansion profile `f(t)`, separator sizes at several balance ratios,
       simplicial and hub counts, the clique tree's pathwidth where the graph is

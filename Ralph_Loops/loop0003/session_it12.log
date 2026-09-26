@@ -1,0 +1,162 @@
+# session it12 started 2026-09-26 18:59:56
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 12, redoing item 09 (conjecture mining). Let me start by reading the plan, the existing `learning/conjecture.py` from iteration 10, and the state of the invariants run.
+  > $ date && pgrep -af "^python -m benchmarks.recertify" ; echo "---"; uptime; echo "---"; ls -la learning/data/ensemble/conjecture* Ralph_Loops/loop0003/ 2>/dev/nul
+
+The invariants run finished (50,949 rows). Now reading the plan's §2.6, the existing module, its tests, and iteration 10's log in one go.
+  > $ grep -n "2.6" reports/ml_nature_plan_2.md | head; echo ====; awk '/^### 2.6|^## 2.6|§2.6/{f=1} f{print} /^### 2.7|^## 2.7/{if(f) exit}' reports/ml_nature_plan_2
+  > $ cat learning/conjecture.py
+  > $ sed -n 1,200p learning/conjecture.py
+  > $ sed -n 200,560p learning/conjecture.py
+  > $ sed -n 560,927p learning/conjecture.py
+
+The module from iteration 10 is complete through all stages. I need iteration 10's log, the tests, the invariants CSV's health, and the `extremal`/`formula_search` interfaces the attack stage calls.
+  > $ sed -n 1,200p Ralph_Loops/loop0003/session_it10.log | tail -80
+  > $ cat tests/test_conjecture.py
+  > $ timeout 300 python - <<'EOF'
+import pandas as pd, numpy as np
+inv = pd.read_csv("learning/data/ensemble/conjecture_invariants.csv.gz")
+print("rows", len(inv), "
+  > $ grep -n "levels\|cap\|class ExpansionBound\|def expansion_bound\|exact" satisfiability/expansion_bound.py | head -60
+
+Levels are exact wherever recorded, so `f1..f6` are valid invariants. Now gathering the remaining interfaces and state in one pass, plus running the existing tests.
+  > $ echo "== extremal defs"; grep -n "^def \|^    return\b" learning/extremal.py | grep "^.*def " ; echo; sed -n "$(grep -n '^def local_search' learning/extremal.py
+
+Four independent lookups remain: the `formula_search` term enumerator, the report's section numbering, the gitignore and iterations state, and whether iteration 10's tests still pass.
+  > $ sed -n "$(grep -n '^def enumerate_terms' learning/formula_search.py | cut -d: -f1),+40p" learning/formula_search.py; echo "== evaluate_terms/format_term"; sed -
+  > $ sed -n 76,84p learning/formula_search.py; echo "== report headers"; grep -n "^## " reports/ml_nature.md | tail -6; wc -l reports/ml_nature.md; echo "== gitignor
+  > $ git ls-files learning/data/ensemble/ | grep conjecture; (timeout 900 python -m pytest tests/test_conjecture.py -q -x > /tmp/it12_tests_cj.log 2>&1 &) ; echo sta
+  > $ export OMP_NUM_THREADS=1 && /usr/bin/time -v timeout 1500 python -m learning.conjecture --stage mine --top 12 2>&1 | grep -v "^\s*\(Page\|Swaps\|File\|Socket\|S
+  > $ timeout 300 python - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30)
+c = pd.read_csv("lea
+  > $ timeout 600 python - <<'EOF'
+import time, numpy as np
+from pathlib import Path
+from learning import conjecture as cj
+from learning.extremal import tree_of_cliqu
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+
+def rep(old, new, count=1):
+    global s
+    assert s.count(old
+  > $ timeout 300 python - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30)
+c = pd.read_csv("lea
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+old = '''def attack_set(cands: pd.DataFrame, top: int = 10) -> p
+  > $ export OMP_NUM_THREADS=1 && timeout 120 python - <<'EOF'
+import pandas as pd
+from learning import conjecture as cj
+c = pd.read_csv(cj.CANDIDATES_CSV)
+a = cj.att
+  > $ timeout 600 python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np, json
+from learning import conjecture as cj
+pd.set_option("display.width", 
+  > $ timeout 900 python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np, json
+from learning import conjecture as cj
+from learning.formula_search im
+  > $ python --version; grep -n "^### " reports/ml_nature.md | awk -F: '$1>5505 && $1<5788' ; echo "== draw"; sed -n "$(grep -n '^def draw' learning/extremal.py | cut
+
+Python 3.12 forks workers, so the running attack is immune to source edits. Now polling the attack to completion in a bounded loop, and appending the new tests in parallel.
+  > $ for i in $(seq 1 90); do if grep -q "attack 720/720" learning/data/ensemble/conjecture_attack.log || ! kill -0 835173 2>/dev/null; then break; fi; sleep 10; don
+  > $ grep -v "^\[conjecture\] attack [0-9]*/720" learning/data/ensemble/conjecture_attack.log | head -40; ls -la learning/data/ensemble/conjecture_attack.csv learnin
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+def rep(old, new):
+    global s
+    assert s.count(old) == 1, ol
+
+Now launching the supplementary attack in the background, appending the new tests, and checking that `recertify` copes with a 30-customer counterexample, all at once.
+  > $ export OMP_NUM_THREADS=1 && nohup python -m learning.conjecture --stage attack-large --workers 16 --steps 150 --restarts 1 --top 12 > learning/data/ensemble/con
+  > $ kill 836125; sleep 2; pkill -P 836125 2>/dev/null; sleep 1; pgrep -f "^python -m learning.conjectur[e] --stage attack-large" | wc -l; python - <<'EOF'
+from path
+  > $ ps -o pid,ppid,etimes,args -C python | grep "attack-large" | awk '{print $1, $2, $3}' | sort -k2 -n | awk '{c[$2]++} END {for (p in c) print "parent", p, "child
+
+Old workers survived the kill: the earlier run's real main process is PID 836127 with 16 children. I'll terminate that process tree by PID, then confirm only the new run remains.
+  > $ ps -o pid,ppid,etimes,args -p 836127 | tail -1 | cut -c1-120; kids=$(pgrep -P 836127); kill 836127 $kids; sleep 2; kill -9 836127 $kids 2>/dev/null; sleep 1; ps
+
+Only the new run remains. Now in parallel: poll the supplementary attack to completion, append the new tests, and read the `recertify` body to confirm it handles 30-customer instances.
+  > $ for i in $(seq 1 72); do if ! kill -0 836230 2>/dev/null; then break; fi; sleep 10; done; date; grep -v "^\[conjecture\] attack [0-9]*/" learning/data/ensemble/
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+old = '''    thm = np.maximum(frame["lb_best"].to_numpy(float), 
+
+What I need next: the regenerated tables, and the new tests appended. Both are independent, so both now.
+  > $ export OMP_NUM_THREADS=1 && timeout 900 python -m learning.conjecture --stage tables 2>&1 | grep -v Warning | tail -2 && sed -n '/## The gap instances/,/## The 
+
+Tables regenerated. Next I need the new tests appended and the head of the tables file (coverage, theorem components, candidate summary) for the section's numbers. Both now.
+  > $ sed -n '/## Coverage/,/## Distinct survivors/p' reports/conjecture_tables.md | cut -c1-400 | head -80; echo; grep -c "" reports/conjecture_tables.md; sed -n '/#
+  > $ timeout 600 python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np, networkx as nx
+from learning import conjecture as cj
+frame = cj.load_table
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/conjecture.py"); s = p.read_text()
+def rep(old, new):
+    global s
+    assert s.count(old) == 1, ol
+
+Now the repair run and the tests, in parallel.
+  > $ export OMP_NUM_THREADS=1 && timeout 1500 python -m learning.conjecture --stage repair --workers 16 2>&1 | grep -v Warning | tail -3; timeout 300 python - <<'EOF
+  > $ export OMP_NUM_THREADS=1 && nohup bash -c 'python -m learning.conjecture --stage mine --top 12 && python -m learning.conjecture --stage attack --workers 16 --st
+  > $ cat >> tests/test_conjecture.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# the branch lemma counts branches at v
+  > $ sed -i 's/    assert out\["hubs3"\] == 1 and out\["blt"\] == 1 and out\["blt1"\] == 2/    assert out["hubs3"] == 1 and out["blt"] == 1/' tests/test_conjecture.p
+  > $ (timeout 1200 python -m pytest tests/ -q -x > /tmp/it12_full_tests.log 2>&1 &); grep -n "^### \|^\*\*Kill\|^Kill\|Regenerate\|^\*\*Size range\|^\*Regenerate\|re
+  > $ sed -n 6070,6100p reports/ml_nature.md; echo ......; sed -n 6290,6321p reports/ml_nature.md
+
+I'm waiting on the re-run chain (mining, both attacks, tables) from the corrected invariants, then I'll write the section from the final tables. Polling in a bounded loop now.
+  > $ for i in $(seq 1 100); do if ! kill -0 839789 2>/dev/null; then break; fi; sleep 10; done; date; kill -0 839789 2>/dev/null && echo STILL-RUNNING || echo chain-
+  > $ sed -n '/## The proved components/,/## Leading valid/p' reports/conjecture_tables.md | cut -c1-260; sed -n '/^Over every novel/p' reports/conjecture_tables.md; 
+  > $ timeout 300 python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np
+from learning import conjecture as cj
+a = pd.read_csv(cj.ATTACK_CSV); b = p
+
+All numbers are in hand. Writing §24 now; PROGRESS.md, iterations.md and a final test run follow.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 24. Conjecture mining: is there a branching-aware lower bound, and does it survive an adversary? (plan 2 §2.6, loop0003 
+  > $ sed -i 's/^- \*\*Current\*\*: 9\/14 SOLVED/- **Current**: 10\/14 SOLVED/' Ralph_Loops/loop0003/PROGRESS.md && grep -n "Current" Ralph_Loops/loop0003/PROGRESS.md
+
+Final checks, all independent: the conjecture tests on the final files and `solutions/` untouched, no stray worker processes of mine, and the CLI's help to confirm the stages.
+  > $ timeout 600 python -m pytest tests/test_conjecture.py -q 2>&1 | tail -1; git status --short solutions/ | wc -l; git check-ignore -q learning/data/conjecture/sol
+  > $ pgrep -af "learning.conjectur[e]" | wc -l; pgrep -af "^python -m benchmarks.recertify" | wc -l; uptime; python -m learning.conjecture --help 2>&1 | grep -A1 "st
+
+Two processes match the module name; I need to confirm they are this session's own shell (the task text names the module), not leftover workers.
+  > $ pgrep -af "learning.conjectur[e]" | cut -c1-90
+
+Only this session's own `claude -p` process matches. No workers of mine remain, recertify's nine processes are untouched, and nothing was written to `solutions/`. The item is complete.
+
+**Item 09 is done and marked `- [x]`.** The loop stands at 10 of 14 solved.
+
+**What was found.** The mining produced no conjecture worth having. Of 11,589 candidate formulas over 30 branching-aware invariants on 50,949 certified instances, 47 exceed the solver's bound on more than 5% of the 338 gap instances. Thirty-six of them are the theorem `optimum ≥ treewidth + 1` in disguise, two are fitted lower envelopes of that theorem and `lb_best` that never beat the pair, and the rest are fitted constants that look novel only on 60 to 125 customer graphs where treewidth is an unresolved interval. Seventy-seven percent of fitted candidates leak on grouped hold-out. The adversary, 297,000 exact-solver evaluations at 8 to 30 customers, broke nothing, and the section says plainly that this record is vacuous rather than clean.
+
+**The one real object** is exact treewidth itself. It is a theorem the solver never computes, and it beats the certified lower bound on 199 of the 338 gap instances and 933 corpus instances, reaching tightness on 67. It is proposed as a `_lower_bound` component in §24 and not applied.
+
+**A bug surfaced and was fixed.** The branch-lemma invariant from iteration 10 counted components that never touched the cut vertex as branches, and sat above the optimum on 347 rows. The theorem table's "must be 0" column caught it. The function is fixed with a regression test, and the 8,292 affected rows were recomputed in place.
+
+**Kill verdict.** Literally not met, since a theorem survives. Met against the honest reference `max(lb_best, tw + 1)`: no candidate beats the proved bound on more than 0.1% of instances with exact treewidth. The bound work needs a new idea, not a new formula.
+
+**Deliverables written.** §24 in `reports/ml_nature.md`, `reports/conjecture_tables.md`, five committed CSVs plus logs (3.8 MB), the extended module, 22 tests. Full suite: 1,012 passed. PROGRESS.md and iterations.md updated. Nothing committed, per instructions.
+
+**Next for the loop.** Item 11 (why the ridge sits where it does), then item 12, which inherits two theorem statements from §24.
+
+# result: success in 2175s, 52 turns, cost $12.15

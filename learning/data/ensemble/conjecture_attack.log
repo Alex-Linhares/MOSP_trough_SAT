@@ -1,0 +1,61 @@
+[conjecture] attack 16/720 in 10s
+[conjecture] attack 32/720 in 18s
+[conjecture] attack 48/720 in 23s
+[conjecture] attack 64/720 in 30s
+[conjecture] attack 80/720 in 36s
+[conjecture] attack 96/720 in 43s
+[conjecture] attack 112/720 in 47s
+[conjecture] attack 128/720 in 52s
+[conjecture] attack 144/720 in 57s
+[conjecture] attack 160/720 in 62s
+[conjecture] attack 176/720 in 68s
+[conjecture] attack 192/720 in 72s
+[conjecture] attack 208/720 in 75s
+[conjecture] attack 224/720 in 78s
+[conjecture] attack 240/720 in 82s
+[conjecture] attack 256/720 in 86s
+[conjecture] attack 272/720 in 91s
+[conjecture] attack 288/720 in 93s
+[conjecture] attack 304/720 in 95s
+[conjecture] attack 320/720 in 98s
+[conjecture] attack 336/720 in 102s
+[conjecture] attack 352/720 in 106s
+[conjecture] attack 368/720 in 109s
+[conjecture] attack 384/720 in 111s
+[conjecture] attack 400/720 in 113s
+[conjecture] attack 416/720 in 116s
+[conjecture] attack 432/720 in 119s
+[conjecture] attack 448/720 in 124s
+[conjecture] attack 464/720 in 126s
+[conjecture] attack 480/720 in 128s
+[conjecture] attack 496/720 in 131s
+[conjecture] attack 512/720 in 134s
+[conjecture] attack 528/720 in 138s
+[conjecture] attack 544/720 in 142s
+[conjecture] attack 560/720 in 144s
+[conjecture] attack 576/720 in 146s
+[conjecture] attack 592/720 in 150s
+[conjecture] attack 608/720 in 154s
+[conjecture] attack 624/720 in 157s
+[conjecture] attack 640/720 in 160s
+[conjecture] attack 656/720 in 162s
+[conjecture] attack 672/720 in 166s
+[conjecture] attack 688/720 in 170s
+[conjecture] attack 704/720 in 175s
+[conjecture] attack 720/720 in 178s
+    candidate                        formula  jobs  evaluations  skipped  max_viol  n_min  n_max  counter_n counter_key   verdict
+0           0                            tw1    48        19200  2130635         0      8     15         -1              survived
+1           1                          tw_lo    48        19200  1969678         0      8     15         -1              survived
+2           2             tw_lo / components    48        19200   247544         0      8     15         -1              survived
+3           3       tw_lo / sqrt(components)    48        19200    53120         0      8     15         -1              survived
+4           4               tw1 / components    48        19200    45478         0      8     15         -1              survived
+5           5                   tw_lo / blt1    48        19200   837747         0      8     15         -1              survived
+6           6             tw_lo / sqrt(blt1)    48        19200   946551         0      8     15         -1              survived
+7           7                     tw1 / blt1    48        19200  1071987         0      8     15         -1              survived
+8           8               tw1 / sqrt(blt1)    48        19200   796383         0      8     15         -1              survived
+9           9         sqrt(tw_lo) · sqrt(f6)    48        19200  1469630         0      8     15         -1              survived
+10         10              tw1 · sqrt(ct_pw)    48        19200  1360174         0      8     15         -1              survived
+11         11                    tw1 · ct_pw    48        19200  1550185         0      8     15         -1              survived
+12         12                   tw1 · ct_pw²    48        19200  1667029         0      8     15         -1              survived
+13         13  sqrt(n_cliques) · contraction    48        19200  1904863        -1      8     15         -1              survived
+14         14             contraction² / tw1    48        19200  1933328        -1      8     15         -1              survived

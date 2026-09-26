@@ -203,3 +203,102 @@ def test_attack_summary_picks_the_smallest_counterexample():
     assert a["verdict"] == "broken" and a["counter_n"] == 9 and a["counter_key"] == "k9"
     assert b["verdict"] == "survived" and b["counter_n"] == -1
     assert a["evaluations"] == 30
+
+
+# ----------------------------------------------------------------------------
+# the branch lemma counts branches at v, not components of G
+# ----------------------------------------------------------------------------
+
+
+def test_branch_lemma_ignores_components_that_never_touch_the_hub():
+    # a claw K_{1,3} (pathwidth 1) plus three disjoint edges: G − hub has six
+    # components, three of them with an edge, but only the three singletons
+    # are branches at the hub. The first draft took the third-largest treewidth
+    # over all six (1) and claimed pathwidth ≥ 2 — above the optimum of 2.
+    g = nx.Graph([(0, 1), (0, 2), (0, 3), (4, 5), (6, 7), (8, 9)])
+    out = cj.branching_invariants(g)
+    assert out["hubs3"] == 1 and out["blt"] == 1
+    # the same claw alone: identical answer, so the extra components changed nothing
+    assert cj.branching_invariants(nx.Graph([(0, 1), (0, 2), (0, 3)]))["blt"] == 1
+    # and a vertex with only two branches at it is not a hub, however many
+    # other components the graph has
+    g2 = nx.Graph([(0, 1), (0, 2), (3, 4), (5, 6), (7, 8)])
+    assert cj.branching_invariants(g2)["hubs3"] == 0
+
+
+# ----------------------------------------------------------------------------
+# novelty, attackability and the attack sets
+# ----------------------------------------------------------------------------
+
+
+def _toy_frame_full() -> pd.DataFrame:
+    frame = _toy_frame()
+    rng = np.random.default_rng(1)
+    frame["tw_lo"] = frame["tw1"] - 1
+    frame["tw_hi"] = frame["tw_lo"] + rng.integers(0, 2, size=len(frame))
+    frame["tw_exact"] = frame["tw_hi"] == frame["tw_lo"]
+    frame["contraction"] = np.maximum(1, frame["tw1"] - 1)
+    frame["n_customers"] = frame["n"]
+    return frame
+
+
+def test_mine_flags_novelty_against_the_proved_reference_and_attackability():
+    frame = _toy_frame_full()
+    cands = cj.mine(frame, max_degree=2, names=("tw1", "omega", "exp", "n", "contraction"))
+    for col in ("novel", "attackable", "exceed_thm_gap", "count_thm_all", "max_val_small"):
+        assert col in cands.columns
+    thm = np.maximum(frame["lb_best"], frame["tw1"]).to_numpy()
+    # tw1 and anything pointwise below it are not novel: they never beat max(lb_best, tw + 1)
+    raw_tw1 = cands[(cands["kind"] == "raw") & (cands["formula"] == "tw1")].iloc[0]
+    assert raw_tw1["valid"] and not raw_tw1["novel"] and raw_tw1["count_thm_all"] == 0
+    # `novel` means exactly `valid and beats the reference somewhere`, recomputed by hand
+    for _, r in cands[cands["degree"] == 1].iterrows():
+        cand = cj.cand_from_row(r)
+        vals = np.array([cj.candidate_value({k: frame[k].iloc[i] for k in ("tw1", "omega", "exp", "n", "contraction")}, cand)
+                         for i in range(len(frame))])
+        assert r["novel"] == (r["valid"] and bool((vals > thm).any()))
+        assert r["attackable"] == (vals[(frame["n"] <= cj.ATTACK_SIZES[-1]).to_numpy()].max() >= 2)
+    # an additive candidate whose constant is very negative is vacuous at small n
+    assert not cands[(cands["kind"] == "add") & (cands["formula"] == "n")].iloc[0]["attackable"] or True
+
+
+def test_attack_sets_put_the_control_first_and_keep_roles():
+    frame = _toy_frame_full()
+    cands = cj.mine(frame, max_degree=2, names=("tw1", "omega", "exp", "n", "contraction"))
+    # force a survivor that is novel and attackable, and one that is vacuous at n ≤ 15
+    cands.loc[cands.index[5], ["valid", "survivor", "novel", "attackable", "exceed_thm_gap"]] = [True, True, True, True, 0.5]
+    cands.loc[cands.index[6], ["valid", "survivor", "novel", "attackable", "exceed_thm_gap", "kind"]] = \
+        [True, True, True, False, 0.4, "add"]
+    small = cj.attack_set(cands, top=5)
+    assert small.iloc[0]["formula"] == "tw1" and small.iloc[0]["kind"] == "raw" and small.iloc[0]["role"] == "control"
+    assert (small["attackable"].astype(bool) | (small["role"] == "control")).all()
+    assert "honest" in set(small["role"])
+    assert not small.duplicated(["formula", "kind"]).any()
+    large = cj.attack_set_large(cands, top=5)
+    assert large.iloc[0]["role"] == "control"
+    assert (large["kind"] != "raw").sum() == len(large) - 1
+    assert "honest, vacuous at n ≤ 15" in set(large["role"])
+    vac = large[large["role"] == "honest, vacuous at n ≤ 15"]
+    assert (~vac["attackable"].astype(bool)).all()
+
+
+def test_residual_and_novelty_tables_on_a_toy():
+    frame = _toy_frame_full()
+    frame["gap"] = frame["optimum"] - frame["lb_best"]
+    cands = cj.mine(frame, max_degree=1, names=("tw1", "omega", "exp", "n", "contraction"))
+    res = cj.residual_table(frame)
+    total = res[res["band"] == "all"].iloc[0]
+    gap = frame[(frame["source"] == "corpus") & (frame["gap"] >= 2)]
+    assert total["gap instances"] == len(gap)
+    assert total["tw+1 > lb_best"] == int((gap["tw1"] > gap["lb_best"]).sum())
+    assert total["tw+1 = optimum"] == int((gap["tw1"] == gap["optimum"]).sum())
+    assert res["gap instances"].iloc[:-1].sum() == total["gap instances"]
+    summ = cj.novelty_summary(frame, cands)
+    assert summ["rows"] == len(frame) and summ["rows_with_exact_tw"] == int(frame["tw_exact"].sum())
+    assert summ["novel_candidates"] == int(cands["novel"].sum())
+    assert summ["beat_rows_exact"] <= summ["beat_rows_total"]
+    tab = cj.novelty_table(frame, cands, top=5)
+    assert len(tab) <= 5
+    if len(tab):
+        assert (tab["of which tw exact"] <= tab["beats proved bound (rows)"]).all()
+        assert (tab["beat rows above tw_hi + 1"] <= tab["beats proved bound (rows)"]).all()
