@@ -68,7 +68,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       Deliverable: the paired distribution by size and density, a proposed
       default stated and not applied. **Kill**: paired median within ±5% at
       every size.
-- [ ] 07 · §2.5b **Theorem 2's switch.** With nodes under both configurations
+- [!] 07 · §2.5b **Theorem 2's switch.** With nodes under both configurations
       on every instance we have (campaign to 100, corpus to 125), fit the
       decision boundary where `csearch` beats `default` (depth-3 tree on
       size-free features, grouped) and compare with

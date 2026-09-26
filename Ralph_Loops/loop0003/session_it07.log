@@ -1,0 +1,134 @@
+# session it07 started 2026-09-26 16:25:45
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 7 of the Ralph loop. My item is 07, Theorem 2's switch. I'll begin by reading the plan, the report sections it cites, and the code that decides the switch today.
+  > $ date && cat reports/ml_nature_plan_2.md && pgrep -af "^python -m benchmarks.recertify" | head; nproc; uptime
+  > $ grep -n "^## \|^### " reports/ml_nature.md | sed -n '1,400p' | grep -n "§1[3-9]\|§20\|^.*## " | head -80
+  > $ grep -n "Theorem 2\|better_move\|sparse_enough" reports/ml_nature.md | sed -n '1,200p'
+  > $ sed -n 3240,3260p reports/ml_nature.md; echo ----; sed -n 3318,3345p reports/ml_nature.md; echo ----; sed -n 3440,3455p reports/ml_nature.md; echo ----; sed -n 
+  > $ grep -n "def sparse_enough_for_better_move" -A 30 satisfiability/customer_search.py | head -60; echo ----; grep -n "def refutation_kwargs" -A 40 learning/node_c
+  > $ sed -n 137,230p satisfiability/customer_search.py; grep -n "BETTER_MOVE_DENSITY" satisfiability/customer_search.py | head -3
+
+Reading the two existing paired-count datasets and the item 06 harness, so the new run only fills what they lack (Theorem 2 forced on where the hand rule turns it off).
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv('learning/data/ensemble/fan_order.csv.gz')
+print(d.shape); print(list(d.columns))
+print(d[['source','n_custom
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv('learning/data/ensemble/fan_order.csv.gz', low_memory=False)
+print(d.groupby(['source', d.n.clip
+  > $ wc -l learning/fan_order.py learning/cost_model.py learning/differential.py tests/test_fan_order.py && sed -n 1,200p learning/fan_order.py
+  > $ sed -n 200,400p learning/fan_order.py
+  > $ echo "== cost_model defs"; grep -n "^def \|^    def \|^[A-Z_]* = " learning/cost_model.py | head -80; echo "== features"; grep -n "^def \|^[A-Z_]* = " learning/
+  > $ sed -n 86,212p learning/cost_model.py; sed -n 378,395p learning/cost_model.py; python - <<'EOF'
+import pandas as pd
+i=pd.read_csv('learning/data/instances.csv')
+  > $ python - <<'EOF'
+import pandas as pd
+r=pd.read_csv('learning/data/ensemble/results_upward.csv', low_memory=False, nrows=3)
+print([c for c in ['tw_min_fill','dom
+  > $ cat > learning/theorem2.py <<'PYEOF'
+"""Theorem 2's switch: when should the complete search turn `better_move` on?
+
+Plan 2 §2.5(b) (`reports/ml_nature_plan_2.md
+  > $ sed -n 1,60p reports/theorem2_tables.md | cut -c1-250; echo; echo "=== launching full run"; nohup python -m learning.theorem2 --workers 16 > learning/data/ensem
+  > $ python - <<'EOF'
+import re
+p='learning/theorem2.py'; s=open(p).read()
+old='''    t = q.groupby(["ppc_band"], observed=True).apply(_summarise, include_groups=Fal
+  > $ date; uptime; wc -l learning/data/theorem2_partial.csv 2>/dev/null; cat learning/data/ensemble/theorem2_run.log; ps -o pid,etime,pcpu,rss,args -p 661367 | tail 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "cd /home/al/dev/MOSP; last=0; while kill -0 661367 2>/dev/null; do cur=$(wc -l < learning/data/ensemble/the
+  > $ grep -n "^## 20\|^## 19\|^### " reports/ml_nature.md | awk -F: '$1>5250' | head -20; echo ----; sed -n '/^## 20\./,/^\*\*Method/p' reports/ml_nature.md | head -
+
+The study is running on 16 workers, heaviest instances first. I'll wait for progress events before drafting the report from real numbers.
+  > $ sleep 240; date; wc -l learning/data/theorem2_partial.csv 2>/dev/null; tail -2 learning/data/ensemble/theorem2_run.log; uptime
+  > $ date; wc -l learning/data/theorem2_partial.csv 2>/dev/null; python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv('learning/data/ensemble/fan_order.cs
+  > $ mkdir -p /tmp/it07 && cat > /tmp/it07/head.md <<'EOF'
+
+## 21. Theorem 2's switch: where should `better_move` be on? (plan 2 §2.5(b), loop0003 item 07)
+
+*2026-09
+  > $ date; wc -l learning/data/theorem2_partial.csv; cat learning/data/ensemble/theorem2_run.log | tail -2; python - <<'EOF'
+import pandas as pd
+p=pd.read_csv('learn
+  > $ grep -n -i "better_move\|theorem 2" reports/inner_loop.md | head -12; grep -n -i "per node\|µs" reports/better_move_bug.md | head -8
+  > $ until [ "$(wc -l < learning/data/theorem2_partial.csv)" -ge 600 ] || ! kill -0 661367 2>/dev/null; do sleep 15; done; date; wc -l learning/data/theorem2_partial
+
+The run is in its heavy head (the 125×125 and 100-customer instances with long deadlines come first). Checking how far it has got.
+  > $ date; wc -l learning/data/theorem2_partial.csv; tail -2 learning/data/ensemble/theorem2_run.log; uptime; python - <<'EOF'
+import pandas as pd
+p=pd.read_csv('lea
+  > Monitor {"command": "cd /home/al/dev/MOSP; last=$(wc -l < learning/data/ensemble/theorem2_run.log); while kill -0 661367 2>/dev/
+  > $ cat > /tmp/it07/progress_head.md <<'EOF'
+
+## Iteration 7 — DATE
+
+**Item 07 · §2.5b Theorem 2's switch** — SOLVED. KILLLINE
+
+### Completed
+- `learning/theorem2.p
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+import learning.theorem2 as t2
+rows=pd.read_csv('learning/data/theorem2_partial.csv', low_memory=False)
+f=t2.w
+  > $ python - <<'EOF'
+p='learning/theorem2.py'; s=open(p).read()
+old='''    keep = [c for c in feats.columns if c not in rows.columns or c in ("source", "instance_na
+
+Feature join fixed and tests pass. The study is still in its heavy head; I'm waiting for the progress notifications from the monitor before writing the report from real numbers.
+
+# result: success in 1195s, 32 turns, cost $6.30
+  > $ date; wc -l learning/data/theorem2_partial.csv; tail -1 learning/data/ensemble/theorem2_run.log; uptime
+
+The heavy head is through and the run is now flushing about 500 instances every 20 seconds. I'll wait for the completion notification.
+
+# result: success in 13s, 2 turns, cost $6.40
+  > $ until [ "$(wc -l < learning/data/theorem2_partial.csv)" -ge 20000 ] || ! kill -0 661367 2>/dev/null; do sleep 20; done; date; wc -l learning/data/theorem2_parti
+  > $ until ! kill -0 661367 2>/dev/null; do sleep 10; done; date; tail -6 learning/data/ensemble/theorem2_run.log; ls -la learning/data/ensemble/theorem2.csv.gz
+  > $ date; wc -l learning/data/theorem2_partial.csv; tail -2 learning/data/ensemble/theorem2_run.log; ps -o pid,etime,pcpu,args --ppid 661367 | head -20; python - <<
+  > $ python - <<'EOF' 2>&1 | tail -5
+import pandas as pd, learning.theorem2 as t2
+rows=pd.read_csv('learning/data/theorem2_partial.csv', low_memory=False)
+from pathl
+  > $ sed -n '/## Refutation: by size band and realised/,$p' /tmp/it07/tables_partial.md | cut -c1-230
+
+The partial analysis is in. Reading the rule, sweep, tree and class tables while the one straggler (a 125×125 instance) finishes, and adding a seconds-based rule score to the module.
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/871cc947-1abc-4daf-bb51-9606a99ae7bd/tool-results/bojw6j7o0.txt; sed -n '/## Refutation: by products/,/## Rules by
+  > $ F=/home/al/.claude/projects/-home-al-dev-MOSP/871cc947-1abc-4daf-bb51-9606a99ae7bd/tool-results/bojw6j7o0.txt; sed -n '/## The one-statistic/,/## Where Theorem 
+  > $ python - <<'EOF'
+p='learning/theorem2.py'; s=open(p).read()
+
+old='''def rule_nodes(p: pd.DataFrame, choose_on: np.ndarray) -> np.ndarray:
+    """Nodes a rule wo
+  > $ python - <<'EOF'
+p='learning/theorem2.py'; s=open(p).read()
+old='''def fit_tree(X: pd.DataFrame, p: pd.DataFrame, depth: int = TREE_DEPTH, seed: int = 0):
+    "
+  > $ ps -o etime,pcpu --pid 661423 | tail -1; F=/tmp/it07/tables_partial.md; sed -n '/## Rules: nodes spent/,/## Rules by hand/p' $F | cut -c330-600 | head -20; pyth
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np, learning.theorem2 as t2
+rows=pd.read_csv('learning/data/theorem2_partial.csv', low_memory=False)
+p=t2.paired(
+  > $ cat > /tmp/it07/body.md <<'EOF'
+
+**Method.** For every certified campaign instance at 10–75 customers
+(44,547: `results.csv` at 10–40, `results_upward.csv` at 5
+  > $ until ! kill -0 661367 2>/dev/null; do sleep 15; done; date; tail -5 learning/data/ensemble/theorem2_run.log; ls -la learning/data/ensemble/theorem2.csv.gz
+  > $ cat > /tmp/it07/progress_body.md <<'EOF'
+- The run: 50,911 instances, 203,644 decision calls, 4.4 core-hours, 62 min
+  on 16 workers (30 of them one 125 × 125 s
+  > $ timeout 600 python -m pytest tests/ -q -x 2>&1 | tail -4
+
+Full suite passes (946 passed, 2 skipped, 1 xfailed, 81 s). Only the one 125×125 straggler remains before the final tables.
+  > $ date; ps -o etime,pcpu,rss --pid 661423 | tail -1; grep -c . learning/data/theorem2_partial.csv
+
+Everything else is drafted and tested. Waiting for the last 125×125 instance to finish so the tables and the report section carry final numbers.
+
+# result: success in 1045s, 17 turns, cost $10.62

@@ -30,3 +30,9 @@
 [2026-09-26 15:30:14] claude session it06 (cap 3.00 h) -> session_it06.log
 [2026-09-26 16:24:24] session it06: ok (exit 0, 52 tool calls)
 [2026-09-26 16:25:45] tests passed: 939 passed, 2 skipped, 1 xfailed, 156 warnings in 80.57s (0:01:20)
+[2026-09-26 16:25:45] committed 49e549fb: 06 · §2.5a Fan order. Behind a flag defaulting to today's behaviour,
+[2026-09-26 16:25:45] === iteration 7: 07 · §2.5b Theorem 2's switch. With nodes under both configurations
+[2026-09-26 16:25:45] claude session it07 (cap 3.00 h) -> session_it07.log
+[2026-09-26 17:06:34] session it07: ok (exit 0, 48 tool calls)
+[2026-09-26 17:06:34] item not marked by the agent (ok); marking - [!] so the loop advances
+[2026-09-26 17:07:55] tests passed: 946 passed, 2 skipped, 1 xfailed, 156 warnings in 80.76s (0:01:20)

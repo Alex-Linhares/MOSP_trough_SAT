@@ -481,3 +481,13 @@ drivers only, not applied.
 - For the owner: if a satisfiable-side driver is ever tuned, `fan_order=
   "degree"` is a measured 35% at 75 with a 1.1–1.3× p90 tail; the `cs-dfs`
   route to a stronger bound is the rule as seed (§7), not the fan order.
+
+## Iteration 7 — 2026-09-26 17:06:34
+### Completed
+- (driver) session ended with outcome `ok` without marking the item
+### Blockers
+- see session_it07.log
+### Next
+- revisit or re-open this item
+
+---
