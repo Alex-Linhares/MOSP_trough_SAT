@@ -4727,3 +4727,245 @@ source in one line once the C standard flag was corrected, and pysat's proof
 output is checkable once flushed. The path is open — and affordable, within
 a million conflicts, for 92.0% of the corpus at `n ≤ 40`; what it leaves
 out is the `m ≥ 30`, `k ≥ 11` corner, and everything at 125 × 125.
+
+## 18. The relabelling portfolio: is label noise a free speed-up? (plan 2 §2.4, loop0003 item 04)
+
+**Question.** The complete customer search reads the neighbour masks of the
+MOSP graph and nothing else (§13), so renaming the customers cannot change
+the answer of a decision call and does change its node count: by up to 8× on
+§13's hard-biased bases and by 24–33% at the ninetieth percentile over the
+whole campaign at n ≤ 40 (§15), under `csearch`. Sixteen relabellings on
+sixteen cores, stopped when the first refutation lands, is a portfolio with
+no coordination cost. Does the spread grow with `n`, so that it is worth the
+cores at 125 × 125? And if it does, can a cheap statistic of a labelling say
+in advance which one to run?
+
+**Method.** `learning/relabel_portfolio.py`. For each instance the identity
+labelling and 16 seeded relabellings (`learning.graph_story.relabel`, rows
+and columns permuted), each decided at `optimum − 1` (the refutation) and at
+`optimum` (the witness search, order simulated) under the `csearch`
+configuration, with a 120 s deadline per call; a censored call keeps its
+count as a lower bound. Instances: 8 from every campaign cell at n ∈ {40, 50,
+60, 75} (36 cells at 40 from `results.csv`, 45 at each of 50, 60, 75 from
+§16's `results_upward.csv`; 1,368 instances) and every certified corpus
+instance at 50–100 customers except the classes `Random-100-100-2` and
+`Random-100-100-4`, whose every call would have censored (identity 10^8–10^9.4
+nodes; the first is the race below, the second is priced): 204 instances.
+The expected minimum of `k` draws from the 16 is computed exactly by order
+statistics (the `i`-th smallest is the minimum of a `k`-subset with
+probability C(16 − i, k − 1)/C(16, k)); the speed-up is the identity's count
+over it, and separately the median labelling's count over it. The run:
+1,572 instances × 17 labellings × 2 sides = 53,448 decision calls, 5.95
+core-hours, 22 minutes wall on 16 workers. Then the portfolio for real on the
+`Random-100-100-2` instances §14 censored (below).
+
+**Baseline.** The identity labelling, which every run in this repository has
+used. Tables: `reports/portfolio_tables.md`.
+
+**Audit, free.** 26,697 of 26,724 calls at `optimum − 1` returned `unsat` and
+27 censored (three instances, 120 s); all 26,724 calls at the optimum returned
+`sat` with a witness simulating to at most the optimum. No stored value
+contradicted, on 27,000 relabelled refutations at 40–100 customers, under the
+fixed C `better_move`.
+
+### (a) The refutation: the spread does not grow, and the portfolio wins nothing
+
+Ratio of `1 + nodes`; every instance in the band:
+
+| band | instances | identity nodes median | max/min median | max/min p90 | MAD log10 | min-of-2 | min-of-4 | min-of-8 | min-of-16 | min-of-16 p90 | min-of-8 saves ≥ 1.5× |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| campaign n=40 | 288 | 72 | 1.00 | 1.14 | 0.0039 | 1.00 | 1.00 | 1.00 | 1.00 | 1.07 | 0 |
+| campaign n=50 | 360 | 891 | 1.02 | 1.16 | 0.0056 | 1.00 | 1.00 | 1.00 | 1.01 | 1.10 | 0 |
+| campaign n=60 | 360 | 3,480 | 1.02 | 1.14 | 0.0049 | 1.00 | 1.00 | 1.00 | 1.00 | 1.07 | 1 |
+| campaign n=75 | 360 | 27,900 | 1.01 | 1.15 | 0.0051 | 1.00 | 1.00 | 1.00 | 1.00 | 1.08 | 0 |
+| corpus 50 | 120 | 620 | 1.05 | 1.13 | 0.0052 | 1.00 | 1.01 | 1.01 | 1.02 | 1.09 | 0 |
+| corpus 60–82 | 33 | 37,000 | 1.02 | 1.11 | 0.0039 | 1.00 | 1.00 | 1.00 | 1.01 | 1.08 | 0 |
+| corpus 99–100 | 51 | 440,000 | 1.01 | 1.26 | 0.0066 | 1.00 | 1.00 | 1.00 | 1.00 | 1.08 | 0 |
+
+(min-of-k columns: median speed-up against the identity.) Restricted to the
+instances whose identity refutation costs at least 10⁴ nodes — the only ones
+a portfolio could matter on — the medians are 1.01–1.05 for min-of-16 and the
+p90s 1.07–1.11 (389 instances at n ≥ 60; table in `portfolio_tables.md`). The
+widest spread in the whole study is 2.14× (`ens_f_n75_m75_d3_i025`, 1.6–3.5
+× 10⁷ nodes), and on it the identity is already within 15% of the best
+labelling. The median min-of-16 speed-up on the hard instances runs 1.12,
+1.02, 1.02, 1.01 at n = 40, 50, 60, 75: **the spread shrinks with `n`**, and
+a log-linear fit extrapolates to 0.88× at 125, which is to say no gain.
+The core efficiency of a 16-way portfolio, identity / (16 × min), is 0.063
+everywhere: fifteen of sixteen cores are wasted.
+
+*The §15 spread was partly the bug.* On the same 288 instances at n = 40 and
+the same nine labellings, item 01's run (before the `better_move` fix,
+`reports/better_move_bug.md` §7) had a max/min p90 of 1.21; this run has
+1.12. The fix moved the identity's own count by a median factor of 1.000 and
+a p90 of 1.09 (max 1.94); the labellings that lost the most were the ones
+the wrong rule had pruned the most.
+
+*Seconds would have said otherwise.* On the 148 instances at n = 75 with
+identity ≥ 10⁵ nodes, the max/min ratio over labellings is 1.05 at the median
+in nodes and **1.49 in seconds** (p90 1.18 against 1.61), on a machine with
+recertify's three workers beside the study's sixteen. A portfolio judged by
+the clock would have reported a 1.5× "speed-up" that is entirely load.
+
+### (b) The witness search: labels matter, and it is the cheap side
+
+The same table for `decide(optimum)`:
+
+| band | instances | identity nodes median | max/min median | max/min p90 | min-of-8 median | min-of-8 p90 | min-of-16 median | min-of-16 p90 | min-of-8 saves ≥ 1.5× |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| campaign n=40 | 288 | 12 | 1.20 | 7.0 | 1.01 | 2.6 | 1.04 | 2.8 | 54 (18.8%) |
+| campaign n=50 | 360 | 27 | 1.66 | 20.8 | 1.14 | 4.9 | 1.16 | 5.8 | 111 (30.8%) |
+| campaign n=60 | 360 | 44 | 1.75 | 81.7 | 1.13 | 11.0 | 1.17 | 14.0 | 117 (32.5%) |
+| campaign n=75 | 360 | 183 | 2.64 | 542 | 1.12 | 14.8 | 1.17 | 35.9 | 136 (37.8%) |
+| corpus 50 | 120 | 34 | 2.10 | 19.3 | 1.14 | 4.2 | 1.17 | 5.3 | 43 (35.8%) |
+| corpus 60–82 | 33 | 160 | 2.02 | 312 | 1.10 | 5.1 | 1.14 | 6.1 | 10 (30.3%) |
+| corpus 99–100 | 51 | 6,810 | 1.69 | 96.8 | 1.07 | 12.3 | 1.08 | 21.0 | 11 (21.6%) |
+
+Here the spread grows with `n` (p90 max/min 7 → 542 from 40 to 75), and where
+the witness search is itself hard (identity ≥ 10⁴ nodes: 0, 2, 25, 67 of the
+288–360 campaign instances at 40, 50, 60, 75) the portfolio is real: median
+min-of-8 speed-up 7.4× at 60 and 6.0× at 75, min-of-16 8.0× and 13.1×, with
+core efficiency 0.5–0.8 — nearly free even in core-hours. But the witness
+search at the optimum costs 183 nodes at the median against 27,900 for the
+refutation at n = 75, and exceeds it on 2.2% of instances (61 of 288 at
+n = 40, 8 of 360 at 75: §15's "21% at 36–40" is a small-size fact). Summed
+over a band, a 16-way portfolio on the satisfiable side removes 2.4–4.8% of
+the cost of the pair `(optimum − 1, optimum)` on the campaign and 0.7% on the
+corpus at 99–100; on both sides, 6–11% and 17%, for sixteen times the cores.
+A descent from the upper bound also asks satisfiable questions at every
+`k > optimum`, which this study did not time; those calls are easier than
+the one at the optimum, so the share can only be smaller.
+
+### (c) No cheap statistic of a labelling predicts its cost
+
+On the 8 instances whose refutation counts spread by at least 1.5×, the
+within-instance Spearman correlation between the count and each statistic —
+the rank correlation of customer index with degree (mean ρ −0.13) and with
+products per customer (−0.09), of product index with customers per product
+(−0.03), the degree of customer 0 (−0.19), the neighbourhood degree of the
+customer the root's cheapest-first fan order picks (+0.33 on 5) and its
+index (+0.05), and the witness search's own node count (+0.13) — never
+reaches 0.5 on more than a quarter of them, and choosing the labelling each
+prefers gives 0.89–1.15× against 1.09× for min-of-2 and 1.19× for min-of-4.
+There is nothing to choose by, and, from (a), nothing worth racing.
+
+### (d) The race: sixteen labellings of the censored `Random-100-100-2` instances, for real
+
+The four instances §14 censored at 1,500 s under `default` (three of them
+under `csearch` too), each run sixteen ways on sixteen cores at `optimum − 1`
+under `csearch` with a 600 s deadline: `-2-4` with every labelling run to
+the deadline, the other three stopped at the first refutation. Node counts
+at the deadline are lower bounds. 10.5 core-hours, against the 8 the plan budgeted; the overrun is the fourth instance run to the deadline sixteen ways.
+
+| instance | k | identity, §14 (pre-fix C) | identity today (fixed C) | finished of 16 | best labelling | wall to first refutation | censored counts at 600 s | core-hours |
+|:--|--:|:--|:--|--:|:--|:--|:--|--:|
+| `Random-100-100-2-4_0` | 14 | 9.31 × 10⁷ nodes, 37 s | ≥ 1.39 × 10⁹ nodes at 600 s | 3 | `relabel6`, 630 M nodes, 287 s | 287 s | 0.99–1.81 × 10⁹ (13) | 2.5 |
+| `Random-100-100-2-1_0` | 23 | ≥ 2.06 × 10⁹ nodes, ≥ 1,500 s | ≥ 1.15 × 10⁹ nodes at 600 s | 0 | none | > 600 s | 0.72–1.15 × 10⁹ (16) | 2.7 |
+| `Random-100-100-2-3_0` | 22 | ≥ 2.64 × 10⁹ nodes, ≥ 1,500 s | ≥ 1.11 × 10⁹ nodes at 600 s | 0 | none | > 600 s | 0.80–1.31 × 10⁹ (16) | 2.7 |
+| `Random-100-100-2-5_0` | 18 | ≥ 2.63 × 10⁹ nodes, ≥ 1,500 s | ≥ 1.03 × 10⁹ nodes at 600 s | 0 | none | > 600 s | 0.74–1.10 × 10⁹ (16) | 2.7 |
+
+`Random-100-100-2-4_0` is the one instance where both the pre-fix and the
+post-fix identity are on record, and it is the finding of this part: §14's
+identity refutation took **93.1 million nodes in 37 s**; today's identity
+labelling had visited **1.39 billion nodes at 600 s and had not finished**,
+and only three of sixteen labellings finished at all (630 M, 684 M and 1.25 G
+nodes; the thirteen censored stood at 0.99–1.81 G), so the spread under the
+fixed rule is at least 2.9× on this instance and the portfolio's wall clock
+beats the identity by at least 2.1× — at sixteen times the cores, against an
+identity that is itself fifteen times slower than it was. On the three
+instances §14 had already censored, no labelling of sixteen finished in
+600 s; the sixteen counts at the deadline span 1.6× (`-2-1`, 0.72–1.15 G),
+which is the spread of the search's *rate*, not of its size.
+
+### (e) What changed: the `better_move` fix costs more the larger the instance
+
+Every earlier `csearch` node count in this repository — `results.csv`
+(§9–§13), `scale_nodes.csv` (§14), the recertify counts, and, on 71 of 135
+cells, `results_upward.csv` (§16, whose run straddled the fix) — was made
+before the 2026-09-26 fix of the C `better_move` (`reports/better_move_bug.md`
+§7), which measured its cost at n ≤ 40 as +7.3% in total, p90 1.18. This
+study's identity rows are post-fix counts for 1,572 of those instances, and
+the ratio (after + 1)/(before + 1) on the identity labelling, where Theorem 2
+is on, is:
+
+| instances | before | after | ratio median | ratio p90 | ratio max |
+|:--|:--|:--|--:|--:|--:|
+| campaign n = 40, 288 | `results.csv` | this study | 1.00 | 1.09 | 1.9 |
+| campaign n = 50, m = 25, 120 | `results_upward.csv` | this study | 1.07 | 1.37 | 2.8 |
+| campaign n = 60, m = 30, 120 | ″ | ″ | 1.06 | 1.51 | 34 |
+| campaign n = 75, m = 37, 120 | ″ | ″ | 1.07 | 1.55 | 3.9 |
+| `Random-50-50-2`, 5 | `scale_nodes.csv` | this study | 1.27 | — | 2.4 |
+| `Random-75-75-2`, 5 | ″ | ″ | 1.19 | — | 1.7 |
+| `Random-100-50-2`, 5 | ″ | ″ | 2.31 | — | 3.4 |
+| `Random-100-50-4`, 5 | ″ | ″ | 3.52 | — | 6.1 |
+| `Random-100-100-2-4_0` | ″ | the race | **≥ 15** | | |
+
+Dense classes, where Theorem 2 is off, are unchanged to the node (all 40
+`Random-*-*-6/8/10` instances, the `default` configuration everywhere). The
+over-pruning the fix removed grew with size on the sparse classes, which is
+where the day-long refutations are; the 125 × 125 recertify counts (1.6 ×
+10¹¹ nodes, 25–28 h) are pre-fix numbers and the post-fix cost at that size
+is not known. Every §14 and §16 rate for `csearch` is a pre-fix rate.
+
+### (f) Projection, recommendation, verdict
+
+**The projected wall clock for the 125 × 125 ridge on 16 cores with a
+relabelling portfolio is the identity's wall clock.** The refutation speed-up
+of min-of-16 is 1.00–1.01 at the median at every size from 40 to 100 and is
+not growing; the recertify counts say 25–28 h per `Random-125-125-2` instance
+and 10–53 h per `-4` under the pre-fix rule, and §16's revised predictions
+(1.5 × 10¹¹ and 4 × 10¹⁰ nodes) say 23 h and 6 h at 0.55 µs per node; a
+portfolio would return the same numbers on sixteen cores instead of one.
+Under the fixed rule each is larger by a factor this item measured as ≥ 15 on
+the one ridge instance at n = 100 where both sides exist, and did not measure
+at 125.
+
+**Recommendation for `benchmarks.recertify`, stated and not applied: do not
+add a relabelling portfolio.** One worker per open entry, as it runs today,
+is the right use of the cores — sixteen entries side by side is a sixteen-fold
+throughput, sixteen labellings of one entry is a one-fold one. What the
+portfolio *would* buy is the satisfiable side: where the witness search at
+the optimum is hard (identity ≥ 10⁴ nodes, 19% of campaign instances at
+n = 75) min-of-16 saves 8–13× at the median at a core efficiency of 0.5–0.8,
+and the spread there grows with `n`. The consumers of satisfiable calls are
+`benchmarks.ratchet`, `heuristics.restricted_dfs`'s seeded searches and the
+`k ≥ optimum` calls of a descent; a portfolio on those costs little because
+those calls are short, and it is a driver change for the owner, not made here.
+Two alerts from the race, outside this item: the recertify run started
+2026-09-24 has three entries still open on the pre-fix C, and its five
+completed re-certifications rest on the rule §7 of the bug report shows
+unsound; and the ridge law's `csearch` constants (§14, §16) are pre-fix.
+
+**Kill criterion** (median min-of-8 refutation speed-up at n ≥ 60 under
+1.5×): **met**, and by a wide margin — 1.003 over the 804 instances at
+n ≥ 60 and 1.009 over the 389 with identity refutations of at least 10⁴
+nodes. The spread is too small to spend cores on.
+
+**Size range covered.** Campaign 40–75 (8 instances from each of 171 cells,
+1,368 instances); corpus 50–100 (204 of the 214 certified instances, the
+ten `Random-100-100-2/4` excluded); the race at 100 on four instances, one
+of them the only pre/post-fix pair at that size. The projection to 125 is an
+extrapolation of a flat curve and rests on counts made under the pre-fix
+rule. Nothing at 125 was run.
+
+**Regenerate.** `python -m learning.relabel_portfolio --workers 16 --deadline 120`
+(5.95 core-hours, 22 min on 16 workers; writes `learning/data/ensemble/portfolio.csv.gz`
+and `reports/portfolio_tables.md`); `python -m learning.relabel_portfolio --stage race
+--race-instances Random-100-100-2-4_0 --no-early-stop --race-deadline 600` then
+`--stage race --race-instances Random-100-100-2-1_0 Random-100-100-2-3_0 Random-100-100-2-5_0
+--race-deadline 600` (10.5 core-hours, 40 min on 16 cores; `portfolio_race.csv`);
+`python -m learning.relabel_portfolio --stage tables`. The pre/post-fix comparison
+joins `portfolio.csv.gz`'s identity rows to `results.csv`, `results_upward.csv` and
+`scale_nodes.csv` by instance name. Tests: `tests/test_relabel_portfolio.py`.
+
+**Method notes.** *Nodes, not seconds, once more*: the seconds spread over
+labellings on a loaded machine (1.49× median) is thirty times the node spread
+(1.05×), and would have passed the kill criterion. *A count is dated by the
+code that made it*: node counts are only comparable within one version of the
+search, and the repository now holds `csearch` counts from three versions
+(before 2026-09-23, between the two fixes, after); `portfolio.csv.gz` carries
+none of that in its columns and should be read as "2026-09-26 after commit
+`0eb33915`". *Parallelise at the call, not the instance*: one job per
+(instance, labelling) kept the longest straggler under four minutes where
+one job per instance would have been an hour. *The first flush should come
+early*: 500 calls at the heaviest instances was 17 minutes of silence.

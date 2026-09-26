@@ -38,7 +38,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       deadline; report the fraction certified by size band and the first n at
       which it stops being affordable. Deliverable: §17 and the table.
       Tests: a 4-customer instance's proof checks; a corrupted proof fails.
-- [ ] 04 · §2.4 **The relabelling portfolio.** From item 01's spreads and new
+- [x] 04 · §2.4 **The relabelling portfolio.** From item 01's spreads and new
       runs at n ∈ {40, 50, 60, 75} (campaign) and 50–100 (corpus), 16 random
       relabellings per instance under `csearch`: the distribution of nodes,
       the expected speed-up of min-of-k for k ∈ {2, 4, 8, 16} against the

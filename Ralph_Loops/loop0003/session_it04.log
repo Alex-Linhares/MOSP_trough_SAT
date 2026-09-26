@@ -1,0 +1,196 @@
+# session it04 started 2026-09-26 13:56:09
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 4: item 04, the relabelling portfolio. I'll read the plan, the §15 spread tables, and the relevant primitives first, then size the runs.
+  > $ date && pgrep -fa "benchmarks.recertify" | head; nproc; uptime; cat Ralph_Loops/loop0003/iterations.md
+  > $ pgrep -f "benchmarks.recertif[y]" | head; echo "---"; nproc; uptime; echo "---"; cat Ralph_Loops/loop0003/iterations.md | head -80
+  > $ grep -n "2.4\|relabel" reports/ml_nature_plan_2.md | head -40; echo ----; sed -n '/^### 2.4/,/^### 2.5/p' reports/ml_nature_plan_2.md
+  > $ grep -n "^## §15\|^## 15\|^## §1[5-7]\|^## 1[5-7]" reports/ml_nature.md; grep -n "spread\|Relabelling spread\|min-of" reports/ml_nature.md | sed -n '1,60p'
+  > $ sed -n 3960,4096p reports/ml_nature.md
+  > $ sed -n 1,140p learning/node_counts.py
+
+Reading the primitives I'll build on: the relabelling helper, the differential harness's runner, the scale test's node counts, and the recertify results for the four censored instances.
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/graph_story.py | head -40; echo ----; sed -n '/^def relabel/,/^def /p' learning/graph_story.py | head -60
+  > $ sed -n 1,80p learning/differential.py; echo; grep -n "^def \|^class \|^[A-Z_]* = " learning/differential.py
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/scale_test.py | head -40; echo ----; head -3 learning/data/ensemble/scale_nodes.csv; wc -l learning/data/ensemble
+  > $ ls recertify/ && python - <<'EOF'
+import json
+r=json.load(open("recertify/results.json"))
+print(type(r), len(r))
+if isinstance(r,dict):
+    ks=list(r)[:5]; prin
+  > $ grep -n "^def decide\|^def sparse_enough\|deadline\|node_budget\|max_nodes" satisfiability/customer_search.py | head -40; echo ----; sed -n '/^def decide(/,/"""
+  > $ python - <<'EOF'
+import pandas as pd
+u=pd.read_csv("learning/data/ensemble/results_upward.csv")
+print(u.columns.tolist()); print(len(u))
+print(u.groupby(["n","m
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/instances.csv")
+print(d.columns.tolist())
+sub=d[(d.n_customers>=50)&(d.n_customers<=100)]
+prin
+  > $ sed -n '/^### 14/,/^### 15/p' reports/ml_nature.md | grep -n "1,500\|censored\|100-100-2\|16 cores\|wall" | head -30; grep -n "Random-100-100-2" reports/ml_natu
+  > $ sed -n 3630,3650p reports/ml_nature.md; echo ....; sed -n 3795,3812p reports/ml_nature.md
+  > $ sed -n 105,200p learning/differential.py; sed -n 326,410p learning/differential.py
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/differential.csv.gz")
+print(d.columns.tolist(), len(d))
+print(d.head(12).to_string())
+  > $ git log --oneline -8 -- satisfiability/customer_search.c; git status --short | head; grep -n "xfail" tests/test_differential.py | head -3; python - <<'EOF'
+impo
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+s=pd.read_csv("learning/data/ensemble/scale_nodes.csv")
+c=s[s.config=="csearch"]
+print(len(c), c.status.value_
+  > $ sed -n 299,325p learning/differential.py; echo ----; sed -n '/^def certified_targets/,/^def /p' learning/node_counts.py | head -50; echo ----; grep -n "^class C
+  > $ sed -n 1,60p tests/test_differential.py; echo ----; python - <<'EOF'
+import pandas as pd
+l=pd.read_csv("benchmarks/results/compute_ledger.csv", low_memory=False
+  > $ python - <<'EOF'
+import pandas as pd
+m=pd.read_csv("learning/data/ensemble/manifest_upward.csv"); print(m.columns.tolist()); print(m.head(2).to_string())
+r=pd.r
+  > Write /home/al/dev/MOSP/learning/relabel_portfolio.py
+  > $ python - <<'EOF'
+import re,pathlib
+p=pathlib.Path("learning/relabel_portfolio.py"); s=p.read_text()
+s=s.replace("_call(inst, k - 1, CONFIG, deadline, None or _d
+
+The run works; only the empty-table case in the tables code failed. Fixing that and re-running the smoke test, then launching the real study.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/relabel_portfolio.py"); s=p.read_text()
+s=s.replace("""    order = {b: i for i, b in enumerate([f"campa
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/relabel_portfolio.py"); s=p.read_text()
+s=s.replace("""    d = inst[(inst.source == "campaign")]
+    if
+
+Pipeline works end to end. Launching the real study (16 workers, 120 s per call) in the background, and writing the tests while it runs.
+  > $ nohup python -m learning.relabel_portfolio --workers 16 --deadline 120 > learning/data/ensemble/portfolio_run.log 2>&1 &
+echo started $!; sleep 20; head -3 lear
+  > Write /home/al/dev/MOSP/tests/test_relabel_portfolio.py
+  > $ timeout 300 python -m pytest tests/test_relabel_portfolio.py -q -x 2>&1 | tail -15
+  > $ tail -3 learning/data/ensemble/portfolio_run.log; uptime; wc -l learning/data/portfolio_partial.csv 2>/dev/null
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Need next: (1) a bounded watch on the study log, (2) the full test suite while cores are free. Both independent.
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/portfolio_run.log | grep -E --line-buffered \"calls,|
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -6
+
+Full suite passes (908 passed, 2 skipped, 1 xfailed). Checking how far the study has got to estimate its finish.
+  > $ date; tail -2 learning/data/ensemble/portfolio_run.log; python - <<'EOF'
+import pandas as pd, os
+p="learning/data/portfolio_partial.csv"
+if os.path.exists(p):
+ 
+
+The study's first flush comes after 500 calls and it runs heaviest first, so no rows yet. I'll wait for the first progress line with a single background wait.
+  > $ until grep -qE "calls,|Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 15; done; date; tail -2 learning/data/ensemble/portfolio_run.log
+
+While the study runs, I'll read how `benchmarks.recertify` dispatches work so the recommendation can be stated concretely.
+  > $ sed -n 1,60p benchmarks/recertify.py | head -80; grep -n "def \|Pool\|workers\|better_move\|deadline\|days" benchmarks/recertify.py | head -40
+
+Recertify runs one worker per open entry on the identity labelling. One more independent fact for the recommendation: how many entries are still open in its current run.
+  > $ tail -15 recertify/run.log; echo; python -c "
+import json; r=json.load(open('recertify/results.json')); print(len(r), [(x['name'],x['status'],round(x['seconds']
+  > $ until grep -qE "calls,|Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 20; done; date; tail -2 learning/data/ensemble/portfolio_run.log
+  > $ date; uptime; ps -o pid,etime,time,pcpu,cmd --ppid 480005 | head -20; ls -la learning/data/portfolio_partial.csv 2>/dev/null
+  > $ until grep -qE "calls,|Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 20; done; date; tail -2 learning/data/ensemble/portfolio_run.log
+
+Nothing else is independent of the study's output. Holding with a bounded foreground wait.
+  > $ until grep -qE "calls,|Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 20; done; date; tail -2 learning/data/ensemble/portfolio_run.log
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/portfolio_partial.csv")
+print(len(d), d.base_name.nunique(), d.groupby(["n","m"]).size().to_di
+
+Rate check: 500 calls in 17.5 minutes, the heaviest cell half done, witness-side calls cheap (about 1.5 s). Projected finish around 14:52. Waiting on the next flush.
+  > $ until grep -qE "1500/|Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 20; done; date; tail -2 learning/data/ensemble/portfolio_run.log
+
+It's accelerating (2,000 calls at 20 minutes). Waiting for the finish marker.
+  > $ until grep -qE "Traceback|rows ->" learning/data/ensemble/portfolio_run.log; do sleep 20; done; date; grep -E "calls,|rows ->" learning/data/ensemble/portfolio_
+  > $ pgrep -f "learning.relabel_portfolio --worker[s]" || echo "study exited"; rm -f learning/data/ensemble/portfolio_race.csv; nohup bash -c 'python -m learning.rel
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+print(len(d), d.base_name.nunique())
+print(d.gro
+  > $ sed -n '/^## Witness search (optimum)/,$p' reports/portfolio_tables.md
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+old=pd.read_csv("learning/data/ense
+  > $ date; cat learning/data/ensemble/portfolio_race.log
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.relabel_portfolio import per_instance, expected_min
+d=pd.read_csv("learning/data/ensemble/portfo
+  > Write /tmp/sec18_draft.md
+
+Draft is written. Waiting for the first race (the fast instance, all 16 labellings) to finish.
+  > $ until grep -qE "Traceback|racing \['Random-100-100-2-1_0'" learning/data/ensemble/portfolio_race.log; do sleep 15; done; date; cat learning/data/ensemble/portfo
+  > $ git log --format='%h %ad %s' --date=iso -6 | cat; echo; ls -la --time-style=long-iso learning/data/ensemble/scale_nodes.csv learning/data/ensemble/results_upwar
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+idn=d[(d.labelling=="identity")&(d.
+  > $ sed -n '/^### 7\|^## 7/,$p' reports/better_move_bug.md | head -80
+  > $ sed -n '/^### What it costs/,$p' reports/better_move_bug.md
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+idn=d[(d.labelling=="identity")&(d.
+  > $ while kill -0 539268 2>/dev/null; do sleep 15; done; date; sed -n '/racing \[.Random-100-100-2-1_0/,$p' learning/data/ensemble/portfolio_race.log
+
+Peeking at the race log and continuing the bounded wait in parallel.
+  > $ date; sed -n '/racing \[.Random-100-100-2-1_0/,$p' learning/data/ensemble/portfolio_race.log
+  > $ while kill -0 539268 2>/dev/null; do sleep 15; done; date; echo race exited
+  > Write /tmp/sec18_tail.md
+
+Only the race's end is pending; everything else depends on it. Waiting.
+  > $ while kill -0 539268 2>/dev/null; do sleep 15; done; date; sed -n '/racing \[.Random-100-100-2-1_0/,$p' learning/data/ensemble/portfolio_race.log | grep -v "unk
+  > $ python -m learning.relabel_portfolio --stage tables > /dev/null && python - <<'EOF'
+import pandas as pd
+r=pd.read_csv("learning/data/ensemble/portfolio_race.csv
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -3
+
+Race complete (10.5 core-hours, over the 8 budgeted; I'll say so). Tests pass. Assembling §18 with the race table built from the CSV and appending it to the report.
+  > $ python - <<'EOF'
+import pandas as pd
+from pathlib import Path
+r=pd.read_csv("learning/data/ensemble/portfolio_race.csv")
+ref={"Random-100-100-2-4_0":"9.31 × 10⁷
+  > $ ls -la learning/data/ensemble/portfolio* learning/data/portfolio_partial.csv 2>/dev/null; grep -n "partial" .gitignore; git status --short | grep -v Ralph_Loops
+
+Need next: remove the regenerable partial file I created, append the PROGRESS.md entry, and mark the item in iterations.md. All three are independent.
+  > $ rm -f learning/data/portfolio_partial.csv && echo removed
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path("Ralph_Loops/loop0003/PROGRESS.md"); s=p.read_text()
+s=s.replace("- **Current**: 3/14 SOLVED","- **Current**: 4
+  > $ sed -i 's/^- \[ \] 04 · §2.4 \*\*The relabelling portfolio\.\*\*/- [x] 04 · §2.4 **The relabelling portfolio.**/' Ralph_Loops/loop0003/iterations.md && grep -n 
+
+Final checks, all independent: the appended section's key spots, that `solutions/` is untouched, and that the module's help runs.
+  > $ grep -n "^## 18\.\|^### (a)\|^### (b)\|^### (c)\|^### (d)\|^### (e)\|^### (f)" reports/ml_nature.md; sed -n '/^### (d) The race/,/^`Random-100-100-2-4_0` is the
+  > $ git status --short solutions/ | head -3; echo "solutions status above (empty = untouched)"; python -m learning.relabel_portfolio --help | head -3
+
+Item 04 is done. Everything the iteration required is written: the module, the tests, §18 of the report, the tables, PROGRESS.md and iterations.md. Nothing was committed and `solutions/` is untouched.
+
+**Outcome: the kill criterion is met, decisively.** Under the `csearch` configuration, relabelling the customers barely moves the cost of a refutation at any size from 40 to 100. The median min-of-8 speed-up at n ≥ 60 is 1.003 over 804 instances, and 1.009 on the 389 hard ones. The spread shrinks with n rather than growing, and a 16-way portfolio wastes fifteen of its sixteen cores. No cheap statistic of a labelling predicts its cost either. The recommendation, stated in §18 (f) and not applied, is not to add a relabelling portfolio to `benchmarks.recertify`.
+
+**Where labels do matter** is the witness search at the optimum. Its spread grows with n, and where that search is hard, min-of-16 saves 8 to 13× at near-free core cost. But it is the cheap side of a descent, so a portfolio there removes only 2 to 5% of a descent pair's cost.
+
+**An unplanned finding from the race.** Today's `better_move` fix costs far more at scale than the +7% measured at n ≤ 40. On `Random-100-100-2-4`, the one ridge instance recorded both before and after the fix, the identity refutation went from 93 million nodes in 37 s to over 1.39 billion nodes unfinished at 600 s, a factor of at least 15. The ratio is 2.3 to 3.5× on `Random-100-50-2/4` and 1.2 to 1.3× at 50 to 75. Every earlier `csearch` node count in the repository is a pre-fix count, including the 125×125 recertify counts and 71 of 135 cells of iteration 2's upward campaign.
+
+**Two alerts for the owner**, outside this item's scope and restated in PROGRESS.md. The recertify run started 2026-09-24 still has three 125×125 entries open on the pre-fix C, and its five completed re-certifications rest on the rule the bug report shows unsound. Re-running them on the fixed C will take longer than the 25 to 53 hours each took, by a factor nobody has measured at that size.
+
+**Compute and verification.** The study cost 5.95 core-hours and the race 10.5 core-hours, over the 8 the plan budgeted. The full test suite passes with 908 passed, 2 skipped, 1 xfailed. Items 05 through 14 remain, so no LOOP_COMPLETE line was added.
+
+# result: success in 4449s, 72 turns, cost $18.17

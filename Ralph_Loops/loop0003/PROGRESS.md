@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 3/14 SOLVED
+- **Current**: 4/14 SOLVED
 
 ---
 
@@ -225,3 +225,95 @@ corpus at n ≤ 40 now carries a third-party-checkable refutation.
   five in conflicts would buy perhaps 150 for ~40 core-hours on the observed
   curve; the 295 Harvey/Simonis 30 × 30 at k 21–30 are the bulk and the
   least responsive.
+
+## Iteration 4 — 2026-09-26 15:15
+
+**Item 04 · §2.4 The relabelling portfolio** — SOLVED. **Kill criterion met,
+by a wide margin**: median min-of-8 refutation speed-up at n ≥ 60 is 1.003
+(804 instances) and 1.009 on the 389 whose identity refutation costs ≥ 10⁴
+nodes; the spread shrinks with n rather than growing. The race produced an
+unplanned finding: today's `better_move` fix costs ≥ 15× nodes on the one
+ridge instance at n = 100 where both sides are on record.
+
+### Completed
+- `learning/relabel_portfolio.py`: identity + 16 seeded relabellings per
+  instance, `decide(optimum − 1)` and `decide(optimum)` under `csearch`,
+  one pool job per (instance, labelling); exact E[min-of-k] by order
+  statistics; speed-ups against the identity and the median labelling,
+  core efficiency; growth fit; six cheap labelling statistics plus the
+  witness count as predictors; `--stage race` (16 labellings on 16 cores,
+  losers terminated at the first refutation, `--no-early-stop` to run all);
+  projection from `recertify/results.json` and §16's predictions.
+- The study: 1,572 instances (8 per cell from 171 campaign cells at
+  n ∈ {40, 50, 60, 75}; 204 corpus instances at 50–100, the ten
+  `Random-100-100-2/4` excluded as unaffordable), 53,448 decision calls,
+  5.95 core-hours, 22 min on 16 workers. Audit free: 26,697 `unsat` + 27
+  censored at optimum − 1, 26,724 `sat` with valid witnesses at the optimum,
+  no value contradicted.
+- **Refutation**: max/min over 16 labellings median 1.00–1.05, p90 1.11–1.26
+  in every band; min-of-16 vs identity median 1.00–1.02; widest spread in
+  the study 2.14×; core efficiency of a 16-way portfolio 0.063. Same 288
+  n = 40 instances and nine labellings as item 01: p90 spread 1.21 before
+  the fix, 1.12 after. Seconds spread on the loaded machine 1.49× median
+  against 1.05× in nodes — the clock alone would have passed the kill.
+- **Witness search**: spread grows with n (p90 max/min 7 → 542 from 40 to
+  75); where it is hard (≥ 10⁴ nodes, 67 of 360 at n = 75) min-of-16 saves
+  8–13× at core efficiency 0.5–0.8; but it is 183 nodes against 27,900 for
+  the refutation at n = 75, so a portfolio on it removes 2–5% of a descent
+  pair's cost. No cheap statistic predicts a labelling's cost (|ρ| < 0.35).
+- **Race** (10.5 core-hours against 8 budgeted; the overrun is the fourth
+  instance run all sixteen ways to the deadline): `Random-100-100-2-4_0`,
+  §14 identity 93.1 M nodes / 37 s pre-fix — today's identity ≥ 1.39 G nodes
+  at 600 s unfinished, 3 of 16 labellings finished (630 M–1.25 G), spread
+  ≥ 2.9×, portfolio wall ≥ 2.1× the identity's at 16× the cores. The three
+  §14-censored instances: 0 of 48 labellings finished in 600 s; counts at
+  the deadline span 1.5–1.6× (rate, not size).
+- **The fix's cost at scale** (§18 (e)): post/pre ratio on the identity
+  where Theorem 2 is on — 1.00 (p90 1.09) at n = 40; medians 1.06–1.07
+  (p90 1.37–1.55, max 34) in the m = n/2 cells at 50–75; 1.19–1.27 on
+  `Random-50/75-*-2`; 2.3× and 3.5× on `Random-100-50-2/4`; ≥ 15× on
+  `Random-100-100-2-4`. Dense classes and every `default` count unchanged.
+  `results.csv`, `scale_nodes.csv`, the recertify counts and 71 of 135
+  `results_upward.csv` cells are pre-fix `csearch` counts.
+- `reports/ml_nature.md` §18 (a)–(f); `reports/portfolio_tables.md`;
+  `learning/data/ensemble/portfolio.csv.gz` (1.1 MB), `portfolio_race.csv`,
+  two logs; ensemble directory 69 MB apparent.
+- `tests/test_relabel_portfolio.py`: 8 tests (order statistics against
+  brute force, statistics on the spider, seeded labellings, status
+  invariance under relabelling, both-sides job row, per-instance speed-ups
+  with a censored maximum kept as a lower bound, table and kill verdict on
+  a toy, a two-way race with append-not-rewrite). Full suite: 908 passed,
+  2 skipped, 1 xfailed in 86 s. No solver default, flag or C changed;
+  nothing written to `solutions/`.
+
+### Blockers
+- None for the item. Deliverables as asked: speed-up curve (§18 (a), flat),
+  projection for the 125 × 125 ridge (§18 (f): the identity's own wall
+  clock; pre-fix 25–28 h per `-2` instance), recommendation stated and not
+  applied (no relabelling portfolio in `recertify`; the satisfiable side is
+  where labels pay).
+- **Alerts for the owner, outside this item** (restating iteration 1's with
+  new evidence): the `benchmarks.recertify` run started 2026-09-24 still has
+  three 125 × 125 entries open on the pre-fix C, and its five completed
+  re-certifications rest on the rule `reports/better_move_bug.md` §7 shows
+  unsound (bug A within the rule). Under the fixed C the same refutations
+  need more nodes by a factor that is ≥ 15 on the one n = 100 ridge instance
+  measured both ways, so re-running them will take longer than 25–53 h each
+  by an amount nobody has measured. The §14/§16 `csearch` rate constants are
+  pre-fix.
+- Process notes for the driver: one job per (instance, labelling) kept
+  stragglers short; the first progress flush at 500 calls was 17 min of
+  silence on the heaviest cells — flush earlier; the study's 120 s deadline
+  censored only 27 calls on 3 instances.
+
+### Next
+- Item 05 · §2.3 predicting cost: the noise floor is MAD log10 0.004–0.007
+  on refutations (§18 (a)); **every `csearch` count must be dated** — train
+  on one version's counts only (post-fix: `portfolio.csv.gz` identity rows,
+  1,572 instances at 40–100; the `default` counts are unaffected everywhere
+  and are the safer target).
+- Item 07 · §2.5b Theorem 2's switch: the fixed rule's saving is smaller
+  than §13–§16 measured (pre-fix); re-measure `csearch` vs `default` on the
+  fixed C before fitting the boundary.
+- A satisfiable-side portfolio (ratchet, `restricted_dfs` seeds, `k ≥ optimum`
+  descent calls) is the one place labels pay; not in this loop's items.

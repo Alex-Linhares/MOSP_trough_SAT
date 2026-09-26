@@ -15,3 +15,8 @@
 [2026-09-26 12:20:05] claude session it03 (cap 3.00 h) -> session_it03.log
 [2026-09-26 13:54:49] session it03: ok (exit 0, 93 tool calls)
 [2026-09-26 13:56:09] tests passed: 900 passed, 2 skipped, 1 xfailed, 152 warnings in 78.51s (0:01:18)
+[2026-09-26 13:56:09] committed 67c85bc7: 03 · §2.1b DRAT proofs at n ≤ 40. Build drat-trim under `tools/`
+[2026-09-26 13:56:09] === iteration 4: 04 · §2.4 The relabelling portfolio. From item 01's spreads and new
+[2026-09-26 13:56:09] claude session it04 (cap 3.00 h) -> session_it04.log
+[2026-09-26 15:10:19] session it04: ok (exit 0, 71 tool calls)
+[2026-09-26 15:11:45] tests passed: 908 passed, 2 skipped, 1 xfailed, 156 warnings in 85.17s (0:01:25)
