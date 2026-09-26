@@ -373,13 +373,18 @@ learning/                       → ML over the certified corpus (instance → o
     bound_gap.py                    Where the proved bounds fail; the treewidth ceiling
     distil.py                       Distils the closing policy into readable rules
     degeneracy.py                   Exact counts of optimal orderings by lattice path counting (n ≤ 15)
+    ensemble.py                     Generated G(n, m, p) campaign: solve, refute, feature, certify (n ≤ 40)
+    hardness_map.py                 Nodes against density per size: the phase transition
+    concentration.py                Variance of the optimum per cell; E[opt](n, m, p)
+    graph_story.py                  Same graph, different clique covers: is hardness a graph property?
+    scale_test.py                   The n ≤ 40 laws against the Chu & Stuckey corpus at 30–125
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
 tests/                          → 779 tests across 37 test modules
 literature/                     → Reference papers (PDFs)
-Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001 done, loop0002 proposed)
+Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001, loop0002 done; loop0003 proposed: `reports/ml_nature_plan_2.md`)
 ```
 
 ## Two Graph Formulations
@@ -740,6 +745,8 @@ says otherwise; nothing in it is a bound or a solver change.
   It is a bound on nothing (below on 481, above on 428). The 13 invariants
   add nothing to the *residual* over the bound (−0.004 MAE): they know what
   the bound knows, expressed differently. `bw_rcm + 1 ≥ optimum` on all 6,376.
+  *It stops being the best estimate above about 50 customers*: on the Chu &
+  Stuckey classes its error is 1.3 stacks at 75 and +4.2 at 125 (§14).
 - **No clean formula for the residual; a clean sandwich for the optimum** (§5).
   The best residual formula is `0.01 · (σ_deg / μ_deg) · (n − 1) · sep_size`,
   MAE 0.303 against 0.431 for zero and 0.260 for boosting: degree dispersion
@@ -749,7 +756,9 @@ says otherwise; nothing in it is a bound or a solver change.
   checked), the ends coincide and force the optimum on 2,823, and elsewhere
   the optimum sits at their midpoint on median (IQR ⅓–⅔) in every size band,
   its position tracking sparsity, not size. `degeneracy + 1` is dominated by
-  contraction degeneracy, so nothing goes to the bound work.
+  contraction degeneracy, so nothing goes to the bound work. *The midpoint is
+  a pooled artifact*: on the generated ensembles the position runs from 0
+  below 1.5 customers per product to ⅔ above 6 (§12).
 - **Where the bound fails is structural, not statistical** (§6): gap ≥ 2 never
   occurs below 20 customers, is 338 instances (5.3%) and 51% of Chu & Stuckey,
   and on 131 of the 338 pathwidth provably exceeds treewidth (see the bounds
@@ -791,7 +800,7 @@ is **met against the plan's stated baseline**, the 36-feature model by file
 section reports both. §2.3's (structure cannot beat density and size) and
 §2.6's (no readable rule keeps half the ranker's gain) are **not met**, the
 latter exceeded at 115%. §2.1, §2.2b and §2.6b carry no kill criterion. §2.4,
-§2.5 and §2.9 are loop0002 (`Ralph_Loops/loop0002/`, proposed, not launched).
+§2.5, §2.8 and §2.9 are the campaign below.
 
 **Method notes that each cost a session**: a label column swept into a
 feature set by an every-numeric-column selector scored 1.000 everywhere (the
@@ -803,6 +812,86 @@ at 16 threads and 10,000 iterations, and runs at 4 and 2,000; a bare
 one ulp short, so round before dividing by `aut_order`. The generated
 witnesses of §8 live in `learning/data/degeneracy_solutions/`, which is
 git-ignored: persisted on disk, not in the repository.
+
+**The generated-ensemble campaign** (`reports/ml_nature.md` §9–§14, Ralph
+loop0002, 2026-09-26, six items in 2 h 11 min). The corpus is a lattice of
+size cells with generator fingerprints, so the questions about density had to
+be asked on ensembles we control: 37,800 instances in 252 cells, `n` from 10
+to 40, `m ∈ {n, 2n}`, both generators (Bernoulli `p` and Chu & Stuckey's fixed
+customers per product `d`), 150 per cell, every one certified, refuted at
+`optimum − 1` under both search configurations, featured and canonicalised,
+in 2.16 core-hours. The artifact is committed under `learning/data/ensemble/`
+(manifest, results, witnesses; instances regenerate byte for byte from their
+seeds; 49 MB). Density means *realised* customers per product (`col_mean`)
+throughout: Chu & Stuckey's "density 2" is 2.7–2.8 realised.
+
+- **At n ≤ 40 the campaign is free and seconds do not see hardness** (§9,
+  §10): the refutation is 0.7% of the cost, bounds and features are the rest;
+  the hardest refutation in 37,800 took 0.04 s while node counts vary by three
+  orders of magnitude across cells at fixed `n = 40`. 17% of the instances are
+  complete graphs, 19% decompose (kept and recorded; Chu & Stuckey discard
+  them), 28% are isomorphic repeats within their cell.
+- **There is a phase transition in hardness** (§11, kill not met): at every
+  `n` from 15 to 40, in both generators, median nodes to refute rise and fall
+  with density by two orders of magnitude each side, the peak sharpens with
+  `n`, and on the ridge the median doubles every 2.9–3.5 customers (power law
+  ruled out at 5–10× the residual; off the ridge, every 4.5–4.9). The ridge
+  sits at about three customers per product when `m = n`, two when `m = 2n`.
+  **Chu & Stuckey's density-2 classes sit exactly on the ridge and their
+  density 4 is its dense shoulder** — the one-picture reason those two classes
+  take a day at 125×125. `reports/figures/hardness_map.png`.
+- **The optimum concentrates** (§12, kill not met): CV under 0.2 in every cell
+  at `n = 40` (median 0.031); the only cells above are Bernoulli cells at or
+  below the giant-component threshold. `E[opt]` is a line in `n` at fixed
+  degree (r² ≥ 0.999 in all 17 series) with slope a function of the nominal
+  degree alone; the fitted formula `E[opt] ≈ 2.1(1 − q) + n[1 − √(1 − q)·27/(D + 27)]`,
+  `q = 1 − (1 − p²)^m`, `D = (n − 1)q`, has held-out MAE 0.49 on cell means.
+  **Not a bound** (below on 9,445 instances, above on 10,641).
+- **The graph is the whole story for hardness** (§13, kill met): re-covering
+  the same edge set with different cliques (15,900 re-coverings of 1,400
+  instances) leaves the node count *exactly* unchanged in every pair — the
+  search reads neighbour masks and nothing else, and the C and Python agree
+  on all 15,900 — and graph-only features predict nodes as well as graph plus
+  matrix. Two things move the count and neither is the cover: **relabelling
+  the customers** (2–6% at the median, up to 2.3× default and 8× `csearch`;
+  the search's tie-breaks, the floor for any label-free predictor), and the
+  `csearch` rule that switches Theorem 2 on by a matrix statistic (10–13%,
+  always in its favour; a design choice, not a property of the problem). The
+  matrix does carry the number of optimal closing orders under the
+  construction value, by up to three orders of magnitude, as §8 said.
+- **At 125×125 the forms hold and the constants do not** (§14, kill met for
+  every interval). Measured on the 200 Chu & Stuckey corpus instances, whose
+  50–125 node counts this item computed (5.65 core-hours; `compute_ledger.csv`
+  had the column and no values) and committed as `scale_nodes.csv`. The
+  refutation grows exponentially in `n` at fixed density through 125 in every
+  class (power law 3–5× worse), at rates the `n ≤ 40` cells overstate by
+  0.005–0.018 per customer, a factor of 6–34 at 125 for densities 6–10 but
+  **within a factor of 3 for the two day-long classes**: §11's pre-registered
+  ridge law said 5 × 10¹¹ nodes at 125 and the recertify counts are 1.6–1.7 ×
+  10¹¹, eight decades of extrapolation. The density-2 class stays 2–6× harder
+  than density 4 at every size to 125 while its `optimum / n` falls from 0.29
+  to 0.18, so the ridge's size-stable coordinate is customers per product, not
+  `optimum / n`. `E[opt]` stays linear in `n` to 125 (r² ≥ 0.986) but with
+  intercept 4–5 stacks where the formula has 2.2 and, at density 2, slope
+  0.146 where it saturates at 0.22, so the formula's bias grows linearly to
+  +8 at `Random-125-125-2` and stays within ±2 at densities 4–10. **Every 90%
+  interval calibrated at n ≤ 40 fails by 50 or 75 and is not to be quoted at
+  n ≥ 50**; the size at which each finding stops holding is tabulated in §14.
+  Theorem 2 saves more at scale than at `n ≤ 40`: `csearch / default` nodes
+  0.63 at `n = 100` and 0.17 on `Random-100-50-4`, never a cost.
+
+**Kill criteria, the campaign.** §2.4 and §2.5 **not met** (a peak exists; the
+optimum concentrates). §2.9 **met** (graph-only predicts nodes as well as the
+full set, and the cover changes nothing). §2.8 **met** for both quantities and
+every estimate: no interval from §11, §12 or §14 at `n ≥ 50`.
+
+**Method notes from the campaign**: plot density as realised `col_mean`, not
+nominal `p`, or the peak appears to drift; the recertify configuration equals
+`csearch` on any instance with ≤ 5 products per customer, so its counts are
+`csearch` observations and never `default` ones; a censored refutation is a
+lower bound, not a missing value; a column-key collision silently overwrote
+one law's column with another's in a first draft, caught by reading the table
+against its summary.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
