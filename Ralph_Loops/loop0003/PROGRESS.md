@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 6/14 SOLVED
+- **Current**: 7/14 SOLVED
 
 ---
 
@@ -485,9 +485,96 @@ drivers only, not applied.
 ## Iteration 7 — 2026-09-26 17:06:34
 ### Completed
 - (driver) session ended with outcome `ok` without marking the item
+- (owner, 17:15) The session finished the study and the tests (946 passed) and
+  committed `learning/theorem2.py`, `tests/test_theorem2.py` and a 40-instance
+  smoke-test `reports/theorem2_tables.md` (c98f0477), then ended its turn
+  waiting on one 125 × 125 straggler — the failure mode TASK.md warns about.
+  **No §21 was written.** Its full run (50,911 instances, 203,644 decision
+  calls, 4.4 core-hours) was still alive as `python -m learning.theorem2
+  --workers 16` (PID 661367) at 17:15, appending to
+  `learning/data/theorem2_partial.csv`; if it has finished, its output is the
+  data for the section; if the straggler is a ridge 125 × 125 refutation it
+  may never finish and should be censored. Item 07 has been re-opened
+  (`- [ ]`) so it is redone after item 08: read `session_it07.log`, reuse the
+  committed code and the partial/full CSV, regenerate the tables with
+  `--stage tables`, and write §21. Do not re-run the whole study.
 ### Blockers
 - see session_it07.log
 ### Next
-- revisit or re-open this item
+- re-opened; see above
 
 ---
+
+## Iteration 8 — 2026-09-26 17:57
+
+**Item 08 · §2.7 Extremal search and exact treewidth** — SOLVED. **Kill
+criterion not met** for four of the five objectives: a bit-flip search with
+the exact solver as oracle beats the corpus's worst instance at the same size
+on `gap` (2 vs 1 at 14–15), `pw − tw` (2 vs 0–1 at 10 and 13–18), refutation
+nodes (3–12× at every n with a corpus instance) and `cs-dfs` overshoot (4 vs 2
+at 15); met for `disagree` (zero in 25,583 adversarial evaluations and in all
+727,816 evaluations that computed it).
+
+### Completed
+- `learning/treewidth.c` + `learning/treewidth.py`: exact treewidth two ways
+  — the O(2ⁿ · n · poly) subset DP (Bodlaender et al.) to n = 26 (5 × 5 grid
+  in 2.2 s), and a decision search "tw ≤ k?" over elimination prefixes with
+  simplicial / almost-simplicial reductions, an MMD cut and a failure memo, to
+  n = 64 under a node budget and deadline (a censored run is an interval).
+  Every answer carries an elimination ordering re-checked by
+  `elimination_width`; a Python reference of the recurrence is in the tests.
+- `learning/extremal.py`: the oracle evaluation (optimum, four component
+  bounds, exact tw, both configurations at `optimum − 1` and `optimum`,
+  `cs-dfs`), hill climbing over bit flips with nauty canonical dedupe and a
+  fewer-edges tie-break, three seed families (trees of cliques, Bernoulli,
+  subsets of §6's ten), stages `corpus` / `search` / `tables`, re-certification
+  of every draw (solver, both refutations, lattice oracle at n ≤ 15, pathwidth
+  DP at n ≤ 18, clique + ordering for tw), and a proof block per `pw − tw`
+  instance.
+- **The corpus pass** (167 s on 8 workers): exact treewidth on 4,335 of 4,443
+  instances — all 4,122 at n ≤ 20, 212 of 234 gap ≥ 2 instances at 27–50 by
+  the decision search. **§6's 38.8% floor is now an interval**: `pw > tw` on
+  164 of 338 gap ≥ 2 instances (48.5%), `pw = tw` on 80 (23.7%), 94 open (82
+  above 64 customers, 12 censored). Corpus max `pw − tw`: 1 to n = 18, 2 at
+  19–40, 3 at 50 (`p2050n9_0`).
+- **The search** (1,431 jobs, 727,816 oracle evaluations, 30.2 M duplicates
+  skipped, 2.73 core-hours): the object is a **10-vertex, 21-edge graph with
+  pathwidth 5 and treewidth 3** — three K4s glued pairwise at three hub
+  vertices plus a tenth vertex joined to one non-hub vertex of each —
+  vertex- and edge-minimal for `pw − tw = 2` (all 10 vertex deletions and 21
+  edge deletions evaluated exactly), proved by a K4, an elimination ordering,
+  two refutations, the pathwidth DP and the lattice oracle. Half the size of
+  the corpus's smallest (19) and of the smallest tree (22). `pw − tw` grows
+  with n but slowly (1 at 7, 2 at 10, 3 not below 50 on record); 3 was not
+  reached at n ≤ 20. Every one of the 48 drawn instances re-certifies.
+- `reports/ml_nature.md` §21; `reports/extremal_tables.md` (all tables,
+  drawings, proofs); `learning/data/ensemble/extremal_*.csv[.gz]` (1.4 MB;
+  ensemble directory 74 MB apparent). Generated witnesses under the
+  git-ignored `learning/data/extremal/solutions/`.
+- `tests/test_extremal.py`: 22 tests — DP against known values and a Python
+  reference, min-fill and MMD as bounds, decision search against the DP on
+  random graphs, censoring is not an answer, the spider (tw 1, pw 2) through
+  `evaluate` and `recertify`, certificate invariance, seeds, a planted
+  objective the search must climb with no matrix evaluated twice, kill and
+  growth tables, the corpus job by DP and by decision search, the n > 64
+  fallback. Full suite: 968 passed, 2 skipped, 1 xfailed in 82 s.
+
+### Blockers
+- None for the item. Not done, stated in §21: exhausting the 274,668
+  9-vertex graphs to make the 10-vertex record a theorem (~1 core-hour);
+  128-bit masks for the 82 open gap ≥ 2 instances above 64 customers.
+- Process notes: the C pendant-vertex shortcut first skipped `degree > k`
+  (caught by a `decide(tw − 1)` test); duplicate proposals must not count as
+  steps; a `pgrep -f` pattern naming an output file matches the shell that
+  names it. `learning/data/ensemble/theorem2*` and `reports/theorem2_tables.md`
+  are modified/untracked from iteration 7 and were not touched here.
+
+### Next
+- Item 09 · §2.6 conjecture mining: `learning.extremal.local_search` takes any
+  callable objective and is the adversary the plan asks for; the family to
+  target is cliques glued pairwise at hubs (§21 (b)), which defeats every
+  degree bound and the min-fill ceiling alike. `learning.treewidth` gives
+  exact tw for candidate invariants at n ≤ 26.
+- Item 12 (Lean): the 10-vertex graph is a concrete instance for any
+  `pathwidth > treewidth` statement.
+

@@ -1,0 +1,8 @@
+120 search jobs, 1500 steps each, 8 workers
+  20/120 jobs, 37 s
+  40/120 jobs, 67 s
+  60/120 jobs, 92 s
+  80/120 jobs, 116 s
+  100/120 jobs, 144 s
+  120/120 jobs, 163 s
+search: 120 jobs, 161,957 evaluations in 163 s

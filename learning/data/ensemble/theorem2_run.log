@@ -102,3 +102,7 @@
   49500/50911 instances, 1057 s
   50000/50911 instances, 1057 s
   50500/50911 instances, 1058 s
+tables → reports/theorem2_tables.md
+verdict {'instances': 50911, 'agreement': 0.4123077527449863, 'threshold': 0.95, 'met': False, 'hand_on_learned_off': 0, 'hand_off_learned_on': 29920}
+verdict_decided {'instances': 50867, 'agreement': 0.41179939843120295, 'threshold': 0.95, 'met': False, 'hand_on_learned_off': 0, 'hand_off_learned_on': 29920}
+verdict_n {'instances': 50911, 'agreement': 0.4123077527449863, 'threshold': 0.95, 'met': False, 'hand_on_learned_off': 0, 'hand_off_learned_on': 29920}

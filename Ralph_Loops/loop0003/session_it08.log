@@ -1,0 +1,184 @@
+# session it08 started 2026-09-26 17:07:55
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the relevant report sections, and the key modules, then build `learning/extremal.py`.
+  > $ date && pgrep -af "^python -m benchmarks.recertify" | head; nproc; cat Ralph_Loops/loop0003/iterations.md; grep -n "2.7" reports/ml_nature_plan_2.md | head
+  > $ sed -n 1,60p reports/ml_nature_plan_2.md && echo ------- && sed -n 200,260p reports/ml_nature_plan_2.md && echo ------ && grep -n "^## \|^### " reports/ml_natur
+  > $ sed -n 1140,1215p reports/ml_nature.md && echo ------- && sed -n 1329,1467p reports/ml_nature.md
+  > $ tail -30 reports/ml_nature.md && echo ------ && git status --short | head -20 && ls learning/ && ls learning/data/ | head -40 && grep -n "^def \|^class " learni
+  > $ sed -n 1,95p learning/bound_gap.py && sed -n 499,660p learning/bound_gap.py
+  > $ sed -n 90,125p learning/node_counts.py && grep -n "def solve_mosp_exact" -A 30 satisfiability/mosp_solver.py | head -60 && grep -n "^def \|^STRATEG\|^    \"" sa
+
+Reading the remaining APIs I need (bound features, upper-bound signature, native build pattern, canonical certificate, data tables), all in one pass.
+  > $ sed -n 125,170p learning/features.py && sed -n 571,600p satisfiability/heuristics.py && grep -n "def _build\|def _load\|gcc\|cc \|ctypes.CDLL\|_LIB\b" satisfiab
+  > $ sed -n 40,100p satisfiability/native.py && grep -n "def mosp_lower_bound" -A 12 satisfiability/expansion_bound.py | head -30 && grep -n "def _lower_bound" -A 25
+  > Write /home/al/dev/MOSP/learning/treewidth.c
+  > Write /home/al/dev/MOSP/learning/treewidth.py
+  > $ time python -m learning.treewidth 2>&1 | tail -15
+  > $ sed -n 399,420p learning/degeneracy.py && sed -n 487,500p learning/degeneracy.py && grep -n "HAVE_NAUTY =" learning/canonical.py && python - <<'EOF'
+import time
+  > $ sed -n 168,245p learning/degeneracy.py | head -80 && python - <<'EOF'
+# check: solve_mosp_exact with an empty column; lattice minimum usage
+import numpy as np, 
+  > $ grep -n "def load_table" -A 12 learning/fingerprint.py | head -30 && grep -n "def enumerate_instances" -A 6 learning/dataset.py && grep -n "def decide" -A 12 sa
+  > Write /home/al/dev/MOSP/learning/extremal.py
+  > $ python - <<'EOF' 2>&1 | tail -30
+import time, numpy as np
+from learning import extremal as ex
+rng=np.random.default_rng(0)
+M=ex.tree_of_cliques(12,rng); print(M
+  > $ mkdir -p learning/data/extremal && nohup python -m learning.extremal --stage corpus --workers 8 --deadline 60 > learning/data/ensemble/extremal_corpus_run.log 2
+
+Both runs are launched. Checking their logs, and meanwhile writing the test module.
+  > $ cat learning/data/ensemble/extremal_corpus_run.log; echo ---; cat learning/data/ensemble/extremal_search_run.log; pgrep -fc "learning.extremal"; date
+  > Write /home/al/dev/MOSP/tests/test_extremal.py
+  > $ timeout 600 python -m pytest tests/test_extremal.py -q -x 2>&1 | tail -15; echo ---; tail -2 learning/data/ensemble/extremal_corpus_run.log; tail -2 learning/da
+  > $ python - <<'EOF'
+import numpy as np, networkx as nx
+from learning.treewidth import *
+rng = np.random.default_rng(11)
+for trial in range(25):
+    n = int(rng.int
+  > $ python - <<'EOF'
+import re,pathlib
+p=pathlib.Path("learning/treewidth.c"); s=p.read_text()
+old="""            if (d <= 1) {                         /* isolated 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! pgrep -f "learning.extremal --stage corpu[s]" >/dev/null && ! pgrep -f "learning.extremal --stage searc[h]" >/dev/null; do sleep 10; done; echo DONE; da
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -4; date
+
+Full suite passes (967 passed). Checking on the two runs' progress.
+  > $ tail -2 learning/data/ensemble/extremal_corpus_run.log; tail -1 learning/data/ensemble/extremal_search_run.log; ls learning/data/extremal/solutions | wc -l; dat
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+old="""    else:
+        # the question §6 left open first: tw ≤ pw − 1?
+  > $ cat >> tests/test_extremal.py <<'EOF'
+
+
+def test_tw_job_beyond_64_customers_reports_heuristic_bounds_only():
+    """Above the decision search's word the job rec
+
+The search finished quickly (84,808 evaluations in 5 minutes), so there is budget for a much larger run. First a look at what it found against the corpus's worst per size.
+  > $ python - <<'EOF'
+import pandas as pd
+from learning import extremal as ex
+jobs=pd.read_csv(ex.JOBS_CSV)
+best=ex.best_per_cell(jobs)
+fr=ex.corpus_frame()
+base=ex.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+# 1. run_search: extra seeds + tag
+old="""def run_search(workers: int, s
+  > $ sed -n 5231,5330p reports/ml_nature.md | head -110
+  > $ tail -1 learning/data/ensemble/extremal_corpus_run.log; tail -1 learning/data/ensemble/extremal_search_run.log; date; uptime
+  > $ until ! pgrep -f "learning.extremal --stage corpu[s]" >/dev/null; do sleep 10; done; echo CORPUS_DONE; date; tail -4 learning/data/ensemble/extremal_corpus_run.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+old="""def _md(table: pd.DataFrame, floatfmt: str = ".3f") -> str:"""
+ne
+  > $ python - <<'EOF'
+import numpy as np, networkx as nx
+from learning import extremal as ex
+from learning.treewidth import masks_from_matrix
+keys=open("learning/dat
+  > $ until ! pgrep -f "learning.extremal --stage corpu[s]" >/dev/null; do sleep 5; done; tail -3 learning/data/ensemble/extremal_corpus_run.log; date; python - <<'EO
+  > $ nohup python -m learning.extremal --stage search --workers 8 --steps 1500 --restarts 6 2 12 --objectives pwtw --sizes 7 8 9 10 11 12 --extra-sizes --seed-keys l
+  > $ python - <<'EOF'
+import pandas as pd
+from learning import extremal as ex
+c=pd.read_csv(ex.CORPUS_TW_CSV)
+e=c[c.tw_exact].assign(d=lambda x:x.pw-x.tw_lo)
+print(e
+  > $ tail -1 learning/data/ensemble/extremal_search_run.log; tail -1 learning/data/ensemble/extremal_minimal_run.log; date
+  > $ python - <<'EOF'
+import pandas as pd
+j=pd.read_csv("learning/data/ensemble/extremal_jobs_minimal.csv")
+print(j.groupby("n").agg(best=("best_value","max"),evals=
+  > $ mv learning/data/ensemble/extremal_jobs_minimal.csv learning/data/extremal/jobs_minimal_v0.csv; rm -f learning/data/ensemble/extremal_trace_minimal.csv.gz; nohu
+  > $ until ! pgrep -f "learning.extremal --stage search .*_minima[l]" >/dev/null; do sleep 10; done; echo MINIMAL_DONE; date; tail -2 learning/data/ensemble/extremal
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+old="""        rows.append({"objective": objective, "n": int(n), "value"
+  > $ for i in $(seq 1 60); do if ! pgrep -f "learning.extremal --stage search .*_minima[l]" >/dev/null; then break; fi; sleep 10; done; tail -1 learning/data/ensembl
+
+Still waiting on the two searches; checking their logs now.
+  > $ tail -1 learning/data/ensemble/extremal_minimal_run.log; tail -1 learning/data/ensemble/extremal_search_run.log; pgrep -fc "learning.extremal --stage searc[h]";
+
+Both searches are done (193,051 + 161,957 oracle evaluations). Building the tables, which also re-certifies every drawn instance.
+  > $ time python -m learning.extremal --stage tables 2>&1 | tail -60
+  > $ sed -n 1,40p reports/extremal_tables.md; grep -n "^## " reports/extremal_tables.md; python - <<'EOF'
+import pandas as pd
+b=pd.read_csv("learning/data/ensemble/e
+  > $ python - <<'EOF'
+import numpy as np, itertools, pandas as pd
+from learning import extremal as ex
+b=pd.read_csv("learning/data/ensemble/extremal_best.csv")
+k=b[(
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+old='''def _md(table: pd.DataFrame, floatfmt: str = ".3f") -> str:
+    r
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/1a1aa369-628d-42d0-acdd-5e46ea204a37/tasks/b2my791n0.output | tail -12; tail -2 learning/data/ensemble/extremal_core_run.
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "b2my791n0"}
+  > $ python - <<'EOF'
+import pandas as pd
+j=pd.read_csv("learning/data/ensemble/extremal_jobs_core.csv")
+print(j.groupby("n").agg(best=("best_value","max"),evals=("e
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text()
+old='''def proof_block(key: str, solutions_dir: Path = SCRATCH_SOLUTIONS
+  > $ pkill -f "^python -m learning.extremal --stage search .*--tag _core10$" ; python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/extremal.py"); s=p.read_text(
+  > $ for i in $(seq 1 100); do pgrep -f "^python -m learning.extremal --stage search .*--tag _core10$" >/dev/null || break; sleep 5; done; tail -1 learning/data/ense
+
+Everything is computed. Now gathering the last numbers and file sizes while the full test suite runs, then writing §21, PROGRESS.md and iterations.md.
+  > $ du -ch learning/data/ensemble/extremal_* | tail -1; ls -la learning/data/ensemble/extremal_*; du -sh --apparent-size learning/data/ensemble; git status --short 
+
+Tests pass (968). Writing the report section now.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 21. Extremal search and exact treewidth: what are the worst small instances, and is pathwidth − treewidth bounded? (plan
+  > $ python - <<'EOF'
+import re, pathlib
+tables = pathlib.Path("reports/extremal_tables.md").read_text()
+sec = tables.split("## The smallest instances found")[1].spl
+
+The report is fixed with the real matrix and ordering. The one remaining step is PROGRESS.md.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("Ralph_Loops/loop0003/PROGRESS.md"); s=p.read_text()
+assert "- **Current**: 6/14 SOLVED" in s
+s=s.replace("- **Cu
+
+Item 08 is complete: code, tests, report section, tables, PROGRESS.md and iterations.md are all written, and nothing was committed or written to `solutions/`.
+
+**What was built**
+- `learning/treewidth.c` and `learning/treewidth.py`: exact treewidth by the subset DP to 26 vertices and by a decision search with simplicial reductions to 64, each answer carrying a re-checkable elimination ordering.
+- `learning/extremal.py`: the bit-flip local search with the exact solver as oracle, nauty deduplication, five objectives, three seed families, the corpus treewidth pass, and re-certification of every draw by solver, both refutation configurations, lattice oracle and pathwidth DP.
+- `tests/test_extremal.py`: 22 tests. Full suite passes with 968 tests in 82 s.
+
+**What was found** (`reports/ml_nature.md` §21, `reports/extremal_tables.md`)
+- **Kill not met** on four of five objectives. The search beats the corpus's worst instance at the same size on gap, on pathwidth minus treewidth, on refutation nodes (3 to 12 times), and on `cs-dfs` overshoot. It is met for the soundness objective: zero wrong answers in 727,816 evaluations.
+- **The smallest known instance with `pw − tw ≥ 2` has 10 vertices**: three K4s glued pairwise at three hub vertices plus one vertex tied to each. Treewidth 3, pathwidth 5, vertex-minimal and edge-minimal, proved by a K4, an elimination ordering, two refutations, the pathwidth DP and the lattice oracle. The corpus's smallest has 19 vertices and the smallest tree needs 22.
+- **§6's floor is now an interval.** Of the 338 gap ≥ 2 corpus instances, pathwidth exceeds treewidth on 164, equals it on 80, and 94 are open, mostly above 64 customers where the decision search does not reach.
+- `pw − tw` grows with n but slowly: 1 at 7 vertices, 2 at 10, and 3 not below 50 customers on any record.
+
+**Caveats recorded in the report**
+- The 10-vertex graph is a record, not a theorem; exhausting the 9-vertex graphs would take about a core-hour and was not run.
+- A pendant-vertex shortcut in the C first skipped the degree check and was caught by a test before any result depended on it.
+- The `theorem2*` files modified in iteration 7 were left untouched.
+
+Items 09 to 14 remain open and item 07 stays blocked, so no `LOOP_COMPLETE` line was added.
+
+# result: success in 2986s, 61 turns, cost $15.32

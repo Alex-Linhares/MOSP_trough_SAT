@@ -1,0 +1,11 @@
+4443 corpus instances for exact treewidth (4122 at n ≤ 20, 338 with gap ≥ 2)
+  500/4443, 147 s
+  1000/4443, 151 s
+  1500/4443, 154 s
+  2000/4443, 155 s
+  2500/4443, 155 s
+  3000/4443, 155 s
+  3500/4443, 155 s
+  4000/4443, 155 s
+  4443/4443, 160 s
+corpus treewidth: 4443 rows in 167 s; exact on 4335

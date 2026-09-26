@@ -5501,3 +5501,286 @@ moves — a pre-existing difference in witness *format* that a naive C-vs-Python
 order comparison trips on; compare on the active customers. And a recorded
 count is only as exact as the CSV that stored it: `results_upward.csv` wrote
 six significant digits.
+
+## 21. Extremal search and exact treewidth: what are the worst small instances, and is pathwidth − treewidth bounded? (plan 2 §2.7, loop0003 item 08)
+
+*2026-09-26. Code: `learning/extremal.py` (the search, the corpus pass, the
+tables) and `learning/treewidth.py` / `learning/treewidth.c` (exact treewidth:
+the O(2ⁿ · n · poly) subset DP of Bodlaender, Fomin, Koster, Kratsch &
+Thilikos to n = 26, and a decision search "tw ≤ k?" over elimination prefixes
+with simplicial / almost-simplicial reductions and a failure memo to n = 64).
+Item 07 (§2.5b) ended without a section; this is the next number. Regenerate:*
+
+```bash
+python -m learning.treewidth                                   # self-check: paths, cycles, grids, Petersen (~3 s)
+python -m learning.extremal --stage corpus --workers 8          # exact treewidth over the corpus (~3 min)
+python -m learning.extremal --stage search --workers 8 --steps 1200 --restarts 6 3 6 --tag _main      # ~10 min
+python -m learning.extremal --stage search --workers 8 --steps 1500 --restarts 6 2 12 --objectives pwtw \
+    --sizes 7 8 9 10 11 12 --extra-sizes --seed-keys learning/data/extremal/pwtw_seeds.txt --tag _minimal
+python -m learning.extremal --stage tables                     # reports/extremal_tables.md, re-certifies every draw
+python -m pytest tests/test_extremal.py -q
+```
+
+*Writes `learning/data/ensemble/extremal_corpus_tw.csv` (exact or interval
+treewidth for 4,443 corpus instances), `extremal_jobs_*.csv` (one row per
+search job with its best instance as a matrix key and its witness),
+`extremal_trace_*.csv.gz` (objective value per evaluation), `extremal_best.csv`
+(the best instance per objective and n, re-certified) and
+`reports/extremal_tables.md` (every table, every drawing, the proofs); 1.4 MB
+in all. Witnesses of the ~730,000 generated instances sit under
+`learning/data/extremal/solutions/` (git-ignored, regenerable). Nothing is
+written to `solutions/`; no bound and no solver path is touched.*
+
+**Question.** §6 described the instances the proved bound misses as *trees of
+cliques with branching* and showed pathwidth strictly above treewidth on 131 of
+the 338 gap ≥ 2 instances — a floor, since min-fill is only an upper bound on
+treewidth. Two things were left open: whether small instances exist that are
+*worse* than anything in the corpus, per objective, and what `pw − tw`
+actually is where the heuristic could not say. Both need an exact treewidth,
+which the repository did not have.
+
+**Method.** (1) *Exact treewidth.* The C subset DP (`TW(S) = min_v max(TW(S − v),
+|Q(S − v, v)|)`, one byte per subset; a 5 × 5 grid in 2.2 s, a 20-vertex
+graph in 0.05 s) for n ≤ 26, and for larger graphs a depth-first decision
+search over elimination prefixes that eliminates simplicial and
+almost-simplicial vertices of degree ≤ k at once (each yields a minor, so the
+answer is unchanged), refutes a node on a simplicial vertex of degree > k or
+an MMD bound > k, and memoises failed prefixes; run upward from MMD to
+min-fill under a node budget and a 60 s deadline, so a censored run is an
+interval and never a value. Every answer carries an elimination ordering
+whose width `elimination_width` recomputes with no shared code; the tests
+check the DP against a Python reference of the recurrence, against known
+values (paths, cycles, grids, K_n, Petersen, K_{3,4}) and against min-fill and
+MMD as bounds, and the decision search against the DP on 25 random graphs.
+Applied to every corpus instance at n ≤ 20 (4,122) and to all 338 gap ≥ 2
+instances (n ≤ 26 by DP; 27–50 by the decision search, asking `tw ≤ pw − 1?`
+first; above 64 customers, the search's word size, min-fill and MMD only,
+recorded as open). (2) *The extremal search.* Hill climbing with sideways
+moves over bit flips of the customer × product matrix (one flip 70%, two
+20%, move a one within its product 10%), `solve_mosp_exact` as the oracle on
+every candidate, canonical deduplication of the MOSP graph by nauty
+certificate (every objective but the trivial bound is a graph invariant,
+§13), ties broken towards fewer edges so the walk drifts to minimal
+examples, a kick of 2–8 flips after 60 consecutive duplicates. Five
+objectives: `gap = optimum − lb_best`; `pwtw = (optimum − 1) − tw` with the
+exact tw; `nodes` of the default refutation of `optimum − 1`; `cs-dfs`
+overshoot; and `disagree`, the number of wrong answers among `decide(optimum
+− 1)` and `decide(optimum)` under both configurations (§15's soundness
+objective). Seeds: random trees of cliques (products glued at hub customers
+until every customer is covered), Bernoulli matrices, and random customer
+subsets of §6's ten smallest gap ≥ 2 instances; then two focused runs for the
+treewidth objective seeded from the best instances found. Every drawn
+instance is re-certified by the exact solver, both refutation configurations
+at `optimum − 1` and `optimum`, the lattice oracle (`learning.degeneracy`,
+n ≤ 15) and the exact pathwidth DP (`fixed_parameter_algorithm.pathwidth`,
+n ≤ 18); its treewidth by the clique it contains and the elimination
+ordering it carries.
+
+**Baseline.** The corpus's worst instance at the same n per objective
+(`instances.csv` for `gap` and overshoot, `node_counts.csv` for nodes, this
+section's exact treewidth for `pw − tw`; the corpus has no instance at n = 8,
+11, 12 or 16).
+
+**Kill (plan 2 §2.7).** The corpus is already extremal if the search beats
+none of its worst instances at the same size.
+
+### The run
+
+| stage | size | cost |
+|:--|:--|:--|
+| exact treewidth, corpus | 4,443 instances: 4,122 at n ≤ 20 (all by DP) and 338 gap ≥ 2 at 20–134 (234 by the decision search, 87 above 64 by heuristics) | 167 s on 8 workers; DP mean 0.035 s, decision search mean 4.9 s, max 69 s |
+| search: pilot + main | 5 objectives × n = 8–15, plus `pwtw` at 16–20; 1,215 jobs | 277,859 evaluations |
+| search: focused `pwtw` | n = 7–12 seeded from the first draws; then n = 9–11 from the 11-vertex core; then n = 8–10 from the 10-vertex core; 216 jobs | 449,957 evaluations |
+| total | 1,431 jobs | **727,816 oracle evaluations**, 30.2 M canonical duplicates skipped, 2.73 core-hours |
+
+Treewidth is exact on 4,335 of the 4,443 (4,122 of 4,122 by DP; 212 of 234 by
+the decision search, 22 censored to an interval; 1 of 87 by coinciding
+heuristics). Every drawn instance re-certifies (`agree` on all 48 rows of
+`extremal_best.csv`: both configurations `unsat` at `optimum − 1` and `sat`
+at `optimum`, lattice oracle equal to the optimum wherever n ≤ 15, pathwidth
+DP equal to `optimum − 1` wherever n ≤ 18, elimination ordering of width
+exactly tw).
+
+### (a) The kill test: the search beats the corpus on four of five objectives
+
+The search's best against the corpus's worst at the same n
+(`reports/extremal_tables.md`, first table):
+
+| objective | n = 9 | 10 | 13 | 14 | 15 | verdict |
+|:--|:--|:--|:--|:--|:--|:--|
+| `gap` (search / corpus) | 1 / 1 | 1 / 1 | 1 / 0 | **2 / 1** | **2 / 1** | beats at 13–15; 2 also at n = 12 where the corpus has nothing |
+| `pw − tw` | 1 / 1 | **2 / 1** | **2 / 0** | **2 / 1** | **2 / 1** | beats at 10 and 13–18; equal (2) at 19–20 |
+| nodes to refute | **21 / 6** | **37 / 15** | **114 / 1** | **132 / 11** | **209 / 57** | beats at every n with a corpus instance |
+| `cs-dfs` overshoot | **2 / 0** | **2 / 1** | **3 / 0** | **3 / 2** | **4 / 2** | beats at every n with a corpus instance |
+| `disagree` | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 | **zero**: 25,583 adversarial evaluations, none found a wrong answer |
+
+**Not killed** for `gap`, `pw − tw`, nodes and overshoot: the corpus's small
+instances are not extremal, and by margins that matter — at n = 15 the
+hardest refutation the search drew costs 3.7× the corpus's hardest (209 vs 57
+nodes; both small, but the ratio is the point), and `cs-dfs` returns 10 on a
+15-customer instance whose optimum is 6, against a worst corpus overshoot of
+2. **Killed** for `disagree`: the fixed C answers every question correctly on
+every instance the adversary produced; zero is reported as zero, and it is
+consistent with §15's zero at `optimum − 1` and §20's zero across fan orders
+(the post-fix C, all three).
+
+The `gap` draws are worth a sentence: the three instances with gap 2 at n =
+12, 14, 15 are one 11-vertex graph (28 edges, optimum 7, `lb_best` 5, tw 5)
+plus isolated customers — the bound is a stack below `tw + 1` and two below
+the optimum, so on this instance even an exact treewidth bound would miss by
+one. It is the same shape §6 described: two K4s and a K5 hung together at
+hubs. Gap 3 was not reached at n ≤ 15 in 36,920 evaluations; the smallest
+corpus instance with gap 3 has 30 customers.
+
+### (b) The smallest instance with pw − tw ≥ 2 has 10 vertices
+
+`pw − tw` by n, the search against the corpus's exact values:
+
+| n | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 30 | 40 | 50 | 79 |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| search max | 1 | 1 | 1 | **2** | 2 | 1 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | — | — | — | — |
+| corpus max (exact tw) | — | — | 1 | 1 | — | — | 0 | 1 | 1 | — | 1 | 1 | **2** | 2 | 2 | 2 | **3** | 2 |
+| corpus instances with exact tw | 0 | 0 | 10 | 1,604 | 0 | 0 | 1 | 3 | 1,194 | 0 | 3 | 4 | 5 | 1,298 | 133 | 42 | 32 | 1 |
+
+(The search's 1 at n = 12 and its 2 at 10 are both true readings of a local
+search: the n = 12 cells ran before the focused runs found the 10-vertex
+graph, which padded with two isolated customers is a 12-customer instance
+with `pw − tw = 2`; the table reports what each cell found, not what is now
+known.) The corpus's first `pw − tw ≥ 2` is at 19 customers
+(`p2020n1_0`, pw 8, tw 6), then Warwick 871 and HS 551 at 20; its largest is
+3, on one instance at 50 (`p2050n9_0`, optimum 10, pw 9, tw 6). The search
+never reached 3 at n ≤ 20 in 542,592 evaluations of the objective, and the
+value it did reach it reached at **10 vertices**:
+
+```
+0 0 1 0 0 0 1 1 0      three K4s — {0,1,8,9}, {0,2,3,7}, {3,4,5,9} —
+0 0 0 0 0 0 1 0 0      pairwise sharing one vertex (0, 3, 9 are the hubs
+1 0 1 0 0 0 0 0 0      and form a triangle), and a tenth vertex 6 joined
+0 0 1 0 1 1 0 0 0      to one non-hub vertex of each: 2, 4 and 8.
+0 0 0 0 1 1 0 0 1      21 edges; degrees 6,6,6,4,4,4,3,3,3,3.
+0 0 0 0 0 1 0 0 0
+1 0 0 1 0 0 0 0 1
+0 0 1 0 0 0 0 0 0
+0 0 0 1 0 0 1 0 0
+0 1 0 0 1 1 1 0 0
+```
+
+*Proof of `pw − tw = 2` on this graph* (`extremal_tables.md`, "The smallest
+instances found"): treewidth **3** — at least 3 because it contains K4, at
+most 3 by the elimination ordering `7 5 4 2 3 6 9 8 1 0` (width 3
+recomputed by `elimination_width`); pathwidth **5** — the
+certified optimum is 6 (`decide(5)` `unsat` under both configurations,
+`decide(6)` `sat` with a witness that simulates to 6), the exact pathwidth DP
+says 5, the lattice oracle says 6. So `pw − tw = 2` on 10 vertices. It is
+**vertex-minimal and edge-minimal**: each of the 10 vertex-deleted subgraphs
+and each of the 21 edge-deleted graphs has `pw − tw ≤ 1` (all evaluated
+exactly). It beats the corpus's smallest (19) and the smallest *tree* with
+`pw − tw ≥ 2` (22 vertices: a vertex with three branches each a 7-vertex
+spider, by the branching lemma of Ellis, Sudborough & Turner). Whether a
+9-vertex graph exists with `pw − tw ≥ 2` is open: 96,000 evaluations at n = 8
+and 9 seeded from this graph's own subgraphs, and 129,000 more at 7–9 from
+other seeds, found none, and the exhaustive answer would need all graphs on 9
+vertices (274,668 up to isomorphism), which the DP and the lattice oracle
+could settle in about an hour — not run here.
+
+**Does `pw − tw` grow with n?** Yes, and slowly: 1 is reachable at 7 (the
+spider), 2 at 10, and the corpus's 3 needs 50. Treewidth-1 graphs give the
+clean scale — `pw − tw ≥ k` on a tree needs about `3^k · 7 / 3` vertices — and
+the K4-based construction here beats it at small k by using cliques as the
+branches. No search at n ≤ 20 found 3, and nothing above 20 was searched;
+the corpus's one instance with 3 is a 50 × 50 Faggioli–Bentivoglio instance.
+The statement covers 7–20 (search) and 9–50 exactly, 79 by interval (corpus).
+
+### (c) §6's floor turned into a number
+
+§6 certified `pw > tw` on 131 of the 338 gap ≥ 2 instances by min-fill and
+called 38.8% a floor. With exact treewidth:
+
+| customers | gap ≥ 2 instances | tw exact | `pw > tw` | `pw = tw` | open | `pw − tw ≥ 2` | max `pw − tw` |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| 20 | 17 | 17 | 12 | 5 | 0 | 2 | 2 |
+| 21–30 | 133 | 133 | 76 | 57 | 0 | 10 | 2 |
+| 31–60 | 101 | 79 | 71 | 18 | 12 | 21 | 3 |
+| 61–134 | 87 | 1 | 5 | 0 | 82 | 4 | 2 |
+| all | 338 | 230 | **164** | **80** | 94 | 37 | 3 |
+
+**`pw > tw` on 164 of 338 (48.5%), `pw = tw` on 80 (23.7%), open on 94** — 82
+of them above 64 customers, where the decision search does not reach and only
+min-fill's five certificates count, and 12 censored at 31–60 after 60 s. Among
+the 244 decided, 67.2% have pathwidth strictly above treewidth. So the
+correct reading of §6 is: on at least 48.5% and at most 76.3% of the gap ≥ 2
+instances no treewidth bound can be tight, and on at least 23.7% one could
+be — there the shortfall of `lb_best` is a shortfall against treewidth, not a
+consequence of the pathwidth–treewidth gap. Over the 17 at n = 20 the count
+rises from §6's 10 to 12. Across the whole corpus at n ≤ 20, `pw > tw` on 237
+of 4,122 (5.7%); min-fill was exact on 96.9% of the 4,335 instances with an
+exact value, one high on most of the rest, three high at worst.
+
+### (d) The other three objectives, in words
+
+*Nodes.* The hardest 15-customer refutation drawn costs 209 nodes (a
+Bernoulli seed climbed to 15 customers × 10 products, 29 ones, 33 edges,
+optimum 7 = `lb_best` = tw + 1); the corpus's hardest at 15 costs 57. Small
+numbers, but the ratio grows with n (3.5× at 9, 2.5× at 10, 12× at 14, 3.7× at
+15) and says the corpus at these sizes samples the easy part of instance
+space — consistent with §11's ridge, which the generators' density choices
+mostly avoid. *Overshoot.* The `cs-dfs` bound is 4 stacks high on a
+15 × 22 instance (optimum 6, `cs-dfs` 10) and 3 high at 11–14 on 10-product
+instances; the corpus's worst at n ≤ 15 is 2. The `cs-dfs` seed is the two-key
+rule's first key (§7), so these are adversarial for the rule too.
+*Disagreement.* Zero, in 25,583 evaluations that tried to maximise it and in
+the 727,816 that computed it along the way (every job's best carries
+`disagree = 0`); the objective is flat, so its "best" instances are the
+edgeless ones the tie-break prefers, and nothing is drawn.
+
+**Finding.** The corpus's small instances are not extremal for any objective
+but soundness: a bit-flip search with the exact solver as oracle beats the
+corpus's worst at the same size on `gap` (2 vs 1 at 14–15), on `pw − tw`
+(2 vs 0–1 at 10 and 13–18), on refutation nodes (3–12× at every size with a
+corpus instance) and on `cs-dfs` overshoot (4 vs 2 at 15), in 2.7 core-hours.
+The object worth keeping is a **10-vertex, 21-edge graph with pathwidth 5 and
+treewidth 3** — three K4s glued pairwise at three hubs plus one vertex tied to
+each — vertex- and edge-minimal for `pw − tw = 2`, half the size of the
+smallest tree with that property and half the size of the corpus's smallest,
+proved by a K4, an elimination ordering, two refutations, the pathwidth DP
+and the lattice oracle. Exact treewidth turns §6's floor into an interval:
+pathwidth exceeds treewidth on 48.5–76.3% of the gap ≥ 2 instances and
+equals it on at least 23.7%, so the treewidth-bound family is provably
+blocked on about half of them and merely loose on a quarter. `pw − tw` grows
+with n but slowly (1 at 7, 2 at 10, 3 not below 50 in anything on record).
+
+**Size range covered.** The search: 7–20 customers for `pw − tw`, 8–15 for
+the other four objectives; every drawn instance has ≤ 20 customers and the
+minimality claims are exhaustive over vertex and edge deletions of one
+10-vertex graph only. Exact treewidth: every corpus instance at 9–20 and every
+gap ≥ 2 instance at 20–50 (22 of the 234 by interval); 61–134 by heuristics,
+recorded as open. Nothing here is evidence about 125 × 125 instances.
+
+**Kill verdict.** Not met for `gap`, `pw − tw`, nodes and overshoot; met for
+`disagree` (zero everywhere, nothing to beat).
+
+**Not a bound, not a solver change.** Exact treewidth is used to *describe*
+instances; `_lower_bound` and every decision path are untouched, no flag was
+added to the search, and nothing was written to `solutions/`. The 727,816
+generated witnesses live in a git-ignored scratch directory and every drawn
+instance's witness is in `extremal_best.csv`.
+
+**Method notes.** The C decision search's pendant-vertex shortcut first
+skipped the `degree > k` refutation, so `tw ≤ 0` was "yes" on a forest —
+caught by the test that asks `decide(tw − 1)` to say no on every random graph;
+the corpus rows were all at k ≥ 2 and unaffected, but the lesson is the usual
+one: test the boundary the shortcut was written for. A local search that
+counts duplicate proposals as steps spends 96% of its budget on
+certificates; count oracle evaluations and let consecutive duplicates trigger
+the kick. Fixing n lets the walk park isolated vertices, so the size of a
+draw is its active vertex count, not its row count. A `pgrep -f` pattern
+that names an output file matches the polling shell that also names it.
+
+**For the next loop.** (i) Exhaust the 274,668 graphs on 9 vertices for
+`pw − tw ≥ 2` with the DP and the lattice oracle (~1 core-hour) to make the
+10-vertex graph a theorem rather than a record. (ii) Run the corpus pass with
+the decision search widened to 128-bit masks: the 82 open instances above 64
+customers are exactly where §6's certificate rate collapsed to 5.7%. (iii)
+Item 09's conjecture mining now has its adversary (`local_search` with any
+callable objective) and a family to target: cliques glued pairwise at hubs,
+which defeat every degree bound and the min-fill ceiling alike.

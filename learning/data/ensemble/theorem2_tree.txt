@@ -1,0 +1,22 @@
+|--- opt_frac <= 0.271
+|   |--- customers_per_product <= 3.389
+|   |   |--- col_cv <= 0.609
+|   |   |   |--- weights: [2.201, 385.676] class: 1
+|   |   |--- col_cv >  0.609
+|   |   |   |--- weights: [0.497, 30.066] class: 1
+|   |--- customers_per_product >  3.389
+|   |   |--- col_cv <= 0.137
+|   |   |   |--- weights: [0.154, 3.216] class: 1
+|   |   |--- col_cv >  0.137
+|   |   |   |--- weights: [0.189, 13.012] class: 1
+|--- opt_frac >  0.271
+|   |--- deg_cv <= 0.498
+|   |   |--- products_per_customer <= 3.106
+|   |   |   |--- weights: [0.235, 99.349] class: 1
+|   |   |--- products_per_customer >  3.106
+|   |   |   |--- weights: [0.079, 506.213] class: 1
+|   |--- deg_cv >  0.498
+|   |   |--- col_cv <= 0.013
+|   |   |   |--- weights: [0.155, 9.398] class: 1
+|   |   |--- col_cv >  0.013
+|   |   |   |--- weights: [0.241, 134.345] class: 1

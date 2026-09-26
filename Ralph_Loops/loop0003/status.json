@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-26 17:06:34",
+  "updated": "2026-09-26 17:57:47",
   "phase": "tests",
-  "started": "2026-09-26 16:25:45",
-  "item": "07 \u00b7 \u00a72.5b Theorem 2's switch. With nodes under both configurations"
+  "started": "2026-09-26 17:07:55",
+  "item": "08 \u00b7 \u00a72.7 Extremal search and exact treewidth. `learning/extremal.py`:"
 }
