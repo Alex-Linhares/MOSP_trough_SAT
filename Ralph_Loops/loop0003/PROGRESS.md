@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 12/14 SOLVED
+- **Current**: 13/14 SOLVED
 
 ---
 
@@ -1029,3 +1029,57 @@ stated with `sorry` behind a gap list.
   the whole Lean development's `sorry` inventory for the named theorems;
   extending `PROVED` with `Reduction.lean`'s names would make the
   Hall-theorem gap visible the same way.
+
+## Iteration 15 — 2026-09-26 20:34
+
+**Item 13 · §2.11 The synthesis** — SOLVED. No new computation; every number
+in the two deliverables is copied from a section of `reports/ml_nature.md`
+and cited by section number, with the two taken from digests
+(§8's medians, §26's recount) verified against the section tables.
+
+### Completed
+- `reports/ml_nature_summary.md` (842 lines): a one-page §0; then one
+  paragraph per claim the two plans produced, grouped in seven themes (the
+  corpus and instruments §1–§3, §9–§10; the optimum §4, §5, §12, §14, §26; the
+  bounds §6, §21, §24; hardness §11, §13, §14, §16, §19, §25; soundness §3,
+  §15, §17 and the free audits; search rules §18, §20, §22; orderings §7, §8,
+  §23), each paragraph ending with its size range, its regenerate command and
+  a status from the plan's four words (finding / conjecture / proposed solver
+  change with measured effect / closed question) plus *theorem* for §26. Then
+  §8, the thirteen solver changes proposed and never enabled, each with the
+  measurement that decides it (one, the `better_move` fix, recorded as
+  applied by the owner in `0eb33915`); §9, twelve closed questions; §10, the
+  open questions priced in four tiers from minutes to unpriced, the unpriced
+  four being a sound refutation check above 40, Yanasse's equality in Lean,
+  the encoding's correctness in Lean, and a separator-aware pathwidth bound;
+  §11, compute per item (about 80 core-hours for loop0003, summed from the
+  sections), the dating of `csearch` counts across three C versions, and
+  where every artifact lives. The first plan's GNN check is recorded as never
+  run.
+- `learning/README.md` rewritten in plain English (343 lines): the puzzle,
+  the safety rule and the two rules that grew (nodes not seconds; state the
+  size range), the folder as a measuring instrument, the findings in seven
+  groups with rounded numbers and section pointers, what is closed, what is
+  proposed and waiting, how to run it, a map of all 34 modules grouped by
+  question with their section numbers, and the three ways the data could
+  mislead (copies, size, dated counts). The stale claims of the old README
+  (`learned+cs-dfs` as the promising route; `reports/learning.md` §4 as
+  the next step) are replaced by the superseding results (§7, §23).
+- Suite: **1,028 passed, 2 skipped, 1 xfailed in 83 s**; no code changed, no
+  solver default, flag, bound or C touched, nothing written to `solutions/`.
+
+### Blockers
+- None. The compute total in summary §11 is a sum of per-item figures quoted
+  from the sections, labelled as such; it is the one number in the file not
+  copied verbatim from a section.
+
+### Next
+- Item 14 · reserve: no item is `- [!]`, so the session goes to the first
+  "for the next loop" note. Candidates in order of the summary's §10:
+  exhaust the 9-vertex graphs for `pw − tw ≥ 2` (~1 core-hour, §21);
+  `learning.corpus_sweep` with the two-key rule seeding `restricted_dfs`
+  against `learned+cs-dfs`'s 709 / 13 (~8 min, §7, decides two proposed
+  changes at once); or Lean gap 1, `pathGraph.IsTree` (2–3 h, §26).
+- For the owner: `CLAUDE.md`'s "What the corpus says" digest can now point
+  at `reports/ml_nature_summary.md` §0 and §8 instead of carrying the
+  numbers itself.

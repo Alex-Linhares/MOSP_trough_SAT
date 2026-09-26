@@ -132,7 +132,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       acceptable: then commit the statements with `sorry` and a gap list in
       the report section. If item 09 produced a conjecture, state it too, with
       `sorry`. Deliverable: two theorems or two statements and the gaps.
-- [ ] 13 · §2.11 **The synthesis.** `reports/ml_nature_summary.md`: every claim
+- [x] 13 · §2.11 **The synthesis.** `reports/ml_nature_summary.md`: every claim
       the two plans produced, one paragraph each, with size range, regenerate
       command and status (finding / conjecture / proposed solver change with
       measured effect / closed question); the solver changes proposed and never

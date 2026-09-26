@@ -1,304 +1,343 @@
 # Learning from the solved instances — in plain English
 
+*Rewritten 2026-09-26 after three unattended loops (26 report sections). The
+full account with every number is `reports/ml_nature.md`; the one-page version
+is `reports/ml_nature_summary.md` §0; this file is for someone who has never
+opened either.*
+
 ## The situation
 
 This project has solved 6,376 scheduling puzzles and *proved* that each answer
-is the best possible. Each solved puzzle comes with the schedule that achieves
-it. That is a large pile of worked examples with the answers in the back of the
-book, and this folder asks a simple question: can a machine learning model look
-at the pile and pick up anything we did not already know?
+is the best possible. Each comes with the schedule that achieves it. That is a
+large pile of worked examples with the answers in the back of the book, and
+this folder started by asking whether a machine learning model could look at
+the pile and learn anything we did not already know.
 
 The puzzle, briefly. A factory has a list of products to make and a list of
 customers, each waiting on some subset of those products. A customer's "stack"
 opens when the first product they want gets made and closes when the last one
 does. Make the products in a bad order and dozens of stacks sit open at once,
 each taking floor space. The question is what order to make things in so that
-the worst moment is as good as it can be. It is NP-hard, which is the formal way
-of saying nobody knows a shortcut.
-
-Everything in this folder is trained on those 6,376 worked examples.
-
-## Why the pile is unusual
-
-Normally, when people train a model on a hard optimization problem, the training
-answers came from a solver that was given a time limit and wrote down whatever
-it had when the clock ran out. Some of those answers are right and some are the
-solver giving up, and the model has no way to tell which is which — so it learns
-the solver's bad habits alongside the actual problem.
-
-Ours are different. Every answer here was *proved* optimal: the solver showed
-both that the answer is achievable and that nothing better exists. The model is
-learning from correct answers only. That is the main reason this folder is worth
-having.
+the worst moment is as good as it can be. It is NP-hard: nobody knows a
+shortcut. Mathematically, the answer is a property of a graph — join two
+customers whenever they share a product, and the best possible number of open
+stacks is that graph's *pathwidth* plus one. Most of what follows is about that
+graph.
 
 ## The one safety rule
 
 There are two ways a model could feed into the solver, and only one is safe.
 
-**Unsafe: letting a model guess how good the answer will be.** The solver starts
-its search from a "lower bound" — a proved statement that the answer is at least
-such-and-such. If that number is ever too high by even one, the solver starts
-its search above the true answer, finds something that works there, and reports
-it as optimal. The schedule it hands back genuinely achieves the number it
-claims, so checking the schedule does *not* catch the error. A guess dressed up
-as a bound would break the solver silently. We don't do it.
+**Unsafe: letting a model guess how good the answer will be.** The solver
+starts its search from a "lower bound" — a proved statement that the answer is
+at least such-and-such. If that number is ever too high by even one, the solver
+starts above the true answer, finds something that works there, and reports it
+as optimal. The schedule it hands back genuinely achieves the number it claims,
+so checking the schedule does *not* catch the error. A guess dressed up as a
+bound would break the solver silently. Nothing in this folder does it, and
+nothing here touches the code that decides what value to try.
 
 **Safe: letting a model propose a schedule.** A schedule can be simulated
-directly — run the products in that order, count the stacks, done. If the model
-proposes a bad schedule we find out immediately and we've lost a little quality
-and nothing else. There is no way for a bad model to produce a wrong *answer*
-this way, only a mediocre one.
+directly — run the products in that order, count the stacks, done. A bad
+proposal costs a little quality and nothing else.
 
-So: the model in `policy.py`, which proposes schedules, has a route into the
-solver. The study in `study_optimum.py`, which predicts numbers, does not.
+Two further rules grew out of the work and are now fixed: **count nodes, not
+seconds** (at small sizes the clock does not see hardness at all, and on a
+busy machine it invents speed-ups that are not there), and **say what sizes a
+conclusion covers** (almost everything solved cheaply has 40 or fewer
+customers; the instances that cost a day have 125, and a result at 40 is
+evidence about 125 only through an extrapolation that says so).
+
+## What this folder is for
+
+**It is a measuring instrument, not a part of the solver.** The original idea
+was that learning from the solved puzzles would make the solver faster. It does
+not — three separate attempts, three measured negatives, all in
+`reports/learned_search.md`. The expensive part of proving an answer optimal is
+showing that one-better is impossible, and better guesses do not help with
+that.
+
+But every time the folder has been pointed at the solver or at the problem, it
+has found something true that nobody knew. The list below is what three loops
+of that produced.
 
 ## What we found
 
-Full numbers and method in [`reports/learning.md`](../reports/learning.md). Four
-findings, in plain terms.
+Numbers are rounded here; the section of `reports/ml_nature.md` in brackets has
+the exact ones and the command that regenerates them.
 
-### 1. The shape of a puzzle says more about its answer than our proof does
+### About the pile itself
 
-Feed a model nothing but structural facts about an instance — how many
-customers, how many products, how the overlaps between customers are
-distributed — and it lands on the exact answer 71% of the time on puzzles it has
-never seen. Our best *proved* lower bound is exact 65% of the time.
+- **It is smaller than it looks.** The 6,376 instances are only 3,667 distinct
+  graphs; two in five are copies of another under renamed customers, and a
+  quarter are "complete" graphs where every customer meets every other and the
+  answer is trivially the number of customers (§1). Any honest test has to
+  keep copies together on one side of the split.
+- **You can tell which generator made an instance from its shape alone**, 94%
+  of the time (§2). So a result on one benchmark family says little about
+  another. The instances that are actually hard — Chu & Stuckey's sparse
+  random ones — and the only real industrial instances both sit in the same
+  sparse corner.
+- **Small instances are free.** We can generate and solve a random instance
+  with 40 customers in a fraction of a second, so the questions about what
+  happens "on average" were answered on 37,800 generated instances, later
+  extended to 75 customers with 6,750 more and to a handful at 100 (§9, §10,
+  §16). Everything about them regenerates from a manifest of seeds.
 
-This does not mean the model should replace the bound. The bound is a proof and
-the model is a guess, and a guess cannot be used where a proof is required. What
-it means is that the information needed to pin down the answer is sitting in the
-instance's structure, and our proof technique is not yet extracting all of it.
-That is a hint about where to look for a better bound, not a replacement for one.
+### About the answer
 
-### 2. A model taught by watching our solved schedules beats the textbook rule
+- **The answer is squeezed between two simple graph numbers.** Two textbook
+  quantities, the graph's *degeneracy* and a *bandwidth* estimate, satisfy
+  `degeneracy + 1 ≤ answer ≤ bandwidth + 1` on every instance we have (§5,
+  §12). Both inequalities are now **proved theorems** in the project's Lean
+  development, for every finite graph (§26). The one step still taken on trust
+  is the classical result that the answer equals pathwidth plus one.
+- **The best single guess is a treewidth heuristic.** Add one to the min-fill
+  treewidth estimate and you hit the exact answer on 86% of the corpus — better
+  than either of the solver's own proved bounds — up to about 50 customers. At
+  125 it is four stacks high (§4, §14). It is a guess, not a bound: it sits
+  below the answer on 481 instances and above on 428.
+- **On random instances the answer barely varies.** Fix the size and density
+  and the optimum is two or three adjacent integers; its mean is a straight
+  line in the number of customers (§12). A formula for that mean fits to half a
+  stack at 40 customers and drifts off at 125 on the sparsest class (§14).
 
-Every method for building a schedule answers the same question over and over:
-given what's already finished, what should come next? The literature's standard
-answer is a rule called MCN — roughly "close out whichever customer is cheapest
-to close right now."
+### About why the solver's bound fails
 
-Our 6,376 proved-optimal schedules contain 2.27 million such decisions, each one
-made by a method that demonstrably reached the best possible answer. We trained a
-model to imitate those decisions and then used it as a schedule builder.
+- **The bound fails for a structural reason.** Three of its four ingredients
+  are really bounds on *treewidth*, and on about half of the 338 instances
+  where the bound is two or more too low, pathwidth is provably larger than
+  treewidth — so no amount of tuning those ingredients could ever close the
+  gap (§6, §21). The instances look like small cliques glued at a few hub
+  customers into a branching tree, with a fringe of customers who want only
+  one product.
+- **The smallest such graph has 10 vertices.** A search with the exact solver
+  as oracle found a 10-vertex graph whose pathwidth exceeds its treewidth by
+  two, proved it minimal, and showed the corpus's small instances are not the
+  worst possible on any measure but soundness (§21).
+- **Computing treewidth exactly would help; no new formula does.** Exact
+  treewidth plus one beats the solver's certified bound on 933 corpus
+  instances. A search over 11,589 candidate formulas found nothing that beats
+  the better of the two proved bounds anywhere treewidth is known exactly — a
+  formula fitted to look valid on 51,000 instances leaks 77% of the time when
+  its constant is refit on a subset (§24). The bound work needs a new idea,
+  not a new formula.
 
-Against MCN, on puzzles held out from training, it overshoots the best possible
-answer by 0.46 stacks on average versus MCN's 1.63, and nails the optimum 75% of
-the time versus 51%. Same cost, better answers.
+### About what makes an instance hard
 
-### 3. The real win: it makes an existing search twice as accurate
+- **Hardness has a ridge.** At fixed size, the work to prove an answer optimal
+  rises and falls with density by a factor of a hundred each side of a peak,
+  and on the peak it doubles every three customers (§11). Chu & Stuckey's
+  "density 2" classes — the ones that take a day at 125 × 125 — sit exactly on
+  it.
+- **The ridge is at a simple place.** It sits where the products, counted as
+  cliques, carry about twice the mass of a spanning tree — one independent
+  cycle of the customer–product incidence graph per customer — at every ratio
+  of products to customers tried, from eight times fewer products than
+  customers to twice as many (§25). Mean degree, the obvious candidate, is not
+  it.
+- **The growth rate slows a little with size.** Fitted at 15–40 customers the
+  ridge law overshoots at 125; the rate falls by about 0.002 (in log10 nodes
+  per customer) for every ten customers, and corrected for that the law
+  predicts the two day-long 125 × 125 counts on record to within a factor of
+  1.1 (§14, §16). The revised central estimate is 1.5 × 10¹¹ nodes per
+  density-2 refutation, with a factor of six either way.
+- **Only the graph matters — and how you label it.** Two matrices with the
+  same customer graph but different products cost the search *exactly* the
+  same number of nodes (15,900 pairs, zero exceptions). Renaming the customers,
+  on the other hand, moves the count by a few percent typically and up to
+  eightfold (§13).
+- **We can predict the cost within a factor of ten.** A censored regression on
+  graph features, trained at up to 75 customers, puts 88% of the counts at
+  100–125 within one decade of the truth and orders the remaining
+  re-certification queue cheapest first (§19). A prediction, for planning
+  only; never a bound.
 
-The project already has a stronger method than MCN — a depth-first search from
-Chu & Stuckey's 2009 paper. It takes a starting schedule as a hint, and the
-better the hint, the more of the search tree it can skip.
+### About whether the proofs are right
 
-Give it our learned schedule as the hint instead of MCN's, and run that over
-**every one of the 6,376 puzzles** — each one scored by a model that was never
-shown anything from its own generator setting:
+- **Every proof at 40 customers or fewer was checked twenty ways and held.**
+  The same question asked under nine relabellings and one re-covering, under
+  two search configurations, on 43,935 instances: 878,580 refutations, zero
+  disagreements (§15).
+- **The check found a bug anyway — on the other side.** Asked the *satisfiable*
+  question at the optimum, one configuration of the C search said "impossible"
+  on 56 instances. The stored answers were right; the pruning rule was wrong,
+  in a way no earlier audit could see, because a proof that is one step too
+  strong leaves the witness intact. The owner fixed it
+  (`reports/better_move_bug.md` §7). Lesson: a refutation record should carry
+  its satisfiable side too.
+- **92% of the corpus at 40 or fewer now carries a proof a stranger can
+  check.** The SAT encoding's refutation is logged as a DRAT proof and verified
+  by an independent checker, drat-trim, from the formula alone; 5,646 of 6,135
+  instances (§17). It costs thousands of times what the search costs, so it is
+  an archive, not a decision procedure, and the encoding itself cannot reach
+  125 × 125 at any width.
+- **Above 40 customers, nothing outside the search checks a refutation.** That
+  is the most important open item this folder has.
 
-| method | average overshoot | exact | worst case | total stacks over |
-|---|---|---|---|---|
-| MCN (textbook rule) | 1.63 | 51% | +27 | — |
-| our learned builder | 0.38 | 78% | +34 | 2,439 |
-| the existing search | 0.24 | 85% | +10 | 1,538 |
-| **the search, with our hint** | **0.11** | **93%** | **+8** | **670** |
+### About search rules, measured and not enabled
 
-Put head to head against the existing search on the same puzzles, the hinted
-version is **better on 709 of them and worse on 13**. Of the 988 puzzles where
-the existing search does not find the best possible answer, the hint recovers
-**571**. The biggest single gain: a 100-customer instance where the best possible
-answer is 48 stacks, the existing search finds 58, and the hinted version finds
-51.
+Each of these was measured behind a flag that defaults to today's behaviour.
+None was switched on; that is the owner's call.
 
-Two things worth noticing. Our learned builder *on its own* has a worse worst
-case than the search (+34 vs +10) — good on average, occasionally falls apart,
-which is what a method with no search behind it looks like. Its value is as the
-hint, not as the answer. And the 13 cases where the hint makes things worse are
-all off by exactly one, for a reason that was already written down in the code:
-the search measures its progress with a formula that slightly over-charges, so a
-better starting point can occasionally lead it to cut off a branch that would
-have turned out well.
+- **Trying equal-cost candidates in a different order** changes a refutation's
+  node count by 0.0% at every size (§20). It does help the cheap satisfiable
+  side (35% fewer nodes at 75 customers, with a tail that gets slower).
+- **Racing sixteen relabellings on sixteen cores** wins nothing on refutations
+  — the best of sixteen is 1% faster than the one you had — and the spread
+  shrinks with size (§18). Again the satisfiable side is where it pays.
+- **Chu & Stuckey's "Theorem 2" pruning rule**, currently on only for sparse
+  instances, saves 7% of nodes if always on and costs 17% per node, so in
+  seconds the current threshold is already in the right place (§22).
 
-### And it is *faster*
+### About good schedules
 
-This was the surprise. Measured properly, the hinted search takes **11.6
-milliseconds** per puzzle against the unhinted search's **19.3**. Producing the
-hint costs 2 milliseconds and saves 10, because a better starting point lets the
-search throw away more of the tree without looking at it. So it is not a
-trade — it is better and cheaper at the same time.
+- **A one-sentence rule beats the learned schedule-builder** (§7): *close the
+  customer that opens the fewest new stacks; on ties, the one with the most
+  unclosed neighbours.* Held out, it lands on the optimum 81% of the time
+  against the learned model's 75% and the textbook rule's 50%, and it is the
+  better starting point for the project's search.
+- **The optimum is never unique**: typically 10⁵ optimal schedules at 10
+  customers and 10¹⁰ at 15, never one (§8). So imitating "the" stored
+  schedule step by step was imitating the solver's coin flips.
+- **Imitation is closed.** Given the exact set of correct moves at every step
+  as the target, the best model beats the rule by less than a hundredth of a
+  stack; the rule is already right at 99.7% of decisions (§23).
 
-### 4. We can predict which puzzles will be easy
+## What is closed and should not be rebuilt
 
-The solver's fast heuristic already finds the optimal answer on most instances —
-the expensive part is *proving* nothing better exists. A model can tell, before
-any of that work starts, whether the fast answer is likely to be the right one,
-and it is right about that far more often than chance (AUC 0.965, where 0.5 is a
-coin flip and 1.0 is perfect).
+Learned upper bounds, learned lower bounds and learned branching inside the
+search (`reports/learning_plan.md` §4); imitation of any kind (§7, §8, §23);
+fan order and relabelling portfolios for refutations (§18, §20); a learned
+switch for Theorem 2 (§22); formulas over degree statistics or over the thirty
+branching invariants of §24 as new lower bounds; mean degree as the ridge's
+location (§25); and any confidence interval calibrated at 40 customers quoted
+at 50 or more (§14). Each has a section saying why, not only that.
 
-That is a scheduling signal: instances predicted "easy" need one proof attempt,
-instances predicted "hard" need the full search. The project's notes already
-list a portfolio decision like this as a wanted feature.
+## What is proposed and waiting on the owner
 
-### A bonus finding that has nothing to do with machine learning
+`reports/ml_nature_summary.md` §8 is the full table. The three with the most
+in them: exact treewidth as one more ingredient of the solver's lower bound
+(§24); the one-sentence rule registered as a heuristic and as the search's
+seed, which would also settle whether the LightGBM dependency is needed at all
+(§7); and the cost model to order the re-certification queue (§19).
 
-Building the feature table meant computing our lower bound two different ways
-across all 6,376 instances. One of the two ways — an expensive clique search the
-solver gives up to 5 seconds per call — **never once produced a better number**
-than the cheap method it runs alongside. Not on a single instance in the corpus.
+## How you actually use it
 
-This is a measurement on our instances, not a proof that it can never help, and
-the clique bound has a separate virtue worth keeping (it stands on its own,
-without relying on Yanasse's pathwidth equivalence). But five seconds a call for
-something that has not helped once is worth a second look.
+The solver runs without any of this installed. Everything here is loaded only
+when asked for by name, so a clone that never runs
+`pip install -r learning/requirements.txt` sees no difference.
 
-## Two ways this could have fooled us
-
-**Nearly-identical puzzles.** Instances in the same benchmark file came out of
-one generator with one setting, so they are near-copies of each other. Split
-them randomly into "training" and "testing" and the model gets tested on
-near-copies of what it studied — the scores look great and mean nothing. Every
-number above splits by *source file* instead, so a model is always tested on
-generator settings it has never seen. We also report the random-split number
-beside it to show how much it flatters: 0.34 versus 0.45. Small, but real, and
-we would rather have it on the record than in a footnote.
-
-**The pile is not the problem.** Of the 6,376 instances, 5,938 have 30 or fewer
-customers, and 3,975 are settled by simple bounds before any real search begins.
-The instances that actually cost us a day of compute on 25 cores — the big dense
-ones — are 25 rows out of 6,376. A model trained here is a model of *this
-collection*. We report results separately on the harder subset throughout, but
-no amount of careful splitting fixes a population that is 93% easy.
-
-## We then tried to make it solve faster. It doesn't.
-
-Finding a good schedule and *proving no better one exists* are different jobs,
-and the second is what the hard instances cost. So the obvious next step was to
-put the learned model inside the proving machinery. Three places, three
-measurements, three negatives — written up in
-[`reports/learned_search.md`](../reports/learned_search.md):
-
-1. **Letting the model choose what the proof search tries first.** No effect on
-   ordinary puzzles — the search's existing rules have already narrowed the
-   choice to almost nothing by the time the model is consulted. On sparse
-   puzzles it cuts the work to find a schedule by 60%, but on one puzzle it
-   turned a 65-step search into a timeout. Too unreliable to ship.
-2. **Starting the proof from the model's better answer.** No effect. The
-   expensive part of a proof is showing that one-better is impossible, and both
-   versions have to do that part. What a better start skips is the easy steps.
-3. **Running the two provers at once and taking whichever finishes first.** No
-   effect, and this one overturned an assumption the project had been carrying:
-   the two provers were believed to fail on different puzzles, so running both
-   should win. They don't. One of them won 63 out of 63 contests. Checking the
-   records showed the belief had never actually been tested — the two provers
-   had never been run on the same puzzle.
-
-The honest summary: our model makes better *answers*, and the hard puzzles are
-not short of answers, they are short of *proofs*. That was predicted in the
-project's own notes before any of this was built; it is now measured.
-
-The most useful thing to come out of it is the third point's corollary. The
-project reaches for the SAT prover first and the other one as a fallback. On
-this evidence that is backwards.
-
-## What this folder is for now
-
-The plan changed once the evidence came in, and it is worth saying plainly:
-**this folder is a measuring instrument, not a part of the solver.**
-
-The original idea was that learning from 6,376 solved puzzles would make the
-solver better at solving. It doesn't — three separate attempts, three
-negatives, all in [`reports/learned_search.md`](../reports/learned_search.md).
-The expensive part of proving an answer optimal is showing that one-better is
-impossible, and better guesses don't help with that.
-
-But every time this folder has been pointed at the solver, it has found
-something true that nobody knew:
-
-- an expensive bound the solver computes on every call has **never once helped**
-  in 6,376 instances;
-- instance structure predicts the answer better than our *proved* lower bound
-  does — evidence that a better proof is available and we haven't found it;
-- the solver was reaching for the wrong prover first, by a factor of 38;
-- and a speed experiment here found a **correctness bug** that had been quietly
-  producing wrong "proofs" — one published answer was wrong because of it.
-
-That last one is the clearest statement of the case. The test suite, the witness
-checks and the audit all confirm that a claimed answer is *achievable*; none of
-them can tell whether a claimed *impossibility* is real. A measurement harness
-could, and did.
-
-So the four questions this folder now asks — full version in
-[`reports/learning_plan.md`](../reports/learning_plan.md) — are all of the form
-"what is true about the solver?" rather than "can a model do the solver's job?":
-
-1. **Which settings should this puzzle be solved with?** The setting that
-   matters most is currently chosen by a single hand-picked number, and getting
-   it wrong costs up to 28× the work. Getting it wrong can never cost a wrong
-   answer, which is why this is the safe one to chase.
-2. **How long will this puzzle take?** We are currently giving instances
-   five-day budgets with no idea which need five minutes and which need five
-   weeks.
-3. **Which puzzles would expose a disagreement between two settings that should
-   agree?** That is how the bug was found. Doing it deliberately rather than by
-   accident is the most valuable verification tool the project has.
-4. **What is the answer for puzzles too big to ever prove?** A prediction with
-   honest error bars, always labelled as a prediction.
-
-## How you actually use it, and what is still open
-
-You can now ask for the hinted method by name. Where the code used to say
-`cs-dfs`, it can say `learned+cs-dfs`:
-
-```python
-from satisfiability.heuristics import upper_bound
-value, ordering = upper_bound(instance, "learned+cs-dfs")
-```
-
-**The solver still runs without any of this installed.** Someone who clones the
-project and never runs `pip install -r learning/requirements.txt` sees no
-difference: nothing breaks, because the machine learning library is only loaded
-at the moment somebody asks for one of these two methods by name. That is the
-only thing "soft import" means.
-
-**If you ask for it and it isn't there, you get an error, not a shrug.** We
-could have made a missing model fall back quietly to the old method. We
-deliberately didn't, because then a benchmark run would print results labelled
-"learned" that were actually produced by the old method, and nobody would ever
-know. An error message says `no trained policy at ...; run python -m
-learning.policy train`, and you fix it in seven seconds.
-
-**Nothing uses it unless you ask.** Every existing script, sweep and solver call
-behaves exactly as before. Making the hinted method the *default* would mean
-this project, which currently needs only a SAT solver and numpy to run, would
-also need a machine learning library and a trained model file present before it
-could solve anything. That is a decision about what the project wants to depend
-on, and the measurements cannot make it for you — they only say the method is
-better and faster.
-
-`reports/learning.md` §4 lists what to do next. The most promising: use the
-learned scorer *inside* the search rather than only to start it.
-
-## Running it
+Two heuristics are registered by name in `satisfiability/heuristics.py` and
+are not defaults: `learned+cs-dfs` (the LightGBM seed; needs a trained model,
+and errors rather than silently falling back if it is missing) and
+`cs-dfs+degree` (the degree tie-break of §20). One flag exists on the complete
+search, `fan_order`, defaulting to today's order.
 
 ```bash
-pip install -r learning/requirements.txt   # pandas, scikit-learn, lightgbm
+pip install -r learning/requirements.txt      # pandas, scikit-learn, lightgbm; optional extras listed inside
 
-python -m learning.dataset          # build the feature table   (~20s)
-python -m learning.study_optimum    # the prediction study      (~2 min)
-python -m learning.policy train     # fit the schedule builder  (~7s)
-python -m learning.policy evaluate  # held-out comparison       (~3 min)
-
-python -m learning.policy train-folds                        # (~40s)
-python -m learning.corpus_sweep --strategy learned+cs-dfs --folds   # (~8 min)
-python -m learning.corpus_sweep --strategy cs-dfs                   # (~20s)
+python -m learning.dataset --workers 16       # the feature table, learning/data/instances.csv (~90 s)
+python -m learning.canonical --workers 16     # isomorphism classes, learning/data/canonical.csv (~1 s)
+python -m learning.ensemble --tables-only     # the generated campaign's tables from the committed CSV
+python -m learning.hardness_map               # the ridge, reports/figures/hardness_map.png (~3 s)
+python -m learning.differential --stage tables
+python -m learning.sandwich                   # brute-force check of the Lean definitions + lake build (~5 s)
+python -m pytest tests/ -q                    # the whole suite, ~80 s
 ```
 
+Every module runs as `python -m learning.<name>`, has a docstring saying what
+question it answers and how to run it, and names its report section. Long
+runs are resumable and write to `learning/data/ensemble/`; nothing writes to
+the corpus's `solutions/` directory.
+
+## The map of the folder
+
+Grouped by the question each module answers; the section is in
+`reports/ml_nature.md`.
+
+**Instruments**
 ```
-learning/
-    features.py         turns an instance into 36 numbers a model can read
-    dataset.py          pairs every instance with its proved answer
-    study_optimum.py    findings 1 and 4 above
-    policy.py           findings 2 and 3 above
-    corpus_sweep.py     scores a strategy against all 6,376 known answers
-    data/instances.csv  the feature table      (not committed; rebuilt in 20s)
-    models/policy.txt   the trained model      (not committed; refitted in 7s)
+features.py          an instance as 49 numbers (matrix, graph, bounds, invariants)   §4
+dataset.py           joins every instance with its proved answer -> data/instances.csv
+canonical.py         isomorphism classes, nauty certificates, WL hashes            §1
+fingerprint.py       generator classifier, size-free features, the instance map;
+                     union_groups is the split every study uses                  §2
+node_counts.py       refute(optimum - 1) under the two search configurations      §3
+ensemble.py          the generated campaign: generate, solve, refute, feature   §9, §10, §16
+degeneracy.py        the exact lattice oracle: optimal orders, optimal choices     §8
+treewidth.py / .c    exact treewidth (subset DP to 26; decision search to 64)     §21
 ```
+
+**The answer**
+```
+study_optimum.py     can structure predict the optimum?           reports/learning.md
+invariants_study.py  pathwidth-adjacent invariants as features                   §4
+formula_search.py    enumerated + PySR symbolic regression                       §5
+concentration.py     variance of the optimum per cell; E[opt](n, m, p)          §12
+scale_test.py        the n <= 40 laws against the corpus at 30-125              §14
+sandwich.py          the Lean theorems checked against brute force and the corpus §26
+```
+
+**The bounds**
+```
+bound_gap.py         where the proved bound fails; the treewidth ceiling           §6
+extremal.py          adversarial search for the worst small instances             §21
+conjecture.py        mining and attacking candidate lower bounds                  §24
+```
+
+**Hardness**
+```
+hardness_map.py      nodes against density per size: the ridge                   §11
+graph_story.py       same graph, different products: re-covering and relabelling §13
+upward.py            rates and drift at 50-100; the revised 125 x 125 prediction §16
+ridge_theory.py      why the ridge is where it is: the excess                    §25
+cost_model.py        censored regression: nodes before the run                   §19
+```
+
+**Soundness**
+```
+differential.py      the same question under ten labellings and two configurations §15
+proofs.py            DRAT proofs through the SAT encoding, checked by drat-trim   §17
+```
+
+**Search rules**
+```
+relabel_portfolio.py min-of-k over relabellings                                   §18
+fan_order.py         degree against index as the tie-break                        §20
+theorem2.py          Chu & Stuckey's Theorem 2 on against off, everywhere         §22
+```
+
+**Schedules**
+```
+policy.py            the LightGBM closing-order ranker (learned+cs-dfs)   reports/learning.md
+distil.py            what the ranker learned: the two-key rule                     §7
+set_imitation.py     imitation with the set of optimal moves as the label         §23
+corpus_sweep.py      scores a heuristic against all 6,376 known answers
+guided_search.py, descent_bench.py   learned branching and starting bounds (closed) reports/learned_search.md
+```
+
+**Data** — `learning/data/ensemble/` is committed (82 MB apparent): the
+campaign's manifests, results and witnesses, and one CSV per study. The rest
+of `learning/data/` is rebuilt by the commands above; the 11.7 GB of DRAT
+proofs live git-ignored under `learning/data/proofs/` with only their hashes
+and verdicts committed in `proofs.csv`.
+
+## Two ways this could have fooled us, and the third that nearly did
+
+**Nearly-identical puzzles.** Instances from one benchmark file, and instances
+that are the same graph under renamed customers, are near-copies. Split them
+randomly and a model is tested on what it studied. Every number in these
+reports groups by file *and* by isomorphism class; where a random-split number
+is shown it is shown to display the leak.
+
+**The pile is not the problem.** Of 6,376 instances, 5,938 have 30 or fewer
+customers. The instances that cost a day of compute are 25 rows. A result on
+the corpus is a result about small instances unless it says otherwise, which
+is why every finding states its size range and why the generated campaign
+exists.
+
+**A count is dated by the code that made it.** Node counts from the C search
+exist from three versions of one pruning rule, and only counts from the same
+version are comparable. The reports say which version made each file; a model
+predicts for the version that made its training data.

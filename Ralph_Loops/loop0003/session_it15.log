@@ -1,0 +1,73 @@
+# session it15 started 2026-09-26 20:22:14
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by checking the clock and the size of what I need to read, then read the plan and the report sections before writing the synthesis.
+  > $ date && wc -l reports/ml_nature.md reports/ml_nature_plan.md reports/ml_nature_plan_2.md reports/learning_plan.md learning/README.md Ralph_Loops/loop0003/iterat
+  > $ cat reports/ml_nature_plan_2.md
+  > $ cat learning/README.md && echo ===== && cat Ralph_Loops/loop0003/iterations.md && echo ===== && sed -n '/^## 4/,$p' reports/learning_plan.md
+  > $ grep -n -i 'regenerat\|^python -m\|^    python -m\|kill criterion\|^### \|Size range\|size range' reports/ml_nature.md | head -400
+
+Next I need the first plan, the existing state of the summary file (if any), the module list under `learning/`, and the report body itself. I'll pull those together.
+  > $ ls reports/ml_nature_summary.md 2>&1; ls learning/*.py learning/*.c | xargs -n1 basename | tr '\n' ' '; echo; echo =====; cat reports/ml_nature_plan.md
+  > $ sed -n '1,1910p' reports/ml_nature.md | grep -v '^|' | grep -v '^$' 
+  > $ sed -n '1910,3814p' reports/ml_nature.md | grep -v '^|' | grep -v '^$'
+  > $ sed -n '3814,5505p' reports/ml_nature.md | grep -v '^|' | grep -v '^$'
+  > $ sed -n '5505,7161p' reports/ml_nature.md | grep -v '^|' | grep -v '^$'
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bqdzzn2cu.txt
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/b0jmjz0m9.txt
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bgfzanggn.txt
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/boxjyqqy3.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bqdzzn2cu.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/b0jmjz0m9.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bgfzanggn.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/boxjyqqy3.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bqdzzn2cu.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/b0jmjz0m9.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/bgfzanggn.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/85602c8d-df04-47a8-a103-12762ff7e492/tool-results/boxjyqqy3.txt
+  > $ date && cat learning/requirements.txt && echo ===== && grep -n 'learning' .gitignore && echo ===== && git log --oneline -5 -- satisfiability/customer_search.c &
+
+Everything needed is in hand. One last check before writing: whether the first plan's GNN check was ever run, so the open-questions list is accurate.
+  > $ grep -n -i 'GNN\|graph neural' reports/ml_nature.md | head; grep -rn -i 'gnn' learning/*.py | head -3; echo ===; grep -n 'sweep_learned\|corpus_sweep' reports/l
+
+Writing the synthesis now. It is long by design: one paragraph per claim, grouped by theme, then the table of proposed-and-not-enabled changes, the closed questions, and the open questions priced.
+  > $ cat > reports/ml_nature_summary.md <<'EOF'
+# Machine learning and the nature of MOSP — the synthesis
+
+*2026-09-26, loop0003 item 13 (plan 2 §2.11). One paragrap
+
+Verifying two numbers I took from digests rather than the section body, fixing one range I mis-copied, and writing the README in the same pass since none of these depend on each other.
+  > $ grep -n '3,293\|3,279' reports/ml_nature.md reports/sandwich_tables.md | head -5; echo ===; grep -n '4 × 10⁵\|2.5 × 10¹⁰\|4e5\|2.5e10' reports/ml_nature.md repo
+  > $ cat > learning/README.md <<'EOF'
+# Learning from the solved instances — in plain English
+
+*Rewritten 2026-09-26 after three unattended loops (26 report sections
+  > $ sed -n '1797,1800p' reports/ml_nature.md | cut -c1-120; echo ===; sed -i 's/predicts the two day-long 125 × 125 counts on record to within 10% in the\n  exponen
+  > $ timeout 580 python -m pytest tests/ -q -x 2>&1 | tail -5
+  > $ STAMP=$(date '+%Y-%m-%d %H:%M') && sed -i 's/^- \*\*Current\*\*: 12\/14 SOLVED/- **Current**: 13\/14 SOLVED/' Ralph_Loops/loop0003/PROGRESS.md && cat >> Ralph_L
+  > $ sed -i 's/^- \[ \] 13 · §2.11 \*\*The synthesis\.\*\*/- [x] 13 · §2.11 **The synthesis.**/' Ralph_Loops/loop0003/iterations.md && grep -n '^- \[' Ralph_Loops/lo
+  > $ git status --short && git diff --stat | tail -3 && date
+
+Item 13 is done. Item 14 stays open, so no `LOOP_COMPLETE` line was added.
+
+**What was written**
+
+- `reports/ml_nature_summary.md`, 842 lines. It opens with a one-page digest, then gives one paragraph per claim from the two plans, grouped into seven themes covering all 26 sections. Each paragraph closes with its size range, its regenerate command, and a status from the plan's vocabulary (finding, conjecture, proposed solver change, closed question), plus "theorem" for the Lean results. Section 8 tables the thirteen solver changes proposed and never enabled with the measurement that decides each; the `better_move` fix is recorded as applied by the owner. Section 9 lists twelve closed questions. Section 10 prices the open questions in four tiers, from a one-core-hour exhaustive check to the four unpriced items: a sound refutation check above 40 customers, Yanasse's equality in Lean, the encoding's correctness in Lean, and a separator-aware pathwidth bound. Section 11 records compute per item, the three dated versions of `csearch` counts, and where every artifact lives.
+- `learning/README.md`, rewritten in plain English at 343 lines. It replaces the stale framing (the learned seed as the promising route) with the superseding results, and maps all 34 modules to the question each answers and its report section.
+
+**Verification**
+
+- Every number was copied from its section. The two figures I first took from digests, the §8 medians and the §26 recount, were checked against the section tables and match.
+- One range I mis-copied in the summary (the noise-floor multiple) was corrected to the section's 10–100×; one loose phrase in the README ("within 10% in the exponent") was replaced by the section's factor of 1.1.
+- The test suite passes: 1,028 passed, 2 skipped, 1 xfailed in 83 s. No code, solver default, flag, bound or C was touched and nothing was written to `solutions/`.
+
+**Bookkeeping**
+
+- PROGRESS.md has an Iteration 15 entry and reads 13/14 SOLVED.
+- iterations.md marks item 13 `- [x]`.
+- Nothing committed, per the loop's rules. The working tree holds the two deliverables plus the loop's own log and status files.
+
+**Next, for item 14**: no item is blocked, so the reserve session goes to a "for the next loop" note. The summary's §10 orders the candidates: the 9-vertex exhaustive check for `pw − tw ≥ 2` (about one core-hour), the corpus sweep with the two-key rule as the DFS seed (about eight minutes, and it decides two proposed changes at once), or the Lean gap for `pathGraph.IsTree` (2–3 hours).
+
+# result: success in 733s, 32 turns, cost $6.89
