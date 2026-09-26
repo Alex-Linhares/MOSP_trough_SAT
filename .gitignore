@@ -20,6 +20,9 @@ proofs/
 # generated-ensemble campaign, which costs hours and is the artifact of loop0002
 learning/data/*
 !learning/data/ensemble/
+# the re-covered witnesses of item 05 (64 MB) regenerate in minutes from
+# recover.csv.gz (base_name, method, k); the CSVs are the artifact
+learning/data/ensemble/recover_solutions/
 learning/models/
 
 # Unattended re-certification logs and results

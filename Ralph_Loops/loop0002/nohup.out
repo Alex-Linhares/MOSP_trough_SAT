@@ -18,3 +18,8 @@
 [2026-09-26 07:12:27] claude session it04 (cap 3.00 h) -> session_it04.log
 [2026-09-26 07:29:49] session it04: ok (exit 0, 38 tool calls)
 [2026-09-26 07:31:05] tests passed: 798 passed, 2 skipped, 1 xfailed, 149 warnings in 75.42s (0:01:15)
+[2026-09-26 07:31:05] committed d55156c8: 04 · §2.5 Does the optimum concentrate? Per cell: mean, variance and
+[2026-09-26 07:31:05] === iteration 5: 05 · §2.9 Is the graph the whole story? Two sources of pairs with
+[2026-09-26 07:31:05] claude session it05 (cap 3.00 h) -> session_it05.log
+[2026-09-26 07:50:21] session it05: ok (exit 0, 33 tool calls)
+[2026-09-26 07:51:38] tests passed: 805 passed, 2 skipped, 1 xfailed, 149 warnings in 75.91s (0:01:15)

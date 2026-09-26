@@ -55,7 +55,7 @@ Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
       against sparsity, to see how `pw − tw` scales. **Kill**: CV above 0.2 up
       to n = 40. Deliverable: the formula with its residual distribution and
       validated range, labelled *not a bound* in every table.
-- [ ] 05 · §2.9 **Is the graph the whole story?** Two sources of pairs with
+- [x] 05 · §2.9 **Is the graph the whole story?** Two sources of pairs with
       identical MOSP graphs and different products: the 150 corpus graph
       classes holding several matrix classes (§1), and generated re-coverings —
       for a campaign instance, re-cover its edge set with different cliques

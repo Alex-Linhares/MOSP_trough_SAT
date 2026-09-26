@@ -1,0 +1,119 @@
+# session it05 started 2026-09-26 07:31:05
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, the existing report, and the key modules this item builds on.
+  > $ date && pgrep -fa benchmarks.recertify | head; nproc; cat Ralph_Loops/loop0002/iterations.md; grep -n "^## \|^### " reports/ml_nature_plan.md | head -60
+  > $ sed -n 1,64p reports/ml_nature_plan.md && sed -n 204,270p reports/ml_nature_plan.md
+  > $ grep -n "^## \|^### " reports/ml_nature.md | head -80; wc -l reports/ml_nature.md
+  > $ sed -n 10,41p reports/ml_nature.md && sed -n 70,88p reports/ml_nature.md && sed -n 1721,1800p reports/ml_nature.md && sed -n 1841,1910p reports/ml_nature.md
+  > $ grep -n "150\|several matrix\|matrix classes" reports/ml_nature.md | head -20; echo ---; head -c 3000 learning/data/ensemble/results.csv | head -3 | cut -c1-250
+  > $ grep -n "^def \|^class \|^    def \|^[A-Z_]* = " learning/ensemble.py learning/node_counts.py learning/canonical.py learning/degeneracy.py learning/features.py 
+  > $ sed -n 157,330p learning/ensemble.py
+  > $ sed -n 94,125p learning/node_counts.py; echo ----; sed -n 92,192p learning/canonical.py; echo ----; sed -n 329,375p learning/features.py
+  > $ grep -n "count_search\|count_closing\|def " learning/degeneracy.py | sed -n 1,60p; echo ----; grep -n "^def \|^class \|matrix\|n_patterns" satisfiability/custom
+  > $ sed -n 100,200p satisfiability/customer_search.py
+  > $ sed -n 200,240p satisfiability/customer_search.py; echo ----NATIVE; grep -n "matrix\|def decide_native\|masks\|_neighbour" satisfiability/native.py | head -30; 
+  > $ grep -n "def _neighbour_masks" -A 16 satisfiability/heuristics.py; echo ----FEATURES; sed -n 56,135p learning/features.py; echo ----INV; sed -n 227,328p learnin
+  > $ sed -n 134,200p learning/features.py; echo ----DEGEN; sed -n 116,150p learning/degeneracy.py; sed -n 168,180p learning/degeneracy.py; sed -n 399,500p learning/d
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ensemble/results.csv")
+g = r.groupby("graph_cert")
+multi = g.filter(lambda d: d
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+c = pd.read_csv("learning/data/canonical.csv")
+nc = pd.read_csv("learning/data/node_counts.csv")
+print(nc.conf
+  > $ grep -n "BETTER_MOVE_DENSITY" satisfiability/customer_search.py | head -3; python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ense
+  > $ sed -n 288,300p satisfiability/heuristics.py; sed -n 340,384p satisfiability/heuristics.py | grep -n "max_open_stacks\|_cs_cost\|return\|UpperBound(" ; sed -n 4
+  > Write /home/al/dev/MOSP/learning/graph_story.py
+
+Smoke-testing the module on a few bases at two sizes before the full run.
+  > $ timeout 600 python -m learning.graph_story --per-n 4 --sizes 10 25 --per-method 1 --relabellings 2 --workers 4 --no-ml --out /tmp/gs_smoke.md 2>&1 | tail -60
+
+The pandas row tuples aren't picklable across the pool. I'll pass plain dicts and wrap them in a namespace inside each job, then rerun the smoke test.
+  > $ python - <<'EOF'
+import re
+p = "learning/graph_story.py"
+s = open(p).read()
+s = s.replace("import time\nimport zlib\n", "import time\nimport zlib\nfrom types im
+  > $ python - <<'EOF'
+p = "learning/graph_story.py"
+s = open(p).read()
+old = '''def _md(frame: pd.DataFrame, floatfmt: str = ".3g") -> str:
+    if frame is None or l
+  > Write /home/al/dev/MOSP/tests/test_graph_story.py
+  > $ grep -n "def generate_random_instance" -A 3 benchmarks/generator.py; cat learning/requirements.txt; echo ----LOG; cat /tmp/gs/run.log; ls learning/data/ensemble
+
+All seven tests pass and the run is about 60% through the re-covering stage. I'll poll the log until the run finishes.
+  > $ for i in $(seq 1 18); do if grep -q "wrote reports" /tmp/gs/run.log || ! kill -0 3956096 2>/dev/null; then break; fi; sleep 30; done; grep -n "^recover:\|^relab
+
+The full study finished in about four minutes. Reading the tables now.
+  > $ sed -n 5,218p /tmp/gs/run.log | cut -c1-900
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ensemble/recover.csv")
+a = r[r.applicable.astype(bool)]
+print("applicable", len
+  > $ grep -n "ensemble\|learning/data" .gitignore; python - <<'EOF'
+p = "learning/graph_story.py"
+s = open(p).read()
+s = s.replace('RECOVER_CSV = ENSEMBLE_DIR / "rec
+  > $ python - <<'EOF'
+p = ".gitignore"
+s = open(p).read()
+old = "!learning/data/ensemble/\n"
+assert old in s and "recover_solutions" not in s
+s = s.replace(old, old 
+
+While the tables regenerate and the suite runs, I'm writing §13 of the report.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 13. Is the graph the whole story? (§2.9, item 05)
+
+*loop0002 iteration 5, 2026-09-26. Code: `learning/graph_story.py`. R
+  > $ python - <<'EOF'
+p = "learning/graph_story.py"
+s = open(p).read()
+old = "colsample_bytree=0.8, verbose=-1, n_jobs=4)"
+assert old in s
+s = s.replace(old, "colsam
+  > $ python -m pytest tests/test_graph_story.py -q 2>&1 | tail -1; grep -n "05 · §2.9" Ralph_Loops/loop0002/iterations.md; git status --short | grep -v "^?? Ralph_Lo
+
+The seeded model shifted the kill-test numbers by about 0.0003, so the report must quote what the regenerate command now produces. Pulling the regenerated ML tables to patch the report.
+  > $ sed -n '/^## ml_all/,/^kill:/p' /tmp/gs/tables2.log | grep -v "^$"; sed -n '/### Non-complete, by n/,/### Verdict/p' reports/graph_story_tables.md | grep "graph
+  > $ python - <<'EOF'
+import re
+p = "reports/ml_nature.md"
+s = open(p).read()
+head, sec = s.split("## 13. Is the graph the whole story?", 1)
+reps = [
+ ("| all 27,321
+
+Item 05 is done. Everything is written, tested and verified; nothing was committed and nothing touched `solutions/`.
+
+**Answer to §2.9: no, the matrix is not part of the hardness story.** With customer labels fixed, re-covering the same edge set with different cliques leaves the default node count to refute `optimum − 1` exactly unchanged in every one of 15,900 pairs. Graph-only features predict nodes as well as the full set, so the kill criterion is met.
+
+What was measured, all at 10 ≤ n ≤ 40:
+
+- **Re-coverings.** 1,400 campaign bases, 15,900 applicable re-coverings by split, merge and greedy edge-clique cover, in 12,031 matrix classes. Every one kept the base's neighbour masks and nauty certificate, solved independently to the same optimum, and matched the base's default node count exactly.
+- **The one matrix channel.** Under `csearch`, 394 pairs differ, all among the 622 where the re-covering crossed the `better_move` density threshold. Theorem 2 saves 10–13% of nodes at the median for n ≥ 25, up to 25%, and never costs a node. That is a configuration rule, not a property of the problem.
+- **Labelling matters more than the matrix.** Renaming customers of the same matrix changes the default count on 588 of 800 bases at n ≥ 25, by 2–6% at the median and up to 2.3×, up to 8× under `csearch`. This is the floor for any graph-invariant predictor.
+- **§8's counts.** `count_search` is equal in all 4,516 re-covered pairs at n ≤ 15. `count_closing` differs in nearly every greedy pair, by 2.9–4.5× at the median and up to 1,540×.
+- **Corpus pairs are uninformative.** The 150 graph classes with several matrix classes are near-complete graphs refuted in 0–13 nodes, and the report says so.
+- **Kill test.** Graph-only MAE 0.0948 against full 0.0968 in log10 nodes on the deduplicated campaign, matrix-only 25–30% worse, grouped by graph class.
+
+Deliverables:
+
+- `learning/graph_story.py` with the constructions, the study and the tables. `reports/ml_nature.md` §13 and `reports/graph_story_tables.md`.
+- `tests/test_graph_story.py`, seven tests including a hand-checked instance. Full suite: 805 passed, 2 skipped, 1 xfailed.
+- Artifact: `recover.csv.gz`, `relabel.csv.gz`, `recover_lattice.csv` under `learning/data/ensemble/`, about 2 MB. The 64 MB of re-covered witnesses are git-ignored since they regenerate in three minutes from the CSV rows.
+- PROGRESS.md has the iteration 5 section and reads 5/6 solved. Item 05 is marked done in iterations.md. Item 06 remains, so no LOOP_COMPLETE line.
+
+One note for item 06: hardness is a function of the labelled graph, so the 125×125 node predictor needs graph features plus a label-noise term, and the recertify counts run under `better_move=True`, whose expected saving §13's flip table now quantifies.
+
+# result: success in 1156s, 34 turns, cost $6.44

@@ -3212,3 +3212,282 @@ about one stack at `n ≤ 40`, and that stack is the whole spread of the
 hardness peak's `optimum / n ≈ 0.3` band at `n = 40` (§11). *A CV of zero
 has no logarithm*; the figure drops those points rather than drawing a
 spike to the axis.
+
+## 13. Is the graph the whole story? (§2.9, item 05)
+
+*loop0002 iteration 5, 2026-09-26. Code: `learning/graph_story.py`. Regenerate:*
+
+```bash
+python -m learning.graph_story --workers 16 --per-n 200 --per-method 4 --relabellings 20   # 251 s on 16 workers, everything below
+python -m learning.graph_story --stage tables                                              # tables and the kill test again from the CSVs, ~4 min
+python -m pytest tests/test_graph_story.py -q
+```
+
+*Writes `learning/data/ensemble/recover.csv.gz`, `relabel.csv.gz` and
+`recover_lattice.csv` (committed; every re-covered instance regenerates from
+its row's `(base_name, method, k)` through `recover`, the base from the
+campaign manifest), the re-covered witnesses under
+`learning/data/ensemble/recover_solutions/` (64 MB, git-ignored, re-solved in
+three minutes), and every table below in full in
+`reports/graph_story_tables.md`. Nothing was written to `solutions/`.*
+
+**Question.** The optimum is `pathwidth(MOSP graph) + 1`, a function of the
+graph alone. Is the *hardness* — the nodes the complete customer search
+visits to refute `optimum − 1` — a function of the graph too, or does the
+matrix (which cliques cover which edges) carry information the reduction
+discards? And §8's two counts: is the number of optimal closing orders under
+the search measure (`count_search`) equal on two instances with the same
+graph, and is the number under the construction value (`count_closing`) free
+to differ? **Kill**: graph-only features predict nodes as well as the full set.
+
+**What the code says before any measurement.** `customer_search.decide` and
+its C port consume `_neighbour_masks(instance)` — the self-inclusive
+neighbourhoods `N[c]` of the MOSP graph, indexed by customer — and nothing
+else of the matrix. So under the default configuration the node count is a
+function of the *labelled* graph, and the measurement below is a test of the
+implementation rather than of the problem. The matrix enters in exactly one
+place: the `csearch` configuration turns Theorem 2 (`better_move`) on when the
+mean number of products per customer is at most 5
+(`sparse_enough_for_better_move`), and a re-covering can move that mean across
+the threshold. Everything else that differs between two matrices with one
+graph — the upper-bound heuristics simulate the *constructed* product order,
+`lb_trivial` is a column sum, the SAT encoding has a position variable per
+product — is outside the refutation being counted. The study therefore
+separates three things and says which is which.
+
+**Method.** Three sources of pairs with the same graph and different products.
+(1) *Re-coverings with fixed labels*, the item's construction: 1,400 base
+instances from the campaign, 200 per `n ∈ {10, 15, …, 40}`, one per
+isomorphism class, non-complete, half drawn uniformly and half from the
+hardest decile by nodes so the ratios have room to move (base nodes median 9
+at n = 10 → 3,850 at n = 40, max 30,755). For each base, four re-coverings by
+each of three methods: **split** one product `P` into `A ⊂ P` and `B`, where
+`B` is `P \ A` plus every vertex of `A` whose edge into `P \ A` no other
+product covers (so the cut's crossing edges are kept where needed and left to
+the other products where they can be); **merge** two overlapping products
+whose union is a clique of the graph, preferring a pair neither of which
+contains the other; and a fresh **greedy edge-clique cover**, maximal cliques
+grown from uncovered edges in a shuffled order, with a singleton product kept
+for every customer that had products but no neighbours, so the set of
+customers that ever open is unchanged. Each re-covering is seeded from
+`(base_name, method, k)`, checked to have the same neighbour masks and nauty
+certificate as its base, **solved independently** with `solve_mosp_exact`
+into its own solutions directory, its witness re-simulated, and `optimum − 1`
+refuted under both `node_counts` configurations; the base is re-refuted in
+the same process and compared with the campaign CSV. (2) *Relabellings*: 20
+random row-and-column permutations of each base, refuted under both
+configurations. Every corpus pair with one graph and different products also
+differs in labelling, so this is the variance no graph-invariant can see and
+the floor against which the kill test has to be read. (3) *The corpus*: §1's
+150 graph classes at n ≤ 40 holding several matrix classes, with their node
+counts from `learning/data/node_counts.csv`. For §8's counts,
+`learning.degeneracy.analyse` on every re-covered pair at n ≤ 15 (the `2^n`
+lattice is pure Python). The kill test predicts `log10(1 + nodes)` on the
+deduplicated campaign (27,321 rows, one per class per cell) with LightGBM
+(400 trees) under `GroupKFold(5)` by MOSP-graph class, from three feature
+sets built from `learning.features` group names: **graph-only** (the graph
+group, the label-free invariants `tw_min_fill`, `tw_min_degree`, `bw_rcm`,
+`spectral_radius`, `fiedler`, `fiedler_lcc`, `sep_size`, `sep_frac`,
+`lb_contraction`, and the optimum, itself a graph invariant: 21 features),
+**matrix-only** (the matrix group and the optimum: 18) and **full** (all 49
+and the optimum: 50); variants without the optimum and with `nodes_csearch`
+as target. Paired statistics are on `log10(1 + nodes)`; Wilcoxon on the
+non-zero differences.
+
+**Baseline.** The hypothesis the plan states: two matrices with the same
+graph cost the search differently, so the matrix carries information the
+reduction discards. For the kill test, the per-size median (what size alone
+knows) and the matrix-only set.
+
+### Re-coverings with fixed labels: 15,900 pairs, every default node count equal
+
+| method | attempted | applicable | matrix differs | matrix class differs | masks equal | graph cert equal | same optimum | witness ok | products change (median) | default: nodes equal | csearch: nodes equal | `better_move` flipped |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| greedy | 5,600 | 5,600 | 5,600 | 5,556 | 5,600 | 5,600 | 5,600 | 5,600 | −11 (p10 −30, p90 +2) | 5,600 | 5,266 | 536 |
+| merge | 5,600 | 5,340 | 5,340 | 5,340 | 5,340 | 5,340 | 5,340 | 5,340 | −1 | 5,340 | 5,324 | 16 |
+| split | 5,600 | 4,960 | 4,960 | 4,960 | 4,960 | 4,960 | 4,960 | 4,960 | +1 | 4,960 | 4,916 | 70 |
+
+15,900 applicable re-coverings (merge needs two overlapping products whose
+union is a clique, split a product of three or more customers; 900 attempts
+found none), 14,280 distinct matrices in 12,031 matrix classes, all 15,900
+with the base's neighbour masks and nauty certificate. All 15,900 solved
+independently to the base's optimum with a witness that re-simulates — 15,900
+free audits of Yanasse's equality, none failed. **Under the default
+configuration the node count is equal to the base's in 15,900 of 15,900
+pairs**: median and maximum `|log10 ratio|` are 0, the Wilcoxon test has no
+non-zero differences to run on. All 1,400 base re-refutations reproduce the
+campaign CSV exactly.
+
+Under `csearch` the count differs in 394 pairs, and **every one of the 394 is
+among the 622 pairs where the re-covering moved the mean products per
+customer across the `better_move` threshold** (0 differ outside them). That
+is the one matrix effect, and it is an effect of the configuration rule, not
+of the search. Read as Theorem 2 on against off on the same labelled graph:
+
+| n | flipped pairs | on < off | on = off | on > off | ratio on/off median | p10 | p90 | nodes (off) median |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 10 | 55 | 0 | 55 | 0 | 1 | 1 | 1 | 1 |
+| 15 | 126 | 39 | 87 | 0 | 1 | 0.857 | 1 | 4 |
+| 20 | 105 | 48 | 57 | 0 | 1 | 0.833 | 1 | 3 |
+| 25 | 112 | 102 | 10 | 0 | 0.879 | 0.835 | 0.975 | 81 |
+| 30 | 95 | 84 | 11 | 0 | 0.869 | 0.798 | 1 | 294 |
+| 35 | 79 | 71 | 8 | 0 | 0.890 | 0.832 | 0.944 | 682 |
+| 40 | 50 | 50 | 0 | 0 | 0.904 | 0.841 | 0.938 | 1,854 |
+
+Theorem 2 saves 10–13% of the nodes at the median for n ≥ 25, up to 20–25% at
+the tenth percentile, and never costs a node (on > off: 0 of 622). The
+re-coverings that flip it are mostly the greedy cover (536 of 622): maximal
+cliques are fewer and larger than the generator's products, and the mean
+products per customer moves by −2.0 to +1.7 (interquartile), either way
+across 5.
+
+### Relabellings of the same matrix: the label floor
+
+| n | bases | default: bases with any change | max/min ratio median | p90 | max | MAD log10 (floor) | csearch: bases with any change | max/min ratio median | p90 | max | MAD log10 |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 10 | 200 | 35 | 1 | 1.11 | 1.80 | 0.0041 | 99 | 1 | 1.57 | 3.67 | 0.021 |
+| 15 | 200 | 97 | 1 | 1.18 | 1.61 | 0.0078 | 136 | 1.24 | 1.73 | 3.86 | 0.026 |
+| 20 | 200 | 125 | 1.06 | 1.17 | 2.26 | 0.0079 | 142 | 1.23 | 1.65 | 8.14 | 0.023 |
+| 25 | 200 | 141 | 1.05 | 1.18 | 1.51 | 0.0068 | 149 | 1.19 | 1.57 | 4.15 | 0.020 |
+| 30 | 200 | 154 | 1.05 | 1.17 | 1.41 | 0.0063 | 155 | 1.14 | 1.45 | 2.91 | 0.016 |
+| 35 | 200 | 148 | 1.04 | 1.14 | 1.47 | 0.0052 | 149 | 1.10 | 1.42 | 2.19 | 0.013 |
+| 40 | 200 | 145 | 1.02 | 1.15 | 1.82 | 0.0048 | 146 | 1.03 | 1.46 | 2.34 | 0.012 |
+
+29,400 refutations (20 relabellings and the base, 1,400 bases), all `unsat`.
+Renaming the customers — the same matrix, the same graph — changes the
+default node count on 588 of the 800 bases at n ≥ 25, by 2–6% at the median
+over 20 relabellings and 14–18% at the ninetieth percentile, at most 2.26×;
+under `csearch` the spread is three to four times wider (p90 1.4–1.7×, max
+8.1×), because Theorem 2's dominance depends on which of several tied
+candidates the index order puts first. **The labelling moves the count; the
+matrix, with labels fixed, does not.** The mean absolute deviation of
+`log10(1 + nodes)` within a base, 0.005–0.008 (default) and 0.012–0.026
+(`csearch`), is the floor below which no label-free predictor can go.
+
+### §8's counts within re-covered pairs (n = 10 and 15, 4,516 pairs)
+
+| n | method | pairs | `count_search` equal | `min_search` = optimum | `count_closing` equal | closing ratio median | p10 | p90 | min | max |
+|--:|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 10 | greedy | 800 | 800 | 800 | 15 | 2.85 | 1.12 | 13.1 | 0.35 | 132 |
+| 10 | merge | 788 | 788 | 788 | 296 | 1.04 | 1 | 1.67 | 0.33 | 4.8 |
+| 10 | split | 672 | 672 | 672 | 287 | 0.97 | 0.57 | 1 | 0.14 | 1.5 |
+| 15 | greedy | 800 | 800 | 800 | 4 | 4.52 | 1.23 | 40.4 | 0.11 | 1,540 |
+| 15 | merge | 776 | 776 | 776 | 210 | 1.06 | 1 | 1.77 | 0.28 | 7.9 |
+| 15 | split | 680 | 680 | 680 | 205 | 0.94 | 0.50 | 1 | 0.11 | 1.5 |
+
+As §8 predicted: **`count_search` is equal in 4,516 of 4,516 pairs** (it is a
+graph invariant, and the lattice minimum equals the optimum on every one),
+and **`count_closing` is not** — a greedy re-cover leaves it unchanged on 19
+of 1,600 pairs and multiplies it by 2.9 (n = 10) and 4.5 (n = 15) at the
+median, by 13–40× at the ninetieth percentile and by up to 1,540×. The
+direction is systematic: covering the same edges with fewer, larger products
+makes more closing orders construct to the optimum; splitting a product makes
+fewer (median ratio 0.94–0.97, minimum 0.11). So the number of optimal
+closing orders *under the search measure* is a property of the graph and the
+number *under the construction value* is a property of the matrix, by up to
+three orders of magnitude at 15 customers.
+
+### The corpus pairs are uninformative
+
+§1's 150 graph classes at n ≤ 40 with several matrix classes hold 2,796
+matrix classes and instances (Simonis, Harvey, Faggioli–Bentivoglio, and the
+two Wilson/Challenge `NWRS7`/`NWRS8` pairs). Node counts never differ within
+a class under either configuration — but they could not: the classes are
+near-complete graphs (optimum n − 1 or n − 2 at n = 10, 15, 20, 30; 28–29 at
+n = 30) refuted in 0–3 nodes, and the maximum in the whole set is 13, the two
+`NWRS` pairs at n = 25 which are the same matrix with one all-zero column
+removed. The corpus offers no pair on which the question has room to move;
+the generated pairs above are the evidence.
+
+### The kill test: graph-only features predict nodes as well as the full set
+
+`log10(1 + nodes_default)`, deduplicated campaign, `GroupKFold(5)` by graph
+class:
+
+| rows | features | n | MAE log10 | RMSE | R² | within 2× |
+|:--|:--|--:|--:|--:|--:|--:|
+| all 27,321 | graph-only | 21 | **0.0948** | 0.126 | 0.980 | 97.4% |
+| | full | 50 | 0.0968 | 0.127 | 0.979 | 97.3% |
+| | matrix-only | 18 | 0.123 | 0.161 | 0.967 | 93.9% |
+| | size-median baseline | 0 | 0.580 | 0.733 | 0.311 | 33.7% |
+| non-complete, nodes ≥ 1 (26,721) | graph-only | 21 | **0.0937** | 0.124 | 0.979 | 97.5% |
+| | full | 50 | 0.0952 | 0.125 | 0.979 | 97.7% |
+| | matrix-only | 18 | 0.118 | 0.154 | 0.968 | 94.6% |
+| same, without the optimum | graph-only | 20 | 0.121 | 0.162 | 0.965 | 93.5% |
+| | full | 49 | 0.118 | 0.158 | 0.966 | 94.0% |
+| | matrix-only | 17 | 0.138 | 0.185 | 0.954 | 90.6% |
+| same, target `nodes_csearch` | graph-only | 21 | **0.0931** | 0.124 | 0.978 | 97.4% |
+| | full | 50 | 0.0953 | 0.126 | 0.977 | 97.4% |
+| | matrix-only | 18 | 0.116 | 0.153 | 0.967 | 94.8% |
+
+Graph-only beats the full set by 0.001–0.002 MAE on both targets and both
+row sets, and is within 0.003 of it without the optimum; by size it is ahead
+at n ≥ 25 and behind by at most 0.001 at n ≤ 20 (table in
+`reports/graph_story_tables.md`). Matrix-only is 25–30% worse everywhere.
+Both are an order of magnitude above the relabelling floor (0.005–0.008), so
+what remains is model and feature error, not label noise. **Kill criterion
+met**: the 29 matrix, bound and matrix-derived invariant features add nothing
+to the prediction of hardness that the 21 graph features do not already carry.
+
+**Finding.** **No: the matrix is not part of the story for hardness, as
+hardness is measured here.** With the customer labels fixed, re-covering the
+same edge set with different cliques — 15,900 re-coverings of 1,400
+instances, 12,031 matrix classes, products removed or added by up to 30 —
+leaves the default node count to refute `optimum − 1` *exactly* unchanged in
+every pair, and the kill test agrees from the other direction: graph-only
+features predict nodes as well as graph-plus-matrix features (MAE 0.095
+against 0.097 in log10), and matrix-only features are 25–30% worse. Two
+things do move the count, and neither is the clique cover. The **labelling**
+does — renaming the customers of the same matrix changes the default count
+on three bases in four at n ≥ 25, by 2–6% at the median and up to 2.3×, and
+by up to 8× under `csearch` — which is a fact about the search's tie-breaks,
+invisible to every graph invariant and the floor for any label-free
+predictor. And the **configuration rule** does: `csearch` turns Theorem 2 on
+by a matrix statistic, mean products per customer ≤ 5, and a re-covering that
+crosses it changes the count by 10–13% at the median, up to 25%, always in
+Theorem 2's favour; that is the only channel through which the matrix reaches
+the refutation, and it is a design choice of `sparse_enough_for_better_move`,
+not a property of the problem. Where the matrix *does* carry information is
+exactly where §8 said: the number of optimal closing orders under the
+construction value, which the same graph's re-coverings multiply or divide by
+up to three orders of magnitude at n = 15 while the count under the search
+measure is identical in all 4,516 pairs. Part of this finding is a theorem
+about the code — the search reads neighbour masks and nothing else — and the
+measurement's value is that it confirms the C port and the Python behave as
+the code says on 15,900 pairs, quantifies the two exceptions, and hands §2.8
+a clean statement: hardness is a function of the labelled graph, so a
+predictor of nodes at 125 × 125 needs graph features and a label-noise term,
+and no matrix feature. For the SAT encoding, whose formula has a position
+variable per product, the story would be different; it is not the hardness
+measured here.
+
+**Size range covered.** Re-coverings and relabellings at n ∈ {10, 15, 20, 25,
+30, 35, 40}, m ∈ {n, 2n} before re-covering, 200 bases per size with base
+node counts up to 30,755; the §8 counts at n = 10 and 15 only (4,516 pairs);
+the corpus pairs at n ≤ 40; the kill test on the whole deduplicated campaign
+(10 ≤ n ≤ 40). The exact-equality result is structural and does not depend
+on size; the sizes of the two exceptions (label spread, Theorem 2's saving)
+are measured to n = 40 and nothing here says how they scale to 125.
+
+**Kill criterion.** Met: graph-only MAE 0.0948 against full 0.0968 on all
+rows, 0.0937 against 0.0952 on non-complete rows (tolerance 0.01); met again
+on `nodes_csearch` and within 0.003 without the optimum.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound` and
+every decision path are untouched; nothing was written to `solutions/`. No
+finding rests on a handful of instances: every re-covered instance was solved
+independently and matched its base's optimum (15,900 of 15,900), every
+refutation returned `unsat` (15,900 + 29,400), and the lattice minimum equals
+the optimum on all 4,916 instances it was computed for.
+
+**Method notes.** *The itertuples row of a DataFrame does not pickle* across a
+pool; pass `to_dict("records")` and wrap. *tabulate prints integers above
+1,000 as `1.09e+03` under `floatfmt`*; format the frame to strings first.
+*Greedy re-covering can return the base's own matrix class* — 44 of 5,600 were
+a column permutation of the base — so "matrix differs" and "matrix class
+differs" are both reported. *Which way the flip goes matters for nothing
+here*: 247 re-coverings became sparse enough for Theorem 2 and 375 too dense,
+and the table above is folded to on-against-off. *The witnesses are the
+expensive-looking part of the artifact and the cheapest to regenerate*: 64 MB
+for 15,900 instances that re-solve in 170 s, so they are git-ignored and the
+CSVs — 2 MB gzipped, from which every instance regenerates — are committed.

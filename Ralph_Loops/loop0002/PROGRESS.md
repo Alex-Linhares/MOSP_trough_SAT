@@ -3,7 +3,7 @@
 ## Ralph Loop 0002 Status
 - **Started**: 2026-09-26 06:18
 - **Target**: 6 items
-- **Current**: 4/6 SOLVED
+- **Current**: 5/6 SOLVED
 
 ---
 
@@ -207,3 +207,64 @@ Item 04 · §2.5 Does the optimum concentrate? Report: `reports/ml_nature.md`
   understates their realised col_mean at density 2 (§11), which is why the
   formula under-predicts that class by 1.6–2.8 at n = 30/40 — use col_mean
   (or (n − 1)·q from the realised matrix density) when placing them.
+
+## Iteration 5 — 2026-09-26 08:25
+
+Item 05 · §2.9 Is the graph the whole story? Report: `reports/ml_nature.md`
+§13; all tables in `reports/graph_story_tables.md`.
+
+### Completed
+- `learning/graph_story.py` (251 s on 16 workers for everything): three
+  re-covering constructions with fixed customer labels (split a product along
+  a cut whose crossing edges are covered elsewhere, merge two overlapping
+  products whose union is a clique, greedy edge-clique cover under a shuffled
+  edge order), each seeded from `(base_name, method, k)`; relabellings; the
+  §8 lattice counts on re-covered pairs; the corpus pairs from `canonical.csv`
+  joined to `node_counts.csv`; the kill test (LightGBM, GroupKFold by graph
+  class, feature sets from `learning.features` group names).
+- 1,400 bases (200 per n ∈ {10,…,40}, one per class, half from the hardest
+  decile), 15,900 applicable re-coverings in 12,031 matrix classes, all with
+  the base's masks and nauty certificate, **all solved independently to the
+  base's optimum** with a re-simulating witness. **Default node count equal
+  in 15,900 of 15,900 pairs.** csearch differs in 394, every one among the
+  622 pairs where the re-covering crossed the `better_move` density
+  threshold (mean products per customer ≤ 5): Theorem 2 saves 10–13% of
+  nodes at the median for n ≥ 25, up to 25%, never costs.
+- Relabelling the same matrix (29,400 refutations) changes the default count
+  on 588 of 800 bases at n ≥ 25 by 2–6% median, up to 2.26×; csearch up to
+  8.1×. This label floor (MAD 0.005–0.008 log10) is what no graph invariant
+  can see.
+- §8 counts, 4,516 pairs at n = 10, 15: `count_search` equal in all;
+  `count_closing` differs in nearly all greedy pairs, ×2.9–4.5 median, up to
+  ×1,540.
+- Corpus pairs (150 classes, 2,796 matrix classes at n ≤ 40) never differ
+  but are near-complete graphs refuted in 0–13 nodes: uninformative, said so.
+- **Kill met**: graph-only MAE 0.0948 vs full 0.0968 (all rows), 0.0937 vs
+  0.0952 (non-complete), also on `nodes_csearch`; matrix-only 25–30% worse.
+  Answer: **no**, the matrix is not part of the hardness story with labels
+  fixed (effect exactly 0); labelling and the configuration rule are.
+- Tests: `tests/test_graph_story.py` (7): hand-checked 4×3 instance for all
+  three constructions, masks preserved on random instances, default node
+  count invariant under re-covering with independent solves, relabel is the
+  same matrix class, feature sets contain no matrix names, tables on tiny
+  frames. Full suite: 805 passed, 2 skipped, 1 xfailed, 77 s.
+- Artifact: `recover.csv.gz` (1.2 MB), `relabel.csv.gz` (0.3 MB),
+  `recover_lattice.csv` (0.45 MB) committed; the 64 MB of re-covered
+  witnesses under `recover_solutions/` are git-ignored (regenerate in 170 s
+  from the CSV's `(base_name, method, k)`), keeping the ensemble artifact at
+  ~43 MB. Nothing written to `solutions/`; no solver default changed;
+  `_lower_bound` untouched.
+
+### Blockers
+- None. `benchmarks.recertify` was running with 9 workers; this iteration
+  used 16 for 4 minutes.
+
+### Next
+- Item 06 (§2.8 scaling): hardness is a function of the *labelled* graph
+  (§13), so predict nodes at 50–125 from graph features only, and carry a
+  label-noise term (MAD 0.005–0.008 log10 at n ≤ 40, growing wider under
+  csearch); the recertify counts are under `better_move=True`, a third
+  configuration, and §13's flip table gives its expected saving (10–13%) so
+  the default-configuration ridge fit of §11 can be adjusted before
+  comparison. `learning.hardness_map.scaling` / `fit_scaling` and
+  `large_counts`, `learning.concentration.STRUCTURAL` as §12 noted.
