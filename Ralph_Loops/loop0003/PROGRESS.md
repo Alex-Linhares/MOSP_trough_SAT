@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 5/14 SOLVED
+- **Current**: 6/14 SOLVED
 
 ---
 
@@ -401,3 +401,83 @@ chosen model: 87.8% of the 98 `default` counts and 89.3% of the 103 pre-fix
 - For the owner: the cost model orders the recertify queue `2-5_0, 2-3_0,
   2-2_0` and prices `2-2_0` at 4–6 more days on the pre-fix rule; a
   per-component predictor would fix the one class it misses.
+
+## Iteration 6 — 2026-09-26 16:23
+
+**Item 06 · §2.5a Fan order** — SOLVED. **Kill criterion met, for both
+configurations**: the paired median node change of the refutation is 0.0% at
+every size from 10 to 100 customers (p10–p90 within [0.992, 1.008]); the fan
+order does not matter for refutations. The witness search and `cs-dfs` are
+where it shows, in aggregate and two-sided; proposed for satisfiable-side
+drivers only, not applied.
+
+### Completed
+- **The flag.** `fan_order="index" | "degree"` on `customer_search.decide`
+  (Python and C) and `heuristics.restricted_dfs` (registered as
+  `cs-dfs+degree`); `heuristics.fan_sort_key` is the one definition both use
+  (cost, then most neighbours not yet closed, then index — §7's two-key rule
+  as a fan order). Defaults unchanged. The C adds `cs_decide_fan` and keeps
+  `cs_decide` with its old signature, because the running
+  `benchmarks.recertify` forks workers late and its in-memory `argtypes` are
+  the old ones; `native._build` now compiles to a scratch name and renames
+  into place so a mapped library keeps its inode. Recertify's nine processes
+  were the same before and after the rebuild.
+- **`learning/fan_order.py`**: item 01's protocol on every certified
+  campaign instance at 10–75 (44,547) and corpus instance at 9–100 (6,349):
+  `decide(optimum − 1)` and `decide(optimum)` × both configurations × both
+  fan orders, witnesses simulated, plus `restricted_dfs` under both orders;
+  default arm compared node for node with every recorded count. 407,168
+  decision calls, 101,792 DFS runs, 9.25 core-hours, 35 min on 16 workers.
+- **Audit**: zero status disagreements between fan orders (50,845 / 50,849
+  refutation pairs, 50,894 / 50,894 witness pairs), zero contradictions, all
+  203,576 witnesses within the optimum; the default arm equals the recorded
+  `nodes_default` on 50,756 of 50,756 (30 of them at the six significant
+  digits `results_upward.csv` stored), §15's identity counts on 43,935 of
+  43,935, §18's post-fix `csearch` identities on 1,572 of 1,572, and
+  `ub_cs_dfs` on 44,547 of 44,547. The default path is byte-for-byte
+  unchanged over the whole study.
+- **Findings** (`reports/ml_nature.md` §20, tables `reports/fan_order_tables.md`):
+  refutation median ratio 1.000 in every band, geometric mean 1.000, widest
+  ratios 0.66–1.12 at n ≥ 50, class-deduplicated medians 1.000 at every n,
+  no per-node cost in seconds; the *fraction of refutations whose count
+  changes at all* rises from 0.1% at n = 10 to 74% at 75 and cancels. Witness
+  search: median 1.000 but geometric mean 0.81 at 75 and total nodes 0.65 at
+  75 / 0.87 at 99–100; on hard searches (≥ 10⁴ nodes) 301 fewer / 162 more at
+  75, total 0.64, p10 0.055, p90 1.06; gain on the ridge cells (total
+  0.43–0.62), neutral-to-worse on dense `m = n/2`. Worth 1.7% of a descent's
+  nodes at 75 (§18 (b) bound). `cs-dfs`: exact 70.0% → 70.1%, total
+  overshoot −1.3%, corpus 99–100 MAE 3.21 → 2.95 and worst 10 → 8, 50% slower
+  in the Python (the sort-key lambda); §7's `cs-dfs+rule` gain came from the
+  seed, not the fan order.
+- `learning/data/ensemble/fan_order.csv.gz` (2.0 MB, one wide row per
+  instance), `fan_order_run.log`; ensemble directory 71 MB apparent.
+- `tests/test_fan_order.py`: 10 tests — the sort key on a hand-built star,
+  the flag reaching the Python fan through the `branch` hook, rejection of an
+  unknown order, no-flag ≡ `"index"` in status/nodes/witness (Python and C),
+  status invariance at every k under both configurations, C ≡ Python under
+  the flag node for node (and not a no-op), the default reproducing eight
+  recorded campaign counts and `ub_cs_dfs` values byte for byte, the DFS
+  still a bound and registered, `measure`/tables/kill verdict on a toy. Full
+  suite: 939 passed, 2 skipped, 1 xfailed in 80 s.
+
+### Blockers
+- None. Deliverables as asked: the paired distribution by size and density
+  (§20 (a), (b), tables), a proposed default stated and not applied (keep
+  `index` for `decide`; `degree` for satisfiable-side drivers only;
+  `cs-dfs+degree` registered, not default), the harness check that the flag
+  never changes a status.
+- Process notes: a C-vs-Python *order* comparison must be made on the active
+  customers — the C lists product-less customers as free moves, the Python
+  omits them (pre-existing, not a bug); a recorded count is only as exact as
+  its CSV (`results_upward.csv` has six significant digits); running the
+  heaviest instances first meant no progress line for 11 minutes.
+
+### Next
+- Item 07 · §2.5b Theorem 2's switch. This run's `nodes_lo_default_*` and
+  `nodes_lo_csearch_*` columns are 50,896 paired post-fix counts under both
+  configurations on the identity labelling — the boundary can be fitted from
+  `fan_order.csv.gz` alone before any new run; §18 (e) says the pre-fix
+  `results*.csv` `csearch` counts must not be mixed in.
+- For the owner: if a satisfiable-side driver is ever tuned, `fan_order=
+  "degree"` is a measured 35% at 75 with a 1.1–1.3× p90 tail; the `cs-dfs`
+  route to a stronger bound is the rule as seed (§7), not the fan order.

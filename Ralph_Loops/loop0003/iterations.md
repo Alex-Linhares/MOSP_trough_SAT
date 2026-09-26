@@ -59,7 +59,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       at 100–125, the predicted versus actual cost of the recertify instances,
       and the cheapest-first order for whatever remains withdrawn.
       **Kill**: fewer than 80% of the 100–125 counts within one decade.
-- [ ] 06 · §2.5a **Fan order.** Behind a flag defaulting to today's behaviour,
+- [x] 06 · §2.5a **Fan order.** Behind a flag defaulting to today's behaviour,
       order the cheapest candidates in `decide` (Python and C) and
       `restricted_dfs` by highest remaining degree instead of customer index;
       test that the default path is byte-for-byte unchanged and that the flag

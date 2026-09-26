@@ -31,12 +31,13 @@ which is in use for the benchmarks that care.
 from __future__ import annotations
 
 import ctypes
+import os
 import subprocess
 import threading
 from pathlib import Path
 
 from mosp.instance import MOSPInstance
-from satisfiability.customer_search import Decision
+from satisfiability.customer_search import FAN_ORDERS, Decision
 from satisfiability.heuristics import _neighbour_masks
 
 _SOURCE = Path(__file__).with_name("customer_search.c")
@@ -53,14 +54,24 @@ def _build() -> bool:
     global _build_error
     if _LIBRARY.exists() and _LIBRARY.stat().st_mtime >= _SOURCE.stat().st_mtime:
         return True
+    # Compiled beside the target and renamed into place: a process that has
+    # the old library mapped keeps its inode, and no process ever opens a
+    # half-written file. A multi-day `benchmarks.recertify` run is the process
+    # this protects.
+    scratch = _LIBRARY.with_name(_LIBRARY.name + f".build-{os.getpid()}")
     try:
         subprocess.run(
             ["gcc", "-O3", "-march=native", "-shared", "-fPIC",
-             "-o", str(_LIBRARY), str(_SOURCE)],
+             "-o", str(scratch), str(_SOURCE)],
             check=True, capture_output=True, timeout=120)
+        os.replace(scratch, _LIBRARY)
         return True
     except (OSError, subprocess.SubprocessError) as exc:
         _build_error = f"{type(exc).__name__}: {exc}"
+        try:
+            scratch.unlink()
+        except OSError:
+            pass
         return False
 
 
@@ -77,14 +88,18 @@ def _load() -> "ctypes.CDLL | None":
             global _build_error
             _build_error = str(exc)
             return None
-        lib.cs_decide.restype = ctypes.c_int
-        lib.cs_decide.argtypes = [
+        # `cs_decide_fan` is `cs_decide` plus the fan-order flag; the C keeps
+        # the old entry point for processes that loaded the library before
+        # the flag existed.
+        lib.cs_decide_fan.restype = ctypes.c_int
+        lib.cs_decide_fan.argtypes = [
             ctypes.c_int, ctypes.c_int,                 # n, k
             ctypes.POINTER(ctypes.c_uint64),            # neighbourhoods
             ctypes.c_longlong, ctypes.c_double,         # max_nodes, seconds
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # subset, definite, memo
             ctypes.c_int, ctypes.c_longlong,            # restrict, memo_limit
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # better, dominators, old
+            ctypes.c_int,                               # fan_order
             ctypes.POINTER(ctypes.c_int),               # out_path
             ctypes.POINTER(ctypes.c_longlong),          # out_nodes
             ctypes.POINTER(ctypes.c_int),               # out_len
@@ -118,6 +133,7 @@ def decide_native(
     max_nodes: int | None = None,
     seconds: float | None = None,
     memo_limit: int = 4_000_000,
+    fan_order: str = "index",
 ) -> Decision | None:
     """Decide "MOSP(instance) <= k?" in C, or return None if it cannot.
 
@@ -126,6 +142,8 @@ def decide_native(
     never means "do not know"; that is `Decision("unknown", ...)`, as in the
     reference.
     """
+    if fan_order not in FAN_ORDERS:
+        raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
     library = _load()
     if library is None:
         return None
@@ -148,13 +166,14 @@ def decide_native(
     nodes = ctypes.c_longlong(0)
     length = ctypes.c_int(0)
 
-    status = library.cs_decide(
+    status = library.cs_decide_fan(
         n, k, packed,
         -1 if max_nodes is None else int(max_nodes),
         0.0 if seconds is None else float(seconds),
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
         int(better_move), int(better_move_dominators), int(old_move),
+        FAN_ORDERS.index(fan_order),
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated

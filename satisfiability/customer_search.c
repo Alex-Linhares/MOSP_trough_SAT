@@ -22,6 +22,11 @@
 
 typedef unsigned __int128 mask_t;
 
+/* Fan order among equal-cost candidates. INDEX is what every run before
+ * 2026-09-26 used and stays the default; DEGREE is the flag of plan 2 §2.5a. */
+#define FAN_ORDER_INDEX  0
+#define FAN_ORDER_DEGREE 1
+
 #define BIT(i)        (((mask_t) 1) << (i))
 #define LOWEST(x)     ((x) & -(x))
 
@@ -97,6 +102,7 @@ typedef struct {
     int      better_move;
     int      better_move_dominators;   /* how many q to try; 0 for all */
     int      old_move;
+    int      fan_order;         /* 0: ties by customer index; 1: by remaining degree, highest first */
     int      use_memo;
     int      restrict_frontier;
     long long nodes;
@@ -293,6 +299,28 @@ static int dominance_filter(search_t *s, mask_t candidates,
     }
 
 sorted:
+    if (s->fan_order == FAN_ORDER_DEGREE) {
+        /* The fan order of reports/ml_nature.md §7's two-key rule: cheapest
+         * first, ties to the candidate with the most neighbours not yet
+         * closed, then index. `remaining` is the customers still open after
+         * the free moves, so the degree is what the Python computes from
+         * `masks[c] & remaining`. Measured behind this flag, never the
+         * default (plan 2 §2.5a). */
+        mask_t remaining = s->full & ~closed;
+        int deg[128];
+        for (int i = 0; i < count; i++)
+            deg[i] = popcount128(s->neighbour[who[i]] & remaining) - 1;
+        for (int i = 1; i < count; i++) {
+            int ci = costs[i], wi = who[i], di = deg[i], j = i - 1;
+            while (j >= 0 && (costs[j] > ci ||
+                              (costs[j] == ci && (deg[j] < di ||
+                                                  (deg[j] == di && who[j] > wi))))) {
+                costs[j + 1] = costs[j]; who[j + 1] = who[j]; deg[j + 1] = deg[j]; j--;
+            }
+            costs[j + 1] = ci; who[j + 1] = wi; deg[j + 1] = di;
+        }
+        return count;
+    }
     /* Insertion sort by cost: the list is short and nearly sorted already. */
     for (int i = 1; i < count; i++) {
         int ci = costs[i], wi = who[i], j = i - 1;
@@ -420,14 +448,20 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  *
  * All four dominance rules are here, which is what Chu & Stuckey run: they
  * report "better move", "old move" and nogood recording all on together.
+ *
+ *   fan_order  : FAN_ORDER_INDEX (ties among equal-cost candidates by customer
+ *                index, the default) or FAN_ORDER_DEGREE (by remaining degree,
+ *                highest first, then index). Order changes which branches are
+ *                visited first, never which are visited: the answer is the same.
  */
-int cs_decide(int n, int k,
-              const uint64_t *neighbours,
-              long long max_nodes, double seconds,
-              int subset_rule, int definite_move, int use_memo,
-              int restrict_frontier, long long memo_limit,
-              int better_move, int better_move_dominators, int old_move,
-              int *out_path, long long *out_nodes, int *out_len) {
+int cs_decide_fan(int n, int k,
+                  const uint64_t *neighbours,
+                  long long max_nodes, double seconds,
+                  int subset_rule, int definite_move, int use_memo,
+                  int restrict_frontier, long long memo_limit,
+                  int better_move, int better_move_dominators, int old_move,
+                  int fan_order,
+                  int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
     if (n <= 0) return 1;
@@ -441,6 +475,7 @@ int cs_decide(int n, int k,
     s.better_move = better_move;
     s.better_move_dominators = better_move_dominators;
     s.old_move = old_move;
+    s.fan_order = fan_order;
     s.use_memo = use_memo;
     s.restrict_frontier = restrict_frontier;
     s.max_nodes = max_nodes;
@@ -471,4 +506,22 @@ int cs_decide(int n, int k,
     free(s.neighbour);
     free(s.memo.slots);
     return found ? 1 : (s.aborted ? -1 : 0);
+}
+
+/* The original entry point, kept with its signature so a process that loaded
+ * the library before `fan_order` existed -- a multi-day `benchmarks.recertify`
+ * run forks its workers late -- calls a function that still means what it
+ * meant. Ties by customer index, as always. */
+int cs_decide(int n, int k,
+              const uint64_t *neighbours,
+              long long max_nodes, double seconds,
+              int subset_rule, int definite_move, int use_memo,
+              int restrict_frontier, long long memo_limit,
+              int better_move, int better_move_dominators, int old_move,
+              int *out_path, long long *out_nodes, int *out_len) {
+    return cs_decide_fan(n, k, neighbours, max_nodes, seconds,
+                         subset_rule, definite_move, use_memo,
+                         restrict_frontier, memo_limit,
+                         better_move, better_move_dominators, old_move,
+                         FAN_ORDER_INDEX, out_path, out_nodes, out_len);
 }

@@ -5227,3 +5227,277 @@ bias at 75 shows. *A `sat` at value − 1 is not a refutation count*: two of the
 ten 100-customer ridge rows are excluded on that ground (§16 (d)). *`pgrep -f`
 matched this session's own process* because the item text was in its command
 line; anchor on the interpreter (`^python -m benchmarks.recertify`).
+
+## 20. Fan order: should equal-cost candidates be tried by remaining degree instead of by index? (plan 2 §2.5(a), loop0003 item 06)
+
+*2026-09-26. Code: `learning/fan_order.py`; the flag is `fan_order` on
+`satisfiability.customer_search.decide` (Python and C) and on
+`satisfiability.heuristics.restricted_dfs` (registered as `cs-dfs+degree`).
+Regenerate:*
+
+```bash
+python -m learning.fan_order --workers 16          # the study: 50,896 instances, ~35 min on 16 cores
+python -m learning.fan_order --stage tables        # reports/fan_order_tables.md from the CSV
+python -m pytest tests/test_fan_order.py -q
+```
+
+*Writes `learning/data/ensemble/fan_order.csv.gz` (one wide row per instance:
+status, nodes and seconds of every decision call under both configurations
+and both fan orders, both witness values, both DFS values; committed) and
+`reports/fan_order_tables.md` (every table below in full). Nothing is written
+to `solutions/`; no default is changed.*
+
+**Question.** Both searches expand candidates cheapest first — the cost of
+closing `c` is `|O(S ∪ {c}) − S|` — and break ties by customer index, which is
+an accident of labelling that §13 and §18 showed moves the node count by up to
+2.3× (`default`) and 8× (`csearch`) without changing the answer. §7 found the
+best one-sentence greedy on record to be *close the customer that opens the
+fewest new stacks; on ties, the one with the most unclosed neighbours*, and
+observed that its first key is the DFS's own fan order. The conjecture (plan 2
+finding 6) is that the second key is the tie-break the search should use.
+Does it change what a refutation costs? What a witness search costs? What the
+`cs-dfs` bound returns?
+
+**The flag.** `fan_order="index"` is today's order and the default everywhere;
+`fan_order="degree"` sorts the surviving candidates by `(cost, −|N[c] ∩ R| + 1,
+c)`, where `R` is the set of customers not yet closed after the node's free
+moves — so the tie-break is the remaining degree in the MOSP graph, highest
+first, then index. The C implements it in `dominance_filter`'s final sort
+behind a new entry point `cs_decide_fan`; `cs_decide` keeps its signature and
+its meaning, so a process that loaded the library before the flag existed —
+the `benchmarks.recertify` run that has been up since 2026-09-24 forks its
+workers late — calls what it always called. The library is now also built to a
+scratch name and renamed into place, so a running process keeps its inode. A
+fan order changes which branches are visited *first* and never which are
+visited: the cost cut, the memo and every dominance rule are properties of the
+state `S`, not of the order the fan is read in. So the *status* of every
+decision must be identical under both orders, and that is what the tests and
+the study check.
+
+**Method.** Every certified campaign instance at 10–75 customers (`results.csv`
+37,800 at 10–40; `results_upward.csv` 6,750 at 50–75, 12 uncertified rows and
+the 35 at n = 100 excluded) and every certified corpus instance at 9–100
+customers (6,349: 6,135 at ≤ 40, 214 at 41–100, the 125 × 125 classes out of
+scope). For each: `decide(optimum − 1)` (the refutation) and `decide(optimum)`
+(the witness search) under both configurations (`default`; `csearch` =
+Theorem 2 on where `sparse_enough_for_better_move`, every candidate a
+dominator) and both fan orders — eight decision calls, item 01's protocol —
+with the `sat` side's closing order simulated (`witness_ok`), a 60 s deadline
+per call on the campaign and 120 s on the corpus above 40; and `restricted_dfs`
+under both fan orders with its default MCN seed and 200,000-node budget. The
+default arm is compared node for node with the counts recorded before the flag
+existed (`nodes_default` in `results.csv` / `results_upward.csv`, §3's
+`node_counts.csv`, §14's `scale_nodes.csv`) and its `cs-dfs` value with the
+recorded `ub_cs_dfs`: a byte-for-byte check that the default path is unchanged,
+over every instance in the study rather than over a test's sample. The paired
+statistic is `(nodes_degree + 1) / (nodes_index + 1)` per instance; a call
+censored at its deadline is a lower bound and its pair is counted but not
+pooled into the ratio statistics. Every `csearch` count here is a **post-fix**
+count (the C `better_move` fix of 2026-09-26, §18 (e)), on both arms.
+
+**Baseline.** The index fan order — what every recorded node count and every
+`cs-dfs` value in this repository was made with.
+
+**Kill (plan 2 §2.5a).** If the paired median node change is within ±5% at
+every size, the fan order does not matter and the conjecture is closed.
+
+### The run
+
+50,896 instances; 407,168 decision calls and 101,792 DFS runs; 9.25
+core-hours, 35 min on 16 workers (`learning/data/ensemble/fan_order_run.log`).
+The audit came out clean on every line:
+
+| check | result |
+|:--|:--|
+| status disagreements between fan orders, refutation side | **0** of 50,845 (`default`) and 50,849 (`csearch`) pairs where both decided |
+| status disagreements, witness side | **0** of 50,894 and 50,894 |
+| contradictions (`sat` at optimum − 1, `unsat` at optimum) | **0** |
+| witnesses simulating above the optimum | **0** of 203,576 |
+| default arm equal to the recorded `nodes_default` | **50,756 of 50,756** available (50,726 exactly; 30 at the six significant digits `results_upward.csv` stored them with, e.g. 123072000 for 123072316) |
+| default arm equal to this morning's §15 identity/`default` count | 43,935 of 43,935 |
+| `csearch` arm equal to §18's post-fix identity count | 1,572 of 1,572 |
+| `restricted_dfs` (index) equal to the recorded `ub_cs_dfs` | 44,547 of 44,547 |
+| censored at optimum − 1 (60 s campaign / 120 s corpus) | 45 / 44 (`default`, index / degree), 41 / 40 (`csearch`); 45 instances in all: 31 of the 50 `f_n75_m150_d2`, two `b_n75_m150_p0.025`, one `f_n75_m75_d3`, the ten `Random-100-100-2/4` and `Random-100-50-4-4_0` |
+
+So the default path is byte-for-byte what it was, over every instance in the
+study and not only over a test's sample, and the flag never changed an
+answer in 407,168 calls.
+
+### (a) The refutation: the order matters more and more often, and cancels
+
+Paired ratio `(nodes_degree + 1) / (nodes_index + 1)` at `optimum − 1`,
+`default` configuration (`csearch` is the same table to the third decimal;
+`reports/fan_order_tables.md` has both, and the witness side):
+
+| band | paired | fewer / equal / more | median | p10 | p90 | geo. mean | total ratio | median nodes (index) |
+|:--|--:|:--|--:|--:|--:|--:|--:|--:|
+| campaign 10 | 5,394 | 3 / 5,388 / 3 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1 |
+| campaign 20 | 5,400 | 177 / 5,094 / 129 | 1.000 | 1.000 | 1.000 | 1.000 | 0.999 | 9 |
+| campaign 30 | 5,400 | 622 / 4,107 / 671 | 1.000 | 0.997 | 1.000 | 1.000 | 0.999 | 25 |
+| campaign 40 | 5,400 | 966 / 3,425 / 1,009 | 1.000 | 0.995 | 1.004 | 1.000 | 1.000 | 78 |
+| campaign 50 | 2,250 | 670 / 869 / 711 | 1.000 | 0.994 | 1.006 | 1.000 | 1.000 | 973 |
+| campaign 60 | 2,250 | 715 / 711 / 824 | 1.000 | 0.996 | 1.008 | 1.000 | 1.007 | 3,710 |
+| campaign 75 | 2,213 | 768 / 566 / 879 | 1.000 | 0.996 | 1.008 | 1.000 | 0.976 | 26,200 |
+| corpus 9–20 | 4,122 | 13 / 4,098 / 11 | 1.000 | 1.000 | 1.000 | 1.000 | 0.999 | 1 |
+| corpus 21–40 | 2,013 | 93 / 1,805 / 115 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 8 |
+| corpus 41–60 | 121 | 29 / 55 / 37 | 1.000 | 0.992 | 1.008 | 1.000 | 1.000 | 646 |
+| corpus 61–82 | 32 | 12 / 8 / 12 | 1.000 | 0.995 | 1.008 | 1.000 | 0.996 | 37,100 |
+| corpus 99–100 | 50 | 23 / 8 / 19 | 1.000 | 0.997 | 1.008 | 1.000 | 1.000 | 422,000 |
+
+The median is 1.000 in every band under both configurations, and so is the
+geometric mean; the p10–p90 band never leaves [0.992, 1.008]; the widest
+ratios at `n ≥ 50` are 0.664 and 1.121; at `n = 75` the absolute log10
+ratio has median 0.0003, p90 0.0058, p99 0.0225. One instance per
+isomorphism class (32,745 classes) gives medians of 1.000 at every `n`. By
+realised density at 50–75 and by cell (`reports/fan_order_tables.md`), every
+cell's median lies in [0.994, 1.015], and the sign of the cell medians is not
+even consistent between configurations (`f_n75_m75_d4` is the cell where
+`degree` saves most under both, 0.996–0.999; the `m = n/2` fixed-`d` cells
+lean the other way at 1.01). Total nodes at 75: 8.71 G index against 8.54 G
+degree; at the corpus 99–100 band 3.00 G against 3.04 G. Seconds beside them:
+4,421 s against 4,434 s at 75, so the degree sort costs nothing per node in
+the C either.
+
+What *does* change with size is how often the order matters at all: the
+fraction of refutations whose node count differs between the two orders is
+0.1% at `n = 10`, 5.7% at 20, 23.9% at 30, 36.6% at 40, 61.4% at 50, 68.4%
+at 60 and 74.4% at 75. The order reaches the count on three refutations in
+four at 75 and moves it by a fraction of a percent, in either direction. The
+mechanism is the one the docstrings state: the cost cut, the memo and the
+dominance rules are properties of the state `S`, so a refutation visits the
+same set of states whichever order the fan is read in, and the order changes
+only how the memo and the old-move set `Q(S)` happen to fill — which is why
+the count changes at all, and why it cancels.
+
+The censored pairs say the same thing at the deadline: on the 44 (`default`)
+and 40 (`csearch`) instances where both arms ran out, the degree arm had
+visited 0.99× the index arm's nodes at the same wall clock (median), and on
+the one instance per configuration where only the degree arm finished
+(`ens_f_n75_m150_d2_i010`: 134 M nodes `unsat` against ≥ 144 M unfinished;
+`_i045` under `csearch`: 76 M against ≥ 85 M) the two counts are within 7%
+of each other — a deadline artefact, not a speed-up.
+
+**Kill criterion (plan 2 §2.5a): met, for both configurations.** The paired
+median node change is 0.0% at every size from 10 to 100 customers; the fan
+order does not matter for refutations and the conjecture, as a statement about
+the complete search's cost, is closed.
+
+### (b) The witness search: the same median, a different distribution
+
+`decide(optimum)` under both orders, `default` configuration (`csearch`
+within 0.03 of every entry):
+
+| band | paired | fewer / equal / more | median | p10 | p90 | geo. mean | total ratio | median nodes (index) |
+|:--|--:|:--|--:|--:|--:|--:|--:|--:|
+| campaign 10 | 5,400 | 55 / 5,334 / 11 | 1.000 | 1.000 | 1.000 | 0.998 | 0.997 | 3 |
+| campaign 20 | 5,400 | 453 / 4,668 / 279 | 1.000 | 1.000 | 1.000 | 0.991 | 0.979 | 6 |
+| campaign 30 | 5,400 | 921 / 3,859 / 620 | 1.000 | 0.900 | 1.03 | 0.972 | 0.929 | 8 |
+| campaign 40 | 5,400 | 1,307 / 3,201 / 892 | 1.000 | 0.828 | 1.08 | 0.945 | 0.882 | 11 |
+| campaign 50 | 2,250 | 759 / 874 / 617 | 1.000 | 0.682 | 1.18 | 0.930 | 0.926 | 26 |
+| campaign 60 | 2,250 | 869 / 699 / 682 | 1.000 | 0.491 | 1.19 | 0.859 | 0.719 | 46 |
+| campaign 75 | 2,246 | 949 / 553 / 744 | 1.000 | 0.349 | 1.31 | 0.813 | 0.648 | 204 |
+| corpus 41–60 | 121 | 43 / 47 / 31 | 1.000 | 0.700 | 1.18 | 0.943 | 0.943 | 29 |
+| corpus 61–82 | 32 | 14 / 6 / 12 | 1.000 | 0.771 | 1.36 | 1.14 | 1.06 | 184 |
+| corpus 99–100 | 60 | 31 / 12 / 17 | 0.999 | 0.354 | 1.09 | 0.939 | 0.871 | 9,810 |
+
+The median is still 1.000 — most witness searches take a handful of nodes and
+the first leaf is the witness under either order — but the distribution is
+skewed left and the skew grows with `n`: the geometric mean falls from 0.998
+at 10 to 0.945 at 40, 0.859 at 60 and 0.813 at 75, the total node count of
+the band falls to 0.65 at 75 and 0.87 at 99–100, and the p10 reaches 0.35.
+Where the witness search is *hard* (index arm ≥ 10⁴ nodes) the effect is
+large and still two-sided:
+
+| band | hard searches | fewer / more | median | p10 | p90 | geo. mean | total ratio |
+|:--|--:|:--|--:|--:|--:|--:|--:|
+| campaign 50 | 25 | 14 / 11 | 0.999 | 0.238 | 1.01 | 0.59 | 0.90 |
+| campaign 60 | 134 | 87 / 47 | 0.991 | 0.104 | 1.04 | 0.55 | 0.69 |
+| campaign 75 | 463 | 301 / 162 | 0.992 | 0.055 | 1.06 | 0.48 | 0.64 |
+| corpus 61–82 | 8 | 5 / 3 | 0.997 | 0.538 | 1.81 | 0.51 | 1.05 |
+| corpus 99–100 | 30 | 20 / 10 | 0.995 | 0.088 | 1.02 | 0.67 | 0.52 |
+
+By cell the gain sits on the ridge and its sparse side: `f_n60_m120_d2`
+(total 0.43), `f_n75_m75_d2` (0.45), `f_n75_m150_d2` (0.51), `f_n75_m75_d3`
+(0.62), `b_n75_m75_p0.025` (0.62); the dense cells are neutral to slightly
+worse (`f_n50_m25_d9` 1.05, `b_n50_m25_p0.05` 1.15). This is §7's finding in
+the search's own terms: the degree tie-break is the two-key rule's second
+key, and under it the first leaf of the fan is the rule's greedy whenever the
+cost cut lets it through, so the witness is found earlier on the instances
+where the rule beats MCN — the sparse ones. It is also §18 (b)'s finding —
+labels move the satisfiable side, not the refutation — with the label noise
+replaced by a rule. The p90 above 1 on every band is the price: a third of
+the hard searches get slower, some by 10×, because a greedy that is right on
+average is wrong on a third of the instances and the DFS then has to back out
+of its first leaf.
+
+What it is worth in a descent is bounded by §18 (b): at `n = 75` the witness
+search is 204 nodes against 26,200 for the refutation (medians), 456 M
+against 8.7 G in total, so a 35% saving on the witness side is 1.7% of the
+band's node count. Where it would count is a driver that asks only
+satisfiable questions — `benchmarks.ratchet`, or the `k ≥ optimum` calls at
+the top of a descent, whose seconds are what `on_improve` exists to save.
+
+### (c) `restricted_dfs`: a smaller overshoot, a slower Python
+
+The `cs-dfs` bound with its default MCN seed and 200,000-node budget, value
+over the certified optimum:
+
+| band | instances | exact (index → degree) | mean overshoot (index → degree) | worst | better / equal / worse | ms (index → degree) |
+|:--|--:|:--|:--|:--|:--|:--|
+| campaign 10–40 | 37,800 | 75.2% → 75.4% | 0.334 → 0.332 | 8 → 8 | 1,108 / 35,669 / 1,023 | 47 → 70 |
+| campaign 50 | 2,250 | 33.2% → 33.5% | 1.18 → 1.16 | 7 → 7 | 285 / 1,728 / 237 | 90 → 134 |
+| campaign 60 | 2,250 | 26.0% → 26.0% | 1.46 → 1.43 | 6 → 7 | 366 / 1,582 / 302 | 88 → 129 |
+| campaign 75 | 2,247 | 20.6% → 20.3% | 1.85 → 1.82 | 9 → 9 | 441 / 1,419 / 387 | 90 → 129 |
+| corpus 9–40 | 6,135 | 86.9% → 87.0% | 0.172 → 0.173 | 6 → 6 | 82 / 5,971 / 82 | 29 → 43 |
+| corpus 41–100 | 214 | 25.2% → 24.3% | 1.79 → 1.66 | 10 → 8 | 40 / 152 / 22 | 103 → 156 |
+| all | 50,896 | 70.0% → 70.1% | 0.475 → 0.469 | 10 → 9 | 2,322 / 46,521 / 2,053 | 51 → 75 |
+
+The total overshoot falls from 24,178 to 23,860 stacks (−1.3%); the gain is
+where the DFS is weakest — `corpus 99–100` 3.21 → 2.95, worst 10 → 8 — and it
+has the same sign structure as the witness search: sparse cells better
+(`f_n50_m25_d4` 17 better / 2 worse), dense `m = n/2` cells worse
+(`b_n60_m30_p0.2` 2 / 11). The extra 50% of wall clock is the Python sort
+key, a lambda called once per candidate per node, not the search; a
+`(cost, -degree, index)` tuple built in the scoring loop would remove it.
+Read against §7, where seeding the DFS with the rule's own greedy order took
+the held-out MAE from 0.311 to 0.127: changing the fan order under the MCN
+seed recovers almost none of that. The gain of `cs-dfs+rule` came from the
+*incumbent* the DFS prunes against, not from the order it reads the fan in;
+with the MCN incumbent, the cost cut removes the rule's leaf before the DFS
+reaches it on most of the instances where the rule would have won.
+
+### Proposed defaults — stated, not applied
+
+- **`decide`**: keep `fan_order="index"`. The refutation is indifferent to the
+  order at every size measured (median change 0.0%, p10–p90 within ±0.8%),
+  and the refutation is 95–98% of a descent's cost. Nothing to gain, and
+  every recorded node count in the repository stays comparable.
+- **Satisfiable-side drivers** (`benchmarks.ratchet`, the `k ≥ optimum`
+  calls of a descent, a portfolio on the witness side as §18 (f) proposed):
+  `fan_order="degree"` saves 35% of the witness-search nodes at 75 and 13%
+  at 100 in total, at a p90 cost of 1.1–1.3× per instance. Worth enabling
+  there and nowhere else; the owner's change.
+- **`restricted_dfs`**: `cs-dfs+degree` is registered and marginally better
+  (+0.1 pt exact, −1.3% total overshoot, better on the sparse large
+  instances where the bound is worst) and 50% slower in the current Python.
+  Not worth changing the default for; if a stronger `cs-dfs` is wanted, §7's
+  rule as the *seed* is the measured route (0.127 vs 0.311).
+
+**Size range.** Campaign 10–75 customers (44,547 instances, both generators,
+`m ∈ {n/2, n, 2n}`), corpus 9–100 (6,349). Nothing here is evidence about
+125 × 125 except that the refutation ratio's spread *narrows* with `n`
+(p90 1.004 at 40, 1.008 at 75–100) while the fraction of affected
+refutations rises; an extrapolation would put the 125 × 125 ratio at 1.00 ±
+0.01, and the 11 censored corpus pairs at 100 show 0.99 at the deadline.
+
+**Method notes.** The C keeps `cs_decide` with its old signature and adds
+`cs_decide_fan`; a long-running process that forks workers late (the
+`benchmarks.recertify` run, up since 2026-09-24, nine processes before and
+after) would otherwise have loaded a library whose entry point took one more
+argument than its in-memory `argtypes` said. `native._build` now compiles to a
+scratch name and renames into place for the same reason. The Python omits
+customers with no products from its witness and the C lists them as free
+moves — a pre-existing difference in witness *format* that a naive C-vs-Python
+order comparison trips on; compare on the active customers. And a recorded
+count is only as exact as the CSV that stored it: `results_upward.csv` wrote
+six significant digits.

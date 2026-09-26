@@ -1,0 +1,165 @@
+# session it06 started 2026-09-26 15:30:14
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan and the relevant code for item 06 (fan order behind a flag), then build the flag, the harness check, and the paired measurement.
+  > $ date && pgrep -af "^python -m benchmarks.recertify" ; nproc; uptime; cat reports/ml_nature_plan_2.md | head -400
+  > $ wc -l satisfiability/customer_search.py satisfiability/heuristics.py learning/node_counts.py learning/differential.py learning/relabel_portfolio.py learning/gra
+  > $ cat satisfiability/customer_search.py
+  > $ cat satisfiability/native.py && wc -l satisfiability/customer_search.c && grep -n "sort\|qsort\|cmp\|order\|playable\|fan" satisfiability/customer_search.c | he
+  > $ sed -n 1,140p satisfiability/customer_search.c
+  > $ sed -n 140,474p satisfiability/customer_search.c
+
+Reading the two-key rule's definition, the DFS heuristic, the refutation primitives and the harness so the flag matches §7 and the measurement reuses item 01's machinery.
+  > $ sed -n 1467,1560p reports/ml_nature.md
+  > $ grep -n "remaining_degree\|def _candidate_features\|def candidate_features\|newly_opened" learning/policy.py learning/distil.py | head -30; echo ----; grep -n "
+  > $ sed -n 55,120p learning/policy.py; echo ---- NODE_COUNTS; cat learning/node_counts.py; echo ---- DIFF; grep -n "^def \|^class \|^    def " learning/differential
+  > $ sed -n 100,410p learning/differential.py
+  > $ grep -n "def \|corpus\|max_customers\|per_cell\|Random-100" learning/relabel_portfolio.py | sed -n 1,80p; echo ---- SEL; sed -n '/^def targets/,/^def [a-z_]*(/p
+  > $ sed -n 85,110p learning/relabel_portfolio.py; sed -n 176,320p learning/relabel_portfolio.py
+
+Now checking the tests I need to extend, how `solve_mosp_exact` forwards to `decide`, the corpus population at 41–100 with its recorded counts, and the report's §18(e) note on the fix.
+  > $ sed -n 20,60p tests/test_native.py; echo ---- HEUR_TESTS; ls tests/ | grep -i "heur\|customer\|search"; grep -n "restricted_dfs" tests/*.py | head; echo ---- SO
+  > $ sed -n 1,60p tests/test_customer_search.py; echo ---- GITIGN; grep -n "customer_search.so\|\.so" .gitignore; git ls-files satisfiability | grep so; echo ---- DI
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("satisfiability/customer_search.c")
+s = p.read_text()
+
+# 1. field
+old = """    int      old_move;
+    int    
+  > $ python - <<'EOF'
+from pathlib import Path
+
+# ---------------- native.py ----------------
+p = Path("satisfiability/native.py"); s = p.read_text()
+old = """import
+  > $ python - <<'EOF'
+import random
+from mosp.instance import MOSPInstance
+from satisfiability.customer_search import decide
+rng = random.Random(3)
+def rnd():
+    n=
+  > $ python - <<'EOF'
+import random
+from mosp.instance import MOSPInstance
+from mosp.verify import max_open_stacks
+from satisfiability.customer_search import decide
+
+
+Debugging a Python-side witness that comes back shorter than the C's; checking whether it predates my change by testing the same case with the flag code bypassed.
+  > $ python - <<'EOF'
+import random
+from mosp.instance import MOSPInstance
+from satisfiability.customer_search import decide
+rng = random.Random(3)
+def rnd():
+    n=
+  > $ python - <<'EOF'
+import random
+from mosp.instance import MOSPInstance
+from mosp.verify import max_open_stacks
+from satisfiability.customer_search import decide
+
+
+Parity holds on 1,976 calls (statuses equal, C equals Python to the node under both orders). Now writing the study module and its tests together.
+  > Write /home/al/dev/MOSP/learning/fan_order.py
+  > Edit /home/al/dev/MOSP/learning/fan_order.py
+  > Write /home/al/dev/MOSP/tests/test_fan_order.py
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_fan_order.py"); s = p.read_text()
+start = s.index("# A hand-checkable tie.")
+end = s.index("def t
+  > Edit /home/al/dev/MOSP/learning/fan_order.py
+  > $ python -m learning.fan_order --stage tables --rows /tmp/fo_test.csv.gz --out /tmp/fo_tables.md 2>&1 | head -80
+
+Fixing the empty-group case in two table builders, then rendering the smoke tables and running the new test file in one go.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/fan_order.py"); s = p.read_text()
+old = """    p = _paired(rows, side, config)
+    p = p[(p.n >= mi
+  > Edit /home/al/dev/MOSP/tests/test_fan_order.py
+  > $ nohup python -m learning.fan_order --workers 16 > learning/data/ensemble/fan_order_run.log 2>&1 &
+echo started $!; sleep 20; tail -3 learning/data/ensemble/fan_
+  > $ timeout 900 python -m pytest tests/test_fan_order.py -q -x 2>&1 | tail -8; tail -2 learning/data/ensemble/fan_order_run.log; uptime
+  > $ pgrep -af "^python -m benchmarks.recertify" | wc -l; ls -la satisfiability/_customer_search.so*; timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -5; tail 
+
+Full suite passes (939 passed, 2 skipped, 1 xfailed) and recertify's nine processes are untouched. Now I'll wait on the study, which is running its heaviest instances first.
+  > $ for i in $(seq 1 27); do sleep 20; if tail -1 learning/data/ensemble/fan_order_run.log | grep -q "instances,"; then break; fi; done; tail -2 learning/data/ensem
+  > $ for i in $(seq 1 27); do sleep 20; if grep -qE "^  [0-9]+/" learning/data/ensemble/fan_order_run.log; then break; fi; done; tail -2 learning/data/ensemble/fan_o
+  > $ python - <<'EOF'
+import pandas as pd
+r = pd.read_csv("learning/data/fan_order_partial.csv")
+cols = ["instance_name","n","optimum","status_lo_default_index","nod
+  > $ for i in $(seq 1 27); do sleep 20; n=$(grep -cE "^  [0-9]+/" learning/data/ensemble/fan_order_run.log); if [ "$n" -ge 2 ]; then break; fi; done; tail -3 learnin
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+fr=[pd.read_csv(p,low_memory=False,usecols=["n","m","cell","certified","nodes_default","nodes_csearch","status
+  > Write /tmp/sec20_head.md
+
+Draft written. Now polling the study until it reports the next milestone.
+  > $ for i in $(seq 1 27); do sleep 20; n=$(grep -cE "^  [0-9]+/" learning/data/ensemble/fan_order_run.log); if [ "$n" -ge 2 ]; then break; fi; done; tail -2 learnin
+  > $ python - <<'EOF'
+import pandas as pd
+r = pd.read_csv("learning/data/fan_order_partial.csv")
+print(len(r), "rows; sources", r.source.value_counts().to_dict())
+pr
+
+The heavy tail is through: median per instance is already down to 9.5 s and the rest are light. Polling until the run finishes.
+  > $ for i in $(seq 1 28); do sleep 20; if grep -q "^wrote" learning/data/ensemble/fan_order_run.log; then break; fi; done; grep -E "^  [0-9]+/|^wrote" learning/data
+
+The study finished in 35 minutes. Reading the tables, checking artifact sizes and the git view of new files together.
+  > $ ls -la learning/data/ensemble/fan_order.csv.gz learning/data/fan_order_partial.csv; du -sh --apparent-size learning/data/ensemble; git status --short | grep -v 
+  > $ grep -n "^## " reports/fan_order_tables.md; echo; sed -n 5,14p reports/fan_order_tables.md | cut -c1-2000
+  > $ sed -n 11,92p reports/fan_order_tables.md
+  > $ sed -n 92,150p reports/fan_order_tables.md | grep -E "campaign 75|campaign 60|campaign 50|band" ; echo ...; sed -n 210,290p reports/fan_order_tables.md; echo; e
+  > $ rm -f learning/data/fan_order_partial.csv && python - <<'EOF'
+import pandas as pd, numpy as np, gzip
+r = pd.read_csv("learning/data/ensemble/fan_order.csv.gz", 
+  > Edit /home/al/dev/MOSP/learning/fan_order.py
+
+Re-rendering the tables, re-running the new tests, and computing the extra statistics for the report, all at once.
+  > $ python -m learning.fan_order --stage tables > /dev/null && sed -n 7,10p reports/fan_order_tables.md | cut -c1-900 && timeout 600 python -m pytest tests/test_fan
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ensemble/fan_order.csv.gz", low_memory=False)
+pd.set_option("display.width", 25
+
+I have every number. Now writing the report body, and running the full suite in parallel since it is independent of the report text.
+  > Write /tmp/sec20_body.md
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/ensemble/fan_order.csv.gz", low_memory=False)
+def dfs(d, label):
+    oi=d.dfs_i
+  > $ python - <<'EOF'
+from pathlib import Path
+import re, time
+body = Path("/tmp/sec20_body.md").read_text()
+subs = [
+ ("**0** of 203,584", "**0** of 203,576"),
+ ("|
+  > $ sed -i 's/# the study: 50,896 instances, ~55 min on 16 cores/# the study: 50,896 instances, ~35 min on 16 cores/' reports/ml_nature.md && grep -n "~35 min on 16
+
+Item 06 is done. Everything is written and verified, well inside the wall-clock cap.
+
+**What was built**
+- A `fan_order` flag (`"index"` default, `"degree"` optional) on `decide` in Python and C, and on `restricted_dfs`, registered as `cs-dfs+degree`. One shared definition, `fan_sort_key` in `satisfiability/heuristics.py`: cheapest first, then most neighbours not yet closed, then index. That is §7's two-key rule read as a fan order.
+- The C gained a new entry point and kept `cs_decide` with its old signature, so the recertify run that has been up since Wednesday keeps calling what it always called. The library is now also built to a scratch name and renamed into place. Recertify's nine processes were unchanged before and after.
+- `learning/fan_order.py`: item 01's protocol on 50,896 instances (campaign 10 to 75, corpus 9 to 100), both configurations, both fan orders, both sides of the optimum, plus the DFS bound. 9.25 core-hours, 35 minutes on 16 workers.
+
+**Audit, all clean.** Zero status disagreements between fan orders in 407,168 decision calls, zero contradictions, every witness within the optimum. The default arm reproduces every recorded node count on record (50,756 of 50,756, 30 of them at the six significant digits the upward CSV stored) and every recorded `cs-dfs` value.
+
+**Finding.** The kill criterion is met for both configurations. The refutation's paired median is exactly 1.000 at every size, the p10 to p90 band stays within one percent, and seconds match too. The order touches three refutations in four at 75 customers and the effect cancels. The witness search is different: medians still 1.000, but in aggregate the degree order saves a third of the witness-search nodes at 75, mostly on the ridge cells, with a tail where it costs up to 10×. That side is worth about two percent of a descent. The DFS bound improves marginally and runs slower in Python.
+
+**Proposed, not applied.** Keep `index` for `decide`. Consider `degree` only for satisfiable-side drivers such as the ratchet. Leave `cs-dfs` alone; §7's rule as the seed is the measured route to a stronger bound.
+
+**Records.** Report §20 in `reports/ml_nature.md`, full tables in `reports/fan_order_tables.md`, data in `learning/data/ensemble/fan_order.csv.gz` (2 MB). Ten new tests; full suite 939 passed, 2 skipped, 1 xfailed. PROGRESS.md has the iteration 6 entry with the count at 6 of 14, and item 06 is marked done in `iterations.md`. Eight items remain, so no `LOOP_COMPLETE`. Nothing committed and nothing written to `solutions/`.
+
+**Next for item 07.** The new CSV already holds 50,896 paired post-fix counts under both configurations, so Theorem 2's decision boundary can be fitted from it before any new run.
+
+# result: success in 3249s, 53 turns, cost $17.70

@@ -63,7 +63,12 @@ from dataclasses import dataclass
 
 from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
-from satisfiability.heuristics import _neighbour_masks, product_order_from_customers
+from satisfiability.heuristics import (
+    FAN_ORDERS,
+    _neighbour_masks,
+    fan_sort_key,
+    product_order_from_customers,
+)
 
 
 @dataclass
@@ -127,6 +132,7 @@ def decide(
     native: bool = True,
     branch: "Callable[[int, int, list[tuple[int, int]]], list[tuple[int, int]]] | None" = None,
     expansion_prune: bool = False,
+    fan_order: str = "index",
     **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
@@ -173,11 +179,23 @@ def decide(
             not for production. Order affects only *which* branches are visited
             first: the cost cut, the memo and every dominance rule are
             properties of the state, not of the order they are reached in.
+        fan_order: how equal-cost candidates are ordered. `"index"` (the
+            default, and what every recorded node count was made with) breaks
+            ties by customer index; `"degree"` puts the candidate with the
+            most neighbours not yet closed first, then index -- the fan order
+            of the two-key rule in `reports/ml_nature.md` §7. Implemented in
+            both the C and the Python, so it costs nothing to ask for. Like
+            `branch`, it changes which branches are visited first and never
+            which are visited, so the answer is the same under either; the
+            node count is what it is measured on (plan 2 §2.5a).
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty
         product set; customers needing nothing are omitted, as they never open.
     """
+    if fan_order not in FAN_ORDERS:
+        raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
+
     if native and branch is None and not expansion_prune:
         from satisfiability.native import decide_native
         answer = decide_native(
@@ -186,7 +204,8 @@ def decide(
             better_move=kwargs.pop("better_move", False),
             better_move_dominators=kwargs.pop("better_move_dominators", 4),
             max_nodes=max_nodes, memo_limit=memo_limit,
-            seconds=None if deadline is None else max(0.0, deadline - time.monotonic()))
+            seconds=None if deadline is None else max(0.0, deadline - time.monotonic()),
+            fan_order=fan_order)
         if answer is not None:
             return answer
 
@@ -302,7 +321,10 @@ def decide(
             playable = _apply_dominance(
                 playable, opens, subset_rule, definite_move)
 
-        playable.sort()
+        if fan_order == "index":
+            playable.sort()
+        else:
+            playable.sort(key=fan_sort_key(fan_order, masks, remaining))
         if branch is not None and len(playable) > 1:
             playable = branch(closed, opened, playable)
         for _, customer in playable:

@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-26 15:28:55",
+  "updated": "2026-09-26 16:24:24",
   "phase": "tests",
-  "started": "2026-09-26 15:11:45",
-  "item": "05 \u00b7 \u00a72.3 Predicting cost. `learning/cost_model.py`: predict"
+  "started": "2026-09-26 15:30:14",
+  "item": "06 \u00b7 \u00a72.5a Fan order. Behind a flag defaulting to today's behaviour,"
 }

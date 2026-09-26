@@ -268,6 +268,29 @@ def _neighbour_masks(instance: MOSPInstance) -> list[int]:
     return masks
 
 
+# Fan orders among equal-cost candidates, shared by `restricted_dfs` and the
+# complete search in `customer_search.decide`. "index" is what every recorded
+# node count and every `cs-dfs` value was made with and is the default
+# everywhere; "degree" is measured behind the flag (reports/ml_nature.md §20).
+FAN_ORDERS = ("index", "degree")
+
+
+def fan_sort_key(fan_order: str, masks: Sequence[int], remaining: int):
+    """Sort key over `(cost, customer, ...)` tuples for a named fan order.
+
+    `"index"`: cheapest first, ties by customer index -- the tuple's own order.
+    `"degree"`: cheapest first, ties to the customer with the most neighbours
+    not yet closed (`|N[c] ∩ remaining| - 1`, `N` self-inclusive), then index.
+    That is the two-key rule of `reports/ml_nature.md` §7 read as a fan order:
+    its greedy is the first leaf of a DFS sorted this way.
+    """
+    if fan_order == "index":
+        return lambda item: item[:2]
+    if fan_order == "degree":
+        return lambda item: (item[0], -((masks[item[1]] & remaining).bit_count() - 1), item[1])
+    raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
+
+
 def _cs_cost(masks: Sequence[int], order: Sequence[int]) -> int:
     """Chu & Stuckey's cost of a customer closing order: `max_i |O(S_i) - S_{i-1}|`.
 
@@ -289,6 +312,7 @@ def restricted_dfs(
     instance: MOSPInstance,
     max_nodes: int = 200_000,
     seed_order: Optional[Sequence[int]] = None,
+    fan_order: str = "index",
     **_: object,
 ) -> UpperBound:
     """Chu & Stuckey's `ub_MOSP` (2009, §3.4): DFS over customer closings,
@@ -318,7 +342,15 @@ def restricted_dfs(
 
     `max_nodes` caps the search. It is anytime: on exhausting the budget it
     returns the best order found so far, which is never worse than the seed.
+
+    `fan_order` breaks ties among equal-cost candidates: `"index"` (default)
+    by customer index, `"degree"` by most neighbours not yet closed, then
+    index -- under which the first leaf is the two-key rule of
+    `reports/ml_nature.md` §7. Registered as `cs-dfs+degree`; `cs-dfs` is
+    unchanged.
     """
+    if fan_order not in FAN_ORDERS:
+        raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
     n_patterns = instance.n_patterns
     active = [c for c in range(instance.n_customers) if instance.customer_patterns(c)]
     if not active or n_patterns == 0:
@@ -361,7 +393,10 @@ def restricted_dfs(
             customer = bit.bit_length() - 1
             now_open = opened | masks[customer]
             scored.append(((now_open & ~closed).bit_count(), customer, bit, now_open))
-        scored.sort()
+        if fan_order == "index":
+            scored.sort()
+        else:
+            scored.sort(key=fan_sort_key(fan_order, masks, remaining))
 
         for cost, customer, bit, now_open in scored:
             # `peak` is below the incumbent by the caller's own check, so
@@ -523,6 +558,8 @@ STRATEGIES: dict[str, Strategy] = {
     "mcn+tabu": mcn_then_tabu,
     "customer-tabu": customer_tabu,
     "cs-dfs": restricted_dfs,
+    "cs-dfs+degree": lambda instance, **kwargs: restricted_dfs(
+        instance, fan_order="degree", **{k: v for k, v in kwargs.items() if k != "fan_order"}),
     "customer-tabu+cs-dfs": mcn_tabu_then_dfs,
     "learned": learned,
     "learned+cs-dfs": learned_then_dfs,
