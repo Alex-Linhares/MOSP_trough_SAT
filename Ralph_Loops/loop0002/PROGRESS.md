@@ -3,7 +3,7 @@
 ## Ralph Loop 0002 Status
 - **Started**: 2026-09-26 06:18
 - **Target**: 6 items
-- **Current**: 3/6 SOLVED
+- **Current**: 4/6 SOLVED
 
 ---
 
@@ -144,3 +144,66 @@ tables in `reports/hardness_map_tables.md` (+ `_csearch`, `_default_class`).
 - Item 06 will want the ridge fit (`scaling`, `fit_scaling`) and the
   `large_counts` table; the recertify counts are under `better_move=True`, a
   third configuration — say so when comparing.
+
+## Iteration 4 — 2026-09-26 08:05
+
+Item 04 · §2.5 Does the optimum concentrate? Report: `reports/ml_nature.md`
+§12; figure `reports/figures/concentration.png`; all tables in
+`reports/concentration_tables.md` (+ `_class`).
+
+### Completed
+- `learning/concentration.py` (6 s; ~30 s with the nested search): per-cell
+  mean/variance/std/CV and modal share of the optimum, raw and per class;
+  kill verdict; CV and std against n as power laws at fixed parameter, with
+  the regime (sub / critical / super / complete) read from the *realised*
+  largest-component fraction; E[opt] against n as line and power law; slope
+  against nominal degree; `formula_search`'s enumerated search over the
+  generator parameters alone (n, m, p, d, k, q, D) on the 252 cell means
+  with leave-one-size-out folds, nested, and a `n ≤ 30 → 35, 40`
+  extrapolation; five hand-written structural forms fitted by LAD; §5's
+  sandwich on the ensemble with λ by n, density and series; the bracket
+  `optimum − tw_min_fill − 1 ≤ pw − tw ≤ optimum − g_degeneracy − 1`.
+- **Kill not met.** Max CV at n = 40 is 0.197 (median 0.031); the 32 cells
+  above 0.2 are all Bernoulli at or below the giant-component threshold
+  (31 of 32 with largest component < 0.95 n), mean optimum 2.3–7.6 and a
+  flat std of 0.7–0.9. Above the threshold std is ≤ 1 stack at n ≤ 40 and
+  grows between constant and √n at fixed degree; a cell is still 2–3
+  adjacent integers (mode share 37–60%).
+- E[opt] linear in n above the threshold (r² ≥ 0.999 in all 17 fixed-degree
+  series), γ ≈ ⅓ below it; slope a function of nominal degree D alone across
+  both m/n. Formula: `E[opt] ≈ 2.1(1 − q) + n[1 − √(1 − q)·27/(D + 27)]`,
+  q = 1 − (1 − p²)^m, D = (n − 1)q: held-out-n MAE 0.49 on cell means (0.46
+  with the exponent fitted, 0.56 per class), 0.66 extrapolated from n ≤ 30,
+  per-instance MAE 0.80 (below on 9,445, above on 10,641, max 6 each way;
+  cell-mean ceiling 0.60). The enumerated monomials cannot express the
+  saturating shape and lose to a linear-in-(n, D) baseline (1.20 vs 0.89).
+  Forms in D alone fail (2.1–2.7) because they cannot reach the complete
+  graph; the (1 − q) factor is the fix.
+- Sandwich holds on all 37,800; forced on 34.2%; **λ is not ½**: pooled ½ as
+  in §5, but 0 → ⅔ monotone in density (ρ 0.63–0.69), 0.24 with n. §5's
+  midpoint was a corpus average over sparsities; old section left in place,
+  contradiction stated in §12.
+- pw > tw certified on ~10% of instances at n ≥ 25, by at most 2, a third of
+  instances at col_mean 2–2.5 (the §11 ridge / §6 family); the scaling of
+  pw − tw is hidden by min-fill's own growing slack (overshoot share 5% →
+  22% from n = 25 to 40). Needs exact treewidth; not computed here.
+- Tests: `tests/test_concentration.py` (7). Full suite: 798 passed,
+  2 skipped, 1 xfailed, 76 s. Nothing written to `solutions/`; no solver
+  default changed; `_lower_bound` untouched.
+
+### Blockers
+- None. `benchmarks.recertify` was running with 9 workers; this iteration
+  used at most 4 cores.
+
+### Next
+- Item 05 (§2.9): `learning.ensemble` rows carry `graph_cert` and
+  `bipartite_cert`, so same-graph/different-matrix pairs within the campaign
+  are `groupby(graph_cert)` with > 1 `bipartite_cert`; `learning.degeneracy`
+  has `count_search` / `count_closing`. Node counts are `nodes_default` /
+  `nodes_csearch` per row.
+- Item 06 will want, from this item: `learning.concentration.STRUCTURAL`
+  (the best form's callable, constants (2.20, 30.8, 0.549) or (2.14, 26.5)
+  with e = ½) and `nominal_features`; note Chu & Stuckey's nominal d
+  understates their realised col_mean at density 2 (§11), which is why the
+  formula under-predicts that class by 1.6–2.8 at n = 30/40 — use col_mean
+  (or (n − 1)·q from the realised matrix density) when placing them.

@@ -13,3 +13,8 @@
 [2026-09-26 06:53:22] claude session it03 (cap 3.00 h) -> session_it03.log
 [2026-09-26 07:11:10] session it03: ok (exit 0, 46 tool calls)
 [2026-09-26 07:12:27] tests passed: 791 passed, 2 skipped, 1 xfailed, 147 warnings in 76.23s (0:01:16)
+[2026-09-26 07:12:27] committed e26b9ba9: 03 · §2.4 Is there a phase transition in hardness? From the campaign
+[2026-09-26 07:12:27] === iteration 4: 04 · §2.5 Does the optimum concentrate? Per cell: mean, variance and
+[2026-09-26 07:12:27] claude session it04 (cap 3.00 h) -> session_it04.log
+[2026-09-26 07:29:49] session it04: ok (exit 0, 38 tool calls)
+[2026-09-26 07:31:05] tests passed: 798 passed, 2 skipped, 1 xfailed, 149 warnings in 75.42s (0:01:15)

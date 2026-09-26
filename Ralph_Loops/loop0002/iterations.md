@@ -45,7 +45,7 @@ Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
       (`reports/figures/hardness_map.png`), the order parameter if one exists,
       and one sentence on why densities 2 and 4 at 125×125 are the ones that
       take 28 hours — or why the map does not say.
-- [ ] 04 · §2.5 **Does the optimum concentrate?** Per cell: mean, variance and
+- [x] 04 · §2.5 **Does the optimum concentrate?** Per cell: mean, variance and
       coefficient of variation of the optimum; CV against n at fixed `(m/n, p)`.
       Fit `E[opt](n, m, p)` with `learning.formula_search`'s enumerated search
       over the generator parameters alone (no graph features), and compare with

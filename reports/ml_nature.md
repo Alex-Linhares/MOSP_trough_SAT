@@ -2874,3 +2874,341 @@ break `pd.qcut` into NaN labels; `_quantile_bins` folds them into one bin
 any cell with `optimum / n < 0.9` at `n ≥ 20`, 0% in every peak cell, and
 87–100% where the graph is complete, so the peak is not an artefact of the
 root cost check; the zero-node regime is the complete-graph edge.
+
+## 12. Does the optimum concentrate on random instances? (§2.5, item 04)
+
+*loop0002 iteration 4, 2026-09-26. Code: `learning/concentration.py`. Regenerate:*
+
+```bash
+python -m learning.concentration --workers 4            # reports/concentration_tables.md + reports/figures/concentration.png, ~6 s (~30 s with the nested search)
+python -m learning.concentration --per-class --no-figure   # one row per MOSP-graph class per cell -> concentration_tables_class.md
+python -m pytest tests/test_concentration.py -q         # 7 tests: nominal features, moments, kill, linear law, λ, the bracket, the structural fit on exact data
+```
+
+*Reads `learning/data/ensemble/results.csv` (§10: 37,800 instances in 252
+cells, 26,052 distinct MOSP graphs) and, for one within-range check,
+`learning/data/instances.csv`. Writes nothing under `solutions/`; no solver
+default changed; `_lower_bound` is untouched. Every table below is in full
+in `reports/concentration_tables.md`; **nothing in this section is a bound**,
+and every estimate table counts how often the rounded estimate falls below
+and above the certified optimum so that no one mistakes a fit for one.*
+
+**Question.** At fixed generator parameters `(n, m, p)`, is the variance of
+the optimum small against its mean? If so the optimum of a random instance
+is a function of the parameters up to a small fluctuation, and a formula for
+`E[opt](n, m, p)` describes the problem rather than a corpus. Then: what is
+that formula, how does it compare with what is known for the pathwidth of
+`G(n, p)` (linear in `n` above the giant-component threshold), where does
+the optimum sit in §5's sandwich `g_degeneracy + 1 ≤ optimum ≤ bw_rcm + 1`
+on these instances, and how does `optimum − (tw_min_fill + 1)` — a proved
+lower end for `pw − tw` — behave against sparsity and size?
+
+**Method.** Per cell: mean, variance, standard deviation and coefficient of
+variation (CV) of the certified optimum, the share at the modal value, raw
+and per isomorphism class. CV and standard deviation against `n` at fixed
+`(generator, m/n, param)` as power laws on `n ≥ 15`; `E[opt]` against `n`
+as a line (slope, intercept, r²) and as a power law (exponent γ). Cells are
+labelled by regime from the *realised* largest-component fraction of the
+MOSP graph at the largest `n` — `sub` below 0.5, `critical` to 0.95,
+`super` above, `complete` when the mean optimum is within 2% of `n` — since
+the nominal degree `(n − 1)·q` overstates the branching of a union of
+cliques and misplaces the threshold. `E[opt]` is fitted three ways to the
+252 cell means, with folds that hold out whole sizes (every distinct `n` is
+a fold, so a formula in `n` is scored on a size it never saw), a nested
+protocol, and an extrapolation from `n ≤ 30` to 35 and 40 previewing item
+06: (1) `learning.formula_search`'s enumerated monomial and pair search
+over features of the generator parameters alone — `n`, `m`, the nominal
+`p` (`d / n` for the fixed generator), `d = p·n`, `k = p·m`, the random
+intersection graph's edge probability `q = 1 − (1 − p²)^m` and expected
+degree `D = (n − 1)·q` — 847 terms; (2) cell-level baselines (constant,
+linear in `n`, linear in `n` and `D`, and `n` itself); (3) five *structural*
+forms `a + n·s(D, q)` chosen by hand from the slope table, with two or three
+constants fitted by least absolute deviation. The sandwich is
+`formula_search.sandwich_table` on the ensemble plus λ by `n`, density and
+series. The treewidth bracket is `optimum − tw_min_fill − 1 ≤ pw − tw ≤
+optimum − g_degeneracy − 1` (min-fill is an elimination ordering, so an
+upper bound on treewidth; degeneracy is a lower bound), with the lower end
+also taken against the better of the two treewidth heuristics.
+
+**Baseline.** For concentration, the `1/√n` of a binomial-like count; for
+`E[opt]`, the constant and linear baselines above, and the `G(n, p)`
+picture: pathwidth `Θ(n)` above the giant-component threshold, bounded by
+components of logarithmic size below it.
+
+### The kill: CV above 0.2 up to n = 40 — not met
+
+| n | max CV | median CV | cells above 0.2 (of 36) | per class |
+|---|---|---|---|---|
+| 10 | 0.270 | 0.096 | 11 | 11 |
+| 15 | 0.250 | 0.068 | 8 | 8 |
+| 20 | 0.243 | 0.056 | 6 | 6 |
+| 25 | 0.225 | 0.043 | 5 | 5 |
+| 30 | 0.207 | 0.040 | 1 | 1 |
+| 35 | 0.222 | 0.036 | 1 | 1 |
+| 40 | **0.197** | 0.031 | **0** | 0 |
+
+32 of 252 cells exceed 0.2, all Bernoulli, and 31 of the 32 have a largest
+component under 0.95 of `n` (the exception: `p = 0.1`, `n = 25`, at 0.96).
+They are the sparse edge of the grid — mean optimum 2.3 to 7.6 — and in
+none of them is the CV falling fast: at `p = 0.025, m = n` (subcritical,
+largest component 0.19–0.29 of `n`) the standard deviation is flat at
+0.7–0.8 over all seven sizes while the mean creeps from 2.7 to 4.3. The
+fixed generator never exceeds 0.150 at any `n`. Per isomorphism class the
+counts are identical.
+
+### How the fluctuation scales
+
+At `n = 40`, by series (min / median / max over cells):
+
+| series | CV | standard deviation (stacks) | share at the modal optimum |
+|---|---|---|---|
+| fixed, m = n | 0.020 / 0.034 / 0.124 | 0.57 / 0.89 / 1.05 | 0.37 / 0.41 / 0.60 |
+| fixed, m = 2n | 0.011 / 0.021 / 0.080 | 0.41 / 0.70 / 0.83 | 0.41 / 0.50 / 0.79 |
+| bernoulli, m = n | 0.004 / 0.056 / 0.194 | 0.14 / 1.07 / 2.02 | 0.23 / 0.41 / 0.98 |
+| bernoulli, m = 2n | 0.000 / 0.022 / 0.197 | 0.00 / 0.76 / 1.89 | 0.24 / 0.47 / 1.00 |
+
+Power-law exponents over `n = 15…40` at fixed parameter (CV ∝ n^a, std ∝ n^b):
+
+| regime (at n = 40) | series-parameter rows | CV exponent, median (range) | std exponent, median (range) | CV at n = 40, median |
+|---|---|---|---|---|
+| super | 27 | −0.47 (−1.86 … +1.61) | 0.35 (−0.56 … 2.56) | 0.03 |
+| critical | 3 | −0.18 (−0.25 … −0.17) | 0.33 (0.17 … 0.61) | 0.19 |
+| sub | 1 | −0.36 | −0.02 | 0.18 |
+| complete | 5 | −2.12 | −1.03 | 0.00 |
+
+The wide ranges in `super` are the Bernoulli rows, which at fixed `p` cross
+from the sparse regime into the complete-graph edge as `n` grows (their
+std first rises to 1.5–2 and then collapses; `p = 0.5` is a complete graph
+on every instance at `n ≥ 20`). The fixed generator is the clean
+fixed-degree series: for `d = 2…8, m = n` the CV falls with exponents
+−0.13 to −0.51 and the standard deviation *grows*, exponents 0.17–0.55 —
+between constant and `√n` on five points, so the fluctuation at fixed
+degree is compatible with `√n` and not with a constant; in absolute terms
+it is under one stack at `n ≤ 25` and 0.6–1.05 stacks at `n = 40`. The
+optimum concentrates in the sense the plan asked for (CV → 0, faster than
+the `1/√n` of a count only where the graph fills), but it does *not*
+concentrate on a single value: the modal optimum holds 37–60% of a fixed-d
+cell at `n = 40`, and a cell is two or three adjacent integers.
+
+### E[opt] against n: linear above the threshold, as for G(n, p)
+
+| regime | rows | r² of a line, median (min) | γ in `mean ∝ n^γ`, median (range) | slope, median (range) |
+|---|---|---|---|---|
+| super, fixed generator | 17 | 1.000 (0.999) | 0.82 (0.60 … 0.96) | 0.59 (0.17 … 0.94) |
+| super, Bernoulli | 10 | 0.99 (0.937) | 1.5 (1.27 … 1.80) | 0.9 (0.39 … 1.08) |
+| critical | 3 | 0.981 (0.939) | 0.58 (0.34 … 0.80) | 0.08 (0.05 … 0.16) |
+| sub | 1 | 0.977 | 0.33 | 0.047 |
+| complete | 5 | 1.000 | 1.05 | 1.03 |
+
+At fixed degree (the fixed generator) the mean is a line in `n` to r² ≥
+0.999 in every one of 17 series, `mean ≈ a + b·n` with intercept `a`
+between 2.6 and 3.8 at moderate density (falling to 1.2 as the graph
+fills); γ < 1 only because of that intercept. Below the threshold the
+growth is γ ≈ ⅓ with slope 0.05 per customer — the mean optimum of a
+subcritical `G(n, m, p)` at `n = 40` is 4.3, on the sparse side of
+bounded. The Bernoulli series at fixed `p` are convex (γ 1.3–1.8) because
+their degree grows with `n`. That is the `G(n, p)` picture: linear above
+the giant component, sublinear below. The slope is a function of the
+nominal degree alone, the two `m / n` ratios falling on one curve:
+
+| D = (n − 1)·q at n = 40 | 3.7 | 7.1 | 7.9 | 12.9 | 14.2 | 18.2 | 21.5 | 23.3 | 27.8 | 27.9 | 31.4 | 32.7 | 34.1 | 35.8 | 36.0 | 37.5 | 38.4 | 38.8 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| series, d | 1n, 2 | 2n, 2 | 1n, 3 | 1n, 4 | 2n, 3 | 1n, 5 | 2n, 4 | 1n, 6 | 1n, 7 | 2n, 5 | 1n, 8 | 2n, 6 | 1n, 9 | 2n, 7 | 1n, 10 | 2n, 8 | 2n, 9 | 2n, 10 |
+| slope b | 0.053 | 0.172 | 0.206 | 0.361 | 0.414 | 0.489 | 0.581 | 0.588 | 0.666 | 0.693 | 0.723 | 0.765 | 0.774 | 0.822 | 0.817 | 0.866 | 0.905 | 0.939 |
+
+### The formula (not a bound)
+
+Cell-level scores, the constants fitted on the training sizes and the error
+measured on the held-out size (MAE in stacks over the 252 cell means):
+
+| estimate of E[opt] | held-out-n MAE | exact | fit on n ≤ 30, MAE at 35 and 40 |
+|---|---|---|---|
+| constant | 9.49 | 0.016 | |
+| linear in n | 6.50 | 0.028 | 9.48 |
+| `n` (the complete-graph value) | 8.42 | 0.167 | |
+| linear in n and D | 0.887 | 0.325 | |
+| enumerated monomial: `0.94·D + 1.99` (nested: same term in 7 of 7 folds) | 1.198 | 0.274 | 2.215 |
+| enumerated pair: `0.647·n·q + 0.048·n·√D + 1.62` (nested 0.914) | 0.785 | 0.365 | 1.101 |
+| structural `a + n·D/(D + c)` | 2.708 | 0.095 | 3.93 |
+| structural `a + n·(1 − e^{−D/τ})` | 2.101 | 0.171 | 3.32 |
+| structural `a + n·[1 − (1 − q)·c/(D + c)]` | 1.184 | 0.278 | 1.55 |
+| structural `a(1 − q) + n·[1 − √(1 − q)·c/(D + c)]`, (a, c) = (2.14, 26.5) | 0.489 | 0.683 | 0.664 |
+| **structural `a(1 − q) + n·[1 − (1 − q)^e·c/(D + c)]`, (a, c, e) = (2.20, 30.8, 0.549)** | **0.456** | **0.726** | **0.693** (bias −0.13) |
+
+The enumerated search cannot express the shape — its monomials are
+saturating in nothing, and its best term loses to the plain "linear in `n`
+and `D`" baseline — so the formula comes from the structural family
+instead, and choosing among five hand-written forms is the only selection
+in it. The two forms in `D` alone, which the slope table above seems to
+license, fail (MAE 2.1–2.7) because a slope in the absolute degree cannot
+reach the complete-graph edge, where the optimum is `n` however `D`
+compares with `c`; closing that end with the edge probability `q = D /
+(n − 1)` is what works. With the exponent fixed by hand at ½ the formula is
+
+> **E[opt](n, m, p) ≈ 2.1·(1 − q) + n·[1 − √(1 − q) · 27 / (D + 27)]**, with
+> `q = 1 − (1 − p²)^m` and `D = (n − 1)·q`,
+
+held-out MAE 0.49 stacks on cell means (fitted exponent 0.55: 0.46), 0.51 on
+the fixed cells and 0.40 on the Bernoulli cells, and 0.66 when fitted on
+`n ≤ 30` and asked about 35 and 40. In the sparse limit (`q → 0`) it reads
+`optimum ≈ 2 + n·D/(D + 27)`: linear in `n` with slope `D/(D + 27)`, the
+saturating slope the table shows — 0.23 at `D = 9` (three customers per
+product, `m = n`), 0.34 at 16, 0.45 at 25, 0.54 at 36, 0.68 at 64. Per
+isomorphism class the √ form wins outright (0.557 held out, same constants
+to 0.1). Its residual on every instance, against the ceiling a perfect
+formula for the *mean* could reach:
+
+| estimate | MAE | exact | below | above | max below | max above | residual quantiles 5 / 25 / 50 / 75 / 95 |
+|---|---|---|---|---|---|---|---|
+| structural formula, fitted exponent | 0.796 | 0.469 | 9,445 | 10,641 | 6 | 6 | −1.76 / −0.50 / −0.01 / 0.65 / 2.15 |
+| enumerated pair | 1.021 | 0.324 | 12,724 | 12,828 | 8 | 5 | −1.93 / −0.83 / −0.02 / 0.83 / 2.21 |
+| cell mean (ceiling) | 0.599 | 0.548 | 8,298 | 8,918 | 6 | 6 | −1.34 / −0.44 / −0.01 / 0.46 / 1.39 |
+
+By size the formula's instance MAE grows from 0.52 at `n = 10` to 1.01 at
+`n = 40` with bias within ±0.16 at every `n`; by series it is biased
++0.4/+0.5 on the fixed generator and −0.3 on Bernoulli, a generator effect
+the nominal parameters do not carry (the fixed generator's degree
+distribution is narrower). It sits **below** the optimum on 9,445 instances
+and **above** it on 10,641, by up to 6 either way; it is an estimate of a
+mean and nothing else. One within-range check outside the campaign: on Chu
+& Stuckey's 50 `Random-30` and `Random-40` corpus instances, with their
+nominal `d`, it is within 0.8 of the class mean at densities 4–10 and
+1.6–2.8 *under* at density 2, whose realised `col_mean` is 2.7–2.8 rather
+than 2 (§11); MAE 1.35 over the 50. Item 06 owns the test beyond `n = 40`.
+
+### The sandwich on the ensemble: λ is not ½
+
+Both inequalities hold on all 37,800 instances (0 violations of either).
+`bw_rcm = g_degeneracy` forces the optimum on 12,918 (34.2%), every one
+with `optimum = g_degeneracy + 1`; the forced share falls from 71.7% at
+`n = 10` to 15.7% at `n = 40` as the sandwich widens (`(bw_rcm −
+g_degeneracy) / n` mean 0.04 → 0.25). Pooled over the 24,882 where they
+differ, λ has quantiles 0 / ⅓ / ½ / ⅔ / 0.8 and mean 0.491 — the corpus
+numbers of §5 to the digit. Broken out, that ½ is a coincidence of the mix:
+
+| λ median by | values |
+|---|---|
+| `n` = 10 / 15 / 20 / 25 / 30 / 35 / 40 | 0.00 / 0.40 / 0.50 / 0.50 / 0.55 / 0.58 / 0.60 |
+| `col_mean` ≤ 1.5 / 1.5–2 / 2–2.5 / 2.5–3 / 3–4 / 4–6 / 6–10 / > 10 | 0.00 / 0.20 / 0.25 / 0.50 / 0.50 / 0.63 / 0.67 / 0.67 |
+| series at `n = 40`: bernoulli 1n / 2n, fixed 1n / 2n | 0.50 / 0.59 / 0.63 / 0.67 |
+| Spearman ρ of λ with `deg_nom`, `opt_frac`, `col_mean`, `g_density`, `n`, `g_deg_std` | 0.69, 0.68, 0.63, 0.61, 0.24, 0.22 |
+
+The share of instances with λ within 0.1 of ½ peaks at 38% at `n = 25` and
+falls to 29% at `n = 40`; the IQR narrows from 0.5 to 0.28 as λ's *mean*
+drifts up. λ is a monotone function of density: the optimum sits at the
+degeneracy end of the sandwich on sparse graphs and two thirds of the way
+to the bandwidth end on dense ones. §5 read the corpus's 0.40 correlation
+with `sep_frac` as "λ tracks sparsity"; here, with density varied at fixed
+size, that is the whole story and the midpoint is not a fixed point. The
+point estimates the sandwich suggests are correspondingly weak on the
+ensemble: `1 + √(g_degeneracy·bw_rcm)` MAE 0.843, the arithmetic mean
+0.748, against `tw_min_fill + 1` at 0.175 (exact 83.4%) and `lb_best` at
+0.312. So the answer to §5's forward question is no: **λ does not
+concentrate at ½**; it concentrates, if anywhere, on a curve in density,
+and the earlier section's midpoint statement stands as a corpus average
+that the ensemble decomposes.
+
+### optimum − (tw_min_fill + 1): how pw − tw scales, as far as a heuristic can say
+
+| n | `res_tw` mean | `res_tw > 0` (pw > tw certified) | `res_tw < 0` | max `res_tw` | with min(tw_mf, tw_md): `> 0` | `res_deg` mean | `res_deg = 0` (pw = tw certified) |
+|---|---|---|---|---|---|---|---|
+| 10 | 0.021 | 2.2% | 0.1% | 1 | 2.2% | 0.13 | 87.2% |
+| 15 | 0.055 | 6.0% | 0.6% | 2 | 6.0% | 0.52 | 63.4% |
+| 20 | 0.076 | 9.7% | 2.1% | 2 | 9.7% | 1.18 | 46.1% |
+| 25 | 0.052 | 10.7% | 5.4% | 2 | 10.9% | 2.03 | 35.0% |
+| 30 | 0.009 | 11.2% | 10.2% | 2 | 11.6% | 3.08 | 27.9% |
+| 35 | −0.069 | 10.1% | 16.0% | 2 | 10.5% | 4.24 | 23.4% |
+| 40 | −0.145 | 10.2% | 22.0% | 2 | 10.6% | 5.55 | 20.3% |
+
+| `col_mean` band | instances | `res_tw > 0` | `res_tw < 0` | `res_deg = 0` |
+|---|---|---|---|---|
+| ≤ 1.5 | 3,089 | 3.2% | 0.0% | 95.7% |
+| 1.5–2 | 3,489 | 14.7% | 1.2% | 58.0% |
+| **2–2.5** | 3,009 | **33.5%** | 3.8% | 25.8% |
+| 2.5–3 | 2,658 | 17.4% | 13.7% | 9.2% |
+| 3–4 | 4,358 | 12.4% | 17.7% | 11.5% |
+| 4–6 | 7,077 | 5.2% | 15.4% | 22.7% |
+| 6–10 | 11,153 | 2.2% | 5.8% | 50.6% |
+| > 10 | 2,967 | 0.2% | 0.7% | 88.7% |
+
+Pathwidth exceeds treewidth *certifiably* (no heuristic in the certificate,
+as in §6) on about 10% of instances at every `n` from 25 to 40, never by
+more than 2, and the certified cases concentrate at two to three customers
+per product — the hardness ridge of §11 and the "sparse, connected" family
+of §6 — reaching a third of all instances at `col_mean` 2–2.5. Taking the
+better of the two treewidth heuristics changes nothing (33.8% vs 33.5%).
+The other end of the bracket, `optimum − g_degeneracy − 1`, grows linearly
+in `n` at moderate density (cell-mean slopes 0.2–0.44 per customer) and
+says only that degeneracy is a loose treewidth bound. Between them the
+campaign can say this much about `pw − tw` at `n ≤ 40`: certified positive
+on a tenth of random instances, bounded by 2 where certified, and the
+share flat in `n` from 25 to 40 while the share of instances where min-fill
+*over*shoots the optimum climbs from 5% to 22% — so if the excess is
+growing with `n`, the heuristic's slack grows faster and hides it. The
+scaling of `pw − tw` needs exact treewidth, which nothing here computes.
+
+**Finding, in one paragraph.** The optimum concentrates: at every one of
+the 36 cells at `n = 40` the coefficient of variation is under 0.2 (0.004–
+0.197, median 0.031), the kill is not met, and the only cells above 0.2 at
+any size are 32 Bernoulli cells at or below the giant-component threshold,
+where the optimum is a small integer with a standard deviation of 0.7–0.9
+that does not fall. Above the threshold the standard deviation is one
+stack or less at `n ≤ 40` and grows between constant and `√n` at fixed
+degree, so the CV falls like `n^{−0.1}` to `n^{−0.5}` and faster where the
+graph fills — but a cell is still two or three adjacent integers, with the
+mode holding 37–60% of it. The mean is a line in `n` above the threshold
+(r² ≥ 0.999 in all 17 fixed-degree series) and sublinear below it (γ ≈ ⅓),
+the `G(n, p)` picture; the slope is a function of the nominal degree `D`
+alone across both `m / n`, and the formula that carries it is
+`E[opt] ≈ 2.1·(1 − q) + n·[1 − √(1 − q) · 27 / (D + 27)]` with `q = 1 −
+(1 − p²)^m`, `D = (n − 1)·q`: held-out MAE 0.49 stacks on the 252 cell
+means (0.46 with the exponent fitted, 0.55 per isomorphism class), 0.66
+when extrapolated from `n ≤ 30` to 35 and 40, and per instance MAE 0.80,
+below the optimum on 9,445 instances and above on 10,641, against a
+ceiling of 0.60 for the cell mean itself. It reads: linear in `n` with
+slope `D / (D + 27)` in the sparse limit, closing to `n` as the edge
+probability `q` reaches 1; the enumerated monomial search cannot express
+that shape and loses to a linear baseline. The sandwich holds on all
+37,800, forces the optimum on 34%, and λ is **not** ½: pooled it is ½ to
+the digit as in §5, but by density it runs from 0 below 1.5 customers per
+product to ⅔ above 6 (ρ 0.63–0.69 with density, 0.24 with `n`), so the
+corpus midpoint was an average over sparsities. Pathwidth exceeds
+treewidth certifiably on a tenth of random instances at `n ≥ 25`, by at
+most 2, concentrated at 2–2.5 customers per product; how that excess
+scales is hidden behind the min-fill heuristic's own growing slack.
+
+**Size range covered.** 10 ≤ n ≤ 40, `m ∈ {n, 2n}`, `col_mean` 1.1–20;
+37,800 instances in 252 cells, 26,052 distinct MOSP graphs, 150 instances
+per cell; power laws and linear fits on `n ≥ 15`. Per isomorphism class
+(27,321 rows) the kill table is identical, λ's medians agree to 0.07, and
+the structural family's held-out MAE is 0.56 against 0.46. The one check
+outside the campaign is Chu & Stuckey's 50 instances at `n = 30` and 40,
+inside the range. **Nothing here is evidence about 125 × 125**; the
+formula's extrapolation test is the `n ≤ 30 → 35, 40` row, and item 06 owns
+the rest.
+
+**Kill criterion.** Not met: no cell at `n = 40` has CV above 0.2 (max
+0.197), and the cells above 0.2 at smaller `n` are the sub- and critical
+regime, stated above.
+
+**Not a bound, not a solver change.** No default changed; `_lower_bound`
+and every decision path are untouched; nothing was written to `solutions/`.
+No finding rests on a handful of instances: every statement is a cell
+statistic over 150 instances or a total over 37,800, and the sandwich
+checks are whole-ensemble, so nothing was re-certified.
+
+**Method notes.** *The regime label must be realised, not nominal.* A first
+draft split cells at nominal degree `(n − 1)·q = 1` and put 17 of the 32
+high-CV cells on the "supercritical" side; the largest-component fraction
+puts 31 of 32 below 0.95. A union of cliques branches less than its degree
+says. *Two structural forms are kept as a record of failure.* `a +
+n·D/(D + c)` fits the fixed-degree slopes by eye and scores 2.7 held out,
+because it has no way to reach the complete graph; the fix is the `(1 − q)`
+factor, not more constants (three constants in `D` alone: 2.19). *A
+concentration statement needs both CV and standard deviation.* CV → 0 here
+because the mean is linear in `n`, and the standard deviation still grows;
+"the optimum is essentially a function of the parameters" is true to within
+about one stack at `n ≤ 40`, and that stack is the whole spread of the
+hardness peak's `optimum / n ≈ 0.3` band at `n = 40` (§11). *A CV of zero
+has no logarithm*; the figure drops those points rather than drawing a
+spike to the axis.

@@ -1,0 +1,108 @@
+# session it04 started 2026-09-26 07:12:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan and report sections this item depends on, then the campaign code and data.
+  > $ pgrep -af benchmarks.recertify | head; nproc; ls learning/ learning/data/ensemble/ | head -50; wc -l reports/ml_nature_plan.md reports/ml_nature.md; cat Ralph_L
+  > $ grep -n "^## \|^### " reports/ml_nature_plan.md | head -60; echo ----; sed -n '/^## §0/,/^## §1/p' reports/ml_nature_plan.md | head -80
+  > $ sed -n '11,64p;148,165p;204,218p;240,271p' reports/ml_nature_plan.md
+  > $ grep -n "^## \|^### " reports/ml_nature.md | sed -n '1,200p'
+  > $ sed -n '871,1140p' reports/ml_nature.md
+  > $ sed -n '2535,2600p;2739,2876p' reports/ml_nature.md
+  > $ sed -n '1910,1990p;2098,2125p;2174,2230p;2296,2320p' reports/ml_nature.md
+  > $ grep -n "^def \|^class \|^    def " learning/ensemble.py learning/hardness_map.py learning/formula_search.py; echo ----; head -1 learning/data/ensemble/results.
+  > $ sed -n 1,92p learning/formula_search.py && sed -n 156,260p learning/formula_search.py && sed -n 312,460p learning/formula_search.py && sed -n 595,668p learning/
+  > $ sed -n 1,160p learning/hardness_map.py && sed -n 351,410p learning/hardness_map.py && sed -n 353,363p learning/ensemble.py && sed -n 776,830p learning/hardness_
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv('learning/data/ensemble/results.csv')
+print(f.shape)
+print(f.groupby(['generator','n']).size()
+  > $ cat tests/test_hardness_map.py | head -80; ls tests/ | grep -i "formula\|ensemble\|hardness"; ls reports/figures/ reports/ | head -60
+  > $ sed -n 108,156p learning/formula_search.py; grep -n "def _scores" -A 12 learning/study_optimum.py; head -1 learning/data/instances.csv | tr ',' '\n' | head -30;
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.hardness_map import load
+f = load()
+f['p_eff'] = np.where(f.generator=='bernoulli', f.param, f.p
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.283/5472b61b155bf1619043ed378f63eaff/dataviz && grep -n -i "categorical" -A 14 references/palette.md | head -60; grep -n 
+
+Palette noted. Now writing `learning/concentration.py` in one go, then running it.
+  > Write /home/al/dev/MOSP/learning/concentration.py
+  > $ time python -m learning.concentration --workers 4 2>&1 | tail -80
+
+The cell table lacks `m` and the other nominal columns; I'll carry them through from the frame.
+  > $ python - <<'EOF'
+import re
+p='learning/concentration.py'; s=open(p).read()
+s=s.replace('''            "deg_nom": float(g["deg_nom"].iloc[0]),
+            "d_nom
+  > $ grep -n "^## " reports/concentration_tables.md; sed -n '/## CV and std against n/,/## E\[opt\] against n/p' reports/concentration_tables.md | tail -12; sed -n '
+  > $ sed -n '/^## The sandwich/,$p' reports/concentration_tables.md | head -150
+  > Read /home/al/dev/MOSP/reports/figures/concentration.png
+  > $ python - <<'EOF'
+p='learning/concentration.py'; s=open(p).read()
+
+# 1. regime from realised largest-component fraction
+s = s.replace('''GIANT_DEGREE = 1.0      
+
+Now the saturating structural fit and the tests, which are independent of each other.
+  > $ python - <<'EOF'
+p='learning/concentration.py'; s=open(p).read()
+anchor = '''# ----------------------------------------------------------------------------
+# th
+
+Tests pass. Now the full run, the per-class variant, and a re-check that nothing was written to `solutions/`, all independent.
+  > $ time python -m learning.concentration --workers 4 2>&1 | tail -75
+  > $ python -m learning.concentration --workers 4 --per-class --no-figure --no-nested 2>&1 | grep -A 12 '"max_cv_by_n"\|"structural"\|"lambda_median_by_n"' | head -6
+  > $ git status --short | grep -v Ralph_Loops; ls solutions | wc -l; git status --short solutions | head
+  > $ sed -n '/^## Structural forms/,/^## The sandwich/p' reports/concentration_tables.md | head -60
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import numpy as np, pandas as pd
+from learning.concentration import load, cell_stats, _fit_form, _n_folds
+from learning.
+  > $ python - <<'EOF'
+p='learning/concentration.py'; s=open(p).read()
+old_start = s.index('STRUCTURAL = {')
+old_end = s.index('def structural_fits(')
+new = '''STRUCT
+
+Now I need the final numbers for the report section, a look at the figure, and the full test suite. All three are independent.
+  > $ sed -n '/^## Kill criterion/,/^## CV of the optimum, by cell/p' reports/concentration_tables.md; sed -n '/^summary by regime:/,/^## E\[opt\] against n/p' report
+  > $ grep -A 12 "^## CV and std against n" reports/concentration_tables.md | head -3; python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.concentration i
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -4
+  > Read /home/al/dev/MOSP/reports/figures/concentration.png
+
+Suite passes (798 passed). I'll pull the last few comparison numbers and fix the figure's zero-CV artefact on the log axis in one go, then write the report section.
+  > $ python - <<'EOF'
+p='learning/concentration.py'; s=open(p).read()
+s = s.replace('''        g = sub[sub["param"] == p].sort_values("n")
+        ax.plot(g["n"], g[
+
+All numbers are in hand. Writing the report section, then PROGRESS.md and iterations.md.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 12. Does the optimum concentrate on random instances? (§2.5, item 04)
+
+*loop0002 iteration 4, 2026-09-26. Code: `learnin
+
+Report written. Now the three remaining bookkeeping items, which are independent: the PROGRESS.md entry, the iterations.md checkbox, and a final check that `solutions/` is untouched.
+  > $ sed -i 's/^- \*\*Current\*\*: 3\/6 SOLVED/- **Current**: 4\/6 SOLVED/' Ralph_Loops/loop0002/PROGRESS.md && cat >> Ralph_Loops/loop0002/PROGRESS.md <<'EOF'
+
+## I
+  > $ git status --short | grep -v "^?? Ralph_Loops\|^ M Ralph_Loops"; echo "--- solutions changes:"; git status --short solutions learning/data/ensemble | head -3; l
+
+Item 04 is done. Everything the driver needs is in place, and nothing else remains to request.
+
+**Verdict: the optimum concentrates, and the kill is not met.** At n = 40 every one of the 36 cells has a coefficient of variation under 0.2 (max 0.197, median 0.031). The 32 cells above 0.2 at smaller sizes are all Bernoulli cells at or below the giant-component threshold, where the optimum is a small integer with a flat standard deviation near 0.8. Above the threshold the spread is at most one stack at n ≤ 40, but a cell still spans two or three adjacent values.
+
+**The formula, labelled not a bound.** The mean optimum is linear in n above the threshold (r² ≥ 0.999 in all 17 fixed-degree series) with a slope that depends on the nominal degree D alone. The form that captures it is `E[opt] ≈ 2.1(1−q) + n·[1 − √(1−q)·27/(D+27)]` with q the random-intersection edge probability and D = (n−1)q. Held-out MAE is 0.49 stacks on cell means and 0.80 per instance, sitting below the optimum on 9,445 instances and above on 10,641. The enumerated monomial search cannot express the saturating shape and loses to a plain linear baseline, which the report says outright.
+
+**Two findings that revise earlier sections.** λ in the sandwich is not ½: pooled it matches §5 to the digit, but by density it runs monotonically from 0 to ⅔, so §5's midpoint was an average over sparsities. Pathwidth exceeds treewidth certifiably on about a tenth of instances at n ≥ 25, never by more than 2, concentrated at 2–2.5 customers per product, and the min-fill heuristic's own growing slack hides how that gap scales.
+
+**Deliverables.** `learning/concentration.py`, `tests/test_concentration.py` (7 tests, full suite 798 passed), report §12 in `reports/ml_nature.md`, full tables in `reports/concentration_tables.md` plus a per-class variant, and `reports/figures/concentration.png`. PROGRESS.md carries the iteration entry with notes for items 05 and 06, and iterations.md marks item 04 done. Nothing was written to `solutions/`, no solver default changed, nothing committed.
+
+# result: success in 1040s, 40 turns, cost $7.02
