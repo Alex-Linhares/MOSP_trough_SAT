@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-26 12:16:48",
+  "updated": "2026-09-26 13:54:49",
   "phase": "tests",
-  "started": "2026-09-26 10:52:26",
-  "item": "02 \u00b7 \u00a72.2 The campaign upward. Extend `learning.ensemble` with"
+  "started": "2026-09-26 12:20:05",
+  "item": "03 \u00b7 \u00a72.1b DRAT proofs at n \u2264 40. Build drat-trim under `tools/`"
 }

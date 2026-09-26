@@ -4458,3 +4458,272 @@ same two instances); it is not the item-01 mechanism
 exercise because it decides `optimum − 1` only, and it is not a wrong
 certified optimum: zero certified values were contradicted by either
 configuration.
+
+## 17. DRAT proofs at n ≤ 40: can every certified optimum carry a refutation a third party can check? (plan 2 §2.1(b), loop0003 item 03)
+
+*loop0003 iteration 3, 2026-09-26. Code: `learning/proofs.py`; checker
+`tools/drat-trim/` (vendored source, `tools/README.md`). Regenerate:*
+
+```bash
+cd tools/drat-trim && gcc drat-trim.c -std=gnu99 -O2 -o drat-trim && cd ../..   # the checker; upstream's -std=c99 fails on glibc ≥ 2.39
+python -m learning.proofs run --max-customers 40 --workers 16 --conflicts 200000 --deadline 60
+                                              # pass 1, every instance at 200k conflicts: 3.0 core-hours, 15.5 min wall on 16 workers
+cp learning/data/proofs.csv learning/data/proofs_200k.csv          # the uniform-budget table, kept
+python -m learning.proofs run --max-customers 40 --workers 16 --conflicts 1000000 --deadline 240 --retry-timeouts --wall 2700
+                                              # pass 2, the 810 censored rows again at 1M: 10.0 core-hours, 39.4 min wall
+python -m learning.proofs backfill                                   # restores the 200k row of any instance the wall cap left pass 2 no time for
+python -m learning.proofs tables --out reports/proof_tables.md      # every table below, ~5 s
+python -m learning.proofs check p2540n5_0__k9                       # re-check one certificate from the benchmark file alone
+python -m pytest tests/test_proofs.py -q                            # 7 tests: the 4-customer proof checks, four corruptions fail, a false claim is sat, ...
+```
+
+*Writes `learning/data/proofs.csv` (committed: one row per instance, the best
+of the two passes, `conflict_budget` saying which; no proof bytes),
+`learning/data/proofs_200k.csv` (pass 1 alone) and, git-ignored, `learning/data/proofs/<stem>.drat.gz` +
+`<stem>.json` (11.7 GB compressed, 31.8 GB raw). Nothing
+under `solutions/`; no solver default changed; `_lower_bound` untouched.*
+
+**Question.** Every certified optimum in the corpus rests on a refutation of
+`optimum − 1`, and almost every refutation rests on the complete customer
+search, whose answers depend on its dominance rules being sound and leave
+nothing behind that anyone else can check. §15 found a false `unsat` in one
+such rule. The direct SAT encoding refutes the same question by resolution,
+and CaDiCaL can log that resolution as a DRAT proof a checker verifies
+without trusting the solver, our encoding's implementation, or our code.
+For how much of the corpus at `n ≤ 40` is such a proof affordable, at what
+cost, and where does it stop being so?
+
+**Method.** For each of the 6,135 certified corpus instances with at
+most 40 customers (`learning.node_counts.certified_targets`: provenance
+`certified:*`, optimum ≥ 2), `learning.proofs` (1) applies the two
+reductions `decide_mosp` applies — component decomposition, then pattern
+dominance inside each component — and records both as index lists in the
+certificate; (2) encodes "MOSP ≤ optimum − 1?" for each component with
+`encode_mosp_decision` and solves it with CaDiCaL 1.9.5 through pysat with
+`with_proof=True`, stopping at the first UNSAT component (its proof refutes
+the instance, by the argument in `decide_mosp`'s docstring); (3) hands the
+DIMACS and the binary DRAT trace to drat-trim (backward checking, RAT
+allowed); (4) stores the proof gzip-compressed with a JSON certificate and
+appends one row to the table. The instance's certificate is: source file and
+name, `k`, the component's customer and pattern indices, the surviving
+pattern indices and the dominated ones dropped beside each survivor, the CNF's
+variable and clause counts and SHA-256, the proof's SHA-256, size and lemma
+count, conflicts and decisions spent, solve and check seconds, the checker's
+verdict, and the backend and pysat versions. `rebuild_cnf` regenerates the
+DIMACS from the certificate's indices and the original matrix without calling
+`mosp.preprocess`, so `python -m learning.proofs check <stem>` re-verifies a
+proof from the benchmark file, the certificate and the checker alone.
+
+Censoring is by **conflicts, not seconds**: each instance gets a CaDiCaL
+conflict budget and a call that exhausts it is `budget`. Two passes: every
+instance at 200,000 conflicts (about 10 s of solving on this machine), then
+the censored ones again at 1,000,000 (about 55–60 s); the table keeps the
+best answer and the budget that produced it. A wall deadline (60 s, then
+240 s) kills the solve child as a safety net (`timeout`); the checker gets
+three times the solve time, 30 s at least (`check_timeout`). All three are
+censored observations, kept apart from `unsat`/`verified`. Two pysat facts
+shaped this and are recorded here because each cost part of the session:
+`Solver.interrupt()` raises `NotImplementedError` for CaDiCaL, so a timer
+cannot stop a solve — the first batch, with a 90 s "deadline", ran one
+instance for 372 s — and the solve therefore runs in a child process the
+worker can kill; and `Solver.get_proof()` returns a **truncated** proof for
+CaDiCaL — the trace goes through a C stdio buffer pysat never flushes before
+reading it, so the text proof ends mid-clause and drat-trim reports "no
+conflict" even on a 30-variable pigeonhole formula. Flushing every C stream
+(`libc.fflush(NULL)`) before reading the trace file yields the complete proof,
+which verifies; `_read_proof` does that and the test suite pins that the
+proof ends with the empty clause.
+
+**Baseline.** Zero third-party-checkable refutations before this item. For
+cost, the complete customer search's own refutation of the same `optimum − 1`
+on the same instances (`learning.node_counts`, `default` configuration,
+seconds and nodes), table (e).
+
+### (a) The run
+
+|    |   instances |   checked |   checked_% |   budget |   timeout |   sat |   not_verified |   check_timeout |   error |   solve_core_hours |   check_core_hours |   proof_GB |   proof_gz_GB |
+|---:|------------:|----------:|------------:|---------:|----------:|------:|---------------:|----------------:|--------:|-------------------:|-------------------:|-----------:|--------------:|
+|  0 |        6135 |      5646 |       92.03 |      489 |         0 |     0 |              0 |               0 |       0 |               9.73 |               1.44 |     31.834 |        11.665 |
+
+### (b) By size band
+
+| band   |   instances |   checked |   unsat_unchecked |   censored |   sat |   error |   checked_% |   solve_s_med |   solve_s_p90 |   solve_s_max |   check_s_med |   check_s_max |   proof_MB_med |   proof_MB_max |   proof_gz_MB_sum |   lemmas_med |   core_hours |
+|:-------|------------:|----------:|------------------:|-----------:|------:|--------:|------------:|--------------:|--------------:|--------------:|--------------:|--------------:|---------------:|---------------:|------------------:|-------------:|-------------:|
+| ≤10    |        1614 |      1605 |                 0 |          9 |     0 |       0 |        99.4 |         0.003 |          0.29 |         23.08 |         0.055 |         27.36 |          0.009 |          89.45 |             806.4 |          607 |         0.33 |
+| 11–20  |        2508 |      2435 |                 0 |         73 |     0 |       0 |        97.1 |         0.049 |          3.19 |         53.61 |         0.1   |         42.9  |          0.155 |         217.88 |            4535.7 |         3746 |         2.26 |
+| 21–30  |        1816 |      1453 |                 0 |        363 |     0 |       0 |        80   |         0.062 |          5.81 |         55.37 |         0.104 |         41.83 |          0.172 |         243.81 |            4915.1 |         4890 |         7.12 |
+| 31–40  |         197 |       153 |                 0 |         44 |     0 |       0 |        77.7 |         4.476 |         16.43 |         36.44 |         3.351 |         32.9  |         18.139 |          90.33 |            1407.8 |       240359 |         1.45 |
+
+### (c) By the width k = optimum − 1, and the n × k grid
+
+| k_band   |   instances |   checked |   censored |   checked_% |   solve_s_med |   solve_s_p90 |   check_s_med |   proof_MB_med |   core_hours |
+|:---------|------------:|----------:|-----------:|------------:|--------------:|--------------:|--------------:|---------------:|-------------:|
+| 1–5      |         476 |       476 |          0 |       100   |         0.002 |          0.14 |         0.05  |          0.003 |         0.05 |
+| 6–10     |        1925 |      1898 |         27 |        98.6 |         0.01  |          1.04 |         0.064 |          0.021 |         1.07 |
+| 11–15    |        1469 |      1360 |        109 |        92.6 |         0.078 |          3.22 |         0.112 |          0.268 |         2.33 |
+| 16–20    |         909 |       867 |         42 |        95.4 |         0.046 |          4.26 |         0.093 |          0.127 |         1.29 |
+| 21–30    |        1255 |       953 |        302 |        75.9 |         0.085 |         11.45 |         0.121 |          0.277 |         5.86 |
+| >30      |         101 |        92 |          9 |        91.1 |         5.486 |         15.14 |         4.002 |         21.387 |         0.56 |
+
+| band   | 1–5     | 6–10      | 11–15     | 16–20   | 21–30    | >30    |
+|:-------|:--------|:----------|:----------|:--------|:---------|:-------|
+| ≤10    | 313/313 | 1292/1301 | nan       | nan     | nan      | nan    |
+| 11–20  | 114/114 | 467/480   | 1208/1268 | 646/646 | nan      | nan    |
+| 21–30  | 46/46   | 99/101    | 152/180   | 221/259 | 935/1230 | nan    |
+| 31–40  | 3/3     | 40/43     | 0/21      | 0/4     | 18/25    | 92/101 |
+
+The width is half the story; the other half is the number of patterns.
+Censored / instances, patterns band by k band, and by the formula size
+`m² · k` (the encoding has `m²` position variables and a `k`-bounded
+cardinality constraint at each of `m` steps):
+
+| m_band   | 1–5   | 6–10   | 11–15   | 16–20   | 21–30   | >30   |
+|:---------|:------|:-------|:--------|:--------|:--------|:------|
+| ≤10      | 0/222 | 0/631  | 0/334   | 0/479   | 0/477   | nan   |
+| 11–20    | 0/179 | 0/956  | 0/683   | 0/379   | 0/343   | 0/92  |
+| 21–30    | 0/75  | 25/323 | 75/416  | 38/47   | 295/428 | nan   |
+| 31–40    | nan   | 2/13   | 34/34   | 4/4     | 7/7     | 9/9   |
+| 41–60    | nan   | 0/2    | 0/2     | nan     | nan     | nan   |
+
+| m2k_band   |   instances |   checked |   censored |   censored_% |   solve_s_med |   proof_MB_med | n_range   | m_range   |
+|:-----------|------------:|----------:|-----------:|-------------:|--------------:|---------------:|:----------|:----------|
+| <500       |         245 |       245 |          0 |          0   |         0.001 |           0    | 9–30      | 10–15     |
+| 500–2k     |        1757 |      1757 |          0 |          0   |         0.011 |           0.02 | 10–40     | 10–30     |
+| 2k–5k      |        2060 |      2060 |          0 |          0   |         0.038 |           0.11 | 10–40     | 10–30     |
+| 5k–10k     |        1066 |      1020 |         46 |          4.3 |         0.825 |           3.53 | 10–40     | 15–40     |
+| 10k–20k    |         568 |       429 |        139 |         24.5 |         2.376 |          11.29 | 10–40     | 20–40     |
+| 20k–50k    |         429 |       133 |        296 |         69   |        13.873 |          70.85 | 20–40     | 30–60     |
+| ≥50k       |          10 |         2 |          8 |         80   |        17.92  |          83.57 | 25–40     | 40–60     |
+
+### (d) Affordability against n, and what five times the budget buys
+
+|   n_customers |   instances |   checked |   censored |   checked_% |   solve_s_med |   solve_s_p90 |   solve_s_max |   check_s_med |   proof_MB_med |   proof_MB_max |   core_hours |
+|--------------:|------------:|----------:|-----------:|------------:|--------------:|--------------:|--------------:|--------------:|---------------:|---------------:|-------------:|
+|             9 |          10 |        10 |          0 |       100   |         0.002 |          0.01 |          0.01 |         0.038 |          0.003 |           0.03 |         0    |
+|            10 |        1604 |      1595 |          9 |        99.4 |         0.004 |          0.3  |         23.08 |         0.055 |          0.009 |          89.45 |         0.33 |
+|            13 |           1 |         1 |          0 |       100   |         0.001 |          0    |          0    |         0.106 |          0.001 |           0    |         0    |
+|            14 |           3 |         3 |          0 |       100   |         0.004 |          0.01 |          0.01 |         0.052 |          0.013 |           0.03 |         0    |
+|            15 |        1194 |      1135 |         59 |        95.1 |         0.107 |          3.14 |         53.61 |         0.121 |          0.391 |         217.88 |         1.34 |
+|            17 |           3 |         3 |          0 |       100   |         0.222 |          0.91 |          1.08 |         0.209 |          0.957 |           3.6  |         0    |
+|            18 |           4 |         4 |          0 |       100   |         0.724 |          1.45 |          1.56 |         0.598 |          3.083 |           5.84 |         0    |
+|            19 |           5 |         5 |          0 |       100   |         0.306 |          1.02 |          1.28 |         0.193 |          1.225 |           4.12 |         0    |
+|            20 |        1298 |      1284 |         14 |        98.9 |         0.028 |          3.24 |         31.93 |         0.085 |          0.053 |         103.23 |         0.92 |
+|            21 |           1 |         1 |          0 |       100   |         0.007 |          0.01 |          0.01 |         0.056 |          0.022 |           0.02 |         0    |
+|            24 |           1 |         1 |          0 |       100   |         0.04  |          0.04 |          0.04 |         0.067 |          0.077 |           0.08 |         0    |
+|            25 |           6 |         6 |          0 |       100   |         0.293 |         17.92 |         18.82 |         0.112 |          1.044 |          83.57 |         0.02 |
+|            26 |           1 |         1 |          0 |       100   |        16.965 |         16.96 |         16.96 |        10.854 |         56.877 |          56.88 |         0.01 |
+|            27 |           2 |         2 |          0 |       100   |         0.054 |          0.1  |          0.11 |         0.072 |          0.194 |           0.38 |         0    |
+|            28 |           4 |         3 |          1 |        75   |        27.881 |         41.98 |         45.5  |        19.062 |         97.317 |         151.53 |         0.05 |
+|            29 |           6 |         1 |          5 |        16.7 |        27.533 |         27.53 |         27.53 |        15.883 |         96.013 |          96.01 |         0.08 |
+|            30 |        1795 |      1438 |        357 |        80.1 |         0.062 |          5.44 |         55.37 |         0.104 |          0.171 |         243.81 |         6.97 |
+|            31 |           2 |         2 |          0 |       100   |         0.017 |          0.03 |          0.03 |         0.047 |          0.042 |           0.06 |         0    |
+|            37 |           2 |         0 |          2 |         0   |       nan     |        nan    |        nan    |       nan     |        nan     |         nan    |         0.04 |
+|            38 |           6 |         0 |          6 |         0   |       nan     |        nan    |        nan    |       nan     |        nan     |         nan    |         0.12 |
+|            39 |           2 |         0 |          2 |         0   |       nan     |        nan    |        nan    |       nan     |        nan     |         nan    |         0.04 |
+|            40 |         185 |       151 |         34 |        81.6 |         4.507 |         16.45 |         36.44 |         3.458 |         18.362 |          90.33 |         1.26 |
+
+The exponential fit below is over the *checked* proofs only (n with at least
+ten of them), so it is the cost of what the budget lets through — not the
+cost of refuting an instance, which the censored rows put beyond the budget
+at every n from 20 up. Read it as: what an affordable proof costs, grows
+slowly with n; what is affordable, is decided by k.
+
+|              | quantity               | n_fitted   |   log10 per customer |   doubling every (customers) |   n at one hour |   n at one GB |
+|:-------------|:-----------------------|:-----------|---------------------:|-----------------------------:|----------------:|--------------:|
+| solve_s_med  | median solve (seconds) | 9–40       |               0.0874 |                         3.44 |            76.9 |         nan   |
+| proof_MB_med | median proof (MB)      | 9–40       |               0.0963 |                         3.13 |           nan   |          61.8 |
+
+Pass 1 (200,000 conflicts) certified 5,325 of 6,135 and censored 810; every one of the 810 ran again at 1,000,000 conflicts and 321 certified, 489 did not (489 exhausted the budget, 0 hit the wall deadline; median solve of a censored row 54 s). Five times the conflicts, by k band and by size band:
+
+| k_band   |   censored_at_200k |   certified_at_1M |   solve_s_med |   proof_MB_med |   certified_% |
+|:---------|-------------------:|------------------:|--------------:|---------------:|--------------:|
+| 1–5      |                  4 |                 4 |        8.339  |           40.7 |         100   |
+| 6–10     |                 82 |                55 |       24.0585 |           69.1 |          67.1 |
+| 11–15    |                183 |                74 |       38.586  |           50.6 |          40.4 |
+| 16–20    |                 91 |                49 |       34.434  |           40.6 |          53.8 |
+| 21–30    |                413 |               111 |       50.595  |           78.5 |          26.9 |
+| >30      |                 37 |                28 |       15.182  |           37.8 |          75.7 |
+
+| band   |   censored_at_200k |   certified_at_1M |   certified_% |
+|:-------|-------------------:|------------------:|--------------:|
+| ≤10    |                 25 |                16 |          64   |
+| 11–20  |                191 |               118 |          61.8 |
+| 21–30  |                500 |               137 |          27.4 |
+| 31–40  |                 94 |                50 |          53.2 |
+
+### (e) Against the complete customer search
+
+Same instances, same question, `learning.node_counts` `default` seconds
+(`cs_*`) against SAT solve plus check (`sat_*`); sums over the band and their
+ratio. Where the SAT path was censored its partial seconds are counted, so
+the ratio is a lower bound on the true cost of a proof.
+
+| band   |   instances |   cs_unsat |   sat_checked |   cs_s_med |   cs_s_max |   cs_nodes_med |   sat_solve_s_med |   sat_solve+check_s_med |   sat_solve+check_s_sum |   cs_s_sum |   ratio_of_sums |
+|:-------|------------:|-----------:|--------------:|-----------:|-----------:|---------------:|------------------:|------------------------:|------------------------:|-----------:|----------------:|
+| ≤10    |        1614 |       1614 |          1605 |     0.0001 |      0.003 |              0 |             0.004 |                   0.062 |                  1202.1 |       0.19 |            6327 |
+| 11–20  |        2508 |       2508 |          2435 |     0.0001 |      0.003 |              2 |             0.057 |                   0.157 |                  8142.9 |       0.29 |           28079 |
+| 21–30  |        1816 |       1816 |          1453 |     0.0002 |      0.004 |              7 |             0.288 |                   0.529 |                 25640.5 |       0.36 |           71224 |
+| 31–40  |         197 |        197 |           153 |     0.0003 |      0.03  |             38 |             7.08  |                  12.322 |                  5226.4 |       0.2  |           26132 |
+
+### (f) Preprocessing among the checked proofs
+
+|    |   checked |   decomposed (components > 1) |   dominance fired |   columns removed |   cnf_clauses_med |   cnf_clauses_max |
+|---:|----------:|------------------------------:|------------------:|------------------:|------------------:|------------------:|
+|  0 |      5646 |                           128 |              3149 |             16868 |              7891 |             68911 |
+
+**Finding.** Of the 6,135 certified corpus instances at 9–40 customers,
+**5,646 (92.0%) now carry a DRAT refutation of `optimum − 1` that drat-trim
+verifies from the DIMACS alone** — 99.4% at ≤ 10 customers, 97.1% at 11–20,
+80.0% at 21–30, 77.7% at 31–40 — for 11.2 core-hours (9.7 solving, 1.4
+checking) and 11.7 GB of compressed proofs (31.8 GB raw), with **zero checker
+rejections, zero `sat` answers** (no stored optimum contradicted; the SAT path
+agrees with the customer search on every one of the 5,646) **and zero
+wall-deadline kills**: every censored call exhausted its conflict budget.
+What decides affordability is not `n` but the formula. Censoring is 0 of 4,062
+below `m² · k = 5,000`, 4% at 5–10k, 25% at 10–20k, 69% at 20–50k; every
+instance with `m ≤ 20` patterns certified whatever its `k` (0 of 4,775
+censored, `k` up to 39), while the Harvey and Simonis 30 × 30 files at
+`k` 21–30 account for 295 of the 489 left. Five times the budget bought 321 of 810
+(40%), most of them the near-complete graphs (`k > 30`: 28 of 37), least at
+`k` 21–30 (27%); another factor of five would, on that curve, buy perhaps
+150 more for 40 core-hours. Against the complete customer search on the same
+questions, the SAT proof costs 6,000–70,000 times the seconds by band (a
+lower bound: censored solves are counted at their budget), and a checked
+proof of a 40-customer instance is 18 MB at the median. **The proof object is
+affordable as an archive for the corpus at `n ≤ 40`; it is not a substitute
+for the search as a decision procedure.** The "first `n` at which it stops
+being affordable" is not a value of `n`: at 200,000 conflicts the first
+failures are at `n = 10` (Harvey `wbo_10_30`, `m = 30`, `k` 7–9), and at a
+million the only `Random-40-40` file to certify is the one at `k = 6`
+(15 s); the same files at `k` 9–12 took 57–85 s and 1.3–1.9 M lemmas in the
+first, unbudgeted batch, so they sit just above the budget rather than out
+of reach. The
+boundary is `m² · k ≈ 10⁴`: the `m = 30` files cross it at `k ≈ 11`, and an
+`m = 125` instance crosses it at `k = 1` — the direct encoding has no proof
+to offer at 125 × 125, for any width.
+
+**What the certificate does and does not cover.** drat-trim's `s VERIFIED`
+says: the DIMACS file is unsatisfiable. Everything between the benchmark file
+and that DIMACS is still trusted code — that `encode_mosp_decision` encodes
+"MOSP ≤ k" (validated against every published optimum and against the
+customer search on the whole corpus, never proved), that decomposition and
+dominance preserve the optimum (Yanasse & Senne 2010; the argument is in
+`decide_mosp`'s docstring), and that the recorded indices are the ones used
+(the CNF hash pins them: `rebuild_cnf` from the indices alone reproduces it).
+The proof replaces the trust in *CaDiCaL* and in *our search's dominance
+rules*; it does not replace the trust in the encoding. A Lean statement of
+the encoding's correctness would close that gap and is item 12's territory.
+
+**Size range.** Corpus instances at 9–40 customers only (6,135 of the
+6,376; the 241 above 40 were not attempted: §16 prices the customer search's
+refutations there at hours, and the SAT path is slower on every instance
+both settle). Nothing here is evidence about the SAT path above 40 customers
+except through (d)'s fit, which is stated with its range.
+
+**Kill criterion (plan 2 §2.1(b)).** *"If drat-trim cannot be built or
+pysat's proof output is not checkable, the item records that and the SAT
+proof path is closed for this stack."* **Not met**: drat-trim built from
+source in one line once the C standard flag was corrected, and pysat's proof
+output is checkable once flushed. The path is open — and affordable, within
+a million conflicts, for 92.0% of the corpus at `n ≤ 40`; what it leaves
+out is the `m ≥ 30`, `k ≥ 11` corner, and everything at 125 × 125.

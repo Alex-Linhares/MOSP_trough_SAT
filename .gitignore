@@ -27,3 +27,15 @@ learning/models/
 
 # Unattended re-certification logs and results
 recertify/
+
+# DRAT proofs of item 03 (loop0003): regenerable, hundreds of MB; the table is committed
+learning/data/proofs/
+!learning/data/proofs.csv
+
+# built binaries of vendored tools
+tools/drat-trim/drat-trim
+tools/drat-trim/lrat-check
+tools/drat-trim/compress
+tools/drat-trim/decompress
+tools/drat-trim/gapless
+!learning/data/proofs_200k.csv

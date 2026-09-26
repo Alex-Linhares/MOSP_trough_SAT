@@ -26,7 +26,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       measured between consecutive sizes, and the revised 125×125 prediction
       with an error band from the 100-customer cells. Commit results and
       manifest; witnesses only if the total stays under ~120 MB apparent.
-- [ ] 03 · §2.1b **DRAT proofs at n ≤ 40.** Build drat-trim under `tools/`
+- [x] 03 · §2.1b **DRAT proofs at n ≤ 40.** Build drat-trim under `tools/`
       (record the blocker if it cannot be built). `learning/proofs.py`:
       re-refute `optimum − 1` through the SAT path with
       `Solver(name='cadical195', with_proof=True)` for every certified corpus

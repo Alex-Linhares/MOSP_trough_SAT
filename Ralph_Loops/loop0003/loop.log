@@ -8,3 +8,10 @@
 [2026-09-26 10:52:26] claude session it02 (cap 3.00 h) -> session_it02.log
 [2026-09-26 12:16:48] session it02: ok (exit 0, 70 tool calls)
 [2026-09-26 12:18:04] tests passed: 830 passed, 2 skipped, 2 xfailed, 152 warnings in 75.75s (0:01:15)
+[2026-09-26 12:18:05] committed 6b22cbba: 02 · §2.2 The campaign upward. Extend `learning.ensemble` with
+[2026-09-26 12:18:05] paused by knobs.json; polling every 60 s
+[2026-09-26 12:20:05] unpaused
+[2026-09-26 12:20:05] === iteration 3: 03 · §2.1b DRAT proofs at n ≤ 40. Build drat-trim under `tools/`
+[2026-09-26 12:20:05] claude session it03 (cap 3.00 h) -> session_it03.log
+[2026-09-26 13:54:49] session it03: ok (exit 0, 93 tool calls)
+[2026-09-26 13:56:09] tests passed: 900 passed, 2 skipped, 1 xfailed, 152 warnings in 78.51s (0:01:18)

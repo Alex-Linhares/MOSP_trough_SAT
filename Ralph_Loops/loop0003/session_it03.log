@@ -1,0 +1,282 @@
+# session it03 started 2026-09-26 12:20:05
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan section for this item, the SAT path code, and checking the compute situation.
+  > $ date && pgrep -af benchmarks.recertify | head; nproc; uptime; grep -n "2.1b\|§2.1\|DRAT\|drat" reports/ml_nature_plan_2.md | head -40
+  > $ sed -n 60,110p reports/ml_nature_plan_2.md; echo ----; sed -n 310,330p reports/ml_nature_plan_2.md; echo ----; ls tools/ 2>/dev/null; ls learning/data/ | head -
+  > $ grep -n "def \|^class " satisfiability/mosp_solver.py | head -60; echo ----; grep -n "def \|^class " satisfiability/mosp_encoding.py
+  > $ sed -n 664,820p satisfiability/mosp_solver.py
+  > $ sed -n 75,121p satisfiability/mosp_encoding.py; echo ----; sed -n 1,80p learning/node_counts.py; echo ----; grep -n "def " learning/node_counts.py
+  > $ sed -n 94,175p learning/node_counts.py; echo ----; python -c "
+from pysat.solvers import Solver
+import pysat; print(pysat.__version__)
+s = Solver(name='cadical1
+
+Network and gcc are available. Now building drat-trim under `tools/` and probing pysat's proof output on a non-trivial UNSAT formula in parallel.
+  > $ mkdir -p tools && cd tools && timeout 120 git clone --depth 1 https://github.com/marijnheule/drat-trim.git 2>&1 | tail -2 && cd drat-trim && git log -1 --format
+  > $ cd /home/al/dev/MOSP/tools/drat-trim && cat Makefile && make 2>&1 | grep -i "error" | head -10
+  > $ gcc drat-trim.c -std=gnu99 -O2 -o drat-trim 2>&1 | grep -c warning; ls -la drat-trim && ./drat-trim 2>&1 | head -3; cd examples && ls | head; 
+  > $ cd /home/al/dev/MOSP && python - <<'EOF'
+from pysat.solvers import Solver
+from pysat.formula import CNF
+from pysat.examples.genhard import PHP
+import time, subp
+  > $ python - <<'EOF'
+from pysat.solvers import Solver
+from pysat.examples.genhard import PHP
+import subprocess, tempfile
+for name in ('cadical195','cadical153'):
+  
+  > $ python - <<'EOF'
+from pysat.solvers import Solver
+from pysat.examples.genhard import PHP
+import subprocess, tempfile
+cnf = PHP(5)
+for name in ('cadical195','glu
+  > $ python - <<'EOF'
+from pysat.solvers import Solver
+from pysat.examples.genhard import PHP
+import subprocess, tempfile
+cnf = PHP(5)
+with Solver(name='cadical195',
+  > $ python - <<'EOF'
+from pysat.solvers import Solver
+from pysat.examples.genhard import PHP
+import subprocess, tempfile
+cnf = PHP(5)
+with Solver(name='cadical195',
+  > $ F=$(python -c "import pysat.solvers as s; print(s.__file__)"); sed -n 2362,2470p $F | grep -n "prfile\|proof\|def delete\|def __init__\|pysolvers" ; echo ----; 
+  > $ python - <<'EOF'
+from pysat.solvers import Solver, pysolvers
+from pysat.examples.genhard import PHP
+import subprocess, tempfile
+for n in (5, 8):
+    cnf = PHP(n
+  > $ python - <<'EOF'
+from pysat.solvers import Solver, pysolvers
+from pysat.examples.genhard import PHP
+import subprocess, tempfile, ctypes, os
+libc = ctypes.CDLL(N
+  > $ sed -n 42,67p mosp/preprocess.py; sed -n 112,122p mosp/preprocess.py; sed -n 180,196p mosp/preprocess.py; echo ---- report style; sed -n 4097,4130p reports/ml_n
+  > $ python - <<'EOF' 2>&1 | tail -40
+import time, tempfile, subprocess, ctypes, threading, os, random
+import numpy as np, pandas as pd
+from learning.node_counts imp
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/bd98a571-ecf9-476d-b54f-657dcce8d941/tasks/bx4el3vjc.output
+  > $ df -h . | tail -1; head -2 learning/data/node_counts.csv; wc -l learning/data/node_counts.csv; python -c "import pysat, sys; print(pysat.__version__, sys.versio
+
+The pricing sample is still running. I'll write the module now, since its design does not depend on the exact timings.
+  > Write /home/al/dev/MOSP/learning/proofs.py
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/bd98a571-ecf9-476d-b54f-657dcce8d941/tasks/bx4el3vjc.output; echo ==== smoke; python - <<'EOF'
+import tempfile, time
+from
+  > $ ps aux | grep -c "[p]ython -$" ; ps -eo pid,etimes,pcpu,args | grep "drat-trim\|python -" | grep -v grep | head; echo ---; timeout 100 python - <<'EOF'
+import t
+  > $ kill 57710 2>/dev/null; sleep 1; ps -p 57710 >/dev/null && echo "still alive" || echo "pricing job stopped"; free -g | head -2; rm -f /tmp/proofs_smoke.csv; rm 
+
+The batch is running on 16 workers with a 90 s per-instance deadline and a 55-minute wall budget. While it runs, I'll write the tests.
+  > Write /home/al/dev/MOSP/tests/test_proofs.py
+  > $ timeout 600 python -m pytest tests/test_proofs.py -q -x 2>&1 | tail -15; echo ---- batch; cat learning/data/proofs_run.log; wc -l learning/data/proofs.csv; pyth
+  > $ python - <<'EOF'
+import gzip, json, tempfile
+from pathlib import Path
+from mosp.instance import MOSPInstance
+from learning.proofs import refute_with_proof, rebu
+  > Edit /home/al/dev/MOSP/tests/test_proofs.py
+  > $ timeout 600 python -m pytest tests/test_proofs.py -q 2>&1 | tail -5; echo ---- batch; tail -3 learning/data/proofs_run.log; python - <<'EOF'
+import pandas as pd
+  > $ timeout 600 python -m pytest tests/test_proofs.py -q -x -k corrupted 2>&1 | grep -B5 -A12 "^E " | head -40
+  > Edit /home/al/dev/MOSP/tests/test_proofs.py
+  > $ timeout 600 python -m pytest tests/test_proofs.py -q 2>&1 | tail -2; echo ---- batch; tail -2 learning/data/proofs_run.log; python - <<'EOF'
+import pandas as pd
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Next I need two independent things: a periodic watch on the batch, and the comparison table against the customer-search cost added to the tables stage. Requesting both now.
+  > Monitor {"command": "cd /home/al/dev/MOSP; while pgrep -f \"learning.proofs run\" >/dev/null; do python - <<'EOF' 2>&1 | tail -1
+  > Edit /home/al/dev/MOSP/learning/proofs.py
+
+Now the customer-search comparison table and the return dict update.
+  > Edit /home/al/dev/MOSP/learning/proofs.py
+  > Edit /home/al/dev/MOSP/learning/proofs.py
+  > $ timeout 120 python -m learning.proofs tables --out /tmp/pt.md 2>&1 | tail -60
+  > $ python - <<'EOF'
+import re
+p = "learning/proofs.py"; s = open(p).read()
+s = s.replace('''            "unsat_unchecked": g.apply(lambda d: int(((d["status"] == "
+  > $ timeout 300 python -m pytest tests/test_proofs.py -q -x 2>&1 | grep -B3 -A8 "^E " | head -30
+  > $ python - <<'EOF'
+p = "learning/proofs.py"; s = open(p).read()
+s = s.replace('''    if not node_counts.exists():
+        return None
+    cs = pd.read_csv(node_co
+
+Tests pass. The batch's slow tail (the 185 instances at n = 40) is running first, so I'll wait in bounded foreground polls and report progress each time.
+  > $ for i in $(seq 1 9); do sleep 60; done; python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv")
+print(len(df), df.status.value_counts(
+
+Only 7 rows in 13 minutes and one solve ran 372 s against a 90 s deadline, so the interrupt is not stopping CaDiCaL. I'll test the interrupt in isolation and re-plan the batch order.
+  > $ timeout 120 python - <<'EOF'
+import time, threading
+from pysat.solvers import Solver
+from pysat.examples.genhard import PHP
+cnf = PHP(11)
+for with_proof in (Fal
+  > $ MAIN=$(pgrep -f "python -m learning.proofs run" | head -1); echo "main $MAIN"; PGID=$(ps -o pgid= -p $MAIN | tr -d ' '); echo "pgid $PGID"; kill -- -$PGID; slee
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/bd98a571-ecf9-476d-b54f-657dcce8d941/tasks/bqnzq34rt.output; F=/home/al/anaconda3/lib/python3.12/site-packages/pysat/solv
+  > $ grep -n "accum_stats\|def get_status\|cadical195_acc_stats" /home/al/anaconda3/lib/python3.12/site-packages/pysat/solvers.py | sed -n 1,5p; awk 'NR>=2362 && NR<
+
+The conflict budget works and stats are available. I'll restructure the module in one pass: solving in a killable subprocess with a conflict budget, checking in the worker.
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) =
+  > $ rm -rf learning/data/proofs learning/data/proofs.csv /tmp/proofs_smoke /tmp/proofs_smoke.csv && timeout 300 python -m learning.proofs run --limit 4 --workers 2 
+  > Monitor {"command": "cd /home/al/dev/MOSP; while pgrep -f \"python -m learning.proofs run\" >/dev/null; do python - <<'EOF' 2>&1
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -3; date
+
+The full suite passes (899 tests). But the batch shows many conflict-budget exhaustions at n = 30. Let me look at which instances those are.
+  > $ python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv")
+df["file"] = df.source_file.str.split("/").str[-1]
+print(df.groupby(["status"]
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+old = '''    tables = {"totals": totals, "by_band": by_band, "by_n
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+old = '''    frame["k_band"] = pd.cut(frame["k"], [0, 5, 10, 15, 2
+  > $ python - <<'EOF'
+import pandas as pd
+from learning.proofs import targets
+jobs = targets(40)
+df = pd.DataFrame([(j[1], j[3], len(j[0]), len(j[0][0]), j[4]) for j
+  > $ MAIN=$(pgrep -f "python -m learning.proofs run" | head -1); PGID=$(ps -o pgid= -p $MAIN | tr -d ' '); kill -- -$PGID; sleep 3; pgrep -f "python -m learning.proo
+  > $ ps -eo pid,pgid,etimes,pcpu,args | grep -E "learning.proofs (run|one)|drat-trim" | grep -v "bash -c\|grep" | awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9}' | sort -k3
+  > $ rm -rf tools/drat-trim/.git && cat > tools/README.md <<'EOF'
+# tools/
+
+Third-party binaries built from source for this repository. Nothing here is
+imported by P
+  > $ du -sh tools/drat-trim/* | sort -h | tail -4; ls -la tools/drat-trim/examples | awk '$5>200000{print $5, $9}'
+  > $ rm -f tools/drat-trim/examples/R_4_4_18.clrat.bz2 tools/drat-trim/examples/R_4_4_18.drat.bz2 tools/drat-trim/examples/R_4_4_18.cnf && printf -- '- The upstream 
+  > $ STEM=$(python -c "
+import pandas as pd; df=pd.read_csv('learning/data/proofs.csv'); ok=df[(df.status=='unsat')&(df.verdict=='verified')]; print(ok.iloc[0].proof
+  > Write /tmp/s17_draft.md
+
+Draft written. The batch is at 304 rows, still in the n = 30 tail where most calls exhaust the budget. I'll wait in a bounded poll and check the rate.
+  > $ for i in $(seq 1 8); do sleep 60; done; python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv")
+print(len(df), "rows; min n", df.n_cus
+
+The n = 30 band is done (1,795 instances, 1,307 checked, 488 censored) and the batch is into the fast small sizes. I'll write the fill-in script that renders the draft's tables while it finishes.
+  > Write /tmp/fill_s17.py
+  > $ until ! pgrep -f "learning.proofs ru[n]" >/dev/null; do sleep 15; done; echo "BATCH EXITED $(date)"; tail -3 learning/data/proofs_run.log; wc -l learning/data/p
+  > $ timeout 300 python /tmp/fill_s17.py 2>&1 | tail -60; wc -l learning/data/proofs.csv; date
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("/tmp/s17_draft.md"); s = p.read_text()
+s = s.replace("{{BY_N}}\n\n{{FIT}}", """{{BY_N}}
+
+The exponential fit
+
+Nothing else is independent of the batch finishing, so I'll wait in a bounded poll.
+  > $ for i in $(seq 1 9); do sleep 60; if ! pgrep -f "learning.proofs ru[n]" >/dev/null; then break; fi; done; wc -l learning/data/proofs.csv; tail -2 learning/data/
+  > $ cp learning/data/proofs.csv learning/data/proofs_200k.csv && cp learning/data/proofs_run.log learning/data/proofs_200k_run.log && printf '!learning/data/proofs_
+  > $ until ! pgrep -f "learning.proofs ru[n]" >/dev/null; do sleep 15; done; echo "RETRY BATCH EXITED $(date)"; tail -2 learning/data/proofs_retry_run.log; wc -l lea
+  > $ rm -f learning/data/proofs_probe_1M.csv learning/data/proofs_probe_1M_run.log && sed -i '/^!learning\/data\/proofs_probe_1M.csv$/d' .gitignore && grep -n "proof
+  > Write /tmp/fill_s17.py
+  > $ timeout 300 python /tmp/fill_s17.py 2>&1 | sed -n '/### (a)/,/### (b)/p;/### (d)/,/### (e)/p' | head -120; echo; echo "REMAINING:"; grep -o "{{[A-Z_]*}}" /tmp/s
+
+The fill script renders correctly. One surprise to look into while the retry runs: 25 instances with at most 10 customers were censored at 200k conflicts. Let me see what they are.
+  > $ python - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/proofs_200k.csv")
+c = f[f.status=="budget"]
+c = c.assign(file=c.source_file.str.split("/").s
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/proofs_200k.csv")
+f["cens"] = f.status.isin(["budget","timeout"])
+f["m_band"] =
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+old = '''    tables = {"totals": totals, "by_band": by_band, "by_n
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+old = '''# -------------------------------------------------------
+  > $ python - <<'EOF'
+from pathlib import Path
+d = Path("/tmp/s17_draft.md"); t = d.read_text()
+old = """                                              # pass 2, the 
+  > $ for i in $(seq 1 9); do sleep 60; done; python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv"); r = df[df.conflict_budget==1000000]
+p
+  > $ for i in $(seq 1 9); do sleep 60; if ! pgrep -f "learning.proofs ru[n]" >/dev/null; then break; fi; done; wc -l learning/data/proofs.csv; tail -1 learning/data/
+  > $ for i in $(seq 1 9); do sleep 60; if ! pgrep -f "learning.proofs ru[n]" >/dev/null; then break; fi; done; wc -l learning/data/proofs.csv; tail -1 learning/data/
+  > $ for i in $(seq 1 9); do sleep 45; if ! pgrep -f "learning.proofs ru[n]" >/dev/null; then break; fi; done; wc -l learning/data/proofs.csv; tail -2 learning/data/
+
+The retry pass completed all 810 rows in 39 minutes wall, inside its cap. Now backfill (should add zero), run the fill script and look at the final tables.
+  > $ python -m learning.proofs backfill && python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv"); print(len(df), df.duplicated(["instance
+  > $ python - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/proofs.py"); s = p.read_text()
+old = '''            "timeout": g["status"].apply(lambda s: int(s.
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -2 > /tmp/full_tests.txt; echo done >> /tmp/full_tests.txt
+  > $ python - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/proofs.csv"); f = pd.read_csv("learning/data/proofs_200k.csv")
+r = df[df.conflict_budget==1
+  > $ python - <<'EOF'
+from pathlib import Path
+d = Path("/tmp/s17_draft.md"); t = d.read_text()
+old = """failures are at `n = 10` (Harvey `wbo_10_30`, `m = 30`, `k` 
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0003/PROGRESS.md"); s = p.read_text()
+s = s.replace("censored; 3.6 core-hours, 15.5 min wall
+  > $ grep -n "first failures\|core-hours, 15.5\|core-hours, 39.4" Ralph_Loops/loop0003/PROGRESS.md; python - <<'EOF'
+from pathlib import Path
+r = Path("reports/ml_na
+  > $ sed -i '180s/3.6 core-hours/3.0 core-hours/; 181s/7.6 core-hours/10.0 core-hours/' Ralph_Loops/loop0003/PROGRESS.md && sed -n 180,181p Ralph_Loops/loop0003/PROG
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0003/PROGRESS.md"); s = p.read_text()
+old = "  failures at 200k are at n = 10 (`wbo_10_30`, 
+
+The full suite passes: 900 passed, 2 skipped, 1 xfailed in 78 s. Final bookkeeping: update the test line in PROGRESS.md, and review what the driver will commit.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0003/PROGRESS.md"); s = p.read_text()
+old = """  on hand-built binary DRAT, `summarise` on a
+  > $ sed -i 's/# 6 tests: the 4-customer proof checks, four corruptions fail, a false claim is sat, .../# 7 tests: the 4-customer proof checks, four corruptions fail
+
+Item 03 is done and everything is written. Nothing remains that the driver needs from me.
+
+**Outcome.** 5,646 of the 6,135 certified corpus instances at 9–40 customers now carry a DRAT refutation of `optimum − 1` that drat-trim verifies from the DIMACS alone. That is 92.0%, with zero checker rejections, zero contradicted optima, and zero wall-deadline kills. The 489 left all exhausted a million CaDiCaL conflicts.
+
+**What was built**
+- `tools/drat-trim/`: Heule's checker vendored from its public source and built with `gnu99`, since the upstream `c99` flag fails on this glibc. Provenance in `tools/README.md`.
+- `learning/proofs.py`: applies the two `decide_mosp` reductions and records them as index lists, solves with CaDiCaL under a conflict budget inside a killable child, checks with drat-trim, stores compressed proofs plus JSON certificates under the git-ignored `learning/data/proofs/`, and commits one row per instance to `learning/data/proofs.csv`. A `check` stage rebuilds the CNF from the benchmark file and certificate alone and re-verifies.
+- `tests/test_proofs.py`: seven tests, including the 4-customer proof checking and four corruptions failing. Full suite: 900 passed, 2 skipped, 1 xfailed.
+
+**Two pysat facts that shaped the design.** `interrupt()` raises `NotImplementedError` for CaDiCaL, so the first batch's deadline was never enforced and it was stopped and discarded. `get_proof()` returns a truncated proof because pysat never flushes the C trace buffer. A `libc.fflush(NULL)` before reading the trace gives complete proofs.
+
+**Finding, in one line.** Affordability is decided by the formula size `m²·k`, not by `n`: zero censoring below 5,000, then 4%, 25%, 69% per decade, every instance with at most 20 patterns certified at any width, and the first failures at 200k conflicts are at `n = 10`. The proof costs 6,000 to 70,000 times the customer search's seconds on the same questions, so it is an archive object, not a decision procedure, and the encoding has nothing to offer at 125×125.
+
+**Files for the driver to commit.** `learning/proofs.py`, `tests/test_proofs.py`, `tools/`, `.gitignore`, `reports/ml_nature.md` §17, `reports/proof_tables.md`, `learning/data/proofs.csv`, `learning/data/proofs_200k.csv`, PROGRESS.md and iterations.md. Nothing under `solutions/` changed. The cost was 13 core-hours across the two passes, and 11.7 GB of proofs sit on disk outside git.
+
+# result: success in 5684s, 94 turns, cost $25.76
