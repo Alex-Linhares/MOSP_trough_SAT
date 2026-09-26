@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 10/14 SOLVED
+- **Current**: 11/14 SOLVED
 
 ---
 
@@ -852,3 +852,86 @@ idea, not a new formula.
   933 corpus floors rise, 67 gap instances become bound-certified). Not
   applied; it is not learned and rests on Yanasse's equality like the
   contraction component.
+
+## Iteration 13 — 2026-09-26 19:58
+
+**Item 11 · §2.9 Why the ridge is where it is** — SOLVED (analysis item, no
+kill). **The ridge is a condition on one parameter across `m / n`, and it is
+not the mean degree**: it sits where the excess of the product cover,
+`(n_ones − m) / n = Σ_j (|C_j| − 1) / n`, is about 2–2.4 — one independent
+cycle of the customer–product incidence graph per customer — at every ratio
+from `m = 2n` to `m = n / 8`. In `col_mean` coordinates that is
+`1 + 2.4 n / m`: 2 / 3 / 5–6 / 9–11 / 21 customers per product, which is why
+§11 saw "three" at `m = n`.
+
+### Completed
+- `learning/ridge_theory.py`: the analytics of `G(n, m, p)` in `col_mean`
+  coordinates for both generators (expected degree — checked against the
+  measured graphs to ±0.5% at `m ≥ n`, −1 to −6% below —, edge probability,
+  branching factor and the giant-component threshold, the excess and the
+  tree threshold), parabolic interpolation of every series' peak with a
+  bootstrap interval, constancy of fifteen candidates across ratios, every
+  hypothesis calibrated on the `m = n` ridge and predicting the others, the
+  collapse test, the ridge's height against `m`, branching-factor bins, a
+  maximal-clique excess computed from the graph, the figure
+  `reports/figures/ridge_theory.png` and `reports/ridge_theory_tables.md`.
+- **The deciding cells the campaign lacked**: `m = n / 4` at `n ∈ {50, 60,
+  75}` (fixed `d` 3–12, Bernoulli `p` 0.05–0.2) and `m = n / 8` at 75 —
+  2,750 instances, all certified with witnesses re-simulating, zero censored
+  refutations, 82 s wall on 16 workers (0.36 core-hours);
+  `learning/data/ensemble/results_ratio.csv` + `manifest_ratio.csv` (300
+  sampled, regenerate byte for byte), kept apart from `results.csv` and
+  `results_upward.csv`. Witnesses under the ensemble `solutions/`; the
+  `.mosp` files the run wrote were removed (the manifest is the artifact).
+- **Findings** (`reports/ml_nature.md` §25): mean degree at the peak runs
+  3.9 → 37.6 across the five ratios (×9.5); calibrated at `m = n` it predicts
+  the `m = n / 2` ridge at 4.7 customers per product against a measured
+  5.2–5.6 with every fixed-generator interval excluding it, 6.4 against
+  9.2–10.6 at `n / 4`, 8.9 against 20.7 at `n / 8`. The excess is 2.0–2.5 at
+  every fixed peak and 1.8–3.0 at every Bernoulli peak (CV 0.13, the only
+  candidate within a factor of 1.65 across ratios); calibrated at `m = n` it
+  predicts the other ridges to 0.055 decades on average and the `n / 8`
+  ridge to 0.012. `optimum / n` and `tw_min_fill / n` (≈ 0.32) predict
+  `n / 2` and `n / 4` as well but fail at `n / 8` by 0.14–0.18 and are
+  outputs, not parameters (§14 already showed `optimum / n` is not
+  size-stable). The parameter is an incidence-graph quantity, not a
+  MOSP-graph invariant: the maximal-clique version runs 1.8–11.8 at the
+  peaks and no graph invariant tested is within a factor of 1.9. The
+  literature's transition (branching factor 1: giant component, linear
+  treewidth and pathwidth — Lee–Lee–Oum 2012, Gao 2012) is where the optimum
+  becomes linear in `n` (bins at 30–40) and lies 1.5–6× below the ridge,
+  which sits at branching factors 4–49. The ridge's height scales as `m^2.9`
+  at `n = 50` to `m^4.9` at 75, so nothing collapses the surface: the excess
+  locates the ridge, `m` sets its height.
+- `tests/test_ridge_theory.py`: 9 tests (exact degree on tiny cases and the
+  large-`n` limit, the excess identity on a 4-cycle of products, threshold
+  inversions and the two hypotheses at `m = n / 4` by hand, ratio snapping,
+  a planted parabola recovered with its interval, a two-ratio toy where the
+  excess predicts and `col_mean` does not, clique excess on a bowtie, the
+  deciding grid). Full suite: **1,021 passed, 2 skipped, 1 xfailed in 82 s.**
+  Nothing written to `solutions/`; no solver default, flag, bound or C
+  changed.
+
+### Blockers
+- None. The `m = n / 8` evidence is one size (75, fixed generator only) and
+  the `m = 2n` fixed peaks are at their grid edge (`d = 2`), stated in §25.
+  The 125 × 125 placement (`col_mean ≈ 3`, between Chu & Stuckey's densities
+  2 and 4) is a prediction labelled as such.
+- Process notes: a maximal-clique enumeration on every instance stalled on
+  two near-complete Bernoulli graphs at `n = 75` while fourteen workers
+  slept — bound such stages by a density cutoff and a cap, and kill a pool
+  by its parent (`pgrep -P`); `ensemble.run` writes instance files unless
+  `instance_dir=None`; a first `date` check would have shown the session had
+  used 17 minutes where the plan assumed an hour — check the clock before
+  sampling a study.
+
+### Next
+- Item 12 (Lean): §24's two theorems, §21's 10-vertex `pw − tw = 2` instance.
+- Item 13/14 (synthesis): §25 gives the ridge a closed form,
+  `col_mean ≈ 1 + 2.4 n / m`, to carry into the summary beside §11's
+  "three customers per product" and §16's ratio table; the excess should be
+  added as a feature/coordinate wherever density is plotted.
+- For the owner: if the ensemble campaign is ever extended, sweep the excess
+  (`r (c − 1)` 1–4) rather than `d` at each ratio, and the generator with
+  fixed `m`, varying `n`, would test whether height ∝ `m^k` at fixed excess
+  holds at 100.

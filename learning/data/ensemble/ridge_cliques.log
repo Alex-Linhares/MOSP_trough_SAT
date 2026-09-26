@@ -1,0 +1,11 @@
+7125 instances to regenerate on 16 workers
+  2000 done
+  4000 done
+  6000 done
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/al/dev/MOSP/learning/ridge_theory.py", line 729, in <module>
+    print(f"{len(f)} rows in {csv} in {time.time() - t0:.0f} s".replace("{csv}", str(CLIQUES_CSV)))
+                              ^^^
+NameError: name 'csv' is not defined. Did you forget to import 'csv'?

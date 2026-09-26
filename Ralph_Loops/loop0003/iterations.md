@@ -116,7 +116,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       whether any learned policy beats the rule under the correct objective,
       and the imitation ceiling at 50–125. **Kill**: not better than the rule
       by 0.02 MAE grouped — then imitation is closed for good.
-- [ ] 11 · §2.9 **Why the ridge is where it is.** Analysis: expected degree,
+- [x] 11 · §2.9 **Why the ridge is where it is.** Analysis: expected degree,
       edge probability and giant-component threshold of G(n, m, p) in
       `col_mean` coordinates for each m/n, overlaid on the hardness map; the
       ridge's `col_mean` at m = n/2 (item 02) against what a mean-degree

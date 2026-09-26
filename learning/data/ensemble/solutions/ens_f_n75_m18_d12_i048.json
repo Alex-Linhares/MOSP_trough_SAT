@@ -1,0 +1,29 @@
+{
+  "instance_name": "ens_f_n75_m18_d12_i048",
+  "n_customers": 75,
+  "n_patterns": 18,
+  "mosp_value": 39,
+  "ordering": [
+    5,
+    14,
+    15,
+    9,
+    8,
+    16,
+    13,
+    0,
+    1,
+    7,
+    6,
+    2,
+    12,
+    10,
+    11,
+    4,
+    3,
+    17
+  ],
+  "provenance": "certified:refutation",
+  "lower_bound": 27,
+  "lower_bound_source": "degeneracy"
+}

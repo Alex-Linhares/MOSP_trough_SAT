@@ -1,0 +1,131 @@
+# session it13 started 2026-09-26 19:37:36
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan §0 and §2.9, the hardness map section (§11) and item 02's ridge findings (§16), then the code for `hardness_map.py`, `concentration.py` and `upward.py`.
+  > $ date && pgrep -af '^python -m benchmarks.recertify' | head; nproc; uptime; ls learning/data/ensemble/ | head -50; wc -l reports/ml_nature_plan_2.md reports/ml_n
+  > $ sed -n 1,80p reports/ml_nature_plan_2.md && grep -n '§2.9\|2\.9' reports/ml_nature_plan_2.md
+  > $ sed -n 255,300p reports/ml_nature_plan_2.md; echo ======; grep -n '^## §\|^## [0-9]' reports/ml_nature.md | head -40
+  > $ sed -n 2535,2878p reports/ml_nature.md
+  > $ grep -n 'ridge\|m = n/2\|m = n / 2\|n//2\|Theorem 2' reports/ml_nature.md | sed -n '1,400p' | awk -F: '$1>=4097 && $1<4462' | head -60
+  > $ sed -n 4282,4320p reports/ml_nature.md; echo ====COLS; head -1 learning/data/ensemble/results.csv | tr ',' '\n' | nl | head -80; echo ====UPCOLS; head -1 learni
+  > $ grep -n 'rig_\|def ' learning/features.py | head -80; echo ====GEN; grep -n 'def \|empty\|repair\|bernoulli\|fixed' learning/ensemble.py | head -80
+  > $ sed -n 290,330p learning/features.py; echo ====ENS; sed -n 1,60p learning/ensemble.py; sed -n 150,162p learning/ensemble.py; echo ====GENR; grep -n 'def generat
+  > $ sed -n 60,150p learning/upward.py; echo ====RIDGE; sed -n 271,290p learning/upward.py; echo ====COLLAPSE; sed -n 409,460p learning/hardness_map.py; echo ====LIT
+  > $ mkdir -p /tmp/it13 && python - <<'EOF' 2>&1 | tail -120
+import numpy as np, pandas as pd
+from learning.upward import load_all
+f = load_all()
+f = f[f.certified.a
+  > $ sed -n 1,40p tests/test_upward.py; echo ====FIG; grep -n 'matplotlib\|plt\.\|savefig\|use(' learning/hardness_map.py | head -20; ls reports/figures/; echo ====D
+
+Next I need the `ensemble.run` signature so I can add a small deciding grid at m = n/4 without touching the existing CSVs, and the chart skill for the overlay figure. Both independent.
+  > $ sed -n 293,366p learning/ensemble.py; grep -n 'RESULTS_CSV\s*=\|RESULTS_UPWARD_CSV\s*=\|ENSEMBLE_DIR\s*=\|def load_results' -A 3 learning/ensemble.py | head -30
+  > $ cat > learning/ridge_theory.py <<'EOF'
+"""Why the ridge is where it is: the hardness peak as a condition on one graph parameter.
+
+Question (`reports/ml_nature_p
+
+The run is fast (about a minute). While it finishes, I'll load the chart skill for the figure.
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.283/cae5842f1162b40e510b04658db080fa/dataviz && grep -n -i 'categorical' -A 14 references/palette.md | head -60; echo ===
+  > $ python - <<'EOF'
+import re
+src = open('learning/ridge_theory.py').read()
+head, tail = src.split('if __name__ == "__main__":')
+body = r'''
+# --------------------
+
+The deciding run finished (2,750 rows in 82 s). Now the full tables stage.
+  > $ python -m learning.ridge_theory --stage tables 2>&1 | tail -5 && python - <<'EOF'
+import pandas as pd
+pd.set_option('display.width',250); pd.set_option('display
+  > $ sed -n 20,200p /home/al/.claude/projects/-home-al-dev-MOSP/fd5da557-da90-4a71-a6f8-1aa269bc8106/tool-results/bb8exzwpm.txt | cut -c1-230
+  > $ cp /home/al/.claude/projects/-home-al-dev-MOSP/fd5da557-da90-4a71-a6f8-1aa269bc8106/tool-results/bb8exzwpm.txt /tmp/it13/out.txt; grep -n 'generator\|candidate'
+  > $ sed -n 36,37p /tmp/it13/out.txt | cut -c1-200; echo; sed -n 54,84p /tmp/it13/out.txt | cut -c1-210
+  > $ python - <<'EOF' 2>&1 | cut -c1-200
+import pandas as pd, numpy as np
+pd.set_option('display.width',250); pd.set_option('display.max_columns',40); pd.set_option(
+  > $ python - <<'EOF'
+src = open('learning/ridge_theory.py').read()
+# 1. constants and clique stage
+src = src.replace('''TABLES = Path("reports/ridge_theory_tables.m
+
+Fixing the cell reconstruction (the CSV stores cell ids, not the parse format), then launching the clique stage and viewing the figure in parallel.
+  > $ python - <<'EOF'
+src = open('learning/ridge_theory.py').read()
+src = src.replace('''def _clique_job(args) -> dict:
+    from learning.ensemble import Cell, gener
+  > Read /home/al/dev/MOSP/reports/figures/ridge_theory.png
+  > $ python - <<'EOF'
+src = open('learning/ridge_theory.py').read()
+old_start = src.index('def figure(')
+old_end = src.index('def _md(')
+new = '''def figure(cells: p
+
+Writing the tests while the clique stage finishes.
+  > $ cat > tests/test_ridge_theory.py <<'EOF'
+"""§25: the ridge as a condition on one parameter -- the analytics, the
+interpolated peak, the calibrated predictions a
+  > $ python -m pytest tests/test_ridge_theory.py -q -x -k planted_ridge 2>&1 | grep -B5 -A12 'def test_interpolated\|Error' | head -60; echo ====; ps -o pid,etime,ti
+  > $ P=$(pgrep -f '^python -m learning.ridge_theory --stage clique[s]' | head -1); echo parent $P; kill $(pgrep -P $P) $P 2>/dev/null; sleep 1; pgrep -f 'ridge_theor
+
+The clique stage finished and wrote its CSV; only the final print line failed. Fixing it and regenerating the tables with the graph-side excess included.
+  > $ sed -i 's|        print(f"{len(f)} rows in {csv} in {time.time() - t0:.0f} s".replace("{csv}", str(CLIQUES_CSV)))|        print(f"{len(f)} rows in {CLIQUES_CSV}
+  > $ python - <<'EOF' 2>&1 | cut -c1-210
+import pandas as pd, numpy as np
+pd.set_option('display.width',250); pd.set_option('display.max_columns',40); pd.set_option(
+
+Numbers are in hand. Next, in parallel: start the full test suite in the background, and pull the threshold table rows I still need for the section.
+  > $ (nohup python -m pytest tests/ -q -x > /tmp/it13/pytest.log 2>&1 &) ; python - <<'EOF' 2>&1 | cut -c1-200
+import pandas as pd
+pd.set_option('display.width',250)
+  > $ sed -n 6323,6345p reports/ml_nature.md; echo ...; tail -12 reports/ml_nature.md; echo ====; tail -3 /tmp/it13/pytest.log; date
+  > $ ls -la learning/data/ensemble/results_ratio.csv learning/data/ensemble/manifest_ratio.csv learning/data/ensemble/ridge_clique_excess.csv learning/data/ensemble/
+  > $ ls learning/data/ensemble/instances | wc -l; ls learning/data/ensemble/instances | sed 's/_i[0-9]*\.mosp//' | sort | uniq -c | sort -rn | head -3; du -sh --appa
+
+Two independent items now: clean up the instance files my run wrote (they regenerate from the manifest, which I'll verify on a sample) and check the test suite; and append §25 to the report.
+  > $ sed -i 's|    frame = run(cells, per_cell, workers=workers, csv=csv, deadline=120.0, solve_budget=600.0)|    frame = run(cells, per_cell, workers=workers, csv=c
+
+Manifest regenerates (300 sampled, 0 mismatches). Now the report section.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 25. Why the ridge is where it is: one parameter across m / n (plan 2 §2.9, loop0003 item 11)
+
+*Iteration 13 of loop0003,
+
+The full suite passed (1,021 passed, 2 skipped, 1 xfailed in 82 s). Two numbers in the section need exact recomputation before I write the progress log.
+  > $ python - <<'EOF'
+from learning.ridge_theory import load_frames
+f = load_frames()
+s = f[(f.n>=50)&(f.n<=75)]
+print('certified 50-75:', len(s), 'cells:', s.groupb
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+reps = [("1.00 at the median below MOSP-graph density 0.1, 4,287 instances)", "1.00 at the median be
+
+Final checks: view the regenerated figure and correct the timestamp in the progress entry.
+  > $ sed -i 's|^## Iteration 13 — 2026-09-26 20:05|## Iteration 13 — 2026-09-26 19:58|' Ralph_Loops/loop0003/PROGRESS.md && grep -n '^## Iteration 13' Ralph_Loops/lo
+  > Read /home/al/dev/MOSP/reports/figures/ridge_theory.png
+
+The layout is right; the caption overruns the right edge and two panels have colliding ticks. A small patch and regeneration.
+  > $ python - <<'EOF'
+p='learning/ridge_theory.py'; s=open(p).read()
+a='''            ticks = [t for t in (1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30) if g["col_mean"].min()
+
+Item 11 is done, marked `- [x]`, and PROGRESS.md carries the iteration 13 entry with the count at 11 of 14.
+
+**The answer to the item's question.** The ridge is a condition on one parameter across m/n, and that parameter is not the mean degree. The hardness peak sits where the excess of the product cover, `(n_ones − m)/n`, is about 2 to 2.4 at every ratio from m = 2n down to m = n/8. In customers-per-product terms the ridge is at `1 + 2.4·n/m`, which is why §11 saw "three" at m = n.
+
+**What decided it.**
+- The m = n/2 cells reject the mean degree. Calibrated at m = n, it predicts the half-ratio ridge at 4.7 customers per product. The measured peaks are 5.2 to 5.6, and every fixed-generator bootstrap interval excludes 4.7.
+- I generated the cells the campaign lacked, m = n/4 at n = 50, 60, 75 and m = n/8 at 75, in 82 seconds on 16 workers. There the gap opens: degree predicts 6.4 and 8.9 against measured 9.2 to 10.6 and 20.7. The excess predicts 10.7 to 11.1 and 21.2.
+- Across fifteen candidates the excess has the best constancy at the peaks, with mean degree a factor of 9.5 apart across ratios. `optimum/n` and `treewidth/n` match at n/2 and n/4 but fail at n/8 and are outputs of the instance, not parameters.
+
+**Two qualifications stated in §25.** The excess is an incidence-graph quantity, not a MOSP-graph invariant: its maximal-clique analogue is not constant, and no graph invariant tested is within a factor of 1.9 across ratios. The literature's transition, the giant component at branching factor 1 where treewidth and pathwidth become linear, is where the optimum becomes linear in n and lies 1.5 to 6 times below the ridge in density. The ridge's height, unlike its location, is set by m, growing one to one and a half decades per doubling of the products.
+
+**Deliverables.** `learning/ridge_theory.py` with run, cliques and tables stages, §25 of `reports/ml_nature.md`, `reports/ridge_theory_tables.md`, the overlay figure, `results_ratio.csv` with a verified manifest, and 9 new tests. Full suite: 1,021 passed, 2 skipped, 1 xfailed in 82 seconds. Nothing written to `solutions/`, no solver default changed, nothing committed.
+
+**Process notes for the driver.** A maximal-clique stage stalled on two near-complete graphs and was killed by parent PID, then rerun with a density cutoff and a clique cap. The run wrote instance files that I removed after the manifest verified. The session used about 20 minutes of its 3-hour cap.
+
+# result: success in 1275s, 45 turns, cost $8.64

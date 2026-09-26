@@ -1,0 +1,30 @@
+55 cells, 2750 instances, 0 already in learning/data/ensemble/results_ratio.csv, 2750 to run on 16 workers
+  100/2750 in 2 s
+  200/2750 in 4 s
+  300/2750 in 6 s
+  400/2750 in 9 s
+  500/2750 in 11 s
+  600/2750 in 13 s
+  700/2750 in 15 s
+  800/2750 in 18 s
+  900/2750 in 20 s
+  1000/2750 in 22 s
+  1100/2750 in 25 s
+  1200/2750 in 27 s
+  1300/2750 in 30 s
+  1400/2750 in 32 s
+  1500/2750 in 35 s
+  1600/2750 in 38 s
+  1700/2750 in 41 s
+  1800/2750 in 45 s
+  1900/2750 in 49 s
+  2000/2750 in 53 s
+  2100/2750 in 56 s
+  2200/2750 in 61 s
+  2300/2750 in 65 s
+  2400/2750 in 68 s
+  2500/2750 in 72 s
+  2600/2750 in 75 s
+  2700/2750 in 79 s
+  2750 rows in 82 s
+2750 rows, 82 s
