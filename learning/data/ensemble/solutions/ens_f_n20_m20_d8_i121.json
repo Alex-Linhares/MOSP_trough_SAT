@@ -1,0 +1,31 @@
+{
+  "instance_name": "ens_f_n20_m20_d8_i121",
+  "n_customers": 20,
+  "n_patterns": 20,
+  "mosp_value": 18,
+  "ordering": [
+    0,
+    2,
+    3,
+    9,
+    19,
+    1,
+    7,
+    10,
+    11,
+    12,
+    15,
+    5,
+    6,
+    4,
+    8,
+    14,
+    18,
+    13,
+    17,
+    16
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 18,
+  "lower_bound_source": "degeneracy"
+}

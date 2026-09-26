@@ -22,7 +22,7 @@ Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
       the report as §9. Tests: a tiny cell regenerates byte for byte from its
       seeds; the results row for a hand-checkable instance carries the right
       optimum and a positive node count.
-- [ ] 02 · §3 phase 3 **The campaign.** Run the grid item 01 chose: at least
+- [x] 02 · §3 phase 3 **The campaign.** Run the grid item 01 chose: at least
       n ∈ {10, 15, 20, 25, 30, 40}, m ∈ {n, 2n}, a density sweep fine enough to
       resolve a peak (d from 2 to 10, and p from 0.05 to 0.5, extending *below*
       Chu & Stuckey's density 2 since §3 found nodes still rising there), 100+

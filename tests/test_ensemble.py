@@ -105,3 +105,49 @@ def test_manifest_regenerates_every_instance(tmp_path: Path):
                 solutions_dir=tmp_path / "sol", verbose=False)
     path = write_manifest(frame, tmp_path / "manifest.csv")
     assert verify_manifest(path) == {"checked": 6, "mismatches": 0}
+
+
+def test_item02_grid_is_the_one_section_9_chose():
+    from learning.ensemble import ITEM02_PER_CELL, item02_cells
+
+    cells = item02_cells()
+    assert len(cells) == 252 and len(set(cells)) == 252
+    assert {c.n for c in cells} == {10, 15, 20, 25, 30, 35, 40}
+    assert all(c.m in (c.n, 2 * c.n) for c in cells)
+    fixed = [c for c in cells if c.generator == "fixed"]
+    assert all(c.param <= c.n for c in fixed)               # d > n is skipped
+    assert {c.param for c in fixed} == set(range(2, 11))
+    assert min(c.param for c in cells if c.generator == "bernoulli") == 0.025   # below d = 2
+    assert max(c.param for c in cells if c.generator == "bernoulli") == 0.5
+    assert ITEM02_PER_CELL >= 100
+    # the pilot's cells are a subset, so its instances are reused with the same seeds
+    from learning.ensemble import extension_cells, pilot_cells
+    assert set(pilot_cells()) | set(extension_cells()) <= set(cells)
+
+
+def test_campaign_tables_on_a_tiny_frame(tmp_path: Path):
+    import pandas as pd
+
+    from learning.ensemble import campaign_summary, campaign_tables, density_matrix
+
+    cells = [Cell("fixed", 6, 6, 2), Cell("fixed", 6, 6, 5), Cell("bernoulli", 6, 12, 0.2)]
+    frame = run(cells, 4, workers=1, csv=tmp_path / "results.csv", instance_dir=None,
+                solutions_dir=tmp_path / "sol", verbose=False)
+    summary = campaign_summary(frame)
+    assert summary["instances"].sum() == 12 and summary["cells"].sum() == 3
+    assert (summary["certified"] == summary["instances"]).all()
+    # d = 5 of n = 6: every product covers five of six customers, so the MOSP
+    # graph is complete on every instance and there is exactly one class
+    d5 = frame[frame["cell"] == Cell("fixed", 6, 6, 5).id]
+    assert d5["complete_graph"].astype(bool).all() and d5["graph_cert"].nunique() == 1
+    assert (d5["optimum"] == 6).all()
+    matrix = density_matrix(frame, "fixed", 1, "classes")
+    assert list(matrix.columns) == ["d", 6]
+    assert matrix.loc[matrix["d"] == 5.0, 6].iloc[0] == "1/4"
+    complete = density_matrix(frame, "fixed", 1, "complete")
+    assert complete.loc[complete["d"] == 5.0, 6].iloc[0] == "100%"
+    decomposable = density_matrix(frame, "fixed", 1, "decomposable")
+    assert decomposable.loc[decomposable["d"] == 5.0, 6].iloc[0] == "0%"
+    text = campaign_tables(frame)
+    assert "core-hours" in text and "m = 2n" in text and "m = 1n" in text
+    assert pd.isna(frame["nodes_default"]).sum() == 0

@@ -2170,3 +2170,364 @@ was deduplicated by instance name and the test now covers it. A cell with
 `d` at or above `n` is a complete graph in one class; the grid skips
 `d > n`. The `.mosp` store was written, measured (18 MB for 8,000 files,
 73 MB on disk in 4 KB blocks) and replaced by the manifest.
+
+## 10. The generated-ensemble campaign: the grid as run (§3 phase 3, item 02)
+
+*loop0002 iteration 2, 2026-09-26. Code: `learning/ensemble.py` (`--item02`,
+`campaign_summary`, `density_matrix`, `campaign_tables`). Regenerate:*
+
+```bash
+python -m learning.ensemble --item02 --workers 16 --verify-manifest 0   # 252 cells x 150; 8,000 pilot rows reused; ~7 min wall
+python -m learning.ensemble --tables-only                               # every table below, all 252 cells, from results.csv
+python -m pytest tests/test_ensemble.py -q                              # 8 tests, two new: the grid, the tables
+```
+
+*Writes `reports/ensemble_tables.md` (all tables in full, including the
+per-cell cost table for 252 cells) and `learning/data/ensemble/`:
+`results.csv` (37,800 rows, 77 columns, 17.5 MB), `manifest.csv` (3.6 MB;
+all 37,800 digests regenerated and matched), `solutions/` (37,800 witnesses,
+19.4 MB, through `solve_mosp_exact` with that directory as `solutions_dir`).
+The artifact is 40.6 MB, under the ~50 MB ceiling, without `.mosp` files.
+Nothing was written to `solutions/`; no solver default changed;
+`_lower_bound` is untouched. No analysis here beyond the descriptive tables:
+the peak, the concentration and the graph-versus-matrix questions are items
+03, 04 and 05.*
+
+**Question.** Run the grid §9 chose, and describe what it contains: the
+grid as run, instances per cell before and after deduplication by MOSP-graph
+isomorphism class, the share of complete graphs and of decomposable instances
+per cell, the total compute, and the audit (every witness re-simulates, every
+`optimum − 1` refutes under both configurations).
+
+**Method.** `item02_cells()`: `n ∈ {10, 15, 20, 25, 30, 35, 40}`,
+`m ∈ {n, 2n}`, the fixed-`d` generator at `d ∈ {2, …, 10}` (`d ≤ n`;
+`d = n` is the complete graph in one class and is kept as the grid's top
+edge), the Bernoulli generator at `p ∈ {0.025, 0.05, 0.075, 0.1, 0.15, 0.2,
+0.3, 0.4, 0.5}` — below Chu & Stuckey's density 2 at the sparse end and into
+the complete-graph regime at the dense end, so both edges are in the data.
+252 cells, **150 instances per cell**, 37,800 instances; **no shortfall**:
+every cell has its 150. The 80 pilot cells of §9 are a subset with the same
+seeds, so their 8,000 rows were reused unchanged and 29,800 were run: **382 s
+wall on 16 workers**, with `benchmarks.recertify` holding 9 other cores
+throughout. Per instance, as in §9: `solve_mosp_exact` (descent budget
+600 s), witness re-simulation, `decide(optimum − 1)` under both
+`node_counts` configurations (deadline 60 s), the 49 features, the
+`canonical` certificates and `g_components`. Neither budget was reached by
+any instance.
+
+**Baseline.** §9's costing: 150 per cell was priced at about 5,500
+core-seconds and six minutes of wall clock, and the artifact at about 40 MB;
+§8's prediction that `p = 0.5` gives complete graphs on 56–81% of instances
+at `n ≥ 10`, so that the useful range is narrower than the grid.
+
+### Audit
+
+| check | count |
+|---|---|
+| instances | 37,800 |
+| witness re-simulates to the optimum | 37,800 |
+| certified (28,119 by the lower bound meeting the value, 9,681 by refutation) | 37,800 |
+| `optimum − 1` refuted, default configuration | 37,794 (+6 with optimum 1, nothing to refute) |
+| `optimum − 1` refuted, csearch configuration | 37,794 (+6) |
+| `sat` at `optimum − 1` (a wrong optimum) | 0 |
+| deadline reached, either configuration | 0 |
+| complete MOSP graphs | 6,511, every one with optimum `n` |
+| decomposable (`g_components > 1`) | 7,101, kept and recorded |
+| manifest rows regenerated with matching digest | 37,800 of 37,800 |
+| node counts reproduced on a fresh re-refutation of 400 sampled instances, both configurations | 400 of 400 |
+
+The six instances with optimum 1 are all at `n = 10, m = 20, p ≤ 0.05`,
+where the repaired near-empty matrix leaves every customer with a private
+product.
+
+### Compute
+
+| component | core-seconds | share | worst instance |
+|---|---|---|---|
+| `solve_mosp_exact` descent | 3,839 | 49.5% | 2.00 s |
+| 49 features | 3,858 | 49.7% | 1.85 s |
+| refute `optimum − 1`, default | 20.0 | 0.26% | 0.044 s |
+| refute `optimum − 1`, csearch | 16.6 | 0.21% | 0.035 s |
+| total, 37,800 instances | 7,762 = **2.16 core-hours** | | 3.85 s |
+
+Wall clock 508 s in all (126 s pilot, 382 s campaign) on 16 workers. The
+refutations are 0.5% of the cost, as §9 found at 0.7%; the hardest of the
+37,800 is still `f_n40_m80_d2_i094` at 40,579 nodes and 0.038 s.
+
+### The grid as run, by size
+
+| generator   |   n |   m |   cells |   instances |   classes |   complete |   decomposable |   certified |   refuted_both |   core_seconds |
+|:------------|----:|----:|--------:|------------:|----------:|-----------:|---------------:|------------:|---------------:|---------------:|
+| fixed       |  10 |  10 |       9 |        1350 |       501 |        658 |             32 |        1350 |           1350 |       7.5      |
+| fixed       |  10 |  20 |       9 |        1350 |       338 |        865 |              0 |        1350 |           1350 |       5.9      |
+| fixed       |  15 |  15 |       9 |        1350 |       817 |        360 |             64 |        1350 |           1350 |      67.5      |
+| fixed       |  15 |  30 |       9 |        1350 |       555 |        640 |              2 |        1350 |           1350 |      51.4      |
+| fixed       |  20 |  20 |       9 |        1350 |      1066 |         85 |             72 |        1350 |           1350 |     129        |
+| fixed       |  20 |  40 |       9 |        1350 |       756 |        444 |              0 |        1350 |           1350 |     100        |
+| fixed       |  25 |  25 |       9 |        1350 |      1280 |          1 |             87 |        1350 |           1350 |     176        |
+| fixed       |  25 |  50 |       9 |        1350 |       913 |        263 |              2 |        1350 |           1350 |     146        |
+| fixed       |  30 |  30 |       9 |        1350 |      1350 |          0 |             84 |        1350 |           1350 |     228        |
+| fixed       |  30 |  60 |       9 |        1350 |      1051 |         97 |              2 |        1350 |           1350 |     187        |
+| fixed       |  35 |  35 |       9 |        1350 |      1350 |          0 |             98 |        1350 |           1350 |     295        |
+| fixed       |  35 |  70 |       9 |        1350 |      1194 |         17 |              2 |        1350 |           1350 |     270        |
+| fixed       |  40 |  40 |       9 |        1350 |      1350 |          0 |             96 |        1350 |           1350 |       1.25e+03 |
+| fixed       |  40 |  80 |       9 |        1350 |      1281 |          0 |              5 |        1350 |           1350 |       1.1e+03  |
+| bernoulli   |  10 |  10 |       9 |        1350 |       813 |         41 |            778 |        1350 |           1350 |       6.6      |
+| bernoulli   |  10 |  20 |       9 |        1350 |       741 |        199 |            668 |        1350 |           1350 |      12        |
+| bernoulli   |  15 |  15 |       9 |        1350 |      1029 |         59 |            671 |        1350 |           1350 |     105        |
+| bernoulli   |  15 |  30 |       9 |        1350 |       902 |        244 |            546 |        1350 |           1350 |     105        |
+| bernoulli   |  20 |  20 |       9 |        1350 |      1107 |        112 |            585 |        1350 |           1350 |     174        |
+| bernoulli   |  20 |  40 |       9 |        1350 |       932 |        278 |            439 |        1350 |           1350 |     156        |
+| bernoulli   |  25 |  25 |       9 |        1350 |      1100 |        132 |            512 |        1350 |           1350 |     220        |
+| bernoulli   |  25 |  50 |       9 |        1350 |       934 |        307 |            358 |        1350 |           1350 |     189        |
+| bernoulli   |  30 |  30 |       9 |        1350 |      1087 |        174 |            444 |        1350 |           1350 |     241        |
+| bernoulli   |  30 |  60 |       9 |        1350 |       922 |        343 |            315 |        1350 |           1350 |     230        |
+| bernoulli   |  35 |  35 |       9 |        1350 |      1072 |        191 |            396 |        1350 |           1350 |     303        |
+| bernoulli   |  35 |  70 |       9 |        1350 |       912 |        371 |            261 |        1350 |           1350 |     267        |
+| bernoulli   |  40 |  40 |       9 |        1350 |      1060 |        232 |            349 |        1350 |           1350 |     906        |
+| bernoulli   |  40 |  80 |       9 |        1350 |       908 |        398 |            233 |        1350 |           1350 |     830        |
+
+`classes` is the number of distinct MOSP graphs summed over the nine cells of
+the row; `refuted_both` counts `unsat` or `trivial` under the default
+configuration, and the csearch column is identical. Core-seconds at `n = 40`
+are about four times those at `n = 35` for the same work: see the method
+note.
+
+### Deduplication
+
+| n | raw | distinct MOSP graphs within cells | repeats | repeats in cells with a complete graph |
+|---|---|---|---|---|
+| 10 | 5,400 | 2,393 | 3,007 | |
+| 15 | 5,400 | 3,303 | 2,097 | |
+| 20 | 5,400 | 3,861 | 1,539 | |
+| 25 | 5,400 | 4,227 | 1,173 | |
+| 30 | 5,400 | 4,410 | 990 | |
+| 35 | 5,400 | 4,528 | 872 | |
+| 40 | 5,400 | 4,599 | 801 | |
+| all | 37,800 | 27,321 | 10,479 | 9,069 (86.5%) |
+
+Across cells there are 26,052 distinct MOSP graphs (the complete graph `K_n`
+recurs in every dense cell of the same `n`) and 37,013 distinct matrices
+(`bipartite_cert`), so 787 instances repeat another byte for byte up to
+row and column permutation, almost all complete graphs at `n = 10`.
+Repeats are an edge phenomenon: 142 of the 252 cells have 150 classes in
+150 instances, 160 have at least 140, and 34 have five or fewer, every one
+of those either a complete-graph cell or a near-empty `n = 10` cell.
+Per-cell counts follow; every entry is `classes / instances`.
+
+**distinct MOSP graphs / instances: bernoulli, m = 1n**
+
+|     p | 10      | 15      | 20      | 25      | 30      | 35      | 40      |
+|------:|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+| 0.025 | 25/150  | 53/150  | 105/150 | 133/150 | 148/150 | 150/150 | 150/150 |
+| 0.05  | 47/150  | 106/150 | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.075 | 67/150  | 144/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.1   | 95/150  | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.15  | 139/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.2   | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.3   | 148/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 148/150 |
+| 0.4   | 112/150 | 102/150 | 95/150  | 62/150  | 37/150  | 19/150  | 10/150  |
+| 0.5   | 31/150  | 25/150  | 8/150   | 5/150   | 2/150   | 3/150   | 2/150   |
+
+**distinct MOSP graphs / instances: bernoulli, m = 2n**
+
+|     p | 10      | 15      | 20      | 25      | 30      | 35      | 40      |
+|------:|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+| 0.025 | 26/150  | 56/150  | 112/150 | 146/150 | 149/150 | 150/150 | 150/150 |
+| 0.05  | 50/150  | 130/150 | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.075 | 99/150  | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.1   | 140/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.15  | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.2   | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+| 0.3   | 103/150 | 105/150 | 64/150  | 34/150  | 20/150  | 10/150  | 6/150   |
+| 0.4   | 20/150  | 9/150   | 6/150   | 3/150   | 2/150   | 1/150   | 1/150   |
+| 0.5   | 3/150   | 2/150   | 1/150   | 1/150   | 1/150   | 1/150   | 1/150   |
+
+**distinct MOSP graphs / instances: fixed, m = 1n**
+
+|   d | 10      | 15      | 20      | 25      | 30      | 35      | 40      |
+|----:|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+|   2 | 147/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   3 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   4 | 147/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   5 | 41/150  | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   6 | 8/150   | 148/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   7 | 4/150   | 51/150  | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   8 | 2/150   | 13/150  | 123/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   9 | 1/150   | 3/150   | 33/150  | 147/150 | 150/150 | 150/150 | 150/150 |
+|  10 | 1/150   | 2/150   | 11/150  | 83/150  | 150/150 | 150/150 | 150/150 |
+
+**distinct MOSP graphs / instances: fixed, m = 2n**
+
+|   d | 10      | 15      | 20      | 25      | 30      | 35      | 40      |
+|----:|:--------|:--------|:--------|:--------|:--------|:--------|:--------|
+|   2 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   3 | 149/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   4 | 28/150  | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   5 | 5/150   | 88/150  | 150/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   6 | 2/150   | 11/150  | 124/150 | 150/150 | 150/150 | 150/150 | 150/150 |
+|   7 | 1/150   | 3/150   | 19/150  | 128/150 | 150/150 | 150/150 | 150/150 |
+|   8 | 1/150   | 1/150   | 8/150   | 24/150  | 119/150 | 150/150 | 150/150 |
+|   9 | 1/150   | 1/150   | 3/150   | 8/150   | 26/150  | 111/150 | 149/150 |
+|  10 | 1/150   | 1/150   | 2/150   | 3/150   | 6/150   | 33/150  | 82/150  |
+
+**share of complete graphs: bernoulli, m = 1n**
+
+|     p | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|------:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| 0.025 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.05  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.075 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.1   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.15  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.2   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.3   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.4   | 1%   | 3%   | 5%   | 8%   | 22%  | 31%  | 57%  |
+| 0.5   | 27%  | 37%  | 70%  | 80%  | 94%  | 96%  | 98%  |
+
+**share of complete graphs: bernoulli, m = 2n**
+
+|     p | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|------:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| 0.025 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.05  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.075 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.1   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.15  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.2   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.3   | 5%   | 1%   | 6%   | 12%  | 31%  | 47%  | 65%  |
+| 0.4   | 39%  | 63%  | 79%  | 93%  | 98%  | 100% | 100% |
+| 0.5   | 89%  | 98%  | 100% | 100% | 100% | 100% | 100% |
+
+**share of complete graphs: fixed, m = 1n**
+
+|   d | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|   2 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   3 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   4 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   5 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   6 | 47%  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   7 | 92%  | 3%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   8 | 99%  | 49%  | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   9 | 100% | 88%  | 10%  | 0%   | 0%   | 0%   | 0%   |
+|  10 | 100% | 99%  | 47%  | 1%   | 0%   | 0%   | 0%   |
+
+**share of complete graphs: fixed, m = 2n**
+
+|   d | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|   2 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   3 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   4 | 6%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   5 | 73%  | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   6 | 98%  | 41%  | 1%   | 0%   | 0%   | 0%   | 0%   |
+|   7 | 100% | 86%  | 21%  | 0%   | 0%   | 0%   | 0%   |
+|   8 | 100% | 100% | 79%  | 21%  | 0%   | 0%   | 0%   |
+|   9 | 100% | 100% | 97%  | 64%  | 10%  | 0%   | 0%   |
+|  10 | 100% | 100% | 99%  | 91%  | 55%  | 11%  | 0%   |
+
+**share with more than one component: bernoulli, m = 1n**
+
+|     p | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|------:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| 0.025 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
+| 0.05  | 100% | 100% | 100% | 100% | 98%  | 97%  | 92%  |
+| 0.075 | 100% | 99%  | 97%  | 86%  | 69%  | 52%  | 36%  |
+| 0.1   | 97%  | 90%  | 75%  | 51%  | 29%  | 15%  | 4%   |
+| 0.15  | 79%  | 47%  | 16%  | 5%   | 0%   | 0%   | 1%   |
+| 0.2   | 38%  | 11%  | 2%   | 0%   | 0%   | 0%   | 0%   |
+| 0.3   | 5%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.4   | 1%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.5   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+
+**share with more than one component: bernoulli, m = 2n**
+
+|     p | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|------:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+| 0.025 | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
+| 0.05  | 100% | 100% | 97%  | 92%  | 85%  | 65%  | 51%  |
+| 0.075 | 99%  | 95%  | 71%  | 40%  | 23%  | 9%   | 5%   |
+| 0.1   | 87%  | 62%  | 23%  | 7%   | 2%   | 0%   | 0%   |
+| 0.15  | 46%  | 6%   | 2%   | 0%   | 0%   | 0%   | 0%   |
+| 0.2   | 13%  | 1%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.3   | 1%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.4   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+| 0.5   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+
+**share with more than one component: fixed, m = 1n**
+
+|   d | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|   2 | 21%  | 43%  | 48%  | 57%  | 55%  | 65%  | 64%  |
+|   3 | 0%   | 0%   | 0%   | 1%   | 1%   | 0%   | 0%   |
+|   4 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   5 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   6 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   7 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   8 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   9 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|  10 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+
+**share with more than one component: fixed, m = 2n**
+
+|   d | 10   | 15   | 20   | 25   | 30   | 35   | 40   |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|   2 | 0%   | 1%   | 0%   | 1%   | 1%   | 1%   | 3%   |
+|   3 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   4 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   5 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   6 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   7 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   8 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|   9 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+|  10 | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   | 0%   |
+
+**The useful range.** Taking a cell as useful when fewer than 10% of its
+graphs are complete and fewer than half decompose, **145 of the 252 cells
+qualify, holding 21,750 instances in 20,652 classes**. The complete edge
+is where §8 said it would be — `p = 0.5` is 27–98% complete at `m = n` and
+89–100% at `m = 2n`; `p = 0.4` is already 39–100% at `m = 2n`; the fixed
+generator completes at `d ≥ 6` for `n = 10`, `d ≥ 8` for `n = 15`, and
+`d ≥ 9` for `n = 20` at `m = 2n` — and it moves *up* in `n`: at `n = 40` no
+fixed-`d` cell and no `p ≤ 0.3` cell is complete. The decomposable edge is
+the mirror: `p = 0.025` decomposes every instance at every `n`, `p = 0.05`
+92–100% at `m = n`, and the share falls with `n` at fixed `p` (`p = 0.1`:
+97% at `n = 10`, 4% at `n = 40`); the fixed generator decomposes only at
+`d = 2, m = n` (21–65%, *rising* with `n`) and almost never at `m = 2n`.
+Chu & Stuckey's discard rule removes exactly those rows; here they are
+counted and kept, with `g_components` on every row.
+
+**Finding, in one paragraph.** The grid ran in full — 252 cells, 150
+instances each, 37,800 in 2.16 core-hours and eight and a half minutes of
+wall clock — and the audit is clean: every witness re-simulates, every
+`optimum − 1` refutes under both configurations, no `sat`, no deadline, and
+every manifest row regenerates. 6,511 instances (17.2%) are complete graphs,
+all with optimum `n`; 7,101 (18.8%) decompose; 10,479 (27.7%) are isomorphic
+repeats within their cell, 86.5% of them in cells containing a complete
+graph. What is left for items 03–05 is a core of 145 cells and 20,652
+distinct graphs where neither edge effect dominates, plus the edges
+themselves, recorded rather than discarded, for the questions where they
+matter (the optimum is a sum over components; the complete graph is the
+regime where `optimum = n` and nodes are zero).
+
+**Size range covered.** 10 ≤ n ≤ 40, m ∈ {n, 2n}, d ∈ {2, …, 10},
+p ∈ {0.025, …, 0.5}, 150 instances per cell. Nothing here is evidence about
+125 × 125.
+
+**Kill criterion.** None is stated for item 02.
+
+**Method notes.** *Seconds doubled on identical instances.* The 20 pilot
+cells at `n = 40` have a median 0.50 s per instance in their first 100 rows
+(§9's run) and 1.18 s in the 50 rows added here, on instances from the same
+generators with the same parameters, while the node counts of `optimum − 1`
+are reproduced exactly on a fresh re-refutation of 400 sampled rows. The
+`n = 40` jobs ran last, alone, at the end of the pool's queue, alongside
+`recertify`'s nine workers; whatever the cause, it is a fact about the
+machine and not about the instances, and it is one more reason the plan's
+rule — nodes, not seconds — is the right one at these sizes. *The grid's
+top edge.* `d = n` (`d = 10` at `n = 10`) is the complete graph in one class
+and was kept so that the fixed generator's table has the same rows at every
+`n`; its 150 instances cost 5 s and 75 KB. *`--item02`* sets 150 per cell
+unless `--per-cell` is given, and reuses whatever the CSV already holds, so
+re-running it after adding cells or instances runs only the difference.

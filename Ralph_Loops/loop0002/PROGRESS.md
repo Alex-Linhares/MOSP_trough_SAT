@@ -3,7 +3,7 @@
 ## Ralph Loop 0002 Status
 - **Started**: 2026-09-26 06:18
 - **Target**: 6 items
-- **Current**: 1/6 SOLVED
+- **Current**: 2/6 SOLVED
 
 ---
 
@@ -50,3 +50,47 @@ Item 01 · Campaign infrastructure and pilot. Report: `reports/ml_nature.md` §9
   lower for m=2n; CV ≤ 0.19 everywhere) are in §9 labelled as previews.
 - Note for item 03: use `col_mean`, not nominal `d`, as density — the fixed-d
   generator's empty-row repair adds 0.12 to `col_mean` at d=2, m=n.
+
+## Iteration 2 — 2026-09-26 06:55
+
+Item 02 · The campaign. Report: `reports/ml_nature.md` §10.
+
+### Completed
+- Ran the grid §9 chose in full, no shortfall: `n ∈ {10,15,20,25,30,35,40}`,
+  `m ∈ {n, 2n}`, `d ∈ {2..10}` (d ≤ n), `p ∈ {0.025,…,0.5}`; 252 cells × 150
+  = 37,800 instances, 8,000 pilot rows reused (same cells, same seeds),
+  29,800 new in 382 s wall on 16 workers (`recertify` held 9 cores). Total
+  2.16 core-hours, 508 s wall including the pilot.
+- Audit clean: 37,800 witnesses re-simulate; `optimum − 1` refutes under both
+  configurations on 37,794 (+6 with optimum 1); 0 `sat`, 0 deadlines; all
+  37,800 manifest digests regenerate; node counts reproduced exactly on a
+  fresh re-refutation of 400 sampled instances, both configurations.
+- Descriptive tables in §10 and in full in `reports/ensemble_tables.md`:
+  by size (cells, instances, classes, complete, decomposable, core-s), dedupe
+  per n, and per cell as density × n matrices of classes/instances, complete
+  share, decomposable share. 6,511 complete graphs (17.2%, all optimum n),
+  7,101 decomposable (18.8%), 10,479 isomorphic repeats within cells (27.7%,
+  86.5% in cells containing a complete graph). 145 of 252 cells have < 10%
+  complete and < 50% decomposable: 21,750 instances, 20,652 classes.
+- Code: `--item02` flag (150 per cell unless `--per-cell`), `campaign_summary`,
+  `density_matrix`, `campaign_tables` in `learning/ensemble.py`; two new tests
+  in `tests/test_ensemble.py` (grid is the §9 grid and a superset of the pilot;
+  tables on a tiny frame where d = 5 of n = 6 is one complete class with
+  optimum 6). Full suite: 784 passed, 2 skipped, 1 xfailed, 76 s.
+- Artifact `learning/data/ensemble/`: results.csv 17.5 MB, 37,800 witnesses
+  19.4 MB, manifest 3.6 MB = 40.6 MB, under the ~50 MB ceiling; no `.mosp`
+  files. Nothing written to `solutions/`.
+
+### Blockers
+- None.
+
+### Next
+- Item 03 (§2.4 phase transition): use `nodes_default`/`nodes_csearch` from
+  `learning/data/ensemble/results.csv`, `col_mean` as density (not nominal d,
+  §9), dedupe with `learning.ensemble.dedupe`; the 145 "useful" cells are
+  where a peak can be resolved without edge effects, but keep the edges in
+  the plot. Place Chu & Stuckey's `Random-n-m-d` classes using the corpus
+  node counts from `learning/data/node_counts.csv`.
+- Method note for anyone timing anything: seconds at n = 40 doubled between
+  the pilot and the campaign on identical instances (0.50 → 1.18 s median)
+  while node counts were reproduced exactly; use nodes.

@@ -58,6 +58,7 @@ Usage:
     python -m learning.ensemble --tables-only           # tables again from the CSV
     python -m learning.ensemble --tables-only --verify-manifest 0   # every instance regenerates
     python -m learning.ensemble --cells f:20:20:2 b:20:40:0.1 --per-cell 50
+    python -m learning.ensemble --item02                # the §10 campaign: 252 cells x 150
 
 Nothing here is a bound, nothing touches `_lower_bound` or any solver default,
 and nothing is written to `solutions/`.
@@ -477,16 +478,99 @@ def affordable(frame: pd.DataFrame, cells: list[Cell], hours: float = 2.5,
     return plan
 
 
-def item02_cells() -> list[Cell]:
-    """The grid item 02 names: n in {10..40}, m in {n, 2n}, d 2..10, p 0.05..0.5,
-    extended below d = 2 / p = 0.05 where the item asks for it."""
+ITEM02_N = (10, 15, 20, 25, 30, 35, 40)
+ITEM02_M_RATIOS = (1, 2)
+ITEM02_D = tuple(range(2, 11))
+ITEM02_P = (0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5)
+ITEM02_PER_CELL = 150
+
+
+def item02_cells(sizes=ITEM02_N, ratios=ITEM02_M_RATIOS, ds=ITEM02_D, ps=ITEM02_P) -> list[Cell]:
+    """The grid §9 chose for item 02: n in {10, 15, ..., 40}, m in {n, 2n},
+    d 2..10 (only d <= n: d = n is already the complete graph in one class),
+    p 0.025..0.5 -- below Chu & Stuckey's d = 2 and above the range where the
+    graph is complete, so the campaign sees both edges. The pilot's 80 cells
+    are a subset with the same seeds, so its 8,000 instances are reused."""
     cells = []
-    for n in (10, 15, 20, 25, 30, 40):
-        for m in (n, 2 * n):
-            cells += [Cell("fixed", n, m, d) for d in range(2, 11) if d <= n]
-            cells += [Cell("bernoulli", n, m, p)
-                      for p in (0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5)]
+    for n in sizes:
+        for ratio in ratios:
+            m = ratio * n
+            cells += [Cell("fixed", n, m, d) for d in ds if d <= n]
+            cells += [Cell("bernoulli", n, m, p) for p in ps]
     return cells
+
+
+# ----------------------------------------------------------------------------
+# the campaign's descriptive tables (§10)
+# ----------------------------------------------------------------------------
+
+
+def campaign_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    """Per `(generator, n, m)`: cells, instances raw and per class, complete
+    graphs, decomposable instances, certified, refuted, core-seconds."""
+    rows = []
+    for (gen, n, m), g in frame.groupby(["generator", "n", "m"]):
+        classes = g.groupby("cell")["graph_cert"].nunique().sum()
+        rows.append({
+            "generator": gen, "n": int(n), "m": int(m),
+            "cells": int(g["cell"].nunique()),
+            "instances": len(g),
+            "classes": int(classes),
+            "complete": int(g["complete_graph"].astype(bool).sum()),
+            "decomposable": int((g["g_components"] > 1).sum()),
+            "certified": int(g["certified"].astype(bool).sum()),
+            "refuted_both": int(((g["status_default"] == "unsat") | (g["status_default"] == "trivial")).sum()
+                                if "status_default" in g else 0),
+            "core_seconds": round(float(g["total_seconds"].sum()), 1),
+        })
+    return pd.DataFrame(rows).sort_values(["generator", "n", "m"], ascending=[False, True, True])
+
+
+def density_matrix(frame: pd.DataFrame, generator: str, ratio: int,
+                   quantity: str = "classes") -> pd.DataFrame:
+    """Rows = density parameter, columns = n, for one generator and `m / n`.
+
+    `quantity`: `classes` (distinct MOSP graphs / instances), `complete`
+    (share of complete graphs), `decomposable` (share with more than one
+    component), `optimum` (mean), `nodes` (median `nodes_default`).
+    """
+    sub = frame[(frame["generator"] == generator) & (frame["m"] == ratio * frame["n"])]
+    table: dict[float, dict[int, str]] = {}
+    for (param, n), g in sub.groupby(["param", "n"]):
+        if quantity == "classes":
+            value = f"{g['graph_cert'].nunique()}/{len(g)}"
+        elif quantity == "complete":
+            value = f"{100 * g['complete_graph'].astype(bool).mean():.0f}%"
+        elif quantity == "decomposable":
+            value = f"{100 * (g['g_components'] > 1).mean():.0f}%"
+        elif quantity == "optimum":
+            value = f"{g['optimum'].mean():.1f}"
+        elif quantity == "nodes":
+            value = f"{g['nodes_default'].median():.0f}"
+        else:
+            raise ValueError(quantity)
+        table.setdefault(float(param), {})[int(n)] = value
+    out = pd.DataFrame(table).T.sort_index()
+    out = out.reindex(sorted(out.columns), axis=1)
+    out.index.name = "p" if generator == "bernoulli" else "d"
+    return out.fillna("·").reset_index()
+
+
+def campaign_tables(frame: pd.DataFrame) -> str:
+    dd = dedupe(frame)
+    text = "### Campaign summary by size\n\n" + _md(campaign_summary(frame))
+    text += (f"{len(frame)} instances in {frame['cell'].nunique()} cells; {len(dd)} distinct "
+             f"MOSP graphs within their cells ({len(frame) - len(dd)} isomorphic repeats); "
+             f"{frame['total_seconds'].sum() / 3600:.2f} core-hours.\n\n")
+    for quantity, title in (("classes", "distinct MOSP graphs / instances"),
+                            ("complete", "share of complete graphs"),
+                            ("decomposable", "share with more than one component")):
+        for generator in GENERATORS:
+            for ratio in sorted({int(round(m / n)) for n, m in
+                                 frame[frame["generator"] == generator][["n", "m"]].itertuples(index=False)}):
+                text += f"### {title}: {generator}, m = {ratio}n\n\n"
+                text += _md(density_matrix(frame, generator, ratio, quantity))
+    return text
 
 
 def _md(frame: pd.DataFrame, floatfmt: str = ".3g") -> str:
@@ -502,6 +586,7 @@ def tables(frame: pd.DataFrame, hours: float = 2.5, workers: int = 16) -> str:
     dd = dedupe(frame)
     text += (f"### Per class\n\n{len(frame)} instances, {len(dd)} distinct MOSP graphs "
              f"within their cells ({len(frame) - len(dd)} isomorphic repeats).\n\n")
+    text += campaign_tables(frame)
     text += "### Cost by size\n\n" + _md(cost_by_size(frame))
     text += "### The two configurations\n\n" + _md(config_ratio(frame))
     plan = affordable(frame, item02_cells(), hours, workers)
@@ -523,6 +608,8 @@ def main() -> None:
     parser.add_argument("--pilot", action="store_true", help="run the §9 pilot cells")
     parser.add_argument("--extension", action="store_true",
                         help="also m = 2n and p = 0.025 cells")
+    parser.add_argument("--item02", action="store_true",
+                        help="the §10 campaign grid: 252 cells, 150 per cell unless --per-cell")
     parser.add_argument("--cells", nargs="*", default=[],
                         help="cells as gen:n:m:param, e.g. f:20:20:2 b:20:40:0.1")
     parser.add_argument("--per-cell", type=int, default=PILOT_PER_CELL)
@@ -548,6 +635,10 @@ def main() -> None:
         cells += pilot_cells()
     if args.extension:
         cells += extension_cells()
+    if args.item02:
+        cells += item02_cells()
+        if args.per_cell == PILOT_PER_CELL:
+            args.per_cell = ITEM02_PER_CELL
     cells += [Cell.parse(c) for c in args.cells]
 
     if args.tables_only or not cells:
@@ -564,10 +655,11 @@ def main() -> None:
         check = verify_manifest(sample=args.verify_manifest or None)
         print(f"manifest: {check['checked']} regenerated, {check['mismatches']} mismatches")
 
-    text = (f"# Generated ensembles: pilot cost tables\n\n"
+    text = (f"# Generated ensembles: campaign tables\n\n"
             f"*Regenerated {time.strftime('%Y-%m-%d %H:%M')} by "
             f"`python -m learning.ensemble{' --pilot' if args.pilot else ''}"
             f"{' --extension' if args.extension else ''}"
+            f"{' --item02' if args.item02 else ''}"
             f"{' --tables-only' if args.tables_only else ''}`; "
             f"{len(frame)} rows in {args.csv}, {time.time() - started:.0f} s.*\n\n")
     text += tables(frame, args.hours, args.workers)

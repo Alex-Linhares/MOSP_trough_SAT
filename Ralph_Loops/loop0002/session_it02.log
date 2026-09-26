@@ -1,0 +1,90 @@
+# session it02 started 2026-09-26 06:35:07
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, the §9 report from iteration 1, and the ensemble module, then run the grid.
+  > $ cat Ralph_Loops/loop0002/iterations.md && echo ---- && pgrep -af benchmarks.recertify | head; nproc; echo ----; wc -l learning/ensemble.py; grep -n "^def \|^cla
+  > $ cat learning/ensemble.py
+  > $ grep -n "^## \|^### " reports/ml_nature.md | tail -30; echo ----; awk '/^## §9/,0' reports/ml_nature.md | head -250
+  > $ sed -n '1910,2200p' reports/ml_nature.md
+  > $ cat tests/test_ensemble.py; echo ----; grep -n ensemble .gitignore; du -sh learning/data/ensemble learning/data/ensemble/solutions; ls learning/data/ensemble/so
+  > $ ls -la learning/data/ensemble/solutions | head -4; f=$(ls learning/data/ensemble/solutions | head -1); cat learning/data/ensemble/solutions/$f; echo; git ls-fil
+
+Reading done; now I'm editing `learning/ensemble.py` to add the item 02 grid flag and the descriptive campaign tables, then I'll launch the grid.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ensemble.py")
+s = p.read_text()
+
+old_item02 = s[s.index("def item02_cells() -> list[Cell]:"):s.inde
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ensemble.py")
+s = p.read_text()
+s = s.replace('text = "### Campaign summary by size\n\n" + _md(camp
+  > $ timeout 300 python -m learning.ensemble --tables-only --out /tmp/ens_check.md > /tmp/ens_check.log 2>&1; echo exit=$?; tail -3 /tmp/ens_check.log; grep -n "^###
+
+Tables work. Now launching the campaign in the background on 16 workers and polling it.
+  > $ setsid nohup env PYTHONPATH=/home/al/dev/MOSP python -m learning.ensemble --item02 --workers 16 --verify-manifest 0 > learning/data/ensemble/campaign_run.log 2>
+
+While it runs, I'll add the tests for the grid and the new tables.
+  > $ cat >> tests/test_ensemble.py <<'EOF'
+
+
+def test_item02_grid_is_the_one_section_9_chose():
+    from learning.ensemble import ITEM02_PER_CELL, item02_cells
+
+    
+  > $ for i in $(seq 1 40); do if ! pgrep -f "learning.ensembl[e]" >/dev/null; then echo finished; break; fi; sleep 15; done; tail -4 learning/data/ensemble/campaign_
+  > $ tail -3 learning/data/ensemble/campaign_run.log; pgrep -cf "learning.ensembl[e]"; wc -l learning/data/ensemble/results.csv; uptime
+
+The campaign has finished. Now checking the run log, audit, and the tables it wrote.
+  > $ grep -v "^  [0-9]*/29800" learning/data/ensemble/campaign_run.log | head -20; echo ----; sed -n '1,25p' reports/ensemble_tables.md; echo; sed -n '/### Campaign 
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.ensemble import load_results, dedupe, density_matrix
+f = load_results()
+print("rows", len(f), "c
+  > $ sed -n '/### distinct MOSP graphs \/ instances: bernoulli, m = 1n/,/### Cost by size/p' reports/ensemble_tables.md
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np, time
+from learning.ensemble import load_results, Cell, generate
+from learning.node_counts import refute
+f = l
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/66ec1d41-425e-40ee-8e7d-8c50337a371c/tasks/beunx6q7o.output 2>/dev/null | tail -3; echo ----; git status --short solution
+
+Campaign done and audited clean. I'm now writing §10 into the report, then PROGRESS.md and iterations.md, while the full test suite finishes in the background.
+  > $ rm -f learning/data/ensemble/campaign_run.log && python - <<'PYEOF'
+from pathlib import Path
+tables = Path("reports/ensemble_tables.md").read_text()
+def section
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/66ec1d41-425e-40ee-8e7d-8c50337a371c/tasks/beunx6q7o.output; echo ----; sed -n '/^## 10\./,/^### Audit/p' reports/ml_natu
+
+Tests pass (784 passed, 2 skipped, 1 xfailed). Now updating PROGRESS.md and iterations.md.
+  > $ sed -i 's/^- \*\*Current\*\*: 1\/6 SOLVED/- **Current**: 2\/6 SOLVED/' Ralph_Loops/loop0002/PROGRESS.md && sed -i 's/^- \[ \] 02 · §3 phase 3 \*\*The campaign\.
+
+Item 02 is done. The campaign ran in full, the audit is clean, and the report, PROGRESS.md and iterations.md are written. Nothing was committed, and nothing touched `solutions/`.
+
+**What ran.** The grid §9 chose, with no shortfall: 7 sizes from n = 10 to 40, m ∈ {n, 2n}, fixed d from 2 to 10 and Bernoulli p from 0.025 to 0.5. That is 252 cells at 150 instances each, 37,800 in total. The 8,000 pilot rows were reused with the same seeds and 29,800 new instances ran in 382 s of wall clock on 16 workers while recertify kept its 9 cores.
+
+| quantity | value |
+|---|---|
+| total compute | 2.16 core-hours (508 s wall incl. pilot) |
+| witnesses re-simulating | 37,800 of 37,800 |
+| `optimum − 1` refuted, both configs | 37,794 (+6 with optimum 1) |
+| `sat` or deadline | 0 |
+| manifest digests regenerated | 37,800 of 37,800 |
+| complete graphs | 6,511 (17.2%), all optimum n |
+| decomposable | 7,101 (18.8%), kept |
+| isomorphic repeats within cells | 10,479 (27.7%) |
+| cells with <10% complete and <50% decomposable | 145 of 252, 20,652 classes |
+| artifact size | 40.6 MB |
+
+**Report §10** in `reports/ml_nature.md` holds the audit, compute breakdown, the by-size table, dedupe per n, and twelve per-cell density × n matrices for classes per instance, complete share and decomposable share. It stays descriptive as the item requires. One method note is worth flagging: seconds per instance at n = 40 doubled between the pilot and the campaign on identical instances, while node counts reproduced exactly on 400 re-refuted samples, which supports the plan's rule of nodes over seconds.
+
+**Code and tests.** `learning/ensemble.py` gained the `--item02` flag and three table functions. Two tests were added and the full suite passed with 784 passed, 2 skipped, 1 xfailed in 76 s.
+
+**Next** is item 03, the phase-transition question, reading node counts from the campaign CSV with `col_mean` as the density axis.
+
+# result: success in 1013s, 23 turns, cost $3.80
