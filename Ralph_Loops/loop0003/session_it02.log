@@ -1,0 +1,171 @@
+# session it02 started 2026-09-26 10:52:26
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the ensemble module, and the prior report sections this item depends on, then price the run before launching it.
+  > $ date && pgrep -af benchmarks.recertify | head; nproc; echo ---; sed -n 1,200p reports/ml_nature_plan_2.md
+  > $ wc -l learning/ensemble.py learning/scale_test.py learning/hardness_map.py learning/node_counts.py && sed -n 1,200p learning/ensemble.py
+  > $ sed -n 200,673p learning/ensemble.py
+  > $ grep -n '^## ' reports/ml_nature.md | tail -12; echo ---; du -sh learning/data/ensemble learning/data/ensemble/* 2>/dev/null | sort -h | tail; echo ---; ls lear
+  > $ du -sh --apparent-size learning/data/ensemble learning/data/ensemble/solutions learning/data/ensemble/results.csv; git ls-files -z learning/data/ensemble | xarg
+  > $ grep -n -i 'doubl\|rate per customer\|per customer\|ridge law\|pre-registered\|10¹¹\|extrapolat\|error band\|factor of' reports/ml_nature.md | awk -F: '$1>2600 
+
+I've read the plan and the ensemble module. Now I'm pulling the exact ridge-law numbers from §11 and §14 so I can price the n=100 cells before launching anything.
+  > $ sed -n 2700,2740p reports/ml_nature.md; echo ======; sed -n 2810,2825p reports/ml_nature.md; echo ======; sed -n 3635,3700p reports/ml_nature.md
+  > $ grep -n 'def \|deadline' learning/node_counts.py | head -40; echo ----; grep -n 'def ' learning/scale_test.py learning/hardness_map.py | head -60; echo ----; se
+  > $ sed -n 351,410p learning/hardness_map.py; echo =====; sed -n 413,475p learning/scale_test.py; echo =====; sed -n 520,550p learning/scale_test.py; echo =====; se
+  > $ mkdir -p /tmp/it02 && cat > /tmp/it02/probe.py <<'EOF'
+import sys, time
+from pathlib import Path
+from learning.ensemble import Cell, generate, analyse
+sol = Pat
+  > $ head -3 learning/data/ensemble/scale_nodes.csv; awk -F, 'NR==1{for(i=1;i<=NF;i++)h[i]=$i} NR>1 && $0 ~ /Random-100-100-2|Random-100-100-4|Random-100-100-6/' lea
+  > $ sleep 45; cat /tmp/it02/probe50.log; echo ----75; cat /tmp/it02/probe75.log
+  > $ sed -n 64,100p tests/test_ensemble.py; echo ====; sed -n 97,130p learning/hardness_map.py; echo ====; grep -n 'FIT_MAX_N\|MIN_FIT_N\|RESULTS_CSV' learning/scale
+  > $ cat /tmp/it02/probe50.log; echo ----75; cat /tmp/it02/probe75.log; echo; pgrep -fc 'it02/probe.py'
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ensemble.py"); s = p.read_text()
+
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) 
+  > $ setsid nohup env PYTHONPATH=. python -m learning.ensemble --upward --ridge100-per-cell 25 --ridge100-sample 5 --deadline 900 --solve-budget 900 --workers 16 --o
+  > $ sed -n 555,572p learning/hardness_map.py; echo ====; sed -n 183,230p learning/scale_test.py; echo ====; python -c "
+import json; r=json.load(open('recertify/res
+  > $ timeout 600 python -m pytest tests/test_ensemble.py -q -x 2>&1 | tail -3
+  > $ grep -n 'better_move\|def solve_mosp_exact\|procedure' satisfiability/mosp_solver.py | head -20; echo ====; tail -3 learning/data/ensemble/upward_run.log; echo 
+  > $ sed -n 605,660p satisfiability/mosp_solver.py | grep -n 'decide\|better\|kwargs\|solve_by_descent\|customer_search' ; grep -n 'better_move' satisfiability/custo
+  > $ grep -n 'def solve\b\|def solve(' satisfiability/customer_search.py | head -3; sed -n "$(grep -n 'def solve(' satisfiability/customer_search.py | head -1 | cut 
+  > $ tail -2 learning/data/ensemble/upward_run.log
+  > $ sed -n 429,470p satisfiability/customer_search.py | grep -n 'better_move\|deadline\|def \|decide' | head -12
+  > $ sed -n 429,445p satisfiability/customer_search.py; sed -n 470,540p satisfiability/customer_search.py | grep -n 'better_move\|decide(' | head
+  > $ cat > learning/upward.py <<'EOF'
+"""The campaign upward: does the ridge law hold at 50-100, and at what rate? (§16, plan 2 §2.2)
+
+Question. §11 fitted, on gener
+  > $ cat > tests/test_upward.py <<'EOF'
+"""§16: the upward grid, its price, and the censoring-aware rate machinery."""
+
+from pathlib import Path
+
+import numpy as np
+
+  > $ grep -n '"row_mean"\|row_mean' learning/features.py | head -3; timeout 300 python -m learning.upward --out /tmp/it02/upward_partial.md > /tmp/it02/upward_partia
+  > $ timeout 120 python -m pytest tests/test_upward.py -q -x -k price 2>&1 | grep -B5 'AssertionError' | head -30; echo ====; grep -n 'mean' learning/features.py | g
+  > $ grep -o '"[a-z_]*row[a-z_]*"\|"[a-z_]*per_cust[a-z_]*"' learning/features.py | sort -u; head -1 learning/data/ensemble/results.csv | tr ',' '\n' | grep -n 'row\
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_upward.py"); s = p.read_text()
+s = s.replace('''def _synthetic_campaign(a: float, b: float, sizes
+
+Tests for the new module pass. The campaign is at 2,700 of 6,785 instances. I'm now running the full test suite in the background while the run continues, and checking the clock.
+  > $ date; (timeout 900 python -m pytest tests/ -q -x > /tmp/it02/pytest_full.log 2>&1; echo "exit $?" >> /tmp/it02/pytest_full.log) & 
+tail -1 learning/data/ensembl
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/ensemble/results_upward.csv")
+print(len(f), f["n"].value_counts().to_dict())
+g 
+  > $ cat /tmp/it02/pytest_full.log | tail -4; tail -1 learning/data/ensemble/upward_run.log; grep -n 'Regenerate\|^\*\*Question\|^\*\*Method\|^\*\*Baseline\|^\*\*Fin
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ cat > /tmp/it02/section_head.md <<'EOF'
+
+## 16. The campaign upward: does the ridge law hold at 50–100, and at what rate? (plan 2 §2.2, loop0003 item 02)
+
+*loop
+  > $ pid=$(pgrep -f 'learning.ensemble --upward' | head -1); echo "waiting on $pid"; until ! kill -0 $pid 2>/dev/null; do sleep 15; done; echo "run finished at $(dat
+  > $ tail -4 /tmp/it02/pytest_full.log; echo ---; tail -1 learning/data/ensemble/upward_run.log; date
+  > $ until grep -q '^exit' /tmp/it02/pytest_full.log; do sleep 5; done; tail -3 /tmp/it02/pytest_full.log
+
+The full suite passes (829 passed, 2 skipped, 2 xfailed). The campaign is still running through the n=60 and n=75 cells; I'll check on its progress and the hard n=100 instances now.
+  > $ tail -1 learning/data/ensemble/upward_run.log; date; python - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/ensemble/results_upward.csv")
+print(f["
+  > $ for i in $(seq 1 110); do n=$(($(wc -l < learning/data/ensemble/results_upward.csv)-1)); [ "$n" -ge 6700 ] && break; sleep 5; done; echo "$n rows at $(date)"; t
+  > $ for i in $(seq 1 110); do n=$(($(wc -l < learning/data/ensemble/results_upward.csv)-1)); [ "$n" -ge 6740 ] && break; sleep 5; done; echo "$n rows at $(date)"; t
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/upward.py"); s = p.read_text()
+s = s.replace('''# -------------------------------------------------
+  > $ uptime; ps -o stat= -p $(pgrep -f 'learning.ensemble --upward' | tr '\n' ',' | sed 's/,$//') | sort | uniq -c; ps -o stat= -p $(pgrep -f 'benchmarks.recertify' 
+  > $ setsid nohup env PYTHONPATH=. python -m learning.upward --finish-uncertified --deadline 1500 --workers 10 --out /tmp/it02/upward_after_finish.md > learning/data
+  > $ pid=$(pgrep -f 'learning.upward --finish-uncertified' | head -1); echo "killing $pid"; pkill -TERM -P $pid; kill -TERM $pid; sleep 2; pgrep -fc 'learning.upward
+  > $ pgrep -af 'learning.upward' | grep -v pgrep | grep -v 'bash -c' || echo "no finish processes"; python - <<'EOF'
+from pathlib import Path
+p = Path("learning/upwa
+  > $ setsid nohup env PYTHONPATH=. python -m learning.upward --finish-uncertified --deadline 1500 --workers 10 > learning/data/ensemble/upward_finish.log 2>&1 < /dev
+  > $ timeout 300 python -m learning.upward --out /tmp/it02/partial2.md > /tmp/it02/partial2.log 2>&1; grep -n 'Traceback\|Error' /tmp/it02/partial2.log | head -3; py
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/upward.py"); s = p.read_text()
+s = s.replace('''    rows = []
+    sub = cells[(cells["generator"] =
+  > $ for i in $(seq 1 112); do n=$(($(wc -l < learning/data/ensemble/results_upward.csv)-1)); f=$(wc -l < learning/data/ensemble/upward_finish.log); { [ "$n" -ge 678
+  > $ pids=$(pgrep -f 'python -m learning.ensemble --upward'); echo "stopping: $pids"; kill -TERM $pids; sleep 3; pgrep -f 'python -m learning.ensemble --upward' && k
+  > $ pgrep -af '^python -m learning.ensemble' | head -3 || echo "no campaign processes"; pgrep -af '^python -m learning.upward' | wc -l; echo "$(($(wc -l < learning/
+  > $ cp learning/data/ensemble/upward_run.log learning/data/ensemble/upward_run_part1.log && setsid nohup env PYTHONPATH=. python -m learning.ensemble --upward --rid
+  > $ for i in $(seq 1 112); do n=$(($(wc -l < learning/data/ensemble/results_upward.csv)-1)); [ "$n" -ge 6785 ] && break; sleep 5; done; echo "$n rows at $(date)"; t
+  > $ for i in $(seq 1 110); do pgrep -f '^python -m learning.ensemble' >/dev/null || break; sleep 5; done; date; tail -3 learning/data/ensemble/upward_run.log | cut 
+  > $ timeout 600 python -m learning.upward > /tmp/it02/upward_final1.log 2>&1; grep -n 'Traceback\|Error' /tmp/it02/upward_final1.log | head -3; python - <<'EOF'
+t =
+  > $ python -c "
+from learning.ensemble import verify_manifest, MANIFEST_UPWARD_CSV
+print(verify_manifest(MANIFEST_UPWARD_CSV, sample=400, seed=1))
+"; python - <<'EO
+  > $ python - <<'EOF'
+t = open('reports/upward_tables.md').read()
+import re
+def sec(title, n=40, start=0):
+    i = t.index(title, start); print("\n".join(t[i:].split
+  > $ python - <<'EOF'
+t = open('reports/upward_tables.md').read()
+i = t.index("### Cells at n >= 50")
+lines = t[i:].split("\n")
+hdr = lines[2]; print(hdr)
+for line i
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/upward.py"); s = p.read_text()
+s = s.replace('''# -------------------------------------------------
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/upward.py"); s = p.read_text()
+s = s.replace('''def apply_finish(frame: pd.DataFrame, finish_csv: P
+  > $ head -3 learning/data/ensemble/upward_run_part1.log | tail -1; tail -2 learning/data/ensemble/upward_run_part1.log | head -1; grep 'rows in' learning/data/ensem
+
+I have the run figures. Next I'll write §16 into the report, then wait for the last eight finish-stage calls, regenerate the tables, run the full suite, and write PROGRESS.md and iterations.md.
+  > $ sed -i 's/~__CORE_HOURS__ core-hours, __WALL__ wall on 16 workers/11.1 core-hours, 50 min wall on 16 workers, in two parts (see Method)/' /tmp/it02/section_head
+  > $ (timeout 900 python -m pytest tests/ -q -x > /tmp/it02/pytest_full2.log 2>&1; echo "exit $?" >> /tmp/it02/pytest_full2.log) & echo "suite started"
+  > $ for i in $(seq 1 112); do pgrep -f '^python -m learning.upward --finish' >/dev/null || break; sleep 5; done; date; tail -n +2 learning/data/ensemble/upward_fini
+  > $ for i in $(seq 1 112); do pgrep -f '^python -m learning.upward --finish' >/dev/null || break; sleep 5; done; date; pgrep -fc '^python -m learning.upward --finis
+  > $ cat > /tmp/it02/fill.py <<'EOF'
+"""Fill the §16 placeholders from the regenerated tables and append the section."""
+import re, sys
+import pandas as pd, numpy as
+  > $ timeout 600 python -m learning.upward > /tmp/it02/upward_final.log 2>&1 && python /tmp/it02/fill.py && grep -n '^## 16\.' reports/ml_nature.md && sed -n '/^### 
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("reports/ml_nature.md"); s = p.read_text()
+def rep(old, new):
+    global s
+    assert s.count(old) == 1, old[
+
+Everything is written. Final checks: what the untracked `.claude/` directory is, and that the appended section renders cleanly.
+  > $ ls -la .claude/ 2>/dev/null | head -5; git log --oneline -1 -- .claude 2>/dev/null | head -1; echo ---; sed -n '/^### (e) The revised 125/,/^(log10 nodes, defau
+
+Item 02 is complete. Recap for the driver:
+
+**What was done**
+
+- **Priced first, kill applied.** The §11 cell laws price the 25-per-cell n=100 ridge cells at 40 core-hours against the plan's cap of 8, so the full grid stops at 75. A 5-per-cell sample at d=3 and d=4 was run to check the price, and the d=2 cell in full since it is free.
+- **The grid ran:** n ∈ {50, 60, 75} × m ∈ {n/2, n, 2n}, 135 cells, 6,750 instances at 50 per cell, plus 35 at n=100. 6,773 of 6,785 certified, every witness re-simulates, no certified value contradicted by either configuration, manifest regenerates (400 sampled, 0 mismatches). 11.1 core-hours in 50 min wall on 16 workers, in two parts: the slow n=75, m=2n cells forced a stop by PID and a resume at shorter budgets for the last 665 rows, which left censored counts in two cells, each flagged where it touches a statistic.
+- **Findings, §16 of `reports/ml_nature.md`.** The exponential form holds to 75 in every series. The rate is not constant: it falls by 0.000217 ± 0.000045 log10 per customer per customer, in 18 of 18 series, pooled t = −4.8. That drift is exactly the 0.005–0.018 discrepancy §14 found between campaign and corpus rates; fitted at 50–100 the campaign reproduces the corpus rates to 0.005. The drift-corrected extrapolation from 75 predicts the two `Random-125-125-2` counts on record to 0.04 decades (11.18 vs 11.21, 11.22), band ±0.8 decades. Revised 125×125 prediction: 1.5 × 10¹¹ nodes (2.5 × 10¹⁰ to 9 × 10¹¹) at density 2, 4 × 10¹⁰ at density 4. The ridge stays at d=3 (m=n) and d=2 (m=2n) through 75 and sits at d=5–6 for m=n/2, where Theorem 2's switch is on for nearly every instance and saves the same ~15% as elsewhere.
+- **The n=100 sample confirmed the price:** 9 of 10 descents ran out at 900 s at 10^9.1–9.3 nodes, two of the values reached were not optimal (`sat` at value−1 under both configurations), the rest censored at 1,500 s. The error band therefore comes from the 75-customer cells, not the 100-customer cells the item asked for; this is stated under the kill criterion.
+
+**Code and tests.** `learning/ensemble.py` gained `--upward`, `price_ridge100` and per-cell counts in `run`; new `learning/upward.py` holds the analysis and a finish stage that writes to its own CSV (a first version rewrote the run's file while the run appended to it, and was stopped before its first write). `tests/test_upward.py` has 6 tests. Full suite: 830 passed, 2 skipped, 2 xfailed.
+
+**Not done or to note.** Nothing written to `solutions/`; `CLAUDE.md` untouched; no solver default changed. Cores briefly exceeded 16 for about 11 minutes while the finish stage overlapped the campaign, on idle capacity. An untracked `.claude/worktrees/` directory appeared during the session and is not mine; the driver may want to exclude it from the commit. PROGRESS.md carries the iteration entry and `Current: 2/14 SOLVED`; item 02 is marked `[x]`.
+
+# result: success in 5061s, 71 turns, cost $22.15

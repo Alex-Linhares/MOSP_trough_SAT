@@ -16,7 +16,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       run, the count of disagreements (state zero as zero), and the
       relabelling spread by size. Tests: a planted unsound rule (a `decide`
       wrapper that lies on one labelling) is caught.
-- [ ] 02 · §2.2 **The campaign upward.** Extend `learning.ensemble` with
+- [x] 02 · §2.2 **The campaign upward.** Extend `learning.ensemble` with
       n ∈ {50, 60, 75} over the density sweep at m ∈ {n/2, n, 2n}, 50 per
       cell, and n = 100 at the ridge cell and its two neighbours (m = n), 25
       per cell, priced by the ridge law before running (§14: ~17 min per

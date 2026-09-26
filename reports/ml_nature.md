@@ -4075,3 +4075,368 @@ not one on the output of another rule; the `subset_rule`'s index tie-break
 prevents the within-rule cycle and does nothing for the cross-rule one.
 *Partial rows flush every 2,000 instances* to `learning/data/differential_partial.csv`
 so a killed run keeps what it had.
+
+## 16. The campaign upward: does the ridge law hold at 50–100, and at what rate? (plan 2 §2.2, loop0003 item 02)
+
+*loop0003 iteration 2, 2026-09-26. Code: `learning/ensemble.py` (`--upward`,
+`price_ridge100`, `upward_cells`, `ridge100_cells`, per-cell counts in
+`run`) and `learning/upward.py`. Regenerate:*
+
+```bash
+python -m learning.ensemble --upward --price-only            # the n = 100 price by the §11 law, nothing run
+python -m learning.ensemble --upward --ridge100-per-cell 25 --ridge100-sample 5 \
+    --deadline 900 --solve-budget 900 --workers 16 --out reports/upward_ensemble_tables.md
+                                                             # the run as made: resumable, 11.1 core-hours, 50 min wall on 16 workers, in two parts (see Method)
+python -m learning.upward                                    # reports/upward_tables.md, every table below, ~10 s
+python -m pytest tests/test_upward.py -q                     # 5 tests: the grid, the price, an exact exponential, censoring, per-cell counts
+```
+
+*Writes `learning/data/ensemble/results_upward.csv` and `manifest_upward.csv`
+(kept apart from `results.csv` so that §10–§15 regenerate unchanged) and the
+witnesses under `learning/data/ensemble/solutions/`. Nothing under
+`solutions/`; no solver default changed; `_lower_bound` untouched.*
+
+**Question.** §11 fitted, on generated instances at 15–40 customers, the
+rate at which the nodes to refute `optimum − 1` grow with `n` at fixed
+customers per product: 0.095 log10 per customer on the `m = n` ridge
+(`d = 3`), 0.062 at `d = 2`, 0.085 at `d = 6`, 0.105 on the `m = 2n` ridge.
+§14 measured the corpus's own rates at 30–125 and found them lower by
+0.005–0.018 per customer, on five Chu & Stuckey instances per class, and
+could not say whether the campaign's rates were wrong or the corpus's five
+instances unlucky. Which is it, does the rate itself drift with `n`, at what
+size is the drift resolved, and what does the 100-customer campaign say
+about the 125 × 125 classes that take a day?
+
+**Method.** `learning.ensemble` extended upward: `n ∈ {50, 60, 75}` at
+`m ∈ {n // 2, n, 2n}` — the half ratio for the first time — with the fixed
+generator at `d = 2..10` and the Bernoulli generator at
+`p ∈ {0.025, 0.05, 0.075, 0.1, 0.15, 0.2}` (`p ≥ 0.3` is a complete graph at
+these sizes, §10), 50 per cell, 135 cells, 6,750 instances; and `n = 100` at
+`m = n`, `d ∈ {2, 3, 4}` — the §11 ridge and its neighbours — **priced first
+by the §11 cell laws** (`price_ridge100`, table below) and, because the price
+exceeds the plan's cap, **sampled**: 25 at `d = 2`, 5 each at `d = 3` and
+`d = 4`. Every instance: solved by the default customer search
+(`solve_mosp_exact`, witness re-simulated), refuted at `optimum − 1` under
+both configurations of `learning.node_counts` with a 900 s deadline per call
+(a censored call is a lower bound and is flagged wherever it touches a
+statistic), featured, canonicalised. Seeds are a CRC of the cell id, so every
+instance regenerates from `manifest_upward.csv`. Analysis in
+`learning.upward`: per cell the median of `log10(1 + nodes)`, flagged as a
+lower bound when a censored count sits at or below it; the **local rate**
+between consecutive sizes with a 90% bootstrap band over instances; the
+**drift** of the local rate against its midpoint `n`, per series and pooled
+within series; `fit_scaling` on the windows 15–40 (§11's), 15–75, 15–100 and
+50–100; the ridge location per size and ratio; Theorem 2's saving at the
+half ratio; and a **revised 125 × 125 prediction** from the 100-customer
+cells, its band the bootstrap spread of the 100-cell median and of the
+75 → 100 rate combined, against the five recertify counts on record.
+
+**Baseline.** §11's rates (15–40) and §14's corpus rates (30–125).
+
+**The price, before anything ran** (`price_ridge100`; the §11 cell laws
+fitted on the §10 campaign at 15–40, `m = n`, default configuration, and
+the C search at 2 × 10⁶ nodes/s — measured after the fact at 1.4 × 10⁶ on
+the `n ≥ 75` refutations, so the price was optimistic by 1.4×):
+
+| cell | law `a + b·n` | log10 median nodes at 100 | median refutation | median instance (3 calls) | 25 per cell |
+|---|---|---|---|---|---|
+| `f_n100_m100_d2` | 0.21 + 0.0619 n | 6.40 | 1.2 s | 3.7 s | 0.03 core-hours |
+| `f_n100_m100_d3` | −0.191 + 0.0951 n | 9.32 | 1,030 s | 3,100 s | 21.5 core-hours |
+| `f_n100_m100_d4` | −0.485 + 0.0973 n | 9.25 | 890 s | 2,660 s | 18.5 core-hours |
+
+**40 core-hours against the plan's cap of 8: the kill criterion applies and
+the full grid stops at 75.** The `d = 2` cell was run in full (25) because it
+is free; `d = 3` and `d = 4` were run as a **sample of 5 each** with a 900 s
+solve budget and 900 s per refutation, a worst case of 7.5 core-hours, so
+that the price itself could be checked. It was: see (d).
+
+**The run as made.** 138 cells, 6,785 instances, 11.1 core-hours, 50
+minutes wall on 16 workers, in two parts. The first part (10:57–11:36, the
+`n = 100` cells, all of `n = 50` and `60`, and `n = 75` at `m = 37` and
+`m = 75`) ran with 900 s budgets. On the `n = 75, m = 150` cells the run
+slowed to four instances a minute — the `d = 2` and `d = 3` cells there are
+the `m = 2n` ridge, 10⁸ nodes at the median with a tail into the 900 s
+deadlines — and would not have finished inside the session, so it was
+stopped by PID and **resumed** (the run is resumable by instance name) with a
+240 s solve budget and a 90 s refutation deadline for the remaining 665 rows
+(`f_n75_m150_d2` from index 44, `d3` from 41, and all of `d4`–`d10` and the
+six Bernoulli cells at `m = 150`; 11:37–11:48). Rows 1–6,120 of
+`results_upward.csv` are the first part, rows 6,121–6,785 the second. The
+consequences are confined to two cells: 8 censored default refutations (6 in
+`f_n75_m150_d2`, 2 in `b_n75_m150_p0.025`), 7 under `csearch` — the audit's
+15 and 14 include the finish stage's 7 + 7 at `n = 100` — and 3
+uncertified instances (1 and 2) whose descent ran out at 240 s — the
+`f_n75_m150_d2` median at 75 is flagged as a **lower bound** and so is the
+`m = 2n, d = 2` rate over 60 → 75. Everything else at `n ≤ 75` settled:
+6,750 instances, 6,747 certified, every witness re-simulates, **no
+certified value contradicted at `optimum − 1` by either configuration** (the
+audit's two `sat` per configuration are the finish stage's answers on
+*uncertified* `n = 100` values, (d)), and
+6,766 distinct MOSP graphs in 6,785 (isomorphic repeats are 0.3% here
+against 28% at `n ≤ 40`, §10). Decomposable: 1,041 (15%), concentrated where
+§10 found them, in the `d = 2` cells at `m ≤ n` (82–100%) and the sparsest
+Bernoulli cells. No complete graphs: `p ≤ 0.2` at `n ≥ 50` never fills the
+graph, which is why `p ≥ 0.3` was dropped from the sweep. The manifest
+regenerates: 400 sampled rows, 0 digest mismatches
+(`verify_manifest(MANIFEST_UPWARD_CSV, sample=400)`).
+
+The `n = 100` sample is the exception and is reported in (d): 9 of the 10
+`d ∈ {3, 4}` descents ran out at 900 s, so those rows carry verified upper
+bounds and no refutation, and a **finish stage** (`learning.upward
+--finish-uncertified`, 1,500 s per call, 10 workers, answers in
+`results_upward_finish.csv`, merged on load and never rewriting the run's
+file) decided `value − 1` for them afterwards.
+
+### (a) The rate per density, and its drift with n
+
+Local rate of the cell median of `log10(1 + nodes)`, default configuration,
+between consecutive sizes, with §11's 15–40 fit and §14's corpus rate beside
+it (full table with 90% bootstrap bands: `reports/upward_tables.md`):
+
+**fixed, m = n** (`col_mean` = `d` to within 0.13)
+
+| d | §11 rate 15–40 | 40 → 50 | 50 → 60 | 60 → 75 | 75 → 100 | fit 50–100 | corpus class (§14, 30–125) |
+|---|---|---|---|---|---|---|---|
+| 2 | 0.062 | 0.038 | 0.043 | 0.059 | 0.043 (25 inst.) | 0.049 | — (corpus `d = 2` is `col_mean` 2.76, the ridge) |
+| 3 | **0.095** | 0.100 | 0.075 | 0.095 | — (0 certified) | 0.088 | 0.079 (`col_mean` 2.76, 30–75) |
+| 4 | 0.097 | 0.095 | 0.098 | 0.087 | 0.089 (1 inst.) | 0.090 | 0.093 (`col_mean` 4.24) |
+| 5 | 0.094 | 0.088 | 0.087 | 0.086 | | 0.087 | |
+| 6 | 0.080 | 0.078 | 0.078 | 0.077 | | 0.077 | 0.072 |
+| 7 | 0.070 | 0.070 | 0.069 | 0.070 | | 0.070 | |
+| 8 | 0.067 | 0.061 | 0.065 | 0.062 | | 0.063 | 0.058 |
+| 9 | 0.063 | 0.054 | 0.055 | 0.058 | | 0.056 | |
+| 10 | 0.064 | 0.053 | 0.049 | 0.048 | | 0.049 | 0.046 |
+
+**fixed, m = 2n**
+
+| d | §11 rate 15–40 | 40 → 50 | 50 → 60 | 60 → 75 | fit 50–100 |
+|---|---|---|---|---|---|
+| 2 | **0.105** | 0.108 | 0.099 | ≥ 0.137 (upper end censored) | — |
+| 3 | 0.101 | 0.111 | 0.091 | 0.113 | 0.105 |
+| 4 | 0.091 | 0.088 | 0.084 | 0.089 | 0.087 |
+| 5 | 0.074 | 0.073 | 0.070 | 0.073 | 0.072 |
+| 6 | 0.068 | 0.061 | 0.061 | 0.060 | 0.060 |
+| 8 | 0.060 (30–40) | 0.051 | 0.039 | 0.043 | 0.042 |
+| 10 | — | 0.040 | 0.049 | 0.032 | 0.042 |
+
+**fixed, m = n / 2** (never generated before; 50 → 60 and 60 → 75 only)
+
+| d | `col_mean` | 50 → 60 | 60 → 75 | doubling every |
+|---|---|---|---|---|
+| 2 | 2.73 | 0.036 | 0.032 | 8–9 customers |
+| 3 | 3.43 | 0.036 | 0.040 | 8 |
+| 4 | 4.27 | 0.071 | 0.069 | 4.2–4.4 |
+| 5 | 5.14 | 0.072 | **0.077** | 3.9–4.2 |
+| 6 | 6.08 | 0.074 | 0.067 | 4.1–4.5 |
+| 7 | 7.04 | 0.073 | 0.075 | 4.0–4.1 |
+| 8 | 8.03 | 0.070 | 0.068 | 4.3–4.4 |
+| 10 | 10.0 | 0.066 | 0.064 | 4.6–4.7 |
+
+**The form holds to 75 in every series and to 100 where there is data.**
+On every `m = n` and `m = 2n` series with at least six cells the exponential
+beats the power law on 15–75 by a factor of 4–11 in RMS residual (e.g.
+`d = 3, m = n`: 0.047 against 0.371; `d = 4`: 0.036 against 0.380), and on
+the 50–100 window alone (three or four cells) by 2–5×. The `m = n / 2` fits
+have three points and cannot separate the two forms; their local rates are
+constant to within their bands.
+
+**The rate drifts down with `n`, slowly, in every series.** The slope of
+the local rate against its midpoint is negative in **18 of 18** fixed-`d`
+series with three or more exact intervals (`m = n` and `m = 2n`, `d = 2..10`),
+individually significant (|t| > 2) in four, and pooled within series
+**−0.000217 ± 0.000045 log10 per customer per customer (t = −4.8)** over
+131 intervals, default configuration; −0.000174 ± 0.000044 (t = −3.9) under
+`csearch`. That is a rate falling by about **0.002 per ten customers**, or
+0.011 between the midpoint of §11's window (27.5) and the midpoint of §14's
+(77.5) — **which is the 0.005–0.018 discrepancy §14 measured.** It is not
+that the campaign's rates were wrong at 15–40; the rate is a function of
+`n`, and the 50–100 fits land within 0.003–0.005 of the corpus classes at
+`d = 4, 6, 8, 10` (0.090 / 0.077 / 0.063 / 0.049 against 0.093 / 0.072 /
+0.058 / 0.046). *Where the drift is resolved:* not per density. A local rate
+between two cells of 50 has a 90% band of ±0.010–0.015, the size of the whole
+drift over 60 customers, so within one series the sequence 0.095, 0.098,
+0.087 (`d = 4`) reads as noise; it is resolved pooled across 18 series at 50
+per cell, and would be resolved per density at about 200 per cell, or with
+cells at 100 and 125. The consecutive-size rates for the two day-long
+classes' analogues are 0.100 / 0.075 / 0.095 (`d = 3`) and 0.095 / 0.098 /
+0.087 / 0.089 (`d = 4`): no acceleration, no collapse, a slow decline.
+
+### (b) The ridge at 50–75, and the half ratio
+
+| series | 50 | 60 | 75 | peak `col_mean` | products per customer at the peak |
+|---|---|---|---|---|---|
+| fixed, m = n | d = 3 | d = 3 | d = 3 | 3.0 | 3.0 |
+| fixed, m = 2n | d = 2 | d = 2 | d = 2 (median a lower bound) | 2.0 | 4.0 |
+| fixed, m = n / 2 | d = 5 | d = 6 | d = 5 | 5.1–6.1 | 2.6–3.0 |
+| bernoulli, m = n | p = 0.05 | 0.05 | 0.05 | 2.6–3.8 | 2.6–3.8 |
+| bernoulli, m = 2n | p = 0.05 | 0.05 | 0.025 | 2.1–3.0 | 4.1–6.1 |
+| bernoulli, m = n / 2 | p = 0.1 | 0.075 | 0.075 | 4.6–5.7 | 2.3–2.9 |
+
+The `m = n` ridge stays at `d = 3` from 15 through 75 and the `m = 2n` ridge
+at `d = 2`, where §11 put them. **At the half ratio the ridge sits at five to
+six customers per product**, and is broad: at `n = 75` the `d = 4..7` cells
+are within 0.27 log10 of the peak (5.19–5.46). So the ridge's coordinate is
+neither customers per product (2, 3, 5.5 across the three ratios) nor
+products per customer (4, 3, 2.75): the peak moves toward *more* customers
+per product and *fewer* products per customer as products get scarcer. The
+ridge's height at 75: 10^8.1 (`m = 2n`, a lower bound), 10^6.8 (`m = n`),
+10^5.5 (`m = n / 2`) — doubling the products is 20× the nodes, halving them
+20× fewer. Corpus check: Chu & Stuckey's `Random-100-50-d` classes (`m = n / 2`)
+are the ones §14 found `csearch` saves most on (0.17), and here Theorem 2's
+switch is on for 87–95% of `m = n / 2` instances (mean products per customer
+≤ 5 holds for `d ≤ 10` at that ratio) against 38–47% at `m = n` and 12–16%
+at `m = 2n`. **Where the switch is on the saving is the same at every
+ratio** — median `csearch / default` 0.85–0.86 at `m = n / 2`, 0.80–0.85 at
+`m = n`, 0.81–0.83 at `m = 2n` (`n = 50–60`) — with a heavier tail at the
+half ratio (p10 0.48–0.58 against 0.66–0.73 and 0.84–0.86). On the 26
+settled `n = 100` instances the median is 0.60. So the half ratio is where
+Theorem 2 is *on*, not where it saves more per instance; the rule
+`sparse_enough_for_better_move` decides by products per customer and the
+half ratio is where that statistic is small. (Item 05 owns the switch.)
+
+### (c) The optimum at 50–75
+
+`E[opt]` is a line in `n` at fixed `d` here as at `n ≤ 40` (§12): at `m = n`,
+`d = 4`, 21.6 / 25.1 / 30.3 at 50 / 60 / 75 (slope 0.35 per customer; §12's
+formula gives 0.34); the coefficient of variation per cell is under 0.07 for
+every `d ≥ 4` and under 0.17 everywhere at `n ≥ 50` (`d = 2` cells, mostly
+decomposable, are the widest). Nothing here is a bound.
+
+### (d) The 100-customer sample and the price
+
+| instance | value (900 s descent) | descent nodes | `csearch` at value − 1 (1,500 s) | `default` at value − 1 (1,500 s) |
+|---|---|---|---|---|
+| `d3_i000` | 23 | 10^9.23 in 901 s | unknown (9.23 log10 nodes, 1500 s) | unknown (9.39 log10 nodes, 1500 s) |
+| `d3_i001` | 24 | 10^9.27 in 906 s | sat (8.73 log10 nodes, 573 s) | sat (9.41 log10 nodes, 1004 s) |
+| `d3_i002` | 25 | 10^9.25 in 903 s | sat (8.79 log10 nodes, 719 s) | sat (9.54 log10 nodes, 1384 s) |
+| `d3_i003` | 24 | 10^9.22 in 902 s | unknown (9.19 log10 nodes, 1500 s) | unknown (9.49 log10 nodes, 1500 s) |
+| `d3_i004` | 23 | 10^9.25 in 903 s | unknown (9.16 log10 nodes, 1500 s) | unknown (9.53 log10 nodes, 1500 s) |
+| `d4_i000` | 39 | 10^9.16 in 901 s | unknown (9.13 log10 nodes, 1500 s) | unknown (9.27 log10 nodes, 1500 s) |
+| `d4_i001` | 41 | 10^9.15 in 901 s | unknown (9.15 log10 nodes, 1500 s) | unknown (9.35 log10 nodes, 1500 s) |
+| `d4_i002` | 40 | 10^9.13 in 903 s | unknown (9.08 log10 nodes, 1500 s) | unknown (9.43 log10 nodes, 1500 s) |
+| `d4_i003` | 36 | 10^9.19 in 900 s | unknown (9.13 log10 nodes, 1500 s) | unknown (9.47 log10 nodes, 1500 s) |
+| `d4_i004` | 38 | 10^8.85 in 482 s | unsat in run (8.76 log10 nodes, 595 s) | unsat in run (8.85 log10 nodes, 511 s) |
+
+Read: the `d = 2` cell at 100 is free (25 of 25 certified, median 10^5.4
+nodes, 96% decomposable — this is not Chu & Stuckey's density 2, §14). Of
+the ten `d ∈ {3, 4}` descents, **one certified** (`d4_i004`, 10^8.85 nodes,
+482 s, both configurations agree) and **nine ran out at 900 s having spent
+10^9.13–9.27 nodes each**. The finish stage then found **two of the five
+`d = 3` values were not optimal** — `csearch` answered `sat` at `value − 1` in
+573 and 719 s (10^8.7–8.8 nodes), so those descents had been cut off *before*
+reaching their optimum, not while refuting it — and censored the rest at
+1,500 s with **10^9.08–9.23 (`csearch`) and 10^9.27–9.53 (`default`) nodes
+visited and no answer**, which are lower bounds on the refutation of
+whatever the optimum is. The two configurations agree on every answered
+call: both say `sat` on `d3_i001` and `d3_i002` (`default` needing 5–6× the
+nodes), both `unsat` on `d4_i004`. Against the §11 law's
+price for the median refutation, 10^9.32 nodes at `d = 3` and 10^9.25 at
+`d = 4`: the one settled `d = 4` count (10^8.85) is 0.4 below it and inside
+the drift-corrected band of (e); the censored ones are already at
+10^9.1–9.3 with the search not finished. **The price was right to within its
+own stated factor**, and the kill criterion was correctly triggered: the
+sample cost 9.6 core-hours for one certified refutation, and 25 per
+cell at 1,500 s per call would have been days. On the ridge at 100 the
+campaign as designed — solve, then refute twice — needs about an hour per
+instance, which is what item 04's relabelling portfolio and item 05's
+Theorem 2 measurement are for.
+
+### (e) The revised 125 × 125 prediction
+
+The plan asked for an error band from the 100-customer cells; those cells
+did not certify (d), so the band comes from the **75-customer cells**, the
+last fully certified size, extrapolated 50 customers with the 60 → 75 local
+rate and its 90% bootstrap band, two ways — the rate held constant, and the
+rate drifting at the pooled slope −0.000217 ± 0.000045 per customer² — and
+checked against the one settled 100 count and the five 125 counts on record
+(`recertify/results.json`, `better_move` on):
+
+| series | median at 75 | last rate | constant rate → 100 | drifting → 100 | observed at 100 | constant → 125 | **drifting → 125** | on record at 125 | §11 law at 125 |
+|---|---|---|---|---|---|---|---|---|---|
+| `d = 3` (ridge; the analogue of `Random-125-125-2`, `col_mean` 3.04 vs 2.76) | 6.78 | 0.095 [0.081, 0.109] | 9.16 [8.80, 9.51] | 9.05 [8.67, 9.42] | censored ≥ 9.1–9.3 (4), two `sat` | 11.54 [10.82, 12.23] | **11.18 [10.39, 11.96]** | 11.21, 11.22 | 11.6 |
+| `d = 4` (`Random-125-125-4`, `col_mean` 4.01 vs 4.24) | 6.63 | 0.087 [0.081, 0.094] | 8.80 [8.65, 8.98] | 8.69 [8.52, 8.89] | 8.85 (1); corpus median 8.71 | 10.98 [10.67, 11.33] | **10.62 [10.25, 11.05]** | 10.69, 10.78, 11.41 | 11.67 |
+| `d = 2` (decomposable; no corpus analogue) | 4.37 | 0.059 [0.043, 0.069] | 5.84 [5.43, 6.09] | 5.74 [5.30, 6.01] | 5.45 (25) | 7.32 | 6.97 [6.07, 7.54] | — | 7.94 |
+
+(log10 nodes, default configuration; the `csearch` rows in
+`reports/upward_tables.md` differ by 0.01–0.2.)
+
+**The drift-corrected prediction lands on the record.** For the ridge class
+the central value 11.18 is within 0.04 of the two 125 counts (11.21, 11.22),
+where the constant-rate figure is 0.33 above and §11's 15–40 law 0.4 above;
+for `d = 4` two of the three counts fall inside the drifting band and the
+third (11.41) inside the constant-rate band. The band is **±0.8 decades — a
+factor of 6 either way** — and comes almost entirely from the bootstrap
+spread of one local rate over 50 instances multiplied by 50 customers of
+extrapolation; the drift's own uncertainty adds 0.1. To halve it needs 200
+per cell at 75, or a certified cell at 100, which (d) prices at an hour per
+instance. **Revised 125 × 125 prediction, stated once:** the median
+refutation of a `Random-125-125-2` instance is **1.5 × 10¹¹ nodes (2.5 × 10¹⁰
+to 9 × 10¹¹)**, and of a `Random-125-125-4` instance **4 × 10¹⁰ (1.8 × 10¹⁰
+to 1.1 × 10¹¹)**, at 1.4 × 10⁶ nodes/s **30 hours (5 to 180) and 8 hours (3.5
+to 22) per refutation** on one core, default configuration. Both are
+consistent with what recertify spent (25–28 h and 10–54 h). This is an
+extrapolation of 50 customers from generated instances whose density is not
+exactly the corpus's and which keep their decomposable members; it is a
+prediction, not a bound, and it is not to be used to allocate budgets
+without item 03's predictor.
+
+**Finding, in one paragraph.** From 10 to 75 customers, at every ratio of
+products to customers, the nodes to refute `optimum − 1` grow exponentially
+in `n` at fixed customers per product, and the rate of that growth is not a
+constant: it **falls by about 0.002 log10 per customer for every ten
+customers**, in all 18 series, pooled at five standard errors. That drift is
+the whole of the discrepancy §14 found between the campaign's 15–40 rates
+and the corpus's 30–125 rates; fitted at the corpus's sizes the campaign
+reproduces the corpus's rates to 0.005. Corrected for it, the ridge law
+extrapolated from 75 to 125 predicts the two day-long `Random-125-125-2`
+counts to 0.04 decades, with a band of a factor of 6. The ridge stays at
+three customers per product for `m = n` and two for `m = 2n` through 75, and
+sits at five to six for `m = n / 2`, where Theorem 2's switch is on for
+nearly every instance and saves what it saves elsewhere. The 100-customer
+ridge cells were priced at 40 core-hours by the §11 law, the plan's cap of 8
+stopped the full grid at 75, and the 5-per-cell sample confirmed the price:
+nine of ten descents ran out at 900 s, two of the values reached were not
+optimal, and the refutations that did settle or censor sit within 0.4
+decades of the law. The `m = 2n, d = 2` cell at 75 and the two cells that ran
+at shorter budgets are the only places a censored count touches a
+statistic, and each is flagged where it does.
+
+**Size range covered.** Generated instances at 10–75 customers (fully
+certified: 6,747 of 6,750 at 50–75 on top of §10's 37,800 at 10–40), 100
+customers at `m = n` for `d = 2` (25 certified) and `d = 3, 4` (1 certified of
+10, the rest verified upper bounds with censored refutations). Chu &
+Stuckey's corpus at 30–125 enters only as a comparison. **Every 125 figure is
+an extrapolation of 50 customers** from the 75-customer cells, labelled so.
+
+**Kill criterion (§2.2: stop at 75 if the 100-customer ridge cells exceed 8
+core-hours in total): MET.** Priced at 40 core-hours before running; the
+full grid stops at 75; the `n = 100` sample was run for the price check and
+is reported as a sample. The revised prediction's band therefore comes from
+the 75-customer cells, as stated in (e), not from the 100-customer cells the
+item asked for.
+
+**Method notes.** (1) *Price at the measured node rate*: the price assumed
+2 × 10⁶ nodes/s and the run delivered 1.4 × 10⁶ on `n ≥ 75` refutations, a
+1.4× on every second in the table; nodes were right, seconds were not. (2)
+*A descent budget is not a refutation budget*: a `solve` that runs out
+returns the best witness so far, and two of nine such values here were one
+above the optimum; the "optimum" column of an uncertified row is an upper
+bound and the finish stage decides `value − 1` for a reason. (3) *A stage
+that rewrites the run's CSV while the run appends to it loses rows*: the
+first version of the finish stage did exactly that and was stopped before its
+first write; the answers now go to their own file and are merged on load.
+(4) *Kill by PID, never by a word*: `kill $(pgrep -f 'learning.ensemble --upward')`
+matched the shell issuing it, because the shell's own command line contained
+the pattern (exit 144); anchor the pattern (`'^python -m learning.ensemble'`).
+(5) *Order the jobs so the expensive cells start first*: the `n = 100` jobs
+went first and ran alongside 6,000 cheap ones; the slow `m = 2n` cells at 75
+came last in cell order and are what forced the resume at shorter budgets —
+sort cells by predicted cost next time, and set the per-call deadline per
+cell (`run` now takes per-cell counts; per-cell deadlines would be the same
+change). (6) The `sat_default` and `sat_csearch` lines in the audit count the finish
+stage's two `sat` answers per configuration on *uncertified* values (the
+same two instances); it is not the item-01 mechanism
+(`csearch` answering `unsat` at `k = optimum`), which this run does not
+exercise because it decides `optimum − 1` only, and it is not a wrong
+certified optimum: zero certified values were contradicted by either
+configuration.

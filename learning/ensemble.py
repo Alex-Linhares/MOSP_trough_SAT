@@ -59,6 +59,9 @@ Usage:
     python -m learning.ensemble --tables-only --verify-manifest 0   # every instance regenerates
     python -m learning.ensemble --cells f:20:20:2 b:20:40:0.1 --per-cell 50
     python -m learning.ensemble --item02                # the §10 campaign: 252 cells x 150
+    python -m learning.ensemble --upward                # §16: n in {50, 60, 75} x m in {n/2, n, 2n}, 50 per cell,
+                                                        #      plus n = 100 at d in {2, 3, 4}, m = n (priced first)
+    python -m learning.ensemble --upward --price-only   # the n = 100 price by the §11 ridge law, nothing run
 
 Nothing here is a bound, nothing touches `_lower_bound` or any solver default,
 and nothing is written to `solutions/`.
@@ -83,6 +86,8 @@ ENSEMBLE_DIR = Path("learning/data/ensemble")
 INSTANCE_DIR = ENSEMBLE_DIR / "instances"
 SOLUTIONS_DIR = ENSEMBLE_DIR / "solutions"
 RESULTS_CSV = ENSEMBLE_DIR / "results.csv"
+RESULTS_UPWARD_CSV = ENSEMBLE_DIR / "results_upward.csv"      # §16: n >= 50, kept apart so §10-§15 regenerate unchanged
+MANIFEST_UPWARD_CSV = ENSEMBLE_DIR / "manifest_upward.csv"
 DEFAULT_OUT = Path("reports/ensemble_tables.md")
 
 GENERATORS = ("bernoulli", "fixed")
@@ -288,16 +293,24 @@ def load_results(csv: Path = RESULTS_CSV) -> pd.DataFrame:
 def run(cells: list[Cell], per_cell: int, workers: int = 16,
         csv: Path = RESULTS_CSV, instance_dir: Path | None = INSTANCE_DIR,
         solutions_dir: Path = SOLUTIONS_DIR, deadline: float | None = 60.0,
-        solve_budget: float | None = 600.0, verbose: bool = True) -> pd.DataFrame:
-    """Solve every `(cell, index)` not yet in the CSV; append as rows finish."""
+        solve_budget: float | None = 600.0, verbose: bool = True,
+        counts: dict[Cell, int] | None = None) -> pd.DataFrame:
+    """Solve every `(cell, index)` not yet in the CSV; append as rows finish.
+
+    `counts` overrides `per_cell` for the cells it names (§16 runs the n = 100
+    cells at a smaller count than the rest). Jobs run in the order the cells
+    are given, so the expensive cells go first and the cheap ones fill in.
+    """
     existing = load_results(csv)
     done = set(existing["instance_name"]) if len(existing) else set()
     cells = list(dict.fromkeys(cells))          # a cell named twice runs once
+    counts = counts or {}
     jobs = [(cell, i, instance_dir, solutions_dir, deadline, solve_budget)
-            for cell in cells for i in range(per_cell)
+            for cell in cells for i in range(counts.get(cell, per_cell))
             if instance_name(cell, i) not in done]
+    planned = sum(counts.get(cell, per_cell) for cell in cells)
     if verbose:
-        print(f"{len(cells)} cells x {per_cell} = {len(cells) * per_cell} instances, "
+        print(f"{len(cells)} cells, {planned} instances, "
               f"{len(done)} already in {csv}, {len(jobs)} to run on {workers} workers",
               flush=True)
     if not jobs:
@@ -501,6 +514,74 @@ def item02_cells(sizes=ITEM02_N, ratios=ITEM02_M_RATIOS, ds=ITEM02_D, ps=ITEM02_
 
 
 # ----------------------------------------------------------------------------
+# the campaign upward (§16, plan 2 §2.2)
+# ----------------------------------------------------------------------------
+
+UPWARD_N = (50, 60, 75)
+UPWARD_M_RATIOS = (0.5, 1, 2)          # m = n // 2 is the ratio the n <= 40 grid never generated
+UPWARD_D = tuple(range(2, 11))
+UPWARD_P = (0.025, 0.05, 0.075, 0.1, 0.15, 0.2)   # p >= 0.3 is a complete graph at n >= 50 (§10)
+UPWARD_PER_CELL = 50
+RIDGE100_N = 100
+RIDGE100_D = (2, 3, 4)                  # the m = n ridge (d = 3, §11) and its two neighbours
+RIDGE100_PER_CELL = 25
+RIDGE100_CORE_HOURS_CAP = 8.0           # plan 2 §2.2's kill: above this, stop at 75
+NODES_PER_SECOND = 2.0e6                # the C search on this machine (§14: 0.5-1.2e9 nodes in 270-570 s)
+
+
+def upward_cells(sizes=UPWARD_N, ratios=UPWARD_M_RATIOS, ds=UPWARD_D, ps=UPWARD_P) -> list[Cell]:
+    """§16's grid: n in {50, 60, 75}, m in {n // 2, n, 2n}, fixed d 2..10 and
+    Bernoulli p 0.025..0.2, so `col_mean` runs from 1.3 to 15 at every size.
+    Seeds are a CRC of the cell id, so these cells share nothing with §10's."""
+    cells = []
+    for n in sizes:
+        for ratio in ratios:
+            m = int(n * ratio)
+            cells += [Cell("fixed", n, m, d) for d in ds if d <= n]
+            cells += [Cell("bernoulli", n, m, p) for p in ps]
+    return cells
+
+
+def ridge100_cells(n: int = RIDGE100_N, ds=RIDGE100_D) -> list[Cell]:
+    return [Cell("fixed", n, n, d) for d in ds]
+
+
+def price_ridge100(campaign_csv: Path = RESULTS_CSV, per_cell: int = RIDGE100_PER_CELL,
+                   calls_per_instance: float = 3.0, ds=RIDGE100_D, n: int = RIDGE100_N,
+                   nodes_per_second: float = NODES_PER_SECOND) -> pd.DataFrame:
+    """What the n = 100 cells cost by §11's cell laws, before anything runs.
+
+    Each instance is a descent (one refutation at `optimum - 1` plus cheaper
+    satisfiable calls) and two refutations, so about three refutations; the
+    median instance is priced at the law's median and the cell at
+    `per_cell` medians. The law is `cell_laws` of `learning.scale_test` fit on
+    the §10 campaign at 15-40, `m = n`, default configuration. A median is a
+    median: the mean of a log-normal spread is several times it, which is why
+    the plan's cap is compared against a low estimate and still exceeded.
+    """
+    from learning.scale_test import cell_laws
+
+    laws = cell_laws(load_results(campaign_csv), max_n=40)
+    rows = []
+    for d in ds:
+        law = laws[laws["d"] == float(d)].iloc[0]
+        log_nodes = law["a"] + law["b"] * n
+        seconds = 10 ** log_nodes / nodes_per_second
+        rows.append({"cell": Cell("fixed", n, n, d).id, "d": d, "col_mean_15_40": round(float(law["col_mean"]), 2),
+                     "law_a": round(float(law["a"]), 3), "law_b": round(float(law["b"]), 4),
+                     "log10_median_nodes_at_100": round(float(log_nodes), 2),
+                     "median_refutation_s": round(seconds, 1),
+                     "median_instance_s": round(seconds * calls_per_instance, 1),
+                     "per_cell": per_cell,
+                     "cell_core_hours": round(seconds * calls_per_instance * per_cell / 3600, 2)})
+    out = pd.DataFrame(rows)
+    out.attrs["total_core_hours"] = float(out["cell_core_hours"].sum())
+    out.attrs["cap_core_hours"] = RIDGE100_CORE_HOURS_CAP
+    out.attrs["within_cap"] = out.attrs["total_core_hours"] <= RIDGE100_CORE_HOURS_CAP
+    return out
+
+
+# ----------------------------------------------------------------------------
 # the campaign's descriptive tables (§10)
 # ----------------------------------------------------------------------------
 
@@ -610,6 +691,14 @@ def main() -> None:
                         help="also m = 2n and p = 0.025 cells")
     parser.add_argument("--item02", action="store_true",
                         help="the §10 campaign grid: 252 cells, 150 per cell unless --per-cell")
+    parser.add_argument("--upward", action="store_true",
+                        help="§16: the 50-75 grid at 50 per cell plus the n = 100 ridge cells, "
+                             "written to results_upward.csv / manifest_upward.csv")
+    parser.add_argument("--ridge100-per-cell", type=int, default=RIDGE100_PER_CELL,
+                        help="instances per n = 100 cell (0 skips them); the price is printed first")
+    parser.add_argument("--ridge100-sample", type=int, default=None,
+                        help="if the priced cost exceeds the cap, run this many per hard n = 100 cell instead")
+    parser.add_argument("--price-only", action="store_true", help="with --upward: print the n = 100 price and stop")
     parser.add_argument("--cells", nargs="*", default=[],
                         help="cells as gen:n:m:param, e.g. f:20:20:2 b:20:40:0.1")
     parser.add_argument("--per-cell", type=int, default=PILOT_PER_CELL)
@@ -640,14 +729,36 @@ def main() -> None:
         if args.per_cell == PILOT_PER_CELL:
             args.per_cell = ITEM02_PER_CELL
     cells += [Cell.parse(c) for c in args.cells]
+    counts: dict[Cell, int] = {}
+    manifest_path = ENSEMBLE_DIR / "manifest.csv"
+    if args.upward:
+        if args.csv == RESULTS_CSV:
+            args.csv = RESULTS_UPWARD_CSV
+        manifest_path = MANIFEST_UPWARD_CSV
+        if args.per_cell == PILOT_PER_CELL:
+            args.per_cell = UPWARD_PER_CELL
+        price = price_ridge100(per_cell=args.ridge100_per_cell)
+        print(_md(price) + f"n = 100 cells at {args.ridge100_per_cell} per cell: "
+              f"{price.attrs['total_core_hours']:.1f} core-hours by the §11 law against a cap of "
+              f"{price.attrs['cap_core_hours']:.0f}; within cap: {price.attrs['within_cap']}", flush=True)
+        if args.price_only:
+            return
+        ridge = ridge100_cells() if args.ridge100_per_cell > 0 else []
+        for cell in ridge:                       # the hard cells first, the cheap ones fill in
+            hard = price[price["d"] == cell.param].iloc[0]["cell_core_hours"] > 1.0
+            if not price.attrs["within_cap"] and args.ridge100_sample is not None and hard:
+                counts[cell] = args.ridge100_sample
+            else:
+                counts[cell] = args.ridge100_per_cell
+        cells = ridge + upward_cells() + cells
 
     if args.tables_only or not cells:
         frame = load_results(args.csv)
     else:
         frame = run(cells, args.per_cell, args.workers, args.csv,
                     instance_dir=INSTANCE_DIR if args.write_instances else None,
-                    deadline=args.deadline, solve_budget=args.solve_budget)
-        write_manifest(frame)
+                    deadline=args.deadline, solve_budget=args.solve_budget, counts=counts)
+        write_manifest(frame, manifest_path)
     if frame.empty:
         print("no results")
         return
@@ -660,6 +771,7 @@ def main() -> None:
             f"`python -m learning.ensemble{' --pilot' if args.pilot else ''}"
             f"{' --extension' if args.extension else ''}"
             f"{' --item02' if args.item02 else ''}"
+            f"{' --upward' if args.upward else ''}"
             f"{' --tables-only' if args.tables_only else ''}`; "
             f"{len(frame)} rows in {args.csv}, {time.time() - started:.0f} s.*\n\n")
     text += tables(frame, args.hours, args.workers)
