@@ -139,7 +139,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       enabled with the measurement that decides each; open questions by cost.
       Bring `learning/README.md` up to date in plain English. No new
       computation; every number copied from a section and cited by number.
-- [ ] 14 · **Reserve.** If any item above is marked `- [!]`, re-open the most
+- [x] 14 · **Reserve.** If any item above is marked `- [!]`, re-open the most
       valuable one with what its blocker taught, and finish it or say exactly
       why it cannot be. If none is blocked, spend this session on the first
       "for the next loop" note left by items 01–13 in PROGRESS.md.

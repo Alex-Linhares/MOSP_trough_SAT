@@ -1,0 +1,31 @@
+n=1: 1/1 parts, 0 s
+n=1: 1 graphs (complete), 1 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=2: 1/1 parts, 0 s
+n=2: 2 graphs (complete), 2 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=3: 1/1 parts, 0 s
+n=3: 4 graphs (complete), 4 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=4: 1/1 parts, 0 s
+n=4: 11 graphs (complete), 11 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=5: 1/1 parts, 0 s
+n=5: 34 graphs (complete), 34 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=6: 1/1 parts, 0 s
+n=6: 156 graphs (complete), 156 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=7: 1/1 parts, 0 s
+n=7: 1,044 graphs (complete), 1,044 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=8: 1/1 parts, 0 s
+n=8: 12,346 graphs (complete), 12,346 treewidth DPs, 0 with pw − tw ≥ 2, 0 s on 16 workers
+n=9: 1/1 parts, 2 s
+n=9: 274,668 graphs (complete), 274,668 treewidth DPs, 0 with pw − tw ≥ 2, 2 s on 16 workers
+n=10: 8/64 parts, 2 s
+n=10: 16/64 parts, 4 s
+n=10: 24/64 parts, 6 s
+n=10: 32/64 parts, 7 s
+n=10: 40/64 parts, 9 s
+n=10: 48/64 parts, 10 s
+n=10: 56/64 parts, 12 s
+n=10: 64/64 parts, 17 s
+n=10: 12,005,168 graphs (complete), 12,005,168 treewidth DPs, 4 with pw − tw ≥ 2, 17 s on 16 workers
+
+real	0m19.510s
+user	3m22.469s
+sys	0m2.137s

@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 13/14 SOLVED
+- **Current**: 14/14 SOLVED
 
 ---
 
@@ -1083,3 +1083,80 @@ and cited by section number, with the two taken from digests
 - For the owner: `CLAUDE.md`'s "What the corpus says" digest can now point
   at `reports/ml_nature_summary.md` §0 and §8 instead of carrying the
   numbers itself.
+
+## Iteration 16 — 2026-09-26 21:40
+
+**Item 14 · Reserve** — SOLVED. No item was `- [!]`, so the session went to
+the first "for the next loop" note (§21 (i), first in the summary's §10):
+exhaust the 9-vertex graphs so that the 10-vertex `pw − tw = 2` record
+becomes a theorem. **It is a theorem, and the census went two sizes
+further**: every graph on ≤ 9 vertices has `pw ≤ tw + 1`; exactly four
+graphs on 10 vertices have `pw − tw = 2` (§21's graph and its three
+hub-supergraphs); 1,034 on 11, none with a gap of 3, 516 of them new
+vertex-minimal examples including twelve of treewidth 2 and pathwidth 4.
+
+### Completed
+- `learning/pwtw_exhaust.c` (standalone, reads nauty `geng` graph6 from
+  stdin): exact pathwidth by the vertex-separation subset DP, exact
+  treewidth by the `learning/treewidth.c` recurrence, joint histogram, every
+  graph with `pw − tw ≥ k` written out; levels 1 and 0 add the sound skips
+  `MMD ≤ tw` and greedy layout `≥ pw` (tested to return the same graphs as
+  the full level on the atlas). `learning/pwtw_exhaust.py`: stages `run`
+  (geng `res/mod` parts on a pool, aggregation into committed CSVs, counts
+  checked against OEIS A000088), `verify` (every found graph re-established
+  by the Python pathwidth DP, the treewidth C + Python reference, an
+  elimination ordering, the clique bound, subgraph containment of §21's
+  graph, vertex-minimality by running its deletions through the C, and
+  `extremal.recertify` as a MOSP instance with products = maximal cliques:
+  exact solver with persisted witness, both `decide` configurations at
+  `optimum − 1` / `optimum`, lattice oracle), `check` (C vs Python on 1,552
+  graphs), `tables`, `price`.
+- **The runs**: n = 1–10, 12,293,434 graphs, 20 s wall on 16 workers (§21
+  had priced n = 9 alone at an hour; the C does 6 µs per 9-vertex graph);
+  n = 11, 1,018,997,864 graphs at level 2 (both DPs on every graph), 2,965 s
+  on 16 workers, 13.2 core-hours. Every count equals A000088; the `tw ≤ 1`
+  column equals the number of forests (A005195) at every n ≤ 11. All 1,038
+  graphs found were re-certified (1,038 of 1,038 agree on every route;
+  optimum = pw + 1 from the solver, the lattice oracle and the pathwidth DP
+  on each).
+- **Findings** (`reports/ml_nature.md` §27, tables `reports/pwtw_tables.md`):
+  (b) `pw − tw ∈ {0, 1}` on all 287,884 graphs with ≤ 9 vertices — the
+  theorem; share of `pw > tw` 0.6% → 9.9% from n = 6 to 11; no graph on
+  ≤ 11 vertices has `pw − tw = 3`. (c) The four 10-vertex graphs are §21's
+  graph with the tenth vertex joined to any subset of the three hubs (a
+  chain of 21–24 edges; edge-maximal as well as edge-minimal now). (d) At 11:
+  families `(pw, tw)` = `(4, 2)`: 12, `(5, 3)`: 396, `(6, 4)`: 626; 730
+  contain §21's graph, 516 are vertex-minimal; the `(4, 2)` twelve have no
+  K4 and all contain the sparsest gap graph on ≤ 11 vertices — 15 edges,
+  max degree 3, three triangles strung between two poles, biconnected, not
+  a tree of cliques. (e) n = 12 priced at 4,300–4,700 core-hours (level 2) or
+  ~240 (level 0); not run.
+- Data: `learning/data/ensemble/pwtw_{census,found,totals}.csv` (310 KB),
+  three logs; raw parts and the binary git-ignored (`.gitignore` updated).
+- `tests/test_pwtw_exhaust.py`: 20 tests (hand values incl. the spider and
+  §21's graph, graph6 round trip, C vs Python on the atlas + random graphs,
+  levels 0/1 ≡ level 2 with skips firing, clique-cover matrix, verify on the
+  spider and §21's graph, vertex-minimality incl. a planted isolated vertex,
+  parse/tables/price on a toy, row replacement, the geng run at n = 5 against
+  the atlas, and the committed census's headline numbers at 9, 10 and 11).
+  Full suite: 1,048 passed, 2 skipped, 1 xfailed in 84 s. No solver default, flag, bound or C path
+  touched; nothing written to `solutions/`.
+
+### Blockers
+- None. Prior art: a web search found bounds relating pathwidth and treewidth
+  (Groenland–Joret–Nadara–Walczak) but no census of small graphs; the
+  repository's usual stance applies — prior art unsettled, no novelty claimed.
+- Process notes: the enumeration estimate in §21 was off by three orders of
+  magnitude in the safe direction (Python-DP seconds vs C microseconds) —
+  price a census in the C's unit; geng's `res/mod` parts are uneven by ~2×,
+  so use 4 parts per worker; a table formatter keyed on Python value types
+  printed integers as floats once a float column appeared.
+
+### Next
+- All 14 items are checked. For a fourth loop, the summary's §10 minus this
+  item: `learning.corpus_sweep` with the two-key rule seeding `restricted_dfs`
+  (~8 min), Lean gap 1 (`pathGraph.IsTree`), the `(4, 2)` family as a second
+  test shape for the bound work (§27 (d)), n = 12 for `pw − tw ≥ 3` with
+  `geng -c -d2` (a weekend on 16 cores).
+
+LOOP_COMPLETE

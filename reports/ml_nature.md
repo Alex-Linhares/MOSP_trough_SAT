@@ -7159,3 +7159,294 @@ Mathlib, not a function; `G.ne_of_adj h rfl` is the irreflexivity step.
 *`Mathlib.Data.Real.Sqrt` is deprecated* in favour of `Mathlib.Analysis.Real.Sqrt`.
 *The lake cache is the whole budget*: the incremental build is 2 s; a
 Mathlib rebuild would be the session.
+
+## 27. The census: every graph on ≤ 11 vertices, pathwidth against treewidth (plan 2 §3 item 14, reserve; §21's note (i))
+
+*Iteration 16 of loop0003, 2026-09-26. Code: `learning/pwtw_exhaust.c` (exact
+pathwidth and treewidth per graph6 line, with two provably sound skip rules),
+`learning/pwtw_exhaust.py` (the run over nauty's `geng`, the independent
+re-verification of every graph found, the tables, the price of n = 12).
+Regenerate:*
+
+```bash
+python -m learning.pwtw_exhaust --stage check                                   # C vs Python references, 1,552 graphs, 2 s
+python -m learning.pwtw_exhaust --stage run --min-n 1 --max-n 10 --workers 16   # 12.3 M graphs, 20 s wall
+python -m learning.pwtw_exhaust --stage run --min-n 11 --max-n 11 --workers 16  # 1.02 G graphs, 49 min wall
+python -m learning.pwtw_exhaust --stage verify --max-recertify 5000             # every graph found, re-established in Python; 90 s
+python -m learning.pwtw_exhaust --stage tables                                  # reports/pwtw_tables.md
+python -m pytest tests/test_pwtw_exhaust.py -q                                  # 20 tests
+```
+
+*Writes `learning/data/ensemble/pwtw_census.csv` (the joint histogram of
+`(n, pw, tw)`, 4 KB), `pwtw_found.csv` (every graph with `pw − tw ≥ 2`, with
+its verification; 300 KB), `pwtw_totals.csv` (graphs seen against OEIS
+A000088 per n, timings), `pwtw_run*.log`, `pwtw_verify.log`, and
+`reports/pwtw_tables.md`. Raw per-part outputs sit under the git-ignored
+`learning/data/pwtw/`; the witnesses of the re-certifications under the
+git-ignored `learning/data/extremal/solutions/`. Nothing is a bound the
+solver uses, nothing changes a solver path, nothing is written to
+`solutions/`.*
+
+**The question.** §21 drew, by local search, a 10-vertex graph with pathwidth
+5 and treewidth 3 and proved it vertex- and edge-minimal *among its own
+deletions*; whether any 9-vertex graph has `pw − tw ≥ 2` was left open, with
+the note that "the exhaustive answer would need all graphs on 9 vertices
+(274,668 up to isomorphism), which the DP and the lattice oracle could settle
+in about an hour". No item was blocked, so the reserve session takes that
+note — the first in `reports/ml_nature_summary.md` §10 — and asks the three
+questions it opens: is the 10-vertex record a theorem; which graphs on 10
+vertices have `pw − tw = 2`; and does `pw − tw = 3` occur at 11.
+
+**Method.** nauty's `geng` enumerates every graph on n vertices up to
+isomorphism, isolated vertices included, so the census at n covers every graph
+on at most n vertices; the counts are checked against OEIS A000088 at every
+n. A 300-line C program reads the graph6 stream and computes, per graph, the
+exact pathwidth by the vertex-separation subset DP (`VS(S) = max(cut(S),
+min_v VS(S − v))`; pathwidth = vertex separation by Kinnersley 1992, the
+theorem `VSEquivPW.lean` proves) and the exact treewidth by the subset
+recurrence of `learning/treewidth.c` (§21). Level 2 computes both for every
+graph, so the joint histogram is complete; levels 1 and 0 skip the treewidth
+DP when the contraction-degeneracy bound already forces `pw − tw < k`
+(`MMD ≤ tw`), and level 0 skips the pathwidth DP too when a greedy layout's
+separation already does (`ub ≥ pw`); both skips are sound by the two
+inequalities, and the tests check that levels 0 and 1 return exactly the
+graphs level 2 returns on the atlas at `k = 1` and `k = 2`. The whole census
+to 11 ran at level 2, so no skip was used for any number quoted here.
+*Verification.* The C is checked against the Python routes on all 1,252
+graphs with 1–7 vertices (the networkx atlas) plus 300 random graphs on 8–11
+(1,552 of 1,552 agree, in the `check` stage and again in the tests); the
+`tw ≤ 1` column of the census is checked against the known number of forests
+(OEIS A005195) at every n; and every one of the 1,038 graphs the census
+writes out is re-established in Python by routes sharing no code with the C —
+the pathwidth DP of `fixed_parameter_algorithm.pathwidth`,
+`learning.treewidth`'s C recurrence (and its Python reference at n ≤ 10), an
+elimination ordering re-checked by `elimination_width`, the clique lower
+bound `ω − 1 ≤ tw`, and, as a MOSP instance whose products are the graph's
+maximal cliques, `learning.extremal.recertify`: the exact solver with a
+persisted witness, `decide(optimum − 1)` and `decide(optimum)` under both
+configurations, and the lattice oracle. Every graph found also has its eleven
+(or ten) single-vertex deletions run through the C, which decides
+vertex-minimality for the gap.
+
+**Baseline.** §21's local search: `pw − tw ≤ 1` on everything it drew at 7–9
+(225,000 evaluations seeded from the record's own subgraphs and from trees of
+cliques), one graph at 10 with `pw − tw = 2`, none with 3 at n ≤ 20.
+
+**Kill criterion.** None stated for the reserve item. The deliverable is the
+theorem or its counterexample.
+
+### (a) The run
+
+| n | graphs (= A000088) | pathwidth DPs | treewidth DPs | `pw − tw ≥ 2` | wall | workers |
+|--:|--:|--:|--:|--:|--:|--:|
+| 1–8 | 13,598 | all | all | 0 | 0.1 s | 16 |
+| 9 | 274,668 | all | all | **0** | 1.6 s | 16 |
+| 10 | 12,005,168 | all | all | **4** | 17 s | 16 |
+| 11 | 1,018,997,864 | all | all | **1,034** | 2,965 s | 16 |
+
+Every count equals A000088, so `geng` produced every isomorphism class and the
+C consumed every line. The n ≤ 10 pass is 20 s of wall clock (3.4 core-minutes)
+against §21's estimate of an hour for n = 9 alone: the joint DP costs 23
+core-µs per 10-vertex graph and `geng` writes the 12 million graphs in 1.6 s.
+The n = 11 pass is 13.2 core-hours (46.6 core-µs per graph, 49 minutes on
+16 workers, beside the nine `recertify` processes).
+
+### (b) The theorem: no graph on ≤ 9 vertices has `pw − tw ≥ 2`
+
+Over all 287,884 graphs on 1–9 vertices (every isomorphism class, isolated
+vertices included), `pw − tw ∈ {0, 1}`. So **every graph on at most nine
+vertices has pathwidth at most treewidth + 1**, and §21's 10-vertex graph is
+a smallest graph with `pw − tw = 2` — by enumeration rather than by a local
+search that happened not to find one. Where the gap appears
+(`pwtw_tables.md`, "Graphs by n and pw − tw"):
+
+| n | graphs | `pw = tw` | `pw = tw + 1` | `pw = tw + 2` | `pw = tw + 3` | share `pw > tw` |
+|--:|--:|--:|--:|--:|--:|--:|
+| ≤ 5 | 52 | 52 | 0 | 0 | 0 | 0 |
+| 6 | 156 | 155 | 1 | 0 | 0 | 0.6% |
+| 7 | 1,044 | 1,029 | 15 | 0 | 0 | 1.4% |
+| 8 | 12,346 | 11,990 | 356 | 0 | 0 | 2.9% |
+| 9 | 274,668 | 261,103 | 13,565 | 0 | 0 | 4.9% |
+| 10 | 12,005,168 | 11,113,769 | 891,395 | 4 | 0 | 7.4% |
+| 11 | 1,018,997,864 | 917,942,621 | 101,054,209 | 1,034 | **0** | 9.9% |
+
+The first graph with `pw > tw` has six vertices (the one graph at n = 6 with
+`pw = 3, tw = 2`); §21's 7-vertex spider is the first with `tw = 1, pw = 2`.
+The share of graphs with pathwidth strictly above treewidth rises with n but
+slowly — 0.6% to 9.9% from 6 to 11 — against the corpus's 5.7% at n ≤ 20
+(§21 (c)), a statement about the generators rather than about graphs. The
+joint distribution at each n is in `pwtw_tables.md`: concentrated on the
+diagonal, with one sub-diagonal (`pw = tw + 1`) carrying a growing share and
+a second sub-diagonal that is empty to 9, holds the four graphs at
+`(pw, tw) = (5, 3)` at 10, and at 11 holds `(4, 2)`: 12, `(5, 3)`: 396,
+`(6, 4)`: 626. **No graph on ≤ 11 vertices has `pw − tw = 3`**, so the
+smallest such graph has at least 12 vertices; the smallest on record is
+§21's 50-vertex corpus instance.
+
+### (c) The four graphs on 10 vertices, and what they are
+
+Exactly four graphs on 10 vertices have `pw − tw = 2` (all with `pw = 5`,
+`tw = 3`, `ω = 4`, one component), and they are one family
+(`pwtw_tables.md`, "Every graph with pw − tw ≥ 2 at n ≤ 10" and "Subgraph
+containment"):
+
+| graph6 | edges | degrees | relation to §21's graph |
+|:--|--:|:--|:--|
+| `ICOfEqtZW` | 21 | 6 6 6 4 4 4 3 3 3 3 | **§21's graph** (nauty certificates equal) |
+| `ICOfEqtZw` | 22 | 7 6 6 4 4 4 4 3 3 3 | §21's graph plus the edge `3–6` |
+| `ICOfEqvZw` | 23 | 7 7 6 5 4 4 4 3 3 3 | plus `3–6`, `6–9` |
+| `ICOfEuvZw` | 24 | 7 7 7 6 4 4 4 3 3 3 | plus `0–6`, `3–6`, `6–9` |
+
+In §21's labels the graph is three K4s — `{0,1,8,9}`, `{0,2,3,7}`,
+`{3,4,5,9}` — glued pairwise at the hubs 0, 3, 9, plus a tenth vertex 6
+joined to one non-hub vertex of each K4 (2, 4, 8). The other three are that
+graph with vertex 6 additionally joined to one, two or all three of the
+hubs; the hubs are interchangeable, so each subset size is one isomorphism
+class, and the four form a chain `21 ⊂ 22 ⊂ 23 ⊂ 24` edges under subgraph
+containment. So the complete description of `pw − tw = 2` on 10 vertices is:
+**§21's graph with the tenth vertex joined to any set of hubs**. The
+edge-minimality §21 proved for the 21-edge graph by its 21 deletions is now
+edge-*maximality* as well for the 24-edge graph, by the census (no graph on
+10 vertices with 25 or more edges has the gap). Every one of the four
+re-establishes by every route: the Python pathwidth DP gives 5, the C
+treewidth recurrence and its Python reference give 3 with an elimination
+ordering of width 3 re-checked independently, `K4 ⊆ G` gives `tw ≥ 3`, and
+as a MOSP instance (products = the maximal cliques) the exact solver
+certifies optimum 6 with a persisted witness, `decide(5)` is `unsat` and
+`decide(6)` `sat` under both configurations, and the lattice oracle says 6.
+
+### (d) The 1,034 graphs on 11 vertices: three families, 516 new minimal ones
+
+All 1,034 have `pw − tw = 2` exactly; 1,030 are connected, the other four
+being the 10-vertex graphs plus an isolated vertex. All 1,034 were
+re-certified as MOSP instances (optimum = `pw + 1` from the solver, the
+lattice oracle and the pathwidth DP on every one; `unsat` / `sat` under both
+configurations on every one) and agree on every route. By `(pw, tw)`
+(`pwtw_tables.md`, "summarised"):
+
+| family `(pw, tw)` | graphs | edges | `ω` | contain §21's graph | vertex-minimal | connected |
+|:--|--:|:--|:--|--:|--:|--:|
+| `(4, 2)` | 12 | 15–19 | 3 | 0 | **12** | 12 |
+| `(5, 3)` | 396 | 21–27 | 3–4 | 104 | 292 | 392 |
+| `(6, 4)` | 626 | 24–34 | 4–5 | 626 | 212 | 626 |
+| all | 1,034 | 15–34 | 3–5 | 730 | **516** | 1,030 |
+
+*Vertex-minimal* means no single-vertex deletion keeps `pw − tw ≥ 2`; since
+the only 10-vertex graphs with the gap are the four of (c), the 518
+non-minimal ones are exactly the graphs with one of those four as an induced
+subgraph, and the **516 vertex-minimal graphs are new minimal examples**
+that no smaller graph explains. The `(4, 2)` family is the surprise: twelve
+graphs of **treewidth 2 and pathwidth 4**, clique number 3 — no K4, so
+nothing in §21's construction — all twelve containing the 15-edge one as a
+subgraph, which is therefore the sparsest graph on ≤ 11 vertices with the
+gap and the one with the smallest maximum degree (3):
+
+```
+graph6 J?`@CpSKf??   11 vertices, 15 edges, degrees 3 3 3 3 3 3 3 3 2 2 2, pw 4, tw 2
+   two poles, 3 and 10; three disjoint triangles {0,4,7}, {1,5,8}, {2,6,9};
+   pole 10 is joined to 0, 1, 2 and pole 3 to 7, 8, 9; the apices 4, 5, 6 have degree 2.
+   0: 4 7 10   1: 5 8 10   2: 6 9 10   3: 7 8 9   4: 0 7   5: 1 8   6: 2 9
+   7: 0 3 4    8: 1 3 5    9: 2 3 6    10: 0 1 2
+```
+
+It is biconnected (one block, no cut vertex), so it is not a tree of cliques
+in §6's sense: the branching that costs pathwidth here is three parallel
+routes between two poles, each with a triangle on it, rather than three
+cliques at hubs. Treewidth 2 is by an elimination ordering of width 2
+(re-checked), pathwidth 4 by the exact DP and by the MOSP solver (optimum 5,
+`decide(4)` `unsat` under both configurations, lattice oracle 5). The
+sparsest `(5, 3)` graphs without §21's graph have 21 edges (288 of the 292
+minimal ones have a K4; four have `ω = 3`, treewidth 3 with no K4); all 626
+`(6, 4)` graphs contain §21's graph, 212 of them without any 10-vertex
+deletion keeping the gap. All 516 minimal graphs are listed with their
+verification in `pwtw_found.csv`; the first forty are drawn in
+`pwtw_tables.md`.
+
+### (e) The price of n = 12, and the external checks
+
+`geng` counts 165,091,172,592 graphs on 12 vertices (A000088). At the level-2
+rate measured at 11, doubled once more for the subset DP, the full joint
+census would cost about 4,300–4,700 core-hours (eleven to twelve days on 16
+cores); at level 0 (skip by `MMD` and the greedy layout; 2.7 core-µs per
+graph at 10, so roughly 5 at 12) the `pw − tw ≥ 2` question alone would cost
+about 230 core-hours plus `geng`'s own ~6.5 core-hours — a weekend on 16
+cores, not this session. The `pw − tw ≥ 3` question has cheaper prefilters
+(a graph needs `pw ≥ tw + 3 ≥ 4`, and a pendant or isolated vertex never
+raises the gap, so `geng -c -d2` suffices) but the same `geng` floor. Not
+run; priced in `pwtw_tables.md`, "Price of n = 12".
+
+Two checks came free. The `tw ≤ 1` column equals the number of forests
+(A005195: 1, 2, 3, 6, 10, 20, 37, 76, 153, 329, 710 for n = 1..11) at every
+n, which checks the treewidth recurrence and `geng`'s coverage against a
+number neither produced. The `pw ≤ 1` column (caterpillar forests: 1, 2, 3,
+6, 10, 20, 36, 72, 137, 275, 540 at n = 1..11) falls one short of the forests
+at 7, where the spider — the smallest tree that is not a caterpillar — first
+appears, and its deficit at each n (1, 4, 16, 54, 170 at 7–11) is the number
+of forests that are not caterpillar forests, which the joint table reads
+directly off the `(pw, tw) = (2, 1)` cell.
+
+**Finding, in one paragraph.** Every graph on at most nine vertices has
+`pw ≤ tw + 1`, by exhaustion of all 287,884 isomorphism classes with exact
+pathwidth and exact treewidth; §21's 10-vertex graph is therefore a smallest
+graph with `pw − tw = 2`, and it is one of exactly four on 10 vertices, all
+of the form "three K4s glued pairwise at three hubs, a tenth vertex tied to a
+non-hub vertex of each and to any set of the hubs". On 11 vertices there are
+1,034 such graphs and none with `pw − tw = 3`, so a gap of 3 needs at least
+12 vertices; 516 of the 1,034 are vertex-minimal, and twelve of them have
+treewidth 2 and pathwidth 4 with no K4 at all — the sparsest, with 15 edges
+and maximum degree 3, is three triangles strung between two poles, a
+biconnected graph that is not a tree of cliques. The whole census to 10 took
+20 s of wall clock where §21 priced the 9-vertex question at an hour, because
+a subset DP over 1,024 subsets costs microseconds in C; the n = 11 pass took
+49 minutes on 16 workers. Every one of the 1,038 graphs found was
+re-established by independent routes including the exact MOSP solver with a
+persisted witness, and two external sequences (A000088, A005195) match at
+every n.
+
+**Size range covered.** Every graph on 1–11 vertices, exactly (isolated
+vertices included, so every graph on ≤ 11 vertices). Nothing here is about
+12 vertices or more except the price; nothing here is about the MOSP corpus
+or about 125 × 125 instances, whose `pw − tw` values §21 (c) covers to 50
+exactly and to 134 by interval.
+
+**Kill criterion.** None stated. Deliverable as asked by §21's note: the
+10-vertex record is a theorem; the census at 10 and 11 is the bonus.
+
+**Not a bound, not a solver change.** Exact pathwidth and treewidth are
+computed to describe graphs; `_lower_bound` and every decision path are
+untouched, nothing was written to `solutions/`, and the 1,038
+re-certifications persisted their witnesses under the git-ignored extremal
+scratch directory.
+
+**Method notes.** *Price the enumeration before believing the estimate.*
+§21 quoted an hour for 274,668 graphs from the Python DP's cost per instance;
+the same recurrence in C over bitmasks is 6 µs per 9-vertex graph, so the
+right unit for a census is the C's, and the estimate was off by three orders
+of magnitude in the safe direction — which is why the session could go to
+11. *`geng` is the enumerator to reach for*: 12 million graphs in 1.6 s,
+`res/mod` splitting for free parallelism, and an isomorphism-class count that
+an external sequence checks; its parts are uneven (the 64 parts at n = 11
+ranged over a factor of ~2 in time), so split finer than the worker count.
+*Graph6 bit order* (upper triangle by columns, 6 bits per byte from the most
+significant, offset 63) is the only thing the C parser can get wrong, so the
+round-trip test compares edge counts on random graphs before anything else.
+*A table formatter that reads the value's Python type prints integers as
+floats* once a float column is present — key the format on the column dtype,
+and print `NaN` in string columns as empty. *A skip rule is tested where it
+fires*: at `k = 2` the atlas has nothing to skip, so the level test runs at
+`k = 1` as well and asserts that fewer DPs ran. *Vertex-minimality is a
+one-line question once the census exists*: run the deletions through the
+same C rather than reasoning about which 10-vertex graphs could be inside.
+
+**For the next loop.** (i) n = 12 at level 0 for `pw − tw ≥ 2` is about 240
+core-hours; the `pw − tw ≥ 3` question at 12 is cheaper with `geng -c -d2`
+and a treewidth lower bound before the DP, and is the first size at which a
+gap of 3 is possible at all. (ii) The `(4, 2)` family — treewidth 2,
+pathwidth 4, biconnected — is a second shape the pathwidth bounds must see,
+beside §6's trees of cliques; whether §24's conjecture mining or the
+expansion bound sees it is a one-command check on twelve graphs. (iii) §21's
+note (ii), exact treewidth with 128-bit masks for the 82 open gap ≥ 2 corpus
+instances above 64 customers, is still open. (iv) The pathwidth marginal of
+the census (1, 539, 248,083, … graphs on 11 vertices by pathwidth) and the
+joint table are integer data that do not appear to be in OEIS; the forest
+and caterpillar-forest columns are the two that are, and they match.

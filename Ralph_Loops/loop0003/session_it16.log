@@ -1,0 +1,154 @@
+# session it16 started 2026-09-26 20:35:53
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by checking the clock, the iterations file, and the plan's §3 for item 14, then decide which "for the next loop" note to spend the session on.
+  > $ date; cd /home/al/dev/MOSP && cat Ralph_Loops/loop0003/iterations.md; echo ---; git status --short | head; echo ---; pgrep -af "^python -m benchmarks.recertify"
+  > $ grep -n "^## §21\|^## §2[0-9]\|^## §1[5-9]" reports/ml_nature.md | head -20; echo ---; awk '/^## §21/{f=1} /^## §22/{f=0} f' reports/ml_nature.md | head -150
+  > $ grep -n "^## \|^### " reports/ml_nature.md | sed -n '1,400p' | grep -n "21\|22" | head; echo ---; grep -n "^## " reports/ml_nature.md | tail -15
+  > $ sed -n '5505,5788p' reports/ml_nature.md
+  > $ which geng nauty-geng showg 2>&1; python -c "import pynauty; print('pynauty', pynauty.__version__)" 2>&1; python -c "import networkx as nx; print('nx', nx.__ver
+  > $ sed -n 1,120p learning/treewidth.py
+
+I'm reading the existing treewidth C and the re-certification path from §21 before writing the exhaustive enumerator. Gathering the rest of what I need in one go.
+  > $ sed -n 1,120p learning/treewidth.c; echo ======; grep -n "def \|^_\|^[A-Z_]* = " learning/extremal.py | head -80
+  > $ sed -n 99,125p learning/extremal.py; echo ======; sed -n 570,680p learning/extremal.py
+  > $ grep -n "9-vertex\|9 vertices\|274,668\|next loop" reports/ml_nature_summary.md | head; echo ---; awk '/^## 10/{f=1} /^## 11/{f=0} f' reports/ml_nature_summary.
+  > $ echo "== best pwtw rows"; python - <<'EOF'
+import pandas as pd
+b = pd.read_csv("learning/data/ensemble/extremal_best.csv")
+print(b.columns.tolist())
+r = b[(b.ob
+
+Everything needed is in view except three small API details. I'll fetch those together, then write the C enumerator.
+  > $ sed -n 25,45p fixed_parameter_algorithm/pathwidth.py; echo ---; grep -n "def nauty_graph_certificate\|def wl_hash\|HAVE_NAUTY =" -A6 learning/canonical.py | hea
+  > Write /home/al/dev/MOSP/learning/pwtw_exhaust.c
+
+Compiling and smoke-testing on hand-checkable graphs (P3, K4, the 7-vertex spider, and §21's 10-vertex graph), then timing n = 9 and n = 10 at every level.
+  > $ gcc -O3 -march=native -Wall -o learning/_pwtw_exhaust learning/pwtw_exhaust.c && python - <<'EOF'
+import networkx as nx, subprocess, numpy as np
+from learning.t
+  > Write /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > $ grep -n "_treewidth\|\.so\|_pwtw\|tools/" .gitignore; printf '\n# item 14 (pwtw census): raw per-part outputs and the built binary\nlearning/data/pwtw/\nlearnin
+  > $ (time python -m learning.pwtw_exhaust --stage check) 2>&1 | tail -8
+
+All 1,552 graphs agree between the C and the Python references. Now the census for n = 1..10 at level 2 on 16 workers.
+  > $ mkdir -p learning/data/pwtw && (time python -m learning.pwtw_exhaust --stage run --min-n 1 --max-n 10 --workers 16 --level 2) 2>&1 | tee learning/data/ensemble/
+  > $ nohup python -m learning.pwtw_exhaust --stage run --min-n 11 --max-n 11 --workers 16 --level 2 > learning/data/ensemble/pwtw_run_n11.log 2>&1 &
+echo "launched P
+
+Verification of the four graphs and the test module are independent of the n = 11 run, so I'll do both now.
+  > $ (time python -m learning.pwtw_exhaust --stage verify) 2>&1 | tail -4; python - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/ensemble/pwtw_found.cs
+  > Write /home/al/dev/MOSP/tests/test_pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > $ (time python -m pytest tests/test_pwtw_exhaust.py -q -x 2>&1 | tail -5)
+  > Edit /home/al/dev/MOSP/tests/test_pwtw_exhaust.py
+
+Fixing the one test assertion, then re-running the tests, generating the tables, and checking the n = 11 progress together.
+  > $ python -m pytest tests/test_pwtw_exhaust.py -q -x 2>&1 | tail -2
+  > $ python -m learning.pwtw_exhaust --stage tables && sed -n '/## Graphs by n/,/## Pathwidth marginal/p' reports/pwtw_tables.md && sed -n '/## Subgraph containment/
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > $ python -m learning.pwtw_exhaust --stage tables >/dev/null && sed -n '/## Graphs by n/,/## Pathwidth marginal/p' reports/pwtw_tables.md | tail -4 && sed -n '/## 
+  > $ sed -n '/## Pathwidth marginal/,/## Price/p' reports/pwtw_tables.md
+  > ToolSearch {"query": "select:WebSearch,Monitor", "max_results": 2}
+
+Arming a one-shot notifier for the n = 11 run and searching for prior art on small-graph pathwidth-vs-treewidth counts, both at once.
+  > $ until grep -q "^n=11: .* graphs" learning/data/ensemble/pwtw_run_n11.log || ! kill -0 966608 2>/dev/null; do sleep 5; done; date; cat learning/data/ensemble/pwt
+  > WebSearch {"query": "smallest graph pathwidth equals treewidth plus 2 exhaustive enumeration small graphs pathwidth treewidth cens
+  > WebSearch {"query": "OEIS number of graphs on n nodes with pathwidth 1 caterpillar forests 1, 2, 3, 6, 10, 20, 36, 72, 137, 275"}
+  > $ date; cat learning/data/ensemble/pwtw_run_n11.log; ls learning/data/pwtw/ | grep -c "n11"; for f in learning/data/pwtw/n11_*; do grep -c "" "$f"; done | sort -n
+
+The n = 11 pass has run 4 of its ~25 minutes (64 parts, 16 at a time). While it runs I'll run the full test suite as an early regression check.
+  > $ (time python -m pytest tests/ -q -x 2>&1 | tail -3)
+  > $ python - <<'EOF'
+import pandas as pd, networkx as nx
+from networkx.algorithms.isomorphism import GraphMatcher
+from learning import pwtw_exhaust as px
+from learn
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+
+Wiring the new columns into the tables function, then re-running verify, tables, and the tests for this module.
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > $ python -m learning.pwtw_exhaust --stage verify 2>&1 | tail -1 && python -m learning.pwtw_exhaust --stage tables && sed -n '/## External check/,/## Pathwidth mar
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > $ python -m learning.pwtw_exhaust --stage tables >/dev/null && grep -c "nan" reports/pwtw_tables.md; date; cat learning/data/ensemble/pwtw_run_n11.log; for f in l
+  > $ sed -n 6910,6940p reports/ml_nature.md; grep -n "^\*\*Size range\|^\*\*Kill\|^\*\*Finding\|^\*\*Method notes\|^\*\*For the next loop" reports/ml_nature.md | tai
+  > Write /tmp/it16/s27.md
+
+Draft written with slots for the n = 11 numbers. Checking the run's progress.
+  > $ date; cat learning/data/ensemble/pwtw_run_n11.log; for f in learning/data/pwtw/n11_*; do grep -c "TOTAL" "$f"; done | sort | uniq -c; grep -h "^FOUND" learning/
+
+12 of 64 parts done, 36 graphs with `pw − tw = 2` so far and none with 3. Nothing else is pending on my side, so I'll poll the run in bounded foreground loops until it finishes.
+  > $ for i in $(seq 1 19); do if grep -q "^n=11: .* graphs" learning/data/ensemble/pwtw_run_n11.log || ! kill -0 966608 2>/dev/null; then break; fi; sleep 30; done; 
+
+22 of 64 parts done after 20 minutes; the parts are uneven, so the pass will take about 45 minutes in all. Polling again.
+  > $ for i in $(seq 1 19); do if grep -q "^n=11: .* graphs" learning/data/ensemble/pwtw_run_n11.log || ! kill -0 966608 2>/dev/null; then break; fi; sleep 30; done; 
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/learning/pwtw_exhaust.py
+  > Edit /home/al/dev/MOSP/tests/test_pwtw_exhaust.py
+
+Running the module's tests plus verify and tables on the n ≤ 10 data to confirm the new columns work, and checking the run in the same pass.
+  > $ python -m pytest tests/test_pwtw_exhaust.py -q 2>&1 | tail -1; python -m learning.pwtw_exhaust --stage verify 2>&1 | tail -1 && python -m learning.pwtw_exhaust 
+
+All green: 20 tests, verification agrees, tables regenerate. Only the n = 11 run is outstanding (36 of 64 parts), so I'll poll it.
+  > $ for i in $(seq 1 19); do if grep -q "^n=11: .* graphs" learning/data/ensemble/pwtw_run_n11.log || ! kill -0 966608 2>/dev/null; then break; fi; sleep 30; done; 
+
+50 of 64 parts done; the last 14 are running. One more poll should catch the finish.
+  > $ for i in $(seq 1 19); do if grep -q "^n=11: .* graphs" learning/data/ensemble/pwtw_run_n11.log || ! kill -0 966608 2>/dev/null; then break; fi; sleep 30; done; 
+  > $ nohup python -m learning.pwtw_exhaust --stage verify --max-recertify 5000 > learning/data/ensemble/pwtw_verify.log 2>&1 &
+echo "verify PID $!"; python - <<'EOF'
+  > $ python - <<'EOF'
+import pandas as pd, networkx as nx
+from learning import pwtw_exhaust as px
+f = pd.read_csv(px.FOUND_CSV); f11 = f[(f.n==11)&(f.tw==2)].sort_va
+  > Edit /home/al/dev/MOSP/tests/test_pwtw_exhaust.py
+  > $ for i in $(seq 1 19); do if grep -q "graphs verified" learning/data/ensemble/pwtw_verify.log || ! kill -0 1006130 2>/dev/null; then break; fi; sleep 30; done; d
+  > $ python -m learning.pwtw_exhaust --stage tables && wc -l reports/pwtw_tables.md && du -sh learning/data/ensemble/pwtw_*.csv && python - <<'EOF'
+import pandas as 
+
+Reading the tail of that output (the disconnected-graph line, the global agreement check, and the test result), since the preview cut it off.
+  > $ tail -6 /home/al/.claude/projects/-home-al-dev-MOSP/f1c5ce58-56d5-4562-84ae-5b3ca08c38a5/tool-results/b353k0oqr.txt; grep -c "" /home/al/.claude/projects/-home-
+
+One last structural fact before the write-up: whether the other eleven treewidth-2 graphs all contain the 15-edge one, so the section can state the family precisely.
+  > $ python - <<'EOF'
+import pandas as pd, networkx as nx
+from networkx.algorithms.isomorphism import GraphMatcher
+from learning import pwtw_exhaust as px
+f = pd.rea
+
+All facts are in hand. I'll now write the final §27, append the PROGRESS.md entry and mark the item, and run the full test suite, all at once.
+  > Write /tmp/it16/s27.md
+  > $ sed -i 's/(1, 539, 247,913+170, … graphs on 11 vertices by pathwidth)/(1, 539, 248,083, … graphs on 11 vertices by pathwidth)/' /tmp/it16/s27.md && grep -c "⟨" 
+  > $ sed -i 's/^- \*\*Current\*\*: 13\/14 SOLVED/- **Current**: 14\/14 SOLVED/' Ralph_Loops/loop0003/PROGRESS.md && sed -i 's/^- \[ \] 14 · \*\*Reserve\.\*\*/- [x] 1
+
+Final checks: the full test suite, and the ensemble directory's size against the ~120 MB budget.
+  > $ du -sh --apparent-size learning/data/ensemble | cut -f1; (time python -m pytest tests/ -q -x 2>&1 | tail -2); date
+  > $ sed -i 's/  Full suite: see the run below\. No solver default/  Full suite: 1,048 passed, 2 skipped, 1 xfailed in 84 s. No solver default/' Ralph_Loops/loop0003
+
+Item 14 is done, the loop is complete, and nothing is left running. The only process `pgrep` matched was the polling shell itself, as earlier iterations warned.
+
+**What the session did.** No item was blocked, so it took the first "for the next loop" note (§21's: exhaust the 9-vertex graphs so the 10-vertex `pw − tw = 2` record becomes a theorem) and went two sizes further, because the estimate in §21 was off by three orders of magnitude in the safe direction: the subset DPs cost microseconds in C, not the Python DP's seconds.
+
+**Findings**, written as §27 of `reports/ml_nature.md` with tables in `reports/pwtw_tables.md`:
+- **Theorem.** Every graph on at most 9 vertices has `pw ≤ tw + 1`. All 287,884 isomorphism classes were enumerated with nauty's `geng` and both widths computed exactly. §21's 10-vertex graph is therefore a smallest graph with `pw − tw = 2`.
+- **The four graphs on 10 vertices** with the gap are §21's graph with its tenth vertex joined to any subset of the three hubs, a chain of 21 to 24 edges. The 21-edge graph is edge-minimal and the 24-edge one edge-maximal.
+- **On 11 vertices** there are 1,034 such graphs and none with a gap of 3, so a gap of 3 needs at least 12 vertices. 516 are new vertex-minimal examples. Twelve have treewidth 2 and pathwidth 4 with no K4 at all. The sparsest, 15 edges and maximum degree 3, is three triangles strung between two poles, biconnected and not a tree of cliques, which makes it a second shape for any future bound work.
+- The share of graphs with pathwidth strictly above treewidth rises from 0.6% at n = 6 to 9.9% at n = 11.
+
+**Verification.** Every count matches OEIS A000088, the treewidth-1 column matches the number of forests (A005195) at every n, the C agrees with the Python references on 1,552 graphs, and all 1,038 graphs found were re-established by independent routes including the exact MOSP solver with persisted witnesses, both `decide` configurations, and the lattice oracle. All 1,038 agree.
+
+**Deliverables.** `learning/pwtw_exhaust.c`, `learning/pwtw_exhaust.py`, `tests/test_pwtw_exhaust.py` (20 tests), three small committed CSVs and logs under the ensemble directory (82 MB apparent in total), a `.gitignore` update for the scratch outputs. Compute was 20 s for n ≤ 10 and 49 minutes on 16 workers for n = 11. The full suite passes with 1,048 tests. No solver default, bound or C path was touched and nothing was written to `solutions/`.
+
+**Bookkeeping.** PROGRESS.md carries the Iteration 16 section, reads 14/14 SOLVED, and ends with `LOOP_COMPLETE`. Item 14 is marked `- [x]` in iterations.md. Nothing was committed, per the driver's rule. The n = 12 census is priced in §27 at 4,300 to 4,700 core-hours for the full joint table or about 240 for the gap question alone, and left for a future loop.
+
+Sources consulted for prior art: [Approximating pathwidth for graphs of small treewidth (arXiv)](https://arxiv.org/abs/2008.00779), [OEIS A000088](https://oeis.org/A000088), [OEIS A005418](https://oeis.org/A005418), [Pathwidth (Wikipedia)](https://en.wikipedia.org/wiki/Pathwidth), [Treewidth (Wikipedia)](https://en.wikipedia.org/wiki/Treewidth). None reports a census of small graphs, so no novelty is claimed.
+
+# result: success in 3934s, 70 turns, cost $19.76

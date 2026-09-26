@@ -77,3 +77,8 @@
 [2026-09-26 20:22:14] claude session it15 (cap 3.00 h) -> session_it15.log
 [2026-09-26 20:34:28] session it15: ok (exit 0, 31 tool calls)
 [2026-09-26 20:35:52] tests passed: 1028 passed, 2 skipped, 1 xfailed, 156 warnings in 83.50s (0:01:23)
+[2026-09-26 20:35:53] committed a6b2cf8a: 13 · §2.11 The synthesis. `reports/ml_nature_summary.md`: every claim
+[2026-09-26 20:35:53] === iteration 16: 14 · Reserve. If any item above is marked `- [!]`, re-open the most
+[2026-09-26 20:35:53] claude session it16 (cap 3.00 h) -> session_it16.log
+[2026-09-26 21:41:28] session it16: ok (exit 0, 69 tool calls)
+[2026-09-26 21:42:52] tests passed: 1048 passed, 2 skipped, 1 xfailed, 157 warnings in 82.98s (0:01:22)

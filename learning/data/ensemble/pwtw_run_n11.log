@@ -1,0 +1,9 @@
+n=11: 8/64 parts, 531 s
+n=11: 16/64 parts, 728 s
+n=11: 24/64 parts, 1283 s
+n=11: 32/64 parts, 1649 s
+n=11: 40/64 parts, 2060 s
+n=11: 48/64 parts, 2350 s
+n=11: 56/64 parts, 2555 s
+n=11: 64/64 parts, 2965 s
+n=11: 1,018,997,864 graphs (complete), 1,018,997,864 treewidth DPs, 1034 with pw − tw ≥ 2, 2965 s on 16 workers

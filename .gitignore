@@ -45,3 +45,8 @@ learning/data/conjecture/
 
 # item 10 labelled rows and models (regenerable, ~100 MB)
 learning/data/set_imitation/
+
+# item 14 (pwtw census): raw per-part outputs and the built binary
+learning/data/pwtw/
+learning/_pwtw_exhaust
+learning/_pwtw_exhaust.build-*
