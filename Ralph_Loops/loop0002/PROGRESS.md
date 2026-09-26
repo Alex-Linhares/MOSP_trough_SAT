@@ -3,7 +3,7 @@
 ## Ralph Loop 0002 Status
 - **Started**: 2026-09-26 06:18
 - **Target**: 6 items
-- **Current**: 5/6 SOLVED
+- **Current**: 6/6 SOLVED
 
 ---
 
@@ -268,3 +268,66 @@ Item 05 · §2.9 Is the graph the whole story? Report: `reports/ml_nature.md`
   the default-configuration ridge fit of §11 can be adjusted before
   comparison. `learning.hardness_map.scaling` / `fit_scaling` and
   `large_counts`, `learning.concentration.STRUCTURAL` as §12 noted.
+
+## Iteration 6 — 2026-09-26 08:30
+
+Item 06 · §2.8 (scaling only) Does it hold at 125 × 125? Report:
+`reports/ml_nature.md` §14; figure `reports/figures/scale_test.png`; all
+tables in `reports/scale_test_tables.md`.
+
+### Completed
+- `learning/scale_test.py`: `--refute` computes the 50–125 node counts
+  (`learning/data/ensemble/scale_nodes.csv`, committed, 38 KB); the analysis
+  predicts the optimum (§12 formula refit on n ≤ 30 with nominal and realised
+  p, §12 constants, `tw_min_fill + 1`, sandwich midpoint, `lb_best`,
+  `ub_best`, LightGBM on scale-free graph features) and the nodes (§11 cell
+  law per density interpolated in `col_mean`, fitted 15–30 and 15–40, ratio-
+  aware for m = 2n; the pre-registered ridge law; a linear surface in n,
+  log col_mean, opt/n, degree), split-conformal radii from campaign n = 35, 40
+  (absolute and n-scaled, widths printed), coverage by band with censored
+  calls as lower bounds, the first band where each interval fails, and the
+  laws read off the corpus itself (`corpus_scaling`, `corpus_linearity`).
+- **The ledger has no node counts** (the brief said it did; the column is
+  empty), so this item refuted `optimum − 1` for the 140 corpus instances at
+  n ≥ 50 outside the two day-long 125 classes under both configurations:
+  280 calls, 273 settled, 7 censored at 1,500 s (all `Random-100-100-2`, at
+  2.1–5.4 × 10⁹ nodes), 5.65 core-hours, 27 min wall on 16 workers. The five
+  recertify counts are the `csearch` configuration (verified via
+  `sparse_enough_for_better_move`) and are compared only with `csearch` laws.
+- Findings: exponential growth in n at fixed density **holds through 125**
+  in every class (power law 3–5× worse in RMS); the campaign's n ≤ 40 rates
+  overstate the corpus's by 0.005–0.018 per customer, a factor 6–34 at 125
+  for d = 6–10, but within ×3 for the two day-long classes: the §11
+  pre-registered ridge law (5 × 10¹¹) against 1.6–1.7 × 10¹¹ on record, and
+  the d = 4 law 11.5 vs 10.7–11.4. The d = 2 class stays 2–6× above d = 4 at
+  every size to 125 while its opt/n falls 0.29 → 0.18, so `col_mean`, not
+  `opt/n`, is the ridge's size-stable coordinate (§11's open question).
+  E[opt] is linear in n at fixed density through 125 (r² ≥ 0.986) but with
+  intercept 4–5 (formula: 2.2) and slope 0.146 at col_mean 2.8 (formula
+  0.22), so the formula's bias reaches +8 at `Random-125-125-2` while
+  staying within ±2 at d ≥ 4; `tw_min_fill + 1` is +4.2 at 125. Theorem 2
+  saves more at 50–125 (median ratio 0.63 at n = 100, 0.17 at
+  `Random-100-50-4`) than §13 measured at n ≤ 40.
+- **Kill met, both quantities**: every 90% interval calibrated on n ≤ 40
+  fails at 50 (tight radii) or 75 (loose radii) and collapses to 0.08–0.27
+  coverage at 100–125; n-scaled radii hold only at ±6–10 stacks / ±1.4–4.9
+  decades. §14 quotes point errors at 50–125 and no interval.
+- Tests: `tests/test_scale_test.py` (8): name parsing, conformal quantile by
+  hand, law interpolation, coverage with censoring and no-radius, first
+  failure, formula ends (complete graph → n), planted scaling rate and
+  linearity, planted cell law. Full suite: 813 passed, 2 skipped, 1 xfailed,
+  76 s. Nothing written to `solutions/`; no solver default changed;
+  `_lower_bound` untouched.
+
+### Blockers
+- None. `benchmarks.recertify` was running with 9 workers; this iteration
+  used 16 for 27 minutes.
+
+### Next
+- Loop complete. For the owner: §14's table "where each finding stops
+  holding" is the fold-in for `CLAUDE.md`; the two open measurements it
+  leaves are exact treewidth on the ridge classes (§12) and whether the
+  Theorem 2 saving keeps growing at 125 on `m = n / 2` instances, which the
+  corpus does not have.
+
+LOOP_COMPLETE

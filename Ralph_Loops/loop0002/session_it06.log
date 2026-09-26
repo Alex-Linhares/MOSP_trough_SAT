@@ -1,0 +1,146 @@
+# session it06 started 2026-09-26 07:51:38
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, the loop0001/loop0002 report sections, and the code this item builds on.
+  > $ date && pgrep -af benchmarks.recertify | head; nproc; wc -l reports/ml_nature_plan.md reports/ml_nature.md; grep -n "^## " reports/ml_nature_plan.md reports/ml_
+  > $ sed -n 1,64p reports/ml_nature_plan.md && echo ------ && grep -n "2.8" reports/ml_nature_plan.md | head && awk '/^### 2.8/,/^### 2.9/' reports/ml_nature_plan.md
+  > $ sed -n 2535,2878p reports/ml_nature.md
+  > $ sed -n 2878,3216p reports/ml_nature.md | grep -n -i -E "formula|STRUCTURAL|E\[opt\]|q = |D = |held-out|extrapolat|MAE|conformal|item 06|^\*\*|^### " | head -80
+  > $ sed -n 3060,3095p reports/ml_nature.md; echo ======; sed -n 3216,3493p reports/ml_nature.md | grep -n -i -E "flip|better_move|saving|10–13|label|MAD|item 06" | 
+  > $ grep -n "^def \|^STRUCTURAL\|^[A-Z_]* = " learning/hardness_map.py learning/concentration.py learning/node_counts.py | head -120; echo ====; head -3 benchmarks/
+
+I'm mapping the data sources: the ledger's `nodes` column is empty for the Random rows, so I'm checking what large-size counts actually exist and what I can compute myself within the budget.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+L=pd.read_csv('benchmarks/results/compute_ledger.csv')
+print("ledger rows with nodes:", L['nodes'].notna().sum
+  > $ python - <<'EOF'
+import pandas as pd
+I=pd.read_csv('learning/data/instances.csv')
+rr=I[I['instance_name'].str.startswith('Random')].copy()
+p=rr['instance_name']
+  > $ sed -n 60,175p learning/node_counts.py; echo =====CONC; sed -n 95,125p learning/concentration.py; sed -n 480,580p learning/concentration.py
+  > $ sed -n 351,410p learning/hardness_map.py; echo ====; sed -n 499,572p learning/hardness_map.py; echo ====; sed -n 1,60p learning/node_counts.py | grep -n "import
+  > $ grep -n "better_move\|decide(\|def _worker\|refute\|deadline" benchmarks/recertify.py | head -20; echo ====; grep -n "def enumerate_instances" -A 25 learning/da
+  > $ grep -n "^def decide" -A 12 satisfiability/customer_search.py | head -30; grep -n "^BETTER_MOVE_DENSITY" satisfiability/customer_search.py; grep -n "DEFAULT_INS
+
+Writing the refutation runner now and launching it in the background, since the n = 50–125 node counts are the long pole. The analysis code follows while it runs.
+  > $ cat > learning/scale_test.py <<'EOF'
+"""Does what the campaign found at n <= 40 hold at 50-125? (plan §2.8, scaling only; loop0002 item 06)
+
+Question
+--------
+I
+  > $ mkdir -p learning/data/ensemble && setsid nohup env PYTHONPATH=/home/al/dev/MOSP python -m learning.scale_test --refute --workers 16 --deadline 1500 --wall-budg
+
+The run is going (125×125 at densities 8 and 10 refute in 10⁵–10⁷ nodes, within seconds). Now exploring the campaign frame to design the two predictors and their calibration.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+F=pd.read_csv('learning/data/ensemble/results.csv')
+print(F.shape, F['status_default'].value_counts().to_dict(
+  > $ python -c "import lightgbm; print('lgbm', lightgbm.__version__)"; grep -n "def feature_names" -A 30 learning/features.py | head -50; echo ====; grep -n "feature
+  > $ sed -n 85,110p learning/graph_story.py; grep -n "^GRAPH_ONLY" -A 4 learning/graph_story.py | head -20; python -c "
+from learning.features import feature_names; 
+  > $ python - <<'EOF'
+# split the file: keep everything up to main(), then append the analysis
+src=open('learning/scale_test.py').read()
+head=src.split("\ndef main()
+  > $ date; wc -l learning/data/ensemble/scale_nodes.csv; tail -4 learning/data/ensemble/scale_nodes.log; python - <<'EOF'
+import pandas as pd
+s=pd.read_csv('learning
+  > $ python - <<'EOF'
+p='learning/scale_test.py'; s=open(p).read()
+# 1. coverage NaN when radius NaN
+s=s.replace('''        in_abs = np.abs(e) <= radius_abs
+        
+
+Fixing the one test failure (the linearity table assumed size 125 is present) and checking the run's progress.
+  > $ python - <<'EOF'
+p='learning/scale_test.py'; s=open(p).read()
+s=s.replace('''                     "opt/n at 30": float(means.loc[30] / 30), "opt/n at 125": floa
+  > $ timeout 600 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ sed -n '/configuration `default`/,/Predictors: bias/p' reports/scale_test_tables.md | head -40; sed -n '/Scaling measured on the corpus itself/,/Per class: obse
+  > $ tail -2 /tmp/claude-1000/-home-al-dev-MOSP/b7437d77-4292-4a9d-949f-8cb6223ab1f3/tasks/bt9ft7kov.output; date; wc -l learning/data/ensemble/scale_nodes.csv; tail
+  > $ grep -E "passed|failed" /tmp/claude-1000/-home-al-dev-MOSP/b7437d77-4292-4a9d-949f-8cb6223ab1f3/tasks/bt9ft7kov.output | tail -1
+
+Suite is green (813 passed). Next I need the run to finish; meanwhile I'll check the figure renders and load the monitoring tool to wait on the run without polling by hand.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! kill -0 3992999 2>/dev/null; do sleep 15; done; date; wc -l /home/al/dev/MOSP/learning/data/ensemble/scale_nodes.csv; tail -2 /home/al/dev/MOSP/learning
+  > Read /home/al/dev/MOSP/reports/figures/scale_test.png
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/b7437d77-4292-4a9d-949f-8cb6223ab1f3/tasks/biofg7oe2.output; pgrep -f "learning.scale_tes[t]" | head -3; date
+  > $ until [ -z "$(pgrep -f 'learning.scale_tes[t] --refute')" ]; do sleep 20; done; date; wc -l /home/al/dev/MOSP/learning/data/ensemble/scale_nodes.csv; tail -3 /h
+  > $ cat > /tmp/sec14_head.md <<'EOF'
+## 14. Does it hold at 125 × 125? The n ≤ 40 laws against the Chu & Stuckey corpus (§2.8, scaling only, item 06)
+
+*loop0002 ite
+
+The run is at 76 of 280 rows. While it continues I'll re-run the analysis on the partial counts to see the trends, and check whether any call has hit the deadline yet.
+  > $ grep -c unknown learning/data/ensemble/scale_nodes.csv; python -m learning.scale_test 2>&1 | grep -v Warning | head -3; sed -n '/Scaling measured on the corpus 
+  > $ python - <<'EOF'
+p='learning/scale_test.py'; s=open(p).read()
+s=s.replace('''def cell_laws(campaign: pd.DataFrame, config: str = "default", max_n: int = FIT_MAX
+
+The optimum half of the analysis does not depend on the run, so I'll pull its final tables now and draft that part of the section while the refutations continue.
+  > $ python - <<'EOF'
+import pandas as pd
+pd.set_option('display.width',250); pd.set_option('display.max_columns',60)
+from learning.scale_test import *
+camp=load_cam
+  > $ date; wc -l learning/data/ensemble/scale_nodes.csv; grep -c unknown learning/data/ensemble/scale_nodes.csv; tail -2 learning/data/ensemble/scale_nodes.log; cat 
+  > $ cat > /tmp/sec14_a.md <<'EOF'
+### (a) The optimum: the line holds to 125, the formula's constants do not, and no interval survives 100
+
+Constants refit on the c
+  > $ date; wc -l learning/data/ensemble/scale_nodes.csv; grep -c unknown learning/data/ensemble/scale_nodes.csv; tail -3 learning/data/ensemble/scale_nodes.log; cat 
+  > $ python - <<'EOF'
+import subprocess, time
+t0=time.time()
+while time.time()-t0 < 560:
+    if not subprocess.run(['pgrep','-f','learning.scale_tes[t] --refute'],ca
+  > $ python - <<'EOF'
+import pandas as pd, subprocess, time
+s=pd.read_csv('learning/data/ensemble/scale_nodes.csv')
+from learning.scale_test import corpus_targets
+na
+
+The refutation run finished at 08:22: 280 calls, all but a few `Random-100-100-2` calls settled within the deadline. Now I'll run the final analysis and read the node-count results.
+  > $ python - <<'EOF'
+import pandas as pd
+s=pd.read_csv('learning/data/ensemble/scale_nodes.csv'); print(len(s), s.status.value_counts().to_dict(), 'core-s', round(s
+  > $ sed -n '/^## The five 125/,$p' reports/scale_test_tables.md; echo; awk '/configuration `default`/{f=1} f && /Per class: observed against predicted/{g=1} g' repo
+  > $ python - <<'EOF'
+p='learning/scale_test.py'; s=open(p).read()
+s=s.replace('''                row[name.split(" (")[0]] = float(np.nanmean(pred[g.index])) if np.i
+  > $ python -m pytest tests/ -q -x 2>&1 | tail -2 > /tmp/final_suite.txt; date >> /tmp/final_suite.txt
+  > Read /home/al/dev/MOSP/reports/figures/scale_test.png
+  > $ cat > /tmp/sec14_b.md <<'EOF'
+
+### (b) The nodes: exponential to 125, at rates the campaign overstates by 0.01–0.02 per customer
+
+The counts this item computed 
+  > $ cat /tmp/final_suite.txt; python - <<'EOF'
+import pandas as pd
+s=pd.read_csv('learning/data/ensemble/scale_nodes.csv')
+w=s[s.status=='unsat'].pivot(index='insta
+  > $ python - <<'EOF'
+import pandas as pd
+s=pd.read_csv('learning/data/ensemble/scale_nodes.csv')
+w=s[s.status=='unsat'].pivot(index='instance_name',columns='config'
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+old='''The counts this item computed (default configuration; `csearch` differs only
+where `better_mo
+  > $ printf '\nLOOP_COMPLETE\n' >> Ralph_Loops/loop0002/PROGRESS.md && tail -3 Ralph_Loops/loop0002/PROGRESS.md && git status --short | grep -v "Ralph_Loops/loop0002
+
+Item 06 is done and the loop is complete. Nothing remains to request.
+
+**What this iteration did.** It tested the two n ≤ 40 laws from items 03 and 04 against Chu & Stuckey's 200 corpus instances at 30–125. The ledger turned out to hold no node counts at all despite the brief, so the module refuted `optimum − 1` itself for the 140 instances at n ≥ 50 outside the two day-long classes, under both configurations. That took 5.65 core-hours, with 273 of 280 calls settled and 7 censored, and the counts are committed as `learning/data/ensemble/scale_nodes.csv`.
+
+**What holds to 125.** The refutation grows exponentially in n at fixed density in every class, with a power law three to five times worse. The mean optimum stays linear in n at fixed density. The density-2 class stays 2–6× harder than density 4 at every size, so customers per product, not optimum/n, is the ridge's size-stable coordinate. The pre-registered ridge law from §11 predicted 5 × 10¹¹ nodes at 125×125 density 2 and the two counts on record are 1.6 and 1.7 × 10¹¹, within a factor of 3 after eight decades of extrapolation.
+
+**What fails.** The campaign's growth rates overstate the corpus's by 0.005–0.018 per customer, which compounds to a factor of 6–34 at 125 for densities 6–10. The §12 formula's intercept and sparse slope are wrong, so its bias reaches +8 stacks at density 2 by 125 while staying within ±2 at densities 4–10. `tw_min_fill + 1` is +4.2 at 125. Every 90% conformal interval calibrated on n ≤ 40 fails at 50 or 75, so the plan's kill criterion is met for both quantities and §14 quotes no interval beyond n = 40. A side finding: Theorem 2's saving grows with n, to a median 37% at n = 100 and 83% on `Random-100-50-4`.
+
+**Bookkeeping.** §14 appended to `reports/ml_nature.md` with tables in `reports/scale_test_tables.md` and the figure in `reports/figures/scale_test.png`. Eight new tests; the full suite passes at 813. PROGRESS.md has the iteration entry, the count reads 6/6, the item is ticked, and `LOOP_COMPLETE` is the last line. Nothing was written to `solutions/`, no solver default changed, and nothing was committed.
+
+# result: success in 2181s, 50 turns, cost $10.24

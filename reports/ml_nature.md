@@ -3491,3 +3491,322 @@ and the table above is folded to on-against-off. *The witnesses are the
 expensive-looking part of the artifact and the cheapest to regenerate*: 64 MB
 for 15,900 instances that re-solve in 170 s, so they are git-ignored and the
 CSVs — 2 MB gzipped, from which every instance regenerates — are committed.
+## 14. Does it hold at 125 × 125? The n ≤ 40 laws against the Chu & Stuckey corpus (§2.8, scaling only, item 06)
+
+*loop0002 iteration 6, 2026-09-26. Code: `learning/scale_test.py`. Regenerate:*
+
+```bash
+python -m learning.scale_test --refute --workers 16 --deadline 1500 --wall-budget 4200   # the 50-125 node counts -> learning/data/ensemble/scale_nodes.csv (resumable)
+python -m learning.scale_test                                                             # reports/scale_test_tables.md + reports/figures/scale_test.png, ~15 s
+python -m pytest tests/test_scale_test.py -q                                              # 8 tests on hand-checkable data
+```
+
+*Reads the campaign (`learning/data/ensemble/results.csv`, §10), the corpus
+feature table (`learning/data/instances.csv`), the n = 30 and 40 node counts of
+§3 (`learning/data/node_counts.csv`), `recertify/results.json`, and the node
+counts this item refuted itself (`learning/data/ensemble/scale_nodes.csv`,
+committed with the code). Writes nothing under `solutions/`; no solver default
+changed; `_lower_bound` untouched. Every table below is in full in
+`reports/scale_test_tables.md`.*
+
+**Question.** Items 03 and 04 fitted two laws on generated instances with at
+most 40 customers: the refutation node count grows exponentially with `n` at
+fixed density (§11, doubling every 2.9–3.5 customers on the ridge, every
+4.5–4.9 off it), and the mean optimum is `E[opt] ≈ a(1 − q) + n[1 − √(1 − q)·c/(D + c)]`
+in the random-intersection-graph parameters `q = 1 − (1 − p²)^m`,
+`D = (n − 1)q` (§12). Taken exactly as fitted, do they predict (a) the certified
+optimum and (b) the nodes to refute `optimum − 1` for Chu & Stuckey's 200
+`Random-n-m-d` corpus instances at `n = 30, 40, 50, 75, 100, 125`? At what
+size does each prediction leave a conformal interval calibrated on `n ≤ 40`?
+The plan's kill: if coverage collapses across the size boundary, the intervals
+say nothing at large sizes and must not be quoted there.
+
+**Data, and what had to be computed.** The item's brief said the 50–125 node
+counts were in the compute ledger. **They are not**: `compute_ledger.csv` has
+a `nodes` column and no row carries a value (the column post-dates the runs
+that filled the corpus). The only large counts on record were the five
+125 × 125 refutations of `recertify/results.json`. So this item refuted
+`optimum − 1` itself for the 140 corpus instances at `n ≥ 50` outside the two
+day-long classes (`Random-125-125-2` and `-4`, where the recertify counts stand
+in), under both `learning.node_counts` configurations, 16 workers, a 1,500 s
+deadline per call. A call that hits the deadline is **censored**: its count is
+a lower bound and enters coverage only when that lower bound already exceeds
+the interval, otherwise as "undetermined". The recertify configuration
+(`better_move=True, better_move_dominators=0, memo=True`) is exactly the
+`csearch` configuration on instances with at most five products per customer
+(`sparse_enough_for_better_move` is true for all five), so those five counts
+are `csearch` observations, and not `default` ones.
+
+**Method.** Fits use campaign `n ≤ 30`; conformal radii are the
+⌈(N + 1)·0.9⌉/N quantile of |residual| on the campaign's `n = 35` and `40`
+instances (split conformal, so an "`n ≤ 40`" interval is honest about the
+5–10 customers of extrapolation it already contains); coverage is then read on
+the corpus by band (30–40, 50, 75, 100, 125; 50 instances in the first, 25 in
+each other, of which the 125 band has 15 `default` and 20 `csearch`
+observations). Two radii per estimate: an **absolute** one, and one **scaled
+with `n`** (the campaign's residual spread grows roughly linearly in `n` for
+the optimum, §12), whose width at 50 and 125 is printed beside it, because a
+wide enough interval "holds" trivially. A 90% interval is said to hold on a
+band if at least 80% of the determined observations fall inside it (the
+binomial slack of 25 draws), and the deliverable is the first band where it
+does not. For the optimum: the §12 form with constants refit on `n ≤ 30`
+(nominal `p = d/n`, and realised `p` = matrix density), the §12 constants
+themselves, and the baselines `tw_min_fill + 1` (§4's best point estimate),
+the §5 sandwich midpoint, `lb_best`, `ub_best`, and a LightGBM on
+**scale-free** graph features predicting `optimum / n` (trees cannot
+extrapolate in `n`, so every feature is a ratio). For the nodes: §11's cell
+law `log10(median) = a_d + b_d·n` per fixed `m = n` density, interpolated in
+`log10 col_mean` between adjacent densities (Chu & Stuckey's "d = 2" has
+`col_mean` 2.7–2.8, §11), the same fitted on 15–40 as §11 did, §11's
+pre-registered ridge law (`d = 3`), and a linear **surface** in `n`,
+`log10 col_mean`, `optimum / n`, mean degree and their products, fitted on all
+four campaign series at `n ≤ 30` (linear in `n`, hence extrapolable; §13
+licenses graph-only features). Then the laws are read off the corpus itself:
+per density class, the class-median nodes at each `n` where all five counts
+are uncensored, fitted exponential against power law with `fit_scaling` over
+30–125, and the class-mean optimum against `n` as a line.
+
+**Baseline.** For the optimum, `tw_min_fill + 1`. For the nodes, §11's own
+fits extrapolated, which is what a reader of §11 would do.
+### (a) The optimum: the line holds to 125, the formula's constants do not, and no interval survives 100
+
+Constants refit on the campaign's `n ≤ 30` cell means: `a = 2.26`, `c = 27.3`
+(§12 on `n ≤ 40`: 2.1, 27). Error in stacks over the 200 corpus instances, and
+the share inside the 90% interval calibrated on campaign `n = 35, 40`
+(absolute radius, and the `n`-scaled radius whose width at 125 is in the
+last column):
+
+| estimate | abs. radius | MAE 30–40 / 50 / 75 / 100 / 125 | bias 125 | coverage, abs: 30–40 / 50 / 75 / 100 / 125 | abs. interval first fails at | n-scaled coverage 125 (width) |
+|---|---|---|---|---|---|---|
+| formula, realised `p`, refit `n ≤ 30` | 2.9 | 0.97 / 1.29 / 2.36 / 4.17 / 2.84 | +0.98 | 0.98 / 0.84 / 0.76 / **0.40** / 0.72 | **75** | 0.96 (±9.8) |
+| formula, realised `p`, §12 constants | 2.9 | 0.96 / 1.27 / 2.33 / 4.20 / 2.77 | +1.14 | 0.98 / 0.84 / 0.76 / 0.38 / 0.72 | 75 | 0.96 (±9.6) |
+| formula, nominal `p = d/n` | 2.8 | 1.26 / 2.26 / 2.41 / 2.75 / 2.93 | −2.01 | 0.94 / **0.66** / 0.56 / 0.60 / 0.40 | **50** | 1.00 (±9.2) |
+| `tw_min_fill + 1` (§4's point estimate) | 1.0 | 0.40 / 0.62 / 1.28 / 3.08 / 4.24 | **+4.24** | 0.94 / 0.88 / **0.68** / 0.14 / 0.08 | **75** | 0.28 (±3.6) |
+| sandwich midpoint (§5) | 3.0 | 1.43 / 2.61 / 6.48 / 8.75 / 13.9 | −9.3 | 0.92 / 0.60 / 0.16 / 0.22 / 0.08 | 50 | 0.28 (±10.7) |
+| `lb_best` | 2.0 | 0.70 / 1.40 / 4.52 / 10.3 / 14.0 | −14.0 | 0.98 / 0.76 / 0.44 / 0.16 / 0.16 | 50 | 0.24 (±6.3) |
+| `ub_best` | 2.0 | 0.98 / 0.80 / 2.04 / 3.66 / 3.68 | +3.68 | 0.90 / 0.92 / 0.64 / 0.36 / 0.24 | 75 | 0.96 (±6.3) |
+| LightGBM, scale-free graph features → `opt / n`, `n ≤ 30` | 0.85 | 0.46 / 0.59 / 1.14 / 2.11 / 2.72 | −1.35 | 0.88 / 0.72 / 0.40 / 0.26 / 0.16 | 50 | 0.60 (±2.9) |
+
+Every absolute interval that covers at 30–40 has stopped covering by 100,
+where the best of them (the realised-`p` formula) holds 40% of the instances
+inside a ±2.9-stack band; `tw_min_fill + 1`, exact on 85.7% of the corpus
+(§4), is off by 4.2 stacks on average at 125 and inside its ±1 band on 2 of
+25. The `n`-scaled intervals "hold" for the formula and for `ub_best`, and
+say nothing: at 125 they are ±9.8 and ±6.3 stacks wide on optima of 23–103.
+**Kill criterion met for the optimum**: the coverage of every interval
+calibrated on `n ≤ 40` collapses between 50 and 100, and no interval from
+this section is to be quoted at `n ≥ 75`.
+
+Where the formula goes wrong is specific. Per class (mean signed error,
+realised `p`): `d = 2` +1.6 at 30, +1.8 at 40, +2.4 at 50, +5.1 at 75, +5.6
+at 100, +8.1 at 125 — a bias growing linearly in `n`; `d = 4` within ±1.5 at
+every size; `d = 6, 8, 10` within −1.9 … −0.2 at every size from 30 to 125. The
+`m ≠ n` classes are worse (`Random-100-50-2`: +10.6; `Random-50-100-2`: −0.2
+with realised `p` but −5.8 nominal), which is the `m` in `q = 1 − (1 − p²)^m`
+being carried through without ever having been tested off `m ∈ {n, 2n}`.
+
+What the corpus says about `E[opt]` itself is cleaner than the formula. The
+class-mean optimum against `n` at fixed density, `m = n`, six sizes from 30 to
+125:
+
+| `d` | `col_mean` | slope | intercept | r² | max residual of a class mean | `opt / n` at 30 → 125 | formula's asymptotic slope at this `D ≈ col_mean²` |
+|---|---|---|---|---|---|---|---|
+| 2 | 2.77 | **0.146** | 5.0 | 0.986 | 0.86 | 0.287 → 0.182 | 0.22 |
+| 4 | 4.26 | 0.396 | 4.3 | 0.998 | 1.08 | 0.533 → 0.424 | 0.40 |
+| 6 | 6.09 | 0.599 | 4.3 | 0.999 | 1.11 | 0.707 → 0.627 | 0.58 |
+| 8 | 8.07 | 0.722 | 4.1 | 0.999 | 1.15 | 0.840 → 0.749 | 0.70 |
+| 10 | 10.0 | 0.804 | 3.6 | 0.999 | 0.93 | 0.900 → 0.826 | 0.79 |
+
+**§12's linearity holds through 125** — `E[opt] = α(density)·n + β` with
+r² ≥ 0.986 in every class and no class mean more than 1.2 stacks off its
+line. What fails is the constants: the intercept is **4–5 stacks, not the
+formula's `a(1 − q) ≈ 2.2`**, and the slope at `col_mean` 2.8 (`D ≈ 8`) is
+0.146 against the formula's 0.22, while at `D ≥ 18` the formula's slopes
+0.40 / 0.58 / 0.70 / 0.79 match the measured 0.40 / 0.60 / 0.72 / 0.80 to
+0.02. At `n ≤ 40` the low intercept and the high sparse slope cancel (2.2 +
+0.22·40 = 11.0 against the measured 11.0 at `Random-40-40-2`), which is how a
+formula fitted there scored MAE 0.49 on cell means and still runs away at 125.
+So `opt / n` at density 2.8 is **still falling at 125** (0.182), heading for
+0.146 and not the 0.21 the formula's `c/(D + c)` saturation predicts, and the
+§11 remark that the 125 × 125 density-2 classes sit *below* the `opt / n ≈ 0.3`
+peak band is confirmed with its mechanism: at fixed sparse density the
+fraction falls as `0.146 + 5/n`.
+
+### (b) The nodes: exponential to 125, at rates the campaign overstates by 0.01–0.02 per customer
+
+The counts this item computed (default configuration; `csearch` differs on
+the 47 settled pairs where `better_move` is on, see the note at the end of
+this part): 280 calls, 273 settled,
+7 censored at 1,500 s, all seven in `Random-100-100-2` at 2.1–5.4 × 10⁹ nodes
+and still running; 5.65 core-hours, 27 minutes wall on 16 workers. Class
+medians of `log10 nodes` against the laws (default configuration; the
+`Random-125-125-2` and `-4` rows are the recertify counts, `csearch`):
+
+| class | 30 | 40 | 50 | 75 | 100 | 125 | §11 law (15–40) at 125 | ridge law at 125 |
+|---|---|---|---|---|---|---|---|---|
+| `d = 2` (`col_mean` 2.7–2.8) | 2.84 | 3.64 | 4.35 | 6.42 | ≥ 9.08 (4 of 5 censored at 9.5–9.73) | 11.2, 11.2 (2 counts) | 10.5 (interpolated) | **11.6** |
+| `d = 4` | 2.23 | 3.08 | 3.86 | 6.16 | 8.71 | 10.7, 10.8, 11.4 (3 counts) | 11.5 | 11.6 |
+| `d = 6` | 1.66 | 2.44 | 2.98 | 4.95 | 6.55 | 8.60 | 9.69 | — |
+| `d = 8` | 1.11 | 1.59 | 2.10 | 3.48 | 5.18 | 6.45 | 7.60 | — |
+| `d = 10` | 0.60 | 1.20 | 1.52 | 2.65 | 3.87 | 4.94 | 6.70 | — |
+
+**The form holds.** Read off the corpus alone, with `fit_scaling` on the class
+medians over every size where all five counts settled (30–125 for `d = 6, 8,
+10`; 30–100 for `d = 4`; 30–75 for `d = 2`), the exponential beats the power
+law in every class, by a factor of 3–5 in RMS residual (0.036–0.10 against
+0.21–0.49 log10), on five or six points spanning a factor of 2.5–4 in `n` — a
+far stronger test than §11's six points over 15–40. The local rate between
+consecutive sizes does not decline with `n` (`d = 6`: 0.078, 0.054, 0.079,
+0.064, 0.082 per customer over 30 → 40 → 50 → 75 → 100 → 125): **at fixed
+density the refutation grows exponentially in `n` from 30 to 125.**
+
+**The rates do not, quite.** Rate per customer, corpus 30–125 against the
+campaign's `n ≤ 40` cell (§11 table):
+
+| class | corpus rate (doubling every) | campaign cell rate 15–40 | difference | compounds to, over 85 customers |
+|---|---|---|---|---|
+| `d = 2` class, `col_mean` 2.77 | 0.079 (3.8) | `d = 3` ridge 0.095; `d = 2` cell 0.062 | −0.016 / +0.017 | ×25 either way |
+| `d = 4` | 0.093 (3.3) | 0.097 | −0.005 | ×2.7 |
+| `d = 6` | 0.072 (4.2) | 0.085 | −0.013 | ×13 |
+| `d = 8` | 0.058 (5.2) | 0.067 | −0.009 | ×6 |
+| `d = 10` | 0.046 (6.5) | 0.064 | −0.018 | ×34 |
+
+Every campaign rate is above the corpus's by 0.005–0.018 log10 per
+customer — a fifth to a quarter of the rate itself, invisible at `n ≤ 40`
+(0.018 × 10 customers is a factor of 1.5, inside a cell's spread) and a
+factor of 6–34 at 125. The §11 law interpolated in `col_mean` is therefore
+right on average at 30–40 (bias +0.02 log10), and over by +0.39 at 50, +0.52
+at 75, +0.68 at 100 and **+1.29 at 125** (15 observations, `d = 6, 8, 10`),
+growing with density: +1.1 at `d = 6`, +1.15 at `d = 8`, +1.8 at `d = 10`.
+Two exceptions run the other way and are the ones that matter for the day-long
+classes. The **`d = 4` law holds to 125**: 11.5 predicted against 10.7–11.4
+observed on three counts, over by 0.1–0.8. And the **ridge law pre-registered
+in §11 — 5 × 10¹¹ nodes at 125 — lands within a factor of 3 of the two
+density-2 counts on record, 1.6 and 1.7 × 10¹¹**, after an extrapolation of
+eight decades from `n = 40`; it tracks the whole `d = 2` class (2.66 / 3.61 /
+4.56 / 6.94 / 9.32 / 11.6 against 2.84 / 3.64 / 4.35 / 6.42 / ≥ 9.08–9.73 /
+11.2), never more than 0.5 log10 off. The interpolated law under-predicts that
+class (10.5 at 125, 8.47 at 100 against lower bounds of 9.5–9.73) because it
+blends the `d = 3` cell with the campaign's `d = 2` cell, which is 50–64%
+decomposable at `n ≥ 20` (§10) and easy for it; Chu & Stuckey's "density 2"
+is the ridge, as §11 placed it, and the ridge law is its law. The two
+day-long classes are thus the two the `n ≤ 40` laws predict best, to within
+a factor of 3, and the classes they predict worst are the ones that take
+seconds.
+
+**The `d = 2` class stays above the `d = 4` class through 125.** Class
+medians, `d = 2` over `d = 4`: ×4.1 at 30, ×3.7 at 40, ×3.1 at 50, ×1.8 at 75,
+**≥ ×6 at 100** (four lower bounds of 3.2–5.4 × 10⁹ against a settled median
+of 5.1 × 10⁸), ×2.7 at 125 (medians of two and three `csearch` counts,
+1.65 × 10¹¹ against 0.61 × 10¹¹). §11 left open whether the peak at 125 would
+have moved to the density-4 side, as it must if `optimum / n ≈ 0.3` is the
+order parameter, since at 125 the density-2 classes have `optimum / n` 0.18.
+It has not: the peak stays at `col_mean` 2.7–3 while `optimum / n` there
+falls as `0.146 + 5 / n` (part a). **`col_mean` at fixed `m / n`, not
+`optimum / n`, is the size-stable location of the ridge**, on the evidence of
+two classes with two to five counts each at 100 and 125.
+
+**Theorem 2 saves more at 50–125 than at `n ≤ 40`** (a §13 follow-up that
+came free). On the 47 settled pairs where the `csearch` rule turns
+`better_move` on (mean products per customer ≤ 5), `csearch / default` nodes
+are median 0.80 at `n = 50` (10 pairs, range 0.34–0.94), 0.83 at 75 (10,
+0.53–0.90) and **0.63 at 100** (27, 0.12–0.95), against §13's 0.87–0.90 at
+`n ≤ 40`; by class at 100: 0.69 at `Random-100-100-4`, 0.42 at
+`Random-100-50-2`, **0.17 at `Random-100-50-4`** (a 6× saving, five of five
+instances). The saving grows with `n` and is largest at `m = n / 2`, a ratio
+the campaign never generated. It never costs. So a `default`-configuration
+law over-predicts a `csearch` count by up to 0.8 log10 at 100, which is a
+further reason the recertify counts are compared with `csearch` laws only.
+
+**Coverage collapses at the first band beyond calibration.** The surface in
+`(n, log col_mean, optimum / n, degree)`, the best-calibrated predictor at
+35–40 (MAE 0.22 log10, 90% radius ±0.42), covers 0.92 at 30–40, **0.72 at
+50**, 0.40 at 75, 0.20 at 100, 0.27 at 125 — it fails at 50 and never
+recovers, with bias +0.9 at 100 and +1.3 at 125. The cell law's split-conformal
+radius is ±1.54 log10 (its 15–30 fit has no row for `d ≥ 8`, whose cell
+medians are under 2 nodes below `n = 25`, so it clamps dense classes to the
+`d = 7` law — the 15–40 law is the honest one and is what the tables above
+use); even that covers 0.74 at 50, 0.60 at 75, 0.50 at 100 and 0.13 at 125.
+The `n`-scaled radii "hold" at ±1.4 (surface) to ±4.9 (cell law) decades at
+125, and mean nothing at that width. **Kill criterion met for the nodes as
+well**: no interval calibrated at `n ≤ 40` is to be quoted at `n ≥ 50`.
+
+**Finding, in one paragraph.** Of the laws fitted at `n ≤ 40`, the *forms*
+survive the trip to 125 and the *constants* do not, and every calibrated
+interval fails at the first size beyond its calibration. The optimum's mean is
+linear in `n` at fixed density from 30 to 125 in all five Chu & Stuckey classes
+(r² ≥ 0.986, class means within 1.2 stacks of the line), but with intercept
+4–5 stacks where the §12 formula has 2.2 and, at 2.8 customers per product,
+slope 0.146 where the formula saturates at 0.22, so the formula's bias grows
+linearly to +8 stacks at `Random-125-125-2` while staying within ±2 at
+densities 4–10; `tw_min_fill + 1`, exact on 86% of the corpus, is +4.2 at 125.
+The refutation grows exponentially in `n` at fixed density through 125 in
+every class (power law 3–5× worse), at rates 0.046–0.093 per customer that
+the campaign's `n ≤ 40` cells overstate by 0.005–0.018, which compounds to a
+factor of 6–34 at 125 for densities 6–10 and to a factor of 3 or less for the
+two classes that take a day — the `d = 4` law and §11's pre-registered ridge
+law (5 × 10¹¹ against 1.6–1.7 × 10¹¹) — so the campaign's claim that those
+classes are hard because they sit on an exponential ridge with the steepest
+rate is upheld at 125, within an order of magnitude and eight decades of
+extrapolation. The `d = 2` class stays 2–6× harder than `d = 4` at every size
+to 125 while its `optimum / n` falls from 0.29 to 0.18, so the ridge's
+size-stable coordinate is customers per product, not `optimum / n`. Conformal
+intervals for both quantities cover 0.92–1.00 at 30–40 and 0.40–0.74 at 50–75,
+collapsing to 0.08–0.27 at 100–125 for every absolute radius; the `n`-scaled
+ones hold only by being 6–10 stacks or 1.4–4.9 decades wide. **Kill met:
+nothing from §11, §12 or this section is to be quoted with an interval at
+`n ≥ 50`.**
+
+**Where each finding stops holding.**
+
+| finding (section) | holds to | fails at | evidence |
+|---|---|---|---|
+| refutation grows exponentially in `n` at fixed density (§11) | **125** | — | exponential beats power law ×3–5 in RMS in all five classes, 5–6 sizes each |
+| the campaign's rates per density (§11) | 100–125 at `d = 3–4` (within 0.005–0.016) | **50** at `d ≥ 6` (bias +0.3 log10 by 50, +1.1–1.8 by 125) | rates table above |
+| ridge law, 5 × 10¹¹ at 125 (§11 pre-registration) | **125**, within ×3 | — | 1.6–1.7 × 10¹¹ on record |
+| the `d = 2` class is the peak, `d = 4` its shoulder (§11) | **125** | — | ×1.8–6 at every size |
+| `optimum / n ≈ 0.3` as the peak's coordinate (§11) | 40 | **75** (0.21 at the peak class) | class `opt / n` 0.29 → 0.18 |
+| `E[opt]` linear in `n` at fixed density (§12) | **125** | — | r² ≥ 0.986, five classes |
+| the §12 formula, densities 4–10 | **125**, within ±2 stacks | — | per-class bias table |
+| the §12 formula, density 2 (`D ≈ 8`) | 50 (+2.4) | **75** (+5.1, growing linearly) | intercept 5 not 2.2, slope 0.146 not 0.22 |
+| `tw_min_fill + 1` as best point estimate (§4) | 50 (MAE 0.6) | **75** (MAE 1.3; +4.2 at 125) | min-fill's slack grows with `n` (§12 saw the onset) |
+| 90% conformal intervals, any estimate, any radius | 40 | **50** (surface, nominal formula, GBM) or **75** (realised formula, `tw`, cell law) | coverage tables |
+
+**Size range covered.** Chu & Stuckey's 200 `Random-n-m-d` corpus instances,
+`n ∈ {30, 40, 50, 75, 100, 125}`, `m ∈ {n, 2n, n/2}` (the last two at
+`n = 50` and `100` only), `d ∈ {2, 4, 6, 8, 10}`, realised `col_mean` 2.6–10.2,
+optima 8.6–103.2, certified; node counts on all 200 under `default` except
+the two 125 × 125 day-long classes, and under `csearch` on 190 (five of the
+ten from recertify, five without any count); 7 of 280 calls censored. The
+campaign side is §10's 37,800 instances at 10–40. Every rate above 40 rests on
+class medians of five instances, and the 125 rows on two and three counts —
+enough to place a decade, not a factor of two. The `m ≠ n` classes have no
+campaign law at `m = n / 2`, and the `m = 2n` law over-predicts the
+`Random-50-100` classes by 0.5 log10 at `d ≥ 4`; the formula is worst there
+(+10.6 at `Random-100-50-2`).
+
+**Kill criterion** (§2.8: coverage collapses across the size boundary →
+intervals not to be quoted at large sizes): **met, for both quantities and
+every estimate.** The section quotes point predictions and their measured
+errors at 50–125 and no interval.
+
+**Method notes.** *The ledger has no node counts.* The brief said the 50–125
+counts were there; `compute_ledger.csv` has the column and no values, so the
+counts were computed here (5.65 core-hours) and are committed as
+`scale_nodes.csv`. *Recertify is `csearch`.* Its configuration
+(`better_move=True, better_move_dominators=0, memo=True`) equals the `csearch`
+rule on any instance with ≤ 5 products per customer, which all five are
+(2.7–4.3); they are therefore compared with the `csearch` laws and never with
+`default`. *Censoring is a lower bound, not a missing value.* A call that hits
+the deadline reports the nodes it visited; the four censored `Random-100-100-2`
+calls already exceed the interpolated law's interval and are the reason the
+ridge law, not the interpolation, is that class's law. *Fit on 15–30 loses the
+dense classes.* The split-conformal design fits on `n ≤ 30`, where the `d ≥ 8`
+cells have medians under 2 nodes at `n ≤ 25` and no law can be fitted, so the
+15–30 cell law clamps them to `d = 7`; the tables compare against the 15–40 law
+(§11's own) for that reason, and its radius is not available since 40 is in
+its fit. *Seconds per node moved with `n`*: 0.28–0.5 µs at 100, 0.55 µs on the
+recertify 125s, 0.9 µs at 125 `d = 6` — seconds are still not a hardness
+measure (§9). *A column-key collision* silently overwrote the 15–30 law's
+column with the 15–40 law's in the per-class table's first draft; caught by
+reading the table against the summary, now keyed by full name.

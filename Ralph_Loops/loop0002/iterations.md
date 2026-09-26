@@ -67,7 +67,7 @@ Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
       quantity: `count_search` should be equal within a pair and
       `count_closing` need not be. **Kill**: graph-only features predict nodes
       as well as the full set. Deliverable: a yes or no with the effect size.
-- [ ] 06 · §2.8 (scaling only) **Does it hold at 125×125?** Take item 03's
+- [x] 06 · §2.8 (scaling only) **Does it hold at 125×125?** Take item 03's
       scaling law and item 04's formula, fitted at n ≤ 40, and predict (a) the
       optimum and (b) the nodes to refute for the 200 Chu & Stuckey corpus
       instances at 30–125, whose optima are certified and whose node counts at
