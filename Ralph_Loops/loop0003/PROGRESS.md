@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 4/14 SOLVED
+- **Current**: 5/14 SOLVED
 
 ---
 
@@ -317,3 +317,87 @@ ridge instance at n = 100 where both sides are on record.
   fixed C before fitting the boundary.
 - A satisfiable-side portfolio (ratchet, `restricted_dfs` seeds, `k ≥ optimum`
   descent calls) is the one place labels pay; not in this loop's items.
+
+## Iteration 5 — 2026-09-26 15:30
+
+**Item 05 · §2.3 Predicting cost** — SOLVED. **Kill criterion not met** for the
+chosen model: 87.8% of the 98 `default` counts and 89.3% of the 103 pre-fix
+`csearch` counts at 100–125 fall within one decade (settled counts alone 87.4%
+/ 88.2%); the linear Tobit alone fails at 73.5% / 73.8%, §11's cell law at
+57.5% / 65.4%, §14's surface at 61.2% / 59.2%.
+
+### Completed
+- `learning/cost_model.py`: assembles every refutation count on record
+  (campaign 37,800 at 10–40, upward 6,785 at 50–100 with the finish stage
+  merged, corpus 6,135 at ≤ 40 + `scale_nodes.csv` at 50–125 + the five
+  recertify counts) with label-free graph features and file ∪ isomorphism-class
+  groups; a hand-written **Tobit** (censored Gaussian regression in log space,
+  analytic gradient, L-BFGS; neither `lifelines` nor `scikit-survival` is
+  installed) on a linear, extrapolable design in `n × {density, m/n, opt/n,
+  degree, dispersion, treewidth, degeneracy, components, clustering}` plus
+  §16's drift (`n²`, `n²·x`); an optional LightGBM correction of the residual
+  on scale-free features only; model selection by fit ≤ 60 → score 75 (test
+  sizes untouched); baselines §11 cell law and §14 surface as published; error
+  by band; the decade claim with censored counts as lower bounds; the noise
+  floor from `portfolio.csv.gz` and `differential.csv.gz`; the recertify table
+  with a censored lower bound for the three entries still running (63.3 h at
+  the finished entries' 0.74 µs/node → ≥ 10^11.49 nodes); a post-fix check
+  labelled as such. Runs in 11 s.
+- **Dating the upward run** (`date_upward_csearch`): in all 70 upward cells
+  where Theorem 2 is on, §18's post-fix identity counts differ from the run's
+  on at least one of the eight shared instances (0 of 70 match), so the whole
+  §16 run is pre-fix and its `csearch` counts train the `csearch` model. §18
+  (e)'s "71 of 135 cells" is the number of cells where the distinction
+  matters, not of post-fix cells.
+- **Findings** (`reports/ml_nature.md` §19, tables `reports/cost_model_tables.md`):
+  in-range MAE 0.09 / 0.09 / 0.14 / 0.20 decades at 10–20 / 21–40 / 50–60 /
+  75 (five-fold grouped CV); at 100 MAE 0.54, bias +0.43, p90 1.07; at 125
+  MAE 0.38, bias +0.38, p90 0.59, 15 of 15 within a decade (`default`), 20 of
+  20 (`csearch`, incl. the five recertify counts). The drift term and the
+  residual GBM are each worth ~0.1 MAE at the first size beyond the fit; the
+  noise floor over relabellings (sd 0.003–0.017) is 30–100× below the error.
+  **The one class missed** is the generated 100-customer `d = 2` cell (96%
+  decomposable): over-predicted by a decade, 14 of 25; without it the
+  100-band is 57 of 58 / 58 of 58. Every corpus class at 100 and 125 is
+  within a decade. **Recertify**: the five finished entries predicted to MAE
+  0.38 / bias +0.38 (over: 29–93 h predicted at 0.55 µs vs 10–53 spent),
+  Spearman 0.4 on the order (the `default` linear model 0.8, MAE 0.13; the
+  §11 law −0.3, ranking the `-2` class below the `-4`). **Cheapest-first for
+  what remains: `Random-125-125-2-5_0`, `2-3_0`, `2-2_0`** (11.15 / 11.34 /
+  11.85 log10 nodes; 22 / 33 / 107 h at 0.55 µs); the first two have already
+  run past their predictions (≥ 11.49 after 63.3 h) and remain within a
+  decade; `2-2_0` is predicted the most expensive of the eight by every model.
+- `learning/data/ensemble/cost_model_predictions.csv` (201 test rows, 26 KB),
+  `cost_model_recertify.csv`; ensemble directory 69 MB apparent.
+- `tests/test_cost_model.py`: 9 tests — Tobit recovers a slope least squares
+  gets wrong under 30%+ censoring and equals OLS without censoring; the
+  decade rule on censored lower bounds; per-band evaluation; the model
+  extrapolates an exact exponential 40 customers beyond its fit; the noise
+  floor on a toy; the recertify table's ranking, hours and open-entry bound;
+  the dating verdicts on toy cells. Full suite: 917 passed, 2 skipped,
+  1 xfailed in 79 s.
+
+### Blockers
+- None. Deliverables as asked: error by size band, the decade claim at
+  100–125 (kill not met), predicted vs actual on the recertify entries, the
+  cheapest-first order for the withdrawn three. Not built: a per-component
+  model (the fix for the decomposable-cell miss).
+- Caveats carried into §19: the 125 claim rests on 15–20 counts (5 on the
+  ridge); 21 of 201 test counts are censored lower bounds and the `default`
+  model sits below 7 of its 11; **every prediction is for the pre-fix
+  `csearch`** — post-fix ridge counts at 100 are ≥ 15× larger (§18) and the
+  model has never seen one at 125.
+- Process note: `pgrep -f benchmarks.recertify` matched this session's own
+  `claude -p` process (the item text is in its command line); anchor on
+  `^python -m benchmarks.recertify`.
+
+### Next
+- Item 06 · §2.5(a) fan order. Paired node counts behind a flag; the noise
+  floor for such pairs is sd 0.003–0.017 decades (§19), so a 5% effect is
+  resolvable per instance.
+- Item 07 · §2.5(b) Theorem 2's switch: re-measure on the fixed C first (§18
+  (e)); §19's dating method (compare with a run of known version) tells
+  pre-fix from post-fix counts wherever both exist.
+- For the owner: the cost model orders the recertify queue `2-5_0, 2-3_0,
+  2-2_0` and prices `2-2_0` at 4–6 more days on the pre-fix rule; a
+  per-component predictor would fix the one class it misses.

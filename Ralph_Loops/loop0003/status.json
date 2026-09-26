@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-26 15:10:19",
+  "updated": "2026-09-26 15:28:55",
   "phase": "tests",
-  "started": "2026-09-26 13:56:09",
-  "item": "04 \u00b7 \u00a72.4 The relabelling portfolio. From item 01's spreads and new"
+  "started": "2026-09-26 15:11:45",
+  "item": "05 \u00b7 \u00a72.3 Predicting cost. `learning/cost_model.py`: predict"
 }

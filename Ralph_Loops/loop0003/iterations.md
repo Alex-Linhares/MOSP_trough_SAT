@@ -49,7 +49,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       the projected wall clock for the 125×125 ridge on 16 cores, a
       recommendation for `benchmarks.recertify` stated and not applied.
       **Kill**: median min-of-8 speed-up under 1.5× at n ≥ 60.
-- [ ] 05 · §2.3 **Predicting cost.** `learning/cost_model.py`: predict
+- [x] 05 · §2.3 **Predicting cost.** `learning/cost_model.py`: predict
       `log10 nodes` from label-free graph features with item 04's relabelling
       spread as the noise floor; censored counts through a survival model
       (lifelines or scikit-survival behind a soft import; else a Tobit-style

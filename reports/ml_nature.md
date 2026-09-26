@@ -4969,3 +4969,261 @@ none of that in its columns and should be read as "2026-09-26 after commit
 (instance, labelling) kept the longest straggler under four minutes where
 one job per instance would have been an hour. *The first flush should come
 early*: 500 calls at the heaviest instances was 17 minutes of silence.
+
+## 19. Predicting cost: how many nodes will a refutation take, before it is run? (plan 2 §2.3, loop0003 item 05)
+
+*2026-09-26. `learning/cost_model.py`; tables in `reports/cost_model_tables.md`;
+per-instance predictions at the test sizes in
+`learning/data/ensemble/cost_model_predictions.csv`, the recertify table in
+`cost_model_recertify.csv`. Regenerate with `python -m learning.cost_model`
+(11 s). Tests: `tests/test_cost_model.py`.*
+
+**The question.** `benchmarks.recertify` allocates five-day budgets blind, and
+the two cost laws on record — §11's per-cell exponential in `n` and §14's
+linear surface fitted at n ≤ 30 — over-predict by a decade or more at 125
+(§14 (b)). Can `log10 nodes` to refute `optimum − 1` be predicted from
+label-free graph features, trained at n ≤ 75, well enough at 100 and 125 to
+budget with? The plan's kill: fewer than 80% of the 100–125 counts within one
+decade → not to be used for budgeting.
+
+**The method.** Target `log10(1 + nodes)`; a call that hit its deadline is a
+right-censored observation (a lower bound, kept, never dropped). Neither
+`lifelines` nor `scikit-survival` is installed, so the censored regression is
+a **Tobit** (Gaussian in log space, censored rows contributing `P(y* ≥ y_obs)`)
+written by hand with its analytic gradient; it fits 50,000 rows in 0.2 s. The
+design is linear and therefore extrapolable: `n`, `log10 col_mean` and its
+square, each multiplied by `n`; `optimum / n`, mean degree, degree dispersion,
+largest-component fraction, `log10 components`, `log10(m / n)`, min-fill
+treewidth and degeneracy as fractions of `n`, clustering, each alone and times
+`n`; and §16's drift of the rate as `n²` and `n²·log10 col_mean`. On top of
+it, optionally, a LightGBM correction of the Tobit residual on **scale-free**
+features only (`x`, `m / n`, `opt / n`, degree / n, dispersion, degeneracy / n,
+treewidth / n, component fraction, clustering, `log n`), fitted on the
+uncensored training rows — a tree model on raw features cannot extrapolate
+in `n`, one on scale-free features can carry a density- and structure-shaped
+correction upward. Model selection never touches the test sizes: every
+variant is fitted at n ≤ 60 and scored at 75, the winner is refitted at ≤ 75
+and sent to 100–125 once.
+
+**Two configurations, dated.** `default` counts are unaffected by the
+2026-09-26 `better_move` fix and are the primary target. `csearch` counts
+changed with it (§18 (e)), so the `csearch` model trains only on pre-fix
+sources and is tested only against pre-fix counts. That the whole upward run
+(§16) is pre-fix is *established, not assumed*: in every one of the 70 upward
+cells where Theorem 2 is on, §18's post-fix identity count differs from the
+run's count on at least one of the eight instances both studies ran (0 of 70
+cells match on all eight; the other 65 cells have the rule off and are the
+same under both versions). `date_upward_csearch` records this. §18 (e)'s
+"71 of 135 cells" is the count of cells where the distinction matters, not of
+post-fix cells.
+
+**Data.** Training, n ≤ 75: the 37,800 campaign instances at 10–40 (§10), the
+6,750 upward instances at 50–75 (§16), the 6,135 corpus instances at ≤ 40 (§3)
+and the 75 corpus `Random` instances at 50–75 (§14): 50,747 `default` counts
+(8 censored) and 50,747 pre-fix `csearch` counts (7 censored). Test, 100 and
+125: every count on record — 33 generated instances at 100 (§16 (d): 25 in
+the decomposable `d = 2` cell, 8 on the ridge, 7 of them censored at 1,500 s;
+the two whose value was not optimal are excluded, since a `sat` call is not a
+refutation), the 50 corpus `Random-100-*` instances (4 censored under
+`default`, 3 under `csearch`), and at 125 the 15 dense-class counts
+(`d = 6, 8, 10`, both configurations) plus, for `csearch`, the five recertify
+counts. **98 `default` counts (11 censored) and 103 `csearch` counts (10
+censored).** Grouping for the in-range cross-validation is file ∪ isomorphism
+class (`union_groups`; cell stands for file on the generated instances).
+
+**The noise floor.** A label-free predictor cannot see which labelling will
+run, so the spread over relabellings of one instance is the error it can never
+remove. Standard deviation of `log10(1 + nodes)` over labellings, refutation
+side, settled calls:
+
+| study | config | band | instances | labellings | sd median | sd p90 | sd median, ≥ 10⁴ nodes |
+|:--|:--|:--|--:|--:|--:|--:|--:|
+| differential (§15) | default | 10–20 | 20,316 | 10 | 0.000 | 0.006 | — |
+| differential (§15) | default | 21–40 | 23,613 | 10 | 0.000 | 0.013 | 0.009 |
+| differential (§15) | csearch | 21–40 | 23,613 | 10 | 0.000 | 0.035 | 0.016 |
+| portfolio (§18) | csearch | 50–60 | 841 | 17 | 0.003 | 0.017 | 0.006 |
+| portfolio (§18) | csearch | 75 | 391 | 17 | 0.001 | 0.017 | 0.004 |
+| portfolio (§18) | csearch | 100 | 51 | 17 | 0.002 | 0.024 | 0.003 |
+
+The floor is 0.003–0.017 decades where the counts are large. Every model error
+below is 10–100× that: **the floor is nowhere near binding**, and the
+unexplained variance is structure the features do not carry, not labels.
+
+### (a) Model selection at ≤ 60 → 75, and the in-range error
+
+Fit at n ≤ 60, scored on the 2,272 counts at 75 (8 censored), `default`:
+
+| variant | MAE | bias | RMSE | within a decade |
+|:--|--:|--:|--:|--:|
+| linear Tobit + drift + GBM residual | **0.189** | +0.054 | 0.271 | 0.991 |
+| linear Tobit + drift, rows weighted per size | 0.271 | −0.085 | 0.406 | 0.951 |
+| linear Tobit + drift | 0.272 | +0.053 | 0.408 | 0.944 |
+| linear Tobit, no drift | 0.288 | −0.142 | 0.426 | 0.946 |
+
+(`csearch`: 0.182 / 0.267 / 0.267 / 0.280 in the same order.) The drift term
+removes the no-drift model's downward bias at 75 (−0.14 → +0.05), as §16 says
+it should; the residual GBM takes a further 0.08 off the MAE. Refitted at
+≤ 75 and cross-validated five-fold by file ∪ class, the chosen model's
+in-range error is **MAE 0.086 / 0.086 / 0.137 / 0.205 at 10–20 / 21–40 /
+50–60 / 75** (`default`; `csearch` 0.084 / 0.086 / 0.137 / 0.191), bias
+within ±0.02 in every band, 96.5–100% within a decade, σ of the Tobit 0.164
+(`default`) and 0.179 (`csearch`).
+
+### (b) The test: 100 and 125, fit at ≤ 75
+
+| predictor | config | band | counts | censored | MAE | bias | p90 |err| | within a decade | pred. below a censored lower bound |
+|:--|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| **Tobit + drift + GBM** | default | 100 | 83 | 11 | 0.535 | +0.43 | 1.07 | **0.855** | 7 of 11 |
+| | default | 125 | 15 | 0 | 0.382 | +0.38 | 0.59 | **1.000** | — |
+| Tobit + drift (linear alone) | default | 100 | 83 | 11 | 0.884 | +0.58 | 2.00 | 0.687 | 11 of 11 |
+| | default | 125 | 15 | 0 | 0.261 | −0.07 | 0.56 | 1.000 | — |
+| §11 cell law (fit 15–40, interpolated in `col_mean`) | default | 100 | 58* | 11 | 0.858 | +0.82 | 1.31 | 0.655 | 11 of 11 |
+| | default | 125 | 15 | 0 | 1.29 | +1.29 | 1.72 | 0.267 | — |
+| §14 surface (fit n ≤ 30) | default | 100 | 83 | 11 | 0.829 | +0.63 | 1.85 | 0.663 | 7 of 11 |
+| | default | 125 | 15 | 0 | 1.43 | +1.32 | 2.42 | 0.333 | — |
+| **Tobit + drift + GBM** | csearch | 100 | 83 | 10 | 0.532 | +0.48 | 1.12 | **0.867** | 7 of 10 |
+| | csearch | 125 | 20 | 0 | 0.375 | +0.37 | 0.60 | **1.000** | — |
+
+(*the cell law has no law for `m = n / 2`: 25 of the 83 counts at 100 get
+none.) A censored count is a lower bound: the prediction is a hit if it is
+not more than a decade below it. The decade claim, all 100–125 counts:
+
+| predictor | default (98 counts, 11 censored) | csearch, pre-fix (103, 10) |
+|:--|--:|--:|
+| Tobit + drift + GBM residual | **0.878** (settled only 0.874) | **0.893** (0.882) |
+| Tobit + drift, linear alone | 0.735 (0.713) | 0.738 (0.710) |
+| §11 cell law | 0.575 (0.532), 73 counts | 0.654 (0.618), 78 counts |
+| §14 surface | 0.612 (0.598) | 0.592 (0.581) |
+
+By class at the test sizes (`default`, chosen model; `csearch` in the tables
+file): every corpus class at 100 and 125 is 100% within a decade except
+`Random-100-100-2` (4 of 5, the four censored counts at ≥ 9.5–9.7 against a
+prediction of 9.43, which is *under* the lower bound by 0.1–0.3 and could be
+under by more), and the biases are −0.18 to +0.49 at 100, +0.12 to +0.62 at
+125 (`Random-125-125-6`: median 8.60 observed, 9.20 predicted). **The one
+failing class is the generated `f_n100_m100_d2` cell**: 25 instances, 96%
+decomposable (§16 (d)), observed median 10^5.45, predicted 10^6.47, 14 of 25
+within a decade. Without it the 100-customer band is **57 of 58 (0.983)**
+under `default` and 58 of 58 under `csearch`. The model learned the campaign's
+`d = 2` cells at 50–75, which decompose less often than the 100-cell (§10:
+50–64% at n ≥ 20), and carries the component count only through
+`log10 components` and the largest-component fraction, which is not enough to
+say that a 100-customer instance in five pieces refutes in the time of its
+largest piece. A model that predicts per component and sums would fix that
+class and is not built here.
+
+For the recertify counts at 125 under `csearch` — the two `Random-125-125-2`
+and three `-4` counts, the only ridge counts on record at that size — the
+chosen model's class medians are 11.4 against 11.2 observed (bias +0.16) and
+11.4 against 10.8 (bias +0.53); the linear Tobit alone gives 10.9 / 11.0
+(−0.3 / +0.2). §16 (e)'s drift-corrected extrapolation from the 75-cells gave
+11.18 and 10.62 for the class medians; the per-instance model is no better
+than that class-level number on those five, and is not worse.
+
+### (c) The recertify entries: predicted against spent
+
+The eight entries `benchmarks.recertify` opened on 2026-09-24 00:07, on the
+pre-fix C, under the `csearch` rule; predicted `log10 nodes` from the
+`csearch` model (pre-fix counts), hours at §16's 0.55 µs per node; the
+`default` model's linear variant beside it as the other configuration's
+reference; the §11 law for comparison. Cheapest first by the chosen model:
+
+| rank | instance | value | pred. csearch | pred. hours | linear csearch | linear default | §11 law | **actual** log10 nodes | **actual** hours | status |
+|--:|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|
+| 1 | `Random-125-125-2-5_0` | 20 | 11.15 | 22 | 10.87 | 10.97 | 10.05 | **≥ 11.49** | ≥ 63.3, running | open |
+| 2 | `Random-125-125-2-4_0` | 24 | 11.27 | 29 | 10.82 | 10.85 | 10.58 | 11.22 | 28.3 | unsat |
+| 3 | `Random-125-125-4-5_0` | 46 | 11.30 | 31 | 10.97 | 10.80 | 11.42 | 10.69 | 10.2 | unsat |
+| 4 | `Random-125-125-2-3_0` | 21 | 11.34 | 33 | 10.99 | 11.07 | 10.05 | **≥ 11.49** | ≥ 63.3, running | open |
+| 5 | `Random-125-125-4-2_0` | 57 | 11.38 | 37 | 11.09 | 10.78 | 11.23 | 10.78 | 13.3 | unsat |
+| 6 | `Random-125-125-2-1_0` | 24 | 11.48 | 46 | 11.04 | 11.08 | 10.35 | 11.21 | 25.0 | unsat |
+| 7 | `Random-125-125-4-4_0` | 51 | 11.78 | 93 | 11.46 | 11.36 | 11.35 | 11.41 | 53.5 | unsat |
+| 8 | `Random-125-125-2-2_0` | 25 | 11.85 | 107 | 11.36 | 11.52 | 10.52 | **≥ 11.49** | ≥ 63.3, running | open |
+
+The "≥ 11.49" rows are censored observations made here: the three workers have
+been running 63.3 hours (checked by PID: three `benchmarks.recertify` workers
+at 100% CPU), and at the finished entries' median rate of 0.74 µs per node
+(0.555–0.784 across the five) they have visited at least 10^11.49 nodes each.
+On the five finished entries every predictor except §14's surface is within a
+decade; the chosen `csearch` model has **MAE 0.38 and bias +0.38** (it
+over-predicts: 29 / 31 / 37 / 46 / 93 hours predicted against 28 / 10 / 13 /
+25 / 53 spent at the 0.55 µs rate, with the two `-4` entries that finished in
+10–13 hours the worst, 3× over), Spearman rank correlation with the spent
+nodes **0.4** (linear `csearch` 0.3; the `default` model's linear variant
+**0.8** with MAE 0.13; the §11 law −0.3, since it puts the whole `-2` class
+below the `-4` class and recertify found the reverse). **Cheapest-first order
+for what remains withdrawn: `2-5_0`, then `2-3_0`, then `2-2_0`** — the
+last predicted the most expensive of all eight by both models and by the §11
+law's own ranking within its class. The first two have already run past their
+predictions (by ≥ 0.34 and ≥ 0.15 decades) and are still inside a decade;
+`2-2_0`'s prediction of 10^11.85 is 107 hours at 0.55 µs and 145 at the
+realised 0.74, against 63 spent, so the model expects it to run until about
+2026-09-30 on the pre-fix rule.
+
+### (d) Post-fix counts against the pre-fix model (labelled, not the test)
+
+Against §18's post-fix identity counts on the corpus at 99–100: the dense
+classes, where Theorem 2 is off, are within a decade 5 of 5 each (they are
+the same counts under both versions); `Random-100-50-2` median 5.78 post-fix
+against 5.77 predicted; `Random-100-50-4` 7.59 against 7.40 (3 of 5); and the
+race's four censored `Random-100-100-2` identities at ≥ 9.05 after 600 s
+against predictions of 9.07 — consistent, and the true post-fix counts there
+are ≥ 15× the pre-fix ones (§18 (d)), so the model, which has never seen a
+post-fix count at that size, will under-predict them by an amount that is not
+known. **A prediction is a prediction for the version of the search that made
+its training counts**; the recertify run is pre-fix, which is why its table
+is the pre-fix model's.
+
+**Finding, in one paragraph.** A censored linear model in `n` and label-free
+graph terms, with §16's drift and a scale-free residual correction, trained at
+10–75 customers, puts **88% of the 98 `default` counts and 89% of the 103
+pre-fix `csearch` counts at 100–125 within one decade**, against 58–65% for
+§11's cell law and 59–61% for §14's surface (which both fail at 125 by more
+than a decade on average); its bias is +0.4 decades (it over-predicts), its
+p90 error one decade at 100 and 0.6 at 125, its in-range error 0.09–0.2 decades
+by five-fold grouped cross-validation, and the relabelling noise floor
+(0.003–0.017) is fifty times below any of it. The one class it misses is the
+generated 100-customer `d = 2` cell, 96% decomposable, where it over-predicts
+by a decade because it does not model components; every corpus class at 100
+and 125 is within a decade, including the five day-long recertify counts,
+which it predicts to +0.38 decades with the right most-expensive entry and a
+weak ordering among the rest. The drift term and the residual correction are
+each worth 0.08–0.1 of MAE at the first size beyond the fit; the linear model
+alone fails the kill at 73%. The remaining three recertify entries are, in
+predicted order, `2-5_0`, `2-3_0`, `2-2_0`; all three have already visited
+≥ 10^11.5 nodes, two of them past their prediction and still within a decade.
+
+**Size range covered.** Training 10–75 customers (44,550 generated, 6,210
+corpus). Test 100–125: 50 corpus `Random` instances at 100, 15 at 125 in the
+dense classes (both configurations), 5 recertify counts at 125 (`csearch`,
+pre-fix), 33 generated at 100. **The claim at 125 rests on 15–20 counts, and
+on the ridge at 125 on 5**; 21 of the 201 test counts are lower bounds, and
+the model sits below 7 of the 11 `default` ones, so its error on the
+100-customer ridge is at least what the table shows and could be more. Nothing
+at 125 is post-fix.
+
+**Kill criterion (plan 2 §2.3: fewer than 80% of the 100–125 counts within
+one decade → not for budgeting): NOT MET** for the chosen model in either
+configuration (87.8% and 89.3%; 87.4% and 88.2% on settled counts alone),
+**MET** for the linear Tobit alone (73.5%, 73.8%) and for both baselines
+(57.5–65.4%). The predictor may be used to *order* a queue and to *size* a
+budget to within a factor of ten; it is a prediction, biased upward by a
+factor of about 2.5 on average, never a bound, and never an input to any
+path that decides `k`.
+
+**Method notes.** *Censoring by hand is cheap*: the Tobit with its analytic
+gradient converges in under a second on 50,000 rows; a survival library was
+not needed and none was installed. *Date a count by comparing it with a run
+of known version*: the upward run's version was settled by checking its
+counts against §18's on the instances both ran, cell by cell — 0 of 70
+Theorem-2-on cells matched, so the whole run predates the fix. *Trees
+extrapolate on scale-free features and not on raw ones*: LightGBM on the
+residual with `n` entering only as `log n` carried the density-shaped
+correction to 125; §14's GBM on raw features could not leave its training
+range. *Do not read the linear coefficients one at a time*: the `n²` term's
+sign is positive in both fits while the rate demonstrably falls with `n`
+(§16); the `n`-interaction terms are collinear (`n · tw / n`, `n · opt / n`,
+`n²`) and the drift is carried jointly, which the no-drift variant's −0.14
+bias at 75 shows. *A `sat` at value − 1 is not a refutation count*: two of the
+ten 100-customer ridge rows are excluded on that ground (§16 (d)). *`pgrep -f`
+matched this session's own process* because the item text was in its command
+line; anchor on the interpreter (`^python -m benchmarks.recertify`).
