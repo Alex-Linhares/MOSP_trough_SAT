@@ -1,0 +1,114 @@
+# session it03 started 2026-09-26 06:53:22
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections and the loop0001/loop0002 report sections this item builds on, then look at the campaign data.
+  > $ pgrep -af benchmarks.recertify | head; nproc; ls learning/ learning/data/ensemble/ | head -50; wc -c learning/data/ensemble/results.csv; grep -n '^## ' reports/
+  > $ sed -n 1,64p reports/ml_nature_plan.md && echo ======== && grep -n '^### ' reports/ml_nature_plan.md
+  > $ sed -n 127,165p reports/ml_nature_plan.md && echo ======2.8/2.9====== && sed -n 204,232p reports/ml_nature_plan.md && echo =====3/4===== && sed -n 240,300p repo
+  > $ sed -n 450,591p reports/ml_nature.md
+  > $ sed -n 1910,2174p reports/ml_nature.md
+  > $ sed -n 2174,2500p reports/ml_nature.md
+  > $ head -1 learning/data/ensemble/results.csv | tr ',' '\n' | nl | head -80; echo ====; grep -n '^def \|^    def \|^class ' learning/ensemble.py | head -60; echo =
+  > $ sed -n 1,110p learning/ensemble.py; echo ====; sed -n 282,290p learning/ensemble.py; sed -n 353,363p learning/ensemble.py; echo ====; ls reports/figures 2>/dev/
+
+Next I need the 125×125 node counts in the ledger, the test-file style, matplotlib availability, and a first look at the peak in the campaign data. None depends on another, so all in one go.
+  > $ head -2 benchmarks/results/compute_ledger.csv; echo; awk -F, 'NR>1 && $5!="" && $1 ~ /Random-125/' benchmarks/results/compute_ledger.csv | sort | head -40; echo
+  > $ python - <<'EOF'
+import json
+for r in json.load(open('recertify/results.json')): print(r)
+EOF
+echo ==== ledger rows with nodes; awk -F, 'NR>1 && $5!=""' benchma
+  > $ grep -n 'def refute\|def refutation_kwargs\|lower\|decide(' learning/node_counts.py | head -30; echo ====; python - <<'EOF'
+import pandas as pd
+inst = pd.read_c
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.283/70d54dea40362c2a8fc8047c62948674/dataviz && sed -n 1,80p references/palette.md; echo ====; grep -n -i 'heatmap\|seque
+  > $ sed -n 529,606p learning/ensemble.py && grep -n 'def bin\|def _md\|tabulate' learning/ensemble.py | head; python -c "import tabulate, scipy; print(tabulate.__ve
+
+Writing the analysis module now. It is one file, so this is a single write.
+  > Write /home/al/dev/MOSP/learning/hardness_map.py
+  > $ time python -m learning.hardness_map --bootstrap 1000 2>&1 | tail -40
+  > $ grep -n '^### ' reports/hardness_map_tables.md | head -40; sed -n '/^### Peaks of the median, with/,/^### Peaks of the p90/p' reports/hardness_map_tables.md | c
+  > $ sed -n '/^### Sharpness/,/^### Collapse by n: col_mean/p' reports/hardness_map_tables.md | cut -c1-330
+
+Next I need the corpus placement tables, the connected-only peak table, and a look at the figure itself. None depends on another.
+  > $ sed -n '/^### Peaks of the median, connected/,/^### Kill/p' reports/hardness_map_tables.md | cut -c1-250 | grep -v '^| bernoulli   |       1 |  1[05]\|^| fixed 
+  > Read /home/al/dev/MOSP/reports/figures/hardness_map.png
+  > $ grep -n "value\b\|'value'\|\"value\"" benchmarks/recertify.py | head -12
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+
+Now the heatmap redraw. It is one contiguous block in `figure`, so a single edit replaces the top-row loop with a per-row `pcolormesh` on a log `col_mean` axis.
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > $ python -m learning.hardness_map --bootstrap 1000 2>&1 | grep -v '^ *\[$\|^ *\]' | head -60 && python -m learning.hardness_map --config csearch --no-figure >/dev
+  > $ sed -n '/^### Grid-free/,/^### Collapse by n: col_mean/p' reports/hardness_map_tables.md | grep -v '^| bernoulli   |       [12] |  1[05]\|^| fixed       |      
+
+Now the tests and a look at the redrawn figure. These are independent, so both go out together.
+  > Write /home/al/dev/MOSP/tests/test_hardness_map.py
+  > $ python -m pytest tests/test_hardness_map.py -q 2>&1 | tail -15
+
+What I need next: fix `collapse` for a constant candidate (qcut returns NaN labels), rerun the tests, view the redrawn figure. The figure view is independent of the fix, so both go now.
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+
+I need two things now, and neither depends on the other: the new test file passing after the fix, and a look at the redrawn figure.
+  > $ python -m pytest tests/test_hardness_map.py -q 2>&1 | tail -3
+  > Read /home/al/dev/MOSP/reports/figures/hardness_map.png
+  > $ python - <<'EOF'
+import sys; sys.path.insert(0,'tests')
+from test_hardness_map import synthetic
+from learning.hardness_map import collapse, _quantile_bins
+impor
+  > Edit /home/al/dev/MOSP/tests/test_hardness_map.py
+  > Edit /home/al/dev/MOSP/learning/hardness_map.py
+  > $ python -m pytest tests/ -q -x 2>&1 | tail -4
+
+The full suite passes with the seven new tests. Now regenerating all three table variants and the figure, and pulling the remaining numbers for the report in the same chained command.
+  > $ python -m learning.hardness_map 2>/dev/null | grep -A3 '"overall"' && python -m learning.hardness_map --config csearch --no-figure >/dev/null && python -m learn
+  > Read /home/al/dev/MOSP/reports/figures/hardness_map.png
+
+The figure is clean now. Writing §11 to the report.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 11. Is there a phase transition in hardness? (§2.4, item 03)
+
+*loop0002 iteration 3, 2026-09-26. Code: `learning/hardnes
+
+Need next: verify the zero-node claim across n, fix five imprecise numbers in the section I just wrote, then the progress files. The verification and the text fixes are independent, so both go now.
+  > $ python - <<'EOF'
+from learning.hardness_map import load, cell_table
+c = cell_table(load())
+z = c[(c.n>=20)&(c.col_mean<=8)]
+print("max zero_share, n>=20, col_me
+  > $ grep -n -B1 -A1 'resolved from its neighbours by' reports/ml_nature.md; grep -n -A3 'Zero-node refutations\*' reports/ml_nature.md; python - <<'EOF'
+from learni
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+fixes = [
+ ("the two\nBernoulli series have an interior peak at every `n ≥ 15` (20 of 21 rows;\n`p` 
+
+Remaining: append the iteration entry to PROGRESS.md with the status line update, and confirm nothing was written under `solutions/`. Both independent, so both now.
+  > $ sed -i 's/^- \*\*Current\*\*: 2\/6 SOLVED/- **Current**: 3\/6 SOLVED/' Ralph_Loops/loop0002/PROGRESS.md && cat >> Ralph_Loops/loop0002/PROGRESS.md <<'EOF'
+
+## I
+
+One last check that the tables and the test file appear in the working tree, since `head` cut the status list short.
+  > $ git status --short | tail -5; ls -la tests/test_hardness_map.py reports/hardness_map_tables*.md | awk '{print $5, $9}'
+
+Item 03 is done. Everything is written and verified, nothing is committed, and nothing touched `solutions/`.
+
+**Finding.** There is a hardness peak, and the kill criterion is not met. At every size from 15 to 40 customers, in both generators and at both product ratios, the median nodes to refute `optimum − 1` rise and then fall with density by two orders of magnitude each side at n = 40. The peak sits at about three customers per product when m = n and two when m = 2n, or more uniformly where the optimum is about a third of n. It sharpens with n. Along the ridge the median grows exponentially, doubling every 2.9 to 3.5 customers, and a power law fits five to ten times worse. Off the ridge at fixed density growth is still exponential but slower, doubling every 4.5 to 4.9 customers. Chu & Stuckey's "density 2" classes have a realised 2.7 to 2.8 customers per product, which places them in the peak cell at n = 30 and n = 40, and their density 4 is the dense shoulder. The one series that is monotone, fixed d at m = 2n, stops at the density where the Bernoulli series at the same ratio puts the peak.
+
+**Deliverables.**
+- `learning/hardness_map.py`, runnable as `python -m learning.hardness_map`, about 3 seconds. Also `--config csearch` and `--per-class` variants, both written and compared.
+- `reports/ml_nature.md` §11 with tables, the kill verdict, size range, regenerate commands, and a pre-registered extrapolation for item 06 to test against the five recorded 125×125 counts.
+- `reports/figures/hardness_map.png` and three full table files under `reports/`.
+- `tests/test_hardness_map.py`, seven tests on a synthetic campaign with a known peak, width, rate and order parameter. Full suite: 791 passed, 2 skipped, 1 xfailed.
+- PROGRESS.md updated to 3/6 solved with an iteration entry, and item 03 marked done in iterations.md.
+
+**One caveat for the reader.** The order-parameter result is split. Mean degree predicts the height of the surface at fixed n best, but its peak location drifts. `optimum / n` has the most constant peak location but collapses slightly worse. The report states both rather than picking one.
+
+# result: success in 1068s, 51 turns, cost $7.17

@@ -8,3 +8,8 @@
 [2026-09-26 06:35:07] claude session it02 (cap 3.00 h) -> session_it02.log
 [2026-09-26 06:52:01] session it02: ok (exit 0, 22 tool calls)
 [2026-09-26 06:53:21] tests passed: 784 passed, 2 skipped, 1 xfailed, 147 warnings in 78.56s (0:01:18)
+[2026-09-26 06:53:22] committed bb021ebc: 02 · §3 phase 3 The campaign. Run the grid item 01 chose: at least
+[2026-09-26 06:53:22] === iteration 3: 03 · §2.4 Is there a phase transition in hardness? From the campaign
+[2026-09-26 06:53:22] claude session it03 (cap 3.00 h) -> session_it03.log
+[2026-09-26 07:11:10] session it03: ok (exit 0, 46 tool calls)
+[2026-09-26 07:12:27] tests passed: 791 passed, 2 skipped, 1 xfailed, 147 warnings in 76.23s (0:01:16)

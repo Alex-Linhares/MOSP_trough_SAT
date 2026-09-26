@@ -2531,3 +2531,346 @@ and was kept so that the fixed generator's table has the same rows at every
 `n`; its 150 instances cost 5 s and 75 KB. *`--item02`* sets 150 per cell
 unless `--per-cell` is given, and reuses whatever the CSV already holds, so
 re-running it after adding cells or instances runs only the difference.
+
+## 11. Is there a phase transition in hardness? (§2.4, item 03)
+
+*loop0002 iteration 3, 2026-09-26. Code: `learning/hardness_map.py`. Regenerate:*
+
+```bash
+python -m learning.hardness_map                          # reports/hardness_map_tables.md + reports/figures/hardness_map.png, ~3 s
+python -m learning.hardness_map --config csearch         # the other search configuration -> hardness_map_tables_csearch.md
+python -m learning.hardness_map --per-class              # one row per MOSP-graph class per cell -> hardness_map_tables_default_class.md
+python -m pytest tests/test_hardness_map.py -q           # 7 tests on a synthetic campaign with a known peak, width, rate and order parameter
+```
+
+*Reads `learning/data/ensemble/results.csv` (§10: 37,800 instances, 252
+cells, 26,052 distinct MOSP graphs), `learning/data/node_counts.csv` and
+`learning/data/instances.csv` (§3, §2: Chu & Stuckey's 50 `Random-30` and
+`Random-40` instances), and lists `recertify/results.json`. Writes nothing
+under `solutions/`; no solver default changed; `_lower_bound` is untouched.
+Every table below is in full, for all 252 cells and both configurations, in
+the three `reports/hardness_map_tables*.md` files.*
+
+**Question.** At fixed `n`, do the nodes the complete customer search visits
+to refute `optimum − 1` peak at some density, where, does the peak sharpen
+with `n`, how do nodes scale with `n` on the peak and off it, and is there an
+order parameter — a quantity at which the peak sits for every size,
+generator and `m / n`? Then: where do Chu & Stuckey's `Random-n-m-d` classes
+sit on the map, and does the map say why densities 2 and 4 at 125 × 125 are
+the ones that take a day?
+
+**Method.** Nodes, never seconds (§9 showed seconds do not see hardness at
+these sizes). Density is `col_mean`, the realised customers per product,
+because the fixed-`d` generator's empty-row repair inflates `d = 2` to 2.1
+and because Chu & Stuckey's "density 2" classes have `col_mean` 2.7–2.8 at
+every `n` from 30 to 125 (§9 said to use it; the table below shows why).
+Per cell: median, p90, p99 and max of `nodes_default`, the share of
+zero-node refutations, the connected share, and the cell median of every
+candidate order parameter. Per `(generator, m / n, n)` the peak cell of the
+median (and of the p90), whether it is interior to the grid, and a 95%
+bootstrap interval (1,000 resamples) on the ratio of the peak's statistic to
+each neighbour's, so a "peak" is claimed only where the interval excludes 1.
+Sharpness is the width of the peak in `log10(col_mean)` at half and at a
+tenth of its height, interpolated between cells. Scaling fits
+`log10(median)` against `n` (exponential, rate per customer) and against
+`log10 n` (power law), on `n ≥ 15` and cells with median ≥ 2, along the
+*ridge* (the peak cell at each `n`, which for the Bernoulli generator moves
+in `p`) and at each fixed parameter. Order parameters are tested two ways:
+**collapse** — at each `n`, all instances of the four series binned by
+quantiles of the candidate; how far apart the four series' per-bin medians
+sit (dispersion, in log10 nodes) and how much of the variance of log nodes
+the pooled bin median explains (r², against the ceiling of the cell medians
+themselves) — and **constancy** — the candidate's value at the peak, by cell
+and grid-free (12 quantile bins over all 5,400 instances at each `n`), and
+its coefficient of variation across sizes and series. Everything is repeated
+per isomorphism class and under the `csearch` configuration; where they
+differ it is said.
+
+**Baseline.** Hardness monotone in density.
+
+### Median nodes to refute optimum − 1, by cell (`col_mean` is the cell's realised density)
+
+**fixed, m = n**
+
+|   d |   col_mean |   10 |   15 |   20 |   25 |   30 |    35 |    40 |
+|----:|-----------:|-----:|-----:|-----:|-----:|-----:|------:|------:|
+|   2 |       2.12 |    5 |   12 |   34 |   58 |  109 |   244 |   473 |
+|   3 |       3.04 |    5 |   16 |   53 |  155 |  460 | **1402** | **3953** |
+|   4 |       4    |    2 |    9 |   30 |   89 |  288 |   830 |  2477 |
+|   5 |       5    |    1 |    4 |   14 |   43 |  126 |   338 |   890 |
+|   6 |       6    |    0 |    2 |    8 |   18 |   50 |   120 |   314 |
+|   8 |       8    |    0 |    0 |    1 |    5 |   12 |    25 |    51 |
+|  10 |      10    |    0 |    0 |    0 |    1 |    3 |     7 |    13 |
+
+**fixed, m = 2n**
+
+|   d |   col_mean |   10 |   15 |   20 |   25 |   30 |    35 |    40 |
+|----:|-----------:|-----:|-----:|-----:|-----:|-----:|------:|------:|
+|   2 |       2    |    5 |   23 |   82 |  262 |  940 | **3080** | **9968** |
+|   3 |       3    |    2 |   11 |   39 |  120 |  374 |  1249 |  3774 |
+|   4 |       4    |    0 |    3 |   12 |   34 |   94 |   232 |   625 |
+|   6 |       6    |    0 |    0 |    1 |    4 |   10 |    21 |    42 |
+|   8 |       8    |    0 |    0 |    0 |    0 |    1 |     4 |     7 |
+|  10 |      10    |    0 |    0 |    0 |    0 |    0 |     0 |     1 |
+
+**bernoulli, m = n** (`col_mean ≈ p · n`, so a row is not one density; the peak cell per column is bold)
+
+|     p |   10 |   15 |   20 |   25 |   30 |   35 |   40 |
+|------:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|
+| 0.025 |    5 |    8 |   11 |   14 |   19 |   27 |   48 |
+| 0.05  |    5 |    8 |   12 |   26 |   82 |  269 |  960 |
+| 0.075 |    5 |    9 |   23 |   74 |  250 | **796** | **2222** |
+| 0.1   |    5 |   12 | **40** | **112** | **340** |  718 | 1313 |
+| 0.15  |    5 | **16** |   38 |   80 |  110 |  164 |  199 |
+| 0.2   | **6** |   13 |   20 |   32 |   38 |   34 |   37 |
+| 0.3   |    4 |    5 |    5 |    5 |    4 |    4 |    3 |
+| 0.4   |    1 |    1 |    1 |    1 |    0 |    0 |    0 |
+
+**bernoulli, m = 2n**
+
+|     p |   10 |   15 |   20 |   25 |   30 |   35 |   40 |
+|------:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|
+| 0.025 |    6 |    9 |   13 |   19 |   30 |   72 |  166 |
+| 0.05  |    6 |    9 |   26 |   71 |  325 | **1339** | **4270** |
+| 0.075 |    5 |   12 |   52 | **148** | **394** |  876 | 1411 |
+| 0.1   |    5 | **17** | **52** |  114 |  172 |  224 |  316 |
+| 0.15  |    6 |   14 |   21 |   25 |   30 |   28 |   28 |
+| 0.2   |    4 |    6 |    7 |    7 |    6 |    5 |    5 |
+| 0.3   |    1 |    1 |    1 |    0 |    0 |    0 |    0 |
+
+Two orders of magnitude each side of the peak at `n = 40`; the p90 tables
+(in the tables file) peak in the same cells with one exception (Bernoulli,
+`m = n`, `n = 30`: p90 at `p = 0.075`, median at `0.1`, adjacent cells).
+
+### The peak, with bootstrap intervals (median, default configuration)
+
+| series | n | peak cell | `col_mean` | median | ratio to sparser neighbour [95% CI] | ratio to denser neighbour [95% CI] |
+|---|---|---|---|---|---|---|
+| fixed, m = n | 20 | d = 3 | 3.05 | 53 | 1.54 [1.36, 1.93] | 1.74 [1.59, 1.93] |
+| fixed, m = n | 30 | d = 3 | 3.03 | 460 | 4.19 [3.44, 4.80] | 1.59 [1.40, 1.76] |
+| fixed, m = n | 40 | d = 3 | 3.05 | 3,953 | 8.34 [6.73, 11.15] | 1.60 [1.39, 1.86] |
+| bernoulli, m = n | 20 | p = 0.1 | 2.25 | 40.5 | 1.73 [1.41, 1.96] | 1.05 [0.87, 1.19] |
+| bernoulli, m = n | 30 | p = 0.1 | 3.07 | 340 | 1.36 [1.12, 1.70] | 3.07 [2.56, 3.50] |
+| bernoulli, m = n | 40 | p = 0.075 | 3.10 | 2,222 | 2.31 [1.95, 2.92] | 1.69 [1.48, 2.02] |
+| bernoulli, m = 2n | 20 | p = 0.1 | 2.12 | 52.5 | 1.02 [0.93, 1.27] | 2.43 [2.22, 2.90] |
+| bernoulli, m = 2n | 30 | p = 0.075 | 2.35 | 394 | 1.21 [0.98, 1.56] | 2.29 [2.05, 2.66] |
+| bernoulli, m = 2n | 40 | p = 0.05 | 2.12 | 4,270 | 25.6 [19.5, 32.7] | 3.02 [2.50, 3.59] |
+| fixed, m = 2n | 20–40 | d = 2 | 2.00 | 82–9,968 | grid edge | 2.09–2.64, all significant |
+
+Over the 28 `(series, n)` rows: the fixed `m = n` series has an interior
+peak at `d = 3` resolved from both neighbours at every `n ≥ 15`; the two
+Bernoulli series have an interior peak at every `n ≥ 15` (12 of 12 rows;
+`p` at the peak falls from 0.2 to 0.075 as `n` rises), resolved from both
+neighbours at 7 of the 12 and from one neighbour, with the other side flat
+within the interval, at the other 5; the fixed `m = 2n` series peaks at `d = 2`, the
+sparsest cell its grid has (`d = 1` is a matching, no instance at all), and
+is **monotone** on that grid at every `n`. The Bernoulli `m = 2n` series,
+which does go below two customers per product, shows what is on the far side
+of that edge: at `n = 35` and `40` the cell at `col_mean` 1.4 has 18–26×
+fewer nodes than the peak at 1.9–2.1. **Per class** the peak table is
+identical in every cell with `n ≥ 20` (the repeats are at the complete and
+near-empty edges, §10). **Under `csearch`** the peak is in the same cell at
+every `n ≥ 25` and in an adjacent cell at `n = 20` (Bernoulli `m = n`: 0.15
+against 0.1); medians at the peak are 15–22% lower.
+
+**Kill criterion** (node counts at fixed `n` monotone in density with no
+peak across three sizes): **not met.** Three of the four series are
+non-monotone with an interior peak at every `n` from 15 to 40 — six sizes —
+and the fourth is monotone only because its grid stops at the density where
+the other series put the peak. Overall verdict from
+`kill_verdict`: `false`; the fixed `m = 2n` series alone: `true`, for the
+edge reason stated.
+
+### Sharpening: width of the peak in `log10(col_mean)`
+
+| series | n | half-height width (factor in `col_mean`) | tenth-height width | peak / sparsest cell | peak / densest cell |
+|---|---|---|---|---|---|
+| fixed, m = n | 20 | 0.30 (×2.0) | 0.50 (×3.2) | 1.5 | 54 |
+| fixed, m = n | 30 | 0.22 (×1.7) | 0.46 (×2.9) | 4.2 | 115 |
+| fixed, m = n | 40 | 0.19 (×1.55) | 0.43 (×2.7) | 8.3 | 282 |
+| bernoulli, m = n | 20 | 0.36 (×2.3) | 0.68 (×4.7, left open) | 3.5 | 42 |
+| bernoulli, m = n | 30 | 0.25 (×1.8) | 0.58 (×3.8) | 17 | 340 |
+| bernoulli, m = n | 40 | 0.24 (×1.75) | 0.48 (×3.0) | 45 | 2,222 |
+| bernoulli, m = 2n | 20 | 0.30 (×2.0) | 0.58 (×3.8, left open) | 3.8 | 54 |
+| bernoulli, m = 2n | 30 | 0.26 (×1.8) | 0.51 (×3.3) | 13 | 395 |
+| bernoulli, m = 2n | 40 | 0.14 (×1.36) | 0.38 (×2.4) | 26 | 4,270 |
+
+The half-height width falls monotonically with `n` in every series with an
+interior peak (fixed `m = n`: 0.30 → 0.19; Bernoulli `m = 2n`: 0.30 → 0.14
+over `n = 20 → 40`), and the peak's height over both edges grows by a factor
+that is itself growing with `n`. **The peak sharpens.** The widths are
+coarse — nine cells per row, interpolated — and the tenth-height width runs
+off the sparse edge at `n ≤ 25` for the Bernoulli series.
+
+### Scaling with `n` (n ≥ 15, cells with median ≥ 2)
+
+| series | where | rate (log10 per customer) | doubling every | RMS resid., exp. | power exponent | RMS resid., power | better |
+|---|---|---|---|---|---|---|---|
+| fixed, m = n | ridge (d = 3) | 0.095 | 3.2 customers | 0.012 | 5.6 | 0.106 | exponential |
+| fixed, m = n | d = 2 | 0.062 | 4.9 | 0.044 | 3.6 | 0.068 | exponential |
+| fixed, m = n | d = 6 | 0.085 | 3.5 | 0.054 | 5.0 | 0.072 | exponential |
+| fixed, m = n | d = 8 (4 points) | 0.067 | 4.5 | 0.019 | 4.9 | 0.009 | power |
+| fixed, m = 2n | ridge (d = 2) | 0.105 | 2.9 | 0.013 | 6.2 | 0.121 | exponential |
+| fixed, m = 2n | d = 4 | 0.091 | 3.3 | 0.059 | 5.3 | 0.061 | exponential |
+| bernoulli, m = n | ridge (p moving) | 0.086 | 3.5 | 0.021 | 5.0 | 0.105 | exponential |
+| bernoulli, m = n | p = 0.025 | 0.030 | 10.1 | 0.040 | 1.7 | 0.071 | exponential |
+| bernoulli, m = n | p = 0.2 | 0.017 | 17.5 | 0.084 | 1.1 | 0.064 | power |
+| bernoulli, m = n | p = 0.3 | −0.009 | — | 0.035 | −0.5 | 0.043 | flat |
+| bernoulli, m = 2n | ridge (p moving) | 0.095 | 3.2 | 0.027 | 5.5 | 0.132 | exponential |
+
+Along every ridge the exponential fit beats the power law by a factor of
+five to ten in residual, at a rate of **0.086–0.105 log10 per customer: the
+median refutation on the ridge doubles every 2.9–3.5 customers and grows
+tenfold every 10–12.** The p90 ridge rates are 0.089–0.108 (tables file),
+per-class rates identical to three figures, `csearch` rates within 0.001.
+Away from the ridge the rate falls but does not vanish where density is
+held fixed (fixed `d = 2`: doubling every 4.9 customers; `d = 8`: every
+4.5, where the power law fits four points about as well); it does vanish
+where the *parameter* is held fixed and the density therefore grows with
+`n` (Bernoulli `p ≥ 0.2`: the graph heads toward complete and the median
+saturates at 30–40 nodes or falls). So at fixed customers-per-product the
+growth is exponential everywhere on this grid, fastest on the ridge, and
+"away from the peak" is a difference of rate — 0.03–0.04 per customer
+between the ridge and `d = 2` or `d ≥ 8` — that compounds: at `n = 40` the ridge is 8× the `d = 2` cell and 78× the
+`d = 8` cell, both ratios growing with `n`, and the difference in rate alone
+would add a further factor of several hundred by `n = 125` if the rates
+held, which is item 06's question, not this one's.
+
+### Order parameters
+
+Collapse at fixed `n` (mean over `n ≥ 20`; dispersion is the range of the
+four series' binned medians in log10 nodes, lower is better; r² ceiling from
+the cell medians themselves is 0.949):
+
+| candidate | dispersion | r² | peak value, by cell (mean, CV, range over 15 interior peaks) | peak value, grid-free (CV over n = 20…40) |
+|---|---|---|---|---|
+| `g_deg_mean` | **0.29** | **0.926** | 6.2, CV 0.19, 4.0–8.3 | 5.2, CV 0.24 (3.8–6.9) |
+| `optimum / n` | 0.31 | 0.912 | **0.33, CV 0.14, 0.28–0.43** | **0.31, CV 0.12 (0.25–0.34)** |
+| `col_mean` | 0.63 | 0.827 | 2.64, CV 0.17, 1.9–3.1 | 2.7, CV 0.15 (2.05–3.0) |
+| matrix `density` | 0.63 | 0.827 | 0.092, CV 0.28 | 0.094, CV 0.19 |
+| `ub − lb` | 0.71 | 0.32 | 2.3, CV 0.51, 1–4 | 3.75, CV 0.26, at the grid edge |
+| `g_components` | 0.80 | 0.02 | 1.3 | degenerate (mostly 1) |
+
+No single candidate does both jobs. **Mean degree** of the MOSP graph is
+the best predictor of nodes at fixed `n` — it explains 92.6% of the variance
+of log nodes against a 94.9% ceiling, and the four series' curves against it
+sit within 0.29 log10 of one another — but the peak's location in it drifts
+from 4 to 8.3 as `n` and `m / n` vary, so it does not name *where* the
+transition is. **`optimum / n`** is the most constant location: the peak sits
+where the optimum is 0.28–0.43 of `n` by cell and 0.25–0.34 grid-free, for
+both generators and both `m / n`, and it collapses nearly as well (0.31,
+0.912). `col_mean` is constant *within* an `m / n` — 3.0 at `m = n` (fixed
+3.03–3.06, Bernoulli 2.25–3.10 rising with `n`) and 2.0 at `m = 2n` (fixed
+2.0, Bernoulli 1.9–2.35) — but not across them, which is what the two
+Bernoulli rows above and the two heatmap pairs in the figure show: the
+peak is at a fixed number of customers per product for a given product-to-
+customer ratio, and doubling the products halves it. `ub − lb` and
+`g_components` are not order parameters: the bound gap grows with `n` at
+every density and explains a third of the variance; components separate the
+sparse edge from everything else and nothing else. The honest statement is
+that at `n ≤ 40` the transition sits at **optimum ≈ n / 3**, equivalently at
+about three customers per product when `m = n`, and that the *height* of the
+hardness surface at fixed `n` is best read off the mean degree.
+
+### Chu & Stuckey's classes on the map
+
+| class | instances | `col_mean` | optimum / n | corpus median nodes | nearest campaign cell (fixed, m = n) | cell median, all | cell median, connected | corpus percentile in the connected cell | cell is the peak |
+|---|---|---|---|---|---|---|---|---|---|
+| Random-30-30-2 | 5 | 2.70 | 0.30 | 691 | d = 3 (3.03) | 460 | 455 | 71% | **yes** |
+| Random-30-30-4 | 5 | 4.20 | 0.53 | 168 | d = 4 | 288 | 288 | 16% | no |
+| Random-30-30-6 | 5 | 5.97 | 0.70 | 45 | d = 6 | 50 | 50 | 45% | no |
+| Random-30-30-8 | 5 | 7.83 | 0.83 | 12 | d = 8 | 12 | 12 | 40% | no |
+| Random-30-30-10 | 5 | 9.93 | 0.90 | 3 | d = 10 | 3 | 3 | 43% | no |
+| Random-40-40-2 | 5 | 2.80 | 0.28 | 4,364 | d = 3 (3.05) | 3,953 | 3,953 | 46% | **yes** |
+| Random-40-40-4 | 5 | 4.25 | 0.53 | 1,193 | d = 4 | 2,477 | 2,477 | 5% | no |
+| Random-40-40-6 | 5 | 5.92 | 0.70 | 276 | d = 6 | 314 | 314 | 36% | no |
+| Random-40-40-8 | 5 | 7.97 | 0.83 | 38 | d = 8 | 51 | 51 | 24% | no |
+| Random-40-40-10 | 5 | 9.90 | 0.90 | 15 | d = 10 | 13 | 13 | 53% | no |
+
+Their "density 2" is not the campaign's `d = 2`. With `col_mean` 2.7–2.8 and
+`optimum / n` 0.28–0.30 it is the campaign's **peak cell** (`d = 3`,
+`col_mean` 3.0, `optimum / n` 0.30) at both sizes, and their instances sit
+at the 46th and 71st percentiles of that cell's connected instances — typical
+peak instances, not outliers. Their density 4 is the dense shoulder, one
+cell over (median 63% of the peak at `n = 40`), and their instances are
+*easier* than the campaign's `d = 4` cell (5th and 16th percentiles), which
+is consistent with their `col_mean` 4.2–4.25 lying past the cell centre.
+Densities 6–10 fall off the ridge by one to two orders of magnitude, on the
+campaign's curve. The connected-only comparison matters least where it was
+expected to matter most: at `d = 3` and above every campaign instance is
+connected; at `d = 2, m = n` only 36–52% are at `n ≥ 20`, and the connected
+ones have medians 1.1–1.3× the cell's (605 vs 473 at `n = 40`), still six
+times below the `d = 3` peak — so discarding decomposable instances does not
+move the peak, it only removes the sparse tail Chu & Stuckey never generate.
+The corpus points are plotted on the connected-only curves in the figure's
+lower-left panel and lie on them.
+
+**The one sentence.** Densities 2 and 4 at 125 × 125 are the classes whose
+realised density (2.7–2.8 and 3.9–4.3 customers per product, `optimum / n`
+0.16–0.20 and 0.37–0.46) puts them on and beside the ridge the map finds at
+every `n` from 15 to 40, where the refutation grows fastest with `n`
+(doubling every 3.2 customers against every 4.5–4.9 at densities 2 and 8 on
+the fixed grid); the map places them, but it cannot say they take a day —
+that needs the ridge rate to hold from 40 to 125, and item 06 tests it.
+For that test, pre-registered here: the ridge fit from `n ≤ 40` (fixed
+`m = n`, `d = 3`) extrapolates to 10^(0.0951 · 85) × 3,953 ≈ **5 × 10¹¹
+nodes** at `n = 125`; the record holds five 125 × 125 refutations from
+`benchmarks.recertify` (configuration `better_move=True`, a third
+configuration, so not directly one of these two columns):
+`Random-125-125-2-1_0` 1.6 × 10¹¹ (25 h), `Random-125-125-2-4_0` 1.7 × 10¹¹
+(28 h), `Random-125-125-4-5_0` 4.9 × 10¹⁰ (10 h), `Random-125-125-4-2_0`
+6.1 × 10¹⁰ (13 h), `Random-125-125-4-4_0` 2.6 × 10¹¹ (54 h). Whether that is
+agreement or a coincidence of two points on an exponential is exactly what
+one fit on six points at `n ≤ 40` cannot tell, and this section makes no
+claim about it. Note too that at `n = 125` the density-2 classes have
+`optimum / n` 0.16–0.20, below the 0.25–0.43 band where the peak sits at
+`n ≤ 40`; if `optimum / n` is the order parameter, the peak at 125 is
+denser than their density 2 — on the density-4 side — which is a
+prediction item 06 can check against those five counts and the four-class
+timing record.
+
+**Finding, in one paragraph.** There is a peak. At every `n` from 15 to 40,
+in both generators and at both `m / n`, the median number of nodes to refute
+`optimum − 1` rises and then falls with density by two orders of magnitude
+on each side at `n = 40`, with the peak above at least one neighbour by
+bootstrap in 26 of 28 series-size rows and monotone only on the one grid
+that stops at the peak's density; the peak sharpens (half-height width
+0.30 → 0.14–0.19 in `log10 col_mean` from `n = 20` to `40`); on the ridge
+the median grows exponentially, doubling every 2.9–3.5 customers with a
+power law ruled out at five to ten times the residual, and off the ridge at
+fixed density it grows exponentially too but more slowly (doubling every
+4.5–4.9), so hardness at these sizes is a difference of exponential rates,
+not of kind. The peak sits where the optimum is about a third of `n`
+(0.25–0.43 across all series, the most size- and ratio-stable location among
+six candidates), equivalently at three customers per product when `m = n`
+and two when `m = 2n`; mean degree predicts the *height* of the surface at
+fixed `n` better than anything else (r² 0.93 of 0.95 attainable) but its
+peak location drifts. Chu & Stuckey's density-2 classes, at a realised 2.7–2.8
+customers per product, are the peak cell of this map at `n = 30` and `40`,
+and their density 4 is its dense shoulder.
+
+**Size range covered.** 10 ≤ n ≤ 40, `m ∈ {n, 2n}`, `col_mean` 1.1–20;
+37,800 instances in 252 cells, 26,052 distinct MOSP graphs; peaks and
+scaling on `n ≥ 15`, order parameters on `n ≥ 20`. The two search
+configurations of §3 agree on every peak at `n ≥ 25`. The Chu & Stuckey
+placement covers their 50 instances at `n = 30` and `40`. **Nothing here is
+evidence about 125 × 125**; the extrapolation above is a prediction for
+item 06 to test, labelled as such.
+
+**Kill criterion.** Not met, as stated above.
+
+**Method notes.** *The x-axis is realised density.* The first draft plotted
+the Bernoulli heatmaps on nominal `p`, under which the peak appears to drift
+left with `n`; on `col_mean` it is a vertical ridge in all four panels, and
+Chu & Stuckey's `d = 2` lands on `d = 3`. Any statement about "density 2"
+needs to say which one. *The kill test had to be written twice.* The first
+version demanded a peak resolved from both adjacent neighbours and fired for
+two series whose peaks are flat-topped over two cells (ratios 1.02–1.21 with
+intervals straddling 1) — a peak that is there but unresolved between
+neighbours, not the plan's "monotone with no peak"; the shipped test checks
+monotonicity literally and reports both resolutions. *Constant candidates*
+break `pd.qcut` into NaN labels; `_quantile_bins` folds them into one bin
+(caught by the synthetic test). *Zero-node refutations* are at most 1.3% in
+any cell with `optimum / n < 0.9` at `n ≥ 20`, 0% in every peak cell, and
+87–100% where the graph is complete, so the peak is not an artefact of the
+root cost check; the zero-node regime is the complete-graph edge.

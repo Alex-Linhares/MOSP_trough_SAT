@@ -3,7 +3,7 @@
 ## Ralph Loop 0002 Status
 - **Started**: 2026-09-26 06:18
 - **Target**: 6 items
-- **Current**: 2/6 SOLVED
+- **Current**: 3/6 SOLVED
 
 ---
 
@@ -94,3 +94,53 @@ Item 02 · The campaign. Report: `reports/ml_nature.md` §10.
 - Method note for anyone timing anything: seconds at n = 40 doubled between
   the pilot and the campaign on identical instances (0.50 → 1.18 s median)
   while node counts were reproduced exactly; use nodes.
+
+## Iteration 3 — 2026-09-26 07:15
+
+Item 03 · §2.4 Is there a phase transition in hardness? Report:
+`reports/ml_nature.md` §11; figure `reports/figures/hardness_map.png`; all
+tables in `reports/hardness_map_tables.md` (+ `_csearch`, `_default_class`).
+
+### Completed
+- `learning/hardness_map.py` (3 s on the 37,800-row campaign): per-cell node
+  statistics with `col_mean` as density; peak per `(generator, m/n, n)` with
+  bootstrap CIs on the ratio to each neighbour; monotonicity test (the kill's
+  literal premise); peak width at half and tenth height; exponential vs
+  power-law scaling along the ridge and at fixed parameter; order-parameter
+  tests (collapse at fixed n, constancy of the peak location by cell and
+  grid-free); Chu & Stuckey's Random-30/40 classes placed on the map
+  (connected-only cells too); the five 125×125 recertify counts listed for
+  item 06. `--config csearch` and `--per-class` variants written and compared.
+- **Kill not met.** Interior peak at every n ≥ 15 in fixed m=n (d=3) and both
+  Bernoulli series; only fixed m=2n is monotone, because its grid stops at
+  d=2 where Bernoulli m=2n puts the peak (col_mean 1.9–2.1) with an 18–26×
+  fall below it. Peak sharpens (half-width 0.30 → 0.14–0.19 log10 col_mean,
+  n 20 → 40). Ridge: exponential, doubling every 2.9–3.5 customers,
+  power law 5–10× worse; off-ridge at fixed density still exponential,
+  doubling every 4.5–4.9. Order parameter: `optimum/n ≈ 0.3` is the most
+  constant peak location (CV 0.12–0.14) across generators and m/n;
+  `g_deg_mean` collapses the height best (r² 0.926 of 0.949) but its peak
+  drifts; `col_mean` is 3.0 at m=n and 2.0 at m=2n. Chu & Stuckey's
+  "density 2" has col_mean 2.7–2.8 and sits in the peak cell (d=3) at n=30
+  and 40 (46th/71st percentile of the cell); density 4 is the dense shoulder.
+  Per-class and csearch results identical in peak location at n ≥ 25.
+- Pre-registered for item 06: ridge extrapolation ≈ 5 × 10¹¹ nodes at
+  n = 125 against recorded 4.9 × 10¹⁰ – 2.6 × 10¹¹; and if `optimum/n` is the
+  order parameter the 125×125 peak is on the density-4 side of density 2.
+- Tests: `tests/test_hardness_map.py` (7) on a synthetic campaign with a
+  known peak, width, rate and order parameter. Full suite: 791 passed,
+  2 skipped, 1 xfailed, 79 s. Nothing written to `solutions/`; no solver
+  default changed.
+
+### Blockers
+- None. `benchmarks.recertify` was running with 9 workers; this iteration
+  used one core.
+
+### Next
+- Item 04 (§2.5 concentration): `learning.hardness_map.cell_table` and
+  `load` give the per-cell frame; CV of the optimum per cell, formula for
+  `E[opt](n, m, p)`. Note from §11 that `optimum/n ≈ 0.3` marks the hardness
+  peak, so the concentration study should report CV on and off the ridge.
+- Item 06 will want the ridge fit (`scaling`, `fit_scaling`) and the
+  `large_counts` table; the recertify counts are under `better_move=True`, a
+  third configuration — say so when comparing.

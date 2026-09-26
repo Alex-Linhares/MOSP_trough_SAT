@@ -33,7 +33,7 @@ Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
       56–81% of instances at n ≥ 10, so the useful range is narrower than the
       grid), total core-hours, and the audit (every witness re-simulates, every
       `optimum − 1` refutes). No analysis yet beyond the descriptive tables.
-- [ ] 03 · §2.4 **Is there a phase transition in hardness?** From the campaign
+- [x] 03 · §2.4 **Is there a phase transition in hardness?** From the campaign
       table: median and p90 nodes against density per size; is there a peak,
       where is it, does it sharpen with n; fit a scaling exponent of nodes
       against n at the peak and away from it. Candidate order parameters:
