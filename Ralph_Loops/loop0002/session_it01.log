@@ -1,0 +1,115 @@
+# session it01 started 2026-09-26 06:18:19
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, the existing report, and the key modules this item builds on.
+  > $ date && pgrep -fa benchmarks.recertify; nproc; cat Ralph_Loops/loop0002/iterations.md; echo ----; cat Ralph_Loops/loop0002/status.json 2>/dev/null; echo; ls Ral
+
+Recertify is running with 9 workers, so I'll cap at 16 workers. Now the plan sections and the modules I'll build on.
+  > $ grep -n "^## \|^### " reports/ml_nature_plan.md | head -60; echo ----; awk '/^## 0/,/^## 1/' reports/ml_nature_plan.md | head -80
+  > $ sed -n 127,165p reports/ml_nature_plan.md; echo ======; sed -n 204,232p reports/ml_nature_plan.md; echo ======; sed -n 240,300p reports/ml_nature_plan.md
+  > $ cat learning/node_counts.py; echo =====GEN; cat benchmarks/generator.py; echo =====GITIGNORE; cat .gitignore
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/canonical.py learning/features.py learning/bound_gap.py learning/dataset.py learning/degeneracy.py | head -120; e
+  > $ sed -n 92,192p learning/canonical.py; echo ====FEATURES; sed -n 1,44p learning/features.py; sed -n 134,170p learning/features.py; sed -n 325,375p learning/featu
+  > $ python -c "
+from learning.features import feature_names
+fn=feature_names(); print(len(fn)); print(fn)" 2>&1 | tail -3; echo ====SOLVE; grep -n "def solve_mosp_e
+
+Still gathering the APIs I'll build on. Next: how §8 wrote its section and used the generated solutions dir, the degeneracy module's generated-instance pattern, and whether pynauty is installed.
+  > $ sed -n 1721,1800p reports/ml_nature.md; echo ====DEGEN; sed -n 504,560p learning/degeneracy.py; echo ====NAUTY; python -c "import pynauty; print('nauty ok')"; p
+  > $ grep -n "^def decide" -A 30 satisfiability/customer_search.py | head -60; grep -n "class Decision" -A 12 satisfiability/customer_search.py; echo ====INST; grep 
+
+Enough API context. Now a quick probe: which tiny instance gives a positive node count, and how long features, solve and refute take at n=40 on a couple of pilot cells.
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import time, tempfile
+from pathlib import Path
+import numpy as np
+from mosp.instance import MOSPInstance
+from satisfiabi
+  > $ grep -n "^def " mosp/verify.py; python - <<'EOF' 2>&1 | grep -v Warning
+import itertools, numpy as np
+from mosp.instance import MOSPInstance
+from mosp.verify im
+  > Write /home/al/dev/MOSP/learning/ensemble.py
+
+Now the gitignore rule and a smoke test of the module on two tiny cells into a temp directory, in parallel.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path(".gitignore"); s = p.read_text()
+s = s.replace("# Regenerated from the corpus in seconds; not worth versionin
+
+The ignore rule works. Smoke test on two tiny cells to a temp directory:
+  > $ rm -rf /tmp/ens_smoke && python - <<'EOF' 2>&1 | grep -v Warning
+from pathlib import Path
+from learning.ensemble import Cell, run, tables, generate
+tmp = Path("
+
+Smoke test passes, resume works, tables render. Next I'll launch the pilot with the extension cells and write the test file at the same time.
+  > $ time python -m learning.ensemble --pilot --extension --workers 16 2>&1 | grep -v Warning | head -30
+  > $ sed -n '/### Cost per cell/,/### Per class/p' reports/ensemble_tables.md | tail -n +90; sed -n '/### Per class/,$p' reports/ensemble_tables.md | head -60
+  > $ time python -m learning.ensemble --extension --pilot --per-cell 100 --workers 16 --cells $(python -c "
+from learning.ensemble import pilot_cells, extension_cell
+  > $ python - <<'EOF'
+import pandas as pd
+from pathlib import Path
+p = Path("learning/data/ensemble/results.csv")
+f = pd.read_csv(p); print("rows", len(f), "unique",
+  > $ du -sh --apparent-size learning/data/ensemble/instances learning/data/ensemble/solutions learning/data/ensemble/results.csv; head -c 600 learning/data/ensemble/
+  > Write /home/al/dev/MOSP/tests/test_ensemble.py
+
+Tests written. Now the formatting fix and manifest flag in the module, plus the analysis numbers for the report, run together.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ensemble.py"); s = p.read_text()
+
+# 1. audit as a readable two-column table
+old = """    a = audit(
+  > $ python -m pytest tests/test_ensemble.py -q -x 2>&1 | tail -5
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_ensemble.py"); s = p.read_text()
+old = """    assert inst.matrix.shape == (12, 10)
+    assert (in
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_ensemble.py"); s = p.read_text()
+old = s[s.index("    assert sums.sum() - 3 * 10"):s.index("\n\n\
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np
+from learning.ensemble import load_results, dedupe, cost_table, affordable, item02_cell
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ensemble.py"); s = p.read_text()
+
+# float precision in the CSV
+old = """        frame.to_csv(csv, m
+
+Remaining: verify the whole manifest and regenerate the tables, run the full test suite, and append §9 to the report. All three are independent, so they go out together.
+  > $ python -m learning.ensemble --tables-only --verify-manifest 0 2>&1 | grep -v Warning | grep -E "manifest:|Regenerated|wrote"; du -sh --apparent-size learning/da
+
+All 8,000 manifest rows regenerate with zero mismatches, and the artifact is 8.2 MB. Two independent steps now: the full test suite, and the §9 section.
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -4
+
+All 782 tests pass. Now the three writes, all independent: §9 appended to the report, the PROGRESS.md entry, and the iterations.md tick.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 9. The generated-ensemble campaign: infrastructure and pilot (§3 phase 3, item 01)
+
+*loop0002 iteration 1, 2026-09-26. C
+
+Final checks, all independent: the tick in iterations.md, that only the ensemble directory is exposed under `learning/data`, and that the CLI still parses.
+  > $ grep -n "^- \[x\] 01\|^- \[ \] 02" Ralph_Loops/loop0002/iterations.md; git status --short --untracked-files=all learning/ reports/ .gitignore tests/ | grep -v "
+
+Item 01 is done. Everything the driver needs is on disk, nothing was committed, and nothing touched `solutions/`.
+
+**What was built.** `learning/ensemble.py` generates cells of `(generator, n, m, density)` under both generators, seeds each instance by a CRC of its cell and index so it regenerates byte for byte, solves it into `learning/data/ensemble/solutions/`, and records per instance the optimum and proof kind, witness re-simulation, nodes and seconds to refute `optimum − 1` under both search configurations, all 49 features, the isomorphism certificates and the component count. One CSV row per instance, resumable. The `.gitignore` now un-ignores `learning/data/ensemble/`.
+
+**What the pilot found.** The specified pilot of 360 instances took 12 s, so I extended it to m = 2n, p = 0.025 and 100 per cell: 8,000 instances in 126 s on 16 workers. The audit is clean on every instance. The cost premise was wrong at these sizes: refuting `optimum − 1` is 0.7% of the time, and seconds are a smooth function of n alone while nodes vary by three orders of magnitude across density at fixed n = 40. Compute does not bind item 02, storage does, so the artifact is a manifest plus witnesses plus results (8.2 MB), with `.mosp` files opt-in. All 8,000 manifest rows regenerate with zero mismatches.
+
+**The grid chosen for item 02.** Seven sizes from 10 to 40, m in {n, 2n}, d from 2 to 10, nine values of p from 0.025 to 0.5, 150 per cell. That is 37,800 instances, about six minutes of wall clock and about 40 MB. The reasoning and the previews for items 03 and 04 are in `reports/ml_nature.md` §9.
+
+**Tests.** Six new tests in `tests/test_ensemble.py`, including the byte-for-byte regeneration and a hand-checked 4×4 instance with optimum 2 and a positive node count. Full suite: 782 passed, 2 skipped, 1 xfailed in 75 s.
+
+PROGRESS.md carries the iteration entry and reads 1/6 solved; item 01 is ticked in iterations.md.
+
+# result: success in 931s, 31 turns, cost $5.27

@@ -4,7 +4,7 @@ One item per iteration, in order. Mark `- [x]` when done, `- [!]` when blocked.
 Plan sections refer to `reports/ml_nature_plan.md`; earlier findings to
 `reports/ml_nature.md` §1–§8.
 
-- [ ] 01 · §3 phase 3 **Campaign infrastructure and pilot.** `learning/ensemble.py`:
+- [x] 01 · §3 phase 3 **Campaign infrastructure and pilot.** `learning/ensemble.py`:
       generate `G(n, m, p)` ensembles under both generators (Bernoulli `p`, and
       Chu & Stuckey's fixed customers-per-product `d`), dedupe by
       `learning.canonical` MOSP-graph certificate, record `g_components` rather

@@ -1,0 +1,5 @@
+[2026-09-26 06:18:19] loop start: up to 10 iterations, cap 3.0 h each, model default
+[2026-09-26 06:18:19] === iteration 1: 01 · §3 phase 3 Campaign infrastructure and pilot. `learning/ensemble.py`:
+[2026-09-26 06:18:19] claude session it01 (cap 3.00 h) -> session_it01.log
+[2026-09-26 06:33:51] session it01: ok (exit 0, 30 tool calls)
+[2026-09-26 06:35:07] tests passed: 782 passed, 2 skipped, 1 xfailed, 147 warnings in 75.50s (0:01:15)

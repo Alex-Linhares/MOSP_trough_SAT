@@ -1906,3 +1906,267 @@ own prefixes, and that is the measurement to make.
 any decision path; no default changed; nothing was written to `solutions/`
 (`git status solutions/` clean after every run); the running
 `benchmarks.recertify` was not touched.
+
+## 9. The generated-ensemble campaign: infrastructure and pilot (§3 phase 3, item 01)
+
+*loop0002 iteration 1, 2026-09-26. Code: `learning/ensemble.py`. Regenerate:*
+
+```bash
+python -m learning.ensemble --pilot --extension --per-cell 100 --workers 16   # 80 cells, 8,000 instances, ~2 min
+python -m learning.ensemble --tables-only                                      # the tables from learning/data/ensemble/results.csv
+python -m learning.ensemble --tables-only --verify-manifest 0                  # every instance regenerates byte for byte
+python -m pytest tests/test_ensemble.py -q
+```
+
+*Writes `reports/ensemble_tables.md` (every table below in full, all 80
+cells) and `learning/data/ensemble/` — `results.csv` (one row per instance,
+77 columns), `manifest.csv` (parameters, seed and matrix digest per
+instance), `solutions/` (8,000 witnesses through `solve_mosp_exact` with that
+directory as `solutions_dir`). The directory is un-ignored in `.gitignore`
+and is 8.2 MB. Nothing was written to `solutions/`; no solver default
+changed; `_lower_bound` is untouched.*
+
+**Question.** What does one instance of the campaign cost per cell of
+`(generator, n, m, density)`, so that item 02 can choose a grid it will
+finish inside 2.5 hours on 16 workers; and does the infrastructure record
+what §2.4, §2.5 and §2.9 will need — the optimum, nodes to refute
+`optimum − 1` under both search configurations, the bounds, the 49 features,
+the isomorphism certificates and the component count?
+
+**Method.** A *cell* is `(generator, n, m, param)`: `bernoulli` is
+`G(n, m, p)` through `generate_random_instance` (every entry 1 with
+probability `p`; empty rows and columns get one entry), `fixed` is Chu &
+Stuckey's fixed customers-per-product `d` through
+`generate_structured_instance`. The `index`-th instance of a cell is seeded
+by a CRC of the cell identifier and the index, so a cell is a pure function
+of its parameters and regenerates alone, in any order, on any machine; the
+manifest's 8,000 digests were all regenerated and matched
+(`--verify-manifest 0`). For each instance the row holds the generator
+parameters and seed; `optimum` with how the descent proved it
+(`solve_proof`: 5,581 by the lower bound meeting the value, 2,419 by
+refutation) and whether the witness re-simulates to it; nodes, seconds and
+status of a fresh `decide(optimum − 1)` under the two configurations of §3
+(`nodes_default`, `nodes_csearch`: one row per instance, the configuration
+in the column name, unlike `learning/data/node_counts.csv`'s one row per
+configuration); all 49 features of `learning.features`, which include
+`lb_best`, `ub_cs_dfs`, `tw_min_fill`, `bw_rcm`, `g_degeneracy` and
+`g_components`; and `learning.canonical`'s `graph_cert`, `bipartite_cert`,
+`wl_hash` and `aut_order`, plus `complete_graph`. Decomposable instances are
+kept and counted, where Chu & Stuckey discard them. The run is resumable and
+appends as rows finish. Deadline per refutation 60 s, descent budget 600 s:
+neither was reached by any instance.
+
+The item specified 10 instances per cell over `n ∈ {10, 20, 30, 40}`,
+`m = n`, `d ∈ {2, 3, 4, 6, 8}`, `p ∈ {0.05, 0.1, 0.2, 0.3}` — 36 cells, 360
+instances — and that took **12 s**. Since the point of the pilot is to price
+item 02's grid, it was extended in the two directions that grid goes and the
+specified pilot does not: `m = 2n` at every density, `p = 0.025` below Chu &
+Stuckey's density 2, and 100 instances per cell for tails. **80 cells, 8,000
+instances, 126 s wall on 16 workers, 1,669 core-seconds** (83% worker
+efficiency). The 8,000 `.mosp` files were written and then dropped in favour
+of the manifest, which the task allows once the artifact outgrows the
+specified pilot; `--write-instances` restores them.
+
+**Baseline.** The premise of pricing before spending: that the cost of an
+instance is set by the refutation, so that hard cells cost more.
+
+### Audit
+
+| check | count |
+|---|---|
+| instances | 8,000 |
+| witness re-simulates to the optimum | 8,000 |
+| certified (refutation or bound) | 8,000 |
+| `optimum − 1` refuted, default configuration | 7,997 (+3 with optimum 1, nothing to refute) |
+| `optimum − 1` refuted, csearch configuration | 7,997 (+3) |
+| `sat` at `optimum − 1` (a wrong optimum) | 0 |
+| deadline reached | 0 |
+| complete MOSP graphs | 536, every one with optimum `n` |
+
+### Where the time goes
+
+| component | core-seconds | share | worst instance |
+|---|---|---|---|
+| `solve_mosp_exact` descent (bounds, `cs-dfs`, search) | 946 | 56.7% | 2.00 s |
+| 49 features (`bound_features` runs `_lower_bound` and two heuristics) | 705 | 42.2% | 1.85 s |
+| refute `optimum − 1`, default | 6.6 | 0.4% | 0.038 s |
+| refute `optimum − 1`, csearch | 5.6 | 0.3% | 0.034 s |
+| total | 1,669 | | 3.85 s |
+
+The premise is false at these sizes. **The refutation is 0.7% of the cost.**
+Seconds are a function of size — 0.006 s per instance at n = 10, 0.11 at 20,
+0.18 at 30, 0.5 at 40, dominated by bound computation and feature extraction
+— while the hardness the campaign is after lives entirely in the node
+counts, which vary by three orders of magnitude across cells at fixed n = 40
+and never reach 0.04 s. The plan's insistence on nodes rather than seconds
+(§2.4) is not just a portability rule here: at n ≤ 40 the seconds do not see
+the hardness at all.
+
+### Cost by size
+
+| generator | n | m | instances | s/instance mean | p90 | max | nodes median | nodes max | worst cell |
+|---|---|---|---|---|---|---|---|---|---|
+| fixed | 10 | 10 | 500 | 0.006 | 0.009 | 0.051 | 1 | 19 | d8 |
+| fixed | 10 | 20 | 500 | 0.005 | 0.006 | 0.021 | 0 | 18 | d4 |
+| fixed | 20 | 20 | 500 | 0.108 | 0.237 | 0.270 | 21.5 | 140 | d4 |
+| fixed | 20 | 40 | 500 | 0.102 | 0.224 | 0.266 | 12 | 281 | d3 |
+| fixed | 30 | 30 | 500 | 0.181 | 0.277 | 0.473 | 104 | 1,450 | d3 |
+| fixed | 30 | 60 | 500 | 0.180 | 0.287 | 0.437 | 95.5 | 4,670 | d2 |
+| fixed | 40 | 40 | 500 | 0.477 | 0.677 | 0.945 | 528 | 15,610 | d3 |
+| fixed | 40 | 80 | 500 | 0.520 | 0.765 | 1.33 | 640 | 40,579 | d2 |
+| bernoulli | 10 | 10 | 500 | 0.005 | 0.007 | 0.215 | 5 | 16 | p0.025 |
+| bernoulli | 10 | 20 | 500 | 0.012 | 0.013 | 0.231 | 5 | 13 | p0.025 |
+| bernoulli | 20 | 20 | 500 | 0.183 | 0.388 | 0.851 | 13 | 274 | p0.025 |
+| bernoulli | 20 | 40 | 500 | 0.160 | 0.342 | 1.06 | 12 | 194 | p0.025 |
+| bernoulli | 30 | 30 | 500 | 0.241 | 0.433 | 1.36 | 36 | 1,350 | p0.025 |
+| bernoulli | 30 | 60 | 500 | 0.229 | 0.429 | 2.50 | 28 | 2,620 | p0.025 |
+| bernoulli | 40 | 40 | 500 | 0.498 | 0.714 | 3.48 | 59 | 5,720 | p0.025 |
+| bernoulli | 40 | 80 | 500 | 0.430 | 0.701 | 3.85 | 148 | 17,030 | p0.025 |
+
+The "worst cell" column is by summed seconds; at n ≥ 20 it is the sparsest
+Bernoulli cell every time, because `p = 0.025` produces the most components
+and the bound code spends longest there, not because it is hardest to refute.
+
+### The n = 40 cells, 100 instances each
+
+| cell | classes | complete | decomposable | optimum mean (CV) | nodes median | p90 | p99 | max | s/instance median | max |
+|---|---|---|---|---|---|---|---|---|---|---|
+| b m=40 p=0.025 | 100 | 0 | 100 | 4.3 (0.19) | 48 | 188 | 683 | 1,178 | 0.72 | 3.48 |
+| b m=40 p=0.05 | 100 | 0 | 94 | 7.4 (0.18) | 908 | 3,085 | 4,208 | 5,724 | 0.40 | 0.71 |
+| b m=40 p=0.1 | 100 | 0 | 5 | 19.4 (0.10) | **1,395** | 2,584 | 4,451 | 4,950 | 0.41 | 0.69 |
+| b m=40 p=0.2 | 100 | 0 | 0 | 33.0 (0.03) | 36 | 60 | 85 | 102 | 0.38 | 0.65 |
+| b m=40 p=0.3 | 99 | 0 | 0 | 37.6 (0.02) | 3 | 5 | 8 | 8 | 0.37 | 0.60 |
+| b m=80 p=0.025 | 100 | 0 | 100 | 4.6 (0.19) | 148 | 605 | 1,633 | 1,796 | 0.60 | 3.85 |
+| b m=80 p=0.05 | 100 | 0 | 49 | 13.4 (0.14) | **4,270** | 9,987 | 15,908 | 17,030 | 0.46 | 0.88 |
+| b m=80 p=0.1 | 100 | 0 | 0 | 28.0 (0.05) | 319 | 561 | 718 | 782 | 0.41 | 0.70 |
+| b m=80 p=0.2 | 100 | 0 | 0 | 37.2 (0.02) | 5 | 9 | 13 | 17 | 0.36 | 0.63 |
+| b m=80 p=0.3 | 5 | 64 | 0 | 39.6 (0.01) | 0 | 0 | 1 | 1 | 0.05 | 0.36 |
+| f m=40 d=2 | 100 | 0 | 65 | 4.6 (0.12) | 504 | 1,147 | 2,049 | 2,088 | 0.43 | 0.95 |
+| f m=40 d=3 | 100 | 0 | 0 | 11.6 (0.08) | **4,285** | 8,436 | 12,275 | 15,610 | 0.46 | 0.92 |
+| f m=40 d=4 | 100 | 0 | 0 | 18.2 (0.05) | 2,540 | 4,334 | 7,320 | 9,227 | 0.44 | 0.76 |
+| f m=40 d=6 | 100 | 0 | 0 | 27.3 (0.03) | 320 | 439 | 578 | 624 | 0.40 | 0.70 |
+| f m=40 d=8 | 100 | 0 | 0 | 32.4 (0.03) | 51 | 68 | 108 | 110 | 0.39 | 0.62 |
+| f m=80 d=2 | 100 | 0 | 4 | 9.5 (0.08) | **10,632** | 18,542 | 35,164 | 40,579 | 0.62 | 1.33 |
+| f m=80 d=3 | 100 | 0 | 0 | 19.6 (0.04) | 3,878 | 5,605 | 7,405 | 7,767 | 0.51 | 0.99 |
+| f m=80 d=4 | 100 | 0 | 0 | 26.5 (0.03) | 641 | 973 | 1,123 | 1,227 | 0.44 | 0.79 |
+| f m=80 d=6 | 100 | 0 | 0 | 33.4 (0.02) | 41 | 61 | 79 | 82 | 0.39 | 0.65 |
+| f m=80 d=8 | 100 | 0 | 0 | 36.8 (0.01) | 8 | 11 | 16 | 16 | 0.38 | 0.65 |
+
+Three things the pilot shows that later items own and will measure properly
+on the full grid — recorded here as what the pilot *suggests*, at n = 40, on
+100 instances per cell, not as findings:
+
+- **Nodes are not monotone in density.** At n = 40 the median peaks at
+  `d = 3` for `m = n` and at `d = 2` for `m = 2n`, at `p = 0.1` for `m = n`
+  and `p = 0.05` for `m = 2n`, and falls by two to three orders of magnitude
+  on both sides. Item 03's kill criterion (monotone, no peak, across three
+  sizes) looks unlikely to fire; its job is the location and the sharpening
+  of the peak, and whether the peak sits at a fixed `optimum / n` or a fixed
+  mean degree rather than at a fixed density. Doubling `m` at fixed `d` moves
+  the peak to a lower `d`; the hardest instance in all 8,000 (40,579 nodes,
+  0.038 s) is `f_n40_m80_d2_i094`, optimum 10 against `lb_best` 7.
+- **The optimum's coefficient of variation** is 0.19 at the sparsest cells
+  and at or below 0.08 everywhere the graph has a single component. Item
+  04's kill criterion (CV above 0.2 up to n = 40) is not met in any pilot
+  cell, but the sparse cells are close and are exactly where the optimum is
+  a sum over components.
+- **Decomposable and complete instances are where the grid's edges are.**
+  At `p = 0.025` every instance decomposes; at `d = 2, m = n` 65% do; at
+  `p = 0.3, m = 2n` 64% are complete graphs with 5 classes in 100 instances.
+  Chu & Stuckey discard the former; §8 predicted the latter. The useful
+  density range at n = 40 is `d ∈ [2, 8]` and `p ∈ [0.05, 0.2]`, and item 02
+  should resolve it finely rather than spend instances at `p ≥ 0.3`.
+
+### Deduplication
+
+| n | raw | distinct MOSP graphs within cells | repeats |
+|---|---|---|---|
+| 10 | 2,000 | 1,181 | 819 |
+| 20 | 2,000 | 1,791 | 209 |
+| 30 | 2,000 | 1,901 | 99 |
+| 40 | 2,000 | 1,904 | 96 |
+| all | 8,000 | 6,777 | 1,223 |
+
+The repeats sit at the ends of the density range: the complete graph
+(`f_n10_m10_d8` and `f_n10_m20_d8` have one class in 100; `b_n40_m80_p0.3`
+five) and the near-empty graph at n = 10 (`b_n10_m20_p0.025`, 81 repeats,
+where the repair of empty rows leaves a near-matching). In the range the
+campaign cares about, 100 instances are 99–100 classes at every n ≥ 20.
+Every table above is over raw instances; per-class numbers differ only in
+those edge cells, and `dedupe` is there for item 02 to report both.
+
+### What "fixed d" is
+
+`generate_structured_instance` gives every product exactly `d` customers and
+then gives every empty customer one product, so `col_mean` exceeds `d`:
+by 0.12 at `d = 2, m = n` (one product in eight gains a customer), 0.04 at
+`d = 3`, 0.015 at `d = 4`, under 0.01 at any `d` with `m = 2n`, and 0 at
+`d ≥ 6`. This is the same repair the Bernoulli generator makes, and it is
+why `p = 0.025` and `d = 2, m = n` are the most decomposable cells rather
+than the emptiest. Chu & Stuckey's `Random-n-m-d` classes have `col_mean`
+equal to `d` to within rounding (§2), consistent with a generator that does
+not repair — or that discards. Item 03 should treat `col_mean`, not the
+nominal `d`, as the density when placing their classes on the map.
+
+### The two configurations
+
+Over 8,000 instances the `csearch` configuration (Theorem 2 on sparse
+instances, every candidate a dominator) visits fewer nodes than the `decide`
+defaults on 2,810, the same on 5,173 and more on 17; median ratio 1.00, as in
+§3 on the corpus. Zero-node refutations are 11.1% overall — 25% at n = 10,
+9% at 20, 5% at 30 and 40 — against 38.5% on the corpus at n ≤ 40 (§3),
+whose n ≤ 40 rows are mostly complete graphs.
+
+### The grid item 02 can afford
+
+Each cell of item 02's grid is priced at the mean seconds per instance of
+the nearest pilot cell with the same generator and `m / n` (nearest in `n`,
+then in density; `affordable()` in the module). For the grid the item names
+— `n ∈ {10, 15, 20, 25, 30, 40}`, `m ∈ {n, 2n}`, `d ∈ {2, …, 10}`,
+`p ∈ {0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5}`, 216 cells — one
+instance in every cell costs 31.6 core-seconds, so with 2.5 h × 16 workers
+at the pilot's 83% efficiency (taken as 70%: 100,800 core-seconds) the
+budget buys **3,188 instances per cell**. Compute does not bind. Storage
+does: a row is 0.45 KB in `results.csv` and a witness 0.5 KB, so the ~50 MB
+ceiling on the committed artifact holds about 45,000 instances in all.
+
+**The chosen grid** for item 02, then: `n ∈ {10, 15, 20, 25, 30, 35, 40}`,
+`m ∈ {n, 2n}`, `d ∈ {2, …, 10}` (only `d ≤ n`), `p ∈ {0.025, 0.05, 0.075,
+0.1, 0.15, 0.2, 0.3, 0.4, 0.5}` — 252 cells — at **150 instances per cell**:
+37,800 instances of which the 8,000 here are reused unchanged (same cells,
+same seeds), about 5,500 core-seconds or six minutes of wall clock, and an
+artifact of about 40 MB with witnesses and manifest and without `.mosp`
+files. 150 per cell resolves a p99. If item 02 wants more where it matters,
+the density range `p ∈ [0.05, 0.2]`, `d ∈ [2, 6]` can go to 300 per cell at
+n ≥ 30 within the same storage by leaving `p ≥ 0.3` at 50, where the graph is
+complete and every instance is the same class; that is the trade to make,
+not a compute one. `n = 35` is added because item 03's scaling exponent
+comes from the peak's height against n, and four points are few.
+
+**Finding, in one paragraph.** At n ≤ 40 the campaign is free: 8,000
+certified instances with both refutation counts, 49 features and
+certificates cost 28 core-minutes, the hardest refutation in the set took
+0.04 s, and the whole of item 02's grid at 150 per cell is a six-minute run
+whose only real limit is the size of the committed artifact. What the pilot
+prices is therefore not hardness but bookkeeping — bounds and features — and
+that is a result: it means nodes are the only measure of hardness available
+at these sizes, since seconds are a smooth function of `n` alone. What it
+previews, and the following items must test, is a node-count peak in density
+at n = 40 that moves with `m`, an optimum whose CV is under 0.2 in every cell
+but near it where the graph decomposes, and grid edges — every instance
+decomposable below `p = 0.05`, most complete above `p = 0.3` at `m = 2n` —
+that Chu & Stuckey's discard rule hides.
+
+**Size range covered.** 10 ≤ n ≤ 40, m ∈ {n, 2n}, `d ∈ {2, 3, 4, 6, 8}`,
+`p ∈ {0.025, 0.05, 0.1, 0.2, 0.3}`, 100 instances per cell. Nothing here is
+evidence about 125 × 125.
+
+**Kill criterion.** None is stated for item 01. Items 03 and 04's are noted
+above as previews only.
+
+**Method notes.** Passing a cell twice on the command line ran it twice and
+wrote 1,800 duplicate rows before `run` deduplicated its cell list; the CSV
+was deduplicated by instance name and the test now covers it. A cell with
+`d` at or above `n` is a complete graph in one class; the grid skips
+`d > n`. The `.mosp` store was written, measured (18 MB for 8,000 files,
+73 MB on disk in 4 KB blocks) and replaced by the manifest.

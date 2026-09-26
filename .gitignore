@@ -16,8 +16,10 @@ lean/.lake/
 proofs/
 .venv-cpsat/
 
-# Regenerated from the corpus in seconds; not worth versioning
-learning/data/
+# Regenerated from the corpus in seconds; not worth versioning -- except the
+# generated-ensemble campaign, which costs hours and is the artifact of loop0002
+learning/data/*
+!learning/data/ensemble/
 learning/models/
 
 # Unattended re-certification logs and results
