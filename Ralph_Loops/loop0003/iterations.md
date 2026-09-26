@@ -125,7 +125,7 @@ Plan sections refer to `reports/ml_nature_plan_2.md`; earlier findings to
       random graphs. Deliverable: the ridge as a condition on one graph
       parameter across m/n, or the statement that none does it, decided by the
       m = n/2 cells. No kill.
-- [ ] 12 · §2.10 **The sandwich in Lean.** In `lean/MOSPFormalization/`, define
+- [x] 12 · §2.10 **The sandwich in Lean.** In `lean/MOSPFormalization/`, define
       degeneracy and bandwidth over the existing graph definitions and prove
       `degeneracy ≤ vertex separation` and `vertex separation ≤ bandwidth`,
       connecting through `VSEquivPW`; `lake build` must pass. Blocked is

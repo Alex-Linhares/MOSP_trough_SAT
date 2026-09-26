@@ -6906,3 +6906,256 @@ unless told not to; the manifest of seeds is the artifact, and the 2,750
 files were removed after the manifest verified. *The `m = n // 2` ratio at
 `n = 75` is 0.493*: ratios are snapped to the nearest of ⅛, ¼, ½, 1, 2 for
 grouping and kept exact for every formula.
+
+## 26. The sandwich in Lean: `degeneracy ≤ pathwidth ≤ bandwidth` as theorems (plan 2 §2.10, loop0003 item 12)
+
+*Iteration 14 of loop0003, 2026-09-26. Code: `lean/MOSPFormalization/Sandwich.lean`
+(578 lines, 32 theorems, 3 `sorry`), `learning/sandwich.py`. Regenerate:*
+
+```bash
+cd lean && lake build                       # 1,638 jobs; ~2 s from the cache, the Mathlib build otherwise
+python -m learning.sandwich                 # brute force to n = 5, corpus recount, lake build + #print axioms; 5 s
+python -m pytest tests/test_sandwich.py -q  # 7 tests
+```
+
+*Writes `reports/sandwich_tables.md` (every table below). Reads
+`learning/data/instances.csv` for the corpus recount. Nothing here is a bound
+the solver uses, a solver change, or a write to `solutions/`.*
+
+**The question.** §5 found `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1` on all
+6,376 corpus instances and called the two ends "two theorems, checked". The
+Lean development already had linear layouts, vertex separation, path
+decompositions and Kinnersley's `vertexSeparation = pathwidth`
+(`VSEquivPW.lean`). Can the two ends be *proved* there, over those
+definitions, so that the checked sandwich rests on something other than
+44,000 instances? Item 09 (§24) added two theorems and one conjecture to
+state.
+
+### (a) What was defined
+
+All over the repository's `LinearLayout V := V ≃ Fin (Fintype.card V)` and
+Mathlib's `SimpleGraph V` with `[Fintype V] [DecidableEq V] [DecidableRel G.Adj]`,
+in `namespace MOSPFormalization`:
+
+| name | definition | computes | Python counterpart |
+|---|---|---|---|
+| `bandwidthOfLayout G σ` | `sup` over adjacent pairs `(u, v)` of `σ v − σ u` (both orientations, so ℕ-subtraction is `\|σ v − σ u\|`) | stretch of one layout | `features._bandwidth(graph, order)`; `bw_rcm` is this at the RCM order |
+| `bandwidth G` | `sInf` over layouts | bandwidth | — (never computed on the corpus) |
+| `laterNeighbors G σ v`, `maxLaterDegree G σ` | neighbours of `v` after `v`; the largest such count | width of an elimination ordering | — |
+| `orderingDegeneracy G` | `sInf` over layouts of `maxLaterDegree` | degeneracy, ordering form | — |
+| `degreeIn G S v`, `minDegreeIn G S` | degree inside `S`; its minimum over `S` (`0` on `∅`) | minimum degree of `G[S]` | — |
+| `degeneracy G` | `sup` over all `S : Finset V` of `minDegreeIn` | degeneracy, Lick–White form | `max(nx.core_number(...))` = `g_degeneracy` |
+| `TreeDecomposition G`, `treewidth G` | tree `T` on a finite index type, bags, vertex and edge coverage, connected trace of every vertex; `sInf` of `sup card − 1` | treewidth | `learning.treewidth` (exact DP / decision search) |
+| `minClosedNeighborhood G t` | `sInf` of `\|N[S]\|` over `\|S\| = t` | `f(t)` of `expansion_bound.py` | `f6` in `conjecture_invariants.csv.gz` |
+
+The two degeneracy forms are both there because the corpus computes the
+Lick–White form and the proof against vertex separation goes through the
+ordering form; they are proved equal (`orderingDegeneracy_eq_degeneracy`),
+so either may be read as *the* degeneracy.
+
+### (b) What was proved (no `sorry`, standard axioms only)
+
+`#print axioms` on each of the thirteen theorems named in `learning.sandwich.PROVED`
+gives `[propext, Classical.choice, Quot.sound]` (`reports/sandwich_tables.md`,
+last table; `learning.sandwich --stage lean` fails if `sorryAx` ever appears on
+one of them or disappears from a stated one).
+
+- **Upper half.** `vertexSepAt_le_bandwidthOfLayout`: at cut `i` every active
+  suffix vertex `v` has a prefix neighbour `u`, so `i < σ v ≤ σ u + b ≤ i + b`;
+  `σ` is injective, and the window `Ioc i (i + b)` has `b` positions, so
+  `card (activeSuffix) ≤ b` (`Finset.card_le_card_of_injOn` into `Finset.Ioc`,
+  `Nat.card_Ioc`). Then `vertexSepOfLayout_le_bandwidthOfLayout` (`sup'_le`),
+  `vertexSeparation_le_bandwidth` (`le_csInf` over the range, as
+  `pathwidth_le_vertexSeparation` does), and through `vertexSeparation_eq_pathwidth`:
+  **`pathwidth_le_bandwidth`** and its layout-level form
+  **`pathwidth_le_bandwidthOfLayout σ`** — the latter is the exact statement the
+  corpus's `bw_rcm + 1 ≥ optimum` checks, since `bw_rcm` is one layout's stretch.
+- **Lower half.** `laterNeighbors_subset_activeSuffix`: a neighbour placed after
+  `v` is in the suffix at `σ v` with `v` itself as its prefix neighbour, so
+  `card (laterNeighbors v) ≤ vertexSepAt (σ v) ≤ vertexSepOfLayout`
+  (`vertexSepAt_le_vertexSepOfLayout`, a lemma the development lacked), whence
+  `maxLaterDegree_le_vertexSepOfLayout` and **`orderingDegeneracy_le_vertexSeparation`**.
+  `degreeIn_le_card_laterNeighbors`: the *first* vertex of any `S` under `σ`
+  (`Finset.exists_min_image`) has all its `S`-neighbours after it (irreflexivity
+  and injectivity give strictness), so `minDegreeIn S ≤ maxLaterDegree σ` for
+  every `S` and every `σ`, i.e. **`degeneracy_le_orderingDegeneracy`**. Chained:
+  **`degeneracy_le_vertexSeparation`**, **`degeneracy_le_pathwidth`**.
+- **The sandwich.** `degeneracy_le_pathwidth_le_bandwidth : degeneracy G ≤ pathwidth G ∧ pathwidth G ≤ bandwidth G`,
+  for every finite simple graph.
+- **The two degeneracy forms coincide.** `orderingDegeneracy_le_degeneracy`, by
+  the greedy elimination ordering: `deleteVertex G v` is `G.comap Subtype.val`
+  on `{u // u ≠ v}`, and `degeneracy_deleteVertex_le` says deleting a vertex
+  never raises the Lick–White degeneracy (a subset of the subtype is a subset
+  of `V` with the same induced degrees, `Finset.filter_map` + `card_map`);
+  `exists_layout_maxLaterDegree_le_degeneracy` is an induction on
+  `Fintype.card V` across types (`∀ n {V : Type u} …`): pick `v` of minimum
+  degree (`Finset.exists_mem_eq_inf'` on `univ`), lay out `{u // u ≠ v}` by
+  the hypothesis, and put `v` at position 0 through
+  `(optionSubtypeNe v).symm ≫ optionCongr σ' ≫ (finSuccEquiv _).symm ≫ finCongr`;
+  `v`'s later neighbours are its whole neighbourhood, everyone else's are
+  unchanged. Hence **`orderingDegeneracy_eq_degeneracy`**.
+- **In MOSP terms.** `MOSPInstance.degeneracy_add_one_le_mospValue_of_eq`:
+  `degeneracy + 1 ≤ mospValue` for any instance with `mospValue = pathwidth + 1`
+  (Yanasse's equality, taken as a hypothesis because the development has only the
+  `≤` direction, under `IsReduced`, and that one rests on the Hall-theorem `sorry`
+  of `Reduction.lean`). `MOSPInstance.mospValue_le_bandwidth_add_one` is the
+  upper half in MOSP terms; it is proved here but *inherits* that `sorry`, so the
+  axiom table lists it as stated.
+
+### (c) Do the definitions compute the right thing?
+
+A theorem about a mis-stated definition proves nothing, so the definitions
+are checked two ways. In the kernel (`decide`, in the Lean file): on the path
+`P₃` degeneracy 1, `minDegreeIn univ` 1, later-degree and separation and
+stretch of the identity layout all 1; on `K₃` degeneracy 2 and stretch 2; on
+the edgeless graph 0 and 0; on the **spider** (subdivided `K_{1,3}`, treewidth
+1, pathwidth 2) degeneracy 1 over all 128 subsets (`maxRecDepth 10000`),
+later-degree 3 and separation 3 for the centre-first layout. In Python
+(`learning.sandwich`, a literal transcription of the Lean definitions by
+brute force over subsets and permutations) on **every labelled graph on 1–5
+vertices, 1,099 graphs**:
+
+| n | graphs | `degeneracy` = core number | `degeneracy` = `orderingDegeneracy` | `vertexSeparation` = exact pathwidth | deg ≤ pw | pw ≤ bw | deg = pw | pw = bw | both tight |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 | 2 |
+| 3 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8 |
+| 4 | 64 | 64 | 64 | 64 | 64 | 64 | 64 | 60 | 60 |
+| 5 | 1,024 | 1,024 | 1,024 | 1,024 | 1,024 | 1,024 | 994 | 919 | 889 |
+
+Zero violations: the Lick–White form is networkx's core number on every
+graph, the ordering form equals it on every graph (the proved
+`orderingDegeneracy_eq_degeneracy`, here a guard on the two *definitions*),
+and `vertexSeparation` as defined equals
+`fixed_parameter_algorithm.pathwidth.compute_pathwidth`. The first graphs
+with `pw < bandwidth` are the four labellings of the claw `K_{1,3}`
+(degeneracy 1, pathwidth 1, bandwidth 2: the centre must sit within one
+position of three leaves); the first with `degeneracy < pathwidth` appear at
+`n = 5` (30 of 1,024).
+
+### (d) The corpus recount
+
+`learning.sandwich --stage corpus`, from `learning/data/instances.csv`:
+
+| band | instances | `g_degeneracy + 1 ≤ optimum` | `optimum ≤ bw_rcm + 1` | lower tight | upper tight | ends coincide |
+|---|---|---|---|---|---|---|
+| ≤ 10 | 1,614 | 1,614 | 1,614 | 1,340 | 1,292 | 1,143 |
+| 11–20 | 2,508 | 2,508 | 2,508 | 1,278 | 1,314 | 1,115 |
+| 21–30 | 1,816 | 1,816 | 1,816 | 585 | 614 | 511 |
+| 31–40 | 197 | 197 | 197 | 61 | 55 | 51 |
+| 41–75 | 151 | 151 | 151 | 21 | 2 | 1 |
+| 76–134 | 90 | 90 | 90 | 8 | 2 | 2 |
+| all | 6,376 | 6,376 | 6,376 | 3,293 | 3,279 | 2,823 |
+
+The 2,823 is §5's "ends coincide and force the optimum on 2,823", regenerated.
+With (b), both columns of inequalities are now theorems about the graph
+(given `optimum = pathwidth + 1`), and the recount is a check on the
+*implementations* of `g_degeneracy`, `bw_rcm` and the certified optima, not
+on the mathematics. Note how the upper end goes slack with size: tight on
+80% of the instances at ≤ 10 customers and on 2 of 90 above 75 — reverse
+Cuthill–McKee is one layout, and `bandwidth ≥ pathwidth` is loose on sparse
+graphs where a good layout for stretch is a poor one for separation.
+
+### (e) Stated with `sorry`: the gap list
+
+Each carries a docstring naming the missing step; `learning.sandwich --stage lean`
+pins that they still use `sorryAx`, so promoting one to a proof will fail that
+check until its row is moved.
+
+*(A fourth, `orderingDegeneracy_le_degeneracy`, was on this list for the
+first twenty minutes of the session and was then proved; see (b).)*
+
+1. **`treewidth_le_pathwidth`** (item 09's theorem 1, `optimum ≥ tw + 1`
+   through `optimum = pw + 1`). `TreeDecomposition` and `treewidth` are
+   defined. *Gap:* a `PathDecomposition` on `Fin (length + 1)` is a
+   `TreeDecomposition` on `SimpleGraph.pathGraph (length + 1)`; this needs
+   (i) `(pathGraph n).IsTree` — Mathlib has `pathGraph_connected` but no
+   acyclicity or tree lemma for `pathGraph` (checked in the vendored
+   Mathlib), so either `isTree_iff_connected_and_card` with an edge count
+   `n − 1`, or acyclicity from the Hasse-diagram structure; (ii) the induced
+   subgraph of `pathGraph` on an interval `{i | v ∈ bag i}` (an interval by
+   the `interval` field) is connected — an induction on the interval's
+   length. The width of the transported decomposition equals `P.width` by
+   `Finset.sup' = Finset.sup` on `univ`. Estimated at 2–3 hours.
+2. **`branch_lemma`** (item 09's theorem 2). Stated as: `v`, three pairwise
+   disjoint sets `A B D` not containing `v`, no edges between different sets,
+   each inducing treewidth `≥ k` (`G.induce (↑A : Set V)`), then
+   `k + 1 ≤ pathwidth G`. *Gap:* the interval argument — in a path
+   decomposition of width `k` each branch has a bag it fills to `k + 1`
+   (needs `treewidth ≤` the width of the restriction of a path decomposition
+   to a branch, i.e. item 2's transport plus restriction), the bags of the
+   three branches are pairwise disjoint intervals of the path, and the
+   middle branch's full bag must also contain `v` (the branch is connected
+   to `v` and the other two branches lie on both sides), so it has size
+   `k + 2`. Not started; depends on item 1.
+3. **`conjecture_sqrt_tw_f6`** (item 09's surviving fitted candidate):
+   `⌊0.9428 · √(treewidth G · minClosedNeighborhood G 6)⌋₊ ≤ pathwidth G + 1`
+   for `6 ≤ card V`, stated with the optimum read as `pathwidth + 1` and
+   over `ℝ` with `Nat.floor`. §24 labels it worthless — pointwise at most
+   `max(lb_best, tw + 1)` on every certified instance — so nothing in this
+   development should be spent on it; it is here because the deliverable asks
+   for survivors to be stated. No proof is attempted or expected.
+
+Also inherited: `MOSPInstance.mospValue_le_bandwidth_add_one` depends on
+`mosp_le_pathwidth_add_one`'s Hall-theorem `sorry` in `Reduction.lean`, which
+predates this loop; the graph-level theorems do not.
+
+### (f) What the proofs do and do not cover
+
+They cover every finite simple graph, so every MOSP graph the corpus or the
+campaign can produce, at any size; the corpus tables are for 9–134 customers
+and the brute force for 1–5 vertices. They say nothing about `optimum`
+except through the hypothesis `mospValue = pathwidth + 1`: the development
+has `mospValue ≤ pathwidth + 1` for reduced instances (with a `sorry`) and no
+`≥`, so Yanasse's equality is still the trusted step between the corpus
+sandwich and these theorems, exactly as it is for the contraction and
+expansion components of `_lower_bound`. The `decide` examples cover the
+definitions' *values* on four graphs; the Python brute force covers them on
+all 1,099 labelled graphs to five vertices against independent
+implementations (networkx core number, the exact pathwidth DP). The
+`treewidth` definition is checked by nothing yet (no `decide`, no Python
+counterpart run against it) and should be read as a candidate definition
+until item 1 of the gap list uses it.
+
+**Finding, in one paragraph.** Both ends of the corpus sandwich are now
+theorems in the repository's Lean development: `degeneracy ≤ pathwidth` and
+`pathwidth ≤ bandwidth` for every finite simple graph, each proved through
+vertex separation and carried to pathwidth by the existing Kinnersley
+theorem, with no `sorry` and the standard three axioms; the layout-level
+form `pathwidth ≤ bandwidthOfLayout σ` is literally the `bw_rcm` inequality
+§5 checked. The proofs are short — the upper half is a window-counting
+argument (an active vertex is within `b` of a prefix neighbour), the lower
+half is that every later neighbour is active at its vertex's own position
+and that the first vertex of any subset has all its subset-neighbours after
+it — and the definitions are pinned to the corpus's implementations on every
+graph to five vertices and to the kernel on four hand-checked graphs. Item
+09's two theorems and its conjecture are stated over a new `TreeDecomposition`
+structure and stand with `sorry` behind a three-item gap list, the load-bearing
+gap being that Mathlib has no `pathGraph.IsTree`; the two degeneracy forms,
+Lick–White's and the elimination ordering's, are proved equal by the greedy
+ordering, an induction on the vertex count across types. `lake build`
+passes (1,638 jobs).
+
+**Size range covered.** The theorems: every finite simple graph. The
+corpus recount: 6,376 certified instances at 9–134 customers (`instances.csv`).
+The brute-force definition check: all labelled graphs on 1–5 vertices;
+the kernel examples: 3 and 7 vertices.
+
+**Kill criterion.** None stated by the plan. Deliverable as asked: two
+theorems (plus the chain to pathwidth and the sandwich statement), and for
+the stated items a gap list with the missing lemmas named.
+
+**Method notes.** *`#print axioms` is the test.* A `sorry` in a lemma three
+files away is invisible in a `lake build` that "succeeds with warnings";
+`learning.sandwich --stage lean` reads the axiom list of every named theorem
+and fails on `sorryAx` in a proved one — and on its *absence* in a stated
+one, so a proof that lands must be promoted in `PROVED`/`STATED` to pass.
+Lean wraps long axiom lists across lines: match with `re.DOTALL`. *Kernel
+`decide` over `Finset (Fin 7)`* (128 subsets) exceeds the default
+`maxRecDepth`; 10,000 suffices and the check takes under a second. *A doc
+comment cannot precede `set_option … in example`* (parse error: expected
+`lemma`); use a line comment. *`G.loopless` is `Std.Irrefl G.Adj`* in this
+Mathlib, not a function; `G.ne_of_adj h rfl` is the irreflexivity step.
+*`Mathlib.Data.Real.Sqrt` is deprecated* in favour of `Mathlib.Analysis.Real.Sqrt`.
+*The lake cache is the whole budget*: the incremental build is 2 s; a
+Mathlib rebuild would be the session.

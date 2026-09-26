@@ -3,7 +3,7 @@
 ## Ralph Loop 0003 Status
 - **Started**: 2026-09-26 10:23
 - **Target**: 14 items
-- **Current**: 11/14 SOLVED
+- **Current**: 12/14 SOLVED
 
 ---
 
@@ -935,3 +935,97 @@ from `m = 2n` to `m = n / 8`. In `col_mean` coordinates that is
   (`r (c − 1)` 1–4) rather than `d` at each ratio, and the generator with
   fixed `m`, varying `n`, would test whether height ∝ `m^k` at fixed excess
   holds at 100.
+
+## Iteration 14 — 2026-09-26 20:20
+
+**Item 12 · §2.10 The sandwich in Lean** — SOLVED. **Two theorems, not two
+statements**: `degeneracy_le_pathwidth` and `pathwidth_le_bandwidth` are
+proved in `lean/MOSPFormalization/Sandwich.lean` over the repository's
+`LinearLayout` / `SimpleGraph` definitions, through `vertexSeparation` and
+Kinnersley's `vertexSeparation_eq_pathwidth`, with `#print axioms` giving
+`[propext, Classical.choice, Quot.sound]` on every one of the nine proved
+theorems (thirteen after the equality below). `lake build` passes (1,638
+jobs, 2 s from the cache). Item 09's two theorems and its conjecture are
+stated with `sorry` behind a gap list.
+
+### Completed
+- `lean/MOSPFormalization/Sandwich.lean` (578 lines, 32 theorems, 3 `sorry`),
+  registered in `MOSPFormalization.lean`. Definitions: `bandwidthOfLayout` /
+  `bandwidth`; `laterNeighbors` / `maxLaterDegree` / `orderingDegeneracy`
+  (elimination-ordering form); `degreeIn` / `minDegreeIn` / `degeneracy`
+  (Lick–White subgraph form, the one networkx's core number computes);
+  `TreeDecomposition` / `treewidth`; `minClosedNeighborhood` (`f(t)`).
+  Proved: the upper half by window counting (an active suffix vertex is
+  within `b` of a prefix neighbour, `Finset.card_le_card_of_injOn` into
+  `Finset.Ioc`), the lower half by "every later neighbour is active at its
+  vertex's position" plus "the first vertex of any subset has all its
+  subset-neighbours after it"; the chain `degeneracy ≤ orderingDegeneracy ≤
+  vertexSeparation = pathwidth ≤ bandwidth`; the sandwich as one statement;
+  `pathwidth_le_bandwidthOfLayout σ` (the literal `bw_rcm` inequality); in
+  MOSP terms `degeneracy + 1 ≤ mospValue` given `mospValue = pathwidth + 1`,
+  and `mospValue ≤ bandwidth + 1` under `IsReduced` (inherits `Reduction.lean`'s
+  Hall-theorem `sorry`). **The two degeneracy forms are proved equal**
+  (`orderingDegeneracy_eq_degeneracy`) by the greedy elimination ordering:
+  `deleteVertex` never raises the Lick–White degeneracy, and an induction on
+  `Fintype.card V` across types puts a minimum-degree vertex at position 0
+  via `optionSubtypeNe` / `optionCongr` / `finSuccEquiv` / `finCongr`.
+  Kernel-`decide`d values on `P₃`, `K₃`, the edgeless
+  graph and the 7-vertex spider (degeneracy over 128 subsets at
+  `maxRecDepth 10000`).
+- `learning/sandwich.py`: literal Python transcriptions of the Lean
+  definitions, brute-forced on **every labelled graph on 1–5 vertices (1,099)**
+  against networkx's core number and the exact pathwidth DP — zero
+  violations, and the proved equality `orderingDegeneracy = degeneracy`
+  holds on all 1,099 (a guard on the definitions); the corpus recount (`instances.csv`: 6,376 / 6,376 on
+  both ends, 3,293 / 3,279 tight, **2,823 ends coincide = §5's number**);
+  `--stage lean` runs `lake build` and `#print axioms` on 17 named theorems
+  and fails if `sorryAx` appears on a proved one *or disappears from a stated
+  one*. `reports/sandwich_tables.md`.
+- `reports/ml_nature.md` §26 (a)–(f): definitions table with Python
+  counterparts, the proofs, the definition checks, the corpus recount, the
+  gap list, what is and is not covered.
+- `tests/test_sandwich.py`: 7 tests (hand-checked values on P₃/K₃/star/
+  spider, empty-set `minDegreeIn`, the exhaustive `n ≤ 4` agreement with the
+  references and the count of claws, the axiom-verdict logic, the corpus
+  sandwich, and the Lean axiom check itself — skipped only if `lake` is
+  absent). Full suite: **1,028 passed, 2 skipped, 1 xfailed in 82 s.**
+  Nothing written to `solutions/`; no solver default, flag, bound or C
+  changed; no `_lower_bound` path touched.
+
+### Blockers
+- None for the deliverable. Three statements stand with `sorry`, each with
+  the missing step named in its docstring and in §26 (e): (1)
+  `treewidth_le_pathwidth` — **the load-bearing gap is that Mathlib has no
+  `(pathGraph n).IsTree`** (only `pathGraph_connected`), plus the
+  connectivity of an interval of the path graph; (2) `branch_lemma` —
+  depends on (1); (3) `conjecture_sqrt_tw_f6` — stated because the
+  deliverable asks, labelled worthless by §24, no proof intended. The
+  `treewidth` definition is unchecked by anything yet. A fourth,
+  `orderingDegeneracy_le_degeneracy`, was proved in the same session.
+- Yanasse's equality is still a hypothesis, not a theorem, in the
+  development: `Reduction.lean` has `mospValue ≤ pathwidth + 1` (under
+  `IsReduced`, with a `sorry`) and no `≥`.
+- Process notes: a doc comment before `set_option … in example` is a parse
+  error (use `--`); `G.loopless` is `Std.Irrefl`, use `G.ne_of_adj h rfl`;
+  `Mathlib.Data.Real.Sqrt` → `Mathlib.Analysis.Real.Sqrt`; Lean wraps
+  `#print axioms` output over lines (`re.DOTALL`); `decide` over
+  `Finset (Fin 7)` needs `maxRecDepth 10000`. The deliverable was written
+  20 minutes into the 3 hours because the lake cache was warm; the greedy
+  ordering proof then took one more build-fix cycle (three errors:
+  `Finset.Nonempty.map` takes no explicit embedding, `Finset.filter_map` +
+  `card_map` closes the induced-degree equality by `rfl`, and `simpa` over a
+  `dite` on a mapped finset rewrites the goal into an existential — use
+  `rwa [dite_eq_left h] at h`).
+
+### Next
+- Item 13 · §2.11 synthesis. §26 gives the sandwich its theorem status;
+  the sentence to carry is that both ends are proved for every finite
+  graph and only Yanasse's equality is trusted between them and `optimum`.
+- Item 14 · reserve: no item is `- [!]`; the first "for the next loop"
+  note is item 01's (the `better_move` cross-rule cycle fix, proposed in
+  §15 and not applied) or, in Lean, gap (1) above — `pathGraph.IsTree`
+  would be a Mathlib contribution as well as this repository's.
+- For the owner: `learning.sandwich --stage lean` is a cheap CI check on
+  the whole Lean development's `sorry` inventory for the named theorems;
+  extending `PROVED` with `Reduction.lean`'s names would make the
+  Hall-theorem gap visible the same way.

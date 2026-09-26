@@ -1,0 +1,141 @@
+# session it14 started 2026-09-26 20:00:16
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan §2.10, the existing Lean definitions, and checking the Lean toolchain, then define degeneracy and bandwidth and prove the sandwich.
+  > $ date && pgrep -af '^python -m benchmarks.recertify' | head; ls lean/ lean/MOSPFormalization/ lean/MOSPFormalization/ForMathlib/ 2>/dev/null; cat lean/lakefile* 
+  > $ cd /home/al/dev/MOSP/lean && cat MOSPFormalization.lean && wc -l MOSPFormalization/*.lean MOSPFormalization/ForMathlib/*.lean && cat MOSPFormalization/LinearLay
+  > $ cat MOSPFormalization/Pathwidth.lean MOSPFormalization/VSEquivPW.lean MOSPFormalization/ForMathlib/VertexSeparation.lean; sed -n 1,60p MOSPFormalization/ForMath
+  > $ (nohup lake build > /tmp/it14_lake_baseline.log 2>&1; echo "EXIT $?" >> /tmp/it14_lake_baseline.log) & 
+cd /home/al/dev/MOSP/lean && grep -n "vertexSepAt.*le\|l
+  > $ sed -n 105,179p MOSPFormalization/LayoutToDecomposition.lean; echo ----; cat /tmp/it14_lake_baseline.log | tail -5; echo ----; grep -n "0.9428\|f(6)\|conjecture
+  > $ cd /home/al/dev/MOSP && grep -n "^## §24\|^## §2[0-9]\|^## §1[5-9]" reports/ml_nature.md | tail -12; grep -n "item 12\|Item 12\|f(6)\|0\.9428\|branch lemma\|Bra
+
+The baseline `lake build` passes from cache. I'm now reading the exact statements item 09 handed to item 12, then I'll write the new Lean module.
+  > $ sed -n 6555,6600p reports/ml_nature.md; echo ----; grep -n "branch lemma" -B2 -A8 reports/ml_nature.md | sed -n 1,60p | grep -n "cut vertex\|branches\|Lemma" | 
+  > $ cd /home/al/dev/MOSP/lean/.lake/packages/mathlib && grep -rn "def sqrt" Mathlib/Analysis/SpecialFunctions/ Mathlib/Data/Real/ 2>/dev/null | head -3; grep -rn "t
+  > $ cd /home/al/dev/MOSP/lean/.lake/packages/mathlib && grep -rn "card_le_card_of_injOn" Mathlib/Data/Finset/Card.lean | head -3; grep -rn "exists_min_image" Mathli
+  > $ grep -n "sqrt (x : ℝ)\|def sqrt" Mathlib/Data/Real/Sqrt.lean | head -3; grep -rn "theorem exists_min_image\|lemma exists_min_image" Mathlib/ | head -3; grep -rn
+  > $ grep -rn "exists_min_image" Mathlib/Data/Finset/*.lean | head -3; grep -n "sqrt" Mathlib/Data/Real/Sqrt.lean | grep "def\|irreducible" | head -3; grep -rn "theo
+  > $ grep -rn "exists_min_image" Mathlib/Data/Finset/ Mathlib/Order/ 2>/dev/null | grep -v "Set\.\|Northcott" | head -3; grep -rn "def sqrt\|def Real.sqrt\|irreducib
+
+I have the Lemma names I need. Writing the Lean module now; `Finset.exists_min_image` and `Real.sqrt` I'll confirm by compiling.
+  > $ cd /home/al/dev/MOSP/lean && cat > MOSPFormalization/Sandwich.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT
+  > $ python3 - <<'EOF'
+import re
+p='MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("import Mathlib.Data.Real.Sqrt","import Mathlib.Analysis.Real.Sqrt"
+  > $ sed -i 's/exact SimpleGraph.ne_of_adj hu.2 rfl/exact G.ne_of_adj hu.2 rfl/' MOSPFormalization/Sandwich.lean && lake build MOSPFormalization.Sandwich 2>&1 | grep
+  > $ cat MOSPFormalization/Check.lean | head -56; echo ----; grep -rn "pathGraph" .lake/packages/mathlib/Mathlib --include=*.lean -l | head; grep -rn "pathGraph.*IsT
+  > $ cd /home/al/dev/MOSP && grep -n "^def \|^    def " fixed_parameter_algorithm/pathwidth.py | head; grep -n "^def " customer_inter/customer_graph.py learning/feat
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""/-- Pathwidth is at most bandwidth (through K
+
+The two theorems compile with only the standard axioms (no `sorryAx`). Now I'm adding hand-checkable examples for the definitions and building a pytest test around the axiom check.
+  > $ cat > /tmp/it14/Scratch.lean <<'EOF'
+import MOSPFormalization.Sandwich
+namespace MOSPFormalization
+
+/-- The path on three vertices 0 – 1 – 2. -/
+def path3 : Sim
+  > $ cd /home/al/dev/MOSP && python3 -c "
+import pandas as pd
+f=pd.read_csv('learning/data/ensemble/conjecture_invariants.csv.gz', nrows=3); print(list(f.columns))
+g
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""    ⌊(0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighbor
+
+Full `lake build` passes with the new module. Next I'm writing the Python cross-check module and its tests.
+  > $ cd /home/al/dev/MOSP && cat > learning/sandwich.py <<'EOF'
+"""Is the sandwich `degeneracy ≤ pathwidth ≤ bandwidth` a theorem in the Lean development?
+
+The Lean 
+  > $ cd /home/al/dev/MOSP/lean && cat .lake/sandwich_axioms.lean | head -12 && lake env lean .lake/sandwich_axioms.lean 2>&1 | grep -v "depends on axioms" | head -20
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='learning/sandwich.py'
+s=open(p).read()
+s=s.replace("""        pattern = re.compile(rf"'{re.escape(namespace)}\\.{re
+  > $ (python -m pytest tests/ -q -x > /tmp/it14/pytest.log 2>&1; echo "EXIT $?" >> /tmp/it14/pytest.log) &
+cd /home/al/dev/MOSP && grep -n "lake\|lean" .gitignore; g
+  > $ tail -30 reports/ml_nature.md; echo ----; python -m learning.sandwich > /tmp/it14/sandwich_all.log 2>&1; tail -2 /tmp/it14/sandwich_all.log; echo ----; cat > /t
+  > $ sed -i 's/^example : degeneracy spider = 1 := by decide/set_option maxRecDepth 10000 in\nexample : degeneracy spider = 1 := by decide/' /tmp/it14/Spider.lean &&
+
+The spider decides in the kernel with a larger recursion depth. I'm adding it to the Lean file, adding a "both ends tight" column to the corpus recount, then writing the report section.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='lean/MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""example : bandwidthOfLayout (⊥ : SimpleGraph 
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""/-- Degeneracy 1 (a forest), decided over all 128 vertex subsets. -/
+
+  > $ wc -l lean/MOSPFormalization/Sandwich.lean learning/sandwich.py tests/test_sandwich.py && grep -c "^theorem" lean/MOSPFormalization/Sandwich.lean && grep -n "^t
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 26. The sandwich in Lean: `degeneracy ≤ pathwidth ≤ bandwidth` as theorems (plan 2 §2.10, loop0003 item 12)
+
+*Iteration 
+  > $ python3 -c "
+from learning import sandwich as sw
+import networkx as nx
+for g in sw.all_graphs(4):
+    r = sw.sandwich(g)
+    if r['vertex_separation'] < r['band
+  > $ python3 - <<'EOF'
+p='reports/ml_nature.md'
+s=open(p).read()
+old="""The first graphs
+with `pw < bandwidth` are the four labelled 4-cycles (pathwidth 2, bandwidth
+  > $ grep -n "12 · §2.10" Ralph_Loops/loop0003/iterations.md && sed -i 's/^- \[ \] 12 · §2.10/- [x] 12 · §2.10/' Ralph_Loops/loop0003/iterations.md && grep -n "^- \[
+  > $ cd /home/al/dev/MOSP/lean/.lake/packages/mathlib && grep -rn "optionSubtypeNe" Mathlib/Logic/Equiv/*.lean | head -8; grep -rn "theorem finSuccEquiv_zero\|theore
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+old_stmt = """/-- The converse of `degeneracy_le_orderingDeg
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""    have hS : (S'.map (Function.Embedding.subtype _)).Nonempty := hS'.map 
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='lean/MOSPFormalization/Sandwich.lean'
+s=open(p).read()
+s=s.replace("""          try rfl
+          try (congr 1; app
+
+Gap (1) is closed with the standard axioms only. Now I'm recounting the Lean file, rerunning the full suite in the background, and updating §26 and PROGRESS.md to match.
+  > $ (python -m pytest tests/ -q -x > /tmp/it14/pytest2.log 2>&1; echo "EXIT $?" >> /tmp/it14/pytest2.log) & 
+cd /home/al/dev/MOSP && wc -l lean/MOSPFormalization/Sa
+  > $ python3 - <<'EOF'
+p='reports/ml_nature.md'
+s=open(p).read()
+reps = [
+("""*Iteration 14 of loop0003, 2026-09-26. Code: `lean/MOSPFormalization/Sandwich.lean`
+(45
+
+The full suite passes (1,028 passed, 2 skipped, 1 xfailed). Final consistency pass: git status, stale phrases, and the untracked-file list.
+  > $ git status --short && echo ---- && grep -n "4 \`sorry\`\|four-item\|Four statements\|sorry\`-ed" reports/ml_nature.md Ralph_Loops/loop0003/PROGRESS.md lean/MOSP
+
+Item 12 is done. Summary of the session:
+
+**Deliverable: two theorems, not two statements.** `lean/MOSPFormalization/Sandwich.lean` (578 lines, 32 theorems) defines bandwidth and both forms of degeneracy over the repository's `LinearLayout` and `SimpleGraph` definitions and proves, with no `sorry` and only `propext`, `Classical.choice`, `Quot.sound`:
+
+- `degeneracy_le_pathwidth` and `pathwidth_le_bandwidth`, each through vertex separation and the existing Kinnersley theorem, plus the sandwich as one statement and the layout-level form `pathwidth_le_bandwidthOfLayout`, which is literally the `bw_rcm` inequality §5 checked.
+- `orderingDegeneracy_eq_degeneracy`: the Lick–White and elimination-ordering forms coincide, by the greedy min-degree ordering as an induction on the vertex count across types. This was on the gap list for twenty minutes and then landed.
+- In MOSP terms, `degeneracy + 1 ≤ mospValue` given Yanasse's equality as a hypothesis; the upper half inherits `Reduction.lean`'s pre-existing Hall-theorem `sorry`.
+
+**Stated with `sorry`, gap list in §26 (e).** `TreeDecomposition`/`treewidth` are defined; `treewidth_le_pathwidth` is blocked chiefly because Mathlib has no `(pathGraph n).IsTree`; the branch lemma depends on it; item 09's conjecture is stated over ℝ with `Nat.floor` and labelled worthless as §24 requires.
+
+**Checks.** `lake build` passes (1,638 jobs). Kernel `decide` fixes the definitions' values on P₃, K₃, the empty graph and the 7-vertex spider. `learning/sandwich.py` brute-forces the Lean definitions on all 1,099 labelled graphs to five vertices against networkx's core number and the exact pathwidth DP with zero violations, recounts the corpus (6,376/6,376 on both ends, 2,823 ends coinciding, matching §5), and runs `#print axioms` on 17 named theorems, failing if `sorryAx` appears on a proved one or disappears from a stated one. `tests/test_sandwich.py` adds 7 tests; the full suite is 1,028 passed, 2 skipped, 1 xfailed in 85 s.
+
+**Bookkeeping.** §26 appended to `reports/ml_nature.md`, `reports/sandwich_tables.md` written, PROGRESS.md iteration 14 added with `Current: 12/14 SOLVED`, item 12 marked `[x]`. Nothing committed, nothing written to `solutions/`, no solver default or bound path touched. Items 13 and 14 remain open, so no `LOOP_COMPLETE`.
+
+# result: success in 1234s, 42 turns, cost $8.39
