@@ -110,6 +110,20 @@ saturate at the average degree (bound 47, average degree 43.2, optimum 91 on
 `Random-125-125-8-5_0`). LBN scores 12 points *worse* than contraction
 degeneracy and LBN+ gains exactly zero.
 
+**Why, structurally** *(2026-09-25, `reports/ml_nature.md` §6)*: the trivial,
+clique and contraction-degeneracy components of `_lower_bound` are all lower
+bounds on **treewidth + 1**, and `tw_min_fill + 1` is an upper bound on it, so
+`optimum > tw_min_fill + 1` certifies pathwidth > treewidth with no heuristic
+in the certificate. That holds on 131 of the 338 instances where the bound
+misses by two or more (and on 8 of the 10 smallest, all 20×10), so three of
+the four components could never be tight there under any budget or tie-break.
+Only the expansion bound, the one pathwidth argument, passes that ceiling (36
+instances). The bound-defeating family is *trees of cliques with branching*:
+sparse, connected, degree-dispersed graphs of small product-cliques glued at
+hub customers with a fringe of single-product customers. If the bound work is
+resumed, that is the family to strengthen; degree and clique bounds are
+provably the wrong place.
+
 Still on record and still unobtained:
 
 - ~~**arc contraction bound** (Yanasse et al. 1999)~~ — **settled 2026-09-22,
@@ -253,6 +267,11 @@ value.)*
 There is one file per enumerated instance and no file that matches none, and as
 of 2026-09-22 none of them is open.
 
+The count of 6,376 is instances, not problems: the 46 `MOSP_Instances/Challenge`
+files are the Miller, Shaw and Wilson files under a second name (certified twice),
+and the corpus holds **3,667 distinct MOSP graphs**, 1,669 of them complete
+(`reports/ml_nature.md` §1). Isomorphic instances carry equal optima everywhere.
+
 That last property had to be restored. Four orphans — `GP1.json` through
 `GP4.json` — were written by `validate_published_optima.py`, which overwrote
 `inst.name` with the short key before saving, producing a filename
@@ -346,12 +365,21 @@ learning/                       → ML over the certified corpus (instance → o
     corpus_sweep.py                 Scores a strategy against all 6,376 known optima
     guided_search.py                Learned branching inside the complete search
     descent_bench.py                Does a better starting bound certify faster?
+    canonical.py                    Isomorphism classes: nauty certificates, WL hashes, |Aut(G)|
+    fingerprint.py                  Generator classifier, size-free features, instance-space map
+    node_counts.py                  Refutes optimum − 1 at n ≤ 40 under both configs, records nodes
+    invariants_study.py             Pathwidth-adjacent invariants as features, ablation
+    formula_search.py               Enumerated + PySR symbolic regression for optimum and residual
+    bound_gap.py                    Where the proved bounds fail; the treewidth ceiling
+    distil.py                       Distils the closing policy into readable rules
+    degeneracy.py                   Exact counts of optimal orderings by lattice path counting (n ≤ 15)
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
-tests/                          → 437 tests across 20 test modules
+tests/                          → 779 tests across 37 test modules
 literature/                     → Reference papers (PDFs)
+Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001 done, loop0002 proposed)
 ```
 
 ## Two Graph Formulations
@@ -535,7 +563,13 @@ python -m benchmarks.solve_all --timeout 120
 - **Nothing checks that a refutation is sound.** Witness verification, the
   corpus audit and the lower-bound guards all confirm a value is *achievable*.
   A refutation one step too strong is invisible to every one of them, which is
-  how the above survived. Item 7's proof objects are the real fix.
+  how the above survived. Item 7's proof objects are the real fix. *Partly
+  addressed at small sizes, 2026-09-25:* `learning.degeneracy` computes the
+  optimum by path counting over the subset lattice, sharing no code with the
+  search, and agrees with the certified value on all 2,812 instances at n ≤ 15;
+  `learning.node_counts` re-refutes `optimum − 1` on all 6,135 at n ≤ 40 under
+  two search configurations. Neither reaches the sizes where the two known
+  false refutations were.
 - **The customer search produces no checkable proof object**, and it is now the
   default, which makes this limitation apply by default too.   Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
 - **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
@@ -657,7 +691,11 @@ branching. Each has a report explaining the mechanism, not just the outcome.
   Registered behind a soft import and **not** the default for anything: that
   would put LightGBM on the solver's critical path, a dependency decision left
   open. The 13 regressions are all off by one and are the `_cs_cost` proxy
-  mismatch its own docstring predicts.
+  mismatch its own docstring predicts. **Superseded 2026-09-25** by the
+  two-key rule of `reports/ml_nature.md` §7, which seeds the DFS better than the
+  ranker (held out 0.127 / 92.7% vs 0.157 / 91.0%) with no model; the
+  measurement that would close the dependency question is `learning.corpus_sweep`
+  with the rule seeding `restricted_dfs`, against the 709 / 13 figure above.
 - **`benchmarks.reheuristic` can no longer improve anything** — the corpus is
   closed, so `--all` is a scoring run rather than an improvement run, and
   `learning.corpus_sweep` wraps it with held-out models. Scoring sweeps write to
@@ -667,6 +705,104 @@ branching. Each has a report explaining the mechanism, not just the outcome.
   call on it. A measurement, not a theorem — and the clique bound is the one
   provable without Yanasse's pathwidth equality — but the budget is worth
   revisiting.
+
+**What the corpus says about the problem itself** (`reports/ml_nature.md`,
+Ralph loop0001, 2026-09-25, executing `reports/ml_nature_plan.md`). Eight
+studies, each with a regenerate command and a stated size range. Every number
+below covers 9–134 customers with 5,938 of 6,376 instances at n ≤ 30, unless it
+says otherwise; nothing in it is a bound or a solver change.
+
+- **The corpus is 3,667 distinct MOSP graphs, not 6,376 instances** (§1).
+  42.5% is isomorphic copies; 26.2% are complete graphs with optimum `n`, all
+  Harvey and Simonis. **157 graph classes span more than one file, so grouping
+  by `source_file` leaks isomorphic copies across the split**; the honest split
+  is `learning.fingerprint.union_groups` (file ∪ class), which is a five-region
+  hold-out in practice (largest group 1,620 instances). Certificates in
+  `learning/data/canonical.csv`.
+- **The generators are fingerprintable at 94.4% from structure alone**, 98.8%
+  at equal size (§2). Harvey is a regularity constraint (constant row or
+  column sums, in all 2,130 and in no other generator); Faggioli–Bentivoglio
+  caps the largest product at half the customers; Chu & Stuckey is sparse
+  where nothing else is, and its density class `d` is `col_mean` to within
+  rounding. Instance space is a lattice of 74 `(n, m)` cells with empty
+  regions between, and the 24 SCOOP industrial instances fall in the sparse
+  corner with all 200 Chu & Stuckey. A result on one collection is a result
+  about that generator.
+- **Node counts are in the ledger** (§3): `solve_mosp_exact(..., stats=dict)`
+  fills `nodes`, `benchmarks/results/compute_ledger.csv` has a `nodes` column,
+  written by `csearch` and `recertify`. 38.5% of refutations at n ≤ 40 visit
+  zero nodes; the p90 grows about 10× per ten customers; over the Random-30/40
+  instances median nodes fall monotonically with density (1,068 → 6 from
+  density 2 to 10), so any hardness peak sits at or below density 2 there.
+- **Min-fill treewidth is the best point estimate of the optimum we have**
+  (§4): `tw_min_fill + 1` is exact on 85.7% at MAE 0.188 against 84.6% / 0.239
+  for `ub_best` and 77.0% / 0.431 for `lb_best`, leading in every size band.
+  It is a bound on nothing (below on 481, above on 428). The 13 invariants
+  add nothing to the *residual* over the bound (−0.004 MAE): they know what
+  the bound knows, expressed differently. `bw_rcm + 1 ≥ optimum` on all 6,376.
+- **No clean formula for the residual; a clean sandwich for the optimum** (§5).
+  The best residual formula is `0.01 · (σ_deg / μ_deg) · (n − 1) · sep_size`,
+  MAE 0.303 against 0.431 for zero and 0.260 for boosting: degree dispersion
+  is the variable, and no conjecture is stated. For the optimum both searches
+  converge on `1 + √(degeneracy · bw_rcm)` with constants exactly (1, 1):
+  `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1` holds on all 6,376 (two theorems,
+  checked), the ends coincide and force the optimum on 2,823, and elsewhere
+  the optimum sits at their midpoint on median (IQR ⅓–⅔) in every size band,
+  its position tracking sparsity, not size. `degeneracy + 1` is dominated by
+  contraction degeneracy, so nothing goes to the bound work.
+- **Where the bound fails is structural, not statistical** (§6): gap ≥ 2 never
+  occurs below 20 customers, is 338 instances (5.3%) and 51% of Chu & Stuckey,
+  and on 131 of the 338 pathwidth provably exceeds treewidth (see the bounds
+  section). A depth-3 tree at fixed `(n, m)` reads "connected and sparse, or
+  dense with a low-degree customer" at AUC 0.931 against 0.849 for density and
+  size; the lower bounds themselves add nothing to the classifier.
+- **The imitation ranker resolves into a one-sentence rule** (§7): *close the
+  customer that opens the fewest new stacks; on ties, the one with the most
+  unclosed neighbours.* Held out: MAE 0.348, exact 80.7%, worst +9 against the
+  LightGBM ranker's 0.519 / 75.0% / +34 and MCN's 1.616 / 50.2% / +26; better
+  than the ranker on 253 instances and worse on 109, in every band and every
+  collection but Shaw; on the 91 Chu & Stuckey held out, 2.42 vs 3.35 vs 9.44.
+  The first key is `restricted_dfs`'s own cheapest-first fan order, so the
+  greedy is that search's first leaf; the tie-break is the *reverse* of MCN's
+  minimum degree. Fiedler order keeps 66% of the gain with no state at all;
+  BFS from a min-degree root does not. Distilled trees and scorers keep less
+  (57%, 82%) because imitation is the wrong objective. **Not registered in
+  `satisfiability/heuristics.py`**: a solver change, left to the owner.
+- **The optimum is never unique** (§8, n ≤ 15 only): 0 of 2,812 corpus
+  instances have a unique optimal closing order even up to twins, 0 of 2,138 a
+  unique product order up to reversal; medians 4 × 10⁵ optimal closing orders
+  at n = 10 and 2.5 × 10¹⁰ at n = 15. The share tracks `optimum / n` (ρ 0.70)
+  and not the bound gap (0.02). A policy optimal at every step but indifferent
+  among optimal moves agrees with the stored witness on only ~30% of steps, and
+  every policy measured sits far above that, so **step agreement above 0.3
+  measures reproduction of the solver's tie-breaks, not optimality**; the
+  2.27 M decisions `learning/policy.py` trains on are ~90% arbitrary choices
+  among optimal ones. Any future imitation must be set-valued
+  (`learning.degeneracy.optimal_choices`) or score construction value only.
+
+Two audits came free and both passed: isomorphic instances carry equal optima
+(§1); the lattice minimum equals the certified optimum on every instance at
+n ≤ 15 and `optimum − 1` re-refutes on every instance at n ≤ 40 under two
+configurations (§3, §8). Nothing was re-certified because nothing disagreed.
+
+**Kill criteria.** §2.2's (no invariant moves grouped MAE by more than 0.02)
+is **met against the plan's stated baseline**, the 36-feature model by file
+(−0.012), and cleared ten times over against structure alone (−0.216); the
+section reports both. §2.3's (structure cannot beat density and size) and
+§2.6's (no readable rule keeps half the ranker's gain) are **not met**, the
+latter exceeded at 115%. §2.1, §2.2b and §2.6b carry no kill criterion. §2.4,
+§2.5 and §2.9 are loop0002 (`Ralph_Loops/loop0002/`, proposed, not launched).
+
+**Method notes that each cost a session**: a label column swept into a
+feature set by an every-numeric-column selector scored 1.000 everywhere (the
+guard is `learning.bound_gap.feature_sets`; build feature sets from group
+names, never from every numeric column); forking a worker pool after LightGBM
+has run deadlocks in libgomp (`spawn` with an initializer); PySR crashes Julia
+at 16 threads and 10,000 iterations, and runs at 4 and 2,000; a bare
+`pkill -f <word>` killed a session's own shell; `pandas` reads 15! from CSV
+one ulp short, so round before dividing by `aut_order`. The generated
+witnesses of §8 live in `learning/data/degeneracy_solutions/`, which is
+git-ignored: persisted on disk, not in the repository.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
