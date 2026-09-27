@@ -124,6 +124,25 @@ hub customers with a fringe of single-product customers. If the bound work is
 resumed, that is the family to strengthen; degree and clique bounds are
 provably the wrong place.
 
+**Exact treewidth, and what is a theorem** *(2026-09-26, `reports/ml_nature.md`
+§21, §24, §26, §27)*. `optimum ≥ treewidth + 1` is a theorem (via Yanasse's
+equality and `tw ≤ pw`), tight on 77.9% of 50,949 certified instances and
+above `lb_best` on 933 corpus instances (67 gap instances would become
+bound-certified). `learning/treewidth.py` computes it exactly to 26 customers
+by subset DP and to 64 by a decision search in 0.2–1 s per instance. Adding it
+to `_lower_bound` is **proposed, not applied**: it is a better floor of the
+same kind, blocked by the ceiling above on the 68% of exact gap instances
+where `pw > tw`. Conjecture mining over thirty branching-aware invariants
+found nothing that beats `max(lb_best, tw + 1)` where treewidth is exact; the
+bound work needs a new idea, not a new formula. The smallest graph with
+`pw − tw = 2` has 10 vertices (three K4s glued at three hubs plus a pendant
+each), and a census of every graph on ≤ 11 vertices shows `pw ≤ tw + 1` on
+all 287,884 graphs to 9 vertices, 4 exceptions at 10, 1,034 at 11 and none
+with `pw − tw = 3`. Both ends of the sandwich, `degeneracy ≤ pathwidth ≤
+bandwidth`, are proved in `lean/MOSPFormalization/Sandwich.lean` with no
+`sorry`; `tw ≤ pw` and the branch lemma are stated there with `sorry` behind a
+gap list (Mathlib lacks `pathGraph.IsTree`).
+
 Still on record and still unobtained:
 
 - ~~**arc contraction bound** (Yanasse et al. 1999)~~ — **settled 2026-09-22,
@@ -168,7 +187,8 @@ separate in the same module: it is a relaxation, and the basis of
 
 - **Kinnersley (1992)** — Established vertex separation = pathwidth. *Information Processing Letters*, 42(6), 345-350.
 - **Yanasse (1997b)** — Mathematical formulation, branch and bound, greedy heuristic. *European Journal of Operational Research*, 100(3), 454-463. Note: this is *not* the paper that introduces the MOSP graph.
-- **Yanasse (1997c)** — Introduced the MOSP graph (nodes = item types) and the clique / minimum-degree lower bounds. Cited via Yanasse & Senne (2010); exact venue still to be confirmed.
+- **Yanasse (1997a) = "Yanasse (1997c)"** — A transformation for solving a pattern sequencing problem in the wood cut industry. *Pesquisa Operacional*, 17(1), 57-70. In `literature/` since 2026-09-27 (from the author); the venue question is settled. Proposition 5 is the MOSP graph (each pattern becomes a clique on its panel types; any MOSP reduces to the two-panel case with optima corresponding both ways), Proposition 3 the minimum-degree bound, Corollary 2 the clique bound, Proposition 1 the reversal symmetry, Proposition 2 the subinstance monotonicity behind `relaxation.py`.
+- **Becceneri, Yanasse & Soma (2004)** — A method for solving the minimization of the maximum number of open stacks problem within a cutting process. *Computers & Operations Research*, 31(14), 2315-2332. In `literature/` since 2026-09-27. States the Minimal Cost Node heuristic in full — it is an **arc-traversal** heuristic (smallest remaining-degree node, then the cheapest incident arc, then every arc between open nodes), which is why the node-closing `mcn` in `satisfiability/heuristics.py` does not reproduce MCNh — the global dominance and equivalency propositions with proofs, the arc contraction bound as an O(n³) procedure, pattern dominance, and their branch-and-bound. Their verdict on their own bound: "quite poor" where C is small. See `literature/MISSING.md`.
 - **Yanasse, Becceneri & Soma (1999)** — Arc contraction lower bound, which dominates all earlier bounds and is contraction degeneracy + 1. *Pesquisa Operacional*, 19(2), 249-277. In `literature/`.
 - **Yanasse, Becceneri & Soma (1997)** — Lower bounds for the problem of sequencing cutting patterns, APORS'97. The 1999 bounds in earlier form; a candidate for the elusive "Yanasse (1997c)", though it carries no clique bound. In `literature/`.
 - **Yanasse & Senne (2010)** — Review of MOSP properties and six pre-processing operations. *European Journal of Operational Research*, 203(3), 559-567.
@@ -355,6 +375,7 @@ lean/
         OpenStacks.lean                 Open stacks counting
         Reduction.lean                  MOSP ↔ pathwidth reduction proof
         Examples.lean                   Verified example instances
+        Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth, proved (2026-09-26)
         ForMathlib/                     Candidates for Mathlib contribution
 
 learning/                       → ML over the certified corpus (instance → optimum)
@@ -378,13 +399,28 @@ learning/                       → ML over the certified corpus (instance → o
     concentration.py                Variance of the optimum per cell; E[opt](n, m, p)
     graph_story.py                  Same graph, different clique covers: is hardness a graph property?
     scale_test.py                   The n ≤ 40 laws against the Chu & Stuckey corpus at 30–125
+    upward.py                       The campaign at 50–75 across the sweep, 100 on the ridge
+    differential.py                 Soundness harness: relabellings and re-coverings must agree on the answer
+    proofs.py                       DRAT refutations of optimum − 1 through the SAT path, checked by drat-trim
+    relabel_portfolio.py            Min-of-k relabellings as a speed-up (it is not, for refutations)
+    cost_model.py                   Censored regression: log nodes from label-free graph features
+    fan_order.py                    Cheapest-first fan by remaining degree vs index, paired in nodes
+    theorem2.py                     Where Theorem 2 should be on: nodes vs seconds
+    extremal.py                     Bit-flip search for extremal small instances, exact solver as oracle
+    treewidth.py                    Exact treewidth: subset DP to 26, decision search to 64
+    conjecture.py                   Conjecture mining with a validity oracle over every certified instance
+    set_imitation.py                Imitation with the optimal-move set as label
+    ridge_theory.py                 The ridge as one parameter across m / n
+    sandwich.py                     Pins the Lean definitions to the corpus implementations; sorry inventory
+    pwtw_exhaust.py                 Census of every graph on ≤ 11 vertices: pathwidth against treewidth
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
 reports/                        → Analysis documents
-tests/                          → 779 tests across 37 test modules
+tools/drat-trim/                → DRAT proof checker, built from source (loop0003 item 03)
+tests/                          → 1,051 tests across 55 test modules
 literature/                     → Reference papers (PDFs)
-Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001, loop0002 done; loop0003 proposed: `reports/ml_nature_plan_2.md`)
+Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001–loop0003 done)
 ```
 
 ## Two Graph Formulations
@@ -565,6 +601,20 @@ python -m benchmarks.solve_all --timeout 120
   optimality withdrawn (`reports/better_move_bug.md`). The general lesson: a
   rule that exists on one side only needs its own invariant, and here it is one
   line — *a dominance rule may change the cost of a search, never its answer.*
+  **It happened again on 2026-09-26** (`reports/ml_nature.md` §15,
+  `reports/better_move_bug.md` §7): the differential harness found the C
+  `better_move` answering `unsat` at the *optimum* on 56 of 17,527 sparse
+  instances at 10–40 customers — a wrong close count inside the rule, a
+  cross-rule cycle with `subset_rule`, and an early exit that had hidden both
+  from the "rule alone" control. Fixed in `0eb33915`: rules now run
+  `definite_move → subset_rule → better_move` and cite only standing
+  candidates; the harness reports zero disagreements on 878,700 runs, the
+  `default` configuration's counts are unchanged to the node, and the fixed
+  rule prunes less — +7.3% nodes at n ≤ 40, ×2–3.5 on the 100-customer
+  half-ratio classes, **≥ 15× on `Random-100-100-2-4_0`**. Every `csearch`
+  count recorded before 2026-09-26 12:19, including the five 125×125
+  recertify counts, is a pre-fix number. The invariant test now draws its
+  instances at 1–3 products per customer, where the failures live.
 - **Nothing checks that a refutation is sound.** Witness verification, the
   corpus audit and the lower-bound guards all confirm a value is *achievable*.
   A refutation one step too strong is invisible to every one of them, which is
@@ -574,9 +624,21 @@ python -m benchmarks.solve_all --timeout 120
   search, and agrees with the certified value on all 2,812 instances at n ≤ 15;
   `learning.node_counts` re-refutes `optimum − 1` on all 6,135 at n ≤ 40 under
   two search configurations. Neither reaches the sizes where the two known
-  false refutations were.
+  false refutations were. *Further, 2026-09-26:* `learning.differential` runs
+  every certified instance at n ≤ 40 (corpus and 37,800 generated) on ten
+  labellings under both configurations at `optimum − 1` *and* `optimum` — the
+  satisfiable side is where an over-strong rule shows — with zero
+  disagreements after the fix; and `learning.proofs` gives 5,646 of the 6,135
+  corpus instances at n ≤ 40 (92.0%) a DRAT refutation drat-trim verifies.
+  Above 40 the only checks are two-configuration and relabelling agreement.
 - **The customer search produces no checkable proof object**, and it is now the
   default, which makes this limitation apply by default too.   Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
+  *Partly closed at n ≤ 40 (2026-09-26, §17)*: the SAT path with proof logging
+  re-refutes 92.0% of those instances with a checked DRAT proof (11.2
+  core-hours, 11.7 GB compressed under git-ignored `learning/data/proofs/`);
+  the boundary is `m² · k ≈ 10⁴`, not `n`, so the direct encoding has no proof
+  to offer at 125×125 at any width. The certificate replaces trust in CaDiCaL
+  and in the dominance rules, not in the encoding.
 - **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
 - **Agreement graph undercounts**: `pathwidth(G_a) + 1` gives a lower bound that can be too low.
 - **Pathwidth SAT encoding has a variable ID collision bug**: The `encoding.py` pool.occupy/top_id tracking is broken (CardEnc auxiliary variables collide across constraints). The solver works because it falls back to greedy. Fixed in `mosp_encoding.py`.
@@ -617,6 +679,10 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   changes what it has to cover: a refutation from `customer_search` is not a
   DRAT proof, so either the refuted instances are re-refuted through SAT for
   their certificates, or the search's own proof object has to be defined.
+  *Status 2026-09-26*: re-refuted through SAT with checked DRAT proofs for
+  92.0% of the corpus at n ≤ 40 (`reports/ml_nature.md` §17); the gap left is
+  the encoding's correctness in Lean (`Encoding.lean` exists) and everything
+  above the `m² · k ≈ 10⁴` boundary.
 - ~~**A portfolio decision procedure.**~~ **Built and measured 2026-09-22 —
   `satisfiability/race.py`, `reports/learned_search.md` §3. It does not pay, and
   the premise was wrong.** Over 20 hard `Random` instances at densities 2 and 8,
@@ -893,10 +959,87 @@ lower bound, not a missing value; a column-key collision silently overwrote
 one law's column with another's in a first draft, caught by reading the table
 against its summary.
 
+**The objects loop** (`reports/ml_nature_plan_2.md`, Ralph loop0003,
+2026-09-26, fourteen items in 11 h 20 min and 16 sessions; findings in
+`reports/ml_nature.md` §15–§27; the synthesis, one paragraph per claim with
+its status, is `reports/ml_nature_summary.md`, and `learning/README.md` is its
+plain-English form). Two sessions ended their turn on a background wait and
+had to be re-opened; nothing else stumbled.
+
+- **Soundness** (§15): 1.76 M decision calls over 43,935 certified instances
+  at 9–40 on ten labellings each: every refutation at `optimum − 1` held, and
+  56 instances said `unsat` at the *optimum* — the `better_move` bug above,
+  found only because the harness asked the satisfiable side. **Ask the
+  satisfiable side**: an over-strong rule cannot be caught at `optimum − 1`
+  when the stored value is right.
+- **The campaign to 75** (§16): 6,747 more certified instances at 50–75 at
+  all three product ratios; the exponential rate falls by 0.002 per customer
+  per ten customers, which is the whole of §14's rate discrepancy; corrected,
+  the ridge law from 75 predicts the two 125×125 ridge counts to 0.04
+  decades. 100 on the ridge was priced at 40 core-hours and stopped at a
+  5-per-cell sample.
+- **DRAT proofs** (§17): 92.0% of the corpus at n ≤ 40, zero checker
+  rejections, zero contradictions; the boundary is the formula size, not `n`.
+- **Relabelling portfolio** (§18, kill met): min-of-16 beats the identity by
+  1.00–1.02 on refutations and the spread shrinks with `n`; recommended
+  against for `recertify`. It pays only on the witness side (8–13× where hard,
+  under 5% of a descent). Seconds spread 1.5× where nodes spread 1.05× on a
+  loaded machine — the clock would have passed the kill.
+- **Cost model** (§19, kill not met): a censored linear model in `n` and
+  label-free graph terms, trained at 10–75, puts 88–89% of the 100–125 counts
+  within a decade (baselines 58–65%), biased upward ×2.5; usable to order a
+  queue and size a budget, never for `k`. Recertify's open entries, cheapest
+  first: `2-5_0`, `2-3_0`, `2-2_0`.
+- **Fan order** (§20, kill met): 0.0% median node change on refutations at
+  every size; keep index order in `decide`. Degree order saves 35% of witness
+  nodes at 75 and is proposed for satisfiable-side drivers only.
+- **Theorem 2's switch** (§22): always-on wins in nodes (−6.6%, never costs
+  more than 1.2%) and loses in seconds (+5–8% on the dense half at 1.17× per
+  node); **keep `sparse_enough_for_better_move` at 5**. Post-fix, where on, the
+  rule saves 27% of refutation nodes in total.
+- **Extremal search** (§21): the corpus's small instances are not extremal
+  for any objective but soundness; the 10-vertex `pw − tw = 2` graph above;
+  pathwidth exceeds treewidth on 48.5–76.3% of the gap instances.
+- **Conjecture mining** (§24): closed against the honest reference
+  `max(lb_best, tw + 1)`; two theorems and one worthless-but-surviving
+  conjecture handed to Lean.
+- **Set-valued imitation** (§23, kill met): with the exact optimal-move set
+  as label and the rule's keys as features, the best policy beats the two-key
+  rule by 0.008 MAE against a kill of 0.02. The rule's pick is already optimal
+  at 99.7% of states. **Imitation is closed for good.**
+- **The ridge** (§25): not a mean-degree condition; the parameter constant
+  across every `m / n` is the cover excess `(n_ones − m) / n ≈ 2–2.4`, one
+  independent cycle of the incidence graph per customer, which puts the ridge
+  at about `1 + 2.4 n / m` customers per product. The giant-component
+  threshold lies 1.5–6× below it.
+- **Lean** (§26): both sandwich inequalities proved; `lake build` passes.
+- **Census** (§27): `pw ≤ tw + 1` on every graph to 9 vertices, by
+  enumeration of all 287,884.
+
+**Kill criteria, this loop.** Met: relabelling portfolio (§18), fan order
+(§20), set-valued imitation (§23), conjecture mining against the honest
+reference (§24), the 100-customer ridge budget (§16). Not met: the DRAT path
+is open (§17), the cost model is usable (§19). Overturned by the data: the
+mean-degree ridge hypothesis (§25).
+
+**Thirteen solver changes proposed and one applied**, each with the
+measurement that decides it, in `reports/ml_nature_summary.md` §8. Applied:
+the `better_move` fix. Recommended against: Theorem 2 always-on, a
+refutation portfolio, degree fan order for `decide`. Still to decide: exact
+treewidth in `_lower_bound`; the two-key rule as heuristic and DFS seed (one
+`corpus_sweep` run settles it and the LightGBM question with it); degree fan
+order and a portfolio on the satisfiable side. **Open and unpriced**: a sound
+refutation check above 40 customers; Yanasse's equality and the encoding's
+correctness in Lean; a pathwidth bound that sees separators of trees of
+cliques.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
-- Becceneri, Yanasse & Soma (2004) is still missing, but no longer blocking the
-  bound question: Yanasse et al. (1999) itself arrived on 2026-09-22 and settles
-  it directly — the arc contraction bound is contraction degeneracy + 1. 2004 is
-  still wanted for Lemma 1's proof and for the MCNh our `mcn` does not
-  reproduce. See `literature/MISSING.md`.
+- ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,
+  with Yanasse (1997a), both from the author. The MCNh our `mcn` does not
+  reproduce is an arc-traversal heuristic (see Key References); reproducing it
+  as a strategy in `satisfiability/heuristics.py` is a small, well-specified
+  item. The global dominance proposition is proved there, and the authors
+  report that using it inside their branch-and-bound made it slower — the
+  same lesson as `reports/inner_loop.md`, that a rule's value depends on what
+  runs beside it.
