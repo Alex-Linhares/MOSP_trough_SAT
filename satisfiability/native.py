@@ -41,6 +41,11 @@ from satisfiability.customer_search import FAN_ORDERS, Decision
 from satisfiability.heuristics import _neighbour_masks
 
 _SOURCE = Path(__file__).with_name("customer_search.c")
+
+# Bits of the C's `better_move_variant`; must match customer_search.c.
+BM_OLD_CLOSE_COUNT = 1
+BM_OLD_RULE_ORDER = 2
+BM_SUBSET_RESTRICTED = 4
 _LIBRARY = Path(__file__).with_name("_customer_search.so")
 _MAX_CUSTOMERS = 128
 
@@ -91,15 +96,18 @@ def _load() -> "ctypes.CDLL | None":
         # `cs_decide_fan` is `cs_decide` plus the fan-order flag; the C keeps
         # the old entry point for processes that loaded the library before
         # the flag existed.
-        lib.cs_decide_fan.restype = ctypes.c_int
-        lib.cs_decide_fan.argtypes = [
+        # `cs_decide_variant` adds the better-move variant bits (item 04 of
+        # loop0004, reports/ml_nature.md §31); `cs_decide_fan` and `cs_decide`
+        # stay as they were for processes that loaded the library before.
+        lib.cs_decide_variant.restype = ctypes.c_int
+        lib.cs_decide_variant.argtypes = [
             ctypes.c_int, ctypes.c_int,                 # n, k
             ctypes.POINTER(ctypes.c_uint64),            # neighbourhoods
             ctypes.c_longlong, ctypes.c_double,         # max_nodes, seconds
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # subset, definite, memo
             ctypes.c_int, ctypes.c_longlong,            # restrict, memo_limit
             ctypes.c_int, ctypes.c_int, ctypes.c_int,   # better, dominators, old
-            ctypes.c_int,                               # fan_order
+            ctypes.c_int, ctypes.c_int,                 # fan_order, better_move_variant
             ctypes.POINTER(ctypes.c_int),               # out_path
             ctypes.POINTER(ctypes.c_longlong),          # out_nodes
             ctypes.POINTER(ctypes.c_int),               # out_len
@@ -134,8 +142,22 @@ def decide_native(
     seconds: float | None = None,
     memo_limit: int = 4_000_000,
     fan_order: str = "index",
+    old_close_count: bool = False,
+    old_rule_order: bool = False,
+    subset_after_better_move: bool = False,
 ) -> Decision | None:
     """Decide "MOSP(instance) <= k?" in C, or return None if it cannot.
+
+    `old_close_count` and `old_rule_order` each *revert* one of the two
+    changes of the 2026-09-26 `better_move` fix (`reports/better_move_bug.md`
+    §7): the corrected close count, and the subset rule running before better
+    move. Both defaults are today's rule; either flag on is an unsound search
+    kept only to measure what the fix costs (`learning.fix_cost`,
+    `reports/ml_nature.md` §31). They do nothing unless `better_move` is on.
+    `subset_after_better_move` is not a revert but a candidate composition
+    (better move first, then the subset rule citing nothing better move
+    discarded), measured in the same study and, like the rest, the default of
+    nothing.
 
     None means "not applicable here" -- too many customers, no library, or a
     flag the C does not implement -- and the caller should use the Python. It
@@ -166,14 +188,17 @@ def decide_native(
     nodes = ctypes.c_longlong(0)
     length = ctypes.c_int(0)
 
-    status = library.cs_decide_fan(
+    variant = (BM_OLD_CLOSE_COUNT if old_close_count else 0) | \
+              (BM_OLD_RULE_ORDER if old_rule_order else 0) | \
+              (BM_SUBSET_RESTRICTED if subset_after_better_move else 0)
+    status = library.cs_decide_variant(
         n, k, packed,
         -1 if max_nodes is None else int(max_nodes),
         0.0 if seconds is None else float(seconds),
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
         int(better_move), int(better_move_dominators), int(old_move),
-        FAN_ORDERS.index(fan_order),
+        FAN_ORDERS.index(fan_order), variant,
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated

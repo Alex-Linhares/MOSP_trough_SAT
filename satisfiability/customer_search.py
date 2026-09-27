@@ -203,6 +203,11 @@ def decide(
             definite_move=definite_move, old_move=old_move, memo=memo,
             better_move=kwargs.pop("better_move", False),
             better_move_dominators=kwargs.pop("better_move_dominators", 4),
+            # Reverts of the 2026-09-26 fix, unsound, for measurement only
+            # (learning.fix_cost); meaningless without `better_move`.
+            old_close_count=bool(kwargs.pop("old_close_count", False)),
+            old_rule_order=bool(kwargs.pop("old_rule_order", False)),
+            subset_after_better_move=bool(kwargs.pop("subset_after_better_move", False)),
             max_nodes=max_nodes, memo_limit=memo_limit,
             seconds=None if deadline is None else max(0.0, deadline - time.monotonic()),
             fan_order=fan_order)

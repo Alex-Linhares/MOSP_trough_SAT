@@ -13,3 +13,8 @@
 [2026-09-27 17:14:03] claude session it03 (cap 3.00 h) -> session_it03.log
 [2026-09-27 18:39:13] session it03: ok (exit 0, 47 tool calls)
 [2026-09-27 18:40:38] tests passed: 1130 passed, 2 skipped, 1 xfailed, 161 warnings in 84.69s (0:01:24)
+[2026-09-27 18:40:38] committed 0bf41c6a: 03 · Q5 Does the graph story hold for the SAT path? On §13's pairs
+[2026-09-27 18:40:38] === iteration 4: 04 · Q1a Which change carries the fix's cost? Behind flags in the C
+[2026-09-27 18:40:38] claude session it04 (cap 3.00 h) -> session_it04.log
+[2026-09-27 19:31:09] session it04: ok (exit 0, 66 tool calls)
+[2026-09-27 19:32:36] tests passed: 1138 passed, 2 skipped, 1 xfailed, 159 warnings in 85.75s (0:01:25)

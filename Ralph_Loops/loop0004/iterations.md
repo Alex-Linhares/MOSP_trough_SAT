@@ -39,7 +39,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       Deliverable: whether the clique cover moves SAT cost, by how much, and
       whether SAT and the search therefore fail on different instances for
       that reason. **Kill**: paired median re-covering ratio within ±5%.
-- [ ] 04 · Q1a **Which change carries the fix's cost?** Behind flags in the C
+- [x] 04 · Q1a **Which change carries the fix's cost?** Behind flags in the C
       and the Python (new entry point; defaults unchanged), toggle the
       close-count correction and the rule reordering separately, giving four
       variants including today's and the pre-fix one. Run each through

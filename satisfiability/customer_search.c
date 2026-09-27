@@ -27,6 +27,19 @@ typedef unsigned __int128 mask_t;
 #define FAN_ORDER_INDEX  0
 #define FAN_ORDER_DEGREE 1
 
+/* Variants of the 2026-09-26 `better_move` fix (0eb33915), for measuring
+ * which of its two changes carries its cost (reports/ml_nature.md §31). Each
+ * bit *reverts* one change; 0 is today's rule, 3 is the rule as it stood
+ * before the fix under the `csearch` configuration. Both reverted forms are
+ * unsound (reports/better_move_bug.md §7) and exist only to be measured. */
+#define BM_OLD_CLOSE_COUNT 1   /* count customers r finishes alone as stacks q closes */
+#define BM_OLD_RULE_ORDER  2   /* better move before the subset rule, which then cites discarded candidates */
+/* Not a revert: a candidate composition. Better move first over every
+ * candidate, then the subset rule over its survivors citing only customers
+ * better move did not discard, so no chain of coverings can point back at a
+ * discarded candidate. Measured as `bm-first`; today's rule is unchanged. */
+#define BM_SUBSET_RESTRICTED 4
+
 #define BIT(i)        (((mask_t) 1) << (i))
 #define LOWEST(x)     ((x) & -(x))
 
@@ -101,6 +114,7 @@ typedef struct {
     int      definite_move;
     int      better_move;
     int      better_move_dominators;   /* how many q to try; 0 for all */
+    int      better_move_variant;      /* BM_OLD_* bits; 0 is today's rule */
     int      old_move;
     int      fan_order;         /* 0: ties by customer index; 1: by remaining degree, highest first */
     int      use_memo;
@@ -120,6 +134,136 @@ static double monotonic_now(void) {
 }
 
 static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen);
+
+/* The subset rule over the candidates in `costs`/`who`/`index_of`, measured
+ * against every remaining customer not in `exclude` (0 in today's rule).
+ * Returns the surviving count. */
+static int subset_pass(const search_t *s, const int *ids, const mask_t *opens,
+                       const int *sizes, int n_remaining, mask_t exclude,
+                       int *costs, int *who, int *index_of, int count) {
+    int kept = 0;
+    for (int i = 0; i < count; i++) {
+        int c = who[i];
+        int at = index_of[i];
+        mask_t own = opens[at];
+        int own_size = sizes[at];
+        int dominated = 0;
+        for (int j = 0; j < n_remaining && !dominated; j++) {
+            if (sizes[j] > own_size) continue;      /* cannot be a subset */
+            int d = ids[j];
+            if (d == c) continue;
+            if (exclude && ((exclude >> d) & 1)) continue;   /* BM_SUBSET_RESTRICTED */
+            mask_t other = opens[j];
+            if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
+        }
+        if (!dominated) { costs[kept] = costs[i]; who[kept] = c;
+                          index_of[kept] = index_of[i]; kept++; }
+    }
+    /* Every candidate dominated by a non-candidate would empty the list;
+     * keep the original in that case, as the Python does. */
+    return kept ? kept : count;
+}
+
+/* Theorem 2 over the candidates in `costs`/`who`/`index_of`. Returns the
+ * surviving count. */
+static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
+                            int *costs, int *who, int *index_of, int count,
+                            mask_t *discarded) {
+    /* Theorem 2, "better move". If S ++ [q] and S ++ [r, q] are both playable
+     * and close(q, S u {r}) >= open(q, S u {r}), then any solution extending
+     * S ++ [r] has one extending S ++ [q], so r can go. Theorem 1 is the case
+     * where one q beats every r at once, which is why it runs first as a fast
+     * path: it is O(R^2) where this is O(R^3).
+     *
+     * Only the cheapest few q are tried as dominators. Using a subset prunes
+     * less but never wrongly -- the theorem justifies each pruning on its own,
+     * so leaving some unfound costs nodes, not correctness. */
+    if (count > 1) {
+        int limit = s->better_move_dominators > 0 &&
+                    s->better_move_dominators < count
+                    ? s->better_move_dominators : count;
+        /* Survivors are marked, not compacted in place. The dominator loop
+         * below reads `who[qi]` across the candidate list while the compaction
+         * writes survivors back into the same array: once anything is pruned,
+         * `kept < ri`, and `who[kept] = who[ri]` clobbers a slot the loop has
+         * yet to read. With `better_move_dominators = 0` the limit is `count`,
+         * so later candidates were compared against whatever had been written
+         * over their dominators -- pruning branches that held solutions and
+         * returning **false refutations**. Found on `Warwick 1730`, which it
+         * refuted at k = 9 against a true optimum of 9. */
+        /* BM_OLD_CLOSE_COUNT restores the over-count, for measurement only. */
+        const int count_finished = s->better_move_variant & BM_OLD_CLOSE_COUNT;
+        int survives[128];
+        for (int i = 0; i < count; i++) survives[i] = 1;
+        for (int ri = 0; ri < count; ri++) {
+            int r = who[ri];
+            mask_t closed_r = closed | BIT(r);
+            mask_t opened_r = opened | s->neighbour[r];
+            mask_t remaining_r = s->full & ~closed_r;
+            int pruned = 0;
+
+            /* Only an *earlier* candidate may dominate a later one. Without
+             * that the relation can cycle -- q dominates r while r dominates q
+             * -- and both are discarded together, taking the solution with
+             * them. Ordering it makes the relation a forest: the first
+             * candidate is never pruned, and whatever covers r is itself
+             * covered by something earlier, transitively. That is what
+             * produced false refutations on `Warwick 1730`, which was refuted
+             * at k = 9 against a true optimum of 9. */
+            for (int qi = 0; qi < limit && qi < ri && !pruned; qi++) {
+                int q = who[qi];
+                if (q == r) continue;
+
+                /* S ++ [r, q] playable: q's cost once r has been played,
+                 * measured as the paper measures it, with r closed and
+                 * nothing else -- *not* the cheaper cost this search would
+                 * charge q in the child, after r's free moves have closed.
+                 * The theorem's proof plays q first and r second, and the
+                 * paper's cost of r after q is this same number, so it is
+                 * this check that keeps S ++ [q, r] playable. Brute force
+                 * on 320 sparse instances at 12-15 customers found 726
+                 * false prunings in 125M applications with the exact cost
+                 * here, and none in 124M with this one. */
+                if (popcount128((opened_r | s->neighbour[q]) & ~closed_r) > s->k)
+                    continue;
+
+                mask_t own = s->neighbour[q] & ~opened_r;
+                int opened_by = popcount128(own);
+                int closed_by = 0;
+                for (mask_t bits = remaining_r; bits; ) {
+                    mask_t bit = LOWEST(bits); bits ^= bit;
+                    mask_t left = s->neighbour[lowest_index(bit)] & ~opened_r;
+                    /* close(q, S u {r}) counts the stacks q closes that r has
+                     * not closed already. A customer with nothing left to
+                     * open once r is played is finished by r alone -- a free
+                     * move in the child, gone before q is played -- and the
+                     * proof of Theorem 1 needs stacks closed *in addition* to
+                     * those. Counting them made close(q, S u {r}) come out one
+                     * too high and pruned r wrongly: the same brute force
+                     * found 57 false prunings in 126M applications of the
+                     * old count, every one an over-count of exactly this
+                     * kind, and none in 124M once they are left out.
+                     * `definite_move` and `subset_rule` never counted them:
+                     * their `ids` skip size-0 customers. */
+                    if ((left || count_finished) && (left & ~own) == 0) closed_by++;
+                }
+                if (closed_by >= opened_by) pruned = 1;
+            }
+            survives[ri] = !pruned;
+        }
+        int kept = 0;
+        mask_t gone = 0;
+        for (int i = 0; i < count; i++)
+            if (survives[i]) {
+                costs[kept] = costs[i]; who[kept] = who[i];
+                index_of[kept] = index_of[i]; kept++;
+            } else {
+                gone |= BIT(who[i]);
+            }
+        if (kept) { count = kept; if (discarded) *discarded = gone; }
+    }
+    return count;
+}
 
 /* Candidates surviving the dominance relations, written into `order` as
  * (cost, customer) pairs sorted by cost. Returns how many. */
@@ -186,116 +330,31 @@ static int dominance_filter(search_t *s, mask_t candidates,
         }
     }
 
-    if (s->subset_rule) {
-        int kept = 0;
-        for (int i = 0; i < count; i++) {
-            int c = who[i];
-            int at = index_of[i];
-            mask_t own = opens[at];
-            int own_size = sizes[at];
-            int dominated = 0;
-            for (int j = 0; j < n_remaining && !dominated; j++) {
-                if (sizes[j] > own_size) continue;      /* cannot be a subset */
-                int d = ids[j];
-                if (d == c) continue;
-                mask_t other = opens[j];
-                if ((other & ~own) == 0 && (other != own || d < c)) dominated = 1;
-            }
-            if (!dominated) { costs[kept] = costs[i]; who[kept] = c;
-                              index_of[kept] = index_of[i]; kept++; }
-        }
-        /* Every candidate dominated by a non-candidate would empty the list;
-         * keep the original in that case, as the Python does. */
-        if (kept) count = kept;
-    }
-
-    /* Theorem 2, "better move". If S ++ [q] and S ++ [r, q] are both playable
-     * and close(q, S u {r}) >= open(q, S u {r}), then any solution extending
-     * S ++ [r] has one extending S ++ [q], so r can go. Theorem 1 is the case
-     * where one q beats every r at once, which is why it runs first as a fast
-     * path: it is O(R^2) where this is O(R^3).
-     *
-     * Only the cheapest few q are tried as dominators. Using a subset prunes
-     * less but never wrongly -- the theorem justifies each pruning on its own,
-     * so leaving some unfound costs nodes, not correctness. */
-    if (s->better_move && count > 1) {
-        int limit = s->better_move_dominators > 0 &&
-                    s->better_move_dominators < count
-                    ? s->better_move_dominators : count;
-        /* Survivors are marked, not compacted in place. The dominator loop
-         * below reads `who[qi]` across the candidate list while the compaction
-         * writes survivors back into the same array: once anything is pruned,
-         * `kept < ri`, and `who[kept] = who[ri]` clobbers a slot the loop has
-         * yet to read. With `better_move_dominators = 0` the limit is `count`,
-         * so later candidates were compared against whatever had been written
-         * over their dominators -- pruning branches that held solutions and
-         * returning **false refutations**. Found on `Warwick 1730`, which it
-         * refuted at k = 9 against a true optimum of 9. */
-        int survives[128];
-        for (int i = 0; i < count; i++) survives[i] = 1;
-        for (int ri = 0; ri < count; ri++) {
-            int r = who[ri];
-            mask_t closed_r = closed | BIT(r);
-            mask_t opened_r = opened | s->neighbour[r];
-            mask_t remaining_r = s->full & ~closed_r;
-            int pruned = 0;
-
-            /* Only an *earlier* candidate may dominate a later one. Without
-             * that the relation can cycle -- q dominates r while r dominates q
-             * -- and both are discarded together, taking the solution with
-             * them. Ordering it makes the relation a forest: the first
-             * candidate is never pruned, and whatever covers r is itself
-             * covered by something earlier, transitively. That is what
-             * produced false refutations on `Warwick 1730`, which was refuted
-             * at k = 9 against a true optimum of 9. */
-            for (int qi = 0; qi < limit && qi < ri && !pruned; qi++) {
-                int q = who[qi];
-                if (q == r) continue;
-
-                /* S ++ [r, q] playable: q's cost once r has been played,
-                 * measured as the paper measures it, with r closed and
-                 * nothing else -- *not* the cheaper cost this search would
-                 * charge q in the child, after r's free moves have closed.
-                 * The theorem's proof plays q first and r second, and the
-                 * paper's cost of r after q is this same number, so it is
-                 * this check that keeps S ++ [q, r] playable. Brute force
-                 * on 320 sparse instances at 12-15 customers found 726
-                 * false prunings in 125M applications with the exact cost
-                 * here, and none in 124M with this one. */
-                if (popcount128((opened_r | s->neighbour[q]) & ~closed_r) > s->k)
-                    continue;
-
-                mask_t own = s->neighbour[q] & ~opened_r;
-                int opened_by = popcount128(own);
-                int closed_by = 0;
-                for (mask_t bits = remaining_r; bits; ) {
-                    mask_t bit = LOWEST(bits); bits ^= bit;
-                    mask_t left = s->neighbour[lowest_index(bit)] & ~opened_r;
-                    /* close(q, S u {r}) counts the stacks q closes that r has
-                     * not closed already. A customer with nothing left to
-                     * open once r is played is finished by r alone -- a free
-                     * move in the child, gone before q is played -- and the
-                     * proof of Theorem 1 needs stacks closed *in addition* to
-                     * those. Counting them made close(q, S u {r}) come out one
-                     * too high and pruned r wrongly: the same brute force
-                     * found 57 false prunings in 126M applications of the
-                     * old count, every one an over-count of exactly this
-                     * kind, and none in 124M once they are left out.
-                     * `definite_move` and `subset_rule` never counted them:
-                     * their `ids` skip size-0 customers. */
-                    if (left && (left & ~own) == 0) closed_by++;
-                }
-                if (closed_by >= opened_by) pruned = 1;
-            }
-            survives[ri] = !pruned;
-        }
-        int kept = 0;
-        for (int i = 0; i < count; i++)
-            if (survives[i]) {
-                costs[kept] = costs[i]; who[kept] = who[i];
-                index_of[kept] = index_of[i]; kept++;
-            }
-        if (kept) count = kept;
+    /* Today's order is subset rule then better move, for the reason above.
+     * BM_OLD_RULE_ORDER runs them the other way round -- the pre-fix
+     * composition, unsound -- so that the cost of the reordering can be
+     * measured on its own (reports/ml_nature.md §31). */
+    if (s->better_move_variant & BM_SUBSET_RESTRICTED) {
+        /* Candidate composition, measured only: better move over every
+         * candidate, then the subset rule over the survivors citing nothing
+         * better move discarded. Better move's chains end at its survivors;
+         * the subset rule's at a subset survivor or a `seen` customer; no
+         * chain can re-enter the discarded set. */
+        mask_t gone = 0;
+        if (s->better_move)
+            count = better_move_pass(s, closed, opened, costs, who, index_of, count, &gone);
+        if (s->subset_rule)
+            count = subset_pass(s, ids, opens, sizes, n_remaining, gone, costs, who, index_of, count);
+    } else if (s->better_move_variant & BM_OLD_RULE_ORDER) {
+        if (s->better_move)
+            count = better_move_pass(s, closed, opened, costs, who, index_of, count, NULL);
+        if (s->subset_rule)
+            count = subset_pass(s, ids, opens, sizes, n_remaining, 0, costs, who, index_of, count);
+    } else {
+        if (s->subset_rule)
+            count = subset_pass(s, ids, opens, sizes, n_remaining, 0, costs, who, index_of, count);
+        if (s->better_move)
+            count = better_move_pass(s, closed, opened, costs, who, index_of, count, NULL);
     }
 
 sorted:
@@ -454,14 +513,14 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  *                highest first, then index). Order changes which branches are
  *                visited first, never which are visited: the answer is the same.
  */
-int cs_decide_fan(int n, int k,
-                  const uint64_t *neighbours,
-                  long long max_nodes, double seconds,
-                  int subset_rule, int definite_move, int use_memo,
-                  int restrict_frontier, long long memo_limit,
-                  int better_move, int better_move_dominators, int old_move,
-                  int fan_order,
-                  int *out_path, long long *out_nodes, int *out_len) {
+int cs_decide_variant(int n, int k,
+                      const uint64_t *neighbours,
+                      long long max_nodes, double seconds,
+                      int subset_rule, int definite_move, int use_memo,
+                      int restrict_frontier, long long memo_limit,
+                      int better_move, int better_move_dominators, int old_move,
+                      int fan_order, int better_move_variant,
+                      int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
     if (n <= 0) return 1;
@@ -474,6 +533,7 @@ int cs_decide_fan(int n, int k,
     s.definite_move = definite_move;
     s.better_move = better_move;
     s.better_move_dominators = better_move_dominators;
+    s.better_move_variant = better_move_variant;
     s.old_move = old_move;
     s.fan_order = fan_order;
     s.use_memo = use_memo;
@@ -506,6 +566,23 @@ int cs_decide_fan(int n, int k,
     free(s.neighbour);
     free(s.memo.slots);
     return found ? 1 : (s.aborted ? -1 : 0);
+}
+
+/* `cs_decide` plus the fan-order flag; kept with its signature for the same
+ * reason as `cs_decide`. Today's better-move rule, always. */
+int cs_decide_fan(int n, int k,
+                  const uint64_t *neighbours,
+                  long long max_nodes, double seconds,
+                  int subset_rule, int definite_move, int use_memo,
+                  int restrict_frontier, long long memo_limit,
+                  int better_move, int better_move_dominators, int old_move,
+                  int fan_order,
+                  int *out_path, long long *out_nodes, int *out_len) {
+    return cs_decide_variant(n, k, neighbours, max_nodes, seconds,
+                             subset_rule, definite_move, use_memo,
+                             restrict_frontier, memo_limit,
+                             better_move, better_move_dominators, old_move,
+                             fan_order, 0, out_path, out_nodes, out_len);
 }
 
 /* The original entry point, kept with its signature so a process that loaded

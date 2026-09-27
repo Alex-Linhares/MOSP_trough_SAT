@@ -8135,3 +8135,332 @@ the in-flight calls* (up to 16 here) rather than recording them as censored;
 the CSV is resumable, so a second run with the same arguments fills them in.
 *`formula unchanged` compares clause counts*, not clause sets; the 21 greedy
 pairs with equal counts and unequal conflicts are the reason to say so.
+
+
+## 31. Which change of the `better_move` fix carries its cost? (plan 3 §1 Q1a, loop0004 item 04)
+
+*loop0004 iteration 4, 2026-09-27. Code: `learning/fix_cost.py`; flags in
+`satisfiability/customer_search.c` (`cs_decide_variant`, bits
+`BM_OLD_CLOSE_COUNT`, `BM_OLD_RULE_ORDER`, `BM_SUBSET_RESTRICTED`),
+`satisfiability/native.py` and `satisfiability/customer_search.py`
+(`old_close_count`, `old_rule_order`, `subset_after_better_move`, all
+default off). Regenerate:*
+
+```bash
+python -m learning.fix_cost --stage harness --workers 14                                     # n ≤ 40, every labelling, 5 variants: 53 s + 35 s on 14 workers
+python -m learning.fix_cost --stage scale --workers 14 --deadline 60 --corpus-deadline 120     # 41–100, decide(optimum − 1): 27 min on 14 workers beside 13 recertify workers; then `--variants bm-first`, 10 min
+python -m learning.fix_cost --stage tables                                                     # every table below and reports/fix_cost_tables.md
+python -m pytest tests/test_fix_cost.py -q
+```
+
+*Writes `learning/data/ensemble/fix_cost_harness.csv.gz` (one row per
+labelling × variant, both calls; 876,350 rows) and
+`learning/data/ensemble/fix_cost_scale.csv` (one row per call). Nothing was
+written to `solutions/`; no solver default was touched: `cs_decide` and
+`cs_decide_fan` keep their signatures and call the new entry point with
+variant 0.*
+
+**Question.** The 2026-09-26 fix of the C `better_move` (`0eb33915`,
+`reports/better_move_bug.md` §7) made two changes to the rule — the close
+count `close(q, S ∪ {r})` stopped counting customers `r` finishes on its
+own (Bug A), and the subset rule moved in front of better move so that no
+rule cites a candidate another rule has discarded (Bug B) — and one to the
+flag plumbing (Bug C, the early exit, which has no effect under the
+`csearch` configuration where both other rules are on). The fixed rule
+costs +7.3% nodes at n ≤ 40, ×2–3.5 on the 100-customer half-ratio classes
+and ≥ 15× on `Random-100-100-2-4_0` (§18). Which change carries that cost,
+is either change sound on its own, and is there a cheaper composition that
+is sound? The plan states no kill criterion; the deliverable is a cost table
+per variant and a recommendation, stated and not applied.
+
+**Method.** Each change is behind its own bit of a new C argument, so the
+four combinations are one library and one entry point:
+
+| variant | close count | rule order | what it is |
+|:--|:--|:--|:--|
+| `fixed` | corrected | subset rule, then better move over its survivors | today's rule, variant 0 |
+| `old-close` | over-counting | today's | Bug A alone |
+| `old-order` | corrected | better move, then the subset rule citing every remaining customer | Bug B alone |
+| `prefix` | over-counting | pre-fix | the rule as it stood before `0eb33915` |
+| `bm-first` | corrected | better move over every candidate, then the subset rule over its survivors citing nothing better move discarded | not a revert: a candidate sound composition, added after the four were measured |
+
+`bm-first` is the pre-fix order with the cycle closed off rather than moved:
+better move's chains of coverings end at its own survivors (its first input
+is never pruned), the subset rule's at a subset survivor or at a customer
+outside the candidate set, and since the subset rule may not cite anything
+better move discarded no chain can re-enter the discarded set. It was added
+because the four reverts answer *which change* but not *whether the cost is
+the order or the soundness*; it defaults off like the rest.
+
+Two stages. **Harness**: every certified instance at 9–40 customers on
+which Theorem 2 is switched on under `csearch` (`sparse_enough_for_better_move`,
+17,527 of the 43,935: 14,970 campaign, 2,557 corpus), the identity, eight
+relabellings and one re-covering (`learning.differential.labellings`),
+`decide(optimum − 1)` and `decide(optimum)` under each variant with
+`better_move_dominators = 0`, 60 s per call; a `sat` below the optimum or an
+`unsat` at it is a false answer, witnesses re-simulated. **Scale**: the
+identity labelling, `decide(optimum − 1)` only, each variant, on every
+certified refutation of the campaign at 50–100 (`results_upward.csv`, 6,773
+instances, 60 s per call), the 124 corpus instances at 41–100 with Theorem 2
+on (120 s per call) and `Random-100-100-2-4_0` at 600 s; a censored call is
+a lower bound on nodes. Ratios are `(a + 1) / (b + 1)` on the calls both
+sides settled `unsat`.
+
+**Reproduction first.** The `prefix` variant reproduces the pre-fix search
+exactly: §15's **56 instances / 88 false answers** to the instance and the
+call; the pre-fix total of **6,101,183** nodes and the post-fix
+**6,544,638** on the same 17,521 identity refutations that §7 of the bug
+report records; the recorded pre-fix `nodes_csearch` of `results.csv`
+(written 06:43 on 2026-09-26, before the fix) on 60 of 60 sampled campaign
+refutations where `csearch` differs from `default` (12 of 12 in
+`tests/test_fix_cost.py`); and the default path is byte-for-byte the old
+library — the old `.so` and the new one agree in status, nodes and witness
+on 10,248 calls, and the old entry points on 500+ more in the tests.
+
+### Soundness at n ≤ 40 (every labelling, both calls, 350,540 calls per variant)
+
+| variant | instances with a false answer | false `unsat` at the optimum | false `sat` below | witness failures | censored |
+|:--|--:|--:|--:|--:|--:|
+| `fixed` | **0** | 0 | 0 | 0 | 0 |
+| `old-close` (Bug A alone) | **1** | 3 | 0 | 0 | 0 |
+| `old-order` (Bug B alone) | **36** | 61 | 0 | 0 | 0 |
+| `prefix` | **56** | 88 | 0 | 0 | 0 |
+| `bm-first` | **0** | 0 | 0 | 0 | 0 |
+
+Every false answer is an `unsat` at the optimum — the satisfiable side, as
+§15 said it would be — and none is a false `sat`. The two changes are both
+necessary: each revert alone is unsound at n ≤ 40, so **no variant that
+undoes either change is a candidate**, whatever it costs. Their false
+answers are not additive either: 1 + 36 < 56, and the one `old-close`
+instance (`ens_b_n25_m25_p0.075_i040`, §15's second shrink target) is
+flagged on three labellings while `old-order` catches it on none. The two
+bugs interact — the cycle usually needs the over-count to discard `r` in
+the first place — which the minimal instances show directly: the 17 × 9
+instance falls to Bug A alone, and the 10 × 13 that §7 attributed to the
+cycle *alone* is refuted only when both bits are set; with the corrected
+close count, the reordering alone answers `sat` on it under every rule
+pairing. (The campaign instance it was cut from, `ens_f_n10_m20_d2_i070`,
+does fall to `old-order` alone, on two labellings.) The bug report's "this
+alone is the 10 × 13 minimal instance" is therefore too strong about the
+minimal instance, though right about the campaign one.
+
+### Cost at n ≤ 40 (identity labelling, `decide(optimum − 1)`, 17,521 refutations every variant settled)
+
+| variant | total nodes | vs `fixed` | vs `prefix` | seconds (sum) | vs `fixed` | M nodes / s |
+|:--|--:|--:|--:|--:|--:|--:|
+| `fixed` | 6,544,638 | 1 | 1.073 | 13.0 | 1 | 0.50 |
+| `old-close` | 6,488,719 | 0.991 | 1.064 | 12.3 | 0.94 | 0.53 |
+| `old-order` | 6,170,505 | 0.943 | 1.011 | 11.9 | 0.91 | 0.52 |
+| `prefix` | 6,101,183 | 0.932 | 1 | 11.7 | 0.90 | 0.52 |
+| `bm-first` | 6,674,420 | 1.020 | 1.094 | 15.1 | 1.16 | 0.44 |
+
+| comparison, `(a + 1) / (b + 1)` | total | median | p90 | p99 | max | min | more | fewer | equal |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| the whole fix: `fixed / prefix` | 1.073 | 1 | 1.18 | 1.80 | 6.52 | 0.82 | 6,381 | 261 | 10,879 |
+| close count alone, from pre-fix: `old-order / prefix` | 1.011 | 1 | 1.01 | 1.32 | 6.22 | 0.92 | 2,244 | 108 | 15,169 |
+| rule order alone, from pre-fix: `old-close / prefix` | 1.064 | 1 | 1.14 | 1.67 | 4.00 | 0.82 | 5,997 | 283 | 11,241 |
+| close count, given the new order: `fixed / old-close` | 1.009 | 1 | 1.00 | 1.27 | 5.92 | 0.92 | 2,088 | 142 | 15,291 |
+| rule order, given the new count: `fixed / old-order` | 1.061 | 1 | 1.13 | 1.64 | 4.00 | 0.77 | 6,003 | 298 | 11,220 |
+| the candidate: `bm-first / fixed` | 1.020 | 1 | 1.03 | 1.20 | 1.83 | 0.63 | 2,758 | 3,282 | 11,481 |
+| the candidate against pre-fix: `bm-first / prefix` | 1.094 | 1 | 1.21 | 1.83 | 6.30 | 0.87 | 5,958 | 64 | 11,499 |
+
+**The reordering carries the cost.** Summing log-ratios over the 17,521
+refutations, the whole fix is 877 nats of extra search; the close count
+accounts for 203 (23%), the reordering for 711 (81%) and their interaction
+for −37 (−4%). The close-count correction changes the node count on 13.4% of
+instances and costs 1.1% in total; the reordering changes it on 35.8% and
+costs 6.4%, in the same direction at every size band (total 1.02 / 1.05 /
+1.06 / 1.06 for the reordering at ≤ 10 / 11–20 / 21–30 / 31–40 against
+1.00 / 1.01 / 1.02 / 1.01 for the close count) and in both sources. The
+worst instance is the same under either decomposition: `p1540n10_0` (40 ×
+15, optimum 8) goes 68 → 428 nodes from the reordering and 428 → 449 from
+the close count. Seconds follow nodes at n ≤ 40: the fix costs 10% of the
+clock, the reordering 9 of those points. On the witness side
+(`decide(optimum)`, 17,519 calls every variant settled) the fix is a net
+*saving* of 2.5% in total, with a spread of 0.05–14× that is the
+tie-break noise of §18, and the close count again costs 1%.
+
+**Closing the cycle costs the same whichever way it is closed.** `bm-first`
+is sound on the same 350,540 calls and is *not* cheaper: +2.0% nodes on
+`fixed` in total (more on 2,758, fewer on 3,282, median 1), +9.4% on
+`prefix`, and slower per node (0.44 against 0.50 M nodes/s, the extra
+better-move pass over the full candidate list and the citation check).
+Running better move first does give it more dominators to try, and that
+does prune more on 3,282 instances; but restricting what the subset rule
+may cite loses more than that gains. The pre-fix rule's cheapness was
+therefore not the order of the rules but the cycle itself: prunings that
+cited a candidate already discarded, which on 6,381 of these instances
+removed branches that happened to hold no *last* solution and on 56 removed
+the last one. There is no sound composition of these two rules in this
+family that recovers that.
+
+### Cost at 41–100 (identity labelling, `decide(optimum − 1)`)
+
+Of the 6,897 instances (6,773 campaign at 50–100, 124 corpus at 41–100),
+Theorem 2 is on for 3,566; the tables are over those, and every call under
+every variant that settled answered `unsat` — no false refutation and no
+false `sat` at 41–100 either, though at one `k` per instance and one
+labelling this is item 06's job, not a soundness result.
+
+| source, n | instances | `fixed` censored | `old-close` | `old-order` | `prefix` |
+|:--|--:|--:|--:|--:|--:|
+| campaign 50 (60 s) | 1,184 | 0 | 0 | 0 | 0 |
+| campaign 60 | 1,120 | 0 | 0 | 0 | 0 |
+| campaign 75 | 1,036 | **27** | 26 | 17 | **17** |
+| campaign 100 | 26 | 1 | 1 | 1 | 1 |
+| corpus 50–99 (120 s) | 91 | 0 | 0 | 0 | 0 |
+| corpus 100 (120 s; the ridge instance 600 s) | 33 | **10** | 10 | 9 | **9** |
+
+The fix pushes ten more 75-customer campaign refutations past 60 seconds
+and one more corpus instance past its deadline — `Random-100-100-2-4_0`,
+below.
+
+| variant | total nodes, 3,452 refutations every variant settled | vs `fixed` | vs `prefix` | seconds (sum) | vs `prefix` | M nodes / s |
+|:--|--:|--:|--:|--:|--:|--:|
+| `fixed` | 3,734,502,267 | 1 | 1.54 | 2,163 | 1.30 | 1.73 |
+| `old-close` | 3,589,358,170 | 0.961 | 1.48 | 2,143 | 1.28 | 1.68 |
+| `old-order` | 2,582,508,803 | 0.692 | 1.06 | 1,766 | 1.06 | 1.46 |
+| `prefix` | 2,426,569,246 | 0.650 | 1 | 1,670 | 1 | 1.45 |
+
+| comparison, `(a + 1) / (b + 1)` | total | median | p90 | p99 | max | min | more | fewer | equal |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| the whole fix: `fixed / prefix` | 1.54 | 1.08 | 1.59 | 3.43 | 34.4 | 0.69 | 3,279 | 64 | 109 |
+| close count alone: `old-order / prefix` | 1.06 | 1.01 | 1.35 | 2.72 | 14.4 | 0.86 | 2,987 | 88 | 377 |
+| rule order alone: `old-close / prefix` | 1.48 | 1.05 | 1.29 | 2.27 | 13.3 | 0.69 | 3,153 | 88 | 211 |
+| close count, given the new order: `fixed / old-close` | 1.04 | 1.00 | 1.26 | 2.24 | 16.1 | 0.95 | 2,877 | 170 | 405 |
+| rule order, given the new count: `fixed / old-order` | 1.45 | 1.05 | 1.23 | 1.87 | 5.21 | 0.69 | 3,143 | 120 | 189 |
+
+By size, generator, product ratio and density (totals of nodes over the
+pairs in the group; `close` is `old-order / prefix`, `order` is
+`old-close / prefix`):
+
+| group | pairs | fix | close | order | median fix |
+|:--|--:|--:|--:|--:|--:|
+| campaign n = 50 | 1,184 | 1.07 | 1.01 | 1.06 | 1.07 |
+| campaign n = 60 | 1,120 | 1.08 | 1.01 | 1.07 | 1.07 |
+| campaign n = 75 | 1,009 | 1.45 | 1.03 | 1.43 | 1.11 |
+| campaign n = 100 (`f_n100_m100_d2`) | 25 | 1.37 | 1.10 | 1.25 | 1.35 |
+| Bernoulli, m / n = ½ | 720 | 1.26 | 1.14 | 1.17 | 1.16 |
+| Bernoulli, m / n = 1 | 415 | 1.22 | 1.02 | 1.20 | 1.11 |
+| Bernoulli, m / n = 2 | 167 | 1.58 | 1.05 | 1.56 | 1.15 |
+| fixed-d, m / n = ½ | 1,330 | 1.14 | 1.08 | 1.10 | 1.07 |
+| fixed-d, m / n = 1 | 582 | 1.27 | 1.03 | 1.24 | 1.05 |
+| fixed-d, m / n = 2 | 124 | 1.52 | 1.00 | 1.52 | 1.03 |
+| fixed-d, d = 2 | 449 | 1.52 | 1.00 | 1.51 | 1.14 |
+| fixed-d, d = 3 | 300 | 1.43 | 1.06 | 1.38 | 1.21 |
+| fixed-d, d = 4 | 300 | 1.11 | 1.01 | 1.10 | 1.09 |
+| fixed-d, d = 5 | 257 | 1.06 | 1.02 | 1.05 | 1.07 |
+| fixed-d, d ≥ 6 | 730 | 1.03–1.08 | 1.00–1.02 | 1.03–1.08 | 1.02–1.07 |
+| corpus 41–100, all | 114 | 2.48 | 1.40 | 2.06 | 1.13 |
+| corpus `Random-100-50-*` | 21 | 3.46 | 1.67 | 2.73 | — |
+
+The corpus instances with the largest cost, each (nodes at `optimum − 1`):
+
+| instance | n × m | `prefix` | `old-close` | `old-order` | `fixed` | fix | close | order |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| `scoop-A_FA+AA-_6_0` | 79 × 21 | 206 | 890 | 1,144 | 2,160 | 10.4 | 5.53 | 4.30 |
+| `p2050n3_0` | 50 × 20 | 109 | 186 | 653 | 652 | 5.94 | 5.95 | 1.70 |
+| `Random-100-50-4-1_0` | 100 × 50 | 7,824,678 | 24,399,895 | 11,491,761 | 30,317,510 | 3.88 | 1.47 | 3.12 |
+| `Random-100-50-4-2_0` | 100 × 50 | 11,166,356 | 33,192,295 | 13,953,255 | 39,287,460 | 3.52 | 1.25 | 2.97 |
+| `Random-100-50-2-2_0` | 100 × 50 | 127,812 | 297,722 | 238,859 | 440,239 | 3.44 | 1.87 | 2.33 |
+| `scoop-A_FA+AA-_8_0` | 82 × 28 | 5,807 | 6,260 | 18,826 | 19,261 | 3.32 | 3.24 | 1.08 |
+| `Random-100-50-6-5_0` | 100 × 50 | 10,357,652 | 21,573,783 | 14,884,150 | 22,914,404 | 2.21 | 1.44 | 2.08 |
+
+**`Random-100-100-2-4_0`**, k = 14, 600 s, the one instance §18 had on both
+sides of the fix:
+
+| variant | status | nodes | seconds |
+|:--|:--|--:|--:|
+| `prefix` | `unsat` | 93,127,027 | 38.8 |
+| `old-order` | `unsat` | 210,696,249 | 81.4 |
+| `old-close` | censored | ≥ 1,826,828,288 | 600 |
+| `fixed` | censored | ≥ 1,823,633,408 | 600 |
+
+The `prefix` count is §14's **93.1 M nodes in 37 s** to the node; the close
+count alone costs 2.26× here, and the reordering at least 8.7× on top of
+it (≥ 19.6× in all, against §18's ≥ 15). Ten more instances were censored
+under `fixed` and settled under `prefix` (nine campaign `n75_m150` at
+density 2–2.5 with the fix ≥ 1.3–2.3× and one `Random-100-100-2-4_0`), none
+the other way round.
+
+**Reproduction at scale.** `prefix` reproduces `results_upward.csv`'s recorded
+`nodes_csearch` on **3,334 of 3,348** settled campaign refutations with
+Theorem 2 on (the file was written at 11:47 on 2026-09-26, two minutes
+after the fix commit; the 14 exceptions are the last two cells that run
+wrote, `n75_m150` at d = 2–3, and no variant reproduces them), so that
+file's `csearch` counts are pre-fix numbers, as CLAUDE.md's method note
+says. `fixed` reproduces 102 of them: the instances the fix leaves
+unchanged.
+
+**At 41–100 the fix costs half again as much search, and both changes now
+matter.** Over the 3,452 refutations every variant settled, today's rule
+visits 1.54× the pre-fix nodes (median 1.08, p90 1.59, 3,279 instances
+dearer against 64 cheaper) and takes 1.30× the seconds — less than the
+nodes because the fixed order is faster per node (1.73 against 1.45 M
+nodes/s: the subset rule first leaves the O(R³) better-move pass a shorter
+list). In total nodes the reordering still carries the cost — 1.48 against
+1.06 for the close count, 1.45 against 1.04 given the other change — because
+the reordering's cost grows with size (1.06 → 1.07 → 1.43 at 50 / 60 / 75,
+1.25 at 100) and with sparsity (1.51 at d = 2, 1.38 at d = 3, ≤ 1.10 from
+d = 4, and 1.52–1.56 at m = 2n against 1.10–1.17 at m = n/2), which is
+where the nodes are. But per instance the two are now comparable: summing
+log-ratios, the close count is 54% of the fix's log-cost and the reordering
+59% (their interaction −14%), against 23% / 81% at n ≤ 40; the close count
+changes 89% of the counts at 41–100 against 13% below 40, and on the
+half-ratio Bernoulli cells and the corpus it is the larger of the two
+(1.14 against 1.17 at m = n/2; 5.5× against 4.3× on `scoop-A_FA+AA-_6_0`,
+6.0× against 1.7× on `p2050n3_0`). The close-count correction is cheap at
+n ≤ 40 because free moves are rare there; at 75–100 customers a candidate
+`r` finishes a customer on its own often enough that the over-count was
+doing real (unsound) pruning. §18's ×2–3.5 on the 100-customer half-ratio
+classes is reproduced (3.46 in total over the 21 `Random-100-50` instances)
+and split 1.67 close / 2.73 order.
+
+**The candidate composition at 41–100.** `bm-first` was then run on the
+same 6,897 instances (10 more minutes). It is sound on every settled call
+here too, censored on 31 against `fixed`'s 38 (it settles seven of the
+`n75_m150` density-2 refutations `fixed` does not, and `fixed` settles one it
+does not), and it *recovers a third of the fix's node cost*: over the 3,452
+refutations every variant settled it visits 0.854× today's nodes (1.32× the
+pre-fix, against 1.54×), fewer on 2,144 instances and more on 1,115, median
+0.989, p10–p90 0.95–1.08, max 1.94. The saving is where the cost is — 0.84
+at n = 75 (1.02 / 1.06 at 50 / 60), 0.79 at d = 2 and 0.88 at d = 3, 0.82 at
+m = 2n against 0.98 at m = n/2, 0.87 over the corpus and 0.85 on the 21
+`Random-100-50` instances — with the exception of the 100-customer ridge
+cell, where it costs 1.16 (median 1.13), and `Random-100-100-2-4_0` itself,
+where it is censored at 600 s alongside `fixed` (≥ 1.80 G nodes). In seconds
+it is a wash: 2,123 against 2,163 (0.98), because it is slower per node
+(1.50 against 1.73 M nodes/s) — the better-move pass now runs over the full
+candidate list and the subset loop carries a citation check that this
+implementation has not tuned. So the pre-fix order does hold value at scale
+that the subset-first order forgoes, and it can be had soundly; what it
+cannot be had for, in this implementation, is less wall-clock.
+
+**Size range.** Soundness and cost of every variant at 9–40 customers over
+17,527 instances × 10 labellings (all three collections' sparse instances
+and the campaign's); refutation cost only, identity labelling only, at
+50–100 on the campaign and 41–100 on the corpus, 3,566 instances with Theorem 2 on, 3,452 of them settled by every variant, 27 + 10 censored under today's rule at 60 / 120 s. Nothing
+here is evidence about 125 × 125 except through §16's rate law; the five
+125 × 125 recertify counts remain pre-fix numbers.
+
+**Recommendation, stated and not applied.** Keep today's rule. Both changes
+of the fix are necessary for soundness at n ≤ 40 — Bug A alone gives 1
+false refutation, Bug B alone 36, both 56 — so there is no cheaper *sound*
+variant among the reverts, and the one sound alternative composition
+(`bm-first`) is 2% dearer at n ≤ 40, 15% cheaper in nodes at 41–100 and even in seconds, so it is a candidate to *tune and re-measure*, not to adopt: the measurement that decides it is seconds on the two day-long 125 × 125 classes after the citation check is moved out of the subset loop, and it is proposed here as such. The close-count
+correction is essentially free (1.1%) and should never be revisited; the
+6.4% at n ≤ 40 and 48% at 41–100 that the reordering costs is the price of
+acyclic coverings, and the way to lower it is not to move the rules but to
+make better move cheaper per node (`reports/inner_loop.md`) or to find a
+third rule. The five flags stay as they are: measured, default off,
+unsound where labelled so.
+
+**Kill criterion.** The plan states none for this item. Two things it did
+say are settled: which change carries the cost (the reordering — 81% of
+the log-cost at n ≤ 40 and the larger share of total nodes at 41–100, where
+the close count has grown to a comparable per-instance share), and whether
+a cheaper sound variant exists (no, among the four reverts; and the one
+further sound composition tried is dearer). One earlier statement is
+corrected: `reports/better_move_bug.md` §7's "this alone is the 10 × 13
+minimal instance" holds for the campaign instance it was cut from and not
+for the minimal instance, which needs both bugs.

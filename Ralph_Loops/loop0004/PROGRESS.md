@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 3/13 SOLVED
+- **Current**: 4/13 SOLVED
 
 ---
 
@@ -212,3 +212,73 @@
 - Item 04 · Q1a: which of the `better_move` fix's two changes carries its cost,
   behind flags, through the differential harness at n ≤ 40 and paired in
   nodes at 50–100.
+
+## Iteration 4 — 2026-09-27 19:35
+
+### Completed
+- **Item 04 · Q1a, which change of the `better_move` fix carries its cost — SOLVED.**
+  `reports/ml_nature.md` §31; tables in `reports/fix_cost_tables.md`; data
+  `learning/data/ensemble/fix_cost_harness.csv.gz` (876,350 rows) and
+  `fix_cost_scale.csv` (34,485 rows).
+- Flags: C `cs_decide_variant` (new entry point; `cs_decide` and `cs_decide_fan`
+  keep their signatures and pass variant 0), bits `BM_OLD_CLOSE_COUNT`,
+  `BM_OLD_RULE_ORDER`, `BM_SUBSET_RESTRICTED`; Python `old_close_count`,
+  `old_rule_order`, `subset_after_better_move` on `decide_native` and through
+  `decide`'s kwargs. All default off; the default path is byte-for-byte the old
+  library (10,248 calls against the pre-change `.so`, same status/nodes/witness).
+  The filter is refactored into `subset_pass` / `better_move_pass` helpers with
+  the bodies verbatim.
+- Reproduction: `prefix` gives §15's 56 instances / 88 false answers exactly,
+  the bug report's 6,101,183 → 6,544,638 totals, §14's 93.1 M nodes / 37 s on
+  `Random-100-100-2-4_0` (93,127,027 in 38.8 s), and the pre-fix `nodes_csearch`
+  of `results.csv` (60/60 sampled) and `results_upward.csv` (3,334 of 3,348).
+- Soundness at n ≤ 40 (17,527 instances × 10 labellings × 2 calls per variant):
+  `fixed` 0, `old-close` 1 instance / 3 false `unsat` at the optimum, `old-order`
+  36 / 61, `prefix` 56 / 88. **Both changes are necessary**; no revert is a
+  candidate. Correction to `better_move_bug.md` §7: the 10 × 13 minimal instance
+  needs both bugs (the campaign instance it came from falls to Bug B alone).
+- Cost at n ≤ 40 (17,521 identity refutations): fix 1.073 total nodes; close
+  count 1.011, reordering 1.064; log-cost shares 23% / 81% / −4% interaction;
+  seconds 1.10. At 41–100 (3,452 refutations all variants settled, Theorem 2 on):
+  fix 1.54 (median 1.08, p90 1.59), close 1.06, order 1.48; seconds 1.30 (the
+  fixed order is faster per node, 1.73 vs 1.45 M/s); per-instance log shares
+  54% / 59% / −14% — the close count grows with size (changes 89% of counts vs
+  13% below 40) and dominates on half-ratio and SCOOP instances. The fix censors
+  10 more at 75 (60 s) and 1 more at 100. §18's ×2–3.5 reproduced on
+  `Random-100-50-*` (3.46 = 1.67 close × 2.73 order); the ridge instance is
+  2.26× close, ≥ 8.7× order, ≥ 19.6× in all.
+- A fifth, non-revert variant `bm-first` (better move first, subset rule citing
+  nothing better move discarded): sound on all 350,540 harness calls and every
+  settled scale call; +2% nodes at n ≤ 40, **0.854× nodes at 41–100** (0.79 at
+  d = 2, 0.84 at n = 75, 0.87 corpus), 1.16 on the 100-customer ridge cell,
+  even in seconds (0.98; slower per node, 1.50 M/s). Censored 31 vs 38.
+- **Recommendation, stated, not applied**: keep today's rule; the reordering is
+  the cost and it is the price of acyclic coverings; `bm-first` is a candidate
+  to tune (move the citation check out of the subset loop) and re-measure in
+  seconds on the 125 × 125 density-2/4 classes, not to adopt.
+- Tests: `tests/test_fix_cost.py` (8) — default byte-for-byte incl. old entry
+  points, recorded `nodes_default` and pre-fix `nodes_csearch` reproduced, flags
+  no-ops without `better_move`, documented statuses on both minimal instances
+  for all five variants, `bm-first` never changes a status vs the Python
+  reference, harness rows / soundness table on the 10 × 13, ratio arithmetic.
+  Full suite 1,138 passed, 2 skipped, 1 xfailed in 86 s, re-run after the last
+  code edit.
+  `solutions/` untouched; recertify (13 workers) untouched.
+
+### Blockers
+- None. The acceptance criterion "each flag never changes a `decide` status on
+  the drawn instances" cannot hold literally for flags whose purpose is to
+  revert a soundness fix; the test asserts the documented statuses instead
+  (`prefix` refutes both minimal instances, `old-close` the 17 × 9, `old-order`
+  neither) and the never-changes invariant for the one sound flag, `bm-first`.
+- Censoring: 60 s at 75 leaves 27 (fixed) / 17 (prefix) refutations as lower
+  bounds; 120 s at 100 leaves 9–10; the paired tables are on the settled pairs
+  and say so. Random-100-100-2-4_0 is censored at 600 s under `fixed`,
+  `old-close` and `bm-first`.
+- Compute: harness 53 s + 35 s, scale 27 + 10 min, all on 14 workers beside 13
+  recertify workers; seconds are from a loaded machine, ratios are the claim.
+
+### Next
+- Item 05 · Q1b: a proof object for the customer search — certificate format,
+  emitter on the Python search, independent checker, tested at n ≤ 20 against
+  the DRAT and lattice verdicts.

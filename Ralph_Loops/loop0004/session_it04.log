@@ -1,0 +1,159 @@
+# session it04 started 2026-09-27 18:40:38
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the bug report, and the C search code this item hinges on.
+  > $ date && pgrep -af benchmarks.recertify | head; nproc; sed -n 1,200p reports/ml_nature_plan_3.md
+  > $ pgrep -f "python.*benchmarks.recertify" | wc -l; uptime; grep -n "04 · Q1a\|^## \|^### " reports/ml_nature_plan_3.md | head -60
+  > $ sed -n 13,75p reports/ml_nature_plan_3.md; echo ----; pgrep -af "benchmarks.recertify" | grep -v bash | head -3; ps -eo pid,pcpu,etime,args | grep -c "[r]ecerti
+  > $ grep -n "^## \|^### " reports/better_move_bug.md; echo ----; awk '/^## 7/,0' reports/better_move_bug.md
+  > $ wc -l satisfiability/customer_search.c satisfiability/customer_search.py satisfiability/native.py learning/differential.py learning/relabel_portfolio.py && grep
+  > $ sed -n 90,135p satisfiability/customer_search.c && sed -n 126,345p satisfiability/customer_search.c && sed -n 455,527p satisfiability/customer_search.c
+
+I'm now reading the Python side of the search, the native loader, the differential harness and §15/§18 of the report before designing the flags.
+  > $ cat satisfiability/native.py
+  > $ sed -n 355,455p satisfiability/customer_search.c
+  > $ git show 0eb33915 --stat | head -20; git show 0eb33915 -- satisfiability/customer_search.c | head -250
+  > $ grep -n "def \|FAN_ORDERS\|better_move\|old_move\|memo\b" satisfiability/customer_search.py | head -80; echo ======; sed -n '/^def decide(/,/^    """/p' satisfi
+  > $ sed -n 190,232p satisfiability/customer_search.py; echo ======SOLVE; sed -n '/^def solve(/,/^    """/p' satisfiability/customer_search.py; grep -n "better_move\
+  > $ grep -n "def \|CONFIG\|better_move\|argparse\|add_argument\|stage" learning/differential.py | head -90
+
+Still reading the harness internals and the data I'll pair against; then I'll design the C flag.
+  > $ sed -n 100,230p learning/differential.py; echo =====RUN; sed -n 299,410p learning/differential.py
+  > $ grep -n "CONFIGS\|def refutation_kwargs" -A 14 learning/node_counts.py | sed -n 1,60p; echo =====VERDICT; sed -n 255,298p learning/differential.py; echo =====RE
+  > $ grep -n "^RELABELLINGS\|^ORACLE_MAX\|^RESULTS_CSV\|^ROWS_CSV\|^SUMMARY_CSV\|^PARTIAL_CSV\|^TABLES\|^DEFAULT_" learning/differential.py; ls -la --time-style=full
+  > $ sed -n 1,60p tests/test_fan_order.py; sed -n 115,200p tests/test_fan_order.py; echo ====T2; grep -n "def test\|MINIMAL\|17.*9\|10.*13" tests/test_theorem2.py te
+  > $ sed -n 140,200p tests/test_native.py; echo ====; sed -n 660,700p learning/differential.py; grep -n "MINIMAL\|minimal" tests/*.py | head; grep -n "FAN_ORDERS\s*=
+  > $ sed -n 237,320p tests/test_customer_search.py
+  > $ date && python - <<'EOF'
+import re
+p="satisfiability/customer_search.c"
+s=open(p).read()
+
+# 1. constants
+s=s.replace("""#define FAN_ORDER_INDEX  0
+#define FAN_O
+  > $ sed -n 125,175p satisfiability/customer_search.c; echo .....; grep -n "return count;\|^static int\|^int cs_\|count_finished\|if (kept) count = kept" satisfiabil
+  > $ cp satisfiability/_customer_search.so /tmp/cs_old.so && python - <<'EOF'
+p="satisfiability/customer_search.c"
+s=open(p).read()
+s=s.replace("""                  
+  > $ grep -n "kwargs" satisfiability/customer_search.py; sed -n 210,222p satisfiability/customer_search.py; python - <<'EOF'
+import ctypes, random, time
+from satisfi
+  > $ python - <<'EOF'
+import sys; sys.path.insert(0,"tests")
+from test_customer_search import MINIMAL_10x13, MINIMAL_17x9
+from mosp.instance import MOSPInstance
+from
+  > $ sed -n 1,60p learning/sat_story.py | head -80; grep -n "def main\|add_argument\|--wall" learning/sat_story.py | head -30; python -c "
+import sys; sys.path.inser
+  > Write /home/al/dev/MOSP/learning/fix_cost.py
+  > $ date && timeout 600 python -m learning.fix_cost --stage harness --limit 60 --workers 8 --harness-csv /tmp/fc_h.csv.gz --out /tmp/fc_tables.md 2>&1 | tail -5 && 
+  > $ python - <<'EOF'
+p="learning/fix_cost.py"; s=open(p).read()
+s=s.replace("""        # the satisfiable side
+        wide_hi = _paired(ident, "nodes_hi", "status_h
+  > $ mkdir -p learning/data && nohup python -m learning.fix_cost --stage harness --workers 14 --out /tmp/fc_tables_h.md > learning/data/fix_cost_harness_run.log 2>&1
+
+The harness is running fast. While it runs I'll write the tests for the flags and the study module.
+  > Write /home/al/dev/MOSP/tests/test_fix_cost.py
+  > $ tail -3 learning/data/fix_cost_harness_run.log; ls tests/__init__.py 2>/dev/null; grep -n "^from tests\|^    from tests\|import test_" tests/*.py | head -3; tim
+  > $ sed -i 's/    wide = pd.DataFrame({"fixed": \[9, 19, 99\], "old-close": \[9, 9, 99\],/    wide = pd.DataFrame({"fixed": [9, 19, 99], "old-close": [4, 9, 49],/' 
+  > $ nohup python -m learning.fix_cost --stage scale --workers 14 --deadline 60 --corpus-deadline 120 --wall 2700 --out /tmp/fc_tables_s.md > learning/data/fix_cost_
+  > $ sed -n 1,80p /tmp/fc_tables_h.md | cut -c1-400
+  > $ sed -n 80,125p /tmp/fc_tables_h.md | cut -c1-600; echo; tail -3 learning/data/fix_cost_scale_run.log
+  > $ python - <<'EOF'
+p="satisfiability/customer_search.c"; s=open(p).read()
+s=s.replace("""#define BM_OLD_CLOSE_COUNT 1   /* count customers r finishes alone as sta
+  > $ ps -o pid,pcpu,etime,args --ppid 2088844 | head -4; wc -l learning/data/ensemble/fix_cost_scale.csv 2>/dev/null; nohup python -m learning.fix_cost --stage harne
+  > $ ps -o pid,lstart,etime,pcpu,args --ppid 2088844 | head -20; ps -o pid,lstart,etime,args -p 2088844; wc -l learning/data/ensemble/fix_cost_scale.csv 2>/dev/null;
+  > $ date; sed -n '/## Soundness/,/### False answers by variant/p' /tmp/fc_tables_h2.md | cut -c1-300; sed -n '/## Refutation cost at n/,/### By size band/p' /tmp/fc
+  > $ python - <<'EOF'
+p="tests/test_fix_cost.py"; s=open(p).read()
+s=s.replace('''FLAGS = ({}, {"old_close_count": True}, {"old_rule_order": True},
+         {"old_cl
+
+Next I need the 41–100 stage to finish, the full test suite run, and the seconds-beside-nodes figures from the harness; launching the suite and computing the seconds now while the scale stage runs.
+  > $ nohup python -m pytest tests/ -q -x > /tmp/pytest_full.log 2>&1 &
+python - <<'EOF'
+import pandas as pd, numpy as np
+r=pd.read_csv("learning/data/ensemble/fix_co
+  > $ sleep 240; tail -2 learning/data/fix_cost_scale_run.log; wc -l learning/data/ensemble/fix_cost_scale.csv 2>/dev/null; tail -2 /tmp/pytest_full.log; date
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -qE "^scale: [0-9]+ calls in|Traceback|Error" learning/data/fix_cost_scale_run.log; do sleep 15; done; tail -4 learning/data/fix_cost_scale_run.log; 
+  > $ until grep -qE "passed|failed|error" /tmp/pytest_full.log; do sleep 10; done; tail -3 /tmp/pytest_full.log
+  > $ tail -2 learning/data/fix_cost_scale_run.log; wc -l learning/data/ensemble/fix_cost_scale.csv 2>/dev/null; date; python - <<'EOF'
+import pandas as pd
+try:
+    s
+
+While the 41–100 stage and the test suite run, I'm drafting the report section with the n ≤ 40 results, leaving the 41–100 tables to fill in when the stage finishes.
+  > Write /tmp/section31_draft.md
+  > $ tail -1 learning/data/fix_cost_scale_run.log; wc -l learning/data/ensemble/fix_cost_scale.csv 2>/dev/null; tail -1 /tmp/pytest_full.log | cut -c1-200; date
+  > $ python -m learning.fix_cost --stage tables --harness-csv /tmp/none.csv.gz --out /tmp/fc_tables_s_interim.md 2>&1 | tail -2 && sed -n '/## Refutation cost at 41/
+  > $ python - <<'EOF'
+p="learning/fix_cost.py"; s=open(p).read()
+s=s.replace("""def scale_targets(upward_csv: Path = UPWARD_CSV, min_customers: int = 41,
+           
+  > $ grep -n "^### \|^## " /tmp/fc_tables_s_interim.md | tail -8; python - <<'EOF'
+import pandas as pd
+s=pd.read_csv("learning/data/ensemble/fix_cost_scale.csv")
+pri
+  > $ until grep -qE "^scale: [0-9]+ calls in|Traceback" learning/data/fix_cost_scale_run.log; do sleep 10; done; tail -3 learning/data/fix_cost_scale_run.log; date
+
+Still waiting on the last calls of the 41–100 stage (the 100-customer campaign cell and censored corpus calls run to their deadlines). Checking progress.
+  > $ tail -2 learning/data/fix_cost_scale_run.log; wc -l learning/data/ensemble/fix_cost_scale.csv; ps --ppid 2088844 -o pid,pcpu,etime | wc -l; date
+  > $ until grep -qE "^scale: [0-9]+ calls in|Traceback" learning/data/fix_cost_scale_run.log; do sleep 10; done; tail -3 learning/data/fix_cost_scale_run.log; date
+  > $ nohup python -m learning.fix_cost --stage scale --workers 14 --deadline 60 --corpus-deadline 120 --variants bm-first --wall 1500 --out /tmp/fc_tables_s2.md > le
+  > $ sed -n '/### Censored on some variant/,$p' /tmp/fc_tables_s.md | cut -c1-300; python - <<'EOF'
+import pandas as pd, numpy as np
+s=pd.read_csv("learning/data/ens
+  > $ tail -1 learning/data/fix_cost_scale_bmfirst_run.log; python - <<'EOF'
+import pandas as pd, numpy as np
+s=pd.read_csv("learning/data/ensemble/fix_cost_scale.csv
+  > $ tail -1 learning/data/fix_cost_scale_bmfirst_run.log; date
+
+The bm-first pass at 41–100 is under way (started 19:18, roughly 8 minutes). I'll arm a wait on it and write the final report section in the meantime.
+  > $ until grep -qE "^scale: [0-9]+ calls in|Traceback" learning/data/fix_cost_scale_bmfirst_run.log; do sleep 10; done; tail -2 learning/data/fix_cost_scale_bmfirst
+  > $ python - <<'EOF'
+p="/tmp/section31_draft.md"; s=open(p).read()
+s=s.replace("{{SCALE_MIN}} min on 14 workers beside 13 recertify workers","27 min on 14 workers b
+  > $ until grep -qE "^scale: [0-9]+ calls in|Traceback" learning/data/fix_cost_scale_bmfirst_run.log; do sleep 10; done; tail -2 learning/data/fix_cost_scale_bmfirst
+  > $ nohup python -m pytest tests/ -q -x > /tmp/pytest_full2.log 2>&1 &
+python -m learning.fix_cost --stage tables 2>&1 | tail -1; ls -la reports/fix_cost_tables.md 
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+s=pd.read_csv("learning/data/ensemble/fix_cost_scale.csv")
+s=s[s.better_move.astype(bool)]
+st=s.pivot_table(in
+  > $ python - <<'EOF'
+p="/tmp/section31_draft.md"; s=open(p).read()
+s=s.replace("{{BMFIRST_MIN}} min","10 min")
+para = """**The candidate composition at 41–100.** `b
+
+Writing the PROGRESS.md entry and marking the item, and checking the final test run.
+  > $ sed -i 's/^- \[ \] 04 · Q1a/- [x] 04 · Q1a/' Ralph_Loops/loop0004/iterations.md && sed -i 's/^- \*\*Current\*\*: 3\/13 SOLVED/- **Current**: 4\/13 SOLVED/' Ralp
+  > $ until grep -qE "passed|failed|error" /tmp/pytest_full2.log; do sleep 5; done; tail -1 /tmp/pytest_full2.log | cut -c1-140; ls learning/data/ | grep fix_cost; du
+  > $ python - <<'EOF'
+p="Ralph_Loops/loop0004/PROGRESS.md"; s=open(p).read()
+s=s.replace("""  Full suite 1,138 passed, 2 skipped, 1 xfailed (113 s, loaded machine) b
+
+Item 04 is solved and written up. Nine items remain unchecked, so no LOOP_COMPLETE line.
+
+**What was built.** The two changes of the 2026-09-26 `better_move` fix are now separately revertable behind flags that default off: a new C entry point `cs_decide_variant` with variant bits, wired through `decide_native` and `decide` as `old_close_count`, `old_rule_order` and `subset_after_better_move`. The old entry points keep their signatures. The default path is byte-identical to the previous library on 10,248 calls. `learning/fix_cost.py` runs the four variants (plus one candidate) through the differential harness at n ≤ 40 and pairs refutation nodes at 41–100.
+
+**Reproduction.** The pre-fix variant reproduces every recorded pre-fix number exactly: §15's 56 instances / 88 false answers, the bug report's node totals, `Random-100-100-2-4_0` at 93,127,027 nodes in 38.8 s, and the recorded `nodes_csearch` in both campaign files.
+
+**Findings** (`reports/ml_nature.md` §31, tables in `reports/fix_cost_tables.md`):
+- Both changes are necessary for soundness. Reverting the close count alone gives 1 false refutation at n ≤ 40, reverting the rule order alone gives 36, both together 56. No revert is a candidate.
+- At n ≤ 40 the reordering carries the cost: 81% of the log-cost, 6.4% of total nodes, against 1.1% for the close count.
+- At 41–100 the fix costs 1.54× nodes and 1.30× seconds. The reordering still dominates total nodes (1.48 against 1.06), but per instance the two are comparable, and the close count is the larger on half-ratio and SCOOP instances. The ridge instance splits as 2.26× close, ≥ 8.7× order.
+- One correction to the bug report: the 10 × 13 minimal instance needs both bugs, not the cycle alone.
+- A fifth, non-revert composition (`bm-first`: better move first, subset rule barred from citing what it discarded) is sound on every call measured, 2% dearer at n ≤ 40, 15% cheaper in nodes at 41–100, and even in seconds because it is slower per node.
+
+**Recommendation, stated and not applied.** Keep today's rule. `bm-first` is worth tuning and re-timing on the 125 × 125 density-2/4 classes before any decision.
+
+**Bookkeeping.** Full suite 1,138 passed, 2 skipped, 1 xfailed in 86 s after the last edit. `tests/test_fix_cost.py` adds 8 tests. PROGRESS.md has the iteration entry with the note that the literal "flag never changes a status" criterion cannot hold for deliberate reverts, and what the tests assert instead. `iterations.md` marks 04 done. Nothing written to `solutions/`; recertify untouched; nothing committed.
+
+# result: success in 3030s, 67 turns, cost $18.90
