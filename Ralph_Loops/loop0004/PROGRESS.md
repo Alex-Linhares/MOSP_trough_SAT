@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 4/13 SOLVED
+- **Current**: 5/13 SOLVED
 
 ---
 
@@ -282,3 +282,87 @@
 - Item 05 · Q1b: a proof object for the customer search — certificate format,
   emitter on the Python search, independent checker, tested at n ≤ 20 against
   the DRAT and lattice verdicts.
+
+## Iteration 5 — 2026-09-27 20:05
+
+### Completed
+- **Item 05 · Q1b, a proof object for the customer search — SOLVED.**
+  `reports/ml_nature.md` §32; tables in `reports/search_certificate_tables.md`;
+  data `learning/data/ensemble/search_certificate.csv` (18,707 rows, one per
+  instance × configuration, 9–75 customers; certificates not stored, they
+  regenerate in milliseconds).
+- `learning/search_certificate.py`: the format (one record per node: move,
+  free moves, kind, steps `["definite", q]` / `["subset", r, d]` /
+  `["better", r, q]`, children; state, cost cut and Theorem 3 recomputed by
+  the checker from the path), the emitter (`decide(native=False)` with
+  witnesses, plus a Python port of the C's fixed `better_move` so Theorem 2
+  steps can be certified at all; reverts `old_close_count` / `old_rule_order`
+  for the tests), the independent checker (`check`: neighbourhoods from the
+  matrix, premises recomputed, exhaustiveness with covering chains that must
+  end at a child or in Q(S), no cycles, memo only without old move), and the
+  corpus study (stages `run` / `tables` / `one`).
+- Fidelity: the emitter equals `decide(native=False)` in status and branches
+  at every k on four configurations (1,060 refutations) and equals the C under
+  `csearch` (1,000 refutations, 170 Theorem 2 steps). On the corpus at n ≤ 40
+  the branch counts equal the C's recorded counts on 5,221 / 5,205 of 6,135
+  (`default` / `csearch`) and **every remaining difference (914 / 930) equals
+  the C run with `memo=False`**: the certificate tree is the C's tree without
+  the memo, which saves the C 40% of nodes there and is exactly the part that
+  is not locally checkable under old move.
+- Result at 9–40: **all 6,135 certified corpus instances refuted and every
+  certificate verified under all three configurations** (`default`, `csearch`,
+  `memo`), 0 rejections, 0 unknown; agrees with §17's 5,646 DRAT verdicts and
+  covers the 489 DRAT censored; lattice oracle 2,812 / 2,812. 25,567 Theorem 2
+  steps certified under `csearch`. Size ~60 bytes per branch uncompressed,
+  325–750 B gzipped at the median per band, 388 KB max; check 14.8 µs per
+  node, 0.62× emit time; whole corpus at n ≤ 40 is 5.0 MB gzipped and checks
+  in 4.5 s. Against DRAT on the 5,646 with both: 13–13,700× smaller gzipped,
+  800–10,000× faster to check (3.2 MB / 2.1 s vs 11.7 GB / 5,190 s) — with
+  the stated difference in trust base (three dominance theorems in the
+  free-move cost model vs resolution + the encoding).
+- At 41–75 (151 instances, Python emitter, 60 s): 141 refuted and verified
+  under both configurations, 10 censored, all at 75 customers (SP3 twice,
+  eight Random-75-75); max verified certificate 977,956 nodes / 10.1 MB gz,
+  check 24 s; 211,737 Theorem 2 steps.
+- Both shipped bugs reproduced and rejected for the right reason: the 17 × 9
+  under the old close count fails a `better` premise at the root; the
+  campaign instance `ens_f_n10_m20_d2_i070` under the old rule order (Bug B
+  alone, from item 04's harness) is rejected as *covering cycle through
+  [6, 9]* with every premise true. Corruptions (dropped child, forged
+  dominator, swapped Theorem 2 roles, raised k, sat leaf, wrong instance,
+  redirected memo) all rejected.
+- **Kill verdict: not met at the step; the finding is where the locality
+  ends.** A Theorem 2 step's premise is a function of (N, S, O(S), k, r, q)
+  and is checked from the instance and the state alone; what is not
+  step-local is termination of the covering chain, a property of the node's
+  whole step set (the 2026-09-26 cycle is exactly that). Theorem 3 is
+  path-local; the memo is state-local only without Theorem 3 — with both, as
+  the C runs them, a cited refutation belongs to its path and checking it is
+  a replay, not a lookup. Table of rules × what each needs in §32.
+- Proposed, not applied: a C emitter behind a flag; Lean statements of the
+  three theorems in the free-move cost model (the one trusted step left);
+  `recertify` emitting and checking certificates.
+- Tests: `tests/test_search_certificate.py` (15) — hand 4-cycle, 17 × 9
+  shape, emitter = reference on 4 configurations, emitter = C with Theorem 2,
+  memo references emitted/checked/redirect rejected, memo+old move refused,
+  Bug A rejected at a `better` premise, Bug B rejected as a cycle, both bugs
+  on the 10 × 13, corruptions, brute-force agreement, row/table plumbing.
+  Full suite 1,153 passed, 2 skipped, 1 xfailed in 100 s, re-run after the
+  last code edit. `solutions/` untouched.
+
+### Blockers
+- None. The first 41–75 run stalled on two 75-customer emits because the
+  deadline was checked every 4,096 branches and Theorem 2 nodes there cost
+  ~0.1 s each; stopped by PID, the emitter now checks every 256 branches and
+  the pool dispatches one job at a time; the run resumed from its CSV.
+  Killing pool workers before their parent made the Pool respawn
+  replacements that were orphaned to systemd — kill the parent first.
+- `pgrep -f benchmarks.recertify` matches this session's own prompt text; no
+  recertify Python process was actually running during this iteration.
+- Nothing at or above 100 customers was emitted; the certificate at 125 × 125
+  would be the 10¹¹-node tree itself (§32 says so).
+
+### Next
+- Item 06 · Q1c: the differential harness at 50–100 under a budget — four
+  relabellings, both configurations, both k, campaign 50–75 and corpus
+  50–100, 300 s per call, ≤ 8 core-hours; censored calls are lower bounds.

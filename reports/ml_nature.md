@@ -8464,3 +8464,253 @@ further sound composition tried is dearer). One earlier statement is
 corrected: `reports/better_move_bug.md` §7's "this alone is the 10 × 13
 minimal instance" holds for the campaign instance it was cut from and not
 for the minimal instance, which needs both bugs.
+
+## 32. A proof object for the customer search: the search certificate (plan 3 §1 Q1b, loop0004 item 05)
+
+*loop0004 iteration 5, 2026-09-27. Code: `learning/search_certificate.py`
+(the format, the emitter, the independent checker, the corpus study);
+tests `tests/test_search_certificate.py` (15). Regenerate:*
+
+```bash
+python -m learning.search_certificate --stage run --max-customers 20 --workers 16                                   # 4,122 instances × 3 configurations: 15 s on 16 workers
+python -m learning.search_certificate --stage run --min-customers 21 --max-customers 40 --workers 16 --deadline 60  # 2,013 more: 6 s
+python -m learning.search_certificate --stage run --min-customers 41 --max-customers 75 --workers 16 --deadline 60 --configs default,csearch   # 151 more, Python emitter, 60 s per call
+python -m learning.search_certificate --stage tables                                                                # reports/search_certificate_tables.md
+python -m learning.search_certificate --stage one --instance "Warwick 877: balanced orders, 4 orders per product" --k 7 --configs default,csearch --save /tmp/w877.json.gz   # optimum 8: emit, check, print sizes
+python -m pytest tests/test_search_certificate.py -q
+```
+
+*Writes `learning/data/ensemble/search_certificate.csv` (one row per instance
+× configuration: status, branches, steps by rule, bytes raw and gzipped, emit
+and check seconds, the checker's verdict; joined at table time with §17's DRAT
+verdict and the lattice oracle) and `reports/search_certificate_tables.md`.
+The certificates themselves are not stored — every one regenerates in
+milliseconds from the instance. Nothing under `solutions/`; no solver default
+touched; nothing here decides `k` for anything.*
+
+**Question.** Every certified optimum above the reach of §17's DRAT proofs
+rests on the customer search's refutation of `optimum − 1`, and a refutation
+from that search has so far been a bare `unsat`: its soundness is the
+soundness of three dominance rules and their composition, and two of those
+were wrong for months while every audit passed, because every audit checks
+that a value is *achievable* (`reports/better_move_bug.md`). What would a
+proof object for such a refutation be — one a third party checks from the
+instance and the object, trusting neither the search nor its author — how
+large is it, how long does it take to check, and can every rule's steps be
+checked *locally*, from the instance and the state at the node? The plan's
+kill criterion is specific: if a Theorem 2 step cannot be checked from the
+instance and the state alone, say precisely why.
+
+**The certificate.** A refutation is a tree of search nodes; the certificate
+is that tree with every pruning decision named. One record per node, in
+visiting order: the customer whose closing reached it, the free moves it
+closed, its kind (`refuted`, or `memo` citing an earlier node with the same
+closed set), its pruning steps and its children. A step is `["definite", q]`
+(Theorem 1: `q` keeps, every other candidate goes), `["subset", r, d]` (`r`
+goes, `d` dominates it) or `["better", r, q]` (Theorem 2: `r` goes, `q`
+covers it). The cost cut and Theorem 3 record nothing, and neither does the
+state: the checker recomputes every candidate's cost from the state, derives
+the closed and opened sets from the path, and maintains `Q(S)` — the moves an
+ancestor already searched — from the path with the reinsertion test the search
+makes at each descent. A certificate is therefore the tree and the witnesses
+and nothing else: **about 60 bytes per branch uncompressed** at 26–40
+customers, 325–750 bytes gzipped at the median in every band to 40, 388 KB at
+the largest (38,777 nodes).
+
+**The checker** (`check`) shares no code with the search — its neighbourhoods
+come from the matrix, not from `satisfiability.heuristics` — and verifies, at
+every node of the tree, given the state it derived: (1) the listed free moves
+are exactly the remaining customers whose neighbourhood is already opened;
+(2) the node is not a solution; (3) a memo node cites a *completed* refutation
+of the same closed set, and memo is enabled without old move (below); (4)
+every step's premise, recomputed from the instance and the state —
+`close(q,S) ≥ open(q,S)` for Theorem 1; `o(d,S) ⊆ o(r,S)` with the index
+tie-break for the subset rule; for Theorem 2, `S++[q]` and `S++[r,q]` playable
+in the paper's measure and `close(q,S∪{r}) ≥ open(q,S∪{r})` with the
+corrected count of `reports/better_move_bug.md` §7; (5) **exhaustiveness**:
+every candidate with cost ≤ k is a child or is covered, and every chain of
+coverings ends at a child or — under old move — at a customer in `Q(S)`,
+with no cycle; (6) the children, recursively. What it trusts: the three
+theorems in the free-move cost model this search uses, and the cost cut. What
+it does not trust: the search, the emitter, or the C. This is the division a
+DRAT proof makes between resolution and the solver.
+
+**The emitter** (`emit`) is `decide(native=False)`'s search with the witnesses
+recorded, plus a Python port of the C's `better_move` (today's rule: Theorem 1,
+the subset rule over the remaining customers, Theorem 2 last over the subset
+survivors with the corrected close count) — the Python reference never had
+Theorem 2, so without the port no Theorem 2 step could be certified. Two
+reverts, `old_close_count` and `old_rule_order`, reproduce the two 2026-09-26
+bugs for the tests. Fidelity: status and branch count equal `decide(native=False)`
+at every `k` from `optimum − 2` to the optimum under four configurations on
+150 random instances at 2–9 customers (1,060 refutations, all checked), and
+equal the C under `csearch` (`better_move=True`, `better_move_dominators=0`)
+at every `k` on 300 sparse random instances at 6–14 customers (1,000
+refutations, 170 Theorem 2 steps, all checked); `tests/test_search_certificate.py`
+repeats both on 40 and 60 instances. On the corpus, the emitter's
+branch counts equal the C's recorded counts (`learning/data/node_counts.csv`)
+on 5,221 of 6,135 instances under `default` and 5,205 under `csearch`; **every
+one of the remaining 914 and 930 equals the C run with `memo=False`**, so the
+certificate tree is the C's tree without the memo, node for node. The memo,
+which the C runs beside old move as Chu & Stuckey do and the Python reference
+refuses, saves the C 40% of its nodes at n ≤ 40 in total (sum ratio 1.68
+under `default`, 1.60 under `csearch`; up to 6.1× and 28.8× on one instance
+each) — and it is exactly the part of the C's refutation that the certificate
+cannot carry (below).
+
+**Results, the corpus at 9–40 customers.** Every certified corpus instance with
+`optimum ≥ 2` (6,135; 4,122 of them at ≤ 20), emitted at `optimum − 1` under
+three configurations — `default` (Theorem 1, subset rule, Theorem 3; the
+Python reference), `csearch` (the same with Theorem 2 where
+`sparse_enough_for_better_move`, every candidate a dominator; the configuration
+that certified the corpus) and `memo` (Theorem 1, subset rule, memo, no
+Theorem 3; the one configuration whose memo references the checker accepts) —
+then checked from a JSON round trip:
+
+| configuration | instances | refuted | unknown | certificates verified | rejected | DRAT verified (§17) | certificate where DRAT is censored | lattice oracle (n_active ≤ 15) agrees |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|
+| `default` | 6,135 | 6,135 | 0 | **6,135** | 0 | 5,646 | 489 | 2,812 / 2,812 |
+| `csearch` | 6,135 | 6,135 | 0 | **6,135** | 0 | 5,646 | 489 | 2,812 / 2,812 |
+| `memo` | 6,135 | 6,135 | 0 | **6,135** | 0 | 5,646 | 489 | 2,812 / 2,812 |
+
+**Every refutation at n ≤ 40 now carries a checked certificate**, in all three
+configurations; the 489 instances at 36–40 whose DRAT proof the conflict budget
+censored have one too. All 6,135 certificate verdicts agree with §17's 5,646
+DRAT verdicts and with the lattice oracle's 2,812. The steps certified: under
+`csearch`, 299,181 branches, 305,316 nodes, 159,616 steps — 64,071 Theorem 1,
+69,978 subset, **25,567 Theorem 2**, and 47,803 free moves; 4,044 of the 6,135
+refutations have no step at all (the cost cut alone) and 2,360 no branch (the
+root refutes). Under `memo`, 172,404 memo references.
+
+**Size and check time by band** (`csearch`; `reports/search_certificate_tables.md`
+has all three):
+
+| band | instances | nodes median / p90 / max | steps median / max | gz bytes median / max | check ms median / p90 / max |
+|:--|--:|:--|:--|:--|:--|
+| 9–10 | 1,614 | 1 / 5 / 14 | 0 / 8 | 325 / 498 | 0.05 / 0.09 / 0.48 |
+| 11–15 | 1,198 | 2 / 12 / 48 | 0 / 27 | 338 / 855 | 0.08 / 0.16 / 0.53 |
+| 16–20 | 1,310 | 5 / 29 / 106 | 0 / 56 | 371 / 1,393 | 0.11 / 0.35 / 1.18 |
+| 21–25 | 8 | 35 / 424 / 424 | 29 / 271 | 744 / 4,536 | 0.36 / 3.5 / 3.6 |
+| 26–30 | 1,808 | 8 / 117 / 1,671 | 0 / 1,072 | 404 / 17,023 | 0.19 / 1.4 / 31.8 |
+| 31–35 | 2 | 104 / 161 / 175 | 69 / 104 | 1,450 / 2,119 | 1.1 / 1.6 / 1.7 |
+| 36–40 | 195 | 35 / 3,050 / 38,777 | 3 / 24,403 | 616 / 388,232 | 1.0 / 44 / 534 |
+
+Checking is linear in the tree: 14.8 µs per node and 28 µs per step in pure
+Python, 0.62× the emitter's own time; the whole corpus at n ≤ 40 under
+`csearch` is **5.0 MB gzipped and checks in 4.5 s**. Against §17's DRAT proofs
+on the 5,646 instances that have both (`csearch`; medians of per-instance
+ratios):
+
+| band | both | gz bytes: certificate / DRAT (medians) | DRAT ÷ certificate, gz | check ms: certificate / DRAT | DRAT ÷ certificate, check |
+|:--|--:|:--|--:|:--|--:|
+| 9–10 | 1,605 | 325 / 4,250 | 12.7× | 0.05 / 55 | 1,220× |
+| 11–15 | 1,139 | 329 / 165,000 | 453× | 0.08 / 120 | 1,620× |
+| 16–20 | 1,296 | 370 / 25,300 | 69× | 0.11 / 86 | 1,180× |
+| 26–30 | 1,445 | 413 / 88,900 | 201× | 0.18 / 104 | 791× |
+| 36–40 | 151 | 413 / 8,220,000 | 13,700× | 0.32 / 3,460 | 10,200× |
+
+Totals over the 5,646: certificates 3.2 MB gzipped, 2.1 s to check; DRAT
+proofs 11.7 GB, 5,190 s. The two objects do not prove the same thing from the
+same trust base — the DRAT proof trusts resolution and our encoding's
+correctness, the certificate trusts three dominance theorems in a cost model
+re-derived by hand and checked by brute force (§7 of the bug report, 124 M
+applications, not a proof) — but on the question a corpus artifact has to
+answer, *can a third party check this refutation without our code*, the
+certificate is three to four orders of magnitude cheaper and reaches every
+instance the search reaches.
+
+**The checker against the two bugs that shipped.** Both historical false
+refutations are reproduced by the emitter's reverts and rejected by the
+checker, each for the reason that was the bug: the 17 × 9 minimal instance
+under `old_close_count` is refuted at its optimum of 5 and rejected at the
+root — *better step (2, 1): close(q, S∪{r}) < open(q, S∪{r})* — the premise
+recomputed with the corrected count is false; `ens_f_n10_m20_d2_i070`
+(campaign, identity labelling, one of the 36 instances item 04 found the
+rule-order revert alone refutes) under `old_rule_order` is refuted at its
+optimum of 4 and rejected — *covering cycle through [6, 9]*: the root's steps
+are `["better", 9, 6]` and `["subset", 6, 9]`, **each premise true**, no chain
+ending anywhere. The 10 × 13 instance under both reverts is rejected too.
+Dropping a child, swapping a Theorem 2 step's roles, forging a subset
+dominator, raising `k`, marking a leaf `sat`, presenting the certificate with
+another instance, and redirecting a memo reference are all rejected
+(`test_corruptions_are_rejected`, `test_memo_references_are_emitted_and_checked`).
+
+**Which rule's steps are locally checkable** — the deliverable, and the kill
+criterion's answer:
+
+| rule | premise is a function of | what else the checker needs | recorded |
+|:--|:--|:--|:--|
+| cost cut | instance, state | nothing | nothing; recomputed |
+| free moves | instance, state | nothing | the list, checked equal to the computed set |
+| subset rule | instance, state, `(r, d)` | the chain from `d` ends at a child or in `Q(S)` (node-level) | `(r, d)` |
+| Theorem 1, definite move | instance, state, `q` | `q` is a child (node-level) | `q` |
+| **Theorem 2, better move** | **instance, state, `(r, q)`, `k`** | **the chain from `q` ends at a child or in `Q(S)`, with no cycle (node-level)** | `(r, q)` |
+| Theorem 3, old move | instance, **path**: the ancestor that searched `q` and every move since | the reinsertion test at each descent | nothing; recomputed from the path |
+| memo | instance, state, the cited node | old move **off**; otherwise not checkable without replaying the cited subtree under the new path's `Q` | `memo_of` |
+
+**Kill verdict: not met at the step, and the precise form of what is not local
+is the finding.** A Theorem 2 step's *premise* is checkable from the instance
+and the state alone: every quantity in it — the playability of `S++[q]` and
+of `S++[r,q]` in the paper's measure, `open(q, S∪{r}) = |N[q] ∖ (O(S) ∪ N[r])|`,
+`close(q, S∪{r})` over the customers left with something to open after `r` —
+is a function of `(N, S, O(S), k, r, q)`, and the checker recomputes all of
+it. What is *not* a property of one step is whether it prunes soundly: "`r`
+goes because `q` covers it" is a refutation of `r`'s subtree only if `q`'s
+subtree is searched, or `q` is itself covered by a chain that ends in one that
+is. That is a property of the **node's whole step set**, and it is exactly the
+property the 2026-09-26 cycle violated with every premise true. So the local
+unit for Theorem 2 is the node, not the step: state plus the node's steps, and
+nothing from elsewhere in the tree. Theorem 3 is one degree less local — its
+premise lives on the path — and the memo is local only without Theorem 3: with
+both on, as the C runs them, a refuted state's subtree may rest on `Q` entries
+inherited from ancestors *above the cited node*, so the refutation belongs to
+the path that found it and a second path reaching the same closed set has no
+right to cite it without re-deriving the subtree under its own `Q`. That
+re-derivation is a replay, not a lookup, and would give up the 40% of nodes
+the memo saves the C. The emitter never combines the two; the C's own tree
+is therefore certified as the tree it would have searched *without* the memo,
+which is what the 914 / 930 count differences above are.
+
+**Above 40.** The emitter is Python, about 120× slower than the C; with a
+60 s deadline per call on the 151 certified corpus instances at 41–75 under
+`default` and `csearch`, **141 of the 151 are refuted and verified under both** (all 120 at 41–50,
+the one at 51–60, 20 of the 30 at 61–75); the 10 censored are all at 75
+customers — SP3 under both of its names and eight `Random-75-75-{2,4}-*` — at
+1.2–1.9 M branches when the deadline fell, which is the Python emitter's
+speed (25–30 k branches/s), not the certificate's limit. Verified sizes at
+41–75 (`csearch`): nodes median 1,425, p90 69,971, max 977,956; gzipped
+median 13.5 KB, max 10.1 MB (`default`: 1,139,377 nodes, 11.4 MB); 63 bytes
+per branch uncompressed under both configurations; check time median 31 ms,
+p90 1.3 s, max 24.4 s (`default` 31.1 s), 89 s in total against 134 s of
+emitting, with 211,737 Theorem 2 steps certified. A censored call is a lower
+bound on the tree, never a missing value, and no certificate was written for
+one. Nothing here is evidence about the
+125 × 125 classes: their refutations visit 10¹¹ nodes (§14), and at ~60 bytes
+per branch a certificate would be some 10 TB uncompressed before gzip — the
+tree itself is the object, and at that size the tree is not a shippable
+artifact. The proof problem the plan names stays open there; what this
+section settles is that below it, the object exists, is tiny, checks in
+milliseconds, and would have caught both bugs that the corpus audits missed.
+
+**Proposed, not applied.** (i) An emitter in the C — a trace of
+`(move, free, steps)` per node in the format above — would make the
+certificate available at the sizes that matter, at the cost of the memo under
+old move (or with the memo, as an uncertified speed-up whose omission the
+checker would flag); measured behind a flag, never the default. (ii) A Lean
+statement of the three theorems in the free-move cost model, which is the one
+trusted step the checker leaves — Theorem 2's hypotheses in particular have a
+brute-force pedigree and no proof (`reports/better_move_bug.md` §7). (iii)
+`benchmarks.recertify` could emit and check a certificate for every
+refutation it records, which turns "two configurations agree" into "a third
+party can check". None of these changes an answer; every one changes what
+the answer rests on.
+
+**Size range covered.** Corpus, 9–40 customers, 6,135 certified instances,
+every one refuted and every certificate verified in all three configurations;
+the two-bug reproductions at 10–17 customers; the corpus at 41–75 (151
+instances, 141 certified under both configurations, 10 censored at 75).
+Nothing at or above 100 customers was emitted. The lattice oracle covers only
+`n_active ≤ 15`; the DRAT comparison only the 5,646 instances §17 verified.
+No `benchmarks.recertify` process was found running during this session
+(`pgrep -f benchmarks.recertify` matches the session's own prompt text; the
+Python process is what to look for).

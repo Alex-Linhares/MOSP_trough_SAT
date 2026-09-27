@@ -1,0 +1,10 @@
+4122 instances to certify under ('default', 'csearch', 'memo') on 16 workers
+  500/4122 in 3 s
+  1000/4122 in 5 s
+  1500/4122 in 6 s
+  2000/4122 in 6 s
+  2500/4122 in 8 s
+  3000/4122 in 14 s
+  3500/4122 in 15 s
+  4000/4122 in 15 s
+wrote reports/search_certificate_tables.md

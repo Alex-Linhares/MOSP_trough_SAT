@@ -18,3 +18,8 @@
 [2026-09-27 18:40:38] claude session it04 (cap 3.00 h) -> session_it04.log
 [2026-09-27 19:31:09] session it04: ok (exit 0, 66 tool calls)
 [2026-09-27 19:32:36] tests passed: 1138 passed, 2 skipped, 1 xfailed, 159 warnings in 85.75s (0:01:25)
+[2026-09-27 19:32:36] committed add832af: 04 · Q1a Which change carries the fix's cost? Behind flags in the C
+[2026-09-27 19:32:36] === iteration 5: 05 · Q1b A proof object for the customer search. Define a
+[2026-09-27 19:32:36] claude session it05 (cap 3.00 h) -> session_it05.log
+[2026-09-27 20:02:41] session it05: ok (exit 0, 45 tool calls)
+[2026-09-27 20:04:14] tests passed: 1153 passed, 2 skipped, 1 xfailed, 161 warnings in 91.87s (0:01:31)

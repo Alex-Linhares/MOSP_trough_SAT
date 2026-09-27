@@ -50,7 +50,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       recommendation, stated and not applied. Tests: the default path
       byte-for-byte unchanged; each flag never changes a `decide` status on
       the differential harness's drawn instances.
-- [ ] 05 · Q1b **A proof object for the customer search.** Define a
+- [x] 05 · Q1b **A proof object for the customer search.** Define a
       certificate: the sequence of pruning decisions of a refutation, each
       with its rule and its witness (the dominator and the subset relation for
       `subset_rule` and `definite_move`; the covering candidate and the cost

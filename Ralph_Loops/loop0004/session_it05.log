@@ -1,0 +1,145 @@
+# session it05 started 2026-09-27 19:32:36
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item's cited sections, and the customer search code, then design the certificate.
+  > $ date && pgrep -f benchmarks.recertify | wc -l && nproc && sed -n 1,80p reports/ml_nature_plan_3.md
+  > $ wc -l satisfiability/customer_search.py satisfiability/customer_search.c learning/degeneracy.py learning/proofs.py learning/differential.py reports/better_move_
+  > $ cat satisfiability/customer_search.py
+  > $ grep -n "better_move\|subset_pass\|definite\|dominance_filter\|close_count\|static int\|static void\|^int\|^void" satisfiability/customer_search.c | head -80
+  > $ sed -n 136,414p satisfiability/customer_search.c
+  > $ sed -n 4462,4530p reports/ml_nature.md
+  > $ head -c 600 learning/data/proofs.csv; echo; echo ---; grep -n "^def \|^class " learning/degeneracy.py learning/proofs.py learning/differential.py learning/node_
+  > $ sed -n 100,260p learning/degeneracy.py
+  > $ sed -n 100,260p learning/differential.py && echo ----- && sed -n 299,340p learning/differential.py && echo ----- && sed -n 140,164p learning/node_counts.py
+  > $ python - <<'EOF'
+import pandas as pd
+p=pd.read_csv("learning/data/proofs.csv")
+s=p[p.n_customers<=20]
+print(len(p), len(s), s.verdict.value_counts().to_dict(), 
+  > $ sed -n 165,259p reports/better_move_bug.md; ls literature/ | grep -i "chu\|stuckey"
+  > $ grep -n "ORACLE_MAX_ACTIVE\s*=" learning/differential.py; grep -n "MINIMAL\|BUG_\|10 × 13\|17 × 9\|def _instance\|np.array\|\[\[" tests/test_fix_cost.py | head 
+  > $ sed -n 94,106p learning/node_counts.py; grep -n "MINIMAL_10x13\|MINIMAL_17x9" -A 22 tests/test_customer_search.py | grep -v "^--$" | head -60; grep -n "def _nei
+  > Write /home/al/dev/MOSP/learning/search_certificate.py
+
+Cleaning up two leftover fragments in the emitter, then smoke-testing the emitter against the reference search and the C.
+  > $ python - <<'EOF'
+import re,pathlib
+p=pathlib.Path("learning/search_certificate.py"); s=p.read_text()
+s=s.replace("""    full_remaining = 0
+    for _, c in playa
+  > $ sed -n 55,62p learning/node_counts.py && python - <<'EOF'
+import random, time, itertools
+from mosp.instance import MOSPInstance
+from mosp.verify import max_open
+
+The checker read node ids as customer ids in the children list. Fixing that and re-running the smoke test.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/search_certificate.py"); s=p.read_text()
+old="""        children = [int(c) for c in node.children]
+    
+  > $ nohup python -m learning.search_certificate --stage run --max-customers 20 --workers 16 > learning/data/ensemble/search_certificate_run.log 2>&1 &
+echo started 
+  > $ python - <<'EOF'
+from mosp.instance import MOSPInstance
+from tests.test_customer_search import MINIMAL_10x13, MINIMAL_17x9
+from learning.search_certificate impo
+  > $ tail -2 learning/data/ensemble/search_certificate_run.log; python - <<'EOF'
+import pandas as pd
+h=pd.read_csv("learning/data/ensemble/fix_cost_harness.csv.gz")
+
+
+The n ≤ 20 run already finished. Launching the 21–40 run in the background, reading the first tables, and listing the old-order false refutations.
+  > $ nohup python -m learning.search_certificate --stage run --min-customers 21 --max-customers 40 --workers 16 --deadline 60 > learning/data/ensemble/search_certifi
+  > $ python - <<'EOF'
+import pandas as pd
+r=pd.read_csv("learning/data/ensemble/results.csv")
+row=r[r.instance_name=="ens_f_n10_m20_d2_i070"].iloc[0]; print(row[["in
+
+The checker rejects the rule-order bug for the right reason: a covering cycle between two individually valid steps. Now writing the test module while the 21–40 run continues.
+  > Write /home/al/dev/MOSP/tests/test_search_certificate.py
+  > $ timeout 600 python -m pytest tests/test_search_certificate.py -q -x 2>&1 | tail -15; echo ----; tail -3 learning/data/ensemble/search_certificate_run_21_40.log;
+  > $ nohup python -m learning.search_certificate --stage run --min-customers 41 --max-customers 75 --workers 16 --deadline 60 --configs default,csearch > learning/da
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("tests/test_search_certificate.py"); s=p.read_text()
+old="""    rng = random.Random(7)
+    seen_memo = 0
+    for 
+  > $ tail -2 learning/data/ensemble/search_certificate_run_41_75.log; python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/search_certificate.py"); s=p.read_text
+  > $ nohup python -m pytest tests/ -q -x > /tmp/full_suite_it05.log 2>&1 &
+echo suite $!; tail -2 learning/data/ensemble/search_certificate_run_41_75.log; date; grep
+
+Waiting on two background jobs: the 41–75 corpus run and the full test suite. While they run, I'll draft the report section from the settled n ≤ 40 numbers, then fill in the 41–75 band.
+  > $ for i in $(seq 1 30); do if grep -q "wrote" learning/data/ensemble/search_certificate_run_41_75.log; then break; fi; sleep 20; done; tail -1 learning/data/ensem
+  > $ python - <<'EOF'
+import pandas as pd
+f=pd.read_csv("learning/data/ensemble/search_certificate.csv")
+f=f[f.n<=40]
+nc=pd.read_csv("learning/data/node_counts.csv")
+  > $ tail -1 learning/data/ensemble/search_certificate_run_41_75.log; python - <<'EOF'
+import pandas as pd, numpy as np, time
+from mosp.instance import MOSPInstance
+
+  > $ date; python - <<'EOF'
+import pandas as pd, numpy as np, time
+from pathlib import Path
+from learning.dataset import enumerate_instances
+from satisfiability.nati
+  > Write /tmp/sec32.md
+  > $ date; tail -1 learning/data/ensemble/search_certificate_run_41_75.log; python - <<'EOF'
+import pandas as pd
+f=pd.read_csv("learning/data/ensemble/search_certifi
+
+Still waiting on the last 34 instances of the 41–75 run. Meanwhile I'm validating the example command in the regenerate block and fixing a wording slip in the draft.
+  > $ timeout 100 python -m learning.search_certificate --stage one --instance "Warwick 877: balanced orders, 4 orders per product" --k 7 --configs default,csearch --
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/search_certificate.py"); s=p.read_text()
+old="""        from benchmarks.solve_all import enumerate_inst
+  > $ timeout 300 python -m pytest tests/test_search_certificate.py -q 2>&1 | tail -2; for i in $(seq 1 4); do if grep -q "wrote" learning/data/ensemble/search_certif
+
+The 41–75 run has stalled on a few slow chunks (work is dispatched in chunks of eight). I'll stop it by PID, switch to single-job dispatch, and resume from the saved rows.
+  > $ ps -o pid,etime,pcpu,args --ppid 2110250 | head -20; pkill -TERM -P 2110250; sleep 1; kill -TERM 2110250 2>/dev/null; sleep 2; pgrep -f "learning.search_certifi
+  > $ pgrep -af "learning.search_certificate|multiprocessing.spawn" | grep -v pgrep | head; python - <<'EOF'
+import pathlib
+p=pathlib.Path("learning/search_certificat
+  > $ ps -o pid,ppid,etime,args -p 2116037,2116040 | cut -c1-90; ps -o pid,args -p $(ps -o ppid= -p 2116037 | tr -d ' ') | cut -c1-120; echo ----; nohup python -m lea
+  > $ for p in $(pgrep -f "multiprocessing.spawn"); do pp=$(awk '/^PPid/{print $2}' /proc/$p/status 2>/dev/null); if [ "$pp" = "4284" ]; then echo "orphan $p"; kill -
+  > $ echo "recertify procs: $(pgrep -f benchmarks.recertify | wc -l)"; ps -o pid,ppid,etime,pcpu,args -p $(pgrep -f benchmarks.recertify | head -3 | tr '\n' ',' | se
+  > $ echo "real recertify python procs:"; pgrep -af "python.*benchmarks.recertify" | cut -c1-100 | head -3; python - <<'EOF'
+import pandas as pd
+f=pd.read_csv("learn
+
+The 41–75 band is in: 141 of 151 instances refuted and verified under both configurations, 10 censored at 60 s, all at 75 customers. Now finishing the report section, PROGRESS.md and iterations.md.
+  > $ python - <<'EOF'
+import pathlib
+p=pathlib.Path("/tmp/sec32.md"); s=p.read_text()
+above="""**141 of the 151 are refuted and verified under both** (all 120 at 41–
+  > $ ls -la learning/data/ensemble/search_certificate.csv | awk '{print $5}'; python - <<'EOF'
+import pathlib, re
+it=pathlib.Path("Ralph_Loops/loop0004/iterations.md
+
+Item 05 is complete. Everything the item asked for is in place and verified.
+
+**What was built**
+- `learning/search_certificate.py` defines the certificate (one record per search node: move, free moves, kind, steps with rule and witness, children), an emitter that mirrors the reference Python search plus a Python port of the C's fixed Theorem 2 rule, and an independent checker that recomputes every premise from the matrix and the state and verifies exhaustiveness at each node.
+- `tests/test_search_certificate.py` adds 15 tests. The full suite passes: 1,153 passed, 2 skipped, 1 xfailed in 100 s.
+- Report section §32 in `reports/ml_nature.md`, tables in `reports/search_certificate_tables.md`, data in `learning/data/ensemble/search_certificate.csv`.
+
+**What was found**
+- Every one of the 6,135 certified corpus instances at 9–40 customers has a verified certificate under all three configurations, with zero rejections. This covers the 489 instances whose DRAT proof was censored in §17, and agrees with all 5,646 DRAT verdicts and the lattice oracle on 2,812.
+- The certificate tree is the C's tree without the memo, node for node: all 914 and 930 branch-count differences from the recorded C counts vanish when the C runs without its memo.
+- Certificates are about 60 bytes per branch and check at 15 µs per node. Against DRAT on the same instances they are 13× to 13,700× smaller and roughly 1,000× faster to check, with a different trust base, which the section states.
+- Both shipped bugs are reproduced and rejected for the right reason: the close-count bug fails a Theorem 2 premise, and the rule-order bug is rejected as a covering cycle with every premise true.
+- Kill verdict: a Theorem 2 step's premise is checkable from the instance and the state alone. What is not step-local is chain termination, a property of the node's whole step set. Theorem 3 is path-local, and the memo is checkable only without old move, which is exactly how the C differs from the certificate.
+
+**Loose ends noted in PROGRESS.md**
+- At 41–75 customers, 141 of 151 instances are certified under both configurations. Ten are censored at 60 s, all at 75 customers, because the emitter is Python.
+- No `benchmarks.recertify` Python process was actually running; the pgrep pattern matches the session's own prompt text.
+- Nothing was committed and nothing was written to `solutions/`. Eight items remain, so no LOOP_COMPLETE line was added.
+
+# result: success in 1804s, 46 turns, cost $8.11
