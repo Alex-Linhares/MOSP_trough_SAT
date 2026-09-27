@@ -1,0 +1,141 @@
+# session it03 started 2026-09-27 17:14:03
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the cited report sections, and the key code for this item.
+  > $ cat reports/ml_nature_plan_3.md && echo ---- && cat Ralph_Loops/loop0004/iterations.md && pgrep -af benchmarks.recertify | head; nproc; date
+  > $ sed -n 1,400p reports/ml_nature_plan_3.md | grep -n "03\|Q5\|SAT" | head -40; echo ----; awk '/^- \[ \] 03|^- \[x\] 03/,/^- \[/' Ralph_Loops/loop0004/iterations
+  > $ sed -n 40,70p reports/ml_nature_plan_3.md; echo ======; grep -n "^## " reports/ml_nature.md | sed -n 10,40p
+  > $ sed -n 3216,3494p reports/ml_nature.md
+  > $ ls -la learning/data/ensemble/ | head -40; echo ----; zcat learning/data/ensemble/recover.csv.gz | head -3; echo; zcat learning/data/ensemble/recover.csv.gz | w
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/graph_story.py | head -80; echo ----; grep -n "def decide_mosp\|SAT_BACKEND\|conflicts\|def _decide\|stats\b" sat
+
+I'm reading the existing pair-generation code and the SAT decision entry point so I can build the study on top of them.
+  > $ sed -n 240,330p learning/graph_story.py; echo ======; sed -n 380,400p learning/graph_story.py; echo ======; sed -n 424,480p learning/graph_story.py
+  > $ sed -n 640,760p satisfiability/mosp_solver.py; echo ======; head -2 learning/data/ensemble/manifest.csv; echo ======; sed -n 84,112p learning/graph_story.py; ec
+  > $ python - <<'EOF'
+import pysat, inspect
+from pysat.solvers import SolverNames, Solver
+print(pysat.__version__)
+names = [k for k in dir(SolverNames) if not k.star
+  > $ sed -n 255,310p learning/proofs.py; echo ======; grep -n "def feature_names" -A 15 learning/features.py | head -30; echo ======; grep -n "def refute" -A 25 lear
+  > $ cat > /tmp/pilot_sat.py <<'EOF'
+import time, threading, sys
+import numpy as np, pandas as pd
+from types import SimpleNamespace
+from learning.graph_story import 
+  > $ sleep 60; cat /tmp/claude-1000/-home-al-dev-MOSP/0320b61b-4fd3-494e-bf76-e4a32b9df65b/tasks/bg60us4ic.output
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/0320b61b-4fd3-494e-bf76-e4a32b9df65b/tasks/bg60us4ic.output
+  > $ for p in $(pgrep -f "^python /tmp/pilot_sat.py$"); do kill $p; done; sleep 1; pgrep -af pilot_sat | grep -v grep | head -3; nohup python /tmp/pilot_sat.py > /tm
+  > $ timeout 100 bash -c 'until grep -q "^40 " /tmp/pilot_sat.out || ! pgrep -f "^python /tmp/pilot_sat.py$" >/dev/null; do sleep 5; done'; grep -c . /tmp/pilot_sat.
+  > $ timeout 110 bash -c 'until grep -q "^40 " /tmp/pilot_sat.out || ! pgrep -f "^python /tmp/pilot_sat.py$" >/dev/null; do sleep 5; done'; grep -c . /tmp/pilot_sat.
+  > $ tail -2 /tmp/pilot_sat.out | cut -c1-120; ps -o pid,etime,time,stat,cmd -p $(pgrep -f "^python /tmp/pilot_sat.py$") 2>/dev/null; echo ======; timeout 60 python 
+
+Neither backend honoured the in-process interrupt, so the pilot is stuck. I'll kill it and test conflict-budget chunking as the deadline mechanism instead.
+  > $ for p in $(pgrep -f "^python /tmp/pilot_sat.py$"); do kill -9 $p; done; timeout 100 python - <<'EOF'
+import time
+from pysat.solvers import Solver
+from mosp.inst
+  > $ head -1 learning/data/ensemble/results.csv | tr ',' '\n' | head -100 | tr '\n' ' '; echo; wc -l learning/data/ensemble/results.csv; python -c "
+import pandas as
+  > Write /home/al/dev/MOSP/learning/sat_story.py
+
+Smoke test on a tiny design into a temp CSV before launching the real run.
+  > $ timeout 300 python -m learning.sat_story --workers 4 --per-n 2 --per-method 1 --relabellings 2 --sizes 10 15 --deadline 10 --csv /tmp/sat_story_smoke.csv.gz --o
+
+Pool workers are daemonic, so the Kissat child must be a raw `os.fork`. I'll patch that and rerun the smoke test.
+  > $ python - <<'EOF'
+import re
+p = "learning/sat_story.py"
+s = open(p).read()
+old_start = s.index("def _kissat_child(conn, matrix, name, k, backend):")
+old_end = s.
+
+The pipeline works end to end. I'm launching the full run now, sized to a 65-minute wall cutoff on 16 workers, and will write the tests while it runs.
+  > $ rm -f learning/data/ensemble/sat_story.csv.gz && nohup python -m learning.sat_story --stage run --workers 16 --per-n 40 --per-method 1 --relabellings 4 --deadli
+  > Write /home/al/dev/MOSP/tests/test_sat_story.py
+  > $ grep -n "def max_open_stacks" mosp/verify.py | head -2; timeout 200 python -m pytest tests/test_sat_story.py -q -x 2>&1 | tail -15; echo ======; tail -3 /tmp/sa
+  > $ python -c "
+import pandas as pd
+f=pd.read_csv('learning/data/ensemble/sat_story.csv.gz')
+print(len(f)); print(f.groupby(['n','kind']).size().unstack(fill_value=
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n 0 -f /tmp/sat_story_run.log | grep -E --line-buffered \"wall .* reached|Traceback|Error|Killed|stop
+
+The monitor is armed. Now the partial analysis pass with the ML kill test on what's on disk, plus the current progress line.
+  > $ tail -1 /tmp/sat_story_run.log; timeout 600 python -m learning.sat_story --stage tables --out /tmp/sat_story_partial.md 2>&1 | grep -v Warning | tail -90
+  > $ python - <<'EOF'
+p = "learning/sat_story.py"
+s = open(p).read()
+# 1. method x n table
+s = s.replace('''    summary["recover_by_n"] = by_n_table(rec_pairs)
+''', 
+  > $ timeout 900 python -m pytest tests/ -q -x > /tmp/pytest_full.log 2>&1; echo "exit $?" >> /tmp/pytest_full.log; tail -3 /tmp/pytest_full.log
+
+Only the report skeleton is requestable now; the other two are in flight. Drafting the fixed parts to a scratch file.
+  > Write /tmp/section30_draft.md
+  > $ tail -1 /tmp/sat_story_run.log; date; cd /home/al/dev/MOSP && python -c "
+import pandas as pd
+f=pd.read_csv('learning/data/ensemble/sat_story.csv.gz'); print(f.
+
+Both outstanding items are in flight, so I'll wait on the test suite's exit line with a bounded loop rather than end the turn.
+  > $ timeout 590 bash -c 'until grep -q "^exit" /tmp/pytest_full.log 2>/dev/null; do sleep 5; done'; tail -4 /tmp/pytest_full.log; echo ----; tail -1 /tmp/sat_story_
+
+The full suite passes with the new tests. The run is the only thing outstanding, so I'll wait on it in bounded stretches and check the size coverage each time.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -1 /tmp/sat_story_run.log; date; cd /home/al/de
+
+Coverage so far is complete through 20 customers with censoring starting at 25. Continuing to wait on the run.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -1 /tmp/sat_story_run.log; date
+
+Still only the run outstanding. Waiting again.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -1 /tmp/sat_story_run.log; date; cd /home/al/de
+
+Refutations at 30 customers censor at about a third, as the `m²·k` boundary from §17 predicts. Only the run is outstanding; waiting.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -1 /tmp/sat_story_run.log; date
+
+The only outstanding item is the run's wall cutoff, about twenty minutes off. One bounded wait.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -1 /tmp/sat_story_run.log; date
+
+Only the wall cutoff is left to wait for. One bounded wait covers most of it.
+  > $ timeout 590 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 10; done'; tail -2 /tmp/sat_story_run.log; date
+  > $ timeout 300 bash -c 'until grep -qE "wall .* reached|Traceback" /tmp/sat_story_run.log; do sleep 5; done; until ! pgrep -f "^python -m learning.sat_story --stag
+
+The run stopped cleanly at its wall: 3,258 calls on disk, complete through 30 customers and a 10-base sample at 35. Now the final tables with the ML kill test.
+  > $ timeout 900 python -m learning.sat_story --stage tables 2>&1 | grep -v -i warning | tail -120
+  > $ python - <<'EOF'
+p = "learning/sat_story.py"
+s = open(p).read()
+s = s.replace('''                     "agree with certified value": int(settled[f"{prefix}_agree
+  > $ awk '/witness conflicts/{f=1} f&&/^## /&&!/witness conflicts/{f=0} f' reports/sat_story_tables.md; awk '/^## Kill verdict/{f=1} f' reports/sat_story_tables.md |
+  > $ timeout 600 python -m learning.sat_story --stage tables > /tmp/tables_final.log 2>&1; grep -c "Warning" /tmp/tables_final.log; awk '/witness conflicts/{f=1} f&&
+  > $ cat /tmp/section30_draft.md >> reports/ml_nature.md && cat >> reports/ml_nature.md <<'EOF'
+
+### The run as made, and every answer against the certified value
+
+|
+
+Privately: everything is written. The one remaining check is a final full-suite run, since the last three edits to the analysis stage postdate the earlier suite run. Nothing else is outstanding.
+  > $ timeout 600 python -m pytest tests/ -q -x 2>&1 | tail -2; git status --short solutions/ | wc -l; date
+
+Privately: nothing is left to request. The report section, tables, data, tests, PROGRESS.md and iterations.md are all written, the full suite passes, and `solutions/` is untouched. Ten items remain unchecked, so no LOOP_COMPLETE line.
+
+**Item 03 is solved.** The graph story does not hold for the SAT path, and the way it fails is the reduced formula.
+
+**What was built.** `learning/sat_story.py` regenerates §13's re-covering and relabelling pairs from the campaign manifest and runs each through exactly what `decide_mosp` does before the solver, at the refutation and the witness, with a 120 s deadline. Conflicts are counted on CaDiCaL 1.9.5, because the default Kissat backend exposes no statistics through pysat, ignores interrupts, and aborts the interpreter on a conflict budget. Kissat is timed in seconds in a forked, hard-killed child. Ten tests in `tests/test_sat_story.py`, full suite 1,130 passed.
+
+**What was found**, over 3,258 SAT calls at 10 to 30 customers with a small sample at 35:
+
+- Every one of the 5,657 settled decisions on either backend agrees with the certified value.
+- Re-covering the same graph moves the refutation's conflicts. Greedy covers give 0.77 of the base at the median, merges 0.87, splits 1.15, each significant, with a typical pair off by a third. The search's node ratio is 1 on the same pairs.
+- The channel is formula size after dominance. Where a split product is dominated away again, the formula and the conflicts are identical on all 29 such pairs.
+- SAT has a label floor the search lacks. Renaming customers moves refutation conflicts by 1.6 to 1.9 times at the median and witness conflicts by 7 to 13 times.
+- The cover is not why SAT and the search rank instances differently. Within-graph variance is 4 to 21 percent. The rest is between graphs, where SAT tracks clause count and the search does not.
+- The kill test inverts §13. Graph-only features predict SAT conflicts at MAE 0.53 in log10 against 0.25 for the full set.
+
+**Kill verdict.** Met on its letter, failed in its spirit. The pooled median is exactly 1.00 because the methods pull opposite ways and 17 percent of pairs are equal. This is stated plainly in §30 of `reports/ml_nature.md`.
+
+**Caveats recorded.** Refutation censoring at 120 s reaches 62 percent at 30 customers, so paired tables there rest on the easier pairs. Nothing above 35 was run.
+
+**Next item** is 04, the two halves of the `better_move` fix behind flags.
+
+# result: success in 5109s, 48 turns, cost $17.52

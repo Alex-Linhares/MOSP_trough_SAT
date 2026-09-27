@@ -29,7 +29,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       whether the rule is MCNh under another name (agreement per step and per
       instance). **Kill**: the paper's example cannot be reproduced from the
       pseudocode — say what is ambiguous and stop.
-- [ ] 03 · Q5 **Does the graph story hold for the SAT path?** On §13's pairs
+- [x] 03 · Q5 **Does the graph story hold for the SAT path?** On §13's pairs
       (`learning/data/ensemble/recover*.csv*`, `relabel.csv.gz`; regenerate
       pairs with `learning.graph_story` if needed) at n ≤ 40, run
       `decide_mosp` through the SAT path (`SAT_BACKEND`, conflicts and seconds

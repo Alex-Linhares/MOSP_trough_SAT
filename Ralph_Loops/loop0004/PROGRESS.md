@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 2/13 SOLVED
+- **Current**: 3/13 SOLVED
 
 ---
 
@@ -163,3 +163,52 @@
 ### Next
 - Item 03 · Q5: `decide_mosp` through the SAT path on §13's re-covering and
   relabelling pairs, conflicts and seconds, paired ratios.
+
+## Iteration 3 — 2026-09-27 18:40
+
+### Completed
+- **Item 03 · Q5, does the graph story hold for the SAT path? — SOLVED.**
+  `reports/ml_nature.md` §30; tables in `reports/sat_story_tables.md`; data
+  `learning/data/ensemble/sat_story.csv.gz` (one row per SAT call, 147 KB).
+- `learning/sat_story.py`: §13's pairs regenerated from the manifest (40 bases
+  per size from its 200, one re-covering per method, four relabellings), each
+  run through `decide_mosp`'s exact reduction (components, dominance,
+  `encode_mosp_decision`) at `optimum − 1` and `optimum`, 120 s deadline.
+  Conflicts on `cadical195` with conflict-budget chunks against the wall;
+  `kissat404` (the default backend) exposes no statistics, ignores
+  `interrupt()` and aborts the interpreter on `conf_budget`, so it is timed in
+  seconds in a forked, hard-killed child on the calls CaDiCaL settled within
+  30 s. Resumable CSV, wall cutoff (`--wall`), one job per call.
+- Run: 3,258 calls, 65 min on 16 workers beside 6 recertify workers; complete
+  at 10–30 customers, a 10-base sample at 35 when the wall fell. **All 5,657
+  settled decisions on both backends agree with the certified value.**
+- Result: the cover moves SAT cost. Refutation paired ratios greedy 0.77 /
+  merge 0.87 / split 1.15 at the median (each p < 1e−8), p10–p90 0.26–1.67,
+  MAD 0.13 log10; the search's node ratio is 1 on the same 464 pairs. The
+  channel is the reduced formula (Spearman 0.6–0.7 between Δconflicts and
+  Δclauses / Δproducts; identical formula ⇒ identical conflicts on all 29
+  such pairs). SAT's label floor is 1.6–1.9× (refute) and 7–13× (witness)
+  against the search's 1.00–1.05×. Within-graph share of SAT variance 4–21%;
+  at fixed n, nodes and conflicts anticorrelate (−0.04 to −0.34) because SAT
+  tracks clause count (0.93–0.98). Kill test inverted from §13: graph-only
+  MAE 0.533 vs full 0.245 vs six formula quantities 0.264.
+- **Kill verdict: met on its letter, failed in its spirit** — pooled median
+  1.00 on both sides because 17% of pairs are equal and the methods pull
+  opposite ways; the per-method medians are all outside ±5%.
+- Proposed, not applied: race a pre-encoding merge re-cover on the SAT path.
+- Tests: `tests/test_sat_story.py` (10) — hand instance optimum 3 by brute
+  force, unsat/sat on both backends, dominance makes the reduced formula and
+  the conflicts equal, deadline censoring on both mechanisms, ratio-table
+  arithmetic incl. censored pairs, kill verdict, job construction. Full suite:
+  1,130 passed, 2 skipped, 1 xfailed in 118 s (loaded machine). `solutions/`
+  untouched; recertify untouched.
+
+### Blockers
+- None. Censoring at 120 s: 22% of refutations at 25, 62% at 30, 71% at 35 —
+  the paired tables at those sizes are on the easier pairs, said in §30. The
+  wall cutoff dropped the in-flight calls (≤ 16) rather than recording them.
+
+### Next
+- Item 04 · Q1a: which of the `better_move` fix's two changes carries its cost,
+  behind flags, through the differential harness at n ≤ 40 and paired in
+  nodes at 50–100.

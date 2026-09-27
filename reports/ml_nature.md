@@ -7858,3 +7858,280 @@ are replaced one by one by the respective patterns and sorted in decreasing
 index order, as proposed by Yanasse [6]") is a third derivation, not
 implemented; that theirs and the 2004 rule agree on 21 of 21 named values
 says the derivation rarely matters on those instances.
+## 30. Does the graph story hold for the SAT path? (plan 3 §1 Q5, loop0004 item 03)
+
+*loop0004 iteration 3, 2026-09-27. Code: `learning/sat_story.py`. Regenerate:*
+
+```bash
+python -m learning.sat_story --stage run --workers 16 --per-n 40 --per-method 1 --relabellings 4 --deadline 120 --wall 3900   # the run as made: 65 min on 16 workers beside 6 recertify workers
+python -m learning.sat_story --stage tables                                                                                  # every table below from the CSV, ~1 min with the ML step
+python -m pytest tests/test_sat_story.py -q
+```
+
+*Writes `learning/data/ensemble/sat_story.csv.gz` (one row per SAT call,
+committed; every instance regenerates from the campaign manifest through
+`learning.graph_story.recover` / `relabel` from its row's `(base_name,
+method, k)`) and every table in full in `reports/sat_story_tables.md`.
+Nothing was written to `solutions/`; no solver default was touched.*
+
+**Question.** §13 showed the complete customer search reads the labelled
+MOSP graph and nothing else: 15,900 re-coverings of the same edge set left
+its node count *exactly* unchanged. The direct SAT encoding is not like that
+on paper — it has a position variable per *product*, so the clique cover is
+written into the formula. Does the cover move SAT's cost, by how much, and
+is that a reason the two procedures would fail on different instances?
+**Kill**: paired median re-covering ratio within ±5% — SAT as
+cover-independent as the search.
+
+**Method.** §13's pairs, regenerated: from its 1,400 bases (200 per `n ∈
+{10, …, 40}`, half uniform and half from the hardest decile by nodes), 40
+per size drawn uniformly; for each, the first applicable re-covering by each
+of `split`, `merge` and `greedy` and the first four relabellings. Each
+instance goes through exactly what `decide_mosp` does before the solver —
+component decomposition, dominated patterns removed, `encode_mosp_decision`
+— at `optimum − 1` (the refutation, expected `unsat`) and at `optimum` (the
+witness, expected `sat`), with a 120-second wall deadline per call. Every
+re-covering is checked to have its base's neighbour masks before it is
+encoded; every answer is checked against the certified value.
+
+*Two backends, because the default one cannot be measured.* `SAT_BACKEND` is
+`kissat404`, and through pysat Kissat exposes no statistics (`accum_stats`
+raises), does not honour `interrupt()` (the pilot's first call ran four
+minutes past a 30-second interrupt, as `benchmarks/ratchet.py`'s note says)
+and refuses `conf_budget` (`incremental solving not supported`, a fatal
+abort). Conflicts are therefore counted on CaDiCaL 1.9.5 (`cadical195`),
+which does all three, with the deadline enforced by 5,000-conflict chunks; a
+censored call keeps its count as a lower bound. Kissat is timed in seconds
+in a forked child killed at the deadline, on the calls CaDiCaL settled within
+30 seconds, so the default backend is on the same pairs at bounded cost.
+Paired statistics are on `log10(1 + conflicts)`; Wilcoxon on the non-zero
+differences; the kill test predicts `log10(1 + conflicts)` on the settled
+refutations of bases and re-coverings (one row per matrix class) under
+`GroupKFold(5)` by MOSP-graph class from §13's three feature sets —
+graph-only (21), matrix-only (18), full (50) — plus a **formula** set
+(products after dominance, variables, clauses, components, with `n` and the
+optimum) and graph+formula.
+
+**Baseline.** §13's result on the same pairs: the search's paired node ratio
+is 1 on every one. For the kill test, the per-size median and the matrix-only
+set. For the cover's effect, the relabelling floor — the same matrix with the
+customers renamed — measured for SAT on the same bases.
+
+### The run as made, and every answer against the certified value
+
+| side | backend | calls | settled | censored (120 s) | skipped | agree with certified value | disagree |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| refute (`optimum − 1`) | cadical195 | 1,634 | 1,320 | 314 | 0 | 1,320 | **0** |
+| refute | kissat404 | 1,634 | 1,224 | 0 | 410 | 1,224 | **0** |
+| witness (`optimum`) | cadical195 | 1,624 | 1,578 | 46 | 0 | 1,578 | **0** |
+| witness | kissat404 | 1,624 | 1,535 | 1 | 88 | 1,535 | **0** |
+
+3,258 SAT calls in 65 minutes on 16 workers: 205 bases (40 per size at
+10–30, 10 at 35 when the wall cutoff fell), about 600 re-coverings and 830
+relabellings, 4–71 products. Kissat was skipped where CaDiCaL censored or
+took over 30 s. **Every settled answer agrees with the certified value on
+both backends** — 2,898 CaDiCaL and 2,759 Kissat decisions, 5,657 more free
+audits of Yanasse's equality and of the encoding. Censoring is where §17's
+`m² · k ≈ 10⁴` boundary puts it: refutations censored at 0 / 1.3 / 0.9 / 22 /
+62 / 71% for n = 10 / 15 / 20 / 25 / 30 / 35, witnesses at 2.8% overall. The
+two backends agree on what is hard: Spearman 0.979 between their seconds on
+the settled refutations of the bases.
+
+### Re-coverings: the same graph, a different formula, a different cost
+
+Paired ratio variant / base on `1 + conflicts`, CaDiCaL, pairs where both
+calls settled:
+
+| side | method | pairs | settled | equal | within ±5% | ratio median | p10 | p90 | min | max | MAD log10 | Wilcoxon p |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| refute | greedy | 203 | 161 | 16 | 14.9% | **0.771** | 0.037 | 1.39 | 8.5e−5 | 3.85 | 0.188 | 4e−12 |
+| refute | merge | 197 | 158 | 34 | 26.6% | **0.869** | 0.414 | 1.20 | 0.070 | 3.40 | 0.090 | 4e−9 |
+| refute | split | 177 | 145 | 29 | 25.5% | **1.15** | 0.773 | 2.08 | 0.291 | 11.7 | 0.090 | 2e−8 |
+| refute | **all** | 577 | 464 | 79 | 22.2% | **1.00** | 0.260 | 1.67 | 8.5e−5 | 11.7 | **0.132** | 4e−7 |
+| witness | greedy | 201 | 196 | 17 | 11.2% | **0.602** | 0.014 | 3.45 | 6.8e−5 | 58.1 | 0.490 | 6e−9 |
+| witness | merge | 197 | 190 | 42 | 24.2% | 1.00 | 0.242 | 4.10 | 0.008 | 19.0 | 0.212 | 0.29 |
+| witness | split | 176 | 171 | 42 | 27.5% | 1.03 | 0.464 | 7.60 | 0.019 | 43.5 | 0.181 | 6e−5 |
+| witness | **all** | 574 | 557 | 101 | 20.6% | **1.00** | 0.094 | 4.38 | 6.8e−5 | 58.1 | **0.280** | 0.008 |
+
+On the same 464 + 557 pairs the search's paired node ratio is 1 on every one
+(§13 reproduced: 464 of 464, 557 of 557). The refutation's pooled median by
+size is 1.00 / 0.92 / 0.93 / 1.00 / 1.00 at n = 10–30 with MAD 0.086–0.156;
+the greedy re-cover alone runs 0.95 / 0.25 / 0.63 / 0.95 / 0.87. Seconds move
+with conflicts: CaDiCaL 0.71 / 0.80 / 1.23 (greedy / merge / split, refute,
+median), Kissat 0.65 / 0.86 / 1.21 on the same pairs — the default backend
+sees the cover the same way.
+
+### The channel is the reduced formula
+
+| side | method | pairs | clauses ratio median | Δ products after dominance (median) | clause count unchanged | …and conflicts equal | Spearman conflicts ~ clauses | ~ Δproducts | seconds ~ clauses |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|
+| refute | greedy | 161 | 1.00 | 0 | 35 | 14 | 0.65 | 0.73 | 0.68 |
+| refute | merge | 158 | 0.95 | −1 | 60 | 34 | 0.57 | 0.61 | 0.51 |
+| refute | split | 145 | 1.07 | +1 | 29 | **29** | 0.27 | 0.36 | 0.25 |
+| witness | greedy | 196 | 0.93 | −1 | 33 | 14 | 0.63 | 0.65 | 0.71 |
+| witness | merge | 190 | 0.95 | −1 | 59 | 37 | 0.10 | 0.07 | 0.02 |
+| witness | split | 171 | 1.05 | +1 | 33 | **33** | 0.15 | 0.17 | 0.14 |
+
+Fewer products after `remove_dominated_patterns` means fewer clauses and
+fewer conflicts, with rank correlation 0.6–0.7 on the refutation for the two
+methods that remove products. `split`'s 29 pairs with an unchanged clause
+count are the pairs where the split-off product was dominated and dropped
+again before encoding — the formula is byte-for-byte the base's, and the
+conflicts are equal on all 29 (the hand-checked case in
+`tests/test_sat_story.py`). Greedy's 35 count-unchanged pairs are equal on
+only 14: the same number of clauses, different clauses, a different search.
+Across the bases at fixed `n`, Spearman between log clauses and log
+conflicts is 0.93–0.98.
+
+### Renaming the customers moves SAT more than the search, and about as much as the cover
+
+Within a base, over the base and its four relabellings (settled only):
+
+| side | n | bases | SAT: bases with any change | SAT max/min median | p90 | max | SAT MAD log10 | search max/min median | search p90 | search MAD log10 |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| refute | 10 | 40 | 38 | 1.83 | 3.96 | 9.1 | 0.078 | 1.00 | 1.10 | 0 |
+| refute | 15 | 40 | 40 | 1.76 | 2.79 | 5.3 | 0.068 | 1.00 | 1.14 | 0.005 |
+| refute | 20 | 39 | 39 | 1.66 | 4.17 | 9.0 | 0.079 | 1.04 | 1.15 | 0.005 |
+| refute | 25 | 29 | 27 | 1.89 | 4.27 | 29.3 | 0.075 | 1.05 | 1.12 | 0.005 |
+| refute | 30 | 13 | 13 | 1.62 | 2.55 | 6.1 | 0.057 | 1.05 | 1.17 | 0.012 |
+| witness | 10–30 | 195 | 185 | 7.2–13.0 | 34–88 | 194 | 0.20–0.26 | 1.00–1.05 | 1.10–1.15 | 0–0.006 |
+
+| side | re-covering pairs | relabelling pairs | re-covering \|ratio\| median | relabelling \|ratio\| median | re-covering p90 | relabelling p90 | re-coverings beyond the relabelling p90 |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| refute | 464 | 642 | 1.36 | 1.26 | 4.26 | 2.00 | 24.4% |
+| witness | 557 | 775 | 1.90 | 2.29 | 15.9 | 11.9 | 12.9% |
+
+The search's label floor (§13: 2–6% at the median) is 60–90% for SAT on the
+refutation and 7–13× on the witness, where CaDiCaL's first satisfying
+assignment is at the mercy of variable order. The cover's effect on the
+refutation is of the same order as the label floor at the median (1.36×
+against 1.26×) and twice it at the ninetieth percentile; on the witness it
+is below the floor.
+
+### Where the variance is, and whether the two procedures fail on the same instances
+
+| n | instances | graphs | var log10 conflicts | within-graph share | between-graph share |
+|--:|--:|--:|--:|--:|--:|
+| 10 | 153 | 40 | 0.59 | 9.2% | 90.8% |
+| 15 | 157 | 40 | 1.50 | 20.6% | 79.4% |
+| 20 | 156 | 40 | 2.06 | 13.6% | 86.4% |
+| 25 | 127 | 38 | 2.54 | 3.9% | 96.1% |
+| 30 | 59 | 25 | 1.22 | 6.7% | 93.3% |
+
+| n | bases | SAT censored | Spearman nodes ~ conflicts | nodes ~ seconds | conflicts ~ clauses | nodes ~ clauses | conflicts median | nodes median |
+|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| 10 | 40 | 0 | −0.32 | −0.30 | 0.97 | −0.34 | 49 | 9 |
+| 15 | 40 | 0 | −0.34 | −0.31 | 0.98 | −0.37 | 2,390 | 21 |
+| 20 | 40 | 1 | −0.04 | −0.04 | 0.97 | −0.05 | 8,736 | 75 |
+| 25 | 40 | 11 | −0.10 | −0.13 | 0.95 | −0.19 | 27,935 | 184 |
+| 30 | 40 | 26 | −0.28 | −0.32 | 0.93 | −0.31 | 316,000 | 500 |
+| all | 205 | 42 | 0.36 | 0.40 | 0.97 | 0.48 | 2,336 | 24 |
+
+### The kill test: graph-only features cannot predict SAT cost
+
+`log10(1 + conflicts)`, settled refutations of bases and re-coverings, one row
+per matrix class, `GroupKFold(5)` by MOSP-graph class:
+
+| side | features | n | MAE log10 | RMSE | R² | within 2× |
+|:--|:--|--:|--:|--:|--:|--:|
+| refute (662 rows) | graph-only | 21 | **0.533** | 0.747 | 0.785 | 39.3% |
+| | matrix-only | 18 | 0.286 | 0.412 | 0.935 | 65.6% |
+| | full | 50 | **0.245** | 0.327 | 0.959 | 68.7% |
+| | formula (products after dominance, vars, clauses, components, n, optimum) | 6 | 0.264 | 0.349 | 0.953 | 66.2% |
+| | graph + formula | 25 | 0.268 | 0.356 | 0.951 | 65.9% |
+| | size-median baseline | 0 | 0.947 | 1.28 | 0.373 | 23.1% |
+| witness (775 rows) | graph-only | 21 | **0.641** | 0.822 | 0.736 | 29.2% |
+| | matrix-only | 18 | 0.484 | 0.632 | 0.844 | 40.5% |
+| | full | 50 | 0.473 | 0.604 | 0.858 | 42.2% |
+| | formula | 6 | 0.474 | 0.606 | 0.856 | 38.7% |
+| | graph + formula | 25 | **0.462** | 0.589 | 0.865 | 42.5% |
+| | size-median baseline | 0 | 0.840 | 1.09 | 0.540 | 22.5% |
+
+§13's result inverted: for the search, graph-only beat the full set by 0.002;
+for SAT, graph-only is **0.29 MAE worse** than the full set (a factor of 1.9
+in conflicts), matrix-only beats graph-only by 0.25, and six formula
+quantities recover 95% of what fifty features know.
+
+**Finding.** **The graph story does not hold for the SAT path, and the way
+it fails is the reduced formula.** With the customer labels fixed, re-covering
+the same edge set moves CaDiCaL's conflicts on the refutation by a factor of
+0.26–1.67 between the tenth and ninetieth percentiles (MAD 0.13 in log10, a
+typical pair off by a third), in the direction of the formula's size:
+covering the edges with fewer, larger products — the greedy cover, or a
+merge — cuts conflicts to 0.77 and 0.87 of the base's at the median, and
+splitting a product raises them to 1.15, each with Wilcoxon `p < 10⁻⁸`, and
+the same on the witness (0.60 / 1.00 / 1.03) and in seconds on both backends
+(Kissat 0.65 / 0.86 / 1.21). The mechanism is visible pair by pair: rank
+correlation 0.6–0.7 between the change in conflicts and the change in
+clauses or in products after dominance; where a split's new product is
+dominated away again the formula is identical and the conflicts equal on all
+29 such pairs, and where the greedy cover happens to leave the clause count
+unchanged the conflicts still differ on 21 of 35 — a different formula of the
+same size is a different search. Two things put this in proportion. First,
+**SAT has a label floor the search barely has**: renaming the customers moves
+the refutation's conflicts by 1.6–1.9× at the median (search: 1.00–1.05×)
+and the witness's by 7–13×, so the cover's 1.36× median effect on the
+refutation is of the order of relabelling noise, twice it at the ninetieth
+percentile, and below it on the witness. Second, **the cover is not why SAT
+and the search fail on different instances.** They do rank instances
+differently — at fixed `n` the Spearman correlation between the search's
+nodes and SAT's conflicts over the bases is negative, −0.04 to −0.34 — but
+the within-graph share of SAT's variance, the part a re-covering can reach,
+is 4–21%, and the rest is between graphs: SAT's cost tracks the formula size
+(Spearman 0.93–0.98 with the clause count at fixed `n`), which is set by how
+many products an instance has after dominance and how large `k` is, and the
+search's cost, which reads neighbour masks only, is negatively related to the
+same quantity (−0.05 to −0.37). So the two procedures disagree about hardness
+for a *matrix* reason, as the plan suspected, but the matrix quantity is the
+product count of the instance rather than the choice of cover on a fixed
+graph, and the kill test says exactly that: graph-only features predict SAT
+refutation conflicts at MAE 0.53 in log10 against 0.25 for the full set and
+0.26 for six formula quantities, the reverse of §13's 0.095 against 0.097 for
+the search. Every one of 5,657 settled decisions on either backend agrees
+with the certified value.
+
+**Kill criterion.** The plan's statement — *paired median re-covering ratio
+within ±5%* — is **met on its letter and fails in its spirit**: the pooled
+median over all methods is 1.00 on both sides, but it is 1.00 because 17% of
+pairs are exactly equal and the methods pull opposite ways (0.77 / 0.87 /
+1.15 on the refutation, each outside ±5% with `p < 10⁻⁸`), and the paired
+MAD of 0.13 log10 says the typical pair is off by a third. §13's search-side
+answer to the same test was MAD 0 with every pair equal. The conclusion the
+kill was written to license — that the two procedures cannot fail on
+disjoint sets for this reason — stands on other grounds (the variance
+decomposition above), not on the median.
+
+**Size range covered.** 10–30 customers at 40 bases per size (§13's bases,
+themselves half uniform and half from the hardest decile by search nodes),
+4–61 products; 35 customers is a 10-base sample with 71% of refutations
+censored and carries no conclusion. Refutation censoring at 120 s is 22% at
+25 and 62% at 30, so the paired tables at those sizes are on the easier
+pairs; the witness side is 97% settled through 30. Nothing above 35 was run,
+and nothing here is evidence about 125 × 125, where §17 found the direct
+encoding has no proof to offer at any width. The label-floor and
+variance-share findings are measured to n = 30 and their scaling is not
+claimed.
+
+**Proposed, not applied.** One measurement item: since fewer products after
+dominance mean fewer conflicts (greedy 0.77× conflicts and 0.71× seconds at
+the median on refutations, but p90 1.39×), a *pre-encoding re-cover* — merging
+products whose union is a clique, which preserves the optimum by §13's
+construction — is a candidate speed-up for the SAT path where a proof object
+is wanted; the spread says it should be raced, not switched on. A predictor of
+SAT cost, unlike one of search cost (§19), needs formula features and a
+label-noise term of ±0.07 log10 on refutations and ±0.25 on witnesses. No
+default changed; `_lower_bound` and every path that decides `k` are
+untouched; nothing was written to `solutions/`.
+
+**Method notes.** *pysat's Kissat cannot be measured in-process*: no
+`accum_stats`, `interrupt()` ignored, and `conf_budget` aborts the whole
+interpreter with a core dump (`incremental solving not supported`) — hence
+CaDiCaL for conflicts and a forked, hard-killed child for Kissat's seconds.
+*Pool workers are daemonic* and refuse `multiprocessing` children; the child
+is a raw `os.fork` with a pipe and `select`. *A pilot that pipes through
+`tail` shows nothing until it exits*; write to a file. *Appending gzip
+members* to one `.csv.gz` reads back as one frame. *The wall cutoff loses
+the in-flight calls* (up to 16 here) rather than recording them as censored;
+the CSV is resumable, so a second run with the same arguments fills them in.
+*`formula unchanged` compares clause counts*, not clause sets; the 21 greedy
+pairs with equal counts and unequal conflicts are the reason to say so.
