@@ -27,7 +27,7 @@ Two references are cited twice, so the table rests on **twelve distinct papers**
 
 ## Acquisition status
 
-**Held: 5 of 12.** All five are legitimate open copies — author-hosted
+**Held: 6 of 12.** All five are legitimate open copies — author-hosted
 preprints or publisher open-archive copies. No paywall was circumvented.
 
 | Ref | Paper | File | Version | Source |
@@ -37,10 +37,11 @@ preprints or publisher open-archive copies. No paywall was circumvented.
 | [10] | Kirousis & Papadimitriou 1986 | `10_kirousis_papadimitriou_1986.pdf` | published, 14 pp. | already in `../../literature/` |
 | [11] | Kornai & Tuza 1992 | `11_kornai_tuza_1992.pdf` | author copy, 6 pp. | kornai.com/Papers/kortuz.pdf |
 | [12] | Fomin 1998 | `12_fomin_1998.pdf` | author preprint (PostScript, converted), 14 pp. | Fomin's UiB page via Wayback Machine |
+| [13] | Kinnersley 1992 | `13_kinnersley_1992.pdf` | published, 6 pp. | sent by H. Yanasse, 2026-09-27; also in `../../literature/` |
 
 Exact retrieval URLs are in `SOURCES.txt`.
 
-**Not obtained: 7 of 12.** Each was checked against OpenAlex, Semantic Scholar,
+**Not obtained: 6 of 12.** Each was checked against OpenAlex, Semantic Scholar,
 CORE, the publisher, the authors' own pages, and (where the author page is dead)
 the Wayback Machine.
 
@@ -51,12 +52,11 @@ the Wayback Machine.
 | [6] | Möhring 1990, Computing Suppl. 7 | Springer paywall. His TU Berlin publication pages have all been retired and redirect to a group landing page; no archived copy found. TU Berlin Technical Report 223 (1989) is the version to chase next. |
 | [7] | Ohtsuki et al. 1979, IEEE TCAS | IEEE Xplore paywall. |
 | [8] | Wing, Huang & Wang 1985, IEEE TCAD | IEEE Xplore paywall. |
-| [13] | Kinnersley 1992, IPL | Elsevier paywall. Already tracked in `../../literature/MISSING.md`. |
 | [14] | Lengauer 1981, Acta Informatica | Springer paywall. A metadata-only record exists in the Max Planck repository (MPG.PuRe) with no attached full text. |
 
 ### Routes still worth trying for the seven
 
-1. **Interlibrary loan / institutional access** — [1], [7], [8], [13], [14] are all
+1. **Interlibrary loan / institutional access** — [1], [7], [8], [14] are all
    ordinary ILL requests. [6] is a Springer book chapter, also ordinary ILL.
 2. **[6] as TU Berlin Technical Report 223 (1989)** — write to TU Berlin's
    mathematics library, or to Möhring directly (emeritus, still contactable).
@@ -121,3 +121,20 @@ in 2001 (the PDF's own title is its PII, `0012-365X(85)90046-9`).
 
 The same trick should work for any other Elsevier open-archive item in this
 corpus. It does **not** help with [1] or [13], which are genuinely closed.
+
+## Beyond Table 1, held since 2026-09-27
+
+Two papers Linhares & Yanasse cite outside Table 1, and one they do not, now
+complete the MOSP–pathwidth chain on the literature's own proofs (details in
+`../../literature/MISSING.md`, entries dated 2026-09-27):
+
+- **[15] Fellows & Langston 1989**, STOC — Theorem 7: gate matrix layout cost
+  `k` iff path-width `k − 1` (one direction sketched; the converse elementary).
+  `../../literature/fellows_langston_1989_search_decision_efficiency_stoc.pdf`.
+- **Fellows & Langston 1987**, IPL 26 — Lemma 4.1, the column-expansion lemma
+  both ways (= Yanasse 1997a Proposition 5); Lemma 4.3, the branch construction.
+  `../../literature/fellows_langston_1987_nonconstructive_advances_ipl.pdf`.
+- **Yanasse 1997a**, Pesquisa Operacional 17(1) — the clique-per-pattern graph
+  (Proposition 5), the minimum-degree and clique bounds; the paper the "1997c"
+  citations point at. `../../literature/yanasse_1997a_transformation_pattern_sequencing_wood.pdf`.
+

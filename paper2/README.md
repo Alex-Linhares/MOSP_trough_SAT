@@ -22,7 +22,7 @@ It cites fourteen bracket numbers, but two references are repeated ([6] for both
 gate matrix layout and PLA folding, [13] for both path-width and vertex
 separation), so the table rests on **twelve distinct papers**.
 
-Five of the twelve are now held in `literature/`; seven could not be obtained
+Six of the twelve are now held in `literature/`; six could not be obtained
 from any open source. The full breakdown, including why each of the seven
 failed and what route to try next, is in `literature/MANIFEST.md`.
 
@@ -35,6 +35,7 @@ Held:
 | [10] | Kirousis & Papadimitriou 1986 | edge search game |
 | [11] | Kornai & Tuza 1992 | narrowness |
 | [12] | Fomin 1998 | split bandwidth |
+| [13] | Kinnersley 1992 | path-width, vertex separation (obtained 2026-09-27) |
 
 Missing, with the role Table 1 gives each:
 
@@ -45,7 +46,6 @@ Missing, with the role Table 1 gives each:
 | [6] | Möhring, R.H. (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer Wien, 17–51. DOI 10.1007/978-3-7091-9076-0_2 | gate matrix layout, PLA folding | Springer paywall; author pages retired |
 | [7] | Ohtsuki, T., Mori, H., Kuh, E.S., Kashiwabara, T. & Fujisawa, T. (1979). One-dimensional logic gate assignment and interval graphs. *IEEE TCAS* 26(9), 675–684. DOI 10.1109/TCS.1979.1084695 | one-dimensional logic | IEEE paywall |
 | [8] | Wing, O., Huang, S. & Wang, R. (1985). Gate matrix layout. *IEEE TCAD* 4(3), 220–231. DOI 10.1109/TCAD.1985.1270118 | gate matrix layout | IEEE paywall |
-| [13] | Kinnersley, N.G. (1992). The vertex separation number of a graph equals its path-width. *IPL* 42(6), 345–350. DOI 10.1016/0020-0190(92)90234-M | path-width, vertex separation | Elsevier paywall |
 | [14] | Lengauer, T. (1981). Black-white pebbles and graph separation. *Acta Informatica* 16(4), 465–475. DOI 10.1007/BF00264496 | edge separation | Springer paywall |
 
 [9] has since been obtained exactly that way — it was never paywalled, only
@@ -56,11 +56,14 @@ material rather than access-mechanism problems.
 The same seven are recorded in the repository-wide registry at
 `../literature/MISSING.md`, cross-referenced by bracket number.
 
-Of the two papers carrying the most weight for this project, one is now in
-hand and one is not. [9] Kirousis & Papadimitriou 1985, the interval-thickness =
-node-search-number link, is held. [13] Kinnersley, the vertex-separation =
-pathwidth theorem the Lean formalization proves, is still missing, and we
-continue to work from secondary statements of it.
+The two papers carrying the most weight for this project are both in hand.
+[9] Kirousis & Papadimitriou 1985, the interval-thickness = node-search-number
+link, and, since 2026-09-27, [13] Kinnersley, the vertex-separation = pathwidth
+theorem: its Theorem 3.1 is proved by exactly the two constructions the Lean
+formalization uses, so `VSEquivPW.lean` formalises the published proof and not
+a secondary statement. With Fellows & Langston 1989 (Theorem 7) and 1987
+(Lemma 4.1), also obtained that day, every link from open stacks to pathwidth
+is a held paper; see `literature/MANIFEST.md`, "Beyond Table 1".
 
 ## Step 2 (done): how popular is each of the twelve problems?
 

@@ -38,3 +38,4 @@ Sources checked and found to have nothing for the other seven:
 (The ScienceDirect and Academia.edu blocks are what stood between us and [9];
  a browser got past them.)
   pure.mpg.de                          - metadata only, no full text
+13_kinnersley_1992.pdf  sent by H. Yanasse by e-mail, 2026-09-27 (published version, DOI 10.1016/0020-0190(92)90234-M); same file as ../../literature/kinnersley_1992_vertex_separation_equals_pathwidth.pdf
