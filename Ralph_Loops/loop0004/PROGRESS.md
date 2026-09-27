@@ -19,6 +19,14 @@
 - `literature/yanasse_1997a_transformation_pattern_sequencing_wood.pdf` and
   `literature/becceneri_yanasse_soma_2004_method_mosp_cutting.pdf` also
   arrived today (item 02 already depends on the second).
+- (17:25) `literature/fellows_langston_1989_search_decision_efficiency_stoc.pdf`
+  arrived too. For item 12: its Theorem 7 proves `pathwidth k − 1 ⟹ layout
+  cost ≤ k` by building the matrix whose columns are the bags and expanding
+  each bag into pairwise two-ones columns — the direction `Reduction.lean`
+  holds with a `sorry`; the converse (a pattern order gives a decomposition:
+  bags = customers open at each step, intervals by construction, every edge
+  in the bag of the pattern that creates it, bag size ≤ peak) is elementary
+  and is the one `Reduction.lean` lacks. `MISSING.md` has the statement.
 
 ---
 

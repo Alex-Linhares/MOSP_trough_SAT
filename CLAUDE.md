@@ -183,6 +183,17 @@ A third operation, **contraction**, does not preserve the optimum and is kept
 separate in the same module: it is a relaxation, and the basis of
 `satisfiability/relaxation.py`.
 
+**The MOSP–pathwidth chain, closed on held papers (2026-09-27).** MOSP = gate
+matrix layout cost (Linhares & Yanasse 2002, Proposition 2, by definition);
+gate matrix layout cost = pathwidth + 1 (Fellows & Langston 1989, Theorem 7:
+one direction sketched there, the converse elementary); pathwidth = vertex
+separation (Kinnersley 1992, Theorem 3.1, both directions); and the graph in
+question is the clique-per-pattern graph of Yanasse (1997a), Proposition 5.
+Every paper in the chain is in `literature/`. What remains is formal, not
+bibliographic: `Reduction.lean` has `mosp ≤ pathwidth + 1` with one `sorry`
+and lacks the elementary converse (loop0004 item 12); details in
+`literature/MISSING.md`.
+
 ### Key References
 
 - **Kinnersley (1992)** — Established vertex separation = pathwidth. *Information Processing Letters*, 42(6), 345-350. In `literature/` since 2026-09-27. Its Theorem 3.1 is proved by the two constructions `LayoutToDecomposition.lean` and `DecompositionToLayout.lean` formalise; its Corollary 3.2 (gate matrix layout cost = node search number = vs + 1) with Linhares & Yanasse (2002) Proposition 2 is the published chain behind `MOSP = pathwidth + 1`; and its Corollary 4.2 with Fellows & Langston (1987) Lemma 4.3 is the **pathwidth branch rule** — three branches of cost k at one vertex force k + 1 — that loop0004 item 11 tests as a bound candidate: known, to be cited.
@@ -198,7 +209,7 @@ separate in the same module: it is a relaxation, and the basis of
 - **Martin, Yanasse & Pinto (2022)** — ILP/CP formulations; comparative benchmarks. *International Transactions in Operational Research*.
 - **Faggioli & Bentivoglio (1998)** — Heuristic approaches and instance generation. *European Journal of Operational Research*, 110(3), 564-575.
 - **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218.
-- **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512.
+- **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512. In `literature/` since 2026-09-27. **Theorem 7**: graphs of gate matrix layout cost k are exactly the graphs of pathwidth k − 1, proved in one direction (decomposition → layout, via column expansion and their 1987 Lemma 4.1); the converse is elementary from the consecutive-ones property. This is the link between open stacks and pathwidth that Linhares & Yanasse (2002) Table 1 rests on.
 
 ## Certified Optima vs Best Known Solutions
 
