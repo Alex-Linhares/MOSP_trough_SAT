@@ -34,6 +34,41 @@
   pattern into its pairwise two-customer columns preserves the optimum — the
   matrix form of Yanasse (1997a) Proposition 5 — which is the lemma the
   `IsReduced` hypothesis in `Reduction.lean` stands in for.
+- **(18:05) Item 12 — read this before touching `Reduction.lean`.** The main
+  theorem `mosp_le_pathwidth_add_one` is stated over `agreementGraph`, whose
+  vertices are *patterns* (two adjacent iff they share a customer). **Over
+  that graph the statement is false**, so its `sorry` (`openStacksAt_le_bag_card`,
+  "active customers inject into the bag") can never be filled: take one
+  pattern `p` and customers `c₁..c₄` with `c_j` requiring `{p, q_j}` — the
+  instance is `IsReduced`, `mospValue = 4` (every order has all four stacks
+  open at `p`), the agreement graph is the star `K_{1,4}` with pathwidth 1,
+  so `pathwidth + 1 = 2 < 4`. Checked with `solve_mosp_exact` and
+  `fixed_parameter_algorithm.pathwidth` on 2026-09-27. `Sandwich.lean`'s
+  `mospValue_le_bandwidth_add_one` inherits the falsehood (bandwidth of
+  `K_{1,4}` is 2). The theorem that is true is over the **MOSP graph**:
+  vertices are *customers*, adjacent iff they share a pattern (each pattern
+  is a clique); `customer_inter/customer_graph.py` builds it, and the chain
+  Linhares & Yanasse 2002 Prop. 2 → Fellows & Langston 1989 Thm 7 (with the
+  1987 Lemma 4.1) → Kinnersley 1992 Thm 3.1 proves `mospValue = pathwidth + 1`
+  for it. What item 12 should do: define `mospGraph : SimpleGraph C`
+  (`Adj c d := c ≠ d ∧ ∃ p, requires c p ∧ requires d p`), then prove both
+  directions over it. Easy direction, `pathwidth + 1 ≤ mospValue`: from a
+  pattern order build bags `X_i = {c | isActive σ c i}`; each customer's
+  bags form an interval by construction, every edge (two customers sharing
+  the pattern at step `i`) lies in `X_i`, `|X_i| = openStacksAt σ i`. Hard
+  direction, `mospValue ≤ pathwidth + 1`: from a path decomposition, every
+  clique (each pattern's customer set) lies in some bag — the Helly lemma:
+  take `v ∈ K` with the largest first bag; every `u ∈ K` is adjacent to `v`,
+  so shares a bag with it, so `u`'s interval covers `firstBag v` — assign
+  each pattern the index of a bag containing its clique, order patterns by
+  that index, and a customer open at step `i` has patterns at bags `≤` and
+  `≥` the current one, hence lies in the current bag by the interval
+  property; so `openStacksAt ≤ width + 1`. No Hall's theorem and no
+  `IsReduced` are needed; the existing `LayoutToDecomposition` /
+  `DecompositionToLayout` files are the templates. Keep the old
+  `Reduction.lean` statements only with a comment recording the
+  counterexample, or replace them; do not leave a false statement standing
+  as if it were an open gap.
 
 ---
 

@@ -194,7 +194,20 @@ column-expansion lemma, proved there in both directions, that Theorem 7's
 sketch relies on. Every paper in the chain is in `literature/`. What remains
 is formal, not bibliographic: `Reduction.lean` has `mosp ≤ pathwidth + 1`
 with one `sorry` and lacks the elementary converse (loop0004 item 12);
-details in `literature/MISSING.md`.
+details in `literature/MISSING.md`. **Correction, 2026-09-27 18:05: that
+`sorry` cannot be filled, because `Reduction.lean` states the theorem over
+`agreementGraph`, whose vertices are patterns, and over that graph it is
+false** — one pattern shared by four customers each with a private pattern
+is reduced, has `mospValue = 4`, and its pattern graph is the star `K_{1,4}`
+of pathwidth 1. `Sandwich.lean`'s `mospValue_le_bandwidth_add_one` inherits
+the falsehood. The Lean development formalises the graph side correctly and
+the MOSP side over the wrong graph, which is the swap the terminology
+correction at the top of this file describes. The fix is to define the MOSP
+graph in Lean (customers as vertices, a clique per pattern) and prove both
+directions over it; the proof needs the Helly property of cliques in a path
+decomposition and the interval property, not Hall's theorem, and no
+`IsReduced` hypothesis. That is loop0004 item 12's corrected brief
+(`Ralph_Loops/loop0004/PROGRESS.md`).
 
 ### Key References
 
