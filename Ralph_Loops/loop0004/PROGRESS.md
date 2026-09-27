@@ -27,6 +27,13 @@
   bags = customers open at each step, intervals by construction, every edge
   in the bag of the pattern that creates it, bag size ≤ peak) is elementary
   and is the one `Reduction.lean` lacks. `MISSING.md` has the statement.
+- (17:40) `literature/fellows_langston_1987_nonconstructive_advances_ipl.pdf`
+  arrived as well. Item 11: its Lemma 4.3 is the branch rule *with proof*
+  (three copies joined at a new vertex adjacent to one vertex in each force
+  cost k + 1). Item 12: its Lemma 4.1 proves, both ways, that expanding each
+  pattern into its pairwise two-customer columns preserves the optimum — the
+  matrix form of Yanasse (1997a) Proposition 5 — which is the lemma the
+  `IsReduced` hypothesis in `Reduction.lean` stands in for.
 
 ---
 

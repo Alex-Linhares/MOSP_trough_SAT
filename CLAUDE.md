@@ -188,11 +188,13 @@ matrix layout cost (Linhares & Yanasse 2002, Proposition 2, by definition);
 gate matrix layout cost = pathwidth + 1 (Fellows & Langston 1989, Theorem 7:
 one direction sketched there, the converse elementary); pathwidth = vertex
 separation (Kinnersley 1992, Theorem 3.1, both directions); and the graph in
-question is the clique-per-pattern graph of Yanasse (1997a), Proposition 5.
-Every paper in the chain is in `literature/`. What remains is formal, not
-bibliographic: `Reduction.lean` has `mosp ≤ pathwidth + 1` with one `sorry`
-and lacks the elementary converse (loop0004 item 12); details in
-`literature/MISSING.md`.
+question is the clique-per-pattern graph of Yanasse (1997a), Proposition 5,
+which is Lemma 4.1 of Fellows & Langston (1987) in matrix vocabulary — the
+column-expansion lemma, proved there in both directions, that Theorem 7's
+sketch relies on. Every paper in the chain is in `literature/`. What remains
+is formal, not bibliographic: `Reduction.lean` has `mosp ≤ pathwidth + 1`
+with one `sorry` and lacks the elementary converse (loop0004 item 12);
+details in `literature/MISSING.md`.
 
 ### Key References
 
@@ -209,6 +211,7 @@ and lacks the elementary converse (loop0004 item 12); details in
 - **Martin, Yanasse & Pinto (2022)** — ILP/CP formulations; comparative benchmarks. *International Transactions in Operational Research*.
 - **Faggioli & Bentivoglio (1998)** — Heuristic approaches and instance generation. *European Journal of Operational Research*, 110(3), 564-575.
 - **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218.
+- **Fellows & Langston (1987)** — Nonconstructive advances in polynomial-time complexity. *Information Processing Letters*, 26, 157-162. In `literature/` since 2026-09-27. Lemma 4.1 is the column-expansion lemma (= Yanasse 1997a Proposition 5), Lemma 4.2 minor-closure of bounded layout cost, Lemma 4.3 the pathwidth branch construction with its proof.
 - **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512. In `literature/` since 2026-09-27. **Theorem 7**: graphs of gate matrix layout cost k are exactly the graphs of pathwidth k − 1, proved in one direction (decomposition → layout, via column expansion and their 1987 Lemma 4.1); the converse is elementary from the consecutive-ones property. This is the link between open stacks and pathwidth that Linhares & Yanasse (2002) Table 1 rests on.
 
 ## Certified Optima vs Best Known Solutions
