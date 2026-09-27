@@ -22,7 +22,7 @@ It cites fourteen bracket numbers, but two references are repeated ([6] for both
 gate matrix layout and PLA folding, [13] for both path-width and vertex
 separation), so the table rests on **twelve distinct papers**.
 
-Six of the twelve are now held in `literature/`; six could not be obtained
+Eleven of the twelve are now held in `literature/` (Möhring only as a two-page preview); one could not be obtained
 from any open source. The full breakdown, including why each of the seven
 failed and what route to try next, is in `literature/MANIFEST.md`.
 
@@ -36,17 +36,18 @@ Held:
 | [11] | Kornai & Tuza 1992 | narrowness |
 | [12] | Fomin 1998 | split bandwidth |
 | [13] | Kinnersley 1992 | path-width, vertex separation (obtained 2026-09-27) |
+| [1] | Yanasse 1997 | MOSP (obtained 2026-09-27) |
+| [6] | Möhring 1990 | gate matrix layout, PLA folding (two-page preview only, 2026-09-27) |
+| [7] | Ohtsuki et al. 1979 | one-dimensional logic (obtained 2026-09-27) |
+| [8] | Wing, Huang & Wang 1985 | gate matrix layout (obtained 2026-09-27) |
+| [14] | Lengauer 1981 | edge separation (obtained 2026-09-27) |
 
 Missing, with the role Table 1 gives each:
 
 | Ref | Reference | Role | Why not held |
 |---|---|---|---|
-| [1] | Yanasse, H.H. (1997). On a pattern sequencing problem to minimize the maximum number of open stacks. *EJOR* 100(3), 454–463. DOI 10.1016/S0377-2217(97)84107-0 | MOSP | Elsevier paywall |
 | [5] | Kashiwabara, T. & Fujisawa, T. (1979). NP-completeness of the problem of finding a minimum clique number interval graph containing a given graph as a subgraph. *Proc. 1979 IEEE ISCAS*, Tokyo, 657–660. No DOI | interval thickness | 1979 proceedings, never digitised |
-| [6] | Möhring, R.H. (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer Wien, 17–51. DOI 10.1007/978-3-7091-9076-0_2 | gate matrix layout, PLA folding | Springer paywall; author pages retired |
-| [7] | Ohtsuki, T., Mori, H., Kuh, E.S., Kashiwabara, T. & Fujisawa, T. (1979). One-dimensional logic gate assignment and interval graphs. *IEEE TCAS* 26(9), 675–684. DOI 10.1109/TCS.1979.1084695 | one-dimensional logic | IEEE paywall |
-| [8] | Wing, O., Huang, S. & Wang, R. (1985). Gate matrix layout. *IEEE TCAD* 4(3), 220–231. DOI 10.1109/TCAD.1985.1270118 | gate matrix layout | IEEE paywall |
-| [14] | Lengauer, T. (1981). Black-white pebbles and graph separation. *Acta Informatica* 16(4), 465–475. DOI 10.1007/BF00264496 | edge separation | Springer paywall |
+| [6] | Möhring, R.H. (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer Wien, 17–51. DOI 10.1007/978-3-7091-9076-0_2 | gate matrix layout, PLA folding | only the two-page preview held; full chapter still wanted |
 
 [9] has since been obtained exactly that way — it was never paywalled, only
 blocked to non-browser clients, and opening the DOI in a browser fetched it.

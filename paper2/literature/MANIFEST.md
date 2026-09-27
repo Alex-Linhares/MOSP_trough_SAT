@@ -27,7 +27,7 @@ Two references are cited twice, so the table rests on **twelve distinct papers**
 
 ## Acquisition status
 
-**Held: 6 of 12.** All five are legitimate open copies — author-hosted
+**Held: 11 of 12 (one as a two-page preview).** All five are legitimate open copies — author-hosted
 preprints or publisher open-archive copies. No paywall was circumvented.
 
 | Ref | Paper | File | Version | Source |
@@ -38,26 +38,27 @@ preprints or publisher open-archive copies. No paywall was circumvented.
 | [11] | Kornai & Tuza 1992 | `11_kornai_tuza_1992.pdf` | author copy, 6 pp. | kornai.com/Papers/kortuz.pdf |
 | [12] | Fomin 1998 | `12_fomin_1998.pdf` | author preprint (PostScript, converted), 14 pp. | Fomin's UiB page via Wayback Machine |
 | [13] | Kinnersley 1992 | `13_kinnersley_1992.pdf` | published, 6 pp. | sent by H. Yanasse, 2026-09-27; also in `../../literature/` |
+| [1] | Yanasse 1997, EJOR | `01_yanasse_1997.pdf` | published | sent by H. Yanasse, 2026-09-27 |
+| [6] | Möhring 1990 | `06_mohring_1990_PREVIEW.pdf` | **first two pages only** (Springer chapter preview) | sent by H. Yanasse, 2026-09-27; the full 35-page chapter is still wanted |
+| [7] | Ohtsuki et al. 1979 | `07_ohtsuki_et_al_1979.pdf` | published, 10 pp. | sent by H. Yanasse, 2026-09-27 |
+| [8] | Wing, Huang & Wang 1985 | `08_wing_huang_wang_1985.pdf` | published, 12 pp. | sent by H. Yanasse, 2026-09-27 |
+| [14] | Lengauer 1981 | `14_lengauer_1981.pdf` | published, 11 pp. | sent by H. Yanasse, 2026-09-27 |
 
 Exact retrieval URLs are in `SOURCES.txt`.
 
-**Not obtained: 6 of 12.** Each was checked against OpenAlex, Semantic Scholar,
+**Not obtained: 1 of 12, plus the full text of one.** Each was checked against OpenAlex, Semantic Scholar,
 CORE, the publisher, the authors' own pages, and (where the author page is dead)
 the Wayback Machine.
 
 | Ref | Paper | Why not |
 |---|---|---|
-| [1] | Yanasse 1997, EJOR | Elsevier paywall; OpenAlex and Semantic Scholar both report `closed`. Already tracked in `../../literature/MISSING.md`. |
 | [5] | Kashiwabara & Fujisawa 1979, ISCAS | 1979 conference proceedings, no DOI, not indexed by OpenAlex at all. The hardest of the twelve. |
-| [6] | Möhring 1990, Computing Suppl. 7 | Springer paywall. His TU Berlin publication pages have all been retired and redirect to a group landing page; no archived copy found. TU Berlin Technical Report 223 (1989) is the version to chase next. |
-| [7] | Ohtsuki et al. 1979, IEEE TCAS | IEEE Xplore paywall. |
-| [8] | Wing, Huang & Wang 1985, IEEE TCAD | IEEE Xplore paywall. |
-| [14] | Lengauer 1981, Acta Informatica | Springer paywall. A metadata-only record exists in the Max Planck repository (MPG.PuRe) with no attached full text. |
+| [6] | Möhring 1990, Computing Suppl. 7 | Only the two-page Springer preview is held (2026-09-27). The full chapter (pp. 17–51) is still wanted; TU Berlin Technical Report 223 (1989) is the alternative version. |
 
 ### Routes still worth trying for the seven
 
-1. **Interlibrary loan / institutional access** — [1], [7], [8], [14] are all
-   ordinary ILL requests. [6] is a Springer book chapter, also ordinary ILL.
+1. **Interlibrary loan / institutional access** — [6] is a Springer book chapter,
+   an ordinary ILL request.
 2. **[6] as TU Berlin Technical Report 223 (1989)** — write to TU Berlin's
    mathematics library, or to Möhring directly (emeritus, still contactable).
 3. **[5]** — the 1979 ISCAS proceedings exist as a physical volume; IEEE has not
