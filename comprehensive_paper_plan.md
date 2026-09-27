@@ -148,7 +148,9 @@ in **71 seconds**. SP4 reaches 53 but is not proved.
 `lean/MOSPFormalization/` contains vertex separation, path decompositions,
 pathwidth, MOSP instances and open-stack counting, with VS = PW (Kinnersley 1992)
 proven sorry-free in both directions. *(measured)* `Reduction.lean` carries 2
-`sorry`s. **None of this yet formalizes the SAT encoding**, which is the piece
+`sorry`s. *(2026-09-27: those two statements were over the pattern graph and
+false; `MOSPGraph.lean` now proves `mospValue = pathwidth(MOSP graph) + 1`
+sorry-free in both directions.)* **None of this yet formalizes the SAT encoding**, which is the piece
 §5.3 needs.
 
 ---
@@ -227,7 +229,7 @@ finite types; the Python implementation is not verified, and §7 states that gap
 Two constraint families — at-most-one and at-most-`k` — are stated by their
 meaning rather than their ladder and totalizer clause forms.
 
-Deciding whether to close the two existing `sorry`s in `Reduction.lean` is
+*(2026-09-27: resolved — see §3.4.)* Deciding whether to close the two existing `sorry`s in `Reduction.lean` is
 separate — they concern the pathwidth reduction, which the SAT solver no longer
 relies on. **Recommendation: leave them and say so.** They are not load-bearing
 for this paper.

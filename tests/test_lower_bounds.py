@@ -62,8 +62,9 @@ def test_bound_never_exceeds_cached_optima():
     """Check against the corpus of solved benchmark instances.
 
     This is the test that matters for the contraction-degeneracy component,
-    whose soundness rests on Yanasse's MOSP = pathwidth + 1 rather than on a
-    direct argument.
+    whose soundness rests on Yanasse's MOSP = pathwidth + 1 (a Lean theorem
+    since 2026-09-27, `MOSPGraph.lean`) plus the treewidth ≤ pathwidth step,
+    rather than on a direct argument.
     """
     if not SOLUTIONS.exists() or not INSTANCE_DIR.exists():
         pytest.skip("benchmark corpus not present")

@@ -1010,7 +1010,10 @@ machine-checkable proof object for the refutations — see
   unobtained**, and may be the same bound as contraction degeneracy. *Pesquisa
   Operacional* is digitised only from 2001. No novelty should be claimed until
   this is settled.
-- **The Lean formalization is incomplete** for the pathwidth reduction (2
+- **The Lean formalization is complete for the MOSP–pathwidth equality** since
+  2026-09-27 (`MOSPGraph.lean`); the three tree-decomposition statements of
+  `Sandwich.lean` are the only `sorry`s. *(Superseded text follows.)* ~~The
+  Lean formalization is incomplete for the pathwidth reduction (2
   `sorry`s), though the part the SAT solver actually relies on — encoding
   faithfulness — is complete. Nothing in Lean covers the customer search.
 - **The pathwidth code paths are legacy.** `mosp/solver.py`, `customer_inter/`,

@@ -114,13 +114,21 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       trees of cliques. Deliverable: the harness and a verdict per candidate.
       **Kill**: none beats the reference on more than 5% of the gap instances
       while surviving.
-- [ ] 12 · Q7 **The Lean equality.** In `lean/MOSPFormalization/Reduction.lean`:
-      attempt the Hall's-theorem `sorry` in `mosp_le_pathwidth_add_one`, and
-      state and attempt the reverse inequality `pathwidth + 1 ≤ mospValue`
-      (a pattern order induces a customer layout whose vertex separation is
-      at most the peak minus one). `lake build` must pass; `learning.sandwich
-      --stage lean` must list the `sorry` inventory. Blocked with statements
-      and a gap list is an acceptable deliverable.
+- [ ] 12 · Q7 **The remaining Lean gaps.** The MOSP–pathwidth equality is
+      already proved (`lean/MOSPFormalization/MOSPGraph.lean`, 2026-09-27,
+      `sorry`-free; read its header and PROGRESS.md's owner notes first). What
+      is left is the tree-decomposition section of `Sandwich.lean`: prove
+      `treewidth_le_pathwidth` (every path decomposition is a tree
+      decomposition — build the `TreeDecomposition` from a `PathDecomposition`
+      directly rather than through `pathGraph.IsTree` if Mathlib lacks it),
+      and the branch lemma (three branches of treewidth ≥ k at a cut vertex
+      force pathwidth ≥ k + 1; Fellows & Langston 1987 Lemma 4.3 and Kinnersley
+      1992 Theorem 4.3 are the references, in `literature/`). Leave
+      `conjecture_sqrt_tw_f6` as a statement. `lake build` must pass;
+      `python -m learning.sandwich --stage lean` must list the inventory and
+      `tests/test_sandwich.py` must pass (move any newly proved name from
+      `STATED` to `PROVED` in `learning/sandwich.py`). Blocked with a precise
+      gap list is an acceptable deliverable.
 - [ ] 13 · **Reserve.** If any item above is marked `- [!]`, re-open the most
       valuable one with what its blocker taught. If none is blocked, take the
       first "for the next loop" note left by items 01–12 in PROGRESS.md.

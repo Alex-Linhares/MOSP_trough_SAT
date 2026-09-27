@@ -468,9 +468,9 @@ Nodes = patterns, edges between patterns sharing a customer (`M^T @ M`). Pathwid
 
 ### Customer Intersection Graph (`customer_inter/solver.py`)
 
-Nodes = customers, edges between customers sharing a pattern (`M @ M^T`). Pathwidth(G_c) + 1 gives an **upper bound** on MOSP. Matches published optimal values on dense instances (GP1-4, GP6-8) but overcounts on sparse instances (SP2-4, GP5).
+Nodes = customers, edges between customers sharing a pattern (`M @ M^T`). This is the MOSP graph, and **`pathwidth(G_c) + 1 = optimum`** is a theorem, proved in Lean on 2026-09-27 (`MOSPGraph.lean`). The earlier reading of the validation table — that it "overcounts on sparse instances" — was wrong about the cause: the values above the published optima (SP2-4, GP5) were overestimates of the pathwidth by the unsound pathwidth SAT encoding's greedy fallback, not a looseness of the reduction.
 
-The overcounting arises because the customer-to-pattern ordering derivation (sort patterns by earliest/latest customer position) is not guaranteed to produce an optimal MOSP ordering, even when the customer ordering achieves optimal pathwidth.
+What *is* heuristic is `pathwidth_to_mosp`'s ordering derivation (sort patterns by earliest/latest customer position): it need not realise the optimum even from an optimal customer layout. The proof in `MOSPGraph.lean` gives the construction that does — order patterns by a bag of the path decomposition that contains their clique — and it would be the correct replacement.
 
 ## Pathwidth Computation
 
@@ -514,7 +514,7 @@ For large instances where branch-and-bound times out, a SAT-based solver encodes
 - 125×125: 28% solved (only density-2 and 2 density-4; density ≥ 4 mostly timeout)
 - **Overall: 200 of 220 instances solved that were previously out of reach for the branch-and-bound solver (91%)**
 
-**Important**: These pathwidth values are provably correct, but the derived MOSP values (pathwidth + 1) are upper bounds that may overcount on sparse instances. See "Critical Finding" above.
+**Important** *(corrected 2026-09-27)*: `pathwidth(MOSP graph) + 1` **is** the optimum — a `sorry`-free Lean theorem, `lean/MOSPFormalization/MOSPGraph.lean`. Where the validation table above shows `pw + 1` above a published optimum (GP5, SP2–SP4), the *pathwidth value* was an overestimate: this encoding is unsound (known bug below) and falls back to a greedy ordering, which is an upper bound on pathwidth. It is not a looseness of the reduction.
 
 `compute_pathwidth_sat()` is a drop-in replacement for `compute_pathwidth_fpt()` with the same interface. It reuses the same preprocessing (pendant removal, component decomposition) and bounds (greedy upper, clique lower).
 
@@ -540,7 +540,7 @@ Encodes the MOSP decision problem directly as SAT, bypassing the pathwidth reduc
 
 ## Design Decisions
 
-**Two graph formulations.** The agreement graph (patterns as vertices) and customer intersection graph (customers as vertices) provide complementary bounds. Neither yields exact MOSP on all instances: agreement undercounts, customer overcounts. The Lean formalization proves agreement graph properties.
+**Two graph formulations** *(reworded 2026-09-27)*. The customer intersection graph (customers as vertices, a clique per pattern) is the MOSP graph, and `pathwidth + 1` of it **equals** the optimum: proved in Lean (`MOSPGraph.lean`, both directions). The agreement graph (patterns as vertices) gives no bound in either direction in general — a four-customer star undercounts (2 against 4), a single customer with many patterns overcounts — and on the benchmark corpus it happened to undercount. The earlier statement that the Lean development "proves agreement graph properties" referred to a theorem over the pattern graph that was false; it is deleted, and `MOSPGraphExamples.lean` proves the counterexample.
 
 **Direct MOSP-to-SAT solver.** Encodes MOSP directly without the pathwidth reduction. Produces exact optimal values validated against all published benchmarks. The placement + pair-wise open-stack forcing captures the full open/close semantics correctly.
 
@@ -811,8 +811,9 @@ branching. Each has a report explaining the mechanism, not just the outcome.
 - **The clique bound never improved on contraction degeneracy + 1** anywhere in
   the corpus, under a 1-second budget. `_lower_bound` spends up to 5 seconds per
   call on it. A measurement, not a theorem — and the clique bound is the one
-  provable without Yanasse's pathwidth equality — but the budget is worth
-  revisiting.
+  provable without Yanasse's pathwidth equality, a distinction that lost its
+  force when the equality became a Lean theorem on 2026-09-27 — but the budget
+  is worth revisiting.
 
 **What the corpus says about the problem itself** (`reports/ml_nature.md`,
 Ralph loop0001, 2026-09-25, executing `reports/ml_nature_plan.md`). Eight
@@ -1066,9 +1067,9 @@ refutation portfolio, degree fan order for `decide`. Still to decide: exact
 treewidth in `_lower_bound`; the two-key rule as heuristic and DFS seed (one
 `corpus_sweep` run settles it and the LightGBM question with it); degree fan
 order and a portfolio on the satisfiable side. **Open and unpriced**: a sound
-refutation check above 40 customers; Yanasse's equality and the encoding's
-correctness in Lean; a pathwidth bound that sees separators of trees of
-cliques.
+refutation check above 40 customers; the encoding's correctness in Lean
+(Yanasse's equality itself was proved on 2026-09-27); a pathwidth bound that
+sees separators of trees of cliques.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.

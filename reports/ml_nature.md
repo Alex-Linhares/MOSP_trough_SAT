@@ -7160,6 +7160,21 @@ Mathlib, not a function; `G.ne_of_adj h rfl` is the irreflexivity step.
 *The lake cache is the whole budget*: the incremental build is 2 s; a
 Mathlib rebuild would be the session.
 
+**Resolution, 2026-09-27, after this section was written.** Yanasse's
+equality is no longer a hypothesis: `lean/MOSPFormalization/MOSPGraph.lean`
+proves `mospValue = pathwidth (mospGraph) + 1` for every instance with a
+requirement, `sorry`-free in both directions, where `mospGraph` has customers
+as vertices (a clique per pattern). The `Reduction.lean` statements this
+section inherited a `sorry` from were over the *pattern* graph and were false
+(the four-customer star: `mospValue = 4`, pattern-graph pathwidth 1;
+`MOSPGraphExamples.lean` proves it); they are deleted. Consequently
+`MOSPInstance.mospValue_le_bandwidth_add_one` is now proved outright over
+`mospGraph`, and `degeneracy_add_one_le_mospValue_of_eq` is replaced by
+`degeneracy_add_one_le_mospValue` under the hypothesis `∃ c p, requires c p`.
+`python -m learning.sandwich --stage lean` lists seventeen proved theorems and
+the three tree-decomposition statements as the only `sorry`s. The commit is
+`d723d173`.
+
 ## 27. The census: every graph on ≤ 11 vertices, pathwidth against treewidth (plan 2 §3 item 14, reserve; §21's note (i))
 
 *Iteration 16 of loop0003, 2026-09-26. Code: `learning/pwtw_exhaust.c` (exact

@@ -6,7 +6,8 @@ Released under the MIT license as described in the file LICENSE.
 
 The certified corpus satisfies `degeneracy(G) + 1 ≤ optimum ≤ bandwidth(G) + 1`
 on every one of its instances (`reports/ml_nature.md` §5), and the optimum is
-`pathwidth + 1` by Yanasse's equality. Both halves are textbook inequalities
+`pathwidth + 1` by Yanasse's equality, proved over the MOSP graph in
+`MOSPGraph.lean` (`MOSPInstance.mospValue_eq_pathwidth_add_one`). Both halves are textbook inequalities
 about graphs; this file proves them over the repository's definitions and
 connects them through Kinnersley's theorem (`VSEquivPW`).
 

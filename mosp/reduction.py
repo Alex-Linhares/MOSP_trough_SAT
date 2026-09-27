@@ -1,8 +1,15 @@
-"""Formal reduction between MOSP and pathwidth.
+"""Reduction between MOSP and pathwidth of the *agreement graph* (patterns as vertices).
 
-Theorem (Yanasse 1997, Kinnersley 1992):
-    Let M be a MOSP instance and G(M) its agreement graph.
-    Then: optimal MOSP value = pathwidth(G(M)) + 1
+**Not a theorem.** `pathwidth(agreement graph) + 1` is neither an upper nor a
+lower bound on the optimum in general: one pattern shared by four customers
+with private patterns has optimum 4 and an agreement graph of pathwidth 1
+(a star), while one customer requiring m + 1 patterns has optimum 1 and a
+complete agreement graph of pathwidth m. On the benchmark corpus it happens
+to undercount (`CLAUDE.md`). The equality `optimum = pathwidth + 1` holds for
+the *MOSP graph* — customers as vertices, a clique per pattern — and is
+proved in `lean/MOSPFormalization/MOSPGraph.lean` (2026-09-27); see
+`customer_inter/reduction.py`. This module is kept for the measurements that
+used it.
 
 This module provides:
   - mosp_to_pathwidth: Map a MOSP instance to a pathwidth problem (graph).

@@ -33,8 +33,12 @@ owner.*
   literature's MCNh under another name is open, now that Becceneri, Yanasse &
   Soma (2004) — obtained 2026-09-27 — states MCNh as an arc-traversal
   heuristic (§7, `literature/MISSING.md`).
-- `Sandwich.lean` proves both sandwich inequalities; `Reduction.lean` has
-  `mosp ≤ pathwidth + 1` with a Hall's-theorem `sorry` and no `≥` (§26).
+- `Sandwich.lean` proves both sandwich inequalities; `Reduction.lean` had
+  `mosp ≤ pathwidth + 1` with a Hall's-theorem `sorry` and no `≥` (§26) —
+  **superseded 2026-09-27 before item 12 ran**: that statement was over the
+  pattern graph and false; `MOSPGraph.lean` now proves the equality over the
+  MOSP graph, `sorry`-free, both directions. Item 12 is reduced to the three
+  tree-decomposition `sorry`s of `Sandwich.lean`.
 
 ## 1. The questions and their items
 
@@ -99,10 +103,12 @@ three components of bound ≥ k then bound ≥ k + 1, seeded by clique size), th
 others the session's. *Kill:* none beats the reference on more than 5% of the
 gap instances while surviving.
 
-**Q7 — the Lean equality.** (12) `Reduction.lean`: attempt the Hall's-theorem
-step and the reverse inequality `pathwidth + 1 ≤ mosp` (a pattern order
-induces a customer layout of vertex separation at most the peak minus one);
-`lake build` must pass. Blocked with statements and a gap list is an
+**Q7 — the Lean equality.** *(Closed outside the loop on 2026-09-27: see §0.)*
+(12) What remains in `Sandwich.lean`: `treewidth_le_pathwidth` (a path
+decomposition is a tree decomposition; needs either `pathGraph.IsTree` or a
+direct construction), the branch lemma (Fellows & Langston 1987 Lemma 4.3,
+Kinnersley 1992 Theorem 4.3), and the `conjecture_sqrt_tw_f6` statement, which
+stays a statement. `lake build` must pass. Blocked with a gap list is an
 acceptable deliverable.
 
 (13) Reserve.

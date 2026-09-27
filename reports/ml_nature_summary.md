@@ -38,8 +38,10 @@ extrapolation.
   structure alone; instance space is a lattice of 74 size cells (§1, §2).
 - **The optimum is sandwiched**, `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1`, on
   every certified instance; both ends are now **theorems in Lean** for every
-  finite graph, with Yanasse's equality the one trusted step between them and
-  the optimum (§5, §26). Min-fill treewidth + 1 is the best point estimate to
+  finite graph, and — *addendum 2026-09-27* — Yanasse's equality itself,
+  `mospValue = pathwidth (mospGraph) + 1`, is a `sorry`-free Lean theorem
+  (`MOSPGraph.lean`; §26's resolution note), so nothing between the sandwich
+  and the optimum is trusted any more (§5, §26). Min-fill treewidth + 1 is the best point estimate to
   about 50 customers and 4 stacks high at 125 (§4, §14).
 - **The proved bound fails structurally**: three of its four components bound
   treewidth, and pathwidth strictly exceeds treewidth on 48.5–76.3% of the
@@ -240,9 +242,11 @@ implementations by brute force on all 1,099 labelled graphs on 1–5 vertices
 (zero violations against networkx's core number and the exact pathwidth DP)
 and by kernel `decide` on four graphs. The corpus recount gives 6,376 / 6,376
 on both ends, 3,293 / 3,279 tight, 2,823 with both ends coinciding — §5's
-number regenerated. Yanasse's equality is still a hypothesis in the
-development (`Reduction.lean` has `≤` under `IsReduced` with a `sorry`, no
-`≥`), so `degeneracy + 1 ≤ mospValue` is proved *given* `mospValue = pathwidth + 1`.
+number regenerated. *Addendum 2026-09-27:* Yanasse's equality is now a
+theorem of the development (`MOSPGraph.lean`, both directions, `sorry`-free),
+so `degeneracy + 1 ≤ mospValue` and `mospValue ≤ bandwidth + 1` are proved
+outright over the MOSP graph; the `Reduction.lean` statement this paragraph
+referred to was over the pattern graph and false (§26, resolution note).
 *Size range:* every finite graph; corpus recount 9–134. *Regenerate:*
 `cd lean && lake build; python -m learning.sandwich`. *Status:* theorem
 (two, plus the chain and the sandwich statement).
@@ -793,10 +797,10 @@ does. Nothing here is started.
   above that the two-arm agreement of §22 and the relabelling agreement of
   §18 are all there is, and the two known false refutations were above 40
   (§15, §17).
-- **Yanasse's equality in Lean**: `Reduction.lean` has `mospValue ≤ pathwidth + 1`
-  under `IsReduced` with a Hall-theorem `sorry` and no `≥`; every bound that
-  is not a clique bound, and every theorem of §26 in MOSP terms, trusts it
-  (§26).
+- ~~**Yanasse's equality in Lean**~~ — **closed 2026-09-27**: proved in
+  `MOSPGraph.lean` in both directions, `sorry`-free, over the MOSP graph
+  (customers as vertices); the `Reduction.lean` statement was over the
+  pattern graph and false (§26, resolution note).
 - **The encoding's correctness in Lean** (`encode_mosp_decision` satisfiable
   iff MOSP ≤ k): with it, §17's 5,646 proofs become end-to-end certificates.
 - **A pathwidth lower bound that sees separators of trees of cliques**: the

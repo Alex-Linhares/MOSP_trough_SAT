@@ -90,8 +90,9 @@ the exact ones and the command that regenerates them.
   quantities, the graph's *degeneracy* and a *bandwidth* estimate, satisfy
   `degeneracy + 1 ≤ answer ≤ bandwidth + 1` on every instance we have (§5,
   §12). Both inequalities are now **proved theorems** in the project's Lean
-  development, for every finite graph (§26). The one step still taken on trust
-  is the classical result that the answer equals pathwidth plus one.
+  development, for every finite graph (§26), and since 2026-09-27 so is the
+  classical result that the answer equals pathwidth plus one
+  (`MOSPGraph.lean`), so nothing on that path is taken on trust.
 - **The best single guess is a treewidth heuristic.** Add one to the min-fill
   treewidth estimate and you hit the exact answer on 86% of the corpus — better
   than either of the solver's own proved bounds — up to about 50 customers. At

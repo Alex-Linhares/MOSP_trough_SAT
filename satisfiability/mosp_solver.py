@@ -129,8 +129,10 @@ def _contraction_degeneracy(graph, max_nodes: int = 400) -> int:
     neighbour it shares fewest neighbours with. The largest minimum degree seen
     over the sequence is a lower bound on treewidth, hence on pathwidth.
 
-    **This bound rests on Yanasse's MOSP = pathwidth(MOSP graph) + 1**, unlike
-    the clique bound above, which is provable directly. A lower bound that is
+    **This bound rests on Yanasse's MOSP = pathwidth(MOSP graph) + 1** — since
+    2026-09-27 a `sorry`-free theorem of the repository's Lean development
+    (`lean/MOSPFormalization/MOSPGraph.lean`) — unlike the clique bound above,
+    which is provable without it. A lower bound that is
     too high does not merely slow the search -- it makes the binary search start
     above the true optimum and return a wrong answer, which simulating the
     witness would not catch, because the witness does achieve the value
