@@ -70,7 +70,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       Deliverable: disagreements (state zero as zero), the relabelling spread
       by size for item 04's variants where it is cheap to add, and the first
       size at which the harness stops being affordable.
-- [ ] 07 · Q4a **One certified ridge cell at 100.** `learning.upward` (or a
+- [x] 07 · Q4a **One certified ridge cell at 100.** `learning.upward` (or a
       new stage) at n = 100, m = n, the realised-density cell nearest three
       customers per product, 25 instances, `default` configuration, resumable,
       priced by `learning.cost_model` before starting; as many as 2.5 hours on

@@ -1,0 +1,12 @@
+11 censored instances -> default at value - 1, 960 s each on 9 workers
+[    960s] ens_f_n100_m100_d3_i018 default k=23: unknown 2,048,565,248 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i016 default k=21: unknown 2,168,872,960 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i001 default k=22: unknown 1,886,588,928 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i005 default k=25: unknown 1,987,239,936 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i017 default k=24: unknown 1,842,262,016 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i014 default k=23: unknown 1,821,581,312 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i010 default k=24: unknown 1,753,772,032 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i003 default k=23: unknown 1,673,588,736 nodes 960 s
+[    960s] ens_f_n100_m100_d3_i007 default k=23: unknown 1,514,397,696 nodes 960 s
+[   1920s] ens_f_n100_m100_d3_i009 default k=23: unknown 1,994,088,448 nodes 960 s
+[   1920s] ens_f_n100_m100_d3_i004 default k=22: unknown 1,850,789,888 nodes 960 s

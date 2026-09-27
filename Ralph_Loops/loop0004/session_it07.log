@@ -1,0 +1,137 @@
+# session it07 started 2026-09-27 20:54:09
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item's cited sections, and the campaign code, then price the cell before launching anything.
+  > $ date && cat Ralph_Loops/loop0004/iterations.md && echo ---- && sed -n 1,200p reports/ml_nature_plan_3.md
+  > $ grep -n "^## " reports/ml_nature.md | sed -n 1,80p; echo ----; pgrep -af "benchmarks.recertify" | grep -v "$$" ; echo "---- load"; uptime; nproc; echo ---- ; ls
+  > $ sed -n 4097,4462p reports/ml_nature.md
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " learning/ensemble.py | head -80; echo ----UPWARD; grep -n "^def \|^class \|^[A-Z_]* = " learning/upward.py; echo ----COST;
+  > $ sed -n 115,260p learning/ensemble.py; echo ======UPWARD; sed -n 434,490p learning/upward.py; echo =====NODECOUNTS; sed -n 94,125p learning/node_counts.py; echo 
+  > $ sed -n 75,106p satisfiability/customer_search.py; sed -n 120,160p satisfiability/customer_search.py; echo =====COSTMODEL; sed -n 100,120p learning/cost_model.py
+  > $ sed -n 828,880p satisfiability/heuristics.py; echo ====TERMS; sed -n 257,295p learning/cost_model.py; echo ====FEATURES; grep -n "^def instance_features\|^def f
+  > $ sed -n 456,470p satisfiability/customer_search.py; sed -n 500,548p satisfiability/customer_search.py | grep -n "product\|ordering\|_closing\|order" | head -20; 
+  > $ grep -n "def _save_solution" -A 40 satisfiability/mosp_solver.py | grep -n "provenance\|json\|mosp_value\|ordering\|def \|monot\|<\|>" | head -30; echo ====; ta
+  > $ sed -n 334,345p satisfiability/mosp_solver.py; grep -n "^PROVENANCE\|^CERTIFIED" satisfiability/mosp_solver.py; grep -n "def instance_features" -A 14 learning/f
+  > Write /home/al/dev/MOSP/learning/ridge100.py
+
+The module is written. I'm cleaning up one print line, checking two imported helper names exist, and then running the price stage.
+  > $ python - <<'EOF'
+import re, pathlib
+p = pathlib.Path("learning/ridge100.py")
+s = p.read_text()
+old = """                          f"{'' if row['achieved'] is No
+  > $ date && time python -m learning.ridge100 --stage price --workers 16 2>&1 | tail -15
+  > $ nohup python -m learning.ridge100 --stage run --workers 16 --wall 6300 --deadline 2400 > learning/data/ensemble/ridge100_run.log 2>&1 &
+echo $! > /tmp/ridge100.
+  > Write /home/al/dev/MOSP/tests/test_ridge100.py
+  > $ timeout 300 python -m pytest tests/test_ridge100.py -q -x 2>&1 | tail -8; echo ====RUN; tail -12 learning/data/ensemble/ridge100_run.log; grep -c "<-" learning/
+  > $ python - <<'EOF'
+import pathlib
+p = pathlib.Path("learning/ridge100.py")
+s = p.read_text()
+old = '''            "disagreement": bool((at["status"] == "unsat").a
+  > $ (timeout 900 python -m pytest tests/ -q -x > /tmp/ridge100_fullsuite.log 2>&1; echo "exit $?" >> /tmp/ridge100_fullsuite.log) &
+sleep 1; echo started-suite
+  > $ grep -n "f_n100_m100_d3\|f_n75_m75_d3" reports/upward_tables.md | head -20; echo ====; grep -n "^## \|^### " reports/upward_tables.md | head -40
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/ensemble/results_upward.csv")
+for cell in ["f_n50_m50_d3","f_n60_m60_d3","f_n75
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/ridge100_run.log | grep -E --line-buffered \"unsat|un
+  > $ until grep -q "^exit" /tmp/ridge100_fullsuite.log; do sleep 5; done; tail -3 /tmp/ridge100_fullsuite.log
+  > $ grep -n "Random-100-100-2\b\|Random-100-100-2-\|Random-100-100-2 " reports/ml_nature.md | sed -n 1,12p; echo ====; python - <<'EOF'
+import pandas as pd, numpy a
+  > $ sed -n 5095,5112p reports/ml_nature.md; echo ====; tail -4 learning/data/ensemble/ridge100_run.log; uptime
+  > $ python - <<'EOF'
+import pandas as pd
+p = pd.read_csv("learning/data/ensemble/ridge100_price.csv")
+cols = ["index","ub_cs-dfs","ub_rule+cs-dfs","ub_mcnh","ub_mcn
+  > $ python - <<'EOF'
+import pathlib
+p = pathlib.Path("learning/ridge100.py")
+s = p.read_text()
+old = '''    ubs, _ = heuristic_upper_bounds(inst)
+    row.update(ubs
+  > $ tail -3 /tmp/ridge100_fullsuite.log; echo ====; grep "<-" learning/data/ensemble/ridge100_run.log | tail -8; grep -c "<-" learning/data/ensemble/ridge100_run.lo
+  > $ sed -n 480,494p reports/upward_tables.md; echo ====CSEARCH; sed -n 949,956p reports/upward_tables.md
+  > $ python - <<'EOF'
+import pathlib
+p = pathlib.Path("learning/ridge100.py")
+s = p.read_text()
+old = '''def law_prediction(n: int = 100) -> dict:
+    """§16(e)'s tw
+  > $ end=$((SECONDS+540)); until [ $SECONDS -ge $end ] || grep -qE "unsat|unknown" learning/data/ensemble/ridge100_calls.csv 2>/dev/null; do sleep 10; done; date; gr
+  > $ end=$((SECONDS+570)); until [ $SECONDS -ge $end ] || grep -qE "unsat|unknown" learning/data/ensemble/ridge100_calls.csv 2>/dev/null; do sleep 10; done; date; gr
+  > Write /tmp/sec34_draft.md
+  > $ end=$((SECONDS+570)); until [ $SECONDS -ge $end ] || grep -qE "unsat|unknown" learning/data/ensemble/ridge100_calls.csv 2>/dev/null; do sleep 10; done; date; gr
+  > $ end=$((SECONDS+570)); until [ $SECONDS -ge $end ] || [ $(grep -cE "unsat|unknown" learning/data/ensemble/ridge100_calls.csv 2>/dev/null) -ge 8 ]; do sleep 10; d
+  > $ grep -E "unsat|unknown" learning/data/ensemble/ridge100_run.log; echo ====; python - <<'EOF'
+import pandas as pd
+c = pd.read_csv("learning/data/ensemble/ridge10
+  > $ python - <<'EOF'
+import pathlib
+p = pathlib.Path("learning/ridge100.py")
+s = p.read_text()
+anchor = '''# -------------------------------------------------------
+  > $ cat >> tests/test_ridge100.py <<'EOF'
+
+
+def test_refute_censored_dispatches_nothing_when_nothing_is_censored(tmp_path: Path):
+    price = pd.read_csv(ridge100.P
+  > $ end=$((SECONDS+570)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; grep -E "unsat|unknown" learning/data/ensemble/ridge100_run.log | tail -3; tail -3 l
+  > $ end=$((SECONDS+580)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; grep -E "unsat|unknown" learning/data/ensemble/ridge100_run.log | tail -2; tail -2 l
+  > $ end=$((SECONDS+585)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; tail -8 learning/data/ensemble/ridge100_refute_censored.log; grep -c "<-" learning/d
+  > $ timeout 300 python -m learning.ridge100 --stage tables --wall 6300 --workers 16 --out /tmp/ridge100_tables_partial.md 2>&1 | tail -30
+  > $ grep -E "unsat|refute" learning/data/ensemble/ridge100_run.log; end=$((SECONDS+540)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; grep -E "unsat|unkno
+  > $ end=$((SECONDS+150)); until [ $SECONDS -ge $end ] || [ $(grep -c "<-" learning/data/ensemble/ridge100_run.log) -ge 105 ]; do sleep 5; done; date; grep -E "unsat
+  > $ pkill -f '^python -m learning.ridge100 --stage refute-censored --workers 9' ; sleep 2; pgrep -af '^python -m learning.ridge100' | cut -c1-90; python - <<'EOF'
+i
+  > $ timeout 120 python -m pytest tests/test_ridge100.py -q 2>&1 | tail -1; end=$((SECONDS+560)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; tail -3 learn
+  > $ end=$((SECONDS+500)); until [ $SECONDS -ge $end ]; do sleep 15; done; date; wc -l learning/data/ensemble/ridge100_calls.csv; tail -6 learning/data/ensemble/ridg
+  > $ timeout 300 python -m learning.ridge100 --stage tables --wall 6300 --workers 16 2>&1 | tail -4; sed -n '/## Per instance/,/## Cell summary/p' reports/ridge100_t
+  > $ sed -n '/## Cell summary/,/## Cost model re-priced/p' reports/ridge100_tables.md | grep -v "^## Cost"; python - <<'EOF'
+import pandas as pd, numpy as np
+c = pd.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+c = pd.read_csv("learning/data/ensemble/ridge100_calls.csv"); c["log"] = np.log10(1+c.nodes)
+cs = c[(c.config=
+  > Write /tmp/sec34_rest.md
+  > $ date; tail -3 learning/data/ensemble/ridge100_refute_censored2.log; pgrep -c -f '^python -m learning.ridge100' || true; cat /tmp/sec34_draft.md /tmp/sec34_rest.
+  > $ python - <<'EOF'
+import pathlib, re
+p = pathlib.Path("Ralph_Loops/loop0004/iterations.md")
+s = p.read_text()
+old = "- [ ] 07 · Q4a **One certified ridge cell at
+  > $ until grep -q "^exit" /tmp/ridge100_fullsuite2.log; do sleep 5; done; tail -2 /tmp/ridge100_fullsuite2.log; end=$((SECONDS+540)); until [ $SECONDS -ge $end ] ||
+  > $ end=$((SECONDS+240)); until [ $SECONDS -ge $end ] || ! pgrep -f '^python -m learning.ridge100' >/dev/null; do sleep 5; done; date; tail -2 learning/data/ensembl
+  > $ python - <<'EOF'
+import pathlib
+p = pathlib.Path("reports/ml_nature.md"); s = p.read_text()
+reps = [
+ ("11 more at 960 s from 22:27, the last two landing after 
+  > $ python - <<'EOF'
+import json, pathlib
+for i in range(5):
+    d = json.loads(pathlib.Path(f"learning/data/ensemble/solutions/ens_f_n100_m100_d3_i{i:03d}.json").r
+  > $ grep -n "writes are under" reports/ml_nature.md | tail -2; python - <<'EOF'
+import pathlib, re
+p = pathlib.Path("reports/ml_nature.md"); s = p.read_text()
+m = r
+
+Item 07 is done and everything is written. Recap:
+
+**Outcome.** The `m = n` ridge cell at 100 customers (`f_n100_m100_d3`, 25 instances) does not certify in the compute available. One instance certified: `i012`, optimum 21, refuted under both configurations (2.1 billion nodes `csearch`, 2.9 billion `default`), the two agreeing. The other 24 stand as verified upper bounds of 22 to 26 with the step below them undecided after 2,400 s and 3.4 to 4.8 billion nodes each under `csearch`, and after 960 to 1,800 s under `default`. The satisfiable side was nearly free. The entire cost is the final step.
+
+**Price against paid.** §19's cost model, fed the heuristic upper bounds, priced the 25 `default` refutations at 45 core-hours and the `csearch` ones at 21, against 28 available, so the run was a sample by construction, and the cost model was right that it would not fit. Re-priced on the one certified optimum it under-predicts by 1.1 decades. §16(e)'s drift-corrected law is contradicted: its median at 100 sits below all 25 lower bounds, so the ridge's growth rate between 75 and 100 is at least 0.115 per customer, above the 15 to 40 rate. Item 08 must refit as a Tobit and compare post-fix counts with post-fix counts, which the six 125×125 recertify counts on record are not.
+
+**Deliverables.**
+- `learning/ridge100.py` with stages `price`, `run`, `refute-censored`, `tables`; `tests/test_ridge100.py` (8 tests). Full suite: 1,170 passed, 2 skipped, 1 xfailed.
+- `reports/ml_nature.md` §34, `reports/ridge100_tables.md`, data under `learning/data/ensemble/` (manifest, price, one row per decision call, logs, witnesses).
+- PROGRESS.md iteration 7 appended, current count 7/13, item 07 marked done. Nothing written to `solutions/`, no defaults changed, no commit.
+
+**Two notes for the owner.** The witness files for §16's `i000` to `i004` under the ensemble solutions directory were lowered by the monotone save (`i001` 24 to 23, `i002` 25 to 24) while `results_upward.csv` keeps the old upper bounds, as stated in §34(d). The working tree also holds unrelated changes not from this item: `literature/MISSING.md`, the Möhring 1990 PDF rename, and `paper2/`.
+
+# result: success in 7562s, 59 turns, cost $33.29

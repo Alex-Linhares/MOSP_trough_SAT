@@ -28,3 +28,8 @@
 [2026-09-27 20:04:14] claude session it06 (cap 3.00 h) -> session_it06.log
 [2026-09-27 20:52:34] session it06: ok (exit 0, 63 tool calls)
 [2026-09-27 20:54:09] tests passed: 1162 passed, 2 skipped, 1 xfailed, 161 warnings in 93.89s (0:01:33)
+[2026-09-27 20:54:09] committed 1070a392: 06 · Q1c The differential harness above 40. Four relabellings, both
+[2026-09-27 20:54:09] === iteration 7: 07 · Q4a One certified ridge cell at 100. `learning.upward` (or a
+[2026-09-27 20:54:09] claude session it07 (cap 3.00 h) -> session_it07.log
+[2026-09-27 23:00:12] session it07: ok (exit 0, 58 tool calls)
+[2026-09-27 23:02:25] tests passed: 1170 passed, 2 skipped, 1 xfailed, 159 warnings in 131.05s (0:02:11)

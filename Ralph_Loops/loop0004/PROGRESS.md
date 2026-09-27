@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 6/13 SOLVED
+- **Current**: 7/13 SOLVED
 
 ---
 
@@ -434,3 +434,87 @@
   customers per product, priced by `learning.cost_model` first; as many of 25
   as 2.5 h on 16 workers certify under `default`, the rest censored lower
   bounds.
+
+## Iteration 7 — 2026-09-27 22:50
+
+### Completed
+- **Item 07 · Q4a, one certified ridge cell at 100 — SOLVED (as a sampled
+  run, as the item allows).** `reports/ml_nature.md` §34; tables
+  `reports/ridge100_tables.md`; data `learning/data/ensemble/manifest_ridge100.csv`
+  (25 instances, `i000`–`i004` byte for byte §16's sample, digests checked),
+  `ridge100_price.csv`, `ridge100_calls.csv` (one row per decision call, 129),
+  `ridge100_run.log`, `ridge100_refute_censored*.log`; witnesses under
+  `learning/data/ensemble/solutions/` (monotone via `_save_solution`).
+- `learning/ridge100.py`: `price` (features, four heuristic UBs, §19's Tobit +
+  drift cost model per instance and configuration, §16(e)'s law figures),
+  `run` (priority scheduler, one decision call per job on 16 workers: descent
+  under `csearch` from the heuristic UB, cheapest predicted first; the final
+  `unsat` is the `csearch` refutation; the `default` refutation of a certified
+  instance queued behind every descent step; 2,400 s per call, 6,300 s wall,
+  resumable from the calls CSV), `refute-censored` (a `default` call at
+  `value − 1` for every censored instance, on idle workers, `--exclude` for
+  calls in flight elsewhere), `tables`.
+- **Price first**: cost model with the UB as optimum proxy: 45.3 core-hours for
+  the 25 `default` refutations, 21.3 for `csearch`; available 28 (16 × 6,300 s).
+  §16(e) law at 100: 9.09 / 8.92 (default / csearch, drifting). So a sample by
+  construction; the plan's own 40 core-hours would not have fit either.
+- **Result**: 129 calls, 26.4 core-hours (17.1 descents, 9.3 `default`). **1 of
+  25 certified**: `i012`, optimum 21, `unsat` at 20 under `csearch` (2.13 × 10⁹
+  nodes, 1,233 s) and `default` (2.94 × 10⁹, 1,424 s), both agree. The other
+  24: verified upper bounds 22–26 (mean 23.6, heuristic UB 1–6 above), the step
+  below censored at 2,400 s with 3.4–4.8 × 10⁹ nodes under `csearch` (log ≥
+  9.54–9.68) and 1.5–5.2 × 10⁹ under `default` (960–1,800 s; all 24, the last
+  two landing after the wall). Censored cell medians: `csearch` ≥ 9.64,
+  `default` ≥ 9.50. The satisfiable side cost 0.78 core-hours in all (80 `sat`
+  calls, median 10⁴·¹ nodes, two at 1.4–2.0 × 10⁹): the whole cost is the last
+  step.
+- **Price against paid**: the cost model said the cell would not fit and it did
+  not, and its `csearch` 9.63 is consistent with every count — but re-priced on
+  `i012`'s certified 21 it gives 8.36 against 9.47 observed (1.1 decades under;
+  `opt_frac` is its strongest term). **§16(e)'s law is contradicted**: its
+  median at 100 (8.92 csearch [8.56, 9.08]) is below all 25 lower bounds; the
+  ridge's rate over 75 → 100 is at least 0.115 per customer, above §11's 0.095
+  — it did not keep falling on this interval, or the 75-cell is low. For item
+  08: these are post-fix counts, the six 125 × 125 recertify counts are pre-fix
+  `csearch` (§31: 1/2–1/3.5 of post-fix at 100, ≥ 1/15 on the ridge instance),
+  so §16(e)'s 0.04-decade match at 125 was post-fix law against pre-fix data;
+  24 of 25 counts here are censored, so the refit is a Tobit.
+- Audit: 25 distinct graphs, 2 decomposable, 25/25 witnesses re-simulate, 0
+  disagreements, 0 below `lb_best` (12–13, 8–13 short), 1 certified provenance.
+  Pre-fix vs post-fix `csearch` on the same `sat` calls (`i001` k = 23, `i002`
+  k = 24): 2.5× and 3.3× more nodes post-fix, §31's fix cost on the sat side.
+- Tests: `tests/test_ridge100.py` (8) — manifest shares §16's five and digests
+  agree, state machine (descent, certification, censoring, disagreement over
+  every k), scheduler priority and in-flight exclusion, heuristic UBs on a
+  chain, law figures, censored median by hand, per-instance/audit with a real
+  witness and monotone save, `refute-censored` a no-op when nothing is
+  censored. Full suite 1,170 passed, 2 skipped, 1 xfailed in 91 s, re-run
+  after the last code edit. `solutions/` untouched.
+
+### Blockers
+- None; the item is sampled as its text allows. What could not be done in 3
+  hours: certify more than one instance (every other final step exceeds
+  10⁹·⁵ nodes); run the descent twice for `default`-side witness counts.
+  Seconds are from a loaded machine (16 + 9 + 8 recertify workers on 32
+  cores; 1.4–2.9 × 10⁶ nodes/s); nodes are the claim.
+- Two things cost minutes: `instance_features` returns its own `ub_best` and
+  silently overwrote the four-strategy minimum in the first price (fixed,
+  re-priced); a second `refute-censored` launch re-dispatched five calls still
+  in flight in the first and was stopped by anchored `pkill` (fixed with
+  `--exclude`).
+- `pgrep -f benchmarks.recertify` shows 9 processes (`--days 5`); their 8
+  workers were left alone.
+- The witness files of §16's `i000`–`i004` under `learning/data/ensemble/solutions/`
+  were lowered by the monotone save (`i001` 24 → 23, `i002` 25 → 24);
+  `results_upward.csv` still records the 900 s descents' upper bounds. Not
+  rewritten, said in §34(d).
+- Unrelated working-tree changes present at the end (owner's, not this
+  item's): `literature/MISSING.md`, the Möhring 1990 PDF rename, `paper2/`.
+
+### Next
+- Item 08 · Q4b: refit §16's drift with the 100 cell — Tobit over 1 exact + 24
+  censored `csearch` counts (and the `default` ones) — predict 125 with a band,
+  and compare with the recertify counts **like with like** (pre-fix vs
+  pre-fix, or re-scale by §31's fix cost). The cell's counts: `ridge100_calls.csv`
+  rows with `purpose == descent`, `status != sat` (csearch) and
+  `config == default` at `k == value − 1`.

@@ -8951,3 +8951,256 @@ the deadline over the inflation — is a usable admission test for any future
 harness run; its price ran 1.38× over actual. (iii) Above the boundary the
 soundness check is §32's certificate or nothing; the eight priced-out
 instances are the ones to emit one for if a C emitter is ever built.
+
+## 34. One certified ridge cell at 100: what does the `m = n` ridge cost where the campaign stopped? (plan 3 §1 Q4a, loop0004 item 07)
+
+*loop0004 iteration 7, 2026-09-27. Code: `learning/ridge100.py`; tables
+`reports/ridge100_tables.md`; data `learning/data/ensemble/manifest_ridge100.csv`
+(the 25 instances, CRC seeds and digests), `ridge100_price.csv` (features,
+heuristic upper bounds, cost-model predictions), `ridge100_calls.csv` (one row
+per decision call: instance, purpose, configuration, `k`, status, nodes,
+seconds, deadline), `ridge100_run.log`; witnesses under
+`learning/data/ensemble/solutions/`. Regenerate:*
+
+```bash
+python -m learning.ridge100 --stage price --workers 16              # instances, features, UBs, the price (~1 min)
+python -m learning.ridge100 --stage run --workers 16 --wall 6300 --deadline 2400   # the run as made; resumable
+python -m learning.ridge100 --stage tables --wall 6300 --workers 16  # reports/ridge100_tables.md
+python -m pytest tests/test_ridge100.py -q                           # 7 tests
+```
+
+*Nothing under `solutions/`; no solver default changed; `_lower_bound`
+untouched.*
+
+**Question.** §16 stopped the generated campaign at 75 customers because the
+`m = n` ridge cell at 100 (`f_n100_m100_d3`: 100 customers, 100 products,
+three customers per product) was priced at 21.5 core-hours by the §11 law
+and a 5-instance sample confirmed it — nine of ten descents ran out at 900 s,
+every refutation censored at 1,500 s. Since then every 125 × 125 figure is a
+50-customer extrapolation from 75 (§16(e)), and the cost model of §19 was
+scored at 100 on the corpus's five `Random-100-100-2` instances and this
+cell's five. Item 07 asks for the cell itself: as many of its 25 instances as
+2.5 hours on 16 workers certify, the rest recorded as censored lower bounds
+with their counts, priced first by `learning.cost_model`, with both
+refutation configurations where affordable.
+
+**Method.** The cell is the campaign's own: `learning.ensemble.generate` with
+the CRC seeds at indices 0–24, so `i000`–`i004` are §16's sample byte for
+byte (digests checked against `manifest_upward.csv`). Each instance is
+*descended* with the complete customer search: a heuristic upper bound (the
+best of `cs-dfs`, `rule+cs-dfs`, `mcnh` and `mcn+tabu`, re-simulated), then
+`decide(value − 1)` repeatedly under the **`csearch` configuration** — at
+three products per customer Theorem 2 is on, and §16(d) measured it 1.8×
+faster in seconds than `default` on the satisfiable side of exactly these
+instances. A `sat` answer is re-simulated and its witness saved (monotone,
+through `_save_solution`); an `unsat` certifies the value *and is the
+`csearch` refutation count*; `unknown` leaves the value a verified upper
+bound. Once an instance is certified its **`default` refutation** at
+`optimum − 1` — the configuration §11 and §16 state their laws in — is queued
+behind every pending descent step. A priority scheduler in the parent
+dispatches one decision call per job to 16 workers, cheapest predicted
+instance first; every call has a deadline (2,400 s) and the run a wall
+(6,300 s) inside which every call's deadline is capped; a call that expires
+is a censored lower bound on its count. The run is resumable from
+`ridge100_calls.csv`. Beside it: 8 `recertify` workers on the same 32 cores
+throughout.
+
+**Baseline.** §16(e)'s two extrapolations from the 75-customer cell (median
+6.78 log10 nodes, rate 0.0951; constant 9.16, drifting 9.09 at 100 under
+`default`; 8.97 / 8.89 under `csearch`), §11's 15–40 law (9.32), and §19's
+cost model — the linear Tobit with drift fitted on every count at 10–75
+(`csearch` on pre-fix sources), predicting from label-free graph features and
+`opt_frac`, the optimum taken as the heuristic upper bound before the run and
+as the certified value after it. The prior answers on `i000`–`i004` (§16(d),
+1,500 s, pre-fix `csearch`) are the other point of comparison.
+
+### (a) The price, before anything ran
+
+| quantity | value |
+|---|---|
+| heuristic upper bounds (best of four) | 24–30 (`cs-dfs` best or tied on 15, `rule+cs-dfs` on 10; `mcnh` 25–33, `mcn+tabu` 31–36 at 13 s each) |
+| `lb_best` | 12–13 (optima will be 23–25: the bound is 10 stacks short here, §6) |
+| `tw_min_fill` | 22–27 |
+| decomposable | 2 of 25 (`i003`, `i024`, two components) |
+| cost model, `default`, optimum := UB | median 9.95 log10 nodes [9.18, 10.68]; 25 refutations = **45.3 core-hours** at 1.8 × 10⁶ nodes/s |
+| cost model, `csearch`, optimum := UB | median 9.63 [8.89, 10.32]; 25 refutations = **21.3 core-hours** |
+| §16(e) law, `default` | 9.16 constant, 9.09 drifting ([8.67, 9.42]) |
+| §16(e) law, `csearch` | 8.97 constant, 8.89 drifting |
+| §11 law (15–40) | 9.32 |
+| available | 16 workers × 6,300 s = **28 core-hours**, less than the `default` refutations alone |
+
+So the run was a sample by construction: the plan's 2.5 hours on 16 workers
+(40 core-hours) would itself have fallen short of the cost model's price, and
+the session's wall left 28.
+
+### (b) The run as made
+
+16 workers, wall 6,300 s (21:02–22:47), 2,400 s per call; beside it, on the
+idle workers, a `default` call at `value − 1` for every instance whose descent
+had censored (`--stage refute-censored`: 12 instances at 1,800 s from 21:43,
+11 more at 960 s from 22:27, the last two landing after the wall). 129
+decision calls, **26.4 core-hours**: 17.1 in the descents (105 calls, 80
+`sat`, 24 censored, 1 `unsat`) and 9.3 in the `default` refutations (24 calls).
+
+**The satisfiable side is cheap and the last step is not.** The heuristic
+upper bounds stood 1–6 stacks above the values reached (median 3), and the
+80 `sat` calls that closed that gap cost a median of 10⁴·¹ nodes, 10⁶·² at the
+third quartile, 10⁸ at p90 — 0.78 core-hours in all, a median of 2 s per
+instance — with two exceptions at 1.4 × 10⁹ and 2.0 × 10⁹ nodes (`i001` at
+k = 23, `i002` at k = 24: 714 and 1,066 s), both the last `sat` before the
+censored step. Every witness re-simulates to the value it was asked for; none
+came in below its `k`. Then the final call: **24 of 25 descents censored at
+2,400 s on the step below their value**, having visited 3.4–4.8 × 10⁹ nodes
+(log10 9.54–9.68) at 1.4–2.0 × 10⁶ nodes/s under `csearch`.
+
+**One instance certified: `i012`, optimum 21.** Its descent went 26 → 21 in
+five `sat` calls (95 s), the refutation at k = 20 returned `unsat` under
+`csearch` in 2.13 × 10⁹ nodes (1,233 s) and under `default` in 2.94 × 10⁹
+(1,424 s), the two configurations agreeing; the witness re-simulates to 21
+and is saved as `certified:refutation`. Its optimum is the lowest in the
+cell (the others stand at 22–26, mean 23.6), which is presumably why it
+settled: at fixed size the refutation at `k = optimum − 1` is cheaper when
+the optimum is smaller relative to the heuristic's landscape — a single
+instance, no statistic.
+
+Per instance (`reports/ridge100_tables.md` has every column; log = log10
+nodes, `≥` a censored lower bound):
+
+| instance | UB | value | status | `csearch` at value − 1 | `default` at value − 1 |
+|---|---|---|---|---|---|
+| `i012` | 26 | **21** | certified | 9.33 (1,233 s) | 9.47 (1,424 s) |
+| `i016` | 26 | 22 | upper bound | ≥ 9.65 | ≥ 9.34 (960 s) |
+| `i000`, `i001`, `i004`, `i006`, `i011`, `i013`, `i015`, `i019`, `i021`, `i023` | 24–29 | 23 | upper bound | ≥ 9.56–9.68 | ≥ 9.53–9.72 (1,800 s), ≥ 9.27–9.28 (960 s) |
+| `i002`, `i003`, `i007`, `i009`, `i014`, `i018`, `i022`, `i024` | 25–30 | 24 | upper bound | ≥ 9.54–9.65 | ≥ 9.18–9.31 (960 s), ≥ 9.53–9.57 (1,800 s) |
+| `i008`, `i010`, `i017`, `i020` | 27–28 | 25 | upper bound | ≥ 9.57–9.67 | ≥ 9.24–9.27 (960 s), ≥ 9.54–9.62 (1,800 s) |
+| `i005` | 28 | 26 | upper bound | ≥ 9.58 | ≥ 9.30 (960 s) |
+
+Cell summary, censored median as in §16 (`learning.upward.censored_median`):
+
+| configuration | counts | settled | censored | median log10 nodes | reading | law at 100 (§16(e), drifting [band]) | cost model, optimum := UB |
+|---|---|---|---|---|---|---|---|
+| `csearch` | 25 | 1 | 24 | **≥ 9.64** | lower bound | 8.92 [8.56, 9.08] | 9.63 [8.89, 10.32] |
+| `default` | 24 | 1 | 23 | **≥ 9.50** | lower bound | 9.09 [8.67, 9.42] | 9.95 [9.18, 10.68] |
+
+**What the censored counts are lower bounds on.** For the one certified
+instance they are refutation counts. For the other 24 the value is a verified
+upper bound on the optimum and the count is a lower bound on the cost of
+*deciding* `value − 1`: if the value is the optimum, on the refutation; if it
+is not, on finding a witness one stack better. §16(d)'s finish stage found two
+of five such values were not optimal (at 573–719 s, pre-fix `csearch`), and
+here the two most expensive `sat` calls (10⁹·¹⁴, 10⁹·³¹) were witnesses, so
+neither reading can be excluded per instance. What can be said of the cell is
+that **every instance needs more than 10⁹·⁵ nodes to settle the step below the
+value the search reached in 2,400 s**, in both configurations.
+
+### (c) The price against what was paid
+
+| | predicted | paid or observed |
+|---|---|---|
+| 25 `default` refutations, cost model (optimum := UB) | 45.3 core-hours | not affordable: 9.3 core-hours bought 1 refutation and 23 lower bounds |
+| 25 `csearch` refutations, cost model (optimum := UB) | 21.3 core-hours | 17.1 core-hours (all descents) bought 1 refutation and 24 lower bounds |
+| §16(e) law, `csearch`, median at 100 | 8.92 [8.56, 9.08] | ≥ 9.64: **every one of the 25 counts is above the band's upper end** |
+| §16(e) law, `default`, median at 100 | 9.09 [8.67, 9.42] | ≥ 9.50: 13 of 24 counts above the band's upper end, the other 11 censored below it at 960 s |
+| §11 law (15–40), `default` | 9.32 | ≥ 9.50 |
+| §16(d) sample price (5 instances, 900 + 2 × 1,500 s) | "about an hour per instance" | 1.0–1.6 h per instance here without settling |
+| cost model on `i012`, optimum := UB (26) | 9.84 | 9.47 observed (`default`) |
+| cost model on `i012`, optimum := certified 21 | 8.36 | 9.47 observed: **1.1 decades under** |
+| node rate assumed | 1.8 × 10⁶ /s | `csearch` 1.82 [1.43, 1.98], `default` 2.07 [1.58, 2.91] × 10⁶ /s on censored calls, 24 workers on 32 cores |
+
+Read: the cost model's price was right in the one way that matters for a
+budget — it said the cell did not fit, and it did not — and its `csearch`
+figure (9.63 median with the UB as the optimum proxy) is consistent with 24
+lower bounds at 9.54–9.68 and one exact count at 9.33. But that agreement
+rests on the wrong optimum: re-priced on `i012`'s certified 21 it drops to
+8.36 against 9.47 observed, because `opt_frac` is its strongest term and a
+low optimum pulls the prediction down. §19 said the model is "usable to order
+a queue and size a budget, never for `k`"; here it sized the budget correctly
+*because* it was fed the heuristic upper bound, which at 100 on the ridge
+overstates the optimum by 1–6. **The §16(e) law is the one contradicted**:
+its drift-corrected median for this cell at 100, 8.92 (`csearch`) / 9.09
+(`default`), sits 0.5–0.7 decades below lower bounds that hold on every
+instance, outside its 90% band on all 25 under `csearch`. The 75-cell's
+60 → 75 rate (0.092–0.095) extrapolated 25 customers gives 8.9–9.2; the cell
+needs at least 0.115 per customer from 75 to reach 9.64, which is *above*
+§11's 15–40 rate (0.095), not below it. So between 75 and 100 on the ridge
+the rate did not keep falling — read against a lower bound, it rose, or the
+75 cell's median (6.78, 50 instances, none censored) is low for the series.
+Item 08 owns that refit and the 125 comparison; two things it must carry
+from here: (i) these are **post-fix** counts and the six recertify counts at
+125 are **pre-fix `csearch`**, which §31 measured at 1/2–1/3.5 of the post-fix
+count on the 100-customer half-ratio classes and ≥ 1/15 on the ridge
+instance, so §16(e)'s match to 11.21 at 125 was a post-fix law against
+pre-fix data; (ii) 24 of the 25 counts here are censored, so the refit is a
+Tobit, not a regression.
+
+**The corpus says the same.** Chu & Stuckey's `Random-100-100-2` (`col_mean`
+2.76, the same ridge, optima 15–24): four of five `default` refutations
+censored at 1,500 s with 3.2–5.4 × 10⁹ nodes (§14, ≥ 9.5–9.7), the fifth
+settled at 1.2 × 10⁹ (9.08); the generated cell at `col_mean` 3.03–3.08
+reproduces that picture instance for instance.
+
+### (d) The audit
+
+25 instances, 25 distinct MOSP graphs (no isomorphic repeat), 2 decomposable
+(`i003`, `i024`, two components each). Every saved witness re-simulates to its
+recorded value (25 of 25); every value is at or above `lb_best` (12–13; the
+bound is 8–13 stacks short here, the §6 family). No `k` received both `sat`
+and `unsat`; the one certified instance was refuted under both
+configurations. The five instances shared with §16's sample regenerate to
+the same digests; on them §16(d)'s pre-fix `csearch` witnesses at k = 23
+(`i001`) and 24 (`i002`) took 5.4 × 10⁸ and 6.2 × 10⁸ nodes, and the post-fix
+search took 1.37 × 10⁹ and 2.04 × 10⁹ for the same answers — 2.5× and 3.3×,
+§31's fix cost on the satisfiable side. `solutions/` untouched; the only
+writes are under `learning/data/ensemble/`, where the witness files of
+`i000`–`i004` now carry the values reached here (`i001` 24 → 23, `i002`
+25 → 24, monotone saves) while `results_upward.csv` keeps §16(d)'s
+uncertified upper bounds as recorded; `ridge100_calls.csv` is the record.
+
+**Finding, in one paragraph.** The `m = n` ridge cell at 100 customers does
+not certify in 28 core-hours: of 25 instances one settled (`i012`, optimum
+21, refuted under both configurations at 2.1–2.9 × 10⁹ nodes), and the other
+24 stand as verified upper bounds of 22–26 with the step below them
+undecided after 2,400 s and 3.4–4.8 × 10⁹ nodes each under `csearch`, and
+after 960–1,800 s and 1.5–5.2 × 10⁹ under `default`. The satisfiable side
+costs almost nothing — 80 witness calls in 0.78 core-hours, median 2 s per
+instance from a heuristic that starts 1–6 stacks high — and the whole cost
+is the last step, as §16(d) said. §19's cost model priced the cell at 45
+core-hours under `default` and 21 under `csearch` from the heuristic upper
+bounds, said correctly that it would not fit, and is consistent with every
+count; fed the one certified optimum instead it under-predicts by 1.1
+decades. §16(e)'s drift-corrected law is not consistent with the cell: its
+median at 100 is 0.5–0.7 decades below lower bounds that hold on every
+instance, which means the ridge's rate between 75 and 100 is at least 0.115
+per customer — the rate did not keep falling over that interval, or the
+75-cell is low — and item 08's refit must be censored and must compare
+post-fix counts with post-fix counts, which the six 125 × 125 counts on
+record are not.
+
+**Size range covered.** One generated cell at 100 customers, 100 products,
+three customers per product: 25 instances, 1 certified, 24 with verified
+upper bounds and censored lower bounds on both configurations. Comparisons: the 75-customer cell of §16 (50
+instances, certified), Chu & Stuckey's five `Random-100-100-2` instances
+(§14), §16(d)'s pre-fix sample on `i000`–`i004`. Nothing here is evidence
+about 125 except through item 08's refit.
+
+**Kill criterion.** The plan states none for item 07. The plan's budget (2.5
+hours on 16 workers, 40 core-hours) was itself below the price; the session
+gave 28 and they were spent as stated.
+
+**Method notes.** (1) *A feature dict can overwrite a result*:
+`instance_features` returns its own `ub_best` (min of `mcn` and `cs-dfs`)
+and the first price stage let it replace the four-strategy minimum, so the
+ordering and the price were computed on a UB up to 3 stacks too high for ten
+instances — caught by comparing the run's own UB list against the table;
+apply features first and results second. (2) *Idle workers are the budget*:
+with one job chain per instance a 25-on-16 run leaves 7 workers idle for the
+second wave and 15 idle after it; the `refute-censored` stage was written
+mid-run to spend them on `default` lower bounds, and a second launch of it
+had to be stopped because it re-dispatched five calls still in flight in the
+first — a stage that appends beside a running one needs the in-flight set,
+not just the recorded one (`--exclude`). (3) *The heuristic's overshoot is
+the descent's length*: 1–6 `sat` calls per instance here, almost all cheap;
+a tighter UB would not have changed the outcome, because the cost is the
+final step. (4) *`default` is faster per node than `csearch` at this size*:
+2.07 against 1.82 × 10⁶ /s at the median, 2.9 at the top, so Theorem 2's
+per-node price at 100 on the ridge is 1.1–1.5×, above §22's 1.17×.

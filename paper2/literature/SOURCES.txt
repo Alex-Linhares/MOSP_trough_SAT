@@ -39,8 +39,13 @@ Sources checked and found to have nothing for the other seven:
  a browser got past them.)
   pure.mpg.de                          - metadata only, no full text
 13_kinnersley_1992.pdf  sent by H. Yanasse by e-mail, 2026-09-27 (published version, DOI 10.1016/0020-0190(92)90234-M); same file as ../../literature/kinnersley_1992_vertex_separation_equals_pathwidth.pdf
-01_yanasse_1997.pdf, 06_mohring_1990_PREVIEW.pdf, 07_ohtsuki_et_al_1979.pdf,
-08_wing_huang_wang_1985.pdf, 14_lengauer_1981.pdf
-     Sent by H. Yanasse by e-mail, 2026-09-27 (publisher versions; the Möhring
-     file is the two-page Springer preview only). Copies also under
-     ../../literature/ with descriptive names.
+01_yanasse_1997.pdf, 07_ohtsuki_et_al_1979.pdf, 08_wing_huang_wang_1985.pdf,
+14_lengauer_1981.pdf
+     Sent by H. Yanasse by e-mail, 2026-09-27 (publisher versions). Copies also
+     under ../../literature/ with descriptive names.
+06_mohring_1990.pdf
+     Pages 20-54 of the full book PDF "Computational Graph Theory" (Computing
+     Supplementum 7, Springer 1990, DOI 10.1007/978-3-7091-9076-0), obtained via
+     institutional access on 2026-09-27 and kept in ~/Downloads; extracted with
+     pdfseparate/pdfunite. Published version, pp. 17-51, 35 pp. Replaces the
+     two-page Springer preview sent by H. Yanasse the same day.
