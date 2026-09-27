@@ -29,6 +29,10 @@ Available strategies:
   customer that opens the fewest new stacks, on ties the one with the most
   unclosed neighbours. No model, no search.
 - `rule+cs-dfs` — the DFS seeded with the rule's order (loop0004 item 01).
+- `mcnh` — Becceneri, Yanasse & Soma (2004)'s Minimal Cost Node heuristic as
+  they state it: an *arc traversal* of the MOSP graph, patterns sequenced when
+  all their pieces have been opened (loop0004 item 02). `mcnh-arcs` is the
+  same traversal with a pattern sequenced when its last own arc is traversed.
 
 Measured on the SP instances, our tabu search returns 22/42/63 against optima of
 19/34/53, while Frinhani et al. (2018) report HBF2r reaching 19/35/53 in under a
@@ -73,13 +77,15 @@ def least_cost_node(instance: MOSPInstance, **_: object) -> UpperBound:
     worst here, because that statement is explicitly "for an MOSP with at most
     two piece types a pattern" -- patterns are arcs there, whereas a pattern with
     k piece types is a clique of size k in general, so traversing "the arcs
-    incident to a node" is not the same operation. Adapting it properly needs
-    Becceneri, Yanasse & Soma (2004), which we do not have.
+    incident to a node" is not the same operation. Adapting it properly needed
+    Becceneri, Yanasse & Soma (2004), obtained 2026-09-27.
 
     None of the three reproduces the published MCNh, which Frinhani et al. report
     at 23/37/57. This version is kept because it seeds tabu best (`mcn+tabu`
     reaches 21/39/62, against 22/42/63 for tabu alone), not because it is a
-    faithful MCNh.
+    faithful MCNh. The faithful one is `mcnh` below (loop0004 item 02): the
+    2004 arc traversal, which gives exactly 23/37/57 and Frinhani's value on
+    all 21 named Challenge rows (`reports/ml_nature.md` §29).
     """
     n_customers = instance.n_customers
     n_patterns = instance.n_patterns
@@ -628,6 +634,197 @@ def learned_then_dfs(
     return restricted_dfs(instance, max_nodes=max_nodes, seed_order=order)
 
 
+def _mosp_graph_untraversed(instance: MOSPInstance) -> list[int]:
+    """Adjacency of the MOSP graph as bitmasks, self excluded: the arcs of
+    Becceneri, Yanasse & Soma (2004)'s `Gp` not yet traversed, at the start.
+    Parallel arcs (two patterns sharing the same pair) are one arc, as their
+    §4 says."""
+    n = instance.n_customers
+    adjacency = [0] * n
+    for pattern in range(instance.n_patterns):
+        holders = instance.pattern_customers(pattern)
+        mask = 0
+        for c in holders:
+            mask |= 1 << c
+        for c in holders:
+            adjacency[c] |= mask & ~(1 << c)
+    return adjacency
+
+
+def mcnh_trace(instance: MOSPInstance) -> dict:
+    """Becceneri, Yanasse & Soma (2004) §4, the Minimal Cost Node heuristic,
+    run to its arc sequence with every loop recorded.
+
+    Their pseudocode, read as the worked example of their Table 1 forces:
+
+    - `Ω(k)` is the degree of node `k` over the arcs not yet traversed; `SETV`
+      holds every node with `Ω ≥ 1`, ordered by non-decreasing `Ω`, ties by
+      index (their printed `SETV` lists are exactly that);
+    - each loop takes `Ω(k)` of the first node of `SETV` and traverses the arc
+      `(n1, n2)` with `Ω(n1) = Ω(k)` whose endpoints have the pair-wise
+      smallest `Ω` -- so `n1` ranges over *every* minimum-degree node, not only
+      the first, and `n2` over its untraversed neighbours, minimising `Ω(n2)`;
+      ties go to `SETV` order for `n1`, then for `n2`. (Their first loop picks
+      (4, 8) although node 3 heads `SETV`: node 3's cheapest arc costs 3 + 4,
+      node 4's 3 + 3.)
+    - both endpoints enter `OPEN`; an endpoint whose `Ω` falls to 0 leaves it;
+    - then every untraversed arc between two `OPEN` nodes is traversed, in
+      lexicographic order of its endpoints (the order their `ARC` lists show),
+      closing nodes as their `Ω` reaches 0;
+    - `ξ` is the size of `OPEN` with both endpoints counted before either is
+      closed, at its largest.
+
+    Returns `{"arcs": [(a, b), ...], "loops": [...], "xi": int}`, `loops` being
+    one dict per outer loop with the `(n1, n2)` it chose, `s` after it, `OPEN`
+    after it, and `SETV` after it, for comparison with the paper's printed
+    states.
+    """
+    n = instance.n_customers
+    untraversed = _mosp_graph_untraversed(instance)
+    n_arcs = sum(mask.bit_count() for mask in untraversed) // 2
+
+    def setv() -> list[int]:
+        return sorted((c for c in range(n) if untraversed[c]),
+                      key=lambda c: (untraversed[c].bit_count(), c))
+
+    arcs: list[tuple[int, int]] = []
+    loops: list[dict] = []
+    open_mask = 0
+    xi = 0
+
+    def traverse(a: int, b: int) -> None:
+        nonlocal open_mask, xi
+        arcs.append((a, b))
+        untraversed[a] &= ~(1 << b)
+        untraversed[b] &= ~(1 << a)
+        open_mask |= (1 << a) | (1 << b)
+        xi = max(xi, open_mask.bit_count())
+        for c in (a, b):
+            if untraversed[c] == 0:
+                open_mask &= ~(1 << c)
+
+    while len(arcs) < n_arcs:
+        order = setv()
+        position = {c: i for i, c in enumerate(order)}
+        degree_k = untraversed[order[0]].bit_count()
+        best: tuple | None = None
+        for n1 in order:
+            if untraversed[n1].bit_count() != degree_k:
+                break
+            candidates = untraversed[n1]
+            while candidates:
+                n2 = (candidates & -candidates).bit_length() - 1
+                candidates &= candidates - 1
+                key = (untraversed[n2].bit_count(), position[n1], position[n2])
+                if best is None or key < best[0]:
+                    best = (key, n1, n2)
+        assert best is not None
+        _, n1, n2 = best
+        traverse(n1, n2)
+        # every arc not yet traversed between two open nodes, lexicographically
+        pending: list[tuple[int, int]] = []
+        scan = open_mask
+        while scan:
+            a = (scan & -scan).bit_length() - 1
+            scan &= scan - 1
+            others = untraversed[a] & open_mask
+            while others:
+                b = (others & -others).bit_length() - 1
+                others &= others - 1
+                if a < b:
+                    pending.append((a, b))
+        for a, b in sorted(pending):
+            if untraversed[a] >> b & 1:
+                traverse(a, b)
+        loops.append({
+            "n1": n1, "n2": n2, "s": len(arcs), "xi": xi,
+            "open": [c for c in range(n) if open_mask >> c & 1],
+            "setv": setv(),
+        })
+    return {"arcs": arcs, "loops": loops, "xi": xi}
+
+
+def patterns_from_arcs(
+    instance: MOSPInstance, arcs: Sequence[tuple[int, int]], rule: str = "nodes"
+) -> list[int]:
+    """The pattern sequence an arc sequence dictates.
+
+    `rule="nodes"` is the sentence Becceneri, Yanasse & Soma (2004) quote from
+    Becceneri (1999): "sequence a pattern Pi when, for the first time, all the
+    nodes corresponding to all the piece types in Pi are open" -- read as
+    *have been opened*, since an arc that closes a node still completes the
+    pattern it belongs to (their P2 is sequenced by the arc (1, 4), which
+    closes node 4). Patterns completed by the same arc are sequenced with the
+    ones containing that arc first, then by index; that tie-break is the only
+    one the example does not print and is needed for their P12 before P3.
+
+    `rule="arcs"` sequences a pattern when the last of its own arcs has been
+    traversed. On patterns of two pieces the two coincide; on their example
+    both give the printed sequence. `learning.mcnh` measures how often they
+    differ over the corpus.
+
+    Patterns with no arc and no opened node -- empty columns, and the
+    single-customer patterns of a customer with no neighbour -- go last, by
+    index; they cost at most one stack wherever they sit.
+    """
+    if rule not in ("nodes", "arcs"):
+        raise ValueError(f"unknown pattern rule {rule!r}; use 'nodes' or 'arcs'")
+    m = instance.n_patterns
+    holders = [instance.pattern_customers(p) for p in range(m)]
+    need = [0] * m
+    for p in range(m):
+        for c in holders[p]:
+            need[p] |= 1 << c
+    if rule == "arcs":
+        remaining_arcs = [{(min(a, b), max(a, b))
+                           for a in holders[p] for b in holders[p] if a < b}
+                          for p in range(m)]
+    touched = 0
+    sequenced: list[int] = []
+    done = [False] * m
+    for a, b in arcs:
+        touched |= (1 << a) | (1 << b)
+        arc = (min(a, b), max(a, b))
+        completed: list[int] = []
+        for p in range(m):
+            if done[p]:
+                continue
+            if rule == "nodes":
+                ready = need[p] and (need[p] & ~touched) == 0
+            else:
+                remaining_arcs[p].discard(arc)
+                ready = need[p] and not remaining_arcs[p] and (need[p] & ~touched) == 0
+            if ready:
+                completed.append(p)
+        completed.sort(key=lambda p: (not (need[p] >> a & 1 and need[p] >> b & 1), p))
+        for p in completed:
+            done[p] = True
+            sequenced.append(p)
+    sequenced.extend(p for p in range(m) if not done[p])
+    return sequenced
+
+
+def mcnh(instance: MOSPInstance, pattern_rule: str = "nodes", **_: object) -> UpperBound:
+    """The Minimal Cost Node heuristic of Becceneri, Yanasse & Soma (2004) §4,
+    as an arc traversal (`mcnh_trace`) followed by their arcs-to-patterns
+    rule (`patterns_from_arcs`); valued by simulation.
+
+    Reproduces their Table 1 example loop by loop -- the arc (4, 8) first,
+    seven loops, the sixteen arcs in their printed order, ξ = 4 -- and their
+    printed sequence P11, P10, P14, P2, P4, P6, P12, P3, P9, P1, P7, P5, P8,
+    P13 with Fig. 2's profile (`tests/test_mcnh.py`). Not the node-closing
+    `mcn` above, which Yanasse & Senne (2010) summarise in one sentence and
+    which does not reproduce the published MCNh numbers; `reports/ml_nature.md`
+    §29 compares the two, the two-key `rule`, and Frinhani et al. (2018)'s
+    MCNh column. Registered as `mcnh`; the default of nothing.
+    """
+    if instance.n_patterns == 0:
+        return 0, []
+    trace = mcnh_trace(instance)
+    ordering = patterns_from_arcs(instance, trace["arcs"], rule=pattern_rule)
+    return max_open_stacks(instance, ordering), ordering
+
+
 STRATEGIES: dict[str, Strategy] = {
     "tabu": tabu,
     "mcn": least_cost_node,
@@ -639,6 +836,9 @@ STRATEGIES: dict[str, Strategy] = {
     "customer-tabu+cs-dfs": mcn_tabu_then_dfs,
     "rule": two_key_rule,
     "rule+cs-dfs": rule_then_dfs,
+    "mcnh": mcnh,
+    "mcnh-arcs": lambda instance, **kwargs: mcnh(
+        instance, pattern_rule="arcs", **{k: v for k, v in kwargs.items() if k != "pattern_rule"}),
     "learned": learned,
     "learned+cs-dfs": learned_then_dfs,
 }

@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 1/13 SOLVED
+- **Current**: 2/13 SOLVED
 
 ---
 
@@ -69,3 +69,47 @@
 - Item 02 · Q6b: the 2004 arc-traversal Minimal Cost Node heuristic from its
   pseudocode; the Table 1 instance is already transcribed in
   `tests/test_rule_seed.py` (`BYS2004`, printed sequence, ξ′ = 4 = optimum).
+
+## Iteration 2 — 2026-09-27 17:15
+
+### Completed
+- **Item 02 · Q6b, the 2004 arc-traversal MCNh — SOLVED.** `reports/ml_nature.md`
+  §29; tables in `reports/mcnh_tables.md`. Kill criterion **not met**: the
+  pseudocode reproduces the paper's Table 1 example to the arc.
+- `satisfiability/heuristics.py`: `mcnh_trace` (Becceneri, Yanasse & Soma 2004
+  §4 as written: Ω over untraversed arcs, SETV by non-decreasing Ω then index,
+  the arc (n₁, n₂) with Ω(n₁) = Ω(k) and pair-wise smallest Ω over *every*
+  minimum-degree node, then every arc among OPEN nodes lexicographically),
+  `patterns_from_arcs` (pattern sequenced when all its pieces have been opened;
+  same-arc ties: the arc's own pattern first, then index — the one tie-break the
+  example does not print, needed for P12 before P3), `mcnh`. Registered `mcnh`
+  and `mcnh-arcs` (pattern sequenced at its last own arc). Default of nothing.
+- Reproduction: seven loops with the paper's (n₁, n₂) per loop, states after
+  loops 1–3 element for element, the sixteen arcs of ARC in printed order, ξ = 4,
+  the printed sequence P11, P10, P14, P2, P4, P6, P12, P3, P9, P1, P7, P5, P8, P13
+  under both pattern rules, and Fig. 2's profile 2,3,3,4,3,3,3,2,3,4,3,4,3,2.
+- Frinhani et al. (2018) Table 2: `mcnh` equals their MCNh on 21 of 21 named
+  Challenge rows (671 = 671; SP2–4 exactly 23/37/57, where `mcn` gives 26/49/74),
+  Shaw mean 14.04 vs 14.00; SCOOP (Fig. 6, aggregates only) total 233 = 233,
+  gap 25.27% = 25.27%, buckets 7/0/8/9 vs 8/0/7/9. `mcnh` is the published MCNh
+  to within tie-breaks; `mcn` never was (2,528 worse / 61 better, MAE 1.343 vs 0.361).
+- Is the rule MCNh under another name? **No.** Over 6,376 (9–134): same value
+  86.9%, same closing order 0.6%, same pattern sequence 0.8%; rule better on 592,
+  worse on 242, MAE 0.279 vs 0.361, leading in every size band. Per step along
+  MCNh's order: its pick attains the rule's first key on 98.8% (structural: arcs
+  among open nodes are swept first), both keys 79.2%, MCN's min-degree key
+  73.4% — falling to 49% / 40% at 61–134. Same first key, opposite second key.
+- `mcnh` vs `mcnh-arcs`: different sequences on 5,748 instances, same value on
+  all 6,376. In-process ms: mcnh 0.94, mcn 0.38, rule 0.27 (loaded machine).
+- `learning/mcnh.py` (stages paper / corpus / report, ~10 s on 16 workers);
+  `tests/test_mcnh.py` (13). Full suite: 1,120 passed, 2 skipped, 1 xfailed in
+  83 s. `solutions/` untouched; recertify (6 workers) untouched.
+
+### Blockers
+- None. SCOOP is compared on aggregates only: Frinhani publish a figure, not a
+  table, for it. Frinhani's own arcs-to-patterns derivation (via Yanasse's
+  reversed piece sequence) is a third reading, not implemented.
+
+### Next
+- Item 03 · Q5: `decide_mosp` through the SAT path on §13's re-covering and
+  relabelling pairs, conflicts and seconds, paired ratios.

@@ -7644,3 +7644,202 @@ value in every table is an upper bound obtained by simulation on the original
 instance, and none of the 31,880 orderings the five sweeps produced came in
 below a certified optimum. `python -m pytest tests/ -q -x`: 1,083 passed, 2
 skipped, 1 xfailed in 83 s.
+
+## 29. The 2004 arc-traversal MCNh: is the two-key rule the literature's heuristic under another name? (plan 3 §1 Q6b, loop0004 item 02)
+
+*Iteration 2 of loop0004, 2026-09-27. Code: `satisfiability/heuristics.py`
+(`mcnh_trace`, `patterns_from_arcs`, `mcnh`; strategies `mcnh` and
+`mcnh-arcs`, registered and the default of nothing), `learning/mcnh.py`.
+Tests: `tests/test_mcnh.py` (13 tests: the paper's seven loops, their three
+printed states, the sixteen arcs of ARC in order, ξ = 4, the printed pattern
+sequence and Fig. 2's profile under both pattern rules; the first loop's
+choice against the naive reading; a chain and a triangle by hand; empty and
+isolated columns; the two pattern rules coincide on two-piece patterns;
+determinism and the upper-bound property; registration without becoming a
+default; the per-step agreement counts). Regenerate:*
+
+```bash
+python -m learning.mcnh --workers 16          # ~10 s: the paper's example, the corpus, the tables
+python -m learning.mcnh --stage paper         # the example, loop by loop
+python -m learning.mcnh --stage report        # the tables from what is on disk
+python -m pytest tests/test_mcnh.py -q
+```
+
+*Writes `learning/data/mcnh/corpus.csv` (git-ignored, regenerable in seconds)
+and `reports/mcnh_tables.md` (every table below in full, committed). Optima
+are read from `solutions/` and nothing is written there (`git status
+solutions/` clean after the run); `benchmarks.recertify` (6 workers) was
+running throughout and was not touched. Milliseconds are in-process
+`perf_counter` on that loaded machine; the ratios are the claim.*
+
+**Question.** Becceneri, Yanasse & Soma (2004), obtained from the author on
+2026-09-27, state the Minimal Cost Node heuristic (MCNh) in full for the
+first time in our literature: an *arc traversal* of the MOSP graph, not the
+node-closing procedure that `mcn` in `satisfiability/heuristics.py`
+implements from Yanasse & Senne (2010)'s one-sentence summary — which never
+reproduced the MCNh numbers Frinhani et al. (2018) publish (SP2–SP4 at
+23/37/57 against `mcn`'s 26/49/74). §7 found the two-key closing rule beats
+every learned policy and asked whether it is MCNh under another name. Three
+questions, in order: does the pseudocode reproduce the paper's own worked
+example (the kill criterion); does the implementation reproduce Frinhani's
+MCNh column; and is the rule MCNh — per instance and per step.
+
+**Method.** `mcnh_trace` is §4 of the paper as written, with the readings its
+Table 1 example forces (each recorded in the function's docstring): `Ω(k)` is
+the degree over untraversed arcs; `SETV` is every node with `Ω ≥ 1` in
+non-decreasing `Ω`, ties by index; each loop traverses the arc `(n1, n2)` with
+`Ω(n1) = Ω(k)` and the pair-wise smallest `Ω` — so `n1` ranges over *every*
+minimum-degree node and `n2` over its untraversed neighbours, minimising
+`Ω(n2)`, ties in `SETV` order (the paper's first loop takes (4, 8) although
+node 3 heads `SETV`: node 3's cheapest arc costs 3 + 4, node 4's 3 + 3; the
+reading "`n1` is the first node of `SETV`" gives (3, 2) and is wrong); both
+endpoints enter `OPEN`, an endpoint at `Ω = 0` leaves it; then every
+untraversed arc between two `OPEN` nodes is traversed in lexicographic order
+of its endpoints, the order the printed `ARC` shows. `patterns_from_arcs`
+turns ARC into a pattern sequence by the sentence the paper quotes from
+Becceneri (1999) — "sequence a pattern when, for the first time, all the
+nodes corresponding to all its piece types are open" — read as *have been
+opened* (their P2 is sequenced by the arc (1, 4), which closes node 4), with
+patterns completed by the same arc taken as the ones containing that arc
+first, then by index; that tie-break is the only thing the example does not
+print and it is needed for their P12 before P3. A second reading,
+`mcnh-arcs`, sequences a pattern when the last of its own arcs is traversed;
+the two coincide on two-piece patterns and on the example. Every strategy was
+run in-process on all 6,376 certified instances (optima read from
+`solutions/`), `perf_counter` around the call. MCNh's closing order is the one
+its pattern sequence induces (customers by last product, ties by index).
+Per-step agreement is measured along MCNh's own closing order: at every step
+with more than one unclosed customer, whether MCNh's pick attains the rule's
+first key (fewest newly opened stacks), both keys (then most unclosed
+neighbours), and MCN's key (fewest unclosed neighbours), each recomputed from
+the same state. Nothing is fitted, so no split is needed.
+
+**Baseline.** `mcn`, whole corpus: MAE 1.343, exact 54.9%, worst +32. The
+two-key `rule`: 0.279, 83.3%, +10 (§28's whole-corpus figures for the
+construction alone).
+
+**The paper's example, reproduced.** Seven loops, as the paper says. The arc
+chosen in each is (4, 8), (4, 6), (4, 1), (6, 5), (1, 3), (3, 2), (1, 7) —
+the paper's `n1, n2` columns. The states after loops 1–3 match to the
+element: `s` = 1, 3, 6; `ξ` = 2, 3, 4; `OPEN` = {4, 8}, {4, 6, 8}, {1, 6};
+`SETV` = {4, 8, 3, 7, 2, 6, 5, 1}, {4, 8, 6, 3, 7, 2, 5, 1}, {6, 3, 7, 1, 2,
+5}. The sixteen arcs of the final `ARC` come out in the printed order (the
+paper's orientation varies — it prints (1, 4) and (6, 5) — so the comparison
+is as unordered pairs). `ξ` = 4. Both pattern rules give exactly the printed
+sequence P11, P10, P14, P2, P4, P6, P12, P3, P9, P1, P7, P5, P8, P13, and its
+simulated profile is Fig. 2's row by row: 2, 3, 3, 4, 3, 3, 3, 2, 3, 4, 3,
+4, 3, 2. **Kill criterion not met**: nothing in the pseudocode had to be
+guessed beyond the two tie-breaks above, and both are pinned by the example.
+
+**Frinhani et al. (2018), Table 2, MCNh column** (their code was Carvalho's
+reimplementation, not the 2004 authors'), against `mcnh` on
+`MOSP_Instances/Challenge`:
+
+| instance | OPT | Frinhani MCNh | mcnh | mcn | rule |
+|---|---|---|---|---|---|
+| GP1 | 45 | 45 | 45 | 45 | 45 |
+| GP2 | 40 | 40 | 40 | 43 | 40 |
+| GP3 | 40 | 40 | 40 | 45 | 43 |
+| GP4 | 30 | 30 | 30 | 43 | 30 |
+| GP5 | 95 | 96 | 96 | 98 | 96 |
+| GP6 | 75 | 75 | 75 | 89 | 75 |
+| GP7 | 75 | 75 | 75 | 96 | 75 |
+| GP8 | 60 | 60 | 60 | 67 | 60 |
+| Miller | 13 | 13 | 13 | 14 | 13 |
+| NWRS1–8 | 3, 4, 7, 7, 12, 12, 10, 16 | same | same | 3, 6, 7, 7, 12, 12, 10, 16 | same |
+| SP1 | 9 | 9 | 9 | 12 | 10 |
+| SP2 | 19 | 23 | 23 | 26 | 22 |
+| SP3 | 34 | 37 | 37 | 49 | 40 |
+| SP4 | 53 | 57 | 57 | 74 | 57 |
+| Shaw (mean of 25) | 13.68 | 14.00 | 14.04 | 15.48 | 14.04 |
+
+`mcnh` equals Frinhani's MCNh on **21 of 21 named rows** (sums 671 = 671
+against OPT 659); on Shaw it is one stack higher in total over the 25 files
+(351 against 350, mean 14.04 against 14.00). On SCOOP, where Frinhani publish only Fig. 6, the
+aggregates coincide: total 233 against an optimum of 186 (gap 25.27% in both),
+largest gap 57.14% here against 60.00% there, buckets 7 / 0 / 8 / 9 here
+against 8 / 0 / 7 / 9 there (optimal, 1–10%, 11–25%, > 25%). Per instance the
+figure cannot be read, so SCOOP is a comparison of aggregates; the labelled
+gaps share 11 of 16 values as multisets and differ where a tie-break did. **`mcnh` is
+the published MCNh to within tie-breaks**; `mcn` never was.
+
+**Over the optimum, whole corpus** (6,376 instances, 9–134 customers).
+
+| strategy | MAE | exact | worst | total over | ms (mean / median) |
+|---|---|---|---|---|---|
+| mcnh | 0.361 | 79.6% | 13 | 2,302 | 0.94 / 0.47 |
+| mcnh-arcs | 0.361 | 79.6% | 13 | 2,302 | 1.12 / 0.55 |
+| mcn | 1.343 | 54.9% | 32 | 8,564 | 0.38 / 0.22 |
+| rule | 0.279 | 83.3% | 10 | 1,781 | 0.27 / 0.20 |
+
+| customers | instances | MAE mcnh | exact | MAE mcn | exact | MAE rule | exact |
+|---|---|---|---|---|---|---|---|
+| 9–30 | 5,938 | 0.231 | 83.1% | 0.924 | 57.8% | 0.177 | 86.8% |
+| 31–60 | 318 | 1.255 | 40.9% | 4.311 | 21.7% | 0.940 | 46.9% |
+| 61–134 | 120 | 4.442 | 10.0% | 14.217 | 0.0% | 3.608 | 10.0% |
+
+**Head to head** (first below / equal / above second): `mcnh` vs `mcn`
+2,528 / 3,787 / 61; `mcnh` vs `rule` 242 / 5,542 / 592; `rule` vs `mcn`
+2,663 / 3,686 / 27; `mcnh` vs `mcnh-arcs` 0 / 6,376 / 0. By collection the
+rule leads on Harvey (0.223 vs 0.305), Simonis (0.127 vs 0.154), Chu &
+Stuckey (2.35 vs 3.00), Faggioli–Bentivoglio (0.967 vs 1.343) and SCOOP
+(1.208 vs 1.958); `mcnh` leads on Wilson (0.600 vs 0.900) and the Challenge
+copies (0.457 vs 0.587), and they tie on Shaw and Miller. The largest
+differences run both ways: `Random-125-125-4-5_0` 59 (`mcnh`) against 51
+(`rule`) on an optimum of 46; GP3 40 against 43 on 40.
+
+**Is the rule MCNh under another name? No.**
+
+| quantity | value |
+|---|---|
+| same value | 5,542 of 6,376 (86.9%) |
+| same closing order | 37 (0.6%) |
+| same pattern sequence | 51 (0.8%) |
+| mean positional agreement of the two closing orders | 0.223 |
+| steps with a choice, along MCNh's order | 134,077 |
+| MCNh's pick attains the rule's key 1 (fewest newly opened) | 98.8% |
+| MCNh's pick attains keys 1 and 2 | 79.2% |
+| MCNh's pick attains MCN's key (fewest unclosed neighbours) | 73.4% |
+
+| customers | steps | key 1 | keys 1+2 | MCN key | same closing order |
+|---|---|---|---|---|---|
+| 9–30 | 108,746 | 99.2% | 83.3% | 78.0% | 0.6% |
+| 31–60 | 13,584 | 97.4% | 72.2% | 66.0% | 0.0% |
+| 61–134 | 11,747 | 96.2% | 49.0% | 39.8% | 0.0% |
+
+**Finding.** The 2004 pseudocode reproduces its own example to the arc and
+the published MCNh numbers to within tie-breaks, so `mcnh` is the literature's
+heuristic and `mcn` — 2,528 instances worse, 61 better, MAE 1.343 against
+0.361 — never was; the heuristics docstring's statement that MCNh could not
+be reproduced from its one-sentence summaries is confirmed and closed. The
+two-key rule is **not** MCNh under another name: the two produce the same
+closing order on 0.6% of instances and the same pattern sequence on 0.8%,
+agree on the value on 86.9%, and where they differ the rule wins 592 to 242,
+leading in MAE overall (0.279 against 0.361) and in every size band, with the
+gap widening with size (61–134 customers: 3.61 against 4.44). What they share
+is the first key: on 98.8% of MCNh's closing decisions the customer it closes
+is one that opens the fewest new stacks — which the arc traversal enforces
+structurally, since every arc among already-open nodes is swept before a
+new one is chosen — and the difference is entirely in the tie-break: MCNh's
+minimum-`Ω` choice is a *minimum-degree* rule (its pick attains MCN's key on
+73.4% of steps, the rule's second key on 79.2%, and the two fall to 40% and
+49% at 61–134 customers, where the rule's advantage is largest). So the
+literature's heuristic and ours are the same first key with opposite second
+keys, and §7's observation that the rule's tie-break is the *reverse* of
+minimum degree is the whole of the difference. The `nodes` and `arcs`
+readings of the arcs-to-patterns sentence give different sequences on 5,748
+instances and the same value on all 6,376 (the `nodes` reading never
+sequences a pattern later; that it never gains a stack either is a
+measurement, not a theorem). `mcnh` costs 0.94 ms per instance in-process
+against 0.27 for the rule and 0.38 for `mcn`. Size range: 9–134 customers,
+the whole certified corpus; nothing here is evidence about the generated
+ensembles or about 125 × 125 beyond the eight Chu & Stuckey files of that
+size in the corpus. **Proposed, not applied**: nothing — `rule` dominates
+`mcnh` as a construction and `rule+cs-dfs` (§28) dominates both; `mcnh`
+stays registered as the literature's reference point and as the check that
+`mcn` is not it. Frinhani's own description of the arcs-to-patterns step
+("a sequence of pieces is traversed from the last to the first piece, which
+are replaced one by one by the respective patterns and sorted in decreasing
+index order, as proposed by Yanasse [6]") is a third derivation, not
+implemented; that theirs and the 2004 rule agree on 21 of 21 named values
+says the derivation rarely matters on those instances.

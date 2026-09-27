@@ -15,7 +15,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       ms per instance) and a one-paragraph answer to whether the LightGBM
       dependency question still exists. Tests: the strategy on a 3-customer
       chain and the paper's example; the sweep's ledger row.
-- [ ] 02 · Q6b **The 2004 arc-traversal MCNh.** Implement the Minimal Cost
+- [x] 02 · Q6b **The 2004 arc-traversal MCNh.** Implement the Minimal Cost
       Node heuristic exactly as `literature/becceneri_yanasse_soma_2004_method_mosp_cutting.pdf`
       §4 states it (Ω(k) over untraversed arcs, SETV ordered by Ω, the arc
       (n₁, n₂) with Ω(n₁) = Ω(k) and pairwise smallest Ω, then every arc among
