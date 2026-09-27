@@ -206,8 +206,16 @@ correction at the top of this file describes. The fix is to define the MOSP
 graph in Lean (customers as vertices, a clique per pattern) and prove both
 directions over it; the proof needs the Helly property of cliques in a path
 decomposition and the interval property, not Hall's theorem, and no
-`IsReduced` hypothesis. That is loop0004 item 12's corrected brief
-(`Ralph_Loops/loop0004/PROGRESS.md`).
+`IsReduced` hypothesis. **Done the same day**: `lean/MOSPFormalization/MOSPGraph.lean`
+proves `mospValue = pathwidth (mospGraph) + 1` for every instance with a
+requirement, `sorry`-free, both directions, with the Helly lemma
+`PathDecomposition.exists_bag_of_isClique` as the key graph-level by-product;
+`MOSPGraphExamples.lean` proves the star counterexample against the old
+statement; the false statements are deleted from `Reduction.lean`;
+`Sandwich.lean`'s MOSP-side theorems are restated over `mospGraph` without
+`IsReduced`. The only `sorry`s left are the three tree-decomposition
+statements of `Sandwich.lean`. loop0004 item 12 is therefore reduced to
+those (`Ralph_Loops/loop0004/PROGRESS.md`).
 
 ### Key References
 
@@ -400,7 +408,9 @@ lean/
         VSEquivPW.lean                  VS = PW proof (Kinnersley 1992)
         MOSPInstance.lean               MOSP instance formalization
         OpenStacks.lean                 Open stacks counting
-        Reduction.lean                  MOSP ↔ pathwidth reduction proof
+        Reduction.lean                  One surviving lemma; the pattern-graph statements were false and are gone
+        MOSPGraph.lean                  mospValue = pathwidth(MOSP graph) + 1, both directions, sorry-free (2026-09-27)
+        MOSPGraphExamples.lean          The star counterexample to the pattern-graph statement; K₃ example
         Examples.lean                   Verified example instances
         Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth, proved (2026-09-26)
         ForMathlib/                     Candidates for Mathlib contribution

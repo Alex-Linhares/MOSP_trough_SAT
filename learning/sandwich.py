@@ -65,15 +65,18 @@ PROVED = (
     "degeneracy_le_vertexSeparation",
     "degeneracy_le_pathwidth",
     "degeneracy_le_pathwidth_le_bandwidth",
-    "MOSPInstance.degeneracy_add_one_le_mospValue_of_eq",
+    "MOSPInstance.degeneracy_add_one_le_mospValue",
+    "MOSPInstance.mospValue_le_bandwidth_add_one",
+    "MOSPInstance.mospValue_eq_pathwidth_add_one",
+    "MOSPInstance.mospValue_le_pathwidth_add_one",
+    "MOSPInstance.pathwidth_add_one_le_mospValue",
     "degeneracy_deleteVertex_le",
     "exists_layout_maxLaterDegree_le_degeneracy",
     "orderingDegeneracy_le_degeneracy",
     "orderingDegeneracy_eq_degeneracy",
 )
-#: Statements committed with `sorry` (their own or inherited from `Reduction.lean`).
+#: Statements committed with `sorry` (the tree-decomposition section of `Sandwich.lean`).
 STATED = (
-    "MOSPInstance.mospValue_le_bandwidth_add_one",
     "treewidth_le_pathwidth",
     "branch_lemma",
     "conjecture_sqrt_tw_f6",

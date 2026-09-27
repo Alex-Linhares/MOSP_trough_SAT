@@ -69,6 +69,14 @@
   `Reduction.lean` statements only with a comment recording the
   counterexample, or replace them; do not leave a false statement standing
   as if it were an open gap.
+- **(18:20) Item 12 is now mostly done outside the loop**: `MOSPGraph.lean`
+  proves `mospValue = pathwidth (mospGraph) + 1` sorry-free (merged on main);
+  `learning.sandwich --stage lean` and `tests/test_sandwich.py` are updated.
+  What is left for item 12 is the tree-decomposition section of
+  `Sandwich.lean`: `treewidth_le_pathwidth` (needs the path graph to be a tree
+  or a direct argument that a path decomposition is a tree decomposition),
+  the branch lemma, and the conjecture. Kinnersley 1992 and Fellows &
+  Langston 1987 Lemma 4.3 are the references for the branch lemma.
 
 ---
 

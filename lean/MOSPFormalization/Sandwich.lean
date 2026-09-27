@@ -35,10 +35,10 @@ connects them through Kinnersley's theorem (`VSEquivPW`).
   under a layout has all its `S`-neighbours after it, so `minDegreeIn S` is
   bounded by the later-degree.
 * `degeneracy_le_pathwidth_le_bandwidth` — the sandwich, and
-  `degeneracy_add_one_le_mospValue_of_eq` / `mospValue_le_bandwidth_add_one`
-  in MOSP terms, the latter under `IsReduced` and depending on the
-  `mosp_le_pathwidth_add_one` of `Reduction.lean`, which still carries a
-  `sorry` (Hall's theorem).
+  `mospValue_le_bandwidth_add_one` / `degeneracy_add_one_le_mospValue` in MOSP
+  terms, over the MOSP graph on customers (`MOSPGraph.lean`): the upper half
+  holds for every instance, the lower half whenever some customer requires some
+  pattern, which is when `mospValue = pathwidth + 1` holds. Both are `sorry`-free.
 * `orderingDegeneracy_eq_degeneracy` — the two forms of degeneracy coincide.
   The converse direction is the greedy elimination ordering: delete a vertex
   of minimum degree (`deleteVertex`, whose degeneracy is no larger), lay out
@@ -59,7 +59,7 @@ connects them through Kinnersley's theorem (`VSEquivPW`).
 -/
 
 import MOSPFormalization.VSEquivPW
-import MOSPFormalization.Reduction
+import MOSPFormalization.MOSPGraph
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -306,20 +306,20 @@ namespace MOSPInstance
 variable {C Pt : Type*} [Fintype C] [DecidableEq C] [Fintype Pt] [DecidableEq Pt]
 variable (M : MOSPInstance C Pt) [DecidableRel M.requires]
 
-/-- The upper half of the corpus sandwich, `optimum ≤ bandwidth + 1`, for a reduced
-instance. Depends on `mosp_le_pathwidth_add_one`, which still carries a `sorry`. -/
-theorem mospValue_le_bandwidth_add_one (hred : M.IsReduced) :
-    M.mospValue ≤ bandwidth M.agreementGraph + 1 :=
-  (mosp_le_pathwidth_add_one M hred).trans
-    (Nat.add_le_add_right (pathwidth_le_bandwidth M.agreementGraph) 1)
+/-- The upper half of the corpus sandwich, `optimum ≤ bandwidth + 1`, over the MOSP
+graph, for every instance: `mospValue_le_pathwidth_add_one` needs no hypothesis. -/
+theorem mospValue_le_bandwidth_add_one :
+    M.mospValue ≤ bandwidth M.mospGraph + 1 :=
+  M.mospValue_le_pathwidth_add_one.trans
+    (Nat.add_le_add_right (pathwidth_le_bandwidth M.mospGraph) 1)
 
-/-- The lower half of the corpus sandwich, `degeneracy + 1 ≤ optimum`, for any instance
-whose optimum equals `pathwidth + 1` (Yanasse's equality, not yet in this development). -/
-theorem degeneracy_add_one_le_mospValue_of_eq
-    (hyan : M.mospValue = pathwidth M.agreementGraph + 1) :
-    degeneracy M.agreementGraph + 1 ≤ M.mospValue := by
-  rw [hyan]
-  exact Nat.add_le_add_right (degeneracy_le_pathwidth M.agreementGraph) 1
+/-- The lower half of the corpus sandwich, `degeneracy + 1 ≤ optimum`, over the MOSP
+graph, whenever some customer requires some pattern — the hypothesis of Yanasse's
+equality `mospValue_eq_pathwidth_add_one`, without which `mospValue = 0`. -/
+theorem degeneracy_add_one_le_mospValue (h : ∃ c p, M.requires c p) :
+    degeneracy M.mospGraph + 1 ≤ M.mospValue := by
+  rw [M.mospValue_eq_pathwidth_add_one h]
+  exact Nat.add_le_add_right (degeneracy_le_pathwidth M.mospGraph) 1
 
 end MOSPInstance
 

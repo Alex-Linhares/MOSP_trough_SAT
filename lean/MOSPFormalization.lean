@@ -8,7 +8,9 @@ import MOSPFormalization.VSEquivPW
 import MOSPFormalization.MOSPInstance
 import MOSPFormalization.OpenStacks
 import MOSPFormalization.Reduction
+import MOSPFormalization.MOSPGraph
 import MOSPFormalization.Examples
+import MOSPFormalization.MOSPGraphExamples
 import MOSPFormalization.ForMathlib.PathDecomposition
 import MOSPFormalization.ForMathlib.VertexSeparation
 import MOSPFormalization.ForMathlib.Pathwidth

@@ -875,12 +875,26 @@ customer needing one pattern Lean gave 0 where the implementation, the
 independent checker and the literature all give 1. The definition is now
 inclusive at both ends, matching Yanasse & Senne's fill-in matrix.
 
-**Incomplete (2 `sorry`s, both in `Reduction.lean`):**
+**The MOSP–pathwidth theorem is proved (2026-09-27, `MOSPGraph.lean`):**
+`mospValue = pathwidth (mospGraph) + 1` for every instance with at least one
+requirement, where `mospGraph` has *customers* as vertices, adjacent when they
+share a pattern, so that each pattern is a clique. Both directions are
+`sorry`-free and depend only on the three standard axioms: from a pattern order
+the open customers at each step are the bags of a path decomposition; from a
+path decomposition every pattern's clique lies in one bag (the Helly lemma),
+patterns are ordered by that bag, and the interval property puts every open
+customer in the current bag. Without a requirement both sides degenerate
+(`mospValue = 0`, `pathwidth = 0`), stated as separate lemmas.
 
-- `openStacksAt_le_bag_card` -- the core injection step, which needs Hall's marriage theorem under the `IsReduced` hypothesis.
-- `exists_instance_achieving_equality` -- the tightness direction.
-
-What is stated in Lean is the one-sided bound `mospValue <= pathwidth + 1` (`mosp_le_pathwidth_add_one`, for `IsReduced` instances), and it currently rests on the first `sorry`. **Equality is not proven, and is not expected to hold in general** -- measurements on real instances (recorded in `CLAUDE.md`) show `pathwidth` of the pattern connection graph, plus one, undercounting the optimum, and the same quantity on the MOSP graph overcounting it. Closing the tightness `sorry` would require the reduced-instance hypothesis to do real work.
+An earlier `Reduction.lean` stated the bound over `agreementGraph`, whose
+vertices are *patterns*, with a `sorry` attributed to Hall's theorem. That
+statement was false, not hard: `MOSPGraphExamples.lean` proves the star
+instance — one pattern shared by four customers with private patterns — is
+reduced, has `mospValue = 4`, and has a pattern graph of pathwidth 1
+(`star_refutes_pattern_graph_bound`). The false statements are deleted and the
+file's comment records why. The remaining `sorry`s are the three tree-decomposition
+statements of `Sandwich.lean` (`treewidth_le_pathwidth`, the branch lemma, and a
+conjecture); `python -m learning.sandwich --stage lean` lists them.
 
 The formalization includes candidates for contribution to Mathlib (`ForMathlib/`).
 
