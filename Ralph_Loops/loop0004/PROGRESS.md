@@ -7,6 +7,21 @@
 
 ---
 
+## Owner note — 2026-09-27 17:10 (read before items 09–12)
+- `literature/kinnersley_1992_vertex_separation_equals_pathwidth.pdf` arrived
+  today. Its Corollary 4.2 and Fellows & Langston (1987) Lemma 4.3 (quoted in
+  it) *are* the pathwidth branch rule of item 11's first candidate: a vertex
+  whose removal leaves three components of cost ≥ k forces cost ≥ k + 1. Treat
+  it as a known lemma — cite it, measure it, do not claim it. `MISSING.md`
+  has the details. Its Theorem 3.1 proof is the pair of constructions in
+  `LayoutToDecomposition.lean` / `DecompositionToLayout.lean`; item 12 may
+  cite it for the vs = pw half.
+- `literature/yanasse_1997a_transformation_pattern_sequencing_wood.pdf` and
+  `literature/becceneri_yanasse_soma_2004_method_mosp_cutting.pdf` also
+  arrived today (item 02 already depends on the second).
+
+---
+
 ## Iteration 1 — 2026-09-27 16:58
 
 ### Completed
