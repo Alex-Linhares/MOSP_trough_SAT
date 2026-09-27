@@ -1,0 +1,161 @@
+# session it01 started 2026-09-27 16:29:24
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item's cited sections, and the code the strategy has to plug into.
+  > $ pgrep -fa benchmarks.recertify; nproc; cat reports/ml_nature_plan_3.md | head -150
+
+Recertify is running with 9 workers, so I'll keep to 16 cores. Now the code the item touches: the heuristics registry, the two-key rule, and the sweep driver.
+  > $ wc -l satisfiability/heuristics.py learning/distil.py learning/corpus_sweep.py && grep -n "^def \|^STRATEGIES\|^    \"\|^HYPOTHESES\|^class " satisfiability/heu
+  > $ sed -n 1,60p satisfiability/heuristics.py && sed -n 225,460p satisfiability/heuristics.py && sed -n 485,587p satisfiability/heuristics.py
+  > $ sed -n 1,240p learning/distil.py
+  > $ cat learning/corpus_sweep.py && grep -n "def \|ledger\|LEDGER" benchmarks/reheuristic.py | head -60
+  > $ grep -n "^## \|^### " reports/ml_nature.md | sed -n 1,80p; grep -n "709\|LightGBM dependency\|dependency question\|corpus_sweep" reports/learning.md CLAUDE.md r
+  > $ grep -n "union_groups\|def " learning/fingerprint.py | head -40; ls learning/data/ | head -40; ls tests/ | grep -i "heur\|sweep\|distil\|learning"; grep -n "cs-
+  > $ sed -n 1467,1720p reports/ml_nature.md
+  > $ sed -n 170,300p reports/learning.md
+  > $ sed -n 1,160p benchmarks/reheuristic.py
+  > $ for f in learning/data/sweep_cs-dfs.json learning/data/sweep_learned_cs-dfs.json learning/data/sweep_learned.json; do echo "== $f"; python -c "
+import json,sys;
+  > $ grep -n "def test\|paper\|chain\|example" tests/test_heuristics.py | head -60; grep -rn "Becceneri\|Table 1\|paper" tests/test_distil.py tests/test_learning.py 
+  > $ sed -n 190,216p learning/fingerprint.py; head -2 learning/data/canonical.csv; head -2 learning/data/instances.csv | cut -c1-400; grep -n "def enumerate_instance
+  > $ sed -n 55,120p learning/policy.py && sed -n 185,330p learning/policy.py && grep -n "MODEL_DIR\s*=" learning/policy.py && git check-ignore -v learning/models/fol
+  > $ grep -n "def record" -A 30 benchmarks/compute.py | head -50; sed -n 1,60p tests/test_heuristics.py; grep -rn "Stuckey\|Becceneri\|Yanasse" tests/*.py | head -10
+  > $ python -c "
+import fitz
+doc = fitz.open('literature/becceneri_yanasse_soma_2004_method_mosp_cutting.pdf')
+txt = ''.join(p.get_text() for p in doc)
+import re
+i =
+  > $ sed -n 1,60p tests/test_distil.py; grep -n "def test" tests/test_distil.py tests/test_learning.py | head -40; python -c "import lightgbm, sys; print(lightgbm.__
+  > $ pdftotext -layout literature/becceneri_yanasse_soma_2004_method_mosp_cutting.pdf /tmp/bys2004.txt && sed -n 150,330p /tmp/bys2004.txt
+  > $ grep -n "def learned_closing_order" -A 30 learning/policy.py | head -45; wc -l learning/data/canonical.csv; python -c "
+import pandas as pd
+c = pd.read_csv('lea
+  > $ grep -n "^def \|^    def " satisfiability/customer_search.py | head -30; grep -rn "corpus_sweep\|sweep_ledger\|SWEEP_LEDGER" tests/*.py | head; grep -n "def sol
+  > $ python - <<'EOF'
+import numpy as np, time
+from mosp.instance import MOSPInstance
+from satisfiability.heuristics import upper_bound
+from learning.distil import g
+
+Reading is done. The paper's example reproduces (the printed sequence simulates to 4, and every strategy reaches 4), so now I'll implement the strategy, then build the fold-grouped comparison module.
+  > $ python - <<'EOF'
+from mosp.instance import MOSPInstance
+from satisfiability.customer_search import solve
+import numpy as np
+rows = """1 1 1 0 0 0 0 0
+1 0 0 1 0 
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("satisfiability/heuristics.py")
+s = p.read_text()
+
+# 1. docstring: list the two new strategies
+old = """- `cu
+  > $ python - <<'EOF'
+import numpy as np
+from mosp.instance import MOSPInstance
+from satisfiability.heuristics import two_key_closing_order
+from learning.distil impo
+  > Write /home/al/dev/MOSP/learning/rule_seed.py
+
+Training the five union-fold models in the background while I write the tests.
+  > $ mkdir -p learning/data/rule_seed && nohup python -m learning.rule_seed --stage train > learning/data/rule_seed/train.log 2>&1 &
+echo started $!
+  > Write /home/al/dev/MOSP/tests/test_rule_seed.py
+  > $ cat learning/data/rule_seed/train.log; ls -la learning/models/union/ 2>/dev/null
+  > $ python - <<'EOF'
+# Search for a tiny instance where the second key (max remaining degree) decides
+# against MCN's tie-break, so the hand test pins the direction
+  > $ timeout 600 python -m pytest tests/test_rule_seed.py -q -x --deselect tests/test_rule_seed.py::test_second_key_prefers_the_most_unclosed_neighbours 2>&1 | tail 
+  > $ grep -n "def find_benchmark_files" -A 25 learning/dataset.py benchmarks/*.py mosp/*.py 2>/dev/null | head -40
+  > $ nohup python -m learning.rule_seed --stage sweep --workers 16 > learning/data/rule_seed/sweep.log 2>&1 & echo started $!
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_rule_seed.py")
+s = p.read_text()
+start = s.index("def test_second_key_prefers_the_most_unclosed_n
+  > $ grep -n "def _should_skip" -A 12 benchmarks/solve_all.py; grep -n "def from_benchmark_file" -A 30 mosp/instance.py | grep -n "def \|format\|split\|readline\|nam
+  > $ sleep 45; cat learning/data/rule_seed/sweep.log; uptime
+  > $ sed -i 's|(instance_dir / "chain.mosp").write_text(|(instance_dir / "chain.txt").write_text(|' tests/test_rule_seed.py && timeout 300 python -m pytest tests/tes
+  > $ cat learning/data/rule_seed/sweep.log; ls -la learning/data/rule_seed/; uptime
+
+All eleven new tests pass. The corpus sweeps are running; while they do, I'll draft the report skeleton and check the sweep periodically with a bounded wait.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ tail -5 reports/ml_nature.md | cut -c1-200; grep -n "^## 27" reports/ml_nature.md; git status --short | head -20
+  > $ cat learning/data/rule_seed/sweep.log; ls learning/data/rule_seed/; pgrep -c -f "learning.rule_seed"
+  > $ until [ -f learning/data/rule_seed/sweep_learned_cs-dfs.json ] || ! pgrep -f "learning.rule_seed --stage sweep" >/dev/null; do sleep 10; done; echo "sweep stage
+  > $ wc -l learning/data/sweep_ledger.csv; ps -eo pid,etimes,pcpu,args | grep "[l]earning.rule_seed" | head; ls learning/data/rule_seed/; tail -3 learning/data/rule_
+  > $ python - <<'EOF'
+import json, pandas as pd
+a = pd.DataFrame(json.load(open('learning/data/sweep_cs-dfs.json'))['rows'])
+b = pd.DataFrame(json.load(open('learnin
+  > $ tail -4 learning/data/rule_seed/sweep.log; ls learning/data/rule_seed/
+  > $ until [ -f learning/data/rule_seed/sweep_rule_cs-dfs.json ] || ! pgrep -f "learning.rule_seed --stage sweep" >/dev/null; do sleep 5; done; tail -3 learning/data
+  > $ python - <<'EOF'
+import json, pandas as pd
+a = pd.DataFrame(json.load(open('learning/data/rule_seed/sweep_cs-dfs.json'))['rows'])
+r = pd.DataFrame(json.load(ope
+  > $ until [ -f learning/data/rule_seed/sweep_learned_cs-dfs.json ] || ! pgrep -f "learning.rule_seed --stage sweep" >/dev/null; do sleep 10; done; tail -4 learning/
+  > $ until ! pgrep -f "learning.rule_seed --stage sweep" >/dev/null; do sleep 5; done; tail -3 learning/data/rule_seed/sweep.log; ls learning/data/rule_seed/
+  > $ tail -4 learning/data/rule_seed/sweep.log; ls learning/data/rule_seed/; ps -eo pid,etimes,pcpu,args | grep "[l]earning.rule_seed" | head -3
+  > $ kill 1994574 2>/dev/null; echo killed-waiter
+  > $ timeout 580 python -m learning.rule_seed --stage time --workers 16 2>&1 | tail -5
+  > $ python -m learning.rule_seed --stage report 2>&1 | tail -120
+
+Tables are built. Now I'm checking the loss cases and a portfolio figure, running the full test suite, and confirming nothing was written to solutions.
+  > $ python - <<'EOF'
+import pandas as pd
+from learning.rule_seed import load_frame
+f = load_frame()
+r, c, l, o = f['sweep:rule+cs-dfs'], f['sweep:cs-dfs'], f['sweep
+  > $ timeout 900 python -m pytest tests/ -q -x 2>&1 | tail -4; git status --short solutions/ | head -3; echo "solutions status above (empty = clean)"
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 28. The two-key rule as the DFS seed, over the whole corpus (plan 3 §1 Q6a, loop0004 item 01)
+
+*Iteration 1 of loop0004,
+  > $ python - <<'EOF'
+import json, pandas as pd
+from learning.rule_seed import load_frame
+f = load_frame()
+old = pd.DataFrame(json.load(open('learning/data/sweep_lea
+  > $ sed -i '7s/^- \[ \] 01 · Q6a/- [x] 01 · Q6a/' Ralph_Loops/loop0004/iterations.md && sed -n 7p Ralph_Loops/loop0004/iterations.md && grep -c "^- \[ \]" Ralph_Loo
+  > $ python - <<'EOF'
+from pathlib import Path
+import time
+p = Path("Ralph_Loops/loop0004/PROGRESS.md")
+s = p.read_text()
+s = s.replace("- **Started**: (not launched
+
+Two numbers I quoted in §28 were wrong (the 125×125 exact counts and the file-fold miss count). Correcting them now, and confirming the working tree state.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("reports/ml_nature.md")
+s = p.read_text()
+old = "| *`learned+cs-dfs` (file folds, 2026-09-22)* | *93.3%* | *0
+
+Item 01 is done. Everything the driver needs is written; nothing was committed and nothing touched `solutions/`.
+
+**Result.** Over all 6,376 certified instances, the two-key rule seeds Chu & Stuckey's restricted DFS better than the LightGBM policy on every statistic, and faster.
+
+| strategy | exact | mean overshoot | worst | better / worse vs `cs-dfs` | ms mean |
+|---|---|---|---|---|---|
+| `cs-dfs` | 84.5% | 0.241 | +10 | — | 29.5 |
+| `rule+cs-dfs` | 94.2% | 0.092 | +8 | 780 / 12 | 16.7 |
+| `learned+cs-dfs`, file ∪ class folds | 92.1% | 0.128 | +8 | 602 / 19 | 20.6 |
+
+Head to head the rule seed beats the learned seed on 263 instances and loses on 80, and leads in every size band and every collection. The LightGBM dependency question no longer exists: the learned seed is dominated by a model-free strategy of the same cost class. Making `rule+cs-dfs` the upper bound where `cs-dfs` is used today is proposed in the report and not applied.
+
+**Side finding.** The 2026-09-22 file-grouped split leaked. Grouping by file ∪ isomorphism class puts every Chu & Stuckey, Faggioli–Bentivoglio, SCOOP, Challenge, Wilson and Shaw file into one fold trained on Harvey and Simonis only, and the learned seed's lead over `cs-dfs` drops from 709 / 13 to 602 / 19 under it.
+
+**What was written.**
+- `satisfiability/heuristics.py`: `two_key_closing_order`, strategies `rule` and `rule+cs-dfs`, registered and the default of nothing.
+- `learning/rule_seed.py`: trains the union-fold models, runs five sweeps through `learning.corpus_sweep` (new `--model-dir`), times in-process, writes `reports/rule_seed_tables.md`.
+- `tests/test_rule_seed.py`: 11 tests, including the chain, a 4-cycle that pins the tie-break direction, the Becceneri–Yanasse–Soma 2004 Table 1 example (printed sequence simulates to 4, the optimum), and the sweep's ledger row into a temporary ledger.
+- `reports/ml_nature.md` §28, `PROGRESS.md` iteration 1, item 01 marked done in `iterations.md`.
+
+Full suite: 1,083 passed, 2 skipped, 1 xfailed in 83 s. One caveat in the report: milliseconds were measured beside 9 recertify workers, so absolute values are about 1.5× those in `reports/learning.md` and only the ratios are the claim. Twelve items remain, so no `LOOP_COMPLETE`.
+
+# result: success in 1782s, 60 turns, cost $9.70

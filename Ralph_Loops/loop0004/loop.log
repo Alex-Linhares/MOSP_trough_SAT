@@ -1,0 +1,5 @@
+[2026-09-27 16:29:24] loop start: up to 15 iterations, cap 3.0 h each, model default
+[2026-09-27 16:29:24] === iteration 1: 01 · Q6a The rule as the DFS seed, over the whole corpus. Register
+[2026-09-27 16:29:24] claude session it01 (cap 3.00 h) -> session_it01.log
+[2026-09-27 16:59:08] session it01: ok (exit 0, 59 tool calls)
+[2026-09-27 17:00:33] tests passed: 1083 passed, 2 skipped, 1 xfailed, 158 warnings in 84.47s (0:01:24)

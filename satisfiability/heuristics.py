@@ -25,6 +25,10 @@ Available strategies:
 - `cs-dfs` — Chu & Stuckey's `ub_MOSP`: depth-first search over customer
   closing orders, branching only on customers already open.
 - `customer-tabu+cs-dfs` — tabu first, then the DFS pruning against it.
+- `rule` — the two-key closing rule of `reports/ml_nature.md` §7: close the
+  customer that opens the fewest new stacks, on ties the one with the most
+  unclosed neighbours. No model, no search.
+- `rule+cs-dfs` — the DFS seeded with the rule's order (loop0004 item 01).
 
 Measured on the SP instances, our tabu search returns 22/42/63 against optima of
 19/34/53, while Frinhani et al. (2018) report HBF2r reaching 19/35/53 in under a
@@ -485,6 +489,78 @@ def mcn_then_tabu(instance: MOSPInstance, seed: int = 42, **_: object) -> UpperB
     return _tabu_search(instance, start_ordering, start_value, seed=seed)
 
 
+def two_key_closing_order(instance: MOSPInstance) -> list[int]:
+    """The two-key closing rule of `reports/ml_nature.md` §7, followed greedily.
+
+    At every step, over *every* customer not yet closed (not only the open
+    frontier), pick the one that
+
+    1. opens the fewest new stacks: `|N[c] \\ opened|`, `N` self-inclusive;
+    2. on ties, has the most unclosed neighbours: `|N[c] \\ closed| - 1`;
+    3. on ties, has the fewest products not yet produced; then the lowest index.
+
+    Keys 3 are MCN's own tie-break (`least_cost_node`), so the rule is
+    `learning.distil.lex_key(HYPOTHESES["lex:min newly_opened,max
+    remaining_degree"])` computed with popcounts instead of a feature matrix;
+    `tests/test_heuristics.py` checks the two agree. Key 1 is the cheapest-first
+    order in which `restricted_dfs` expands its fan, so the greedy is that
+    search's first leaf; key 2 is the *reverse* of MCN's minimum degree.
+
+    Held out over 1,920 corpus instances the rule's construction is 0.348 stacks
+    over the optimum against 1.616 for MCN and 0.519 for the LightGBM ranker
+    (`reports/ml_nature.md` §7). Returns only customers with at least one
+    product, as `restricted_dfs`'s `seed_order` expects.
+    """
+    masks = _neighbour_masks(instance)
+    n = instance.n_customers
+    pmasks = [0] * n
+    for c in range(n):
+        for p in instance.customer_patterns(c):
+            pmasks[c] |= 1 << p
+    remaining = [c for c in range(n) if masks[c]]
+    closed = opened = produced = 0
+    order: list[int] = []
+    while remaining:
+        pick = min(
+            remaining,
+            key=lambda c: (
+                (masks[c] & ~opened).bit_count(),
+                -((masks[c] & ~closed).bit_count() - 1),
+                (pmasks[c] & ~produced).bit_count(),
+                c,
+            ),
+        )
+        order.append(pick)
+        opened |= masks[pick]
+        closed |= 1 << pick
+        produced |= pmasks[pick]
+        remaining.remove(pick)
+    return order
+
+
+def two_key_rule(instance: MOSPInstance, **_: object) -> UpperBound:
+    """Greedy construction under `two_key_closing_order`, valued by simulation."""
+    ordering = product_order_from_customers(instance, two_key_closing_order(instance))
+    return max_open_stacks(instance, ordering), ordering
+
+
+def rule_then_dfs(
+    instance: MOSPInstance, max_nodes: int = 200_000, **_: object
+) -> UpperBound:
+    """`restricted_dfs` with the two-key rule's order as its incumbent.
+
+    The argument of `learned_then_dfs` with a seed that needs no model: the DFS
+    prunes against its incumbent, and §7 measured the rule's order as a better
+    incumbent than the ranker's (`cs-dfs+rule` 0.127 / 92.7% against 0.157 /
+    91.0% held out). Whether that holds over the whole corpus, against the
+    709-better / 13-worse `learned+cs-dfs` scored over `cs-dfs`, is what
+    `learning.rule_seed` measures (`reports/ml_nature.md` §28). Registered as
+    `rule+cs-dfs`; the default of nothing.
+    """
+    return restricted_dfs(instance, max_nodes=max_nodes,
+                          seed_order=two_key_closing_order(instance))
+
+
 @lru_cache(maxsize=4)
 def _load_cached(path: str):
     from learning.policy import load
@@ -561,6 +637,8 @@ STRATEGIES: dict[str, Strategy] = {
     "cs-dfs+degree": lambda instance, **kwargs: restricted_dfs(
         instance, fan_order="degree", **{k: v for k, v in kwargs.items() if k != "fan_order"}),
     "customer-tabu+cs-dfs": mcn_tabu_then_dfs,
+    "rule": two_key_rule,
+    "rule+cs-dfs": rule_then_dfs,
     "learned": learned,
     "learned+cs-dfs": learned_then_dfs,
 }

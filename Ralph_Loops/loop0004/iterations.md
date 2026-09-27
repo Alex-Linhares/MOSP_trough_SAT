@@ -4,7 +4,7 @@ One item per iteration, in order. Mark `- [x]` when done, `- [!]` when blocked.
 Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
 `reports/ml_nature.md` §1–§27. Report sections continue from §28.
 
-- [ ] 01 · Q6a **The rule as the DFS seed, over the whole corpus.** Register
+- [x] 01 · Q6a **The rule as the DFS seed, over the whole corpus.** Register
       `rule+cs-dfs` in `satisfiability/heuristics.py` (the two-key rule of §7,
       `learning.distil.HYPOTHESES`, followed greedily, then `restricted_dfs` at
       its default budget seeded with that order; not the default of anything).

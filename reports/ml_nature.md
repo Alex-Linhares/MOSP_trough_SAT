@@ -7450,3 +7450,197 @@ instances above 64 customers, is still open. (iv) The pathwidth marginal of
 the census (1, 539, 248,083, … graphs on 11 vertices by pathwidth) and the
 joint table are integer data that do not appear to be in OEIS; the forest
 and caterpillar-forest columns are the two that are, and they match.
+
+## 28. The two-key rule as the DFS seed, over the whole corpus (plan 3 §1 Q6a, loop0004 item 01)
+
+*Iteration 1 of loop0004, 2026-09-27. Code: `satisfiability/heuristics.py`
+(`two_key_closing_order`, strategies `rule` and `rule+cs-dfs`, registered and
+the default of nothing), `learning/rule_seed.py`, `learning/corpus_sweep.py`
+(`--model-dir`). Tests: `tests/test_rule_seed.py` (11 tests: the rule on a
+3-customer chain and a 4-cycle by hand, equality with `learning.distil`'s
+`HYPOTHESES` rule on 60 random instances, Becceneri, Yanasse & Soma (2004)
+Table 1 — their printed sequence simulates to 4, every strategy reaches 4 and
+the complete search refutes 3 — and the sweep's ledger row into a temporary
+ledger and a temporary solutions directory). Regenerate:*
+
+```bash
+python -m learning.rule_seed --workers 16        # ~12 min: train 30 s, sweeps 12 min, timing 50 s
+python -m learning.rule_seed --stage report      # the tables from what is on disk
+python -m pytest tests/test_rule_seed.py -q
+```
+
+*Writes `learning/models/union/` (five fold models, `folds.json`; git-ignored),
+`learning/data/rule_seed/` (five sweep JSONs, `timing.csv`; git-ignored) and
+`reports/rule_seed_tables.md` (every table below in full, committed). Sweep
+rows go to `learning/data/sweep_ledger.csv`, the scoring ledger, never the
+compute ledger. Nothing was written to `solutions/` (`git status solutions/`
+clean after the run); `benchmarks.recertify` (9 workers) was running
+throughout and was not touched.*
+
+**Question.** `reports/learning.md` §2 measured `learned+cs-dfs` — Chu &
+Stuckey's restricted DFS at 200,000 nodes seeded with the LightGBM ranker's
+closing order — as strictly better than `cs-dfs` on 709 of 6,376 corpus
+instances and worse on 13, and left open whether LightGBM and a model file
+belong on the solver's critical path. §7 found a two-key rule with no model
+that seeds the DFS better than the ranker on 1,920 held-out instances. Over
+the whole corpus, is the rule-seeded DFS at least as good as the learned one?
+If it is, the dependency question does not need deciding.
+
+**Method.** `two_key_closing_order` is §7's rule computed with popcounts:
+over every unclosed customer, close the one that opens the fewest new stacks
+(`|N[c] \ opened|`), on ties the one with the most unclosed neighbours
+(`|N[c] \ closed| − 1`, the *reverse* of MCN's minimum degree), then MCN's
+own tie-break (fewest products not yet produced, then index). It agrees with
+`learning.distil.greedy_closing_order(lex_key(HYPOTHESES["lex:min
+newly_opened,max remaining_degree"]))` on 400 random instances and in the
+test. `rule+cs-dfs` is `restricted_dfs` at its default 200,000 nodes with
+that order as the incumbent. Every strategy was swept with
+`learning.corpus_sweep` — `benchmarks.reheuristic.sweep` over the closed
+corpus, one process per instance, saves monotone so nothing is written — and
+the values are exact scores against certified optima. The learned strategy
+was swept fold by fold with a model blind to the fold, and the folds here
+group by **file ∪ MOSP-graph isomorphism class** (`learning.fingerprint.union_groups`
+over `learning/data/canonical.csv`, 512 groups, the largest 1,620 instances,
+dealt largest-first to the emptiest fold), not by file alone as
+`reports/learning.md` did — 157 classes span more than one file (§1). The
+five union-fold models were trained by this item with `learning.policy._fit`
+(1.2–2.2 M decision rows each, 4–7 s per fold). Seconds per instance were
+measured separately, in-process, every strategy on every instance in one
+spawned worker with `perf_counter` around the call, so the sweep's
+process-spawn and import cost is excluded; the in-process values equal the
+sweep's on all 6,376 × 5 (the strategies are deterministic), and the new
+`cs-dfs` sweep equals the 2026-09-22 one on all 6,376. Two context rows:
+`rule` alone (the greedy, no search) and `cs-dfs+degree` (the DFS whose fan
+is sorted by the rule's two keys, MCN seed; §20's flag). The machine carried
+9 `recertify` workers plus 16 sweep workers, so absolute milliseconds are
+about 1.5× those of `reports/learning.md` (`cs-dfs` 29.5 ms against 19.3);
+the ratios are the claim.
+
+**Baseline.** `cs-dfs`: exact 84.5%, mean overshoot 0.241, worst +10, total
+overshoot 1,539 stacks, missing the optimum on 988 instances. The reference
+the item names, `learned+cs-dfs` with **file-grouped** folds (2026-09-22):
+93.3%, 0.105, worst +8, 670 stacks; 709 better / 5,654 equal / 13 worse
+against `cs-dfs`.
+
+**The three-way table** (6,376 instances, 9–134 customers; milliseconds
+in-process on a loaded machine).
+
+| strategy | exact | mean overshoot | worst | total overshoot | misses | ms mean | ms median | ms p90 |
+|---|---|---|---|---|---|---|---|---|
+| `cs-dfs` (MCN seed) | 84.5% | 0.241 | +10 | 1,539 | 988 | 29.5 | 0.61 | 68.1 |
+| **`rule+cs-dfs`** | **94.2%** | **0.092** | **+8** | **586** | **370** | **16.7** | **0.29** | **61.9** |
+| `learned+cs-dfs` (file ∪ class folds) | 92.1% | 0.128 | +8 | 819 | 506 | 20.6 | 1.68 | 65.6 |
+| *`learned+cs-dfs` (file folds, 2026-09-22)* | *93.3%* | *0.105* | *+8* | *670* | *429* | — | — | — |
+| `rule` alone | 83.3% | 0.279 | +10 | 1,781 | 1,062 | 0.26 | 0.19 | 0.39 |
+| `cs-dfs+degree` | 84.6% | 0.238 | +8 | 1,519 | 985 | 45.5 | 0.62 | 102.9 |
+
+**Head to head** (first below / equal / above second).
+
+| first | second | better | equal | worse | stacks saved | stacks lost | first exact where second misses | both miss |
+|---|---|---|---|---|---|---|---|---|
+| `rule+cs-dfs` | `cs-dfs` | **780** | 5,584 | **12** | 966 | 13 | 627 | 361 |
+| `learned+cs-dfs` (union folds) | `cs-dfs` | 602 | 5,755 | 19 | 749 | 29 | 497 | 491 |
+| `learned+cs-dfs` (file folds, 2026-09-22) | `cs-dfs` | 709 | 5,654 | 13 | 882 | 14 | 571 | 417 |
+| `rule+cs-dfs` | `learned+cs-dfs` (union) | **263** | 6,033 | **80** | 325 | 92 | 196 | 310 |
+| `rule+cs-dfs` | `learned+cs-dfs` (file folds) | 182 | 6,086 | 108 | — | — | — | — |
+| `rule` alone | `cs-dfs` | 351 | 5,540 | 485 | 428 | 670 | 249 | 739 |
+| `cs-dfs+degree` | `cs-dfs` | 128 | 6,135 | 113 | 161 | 141 | 57 | 931 |
+| `rule+cs-dfs` | `cs-dfs+degree` | 793 | 5,550 | 33 | 975 | 42 | 629 | 356 |
+
+The 12 instances where the rule seed loses to the MCN seed are off by one on
+11 and by two on one, at 10–50 customers — the `_cs_cost` proxy mismatch
+`reports/learning.md` §2 diagnosed for the learned seed's 13, not a property
+of the rule. Against the learned seed the rule loses by one on 71 of 80 and
+never by more than three, and wins by two or more on 45 of 263 (by 6 on
+`Random-100-50-6-4_0`, by 7 on `HS problem 1142`). Taking the better of the
+two seeds per instance would give 95.1% exact, 0.077 mean overshoot, 494
+stacks: 306 instances are missed by both DFS variants and 361 by the rule
+seed and MCN seed together.
+
+**By size band and collection** (mean overshoot; exact in parentheses).
+
+| customers | instances | `cs-dfs` | `rule+cs-dfs` | `learned+cs-dfs` |
+|---|---|---|---|---|
+| 9–30 | 5,938 | 0.157 (87.9%) | **0.037 (96.8%)** | 0.056 (95.4%) |
+| 31–60 | 318 | 0.783 (50.3%) | **0.355 (72.3%)** | 0.516 (61.0%) |
+| 61–134 | 120 | 2.958 (9.2%) | **2.108 (22.5%)** | 2.667 (11.7%) |
+
+| collection | instances | `cs-dfs` | `rule+cs-dfs` | `learned+cs-dfs` |
+|---|---|---|---|---|
+| Simonis | 3,630 | 0.107 | **0.020** | 0.041 |
+| Harvey | 2,130 | 0.200 | **0.050** | 0.070 |
+| Faggioli–Bentivoglio | 300 | 0.850 | **0.417** | 0.483 |
+| Chu & Stuckey | 200 | 2.075 | **1.275** (50.5% exact) | 1.670 (38.0%) |
+| Challenge (= Miller/Shaw/Wilson) | 46 | 0.326 | **0.152** | 0.283 |
+| Shaw | 25 | 0.160 | 0.000 | 0.000 |
+| SCOOP | 24 | 0.958 | **0.625** | 0.667 |
+| Wilson | 20 | 0.550 | **0.350** | 0.650 |
+
+The rule seed leads in every band and every collection, with Shaw a tie at
+zero. The largest gains over `cs-dfs` are on the Chu & Stuckey `Random`
+instances (`Random-100-50-6-4_0` 58 → 50 against 48; `Random-100-100-6-2_0`
+70 → 66, optimal; `Random-125-125-4-2_0` 63 → 60 against 57), which is where
+`reports/learning.md` found the learned seed's gains too.
+
+**What the union grouping did to the learned strategy.** Grouping by file ∪
+class puts every Chu & Stuckey, Faggioli–Bentivoglio, SCOOP, Challenge,
+Wilson and Shaw file — 557 files, 873 instances — into one fold whose model
+is trained on Harvey and Simonis (and 23 Faggioli–Bentivoglio instances)
+only; the other four folds are Harvey and Simonis in 8–34 files each. That is
+the five-region hold-out §1 predicted, and it is the honest one: a model
+scored on `Random-100-50-6-4_0` has never seen a Chu & Stuckey instance. Under
+it the learned seed drops from 93.3% / 0.105 (file folds) to 92.1% / 0.128,
+and its lead over `cs-dfs` from 709 / 13 to 602 / 19. So about a seventh of
+the 2026-09-22 gain was the file split leaking isomorphic copies and sibling
+generator configurations across folds. The rule needs no split, and its
+numbers are the same under any grouping.
+
+**Finding.** The dependency question is closed, in the negative. Over all
+6,376 certified instances the two-key rule seeds Chu & Stuckey's restricted
+DFS better than the LightGBM policy does on every statistic — exact 94.2%
+against 92.1%, 586 stacks of total overshoot against 819, 263 instances
+better against 80 worse, ahead in every size band and every collection —
+and it is faster (16.7 ms per instance against 20.6, and 0.29 against 1.68
+at the median, where the ranker's per-step predict dominates), with no
+model, no training, no fold protocol and no dependency. Against the item's
+stated reference it is 780 better / 12 worse over `cs-dfs` where the learned
+seed was 709 / 13 with a leaky split and is 602 / 19 with the honest one. It
+recovers 627 of the 988 optima `cs-dfs` misses against the learned seed's
+497. The rule alone (0.26 ms) is not a substitute for the search: it is worse
+than `cs-dfs` on 485 instances, and sorting the DFS's fan by the same two
+keys without the seed (`cs-dfs+degree`) changes almost nothing (128 / 113)
+and costs 1.5× the time — the value is in the *incumbent* the rule hands the
+DFS, exactly as `reports/learning.md` §2 argued for the learned seed. There
+is therefore nothing left for LightGBM to decide on the solver's critical
+path: `learned+cs-dfs` is dominated by a strategy of the same cost class
+with no dependency. **Proposed, not applied:** `rule+cs-dfs` as the upper
+bound strategy where `cs-dfs` is used today (`customer_search.solve`'s
+`upper_strategy`, `csearch`, the descent drivers), at 57% of `cs-dfs`'s time
+and with 12 known regressions of one stack (one of two) against 780 gains;
+this is a solver default and is left to the owner, as the plan requires.
+`learned` and `learned+cs-dfs` can stay registered behind their soft import
+as the record of what the imitation work produced, but nothing should be
+built on them.
+
+**Size range covered.** 6,376 instances at 9–134 customers, of which 5,938
+are at ≤ 30; the lead holds in each band (0.037 vs 0.056; 0.355 vs 0.516;
+2.108 vs 2.667) but above 60 customers it rests on 120 instances, where the
+rule-seeded DFS is still 2.1 stacks over the optimum on average and exact on
+22.5%. Nothing here is evidence about 125 × 125 beyond the 25 instances of
+that size in the corpus, where the rule seed is exact on 2, the learned seed
+on 1 and `cs-dfs` on 1, at mean overshoots of 2.88, 3.40 and 3.68. The milliseconds were measured on a machine
+running 25 other processes and are comparable only with each other.
+
+**Kill criterion.** The plan states none for item 01; the item's deliverable
+is the three-way table and a one-paragraph answer, both above. The decision
+criterion used is the one the item implies: if the rule seed is at least as
+good as the learned seed head to head over the corpus, the dependency
+question does not exist. It is better, 263 to 80.
+
+**Not a bound, not a solver change.** `_lower_bound` and every path that
+decides `k` are untouched; `DEFAULT_STRATEGY` is still `mcn+tabu` and
+`customer_search.solve`'s `upper_strategy` still `cs-dfs` (tested); every
+value in every table is an upper bound obtained by simulation on the original
+instance, and none of the 31,880 orderings the five sweeps produced came in
+below a certified optimum. `python -m pytest tests/ -q -x`: 1,083 passed, 2
+skipped, 1 xfailed in 83 s.

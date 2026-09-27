@@ -71,21 +71,29 @@ def run(
     limit: int | None = None,
     ledger: Path = SWEEP_LEDGER,
     verbose: bool = True,
+    model_dir: Path = MODEL_DIR,
 ) -> tuple[dict, list[tuple]]:
+    """Sweep `strategy` over the corpus; returns (summary, rows).
+
+    `model_dir` is where `--folds` finds `folds.json` and `fold{i}.txt`. The
+    default holds the file-grouped models of `learning.policy train-folds`;
+    `learning.rule_seed` passes the file ∪ isomorphism-class models it trains
+    under `learning/models/union/`.
+    """
     pairs = enumerate_instances(instance_dir)
     if limit:
         pairs = pairs[:limit]
 
     batches: list[tuple[str, list[MOSPInstance], dict]] = []
     if use_folds:
-        manifest = json.loads((MODEL_DIR / "folds.json").read_text())
+        manifest = json.loads((model_dir / "folds.json").read_text())
         assignment = manifest["assignment"]
         for fold in range(manifest["folds"]):
             members = [inst for path, inst in pairs
                        if assignment.get(str(path)) == fold]
             if members:
                 batches.append((f"fold {fold}", members,
-                                {"model_path": str(MODEL_DIR / f"fold{fold}.txt")}))
+                                {"model_path": str(model_dir / f"fold{fold}.txt")}))
     else:
         batches.append(("all", [inst for _, inst in pairs], {}))
 
@@ -115,10 +123,13 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=12)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--model-dir", type=Path, default=MODEL_DIR,
+                        help="where --folds finds folds.json and fold{i}.txt")
     args = parser.parse_args()
 
     summary, rows = run(args.strategy, use_folds=args.folds,
-                        workers=args.workers, limit=args.limit)
+                        workers=args.workers, limit=args.limit,
+                        model_dir=args.model_dir)
 
     print(f"\n{summary['strategy']}"
           f"{' (held-out models)' if summary['folds'] else ''} "
