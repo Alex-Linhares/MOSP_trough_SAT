@@ -63,7 +63,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       size, and the statement of which rule's steps are locally checkable.
       **Kill**: if a Theorem 2 step cannot be checked from the instance and
       the state alone, say precisely why; that is the finding.
-- [ ] 06 · Q1c **The differential harness above 40.** Four relabellings, both
+- [x] 06 · Q1c **The differential harness above 40.** Four relabellings, both
       configurations, both `k`, on the campaign at 50–75 (sample 8 per cell)
       and the corpus at 50–100 (all), 300 s per call, priced first, ≤ 8
       core-hours; censored calls are lower bounds and never disagreements.

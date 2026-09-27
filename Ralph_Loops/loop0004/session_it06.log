@@ -1,0 +1,193 @@
+# session it06 started 2026-09-27 20:04:14
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the harness, and the prior sections this item builds on, then price the run before launching it.
+  > $ date && nproc && pgrep -af "benchmarks.recertify" | grep -v "pgrep" ; echo "---"; uptime; echo; sed -n '1,200p' reports/ml_nature_plan_3.md
+  > $ wc -l learning/differential.py learning/fix_cost.py learning/relabel_portfolio.py learning/cost_model.py learning/upward.py learning/scale_test.py && sed -n '1,
+  > $ sed -n '200,520p' learning/differential.py
+  > $ sed -n '520,818p' learning/differential.py; echo "=== node_counts CONFIGS"; grep -n "CONFIGS\|def refutation_kwargs\|def certified_targets" -A12 learning/node_c
+  > $ sed -n '1,140p' learning/fix_cost.py; echo "=== VARIANTS & scale"; grep -n "^def \|^VARIANTS\|^[A-Z_]* = " learning/fix_cost.py
+  > $ sed -n '248,340p' learning/fix_cost.py
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+s = pd.read_csv("learning/data/ensemble/fix_cost_scale.csv")
+print(s.columns.tolist()); print(len(s))
+f = s[s.
+  > $ python - <<'EOF'
+import pandas as pd
+u = pd.read_csv("learning/data/ensemble/results_upward.csv")
+print(u.columns.tolist()); print(len(u))
+c = u[u.certified.ast
+  > $ python - <<'EOF'
+from learning.node_counts import certified_targets
+from learning.dataset import DEFAULT_INSTANCE_DIR, DEFAULT_SOLUTIONS_DIR
+import collections
+
+
+Sizing the run from item 04's measured seconds, then I'll read §31's censoring numbers and the corpus timing per instance.
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+s = pd.read_csv("learning/data/ensemble/fix_cost_scale.csv")
+f = s[s.variant=="fixed"].copy()
+f["band"]=pd.cut
+  > $ sed -n '8140,8200p' reports/ml_nature.md; echo ....; grep -n "censor\|Censor" reports/ml_nature.md | sed -n '1,400p' | awk -F: '$1>8140' | head -30
+  > $ python - <<'EOF'
+# corpus 50-100 instances: which have Theorem 2 on (csearch config), and their default identity refute time is unknown for the ones fix_cost sk
+  > $ sed -n '1,60p' tests/test_fix_cost.py; grep -n "def test" tests/test_fix_cost.py tests/test_differential.py
+  > $ python - <<'EOF'
+import pandas as pd
+p = pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+print(p.columns.tolist(), len(p))
+print(p.head
+  > $ python - <<'EOF'
+import pandas as pd
+sn = pd.read_csv("learning/data/ensemble/scale_nodes.csv")
+sn = sn[(sn.n_customers>=50)&(sn.n_customers<=100)]
+w = sn.pivot
+  > $ grep -n "^def relabel\|^def recover\|^def same_labelled_graph" -A6 learning/graph_story.py | head -40; grep -n "^def decide(" -A30 satisfiability/customer_searc
+  > $ sed -n '8425,8467p' reports/ml_nature.md; echo ===; cat Ralph_Loops/loop0004/iterations.md | head -60
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+p = pd.read_csv("learning/data/ensemble/portfolio.csv.gz", low_memory=False)
+p=p[p.n>=50]
+# statuses: any disa
+  > $ python - <<'EOF'
+import pandas as pd
+u = pd.read_csv("learning/data/ensemble/results_upward.csv", low_memory=False)
+u=u[u.certified.astype(bool)&(u.n<=75)]
+g=u.
+  > $ sed -n '141,247p' learning/fix_cost.py
+  > Write /home/al/dev/MOSP/learning/differential_scale.py
+  > $ time python -m learning.differential_scale --stage price --reserve 3600 2>&1 | tail -60
+  > $ python - <<'EOF'
+import re
+p="learning/differential_scale.py"
+s=open(p).read()
+old='''            lo = predicted_call_seconds(sec, status, deadline)
+           
+
+The price fits: 6.74 core-hours scheduled, the five 100×100 density-2 and four density-4 refutations priced out. Launching the run now in the background, then writing tests while it runs.
+  > $ rm -f learning/data/ensemble/differential_scale.csv && nohup python -m learning.differential_scale --stage run --workers 16 --wall 3000 --reserve 3600 > learnin
+  > $ sed -n '1,46p' tests/test_differential.py; sed -n '127,160p' tests/test_differential.py
+  > Write /home/al/dev/MOSP/tests/test_differential_scale.py
+  > $ python -m pytest tests/test_differential_scale.py -q -x 2>&1 | tail -15
+  > $ tail -3 learning/data/differential_scale_run.log; python - <<'EOF'
+import pandas as pd, os
+p="learning/data/ensemble/differential_scale.csv"
+if os.path.exists(p
+  > $ sed -i 's|    assert names\[0\] == "mid" and names\[-1\] == "cheap"          # mid costs 101, dear 1, cheap 11|    assert names[0] == "mid" and names[-1] == "de
+  > $ sleep 240; tail -2 learning/data/differential_scale_run.log; python - <<'EOF'
+import pandas as pd, os
+p="learning/data/ensemble/differential_scale.csv"
+if os.pa
+  > $ python - <<'EOF'
+from learning.differential_scale import targets, variant_targets
+import collections
+jobs = targets()
+v = variant_targets(jobs)
+print(len(jobs),
+
+The run is in progress. Variants stage is priced at about half a core-hour on 611 instances, within the reserve. I'll check progress now and draft the report while the run continues.
+  > $ tail -2 learning/data/differential_scale_run.log; python - <<'EOF'
+import pandas as pd, os
+p="learning/data/ensemble/differential_scale.csv"
+if os.path.exists(p
+  > $ sed -n '8468,8530p' reports/ml_nature.md
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -qE "  [0-9]+/12940 jobs|run: [0-9]+ jobs in|Traceback|wall .* reached" learning/data/differential_scale_run.log || ! kill -0 2126805 2>/dev/null; do
+  > $ grep -n "^## 18\.\|^## 15\." reports/ml_nature.md; awk '/^## 18\./{f=1} f&&/\*\*Finding|\*\*Result|\*\*Size range|\*\*Kill/{print NR": "substr($0,1,400)} /^## 1
+  > $ sed -n '4731,4760p;4930,4960p' reports/ml_nature.md
+  > $ awk 'NR>=3814 && NR<=3900 && /\*\*/' reports/ml_nature.md | cut -c1-300 | head -12; sed -n '60,140p' Ralph_Loops/loop0004/iterations.md | grep -n "^- \[" 
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/62c89d3c-0697-45c2-a58f-a6edad7ef68f/tasks/bgggq983k.output 2>/dev/null; tail -2 learning/data/differential_scale_run.log
+
+Waiting on the first progress flush from the run; I'll block on it in the foreground with a bounded loop.
+  > $ until grep -qE "  [0-9]+/12940 jobs|run: [0-9]+ jobs in|Traceback|wall .* reached" learning/data/differential_scale_run.log || ! kill -0 2126805 2>/dev/null; do
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/differential_scale.csv", low_memory=False)
+print(len(d), d.groupby(["class","config"]
+
+All 200 dearest jobs settled, none censored, zero false answers so far. Blocking until the run completes.
+  > $ until grep -qE "run: [0-9]+ jobs in|Traceback|wall .* reached" learning/data/differential_scale_run.log || ! kill -0 2126805 2>/dev/null; do sleep 15; done; tai
+  > $ rm -f learning/data/ensemble/differential_scale_variants.csv; nohup python -m learning.differential_scale --stage variants --workers 16 --wall 1500 > learning/d
+  > $ python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.differential_scale import summaries, audit_table, censoring_table, spread_table, config_agreemen
+  > $ sed -n '14,200p' /home/al/.claude/projects/-home-al-dev-MOSP/62c89d3c-0697-45c2-a58f-a6edad7ef68f/tool-results/bm87q4q2y.txt | cut -c1-260
+  > $ python - <<'EOF' 2>&1 | cut -c1-200
+import pandas as pd, numpy as np
+from learning.differential_scale import spread_table, config_agreement_table, band
+pd.set_o
+  > $ tail -3 learning/data/differential_scale_variants.log
+  > $ nohup python -m learning.differential_scale --stage run --workers 8 --wall 1500 --reserve 0 > learning/data/differential_scale_run2.log 2>&1 & echo $!
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/differential_scale.csv", low_memory=False)
+x=d[d.base_name=="Random-100-100-2-5_0"][[
+  > $ until grep -qE "variants: [0-9]+ instances in|Traceback|wall .* reached" learning/data/differential_scale_variants.log || ! kill -0 2151913 2>/dev/null; do slee
+
+The rerun skipped the priced-out instance because its witness-only rows count as recorded. Fixing the resume logic to run just the missing side, then relaunching, while I read the variants results.
+  > $ python - <<'EOF'
+p="learning/differential_scale.py"; s=open(p).read()
+old='''def build_jobs(jobs: list[dict], scheduled: pd.DataFrame, relabellings: int = RELAB
+  > $ python - <<'EOF' 2>&1 | cut -c1-220
+import pandas as pd
+from learning.differential_scale import variant_tables
+pd.set_option("display.width",220)
+v=pd.read_csv(
+  > $ python - <<'EOF'
+p="tests/test_differential_scale.py"; s=open(p).read()
+s=s.replace("    build_jobs,\n","    build_jobs,\n    recorded_sides,\n")
+s+='''
+
+def te
+  > $ until grep -qE "run: [0-9]+ jobs in|Traceback|wall .* reached" learning/data/differential_scale_run2.log || ! kill -0 2152460 2>/dev/null; do sleep 10; done; ta
+  > $ python -m learning.differential_scale --stage tables > /dev/null && wc -c reports/differential_scale_tables.md && python - <<'EOF' 2>&1 | cut -c1-200
+import pan
+  > $ python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/differential_scale.csv", low_memory=False)
+new=d[d.sides=="lo"]; print(new[["base_nam
+  > $ python - <<'EOF'
+import pandas as pd
+d=pd.read_csv("learning/data/ensemble/differential_scale.csv", low_memory=False)
+x=d[d.base_name.str.startswith("Random-100
+  > $ until grep -qE "run: [0-9]+ jobs in|Traceback|wall .* reached" learning/data/differential_scale_run3.log || ! kill -0 2156457 2>/dev/null; do sleep 10; done; ta
+  > $ python - <<'EOF'
+p="learning/differential_scale.py"; s=open(p).read()
+old='''        for key, b in d.groupby(by, sort=False):
+            censored_bases = b[b[s
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 33. The differential harness above 40, under a budget (plan 3 §1 Q1c, loop0004 item 06)
+
+*loop0004 iteration 6, 2026-09-
+  > $ python -m pytest tests/ -q -x 2>&1 | tail -2
+  > $ sed -i 's/^- \*\*Current\*\*: 5\/13 SOLVED/- **Current**: 6\/13 SOLVED/' Ralph_Loops/loop0004/PROGRESS.md && cat >> Ralph_Loops/loop0004/PROGRESS.md <<'EOF'
+
+##
+
+Item 06 is complete. Recap for the loop owner:
+
+**Item 06 · Q1c, the differential harness above 40 — SOLVED.** Report section §33 appended to `reports/ml_nature.md`, tables in `reports/differential_scale_tables.md`, PROGRESS.md updated to 6/13 and the item marked `[x]` in iterations.md. Nothing under `solutions/` changed and no solver default was touched.
+
+**What ran.** The new module `learning/differential_scale.py` priced every call from a recorded identity run before scheduling it, then ran the identity plus four relabellings under both configurations at `optimum − 1` and `optimum`, 300 s per call, on all 214 certified corpus instances at 50–100 and eight instances from each of the 135 campaign cells at 50–75.
+
+- 25,800 decision calls on 1,294 instances, 5.96 core-hours against a price of 8.23.
+- Zero disagreements, zero contradictions, zero witness failures. All 12,860 refutations returned `unsat` within 300 s.
+- Two censored calls, both the witness search on one relabelling of `Random-100-100-2-5_0`. Lower bounds, not disagreements.
+- A baseline check I added: the loop0003 portfolio's 21,828 rows at 50–100 also carry zero flags.
+
+**Where the harness stops being affordable.** Everything at 75 customers or fewer fits, including the hardness ridge cell. At 100 customers every class fits except the ridge and its dense shoulder, the eight `Random-100-100` instances at densities 2 and 4, whose refutations would each exceed 300 s on every labelling. Those are the classes that take a day at 125×125, and above this boundary the only soundness check left is the certificate of §32.
+
+**Spread.** A relabelling moves a refutation's node count by 1.00 to 1.02× in the median at every size, up to 1.3× on the ridge's sparse side at 100, so it never flips a settled refutation to a censored one. The witness search spreads 1.3 to 2× in the median and up to 10⁴×. Item 04's pre-fix rule proved 2.5 to 3× more label-sensitive than today's rule and gave no false answer on 611 cheap sparse instances above 40, which is not evidence of soundness and is stated as such.
+
+**Tests.** Nine new tests in `tests/test_differential_scale.py`. Full suite passes: 1,162 passed, 2 skipped, 1 xfailed in 95 s, rerun after the last code edit.
+
+One process note is recorded in PROGRESS.md: the first resume keyed on the instance triple and skipped instances whose witness side was already on record, so three passes were needed. The resume is now side-aware and tested.
+
+Next item is 07, the certified ridge cell at 100 customers.
+
+# result: success in 2899s, 64 turns, cost $11.77

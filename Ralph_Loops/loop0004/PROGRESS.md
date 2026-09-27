@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 5/13 SOLVED
+- **Current**: 6/13 SOLVED
 
 ---
 
@@ -366,3 +366,71 @@
 - Item 06 · Q1c: the differential harness at 50–100 under a budget — four
   relabellings, both configurations, both k, campaign 50–75 and corpus
   50–100, 300 s per call, ≤ 8 core-hours; censored calls are lower bounds.
+
+## Iteration 6 — 2026-09-27 20:55
+
+### Completed
+- **Item 06 · Q1c, the differential harness above 40 under a budget — SOLVED.**
+  `reports/ml_nature.md` §33; tables in `reports/differential_scale_tables.md`;
+  data `learning/data/ensemble/differential_scale.csv` (12,960 rows, one per
+  instance × labelling × configuration, both calls), `differential_scale_price.csv`,
+  `differential_scale_variants.csv` (12,220 rows).
+- `learning/differential_scale.py`: targets (first 8 certified by index of
+  each of the 135 campaign cells at 50–75 = 1,080; all 214 certified corpus
+  instances at 50–100), a `price` stage (every call priced from a recorded
+  identity run of the same instance and configuration — `results_upward`,
+  `scale_nodes`, §31's `fix_cost_scale`, §18's portfolio, plus a 10 s probe
+  for the 96 unrecorded corpus pairs — ×1.3, capped at the deadline, censored
+  records at the full 300 s; witnesses always scheduled, refutations cheapest
+  instance first to the budget), a resumable `run` (one job per instance ×
+  labelling × configuration, side-aware resume, dearest first, wall cutoff), a
+  `variants` stage (item 04's `old-order`, `prefix`, `bm-first` beside `fixed`
+  on the refutation side where Theorem 2 is on and the identity settled ≤ 2 s
+  in §31), and tables.
+- Result over 1,294 instances × 5 labellings × 2 configurations at 300 s:
+  **25,800 decision calls, 12,860 of 12,860 refutations `unsat` (none censored,
+  max 193 s), 12,938 of 12,940 witnesses simulate to the optimum, 0
+  disagreements, 0 contradictions, 0 witness failures**; the 2 censored calls
+  are the witness search on one relabelling of `Random-100-100-2-5_0` (≥ 6.8 ×
+  10⁸ nodes), where the other labellings find it in 3.6 × 10⁶–1.8 × 10⁸. Both
+  configurations agree on all 6,430 settled pairs; `csearch/default` median
+  1.000, never above 1 at p90. Baseline added: `verdict` over §18's 21,828
+  portfolio rows at 50–100 also gives 0 flagged.
+- Affordability: priced 6.74 → 7.41 → 8.23 core-hours over three passes
+  (reserve released, then budget 8.9 for one instance), actual 5.96 + 0.45
+  (price/actual 1.38). Priced out: all five `Random-100-100-2` and three of
+  five `Random-100-100-4` (6.67 core-hours of calls certain to censor). **The
+  harness is affordable at 300 s everywhere at ≤ 75 (ridge cell included:
+  8/8 refuted on every labelling, ≤ 193 s) and at 100 on every class but the
+  ridge and its dense shoulder** — the first size at which it stops being
+  affordable is 100 customers on `Random-100-100-2/4`, the classes that take a
+  day at 125.
+- Spread: refutation max/min median 1.004–1.025 by band, p90 1.06–1.17, max
+  1.58, MAD 0.002–0.006 log10; on the ridge and its sparse side at 75–100,
+  1.07–1.31 (max 1.54). Witness max/min median 1.3–2.0, p90 14–1,600, max 4 ×
+  10⁴; witness cheaper than refutation on 12,395 of 12,840.
+- Variants on 611 cheap sparse instances (12,220 calls, 0.45 core-h): 0 false
+  answers from the unsound reverts (not evidence of soundness; §31 stands);
+  the pre-fix rule is 2.5–3× more label-sensitive (MAD 0.019–0.024 vs
+  0.007–0.008, max/min up to 7.1× vs 1.4×), most of it from the rule order.
+- Tests: `tests/test_differential_scale.py` (9) — per-cell sample, pricing
+  arithmetic incl. censored records, schedule (witnesses always, cheapest
+  first, reserve), job order and side-aware resume, `run_sides` on the spider
+  under both configurations with a skipped side, censored/skipped never a
+  disagreement, spread arithmetic by hand with a censored base, band/class
+  names. Full suite 1,162 passed, 2 skipped, 1 xfailed in 95 s, re-run after
+  the last code edit. `solutions/` untouched; recertify (9 workers) untouched.
+
+### Blockers
+- None. Three passes were needed because the first resume keyed on the
+  triple and skipped instances whose witness side was already recorded; fixed
+  (`recorded_sides`, side-aware `build_jobs`) with a test. Seconds are from a
+  loaded machine (16 + 9 workers on 32 cores, 0.49 M nodes/s median); nodes
+  are the claim. The campaign at 50–75 is a per-cell sample of 8, not the
+  cells; the eight priced-out instances at 100 have witness-side checks only.
+
+### Next
+- Item 07 · Q4a: one certified ridge cell at n = 100, m = n, realised three
+  customers per product, priced by `learning.cost_model` first; as many of 25
+  as 2.5 h on 16 workers certify under `default`, the rest censored lower
+  bounds.

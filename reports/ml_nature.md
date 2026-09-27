@@ -8714,3 +8714,240 @@ Nothing at or above 100 customers was emitted. The lattice oracle covers only
 No `benchmarks.recertify` process was found running during this session
 (`pgrep -f benchmarks.recertify` matches the session's own prompt text; the
 Python process is what to look for).
+
+## 33. The differential harness above 40, under a budget (plan 3 §1 Q1c, loop0004 item 06)
+
+*loop0004 iteration 6, 2026-09-27. Code: `learning/differential_scale.py`;
+tests `tests/test_differential_scale.py` (9). Regenerate:*
+
+```bash
+python -m learning.differential_scale --stage price --reserve 3600                            # prices only; probes the 96 unrecorded corpus (instance, config) pairs at 10 s: 11 s
+python -m learning.differential_scale --stage run --workers 16 --wall 3000 --reserve 3600     # 12,940 jobs: 21 min on 16 workers beside 9 recertify workers
+python -m learning.differential_scale --stage variants --workers 16                           # item 04's variants on 611 cheap sparse instances: 2 min
+python -m learning.differential_scale --stage run --workers 8 --reserve 0                     # the reserve released: Random-100-100-4-1_0's 10 refutations, 5 min
+python -m learning.differential_scale --stage run --workers 8 --reserve 0 --budget 8.9        # ens_f_n75_m150_d2_i006's 10 refutations, 5 min (actual spend was 1.38× under the price)
+python -m learning.differential_scale --stage tables                                          # reports/differential_scale_tables.md
+python -m pytest tests/test_differential_scale.py -q
+```
+
+*Writes `learning/data/ensemble/differential_scale.csv` (one row per instance
+× labelling × configuration, 12,960 rows, both calls' status, nodes and
+seconds; resumable by side), `differential_scale_price.csv` (the price of
+every (instance, configuration) and whether its refutation was scheduled),
+`differential_scale_variants.csv` (12,220 rows) and
+`reports/differential_scale_tables.md`. Nothing under `solutions/`; no
+default touched; nothing here decides `k` for anything.*
+
+**Question.** Every refutation at 9–40 customers is sound on twenty
+independent searches (§15) and carries a checkable certificate (§32). Above
+40 the checks on record were the two configurations agreeing on the identity
+labelling (§3, §14) and the loop0003 portfolio (§18: sixteen relabellings at
+50–100 under `csearch` alone, asked about speed). Item 06 asks §15's question
+where the certified corpus is actually hard: on the campaign at 50–75 and
+the corpus at 50–100, with the identity and four relabellings, both
+configurations, both `k`, 300 s per call, inside eight core-hours **priced
+before the run**. Three deliverables: the disagreements (zero stated as
+zero), the relabelling spread by size for item 04's variants where it is
+cheap to add, and the first size at which the harness stops being affordable.
+The plan states no kill criterion.
+
+**Method.** Targets: the first eight certified instances by index of every
+campaign cell at `n ∈ {50, 60, 75}`, `m ∈ {n/2, n, 2n}`, both generators
+(135 cells, 1,080 instances of §16's 6,747), and every certified corpus
+instance at 50–100 (214: 120 at 50, 31 at 51–75, 3 SCOOP at 76–99, 60 at
+100). Labellings: the identity and `relabel0..3` of
+`learning.graph_story.relabel` (rows and columns permuted, seeded from the
+name); the re-covering is left out, because under `default` it leaves the
+count exactly unchanged (§13) and under `csearch` §15 already covered it.
+Each labelling is decided at `optimum − 1` and at `optimum` under `default`
+and `csearch`, the witness simulated; the verdict per instance is
+`learning.differential.verdict`, so a censored call is a lower bound and
+never a disagreement. Every call is **priced from a recorded identity run of
+the same instance under the same configuration** — `results_upward.csv` and
+`scale_nodes.csv` for `default`, §31's `fix_cost_scale.csv` for `csearch`
+under today's rule, §18's portfolio for the witness side, and a 10 s probe
+for the 96 corpus (instance, configuration) pairs with no record — inflated
+by 1.3 for the relabelling spread and capped at the deadline; a record that
+was itself censored is priced at the full 300 s. Every witness call is
+scheduled (cheap, and the satisfiable side is where an over-strong rule
+shows, §15); refutations are scheduled cheapest instance first until the
+budget is spent, one core-hour held back for the variants stage. Jobs run
+dearest first on 16 workers beside the nine `recertify` workers, so seconds
+are from a loaded machine and nodes are the claim.
+
+**Baseline.** §15 at 9–40: 878,580 refutations, 878,612 witness calls, 0
+disagreements after the fix. §18 at 50–100: I re-ran `verdict` over its
+21,828 rows (1,284 bases, `csearch` only, 120 s): 0 disagreements, 0
+contradictions, 27 censored refutations — a check §18 did not report.
+
+### The audit
+
+| source | n | instances | with refutation | decision calls | `unsat` at opt−1 | `sat` at opt | censored opt−1 | censored opt | witness failures | disagreements | contradictions | core-hours |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| campaign | 50 | 360 | 360 | 7,200 | 3,600 | 3,600 | 0 | 0 | 0 | 0 | 0 | 0.02 |
+| campaign | 60 | 360 | 360 | 7,200 | 3,600 | 3,600 | 0 | 0 | 0 | 0 | 0 | 0.06 |
+| campaign | 75 | 360 | 360 | 7,200 | 3,600 | 3,600 | 0 | 0 | 0 | 0 | 0 | 2.76 |
+| corpus | 50 | 120 | 120 | 2,400 | 1,200 | 1,200 | 0 | 0 | 0 | 0 | 0 | 0.00 |
+| corpus | 51–75 | 31 | 31 | 620 | 310 | 310 | 0 | 0 | 0 | 0 | 0 | 0.05 |
+| corpus | 76–99 | 3 | 3 | 60 | 30 | 30 | 0 | 0 | 0 | 0 | 0 | 0.00 |
+| corpus | 100 | 60 | 52 | 1,120 | 520 | 598 | 0 | 2 | 0 | 0 | 0 | 3.07 |
+| **total** | 50–100 | **1,294** | **1,286** | **25,800** | **12,860 of 12,860** | **12,938 of 12,940** | **0** | **2** | **0** | **0** | **0** | **5.96** |
+
+**Zero disagreements, zero contradictions, zero witness failures.** Every
+one of the 12,860 refutation calls at `optimum − 1` returned `unsat` within
+300 s — none was censored, the slowest took 193 s (`Random-100-100-4-2_0`,
+`relabel3`, `csearch`, 1.85 × 10⁸ nodes) and 15 took over 150 s — and 12,938
+of the 12,940 witness calls at `optimum` returned a closing order that
+simulates to the optimum. The two censored calls are the *witness* search
+on one relabelling of `Random-100-100-2-5_0` (`relabel0`, both
+configurations, ≥ 6.3 × 10⁸ and ≥ 6.8 × 10⁸ nodes at 300 s), where the other
+four labellings found the witness in 3.6 × 10⁶ to 1.8 × 10⁸ nodes: a
+censored call, a lower bound, and no disagreement. The two configurations
+settled the same labelling on 6,430 refutation pairs and agreed on every
+one; their node counts are equal on 3,192 of them, and `csearch / default`
+has median 1.000 at every size but 50 (0.968), p10 0.80–0.87 and never
+exceeds 1 at p90 — Theorem 2 saves and never costs, as §22 found at ≤ 40.
+In all: 2.97 × 10¹⁰ refutation nodes and 7.0 × 10⁹ witness nodes, at a
+median 0.49 M nodes/s on the loaded machine.
+
+### The price and where the harness stops being affordable
+
+| pass | budget | reserve | priced (core-h) | refutations priced out | what the pass added |
+|:--|--:|--:|--:|--:|:--|
+| 1 | 8.0 | 1.0 | 6.74 | 10 instances (100 calls) | everything else: 12,940 jobs, 21 min wall |
+| 2 | 8.0 | 0 | 7.41 | 9 | `Random-100-100-4-1_0` (csearch record censored at 120 s; settled here in 122–146 s) |
+| 3 | 8.9 | 0 | 8.23 | 8 | `ens_f_n75_m150_d2_i006` (default record censored; settled in 128–166 s) |
+| actual | | | **5.96 + 0.45** (variants) | | price / actual 1.38: the inflation and the 300 s cap on censored records are both conservative |
+
+The eight instances whose refutations were never scheduled are **all five
+`Random-100-100-2` and three of the five `Random-100-100-4`** (`4-3_0`,
+`4-4_0`, `4-5_0`; identity `default` records 324–1,500+ s, `csearch` ≥ 120 s
+censored in §31): 80 calls priced at 6.67 core-hours, every one expected to
+censor, since 300 s buys 1.5–3 × 10⁸ nodes at this machine's rate and §14's
+counts for these instances are 1.6 × 10⁸ to ≥ 1.8 × 10⁹ per call. Their
+witness sides were run (all 100 calls, 98 settled, the two censored above).
+So **the harness is affordable at 300 s per call everywhere at ≤ 75
+customers** — including the ridge cell `f_n75_m150_d2`, whose eight
+instances refuted on every labelling at 1.5 × 10⁸ nodes median and 193 s
+at worst, and the priced-out records there were §31's 60 s censorings, not
+long calls — **and at 100 customers on every class but the ridge and its
+dense shoulder**: `Random-100-50` at every density (`4-4_0` at 3.4 × 10⁸
+nodes, 127 s, on the identity), `Random-100-100` at densities 6–10, and two
+of five at density 4. The first size at which it stops being affordable is
+therefore **100 customers, `m = n`, two to four customers per product** — 8
+of the 60 corpus instances at 100, the same eight §18 excluded by hand and
+the classes that take a day at 125 × 125 (§14). Where 300 s does not settle
+the identity, four relabellings buy nothing but four more censorings: the
+spread of a refutation is 1.00–1.05× in nodes (below), so no labelling of a
+censored instance would have settled either. Above this boundary the only
+soundness check available remains what §32 states: the certificate, which at
+this size is the search tree itself.
+
+### The relabelling spread, refutations
+
+| source | config | n | bases | identity median nodes | bases with any change | max/min median | p90 | max | identity/min median | p90 | MAD log10 |
+|:--|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| campaign | default | 50 | 360 | 927 | 273 | 1.010 | 1.079 | 1.30 | 1.002 | 1.050 | 0.0036 |
+| campaign | default | 60 | 360 | 3,914 | 279 | 1.006 | 1.083 | 1.30 | 1.001 | 1.040 | 0.0034 |
+| campaign | default | 75 | 360 | 27,689 | 291 | 1.004 | 1.112 | 1.58 | 1.001 | 1.043 | 0.0040 |
+| campaign | csearch | 50 | 360 | 835 | 274 | 1.017 | 1.102 | 1.36 | 1.003 | 1.068 | 0.0045 |
+| campaign | csearch | 60 | 360 | 3,597 | 280 | 1.011 | 1.090 | 1.41 | 1.001 | 1.048 | 0.0040 |
+| campaign | csearch | 75 | 360 | 27,010 | 291 | 1.005 | 1.101 | 1.44 | 1.001 | 1.045 | 0.0041 |
+| corpus | default | 50 | 120 | 626 | 83 | 1.016 | 1.070 | 1.19 | 1.005 | 1.050 | 0.0035 |
+| corpus | default | 61–75 | 30 | 62,827 | 28 | 1.002 | 1.063 | 1.11 | 1.001 | 1.032 | 0.0023 |
+| corpus | default | 100 | 52 | 637,990 | 44 | 1.004 | 1.116 | 1.48 | 1.001 | 1.045 | 0.0052 |
+| corpus | csearch | 50 | 120 | 620 | 84 | 1.025 | 1.091 | 1.31 | 1.009 | 1.060 | 0.0045 |
+| corpus | csearch | 61–75 | 30 | 62,827 | 28 | 1.003 | 1.098 | 1.13 | 1.001 | 1.070 | 0.0028 |
+| corpus | csearch | 100 | 52 | 606,534 | 44 | 1.005 | 1.173 | 1.54 | 1.001 | 1.067 | 0.0060 |
+
+By class where the counts are large (75 and 100 customers, both
+configurations): the ridge cell `f_n75_m150_d2` max/min median 1.13–1.15
+(max 1.45, MAD 0.018–0.019); `Random-100-100-4` (two bases) 1.11–1.12;
+`Random-100-50-4` 1.27–1.31 (max 1.54, MAD 0.029–0.030); `Random-100-50-2`
+1.07–1.12; every class at density ≥ 6 and every cell at `d ≥ 5` or
+`p ≥ 0.075` 1.000–1.002. The spread lives on the ridge and its sparse side,
+grows there to about 1.3× at 100, and is 1.00–1.02× in the median elsewhere:
+§18's 1.00–1.02 over sixteen labellings, reproduced with four under both
+configurations, and the noise floor §19's cost model cannot remove stays
+under 0.03 log10 everywhere.
+
+**The witness side is the opposite.** Max/min over five labellings has
+median 1.3–2.0 at every size, p90 14–115 (campaign 75: 115; corpus 61–75:
+500–1,600) and maxima of 4 × 10³–4 × 10⁴; the identity is at the minimum
+in the median (1.01–1.12) but 3–12× above it at p90, and on
+`Random-100-100-2-5_0` the five labellings span 3.6 × 10⁶ to ≥ 6.8 × 10⁸
+nodes. Witness searches are cheaper than refutations on 12,395 of the 12,840
+pairs (median ratio 0.059), so this spread costs little in a descent — but
+it is where §18's portfolio pays, and item 06 confirms it at 100 under both
+configurations.
+
+### Item 04's variants above 40 (`--stage variants`)
+
+611 instances have Theorem 2 on and an identity refutation under today's
+rule within 2 s in §31's table (264 at 50, 181 at 51–60, 152 at 61–75, 3 at
+76–99, 11 at 100); each was refuted on the five labellings under `fixed`,
+`old-order`, `prefix` and `bm-first` at 60 s (12,220 calls, 0.45
+core-hours, 0 censored).
+
+| variant | sound? (§31) | calls | `unsat` | false `sat` at opt−1 | max/min median 50 / 51–60 / 61–75 | max/min max | MAD log10 50 / 51–60 / 61–75 | nodes vs `fixed`, identity, total ratio 50 / 51–60 / 61–75 / 100 |
+|:--|:--|--:|--:|--:|:--|--:|:--|:--|
+| `fixed` | yes | 3,055 | 3,055 | 0 | 1.049 / 1.044 / 1.032 | 1.41 | 0.0080 / 0.0077 / 0.0074 | 1 |
+| `bm-first` | yes | 3,055 | 3,055 | 0 | 1.067 / 1.064 / 1.055 | 1.72 | 0.0111 / 0.0119 / 0.0110 | 1.021 / 1.038 / 1.041 / 1.004 |
+| `old-order` | **no** | 3,055 | 3,055 | 0 | 1.081 / 1.079 / 1.063 | 2.25 | 0.0127 / 0.0142 / 0.0137 | 0.945 / 0.941 / 0.943 / 0.926 |
+| `prefix` | **no** | 3,055 | 3,055 | 0 | 1.095 / 1.114 / 1.095 | 7.14 | 0.0187 / 0.0233 / 0.0238 | 0.931 / 0.930 / 0.916 / 0.884 |
+
+Two things. **No false answer from the unsound reverts on these 611
+instances** — which is not evidence of soundness (§31 proved both reverts
+unsound at ≤ 40, with false answers on 0.3% of sparse instances, so about
+two were to be expected here and none appeared on this cheap-biased sample);
+it is the statement that at 50–100 the rate is not visibly higher. **The
+pre-fix rule is 2.5–3× more label-sensitive than today's**: MAD 0.019–0.024
+against 0.007–0.008, max/min up to 7.1× against 1.4×, and the reordering
+alone (`old-order`) is most of that (0.013–0.014). The fix's reordering
+bought not only acyclic coverings but a node count that depends less on the
+customer names — the cycle-prone coverings were index-order-dependent. On
+these cheap instances the pre-fix rule saves 7–12% of nodes and `bm-first`
+costs 2–4%, where §31 found `bm-first` saving 15% at 41–100 on the full
+set: the saving is on the expensive instances this stage excludes by
+construction, and §31's figure stands.
+
+**Finding.** On 1,294 certified instances at 50–100 customers — every
+corpus instance in that range and eight from each of the 135 campaign
+cells at 50–75 — the identity and four relabellings, decided at
+`optimum − 1` and `optimum` under both configurations, gave 12,860
+refutations that all returned `unsat` and 12,938 witnesses that all
+simulate to the optimum, with zero disagreements, zero contradictions and
+two censored witness calls, in 5.96 core-hours against a price of 8.23. The
+harness at 300 s per call is affordable everywhere at ≤ 75 customers,
+including the hardness ridge, and at 100 on every class except the ridge and
+its dense shoulder (`Random-100-100` at densities 2 and 4, 8 instances),
+whose refutations would each need more than 300 s on every labelling; that
+is the first size at which it stops being affordable, and it coincides with
+the classes that take a day at 125 × 125. The relabelling spread of a
+refutation is 1.00–1.02× in the median at every size, 1.1–1.3× on the ridge
+and its sparse side at 75–100, and 0.002–0.006 log10 MAD, so a relabelling
+never turns a settled refutation into a censored one or the reverse; the
+witness search spreads 1.3–2× in the median and up to 10⁴×. Item 04's
+pre-fix rule is 2.5–3× more label-sensitive than the fixed rule and gave no
+false answer on 611 cheap sparse instances above 40.
+
+**Size range.** Campaign 50–75 (1,080 of 6,747 certified instances, eight
+per cell, first by index — a sample and not the cells; 135 cells), corpus
+50–100 (all 214 certified; 52 of the 60 at 100 refuted, 8 witness-only).
+Variants: 611 instances at 50–100 with identity refutation ≤ 2 s. Nothing
+was run at 125; the statement about 125 × 125 is that the priced-out classes
+at 100 are the same generator classes, and that a relabelling does not move
+a refutation's count by more than 1.5× anywhere measured.
+
+**Kill criterion.** None stated by the plan. The deliverables: disagreements
+**zero** (stated as zero over 25,800 calls); the variant spread table above;
+the affordability boundary at **100 customers on `Random-100-100-2/4`**.
+
+**Proposed, not applied.** (i) `benchmarks.recertify` could run its
+satisfiable calls as a labelling portfolio (§18's recommendation, confirmed
+here at 100: spread 10⁴×, cost 6% of a refutation). (ii) The price stage's
+rule — schedule a refutation only if a recorded identity run settled within
+the deadline over the inflation — is a usable admission test for any future
+harness run; its price ran 1.38× over actual. (iii) Above the boundary the
+soundness check is §32's certificate or nothing; the eight priced-out
+instances are the ones to emit one for if a C emitter is ever built.
