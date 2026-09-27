@@ -33,3 +33,8 @@
 [2026-09-27 20:54:09] claude session it07 (cap 3.00 h) -> session_it07.log
 [2026-09-27 23:00:12] session it07: ok (exit 0, 58 tool calls)
 [2026-09-27 23:02:25] tests passed: 1170 passed, 2 skipped, 1 xfailed, 159 warnings in 131.05s (0:02:11)
+[2026-09-27 23:02:26] committed 26af1dda: 07 · Q4a One certified ridge cell at 100. `learning.upward` (or a
+[2026-09-27 23:02:26] === iteration 8: 08 · Q4b Does the rate keep falling? Refit §16's drift with the 100
+[2026-09-27 23:02:26] claude session it08 (cap 3.00 h) -> session_it08.log
+[2026-09-28 00:46:57] session it08: ok (exit 0, 62 tool calls)
+[2026-09-28 00:52:32] tests passed: 1178 passed, 2 skipped, 1 xfailed, 159 warnings in 333.94s (0:05:33)

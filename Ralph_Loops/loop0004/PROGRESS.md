@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 7/13 SOLVED
+- **Current**: 8/13 SOLVED
 
 ---
 
@@ -518,3 +518,81 @@
   pre-fix, or re-scale by §31's fix cost). The cell's counts: `ridge100_calls.csv`
   rows with `purpose == descent`, `status != sat` (csearch) and
   `config == default` at `k == value − 1`.
+
+## Iteration 8 — 2026-09-28 00:35
+
+### Completed
+- **Item 08 · Q4b, does the rate keep falling? — SOLVED.** `reports/ml_nature.md`
+  §35; tables `reports/rate_drift_tables.md`; data
+  `learning/data/ensemble/ridge100_prefix_calls.csv` (25 pre-fix `csearch`
+  calls at `value − 1` on §34's cell), `ridge100_prefix_run.log`; one witness
+  lowered under `learning/data/ensemble/solutions/` (`i005`, 26 → 25).
+- `learning/rate_drift.py`: `prefix-run` (item 04's `prefix` variant —
+  `old_close_count` + `old_rule_order`, Theorem 2 on — one call per instance,
+  deadline capped by the wall, resumable, `sat` witnesses saved monotonically);
+  series assembly (10–75 campaign + 100 cell per configuration; an instance
+  the pre-fix run shows non-optimal leaves every series at 100); censored
+  maximum likelihood (Tobit) for exponential / quadratic / power / saturating
+  laws with `σ(n)`, windows 10–100 and 40–100, stratified bootstrap bands
+  (parallel, spawned pool); the 100 cell's censored-normal location with a
+  profile interval; readings of 125 incl. §16(e)'s and two pointwise ones;
+  fix-cost pairing post-fix vs pre-fix; the class cost table.
+- **Like with like**: the six recertify counts and every campaign `csearch`
+  count below 100 are pre-fix (workers forked 2026-09-24; files written before
+  the fix); `default` is fix-invariant; §34's `csearch` is post-fix. §16(e)'s
+  0.04-decade "match" compared the `default` law with the pre-fix `csearch`
+  record; on its own `csearch` row it sat 0.22 below.
+- **Pre-fix run** (15.2 core-hours, 75 min, 16 workers beside 36 foreign):
+  5 `unsat` (9.00–9.29), 1 `sat` (`i005` at k = 25 — the value was not
+  optimal; its §34 censored counts were witness-search bounds), 19 censored
+  at ≥ 9.25–9.35 (2,086–2,400 s at 0.8–0.9 M nodes/s).
+- **Result**: over 75 → 100 the ridge's rate is 0.116 [0.110, 0.121] (pre-fix
+  `csearch`) / 0.140 [0.128, 0.156] (`default`) by the cell's location, against
+  0.092–0.095 over 60 → 75; the quadratic's curvature on 10–100 turns from
+  −4.4/−6.9 × 10⁻⁵ (10–75) to +3.0/+1.8 × 10⁻⁵ with the cell, positive on
+  40–100. **Not sub-exponential** (power law loses by 1,000–1,200 AIC
+  everywhere); **the drift reverses on the ridge** over 75 → 100 and survives
+  on the d = 4 neighbour (5-instance cell). At 125, pre-fix `csearch`, the
+  exponential refit on 10–100 gives **11.43 [11.36, 11.51]** with the record
+  (11.21, 11.22, 11.66) 0.2 either side, §16(e)'s drifting 11.00 0.22 below;
+  the readings carrying the 75 → 100 rise forward (12.4–12.6) are 0.8–1.4
+  above the record — **the rise is not sustained to 125 in the corpus class**.
+  d = 4: record median 10.78 sits on §16's drifting law (10.61), 0.65 below the
+  exponential refit.
+- **Revised law**: `log10 nodes = −0.24 + 0.0934 n` (ridge, pre-fix `csearch`),
+  no resolvable drift, σ → 0.5 at 100; at 125 median 2.7 × 10¹¹ nodes (2.3–3.2
+  on the median, ×/÷ 10 per instance), 55 h per refutation on one core at
+  1.4 M nodes/s (record 25–72 h). Fix ratio on the 100 cell **≥ 2.34×**
+  (exact 2.15 on `i012`; four lower bounds to 3.15). Withdrawn instances: the
+  two still open have the median (55 h) inside their 5-day budget but not the
+  tail; re-refuting all eight 125 × 125 on the fixed code ≥ 130 h (5.3 days)
+  per instance median, ~6 core-weeks, d = 2 tail a week or more each.
+- Tests: `tests/test_rate_drift.py` (8) — rate = d mean/dn for all four laws,
+  Tobit recovers an exact exponential under 90% censoring (and the as-exact
+  reading is biased low, the quadratic finds no curvature, the power law
+  loses), cell location by hand (exact → 1.0; one exact + two bounds → above
+  the censored median; all censored → no upper end), bootstrap band covers the
+  fit, fix-cost pairing on temp CSVs incl. the `sat` exclusion, record
+  comparison and hours arithmetic, on-disk records, fix-ratio summary and
+  class cost table. Full suite: 1,178 passed, 2 skipped, 1 xfailed in 440 s (loaded machine), re-run after the last code edit.
+  `solutions/` untouched; recertify (8 workers) untouched.
+
+### Blockers
+- None. 19 of 24 pre-fix calls censored at 2,400 s on a machine at load 37–42
+  (28 foreign `bench/run.py` workers appeared at 23:00), so the pre-fix cell
+  is itself mostly lower bounds; its location rests on the 75 cell's spread.
+  Both `sat` and `unsat` answers of the pre-fix rule are labelled as what they
+  are (a `sat` verifies; an `unsat` is a refutation under the over-pruning
+  rule, not a certificate).
+- A bootstrap pool launched from a `python -` stdin script cannot be
+  re-imported by `spawn` and respawned failing workers into a 40 MB log until
+  killed by PID; the module's pool is launched from a file and is fine.
+- The d = 4 series at 100 is §16(d)'s five instances with four censored
+  values from 900 s descents, weighed accordingly.
+
+### Next
+- Item 09 · Q3: the cover excess as a quantity of the random bipartite
+  incidence graph (cyclomatic number `n_ones − n − m + c`), against the 2-core
+  / k-core thresholds and the random-intersection-graph literature; a
+  derivation of where the ridge should sit per `m / n`, tested against §25's
+  measured peaks.

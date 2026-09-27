@@ -1,0 +1,163 @@
+# session it08 started 2026-09-27 23:02:26
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 8: item 08, refitting §16's drift law with the 100-cell counts and predicting 125. Let me read the plan and the cited sections first.
+  > $ date && pgrep -af benchmarks.recertify | grep -v -- '--' | head; nproc; grep -n "08 · Q4b" -A 30 reports/ml_nature_plan_3.md | head -60
+  > $ pgrep -af "benchmarks\.recertify" | grep -v pgrep | head -3; echo ---; grep -n "Q4b" reports/ml_nature_plan_3.md; echo ---; awk '/^## §16|^## §16 /{f=1} /^## §1
+  > $ pgrep -af "benchmarks\.recertify" | grep -v pgrep | wc -l; grep -n "^#" reports/ml_nature_plan_3.md | head -40; echo ---; grep -n "rate keep falling\|Q4b\|item 
+  > $ sed -n 1,60p reports/ml_nature_plan_3.md; echo ...; sed -n 76,92p reports/ml_nature_plan_3.md; echo ---; grep -n "^## " reports/ml_nature.md | awk -F: '$1>0' | 
+  > $ sed -n 92,140p reports/ml_nature_plan_3.md
+  > $ sed -n 4097,4462p reports/ml_nature.md
+
+Reading §16 done. Now I'll read §34 (the 100 cell), the recertify counts, §31's fix-cost figures at 100, and look at the existing `learning/upward.py` code, all in parallel.
+  > $ sed -n 8955,9400p reports/ml_nature.md
+  > $ ls recertify/ && python - <<'EOF'
+import json
+d=json.load(open('recertify/results.json'))
+print(type(d), len(d))
+import itertools
+if isinstance(d,dict):
+    for
+  > $ head -c 1500 recertify/run.log; echo; echo ...; grep -n "Random-125" recertify/run.log | head -20; echo ---; ls -la recertify/results.json; git log -1 --format=
+  > $ wc -l learning/upward.py learning/scale_test.py learning/ridge100.py learning/cost_model.py; grep -n "^def \|^class " learning/upward.py learning/scale_test.py 
+  > $ sed -n 1,120p learning/upward.py
+  > $ echo "=== upward 146-250"; sed -n 146,250p learning/upward.py; echo "=== upward 326-434"; sed -n 326,434p learning/upward.py; echo "=== ridge100 1-76"; sed -n 1
+
+Still reading the code I'll build on. Next I need the pre-fix flag plumbing, §31's ridge fix-cost figures, the d=3 series data, and the 125 corpus lower bounds, all independent, so one batch.
+  > $ echo "=== refutation_kwargs"; grep -n "def refutation_kwargs" -A 25 learning/node_counts.py; echo "=== fix_cost variants"; grep -n "VARIANTS\|old_close_count\|o
+  > $ sed -n 8360,8400p reports/ml_nature.md; echo "=== fix_cost_tables 380-420"; sed -n 380,420p reports/fix_cost_tables.md; echo "=== fix_cost.py 100-135"; sed -n 1
+  > $ uptime; echo "=== scale_nodes"; grep -E "Random-1(00|25)-1(00|25)-[24]-" learning/data/ensemble/scale_nodes.csv; echo "=== ridge100 calls at value-1"; python - 
+  > $ ps -eo pid,ppid,pcpu,etime,args --sort=-pcpu | head -30 | cut -c1-150; echo; grep -n "^def generate\|^class Cell\|^def cell_seed\|^def instance_name" -A 6 learn
+  > $ mkdir -p learning && cat > learning/rate_drift.py <<'EOF'
+"""Does the rate keep falling? The ridge law refitted with the 100 cell (loop0004 item 08, `reports/ml
+  > $ python - <<'EOF'
+from satisfiability.customer_search import decide
+from mosp.instance import MOSPInstance
+from benchmarks.generator import generate_structured_i
+  > $ sed -n 482,486p reports/upward_tables.md; sed -n 951,955p reports/upward_tables.md; echo "=== fit_scaling"; grep -n "def fit_scaling" -A 30 learning/hardness_ma
+  > $ python - <<'EOF'
+# insert the analysis block before main()
+src = open('learning/rate_drift.py').read()
+marker = "\n\ndef main() -> None:"
+analysis = r'''
+
+# ---
+  > $ time python - <<'EOF'
+import numpy as np, pandas as pd
+from learning import rate_drift as rd
+fr = rd.series('default', 3.0)
+print(fr.groupby('n').agg(N=('log_no
+  > $ date; cat learning/data/ensemble/ridge100_prefix_run.log; uptime
+
+Run is 3 minutes in with nothing settled yet, as expected. Writing the tests now while it runs.
+  > $ cat > tests/test_rate_drift.py <<'EOF'
+"""Tests for `learning.rate_drift` (loop0004 item 08): the laws and their
+rates, the censored likelihood on synthetic ser
+  > $ python - <<'EOF'
+src = open('learning/rate_drift.py').read()
+old = '''            parts.append(f"\\n### `{label}`: the 100 cell's location (censored-normal MLE,
+  > $ tail -5 recertify/run.log; echo "=== recertify processes elapsed"; ps -o pid,etime,pcpu,args -p $(pgrep -f "^python -m benchmarks\.recertify" | tr '\n' ',' | se
+  > $ sed -n 125,150p reports/better_move_bug.md; echo "=== prefix run"; cat learning/data/ensemble/ridge100_prefix_run.log; echo "=== trial"; cat /tmp/rate_drift_tab
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/ridge100_prefix_run.log | grep -E --line-buffered \"k
+  > $ until ! kill -0 2384550 2>/dev/null; do sleep 5; done; echo trial-done; tail -5 /tmp/rate_drift_tables_trial.log
+  > $ for i in $(seq 1 110); do if [ -s learning/data/ensemble/ridge100_prefix_calls.csv ] || [ -s /tmp/claude-1000/-home-al-dev-MOSP/9aa8bc60-cd4b-49b2-a521-0ca5d75d
+  > $ for i in $(seq 1 115); do if [ -s learning/data/ensemble/ridge100_prefix_calls.csv ] || [ -s /tmp/claude-1000/-home-al-dev-MOSP/9aa8bc60-cd4b-49b2-a521-0ca5d75d
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/ridge100_prefix_run.log | grep -E --line-buffered \"k
+  > $ for i in $(seq 1 115); do if [ -s /tmp/claude-1000/-home-al-dev-MOSP/9aa8bc60-cd4b-49b2-a521-0ca5d75d3528/tasks/baallt64r.output ]; then break; fi; sleep 5; don
+  > $ kill 2384550 2>/dev/null; sleep 1; pgrep -f "learning.rate_drift --stage tables" || echo trial-stopped; python - <<'EOF'
+src = open('learning/rate_drift.py').re
+  > $ for i in $(seq 1 60); do grep -q "resamples" /tmp/claude-1000/-home-al-dev-MOSP/9aa8bc60-cd4b-49b2-a521-0ca5d75d3528/tasks/b7ra1nb7e.output 2>/dev/null && break
+  > $ pgrep -af "^python -$|python - $" | head; pgrep -af "multiprocessing.spawn" | grep -v "rate_drift --stage prefix" | wc -l; ps -eo pid,ppid,etime,args | grep "sp
+  > $ ps -o pid,ppid,etime,args -p 2405374 | cut -c1-120; kill 2409419; sleep 1; pkill -P 2409419; sleep 1; pgrep -af "^python -$" || echo "stdin test gone"; ps -eo p
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/ridge100_prefix_run.log | grep -E --line-buffered \"k
+
+Testing the parallel bootstrap from a file-based script (the stdin form broke spawn), and checking the pre-fix run as its first wave nears the deadline.
+  > $ cat > /tmp/boot_test.py <<'EOF'
+import time
+from learning import rate_drift as rd
+if __name__ == "__main__":
+    fr = rd.series('default', 3.0)
+    t = time.mon
+  > $ nohup python -m learning.rate_drift --stage tables --resamples 200 --workers 8 > /tmp/rate_drift_tables_partial.log 2>&1 &
+echo $! > /tmp/rate_drift_partial.pid
+  > $ until ! kill -0 2462589 2>/dev/null; do sleep 5; done; cat /tmp/rate_drift_tables_partial.log | tail -8; date; tail -6 learning/data/ensemble/ridge100_prefix_ru
+  > $ grep -n "^## \|^### " reports/rate_drift_tables.md; echo; awk '/Series `default, d = 3`/,/Series `default, d = 4`/' reports/rate_drift_tables.md | cut -c1-400
+  > $ python - <<'EOF'
+src = open('learning/rate_drift.py').read()
+old = '''    out = pd.DataFrame(rows)
+    out["hours_125_1core"] = out["mean_125"].map(lambda v: ho
+  > $ python - <<'EOF'
+src = open('learning/rate_drift.py').read()
+old = '''def _md(frame: pd.DataFrame, floatfmt: str = ".3g") -> str:'''
+new = '''def fix_ratio_summ
+  > Monitor {"command": "tail -n 0 -f /home/al/dev/MOSP/learning/data/ensemble/ridge100_prefix_run.log | grep -E --line-buffered \"k
+  > $ awk '/Series `default, d = 4`/,/Series `csearch-prefix, d = 3`/' reports/rate_drift_tables.md | grep -v "^|  [1-6]" | cut -c1-300; awk '/Series `csearch-prefix,
+  > $ date; tail -4 learning/data/ensemble/ridge100_prefix_run.log; ls learning/data/ensemble/solutions/ | grep -c n100_m100_d3; python -c "
+import json; d=json.load(
+  > $ mkdir -p /tmp/it8 && cat > /tmp/it8/sec35_head.md <<'EOF'
+
+## 35. Does the rate keep falling? The ridge law refitted with the 100 cell, and the 125 record read 
+  > $ cat > /tmp/it8/sec35_body.md <<'EOF'
+
+### (a) The pre-fix run on the 100 cell
+
+{{PREFIX_RUN_TABLE}}
+
+**One value was not optimal.** The pre-fix search answered 
+
+Waiting for the second wave of pre-fix calls (due about 00:24). Drafting the closing prose of the section in the meantime.
+  > $ cat > /tmp/it8/sec35_tail.md <<'EOF'
+
+**Finding, in one paragraph.** Between 75 and 100 customers the `m = n`
+ridge's rate did not keep falling. Read as what th
+  > $ for i in $(seq 1 95); do n=$(wc -l < learning/data/ensemble/ridge100_prefix_calls.csv); if [ "$n" -ge 26 ] || grep -q "wall:" learning/data/ensemble/ridge100_pr
+  > $ for i in $(seq 1 95); do if ! kill -0 2382215 2>/dev/null; then break; fi; sleep 6; done; date; wc -l < learning/data/ensemble/ridge100_prefix_calls.csv; tail -
+  > $ pgrep -af "rate_drift --stage prefix-run" | grep -v "bash\|pgrep" || echo "run exited"; nohup python -m learning.rate_drift --stage tables --resamples 200 --wor
+  > $ sed -n 1,45p reports/rate_drift_tables.md | cut -c1-200; echo ......; grep -n "^## \|^### " reports/rate_drift_tables.md | tail -8; echo ......; awk '/^## Fix r
+  > $ python - <<'EOF'
+src = open('learning/rate_drift.py').read()
+old = '''        pf["log_nodes"] = np.log10(1.0 + pf["nodes"].astype(float)).round(3)
+        parts
+
+Final numbers are in. I need the `default` d=3 and pre-fix d=4 rows from the regenerated tables, then I write the section.
+  > $ awk '/^### `default, d = 3`: the 100/,/^## Series `default, d = 4`/' reports/rate_drift_tables.md | grep "^| 100\|^| §16\|^| Tobit\|^| 100-cell" | cut -c1-200; 
+  > $ (python -m pytest tests/ -q -x > /tmp/it8/pytest_full.log 2>&1; echo "exit $?" >> /tmp/it8/pytest_full.log) &
+echo started-tests; tail -2 /tmp/rate_drift_tables
+  > $ cat /tmp/it8/sec35_head.md > /tmp/it8/sec35.md && cat >> /tmp/it8/sec35.md <<'EOF'
+
+### (a) The pre-fix run on the 100 cell
+
+25 calls, 16 workers, 75 minutes wa
+  > $ python - <<'EOF'
+p='reports/ml_nature.md'; s=open(p).read()
+a="sit 1.2–1.4 decades above the record's median and 0.8\nabove its largest count"
+b="sit 1.2–1.4 de
+  > $ for i in $(seq 1 90); do t=$(kill -0 $(cat /tmp/rate_drift_final2.pid) 2>/dev/null && echo run || echo done); if [ "$t" = done ] && grep -q "^exit" /tmp/it8/pyt
+  > $ python - <<'EOF'
+src = open('learning/rate_drift.py').read()
+old = '''        pf["achieved"] = pf["achieved"].map(lambda v: "" if pd.isna(v) else f"{int(v)}")
+ 
+
+Only one thing remains: the tables regeneration with the formatting fix (about 8 minutes). Waiting for it, then a final check of the regenerated file.
+  > $ for i in $(seq 1 95); do kill -0 $(cat /tmp/rate_drift_final3.pid) 2>/dev/null || break; sleep 6; done; date; tail -1 /tmp/rate_drift_tables_final3.log; sed -n 
+
+Item 08 is complete: the report section, tables, data, tests, PROGRESS entry and iterations mark are all written, the full suite passes, and nothing under `solutions/` changed.
+
+**What was done**
+
+- **Like-with-like comparison established first.** The six 125 × 125 recertify counts and every campaign `csearch` count below 100 customers are pre-fix numbers, while §34's 100-cell `csearch` counts are post-fix. To compare fairly, I ran the pre-fix `csearch` rule (item 04's `prefix` variant) on all 25 ridge-100 instances at `value − 1`. 15.2 core-hours on 16 workers. Result: 5 refuted (log10 nodes 9.00–9.29), 19 censored at ≥ 9.25–9.35, and one `sat`: `i005`'s value 26 was not optimal (now 25, witness saved under the ensemble directory). That instance leaves every series at 100 since its censored counts bounded a witness search.
+- **Refit as a Tobit** (`learning/rate_drift.py`): censored maximum likelihood for four law shapes with a size-dependent scale, on 10–100 and 40–100, bootstrap bands, plus the 100 cell's censored-normal location.
+
+**Findings** (`reports/ml_nature.md` §35, `reports/rate_drift_tables.md`)
+
+- **The rate did not keep falling.** Over 75 → 100 the cell's location implies 0.116 [0.110, 0.121] per customer under pre-fix `csearch` and 0.140 under `default`, against 0.092–0.095 over 60 → 75. The quadratic curvature flips from negative on 10–75 to positive with the cell. Not sub-exponential (the power law loses by over 1,000 AIC everywhere). The drift reverses on the ridge and survives only on the d = 4 neighbour.
+- **At 125, like with like:** the exponential refit gives 11.43 [11.36, 11.51] with the record (11.21, 11.22, 11.66) 0.2 either side. §16(e)'s drifting `csearch` figure of 11.00 sat 0.22 below; its headline 11.18 was a `default` figure. Readings that carry the 75 → 100 rise forward (12.4–12.6) are contradicted by the record by 0.8–1.4 decades, so the rise is not sustained to 125 in the corpus class.
+- **Revised law:** `log10 nodes = −0.24 + 0.0934 n`, median 2.7 × 10¹¹ nodes at 125, 55 h per refutation on one core pre-fix. Fix ratio on the 100 cell ≥ 2.34× (one exact pair at 2.15). Re-refuting the eight 125 × 125 instances on the fixed code costs ≥ 130 h per instance median, about six core-weeks.
+
+**Tests:** `tests/test_rate_drift.py` (8 tests). Full suite 1,178 passed, 2 skipped, 1 xfailed in 440 s on a loaded machine.
+
+**Caveats noted in the report:** 19 of 24 pre-fix calls censored because the machine ran at load 37–42 (28 foreign workers appeared mid-session), so the pre-fix cell rests on the 75 cell's spread; pre-fix `unsat` answers are refutations under the over-pruning rule, not certificates.
+
+# result: success in 6270s, 63 turns, cost $30.28

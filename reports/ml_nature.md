@@ -9204,3 +9204,328 @@ a tighter UB would not have changed the outcome, because the cost is the
 final step. (4) *`default` is faster per node than `csearch` at this size*:
 2.07 against 1.82 × 10⁶ /s at the median, 2.9 at the top, so Theorem 2's
 per-node price at 100 on the ridge is 1.1–1.5×, above §22's 1.17×.
+
+## 35. Does the rate keep falling? The ridge law refitted with the 100 cell, and the 125 record read like with like (plan 3 §1 Q4b, loop0004 item 08)
+
+*loop0004 iteration 8, 2026-09-27/28. Code: `learning/rate_drift.py`; tables
+`reports/rate_drift_tables.md`; data `learning/data/ensemble/ridge100_prefix_calls.csv`
+(the pre-fix `csearch` run on the 100 cell, one row per call) and
+`ridge100_prefix_run.log`; one witness under `learning/data/ensemble/solutions/`
+(`i005`, 26 → 25, monotone save). Regenerate:*
+
+```bash
+python -m learning.rate_drift --stage prefix-run --workers 16 --deadline 2400 --wall 4500   # the pre-fix csearch run as made; resumable
+python -m learning.rate_drift --stage tables --resamples 200 --workers 8                    # reports/rate_drift_tables.md, ~8 min on a loaded machine
+python -m pytest tests/test_rate_drift.py -q                                                # 8 tests
+```
+
+*Nothing under `solutions/`; no solver default changed; `_lower_bound`
+untouched; the pre-fix rule is item 04's `prefix` variant behind flags that
+default off.*
+
+**Question.** §16 found the ridge law's rate falling by 0.002 log10 per
+customer for every ten customers, pooled over 18 series at 10–75, and,
+extrapolating from the 75 cell with that drift, put the median
+`Random-125-125-2` refutation at 11.18 log10 nodes against 11.21 and 11.22 on
+record. §34 then found every count of the 100 ridge cell above that law's
+band. Refit the law with the 100 cell — one exact count and twenty-three or
+twenty-four censored lower bounds per configuration, so a Tobit, not a
+regression — predict 125 with a band, and compare with the six 125 × 125
+recertify counts **like with like**. Is the curve sub-exponential, does the
+drift saturate, and what do the day-long classes cost under each reading?
+
+**Like with like, first.** The six counts in `recertify/results.json` were
+made by workers forked on 2026-09-24 00:07 from a library built before the
+`better_move` fix of 2026-09-26 11:45 (`0eb33915`); they are **pre-fix
+`csearch`** counts, as are every `csearch` count of the 10–75 campaign
+(`results.csv`, `results_upward.csv`, written before 12:19 that day; §31
+reproduces them to the node with the `prefix` variant). The `default`
+configuration has no `better_move` and is untouched by the fix. §34's
+`csearch` counts at 100 are post-fix. So there are three series and only two
+of them can be extended to 100 from the record: `default` (10–75 campaign,
+100 from §34), **pre-fix `csearch`** (10–75 campaign, 100 from a run made
+here), and post-fix `csearch` (the 100 cell alone). §16(e)'s "0.04-decade
+match" compared a `default`/pre-fix-`csearch` law with pre-fix `csearch`
+counts, which is fair only within the `csearch` row of its table; the
+comparison below is made on the pre-fix `csearch` series throughout.
+
+**Method.** (1) *The pre-fix run*: `decide(value − 1)` on each of §34's 25
+instances under the `csearch` configuration with `old_close_count` and
+`old_rule_order` on (item 04's `prefix`, the rule the record was made with),
+2,400 s per call, 16 workers, 4,500 s wall; a censored call is a lower bound.
+(2) *The series*: instance-level `log10(1 + nodes)` from the campaign at
+10–75 (150 per cell to 40, 50 per cell above) and the 100 cell (§34 for
+`default` and post-fix `csearch`, this run for pre-fix `csearch`; for the
+`d = 4` neighbour the five-instance sample of §16(d), one exact and four
+censored at 1,500 s). An instance whose value the pre-fix run shows is not
+optimal (`sat` at `value − 1`) leaves every series at 100: its censored
+counts bound a witness search, not the refutation. (3) *The fit*: censored
+maximum likelihood — an exact count contributes `φ`, a lower bound `Φ̄` —
+for four shapes, exponential `a + b n`, quadratic `a + b n + c n²` (§16's
+linear drift; the rate is `b + 2 c n`), power law `a + b log10 n`, and a
+saturating drift `rate(n) = b∞ + (b₀ − b∞) e^{−n/τ}`, each with a scale
+`σ(n) = exp(s₀ + s₁ (n − 50)/50)` because the instance spread grows from 0.2
+at 10 to 0.44 at 75; on the windows 10–100 and 40–100; compared by AIC; 90%
+bands on the 125 median by a stratified bootstrap over instances within
+cells (200 resamples). The 100 cell is read three ways on §16's model:
+censored, as exact (the lower-bound reading) and dropped (what §16 saw).
+(4) *The cell alone*: the censored-normal MLE of the 100 cell's location with
+`σ` held at the 75 cell's, its 90% profile interval, and the 75 → 100 rate it
+implies; then §16(e)'s own method one cell up — that location plus a rate
+held constant to 125. (5) The record: the six 125 counts by class, and §14's
+`Random-100-100-2/4` counts at 100.
+
+**Baseline.** §16(e)'s two extrapolations from 75 (constant rate, drifting
+rate) in both configurations; the six recertify counts; §11's 15–40 law.
+
+### (a) The pre-fix run on the 100 cell
+
+25 calls, 16 workers, 75 minutes wall, 15.2 core-hours, beside 28 foreign
+workers and 8 recertify workers on 32 cores (0.8–0.9 × 10⁶ nodes/s, so
+2,400 s censored at about 2 × 10⁹ nodes). Full table:
+`reports/rate_drift_tables.md`.
+
+| answer | instances | log10 nodes | seconds |
+|---|---|---|---|
+| `unsat` | 5 — `i012` (k = 20, the instance §34 certified), `i013`, `i015`, `i016`, `i023` (k = 21–22) | 9.00, 9.29, 9.14, 9.28, 9.13 | 1,093–2,285 |
+| `sat` | 1 — `i005` at k = 25 | 9.17 | 1,671 |
+| censored | 19, at 2,086–2,400 s | ≥ 9.25–9.35 | — |
+
+**One value was not optimal.** The pre-fix search answered `sat` at
+`value − 1` on `i005` (26 → 25, witness re-simulated and saved), so §34's
+censored counts on that instance — ≥ 9.58 (`csearch`) and ≥ 9.30
+(`default`) — were bounds on a witness search, and it leaves every series at
+100. On the other 24 the pre-fix rule gave no `sat`, so their values stand as
+before: verified upper bounds with the step below undecided, except `i012`
+(certified in §34) and the four the pre-fix rule refuted here, whose `unsat`
+is a refutation **under the rule since shown to over-prune** — the same
+standing as the six 125 counts, and not a certificate. On the same k the
+post-fix `csearch` of §34 had censored all four at ≥ 9.57–9.65.
+
+### (b) The cells, and what the 100 cell says its median is
+
+Instance-level `log10(1 + nodes)` at `value − 1`. The 100 cell's median is a
+censored median and reads as a lower bound. The *location* is the
+censored-normal MLE of the cell's centre with `σ` held at the 75 cell's
+spread, with its 90% profile interval, and the rate over 75 → 100 it implies
+beside the exact 60 → 75 rate:
+
+| series | 75 median (σ) | 100: instances, exact, censored | 100 censored median | 100 location [90%] | rate 60 → 75 | rate 75 → 100 from censored median | rate 75 → 100 from location [90%] |
+|---|---|---|---|---|---|---|---|
+| `default`, d = 3 | 6.78 (0.435) | 23, 1, 22 | ≥ 9.53 | 10.28 [9.97, 10.68] | 0.095 | ≥ 0.110 | **0.140** [0.128, 0.156] |
+| pre-fix `csearch`, d = 3 | 6.66 (0.302) | 24, 5, 19 | ≥ 9.28 | 9.55 [9.42, 9.70] | 0.092 | ≥ 0.105 | **0.116** [0.110, 0.121] |
+| post-fix `csearch`, d = 3 (75 cell is pre-fix) | 6.66 (0.302) | 24, 1, 23 | ≥ 9.64 | 10.12 [9.93, 10.36] | 0.092 | ≥ 0.119 | 0.138 (crosses the fix) |
+| `default`, d = 4 (§16(d)'s five) | 6.63 (0.295) | 5, 1, 4 | ≥ 9.35 | 9.50 [9.24, 9.80] | 0.087 | ≥ 0.109 | 0.115 [0.105, 0.127] |
+| pre-fix `csearch`, d = 4 (§16(d)'s five) | 6.58 (0.267) | 5, 1, 4 | ≥ 9.13 | 9.27 [9.03, 9.54] | 0.086 | ≥ 0.102 | 0.108 [0.098, 0.119] |
+
+With `σ` at the value the 10–75 fit extrapolates to 100 (0.50–0.59, since
+the spread grows with `n`) the d = 3 locations move up, to 9.76 [9.53, 10.00]
+(pre-fix) and 10.55 [10.13, 11.09] (`default`), and the rates to 0.124 and
+0.151. Read: in every series the 100 cell sits above what the last exact rate
+predicts. Over 60 → 75 the ridge's rate is 0.092–0.095; over 75 → 100 the
+censored medians alone say at least 0.105–0.110, and the cell locations say
+0.116–0.140 with intervals that exclude 0.095 in both configurations that have
+a 75 cell of their own. For d = 4 the same reading gives 0.108–0.115 against
+0.086–0.087, on five instances whose four censored values came from 900 s
+descents — too small a sample, and too uncertain a value, to weigh. The
+post-fix row's 0.138 is not a law rate: it is the pre-fix rise plus the fix's
+cost.
+
+### (c) Every reading of 125
+
+Per series: §16(e)'s two extrapolations from 75; the Tobit refits by shape and
+window with the cell censored, read as exact, and dropped; the two pointwise
+readings (the cell's location plus a rate held constant). Bands are 90% on the
+*median* by bootstrap — the record's three counts are single instances, and
+one instance at 125 spreads about ±1.0 decade around the median (σ ≈ 0.5–0.6
+at 100 and growing). `record` counts the analogue class's on-record counts
+inside the band, a fair comparison only in the pre-fix `csearch` rows. AIC,
+curvature bands and rate bands: `reports/rate_drift_tables.md`.
+
+**Pre-fix `csearch`, d = 3 — the `Random-125-125-2` analogue; record 11.21, 11.22, 11.66 (median 11.22):**
+
+| reading | 100 cell | mean at 100 | mean at 125 [90%] | rate at 100 | curvature c | record inside | record median − mean |
+|---|---|---|---|---|---|---|---|
+| §16(e) drifting from 75 | not used | 8.89 | 11.00 [10.33, 11.42] | — | — | 2 | +0.22 |
+| §16(e) constant from 75 | not used | 8.97 | 11.28 [10.68, 11.63] | — | — | 2 | −0.06 |
+| **Tobit exponential 10–100** | censored | 9.10 | **11.43 [11.36, 11.51]** | 0.0934 | — | 0 | −0.22 |
+| Tobit quadratic 10–100 | censored | 9.22 | 11.66 [11.5, 11.9] | 0.0974 | **+3.0 × 10⁻⁵** | 1 | −0.46 |
+| Tobit quadratic 10–100 | as exact | 9.09 | 11.43 [11.3, 11.6] | 0.0934 | +3 × 10⁻⁶ | 0 | −0.20 |
+| Tobit quadratic 10–100 | dropped (= §16's data) | 8.86 | 11.03 [10.7, 11.3] | 0.0869 | −4.4 × 10⁻⁵ | 2 | +0.21 |
+| Tobit power law 10–100 | censored | 4.78 | 5.19 | 0.018 | AIC +1,170 vs exponential | 0 | +6.0 |
+| Tobit saturating drift 10–100 | censored | 9.22 | 11.66 [11.4, 11.8] | 0.097 | — | 1 | −0.44 |
+| Tobit exponential 40–100 | censored | 9.19 | 11.57 [11.5, 11.7] | 0.0953 | — | 1 | −0.35 |
+| Tobit quadratic 40–100 | censored | 9.50 | 12.60 [12.3, 13.0] | 0.117 | +2.9 × 10⁻⁴ | 0 | −1.38 |
+| 100-cell location + 75 → 100 rate held | location MLE | 9.55 | 12.44 [12.2, 12.7] | 0.116 | — | 0 | −1.22 |
+| 100-cell location + 60 → 75 rate held | location MLE | 9.55 | 11.86 [11.7, 12.0] | 0.092 | — | 0 | −0.64 |
+
+**Pre-fix `csearch`, d = 4 — the `Random-125-125-4` analogue; record 10.69, 10.78, 11.41 (median 10.78); the 100 cell is §16(d)'s five:**
+
+| reading | 100 cell | mean at 100 | mean at 125 [90%] | rate at 100 | curvature c | record inside | record median − mean |
+|---|---|---|---|---|---|---|---|
+| §16(e) drifting from 75 | not used | 8.65 | 10.61 [10.25, 11.07] | — | — | 2 | +0.17 |
+| §16(e) constant from 75 | not used | 8.73 | 10.89 [10.60, 11.28] | — | — | 2 | −0.11 |
+| Tobit exponential 10–100 | censored | 9.05 | 11.43 [11.4, 11.5] | 0.0952 | — | 1 | −0.65 |
+| Tobit quadratic 10–100 | censored | 8.94 | 11.21 [11.1, 11.4] | 0.0916 | −2.8 × 10⁻⁵ | 0 | −0.43 |
+| Tobit quadratic 10–100 | dropped | 8.87 | 11.07 [10.9, 11.3] | 0.0893 | −4.4 × 10⁻⁵ | 0 | −0.29 |
+| Tobit exponential 40–100 | censored | 8.99 | 11.34 [11.2, 11.5] | 0.094 | — | 1 | −0.56 |
+| Tobit quadratic 40–100 | censored | 9.06 | 11.53 [11.1, 12.1] | 0.098 | +4.3 × 10⁻⁵ | 1 | −0.75 |
+| 100-cell location + 75 → 100 rate held | location MLE | 9.27 | 11.97 [11.5, 12.5] | 0.108 | — | 0 | −1.19 |
+
+**`default`, d = 3 — no count on record at 125 under `default` (§14's five `Random-125-125-2` refutations censored at 1,500 s):**
+
+| reading | 100 cell | mean at 100 | mean at 125 [90%] | rate at 100 | curvature c |
+|---|---|---|---|---|---|
+| §16(e) drifting from 75 | not used | 9.05 | 11.18 [10.39, 11.96] | — | — |
+| Tobit exponential 10–100 | censored | 9.31 | 11.69 [11.6, 11.8] | 0.0952 | — |
+| Tobit quadratic 10–100 | censored | 9.38 | 11.83 [11.6, 12.1] | 0.0976 | +1.8 × 10⁻⁵ |
+| Tobit quadratic 10–100 | dropped | 8.95 | 11.03 [10.7, 11.4] | 0.085 | −6.9 × 10⁻⁵ |
+| Tobit quadratic 40–100 | censored | 10.06 | 13.75 [13.3, 14.3] | 0.136 | +4.7 × 10⁻⁴ |
+| 100-cell location + 75 → 100 rate held | location MLE | 10.28 | 13.78 [13.2, 14.6] | 0.140 | — |
+| 100-cell location + 60 → 75 rate held | location MLE | 10.28 | 12.66 [12.3, 13.1] | 0.095 | — |
+
+(For `default`, d = 4: exponential 10–100 11.6, quadratic 10–100 censored 11.1
+with c = −5.4 × 10⁻⁵, dropped 10.9 with −8.0 × 10⁻⁵.)
+
+Three things the tables say. **First, the shape.** The power law loses to the
+exponential by 1,000–1,200 AIC in every series: the curve is not
+sub-exponential in that sense at any size. **Second, the drift.** On 10–75
+the quadratic's curvature is negative in every series (−4.4 to −8.0 × 10⁻⁵:
+§16's drift, seen from one density at a time); with the 100 cell entered as
+what it is, the ridge's curvature is +1.8 to +3.0 × 10⁻⁵ on 10–100 and
++2.9 to +4.7 × 10⁻⁴ on 40–100 — the fall has not merely stopped, the last
+interval rises — while on the d = 4 neighbour it stays negative on 10–100
+(−2.8, −5.4 × 10⁻⁵) and turns positive only on 40–100. Reading the censored
+counts as exact, the reading a naive table takes, halves the correction
+(+3 × 10⁻⁶, −1.5 × 10⁻⁵): the difference between "≥" and "=" at 100 is
+0.1–0.3 decades at 125. **Third, the record.** On the ridge, the pre-fix
+`csearch` record at 125 (11.21, 11.22, 11.66) lies between §16(e)'s drifting
+reading (11.00, 0.22 below the record median) and the constant-rate
+exponential refitted on 10–100 (11.43, 0.22 above it), inside the
+one-instance spread of either; the readings that carry the 75 → 100 rise
+forward (12.4–12.6) sit 1.2–1.4 decades above the record's median and 0.8–0.9
+above its largest count — **the rise measured between 75 and 100 is not
+sustained to 125 in the corpus class**. On d = 4 the record's median (10.78)
+sits on §16(e)'s drifting figure (10.61) and 0.65 below the exponential
+refit; there the drift reading stands.
+
+### (d) The fix's cost at 100, and the post-fix reading
+
+Post-fix `csearch` (§34) against pre-fix `csearch` (this run) at the same k on
+the same instances: one exact pair — `i012`, 9.33 against 9.00, **2.15×** — and
+four lower bounds where the post-fix call censored and the pre-fix call
+settled (`i013` ≥ 2.2×, `i016` ≥ 2.3×, `i023` ≥ 2.8×, `i015` ≥ 3.15×); on the
+other 19 both calls censored and the pair says nothing. Median over the five
+**≥ 2.34×**, range 2.15 to ≥ 3.15. That is §31's fix cost at 41–100 (1.54×
+overall, 2–3.5× on the 100-customer half-ratio classes) at the top of its
+range, and well below the ≥ 19.6× §31 found on `Random-100-100-2-4_0`, whose
+pre-fix refutation was a 93 M-node outlier. The post-fix reading of any 125
+figure below is the pre-fix figure times at least 2.34; there is no post-fix
+series to fit, because every `csearch` count below 100 is pre-fix.
+
+### (e) What the day-long classes cost under each reading
+
+Pre-fix `csearch` series; one core at 1.4 × 10⁶ nodes/s (the recertify
+machine did 1.8 × 10⁶); post-fix at ≥ 2.34× (the fix ratio's median lower
+bound); the record's own hours beside them.
+
+| class | reading | log10 nodes at 125 [90% on the median] | hours, pre-fix | hours, post-fix (≥ 2.34×) | on record (pre-fix) |
+|---|---|---|---|---|---|
+| `Random-125-125-2` | §16(e) drifting from 75 | 11.00 [10.33, 11.42] | 20 | ≥ 46 | 11.21, 11.22, 11.66 → 25, 28, 72 h |
+| | **Tobit exponential 10–100** | **11.43 [11.36, 11.51]** | **55** | **≥ 128** | |
+| | Tobit quadratic 40–100 | 12.60 [12.30, 12.99] | 790 | ≥ 1,860 | |
+| | 100-cell location + 75 → 100 rate | 12.44 [12.17, 12.73] | 550 | ≥ 1,280 | |
+| `Random-125-125-4` | §16(e) drifting from 75 | 10.61 [10.25, 11.07] | 8 | ≥ 19 | 10.69, 10.78, 11.41 → 10, 13, 54 h |
+| | Tobit exponential 10–100 | 11.43 [11.37, 11.48] | 53 | ≥ 124 | |
+| | Tobit quadratic 40–100 | 11.53 [11.12, 12.08] | 67 | ≥ 157 | |
+| | 100-cell location + 75 → 100 rate | 11.97 [11.49, 12.51] | 180 | ≥ 430 | |
+
+**Finding, in one paragraph.** Between 75 and 100 customers the `m = n`
+ridge's rate did not keep falling. Read as what they are — five exact counts
+and nineteen censored lower bounds under pre-fix `csearch`, one and
+twenty-two under `default` — the 100 cell's location implies a rate of
+0.116 [0.110, 0.121] log10 per customer over 75 → 100 under pre-fix `csearch`
+and 0.140 [0.128, 0.156] under `default`, against 0.092–0.095 over 60 → 75
+and 0.085–0.089 had §16's drift continued; the quadratic's curvature on
+10–100 is no longer negative (+1.8 to +3.0 × 10⁻⁵) and on 40–100 it is
+positive, so the law is **not sub-exponential** on the ridge — the power law
+loses to the exponential by over a thousand AIC in every series — and the
+drift §16 pooled from 18 series does **not saturate on the ridge, it
+reverses** over 75 → 100, while on the d = 4 neighbour, where the 100 cell is
+five instances on 900-second values, the negative curvature survives
+(−5.4 × 10⁻⁵ `default`, −2.8 × 10⁻⁵ pre-fix `csearch`). Compared like with
+like — pre-fix `csearch` law against pre-fix `csearch` record, which §16(e)'s
+headline did not do — the constant-rate exponential refitted on 10–100 puts
+the median `Random-125-125-2` refutation at **11.43 log10 nodes [11.36,
+11.51]** and the record's three counts (11.21, 11.22, 11.66) fall 0.2 below
+and 0.2 above it, inside one instance's spread, where §16(e)'s drifting
+`csearch` figure of 11.00 sat 0.2 below the record and its quoted 11.18 was a
+`default` figure; the readings that carry the 75 → 100 rise to 125 give
+12.4–12.6, which the record contradicts by 0.8–1.4 decades. So the rise is
+confined to the 75–100 interval as far as the corpus class can tell — its
+three counts put the rate over 100 → 125 at 0.07–0.09 — unless the
+generated ridge at `col_mean` 3.04 is harder at 125 than the corpus class at
+2.76, which the 100-customer corpus counts (three censored at ≥ 9.31–9.42,
+two settled at 7.97 and 8.27, against the cell's 19 at ≥ 9.25–9.35 and five
+at 9.00–9.29) do not suggest; on d = 4 the record sits on §16's drifting law
+and 0.65 below the exponential refit. **The revised law, stated once:** on the
+ridge, pre-fix `csearch`, `log10 nodes = −0.24 + 0.0934 n` from 10 to 100
+with no resolvable drift and σ growing to 0.5 at 100; at 125 a median of
+**2.7 × 10¹¹ nodes (2.3 to 3.2 × 10¹¹ on the median; ×/÷ 10 for one
+instance)**, **55 hours** per refutation on one core at 1.4 × 10⁶ nodes/s,
+against 25–72 hours spent on the record. Post-fix, the same refutations cost
+the fix ratio more: **≥ 2.34× on the 100 cell** (one exact pair at 2.15, four
+lower bounds to 3.15), ≥ 19.6 on `Random-100-100-2-4_0` (§31). **For
+re-certifying the withdrawn instances**: the two still open
+(`Random-125-125-2-2_0`, `-2-3_0`, running since 2026-09-24 on the pre-fix
+library with five-day budgets, four days spent) are priced by this law at a
+median of 55 h with a factor-of-ten instance spread, so the budget covers the
+median and not the tail; and re-refuting all eight 125 × 125 instances on the
+fixed code — the six on record carry the pre-fix caveat — costs at least
+2.34× that, a median of **≥ 130 hours (5.3 days) per instance on one core**,
+some six core-weeks in all, with the d = 2 tail (`-2-5_0` took 72 h pre-fix)
+at a week or more each. That is the price of a clean corpus at 125 × 125,
+and it is a `csearch`-configuration price: `default` at 125 is 11.7–11.8 by
+the same refit and has no count on record.
+
+**Size range covered.** Generated `m = n` fixed-d instances at 10–100
+customers: d = 3 at 10–75 fully certified (150 per cell to 40, 50 above), at
+100 the 24 instances of §34's cell that survive the pre-fix check (1
+certified, 4 refuted under the pre-fix rule only, 19 verified upper bounds
+with censored steps under both rules); d = 4 at 100 on §16(d)'s five (1
+certified). Chu & Stuckey's `Random-100-100-2/4` and `Random-125-125-2/4`
+enter only as the record. **Every 125 figure is an extrapolation of 25
+customers** from a cell that is itself mostly lower bounds, and rests on the
+reading that a value the descent reached in 2,400 s is optimal — one of 25
+was not.
+
+**Kill criterion.** The plan states none for item 08. Its deliverable — the
+revised law and its band, and a sentence on the withdrawn instances — is the
+paragraph above. A correction to §16(e) and §34 follows from it and both are
+left in place: §16(e)'s "0.04-decade match" was `default` law against pre-fix
+`csearch` record; on the `csearch` row of its own table the drifting law sat
+0.22 below the record, and the refit here moves the ridge law up by the same
+0.2 and takes the drift out of it. §34's reading that "the rate did not keep
+falling" stands, and is now bounded: 0.116–0.140 over 75 → 100, and not
+sustained to 125 in the corpus class.
+
+**Method notes.** (1) *A censored cell has a location, not a median*: the
+censored median of the 100 cell (≥ 9.3–9.6) understates its centre by 0.3–0.8
+decades under any normal reading with the 75 cell's spread; §34's "≥ 9.64"
+was right and was not the centre. (2) *Read a pre-fix record with a pre-fix
+law*: the `csearch` series below 100 is pre-fix throughout, `default` is
+fix-invariant, and the post-fix `csearch` series is one cell — say which one
+every figure is in. (3) *Ask the satisfiable side at 100 too*: one pre-fix
+call lowered a value the post-fix descent had left standing after 2,400 s,
+and its censored counts had been entering §34's cell summary as refutation
+bounds; a cheaper rule is a cheap check on the values, even an unsound one,
+because a `sat` witness verifies. (4) *`spawn` cannot re-import a stdin
+script*: a pool launched from `python -` respawned failing workers into a
+40 MB log until killed by PID; launch pools from a file. (5) Seconds here are
+from a machine at load 37–42 (28 foreign workers and 8 recertify workers
+beside these 16): 0.8–0.9 × 10⁶ nodes/s, so 2,400 s censored at about
+2 × 10⁹ nodes; nodes are the claim. (6) *Fit to instances, not cell medians,
+when the top cell is censored* — a median of lower bounds has no likelihood —
+but say what the window weighs: 1,050 of the 1,225 points on 10–100 lie at
+n ≤ 40, so the 10–100 fits are anchored low and the 40–100 fits are the ones
+the 100 cell moves; both are reported.

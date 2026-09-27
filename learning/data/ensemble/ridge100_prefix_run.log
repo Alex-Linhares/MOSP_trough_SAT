@@ -1,0 +1,26 @@
+prefix-run: 25 calls to make, 0 recorded, 16 workers, deadline 2400 s, wall 4500 s
+  ens_f_n100_m100_d3_i012 k=20 unsat 994,192,553 nodes 1093 s
+  ens_f_n100_m100_d3_i015 k=22 unsat 1,395,232,177 nodes 1516 s
+  ens_f_n100_m100_d3_i005 k=25 sat 1,468,527,208 nodes 1671 s
+  ens_f_n100_m100_d3_i013 k=22 unsat 1,960,666,847 nodes 2285 s
+  ens_f_n100_m100_d3_i000 k=22 unknown 2,218,573,824 nodes 2400 s
+  ens_f_n100_m100_d3_i001 k=22 unknown 1,864,646,656 nodes 2400 s
+  ens_f_n100_m100_d3_i002 k=23 unknown 2,025,484,288 nodes 2400 s
+  ens_f_n100_m100_d3_i003 k=23 unknown 1,944,379,392 nodes 2400 s
+  ens_f_n100_m100_d3_i004 k=22 unknown 1,826,897,920 nodes 2400 s
+  ens_f_n100_m100_d3_i006 k=22 unknown 1,792,499,712 nodes 2400 s
+  ens_f_n100_m100_d3_i007 k=23 unknown 1,855,049,728 nodes 2400 s
+  ens_f_n100_m100_d3_i008 k=24 unknown 1,974,636,544 nodes 2400 s
+  ens_f_n100_m100_d3_i009 k=23 unknown 2,109,419,520 nodes 2400 s
+  ens_f_n100_m100_d3_i010 k=24 unknown 1,904,848,896 nodes 2400 s
+  ens_f_n100_m100_d3_i011 k=22 unknown 1,909,956,608 nodes 2400 s
+  ens_f_n100_m100_d3_i014 k=23 unknown 1,978,540,032 nodes 2400 s
+  ens_f_n100_m100_d3_i016 k=21 unsat 1,888,237,895 nodes 2275 s
+  ens_f_n100_m100_d3_i017 k=24 unknown 1,829,081,088 nodes 2400 s
+  ens_f_n100_m100_d3_i018 k=23 unknown 1,965,711,360 nodes 2400 s
+  ens_f_n100_m100_d3_i023 k=22 unsat 1,339,736,297 nodes 1680 s
+  ens_f_n100_m100_d3_i019 k=22 unknown 1,880,834,048 nodes 2200 s
+  ens_f_n100_m100_d3_i020 k=24 unknown 1,802,948,608 nodes 2086 s
+  ens_f_n100_m100_d3_i021 k=22 unknown 2,003,537,920 nodes 2086 s
+  ens_f_n100_m100_d3_i022 k=23 unknown 1,880,731,648 nodes 2086 s
+  ens_f_n100_m100_d3_i024 k=23 unknown 1,884,647,424 nodes 2086 s

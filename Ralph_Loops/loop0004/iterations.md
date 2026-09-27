@@ -78,7 +78,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       their counts. Both refutation configurations where affordable.
       Deliverable: the cell's optima and nodes, the audit, and the price paid
       against the prediction.
-- [ ] 08 · Q4b **Does the rate keep falling?** Refit §16's drift with the 100
+- [x] 08 · Q4b **Does the rate keep falling?** Refit §16's drift with the 100
       cell (settled and censored); predict 125 with a band; compare with the
       six recertify counts on record (pre-fix, `csearch`; compare like with
       like); state whether the curve is sub-exponential, whether the drift
