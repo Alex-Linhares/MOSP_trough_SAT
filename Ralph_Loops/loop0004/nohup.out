@@ -53,3 +53,8 @@
 [2026-09-28 03:46:10] claude session it11 (cap 3.00 h) -> session_it11.log
 [2026-09-28 05:35:25] session it11: ok (exit 0, 105 tool calls)
 [2026-09-28 05:37:08] tests passed: 1214 passed, 2 skipped, 1 xfailed, 161 warnings in 103.01s (0:01:43)
+[2026-09-28 05:37:08] committed dc2b2424d: 11 · Q2 The bound harness and three candidates.
+[2026-09-28 05:37:08] === iteration 12: 12 · Q7 The remaining Lean gaps. The MOSP–pathwidth equality is
+[2026-09-28 05:37:08] claude session it12 (cap 3.00 h) -> session_it12.log
+[2026-09-28 05:55:47] session it12: ok (exit 0, 33 tool calls)
+[2026-09-28 05:58:18] tests passed: 1216 passed, 2 skipped, 1 xfailed, 161 warnings in 150.16s (0:02:30)

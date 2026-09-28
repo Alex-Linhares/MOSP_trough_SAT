@@ -5,9 +5,15 @@ The Lean side is `lean/MOSPFormalization/Sandwich.lean`: it defines degeneracy
 bandwidth over the repository's graph definitions, proves
 `degeneracy ≤ vertexSeparation` and `vertexSeparation ≤ bandwidth`, and carries
 them to pathwidth through `VSEquivPW` (Kinnersley), and proves the two
-degeneracy forms equal by the greedy elimination ordering. Three further
-statements stand with `sorry`: `treewidth ≤ pathwidth`, item 09's branch
-lemma, and item 09's fitted conjecture.
+degeneracy forms equal by the greedy elimination ordering. Since loop0004
+item 12 (2026-09-28) it also proves `treewidth ≤ pathwidth` (every path
+decomposition is a tree decomposition on the path graph, which the file proves
+is a tree) and the pathwidth branch lemma of Fellows & Langston (1987) /
+Kinnersley (1992) — three disjoint connected branches of pathwidth ≥ k attached
+to one vertex force pathwidth ≥ k + 1 — together with a Lean proof that the
+statement previously carried with `sorry`, which lacked the attachment and
+connectivity hypotheses, was false. One statement stands with `sorry`: item
+09's fitted conjecture, left as a statement on purpose.
 
 This module answers the two questions a proof about a definition leaves open:
 
@@ -74,11 +80,21 @@ PROVED = (
     "exists_layout_maxLaterDegree_le_degeneracy",
     "orderingDegeneracy_le_degeneracy",
     "orderingDegeneracy_eq_degeneracy",
-)
-#: Statements committed with `sorry` (the tree-decomposition section of `Sandwich.lean`).
-STATED = (
+    # loop0004 item 12: the tree-decomposition section.
+    "pathGraph_isTree",
+    "pathGraph_induce_interval_connected",
+    "PathDecomposition.toTreeDecomposition_width",
     "treewidth_le_pathwidth",
+    "PathDecomposition.exists_mem_bag_of_connected",
+    "PathDecomposition.exists_bag_subset_of_le_pathwidth_induce",
     "branch_lemma",
+    "branch_lemma_treewidth",
+    "MOSPInstance.treewidth_add_one_le_mospValue",
+    "pathwidth_bot_fin4",
+    "old_branch_statement_false",
+)
+#: Statements committed with `sorry`: item 09's fitted conjecture, kept as a statement.
+STATED = (
     "conjecture_sqrt_tw_f6",
 )
 

@@ -114,3 +114,75 @@ def test_lean_theorems_are_sorry_free():
         pytest.skip("the Lean library is not built; run `lake build` in lean/")
     ok, problems = sw.axioms_verdict(frame)
     assert ok, problems
+
+
+# ---------------------------------------------------------------------------
+# loop0004 item 12: the tree-decomposition section of Sandwich.lean
+# ---------------------------------------------------------------------------
+
+def _three_branches_at(v, branches, attach):
+    """`v` plus the given branch graphs; each branch is joined to `v` at one vertex
+    when `attach` is set, else left as it is (disjoint from `v`)."""
+    g = nx.Graph()
+    g.add_node(v)
+    for branch in branches:
+        g = nx.union(g, branch)
+        if attach:
+            g.add_edge(v, next(iter(branch.nodes())))
+    return g
+
+
+def test_branch_lemma_hypotheses_matter_on_hand_instances():
+    """The corrected `branch_lemma`: three disjoint *connected* branches of pathwidth
+    ≥ k, each *attached* to `v`, force pathwidth ≥ k + 1 — and dropping either
+    hypothesis breaks it, which is why the statement Sandwich.lean carried with
+    `sorry` until 2026-09-28 (neither hypothesis) was false."""
+    # k = 1: three edges (pathwidth 1 each) attached to v give the subdivided claw,
+    # pathwidth 2 = k + 1 (`spider` in the Lean file).
+    edges = [nx.relabel_nodes(nx.path_graph(2), {0: 1 + 2 * i, 1: 2 + 2 * i}) for i in range(3)]
+    attached = _three_branches_at(0, edges, attach=True)
+    assert nx.is_isomorphic(attached, _spider())
+    assert sw.vertex_separation(attached) == 2
+    # Same branches, not attached: pathwidth stays 1. The old statement's other
+    # hypotheses all hold (v outside, disjoint, no edges between branches).
+    unattached = _three_branches_at(0, edges, attach=False)
+    assert sw.vertex_separation(unattached) == 1
+    # `old_branch_statement_false` in Lean: k = 0, four isolated vertices, pathwidth 0.
+    assert sw.vertex_separation(nx.empty_graph(4)) == 0
+    # Attached but disconnected branches: each branch is an edge plus an isolated
+    # vertex, v attached to the isolated vertex; pathwidth 1 = k, not k + 1.
+    disconnected = []
+    for i in range(3):
+        b = nx.Graph()
+        b.add_edge(10 * (i + 1) + 1, 10 * (i + 1) + 2)
+        b.add_node(10 * (i + 1))          # first node: the isolated one, attached to v
+        b = nx.relabel_nodes(b, {})
+        disconnected.append(b)
+    g = nx.Graph()
+    g.add_node(0)
+    for b in disconnected:
+        g = nx.union(g, b)
+        g.add_edge(0, min(b.nodes()))
+    assert sw.vertex_separation(g) == 1
+    # Attached and connected but with edges between the branches: still ≥ k + 1
+    # (the lemma needs no separation hypothesis) — a triangle of edges' endpoints.
+    linked = attached.copy()
+    linked.add_edges_from([(2, 4), (4, 6), (6, 2)])
+    assert sw.vertex_separation(linked) >= 2
+
+
+def test_inventory_names_are_declared_in_the_lean_file():
+    """Every name the axiom check asks for is a declaration in Sandwich.lean, and the
+    only `sorry` left is the conjecture's."""
+    text = (sw.LEAN_DIR / "MOSPFormalization" / "Sandwich.lean").read_text()
+    # Three of the MOSP-terms names are proved in MOSPGraph.lean and re-exported here.
+    both = text + (sw.LEAN_DIR / "MOSPFormalization" / "MOSPGraph.lean").read_text()
+    for name in sw.PROVED + sw.STATED:
+        short = name.split(".")[-1]
+        assert f"theorem {short}" in both or f"def {short}" in both or \
+            f"theorem PathDecomposition.{short}" in both, name
+    assert "treewidth_le_pathwidth" in sw.PROVED
+    assert "branch_lemma" in sw.PROVED
+    assert sw.STATED == ("conjecture_sqrt_tw_f6",)
+    body = text.split("/-! ### Tree decompositions -/", 1)[1]
+    assert body.count("\n  sorry") == 1

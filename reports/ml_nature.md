@@ -10446,3 +10446,195 @@ appending to: the gzip stream ends before its marker. A subprocess pool
 that hits a per-minor subproblem cap should move to the next minor, not
 stop the sequence — the first `contract-branch` evaluated one minor of 125
 on every sparse graph and looked exactly like `sep-branch`.
+
+## 39. The remaining Lean gaps: `treewidth ≤ pathwidth` and the branch lemma (plan 3 §1 Q7, loop0004 item 12)
+
+*Iteration 12 of loop0004, 2026-09-28. Code: `lean/MOSPFormalization/Sandwich.lean`
+(the tree-decomposition section and the hand-checked values), `learning/sandwich.py`
+(the inventory), `tests/test_sandwich.py`. Regenerate:*
+
+```bash
+cd lean && lake build                                   # the whole development; Sandwich.lean rebuilds in ~2 s on a warm cache
+python -m learning.sandwich --stage lean                # lake build + #print axioms on every named theorem → reports/sandwich_tables.md
+python -m learning.sandwich                             # the same plus the brute-force and corpus stages, ~1 min
+python -m pytest tests/test_sandwich.py -q              # 9 tests, incl. the axiom check and the hand instances below
+```
+
+*Reads nothing but the Lean sources. Writes `reports/sandwich_tables.md`. No
+data, no solver, no bound, nothing under `solutions/`.*
+
+**Question.** `MOSPGraph.lean` closed Yanasse's equality on 2026-09-27, and
+plan 3 §0 reduced item 12 to the three `sorry`s of `Sandwich.lean`'s
+tree-decomposition section: `treewidth_le_pathwidth` (item 09's first
+theorem, `optimum ≥ tw + 1` through `optimum = pw + 1`), the branch lemma
+(three branches of treewidth `≥ k` at a cut vertex force pathwidth `≥ k + 1`;
+Fellows & Langston 1987 Lemma 4.3, Kinnersley 1992 Corollary 4.2), and the
+conjecture `conjecture_sqrt_tw_f6`, which stays a statement. The deliverable is
+either the proofs or a precise gap list.
+
+### (a) What Mathlib had, and the path graph as a tree
+
+The `TreeDecomposition` structure asks for `T.IsTree`, and the natural tree for
+a path decomposition on `Fin (length + 1)` is Mathlib's `pathGraph (length + 1)`.
+Mathlib (the September 2026 master this project pins) has `pathGraph_connected`
+and no statement about its acyclicity, so the item's fallback ("build the
+`TreeDecomposition` directly if Mathlib lacks `pathGraph.IsTree`") was not
+needed: `pathGraph_isTree` is proved in 30 lines. Acyclicity is
+`isAcyclic_iff_forall_adj_isBridge`, and every edge `{i, i + 1}` is a bridge
+because a walk from `i` to `i + 1` in the graph with that edge deleted must
+cross the cut `{j | j ≤ i}` along some dart (`Walk.exists_boundary_dart`), and
+the only dart of the path graph across that cut is the deleted edge
+(`pathGraph_isBridge_succ`). The connectivity condition of a tree
+decomposition — the nodes whose bags hold `v` induce a connected subgraph —
+is the interval property, through `pathGraph_induce_interval_connected`: the
+path graph induced on any interval of `Fin (n + 1)` is connected, by walking
+one step at a time (induction on the distance). Both are graph-level lemmas
+about Mathlib objects only and are candidates for `ForMathlib/`.
+
+### (b) `treewidth ≤ pathwidth`, and in MOSP terms
+
+`PathDecomposition.toTreeDecomposition` is the path decomposition read as a
+tree decomposition on `pathGraph (length + 1)` with the same bags; its width is
+the same number (`toTreeDecomposition_width`, the `sup'`/`sup` identity), so
+`treewidth G ≤ P.width` for every `P` and `treewidth_le_pathwidth` follows by
+`le_csInf`. Over the MOSP graph, `MOSPInstance.treewidth_add_one_le_mospValue`
+states `treewidth (mospGraph M) + 1 ≤ mospValue M` whenever some customer
+requires some pattern — the theorem §21 and §24 use as the honest reference
+`tw + 1` for the bound work, and the treewidth ceiling of §6 (`optimum >
+tw_min_fill + 1` certifies `pw > tw`) now rests on a checked proof rather than
+a citation.
+
+### (c) The branch lemma: the stated version was false, the corrected one is proved
+
+**The statement `Sandwich.lean` carried with `sorry` was false.** It asked for
+a vertex `v` and three finsets `A, B, D` not containing `v`, pairwise disjoint,
+pairwise non-adjacent (`hsep`, `hsep'`), each inducing a subgraph of treewidth
+`≥ k`, and concluded `k + 1 ≤ pathwidth G`. It did not ask that `v` be adjacent
+to any branch, nor that any branch be connected. Take four isolated vertices,
+`v = 0`, `A = {1}`, `B = {2}`, `D = {3}`, `k = 0`: every hypothesis holds
+(treewidth is `≥ 0`, there are no edges to forbid) and the pathwidth is `0`,
+not `≥ 1`. `old_branch_statement_false` proves exactly that in Lean, with
+`pathwidth_bot_fin4` (four singleton bags) supplying the value. Without
+attachment the claim fails for every `k` (three disjoint `K_{k+1}` and an
+isolated vertex); with attachment but without connectivity it fails for
+`k ≥ 3` (each branch a graph of pathwidth `k` plus an isolated vertex, `v`
+attached to the isolated one). Both literature forms carry both hypotheses
+implicitly: Fellows & Langston attach a new vertex to one vertex in each of
+three *connected* graphs, and Kinnersley's Corollary 4.2 speaks of the
+subtrees a vertex of a tree induces, which are the components of `T − v` and
+each adjacent to `v`. The `sorry` was hiding a wrong statement, as the
+`Reduction.lean` one was on 2026-09-27; the lesson is the same, that a
+stated-not-proved theorem needs a small-instance check before it is committed.
+
+**The corrected statement**, `branch_lemma`: for `v ∉ A ∪ B ∪ D`, `A, B, D`
+pairwise disjoint, each inducing a *connected* subgraph, each containing a
+neighbour of `v`, and each of pathwidth `≥ k`, `k + 1 ≤ pathwidth G`.
+`branch_lemma_treewidth` is the same with `k ≤ treewidth (G.induce ·)` in
+place of pathwidth (through (b)); it is the form §24 stated and item 11's
+`cut-branch` candidate computes, with the two missing hypotheses added. **The
+separation hypotheses are dropped**: the lemma holds whatever edges run between
+the branches, which the literature's component form never needed to say.
+
+**The proof** is the interval argument of Fellows & Langston's Lemma 4.3 over
+path decompositions rather than layouts. Take a path decomposition `P` of
+`G` with `P.width = pathwidth G` (`Nat.sInf_mem`) and suppose `P.width ≤ k`.
+
+1. *Each branch fills a bag* (`exists_bag_subset_of_le_pathwidth_induce`).
+   `P.restrict A` is a path decomposition of `G.induce A` (bags intersected
+   with `A`), so `k ≤ pathwidth (G.induce A) ≤ (P.restrict A).width`, and its
+   largest bag holds `k + 1` vertices of `A`; the same bag of `P` has at most
+   `k + 1` vertices, so it is contained in `A`. Nonemptiness of `A` (from the
+   attached neighbour) is what makes `k ≤ sup − 1` mean `k + 1 ≤ sup`; without
+   it the lemma is false for `A = ∅`, which `omega`'s counterexample pointed
+   out during the session.
+2. *The three full bags are distinct* (disjoint nonempty sets), so one of the
+   six orders holds; by symmetry `iX < iY < iZ` with `bag iY ⊆ Y`.
+3. *The middle bag* (`middle_bag_false`). `v ∉ Y`, so `v ∉ bag iY`, and by the
+   interval property `v`'s bags lie entirely before or entirely after `iY`.
+   If before: `v` shares a bag `c ≤ lastBag v < iY` with its neighbour `z ∈ Z`,
+   and `Z` meets `bag iZ` with `iZ > iY`; `Z` is connected, so along a walk in
+   `G.induce Z` from `z` to that vertex some vertex lies in `bag iY`
+   (`exists_mem_bag_of_connected`, induction on the walk: consecutive vertices
+   share a bag, and the first shared bag past `iY` leaves its tail vertex in
+   `bag iY`). That vertex is in `Y ∩ Z = ∅`. If after: the same with `X`.
+
+The six orders are handled by one `rcases … <;> first | exact middle_bag_false …`
+with the six permutations of `(A, B, D)`; the cyclic "orders" are not
+contradictions but ordinary instances, since the lemma only reads two of the
+three comparisons.
+
+### (d) The inventory
+
+| | before (2026-09-27) | after (2026-09-28) |
+|---|---:|---:|
+| `sorry` in `Sandwich.lean` | 3 | 1 (`conjecture_sqrt_tw_f6`, on purpose) |
+| `sorry` in the development | 3 | 1 |
+| named theorems in `learning.sandwich.PROVED` | 17 | 28 |
+| named statements in `STATED` | 3 | 1 |
+| lines in `Sandwich.lean` | 579 | 906 |
+
+New declarations, all `sorryAx`-free by `#print axioms` (`reports/sandwich_tables.md`):
+`pathGraph_isBridge_succ`, `pathGraph_isAcyclic`, `pathGraph_isTree`,
+`pathGraph_induce_interval_connected`, `PathDecomposition.toTreeDecomposition`,
+`toTreeDecomposition_width`, `treewidth_le_width`, `treewidth_le_pathwidth`,
+`PathDecomposition.restrict`, `exists_mem_bag_of_connected`, `middle_bag_false`,
+`exists_bag_subset_of_le_pathwidth_induce`, `branch_lemma`,
+`branch_lemma_treewidth`, `MOSPInstance.treewidth_add_one_le_mospValue`,
+`pathwidth_bot_fin4`, `old_branch_statement_false` — 3 definitions, 14
+theorems. Axioms used: `propext`, `Classical.choice`, `Quot.sound` only.
+`lake build` passes (1,640 jobs); `tests/test_sandwich.py` checks the
+corrected hypotheses on hand instances with the brute-force vertex separation
+(the subdivided claw has pathwidth 2 = 1 + 1; the same three edges unattached
+have pathwidth 1; four isolated vertices 0; three edge-plus-isolated-vertex
+branches attached at their isolated vertices, pathwidth 1 = `k`, not `k + 1`;
+the claw with a triangle joining its leaves still `≥ 2`).
+
+**Gap list** (what item 12 leaves unproved, and why):
+
+- `conjecture_sqrt_tw_f6` — a statement by design (§24: pointwise below the
+  proved pair on every certified instance; proving it would prove nothing).
+- The *separator* form of the branch lemma, §38's Lemma A (three components of
+  `H − S` pairwise linked through components of `H[S]` of pathwidth `≥ k` force
+  `≥ k + 1`), is not formalised. The cut-vertex case is `S = {v}` and is what
+  `branch_lemma` proves; the general case needs the same middle-bag argument
+  with `S`'s components in place of `v`, and was not attempted in the session.
+- The *component* form ("`v` has three components of `G − v` of pathwidth
+  `≥ k` adjacent to it") is not stated as a corollary: it needs Mathlib's
+  `ConnectedComponent` of the induced subgraph `G − v` read back as a `Finset V`
+  with its connectivity and attachment, which is routine but was not done;
+  `branch_lemma` takes the three finsets and the two facts directly, which is
+  what any user has in hand.
+- `pathGraph_isTree` and `pathGraph_induce_interval_connected` are stated in
+  `Sandwich.lean`, not moved to `ForMathlib/`.
+
+### The finding, in one paragraph
+
+Item 12 is closed rather than blocked: the two tree-decomposition theorems of
+`Sandwich.lean` are proved without `sorry` — `treewidth ≤ pathwidth` by
+reading a path decomposition as a tree decomposition on the path graph, which
+had to be shown to be a tree because Mathlib does not say so, and the branch
+lemma by the interval argument — and the development's `sorry` count is one,
+the conjecture kept as a statement on purpose. The substantive result is a
+correction: **the branch lemma as this file had stated it since item 09 was
+false**, lacking both the connectivity of the branches and their attachment
+to the cut vertex, and Lean has a proof of the counterexample beside the
+proof of the corrected lemma. Item 11's `cut-branch` candidate implemented
+the correct rule (components of `G − v`, which are connected and attached),
+so no measurement in §38 is affected; what was wrong was the statement in
+the formal file, exactly as with `Reduction.lean` the day before. The lemma
+also comes out slightly more general than the literature's phrasing: no
+hypothesis on edges between the branches is needed.
+
+**Size range covered.** Theorems: every finite simple graph, every MOSP
+instance with a requirement. Kernel-checked instances: 3, 4 and 7 vertices.
+Python cross-checks of the hypotheses: graphs on 4–10 vertices by brute-force
+vertex separation. No corpus measurement was needed or made.
+
+**Kill criterion.** The plan states none for item 12; "blocked with a gap
+list" was the acceptable minimum. Verdict: not blocked; the gap list above
+has one deliberate entry and three unattempted generalisations.
+
+**Not a bound, not a solver change.** Nothing here reaches the solver; the
+theorems are about the definitions in `lean/`, pinned to the corpus
+implementations by `learning.sandwich`'s brute-force stage (unchanged, still
+agreeing with networkx on every graph on ≤ 5 vertices).

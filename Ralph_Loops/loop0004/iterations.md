@@ -114,7 +114,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       trees of cliques. Deliverable: the harness and a verdict per candidate.
       **Kill**: none beats the reference on more than 5% of the gap instances
       while surviving.
-- [ ] 12 · Q7 **The remaining Lean gaps.** The MOSP–pathwidth equality is
+- [x] 12 · Q7 **The remaining Lean gaps.** The MOSP–pathwidth equality is
       already proved (`lean/MOSPFormalization/MOSPGraph.lean`, 2026-09-27,
       `sorry`-free; read its header and PROGRESS.md's owner notes first). What
       is left is the tree-decomposition section of `Sandwich.lean`: prove
