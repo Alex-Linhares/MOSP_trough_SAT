@@ -1,0 +1,17 @@
+[harness] 6773 certified rows, 0 done, 6773 to run
+[harness] validity 500/6773 in 468s
+[harness] validity 1000/6773 in 824s
+[harness] validity 1500/6773 in 1241s
+[harness] validity 2000/6773 in 1691s
+[harness] validity 2500/6773 in 1962s
+[harness] validity 3000/6773 in 2109s
+[harness] validity 3500/6773 in 2372s
+[harness] wall reached; cancelling the rest
+UPWARD_DONE
+[harness] 6773 certified rows, 3544 done, 3229 to run
+[harness] validity 500/3229 in 186s
+[harness] validity 1000/3229 in 398s
+[harness] validity 1500/3229 in 474s
+[harness] validity 2000/3229 in 714s
+[harness] wall reached; cancelling the rest
+UPWARD_DONE

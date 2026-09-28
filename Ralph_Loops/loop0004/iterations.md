@@ -101,7 +101,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       `m` alone (§25 said 1–1.5 decades per doubling), of excess, or of both.
       Deliverable: a formula with held-out error, or the statement that
       height needs `m` separately from the ridge coordinate.
-- [ ] 11 · Q2 **The bound harness and three candidates.**
+- [x] 11 · Q2 **The bound harness and three candidates.**
       `learning/bound_harness.py`: takes any candidate bound as a Python
       function over an instance or its MOSP graph; (a) validity on every
       certified instance (corpus + campaign; a single "above optimum" is a

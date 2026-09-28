@@ -1,0 +1,22 @@
+[harness] 6376 certified rows, 0 done, 6376 to run
+[harness] validity 500/6376 in 107s
+[harness] validity 1000/6376 in 125s
+[harness] validity 1500/6376 in 143s
+[harness] validity 2000/6376 in 163s
+[harness] validity 2500/6376 in 177s
+[harness] validity 3000/6376 in 185s
+[harness] validity 3500/6376 in 194s
+[harness] validity 4000/6376 in 200s
+[harness] validity 4500/6376 in 205s
+[harness] validity 5000/6376 in 211s
+[harness] validity 5500/6376 in 219s
+[harness] validity 6000/6376 in 226s
+[harness] validity 6376/6376 in 231s
+                                          bound  rows  above optimum (must be 0)  tight, all  > lb_best, all  > reference, all  tight, gap  > lb_best, gap  > reference, gap  beats reference, gap (count)  mean shortfall, gap
+0                                tw + 1 (tw_lo)  6376                          0    0.886606        0.146330          0.000000    0.198225        0.588757          0.000000                             0             8.881657
+1                                       lb_best  6376                          0    0.769918        0.000000          0.000000    0.000000        0.000000          0.000000                             0             4.781065
+2                reference max(lb_best, tw + 1)  6376                          0    0.895546        0.146330          0.000000    0.198225        0.588757          0.000000                             0             3.920118
+3  branch lemma + 1 (§24, one level, tw-seeded)  6376                          0    0.002666        0.000627          0.000627    0.000000        0.000000          0.000000                             0            22.298817
+4                                    cut-branch  6376                          0    0.441343        0.000627          0.000627    0.000000        0.000000          0.000000                             0            14.150888
+5                                    sep-branch  6376                          0    0.698243        0.048620          0.000784    0.014793        0.044379          0.000000                             0            13.988166
+6                               contract-branch  6376                          0    0.745765        0.062578          0.002039    0.023669        0.248521          0.023669                             8             7.896450

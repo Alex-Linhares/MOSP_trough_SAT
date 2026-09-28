@@ -1,0 +1,24 @@
+[harness] 44176 certified rows, 36923 done, 7253 to run
+[harness] validity 500/7253 in 141s
+[harness] validity 1000/7253 in 207s
+[harness] validity 1500/7253 in 264s
+[harness] validity 2000/7253 in 320s
+[harness] validity 2500/7253 in 376s
+[harness] validity 3000/7253 in 432s
+[harness] validity 3500/7253 in 488s
+[harness] validity 4000/7253 in 550s
+[harness] validity 4500/7253 in 607s
+[harness] validity 5000/7253 in 663s
+[harness] validity 5500/7253 in 719s
+[harness] validity 6000/7253 in 776s
+[harness] validity 6500/7253 in 832s
+[harness] validity 7000/7253 in 889s
+[harness] validity 7253/7253 in 945s
+                                          bound   rows  above optimum (must be 0)  tight, all  > lb_best, all  > reference, all  tight, gap  > lb_best, gap  > reference, gap  beats reference, gap (count)  mean shortfall, gap
+0                                tw + 1 (tw_lo)  44176                          0    0.860580        0.151960          0.000000    0.198225        0.588757          0.000000                             0             8.881657
+1                                       lb_best  44176                          0    0.747646        0.000000          0.000000    0.000000        0.000000          0.000000                             0             4.781065
+2                reference max(lb_best, tw + 1)  44176                          0    0.877875        0.151960          0.000000    0.198225        0.588757          0.000000                             0             3.920118
+3  branch lemma + 1 (§24, one level, tw-seeded)  44176                          0    0.008036        0.000611          0.000611    0.000000        0.000000          0.000000                             0            22.298817
+4                                    cut-branch  44176                          0    0.400761        0.000951          0.000951    0.000000        0.000000          0.000000                             0            14.150888
+5                                    sep-branch  44176                          0    0.563134        0.028002          0.001313    0.014793        0.044379          0.000000                             0            13.988166
+6                               contract-branch  44176                          0    0.615379        0.052744          0.002150    0.023669        0.248521          0.023669                             8             7.896450

@@ -1,0 +1,336 @@
+# session it11 started 2026-09-28 03:46:10
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 11 of loop0004: item 11, the bound harness and three candidates. I'll start by reading the plan, the cited report sections, and the existing adversary/oracle code.
+  > $ date && pgrep -af "benchmarks.recertify" | grep -v pgrep | head; nproc; uptime; grep -n "11 · Q2\|^## \|item 11\|Item 11" reports/ml_nature_plan_3.md | head -40
+  > $ sed -n 1,140p reports/ml_nature_plan_3.md
+  > $ grep -n "^## " reports/ml_nature.md | sed -n 1,60p
+  > $ sed -n 6323,6620p reports/ml_nature.md
+  > $ wc -l learning/conjecture.py learning/extremal.py learning/treewidth.py learning/bound_gap.py learning/features.py learning/dataset.py learning/ensemble.py && s
+  > $ grep -n "^def \|^class \|^    def " learning/conjecture.py learning/extremal.py learning/treewidth.py | head -150
+
+Reading the existing invariants, adversary and treewidth APIs I'll build the harness on.
+  > $ sed -n 120,300p learning/conjecture.py
+  > $ sed -n 396,475p learning/conjecture.py && echo ---- && sed -n 799,912p learning/conjecture.py
+  > $ sed -n 295,345p learning/extremal.py && echo ---- && sed -n 146,200p learning/extremal.py && echo ---- && sed -n 206,260p learning/extremal.py && echo ---- && s
+
+Now checking the contraction routine, the draw/recertify helpers and the test conventions before writing the module.
+  > $ grep -n "_contraction_degeneracy" -A 45 satisfiability/mosp_solver.py | sed -n 1,80p; echo ----; sed -n 570,680p learning/extremal.py; echo ----; sed -n 1,40p t
+
+I have what I need. Writing `learning/bound_harness.py` now: the harness (validity over all certified instances, extremal attack, tightness against the reference) and the three candidates.
+  > $ head -3 learning/data/instances.csv | cut -c1-400 && python - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/instances.csv")
+print(f.shape, f["sourc
+  > Write /home/al/dev/MOSP/learning/bound_harness.py
+  > $ python - <<'EOF'
+import re
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = s[s.index("def kill_verdict"):s.index("def write_tables")]
+new = '''def kill
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+s = s.replace("""    if n <= pairs_max_n:
+        for u, v in itertools.combinations(sorted(
+  > $ sleep 60; cat /tmp/claude-1000/-home-al-dev-MOSP/a52edca2-4c69-48c7-afaf-e25fb647f52b/tasks/b5s623mgs.output
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/a52edca2-4c69-48c7-afaf-e25fb647f52b/tasks/b5s623mgs.output
+
+The timing script is still loading the certified rows and corpus matrices. While it runs, I'll write the test file so it's ready.
+  > Write /home/al/dev/MOSP/tests/test_bound_harness.py
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/a52edca2-4c69-48c7-afaf-e25fb647f52b/tasks/b5s623mgs.output | tail -40
+  > $ ps aux | grep bh_time | grep -v grep | head -3; uptime
+  > $ (which py-spy && py-spy dump --pid 2766472 2>&1 | head -40) ; python - <<'EOF'
+import time
+t=time.time()
+from learning.conjecture import all_rows, load_table
+r 
+  > $ kill 2766472 2766470 2>/dev/null; python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """    cliques = [frozenset(c) for c in nx.find_cliq
+  > $ timeout 100 python -m pytest tests/test_bound_harness.py -q -x 2>&1 | tail -15
+  > $ cat /tmp/bh_small.log; echo ----; cat /tmp/bh_mid.log; echo ----; cat /tmp/bh_big.log
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+
+# 1. family_separators: optional chordal completion
+old = """def family_separators(graph, p
+  > Monitor {"command": "until [ $(wc -l < /tmp/bh_big.log) -ge 8 ] || [ $(wc -l < /tmp/bh_mid.log) -ge 16 ]; do sleep 5; done; echo
+  > $ sed -n 1140,1175p reports/ml_nature.md | cut -c1-300
+  > $ cat /tmp/bh_big.log; echo MID; cat /tmp/bh_mid.log | tail -5
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """        budget.subproblems += inner.subproblems
+        best = max(best, value)
+   
+  > Monitor {"command": "until grep -q \"validity 5\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_corpus.log 2>/dev/n
+  > $ tail -c 600 learning/data/ensemble/bound_harness_run_corpus.log; echo; tail -c 400 learning/data/ensemble/bound_harness_run_attack.log; echo; tail -5 Ralph_Loop
+  > Write /tmp/sec38_draft.md
+  > $ date; tail -c 300 learning/data/ensemble/bound_harness_run_corpus.log; echo; tail -c 300 learning/data/ensemble/bound_harness_run_attack.log; echo; uptime
+  > Monitor {"command": "until grep -q \"attack 144/144\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_attack.log 2>/d
+  > $ sed -n 104,116p Ralph_Loops/loop0004/iterations.md; git status --short | head -20
+  > $ grep -n "conjecture\|degeneracy_solutions\|proofs" .gitignore | head; 
+  > $ sed -n 42,46p .gitignore && printf '\n# item 11 (loop0004): the bound harness adversary'"'"'s scratch witnesses, regenerable\nlearning/data/bound_harness/\n' >>
+
+Corpus validity is moving fast (the 500 largest instances done in 100 s on 12 workers). Waiting on the adversary to finish.
+  > Monitor {"command": "until grep -q \"VALIDITY_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/de
+  > $ tail -3 learning/data/ensemble/bound_harness_run_attack.log; tail -2 learning/data/ensemble/bound_harness_run_corpus.log; ls learning/data/ensemble/ | grep boun
+  > $ python - <<'EOF' 2>&1 | tail -30
+import pandas as pd, numpy as np
+from learning import bound_harness as bh
+f = bh.load_values()
+print(len(f), "rows so far; n ra
+  > $ pkill -P 2768013 2>/dev/null; kill 2768013 2>/dev/null; sleep 1; pgrep -af "learning.bound_harness --stage validity" | grep -v pgrep | awk '{print $1}' | xargs 
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """    ap.add_argument("--key", default=None)
+    args = ap.parse_args()"""
+new = """ 
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """def write_tables(values_csv: Path = VALUES_CSV, attack_csv: Path = ATTACK_CSV,
+    
+
+Waiting on the corpus validity rerun (about five minutes) and the supplementary attack; nothing else is independent of those results right now.
+  > Monitor {"command": "until [ -f /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_campaign.log ]; do sleep 15; done; ec
+  > $ tail -2 learning/data/ensemble/bound_harness_run_attack_large.log; tail -1 learning/data/ensemble/bound_harness_run_corpus.log; date
+  > Monitor {"command": "until grep -q \"verdict\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_attack_large.log 2>/de
+  > $ nohup timeout 1500 python -m pytest tests/ -q -x -p no:cacheprovider > /tmp/bh_pytest_early.log 2>&1 &
+echo "pytest pid $!"
+
+Everything remaining depends on the three running jobs (corpus validity, supplementary attack, test suite), all of which have monitors or logs armed. Waiting for their events.
+  > Monitor {"command": "until grep -qE \"passed|failed|error\" /tmp/bh_pytest_early.log 2>/dev/null; do sleep 20; done; echo PYTEST
+
+All three remaining dependencies (corpus validity, supplementary attack, test suite) have monitors armed. Nothing else can be requested until one of them reports, so I'm waiting on those events.
+
+# result: success in 1222s, 48 turns, cost $8.60
+  > $ date; ls -la learning/data/ensemble/ | grep bound_harness; tail -3 learning/data/ensemble/bound_harness_run_corpus.log | cut -c1-200; tail -2 learning/data/ense
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """        pool = gap_seed_matrices()
+        seed = subset_of(pool[rng.integers(len(p
+  > $ python - <<'EOF' 2>&1 | tail -60
+import pandas as pd, numpy as np
+from learning import bound_harness as bh
+f = bh.load_values()
+f = f[f.source=="corpus"]
+print(
+  > $ python - <<'EOF'
+p = "learning/bound_harness.py"
+s = open(p).read()
+old = """    memo: dict[frozenset, int] = {}
+    top = frozenset(graph.nodes())
+    top_fami
+  > Monitor {"command": "until grep -q \"verdict\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_attack_large.log 2>/de
+
+Arming a monitor for the campaign/upward chain and extending the report draft with the corpus findings, which are final.
+  > Monitor {"command": "until grep -q \"VALIDITY_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/de
+  > $ python - <<'EOF' 2>&1 | tail -40
+import pandas as pd, numpy as np
+from learning import bound_harness as bh
+f = bh.load_values(); f = f[f.source=="corpus"]
+g = f
+  > $ for i in 1 2 3; do cp learning/data/ensemble/bound_harness_values.csv.gz /tmp/bhv.csv.gz && python -c "import pandas as pd; pd.read_csv('/tmp/bhv.csv.gz')" 2>/d
+  > $ cat >> /tmp/sec38_draft.md <<'EOF'
+
+### (c) Validity: no candidate is ever above the optimum
+
+VALIDITY_TABLE
+
+Every row of the "must be 0" column is 0: the thre
+
+The campaign run is progressing (1,000 of 37,800 in 132 s, largest first), the supplementary attack is at 16 of 36 jobs, and the early test suite is at 65%. All three have monitors armed; nothing further is independent of them, so I'm waiting on those events.
+
+# result: success in 190s, 10 turns, cost $10.00
+
+Supplementary attack done: all three survived 1,800 more evaluations each at 18–25 customers, again reaching the optimum in every job and never exceeding it. Checking the chain and the test suite.
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-100; tail -c 300 /tmp/bh_pytest_early.log
+  > $ cat > /tmp/bh_redo_disconnected.py <<'EOF'
+"""Drop the rows whose seed diagnostic predates the fix (disconnected graphs
+evaluated by the old code) so a resumed 
+  > Monitor {"command": "until grep -q \"VALIDITY_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/de
+  > Write /tmp/progress11_draft.md
+
+Full suite passed early (1,214 passed, 2 skipped, 1 xfailed), but I edited the module after it started, so I'll rerun it at the end. Waiting on the validity chain.
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80
+
+Nothing else can proceed until the chain finishes (campaign at 2,500 of 37,800, speeding up as instance size falls). Waiting on the monitor.
+  > Monitor {"command": "until grep -q \"VALIDITY_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/de
+
+Everything remaining depends on the validity chain finishing; the monitor is armed and I'll act on its event.
+
+# result: success in 79s, 7 turns, cost $10.73
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; ls learning/data/ensemble/bound_harness_run_upward.log 2>/dev/null
+  > $ ps -o pid,ppid,etime,cmd -p 2769564 | cat; pgrep -af "bound_harness --stage validity" | grep -v pgrep | grep -v "^.*sh " | awk '{print $1, $2, $3, $4, $5, $6, $
+  > $ kill 2769564; sleep 1; ps -p 2772456 -o pid,etime,cmd | cat; ps -p 2769564 >/dev/null 2>&1 && echo "bash still alive" || echo "chain parent stopped; campaign py
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 20; done; echo CAMPAIGN_EXITED; tail -4 /home/al/dev/MOSP/learn
+
+The campaign run is the only outstanding dependency; its exit monitor is armed, and the upward run, the disconnected-row rerun, the tables and the write-up all follow from it in sequence.
+
+# result: success in 37s, 5 turns, cost $14.08
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80
+  > $ cat > /tmp/bh_upward.py <<'EOF'
+from pathlib import Path
+from learning import bound_harness as bh
+out = bh.ENSEMBLE / "bound_harness_values_upward.csv.gz"
+bh.ru
+  > Monitor {"command": "until grep -q \"UPWARD_DONE\\|Traceback\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward
+
+Both remaining runs (campaign on 12 workers, upward on 4) have exit monitors armed; the rerun of the disconnected rows, the merge, the tables and the write-up all depend on the campaign finishing, so I'm waiting on those events.
+
+# result: success in 34s, 4 turns, cost $14.41
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80; upti
+
+Both runs are progressing (campaign at 9,000 of 37,800; upward just started on its 6,773 rows). Their exit monitors are armed and nothing else is independent of them; waiting on those events.
+
+# result: success in 11s, 2 turns, cost $14.56
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 20; done; echo CAMPAIGN_EXITED; tail -3 /home/al/dev/MOSP/learn
+
+Campaign at 14,000 of 37,800 (about 35 minutes to go); upward running on its own file. Monitors are armed for both exits, and every remaining step (disconnected-row rerun, merge, tables, section, PROGRESS, final tests) depends on the campaign finishing.
+
+# result: success in 25s, 3 turns, cost $17.79
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80
+  > Monitor {"command": "until grep -q \"UPWARD_DONE\\|Traceback\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward
+
+Both monitors are armed (campaign exit, upward completion). Nothing else is independent of the campaign finishing, so I'm waiting on those events.
+
+# result: success in 16s, 3 turns, cost $18.02
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 20; done; echo CAMPAIGN_EXITED; tail -3 /home/al/dev/MOSP/learn
+
+Campaign at 21,000 of 37,800 (about 25 minutes left), upward at 1,000 of 6,773 on its four workers. Monitors are armed for both; every remaining step depends on the campaign finishing.
+
+# result: success in 15s, 3 turns, cost $21.28
+  > Monitor {"command": "until grep -q \"UPWARD_DONE\\|Traceback\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward
+
+Both monitors re-armed; nothing else is independent of the campaign finishing. Waiting on those events.
+
+# result: success in 9s, 2 turns, cost $21.43
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 20; done; echo CAMPAIGN_EXITED; tail -3 /home/al/dev/MOSP/learn
+
+Campaign at 26,500 of 37,800 (roughly 17 minutes left); upward at 1,500 of 6,773. Both monitors armed; the rest of the work follows the campaign's exit.
+
+# result: success in 14s, 3 turns, cost $24.71
+  > Monitor {"command": "until grep -q \"UPWARD_DONE\\|Traceback\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward
+
+Monitors are armed for both runs; nothing else is independent of the campaign finishing.
+
+# result: success in 10s, 2 turns, cost $24.86
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 20; done; echo CAMPAIGN_EXITED; tail -3 /home/al/dev/MOSP/learn
+  > Monitor {"command": "until grep -q \"UPWARD_DONE\\|Traceback\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward
+  > $ nohup timeout 1500 python -m pytest tests/ -q -x -p no:cacheprovider > /tmp/bh_pytest_final.log 2>&1 &
+echo "pytest pid $!"; date
+  > Monitor {"command": "until grep -qE \"passed|failed|error\" /tmp/bh_pytest_final.log 2>/dev/null; do sleep 20; done; echo PYTEST
+
+Three monitors are armed (campaign exit, upward completion, final test suite). The remaining steps all depend on the campaign finishing in about eight minutes: drop and rerun the disconnected rows, merge the upward file, write the tables, fill in §38, then PROGRESS and iterations. Nothing further is independent right now.
+
+# result: success in 42s, 6 turns, cost $28.45
+
+That was the earlier upward monitor expiring; its replacement is armed. Still waiting on the campaign exit.
+
+# result: success in 4s, 1 turns, cost $28.52
+
+Final test suite passes on the current code: 1,214 passed, 2 skipped, 1 xfailed in 107 s. Checking the campaign.
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; tail -1 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-80; kill
+  > $ tail -4 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-200; python -c "
+import pandas as pd; f=pd.read_csv('learning/data/ensemble/bound_harness_
+  > $ sed -i 's/wall=2400/wall=720/' /tmp/bh_upward.py && nohup python /tmp/bh_upward.py >> learning/data/ensemble/bound_harness_run_upward.log 2>&1 & echo "upward re
+  > Monitor {"command": "until [ $(grep -c \"UPWARD_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/
+
+Both runs have monitors armed; the remaining steps depend on the campaign exit (a few minutes away).
+
+# result: success in 36s, 5 turns, cost $28.95
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_campaign.log | cut -c1-80; kill -0 2772456 2>/dev/null && echo campaign_alive
+  > Monitor {"command": "while kill -0 2772456 2>/dev/null; do sleep 10; done; echo CAMPAIGN_EXITED; tail -3 /home/al/dev/MOSP/learn
+
+Campaign at 37,000 of 37,800; its exit monitor is armed, as is the upward one. The next steps (rerun of disconnected rows, merge, tables, write-up) follow immediately on the campaign's exit.
+
+# result: success in 16s, 3 turns, cost $32.33
+
+Campaign done: 44,176 rows (corpus + campaign), zero above the optimum. Now dropping the old-diagnostic disconnected rows and rerunning them.
+  > $ python /tmp/bh_redo_disconnected.py && nohup python -m learning.bound_harness --stage validity --workers 12 --sources corpus,campaign > learning/data/ensemble/b
+  > Monitor {"command": "until grep -q \"certified rows\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_redo.log 2>/dev
+
+Waiting on the redo run (rerun of the disconnected rows with the corrected seed diagnostic) and the resumed upward run; the merge and tables need both files quiet.
+
+# result: success in 25s, 3 turns, cost $32.59
+  > Monitor {"command": "until grep -q \"contract-branch\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_redo.log 2>/de
+
+Redo run has 7,253 disconnected rows to recompute (about ten minutes); both it and the upward resume have monitors armed. The merge, tables and write-up depend on them.
+
+# result: success in 14s, 2 turns, cost $32.76
+  > $ date; tail -2 learning/data/ensemble/bound_harness_run_upward.log | cut -c1-100; tail -1 learning/data/ensemble/bound_harness_run_redo.log | cut -c1-100; kill -
+  > Monitor {"command": "until [ $(grep -c \"UPWARD_DONE\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_upward.log 2>/
+
+Both remaining runs have monitors armed; the merge, tables and write-up depend on them, so I'm waiting on those events.
+
+# result: success in 22s, 3 turns, cost $33.01
+  > $ python -c "
+import pandas as pd; f=pd.read_csv('learning/data/ensemble/bound_harness_values_upward.csv.gz'); print(len(f), 'upward rows'); print(f.groupby('n').
+
+Upward covered 5,686 of 6,773 (all of 60, 75 and 100, half of 50). While the redo finishes, I'll read the upward results on their own.
+  > $ python - <<'EOF' 2>&1 | tail -30
+import pandas as pd, numpy as np
+from pathlib import Path
+from learning import bound_harness as bh
+f = bh.load_values(Path("lea
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_redo.log | cut -c1-80
+
+The redo run is the only outstanding dependency (its monitor is armed); merge, tables and write-up follow it.
+
+# result: success in 37s, 4 turns, cost $33.40
+  > $ date; tail -1 learning/data/ensemble/bound_harness_run_redo.log | cut -c1-80
+  > Monitor {"command": "until grep -q \"contract-branch\" /home/al/dev/MOSP/learning/data/ensemble/bound_harness_run_redo.log 2>/de
+
+Redo at 4,500 of 7,253 (about four minutes left); monitor armed. Everything remaining follows from it.
+
+# result: success in 16s, 3 turns, cost $36.89
+
+Redo done. Merging the upward file into the main values file and writing the tables.
+  > $ date && python - <<'EOF'
+import pandas as pd
+from learning import bound_harness as bh
+main = pd.read_csv(bh.VALUES_CSV); up = pd.read_csv(bh.ENSEMBLE / "bound_h
+  > $ python - <<'EOF' 2>&1 | tail -45
+import pandas as pd, numpy as np
+from learning import bound_harness as bh
+f = bh.load_values()
+ex = f.tw_exact.astype(str).str.
+
+I have every number now. Writing the final §38, appending it to the report, then PROGRESS and iterations.
+  > $ python - <<'EOF'
+draft = open("/tmp/sec38_draft.md").read()
+head = draft[:draft.index("### (c) Validity")]
+head = head.replace("~RUN_CORPUS", "4 min on 12 worke
+  > $ grep -n "RUN_\|_TABLE\|_TEXT\|NROWS\|_ROWS" /tmp/sec38_final.md | head; python - <<'EOF'
+import re
+p = "Ralph_Loops/loop0004/PROGRESS.md"
+s = open(p).read()
+s =
+
+Item 11 is complete. Recap:
+
+**What was built.** `learning/bound_harness.py` takes any candidate lower bound as a Python function and runs it through three checks: validity on every certified instance with the "above optimum (must be 0)" column and counterexample drawing, an extremal-search attack with the exact solver as oracle, and tightness on the 338 gap instances against the reference `max(lb_best, tw + 1)`. Three candidates went through it: the plan's recursive cut-vertex branch rule, a separator generalisation (Lemma A, proved in §38 by the layout argument), and the same rule over the contraction-degeneracy minors.
+
+**What it found.**
+- All three candidates are valid on all 49,862 certified instances evaluated (corpus and campaign complete; upward 5,686 of 6,773, said so in the report) and survive 11,880 adversarial evaluations each, reaching the optimum in every job without crossing it.
+- None beats the reference on a gap instance by branching. `contract-branch` is above it on 8 (2.4%), all from a minor's treewidth seed where the reference's treewidth is a 1-second interval.
+- The branch rule itself adds at most one stack, on 0.1 to 0.3% of rows, always where pathwidth equals treewidth plus one, and always tight there (forests, sparse trees of cliques). On the 5,003 exact-treewidth rows where pathwidth exceeds treewidth, the candidates are tight on 1.2%.
+- Kill criterion met: the gap stacks are not recoverable by the branch rule at any separator the clique structure exposes.
+
+**Deliverables.** §38 in `reports/ml_nature.md`, tables in `reports/bound_harness_tables.md`, data under `learning/data/ensemble/` (values, two attack files, logs), 14 tests in `tests/test_bound_harness.py`. Full suite: 1,214 passed, 2 skipped, 1 xfailed on the final code. `solutions/` untouched, no solver default changed, nothing committed. PROGRESS.md has the iteration entry (11/13 solved) and item 11 is marked done in iterations.md.
+
+**Next** is item 12, the remaining tree-decomposition gaps in `Sandwich.lean`; Lemma A's proof in §38 is the separator form of the branch lemma it needs.
+
+# result: success in 259s, 5 turns, cost $41.23

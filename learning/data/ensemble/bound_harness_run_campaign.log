@@ -1,0 +1,85 @@
+[harness] 37800 certified rows, 6376 done, 37800 to run
+[harness] validity 500/37800 in 86s
+[harness] validity 1000/37800 in 132s
+[harness] validity 1500/37800 in 187s
+[harness] validity 2000/37800 in 229s
+[harness] validity 2500/37800 in 288s
+[harness] validity 3000/37800 in 319s
+[harness] validity 3500/37800 in 407s
+[harness] validity 4000/37800 in 460s
+[harness] validity 4500/37800 in 499s
+[harness] validity 5000/37800 in 543s
+[harness] validity 5500/37800 in 605s
+[harness] validity 6000/37800 in 642s
+[harness] validity 6500/37800 in 675s
+[harness] validity 7000/37800 in 713s
+[harness] validity 7500/37800 in 756s
+[harness] validity 8000/37800 in 801s
+[harness] validity 8500/37800 in 845s
+[harness] validity 9000/37800 in 889s
+[harness] validity 9500/37800 in 933s
+[harness] validity 10000/37800 in 977s
+[harness] validity 10500/37800 in 1022s
+[harness] validity 11000/37800 in 1067s
+[harness] validity 11500/37800 in 1112s
+[harness] validity 12000/37800 in 1159s
+[harness] validity 12500/37800 in 1200s
+[harness] validity 13000/37800 in 1239s
+[harness] validity 13500/37800 in 1278s
+[harness] validity 14000/37800 in 1315s
+[harness] validity 14500/37800 in 1352s
+[harness] validity 15000/37800 in 1392s
+[harness] validity 15500/37800 in 1432s
+[harness] validity 16000/37800 in 1474s
+[harness] validity 16500/37800 in 1521s
+[harness] validity 17000/37800 in 1567s
+[harness] validity 17500/37800 in 1612s
+[harness] validity 18000/37800 in 1659s
+[harness] validity 18500/37800 in 1706s
+[harness] validity 19000/37800 in 1754s
+[harness] validity 19500/37800 in 1802s
+[harness] validity 20000/37800 in 1851s
+[harness] validity 20500/37800 in 1899s
+[harness] validity 21000/37800 in 1948s
+[harness] validity 21500/37800 in 1998s
+[harness] validity 22000/37800 in 2049s
+[harness] validity 22500/37800 in 2100s
+[harness] validity 23000/37800 in 2158s
+[harness] validity 23500/37800 in 2211s
+[harness] validity 24000/37800 in 2264s
+[harness] validity 24500/37800 in 2317s
+[harness] validity 25000/37800 in 2371s
+[harness] validity 25500/37800 in 2424s
+[harness] validity 26000/37800 in 2479s
+[harness] validity 26500/37800 in 2533s
+[harness] validity 27000/37800 in 2588s
+[harness] validity 27500/37800 in 2644s
+[harness] validity 28000/37800 in 2700s
+[harness] validity 28500/37800 in 2756s
+[harness] validity 29000/37800 in 2812s
+[harness] validity 29500/37800 in 2870s
+[harness] validity 30000/37800 in 2927s
+[harness] validity 30500/37800 in 2984s
+[harness] validity 31000/37800 in 3042s
+[harness] validity 31500/37800 in 3100s
+[harness] validity 32000/37800 in 3161s
+[harness] validity 32500/37800 in 3222s
+[harness] validity 33000/37800 in 3281s
+[harness] validity 33500/37800 in 3338s
+[harness] validity 34000/37800 in 3396s
+[harness] validity 34500/37800 in 3455s
+[harness] validity 35000/37800 in 3519s
+[harness] validity 35500/37800 in 3578s
+[harness] validity 36000/37800 in 3636s
+[harness] validity 36500/37800 in 3695s
+[harness] validity 37000/37800 in 3754s
+[harness] validity 37500/37800 in 3813s
+[harness] validity 37800/37800 in 3872s
+                                          bound   rows  above optimum (must be 0)  tight, all  > lb_best, all  > reference, all  tight, gap  > lb_best, gap  > reference, gap  beats reference, gap (count)  mean shortfall, gap
+0                                tw + 1 (tw_lo)  44176                          0    0.860580        0.151960          0.000000    0.198225        0.588757          0.000000                             0             8.881657
+1                                       lb_best  44176                          0    0.747646        0.000000          0.000000    0.000000        0.000000          0.000000                             0             4.781065
+2                reference max(lb_best, tw + 1)  44176                          0    0.877875        0.151960          0.000000    0.198225        0.588757          0.000000                             0             3.920118
+3  branch lemma + 1 (§24, one level, tw-seeded)  44176                          0    0.008036        0.000611          0.000611    0.000000        0.000000          0.000000                             0            22.298817
+4                                    cut-branch  44176                          0    0.400761        0.000951          0.000951    0.000000        0.000000          0.000000                             0            14.150888
+5                                    sep-branch  44176                          0    0.559150        0.027187          0.001313    0.014793        0.044379          0.000000                             0            13.988166
+6                               contract-branch  44176                          0    0.615379        0.052744          0.002150    0.023669        0.248521          0.023669                             8             7.896450

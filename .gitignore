@@ -50,3 +50,6 @@ learning/data/set_imitation/
 learning/data/pwtw/
 learning/_pwtw_exhaust
 learning/_pwtw_exhaust.build-*
+
+# item 11 (loop0004): the bound harness adversary's scratch witnesses, regenerable
+learning/data/bound_harness/

@@ -10148,3 +10148,301 @@ run by its parent PID first, then the workers by anchored pattern; the
 resumable CSV keeps every flushed batch of twenty. (7) Seconds are from a
 machine at load 40–45 (24 foreign `bench/run.py` workers and 8 recertify
 workers beside these 16); everything here is a count or a ratio.
+
+## 38. The bound harness and three branching-aware candidates (plan 3 §1 Q2, loop0004 item 11)
+
+*Iteration 11 of loop0004, 2026-09-28. Code: `learning/bound_harness.py`. Regenerate:*
+
+```bash
+python -m learning.bound_harness --stage validity --workers 12 --sources corpus     # every corpus instance, three candidates; 4 min on 12 workers
+python -m learning.bound_harness --stage validity --workers 12 --sources campaign   # the 37,800 at 10–40; 63 min on 12 workers (0.15 s per instance, the write-back of the growing file included)
+python -m learning.bound_harness --stage validity --workers 12 --sources upward --wall 2400   # the 6,773 at 50–100; 52 min of 4 workers reached 5,686 of 6,773 (see coverage)
+python -m learning.bound_harness --stage attack --workers 4                         # 10,080 oracle evaluations per candidate at n = 8..15; 3 min on 4 workers; `--sizes 18,20,22,25 --steps 150 --restarts 1 --attack-csv …_attack_large.csv` for the supplementary run, 4 min
+python -m learning.bound_harness --stage tables                                     # reports/bound_harness_tables.md
+python -m learning.bound_harness --stage one --key <matrix key>                     # one instance, every candidate
+python -m pytest tests/test_bound_harness.py -q                                     # 14 tests
+```
+
+*Reads the certified rows and the treewidth intervals of §24's invariants
+table (`learning.conjecture.all_rows`, `load_table`), the corpus matrices
+from the benchmark tree and the generated ones by regeneration from their
+seeds. Writes `reports/bound_harness_tables.md` (every table below in
+full), `learning/data/ensemble/bound_harness_values.csv.gz` (one row per
+certified instance evaluated: the three values, seconds, subproblems and a
+censored flag each), `bound_harness_attack.csv` (one row per adversary
+job) and four run logs. The adversary's scratch witnesses live under
+`learning/data/bound_harness/` (git-ignored). Nothing under `solutions/`,
+no solver default, and **no bound**: nothing here reaches
+`_lower_bound` or any path that decides `k`.*
+
+**Question.** §6 named the family the proved bound cannot see — trees of
+cliques with branching — and §24 showed why: three of `lb_best`'s four
+components are treewidth bounds, `tw + 1` is the honest reference, and the
+one branching lemma it tried (the cut-vertex rule, seeded by treewidth, one
+level) never beats `lb_best` on a gap instance because only 10 of the 338
+have a cut vertex with three branches at all: *the gap instances branch at
+separators, not at cut vertices*. Plan 3 asks for the harness rather than
+the discovery — a module that takes any candidate lower bound as a Python
+function and (a) checks it on every certified instance, (b) attacks it with
+the extremal search, (c) reports its tightness on the gap instances against
+`max(lb_best, tw + 1)` — and for three stated candidates run through it,
+the first the pathwidth branch rule applied recursively over cut vertices,
+the other two the session's own, both meant to see separators.
+
+### (a) The harness
+
+A candidate is `f(graph, matrix, budget) -> int`, a lower bound on the
+optimum in optimum units (pathwidth + 1); `--extra module:function` plugs
+one in beside the three below. The harness runs it on every certified
+instance — corpus 6,376 at 9–134 customers, campaign 37,800 at 10–40,
+upward 6,773 at 50–100 — under a per-instance budget (a deadline and a cap
+on memoised subproblems; when either runs out the recursion returns its
+seed, which is still valid, and the row is flagged `censored`), and reports
+for each candidate and for the proved references the **"above optimum (must
+be 0)"** column (§24's cheapest theorem-checker), tightness, and the share
+strictly above `lb_best` and above the reference `max(lb_best, tw_lo + 1)`,
+on all rows and on the 338 gap instances. Any row above the optimum is a
+counterexample: the harness lists it with its matrix key, draws it
+(`learning.extremal.draw`) and re-certifies it (the exact solver, both
+refutation configurations, the lattice oracle at n ≤ 15, the pathwidth DP at
+n ≤ 18). The adversary is `learning.extremal.local_search` climbing
+`f(G) − optimum` with the exact solver as oracle: 8 sizes (8–15) × 3 seed
+families (trees of cliques, Bernoulli, subsets of §6's gap instances) × 2
+restarts × 210 evaluations = 10,080 per candidate, canonical duplicates
+skipped. Kill (plan 3 §1 Q2): none beats the reference on more than 5% of
+the gap instances while surviving (a) and (b).
+
+### (b) The three candidates, and why they are valid
+
+All three rest on one lemma and two theorems. The lemma is Fellows &
+Langston (1987) Lemma 4.3 / Kinnersley (1992) Corollary 4.2 — three
+branches of pathwidth ≥ k at a cut vertex force pathwidth ≥ k + 1 — in the
+form the session needs, with the cut vertex replaced by a separator:
+
+> **Lemma A.** Let `S ⊆ V(H)` and let `B₁, B₂, B₃` be three components of
+> `H − S` with `pw(Bᵢ) ≥ k`, such that for every pair `Bᵢ, Bⱼ` some
+> connected component of `H[S]` has a neighbour in both. Then `pw(H) ≥ k + 1`.
+
+*Proof* (vertex separation = pathwidth, Kinnersley 1992). Fix a layout of
+`H`. Restricted to `Bᵢ` it is a layout of `Bᵢ`, so it has a cut `cᵢ` at which
+≥ k vertices of `Bᵢ` are separated, and those vertices are separated at `cᵢ`
+in the layout of `H` too. Relabel so `c₁ ≤ c₂ ≤ c₃`. If two cuts coincide,
+that cut separates ≥ 2k ≥ k + 1 vertices (k ≥ 1; for k = 0 the claim is that
+`H` has an edge, which it does). Otherwise look at `c₂`: `B₂` contributes k.
+`B₁` has a vertex left of `c₁ < c₂`; if it also has one right of `c₂` then,
+being connected, it has an edge crossing `c₂` and contributes one more.
+Likewise `B₃`, which has a vertex right of `c₃ > c₂`. In the remaining case
+`B₁` lies entirely left of `c₂` and `B₃` entirely right; take the component
+`Q` of `H[S]` adjacent to both: a path from `B₁` through `Q` to `B₃` crosses
+`c₂`, and the left endpoint of the crossing edge lies in `B₁ ∪ Q`, disjoint
+from `B₂`. In every case ≥ k + 1 vertices are separated at one cut. ∎
+
+The two theorems are `ω − 1 ≤ tw ≤ pw` (so exact treewidth, when it can be
+computed, and the clique number are pathwidth seeds) and the minor
+monotonicity of pathwidth. The candidates:
+
+- **`cut-branch`** (the plan's): `b(H) = max(ω(H) − 1, max_v third-largest
+  {b(B) : B a branch at v} + 1)` over the cut vertices `v` of a connected
+  `H` with three or more branches (components of `H − v`), the maximum over
+  components when `H` is disconnected; memoised over vertex sets; Lemma A
+  with `S = {v}`. Seeded by the clique number alone, as the plan states.
+- **`sep-branch`** (the session's first): the same recursion with `S`
+  ranging over the cut vertices, the pairwise intersections of the maximal
+  cliques (the glue sets of a tree of cliques), the adhesions of a clique
+  tree of the MCS-M chordal completion, and — on subgraphs of ≤ 40
+  vertices — every edge; the family is computed once on the whole graph and
+  a subproblem uses its own cut vertices, the top-level separators
+  intersected with it and its edges. Lemma A's pairwise-link condition is
+  checked on every triple. Seeded by `max(ω − 1, tw)`, treewidth exact by the
+  subset DP on subgraphs of ≤ 16 vertices and ≤ 22 at the top level.
+  Dominates `cut-branch` pointwise.
+- **`contract-branch`** (the session's second): `sep-branch` on every minor
+  of the contraction-degeneracy sequence — contract the minimum-degree
+  vertex into the neighbour it shares fewest neighbours with, the rule of
+  `_contraction_degeneracy` — maximum over the sequence; on the minors the
+  seed adds the minimum degree (`tw ≥ δ`) and drops the clique number when
+  the minor is dense. Contraction folds the fringe of single-product
+  customers into the hubs, where §6's family keeps its separators. Contains
+  contraction degeneracy + 1 as the seed's contribution.
+
+On hand instances (the tests): the spider with three legs of two (pw 2)
+and the spider of spiders (pw 3) are exact under all three; three K₄ at a
+hub is the clique; the theta graph — two adjacent hubs joined by three
+paths of three, no cut vertex, optimum 4 — is 2 under `cut-branch` and 3
+under `sep-branch`, which finds the separator `{a, b}` with three `P₃`
+branches. (A strengthening one is tempted to conjecture, "pw ≥ k + |S|
+when `S` has a matching into each branch", is **false**: two adjacent hubs
+with three spider branches attached by a matching of size two has optimum
+4, not 5; the straddling case of the proof is where it fails.)
+
+### (c) Validity: no candidate is ever above the optimum
+
+| bound | rows | above optimum (must be 0) | tight, all | > lb_best, all | > reference, all | tight, gap | > lb_best, gap | > reference, gap | beats reference, gap (count) | mean shortfall, gap |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| tw + 1 (`tw_lo`) | 49,862 | 0 | 78.9% | 14.7% | 0 | 19.8% | 58.9% | 0 | 0 | 8.88 |
+| `lb_best` | 49,862 | 0 | 69.8% | — | 0 | 0 | — | 0 | 0 | 4.78 |
+| reference `max(lb_best, tw + 1)` | 49,862 | 0 | 81.9% | 14.7% | — | 19.8% | 58.9% | — | — | 3.92 |
+| branch lemma + 1 (§24, one level, tw-seeded) | 49,862 | 0 | 0.8% | 0.06% | 0.06% | 0 | 0 | 0 | 0 | 22.30 |
+| **`cut-branch`** | 49,862 | **0** | 36.2% | 0.09% | 0.09% | 0 | 0 | **0** | 0 | 14.15 |
+| **`sep-branch`** | 49,862 | **0** | 50.6% | 2.5% | 0.13% | 1.5% | 4.4% | **0** | 0 | 13.99 |
+| **`contract-branch`** | 49,862 | **0** | 55.3% | 5.1% | 0.39% | 2.4% | 24.9% | **2.4%** | 8 | 7.90 |
+
+Coverage: corpus 6,376 of 6,376 (9–134 customers), campaign 37,800 of
+37,800 (10–40), upward **5,686 of 6,773** (50–100: all 2,247 at 75, all
+2,250 at 60, the 26 at 100, and 1,163 of the 2,250 at 50 — the run went
+largest-first under a wall and the remaining 1,087 at 50 customers are the
+cheapest rows it did not reach; the section says "every certified instance"
+for the corpus and the campaign and "5,686 of 6,773" for upward). Every
+"must be 0" is 0: the three candidates are valid on all 49,862 rows. The
+adversary agrees: **60 jobs and 11,880 exact-solver evaluations per
+candidate** (the plan's 10,080 at 8–15 plus 1,800 at 18, 20, 22 and 25 —
+615,000–629,000 canonical duplicates skipped, so the search is
+neighbourhood-bound as in §24), maximum violation 0 for all three, and the
+optimum *reached* (violation exactly 0) in **every one of the 60 jobs** of
+every candidate — the record is clean, not vacuous, in §24's sense. No
+counterexample to draw; the counterexample list is empty. Cost of (a):
+7.4 core-hours (`cut-branch` 0.35, `sep-branch` 2.7, `contract-branch` 4.4).
+Censored (budget hit, seed returned): `sep-branch` 665 rows, `contract-branch`
+1,501, almost all at 31–75 customers (where the sparse `m = n/2` upward cells
+have hundreds of separators each); 33 and 51 of the 338 gap instances.
+
+### (d) Tightness on the gap instances: no candidate beats the reference by branching
+
+| band | gap instances | tw exact | `cut-branch` > `lb_best` / > ref / tight | `sep-branch` > `lb_best` / > ref / tight | `contract-branch` > `lb_best` / > ref / tight | shortfall cut / sep / contract |
+|:--|--:|--:|:--|:--|:--|:--|
+| 9–20 | 17 | 17 | 0 / 0 / 0 | 15 / 0 / 5 | 15 / 0 / 5 | 4.06 / 0.82 / 0.82 |
+| 21–30 | 133 | 130 | 0 / 0 / 0 | 0 / 0 / 0 | 30 / 0 / 1 | 6.01 / 6.01 / 2.10 |
+| 31–40 | 47 | 38 | 0 / 0 / 0 | 0 / 0 / 0 | 20 / 0 / 2 | 5.96 / 5.96 / 2.30 |
+| 41–60 | 54 | 23 | 0 / 0 / 0 | 0 / 0 / 0 | 16 / 5 / 0 | 7.76 / 7.76 / 4.26 |
+| 61–75 | 17 | 0 | 0 / 0 / 0 | 0 / 0 / 0 | 1 / 1 / 0 | 24.2 / 24.2 / 14.4 |
+| 76–100 | 45 | 1 | 0 / 0 / 0 | 0 / 0 / 0 | 1 / 1 / 0 | 34.0 / 34.0 / 21.9 |
+| 101–134 | 25 | 0 | 0 / 0 / 0 | 0 / 0 / 0 | 1 / 1 / 0 | 51.0 / 51.0 / 32.3 |
+| all | 338 | 209 | 0 / 0 / 0 | 15 / 0 / 5 | 84 / **8** / 8 | 14.2 / 14.0 / 7.90 |
+
+`cut-branch` beats `lb_best` on **none** of the 338 gap instances.
+`sep-branch` beats it on 15 (4.4%) — the 15 at 9–20 customers where its
+treewidth seed is exact and `tw + 1 > lb_best`, the reference restated —
+and the reference on **none**. `contract-branch` beats `lb_best` on 84
+(24.9%) and the reference on **8 (2.4%)**, and all 8 are the same thing: a
+50–125-customer instance (`Random-125-125-4-2_0`, `Random-100-50-6-2_0`,
+`Random-75-75-4-5_0`, `Random-50-50-2-5_0`, four `p4050n*`) whose treewidth
+is a 1-second interval, on which the *seed of a minor* — its clique number,
+minimum degree, or exact treewidth when it has ≤ 16 vertices — is
+`lb_best + 1`; `value == seed` on all 8 and the branch rule contributes
+nothing. That is §24(c)'s finding again: above 40 customers a candidate can
+only show that `tw_lo` is loose, a statement about the 1-second search and
+not about pathwidth. The eight would fall to exact treewidth if it were
+computed, and §24 already proposes that.
+
+| candidate | over | gain > 0, all | gain > 0, gap | max gain | censored | median s | max s | core-h |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| `cut-branch` | ω (its seed) | 0.14% (68) | 0 | 1 | 34 | 0.001 | 23.5 | 0.35 |
+| `sep-branch` | max(ω − 1, tw_DP) + 1 (its seed) | 0.32% (158) | 0 | 1 | 665 | 0.030 | 23.8 | 2.7 |
+| `contract-branch` | best seed over its minors | 0.13% (64) | 0 | 1 | 1,501 | 0.155 | 23.6 | 4.4 |
+| `contract-branch` | `sep-branch` | 42.8% | 74.3% | 48 | | | | |
+| `contract-branch`'s seed alone | reference | 0.3% (134) | 2.4% (8) | 3 | | | | |
+
+**What the branch rule itself adds is at most one, and never on a gap
+instance.** Over 49,862 rows the recursion lifts `cut-branch` above its
+clique seed on 68, `sep-branch` above `max(ω − 1, tw_DP) + 1` on 158 and
+`contract-branch` above the best seed over its minors on 64 — by exactly one
+every time (`max gain` 1), on zero gap instances. The big number in the
+table, `contract-branch` above `sep-branch` on 42.8% of rows and by up to 48,
+is contraction degeneracy arriving through the minors' minimum degree, which
+`lb_best` already has. Where the rule *is* the reason a candidate is above
+the reference — `cut-branch` on 43 rows, `sep-branch` on 63, `contract-branch`
+on 62 of its 196 (the other 134 are the seed-on-an-interval effect above,
+101 of them upward `m = n/2` cells at 60–75 where `tw_lo` is MMD+) — every
+such row has exact treewidth, pathwidth strictly above it, and the candidate
+**tight** (43 of 43, 62 of 63, 62 of 62): the rule finds the extra one where
+`pw = tw + 1` and finds it exactly. Twelve of those rows are forests (the
+Warwick "2 orders per product" files, every product an edge; of the 737
+triangle-free rows, 87 have optimum 3 and the reference misses five of them,
+all five recovered — Ellis, Sudborough & Turner's recursion is exact on
+trees), and the rest are sparse trees of cliques from the campaign's fixed
+generator at 10–40 customers and two upward instances at 60 and 75
+(`ens_b_n60_m60_p0.025_i027`, `ens_f_n75_m37_d2_i000`, both from 4 to 5)
+plus `Warwick 1857` at 30 (optimum 5, `tw + 1 = lb_best = 4`, a minor with
+a separator and three branches of pathwidth 3). **But among the 5,003 rows
+with exact treewidth on which pathwidth strictly exceeds it — the bound's
+ceiling of §6 and §24 — the candidates are tight on 44 / 63 / 62, i.e. 1.2%.**
+The other 98.8%, and all 142 gap instances with `pw > tw` exact, are not
+trees of cliques glued at *separators the candidates can find*: only 10 of
+the 338 gap instances have a cut vertex with three branches, 99 any cut
+vertex, and the separator family — clique glue sets, clique-tree adhesions,
+edges — produces no triple of pairwise-linked branches whose third value
+exceeds the clique seed on any of them. Branching of the Lemma A kind is
+present in the family §6 described and is worth exactly one, at the leaves;
+the missing stacks on the gap instances are somewhere else.
+
+**Kill verdict (plan 3 §1 Q2: none beats the reference on more than 5% of
+the gap instances while surviving).** **Met.** `cut-branch` 0.0%,
+`sep-branch` 0.0%, `contract-branch` 2.4% — and that 2.4% is the minors'
+treewidth seeds where `tw_lo` is a 1-second interval, not branching. All
+three survive (a) on 49,862 certified instances and (b) on 11,880
+adversarial evaluations each.
+
+### The finding, in one paragraph
+
+The harness works and is cheap — 7.4 core-hours for three candidates on
+49,862 instances, 3 minutes per candidate for the adversary — and it
+returns verdicts, not impressions: the three branching-aware candidates are
+valid everywhere (an implementation bug of the kind §24(e) caught would
+have shown in the "must be 0" column and did not), the adversary reaches
+their tightness frontier in every job without crossing it, and none of them
+beats `max(lb_best, tw + 1)` on a single gap instance by branching. The
+separator generalisation of the branch lemma (Lemma A, proved above) and
+its contraction-minor form are true and, on the corpus, worth exactly one
+stack on 0.1–0.3% of instances, all with `pw = tw + 1`, all tight when it
+fires. The bound-defeating family is not branching at cut vertices (§24)
+and, this section adds, not at any separator the clique structure exposes
+either: **the stacks the proved bound misses on the gap instances are not
+recoverable by the branch rule at any separator this session could name**,
+and the next bound idea has to be a different pathwidth argument — the
+expansion bound is the only one on record that passes the treewidth
+ceiling (§6) — not a stronger branching one.
+
+**Size range covered.** Validity: 9–134 customers, 49,862 certified
+instances (corpus 6,376 at 9–134, all; campaign 37,800 at 10–40, all;
+upward 5,686 of 6,773 at 50–100, complete at 60, 75 and 100 and 52% at
+50). The reference's treewidth is exact on 44,150 rows (all ≤ 26 by the DP,
+82% of 27–64 by the 1-second search) and an interval above; every "beats
+the reference" above 40 customers is read against `tw_lo`. The adversary:
+8–15 (the plan's) and 18–25 (supplementary). Budgets: 5 / 8 / 12 s and
+4,000 / 3,000 / 4,000 subproblems per instance; 665 and 1,501 rows are
+censored and carry their seed — a censored value is a valid lower bound
+that might have been higher, so the tightness shares are lower bounds on
+what the candidates can do under a larger budget, which matters at 31–75
+customers and nowhere near the kill.
+
+**Not a bound, not a solver change.** No candidate reaches
+`satisfiability/mosp_solver.py::_lower_bound` or any path that decides `k`;
+`learning.treewidth` and the branch rules are called by the study only.
+Nothing under `solutions/`.
+
+**Handed on.** (1) *Lemma A* as stated and proved in (b) is the separator
+form of Fellows & Langston (1987) Lemma 4.3; item 12's branch lemma in
+`Sandwich.lean` may take either form — the cut-vertex case is `S = {v}`,
+and the proof is the same layout argument. (2) The harness is the
+deliverable: a candidate bound goes in as one function and comes out with
+a validity count over every certified instance, an adversarial record, a
+tightness table against the honest reference and a verdict; the plan's
+"prediction is never a bound" rule has a place where a prediction can be
+sent to become one or be refuted. (3) Exact treewidth in `_lower_bound`
+(§24's proposal) would also retire the eight "beats" of `contract-branch`.
+
+**Method notes.** Never materialise every maximal clique of a dense graph
+(`find_cliques` on a 125-vertex density-8 Chu & Stuckey graph has millions;
+an `islice` with a cap is the difference between 3 s and a hang). A
+recursive bound over subgraphs must compute its separator family once and
+restrict it, not recompute it per subproblem — the first version spent its
+15-second budget on chordal completions of 134-vertex graphs and returned
+its seed. When a candidate returns diagnostics beside its value, define
+them for disconnected graphs too: the first draft's "seed" was the seed of
+*a connected top* and read 1 on 7,253 decomposable instances, which
+inflated the "gain over seed" column 50× until the rows were rerun. Resume
+by `(instance_name, source)` and never read a `.csv.gz` a worker is
+appending to: the gzip stream ends before its marker. A subprocess pool
+that hits a per-minor subproblem cap should move to the next minor, not
+stop the sequence — the first `contract-branch` evaluated one minor of 125
+on every sparse graph and looked exactly like `sep-branch`.

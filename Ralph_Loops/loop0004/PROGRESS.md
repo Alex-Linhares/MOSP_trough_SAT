@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 10/13 SOLVED
+- **Current**: 11/13 SOLVED
 
 ---
 
@@ -755,3 +755,87 @@
   `max(lb_best, tw + 1)`) and three candidates, the first the pathwidth branch
   rule over cut vertices (Fellows & Langston 1987 Lemma 4.3 / Kinnersley 1992
   Corollary 4.2 — known, to be cited, not claimed).
+
+## Iteration 11 — 2026-09-28 05:40
+
+### Completed
+- **Item 11 · Q2, the bound harness and three candidates — SOLVED (the
+  harness works; each candidate has a verdict; the kill is met).**
+  `reports/ml_nature.md` §38; tables `reports/bound_harness_tables.md`; data
+  `learning/data/ensemble/bound_harness_values.csv.gz` (one row per
+  certified instance evaluated: three values, their seeds, seconds,
+  subproblems, censored flags), `bound_harness_attack.csv` (144 adversary
+  jobs at 8–15) and `bound_harness_attack_large.csv` (36 at 18–25), five
+  run logs. Scratch witnesses under `learning/data/bound_harness/`
+  (git-ignored).
+- `learning/bound_harness.py`: a candidate is any callable
+  `f(graph, matrix, budget) -> int | (int, dict)` returning a lower bound in
+  optimum units (`--extra module:function` plugs one in); stage `validity`
+  runs every candidate on every certified instance under a per-instance
+  budget (deadline + subproblem cap; on exhaustion the recursion returns its
+  seed, still valid, and flags `censored`), resumable, largest first; stage
+  `attack` is `learning.extremal.local_search` climbing `f − optimum` with
+  the exact solver as oracle (8 sizes × 3 seed families × 2 restarts × 210 =
+  10,080 evaluations per candidate; `--sizes` for more); stage `tables`
+  writes the "above optimum (must be 0)" column beside tightness and the
+  shares above `lb_best` and above the reference `max(lb_best, tw_lo + 1)`
+  on all rows and on the 338 gap instances, per band, the gain over each
+  candidate's own seed, the counterexample list (drawn and re-certified when
+  non-empty) and the kill verdict.
+- Three candidates, all proved valid: `cut-branch` (the plan's: the
+  Fellows–Langston / Kinnersley branch rule recursively over cut vertices,
+  clique-seeded), `sep-branch` (the rule with the cut vertex replaced by a
+  separator — Lemma A in §38, proved there: three components of `H − S`
+  pairwise linked through components of `H[S]` with pw ≥ k force pw ≥ k + 1 —
+  over cut vertices, maximal-clique intersections, clique-tree adhesions of
+  the MCS-M completion and edges on small subgraphs; seeded by `max(ω − 1,
+  tw)` with exact treewidth on subgraphs ≤ 16 / ≤ 22 at the top), and
+  `contract-branch` (`sep-branch` on every minor of the contraction-degeneracy
+  sequence, by minor monotonicity; minors seeded also by minimum degree).
+- Result: over 49,862 certified instances (corpus 6,376 at 9–134, all;
+  campaign 37,800 at 10–40, all; upward 5,686 of 6,773 at 50–100 — complete
+  at 60/75/100, 52% at 50, the rest not reached under the wall) **no candidate
+  is ever above the optimum**, and all three survive 11,880 adversarial
+  evaluations each (10,080 at 8–15 + 1,800 at 18–25), reaching the optimum in
+  all 60 jobs. On the 338 gap instances: `cut-branch` beats `lb_best` on 0,
+  `sep-branch` on 15 (its exact-tw seed; 0 above the reference),
+  `contract-branch` on 84 and above the reference on **8 (2.4%)** — all 8 a
+  minor's seed (clique / min degree / tw of a ≤ 16-vertex minor) at `lb_best + 1`
+  where `tw_lo` is a 1-second interval, `value == seed`, no branching. The
+  branch rule itself adds **at most one**, on 0.1–0.3% of rows and on zero gap
+  instances; where it lifts a candidate above the reference (43 / 63 / 62
+  rows) the candidate is tight and `pw = tw + 1`: forests (12; the five
+  Warwick "2 orders per product" instances the reference misses are all
+  recovered), sparse campaign trees of cliques at 10–40, two upward at 60/75,
+  `Warwick 1857` at 30. Among the 5,003 exact-tw rows with `pw > tw` the
+  candidates are tight on 1.2%; on all 142 gap instances with `pw > tw` exact,
+  on none. Cost 7.4 core-hours; censored 665 / 1,501 rows (31–75 customers),
+  which carry their seed.
+- Kill verdict: **met** — `cut-branch` 0.0%, `sep-branch` 0.0%,
+  `contract-branch` 2.4% of the gap instances above the reference, the last
+  entirely the minors' treewidth seeds where `tw_lo` is a 1-second interval.
+- Tests: `tests/test_bound_harness.py` (14) — hand instances (stars, spiders,
+  three K4 at a hub, the theta graph with its edge separator) against the
+  exact optimum, the spider-of-spiders recursion, Lemma A's pairwise-link
+  condition, the separator family, seeds, budget exhaustion returning the
+  seed, the contraction sequence against `_contraction_degeneracy`, a
+  user candidate that overclaims caught by the "must be 0" column, the
+  evaluate protocol. Full suite: 1,214 passed, 2 skipped, 1 xfailed in 107 s, on the final code. `solutions/` untouched;
+  recertify (9 workers) untouched.
+
+### Blockers
+- None. Upward is a 5,686-of-6,773 sample (wall), said in §38. Three things
+  cost minutes: materialising every maximal clique of a dense 125-vertex
+  graph (hang; `islice` cap), recomputing the separator family per
+  subproblem (budget spent on chordal completions; computed once and
+  restricted), and a seed diagnostic undefined on disconnected graphs (7,253
+  rows rerun; values unchanged). The upward run was moved to its own file
+  and merged because two processes appending to one `.csv.gz` corrupt it.
+  The `Random-*` gap "beats" are read against `tw_lo`, a 1-second interval;
+  exact treewidth would retire them. Recertify (9 workers) untouched.
+
+### Next
+- Item 12 · Q7: the three tree-decomposition `sorry`s of `Sandwich.lean`
+  (`treewidth_le_pathwidth`, the branch lemma — Lemma A of §38 is the
+  separator form, with its layout proof written out — and the conjecture
+  statement); `lake build` must pass; a gap list is an acceptable deliverable.

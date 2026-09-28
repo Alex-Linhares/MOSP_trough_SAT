@@ -1,0 +1,13 @@
+[harness] attack 16/144 in 35s
+[harness] attack 32/144 in 60s
+[harness] attack 48/144 in 76s
+[harness] attack 64/144 in 91s
+[harness] attack 80/144 in 104s
+[harness] attack 96/144 in 118s
+[harness] attack 112/144 in 130s
+[harness] attack 128/144 in 146s
+[harness] attack 144/144 in 162s
+         candidate  jobs  evaluations  skipped  max_viol  reached_optimum  n_min  n_max  counter_n counter_key   verdict
+0  contract-branch    48        10080   612536         0               48      8     15         -1              survived
+1       cut-branch    48        10080   624460         0               48      8     15         -1              survived
+2       sep-branch    48        10080   594043         0               48      8     15         -1              survived
