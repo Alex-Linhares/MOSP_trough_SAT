@@ -87,17 +87,13 @@ every claim states its size range.*
 
 ## Literature and bibliography
 
-- [ ] **Settle the novelty of the expansion bound** (`satisfiability/expansion_bound.py`,
-      `reports/expansion_bound.md`): `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})` with
-      `f(t) = min_{|C|=t} |N[C]|`, a vertex-isoperimetric argument over the
-      vertex-separation formulation. It is the only component of `_lower_bound`
-      that passes the treewidth ceiling (§6) and the one candidate for a new
-      bound this project has produced. Ellis, Sudborough & Turner (1994),
-      Coudert et al. (2014), Kobayashi et al. (2014) and Mallach (2018) were read
-      on 2026-09-28 and do not contain it (`literature/MISSING.md`). Still to
-      check: the graph-searching literature's isoperimetric lower bounds, and the
-      Kinnersley citation list (bound and layout papers); nothing outward-facing
-      may claim it until this is done. Likewise record whether the two-key
+- [x] **Settle the novelty of the expansion bound** — settled 2026-09-28: it is
+      Harper's vertex-isoperimetric bound, `vs(G) ≥ max_i min_{|S|=i} |∂_in S|`
+      (Harper 1966; on pathwidth, Chandran & Kavitha 2006, Lin & Lin 2025). No
+      novelty; the capped exact computation is ours. `literature/MISSING.md`.
+- [ ] Obtain Lin & Lin (2025) and Chandran & Kavitha (2006) and check whether
+      either computes `Φ` for general graphs, or only on hypercubes.
+- [ ] Still open from the same item: record whether the two-key
       rule's tie-break (most unclosed neighbours) appears anywhere; §29 shows it
       is not MCNh's.
 

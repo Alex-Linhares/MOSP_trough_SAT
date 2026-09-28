@@ -103,7 +103,7 @@ instances, 196 s for the whole corpus. On the 125×125 instances the cap is a
 dial — `Random-125-125-10-5_0` goes 59 → 98 against an optimum of 99 — and GP5
 comes out exactly at its published 95. It rests on `MOSP = pathwidth + 1`, like
 contraction degeneracy and unlike the clique bound; `BOUND_SOURCES` records
-`expansion`. Prior art unsettled, no novelty claimed. `reports/expansion_bound.md`.
+`expansion`. **Not new (settled 2026-09-28)**: it is the classical **vertex-isoperimetric bound** of Harper's method (Harper 1966): writing `Φ(i) = min_{|S|=i} |∂_in S|`, the smallest inner vertex boundary of an `i`-set, every layout's prefix of size `i` separates at least `Φ(i)` vertices, so `vs(G) ≥ max_i Φ(i)`; and `i − M(i)` *is* `Φ(i)`, because the interior of an `i`-set is exactly a `C` with `N[C] ⊆ S`. Its use on pathwidth goes back at least to Chandran & Kavitha (2006) on hypercubes and Lin & Lin (2025). What is ours is the engineering: `f` computed exactly by branch and bound, the sound cap, and the corpus measurement. `reports/expansion_bound.md` §4.
 
 Why the older family could not be pushed further: they are all degree-based and
 saturate at the average degree (bound 47, average degree 43.2, optimum 91 on

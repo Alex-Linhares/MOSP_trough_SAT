@@ -42,10 +42,16 @@ mean gap 0.98 -> 0.61, tight on 65.3% -> 75.3%. On the 200 Chu & Stuckey
 caps go much further on the hardest instances -- `Random-125-125-10-5_0` reaches
 98 against an optimum of 99, from 59 -- at a cost that grows sharply with `t`.
 
-**Prior art unsettled.** This is a vertex-isoperimetric argument over an interval
-/ vertex-separation formulation, and something equivalent may well be known;
-Ellis, Sudborough & Turner (1994) on vertex separation is the obvious place to
-look. No novelty is claimed until `literature/MISSING.md` records an answer.
+**Prior art: not new (settled 2026-09-28).** This is the classical
+vertex-isoperimetric lower bound of Harper's method (Harper 1966, J. Combin.
+Theory 1, 385-393). Write `Phi(i) = min over |S| = i of |S| - |int S|`, the
+smallest inner vertex boundary of an `i`-set, where `int S = {v : N[v] subset
+of S}`. The interior of `S` is exactly a `C` with `N[C] subset of S`, so
+`i - M(i) = Phi(i)` and the bound above is `vs(G) >= max_i Phi(i)`. It has
+been applied to pathwidth at least by Chandran & Kavitha (2006) and Lin & Lin
+(2025), both on hypercubes. What this module adds is the exact computation of
+`f` under a sound cap; no novelty is claimed for the bound itself.
+See `literature/MISSING.md`.
 """
 
 from __future__ import annotations

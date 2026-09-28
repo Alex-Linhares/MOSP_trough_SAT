@@ -107,14 +107,21 @@ else. Contraction degeneracy and this bound both go through Yanasse's
 `MOSP = pathwidth(MOSP graph) + 1`, so a closure resting on either inherits that
 theorem. `BOUND_SOURCES` now carries `expansion` so the provenance records which.
 
-**Prior art is unsettled and no novelty is claimed.** This is a
-vertex-isoperimetric argument over the vertex-separation formulation, and
-something equivalent may well be known — Ellis, Sudborough & Turner (1994) on
-vertex separation is the obvious place to look, and the MOSP literature's LB3/LB4
-(subgraph and minimum-degree bounds, Yanasse et al. 1999 §3.1) are its
-neighbours without being it. `literature/MISSING.md` carries the question. The
-same discipline as the arc contraction bound, which turned out to be something we
-already had under another name.
+**Prior art, settled 2026-09-28: the bound is not new.** It is the classical
+vertex-isoperimetric lower bound, Harper's method (Harper 1966). Let
+`Φ(i) = min_{|S|=i} |∂_in S|`, where `∂_in S` is the set of vertices of `S`
+with a neighbour outside `S`. Every layout's prefix of size `i` is some such
+`S`, so `vs(G) ≥ max_i Φ(i)`. The interior `S \ ∂_in S` is exactly a set `C`
+with `N[C] ⊆ S`, so the largest interior of an `i`-set is `M(i)` and
+`i − M(i) = Φ(i)`: the argument above is that bound in other words. It has
+been applied to pathwidth at least by Chandran & Kavitha (2006) and Lin & Lin
+(2025), who note that for hypercubes pathwidth equals bandwidth, the
+isoperimetric value. What is ours is only the engineering: computing `f`
+exactly by branch and bound, the cap and the rule that keeps it sound, and the
+corpus measurement. The same outcome as the arc contraction bound, which turned
+out to be contraction degeneracy under another name. The isoperimetric reading
+also explains §4a: trees of cliques have small separators at every size, so
+`Φ` stays low on exactly the family where the bound fails.
 
 ## 4a. Where it works, and where it does not at all
 
@@ -163,7 +170,7 @@ contraction for sparse, and the max of the two is free.
 
 ## 5. Next
 
-1. **Settle the prior art** before this is written up anywhere outward-facing.
+1. ~~**Settle the prior art**~~ — settled 2026-09-28, §4: Harper's vertex-isoperimetric bound.
 2. **Re-run the hard instances with it.** The 125×125 instances were certified
    by descending from an upper bound through forty values of `k`; starting from
    98 instead of 59 changes what that costs by orders of magnitude. This is the

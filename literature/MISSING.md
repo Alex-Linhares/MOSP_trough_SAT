@@ -127,25 +127,21 @@ pages, and the Wayback Machine where an author page is dead.
 
 ## Prior art to settle (not missing — unidentified)
 
-- **The neighbourhood-expansion lower bound** of `satisfiability/expansion_bound.py`
-  (2026-09-22): for a prefix `V_i` of a customer ordering, the finished
-  customers `C_i` satisfy `N[C_i] ⊆ V_i`, giving
-  `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})` with `f(t) = min_{|C|=t}|N[C]|`. This
-  is a vertex-isoperimetric argument over the vertex-separation formulation and
-  **may well be known**; nothing outward-facing may claim it until this is
-  settled. **Checked 2026-09-28 and not there:** Ellis, Sudborough & Turner
-  (1994), which proves no general-graph lower bound at all; Coudert, Mazauric &
-  Nisse (2014) and Kobayashi, Komuro & Tamaki (2014), whose exact searches prune
-  only against the incumbent; and Mallach (2018), whose bounds are LP
-  relaxations. Still to look: the graph-searching literature's
-  expansion/isoperimetric lower bounds (vertex-isoperimetric bounds on grids and
-  hypercubes are the likeliest home);
-  and Bodlaender, Koster & Wolle on treewidth lower bounds, which contains
-  nothing of this shape but is where the degree-based family lives. Within the
-  MOSP literature the neighbours are Yanasse et al. (1999) §3.1's LB3 (subgraph)
-  and LB4 (minimum degree over induced subgraphs) — related but not the same
-  quantity. Precedent for caution: the arc contraction bound turned out to be
-  contraction degeneracy under another name.
+- ~~**The neighbourhood-expansion lower bound** of `satisfiability/expansion_bound.py`~~
+  — **settled 2026-09-28: not new.** `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})` with
+  `f(t) = min_{|C|=t}|N[C]|` is the classical vertex-isoperimetric bound
+  `vs(G) ≥ max_i Φ(i)`, `Φ(i) = min_{|S|=i} |∂_in S|`: the interior of an `i`-set
+  is exactly a `C` with `N[C] ⊆ S`, so `i − M(i) = Φ(i)`. Sources to cite:
+  - **Harper, L.H.** (1966). Optimal numberings and isoperimetric problems on graphs. *Journal of Combinatorial Theory*, 1(3), 385-393. doi:10.1016/S0021-9800(66)80059-5 — the method. Not held.
+  - **Chandran, L.S. & Kavitha, T.** (2006). The treewidth and pathwidth of hypercubes. *Discrete Mathematics*, 306(3), 359-365. doi:10.1016/j.disc.2005.12.011 — applied to pathwidth. Not held.
+  - **Lin, L. & Lin, Y.** (2025). Discrete isoperimetric method for bandwidth, pathwidth and treewidth of hypercubes. *Discrete Applied Mathematics*, 363, 201-214. doi:10.1016/j.dam.2024.12.001 — abstract read 2026-09-28: pw(Q_d) = bw(Q_d) by Harper's method, tw(Q_d) open. Not held.
+  - **Harper, L.H.** (2004). *Global Methods for Combinatorial Isoperimetric Problems*. Cambridge University Press. doi:10.1017/CBO9780511616679 — the book-length treatment. Not held.
+  - **Díaz, J., Petit, J. & Serna, M.** (2002). A survey of graph layout problems. *ACM Computing Surveys*, 34(3), 313-356. doi:10.1145/568522.568523 — survey of layout lower bounds. Not held.
+
+  Read on the way and not containing it: Ellis, Sudborough & Turner (1994),
+  Coudert, Mazauric & Nisse (2014), Kobayashi, Komuro & Tamaki (2014), Mallach
+  (2018). What remains ours is the exact capped computation of `f` and the
+  corpus measurement, not the bound.
 
 ## Server issues
 
