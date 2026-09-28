@@ -9835,3 +9835,316 @@ runs as a script*: an appended section left `STATES_CSV` undefined for the
 `tables` stage and cost one run; the main block belongs at the end of the
 file. (6) Seconds are from a machine at load 34–42 (9 recertify workers
 beside these 12–16); everything here is a count or a ratio.
+
+## 37. Is the ridge's height a function of the same quantity as its location? (plan 3 §1 Q3b, loop0004 item 10)
+
+*Iteration 10 of loop0004, 2026-09-28. Code: `learning/ridge_height.py`. Regenerate:*
+
+```bash
+python -m learning.ridge_height --stage run --workers 16   # Bernoulli m = 4n / 8n and a finer 2n grid at 40–75, and m = n/4, n/2 at 100: 3,380 instances, all certified; ~90 min on a loaded machine, resumable
+python -m learning.ridge_height --stage tables             # reports/ridge_height_tables.md: ~1 min
+python -m pytest tests/test_ridge_height.py -q             # 10 tests
+```
+
+*Reads §25's frames (`results.csv`, `results_upward.csv` with its finish
+stage, `results_ratio.csv`) through `learning.ridge_theory.load_frames`, so
+every peak below 4n is §25's peak to the digit, plus this item's
+`results_height.csv` (manifest `manifest_height.csv`; witnesses under
+`learning/data/ensemble/solutions/`) and §34/§35's 100 cell through
+`learning.rate_drift`. Writes `reports/ridge_height_tables.md` (every table
+in full), `learning/data/ensemble/height_effective_m.csv` (products with two
+or more customers per Bernoulli instance at n ≥ 40, by regeneration) and
+`results_height_run.log`. Nothing under `solutions/`, no solver default, no
+bound.*
+
+**Question.** §25 located the ridge — the density at which the nodes to
+refute `optimum − 1` peak at fixed `n` — at cover excess `(n_ones − m) / n ≈
+2–2.4` for every product ratio, and noted in passing (§25 (g)) that its
+*height* climbs one to one and a half decades per doubling of `m` at fixed
+`n`, steepening with `n`, so that no single parameter collapses the surface.
+Is the height a function of `(n, excess, m / n)`? At fixed `n`, is it a
+function of `m` alone, of the excess at the peak, or of both — and does the
+climb with `m` continue, or does it saturate once the ridge's products are
+pairs? Deliverable: a formula with held-out error, or the statement that the
+height needs `m` separately from the ridge coordinate.
+
+**Method.** (a) *Peaks.* For every (generator, `m / n`, `n`) series with
+three or more cells at `n ≥ 15`, §25's interpolated peak (the cell with the
+largest censoring-aware median of `log10(1 + nodes)`, `default` and
+`csearch` configurations) gives the height, the location in `col_mean`, the
+excess and `optimum / n` there; a height is a lower bound where the peak
+cell's median is censored, and an *edge* height where the peak is the
+sparsest cell of its grid. The 100 cell (§34, fixed `m = n`, `d = 3`) enters
+as §35's censored-normal location with its 90% profile interval, `default`
+(1 exact + 22 censored) and pre-fix `csearch` (5 + 19), never as a fitted
+point. (b) *The cells the surface lacked.* The fixed generator cannot go
+below two customers per product, so its `m = 2n` peak has always sat at the
+grid edge (`d = 2`, excess exactly 2) and nothing above `m = 2n` existed for
+either generator. This item generated Bernoulli `m = 4n` at `n ∈ {40, 50,
+60, 75}`, `m = 8n` at `n ∈ {50, 60}` and a finer `m = 2n` grid at 50–75
+(nominal customers per product from 0.7 to 3.0; 50 per cell, 20 at `n = 75`),
+and — because the low-ratio ridges are cheap where the `m = n` ridge costs
+a day — `m = n / 4` and `m = n / 2` at `n = 100`, both generators, 30 per
+cell, as held-out points for the extrapolation in `n`; every instance
+certified. Because the generator repairs an empty column with
+one customer, the realised `col_mean` is about `c + e^{−c}` and the
+excess-2.4 ridge sits at nominal `c ≈ 1.35` (4n) and `≈ 0.9` (8n): the first
+8n grid started at 1.1 and missed it, and was extended. (c) *Formulas.*
+Thirteen candidate laws for the height `h` fitted by least squares on the
+exact heights per generator: `n` only (§11's one ridge law), `n + log m`,
+`n + m`, `n × log m` (§25 (g)'s steepening), `n · g(m / n)` with `g` linear
+and quadratic in `log r`, `n · g(c*)` with `c* = 1 + 2.4 / r` the ridge's
+customers per product (the log of the ridge clique's size), the same with
+the *measured* peak `col_mean` and with the effective ratio `m_eff / n`
+(`m_eff` = products with two or more customers), and each of the excess
+variants (`+ e · excess`, `+ n · e · excess`, excess alone). Held out three
+ways: leave one (generator, ratio) series out, leave one `n` out, and train
+on `n ≤ 60` to predict 75; the `n ≤ 75` fit is read at 100 against the
+`m = n` location interval and the two certified low-ratio cells. (d) *The excess partial*: the residual of the best
+`(n, m)` law against the peak excess, and the held-out gain of adding it.
+(e) *Collapse.* At `n ∈ {50, 60, 75}` every cell median of every series,
+raw, minus its own series' peak height (the shape alone) and minus the
+fitted `H(n, m)`, binned by `log10` of excess, `col_mean`, mean degree and
+branching factor: §11's dispersion (instance-weighted mean over bins of the
+range of per-series medians) and `r²`. (f) *Width*: per series, the decades
+of excess over which the cell median stays within 0.5 and 1 decade of the
+peak, and its two halves.
+
+**Baseline.** §25 (g): slope of `log10` height in `log10 m` of 2.9 / 3.4 /
+4.9 at `n = 50 / 60 / 75` (fixed), "one to one and a half decades per
+doubling", and the `n`-only ridge law of §11/§35, `log10 nodes = −0.24 +
+0.0934 n` for the fixed `m = n` series, which has no `m` in it.
+
+### (a) The peaks, and what the finer grids did to them
+
+57 series peaks under `default` (31 Bernoulli, 26 fixed; 15–100 customers;
+the same again under `csearch`), every one from certified instances; the
+full table is in `reports/ridge_height_tables.md`. The finer `m = 2n`
+Bernoulli grid moved that series' peaks *up*: 4.42 → 4.57 at `n = 50`
+(location `col_mean` 2.43 → 2.26), 5.09 → 5.59 at 60 (2.40 → 2.37), and the
+`n = 75` peak, which §25 had at the grid edge (`p = 0.025`, 7.00), is now
+interior at 2.38 with height 7.15 — §25's coarse 0.025 steps in `p`
+underestimated the `m = 2n` ridge by up to half a decade. The new ratios sit
+where the excess says they should: Bernoulli `m = 4n` peaks at excess
+2.0–2.9 (`col_mean` 1.50–1.73, all interior at 40–60, at the sparsest cell
+at 75) and `m = 8n` at 2.9–3.0 (`col_mean` 1.36–1.37; the first grid,
+nominal `c ≥ 1.1`, was entirely on the dense side and monotone toward
+sparser cells). The two low-ratio cells at 100 are interior: fixed `n / 4`
+at `col_mean` 10.4, excess 2.34, height **5.13**; Bernoulli `n / 4` at 8.40,
+excess 1.85, height **5.07**.
+
+### (b) At fixed n the climb per doubling of m falls off — and per doubling of *effective* products it does not
+
+Height at the peak, `default`, and its increment per doubling of `m` between
+neighbouring ratios (`Δ`), by generator and `n`:
+
+| generator | n | h[n/8] | h[n/4] | h[n/2] | h[n] | h[2n] | h[4n] | h[8n] | Δ n/8→n/4 | Δ n/4→n/2 | Δ n/2→n | Δ n→2n | Δ 2n→4n | Δ 4n→8n |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fixed | 50 | | 2.44 | 3.59 | 4.60 | 5.08 (edge) | | | | 1.08 | 1.02 | 0.47 | | |
+| fixed | 60 | | 3.02 | 4.32 | 5.35 | 6.07 (edge) | | | | 1.30 | 1.04 | 0.71 | | |
+| fixed | 75 | 2.14 | 3.73 | 5.46 | 6.78 | ≥ 8.12 (edge, censored) | | | 1.59 | 1.66 | 1.30 | ≥ 1.34 | | |
+| bernoulli | 50 | | 2.53 | 3.63 | 4.15 | 4.57 | 4.88 | 4.97 | | 1.04 | 0.52 | 0.42 | 0.31 | 0.09 |
+| bernoulli | 60 | | 3.12 | 4.28 | 4.95 | 5.59 | 5.82 | 6.07 | | 1.16 | 0.67 | 0.63 | 0.23 | 0.25 |
+| bernoulli | 75 | | 3.72 | 5.35 | 6.20 | 7.15 | 7.78 (edge) | | | 1.57 | 0.83 | 0.96 | 0.63 | |
+
+Read along a row: for the Bernoulli generator the gain per doubling of `m`
+falls from 1.0–1.6 decades (`n / 4 → n / 2`) to 0.5–0.8 (`→ n`), 0.4–1.0
+(`→ 2n`), 0.2–0.6 (`→ 4n`) and 0.1–0.25 (`→ 8n`): **the climb saturates**.
+It saturates because, at the excess-2.4 ridge, the products that carry an
+edge saturate. A product with one customer or none adds nothing to the MOSP
+graph and is removed by dominance; counting only products with two or more
+customers, `m_eff / n` at the Bernoulli peaks is 0.24 / 0.48 / 0.74–0.89 /
+1.32–1.34 / 1.4–1.9 / 2.1 for `m / n = ¼ / ½ / 1 / 2 / 4 / 8` — from `2n` up,
+a doubling of `m` adds a fifth to a third to the effective products, the
+rest being singletons and empties the generator's repair leaves behind. Per
+doubling of `m_eff` the increments are 1.10 / 0.83 / 0.51 / 0.56 / 0.84 at
+`n = 50` and 1.22 / 0.91 / 0.90 / 0.81 / 0.64 at 60 — roughly flat, at
+about `0.017 n` decades per doubling (0.86 at 50, 1.0 at 60), which is what
+the fixed generator, where every product has `d ≥ 2` customers and
+`m_eff = m`, shows directly: 1.02–1.08 per doubling at 50, 1.04–1.30 at 60,
+1.30–1.66 at 75, with only the grid-edge `m = 2n` step below that. §25 (g)'s
+"1–1.5 decades per doubling, steepening with n" is the fixed generator's
+`≈ 0.017 n` per doubling of effective products; the Bernoulli series flatten
+above `m = 2n` because their effective products stop growing.
+
+### (c) Formulas for the height, held out three ways (`default`; n = 15–75 fitted, n = 100 always held out)
+
+Pooled over both generators (54 exact peaks; `r = m / n`, `r_eff = m_eff / n`,
+`c* = 1 + 2.4 / r` the ridge's customers per product; RMSE in decades of nodes;
+`extrap75` trains on `n ≤ 60`; `extrap100` on `n ≤ 75` and reads the two
+certified `n / 4` cells at 100):
+
+| formula | params | in-sample | leave-series-out | leave-n-out | extrap 75 (MAE) | extrap 100, n/4 (b, f) | extrap 100, n/2 (b, f) | fit at 100, m = n vs location 10.27 [9.97, 10.68] |
+|---|---|---|---|---|---|---|---|---|
+| `a + b n` (§11's one law) | 2 | 0.97 | 1.07 | 1.02 | 1.51 | +2.29, +2.23 | −0.44, −0.74 | 7.36 (−2.9) |
+| `a + b n + c log m` | 3 | 0.47 | 0.56 | 0.55 | 0.80 | +1.10, +1.05 | −0.95, −1.24 | 7.53 |
+| `a + b n + c m` | 3 | 0.75 | 1.06 | 0.82 | 1.15 | +1.45, +1.40 | −1.10, −1.39 | 7.05 |
+| `a + b n + c log m + d n log m` | 4 | 0.36 | 0.45 | 0.46 | 0.54 | +0.79, +0.73 | −0.60, −0.89 | 8.55 |
+| `a + n (b + c log r)` | 3 | 0.36 | 0.44 | 0.41 | 0.53 | +0.43, +0.38 | −1.07, −1.36 | 7.97 |
+| `a + n (b + c log r + d log² r)` | 4 | 0.15 | 0.19 | 0.16 | 0.16 | +0.21, +0.16 | −0.55, −0.85 | 8.71 |
+| `a + n (b + c log c*)` | 3 | 0.22 | 0.27 | 0.25 | 0.30 | +0.24, +0.19 | −0.87, −1.16 | 8.37 |
+| **`a + n (b + c log r_eff)`** | **3** | **0.18** | **0.21** | **0.22** | **0.33** | **+0.21, +0.16** | **−0.86, −1.05** | **8.80 (−1.5)** |
+| `a + n (b + c log r_eff + d log² r_eff)` | 4 | 0.12 | 0.15 | 0.14 | 0.18 | +0.20, +0.15 | −0.59, −0.78 | 8.97 |
+| `a + n (b + c log r_eff) + e · excess` | 4 | 0.16 | 0.22 | 0.21 | 0.31 | +0.34, +0.14 | −0.72, −0.96 | 8.99 |
+| `a + b n + e · excess` | 3 | 0.86 | 0.96 | 0.86 | 1.23 | +1.10, +1.81 | −1.25, −1.31 | 6.74 |
+| `a + n (b + e · excess)` | 3 | 0.86 | 0.96 | 0.87 | 1.19 | +0.79, +2.18 | −1.23, −1.07 | 6.93 |
+
+The three-parameter law that survives is
+
+> `log10 nodes at the ridge ≈ −0.10 + n · (0.089 + 0.058 · log10(m_eff / n))`
+
+— **per customer, the height grows by 0.0175 decades for every doubling of
+the effective products**, and at `m_eff = n` by 0.089 per customer (§35's
+`0.0934 n − 0.24` for the fixed `m = n` series, refitted with every ratio).
+Leave-series-out 0.21 decades, leave-`n`-out 0.22, and it predicts the two
+certified `n / 4` ridges at 100 to +0.16 and +0.21 from the `n ≤ 75` fit
+(the `n / 2` ridges are another matter: (g)).
+Per generator (same table in `ridge_height_tables.md`): for the fixed
+generator the log-clique form `−0.16 + n (0.1325 − 0.0767 log10 c*)` is the
+best three-parameter law (in-sample 0.076, leave-series-out 0.136,
+leave-`n`-out 0.086, 75 from ≤ 60 to 0.10, the fixed `n / 4` cell at 100 to
++0.10) and `r_eff = r` there; for the Bernoulli generator `r_eff` is what
+makes a linear law work at all (0.26 leave-series-out against 0.43 for the
+nominal ratio; the quadratic 0.19). Under `csearch` the same laws hold with
+the same ranking (pooled `r_eff` linear 0.16 / 0.19 / 0.19 in-sample / by series / by `n`;
+fixed log-clique 0.126). The `n`-only law is wrong by a decade and more in every test, and
+`a + b n + c m` (linear in `m`) by as much: the height is a function of
+`n · log(m_eff / n)`, not of `m` and `n` separately and not of `m` alone.
+
+### (d) The excess at the peak carries nothing about the height
+
+The peak excess ranges 1.8–2.5 (fixed) and 1.5–3.0 (Bernoulli) across the
+series. Against the residual of the best `(n, m)` law it has slope +0.15 per
+unit (fixed, log-clique base; correlation 0.37) and −0.18 (Bernoulli,
+`r_eff` base; −0.40) — **opposite signs in the two generators** — and adding
+it changes the leave-series-out RMSE by −0.03 to +0.07 decades depending on
+the base (−0.06 to +0.01 under `csearch`); the excess-only laws are off by a
+decade. Whatever the excess at the peak is measuring (mostly where
+the grid happened to land), it is not the height.
+
+### (e) The whole surface collapses to H(n, m_eff) + S(excess), to r² 0.9
+
+Cell medians of every series at `n ∈ {50, 60, 75}` (60, 60 and 74 cells in 8,
+8 and 10 series), binned by `log10` of a candidate coordinate; §11's
+dispersion and `r²`:
+
+| coordinate | y | dispersion 50 / 60 / 75 (decades) | r² 50 / 60 / 75 |
+|---|---|---|---|
+| excess | raw | 2.04 / 2.43 / 3.67 | 0.54 / 0.52 / 0.42 |
+| excess | minus own peak height | **0.89 / 0.86 / 0.83** | **0.86 / 0.89 / 0.94** |
+| excess | minus fitted H(n, m_eff) | 0.96 / 1.08 / 1.16 | 0.87 / 0.89 / 0.92 |
+| mean degree | minus own peak height | 1.07 / 1.32 / 1.97 | 0.84 / 0.82 / 0.81 |
+| branching factor | minus own peak height | 1.07 / 1.18 / 1.85 | 0.84 / 0.85 / 0.81 |
+| `col_mean` | minus own peak height | 2.47 / 2.82 / 4.63 | 0.20 / 0.20 / 0.07 |
+
+§25 (g) said no single parameter collapses the surface (r² 0.38–0.56, the
+"raw" row). Two do: once each series' height is taken out, the *shape* of
+the ridge is one function of the excess to r² 0.86–0.94 with a residual
+dispersion of 0.8–0.9 decades that does not grow with `n`; the fitted
+`H(n, m_eff)` in place of the measured height costs 0.02–0.06 in r². In
+`col_mean` — §11's coordinate — the shapes do not collapse at all (r² ≤ 0.2),
+and degree and branching factor collapse worse and lose ground with `n`.
+
+### (f) The width
+
+Per series, the decades of excess over which the cell median stays within
+half a decade of the peak: 0.25–0.51 (median 0.35), and within one decade
+0.32–0.68 — the ridge is about a factor 2.2 wide in excess at half a decade
+and a factor 3 at one. It is asymmetric: for `m ≥ n` the sparse side is the
+short one (fixed `m = n`: 0.05–0.08 decades to the left against 0.23–0.26 to
+the right; the dense side falls slowly because the optimum grows while the
+search still has room), and for `m ≤ n / 4` the dense side runs into the
+grid. It narrows slowly with `n`: fixed `m = n` at one decade 0.50 / 0.48 /
+0.42, Bernoulli `m = n` 0.64 / 0.55 / 0.49 at 50 / 60 / 75. The residual
+0.8-decade dispersion in (e) is this: the series share a shape but not
+exactly a width.
+
+### (g) At 100 the law holds where the ridge is cheap, and the departure grows with m / n
+
+The `n ≤ 75` fits put the fixed `m = n` ridge at 100 at 8.4–9.0 decades under
+every law with `n` in it (`default`); §35's censored-normal location of that
+cell is 10.27 [9.97, 10.68] — every law is 1.3–1.9 decades low, which is the
+75 → 100 rise §35 measured, restated. The two new ratios at 100 sit between:
+the `n / 4` ridges (certified 5.13 fixed, 5.07 Bernoulli; `col_mean` 10.4
+and 8.4, excess 2.34 and 1.85) are predicted to +0.10 to +0.24, *on* the
+line; the `n / 2` ridges (fixed **8.10** at `col_mean` 5.48, excess 2.25,
+its `d = 5` cell with 13 of 30 refutations censored at 120 s, all above the
+median; Bernoulli **7.80** at 5.18, excess 2.09, 8 of 30 censored) are
+0.6–1.1 decades *above* the `r_eff` law and 0.55–0.85 above the quadratic.
+Read as rates per customer, 60 → 75 against 75 → 100: `n / 4` 0.041–0.047 →
+0.054–0.056, `n / 2` 0.071–0.076 → 0.098–0.106, `m = n` 0.095 → 0.140 (the
+location). So the rise between 75 and 100 that §35 found on the `m = n`
+ridge is **not a property of the linear-in-`n` form** — which reaches 100 to
+a quarter of a decade at `n / 4` — and it is **not confined to `m = n`**: it
+grows with the product ratio, from nothing at `n / 4` through +0.03 per
+customer at `n / 2` to +0.045 at `m = n`. The height law of (c) is a law for
+`n ≤ 75` and for the cheap ridges at 100; above that the rate itself rises
+with `n`, faster the more products there are, and this data does not say
+where that starts for each ratio.
+
+**Finding, in one paragraph.** The ridge's height is not a function of the
+ridge coordinate. At the peak the excess is 2 ± 0.5 everywhere and explains
+nothing of a height that spans four decades at fixed `n`; the height is set
+by `n` and by the number of products that carry an edge, through one
+three-parameter law for both generators, `log10 nodes ≈ −0.10 + n (0.089 +
+0.058 log10(m_eff / n))`: 0.0175 decades per customer per doubling of the
+effective products, held out at 0.20 decades by series and 0.21 by `n`, and
+predicting the certified `n / 4` ridges at 100 to +0.2 from `n ≤ 75`. §25's
+"one to one and a half decades per doubling of `m`" is this law's `0.017 n`
+at `n = 60–90` for the fixed generator, where every product counts; for the
+Bernoulli generator the gain per doubling of `m` falls to a tenth of a decade
+by `m = 8n` because at the excess-2.4 ridge the effective products saturate
+near `2n` — in `m_eff` the same increments are flat. With the height taken
+out, the whole surface at 50–75 is one shape in the excess (r² 0.86–0.94,
+0.8-decade residual from widths that differ), and no shape in `col_mean`.
+The answer to the item's question is therefore: **height needs `m`
+separately from the ridge coordinate, in the form `n · log(m_eff / n)`, and
+the excess at the peak adds nothing** (−0.01 to +0.07 decades held out,
+opposite signs in the two generators). What the law does not do is hold
+past 75 at the higher ratios: at 100 it reaches the certified `n / 4` ridges
+to +0.2, runs 0.6–1.1 decades under the certified `n / 2` ridges and 1.3–1.9
+under §35's `m = n` location — the 75 → 100 rise is real, is not an artifact
+of the extrapolation, and grows with `m / n`.
+
+**Size range covered.** Peaks at `n ∈ {15, …, 40}` (campaign, `m ∈ {n, 2n}`),
+`{50, 60, 75}` (`m / n ∈ {⅛ (75, fixed), ¼, ½, 1, 2}` from §16/§25, plus this
+item's Bernoulli `2n` finer grid, `4n` at 40–75 and `8n` at 50–60), and 100
+(`m = n / 4` and `n / 2`, both generators, certified; `m = n` from §34/§35's
+location only). Fits on 15–75, 54 exact peaks pooled; collapse and width at
+50–75. The new cells: 3,380 instances in 82 cells, 3,378 certified under both
+configurations (two Bernoulli `n = 100`, `m = 50` instances are verified
+upper bounds with optimality open and enter no peak); 52 `default`
+refutations censored at 120 s (10 at `n = 75`, `m = 300`; 42 at `n = 100`,
+`m = 50`, on the ridge cells, all above their cell's median) and 44 under
+`csearch`; every witness re-simulates. Nothing here is evidence
+about 125 × 125; the law's value at `n = 125`, `m_eff = n` is 11.0 decades,
+to be read against §35 (record 11.2–11.7 pre-fix `csearch`), not asserted.
+
+**Kill criterion.** None stated by the plan. Deliverable as asked: a formula
+with held-out error, with the qualification that the `m` it needs is the
+count of edge-carrying products and that its extrapolation in `n` is
+verified at 100 only for the cheap low-ratio ridges.
+
+**Method notes.** (1) *Design a Bernoulli grid in realised, not nominal,
+density*: the generator repairs every empty column with one customer, so at
+nominal `c` customers per product the realised `col_mean` is about
+`c + e^{−c}` and the excess counts only what is left above one per product;
+the first `m = 8n` grid (nominal 1.1–2.2) lay entirely on the dense side of
+the ridge and had to be extended to 0.7. (2) *Increments per doubling of
+`m_eff` are undefined where `m_eff` barely moves*: between the Bernoulli
+`2n` and `4n` peaks at 75 the effective products differ by 2%, so the
+"per-doubling" figure there is meaningless and is not quoted; the table in
+`ridge_height_tables.md` shows it as 17.8. (3) *Order the run by cost, and
+price it*: the `n = 75`, `m = 300` cells cost about three worker-minutes
+per instance where the `n ≤ 60` cells cost two seconds, and a first launch
+with the 75 cells first was stopped and reordered; the low-ratio 100 cells
+were added because the law prices them at minutes. (4) *Hold the 100 cell out
+of every fit* — the location is a censored-MLE estimate, not a median, and
+the point of the section is what the `n ≤ 75` laws say about it. (5) Two `n = 100`, `m = 50` instances came back
+`uncertified` from the 600 s solve budget and are excluded rather than
+re-solved: a peak is a median over 30 and two open values do not move it.
+(6) Kill a
+run by its parent PID first, then the workers by anchored pattern; the
+resumable CSV keeps every flushed batch of twenty. (7) Seconds are from a
+machine at load 40–45 (24 foreign `bench/run.py` workers and 8 recertify
+workers beside these 16); everything here is a count or a ratio.

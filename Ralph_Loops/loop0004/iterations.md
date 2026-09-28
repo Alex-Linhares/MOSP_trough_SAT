@@ -95,7 +95,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       m/n ∈ {2, 1, 1/2, 1/4, 1/8}. Deliverable: the mechanism, or the
       statement that none of the candidate thresholds coincides with the
       ridge, with the numbers.
-- [ ] 10 · Q3b **Is the ridge's height a function of the same quantity?**
+- [x] 10 · Q3b **Is the ridge's height a function of the same quantity?**
       Fit peak median nodes against `(n, excess, m / n)` across all series
       (§11, §16, item 07); test whether height at fixed `n` is a function of
       `m` alone (§25 said 1–1.5 decades per doubling), of excess, or of both.

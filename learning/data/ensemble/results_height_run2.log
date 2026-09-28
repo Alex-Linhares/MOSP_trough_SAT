@@ -1,0 +1,7 @@
+61 cells, 2670 instances, 2140 already in learning/data/ensemble/results_height.csv, 530 to run on 16 workers
+  100/530 in 25 s
+  200/530 in 63 s
+  300/530 in 75 s
+  400/530 in 86 s
+  500/530 in 586 s
+  530 rows in 758 s

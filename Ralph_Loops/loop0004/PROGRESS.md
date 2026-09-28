@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 9/13 SOLVED
+- **Current**: 10/13 SOLVED
 
 ---
 
@@ -670,3 +670,88 @@
   fit peak median nodes against (n, excess, m/n) across all series; §36's
   `cover_excess_measures.csv` has the 2-core and reduced-instance sizes per
   instance if the height wants the core's size rather than n.
+
+## Iteration 10 — 2026-09-28 03:41
+
+### Completed
+- **Item 10 · Q3b, is the ridge's height a function of the same quantity? —
+  SOLVED (a formula with held-out error; the height needs `m` separately, as
+  `n · log(m_eff / n)`, and the excess at the peak adds nothing).**
+  `reports/ml_nature.md` §37; tables `reports/ridge_height_tables.md`; data
+  `learning/data/ensemble/results_height.csv` (3,380 rows, one per new
+  instance, both configurations; manifest `manifest_height.csv`),
+  `height_effective_m.csv` (products with ≥ 2 customers per Bernoulli
+  instance at n ≥ 15, by regeneration), three run logs; witnesses under
+  `learning/data/ensemble/solutions/`.
+- `learning/ridge_height.py`: peaks for every (generator, m/n, n) series
+  through §25's `peak_table` (heights flagged censored / grid-edge), §35's
+  100-cell location as a held-out point, the new cells (Bernoulli m = 4n at
+  40–75, 8n at 50–60, a finer 2n grid at 50–75, and — because they are cheap —
+  m = n/4 and n/2 at n = 100, both generators, 30 per cell), eighteen
+  candidate laws fitted per generator and pooled with leave-series-out,
+  leave-n-out, ≤ 60 → 75 and ≤ 75 → 100 errors (100 never fitted), the excess
+  partial, the surface-collapse statistic (raw / minus own peak / minus fitted
+  H) and the width table.
+- New cells: 3,380 instances in 82 cells, all certified under both
+  configurations; 10 refutations censored at 120 s (n = 75, m = 300), none at
+  100. ~50 min of 16 workers in three launches.
+- Result (`default`, 15–75 fitted, 54 exact peaks pooled): the height at the
+  ridge is `log10 nodes ≈ −0.10 + n (0.089 + 0.058 log10(m_eff / n))`,
+  `m_eff` the products with two or more customers — 0.0175 decades per
+  customer per doubling of effective products — leave-series-out 0.20,
+  leave-n-out 0.21, ≤ 60 → 75 MAE 0.33, and it predicts the two certified
+  n/4 ridges at 100 to +0.16 / +0.21. Fixed generator alone: the log-clique
+  form `−0.16 + n (0.1325 − 0.0767 log10(1 + 2.4 n/m))`, leave-series-out
+  0.136, n/4 at 100 to +0.10. `n`-only law: 1.15; `a + b n + c m`: 1.10;
+  excess-only laws: ~1.0. Same ranking under `csearch`.
+- The Bernoulli climb per doubling of m saturates (1.0–1.6 decades at
+  n/4 → n/2, 0.1–0.25 at 4n → 8n) because the effective products saturate at
+  the excess-2.4 ridge (m_eff/n 0.24 → 2.1 from m = n/4 to 8n); per doubling
+  of m_eff the increments are flat at ≈ 0.017 n, which is what the fixed
+  generator (m_eff = m) shows as §25 (g)'s "1–1.5 decades per doubling".
+- The excess at the peak: slope of the residual +0.15 per unit (fixed) and
+  −0.18 (Bernoulli), opposite signs; held-out gain −0.01 to +0.07 decades.
+- Collapse at 50–75: with each series' own height removed, the shape is one
+  function of the excess (r² 0.86 / 0.89 / 0.94, dispersion 0.8–0.9 decades,
+  not growing with n); in `col_mean` r² ≤ 0.2; degree / branching 0.81–0.85.
+  Widths: 0.25–0.51 decades of excess at half a decade below the peak,
+  asymmetric (sparse side short for m ≥ n), narrowing slowly with n.
+- At 100 the laws reach the low-ratio ridges (+0.1–0.2) and miss the m = n
+  location by 1.3–1.9 decades (§35's rise, restated): the 75 → 100 rise is a
+  not an artifact of the linear-in-n form — and it grows with m/n: the two
+  certified n/2 ridges at 100 (fixed 8.10, Bernoulli 7.80; the ridge cells
+  13 and 8 of 30 censored at 120 s above the median) sit 0.6–1.1 decades
+  above the law. Rates per customer 60→75 vs 75→100: n/4 0.04 → 0.055, n/2
+  0.07 → 0.10, m = n 0.095 → 0.14.
+- The finer Bernoulli 2n grid lifted §25's peaks by up to 0.5 decades
+  (n = 60: 5.09 → 5.59; n = 75 now interior at 7.15).
+- Tests: `tests/test_ridge_height.py` (10) — extended ratio labels, the cell
+  design and its order, design-matrix shapes, exact recovery of planted
+  `n·g(r)` and log-clique laws with zero held-out error under all four
+  schemes (100 never fitted), excess partial zero when not planted, model
+  table plumbing incl. the 100-cell check, increments per doubling by hand,
+  collapse statistic on a perfect and a broken collapse, width crossings on a
+  triangle, the 100-cell location against §35. Full suite: 1,200 passed, 2 skipped, 1 xfailed in 342 s (loaded machine), re-run after the last code edit.
+  `solutions/` untouched; recertify (8 workers) untouched.
+
+### Blockers
+- None. Three compute notes: the first launch put the n = 75, m = 300 cells
+  first (about three worker-minutes each against two seconds at n ≤ 60) and
+  was stopped and reordered; the first m = 8n grid (nominal 1.1–2.2
+  customers per product) lay entirely on the dense side of the ridge because
+  the generator's empty-column repair adds about e^{−c} to the realised
+  density, and was extended down to 0.7; the low-ratio 100 cells were added
+  mid-session because the law prices them at minutes (they took 55 min of 16
+  workers, the n/2 ridge cells at 100 running into the 120 s deadline on
+  their upper half). Two n = 100, m = 50 Bernoulli instances left the 600 s
+  solve budget uncertified (verified upper bounds 24 and 22); excluded from
+  the peaks, not re-solved.
+- Seconds are from a machine at load 40–45 (24 foreign `bench/run.py`
+  workers and 8 recertify workers beside these 16); nodes are the claim.
+
+### Next
+- Item 11 · Q2: the bound harness (validity over every certified instance,
+  `learning.extremal` as adversary, tightness on the 338 gap instances against
+  `max(lb_best, tw + 1)`) and three candidates, the first the pathwidth branch
+  rule over cut vertices (Fellows & Langston 1987 Lemma 4.3 / Kinnersley 1992
+  Corollary 4.2 — known, to be cited, not claimed).

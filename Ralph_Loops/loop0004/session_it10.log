@@ -1,0 +1,220 @@
+# session it10 started 2026-09-28 02:08:59
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan and the sections this item cites, then look at the data already on disk for the ridge peaks.
+  > $ date && pgrep -af benchmarks.recertify | head; nproc; uptime; sed -n 1,400p reports/ml_nature_plan_3.md | grep -n "" | sed -n '1,60p'
+  > $ sed -n 60,200p reports/ml_nature_plan_3.md
+  > $ grep -n "^## " reports/ml_nature.md | sed -n '1,80p'; ls learning/data/ensemble/ | head -80; wc -l learning/data/ensemble/results.csv learning/data/ensemble/res
+  > $ sed -n 6621,6910p reports/ml_nature.md
+  > $ head -1 learning/data/ensemble/results.csv; echo; head -1 learning/data/ensemble/results_upward.csv; echo; head -1 learning/data/ensemble/results_ratio.csv; ech
+  > $ sed -n 256,410p learning/ridge_theory.py && sed -n 560,600p learning/ridge_theory.py
+
+I'm reading how the earlier sections computed the ridge peaks so the height study reuses the same machinery; next I'll check the data at 100 customers and the Tobit fitter from §35.
+  > $ sed -n 1,60p learning/ridge_theory.py && sed -n 59,83p learning/ridge_theory.py && grep -n "^def prepare\|^def load_results\|^def apply_finish\|^def censoring\|
+  > $ sed -n 90,140p learning/hardness_map.py; sed -n 60,80p learning/rate_drift.py; sed -n 170,260p learning/rate_drift.py; sed -n 395,422p learning/rate_drift.py
+  > $ (python - <<'EOF'
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+from learning.ridge_theory import load_frames, cell_median
+  > $ grep -n "^class Cell\|^def run\b\|^def run(\|^def write_manifest\|^def load_results\|^def load_all" -A 12 learning/ensemble.py learning/upward.py | head -120; g
+  > $ sed -n 127,160p learning/ensemble.py && sed -n 305,380p learning/ensemble.py && ps -eo pid,pcpu,etime,args --sort=-pcpu | head -30 | cut -c1-120
+  > $ sed -n 145,200p learning/ridge_theory.py && grep -n "^CANDIDATES" -A 6 learning/ridge_theory.py && grep -n "def apply_finish" -A 20 learning/upward.py | head -3
+
+Now writing the module's run stage and launching the small Bernoulli m = 4n / 8n campaign in the background, so its instances certify while I write the analysis.
+  > $ cat > learning/ridge_height.py <<'EOF'
+"""Is the ridge's *height* a function of the same quantity as its location?
+
+Question (`reports/ml_nature_plan_3.md` §1 Q
+  > $ python - <<'EOF' 2>&1 | grep -v Warning
+from learning import rate_drift as rd
+import numpy as np
+for cfg in ("default","csearch-prefix","csearch"):
+    s = rd.s
+
+Now the analysis half of the module: peak assembly, the candidate formulas with held-out schemes, the surface collapse and the width table.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py")
+src = p.read_text()
+head = src.split('if __name__ == "__main__":')[0]
+analysis = 
+  > $ ps -o pid,pcpu,etime,args -p $(pgrep -d, -f "learning.ridge_height --stage run") | head -4; ls learning/data/ensemble/solutions | grep -c "ens_b_n75_m300" ; tim
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py")
+s = p.read_text()
+
+# 1. measured-clique-size model
+s = s.replace('''    "excess o
+  > $ cat > tests/test_ridge_height.py <<'EOF'
+"""§37: the ridge's height -- the new cells, the candidate formulas, the
+excess partial, the collapse statistic and the
+
+The n = 75 cells are far slower than priced (about 6 worker-minutes each), so I'm stopping the run and relaunching with the cheap n ≤ 60 cells first and the 75 cells last at 12 per cell.
+  > $ kill 2693251; sleep 2; pkill -f "^python -m learning.ridge_height --stage run"; sleep 2; pgrep -fc "^python -m learning.ridge_height --stage run"; ls learning/d
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+
+# effective products helper, inserted before the (a) section
+
+  > $ tail -1 learning/data/ensemble/results_height_run.log && wc -l learning/data/ensemble/height_effective_m.csv && timeout 300 python - <<'EOF' 2>&1 | grep -v Warn
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Waiting for the cheap cells (up to 2,150 rows) with a single background watcher, and drafting the report skeleton in parallel.
+  > $ until [ "$(tail -1 learning/data/ensemble/results_height_run.log | grep -oE '^ *[0-9]+' | tr -d ' ')" -ge 2100 ] 2>/dev/null || ! pgrep -f "^python -m learning.
+  > $ sed -n 9533,9560p reports/ml_nature.md; echo ......; tail -40 reports/ml_nature.md | cut -c1-200; echo; grep -n "10 · Q3b" -B2 -A6 Ralph_Loops/loop0004/iteratio
+  > $ timeout 600 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+pd.set_option("display.widt
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+s = s.replace("""FOUR_N = {40: (1.2, 1.4, 1.6, 1.8, 2.0, 2.4, 
+
+While the cheap cells finish, I'll draft the fixed parts of the report section (question, method, baseline, regenerate commands) so only the numbers remain to fill in.
+  > $ mkdir -p /tmp/rh && cat > /tmp/rh/head.md <<'EOF'
+## 37. Is the ridge's height a function of the same quantity as its location? (plan 3 §1 Q3b, loop0004 item 10
+  > $ until [ "$(tail -1 learning/data/ensemble/results_height_run.log | grep -oE '^ *[0-9]+' | tr -d ' ')" -ge 2100 ] 2>/dev/null; do sleep 10; done; tail -1 learnin
+  > $ timeout 900 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+pd.set_option("display.widt
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+s = s.replace("def effective_products(frame: pd.DataFrame, min
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+old_start = s.index("def fixed_n_table(")
+old_end = s.index("d
+  > $ while pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null; do sleep 15; done; tail -3 learning/data/ensemble/results_height_run2.log; wc -l learn
+
+Waiting on the last 130 instances at n = 75. While they run, I'll check the collapse and width tables on the settled data and confirm the full test suite still passes with the new module.
+  > $ timeout 900 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+pd.set_option("display.widt
+  > $ tail -1 learning/data/ensemble/results_height_run2.log; ls learning/data/ensemble/solutions | grep -c "ens_b_n75_m300\|ens_b_n75_m150_p0.02_\|ens_b_n75_m150_p0.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+s = s.replace("PER_CELL = {40: 50, 50: 50, 60: 50, 75: 12}",
+"
+  > $ timeout 1500 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ cd /tmp/rh && python - <<'EOF'
+from pathlib import Path
+p = Path("head.md"); s = p.read_text()
+s = s.replace("python -m learning.ridge_height --stage run --work
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+s = s.replace('''    elif scheme == "extrap75":
+        test =
+
+Checking the run's progress and the test-suite output; the relaunch with the 100-customer cells depends on the current run ending.
+  > $ tail -1 learning/data/ensemble/results_height_run2.log; wc -l learning/data/ensemble/results_height.csv; pgrep -fc "^python -m learning.ridge_height --stage run
+  > $ for i in $(seq 1 100); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -2 learning/data/ensemble/results_he
+
+The first run finished (2,670 rows) and the suite passed in the background. Relaunching for the added 75 instances and the n = 100 cells.
+  > $ tail -2 /tmp/claude-1000/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tasks/blb0noxq3.output; setsid nohup python -m learning.ridge_height --stage run
+  > $ grep -E "passed|failed" /tmp/claude-1000/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tasks/blb0noxq3.output | tail -1; timeout 900 python -m learning
+  > $ sed -n 76,122p reports/ridge_height_tables.md | cut -c1-400; echo ====; sed -n 226,249p reports/ridge_height_tables.md | cut -c1-330; echo ====; sed -n 313,348p
+  > $ timeout 600 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+pd.set_option("display.widt
+
+Next I need the final data (the run is the only dependency left), then the final tables and the report. Waiting for the run in a bounded loop.
+  > $ for i in $(seq 1 110); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -2 learning/data/ensemble/results_he
+  > $ tail -1 learning/data/ensemble/results_height_run3.log; wc -l learning/data/ensemble/results_height.csv; ls learning/data/ensemble/solutions | grep -c "ens_._n1
+  > $ for i in $(seq 1 48); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -2 learning/data/ensemble/results_hei
+  > $ ls learning/data/ensemble/solutions | grep -c "ens_._n100_m25\|ens_._n100_m50"; for c in f_n100_m25 b_n100_m25 f_n100_m50 b_n100_m50; do echo "$c solved $(ls le
+  > $ timeout 900 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd, numpy as np
+pd.set_option("display.widt
+  > $ sed -n 1,400p /home/al/.claude/projects/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tool-results/bmyhmstgm.txt | cut -c1-330
+
+I'm reading the compact tables in pieces (the single dump exceeded the output limit), then I'll write the report.
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tool-results/bmyhmstgm.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tool-results/bmyhmstgm.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tool-results/bmyhmstgm.txt
+
+I have the near-final numbers. Writing the report section now; the only figures that can still move are the m = n/2 cells at 100 and I'll patch those after stopping the run.
+  > $ cat > /tmp/rh/body.md <<'EOF'
+
+### (a) The peaks, and what the finer grids did to them
+
+57 series peaks under `default` (31 Bernoulli, 26 fixed; 15–100 customer
+  > $ cat /tmp/rh/head.md /tmp/rh/body.md > /tmp/rh/section.md && wc -w /tmp/rh/section.md && grep -c "«" /tmp/rh/section.md; tail -1 learning/data/ensemble/results_h
+  > $ timeout 1500 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ for i in $(seq 1 130); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -2 learning/data/ensemble/results_he
+  > $ cat > /tmp/rh/progress.md <<'EOF'
+
+## Iteration 10 — 2026-09-28 «TIME»
+
+### Completed
+- **Item 10 · Q3b, is the ridge's height a function of the same quantity? 
+
+The run is the only dependency left; waiting on it in a bounded loop, then the final tables and the write-up.
+  > $ for i in $(seq 1 48); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -1 learning/data/ensemble/results_hei
+  > $ for i in $(seq 1 48); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; tail -1 learning/data/ensemble/results_hei
+  > $ timeout 300 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd
+pd.set_option("display.width", 250)
+from
+  > $ for i in $(seq 1 25); do pgrep -f "^python -m learning.ridge_height --stage run" >/dev/null || break; sleep 12; done; pgrep -fc "^python -m learning.ridge_heigh
+  > $ timeout 900 python -m learning.ridge_height --stage tables 2>&1 | grep -v Warn | tail -1; timeout 600 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warn
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+old = '''        for scheme in ("loso", "lono", "extrap75", "e
+  > $ timeout 600 python - <<'EOF' 2>&1 | grep -v Warn
+import warnings; warnings.filterwarnings("ignore")
+import pandas as pd
+pd.set_option("display.width", 250); pd.
+  > $ timeout 1500 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ pkill -f "^python -m pytest tests/ -q -x" ; python - <<'EOF'
+from pathlib import Path
+p = Path("learning/ridge_height.py"); s = p.read_text()
+old = '''    pts =
+  > $ python - <<'EOF'
+from pathlib import Path
+s = Path("/tmp/rh/section.md").read_text()
+
+# --- (c) table: final numbers, n = 100 held out of every fold, n/2 column
+  > $ timeout 1500 python -m pytest tests/ -q -x 2>&1 | tail -3
+  > $ tail -c 200 reports/ml_nature.md | od -c | tail -3 >/dev/null; printf '\n' >> reports/ml_nature.md && cat /tmp/rh/section.md >> reports/ml_nature.md && grep -n 
+  > $ git status --short learning/ridge_height.py tests/test_ridge_height.py reports/ridge_height_tables.md solutions/ | head; echo "solutions changes: $(git status -
+
+Everything is written; the last dependency is the final full test run, whose count fills the one remaining placeholder in PROGRESS.md. Waiting for it.
+  > $ F=/tmp/claude-1000/-home-al-dev-MOSP/7926e52b-a7c9-488a-920f-3bf6526697d2/tasks/bl28i2ta5.output; for i in $(seq 1 45); do grep -qE "passed|failed|error" $F 2>/
+  > $ sed -i 's/Full suite: «TESTS», re-run after the last code edit\./Full suite: 1,200 passed, 2 skipped, 1 xfailed in 342 s (loaded machine), re-run after the last
+
+Item 10 is done. Nothing is left pending: no background processes of mine are running, `solutions/` is untouched, three items remain unchecked in `iterations.md`, so no `LOOP_COMPLETE` line.
+
+**What the item asked and what it found.** The ridge's height is not a function of the ridge coordinate. The excess at the peak is 2 ± 0.5 in every series and explains none of a height that spans four decades at fixed n. The height is set by n and by the number of products that carry an edge, through one three-parameter law for both generators:
+
+```
+log10 nodes at the ridge ≈ −0.10 + n · (0.089 + 0.058 · log10(m_eff / n))
+```
+
+with `m_eff` the products having two or more customers. Held out by series 0.21 decades, by n 0.22, and it predicts the two certified `n/4` ridges at 100 customers to +0.2 from the `n ≤ 75` fit. Adding the excess changes held-out error by −0.03 to +0.07 decades with opposite signs in the two generators. So the deliverable is the second alternative the item allowed, with a formula attached: height needs `m` separately, in the form `n · log(m_eff / n)`.
+
+**Two things the new cells settled.**
+- **§25's "1–1.5 decades per doubling of m" saturates for the Bernoulli generator** (0.1–0.25 decades by `m = 8n`) because at the excess-2.4 ridge the edge-carrying products saturate near `2n`; per doubling of `m_eff` the increments are flat at about `0.017 n`, which is what the fixed generator shows directly.
+- **The 75 → 100 rise §35 found on the `m = n` ridge is real and grows with `m / n`.** Two cheap certified cells at 100 were added: the `n/4` ridges land on the `n ≤ 75` law, the `n/2` ridges sit 0.6–1.1 decades above it, and the `m = n` location sits 1.3–1.9 above. Rates per customer over 75 → 100 against 60 → 75: 0.04 → 0.055, 0.07 → 0.10, 0.095 → 0.14.
+
+Also: with each series' height removed, the whole surface at 50–75 collapses in the excess to r² 0.86–0.94 and not at all in `col_mean`; and the finer Bernoulli `2n` grid lifted §25's peaks by up to half a decade.
+
+**Artifacts.** `learning/ridge_height.py`, `tests/test_ridge_height.py` (10 tests), `reports/ml_nature.md` §37, `reports/ridge_height_tables.md`, and under `learning/data/ensemble/` the results, manifest, effective-product table, three run logs and 3,330 witnesses (18 MB added; the directory is 112 MB apparent). 3,380 new instances in 82 cells, 3,378 certified under both configurations. Full suite after the last edit: 1,200 passed, 2 skipped, 1 xfailed. PROGRESS.md has the iteration entry and reads 10/13 solved; the item is ticked in `iterations.md`.
+
+**Caveats recorded in the report.** The fixed `m = 2n` peaks are grid-edge heights as before; the `n/2` ridge cells at 100 have 8–13 of 30 refutations censored at 120 s, all above the median; two `n = 100`, `m = 50` Bernoulli instances left the solve budget uncertified and enter no peak; seconds came from a machine at load 40–45.
+
+# result: success in 5492s, 74 turns, cost $34.77
