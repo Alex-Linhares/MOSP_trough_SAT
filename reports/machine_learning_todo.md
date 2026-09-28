@@ -87,6 +87,18 @@ every claim states its size range.*
 
 ## Literature and bibliography
 
+- [ ] **Settle the novelty of the expansion bound** (`satisfiability/expansion_bound.py`,
+      `reports/expansion_bound.md`): `vs(G) ≥ max_i (i − max{t : f(t) ≤ i})` with
+      `f(t) = min_{|C|=t} |N[C]|`, a vertex-isoperimetric argument over the
+      vertex-separation formulation. It is the only component of `_lower_bound`
+      that passes the treewidth ceiling (§6) and the one candidate for a new
+      bound this project has produced. Check Ellis, Sudborough & Turner (1994),
+      the graph-searching literature's isoperimetric lower bounds, and the
+      Kinnersley citation list (bound and layout papers); nothing outward-facing
+      may claim it until this is done. Likewise record whether the two-key
+      rule's tie-break (most unclosed neighbours) appears anywhere; §29 shows it
+      is not MCNh's.
+
 - [ ] Read the full Möhring (1990) chapter (35 pp., in `literature/` since
       2026-09-27) and record in `literature/MISSING.md` what it settles for
       Table 1's gate matrix layout and PLA folding entries.
