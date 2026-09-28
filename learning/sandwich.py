@@ -12,8 +12,12 @@ is a tree) and the pathwidth branch lemma of Fellows & Langston (1987) /
 Kinnersley (1992) — three disjoint connected branches of pathwidth ≥ k attached
 to one vertex force pathwidth ≥ k + 1 — together with a Lean proof that the
 statement previously carried with `sorry`, which lacked the attachment and
-connectivity hypotheses, was false. One statement stands with `sorry`: item
-09's fitted conjecture, left as a statement on purpose.
+connectivity hypotheses, was false. Since item 13 (2026-09-28) it also proves
+the *separator* form, Lemma A of `reports/ml_nature.md` §38: the cut vertex
+replaced by connectors — connected subsets of a separator `S`, one per pair of
+branches — with the cut-vertex lemma re-derived as the case `S = {v}`. One
+statement stands with `sorry`: item 09's fitted conjecture, left as a statement
+on purpose.
 
 This module answers the two questions a proof about a definition leaves open:
 
@@ -92,6 +96,13 @@ PROVED = (
     "MOSPInstance.treewidth_add_one_le_mospValue",
     "pathwidth_bot_fin4",
     "old_branch_statement_false",
+    # loop0004 item 13: the separator form of the branch lemma (Lemma A of §38).
+    "PathDecomposition.middle_bag_false_linked",
+    "branch_lemma_linked",
+    "branch_lemma_separator",
+    "branch_lemma_separator_treewidth",
+    "induce_singleton_connected",
+    "branch_lemma_of_separator",
 )
 #: Statements committed with `sorry`: item 09's fitted conjecture, kept as a statement.
 STATED = (

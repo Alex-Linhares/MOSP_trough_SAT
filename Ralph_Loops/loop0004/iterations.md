@@ -129,6 +129,6 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       `tests/test_sandwich.py` must pass (move any newly proved name from
       `STATED` to `PROVED` in `learning/sandwich.py`). Blocked with a precise
       gap list is an acceptable deliverable.
-- [ ] 13 · **Reserve.** If any item above is marked `- [!]`, re-open the most
+- [x] 13 · **Reserve.** If any item above is marked `- [!]`, re-open the most
       valuable one with what its blocker taught. If none is blocked, take the
       first "for the next loop" note left by items 01–12 in PROGRESS.md.

@@ -183,6 +183,55 @@ def test_inventory_names_are_declared_in_the_lean_file():
             f"theorem PathDecomposition.{short}" in both, name
     assert "treewidth_le_pathwidth" in sw.PROVED
     assert "branch_lemma" in sw.PROVED
+    assert "branch_lemma_separator" in sw.PROVED
+    assert "branch_lemma_of_separator" in sw.PROVED
     assert sw.STATED == ("conjecture_sqrt_tw_f6",)
     body = text.split("/-! ### Tree decompositions -/", 1)[1]
     assert body.count("\n  sorry") == 1
+
+
+# ---------------------------------------------------------------------------
+# loop0004 item 13: the separator form of the branch lemma (Lemma A of §38)
+# ---------------------------------------------------------------------------
+
+def _branches_through_separator(branch, separator_edge, attach):
+    """Three copies of `branch` (nodes relabelled 10i + j) and a two-vertex separator
+    `{100, 101}`, joined by an edge when `separator_edge` is set; `attach` maps each
+    branch index to the separator vertex its first node is joined to."""
+    g = nx.Graph()
+    g.add_nodes_from([100, 101])
+    if separator_edge:
+        g.add_edge(100, 101)
+    for i in range(3):
+        b = nx.relabel_nodes(branch, {u: 10 * (i + 1) + u for u in branch.nodes()})
+        g = nx.union(g, b)
+        g.add_edge(attach[i], min(b.nodes()))
+    return g
+
+
+def test_separator_branch_lemma_hypotheses_matter_on_hand_instances():
+    """`branch_lemma_separator` (Lemma A): three disjoint connected branches of
+    pathwidth ≥ k, every two joined through a connected subset of a separator `S`
+    disjoint from them, force pathwidth ≥ k + 1 — and the pairwise-link hypothesis
+    is what carries it: with the same `S` as two isolated vertices, one pair
+    unlinked, the pathwidth stays at k."""
+    from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+    edge = nx.path_graph(2)
+    # k = 1, S = {100, 101} an edge (one component of G[S]); branch A hangs from 100,
+    # B and D from 101. Every pair is linked through that component: pathwidth 2.
+    linked = _branches_through_separator(edge, True, {0: 100, 1: 101, 2: 101})
+    assert sw.vertex_separation(linked) == 2
+    # Same attachments, S without its edge: {100} links A with nothing else, {101}
+    # links B with D only, so the pair (A, B) has no connector — pathwidth 1 = k.
+    unlinked = _branches_through_separator(edge, False, {0: 100, 1: 101, 2: 101})
+    assert sw.vertex_separation(unlinked) == 1
+    # Both connectors present but A, B on one and D on the other: (A, D) unlinked,
+    # pathwidth 1 = k again.
+    split = _branches_through_separator(edge, False, {0: 100, 1: 100, 2: 101})
+    assert sw.vertex_separation(split) == 1
+    # k = 2 with triangles (11 vertices, exact DP): linked gives 3, unlinked 2.
+    tri = nx.complete_graph(3)
+    assert compute_pathwidth(_branches_through_separator(tri, True, {0: 100, 1: 101, 2: 101}))[0] == 3
+    assert compute_pathwidth(_branches_through_separator(tri, False, {0: 100, 1: 101, 2: 101}))[0] == 2
+    # The case S = {v} is `branch_lemma` (`branch_lemma_of_separator`): the spider.
+    assert sw.vertex_separation(_spider()) == 2

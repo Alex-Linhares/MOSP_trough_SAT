@@ -1,0 +1,64 @@
+# session it13 started 2026-09-28 05:58:18
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the loop's iterations file, the plan's §1 item 13 text, and grep PROGRESS.md for "next loop" notes to identify what the reserve item should take.
+  > $ cat Ralph_Loops/loop0004/iterations.md && echo ---- && grep -n -i "next loop\|for the next\|\[!\]" Ralph_Loops/loop0004/PROGRESS.md Ralph_Loops/loop0004/iterati
+  > $ grep -n "13\b.*Reserve\|Reserve\|reserve" reports/ml_nature_plan_3.md | head; echo ----; grep -n "^## §3[89]\|^## §38\|^## §39\|^## 3[89]\|^## §4" reports/ml_na
+  > $ sed -n 105,125p reports/ml_nature_plan_3.md; echo ======; sed -n 10210,10262p reports/ml_nature.md; echo ======; sed -n 10415,10449p reports/ml_nature.md; echo 
+  > $ grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^structure\|^section\|^end\|^namespace\|^/-!\|^--.*§\|sorry" lean/MOSPFormalization/Sandwich.lean | head -1
+  > $ sed -n 1,100p lean/MOSPFormalization/Sandwich.lean
+  > $ sed -n 481,520p lean/MOSPFormalization/Sandwich.lean; echo ======; sed -n 616,800p lean/MOSPFormalization/Sandwich.lean
+  > $ cd /home/al/dev/MOSP/lean && grep -rn "theorem induce_singleton\|connected_induce_singleton\|induce_pair_connected_of_adj\|theorem induce_union_connected\|theor
+  > $ cd /home/al/dev/MOSP && grep -n "PROVED\|STATED\|def \|sorry" learning/sandwich.py | head -60; echo ----; sed -n 350,360p lean/.lake/packages/mathlib/Mathlib/Co
+  > $ sed -n 1,105p learning/sandwich.py
+  > $ grep -n "def \|branch\|sorry\|STATED\|PROVED" tests/test_sandwich.py | head -60; echo; sed -n 1,40p tests/test_sandwich.py
+  > $ sed -n 105,190p tests/test_sandwich.py
+  > $ grep -n -i "pairwise\|link\|component.*S\b\|def _sep\|def sep_branch\|def _branch\|third" learning/bound_harness.py | head -40
+  > $ sed -n 246,276p learning/bound_harness.py; echo =====; grep -n "theorem mem_bag_iff_between\|def firstBag\|def lastBag\|theorem bag_card_le_width_add_one\|theor
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+from pathlib import Path
+p = Path("lean/MOSPFormalization/Sandwich.lean")
+text = p.read_text()
+marker = "\nend TreeDec
+
+Everything compiled except the singleton-connectivity helper, which used a wrong Mathlib name. I only need the right lemma name for "the subtype of a subsingleton set is a subsingleton", so one grep.
+  > $ grep -rn "theorem subsingleton_coe\|lemma subsingleton_coe\|instance.*subsingleton_coe\|subsingleton_coe_of\|theorem Set.Subsingleton.coe_sort\|coe_sort" .lake/
+
+The name is right but takes the set explicitly. Fixing the helper with `Set.Subsingleton.coe_sort` and `have`, then rebuilding.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+from pathlib import Path
+p = Path("lean/MOSPFormalization/Sandwich.lean")
+t = p.read_text()
+old = """  haveI : Nonempt
+  > $ cd /home/al/dev/MOSP && grep -n "^def " fixed_parameter_algorithm/pathwidth.py | head; echo ----; sed -n 153,170p learning/sandwich.py; echo ----; sed -n 249,26
+  > $ python3 - <<'EOF'
+from pathlib import Path
+# 1. inventory
+p = Path("learning/sandwich.py"); t = p.read_text()
+old = '''    "pathwidth_bot_fin4",
+    "old_branch
+  > $ (python -m pytest tests/ -q -x > /tmp/it13_pytest.log 2>&1; echo "EXIT $?" >> /tmp/it13_pytest.log) & 
+cd /home/al/dev/MOSP && wc -l lean/MOSPFormalization/Sand
+
+Now the report section. The full suite is running in the background; I'll append §40 to `reports/ml_nature.md` now and write PROGRESS.md once the suite result is in.
+  > $ cat >> reports/ml_nature.md <<'EOF'
+
+## 40. The separator form of the branch lemma in Lean: §38's Lemma A (plan 3 §1 reserve, loop0004 item 13)
+
+*Iteration 13 o
+
+Next I need the suite result, the item mark in iterations.md, and a timestamp; the mark and the timestamp don't depend on the suite, so I'll do them now and check the log in the same call.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0004/iterations.md"); t = p.read_text()
+old = "- [ ] 13 · **Reserve.**"
+assert t.count(old)
+
+The only thing left before PROGRESS.md is the suite's final line, which is still running. I'll load the Monitor tool to wait on the log rather than poll by hand.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^EXIT" /tmp/it13_pytest.log; do sleep 2; done; tail -4 /tmp/it13_pytest.log
+
+The suite is the only outstanding dependency; PROGRESS.md waits on its count and time. Nothing else is pending, so I'm waiting for the completion notification.
+
+# result: success in 569s, 24 turns, cost $4.53

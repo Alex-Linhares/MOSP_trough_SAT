@@ -10638,3 +10638,176 @@ has one deliberate entry and three unattempted generalisations.
 theorems are about the definitions in `lean/`, pinned to the corpus
 implementations by `learning.sandwich`'s brute-force stage (unchanged, still
 agreeing with networkx on every graph on ≤ 5 vertices).
+
+## 40. The separator form of the branch lemma in Lean: §38's Lemma A (plan 3 §1 reserve, loop0004 item 13)
+
+*Iteration 13 of loop0004, 2026-09-28. Code: `lean/MOSPFormalization/Sandwich.lean`
+(the section "The separator form", six declarations after `branch_lemma_treewidth`),
+`learning/sandwich.py` (the inventory, six names added to `PROVED`),
+`tests/test_sandwich.py` (one test added, one extended). Regenerate:*
+
+```bash
+cd lean && lake build                                   # the whole development; Sandwich.lean rebuilds in ~2 s on a warm cache
+python -m learning.sandwich --stage lean                # lake build + #print axioms on every named theorem → reports/sandwich_tables.md
+python -m pytest tests/test_sandwich.py -q              # 10 tests, incl. the axiom check and the hand instances below
+```
+
+*Reads nothing but the Lean sources. Writes `reports/sandwich_tables.md`. No
+data, no solver, no bound, nothing under `solutions/`.*
+
+**Question.** Item 13 is the reserve: no item of this loop is blocked, so it
+takes the first note left for the next loop, which is iteration 12's — the
+separator form of the branch lemma, §38's Lemma A, listed in §39's gap list as
+"not attempted in the session". §38 stated and proved it on paper, in layout
+vocabulary, as the lemma all three bound candidates of item 11 rest on:
+
+> **Lemma A.** Let `S ⊆ V(H)` and let `B₁, B₂, B₃` be three components of
+> `H − S` with `pw(Bᵢ) ≥ k`, such that for every pair `Bᵢ, Bⱼ` some connected
+> component of `H[S]` has a neighbour in both. Then `pw(H) ≥ k + 1`.
+
+The deliverable is the Lean theorem over the repository's definitions, with
+`lake build` passing and the inventory updated, or a precise gap list.
+
+### (a) The statement, and how it reads §38's
+
+`branch_lemma_separator` takes a finset `S` and three finsets `A, B, D`, all
+four pairwise disjoint, each of `A, B, D` inducing a connected subgraph of
+pathwidth `≥ k`, and for each of the three pairs a *connector*: a finset
+`Q ⊆ S` inducing a connected subgraph, with a vertex adjacent to a vertex of
+one branch and a vertex adjacent to a vertex of the other. It concludes
+`k + 1 ≤ pathwidth G`. Two readings differ from §38's wording, neither in
+substance:
+
+- §38's connectors are *components* of `G[S]`; the Lean hypothesis asks for a
+  *connected subset* of `S`. A connected subset lies inside one component,
+  which then has the two neighbours, and a component is a connected subset;
+  the two hypotheses are equivalent, and the subset form is what a user has in
+  hand without invoking Mathlib's `ConnectedComponent` of an induced subgraph.
+  Item 11's `linked_third` (in `learning/bound_harness.py`) checks exactly the
+  component form — two components of `H − S` are linked when the sets of
+  `G[S]`-component ids their neighbourhoods touch intersect — so the theorem
+  covers the rule as computed.
+- §38's branches are components of `H − S`; the Lean branches are any three
+  connected finsets disjoint from `S` and from each other. Components are
+  such finsets, and, as with `branch_lemma` in §39, no hypothesis on edges
+  *between* the branches is needed.
+
+The theorem is proved through a more general one, `branch_lemma_linked`, in
+which the three connectors need not lie in a common `S`: the connector of a
+pair is any connected finset *disjoint from the third branch* and adjacent to
+both members of the pair. It may meet the two branches it joins. `S` then
+plays no role beyond supplying the disjointness from the third branch
+(`Finset.disjoint_of_subset_left`), which is the whole of
+`branch_lemma_separator`'s proof. `branch_lemma_separator_treewidth` is the
+form with `k ≤ treewidth (G.induce ·)` on the branches, through
+`treewidth_le_pathwidth` (§39(b)), the form `sep-branch` computes with its
+exact-treewidth seed.
+
+### (b) The proof, and why it is shorter than the cut-vertex one
+
+`middle_bag_false_linked` replaces §39(c)'s `middle_bag_false`. Fix a path
+decomposition `P` of width `≤ k` (`Nat.sInf_mem` on the pathwidth), and by
+`exists_bag_subset_of_le_pathwidth_induce` (§39(c) step 1, unchanged) each
+branch fills a bag of its own; the three bags are distinct since the branches
+are disjoint and the bags nonempty; by symmetry `iX < iY < iZ` with
+`bag iY ⊆ Y`, and `Q` is the connector of the pair `(X, Z)`, disjoint from `Y`.
+Take the edge joining `Q` to `X`, covered by some bag `c₁`, and the edge
+joining `Q` to `Z`, covered by some bag `c₂`. Then one of three connected sets,
+each disjoint from `Y`, has a vertex in a bag at or before `iY` and one in a
+bag at or after it, and so by `exists_mem_bag_of_connected` (§39(c), unchanged)
+a vertex in `bag iY ⊆ Y`:
+
+| case | the set | its two bags |
+|---|---|---|
+| `iY ≤ c₁` | `X` | `iX ≤ iY` (its full bag) and `c₁ ≥ iY` (its end of the first edge) |
+| `c₁ < iY` and `c₂ ≤ iY` | `Z` | `c₂ ≤ iY` (its end of the second edge) and `iZ ≥ iY` (its full bag) |
+| `c₁ < iY < c₂` | `Q` | `c₁` and `c₂` |
+
+No case on which side of the middle bag the cut vertex sits is needed, because
+there is no cut vertex: the interval property is used only inside
+`exists_mem_bag_of_connected`. The cut-vertex lemma is recovered as
+`branch_lemma_of_separator` with `S = {v}` and every connector `{v}`
+(`induce_singleton_connected`, from Mathlib's `Connected.of_subsingleton`);
+it has the same statement as `branch_lemma` and is a second proof of it. The
+six orders of the three full bags are dispatched as in §39(c), one
+`rcases … <;> first` over the six permutations of `(A, B, D)`, each naming
+the connector of the two outer branches.
+
+### (c) Hand instances
+
+`tests/test_sandwich.py::test_separator_branch_lemma_hypotheses_matter_on_hand_instances`
+checks the hypotheses on the Python side with the brute-force vertex
+separation of `learning.sandwich` (8 vertices) and the exact subset DP
+(11 vertices):
+
+| instance | `S` | links | pathwidth | reading |
+|---|---|---|---|---|
+| three edges, `A` on `s₁`, `B` and `D` on `s₂` | edge `s₁s₂` | all three pairs through `{s₁, s₂}` | **2** = k + 1 | Lemma A |
+| the same, `S` without its edge | `{s₁}`, `{s₂}` | `(B, D)` only | 1 = k | the link hypothesis is necessary |
+| the same, `A`, `B` on `s₁`, `D` on `s₂` | `{s₁}`, `{s₂}` | `(A, B)` only | 1 = k | idem |
+| three triangles, `A` on `s₁`, `B` and `D` on `s₂` | edge `s₁s₂` | all three | **3** = k + 1 | Lemma A at k = 2 |
+| the same, `S` without its edge | `{s₁}`, `{s₂}` | `(B, D)` only | 2 = k | idem |
+| the spider | `{v}` | all three through `{v}` | 2 | `branch_lemma_of_separator` |
+
+### (d) The inventory
+
+| | after item 12 | after item 13 |
+|---|---:|---:|
+| `sorry` in `Sandwich.lean` | 1 (`conjecture_sqrt_tw_f6`, on purpose) | 1 (the same) |
+| `sorry` in the development | 1 | 1 |
+| named theorems in `learning.sandwich.PROVED` | 28 | 34 |
+| named statements in `STATED` | 1 | 1 |
+| lines in `Sandwich.lean` | 906 | 1,099 |
+
+New declarations, all `sorryAx`-free by `#print axioms`
+(`reports/sandwich_tables.md`): `PathDecomposition.middle_bag_false_linked`,
+`branch_lemma_linked`, `branch_lemma_separator`,
+`branch_lemma_separator_treewidth`, `induce_singleton_connected`,
+`branch_lemma_of_separator` — six theorems, no definitions. Axioms used:
+`propext`, `Classical.choice`, `Quot.sound` only. `lake build` passes
+(1,640 jobs).
+
+**Gap list after item 13** (what §39(d) listed, updated):
+
+- `conjecture_sqrt_tw_f6` — a statement by design, unchanged.
+- ~~The separator form, §38's Lemma A~~ — **proved**, in the connected-subset
+  reading of (a), and in the more general linked form.
+- The *component* form of either lemma ("the components of `G − v`", or of
+  `G − S`, of pathwidth `≥ k`") is still not stated as a corollary: it needs
+  Mathlib's `ConnectedComponent` of an induced subgraph read back as a
+  `Finset V` with its connectivity, which `branch_lemma_linked` does not
+  need and item 13 did not attempt. Any user of the rule has the finsets.
+- `pathGraph_isTree`, `pathGraph_induce_interval_connected` and now
+  `induce_singleton_connected` are stated in `Sandwich.lean`, not moved to
+  `ForMathlib/`.
+
+### The finding, in one paragraph
+
+Lemma A is a theorem of the development: `branch_lemma_separator` states
+§38's separator form of the pathwidth branch rule over the repository's
+path-decomposition definitions and proves it `sorry`-free, so all three of
+item 11's candidates — `cut-branch`, `sep-branch` and `contract-branch`, the
+last through minor monotonicity, which is not formalised — now rest on a
+checked lemma rather than a paper proof for their branching step. The
+substantive observation is that the separator is a distraction: the lemma
+that carries the argument, `branch_lemma_linked`, asks only that each pair
+of branches be joined by a connected set disjoint from the third, and its
+middle-bag step is shorter than the cut-vertex one in §39 because it needs
+no case on where the cut vertex lies. The cut-vertex lemma falls out as
+`S = {v}`. Nothing in §38's measurements changes: `linked_third` checks the
+component reading, which (a) shows equivalent to the hypothesis proved.
+
+**Size range covered.** Theorems: every finite simple graph. Kernel-checked
+instances: none new (the theorems are general; the Python cross-checks stand
+in). Python cross-checks of the hypotheses: graphs on 8 and 11 vertices, by
+brute-force vertex separation and the exact subset DP. No corpus measurement
+was needed or made.
+
+**Kill criterion.** The plan states none for the reserve. The item's own
+completion condition — the first "for the next loop" note of items 01–12,
+done or precisely blocked — is met: done.
+
+**Not a bound, not a solver change.** Nothing here reaches the solver or
+`_lower_bound`; the theorems are about the definitions in `lean/`, and the
+Python `sep-branch` candidate remains a study-only function of
+`learning.bound_harness`.

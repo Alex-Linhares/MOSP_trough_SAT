@@ -46,7 +46,7 @@ connects them through Kinnersley's theorem (`VSEquivPW`).
   the rest by induction on the number of vertices, and put the deleted vertex
   first.
 
-## Tree decompositions (loop0004 item 12, 2026-09-28)
+## Tree decompositions (loop0004 items 12 and 13, 2026-09-28)
 
 * `TreeDecomposition`, `treewidth` — a tree on a finite index type with bags,
   covering vertices and edges, the bags containing any vertex inducing a
@@ -72,6 +72,17 @@ connects them through Kinnersley's theorem (`VSEquivPW`).
   side and to its own bag on the far side, so being connected it crosses the
   middle bag (`exists_mem_bag_of_connected`, `middle_bag_false`). No hypothesis
   on edges *between* the branches is needed.
+* `branch_lemma_separator` — **Lemma A** of `reports/ml_nature.md` §38 (loop0004
+  item 13, 2026-09-28), the separator form: the cut vertex is replaced by a set `S`
+  disjoint from the branches such that every two branches are joined through a
+  connected subset of `S` (a component of `G[S]`, in §38's words). Proved through
+  `branch_lemma_linked`, where each pair of branches has its own connector, any
+  connected set disjoint from the third branch and adjacent to both; the middle-bag
+  step (`middle_bag_false_linked`) needs no case on which side the cut vertex sits,
+  since one of the two outer branches or the connector must cross the middle bag.
+  `branch_lemma_of_separator` re-derives `branch_lemma` as the case `S = {v}`;
+  `branch_lemma_separator_treewidth` is the treewidth-seeded form item 11's
+  `sep-branch` candidate computes.
 * `old_branch_statement_false` — the statement this file carried with `sorry`
   until 2026-09-28 asked only that the branches be pairwise non-adjacent,
   neither connected nor attached to `v`, and **was false**: four isolated
@@ -779,6 +790,188 @@ theorem branch_lemma_treewidth (v : V) (A B D : Finset V) (k : ℕ)
     (hA.trans (treewidth_le_pathwidth (G := G.induce (↑A : Set V))))
     (hB.trans (treewidth_le_pathwidth (G := G.induce (↑B : Set V))))
     (hD.trans (treewidth_le_pathwidth (G := G.induce (↑D : Set V))))
+
+/-! #### The separator form: Lemma A of `reports/ml_nature.md` §38 (loop0004 item 13)
+
+The cut vertex `v` of `branch_lemma` is replaced by a *connector* for each pair of
+branches: a connected vertex set `Q`, disjoint from the third branch, adjacent to both.
+In Lemma A the connectors are connected components of the subgraph induced on a
+separator `S` disjoint from the three branches, which is the special case
+`branch_lemma_separator`; `branch_lemma` itself is the case `S = {v}`
+(`branch_lemma_of_separator`). The proof is shorter than the cut-vertex one: with the
+three full bags in the order `iX < iY < iZ`, the bag of the edge joining `Q` to `X`
+and the bag of the edge joining `Q` to `Z` lie on some sides of `iY`, and whichever
+they are, one of `X`, `Z`, `Q` — all connected, all disjoint from `Y` — has a vertex
+in a bag before `iY` and one in a bag after it, so it meets `bag iY ⊆ Y`. -/
+
+/-- The middle bag, linked form. Three bags `iX < iY < iZ`, the middle one inside `Y`,
+the outer two meeting `X` and `Z`; a connected `Q` disjoint from `Y` is adjacent to both
+`X` and `Z`, which are connected and disjoint from `Y`. Then one of `X`, `Z`, `Q` crosses
+bag `iY` — impossible. -/
+theorem PathDecomposition.middle_bag_false_linked (P : PathDecomposition G)
+    (X Y Z Q : Finset V) (hXY : Disjoint X Y) (hYZ : Disjoint Y Z) (hQY : Disjoint Q Y)
+    (hconnX : (G.induce (↑X : Set V)).Connected) (hconnZ : (G.induce (↑Z : Set V)).Connected)
+    (hconnQ : (G.induce (↑Q : Set V)).Connected)
+    (hadjX : ∃ q ∈ Q, ∃ x ∈ X, G.Adj q x) (hadjZ : ∃ q ∈ Q, ∃ z ∈ Z, G.Adj q z)
+    {iX iY iZ : Fin (P.length + 1)} (h1 : iX < iY) (h2 : iY < iZ)
+    (hX : ∃ x ∈ X, x ∈ P.bag iX) (hY : P.bag iY ⊆ Y) (hZ : ∃ z ∈ Z, z ∈ P.bag iZ) : False := by
+  obtain ⟨q₁, hq₁Q, x₁, hx₁X, hqx⟩ := hadjX
+  obtain ⟨q₂, hq₂Q, z₁, hz₁Z, hqz⟩ := hadjZ
+  obtain ⟨c₁, hq₁c, hx₁c⟩ := P.edge_coverage q₁ x₁ hqx
+  obtain ⟨c₂, hq₂c, hz₁c⟩ := P.edge_coverage q₂ z₁ hqz
+  obtain ⟨x', hx'X, hx'⟩ := hX
+  obtain ⟨z', hz'Z, hz'⟩ := hZ
+  rcases le_or_gt iY c₁ with hc₁ | hc₁
+  · -- `X` has a vertex in bag `iX ≤ iY` and one in bag `c₁ ≥ iY`.
+    obtain ⟨w, hwX, hw⟩ :=
+      P.exists_mem_bag_of_connected X hconnX hx'X hx₁X hx' hx₁c h1.le hc₁
+    exact Finset.disjoint_left.mp hXY hwX (hY hw)
+  · rcases le_or_gt c₂ iY with hc₂ | hc₂
+    · -- `Z` has a vertex in bag `c₂ ≤ iY` and one in bag `iZ ≥ iY`.
+      obtain ⟨w, hwZ, hw⟩ :=
+        P.exists_mem_bag_of_connected Z hconnZ hz₁Z hz'Z hz₁c hz' hc₂ h2.le
+      exact Finset.disjoint_left.mp hYZ (hY hw) hwZ
+    · -- `Q` has a vertex in bag `c₁ < iY` and one in bag `c₂ > iY`.
+      obtain ⟨w, hwQ, hw⟩ :=
+        P.exists_mem_bag_of_connected Q hconnQ hq₁Q hq₂Q hq₁c hq₂c hc₁.le hc₂.le
+      exact Finset.disjoint_left.mp hQY hwQ (hY hw)
+
+/-- **The branch lemma, linked form.** Three pairwise disjoint, connected vertex sets of
+pathwidth at least `k`, every two of them joined by a connected set disjoint from the
+third (a *connector*), force pathwidth at least `k + 1`. The connectors may meet the two
+branches they join, and no hypothesis on edges between the branches is needed.
+Nonemptiness of each branch comes from its connectors' adjacency. -/
+theorem branch_lemma_linked (A B D : Finset V) (k : ℕ)
+    (hAB : Disjoint A B) (hAD : Disjoint A D) (hBD : Disjoint B D)
+    (hconnA : (G.induce (↑A : Set V)).Connected) (hconnB : (G.induce (↑B : Set V)).Connected)
+    (hconnD : (G.induce (↑D : Set V)).Connected)
+    (hA : k ≤ pathwidth (G.induce (↑A : Set V))) (hB : k ≤ pathwidth (G.induce (↑B : Set V)))
+    (hD : k ≤ pathwidth (G.induce (↑D : Set V)))
+    (hQAB : ∃ Q : Finset V, Disjoint Q D ∧ (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b))
+    (hQAD : ∃ Q : Finset V, Disjoint Q B ∧ (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d))
+    (hQBD : ∃ Q : Finset V, Disjoint Q A ∧ (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d)) :
+    k + 1 ≤ pathwidth G := by
+  obtain ⟨QAB, hQABD, hcAB, haAB, hbAB⟩ := hQAB
+  obtain ⟨QAD, hQADB, hcAD, haAD, hdAD⟩ := hQAD
+  obtain ⟨QBD, hQBDA, hcBD, hbBD, hdBD⟩ := hQBD
+  have hne : (Set.range (fun P : PathDecomposition G => P.width)).Nonempty :=
+    ⟨_, PathDecomposition.trivial G, rfl⟩
+  obtain ⟨P, hP⟩ := Nat.sInf_mem hne
+  change P.width = pathwidth G at hP
+  rw [← hP]
+  by_contra hcon
+  have hw : P.width ≤ k := by omega
+  obtain ⟨iA, hiA, hneA⟩ := P.exists_bag_subset_of_le_pathwidth_induce A
+    (by obtain ⟨-, -, a, ha, -⟩ := haAB; exact ⟨a, ha⟩) k hA hw
+  obtain ⟨iB, hiB, hneB⟩ := P.exists_bag_subset_of_le_pathwidth_induce B
+    (by obtain ⟨-, -, b, hb, -⟩ := hbAB; exact ⟨b, hb⟩) k hB hw
+  obtain ⟨iD, hiD, hneD⟩ := P.exists_bag_subset_of_le_pathwidth_induce D
+    (by obtain ⟨-, -, d, hd, -⟩ := hdAD; exact ⟨d, hd⟩) k hD hw
+  have hA' : ∃ a ∈ A, a ∈ P.bag iA := by obtain ⟨a, ha⟩ := hneA; exact ⟨a, hiA ha, ha⟩
+  have hB' : ∃ b ∈ B, b ∈ P.bag iB := by obtain ⟨b, hb⟩ := hneB; exact ⟨b, hiB hb, hb⟩
+  have hD' : ∃ d ∈ D, d ∈ P.bag iD := by obtain ⟨d, hd⟩ := hneD; exact ⟨d, hiD hd, hd⟩
+  have nAB : iA ≠ iB := fun h => by
+    subst h; obtain ⟨x, hx⟩ := hneA; exact Finset.disjoint_left.mp hAB (hiA hx) (hiB hx)
+  have nAD : iA ≠ iD := fun h => by
+    subst h; obtain ⟨x, hx⟩ := hneA; exact Finset.disjoint_left.mp hAD (hiA hx) (hiD hx)
+  have nBD : iB ≠ iD := fun h => by
+    subst h; obtain ⟨x, hx⟩ := hneB; exact Finset.disjoint_left.mp hBD (hiB hx) (hiD hx)
+  rcases lt_or_gt_of_ne nAB with hab | hab <;> rcases lt_or_gt_of_ne nAD with had | had <;>
+    rcases lt_or_gt_of_ne nBD with hbd | hbd <;>
+    first
+    | exact P.middle_bag_false_linked A B D QAD hAB hBD hQADB hconnA hconnD hcAD
+        haAD hdAD hab hbd hA' hiB hD'
+    | exact P.middle_bag_false_linked A D B QAB hAD hBD.symm hQABD hconnA hconnB hcAB
+        haAB hbAB had hbd hA' hiD hB'
+    | exact P.middle_bag_false_linked D A B QBD hAD.symm hAB hQBDA hconnD hconnB hcBD
+        hdBD hbBD had hab hD' hiA hB'
+    | exact P.middle_bag_false_linked B A D QBD hAB.symm hAD hQBDA hconnB hconnD hcBD
+        hbBD hdBD hab had hB' hiA hD'
+    | exact P.middle_bag_false_linked B D A QAB hBD hAD.symm hQABD hconnB hconnA hcAB
+        hbAB haAB hbd had hB' hiD hA'
+    | exact P.middle_bag_false_linked D B A QAD hBD.symm hAB.symm hQADB hconnD hconnA hcAD
+        hdAD haAD hbd hab hD' hiB hA'
+
+/-- **Lemma A** (`reports/ml_nature.md` §38, the separator form of Fellows & Langston
+1987 Lemma 4.3). Let `S` be disjoint from three pairwise disjoint, connected vertex sets
+`A`, `B`, `D` of pathwidth at least `k`, such that every two of them are joined through
+`S`: some connected `Q ⊆ S` is adjacent to both. Then `pathwidth G ≥ k + 1`. In §38 the
+`Q` are connected components of the subgraph induced on `S`; a connected subset of `S`
+lies in one component, which then touches both branches, so the two readings agree. -/
+theorem branch_lemma_separator (S A B D : Finset V) (k : ℕ)
+    (hSA : Disjoint S A) (hSB : Disjoint S B) (hSD : Disjoint S D)
+    (hAB : Disjoint A B) (hAD : Disjoint A D) (hBD : Disjoint B D)
+    (hconnA : (G.induce (↑A : Set V)).Connected) (hconnB : (G.induce (↑B : Set V)).Connected)
+    (hconnD : (G.induce (↑D : Set V)).Connected)
+    (hA : k ≤ pathwidth (G.induce (↑A : Set V))) (hB : k ≤ pathwidth (G.induce (↑B : Set V)))
+    (hD : k ≤ pathwidth (G.induce (↑D : Set V)))
+    (hlinkAB : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b))
+    (hlinkAD : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d))
+    (hlinkBD : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d)) :
+    k + 1 ≤ pathwidth G := by
+  obtain ⟨QAB, hQABS, hcAB, haAB, hbAB⟩ := hlinkAB
+  obtain ⟨QAD, hQADS, hcAD, haAD, hdAD⟩ := hlinkAD
+  obtain ⟨QBD, hQBDS, hcBD, hbBD, hdBD⟩ := hlinkBD
+  exact branch_lemma_linked A B D k hAB hAD hBD hconnA hconnB hconnD hA hB hD
+    ⟨QAB, Finset.disjoint_of_subset_left hQABS hSD, hcAB, haAB, hbAB⟩
+    ⟨QAD, Finset.disjoint_of_subset_left hQADS hSB, hcAD, haAD, hdAD⟩
+    ⟨QBD, Finset.disjoint_of_subset_left hQBDS hSA, hcBD, hbBD, hdBD⟩
+
+/-- Lemma A with the branches' treewidth in place of their pathwidth. -/
+theorem branch_lemma_separator_treewidth (S A B D : Finset V) (k : ℕ)
+    (hSA : Disjoint S A) (hSB : Disjoint S B) (hSD : Disjoint S D)
+    (hAB : Disjoint A B) (hAD : Disjoint A D) (hBD : Disjoint B D)
+    (hconnA : (G.induce (↑A : Set V)).Connected) (hconnB : (G.induce (↑B : Set V)).Connected)
+    (hconnD : (G.induce (↑D : Set V)).Connected)
+    (hA : k ≤ treewidth (G.induce (↑A : Set V))) (hB : k ≤ treewidth (G.induce (↑B : Set V)))
+    (hD : k ≤ treewidth (G.induce (↑D : Set V)))
+    (hlinkAB : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b))
+    (hlinkAD : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ a ∈ A, G.Adj q a) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d))
+    (hlinkBD : ∃ Q ⊆ S, (G.induce (↑Q : Set V)).Connected ∧
+      (∃ q ∈ Q, ∃ b ∈ B, G.Adj q b) ∧ (∃ q ∈ Q, ∃ d ∈ D, G.Adj q d)) :
+    k + 1 ≤ pathwidth G :=
+  branch_lemma_separator S A B D k hSA hSB hSD hAB hAD hBD hconnA hconnB hconnD
+    (hA.trans (treewidth_le_pathwidth (G := G.induce (↑A : Set V))))
+    (hB.trans (treewidth_le_pathwidth (G := G.induce (↑B : Set V))))
+    (hD.trans (treewidth_le_pathwidth (G := G.induce (↑D : Set V))))
+    hlinkAB hlinkAD hlinkBD
+
+/-- The subgraph induced on a single vertex is connected. -/
+theorem induce_singleton_connected (v : V) :
+    (G.induce (↑({v} : Finset V) : Set V)).Connected := by
+  rw [Finset.coe_singleton]
+  have : Nonempty (({v} : Set V)) := ⟨⟨v, Set.mem_singleton v⟩⟩
+  have : Subsingleton (({v} : Set V)) := Set.subsingleton_singleton.coe_sort
+  exact Connected.of_subsingleton
+
+/-- `branch_lemma` is the case `S = {v}` of Lemma A: the connector of every pair is `{v}`
+itself. Same statement as `branch_lemma`, second proof. -/
+theorem branch_lemma_of_separator (v : V) (A B D : Finset V) (k : ℕ)
+    (hvA : v ∉ A) (hvB : v ∉ B) (hvD : v ∉ D)
+    (hAB : Disjoint A B) (hAD : Disjoint A D) (hBD : Disjoint B D)
+    (hconnA : (G.induce (↑A : Set V)).Connected) (hconnB : (G.induce (↑B : Set V)).Connected)
+    (hconnD : (G.induce (↑D : Set V)).Connected)
+    (hadjA : ∃ a ∈ A, G.Adj v a) (hadjB : ∃ b ∈ B, G.Adj v b) (hadjD : ∃ d ∈ D, G.Adj v d)
+    (hA : k ≤ pathwidth (G.induce (↑A : Set V))) (hB : k ≤ pathwidth (G.induce (↑B : Set V)))
+    (hD : k ≤ pathwidth (G.induce (↑D : Set V))) :
+    k + 1 ≤ pathwidth G :=
+  branch_lemma_separator {v} A B D k
+    (Finset.disjoint_singleton_left.mpr hvA) (Finset.disjoint_singleton_left.mpr hvB)
+    (Finset.disjoint_singleton_left.mpr hvD) hAB hAD hBD hconnA hconnB hconnD hA hB hD
+    ⟨{v}, Finset.Subset.refl _, induce_singleton_connected v,
+      ⟨v, Finset.mem_singleton_self v, hadjA⟩, ⟨v, Finset.mem_singleton_self v, hadjB⟩⟩
+    ⟨{v}, Finset.Subset.refl _, induce_singleton_connected v,
+      ⟨v, Finset.mem_singleton_self v, hadjA⟩, ⟨v, Finset.mem_singleton_self v, hadjD⟩⟩
+    ⟨{v}, Finset.Subset.refl _, induce_singleton_connected v,
+      ⟨v, Finset.mem_singleton_self v, hadjB⟩, ⟨v, Finset.mem_singleton_self v, hadjD⟩⟩
 
 end TreeDecompositions
 
