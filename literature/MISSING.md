@@ -136,3 +136,42 @@ pages, and the Wayback Machine where an author page is dead.
 ## Server issues
 
 - **Lopes, I.C. & De Carvalho, J.M.V.** (2015). Graph properties of minimization of open stacks problems and a new integer programming model. *Pesquisa Operacional*, 35(2), 213-250. DOI: 10.1590/0101-7438.2015.035.02.0213 — SciELO open access, but server returned 502/504 errors. Retry later.
+
+## Random bipartite graphs, cores and random intersection graphs (item 09 of loop0004, 2026-09-28)
+
+None of these is held; `reports/ml_nature.md` §36 cites them from memory for
+the thresholds it computes itself in the configuration model, and every
+citation there should be checked against the paper before it is quoted
+outside this repository.
+
+- Pittel, Spencer & Wormald (1996), "Sudden emergence of a giant k-core in a
+  random graph", *J. Combin. Theory B* 67 — the k-core threshold of G(n, p).
+- Molloy (2005), "Cores in random hypergraphs and Boolean formulas", *Random
+  Structures & Algorithms* 27.
+- Fernholz & Ramachandran (2007), "The k-core and branching processes",
+  *Combin. Probab. Comput.* 16; Riordan (2008), "The k-core and branching
+  processes", *Combin. Probab. Comput.* 17 — cores for general degree sequences,
+  the peeling fixed point used in `learning/cover_excess.py`.
+- Luby, Mitzenmacher, Shokrollahi & Spielman (2001), "Efficient erasure
+  correcting codes", *IEEE Trans. Inform. Theory* 47 — the 2-core (stopping
+  set) of a bipartite factor graph with given degree distributions.
+- Dubois & Mandler (2002), "The 3-XORSAT threshold", *FOCS*; Mézard,
+  Ricci-Tersenghi & Zecchina (2003), "Two solutions to diluted p-spin models
+  and XORSAT problems", *J. Stat. Phys.* 111 — a threshold set by the 2-core of
+  the factor graph having as many constraints as variables.
+- Karoński, Scheinerman & Singer-Cohen (1999), "On random intersection
+  graphs: the subgraph problem", *Combin. Probab. Comput.* 8; Fill, Scheinerman
+  & Singer-Cohen (2000), *Random Structures & Algorithms* 16 — G(n, m, p) and
+  its equivalence to G(n, p̂) only for m ≫ n⁶.
+- Behrisch (2007), "Component evolution in random intersection graphs",
+  *Electron. J. Combin.* 14; Lagerås & Lindholm (2008), "A note on the
+  component structure in random intersection graphs with tunable
+  clustering", *Electron. J. Combin.* 15 — the giant component at m = Θ(n).
+- Stark (2004), "The vertex degree distribution of random intersection
+  graphs", *Random Structures & Algorithms* 24; Deijfen & Kets (2009),
+  *Probab. Engrg. Inform. Sci.* 23 — compound-Poisson degrees at m = Θ(n).
+- Rybarczyk (2011), "Diameter, connectivity and phase transition of the
+  uniform random intersection graph", *Discrete Math.* 311 — connectivity.
+- Schmidt-Pruzan & Shamir (1985), *Combinatorica* 5; Karoński & Łuczak (2002),
+  *J. Comput. Appl. Math.* 142 — the giant component of random hypergraphs
+  (already cited in §25).

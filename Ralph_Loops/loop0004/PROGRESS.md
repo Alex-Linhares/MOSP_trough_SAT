@@ -3,7 +3,7 @@
 ## Ralph Loop 0004 Status
 - **Started**: 2026-09-27
 - **Target**: 13 items
-- **Current**: 8/13 SOLVED
+- **Current**: 9/13 SOLVED
 
 ---
 
@@ -596,3 +596,77 @@
   / k-core thresholds and the random-intersection-graph literature; a
   derivation of where the ridge should sit per `m / n`, tested against §25's
   measured peaks.
+
+## Iteration 9 — 2026-09-28 02:05
+
+### Completed
+- **Item 09 · Q3a, why cover excess two — SOLVED (as the statement the item
+  allows: none of the candidate thresholds coincides with the ridge, with the
+  numbers, plus the mechanism the ridge is a transition of).**
+  `reports/ml_nature.md` §36; tables `reports/cover_excess_tables.md`; data
+  `learning/data/ensemble/cover_excess_measures.csv` (9,497 rows: peeled
+  2-/(3,2)-/(2,3)-/(3,3)-cores and the dominance-reduced instance for every
+  certified instance at n ∈ {50, 60, 75}), `cover_excess_states.csv` (6,840
+  rows at n = 20, 25: exact boundary-feasible, fitting and reachable closed-set
+  counts at optimum − 1), three run logs. `literature/MISSING.md` gained the
+  list of random-graph / core / random-intersection-graph papers cited from
+  memory in §36, none held.
+- `learning/cover_excess.py`: the incidence graph as a two-type configuration
+  model with the generators' degree distributions and the empty-row repair;
+  the (k_C, k_P)-core peeling fixed point, core sizes and cyclomatic numbers,
+  emergence thresholds by bisection, scan-then-bisect inversion; peeling and
+  dominance reduction on instances; §25's peaks with the new candidates
+  (natural-value scoring, constancy, calibrated predictions); exact subset-DP
+  counts of feasible / fitting / reachable closed sets (n ≤ 25) with the
+  random-model prediction of the feasible count. Analytic cores check against
+  peeled cores to 0.002 (2-core share) at m ≥ n; 0.03–0.15 high at m ≤ n/4.
+- Result over the 25 measured peaks (n = 50–75, m/n ∈ {2, 1, ½, ¼, ⅛}, both
+  generators): giant / 2-core emergence 0.34–0.78 decades below the ridge,
+  further below the fewer the products; (3,2)- and (2,3)-core emergence
+  0.11–0.45 below with the same drift; (3,3)-core crosses the ridge (+0.08 at
+  2n, −0.25 at n/8); XORSAT-style "2-core cyclomatic = core customers"
+  0.06–0.37 below; connectivity moves with n. Excess 2 at its natural value:
+  mean 0.039, max 0.084, flat residual −0.07…+0.01 across ratios; its
+  tree-free form "2-core cyclomatic number = n" 0.047. Calibrated at m = n,
+  the excess (2.40), the 2-core's cyclomatic number per core customer (1.68 /
+  1.73, i.e. core excess ≈ 2.7) and the dominance-reduced excess (2.66) all
+  score 0.035–0.052 — one condition read on three subsets of the cover, not
+  separable at the grid's 0.05-decade resolution. Constancy: 2-core excess CV
+  0.101 (range 2.11–3.14) vs excess 0.127.
+- Mechanism (n = 20, 25; 6,840 instances): the number of closed sets whose
+  boundary fits optimum − 1 is monotone in density (saturates at 2^n),
+  predicted by the random model to 0.0002 decades, and anticorrelated with the
+  nodes (Spearman −0.87); the number of sets *reachable* from ∅ through fitting
+  steps equals the default node count to 0.03 (fixed) / 0.06 (Bernoulli)
+  decades at the median on connected instances (nodes ≤ reachable on 99.1%;
+  Spearman 0.99 / 0.97) and peaks where the nodes peak in all 8
+  connected-instance series. The ridge is a percolation statement about the
+  subset lattice under the boundary cost, not about the incidence graph, which
+  is why no incidence-graph threshold locates it.
+- Tests: `tests/test_cover_excess.py` (12) — degree pmfs and repair, size
+  biasing, 2-core at the giant threshold, core order (2,2) < (3,2) < (3,3),
+  regular bipartite fixed point, peeling and cyclomatic numbers by hand,
+  components, dominance reduction, four-cycle measures, inversion and
+  connectivity, planted excess-2 ridge scored exactly, reachable/fitting
+  counts against brute force on the 4-cycle. Full suite, re-run after the
+  last code edit: 1,190 passed, 2 skipped, 1 xfailed in 343 s (loaded
+  machine). `solutions/` untouched (git status clean there); recertify
+  (9 workers) untouched.
+
+### Blockers
+- None. The item's alternative deliverable was taken: no threshold coincides.
+  Two compute notes: the exact reachable-set DP at n = 25 costs 13 s per
+  instance at load 35, so n = 25 is 40 per cell; the `tables` stage is 4.5
+  min because the core inversions scan 100 points before bisecting. One lost
+  run: a section appended after the `if __name__ == "__main__"` block left
+  `STATES_CSV` undefined when the module ran as a script.
+- Literature: none of the random-graph papers cited in §36 is held; the
+  fixed-point method is standard and is checked against peeled cores here,
+  but every citation should be verified before quoting (listed in
+  `literature/MISSING.md`).
+
+### Next
+- Item 10 · Q3b: is the ridge's *height* a function of the same quantity —
+  fit peak median nodes against (n, excess, m/n) across all series; §36's
+  `cover_excess_measures.csv` has the 2-core and reduced-instance sizes per
+  instance if the height wants the core's size rather than n.

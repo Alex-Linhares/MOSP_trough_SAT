@@ -85,7 +85,7 @@ Plan sections refer to `reports/ml_nature_plan_3.md`; earlier findings to
       saturates, and what the day-long classes cost under each reading.
       Deliverable: the revised law and its band, and a sentence on what it
       means for re-certifying the withdrawn instances.
-- [ ] 09 · Q3a **Why cover excess two.** Analysis: the cover excess
+- [x] 09 · Q3a **Why cover excess two.** Analysis: the cover excess
       `(n_ones − m) / n` as a quantity of the random bipartite incidence graph
       (cyclomatic number `n_ones − n − m + c`, so excess 2 is one independent
       cycle per customer); the 2-core and k-core thresholds of random

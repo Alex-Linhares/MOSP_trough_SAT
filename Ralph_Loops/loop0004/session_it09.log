@@ -1,0 +1,207 @@
+# session it09 started 2026-09-28 00:52:33
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, §25 of the report, and the ridge-theory module, then design the analysis for item 09.
+  > $ date && pgrep -af "benchmarks.recertify" | grep -v pgrep | head; nproc; uptime; sed -n 1,80p reports/ml_nature_plan_3.md
+  > $ sed -n 80,200p reports/ml_nature_plan_3.md
+  > $ grep -n "^## " reports/ml_nature.md | sed -n 20,45p; grep -n "^## §25\|^## 25\|§25" reports/ml_nature.md | head -5
+  > $ sed -n 6621,6910p reports/ml_nature.md
+  > $ sed -n 1,120p learning/ridge_theory.py && grep -n "^def \|^    def " learning/ridge_theory.py | head -80 && wc -l learning/ridge_theory.py
+  > $ sed -n 145,300p learning/ridge_theory.py && sed -n 323,410p learning/ridge_theory.py
+
+Reading the existing peak machinery done; now checking the data columns, the generator, and the report tables so I can reuse the measured peaks rather than recompute them.
+  > $ head -c 1500 learning/data/ensemble/results_ratio.csv; echo; echo ---; ls learning/data/ensemble/ | head -50; echo ---; grep -n "^def generate\|^class Cell\|^de
+  > $ sed -n 115,200p learning/ensemble.py; echo ---; sed -n 1,60p reports/ridge_theory_tables.md | cut -c1-300; echo ---; grep -n "sparse_enough\|def decide\b\|def d
+  > $ sed -n 297,322p learning/ridge_theory.py && sed -n 404,500p learning/ridge_theory.py && grep -n "def generate_structured_instance" -A 40 benchmarks/generator.py
+  > $ grep -n "def generate_random_instance" -A 45 benchmarks/generator.py | grep -n "zero\|sum() == 0\|rng\.\|return" | head; grep -n "^def prepare" -A 30 learning/u
+
+Now writing the module `learning/cover_excess.py`: the configuration-model core theory, the per-instance peeling and dominance measurements, and the tables.
+  > Write /home/al/dev/MOSP/learning/cover_excess.py
+
+Quick sanity checks on the analytics and the peeler before the full measurement run.
+  > $ timeout 600 python - <<'EOF'
+import numpy as np, time
+from learning.cover_excess import *
+t=time.time()
+for gen in ("fixed","bernoulli"):
+    for lab,r in RATIO
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/fc55776d-aad8-4235-9edb-d738e789a7b2/tasks/b6jn8tb5l.output; pkill -f "^python -$" ; sleep 1; pgrep -af "^python -$" | he
+  > $ python - <<'EOF'
+import re
+p="learning/cover_excess.py"; s=open(p).read()
+s=s.replace('''    rho = r * c
+    k = np.arange(max_deg + 1)
+    p_c = poisson.pmf(k,
+  > $ nohup python -m learning.cover_excess --stage measure --workers 16 > learning/data/ensemble/cover_excess_measure.log 2>&1 &
+echo started $!; sleep 45; cat learn
+  > $ nohup python -m learning.cover_excess --stage tables > learning/data/ensemble/cover_excess_tables.log 2>&1 &
+echo started $!
+
+Tables are building; meanwhile I'll write the tests for the module.
+  > Write /home/al/dev/MOSP/tests/test_cover_excess.py
+  > $ timeout 900 python -m pytest tests/test_cover_excess.py -q -x 2>&1 | tail -15; echo ---; cat learning/data/ensemble/cover_excess_tables.log; pgrep -af "cover_ex
+  > $ python - <<'EOF'
+p="tests/test_cover_excess.py"; s=open(p).read()
+s=s.replace("""    assert (np.arange(len(p_p)) * p_p).sum() > 3.0                   # and the 
+  > $ timeout 900 python -m pytest tests/test_cover_excess.py -q -x 2>&1 | grep -B 12 "AssertionError" | head -30; echo ---; cat learning/data/ensemble/cover_excess_t
+  > $ sed -i 's|    assert rec\["c_cyc_n"\] == pytest.approx((8 - 4 - 4 + 1) / 4)|    assert rec["c_cyc_n"] == pytest.approx((9 - 4 - 4 + 1) / 4)          # nine ones
+  > $ python -c "
+import numpy as np
+from learning.cover_excess import dominance_record
+print(dominance_record(np.array([[1,1,1],[1,1,0],[0,0,1]])))" && python - <<'E
+
+All 11 tests pass. The tables stage is still running in the background; I'll poll it in a bounded loop and read the results once written.
+  > $ for i in $(seq 1 20); do if [ -s reports/cover_excess_tables.md ] && ! pgrep -f "cover_excess --stage tables" >/dev/null; then break; fi; sleep 15; done; date; 
+  > $ timeout 300 python - <<'EOF'
+import time, numpy as np, pandas as pd
+from learning.cover_excess import *
+row = pd.DataFrame([{"generator":"fixed","ratio_label":"
+  > $ kill 2629259; sleep 1; python - <<'EOF'
+p="learning/cover_excess.py"; s=open(p).read()
+s=s.replace('''                "2-core excess 2": invert_analytic(
+      
+  > $ python -c "import numpy as np; print(np.__version__, hasattr(np,'bitwise_count'))"; python - <<'EOF'
+import pandas as pd
+f=pd.read_csv("learning/data/ensemble/r
+  > $ free -g | head -2; cat >> learning/cover_excess.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# (d) a mechanism: t
+  > $ nohup python -c "from learning.cover_excess import measure_states; measure_states(workers=8)" > learning/data/ensemble/cover_excess_states.log 2>&1 &
+echo state
+
+Tables are written and the state counts are finishing. Reading the key summary tables now.
+  > $ awk '/^## Analytic thresholds/,/^## Every threshold at its natural value, per series/' reports/cover_excess_tables.md | cut -c1-400
+  > $ awk '/^## Analytic cores against peeled cores/,/^## The new quantities/' reports/cover_excess_tables.md | python -c "
+import sys,pandas as pd,io
+txt=sys.stdin.r
+  > $ awk '/^## Constancy across/,/^## Calibrated at m = n, predicted at the other ratios: the new candidates, summary/' reports/cover_excess_tables.md | cut -c1-260 
+  > $ tail -2 learning/data/ensemble/cover_excess_states.log && python - <<'EOF'
+p="learning/cover_excess.py"; s=open(p).read()
+old_start = s.index("def invert_analyt
+  > $ timeout 900 python - <<'EOF'
+import pandas as pd, numpy as np, time
+from learning.cover_excess import *
+t=time.time()
+measures = pd.read_csv(MEASURES_CSV).drop_
+  > $ tail -1 learning/data/ensemble/cover_excess_states.log; python - <<'EOF'
+p="learning/cover_excess.py"; s=open(p).read()
+# 1. reachable states after feasible_sta
+
+Waiting for the first state-count run to finish, then relaunching it with the reachable-set column and preparing the report text in parallel.
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; pgrep
+  > $ python - <<'EOF'
+import pandas as pd, re
+txt=open("reports/cover_excess_tables.md").read()
+def table(title):
+    sec=txt.split("## "+title)[1].split("\n## ")[0]
+  > $ tail -2 learning/data/ensemble/cover_excess_states.log; timeout 600 python -m pytest tests/test_cover_excess.py -q 2>&1 | tail -2
+  > $ cat >> tests/test_cover_excess.py <<'EOF'
+
+
+def test_reachable_states_against_brute_force_on_the_four_cycle():
+    import itertools
+
+    from learning.cover_exc
+  > $ nohup python -m pytest tests/ -q -x > /tmp/cover_excess_fullsuite.log 2>&1 &
+echo suite $!; for i in $(seq 1 15); do if ! pgrep -f "measure_states" >/dev/null; 
+  > $ for i in $(seq 1 15); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; tail 
+
+The state counts at n = 25 are the slow tail (about 5 more minutes); the full test suite is running alongside. I'll keep polling in bounded loops, then run the final tables stage.
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; tail 
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; tail 
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; tail 
+  > $ ps -o pid,etime,time,pcpu,rss,cmd --ppid 2632863 | head -5; for i in $(seq 1 15); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; t
+  > $ grep -n "^## 35" reports/ml_nature.md && tail -30 reports/ml_nature.md | cut -c1-200 && grep -n "Karonski\|Karoński\|Behrisch\|Lager\|Pittel\|Molloy\|Riordan\|F
+  > $ tail -1 learning/data/ensemble/cover_excess_states.log; date; git status --short | head
+
+Drafting the report section now with the settled numbers, and noting the missing random-graph papers in the literature ledger, while the last state counts finish.
+  > $ tail -20 literature/MISSING.md | cut -c1-160 && cat >> literature/MISSING.md <<'EOF'
+
+## Random bipartite graphs, cores and random intersection graphs (item 09 
+  > Write /tmp/sec36_draft.md
+  > $ tail -1 learning/data/ensemble/cover_excess_states.log; date; for i in $(seq 1 15); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done;
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; date
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; date
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; date
+
+Still waiting on the last few hundred exact state counts at n = 25; the only remaining dependency chain is that run, then the tables stage, then the report text. Polling once more.
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; date
+  > $ for i in $(seq 1 16); do if ! pgrep -f "measure_states" >/dev/null; then break; fi; sleep 7; done; tail -1 learning/data/ensemble/cover_excess_states.log; date;
+  > $ nohup python -m learning.cover_excess --stage tables > learning/data/ensemble/cover_excess_tables.log 2>&1 &
+echo tables $!
+  > $ timeout 300 python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.cover_excess import *
+states=pd.read_csv(STATES_CSV).drop_duplicates("instance_name"
+  > $ cat learning/data/ensemble/cover_excess_tables.log; timeout 120 python - <<'EOF'
+import pandas as pd, numpy as np
+from learning.cover_excess import *
+from learn
+  > $ cat learning/data/ensemble/cover_excess_tables.log; timeout 120 python - <<'EOF'
+import pandas as pd, numpy as np
+from scipy.stats import spearmanr
+from learnin
+
+The tables job should be finishing; I'll read its output and the state-count results together, then fill in the report.
+  > $ cat learning/data/ensemble/cover_excess_tables.log; ls -la reports/cover_excess_tables.md; python - <<'EOF'
+import pandas as pd, numpy as np
+txt=open("reports/c
+  > $ for i in $(seq 1 16); do if ! pgrep -f "cover_excess --stage tables" >/dev/null; then break; fi; sleep 7; done; cat learning/data/ensemble/cover_excess_tables.l
+  > $ for i in $(seq 1 16); do if ! pgrep -f "cover_excess --stage tables" >/dev/null; then break; fi; sleep 7; done; cat learning/data/ensemble/cover_excess_tables.l
+  > $ python - <<'EOF'
+p="learning/cover_excess.py"; s=open(p).read()
+block='''
+
+if __name__ == "__main__":
+    main()
+'''
+assert block in s
+s=s.replace(block,"\n")
+s
+  > $ timeout 110 python - <<'EOF'
+import pandas as pd, numpy as np
+from scipy.stats import spearmanr
+from learning.cover_excess import *
+from learning.ensemble impor
+  > $ for i in $(seq 1 16); do if ! pgrep -f "cover_excess --stage tables" >/dev/null; then break; fi; sleep 7; done; cat learning/data/ensemble/cover_excess_tables.l
+
+The final tables job is still running (the scan-based inversions make it a few minutes). I'll keep polling in bounded loops; everything else waits on its output.
+  > $ for i in $(seq 1 16); do if ! pgrep -f "cover_excess --stage tables" >/dev/null; then break; fi; sleep 7; done; cat learning/data/ensemble/cover_excess_tables.l
+  > $ python - <<'EOF' 2>/dev/null
+import pandas as pd, numpy as np
+txt=open("reports/cover_excess_tables.md").read()
+def table(title):
+    sec=txt.split("## "+title)
+  > $ nohup python -m pytest tests/ -q -x > /tmp/cover_excess_fullsuite2.log 2>&1 &
+echo suite $!; grep -c "" reports/ml_nature.md; grep -n "^- \[ \] 09\|^- \[x\] 08\
+  > Write /tmp/sec36.md
+  > $ cat /tmp/sec36.md >> reports/ml_nature.md && tail -3 reports/ml_nature.md | cut -c1-80 && python - <<'EOF'
+p="Ralph_Loops/loop0004/iterations.md"; s=open(p).rea
+  > $ git status --short solutions/ | head -3; echo "solutions changes: $(git status --short solutions/ | wc -l)"; git status --short | grep -v "^?? Ralph_Loops\|^ M 
+  > $ for i in $(seq 1 16); do if ! pgrep -f "pytest tests/ -q -x" >/dev/null; then break; fi; sleep 7; done; tail -c 300 /tmp/cover_excess_fullsuite2.log; date
+  > $ python - <<'EOF'
+p="Ralph_Loops/loop0004/PROGRESS.md"; s=open(p).read()
+old="""counts against brute force on the 4-cycle. Full suite before the last two
+  cosme
+
+Item 09 is complete. Nothing remains to request: the report section, tables, data, tests, PROGRESS.md and iterations.md are all written, the full suite passed after the last code edit, and `solutions/` is untouched.
+
+**Outcome.** No known threshold of the random bipartite incidence graph coincides with the hardness ridge. The deliverable is that statement with the numbers, plus the mechanism the ridge is actually a transition of.
+
+**What was built.** `learning/cover_excess.py` models the customer–product incidence graph as a two-type configuration model with each generator's degree distributions and the empty-row repair. It derives core emergence thresholds and core cyclomatic numbers, peels real instances to check them, scores every candidate against §25's 25 measured peaks, and counts feasible and reachable closed sets exactly at n ≤ 25. Tests: `tests/test_cover_excess.py`, 12 cases on hand-checkable instances.
+
+**Findings, written to `reports/ml_nature.md` §36:**
+- The giant component sits 0.34 to 0.78 decades below the ridge, further below the fewer the products. The (3,2)- and (2,3)-cores appear 0.11 to 0.45 below with the same drift. The (3,3)-core crosses the ridge, so its small mean error is misleading. Connectivity moves with n while the ridge does not.
+- Excess 2 at its natural value is the only line within 0.09 decades of every peak with a flat residual across ratios. Its tree-free forms, the 2-core's excess and the dominance-reduced excess, score the same when calibrated. They are one condition on the cover's cycle mass, not separable at the grid's resolution.
+- The mechanism is reachability, not feasibility. The count of closed sets whose boundary fits `optimum − 1` is monotone in density and anticorrelated with node counts. The count of sets reachable from the empty set through fitting steps matches the default search's node count to 0.03 to 0.06 decades on connected instances and peaks where the nodes peak in all eight series at n = 20 and 25. That is why an incidence-graph threshold alone cannot locate the ridge.
+
+**Files.** Analytic and empirical tables in `reports/cover_excess_tables.md`. Data under `learning/data/ensemble/` as two CSVs and three logs. The random-graph papers cited from memory are listed as wanted in `literature/MISSING.md`, none held.
+
+**Verification.** Full suite after the last edit: 1,190 passed, 2 skipped, 1 xfailed in 343 s on a loaded machine.
+
+**Next item.** Item 10 asks whether the ridge's height is a function of the same quantity. The per-instance core and reduced-instance sizes in `cover_excess_measures.csv` are available if the height fit wants a core size rather than n.
+
+# result: success in 4237s, 73 turns, cost $12.26

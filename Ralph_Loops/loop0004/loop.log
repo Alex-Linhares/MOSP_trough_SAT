@@ -38,3 +38,8 @@
 [2026-09-27 23:02:26] claude session it08 (cap 3.00 h) -> session_it08.log
 [2026-09-28 00:46:57] session it08: ok (exit 0, 62 tool calls)
 [2026-09-28 00:52:32] tests passed: 1178 passed, 2 skipped, 1 xfailed, 159 warnings in 333.94s (0:05:33)
+[2026-09-28 00:52:33] committed 14c3cbcf: 08 · Q4b Does the rate keep falling? Refit §16's drift with the 100
+[2026-09-28 00:52:33] === iteration 9: 09 · Q3a Why cover excess two. Analysis: the cover excess
+[2026-09-28 00:52:33] claude session it09 (cap 3.00 h) -> session_it09.log
+[2026-09-28 02:03:11] session it09: ok (exit 0, 72 tool calls)
+[2026-09-28 02:08:58] tests passed: 1190 passed, 2 skipped, 1 xfailed, 159 warnings in 346.60s (0:05:46)

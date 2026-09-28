@@ -9529,3 +9529,309 @@ when the top cell is censored* — a median of lower bounds has no likelihood �
 but say what the window weighs: 1,050 of the 1,225 points on 10–100 lie at
 n ≤ 40, so the 10–100 fits are anchored low and the 40–100 fits are the ones
 the 100 cell moves; both are reported.
+
+## 36. Why cover excess two? The ridge against the thresholds of the random bipartite incidence graph (plan 3 §1 Q3a, loop0004 item 09)
+
+*Iteration 9 of loop0004, 2026-09-28. Code: `learning/cover_excess.py`. Regenerate:*
+
+```bash
+python -m learning.cover_excess --stage measure --workers 16   # peel and reduce the 9,497 certified instances at n in {50, 60, 75}: 5 s
+python -c "from learning.cover_excess import measure_states; measure_states(workers=12)"   # exact state counts at n = 20 (150 per cell) and 25 (40 per cell): 26 min on a loaded machine
+python -m learning.cover_excess --stage tables                 # reports/cover_excess_tables.md: 4.5 min
+python -m pytest tests/test_cover_excess.py -q                 # 12 tests
+```
+
+*Reads §25's frames (`results.csv`, `results_upward.csv` with its finish
+stage, `results_ratio.csv`) through `learning.ridge_theory.load_frames`, so
+the peaks here are §25's peaks to the digit. Writes
+`learning/data/ensemble/cover_excess_measures.csv` (one row per instance at
+50–75: 2-core, (3,2)-, (2,3)- and (3,3)-core sizes and cyclomatic numbers,
+and the dominance-reduced instance), `cover_excess_states.csv` (one row per
+instance at 20 and 25: exact counts of boundary-feasible, fitting and
+reachable closed sets at `k = optimum − 1`), `reports/cover_excess_tables.md`
+(every table in full) and three run logs. Nothing under `solutions/`, no
+solver default, no bound.*
+
+**Question.** §25 found the ridge at cover excess `(n_ones − m) / n ≈ 2–2.4`
+for every product ratio from `m = 2n` to `m = n / 8`, read it as "one
+independent cycle of the customer–product incidence graph per customer", and
+left the *why* open. The incidence graph of `G(n, m, p)` is a random
+bipartite graph, and random bipartite graphs have a short list of known
+thresholds: the giant component (where the 2-core also appears), the
+discontinuous emergence of the deeper cores, and connectivity; the
+random-intersection-graph literature adds nothing beyond these at
+`m = Θ(n)`. Does any of them sit where the ridge sits, for every `m / n`? If
+one does, that is the mechanism; if none does, the excess-2 line is a
+density condition and not a percolation transition, and the item's
+deliverable is that statement with the numbers.
+
+**Method.** (a) *The incidence graph as a configuration model.* Products per
+customer is Poisson(`r c`) in both generators (`r = m / n`, `c` = realised
+customers per product), with the empty-row repair moving the mass at 0 to 1
+and each product receiving `P(0) / r` extra customers on average; customers
+per product is exactly `d` for the fixed generator (a non-integer realised
+`c` is the mixture of its two neighbouring integers) and Poisson(`c`) for
+Bernoulli. The `(k_C, k_P)`-core — customers with at least `k_C` remaining
+products, products with at least `k_P` remaining customers — is the fixed
+point of the two-type peeling recursion `a = P(product has ≥ k_P − 1 other
+alive edges)`, `b = P(customer has ≥ k_C − 1 other alive edges)`, iterated
+from `(1, 1)` (Luby et al. 2001 for bipartite factor graphs; Fernholz &
+Ramachandran 2007 and Riordan 2008 for general degree sequences; none of
+these papers is held, `literature/MISSING.md`). From the fixed point come the
+expected share of customers and products in the core, its edges, and hence
+its cyclomatic number `E − C − P` per customer and per core customer, all in
+`col_mean` coordinates per `(generator, r)`; a core's threshold is the
+smallest `c` at which it is non-empty (bisection). Every analytic core is
+checked against the peeled core of the regenerated instances, cell by cell.
+(b) *Candidates at their natural value.* Ten conditions, each an
+uncalibrated prediction of the ridge per `m / n`: the giant component
+(branching factor 1; a continuous transition, and where the 2-core appears),
+the incidence forest threshold (excess 1), excess 2 itself, the `(3,2)`-,
+`(2,3)`- and `(3,3)`-core emergences, "the 2-core holds half the customers",
+"the 2-core's cyclomatic number equals its customer count" (the XORSAT-style
+condition, where the 2-core of a factor graph has as many constraints as
+variables — Dubois & Mandler 2002, Mézard, Ricci-Tersenghi & Zecchina 2003 —
+and identical to "the core instance has excess 2"), "the 2-core's cyclomatic
+number equals `n`", and connectivity (products per customer `ln n`). Scored
+as §25 (d): `|log10(predicted / measured)|` against the interpolated peak and
+its bootstrap interval, 25 series at `n ∈ {50, 60, 75}`. (c) *Empirical core
+and dominance quantities at the peaks*, interpolated to the peak `col_mean`
+as §25 did, added to §25's constancy table (CV across ratios at fixed
+`(generator, n)`), and (d) *calibrated at `m = n`* and predicted at the other
+ratios, as §25 (d). The dominance-reduced instance is what the solver sees at
+the root: products whose customer set sits inside another's dropped
+(`mosp.preprocess`), then customers whose closed neighbourhood sits inside
+another's (the search's subset rule), then products again. (e) *A mechanism
+test underneath the thresholds question*: at `n = 20` (150 per cell) and
+`n = 25` (40 per cell), for every campaign cell at `m ∈ {n, 2n}`, both
+generators, three exact counts by subset DP over `2^n` at `k = optimum − 1`:
+the closed sets `S` with boundary `|N[S] \ S| ≤ k`; those whose closing step
+fits the search's cost, `|N[S]| − |S| + 1 ≤ k`; and those *reachable* from
+the empty set through a chain of fitting sets `S \ {c} → S` — the search tree
+without dominance and without the memo. Which of the three peaks where the
+nodes peak, and which is monotone in density.
+
+**Baseline.** §25: the ridge at excess 2–2.4, `col_mean ≈ 1 + 2.4 n / m`;
+the giant threshold 1.5–6× below it.
+
+### (a) What excess two is, in incidence-graph terms
+
+With `β = n_ones − n − m + comp` the cyclomatic number of the incidence graph,
+`excess = β / n + 1 − comp / n`; the instances at the ridge are connected
+(§25 (f)), so excess 2 is `β ≈ n`: one independent Berge cycle of the
+hypergraph per customer. In degree terms it is products per customer
+`ρ = r c = excess + r = 2 + m / n` — 4 at `m = 2n`, 3 at `m = n`, then 2.5,
+2.25 and 2.125 — against measured 4.0 / 3.3–3.5 / 2.6–2.8 / 2.2–2.7 / 2.5 at
+the peaks; or `n_ones = 2n + m`, two ones per customer and one per product.
+None of the three readings is a statement about a structure appearing; each
+is a statement about a mean.
+
+### (b) The thresholds, derived (col_mean; fixed generator / Bernoulli; measured peaks at n = 50 / 60 / 75)
+
+| m / n | giant (branch 1) | forest (excess 1) | **excess 2** | (3,2)-core | (2,3)-core | (3,3)-core | 2-core holds ½ | 2-core cyc = core customers | connectivity n = 50 / 75 | **measured** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | 1.37 / 0.71 | 1.5 | 2 | 1.84 / 1.50 | 2.41 / 1.68 | 2.78 / 2.40 | 1.53 / 1.28 | 1.92 / 1.81 | 1.96 / 2.16 | 2.01 (grid edge) / 2.43, 2.40, 2.06 |
+| 1 | 1.62 / 1.00 | 2 | 3 | 2.24 / 2.23 | 2.84 / 2.23 | 3.57 / 3.35 | 2.14 / 2.05 | 2.66 / 2.54 | 3.91 / 4.32 | 3.31, 3.47, 3.41 / 3.11, 3.48, 3.63 |
+| ½ | 2.00 / 1.41 | 3 | 5 | 3.71 / 3.36 | 3.64 / 3.00 | 5.01 / 4.79 | 3.50 / 3.55 | 3.82 / 3.72 | 7.82 / 8.63 | 5.50, 5.64, 5.24 / 5.11, 4.87, 5.44 |
+| ¼ | 2.56 / 2.00 | 5 | 9 | 4.50 / 5.10 | 4.50 / 4.09 | 7.36 / 7.01 | 6.77 / 6.74 | 5.67 / 5.61 | 15.6 / 17.3 | 9.17, 10.63, 9.59 / 8.43, 8.19, 8.40 |
+| ⅛ | 3.37 / 2.83 | 9 | 17 | 8.79 / 7.81 | 6.98 / 5.61 | 11.2 / 10.5 | 13.4 / 13.4 | 8.55 / 8.56 | 31.3 / 34.5 | 20.7 / — |
+
+The analytic cores are right where the model's assumptions hold: on the
+`m ∈ {n, 2n}` cells the predicted 2-core share of customers is within 0.002
+of the peeled median and the `(3,2)`-core share within 0.004; at `m ≤ n / 4`
+(12–19 products, where "many products" is a stretch and the repairs are a
+tenth of the ones) the predicted cyclomatic number runs 0.14–0.15 per
+customer high at the median, the share of customers 0.03–0.05 high. The
+check table is in `reports/cover_excess_tables.md`.
+
+### (c) Every threshold at its natural value, scored against the 25 measured peaks
+
+| condition | mean \|log10 error\| | max | signed mean | within CI (of 25) | signed error by ratio 2n / n / n/2 / n/4 / n/8 |
+|---|---|---|---|---|---|
+| **excess 2 (one cycle per customer)** | **0.039** | 0.084 | −0.025 | 9 | −0.030 / −0.054 / −0.025 / +0.014 / −0.068 |
+| 2-core cyclomatic number = n | 0.047 | 0.100 | −0.041 | 10 | −0.039 / −0.064 / −0.041 / −0.010 / −0.097 |
+| (3,3)-core emergence | 0.065 | 0.253 | −0.018 | 6 | **+0.080 / +0.008 / −0.033 / −0.089 / −0.253** |
+| 2-core cyclomatic number = core customers (core excess 2) | 0.139 | 0.373 | −0.139 | 3 | −0.061 / −0.117 / −0.147 / −0.194 / −0.373 |
+| connectivity (products per customer = ln n) | 0.151 | 0.331 | +0.137 | 4 | −0.019 / +0.082 / +0.191 / +0.277 / +0.241 |
+| 2-core holds half the customers | 0.170 | 0.277 | −0.170 | 1 | −0.185 / −0.209 / −0.177 / −0.110 / −0.169 |
+| (3,2)-core emergence | 0.178 | 0.359 | −0.178 | 3 | −0.110 / −0.182 / −0.176 / −0.216 / −0.359 |
+| (2,3)-core emergence | 0.194 | 0.452 | −0.175 | 0 | −0.028 / −0.129 / −0.204 / −0.294 / −0.452 |
+| incidence forest (excess 1) | 0.224 | 0.345 | −0.224 | 0 | −0.155 / −0.230 / −0.247 / −0.242 / −0.345 |
+| giant component (branching factor 1) | 0.477 | 0.780 | −0.477 | 0 | −0.339 / −0.427 / −0.498 / −0.593 / −0.780 |
+
+Read the last column, not the first: a mechanism has to miss by the *same*
+amount at every ratio, and every emergence threshold misses by an amount
+that grows as `m / n` falls. The `(3,3)`-core is the instructive failure: its
+mean error is as small as the excess's because it passes *through* the ridge
+— 0.08 above at `m = 2n`, on it at `m = n`, 0.25 below at `m = n / 8` — and a
+line that crosses the ridge is not the ridge. The `(3,2)`- and `(2,3)`-cores
+appear 0.11–0.45 decades below it, further below the sparser the products;
+the giant component 0.34–0.78 below (§25 (f) again); the XORSAT-style
+condition on the 2-core 0.06–0.37 below, drifting the same way. Connectivity
+moves with `n` (products per customer `ln n` is 3.9 at 50 and 4.3 at 75)
+where the measured peak does not (§11, §16: `d = 3` at `m = n` from 15 to
+75), and misses by +0.19 to +0.28 at the low ratios. Excess 2 is the only
+line within 0.09 decades of every peak with a *flat* residual across ratios
+(−0.07 to +0.01); §25's fitted 2.4 is that 0.03–0.07-decade offset seen from
+the other side. "2-core cyclomatic number = `n`" is the same line with the
+tree fringe removed and scores the same (0.047, 10 within interval).
+
+### (d) The cores at the ridge, and the constancy table with them
+
+At the interpolated peaks (fixed generator, `n = 50–75`) the 2-core of the
+incidence graph holds 64–92% of the customers and 96–100% of the products,
+the `(3,2)`-core 35–70% of the customers, the `(3,3)`-core 0–49%; the
+dominance-reduced instance keeps 23–91% of the customers (falling with
+`m / n`: 90% at `m = 2n`, 23% at `n / 8`) and 92–100% of the products. None
+of the shares is constant, and the cores' emergence is far behind: the
+2-core is three quarters of the graph at the ridge. What *is* about as
+constant as the excess is the excess of what survives peeling or dominance:
+
+| candidate at the peak | CV across ratios (mean over 6 (generator, n) pairs) | max / min across ratios | range at the peaks |
+|---|---|---|---|
+| 2-core: excess of the core instance | **0.101** | **1.37** | 2.11–3.14 (median 2.57) |
+| dominance-reduced: products per kept customer | 0.101 | 1.43 | 3.05–4.35 |
+| dominance-reduced: excess | 0.119 | 1.71 | 2.02–3.51 (median 2.66) |
+| **excess (§25's)** | 0.127 | 1.65 | 1.78–2.97 (median 2.16) |
+| 2-core: share of customers | 0.128 | 1.53 | 0.57–0.92 |
+| RCM bandwidth / n (§25's best graph invariant) | 0.146 | 1.94 | 0.42–0.83 |
+| 2-core: cyclomatic number per core customer | 0.163 | 1.69 | 1.13–2.16 (median 1.60) |
+| optimum / n | 0.181 | 2.75 | 0.20–0.55 |
+| (3,2)-core: share of customers | 0.253 | 2.48 | 0.28–0.75 |
+| MOSP-graph mean degree | 0.402 | 9.46 | 3.9–37.6 |
+| (3,3)-core: share of customers | 0.550 | 3.64 | 0–0.57 |
+
+(The 2-core's share of products, CV 0.097, is left out: it is 1.00 at every
+`m ≤ n / 2` peak and 0.54–0.97 above — a saturated quantity.) The
+improvement from 0.127 to 0.101 is the fringe: customers with one product,
+and the products that peel with them, carry excess but no cycles, so the
+ridge is a little better described as "the *2-core* of the cover has excess
+2.1–3.1, median 2.6 — cyclomatic number 1.1–2.2 per core customer" than as
+"the cover has excess 1.8–3.0". It is the same statement with the trees
+removed, not a different mechanism, and (e) shows it is not decisively
+better as a predictor either.
+
+### (e) Calibrated at m = n, predicted at the other ratios (19 non-calibration series; 13 deciding at m ≤ n / 2)
+
+| hypothesis: ridge at constant … | calibration (fixed / Bernoulli) | mean \|log10 error\| | max | within CI | deciding mean | undefined |
+|---|---|---|---|---|---|---|
+| dominance-reduced excess (empirical) | 2.66 / 2.68 | 0.035 | 0.132 | 8 | 0.035 | 6 |
+| 2-core cyclomatic number per core customer (analytic) | 1.68 / 1.73 | 0.040 | 0.103 | 9 | 0.038 | 0 |
+| 2-core excess (empirical) | 2.66 / 2.72 | 0.040 | 0.082 | 9 | 0.038 | 1 |
+| (3,2)-core cyclomatic number per core customer (empirical) | — | 0.044 | 0.145 | 9 | 0.042 | 0 |
+| **excess (analytic, §25's hypothesis recomputed)** | 2.40 / 2.40 | 0.051 | 0.118 | 8 | 0.057 | 0 |
+| 2-core cyclomatic number per customer (analytic) | 1.43 / 1.45 | 0.052 | 0.113 | 5 | 0.055 | 0 |
+| (3,3)-core share of customers (empirical) | — | 0.051 | 0.099 | 4 | 0.047 | 0 |
+| branching factor (analytic; the degree family) | — | 0.100 | 0.373 | 5 | 0.115 | 0 |
+| (3,2)-core share of customers (analytic) | — | 0.102 | 0.199 | 4 | 0.133 | 0 |
+| 2-core share of customers (analytic) | — | 0.115 | 0.208 | 4 | 0.144 | 0 |
+
+Per series, the core version and §25's excess trade misses: the 2-core's
+cyclomatic number per core customer, calibrated at 1.68, predicts the
+Bernoulli `n / 4` peaks 0.05 decades high where the plain excess is 0.11–0.12
+high, and predicts the fixed `n / 8` peak at 16.3 against a measured 20.7
+(−0.10) where the plain excess says 20.9 (+0.007). An "undefined" entry is a
+series on whose grid the empirical quantity never reaches the calibration
+value (the dominance-reduced excess at `m = 2n`, where the reduced instance
+is nearly the whole instance and its excess runs with the grid edge). Six
+candidates now sit within 0.035–0.052 of one another and inside the
+0.05-decade resolution §25's method notes give the grid; the calibration
+cannot separate "excess 2.4" from "core excess 2.7" from "reduced excess
+2.7", and it does not need to — they are one condition on the cycle mass of
+the cover, read on three subsets of it.
+
+### (f) The mechanism underneath: what the search has to exhaust
+
+At `n = 20` and `25`, `m ∈ {n, 2n}`, both generators, 6,840 certified
+instances, `k = optimum − 1`:
+
+| count at `k = optimum − 1` | behaviour along the density grid | Spearman with `default` nodes (n = 20 / 25) | peaks where the nodes peak? |
+|---|---|---|---|
+| closed sets with boundary `≤ k` | **monotone increasing** in every fixed series, saturating at `2^n` (every set fits once `optimum ≥ n − 1`); rising with a dip at the decomposable sparse edge in the Bernoulli series | **−0.87 / −0.87** | never: its peak is the dense grid edge (excess 9–18) |
+| sets whose closing step fits, `|N[S]| − |S| + 1 ≤ k` | monotone in all 8 connected-instance series | (the same to within 0.01 decades) | never |
+| sets **reachable** from ∅ through fitting steps | rises and falls; on connected instances within 0.03 (fixed) / 0.06 (Bernoulli) decades of the node count at the median, nodes ≤ reachable on 99.1% (the dominance rules' saving: p10 0.15 / 0.27 decades) | **0.88 / 0.88** all instances; 0.99 / 0.97 on connected instances with ≥ 10 reachable sets | **in all 8 connected-instance series** (fixed: 2.0 / 2.0 / 3.05 / 3.04; Bernoulli 1.58 / 1.74 / 2.45 / 2.32 customers per product) |
+
+The random-model count of boundary-feasible sets — customers outside `S`
+treated as independent, each joined to `S` with the probability a product
+covers both — reproduces the exact count to 0.0002 decades at the median
+over the 6,840 instances, so the *feasibility* side of the ridge is fully
+understood and is not where the ridge comes from: it says the state space
+grows monotonically with density. The ridge is a property of
+**reachability** in the lattice of closed sets: sparse instances have many
+feasible sets but few chains (and decompose — on decomposable Bernoulli
+instances the whole-graph reachable count exceeds the nodes by 1.5 decades
+at the median, because the search solves the components separately while
+the lattice count multiplies them), dense instances have every set feasible
+but the first step already costs more than `k`. That is why no threshold of
+the incidence graph *alone* can locate the ridge: the giant component and
+the cores are statements about the incidence graph, the ridge is a
+percolation statement about the subset lattice under the boundary cost, and
+excess 2 is where, on these generators, the reachable region of that
+lattice is largest. Deriving the reachable count in the random model is a
+first-passage problem over `2^n` states and is not attempted here.
+
+**Finding, in one paragraph.** None of the incidence graph's known
+thresholds coincides with the ridge. The giant component (also the 2-core's
+appearance) sits 0.34–0.78 decades below it and further below the fewer the
+products; the `(3,2)`- and `(2,3)`-cores appear 0.11–0.45 decades below with
+the same drift; the `(3,3)`-core crosses the ridge (+0.08 at `m = 2n`, −0.25
+at `m = n / 8`); the XORSAT-style "core cyclomatic number = core customers"
+is 0.06–0.37 below; connectivity moves with `n` and the ridge does not. The
+only line within 0.09 decades of every measured peak at `n = 50–75` and
+`m / n ∈ {2, 1, ½, ¼, ⅛}`, with a flat residual across ratios, is excess 2
+itself (mean 0.039, and 0.047 for its tree-free form "2-core cyclomatic
+number = n"), and calibrating it or its 2-core and dominance-reduced
+variants at `m = n` gives 0.035–0.052 for all of them — one condition on the
+cycle mass of the cover read three ways, not separable at the grid's
+resolution. So "one independent cycle per customer" is a density condition,
+not a percolation transition of the incidence graph; the transition it
+marks is in the lattice of closed sets: the count of sets whose boundary
+fits `optimum − 1` is monotone in density and anticorrelated with the node
+count (−0.87), while the count of sets *reachable* from the empty set
+through fitting steps equals the node count to 0.03–0.06 decades on
+connected instances and peaks where the nodes peak in all eight series at
+`n = 20–25`. The ridge is where the reachable region of that lattice is
+largest, and where that is, in terms of the generator, is what §25
+measured: excess about 2.
+
+**Size range covered.** Thresholds derived in the large-`n` configuration
+model and scored against the 25 interpolated peaks at `n ∈ {50, 60, 75}`,
+`m / n ∈ {2, 1, ½, ¼, ⅛ (n = 75, fixed only)}`, both generators (§25's 9,497
+certified instances in 190 cells); the analytic cores checked against peeled
+cores on the same 9,497 instances; the mechanism test at `n = 20` and `25`,
+`m ∈ {n, 2n}`, 6,840 certified campaign instances. The `m = 2n` fixed peaks
+are grid-edge lower bounds on the location, as in §25. Nothing here is
+evidence about 125 × 125 except through §25's extrapolation of the excess
+line, which this section leaves as it was.
+
+**Kill criterion.** None stated by the plan. The deliverable asked for "the
+mechanism, or the statement that none of the candidate thresholds coincides
+with the ridge, with the numbers": the statement, with the numbers in (c),
+and the reachability mechanism of (f) as what the ridge is a transition
+*of*.
+
+**Method notes.** (1) *Score a threshold by the shape of its residual, not
+its mean*: the `(3,3)`-core emergence has a mean error as small as the
+excess's and is wrong, because it crosses the ridge; a table of errors by
+ratio is the test. (2) *The configuration model needs the repairs*: without
+the empty-row repair the customer degree has 8–13% mass at zero at the
+sparse ridges and the predicted 2-core is visibly too small; with it the
+2-core shares match the peeled medians to 0.002 at `m ≥ n`, and still run
+high at `m ≤ n / 4`, where `m` is 9–19 and the limit is a stretch — say
+which cells a large-`n` formula is checked on. (3) *Invert a core quantity
+by scanning first*: the cyclomatic number per core customer is undefined
+below the core's emergence and not monotone just above it, and a bisection
+from a fixed bracket returned 203 and 312 customers per product for a
+quantity that crosses 1 at 3.8 and 8.6; a geometric scan for the first
+crossing, then bisection inside the bracket, is what the module does. (4)
+*"Number of feasible states" is the wrong mechanism and worth ruling out
+explicitly*: it is monotone and saturates at `2^n`, its random-model
+prediction is exact to 0.0002 decades, and it anticorrelates with the nodes;
+the search is reachability-limited. The reachable count is a layer-by-layer
+DP over the subset lattice, `2^25` states in 4.6 s unloaded (13 s at load
+35), which is why `n = 25` is sampled at 40 per cell. (5) *Module-level
+names defined after `if __name__ == "__main__"` do not exist when the module
+runs as a script*: an appended section left `STATES_CSV` undefined for the
+`tables` stage and cost one run; the main block belongs at the end of the
+file. (6) Seconds are from a machine at load 34–42 (9 recertify workers
+beside these 12–16); everything here is a count or a ratio.
