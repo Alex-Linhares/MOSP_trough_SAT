@@ -412,7 +412,8 @@ lean/
         MOSPGraph.lean                  mospValue = pathwidth(MOSP graph) + 1, both directions, sorry-free (2026-09-27)
         MOSPGraphExamples.lean          The star counterexample to the pattern-graph statement; K₃ example
         Examples.lean                   Verified example instances
-        Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth, proved (2026-09-26)
+        Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth; treewidth ≤ pathwidth; the branch lemma
+                                        (corrected) and its separator form — all proved; one sorry left, the §24 conjecture (2026-09-28)
         ForMathlib/                     Candidates for Mathlib contribution
 
 learning/                       → ML over the certified corpus (instance → optimum)
@@ -457,7 +458,7 @@ reports/                        → Analysis documents
 tools/drat-trim/                → DRAT proof checker, built from source (loop0003 item 03)
 tests/                          → 1,051 tests across 55 test modules
 literature/                     → Reference papers (PDFs)
-Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001–loop0003 done)
+Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001–loop0004 done)
 ```
 
 ## Two Graph Formulations
@@ -661,7 +662,10 @@ python -m benchmarks.solve_all --timeout 120
   search, and agrees with the certified value on all 2,812 instances at n ≤ 15;
   `learning.node_counts` re-refutes `optimum − 1` on all 6,135 at n ≤ 40 under
   two search configurations. Neither reaches the sizes where the two known
-  false refutations were. *Further, 2026-09-26:* `learning.differential` runs
+  false refutations were. *2026-09-28*: the differential harness now covers
+  50–100 with zero disagreements on 25,800 calls (§33); above that boundary
+  only `Random-100-100-2/4` and the 125×125 classes remain unchecked, and the
+  certificate of §32 is the only instrument that could reach them. *Further, 2026-09-26:* `learning.differential` runs
   every certified instance at n ≤ 40 (corpus and 37,800 generated) on ten
   labellings under both configurations at `optimum − 1` *and* `optimum` — the
   satisfiable side is where an over-strong rule shows — with zero
@@ -670,6 +674,10 @@ python -m benchmarks.solve_all --timeout 120
   Above 40 the only checks are two-configuration and relabelling agreement.
 - **The customer search produces no checkable proof object**, and it is now the
   default, which makes this limitation apply by default too.   Its refutations rest on the dominance rules being sound, cross-validated heavily but with no CNF to re-refute and no proof log. It now accounts for a large share of the certified corpus.
+  *2026-09-28*: `learning/search_certificate.py` (§32) is that proof object —
+  every pruning step with its witness, checked independently and replayed —
+  verified on 141 of 151 corpus instances at 41–75; a C emitter is proposed.
+  It does not scale to the 10¹¹-node trees at 125×125.
   *Partly closed at n ≤ 40 (2026-09-26, §17)*: the SAT path with proof logging
   re-refutes 92.0% of those instances with a checked DRAT proof (11.2
   core-hours, 11.7 GB compressed under git-ignored `learning/data/proofs/`);
@@ -1070,6 +1078,86 @@ order and a portfolio on the satisfiable side. **Open and unpriced**: a sound
 refutation check above 40 customers; the encoding's correctness in Lean
 (Yanasse's equality itself was proved on 2026-09-27); a pathwidth bound that
 sees separators of trees of cliques.
+
+**The seven-questions loop** (`reports/ml_nature_plan_3.md`, Ralph loop0004,
+2026-09-27 16:29 to 2026-09-28 06:10, thirteen items in thirteen sessions,
+$235; findings in `reports/ml_nature.md` §28–§40). Beside it, outside the
+loop, the MOSP–pathwidth equality was proved in Lean (above). What it settled:
+
+- **The LightGBM question is closed** (§28): the two-key rule seeds the DFS
+  better than the learned policy on every statistic over all 6,376 (exact
+  94.2% vs 92.1%, 263 better / 80 worse, faster), and 780 / 12 over `cs-dfs`
+  where the learned seed's 709 / 13 rested on the leaky split. `rule+cs-dfs`
+  is registered and proposed as the upper-bound strategy; not the default.
+- **The rule is not MCNh** (§29): the 2004 arc-traversal heuristic,
+  reimplemented from its pseudocode and reproducing its worked example and
+  Frinhani's numbers, shares the rule's first key structurally and has the
+  opposite tie-break (minimum degree); the rule wins 592 / 242. `mcnh` is
+  registered as the literature's reference point; the old `mcn` never was it.
+- **The graph story fails for SAT, by formula size** (§30): re-covering
+  moves CaDiCaL's conflicts ×0.26–1.67, in the direction of clause count;
+  SAT's cost tracks clause count (ρ > 0.93), the search's cost is negatively
+  related to it, so the two disagree about hardness for a matrix reason —
+  the product count, not the cover. Kissat through pysat exposes no
+  statistics, ignores interrupts and refuses conflict budgets.
+- **No cheaper sound fix** (§31): reverting either half of the `better_move`
+  fix brings false refutations back (1 and 36 of the 56); the reordering
+  carries 81% of the cost; one further sound composition is 15% cheaper in
+  nodes at 41–100 and proposed for tuning, not adoption.
+- **The customer search has a proof object** (§32): a certificate of every
+  pruning step with its witness and an independent checker that recomputes
+  each premise and replays the residual tree; 141 of 151 corpus instances at
+  41–75 verified under both configurations, 13.5 KB and 31 ms at the median.
+  The checkable unit for Theorem 2 is the *node*, not the step; the memo is
+  local only without Theorem 3. At 125×125 the tree is 10¹¹ nodes and not
+  shippable. Both known bugs would have been caught.
+- **Zero disagreements above 40** (§33): 25,800 calls on 1,294 instances at
+  50–100 on five labellings and both configurations; the harness is
+  affordable to 75 everywhere and at 100 except on `Random-100-100-2/4`, the
+  eight instances that coincide with the day-long classes.
+- **The ridge at 100 does not certify in 28 core-hours** (§34): 1 of 25;
+  the rest verified upper bounds with the last step undecided at 3–5 × 10⁹
+  nodes. **The rate did not keep falling** (§35): 0.116 per customer over
+  75 → 100 against 0.093 before; not sub-exponential; the drift of §16
+  reverses on the ridge. Compared like with like, a constant-rate law puts
+  the 125×125 ridge refutation at **2.7 × 10¹¹ nodes, 55 h on one core
+  pre-fix, ×/÷ 10 per instance**, and the record's three counts sit within
+  0.2 decades of it. Post-fix: ≥ 2.3× on the 100 cell, ~20× on the one
+  measured ridge instance.
+- **The ridge is not a percolation threshold** (§36): no core, giant-component
+  or connectivity threshold of the incidence graph coincides with it; excess
+  2 is a density condition. What it is a transition *of*: the number of
+  closed sets *reachable* through fitting steps equals the node count and
+  peaks where the nodes peak. **Height needs `m` separately** (§37):
+  `log10 nodes ≈ −0.10 + n (0.089 + 0.058 log10(m_eff / n))`, with the
+  excess at the peak adding nothing.
+- **The branching family is closed by a harness** (§38): three
+  branching-aware candidates (cut-vertex, a separator generalisation proved
+  as Lemma A, and its minor form) are valid on 49,862 instances, survive
+  11,880 adversarial evaluations each, and beat `max(lb_best, tw + 1)` on no
+  gap instance by branching. `learning/bound_harness.py` takes any bound as
+  a function; the next bound idea must be a different pathwidth argument.
+- **Lean, three sorries to one** (§39, §40): `treewidth ≤ pathwidth` via
+  `pathGraph_isTree` (proved here; Mathlib lacked it); **the branch lemma as
+  stated was false** (it lacked connectivity and attachment; a four-vertex
+  counterexample is proved in Lean) and is corrected and proved by the
+  interval argument of Fellows & Langston 1987 Lemma 4.3, with its separator
+  form (§38's Lemma A) proved by the reserve item. 28 named theorems proved,
+  one statement left, the §24 conjecture, kept on purpose.
+
+**Kill criteria, this loop.** Met: §2.5's paired re-covering test on its
+letter (§30, failing in spirit); the fix variants (no cheaper sound one,
+§31); the branching candidates (§38). Not met: the ridge budget at 100 (§34,
+the budget was below the price). Settled without a criterion: §28, §29,
+§32, §33, §35–§37, §39, §40.
+
+**Lessons that cost sessions**: a stated-not-proved theorem needs a
+small-instance check before it is committed — two `sorry`s in this
+development were hiding false statements, not hard ones; a session that
+waits on its own `Monitor` is re-woken and is *not* the failure mode of
+loop0003, whose sessions ended on a bare wait; the driver's `git add -A`
+sweeps unrelated working-tree changes (the full Möhring chapter landed in
+item 07's commit).
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
