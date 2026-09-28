@@ -116,12 +116,17 @@ def test_paper_example_optimum_is_four():
     assert decide(BYS2004, BYS2004_OPTIMUM - 1).status == "unsat"
 
 
-def test_registered_and_not_the_default():
+def test_registered_and_now_the_default():
+    """Enabled by the owner on 2026-09-28 after §28 (780 better / 12 worse over
+    `cs-dfs` on the whole corpus); this pins the decision so a regression is a
+    test failure, not a silent revert."""
     assert "rule" in STRATEGIES and "rule+cs-dfs" in STRATEGIES
-    assert DEFAULT_STRATEGY == "mcn+tabu"
+    assert DEFAULT_STRATEGY == "rule+cs-dfs"
     from satisfiability.customer_search import solve
+    from satisfiability.mosp_solver import solve_mosp_exact
     import inspect
-    assert inspect.signature(solve).parameters["upper_strategy"].default == "cs-dfs"
+    assert inspect.signature(solve).parameters["upper_strategy"].default == "rule+cs-dfs"
+    assert inspect.signature(solve_mosp_exact).parameters["upper_strategy"].default == "rule+cs-dfs"
 
 
 def test_seeded_dfs_never_reports_above_its_seed():

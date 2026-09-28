@@ -140,7 +140,7 @@ def test_unknown_pattern_rule_is_rejected():
 
 def test_registered_and_not_the_default():
     assert "mcnh" in STRATEGIES and "mcnh-arcs" in STRATEGIES
-    assert DEFAULT_STRATEGY == "mcn+tabu"
+    assert DEFAULT_STRATEGY != "mcnh"  # the default became rule+cs-dfs on 2026-09-28
     assert upper_bound(BYS2004, "mcnh")[0] == 4
 
 

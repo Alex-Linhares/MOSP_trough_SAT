@@ -457,7 +457,7 @@ def solve(
     instance: MOSPInstance,
     *,
     upper: int | None = None,
-    upper_strategy: str = "cs-dfs",
+    upper_strategy: str = "rule+cs-dfs",
     lower: int = 0,
     max_nodes: int | None = None,
     time_budget: float | None = None,

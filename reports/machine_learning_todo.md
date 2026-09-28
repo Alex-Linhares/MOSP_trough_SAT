@@ -44,7 +44,7 @@ every claim states its size range.*
 
 ## Proposed in the findings and waiting for a decision (§28–§40)
 
-- [ ] `rule+cs-dfs` as the upper-bound strategy wherever `cs-dfs` is used
+- [x] *(done 2026-09-28)* `rule+cs-dfs` as the upper-bound strategy wherever `cs-dfs` is used
       (§28: 780 better / 12 worse over `cs-dfs`, 57% of its time). Owner's
       default change. *Cost: minutes, plus a corpus re-sweep.*
 - [ ] The `bm-first` rule composition: 15% cheaper in nodes at 41–100, 2%

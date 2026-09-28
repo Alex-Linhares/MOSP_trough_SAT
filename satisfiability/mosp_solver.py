@@ -561,7 +561,7 @@ def solve_mosp_exact(
     *,
     procedure: str = DEFAULT_PROCEDURE,
     solutions_dir: Path | str | None = SOLUTIONS_DIR,
-    upper_strategy: str = "cs-dfs",
+    upper_strategy: str = "rule+cs-dfs",
     time_budget: float | None = None,
     max_nodes: int | None = None,
     stats: dict | None = None,

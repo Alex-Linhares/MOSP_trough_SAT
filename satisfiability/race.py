@@ -174,7 +174,7 @@ def solve_race(
     instance: MOSPInstance,
     *,
     upper: int | None = None,
-    upper_strategy: str = "cs-dfs",
+    upper_strategy: str = "rule+cs-dfs",
     lower: int = 0,
     time_budget: float | None = None,
     procedures: Sequence[str] = PROCEDURES,

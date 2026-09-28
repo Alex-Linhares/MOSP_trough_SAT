@@ -560,8 +560,9 @@ def rule_then_dfs(
     incumbent than the ranker's (`cs-dfs+rule` 0.127 / 92.7% against 0.157 /
     91.0% held out). Whether that holds over the whole corpus, against the
     709-better / 13-worse `learned+cs-dfs` scored over `cs-dfs`, is what
-    `learning.rule_seed` measures (`reports/ml_nature.md` §28). Registered as
-    `rule+cs-dfs`; the default of nothing.
+    `learning.rule_seed` measures (`reports/ml_nature.md` §28): 780 better /
+    12 worse. Registered as `rule+cs-dfs`; the default upper-bound strategy and
+    the descent's seed since 2026-09-28.
     """
     return restricted_dfs(instance, max_nodes=max_nodes,
                           seed_order=two_key_closing_order(instance))
@@ -843,7 +844,13 @@ STRATEGIES: dict[str, Strategy] = {
     "learned+cs-dfs": learned_then_dfs,
 }
 
-DEFAULT_STRATEGY = "mcn+tabu"
+#: Changed from "mcn+tabu" to "rule+cs-dfs" on 2026-09-28 by the owner, on the
+#: measurement of `reports/ml_nature.md` §28: over all 6,376 certified instances
+#: the two-key rule seeding the restricted DFS is exact on 94.2% against 92.1%
+#: for the learned seed and beats plain `cs-dfs` on 780 instances against 12, at
+#: 57% of its time; `cs-dfs` was already stronger and faster than `mcn+tabu`.
+#: Every strategy stays registered; pass `strategy=` to use another.
+DEFAULT_STRATEGY = "rule+cs-dfs"
 
 
 def upper_bound(

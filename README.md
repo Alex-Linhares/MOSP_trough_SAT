@@ -316,7 +316,8 @@ they can be compared on the same instances:
 |---|---|
 | `tabu` | swap-move tabu search over raw product permutations |
 | `mcn` | least cost node (Becceneri 1999): minimum-degree elimination on the MOSP graph |
-| `mcn+tabu` | MCN to construct, tabu to improve — the default |
+| `mcn+tabu` | MCN to construct, tabu to improve — the default until 2026-09-28 |
+| `rule+cs-dfs` | the two-key closing rule (fewest new stacks, then most unclosed neighbours) seeding the restricted DFS — **the default since 2026-09-28**, on a whole-corpus measurement (780 better / 12 worse over `cs-dfs`) |
 | `customer-tabu` | tabu search over *customer closing orders* rather than product orders |
 | `cs-dfs` | Chu & Stuckey's `ub_MOSP`: DFS over closing orders, branching only on customers already open |
 | `customer-tabu+cs-dfs` | tabu first, then the DFS pruning against its result |

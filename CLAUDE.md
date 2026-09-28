@@ -537,7 +537,7 @@ Encodes the MOSP decision problem directly as SAT, bypassing the pathwidth reduc
 
 **Bounds for iterative deepening**:
 - Lower bound: `_lower_bound` — trivial, clique and contraction degeneracy, best of the three (see the bounds section above)
-- Upper bound: a named strategy from `satisfiability/heuristics.py`, defaulting to `mcn+tabu`; `cs-dfs` is usually stronger and far faster
+- Upper bound: a named strategy from `satisfiability/heuristics.py`, defaulting since 2026-09-28 to `rule+cs-dfs` — the two-key closing rule seeding Chu & Stuckey's restricted DFS, enabled by the owner on §28's corpus measurement (780 better / 12 worse over `cs-dfs`, 57% of its time); `mcn+tabu` was the default before, and `cs-dfs` was already stronger and far faster than it
 
 ## Design Decisions
 
