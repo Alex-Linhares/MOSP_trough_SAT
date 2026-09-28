@@ -92,8 +92,10 @@ every claim states its size range.*
       `f(t) = min_{|C|=t} |N[C]|`, a vertex-isoperimetric argument over the
       vertex-separation formulation. It is the only component of `_lower_bound`
       that passes the treewidth ceiling (§6) and the one candidate for a new
-      bound this project has produced. Check Ellis, Sudborough & Turner (1994),
-      the graph-searching literature's isoperimetric lower bounds, and the
+      bound this project has produced. Ellis, Sudborough & Turner (1994),
+      Coudert et al. (2014), Kobayashi et al. (2014) and Mallach (2018) were read
+      on 2026-09-28 and do not contain it (`literature/MISSING.md`). Still to
+      check: the graph-searching literature's isoperimetric lower bounds, and the
       Kinnersley citation list (bound and layout papers); nothing outward-facing
       may claim it until this is done. Likewise record whether the two-key
       rule's tie-break (most unclosed neighbours) appears anywhere; §29 shows it
