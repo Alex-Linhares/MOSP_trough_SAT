@@ -115,9 +115,12 @@ distinct works citing them, coloured by OpenAlex field. Kashiwabara & Fujisawa
   span two disciplines, and 63 of those join graph theory to VLSI design.
 - **The operations-research side is an island.** Only 6 works cite both a MOSP
   paper (Yanasse 1997, Fink & Voss 1999, or Linhares & Yanasse 2002) and a
-  graph-theory paper. Four of the six are 2015-2017 papers on pathwidth or
-  vertex separation that cite Linhares & Yanasse (2002) as the link; the other
-  two are 2001 and 2004 pattern-sequencing work from the same research group.
+  graph-theory paper. Two are from the Table 1 authors themselves (Linhares
+  & Yanasse 2001; Yanasse & Limeira 2004). One is MOSP work (Lopes &
+  Valério de Carvalho 2015, on graph properties of MOSP). Three are pathwidth
+  or vertex-separation work from computer science (Fraire-Huacuja,
+  Castillo-García and colleagues, two papers in 2016; Ding et al. 2017). Every
+  one of the six except the 2001 paper cites Linhares & Yanasse (2002).
 - **The fields follow the disciplines.** Works citing the MOSP papers are
   mostly Engineering (86 of 135); works citing the graph-theory papers are
   mostly Computer Science (417 of 507).
