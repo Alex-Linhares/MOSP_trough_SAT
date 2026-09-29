@@ -109,16 +109,36 @@ through its offset. So the run covers three kinds of input:
   Coudert, Mazauric & Nisse 2014, TreewidthLIB, PACE), each turned into a MOSP
   instance with one pattern per edge, and compared against published pathwidth
   solvers.
-- **The other problems in the table** — published instances of gate matrix
-  layout, PLA folding and graph searching where they exist, each translated
-  through its equivalence. Section 3's proofs are what make each translation
-  sound, so an instance class enters only once its equivalence is proved.
+- **The other problems in the table** — every published benchmark collection
+  we can find for any of the twelve problems (decided 2026-09-29: all of
+  them, not a sample), each translated through its equivalence. Section 3's
+  proofs are what make each translation sound, so a collection enters only
+  once its equivalence is proved.
 
 The shared artifact is **a large dataset of instances with certified optimal
 pathwidth**. Each instance has its graph, the problem it came from, the
 optimum, a witness layout, the value under every problem in the table, and a
 proof of optimality (a DRAT refutation or a search certificate) that a third
 party can check without our code.
+
+**Where to look.** Held already, all MOSP: the 2005 Constraint Modelling
+Challenge (Harvey, Miller, Shaw, Simonis, Wilson), Faggioli & Bentivoglio,
+SCOOP and Chu & Stuckey (`../benchmarks/instances/`). Leads to verify, from
+memory and the papers in hand:
+
+| Problem | Where instances may be | Status |
+|---|---|---|
+| gate matrix layout | the VLSI circuits used in the GMLP heuristic literature (e.g. Oliveira & Lorena 2002, Linhares's own work) | to verify |
+| PLA folding | MCNC / Espresso PLA benchmark circuits | to verify |
+| one-dimensional logic | same circuit sources as gate matrix layout | to verify |
+| vertex separation | VSPLIB (cited by Coudert, Mazauric & Nisse 2014), with grids, trees and Harwell-Boeing graphs from the VSP metaheuristic papers | to verify |
+| pathwidth | TreewidthLIB; PACE 2016-17 treewidth sets; Coudert et al.'s graphs | to verify |
+| node / edge search | probably no benchmark sets; the graph-searching papers are theoretical | to check |
+| narrowness, split bandwidth, edge separation, interval thickness | almost certainly none, since the names are barely used | to check |
+
+A survey pass through the citers of each Table 1 paper, which
+`data/openalex_citations.json` already lists, is the systematic way to find
+the rest: any experimental paper among them had instances.
 
 **To do for the dataset.** Choose the collections and get their licences.
 Fix a file format and a checker. Record provenance for every value, as
