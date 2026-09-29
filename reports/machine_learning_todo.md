@@ -118,6 +118,8 @@ every claim states its size range.*
       the pre-fix rule.
 - [ ] Add the popularity measurement (`paper2/popularity.md`) as a short
       section on where the problem lives in the literature.
-- [ ] Re-attach the rebuilt PDF to the existing Zotero item (key QN7U6UDH)
-      rather than creating a new one; the connector's `saveAttachment` needs
-      the item's session, so create a named session and item id first.
+- [x] Re-attach the rebuilt PDF to the existing Zotero item (key QN7U6UDH):
+      done 2026-09-29 by replacing the attachment's file in
+      `storage/HL4K2PQP/` in place (the connector cannot attach to an existing
+      item). Repeat the same way after each rebuild. The duplicate item
+      ZJPDY69D, which has no PDF, is still there to delete by hand.
