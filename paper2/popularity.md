@@ -6,6 +6,14 @@ answers, and they disagree sharply, so both are given.
 - **Problem literature** — works whose *title or abstract* uses the problem's
   name, restricted to Computer Science, Mathematics, Engineering and Decision
   Sciences. This measures how alive the *name* is.
+  The restriction to those four fields is there because several of these
+  names are ordinary words or phrases that other fields use for something
+  else. Unrestricted, "narrowness" returns over a million works, mostly
+  physics, optics and medicine; "edge separation" returns aerodynamics papers
+  on leading- and trailing-edge flow separation; "open stacks" picks up
+  OpenStack, the cloud platform; and "interval thickness" picks up petroleum
+  geology. The full list, with the raw counts, is under *Method and its
+  limits* below.
 - **Defining paper citations** — `cited_by_count` for the Table 1 reference that
   Linhares & Yanasse attach to that problem. This measures how much the
   *result* is used, which is not the same thing.
