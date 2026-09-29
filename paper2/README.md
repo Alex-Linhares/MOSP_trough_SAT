@@ -10,6 +10,9 @@ engineering. Those live in the rest of the repository.
   Yanasse (2002). `literature/MANIFEST.md` is the index and status record;
   `literature/SOURCES.txt` records where each file came from.
 - `table1.bib` — BibTeX for Table 1's twelve references, keyed `LY2002ref<n>`.
+- `citation_graph.py` — the citation network and popularity figures in
+  `figures/`, from OpenAlex (cached in `data/`); discussed at the end of
+  `popularity.md`.
 - `popularity.md` — the full popularity measurement: method, the contaminated
   raw counts that were discarded, and the caveats. The table itself is
   reproduced under Step 2 below.

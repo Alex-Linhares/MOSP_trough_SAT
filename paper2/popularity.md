@@ -88,3 +88,32 @@ by sampling returned titles. Remaining caveats:
 - **Gate matrix layout and PLA folding overlap**, since Möhring [6] is Table 1's
   reference for both.
 - Citation counts are OpenAlex's, which run lower than Google Scholar's.
+
+## Who cites whom (added 2026-09-29)
+
+![Citation network of the Table 1 papers](figures/table1_citation_network.png)
+
+![Name usage of the twelve problems](figures/table1_popularity.png)
+
+Regenerate with `python -m paper2.citation_graph` (OpenAlex responses cached in
+`paper2/data/openalex_citations.json`; `--refresh` re-fetches). The network
+has the eleven indexed Table 1 papers plus Linhares & Yanasse (2002) itself on
+a circle, coloured by the discipline Table 1 gives their problem, and the 844
+distinct works citing them, coloured by OpenAlex field. Kashiwabara & Fujisawa
+(1979) has no OpenAlex record and is absent.
+
+- **The communities barely touch.** 269 of the 844 citing works cite two or
+  more Table 1 papers, but almost all of those stay inside one discipline. 74
+  span two disciplines, and 63 of those join graph theory to VLSI design.
+- **The operations-research side is an island.** Only 6 works cite both a MOSP
+  paper (Yanasse 1997, Fink & Voss 1999, or Linhares & Yanasse 2002) and a
+  graph-theory paper. Four of the six are 2015-2017 papers on pathwidth or
+  vertex separation that cite Linhares & Yanasse (2002) as the link; the other
+  two are 2001 and 2004 pattern-sequencing work from the same research group.
+- **The fields follow the disciplines.** Works citing the MOSP papers are
+  mostly Engineering (86 of 135); works citing the graph-theory papers are
+  mostly Computer Science (417 of 507).
+
+Counts are OpenAlex's, which misses citations Google Scholar has, so these are
+lower bounds on how connected the literature is. The field of a citing work is
+OpenAlex's `primary_topic` assignment, which is automatic.
