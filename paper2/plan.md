@@ -96,11 +96,34 @@ ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
 (§11, §25).
 
 **To do.** State each dominance rule as a lemma about vertex-separation
-layouts and prove it (in Lean where feasible — the bugs show why). Run the
-solver on standard pathwidth benchmarks (e.g. the graphs of Coudert, Mazauric
-& Nisse 2014, or PACE instances) through the one-pattern-per-edge encoding,
-and compare with published pathwidth solvers. Decide how much of the
-soundness history belongs in this paper.
+layouts and prove it (in Lean where feasible — the bugs show why). Decide how
+much of the soundness history belongs in this paper.
+
+**The benchmark and the dataset** (decided 2026-09-29: benchmark everything,
+and publish the result as a dataset). Because the problems are one complex, a
+single certified pathwidth value answers every problem in the table at once,
+through its offset. So the run covers three kinds of input:
+
+- **MOSP instances** — the certified corpus as it stands.
+- **Pathwidth benchmarks** — standard graph collections (e.g. the instances of
+  Coudert, Mazauric & Nisse 2014, TreewidthLIB, PACE), each turned into a MOSP
+  instance with one pattern per edge, and compared against published pathwidth
+  solvers.
+- **The other problems in the table** — published instances of gate matrix
+  layout, PLA folding and graph searching where they exist, each translated
+  through its equivalence. Section 3's proofs are what make each translation
+  sound, so an instance class enters only once its equivalence is proved.
+
+The shared artifact is **a large dataset of instances with certified optimal
+pathwidth**. Each instance has its graph, the problem it came from, the
+optimum, a witness layout, the value under every problem in the table, and a
+proof of optimality (a DRAT refutation or a search certificate) that a third
+party can check without our code.
+
+**To do for the dataset.** Choose the collections and get their licences.
+Fix a file format and a checker. Record provenance for every value, as
+`solutions/` does. Price the run with the cost model of
+`../reports/ml_nature.md` §19 before starting it.
 
 ## 5. Closing
 
@@ -111,9 +134,22 @@ degree or clique bound can close it).
 
 **To do.** Write last.
 
-## Open decisions
+## Decisions
 
-- Venue and length.
-- Whether the Lean development is a companion artifact or part of the paper.
-- Whether section 4's benchmark run is on MOSP instances, pathwidth
-  benchmarks, or both.
+- **Venue: INFORMS Journal on Computing first** (decided 2026-09-29). The
+  journal expects the code and data behind a paper to be deposited in its
+  own repository; check the current rules before submission and build the
+  dataset to satisfy them.
+- **The Lean proofs go into a GitHub repository made for this paper**
+  (decided 2026-09-29), separate from this one. The paper cites it. The
+  development in `../lean/MOSPFormalization/` is the starting point.
+- **Section 4 benchmarks all three kinds of input** (decided 2026-09-29):
+  MOSP instances, pathwidth benchmarks, and instances of the other problems
+  in the table, released together as one dataset.
+
+## Still open
+
+- Length, and how the proofs of section 3 split between the paper, an
+  appendix and the Lean repository.
+- What to call the dataset, and where to host it beyond the journal's own
+  repository.
