@@ -71,47 +71,49 @@ is a held paper; see `literature/MANIFEST.md`, "Beyond Table 1".
 
 ## Step 2 (done): how popular is each of the twelve problems?
 
-Measured against OpenAlex, 2026-09-17. Two measures, because they disagree
-sharply: works using the problem's *name* in title or abstract (restricted to
-computer science, mathematics, engineering and decision sciences), and citations
-of the Table 1 paper attached to that problem. Method and caveats are in
-`popularity.md`.
+Measured against OpenAlex, 2026-09-17, and corrected 2026-09-29 after a
+relevance check showed most search hits for several names were about something
+else. Two measures, because they disagree sharply: works about the problem
+that use its *name* in title or abstract (restricted to computer science,
+mathematics, engineering and decision sciences), and citations of the Table 1
+paper attached to that problem. Method, the correction and the caveats are in
+`popularity.md`, with figures on citations and on growth over the decades.
 
-| Problem | Works using the name | Table 1 ref | Citations of that paper |
+| Problem | Relevant works using the name | Table 1 ref | Citations of that paper |
 |---|---:|---|---:|
-| Graph path-width | **1,609** | [13] Kinnersley 1992 | 215 |
-| Node search game | 127 | [9] Kirousis & Papadimitriou 1985 | 124 |
-| Gate matrix layout | 126 | [6] Möhring 1990 / [8] Wing et al. 1985 | 134 / 89 |
-| Vertex separation | 105 | [13] Kinnersley 1992 | 215 |
-| Edge search game | 94 | [10] Kirousis & Papadimitriou 1986 | **294** |
-| PLA folding | 74 | [6] Möhring 1990 | 134 |
-| MOSP | 60 | [1] Yanasse 1997 / [4] Fink & Voss 1999 | 74 / 71 |
-| Narrowness | 35 | [11] Kornai & Tuza 1992 | 44 |
-| Split bandwidth | 35 | [12] Fomin 1998 | 19 |
-| Edge separation | 22 | [14] Lengauer 1981 | 77 |
-| One-dimensional logic | 18 | [7] Ohtsuki et al. 1979 | 107 |
-| Interval thickness | 10 | [5] Kashiwabara & Fujisawa 1979 | not indexed |
+| Graph path-width | **1,213** | [13] Kinnersley 1992 | 215 |
+| Gate matrix layout | 110 | [6] Möhring 1990 / [8] Wing et al. 1985 | 134 / 89 |
+| PLA folding | 68 | [6] Möhring 1990 | 134 |
+| MOSP | 58 | [1] Yanasse 1997 / [4] Fink & Voss 1999 | 74 / 71 |
+| Vertex separation | 55 | [13] Kinnersley 1992 | 215 |
+| Edge search game | 38 | [10] Kirousis & Papadimitriou 1986 | **294** |
+| Node search game | 34 | [9] Kirousis & Papadimitriou 1985 | 124 |
+| One-dimensional logic | 11 | [7] Ohtsuki et al. 1979 | 107 |
+| Interval thickness | 6 | [5] Kashiwabara & Fujisawa 1979 | not indexed |
+| Narrowness | 0 | [11] Kornai & Tuza 1992 | 44 |
+| Split bandwidth | 0 | [12] Fomin 1998 | 19 |
+| Edge separation | 0 | [14] Lengauer 1981 | 77 |
 
 For scale, outside Table 1: **treewidth** 6,222 works, **bandwidth
 minimization** 306.
 
 Four things worth carrying into the mathematics:
 
-- **Pathwidth has absorbed the family** — 1,609 works, 27× MOSP, more than the
-  other eleven names combined. Whatever is known about this equivalence class
-  was most likely published under "pathwidth", not under any other name here.
+- **Pathwidth has absorbed the family** — 1,213 relevant works, 21× MOSP,
+  more than three times the other eleven names combined, and the only name
+  still growing. Whatever is known about this equivalence class was most
+  likely published under "pathwidth", not under any other name here.
 - **Citations do not track name usage.** Kirousis & Papadimitriou 1986 is the
-  most-cited paper in the table (294) while "edge search game" is only the fifth
-  most-used name; it is cited as a foundational graph-searching result, not as a
-  problem people work on. Ohtsuki et al. 1979 is starker: 107 citations against
-  18 works using "one-dimensional logic".
-- **MOSP is smaller than most of its own synonyms**, below node search, gate
-  matrix layout, vertex separation, edge search and PLA folding.
-- **Four names are effectively dead**: interval thickness, one-dimensional
-  logic, edge separation and split bandwidth. Split bandwidth is Fomin's own
-  coinage in the paper Table 1 cites, has 19 citations, and was never adopted.
-  Edge separation in Lengauer's pebbling sense returns *zero* works — the phrase
-  survives in the literature only as aerodynamics.
+  most-cited paper in the table (294) while only 38 works use "edge search
+  game" in its sense; it is cited as a foundational graph-searching result,
+  not as a problem people work on. Ohtsuki et al. 1979 is starker: 107
+  citations against 11 works using "one-dimensional logic".
+- **MOSP is one of the better-used names**, fourth of twelve, ahead of vertex
+  separation and both search games. (The uncorrected counts said the opposite.)
+- **Three names are not in use at all**: narrowness, split bandwidth and edge
+  separation have no relevant works. Split bandwidth is Fomin's own coinage in
+  the paper Table 1 cites, has 19 citations, and was never adopted. Interval
+  thickness (6) and one-dimensional logic (11) are nearly as rare.
 
 Counts are lower bounds: a paper can work on pathwidth without putting the word
 in its abstract, and OpenAlex's thin abstract coverage of older material biases

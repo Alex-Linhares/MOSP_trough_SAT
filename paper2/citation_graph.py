@@ -185,28 +185,30 @@ def draw_popularity() -> Path:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    rows = [  # from popularity.md, OpenAlex 2026-09-17
-        ("graph path-width", 1609, "GT"), ("node search game", 127, "GT"),
-        ("gate matrix layout", 126, "VLSI"), ("vertex separation", 105, "GT"),
-        ("edge search game", 94, "GT"), ("PLA folding", 74, "VLSI"), ("MOSP", 60, "OR"),
-        ("narrowness", 35, "GT"), ("split bandwidth", 35, "GT"), ("edge separation", 22, "GT"),
-        ("one-dimensional logic", 18, "VLSI"), ("interval thickness", 10, "GT")]
+    from paper2.relevance import relevant_counts
+    from paper2.trends import QUERIES
+    rc = relevant_counts()
+    rows = sorted(((n, rc[n], d) for n, _, d, _ in QUERIES), key=lambda r: -r[1])
     fig, ax = plt.subplots(figsize=(9, 5.5))
     names = [r[0] for r in rows][::-1]
     vals = [r[1] for r in rows][::-1]
     cols = [DISCIPLINE[r[2]][1] for r in rows][::-1]
     ax.barh(names, vals, color=cols)
     for i, v in enumerate(vals):
-        ax.text(v + 15, i, f"{v:,}", va="center", fontsize=9)
-    ax.set_xlabel("works using the problem's name in title or abstract")
+        if v:
+            ax.text(v + 15, i, f"{v:,}", va="center", fontsize=9)
+    for i, v in enumerate(vals):
+        if v == 0:
+            ax.text(15, i, "0: every search hit was about something else", va="center", fontsize=8.5, color="0.4")
+    ax.set_xlabel("works about the problem that use its name in title or abstract")
     ax.set_title("The twelve equivalent problems of Table 1, by how often the name is used\n"
-                 "OpenAlex, computer science, mathematics, engineering and decision sciences, 2026-09-17",
+                 "relevant works only, in CS, mathematics, engineering and decision sciences; OpenAlex, 2026-09-29",
                  fontsize=10)
     from matplotlib.patches import Patch
     ax.legend(handles=[Patch(color=c, label=n) for n, c in DISCIPLINE.values()],
               loc="lower right", frameon=False)
     ax.spines[["top", "right"]].set_visible(False)
-    ax.set_xlim(0, 1800)
+    ax.set_xlim(0, 1400)
     fig.tight_layout()
     FIGS.mkdir(exist_ok=True)
     out = FIGS / "table1_popularity.png"
@@ -219,19 +221,19 @@ def draw_popularity() -> Path:
 # is used: Wing et al. for gate matrix layout (Möhring is PLA folding's),
 # Yanasse 1997 for MOSP. Kinnersley serves pathwidth and vertex separation,
 # Möhring serves PLA folding and gate matrix layout, so shared papers are joined.
-SCATTER = [
-    ("graph path-width", 1609, 215, "GT", "Kinnersley 1992"),
-    ("node search game", 127, 124, "GT", "Kirousis & Papadimitriou 1985"),
-    ("gate matrix layout", 126, 89, "VLSI", "Wing et al. 1985"),
-    ("vertex separation", 105, 215, "GT", "Kinnersley 1992"),
-    ("edge search game", 94, 294, "GT", "Kirousis & Papadimitriou 1986"),
-    ("PLA folding", 74, 134, "VLSI", "Möhring 1990"),
-    ("MOSP", 60, 74, "OR", "Yanasse 1997"),
-    ("narrowness", 35, 44, "GT", "Kornai & Tuza 1992"),
-    ("split bandwidth", 35, 19, "GT", "Fomin 1998"),
-    ("edge separation", 22, 77, "GT", "Lengauer 1981"),
-    ("one-dimensional logic", 18, 107, "VLSI", "Ohtsuki et al. 1979"),
-    ("interval thickness", 10, None, "GT", "Kashiwabara & Fujisawa 1979"),
+SCATTER = [  # name, citations of the defining paper (popularity.md), discipline, paper
+    ("graph path-width", 215, "GT", "Kinnersley 1992"),
+    ("node search game", 124, "GT", "Kirousis & Papadimitriou 1985"),
+    ("gate matrix layout", 89, "VLSI", "Wing et al. 1985"),
+    ("vertex separation", 215, "GT", "Kinnersley 1992"),
+    ("edge search game", 294, "GT", "Kirousis & Papadimitriou 1986"),
+    ("PLA folding", 134, "VLSI", "Möhring 1990"),
+    ("MOSP", 74, "OR", "Yanasse 1997"),
+    ("narrowness", 44, "GT", "Kornai & Tuza 1992"),
+    ("split bandwidth", 19, "GT", "Fomin 1998"),
+    ("edge separation", 77, "GT", "Lengauer 1981"),
+    ("one-dimensional logic", 107, "VLSI", "Ohtsuki et al. 1979"),
+    ("interval thickness", None, "GT", "Kashiwabara & Fujisawa 1979"),
 ]
 
 
@@ -242,7 +244,7 @@ def draw_scatter() -> Path:
     from matplotlib.patches import Patch
 
     fig, ax = plt.subplots(figsize=(9.5, 7.5))
-    lo, hi, floor = 7, 3000, 10
+    lo, hi, floor = 4, 3000, 10
     ax.fill_between([lo, hi], [lo, hi], hi, color="#eef3fb", lw=0)
     ax.fill_between([lo, hi], lo, [lo, hi], color="#fbf1e6", lw=0)
     ax.plot([lo, hi], [lo, hi], color="0.5", ls="--", lw=1)
@@ -250,42 +252,53 @@ def draw_scatter() -> Path:
             fontsize=9.5, color="#2b4c7e", va="top")
     ax.text(2700, 8.5, "name used more\nthan the paper is cited:\nthe name has spread\nbeyond its source",
             fontsize=9.5, color="#8a5a1c", ha="right", va="bottom")
-    pts = {}
-    for name, works, cites, disc, ref in SCATTER:
+    from paper2.relevance import relevant_counts
+    rc = relevant_counts()
+    zero_x = 4.6
+    pts, zeros = {}, []
+    for name, cites, disc, ref in SCATTER:
+        works = rc[name]
         c = DISCIPLINE[disc][1]
         if cites is None:
             ax.scatter(works, floor, marker="v", s=90, facecolor="white", edgecolor=c, lw=1.6, zorder=3)
-            ax.annotate(f"{name}\n({ref}: not indexed)", (works, floor), xytext=(8, 2),
+            ax.annotate(f"{name}  ({works} works;\n{ref} not indexed)", (works, floor), xytext=(8, 2),
                         textcoords="offset points", fontsize=8.5, color="0.3")
+            continue
+        if works == 0:
+            zeros.append((name, cites, c))
+            ax.scatter(zero_x, cites, marker="<", s=90, color=c, edgecolor="k", lw=0.6, zorder=3, clip_on=False)
             continue
         pts[name] = (works, cites)
         ax.scatter(works, cites, s=110, color=c, edgecolor="k", lw=0.6, zorder=3)
+    for name, cites, c in zeros:
+        ax.annotate(f"{name} (0 works)", (zero_x, cites), xytext=(8, -3), textcoords="offset points",
+                    fontsize=9, color="0.25")
     for a, b in [("graph path-width", "vertex separation")]:
         (x1, y1), (x2, y2) = pts[a], pts[b]
         ax.plot([x1, x2], [y1, y2], color="0.6", lw=0.8, ls=":", zorder=2)
     offsets = {"graph path-width": (-10, 10, "right"), "vertex separation": (8, 6, "left"),
-               "edge search game": (8, 4, "left"), "node search game": (8, -2, "left"),
+               "edge search game": (8, 4, "left"), "node search game": (6, -16, "left"),
                "gate matrix layout": (8, -10, "left"), "PLA folding": (8, 4, "left"),
-               "MOSP": (8, -4, "left"), "narrowness": (-8, 4, "right"),
-               "split bandwidth": (8, -6, "left"), "edge separation": (-8, 2, "right"),
-               "one-dimensional logic": (8, 2, "left")}
+               "MOSP": (8, -4, "left"), "one-dimensional logic": (-6, 8, "right")}
     for name, (x, y) in pts.items():
         dx, dy, ha = offsets[name]
         ax.annotate(name, (x, y), xytext=(dx, dy), textcoords="offset points",
                     ha=ha, fontsize=9.5, weight="bold" if name in ("graph path-width", "MOSP") else None)
     ax.set_xscale("log"); ax.set_yscale("log")
     ax.set_xlim(lo, hi); ax.set_ylim(lo, 700)
-    ax.set_xlabel("works using the problem's name in title or abstract (log scale)")
+    ax.set_xlabel("relevant works using the problem's name in title or abstract (log scale)")
     ax.set_ylabel("citations of the paper Table 1 cites for it (log scale)")
-    ax.set_title("Is the name alive, or only the result?\nThe twelve problems of Linhares & Yanasse (2002), Table 1; OpenAlex, 2026-09-17",
+    ax.set_title("Is the name alive, or only the result?\nThe twelve problems of Linhares & Yanasse (2002), Table 1; "
+                 "relevant works only; OpenAlex, 2026-09-29",
                  fontsize=10.5)
     ax.legend(handles=[Patch(color=c, label=n) for n, c in DISCIPLINE.values()],
               loc="center right", bbox_to_anchor=(1.0, 0.45), frameon=False)
-    fig.text(0.01, 0.005, "Dotted line: pathwidth and vertex separation share Kinnersley 1992. "
+    fig.text(0.01, 0.005, "Left-pointing markers at the left edge: no relevant works use the name.\n"
+             "Dotted line: pathwidth and vertex separation share Kinnersley 1992. "
              "Gate matrix layout uses Wing et al. 1985; MOSP uses Yanasse 1997.",
              ha="left", va="bottom", fontsize=7.5, color="0.35")
     ax.spines[["top", "right"]].set_visible(False)
-    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     FIGS.mkdir(exist_ok=True)
     out = FIGS / "table1_name_vs_citations.png"
     fig.savefig(out, dpi=150)
