@@ -6,6 +6,8 @@ engineering. Those live in the rest of the repository.
 
 ## Contents
 
+- `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
+  what each argues, what exists, what is still to do.
 - `literature/` — source papers, named by their bracket number in Linhares &
   Yanasse (2002). `literature/MANIFEST.md` is the index and status record;
   `literature/SOURCES.txt` records where each file came from.
