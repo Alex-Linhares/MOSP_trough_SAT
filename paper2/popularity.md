@@ -103,6 +103,20 @@ by sampling returned titles. Remaining caveats:
 
 ![Name usage of the twelve problems](figures/table1_popularity.png)
 
+![Name usage against citations of the defining paper](figures/table1_name_vs_citations.png)
+
+The bar chart is on a linear scale on purpose: pathwidth's bar is longer than
+the other eleven put together, which is the first finding above. The scatter
+puts the report's two measures against each other. Above the diagonal, the
+paper Table 1 cites is cited more often than the problem's name is used: the
+result is still in use but the name is not. Seven of the eleven indexed
+problems sit there, one-dimensional logic and edge separation furthest out.
+Below the diagonal the name has outgrown its source paper. Pathwidth is the
+only problem far below it, with about 7.5 works using the name for every
+citation of Kinnersley (1992). Node search sits on the line, and gate matrix
+layout and split bandwidth just below it. MOSP sits close to the line, with
+the name and the paper at similar, small counts.
+
 Regenerate with `python -m paper2.citation_graph` (OpenAlex responses cached in
 `paper2/data/openalex_citations.json`; `--refresh` re-fetches). The network
 has the eleven indexed Table 1 papers plus Linhares & Yanasse (2002) itself on
