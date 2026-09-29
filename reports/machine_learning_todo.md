@@ -122,4 +122,4 @@ every claim states its size range.*
       done 2026-09-29 by replacing the attachment's file in
       `storage/HL4K2PQP/` in place (the connector cannot attach to an existing
       item). Repeat the same way after each rebuild. The duplicate item
-      ZJPDY69D, which has no PDF, is still there to delete by hand.
+      ZJPDY69D was deleted by the owner the same day.
