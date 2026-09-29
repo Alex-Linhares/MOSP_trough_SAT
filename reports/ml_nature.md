@@ -7669,9 +7669,27 @@ certified instances at n ≤ 40 (seed 7): both certified the stored optimum on
 300 of 300, in 7.6 s total under `cs-dfs` and 2.5 s under `rule+cs-dfs`.
 Only the incumbent differs; the refutation that proves optimality is the same
 search under either seed, so certified values cannot change, and the saving is
-the satisfiable steps the better start skips. **Not measured: the end-to-end
-time above 40 customers**, where the refutation at `optimum − 1` dominates and
-the seed is expected to matter little. Figures from this item's sweep output:
+the satisfiable steps the better start skips. Above 40 customers the
+refutation at `optimum − 1` dominates and the seed was expected to matter
+little; **measured 2026-09-29** on four large instances where the two seeds
+start at different values, each (instance, seed) on its own pinned core of an
+otherwise idle machine, the descent run exactly as `solve_mosp_exact` runs it
+(`_lower_bound` as floor, no cache):
+
+| instance | optimum | start `cs-dfs` | start rule | nodes `cs-dfs` | nodes rule | seconds `cs-dfs` | seconds rule |
+|---|---|---|---|---|---|---|---|
+| `Random-100-100-4-1_0` | 46 | 49 | 47 | 248,249,136 | 247,847,525 | 135.0 | 136.9 |
+| `Random-125-125-6-1_0` | 81 | 84 | 83 | 68,331,810 | 68,331,759 | 52.5 | 58.0 |
+| `Random-125-125-6-3_0` | 80 | 85 | 83 | 286,852,293 | 286,852,107 | 199.6 | 199.2 |
+| `Random-125-125-6-4_0` | 80 | 83 | 80 | 400,047,185 | 400,038,970 | 268.9 | 269.0 |
+
+All eight certify the stored optimum by refutation. Node counts agree to
+within 0.2% and seconds to within clock noise, even on `6-4_0` where the rule
+starts *at* the optimum and skips every satisfiable step: those steps cost
+about 8,000 nodes against 400 million for the refutation. **At 100–125
+customers the seed changes the upper bound and not the certification cost.**
+Its value there is a better answer when a run is stopped early, not a faster
+proof. Figures from this item's sweep output:
 `reports/figures/rule_seed_scatter.png` (excess over optimum per instance,
 both seeds) and `reports/figures/rule_seed_by_size.png` (mean excess and
 share exact by size band). Regenerate:
@@ -7679,6 +7697,7 @@ share exact by size band). Regenerate:
 ```bash
 python -m learning.rule_seed_plots                          # from learning/data/rule_seed/
 PYTHONPATH=. python -m learning.rule_seed_descent_check     # the 300-instance descent, ~10 s on 12 workers
+PYTHONPATH=. python -m learning.rule_seed_large             # the four large instances, ~4.5 min on 8 cores
 ```
 
 ## 29. The 2004 arc-traversal MCNh: is the two-key rule the literature's heuristic under another name? (plan 3 §1 Q6b, loop0004 item 02)

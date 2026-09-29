@@ -607,13 +607,19 @@ optimum rises from 8\% to 26\%. The rule does not make big instances easy.
 Above 100 customers its start is still about three stacks above the optimum
 on average, and only 27 instances of that size are in the corpus.
 
-What has not been measured is the effect on the whole solve for large
-instances. On 300 instances of up to 40 customers, the full two-phase solve
-certified the same optimum under both starts on all 300, in 2.5 seconds in
-total against 7.6 \S{28}. On the day-long 125-by-125 instances we expect the
-difference to be small, because a better start skips a few of the cheap
-``yes, that can be done'' questions at the top of the descent and none of
-the expensive ``no'' at the bottom. The owner made the rule the solver's
+The whole solve tells a different story from the first phase. On 300
+instances of up to 40 customers, the full two-phase solve certified the same
+optimum under both starts on all 300, in 2.5 seconds in total against 7.6
+\S{28}. On large instances the gain disappears. We ran four instances of 100
+and 125 customers where the two starts differ by one to three stacks, each
+on its own processor core: all eight runs proved the right optimum, the
+search visited the same number of positions to within 0.2\%, and the times
+agreed to within a few seconds, between one and four and a half minutes
+\S{28}. Even where the rule starts exactly at the optimum, and so skips every
+``yes, that can be done'' question, the saving is about eight thousand
+positions against four hundred million spent on the final ``no''. So on
+large instances the rule gives a better answer if a run is stopped early,
+not a faster proof. The owner made the rule the solver's
 default on 2026-09-28 on the strength of the first-phase measurement.
 
 \begin{figure}[t]
