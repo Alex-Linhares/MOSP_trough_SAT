@@ -619,7 +619,61 @@ agreed to within a few seconds, between one and four and a half minutes
 ``yes, that can be done'' question, the saving is about eight thousand
 positions against four hundred million spent on the final ``no''. So on
 large instances the rule gives a better answer if a run is stopped early,
-not a faster proof. The owner made the rule the solver's
+not a faster proof. Table~\ref{tab:seedphases} puts the two measurements
+side by side.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The two-key rule against Chu and Stuckey's own start. Top: the
+first phase (finding a good sequence) over all 6,376 certified instances.
+Bottom: the whole solve, finding plus proving, on four large instances, each
+run on its own processor core; C\&S is Chu and Stuckey's start. ``Nodes'' are the positions the search
+visited; M is millions \S{28}.}
+\label{tab:seedphases}
+\begin{tabular}{lrrrr}
+\toprule
+\multicolumn{5}{l}{\emph{First phase, 6,376 instances}} \\
+start & at the optimum & mean excess & worst excess & ms per instance \\
+\midrule
+Chu \& Stuckey (MCN) & 84.5\% & 0.241 & $+10$ & 29.5 \\
+two-key rule & 94.2\% & 0.092 & $+8$ & 16.7 \\
+\midrule
+\multicolumn{5}{l}{rule better on 780 instances, worse on 12, equal on 5,584} \\
+\bottomrule
+\end{tabular}
+
+\medskip
+
+\begin{tabular}{lrccc}
+\toprule
+\multicolumn{5}{l}{\emph{Whole solve, four large instances}} \\
+instance & optimum & start & nodes & seconds \\
+ & & C\&S / rule & C\&S / rule & C\&S / rule \\
+\midrule
+Random-100-100-4-1 & 46 & 49 / 47 & 248.2\,M / 247.8\,M & 135 / 137 \\
+Random-125-125-6-1 & 81 & 84 / 83 & 68.3\,M / 68.3\,M & 52 / 58 \\
+Random-125-125-6-3 & 80 & 85 / 83 & 286.9\,M / 286.9\,M & 200 / 199 \\
+Random-125-125-6-4 & 80 & 83 / 80 & 400.0\,M / 400.0\,M & 269 / 269 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In plain English, the top half of the table says the rule is a better
+first guess. More than nine times in ten it already finds the best possible sequence,
+where Chu and Stuckey's start does so about eight and a half times in ten;
+when it misses it misses by less; it is almost never worse; and it gets
+there in a little over half the time. The bottom half says that, on big
+instances, a better first guess does not make the proof any shorter. Both
+starts end with the same optimum, the search looks at the same number of
+positions to within a fraction of a percent, and the clock agrees to within
+a few seconds. The reason is that the proof has to rule out every sequence
+with one stack fewer, and that job is the same size however good the
+starting guess was. The last row is the clearest case: the rule starts
+exactly at the optimum and so skips every intermediate step, yet those steps
+were worth about eight thousand positions out of four hundred million.
+
+The owner made the rule the solver's
 default on 2026-09-28 on the strength of the first-phase measurement.
 
 \begin{figure}[t]
