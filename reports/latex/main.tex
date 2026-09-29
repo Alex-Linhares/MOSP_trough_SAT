@@ -574,6 +574,72 @@ cs-dfs alone & 0.241 & 84.5\% & 29.5 \\
 \end{tabular}
 \end{table}
 
+\paragraph{The rule against Chu and Stuckey's own start.}
+It helps to say plainly what \citet{ChuStuckey2009}'s solver does, because
+the rule changes only one part of it. The solver works in two phases. First
+it looks for a good production sequence quickly: it builds one greedily, one
+customer at a time, and then spends a fixed budget (200{,}000 steps of a
+restricted depth-first search) trying to improve it. That gives an upper
+bound, a number of stacks known to be achievable. Then it proves the answer:
+it asks ``can it be done with one stack fewer?'' and keeps asking until the
+answer is no. The last ``no'' is the proof of optimality, and on hard
+instances it is almost all of the cost.
+
+The two-key rule replaces only the greedy start of the first phase. Chu and
+Stuckey start from the textbook minimal-cost-node order; we start from the
+rule's order and leave the restricted search and the whole proof phase
+untouched. So the rule cannot change any certified answer, only how close
+the first phase gets and how much work the second phase is left with.
+
+Over all 6,376 certified instances the rule's start ends the first phase at
+the optimum on 94.2\% of them, against 84.5\% for Chu and Stuckey's, and it
+is better on 780 instances and worse on 12 (Figure~\ref{fig:seedscatter}).
+Where it loses, it loses by one stack on 11 of the 12; where it wins, it
+often closes a gap of two or three stacks entirely, and in one case turns
+ten stacks too many into two. It is also faster, 16.7 against 29.5
+milliseconds per instance, because a better starting sequence lets the
+restricted search discard more of what it would otherwise explore \S{28}.
+
+Figure~\ref{fig:seedsize} shows the same comparison by instance size. The
+rule leads in every band, and the lead grows with size: between 81 and 100
+customers the share of instances where the first phase already finds the
+optimum rises from 8\% to 26\%. The rule does not make big instances easy.
+Above 100 customers its start is still about three stacks above the optimum
+on average, and only 27 instances of that size are in the corpus.
+
+What has not been measured is the effect on the whole solve for large
+instances. On 300 instances of up to 40 customers, the full two-phase solve
+certified the same optimum under both starts on all 300, in 2.5 seconds in
+total against 7.6 \S{28}. On the day-long 125-by-125 instances we expect the
+difference to be small, because a better start skips a few of the cheap
+``yes, that can be done'' questions at the top of the descent and none of
+the expensive ``no'' at the bottom. The owner made the rule the solver's
+default on 2026-09-28 on the strength of the first-phase measurement.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.66\textwidth]{rule_seed_scatter}
+\caption{The first phase of the solver under two starting sequences, one
+point per instance group: stacks above the certified optimum with Chu and
+Stuckey's start (across) and the two-key rule's start (up). Points below the
+dashed diagonal are instances where the rule does better (780), points above
+it where it does worse (12); 5,584 instances sit on the diagonal, most of
+them at the optimum under both. Marker size and colour give the number of
+instances at each point. 6,376 instances, 9--134 customers \S{28}.}
+\label{fig:seedscatter}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{rule_seed_by_size}
+\caption{The same comparison by size. Top: mean stacks above the optimum at
+the end of the first phase. Bottom: share of instances where the first phase
+already finds the optimum. Grey is Chu and Stuckey's start, blue the two-key
+rule's; instance counts are in brackets under each band. Only the start
+differs; the proof phase is the same search under both \S{28}.}
+\label{fig:seedsize}
+\end{figure}
+
 \paragraph{Imitation is closed.}
 Why did imitation learn so little? Because the target was mostly noise. Exact
 path counting over the subset lattice shows the optimum is never unique: 0 of
@@ -875,14 +941,14 @@ Height law; RMSE 0.18 / 0.21; 57 peaks; 3,378 certified & \S{37} & \code{python 
 \end{longtable}
 \normalsize
 
-\section{Solver changes proposed and never enabled}
+\section{Solver changes proposed, and the two applied}
 \label{app:changes}
 
 A reader may want to know what in this paper is a finding and what is a
 recommendation. Every entry below was measured behind a flag that defaults to
 today's behaviour, or in a report, and none was enabled by a loop; enabling
-any of them is the owner's change. The one entry that was applied, the
-\code{better\_move} fix, went through the owner. The full table with the
+any of them is the owner's change. Two were applied by the owner: the
+\code{better\_move} fix, and the two-key rule as the default start (entries 3 and 14). The full table with the
 measurement that decides each entry is section 8 of the summary.
 
 \footnotesize
@@ -900,7 +966,7 @@ measurement that decides each entry is section 8 of the summary.
 \endfoot
 1 & Fix the C \code{better\_move} \S{15, 31} & false refutations at the optimum on 56 of 43,935 instances; fix costs $+7.3\%$ nodes at $\le 40$, $1.54\times$ at 41--100 & applied by the owner \\
 2 & Exact or interval treewidth as a lower-bound component \S{24} & floor rises on 933 instances; valid on all 50,949 & proposed \\
-3 & Two-key rule as heuristic and DFS seed \S{7, 28} & 780 better / 12 worse over cs-dfs on 6,376 & registered, not default \\
+3 & Two-key rule as heuristic and DFS seed \S{7, 28} & 780 better / 12 worse over cs-dfs on 6,376 & applied by the owner, 2026-09-28 \\
 4 & Degree fan order on \code{decide} \S{20} & 0.0\% on refutations & closed \\
 5 & Degree fan order on satisfiable-side drivers \S{20} & $-35\%$ witness nodes at 75, $-13\%$ at 100 & proposed \\
 6 & cs-dfs$+$degree as the cs-dfs default \S{20, 28} & 128 / 113 vs cs-dfs at $1.5\times$ the time & registered, not default \\
@@ -911,7 +977,7 @@ measurement that decides each entry is section 8 of the summary.
 11 & learned$+$cs-dfs as default upper bound & dominated by the rule seed 263 / 80 & registered, not default \\
 12 & Group study splits by graph certificate \S{1} & 157 classes leak across files & proposed (study change) \\
 13 & Draw the dominance test's instances sparse; add the two minimal counterexamples \S{15} & the dense family never exposed the cycle & proposed \\
-14 & rule$+$cs-dfs wherever cs-dfs is used \S{28} & 627 of 988 misses recovered; 16.7 vs 29.5\,ms & proposed \\
+14 & rule$+$cs-dfs wherever cs-dfs is used \S{28} & 627 of 988 misses recovered; 16.7 vs 29.5\,ms & applied by the owner, 2026-09-28 \\
 15 & \code{mcnh} strategies \S{29} & the published MCNh to within tie-breaks & registered as reference point \\
 16 & bm-first composition of the dominance rules \S{31} & sound where measured; $0.854\times$ nodes at 41--100; seconds 0.98 & proposed to tune, not adopt \\
 17 & Pre-encoding re-cover for the SAT path \S{30} & $0.77\times$ conflicts, $0.71\times$ seconds at the median & proposed, to be raced \\

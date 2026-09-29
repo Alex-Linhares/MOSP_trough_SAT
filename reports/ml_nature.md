@@ -7660,6 +7660,27 @@ instance, and none of the 31,880 orderings the five sweeps produced came in
 below a certified optimum. `python -m pytest tests/ -q -x`: 1,083 passed, 2
 skipped, 1 xfailed in 83 s.
 
+**Addendum, 2026-09-28/29: applied, checked end to end, and plotted.** The
+owner made `rule+cs-dfs` the default on 2026-09-28 (`DEFAULT_STRATEGY`,
+`customer_search.solve`, `solve_mosp_exact`, `race`; commit d0b5c5ecd), so the
+"not a solver change" paragraph above describes the state when this item ran.
+Before the switch the complete descent was run under both seeds on 300
+certified instances at n ≤ 40 (seed 7): both certified the stored optimum on
+300 of 300, in 7.6 s total under `cs-dfs` and 2.5 s under `rule+cs-dfs`.
+Only the incumbent differs; the refutation that proves optimality is the same
+search under either seed, so certified values cannot change, and the saving is
+the satisfiable steps the better start skips. **Not measured: the end-to-end
+time above 40 customers**, where the refutation at `optimum − 1` dominates and
+the seed is expected to matter little. Figures from this item's sweep output:
+`reports/figures/rule_seed_scatter.png` (excess over optimum per instance,
+both seeds) and `reports/figures/rule_seed_by_size.png` (mean excess and
+share exact by size band). Regenerate:
+
+```bash
+python -m learning.rule_seed_plots                          # from learning/data/rule_seed/
+PYTHONPATH=. python -m learning.rule_seed_descent_check     # the 300-instance descent, ~10 s on 12 workers
+```
+
 ## 29. The 2004 arc-traversal MCNh: is the two-key rule the literature's heuristic under another name? (plan 3 §1 Q6b, loop0004 item 02)
 
 *Iteration 2 of loop0004, 2026-09-27. Code: `satisfiability/heuristics.py`
