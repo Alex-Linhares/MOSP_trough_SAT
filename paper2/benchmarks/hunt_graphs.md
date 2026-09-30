@@ -65,7 +65,15 @@ the archive and are left compressed; unpacked they would be about 1 GB.
 - **Licence**: none stated.
 - **Format**: text, `.mtx.rnd`. Line 1 `Nombre del problema: <name>`, line 2 `n n k`, then one edge `u v` per line, 1-based. HB files list each edge once (k = m); grid and tree files list each edge in both directions (k = 2m).
 - **Contents** (verified): `hb/` 73 graphs, n 24–960, m 46–7442; `grids/` 50 square grids λ×λ, 5 ≤ λ ≤ 54, n 25–2916, m 40–5724; `tree/1rot, 2rot, 3rot` 50 trees (19 + 19 + 12), n 22–202, m 21–201. The trees are the minimal trees of Ellis–Sudborough–Turner 1994 with VS 3, 4, 5 (n = 22, 67, 202); the file name `TREE_<n>_<vs>_rot<i>` carries the optimum. The same file names recur across the three `rot` folders with different content.
-- **Discrepancy**: the page says HB edges range 34–3721; the files give 46–7442 (unique undirected, loops removed). **Unresolved**; our count is from the files.
+- **Discrepancy**: the page says HB edges range 34–3721; the files give 46–7442 (unique undirected, loops removed). **Resolved 2026-09-30: the files are right and the page is wrong.** Every file is a
+  simple graph: no self-loops, no edge stored in both directions, and each header
+  matches its line count. The originals in the NIST Matrix Market store the lower
+  triangle with the diagonal, so edges = entries − vertices, and both ends of the
+  range match the files: `nos3` has 960 × 960 and 8,402 entries, so 7,442 edges;
+  `can___24` has 24 × 24 and 92 entries, so 68 edges. The page's 3,721 and 34 are
+  exactly half of those two values. Its minimum is also inconsistent, since
+  `bcspwr01`, with 46 edges, would halve to 23. Ding et al. (2017) repeat the
+  page's figure.
 - **Optima**: grids VS = λ, trees VS = the value in the name — both by construction. HB: only GVNS values and times in `vsp_results.xlsx` (heuristic, not proofs). The xlsx reports 6 for several `TREE_202_5` trees whose optimum is 5, so its tree column is not an optimum column. Coudert et al. (2014) proved exact pathwidth for grids up to λ = 13, trees up to n = 67 and 26 HB graphs (values not tabulated in the SEA paper); Mallach (2018) Tables 2–3 give exact pathwidth for 20 HB, 6 grids and 20 trees with n ≤ 100.
 - **Overlap**: the HB graphs are Harwell-Boeing matrices; 36 names also appear in CMPLIB's HB set, randomly relabelled (`.rnd`), and 31 of those 36 agree in n, m and degree sequence; 5 (`bcsstk20`, `bcsstk22`, `dwt__234`, `nos1`, `nos2`) have fewer vertices in CMPLIB than in VSPLIB, so the two sets are not interchangeable.
 
