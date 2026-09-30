@@ -1,0 +1,135 @@
+# session it07 started 2026-09-30 13:08:44
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "07 Split" Ralph_Loops/loop0005/iterations.md; ls lean/MOSPFormalization/Complex/; grep -n -i "split" paper2/equivalences.md 
+  > $ cd /home/al/dev/MOSP; sed -n 290,330p paper2/equivalences.md; sed -n 515,540p paper2/equivalences.md; ls paper2/literature/; tail -80 paper2/equivalences.md | h
+  > $ cd /home/al/dev/MOSP/lean; wc -l MOSPFormalization/*.lean MOSPFormalization/Complex/*.lean; cat MOSPFormalization/LinearLayout.lean MOSPFormalization/VertexSepa
+  > $ cd /home/al/dev/MOSP/lean; cat MOSPFormalization/PathDecomposition.lean | head -120; grep -n "bandwidth\|def \|theorem \|lemma " MOSPFormalization/Sandwich.lean
+  > $ cd /home/al/dev/MOSP/lean; sed -n 100,200p MOSPFormalization/Sandwich.lean; cat MOSPFormalization/Pathwidth.lean; cat MOSPFormalization/VSEquivPW.lean | sed -n 
+  > $ cd /home/al/dev/MOSP/lean; sed -n 1,120p MOSPFormalization/Complex/Narrowness.lean; sed -n 145,300p MOSPFormalization/Complex/Narrowness.lean
+
+Reading done; I'm designing the Lean for item 07 (split bandwidth: define splittings, prove `pw ≤ sb ≤ pw + 1`). First a quick check of some Lean tactics/lemma names.
+  > $ cd /home/al/dev/MOSP/lean; mkdir -p /tmp/sbt; cat > /tmp/sbt/T.lean <<'EOF'
+import Mathlib
+example (a b n : ℕ) (h : a * n + 1 < b * n) : a * n < b * n := by ome
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem card_filter_add_card_filter_not\|theorem filter_card_add_filter_neg_card_eq_card\|theorem card_filter_add_card_filt
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/SplitBandwidth.lean
+  > $ cd /home/al/dev/MOSP/lean; ls .lake/build/lib/lean/MOSPFormalization/Complex/ 2>/dev/null | head; time lake env lean MOSPFormalization/Complex/SplitBandwidth.le
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""    (∀ x y, G.Adj x y ↔ H.Adj (f 
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("by simp only [hx, SimpleGraph.Iso.a
+
+Lower-bound half compiles. Now adding the split-induction and the explicit upper-bound construction.
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+add = r'''
+/-- A split has pathwidth at least th
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""    (h : IsSplit G H) [Fintype W'
+  > $ cd /home/al/dev/MOSP/lean; sed -n 325,340p MOSPFormalization/Complex/SplitBandwidth.lean
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""  apply le_csInf ⟨bandwidth G, V,
+
+Now the upper-bound construction (copies of each vertex along its shack interval, added one at a time).
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+add = r'''
+/-! ### Bandwidth from a sorting key 
+  > $ cd /home/al/dev/MOSP/lean; grep -n -A6 "SimpleGraph.*where" MOSPFormalization/Complex/*.lean MOSPFormalization/MOSPGraph.lean | head -30; grep -n "loopless" MOS
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""    have h1 := mt (key_lt_iff hs 
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("instance (c : ℕ) : DecidableEq (Sta
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""      have := Nat.succ_mul (σ z).
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+add = r'''
+theorem inStage_succ {c : ℕ} {p : V ×
+
+Most of the construction checks; fixing five local errors.
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""      · intro x y h
+        exact
+  > $ cd /home/al/dev/MOSP/lean; sed -n 765,780p MOSPFormalization/Complex/SplitBandwidth.lean
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+a=s.index("theorem bandwidth_stage_le")
+b=s.inde
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""  have h1 := (key_lt_iff hzlt hxl
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/SplitBandwidth.lean'
+s=open(p).read()
+s=s.replace("""  · have hxm := att_full G σ x.pr
+
+The whole file checks. Verifying axioms and that the checker is really running:
+  > $ cd /home/al/dev/MOSP/lean; cp MOSPFormalization/Complex/SplitBandwidth.lean /tmp/sbt/SB.lean; cat >> /tmp/sbt/SB.lean <<'EOF'
+#print axioms MOSPFormalization.Co
+
+No sorry, standard axioms only. Now wiring the import and running the build.
+  > $ cd /home/al/dev/MOSP/lean; grep -n Complex MOSPFormalization.lean; sed -i 's/^import MOSPFormalization.Complex.OneDimLogic$/import MOSPFormalization.Complex.One
+  > $ cd /home/al/dev/MOSP; sed -i 's/(`bandwidthOfLayout_split_le`)/(`bandwidth_stage_le`, through `bandwidth_le_of_key`)/' lean/MOSPFormalization/Complex/SplitBandw
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old=[l for l in s.split('\n') if l.startswith('| 9 | Split bandwidth')][0]
+n
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="""- **Status.** Weaker than stated (a sandwich). `sb ∈ {Z − 1, Z}` meet
+
+While the gate runs, I'll write PROGRESS.md and mark the item.
+  > $ cd /home/al/dev/MOSP; sed -i 's/^- \[ \] \*\*07 Split bandwidth/- [x] **07 Split bandwidth/' Ralph_Loops/loop0005/iterations.md; grep -n "07 Split" Ralph_Loops/
+  > $ cd /home/al/dev/MOSP; cat /tmp/claude-1000/-home-al-dev-MOSP/d39d506d-8faf-4025-af16-ad1feed770f1/tasks/b582jr7oa.output | tail -15; sed -i 's/interval property
+
+Item 07 is done: Fomin's Theorem 8, `pw(G) ≤ sb(G) ≤ pw(G) + 1`, is proved in Lean with no `sorry`. The gate passes: lake build ok, the one allowed `sorry` is still the one in `Sandwich.lean`, and 1,231 tests pass.
+
+**What's new.** `lean/MOSPFormalization/Complex/SplitBandwidth.lean`, imported from the root. `#print axioms` shows only `propext`, `Classical.choice` and `Quot.sound`.
+- **Definitions, as Fomin §3.2 gives them:**
+  - `IsNodeSplitting`: one vertex becomes two adjacent vertices, and its neighbours are split between them into two groups, either of which may be empty.
+  - `IsSplit`: a copy of `G` followed by any finite number of such splittings.
+  - `splitBandwidth`: the smallest bandwidth over all splits, using `Sandwich.lean`'s bandwidth.
+
+  None of these mentions pathwidth.
+- **Lower half (`pathwidth_le_splitBandwidth`).** Only the special case Fomin's proof needs is proved: a single splitting cannot lower pathwidth (`pathwidth_le_of_isNodeSplitting`). The proof merges the two new vertices back into one in every bag. The general fact that pathwidth never drops when passing to a minor was not needed and is not formalised. The rest follows from `pathwidth_le_bandwidth`.
+- **Upper half (`splitBandwidth_le_pathwidth_add_one`).** This does not follow Fomin's route, which goes through interval bandwidth (his Thm 6). Instead I build a split directly from a vertex ordering taken from item 04's narrowness work:
+  - each vertex is replaced by a path of copies, one for each step at which it is in Kornai & Tuza's shack;
+  - sorted by step, this split has bandwidth at most the ordering's narrowness, which is `pw + 1`;
+  - a separate proof shows the graph really is a split, reached by adding the copies one node splitting at a time.
+- **No hypotheses.** Fomin assumes connected graphs with at least two vertices. Both halves hold here for every finite graph, including the empty one.
+
+**Not proved.** That both ends of the sandwich actually occur, e.g. `sb(K_{1,3}) = 2 = pw + 1`. Proving it needs a lower bound over every split of `K_{1,3}`, so it stays with the brute-force checker. Fomin's Theorems 3 and 6 (`sb = ib`) are not formalised either, and the proof does not use them.
+
+**Records updated:**
+- `paper2/equivalences.md`: row 9 is marked as a sandwich and proved, the §9 status line is updated, and there is a new section "Item 07".
+- `PROGRESS.md`: Iteration 7 added and the count set to 7/14.
+- `iterations.md`: item 07 is marked `[x]`.
+
+Nothing is committed.
+
+# result: success in 983s, 35 turns, cost $3.42

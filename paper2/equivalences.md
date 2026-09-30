@@ -54,7 +54,7 @@ column; `vs` = vertex separation of the same graph.
 | 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
 | 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
-| 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices | itself | `pw ≤ sb ≤ pw + 1` (Thm 8); `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | — | weaker than stated (sandwich) |
+| 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
 | 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
 | 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | — | **misattributed and false** under every reading [14] supports |
 | 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | 1,652 graphs, 0 fail | `vertexSeparation_eq_pathwidth` | confirmed |
@@ -317,6 +317,8 @@ form; edge separation, which is also misattributed).
   path, which has two.
 - **Status.** Weaker than stated (a sandwich). `sb ∈ {Z − 1, Z}` meets the
   literal ±1 wording.
+  **Proved in Lean** (item 07, `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`),
+  for every finite graph.
 
 ### 10. Graph path-width — [13] Kinnersley 1992
 
@@ -755,3 +757,66 @@ observed `tracks_B ∈ {pw + 1, pw + 2}` on 1,027 instances and whether the gap
 reaches 2 is open, so no upper bound is stated. The counterexample to a fixed
 offset (`boundary_path_instance`, 3 pinned vs 2) would need a case analysis
 over 120 inner-gate orders and is left to the checker.
+
+## Item 07: split bandwidth in Lean
+
+`lean/MOSPFormalization/Complex/SplitBandwidth.lean`, imported from the root;
+sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions.** From Fomin §3.2 (preprint p. 7), quoted in §9 above.
+`IsNodeSplitting G H`: `H` arises from `G` by splitting one vertex `v` into
+`u ≠ w` with the edge `uw`, the other vertices corresponding through a
+bijection `f` that preserves adjacency, and every neighbour of `v` adjacent to
+exactly one of `u` (class `M`) and `w` (class `N`), nothing else adjacent to
+them; either class may be empty. `IsSplit G H`: an inductive predicate, a copy
+of `G` (`iso`) followed by any finite number of node splittings (`step`).
+`splitBandwidth G`: `sInf` of `bandwidth H` (Sandwich.lean's bandwidth) over
+all splits `H` with a finite vertex type in the same universe. Vertices are
+named up to bijection, which is what "a sequence of node splittings" means for
+graphs; no definition mentions paths, decompositions or separation.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `pathwidth_le_of_isNodeSplitting` | one node splitting does not decrease pathwidth | the special case of minor-monotonicity Thm 8's proof uses |
+| `IsSplit.pathwidth_le` | `pw(G) ≤ pw(H)` for every finite split `H` | induction over the splittings |
+| `pathwidth_le_splitBandwidth` | `pw(G) ≤ sb(G)`, no hypothesis | **Thm 8, lower half** (with `pathwidth_le_bandwidth`) |
+| `splitBandwidth_le_bandwidth` | `sb(G) ≤ b(G)` (the empty sequence) | definition |
+| `isSplit_stage`, `isSplit_stage_succ` | the explicit construction below is a split, one node splitting per stage | — |
+| `bandwidth_stage_le`, `splitBandwidth_le_inNarrowness` | `sb(G) ≤ ν(σ)` for every in-sequence `σ` | — |
+| `splitBandwidth_le_pathwidth_add_one` | `sb(G) ≤ pw(G) + 1`, no hypothesis | **Thm 8, upper half** (with Kornai & Tuza Prop. 3.1, item 04) |
+| `pathwidth_le_splitBandwidth_le_pathwidth_add_one` | `pw ≤ sb ≤ pw + 1` | **Thm 8** |
+| `bandwidth_le_of_key` | sorting by an injective key gives bandwidth ≤ the largest number of keys in `[key y, key z)` over edges `yz` | helper |
+
+**The proof.** Lower half: merge `u` and `w` back into `v` in every bag of a
+path decomposition of the split. Bag sizes do not grow; the bags holding `v`
+are the union of those holding `u` and those holding `w`, two intervals that
+meet at the bag covering the edge `uw`, so the result is again an interval.
+This is the only case of minor-monotonicity Fomin's argument needs, and general
+minor-monotonicity is not formalised. Upper half: not Fomin's route (a path
+decomposition with bags of equal size, then `sb = ib`, Thm 6), which would
+need interval bandwidth and helicopter search. The split is built instead from
+an in-sequence `σ`: vertex `v` becomes the path of its copies `(v, i)`, one
+per step `i` at which `v` is in Kornai & Tuza's shack (`σ v ≤ i ≤
+max_{u ∈ N[v]} σ u`), and the edge `uv` joins the copies at step
+`max(σ u, σ v)`. In the order `(i, σ v)`, every edge stretches only over copies
+whose vertices lie in one shack, and a vertex contributes at most one copy to
+the stretch, so the bandwidth is at most `ν(σ) = pw + 1`. That this graph is a
+split is proved by adding the copies in that same order (key `i · n + σ v`):
+at stage `c` the first copy of every vertex and the copies of key `≤ c` are
+present, each edge end sits on the latest present copy not beyond its
+attachment step, stage 0 is isomorphic to `G`, and each new copy `(v, j + 1)`
+splits `(v, j)` — `M` is the previous copy and the attachments at step `j`,
+`N` those at steps `> j`.
+
+**Edge cases.** No hypothesis at all: Fomin restricts to connected graphs with
+at least two vertices, but both halves hold for every finite graph, and on the
+empty graph `pw = sb = 0`.
+
+**Not formalised.** That both ends are attained (`sb(K₂) = 1 = pw`,
+`sb(K_{1,3}) = 2 = pw + 1`, item 02): the second needs a lower bound over every
+split of `K_{1,3}` (splits of a tree are trees with at least as many leaves),
+which is not done. Fomin's Thms 3 and 6 (`sb = ib = 1/μ_m`) are not
+formalised; item 02 checks the sandwich at scale through `ib` and Thm 6, and
+the Lean proof uses neither.

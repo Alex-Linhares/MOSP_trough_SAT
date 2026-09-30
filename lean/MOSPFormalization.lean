@@ -21,3 +21,4 @@ import MOSPFormalization.Complex.GateMatrix
 import MOSPFormalization.Complex.Narrowness
 import MOSPFormalization.Complex.IntervalThickness
 import MOSPFormalization.Complex.OneDimLogic
+import MOSPFormalization.Complex.SplitBandwidth

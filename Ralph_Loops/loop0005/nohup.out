@@ -28,3 +28,8 @@
 [2026-09-30 12:49:36] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-09-30 13:06:23] session it06: ok (exit 0, 22 tool calls)
 [2026-09-30 13:08:43] tests passed: GATE PASS
+[2026-09-30 13:08:44] committed 18d7acc33: 06 One-dimensional logic. `Complex/OneDimLogic.lean`: formalise
+[2026-09-30 13:08:44] === iteration 7: 07 Split bandwidth. `Complex/SplitBandwidth.lean`: define node
+[2026-09-30 13:08:44] claude session it07 (cap 4.00 h) -> session_it07.log
+[2026-09-30 13:25:08] session it07: ok (exit 0, 34 tool calls)
+[2026-09-30 13:27:28] tests passed: GATE PASS

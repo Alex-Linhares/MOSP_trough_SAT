@@ -56,7 +56,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   Ohtsuki et al. (1979)'s gate-assignment problem as item 01 states it and
   prove its relation (expected: via interval graphs, so reuse item 05).
 
-- [ ] **07 Split bandwidth.** `Complex/SplitBandwidth.lean`: define node
+- [x] **07 Split bandwidth.** `Complex/SplitBandwidth.lean`: define node
   splitting and split bandwidth as Fomin (1998) §3.2 and prove Theorem 8,
   `pw ≤ sb ≤ pw + 1` (upper: his layout construction from a path
   decomposition with equal-size bags; lower: pw is minor-monotone and

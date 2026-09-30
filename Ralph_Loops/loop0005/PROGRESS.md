@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 6/14 SOLVED
+Current: 7/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -265,3 +265,46 @@ Current: 6/14 SOLVED
 - Item 09 (PLA folding) can reuse `placementGraph`/`colorable_iff_isTrackAssignment`
   style: simple folding is a colouring with colour classes of size ≤ 2.
 - Item 10 (node search, ns = θ) can state against `intervalThickness`.
+
+## Iteration 7 — 2026-09-30 13:24
+
+### Completed
+- **07 Split bandwidth** — `lean/MOSPFormalization/Complex/SplitBandwidth.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** from Fomin §3.2 (p. 7): `IsNodeSplitting` (one vertex
+  becomes an adjacent pair `u, w`, its neighbourhood partitioned into `M`,
+  `N`, either empty; vertices named up to a bijection), `IsSplit` (a copy of
+  `G` followed by finitely many splittings, an inductive predicate over the
+  vertex type), `splitBandwidth` = least `bandwidth` (Sandwich.lean's) over
+  finite splits.
+- **Proved, Theorem 8 in full, no hypothesis** (Fomin assumes connected,
+  ≥ 2 vertices; both halves hold for every finite graph, the empty one
+  included): `pathwidth_le_splitBandwidth_le_pathwidth_add_one`.
+  - Lower half: `pathwidth_le_of_isNodeSplitting` — the special case of
+    minor-monotonicity Fomin's proof uses (merge `u, w` back in every bag; the
+    two bag intervals meet at the edge `uw`). General minor-monotonicity was
+    not needed and is not formalised. Then `pathwidth_le_bandwidth`.
+  - Upper half: not Fomin's route (equal-size bags + `sb = ib`, Thm 6), which
+    would need interval bandwidth. Instead an explicit split from an
+    in-sequence `σ` of item 04: `v` becomes a path of copies, one per step
+    at which `v` is in Kornai & Tuza's shack; edge `uv` attaches at step
+    `max(σ u, σ v)`; sorted by `(step, σ v)` its bandwidth is ≤ `ν(σ)`
+    (`bandwidth_stage_le`), and it is reached one node splitting per copy
+    (`isSplit_stage`). With `ν = pw + 1` (item 04) this is the bound.
+- `paper2/equivalences.md`: row 9 (marked **sandwich**, proved), §9 status,
+  and a new section "Item 07".
+
+### Blockers
+- None. Not formalised, by choice: that both ends are attained
+  (`sb(K_{1,3}) = 2 = pw + 1` needs a lower bound over every split of
+  `K_{1,3}`; it stays with the checker), and Fomin's Thms 3 and 6
+  (`sb = ib = 1/μ_m`).
+
+### Next
+- Item 08 (edge separation: Lengauer's VSG = vs, and the star
+  counterexample for cutwidth / modified cutwidth).
+- `bandwidth_le_of_key` (layout from an injective sorting key) and
+  `pathwidth_le_of_map` (pathwidth under a vertex map whose fibres keep the
+  interval property) in `SplitBandwidth.lean` are reusable; the
+  search games (10–11) may want the latter for 2-expansions (EST Thm 2.2).

@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 13:06:23",
+  "updated": "2026-09-30 13:25:08",
   "phase": "tests",
-  "started": "2026-09-30 12:49:36",
-  "item": "06 One-dimensional logic. `Complex/OneDimLogic.lean`: formalise"
+  "started": "2026-09-30 13:08:44",
+  "item": "07 Split bandwidth. `Complex/SplitBandwidth.lean`: define node"
 }
