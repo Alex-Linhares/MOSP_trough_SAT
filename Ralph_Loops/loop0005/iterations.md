@@ -71,7 +71,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   (cutwidth), prove a counterexample to its equivalence with pathwidth ± 1 on
   a small graph found by item 02.
 
-- [ ] **09 PLA folding.** `Complex/PLAFolding.lean`: formalise PLA folding as
+- [x] **09 PLA folding.** `Complex/PLAFolding.lean`: formalise PLA folding as
   Möhring (1990) states it and prove the relation item 01 found; if it is not
   an equivalence up to ±1, prove the correct relation and a counterexample to
   Table 1's claim.

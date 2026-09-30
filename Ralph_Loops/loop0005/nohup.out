@@ -38,3 +38,8 @@
 [2026-09-30 13:27:28] claude session it08 (cap 4.00 h) -> session_it08.log
 [2026-09-30 13:43:30] session it08: ok (exit 0, 40 tool calls)
 [2026-09-30 13:45:50] tests passed: GATE PASS
+[2026-09-30 13:45:50] committed 07ff39624: 08 Edge separation. `Complex/EdgeSeparation.lean`: formalise the
+[2026-09-30 13:45:50] === iteration 9: 09 PLA folding. `Complex/PLAFolding.lean`: formalise PLA folding as
+[2026-09-30 13:45:50] claude session it09 (cap 4.00 h) -> session_it09.log
+[2026-09-30 13:51:41] session it09: ok (exit 0, 19 tool calls)
+[2026-09-30 13:54:01] tests passed: GATE PASS

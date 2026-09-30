@@ -1,0 +1,61 @@
+# session it09 started 2026-09-30 13:45:50
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "09 PLA" Ralph_Loops/loop0005/iterations.md; ls lean/MOSPFormalization/Complex/; wc -l lean/MOSPFormalization/Complex/*.lean;
+  > $ cd /home/al/dev/MOSP; sed -n 170,210p paper2/equivalences.md; sed -n 460,480p paper2/equivalences.md; sed -n 510,530p paper2/equivalences.md; grep -n "def pla\|
+  > $ cd /home/al/dev/MOSP; ls paper2/literature/; sed -n 820,960p paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP; pdftotext -layout paper2/literature/06_mohring_1990.pdf /tmp/m.txt; grep -n "PLA\|folding\|path partition" /tmp/m.txt | head -60
+  > $ cd /home/al/dev/MOSP; sed -n 455,575p /tmp/m.txt; sed -n 1025,1125p /tmp/m.txt
+
+Reading `GateMatrix.lean` so PLA folding can be defined as a capacity-constrained track assignment.
+  > $ cd /home/al/dev/MOSP; cat lean/MOSPFormalization/Complex/GateMatrix.lean
+  > $ cd /home/al/dev/MOSP/lean; grep -n "def LinearLayout\|abbrev LinearLayout" -A3 MOSPFormalization/*.lean; grep -n "theorem\|lemma" MOSPFormalization/Complex/Edge
+
+Writing `Complex/PLAFolding.lean`: capacity-capped track assignment (Möhring's PLAMPP), the bounds `pw+1 ≤ pla`, `|N| ≤ 2·pla`, multiple folding = `t`, and identity/path counterexamples.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/PLAFolding.lean
+  > $ cd /home/al/dev/MOSP/lean; sed -i 's/^import MOSPFormalization.Complex.EdgeSeparation$/&\nimport MOSPFormalization.Complex.PLAFolding/' MOSPFormalization.lean; 
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem card_le_mul_card_image\|theorem card_le_mul_card_image_of_maps_to" .lake/packages/mathlib/Mathlib/ | head; grep -rl
+  > $ cd /home/al/dev/MOSP/lean; sed -n 385,410p .lake/packages/mathlib/Mathlib/Algebra/Order/BigOperators/Group/Finset.lean; grep -n "^import" MOSPFormalization/Comp
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/PLAFolding.lean; sed -i 's/^import MOSPFormalization.Complex.GateMatrix$/&\nimport Mathlib.Algebra.Order.
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/PLAFolding.lean; python3 - <<'EOF'
+f='MOSPFormalization/Complex/PLAFolding.lean'
+s=open(f).read()
+old=s[s
+
+Compiles cleanly. Checking axioms, then the gate.
+  > $ cd /home/al/dev/MOSP/lean; cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Complex.PLAFolding
+open MOSPFormalization.Complex
+#print axioms plaTracks_idMatri
+
+Meanwhile, updating `paper2/equivalences.md`.
+  > $ cd /home/al/dev/MOSP; sed -n 40,70p paper2/equivalences.md; grep -n "^## \|^### " paper2/equivalences.md | tail -15; tail -30 paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+f='paper2/equivalences.md'
+s=open(f).read()
+old="| 2,130 matrices; `I_5`: 3 vs 1 | — | **false** as stated (simple foldi
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+f='paper2/equivalences.md'
+s=open(f).read()
+old='''  "PLA folding" means multiple folding. Item 09 decides which to form
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/abb6c87f-22f1-41d1-8e83-7117f442e2e5/tasks/bb0xs9za9.output
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; sed -i 's/^- \[ \] \*\*09 PLA folding/- [x] **09 PLA folding/' iterations.md; sed -i 's/^Current: 8\/14 SOLVED/Curren
+
+Item 09 (PLA folding) is done. Table 1's "equivalent up to ±1" claim is false for PLA folding as Möhring defines it, and the gap is unbounded. The gate passes: `lake build` is ok, there is no new `sorry`, and 1,231 tests pass.
+
+The work is in `lean/MOSPFormalization/Complex/PLAFolding.lean`, imported from the root file. It has no `sorry`, and it depends only on the standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+- **Definition (Möhring p. 25, PLAMPP):** a PLA layout is a gate matrix track assignment (from item 03) with at most `c` nets per track. `plaTracks` is the case `c = 2`. With no real cap (`c` at least the number of nets) it is multiple folding.
+- **The correct relation, proved:** PLA tracks ≥ max(pw + 1, ⌈|N|/2⌉), where |N| is the number of nets. It needs one assumption: some net meets some gate.
+- **Multiple folding matches exactly:** with no cap, the minimum number of tracks equals the gate matrix layout cost, which is pw + 1.
+- **Counterexamples:**
+  - On the n × n identity matrix, PLA tracks are exactly ⌈n/2⌉ while pw + 1 = 1. At n = 5 that is 3 against 1, the example item 01 found, and the gap grows without bound as n grows.
+  - The incidence matrix of a path gives the same result on a **connected** graph: pw + 1 ≤ 2, but PLA tracks are at least ⌈(n+1)/2⌉. On the 7-vertex path the gap is at least 2, and it too is unbounded. So restricting Table 1 to connected graphs does not rescue this row.
+
+Not formalised: Möhring's Prop. 3.15 and 3.16, Thm 3.14 in its path-partition wording, and the block/constrained folding variants. The verdict doesn't depend on any of them.
+
+`paper2/equivalences.md` has the updated row 4, the §4 status and a new "Item 09" section. PROGRESS.md now reads 9/14, and the item is marked `[x]` in `iterations.md`. Five items remain open, so no LOOP_COMPLETE. Nothing is committed.
+
+# result: success in 350s, 20 turns, cost $1.29

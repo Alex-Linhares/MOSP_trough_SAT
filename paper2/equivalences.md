@@ -49,7 +49,7 @@ column; `vs` = vertex separation of the same graph.
 | 1 | MOSP | Yanasse 1997 EJOR [1]; Fink & Voss 1999 [4] | 0/1 matrix (piece types × patterns) | MOSP graph: piece types, adjacent iff they share a pattern | `Z = pw + 1`; not in [1] or [4] (definitions only); Yanasse 1997a Prop. 5, Fellows & Langston 1987 Lemma 4.1 + 1989 Thm 7, with L&Y 2002 Prop. 2 | corpus; 2,130 matrices, 0 fail | `mospValue_eq_pathwidth_add_one` | confirmed (needs one requirement) |
 | 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | `NetGateMatrix.tracks_eq_pathwidth_add_one`, `tracks_eq_mospValue`, `tracksFor_eq_maxOpenStacks` | confirmed; **proved** (needs one 1 in M) |
 | 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | `Complex.LogicArray.tracks_eq_intervalThickness`, `tracks_eq_pathwidth_add_one`, `exists_placementGraph_le` (Thm 3), `tracks_eq_gateMatrix_tracks`; boundary: `pathwidth_add_one_le_tracksPinned` only | confirmed (core problem); **proved** (θ form: every net has a gate; pw form: some net meets some gate); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked), lower bound proved |
-| 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | — | **false** as stated (simple folding); confirmed for multiple folding |
+| 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | `Complex.NetGateMatrix.pathwidth_add_one_le_plaTracks`, `card_le_two_mul_plaTracks`, `foldTracks_eq_pathwidth_add_one` (multiple folding); counterexamples `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_six`, `plaTracks_pathMatrix_unbounded` (connected) | **false** as stated (simple folding); confirmed for multiple folding; **proved**: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, multiple folding `= pw + 1`, and the counterexamples (unbounded gap, also on connected instances) |
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph) |
 | 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
 | 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
@@ -200,8 +200,9 @@ form; edge separation, which is also misattributed).
   `t = 2`, folding `≥ ⌈n/2⌉`, gap ≥ 2 from n = 7.
 - **Status.** False as stated for PLA folding in the sense Möhring defines it
   (and the sense the PLA literature he cites uses, [HNS82]); confirmed if
-  "PLA folding" means multiple folding. Item 09 decides which to formalise;
-  both, preferably.
+  "PLA folding" means multiple folding. Item 09 formalised both: the
+  counterexamples (edgeless `I_5` and connected `P_7`, gap unbounded) and
+  multiple folding `= pw + 1`; see "Item 09" below.
 
 ### 5. Interval thickness — [5] Kashiwabara & Fujisawa 1979 (not held)
 
@@ -891,3 +892,44 @@ an NP-hardness gadget, checked by item 02 to `N = 4`), and exact values of
 `cw`, `mcw` on stars (only the lower bounds are needed for the
 counterexamples; item 02 gives `cw(K_{1,7}) = mcw(K_{1,9}) = 4`).
 
+## Item 09: PLA folding in Lean
+
+`lean/MOSPFormalization/Complex/PLAFolding.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** (Möhring p. 25, PLAMPP), on top of item 03's MPP:
+`IsFolding c π h` is a track assignment of `M^π` (`IsTrackAssignment`) with
+at most `c` nets on every track; `foldTracks c` the fewest tracks over all gate
+orders; `plaTracks = foldTracks 2`. Möhring's "two (sometimes also more)
+signals to share a row" is the parameter `c`; with no effective cap
+(`c ≥ |N|`) this is multiple folding, which as a layout problem is the MPP.
+
+**Proved.**
+
+- `tracks_le_plaTracks`, `pathwidth_add_one_le_plaTracks` (some net meets some
+  gate): every PLA layout is an MPP layout, so `pla ≥ t = pw + 1`.
+- `card_le_two_mul_plaTracks`: `|N| ≤ 2 · pla`, for every matrix, by a
+  fibre count; `plaTracks_le_card`.
+- `foldTracks_eq_tracks`, `foldTracks_eq_pathwidth_add_one`: multiple folding
+  is exact, `= t = pw + 1` (the layout form of Thm 3.14 with Prop. 3.5).
+- Identity matrix `idMatrix n`: `plaTracks_idMatrix` (`= ⌈n/2⌉`, exactly),
+  `tracks_idMatrix` (`= 1`), `pathwidth_idMatrix` (`pw + 1 = 1`);
+  `plaTracks_idMatrix_five` (3 against 1, item 01's counterexample) and
+  `plaTracks_idMatrix_unbounded` (for every `c`, `pw + 1 + c < pla` on
+  `I_{2c+3}`).
+- Path incidence matrix `pathMatrix n` (nets the `n + 1` path vertices, gates
+  the `n` edges): `netGraph_pathMatrix_connected`, `tracks_pathMatrix_le_two`
+  (alternate the vertices between two tracks), `plaTracks_pathMatrix_six`
+  (`pw + 1 + 2 ≤ pla` on `P_7`, item 02's connected instance) and
+  `plaTracks_pathMatrix_unbounded`. So restricting Table 1 to connected
+  graphs does not rescue the row.
+
+**Verdict.** Table 1's "±1" fails for PLA folding in the sense of its cited
+source, by an unbounded amount, on edgeless and on connected instances; the
+correct general relation is the one-sided `pla ≥ max(pw + 1, ⌈|N|/2⌉)`. It
+holds exactly for multiple folding.
+
+**Not formalised.** Prop. 3.15 (`pla = |V(G)| − s` over folding sets with no
+alternating cycle), Thm 3.14 in the path-partition vocabulary (degree and
+cycle constraints), Prop. 3.16 (`Z_{m,m}` subgraphs), and block / constrained
+folding. None is needed for the verdict.

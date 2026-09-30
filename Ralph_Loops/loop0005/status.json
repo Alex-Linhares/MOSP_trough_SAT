@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 13:43:30",
+  "updated": "2026-09-30 13:51:41",
   "phase": "tests",
-  "started": "2026-09-30 13:27:28",
-  "item": "08 Edge separation. `Complex/EdgeSeparation.lean`: formalise the"
+  "started": "2026-09-30 13:45:50",
+  "item": "09 PLA folding. `Complex/PLAFolding.lean`: formalise PLA folding as"
 }

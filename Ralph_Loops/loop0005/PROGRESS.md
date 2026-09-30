@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 8/14 SOLVED
+Current: 9/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -353,3 +353,39 @@ Current: 8/14 SOLVED
   `vertexSeparation_eq_zero_of_edgeless` (`EdgeSeparation.lean`, Helpers);
   item 10 (node search, ns = vs + 1 except on edgeless graphs) needs exactly
   the same edgeless split as `vsg_eq_max`.
+
+## Iteration 9 — 2026-09-30 13:51
+
+### Completed
+- **09 PLA folding** — `lean/MOSPFormalization/Complex/PLAFolding.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** from Möhring p. 25 (PLAMPP), on item 03's MPP:
+  `IsFolding c π h` (a track assignment of `M^π` with ≤ `c` nets per
+  track), `foldTracks c`, `plaTracks = foldTracks 2`. Multiple folding is
+  the uncapped case.
+- **Proved**:
+  - `pathwidth_add_one_le_plaTracks` and `card_le_two_mul_plaTracks`:
+    `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, the correct general relation;
+    `plaTracks_le_card`.
+  - `foldTracks_eq_tracks` / `foldTracks_eq_pathwidth_add_one`: multiple
+    folding (`c ≥ |N|`) is exactly `t = pw + 1`.
+  - Counterexamples to Table 1's ±1: `plaTracks_idMatrix` (`= ⌈n/2⌉`
+    exactly), `plaTracks_idMatrix_five` (3 vs `pw + 1 = 1`),
+    `plaTracks_idMatrix_unbounded`; and on a **connected** net graph, the
+    path incidence matrix: `netGraph_pathMatrix_connected`,
+    `tracks_pathMatrix_le_two`, `plaTracks_pathMatrix_six` (gap ≥ 2 on
+    `P_7`), `plaTracks_pathMatrix_unbounded`.
+- `paper2/equivalences.md`: row 4 updated, §4 status, new section "Item 09".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None. Not formalised, by choice: Prop. 3.15 (`|V| − s` over folding
+  sets), Thm 3.14 in path-partition vocabulary, Prop. 3.16, block and
+  constrained folding. The verdict does not need them.
+
+### Next
+- Item 10 (node search, monotone): `ns = vs + 1` with the same edgeless
+  split as `vsg_eq_max` (EdgeSeparation.lean helpers).
+- `finLayout n` (identity layout on `Fin n`, `finLayout_val`) in
+  PLAFolding.lean is reusable for concrete examples.
