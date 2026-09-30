@@ -1,0 +1,53 @@
+# session it04 started 2026-09-30 12:33:03
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "04 Narrowness" Ralph_Loops/loop0005/iterations.md; grep -n -i -B2 -A40 "narrowness" paper2/equivalences.md | head -150
+  > $ cd /home/al/dev/MOSP/lean; ls MOSPFormalization/Complex; cat MOSPFormalization.lean; wc -l MOSPFormalization/*.lean MOSPFormalization/Complex/*.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; cat LinearLayout.lean VertexSeparation.lean Pathwidth.lean VSEquivPW.lean
+  > $ cd /home/al/dev/MOSP/paper2/literature; ls; f=$(ls | grep -i -E "11|kornai" | head -1); pdftotext -layout "$f" - | head -150
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -rn "revPerm\|Fin.rev\|reverse" --include=*.lean . | head -20; sed -n 1,80p Complex/GateMatrix.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 80,140p Complex/GateMatrix.lean; grep -n "theorem\|lemma" Complex/GateMatrix.lean | head -30; cat ../../Ralp
+
+I've read the source (Kornai & Tuza §2–3) and the existing Lean; now writing `Complex/Narrowness.lean`.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/Narrowness.lean
+  > $ cd /home/al/dev/MOSP/lean; time lake env lean MOSPFormalization/Complex/Narrowness.lean 2>&1 | head -80
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/Narrowness.lean'
+s=open(p).read()
+s=s.replace("""  (σ v).val ≤ i ∧ ∀ u, G.Adj v u → (σ
+  > $ cd /home/al/dev/MOSP/lean; sed -n 225,300p MOSPFormalization/Complex/Narrowness.lean
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/Narrowness.lean'
+s=open(p).read()
+s=s.replace("""      · refine ⟨by omega, u, ?_, hadj
+  > $ cd /home/al/dev/MOSP/lean; sed -i 's/rw \[dite_cond_eq_false (eq_false hn)\]/simp only [hn, ↓reduceDIte]/' MOSPFormalization/Complex/Narrowness.lean; lake env l
+
+Lean file compiles clean; adding it to the root import and checking axioms.
+  > $ cd /home/al/dev/MOSP/lean; echo "import MOSPFormalization.Complex.Narrowness" >> MOSPFormalization.lean; cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Com
+  > $ cd /home/al/dev/MOSP; sed -n 40,53p paper2/equivalences.md; grep -n "^## \|^### Item" paper2/equivalences.md; sed -n '/^## Item 03/,$p' paper2/equivalences.md |
+  > $ cd /home/al/dev/MOSP; grep -n -i -A25 "def narrow" paper2/complex_check.py | head -60
+
+Conventions match the checker. Updating `equivalences.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw +
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; sed -i 's/^- \[ \] \*\*04 Narrowness/- [x] **04 Narrowness/' iterations.md; sed -i 's/^Current: 3\/14 SOLVED/Current:
+
+Item 04 (narrowness) is finished, and the gate passes: `lake build` succeeds, the only `sorry` is the existing one in `Sandwich.lean`, and 1,231 tests pass.
+
+**What was built:** `lean/MOSPFormalization/Complex/Narrowness.lean`, imported from the root file. It has no `sorry`, and the only axioms it uses are `propext`, `Classical.choice` and `Quot.sound`.
+
+- **Definitions:** narrowness is written as the shack process Kornai & Tuza describe in §2: put a vertex in, then move out every vertex whose neighbours are all already in. The shack size is counted both after each insertion and after each removal. The out-sequence version is defined as its own process rather than as the in-process run backwards. That means Proposition 2.1 (in- and out-sequences agree) proves something real here; the Python checker only reverses the sequence.
+- **What is proved:**
+  - For every single sequence, the narrowness equals the vertex separation of the reversed sequence plus one (`inNarrowness_eq_vertexSepOfLayout_reverse`). The reversal is needed only because the existing development counts separated vertices from the other end.
+  - Proposition 2.1, in the paper's own wording and by the paper's proof (`exists_inNarrowness_iff_exists_outNarrowness`).
+  - Proposition 3.1, `narrowness G = pathwidth G + 1` for any graph with at least one vertex (`narrowness_eq_pathwidth_add_one`). It goes through the existing vertex-separation = pathwidth theorem, not the paper's construction from path decompositions.
+  - The graph with no vertices has narrowness 0 (`narrowness_of_isEmpty`), the same convention the checker uses. No other hypothesis is needed: isolated vertices and disconnected graphs are covered.
+
+**Records updated:** row 8 of `paper2/equivalences.md` plus a new "Item 04" section, an Iteration 4 entry in `PROGRESS.md` (now 4/14 solved), and the item marked `[x]` in `iterations.md`. Nothing was committed.
+
+# result: success in 377s, 18 turns, cost $1.25

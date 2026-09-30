@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 12:30:43",
+  "updated": "2026-09-30 12:39:21",
   "phase": "tests",
-  "started": "2026-09-30 12:23:55",
-  "item": "03 Gate matrix layout. `Complex/GateMatrix.lean`: define gate matrix"
+  "started": "2026-09-30 12:33:03",
+  "item": "04 Narrowness. `Complex/Narrowness.lean`: define narrowness of an"
 }

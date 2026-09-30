@@ -40,7 +40,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   item 01 says which), and conclude `= pathwidth + 1` of the right graph from
   `mospValue_eq_pathwidth_add_one`.
 
-- [ ] **04 Narrowness.** `Complex/Narrowness.lean`: define narrowness of an
+- [x] **04 Narrowness.** `Complex/Narrowness.lean`: define narrowness of an
   in-sequence exactly as Kornai & Tuza (1992) §2, prove their Proposition 2.1
   (in- and out-sequences agree) if needed, and Proposition 3.1,
   `narrowness G = pathwidth G + 1` for every graph with at least one vertex.

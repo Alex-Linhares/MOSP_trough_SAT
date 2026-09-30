@@ -18,3 +18,4 @@ import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
 import MOSPFormalization.Complex.GateMatrix
+import MOSPFormalization.Complex.Narrowness

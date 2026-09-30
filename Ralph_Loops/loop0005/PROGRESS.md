@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 3/14 SOLVED
+Current: 4/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -145,3 +145,42 @@ Current: 3/14 SOLVED
   `IsTrackAssignment`.
 - Item 06 (one-dimensional logic) can reuse the same track-assignment
   definitions, with gates restricted per Ohtsuki eqs. (3)–(4).
+
+## Iteration 4 — 2026-09-30 12:39
+
+### Completed
+- **04 Narrowness** — `lean/MOSPFormalization/Complex/Narrowness.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** are the shack process of Kornai & Tuza §2 (p. 2):
+  `MovedAt`, `shackAfterPut`, `shackAfterMove`, `inNarrowness` (the
+  maximum over both states of every step), `narrowness`. The out-sequence
+  dual is its own process (`EnteredBy`, `outShackBeforeMove`,
+  `outShackAfterMove`, `outNarrowness`, `outNarrownessGraph`), not a
+  reversal, so Prop. 2.1 says something.
+- **Proved**:
+  - per sequence, `inNarrowness_eq_vertexSepOfLayout_reverse`:
+    `ν(σ) = vs(reverse σ) + 1` when `V` is nonempty. The shack just after
+    `vᵢ` enters is `vᵢ` plus the active suffix of the reversed layout at
+    `n − 1 − i`. The reversal is there because the development's
+    `activeSuffix` counts suffix vertices and the shack counts prefix vertices.
+  - Prop. 2.1, as stated (`exists_inNarrowness_iff_exists_outNarrowness`),
+    by their proof (`outNarrowness_reverse`), and
+    `outNarrownessGraph_eq_narrowness`.
+  - Prop. 3.1, `narrowness_eq_pathwidth_add_one` under `[Nonempty V]`,
+    through `vertexSeparation_eq_pathwidth`.
+  - Edge case: `narrowness_of_isEmpty` (`ν = 0`, the same convention as
+    `complex_check`).
+- `paper2/equivalences.md`: row 8 updated, and a new section "Item 04".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None.
+
+### Next
+- Item 05 (interval thickness). `reverseLayout` and `sup_comp_rev` in
+  `Narrowness.lean` are reusable. `mem_shackAfterPut_iff` already has the
+  interval form: `v` is in the shack at `i` iff
+  `σ v ≤ i ≤ max_{u ∈ N[v]} σ u`. That is the interval model a layout
+  gives, so the layout → interval-supergraph direction of item 05 can
+  probably go through the same identity.

@@ -53,7 +53,7 @@ column; `vs` = vertex separation of the same graph.
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | — | unsourced at [5]; relation confirmed in [6], [9] |
 | 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
 | 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
-| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1) | 1,652 graphs, 0 fail | — | confirmed |
+| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
 | 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices | itself | `pw ≤ sb ≤ pw + 1` (Thm 8); `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | — | weaker than stated (sandwich) |
 | 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
 | 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | — | **misattributed and false** under every reading [14] supports |
@@ -598,3 +598,56 @@ can share any track. This is the case the three main theorems cover. The
 all-zero case is a convention; Möhring's nets always meet a gate. The Lean
 theorems state both degenerate values explicitly, so the difference is
 visible rather than hidden.
+
+## Item 04: narrowness in Lean
+
+`lean/MOSPFormalization/Complex/Narrowness.lean`, namespace
+`MOSPFormalization.Complex`, sorry-free (axioms: `propext`,
+`Classical.choice`, `Quot.sound`).
+
+**Definition, from Kornai & Tuza §2 (p. 2), as the process.** An
+in-sequence is a `LinearLayout V` (positions 0-based). `MovedAt σ i v`: at
+step `i`, `v` has been put in and has no neighbour at a position `> i`, so it
+goes to the OM. `shackAfterPut σ i` is every vertex put in at a step `≤ i`
+and moved out at no step `< i`; `shackAfterMove σ i` the same with "no step
+`≤ i`". `inNarrowness σ` is the maximum of both cards over all steps ("the
+maximum number of vertices in the shack during this process"), and
+`narrowness G` the minimum over all in-sequences. The out-sequence version is
+defined as its own process, not as a reversal: `EnteredBy τ i v` says the
+smallest subscript `j` with `v = w_j` or `v ~ w_j` is `≤ i`;
+`outShackBeforeMove` / `outShackAfterMove` are the shack just before and just
+after `wᵢ` leaves; `outNarrowness`, `outNarrownessGraph` as before. (The
+checker's `out_narrowness` only reverses the in-process; the Lean definition
+is independent of it, so Prop. 2.1 has content here.) No definition mentions
+separation or decompositions.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `mem_shackAfterPut_iff` | `v` in the shack after `vᵢ` enters iff `σ v ≤ i` and some `u ∈ N[v]` has `σ u ≥ i` | definitions |
+| `shackAfterMove_subset_shackAfterPut`, `inNarrowness_eq_sup` | the maximum is reached just after an insertion | K&T p. 2 (implicit) |
+| `shackAfterPut_eq_insert_activeSuffix` | shack after `vᵢ` enters = `{vᵢ}` ∪ active suffix of the reversed layout at `n − 1 − i` | — |
+| `inNarrowness_eq_vertexSepOfLayout_reverse` | `ν(σ) = vs(reverse σ) + 1`, `V` nonempty | item 01's note, per sequence |
+| `outShackBeforeMove_reverse`, `outNarrowness_reverse` | the in-sequence `(vᵢ)` and the out-sequence `wᵢ = v_{n+1−i}` have the same narrowness | K&T Prop. 2.1, their proof |
+| `exists_inNarrowness_iff_exists_outNarrowness` | an in-sequence of narrowness `k` exists iff an out-sequence of narrowness `k` does | K&T Prop. 2.1, as stated |
+| `outNarrownessGraph_eq_narrowness` | the dual definition gives the same `ν(G)` | K&T p. 3 |
+| `narrowness_eq_vertexSeparation_add_one` | `ν(G) = vs(G) + 1`, `V` nonempty | — |
+| `narrowness_eq_pathwidth_add_one` | `ν(G) = pw(G) + 1`, `V` nonempty | **K&T Prop. 3.1** |
+| `narrowness_of_isEmpty` | no vertices: `ν = 0` (while `pw + 1 = 1`) | edge case |
+
+**The proof.** Not K&T's direct construction from path decompositions, but
+the per-sequence identity: the shack just after `vᵢ` enters is `vᵢ` plus the
+earlier vertices still owing a neighbour at `i` or later, which is the active
+suffix of the reversed layout at the mirrored position (the development's
+`activeSuffix` counts suffix vertices with a prefix neighbour; K&T's shack
+counts prefix vertices with a suffix neighbour, hence the reversal). Reversal
+is an involution on layouts, so the minima differ by exactly one, and
+`vertexSeparation_eq_pathwidth` (Kinnersley) closes it. K&T's `Xᵢ` is
+`shackAfterPut σ i`.
+
+**Edge cases.** The hypothesis is `Nonempty V`, which is K&T's "at least one
+vertex"; with none, `ν = 0` (`narrowness_of_isEmpty`), as in
+`complex_check.narrowness`. Isolated vertices and disconnected graphs need no
+hypothesis: an isolated vertex enters and leaves in one step. No edge is
+required, unlike node search (row 6).
