@@ -1,0 +1,2 @@
+# One line per sorry this loop may leave beyond the baseline (Sandwich.lean, the §24 conjecture).
+# Format: file | theorem | why it is a stated gap. Only items 11-12 may add lines, mirrored in paper2/search_soundness.md.
