@@ -173,6 +173,11 @@ degree or clique bound can close it).
 
 ## Decisions
 
+- **The definite move** (decided 2026-10-01): Chu & Stuckey's Theorem 1 is
+  false as published (`paper2/search_soundness.md`, loop0006 item 08). The
+  paper states the gap and the repaired rule, which is proved sound in Lean.
+  The solver is not changed. Section 4's soundness theorem covers the repaired
+  rule, and says exactly what holds for the code as it stands.
 - **Venue: INFORMS Journal on Computing first** (decided 2026-09-29). The
   journal expects the code and data behind a paper to be deposited in its
   own repository; check the current rules before submission and build the
