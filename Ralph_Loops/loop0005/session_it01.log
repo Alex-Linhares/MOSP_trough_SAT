@@ -1,0 +1,93 @@
+# session it01 started 2026-09-30 11:47:05
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0005/iterations.md; ls Ralph_Loops/loop0005/; cat Ralph_Loops/loop0005/gate.py | head -80
+  > $ cd /home/al/dev/MOSP; cat paper2/plan.md; cat paper2/README.md; cat paper2/literature/MANIFEST.md; ls paper2 paper2/literature; cat paper2/table1.bib
+  > $ cd /home/al/dev/MOSP; sed -n '/^## 3/,/^## 5/p' paper2/plan.md; echo ======; cat paper2/literature/MANIFEST.md; ls paper2 paper2/literature; cat paper2/table1.b
+  > $ cd /home/al/dev/MOSP; cat paper2/equivalences.md; cat Ralph_Loops/loop0005/allowed_sorries.txt; which pdftotext; mkdir -p /tmp/lit; for f in paper2/literature/*
+  > $ cd /home/al/dev/MOSP; ls literature | grep -i -E "linhares|ellis|wing"; 
+  > $ cd /home/al/dev/MOSP; pdftotext -layout "literature/Linhares and Yanasse - 2002 - Connections between cutting-pattern sequencing, VL.pdf" /tmp/lit/ly2002.txt; w
+
+I'm reading the Table 1 source papers, extracted as text, to build the statement census. Next I'll read Linhares & Yanasse §2 (the MOSP↔GMLP Proposition 2) to see how they relate the two.
+  > $ cd /home/al/dev/MOSP; sed -n 100,232p /tmp/lit/ly2002.txt
+  > $ cd /home/al/dev/MOSP; sed -n 30,100p /tmp/lit/ly2002.txt
+  > $ cd /home/al/dev/MOSP; cat /tmp/lit/08_wing_huang_wang_1985.txt | head -150; pdfinfo paper2/literature/08_wing_huang_wang_1985.pdf | grep Pages
+  > Read /home/al/dev/MOSP/paper2/literature/08_wing_huang_wang_1985.pdf
+  > $ sed -n 1,400p /tmp/lit/06_mohring_1990.txt
+  > $ sed -n 400,900p /tmp/lit/06_mohring_1990.txt | grep -v '^\s*$' | cut -c1-200
+  > $ sed -n 900,1500p /tmp/lit/06_mohring_1990.txt | grep -v '^\s*$' | cut -c1-200
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/9ade16e4-7c1a-4abd-aec7-7c767f55a728/tool-results/bfjkvf2i1.txt
+  > $ grep -v '^\s*$' /tmp/lit/14_lengauer_1981.txt | cut -c1-180 | sed -n 1,330p
+  > $ grep -v '^\s*$' /tmp/lit/14_lengauer_1981.txt | cut -c1-180 | sed -n 330,520p
+  > $ grep -v '^\s*$' /tmp/lit/09_kirousis_papadimitriou_1985.txt | cut -c1-180
+  > $ grep -v '^\s*$' /tmp/lit/10_kirousis_papadimitriou_1986.txt | cut -c1-180 | sed -n 1,260p
+  > $ grep -v '^\s*$' /tmp/lit/10_kirousis_papadimitriou_1986.txt | cut -c1-180 | sed -n 260,520p | grep -n -i -E -A12 "theorem|definition|lemma|corollary" | head -20
+  > $ grep -v '^\s*$' /tmp/lit/10_kirousis_papadimitriou_1986.txt | cut -c1-180 | sed -n 425,500p
+  > $ grep -v '^\s*$' /tmp/lit/11_kornai_tuza_1992.txt | cut -c1-180 | sed -n 1,220p
+  > $ grep -v '^\s*$' /tmp/lit/12_fomin_1998.txt | cut -c1-180 | sed -n 1,400p
+  > $ grep -v '^\s*$' /tmp/lit/13_kinnersley_1992.txt | cut -c1-180 | sed -n 1,140p
+  > $ grep -v '^\s*$' /tmp/lit/07_ohtsuki_et_al_1979.txt | cut -c1-200 | sed -n 1,260p
+  > $ grep -v '^\s*$' /tmp/lit/07_ohtsuki_et_al_1979.txt | cut -c1-200 | sed -n 260,420p | grep -n -i -B3 -A10 "boundary\|IV\.\|Theorem\|Lemma" | head -120
+  > $ grep -v '^\s*$' /tmp/lit/01_yanasse_1997.txt | cut -c1-200 | sed -n 1,120p
+  > $ grep -v '^\s*$' /tmp/lit/01_yanasse_1997.txt | cut -c1-200 | sed -n 120,230p; grep -n -i "path\|interval\|graph" /tmp/lit/04_fink_voss_1999.txt | head -30
+  > $ sed -n 100,200p /tmp/lit/04_fink_voss_1999.txt | grep -v '^\s*$' | cut -c1-160
+  > $ sed -n 40,100p /tmp/lit/04_fink_voss_1999.txt | grep -v '^\s*$' | cut -c1-160
+  > $ cd /home/al/dev/MOSP; pdfinfo literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf | grep Pages; pdftotext -f 1 -l 3 literature/wing_huan
+  > Read /home/al/dev/MOSP/literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf
+  > Read /home/al/dev/MOSP/literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf
+  > $ grep -n -i -B3 -A25 "Theorem 7" /tmp/lit/fellows_langston_1989_search_decision_efficiency_stoc.txt | head -90; grep -n -i -A15 "Lemma 4.1" /tmp/lit/fellows_lang
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "def \|theorem \|structure " Pathwidth.lean PathDecomposition.lean VertexSeparation.lean LinearLayout.lean 
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 1,48p VertexSeparation.lean; sed -n 15,35p Pathwidth.lean; sed -n 25,60p PathDecomposition.lean
+  > Read /home/al/dev/MOSP/paper2/literature/14_lengauer_1981.pdf
+
+Sources are all read. Writing the census into `paper2/equivalences.md` now.
+  > Write /home/al/dev/MOSP/paper2/equivalences.md
+  > $ cat > /tmp/stars.py <<'EOF'
+import itertools
+def star(n): return [(0,i) for i in range(1,n+1)], n+1
+def cw(E,N,mod):
+    best=10**9
+    # center position only m
+
+Hand claims on stars check out. Now running the gate (no code changed, but acceptance requires it).
+  > $ cd /home/al/dev/MOSP && timeout 580 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005 && python3 - <<'EOF'
+import re
+p='iterations.md'; s=open(p).read()
+s=s.replace("- [ ] **01 Statement census.**","- [x]
+
+Item 01, the statement census, is done. `paper2/equivalences.md` now covers all twelve Table 1 problems: each has the source's own definition quoted with page and number, what it is defined on, the graph it maps to, the exact relation to pathwidth with its theorem number, and a verdict. The gate passes (lake build ok, 1 sorry against a limit of 1, 1,217 tests pass). No Lean or checker code was written, as the item required.
+
+I read Table 1's "±1" two ways: as the literal claim that a value lies within one of the open-stack count Z, and as the stronger claim of a fixed offset.
+
+**Verdicts:**
+- **Confirmed (exact):**
+  - **MOSP:** the cited [1] and [4] only define the problem. The relation to pathwidth comes from Yanasse 1997a, Fellows & Langston 1989 and Linhares & Yanasse Prop. 2, and is already proved in Lean.
+  - **Gate matrix layout:** equal to MOSP on the same matrix, with no transposition (rows are nets, which play the part of piece types).
+  - **One-dimensional logic:** confirmed for the core problem only. The variant with boundary gates fixed at the ends is not within ±1.
+  - **Narrowness:** narrowness = pathwidth + 1.
+  - **Node search:** 1985 proves node search = interval thickness, and 1986 proves node search = vertex separation + 1. Both fail on edgeless graphs, where the node search number is 0.
+  - **Vertex separation:** vertex separation = pathwidth.
+- **Unsourced at its citation:** interval thickness. The cited paper [5] is still not held, but Möhring Prop. 3.5 proves the relation.
+- **Weaker than stated:**
+  - **Edge search** is a band: vertex separation ≤ edge search ≤ vertex separation + 2, and all three values occur.
+  - **Split bandwidth** is a sandwich: pathwidth ≤ split bandwidth ≤ pathwidth + 1, and both values occur.
+  - Both still meet the literal "±1 of open stacks" wording.
+- **False as stated:**
+  - **PLA folding:** in Möhring's own sense (at most two nets per track) it is not within ±1. The 5×5 identity matrix needs 3 tracks against 1. Multiple folding is exact (his Thm 3.14).
+  - **Edge separation:** misattributed. Lengauer's edge game is min-cut linear arrangement (cutwidth), and his Definition 6 is modified cutwidth. Both have unbounded gap to pathwidth on stars. His vertex game is exactly vertex separation, which is already Table 1's last row.
+
+The star values (cutwidth of K₁,₇ = 4, modified cutwidth of K₁,₉ = 4) were checked with a throwaway script. The other counterexamples are hand arguments, listed for item 02 to verify: the identity matrix, the boundary-gate family, and split bandwidth of K₁,₃ = 2.
+
+**Other findings:**
+- Table 1 is on p. 1764 of the 2002 paper, not p. 1762 as `MANIFEST.md` says. I left `MANIFEST.md` alone because it is outside this item.
+- Fink & Voss transpose the MOSP matrix (their rows are patterns).
+- Wing et al.'s full problem adds a realizability constraint that Table 1's version drops.
+
+The file ends with eleven statements for item 02's brute-force checker to test. One design question is still open: split bandwidth needs a bound on the number of node splittings before it can be brute-forced.
+
+PROGRESS.md now reads 1/14 SOLVED with the iteration section, and item 01 is marked `[x]` in `iterations.md`. Nothing was committed.
+
+# result: success in 616s, 41 turns, cost $3.05

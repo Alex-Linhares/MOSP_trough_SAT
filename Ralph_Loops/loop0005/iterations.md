@@ -3,7 +3,7 @@
 Phase 1 settles statements (no Lean). Phase 2 proves what is within reach.
 Phase 3 is graph searching. Then assembly and a reserve.
 
-- [ ] **01 Statement census.** For each of the twelve Table 1 problems, read
+- [x] **01 Statement census.** For each of the twelve Table 1 problems, read
   its source in `paper2/literature/` (and the extra sources in TASK.md) and
   write down, in `paper2/equivalences.md`: the source's own definition
   (quoted, with page and numbered definition), the input it is defined on
