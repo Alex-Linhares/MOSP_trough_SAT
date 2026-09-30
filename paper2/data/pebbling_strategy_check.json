@@ -1,0 +1,15 @@
+{
+ "graphs": 1252,
+ "max_vertices": 7,
+ "plays": 5378453,
+ "failures": {
+  "legal": 0,
+  "bound": 0,
+  "optimal": 0,
+  "removal": 0,
+  "three": 0
+ },
+ "counterexamples": [],
+ "seconds": 8.8,
+ "quick": false
+}

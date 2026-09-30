@@ -58,5 +58,11 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms nodeSearch_sub_one_le_edgeSearch_le_add_one
 #print axioms edgeSearch_le_progressiveEdgeSearch_le_add_two
 
+-- loop0006 item 03: Lengauer (1981) Theorem 3
+#print axioms pebblesWithin_lengauerD_iff
+#print axioms isPositiveVSG_iff_isPositivePBWP_lengauerD
+#print axioms pbw_lengauerD_eq_pathwidth
+#print axioms pbw_lengauerD_of_edgeless
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

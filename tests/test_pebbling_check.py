@@ -3,6 +3,8 @@ the four games on dags whose demands can be checked by hand, Lengauer's
 constructions G_u and G_d, and a quick run of every P.5 statement."""
 from __future__ import annotations
 
+import itertools
+
 import networkx as nx
 import pytest
 from networkx.generators.atlas import graph_atlas_g
@@ -128,3 +130,50 @@ def test_quick_run_has_no_failures():
     rep = cc.run_pebbling(quick=True, workers=2, out=None)
     assert rep["summary"]
     assert all(v["failed"] == 0 for v in rep["summary"].values()), rep["counterexamples"]
+
+
+# --- loop0006 item 03: the constructions of the Lean proof of Theorem 3 ---
+
+
+def test_replay_rejects_illegal_moves():
+    # G_d of K2: vertices 0, 1 and the edge vertex 2 with predecessors 0, 1
+    gd = cc.lengauer_d(cc.complete_graph(2))
+    with pytest.raises(ValueError):  # the edge turns with only one end pebbled
+        cc.replay_progressive(gd, [("place", 0), ("turn", 0), ("place", 2), ("turn", 2)])
+    with pytest.raises(ValueError):  # a white pebble is never removed
+        cc.replay_progressive(gd, [("place", 0), ("remove", 0)])
+    with pytest.raises(ValueError):  # progressive: no second placement
+        cc.replay_progressive(ONE, [("place", 0), ("turn", 0), ("remove", 0), ("place", 0)])
+    with pytest.raises(ValueError):  # the play must end with everything done
+        cc.replay_progressive(ONE, [("place", 0)])
+
+
+def test_layout_strategy_on_named_graphs():
+    for g in (cc.complete_graph(2), cc.complete_graph(3), cc.complete_graph(4),
+              cc.path_graph(4), cc.cycle_graph(4), cc.star_graph(3)):
+        n = g[0]
+        best = min(cc.replay_progressive(cc.lengauer_d(g), cc.gd_layout_strategy(g, p))
+                   for p in itertools.permutations(range(n)))
+        assert best == cc.vs_dp(g) + 2
+    # edgeless: one pebble at a time
+    g = cc.graph(3, [])
+    assert cc.replay_progressive(cc.lengauer_d(g), cc.gd_layout_strategy(g, (0, 1, 2))) == 1
+
+
+def test_removal_layout_is_the_clearing_order():
+    g = cc.path_graph(4)
+    order = (2, 0, 3, 1)
+    assert cc.removal_layout(4, cc.gd_layout_strategy(g, order)) == list(order)
+
+
+def test_outer_convention_has_the_same_minimum():
+    for h in graph_atlas_g()[1:60]:
+        g = cc.from_nx(h)
+        perms = list(itertools.permutations(range(g[0])))
+        assert min(cc.vs_outer_of_layout(g, p) for p in perms) == cc.vertex_separation(g)
+
+
+def test_strategy_quick_run_has_no_failures():
+    rep = cc.run_pebbling_strategy(quick=True, workers=2, out=None)
+    assert rep["graphs"] > 0 and rep["plays"] > 0
+    assert all(v == 0 for v in rep["failures"].values()), rep["counterexamples"]

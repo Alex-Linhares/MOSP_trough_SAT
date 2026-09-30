@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 21:46:20",
+  "updated": "2026-09-30 22:09:15",
   "phase": "tests",
-  "started": "2026-09-30 21:32:01",
-  "item": "02 Pebbling brute force. Extend `paper2/complex_check.py` with an"
+  "started": "2026-09-30 21:49:17",
+  "item": "03 Lengauer Theorem 3 in Lean. `Complex/Pebbling.lean`: define the"
 }

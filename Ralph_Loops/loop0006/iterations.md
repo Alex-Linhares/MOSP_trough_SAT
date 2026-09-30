@@ -21,7 +21,7 @@ assembly and a reserve.
   (and all G_d, G_u constructions) small enough, reporting agreement or
   counterexamples in `paper2/equivalences.md`. Tests on hand-checked dags.
 
-- [ ] **03 Lengauer Theorem 3 in Lean.** `Complex/Pebbling.lean`: define the
+- [x] **03 Lengauer Theorem 3 in Lean.** `Complex/Pebbling.lean`: define the
   (progressive) black-white pebble game on a finite dag and prove Lengauer's
   Thm 3, VSG on G ↔ PBWP on G_d with K + 2, reusing the VSG of
   `Complex/EdgeSeparation.lean`. Hence the pebbling number of G_d equals

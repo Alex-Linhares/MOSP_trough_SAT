@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 2/13 SOLVED
+Current: 3/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -124,3 +124,84 @@ Current: 2/13 SOLVED
   and finish with `isPositiveVSG_iff_triangleGraph`. State with
   `vertexSeparation`.
 
+## Iteration 3 — 2026-09-30 22:08
+
+### Completed
+- **03 Lengauer Theorem 3 in Lean.** New file
+  `lean/MOSPFormalization/Complex/Pebbling.lean`, imported from the root. It has
+  no `sorry`, and its axioms are `propext`, `Classical.choice` and `Quot.sound`
+  only; the new lines in `paper2/axiom_check.lean` check this.
+  - **Definitions.** Under (iii') each vertex is pebble-free, then white, then
+    black, then cleared, entering each phase once:
+    - `PebblePhase` holds the four phases;
+    - `PebbleMove` holds the three moves, place, turn and remove;
+    - `PebbleMove.Legal` encodes Lengauer's rules (iv)–(vi), with an optional
+      turn;
+    - `PebblesWithin D K` means reachable through positions holding at most
+      `K` pebbles. `IsPositivePBWP` adds `0 < K`, and `pbw` is the least `K`.
+    This is the machine of item 02's `progressive_bw_within(rules="lengauer")`.
+    `lengauerD G` is G_d on `V ⊕ G.edgeSet`, and it has depth one
+    (`lengauerD_no_path_two`).
+  - **Proved:**
+    - `pebblesWithin_lengauerD_iff`: `PebblesWithin (G_d) (K+2) ↔ vs(G) ≤ K`
+      for every graph and every K ≥ 0;
+    - `isPositiveVSG_iff_isPositivePBWP_lengauerD`: Lengauer's statement, for
+      K > 0;
+    - `pbw_lengauerD` and its `_eq_pathwidth` and `_eq_vsg` forms:
+      `pbw(G_d) = vs + 2 = pw + 2 = VSG + 2` if G has an edge;
+    - `pbw_lengauerD_of_edgeless`: `pbw(G_d) = 1` if G is edgeless and
+      nonempty. This is item 02's edge case.
+  - **Route: direct on G_d, not the P.6 plan** (Thm 2 on G_d and then Thm 4).
+    The development's vs counts the outer boundary, so both directions are
+    short:
+    - (⇐) clear the vertices in layout order. For each vertex v, blacken
+      N[v], pass a pebble through each edge vertex at v, then remove v.
+    - (⇒) lay the vertices out in the order they lose their pebble. At each
+      cut, look at the moment the *last* cut edge turns. The edge vertex, its
+      cleared endpoint and the whole active suffix are pebbled together
+      (`outerBoundary_card_le`).
+    Thm 2 is untouched, so item 04 still has to prove it.
+  - About 900 lines. Every new lemma compiled on its first or second try except
+    for heartbeat timeouts in `tauto`, which were replaced by explicit terms.
+- **Python.** Added to `paper2/complex_check.py`:
+  - `replay_progressive`, the Lean legality move by move;
+  - `gd_layout_strategy`, the (⇐) construction;
+  - `removal_layout`, the (⇒) layout;
+  - `vs_outer_of_layout`, the Lean convention;
+  - `run_pebbling_strategy`, run with
+    `python -m paper2.complex_check --pebbling-strategy` (9 s, writes
+    `paper2/data/pebbling_strategy_check.json`).
+
+  It covers every layout of every atlas graph on 1–7 vertices, 1,252 graphs
+  and 5,378,453 plays, with **zero failures**. The checks are:
+  - the play is legal;
+  - it stays within `vs(layout)+2` pebbles (1 if edgeless);
+  - the removal layout satisfies the (⇒) bound;
+  - an edge forces 3 pebbles;
+  - the best layout attains `vs+2`.
+
+  `tests/test_pebbling_check.py` has five new tests, 25 in total.
+- **Docs.**
+  - `paper2/problem_transformations.md`: new problem §1.13 (progressive
+    black-white pebbling), transformation (E10) in §2.1, and the (E10) proof
+    in §3, formal and then *In plain English*.
+  - `paper2/equivalences.md`: new P.8, and row 13c of P.4 marked as proved.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1256 passed, 2 skipped, 1 xfailed; GATE PASS.
+
+### Blockers
+- None. The Python check of the (⇒) direction covers only the plays the (⇐)
+  strategy produces. All plays were covered for the *statement* in item 02
+  (P.7), not for the proof's construction. The Lean proof covers every play.
+
+### Next
+- Item 04: Lengauer Thm 2 (`pbw(D) = vs(D_u) + 1`, D nonempty) in
+  `Complex/PebblingGu.lean`, and KP Thm 3.1 (`mpb = mpbw = vs + 1`, G
+  nonempty). Reuse from this file: the game; `exists_seq_of_reflTransGen`,
+  `seq_rank_mono` and `seq_exists_turn`, for time arguments on a play; and
+  `exists_layout_of_injective`, for the removal-order layout.
+  - (⇒) of Thm 2 is Lengauer's removal-time layout, in the outer convention.
+  - (⇐) needs the four-step simulation, or a direct strategy in the style of
+    `pebblesWithin_of_layout`.
+  - For KP, the orientation-by-layout strategy with black pebbles gives `≤`,
+    and `min_D` is P.3's lemma.
+  - Then extend §1.13, (E10) and the master table with 13a and 13b.

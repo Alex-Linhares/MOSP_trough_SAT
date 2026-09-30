@@ -128,6 +128,20 @@ problems:
   each move at most $K$ unpebbled vertices are adjacent to a pebbled one?
   Value $\mathrm{VSG}(G)$. (Lengauer, p. 467.)
 
+### 1.13 Progressive black-white pebbling
+**Instance.** A dag $D = (V, A)$ and a positive integer $K$.
+**Question.** Can $D$ be pebbled progressively with at most $K$ pebbles on it
+at any instant? The rules: every vertex starts pebble-free and ends
+pebble-free; a white pebble may be placed on a pebble-free vertex at any time;
+a white pebble on $v$ may be turned black once every immediate predecessor of
+$v$ carries a pebble; a black pebble may be removed at any time; and each
+vertex receives and loses a pebble exactly once.
+The least such $K$ is $\mathrm{pbw}(D)$. (Lengauer 1981, pp. 466–467, after
+Cook & Sethi; Kirousis & Papadimitriou 1986, p. 206.) The dag built from
+a graph $G$ is $G_d$, with a vertex for each vertex and each edge of $G$ and arcs
+$v \to \{v, w\}$, $w \to \{v, w\}$ (Lengauer, Def. 1b). Lengauer's $D_u$,
+built from a dag, is item 04's.
+
 ---
 
 ## 2. The transformations
@@ -188,6 +202,16 @@ $\mathrm{VSG}(G) = \max(1, \mathrm{vs}(G))$. If $E \ne \emptyset$, the triangle
 graph $G_{du}$, which adds a triangle on every edge, satisfies
 $$\mathrm{vs}(G_{du}) = \mathrm{vs}(G) + 1.$$
 Lengauer 1981, Thm 4. Lean: `vsg_eq_max`, `vertexSeparation_triangleGraph`.
+
+**(E10) Progressive pebbling of $G_d$.** For every graph and every $K \ge 0$,
+$$\mathrm{vs}(G) \le K \iff \mathrm{pbw}(G_d) \le K + 2,$$
+so if $E \ne \emptyset$,
+$$\mathrm{pbw}(G_d) = \mathrm{vs}(G) + 2 = \mathrm{pw}(G) + 2 = \mathrm{VSG}(G) + 2,$$
+and $\mathrm{pbw}(G_d) = 1$ if $G$ is edgeless with $V \ne \emptyset$.
+Lengauer 1981, Thm 3, which states the instance form for positive $K$. Lean:
+`pebblesWithin_lengauerD_iff`, `isPositiveVSG_iff_isPositivePBWP_lengauerD`,
+`pbw_lengauerD_eq_pathwidth`, `pbw_lengauerD_of_edgeless`
+(`Complex/Pebbling.lean`).
 
 ### 2.2 Bands
 
@@ -533,6 +557,55 @@ charges, at each moment, for the unpebbled vertices touching pebbled ones.
 That charge is vertex separation read from the other end. His Theorem 4 says
 that putting a little triangle on every edge raises the answer by exactly
 one.
+
+### (E10) Progressive pebbling of $G_d$
+
+Write $\partial S = N(S) \setminus S$, so that the vertex separation of a
+layout is $\max_i |\partial P_i|$ over its prefixes $P_i$ (the convention of
+(E9)). In a progressive play a vertex passes once through the phases
+pebble-free, white, black, cleared.
+
+*Proof.* ($\Leftarrow$) Take a layout with $|\partial P_i| \le K$ for all $i$
+and clear its vertices in order. To clear $v_i$: place and turn a pebble on
+every pebble-free vertex of $N[v_i]$ (vertices of $G$ have no predecessors in
+$G_d$, so they turn at once); then, for each edge $e$ at $v_i$ not yet
+cleared, place a white pebble on $e$, turn it (both ends are black) and
+remove it; then remove $v_i$. Before step $i$ the black vertices are exactly
+$\partial P_{i-1}$, and $\partial P_{i-1} \cup N[v_i] \setminus P_{i-1} =
+\partial P_i \cup \{v_i\}$. So during the step at most
+$|\partial P_i| + 1 + 1 \le K + 2$ pebbles are on the dag, the last one for
+the edge vertex in play. If $G$ is edgeless there are no edge vertices and
+$\partial P_i = \emptyset$, so one pebble suffices.
+
+($\Rightarrow$) Take a play with at most $K + 2$ pebbles and lay out $V$ in
+the order its vertices lose their pebble. Fix a cut, let $S$ be the vertices
+cleared by then and $B = \partial S$; suppose $B \ne \emptyset$. For every
+edge $ab$ with $a \in S$, $b \notin S$, the edge vertex $ab$ is turned while
+$a$ and $b$ carry pebbles, hence before $a$ is cleared, hence before the cut.
+Let $e = ab$ be the one of these edges turned last, at time $\tau$. At $\tau$,
+the vertex $e$ is white, $a$ is pebbled, and every $w \in B$ is pebbled: $w$
+has an edge $uw$ with $u \in S$, turned at a time $\le \tau$ with $w$
+pebbled, and $w$ is not cleared until after the cut. These $|B| + 2$
+vertices of $G_d$ are distinct, so $|B| + 2 \le K + 2$.
+
+For the number form, an edge $ab$ forces three pebbles (when $ab$ turns,
+$a$ and $b$ are pebbled too), so every feasible budget has the form $K + 2$.
+On an edgeless graph with a vertex, one pebble is needed and suffices, while
+$\mathrm{vs} + 2 = 2$. Lengauer's instance form, for $K \ge 1$, follows with
+$\mathrm{VSG} = \max(1, \mathrm{vs})$ (E9). $\square$
+
+Lengauer proves Theorem 3 by applying his Theorem 2 to $G_d$ and then his
+Theorem 4. The proof above works on $G_d$ directly and needs neither.
+
+*In plain English.* Turn each edge of a graph into a small task that needs
+its two endpoints "on the table" at once. Working through the vertices in a
+good order, you keep on the table only the vertices still waiting for a
+neighbour, plus the one you are finishing and one edge task, which is the
+vertex separation plus two. Conversely, look at any schedule at the moment the
+last edge crossing a cut is done. Its task, one endpoint, and every vertex
+waiting on the far side of the cut are all on the table together. So no
+schedule beats vertex separation plus two. A graph with no edges is the
+exception: one slot is enough.
 
 ### (B1) $\mathrm{pw} \le \mathrm{sb} \le \mathrm{pw} + 1$
 

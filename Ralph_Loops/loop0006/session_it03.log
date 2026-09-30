@@ -1,0 +1,248 @@
+# session it03 started 2026-09-30 21:49:17
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cat Ralph_Loops/loop0006/iterations.md | sed -n '1,80p'; ls lean/MOSPFormalization/Complex/
+  > $ sed -n '/Pebbling (loop0006/,$p' paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP/lean && wc -l MOSPFormalization/Complex/*.lean MOSPFormalization/*.lean | tail -40; grep -n "^def\|^theorem\|^lemma\|^structure\|^noncomput
+  > $ cat MOSPFormalization/LinearLayout.lean MOSPFormalization/VertexSeparation.lean; sed -n 1,300p MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ cd /home/al/dev/MOSP && grep -n "def progressive_bw_within" -A60 paper2/complex_check.py | head -90; cat Ralph_Loops/loop0006/gate.py | head -60; ls ~/.elan 2>/
+
+Planning done; writing `Complex/Pebbling.lean` now: the four-phase progressive game, G_d, and a direct proof of both directions of Theorem 3.
+  > $ cd /home/al/dev/MOSP/lean && sed -n 1,60p .lake/packages/mathlib/Mathlib/Combinatorics/Digraph/Basic.lean | grep -n "structure\|Adj" ; cat MOSPFormalization.lea
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/Pebbling.lean
+  > $ time lake env lean MOSPFormalization/Complex/Pebbling.lean 2>&1 | head -40
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("  Relation.ReflTransGen.mono (fun _ _ ⟨m, hm, hQ, hc⟩ => ⟨m, hm, hQ,
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("  Relation.ReflTransGen.lift id (fun _ _ ⟨m, hm, hQ, hc⟩ => ⟨m, hm, 
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+old=s[s.index("theorem PebblesWithin.mono"):s.index("/-- A play as a sequence")]
+
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+/-! ### What a play implies -/
+
+section Plays
+
+open PebblePhase
+
+variable
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace('''  set j := Nat.find hex with hj
+  have hjT : j ≤ T := (Nat.find_sp
+  > $ grep -rn "orderIsoOfFin\|orderEmbOfFin\|layoutOfInjective\|ofInjective\|sortBy\|monotone in" MOSPFormalization --include=*.lean | head -20
+  > $ sed -n 150,282p MOSPFormalization/Complex/IntervalThickness.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+/-! ### The layout a play induces -/
+
+section Lower
+
+open PebblePhase
+
+va
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("      rw [← eq_done_iff_rank]; simpa [S] using hwS","      rw [Ne, ←
+
+The key lower-bound lemma compiles. Next: turn removal times into a layout to finish (⇒).
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+/-- A layout listing the vertices in increasing order of an injective key
+
+(⇒) is proved. Now the small lower bounds and then the construction (⇐).
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+/-- With an edge `{a, b}`, `G_d` needs three pebbles: when `{a, b}` turns
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace('''end Plays''','''theorem seq_numPebbles_le (hs : ∀ i < T, PebbleSte
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+/-! ### The strategy a layout induces -/
+
+section Upper
+
+open PebblePhase
+
+Building blocks compile. Now the per-vertex step and the chain along a layout.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+add='''
+variable (G) in
+/-- The edges with an endpoint in `S`. -/
+def clearedEdge
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""      (by rw [disjoint_left]; intro w hw; simp [X] at hw; exact hw
+  > $ sed -n 725,740p MOSPFormalization/Complex/Pebbling.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""        simp only [mem_insert, exists_eq_or_imp]
+        by_cases 
+  > $ sed -n 730,736p MOSPFormalization/Complex/Pebbling.lean; sed -i '734s/        tauto/        trace_state\n        sorry/' MOSPFormalization/Complex/Pebbling.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""        trace_state
+        sorry""","""        exact ⟨fun h => h.
+
+Both directions of Theorem 3 compile, no `sorry`. Adding the headline theorems (instance form, Lengauer's form, number forms, edge cases).
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("    (h1 : ∀ i (hi : i < Fintype.card V), vertexSepAt G σ i + 1 ≤ K)"
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""  apply le_antisymm (Nat.sInf_le hwithin)
+  apply le_csInf ⟨1, hwi
+  > $ sed -n 820,840p MOSPFormalization/Complex/Pebbling.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""    pbw (lengauerD G) = vertexSeparation G + 2 := by
+  apply le_an
+  > $ grep -c "if_pos\|if_neg" MOSPFormalization/Complex/*.lean | head; lake env lean MOSPFormalization/Complex/Pebbling.lean 2>&1 | grep -c warning
+  > $ grep -n "if_pos\|if_neg" MOSPFormalization/Complex/Pebbling.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("      · rw [if_neg hw, if_neg hw]","      · simp only [hw, ↓reduceIt
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+T="ite_cond_eq_true _ _ (eq_true {})"
+F="ite_cond_eq_false _ _ (eq_false {})"
+s=s
+  > $ sed -i 's/ite_cond_eq_false _ _ (eq_false/ite_eq_right_of_eq_false (eq_false/g; s/ite_cond_eq_true _ _ (eq_true/ite_eq_left_of_eq_true (eq_true/g' MOSPFormaliza
+  > $ sed -n 706,742p MOSPFormalization/Complex/Pebbling.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+s=s.replace("""      · rw [ite_eq_right_of_eq_false (eq_false hw), ite_eq_right_o
+
+Lean file is complete and warning-free. Now a Python check of the proof's own strategy (replay the layout construction under the Lean rules), then docs.
+  > $ cd /home/al/dev/MOSP && grep -n "^def \|^    def " paper2/complex_check.py | sed -n '1,200p' | grep -n "lengauer\|vs_dp\|run_pebbling\|atlas\|_search\|popcount\
+  > $ sed -n '/^def run_pebbling/,/^def [a-z_]*(/p' paper2/complex_check.py | head -150; grep -n "argparse\|--pebbling\|--quick" paper2/complex_check.py | head; sed -
+  > $ sed -n 200,268p paper2/complex_check.py; sed -n 1995,2030p paper2/complex_check.py; grep -n "def edges_of\|def graph\b\|def graph(\|def from_nx\|PEBBLING_REPORT
+  > $ python3 - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+add='''
+
+# ----------------------------------------------------------------------------
+# Pebblin
+  > $ time python -m paper2.complex_check --pebbling-strategy | head -14
+  > $ python3 - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+s=s.replace('''    graph: every layout to 6 vertices (5 when quick), 720 sampled layouts at 7."""
+
+Full run: 5,378,453 replayed plays, zero failures. Adding tests.
+  > $ cat >> tests/test_pebbling_check.py <<'EOF'
+
+
+# --- loop0006 item 03: the constructions of the Lean proof of Theorem 3 ---
+
+
+def test_replay_rejects_illegal_mov
+
+Tests pass. Now the Lean module docstring, root import, and an axiom audit.
+  > $ head -30 paper2/axiom_check.lean; grep -c "print axioms" paper2/axiom_check.lean; tail -5 paper2/axiom_check.lean
+
+Now the docstring and imports.
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Complex/Pebbling.lean'
+s=open(p).read()
+doc='''/-
+Copyright (c) 2026 Alexandre Linhares. All
+
+Lean builds; axioms are the standard three. Now the docs: axiom_check, equivalences.md, problem_transformations.md.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+s=s.replace("\n-- control: the baseline sorry","\n-- loop0006 item 03: Le
+  > $ sed -n 1,32p paper2/problem_transformations.md; sed -n 99,192p paper2/problem_transformations.md; sed -n 517,537p paper2/problem_transformations.md; sed -n 623,
+  > $ python3 - <<'EOF'
+p='paper2/problem_transformations.md'
+s=open(p).read()
+prob='''### 1.13 Progressive black-white pebbling
+**Instance.** A dag $D = (V, A)$ and 
+  > $ sed -n 131,146p paper2/problem_transformations.md; sed -n 205,214p paper2/problem_transformations.md
+  > $ python3 - <<'EOF'
+p='paper2/problem_transformations.md'
+s=open(p).read()
+s=s.replace("$v \to \\{v, w\\}$, $w \to \\{v, w\\}$ (Lengauer, Def. 1b); and, item 04, 
+
+Now `equivalences.md`: update P.4's table status for 13c and add a P.8 section.
+  > $ python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="| 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edg
+
+While the gate runs, I'll write PROGRESS.md and mark the item.
+  > $ date '+%Y-%m-%d %H:%M' && python3 - <<'EOF'
+p='Ralph_Loops/loop0006/iterations.md'
+s=open(p).read()
+s=s.replace("- [ ] **03 Lengauer Theorem 3 in Lean.**","- [x
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0006/PROGRESS.md'
+s=open(p).read()
+s=s.replace("Current: 2/13 SOLVED","Current: 3/13 SOLVED")
+s=s.rstrip("\n")+'''
+
+## Iter
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/d0421787-9928-43c9-9b6f-3633ca184b0d/tasks/be3ux69os.output
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/d0421787-9928-43c9-9b6f-3633ca184b0d/tasks/be3ux69os.output; until gre
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/d0421787-9928-43c9-9b6f-3633ca184b0d/tasks/be3ux69os.output; until grep -qE "GATE (PASS|FAIL)|Traceback" $f; do sleep 5; do
+  > $ sed -i 's/^- Gate: see below\.$/- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1256 passed, 2 skipped, 1 xfailed; GATE PASS./' Ralph_Loops/lo
+
+Item 03 is done: Lengauer's Theorem 3 is proved in Lean with no `sorry`, and the gate passes (`lake build` ok, 1 `sorry` against a limit of 1, 1,256 tests passed, 2 skipped, 1 xfailed).
+
+**What is proved** (in `lean/MOSPFormalization/Complex/Pebbling.lean`, imported from the root). The only axioms used are the standard three: `propext`, `Classical.choice`, `Quot.sound`.
+- **The game.** The progressive black-white game is defined as in Lengauer: each vertex passes once through pebble-free, white, black and cleared. The moves are place white, turn black and remove black. G_d is `lengauerD G`, and I proved it has no directed path of length two, so it is a dag.
+- **The instance form:** `pebblesWithin_lengauerD_iff` says G_d can be pebbled with K + 2 pebbles if and only if vs(G) ≤ K, for every graph and every K ≥ 0, with no other hypothesis.
+- **Lengauer's own wording** (VSG positive ⇔ PBWP positive at K + 2) is `isPositiveVSG_iff_isPositivePBWP_lengauerD`, for every positive K.
+- **The number form:** when G has an edge, pbw(G_d) = vs + 2 = pw + 2 = VSG + 2 (`pbw_lengauerD` and its two variants). When G has no edges but at least one vertex, pbw(G_d) = 1 (`pbw_lengauerD_of_edgeless`). That is the edge case item 02 found.
+
+**The proof does not follow the plan from item 01.** That plan was Lengauer's route: his Theorem 2 applied to G_d, then his Theorem 4. The Lean proof works on G_d directly:
+- **Layout to pebbling:** clear the vertices in layout order. For each vertex, blacken its closed neighbourhood, pass a pebble through each of its edge vertices, then remove it.
+- **Pebbling to layout:** order the vertices by when they lose their pebble. At each cut, look at the moment the last edge crossing the cut turns black. That edge vertex, its endpoint on the cleared side, and every vertex on the other side's boundary are pebbled at once, which forces the +2.
+
+As a result, Theorem 2 is still unproved and remains the work of item 04.
+
+**Python checks.** In `paper2/complex_check.py`, `python -m paper2.complex_check --pebbling-strategy` replays both of the proof's constructions under the Lean rules. It runs every layout of all 1,252 graphs on 1–7 vertices, 5,378,453 plays in 9 s, with zero failures. `tests/test_pebbling_check.py` has five new tests. One limit: the check of the pebbling-to-layout direction only runs on plays the strategy itself produces. The statement was checked against all plays in item 02, and the Lean proof covers every play.
+
+**Docs.**
+- `paper2/problem_transformations.md` gains problem §1.13, transformation (E10), and its proof in both the formal and the plain-English register.
+- `paper2/equivalences.md` gains section P.8, and row 13c is marked proved.
+- `paper2/axiom_check.lean` has the new theorems added.
+
+PROGRESS.md now reads 3/13 and item 03 is marked `[x]`. Nothing was committed.
+
+# result: success in 1197s, 61 turns, cost $4.51

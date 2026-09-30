@@ -1597,7 +1597,7 @@ Thm 2 plus this one-line lemma.
 |---|---|---|---|---|---|
 | 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`) |
 | 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs |
-| 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edge; `= 1` if G is edgeless and nonempty | +2 on G (`= Z + 1`) | **exact**, fixed offset; instance form true for every K ≥ 0 with vs |
+| 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edge; `= 1` if G is edgeless and nonempty | +2 on G (`= Z + 1`) | **exact**, fixed offset; instance form true for every K ≥ 0 with vs; **proved in Lean (P.8)** |
 | — | Unrestricted BWP | Lengauer p. 469 | `bw(G_d) ≤ 3` | none | **not a member** |
 
 In short: pebbling relates to vertex separation **exactly**. It has offset
@@ -1773,3 +1773,79 @@ Nothing in P.1–P.6 needed correcting. The only error found this session was
 in a hand value in the new tests: the in-spider's demand is 4, not 3,
 because its root turns with three predecessors pebbled. The solver was right.
 
+### P.8 Lengauer's Theorem 3 in Lean (loop0006 item 03)
+
+`lean/MOSPFormalization/Complex/Pebbling.lean`, no `sorry`, axioms `propext`,
+`Classical.choice` and `Quot.sound` only (`paper2/axiom_check.lean`). It proves
+row 13c.
+
+**The definitions.**
+
+- **The game.** Under (iii'), a vertex's history is forced: it is pebble-free,
+  then white, then black, then cleared, each phase entered once. So a position
+  is one of four phases per vertex (`PebblePhase`). The three moves are place
+  white, turn, and remove black (`PebbleMove`). Their legality is rules
+  (iv)–(vi) (`PebbleMove.Legal`), with the turn optional as in Lengauer.
+  `PebblesWithin D K` says the all-cleared position is reachable from the
+  pebble-free one without ever holding more than `K` pebbles.
+  `IsPositivePBWP` adds Lengauer's `K > 0`, and `pbw` is the least `K`. This is
+  the machine `progressive_bw_within(rules="lengauer")` of P.7.
+- **G_d** is `lengauerD G` on `V ⊕ G.edgeSet`. It has no directed path of
+  length two, so it is a dag (`lengauerD_no_path_two`).
+
+**The theorems.**
+
+| Statement | Lean | Hypothesis |
+|---|---|---|
+| `PebblesWithin (G_d) (K + 2) ↔ vs(G) ≤ K` | `pebblesWithin_lengauerD_iff` | none, every K ≥ 0 |
+| Lengauer's Thm 3: `(G, K)` VSG-positive ⇔ `(G_d, K + 2)` PBWP-positive | `isPositiveVSG_iff_isPositivePBWP_lengauerD` | `0 < K` (his instances) |
+| `pbw(G_d) = vs(G) + 2`, `= pw(G) + 2`, `= VSG(G) + 2` | `pbw_lengauerD`, `pbw_lengauerD_eq_pathwidth`, `pbw_lengauerD_eq_vsg` | G has an edge |
+| `pbw(G_d) = 1` | `pbw_lengauerD_of_edgeless` | G edgeless, V nonempty |
+| an edge forces 3 pebbles; a vertex forces 1 | `three_le_of_pebblesWithin`, `one_le_of_pebblesWithin` | — |
+
+These are exactly the edge cases of P.3 and P.7: the instance form needs no
+hypothesis when read with vs, and the number form needs an edge.
+
+**The route differs from P.6's plan.** P.6 proposed Lengauer's own proof:
+Thm 2 on G_d, then Thm 4. The Lean proof works on G_d directly, and so needs
+neither Thm 2's four-step simulation nor the triangle graph. The development's
+vs counts the **outer** boundary (`activeSuffix`: later vertices with a
+neighbour at or before the cut), and in that convention both directions are
+short:
+
+- **(⇐) `pebblesWithin_of_layout`.** Clear the vertices in layout order. To
+  clear v:
+  1. blacken the pebble-free vertices of N[v];
+  2. pass a pebble through every edge vertex at v not yet cleared (place,
+     turn, remove);
+  3. remove v.
+  Between steps the black set is exactly the active suffix (`layoutPos`). So
+  at most `|new active suffix| + 1 + 1` pebbles are ever in play.
+- **(⇒) `vertexSeparation_le_of_pebblesWithin`.** The layout is the order in
+  which vertices lose their pebble. At any cut, take the cut edge that is
+  turned **last** (`outerBoundary_card_le`). At that instant the edge vertex,
+  its endpoint on the cleared side, and the whole active suffix all carry
+  pebbles. That is `|active suffix| + 2` distinct pebbles.
+
+The (⇒) argument chooses a time outside the step it bounds: the last cut edge
+can turn long before the cut's vertex is cleared. That is why the play is
+unfolded into a time-indexed sequence (`exists_seq_of_reflTransGen`), rather
+than handled by an invariant on positions.
+
+**Checked before and after stating.** P.7 checked the statement (row 4 of its
+table). The proof's two constructions are replayed by
+`python -m paper2.complex_check --pebbling-strategy`, which writes
+`paper2/data/pebbling_strategy_check.json` in 9 s on 32 cores. It covers
+every layout of every atlas graph on 1–7 vertices, 1,252 graphs and 5,378,453
+plays. Each play is replayed move by move under the Lean legality
+(`replay_progressive`), and four things are checked:
+
+- the (⇐) play is legal and ends with everything cleared;
+- it uses at most `vs(layout) + 2` pebbles (1 if edgeless), where
+  `vs_outer_of_layout` is the Lean convention;
+- its removal-order layout satisfies the (⇒) bound `vs ≤ pebbles − 2`;
+- an edge forces 3 pebbles, and the best layout attains `vs + 2` exactly.
+
+Zero failures. Tests: `tests/test_pebbling_check.py`, five new, including
+that the outer convention has the same minimum over layouts as Kinnersley's
+inner one.

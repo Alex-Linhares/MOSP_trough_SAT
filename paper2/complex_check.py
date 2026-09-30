@@ -12,6 +12,7 @@ exhaustively on small inputs:
     python -m paper2.complex_check            # full run, writes the JSON report
     python -m paper2.complex_check --quick    # atlas to 5 vertices, fewer samples
     python -m paper2.complex_check --pebbling # loop0006 item 02: pebbling (P.5)
+    python -m paper2.complex_check --pebbling-strategy  # item 03: the Lean proof's constructions
 
 (interval thickness by explicit interval models only to 6 vertices; above
 that by event words, which the atlas run checks against the model search).
@@ -1992,6 +1993,156 @@ def run(quick=False, workers=None, seed=20260930, out=REPORT):
     return report
 
 
+# ----------------------------------------------------------------------------
+# Pebbling (loop0006 item 03): the two constructions of the Lean proof of
+# Lengauer's Theorem 3, `lean/MOSPFormalization/Complex/Pebbling.lean`
+# ----------------------------------------------------------------------------
+#
+# The Lean game is a four-phase machine per vertex (fresh, white, black, done)
+# with three moves, place / turn / remove; `replay_progressive` is that game
+# move by move. `gd_layout_strategy` is `pebblesWithin_of_layout` (⇐) and
+# `removal_layout` is the layout of `vertexSeparation_le_of_pebblesWithin` (⇒).
+# The Lean layout convention is the *outer* boundary (`activeSuffix`: later
+# vertices with a neighbour at or before position i), `vs_outer_of_layout`;
+# its minimum over layouts equals `vertex_separation` by reversal.
+
+FRESH, WHITE, BLACK, DONE = range(4)
+
+
+def replay_progressive(d, moves):
+    """Play `moves` (pairs `("place" | "turn" | "remove", v)`) on the dag `d`
+    under `PebbleMove.Legal` of Pebbling.lean and return the largest number of
+    pebbles on the dag. Raises `ValueError` on an illegal move or if the play
+    does not end with every vertex done."""
+    n, pred = d
+    ph = [FRESH] * n
+    best = cur = 0
+    for kind, v in moves:
+        if kind == "place":
+            if ph[v] != FRESH:
+                raise ValueError(f"place {v} in phase {ph[v]}")
+            ph[v] = WHITE
+            cur += 1
+        elif kind == "turn":
+            if ph[v] != WHITE:
+                raise ValueError(f"turn {v} in phase {ph[v]}")
+            for u in range(n):
+                if pred[v] >> u & 1 and ph[u] not in (WHITE, BLACK):
+                    raise ValueError(f"turn {v} with predecessor {u} unpebbled")
+            ph[v] = BLACK
+        elif kind == "remove":
+            if ph[v] != BLACK:
+                raise ValueError(f"remove {v} in phase {ph[v]}")
+            ph[v] = DONE
+            cur -= 1
+        else:
+            raise ValueError(kind)
+        best = max(best, cur)
+    if any(p != DONE for p in ph):
+        raise ValueError("play does not end with every vertex done")
+    return best
+
+
+def vs_outer_of_layout(g, order):
+    """The Lean `vertexSepOfLayout`: `max_i |activeSuffix i|`, the vertices at
+    positions > i with a neighbour at a position <= i."""
+    n, adj = g
+    best = 0
+    for i, pre in enumerate(_prefix_masks(order)[:-1]):
+        best = max(best, sum(1 for v in order[i + 1:] if adj[v] & pre))
+    return best
+
+
+def gd_layout_strategy(g, order):
+    """The play of `pebblesWithin_of_layout` on `lengauer_d(g)`: for each `v` in
+    `order`, blacken the pebble-free vertices of N[v] (place, turn), then place,
+    turn and remove every edge vertex at `v` not yet cleared, then remove `v`."""
+    n, adj = g
+    es = edges_of(g)
+    moves, done, black, cleared = [], 0, 0, set()
+    for v in order:
+        for w in [v] + [w for w in range(n) if adj[v] >> w & 1]:
+            if not (done >> w & 1) and not (black >> w & 1):
+                moves += [("place", w), ("turn", w)]
+                black |= 1 << w
+        for i, (a, b) in enumerate(es):
+            if v in (a, b) and i not in cleared:
+                moves += [("place", n + i), ("turn", n + i), ("remove", n + i)]
+                cleared.add(i)
+        moves.append(("remove", v))
+        done |= 1 << v
+    return moves
+
+
+def removal_layout(n_g, moves):
+    """The layout of `vertexSeparation_le_of_pebblesWithin`: the vertices of G
+    (the first `n_g` vertices of G_d) in the order they lose their pebble."""
+    return [v for kind, v in moves if kind == "remove" and v < n_g]
+
+
+def strategy_row(g, max_layouts=None, seed=0):
+    """Both constructions on every layout of `g` (or a sample of `max_layouts`)."""
+    n, _ = g
+    gd = lengauer_d(g)
+    has_edge = bool(edges_of(g))
+    perms = list(itertools.permutations(range(n)))
+    if max_layouts is not None and len(perms) > max_layouts:
+        perms = random.Random(seed).sample(perms, max_layouts)
+    vs = vs_dp(g)
+    fails = {"legal": 0, "bound": 0, "optimal": 0, "removal": 0, "three": 0}
+    best_play = None
+    for order in perms:
+        moves = gd_layout_strategy(g, order)
+        try:
+            k = replay_progressive(gd, moves)
+        except ValueError:
+            fails["legal"] += 1
+            continue
+        lay = vs_outer_of_layout(g, order)
+        # (⇐): at most the active suffix, the vertex cleared and one edge vertex
+        fails["bound"] += k > (lay + 2 if has_edge else 1)
+        # (⇒): the removal-order layout has vs <= pebbles - 2
+        fails["removal"] += has_edge and vs_outer_of_layout(g, removal_layout(n, moves)) > k - 2
+        # `three_le_of_pebblesWithin`
+        fails["three"] += has_edge and k < 3
+        best_play = k if best_play is None else min(best_play, k)
+    # the minimum over layouts attains pbw(G_d) = vs + 2 (1 if edgeless)
+    fails["optimal"] += best_play != (vs + 2 if has_edge else 1)
+    return {"n": n, "edges": edges_of(g), "layouts": len(perms), "vs": vs,
+            "best_play": best_play, "fails": fails}
+
+
+def _strategy_task(args):
+    g, cap = args
+    return strategy_row(g, max_layouts=cap)
+
+
+PEBBLING_STRATEGY_REPORT = Path(__file__).resolve().parent / "data" / "pebbling_strategy_check.json"
+
+
+def run_pebbling_strategy(quick=False, workers=None, out=PEBBLING_STRATEGY_REPORT):
+    """Replays both constructions of the Lean proof of Theorem 3 on every atlas
+    graph on <= 7 vertices (<= 5 when quick), every layout of each."""
+    from networkx.generators.atlas import graph_atlas_g
+
+    t0 = time.time()
+    nmax = 5 if quick else 7
+    gs = [from_nx(h) for h in graph_atlas_g() if 1 <= h.number_of_nodes() <= nmax]
+    tasks = [(g, None) for g in gs]
+    with Pool(workers) as pool:
+        rows = list(pool.imap_unordered(_strategy_task, tasks, chunksize=4))
+    totals = {k: sum(r["fails"][k] for r in rows) for k in rows[0]["fails"]}
+    report = {"graphs": len(rows), "max_vertices": nmax,
+              "plays": sum(r["layouts"] for r in rows),
+              "failures": totals,
+              "counterexamples": [r for r in rows if any(r["fails"].values())][:5],
+              "seconds": round(time.time() - t0, 1), "quick": quick}
+    if out is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1, default=list))
+    return report
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--quick", action="store_true")
@@ -1999,7 +2150,14 @@ def main(argv=None):
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--pebbling", action="store_true",
                     help="run only the loop0006 pebbling checks (P.5), writing pebbling_check.json")
+    ap.add_argument("--pebbling-strategy", action="store_true",
+                    help="replay the two constructions of the Lean proof of Lengauer Thm 3 (item 03)")
     a = ap.parse_args(argv)
+    if a.pebbling_strategy:
+        rep = run_pebbling_strategy(quick=a.quick, workers=a.workers,
+                                    out=a.out or PEBBLING_STRATEGY_REPORT)
+        print(json.dumps(rep, indent=1, default=list))
+        return 0
     if a.pebbling:
         rep = run_pebbling(quick=a.quick, workers=a.workers, out=a.out or PEBBLING_REPORT)
         print(json.dumps(rep["stats"], indent=1))
