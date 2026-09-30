@@ -25,3 +25,5 @@ import MOSPFormalization.Complex.SplitBandwidth
 import MOSPFormalization.Complex.EdgeSeparation
 import MOSPFormalization.Complex.PLAFolding
 import MOSPFormalization.Complex.NodeSearch
+import MOSPFormalization.Complex.KirousisPapadimitriouGap
+import MOSPFormalization.Complex.EdgeSearch

@@ -18,8 +18,15 @@ edgeless graph ns = 0). It is proved in Lean for the monotone game,
 `monotoneNodeSearch_eq_vertexSeparation_add_one` in
 `../lean/MOSPFormalization/Complex/NodeSearch.lean` (loop0005 item 10), by the
 corrected argument below. The fault in the published proof was found by that
-item's session and checked by hand. **A Lean proof of the counterexample is in
-progress** (2026-09-30); this entry will be updated with its theorem names.
+item's session and **is proved in Lean** (2026-09-30), with no `sorry` and only
+the standard axioms: `kirousisPapadimitriou_claim2_false` in
+`../lean/MOSPFormalization/Complex/KirousisPapadimitriouGap.lean`.
+
+**Verdict: a gap, not a wrong theorem, and the paper holds the repair.** The
+proof as written assumes only an optimal recontamination-free strategy, and
+under that assumption claim (2) is false. The paper's own Corollary 2.4
+supplies a normal form under which claim (2) is true, but the proof does not
+cite it (see *The repair inside the paper*).
 
 ### The published argument (p. 217)
 
@@ -77,11 +84,29 @@ gives 3 = |D_{i₀}| < ns(G) = 2, which is false: the argument derives a false
 inequality from its own hypotheses.
 
 The conclusion vs < ns is still true here (1 < 2). The proof, not the
-theorem, is broken. Any graph admits such useless placements, so the
-published argument proves nothing without an extra hypothesis. It would
-survive under a normal form in which a searcher, once placed, stays until
-its vertex has no contaminated edge. But the paper neither states nor proves
-that every optimal strategy can be put in that form.
+theorem, is broken as written, and the same useless placements can be added
+to an optimal strategy on any graph.
+
+### The repair inside the paper
+
+The paper proves the normal form the argument needs, earlier and for another
+purpose. **Corollary 2.4** (p. 210): "There is always an optimal
+node-searching strategy in which no vertex is visited twice by a searcher,
+and in which every searcher is deleted immediately after all the edges
+incident on it have been cleared." Under that form claim (2) holds: a vertex
+visited only once must keep its searcher until all its edges are clear, since
+an edge is cleared only while both endpoints are guarded. The paper also
+says, on p. 208, "In the sequel we shall consider only strategies of the above
+type". But that sentence follows Corollary 2.2, about *edge*-searching, and
+comes before node searching is defined. So it does not obviously cover the
+node-searching strategy of Theorem 4.1, whose proof says only "optimal,
+recontamination-free". Our strategy visits leaf a twice, so Corollary 2.4's
+form excludes it (`kpStrategy_not_visitsOnce`).
+
+The citation repair has a price. Corollary 2.4 rests on Theorem 2.3
+(recontamination does not help), which rests on LaPaugh's theorem. So the
+proof of ns ≥ vs + 1, repaired this way, depends on LaPaugh even for
+recontamination-free strategies. The argument below does not.
 
 ### The corrected argument
 
@@ -103,7 +128,37 @@ together with v_i, all hold searchers. Hence vs + 1 ≤ ns for every monotone
 strategy, and the monotonicity theorem extends this to all strategies.
 
 This is the argument formalised as `vertexSeparation_add_one_le_of_monotone`
-in `NodeSearch.lean`.
+in `NodeSearch.lean`. On the counterexample, the clearing times computed from
+the game itself are 12, 8, 10 and 12 for c, a, b and d, and ordering by them
+gives separator sets of size 1 = ns − 1 (`kpClearTime_eq`,
+`dBy_clearTime_eq`).
+
+### The Lean proof of the counterexample
+
+`KirousisPapadimitriouGap.lean`, 483 lines. The game's definitions are those
+of `NodeSearch.lean`, checked against the paper's §2: moves place or remove
+a searcher, an edge is cleared when both endpoints are guarded, and
+recontamination runs along searcher-free paths. The concrete facts are
+computed by `decide` through a finite simulation proved to agree with the
+game (`sim_correct`).
+
+- `kpStrategy_noRecontamination_and_clears`, `searchCost_kpStrategy`: the
+  strategy clears K_{1,3}, never recontaminates, and uses 2 searchers.
+- `nodeSearch_star3`, `monotoneNodeSearch_star3` (both = 2), and
+  `kpStrategy_optimal`. The lower bound is the general lemma
+  `two_le_of_isNodeSearch`: clearing any edge needs two searchers.
+- `kpLayout_kpStrategy`: the first-acceptance order is a, b, d, c.
+- `card_kpD_three`, `kpD_max_iff`: |D₃| = 3, and i₀ = 3 is the only maximiser,
+  so no other choice of i₀ helps.
+- `kp_claim2_fails_star3`: at every point where exactly a, b, d have accepted
+  a searcher, D₃ is not inside the guarded set.
+- `kirousisPapadimitriou_claim2_false`: the headline. A graph with an edge
+  and an optimal recontamination-free strategy exist for which every
+  maximiser i₀ has ns(G) ≤ |D_{i₀}|, and claim (2) fails at every matching
+  point.
+
+Not proved in Lean: that Corollary 2.4's normal form makes claim (2) true in
+general.
 
 ### What remains open
 
