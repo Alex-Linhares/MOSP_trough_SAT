@@ -251,3 +251,385 @@ $Z = 0$ while $\mathrm{pw} + 1 = 1$. Lengauer's Theorem 4 fails for $K = 0$ on
 an edgeless graph. Lean: `nodeSearch_ne_intervalThickness_of_edgeless`,
 `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless`,
 `isPositiveVSG_triangleGraph_counterexample`.
+
+---
+
+## 3. Proofs
+
+Each result of section 2 is proved twice. The first proof is written for a
+mathematician. The second, *in plain English*, says the same thing for
+someone who knows what a graph is and nothing more. The formal proofs follow
+the Lean development, which is the authority where the two differ in detail.
+They are complete for the classical results, and the two long ones, (E7) and
+(B2), are given as the argument's structure with the key steps proved.
+
+Throughout, for a path decomposition $X_1, \dots, X_r$ and a vertex $v$, let
+$\mathrm{first}(v)$ and $\mathrm{last}(v)$ be the least and greatest indices
+of bags containing $v$. The interval property says
+$v \in X_i \iff \mathrm{first}(v) \le i \le \mathrm{last}(v)$.
+
+### Two lemmas used repeatedly
+
+**Lemma H (Helly for intervals).** Pairwise intersecting intervals
+$[a_1, b_1], \dots, [a_m, b_m]$ of a line have a common point.
+
+*Proof.* Let $a = \max_i a_i$. For any $i, j$, the intervals $[a_i,b_i]$ and
+$[a_j,b_j]$ meet, so $a_j \le b_i$. Hence $a \le b_i$ for every $i$, and
+$a \in [a_i, b_i]$ for every $i$. $\square$
+
+*In plain English.* If every two of a set of stretches of road overlap, then
+some single spot lies on all of them. Take the latest starting point. Every
+stretch starts no later than that spot, and none can end before it, or it
+would miss the stretch that starts there.
+
+**Lemma C (cliques sit in a bag).** In a path decomposition of $G$, every
+clique of $G$ lies inside a single bag.
+
+*Proof.* For $u \in K$, the bags containing $u$ form the integer interval
+$[\mathrm{first}(u), \mathrm{last}(u)]$. For $u, v \in K$ the edge $uv$ lies
+in some bag, so the two intervals meet. By Lemma H all the intervals share an
+index $i$, and $K \subseteq X_i$. $\square$ (Lean:
+`PathDecomposition.exists_bag_of_isClique`.)
+
+*In plain English.* Each vertex lives in an unbroken run of bags. Two
+neighbours must meet in some bag, so their runs overlap. For a group of
+mutual neighbours all the runs overlap pairwise, so by Lemma H one bag holds
+the whole group.
+
+### (E1) $\mathrm{vs} = \mathrm{pw}$
+
+*Proof.* ($\mathrm{pw} \le \mathrm{vs}$.) Let $L$ be a layout with
+$\max_i |V_L(i)| = k$, and put $V_L(0) = \emptyset$. Define
+$X_i = V_L(i-1) \cup \{L^{-1}(i)\}$ for $1 \le i \le n$, so $|X_i| \le k+1$.
+Every $v$ lies in $X_{L(v)}$. For an edge $uv$ with $L(u) < L(v) = j$, the
+vertex $u$ is in $V_L(j-1)$, so $u, v \in X_j$. Finally
+$u \in X_i \iff L(u) \le i \le \max(\{L(u)\} \cup \{L(v) : uv \in E\})$,
+an interval. So $(X_i)$ is a path decomposition of width $\le k$.
+
+($\mathrm{vs} \le \mathrm{pw}$.) Let $(X_i)$ have width $k$. Order the
+vertices by $\mathrm{first}$, breaking ties arbitrarily, to get $L$. Fix
+$1 \le i < n$, let $w = L^{-1}(i+1)$ and $f = \mathrm{first}(w)$. Take
+$u \in V_L(i)$, with a neighbour $v$, $L(v) \ge i+1$. Then
+$\mathrm{first}(u) \le f \le \mathrm{first}(v)$. The edge $uv$ lies in a bag
+$X_s$ with $s \ge \mathrm{first}(v) \ge f$. Since
+$\mathrm{first}(u) \le f \le s$ and $u \in X_s$, the interval property gives
+$u \in X_f$. So $V_L(i) \subseteq X_f \setminus \{w\}$, because $w \in X_f$
+but $L(w) > i$. Hence $|V_L(i)| \le k$. $\square$ (Kinnersley 1992, Thm 3.1.)
+
+*In plain English.* Vertex separation asks you to line the vertices up so
+that, at every cut in the line, few vertices on the left still have
+unfinished business on the right. Path-width asks for a row of overlapping
+boxes covering the graph. From a good lineup, make one box per vertex: the
+vertex itself plus everything to its left still waiting for a neighbour.
+Conversely, from good boxes, line the vertices up in the order they first
+appear. Everything on the left of a cut that still has a neighbour on the
+right must sit in the box where the next vertex first appears, alongside that
+vertex. So both measures come out the same.
+
+### (E2) $Z(M) = \mathrm{pw}(G_M) + 1$
+
+*Proof.* ($Z \le \mathrm{pw} + 1$.) Take a path decomposition of $G_M$ of
+width $k$. The rows $R_c = \{r : M_{rc} = 1\}$ of each column $c$ form a
+clique of $G_M$, so by Lemma C they lie in some bag $X_{b(c)}$. Order the
+columns by $b(c)$ to get $\pi$. If row $r$ is active at the position of
+column $c$, there are columns $x, y$ of $r$ with
+$\pi(x) \le \pi(c) \le \pi(y)$, so $b(x) \le b(c) \le b(y)$. As
+$r \in X_{b(x)} \cap X_{b(y)}$, the interval property gives $r \in X_{b(c)}$.
+So at most $|X_{b(c)}| \le k+1$ rows are active there.
+
+($\mathrm{pw} + 1 \le Z$.) Take $\pi$ with at most $Z$ active rows at every
+position. Let $X_j$ be the set of rows active at position $j$, and add a
+singleton bag $\{r\}$ for each row with no 1. Rows sharing a column $c$ are
+both active at $\pi(c)$. A row with a 1 is active exactly on the positions
+between its first and last column, which is an interval. So this is a path
+decomposition of width $\max(Z, 1) - 1 = Z - 1$, using $Z \ge 1$ because $M$
+has a 1. $\square$
+
+*In plain English.* Draw one dot per customer, and join two dots whenever
+some pattern serves both. A production order gives, at each moment, a box
+holding the customers whose stacks are open. Those boxes cover the drawing,
+and each customer's stack is open over one unbroken stretch of time. So the
+boxes form a path decomposition, as wide as the most stacks ever open.
+Conversely, from any good row of boxes, each pattern's customers are all
+mutual neighbours, so some box holds them all. Cutting the patterns in box
+order never opens more stacks than a box holds.
+
+### (E3) $t(M) = Z(M)$
+
+*Proof.* Fix the gate order $\pi$, and let $A_j$ be the set of nets active at
+position $j$. (Lower bound.) Nets in $A_j$ are pairwise active at a common
+position, so they need distinct tracks, and $t_\pi \ge \max_j |A_j|$. (Upper
+bound, left-edge.) Net $r$ is active on an interval
+$I_r = [\ell_r, \rho_r]$. Process the nets by increasing $\ell_r$, giving each
+the least track not used by an earlier net whose interval contains $\ell_r$.
+Those earlier nets are in $A_{\ell_r} \setminus \{r\}$, so at most
+$\max_j |A_j| - 1$ tracks are blocked, and $\max_j |A_j|$ tracks suffice.
+So $t_\pi = \max_j |A_j|$, which is the number of open stacks of $\pi$ on the
+same matrix, with nets as customers and gates as patterns. Minimise over
+$\pi$. $\square$
+
+*In plain English.* Once the gates are in order, each wire runs over an
+unbroken stretch. Wires that are running at the same point need separate
+tracks. Sweeping from left to right and giving each new wire the lowest free
+track never needs more tracks than the most wires running at one point. That
+number is exactly the open-stacks count of the same table read as a cutting
+problem, so the two problems are one problem with different words.
+
+### (E4) $\theta(G) = \mathrm{pw}(G) + 1$
+
+*Proof.* ($\le$.) From a decomposition of width $k$, give $v$ the interval
+$[\mathrm{first}(v), \mathrm{last}(v)]$, and let $H$ be their intersection
+graph. Every edge of $G$ lies in a bag, so $G \subseteq H$. A clique of $H$ is
+a family of pairwise meeting intervals, which share an index $i$ (Lemma H),
+so it lies in $X_i$. Hence $\omega(H) \le k+1$.
+($\ge$.) Take an interval model $\{J_v\}$ of $H \supseteq G$ with
+$\omega(H) = \theta$. Let $p_1 < \dots < p_r$ be the left endpoints, and
+$X_s = \{v : p_s \in J_v\}$. Each $X_s$ is a clique of $H$, so
+$|X_s| \le \theta$. Each $v$ lies in the bag at its own left endpoint. For an
+edge $uv$, the point $\max(\text{left}(J_u), \text{left}(J_v))$ lies in both
+intervals and is some $p_s$. The bags containing $v$ are those $p_s$ in
+$J_v$, consecutive because $J_v$ is an interval. So
+$\mathrm{pw} \le \theta - 1$. $\square$ (Möhring 1990, Prop. 3.5.)
+
+*In plain English.* An interval graph is what you get by giving each vertex a
+stretch of road and joining two vertices when their stretches overlap. A row
+of boxes turns into stretches: a vertex's stretch runs from its first box to
+its last. A group of mutual neighbours in the result then shares a box, so no
+group is bigger than a box. Going back, stand at each place where a stretch
+begins, and make a box of all the stretches passing through that place.
+
+### (E5) One-dimensional logic: tracks $= \theta(H) = \mathrm{pw}(H) + 1$
+
+*Proof.* A gate order gives each net the interval its gates span. Nets that
+share a gate overlap, so the intersection graph $I_\pi$ of these intervals
+contains $H$. By the argument of (E3), the tracks needed equal
+$\omega(I_\pi) \ge \theta(H)$. Conversely, take an interval model $\{J_v\}$
+of $H' \supseteq H$ with $\omega(H') = \theta(H)$. For each gate $t$, the
+nets $V(t)$ form a clique of $H$, so their intervals share a point $p_t$
+(Lemma H). Order the gates by $p_t$. Net $v$'s span runs between points of
+$J_v$, so two nets that overlap in this order have intervals $J$ that meet.
+So $I_\pi \subseteq H'$ and $\omega(I_\pi) \le \theta(H)$. Every net must lie
+on some gate, or it has no span. The last equality is (E4). $\square$
+(Ohtsuki et al. 1979, Thm 3.)
+
+*In plain English.* The gates of a logic array must be put in a row, and each
+wire then covers the stretch between its first and last gate. The fewest
+tracks is the thickest pile-up of wires, so the question is which pile-ups
+the connection pattern forces. Given the best possible set of stretches,
+each gate's wires all overlap, so they share a spot. Put each gate at that
+spot. No wire then reaches beyond its intended stretch, so the pile-ups are
+no worse than planned.
+
+### (E6) $\nu(G) = \mathrm{pw}(G) + 1$
+
+*Proof.* Fix an ordering $\sigma = (v_1, \dots, v_n)$. After step $i - 1$ the
+shack holds exactly those $v_j$, $j \le i-1$, with a neighbour $v_\ell$,
+$\ell > i-1$, which is $V_\sigma(i-1)$. Step $i$ adds $v_i$. The shack is
+largest just after an insertion, so
+$\nu(\sigma) = 1 + \max_{0 \le i < n} |V_\sigma(i)| = \mathrm{vs}_\sigma + 1$,
+for $n \ge 1$. Minimise over $\sigma$ and apply (E1). $\square$ (Kornai & Tuza
+1992, Prop. 3.1. Lean states it with the suffix convention, as
+$\nu(\sigma) = \mathrm{vs}(\sigma^{\mathrm{rev}}) + 1$.)
+
+*In plain English.* The shack is a short-term memory. Each word goes in, and
+a word leaves once nothing later depends on it. Just after a new word
+arrives, the shack holds that word plus every earlier word still waiting for
+a later one. That is exactly the count vertex separation measures, plus one.
+
+### (E7) $\mathrm{ns} = \mathrm{mns} = \mathrm{vs} + 1$ when $E \ne \emptyset$
+
+*Proof.* Three inequalities.
+
+(i) $\mathrm{ns} \le \mathrm{mns}$: a monotone strategy is a strategy.
+
+(ii) $\mathrm{mns} \le \mathrm{vs} + 1$: the *shack strategy*. For an
+ordering $\sigma$, at step $i$ place a searcher on $v_i$, then remove the
+searchers of all $v_j$ with no neighbour after $v_i$. The guarded set after
+step $i$ is the shack of (E6), so the cost is $\nu(\sigma)$. An edge
+$v_j v_\ell$ with $j < \ell$ is cleared at step $\ell$, because $v_j$ is
+still guarded, having the later neighbour $v_\ell$. There is no
+recontamination: after step $i$ every contaminated edge has an endpoint
+outside $P_i = \{v_1, \dots, v_i\}$. A searcher-free path from a clear edge
+to a contaminated one would leave $P_i$, and its last vertex in $P_i$ has a
+later neighbour, so it is guarded, a contradiction. By (E6),
+$\min_\sigma \nu(\sigma) = \mathrm{vs} + 1$.
+
+(iii) $\mathrm{vs} + 1 \le \mathrm{ns}$, for arbitrary strategies (Bienstock &
+Seymour's crusade method on vertex sets). Let $\partial A = N(A) \setminus A$.
+Because $|\partial A| = |N[A]| - |A|$, with $N[A \cup B] = N[A] \cup N[B]$ and
+$N[A \cap B] \subseteq N[A] \cap N[B]$, the function $|\partial \cdot|$ is
+submodular:
+$$|\partial(A \cup B)| + |\partial(A \cap B)| \le |\partial A| + |\partial B|.$$
+A *chain of width* $\le K$ is a sequence $\emptyset = A_0, A_1, \dots, A_m = V$,
+each step adding at most one vertex and removing any number, with every
+$|\partial A_i| \le K$.
+
+(a) From a strategy with $\le k$ searchers, the *clean sets* give a chain of
+width $\le k - 1$. The clean set is the set of vertices touching no
+contaminated edge. In a closed position its boundary is guarded, and a vertex
+that becomes clean is guarded. Lean: `exists_chain_step`.
+
+(b) Any chain of width $\le K$ can be made increasing. Take one of least
+weight $\sum_i (|\partial A_i| \cdot (n+1) + |A_i|)$. If
+$A_j \not\subseteq A_{j+1}$, replace $A_j$ by $A_j \cap A_{j+1}$ if that does
+not enlarge its boundary. Otherwise replace $A_{j+1}$ by $A_j \cup A_{j+1}$,
+whose boundary is then smaller, by submodularity. Either way the weight
+falls, a contradiction. Lean: `exists_monotone_chain`.
+
+(c) An increasing chain adding one vertex at a time is a layout whose prefixes
+are the $A_i$. Their boundaries are the sets vertex separation counts, read
+from the other end. So $\mathrm{vs} \le K$.
+
+Then (a) to (c) give $\mathrm{vs} \le k - 1$, that is,
+$\mathrm{vs} + 1 \le \mathrm{ns}$. Combining,
+$\mathrm{ns} \le \mathrm{mns} \le \mathrm{vs} + 1 \le \mathrm{ns}$, so all are
+equal, and $\theta = \mathrm{pw} + 1 = \mathrm{vs} + 1$ by (E1), (E4).
+$E \ne \emptyset$ is needed because on an edgeless graph there is nothing to
+clear and $\mathrm{ns} = 0$. $\square$
+
+The Kirousis & Papadimitriou (1986) proof of (iii) for monotone strategies
+orders vertices by first placement, which fails. `proof_reductions.md` §1
+gives the counterexample and the repair.
+
+*In plain English.* Picture a building full of gas, where rooms are vertices
+and corridors are edges. A corridor is aired out when both its ends are
+guarded at once, and gas creeps back along any unguarded route. Sweeping
+room by room in a good order, and leaving each room only once all its
+neighbours have been visited, needs one guard more than the vertex
+separation. The hard part is showing no clever strategy does better, even
+one that lets gas back in and re-sweeps. Track the set of rooms that are
+fully clean. Its doorways to dirty rooms must be guarded, so it never has
+more exits than there are guards, less one. The clean set may shrink and
+grow erratically, but a counting trick shows the erratic history can always
+be straightened into one that only grows, without widening any doorway. A
+steadily growing clean set is just a lineup of the rooms, so its doorway
+count is the vertex separation. Hence recontamination never helps.
+
+### (E8) Multiple folding
+
+*Proof.* With no bound on nets per track, a folding is exactly a gate
+permutation with a track assignment as in §1.4, so the minimum is $t(M)$. It
+equals $\mathrm{pw}(G_M) + 1$ by (E3) and (E2). $\square$
+
+*In plain English.* If any number of wires may share a track, "folding" is
+just gate matrix layout under another name.
+
+### (E9) Lengauer's vertex separator game
+
+*Proof.* After $i$ moves the pebbled set is the prefix $P_i$ of the pebbling
+order, and the vertex cut is $\partial P_i = N(P_i) \setminus P_i$. So the
+cost of an order is $\max_i |\partial P_i|$, which is the vertex separation of
+the reversed layout. Minimising over orders gives $\mathrm{vs}(G)$. The game
+requires $K \ge 1$, which accounts for the $\max(1, \cdot)$. For Theorem 4,
+$G_{du}$ adds for each edge $e = uv$ a new vertex $e'$ adjacent to $u$ and
+$v$. (Upper bound.) Place each $e'$ just before the first of its endpoints in
+an optimal layout of $G$. Each cut gains at most one vertex. (Lower bound.)
+An induction along the layout that $G_{du}$ induces on $V$ shows some cut
+gains exactly one. Lean proves this directly, in place of Lengauer's
+normal-form Lemma 5. $\square$
+
+*In plain English.* Lengauer's game pebbles the vertices one by one and
+charges, at each moment, for the unpebbled vertices touching pebbled ones.
+That charge is vertex separation read from the other end. His Theorem 4 says
+that putting a little triangle on every edge raises the answer by exactly
+one.
+
+### (B1) $\mathrm{pw} \le \mathrm{sb} \le \mathrm{pw} + 1$
+
+*Proof.* (Lower.) Splitting $v$ into an edge $uw$ can be undone by
+contracting $uw$. Replacing $u$ and $w$ by $v$ in every bag of a
+decomposition of the split gives a decomposition of $G$ of no greater width.
+The bags containing $u$ and those containing $w$ form two intervals that
+meet, because the edge $uw$ lies in a bag, so $v$'s bags form an interval. So
+$\mathrm{pw}(G) \le \mathrm{pw}(G^*)$. Also $\mathrm{pw} \le b$: for a layout of
+bandwidth $b$, the windows $\{v_i, \dots, v_{i+b}\}$ form a decomposition of
+width $b$. Hence $\mathrm{pw}(G) \le b(G^*)$ for every split $G^*$.
+(Upper.) Take an ordering $\sigma$ with $\nu(\sigma) = \mathrm{pw} + 1$ (E6).
+Split each vertex $v$ into a path of copies, one for each step at which $v$
+is in the shack, and attach the original edge $uv$ at step
+$\max(\sigma(u), \sigma(v))$. Each splitting is a node splitting. Lay out the
+copies by (step, position in $\sigma$). Consecutive copies of one vertex, and
+the two ends of an attached edge, are then at most $\nu(\sigma)$ apart. So
+$\mathrm{sb} \le \nu(\sigma) = \mathrm{pw} + 1$. This construction is the Lean
+proof. It differs from Fomin's, which goes through interval bandwidth.
+$\square$
+
+*In plain English.* Splitting a vertex means stretching it into two joined
+halves, dividing its connections between them. Stretching can't make a graph
+easier in the path-width sense, and a narrow band layout is a special case of
+a path decomposition. That gives the lower bound. For the upper bound, stretch
+each vertex into a chain of copies, one for each moment it sits in the
+narrowness shack. The copies then line up so that nothing connected is ever
+more than a shack-width apart.
+
+### (B2) $\mathrm{vs} \le \mathrm{es} \le \mathrm{vs} + 2$
+
+*Proof.* (Upper.) Follow the shack ordering. Each step places a searcher on
+$v_i$ and clears its edges to earlier guarded neighbours by sliding one extra
+searcher along each, then removes the vertices whose edges are all clear.
+This is Ellis, Sudborough & Turner's procedure `search1`. It costs
+$\nu(\sigma) + 1 = \mathrm{vs} + 2$ and never recontaminates, for the reason
+given in (E7)(ii). (Lower.) Run the chain argument of (E7)(iii) on the clean
+sets of an edge-search strategy. At most one vertex becomes clean unguarded
+in a single step, because a slide clears one edge. So the chain has width
+$\le k$, not $k - 1$, and $\mathrm{vs} \le \mathrm{es}$. The progressive case
+is the same argument restricted to strategies without recontamination.
+$\square$
+
+*In plain English.* Edge searching lets a guard walk along a corridor, which
+clears it on the way. You can do the node-search sweep with one extra guard
+for the walking, so edge search costs at most two more than vertex
+separation. The clean-set argument still works, except that one freshly
+cleaned room may have been left unguarded, so the edge search number is at
+least the vertex separation.
+
+### (F1) PLA folding
+
+*Proof.* A PLA layout is a track assignment, so $\mathrm{pla} \ge t$, and
+each track holds at most two nets, so
+$\mathrm{pla} \ge \lceil |N|/2 \rceil$. For the identity matrix $I_n$, every
+net is on its own gate, so $G_M$ is edgeless and $\mathrm{pw} + 1 = 1$. The
+nets pair up two per track, so $\mathrm{pla}(I_n) = \lceil n/2 \rceil$, and
+$\mathrm{pla}(I_5) = 3$. For the path matrix of $P_n$, with one gate per edge,
+$G_M = P_n$, so $t = \mathrm{pw}(P_n) + 1 = 2$ while
+$\mathrm{pla} \ge \lceil n/2 \rceil$. $\square$
+
+*In plain English.* Simple folding allows only two wires per track. Five
+wires that never interact need just one track in ordinary layout, but three
+when each track holds two. The gap grows with the number of wires, so no
+fixed "±1" can hold.
+
+### (F2) Cutwidth is not within a constant of path-width
+
+*Proof.* ($\mathrm{pw} \le \mathrm{cw}$.) Each $u \in V_L(i)$ has an edge
+from position $\le i$ to position $> i$. Distinct $u$ give distinct edges, so
+$|V_L(i)| \le$ the cut at $i$. Then apply (E1). (Stars.)
+$\mathrm{pw}(K_{1,n}) = 1$, using bags $\{c, \ell_i\}$. In any layout, let the
+centre $c$ have $a$ leaves on its left and $b$ on its right, with
+$a + b = n$. The gap just left of $c$ is crossed by $a$ edges, and the gap
+just right by $b$, so $\mathrm{cw} \ge \lceil n/2 \rceil$. Placing the centre in
+the middle attains it. For modified cutwidth, on the side with
+$\ge \lceil n/2 \rceil$ leaves, the leaf nearest $c$ is passed over strictly
+by the edges to all the others on that side, so
+$\mathrm{mcw} \ge \lceil n/2 \rceil - 1$. $\square$
+
+*In plain English.* Cutwidth counts the wires crossing each gap, not the
+vertices waiting behind it. A star is as simple as a graph gets for
+path-width, since one hub is linked to many leaves. But wherever the hub goes
+in a line, half the leaves are on one side and all their wires cross the gap
+next to the hub. So the count grows with the number of leaves while
+path-width stays at 1.
+
+### (F3) Edge cases
+
+*Proof.* On an edgeless graph with $V \ne \emptyset$, the empty strategy
+clears every edge, so $\mathrm{ns} = 0$, while $\mathrm{vs} = 0$ and
+$\theta = 1$, so $\mathrm{vs} + 1 = \theta = 1 \ne 0$. For a matrix with no 1s,
+no row is ever active, so $Z = 0$, while $\mathrm{pw}(G_M) + 1 = 1$. Lengauer's
+Theorem 4 at $K = 0$ on an edgeless graph: the left side is false, since
+$K$ must be positive, while the right side, at $K + 1 = 1$, is true.
+$\square$
+
+*In plain English.* With nothing to search, no searchers are needed, but the
+formulas still say one. The published theorems simply forgot to exclude the
+empty case.
