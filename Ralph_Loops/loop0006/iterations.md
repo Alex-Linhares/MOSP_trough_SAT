@@ -4,7 +4,7 @@ Phase A: pebbling joins the complex. Phase B: every pruning rule of Chu &
 Stuckey's search is proved never to discard the last solution. Then
 assembly and a reserve.
 
-- [ ] **01 Pebbling census.** Read Lengauer (1981) §1-2 and Kirousis &
+- [x] **01 Pebbling census.** Read Lengauer (1981) §1-2 and Kirousis &
   Papadimitriou (1986) §3 and write down, in `paper2/equivalences.md` (a new
   section "Pebbling"): the black-white pebble game and its progressive
   version exactly as each source defines them (quoted, page and number), the

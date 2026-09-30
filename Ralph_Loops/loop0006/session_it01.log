@@ -1,0 +1,69 @@
+# session it01 started 2026-09-30 21:20:52
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cat Ralph_Loops/loop0006/iterations.md && cat Ralph_Loops/loop0006/gate.py && ls Ralph_Loops/loop0006/
+  > $ sed -n 1,80p paper2/equivalences.md && grep -n "^#" paper2/equivalences.md paper2/problem_transformations.md | head -80 && wc -l paper2/complex_check.py && grep
+
+Now the sources. Let me read the census entry for Lengauer (§11) and look at the PDFs.
+  > $ sed -n 339,532p paper2/equivalences.md; ls literature | grep -i -E "lengauer|kirousis"; ls paper2/literature | head -30; which pdftotext
+  > $ pdftotext -layout literature/lengauer_1981_black_white_pebbles_graph_separation.pdf /tmp/leng.txt && wc -l /tmp/leng.txt && sed -n 1,400p /tmp/leng.txt
+  > $ sed -n 400,542p /tmp/leng.txt; pdftotext -layout paper2/literature/10_kirousis_papadimitriou_1986.pdf /tmp/kp.txt; wc -l /tmp/kp.txt; cmp literature/kirousis_pa
+  > $ grep -n "pebbl\|3\. \|Theorem 3\|mpb" /tmp/kp.txt | head -60
+  > $ sed -n 1,130p /tmp/kp.txt; sed -n 380,470p /tmp/kp.txt
+  > $ cd /tmp && pdftoppm -f 3 -l 3 -r 110 -png /home/al/dev/MOSP/literature/lengauer_1981_black_white_pebbles_graph_separation.pdf leng467 && ls leng467*
+
+I've read Lengauer §1–2 and the start of KP §3. Now I'm checking the scanned page to see whether the source's inequality is "<" or "≤".
+  > Read /tmp/leng467-03.png
+  > $ grep -n "Corollary 2.4" -A8 /tmp/kp.txt | head -30; grep -n "^theorem\|^def\|^lemma\|^noncomputable def" lean/MOSPFormalization/Complex/EdgeSeparation.lean | he
+
+Confirmed: the source has "VSG(S) ≤ K". Before writing the census I'll run a quick throwaway brute force (in /tmp, not the item-02 deliverable) to check the edge cases I'm about to state.
+  > $ mkdir -p /tmp/peb && cat > /tmp/peb/spot.py <<'EOF'
+import itertools, sys
+sys.path.insert(0, '/home/al/dev/MOSP/paper2'); sys.path.insert(0, '/home/al/dev/MOSP'
+  > $ sed -n 1291,1338p paper2/equivalences.md; sed -n 532,590p paper2/equivalences.md
+
+Everything I need is settled. Writing the "Pebbling" section of `paper2/equivalences.md` now.
+  > $ cat >> paper2/equivalences.md <<'EOF'
+
+## Pebbling (loop0006 item 01: the census)
+
+Loop0006 asks whether progressive black-white pebbling is a thirteenth member
+  > $ sed -i 's/Spot check: agrees on all 461 labelled graphs with\n//' paper2/equivalences.md && python3 - <<'EOF'
+p='paper2/equivalences.md'; s=open(p).read()
+old="
+
+Census written. Running the gate. This item adds no Lean, but the gate is part of the acceptance criteria.
+  > $ timeout 3000 python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -8
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0006 && python3 - <<'EOF'
+p='iterations.md'; s=open(p).read()
+s=s.replace("- [ ] **01 Pebbling census.**","- [x] **01 Pebbl
+
+Item 01 is done. The census is the new "Pebbling" section at the end of `paper2/equivalences.md`, and the gate passes (`lake build` ok, 1 `sorry` against a limit of 1, 1,231 tests passed). As the item required, it has no Lean and no Python.
+
+**Verdict:** progressive black-white pebbling relates to vertex separation exactly, so it belongs in the complex. The offset depends on which graph the game is played against:
+
+- **KP Thm 3.1, combined with their Thm 4.1:** `mpb = mpbw = pw + 1` on every nonempty graph, using the graph itself. That is the same offset as interval thickness and narrowness, and it is the natural thirteenth member.
+- **Lengauer Thm 2:** `pbw(D) = pw(D_u) + 1` on every nonempty dag D. This is also exactly the open-stacks value of a matrix with one column per vertex v, holding v and its immediate predecessors, because D_u is that matrix's MOSP graph.
+- **Lengauer Thm 3:** `pbw(G_d) = pw(G) + 2` for any graph with an edge.
+- **Not a member:** the unrestricted game (recomputation allowed) needs at most 3 pebbles on every G_d.
+
+**Faults and edge cases in the sources:**
+- KP Thm 3.1's `mpb = ns` is false on edgeless graphs: `ns = 0` but `mpb = 1`.
+- Lengauer Thm 2's yes/no form fails at K = 1 on edgeless dags, because his vertex separator game (VSG) requires K ≥ 1. It holds if you use vertex separation (vs) instead. Thm 3's yes/no form then holds for every K ≥ 0.
+- Lengauer's remark (p. 467) that recomputation doesn't help on directed trees is refuted, for trees directed root to leaves, by KP's own ternary-tree example. It can only be true for trees directed towards the root.
+- KP's claim of "no recontamination" in one proof step is true but given without argument. The census writes out the argument.
+
+**Observations the sources don't make:**
+- The undirected graphs of the form D_u are exactly the chordal graphs. That is why Lengauer needs the detour through G_d for Thm 3.
+- `mpb = mpbw = pw + 1` has short direct proofs that avoid the search-game monotonicity theorems.
+
+I checked every relation above with a throwaway script in /tmp, which is not item 02's checker. It found no failures:
+- on all dags up to 5 vertices;
+- on all graphs up to 5 vertices;
+- for Thm 3, on graphs where vertices plus edges total at most 9.
+
+Section P.5 lists the eight statements for item 02 to check properly, and P.6 sketches the Lean route for items 03–04. PROGRESS.md (now 1/13) and iterations.md are updated; nothing is committed.
+
+# result: success in 526s, 17 turns, cost $1.57

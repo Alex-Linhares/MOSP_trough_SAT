@@ -1351,3 +1351,306 @@ crusade. Their route goes through mixed search and a subdivision; not attempted,
 and not sized. `EdgeSearchMonotonicity`
 stays a named `Prop`, and no table row now depends on it.
 
+
+## Pebbling (loop0006 item 01: the census)
+
+Loop0006 asks whether progressive black-white pebbling is a thirteenth member
+of the complex. Table 1 does not list it; [14] Lengauer (1981), which Table 1
+cites for "edge separation", is in fact mostly about this game (§11 above).
+Two sources, both held: Lengauer, *Black-white pebbles and graph separation*,
+Acta Informatica 16 (1981) 465–475
+(`../literature/lengauer_1981_black_white_pebbles_graph_separation.pdf`), and
+[10] Kirousis & Papadimitriou, *Searching and pebbling*, TCS 47 (1986) 205–218
+(`literature/10_kirousis_papadimitriou_1986.pdf`), §3. Page numbers are the
+printed ones. This section is the census only: it contains no Lean. Item 02
+checks every statement in it by brute force, and items 03–04 prove them.
+
+### P.1 The games, as each source defines them
+
+**Lengauer's black-white pebble game (BWP)**, p. 466. He presents it as
+Cook & Sethi's game ("We introduce their black-white pebble game (BWP) here as
+follows"). Cook & Sethi (1976) is not held, so the definition used here is
+Lengauer's wording, as TASK.md asks. "The game is played on a dag G
+according to the following rules.
+
+ (i) All vertices start out pebble-free.
+ (ii) All vertices end up pebble-free.
+ (iii) Each vertex receives and loses a pebble at least once.
+ (iv) A white pebble can be placed on a pebble-free vertex at any time.
+ (v) A black pebble can be removed from a vertex at any time.
+ (vi) A white pebble on a vertex v may be turned black if all of the
+ immediate predecessors of v are pebbled.
+
+An *instance* (G, K) of BWP (where G is a dag and K is a positive integer) is
+called *positive* if G can be pebbled using at most K pebbles." The cost is
+"the maximum number of pebbles used at any instant in the game" (p. 466).
+Footnote 1 (p. 466): v₀ is an *immediate predecessor* of v₁ when (v₀, v₁) is
+an edge. Three things follow from the rules as written. There is no rule that
+places a black pebble directly: a black pebble is a white one that has been
+turned. A white pebble can never be removed, because (v) removes only black
+ones, so by (ii) every white pebble is eventually turned. A vertex is
+"pebbled" when it carries a pebble of either colour.
+
+**The progressive game PBWP**, p. 467: "By exchanging rule (iii) with the
+following rule: (iii') Each vertex receives and loses a pebble *exactly*
+once, we define a progressive black-white pebble game (PBWP) that
+effectively disallows recomputation." Lengauer gives the number no symbol.
+Here **PBWP(G)** is the least positive K with (G, K) positive, which matches
+his convention for VSG(G) (p. 467).
+
+**Lengauer's vertex separator game VSG**, p. 467: this is §11 above. "A pair
+(G, K) with G being an undirected graph and K being a positive integer is a
+*positive* instance of VSG if VSG(S) ≤ K" (checked on the page image as `≤`;
+pdftotext reads it as `<`). VSG(G) is the least such K, and `VSG = max(1, vs)`
+(`Complex.vsg_eq_max`, `EdgeSeparation.lean`).
+
+**Kirousis & Papadimitriou's games**, [10] pp. 205–206. The black game:
+"(i) A pebble can be placed on a vertex only if all the immediate
+predecessors of that vertex are pebbled. ... (ii) A pebble can be deleted at
+any time." The game "starts with all vertices of the graph pebble-free, and
+ends when the same situation is attained after all vertices have been pebbled
+at least once". The black and white game adds white pebbles, which "can be
+placed at any point on any vertex, but they can be removed only after they
+turn black. A white pebble turns black at the moment when all the immediate
+predecessors of the vertex on which it lies are pebbled. In this version, a
+vertex is considered pebbled when it carries a pebble, whatever its colour."
+Progressive, p. 206: "In these versions, each vertex can be pebbled only
+once. ... The progressive black, and black-white pebble demands for a graph G
+are denoted by pb(G), and pbw(G)." Directives, §3 p. 213: "We define Δ(G) to
+be the set of dags whose underlying directed graph equals G ... we say that D
+is a directive of G. For a graph G, define mpb(G) to be min_{D∈Δ(G)} pb(D),
+the minimum progressive black pebble demand over all directives of G.
+Similarly, mpbw(G) = min_{D∈Δ(G)} pbw(D)."
+
+**How the two black-white definitions differ, and why the numbers agree.**
+
+1. *Turning.* Lengauer's turn is optional ("may be turned black"). KP's is
+   automatic ("turns black at the moment"). Every KP play is a Lengauer play:
+   turn each pebble at the moment KP's rule fires. Conversely, turning earlier
+   never hurts, because a black pebble counts as pebbled exactly as a white
+   one does and may additionally be removed. So the demands agree. KP also
+   keep the black game's direct black placement (rule (i)). Lengauer gets the
+   same move as "place white, turn at once", at the same pebble count, and his
+   own Thm 2 proof writes it as step 2, "Put a black pebble on v".
+2. *Progressiveness.* Lengauer's (iii') ("receives and loses a pebble exactly
+   once") and KP's "pebbled only once", together with "all vertices have been
+   pebbled at least once", say the same thing.
+3. *Positivity.* Lengauer's K is a positive integer, so the empty dag has
+   PBWP = 1 where pbw = 0. On every nonempty dag, **PBWP(G) = pbw(G)**.
+   Throughout, `pbw` means this common number.
+
+*Spot check* (a throwaway script, not item 02's checker). The progressive
+demand under Lengauer's rules and under KP's automatic turning agrees on all
+1,100 labelled dags with at most 5 vertices (the empty dag included), where every edge i → j has i < j.
+Up to isomorphism, that covers every dag of that size.
+
+### P.2 The graphs
+
+- **Dags** are the input to pebbling, with edges from operands to result.
+- **G_u**, Lengauer Def. 1a (p. 468): `E_u = {{v, w} | (v, w) ∈ E} ∪ {{v, w} |
+  (v, u), (w, u) ∈ E for some u ∈ V}`. In words: "G_u makes cliques out of the
+  immediate predecessors of every vertex in G and then ignores edge
+  directions". Equivalently, G_u is the union of the cliques on the closed
+  in-neighbourhoods `N⁻[v] = {v} ∪ pred(v)`. This is what connects PBWP to
+  open stacks. **G_u is the MOSP graph of the |V| × |V| matrix M_G whose
+  column v is N⁻[v]**: a customer per vertex, and one product per vertex that
+  the vertex and its immediate predecessors need.
+- **G_d**, Lengauer Def. 1b (p. 469): `V_d = V ∪ E`, `E_d = {(v, {v, w}),
+  (w, {v, w}) | {v, w} ∈ E}`. It "erects a complete binary tree of height 1
+  over each edge in E, and then discards the edges in E". It is a depth-1
+  dag: the sources are V and the sinks are E, each sink with in-degree 2.
+  (G_d)_u = G_du, the triangle graph of Thm 4 (p. 472). In Lean that is
+  `Complex.triangleGraph G` on `V ⊕ G.edgeSet`.
+- **Which undirected graphs are some G_u?** Exactly the **chordal** graphs.
+  G_u = H forces every predecessor set to be a clique of H, so a topological
+  order of G is a reverse perfect elimination ordering of H. Conversely, a
+  chordal H oriented along the reverse of a perfect elimination ordering
+  gives G_u = H. For example, C₄ is not a G_u: any acyclic orientation has a
+  sink, whose two in-neighbours are opposite corners of the square, so G_u
+  adds a chord. Thm 2 therefore reaches only chordal undirected graphs, and
+  that is why Thm 3 needs the detour through G_d. This observation is ours;
+  Lengauer does not make it.
+- **Directives** of an undirected G, KP p. 213: the acyclic orientations of
+  G. For every directive D, G ⊆ D_u.
+
+### P.3 The relations, as stated and as they hold
+
+**(P-L2) Lengauer Thm 2**, p. 469: "(G, K) is a positive instance of PBWP if
+and only if (G_u, K − 1) is a positive instance of VSG."
+
+- *The proof.* (⇒) Pebble v in G_u at the time v *loses* its pebble in G. If
+  the cut after that placement has size k, then G carried k + 1 pebbles just
+  before the removal: the k cut vertices, which by a three-case argument
+  still hold pebbles, plus v itself. (⇐) Simulate each VSG placement on v in
+  four steps: whiten the pebble-free G_u-neighbours of v that are still
+  unpebbled in G; blacken v; turn the successors of v black; remove v. An
+  induction with invariants (a)–(d) (pp. 470–471) shows the pebble count
+  never exceeds the cut plus one.
+- *Edge case.* At K = 1 the statement fails literally. For an edgeless
+  nonempty dag, (G, 1) is positive, but (G_u, 0) is not an instance, because
+  VSG requires K ≥ 1. The number form fails there too: `PBWP(G) = 1` while
+  `VSG(G_u) + 1 = 2`. The statement holds as written for every K ≥ 2. It holds
+  for every K ≥ 1 if VSG is replaced by `vs` (read "(G_u, K − 1) positive" as
+  `vs(G_u) ≤ K − 1`).
+- **As a number: `pbw(G) = vs(G_u) + 1 = pw(G_u) + 1` for every nonempty
+  dag G.** By `MOSPGraph.lean` this also equals `Z(M_G)`, the MOSP value of
+  the instance above. If G has an edge, `pbw(G) = VSG(G_u) + 1`.
+- **Exact**, offset +1, on the transformed graph G_u. The spot check agrees on
+  all 1,100 dags described in P.1.
+
+**(P-L3) Lengauer Thm 3**, p. 472: "The instance (G, K) of VSG is positive if
+and only if the instance (G_d, K + 2) of PBWP is positive." Proof (p. 472):
+"The proof follows from a combination of Theorem 2 with" Thm 4. That is,
+Thm 2 applied to G_d, using (G_d)_u = G_du, followed by Thm 4
+(`(G, K)` VSG-positive ⇔ `(G_du, K + 1)` VSG-positive, already proved in Lean
+as `Complex.isPositiveVSG_iff_triangleGraph`, under the hypothesis "G has an
+edge or 0 < K").
+
+- *Edge case.* For G edgeless and nonempty, G_d is G with no arcs, so
+  `PBWP(G_d) = 1`. Meanwhile `VSG(G) + 2 = 3` and `vs(G) + 2 = 2`. The
+  instance form still holds on every graph for every K ≥ 1, because on an
+  edgeless graph both sides are positive for all K. With `vs` in place of VSG
+  it holds for **every K ≥ 0**: `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`. Only the
+  number form needs an edge.
+- **As a number: `pbw(G_d) = vs(G) + 2 = pw(G) + 2` for every graph with at
+  least one edge**, and `pbw(G_d) = 1` for an edgeless nonempty graph.
+- **Exact**, offset +2 on pw, on the transformed dag G_d. That is `Z + 1` for
+  the corresponding MOSP instance, so it is a fixed offset `c = +1` in Table
+  1's reading. Spot check: agrees on all 461 labelled graphs with
+  `|V| ≤ 5` and `|V| + |E| ≤ 9`.
+- *Progressiveness is essential here* (Lengauer p. 469). G_d has no path of
+  length 2, so "the graphs it yields can easily be pebbled in the
+  unrestricted BWP using only three pebbles". The unrestricted game is
+  therefore **not** a member of the complex: `bw(G_d) ≤ 3` while
+  `pbw(G_d) = pw(G) + 2` is unbounded (take G = K_n).
+
+**(P-KP) KP Thm 3.1**, p. 213: "For any graph G, mpb(G) = ns(G) = mpbw(G)."
+
+- *The proof.* `mpbw ≤ mpb` is immediate. For `mpb ≤ ns`, take an optimal
+  recontamination-free strategy S "as in Corollary 2.4" (p. 210: "no vertex is
+  visited twice by a searcher, and ... every searcher is deleted immediately
+  after all the edges incident on it have been cleared"). Orient each edge
+  away from its endpoint visited first. S, read as black pebbles on this
+  directive, is a progressive pebbling. For `ns ≤ mpbw`, read the pebbles of
+  a progressive black-white pebbling as searchers. Every edge vw sees both
+  endpoints pebbled at some instant. If w is a predecessor of v, this happens
+  when v's pebble is placed black or turns black; otherwise swap the roles.
+- *On the proof.* KP's last sentence ("all edges of G will be eventually
+  cleared (with no recontamination)") asserts more than the overlap shows.
+  It does follow, though. A vertex can lose its pebble only after every
+  neighbour has received one: a successor pebbled later would need it
+  pebbled in order to turn black, and a predecessor was pebbled when it
+  turned. That is exactly the hypothesis of [9]'s Lemma (§6 above).
+  Alternatively, the pebble intervals form an interval supergraph of G, so
+  `θ(G) ≤ pbw(D)` for every directive D, and `θ = ns`.
+- *Edge case.* On an edgeless nonempty graph, `ns = 0` (there is nothing to
+  clear, §6 above), but `mpb = mpbw = 1`, because every vertex must receive a
+  pebble. **The first equality of Thm 3.1 is false on edgeless graphs with at
+  least one vertex**, which is the same gap as [9] and Thm 4.1 have.
+- **As a number: `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1` for every
+  nonempty graph**, edgeless ones included, and `= ns(G)` when G has an edge.
+  This combines Thm 3.1 with Thm 4.1 (`ns = vs + 1`, ≥ 1 edge). Both halves
+  also have short direct proofs that avoid searching.
+  - (≤) Orient by an optimal layout, place black pebbles in layout order, and
+    remove a vertex once all its neighbours have been placed. When v_i is
+    placed, the pebbled vertices are v_i and the earlier vertices with a
+    neighbour at index ≥ i, which is Kinnersley's `V_L(i − 1)`. That is at
+    most `vs + 1` pebbles.
+  - (≥) The interval argument above.
+  So `mpb = mpbw = pw + 1` needs neither LaPaugh nor node monotonicity.
+- **Exact**, offset +1, on the input graph itself, with no transformation.
+  This is the same offset as θ, ν and ns, so `mpb = mpbw = Z`. Spot check:
+  `mpb = mpbw = vs + 1` on all 1,099 labelled nonempty graphs with at most 5
+  vertices, minimising over every acyclic orientation.
+
+**How the two sources relate.** For a directive D of G, G ⊆ D_u, so
+Lengauer's Thm 2 gives `pbw(D) = pw(D_u) + 1 ≥ pw(G) + 1`. KP's
+`mpbw(G) = pw(G) + 1` then says that `min_D pw(D_u) = pw(G)`. Directly: orient
+along an optimal layout. The earlier neighbours of v_i all lie in the
+separator at step i − 1, so each added predecessor clique lies inside a bag
+together with v_i, and no width is added. KP's mpbw half is thus Lengauer's
+Thm 2 plus this one-line lemma.
+
+**Also in the sources, and outside the complex.**
+
+- KP Thm 3.3 (p. 214): for D with in-degree at most k,
+  `pbw(D) ≤ (k + 1) ns(G)`. This is a multiplicative band.
+- KP's star example (p. 214): `ns(K_{1,n}) = 2` while `bw(D) = n + 1` when
+  every edge points to the centre. So a single directive can be arbitrarily
+  worse than the minimum.
+- KP Prop. 3.2 (p. 214): `ns` of the complete ternary tree of height h is
+  h + 1, while that tree, "directed from the root towards the leaves can be
+  pebbled, allowing repebbling, by just two pebbles".
+- **A scope note on Lengauer p. 467.** Lengauer remarks: "Note, that for
+  directed trees recomputation is of no advantage. Thus BWP and PBWP have the
+  same complexity on trees." KP's example refutes this for trees directed
+  root → leaves: there the progressive demand is at least mpb = h + 1 > 2.
+  The remark can only be meant for **in-trees** (edges towards the root, as
+  in the pebbling literature Lengauer cites), where every vertex has one
+  successor. Neither source proves it. Item 02 is to check it on small
+  in-trees and out-trees.
+
+### P.4 Verdict: does pebbling belong in the complex?
+
+| # | Problem | Source | Relation (census; spot-checked, not yet proved) | Offset | Status |
+|---|---|---|---|---|---|
+| 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`) |
+| 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs |
+| 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edge; `= 1` if G is edgeless and nonempty | +2 on G (`= Z + 1`) | **exact**, fixed offset; instance form true for every K ≥ 0 with vs |
+| — | Unrestricted BWP | Lengauer p. 469 | `bw(G_d) ≤ 3` | none | **not a member** |
+
+In short: pebbling relates to vertex separation **exactly**. It has offset
++1 when the undirected side is D_u (Lengauer Thm 2) or the graph itself with
+the directive chosen optimally (KP), and offset +2 when the dag is built from
+the graph by G_d (Lengauer Thm 3). The progressive restriction is what makes
+this work; the unrestricted game has bounded demand on every G_d. For the
+paper, the natural thirteenth member is **13a** (`mpb = mpbw = pw + 1`, on
+the input graph, the same offset as θ and ν), with 13b and 13c as its
+dag-side transformations. No Table 1 entry names pebbling, and Lengauer
+[14], the paper cited for "edge separation", is where it comes from.
+
+### P.5 Statements for item 02 to check
+
+Implement progressive black-white pebbling from P.1's rules. Use Lengauer's
+optional turning and KP's automatic turning separately, and the black-only
+game for mpb. Compute vs by the existing DP.
+
+1. The Lengauer and KP rules give equal demand on every dag.
+2. `pbw(D) = vs(D_u) + 1` on every nonempty dag. Lengauer's instance form
+   fails at K = 1 exactly on edgeless D when read with VSG, and holds for all
+   K ≥ 1 when read with vs.
+3. `pbw(D) = Z(M_D)`, where M_D is the column-per-vertex matrix of N⁻[v],
+   through `mosp_value`.
+4. `pbw(G_d) = vs(G) + 2` when G has an edge, and `pbw(G_d) = 1` when G is
+   edgeless and nonempty. The instance form `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`
+   holds for every K ≥ 0. Here `|V| + |E|` bounds the state space: 4^(n+m)
+   for the naive search.
+5. `mpb(G) = mpbw(G) = vs(G) + 1` on every nonempty graph. `ns = 0 ≠ mpb` on
+   edgeless nonempty graphs.
+6. G is some D_u if and only if G is chordal (C₄ is the smallest failure).
+   The optimal-layout directive attains `pw(D_u) = pw(G)`.
+7. Unrestricted BWP, and the black pebble game, need at most 3 pebbles on
+   every G_d, so the gap `pbw(G_d) − bw(G_d)` is unbounded.
+8. Lengauer's remark: BWP = PBWP on small in-trees. Out-trees give
+   counterexamples: KP's ternary tree of height 2 (13 vertices) has
+   progressive demand 3 against 2. This needs a black-game solver with
+   repebbling.
+
+### P.6 Notes for the Lean items
+
+- *Item 03, Thm 3.* The route with the least new work is Lengauer's own:
+  Thm 2 specialised to the depth-1 dag G_d, whose `G_u` is already
+  `Complex.triangleGraph`, followed by `isPositiveVSG_iff_triangleGraph`. The
+  pebbling side of G_d is simple because no sink is a predecessor. Stating
+  the result with `vertexSeparation` rather than `vsg` removes the K ≥ 1 and
+  edge hypotheses from the instance form (P-L3).
+- *Item 04, Thm 2.* Stated with `vs`, it needs only "D nonempty". Its (⇒)
+  direction is the removal-time layout, and its (⇐) direction is the
+  four-step simulation. For KP, the direct layout and interval proofs of P-KP
+  avoid node search entirely. `IntervalThickness.lean` supplies the interval
+  half, and a layout supplies the other.
+- A play can be modelled as a list of moves (place white, turn, remove
+  black) with a validity predicate, and progressive as "each vertex placed
+  once and removed once". An equivalent and simpler object is the pair of
+  times (received, lost) per vertex. The interval proofs work with that
+  object.

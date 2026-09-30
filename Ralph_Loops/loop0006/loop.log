@@ -1,0 +1,5 @@
+[2026-09-30 21:20:52] loop start: up to 16 iterations, cap 4.0 h each, model default
+[2026-09-30 21:20:52] === iteration 1: 01 Pebbling census. Read Lengauer (1981) §1-2 and Kirousis &
+[2026-09-30 21:20:52] claude session it01 (cap 4.00 h) -> session_it01.log
+[2026-09-30 21:29:38] session it01: ok (exit 0, 16 tool calls)
+[2026-09-30 21:32:01] tests passed: GATE PASS
