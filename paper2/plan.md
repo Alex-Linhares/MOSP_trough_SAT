@@ -176,8 +176,11 @@ degree or clique bound can close it).
 - **The definite move** (decided 2026-10-01): Chu & Stuckey's Theorem 1 is
   false as published (`paper2/search_soundness.md`, loop0006 item 08). The
   paper states the gap and the repaired rule, which is proved sound in Lean.
-  The solver is not changed. Section 4's soundness theorem covers the repaired
-  rule, and says exactly what holds for the code as it stands.
+  **The solver will be fixed to match the theorems** (updated 2026-10-01), in
+  both the MOSP search (`satisfiability/customer_search.py` and `.c`) and the
+  pathwidth solver (`pathwidth_solver/pathwidth/`), after loop0006. Section 4's
+  soundness theorem covers the repaired rules. Once the fix is in, the certified
+  values that rest only on the customer search are re-certified under it.
 - **Venue: INFORMS Journal on Computing first** (decided 2026-09-29). The
   journal expects the code and data behind a paper to be deposited in its
   own repository; check the current rules before submission and build the
@@ -211,5 +214,9 @@ degree or clique bound can close it).
    format and checker (and the two result-file fixes the transfer document
    lists), price the run, and run it.
 4. **Section 5,** then the LaTeX draft of the whole paper.
-5. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
+5. **Fix both solvers to match the soundness theorems:** the repaired
+   definite and better moves (loop0006 items 08, 10), in the MOSP search and
+   the pathwidth solver. Re-certify the values certified only by the customer
+   search, and rerun the pathwidth benchmarks under the fixed rules.
+6. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
    the code, and the dataset, built from the final versions of each.

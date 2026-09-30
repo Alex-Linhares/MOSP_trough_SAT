@@ -721,9 +721,14 @@ python -m benchmarks.solve_all --timeout 120
   every refutation the customer search has made rests on a rule that can
   discard the last solution at a node. Refutations with an independent proof
   (the SAT path, DRAT at n <= 40, the lattice oracle at n <= 15) are
-  unaffected. The solver is unchanged, by the owner's decision of 2026-10-01: the
-  paper states the gap and the repaired rule (one small bipartite matching per
-  candidate), and the production code keeps the published premise. `paper2/search_soundness.md`
+  unaffected. The owner's decision of 2026-10-01: the paper states the gap and the
+  repaired rule, and **the solver will be fixed to match the theorems**, in both
+  `satisfiability/` and `pathwidth_solver/`, after loop0006 (one small
+  bipartite matching per candidate). Until then the production code keeps the
+  published premise. Afterwards, the values certified only by the customer
+  search are re-certified. The better move shares the flaw (its premise 4 is
+  the definite premise at the child; loop0006 item 10), and its repair is
+  proved sound too. `paper2/search_soundness.md`
   §2.2 and §4.2.
 - **Nothing checks that a refutation is sound.** Witness verification, the
   corpus audit and the lower-bound guards all confirm a value is *achievable*.
