@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 7/14 SOLVED
+Current: 8/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -308,3 +308,48 @@ Current: 7/14 SOLVED
   `pathwidth_le_of_map` (pathwidth under a vertex map whose fibres keep the
   interval property) in `SplitBandwidth.lean` are reusable; the
   search games (10–11) may want the latter for 2-expansions (EST Thm 2.2).
+
+## Iteration 8 — 2026-09-30 13:43
+
+### Completed
+- **08 Edge separation** — `lean/MOSPFormalization/Complex/EdgeSeparation.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** from Lengauer (1981): the vertex separator game VSG (p. 467:
+  `VSGStrategy`, `pebbledAfter`, `vertexCut`, `vsgOfStrategy`,
+  `IsPositiveVSG` with `K > 0`, `vsg`); `G_du` (p. 472, `triangleGraph` on
+  `V ⊕ G.edgeSet`); min-cut linear arrangement (p. 468, `cutAt`, `cutwidth`);
+  MMCLA (Def. 6, p. 473, `modCutAt`, `modCutwidth`); `starGraph n` = `K_{1,n}`.
+- **Proved**:
+  - `vsg_eq_max`: VSG = max(1, vs); `vsg_eq_pathwidth` for graphs with an
+    edge, `vsg_eq_one_of_edgeless` otherwise. The cut after move `i + 1` is
+    literally `activeSuffix` at `i` (`vertexCut_succ`), no reversal needed.
+  - **Theorem 4**: `vertexSeparation_triangleGraph` / `pathwidth_triangleGraph`
+    (`+1` exactly, G with an edge) and Lengauer's form
+    `isPositiveVSG_iff_triangleGraph` (G has an edge or K > 0). **Found**: the
+    theorem as stated fails at K = 0 on edgeless graphs,
+    `isPositiveVSG_triangleGraph_counterexample`. Upper half by Lengauer's
+    construction (each e' just before its first endpoint, via a sorting key);
+    lower half by a direct induction along the induced layout instead of his
+    normal-form Lemma 5.
+  - Cutwidth readings false: `pathwidth_le_cutwidth` (one-sided),
+    `n ≤ 2 cw(K_{1,n})`, `n ≤ 2 mcw(K_{1,n}) + 2`, `pw(K_{1,n}) ≤ 1`; hence
+    `pathwidth_add_two_lt_cutwidth_star7`, `pathwidth_add_two_lt_modCutwidth_star9`,
+    and `cutwidth_unbounded` / `modCutwidth_unbounded` (no additive constant).
+- `paper2/equivalences.md`: rows 11 and 12 updated; new section "Item 08".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None. Not formalised, by choice: Thms 2–3 (black–white pebbling, not a
+  Table 1 problem), Thm 7 (the MMCLA → VSG NP-hardness blow-up), and exact
+  cw / mcw values on stars (only the lower bounds are needed).
+
+### Next
+- Item 09 (PLA folding): Möhring Thm 3.14 (multiple folding = θ) and the
+  `I_5` counterexample for simple folding. `GateMatrix.lean`'s track
+  assignments and `OneDimLogic.lean`'s colouring view apply.
+- Reusable here: `exists_layout_vertexSeparation`, `vertexSepOfLayout_le_iff`,
+  `exists_vertexSepAt_eq`, `one_le_vertexSeparation`,
+  `vertexSeparation_eq_zero_of_edgeless` (`EdgeSeparation.lean`, Helpers);
+  item 10 (node search, ns = vs + 1 except on edgeless graphs) needs exactly
+  the same edgeless split as `vsg_eq_max`.

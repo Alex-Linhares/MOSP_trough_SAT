@@ -56,8 +56,8 @@ column; `vs` = vertex separation of the same graph.
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
 | 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
 | 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
-| 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | — | **misattributed and false** under every reading [14] supports |
-| 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | 1,652 graphs, 0 fail | `vertexSeparation_eq_pathwidth` | confirmed |
+| 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | `Complex.vsg_eq_pathwidth`, `vsg_eq_one_of_edgeless`, `vertexSeparation_triangleGraph` (Thm 4), `isPositiveVSG_iff_triangleGraph`; counterexamples `pathwidth_add_two_lt_cutwidth_star7`, `pathwidth_add_two_lt_modCutwidth_star9`, `cutwidth_unbounded`, `modCutwidth_unbounded`; `pathwidth_le_cutwidth` | **misattributed and false** under every reading [14] supports; **proved**: VSG = vs = pw (≥ 1 edge; VSG = 1 edgeless), Thm 4, and the star counterexamples |
+| 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | 1,652 graphs, 0 fail | `vertexSeparation_eq_pathwidth`; VSG: `Complex.vsg_eq_vertexSeparation` | confirmed |
 
 Summary: **six confirmed** (MOSP, gate matrix layout, one-dimensional logic,
 narrowness, node search with the edgeless exception, vertex separation), plus
@@ -820,3 +820,74 @@ split of `K_{1,3}` (splits of a tree are trees with at least as many leaves),
 which is not done. Fomin's Thms 3 and 6 (`sb = ib = 1/μ_m`) are not
 formalised; item 02 checks the sandwich at scale through `ib` and Thm 6, and
 the Lean proof uses neither.
+
+## Item 08: edge separation in Lean
+
+`lean/MOSPFormalization/Complex/EdgeSeparation.lean`, imported from the root.
+Sorry-free; `#print axioms` shows only `propext`, `Classical.choice`,
+`Quot.sound`. Everything in [14] that §11 found is formalised from the source:
+the vertex separator game, `G_du` and Theorem 4, the edge game (min-cut linear
+arrangement, p. 468) and Definition 6.
+
+**Definitions** (nothing mentions bags or pathwidth):
+
+- `VSGStrategy V = Fin n ≃ V` (move `j` pebbles `S j`), `pebbledAfter S i`,
+  `vertexCut S i` (pebble-free vertices adjacent to a pebbled one, p. 467),
+  `vsgOfStrategy S` (the largest cut over moves `0..n`), `IsPositiveVSG G K`
+  (`K > 0` and some `S` with `VSG(S) ≤ K`), `vsg G` (least such `K`).
+- `triangleGraph G` on `V ⊕ G.edgeSet`: Lengauer's `G_du` (p. 472), a new
+  vertex `e'` per edge adjacent to both ends.
+- `cutAt σ i` (edges with one end at position `≤ i` and the other `> i`),
+  `cutwidth`; `modCutAt σ i` (edges with ends strictly either side of position
+  `i`, Def. 6), `modCutwidth`. Edges are counted as ordered pairs, earlier end
+  first, one per edge.
+- `starGraph n` = `K_{1,n}` on `Fin (n + 1)`, centre `0`.
+
+**Proved.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `vertexCut_succ`, `vsgOfStrategy_eq` | cut after move `i + 1` = `activeSuffix` at `i` of `S⁻¹`; `VSG(S) = vs(S⁻¹)` | — |
+| `isPositiveVSG_iff`, `vsg_eq_max` | `(G, K)` positive ⇔ `0 < K ∧ vs ≤ K`; `VSG = max(1, vs)` | p. 467 |
+| `vsg_eq_vertexSeparation`, `vsg_eq_pathwidth` | `VSG = vs = pw` for every graph with an edge | with Kinnersley Thm 3.1 |
+| `vsg_eq_one_of_edgeless` | `VSG = 1` on edgeless graphs (the empty graph included) | positivity of `K` |
+| `vertexSeparation_triangleGraph`, `pathwidth_triangleGraph` | `vs(G_du) = vs(G) + 1`, `pw(G_du) = pw(G) + 1`, `G` with an edge | **Thm 4** |
+| `isPositiveVSG_iff_triangleGraph` | `(G, K)` positive ⇔ `(G_du, K + 1)` positive, if `G` has an edge or `K > 0` | **Thm 4**, Lengauer's form |
+| `isPositiveVSG_triangleGraph_counterexample` | on an edgeless graph, `(G, 0)` is not positive and `(G_du, 1)` is | the exception to Thm 4 as stated |
+| `vertexSeparation_le_cutwidth`, `pathwidth_le_cutwidth` | `vs ≤ cw` | standard |
+| `pathwidth_starGraph_le_one` | `pw(K_{1,n}) ≤ 1` | — |
+| `two_mul_cutwidth_starGraph` | `n ≤ 2 cw(K_{1,n})` | — |
+| `two_mul_modCutwidth_starGraph` | `n ≤ 2 mcw(K_{1,n}) + 2` | — |
+| `pathwidth_add_two_lt_cutwidth_star7` | `pw(K_{1,7}) + 2 < cw(K_{1,7})` | counterexample |
+| `pathwidth_add_two_lt_modCutwidth_star9` | `pw(K_{1,9}) + 2 < mcw(K_{1,9})` | counterexample |
+| `cutwidth_unbounded`, `modCutwidth_unbounded` | for every `k` a star with `cw ≥ pw + k`, `mcw ≥ pw + k` | — |
+
+**The proof of Theorem 4.** Upper half, Lengauer's construction: from an
+optimal layout `σ` of `G`, order `V ⊕ E` by the key `(2σ(v) + 1)·n` for a
+vertex and `2σ(lo e)·n + σ(hi e)` for an edge vertex, `lo e` its earlier end —
+each `e'` just before the first of its endpoints. After a vertex `x` the cut
+of `G_du` is the cut of `G` at `σ(x)`; after an edge vertex it is inside that
+cut plus the endpoint about to be pebbled. Lower half: not Lengauer's
+normal-form Lemma 5 (moving each `e'` to just before its first endpoint without
+increasing the cut, which he argues by a case analysis), but a direct
+induction along the layout `σ` that a layout `τ` of `G_du` induces on `V`. For
+each position `p` with vertex `x`: if some active vertex `a` of `G` at `p` is
+adjacent to `x`, then either some such `e' = {x, a}` is still unpebbled just
+after `x` in `τ` (it is on the cut of `G_du` beside the whole cut of `G`), or
+all are pebbled before `x`, and just before `x` the cut of `G_du` holds the cut
+of `G` and `x` itself; either way `τ` has width at least `|cut| + 1`.
+Otherwise the cut at `p` is already a cut at `p − 1`. So every nonempty cut of
+`σ` is below the width of `τ`, and a graph with an edge has a nonempty cut.
+
+**Edge cases.** Theorem 4 as Lengauer states it ("`K` a positive integer" for
+both instances) is false at `K = 0` on edgeless graphs, where `(G_du, 1)` is
+positive and `(G, 0)` is not an instance; it holds for every other `(G, K)`.
+The equation `vs(G_du) = vs(G) + 1` needs an edge: on an edgeless graph
+`G_du = G` and both are 0.
+
+**Not formalised.** Theorems 2–3 (black–white pebbling, which is not a Table 1
+problem), Theorem 7 (`vs(G') = mcw(G) + N` under the `(N + 1)`-clique blow-up,
+an NP-hardness gadget, checked by item 02 to `N = 4`), and exact values of
+`cw`, `mcw` on stars (only the lower bounds are needed for the
+counterexamples; item 02 gives `cw(K_{1,7}) = mcw(K_{1,9}) = 4`).
+

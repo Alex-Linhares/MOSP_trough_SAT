@@ -1,0 +1,127 @@
+# session it08 started 2026-09-30 13:27:28
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "08 Edge" Ralph_Loops/loop0005/iterations.md; grep -n "^## \|^### " paper2/equivalences.md | head -60
+  > $ cd /home/al/dev/MOSP; ls lean/MOSPFormalization/Complex/; wc -l lean/MOSPFormalization/Complex/*.lean; grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^str
+  > $ cd /home/al/dev/MOSP; sed -n 334,384p paper2/equivalences.md; sed -n 42,70p paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; ls paper2/literature/; sed -n 1,80p lean/MOSPFormalization/VertexSeparation.lean; grep -n "star\|theorem" lean/MOSPFormalization/MOSPGraph
+  > $ cd /home/al/dev/MOSP; sed -n 25,50p lean/MOSPFormalization/LinearLayout.lean; pdftotext -layout paper2/literature/14_lengauer_1981.pdf /tmp/leng.txt; grep -n "T
+  > $ sed -n 330,440p /tmp/leng.txt
+
+Checking the existing key-to-layout helpers in `SplitBandwidth.lean` before writing item 08 (edge separation: Lengauer's VSG = vs, Theorem 4, and star counterexamples for cutwidth).
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "theorem\|lemma\|def \|abbrev" Complex/SplitBandwidth.lean | head -60; grep -rn "theorem.*bandwidth\|def ba
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 1,100p Complex/SplitBandwidth.lean | head -60; sed -n 340,440p Complex/SplitBandwidth.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -rn "theorem vertexSepAt_le_vertexSepOfLayout\|theorem vertexSepOfLayout_le\|theorem vertexSeparation_eq_pathw
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 110,140p MOSPGraph.lean; sed -n 225,245p Sandwich.lean; sed -n 45,55p VSEquivPW.lean
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ cd /home/al/dev/MOSP/lean && time lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | tail -40
+
+Skeleton builds except the `triangleGraph` definition; fixing that now.
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | grep -A15 "error" | head -60
+  > $ sed -n 476,481p MOSPFormalization/Complex/SplitBandwidth.lean; sed -n 92,96p MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("""  Nat.sInf_mem ⟨_, ⟨Fintype.equivFin V, rfl⟩⟩""","""  Nat.sI
+  > $ sed -i 's/  rw \[dite_eq_right_iff.mpr sorry\]/  simp only [dite_eq_right (show Fintype.card V ≠ 0 by omega)]/' MOSPFormalization/Complex/EdgeSeparation.lean &&
+  > $ sed -i '264s/exact G.symm h/exact G.symm.symm _ _ h/' MOSPFormalization/Complex/EdgeSeparation.lean && lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 
+
+Helpers, VSG section and `triangleGraph` compile. Now the lower half of Theorem 4.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+old=s[s.index("  -- the claim, by induction along σ"):s.index("end Triangle
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | tail -20
+
+Lower half of Theorem 4 compiles on the first try. Now the upper half (Lengauer's construction) and the combined statements.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("push_neg at","push Not at")
+new='''theorem vertexSeparation_ad
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("      rw [hz, hkey_lt, hkey_lt] at *\n","      rw [hz] at hy1 
+  > $ sed -i 's/have h2 : hi e = hi f/have h2 : up e = up f/' MOSPFormalization/Complex/EdgeSeparation.lean && grep -n "hi f\|hi (" MOSPFormalization/Complex/EdgeSepa
+  > $ sed -i '508s/hi f/up f/' MOSPFormalization/Complex/EdgeSeparation.lean && sed -n 540,548p MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("      rw [hkey_lt] at hy1 hw1\n","      replace hy1 := (hkey_l
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | grep -A8 "544:38" | head -20
+
+Still on the upper half of Theorem 4 — fixing a unification mismatch in the key comparisons.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("      replace hy1 := (hkey_lt _ _).mp hy1\n      replace hw1 :
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+a="      replace hy1 := (hkey_lt _ y).mp hy1\n      replace hw1 := fun h =>
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | grep -A45 "553:47" | sed -n 14,45p; sed -n 545,560p MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("""  have hkB : ∀ y, kB y < n := by""","""  have hkA1 : ∀ v, kA
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | grep -A30 "594:19" | head -32; sed -n 585,596p MOSPFormalization/Complex/EdgeSeparation.lean
+  > $ python3 - <<'EOF'
+import re
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+i=s.index("    set m := lo e₀\n"); j=s.index("/-- **Lengauer, The
+
+Theorem 4 is now fully proved (both directions). Next: cutwidth, modified cutwidth, and the star counterexamples.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+new='''/-! ### Min-cut linear arrangement and its modified form -/
+
+section
+  > $ sed -i '746s/simp \[σ, Fin.val_rev\]; omega/simp [σ, Fin.val_rev]/' MOSPFormalization/Complex/EdgeSeparation.lean && sed -n 821p MOSPFormalization/Complex/EdgeS
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSeparation.lean'
+s=open(p).read()
+s=s.replace("refine ⟨fun h => by subst h; omega, ?_, ?_⟩\n      · trace_sta
+  > $ lake build MOSPFormalization.Complex.EdgeSeparation 2>&1 | grep -i "warn\|sorry" | head; grep -n "sorry\|axiom" MOSPFormalization/Complex/EdgeSeparation.lean
+
+Whole file compiles with no `sorry`. Tidying the linter warnings, adding the root import, and checking axioms.
+  > $ sed -i 's/^set_option linter.unusedSectionVars false$/set_option linter.unusedSectionVars false\nset_option linter.unusedSimpArgs false/' MOSPFormalization/Comp
+
+All theorems depend only on the standard three axioms. Now the docs: `equivalences.md`, PROGRESS, iterations.
+  > $ cd /home/al/dev/MOSP && sed -i 's/  either to pathwidth. Both stars are the smallest found by the checker\n//' lean/MOSPFormalization/Complex/EdgeSeparation.lea
+  > $ python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old_row=[l for l in s.split('\n') if l.startswith('| 11 | Edge separation')][0]
+cells=old_row.spli
+
+Docs updated. Running the gate.
+  > $ timeout 900 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005 && sed -i 's/^- \[ \] \*\*08 Edge separation\.\*\*/- [x] **08 Edge separation.**/' iterations.md && sed -i 's/^Current
+
+Item 08 (edge separation) is done and the gate passes: `lake build` is clean, the only `sorry` is the one already allowed in `Sandwich.lean`, and 1,231 tests pass.
+
+`lean/MOSPFormalization/Complex/EdgeSeparation.lean` is imported from the root and has no `sorry`. Its theorems use only the three standard axioms (`propext`, `Classical.choice`, `Quot.sound`). Each definition is taken from Lengauer (1981) and cited by page, and none mentions bags or pathwidth.
+
+- **Lengauer's vertex separator game (VSG):** it equals `max(1, vs)`. So VSG = vs = pw for every graph with an edge, and VSG = 1 on edgeless graphs. The cut after move `i + 1` is exactly the development's `activeSuffix` at `i`.
+- **Theorem 4:** adding a triangle on every edge raises the value by exactly one, `vs(G_du) = vs(G) + 1` (so `pw(G_du) = pw(G) + 1`), for any graph with an edge. It is also proved in Lengauer's own form: `(G, K)` is positive iff `(G_du, K + 1)` is.
+- **New finding:** Theorem 4 as Lengauer states it fails at `K = 0` on edgeless graphs. There `(G_du, 1)` is positive but `(G, 0)` is not, because he requires `K` to be positive. This is proved in Lean as `isPositiveVSG_triangleGraph_counterexample`, and the correct statement assumes an edge or `K > 0`.
+- **How it was proved:** the upper half uses Lengauer's construction. The lower half does not use his normal-form Lemma 5; it is a direct induction along the layout that a layout of `G_du` induces on the original vertices.
+- **The cutwidth readings of "edge separation" are false:**
+  - `pw ≤ cw` always holds, so the failure is only from above.
+  - For stars, `n ≤ 2·cw(K_{1,n})`, `n ≤ 2·mcw(K_{1,n}) + 2`, and `pw(K_{1,n}) ≤ 1`.
+  - Hence `cw(K_{1,7}) > pw + 2` and `mcw(K_{1,9}) > pw + 2`.
+  - Neither cutwidth nor modified cutwidth is within any fixed constant of pathwidth.
+
+I left three things out on purpose:
+- Theorems 2–3, on black–white pebbling, which is not a Table 1 problem.
+- Theorem 7, the NP-hardness construction.
+- Exact cutwidth values on stars; only the lower bounds are needed for the counterexamples.
+
+`paper2/equivalences.md` has rows 11 and 12 updated and a new "Item 08" section. PROGRESS.md has the Iteration 8 entry and now reads 8/14 SOLVED, and item 08 is marked `[x]` in iterations.md. Six items remain, so the loop is not complete. Nothing was committed.
+
+# result: success in 961s, 41 turns, cost $3.35

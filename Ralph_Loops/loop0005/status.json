@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 13:25:08",
+  "updated": "2026-09-30 13:43:30",
   "phase": "tests",
-  "started": "2026-09-30 13:08:44",
-  "item": "07 Split bandwidth. `Complex/SplitBandwidth.lean`: define node"
+  "started": "2026-09-30 13:27:28",
+  "item": "08 Edge separation. `Complex/EdgeSeparation.lean`: formalise the"
 }

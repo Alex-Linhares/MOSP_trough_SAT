@@ -64,7 +64,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   the obstacle, prove the special case splits need and say so. Record that
   this is a sandwich in the master table.
 
-- [ ] **08 Edge separation.** `Complex/EdgeSeparation.lean`: formalise the
+- [x] **08 Edge separation.** `Complex/EdgeSeparation.lean`: formalise the
   statement item 01 settled (Lengauer's vertex separator game and/or his
   modified min-cut arrangement, Definition 6 and Theorem 4) and prove it. If
   Table 1's "edge separation" is ordinary min-cut linear arrangement
