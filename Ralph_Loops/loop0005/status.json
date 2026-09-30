@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 12:39:21",
+  "updated": "2026-09-30 12:47:16",
   "phase": "tests",
-  "started": "2026-09-30 12:33:03",
-  "item": "04 Narrowness. `Complex/Narrowness.lean`: define narrowness of an"
+  "started": "2026-09-30 12:41:41",
+  "item": "05 Interval thickness. `Complex/IntervalThickness.lean`: define"
 }

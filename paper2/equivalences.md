@@ -50,7 +50,7 @@ column; `vs` = vertex separation of the same graph.
 | 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | `NetGateMatrix.tracks_eq_pathwidth_add_one`, `tracks_eq_mospValue`, `tracksFor_eq_maxOpenStacks` | confirmed; **proved** (needs one 1 in M) |
 | 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | — | confirmed (core problem); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked) |
 | 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | — | **false** as stated (simple folding); confirmed for multiple folding |
-| 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | — | unsourced at [5]; relation confirmed in [6], [9] |
+| 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph) |
 | 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
 | 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
@@ -651,3 +651,47 @@ vertex"; with none, `ν = 0` (`narrowness_of_isEmpty`), as in
 `complex_check.narrowness`. Isolated vertices and disconnected graphs need no
 hypothesis: an isolated vertex enters and leaves in one step. No edge is
 required, unlike node search (row 6).
+
+## Item 05: interval thickness in Lean
+
+`lean/MOSPFormalization/Complex/IntervalThickness.lean`, imported from the
+root; sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions.** From [9] p. 182 and Möhring p. 28, 31, since [5] is not held.
+`IntervalModel α H`: a closed interval `[left v, right v]` of a linear order
+`α` per vertex, distinct vertices adjacent in `H` iff their intervals
+intersect (`left u ≤ right v ∧ left v ≤ right u`). `IsIntervalGraph H`: a model
+in `ℕ` exists. `intervalThickness G`: the least `H.cliqueNum` (Mathlib's
+clique number, not a local definition) over interval graphs `H ≥ G` on the
+same vertex type. No definition mentions bags or separation. The choice of
+`ℕ` is immaterial: the lower bound holds for models in any linear order, and a
+model in `ℕ` attains it.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `bagGraph`, `le_bagGraph`, `bagModel`, `isIntervalGraph_bagGraph` | "share a bag" of a path decomposition is an interval supergraph, each vertex's interval its range of bags | Möhring Prop. 3.5, first half |
+| `cliqueNum_bagGraph_le` | its clique number is `≤ width + 1` (cliques lie in one bag: the Helly lemma of `MOSPGraph.lean`) | Möhring Thm 3.4 (Fulkerson–Gross), the direction needed |
+| `intervalThickness_le_pathwidth_add_one` | `θ ≤ pw + 1`, no hypothesis | — |
+| `pointDecomposition`, `pointDecomposition_bag_isClique` | a model in any linear order gives a path decomposition: bag `i` is the intervals through the `i`-th left endpoint; each bag is a clique | Möhring Prop. 3.5, second half |
+| `pathwidth_add_one_le_cliqueNum` | `pw(G) + 1 ≤ ω(H)` for every interval supergraph `H` (any linear order), `V` nonempty | — |
+| `intervalThickness_eq_pathwidth_add_one` | `θ(G) = pw(G) + 1`, `V` nonempty | **Möhring Prop. 3.5** |
+| `intervalThickness_eq_vertexSeparation_add_one` | `θ(G) = vs(G) + 1`, `V` nonempty | via Kinnersley Thm 3.1 |
+| `intervalThickness_of_isEmpty` | no vertices: `θ = 0` (while `pw + 1 = 1`) | edge case |
+
+**The proof.** Möhring's two constructions directly, not through vertex
+separation. Decomposition → model: intervals `[firstBag v, lastBag v]`;
+intersecting intervals share the bag at the later left endpoint. Model →
+decomposition: the left endpoints, sorted (`Finset.orderEmbOfFin`), are the
+bags' points; an edge `uv` of `G` is an edge of `H`, so the intervals meet
+and both contain the later left endpoint; the interval property is
+monotonicity of the sorted points. Only left endpoints are needed as points,
+which is the Helly property of intervals in its simplest form.
+
+**Edge cases.** The only hypothesis is `Nonempty V`; with no vertices
+`θ = 0` (`intervalThickness_of_isEmpty`), the same convention as
+`complex_check.interval_thickness`. No edge or connectivity is needed: an
+isolated vertex gets its own interval, and an edgeless nonempty graph has
+`θ = 1 = pw + 1`. Item 01's statement check (θ = pw + 1 on 1,652 graphs, two
+independent searches) was the check before stating.

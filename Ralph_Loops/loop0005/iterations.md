@@ -45,7 +45,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   (in- and out-sequences agree) if needed, and Proposition 3.1,
   `narrowness G = pathwidth G + 1` for every graph with at least one vertex.
 
-- [ ] **05 Interval thickness.** `Complex/IntervalThickness.lean`: define
+- [x] **05 Interval thickness.** `Complex/IntervalThickness.lean`: define
   interval graphs by interval models and interval thickness as the minimum
   clique number of an interval supergraph on the same vertices; prove
   `intervalThickness G = pathwidth G + 1` (path decomposition → interval

@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 4/14 SOLVED
+Current: 5/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -184,3 +184,39 @@ Current: 4/14 SOLVED
   `σ v ≤ i ≤ max_{u ∈ N[v]} σ u`. That is the interval model a layout
   gives, so the layout → interval-supergraph direction of item 05 can
   probably go through the same identity.
+
+## Iteration 5 — 2026-09-30 12:47
+
+### Completed
+- **05 Interval thickness** — `lean/MOSPFormalization/Complex/IntervalThickness.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** from [9] p. 182 and Möhring pp. 28, 31 (since [5] is not
+  held): `IntervalModel α H` (closed intervals of a linear order `α`, distinct
+  vertices adjacent iff the intervals intersect), `IsIntervalGraph` (a model in
+  `ℕ`), `intervalThickness` = least Mathlib `cliqueNum` over interval
+  supergraphs on the same vertex type. Nothing mentions bags.
+- **Proved** (Möhring Prop. 3.5, by his two constructions):
+  - `intervalThickness_le_pathwidth_add_one`, no hypothesis: "share a bag"
+    (`bagGraph`) is an interval supergraph via `[firstBag, lastBag]`, and its
+    clique number is ≤ width + 1 by the Helly lemma of `MOSPGraph.lean`.
+  - `pathwidth_add_one_le_cliqueNum`: for a model in *any* linear order,
+    bags at the sorted left endpoints (`pointDecomposition`) are cliques, so
+    pw + 1 ≤ ω(H). So restricting models to `ℕ` changes nothing.
+  - `intervalThickness_eq_pathwidth_add_one` under `[Nonempty V]`, and
+    `intervalThickness_eq_vertexSeparation_add_one`.
+  - Edge case `intervalThickness_of_isEmpty`: `θ = 0`, which matches
+    `complex_check`.
+- `paper2/equivalences.md`: row 5 updated, and a new section "Item 05".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None.
+
+### Next
+- Item 06 (one-dimensional logic): Ohtsuki's tracks = θ(H) for the
+  connection graph. `IntervalModel`, `bagGraph` and
+  `pathwidth_add_one_le_cliqueNum` apply directly. The placement gives an
+  interval model of the nets, and the track count for a fixed placement is the
+  left-edge argument from `GateMatrix.lean` (`tracksFor_eq_maxOpenStacks`).
+- Item 10 (node search, ns = θ) can state against `intervalThickness` now.

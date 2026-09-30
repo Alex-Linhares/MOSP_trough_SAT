@@ -1,0 +1,53 @@
+# session it05 started 2026-09-30 12:41:41
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A12 "05 Interval" Ralph_Loops/loop0005/iterations.md; ls lean/MOSPFormalization/Complex/; grep -n "Interval\|interval" paper2/equivalences.md | head -6
+  > $ sed -n 200,235p paper2/equivalences.md; cat lean/MOSPFormalization/PathDecomposition.lean lean/MOSPFormalization/Pathwidth.lean; cat lean/MOSPFormalization.lean
+  > $ cd /home/al/dev/MOSP/lean && grep -n "exists_bag_of_isClique" -A12 MOSPFormalization/MOSPGraph.lean | head -30; grep -rn "theorem.*pathwidth\b\|pathwidth_spec\|
+  > $ sed -n 700,760p .lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Clique.lean; sed -n 90,100p MOSPFormalization/MOSPGraph.lean; grep -n "pathwidth" MOSPF
+  > $ sed -n 55,77p MOSPFormalization/MOSPGraph.lean; sed -n 100,115p MOSPFormalization/MOSPGraph.lean; sed -n 60,110p MOSPFormalization/Complex/Narrowness.lean
+
+Writing `Complex/IntervalThickness.lean`: interval models over any linear order, θ as a minimum clique number over interval supergraphs, and both directions of the proof.
+  > $ cd /home/al/dev/MOSP && grep -n "def interval_thickness\|def theta\|isEmpty\|n == 0\|if n == 0" paper2/complex_check.py | head; grep -rn "orderEmbOfFin_mem\|the
+  > $ sed -n 455,500p paper2/complex_check.py; grep -n "theorem vertexSeparation_eq_pathwidth" -A3 lean/MOSPFormalization/VSEquivPW.lean
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/IntervalThickness.lean
+  > $ cd /home/al/dev/MOSP/lean && time lake env lean MOSPFormalization/Complex/IntervalThickness.lean 2>&1 | head -60
+  > $ f=MOSPFormalization/Complex/IntervalThickness.lean && python3 - <<'EOF'
+f='MOSPFormalization/Complex/IntervalThickness.lean'
+s=open(f).read()
+s=s.replace("symm 
+  > $ echo "import MOSPFormalization.Complex.IntervalThickness" >> MOSPFormalization.lean && cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Complex.IntervalThick
+
+Build passes, axioms clean. Now updating `equivalences.md`, then the gate.
+  > $ cd /home/al/dev/MOSP && sed -n 40,64p paper2/equivalences.md; grep -n "^## \|^### Item" paper2/equivalences.md; tail -40 paper2/equivalences.md
+  > $ python3 - <<'EOF'
+f='paper2/equivalences.md'
+s=open(f).read()
+old="| 1,652 graphs, 0 fail | — | unsourced at [5]; relation confirmed in [6], [9] |"
+assert s.cou
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005 && sed -i 's/^- \[ \] \*\*05 Interval thickness/- [x] **05 Interval thickness/' iterations.md && sed -i 's#^Current: 4
+
+Item 05 is done: interval thickness (θ) is now proved in Lean to equal pathwidth + 1, i.e. `θ(G) = pw(G) + 1`, for every graph with at least one vertex. The file has no `sorry` and uses only Lean's three standard axioms. The gate passes: `lake build` works, the only `sorry` is still the planned one in `Sandwich.lean`, and 1,231 tests pass.
+
+**Definitions** (`lean/MOSPFormalization/Complex/IntervalThickness.lean`). Source [5] isn't held, so they come from Kirousis & Papadimitriou (1985) p. 182 and Möhring (1990) pp. 28 and 31:
+- **Interval model:** each vertex gets a closed interval of a linear order, and two distinct vertices are adjacent exactly when their intervals intersect.
+- **Interval graph:** a graph with an interval model in ℕ.
+- **θ(G):** the smallest clique number (Mathlib's `cliqueNum`) of an interval graph that contains G on the same vertices.
+
+None of these mention path decompositions or pathwidth, so the theorem isn't circular.
+
+**Proof.** It follows Möhring's Proposition 3.5 in both directions:
+- **θ ≤ pw + 1, with no hypothesis:** from a path decomposition, give each vertex the range of bags it appears in. The resulting "share a bag" graph is an interval graph containing G, and each of its cliques fits inside one bag, using the clique-in-one-bag lemma already proved in `MOSPGraph.lean`.
+- **pw + 1 ≤ θ:** from an interval model in *any* linear order, take one bag at each left endpoint, in order. Each bag is a clique, which gives a path decomposition of G. Because this works for any linear order, restricting models to ℕ loses nothing.
+
+**Corollaries and edge cases:**
+- θ = vertex separation + 1 also holds.
+- With no vertices θ = 0 (while pw + 1 = 1). That is the only exception, and it matches the checker's convention.
+- Graphs with no edges or several components need no extra hypothesis.
+
+**Bookkeeping:** row 5 of `paper2/equivalences.md` now names the Lean theorems and has its own "Item 05" section. Item 05 is marked `[x]`, and PROGRESS.md has an Iteration 5 entry with the count at 5/14. Nine items remain, so there is no LOOP_COMPLETE line. Nothing is committed, and nothing under `solutions/` was touched.
+
+# result: success in 335s, 15 turns, cost $1.00
