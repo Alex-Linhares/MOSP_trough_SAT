@@ -1,0 +1,74 @@
+# session it06 started 2026-09-30 12:49:36
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A12 "06 One-dim" Ralph_Loops/loop0005/iterations.md; grep -n "^## \|^### " paper2/equivalences.md | head -50
+  > $ sed -n 1,70p paper2/equivalences.md; sed -n 135,176p paper2/equivalences.md; sed -n 451,547p paper2/equivalences.md | grep -n -i -B2 -A8 "ohtsuki\|one-dim"
+  > $ sed -n 655,800p paper2/equivalences.md; grep -n -i -A60 "def one_dim\|ohtsuki" paper2/complex_check.py | head -150
+  > $ cd /home/al/dev/MOSP/lean && ls MOSPFormalization/Complex/ && wc -l MOSPFormalization/Complex/*.lean && grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^st
+  > $ sed -n 1,160p MOSPFormalization/Complex/GateMatrix.lean; sed -n 180,350p MOSPFormalization/Complex/GateMatrix.lean
+  > $ cd /home/al/dev/MOSP/paper2/literature && ls; f=$(ls | grep -i ohtsuki | head -1); pdftotext -layout "$f" /tmp/oht.txt; wc -l /tmp/oht.txt
+
+Reading Ohtsuki §II to pin the definition before writing Lean.
+  > $ sed -n 60,330p /tmp/oht.txt
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization && grep -n "def LinearLayout\|abbrev LinearLayout" -A3 *.lean; grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|
+  > $ sed -n 60,140p MOSPGraph.lean; sed -n 180,245p MOSPGraph.lean; sed -n 60,120p Complex/IntervalThickness.lean; sed -n 225,282p Complex/IntervalThickness.lean
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; grep -rn "theorem.*card_le_of_colorable\|theorem.*chromaticNumber_eq_sInf\|theorem cliqueNum\|the
+  > $ sed -n 540,560p .lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Coloring/Vertex.lean; sed -n 40,54p MOSPFormalization/OpenStacks.lean; grep -n "isActiv
+  > $ sed -n 1,39p MOSPFormalization/OpenStacks.lean | grep -n "namespace\|variable\|structure\|def patterns" ; grep -n "namespace\|def patterns\|structure MOSPInstan
+
+Writing `Complex/OneDimLogic.lean` now (Ohtsuki's placement → interval graph → chromatic number, and his Theorem 3 direction).
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/OneDimLogic.lean
+  > $ echo "import MOSPFormalization.Complex.OneDimLogic" >> MOSPFormalization.lean && timeout 1500 lake env lean MOSPFormalization/Complex/OneDimLogic.lean 2>&1 | he
+
+Need the colouring import.
+  > $ sed -i 's/^import MOSPFormalization.Complex.IntervalThickness$/import MOSPFormalization.Complex.IntervalThickness\nimport Mathlib.Combinatorics.SimpleGraph.Colo
+  > $ sed -n 155,168p MOSPFormalization/Complex/OneDimLogic.lean; sed -n 268,276p MOSPFormalization/Complex/OneDimLogic.lean; sed -n 380,388p MOSPFormalization/Comple
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/OneDimLogic.lean'
+s=open(p).read()
+s=s.replace("""    (A.placementGraph π).Colorable (A.tracksFor π) :=
+  Nat.sIn
+
+Compiles cleanly. Checking axioms and running the full build.
+  > $ cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Complex.OneDimLogic
+open MOSPFormalization.Complex
+#print axioms LogicArray.tracks_eq_intervalThickness
+#pri
+
+Build passes and the axioms are clean. Now updating `equivalences.md`.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="| 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | — | confirmed (co
+  > $ timeout 1200 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate is running (~2.5 min). Meanwhile, updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005 && sed -i 's/^- \[ \] \*\*06 One-dimensional logic/- [x] **06 One-dimensional logic/' iterations.md && sed -i 's/^Curr
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/c8ec1c3f-f02e-4795-bf63-9e968fd0fe8d/tasks/bx15dpyaw.output; for i in $(seq 1 110); do if grep -qiE "gate (passed|failed)|P
+
+Item 06 is done: the minimum number of tracks in Ohtsuki et al.'s (1979) one-dimensional logic problem is now proved in Lean to equal the interval thickness of the connection graph, and so pathwidth + 1. The file has no `sorry` and uses only the three standard axioms. The gate passes: `lake build` is fine, the only `sorry` is still the deliberate one in `Sandwich.lean`, and 1,231 tests pass.
+
+**Definitions.** `lean/MOSPFormalization/Complex/OneDimLogic.lean` follows Ohtsuki §II (pp. 676–677) and none of it mentions stacks, bags or pathwidth:
+- the net–gate relation, with Ohtsuki's two standing assumptions (every gate has a net, every net has two gates) as a separate predicate;
+- the connection graph `H` (nets adjacent if they share a gate);
+- the interval graph of a gate order;
+- tracks for one order, defined as that graph's chromatic number (Ohtsuki's own wording);
+- the minimum over all orders.
+
+**What is proved, by Ohtsuki's route through interval graphs:**
+- `H` is a subgraph of every placement's interval graph, and that graph really is an interval graph when every net has a gate.
+- For a single order, chromatic number equals clique number. This reuses the left-edge argument from item 03.
+- The half of Ohtsuki's Theorem 3 that the track count needs: from any interval supergraph of `H`, sorting the gates by a point common to each gate's nets gives an order whose interval graph fits inside that supergraph. Ohtsuki's extra condition (a minimal augmentation) is only needed for his exact equality, not for the count, so it is not formalised.
+- `tracks_eq_intervalThickness`: minimum tracks = θ(H), assuming only that every net has a gate. With item 05's θ = pw + 1 this gives tracks = pw(H) + 1, and both follow directly under Ohtsuki's own assumptions.
+
+**Also proved:**
+- The problem has the same value as item 03's gate matrix layout on the same matrix, with no hypothesis.
+- tracks = pw(H) + 1 holds as soon as one net meets one gate, even if some nets have no gate.
+- Edge cases: no nets gives 0 tracks; nets but no connections gives 1.
+
+**Left open: the boundary-gate version (§IV).** Only the easy direction is proved, that pinning the two boundary gates can't need fewer than pw(H) + 1 tracks. The brute-force check saw either pw + 1 or pw + 2, but there is no upper bound in hand. The instance showing it isn't a fixed offset (3 tracks pinned against 2 free) would need a case check over 120 gate orders in Lean, so it stays with the checker.
+
+I updated row 3 of `paper2/equivalences.md` and added an "Item 06" section, appended Iteration 6 to `PROGRESS.md` (now 6/14 solved), and marked the item `[x]` in `iterations.md`. Nothing is committed.
+
+# result: success in 1007s, 23 turns, cost $2.41

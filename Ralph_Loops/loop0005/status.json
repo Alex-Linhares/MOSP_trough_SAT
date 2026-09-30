@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 12:47:16",
+  "updated": "2026-09-30 13:06:23",
   "phase": "tests",
-  "started": "2026-09-30 12:41:41",
-  "item": "05 Interval thickness. `Complex/IntervalThickness.lean`: define"
+  "started": "2026-09-30 12:49:36",
+  "item": "06 One-dimensional logic. `Complex/OneDimLogic.lean`: formalise"
 }

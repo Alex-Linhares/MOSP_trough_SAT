@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 5/14 SOLVED
+Current: 6/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -220,3 +220,48 @@ Current: 5/14 SOLVED
   interval model of the nets, and the track count for a fixed placement is the
   left-edge argument from `GateMatrix.lean` (`tracksFor_eq_maxOpenStacks`).
 - Item 10 (node search, ns = θ) can state against `intervalThickness` now.
+
+## Iteration 6 — 2026-09-30 12:56
+
+### Completed
+- **06 One-dimensional logic** — `lean/MOSPFormalization/Complex/OneDimLogic.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** from Ohtsuki et al. §II (pp. 676–677): `LogicArray`
+  (`v ∈ V(t)`), `IsOhtsuki` (eqs. (3)–(4)), `connectionGraph` (eq. (6)),
+  `OnInterval`, `placementGraph π` (interval graph of a gate sequence),
+  `tracksFor π` = its chromatic number (least `k` with Mathlib
+  `Colorable k`), `tracks` = least over gate sequences, and `tracksPinned`
+  for §IV. Nothing mentions stacks, bags or pathwidth.
+- **Proved, Ohtsuki's route through interval graphs**:
+  - `connectionGraph_le_placementGraph`, `placementModel` (placement graph is
+    an interval graph when every net has a gate);
+  - `tracksFor_eq_cliqueNum`: χ = ω for placement graphs (the left-edge
+    argument of item 03);
+  - `exists_placementGraph_le`: Thm 3's inclusion `E* ⊆ Ê` — from any
+    interval supergraph `Ĥ`, sorting gates by `d(t) = max_{v∈V(t)} left(v)`
+    gives a placement whose graph lies inside `Ĥ` (minimality of the
+    augmentation is not needed for the count);
+  - `tracks_eq_intervalThickness`: **min tracks = θ(H)** when every net has a
+    gate; `tracks_eq_pathwidth_add_one_of_forall_exists` and the
+    `IsOhtsuki.*` corollaries via item 05.
+- **Also**: `tracks_eq_gateMatrix_tracks` (same value as `t(M)`, no
+  hypothesis), `tracks_eq_pathwidth_add_one` (one connection suffices,
+  gateless nets allowed), edge cases `tracks_of_isEmpty`,
+  `tracks_eq_one_of_forall_not`, and for §IV only the trivial
+  `pathwidth_add_one_le_tracksPinned`.
+- `paper2/equivalences.md`: row 3 updated, new section "Item 06".
+
+### Blockers
+- None for the core problem. The §IV boundary variant is left at its lower
+  bound: the observed band `{pw + 1, pw + 2}` has no proof in hand (the
+  expected upper bound needs Ohtsuki's B-augmentation argument), and the
+  fixed-offset counterexample `boundary_path_instance` would need a case
+  analysis over 120 inner-gate orders; it stays with the checker.
+
+### Next
+- Item 07 (split bandwidth, Fomin Thm 8). `Sandwich.lean` has
+  `pw ≤ bandwidth` for the lower half.
+- Item 09 (PLA folding) can reuse `placementGraph`/`colorable_iff_isTrackAssignment`
+  style: simple folding is a colouring with colour classes of size ≤ 2.
+- Item 10 (node search, ns = θ) can state against `intervalThickness`.

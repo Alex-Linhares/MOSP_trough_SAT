@@ -52,7 +52,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   model from each vertex's bag interval; interval model → decomposition from
   the points). State the empty-graph convention.
 
-- [ ] **06 One-dimensional logic.** `Complex/OneDimLogic.lean`: formalise
+- [x] **06 One-dimensional logic.** `Complex/OneDimLogic.lean`: formalise
   Ohtsuki et al. (1979)'s gate-assignment problem as item 01 states it and
   prove its relation (expected: via interval graphs, so reuse item 05).
 
