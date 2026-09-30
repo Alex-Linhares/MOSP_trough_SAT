@@ -6,6 +6,9 @@ engineering. Those live in the rest of the repository.
 
 ## Contents
 
+- `problem_transformations.md` — section 3 in paper form: each Table 1 problem
+  as Instance / Question, then the transformations from equalities to bands to
+  what is unproved or false, with sources and Lean names.
 - `proof_reductions.md` — faults found in published proofs of the reductions,
   with the corrected arguments (first: Kirousis & Papadimitriou 1986, Thm 4.1).
 - `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
