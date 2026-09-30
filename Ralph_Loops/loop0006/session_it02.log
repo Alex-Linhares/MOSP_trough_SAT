@@ -1,0 +1,118 @@
+# session it02 started 2026-09-30 21:32:01
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*02/,/\*\*03/p' Ralph_Loops/loop0006/iterations.md; wc -l paper2/complex_check.py; grep -n "^def \|^class \|^if __name__" pape
+  > $ cd /home/al/dev/MOSP; sed -n '/Pebbling (loop0006 item 01/,$p' paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; sed -n 1,75p paper2/complex_check.py; sed -n 74,135p paper2/complex_check.py; sed -n 200,300p paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP; sed -n 550,630p paper2/complex_check.py; sed -n 830,860p paper2/complex_check.py; sed -n 960,1340p paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP; nproc; uptime; head -40 tests/test_complex_check.py; grep -n "^def test" tests/test_complex_check.py | wc -l; cat Ralph_Loops/loop0006/gat
+  > $ cd /home/al/dev/MOSP; sed -n 915,930p paper2/complex_check.py; sed -n 150,200p paper2/complex_check.py; ls paper2/data/
+
+Writing the pebbling solvers into `paper2/complex_check.py` now: progressive black-white under Lengauer's rules and under KP's, progressive black, and the two unrestricted games.
+  > $ cd /home/al/dev/MOSP; cat > /tmp/peb.py <<'EOF'
+# ----------------------------------------------------------------------------
+# Pebbling (loop0006 item 02): eq
+  > $ cd /home/al/dev/MOSP; sed -i '/# placeholder/d' /tmp/peb.py && python3 - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+peb=open('/tmp/peb.py').read()
+mar
+
+Small cases all agree. Timing a quick run before the full one.
+  > $ cd /home/al/dev/MOSP; time python3 -c "
+from paper2 import complex_check as cc, json
+" 2>/dev/null; time python3 -c "
+import json
+from paper2 import complex_che
+
+Quick run: zero failures. Now the full run: dags to 6 vertices, G_d with |V|+|E| ≤ 10, directives to 6 vertices, rooted trees to 9, and the 13-vertex ternary tree.
+  > $ cd /home/al/dev/MOSP; time timeout 3000 python3 -c "
+import json
+from paper2 import complex_check as cc
+r=cc.run_pebbling(quick=False)
+print(json.dumps({k:r[k] 
+
+18 s for the whole run, so there is room to go bigger. Timing the largest candidates before widening.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import time
+from paper2 import complex_check as cc
+t=time.time(); r=cc.directive_row(cc.complete_graph(7)); print('K7 dir',ti
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+old='''    dag_max = 5 if quick else 6
+    gd_bound = 7 if quick else 10
+  
+
+Every check passes. Finding the smallest out-tree where repebbling helps, and the gap by size, for the write-up.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2 import complex_check as cc
+import collections
+by=collections.defaultdict(lambda:[0,0])
+first=None
+for n in range(
+
+Smallest counterexample to Lengauer's remark read for out-trees: the 7-vertex spider (three legs of length 2), which is smaller than KP's 13-vertex tree. Now the tests.
+  > $ cd /home/al/dev/MOSP; cat > tests/test_pebbling_check.py <<'EOF'
+"""Tests for the pebbling part of `paper2.complex_check` (loop0006 item 02):
+the four games on 
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2 import complex_check as cc
+d=cc.dag(7, [(v, u) for u, v in [(0, 1), (1, 2), (0, 3), (3, 4), (0, 5), (5, 6)]])
+pri
+
+My hand value for the in-spider was wrong, not the solver: its root has three predecessors that must all be pebbled when it turns, so the demand is 4. Fixing the table.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='tests/test_pebbling_check.py'
+s=open(p).read()
+s=s.replace("""    (SPIDER_OUT, 3, 3, 2, 2),
+    (SPIDER_IN, 3, 3, 3, 
+
+Tests pass. Now writing the results into `paper2/equivalences.md`.
+  > $ cd /home/al/dev/MOSP; ls -la paper2/data/pebbling_check.json; git status --short paper2/data/; grep -n "spot-checked, not yet proved\|Item 02 is to check it" pa
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="""  successor. Neither source proves it. Item 02 is to check it on smal
+
+Running the gate.
+  > $ cd /home/al/dev/MOSP; timeout 3000 python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -8
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='Ralph_Loops/loop0006/iterations.md'
+s=open(p).read()
+old="- [ ] **02 Pebbling brute force.**"
+assert old in s; s=s.re
+
+Item 02 is done. Every pebbling statement recorded in iteration 1 holds on every small input checked, with no counterexamples. The gate passes: `lake build` succeeds, the only `sorry` is the existing one (limit 1), and pytest shows 1251 passed, 2 skipped, 1 expected failure.
+
+**What was built** (in `paper2/complex_check.py`):
+- **Games:** four pebbling games, written from the sources' own wording. Each is decided exactly by searching every position that stays within a pebble budget, and each result is confirmed by showing one pebble fewer fails.
+  - progressive black-white, under Lengauer's rules (turning a white pebble black is optional) and under Kirousis & Papadimitriou's (turning is automatic);
+  - progressive black;
+  - black-white and black with re-pebbling allowed.
+- **Graph constructions:** Lengauer's two graphs built from a dag (`lengauer_u`, `lengauer_d`), the matrix whose MOSP value should equal the pebbling number (`pebble_matrix`), all acyclic orientations of a graph, and a chordality test.
+- **How to run it:** `python -m paper2.complex_check --pebbling` takes 279 s on 32 cores and writes `paper2/data/pebbling_check.json`.
+
+**What was checked:**
+- every dag on up to 6 vertices, plus 20,000 random dags on 7;
+- every small graph from the networkx atlas (at most 7 vertices) with vertices plus edges ≤ 14, for Lengauer's Theorem 3 (299 graphs);
+- every graph on up to 7 vertices, over all its orientations (1,252 graphs);
+- every rooted tree on up to 11 vertices, with arcs pointing both towards and away from the root (4,394);
+- 359,744 play positions for the "no recontamination" lemma behind Kirousis & Papadimitriou's proof. It holds in every play that can still finish, not only in optimal ones.
+
+**Findings:**
+- **Lengauer's remark that re-pebbling doesn't help on trees fails earlier than we thought.** For trees directed away from the root, the smallest counterexample has 7 vertices, not 13 (Kirousis & Papadimitriou's ternary tree). It is a root with three legs of length 2: progressive pebbling needs 3 pebbles, with re-pebbling 2 suffice. No such tree on 6 or fewer vertices fails. Up to 11 vertices the gap is never more than 1.
+- **On trees directed towards the root, re-pebbling never helped** in any of the 4,394 cases, in either game. That supports reading Lengauer's remark as being about those trees.
+- **The gap between progressive and unrestricted pebbling grows.** On Lengauer's dag built from the complete graph Kₙ, progressive pebbling needs n + 1 pebbles for n = 2, 3, 4, while unrestricted pebbling needs 3 every time.
+
+The results are written up as a new section P.7 at the end of `paper2/equivalences.md`, and earlier sections now point to it. The tests are in `tests/test_pebbling_check.py` (20 tests on hand-checked dags plus a quick full run). The only error found was one of my own hand-computed test values; the solver was right.
+
+**Limits and what's left:**
+- Dags are exhaustive only up to 6 vertices, and the node-search comparison covers graphs up to 6 vertices.
+- I did not update `paper2/problem_transformations.md`; the new problem section and its proofs belong with Lean items 03–04.
+
+The item is marked `[x]` in `iterations.md`, PROGRESS.md is updated to 2/13, and nothing was committed.
+
+# result: success in 858s, 21 turns, cost $1.73

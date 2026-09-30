@@ -1588,11 +1588,12 @@ Thm 2 plus this one-line lemma.
   The remark can only be meant for **in-trees** (edges towards the root, as
   in the pebbling literature Lengauer cites), where every vertex has one
   successor. Neither source proves it. Item 02 is to check it on small
-  in-trees and out-trees.
+  in-trees and out-trees. *(Checked in P.7: it holds on every in-tree to 11
+  vertices, and fails already on a 7-vertex out-tree.)*
 
 ### P.4 Verdict: does pebbling belong in the complex?
 
-| # | Problem | Source | Relation (census; spot-checked, not yet proved) | Offset | Status |
+| # | Problem | Source | Relation (census; brute-force checked in P.7, not yet proved) | Offset | Status |
 |---|---|---|---|---|---|
 | 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`) |
 | 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs |
@@ -1654,3 +1655,121 @@ game for mpb. Compute vs by the existing DP.
   once and removed once". An equivalent and simpler object is the pair of
   times (received, lost) per vertex. The interval proofs work with that
   object.
+
+### P.7 Brute-force check (loop0006 item 02)
+
+`paper2/complex_check.py` now implements the four games of P.1 from the
+source wording and decides each for a pebble budget k by exhaustive search
+over the positions that never hold more than k pebbles:
+
+- `progressive_bw_within(d, k, rules)`: PBWP. `rules="lengauer"` gives rules
+  (i), (ii), (iii'), (iv)–(vi) of pp. 466–467, with optional turning and white
+  pebbles never removed. `rules="kp"` gives KP pp. 205–206, where a white pebble
+  turns at the moment its predecessors are all pebbled.
+- `progressive_black_within`: KP's progressive black game.
+- `unrestricted_bw_within`: BWP with rule (iii), "at least once".
+- `unrestricted_black_within`: KP's black game with repebbling.
+
+Alongside the games it builds the constructions: `lengauer_u` (Def. 1a),
+`lengauer_d` (Def. 1b, numbered like the existing `lengauer_du`),
+`pebble_matrix` (M_D of P.2), `acyclic_orientations` (directives, one per
+topological order, deduplicated) and `is_chordal` (simplicial elimination,
+checked against networkx). vs is the existing prefix DP `vs_dp`, VSG the
+existing literal `vsg`, `Z` the literal `mosp_value`, and ns the existing
+`node_search`. Positivity is monotone in K, so each instance form is read off
+the demand. Each demand is certified exact by also refuting it one pebble
+lower.
+
+Regenerate with `python -m paper2.complex_check --pebbling` (279 s on 32
+cores). This writes `paper2/data/pebbling_check.json`; add `--quick` for a
+one-second version, which `tests/test_pebbling_check.py` runs. The tests also
+check every game on eight hand-computed dags.
+
+**Inputs.**
+
+- **Dags** (statements 1–3):
+  - every dag on 0–6 vertices with arcs i → j only for i < j. That is 33,868
+    labelled dags, which covers every dag on ≤ 6 vertices up to isomorphism.
+  - 20,000 random dags on 7 vertices, arc probability drawn from
+    {0.2, …, 0.8}, seed 20260930.
+- **G_d** (statements 4 and 7): every graph of the networkx atlas (so ≤ 7
+  vertices) with `|V| + |E| ≤ 14`, 299 graphs. The largest G_d has 14
+  vertices.
+- **Directives** (statements 5 and 6): every atlas graph on 1–7 vertices,
+  1,252 graphs, each with all of its acyclic orientations (up to 5,040 for
+  K₇). ns is computed to 6 vertices only (202 graphs with an edge).
+- **Trees** (statement 8): every tree on 1–11 vertices, with every choice of
+  root, directed both ways. That is 4,394 rooted trees.
+- **Plays** (P.3's recontamination lemma): every dag on ≤ 5 vertices, with
+  every play position from which the play can still be completed. That is
+  359,744 live positions.
+
+**Results. Every statement of P.5 holds on every input, with zero
+counterexamples.**
+
+| P.5 | Statement | Checked | Failed |
+|---|---|---|---|
+| 1 | Lengauer's rules and KP's rules give equal pbw | 53,868 dags | 0 |
+| 1 | pbw ≤ pb | 53,868 | 0 |
+| 2 | `pbw(D) = vs(D_u) + 1`, D nonempty | 53,867 | 0 |
+| 2 | instance form with vs holds for every K ≥ 1 | 53,867 | 0 |
+| 2 | instance form with VSG fails exactly at K = 1 on edgeless D, nowhere else (K ≤ n + 1) | 33,867 | 0 |
+| 2 | `pbw(D) = VSG(D_u) + 1`, D with an arc | 33,861 | 0 |
+| 3 | `pbw(D) = Z(M_D)`, D nonempty | 53,867 | 0 |
+| 3 | the MOSP graph of M_D is D_u, literally | 53,868 | 0 |
+| 4 | `(G_d)_u = G_du` (Thm 4's triangle graph), literally | 299 graphs | 0 |
+| 4 | `pbw(G_d) = vs(G) + 2`, G with an edge | 292 | 0 |
+| 4 | `pbw(G_d) = 1`, G edgeless and nonempty | 7 | 0 |
+| 4 | `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`, every K ≥ 0 | 299 | 0 |
+| 4 | Thm 3 as Lengauer states it (VSG, K ≥ 1) | 299 | 0 |
+| 5 | `mpb = vs + 1` and `mpbw = vs + 1`, G nonempty | 1,252 graphs | 0 |
+| 5 | `mpb = ns = mpbw` (KP Thm 3.1), G with an edge, ≤ 6 vertices | 202 | 0 |
+| 5 | `ns = 0` and `mpb = 1`, G edgeless and nonempty (Thm 3.1 fails) | 6 | 0 |
+| 5 | orienting along an optimal layout attains mpb | 1,252 | 0 |
+| 6 | G is some D_u ⇔ G chordal | 1,252 | 0 |
+| 6 | `min_D vs(D_u) = vs(G)`, attained by the optimal-layout directive | 1,252 | 0 |
+| 7 | unrestricted BWP on G_d needs ≤ 3 pebbles; so does the black game | 299 | 0 |
+| 8 | in-trees: BWP = PBWP, and black with repebbling = progressive black | 4,394 | 0 |
+| P.3 | in every completable progressive play, a vertex that has lost its pebble has every neighbour already pebbled | 359,744 positions | 0 |
+
+**Named instances** (all values exact):
+
+| Dag | pbw | pb | bw (unrestricted) | b (unrestricted) | vs of the graph |
+|---|---|---|---|---|---|
+| G_d of K₂ (3 vertices) | 3 | 3 | 3 | 3 | 1 |
+| G_d of K₃ (6) | 4 | 4 | 3 | 3 | 2 |
+| G_d of K₄ (10) | 5 | 5 | 3 | 3 | 3 |
+| G_d of C₄ (8) | 4 | 4 | 3 | 3 | 2 |
+| G_d of P₄, of K₁,₃ (7) | 3 | 3 | 3 | 3 | 1 |
+| KP's ternary out-tree, height 2 (13) | 3 | 3 | **2** | **2** | 2 |
+| the same tree as an in-tree | 5 | 6 | 5 | 6 | — |
+| K₁,₄ with every edge to the centre (KP p. 214) | 5 | 5 | 5 | 5 | mpb(K₁,₄) = 2 |
+
+The G_d rows show statement 7's unbounded gap growing. `pbw(G_d(Kₙ)) − bw`
+is 0, 1, 2 for n = 2, 3, 4, and in general `pbw(G_d(Kₙ)) = n + 1` while `bw ≤ 3`.
+
+**Two findings beyond confirmation.**
+
+1. **The smallest counterexample to Lengauer's remark read for out-trees has
+   7 vertices, not 13.** It is the spider with three legs of length 2,
+   directed away from the root: arcs 0→1→2, 0→3→4, 0→5→6. Its progressive
+   demand is 3 in both games, but with repebbling it is 2. The root is
+   re-placed for each leg, so at most one leg vertex and one other pebble are
+   ever on the dag. Progressively, the root must keep its single pebble until
+   the last leg's first vertex has turned, and on an earlier leg a vertex and
+   its successor must be pebbled together, so three pebbles coincide. No
+   out-tree on ≤ 6 vertices has a gap. By size, the out-trees with
+   `pbw > bw` number 7 of 77 rooted trees at 7 vertices, 24 of 184 at 8 and
+   99 of 423 at 9. Over all 4,394 rooted trees to 11 vertices the gap is 1
+   on 1,559 and 0 on the rest, and never 2 at this size. On in-trees, repebbling never helped,
+   in either game, in any of the 4,394. So Lengauer's remark holds for
+   in-trees as far as checked, which is the reading P.3 proposed.
+2. **KP's "no recontamination" claim, repaired in P.3, holds on every play,**
+   not only on optimal ones: on every position from which a progressive play
+   can still finish. It is a property of the rules, which is what the Lean
+   items need.
+
+Nothing in P.1–P.6 needed correcting. The only error found this session was
+in a hand value in the new tests: the in-spider's demand is 4, not 3,
+because its root turns with three predecessors pebbled. The solver was right.
+

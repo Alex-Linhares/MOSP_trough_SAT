@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 1/13 SOLVED
+Current: 2/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -63,3 +63,64 @@ Current: 1/13 SOLVED
 - Item 03 route (P.6): Thm 2 specialised to the depth-1 dag G_d, whose `G_u` is
   `Complex.triangleGraph`, then `isPositiveVSG_iff_triangleGraph`. State with `vertexSeparation`,
   not `vsg`.
+
+## Iteration 2 — 2026-09-30 21:50
+
+### Completed
+- **02 Pebbling brute force.** Added to `paper2/complex_check.py`:
+  - Four games, written from the source wording and decided exactly by search
+    over positions with a pebble budget:
+    - progressive black-white under Lengauer's rules (optional turning) and
+      under KP's (automatic turning);
+    - progressive black;
+    - unrestricted BWP (rule (iii));
+    - unrestricted black with repebbling.
+  - The constructions `lengauer_u`, `lengauer_d`, `pebble_matrix`,
+    `acyclic_orientations` and `is_chordal`.
+  - A live-position check of P.3's recontamination lemma.
+  - `run_pebbling`, run with `python -m paper2.complex_check --pebbling`: 279 s
+    on 32 cores; writes `paper2/data/pebbling_check.json`.
+- **Every statement of P.5 holds, with zero counterexamples**, on:
+  - all 33,868 labelled dags with ≤ 6 vertices, plus 20,000 random dags on 7;
+  - all 299 atlas graphs with `|V| + |E| ≤ 14` for G_d;
+  - all 1,252 atlas graphs on ≤ 7 vertices with every directive;
+  - all 4,394 rooted trees with ≤ 11 vertices;
+  - 359,744 live play positions for the lemma.
+  The results are written up as P.7 in `paper2/equivalences.md`; P.3 and P.4
+  now point to it.
+- **Finding:** Lengauer's p. 467 remark, read for out-trees, first fails at
+  **7 vertices**: the spider with three legs of length 2 has pbw = pb = 3 and
+  bw = b = 2. KP's 13-vertex tree is not the smallest counterexample, and no
+  out-tree on ≤ 6 vertices fails. Over all rooted trees to 11 vertices the
+  out-tree gap is 1 on 1,559 of them and 0 on the rest, never more. On
+  in-trees, repebbling never helps in either game.
+- **Named values:** `pbw(G_d(K_n)) = n + 1` for n = 2, 3, 4, while `bw = b = 3`,
+  so statement 7's gap grows. KP's star gives 5 against mpb = 2.
+- Tests: `tests/test_pebbling_check.py` has 20 tests, covering:
+  - eight hand-computed dags under all four games;
+  - exactness one pebble below the demand;
+  - the rule that a white pebble is never removed;
+  - `(G_d)_u = G_du`;
+  - M_D and Z;
+  - directives of C₄, P₄ and K₁,₄;
+  - chordality against networkx;
+  - the lemma;
+  - a quick run with zero failures.
+  The only error found was in one of my hand values (the in-spider's demand is
+  4, not 3). The solver was right.
+- Gate: `lake build` ok; sorry 1 of limit 1; 1251 passed, 2 skipped, 1 xfailed;
+  GATE PASS. No Lean changed.
+
+### Blockers
+- None. Limits of coverage: dags are exhaustive only to 6 vertices (7 is
+  sampled), G_d to `|V| + |E| ≤ 14`, and ns to 6 vertices.
+- `paper2/problem_transformations.md` is unchanged. Its new §1.x, with the
+  proofs, belongs with items 03 and 04, where the proofs are written.
+
+### Next
+- Item 03: Lengauer Thm 3 in Lean (`Complex/Pebbling.lean`), by the P.6 route.
+  Define PBWP by per-vertex (received, lost) times or by move lists, check
+  against `progressive_bw_within`, specialise Thm 2 to the depth-1 dag G_d,
+  and finish with `isPositiveVSG_iff_triangleGraph`. State with
+  `vertexSeparation`.
+

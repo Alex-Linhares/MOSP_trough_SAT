@@ -1,0 +1,320 @@
+{
+ "stats": {
+  "dags_exhaustive": 33868,
+  "dags": 53868,
+  "dag_seconds": 38.6,
+  "gd_graphs": 299,
+  "gd_bound_V_plus_E": 14,
+  "gd_seconds": 7.9,
+  "directive_graphs": 1252,
+  "is_chordal_vs_networkx_mismatches": 0,
+  "directive_seconds": 85.4,
+  "rooted_trees": 4394,
+  "tree_seconds": 143.9,
+  "lemma_dags_max_n": 5,
+  "lemma_live_positions": 359744,
+  "lemma_seconds": 0.6
+ },
+ "summary": {
+  "P1 Lengauer rules = KP rules (pbw)": {
+   "checked": 53868,
+   "failed": 0
+  },
+  "P1 pbw <= pb": {
+   "checked": 53868,
+   "failed": 0
+  },
+  "P2 instance form with VSG fails exactly at K = 1 on edgeless D": {
+   "checked": 33867,
+   "failed": 0
+  },
+  "P2 instance form with vs holds for every K >= 1": {
+   "checked": 53867,
+   "failed": 0
+  },
+  "P2 pbw = VSG(D_u) + 1 (D with an arc)": {
+   "checked": 33861,
+   "failed": 0
+  },
+  "P2 pbw(D) = vs(D_u) + 1 (nonempty)": {
+   "checked": 53867,
+   "failed": 0
+  },
+  "P3 pbw(D) = Z(M_D) (nonempty)": {
+   "checked": 53867,
+   "failed": 0
+  },
+  "P3 the MOSP graph of M_D is D_u": {
+   "checked": 53868,
+   "failed": 0
+  },
+  "P4 (G_d)_u = G_du (Lengauer Thm 4's triangle graph)": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P4 Thm 3 as stated (VSG, K >= 1)": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P4 pbw(G_d) = 1 (G edgeless, nonempty)": {
+   "checked": 7,
+   "failed": 0
+  },
+  "P4 pbw(G_d) = vs(G) + 2 (G with an edge)": {
+   "checked": 292,
+   "failed": 0
+  },
+  "P4 pbw(G_d) is exact (not within one pebble less)": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P4 vs(G) <= K iff pbw(G_d) <= K + 2, every K >= 0": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P5 mpb = ns = mpbw (KP Thm 3.1; G with an edge)": {
+   "checked": 202,
+   "failed": 0
+  },
+  "P5 mpb = vs + 1 (nonempty)": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P5 mpbw = vs + 1 (nonempty)": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P5 ns = 0 != mpb = 1 (edgeless, nonempty)": {
+   "checked": 6,
+   "failed": 0
+  },
+  "P5 the optimal-layout directive attains mpb": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P6 G is some D_u iff G is chordal": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P6 min over directives of vs(D_u) = vs(G)": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P6 the optimal-layout directive attains vs(D_u) = vs(G)": {
+   "checked": 1252,
+   "failed": 0
+  },
+  "P7 black pebble game on G_d <= 3": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P7 unrestricted BWP on G_d <= 3": {
+   "checked": 299,
+   "failed": 0
+  },
+  "P8 in-trees: BWP = PBWP (Lengauer p. 467)": {
+   "checked": 4394,
+   "failed": 0
+  },
+  "P8 in-trees: black game, repebbling = progressive": {
+   "checked": 4394,
+   "failed": 0
+  }
+ },
+ "counterexamples": {},
+ "out_trees_by_pbw_minus_bw": {
+  "0": 2835,
+  "1": 1559
+ },
+ "out_tree_examples": [
+  {
+   "n": 7,
+   "arcs_in": [
+    [
+     3,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     6,
+     5
+    ]
+   ],
+   "pbw_out": 3,
+   "bw_out": 2,
+   "pb_out": 3,
+   "b_out": 2
+  },
+  {
+   "n": 7,
+   "arcs_in": [
+    [
+     1,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     6,
+     5
+    ]
+   ],
+   "pbw_out": 3,
+   "bw_out": 2,
+   "pb_out": 3,
+   "b_out": 2
+  },
+  {
+   "n": 7,
+   "arcs_in": [
+    [
+     1,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     6,
+     5
+    ]
+   ],
+   "pbw_out": 3,
+   "bw_out": 2,
+   "pb_out": 3,
+   "b_out": 2
+  }
+ ],
+ "named": {
+  "G_d of K2": {
+   "|V_d|": 3,
+   "vs(G)": 1,
+   "pbw(G_d)": 3,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 3
+  },
+  "G_d of K3": {
+   "|V_d|": 6,
+   "vs(G)": 2,
+   "pbw(G_d)": 4,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 4
+  },
+  "G_d of K4": {
+   "|V_d|": 10,
+   "vs(G)": 3,
+   "pbw(G_d)": 5,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 5
+  },
+  "G_d of P4": {
+   "|V_d|": 7,
+   "vs(G)": 1,
+   "pbw(G_d)": 3,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 3
+  },
+  "G_d of C4": {
+   "|V_d|": 8,
+   "vs(G)": 2,
+   "pbw(G_d)": 4,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 4
+  },
+  "G_d of K1,3": {
+   "|V_d|": 7,
+   "vs(G)": 1,
+   "pbw(G_d)": 3,
+   "bw(G_d)": 3,
+   "b(G_d)": 3,
+   "pb(G_d)": 3
+  },
+  "ternary out-tree, height 1": {
+   "n": 4,
+   "pbw": 2,
+   "pb": 2,
+   "bw": 2,
+   "b": 2,
+   "pw(tree)": 1
+  },
+  "ternary in-tree, height 1": {
+   "n": 4,
+   "pbw": 4,
+   "pb": 4,
+   "bw": 4,
+   "b": 4
+  },
+  "ternary out-tree, height 2": {
+   "n": 13,
+   "pbw": 3,
+   "pb": 3,
+   "bw": 2,
+   "b": 2,
+   "pw(tree)": 2
+  },
+  "ternary in-tree, height 2": {
+   "n": 13,
+   "pbw": 5,
+   "pb": 6,
+   "bw": 5,
+   "b": 6
+  },
+  "K1,4, every edge to the centre (KP p. 214)": {
+   "pbw": 5,
+   "pb": 5,
+   "bw": 5,
+   "b": 5,
+   "mpb": 2
+  }
+ },
+ "seconds": 279.4,
+ "quick": false,
+ "seed": 20260930
+}

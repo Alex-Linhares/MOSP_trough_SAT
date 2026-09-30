@@ -11,6 +11,7 @@ exhaustively on small inputs:
 
     python -m paper2.complex_check            # full run, writes the JSON report
     python -m paper2.complex_check --quick    # atlas to 5 vertices, fewer samples
+    python -m paper2.complex_check --pebbling # loop0006 item 02: pebbling (P.5)
 
 (interval thickness by explicit interval models only to 6 vertices; above
 that by event words, which the atlas run checks against the model search).
@@ -51,6 +52,13 @@ Definitions and where they come from (page numbers as in equivalences.md):
 - `one_dim_logic_tracks` Ohtsuki et al. 1979 sec. II (and sec. IV with the
                          boundary gates fixed at the ends).
 - `cutwidth`, `modified_cutwidth`   Lengauer 1981 p. 468 and Def. 6 p. 473.
+- `progressive_bw_within` Lengauer 1981 pp. 466-467 (BWP with rule (iii'),
+                         optional turning) and Kirousis & Papadimitriou 1986
+                         pp. 205-206 (automatic turning); `progressive_black_within`,
+                         `unrestricted_bw_within`, `unrestricted_black_within`
+                         the other three games; `lengauer_u`, `lengauer_d`
+                         Lengauer Def. 1 (pp. 468-469). Checked by
+                         `run_pebbling` against equivalences.md P.5.
 """
 from __future__ import annotations
 
@@ -65,6 +73,7 @@ from multiprocessing import Pool
 from pathlib import Path
 
 REPORT = Path(__file__).resolve().parent / "data" / "complex_check.json"
+PEBBLING_REPORT = Path(__file__).resolve().parent / "data" / "pebbling_check.json"
 
 # ----------------------------------------------------------------------------
 # Graphs
@@ -1007,6 +1016,674 @@ def lengauer_blowup(g):
 
 
 # ----------------------------------------------------------------------------
+# Pebbling (loop0006 item 02): equivalences.md, section "Pebbling", P.1-P.5
+# ----------------------------------------------------------------------------
+#
+# Dags are `(n, pred)` with `pred[v]` the bitmask of immediate predecessors of
+# `v` (Lengauer p. 466 footnote 1: v0 is an immediate predecessor of v1 when
+# (v0, v1) is an edge). Every game is decided for a pebble budget `k` by an
+# exhaustive search over the reachable positions that never hold more than `k`
+# pebbles; the demand is the least `k` that reaches the final position. That
+# positivity is monotone in `k` is immediate (a play within k is within k + 1),
+# so the instance forms of the theorems are read off the demand.
+
+
+def dag(n, arcs):
+    """`(n, pred)` from arcs `(u, v)`: `u` an immediate predecessor of `v`."""
+    pred = [0] * n
+    for u, v in arcs:
+        if u == v:
+            raise ValueError("loops are not dags")
+        pred[v] |= 1 << u
+    d = (n, tuple(pred))
+    if topological_order(d) is None:
+        raise ValueError("not acyclic")
+    return d
+
+
+def arcs_of(d):
+    n, pred = d
+    return [(u, v) for v in range(n) for u in range(n) if pred[v] >> u & 1]
+
+
+def topological_order(d):
+    n, pred = d
+    order, placed = [], 0
+    while len(order) < n:
+        ready = [v for v in range(n) if not placed >> v & 1 and pred[v] & ~placed == 0]
+        if not ready:
+            return None
+        for v in ready:
+            order.append(v)
+            placed |= 1 << v
+    return order
+
+
+def underlying(d):
+    return graph(d[0], arcs_of(d))
+
+
+def lengauer_u(d):
+    """Lengauer Def. 1a (p. 468): the arcs undirected, plus a clique on the
+    immediate predecessors of every vertex."""
+    n, pred = d
+    es = set()
+    for v in range(n):
+        ps = [u for u in range(n) if pred[v] >> u & 1]
+        es.update((min(u, v), max(u, v)) for u in ps)
+        es.update(itertools.combinations(ps, 2))
+    return graph(n, sorted(es))
+
+
+def lengauer_d(g):
+    """Lengauer Def. 1b (p. 469): `V_d = V u E`, arcs `v -> {v, w}` and
+    `w -> {v, w}`. Vertex `n + i` is the i-th edge of `edges_of(g)`, the
+    numbering `lengauer_du` uses, so `lengauer_u(lengauer_d(g)) ==
+    lengauer_du(g)` literally."""
+    n, _ = g
+    es = edges_of(g)
+    return (n + len(es), tuple([0] * n + [(1 << u) | (1 << v) for u, v in es]))
+
+
+def orient(g, order):
+    """The directive of `g` with every edge pointing to its later end in `order`."""
+    n, adj = g
+    pos = {v: i for i, v in enumerate(order)}
+    return (n, tuple(sum(1 << u for u in range(n) if adj[v] >> u & 1 and pos[u] < pos[v])
+                     for v in range(n)))
+
+
+def acyclic_orientations(g):
+    """Every directive of `g` (KP p. 213), each once: an acyclic orientation
+    is induced by a topological order, so orient along every permutation."""
+    return sorted({orient(g, p) for p in itertools.permutations(range(g[0]))})
+
+
+def pebble_matrix(d):
+    """The MOSP instance of P.2: a row per vertex, a column per vertex, row u
+    of column v set iff u is in N^-[v] = {v} u pred(v)."""
+    n, pred = d
+    return tuple(tuple(int(u == v or bool(pred[v] >> u & 1)) for v in range(n)) for u in range(n))
+
+
+def _search(start, moves, final):
+    seen = {start}
+    stack = [start]
+    while stack:
+        s = stack.pop()
+        for t in moves(s):
+            if t == final:
+                return True
+            if t not in seen:
+                seen.add(t)
+                stack.append(t)
+    return start == final
+
+
+def progressive_bw_within(d, k, rules="lengauer"):
+    """Can `d` be pebbled in the progressive black-white game with at most `k`
+    pebbles at any instant?
+
+    `rules="lengauer"`: Lengauer p. 466-467, rules (i), (ii), (iii'), (iv),
+    (v), (vi): place a white pebble on a pebble-free vertex; remove a black
+    pebble; a white pebble *may* be turned black when every immediate
+    predecessor is pebbled; each vertex receives and loses a pebble exactly
+    once. `rules="kp"`: Kirousis & Papadimitriou p. 205-206, where a white
+    pebble turns black *at the moment* its predecessors are all pebbled (a
+    black placement is a white one that turns at once). A position is
+    `(white, black, done)`, `done` the vertices that have received and lost
+    their one pebble."""
+    n, pred = d
+    full = (1 << n) - 1
+    auto = rules == "kp"
+    if rules not in ("lengauer", "kp"):
+        raise ValueError(rules)
+
+    def turn_all(w, b):
+        peb = w | b
+        x = w
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            if pred[v] & ~peb == 0:
+                w &= ~(1 << v)
+                b |= 1 << v
+        return w, b
+
+    def moves(s):
+        w, b, done = s
+        peb = w | b
+        if popcount(peb) < k:
+            x = full & ~(peb | done)
+            while x:
+                v = (x & -x).bit_length() - 1
+                x &= x - 1
+                w2 = w | 1 << v
+                yield turn_all(w2, b) + (done,) if auto else (w2, b, done)
+        if not auto:
+            x = w
+            while x:
+                v = (x & -x).bit_length() - 1
+                x &= x - 1
+                if pred[v] & ~peb == 0:
+                    yield (w & ~(1 << v), b | 1 << v, done)
+        x = b
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            yield (w, b & ~(1 << v), done | 1 << v)
+
+    return _search((0, 0, 0), moves, (0, 0, full))
+
+
+def progressive_black_within(d, k):
+    """KP p. 205-206, progressive: a pebble may be placed on a vertex only if
+    all its immediate predecessors are pebbled, removed at any time, and each
+    vertex is pebbled exactly once. Position `(pebbled, done)`."""
+    n, pred = d
+    full = (1 << n) - 1
+
+    def moves(s):
+        b, done = s
+        if popcount(b) < k:
+            x = full & ~(b | done)
+            while x:
+                v = (x & -x).bit_length() - 1
+                x &= x - 1
+                if pred[v] & ~b == 0:
+                    yield (b | 1 << v, done)
+        x = b
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            yield (b & ~(1 << v), done | 1 << v)
+
+    return _search((0, 0), moves, (0, full))
+
+
+def unrestricted_bw_within(d, k):
+    """Lengauer's BWP (p. 466) with rule (iii), "at least once": a white pebble
+    on any pebble-free vertex, including one pebbled before. Position
+    `(white, black, received)`; the game ends pebble-free with every vertex
+    received, and since it ends pebble-free every received pebble was lost."""
+    n, pred = d
+    full = (1 << n) - 1
+
+    def moves(s):
+        w, b, rec = s
+        peb = w | b
+        if popcount(peb) < k:
+            x = full & ~peb
+            while x:
+                v = (x & -x).bit_length() - 1
+                x &= x - 1
+                yield (w | 1 << v, b, rec | 1 << v)
+        x = w
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            if pred[v] & ~peb == 0:
+                yield (w & ~(1 << v), b | 1 << v, rec)
+        x = b
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            yield (w, b & ~(1 << v), rec)
+
+    return _search((0, 0, 0), moves, (0, 0, full))
+
+
+def unrestricted_black_within(d, k):
+    """KP's black pebble game (p. 205), repebbling allowed."""
+    n, pred = d
+    full = (1 << n) - 1
+
+    def moves(s):
+        b, rec = s
+        if popcount(b) < k:
+            x = full & ~b
+            while x:
+                v = (x & -x).bit_length() - 1
+                x &= x - 1
+                if pred[v] & ~b == 0:
+                    yield (b | 1 << v, rec | 1 << v)
+        x = b
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            yield (b & ~(1 << v), rec)
+
+    return _search((0, 0), moves, (0, full))
+
+
+def _demand(d, within, lo=1):
+    """Least `k >= lo` with `within(d, k)`; 0 on the empty dag (KP's demand;
+    Lengauer's positive-K number is `max(1, .)`)."""
+    n, _ = d
+    if n == 0:
+        return 0
+    for k in range(lo, n + 1):
+        if within(d, k):
+            return k
+    raise AssertionError("n pebbles always suffice")
+
+
+def pbw(d, rules="kp", lo=1):
+    return _demand(d, lambda d, k: progressive_bw_within(d, k, rules), lo)
+
+
+def pb(d, lo=1):
+    return _demand(d, progressive_black_within, lo)
+
+
+def bw_unrestricted(d, lo=1):
+    return _demand(d, unrestricted_bw_within, lo)
+
+
+def black_unrestricted(d, lo=1):
+    return _demand(d, unrestricted_black_within, lo)
+
+
+def mpb_mpbw(g):
+    """KP p. 213: the least progressive black and black-white demand over all
+    directives of `g`."""
+    ds = acyclic_orientations(g)
+    return min(pb(d) for d in ds), min(pbw(d) for d in ds)
+
+
+def is_chordal(g):
+    """Every cycle of length >= 4 has a chord: repeatedly delete a simplicial
+    vertex (its neighbourhood a clique)."""
+    n, adj = g
+    alive = (1 << n) - 1
+    while alive:
+        for v in range(n):
+            if alive >> v & 1:
+                nb = adj[v] & alive
+                ok = True
+                x = nb
+                while x and ok:
+                    u = (x & -x).bit_length() - 1
+                    x &= x - 1
+                    if nb & ~adj[u] & ~(1 << u):
+                        ok = False
+                if ok:
+                    alive &= ~(1 << v)
+                    break
+        else:
+            return False
+    return True
+
+
+def repebble_play_lemma(d):
+    """KP's recontamination claim (P.3, 'On the proof'): in every position of
+    a progressive black-white play (Lengauer's rules, no budget) from which
+    the play can still be completed, a vertex that has lost its pebble has
+    every neighbour (predecessor or successor) already pebbled or done.
+    Returns the number of such positions checked, or raises on a violation."""
+    n, pred = d
+    full = (1 << n) - 1
+    adj = underlying(d)[1]
+    # forward: all reachable positions and arcs
+    start = (0, 0, 0)
+    succ = {}
+    stack = [start]
+    succ[start] = None
+    order = []
+    while stack:
+        s = stack.pop()
+        order.append(s)
+        w, b, done = s
+        peb = w | b
+        out = []
+        x = full & ~(peb | done)
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            out.append((w | 1 << v, b, done))
+        x = w
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            if pred[v] & ~peb == 0:
+                out.append((w & ~(1 << v), b | 1 << v, done))
+        x = b
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            out.append((w, b & ~(1 << v), done | 1 << v))
+        succ[s] = out
+        for t in out:
+            if t not in succ:
+                succ[t] = None
+                stack.append(t)
+    rev = {}
+    for s, out in succ.items():
+        for t in out or ():
+            rev.setdefault(t, []).append(s)
+    final = (0, 0, full)
+    live = {final}
+    stack = [final]
+    while stack:
+        t = stack.pop()
+        for s in rev.get(t, ()):
+            if s not in live:
+                live.add(s)
+                stack.append(s)
+    for w, b, done in live:
+        rec = w | b | done
+        x = done
+        while x:
+            v = (x & -x).bit_length() - 1
+            x &= x - 1
+            if adj[v] & ~rec:
+                raise AssertionError(("lemma fails", d, (w, b, done)))
+    return len(live)
+
+
+def ternary_tree(h):
+    """KP Prop. 3.2's complete ternary tree of height `h`, directed from the
+    root (vertex 0) towards the leaves; vertex i's children are 3i+1..3i+3."""
+    n = (3 ** (h + 1) - 1) // 2
+    return dag(n, [((c - 1) // 3, c) for c in range(1, n)])
+
+
+def rooted_trees(n):
+    """Every tree on `n` vertices up to isomorphism, with every root, as
+    `(in_tree, out_tree)` pairs: arcs towards and away from the root."""
+    import networkx as nx
+    out = []
+    trees = [nx.empty_graph(1)] if n == 1 else list(nx.nonisomorphic_trees(n))
+    for t in trees:
+        for r in range(n):
+            parent = dict(nx.bfs_predecessors(t, r))
+            arcs = [(parent[c], c) for c in parent]
+            out.append((dag(n, [(v, u) for u, v in arcs]), dag(n, arcs)))
+    return out
+
+
+def dag_row(d, rules_both=True, matrix=True):
+    """Every pebbling quantity of P.5 statements 1-3 on one dag."""
+    n, pred = d
+    du = lengauer_u(d)
+    r = dict(n=n, arcs=arcs_of(d), m=len(arcs_of(d)))
+    r["pbw_kp"] = pbw(d, "kp")
+    r["pbw_lengauer"] = pbw(d, "lengauer") if rules_both else None
+    r["pb"] = pb(d)
+    r["vs_du"] = vs_dp(du)
+    r["vsg_du"] = vsg(du) if n <= 6 else None
+    r["Z"] = mosp_value(pebble_matrix(d)) if matrix and n else None
+    r["mosp_graph_is_du"] = row_graph(pebble_matrix(d)) == du if n else True
+    return r
+
+
+def dag_checks(r):
+    out = []
+    n, m = r["n"], r["m"]
+
+    def chk(name, ok, applies=True):
+        if applies:
+            out.append((name, bool(ok)))
+
+    chk("P1 Lengauer rules = KP rules (pbw)", r["pbw_kp"] == r["pbw_lengauer"],
+        r["pbw_lengauer"] is not None)
+    chk("P1 pbw <= pb", r["pbw_kp"] <= r["pb"])
+    chk("P2 pbw(D) = vs(D_u) + 1 (nonempty)", r["pbw_kp"] == r["vs_du"] + 1, n >= 1)
+    # instance forms, K = 1 .. n + 1: (D, K) positive iff pbw <= K
+    if n >= 1:
+        vs_form = all((r["pbw_kp"] <= K) == (r["vs_du"] <= K - 1) for K in range(1, n + 2))
+        chk("P2 instance form with vs holds for every K >= 1", vs_form)
+        if r["vsg_du"] is not None:
+            fails = [K for K in range(1, n + 2)
+                     if (r["pbw_kp"] <= K) != (K - 1 >= 1 and r["vsg_du"] <= K - 1)]
+            chk("P2 instance form with VSG fails exactly at K = 1 on edgeless D",
+                fails == ([1] if m == 0 else []))
+            chk("P2 pbw = VSG(D_u) + 1 (D with an arc)", r["pbw_kp"] == r["vsg_du"] + 1, m > 0)
+    chk("P3 pbw(D) = Z(M_D) (nonempty)", r["pbw_kp"] == r["Z"], n >= 1 and r["Z"] is not None)
+    chk("P3 the MOSP graph of M_D is D_u", r["mosp_graph_is_du"])
+    return out
+
+
+def gd_row(g, exact_unrestricted=True):
+    """P.5 statements 4 and 7 on one graph: pbw(G_d) against vs(G), and the
+    unrestricted games on G_d."""
+    n, _ = g
+    gd = lengauer_d(g)
+    m = len(edges_of(g))
+    r = dict(n=n, m=m, edges=edges_of(g))
+    r["vs"] = vs_dp(g)
+    r["vsg"] = vsg(g) if n <= 7 else None
+    r["pbw_gd"] = pbw(gd, "kp", lo=max(1, r["vs"] + 1))
+    # the lo shortcut is only sound if pbw > vs + 1 - 1; check it explicitly
+    r["pbw_gd_below"] = progressive_bw_within(gd, r["pbw_gd"] - 1, "kp") if r["pbw_gd"] > 1 else False
+    r["du_is_triangle"] = lengauer_u(gd) == lengauer_du(g)
+    r["bw_gd"] = bw_unrestricted(gd) if exact_unrestricted else None
+    r["b_gd"] = black_unrestricted(gd) if exact_unrestricted else None
+    return r
+
+
+def gd_checks(r):
+    out = []
+    n, m = r["n"], r["m"]
+
+    def chk(name, ok, applies=True):
+        if applies:
+            out.append((name, bool(ok)))
+
+    chk("P4 pbw(G_d) is exact (not within one pebble less)", not r["pbw_gd_below"])
+    chk("P4 (G_d)_u = G_du (Lengauer Thm 4's triangle graph)", r["du_is_triangle"])
+    chk("P4 pbw(G_d) = vs(G) + 2 (G with an edge)", r["pbw_gd"] == r["vs"] + 2, m > 0)
+    chk("P4 pbw(G_d) = 1 (G edgeless, nonempty)", r["pbw_gd"] == 1, m == 0 and n >= 1)
+    chk("P4 vs(G) <= K iff pbw(G_d) <= K + 2, every K >= 0",
+        all((r["vs"] <= K) == (r["pbw_gd"] <= K + 2) for K in range(0, n + m + 2)), n >= 1)
+    if r["vsg"] is not None:
+        chk("P4 Thm 3 as stated (VSG, K >= 1)",
+            all((K >= max(1, r["vsg"])) == (r["pbw_gd"] <= K + 2) for K in range(1, n + m + 2)), n >= 1)
+    if r["bw_gd"] is not None:
+        chk("P7 unrestricted BWP on G_d <= 3", r["bw_gd"] <= 3, n >= 1)
+        chk("P7 black pebble game on G_d <= 3", r["b_gd"] <= 3, n >= 1)
+    return out
+
+
+def directive_row(g):
+    """P.5 statements 5 and 6 on one undirected graph."""
+    n, _ = g
+    ds = acyclic_orientations(g)
+    r = dict(n=n, m=len(edges_of(g)), edges=edges_of(g), directives=len(ds))
+    r["vs"] = vs_dp(g)
+    r["ns"] = node_search(g) if n <= 6 else None
+    r["mpb"] = min(pb(d) for d in ds)
+    r["mpbw"] = min(pbw(d) for d in ds)
+    r["chordal"] = is_chordal(g)
+    r["is_some_du"] = any(lengauer_u(d) == g for d in ds)
+    r["min_vs_du"] = min(vs_dp(lengauer_u(d)) for d in ds)
+    best = min(itertools.permutations(range(n)), key=lambda p: vs_of_layout(g, p))
+    lay = orient(g, best)
+    r["vs_du_layout"] = vs_dp(lengauer_u(lay))
+    r["pb_layout"] = pb(lay)
+    return r
+
+
+def directive_checks(r):
+    out = []
+    n, m = r["n"], r["m"]
+
+    def chk(name, ok, applies=True):
+        if applies:
+            out.append((name, bool(ok)))
+
+    chk("P5 mpb = vs + 1 (nonempty)", r["mpb"] == r["vs"] + 1, n >= 1)
+    chk("P5 mpbw = vs + 1 (nonempty)", r["mpbw"] == r["vs"] + 1, n >= 1)
+    if r["ns"] is not None:
+        chk("P5 mpb = ns = mpbw (KP Thm 3.1; G with an edge)", r["mpb"] == r["ns"] == r["mpbw"], m > 0)
+        chk("P5 ns = 0 != mpb = 1 (edgeless, nonempty)", r["ns"] == 0 and r["mpb"] == 1, m == 0 and n >= 1)
+    chk("P5 the optimal-layout directive attains mpb", r["pb_layout"] == r["mpb"], n >= 1)
+    chk("P6 G is some D_u iff G is chordal", r["is_some_du"] == r["chordal"])
+    chk("P6 min over directives of vs(D_u) = vs(G)", r["min_vs_du"] == r["vs"])
+    chk("P6 the optimal-layout directive attains vs(D_u) = vs(G)", r["vs_du_layout"] == r["vs"])
+    return out
+
+
+def tree_row(pair):
+    """P.5 statement 8 on one rooted tree, in both directions."""
+    tin, tout = pair
+    r = dict(n=tin[0], arcs_in=arcs_of(tin))
+    for name, d in (("in", tin), ("out", tout)):
+        r[f"pbw_{name}"] = pbw(d, "kp")
+        r[f"bw_{name}"] = bw_unrestricted(d)
+        r[f"pb_{name}"] = pb(d)
+        r[f"b_{name}"] = black_unrestricted(d)
+    return r
+
+
+def tree_checks(r):
+    return [("P8 in-trees: BWP = PBWP (Lengauer p. 467)", r["bw_in"] == r["pbw_in"]),
+            ("P8 in-trees: black game, repebbling = progressive", r["b_in"] == r["pb_in"])]
+
+
+def _all_dags(n):
+    """Every dag on `0..n-1` with arcs `i -> j` only for `i < j`: every dag on
+    n vertices up to isomorphism, with repetition."""
+    pairs = list(itertools.combinations(range(n), 2))
+    for bits in range(1 << len(pairs)):
+        pred = [0] * n
+        for i, (u, v) in enumerate(pairs):
+            if bits >> i & 1:
+                pred[v] |= 1 << u
+        yield (n, tuple(pred))
+
+
+def _dag_task(d):
+    return dag_row(d)
+
+
+def _gd_task(g):
+    return gd_row(g)
+
+
+def run_pebbling(quick=False, workers=None, seed=20260930, out=PEBBLING_REPORT):
+    """Every statement of P.5, exhaustively on small inputs."""
+    from networkx.generators.atlas import graph_atlas_g
+
+    t0 = time.time()
+    summary, counterexamples, stats = {}, {}, {}
+
+    def record(checks, witness):
+        for name, ok in checks:
+            s = summary.setdefault(name, [0, 0])
+            s[0] += 1
+            if not ok:
+                s[1] += 1
+                if len(counterexamples.setdefault(name, [])) < 5:
+                    counterexamples[name].append(witness)
+
+    dag_max = 5 if quick else 6
+    dag_sample = (7, 200 if quick else 20000)  # random dags on 7 vertices
+    gd_bound = 7 if quick else 14
+    atlas_dir = 5 if quick else 7
+    tree_max = 6 if quick else 11
+    rng = random.Random(seed)
+    with Pool(workers) as pool:
+        # statements 1-3: every dag i -> j (i < j) on <= dag_max vertices
+        t = time.time()
+        dags = [d for n in range(0, dag_max + 1) for d in _all_dags(n)]
+        stats["dags_exhaustive"] = len(dags)
+        n7, count = dag_sample
+        pairs7 = list(itertools.combinations(range(n7), 2))
+        for _ in range(count):
+            p = rng.choice([0.2, 0.35, 0.5, 0.65, 0.8])
+            dags.append(dag(n7, [e for e in pairs7 if rng.random() < p]))
+        for r in pool.imap_unordered(_dag_task, dags, chunksize=64):
+            record(dag_checks(r), {"n": r["n"], "arcs": r["arcs"]})
+        stats["dags"] = len(dags)
+        stats["dag_seconds"] = round(time.time() - t, 1)
+        # statements 4 and 7: G_d for every atlas graph with |V| + |E| <= gd_bound
+        t = time.time()
+        gs = [from_nx(h) for h in graph_atlas_g()
+              if h.number_of_nodes() >= 1 and h.number_of_nodes() + h.number_of_edges() <= gd_bound]
+        for r in pool.imap_unordered(_gd_task, gs, chunksize=1):
+            record(gd_checks(r), {"n": r["n"], "edges": r["edges"]})
+        stats["gd_graphs"] = len(gs)
+        stats["gd_bound_V_plus_E"] = gd_bound
+        stats["gd_seconds"] = round(time.time() - t, 1)
+        # statements 5 and 6: every atlas graph on 1..atlas_dir vertices, all directives
+        t = time.time()
+        gs = [from_nx(h) for h in graph_atlas_g() if 1 <= h.number_of_nodes() <= atlas_dir]
+        chordal_mismatch = 0
+        import networkx as nx
+        for h, r in zip((h for h in graph_atlas_g() if 1 <= h.number_of_nodes() <= atlas_dir),
+                        pool.imap(directive_row, gs, chunksize=1)):
+            record(directive_checks(r), {"n": r["n"], "edges": r["edges"]})
+            chordal_mismatch += r["chordal"] != nx.is_chordal(h)
+        stats["directive_graphs"] = len(gs)
+        stats["is_chordal_vs_networkx_mismatches"] = chordal_mismatch
+        stats["directive_seconds"] = round(time.time() - t, 1)
+        # statement 8: every rooted tree on <= tree_max vertices, both directions
+        t = time.time()
+        pairs = [p for n in range(1, tree_max + 1) for p in rooted_trees(n)]
+        out_gap = {}
+        out_examples = []
+        for r in pool.imap_unordered(tree_row, pairs, chunksize=4):
+            record(tree_checks(r), {"n": r["n"], "arcs_in": r["arcs_in"]})
+            gap = r["pbw_out"] - r["bw_out"]
+            out_gap[gap] = out_gap.get(gap, 0) + 1
+            if gap > 0 and len(out_examples) < 3:
+                out_examples.append({k: r[k] for k in ("n", "arcs_in", "pbw_out", "bw_out", "pb_out", "b_out")})
+        stats["rooted_trees"] = len(pairs)
+        stats["tree_seconds"] = round(time.time() - t, 1)
+
+    # the recontamination lemma of P.3, on every dag of <= 4 vertices (all plays)
+    t = time.time()
+    lemma_positions = 0
+    lemma_max = 4 if quick else 5
+    for n in range(1, lemma_max + 1):
+        for d in _all_dags(n):
+            lemma_positions += repebble_play_lemma(d)
+    stats["lemma_dags_max_n"] = lemma_max
+    stats["lemma_live_positions"] = lemma_positions
+    stats["lemma_seconds"] = round(time.time() - t, 1)
+
+    # named instances
+    named = {}
+    for name, g in (("K2", complete_graph(2)), ("K3", complete_graph(3)), ("K4", complete_graph(4)),
+                    ("P4", path_graph(4)), ("C4", cycle_graph(4)), ("K1,3", star_graph(3))):
+        if quick and g[0] + len(edges_of(g)) > 7:
+            continue
+        gd = lengauer_d(g)
+        named[f"G_d of {name}"] = {"|V_d|": gd[0], "vs(G)": vs_dp(g), "pbw(G_d)": pbw(gd),
+                                   "bw(G_d)": bw_unrestricted(gd), "b(G_d)": black_unrestricted(gd),
+                                   "pb(G_d)": pb(gd)}
+    heights = (1,) if quick else (1, 2)
+    for h in heights:
+        tt = ternary_tree(h)
+        named[f"ternary out-tree, height {h}"] = {
+            "n": tt[0], "pbw": pbw(tt), "pb": pb(tt), "bw": bw_unrestricted(tt),
+            "b": black_unrestricted(tt), "pw(tree)": vs_dp(underlying(tt)) if tt[0] <= 13 else None}
+        rev = dag(tt[0], [(v, u) for u, v in arcs_of(tt)])
+        named[f"ternary in-tree, height {h}"] = {
+            "n": rev[0], "pbw": pbw(rev), "pb": pb(rev), "bw": bw_unrestricted(rev),
+            "b": black_unrestricted(rev)}
+    star_in = dag(5, [(i, 0) for i in range(1, 5)])
+    named["K1,4, every edge to the centre (KP p. 214)"] = {
+        "pbw": pbw(star_in), "pb": pb(star_in), "bw": bw_unrestricted(star_in),
+        "b": black_unrestricted(star_in), "mpb": mpb_mpbw(star_graph(4))[0]}
+
+    report = {
+        "stats": stats,
+        "summary": {k: {"checked": v[0], "failed": v[1]} for k, v in sorted(summary.items())},
+        "counterexamples": counterexamples,
+        "out_trees_by_pbw_minus_bw": {str(k): v for k, v in sorted(out_gap.items())},
+        "out_tree_examples": out_examples,
+        "named": named,
+        "seconds": round(time.time() - t0, 1), "quick": quick, "seed": seed,
+    }
+    if out is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1, default=list))
+    return report
+
+
+# ----------------------------------------------------------------------------
 # The checks
 # ----------------------------------------------------------------------------
 
@@ -1319,8 +1996,21 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--quick", action="store_true")
     ap.add_argument("--workers", type=int, default=None)
-    ap.add_argument("--out", type=Path, default=REPORT)
+    ap.add_argument("--out", type=Path, default=None)
+    ap.add_argument("--pebbling", action="store_true",
+                    help="run only the loop0006 pebbling checks (P.5), writing pebbling_check.json")
     a = ap.parse_args(argv)
+    if a.pebbling:
+        rep = run_pebbling(quick=a.quick, workers=a.workers, out=a.out or PEBBLING_REPORT)
+        print(json.dumps(rep["stats"], indent=1))
+        width = max(len(k) for k in rep["summary"])
+        for k, v in rep["summary"].items():
+            print(f"{k:<{width}}  checked {v['checked']:>6}  failed {v['failed']:>6}")
+        for key in ("out_trees_by_pbw_minus_bw", "named", "counterexamples"):
+            print(key, json.dumps(rep[key]))
+        print(f"{rep['seconds']} s")
+        return 0
+    a.out = a.out or REPORT
     rep = run(quick=a.quick, workers=a.workers, out=a.out)
     print(json.dumps(rep["stats"], indent=1))
     width = max(len(k) for k in rep["summary"])

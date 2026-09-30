@@ -15,7 +15,7 @@ assembly and a reserve.
   exactly, on which graph, with which offset, and whether pebbling belongs in
   the complex as an exact member. No Lean.
 
-- [ ] **02 Pebbling brute force.** Extend `paper2/complex_check.py` with an
+- [x] **02 Pebbling brute force.** Extend `paper2/complex_check.py` with an
   exhaustive progressive black-white pebbling solver for small dags, from the
   source's definition, and check every relation item 01 wrote on all dags
   (and all G_d, G_u constructions) small enough, reporting agreement or
