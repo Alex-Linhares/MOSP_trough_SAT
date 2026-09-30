@@ -1397,6 +1397,225 @@ def run_subset(workers=None, out=None, quick=False, n_random=None):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 10: Search/BetterMove.lean
+# ----------------------------------------------------------------------------
+
+# (masks, S, r, q, k) of `betterMove_counterexample`: `cexGraph` at the root, the code drops 2
+# citing 0, and a solution exists after 2 but not after 0.
+BETTER_CEX = (DEFINITE_CEX[0][0], 0, 2, 0, 6)
+# `bugA_counterexample`: the old close count's premise holds, the corrected one does not.
+BUG_A_CEX = ([3375, 1051, 1165, 15, 18, 289, 704, 1732, 3361, 704, 3463, 3329], 0, 6, 4, 4)
+# `bugB_counterexample`: (masks, S, k); the old order keeps {6}, the fixed order {3, 6}.
+BUG_B_CEX = ([139, 59, 12, 15, 178, 242, 224, 241], 0b100, 4)
+
+
+def b_is_better(masks, O, S, k, r, q, old=False):
+    """`IsBetter` (or `IsBetterOld`): premise 3 and open' <= close' after S + r."""
+    Sr = S | 1 << r
+    Or = O[Sr]
+    if (O[Sr | 1 << q] & ~Sr).bit_count() > k:
+        return False
+    own = masks[q] & ~Or
+    close = 0
+    for d in range(len(masks)):
+        if Sr >> d & 1:
+            continue
+        left = masks[d] & ~Or
+        if (left or old) and left & ~own == 0:
+            close += 1
+    return own.bit_count() <= close
+
+
+def b_is_repaired(masks, O, CL, S, k, r, q):
+    """`IsRepairedBetter`: premise 3 and q hereditarily definite at cl(S + r)."""
+    Sr = S | 1 << r
+    return (O[Sr | 1 << q] & ~Sr).bit_count() <= k and d_hereditary(masks, O, CL[Sr], q)
+
+
+def b_within(L, W, q):
+    return L == 0 or sum(1 for w in W if w < q) < L
+
+
+def b_better_filter(W, cite):
+    """`betterFilterBy`: r goes if an earlier q in W is cited."""
+    return [r for r in W if not any(q < r and cite(W, r, q) for q in W)]
+
+
+def b_full(masks, O, S, P, D, cite):
+    """`fullFilter`: definite -> subset -> better."""
+    F = [q for q in P if D(q)]
+    if F:
+        return [min(F)]
+    return b_better_filter(s_subset_filter(masks, O, S, P), cite)
+
+
+def b_old_order(masks, O, S, P, D, cite):
+    """`oldOrderFilter`: definite, else the better move over P, then the subset rule."""
+    F = [q for q in P if D(q)]
+    if F:
+        return [min(F)]
+    return s_subset_filter(masks, O, S, b_better_filter(P, cite))
+
+
+def check_better_graph(masks, ks=None, all_sets=False, seed=0, limits=(0, 1, 2)):
+    """Every statement of `Search/BetterMove.lean` on one graph: pair statements at every set
+    (`all_sets`) or at the free-closed states with the invariant; node statements at the
+    free-closed states with the invariant and a solution, over families of refuted old moves."""
+    n = len(masks)
+    full = (1 << n) - 1
+    O, CL = s_tables(masks)
+    t = Counter()
+    rng = random.Random(seed * 104729 + sum(masks))
+    fc = [S for S in range(full + 1) if CL[S] == S]
+    for k in (range(0, n + 1) if ks is None else ks):
+        SS = s_searchsol_table(masks, k, O, CL)
+        sets = range(full + 1) if all_sets else [S for S in fc if (O[S] & ~S).bit_count() <= k]
+        for T in sets:
+            outside = [c for c in range(n) if not T >> c & 1]
+            for r in outside:
+                cost_r = (O[T | 1 << r] & ~T).bit_count()
+                for q in outside:
+                    if q == r:
+                        continue
+                    t["pairs"] += 1
+                    code = b_is_better(masks, O, T, k, r, q)
+                    p3 = (O[T | 1 << r | 1 << q] & ~(T | 1 << r)).bit_count() <= k
+                    op, cl_ = d_counts(masks, O, CL[T | 1 << r], q)
+                    if code != (p3 and op <= cl_):                    # isBetter_iff
+                        t["fail_isBetter_iff"] += 1
+                    rep = b_is_repaired(masks, O, CL, T, k, r, q)
+                    if rep and not code:                              # IsRepairedBetter.isBetter
+                        t["fail_repaired_implies_code"] += 1
+                    if cost_r <= k and SS[CL[T | 1 << r]]:
+                        if rep:                                       # the repaired rule is sound
+                            t["repaired_applications"] += 1
+                            if not SS[CL[T | 1 << q]]:
+                                t["fail_repaired_sound"] += 1
+                        if code:
+                            t["code_applications"] += 1
+                            if not SS[CL[T | 1 << q]]:
+                                t["code_pair_false"] += 1
+                        if b_is_better(masks, O, T, k, r, q, old=True) and not SS[CL[T | 1 << q]]:
+                            t["bugA_pair_false"] += 1
+        for S in fc:
+            if S == full or (O[S] & ~S).bit_count() > k or not SS[S]:
+                continue
+            R = [c for c in range(n) if not S >> c & 1]
+            refuted = sum(1 << c for c in R if not SS[CL[S | 1 << c]])
+            her = {q: d_hereditary(masks, O, S, q) for q in R}
+            code_def = {q: d_counts(masks, O, S, q)[0] <= d_counts(masks, O, S, q)[1] for q in R}
+            for Q in q_family(refuted, rng):
+                P = s_playable(masks, O, S, k, [c for c in R if not Q >> c & 1])
+                for L in limits:
+                    t["nodes"] += 1
+                    code_cite = (lambda W, r, q, L=L: b_within(L, W, q)
+                                 and b_is_better(masks, O, S, k, r, q))
+                    rep_cite = (lambda W, r, q, L=L: b_within(L, W, q)
+                                and b_is_repaired(masks, O, CL, S, k, r, q))
+                    mine = b_full(masks, O, S, P, lambda q: code_def[q], code_cite)
+                    old = b_old_order(masks, O, S, P, lambda q: code_def[q], code_cite)
+                    for variant, lean in (("fixed", mine), ("old_order", old)):
+                        cfg = {"definite": True, "subset": True, "better": True, "limit": L,
+                               "variant": variant, "old_move": True}
+                        _, Lp, _, _, _ = node_filter(masks, full, S, Q, k, cfg)
+                        if sorted(c for _, c in Lp) != sorted(lean):  # Lean filter = item 06 port
+                            t[f"fail_port_{variant}"] += 1
+                    rep = b_full(masks, O, S, P, lambda q: her[q], rep_cite)
+                    if not any(SS[CL[S | 1 << c]] for c in rep):      # repairedFullFilter_sound
+                        t["fail_repaired_node"] += 1
+                    if not any(SS[CL[S | 1 << c]] for c in mine):
+                        definite = any(code_def[q] for q in P)
+                        t["code_loses_definite" if definite else "code_loses_better"] += 1
+                    if not any(SS[CL[S | 1 << c]] for c in old):
+                        t["old_order_loses"] += 1
+    return t
+
+
+def better_augment(rng):
+    """A definite-move counterexample graph, up to four extra vertices and two edge flips,
+    relabelled: where the better move's false links live."""
+    base = rng.choice([m for m, _, _, _ in DEFINITE_CEX])
+    n0 = len(base)
+    extra = rng.randint(0, 3 if n0 == 14 else 1)
+    n = n0 + extra
+    ms = list(base) + [1 << v for v in range(n0, n)]
+    for v in range(n0, n):
+        for u in rng.sample(range(v), rng.randint(1, 4)):
+            ms[v] |= 1 << u
+            ms[u] |= 1 << v
+    for _ in range(rng.randint(0, 2)):
+        u, v = rng.sample(range(n), 2)
+        ms[u] ^= 1 << v
+        ms[v] ^= 1 << u
+    perm = list(range(n))
+    rng.shuffle(perm)
+    return relabel(ms, perm)
+
+
+def _better_job(args):
+    masks, all_sets = args
+    return check_better_graph(masks, all_sets=all_sets)
+
+
+def _better_aug_job(args):
+    seed, count = args
+    rng = random.Random(seed)
+    t = Counter()
+    for _ in range(count):
+        masks = better_augment(rng)
+        O, CL = s_tables(masks)
+        opt = next(k for k in range(len(masks) + 1) if s_searchsol_table(masks, k, O, CL)[0])
+        t.update(check_better_graph(masks, ks=[max(0, opt - 1), opt, opt + 1], seed=seed,
+                                    limits=(0,)))
+    return t
+
+
+def run_better(workers=None, out=None, quick=False, n_random=None):
+    """Item 10's check: every labelled graph on 1-5 vertices at every set, on 6 and the atlas
+    on 7 at the search's states, random sparse and cover graphs at 10-13, augmented
+    definite-move counterexamples at 14-17 at k in {opt-1, opt, opt+1}, and the three pinned
+    Lean counterexamples."""
+    started = time.time()
+    small = [(m, n <= 5) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        small += [(m, False) for m in atlas_graphs(7)]
+    rng = random.Random(10)
+    count = (10 if quick else 1500) if n_random is None else n_random
+    rand = []
+    for _ in range(count):
+        n = rng.randint(10, 11 if quick else 13)
+        rand.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False))
+    work = small + rand
+    aug = [] if quick else [(2000 + i, 5) for i in range(400)]
+    by = {"small": Counter(), "random": Counter(), "augmented": Counter()}
+    with Pool(workers) as pool:
+        for t in pool.imap(_better_job, small, chunksize=8):
+            by["small"].update(t)
+        for t in pool.imap_unordered(_better_job, rand, chunksize=4):
+            by["random"].update(t)
+        for t in pool.imap_unordered(_better_aug_job, aug):
+            by["augmented"].update(t)
+    total = Counter()
+    for t in by.values():
+        total.update(t)
+    pinned = {}
+    for name, (m, S, r, q, k) in (("better_cex", BETTER_CEX), ("bug_a", BUG_A_CEX)):
+        pinned[name] = dict(check_better_graph(m, ks=[k], limits=(0,)))
+    pinned["bug_b"] = dict(check_better_graph(BUG_B_CEX[0], ks=[BUG_B_CEX[2]], limits=(0,)))
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(work),
+              "augmented_graphs": sum(c for _, c in aug), "quick": quick,
+              "tally": dict(total), "tally_by_family": {k: dict(v) for k, v in by.items()},
+              "pinned_tallies": pinned,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))
+              + sum(v for p in pinned.values() for k, v in p.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_better_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
@@ -1408,7 +1627,13 @@ def main():
                     help="item 08: check Search/DefiniteMove.lean and the counterexamples")
     ap.add_argument("--subset", action="store_true",
                     help="item 09: check Search/SubsetRule.lean")
+    ap.add_argument("--better", action="store_true",
+                    help="item 10: check Search/BetterMove.lean")
     args = ap.parse_args()
+    if args.better:
+        print(json.dumps(run_better(workers=args.workers, quick=args.quick,
+                                    n_random=args.random), indent=1))
+        return
     if args.subset:
         print(json.dumps(run_subset(workers=args.workers, quick=args.quick,
                                     n_random=args.random), indent=1))

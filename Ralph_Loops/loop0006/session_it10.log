@@ -1,0 +1,256 @@
+# session it10 started 2026-10-01 00:23:46
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A12 "10 Better move" Ralph_Loops/loop0006/iterations.md; ls lean/MOSPFormalization/Search/; wc -l lean/MOSPFormalization/Search/*.lean paper2/search_ch
+  > $ grep -n "^#" paper2/search_soundness.md | head -60
+  > $ sed -n 1,200p lean/MOSPFormalization/Search/Basic.lean
+  > $ grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^abbrev\|^inductive\|^structure" lean/MOSPFormalization/Search/*.lean
+  > $ sed -n 450,600p paper2/search_soundness.md
+  > $ sed -n 1,140p lean/MOSPFormalization/Search/DefiniteMove.lean
+  > $ sed -n 140,422p lean/MOSPFormalization/Search/DefiniteMove.lean
+  > $ sed -n 1,150p lean/MOSPFormalization/Search/SubsetRule.lean | sed -n 60,150p; sed -n 250,391p lean/MOSPFormalization/Search/SubsetRule.lean
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " paper2/search_check.py | head -80; ls paper2/definite_hunt*
+
+Reading the existing tooling; next I test whether the corrected better move inherits the definite move's flaw, using the 14-customer counterexample.
+  > $ sed -n 155,350p paper2/search_check.py; sed -n 935,1000p paper2/search_check.py
+  > $ cat > /tmp/bm1.py <<'EOF'
+from paper2.search_check import *
+masks,S,q,k = DEFINITE_CEX[0]
+n=len(masks); full=(1<<n)-1
+M=Model(masks,k)
+print("sol root", M.sol(M
+  > $ sed -n 1,80p paper2/definite_hunt_gen.py; head -60 paper2/definite_hunt.c; sed -n 1340,1366p paper2/search_check.py
+  > $ sed -n 60,140p paper2/definite_hunt.c
+  > $ cat > /tmp/bm2.py <<'EOF'
+from paper2.search_check import *
+masks,S,q,k = DEFINITE_CEX[0]
+n=len(masks); full=(1<<n)-1
+M=Model(masks,k)
+# reachable family from {
+  > Write /home/al/dev/MOSP/paper2/better_hunt.c
+
+Found that the "corrected" better move's own conclusion fails on the 14-customer definite-move graph. Now running a C hunter to see whether it can also lose the last solution at a node.
+  > $ gcc -O2 -o /tmp/better_hunt paper2/better_hunt.c 2>&1 | head; echo "14 2201 102 30 13 21 6690 8514 9857 3904 4000 16256 3873 13344 13504" | /tmp/better_hunt | t
+  > $ cat > /tmp/relabel.py <<'EOF'
+import sys,random
+rng=random.Random(int(sys.argv[1]))
+for line in sys.stdin:
+    a=list(map(int,line.split())); n=a[0]; ms=a[1:]
+ 
+  > $ cat > /tmp/aug.py <<'EOF'
+import sys,random
+rng=random.Random(int(sys.argv[1])); cnt=int(sys.argv[2])
+base=[2201,102,30,13,21,6690,8514,9857,3904,4000,16256,387
+  > $ sed -i 's/^base=.*/BASES=[[2201,102,30,13,21,6690,8514,9857,3904,4000,16256,3873,13344,13504],[18459,103,286,13,21,60578,8770,60320,7044,20416,7712,44961,13568,
+  > $ grep -n "old_close\|BUG_A\|17 × 9\|17x9\|PINNED\|def pinned_instances" -A3 paper2/search_check.py | sed -n 1,60p; python3 -c "
+import json;d=json.load(open('pap
+  > $ sed -n 660,700p paper2/search_check.py; python3 -c "
+import json;d=json.load(open('paper2/data/search_check.json'));e=d['examples'];print(type(e)); 
+import iter
+
+Checking the small witnesses for the two old bug forms (Bug A close count, Bug B rule order) so they can go into Lean.
+  > $ cat > /tmp/gen_sparse.py <<'EOF'
+import sys,random
+from paper2.search_check import random_sparse, random_cover
+rng=random.Random(int(sys.argv[1])); cnt=int(sys.
+  > $ cat > /tmp/bA.py <<'EOF'
+from paper2.search_check import *
+from collections import deque
+masks=[3375,1051,1165,15,18,289,704,1732,3361,704,3463,3329]; k=4;S=0;r
+  > $ cat > /tmp/bB.py <<'EOF'
+from paper2.search_check import *
+from collections import deque
+masks=[139,59,12,15,178,242,224,241]; k=4; S=0b100
+n=len(masks); full=(
+
+Witnesses in hand (Bug A: 12 vertices, pair; Bug B: 8 vertices, node). Now writing `Search/BetterMove.lean`; first checking the helper signatures.
+  > $ sed -n 296,430p lean/MOSPFormalization/Search/Basic.lean | grep -v "^  " ; grep -rn "theorem sdiff_insert \|theorem sdiff_insert_of" lean/.lake/packages/mathlib
+  > $ sed -n 296,425p lean/MOSPFormalization/Search/Basic.lean | grep -A4 "^theorem solvable_of_solvable_insert\|^theorem solvable_cl_iff\|^theorem searchSol_cl_of_so
+  > $ cat > /tmp/fam.py <<'EOF'
+from paper2.search_check import *
+from collections import deque
+def fam(masks,k,start):
+  n=len(masks); full=(1<<n)-1; M=Model(masks,k
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/BetterMove.lean
+  > $ grep -n "Search" lean/MOSPFormalization.lean; grep -rn "theorem sdiff_nonempty" lean/.lake/packages/mathlib/Mathlib/Data/Finset/ | head -3
+  > $ sed -i '37a import MOSPFormalization.Search.BetterMove' lean/MOSPFormalization.lean && cd lean && time lake env lean MOSPFormalization/Search/BetterMove.lean 2>
+
+Build ran; fixing three small errors (a rewrite target, a union identity, a parse issue).
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/BetterMove.lean'
+s=open(p).read()
+s=s.replace("""    rw [Finset.sdiff_eq_empty_iff_subset.2 (mem_finished.1 hq)]
+ 
+  > $ time lake env lean MOSPFormalization/Search/BetterMove.lean 2>&1 | head -60
+
+The Lean file compiles cleanly on its own. Checking the background hunt for lost nodes.
+  > $ ls /tmp/bhunt/ | wc -l; cat /tmp/bhunt/*.out | grep -c PAIR; grep -h NODE /tmp/bhunt/*.out | head -3; grep -h "^graphs" /tmp/bhunt/*.out | wc -l; pgrep -x bette
+  > $ grep -h "^graphs" /tmp/bhunt/*.out | awk '{g+=$2;n+=$4;p+=$6;pb+=$8;nb+=$10} END{print g,n,p,pb,nb}'
+  > $ mkdir -p /tmp/bhunt2 && for s in $(seq 101 128); do (nohup sh -c "python3 /tmp/aug.py $s 400 | MODE=2 /tmp/better_hunt > /tmp/bhunt2/$s.out" >/dev/null 2>&1 &) 
+
+Background validation of the repaired premise is running. Meanwhile adding the `--better` brute-force section to `paper2/search_check.py`.
+  > $ cd /home/al/dev/MOSP && sed -n 1150,1431p paper2/search_check.py
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+anchor="def main():"
+new='''# --------------------------------------------------------------------
+  > $ time python3 -c "
+from paper2.search_check import *
+for name,(m,S,r,q,k) in (('cex',BETTER_CEX),('A',BUG_A_CEX)):
+    print(name, dict(check_better_graph(m,ks=[
+  > $ pgrep -x better_hunt | wc -l; grep -h "^graphs" /tmp/bhunt2/*.out | awk '{g+=$2;n+=$4;p+=$6;pb+=$8;nb+=$10} END{print g,n,p,pb,nb}'; grep -h "PAIR\|NODE" /tmp/b
+
+Repair hunt done: zero failures over 11,200 graphs. Launching the full Python check in the background.
+  > $ nohup python3 -m paper2.search_check --better --workers 30 > /tmp/better_full.log 2>&1 &
+echo $!
+  > $ tail -60 tests/test_search_check.py; grep -n "Search" paper2/axiom_check.lean | tail -15
+  > $ cat >> paper2/axiom_check.lean <<'EOF'
+
+-- loop0006 item 10: the better move (Search/BetterMove.lean)
+#print axioms MOSPFormalization.Search.isBetter_iff
+#print
+  > $ grep -n "sorry\|control\|import" paper2/axiom_check.lean | head; python3 -m pytest tests/test_search_check.py -q 2>&1 | tail -2
+  > $ sed -n 108,116p paper2/axiom_check.lean
+
+Moving my new axiom lines above the control so the control stays last.
+  > $ python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+ctrl="\n-- control: the baseline sorry, expected to show sorryAx\n#print axioms conjecture_sqrt_t
+
+Now running the full `lake build` and then the axiom check.
+  > $ cd /home/al/dev/MOSP/lean && time lake build 2>&1 | tail -5 && time lake env lean ../paper2/axiom_check.lean 2>&1 | tail -16
+
+Build passes and the axioms are the standard three. Now the documentation: `paper2/search_soundness.md`.
+  > $ cd /home/al/dev/MOSP && sed -n 1,71p paper2/search_soundness.md; sed -n 708,760p paper2/search_soundness.md
+  > $ sleep 60; cat /tmp/better_full.log | tail -5; ps -p 332596 -o etime= 2>/dev/null
+  > $ tail -5 /tmp/better_full.log; ps -p 332596 -o etime= 2>/dev/null
+  > $ python3 -c "
+import json;d=json.load(open('paper2/data/search_better_check.json'));print(d['seconds'],d['graphs'],d['augmented_graphs'],d['failures']);print(jso
+
+Full check passed (zero failures, 44 s). It's cheap, so I'm enlarging the sample and splitting the tallies by family before rerunning.
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+old='''    work = [(m, n <= 5) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs
+
+While that runs, writing §4.4 and the finding into `paper2/search_soundness.md`.
+  > $ sed -n 1231,1354p paper2/search_soundness.md
+  > $ tail -2 /tmp/better_full.log; pgrep -f "search_check --better" | head -2
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+old="§4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definit
+  > $ sed -i 's/> move loses the last solution: none over 20,800 graphs at 12–18 customers/> move loses the last solution: none over 25,300 graphs at 12–18 customers/
+
+Now the §2.4 and §2.9 notes.
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+old="""`better_move_bug.md` §7 measures the alternatives:
+"""
+assert old in s
+s=s.replace(old,
+  > $ cat >> paper2/search_soundness.md <<'EOF'
+
+### 4.4 The better move (item 10): the corrected form is still unsound; repaired and proved
+
+`lean/MOSPFormalization/
+
+Tightening the certificate-checker paragraph: in a refutation certificate a false link is used to conclude that `r` is refuted.
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+i=s.index("that is the code's definite premise at the child. **The checker therefore")
+j=s.ind
+  > $ while pgrep -f "search_check --better" >/dev/null; do sleep 10; done; tail -3 /tmp/better_full.log
+
+Meanwhile, saving the hunt's graph generator next to the hunter so the hunt can be reproduced.
+  > $ { cat <<'EOF'
+"""Graphs for `paper2/better_hunt.c` (loop0006 item 10): the definite move's two
+counterexample graphs (`DEFINITE_CEX` in `paper2/search_check.py`
+  > $ python3 - <<'EOF'
+p='paper2/better_hunt.c'
+s=open(p).read()
+s=s.replace("""//   python3 paper2/definite_hunt_gen.py 1 3000 10 16 4 | /tmp/better_hunt
+""","""// 
+  > $ cat >> tests/test_search_check.py <<'EOF'
+
+
+def test_better_hunt_finds_the_false_link_and_the_repair_nothing(tmp_path):
+    import shutil
+    import subprocess
+
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/04037295-124b-4523-80b3-5edfd85b8327/tasks/bp2k8llva.output; pgrep -f "search_check --better" | wc -l; ps -o etime= -p $(
+
+My wait loop matches its own command text, so it will never exit. Stopping it by PID and checking the real run.
+  > $ pgrep -af "search_check --better" | grep -v python3 | head; pgrep -af "python3 -m paper2.search_check --better" | head -2; tail -3 /tmp/better_full.log
+  > $ kill 333782; ps -o etime= -p 333250
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "while kill -0 333250 2>/dev/null; do sleep 5; done; echo \"done: $(tail -c 300 /tmp/better_full.log | tr '\
+
+While the check runs, I'm marking the item in iterations.md.
+  > $ sed -i 's/^- \[ \] \*\*10 Better move\.\*\*/- [x] **10 Better move.**/' Ralph_Loops/loop0006/iterations.md && grep -n "10 Better" Ralph_Loops/loop0006/iteration
+  > $ sleep 1; ps -o etime= -p 333250; tail -c 200 /tmp/better_full.log
+
+The run is still going; I'll wait for the monitor's notification.
+  > $ date; ps -o lstart=,etime= -p 333250
+  > Monitor {"command": "while kill -0 333250 2>/dev/null; do sleep 5; done; echo finished", "description": "wait for better check P
+
+Waiting on the check to finish.
+  > $ git diff --stat; git status --short | head
+  > Monitor {"command": "while kill -0 333250 2>/dev/null; do sleep 5; done; echo finished", "description": "wait again for better c
+
+The full check is still running; I'll write up once the monitor reports it has finished.
+
+# result: success in 1044s, 74 turns, cost $4.87
+  > $ python3 -c "
+import json;d=json.load(open('paper2/data/search_better_check.json'));print(d['seconds'],d['graphs'],d['augmented_graphs'],d['failures'])
+for k,v i
+
+Zero failures, and the better move never loses a node. Writing §4.4.4 and then running the gate.
+  > $ cat >> paper2/search_soundness.md <<'EOF'
+
+#### 4.4.4 The check
+
+`python -m paper2.search_check --better` takes 187 s on 30 cores and writes
+`data/search_better
+
+Gate passes. Writing the PROGRESS entry.
+  > $ sed -i 's/^Current: 9\/13 SOLVED/Current: 10\/13 SOLVED/' Ralph_Loops/loop0006/PROGRESS.md && cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 10 —
+
+Item 10 is finished. The main finding is that the better move is unsound as a pairwise rule even in its corrected form, which is the form the C has run since the 2026-09-26 fix. The gate passes: `lake build` ok, still the one allowed `sorry` (the §24 conjecture), 1,312 tests passed.
+
+**The finding.** The better move's close-count premise is exactly the definite-move test for `q`, applied at the state reached by closing `r`. Item 08 showed that test is false, so the better move inherits the fault.
+- **The counterexample (`betterMove_counterexample`):** on item 08's 14-customer graph, at the root with `k = 6`, the definite move does not fire and the code drops `2` citing `0`. A solution exists after `2` and none after `0`.
+- **Not a lost node:** at that same node the filter still keeps customer `1`, which has a solution. No node where the better move loses the last solution has been found:
+  - 681 false citations in the full Python check, zero lost nodes;
+  - 798 false citations over 25,300 graphs at 12–18 customers in the C hunt, zero lost nodes.
+- **The certificate checker (`learning/search_certificate.py`)** accepts the false citation from the counterexample.
+- **Where the C runs it:** whenever `better_move` is on, which means `csearch` on sparse instances and `recertify` always.
+
+**Proved in `Search/BetterMove.lean`** (no `sorry`, only the three standard axioms):
+- **The repaired rule is sound.** The repair is item 08's repaired premise, applied at the state reached by closing `r`. With it, a solution after `r` gives one after `q`, following the paper's own argument.
+- **The fixed order is sound with both repairs.** `definite_move → subset_rule → better_move` never loses the last solution at a node, for any limit `L` and any set of refuted old moves (`repairedFullFilter_sound`).
+- **Bug A (the old close count):** on a 12-customer graph, the old premise holds, the corrected one does not, and the rule's conclusion is false.
+- **Bug B (the old rule order):** on item 06's 8-customer node, the old order keeps only customer `6`, which leads nowhere. The fixed order keeps `3` and `6`, and `3` has a solution. Every premise used there is the corrected one; the fault is the cycle `3 → 0 → 3`.
+
+**Checks.**
+- **`python -m paper2.search_check --better`** (187 s on 30 cores) found zero failures:
+  - 513 M pair checks;
+  - 169 M uses of the repaired rule;
+  - 20.4 M nodes, where the Lean filters match item 06's port in both orders and the fully repaired filter never loses a node.
+- **The C hunt under the repaired premise** found nothing on 11,200 graphs.
+- **Tests:** seven new tests, including a mutation test and a run of the new hunter on the counterexample graph.
+
+**Files.**
+- New: `lean/MOSPFormalization/Search/BetterMove.lean` (imported from the root), `paper2/better_hunt.c` and `paper2/better_hunt_gen.py`.
+- Changed: `paper2/search_check.py`, `tests/test_search_check.py`, `paper2/axiom_check.lean`, and `paper2/search_soundness.md` (a finding box at the top, notes in §2.4 and §2.9, and a new §4.4).
+- The solver is unchanged; whether to adopt the repair is your decision.
+
+PROGRESS.md now reads 10/13 and item 10 is marked `[x]`. Item 12 has to either state its theorem for the repaired filter or name two gaps (the definite move and the better move as coded). It also has to say which premise the certificate checker certifies.
+
+# result: success in 204s, 4 turns, cost $5.19

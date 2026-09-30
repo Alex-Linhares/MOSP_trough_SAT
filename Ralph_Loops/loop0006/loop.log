@@ -43,3 +43,8 @@
 [2026-10-01 00:07:38] claude session it09 (cap 4.00 h) -> session_it09.log
 [2026-10-01 00:21:20] session it09: ok (exit 0, 39 tool calls)
 [2026-10-01 00:23:46] tests passed: GATE PASS
+[2026-10-01 00:23:46] committed 8014ef85f: 09 Subset rule. `Search/SubsetRule.lean`: the subset rule with its
+[2026-10-01 00:23:46] === iteration 10: 10 Better move. `Search/BetterMove.lean`: Chu & Stuckey Thm 2 in
+[2026-10-01 00:23:46] claude session it10 (cap 4.00 h) -> session_it10.log
+[2026-10-01 00:45:38] session it10: ok (exit 0, 76 tool calls)
+[2026-10-01 00:48:08] tests passed: GATE PASS

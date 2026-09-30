@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 9/13 SOLVED
+Current: 10/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -738,3 +738,83 @@ Current: 9/13 SOLVED
   `definite_hunt`-style exact check on gadget graphs before stating.
 - Counterexamples for Bugs A and B: the 8-vertex Bug B node from item 06, and a state of
   the 17 × 9 for Bug A.
+
+## Iteration 10 — 2026-10-01 00:50
+
+### Completed
+- **10 Better move. FINDING: the *corrected* better move is still unsound as a pairwise
+  rule, and the C runs it.** Its premise 4 is exactly the code's definite-move premise for
+  `q` at the child `cl(S ∪ {r})`, so it inherits item 08's falsity of Theorem 1. No node where
+  it loses the last solution has been found. New file
+  `lean/MOSPFormalization/Search/BetterMove.lean`, about 500 lines, imported from the root.
+  No `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound` only (new lines in
+  `paper2/axiom_check.lean`, above the control).
+  - **Definitions:**
+    - `betterOpen`, `betterClose` (the corrected count) and `betterCloseOld` (Bug A);
+    - `IsBetter` (premises 3 and 4), `IsBetterOld` and `IsRepairedBetter`;
+    - `withinLimit` (premise 1, `L`) and `betterCite`;
+    - `betterFilterBy`, the pass, which like the C does not consult whether `q` survives;
+    - `fullFilter` (`definite → subset → better` for any premises), `codeFullFilter`,
+      `repairedFullFilter` and `oldOrderFilter` (Bug B's order).
+  - **Proved:**
+    - `isBetter_iff`: `IsBetter ↔ stepCost (S∪{r}) q ≤ k ∧ IsDefinite (cl(S∪{r})) q`.
+    - **`betterMove_counterexample`**, on item 08's `cexGraph` at the root with `k = 6`:
+      the definite move does not fire, and `0` and `2` survive the subset rule. The code
+      drops `2` citing `0` under the corrected premise, and the repaired premise fails.
+      `S·2 = {2}` has a solution; `S·0 = {0}` has none, shown by an invariant family of 18
+      states. `betterMove_counterexample_node`: the filter still keeps `1`, which has a
+      solution, so this is a false link, not a lost node.
+    - **The repair**, `IsRepairedBetter`, is premise 3 plus `q` hereditarily definite at the
+      child. `solvable_cl_insert_of_repairedBetter` and
+      `searchSol_cl_insert_of_repairedBetter` prove `Sol_k(S·r) → Sol_k(S·q)` for `r`
+      playable, by the paper's route: the repaired Thm 1 at the child, then the swap. `q`'s
+      playability is not needed. Also proved: `IsRepairedBetter.isBetter` and
+      `isRepairedBetter_of_openCount_le_one`.
+    - **The composition**: `betterFilterBy_sound` (the least member of `W` with a solution
+      is never dropped, so no chain argument is needed and `L` does not matter),
+      `fullFilter_sound`, and **`repairedFullFilter_sound`**: with both repairs,
+      `definite → subset → better` is node-sound under the invariant, for any `L` and any
+      refuted `Q`.
+    - **`bugA_counterexample`**: 12 customers, root, `k = 4`, `r = 6`, `q = 4`. The old
+      premise holds and the corrected one does not; `S·6` has a solution and `S·4` has
+      none. It was found by the new `paper2/better_hunt.c` (`MODE=1`).
+    - **`bugB_counterexample`**: item 06's 8-customer node, `S = {2}`, `k = 4`. The old
+      order keeps `{6}`, a dead child, while the fixed order keeps `{3, 6}`. Every premise
+      is the corrected one; the fault is the cycle `3 → 0 → 3`.
+  - Two compile rounds, three local fixes, no proof abandoned.
+- **Does the C implement the right form? No.** `customer_search.c:213–251` tests premises 3
+  and 4, which is the unsound form. It runs whenever `better_move` is on: `csearch` on sparse
+  instances, and `recertify` always. The certificate checker (Cert:628–637) accepts the false
+  link. The solver is unchanged; the owner decides.
+- **Python.**
+  - `python -m paper2.search_check --better` takes 187 s on 30 cores and writes
+    `paper2/data/search_better_check.json`. It covers 36,411 graphs (labelled to 6, atlas 7,
+    1,500 random at 10–13) plus 2,000 augmented definite counterexamples at 14–17. **Zero
+    failures** across 513 M pairs (`isBetter_iff`, repair ⇒ code), 169 M repaired
+    applications, and 20.4 M nodes: the Lean filters equal item 06's port in both orders,
+    and the repaired composition is node-sound.
+  - The code's premise gives 681 false links, all on augmented graphs, and loses no node
+    through the better move. The definite move loses 1,810 nodes, Bug A gives 8,371 false
+    links, and Bug B loses 4,135 nodes.
+  - `paper2/better_hunt.c` and `paper2/better_hunt_gen.py`: 25,300 graphs at 12–18 gave 798
+    false links and no lost node. The repair (`MODE=2`) gave nothing on 11,200 graphs.
+  - `tests/test_search_check.py` has seven new tests, 37 in total, including a mutation (the
+    code's premise used as the repair gets caught) and the hunter run on `cexGraph`.
+- **Docs.** `paper2/search_soundness.md`:
+  - a finding box at the top;
+  - an item 10 paragraph in §2.4, where the "why" fails exactly at its appeal to §2.2;
+  - an item 10 note in §2.9;
+  - new §4.4, covering definitions, theorems, the C, what Cert checks, and the check table.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1312 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None for the item. Open: whether the better move (or the definite move) ever loses a node,
+  or a whole instance, under the code's premises. No case has been found.
+
+### Next
+- Item 11, the memo and old move (`Search/Memo.lean`).
+- Item 12 must state its theorem for `repairedFullFilter` (proved node-sound here) or name
+  two gaps: the definite move and the better move as coded. It must also say which premise
+  the certificate checker certifies, since Cert accepts the false link of
+  `betterMove_counterexample`.

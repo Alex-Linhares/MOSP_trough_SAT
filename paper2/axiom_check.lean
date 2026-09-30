@@ -108,5 +108,19 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.codeFilter_counterexample
 #print axioms MOSPFormalization.Search.noTieBreak_counterexample
 
+-- loop0006 item 10: the better move (Search/BetterMove.lean)
+#print axioms MOSPFormalization.Search.isBetter_iff
+#print axioms MOSPFormalization.Search.IsRepairedBetter.isBetter
+#print axioms MOSPFormalization.Search.isRepairedBetter_of_openCount_le_one
+#print axioms MOSPFormalization.Search.solvable_cl_insert_of_repairedBetter
+#print axioms MOSPFormalization.Search.searchSol_cl_insert_of_repairedBetter
+#print axioms MOSPFormalization.Search.betterFilterBy_sound
+#print axioms MOSPFormalization.Search.fullFilter_sound
+#print axioms MOSPFormalization.Search.repairedFullFilter_sound
+#print axioms MOSPFormalization.Search.betterMove_counterexample
+#print axioms MOSPFormalization.Search.betterMove_counterexample_node
+#print axioms MOSPFormalization.Search.bugA_counterexample
+#print axioms MOSPFormalization.Search.bugB_counterexample
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

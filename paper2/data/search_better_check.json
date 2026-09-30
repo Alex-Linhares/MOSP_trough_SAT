@@ -1,0 +1,69 @@
+{
+ "seconds": 186.8,
+ "graphs": 36411,
+ "augmented_graphs": 2000,
+ "quick": false,
+ "tally": {
+  "nodes": 20360256,
+  "pairs": 512749296,
+  "repaired_applications": 169494016,
+  "code_applications": 169561750,
+  "old_order_loses": 4135,
+  "bugA_pair_false": 8371,
+  "code_pair_false": 681,
+  "code_loses_definite": 1810
+ },
+ "tally_by_family": {
+  "small": {
+   "nodes": 4664346,
+   "pairs": 29900108,
+   "repaired_applications": 16988424,
+   "code_applications": 16988502
+  },
+  "random": {
+   "pairs": 145713894,
+   "repaired_applications": 106377521,
+   "code_applications": 106418101,
+   "nodes": 9235320,
+   "old_order_loses": 457,
+   "bugA_pair_false": 12
+  },
+  "augmented": {
+   "pairs": 337135294,
+   "repaired_applications": 46128071,
+   "code_applications": 46155147,
+   "nodes": 6460590,
+   "code_pair_false": 681,
+   "bugA_pair_false": 8359,
+   "old_order_loses": 3678,
+   "code_loses_definite": 1810
+  }
+ },
+ "pinned_tallies": {
+  "better_cex": {
+   "pairs": 25382,
+   "code_applications": 1768,
+   "code_pair_false": 1,
+   "bugA_pair_false": 12,
+   "repaired_applications": 1767,
+   "nodes": 645,
+   "code_loses_definite": 11,
+   "old_order_loses": 11
+  },
+  "bug_a": {
+   "pairs": 3522,
+   "repaired_applications": 177,
+   "code_applications": 177,
+   "bugA_pair_false": 2,
+   "nodes": 120
+  },
+  "bug_b": {
+   "pairs": 560,
+   "repaired_applications": 132,
+   "code_applications": 132,
+   "nodes": 30,
+   "old_order_loses": 4
+  }
+ },
+ "failures": 0
+}

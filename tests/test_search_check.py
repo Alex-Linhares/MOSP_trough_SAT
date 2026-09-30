@@ -357,3 +357,98 @@ def test_subset_composition_with_the_code_definite_move_loses_on_the_cex():
     assert SS[S] and not SS[CL[S | 1 << q]]
     L = sc.s_composed(masks, O, S, P, lambda c: sc.d_hereditary(masks, O, S, c))
     assert any(SS[CL[S | 1 << c]] for c in L)                              # repairedFilter
+
+
+# ---------------------------------------------------------------------------
+# item 10: Search/BetterMove.lean
+# ---------------------------------------------------------------------------
+
+
+def test_better_quick_run_has_no_failures():
+    r = sc.run_better(quick=True, workers=2)
+    assert r["failures"] == 0
+    assert r["tally"]["repaired_applications"] > 0 and r["tally"]["nodes"] > 0
+
+
+def test_better_every_statement_on_every_set_to_four_vertices():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_better_graph(masks, all_sets=True)
+            assert not any(v for key, v in t.items() if key.startswith("fail_")), (masks, t)
+
+
+def test_better_move_counterexample_is_the_lean_statement():
+    masks, S, r, q, k = sc.BETTER_CEX
+    O, CL = sc.s_tables(masks)
+    n = len(masks)
+    P = sc.s_playable(masks, O, S, k, list(range(n)))
+    code_def = lambda c: (lambda oc: oc[0] <= oc[1])(sc.d_counts(masks, O, S, c))
+    assert not any(code_def(c) for c in P)                                # definite does not fire
+    W = sc.s_subset_filter(masks, O, S, P)
+    assert q in W and r in W and q < r
+    assert sc.b_is_better(masks, O, S, k, r, q)
+    assert not sc.b_is_repaired(masks, O, CL, S, k, r, q)
+    cite = lambda W, a, b: sc.b_is_better(masks, O, S, k, a, b)
+    kept = sc.b_full(masks, O, S, P, code_def, cite)
+    assert r not in kept and 1 in kept                                   # the node keeps 1
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[CL[S | 1 << r]] and not SS[CL[S | 1 << q]] and SS[CL[S | 1 << 1]]
+    assert CL[1 << q] == 1 << q and CL[1 << r] == 1 << r                  # bm_cl_zero, bm_cl_two
+
+
+def test_bug_a_counterexample_is_the_lean_graph():
+    masks, S, r, q, k = sc.BUG_A_CEX
+    edges = [(0, 1), (0, 2), (0, 3), (0, 5), (0, 8), (0, 10), (0, 11), (1, 3), (1, 4), (1, 10),
+             (2, 3), (2, 7), (2, 10), (5, 8), (6, 7), (6, 9), (7, 9), (7, 10), (8, 10), (8, 11),
+             (10, 11)]                                                    # bugAEdges
+    assert masks == sc.masks_from_edges(12, edges)
+    O, CL = sc.s_tables(masks)
+    assert sc.b_is_better(masks, O, S, k, r, q, old=True)
+    assert not sc.b_is_better(masks, O, S, k, r, q)
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[CL[1 << r]] and not SS[CL[1 << q]]
+    assert CL[1 << r] == (1 << 6) | (1 << 9) and CL[1 << q] == 1 << 4
+
+
+def test_bug_b_counterexample_is_the_lean_graph():
+    masks, S, k = sc.BUG_B_CEX
+    edges = [(0, 1), (0, 3), (0, 7), (1, 3), (1, 4), (1, 5), (2, 3), (4, 5), (4, 7), (5, 6),
+             (5, 7), (6, 7)]                                              # bugBEdges
+    assert masks == sc.masks_from_edges(8, edges)
+    O, CL = sc.s_tables(masks)
+    P = sc.s_playable(masks, O, S, k, [c for c in range(8) if not S >> c & 1])
+    assert P == [0, 3, 6]
+    code_def = lambda c: (lambda oc: oc[0] <= oc[1])(sc.d_counts(masks, O, S, c))
+    cite = lambda W, a, b: sc.b_is_better(masks, O, S, k, a, b)
+    assert sc.b_old_order(masks, O, S, P, code_def, cite) == [6]
+    assert sc.b_full(masks, O, S, P, code_def, cite) == [3, 6]
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[S] and SS[CL[S | 1 << 3]] and not SS[CL[S | 1 << 6]]
+
+
+def test_better_checker_catches_the_code_premise_as_the_repair(monkeypatch):
+    masks, S, r, q, k = sc.BETTER_CEX
+    assert sc.check_better_graph(masks, ks=[k], limits=(0,)).get("fail_repaired_sound", 0) == 0
+    monkeypatch.setattr(sc, "b_is_repaired",
+                        lambda masks, O, CL, S, k, r, q: sc.b_is_better(masks, O, S, k, r, q))
+    t = sc.check_better_graph(masks, ks=[k], limits=(0,))
+    assert t["fail_repaired_sound"] >= 1
+
+
+def test_better_hunt_finds_the_false_link_and_the_repair_nothing(tmp_path):
+    import shutil
+    import subprocess
+    from pathlib import Path
+    if shutil.which("gcc") is None:
+        pytest.skip("no gcc")
+    src = Path(sc.__file__).resolve().parent / "better_hunt.c"
+    exe = tmp_path / "better_hunt"
+    subprocess.run(["gcc", "-O2", "-o", str(exe), str(src)], check=True)
+    masks = sc.BETTER_CEX[0]
+    line = f"{len(masks)} " + " ".join(map(str, masks)) + "\n"
+    out = {}
+    for mode in ("0", "2"):
+        out[mode] = subprocess.run([str(exe)], input=line, capture_output=True, text=True,
+                                   env={"MODE": mode}, check=True).stdout
+    assert "PAIR k=6 S=0 r=2 q=0" in out["0"] and "NODE" not in out["0"]
+    assert "PAIR" not in out["2"] and "NODE" not in out["2"]

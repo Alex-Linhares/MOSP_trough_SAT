@@ -69,7 +69,7 @@ assembly and a reserve.
 - [x] **09 Subset rule.** `Search/SubsetRule.lean`: the subset rule with its
   index tie-break, sound on its own and after the definite move.
 
-- [ ] **10 Better move.** `Search/BetterMove.lean`: Chu & Stuckey Thm 2 in
+- [x] **10 Better move.** `Search/BetterMove.lean`: Chu & Stuckey Thm 2 in
   its corrected form, sound in the composition `definite_move →
   subset_rule → better_move` citing only standing candidates. Prove Lean
   counterexamples to the two wrong forms item 06 confirmed (the uncorrected
