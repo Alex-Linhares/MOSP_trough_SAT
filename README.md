@@ -5,15 +5,20 @@ direct [SAT encoding](reports/encoding.md) run on [Kissat](https://github.com/ar
 with a [complete search over customer closing orders](reports/customer_search.md),
 plus graph-theoretic lower bounds and several upper-bound heuristics. Includes a
 Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalization/Encoding.lean),
-and the pathwidth theory the project started from is partly formalized.
+and `MOSP = pathwidth + 1` over the MOSP graph is proved in both directions
+(`lean/MOSPFormalization/MOSPGraph.lean`, 2026-09-27).
 
-**All 6,376 cached solutions are certified optimal — the whole corpus**, each
-with a witness ordering in `solutions/` that can be checked without trusting
-this code. **Every optimal value published in the literature is among them** —
-GP1–8, SP1–4, Miller and NWRS1–8, all twenty — and so is every Chu & Stuckey
-`Random` instance, including the 125×125 sparse and dense classes their Table 1
-singles out as hardest. The last of them fell on 2026-09-22. What the paper
-still does not let us check is set out in
+**6,374 of the 6,376 cached solutions are certified optimal**, each with a
+witness ordering in `solutions/` that can be checked without trusting this
+code; the other two, `Random-125-125-2-2_0` (25) and `Random-125-125-2-3_0`
+(21), are verified upper bounds whose optimality claim was withdrawn after the
+`better_move` bug and has not been re-proved *(2026-09-30)*. **Every optimal
+value published in the literature is among the certified** — GP1–8, SP1–4,
+Miller and NWRS1–8, all twenty — and so is every other Chu & Stuckey `Random`
+instance, including the rest of the 125×125 sparse and dense classes their
+Table 1 singles out as hardest. *(The whole corpus was first closed on
+2026-09-22; the bug of 2026-09-23 re-opened 13 entries, and 11 have been
+re-certified since.)* What the paper still does not let us check is set out in
 [What Chu & Stuckey's paper does not settle](#what-chu--stuckeys-paper-does-not-settle).
 
 Each file records how its value was established, so proofs and good guesses are
@@ -81,7 +86,7 @@ measured rather than as it would be nicer to state:
 | the bulk of the corpus | closed 6,226 instances | not run on them; would likely also close them |
 | hard Random instances, dense (d ≥ 6) | refutations do not return | seconds to minutes |
 | hard Random instances, sparse (d = 2) | refutations do not return | branching factor explodes |
-| proof artifact | a CNF anyone can re-refute | none yet (see [limitations](#known-limitations)) |
+| proof artifact | a CNF anyone can re-refute | a per-node search certificate, verified at 41–75 customers (`learning/search_certificate.py`, 2026-09-28); none at 125×125 (see [limitations](#known-limitations)) |
 | entry point | `satisfiability.mosp_solver.solve_mosp_sat` | `satisfiability.customer_search.solve` |
 
 An earlier version of this section claimed the two "fail on disjoint sets". That
@@ -309,13 +314,14 @@ column dedupe does to formula size are in
 
 ## Upper bounds
 
-`satisfiability/heuristics.py` registers six strategies behind one signature, so
-they can be compared on the same instances:
+`satisfiability/heuristics.py` registers thirteen strategies behind one
+signature, so they can be compared on the same instances; the main ones:
 
 | strategy | what it is |
 |---|---|
 | `tabu` | swap-move tabu search over raw product permutations |
-| `mcn` | least cost node (Becceneri 1999): minimum-degree elimination on the MOSP graph |
+| `mcn` | least cost node: minimum-degree elimination on the MOSP graph. Not the MCNh of Becceneri, Yanasse & Soma (2004), which is an arc-traversal heuristic |
+| `mcnh` | MCNh reimplemented from the 2004 pseudocode, reproducing its worked example; registered as the literature's reference point, the default of nothing |
 | `mcn+tabu` | MCN to construct, tabu to improve — the default until 2026-09-28 |
 | `rule+cs-dfs` | the two-key closing rule (fewest new stacks, then most unclosed neighbours) seeding the restricted DFS — **the default since 2026-09-28**, on a whole-corpus measurement (780 better / 12 worse over `cs-dfs`) |
 | `customer-tabu` | tabu search over *customer closing orders* rather than product orders |
@@ -446,15 +452,23 @@ instance, with no file matching none:
 
 | provenance | count | share | meaning |
 |---|---|---|---|
-| `certified:refutation` | 6,374 | 99.97% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
+| `certified:refutation` | 6,372 | 99.94% | satisfiable at `k` with a witness, unsatisfiable at `k−1` |
 | `certified:bound` | 2 | 0.03% | satisfiable at `k`, and the lower bound already equals `k` |
-| **certified, either way** | **6,376** | **100%** | **an optimality claim** |
-| `solution` | 0 | — | a witness of value `k` and nothing more; optimality open |
+| **certified, either way** | **6,374** | **99.97%** | **an optimality claim** |
+| `solution` | 2 | 0.03% | a witness of value `k` and nothing more; optimality open |
+
+*(As counted by `python -m benchmarks.corpus` on 2026-09-30. The two open are
+`Random-125-125-2-2_0` and `Random-125-125-2-3_0`.)*
 
 Every file records which it is, because a corpus that cannot distinguish a proof
 from a good guess is a liability. Both kinds are equally checkable as *upper*
 bounds — the witness verifies either way — but only the first is an optimality
 claim, and they must not be added together.
+
+*(Superseded 2026-09-23: the next paragraph describes the corpus as closed on
+2026-09-22. A false-refutation bug in `better_move` then withdrew 13
+optimality claims and corrected one value; 11 of the 13 have been re-certified
+since, and two remain open, as in the table above.)*
 
 No file is uncertified. The last to hold out were all 125×125 at density 2 or
 4 — exactly the two classes Chu & Stuckey's Table 1 singles out as hardest — and
@@ -558,6 +572,14 @@ trust chain entirely for this half of the claim.
   That is evidence, not proof. Giving this engine a checkable proof object is
   open work.
 
+  *(Updated 2026-09-28: `learning/search_certificate.py` records every pruning
+  step with its witness and checks it with an independent replay; 141 of 151
+  corpus instances at 41–75 customers verify under both configurations. It
+  does not scale to the 10¹¹-node trees at 125×125. `learning/differential.py`
+  also asks `optimum − 1` and `optimum` on several relabellings of every
+  certified instance to 40 customers and of 1,294 at 50–100 (all but the eight
+  `Random-100-100-2/4`), with zero disagreements since the fix of 2026-09-26. See `reports/ml_nature.md` §15, §32, §33.)*
+
 ### A third solver, as an outside check
 
 Both engines above were written for this project, so their agreement is weaker
@@ -604,6 +626,10 @@ Two routes would close the remaining gap for the SAT half, and neither is done:
   puts the easy 94% of the corpus at about 7.5 GB and the whole of it past a
   terabyte. Shelved on those grounds — though contraction (above) makes the
   refuted instances much smaller, which changes that arithmetic.
+  *(Superseded 2026-09-26: `learning/proofs.py` gives 92.0% of the corpus at
+  n ≤ 40 a DRAT refutation checked by drat-trim (`tools/drat-trim/`), with zero
+  rejections; the boundary is formula size, `m² · k ≈ 10⁴`, so the direct
+  encoding has no proof to offer at 125×125. `reports/ml_nature.md` §17.)*
 - **the Lean formalization** — prove the CNF satisfiable iff `MOSP(I) ≤ k`.
   **Done**, in `lean/MOSPFormalization/Encoding.lean`, with no `sorry` and no
   axioms beyond `propext`, `Classical.choice` and `Quot.sound`. What remains is
@@ -615,6 +641,8 @@ So the honest summary: the upper bounds are checkable by anyone today; the SAT
 lower bounds are reproducible, independently re-refutable, and rest on an
 encoding proved faithful; and the customer-search lower bounds are heavily
 cross-validated but carry no artifact a third party can check.
+*(Updated 2026-09-28: at 41–75 customers they now do; see the search
+certificate above.)*
 
 ## Project Structure
 
@@ -628,6 +656,8 @@ satisfiability/                 -> the two exact engines, and the bounds
     cpsat.py                        Bridge to the CP oracle (OR-Tools CP-SAT), separate interpreter
     cpsat_oracle.py                 The Martin/Yanasse/Pinto CP model (runs in .venv-cpsat)
     relaxation.py                   Contraction relaxation: certified lower bounds
+    expansion_bound.py              Harper's vertex-isoperimetric bound (off by default)
+    race.py                         Races SAT and the customer search on one call
     heuristics.py                   Upper bound strategies behind one signature
     encoding.py                     Pathwidth CNF encoding (legacy)
     solver.py                       Pathwidth solver (legacy)
@@ -659,7 +689,7 @@ benchmarks/
     corpus.py                       What the corpus claims, counted from the files
     oracle_sweep.py                 Checks the corpus against the CP oracle, an outside solver
     compute.py                      Totals the corpus's compute cost in core-hours
-    compute.py                      Totals the corpus's compute cost in core-hours
+    recertify.py                    Unattended re-proving of withdrawn optimality claims
     ratchet.py                      Descending satisfiable-call search
     reheuristic.py                  Re-run an upper bound strategy over the corpus
     solve_parallel.py               Parallel solving: across instances, and across k
@@ -680,7 +710,14 @@ benchmarks/
 solutions/                      Cached solutions with provenance (JSON)
 
 lean/
-    MOSPFormalization/              Lean 4 proofs: encoding faithfulness, VS = PW
+    MOSPFormalization/              Lean 4 proofs: encoding faithfulness, VS = PW,
+                                    MOSP = pathwidth + 1, and Table 1's equivalences (Complex/)
+
+learning/                       ML and measurement over the certified corpus (see learning/README.md)
+pathwidth_solver/               Exact graph pathwidth solver, transferred 2026-09-30 (see its TRANSFER.md)
+paper2/                         Paper 2, "The pathwidth complex" (plan in paper2/plan.md)
+tools/                          Third-party tools built from source (drat-trim)
+Ralph_Loops/                    Unattended one-item-per-session drivers (loop0001–loop0005)
 
 reports/
     encoding.md                     The CNF formulation, and what is proved of it
@@ -692,7 +729,7 @@ reports/
     chu_stuckey_plan.md             The plan the recent work follows
     fpt_theory_practice_gap.md      Why FPT tractability failed in practice
 
-tests/                          471 tests across 26 test modules
+tests/                          1,234 tests across 67 test modules
 figures/                        Gate matrix layouts for the published instances
 literature/                     Reference papers
 validate_published_optima.py    Batch validation against published optima
@@ -715,6 +752,11 @@ Requires Python 3.9+ with `networkx`, `numpy`, `python-sat`, `matplotlib`, and
 from mosp.instance import MOSPInstance
 
 instance = MOSPInstance.from_benchmark_file("path/to/instance.txt")[0]
+
+# The entry point to reach for: the customer search by default (procedure="sat"
+# for the SAT engine), upper bound from `rule+cs-dfs`, result cached in solutions/.
+from satisfiability import solve_mosp_exact
+value, ordering = solve_mosp_exact(instance)
 
 # SAT engine: binary search over k, witness ordering over products.
 from satisfiability.mosp_solver import solve_mosp_sat
@@ -810,8 +852,14 @@ The format is auto-detected from the path; pass `transpose=` to override.
 The MOSP-pathwidth connection (Kinnersley 1992, Yanasse 1997):
 
 ```
-VS(G) = PW(G) = IT(G) = SN(G) - 1 = GML(G) + 1
+VS(G) = PW(G) = IT(G) - 1 = SN(G) - 1 = GML(G) - 1
 ```
+
+*(Corrected 2026-09-30: this line read `PW = IT = SN − 1 = GML + 1`. Interval
+thickness, node search number and gate matrix layout cost are each
+`pathwidth + 1`, as `lean/MOSPFormalization/Complex/` proves:
+`intervalThickness_eq_pathwidth_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`,
+`tracks_eq_pathwidth_add_one`.)*
 
 This equivalence is why the project started with pathwidth; both engines have
 since moved off it, and it survives here as the justification for one lower
@@ -833,6 +881,11 @@ Earlier versions of this README attached the `pathwidth + 1` equality to the
 agreement graph, which is the wrong object -- the undercounting measured there
 is not a counterexample to Yanasse's result. Whether the equality is tight on the
 MOSP graph is a question this project has not yet answered properly.
+*(Superseded 2026-09-27: it is. `mospValue = pathwidth (mospGraph) + 1` is
+proved in Lean in both directions; see below. The values above published optima
+once measured through `customer_inter/` (GP5, SP2–SP4) were overestimates of the
+pathwidth by the unsound legacy pathwidth SAT encoding's greedy fallback, not a
+looseness of the reduction.)*
 
 Neither engine depends on the resolution. The SAT encoding bypasses both
 reductions, treating MOSP as a self-contained decision problem. The customer
@@ -893,9 +946,21 @@ statement was false, not hard: `MOSPGraphExamples.lean` proves the star
 instance — one pattern shared by four customers with private patterns — is
 reduced, has `mospValue = 4`, and has a pattern graph of pathwidth 1
 (`star_refutes_pattern_graph_bound`). The false statements are deleted and the
-file's comment records why. The remaining `sorry`s are the three tree-decomposition
-statements of `Sandwich.lean` (`treewidth_le_pathwidth`, the branch lemma, and a
-conjecture); `python -m learning.sandwich --stage lean` lists them.
+file's comment records why. *(Updated 2026-09-28: `treewidth_le_pathwidth` and
+the corrected branch lemma are proved; the one `sorry` left in the whole
+development is the §24 conjecture in `Sandwich.lean`, kept on purpose.)*
+`python -m learning.sandwich --stage lean` lists it.
+
+**Table 1 of Linhares & Yanasse (2002)** is formalised in
+`lean/MOSPFormalization/Complex/` (Ralph loop0005, 2026-09-30): thirteen files
+proving the equivalences of gate matrix layout, narrowness, interval thickness,
+one-dimensional logic, split bandwidth, edge separation, PLA folding, node
+search and edge search with pathwidth or vertex separation, where they hold,
+and counterexamples where the table's row is false as read (edge separation as
+cutwidth, simple PLA folding), plus a counterexample to a step of Kirousis &
+Papadimitriou's (1986) proof. One named gap, `EdgeSearchMonotonicity`
+(LaPaugh), is used by no row. Axioms: `propext`, `Classical.choice`,
+`Quot.sound` only.
 
 The formalization includes candidates for contribution to Mathlib (`ForMathlib/`).
 
@@ -908,9 +973,11 @@ cd lean && lake build
 ## What Chu & Stuckey's paper does not settle
 
 Their algorithm is the one that closed the hard end of this corpus, and this
-project is a reimplementation of it. Every instance here is now proved optimal,
-their 125×125 classes included, which is what their "finds and proves the
-optimal in all cases" claims. Three things still cannot be checked against the
+project is a reimplementation of it. Every instance here but two is now proved
+optimal, their 125×125 classes included, which is what their "finds and proves
+the optimal in all cases" claims. *(The two, `Random-125-125-2-2_0` and
+`-2-3_0`, were certified under the faulty `better_move` rule and withdrawn on
+2026-09-23; the comparable re-proofs took 25–28 hours each.)* Three things still cannot be checked against the
 paper, and two of them are about what it does not say.
 
 **What we reproduced.** Their stated configuration — *"better move"*, *"old
@@ -973,6 +1040,8 @@ machine-checkable proof object for the refutations — see
   and nothing here changes that; what is proved is 6,363 particular instances.
   A larger or differently shaped instance can still be out of reach, and the
   19.2 hours the last 27 took says how close the ceiling is.
+  *(Updated 2026-09-30: 11 of the 13 have been re-certified; 6,374 of 6,376
+  are certified and `Random-125-125-2-2_0` and `-2-3_0` remain open.)*
 - **`cs-dfs` is a weaker `ub_MOSP` than theirs**, by 4–5 stacks on the
   instances that were hard; the faithful version exists in the C and the
   heuristic does not call it. See
@@ -983,9 +1052,12 @@ machine-checkable proof object for the refutations — see
   CNF to re-refute and no proof log. It now accounts for a large share of the
   certified corpus, which makes this the project's biggest open verification gap.
   See [Checking the claims](#checking-the-claims-without-trusting-this-code).
-- **Nothing races the two engines**, and on the hard instances there is no
-  measured reason to: the customer search's failures are a subset of SAT's. A
-  portfolio would be a bet on complementarity nobody has demonstrated here.
+  *(Updated 2026-09-28: a per-node certificate now exists and verifies at 41–75
+  customers, `learning/search_certificate.py`; it does not reach 125×125.)*
+- **Nothing races the two engines by default**, and on the hard instances there
+  is no measured reason to: the customer search's failures are a subset of
+  SAT's. *(2026-09-22: the race was built, `satisfiability/race.py`, and the
+  customer search won 63 of 63 decision calls; `reports/learned_search.md` §3.)*
 - **The relaxation driver cannot close instances**, only tighten bounds. It tries
   to refute `ub − 1` on a contraction, which can only succeed when `ub` is
   already the true optimum — and on the sparse instances it was being asked about,
@@ -1002,18 +1074,28 @@ machine-checkable proof object for the refutations — see
   start above the true optimum and return a wrong answer that still passes
   witness verification. Checked against every known optimum with zero violations,
   and re-checked by `tests/test_lower_bounds.py` — evidence, not proof.
+  *(Updated 2026-09-27: `MOSP = pathwidth + 1` is now a Lean theorem; that
+  contraction degeneracy is at most treewidth ≤ pathwidth is published but not
+  formalised here, and the implementation is still checked, not proved.)*
 - **Lemma 1 (contraction relaxes) is measured, not proved here.** 3,167
   contractions with no violation, and the reverse operation — merging two
   customers that share no product — really does break it, at 17 violations in
   1,044. The proof is attributed to Becceneri, Yanasse & Soma (2004), which this
-  project does not have.
+  project does not have. *(Updated 2026-09-27: the paper is now in
+  `literature/`; whether its proof covers Lemma 1 as used here has not been
+  checked.)*
 - **The arc contraction bound of Yanasse, Becceneri & Soma (1999) is
   unobtained**, and may be the same bound as contraction degeneracy. *Pesquisa
   Operacional* is digitised only from 2001. No novelty should be claimed until
-  this is settled.
+  this is settled. *(Settled 2026-09-22: the paper is in `literature/`; its LB5
+  is contraction degeneracy + 1, the bound computed here, up to tie-break. No
+  novelty is claimed. Likewise the expansion bound of
+  `satisfiability/expansion_bound.py` is Harper's (1966) vertex-isoperimetric
+  bound, settled 2026-09-29.)*
 - **The Lean formalization is complete for the MOSP–pathwidth equality** since
-  2026-09-27 (`MOSPGraph.lean`); the three tree-decomposition statements of
-  `Sandwich.lean` are the only `sorry`s. *(Superseded text follows.)* ~~The
+  2026-09-27 (`MOSPGraph.lean`); ~~the three tree-decomposition statements of
+  `Sandwich.lean` are the only `sorry`s~~ *(updated 2026-09-28: one `sorry`
+  remains, the §24 conjecture in `Sandwich.lean`, kept on purpose)*. *(Superseded text follows.)* ~~The
   Lean formalization is incomplete for the pathwidth reduction (2
   `sorry`s), though the part the SAT solver actually relies on — encoding
   faithfulness — is complete. Nothing in Lean covers the customer search.
@@ -1029,7 +1111,8 @@ machine-checkable proof object for the refutations — see
 ## References
 
 - **Kinnersley, N.G.** (1992). The vertex separation number of a graph equals its path-width. *Information Processing Letters*, 42(6), 345-350.
-- **Yanasse, H.H.** (1997). On a pattern sequencing problem to minimize the maximum number of open stacks. *European Journal of Operational Research*, 100(3), 454-463.
+- **Yanasse, H.H.** (1997a). A transformation for solving a pattern sequencing problem in the wood cut industry. *Pesquisa Operacional*, 17(1), 57-70. (The MOSP graph, Proposition 5; cited above as "1997c".)
+- **Yanasse, H.H.** (1997b). On a pattern sequencing problem to minimize the maximum number of open stacks. *European Journal of Operational Research*, 100(3), 454-463.
 - **Linhares, A. & Yanasse, H.H.** (2002). Connections between cutting-pattern sequencing, VLSI design, and flexible machines. *Computers & Operations Research*, 29, 1759-1772.
 - **Chu, G. & Stuckey, P.J.** (2009). Minimizing the maximum number of open stacks by customer search. *CP 2009*, LNCS 5732, 242-257.
 - **Frinhani, R.M.D. et al.** (2018). A PageRank-based heuristic for the minimization of open stacks problem. *PLOS ONE*, 13(8), e0203076.

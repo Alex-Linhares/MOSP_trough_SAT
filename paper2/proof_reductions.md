@@ -17,7 +17,8 @@ number and vs the vertex separation. PDF: `literature/10_kirousis_papadimitriou_
 edgeless graph ns = 0). It is proved in Lean for the monotone game,
 `monotoneNodeSearch_eq_vertexSeparation_add_one` in
 `../lean/MOSPFormalization/Complex/NodeSearch.lean` (loop0005 item 10), by the
-corrected argument below. The fault in the published proof was found by that
+corrected argument below, and for the full game since item 14,
+`nodeSearch_eq_vertexSeparation_add_one` in `Complex/NodeMonotonicity.lean`. The fault in the published proof was found by that
 item's session and **is proved in Lean** (2026-09-30), with no `sorry` and only
 the standard axioms: `kirousisPapadimitriou_claim2_false` in
 `../lean/MOSPFormalization/Complex/KirousisPapadimitriouGap.lean`.
@@ -160,13 +161,18 @@ game (`sim_correct`).
 Not proved in Lean: that Corollary 2.4's normal form makes claim (2) true in
 general.
 
-### What remains open
+### The step to arbitrary strategies (closed 2026-09-30)
 
 The step from monotone to arbitrary strategies ("recontamination does not
-help", [10] Theorem 2.3, via LaPaugh) is not formalised. In Lean it is a named
-hypothesis, `NodeSearchMonotonicity`, and
+help", [10] Theorem 2.3, via LaPaugh) was at first a named hypothesis,
+`NodeSearchMonotonicity`, from which
 `nodeSearch_eq_vertexSeparation_add_one_of_monotonicity` derives the full
-theorem from it. It does not rest on the faulty step above.
+theorem. Loop0005 item 14 proved it, following Bienstock & Seymour (1991)
+rather than LaPaugh: `nodeSearchMonotonicity` and
+`nodeSearch_eq_vertexSeparation_add_one` in `Complex/NodeMonotonicity.lean`.
+It does not rest on the faulty step above. The only named gap left in
+section 3 is the edge-search analogue, `EdgeSearchMonotonicity`, which no
+row uses.
 
 ## 2. Smaller faults recorded elsewhere
 

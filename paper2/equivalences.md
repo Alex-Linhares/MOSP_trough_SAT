@@ -18,8 +18,8 @@ are the printed page numbers of the source; where only a preprint is held
 
 ## What Table 1 claims, and how it is read here
 
-Linhares & Yanasse (2002), p. 1764 (not p. 1762 as `literature/MANIFEST.md`
-says; p. 1762 carries Fig. 1), introduce Table 1 as "a set of problems that
+Linhares & Yanasse (2002), p. 1764 (not p. 1762, which carries Fig. 1 and
+which `literature/MANIFEST.md` gave until 2026-09-30), introduce Table 1 as "a set of problems that
 consist of, given input Π, compute a function f(Π) that is either equal to
 the number of open stacks or closely related to it (plus or minus one)". The
 reference column cites where each problem was studied; the table gives no

@@ -7,8 +7,10 @@ opened either.*
 
 ## The situation
 
-This project has solved 6,376 scheduling puzzles and *proved* that each answer
-is the best possible. Each comes with the schedule that achieves it. That is a
+This project has solved 6,376 scheduling puzzles and *proved* that the answer
+is the best possible for 6,374 of them; the other two are good schedules whose
+proof of optimality was withdrawn after a solver bug and has not yet been
+redone *(2026-09-30)*. Each comes with the schedule that achieves it. That is a
 large pile of worked examples with the answers in the back of the book, and
 this folder started by asking whether a machine learning model could look at
 the pile and learn anything we did not already know.
@@ -143,6 +145,10 @@ the exact ones and the command that regenerates them.
   predicts the two day-long 125 × 125 counts on record to within a factor of
   1.1 (§14, §16). The revised central estimate is 1.5 × 10¹¹ nodes per
   density-2 refutation, with a factor of six either way.
+  *(Superseded 2026-09-28, §35: measured on the ridge at 100 customers the rate
+  did not keep falling — 0.116 per customer from 75 to 100 against 0.093
+  before. Compared like with like, a constant rate puts the 125 × 125 ridge
+  refutation at 2.7 × 10¹¹ nodes, a factor of ten either way.)*
 - **Only the graph matters — and how you label it.** Two matrices with the
   same customer graph but different products cost the search *exactly* the
   same number of nodes (15,900 pairs, zero exceptions). Renaming the customers,
@@ -175,6 +181,12 @@ the exact ones and the command that regenerates them.
   125 × 125 at any width.
 - **Above 40 customers, nothing outside the search checks a refutation.** That
   is the most important open item this folder has.
+  *(Updated 2026-09-28: two checks now reach further. The same relabelling
+  harness asked 25,800 questions at 50–100 customers with zero disagreements
+  (§33), and the search now writes a certificate of every pruning step that an
+  independent checker replays, verified on 141 of 151 corpus instances at
+  41–75 (§32, `search_certificate.py`). Neither reaches the day-long 125 × 125
+  instances.)*
 
 ### About search rules, measured and not enabled
 
@@ -197,7 +209,19 @@ None was switched on; that is the owner's call.
   customer that opens the fewest new stacks; on ties, the one with the most
   unclosed neighbours.* Held out, it lands on the optimum 81% of the time
   against the learned model's 75% and the textbook rule's 50%, and it is the
-  better starting point for the project's search.
+  better starting point for the project's search. **Since 2026-09-28 it is the
+  solver's default upper bound** (`rule+cs-dfs`), after a whole-corpus sweep
+  found it better than the plain search on 780 instances and worse on 12, and
+  better than the learned seed on every statistic (§28) — so LightGBM stays off
+  the solver's path. *Measured 2026-09-29*: on four instances at 100–125
+  customers it changes the upper bound and not the cost of proving optimality
+  (node counts within 0.2%), because that cost is the one refutation both
+  starts must do; it speeds certification only on small instances (§28
+  addendum).
+- **It is not the literature's rule either** (§29): the Minimal Cost Node
+  heuristic of Becceneri, Yanasse & Soma (2004), rebuilt from its pseudocode,
+  shares the first key and breaks ties the opposite way; the rule wins 592 to
+  242.
 - **The optimum is never unique**: typically 10⁵ optimal schedules at 10
   customers and 10¹⁰ at 15, never one (§8). So imitating "the" stored
   schedule step by step was imitating the solver's coin flips.
@@ -213,7 +237,9 @@ fan order and relabelling portfolios for refutations (§18, §20); a learned
 switch for Theorem 2 (§22); formulas over degree statistics or over the thirty
 branching invariants of §24 as new lower bounds; mean degree as the ridge's
 location (§25); and any confidence interval calibrated at 40 customers quoted
-at 50 or more (§14). Each has a section saying why, not only that.
+at 50 or more (§14); the LightGBM seed as a default (§28); and the
+branching-aware bound candidates, closed by `bound_harness.py` (§38). Each has
+a section saying why, not only that.
 
 ## What is proposed and waiting on the owner
 
@@ -222,6 +248,8 @@ in them: exact treewidth as one more ingredient of the solver's lower bound
 (§24); the one-sentence rule registered as a heuristic and as the search's
 seed, which would also settle whether the LightGBM dependency is needed at all
 (§7); and the cost model to order the re-certification queue (§19).
+*(Updated 2026-09-28: the second is done — the owner made `rule+cs-dfs` the
+default, and the LightGBM question is closed against it (§28).)*
 
 ## How you actually use it
 
@@ -229,10 +257,12 @@ The solver runs without any of this installed. Everything here is loaded only
 when asked for by name, so a clone that never runs
 `pip install -r learning/requirements.txt` sees no difference.
 
-Two heuristics are registered by name in `satisfiability/heuristics.py` and
-are not defaults: `learned+cs-dfs` (the LightGBM seed; needs a trained model,
-and errors rather than silently falling back if it is missing) and
-`cs-dfs+degree` (the degree tie-break of §20). One flag exists on the complete
+Heuristics from this folder registered by name in
+`satisfiability/heuristics.py`: `rule+cs-dfs` (the two-key rule seeding the
+restricted search), **the default since 2026-09-28**, and `rule` alone; and,
+not defaults, `learned+cs-dfs` (the LightGBM seed; needs a trained model, and
+errors rather than silently falling back if it is missing), `cs-dfs+degree`
+(the degree tie-break of §20) and `mcnh` (the 2004 literature rule, §29). One flag exists on the complete
 search, `fan_order`, defaulting to today's order.
 
 ```bash
@@ -300,6 +330,7 @@ cost_model.py        censored regression: nodes before the run                  
 ```
 differential.py      the same question under ten labellings and two configurations §15
 proofs.py            DRAT proofs through the SAT encoding, checked by drat-trim   §17
+search_certificate.py  a checkable certificate for the search's refutations      §32
 ```
 
 **Search rules**

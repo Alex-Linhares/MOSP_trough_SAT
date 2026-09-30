@@ -1,5 +1,7 @@
 # Using machine learning to understand the nature of MOSP — third plan
 
+> *Note 2026-09-30: "the three tree-decomposition `sorry`s" (§0) is superseded: `treewidth ≤ pathwidth` and the corrected branch lemma are proved and one `sorry` is left, the §24 conjecture (see `reports/ml_nature.md` §39, §40).*
+
 *2026-09-27. The sequel to `reports/ml_nature_plan_2.md`. Twenty-seven sections
 of `reports/ml_nature.md` and the synthesis `reports/ml_nature_summary.md`
 leave seven questions, ranked by what depends on them. This plan turns the

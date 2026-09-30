@@ -92,8 +92,12 @@ its C core); the certified corpus of 6,376 instances and the generated
 ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
 `better_move` bugs found by the differential harness, the fix, DRAT proofs for
 92% at n ≤ 40, and the search certificate (`../reports/ml_nature.md` §15, §17,
-§32). The two-key rule as the starting layout (§28), and the hardness ridge
-(§11, §25).
+§32). The two-key rule as the starting layout (§28; it improves the upper
+bound and small instances, and leaves certification cost at 100-125
+customers unchanged, §28 addendum), and the hardness ridge (§11, §25). The
+graph version of the search, with a C engine to 1,024 vertices and a first
+benchmark run (Rome 11,183 / 11,534 proved, 97.0%, at ≤ 600 s per graph), is
+`../pathwidth_solver/`, transferred 2026-09-30 (`TRANSFER.md` there).
 
 **To do.** State each dominance rule as a lemma about vertex-separation
 layouts and prove it (in Lean where feasible — the bugs show why). Decide how
@@ -132,25 +136,29 @@ value is then an exact answer for every problem kept. The hunt's catalogue is
 
 **Where to look.** Held already, all MOSP: the 2005 Constraint Modelling
 Challenge (Harvey, Miller, Shaw, Simonis, Wilson), Faggioli & Bentivoglio,
-SCOOP and Chu & Stuckey (`../benchmarks/instances/`). Leads to verify, from
-memory and the papers in hand:
+SCOOP and Chu & Stuckey (`../benchmarks/instances/`). Leads as first
+listed, from memory and the papers in hand, with the hunt's findings
+(2026-09-30; details in `benchmarks/README.md`):
 
 | Problem | Where instances may be | Status |
 |---|---|---|
-| gate matrix layout | the VLSI circuits used in the GMLP heuristic literature (e.g. Oliveira & Lorena 2002, Linhares's own work) | to verify |
-| PLA folding | MCNC / Espresso PLA benchmark circuits | to verify |
-| one-dimensional logic | same circuit sources as gate matrix layout | to verify |
-| vertex separation | VSPLIB (cited by Coudert, Mazauric & Nisse 2014), with grids, trees and Harwell-Boeing graphs from the VSP metaheuristic papers | to verify |
-| pathwidth | TreewidthLIB; PACE 2016-17 treewidth sets; Coudert et al.'s graphs | to verify |
-| node / edge search | probably no benchmark sets; the graph-searching papers are theoretical | to check |
-| narrowness, split bandwidth, edge separation, interval thickness | almost certainly none, since the names are barely used | to check |
+| gate matrix layout | the VLSI circuits used in the GMLP heuristic literature (e.g. Oliveira & Lorena 2002, Linhares's own work) | found: 11 circuits, best tracks published (`benchmarks/raw/lorena_vlsi/`) |
+| PLA folding | MCNC / Espresso PLA benchmark circuits | in scope only as multiple folding; MCNC / LGSynth not downloaded yet |
+| one-dimensional logic | same circuit sources as gate matrix layout | found: the same 11 circuits |
+| vertex separation | VSPLIB (cited by Coudert, Mazauric & Nisse 2014), with grids, trees and Harwell-Boeing graphs from the VSP metaheuristic papers | found: VSPLIB and the Small set held |
+| pathwidth | TreewidthLIB; PACE 2016-17 treewidth sets; Coudert et al.'s graphs | found: Rome, PACE 2016-17, freetdi, TreewidthLIB's colouring subset (the rest must be requested) |
+| node / edge search | probably no benchmark sets; the graph-searching papers are theoretical | none exists; edge search is out of scope (a band) |
+| narrowness, split bandwidth, edge separation, interval thickness | almost certainly none, since the names are barely used | none exists; split bandwidth and edge separation are out of scope |
 
 A survey pass through the citers of each Table 1 paper, which
 `data/openalex_citations.json` already lists, is the systematic way to find
-the rest: any experimental paper among them had instances.
+the rest: any experimental paper among them had instances. Done 2026-09-30
+(`benchmarks/hunt_citers.md`: about 145 experimental papers, 24 instance
+sets).
 
-**To do for the dataset.** Choose the collections and get their licences.
-Fix a file format and a checker. Record provenance for every value, as
+**To do for the dataset.** Choose the collections from the catalogue and get
+their licences; send the four requests of `benchmarks/README.md` §2.
+Deduplicate. Fix a file format and a checker. Record provenance for every value, as
 `solutions/` does. Price the run with the cost model of
 `../reports/ml_nature.md` §19 before starting it.
 
@@ -193,9 +201,10 @@ degree or clique bound can close it).
    paragraph, including the relevance correction.
 3. **Section 4:** state the dominance rules as lemmas about layouts. The graph
    solver and a first benchmark run exist, transferred from `~/dev/pathwidth`
-   (`../pathwidth_solver/TRANSFER.md`). Hunt for
-   benchmark collections for every problem in the table, fix the dataset
-   format and checker, price the run, and run it.
+   (`../pathwidth_solver/TRANSFER.md`), and the benchmark hunt is done
+   (`benchmarks/README.md`). Deduplicate the collections, fix the dataset
+   format and checker (and the two result-file fixes the transfer document
+   lists), price the run, and run it.
 4. **Section 5,** then the LaTeX draft of the whole paper.
 5. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
    the code, and the dataset, built from the final versions of each.

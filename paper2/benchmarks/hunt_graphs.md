@@ -130,7 +130,7 @@ the archive and are left compressed; unpacked they would be about 1 GB.
 - **Licence**: none stated.
 - **Format**: GraphML, one file `grafo<id>.<n>.graphml`, undirected.
 - **Contents**: 11,534 files (the papers say 11,529 and 11,528), n 10–110 (Coudert et al. say ≤ 100), m 9–158. 150 file contents occur more than once byte for byte, so the count of distinct graphs is lower; **not yet deduplicated up to isomorphism**.
-- **Optima**: no per-graph pathwidth published; Coudert et al. give only the solved/unsolved distribution by n. The per-graph values would be new.
+- **Optima**: no per-graph pathwidth published; Coudert et al. give only the solved/unsolved distribution by n. The per-graph values would be new. (2026-09-30: the transferred solver in `../../pathwidth_solver/` has proved 11,183 of the 11,534 at ≤ 600 s each; not yet deduplicated or in the dataset.)
 
 ## Source collections recorded, not downloaded
 

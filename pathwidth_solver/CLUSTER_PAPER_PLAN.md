@@ -1,5 +1,8 @@
 # Paper plan: "Pathwidth is a cluster of problems"
 
+*Transferred on 2026-09-30 from `~/dev/pathwidth`; see `TRANSFER.md`. Superseded: its Lean items are done in Ralph
+loop0005 (`lean/MOSPFormalization/Complex/`), and the current paper plan is `paper2/plan.md`. "This repo" below is now `pathwidth_solver/`.*
+
 Draft 2026-09-28, for evaluation. Assets referred to: `~/dev/MOSP/paper2/` (Table 1 corpus, popularity
 study, `table1.bib`), `~/dev/MOSP/lean/` (Lean 4 development), this repo (solver, benchmarks, literature).
 
@@ -11,7 +14,7 @@ different kind of evidence:
 
 | Claim | Evidence | Status |
 |---|---|---|
-| **C1. One cluster, one dominant name.** The twelve names denote the same quantity up to a stated constant; "pathwidth" is where the literature has gone. | Bibliometrics (OpenAlex): pathwidth 1,609 works, 27× MOSP, more than the other eleven together. | Done (`paper2/popularity.md`), needs a refresh and a solver-literature cut. |
+| **C1. One cluster, one dominant name.** The twelve names denote the same quantity up to a stated constant; "pathwidth" is where the literature has gone. | Bibliometrics (OpenAlex): pathwidth 1,609 works, 27× MOSP, more than the other eleven together. *(Superseded 2026-09-29: relevant works, pathwidth 1,213 and MOSP 58; `paper2/popularity.md`.)* | Done (`paper2/popularity.md`), needs a refresh and a solver-literature cut. |
 | **C2. The equivalences are theorems, and here they are, machine-checked.** For each entry: the published statement, the exact graph construction, the exact shift, and a Lean 4 proof. | The twelve source papers (11 held in full; Kashiwabara–Fujisawa 1979 unobtainable); Lean: vs = pw and MOSP = pw + 1 already sorry-free. | Partly done; the rest is §3. |
 | **C3. One algorithm solves all of them.** An exact solver for any member is an exact solver for every member; concretely, Chu & Stuckey's closing-order search for MOSP, run on graphs, is the strongest exact pathwidth solver published. | Node-for-node identity with the MOSP implementation; benchmarks vs Coudert et al. (JEA 2016) and Kobayashi et al. (SEA 2014). | Done here for the plain Chu & Stuckey search; §4 lists the remaining runs. |
 

@@ -80,7 +80,7 @@ pathwidth has never been a PACE track.
 |---|---|
 | `1998-Bodlaender-Partial-k-Arboretum-Bounded-Treewidth-TCS.pdf` | Survey of treewidth/pathwidth theory and relations to other parameters. TCS 209 (1998). |
 | `2009-Coudert-Huc-Sereni-Pathwidth-of-Outerplanar-Graphs-JGT.pdf` | Pathwidth of outerplanar graphs vs. their duals (pw(G) ≤ 2 pw(G*) + 1). J. Graph Theory 2007. |
-| `2011-Petit-Addenda-Survey-Layout-Problems-BEATCS.pdf` | Addenda (2002–2011) to Díaz–Petit–Serna, "A survey of graph layout problems", ACM Comput. Surv. 34 (2002). The original survey is paywalled: https://doi.org/10.1145/568522.568523 |
+| `2011-Petit-Addenda-Survey-Layout-Problems-BEATCS.pdf` | Addenda (2002–2011) to Díaz–Petit–Serna, "A survey of graph layout problems", ACM Comput. Surv. 34 (2002). The original survey (https://doi.org/10.1145/568522.568523) is held since 2026-09-30 as `diaz_petit_serna_2002_survey_graph_layout_problems.pdf`. |
 
 Classical paywalled references:
 - Skodinis. *Construction of linear tree-layouts which are optimal with respect to vertex separation in linear time.* J. Algorithms 47 (2003).
@@ -97,19 +97,19 @@ appropriate graph. Added 2026-09-27.
 
 | File | Content |
 |---|---|
-| `1992-Kinnersley-Vertex-Separation-Number-Equals-Path-Width-IPL.pdf` | vs(G) = pw(G). IPL 42 (1992). The identity everything in §1 relies on. |
-| `1994-Ellis-Sudborough-Turner-Vertex-Separation-and-Search-Number-of-a-Graph-IandC.pdf` | Linear-time vertex separation of trees and O(n log n) optimal tree layouts; vs = node search number − 1. Information and Computation 113(1):50–79 (1994). Scanned copy (30 pp.). Obtained 2026-09-28. Basis for solving tree components exactly (plan phase 5). |
-| `1981-Lengauer-Black-White-Pebbles-and-Graph-Separation-ActaInf.pdf` | Vertex separator game; relates black-white pebbling of DAGs to separators of undirected graphs. Acta Informatica 16 (1981). Origin of the vertex-separation view. |
-| `1987-Fellows-Langston-Nonconstructive-Advances-Polynomial-Time-Complexity-IPL.pdf` | Graph-minor theorem ⇒ polynomial (nonconstructive) algorithms for fixed-k gate matrix layout / pathwidth. IPL 26 (1987). Poor OCR scan. |
-| `1989-Fellows-Langston-On-Search-Decision-Efficiency-Polynomial-Time-Algorithms-STOC.pdf` | Self-reduction turning nonconstructive decision algorithms into constructive search algorithms (extended abstract). STOC 1989. |
+| `kinnersley_1992_vertex_separation_equals_pathwidth.pdf` | vs(G) = pw(G). IPL 42 (1992). The identity everything in §1 relies on. |
+| `ellis_sudborough_turner_1994_vertex_separation_search_number.pdf` | Linear-time vertex separation of trees and O(n log n) optimal tree layouts; vs = node search number − 1. Information and Computation 113(1):50–79 (1994). Scanned copy (30 pp.). Obtained 2026-09-28. Basis for solving tree components exactly (plan phase 5). |
+| `lengauer_1981_black_white_pebbles_graph_separation.pdf` | Vertex separator game; relates black-white pebbling of DAGs to separators of undirected graphs. Acta Informatica 16 (1981). Origin of the vertex-separation view. |
+| `fellows_langston_1987_nonconstructive_advances_ipl.pdf` | Graph-minor theorem ⇒ polynomial (nonconstructive) algorithms for fixed-k gate matrix layout / pathwidth. IPL 26 (1987). Poor OCR scan. |
+| `fellows_langston_1989_search_decision_efficiency_stoc.pdf` | Self-reduction turning nonconstructive decision algorithms into constructive search algorithms (extended abstract). STOC 1989. |
 
 ### Gate matrix layout (VLSI)
 
 | File | Content |
 |---|---|
-| `1979-Ohtsuki-Mori-Kuh-Kashiwabara-Fujisawa-One-Dimensional-Logic-Gate-Assignment-Interval-Graphs-TCAS.pdf` | Gate assignment = interval-graph augmentation with minimum clique; the earliest pathwidth-equivalent formulation. IEEE Trans. Circuits & Systems CAS-26 (1979). |
-| `1985-Wing-Huang-Wang-Gate-Matrix-Layout-TCAD.pdf` | Graph-theoretic model of gate matrix layout, min number of tracks. IEEE TCAD 4(3) (1985). |
-| `1990-Mohring-Graph-Problems-Gate-Matrix-Layout-PLA-Folding-Computing.pdf` | Full 35-page survey of the graph problems behind gate matrix layout and PLA folding: interval-graph augmentation with minimum clique size (= pathwidth + 1), node search, vertex separation, the MPQ-tree and interval-order machinery, matching problems with side constraints. Computing Suppl. 7 (Computational Graph Theory, Tinhofer–Mayr–Noltemeier–Sysło eds.), 17–51, Springer 1990. Extracted 2026-09-27 from the full book PDF (pp. 20–54 of the file; book kept in `~/Downloads`). Replaces the 2-page preview. |
+| `ohtsuki_mori_kuh_kashiwabara_fujisawa_1979_one_dimensional_logic.pdf` | Gate assignment = interval-graph augmentation with minimum clique; the earliest pathwidth-equivalent formulation. IEEE Trans. Circuits & Systems CAS-26 (1979). |
+| `wing_huang_wang_1985_gate_matrix_layout.pdf` | Graph-theoretic model of gate matrix layout, min number of tracks. IEEE TCAD 4(3) (1985). |
+| `mohring_1990_gate_matrix_layout_pla_folding.pdf` | Full 35-page survey of the graph problems behind gate matrix layout and PLA folding: interval-graph augmentation with minimum clique size (= pathwidth + 1), node search, vertex separation, the MPQ-tree and interval-order machinery, matching problems with side constraints. Computing Suppl. 7 (Computational Graph Theory, Tinhofer–Mayr–Noltemeier–Sysło eds.), 17–51, Springer 1990. Extracted 2026-09-27 from the full book PDF (pp. 20–54 of the file; book kept in `~/Downloads`). Replaces the 2-page preview. |
 
 ### Minimization of open stacks (MOSP, cutting/pattern sequencing)
 
@@ -118,9 +118,9 @@ lineage (2005 Constraint Modelling Challenge; Chu & Stuckey 2009) that the pathw
 
 | File | Content |
 |---|---|
-| `1997-Yanasse-Pattern-Sequencing-Minimize-Maximum-Open-Stacks-EJOR.pdf` | Defines MOSP, complexity, first exact approaches. EJOR 100 (1997). |
-| `1997-Yanasse-Transformation-Pattern-Sequencing-Wood-Cut-Industry-PesqOper.pdf` | Reduction: every MOSP instance is equivalent to one where each pattern has ≤ 2 piece types (i.e. a graph). Pesquisa Operacional 17(1) (1997). |
-| `2004-Becceneri-Yanasse-Soma-Method-Minimization-Maximum-Open-Stacks-Cutting-COR.pdf` | Exact method for MOSP within a cutting process. Computers & OR 31 (2004). |
+| `yanasse_1997b_pattern_sequencing_open_stacks_ejor.pdf` | Defines MOSP, complexity, first exact approaches. EJOR 100 (1997). |
+| `yanasse_1997a_transformation_pattern_sequencing_wood.pdf` | Reduction: every MOSP instance is equivalent to one where each pattern has ≤ 2 piece types (i.e. a graph). Pesquisa Operacional 17(1) (1997). |
+| `becceneri_yanasse_soma_2004_method_mosp_cutting.pdf` | Exact method for MOSP within a cutting process. Computers & OR 31 (2004). |
 | `2004-Yanasse-Limeira-Refinements-Enumeration-Scheme-Pattern-Sequencing-ITOR.pdf` | Refinements of the MOSP branch-and-bound: represent MOSP as graph traversal, split the MOSP graph into parts solved independently, solve special-topology parts (trees, stars) exactly in polynomial time and branch only on the 'complex' parts; the local dominance rule the later Brazilian exact methods cite. Limited computational results. ITOR 11(3) (2004). Obtained 2026-09-27. |
 | `2010-Yanasse-Senne-Minimization-Open-Stacks-Review-Properties-Preprocessing-EJOR.pdf` | Review of MOSP structural properties and preprocessing (dominance, reductions). EJOR 203 (2010). Preprocessing rules transfer to pathwidth. |
 | `2015-Lopes-Valerio-de-Carvalho-Graph-Properties-Minimization-Open-Stacks-New-Integer-Programming-Model-PesqOper.pdf` | MOSP as *interval graph completion* of the MOSP graph (min clique number), with a 20-page tutorial on interval / comparability / chordal graphs and the layout-problem zoo (§3 lists pathwidth, cutwidth, vertex separation); derives an IP model from Olariu's interval-graph characterization; tests on the 2005 challenge instances (optimum found fast, proof of optimality slow on symmetric instances). Pesquisa Operacional 35(2):213–250 (2015), open access on SciELO, doi 10.1590/0101-7438.2015.035.02.0213. Obtained 2026-09-27. |
@@ -131,9 +131,14 @@ lineage (2005 Constraint Modelling Challenge; Chu & Stuckey 2009) that the pathw
 | `2024-Lima-Santos-Carvalho-Delta-Evaluation-Function-Column-Permutation-Problems-arXiv.pdf` | Treats MOSP and gate matrix layout as one *column permutation problem* on a sparse binary matrix (consecutive-ones view) and gives a Δ-evaluation for local-search moves, compared against full re-evaluation and Frinhani et al.'s indirect evaluation on the standard MOSP/GMLP instance sets. Heuristic side only (no exact method); its §2 is a compact up-to-date MOSP/GMLP literature review naming Gonçalves et al. (2016) BRKGA as MOSP state of the art. arXiv 2409.04926 (2024). Obtained 2026-09-27. |
 
 The full MOSP corpus (Chu & Stuckey CP 2009, Linhares & Yanasse 2002, the Yanasse–Becceneri–Soma bounds
-papers, Kirousis–Papadimitriou, Kornai–Tuza, Fomin, …) lives in `~/dev/MOSP/literature/` and
-`~/dev/MOSP/paper2/literature/` (see their MISSING.md / MANIFEST.md). Ten files in §7 are byte-identical copies
-of files there. The challenge instances (`ChallengeInstances2005.tgz`, `problems_*.txt`) are also on that site.
+papers, Kirousis–Papadimitriou, Kornai–Tuza, Fomin, …) is in this folder and in `../paper2/literature/`
+(see `MISSING.md` and `../paper2/literature/MANIFEST.md`). The challenge instances (`ChallengeInstances2005.tgz`,
+`problems_*.txt`) are also on that site.
+
+*Transfer note, 2026-09-30.* This file was `~/dev/pathwidth/literature/README.md`, copied here with the
+papers (`../pathwidth_solver/TRANSFER.md`). Eleven of its files (Ohtsuki et al., Lengauer, Wing et al., Fellows & Langston
+1987 and 1989, Möhring, Kinnersley, Ellis et al., Yanasse 1997a and 1997b, Becceneri et al.) were byte-identical
+to files this folder already held and were not copied; the table rows above now name the held copies.
 
 ## 8. Adjacent width solvers (treewidth / branchwidth) worth imitating
 

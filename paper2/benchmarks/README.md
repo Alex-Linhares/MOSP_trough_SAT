@@ -23,11 +23,15 @@ unpacked. Nothing in `raw/` is part of the repository.
 
 ## 1. Held or downloaded, in scope
 
-"Solvable?" is a first guess at whether the exact search can certify the
-optimum. The customer search has certified MOSP optima up to about 125
-customers, and pathwidth instances are MOSP instances with one pattern per
-edge, so the vertex count is the customer count. It must be priced before a
-run.
+"Solvable?" was first written as a guess at whether the exact search can
+certify the optimum, assuming the MOSP customer search's ceiling of about 125
+customers (pathwidth instances are MOSP instances with one pattern per edge,
+so the vertex count is the customer count). For the graph collections that
+guess is superseded where a result exists: the graph pathwidth solver
+transferred on 2026-09-30 (`../../pathwidth_solver/`, C engine to 1,024
+vertices; results in `../../pathwidth_solver/bench/results/`) has already run
+them, and those rows now give its proved counts, marked "solved in
+pathwidth_solver (≤ 600 s)". The rest must still be priced before a run.
 
 | Collection | Problem | Instances | Size | Optima published? | Where | Solvable? |
 |---|---|---|---|---|---|---|
@@ -38,17 +42,17 @@ run.
 | Carvalho & Soma 2015 | MOSP | 150 | 150-200 square | "optimal" per instance in a spreadsheet, certifier unstated | `raw/carvalho_soma2015/` | beyond what we have certified; to price |
 | Frinhani, Carvalho & Soma 2018, large | MOSP | 610 | 400-1000 square | heuristic only | `raw/frinhani2018_large/` | almost certainly not exactly |
 | VLSI gate-matrix circuits (wli, wsn, v4000, v4050, v4090, v4470, x0, w1-w4) | gate matrix layout, one-dim. logic | 11 | 10-202 nets | best tracks published | `raw/lorena_vlsi/`, Wayback copies of Lorena's INPE page | likely, all small |
-| VSPLIB 2012: grids, trees | vertex separation | 50 + 50 | to 2,916 vertices | yes, by construction | `raw/vsplib/` | known without solving; small ones as checks |
-| VSPLIB 2012: Harwell-Boeing | vertex separation | 73 | 24-960 vertices | heuristic best-knowns only | `raw/vsplib/` | small ones only |
+| VSPLIB 2012: grids, trees | vertex separation | 50 + 50 | to 2,916 vertices | yes, by construction | `raw/vsplib/` | solved in pathwidth_solver (≤ 600 s): trees 50 / 50, grids 9 / 50 (sides 5-13), all matching the known widths |
+| VSPLIB 2012: Harwell-Boeing | vertex separation | 73 | 24-960 vertices | heuristic best-knowns only | `raw/vsplib/` | solved in pathwidth_solver (≤ 600 s): 39 / 73, to 817 vertices |
 | Small (Martí et al. 2008) | vertex separation / pathwidth | 84 | 16-24 vertices | yes, Mallach 2018 Tables 4-5 | `raw/cmplib_small/` | yes |
-| Rome graphs | pathwidth | 11,534 files, some duplicates | 10-110 vertices | no per-graph values ever published | `raw/rome/` | yes, the largest new contribution |
+| Rome graphs | pathwidth | 11,534 files, some duplicates | 10-110 vertices | no per-graph values ever published | `raw/rome/` | solved in pathwidth_solver (≤ 600 s): 11,183 / 11,534 (97.0%) proved; the largest new contribution |
 | PACE 2017 exact | treewidth, used for pathwidth | 200 | 48-3,706 vertices | treewidth, not pathwidth | `raw/pace2017_tw/` | small ones only |
 | PACE 2017 bonus | treewidth | 100 | 92-420 vertices | treewidth for 91 | `raw/pace2017_tw_bonus/` | some |
 | PACE 2016 | treewidth | 283 | up to 24 million vertices | treewidth for 208 | `raw/pace2016_tw/` | small ones only |
 | PACE 2017 heuristic | treewidth | 200 | up to 15 million vertices | no | `raw/pace2017_tw/` | small ones only |
-| freetdi named graphs | treewidth | 150 | 4-3,282 vertices | treewidth upper bounds | `raw/freetdi_named-graphs/` | small ones |
+| freetdi named graphs | treewidth | 150 | 4-3,282 vertices | treewidth upper bounds | `raw/freetdi_named-graphs/` | solved in pathwidth_solver (≤ 600 s): 125 / 150 |
 | freetdi control-flow graphs | treewidth | 1,817 | 1-1,452 vertices | treewidth decompositions | `raw/freetdi_CFGs/` | most are low-width; to price |
-| TreewidthLIB, colouring subset | treewidth | 58, excluding 24 preprocessed copies | 5-864 vertices | lost with the site | `raw/treewidthlib/` | small ones |
+| TreewidthLIB, colouring subset | treewidth | 58, excluding 24 preprocessed copies | 5-864 vertices | lost with the site | `raw/treewidthlib/` | solved in pathwidth_solver (≤ 600 s): 31 / 58, including queen11_11 and queen12_12 |
 
 ## 2. Exist, but must be requested
 

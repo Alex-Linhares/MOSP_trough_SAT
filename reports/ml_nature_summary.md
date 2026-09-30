@@ -13,6 +13,18 @@ that section names; this file computes nothing and is not a bound. Where a
 later section corrected an earlier one, the paragraph gives the corrected
 value and cites both.*
 
+*Audited 2026-09-30 against the code and the corpus. Current state, where it
+differs from the dated paragraphs below: `rule+cs-dfs` is the default
+upper-bound strategy since 2026-09-28 (§8 #14), and on 2026-09-29 the seed
+was measured not to change certification cost at 100–125 customers (§28
+addendum); the corpus is 6,374 of 6,376 certified, two open
+(`Random-125-125-2-2_0` at 25, `-2-3_0` at 21); the Lean development has one
+`sorry` (the §24 conjecture) and, since loop0005, proves Table 1's
+equivalences in `lean/MOSPFormalization/Complex/` (2.10); the expansion bound
+is Harper's vertex-isoperimetric bound, no novelty; and the encoding's
+faithfulness is proved in `Encoding.lean`, so §10's Lean gap is the
+Python-to-clauses step, not the encoding.*
+
 **How to read a paragraph.** Each ends with three lines: the **size range**
 the claim covers, the **regenerate** command (the section holds the full form
 with flags and timings), and a **status** from the plan's four words —
@@ -28,7 +40,9 @@ decides `k`. No solver default changed in four loops; the one change to
 solver code that changed an answer, the C `better_move` fix, landed through
 the owner (`reports/better_move_bug.md` §7), and loop0004's additions to the
 solver — §31's variant flags in the C, §28's `rule+cs-dfs` and §29's `mcnh`
-strategies — default to today's behaviour and are the default of nothing. The
+strategies — default to today's behaviour and are the default of nothing.
+*(Superseded 2026-09-30: the owner made `rule+cs-dfs` the default on
+2026-09-28, §8 #14.)* The
 Lean proof of `mospValue = pathwidth (mospGraph) + 1` (`MOSPGraph.lean`,
 commit `d723d173`) also landed outside a loop, on 2026-09-27. Every split
 groups by file ∪ MOSP-graph isomorphism class. Hardness is counted in nodes,
@@ -47,13 +61,16 @@ extrapolation.
 - **The corpus is 3,667 distinct MOSP graphs, not 6,376 instances**, a quarter
   of them complete graphs; the generators are fingerprintable at 94.4% from
   structure alone; instance space is a lattice of 74 size cells (§1, §2).
+  *(2026-09-30: 6,374 of the 6,376 carry a certified optimum; two
+  125 × 125 entries withdrawn after the `better_move` bug are still open.)*
 - **`mospValue = pathwidth (mospGraph) + 1` is a `sorry`-free Lean theorem**,
   both directions, over the MOSP graph; the `Reduction.lean` statement it
   replaces was over the pattern graph and false (§26, resolution note). So
   the sandwich `degeneracy + 1 ≤ optimum ≤ bw_rcm + 1`, checked on every
   certified instance, and `treewidth + 1 ≤ optimum` are theorems about the
   optimum itself; 34 named theorems proved, one `sorry` kept on purpose
-  (§5, §26, §39, §40). Min-fill treewidth + 1 is the best point estimate to
+  (§5, §26, §39, §40). *(2026-09-30: loop0005 added Table 1's equivalences
+  in `Complex/`, still one `sorry` in the whole development, 2.10.)* Min-fill treewidth + 1 is the best point estimate to
   about 50 customers and 4 stacks high at 125 (§4, §14).
 - **The proved bound fails structurally**: three of its four components bound
   treewidth, pathwidth strictly exceeds treewidth on 48.5–76.3% of the 338
@@ -93,7 +110,10 @@ extrapolation.
   against a kill of 0.02 (§7, §8, §23), and over the whole corpus the rule
   seeds the DFS better than the learned policy on every statistic (94.2% vs
   92.1% exact, 263 / 80) with no model (§28). The rule is not the
-  literature's MCNh, now reproduced and registered (§29).
+  literature's MCNh, now reproduced and registered (§29). *(2026-09-30:
+  `rule+cs-dfs` is the default since 2026-09-28; at 100–125 customers it
+  changes the upper bound and not the certification cost, nodes within 0.2%
+  on four instances, §28 addendum.)*
 - **A cost model puts 88–89% of the 100–125 refutation counts within a
   decade**; it sized the 100 ridge cell correctly from the heuristic upper
   bound and is 1.1 decades under from the certified optimum (§19, §34).
@@ -381,6 +401,22 @@ induced subgraph read back as a `Finset`), and the minor monotonicity that
 `contract-branch` also rests on.
 *Size range:* every finite simple graph; Python cross-checks on 8 and 11
 vertices. *Regenerate:* `cd lean && lake build; python -m learning.sandwich --stage lean`.
+*Status:* theorem.
+
+**2.10 Table 1's equivalences are proved in Lean (loop0005, 2026-09-30;
+outside the three plans).** `lean/MOSPFormalization/Complex/`, 13 files,
+formalises the rows of Linhares & Yanasse (2002) Table 1 against pathwidth:
+gate matrix layout, narrowness, interval thickness, one-dimensional logic,
+split bandwidth (a sandwich), edge separation (false read as cutwidth, exact
+as Lengauer's VSG), PLA folding (simple folding false, multiple folding
+exact), node search (the full game, monotonicity via Bienstock–Seymour),
+edge search (`band ≤ es ≤ vs + 2`, full game), interval thickness = node
+search, and a counterexample to the proof of Kirousis & Papadimitriou (1986)
+Theorem 4.1 as written. One named gap, `EdgeSearchMonotonicity` (LaPaugh),
+is a hypothesis used by no row, not a `sorry`; the axioms are `propext`,
+`Classical.choice` and `Quot.sound` only (`paper2/axiom_check.lean`). The
+development's only `sorry` is still `conjecture_sqrt_tw_f6`.
+*Size range:* every finite graph. *Regenerate:* `cd lean && lake build`.
 *Status:* theorem.
 
 ---
@@ -1225,6 +1261,7 @@ customers it rests on 56 instances with the rule 3.7 stacks off.
 kill (no readable rule keeps half the gain) exceeded at 115%; proposed solver
 change (register the rule as a heuristic and as the `cs-dfs` seed) —
 registered by §28 as `rule` and `rule+cs-dfs`, the default of nothing.
+*(Superseded 2026-09-30: `rule+cs-dfs` is the default since 2026-09-28.)*
 
 **7.2 The rule seeds the DFS better than the learned policy over the whole
 corpus; the LightGBM question is closed (§28).** `two_key_closing_order`
@@ -1262,7 +1299,12 @@ only with each other. *Regenerate:* `python -m learning.rule_seed --workers 16`.
 *Status:* closed question (the LightGBM dependency); proposed solver change
 (`rule+cs-dfs` as the upper-bound strategy wherever `cs-dfs` is used today:
 `customer_search.solve`'s `upper_strategy`, `csearch`, the descent drivers),
-not applied.
+not applied. *(Superseded 2026-09-30: applied by the owner on 2026-09-28,
+commit `d0b5c5ecd`; measured 2026-09-29 on four instances at 100–125, the
+seed changes the starting bound and not the certification cost, nodes within
+0.2%, because the refutation at `optimum − 1` is the same search under
+either seed (§28 addendum). Its value at scale is a better answer when a run
+is stopped early, not a faster proof.)*
 
 **7.3 The rule is not the literature's MCNh, which is now reproduced (§29).**
 Becceneri, Yanasse & Soma (2004), obtained from the author on 2026-09-27,
@@ -1342,6 +1384,9 @@ undetermined); ceiling 50–134 on 238 witnesses. *Regenerate:*
 
 ## 8. Solver changes proposed and never enabled
 
+*(2026-09-30: two of the entries below have since been enabled by the owner,
+#1 and #14; the heading is kept as written.)*
+
 Every entry is behind a flag that defaults to today's behaviour or lives in a
 report; enabling any of them is the owner's change. "Decides" names the
 measurement that would settle whether to enable it, or that already has.
@@ -1350,18 +1395,18 @@ measurement that would settle whether to enable it, or that already has.
 |---|---|---|---|---|---|
 | 1 | Fix the C `better_move` (cross-rule composition; wrong close count; early exit) | §15 | false `unsat` at the optimum on 0.32% of sparse instances at 10–40; fix costs `csearch` refutations +7.3% nodes at n ≤ 40, 1.54× at 41–100, ≥ 19.6× on `Random-100-100-2-4_0` (§31), ≥ 2.34× on the 100 ridge cell (§35) | the differential harness at 0 disagreements — done; §31: both halves necessary (1 and 36 of the 56 false answers return if either is reverted) | **applied by the owner** (`0eb33915`; `better_move_bug.md` §7) |
 | 2 | Exact / interval treewidth as a `_lower_bound` component | §24 | floor rises on 933 corpus instances, 67 gap instances become bound-certified; 0.2–1 s per instance (39 s worst); valid on all 50,949 ("above optimum" = 0); would also retire the eight seed-on-an-interval "beats" of `contract-branch` (§38) | a descent timing over the 25 hardest instances, as `reports/expansion_bound.md` §6 did — a floor shortens a descent only where it equals the optimum, and it never does where `pw > tw` (68% of exact gap instances). Since §39 it rests on the proved `treewidth_add_one_le_mospValue`, not on a cited equality | proposed |
-| 3 | Register the two-key rule as a heuristic and as the `restricted_dfs` seed | §7 | `cs-dfs+rule` 0.127 / 92.7% vs `cs-dfs+lgbm` 0.157 / 91.0% held out (1,920); over all 6,376 (§28): `rule+cs-dfs` 94.2% / 0.092 / 586 stacks, 780 / 12 over `cs-dfs`, 263 / 80 over `learned+cs-dfs`, at 57% of `cs-dfs`'s time | decided by §28's corpus sweep: the rule seeds better with no model | **registered** (`rule`, `rule+cs-dfs`), not default; see #14 |
+| 3 | Register the two-key rule as a heuristic and as the `restricted_dfs` seed | §7 | `cs-dfs+rule` 0.127 / 92.7% vs `cs-dfs+lgbm` 0.157 / 91.0% held out (1,920); over all 6,376 (§28): `rule+cs-dfs` 94.2% / 0.092 / 586 stacks, 780 / 12 over `cs-dfs`, 263 / 80 over `learned+cs-dfs`, at 57% of `cs-dfs`'s time | decided by §28's corpus sweep: the rule seeds better with no model | **registered** (`rule`, `rule+cs-dfs`); `rule+cs-dfs` default since 2026-09-28, see #14 |
 | 4 | `fan_order="degree"` on `decide` | §20 | refutation 0.0% at every size (kill met) | decided: keep `index` | closed |
 | 5 | `fan_order="degree"` for satisfiable-side drivers (`ratchet`, the `k ≥ optimum` calls of a descent) | §20 | −35% witness nodes at 75, −13% at 100 in total; p90 cost 1.1–1.3× | a paired run of `benchmarks.ratchet` under both orders in nodes | proposed |
 | 6 | `cs-dfs+degree` as the `cs-dfs` default | §20 | +0.1 pt exact, −1.3% total overshoot, corpus 99–100 MAE 3.21 → 2.95; 50% slower in Python; over the corpus 128 / 113 against `cs-dfs` at 1.5× the time (§28) | replace the sort-key lambda by a tuple, then re-time; dominated by #14 | registered, not default |
 | 7 | Theorem 2 always on (`sparse_enough_for_better_move` → true) | §22 | nodes −6.6% where the hand rule is off (one cost of 1.2%); seconds +5% on heavy hand-off refutations at 1.167× per node; at 50–100 `csearch / default` never above 1 at p90 in nodes (§33); per-node price 1.1–1.5× on the 100 ridge cell (§34) | the C `better_move`'s per-node overhead: below 1.03 always-on wins the clock from 50 up | proposed and **recommended against** (keep 5) |
 | 8 | A relabelling portfolio in `benchmarks.recertify` on refutations | §18 | min-of-16 refutation speed-up 1.00–1.01, core efficiency 0.063; spread 1.00–1.02 with four labellings under both configurations at 50–100 (§33) | decided at 40–100 | recommended against |
 | 9 | A relabelling portfolio on satisfiable calls (`recertify`, `ratchet`) | §18 | 8–13× where the witness search is hard, core efficiency 0.5–0.8; 2–5% of a descent pair; confirmed at 100 under both configurations: witness spread up to 10⁴×, the witness 6% of a refutation's cost (§33) | same as #5 | proposed |
-| 10 | The cost model to order and size the recertify queue | §19 | 88–89% of 100–125 counts within a decade; sized the 100 ridge cell correctly from the heuristic UB (45.3 / 21.3 core-hours; 28 available) and under-predicts by 1.1 decades from the certified optimum (§34) | the two entries still open finishing; §35's like-for-like law (55 h median pre-fix, ×/÷ 10) is the simpler price | proposed, for ordering only, never for `k` |
+| 10 | The cost model to order and size the recertify queue | §19 | 88–89% of 100–125 counts within a decade; sized the 100 ridge cell correctly from the heuristic UB (45.3 / 21.3 core-hours; 28 available) and under-predicts by 1.1 decades from the certified optimum (§34) | the two entries still open (`Random-125-125-2-2_0`, `-2-3_0`, open as of 2026-09-30) finishing; §35's like-for-like law (55 h median pre-fix, ×/÷ 10) is the simpler price | proposed, for ordering only, never for `k` |
 | 11 | `learned+cs-dfs` as the default upper bound | `reports/learning.md` | 709 / 13 over `cs-dfs` on the file split; 602 / 19 on the honest split; dominated by `rule+cs-dfs` 263 / 80 head to head (§28) | decided by §28 | registered, not default; nothing to be built on it |
 | 12 | Group `learning/study_optimum.py`'s split by `graph_cert` | §1 | file grouping leaks 157 classes across files; worth a seventh of the learned seed's gain (§28) | a study change, not a solver change | proposed |
 | 13 | Draw `test_better_move_never_changes_a_decision`'s instances at 1–3 products per customer and add the two minimal counterexamples | §15 | the dense family it drew never ties enough candidates to expose the cycle | done if the strict `xfail` in `tests/test_differential.py` has been promoted (§28's test run still reports 1 xfailed) | proposed |
-| 14 | `rule+cs-dfs` as the upper-bound strategy wherever `cs-dfs` is used today (`customer_search.solve`'s `upper_strategy`, `csearch`, the descent drivers) | §28 | 780 better / 12 worse over `cs-dfs` on 6,376, 627 of its 988 misses recovered, 16.7 ms against 29.5 per instance; the 12 regressions off by one (one by two) | `DEFAULT_STRATEGY` is still `mcn+tabu` and `upper_strategy` still `cs-dfs` (tested); a solver default, the owner's | **applied by the owner 2026-09-28** (`DEFAULT_STRATEGY`, `customer_search.solve`, `solve_mosp_exact`, `race`) |
+| 14 | `rule+cs-dfs` as the upper-bound strategy wherever `cs-dfs` is used today (`customer_search.solve`'s `upper_strategy`, `csearch`, the descent drivers) | §28 | 780 better / 12 worse over `cs-dfs` on 6,376, 627 of its 988 misses recovered, 16.7 ms against 29.5 per instance; the 12 regressions off by one (one by two); 2026-09-29: certification cost unchanged at 100–125 (nodes within 0.2% on four instances, §28 addendum) | decided by §28; before 2026-09-28 `DEFAULT_STRATEGY` was `mcn+tabu` and `upper_strategy` `cs-dfs` | **applied by the owner 2026-09-28** (`DEFAULT_STRATEGY`, `customer_search.solve`, `solve_mosp_exact`, `race`; `d0b5c5ecd`) |
 | 15 | `mcnh` / `mcnh-arcs` as strategies | §29 | the published MCNh to within tie-breaks (21 of 21 named Frinhani rows); MAE 0.361 against `rule`'s 0.279; 0.94 ms | nothing: `rule` dominates it as a construction and `rule+cs-dfs` dominates both | registered as the literature's reference point |
 | 16 | `bm-first`: better move first, the subset rule over its survivors citing nothing better move discarded | §31 | sound on 350,540 calls at n ≤ 40 and every settled call at 41–100; +2.0% nodes at n ≤ 40, **0.854×** at 41–100, 1.16 on the 100 ridge cell; seconds a wash (0.98) at 1.50 against 1.73 M nodes/s | move the citation check out of the subset loop, then seconds on the two day-long 125 × 125 classes | proposed to tune and re-measure, not to adopt; the four revert flags stay measured, default off, unsound where labelled so |
 | 17 | A pre-encoding re-cover for the SAT path (merge products whose union is a clique, optimum-preserving by §13's construction) | §30 | greedy re-cover 0.77× conflicts and 0.71× seconds at the median on refutations, p90 1.39× | a race, not a switch | proposed |
@@ -1449,6 +1494,13 @@ section explaining the mechanism, not only the outcome.
   (no connectivity, no attachment; a four-vertex counterexample is proved),
   the corrected cut-vertex form and the separator form (§38's Lemma A) are
   proved, the latter through a linked form that needs no common `S` at all.
+- **The rule seed as a certification speed-up at scale** (§28 addendum,
+  2026-09-29): no; on four instances at 100–125 the descent's nodes agree to
+  within 0.2% under either seed, the refutation being the same search.
+- **Novelty of the expansion bound** (2026-09-28, `reports/expansion_bound.md`
+  §4, `literature/MISSING.md`): none; it is Harper's vertex-isoperimetric
+  bound (Harper 1966; on pathwidth Chandran & Kavitha 2006, Lin & Lin 2025).
+  The capped exact computation and the corpus measurement are ours.
 - **Learned upper bounds, learned lower bounds, learned branching** as routes
   to faster solving (`reports/learning_plan.md` §4, inherited): closed before
   these plans and confirmed by them.
@@ -1514,6 +1566,8 @@ does. Nothing here is started.
   instance on one core, some six core-weeks in all, the `d = 2` tail at a
   week or more each. That is the price of a clean corpus at 125 × 125, and it
   is a `csearch` price; `default` at 125 has no count on record (§31, §35).
+  *(2026-09-30: both still open; the corpus stands at 6,374 of 6,376
+  certified.)*
 - **The `m = n` ridge at 100 beyond 28 core-hours** (§34): 24 of 25
   instances stand as verified upper bounds with the step below undecided at
   3.4–4.8 × 10⁹ nodes under `csearch`; the cost model priced the 25
@@ -1544,7 +1598,12 @@ does. Nothing here is started.
   iff MOSP ≤ k): with it, §17's 5,646 proofs become end-to-end certificates.
   With Yanasse's equality now proved (§26), the graph side of that chain is
   closed and this is the remaining formal gap on the SAT side; on the search
-  side it is #20, the three dominance theorems.
+  side it is #20, the three dominance theorems. *(Corrected 2026-09-30: the
+  abstract encoding is already proved faithful, `encodes_iff_mospValue_le` in
+  `lean/MOSPFormalization/Encoding.lean`, `sorry`-free since 2026-09-18,
+  `reports/encoding.md` §8. What is open is that `mosp_encoding.py` emits
+  those clauses and that the AMO and totalizer clause forms mean what the
+  Lean models them as.)*
 - **A pathwidth lower bound that is a different argument**: the family §6
   drew, §21 minimised and §27 enumerated (including the biconnected `(4, 2)`
   shape), on which every degree, clique and treewidth bound is provably

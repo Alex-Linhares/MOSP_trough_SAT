@@ -2,7 +2,7 @@
 
 Source: Linhares, A. & Yanasse, H.H. (2002). *Connections between cutting-pattern
 sequencing, VLSI design, and flexible machines.* Computers & Operations Research
-29(14), 1759–1772. Table 1, p. 1762, held in `../../literature/`.
+29(14), 1759–1772. Table 1, p. 1764 (p. 1762 carries Fig. 1; this file said 1762 until 2026-09-30), held in `../../literature/`.
 
 Table 1 lists twelve problems asserted to be equivalent (up to ±1) and attaches
 references [1,4], [6,8], [7], [6], [5], [9], [10], [11], [12], [13], [14], [13].
@@ -27,8 +27,10 @@ Two references are cited twice, so the table rests on **twelve distinct papers**
 
 ## Acquisition status
 
-**Held: 11 of 12.** All five are legitimate open copies — author-hosted
-preprints or publisher open-archive copies. No paywall was circumvented.
+**Held: 11 of 12**, the Möhring chapter in full (35 pp.). All are legitimate
+copies: author-hosted preprints, publisher open-archive copies, copies sent by
+H. Yanasse, and one chapter extracted from a book obtained through
+institutional access. No paywall was circumvented.
 
 | Ref | Paper | File | Version | Source |
 |---|---|---|---|---|
@@ -116,7 +118,7 @@ browser fetched it immediately, as the published 4-page scan Elsevier produced
 in 2001 (the PDF's own title is its PII, `0012-365X(85)90046-9`).
 
 The same trick should work for any other Elsevier open-archive item in this
-corpus. It does **not** help with [1] or [13], which are genuinely closed.
+corpus. It does **not** help with [1] or [13], which are genuinely closed (both since sent by H. Yanasse, 2026-09-27).
 
 ## Beyond Table 1, held since 2026-09-27
 

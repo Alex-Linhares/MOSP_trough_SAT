@@ -1,5 +1,7 @@
 # What Transfers from Chu & Stuckey (2009) to a SAT Encoding
 
+> *Note 2026-09-30: the recommendation to chase Becceneri, Yanasse & Soma (2004) to "settle the novelty question" is superseded: the paper was obtained on 2026-09-27 and the contraction bound is Yanasse et al.'s (1999) arc contraction bound, no novelty claimed (see `reports/lower_bounds.md` §3). This report is itself superseded on two points by `chu_stuckey_plan.md`.*
+
 Their solver closes SP3 in 410 ms and SP4 in 9,087 ms on 2009 hardware. Ours has
 a solution of 35 for SP3 against a published 34, and spent 12.5 hours on a single
 call at 34 without answering. That gap is the thing a reviewer will press on, so

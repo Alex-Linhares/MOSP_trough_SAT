@@ -201,8 +201,8 @@ connected graph with at least two vertices; the Lean proof needs neither. Lean:
 **(B2) Edge search.** For every graph,
 $$\mathrm{vs}(G) \le \mathrm{es}(G) \le \mathrm{vs}(G) + 2,$$
 and the same for $\mathrm{pes}$. All three offsets occur: $K_2$ has
-$\mathrm{es} = \mathrm{vs} = 1$, and $K_{3,3}$ has $\mathrm{vs} = 3$,
-$\mathrm{es} = 5$. Ellis, Sudborough & Turner 1994, Thm 2.1; Kirousis &
+$\mathrm{es} = \mathrm{vs} = 1$, $K_{1,3}$ has $\mathrm{vs} = 1$,
+$\mathrm{es} = 2$, and $K_{3,3}$ has $\mathrm{vs} = 3$, $\mathrm{es} = 5$. Ellis, Sudborough & Turner 1994, Thm 2.1; Kirousis &
 Papadimitriou 1986, p. 209. Lean: `vertexSeparation_le_edgeSearch_le_add_two`,
 `vertexSeparation_le_progressiveEdgeSearch_le_add_two`.
 

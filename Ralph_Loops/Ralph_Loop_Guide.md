@@ -20,14 +20,22 @@ Ralph Loops solve this by resetting to 0% context at each iteration while preser
 ## Folder Structure
 
 ```
-RalphLoops/
-├── RALPH_LOOP_GUIDE.md    # This file
+Ralph_Loops/
+├── Ralph_Loop_Guide.md    # This file
 └── loop0001/              # First loop instance
     ├── TASK.md            # Immutable goal definition (read-only)
     ├── PROGRESS.md        # Mutable state (updated each iteration)
     ├── iterations.md      # Ordered work items (replaces near_misses.md)
-    └── [optional files]   # Additional context files
+    ├── loop.py            # The driver (one copy per loop)
+    ├── knobs.json         # Run-time controls, re-read before every session
+    ├── status.json        # What is running now, since when, which phase
+    ├── loop.log, session_itNN.log/.jsonl, nohup.out   # written by the driver
+    └── [optional files]   # e.g. gate.py, allowed_sorries.txt (loop0005)
 ```
+
+*(Corrected 2026-09-30: this tree read `RalphLoops/` and `RALPH_LOOP_GUIDE.md`;
+the folder in this repository is `Ralph_Loops/`. Loops 0001–0005 exist, all
+finished; see "As practised here" at the end.)*
 
 > **Naming convention**: The work-item list is called `iterations.md` (not `near_misses.md`).
 > This makes loops general — they can track architectural tasks, problem-solving runs, or anything else.
@@ -160,6 +168,11 @@ python3 loop.py 60 --fresh
 python3 loop.py 20 /path/to/TASK.md /path/to/PROGRESS.md
 ```
 
+*(Note 2026-09-30: the drivers in `Ralph_Loops/loop0001`–`loop0005` take only
+`[N]`, `--fresh` and `--dry-run`; they read TASK.md and PROGRESS.md from their
+own folder and ignore further positional arguments. With no `N` they run up to
+`knobs.json`'s `max_iterations`.)*
+
 **What `loop.py` does each iteration:**
 1. Reads `TASK.md` + `PROGRESS.md` and finds the next task from `iterations.md` (falls back to `near_misses.md`)
 2. Spawns a fresh `claude -p` session with the combined prompt
@@ -197,3 +210,57 @@ The exact string `LOOP_COMPLETE` signals done:
 - Script checks and exits
 
 ---
+
+## As practised here (added 2026-09-30)
+
+How loops 0001–0005 were actually run in this repository. The procedure above
+is the general pattern; this is what to do here.
+
+**Launch** detached from the repository root, with the API key in the
+environment, read from `~/.config/anthropic/api_key` (never typed on a command
+line), so unattended sessions do not draw on the interactive login:
+
+```bash
+export ANTHROPIC_API_KEY="$(tr -d '\n' < ~/.config/anthropic/api_key)"
+setsid nohup python Ralph_Loops/loopNNNN/loop.py >> Ralph_Loops/loopNNNN/nohup.out 2>&1 < /dev/null & disown
+```
+
+The driver refuses to start if the code directories have uncommitted changes,
+and it commits each item with `git add -A`, so commit unrelated work first.
+Never start a second driver on the same folder; it would corrupt its state.
+
+**Check by PID, never by command text.** A `pgrep -f` or `pkill -f` on the
+command line also matches the shell running the check (one session killed its
+own shell that way). Use
+
+```bash
+pgrep -x -f "python Ralph_Loops/loopNNNN/loop.py"                  # the PID
+tr '\0' '\n' < /proc/<pid>/environ | grep -c ANTHROPIC_API_KEY     # the key is set
+cat Ralph_Loops/loopNNNN/status.json; tail Ralph_Loops/loopNNNN/loop.log
+```
+
+**Steer with `knobs.json`**, which is re-read before every session and every
+fix attempt: `stop` (finish the current item, commit, exit), `pause`,
+`iteration_cap_hours`, `fix_cap_hours`, `max_fix_attempts`, `max_iterations`,
+`model`, `sleep_between_s`, `run_tests`. A session that died is marked `- [!]`
+in `iterations.md`; flip it back to `- [ ]` to redo it, and relaunch if the
+driver has exited.
+
+**The gate.** Loops 0001–0004 gate on `python -m pytest tests/ -q -x`.
+loop0005, whose items are Lean proofs, uses its own script,
+`Ralph_Loops/loop0005/gate.py`: `lake build` passes, every file under
+`lean/MOSPFormalization/Complex/` is imported, the count of `sorry` in Lean
+code does not exceed the baseline plus `allowed_sorries.txt`, no new `axiom`,
+and pytest passes. A loop whose correctness criterion is not the test suite
+should write a gate like it and point `TEST_CMD` at it.
+
+**Working beside a running loop**: use a separate git worktree and commit only
+your own paths; never commit a file the loop's session has modified.
+
+| loop | subject | items | ran |
+|---|---|---|---|
+| loop0001 | ML and the nature of MOSP, phase 1 | 8 | finished 2026-09-25 |
+| loop0002 | the generated-ensemble campaign | 6 | 2026-09-26, 2 h 11 min |
+| loop0003 | objects (`reports/ml_nature_plan_2.md`) | 14 | 2026-09-26, 16 sessions |
+| loop0004 | the seven questions (`reports/ml_nature_plan_3.md`) | 13 | 2026-09-27 to 09-28 |
+| loop0005 | Table 1 of Linhares & Yanasse (2002) in Lean (`lean/MOSPFormalization/Complex/`) | 14 | 2026-09-30, $37 |

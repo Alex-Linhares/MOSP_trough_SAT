@@ -1,18 +1,21 @@
 # paper2 — the mathematics of MOSP
 
-A workspace for the mathematical side of the problem only: the equivalences, the
-graph parameters, the bounds and the proofs. No solver code, no benchmarks, no
-engineering. Those live in the rest of the repository.
+The workspace for the second paper, *The pathwidth complex* (`plan.md`): the
+equivalences of Table 1, the graph parameters, the bounds and the proofs, the
+popularity measurement, and the catalogue of benchmark collections for the
+dataset. No solver code: the MOSP solver lives in the rest of the repository,
+the graph pathwidth solver in `../pathwidth_solver/`.
 
 ## Contents
 
+- `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
+  what each argues, what exists, what is still to do, the decisions taken
+  (venue: INFORMS Journal on Computing first) and the remaining work in order.
 - `problem_transformations.md` — section 3 in paper form: each Table 1 problem
   as Instance / Question, then the transformations from equalities to bands to
   what is unproved or false, with sources and Lean names.
 - `proof_reductions.md` — faults found in published proofs of the reductions,
   with the corrected arguments (first: Kirousis & Papadimitriou 1986, Thm 4.1).
-- `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
-  what each argues, what exists, what is still to do.
 - `equivalences.md` — section 3: the master table of the twelve Table 1
   problems (relation to pathwidth, Lean theorem, status), the chain figure
   (`figures/equivalence_chain.{dot,pdf,png}`), the gap and sorry inventory,
@@ -27,12 +30,23 @@ engineering. Those live in the rest of the repository.
   Yanasse (2002). `literature/MANIFEST.md` is the index and status record;
   `literature/SOURCES.txt` records where each file came from.
 - `table1.bib` — BibTeX for Table 1's twelve references, keyed `LY2002ref<n>`.
-- `citation_graph.py` — the citation network and popularity figures in
-  `figures/`, from OpenAlex (cached in `data/`); discussed at the end of
-  `popularity.md`.
 - `popularity.md` — the full popularity measurement: method, the contaminated
   raw counts that were discarded, and the caveats. The table itself is
   reproduced under Step 2 below.
+- `citation_graph.py` — the citation network and popularity figures, from
+  OpenAlex (`python -m paper2.citation_graph`); discussed at the end of
+  `popularity.md`.
+- `trends.py` — growth and decline of each name, and citers by decade
+  (`python -m paper2.trends`).
+- `relevance.py` — the relevance filter behind the 2026-09-29 correction of
+  the name counts (`python -m paper2.relevance`).
+- `figures/` — the popularity and trend figures and the equivalence chain.
+- `data/` — the OpenAlex caches, the relevance labels, and
+  `complex_check.json`, the brute-force check's output.
+- `benchmarks/` — the benchmark hunt for section 4, restricted to the
+  problems proved exactly equivalent: `README.md` is the catalogue, with
+  `hunt_graphs.md`, `hunt_matrix.md` and `hunt_citers.md` behind it; downloads
+  go to `benchmarks/raw/`, which is git-ignored.
 
 ## Step 1 (done): the Table 1 corpus
 
@@ -42,9 +56,10 @@ It cites fourteen bracket numbers, but two references are repeated ([6] for both
 gate matrix layout and PLA folding, [13] for both path-width and vertex
 separation), so the table rests on **twelve distinct papers**.
 
-Eleven of the twelve are now held in `literature/` (Möhring only as a two-page preview); one could not be obtained
-from any open source. The full breakdown, including why each of the seven
-failed and what route to try next, is in `literature/MANIFEST.md`.
+Eleven of the twelve are now held in `literature/`, Möhring (1990) as the
+full 35-page chapter; one, Kashiwabara & Fujisawa (1979), could not be
+obtained from any source. The full breakdown, and the route still worth
+trying for [5], is in `literature/MANIFEST.md`.
 
 Held:
 
@@ -57,25 +72,24 @@ Held:
 | [12] | Fomin 1998 | split bandwidth |
 | [13] | Kinnersley 1992 | path-width, vertex separation (obtained 2026-09-27) |
 | [1] | Yanasse 1997 | MOSP (obtained 2026-09-27) |
-| [6] | Möhring 1990 | gate matrix layout, PLA folding (two-page preview only, 2026-09-27) |
+| [6] | Möhring 1990 | gate matrix layout, PLA folding (full 35-page chapter, obtained 2026-09-27) |
 | [7] | Ohtsuki et al. 1979 | one-dimensional logic (obtained 2026-09-27) |
 | [8] | Wing, Huang & Wang 1985 | gate matrix layout (obtained 2026-09-27) |
 | [14] | Lengauer 1981 | edge separation (obtained 2026-09-27) |
 
-Missing, with the role Table 1 gives each:
+Missing, with the role Table 1 gives it:
 
 | Ref | Reference | Role | Why not held |
 |---|---|---|---|
 | [5] | Kashiwabara, T. & Fujisawa, T. (1979). NP-completeness of the problem of finding a minimum clique number interval graph containing a given graph as a subgraph. *Proc. 1979 IEEE ISCAS*, Tokyo, 657–660. No DOI | interval thickness | 1979 proceedings, never digitised |
-| [6] | Möhring, R.H. (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer Wien, 17–51. DOI 10.1007/978-3-7091-9076-0_2 | gate matrix layout, PLA folding | only the two-page preview held; full chapter still wanted |
 
-[9] has since been obtained exactly that way — it was never paywalled, only
-blocked to non-browser clients, and opening the DOI in a browser fetched it.
-That leaves the seven above, all of which are real paywalls or undigitised
-material rather than access-mechanism problems.
+Of the seven once missing, [9] was obtained by opening the DOI in a browser
+(it was never paywalled, only blocked to non-browser clients), five were sent
+by H. Yanasse on 2026-09-27, and Möhring's chapter was extracted from the book
+the same day. [5] is undigitised 1979 proceedings.
 
-The same seven are recorded in the repository-wide registry at
-`../literature/MISSING.md`, cross-referenced by bracket number.
+The repository-wide registry `../literature/MISSING.md` records the same
+history, cross-referenced by bracket number.
 
 The two papers carrying the most weight for this project are both in hand.
 [9] Kirousis & Papadimitriou 1985, the interval-thickness = node-search-number
@@ -137,6 +151,24 @@ in its abstract, and OpenAlex's thin abstract coverage of older material biases
 against exactly the 1979–85 VLSI entries. `popularity.md` records which raw
 counts were discarded as contaminated and why.
 
+## Step 3 (done, 2026-09-30, Ralph loop0005): the equivalences, proved
+
+Every Table 1 row is settled and proved in Lean
+(`../lean/MOSPFormalization/Complex/`, 13 files; axioms `propext`,
+`Classical.choice` and `Quot.sound` only, `axiom_check.lean`). Seven problems
+equal pathwidth or pathwidth + 1, split bandwidth and edge search are bands,
+and simple PLA folding and edge separation (read as cutwidth) are false as
+Table 1 states them. The one named gap, LaPaugh's `es = pes`, is used by no
+row. The paper form is `problem_transformations.md`, the evidence
+`equivalences.md`, faults in published proofs `proof_reductions.md`.
+
+## What remains
+
+The benchmark hunt is done (`benchmarks/README.md`). What is left — the
+thesis, the paper's figures, the dominance rules as layout lemmas, the
+dataset run, the draft, and last the paper's own repository — is listed in
+order under *Remaining work* in `plan.md`.
+
 ## A caution carried over from the main project
 
 The repository's `CLAUDE.md` records that the MOSP graph (nodes = item types,
@@ -144,4 +176,6 @@ The repository's `CLAUDE.md` records that the MOSP graph (nodes = item types,
 swapped here for a while, and that the pathwidth equivalence concerns the first.
 Table 1's equivalences are stated at the level of problems, not of a particular
 graph construction, so re-deriving each one explicitly — saying which graph,
-and which ±1 — is the natural first piece of mathematics to do here.
+and which ±1 — was the first piece of mathematics done here (Step 3; for MOSP
+the graph is the MOSP graph, `MOSPGraph.lean`, and the statement over the
+pattern graph is false, `MOSPGraphExamples.lean`).

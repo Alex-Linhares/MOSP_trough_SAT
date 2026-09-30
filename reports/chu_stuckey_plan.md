@@ -1,5 +1,7 @@
 # Exploiting Chu & Stuckey (2009): A Complete Plan
 
+> *Note 2026-09-30: §8's "still blocking" is superseded: Becceneri, Yanasse & Soma (2004) was obtained on 2026-09-27, and Yanasse et al. (1999) settles the novelty question, the contraction bound being their arc contraction bound, no novelty claimed (see `reports/lower_bounds.md` §3, `literature/MISSING.md`).*
+
 Chu & Stuckey close SP3 in 410 ms and SP4 in 9,087 ms on 2009 hardware. We have
 not closed either. This is the plan for extracting everything their paper offers,
 ordered by what it is worth to us rather than by the order they present it.

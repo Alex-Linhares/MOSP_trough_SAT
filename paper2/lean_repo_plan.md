@@ -2,7 +2,9 @@
 
 A plan for the owner (loop0005 item 13, 2026-09-30). Nothing has been moved,
 created or pushed. The decision that the proofs get their own repository is
-`plan.md`, *Decisions*.
+`plan.md`, *Decisions*; on 2026-09-30 its scope was widened to the Lean, the
+code and the data, and building it is the paper's last step. This file covers
+the Lean part only.
 
 ## What the repository is for
 
@@ -133,8 +135,8 @@ solver's certificate chain), and the rest of `Sandwich.lean` unless sections
 2. `grep` for `sorry` and `axiom` outside comments: zero (the gate's
    `strip_comments` in `Ralph_Loops/loop0005/gate.py` can be copied).
 3. `paper2/axiom_check.lean`, moved to the repository root and with its
-   control line (`conjecture_sqrt_tw_f6`) deleted: `#print axioms` on the 33
-   theorems section 3 names, each expected to show exactly `propext`,
+   control line (`conjecture_sqrt_tw_f6`) deleted: `#print axioms` on the 44
+   theorems section 3 names (33 through item 13, 11 added by item 14), each expected to show exactly `propext`,
    `Classical.choice`, `Quot.sound`.
 4. The checker `paper2/complex_check.py` and `tests/test_complex_check.py`
    stay in this repository (Python, part of the dataset side), or go into the

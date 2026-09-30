@@ -1,5 +1,8 @@
 # Plan: from `customer_search.py` to a graph pathwidth solver
 
+*Transferred on 2026-09-30 from `~/dev/pathwidth` into `pathwidth_solver/` of the MOSP repository; see `TRANSFER.md`.
+`~/dev/MOSP/...` below is this repository; `src/`, `bench/` and the solver's own tests are under `pathwidth_solver/`.*
+
 Written 2026-09-27. Source: `src/customer_search.py`, a verbatim copy of
 `~/dev/MOSP/satisfiability/customer_search.py` (Chu & Stuckey 2009 customer search,
 Python reference implementation). Target: a Python package that takes a

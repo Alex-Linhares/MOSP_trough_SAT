@@ -1,5 +1,7 @@
 # Machine learning and the nature of MOSP — findings
 
+> *Note 2026-09-30: sections with later corrections, each also noted in place or in a later section: §7 (the rule, "not registered", is registered by §28 and the default since 2026-09-28, §28 addendum); every `csearch` node count before 2026-09-26, in §3, §9–§14 and §16 (the `better_move` fix, §15 resolution, §18, §31, §35); §21/§24's branch lemma (false as stated, corrected in §39) and §26's `sorry`s and pattern-graph `Reduction.lean` (§26 resolution; one `sorry` left, §40). The corpus is now 6,374 of 6,376 certified.*
+
 *Started 2026-09-25. The report `reports/ml_nature_plan.md` lays out the
 questions; this file collects the answers, one section per Ralph-loop
 iteration, appended and never rewritten. Where a later section contradicts an

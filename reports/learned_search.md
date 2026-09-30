@@ -1,5 +1,7 @@
 # Putting the learned policy inside the solver, not beside it
 
+> *Note 2026-09-30: "the corpus is closed" was overturned on 2026-09-23 by the `better_move` bug (now 6,374 of 6,376 certified, two open; `reports/better_move_bug.md`), and the "customer graph overcounts" reading of `pathwidth(G_c) + 1` was the unsound pathwidth encoding's greedy fallback, not the reduction, which is a Lean theorem (`MOSPGraph.lean`, 2026-09-27). Node counts here predate the 2026-09-26 fix.*
+
 *2026-09-22. Code: `learning/guided_search.py`, `learning/descent_bench.py`,
 `satisfiability/race.py`, `benchmarks/race_sweep.py`.*
 

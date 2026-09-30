@@ -1,5 +1,7 @@
 # Profiling the C inner loop
 
+> *Note 2026-09-30: the node counts and per-node costs here predate the 2026-09-26 `better_move` fix (`0eb33915`), which costs +7% nodes at n ≤ 40 and ≥ 15× on `Random-100-100-2-4_0` (see `reports/better_move_bug.md` §7, `reports/ml_nature.md` §31).*
+
 *2026-09-22. `satisfiability/customer_search.c`. The hard refutations visit
 274-627 million nodes at ~0.69 µs each, so after three failed attempts to reduce
 the node **count** (`reports/expansion_bound.md` §6-7), this is the first look at

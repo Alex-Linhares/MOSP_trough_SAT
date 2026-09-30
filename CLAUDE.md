@@ -59,6 +59,8 @@ The pathwidth computation itself is provably correct (SAT certifies optimality v
 
 The overcounting on the customer graph arises because the customer-to-pattern ordering derivation is heuristic (sort by earliest/latest customer position), not optimal. A customer ordering that achieves optimal pathwidth does not necessarily produce a pattern ordering that achieves optimal MOSP.
 
+*(Superseded 2026-09-27: `pathwidth(G_c) + 1 = optimum` is a theorem, `lean/MOSPFormalization/MOSPGraph.lean`. The overcounts on GP5 and SP2–SP4 were overestimates of the pathwidth by the unsound pathwidth SAT encoding's greedy fallback, not a looseness of the reduction; and the agreement graph gives no bound in either direction in general, see Design Decisions.)*
+
 **The correct approach is to encode MOSP directly as SAT**, bypassing the pathwidth reduction entirely. The SAT infrastructure (encoding, solver wrapper, CaDiCaL backend) built for pathwidth can be reused for a direct MOSP encoding.
 
 ## Bounds: No Longer the Weakest, and Still Weak Where It Matters
@@ -141,7 +143,9 @@ all 287,884 graphs to 9 vertices, 4 exceptions at 10, 1,034 at 11 and none
 with `pw − tw = 3`. Both ends of the sandwich, `degeneracy ≤ pathwidth ≤
 bandwidth`, are proved in `lean/MOSPFormalization/Sandwich.lean` with no
 `sorry`; `tw ≤ pw` and the branch lemma are stated there with `sorry` behind a
-gap list (Mathlib lacks `pathGraph.IsTree`).
+gap list (Mathlib lacks `pathGraph.IsTree`). *(Superseded 2026-09-28, §39–§40:
+both are proved, the branch lemma after correcting a false statement; the only
+`sorry` left in the development is the §24 conjecture, kept on purpose.)*
 
 Still on record and still unobtained:
 
@@ -215,7 +219,13 @@ statement; the false statements are deleted from `Reduction.lean`;
 `Sandwich.lean`'s MOSP-side theorems are restated over `mospGraph` without
 `IsReduced`. The only `sorry`s left are the three tree-decomposition
 statements of `Sandwich.lean`. loop0004 item 12 is therefore reduced to
-those (`Ralph_Loops/loop0004/PROGRESS.md`).
+those (`Ralph_Loops/loop0004/PROGRESS.md`). *(Superseded 2026-09-28: two of
+the three are proved; the one `sorry` left is the §24 conjecture in
+`Sandwich.lean`. On 2026-09-30 loop0005 proved the equivalences of Linhares &
+Yanasse (2002) Table 1 in `lean/MOSPFormalization/Complex/`, with one named
+gap, `EdgeSearchMonotonicity` (LaPaugh), that no row uses, and axioms
+`propext`, `Classical.choice`, `Quot.sound` only, checked by
+`paper2/axiom_check.lean`.)*
 
 ### Key References
 
@@ -231,7 +241,7 @@ those (`Ralph_Loops/loop0004/PROGRESS.md`).
 - **Frinhani et al. (2018)** — PageRank heuristic; published optimal values for Challenge/SCOOP instances using Chu & Stuckey's algorithm. *PLOS ONE*, 13(8), e0203076.
 - **Martin, Yanasse & Pinto (2022)** — ILP/CP formulations; comparative benchmarks. *International Transactions in Operational Research*.
 - **Faggioli & Bentivoglio (1998)** — Heuristic approaches and instance generation. *European Journal of Operational Research*, 110(3), 564-575.
-- **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218.
+- **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218. *(2026-09-30)*: in the proof of Theorem 4.1, claim (2) fails as written (`K_{1,3}`); it is repaired by their own Corollary 2.4 or by clearing-time order. `paper2/proof_reductions.md`; the counterexample is `Complex/KirousisPapadimitriouGap.lean`.
 - **Fellows & Langston (1987)** — Nonconstructive advances in polynomial-time complexity. *Information Processing Letters*, 26, 157-162. In `literature/` since 2026-09-27. Lemma 4.1 is the column-expansion lemma (= Yanasse 1997a Proposition 5), Lemma 4.2 minor-closure of bounded layout cost, Lemma 4.3 the pathwidth branch construction with its proof.
 - **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512. In `literature/` since 2026-09-27. **Theorem 7**: graphs of gate matrix layout cost k are exactly the graphs of pathwidth k − 1, proved in one direction (decomposition → layout, via column expansion and their 1987 Lemma 4.1); the converse is elementary from the consecutive-ones property. This is the link between open stacks and pathwidth that Linhares & Yanasse (2002) Table 1 rests on.
 
@@ -263,8 +273,8 @@ Until a provenance field exists, the split is recoverable from other records:
    whatever produced it.
 3. Everything else is a best known solution with optimality unproven.
 
-Measured on 2026-09-22 with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), now read from the files
-themselves rather than reconstructed:
+Measured with 6,376 cached solutions (regenerate with `python -m benchmarks.corpus`), read from the files
+themselves rather than reconstructed (first measured 2026-09-22; the table below is 2026-09-30):
 
 **The corpus was re-opened on 2026-09-23 by a bug, not by a new instance.**
 `better_move` could return a **false refutation** — it let the domination
@@ -274,11 +284,18 @@ entry `benchmarks.csearch` certified with that rule was suspect: 55 of them.
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,361 |
+| `certified:refutation` | 6,372 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 13 |
+| `solution` (optimality open) | 2 |
 
-**6,363 of 6,376 certified optimal; 13 open.** Re-verified with the fixed code
+**6,374 of 6,376 certified optimal (99.97%); 2 open** *(measured 2026-09-30,
+`python -m benchmarks.corpus`)*: `Random-125-125-2-2_0` at 25 and
+`Random-125-125-2-3_0` at 21, both verified upper bounds with optimality
+unproven. No run is working on them: `benchmarks.recertify --days 5` ended at
+2026-09-29 00:07 with its budget expired, re-certifying 6 of its 8 entries
+(`recertify/run.log`). Closing them needs a new, longer run. On 2026-09-23 the table read 6,361 / 2 / 13, i.e. **6,363 of 6,376
+certified; 13 open**, and the rest of this paragraph is that day's account;
+11 of the 13 have since re-certified. Re-verified with the fixed code
 at `value - 1`: 41 of the 55 re-certify, 13 need hours per refutation and have
 had their optimality claim **withdrawn** until they do, and **one was simply
 wrong** — `Random-100-100-2-2_0`, certified at 21 when the true optimum is
@@ -320,7 +337,8 @@ independent refutation, and all 6,376 witnesses re-simulate to their recorded
 value.)*
 
 There is one file per enumerated instance and no file that matches none, and as
-of 2026-09-22 none of them is open.
+of 2026-09-22 none of them is open. *(Superseded 2026-09-23 by the `better_move` re-opening above: as of
+2026-09-30 two are open.)*
 
 The count of 6,376 is instances, not problems: the 46 `MOSP_Instances/Challenge`
 files are the Miller, Shaw and Wilson files under a second name (certified twice),
@@ -360,7 +378,7 @@ satisfiability/                 → SAT-based solvers (pathwidth + direct MOSP)
     heuristics.py                   Upper bound strategies behind one signature
     customer_search.py              Complete search over customer closing orders
     relaxation.py                   Contraction relaxation: certified lower bounds
-    expansion_bound.py              Neighbourhood-expansion lower bound (not degree-based)
+    expansion_bound.py              Neighbourhood-expansion lower bound = Harper's vertex-isoperimetric bound (off by default)
     race.py                         Portfolio: SAT and customer search on one decision call
 
 customer_inter/                 → Customer intersection graph approach (customers as vertices)
@@ -412,9 +430,25 @@ lean/
         MOSPGraph.lean                  mospValue = pathwidth(MOSP graph) + 1, both directions, sorry-free (2026-09-27)
         MOSPGraphExamples.lean          The star counterexample to the pattern-graph statement; K₃ example
         Examples.lean                   Verified example instances
+        Encoding.lean                   The direct SAT encoding is faithful (clause families as modelled; 2026-09-17)
+        Check.lean                      Small instances where the Lean open-stack count agrees with the implementation
         Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth; treewidth ≤ pathwidth; the branch lemma
                                         (corrected) and its separator form — all proved; one sorry left, the §24 conjecture (2026-09-28)
         ForMathlib/                     Candidates for Mathlib contribution
+        Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
+            GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1
+            Narrowness.lean                 narrowness = pathwidth + 1
+            IntervalThickness.lean          interval thickness = pathwidth + 1
+            OneDimLogic.lean                one-dimensional logic: tracks = interval thickness = pathwidth + 1
+            SplitBandwidth.lean             pw ≤ sb ≤ pw + 1 (a sandwich, not an equality)
+            EdgeSeparation.lean             false as cutwidth; Lengauer's vertex-separation game exact
+            PLAFolding.lean                 simple folding is not pathwidth + 1; multiple folding is
+            NodeSearch.lean                 monotone node search mns = vs + 1
+            NodeMonotonicity.lean           full node search is monotone: ns = mns = vs + 1 (via Bienstock–Seymour)
+            IntervalSearch.lean             interval thickness = node search (monotone game)
+            EdgeSearch.lean                 progressive edge search: vs ≤ s ≤ vs + 2; names the EdgeSearchMonotonicity gap
+            EdgeSearchFull.lean             edge search, full game: vs ≤ s ≤ vs + 2
+            KirousisPapadimitriouGap.lean   the K_{1,3} counterexample to a step of their Theorem 4.1 proof, and the repair
 
 learning/                       → ML over the certified corpus (instance → optimum)
     features.py                     Instance features: matrix, MOSP graph, bounds
@@ -454,18 +488,34 @@ learning/                       → ML over the certified corpus (instance → o
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
+paper2/                         → Paper 2, "The pathwidth complex" (the mathematics; plan.md is the plan)
+    problem_transformations.md      Section 3: each Table 1 problem as Instance / Question, every transformation proved
+    proof_reductions.md             Faults in published proofs of the reductions, with repairs
+    equivalences.md                 Section 3's master table: what each source proves, where checked and proved
+    popularity.md                   How much each name is used in the literature (corrected 2026-09-29)
+    citation_graph.py               Who cites the Table 1 papers (OpenAlex), one network figure
+    trends.py                       Which Table 1 names are growing or fading, by period
+    relevance.py                    Relevance filter for the OpenAlex name searches
+    complex_check.py                Brute-force checker: every Table 1 quantity from its own definition
+    axiom_check.lean                Axiom audit of the Complex/ theorems
+    benchmarks/                     The benchmark hunt for the exactly equivalent problems (README.md)
+
+pathwidth_solver/               → Exact graph pathwidth solver, Chu & Stuckey's search ported to graphs
+                                    (transferred from ~/dev/pathwidth 2026-09-30, see TRANSFER.md; Rome
+                                    11,183 / 11,534 proved, VSPLIB trees 50 / 50, HB 39 / 73)
+
 reports/                        → Analysis documents
 tools/drat-trim/                → DRAT proof checker, built from source (loop0003 item 03)
-tests/                          → 1,051 tests across 55 test modules
+tests/                          → 1,234 tests across 67 test modules (collected 2026-09-30)
 literature/                     → Reference papers (PDFs)
-Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001–loop0004 done)
+Ralph_Loops/                    → Unattended one-item-per-session drivers (loop0001–loop0005 done)
 ```
 
 ## Two Graph Formulations
 
 ### Agreement Graph (`mosp/solver.py`)
 
-Nodes = patterns, edges between patterns sharing a customer (`M^T @ M`). Pathwidth gives a **lower bound** on MOSP but can undercount on some instances.
+Nodes = patterns, edges between patterns sharing a customer (`M^T @ M`). Its pathwidth gives **no bound in either direction** in general *(corrected 2026-09-27)*: a four-customer star undercounts (2 against 4), a single customer with many patterns overcounts. On the benchmark corpus it happened to undercount, which is why this line used to call it a lower bound. `MOSPGraphExamples.lean` proves the star counterexample.
 
 ### Customer Intersection Graph (`customer_inter/solver.py`)
 
@@ -589,7 +639,7 @@ pip install -r requirements.txt
 python -m pytest tests/ -v
 
 # Solve via customer intersection graph + branch-and-bound (small/medium instances)
-# NOTE: gives upper bound, may overcount on sparse instances
+# NOTE: gives an upper bound; it can overcount because the pattern ordering is derived heuristically
 python -c "
 from mosp.instance import MOSPInstance
 from customer_inter.solver import solve_mosp
@@ -684,14 +734,35 @@ python -m benchmarks.solve_all --timeout 120
   the boundary is `m² · k ≈ 10⁴`, not `n`, so the direct encoding has no proof
   to offer at 125×125 at any width. The certificate replaces trust in CaDiCaL
   and in the dominance rules, not in the encoding.
-- **Pathwidth reduction is not tight**: `pathwidth(G_c) + 1` overcounts MOSP on sparse instances (validated on GP5, SP2-4). Use `solve_mosp_sat()` for exact results.
-- **Agreement graph undercounts**: `pathwidth(G_a) + 1` gives a lower bound that can be too low.
+- ~~**Pathwidth reduction is not tight**~~ *(corrected 2026-09-27)*: `pathwidth(G_c) + 1` **equals** the optimum, a theorem (`MOSPGraph.lean`). The overcounts once recorded here (GP5, SP2–4) came from the unsound pathwidth SAT encoding's greedy fallback overestimating the pathwidth. What remains a limitation is the pathwidth pipeline in `customer_inter/`: that fallback, and a heuristic pattern ordering derivation, so its values are upper bounds. Use `solve_mosp_exact()` for exact results.
+- **Agreement graph gives no bound**: `pathwidth(G_a) + 1` can be below the optimum or above it *(corrected 2026-09-27; this line used to call it a lower bound)*.
 - **Pathwidth SAT encoding has a variable ID collision bug**: The `encoding.py` pool.occupy/top_id tracking is broken (CardEnc auxiliary variables collide across constraints). The solver works because it falls back to greedy. Fixed in `mosp_encoding.py`.
 - **SAT solver ceiling around n = 125**: The pathwidth position-based encoding produces O(n²) variables and O(n² · degree) clauses. Instances with 125 vertices and density ≥ 4 (pathwidth ≥ 50) exceed 300s.
 - **Exact DP ceiling at n = 18**: The subset DP uses O(2^n) space/time.
 - **Branch-and-bound depends on pathwidth**: Handles n = 100+ when k ≤ 5, but slows down for moderate pathwidth (k ≥ 10) on large graphs.
 
 ## Next Steps
+
+**Paper 2, "The pathwidth complex"** *(2026-09-30)*. The plan is
+`paper2/plan.md`; the venue is the INFORMS Journal on Computing first (decided
+2026-09-29). Section 3 is done: `paper2/problem_transformations.md` gives every
+Table 1 problem as Instance / Question with a formal and a plain-English proof
+of each transformation, `paper2/equivalences.md` is its master table, and
+Ralph loop0005 (14 items, $37) proved the equivalences in
+`lean/MOSPFormalization/Complex/`. Of Table 1's twelve references, eleven are
+held, including the full 35-page Möhring (1990) chapter; only Kashiwabara &
+Fujisawa (1979) is missing (Table 1 is on p. 1764). The benchmark hunt is done
+(`paper2/benchmarks/README.md`), and the graph pathwidth solver was transferred
+into `pathwidth_solver/`. The paper's own repository (Lean, code and data) is
+the **last** step. Paper 1 (ML on MOSP) is `reports/latex/main.pdf`, 18 pages.
+Popularity counts in `paper2/popularity.md` were corrected on 2026-09-29
+(pathwidth 1,213 relevant works, MOSP 58); earlier raw counts are superseded.
+
+**The two-key rule does not speed large certifications** *(measured
+2026-09-29, `reports/ml_nature.md` §28 addendum)*. Made the default upper-bound
+seed on 2026-09-28, it changes the incumbent and not the refutation: on four
+instances at 100–125 customers node counts agree within 0.2%. It helps small
+instances and the upper bound only.
 
 Sequenced by `reports/chu_stuckey_plan.md` §7, which supersedes the earlier list
 here. Items 1, 3 and 6 are done (2026-09-18).
@@ -727,7 +798,11 @@ here. Items 1, 3 and 6 are done (2026-09-18).
   *Status 2026-09-26*: re-refuted through SAT with checked DRAT proofs for
   92.0% of the corpus at n ≤ 40 (`reports/ml_nature.md` §17); the gap left is
   the encoding's correctness in Lean (`Encoding.lean` exists) and everything
-  above the `m² · k ≈ 10⁴` boundary.
+  above the `m² · k ≈ 10⁴` boundary. *(2026-09-30: `Encoding.lean` proves the
+  encoding faithful with no `sorry`, but models the ladder and totalizer by
+  their meaning, and that `mosp_encoding.py` emits exactly those clauses is a
+  reading, not a proof. The customer search's own proof object exists since
+  2026-09-28, §32, verified to 75 customers.)*
 - ~~**A portfolio decision procedure.**~~ **Built and measured 2026-09-22 —
   `satisfiability/race.py`, `reports/learned_search.md` §3. It does not pay, and
   the premise was wrong.** Over 20 hard `Random` instances at densities 2 and 8,
@@ -812,6 +887,8 @@ branching. Each has a report explaining the mechanism, not just the outcome.
   ranker (held out 0.127 / 92.7% vs 0.157 / 91.0%) with no model; the
   measurement that would close the dependency question is `learning.corpus_sweep`
   with the rule seeding `restricted_dfs`, against the 709 / 13 figure above.
+  *(Done in loop0004, §28: the rule wins, and LightGBM stays off the critical
+  path.)*
 - **`benchmarks.reheuristic` can no longer improve anything** — the corpus is
   closed, so `--all` is a scoring run rather than an improvement run, and
   `learning.corpus_sweep` wraps it with held-out models. Scoring sweeps write to
@@ -889,6 +966,8 @@ says otherwise; nothing in it is a bound or a solver change.
   BFS from a min-degree root does not. Distilled trees and scorers keep less
   (57%, 82%) because imitation is the wrong objective. **Not registered in
   `satisfiability/heuristics.py`**: a solver change, left to the owner.
+  *(Superseded 2026-09-28: registered as `rule+cs-dfs` and made the default
+  upper-bound strategy.)*
 - **The optimum is never unique** (§8, n ≤ 15 only): 0 of 2,812 corpus
   instances have a unique optimal closing order even up to twins, 0 of 2,138 a
   unique product order up to reversal; medians 4 × 10⁵ optimal closing orders
@@ -1073,7 +1152,8 @@ measurement that decides it, in `reports/ml_nature_summary.md` §8. Applied:
 the `better_move` fix. Recommended against: Theorem 2 always-on, a
 refutation portfolio, degree fan order for `decide`. Still to decide: exact
 treewidth in `_lower_bound`; the two-key rule as heuristic and DFS seed (one
-`corpus_sweep` run settles it and the LightGBM question with it); degree fan
+`corpus_sweep` run settles it and the LightGBM question with it; *settled
+by §28 and applied 2026-09-28, so two changes are now applied*); degree fan
 order and a portfolio on the satisfiable side. **Open and unpriced**: a sound
 refutation check above 40 customers; the encoding's correctness in Lean
 (Yanasse's equality itself was proved on 2026-09-27); a pathwidth bound that
@@ -1089,6 +1169,8 @@ loop, the MOSP–pathwidth equality was proved in Lean (above). What it settled:
   94.2% vs 92.1%, 263 better / 80 worse, faster), and 780 / 12 over `cs-dfs`
   where the learned seed's 709 / 13 rested on the leaky split. `rule+cs-dfs`
   is registered and proposed as the upper-bound strategy; not the default.
+  *(Superseded 2026-09-28: the owner made it the default. Measured 2026-09-29,
+  it does not change certification cost at 100–125 customers.)*
 - **The rule is not MCNh** (§29): the 2004 arc-traversal heuristic,
   reimplemented from its pseudocode and reproducing its worked example and
   Frinhani's numbers, shares the rule's first key structurally and has the
@@ -1165,7 +1247,7 @@ item 07's commit).
   with Yanasse (1997a), both from the author. The MCNh our `mcn` does not
   reproduce is an arc-traversal heuristic (see Key References); reproducing it
   as a strategy in `satisfiability/heuristics.py` is a small, well-specified
-  item. The global dominance proposition is proved there, and the authors
+  item. *(Done in loop0004, §29: registered as `mcnh`.)* The global dominance proposition is proved there, and the authors
   report that using it inside their branch-and-bound made it slower — the
   same lesson as `reports/inner_loop.md`, that a rule's value depends on what
   runs beside it.

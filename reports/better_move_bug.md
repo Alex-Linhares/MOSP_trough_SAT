@@ -1,5 +1,7 @@
 # A false refutation in `better_move`
 
+> *Note 2026-09-30: "6,363 of 6,376 certified" (§5) is superseded: 11 of the 13 withdrawn entries have re-certified, and the corpus stands at 6,374 of 6,376 with two open (`Random-125-125-2-2_0`, `-2-3_0`). The fix of §4 was incomplete; the second fix is §7 (`0eb33915`, 2026-09-26), and `csearch` counts before it are pre-fix (see `reports/ml_nature_summary.md` §5, §8 #1).*
+
 *2026-09-23. Found while profiling the C inner loop, which is not where anyone
 was looking for it.*
 

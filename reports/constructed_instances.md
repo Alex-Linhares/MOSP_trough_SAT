@@ -1,5 +1,7 @@
 # Can we manufacture instances whose optimum we already know?
 
+> *Note 2026-09-30: "the corpus is closed" (§1) was overturned on 2026-09-23 by the `better_move` bug; it stands at 6,374 of 6,376 certified, two open (see `reports/better_move_bug.md`).*
+
 *2026-09-22. Prompted by a question about packed gate-matrix layouts. Short
 answer: yes, easily, and within every construction tried the optimum is known
 **because** our weakest bound is tight on it. The two properties are the same
