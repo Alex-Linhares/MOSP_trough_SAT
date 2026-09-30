@@ -1,0 +1,82 @@
+# session it05 started 2026-09-30 22:30:43
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*05/,/\*\*06/p' Ralph_Loops/loop0006/iterations.md; cat Ralph_Loops/loop0006/gate.py | head -60; ls paper2/; wc -l satisfiabil
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*06/,$p' Ralph_Loops/loop0006/iterations.md; sed -n '/### 4/,/### 5/p' paper2/plan.md | head -80
+
+Now the code. Let me read the Python reference in full.
+  > $ cd /home/al/dev/MOSP; cat -n satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; cat -n satisfiability/customer_search.c | sed -n 1,330p
+  > $ cd /home/al/dev/MOSP; cat -n satisfiability/customer_search.c | sed -n 330,604p
+  > $ cd /home/al/dev/MOSP; sed -n 1,200p learning/search_certificate.py
+  > $ cd /home/al/dev/MOSP; grep -n "def \|premise\|paper's\|chain\|cycle" learning/search_certificate.py | sed -n 1,120p
+  > $ cd /home/al/dev/MOSP; sed -n 396,705p learning/search_certificate.py
+  > $ cd /home/al/dev/MOSP; grep -n "better_move\|old_move\|memo" benchmarks/csearch.py benchmarks/recertify.py satisfiability/mosp_solver.py satisfiability/native.py
+  > $ cd /home/al/dev/MOSP; sed -n 1,105p reports/better_move_bug.md; sed -n 167,260p reports/better_move_bug.md; sed -n 60,110p benchmarks/csearch.py; sed -n 1,40p s
+  > $ cd /home/al/dev/MOSP; ls literature paper2/literature | grep -i -E "chu|stuckey"; grep -n -i "theorem 1\|theorem 3\|definite\|old move\|Thm" reports/customer_se
+  > $ cd /home/al/dev/MOSP; pdftotext -layout literature/chu_stuckey_2009.pdf /tmp/cs.txt; grep -n -i "theorem\|definite\|better move\|old move\|nogood\|playable\|clo
+  > $ sed -n 170,335p /tmp/cs.txt
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 1,80p Complex/Narrowness.lean; grep -n "^theorem\|^lemma\|^def\|^noncomputable def" Complex/Narrowness.lean 
+  > $ mkdir -p /tmp/ls05 && cat > /tmp/ls05/check.py <<'EOF'
+# Throwaway sanity check of the statements written in search_soundness.md §2 (item 05).
+import random, it
+
+Per-rule conclusions hold with zero failures on 1,461 (graph, k) calls. Now checking what evidence already exists for the memo + old move combination, which the production C runs.
+  > $ cd /home/al/dev/MOSP; grep -n "10,476\|old_move.*memo\|memo.*old_move" tests/test_native.py satisfiability/*.py learning/differential.py | head; grep -n "def co
+  > $ cd /home/al/dev/MOSP; grep -n "CONFIGS\s*=\|def refutation_kwargs" -A12 learning/node_counts.py | head -40
+  > $ cd /home/al/dev/MOSP; ls paper2/search_soundness.md 2>&1; head -40 paper2/problem_transformations.md; grep -n "better_move\|old_move\|memo" pathwidth_solver/pat
+  > $ cd /home/al/dev/MOSP; grep -n "# 1. free\|# 2. not\|# 3. memo\|# 4. premises\|# 5. exhaust\|# 6. children\|if config.get(\"memo\") and old_move\|def _better_pre
+  > $ cd /home/al/dev/MOSP; sed -n 318,395p learning/search_certificate.py
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 86,150p Complex/Narrowness.lean; grep -n "theorem mospValue_eq\|theorem.*pathwidth" MOSPGraph.lean | head
+
+I have all the pieces. Writing `paper2/search_soundness.md` §1–2 now.
+  > Write /home/al/dev/MOSP/paper2/search_soundness.md
+
+Draft written. Now verifying the line citations and page numbers against the sources.
+  > $ cd /home/al/dev/MOSP; for r in 600,611 612,621 622,631 641,657 648,649 659,668 526,528; do echo "== Cert $r"; sed -n "${r}p" learning/search_certificate.py | he
+  > $ cd /home/al/dev/MOSP; grep -n 'if rule == "definite"\|elif rule == "subset"\|elif rule == "better"\|else:$\|raise Rejected(f"node {node.id}: unknown rule\|here 
+  > $ awk '/\f/{p++} /All functions c\(p\)|Define open\(c|currently open stacks|prunes$|only one branch at a time|incorrectly stated|synergies|Naively/{print p+1": "$
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/search_soundness.md'); s=p.read_text()
+reps=[("(2009, §2, p. 244)","(2009, §2, P
+
+Page references fixed to the preprint's PDF pages. Adding one clarifying sentence, then a small test that keeps the quoted code snippets honest against the source.
+  > Edit /home/al/dev/MOSP/paper2/search_soundness.md
+  > Write /home/al/dev/MOSP/tests/test_search_soundness_doc.py
+  > $ cd /home/al/dev/MOSP; python -m pytest tests/test_search_soundness_doc.py -q 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import tests.test_search_soundness_doc as t
+b=t._blocks(); print(len(b), sum(len(l) for _,l in b))
+t._blocks=lambda b=b:[(b[0
+
+The gate is running in the background. While it runs, I'll write the PROGRESS entry and mark the item.
+  > $ cd /home/al/dev/MOSP; head -3 /tmp/claude-1000/-home-al-dev-MOSP/ca0f07da-33a4-48f2-8c42-70a27d941600/tasks/bb2weqniu.output; date '+%Y-%m-%d %H:%M'; python3 - 
+  > $ cd /home/al/dev/MOSP; sed -i 's/^Current: 4\/13 SOLVED/Current: 5\/13 SOLVED/' Ralph_Loops/loop0006/PROGRESS.md; cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+Now I'll wait for the gate to finish.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"description": "loop0006 gate result", "timeout_ms": 600000, "command": "F=/tmp/claude-1000/-home-al-dev-MOSP/ca0f07da-
+  > $ cd /home/al/dev/MOSP; grep -E "lake build|sorry" /tmp/claude-1000/-home-al-dev-MOSP/ca0f07da-33a4-48f2-8c42-70a27d941600/tasks/bb2weqniu.output; cat >> Ralph_Lo
+
+Item 05 is done: `paper2/search_soundness.md` now has §1–2, and the gate passes (`lake build` ok, `sorry` 1 of limit 1, 1,275 tests passed, 2 skipped, 1 xfailed). The item is marked `[x]`, PROGRESS.md reads 5/13, and nothing was committed.
+
+**What the document says**
+- **§1, the model:**
+  - States are closed sets with the free moves already closed, `cl(T) = fin(O(T))`. Since `O(cl T) = O(T)`, the opened set depends only on the closed set, which is why the memo can key on it.
+  - Closing `c` costs `|O(T∪{c}) ∖ T|`, and the question is `Sol_k(∅)`: can every customer be closed in some order at cost ≤ k?
+  - Lemma F says closing the free moves loses nothing.
+  - A full order's cost is `outNarrowness` in `Narrowness.lean`, so the least cost is pw + 1, which is MOSP. Proving this link in Lean is item 07's job.
+- **§2, the rules:** the free move, definite move, subset rule, corrected better move, old move and memo. Each gets its exact premise and conclusion as coded, the quoted C and Python lines, its place in the order, why it cannot cycle, and what the certificate checker verifies for it.
+  - Node soundness is stated as one condition: every chain of coverings from a discarded candidate must end at a kept move or an old move. That is the checker's step 5.
+  - Both known bad forms are located: the uncounted-free-customers close count and the cross-rule cycle.
+- **§2.9, the claim:** the full composition in the code's order answers `unsat` only if `¬Sol_k(∅)`. The five configurations that produced the corpus's refutations are all instances of it.
+
+**Findings, stated but not proved**
+1. **Every production refutation ran old move and the memo together.** `decide()` defaults to both and sends them to the C, and that is the path of `csearch`, `recertify` and the harness default. The Python reference refuses this combination and the certificate checker won't check it. §2.7 argues it is sound: a node's old moves rest only on subtrees that have already been fully refuted, so those refutations are genuine. It is recorded as a claim for item 11 to prove or refute.
+2. The C comment at `customer_search.c:178` says only "the cheapest few q" are tried. In fact they are the first few *by index*, because the cost sort happens after the filter. This does not affect soundness, and I left the code unchanged.
+3. Chu & Stuckey's "synergy" between old move and better move is implemented nowhere.
+
+Before writing, I checked each rule's stated conclusion with a throwaway script on 1,461 `(graph, k)` pairs (graphs up to 8 vertices), with zero failures. That check did not simulate old move or the memo, since both depend on the search path; item 06 covers them. A new test, `tests/test_search_soundness_doc.py`, fails if any of the 54 quoted code lines drifts from the source, and fails if the C's `subset_rule → better_move` order changes.
+
+# result: success in 671s, 36 turns, cost $2.71

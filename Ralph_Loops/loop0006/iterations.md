@@ -34,7 +34,7 @@ assembly and a reserve.
   among the equalities or bands, and their proofs in both registers) and the
   master table of `paper2/equivalences.md`.
 
-- [ ] **05 The search, stated.** Write `paper2/search_soundness.md` §1-2:
+- [x] **05 The search, stated.** Write `paper2/search_soundness.md` §1-2:
   the customer search as a mathematical object (states = closed sets S;
   opened set O(S) = ∪ N[c]; a move closes c; its cost; the decision question
   "is there a closing order of cost ≤ k from S?"), and each rule as it is

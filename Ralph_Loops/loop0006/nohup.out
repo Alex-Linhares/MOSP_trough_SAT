@@ -18,3 +18,8 @@
 [2026-09-30 22:11:46] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-09-30 22:28:15] session it04: ok (exit 0, 53 tool calls)
 [2026-09-30 22:30:43] tests passed: GATE PASS
+[2026-09-30 22:30:43] committed 8d824d034: 04 Lengauer Theorem 2 and KP Theorem 3.1. `Complex/PebblingGu.lean`:
+[2026-09-30 22:30:43] === iteration 5: 05 The search, stated. Write `paper2/search_soundness.md` §1-2:
+[2026-09-30 22:30:43] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-09-30 22:41:55] session it05: ok (exit 0, 35 tool calls)
+[2026-09-30 22:44:23] tests passed: GATE PASS

@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 4/13 SOLVED
+Current: 5/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -285,3 +285,103 @@ Current: 4/13 SOLVED
   `learning/search_certificate.py`, quoting the code lines, in the fixed order
   `definite_move → subset_rule → better_move`, citing standing candidates only.
 
+
+## Iteration 5 — 2026-09-30 22:41
+
+### Completed
+- **05 The search, stated.** New `paper2/search_soundness.md` §1–2, with no
+  Lean. Sources: `satisfiability/customer_search.py` (the reference),
+  `customer_search.c` (`dominance_filter`, `subset_pass`, `better_move_pass`,
+  `inherit_old_moves`, `search`), `learning/search_certificate.py` (the
+  emitter and the checker), and Chu & Stuckey (2009), cited by preprint PDF
+  page. Code is quoted with line numbers at `8d824d034`.
+  - **§1, the model.** Covers:
+    - `O(T)`, `fin(X)`, `o`, `open`, `close`;
+    - the step cost `|O(T∪{c}) ∖ T|`;
+    - free-closed states `cl(T) = fin(O(T))`. `O(cl T) = O(T)`, which is
+      why the memo may key on the closed set;
+    - `Sol_k` on states;
+    - Lemma F (free moves), under `|O(T)∖T| ≤ k`, which holds at every node;
+    - a full order's cost is `outNarrowness` (`Complex/Narrowness.lean`,
+      `outShackBeforeMove`), so `min cost = narrowness = pw + 1 = MOSP`. This
+      is the connection item 07 must prove;
+    - the node procedure step by step.
+  - **§2, the rules.** For each rule: the premise and conclusion exactly as
+    coded, the code lines, the order, why it is acyclic, and what Cert
+    checks. The rules are the free move, the definite move (first `q` in
+    index order; `close` counts `R(S)`, including `q` and `Q`), the subset
+    rule (dominators range over all of `R(S)`, including `Q`, with an index
+    tie-break and an all-dominated fallback), the corrected better move, the
+    old move and the memo. For the better move:
+    - its inputs are the subset survivors in index order;
+    - an earlier-index `q` among the first `L` may cover `r`;
+    - playability is measured in the paper's measure;
+    - the close count skips customers `r` finishes;
+    - the proof sketch goes through Thm 1 at `cl(S∪{r})` and the swap.
+
+    Node soundness is stated as a covering condition: every chain from a
+    discarded playable candidate ends in `L` or `Q`. That is Cert's step 5.
+    The two bad forms (Bug A, the close count; Bug B, the cross-rule cycle)
+    are located in the C variant bits.
+  - **§2.9, the claim.** Every flag setting with `restrict`, `expansion_prune`
+    and the variant bits off, and the order `free → memo → Q → cost cut →
+    definite → subset → better`, answers `unsat` only if `¬Sol_k(∅)`. The
+    table there shows the five configurations that produced refutations
+    (Python reference, C default, `csearch`, `recertify`, Cert `memo`) as
+    instances of it.
+- **Findings (stated, not yet proved):**
+  1. **Every production refutation ran old move and the memo together.**
+     `decide()` defaults to both and routes to the C, which is the path of
+     `csearch`, `recertify` and the harness's `default`. That combination is
+     the one the Python refuses and Cert declines to check. §2.7 argues it is
+     **sound**, by induction on subtree completion order: a node's `Q` entries
+     rest only on refutations that are already complete, so they are genuine.
+     If so, the Python docstring's stated reason ("could refute a state that
+     some other path would not") is not a soundness argument, and only
+     Cert's local-checkability point stands. This is recorded as a claim for
+     item 11, not a finding.
+  2. The C comment at `customer_search.c:178` ("only the cheapest few q")
+     is inaccurate. The dominator loop takes the first `L` subset survivors
+     *by index*, because sorting by cost happens after the filter. This does
+     not affect soundness. The code is not changed.
+  3. Chu & Stuckey's old-move/better-move "synergy" (PDF p. 7) is
+     implemented nowhere.
+- **Spot check before stating** (a throwaway `/tmp` script, not item 06's
+  deliverable). `Sol_k` was computed by DP over closed sets, on 300 random
+  graphs with 2–8 vertices at every k, 1,461 `(graph, k)` pairs. Checked:
+  - Lemma F;
+  - the definite move's conclusion `Sol(S) ⇒ Sol(S·q)`;
+  - the subset rule's `Sol(S·r) ⇒ Sol(S·d)` for every pair;
+  - the corrected better move's `Sol(S·r) ⇒ Sol(S·q)` for every pair.
+
+  There were **zero failures**.
+- **Test.** `tests/test_search_soundness_doc.py` has 3 tests. They check that
+  every quoted `Py:`/`C:` code line (54 lines in 7 blocks) is still in the
+  cited source, with indentation, `...` and the document's `/* */`
+  annotations ignored, and that the C runs `subset_pass` before
+  `better_move_pass`. A mutation (a bogus quoted line) is caught.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1275 passed,
+  2 skipped, 1 xfailed; GATE PASS. No Lean changed.
+
+### Blockers
+- None. The spot check covers only graphs with ≤ 8 vertices, and it did not
+  simulate old move or the memo, because they depend on the path. Item 06 is
+  the exhaustive check. The claim in §2.7 that old move plus the memo is
+  sound rests on an argument and on the existing harness counts, not on a
+  check made here.
+
+### Next
+- Item 06: `paper2/search_check.py`. Implement §2's rules exactly as stated,
+  including the index-order dominator loop with `L`, the subset fallback, and
+  `Q` inheritance, and check node soundness in the covering form of §2.0 on
+  every graph with ≤ 7 vertices at every k:
+  - each rule singly;
+  - the composition;
+  - Bug A and Bug B, which should fail. Bug A may need more than 11 customers
+    (`better_move_bug.md` §7), so search larger random sparse instances if it
+    does not fail at 7;
+  - old move with the memo, run by a full tree search against `Sol_k`. This
+    tests the §2.7 claim.
+- Item 07's connecting lemma: a full order's cost equals `outNarrowness`
+  (`outShackBeforeMove`), then `outNarrownessGraph_eq_narrowness` and
+  `narrowness_eq_pathwidth_add_one`.
