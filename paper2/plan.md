@@ -68,15 +68,15 @@ bandwidth, treewidth ≤ pathwidth, the branch lemma (`Sandwich.lean`). The
 star counterexample showing the pattern graph is the wrong graph
 (`MOSPGraphExamples.lean`).
 
-**To do.** One table: problem, graph, offset, source, proof status (paper /
-Lean). Then the missing links in Lean, in rough order of difficulty: interval
-thickness (interval supergraphs), node search, gate matrix layout as a matrix
-problem, one-dimensional logic, PLA folding, edge search (the +2 is an
-inequality, not an equality), narrowness, split bandwidth, edge separation.
-Decide which of Table 1's "±1" claims are equalities, which are inequalities,
-and whether any is false as stated — the Lean development has already found
-two false statements (`CLAUDE.md`), so each needs a small-instance check
-before it is stated.
+**Done (2026-09-30, loop0005).** Every row is settled and proved in Lean.
+The problems and the transformations, with formal and plain-English proofs,
+are in `problem_transformations.md`. The evidence behind each row is in
+`equivalences.md`, and faults in published proofs are in
+`proof_reductions.md`. The Lean is in `../lean/MOSPFormalization/Complex/`.
+In summary: seven problems are equal to pathwidth + 1 or to pathwidth, split
+bandwidth and edge search are bands, and PLA folding and edge separation are
+false as Table 1 states them. The one stated gap, LaPaugh's theorem, is
+needed by no row.
 
 ## 4. Chu & Stuckey as a pathwidth solver
 
@@ -160,9 +160,11 @@ degree or clique bound can close it).
   journal expects the code and data behind a paper to be deposited in its
   own repository; check the current rules before submission and build the
   dataset to satisfy them.
-- **The Lean proofs go into a GitHub repository made for this paper**
-  (decided 2026-09-29), separate from this one. The paper cites it. The
-  development in `../lean/MOSPFormalization/` is the starting point.
+- **The paper gets its own GitHub repository, holding the Lean, the code and
+  the data** (decided 2026-09-29; scope widened 2026-09-30), separate from
+  this one. The paper cites it. **It is the last thing to do**, once the paper
+  and the dataset are final, so that what is published is what the paper
+  describes. The Lean part follows `lean_repo_plan.md`.
 - **Section 4 benchmarks all three kinds of input** (decided 2026-09-29):
   MOSP instances, pathwidth benchmarks, and instances of the other problems
   in the table, released together as one dataset.
@@ -173,3 +175,16 @@ degree or clique bound can close it).
   appendix and the Lean repository.
 - What to call the dataset, and where to host it beyond the journal's own
   repository.
+
+## Remaining work, in order
+
+1. **Section 1:** obtain the thesis PDF and record what it proved and what it
+   only cited.
+2. **Section 2:** choose the paper's three figures and write the method
+   paragraph, including the relevance correction.
+3. **Section 4:** state the dominance rules as lemmas about layouts. Hunt for
+   benchmark collections for every problem in the table, fix the dataset
+   format and checker, price the run, and run it.
+4. **Section 5,** then the LaTeX draft of the whole paper.
+5. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
+   the code, and the dataset, built from the final versions of each.
