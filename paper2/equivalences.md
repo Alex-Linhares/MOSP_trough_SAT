@@ -6,8 +6,11 @@ it is checked (brute force, `complex_check.py`) and proved (Lean,
 `../lean/MOSPFormalization/Complex/`).
 
 Item 01 (statement census, 2026-09-30) read every source and filled in the
-table below. Nothing in it has been brute-force checked yet (item 02) or
-formalised beyond what existed before the loop. Page numbers are the printed
+table below. Item 02 (brute-force check, 2026-09-30) computed every quantity
+from its own definition and checked every statement exhaustively on small
+inputs; its results fill the "Checked" column and the section *Item 02: the
+brute-force check* at the end. Nothing is formalised beyond what existed
+before the loop. Page numbers are the printed
 page numbers of the source; where only a preprint is held (Kornai & Tuza,
 Fomin) the preprint's own page or section is given.
 
@@ -43,18 +46,18 @@ column; `vs` = vertex separation of the same graph.
 
 | # | Problem | Source (Table 1 ref) | Defined on | Graph | Relation (source, theorem) | Checked | Lean | Status |
 |---|---|---|---|---|---|---|---|---|
-| 1 | MOSP | Yanasse 1997 EJOR [1]; Fink & Voss 1999 [4] | 0/1 matrix (piece types × patterns) | MOSP graph: piece types, adjacent iff they share a pattern | `Z = pw + 1`; not in [1] or [4] (definitions only); Yanasse 1997a Prop. 5, Fellows & Langston 1987 Lemma 4.1 + 1989 Thm 7, with L&Y 2002 Prop. 2 | corpus | `mospValue_eq_pathwidth_add_one` | confirmed (needs one requirement) |
-| 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | — | — | confirmed |
-| 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant | — | — | confirmed (core problem); boundary variant not ±1 |
-| 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | — | — | **false** as stated (simple folding); confirmed for multiple folding |
-| 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | — | — | unsourced at [5]; relation confirmed in [6], [9] |
-| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | — | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
-| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | — | — | weaker than stated (band of width 2) |
-| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1) | — | — | confirmed |
-| 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices | itself | `pw ≤ sb ≤ pw + 1` (Thm 8); `sb = ib = 1/μ_m` (Thms 3, 6) | — | — | weaker than stated (sandwich) |
-| 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | — | `Pathwidth.lean` | definition |
-| 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | — | — | **misattributed and false** under every reading [14] supports |
-| 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | — | `vertexSeparation_eq_pathwidth` | confirmed |
+| 1 | MOSP | Yanasse 1997 EJOR [1]; Fink & Voss 1999 [4] | 0/1 matrix (piece types × patterns) | MOSP graph: piece types, adjacent iff they share a pattern | `Z = pw + 1`; not in [1] or [4] (definitions only); Yanasse 1997a Prop. 5, Fellows & Langston 1987 Lemma 4.1 + 1989 Thm 7, with L&Y 2002 Prop. 2 | corpus; 2,130 matrices, 0 fail | `mospValue_eq_pathwidth_add_one` | confirmed (needs one requirement) |
+| 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | — | confirmed |
+| 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | — | confirmed (core problem); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked) |
+| 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | — | **false** as stated (simple folding); confirmed for multiple folding |
+| 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | — | unsourced at [5]; relation confirmed in [6], [9] |
+| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
+| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
+| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1) | 1,652 graphs, 0 fail | — | confirmed |
+| 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices | itself | `pw ≤ sb ≤ pw + 1` (Thm 8); `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | — | weaker than stated (sandwich) |
+| 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
+| 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | — | **misattributed and false** under every reading [14] supports |
+| 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | 1,652 graphs, 0 fail | `vertexSeparation_eq_pathwidth` | confirmed |
 
 Summary: **six confirmed** (MOSP, gate matrix layout, one-dimensional logic,
 narrowness, node search with the edgeless exception, vertex separation), plus
@@ -150,12 +153,25 @@ form; edge separation, which is also misattributed).
   et al. cite [7] as [3] for exactly this).
 - **Boundary gates.** §IV (p. 680) adds the constraint that `t_l, t_r` sit at
   the two ends (a "B augmentation"), assuming `V(t_l) ∩ V(t_r) = ∅` (eq. 14).
-  That variant is not within ±1 of `pw + 1`: k nets `a_i ∈ V(t_l)`, k nets
-  `b_i ∈ V(t_r)`, and one inner gate `{a_i, b_i}` per i give `H = kK_2`
-  (`pw + 1 = 2`), but at the first inner gate all k nets `a_i` are open plus
-  one `b_i`, so at least k + 1 tracks. (Argument by hand; item 02 to check.)
+  *Corrected by item 02.* Item 01 claimed a family `kK_2` (k nets
+  `a_i ∈ V(t_l)`, k nets `b_i ∈ V(t_r)`, inner gates `{a_i, b_i}`) with
+  tracks `k + 1` against `pw + 1 = 2`. That misread `H`: eq. (6) ranges over
+  all of `T`, boundary gates included, so the `a_i` form a clique, as do the
+  `b_i`, and `H` is two `K_k` joined by a perfect matching, with `pw(H) + 1 =
+  k + 1` = the tracks (checked k = 1..4; pinning the boundary gates costs
+  nothing there). The pin does cost something elsewhere: nets a–e with
+  connection graph the path a-b-c-d-e, `t_l = {c}`, `t_r = {a}`, inner gates
+  `{a,b}, {b,c}, {c,d}, {d,e}, {e}` need 3 tracks pinned and 2 free
+  (`boundary_path_instance`). Over 1,027 random instances (3–6 nets, 4–7
+  gates) the pinned optimum exceeds `pw(H) + 1` by 0 on 980 and by 1 on 47,
+  never by more. Always `≥ pw(H) + 1` (a pinned placement is a placement).
+  An upper bound of `pw(H) + 1 + |V(t_l)| + |V(t_r)|` is expected (stretch the
+  pinned nets' intervals to the ends of an optimal model) but not proved
+  here: realising the stretched model as a pinned gate sequence needs
+  Ohtsuki's B-augmentation argument. Whether a gap of 2 occurs is open.
 - **Status.** Confirmed for the problem as posed in §II–III; the boundary
-  version is a constrained variant, the analogue of Möhring's Weinberger MPP.
+  version is a constrained variant, the analogue of Möhring's Weinberger MPP:
+  not a fixed offset (gap 0 or 1), within ±1 on everything checked.
 
 ### 4. PLA folding — [6] Möhring 1990
 
@@ -412,7 +428,8 @@ on all graphs to 6 vertices, random graphs to 8, matrices to 5 × 5.
 1. `Z(M) = t(M)` (gate matrix layout, tracks by feasible track assignment) on
    every matrix; `Z(M) = pw(G_M) + 1` when M has a 1.
 2. One-dimensional logic without boundary gates `= θ(H) = pw(H) + 1`; with
-   boundary gates, the `kK_2` family exceeds `pw + 2` from k = 3.
+   boundary gates, the `kK_2` family exceeds `pw + 2` from k = 3. *(Item 02:
+   false as stated — `H` includes the boundary gates; see §3.)*
 3. Simple PLA folding: `tracks ≥ max(pw + 1, ⌈|V|/2⌉)`; the 5 × 5 identity has
    tracks 3 against `pw + 1 = 1`; multiple folding `= pw + 1`.
 4. `θ = pw + 1` for ≥ 1 vertex.
@@ -430,3 +447,99 @@ on all graphs to 6 vertices, random graphs to 8, matrices to 5 × 5.
     `vs(G') = mcw(G) + N` on small G.
 11. `cw` and `mcw` are not within ±1 of `pw + 1` (stars `K_{1,7}`, `K_{1,9}`);
     `vs ≤ cw`; candidate `vs ≤ mcw + 1`.
+
+## Item 02: the brute-force check
+
+`paper2/complex_check.py` (`python -m paper2.complex_check`, 2.5 min on 32
+cores; report in `paper2/data/complex_check.json`; tests in
+`tests/test_complex_check.py`). Every quantity is computed from the source's
+own definition, never through pathwidth:
+
+| Quantity | Implemented as | Source |
+|---|---|---|
+| `pw` | search over bag sequences, state (introduced, current bag), interval property enforced | Kinnersley p. 346 |
+| `vs` | literal minimum over all permutations of `max_i |V_L(i)|` (prefix side) | Kinnersley p. 346 |
+| VSG | literal minimum over pebbling orders of the largest vertex cut | Lengauer p. 467 |
+| `θ` | (a) interval models with integer endpoints in `0..n−1`, adjacent ⇒ intersecting, clique = max point load, n ≤ 6; (b) interval models as open/close event words, all n; (a) = (b) on all 208 graphs to 6 vertices | K&P 1985 p. 182; Möhring p. 31 |
+| `ν` | literal shack process over all in-sequences; out-sequences to 6 vertices | Kornai & Tuza §2, Prop. 2.1 |
+| `ns` | game-state search over (guarded set, contaminated edges), place/remove, clearing, recontamination through unguarded vertices; and the monotone game (recontaminating moves forbidden) | K&P 1985 p. 181 |
+| `es` | the same with searcher multiplicities and slides; slide clears the edge, then recontamination; both games | K&P 1986 p. 208 |
+| `ib` | Fomin's numberings (surjections of any length), decided exactly by a finite automaton over per-vertex gap ages, so no length bound is needed | Fomin §3.1 |
+| `sb` | explicit node splittings (up to 3, isomorphism-deduplicated) and bandwidth; an upper bound, compared with `ib` | Fomin §3.2 |
+| `Z` | L&Y eqs. (1)–(2) over all column orders | L&Y 2002 p. 1760 |
+| `t` | column order plus an explicit track assignment (tracks hold gate-disjoint augmented nets), minimised; not the max column sum | Möhring p. 18 |
+| PLA | the same with at most two nets per track | Möhring p. 25 |
+| 1-dim logic | the same on Ohtsuki instances (`|V(t)| ≥ 1`, `|T(v)| ≥ 2`), optionally with `t_l`, `t_r` pinned | Ohtsuki §II, §IV |
+| `cw`, `mcw` | literal minimum over permutations (DP over prefix sets for the 8- and 10-vertex stars) | Lengauer p. 468, Def. 6 |
+
+The three prefix-set DPs (`vs_dp`, `cutwidth_dp`, `modified_cutwidth_dp`)
+are exact because each layout's cost is a max of terms that depend only on
+the prefix and the next vertex; the tests check each against the literal
+minimum. `vs_dp` is used only on the constructed graphs (2-expansions,
+`G_du`, Lengauer's blow-up), never for the `vs = pw` check itself.
+
+**Inputs.** All 1,252 graphs on 1–7 vertices (networkx atlas); 400 random
+graphs on 7 and 8 vertices (`p ∈ {0.25, 0.4, 0.55, 0.7}`, seed 20260930);
+630 matrices up to 4 × 4, one per class under row and column permutation,
+plus 1,500 random 5 × 5, 2,130 in total; 1,027 random Ohtsuki instances with
+two disjoint boundary gates. Edge search runs to 20 edges (1,632 graphs),
+the 2-expansion check to `n + 2m ≤ 18` (181), `G_du` to `n + m ≤ 16` (680).
+
+**Results** (checked / failed):
+
+| # | Statement (item 01 list) | checked | failed |
+|---|---|---|---|
+| 1 | `Z = t` | 2,130 | 0 |
+| 1 | `Z = pw(G_M) + 1` when M has a 1 | 2,130 | 0 |
+| 2 | 1-dim logic tracks `= θ(H) = pw(H) + 1` | 452 | 0 |
+| 2b | pinned boundary tracks `≥` free tracks `= pw(H) + 1` | 1,027 | 0 |
+| 2b | pinned boundary tracks within 1 of `pw(H) + 1` | 1,027 | 0 (gap 1 on 47) |
+| 3 | PLA `≥ max(pw + 1, ⌈nets/2⌉)` | 2,130 | 0 |
+| 3 | multiple folding (`= t`) `= pw + 1` | 2,130 | 0 |
+| 4 | `θ = pw + 1`, ≥ 1 vertex (event words / model search) | 1,652 / 208 | 0 / 0 |
+| 5 | `ns = vs + 1` and `ns = θ`, ≥ 1 edge | 1,644 | 0 |
+| 5 | monotone `ns` = `ns`; `ns = 0` edgeless | 1,652; 8 | 0; 0 |
+| 6 | `vs ≤ es ≤ vs + 2`; `ns − 1 ≤ es ≤ ns + 1`; monotone `es` = `es` | 1,632 | 0 |
+| 6 | `es = vs(2-expansion)` | 181 | 0 |
+| 7 | `ν = pw + 1`; in- = out-narrowness | 1,652; 208 | 0; 0 |
+| 7 | per sequence `ν(seq) = vs(seq) + 1` | tests (C5, all 120 orders) | 0 |
+| 8 | `pw ≤ ib ≤ pw + 1`, connected, ≥ 2 vertices; `ib ≤ bw` | 1,302 | 0 |
+| 9 | `vs = pw`; VSG `= vs` (≥ 1 edge) | 1,652; 1,644 | 0; 0 |
+| 10 | `vs(G_du) = vs + 1` (Lengauer Thm 4) | 680 | 0 |
+| 10 | `vs(G') = mcw(G) + N` (Thm 7) | 7 graphs, N ≤ 4 | 0 |
+| 11 | `vs ≤ cw`; `vs ≤ mcw + 1` | 1,652 | 0 |
+| 11 | `cw` within 1 of `pw + 1` | 1,644 | 341 |
+| 11 | `mcw` within 1 of `pw + 1` | 1,644 | 738 |
+
+Values attained: `es − vs ∈ {0, 1, 2}` (K_2: 0; K_{1,3}: 1; K_{3,3}: 2,
+es 5 as EST state); `ib − pw ∈ {0, 1}` (K_2, K_4: 0; K_{1,3}, K_{3,3}: 1);
+`cw − (pw + 1)` from −1 to 7; `mcw − (pw + 1)` from −2 to 3 (K_2 has mcw 0
+against Z = 2, so even the literal ±1 reading fails downward). Named values:
+`cw(K_{1,7}) = 4`, `mcw(K_{1,9}) = 4`, as item 01 computed. PLA: identity
+matrices `I_3, I_4, I_5` fold to 2, 2, 3 tracks against `t = 1`; incidence
+matrices of `P_5, P_6, P_7` to 3, 3, 4 against `t = 2` — the gap of 2 appears
+at `I_5` and `P_7`, not in the exhaustive range (to 4 × 4, where PLA −
+(pw + 1) ∈ {0, 1}).
+
+**Split bandwidth, how far.** Item 01's open design point is settled by not
+bounding splits at all: `ib` is decided over numberings of every length by a
+finite automaton (per vertex: unseen, open with the age of its last
+occurrence, closed with that age; ages must stay below `b` while the vertex
+still owes an occurrence), and `sb = ib` is Fomin Thm 6. `sb` from its own
+definition is computed only as an upper bound through at most three explicit
+splittings, on K_2, P_3, K_{1,3}, C_4, K_3, K_4: it equals `ib` on all six
+(K_{1,3}: 2 = pw + 1; the others: pw). So the check of `pw ≤ sb ≤ pw + 1` at
+scale rests on Fomin Thm 6; the six direct values are the independent part.
+
+**Verdict changes.** One: the boundary-gate variant of one-dimensional logic
+(§3), which item 01 called "not ±1" on a misread connection graph, is a band
+`{pw + 1, pw + 2}` on everything checked, not a fixed offset. Everything
+else item 01 stated is confirmed as stated, including every counterexample
+(PLA `I_5`, the two stars, `ns = 0` on edgeless graphs) and every band (es,
+sb). The search games agree with their monotone versions on every graph
+checked, which is the monotonicity theorems (K&P 1986 Thm 2.3; LaPaugh) seen
+at small size; items 10–11 prove the monotone relations only.
+
+**Not checked.** `sb` directly beyond the six graphs above; Lengauer Thm 7 at
+N ≥ 5 (the blow-up has N(N + 1) vertices); edge search above 20 edges;
+Lengauer Thms 2–3 (black–white pebbling on dags, outside the twelve rows).

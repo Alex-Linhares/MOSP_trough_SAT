@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 1/14 SOLVED
+Current: 2/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -61,3 +61,50 @@ Current: 1/14 SOLVED
   boundary counterexample if cheap); 08 VSG = vs, Thm 4, and a star
   counterexample for cutwidth; 09 multiple folding = θ and the identity-matrix
   counterexample for simple folding.
+
+## Iteration 2 — 2026-09-30 12:40
+
+### Completed
+- **02 Brute-force checker** — `paper2/complex_check.py` (`python -m
+  paper2.complex_check`, ~2.5 min on 32 cores, JSON report in
+  `paper2/data/complex_check.json`), 14 tests in `tests/test_complex_check.py`
+  (P4, K1,3, C5, K4, K3,3, edgeless, stars, identity matrix, Ohtsuki
+  instances; the prefix-set DPs against literal permutation minima). Every
+  quantity from its own definition: pw by bag-sequence search, vs / VSG /
+  ν / cw / mcw over permutations, θ by interval models (two independent
+  searches), node and edge search by game-state search with recontamination
+  and in the monotone version, ib by Fomin's numberings via a finite
+  automaton (no length bound), sb by explicit splittings (upper bound, six
+  graphs), Z / t / PLA / one-dim logic by column order plus explicit track
+  assignment.
+- Inputs: all 1,252 atlas graphs on 1–7 vertices, 400 random on 7–8, 2,130
+  matrices (every class to 4 × 4, 1,500 random 5 × 5), 1,027 random Ohtsuki
+  boundary instances. **Zero failures** on every exact statement of item 01
+  (MOSP = t = pw + 1, one-dim logic, θ, ν, ns = θ = vs + 1 for ≥ 1 edge, ns = 0
+  edgeless, vs = pw, VSG = vs, Lengauer Thms 4 and 7, EST Thm 2.2, the es band
+  and the ib sandwich); monotone games equal the full games everywhere. The
+  bands are attained: es − vs ∈ {0, 1, 2}, ib − pw ∈ {0, 1}. Counterexamples
+  confirmed: cw / mcw off ±1 on 341 / 738 of 1,644 graphs, PLA `I_5` 3 vs 1.
+- **One item-01 verdict corrected**: the Ohtsuki boundary-gate family `kK_2`
+  was a misreading — eq. (6) builds `H` over all gates, boundary included, and
+  there tracks = pw(H) + 1. The boundary variant is a band {pw + 1, pw + 2}
+  on everything checked (gap 1 on 47 of 1,027; explicit 5-net path instance
+  `boundary_path_instance`). `equivalences.md` §3, row 3 and statement 2
+  updated; new section "Item 02: the brute-force check" at the end.
+- Gate passes (1,231 tests).
+
+### Blockers
+- None. Limits recorded in equivalences.md: sb from its own definition only
+  on six graphs (the scale check goes through ib and Fomin Thm 6); Lengauer
+  Thm 7 only to N = 4; edge search to 20 edges; whether the boundary gap can
+  reach 2 is open.
+
+### Next
+- Item 03 (gate matrix layout in Lean): the checker confirms `t = Z` with an
+  explicit track assignment, identity map on the matrix. The Lean definition
+  should be the track-assignment one (Möhring p. 18), which makes the
+  left-edge argument (max column sum = min tracks for intervals) the real
+  content of the proof.
+- The Lean items can take small counterexamples straight from the checker:
+  `I_5` (PLA), `K_{1,7}` / `K_{1,9}` (cw / mcw), K_2 (mcw 0 vs Z 2), the
+  boundary path instance (item 06, if the variant is formalised).

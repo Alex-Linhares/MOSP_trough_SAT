@@ -1,0 +1,832 @@
+{
+ "stats": {
+  "atlas_graphs": 1252,
+  "random_graphs": 400,
+  "graph_seconds": 50.9,
+  "matrices": 2130,
+  "matrices_exhaustive_classes": 630,
+  "ohtsuki_instances": 452,
+  "matrix_seconds": 2.2
+ },
+ "summary": {
+  "S1 Z = pw(G_M) + 1 when M has a 1": {
+   "checked": 2130,
+   "failed": 0
+  },
+  "S1 Z = t (gate matrix layout)": {
+   "checked": 2130,
+   "failed": 0
+  },
+  "S10 vs(G_du) = vs + 1 (>= 1 edge)": {
+   "checked": 680,
+   "failed": 0
+  },
+  "S11 cw within 1 of pw + 1": {
+   "checked": 1644,
+   "failed": 341
+  },
+  "S11 mcw within 1 of pw + 1": {
+   "checked": 1644,
+   "failed": 738
+  },
+  "S11 vs <= cw": {
+   "checked": 1652,
+   "failed": 0
+  },
+  "S11 vs <= mcw + 1": {
+   "checked": 1652,
+   "failed": 0
+  },
+  "S2 1-dim logic tracks = pw(H) + 1": {
+   "checked": 452,
+   "failed": 0
+  },
+  "S2 1-dim logic tracks = theta(H)": {
+   "checked": 452,
+   "failed": 0
+  },
+  "S2b boundary tracks >= free tracks = pw(H) + 1": {
+   "checked": 1027,
+   "failed": 0
+  },
+  "S2b boundary tracks within 1 of pw(H) + 1": {
+   "checked": 1027,
+   "failed": 0
+  },
+  "S3 PLA >= max(pw + 1, ceil(nets / 2))": {
+   "checked": 2130,
+   "failed": 0
+  },
+  "S3 PLA within 1 of pw + 1": {
+   "checked": 2130,
+   "failed": 0
+  },
+  "S3 multiple folding (= t) = pw + 1 when M has a 1": {
+   "checked": 2130,
+   "failed": 0
+  },
+  "S4 the two interval-thickness searches agree": {
+   "checked": 208,
+   "failed": 0
+  },
+  "S4 theta = pw + 1 (>= 1 vertex; event words)": {
+   "checked": 1652,
+   "failed": 0
+  },
+  "S4 theta = pw + 1 (>= 1 vertex; model search, n <= 6)": {
+   "checked": 208,
+   "failed": 0
+  },
+  "S5 monotone ns = ns": {
+   "checked": 1652,
+   "failed": 0
+  },
+  "S5 ns = 0 on edgeless graphs": {
+   "checked": 8,
+   "failed": 0
+  },
+  "S5 ns = theta (>= 1 edge)": {
+   "checked": 1644,
+   "failed": 0
+  },
+  "S5 ns = vs + 1 (>= 1 edge)": {
+   "checked": 1644,
+   "failed": 0
+  },
+  "S6 es = vs(2-expansion)": {
+   "checked": 181,
+   "failed": 0
+  },
+  "S6 monotone es = es": {
+   "checked": 1632,
+   "failed": 0
+  },
+  "S6 ns - 1 <= es <= ns + 1": {
+   "checked": 1632,
+   "failed": 0
+  },
+  "S6 vs <= es <= vs + 2": {
+   "checked": 1632,
+   "failed": 0
+  },
+  "S7 in- and out-narrowness agree": {
+   "checked": 208,
+   "failed": 0
+  },
+  "S7 nu = pw + 1 (>= 1 vertex)": {
+   "checked": 1652,
+   "failed": 0
+  },
+  "S8 ib <= bandwidth": {
+   "checked": 1302,
+   "failed": 0
+  },
+  "S8 pw <= ib <= pw + 1 (connected, >= 2 vertices)": {
+   "checked": 1302,
+   "failed": 0
+  },
+  "S9 VSG = vs (graphs with an edge)": {
+   "checked": 1644,
+   "failed": 0
+  },
+  "S9 vs = pw": {
+   "checked": 1652,
+   "failed": 0
+  }
+ },
+ "counterexamples": {
+  "S11 mcw within 1 of pw + 1": [
+   {
+    "n": 2,
+    "edges": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "n": 3,
+    "edges": [
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "n": 3,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ]
+    ]
+   },
+   {
+    "n": 3,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "n": 4,
+    "edges": [
+     [
+      2,
+      3
+     ]
+    ]
+   }
+  ],
+  "S11 cw within 1 of pw + 1": [
+   {
+    "n": 6,
+    "edges": [
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      5
+     ]
+    ]
+   },
+   {
+    "n": 6,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      5
+     ]
+    ]
+   },
+   {
+    "n": 6,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      5
+     ]
+    ]
+   },
+   {
+    "n": 6,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ]
+    ]
+   },
+   {
+    "n": 6,
+    "edges": [
+     [
+      0,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      0,
+      5
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      5
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      2,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      3,
+      5
+     ],
+     [
+      4,
+      5
+     ]
+    ]
+   }
+  ]
+ },
+ "value_sets": {
+  "es - vs": [
+   0,
+   1,
+   2
+  ],
+  "ib - pw": [
+   0,
+   1
+  ],
+  "cw - (pw+1)": [
+   -1,
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "mcw - (pw+1)": [
+   -2,
+   -1,
+   0,
+   1,
+   2,
+   3
+  ],
+  "PLA - (pw+1)": [
+   0,
+   1
+  ]
+ },
+ "named": {
+  "P4": {
+   "pw": 1,
+   "vs": 1,
+   "vsg": 1,
+   "theta": 2,
+   "nu": 2,
+   "ns": 2,
+   "ns_mono": 2,
+   "es": 1,
+   "es_mono": 1,
+   "ib": 1,
+   "bw": 1,
+   "cw": 1,
+   "mcw": 0,
+   "vs_2exp": 1,
+   "vs_du": 2
+  },
+  "P6": {
+   "pw": 1,
+   "vs": 1,
+   "vsg": 1,
+   "theta": 2,
+   "nu": 2,
+   "ns": 2,
+   "ns_mono": 2,
+   "es": 1,
+   "es_mono": 1,
+   "ib": 1,
+   "bw": 1,
+   "cw": 1,
+   "mcw": 0,
+   "vs_2exp": 1,
+   "vs_du": 2
+  },
+  "C4": {
+   "pw": 2,
+   "vs": 2,
+   "vsg": 2,
+   "theta": 3,
+   "nu": 3,
+   "ns": 3,
+   "ns_mono": 3,
+   "es": 2,
+   "es_mono": 2,
+   "ib": 2,
+   "bw": 2,
+   "cw": 2,
+   "mcw": 1,
+   "vs_2exp": 2,
+   "vs_du": 3
+  },
+  "C6": {
+   "pw": 2,
+   "vs": 2,
+   "vsg": 2,
+   "theta": 3,
+   "nu": 3,
+   "ns": 3,
+   "ns_mono": 3,
+   "es": 2,
+   "es_mono": 2,
+   "ib": 2,
+   "bw": 2,
+   "cw": 2,
+   "mcw": 1,
+   "vs_2exp": 2,
+   "vs_du": 3
+  },
+  "K4": {
+   "pw": 3,
+   "vs": 3,
+   "vsg": 3,
+   "theta": 4,
+   "nu": 4,
+   "ns": 4,
+   "ns_mono": 4,
+   "es": 4,
+   "es_mono": 4,
+   "ib": 3,
+   "bw": 3,
+   "cw": 4,
+   "mcw": 2,
+   "vs_2exp": 4,
+   "vs_du": 4
+  },
+  "K1,3": {
+   "pw": 1,
+   "vs": 1,
+   "vsg": 1,
+   "theta": 2,
+   "nu": 2,
+   "ns": 2,
+   "ns_mono": 2,
+   "es": 2,
+   "es_mono": 2,
+   "ib": 2,
+   "bw": 2,
+   "cw": 2,
+   "mcw": 1,
+   "vs_2exp": 2,
+   "vs_du": 2
+  },
+  "K3,3": {
+   "pw": 3,
+   "vs": 3,
+   "vsg": 3,
+   "theta": 4,
+   "nu": 4,
+   "ns": 4,
+   "ns_mono": 4,
+   "es": 5,
+   "es_mono": 5,
+   "ib": 4,
+   "bw": 4,
+   "cw": 5,
+   "mcw": 3,
+   "vs_2exp": null,
+   "vs_du": 4
+  },
+  "K2": {
+   "pw": 1,
+   "vs": 1,
+   "vsg": 1,
+   "theta": 2,
+   "nu": 2,
+   "ns": 2,
+   "ns_mono": 2,
+   "es": 1,
+   "es_mono": 1,
+   "ib": 1,
+   "bw": 1,
+   "cw": 1,
+   "mcw": 0,
+   "vs_2exp": 1,
+   "vs_du": 2
+  },
+  "K1,7": {
+   "pw": 1,
+   "cw": 4,
+   "mcw": 3
+  },
+  "K1,9": {
+   "pw": 1,
+   "cw": 5,
+   "mcw": 4
+  }
+ },
+ "split_bandwidth": {
+  "K2": {
+   "pw": 1,
+   "ib": 1,
+   "bw": 1,
+   "sb<=2 splittings": 1,
+   "sb<=3 splittings": 1
+  },
+  "P3": {
+   "pw": 1,
+   "ib": 1,
+   "bw": 1,
+   "sb<=2 splittings": 1,
+   "sb<=3 splittings": 1
+  },
+  "K1,3": {
+   "pw": 1,
+   "ib": 2,
+   "bw": 2,
+   "sb<=2 splittings": 2,
+   "sb<=3 splittings": 2
+  },
+  "C4": {
+   "pw": 2,
+   "ib": 2,
+   "bw": 2,
+   "sb<=2 splittings": 2,
+   "sb<=3 splittings": 2
+  },
+  "K3": {
+   "pw": 2,
+   "ib": 2,
+   "bw": 2,
+   "sb<=2 splittings": 2,
+   "sb<=3 splittings": 2
+  },
+  "K4": {
+   "pw": 3,
+   "ib": 3,
+   "bw": 3,
+   "sb<=2 splittings": 3,
+   "sb<=3 splittings": 3
+  }
+ },
+ "lengauer_thm7": {
+  "K2": {
+   "N": 2,
+   "mcw": 0,
+   "vs(G')": 2,
+   "holds": true
+  },
+  "P3": {
+   "N": 3,
+   "mcw": 0,
+   "vs(G')": 3,
+   "holds": true
+  },
+  "K3": {
+   "N": 3,
+   "mcw": 1,
+   "vs(G')": 4,
+   "holds": true
+  },
+  "K1,2+K1": {
+   "N": 4,
+   "mcw": 0,
+   "vs(G')": 4,
+   "holds": true
+  },
+  "P4": {
+   "N": 4,
+   "mcw": 0,
+   "vs(G')": 4,
+   "holds": true
+  },
+  "K1,3": {
+   "N": 4,
+   "mcw": 1,
+   "vs(G')": 5,
+   "holds": true
+  },
+  "C4": {
+   "N": 4,
+   "mcw": 1,
+   "vs(G')": 5,
+   "holds": true
+  }
+ },
+ "ohtsuki_boundary": {
+  "1": {
+   "tracks_boundary": 2,
+   "tracks_free": 2,
+   "pw(H all gates)+1": 2,
+   "pw(H inner gates)+1": 2
+  },
+  "2": {
+   "tracks_boundary": 3,
+   "tracks_free": 3,
+   "pw(H all gates)+1": 3,
+   "pw(H inner gates)+1": 2
+  },
+  "3": {
+   "tracks_boundary": 4,
+   "tracks_free": 4,
+   "pw(H all gates)+1": 4,
+   "pw(H inner gates)+1": 2
+  },
+  "4": {
+   "tracks_boundary": 5,
+   "tracks_free": 5,
+   "pw(H all gates)+1": 5,
+   "pw(H inner gates)+1": 2
+  },
+  "path a-b-c-d-e": {
+   "tracks_boundary": 3,
+   "tracks_free": 2,
+   "pw1": 2
+  },
+  "random: instances by boundary - (pw+1)": {
+   "0": 980,
+   "1": 47
+  },
+  "random: worst": {
+   "matrix": [
+    [
+     0,
+     1,
+     0,
+     0,
+     1,
+     1,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1
+    ],
+    [
+     1,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     0,
+     0,
+     1,
+     0
+    ]
+   ],
+   "lr": [
+    0,
+    6
+   ],
+   "tracks_boundary": 3,
+   "tracks_free": 2,
+   "pw1": 2
+  }
+ },
+ "pla": {
+  "I3": {
+   "pla": 2,
+   "t": 1,
+   "pw+1": 1
+  },
+  "I4": {
+   "pla": 2,
+   "t": 1,
+   "pw+1": 1
+  },
+  "I5": {
+   "pla": 3,
+   "t": 1,
+   "pw+1": 1
+  },
+  "P5 incidence": {
+   "pla": 3,
+   "t": 2,
+   "pw+1": 2
+  },
+  "P6 incidence": {
+   "pla": 3,
+   "t": 2,
+   "pw+1": 2
+  },
+  "P7 incidence": {
+   "pla": 4,
+   "t": 2,
+   "pw+1": 2
+  }
+ },
+ "seconds": 146.6,
+ "quick": false,
+ "seed": 20260930
+}

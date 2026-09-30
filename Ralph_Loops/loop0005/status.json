@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 11:57:22",
+  "updated": "2026-09-30 12:20:51",
   "phase": "tests",
-  "started": "2026-09-30 11:47:05",
-  "item": "01 Statement census. For each of the twelve Table 1 problems, read"
+  "started": "2026-09-30 11:59:48",
+  "item": "02 Brute-force checker. `paper2/complex_check.py`: implement each"
 }

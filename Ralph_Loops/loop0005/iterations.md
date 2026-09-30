@@ -19,7 +19,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   Papadimitriou (1985, 1986) proves interval thickness = node search number
   and node search = vs + 1. Build the master table. No code.
 
-- [ ] **02 Brute-force checker.** `paper2/complex_check.py`: implement each
+- [x] **02 Brute-force checker.** `paper2/complex_check.py`: implement each
   problem from its *own* definition (not via pathwidth) as an exhaustive
   solver for small inputs — pathwidth (path decompositions), vertex
   separation (layouts), interval thickness (interval supergraphs), narrowness

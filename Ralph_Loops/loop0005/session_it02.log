@@ -1,0 +1,135 @@
+# session it02 started 2026-09-30 11:59:48
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0005/iterations.md; wc -l paper2/equivalences.md; cat Ralph_Loops/loop0005/gate.py | head -80; ls paper2 tests | head 
+  > $ cd /home/al/dev/MOSP; cat paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP/paper2/literature; ls; cat MANIFEST.md | head -40
+  > $ cd /tmp; for f in 12_fomin_1998 07_ohtsuki_et_al_1979 14_lengauer_1981 10_kirousis_papadimitriou_1986; do pdftotext -layout /home/al/dev/MOSP/paper2/literature/
+  > $ cd /tmp; grep -n -i "boundary\|B augment\|t_l\|(14)" 07_ohtsuki_et_al_1979.txt | head -40; grep -n -i -A30 "Theorem 7" 14_lengauer_1981.txt | head -80
+  > $ cd /tmp; sed -n 300,420p 07_ohtsuki_et_al_1979.txt
+
+I'm writing the brute-force checker now: each Table 1 quantity from its own source definition, then checking item 01's eleven statements on small graphs and matrices.
+  > $ cd /home/al/dev/MOSP; python -c "import networkx, sys; print(networkx.__version__, sys.version)"; nproc; uptime; ls paper2/data | head; head -30 tests/test_sand
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "def activeSuffix\|def vertexSeparation\|def layoutSeparation\|def separationAt" -A6 VertexSeparation.lean 
+  > Write /home/al/dev/MOSP/paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP; timeout 600 python -c "
+import time
+from paper2.complex_check import *
+for name,g in list(_named_graphs().items()):
+    t=time.time(); r=g
+  > $ cd /home/al/dev/MOSP; timeout 900 python -c "
+import time
+import paper2.complex_check as cc
+for name,g in list(cc._named_graphs().items()):
+    t=time.time(); r
+  > $ cd /home/al/dev/MOSP; timeout 900 python -c "
+import time, random, itertools
+import paper2.complex_check as cc
+def T(f,*a,**k):
+    t=time.time(); v=f(*a,**k); 
+
+Timing the expensive solvers (search games, interval models) on K6 and random 7–8 vertex graphs to size the full run.
+  > $ sleep 60; cat /tmp/claude-1000/-home-al-dev-MOSP/1ed0bbf2-f682-428b-905c-3c55302374bb/tasks/b0ouk5zth.output
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/1ed0bbf2-f682-428b-905c-3c55302374bb/tasks/b0ouk5zth.output
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import re
+p='paper2/complex_check.py'
+s=open(p).read()
+s=s.replace('''    n, adj = g
+    pos = {v: i for i, v in enumerat
+  > $ cd /home/al/dev/MOSP; wc -l paper2/complex_check.py; grep -n "^def \|^# ---" paper2/complex_check.py | head -100; git status --short paper2
+  > $ cd /home/al/dev/MOSP; timeout 300 python -c "
+import time, itertools
+import paper2.complex_check as cc
+from networkx.generators.atlas import graph_atlas_g
+gs=[c
+  > $ cd /home/al/dev/MOSP; timeout 600 python -c "
+import time, itertools, random
+import paper2.complex_check as cc
+def T(f,*a,**k):
+    t=time.time(); v=f(*a,**k); 
+
+Solvers are fast enough; widening the random samples and launching the full run.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+s=s.replace("        if m <= 12:\n            r[\"es\"]","        if m <= 20
+  > $ sed -n 120,215p /tmp/07_ohtsuki_et_al_1979.txt
+
+Found that item 01's boundary-gate counterexample is wrong: Ohtsuki's connection graph includes the boundary gates, so that family has no gap. Adding a sweep that looks for a real boundary gap.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+s=s.replace('''def identity_matrix(k):''','''def boundary_path_instance():
+ 
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.complex_check > /tmp/cc_full.log 2>&1 &
+echo $!
+
+Full run launched (PID 26099). Writing the tests on hand-checked graphs while it runs.
+  > Write /home/al/dev/MOSP/tests/test_complex_check.py
+  > $ cd /home/al/dev/MOSP; time timeout 600 python -m pytest tests/test_complex_check.py -q 2>&1 | tail -15; tail -3 /tmp/cc_full.log
+  > $ sleep 5; ps -p 26099 -o etime,stat; cat /tmp/cc_full.log | head; uptime
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! kill -0 26099 2>/dev/null; do sleep 5; done; tail -c 6000 /tmp/cc_full.log
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+s=s.replace("- every graph on at most 6 vertices (the networkx atlas, 1,253 
+  > $ cd /home/al/dev/MOSP; ls -la paper2/data/complex_check.json; grep -n "Item 01 (statement census" -A4 paper2/equivalences.md | head; grep -n "^| 3 \|^| 4 \|^- \*
+
+Now updating `paper2/equivalences.md`: filling the Checked column, correcting item 01's boundary-gate claim, and adding the item 02 section.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1, a[:60]
+    s=s.replace(a
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1, a[:60]
+    s=s.replace(a
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+a="""  never by more. Always `≥ pw(H) + 1` (a pinned placement is a placement
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; python - <<'EOF'
+s=open('iterations.md').read()
+a="- [ ] **02 Brute-force checker.**"
+assert s.count(a)==1; s=s.repla
+
+Item 02 (the brute-force checker) is done, and the gate passes: `lake build` is OK, the sorry count is unchanged at 1, and 1,231 tests pass. Nothing is committed.
+
+**What I built**
+- **`paper2/complex_check.py`**: runs as `python -m paper2.complex_check` and takes about 2.5 minutes on 32 cores. It computes every Table 1 quantity from its source's own definition, never through pathwidth:
+  - pathwidth by searching bag sequences;
+  - vertex separation, Lengauer's vertex separator game, narrowness, cutwidth and modified cutwidth as minima over all orderings;
+  - interval thickness by two independent interval-model searches, which agree on every graph on up to 6 vertices;
+  - node and edge search as game-state searches with recontamination, plus the monotone versions;
+  - interval bandwidth over Fomin's numberings of any length;
+  - MOSP, gate matrix layout, PLA folding and one-dimensional logic by column order plus an explicit track assignment.
+- **`tests/test_complex_check.py`**: 14 tests on graphs checked by hand (path, star, cycle, K4, K3,3, edgeless graphs, the identity matrix, Ohtsuki instances).
+- **Inputs:** all 1,252 graphs on 1–7 vertices (networkx atlas), 400 random graphs on 7–8 vertices, 2,130 matrices (every class up to 4×4 plus 1,500 random 5×5), and 1,027 random boundary-gate instances.
+
+**Results**
+- **No failures on any exact statement from item 01.** That covers MOSP = gate matrix layout = pathwidth + 1, one-dimensional logic, interval thickness, narrowness, node search = interval thickness = vertex separation + 1 (on graphs with an edge), node search = 0 on edgeless graphs, vertex separation = pathwidth, and Lengauer's game = vertex separation. It also covers Lengauer's Theorems 4 and 7, Ellis–Sudborough–Turner's Theorem 2.2, and the edge-search and interval-bandwidth bands.
+- **The bands are real.** Edge search minus vertex separation takes all three values 0, 1 and 2. Interval bandwidth minus pathwidth takes both 0 and 1.
+- **Monotone games match the full games on every graph checked**, so recontamination never helped at these sizes.
+- **Item 01's counterexamples hold:**
+  - Cutwidth is outside ±1 of pathwidth + 1 on 341 of 1,644 graphs, and modified cutwidth on 738.
+  - PLA folding of the 5×5 identity needs 3 tracks against 1.
+
+**One item-01 verdict was wrong, and I corrected it.** Item 01's boundary-gate example for one-dimensional logic (the `kK_2` family) misread Ohtsuki's connection graph. His eq. (6) builds it over all gates, boundary gates included, and on that graph the family has no gap. The boundary variant does have a real gap: tracks are pathwidth + 1 or pathwidth + 2 on everything checked, with an explicit 5-net path instance showing the +1. That makes it a band, not a fixed offset. Whether the gap can ever reach 2 is still open.
+
+**Limits**, all recorded in `paper2/equivalences.md`:
+- Split bandwidth is computed directly from node splittings only on six small graphs. At scale the check goes through interval bandwidth and relies on Fomin's Theorem 6 (split bandwidth = interval bandwidth).
+- Lengauer's Theorem 7 is checked only for graphs up to 4 vertices, and edge search only up to 20 edges.
+
+`paper2/equivalences.md` now has the Checked column filled in, the corrected §3, and a new section "Item 02: the brute-force check" with the full results table. PROGRESS.md says 2/14 SOLVED and item 02 is marked `[x]`. Twelve items remain, so the loop is not complete.
+
+# result: success in 1263s, 34 turns, cost $2.97
