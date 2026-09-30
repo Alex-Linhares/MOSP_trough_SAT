@@ -31,7 +31,7 @@ run.
 
 | Collection | Problem | Instances | Size | Optima published? | Where | Solvable? |
 |---|---|---|---|---|---|---|
-| 2005 Constraint Modelling Challenge | MOSP | 5,806 | to 134 × 49 | yes, certified here | `../../benchmarks/instances/` | done |
+| 2005 Constraint Modelling Challenge | MOSP | 5,852, including 46 duplicate copies | to 134 × 49 | yes, certified here | `../../benchmarks/instances/` | done |
 | Faggioli & Bentivoglio 1998 | MOSP | 300 | to 50 × 40 | yes, certified here | held | done |
 | SCOOP (selected) | MOSP | 24 | to 134 × 49 | yes, certified here | held | done |
 | Chu & Stuckey 2009 | MOSP | 200 | 30-125 | yes, certified here | held | done |
