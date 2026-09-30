@@ -1,0 +1,108 @@
+# session it13 started 2026-09-30 14:47:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A15 "13 Assemble" Ralph_Loops/loop0005/iterations.md; cat Ralph_Loops/loop0005/allowed_sorries.txt; wc -l paper2/equivalences.md 
+  > $ cd /home/al/dev/MOSP; sed -n 1,140p paper2/equivalences.md; grep -n "^#" paper2/equivalences.md; sed -n '/^## 3/,/^## 4/p' paper2/plan.md
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/plan.md; cat paper2/README.md | head -60; git log --oneline -3 -- lean/MOSPFormalization/Complex/KirousisPapadimitriou
+  > $ cd /home/al/dev/MOSP/lean; for f in MOSPFormalization/Complex/*.lean; do echo "== $f $(wc -l <$f)"; grep -n "^import" $f; done; cat MOSPFormalization.lean; head
+  > $ cd /home/al/dev/MOSP/lean; for f in MOSPFormalization/*.lean MOSPFormalization/ForMathlib/*.lean; do echo "== $f $(wc -l <$f) sorry:$(grep -c '\bsorry\b' $f)"; 
+  > $ cd /home/al/dev/MOSP/lean; grep -oE "^(noncomputable )?(private )?(theorem|lemma|def|abbrev|structure|inductive|instance) [A-Za-z_.'0-9]+" MOSPFormalization/San
+
+Assembling item 13: checking which parts of `Sandwich.lean` the Complex files depend on, so the repo move plan is accurate.
+  > $ cd /home/al/dev/MOSP/lean; grep -nE "^(noncomputable )?(theorem|lemma|def) (bandwidth|bandwidthOfLayout|bandwidth_le_bandwidthOfLayout|pathwidth_le_bandwidth|ve
+  > $ cd /home/al/dev/MOSP; sed -n '/^## Master table/,/^Summary/p' paper2/equivalences.md | awk -F'|' '{print $9}' | grep -oE '`[^`]+`' | tr -d '`' | sed 's/^Complex
+  > $ cd /home/al/dev/MOSP; grep -n "KirousisPapadimitriouGap\|claim2\|proof_reductions" paper2/equivalences.md | head; sed -n 1108,1153p paper2/equivalences.md; sed 
+  > $ cd /home/al/dev/MOSP/lean; grep -nE "^namespace|^end [A-Z]|^section|^variable" MOSPFormalization/Complex/*.lean MOSPFormalization/MOSPGraph.lean MOSPFormalizati
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem mospValue_eq_pathwidth_add_one\|theorem vertexSeparation_eq_pathwidth" MOSPFormalization/*.lean; grep -n "^namespac
+  > $ cd /home/al/dev/MOSP/lean; names="MOSPInstance.mospValue_eq_pathwidth_add_one vertexSeparation_eq_pathwidth NetGateMatrix.tracks_eq_pathwidth_add_one NetGateMat
+
+Headline theorems all check clean (standard axioms only). Now looking at what `Sandwich.lean` contributes, for the move plan.
+  > $ cd /home/al/dev/MOSP/lean; grep -nE "^(section|end|namespace|/-! ###|noncomputable def|def|theorem|lemma)" MOSPFormalization/Sandwich.lean | sed -n 1,60p; ls ..
+  > $ cd /home/al/dev/MOSP/lean; sed -n 228,240p MOSPFormalization/Sandwich.lean; wc -l MOSPFormalization/*.lean MOSPFormalization/Complex/*.lean | tail -1; cat ../Ra
+  > $ which dot mmdc npx 2>&1; ls /home/al/dev/MOSP/paper2/figures
+
+Writing the equivalence-chain diagram as DOT and rendering it with Graphviz.
+  > Write /home/al/dev/MOSP/paper2/figures/equivalence_chain.dot
+  > $ cd /home/al/dev/MOSP; grep -rnE "theorem (foldTracks_eq_tracks|vsg_eq_max|edgeSearch_le_vertexSeparation_add_two|intervalThickness_eq_pathwidth_add_one)\b" lean
+  > Read /home/al/dev/MOSP/paper2/figures/equivalence_chain.png
+
+The figure renders cleanly. Next, the section-3 tables in `equivalences.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old_intro=s[s.index("Item 01 (statement census"):s.index("## What Table 1 cl
+  > Write /tmp/sec3.md
+  > $ cd /home/al/dev/MOSP; grep -oE '`[A-Za-z_.]+[a-z_][A-Za-z_.0-9]*`' /tmp/sec3.md | tr -d '`' | grep -E '_|^[a-z]+[A-Z]' | grep -vE '\.(lean|md|py|txt)$|^lb_best|
+  > $ cd /home/al/dev/MOSP; { cat <<'EOF'
+/-
+Axiom check for section 3 (`paper2/equivalences.md`): every Lean theorem the
+master table, the chain figure and the gap i
+
+33 theorems clean, control shows `sorryAx` as expected. Inserting the section into `equivalences.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+a=s.index("Item 01 (statement census"); b=s.index("## What Table 1 claims")
+
+  > $ cd /home/al/dev/MOSP; sed -n '/^## 4/,$p' paper2/plan.md | grep -n -i "lean\|sandwich\|repo" ; grep -rn "Real\.\|sqrt" lean/MOSPFormalization/Sandwich.lean | he
+  > $ cd /home/al/dev/MOSP; sed -n '/^## 4/,$p' paper2/plan.md | sed -n 60,100p; ls lean; cat lean/lake-manifest.json | grep -A3 '"name": "mathlib"' | head; cd lean &
+  > $ cd /home/al/dev/MOSP/lean; python3 -c "
+import json;m=json.load(open('lake-manifest.json'))
+for p in m['packages']: print(p['name'],p.get('rev'))"; grep -n "^th
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "def agreementGraph\|def IsReduced\|def mospValue\|def mospGraph" MOSPFormalization/*.lean
+
+Now the Lean repository move plan.
+  > Write /home/al/dev/MOSP/paper2/lean_repo_plan.md
+
+Verifying the plan's key claim — that a `Bandwidth.lean` excerpt suffices to replace the `Sandwich` import — with a scratch build outside the repo.
+  > $ set -e; S=/tmp/scratch; rm -rf $S; mkdir -p $S/Scratch $S/out/Scratch; cd /home/al/dev/MOSP/lean
+F=MOSPFormalization/Sandwich.lean
+{ echo "import MOSPFormalizat
+  > $ S=/tmp/scratch; cd /home/al/dev/MOSP/lean
+sed 's/import MOSPFormalization.Sandwich/import Scratch.Bandwidth/' MOSPFormalization/Complex/SplitBandwidth.lean > $S
+  > $ S=/tmp/scratch; cd /home/al/dev/MOSP/lean
+time lake env bash -c "export LEAN_PATH=$S/out:\$LEAN_PATH; set -o pipefail; for m in Bandwidth SplitBandwidth EdgeSep
+  > $ S=/tmp/scratch; cd /home/al/dev/MOSP/lean; cat $S/*.log | head; printf 'import Scratch.EdgeSeparation\nopen MOSPFormalization MOSPFormalization.Complex\n#print 
+
+Confirmed: with the excerpt, `SplitBandwidth` and `EdgeSeparation` build and the conjecture leaves the import closure. Updating the plan to say so.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/lean_repo_plan.md'
+s=open(p).read()
+s=s.replace("| Base needed from `lean/MOSPFormalization/` | 10 + an excerp
+  > $ cd /home/al/dev/MOSP; grep -n "equivalences\|complex_check\|lean_repo" paper2/README.md; sed -n 6,22p paper2/README.md
+  > Edit /home/al/dev/MOSP/paper2/README.md
+  > $ cd /home/al/dev/MOSP; python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -8
+
+While the gate runs, updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; sed -i 's/^- \[ \] \*\*13 Assemble\.\*\*/- [x] **13 Assemble.**/' iterations.md; sed -i 's/^Current: 12\/14 SOLVED/Cu
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"description": "gate.py completion", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/747dc9e7-b5
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/747dc9e7-b51a-40c7-bf22-0f086073294d/tasks/bb6dwymuw.output; until grep -qE "GATE|passed|failed|Traceback" $f; do sleep 5; 
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+
+Item 13 is done and the gate passes: `lake build` ok, one `sorry` against a limit of one, 1,231 tests pass. It is marked `- [x]` in `iterations.md`, `PROGRESS.md` has its Iteration 13 section and now reads `Current: 13/14 SOLVED`, and nothing is committed. Item 14 is still open, so `LOOP_COMPLETE` was not added.
+
+**What was produced**
+- **`paper2/equivalences.md`** now opens as section 3:
+  - **Master table:** each of the twelve problems with its source, the relation actually proved and its hypothesis, the main Lean theorem, and a status from the five required labels (proved / sandwich / monotone only / stated gap / false as stated), plus a tally.
+  - **The chain:** the equivalence diagram (below).
+  - **Gaps and sorries:**
+    - The loop added no allowed sorries; the only `sorry` is the old conjecture in `Sandwich.lean`, and no section-3 theorem depends on it.
+    - The two monotonicity gaps (`NodeSearchMonotonicity`, `EdgeSearchMonotonicity`) are stated as `Prop`s and used only as hypotheses, never asserted.
+    - Errors found in the sources are listed, each with its Lean counterexample.
+
+  The earlier detailed table and the per-item sections stay below this as the full record.
+- **`paper2/figures/equivalence_chain.dot`**, rendered to `.pdf` and `.png`. Every edge is labelled with its Lean theorem. Solid edges are proved identities, dashed are proved inequalities, dotted are the two gaps, and red are the Table 1 claims that are false.
+- **`paper2/axiom_check.lean`** prints the axioms of all 33 theorems the section names. All 33 use only the three standard axioms. A control line on the conjecture shows `sorryAx`, which confirms the check can fail.
+- **`paper2/lean_repo_plan.md`** lists which files move to the paper's repository and in what order:
+  - 10 base files (1,392 lines);
+  - 11 `Complex/` files (6,022 lines);
+  - optionally, the 3 files with the pattern-graph counterexample;
+  - plus the Mathlib commit to pin, what stays behind, the checks to run, and the move steps.
+- `paper2/README.md`'s contents list now includes the new files.
+
+**The one finding with consequences for the move:** section 3 uses only five declarations from `Sandwich.lean`, all about bandwidth. Copying them into a new file of about 100 lines, `Bandwidth.lean`, removes the `Sandwich` import from the only two files that have it (`SplitBandwidth` and `EdgeSeparation`). I tested this with a throwaway build in `/tmp`, now deleted: both files build, their theorems keep the standard axioms, and the conjecture drops out of the imports. So the paper's repository can be built with no `sorry` at all.
+
+**Next:** item 14, the monotonicity theorem that would close both gaps.
+
+# result: success in 488s, 43 turns, cost $2.18

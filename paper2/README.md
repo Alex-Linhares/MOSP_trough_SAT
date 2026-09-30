@@ -10,6 +10,16 @@ engineering. Those live in the rest of the repository.
   with the corrected arguments (first: Kirousis & Papadimitriou 1986, Thm 4.1).
 - `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
   what each argues, what exists, what is still to do.
+- `equivalences.md` — section 3: the master table of the twelve Table 1
+  problems (relation to pathwidth, Lean theorem, status), the chain figure
+  (`figures/equivalence_chain.{dot,pdf,png}`), the gap and sorry inventory,
+  and the per-item record of Ralph loop0005.
+- `complex_check.py` — brute-force checker for every section-3 statement
+  (`python -m paper2.complex_check`; tests in `tests/test_complex_check.py`).
+- `axiom_check.lean` — `#print axioms` on every theorem section 3 names
+  (`cd lean && lake env lean ../paper2/axiom_check.lean`).
+- `lean_repo_plan.md` — which Lean files move to the paper's own repository,
+  in what order, and what they need from `lean/MOSPFormalization/`.
 - `literature/` — source papers, named by their bracket number in Linhares &
   Yanasse (2002). `literature/MANIFEST.md` is the index and status record;
   `literature/SOURCES.txt` records where each file came from.

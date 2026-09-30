@@ -94,7 +94,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   monotone game. Add Lean counterexamples for any Table 1 claim items 01-02
   found false that no earlier item has proved.
 
-- [ ] **13 Assemble.** Finish `paper2/equivalences.md` as section 3 of the
+- [x] **13 Assemble.** Finish `paper2/equivalences.md` as section 3 of the
   paper: the master table (every problem, source, relation, Lean name,
   status: proved / sandwich / monotone only / stated gap / false as stated),
   a figure-ready diagram of the equivalence chain as a Mermaid or DOT graph,

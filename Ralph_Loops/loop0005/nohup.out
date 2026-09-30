@@ -58,3 +58,8 @@
 [2026-09-30 14:30:00] claude session it12 (cap 4.00 h) -> session_it12.log
 [2026-09-30 14:45:03] session it12: ok (exit 0, 22 tool calls)
 [2026-09-30 14:47:26] tests passed: GATE PASS
+[2026-09-30 14:47:27] committed 3b0657b45: 12 Interval thickness = node search. `Complex/IntervalSearch.lean`:
+[2026-09-30 14:47:27] === iteration 13: 13 Assemble. Finish `paper2/equivalences.md` as section 3 of the
+[2026-09-30 14:47:27] claude session it13 (cap 4.00 h) -> session_it13.log
+[2026-09-30 14:55:36] session it13: ok (exit 0, 41 tool calls)
+[2026-09-30 14:58:00] tests passed: GATE PASS

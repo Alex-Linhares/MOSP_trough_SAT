@@ -5,14 +5,14 @@ Every row states what the source proves, not what Table 1 asserts, and where
 it is checked (brute force, `complex_check.py`) and proved (Lean,
 `../lean/MOSPFormalization/Complex/`).
 
-Item 01 (statement census, 2026-09-30) read every source and filled in the
-table below. Item 02 (brute-force check, 2026-09-30) computed every quantity
-from its own definition and checked every statement exhaustively on small
-inputs; its results fill the "Checked" column and the section *Item 02: the
-brute-force check* at the end. Item 03 (2026-09-30) proved the gate matrix
-row in Lean (section *Item 03* at the end). Page numbers are the printed
-page numbers of the source; where only a preprint is held (Kornai & Tuza,
-Fomin) the preprint's own page or section is given.
+Built one item per session (2026-09-30). Item 01 read every source and
+filled in the census; item 02 computed every quantity from its own definition
+and checked every statement on small inputs (*Item 02: the brute-force check*);
+items 03–12 proved the rows in Lean, one file per problem (*Item 03* …
+*Item 12*); item 13 assembled the section: the master table, the chain figure,
+the gap and sorry inventory, and `lean_repo_plan.md` (*Item 13*). Page numbers
+are the printed page numbers of the source; where only a preprint is held
+(Kornai & Tuza, Fomin) the preprint's own page or section is given.
 
 ## What Table 1 claims, and how it is read here
 
@@ -39,7 +39,110 @@ a band or sandwich); **misattributed** (the cited paper proves something
 else); **unsourced** (only the unheld [5] is cited for it); **false** (not
 within ±1 of `Z`, with a counterexample family).
 
-## Master table
+## Master table (section 3)
+
+One row per Table 1 problem. **Relation** is what is true and proved, with its
+hypothesis; `pw`, `vs` are of the graph the problem lives on (the MOSP / net
+graph for the matrix problems, the input graph otherwise). **Status** uses five
+labels, in this order of strength:
+
+- **proved** — the exact relation to `pw` is a sorry-free Lean theorem;
+- **sandwich** — the true relation is a band (`pw ≤ f ≤ pw + c`), proved in
+  Lean; the literal "±1" wording may still hold, a fixed offset does not;
+- **monotone only** — proved for the monotone (recontamination-free) version
+  of a search game; the full game needs a monotonicity theorem;
+- **stated gap** — that monotonicity theorem, stated in Lean as a named `Prop`
+  and used only as an explicit hypothesis, never asserted (no `sorry`);
+- **false as stated** — Table 1's claim fails; the counterexample is proved in
+  Lean.
+
+All Lean names are in namespace `MOSPFormalization` (with `Complex.` for the
+files under `Complex/`); every one listed here depends only on `propext`,
+`Classical.choice` and `Quot.sound` (`paper2/axiom_check.lean`).
+
+| # | Problem | Source (Table 1 ref; where the relation is proved) | Relation, proved | Headline Lean theorem (file) | Status |
+|---|---|---|---|---|---|
+| 1 | MOSP | [1] Yanasse 1997, [4] Fink & Voss 1999 (definitions only); relation: Yanasse 1997a Prop. 5, Fellows & Langston 1989 Thm 7, L&Y 2002 Prop. 2 | `Z(M) = pw(G_M) + 1` when M has a requirement | `MOSPInstance.mospValue_eq_pathwidth_add_one` (`MOSPGraph.lean`) | **proved** |
+| 2 | Gate matrix layout | [6] Möhring 1990 p. 18, Thm 3.2, Prop. 3.5; [8] Wing et al. 1985 Problem 1 | `t(M) = Z(M) = pw + 1` when M has a 1; left edge: min tracks of `M^π` = max column sum | `NetGateMatrix.tracks_eq_mospValue`, `NetGateMatrix.tracks_eq_pathwidth_add_one` (`GateMatrix.lean`) | **proved** |
+| 3 | One-dimensional logic | [7] Ohtsuki et al. 1979 §II, Thm 3 | `tracks = θ(H) = pw(H) + 1` (every net has a gate; the pw form needs one connection); §IV boundary gates: `pw + 1 ≤ tracks_B` | `LogicArray.tracks_eq_intervalThickness`, `LogicArray.tracks_eq_pathwidth_add_one` (`OneDimLogic.lean`) | **proved** (core problem); §IV variant: lower half only, band `{pw + 1, pw + 2}` checked, not proved |
+| 4 | PLA folding | [6] Möhring p. 25 (PLAMPP), Thm 3.14, Prop. 3.15 | simple folding: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, gap unbounded, also on connected net graphs; multiple folding `= pw + 1` | `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_unbounded`; `NetGateMatrix.foldTracks_eq_pathwidth_add_one` (`PLAFolding.lean`) | **false as stated** (simple folding); multiple folding **proved** |
+| 5 | Interval thickness | [5] Kashiwabara & Fujisawa 1979, not held; Möhring Prop. 3.5; [9] K&P 1985 Thm | `θ = pw + 1` (V nonempty); `θ = mns` (≥ 1 edge) | `intervalThickness_eq_pathwidth_add_one` (`IntervalThickness.lean`); `intervalSearch_chain` (`IntervalSearch.lean`) | **proved**; `θ = ns` **monotone only** |
+| 6 | Node search | [9] K&P 1985 Thm (`ns = θ`); [10] K&P 1986 Thm 4.1 (`ns = vs + 1`) | `mns = vs + 1 = pw + 1 = θ` (≥ 1 edge); `ns ≤ vs + 1` always; `ns = mns = 0` on edgeless graphs | `monotoneNodeSearch_eq_vertexSeparation_add_one` (`NodeSearch.lean`), `monotoneNodeSearch_eq_intervalThickness`, `nodeSearch_ne_intervalThickness_of_edgeless` (`IntervalSearch.lean`) | **monotone only**; `ns ≥ vs + 1` a **stated gap** (`NodeSearchMonotonicity`); **false as stated** on edgeless graphs |
+| 7 | Edge search | [10] K&P 1986 p. 209; Ellis, Sudborough & Turner 1994 Thm 2.1 | `vs ≤ pes ≤ vs + 2` (every finite graph); `es ≤ vs + 2` | `vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two` (`EdgeSearch.lean`) | **sandwich**, **monotone only**; `vs ≤ es` a **stated gap** (`EdgeSearchMonotonicity`) |
+| 8 | Narrowness | [11] Kornai & Tuza 1992 Prop. 3.1, Prop. 2.1 | `ν = pw + 1` (V nonempty); per sequence `ν(σ) = vs(rev σ) + 1` | `narrowness_eq_pathwidth_add_one` (`Narrowness.lean`) | **proved** |
+| 9 | Split bandwidth | [12] Fomin 1998 Thm 8 | `pw ≤ sb ≤ pw + 1` (every finite graph; Fomin assumes connected, ≥ 2 vertices) | `pathwidth_le_splitBandwidth_le_pathwidth_add_one` (`SplitBandwidth.lean`) | **sandwich** |
+| 10 | Path-width | [13] Kinnersley 1992 p. 346 | the reference definition | `pathwidth` (`Pathwidth.lean`) | definition |
+| 11 | Edge separation | [14] Lengauer 1981, misattributed: its edge game is cutwidth (p. 468), Def. 6 modified cutwidth; its vertex game VSG is `vs` | `cw`, `mcw` unbounded against `pw` (stars); `VSG = max(1, vs)`; Thm 4 `vs(G_du) = vs + 1` (≥ 1 edge) | `cutwidth_unbounded`, `modCutwidth_unbounded`, `vsg_eq_max`, `vertexSeparation_triangleGraph` (`EdgeSeparation.lean`) | **false as stated** (and misattributed); VSG **proved** |
+| 12 | Vertex separation | [13] Kinnersley 1992 Thm 3.1 | `vs = pw` | `vertexSeparation_eq_pathwidth` (`VSEquivPW.lean`) | **proved** |
+
+**Tally.** Proved exactly: MOSP, gate matrix layout, one-dimensional logic,
+interval thickness, narrowness, vertex separation (six), plus multiple folding
+and Lengauer's VSG. Sandwich: split bandwidth, edge search. Monotone only: node
+search, edge search, and with them `θ = ns`. Stated gaps: two, both
+monotonicity. False as stated: PLA folding (simple), edge separation; and, as
+edge cases of rows that are otherwise right, `ns = vs + 1` and `ns = θ` on
+edgeless graphs. Nothing in the table is asserted without proof.
+
+## The chain
+
+![The equivalence chain](figures/equivalence_chain.png)
+
+Source `figures/equivalence_chain.dot` (Graphviz; PDF and PNG beside it,
+regenerate with the two `dot` commands in its header). Solid edges are exact
+identities proved in Lean, dashed edges proved inequalities, dotted edges the
+two monotonicity gaps, red edges Table 1 claims that are false. Every edge is
+labelled with its Lean theorem and hypothesis. Read from the right: everything
+is attached to `pw` through three hubs — `vs` (Kinnersley), `θ` (Möhring
+Prop. 3.5) and `Z` (the MOSP graph) — and `intervalSearch_chain`
+(`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge) is the one theorem that joins the
+three search-side hubs.
+
+## Gaps, sorries and errors found in the sources
+
+**Allowed sorries added by this loop: none.**
+`Ralph_Loops/loop0005/allowed_sorries.txt` has no entries. The only `sorry`
+in the Lean development is the baseline one, which predates the loop:
+
+| File | Theorem | Why it stays |
+|---|---|---|
+| `Sandwich.lean` | `conjecture_sqrt_tw_f6` | the §24 conjecture of `reports/ml_nature.md`, kept on purpose as a statement; proving it would prove nothing new (pointwise ≤ `max(lb_best, tw + 1)`). No theorem of this section depends on it (`paper2/axiom_check.lean`), although `SplitBandwidth.lean` and `EdgeSeparation.lean` import the file for `bandwidth`. |
+
+**Stated gaps (named `Prop`s, used only as hypotheses):**
+
+| File | Name | Content | Source of the missing theorem | What it would give |
+|---|---|---|---|---|
+| `NodeSearch.lean` | `NodeSearchMonotonicity G` | `nodeSearch G = monotoneNodeSearch G` | [10] Thm 2.3, via LaPaugh (1993); Bienstock & Seymour (1991) | `nodeSearch_eq_vertexSeparation_add_one_of_monotonicity`, `nodeSearch_eq_intervalThickness_of_monotonicity`, `NetGateMatrix.tracks_eq_nodeSearch_of_monotonicity` |
+| `EdgeSearch.lean` | `EdgeSearchMonotonicity G` | `edgeSearch G = progressiveEdgeSearch G` | LaPaugh (1993) | `vertexSeparation_le_edgeSearch_of_monotonicity`, hence `vs ≤ es ≤ vs + 2` for the full game |
+
+Both are item 14's reserve. The upper halves of both games (`ns ≤ vs + 1`,
+`es ≤ vs + 2`) need no monotonicity and are proved outright.
+
+**Errors in the sources, each with a Lean proof:**
+
+- Kirousis & Papadimitriou (1986), proof of Thm 4.1, claim (2) is false for
+  the strategies it quantifies over (`K_{1,3}`; theorem unaffected):
+  `kirousisPapadimitriou_claim2_false` (`Complex/KirousisPapadimitriouGap.lean`,
+  written outside the loop, 2026-09-30; `proof_reductions.md`).
+  `NodeSearch.lean` avoids the step by ordering by clearing time.
+- Kirousis & Papadimitriou (1985), Theorem (`ns = θ` "for any graph") and
+  (1986) Thm 4.1 fail on nonempty edgeless graphs:
+  `nodeSearch_ne_intervalThickness_of_edgeless`,
+  `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless`.
+- Lengauer (1981) Thm 4 fails at `K = 0` on edgeless graphs:
+  `isPositiveVSG_triangleGraph_counterexample`.
+- Möhring (1990) Thm 3.9 (`t = ns`) fails literally on the `1 × 1` matrix
+  `[1]`: `tracks_ne_monotoneNodeSearch_one`.
+- Table 1 itself: PLA (simple) folding and "edge separation" are not within
+  ±1 (rows 4 and 11); Table 1 sits on p. 1764 of L&Y 2002, not p. 1762.
+
+**Not formalised, by choice** (all checked by `complex_check.py` instead):
+that the band ends are attained (`es − vs ∈ {0, 1, 2}` on `K_2`, `K_{3,3}`;
+`sb(K_{1,3}) = 2`; the Ohtsuki boundary gap), which needs lower bounds over
+every strategy, split or placement; Fomin Thms 3 and 6; EST Thm 2.2;
+Lengauer Thms 2, 3, 7; Möhring Prop. 3.15 and Thm 3.14 in path-partition
+form; the Ohtsuki §IV upper bound.
+
+## Detailed table: census, check and Lean
 
 `Z` = number of open stacks; `pw` = pathwidth of the graph in the "Graph"
 column; `vs` = vertex separation of the same graph.
@@ -1151,3 +1254,19 @@ placements and stays with the checker.
 **Agreement with the checker.** Item 02, rows 4 and 5 of its table: `ns = θ
 = vs + 1` on all 1,644 graphs with an edge, and `θ = pw + 1` on all 1,652, so
 `θ = 1` against `ns = 0` on the 8 edgeless ones.
+
+## Item 13: assembly
+
+- The **master table** above (five status labels) replaces the census table
+  as the section's summary; the census table stays below it as the detailed
+  record (definitions, checked counts, every Lean name).
+- **The chain figure**, `figures/equivalence_chain.{dot,pdf,png}`.
+- **`axiom_check.lean`**: `#print axioms` on all 33 theorems the section
+  names; all 33 depend only on `propext`, `Classical.choice`, `Quot.sound`,
+  and the control `conjecture_sqrt_tw_f6` shows `sorryAx`, so the check can
+  fail.
+- **Sorry inventory**: none added by the loop; the two monotonicity gaps are
+  `Prop`s, not sorries.
+- **`lean_repo_plan.md`**: the files that move to the paper's own
+  repository, their dependency order, and what they need from
+  `lean/MOSPFormalization/`.

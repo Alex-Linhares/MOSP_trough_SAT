@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 12/14 SOLVED
+Current: 13/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -524,3 +524,46 @@ Current: 12/14 SOLVED
 - Item 13 (assemble): master table, chain diagram, allowed-sorry list (still
   empty beyond the baseline), `paper2/lean_repo_plan.md`. `intervalSearch_chain`
   is the node of the diagram joining θ, mns, vs and pw.
+
+## Iteration 13 — 2026-09-30 14:55
+
+### Completed
+- **13 Assemble** — no new Lean; `lake build` untouched.
+- `paper2/equivalences.md` is now section 3 in order: **master table** (12
+  rows: problem, source, relation proved with its hypothesis, headline Lean
+  theorem and file, status in five labels — proved / sandwich / monotone
+  only / stated gap / false as stated — and a tally), **the chain** (figure),
+  **gaps, sorries and errors found in the sources**, then the old census
+  table as the detailed record, the census, and the per-item sections (new
+  "Item 13: assembly" at the end). Intro paragraph updated.
+- **Figure**: `paper2/figures/equivalence_chain.dot` (Graphviz; `.pdf` and
+  `.png` rendered): solid = exact identity proved, dashed = proved
+  inequality/band, dotted = the two monotonicity gaps, red = false Table 1
+  claims; every edge labelled with its Lean theorem and hypothesis.
+- **Axiom check**: `paper2/axiom_check.lean`
+  (`cd lean && lake env lean ../paper2/axiom_check.lean`): all 33 theorems
+  the section names depend only on `propext`, `Classical.choice`,
+  `Quot.sound`; a control line (`conjecture_sqrt_tw_f6`) shows `sorryAx`.
+  Kept outside `lean/MOSPFormalization/` so the gate's import rule does not
+  apply.
+- **Sorry inventory**: `allowed_sorries.txt` has no entries; the only `sorry`
+  is the baseline §24 conjecture, on which no section-3 theorem depends. The
+  two gaps (`NodeSearchMonotonicity`, `EdgeSearchMonotonicity`) are `Prop`s
+  used as hypotheses, listed with what they would give.
+- **`paper2/lean_repo_plan.md`**: tiers and build order (10 base files,
+  1,392 lines; 11 `Complex/` files, 6,022 lines; optional 3-file
+  pattern-graph counterexample), Mathlib pin, what stays behind, checks, move
+  procedure. Key finding: section 3 uses five declarations of `Sandwich.lean`;
+  a ~100-line `Bandwidth.lean` excerpt replaces the import in
+  `SplitBandwidth` and `EdgeSeparation`, which **was verified by a scratch
+  build in /tmp** (both build, axioms unchanged, conjecture out of the
+  environment), so the new repository can be sorry-free.
+- `paper2/README.md` contents list updated.
+
+### Blockers
+- None.
+
+### Next
+- Item 14 (reserve): LaPaugh / Bienstock–Seymour monotonicity, which would
+  discharge both named gaps. `EdgeSearch.lean`'s `SafeClear` machinery is the
+  starting point.
