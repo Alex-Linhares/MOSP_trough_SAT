@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 10/14 SOLVED
+Current: 11/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -439,3 +439,54 @@ Current: 10/14 SOLVED
 - Item 12 (interval thickness = node search): now a two-line corollary of
   `monotoneNodeSearch_eq_pathwidth_add_one` and
   `intervalThickness_eq_pathwidth_add_one` (≥ 1 edge).
+
+## Iteration 11 — 2026-09-30 14:26
+
+### Completed
+- **11 Edge search, progressive** — `lean/MOSPFormalization/Complex/EdgeSearch.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** are the game of EST 1994 p. 53 / [10] §2 p. 208:
+  `EdgeState` (searcher count per vertex, since `search1` stacks searchers;
+  contaminated edges), `EdgeMove` (`place` / `remove` / `slide`), `edgeStep`
+  (a slide from a guarded vertex along an edge clears it, then the gas spreads
+  through searcher-free paths, reusing item 10's `recontaminate`),
+  `edgeCost` (total searchers), `Progressive`, `edgeSearch`,
+  `progressiveEdgeSearch`. The source's two clearing cases are one rule,
+  "clear, then recontaminate". Same semantics as the checker's `edge_search`.
+- **Proved, EST Theorem 2.1 for the progressive game, no hypothesis** (edgeless
+  and empty graphs included): `vertexSeparation_le_progressiveEdgeSearch_le_add_two`,
+  `pathwidth_le_progressiveEdgeSearch_le_add_two`.
+  - Upper half (Lemma 2.2): `edgeStrategy_isProgressive`, EST's `search1` on a
+    Kornai–Tuza in-sequence, cost `ν(σ) + 1`; progressive because the cleared
+    set stays *safe* (`SafeClear`, `not_mem_of_mem_recontaminate`,
+    `edgeStep_of_safe`); the phase induction EST leave as "it can be shown" is
+    `edgePhase_spec`.
+  - Lower half (Lemma 2.1): `vertexSeparation_le_of_progressive`, not EST's
+    argument (first occupation after an irredundancy normal form) but the
+    clearing-time order of item 10, with ties broken unguarded-first and
+    `clear_step_unique` (one step makes at most one unguarded vertex clear).
+- Also: `edgeSearch_le_vertexSeparation_add_two` / `_pathwidth_add_two` (full
+  game), [10] p. 209's `mns − 1 ≤ pes ≤ mns + 1` on graphs with an edge,
+  `edgeSearch_of_edgeless`, `progressiveEdgeSearch_of_edgeless`.
+- **Gap, stated as a Prop, not asserted**: `EdgeSearchMonotonicity` (LaPaugh
+  1993); `vertexSeparation_le_edgeSearch_of_monotonicity` derives the missing
+  full-game half. No `sorry`; `allowed_sorries.txt` unchanged.
+- `paper2/equivalences.md`: row 7, §7 status, new section "Item 11".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None for the item. Not formalised, by choice: that both band ends are
+  attained (needs lower bounds over all strategies on `K₃,₃`), EST Thm 2.2
+  (`s = vs` of the 2-expansion), multigraphs/loops. All stay with the checker.
+
+### Next
+- Item 12 (interval thickness = node search): a two-line corollary of
+  `monotoneNodeSearch_eq_pathwidth_add_one` and
+  `intervalThickness_eq_pathwidth_add_one` (≥ 1 edge), plus any Table 1
+  counterexample not yet in Lean (check items 01–02's list; cw/mcw and PLA
+  are done).
+- Item 14's reserve: LaPaugh's theorem would discharge both
+  `EdgeSearchMonotonicity` and (via [10] Thm 2.3) `NodeSearchMonotonicity`.
+  The `SafeClear` machinery here is the natural starting point for a
+  Bienstock–Seymour style proof.

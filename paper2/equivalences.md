@@ -52,7 +52,7 @@ column; `vs` = vertex separation of the same graph.
 | 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | `Complex.NetGateMatrix.pathwidth_add_one_le_plaTracks`, `card_le_two_mul_plaTracks`, `foldTracks_eq_pathwidth_add_one` (multiple folding); counterexamples `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_six`, `plaTracks_pathMatrix_unbounded` (connected) | **false** as stated (simple folding); confirmed for multiple folding; **proved**: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, multiple folding `= pw + 1`, and the counterexamples (unbounded gap, also on connected instances) |
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph) |
 | 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | `Complex.monotoneNodeSearch_eq_vertexSeparation_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`, `monotoneNodeSearch_of_edgeless`, `nodeSearch_le_vertexSeparation_add_one`; gap stated as `NodeSearchMonotonicity` | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`); **proved for the monotone game** (`mns = vs + 1`, ≥ 1 edge; `mns = ns = 0` edgeless) and `ns ≤ vs + 1`; `ns ≥ vs + 1` is the named gap ([10] Thm 2.3) |
-| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
+| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | `Complex.vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `pathwidth_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two`, `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`, `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch`, `edgeSearch_of_edgeless`; gap stated as `EdgeSearchMonotonicity` | weaker than stated (band of width 2); **proved for the progressive game** (`vs ≤ s ≤ vs + 2`, every finite graph) and `s ≤ vs + 2` for the full game; `vs ≤ s` in the full game is the named gap (LaPaugh 1993) |
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
 | 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
 | 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
@@ -281,6 +281,12 @@ form; edge separation, which is also misattributed).
 - **Status.** Weaker than stated. `es ∈ {pw, pw + 1, pw + 2} = {Z − 1, Z, Z + 1}`
   meets the literal ±1 wording; it is not a fixed offset (K_2: es = 1 = Z − 1;
   K_{3,3}: es = 5 = Z + 1).
+  *Item 11*: EST Thm 2.1 proved in Lean for progressive strategies, on every
+  finite graph; for the full game `s ≤ vs + 2` is proved and `vs ≤ s` rests
+  on LaPaugh's theorem, stated as the named gap `EdgeSearchMonotonicity`.
+  EST's Lemma 2.1 argument (order by first occupation, after making the
+  strategy irredundant) is replaced by ordering by clearing time (see
+  "Item 11" below).
 
 ### 8. Narrowness — [11] Kornai & Tuza 1992
 
@@ -1013,3 +1019,84 @@ contaminated sets are `Set`s, so `decide` does not apply.
 graphs with an edge, `= 0` on the 8 edgeless ones, `ns_mono = ns` on all
 1,652 (statement S5).
 
+## Item 11: edge search (progressive) in Lean
+
+`lean/MOSPFormalization/Complex/EdgeSearch.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** (EST 1994 p. 53; [10] §2 p. 208), the game itself: an
+`EdgeState` is a searcher count per vertex (several searchers may share a
+vertex; `search1` needs it) and a set of contaminated edges; an `EdgeMove` is
+`place v`, `remove v` or `slide u v`. `edgeStep` changes the counts; a slide
+from a guarded `u` along an edge `uv` clears `uv`; then every edge joined to a
+still-contaminated edge by a searcher-free path is contaminated (the
+`recontaminate` of item 10). The source's two clearing cases ("a second
+searcher is moved from `x`", or "all edges incident to `x` except `e` are
+clear") are the one rule "clear, then recontaminate": if `u` is left empty
+with another contaminated edge, the gas returns to `uv` in the same step. Start:
+no searchers, every edge contaminated. `edgeCost` is the largest *total*
+number of searchers over the run; `Progressive` says no move enlarges the
+contaminated set (EST p. 53, the checker's `monotone=True`). `edgeSearch` /
+`progressiveEdgeSearch` are the least costs. The semantics are those of
+`complex_check.edge_search`.
+
+**Proved.**
+
+- `progressiveEdgeSearch_le_vertexSeparation_add_two`: **EST Lemma 2.2**, by
+  their procedure `search1` (`edgeStrategy`): place the next vertex `x`; for
+  each earlier neighbour `y`, add a searcher to `y`, slide it to `x`, remove a
+  searcher from `x`; then remove the searchers of vertices with no neighbour
+  still to come. Run on an in-sequence `σ` (item 04), the searchers between
+  phases are one each on Kornai & Tuza's shack minus the entering vertex, and a
+  phase adds at most two more, so `search1` costs `ν(σ) + 1`
+  (`edgeStrategy_isProgressive`), and `ν(σ reversed) = vs(σ) + 1`. It is
+  progressive: the proof keeps the cleared set *safe* (`SafeClear`: an
+  unguarded vertex touching a cleared edge has all its edges cleared), and gas
+  cannot cross into a safe cleared set (`not_mem_of_mem_recontaminate`).
+  EST's proof is the sentence "it can be shown, by induction on i"; the
+  induction is `edgePhase_spec`.
+- `vertexSeparation_le_of_progressive`: **EST Lemma 2.1 for progressive
+  strategies**, by a different argument. EST order the vertices by the step
+  at which each is first occupied, after first making the strategy
+  "irredundant" (removing placements on clear vertices and removals that
+  expose a contaminated one). Here the vertices are ordered by the time `τ(v)`
+  from which no contaminated edge touches them, ties broken by putting first a
+  vertex that is unguarded at that time. At `τ(vᵢ)`, a later vertex `w` with an
+  earlier neighbour `u` carries a searcher: if `τ(w)` is later, `w` still has a
+  contaminated edge and, unguarded, would spread the gas to the clear edge `uw`
+  (closedness, `isClosed_edgeStep`); if `τ(w) = τ(vᵢ)`, the tie-break makes
+  `w` guarded unless both are unguarded, and two unguarded vertices cannot
+  become clear in one step, because a step clears only the edge slid along
+  and its far end receives the searcher (`clear_step_unique`). Unlike node
+  search, `vᵢ` itself need not be guarded (its last edge may be cleared by
+  sliding *away* from it), which is why the bound is `vs`, not `vs + 1`. No
+  irredundancy normal form is needed.
+- Together, **EST Theorem 2.1 for the progressive game**:
+  `vertexSeparation_le_progressiveEdgeSearch_le_add_two` and
+  `pathwidth_le_progressiveEdgeSearch_le_add_two`, with **no hypothesis**
+  (edgeless and empty graphs included, where both sides are 0).
+- Full game: `edgeSearch_le_progressiveEdgeSearch`,
+  `edgeSearch_le_vertexSeparation_add_two`, `edgeSearch_le_pathwidth_add_two`.
+- With item 10, [10] p. 209's band for the monotone games on a graph with an
+  edge: `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch` (`mns − 1 ≤
+  pes`) and `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`.
+- Edge cases: `progressiveEdgeSearch_of_edgeless`, `edgeSearch_of_edgeless`
+  (`= 0`).
+
+**The named gap.** `EdgeSearchMonotonicity G : Prop := edgeSearch G =
+progressiveEdgeSearch G` is LaPaugh (1993), stated and **not asserted**; no
+`sorry` stands for it, so `allowed_sorries.txt` is unchanged.
+`vertexSeparation_le_edgeSearch_of_monotonicity` derives the missing half of
+Thm 2.1 from it. This is the same theorem item 10's `NodeSearchMonotonicity`
+reduces to in [10] (Thm 2.3 from Thm 2.1), so item 14's reserve, if it proves
+LaPaugh, closes both.
+
+**Not formalised, by choice.** That the band is attained at both ends (`K₂`:
+`s = vs = 1`; `K_{1,3}`: `s = vs + 1`; `K₃,₃`: `s = 5 = vs + 2`, EST p. 57,
+which needs a lower bound over all strategies) and EST Thm 2.2 (`s(G) = vs(2-expansion)`); both stay
+with the checker (`es − vs ∈ {0, 1, 2}` on 1,632 graphs, row 6 of item 02's
+table). Multigraphs and loops, which EST allow and `search1` handles, are outside
+`SimpleGraph`.
+
+**Agreement with the checker.** Item 02: the monotone (progressive) `es`
+equals `es`, and `vs ≤ es ≤ vs + 2`, on all 1,632 graphs to 20 edges.

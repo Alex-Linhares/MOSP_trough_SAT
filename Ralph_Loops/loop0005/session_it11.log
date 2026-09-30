@@ -1,0 +1,125 @@
+# session it11 started 2026-09-30 14:09:34
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "11 Edge search" Ralph_Loops/loop0005/iterations.md; cat Ralph_Loops/loop0005/allowed_sorries.txt; wc -l lean/MOSPFormalizati
+  > $ cd /home/al/dev/MOSP; grep -n -i -B2 -A40 "^## .*Edge search\|^## 7\b\|^## 7 " paper2/equivalences.md | head -150
+  > $ cd /home/al/dev/MOSP; grep -n "^#" paper2/equivalences.md; grep -n -i "edge search" paper2/equivalences.md | head -30
+  > $ cd /home/al/dev/MOSP; sed -n 224,285p paper2/equivalences.md; sed -n 941,1100p paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; cat lean/MOSPFormalization/Complex/NodeSearch.lean
+  > $ cd /home/al/dev/MOSP; grep -n "def edge_search" -A80 paper2/complex_check.py | head -130
+  > $ cd /home/al/dev/MOSP; sed -n 40,400p /home/al/.claude/projects/-home-al-dev-MOSP/6252eadb-78fb-48cb-8e6f-6ff237721d48/tool-results/b7tcurqtv.txt
+
+Reading the Ellis–Sudborough–Turner source next, then I'll design the Lean file.
+  > $ cd /home/al/dev/MOSP; ls literature | grep -i ellis; pdftotext -f 1 -l 12 literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf /tmp/est.t
+  > $ cd /home/al/dev/MOSP; pdfinfo literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf | head; ls paper2/literature/ ; grep -n -i "ellis" pap
+
+Scanned PDF; reading the relevant pages as images.
+  > Read /home/al/dev/MOSP/literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf
+  > $ cd /home/al/dev/MOSP; sed -n 400,755p /home/al/.claude/projects/-home-al-dev-MOSP/6252eadb-78fb-48cb-8e6f-6ff237721d48/tool-results/b7tcurqtv.txt
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem exists_layout_sorted\|def activeSuffix\|def vertexSepAt\|def vertexSepOfLayout\|theorem mem_activeSuffix_iff\|theor
+  > $ cd /home/al/dev/MOSP/lean; grep -n "^def\|^noncomputable def\|^theorem\|^lemma\|^abbrev" MOSPFormalization/Complex/Narrowness.lean | head -60; grep -n "theorem 
+  > $ cd /home/al/dev/MOSP/lean; sed -n 227,264p MOSPFormalization/Complex/Narrowness.lean; grep -n "card_shackAfterPut_le_inNarrowness" -A8 MOSPFormalization/Complex
+
+Now I have the design. Writing `Complex/EdgeSearch.lean`.
+  > $ cd /home/al/dev/MOSP/lean; cat MOSPFormalization.lean | tail -15; ls .lake/build/lib/lean/MOSPFormalization/Complex/ 2>/dev/null | head -30
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/EdgeSearch.lean
+  > $ cd /home/al/dev/MOSP/lean; time lake env lean MOSPFormalization/Complex/EdgeSearch.lean 2>&1 | head -60
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("""  rw [← Finset.sum_erase_add _ _ (Fin
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+old=s[s.index("  rw [← Finset.add_sum_erase Finset.u
+
+Basic layer compiles. Now the upper bound (`search1` strategy).
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+upper = r'''
+/-! ### `search1` is a progressive stra
+  > $ cd /home/al/dev/MOSP/lean; sed -n 605,640p MOSPFormalization/Complex/EdgeSearch.lean; lake env lean MOSPFormalization/Complex/EdgeSearch.lean 2>&1 | sed -n 100,
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem forall_mem\|theorem mem_iff'" .lake/packages/mathlib/Mathlib/Data/Sym/Sym2.lean | head
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("Sym2.forall_mem_mk]","Sym2.forall_mem_p
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("""  ext w
+  simp only [supp, ind, Finse
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("""  ext w
+  by_cases hw : w = u
+  · sub
+
+Upper bound (EST Lemma 2.2) compiles. Now the lower bound and the main theorems.
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+lower = r'''
+/-! ### From a progressive strategy to 
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("""  have hstep : ∀ t, t < L → st (t + 1
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("have hgw0 : g w = 0 := by simp only [g]
+
+Whole file compiles with no warnings. Fixing the docstring wording, adding the root import, and checking axioms.
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearch.lean'
+s=open(p).read()
+s=s.replace("""* With node search (item 10): `vs ≤ m
+
+Build passes, axioms clean. Now `equivalences.md`.
+  > $ cd /home/al/dev/MOSP; sed -n 42,56p paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="| 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of w
+  > $ cd /home/al/dev/MOSP; sed -n 458,553p paper2/equivalences.md | grep -n -i "edge search\|S[0-9]\b\|es " | head -20
+  > $ cd /home/al/dev/MOSP; sed -n 505,520p paper2/equivalences.md; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+s=s.replace("statement S6 of item\n0
+
+Now the gate.
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; sed -i 's/^- \[ \] \*\*11 Edge search, monotone\.\*\*/- [x] **11 Edge search, monotone.**/' iterations.md; grep -n "1
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; cat >> PROGRESS.md <<'EOF'
+
+## Iteration 11 — 2026-09-30 14:26
+
+### Completed
+- **11 Edge search, progressive** — `le
+
+Item 11 is done. Ellis, Sudborough & Turner's (EST 1994) Theorem 2.1, `vs ≤ s ≤ vs + 2`, is now proved in Lean for progressive strategies. There is no `sorry` and no new axiom, and the gate passes (lake build ok, 1,231 tests pass).
+
+**What's in `lean/MOSPFormalization/Complex/EdgeSearch.lean`**
+- **The game** is defined from EST p. 53 and Kirousis & Papadimitriou 1986 p. 208, with nothing about layouts in it. It tracks how many searchers stand on each vertex, because the source's own strategy stacks two on one vertex. The moves are place, remove and slide; a slide clears the edge it crosses, and then gas spreads back through paths with no searchers. That matches `complex_check.edge_search`, and it covers both of the source's clearing cases.
+- **Upper bound (EST Lemma 2.2):** `edgeStrategy_isProgressive` is EST's own procedure, `search1`. It never recontaminates an edge because the cleared edges stay closed: any vertex without a searcher that touches a cleared edge has all its edges cleared. EST leave the step-by-step induction as "it can be shown"; here it is `edgePhase_spec`.
+- **Lower bound (EST Lemma 2.1):** `vertexSeparation_le_of_progressive` uses a different argument from EST's. EST first remove redundant moves from the strategy. Instead, vertices are ordered by the time they stop touching contaminated edges, with the unguarded vertex first on a tie. A new lemma, `clear_step_unique`, supplies the one extra fact this needs: one step can make at most one unguarded vertex clear.
+- **Main results:** `vertexSeparation_le_progressiveEdgeSearch_le_add_two` and a pathwidth version. They need no hypothesis, so edgeless and empty graphs are covered. Also proved:
+  - `s ≤ vs + 2` for the full game;
+  - the band `ns − 1 ≤ es ≤ ns + 1` from Kirousis & Papadimitriou 1986 p. 209, for the monotone games on graphs with an edge;
+  - `s = 0` on edgeless graphs.
+
+**Still open.** In the full game, where recontamination is allowed, only `s ≤ vs + 2` is proved. The other half, `vs ≤ s`, depends on LaPaugh's theorem (recontamination does not help). It is stated as the proposition `EdgeSearchMonotonicity` but not assumed, and `vertexSeparation_le_edgeSearch_of_monotonicity` derives the missing half from it. `allowed_sorries.txt` is unchanged.
+
+**Left with the checker on purpose:**
+- Lean does not prove that all three values of the band actually occur (`K₂` at the bottom, `K₃,₃` at the top), because that needs a lower bound over every strategy.
+- EST Theorem 2.2 (search number = vertex separation after subdividing each edge twice).
+- Multigraphs, which EST allow but Lean's `SimpleGraph` does not.
+
+`paper2/equivalences.md` has row 7, the §7 status and a new "Item 11" section. PROGRESS.md now reads 11/14, the item is marked `[x]` in iterations.md, and nothing is committed. Items 12–14 remain, so there is no LOOP_COMPLETE line.
+
+# result: success in 1071s, 37 turns, cost $4.11

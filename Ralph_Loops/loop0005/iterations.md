@@ -83,7 +83,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   theorem (recontamination does not help) as a named gap in
   allowed_sorries.txt only if its proof does not fit.
 
-- [ ] **11 Edge search, monotone.** `Complex/EdgeSearch.lean`: define edge
+- [x] **11 Edge search, monotone.** `Complex/EdgeSearch.lean`: define edge
   searching (Parsons; Ellis, Sudborough & Turner 1994 §1) and prove, for
   progressive strategies, `vs ≤ s ≤ vs + 2` (their Lemmas 2.1-2.2); state
   LaPaugh's theorem (recontamination does not help) as a named gap if needed.
