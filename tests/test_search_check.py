@@ -171,3 +171,45 @@ def test_bug_b_alone_refutes_a_10_vertex_graph_at_its_optimum():
     base = dict(definite=False, subset=True, better=True, limit=0, old_move=True, memo=True)
     assert sc.search_decide(masks, k, dict(base, variant="old_order"))[0] is False
     assert sc.search_decide(masks, k, dict(base, variant="fixed"))[0] is True
+
+
+# --- item 07: the Lean model of Search/Basic.lean ---------------------------
+
+
+def test_model_quick_run_has_no_failures():
+    r = sc.run_model(quick=True, workers=2)
+    assert r["failures"] == 0
+    assert r["tally"]["layouts"] > 0 and r["tally"]["mono_pairs"] > 0
+
+
+def test_model_order_cost_hand_values():
+    path = sc.masks_from_edges(3, [(0, 1), (1, 2)])
+    # closing 0 opens {0,1} (2); then 1 opens 2: open {1,2} (2); then 2: {2} (1)
+    assert sc.m_order_cost(path, 0, [0, 1, 2]) == 2
+    # closing the middle first opens everything: 3 stacks
+    assert sc.m_order_cost(path, 0, [1, 0, 2]) == 3
+    assert sc.m_out_narrowness(path, [0, 1, 2]) == 2
+    assert sc.m_vs_of_layout(path, [0, 1, 2]) == 1
+    star = sc.masks_from_edges(4, [(0, 1), (0, 2), (0, 3)])
+    assert min(sc.m_order_cost(star, 0, p) for p in itertools.permutations(range(4))) == 2
+
+
+def test_model_lemma_f_needs_the_invariant():
+    # K2 with customer 0 closed: |O(T) - T| = 1 > k = 0. cl(T) is everything, so
+    # SearchSol holds there, while closing 1 after 0 costs one stack: not Solvable.
+    k2 = sc.masks_from_edges(2, [(0, 1)])
+    T = 0b01
+    assert sc.m_cl(k2, T) == 0b11
+    assert sc.m_searchsol_table(k2, 0)[sc.m_cl(k2, T)]
+    assert not sc.m_solvable_table(k2, 0)[T]
+    # at k = 1 the invariant holds and the two agree
+    assert sc.m_solvable_table(k2, 1)[T] and sc.m_searchsol_table(k2, 1)[sc.m_cl(k2, T)]
+
+
+def test_model_catches_a_wrong_cost():
+    # a cost that forgets to count the customer being closed breaks cost = vs + 1
+    path = sc.masks_from_edges(3, [(0, 1), (1, 2)])
+    wrong = max((sc.m_opened(path, T | 1 << c) & ~(T | 1 << c)).bit_count()
+                for T, c in ((0, 0), (1, 1), (3, 2)))
+    assert wrong != sc.m_vs_of_layout(path, [0, 1, 2]) + 1
+    assert sc.m_order_cost(path, 0, [0, 1, 2]) == sc.m_vs_of_layout(path, [0, 1, 2]) + 1

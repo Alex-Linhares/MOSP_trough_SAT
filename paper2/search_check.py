@@ -743,12 +743,198 @@ def run(quick=False, workers=None, out=REPORT, n_random=None):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 07: the Lean model of `Search/Basic.lean`, checked before it was stated
+# ----------------------------------------------------------------------------
+#
+# These functions transcribe the Lean definitions literally, on *arbitrary*
+# sets of closed customers (not only free-closed states): `opened`, `cl`,
+# `stepCost`, `orderCost` (the maximum step cost along a list), `Solvable`
+# (some ordering of V \ T after T has cost <= k) and `SearchSol` (the
+# inductive predicate: T = V, or a playable c whose child cl(T + c) satisfies
+# it). Kornai & Tuza's out-sequence shack is transcribed from
+# `Complex/Narrowness.lean` (`EnteredBy`, `outShackBeforeMove`), and the
+# layout's vertex separation from `VertexSeparation.lean` (`activeSuffix`).
+
+
+def m_opened(masks, T):
+    o = 0
+    for c in bits(T):
+        o |= masks[c]
+    return o
+
+
+def m_cl(masks, T):
+    o = m_opened(masks, T)
+    return sum(1 << c for c in range(len(masks)) if masks[c] & ~o == 0)
+
+
+def m_step_cost(masks, T, c):
+    return (m_opened(masks, T | 1 << c) & ~T).bit_count()
+
+
+def m_order_cost(masks, T, order):
+    cost = 0
+    for c in order:
+        cost = max(cost, m_step_cost(masks, T, c))
+        T |= 1 << c
+    return cost
+
+
+def m_solvable_table(masks, k):
+    """`Solvable k T` for every T, by the recursion prepend/first-move (Lean
+    `solvable_of_solvable_insert`, `exists_first_move`)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    P = [False] * (1 << n)
+    for T in range(full, -1, -1):
+        P[T] = T == full or any(P[T | 1 << c] for c in range(n)
+                                if not T >> c & 1 and m_step_cost(masks, T, c) <= k)
+    return P
+
+
+def m_searchsol_table(masks, k):
+    """`SearchSol k T` for every T: the inductive definition, whose children are cl(T + c)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    S = [False] * (1 << n)
+    for T in range(full, -1, -1):   # cl(T + c) is a strict superset of T
+        S[T] = T == full or any(S[m_cl(masks, T | 1 << c)] for c in range(n)
+                                if not T >> c & 1 and m_step_cost(masks, T, c) <= k)
+    return S
+
+
+def m_out_narrowness(masks, tau):
+    """`outNarrowness`: max over i of |{v : EnteredBy tau i v and i <= tau v}|; tau[v] is v's position."""
+    n = len(masks)
+    best = 0
+    for i in range(n):
+        shack = sum(1 for v in range(n)
+                    if tau[v] >= i and any(tau[u] <= i for u in bits(masks[v])))
+        best = max(best, shack)
+    return best
+
+
+def m_vs_of_layout(masks, tau):
+    """`vertexSepOfLayout`: max over i < n of the suffix vertices (tau >= i) adjacent to the prefix."""
+    n = len(masks)
+    if n == 0:
+        return 0
+    return max(sum(1 for v in range(n) if tau[v] >= i
+                   and any(tau[u] < i for u in bits(masks[v] & ~(1 << v))))
+               for i in range(n))
+
+
+def check_model_graph(masks, *, perms=None, pairs=True, seed=0):
+    """Every statement of `Search/Basic.lean` on one graph; returns a tally of checks and failures."""
+    n = len(masks)
+    full = (1 << n) - 1
+    t = Counter()
+    rng = random.Random(seed)
+    # a full closing order's cost = outNarrowness = vs + 1 (orderCost_ofFn_eq_*)
+    all_perms = itertools.permutations(range(n)) if perms is None else (
+        rng.sample(range(n), n) for _ in range(perms))
+    costs = []
+    for order in all_perms:
+        tau = [0] * n
+        for pos, v in enumerate(order):
+            tau[v] = pos
+        c = m_order_cost(masks, 0, order)
+        costs.append(c)
+        t["layouts"] += 1
+        if c != m_out_narrowness(masks, tau):
+            t["fail_outNarrowness"] += 1
+        if n and c != m_vs_of_layout(masks, tau) + 1:
+            t["fail_vs_plus_one"] += 1
+    if m_cl(masks, 0) != 0:
+        t["fail_cl_empty"] += 1
+    opened = [m_opened(masks, T) for T in range(full + 1)]
+    for T in range(full + 1):
+        if m_opened(masks, m_cl(masks, T)) != opened[T] or T & ~m_cl(masks, T):
+            t["fail_opened_cl"] += 1
+    for k in range(n + 2):
+        P = m_solvable_table(masks, k)
+        S = m_searchsol_table(masks, k)
+        if perms is None and P[0] != (min(costs) <= k):
+            t["fail_root_min_cost"] += 1
+        if P[0] != S[0]:
+            t["fail_root"] += 1
+        for T in range(full + 1):
+            inv = (opened[T] & ~T).bit_count() <= k
+            clT = m_cl(masks, T)
+            t["lemma_f"] += 1
+            if P[T] and not S[clT]:                  # searchSol_cl_of_solvable
+                t["fail_lemma_f_forward"] += 1
+            if inv and S[clT] != P[T]:               # solvable_iff_searchSol_cl
+                t["fail_lemma_f"] += 1
+            if not inv and S[clT] and not P[T]:
+                t["lemma_f_needs_invariant"] += 1   # the hypothesis is not decorative
+            if S[T] and inv and not P[T]:           # solvable_of_searchSol
+                t["fail_solvable_of_searchSol"] += 1
+            if P[T] and not P[clT]:                  # solvable_cl
+                t["fail_solvable_cl"] += 1
+            for c in range(n):
+                if T >> c & 1 or masks[c] & ~opened[T]:
+                    continue
+                t["free_moves"] += 1                 # solvable_insert_of_free, _iff_of_free
+                if P[T] and not P[T | 1 << c]:
+                    t["fail_free_move"] += 1
+                if inv and P[T | 1 << c] != P[T]:
+                    t["fail_free_move_iff"] += 1
+                if not inv and P[T | 1 << c] and not P[T]:
+                    t["free_move_iff_needs_invariant"] += 1
+            if pairs:                                # solvable_mono, over all T <= T'
+                sub = full & ~T
+                Tp = sub
+                while True:
+                    T2 = T | Tp
+                    if opened[T2] & ~opened[T] == 0:
+                        t["mono_pairs"] += 1
+                        if P[T] and not P[T2]:
+                            t["fail_mono"] += 1
+                    if Tp == 0:
+                        break
+                    Tp = (Tp - 1) & sub
+    return t
+
+
+def _model_job(args):
+    masks, perms, pairs = args
+    return check_model_graph(masks, perms=perms, pairs=pairs)
+
+
+def run_model(workers=None, out=None, quick=False):
+    """Item 07's check: every labelled graph on 0-6 vertices and every atlas graph on 7, each
+    with every layout and every monotonicity pair (`quick`: labelled graphs to 4 only)."""
+    started = time.time()
+    work = [(m, None, True) for n in range((4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        work += [(m, None, True) for m in atlas_graphs(7)]
+    total = Counter()
+    with Pool(workers) as pool:
+        for t in pool.imap_unordered(_model_job, work, chunksize=16):
+            total.update(t)
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(work),
+              "quick": quick, "tally": dict(total),
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_model_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--random", type=int, default=None, help="random instances at 8-16 vertices")
+    ap.add_argument("--model", action="store_true",
+                    help="item 07: check the Lean model of Search/Basic.lean")
     args = ap.parse_args()
+    if args.model:
+        print(json.dumps(run_model(workers=args.workers, quick=args.quick), indent=1))
+        return
     report = run(quick=args.quick, workers=args.workers, n_random=args.random)
     print(json.dumps({"seconds": report["seconds"], "graphs": report["graphs"],
                       "summary": report["summary"],

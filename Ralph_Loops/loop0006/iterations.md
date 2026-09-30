@@ -54,7 +54,7 @@ assembly and a reserve.
   rules singly and in the code's composition, and check that the two known
   bad forms of `better_move` (`reports/better_move_bug.md` §7) fail. Tests.
 
-- [ ] **07 Search model in Lean.** `Search/Basic.lean`: closed sets, the
+- [x] **07 Search model in Lean.** `Search/Basic.lean`: closed sets, the
   opened set, the cost of a closing order, the decision predicate
   `Solvable G k S` ("some ordering of V \ S after S has cost ≤ k"), and the
   lemma connecting it to `vertexSeparation` and `narrowness` (a full closing

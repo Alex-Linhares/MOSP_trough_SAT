@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 23:12:30",
+  "updated": "2026-09-30 23:25:02",
   "phase": "tests",
-  "started": "2026-09-30 22:44:23",
-  "item": "06 Brute-force soundness check. `paper2/search_check.py`:"
+  "started": "2026-09-30 23:14:58",
+  "item": "07 Search model in Lean. `Search/Basic.lean`: closed sets, the"
 }

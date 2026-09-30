@@ -28,3 +28,8 @@
 [2026-09-30 22:44:23] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-09-30 23:12:30] session it06: ok (exit 0, 47 tool calls)
 [2026-09-30 23:14:58] tests passed: GATE PASS
+[2026-09-30 23:14:58] committed a14df2ea2: 06 Brute-force soundness check. `paper2/search_check.py`:
+[2026-09-30 23:14:58] === iteration 7: 07 Search model in Lean. `Search/Basic.lean`: closed sets, the
+[2026-09-30 23:14:58] claude session it07 (cap 4.00 h) -> session_it07.log
+[2026-09-30 23:25:02] session it07: ok (exit 0, 30 tool calls)
+[2026-09-30 23:27:29] tests passed: GATE PASS

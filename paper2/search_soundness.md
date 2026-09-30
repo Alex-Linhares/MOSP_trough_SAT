@@ -11,7 +11,7 @@ precisely and then proves it.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
-- §4 (items 07–11) gives the Lean proofs.
+- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it.
 
@@ -836,3 +836,140 @@ It does not reach the sizes where Bug A lives, except by sampling:
 
 A check of this kind would have caught Bug B from 8 customers and Bug A only
 from 12. The proofs of items 07–11 are what cover every size.
+
+
+---
+
+## 4. The Lean proofs
+
+### 4.1 The model, Lemma F and the free move (item 07)
+
+`lean/MOSPFormalization/Search/Basic.lean`, namespace
+`MOSPFormalization.Search`. It has no `sorry`, and its axioms are `propext`,
+`Classical.choice` and `Quot.sound` only (the new lines in
+`axiom_check.lean`). Every statement was checked before it was proved, by
+`python -m paper2.search_check --model` (§4.1.4).
+
+#### 4.1.1 Definitions
+
+The graph `G` is any finite simple graph, and every customer is a vertex. The
+definitions follow §1.2–§1.3 word for word, on *arbitrary* closed sets `T`,
+not only on free-closed states.
+
+| §1 | Lean | definition |
+|---|---|---|
+| `N[c]` | `nbhd G c` | `{d : d = c ∨ G.Adj c d}` |
+| `O(T)` | `opened G T` | `T.biUnion (nbhd G)` |
+| `fin(X)` | `finished G X` | `{c : nbhd G c ⊆ X}` |
+| `cl(T)` | `cl G T` | `finished G (opened G T)` |
+| `cost(T, c)` | `stepCost G T c` | `(opened G (insert c T) \ T).card` |
+| cost of a closing order | `orderCost G T l` | `0` on `[]`; `max (stepCost G T c) (orderCost G (insert c T) l)` on `c :: l` |
+| closing order from `T` | `IsClosingOrder T l` | `l.Nodup ∧ ∀ c, c ∈ l ↔ c ∉ T` |
+| `P_k(T)` | `Solvable G k T` | `∃ l, IsClosingOrder T l ∧ orderCost G T l ≤ k` |
+| `Sol_k(S)` | `SearchSol G k S` | inductive: `S = univ`, or `c ∉ S`, `stepCost G S c ≤ k`, and `SearchSol G k (cl G (insert c S))` |
+
+`SearchSol` is the predicate the search decides, stated as the search
+computes it: its children are the free closures of `S ∪ {c}`, as in Py:364
+and C:482. It is not defined in terms of `Solvable`, so Lemma F is a theorem
+and not a definition.
+
+#### 4.1.2 What is proved
+
+- **Basic facts** (§1.2):
+  - `subset_cl` (`T ⊆ cl T`);
+  - `opened_cl` (`O(cl T) = O(T)`, the reason the memo may key on the
+    closed set);
+  - `cl_empty` (the root is free-closed);
+  - `card_opened_insert_sdiff_lt` (the node invariant at a child is below
+    the parent's step cost);
+  - `stepCost_of_free` (a free move costs exactly `|O(T) ∖ T|`).
+- **Monotonicity** (`solvable_mono`): if `T ⊆ T'` and `O(T') ⊆ O(T)`, then
+  `P_k(T) → P_k(T')`. More closed with nothing more opened never hurts. The
+  proof deletes `T'`'s customers from a closing order from `T`
+  (`orderCost_filter_le`). Every remaining step closes the same customer with
+  at least as much closed and no more open, so its cost cannot rise.
+- **The free move is sound.**
+  - `solvable_insert_of_free`: if `N[c] ⊆ O(S)`, then `P_k(S) → P_k(S ∪ {c})`.
+    This is the special case `T' = S ∪ {c}` of monotonicity, and it needs no
+    hypothesis.
+  - `solvable_insert_iff_of_free`: under the node invariant
+    `|O(S) ∖ S| ≤ k` the two are equivalent, because the free move then costs
+    at most `k`.
+  - `solvable_cl`, `solvable_cl_iff`: the same for all free moves at once.
+- **Lemma F** (`solvable_iff_searchSol_cl`): if `|O(T) ∖ T| ≤ k`, then
+  `P_k(T) ↔ Sol_k(cl T)`.
+  - (→) is `searchSol_cl_of_solvable`, which needs no hypothesis. A first
+    move of a solvable order from `cl T` is playable, and its child is
+    solvable (`exists_first_move`). Induction on `|V ∖ T|`.
+  - (←) is `solvable_of_searchSol` plus `solvable_cl_iff`. Unfold `Sol_k` and
+    prepend each move (`solvable_of_solvable_insert`). At each child, the
+    invariant is the parent's step cost minus one, so it is at most `k`.
+  - At the root, `solvable_empty_iff`: `P_k(∅) ↔ Sol_k(∅)`.
+- **Cost = out-narrowness** (`orderCost_ofFn_eq_outNarrowness`). For a layout
+  `τ`, the closing order `orderOfLayout τ` closes `τ⁻¹ 0, τ⁻¹ 1, …`. Its cost
+  is `Complex.outNarrowness G τ`, the narrowness of the out-sequence `τ` in
+  Kornai & Tuza's dual shack process. The `i`-th step opens exactly the shack
+  just before `wᵢ` leaves (`stepCost_orderOfLayout`). By
+  `exists_orderOfLayout`, every full closing order is of this form.
+  - `orderCost_ofFn_eq_vertexSepOfLayout_add_one` gives the same cost as
+    `vs(τ) + 1` for nonempty `V`, in the development's convention (the active
+    suffix of `τ` itself, not of its reverse).
+- **The search decides pathwidth and MOSP.**
+  - `solvable_empty_iff_narrowness_le`: `P_k(∅) ↔ ν(G) ≤ k`.
+  - `searchSol_empty_iff_narrowness_le` and
+    `searchSol_empty_iff_vertexSeparation_add_one_le`.
+  - `searchSol_empty_iff_pathwidth_add_one_le`: `Sol_k(∅) ↔ pw(G) + 1 ≤ k`
+    for nonempty `V`.
+  - `searchSol_mospGraph_iff_mospValue_le`: for an instance with at least one
+    requirement, `Sol_k(∅)` on `mospGraph M` holds iff `mospValue M ≤ k`.
+    This goes through `mospValue_eq_pathwidth_add_one` (`MOSPGraph.lean`).
+    So the only thing a refutation `¬ Sol_k(∅)` may mean is `mospValue > k`,
+    which is the sentence of §1.4 that item 07 was to turn into a lemma.
+
+#### 4.1.3 Modelling notes
+
+- **Inactive customers.** The search drops customers with no product
+  (Py:193–194). `mospGraph` keeps them as isolated vertices. Closing one costs
+  one stack plus whatever is already open, so the model's `Sol_k(∅)` on
+  `mospGraph` and the search's on the active customers agree for every
+  `k ≥ 1`, and both are false at `k = 0` once some requirement exists. The
+  final theorem is stated on `mospGraph`, where no case split is needed. The
+  statement about the active subgraph is item 12's.
+- **Where the invariant matters.** Lemma F's (←) direction and the free
+  move's converse are false without `|O(T) ∖ T| ≤ k`. The smallest case is
+  `K₂` with one customer closed at `k = 0`: `cl T` is everything, so
+  `Sol_0(cl T)` holds, but closing the other customer costs one. The check
+  counts 3.55 M such cases for Lemma F and 3.76 M for the free move
+  (`lemma_f_needs_invariant`, `free_move_iff_needs_invariant`), so the
+  hypothesis is not decorative. The invariant holds at every node the search
+  visits (§1.4). Items 08–11 carry it as a hypothesis on states.
+- **What is not yet modelled.** This item does not model `Q`, the dominance
+  filter, the memo or the search procedure (the order of §1.5). Items 08–11
+  add each rule's statement in terms of `Solvable`/`SearchSol` on states.
+
+#### 4.1.4 The check
+
+`python -m paper2.search_check --model` (48 s on 30 cores; writes
+`data/search_model_check.json`) transcribes the Lean definitions literally.
+`Solvable` is computed by its prepend recursion and `SearchSol` by its
+inductive clauses, both on all `2ⁿ` sets. `outNarrowness` and
+`vertexSepOfLayout` are transcribed from `Narrowness.lean` and
+`VertexSeparation.lean`. The check covers every labelled graph on 0–6
+vertices and every atlas graph on 7 (34,912 graphs), with every layout and
+every `k ≤ n + 1`, and checks:
+
+| statement | cases | failures |
+|---|---|---|
+| `orderCost = outNarrowness = vs + 1`, per layout | 28,979,190 | 0 |
+| `O(cl T) = O(T)`, `T ⊆ cl T`, `cl ∅ = ∅` | every `T` | 0 |
+| `solvable_mono`, every `T ⊆ T'` with `O(T') ⊆ O(T)` | 91,517,418 | 0 |
+| free move, and its converse under the invariant | 32,972,900 | 0 |
+| Lemma F, both directions, `solvable_cl`, `solvable_of_searchSol` | 18,215,784 | 0 |
+| root: `P_k(∅) = Sol_k(∅) = (min cost ≤ k)` | every graph and `k` | 0 |
+
+The tests (`tests/test_search_check.py`, four new) pin:
+
+- hand values on `P₃` and `K₁,₃`;
+- the `K₂` case where the invariant is needed;
+- a mutation, a step cost that forgets the customer being closed, which
+  breaks `cost = vs + 1`.

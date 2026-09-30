@@ -1,0 +1,99 @@
+# session it07 started 2026-09-30 23:14:58
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "07 Search model" Ralph_Loops/loop0006/iterations.md; ls lean/MOSPFormalization/Search/ lean/MOSPFormalization/Complex/; cat 
+  > $ cd /home/al/dev/MOSP; sed -n 1,200p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP/lean; wc -l MOSPFormalization/Complex/Narrowness.lean; grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^structure\|^abbrev\|^variable\
+  > $ cd /home/al/dev/MOSP/lean; sed -n 1,382p MOSPFormalization/Complex/Narrowness.lean; grep -n "structure LinearLayout" -A15 MOSPFormalization/LinearLayout.lean
+  > $ cd /home/al/dev/MOSP/lean; grep -n "LinearLayout" MOSPFormalization/LinearLayout.lean | head -5; grep -n "theorem mospValue_eq_pathwidth_add_one\|def mospGraph"
+  > $ cd /home/al/dev/MOSP/lean; sed -n 1,60p MOSPFormalization/MOSPGraph.lean | grep -v "^$" | head -60; grep -n "variable\|structure\|def shares\|requires" MOSPForm
+
+Designing `Search/Basic.lean` now: I'm defining the list-based closing-order cost, `Solvable`, and the search predicate, then proving monotonicity, Lemma F, and the bridge to narrowness.
+  > $ cd /home/al/dev/MOSP/lean; grep -n "instance\|DecidableRel" MOSPFormalization/MOSPGraph.lean | head; grep -n "def vertexSeparation\|theorem vertexSeparation_eq_
+  > $ cd /home/al/dev/MOSP/lean; mkdir -p /tmp/lt; cat > /tmp/lt/T.lean <<'EOF'
+import Mathlib
+open List
+example (l : List ℕ) (n a : ℕ) : a ∈ l.take n ↔ True := by
+  
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/Basic.lean
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Search/Basic.lean'
+s=open(p).read()
+s=s.replace("""  obtain ⟨c, _⟩ := h
+  haveI : Nonempty C :
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Search/Basic.lean'
+s=open(p).read()
+old="""    · rw [← Finset.sdiff_sdiff_left', Finset.sdiff_
+  > $ cd /home/al/dev/MOSP/lean; sed -n 150,156p MOSPFormalization/Search/Basic.lean
+
+`Search/Basic.lean` compiles with no errors. Next I'm wiring it into the root, adding the axiom check and the Python checks.
+  > $ cd /home/al/dev/MOSP/lean; sed -i '153s/fun d hd/fun _ hd/' MOSPFormalization/Search/Basic.lean; echo "import MOSPFormalization.Search.Basic" >> MOSPFormalizati
+  > $ cd /home/al/dev/MOSP; head -20 paper2/axiom_check.lean; python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+add="""-- loop0006 item 07: the customer 
+  > $ cd /home/al/dev/MOSP; wc -l paper2/search_check.py; grep -n "^def \|^    parser\|add_argument\|__main__\|^import\|^from" paper2/search_check.py | head -60; sed 
+  > $ cd /home/al/dev/MOSP; sed -n 20,48p lean/MOSPFormalization/VertexSeparation.lean; sed -n 56,135p paper2/search_check.py; sed -n 700,760p paper2/search_check.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+block='''
+# ----------------------------------------------------------------
+  > $ cd /home/al/dev/MOSP; python -m paper2.search_check --model --workers 30 2>&1 | tail -25
+
+The full model check passed with zero failures in about a second. Since it's that cheap, I'm widening it to every labelled graph on 6 vertices and every layout of the 7-vertex atlas.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+old='''    """Item 07's check: all labelled graphs to 5 vertices and the atl
+  > $ cd /home/al/dev/MOSP; head -30 tests/test_search_check.py; cat >> tests/test_search_check.py <<'EOF'
+
+
+# --- item 07: the Lean model of Search/Basic.lean ------
+
+Tests pass. Now writing the Lean section of `search_soundness.md`.
+  > $ cd /home/al/dev/MOSP; grep -n "^## \|^### " paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; sed -n 216,247p paper2/search_soundness.md; sed -n 820,900p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+s=s.replace("- §4 (items 07–11) gives the Lean proofs.","- §4 (items 07–
+
+Now running the gate.
+  > $ cd /home/al/dev/MOSP; timeout 3000 python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -6
+
+Meanwhile, the PROGRESS entry and item mark.
+  > $ cd /home/al/dev/MOSP; sed -i 's/^- \[ \] \*\*07 Search model in Lean\.\*\*/- [x] **07 Search model in Lean.**/' Ralph_Loops/loop0006/iterations.md; grep -n "07 
+  > $ cd /home/al/dev/MOSP; cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 7 — 2026-09-30 23:24
+
+### Completed
+- **07 Search model in Lean.** New file 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/c3a34f83-8bbe-4ff0-b317-9c98a333fd3c/tasks/bo0gub988.output; until gre
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/c3a34f83-8bbe-4ff0-b317-9c98a333fd3c/tasks/bo0gub988.output
+  > $ cd /home/al/dev/MOSP; sed -i 's/^- Gate: see below\.$/- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1293 passed, 2 skipped,\n  1 xfailed; GA
+
+Item 07 is done: the customer search is now modelled in Lean, with no `sorry`, and the gate passes (1293 tests passed, 2 skipped, 1 xfailed; `sorry` count still 1, the §24 conjecture). It is marked `[x]`, and PROGRESS.md now reads 7/13 with the Iteration 7 section added. Nothing was committed.
+
+**What the Lean proves** (`lean/MOSPFormalization/Search/Basic.lean`, imported from the root; axioms `propext`, `Classical.choice` and `Quot.sound` only):
+- **Definitions:** closed and opened sets, the cost of one closing step and of a whole closing order, `Solvable G k T` (some ordering of the customers not yet closed costs at most k), and the search's own predicate `SearchSol`. `SearchSol` is defined the way the code recurses, not in terms of `Solvable`, so linking the two is a real theorem.
+- **Monotonicity:** closing more customers without opening more stacks never hurts (`solvable_mono`).
+- **The free move is sound:** closing a customer whose neighbours are all already open never hurts (`solvable_insert_of_free`). The reverse direction also holds when at most k stacks are open at the node.
+- **Lemma F:** under that same condition, `Solvable` from T is equivalent to `SearchSol` from its free closure (`solvable_iff_searchSol_cl`). One direction needs no condition.
+- **Cost = narrowness:** a full closing order costs exactly the narrowness of the matching sequence in `Narrowness.lean`, which equals its vertex separation plus 1.
+- **The search decides MOSP:** `SearchSol` from the empty set holds exactly when pathwidth + 1 ≤ k, and on the MOSP graph exactly when `mospValue ≤ k` (`searchSol_mospGraph_iff_mospValue_le`). So a refutation can only mean `mospValue > k`.
+
+**Checked before stating:** `python -m paper2.search_check --model` copies the Lean definitions directly into Python. It covers every labelled graph on 0–6 vertices and every graph on 7 vertices (34,912 graphs), with every layout and every k. It found zero failures across 29.0M layouts, 91.5M monotonicity pairs, 33.0M free moves and 18.2M Lemma F cases. It takes 48 s on 30 cores and writes `paper2/data/search_model_check.json`.
+
+The "at most k open" condition is necessary: without it, Lemma F fails in 3.55M cases. The smallest is a single edge with one customer closed at k = 0. Four new tests in `tests/test_search_check.py` cover this case, hand-computed values and a deliberately broken cost function.
+
+**Docs:** new §4.1 in `paper2/search_soundness.md` has the definitions table, each theorem with its proof idea, modelling notes and the check table.
+
+**Not yet covered:**
+- The old moves, the dominance filter, the memo and the search procedure; items 08–11 add them.
+- Customers with no product: the final theorem is stated on the MOSP graph, which keeps them as isolated vertices, while the search drops them. §4.1.3 argues this changes nothing, but the Lean statement on the active customers only is left for item 12.
+
+# result: success in 603s, 31 turns, cost $2.33

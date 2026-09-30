@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 6/13 SOLVED
+Current: 7/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -485,3 +485,85 @@ Current: 6/13 SOLVED
   Lean counterexample to the old order. For Bug A the smallest pair failure
   seen has 12 vertices; a node-level counterexample can use a single state of
   the 17 × 9.
+
+## Iteration 7 — 2026-09-30 23:24
+
+### Completed
+- **07 Search model in Lean.** New file `lean/MOSPFormalization/Search/Basic.lean`
+  (about 600 lines, namespace `MOSPFormalization.Search`), imported from the root.
+  No `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound` only (new lines in
+  `paper2/axiom_check.lean`).
+  - **Definitions**, on arbitrary closed sets, following `search_soundness.md` §1:
+    - `nbhd`, `opened` (O), `finished` (fin), `cl`, `stepCost`;
+    - `orderCost` (the maximum step cost along a list), `IsClosingOrder`;
+    - `Solvable G k T` (P_k: some ordering of V \ T after T costs ≤ k);
+    - `SearchSol G k S` (Sol_k), an inductive predicate whose children are
+      `cl (insert c S)`, as the code recurses. It is not defined via `Solvable`.
+  - **Proved:**
+    - `solvable_mono`: `T ⊆ T'` and `O(T') ⊆ O(T)` give `P_k(T) → P_k(T')`.
+    - **Free move**: `solvable_insert_of_free` (no hypothesis), with its converse
+      `solvable_insert_iff_of_free` under the node invariant `|O(S) \ S| ≤ k`;
+      also `solvable_cl` and `solvable_cl_iff`.
+    - **Lemma F**: `solvable_iff_searchSol_cl`, `P_k(T) ↔ Sol_k(cl T)` under the
+      invariant. The (→) half, `searchSol_cl_of_solvable`, needs no hypothesis.
+      At the root, `solvable_empty_iff`.
+    - **Cost = narrowness**: `orderCost_ofFn_eq_outNarrowness` (the closing order
+      of a layout τ costs `outNarrowness G τ`, step by step via
+      `stepCost_orderOfLayout`), `orderCost_ofFn_eq_vertexSepOfLayout_add_one`
+      (`= vs(τ) + 1`), and `exists_orderOfLayout` (every full closing order is
+      one of these).
+    - **The search decides pathwidth and MOSP**:
+      - `solvable_empty_iff_narrowness_le`;
+      - `searchSol_empty_iff_{narrowness_le, vertexSeparation_add_one_le,
+        pathwidth_add_one_le}`;
+      - `searchSol_mospGraph_iff_mospValue_le`: `Sol_k(∅)` on `mospGraph M` iff
+        `mospValue M ≤ k`, given one requirement.
+
+      So `¬ Sol_k(∅)` means `mospValue > k`.
+  - The whole file compiled after one round of fixes: four local tactic errors,
+    no proof abandoned.
+- **Check before stating.** `python -m paper2.search_check --model` is a new
+  section of `paper2/search_check.py` that transcribes the Lean definitions
+  literally. It runs in 48 s on 30 cores and writes
+  `paper2/data/search_model_check.json`. It covers every labelled graph on 0–6
+  vertices and every atlas graph on 7 (34,912 graphs), with every layout and
+  every k. **Zero failures** across:
+  - 29.0 M layouts (`orderCost = outNarrowness = vs + 1`);
+  - 91.5 M monotonicity pairs;
+  - 33.0 M free moves;
+  - 18.2 M Lemma F cases.
+
+  The invariant is needed: without it, Lemma F's (←) fails in 3.55 M cases and
+  the free move's converse in 3.76 M. The smallest case is K₂ with one customer
+  closed at k = 0. `tests/test_search_check.py` has four new tests (18 in all):
+  - a quick run with no failures;
+  - hand values on P₃ and K₁,₃;
+  - the K₂ case;
+  - a mutation (a step cost that forgets the closed customer breaks `= vs + 1`).
+- **Docs.** New §4.1 in `paper2/search_soundness.md` gives:
+  - a definition table from §1 to Lean;
+  - every theorem with its proof idea;
+  - modelling notes: inactive customers, where the invariant matters, and what
+    is not yet modelled;
+  - the check table.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1293 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None. What is not modelled yet: `Q`, the dominance filter, the memo and the
+  node procedure (items 08–11). The final theorem is stated on `mospGraph`,
+  which keeps customers with no product as isolated vertices. The search drops
+  them; the argument that this changes nothing is in §4.1.3, and the Lean
+  statement on the active subgraph is item 12's.
+
+### Next
+- Item 08: `Search/DefiniteMove.lean`. Chu & Stuckey Thm 1 in the code's form
+  (§2.2: the first `q` in index order with `open(q) ≤ close(q)`, `close`
+  counting unfinished `d` with `o(d) ⊆ o(q)`). State it on a free-closed state
+  `S` under the invariant, as
+  `Solvable G k S → cost(S, q) ≤ k ∧ Solvable G k (cl (insert q S))`.
+  - Reuse `solvable_mono`, `solvable_cl_iff`, `exists_first_move` and
+    `solvable_of_solvable_insert`.
+  - The swap argument moves `q` to the front of an optimal order. The customers
+    `d` with `o(d) ⊆ o(q)` become free after `q`, which is what
+    `solvable_mono` covers.

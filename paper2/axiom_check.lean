@@ -77,5 +77,15 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms mpb_eq_nodeSearch
 #print axioms mpb_ne_nodeSearch_of_edgeless
 
+-- loop0006 item 07: the customer search model (Search/Basic.lean)
+#print axioms MOSPFormalization.Search.solvable_mono
+#print axioms MOSPFormalization.Search.solvable_insert_of_free
+#print axioms MOSPFormalization.Search.solvable_insert_iff_of_free
+#print axioms MOSPFormalization.Search.solvable_iff_searchSol_cl
+#print axioms MOSPFormalization.Search.orderCost_ofFn_eq_outNarrowness
+#print axioms MOSPFormalization.Search.orderCost_ofFn_eq_vertexSepOfLayout_add_one
+#print axioms MOSPFormalization.Search.searchSol_empty_iff_pathwidth_add_one_le
+#print axioms MOSPFormalization.Search.searchSol_mospGraph_iff_mospValue_le
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

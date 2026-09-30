@@ -1,0 +1,14 @@
+{
+ "seconds": 48.3,
+ "graphs": 34912,
+ "quick": false,
+ "tally": {
+  "layouts": 28979190,
+  "lemma_f": 18215784,
+  "mono_pairs": 91517418,
+  "lemma_f_needs_invariant": 3554842,
+  "free_moves": 32972900,
+  "free_move_iff_needs_invariant": 3757196
+ },
+ "failures": 0
+}
