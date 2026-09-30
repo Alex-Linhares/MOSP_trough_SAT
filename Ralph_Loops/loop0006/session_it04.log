@@ -1,0 +1,193 @@
+# session it04 started 2026-09-30 22:11:46
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A25 "04 Lengauer" Ralph_Loops/loop0006/iterations.md; cat Ralph_Loops/loop0006/allowed_sorries.txt 2>/dev/null; wc -l lean/MOSPFormalization/Complex/Pe
+  > $ sed -n 1,200p lean/MOSPFormalization/Complex/Pebbling.lean
+  > $ grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^private\|^abbrev\|^structure\|^section\|^end\|^variable\|^open" lean/MOSPFormalization/Complex/Pebbling.le
+  > $ sed -n 199,954p lean/MOSPFormalization/Complex/Pebbling.lean
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/0ad89bb0-108d-46ad-9278-059e6bd9be28/tool-results/bzjpbejdn.txt
+  > $ grep -n "D_u\|G_u" paper2/equivalences.md | head -40; grep -n "^## \|^### " paper2/equivalences.md | tail -30
+
+I'm reading the pebbling census and the loop0005 sources before I write `PebblingGu.lean`.
+  > $ sed -n 1355,1660p paper2/equivalences.md; sed -n 1776,1900p paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization && cat LinearLayout.lean | head -80; grep -n "theorem\|def \|lemma" VertexSeparation.lean | head -60
+  > $ grep -rn "reverse\|rev\b\|Fin.rev\|revLayout" --include=*.lean . | head -20; grep -n "IsPositiveVSG\|theorem vsg_eq\|theorem isPositiveVSG_iff\b\|def vsg" Compl
+  > $ sed -n 1,120p Complex/Narrowness.lean; sed -n 195,300p Complex/Narrowness.lean; sed -n 20,70p VertexSeparation.lean
+  > $ grep -n "^theorem\|^def\|^noncomputable def\|^structure\|^abbrev" MOSPGraph.lean MOSPInstance.lean OpenStacks.lean | head -50; grep -n "theorem vertexSepOfLayou
+  > $ sed -n 20,45p MOSPInstance.lean; sed -n 140,172p MOSPGraph.lean; sed -n 460,470p MOSPGraph.lean; sed -n 90,110p Complex/EdgeSeparation.lean; sed -n 655,665p Com
+  > $ cd /home/al/dev/MOSP/lean && grep -n "noncomputable def pathwidth\|^def pathwidth" -r MOSPFormalization/*.lean MOSPFormalization/ForMathlib/*.lean | head; grep 
+
+I've worked out the proof plan and am now writing the first part of `PebblingGu.lean`: the definitions and the lower bound for Lengauer's Theorem 2.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/PebblingGu.lean
+  > $ time lake env lean MOSPFormalization/Complex/PebblingGu.lean 2>&1 | head -60
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""  symm := by
+    intro u w ⟨hne, h⟩""","""  symm := by
+    const
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""  show B.card ≤ K
+  omega""","""  have hBc : B.card = (outerBoun
+
+Lower bound compiles. Now the upper bound: the strategy that pebbles D from a layout of D_u.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+new = r'''
+/-! ### Theorem 2 (⇐): the strategy a layout induces -/
+
+section Upp
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""  induction X using Finset.induction_on with
+  | empty => simp
+"
+  > $ lake env lean MOSPFormalization/Complex/PebblingGu.lean 2>&1 | grep -c "error"; grep -n "vertexSeparation_eq_pathwidth" MOSPFormalization/VSEquivPW.lean; sed -n
+
+Theorem 2's two directions both compile. Next: the statements, the MOSP link, and the black game for KP Theorem 3.1.
+  > $ grep -rn "theorem.*vertexSeparation.*mono\|vertexSeparation_le_of_le\|theorem vertexSepAt_mono" MOSPFormalization | head; grep -n "def nodeSearch\|^theorem node
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+new = r'''
+/-! ### Theorem 2 -/
+
+section Theorem2
+
+variable {α : Type*} [Fintyp
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""    (h : BlackPebblesWithin D K) : PebblesWithin D K := by
+  unf
+
+Theorem 2 and the MOSP link compile. Now the black strategy that orients G along a layout, and the KP equalities.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+new = r'''
+section KPStrategy
+
+variable {V : Type*} [Fintype V] [DecidableEq V]
+  > $ sed -n 890,900p MOSPFormalization/Complex/PebblingGu.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""    rcases mem_insert.mp hw with rfl | hw
+    · exact ⟨hv.le, w,
+  > $ sed -n 1015,1030p MOSPFormalization/Complex/PebblingGu.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""  apply le_antisymm (Nat.sInf_le ⟨D, hD, hb⟩)
+  refine""","""  r
+
+Everything compiles. Now I'll tidy the warnings, write the module docstring, and wire up the root import and the axiom check.
+  > $ lake env lean MOSPFormalization/Complex/PebblingGu.lean 2>&1 | grep "warning" | head -30; cat ../paper2/axiom_check.lean | tail -30
+  > $ sed -n 512,520p MOSPFormalization/Complex/PebblingGu.lean; sed -n 954,962p MOSPFormalization/Complex/PebblingGu.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+s=s.replace("""      rw [if_neg hw, if_neg hw]
+      by_cases hb : w ∈ Bl ∪ Z
+ 
+
+The Lean file is clean. Now the Python replay of both constructions, in the style of item 03's `--pebbling-strategy`.
+  > $ cd /home/al/dev/MOSP && grep -n "^def \|^    def \|argparse\|add_argument\|--pebbling" paper2/complex_check.py | sed -n 1,400p | grep -n "pebbl\|replay\|gd_\|re
+  > $ sed -n 1,30p paper2/complex_check.py; sed -n 1032,1125p paper2/complex_check.py; sed -n 1990,2200p paper2/complex_check.py
+  > $ sed -n 1124,1180p paper2/complex_check.py; grep -n "^def graph\|^def vs_dp\|^def _prefix_masks\|^def edges_of\|^def from_nx\|^def vertex_separation" paper2/comp
+  > $ python3 - <<'EOF'
+p='paper2/complex_check.py'
+s=open(p).read()
+new = r'''
+
+# ----------------------------------------------------------------------------
+# Pebb
+  > $ sed -i 's/^import json$/import json\nimport math/' paper2/complex_check.py && time python -m paper2.complex_check --pebbling-gu --quick --out /tmp/q.json | tail
+  > $ sed -i 's/        fails\["removal"\] += vs_outer_of_layout(u, rem) > k - 1/        fails["removal"] += vs_outer_of_layout(u, rem) > max(k, 1) - 1/' paper2/compl
+
+The replay finds zero failures in 9 s: 66,067 digraphs on at most 4 vertices (loops allowed), plus the 5-vertex dags and 5.4 M KP plays. Next I'm adding tests, then the Lean docstring and the docs.
+  > $ head -30 tests/test_pebbling_check.py; grep -n "^def test" tests/test_pebbling_check.py | tail -8
+  > $ cat >> tests/test_pebbling_check.py <<'EOF'
+
+
+# --- loop0006 item 04: Lengauer Thm 2 and KP Thm 3.1 (Complex/PebblingGu.lean) ---
+
+TWO_CYCLE = cc.digraph_pred(2
+
+Tests pass (41). Now the Lean docstring, the root import and the axiom audit.
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/Complex/PebblingGu.lean'
+s=open(p).read()
+old = """# Lengauer's Theorem 2 and Kirousis & Papadimitriou's Theorem 3.1
+  > $ cd /home/al/dev/MOSP/lean && time lake build 2>&1 | grep -v "^✔\|^⚠\|warning\|^info" | tail -15 && lake env lean ../paper2/axiom_check.lean 2>&1 | tail -16
+  > $ ls -la .lake/build/lib/lean/MOSPFormalization/Complex/PebblingGu.olean 2>&1; lake build MOSPFormalization.Complex.PebblingGu 2>&1 | tail -2
+
+Build passes and all new theorems use only the three standard axioms. Now the paper documents: §1.13 and the transformations in `problem_transformations.md`, then the master table.
+  > $ cd /home/al/dev/MOSP/paper2 && grep -n "^#\|E10\|1\.13" problem_transformations.md | head -80
+  > $ sed -n 1,22p problem_transformations.md; sed -n 125,216p problem_transformations.md; sed -n 281,330p problem_transformations.md; sed -n 440,470p problem_transfo
+  > $ sed -n 216,281p problem_transformations.md; sed -n 696,760p problem_transformations.md
+
+Now I'll write the new problem text, (E11)/(E12), the edge cases, and the proofs.
+  > $ python3 - <<'EOF'
+p='problem_transformations.md'
+s=open(p).read()
+old="""$v \\to \\{v, w\\}$, $w \\to \\{v, w\\}$ (Lengauer, Def. 1b). Lengauer's $D_u$,
+built f
+  > $ grep -n "13c\|13a\|13b\|master" equivalences.md | head -30; sed -n 1,60p equivalences.md
+  > $ sed -n 60,110p equivalences.md; sed -n 1840,1900p equivalences.md | head -5; wc -l equivalences.md
+  > $ python3 - <<'EOF'
+p='equivalences.md'
+s=open(p).read()
+row12="| 12 | Vertex separation | [13] Kinnersley 1992 Thm 3.1 | `vs = pw` | `vertexSeparation_eq_pathwid
+
+Docs are written. Running the gate now.
+  > $ cd /home/al/dev/MOSP && ls -la paper2/data/pebbling_gu_check.json && time python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -15
+
+Gate passes. Now updating PROGRESS.md and iterations.md.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0006/iterations.md'
+s=open(p).read()
+s=s.replace("- [ ] **04 Lengauer Theorem 2 and KP Theorem 3.1.**","- [x] **04 Lengauer
+  > $ wc -l lean/MOSPFormalization/Complex/PebblingGu.lean
+  > $ sed -i 's/(about 1,050 lines), imported from the/(about 1,150 lines), imported from the/' Ralph_Loops/loop0006/PROGRESS.md && grep -n "1,150" Ralph_Loops/loop00
+
+Item 04 is done: Lengauer's Theorem 2 and Kirousis & Papadimitriou's Theorem 3.1 are proved in Lean, and the gate passes. `lake build` is ok, the only `sorry` is still the §24 conjecture, and pytest gives 1,272 passed, 2 skipped, 1 xfailed.
+
+**What is proved** (new file `lean/MOSPFormalization/Complex/PebblingGu.lean`, imported from the root). It uses only the three standard axioms, which `paper2/axiom_check.lean` now checks.
+
+- **Lengauer Theorem 2:**
+  - For every digraph and every K ≥ 0: D can be pebbled progressively with K + 1 pebbles exactly when vs(D_u) ≤ K.
+  - His statement as written holds for K ≥ 2 and fails at K = 1 on a nonempty dag with no arcs, where (D_u, 0) is not a valid VSG instance. There is a Lean proof of that failure.
+  - On any nonempty digraph, pbw(D) = vs(D_u) + 1 = pw(D_u) + 1. It also equals Z(M_D), the MOSP value of the matrix whose column v is v and its predecessors, because D_u is exactly that matrix's MOSP graph.
+- **Kirousis & Papadimitriou Theorem 3.1:**
+  - On every nonempty graph, mpb = mpbw = vs + 1 = pw + 1.
+  - Their statement mpb = ns = mpbw holds when G has an edge.
+  - Their first equality is false on edgeless nonempty graphs: mpb = mpbw = 1 but ns = 0. This is also proved in Lean.
+- **One strengthening:** Theorem 2 never uses acyclicity, so it holds for the game on any digraph, including cycles and loops. An exact search on all 66,067 digraphs with at most 4 vertices agrees.
+- **The KP proof avoids node search entirely.** Orient the graph along the reverse of an optimal layout and place black pebbles in layout order. The pebbles on the graph at each step are exactly the "shack" already formalised in `Narrowness.lean`. So neither LaPaugh's theorem nor any monotonicity result is needed.
+
+**Python check.** `python -m paper2.complex_check --pebbling-gu` takes about 9 s and writes `paper2/data/pebbling_gu_check.json`. It replays the proofs' constructions move by move, with zero failures:
+- Theorem 2's strategy on every layout of D_u, for every digraph up to 4 vertices and every dag on 5.
+- The black strategy on every layout of every graph up to 7 vertices, 5.4 million plays.
+
+The check is exhaustive only up to those sizes; the Lean proofs cover all sizes. `tests/test_pebbling_check.py` has 16 new tests, including one that deletes a step of Lengauer's strategy and confirms the play becomes illegal.
+
+**Docs.**
+- `paper2/problem_transformations.md`:
+  - §1.13 extended with D_u, the black game and mpb/mpbw;
+  - new transformations (E11) and (E12);
+  - the edge cases added to (F3);
+  - both proofs, formal and then in plain English.
+- `paper2/equivalences.md`:
+  - master table row 13 for pebbling, marked as not a Table 1 row;
+  - rows 13a and 13b marked proved;
+  - new section P.9.
+
+`PROGRESS.md` is at 4/13 with the item marked `[x]`; I committed nothing. Phase A is complete. Adding pebbling to the chain figure is left to item 12, and item 05 (stating the customer search) is next.
+
+# result: success in 988s, 54 turns, cost $4.66

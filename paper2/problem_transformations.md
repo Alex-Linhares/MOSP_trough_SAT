@@ -139,8 +139,21 @@ vertex receives and loses a pebble exactly once.
 The least such $K$ is $\mathrm{pbw}(D)$. (Lengauer 1981, pp. 466–467, after
 Cook & Sethi; Kirousis & Papadimitriou 1986, p. 206.) The dag built from
 a graph $G$ is $G_d$, with a vertex for each vertex and each edge of $G$ and arcs
-$v \to \{v, w\}$, $w \to \{v, w\}$ (Lengauer, Def. 1b). Lengauer's $D_u$,
-built from a dag, is item 04's.
+$v \to \{v, w\}$, $w \to \{v, w\}$ (Lengauer, Def. 1b). The graph built from
+a dag $D$ is $D_u$: the arcs of $D$ with their directions dropped, plus a clique
+on the immediate predecessors of every vertex (Lengauer, Def. 1a). Equivalently,
+$D_u$ is the MOSP graph $G_{M_D}$ of the $V \times V$ matrix $M_D$ whose column
+$v$ is $N^-[v] = \{v\} \cup \mathrm{pred}(v)$.
+- **Progressive black pebbling.** The same, with no white pebbles: a pebble may
+  be placed on a never-pebbled vertex only if every immediate predecessor is
+  pebbled, and removed at any time. Value $\mathrm{pb}(D)$. (Kirousis &
+  Papadimitriou 1986, pp. 205–206.)
+- **Minimum progressive pebbling of a graph.** *Instance:* a graph $G$ and a
+  positive integer $K$. *Question:* is there a *directive* of $G$ (an acyclic
+  orientation, "a dag whose underlying graph equals $G$") that can be pebbled
+  progressively with at most $K$ pebbles? Values $\mathrm{mpb}(G) =
+  \min_D \mathrm{pb}(D)$ and $\mathrm{mpbw}(G) = \min_D \mathrm{pbw}(D)$.
+  (Kirousis & Papadimitriou 1986, p. 213.)
 
 ---
 
@@ -213,6 +226,28 @@ Lengauer 1981, Thm 3, which states the instance form for positive $K$. Lean:
 `pbw_lengauerD_eq_pathwidth`, `pbw_lengauerD_of_edgeless`
 (`Complex/Pebbling.lean`).
 
+**(E11) Progressive pebbling of a dag.** For every dag and every $K \ge 0$,
+$$\mathrm{pbw}(D) \le K + 1 \iff \mathrm{vs}(D_u) \le K,$$
+so if $V \ne \emptyset$,
+$$\mathrm{pbw}(D) = \mathrm{vs}(D_u) + 1 = \mathrm{pw}(D_u) + 1 = Z(M_D),$$
+and $\mathrm{pbw}(D) = \mathrm{VSG}(D_u) + 1$ if $D$ has an arc. Nothing uses
+acyclicity: the same holds for the game on any digraph, cycles and loops
+included. Lengauer 1981, Thm 2, which states the instance form "(D, K)
+positive for PBWP iff $(D_u, K-1)$ positive for VSG"; that form holds for
+$K \ge 2$ and fails at $K = 1$ (F3). Lean: `pebblesWithin_iff_lengauerU`,
+`isPositivePBWP_iff_isPositiveVSG_lengauerU`,
+`pbw_eq_pathwidth_lengauerU_add_one`, `pbw_eq_vsg_lengauerU_add_one`,
+`pbw_eq_mospValue_pebbleMatrix` (`Complex/PebblingGu.lean`).
+
+**(E12) Minimum progressive pebbling.** If $V \ne \emptyset$,
+$$\mathrm{mpb}(G) = \mathrm{mpbw}(G) = \mathrm{vs}(G) + 1 = \mathrm{pw}(G) + 1,$$
+and if $E \ne \emptyset$ this is also $\mathrm{ns}(G)$. Kirousis & Papadimitriou
+1986, Thm 3.1, which states $\mathrm{mpb} = \mathrm{ns} = \mathrm{mpbw}$ for every
+graph; the first equality fails on edgeless graphs (F3). Lean:
+`mpb_eq_mpbw`, `mpb_eq_pathwidth_add_one`, `mpbw_eq_pathwidth_add_one`,
+`mpb_eq_nodeSearch` (`Complex/PebblingGu.lean`). The proof uses neither node
+search nor monotonicity.
+
 ### 2.2 Bands
 
 **(B1) Split bandwidth.** For every graph,
@@ -272,9 +307,14 @@ The row is also misattributed: what Lengauer proves exactly is the vertex game
 while $\mathrm{vs} + 1 = \theta = 1$ (for $V \ne \emptyset$). Both Kirousis &
 Papadimitriou equalities need $E \ne \emptyset$. For a matrix with no 1s,
 $Z = 0$ while $\mathrm{pw} + 1 = 1$. Lengauer's Theorem 4 fails for $K = 0$ on
-an edgeless graph. Lean: `nodeSearch_ne_intervalThickness_of_edgeless`,
+an edgeless graph. For pebbling, Kirousis & Papadimitriou's
+$\mathrm{mpb} = \mathrm{ns}$ fails on every edgeless graph with a vertex
+($\mathrm{mpb} = \mathrm{mpbw} = 1$, $\mathrm{ns} = 0$), and Lengauer's Theorem 2
+fails at $K = 1$ on a dag with no arcs ($(D, 1)$ is positive, but $(D_u, 0)$ is
+no instance of VSG). Lean: `nodeSearch_ne_intervalThickness_of_edgeless`,
 `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless`,
-`isPositiveVSG_triangleGraph_counterexample`.
+`isPositiveVSG_triangleGraph_counterexample`, `mpb_ne_nodeSearch_of_edgeless`,
+`isPositivePBWP_one_not_isPositiveVSG_zero`.
 
 ---
 
@@ -606,6 +646,85 @@ last edge crossing a cut is done. Its task, one endpoint, and every vertex
 waiting on the far side of the cut are all on the table together. So no
 schedule beats vertex separation plus two. A graph with no edges is the
 exception: one slot is enough.
+
+### (E11) Progressive pebbling of a dag
+
+Write $\partial S = N(S) \setminus S$ in $D_u$, as in (E10).
+
+*Proof.* ($\Leftarrow$) Take a layout of $D_u$ with $|\partial P_i| \le K$ for
+all $i$ and clear its vertices in order. Keep the invariant that after
+clearing $S$ the pebbled vertices are exactly $\partial S$, black where they
+have an immediate predecessor in $S$ and white elsewhere. To clear $v$ (these
+are Lengauer's four steps):
+1. place a white pebble on every pebble-free vertex of $N_{D_u}[v]$;
+2. turn $v$ black, if it is white;
+3. turn black every white successor $w$ of $v$;
+4. remove $v$.
+
+Step 2 is legal: a white $v$ has no predecessor in $S$, so its predecessors are
+$D_u$-neighbours of $v$ outside $S$, all pebbled after step 1. Step 3 is legal:
+a white $w$ has no predecessor in $S$, and every predecessor of $w$ is $v$, $w$
+itself, or shares the successor $w$ with $v$, so it is a $D_u$-neighbour of $v$,
+and it is pebbled. During the step the pebbled vertices are
+$\partial S \cup N_{D_u}[v] \setminus S \subseteq \partial(S \cup \{v\}) \cup \{v\}$,
+at most $K + 1$. After step 4 the invariant holds for $S \cup \{v\}$: a vertex
+of the new boundary with a predecessor in $S$ was black already, one with
+predecessor $v$ was turned in step 3, and the rest are white.
+
+($\Rightarrow$) Take a play with at most $K + 1$ pebbles and lay out $V$ in the
+order its vertices lose their pebble. Let $v$ be removed at time $t + 1$ and
+$S$ be the vertices cleared by then, $B = \partial S$. Let $w \in B$, with
+$u \in S$ a $D_u$-neighbour. If $u \to w$, then when $w$ turned, $u$ and $w$
+were both pebbled; if $w \to u$, the same holds when $u$ turned; if $u$ and
+$w$ share a successor $x$, the same holds when $x$ turned. That moment comes
+before $u$ is cleared, so at or before $t$. Since $w$ is not cleared at
+$t + 1$, it still carries its pebble at $t$. At $t$ the vertex $v$ is still
+black too, and $v \notin B$, so $|B| + 1 \le K + 1$.
+
+Every vertex must receive a pebble, so a nonempty dag needs one, and the
+number form follows. $M_D$ has the 1 at $(v, v)$, and $D_u = G_{M_D}$
+because two distinct rows share column $x$ exactly when each is $x$ or a
+predecessor of $x$; so (E2) gives $Z(M_D) = \mathrm{pw}(D_u) + 1$. $\square$
+
+*In plain English.* A dag is a recipe: each step needs the results of the
+steps before it. Two steps are "linked" if one feeds the other or both feed
+the same later step, because at some moment both must be on the table. The
+best schedule keeps on the table exactly what vertex separation counts in
+the linked graph, plus the step being finished. And no schedule does better:
+at the moment a step is cleared from the table, everything linked to the
+finished steps but not yet finished itself is still there. The same pebble
+count is the MOSP value of the matrix that asks each step and its inputs
+to be "open" together.
+
+### (E12) Minimum progressive pebbling
+
+*Proof.* ($\ge$) A black play is a black-white play (place white and turn at
+once), so $\mathrm{mpbw} \le \mathrm{mpb}$. For every directive $D$ of $G$, each
+edge of $G$ is an arc of $D$, so $G \subseteq D_u$ and
+$\mathrm{vs}(G) \le \mathrm{vs}(D_u)$. By (E11),
+$\mathrm{pbw}(D) = \mathrm{vs}(D_u) + 1 \ge \mathrm{vs}(G) + 1$ on a nonempty $G$.
+
+($\le$) Orient $G$ along an ordering $\sigma = (v_1, \dots, v_n)$, every edge
+towards its later end, which is acyclic. Pebble in order: at step $i$, place a
+black pebble on $v_i$, then remove every pebble whose vertex has no neighbour
+after $v_i$. The predecessors of $v_i$ are its earlier neighbours, and none has
+been removed, since $v_i$ comes after it; so every placement is legal. The
+pebbles just after $v_i$ is placed are Kornai & Tuza's shack (E6), so the
+play uses $\nu(\sigma) = \mathrm{vs}(\sigma^{\mathrm{rev}}) + 1$ pebbles. Take
+$\sigma$ the reverse of an optimal layout. The value $\mathrm{ns}$ follows
+from (E7) when $E \ne \emptyset$. $\square$
+
+Kirousis & Papadimitriou prove $\mathrm{mpb} \le \mathrm{ns} \le \mathrm{mpbw}$
+through node search, with a recontamination-free strategy for the first and
+an unargued "no recontamination" for the second (`equivalences.md`, P.3).
+The proof above goes through vertex separation and (E11) and needs neither.
+
+*In plain English.* A graph can be turned into a recipe by giving each edge
+a direction. With the directions chosen along a good order of the vertices,
+you prepare each vertex in turn and throw it away once all its neighbours are
+done. The table then holds exactly the narrowness shack, so vertex separation
+plus one. No choice of directions beats that, because whatever you choose,
+every edge of the graph links two steps of the recipe.
 
 ### (B1) $\mathrm{pw} \le \mathrm{sb} \le \mathrm{pw} + 1$
 

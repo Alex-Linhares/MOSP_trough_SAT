@@ -13,6 +13,7 @@ exhaustively on small inputs:
     python -m paper2.complex_check --quick    # atlas to 5 vertices, fewer samples
     python -m paper2.complex_check --pebbling # loop0006 item 02: pebbling (P.5)
     python -m paper2.complex_check --pebbling-strategy  # item 03: the Lean proof's constructions
+    python -m paper2.complex_check --pebbling-gu  # item 04: Thm 2 and KP Thm 3.1 constructions
 
 (interval thickness by explicit interval models only to 6 vertices; above
 that by event words, which the atlas run checks against the model search).
@@ -66,6 +67,7 @@ from __future__ import annotations
 import argparse
 import itertools
 import json
+import math
 import random
 import sys
 import time
@@ -2143,6 +2145,212 @@ def run_pebbling_strategy(quick=False, workers=None, out=PEBBLING_STRATEGY_REPOR
     return report
 
 
+# ----------------------------------------------------------------------------
+# Pebbling (loop0006 item 04): the constructions of the Lean proofs of
+# Lengauer's Theorem 2 and KP's Theorem 3.1, `Complex/PebblingGu.lean`
+# ----------------------------------------------------------------------------
+#
+# `gu_layout_strategy` is `pebblesWithin_of_layout_lengauerU` (⇐ of Thm 2):
+# for each `v` of a layout of G_u, whiten the pebble-free G_u-neighbours of `v`
+# (and `v`), turn `v` and its successors that are not black, remove `v`
+# (`reach_guPos_insert`). The (⇒) layout is the removal order. The Lean
+# statement is for the game on *any* digraph, loops and cycles included, so
+# `run_pebbling_gu` also checks `pbw(D) = vs(G_u) + 1` on every digraph with
+# at most 4 vertices, loops allowed. `kp_black_strategy` is
+# `blackPebblesWithin_layoutOrient` (KP Thm 3.1 ≤): orient along the layout,
+# place in layout order, clear a vertex once all its neighbours are placed.
+
+
+def digraph_pred(n, arcs):
+    """`(n, pred)` from arcs `(u, v)` with no acyclicity or loop check."""
+    pred = [0] * n
+    for u, v in arcs:
+        pred[v] |= 1 << u
+    return (n, tuple(pred))
+
+
+def lengauer_u_general(d):
+    """`lengauerU` of PebblingGu.lean: `u ≠ w` and an arc either way or a common
+    successor. Equals `lengauer_u` on loop-free digraphs."""
+    n, pred = d
+    es = set()
+    for v in range(n):
+        ps = [u for u in range(n) if pred[v] >> u & 1]
+        es.update((min(u, v), max(u, v)) for u in ps if u != v)
+        es.update((a, b) for a, b in itertools.combinations(ps, 2))
+    return graph(n, sorted(es))
+
+
+def gu_layout_strategy(d, order):
+    """The play of `pebblesWithin_of_layout_lengauerU` on `d` along `order`
+    (a layout of G_u), in the move vocabulary of `replay_progressive`."""
+    n, pred = d
+    _, uadj = lengauer_u_general(d)
+    succ = [sum(1 << v for v in range(n) if pred[v] >> u & 1) for u in range(n)]
+    ph = [FRESH] * n
+    moves = []
+    for v in order:
+        for w in [v] + [w for w in range(n) if uadj[v] >> w & 1]:  # step 1: whiten X
+            if ph[w] == FRESH:
+                moves.append(("place", w))
+                ph[w] = WHITE
+        for z in [v] + [w for w in range(n) if succ[v] >> w & 1 and ph[w] != DONE]:  # Z
+            if ph[z] == WHITE:
+                moves.append(("turn", z))
+                ph[z] = BLACK
+        moves.append(("remove", v))
+        ph[v] = DONE
+    return moves
+
+
+def replay_black(d, moves):
+    """KP's progressive black game (`BlackMove.Legal`): `("place", v)` puts a
+    black pebble on a never-pebbled `v` whose predecessors are all pebbled,
+    `("remove", v)` clears it. Returns the largest pebble count."""
+    n, pred = d
+    ph = [FRESH] * n
+    best = cur = 0
+    for kind, v in moves:
+        if kind == "place":
+            if ph[v] != FRESH:
+                raise ValueError(f"place {v} in phase {ph[v]}")
+            for u in range(n):
+                if pred[v] >> u & 1 and ph[u] != BLACK:
+                    raise ValueError(f"place {v} with predecessor {u} unpebbled")
+            ph[v] = BLACK
+            cur += 1
+        elif kind == "remove":
+            if ph[v] != BLACK:
+                raise ValueError(f"remove {v} in phase {ph[v]}")
+            ph[v] = DONE
+            cur -= 1
+        else:
+            raise ValueError(kind)
+        best = max(best, cur)
+    if any(p != DONE for p in ph):
+        raise ValueError("play does not end with every vertex done")
+    return best
+
+
+def black_to_bw(moves):
+    """`BlackStep.reflTransGen`: a black placement is a white one turned at once."""
+    out = []
+    for kind, v in moves:
+        out += [("place", v), ("turn", v)] if kind == "place" else [(kind, v)]
+    return out
+
+
+def kp_black_strategy(g, order):
+    """The play of `blackPebblesWithin_layoutOrient` on `orient(g, order)`."""
+    n, adj = g
+    pos = {v: i for i, v in enumerate(order)}
+    moves, live = [], []
+    for i, v in enumerate(order):
+        moves.append(("place", v))
+        live.append(v)
+        keep = []
+        for w in live:
+            if all(pos[u] <= i for u in range(n) if adj[w] >> u & 1):
+                moves.append(("remove", w))
+            else:
+                keep.append(w)
+        live = keep
+    return moves
+
+
+def gu_row(d):
+    """Both Thm 2 constructions on every layout of G_u, and the statement."""
+    n, _ = d
+    u = lengauer_u_general(d)
+    vs = vs_dp(u)
+    fails = {"legal": 0, "bound": 0, "removal": 0, "optimal": 0, "statement": 0}
+    best = None
+    for order in itertools.permutations(range(n)):
+        moves = gu_layout_strategy(d, order)
+        try:
+            k = replay_progressive(d, moves)
+        except ValueError:
+            fails["legal"] += 1
+            continue
+        fails["bound"] += k > vs_outer_of_layout(u, order) + 1
+        rem = [v for kind, v in moves if kind == "remove"]
+        fails["removal"] += vs_outer_of_layout(u, rem) > max(k, 1) - 1
+        best = k if best is None else min(best, k)
+    if n:
+        fails["optimal"] += best != vs + 1
+        # the statement, by exact search: pbw(D) = vs(G_u) + 1
+        fails["statement"] += not (progressive_bw_within(d, vs + 1)
+                                   and not progressive_bw_within(d, vs))
+    return {"n": n, "pred": d[1], "vs_u": vs, "fails": fails}
+
+
+def kp_row(g):
+    """The KP black strategy on every layout of `g`."""
+    n, _ = g
+    vs = vs_dp(g)
+    fails = {"legal": 0, "bound": 0, "bw_replay": 0, "optimal": 0}
+    best = None
+    for order in itertools.permutations(range(n)):
+        d = orient(g, order)
+        moves = kp_black_strategy(g, order)
+        try:
+            k = replay_black(d, moves)
+        except ValueError:
+            fails["legal"] += 1
+            continue
+        # the shack just after v_i is put in = vs(reversed layout) + 1
+        fails["bound"] += k > vs_outer_of_layout(g, list(reversed(order))) + 1
+        try:
+            fails["bw_replay"] += replay_progressive(d, black_to_bw(moves)) != k
+        except ValueError:
+            fails["bw_replay"] += 1
+        best = k if best is None else min(best, k)
+    fails["optimal"] += best != vs + 1
+    return {"n": n, "edges": edges_of(g), "vs": vs, "fails": fails}
+
+
+def _all_digraphs(n, loops=True):
+    pairs = [(u, v) for u in range(n) for v in range(n) if loops or u != v]
+    for mask in range(1 << len(pairs)):
+        yield digraph_pred(n, [pairs[i] for i in range(len(pairs)) if mask >> i & 1])
+
+
+PEBBLING_GU_REPORT = Path(__file__).resolve().parent / "data" / "pebbling_gu_check.json"
+
+
+def run_pebbling_gu(quick=False, workers=None, out=PEBBLING_GU_REPORT):
+    """Thm 2's constructions on every digraph with <= 4 vertices, loops
+    allowed (<= 3 when quick), and on every dag with 5 vertices; KP's black
+    strategy on every atlas graph with <= 7 vertices (<= 5 when quick)."""
+    from networkx.generators.atlas import graph_atlas_g
+
+    t0 = time.time()
+    dmax = 3 if quick else 4
+    ds = [d for n in range(0, dmax + 1) for d in _all_digraphs(n)]
+    dags5 = [] if quick else list(_all_dags(5))
+    gmax = 5 if quick else 7
+    gs = [from_nx(h) for h in graph_atlas_g() if 1 <= h.number_of_nodes() <= gmax]
+    with Pool(workers) as pool:
+        drows = list(pool.imap_unordered(gu_row, ds + dags5, chunksize=64))
+        grows = list(pool.imap_unordered(kp_row, gs, chunksize=4))
+
+    def tot(rows):
+        return {k: sum(r["fails"][k] for r in rows) for k in rows[0]["fails"]}
+
+    report = {"digraphs": len(ds), "digraph_max_vertices": dmax, "dags_5": len(dags5),
+              "gu_failures": tot(drows),
+              "graphs": len(gs), "graph_max_vertices": gmax,
+              "kp_plays": sum(math.factorial(r["n"]) for r in grows),
+              "kp_failures": tot(grows),
+              "counterexamples": ([r for r in drows if any(r["fails"].values())][:5]
+                                  + [r for r in grows if any(r["fails"].values())][:5]),
+              "seconds": round(time.time() - t0, 1), "quick": quick}
+    if out is not None:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1, default=list))
+    return report
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--quick", action="store_true")
@@ -2152,7 +2360,13 @@ def main(argv=None):
                     help="run only the loop0006 pebbling checks (P.5), writing pebbling_check.json")
     ap.add_argument("--pebbling-strategy", action="store_true",
                     help="replay the two constructions of the Lean proof of Lengauer Thm 3 (item 03)")
+    ap.add_argument("--pebbling-gu", action="store_true",
+                    help="replay the constructions of the Lean proofs of Lengauer Thm 2 and KP Thm 3.1 (item 04)")
     a = ap.parse_args(argv)
+    if a.pebbling_gu:
+        rep = run_pebbling_gu(quick=a.quick, workers=a.workers, out=a.out or PEBBLING_GU_REPORT)
+        print(json.dumps(rep, indent=1, default=list))
+        return 0
     if a.pebbling_strategy:
         rep = run_pebbling_strategy(quick=a.quick, workers=a.workers,
                                     out=a.out or PEBBLING_STRATEGY_REPORT)

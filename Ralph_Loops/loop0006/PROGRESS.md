@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 3/13 SOLVED
+Current: 4/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -205,3 +205,83 @@ Current: 3/13 SOLVED
   - For KP, the orientation-by-layout strategy with black pebbles gives `≤`,
     and `min_D` is P.3's lemma.
   - Then extend §1.13, (E10) and the master table with 13a and 13b.
+
+## Iteration 4 — 2026-09-30 22:45
+
+### Completed
+- **04 Lengauer Theorem 2 and KP Theorem 3.1.** New file
+  `lean/MOSPFormalization/Complex/PebblingGu.lean` (about 1,150 lines), imported from the
+  root. No `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound` only (new lines in
+  `paper2/axiom_check.lean`).
+  - **Definitions**:
+    - `lengauerU D` (D_u, Def. 1a);
+    - KP's progressive black game (`BlackMove`, `BlackPebblesWithin`, `pb`);
+    - `IsDirective G D` (acyclic orientation), with `mpb` and `mpbw`;
+    - `pebbleMatrix D` (M_D, column v = N⁻[v]).
+  - **Lengauer Thm 2**:
+    - `pebblesWithin_iff_lengauerU`: `PebblesWithin D (K+1) ↔ vs(D_u) ≤ K`, every digraph,
+      every K ≥ 0;
+    - `isPositivePBWP_iff_isPositiveVSG_lengauerU`: the stated form, for K ≥ 2;
+    - `isPositivePBWP_one_not_isPositiveVSG_zero`: the K = 1 failure on arc-free D;
+    - `pbw_eq_{vertexSeparation,pathwidth}_lengauerU_add_one`: `pbw(D) = vs(D_u) + 1 =
+      pw(D_u) + 1`, D nonempty;
+    - `pbw_eq_vsg_lengauerU_add_one`: the same with VSG, given an arc;
+    - `mospGraph_pebbleMatrix` and `pbw_eq_mospValue_pebbleMatrix`: `pbw(D) = Z(M_D)`.
+  - **KP Thm 3.1**, as item 01 settled it:
+    - `mpb_eq_mpbw` and `mpb/mpbw_eq_{vertexSeparation,pathwidth}_add_one`: `mpb = mpbw =
+      vs + 1 = pw + 1`, G nonempty;
+    - `mpb_eq_nodeSearch`: the stated `mpb = ns = mpbw`, G with an edge;
+    - `mpb_ne_nodeSearch_of_edgeless`: the false edge case, `mpb = mpbw = 1`, `ns = 0`.
+  - **Finding (a strengthening, not a fault)**: Theorem 2 holds for the game on *any*
+    digraph. Acyclicity is never used in either direction. It is checked by exact search on
+    all 66,067 digraphs with at most 4 vertices, loops included.
+  - **Routes**:
+    - Thm 2 (⇒) is Lengauer's removal-order layout with his three cases
+      (`outerBoundary_lengauerU_card_le`).
+    - Thm 2 (⇐) is his four steps, recast as one invariant on positions (`guPos`: the outer
+      boundary of the cleared set, black exactly where it has a cleared predecessor), in
+      `reach_guPos_insert`.
+    - KP (≥) is `G ≤ D_u` for every directive, plus Thm 2 (⇒) and a new
+      `vertexSeparation_mono`.
+    - KP (≤) orients along the reverse of an optimal layout and pebbles black in layout
+      order. The live pebbles are exactly `Narrowness.lean`'s shack (`card_shackAfterPut`).
+      This uses no node search, no LaPaugh and no monotonicity. `mpb = ns` then needs only
+      `NodeMonotonicity.lean`.
+  - Every lemma compiled within two or three attempts. No proof was abandoned.
+- **Python**: a new section in `paper2/complex_check.py` with `digraph_pred`,
+  `lengauer_u_general`, `gu_layout_strategy`, `replay_black`, `black_to_bw`,
+  `kp_black_strategy` and `run_pebbling_gu`. Run it with
+  `python -m paper2.complex_check --pebbling-gu` (9 s on 32 cores); it writes
+  `paper2/data/pebbling_gu_check.json`. **Zero failures** on:
+  - Thm 2's strategy over every layout of D_u, for 66,067 digraphs (≤ 4 vertices) and
+    1,024 dags on 5. It checks legality, the `vs(layout)+1` bound, the (⇒) bound of the
+    removal layout, optimality, and the statement by exact search.
+  - KP's black strategy over every layout of the 1,252 atlas graphs on ≤ 7 vertices,
+    5,378,453 plays. It checks black legality, the shack bound, legal replay as a
+    black-white play with the same count, and optimality.
+
+  Tests: `tests/test_pebbling_check.py` has 16 new tests, 41 in total, including a
+  mutation test (dropping step 3 of Lengauer's four steps makes the play illegal) and the
+  cyclic cases.
+- **Docs**:
+  - `paper2/problem_transformations.md`: §1.13 extended with D_u = G_{M_D}, the black game
+    and mpb/mpbw; new (E11) (Thm 2) and (E12) (KP Thm 3.1) in §2.1; the edge cases added to
+    (F3); proofs of (E11) and (E12) in §3, formal and then *In plain English*.
+  - `paper2/equivalences.md`: master table row 13 (pebbling; not a Table 1 row) with a
+    tally note; P.4 rows 13a and 13b marked as proved; new section P.9.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1272 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None. Coverage limits of the Python check: digraphs are exhaustive only to 4 vertices,
+  dags to 5, and graphs to 7. The Lean proofs cover all sizes.
+
+### Next
+- Phase A is done: rows 13a, 13b and 13c are all proved. The figure
+  `paper2/figures/equivalence_chain.dot` does not yet show pebbling. Adding it is item 12's
+  (assemble) job, not item 05's.
+- Item 05, the search stated: write `paper2/search_soundness.md` §1–2 from
+  `satisfiability/customer_search.py`, `customer_search.c` (`dominance_filter`) and
+  `learning/search_certificate.py`, quoting the code lines, in the fixed order
+  `definite_move → subset_rule → better_move`, citing standing candidates only.
+

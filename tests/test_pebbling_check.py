@@ -177,3 +177,70 @@ def test_strategy_quick_run_has_no_failures():
     rep = cc.run_pebbling_strategy(quick=True, workers=2, out=None)
     assert rep["graphs"] > 0 and rep["plays"] > 0
     assert all(v == 0 for v in rep["failures"].values()), rep["counterexamples"]
+
+
+# --- loop0006 item 04: Lengauer Thm 2 and KP Thm 3.1 (Complex/PebblingGu.lean) ---
+
+TWO_CYCLE = cc.digraph_pred(2, [(0, 1), (1, 0)])
+LOOP = cc.digraph_pred(1, [(0, 0)])
+
+
+def test_lengauer_u_general_agrees_on_dags():
+    for d in [ONE, ARC, CHAIN, IN_STAR, OUT_STAR, EDGELESS, SPIDER_OUT, SPIDER_IN]:
+        assert cc.lengauer_u_general(d) == cc.lengauer_u(d)
+    # a loop adds no edge; a 2-cycle is one edge
+    assert cc.edges_of(cc.lengauer_u_general(LOOP)) == []
+    assert cc.edges_of(cc.lengauer_u_general(TWO_CYCLE)) == [(0, 1)]
+
+
+@pytest.mark.parametrize("d", [ONE, ARC, CHAIN, IN_STAR, OUT_STAR, EDGELESS, SPIDER_IN,
+                               TWO_CYCLE, LOOP])
+def test_gu_strategy_is_legal_and_within_bound(d):
+    u = cc.lengauer_u_general(d)
+    for order in itertools.permutations(range(d[0])):
+        k = cc.replay_progressive(d, cc.gu_layout_strategy(d, order))
+        assert k <= cc.vs_outer_of_layout(u, order) + 1
+
+
+def test_theorem2_holds_on_cyclic_digraphs():
+    # the Lean statement needs no acyclicity: pbw = vs(G_u) + 1 on a 2-cycle and a loop
+    for d, want in [(TWO_CYCLE, 2), (LOOP, 1)]:
+        assert cc.vs_dp(cc.lengauer_u_general(d)) + 1 == want
+        assert cc.progressive_bw_within(d, want) and not cc.progressive_bw_within(d, want - 1)
+
+
+def test_gu_strategy_needs_the_successor_turns():
+    # dropping step 3 (turn the successors of v) leaves the head of an arc unturnable
+    moves = [m for m in cc.gu_layout_strategy(ARC, (0, 1)) if m != ("turn", 1)]
+    with pytest.raises(ValueError):
+        cc.replay_progressive(ARC, moves)
+
+
+def test_kp_black_strategy_on_named_graphs():
+    path = cc.graph(4, [(0, 1), (1, 2), (2, 3)])
+    moves = cc.kp_black_strategy(path, (0, 1, 2, 3))
+    assert cc.replay_black(cc.orient(path, (0, 1, 2, 3)), moves) == 2
+    star = cc.graph(4, [(0, 1), (0, 2), (0, 3)])
+    # centre first: 2 pebbles; centre last: all four at once
+    assert cc.replay_black(cc.orient(star, (0, 1, 2, 3)), cc.kp_black_strategy(star, (0, 1, 2, 3))) == 2
+    assert cc.replay_black(cc.orient(star, (1, 2, 3, 0)), cc.kp_black_strategy(star, (1, 2, 3, 0))) == 4
+
+
+def test_replay_black_rejects_unpebbled_predecessor():
+    with pytest.raises(ValueError):
+        cc.replay_black(ARC, [("place", 1), ("place", 0), ("remove", 0), ("remove", 1)])
+
+
+def test_black_to_bw_is_a_legal_bw_play():
+    k5 = cc.graph(5, list(itertools.combinations(range(5), 2)))
+    order = (2, 0, 4, 1, 3)
+    moves = cc.kp_black_strategy(k5, order)
+    d = cc.orient(k5, order)
+    assert cc.replay_progressive(d, cc.black_to_bw(moves)) == cc.replay_black(d, moves) == 5
+
+
+def test_gu_quick_run_has_no_failures():
+    rep = cc.run_pebbling_gu(quick=True, workers=2, out=None)
+    assert not any(rep["gu_failures"].values())
+    assert not any(rep["kp_failures"].values())
+    assert rep["digraphs"] == 1 + 2 + 16 + 512

@@ -13,3 +13,8 @@
 [2026-09-30 21:49:17] claude session it03 (cap 4.00 h) -> session_it03.log
 [2026-09-30 22:09:15] session it03: ok (exit 0, 60 tool calls)
 [2026-09-30 22:11:46] tests passed: GATE PASS
+[2026-09-30 22:11:46] committed f2fe5a47d: 03 Lengauer Theorem 3 in Lean. `Complex/Pebbling.lean`: define the
+[2026-09-30 22:11:46] === iteration 4: 04 Lengauer Theorem 2 and KP Theorem 3.1. `Complex/PebblingGu.lean`:
+[2026-09-30 22:11:46] claude session it04 (cap 4.00 h) -> session_it04.log
+[2026-09-30 22:28:15] session it04: ok (exit 0, 53 tool calls)
+[2026-09-30 22:30:43] tests passed: GATE PASS

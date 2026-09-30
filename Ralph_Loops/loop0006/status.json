@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 22:09:15",
+  "updated": "2026-09-30 22:28:15",
   "phase": "tests",
-  "started": "2026-09-30 21:49:17",
-  "item": "03 Lengauer Theorem 3 in Lean. `Complex/Pebbling.lean`: define the"
+  "started": "2026-09-30 22:11:46",
+  "item": "04 Lengauer Theorem 2 and KP Theorem 3.1. `Complex/PebblingGu.lean`:"
 }

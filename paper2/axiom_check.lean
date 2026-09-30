@@ -64,5 +64,18 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms pbw_lengauerD_eq_pathwidth
 #print axioms pbw_lengauerD_of_edgeless
 
+-- loop0006 item 04: Lengauer (1981) Theorem 2, Kirousis & Papadimitriou (1986) Theorem 3.1
+#print axioms pebblesWithin_iff_lengauerU
+#print axioms isPositivePBWP_iff_isPositiveVSG_lengauerU
+#print axioms isPositivePBWP_one_not_isPositiveVSG_zero
+#print axioms pbw_eq_pathwidth_lengauerU_add_one
+#print axioms pbw_eq_vsg_lengauerU_add_one
+#print axioms pbw_eq_mospValue_pebbleMatrix
+#print axioms mpb_eq_mpbw
+#print axioms mpb_eq_pathwidth_add_one
+#print axioms mpbw_eq_pathwidth_add_one
+#print axioms mpb_eq_nodeSearch
+#print axioms mpb_ne_nodeSearch_of_edgeless
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

@@ -76,6 +76,7 @@ files under `Complex/`); every one listed here depends only on `propext`,
 | 10 | Path-width | [13] Kinnersley 1992 p. 346 | the reference definition | `pathwidth` (`Pathwidth.lean`) | definition |
 | 11 | Edge separation | [14] Lengauer 1981, misattributed: its edge game is cutwidth (p. 468), Def. 6 modified cutwidth; its vertex game VSG is `vs` | `cw`, `mcw` unbounded against `pw` (stars); `VSG = max(1, vs)`; Thm 4 `vs(G_du) = vs + 1` (≥ 1 edge) | `cutwidth_unbounded`, `modCutwidth_unbounded`, `vsg_eq_max`, `vertexSeparation_triangleGraph` (`EdgeSeparation.lean`) | **false as stated** (and misattributed); VSG **proved** |
 | 12 | Vertex separation | [13] Kinnersley 1992 Thm 3.1 | `vs = pw` | `vertexSeparation_eq_pathwidth` (`VSEquivPW.lean`) | **proved** |
+| 13 | Progressive pebbling (not in Table 1; loop0006, P.1–P.9) | Lengauer 1981 Thms 2, 3; [10] K&P 1986 Thm 3.1 | `mpb = mpbw = vs + 1 = pw + 1` (V nonempty), `= ns` (≥ 1 edge); `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)` (D nonempty, any digraph); `pbw(G_d) = vs + 2 = pw + 2` (≥ 1 edge), `= 1` edgeless | `mpb_eq_mpbw`, `mpb_eq_pathwidth_add_one`, `mpb_eq_nodeSearch`, `pbw_eq_pathwidth_lengauerU_add_one`, `pbw_eq_mospValue_pebbleMatrix` (`PebblingGu.lean`); `pbw_lengauerD_eq_pathwidth` (`Pebbling.lean`) | **proved**; **false as stated** on edge cases: K&P's `mpb = ns` on edgeless graphs, Lengauer's Thm 2 instance form at K = 1 |
 
 **Tally.** Proved exactly: MOSP, gate matrix layout, one-dimensional logic,
 interval thickness, node search (full game), narrowness, vertex separation
@@ -84,6 +85,9 @@ edge search (full game). Monotone only: none since item 14. Stated gaps: one,
 LaPaugh's `es = pes`, which no row of the table needs any more. False as stated: PLA folding (simple), edge separation; and, as
 edge cases of rows that are otherwise right, `ns = vs + 1` and `ns = θ` on
 edgeless graphs. Nothing in the table is asserted without proof.
+Row 13, added by loop0006, is not a Table 1 row: progressive pebbling is a
+candidate thirteenth member, **proved** exact with offset +1 on the graph
+itself (13a), +1 on `D_u` (13b) and +2 on `G_d` (13c).
 
 ## The chain
 
@@ -1593,10 +1597,10 @@ Thm 2 plus this one-line lemma.
 
 ### P.4 Verdict: does pebbling belong in the complex?
 
-| # | Problem | Source | Relation (census; brute-force checked in P.7, not yet proved) | Offset | Status |
+| # | Problem | Source | Relation (census; brute-force checked in P.7; proved in P.8–P.9) | Offset | Status |
 |---|---|---|---|---|---|
-| 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`) |
-| 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs |
+| 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`); **proved in Lean (P.9)** |
+| 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs; **proved in Lean (P.9)**, for every digraph |
 | 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edge; `= 1` if G is edgeless and nonempty | +2 on G (`= Z + 1`) | **exact**, fixed offset; instance form true for every K ≥ 0 with vs; **proved in Lean (P.8)** |
 | — | Unrestricted BWP | Lengauer p. 469 | `bw(G_d) ≤ 3` | none | **not a member** |
 
@@ -1849,3 +1853,92 @@ plays. Each play is replayed move by move under the Lean legality
 Zero failures. Tests: `tests/test_pebbling_check.py`, five new, including
 that the outer convention has the same minimum over layouts as Kinnersley's
 inner one.
+
+### P.9 Lengauer's Theorem 2 and KP's Theorem 3.1 in Lean (loop0006 item 04)
+
+`lean/MOSPFormalization/Complex/PebblingGu.lean`, no `sorry`, axioms `propext`,
+`Classical.choice` and `Quot.sound` only (`paper2/axiom_check.lean`). It proves
+rows 13a and 13b. The game is `Pebbling.lean`'s.
+
+**The definitions.**
+
+- `lengauerU D` is `D_u` (Def. 1a): distinct `u, w` are joined iff an arc joins
+  them either way or they have a common immediate successor.
+- `BlackMove`, `BlackPebblesWithin`, `pb` are KP's progressive black game: a
+  pebble goes on a never-pebbled vertex whose immediate predecessors are all
+  pebbled, and is deleted at any time.
+- `IsDirective G D` says D is an acyclic orientation of G. `mpb` and `mpbw`
+  are the least demands over directives.
+- `pebbleMatrix D` is `M_D`: column `p` is `N⁻[p]`.
+
+**The theorems.**
+
+| Statement | Lean | Hypothesis |
+|---|---|---|
+| `PebblesWithin D (K + 1) ↔ vs(D_u) ≤ K` | `pebblesWithin_iff_lengauerU` | none: every digraph, every K ≥ 0 |
+| Lengauer's Thm 2: `(D, K)` PBWP-positive ⇔ `(D_u, K − 1)` VSG-positive | `isPositivePBWP_iff_isPositiveVSG_lengauerU` | `2 ≤ K` |
+| Thm 2 fails at K = 1 | `isPositivePBWP_one_not_isPositiveVSG_zero` | D has no arcs |
+| `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1` | `pbw_eq_vertexSeparation_lengauerU_add_one`, `pbw_eq_pathwidth_lengauerU_add_one` | V nonempty |
+| `pbw(D) = VSG(D_u) + 1` | `pbw_eq_vsg_lengauerU_add_one` | an arc `u → v`, `u ≠ v` |
+| `D_u = G_{M_D}` and `pbw(D) = Z(M_D)` | `mospGraph_pebbleMatrix`, `pbw_eq_mospValue_pebbleMatrix` | V nonempty |
+| `mpb = mpbw = vs + 1 = pw + 1` | `mpb_eq_vertexSeparation_add_one`, `mpbw_eq_vertexSeparation_add_one`, `mpb_eq_mpbw`, `mpb_eq_pathwidth_add_one`, `mpbw_eq_pathwidth_add_one` | V nonempty |
+| KP's Thm 3.1 as stated: `mpb = ns = mpbw` | `mpb_eq_nodeSearch` | G has an edge |
+| `mpb = mpbw = 1`, `ns = 0` | `mpb_ne_nodeSearch_of_edgeless` | G edgeless, V nonempty |
+
+**Stronger than the sources in one respect.** Theorem 2 is proved for the game
+on *any* digraph: acyclicity is never used, in either direction. The Python
+check confirms this on all 66,067 digraphs with at most 4 vertices, loops and
+cycles included. For example, a 2-cycle has `pbw = 2 = vs(K₂) + 1`, and a
+single loop has `pbw = 1`.
+
+**The routes.**
+
+- **Theorem 2 (⇒)** is Lengauer's. Lay the vertices out in the order they lose
+  their pebble. Just before `v` is removed, every `D_u`-neighbour `w` of the
+  cleared set that is not itself cleared still carries a pebble, by the three
+  cases: an arc `u → w`, an arc `w → u`, or a common successor. Each case gives
+  a turn that saw `u` and `w` pebbled together, before `u` was cleared
+  (`outerBoundary_lengauerU_card_le`).
+- **Theorem 2 (⇐)** is Lengauer's four steps, recast as an invariant on
+  positions (`guPos`). After clearing `S`, the outer boundary of `S` in `D_u` is
+  pebbled, and is black exactly where it has a predecessor in `S`. To clear
+  `v`:
+  1. whiten `N_u[v]`;
+  2. turn `v`;
+  3. turn the successors of `v` that are not black;
+  4. remove `v`.
+
+  This is `reach_guPos_insert`. His invariants (a)–(d) collapse into the one
+  position function.
+- **KP (≥)**: every edge of G is an arc of any directive D, so `G ≤ D_u`.
+  Theorem 2 (⇒) and `vertexSeparation_mono` then give `vs(G) + 1 ≤ pbw(D)`, and
+  a black play is a black-white play (`BlackPebblesWithin.pebblesWithin`).
+- **KP (≤)**: orient along a layout (`layoutOrient`, a directive). Place black
+  pebbles in layout order, and clear a vertex once all its neighbours are
+  placed (`blackPebblesWithin_layoutOrient`). The pebbles in play are
+  `Narrowness.lean`'s shack, of size `vs(σ reversed) + 1`, so take σ to be the
+  reverse of an optimal layout.
+
+  This is census P.3's direct proof. It uses neither node search, nor LaPaugh,
+  nor monotonicity. `mpb = ns` then follows from `NodeMonotonicity.lean` alone.
+
+**Checked before and after stating.** P.7 checked the statements. The
+constructions are replayed by `python -m paper2.complex_check --pebbling-gu`,
+which writes `paper2/data/pebbling_gu_check.json` in 9 s on 32 cores. Zero
+failures on each of the following:
+
+- *Theorem 2's strategy*, on every layout of `D_u` for every digraph with at
+  most 4 vertices (66,067, loops allowed) and every dag on 5 vertices (1,024,
+  labelled along a topological order). The play is legal under
+  `replay_progressive`, stays within `vs(layout) + 1`, and its removal layout
+  satisfies the (⇒) bound. The best layout attains `vs(D_u) + 1`, and the
+  statement `pbw(D) = vs(D_u) + 1` is re-decided by exact search on every one of
+  these digraphs.
+- *KP's black strategy*, on every layout of every atlas graph with at most 7
+  vertices (1,252 graphs, 5,378,453 plays). The play is legal under
+  `replay_black` (`BlackMove.Legal`) and stays within the shack bound
+  `vs(reversed layout) + 1`. Converted to black-white moves, it replays
+  legally with the same count, and the best layout attains `vs + 1`.
+
+Tests: `tests/test_pebbling_check.py`, 16 new (41 in the file). They include a
+mutation test: dropping step 3 of the four steps makes the play illegal.

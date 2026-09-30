@@ -27,7 +27,7 @@ assembly and a reserve.
   `Complex/EdgeSeparation.lean`. Hence the pebbling number of G_d equals
   vs(G) + 2 (with the edge-case hypotheses item 02 found).
 
-- [ ] **04 Lengauer Theorem 2 and KP Theorem 3.1.** `Complex/PebblingGu.lean`:
+- [x] **04 Lengauer Theorem 2 and KP Theorem 3.1.** `Complex/PebblingGu.lean`:
   prove Lengauer's Thm 2 (PBWP on G ↔ VSG on G_u, K − 1), and KP Thm 3.1 as
   item 01 settled it, or the part of it within reach. Then add pebbling to
   `paper2/problem_transformations.md` (problem §1.13, its transformations

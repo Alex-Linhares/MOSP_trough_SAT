@@ -1,0 +1,24 @@
+{
+ "digraphs": 66067,
+ "digraph_max_vertices": 4,
+ "dags_5": 1024,
+ "gu_failures": {
+  "legal": 0,
+  "bound": 0,
+  "removal": 0,
+  "optimal": 0,
+  "statement": 0
+ },
+ "graphs": 1252,
+ "graph_max_vertices": 7,
+ "kp_plays": 5378453,
+ "kp_failures": {
+  "legal": 0,
+  "bound": 0,
+  "bw_replay": 0,
+  "optimal": 0
+ },
+ "counterexamples": [],
+ "seconds": 9.4,
+ "quick": false
+}
