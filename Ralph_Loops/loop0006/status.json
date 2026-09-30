@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-01 00:05:10",
+  "updated": "2026-10-01 00:21:20",
   "phase": "tests",
-  "started": "2026-09-30 23:27:29",
-  "item": "08 Definite move. `Search/DefiniteMove.lean`: Chu & Stuckey Thm 1"
+  "started": "2026-10-01 00:07:38",
+  "item": "09 Subset rule. `Search/SubsetRule.lean`: the subset rule with its"
 }

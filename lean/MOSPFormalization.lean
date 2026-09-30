@@ -34,3 +34,4 @@ import MOSPFormalization.Complex.Pebbling
 import MOSPFormalization.Complex.PebblingGu
 import MOSPFormalization.Search.Basic
 import MOSPFormalization.Search.DefiniteMove
+import MOSPFormalization.Search.SubsetRule

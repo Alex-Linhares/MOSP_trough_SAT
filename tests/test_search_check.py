@@ -292,3 +292,68 @@ def test_definite_checker_catches_a_planted_fault(monkeypatch):
     monkeypatch.setattr(sc, "d_hereditary", code_premise)
     t = sc.check_definite_graph(masks, ks=[k])
     assert t["fail_hereditary_sound"] >= 1
+
+
+# --- item 09: the subset rule (Search/SubsetRule.lean) ---------------------
+
+
+def test_subset_quick_run_has_no_failures():
+    r = sc.run_subset(quick=True, workers=2)
+    assert r["failures"] == 0
+    assert r["tally"]["covering_premises"] > 0 and r["tally"]["nodes"] > 0
+    assert r["tally"]["port_nodes"] > 0 and r["tally"].get("fail_port", 0) == 0
+
+
+def test_subset_every_statement_on_every_set_to_four_vertices():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_subset_graph(masks, all_sets=True)
+            assert not any(v for key, v in t.items() if key.startswith("fail_")), (masks, t)
+
+
+def test_subset_tie_break_counterexample_is_the_lean_graph():
+    masks, S, k = sc.SUBSET_TIE_CEX
+    edges = [(0, 2), (0, 3), (0, 6), (1, 4), (1, 6), (3, 6), (4, 5), (4, 6)]   # tieEdges
+    assert masks == sc.masks_from_edges(7, edges)
+    O, CL = sc.s_tables(masks)
+    assert CL[S] == S and (O[S] & ~S).bit_count() <= k
+    P = sc.s_playable(masks, O, S, k, [c for c in range(7) if not S >> c & 1])
+    assert P == [0, 3, 5]
+    assert sc.s_filter_by(sc.s_weak_dominated, masks, O, S, P) == [5]
+    assert sc.s_subset_filter(masks, O, S, P) == [0, 5]
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[S] and not SS[CL[S | 1 << 5]] and SS[CL[S | 1]]
+    assert CL[S | 1 << 5] == 0b100100                                      # tie_cl_insert
+    assert sc.m_order_cost(masks, S, [0, 3, 1, 4, 5, 6]) <= k               # tie_solvable
+    # from {2, 5} nothing is playable within 3: the invariant family is {{2, 5}}
+    assert all(sc.m_step_cost(masks, 0b100100, c) > k for c in (0, 1, 3, 4, 6))
+
+
+def test_subset_checker_catches_a_missing_tie_break(monkeypatch):
+    masks, S, k = sc.SUBSET_TIE_CEX
+    assert not any(v for key, v in sc.check_subset_graph(masks, ks=[k], all_sets=False).items()
+                   if key.startswith("fail_"))
+
+    def no_tie_break(masks, O, S, d, r):
+        a, b = masks[d] & ~O[S], masks[r] & ~O[S]
+        return d != r and a & ~b == 0
+
+    monkeypatch.setattr(sc, "s_dominates", no_tie_break)
+    t = sc.check_subset_graph(masks, ks=[k], all_sets=False)
+    assert t["fail_subset_node"] >= 1 and t["fail_exists_undominated"] >= 1
+
+
+def test_subset_composition_with_the_code_definite_move_loses_on_the_cex():
+    masks, S, q, k = sc.DEFINITE_CEX[0]
+    O, CL = sc.s_tables(masks)
+    P = sc.s_playable(masks, O, S, k, [c for c in range(len(masks)) if not S >> c & 1])
+
+    def code(c):
+        op, close = sc.d_counts(masks, O, S, c)
+        return op <= close
+
+    assert sc.s_composed(masks, O, S, P, code) == [q]                     # codeFilter = {0}
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[S] and not SS[CL[S | 1 << q]]
+    L = sc.s_composed(masks, O, S, P, lambda c: sc.d_hereditary(masks, O, S, c))
+    assert any(SS[CL[S | 1 << c]] for c in L)                              # repairedFilter

@@ -66,7 +66,7 @@ assembly and a reserve.
   (the move whose closing opens no more than it closes can be taken first),
   in the form the code uses.
 
-- [ ] **09 Subset rule.** `Search/SubsetRule.lean`: the subset rule with its
+- [x] **09 Subset rule.** `Search/SubsetRule.lean`: the subset rule with its
   index tie-break, sound on its own and after the definite move.
 
 - [ ] **10 Better move.** `Search/BetterMove.lean`: Chu & Stuckey Thm 2 in

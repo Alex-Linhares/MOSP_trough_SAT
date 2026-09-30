@@ -1,0 +1,42 @@
+{
+ "seconds": 79.8,
+ "graphs": 36411,
+ "gadget_graphs": 2000,
+ "quick": false,
+ "tally": {
+  "subset_pairs": 836775009,
+  "undominated_queries": 78372969,
+  "covering_premises": 533196647,
+  "port_nodes": 12596190,
+  "nodes": 8517471,
+  "trans_triples": 183565518,
+  "weak_loses": 4730
+ },
+ "pinned_tallies": [
+  {
+   "subset_pairs": 26015,
+   "covering_premises": 7385,
+   "undominated_queries": 2788,
+   "port_nodes": 578,
+   "nodes": 645,
+   "code_composition_loses": 11
+  },
+  {
+   "subset_pairs": 39470,
+   "covering_premises": 10876,
+   "undominated_queries": 3861,
+   "port_nodes": 694,
+   "nodes": 670,
+   "code_composition_loses": 11
+  },
+  {
+   "subset_pairs": 464,
+   "covering_premises": 308,
+   "undominated_queries": 68,
+   "port_nodes": 30,
+   "nodes": 20,
+   "weak_loses": 4
+  }
+ ],
+ "failures": 0
+}

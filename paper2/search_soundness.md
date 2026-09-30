@@ -11,7 +11,7 @@ precisely and then proves it.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
-- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved).
+- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it.
 
@@ -433,6 +433,20 @@ ordering is the 2026-09-26 fix (§2.4).
 that `d ∈ R(S)` with `d ≠ r`, and that the tie-broken inclusion holds. It also
 rejects a candidate that is discarded twice.
 
+**Item 09: sound as coded, proved** (`Search/SubsetRule.lean`, §4.3). The
+covering `Sol_k(S·r) ⇒ Sol_k(S·d)` holds whenever `o(d, S) ⊆ o(r, S)` and `r`
+is playable. It needs no invariant, no free-closed state and no tie-break, and
+unlike the definite move's it has no collision weakness: the paper's one-line
+argument is right. The filter is node-sound on its own, with any family `Q` of
+refuted old moves. After the definite move, it is node-sound with the repaired
+premise and not with the code's premise, and that loss is the definite move's.
+**The tie-break is not decorative.** Without it, twins (equal `o`) dominate
+each other and both go. If some other candidate survives, the fallback does
+not fire, and the last solution can be lost. The smallest case found has 7
+customers and is proved in Lean (`noTieBreak_counterexample`). The code's
+tie-break (`d < r` on equality) and the paper's (`d < r` always) both prevent
+this.
+
 ### 2.4 The better move (Chu & Stuckey Theorem 2, corrected), C only
 
 **Paper.** "Suppose S ++ [q] and S ++ [r, q] are playable and close(q, S ∪ {r})
@@ -727,6 +741,9 @@ now a conjecture about whole instances: it would say that the misfires never
 combine into a wrong `unsat`. Nothing found so far contradicts that (§4.2.4),
 and nothing proves it. Item 12 must either state the theorem for the repaired
 rule or name this gap.
+
+*(Item 09: the subset rule is not what breaks it. `definite → subset` is
+node-sound with the repaired premise, `repairedFilter_sound`.)*
 
 The claim covers the old-move-plus-memo combination (§2.7) and is **false** for
 the variant bits `BM_OLD_CLOSE_COUNT` and `BM_OLD_RULE_ORDER` (§2.4). Item 06
@@ -1210,3 +1227,128 @@ The 4-customer example of the literal-sequence slip in §2.2:
 - `U′ = [1, 2, 0, 3]` costs 2, but `[0, 1, 2, 3]` costs 3, because `3` stays
   open while `1` and `2` are closed;
 - closing `3` right after `0` fixes it.
+
+### 4.3 The subset rule (item 09): sound as coded; the tie-break is necessary
+
+`lean/MOSPFormalization/Search/SubsetRule.lean`, namespace
+`MOSPFormalization.Search`, about 390 lines. It has no `sorry`, and its axioms
+are `propext`, `Classical.choice` and `Quot.sound` only (`../paper2/axiom_check.lean`).
+Customers carry a `LinearOrder`, which is the index order of the tie-break.
+
+#### 4.3.1 Definitions
+
+| §2.3 | Lean |
+|---|---|
+| `d` dominates `r`: `d ≠ r`, `o(d, S) ⊆ o(r, S)`, and `o(d, S) ≠ o(r, S)` or `d < r` | `Dominates G S d r` |
+| some `d ∈ R(S) = V ∖ S` dominates `r` (dominators range over all of `R(S)`, `Q` included) | `IsSubsetDominated G S r` |
+| the cost cut `[c ∈ K : cost(S, c) ≤ k]` | `playable G k S K` |
+| the survivors, and the rule with its all-dominated fallback | `subsetKept G S P`, `subsetFilter G S P` |
+| the code's order, `definite_move → subset_rule`: the least `q ∈ P` meeting a premise `D`, alone, else the subset filter | `definiteThenSubset G D S P` |
+| that filter at node `(S, Q)`, candidates `(V ∖ S) ∖ Q`, with `D` the code's premise / the repair | `codeFilter G k S Q` / `repairedFilter G k S Q` |
+| domination without the tie-break (the counterexample only) | `WeakDominates`, `weakSubsetFilter` |
+
+`playable G k S (V ∖ S)` is the candidate list without old move, where `Q = ∅`.
+`definiteThenSubset` is stated for an arbitrary premise so that one theorem
+covers both premises.
+
+#### 4.3.2 What is proved
+
+- **The covering** (`searchSol_cl_insert_of_newlyOpened_subset`). Suppose
+  `o(d, S) ⊆ o(r, S)` and `cost(S, r) ≤ k`. Then `Sol_k(S·r) → Sol_k(S·d)`.
+  The statement holds for every `S` and needs no invariant or tie-break. The
+  proof has four steps:
+  - closing `r` opens `N[d]`, so `d ∈ S·r`
+    (`mem_cl_insert_of_newlyOpened_subset`);
+  - `S·d ⊆ S·r` (`cl_insert_subset_of_newlyOpened_subset`);
+  - from `S·d`, closing `r` opens exactly `O(S ∪ {r})`
+    (`opened_insert_cl_insert_of_newlyOpened_subset`), so it lands on `S·r`
+    (`cl_insert_cl_insert_of_newlyOpened_subset`) at a cost no greater than
+    `cost(S, r)`, because `S ⊆ S·d`;
+  - if `r` is already in `S·d`, then `S·d = S·r`.
+
+  `stepCost_le_of_newlyOpened_subset` shows that the dominator is playable.
+- **A strict order.** `not_dominates_self` and `Dominates.trans` together
+  mean the rule alone cannot cycle. `exists_undominated` says that every
+  `r ∉ S` lies above an undominated `m ∉ S` with `o(m, S) ⊆ o(r, S)`. Take
+  the least `m` by `(|o(m, S)|, m)`. Then one covering step reaches a
+  survivor, and no chain argument is needed.
+- **Node soundness on its own** (`subsetFilter_sound`). Assume `S ≠ V`,
+  `¬ Sol_k(S·q)` for every `q ∈ Q`, and `Sol_k(S)`. Then some `c` in
+  `subsetFilter G S (playable G k S ((V ∖ S) ∖ Q))` has `Sol_k(S·c)`. It
+  holds for any `Q`, and `Q = ∅` is the rule without old move. On the way,
+  `subsetKept_nonempty` shows that when a solution exists the fallback never
+  fires.
+- **After the definite move** (`definiteThenSubset_sound`). Suppose the
+  premise `D` is sound at `S`: for every `q ∉ S`, `D q`, playability and
+  `Sol_k(S)` give `Sol_k(S·q)`. Then the composition is node-sound.
+  `repairedFilter_sound` instantiates this with `IsHereditarilyDefinite` at
+  any node with the invariant `|O(S) ∖ S| ≤ k`, using item 08's
+  `searchSol_cl_insert_of_hereditarilyDefinite`.
+- **With the code's premise it is not** (`codeFilter_counterexample`). On
+  item 08's `cexGraph` at `S = {2}`, `k = 6`, `Q = ∅`, `codeFilter = {0}`,
+  `Sol_k(S)` holds and `Sol_k(S·0)` does not. The subset rule never runs at
+  that node, so the loss is the definite move's.
+- **The tie-break is necessary** (`noTieBreak_counterexample`). `tieGraph` has
+  7 customers and edges `0–2, 0–3, 0–6, 1–4, 1–6, 3–6, 4–5, 4–6`. At
+  `S = {2}` with `k = 3` and the invariant, the playable candidates are
+  `{0, 3, 5}`:
+  - `o(0, S) = o(3, S) = {3, 6}` and `o(5, S) = {4, 5}`;
+  - without the tie-break, `0` and `3` dominate each other and both go;
+  - `5` survives, so the fallback does not fire and the filter keeps `{5}`;
+  - a solution exists from `S` (`0, 3, 1, 4, 5, 6`), and none from
+    `S·5 = {2, 5}`, where no move costs `≤ 3`;
+  - with the tie-break, only `3` goes and `subsetFilter = {0, 5}`.
+
+  The paper's own form (PDF p. 5) removes `j` only when some `i < j` has
+  `o(i) ⊆ o(j)`. It is a subrelation of the code's, uses the same covering,
+  and is acyclic by index. It is checked here, not stated in Lean.
+
+**What the certificate checker needs from this.** Cert step `["subset", r, d]`
+checks that `r` is playable, that `d ∈ R(S)` with `d ≠ r`, and that the
+tie-broken inclusion holds (Cert:617–627). That is exactly the premise of
+`searchSol_cl_insert_of_newlyOpened_subset`, whose conclusion is the link
+`r → d` the checker records. Cert checks the tie-break itself. Without that
+check, step 5's cycle check would be the only guard, and it would reject the
+twin cycle `0 → 3 → 0` of `noTieBreak_counterexample`.
+
+#### 4.3.3 The check
+
+`python -m paper2.search_check --subset` takes 80 s on 30 cores and writes
+`data/search_subset_check.json`. It transcribes the Lean definitions.
+
+- **Graphs.** Every labelled graph on 1–6 vertices, checked at every set `T`,
+  not only at states. Every atlas graph on 7, and 1,500 random sparse and
+  cover graphs on 10–13, checked at the search's states (free-closed, with
+  the invariant). 2,000 gadget graphs on 12–16, built from the definite
+  move's gadget with the rule's twist and randomly relabelled so that the
+  tie-break cannot see the construction, checked at `k ∈ {opt − 1, opt,
+  opt + 1}`. The pinned counterexamples of items 08 and 09.
+- **Node checks.** Every node with a solution, over the item 06 families `Q`
+  of genuinely refuted children.
+
+| statement | cases | failures |
+|---|---|---|
+| pair facts: `d ∈ S·r`, `S·d ⊆ S·r`, `cost(S, d) ≤ cost(S, r)` | 836,775,009 | 0 |
+| the covering `Sol_k(S·r) ⇒ Sol_k(S·d)`, `r` playable | 533,196,647 | 0 |
+| `Dominates` irreflexive and transitive (≤ 6 vertices) | 183,565,518 triples | 0 |
+| `exists_undominated` | 78,372,969 | 0 |
+| the Lean filter = the item 06 port of the code, with and without the definite move, `Q = ∅` | 12,596,190 nodes | 0 |
+| `subsetKept_nonempty`, `subsetFilter_sound`, `repairedFilter_sound`, the paper's form | 8,517,471 nodes each | 0 |
+| no tie-break: the last solution lost | 4,730 nodes | — |
+| the code's `definite → subset` loses it | 0 here; 11 `Q`-nodes on each pinned definite counterexample | — |
+
+The form without the tie-break loses nothing on any graph with ≤ 6 vertices.
+Its first losses are at 7 vertices. The Lean graph was found among the atlas
+graphs on 7 under random labellings. Removing the tie-break from the checker
+(the mutation test) makes it report `fail_subset_node` and
+`fail_exists_undominated` on that graph.
+
+The tests are `tests/test_search_check.py`, five new:
+
+- a quick run;
+- every statement at every set to 4 vertices;
+- the Lean graph and its certificates (`tie_solvable`, `tie_cl_insert`, the
+  invariant family `{{2, 5}}`);
+- the mutation;
+- the code's and the repaired composition on `DEFINITE_CEX[0]`.
+

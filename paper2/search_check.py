@@ -1133,6 +1133,269 @@ def run_definite(workers=None, out=None, quick=False, n_random=None):
         out.write_text(json.dumps(report, indent=1))
     return report
 
+# ----------------------------------------------------------------------------
+# item 09: the subset rule (Search/SubsetRule.lean)
+# ----------------------------------------------------------------------------
+#
+# Transcribes `Search/SubsetRule.lean`: `Dominates S d r` (o(d, S) ⊆ o(r, S), d != r, and
+# the inclusion strict or d < r), the subset filter over the playable candidates with its
+# all-dominated fallback, and the composition `definite -> subset` for a premise D (the
+# code's `open <= close`, or the repair). The conclusions checked are the Lean ones, on
+# `SearchSol` computed by its inductive clauses.
+
+
+# The subset rule without its index tie-break loses the last solution on this 7-customer
+# graph (`noTieBreak_counterexample`, `tieGraph` of the Lean file): (masks, S, k); at S = {2}
+# the twins 0 and 3 both go and only the refuted 5 is kept.
+SUBSET_TIE_CEX = ([77, 82, 5, 73, 114, 48, 91], 0b100, 3)
+
+
+def s_weak_dominated(masks, O, S, r):
+    """Without the tie-break: some d outside S, d != r, with o(d, S) ⊆ o(r, S)."""
+    b = masks[r] & ~O[S]
+    return any(d != r and (masks[d] & ~O[S]) & ~b == 0 for d in range(len(masks)) if not S >> d & 1)
+
+
+def s_paper_dominated(masks, O, S, r):
+    """The paper's literal form (PDF p. 5): some d < r outside S with o(d, S) ⊆ o(r, S)."""
+    b = masks[r] & ~O[S]
+    return any((masks[d] & ~O[S]) & ~b == 0 for d in range(r) if not S >> d & 1)
+
+
+def s_filter_by(pred, masks, O, S, P):
+    kept = [r for r in P if not pred(masks, O, S, r)]
+    return kept or list(P)
+
+
+def s_tables(masks):
+    n = len(masks)
+    O = d_opened_table(masks)
+    CL = [0] * (1 << n)
+    for T in range(1 << n):
+        o = O[T]
+        CL[T] = sum(1 << c for c in range(n) if masks[c] & ~o == 0)
+    return O, CL
+
+
+def s_searchsol_table(masks, k, O, CL):
+    """`SearchSol k T` for every T (as `m_searchsol_table`, with O and cl precomputed)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    S = [False] * (1 << n)
+    for T in range(full, -1, -1):
+        if T == full:
+            S[T] = True
+            continue
+        rem = full & ~T
+        while rem:
+            low = rem & -rem
+            rem ^= low
+            if (O[T | low] & ~T).bit_count() <= k and S[CL[T | low]]:
+                S[T] = True
+                break
+    return S
+
+
+def s_dominates(masks, O, S, d, r):
+    """`Dominates G S d r`."""
+    a, b = masks[d] & ~O[S], masks[r] & ~O[S]
+    return d != r and a & ~b == 0 and (a != b or d < r)
+
+
+def s_dominated(masks, O, S, r):
+    """`IsSubsetDominated G S r`: some d outside S dominates r."""
+    return any(s_dominates(masks, O, S, d, r) for d in range(len(masks)) if not S >> d & 1)
+
+
+def s_playable(masks, O, S, k, K):
+    return [c for c in K if (O[S | 1 << c] & ~S).bit_count() <= k]
+
+
+def s_subset_filter(masks, O, S, P):
+    """`subsetFilter G S P`: the undominated members of P, or P itself if there are none."""
+    kept = [r for r in P if not s_dominated(masks, O, S, r)]
+    return kept or list(P)
+
+
+def s_composed(masks, O, S, P, D):
+    """`definiteThenSubset`: the least q in P meeting D alone, else the subset filter."""
+    F = [q for q in P if D(q)]
+    return [min(F)] if F else s_subset_filter(masks, O, S, P)
+
+
+def check_subset_graph(masks, ks=None, all_sets=True, seed=0):
+    """Every statement of `Search/SubsetRule.lean` on one graph. Pair and dominator statements
+    at every set T (`all_sets`) or at the free-closed states with the invariant; node
+    statements at every free-closed state with the invariant and a solution, over families
+    of genuinely refuted old moves Q."""
+    n = len(masks)
+    full = (1 << n) - 1
+    O, CL = s_tables(masks)
+    t = Counter()
+    rng = random.Random(seed * 7919 + sum(masks))
+    fc = [S for S in range(full + 1) if CL[S] == S]
+    for k in (range(0, n + 1) if ks is None else ks):
+        SS = s_searchsol_table(masks, k, O, CL)
+        sets = range(full + 1) if all_sets else [S for S in fc if (O[S] & ~S).bit_count() <= k]
+        for T in sets:
+            outside = [c for c in range(n) if not T >> c & 1]
+            for r in range(n):
+                nr = masks[r] & ~O[T]
+                cost_r = (O[T | 1 << r] & ~T).bit_count()
+                for d in range(n):
+                    nd = masks[d] & ~O[T]
+                    if nd & ~nr:
+                        continue
+                    t["subset_pairs"] += 1
+                    if not CL[T | 1 << r] >> d & 1:                     # mem_cl_insert_of_...
+                        t["fail_mem_cl_insert"] += 1
+                    if CL[T | 1 << d] & ~CL[T | 1 << r]:               # cl_insert_subset_of_...
+                        t["fail_cl_insert_subset"] += 1
+                    if (O[T | 1 << d] & ~T).bit_count() > cost_r:     # stepCost_le_of_...
+                        t["fail_stepCost_le"] += 1
+                    if cost_r <= k and SS[CL[T | 1 << r]]:            # searchSol_cl_insert_of_...
+                        t["covering_premises"] += 1
+                        if not SS[CL[T | 1 << d]]:
+                            t["fail_covering"] += 1
+            if n <= 6 and all_sets:                                    # Dominates is a strict order
+                for a in outside:
+                    if s_dominates(masks, O, T, a, a):
+                        t["fail_irrefl"] += 1
+                    for b in outside:
+                        if not s_dominates(masks, O, T, a, b):
+                            continue
+                        for c in outside:
+                            t["trans_triples"] += 1
+                            if s_dominates(masks, O, T, b, c) and not s_dominates(masks, O, T, a, c):
+                                t["fail_trans"] += 1
+            for r in outside:                                          # exists_undominated
+                t["undominated_queries"] += 1
+                nr = masks[r] & ~O[T]
+                if not any(not s_dominated(masks, O, T, m) and (masks[m] & ~O[T]) & ~nr == 0
+                           for m in outside):
+                    t["fail_exists_undominated"] += 1
+        for S in fc:
+            if S == full or (O[S] & ~S).bit_count() > k:
+                continue
+            R = [c for c in range(n) if not S >> c & 1]
+            # the Lean filter is the item 06 port of the code, at every Q = 0 node
+            P0 = s_playable(masks, O, S, k, R)
+            for cfg_def in (False, True):
+                cfg = {"definite": cfg_def, "subset": True, "better": False, "limit": 0,
+                       "variant": "fixed", "old_move": False}
+                _, L, _, _, _ = node_filter(masks, full, S, 0, k, cfg)
+                code = (lambda q: (lambda op_cl: op_cl[0] <= op_cl[1])(d_counts(masks, O, S, q)))
+                mine = (s_composed(masks, O, S, P0, code) if cfg_def
+                        else s_subset_filter(masks, O, S, P0))
+                t["port_nodes"] += 1
+                if sorted(c for _, c in L) != sorted(mine):
+                    t["fail_port"] += 1
+            if not SS[S]:
+                continue
+            refuted = sum(1 << c for c in R if not SS[CL[S | 1 << c]])
+            her = {q: d_hereditary(masks, O, S, q) for q in R}
+            code_def = {q: d_counts(masks, O, S, q)[0] <= d_counts(masks, O, S, q)[1] for q in R}
+            for Q in q_family(refuted, rng):
+                P = s_playable(masks, O, S, k, [c for c in R if not Q >> c & 1])
+                t["nodes"] += 1
+                kept = [r for r in P if not s_dominated(masks, O, S, r)]
+                if not kept:                                           # subsetKept_nonempty
+                    t["fail_kept_nonempty"] += 1
+                L = s_subset_filter(masks, O, S, P)
+                if not any(SS[CL[S | 1 << c]] for c in L):             # subsetFilter_sound
+                    t["fail_subset_node"] += 1
+                L = s_composed(masks, O, S, P, lambda q: her[q])
+                if not any(SS[CL[S | 1 << c]] for c in L):             # repaired composition
+                    t["fail_repaired_node"] += 1
+                L = s_filter_by(s_paper_dominated, masks, O, S, P)
+                if not any(SS[CL[S | 1 << c]] for c in L):             # the paper's own form
+                    t["fail_paper_node"] += 1
+                L = s_filter_by(s_weak_dominated, masks, O, S, P)
+                if not any(SS[CL[S | 1 << c]] for c in L):             # no tie-break: unsound
+                    t["weak_loses"] += 1
+                L = s_composed(masks, O, S, P, lambda q: code_def[q])
+                if not any(SS[CL[S | 1 << c]] for c in L):             # the code's composition
+                    t["code_composition_loses"] += 1
+    return t
+
+
+def _subset_job(args):
+    masks, all_sets = args
+    return check_subset_graph(masks, all_sets=all_sets)
+
+
+def _subset_gadget_job(args):
+    seed, count, lo, hi = args
+    rng = random.Random(seed)
+    t = Counter()
+    for _ in range(count):
+        masks = subset_gadget(rng.randint(lo, hi), rng)
+        O, CL = s_tables(masks)
+        opt = next(k for k in range(len(masks) + 1) if s_searchsol_table(masks, k, O, CL)[0])
+        t.update(check_subset_graph(masks, ks=[max(0, opt - 1), opt, opt + 1], all_sets=False,
+                                    seed=seed))
+    return t
+
+
+def subset_gadget(n, rng):
+    """The definite move's gadget (family 4 of `definite_hunt_gen.py`) with a twist for the
+    subset rule: a closed s whose open neighbours d_i share one new stack y with r, so that
+    closing r finishes them together, plus a random rest."""
+    E = set()
+    r_ = rng.randint(2, 3)
+    t_ = rng.randint(1, r_)
+    rest = n - (3 + r_ + t_)
+    if rest < 1:
+        return random_sparse(n, rng)
+    s, q, y = 0, 1, 2
+    ds = list(range(3, 3 + r_))
+    zs = list(range(3 + r_, 3 + r_ + t_))
+    R = list(range(3 + r_ + t_, n))
+    E |= {(s, q)} | {(s, d) for d in ds} | {(d, y) for d in ds} | {(q, y)} | {(q, z) for z in zs}
+    for z in zs:
+        for w in rng.sample(R, rng.randint(1, len(R))):
+            E.add((z, w))
+    E.add((y, rng.choice(R)))
+    p = rng.uniform(0.15, 0.5)
+    E |= {(u, v) for u in R for v in R if u < v and rng.random() < p}
+    perm = list(range(n))
+    rng.shuffle(perm)                      # the index tie-break must not see the construction
+    return masks_from_edges(n, [(perm[u], perm[v]) for u, v in E if u != v])
+
+
+def run_subset(workers=None, out=None, quick=False, n_random=None):
+    """Item 09's check: every labelled graph on 1-6 vertices at every set T, every atlas graph on
+    7 at the search's states, random sparse and cover graphs at 10-13 and gadget graphs at
+    12-16 at the search's states, and the pinned definite-move counterexamples."""
+    started = time.time()
+    work = [(m, True) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        work += [(m, False) for m in atlas_graphs(7)]
+    rng = random.Random(9)
+    count = (10 if quick else 1500) if n_random is None else n_random
+    for _ in range(count):
+        n = rng.randint(10, 11 if quick else 13)
+        work.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False))
+    total = Counter()
+    gadget = [] if quick else [(1000 + i, 5, 12, 16) for i in range(400)]
+    with Pool(workers) as pool:
+        for t in pool.imap_unordered(_subset_job, work, chunksize=8):
+            total.update(t)
+        for t in pool.imap_unordered(_subset_gadget_job, gadget):
+            total.update(t)
+    pinned = [dict(check_subset_graph(m, ks=[k], all_sets=False)) for m, _, _, k in DEFINITE_CEX]
+    pinned.append(dict(check_subset_graph(SUBSET_TIE_CEX[0], ks=[SUBSET_TIE_CEX[2]], all_sets=False)))
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(work),
+              "gadget_graphs": sum(c for _, c, _, _ in gadget), "quick": quick,
+              "tally": dict(total), "pinned_tallies": pinned,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))
+              + sum(v for p in pinned for k, v in p.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_subset_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -1143,7 +1406,13 @@ def main():
                     help="item 07: check the Lean model of Search/Basic.lean")
     ap.add_argument("--definite", action="store_true",
                     help="item 08: check Search/DefiniteMove.lean and the counterexamples")
+    ap.add_argument("--subset", action="store_true",
+                    help="item 09: check Search/SubsetRule.lean")
     args = ap.parse_args()
+    if args.subset:
+        print(json.dumps(run_subset(workers=args.workers, quick=args.quick,
+                                    n_random=args.random), indent=1))
+        return
     if args.definite:
         print(json.dumps(run_definite(workers=args.workers, quick=args.quick,
                                       n_random=args.random), indent=1))

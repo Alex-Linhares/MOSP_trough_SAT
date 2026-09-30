@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 8/13 SOLVED
+Current: 9/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -655,3 +655,86 @@ Current: 8/13 SOLVED
   `Sol(S·r) ⇒ Sol(S·d)` on gadget families first.
 - Items 10–12 must build on the repaired definite move, and item 12's composition theorem
   must say which rule it covers.
+
+## Iteration 9 — 2026-10-01 00:20
+
+### Completed
+- **09 Subset rule. It is sound as coded, on its own and after the repaired definite move.
+  FINDING: the index tie-break is needed for soundness, not only for acyclicity.** New file
+  `lean/MOSPFormalization/Search/SubsetRule.lean`, 391 lines, imported from the root. No
+  `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound` only (new lines in
+  `paper2/axiom_check.lean`). Customers carry a `LinearOrder`, which is the index order.
+  - **Definitions:**
+    - `Dominates` (`d ≠ r`, `o(d) ⊆ o(r)`, strict or `d < r`);
+    - `IsSubsetDominated` (dominators over all of `V ∖ S`, `Q` included, as the code does);
+    - `playable` (the cost cut);
+    - `subsetKept` and `subsetFilter` (with the all-dominated fallback);
+    - `definiteThenSubset D` (the least `q` meeting `D` alone, else the subset filter);
+    - `codeFilter` and `repairedFilter` at a node `(S, Q)`;
+    - `WeakDominates` and `weakSubsetFilter` (no tie-break).
+  - **Proved:**
+    - `searchSol_cl_insert_of_newlyOpened_subset`, the covering: if `o(d,S) ⊆ o(r,S)` and
+      `r` is playable, then `Sol_k(S·r) → Sol_k(S·d)`. It holds at *every* `S`, with no
+      invariant and no tie-break. The proof: `d ∈ S·r`, `S·d ⊆ S·r`, and `(S·d)·r = S·r` at
+      no greater cost. Unlike Theorem 1, the paper's argument is right as it stands.
+    - `not_dominates_self` and `Dominates.trans`: a strict order.
+    - `exists_undominated`: take the least `m` by `(|o(m)|, m)`. One covering step reaches
+      a survivor, so no chain argument is needed.
+    - `subsetFilter_sound`: node soundness with any family `Q` of refuted old moves.
+      `subsetKept_nonempty`: the fallback never fires when a solution exists.
+    - `definiteThenSubset_sound`: for any definite premise sound at `S`, the composition is
+      node-sound. `repairedFilter_sound` instantiates it with item 08's repair, under the
+      invariant.
+    - `codeFilter_counterexample`: with the code's premise, the composition keeps `{0}` on
+      `cexGraph` and loses the solution. The loss is the definite move's; the subset rule
+      does not run at that node.
+    - **`noTieBreak_counterexample`**, on `tieGraph`, 7 customers and 8 edges. At `S = {2}`
+      with `k = 3`, the twins `0` and `3` (`o = {3,6}`) dominate each other and both go.
+      `5` survives, so the fallback does not fire. The filter keeps `{5}`, and `{2}·5` has
+      no solution while `{2}` has one. With the tie-break, `subsetFilter = {0, 5}`.
+  - **Does the C implement the right form? Yes.** `Py:417–428` and `C:151–164` both break
+    ties by `d < r`, and so does Cert:617–627. The paper's own form (`d < r` required
+    always) is also sound; it is checked, not stated in Lean.
+- **Check before stating.** `python -m paper2.search_check --subset` takes 80 s on 30 cores
+  and writes `paper2/data/search_subset_check.json`. Graphs:
+  - every labelled graph on 1–6, checked at every set;
+  - atlas graphs on 7, and 1,500 random graphs at 10–13, at the search's states;
+  - 2,000 relabelled gadget graphs at 12–16, at `k ∈ {opt−1, opt, opt+1}`.
+
+  **Zero failures** across:
+  - 837 M pair facts;
+  - 533 M covering cases;
+  - 184 M transitivity triples;
+  - 78 M undominated queries;
+  - 12.6 M nodes where the Lean filter equals item 06's port of the code, with the definite
+    move on and off;
+  - 8.5 M nodes each for node soundness, the repaired composition and the paper's form.
+
+  The no-tie-break form loses the last solution at 4,730 nodes. None has ≤ 6 vertices; the
+  first are at 7. The code's composition lost nothing outside the pinned definite
+  counterexamples. `tests/test_search_check.py` has five new tests, 30 in total, including
+  a mutation (removing the tie-break gets caught) and the Lean graph with its certificates.
+- **Docs.** `paper2/search_soundness.md`:
+  - the §4 bullet at the top;
+  - an item 09 paragraph in §2.3;
+  - a note in §2.9 that the subset rule is not what breaks the claim;
+  - new §4.3 (definitions, theorems, what Cert checks, the check table).
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1305 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None. The paper's literal form of the rule is checked only, not proved in Lean. It is a
+  subrelation with the same covering, so it would be a small addition if item 12 wants it.
+
+### Next
+- Item 10, the better move. Build on `definiteThenSubset` and `subsetFilter`. The node
+  filter becomes `definite → subset → better`, where better move cites only earlier
+  subset survivors among the first `L`.
+- Prove the covering for the corrected premise with the close count skipping customers `r`
+  finishes. A route: Theorem 1 at `cl(S∪{r})` and the swap. Since Theorem 1 is false as
+  coded (item 08), the better move's proof must not go through the unrepaired Theorem 1.
+  Check first whether the corrected better move itself is sound; it is Theorem 1 applied at
+  `S·r`, and may inherit the same collision weakness at ≥ 14 customers. Run a
+  `definite_hunt`-style exact check on gadget graphs before stating.
+- Counterexamples for Bugs A and B: the 8-vertex Bug B node from item 06, and a state of
+  the 17 × 9 for Bug A.

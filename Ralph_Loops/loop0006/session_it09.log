@@ -1,0 +1,139 @@
+# session it09 started 2026-10-01 00:07:38
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A12 "09 Subset" Ralph_Loops/loop0006/iterations.md; date
+  > $ grep -n "^#" paper2/search_soundness.md | head -60; wc -l paper2/search_soundness.md
+  > $ sed -n 1,440p paper2/search_soundness.md
+  > $ sed -n 560,760p paper2/search_soundness.md; sed -n 900,1212p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP/lean && grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^inductive\|^abbrev\|^variable\|^open\|^namespace\|^section\|^end\|^instance\|
+  > $ sed -n 105,200p MOSPFormalization/Search/Basic.lean; sed -n 1,100p MOSPFormalization/Search/DefiniteMove.lean; sed -n 140,165p MOSPFormalization/Search/Definite
+
+I'm working on item 09 (the subset rule). I've read the Lean API; my next step is to brute-force the exact statements before writing Lean.
+  > $ cd /home/al/dev/MOSP && wc -l paper2/search_check.py && grep -n "^def \|^class \|^[A-Z_]* = \|argparse\|add_argument\|--definite\|--model" paper2/search_check.p
+  > $ sed -n 1,60p paper2/search_check.py; sed -n 120,160p paper2/search_check.py; sed -n 936,1162p paper2/search_check.py
+  > $ head -50 paper2/definite_hunt_gen.py; grep -n "^def " paper2/definite_hunt_gen.py; head -30 paper2/definite_hunt.c; ls tests/test_search_check.py && grep -n "^d
+  > $ sed -n 756,940p paper2/search_check.py; sed -n 158,230p paper2/search_check.py; sed -n 1,35p tests/test_search_check.py; sed -n 215,300p tests/test_search_check
+  > $ sed -n 229,350p paper2/search_check.py; sed -n 481,492p paper2/search_check.py
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+new=r'''
+# ----------------------------------------------------------------------------
+# item 09:
+  > $ nproc && (nohup python -m paper2.search_check --subset --workers 30 > /tmp/subset_full.log 2>&1 &) ; echo started
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/SubsetRule.lean
+  > $ cd /home/al/dev/MOSP/lean && time lake env lean MOSPFormalization/Search/SubsetRule.lean 2>&1 | head -60
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/SubsetRule.lean'
+s=open(p).read()
+s=s.replace("@definiteThenSubset V _ (IsHereditarilyDefinite G S)","@definiteThe
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/SubsetRule.lean'
+s=open(p).read()
+s=s.replace("""  unfold subsetFilter
+  rw [if_neg (ne_empty_of_mem hm)]
+  exact 
+
+The Lean file `Search/SubsetRule.lean` compiles. I'm adding it to the root import, building it, and checking its axioms.
+  > $ sed -i '36a import MOSPFormalization.Search.SubsetRule' MOSPFormalization.lean && sed -n 34,38p MOSPFormalization.lean && time lake build MOSPFormalization.Sear
+  > $ cd /home/al/dev/MOSP && tail -25 paper2/axiom_check.lean; cat /tmp/subset_full.log | head -5
+  > $ head -12 paper2/axiom_check.lean; python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+names=["searchSol_cl_insert_of_newlyOpened_subset","cl_insert_c
+
+The full check has zero failures in 56 s. Next I'll make sure the checker catches a planted fault: the subset rule without its tie-break.
+  > $ sed -i 's/gadget = \[\] if quick else \[(1000 + i, 5, 12, 16) for i in range(120)\]/gadget = [] if quick else [(1000 + i, 5, 12, 16) for i in range(400)]/' pape
+  > $ timeout 600 python3 - <<'EOF'
+import paper2.search_check as sc, random
+def bad(masks,O,S,d,r):
+    a,b = masks[d]&~O[S], masks[r]&~O[S]
+    return d!=r and a&~b
+  > $ timeout 900 python3 - <<'EOF'
+import paper2.search_check as sc, itertools, random
+def bad(masks,O,S,d,r):
+    a,b = masks[d]&~O[S], masks[r]&~O[S]
+    return d!
+  > $ python3 - <<'EOF'
+import paper2.search_check as sc
+m=[77, 82, 5, 73, 114, 48, 91]; n=7
+E=[(u,v) for u in range(n) for v in range(u+1,n) if m[u]>>v&1]
+print(E)
+O
+  > $ python3 -c "
+import paper2.search_check as sc
+m=[77, 82, 5, 73, 114, 48, 91]; O,CL=sc.s_tables(m); S=4
+P=sc.s_playable(m,O,S,3,[c for c in range(7) if not S>>c&
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Search/SubsetRule.lean'
+s=open(p).read()
+# weak defs in the generic section, before `variabl
+
+The tie-break counterexample compiled first time, so fast that I'm suspicious. I'll plant an error to confirm the file is really being checked.
+  > $ cp MOSPFormalization/Search/SubsetRule.lean /tmp/sr.lean && sed -i 's/= {0, 5} ∧/= {0, 3} ∧/' MOSPFormalization/Search/SubsetRule.lean && lake env lean MOSPForm
+
+Confirmed: the check is real. Next I'll add the paper's literal form and the no-tie-break form to the Python check, then rerun it in full.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+s=s.replace('''def s_tables(masks):''','''# The subset rule without its in
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Search/SubsetRule.lean'
+s=open(p).read()
+s=s.replace("""  (item 08), which the composition i
+
+Now the tests.
+  > $ cd /home/al/dev/MOSP && cat >> tests/test_search_check.py <<'EOF'
+
+
+# --- item 09: the subset rule (Search/SubsetRule.lean) ---------------------
+
+
+def test_sub
+  > $ sleep 60; cat /tmp/subset_full.log
+  > $ timeout 600 bash -c 'until grep -q failures /tmp/subset_full.log; do sleep 5; done'; cat /tmp/subset_full.log
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+old="- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+old="""`r → d` the checker records. The tie-break matters to the checker only
+through step 5's
+
+While the gate runs, I'll check the axiom audit file.
+  > $ cd /home/al/dev/MOSP/lean && timeout 900 lake env lean ../paper2/axiom_check.lean 2>&1 | grep -v "propext, Classical.choice, Quot.sound\]" | head
+  > $ timeout 900 lake env lean ../paper2/axiom_check.lean 2>&1 | tr -d '\n' | sed 's/'"'"'MOSP/\n&/g; s/'"'"'conj/\n&/g' | grep -iE "sorry|error|SubsetRule|Search\.(
+  > $ timeout 1700 bash -c 'until grep -q "GATE" /tmp/claude-1000/-home-al-dev-MOSP/da6ab2dd-9531-43ca-9ad2-834560663cb7/tasks/bzesu19vu.output; do sleep 10; done'; t
+
+The gate passes. Now I'll update PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP && date "+%Y-%m-%d %H:%M" && sed -i 's/^Current: 8\/13 SOLVED/Current: 9\/13 SOLVED/' Ralph_Loops/loop0006/PROGRESS.md && sed -i 's/^- \[ \
+  > $ cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 9 — 2026-10-01 00:20
+
+### Completed
+- **09 Subset rule. It is sound as coded, on its own and after
+
+Item 09 is done. The subset rule is sound as the code implements it, and the new Lean file proves it with no `sorry`. The gate passes: `lake build` ok, sorry count 1 of limit 1, and 1305 tests passed.
+
+**Finding: the index tie-break is needed for soundness, not just to prevent cycles.** Without it, two customers that would open the same new stacks knock each other out. If another candidate survives, the fallback that keeps everything never fires, and the last solution can be lost. `noTieBreak_counterexample` proves this on a 7-customer graph. At `S = {2}` with `k = 3`, customers 0 and 3 both go and only 5 is kept, but `{2}` has a solution and `{2}·5` has none. The C, the Python and the certificate checker all apply the tie-break correctly, as does the paper's own stricter form.
+
+**What `lean/MOSPFormalization/Search/SubsetRule.lean` proves** (391 lines, standard axioms only):
+- **The rule's core step:** if what `d` would newly open is contained in what `r` would, and `r` is playable, then a solution through `r` gives one through `d`. It holds at every state with no extra hypotheses. Unlike the definite move's in item 08, the paper's one-line argument is correct.
+- **The rule on its own:** it never discards the last solution, for any set of old moves that are genuinely refuted. When a solution exists, the fallback never fires.
+- **After the definite move:** the combination is sound with item 08's repaired definite move. With the code's version it is not, on item 08's counterexample, but that loss comes from the definite move; the subset rule doesn't run at that node.
+
+**Brute-force check** (`python -m paper2.search_check --subset`, 80 s on 30 cores): zero failures across about 837 M case checks on:
+- every labelled graph up to 6 vertices, at every set;
+- the 7-vertex atlas and 1,500 random graphs at 10–13 vertices;
+- 2,000 relabelled gadget graphs at 12–16 vertices.
+
+The Lean filter matches item 06's port of the code at 12.6 M nodes. Without the tie-break the rule loses a solution at 4,730 nodes, none below 7 vertices.
+
+I added five tests, including one that removes the tie-break and confirms the checker catches it. I also wrote §4.3 of `paper2/search_soundness.md` and short notes in §2.3 and §2.9.
+
+The paper's literal form of the rule is checked but not proved in Lean. Progress is now 9/13; the next item is the better move. Nothing is committed; the driver commits.
+
+# result: success in 821s, 40 turns, cost $3.20

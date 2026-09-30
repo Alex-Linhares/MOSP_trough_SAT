@@ -96,5 +96,17 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.definiteMove_counterexample
 #print axioms MOSPFormalization.Search.not_isHereditarilyDefinite_cex
 
+-- loop0006 item 09: the subset rule (Search/SubsetRule.lean)
+#print axioms MOSPFormalization.Search.searchSol_cl_insert_of_newlyOpened_subset
+#print axioms MOSPFormalization.Search.cl_insert_cl_insert_of_newlyOpened_subset
+#print axioms MOSPFormalization.Search.Dominates.trans
+#print axioms MOSPFormalization.Search.exists_undominated
+#print axioms MOSPFormalization.Search.subsetKept_nonempty
+#print axioms MOSPFormalization.Search.subsetFilter_sound
+#print axioms MOSPFormalization.Search.definiteThenSubset_sound
+#print axioms MOSPFormalization.Search.repairedFilter_sound
+#print axioms MOSPFormalization.Search.codeFilter_counterexample
+#print axioms MOSPFormalization.Search.noTieBreak_counterexample
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
