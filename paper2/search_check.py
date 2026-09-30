@@ -924,6 +924,216 @@ def run_model(workers=None, out=None, quick=False):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 08: the definite move (Search/DefiniteMove.lean)
+# ----------------------------------------------------------------------------
+#
+# Transcribes `Search/DefiniteMove.lean`: openStacks b(T) = |O(T) - T|, o(c, S),
+# open/close counts as the code counts them, the code's premise, the repaired
+# (hereditary) premise and its matching form. The conclusion checked is the
+# rule's own: P_k(S) => P_k(cl(S + q)).
+
+# Two counterexamples to Chu & Stuckey's Theorem 1 in the code's form, each with
+# (masks, S, q, k). The first is `cexGraph` of the Lean file (14 customers, found by
+# random search at 10-16 customers and minimised by vertex/edge deletion); the
+# second is the first one found (16 customers).
+DEFINITE_CEX = [
+    ([2201, 102, 30, 13, 21, 6690, 8514, 9857, 3904, 4000, 16256, 3873, 13344, 13504], 0b100, 0, 6),
+    ([18459, 103, 286, 13, 21, 60578, 8770, 60320, 7044, 20416, 7712, 44961, 13568, 30944,
+      58017, 51360], 0b100, 0, 7),
+]
+
+
+def d_opened_table(masks):
+    n = len(masks)
+    O = [0] * (1 << n)
+    for T in range(1, 1 << n):
+        low = T & -T
+        O[T] = O[T ^ low] | masks[low.bit_length() - 1]
+    return O
+
+
+def d_solvable_table(masks, k, O):
+    """`Solvable k T` for every T (as `m_solvable_table`, with the opened sets precomputed)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    P = [False] * (1 << n)
+    P[full] = True
+    for T in range(full - 1, -1, -1):
+        rem = full & ~T
+        while rem:
+            low = rem & -rem
+            rem ^= low
+            if (O[T | low] & ~T).bit_count() <= k and P[T | low]:
+                P[T] = True
+                break
+    return P
+
+
+def d_open_stacks(O, T):
+    return (O[T] & ~T).bit_count()
+
+
+def d_counts(masks, O, S, q):
+    """(open(q, S), close(q, S)) as the code counts them over the customers not in S."""
+    n = len(masks)
+    OS = O[S]
+    own = masks[q] & ~OS
+    close = sum(1 for d in range(n) if not S >> d & 1 and (masks[d] & ~OS) & ~own == 0)
+    return own.bit_count(), close
+
+
+def d_child(masks, O, S, q):
+    U = O[S | 1 << q]
+    return sum(1 << c for c in range(len(masks)) if masks[c] & ~U == 0)
+
+
+def d_hereditary(masks, O, S, q):
+    """`IsHereditarilyDefinite`: b(X) <= b(B) for S <= B <= X, q not in B."""
+    X = d_child(masks, O, S, q)
+    bX = d_open_stacks(O, X)
+    D = X & ~S & ~(1 << q)
+    E = D
+    while True:
+        if d_open_stacks(O, S | E) < bX:
+            return False
+        if E == 0:
+            return True
+        E = (E - 1) & D
+
+
+def d_matching_size(masks, O, S, q):
+    """Maximum matching of the customers X - S - {q} to distinct stacks y in o(d, S)."""
+    X = d_child(masks, O, S, q)
+    OS = O[S]
+    match = {}
+
+    def augment(d, seen):
+        for y in bits(masks[d] & ~OS):
+            if y in seen:
+                continue
+            seen.add(y)
+            if y not in match or augment(match[y], seen):
+                match[y] = d
+                return True
+        return False
+
+    return sum(1 for d in bits(X & ~S & ~(1 << q)) if augment(d, set()))
+
+
+def check_definite_graph(masks, ks=None, first_only=False):
+    """Every statement of `Search/DefiniteMove.lean` on one graph, at every free-closed S with
+    the node invariant, every k and every q not in S."""
+    n = len(masks)
+    full = (1 << n) - 1
+    O = d_opened_table(masks)
+    t = Counter()
+    # submodularity of b over all pairs is quadratic in 2^n: all pairs to 5 customers, else a sample
+    rng = random.Random(len(masks) * 7919 + sum(masks))
+    pairs = ((A, B) for A in range(full + 1) for B in range(full + 1)) if n <= 5 else (
+        (rng.randrange(full + 1), rng.randrange(full + 1)) for _ in range(2000))
+    for A, B in pairs:
+        t["submodular_pairs"] += 1
+        if (d_open_stacks(O, A | B) + d_open_stacks(O, A & B)
+                > d_open_stacks(O, A) + d_open_stacks(O, B)):
+            t["fail_submodular"] += 1
+    fc = [S for S in range(full) if sum(1 << c for c in range(n) if masks[c] & ~O[S] == 0) == S]
+    for k in (range(1, n + 1) if ks is None else ks):
+        P = d_solvable_table(masks, k, O)
+        for S in fc:
+            if d_open_stacks(O, S) > k:
+                continue
+            for q in range(n):
+                if S >> q & 1:
+                    continue
+                X = d_child(masks, O, S, q)
+                op, cl_ = d_counts(masks, O, S, q)
+                code = op <= cl_
+                # isDefinite_iff
+                t["definite_iff"] += 1
+                if code != (d_open_stacks(O, X) <= d_open_stacks(O, S)):
+                    t["fail_definite_iff"] += 1
+                if cl_ != (X & ~S).bit_count():
+                    t["fail_closeCount_eq"] += 1
+                her = d_hereditary(masks, O, S, q)
+                mat = d_matching_size(masks, O, S, q) >= op - 1
+                t["hereditary_vs_matching"] += 1
+                if her != mat:                         # Hall with deficiency (not in Lean)
+                    t["fail_matching_iff_hereditary"] += 1
+                if her and not code:                   # IsHereditarilyDefinite.isDefinite
+                    t["fail_hereditary_implies_code"] += 1
+                if op <= 1 and not her:                # isHereditarilyDefinite_of_openCount_le_one
+                    t["fail_open_le_one"] += 1
+                if her:
+                    t["hereditary_moves"] += 1         # solvable_cl_insert_of_hereditarilyDefinite
+                    if P[S] and not P[X]:
+                        t["fail_hereditary_sound"] += 1
+                playable = (O[S | 1 << q] & ~S).bit_count() <= k
+                if code and playable:
+                    t["code_moves"] += 1               # the code's rule: the finding
+                    if not her:
+                        t["code_not_hereditary"] += 1
+                    if P[S] and not P[X]:
+                        t["code_loses_last_solution"] += 1
+                    if first_only:
+                        break
+    return t
+
+
+def definite_cex_report():
+    """The pinned counterexamples, with what the port of the code keeps at the node."""
+    out = []
+    for masks, S, q, k in DEFINITE_CEX:
+        n = len(masks)
+        O = d_opened_table(masks)
+        P = d_solvable_table(masks, k, O)
+        X = d_child(masks, O, S, q)
+        cfg = {"definite": True, "subset": True, "better": True, "limit": 0, "variant": "fixed",
+               "old_move": False}
+        _, L, _, _, _ = node_filter(masks, (1 << n) - 1, S, 0, k, cfg)
+        opt = next(kk for kk in range(1, n + 1) if d_solvable_table(masks, kk, O)[0])
+        op, cl_ = d_counts(masks, O, S, q)
+        out.append({"n": n, "S": list(bits(S)), "q": q, "k": k, "open": op, "close": cl_,
+                    "playable": (O[S | 1 << q] & ~S).bit_count() <= k,
+                    "node_keeps": [c for _, c in L], "child": list(bits(X)),
+                    "P_S": P[S], "P_child": P[X], "hereditary": d_hereditary(masks, O, S, q),
+                    "optimum": opt, "decide_at_optimum": search_decide(masks, opt, dict(cfg, memo=True, old_move=True))[0]})
+    return out
+
+
+def _definite_job(args):
+    masks, first_only = args
+    return check_definite_graph(masks, first_only=first_only)
+
+
+def run_definite(workers=None, out=None, quick=False, n_random=None):
+    """Item 08's check: every labelled graph on 1-6 vertices and every atlas graph on 7, plus
+    random graphs at 10-13 from `jobs_random`'s families, plus the pinned counterexamples."""
+    started = time.time()
+    work = [(m, False) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        work += [(m, False) for m in atlas_graphs(7)]
+    rng = random.Random(8)
+    count = (20 if quick else 2000) if n_random is None else n_random
+    for _ in range(count):
+        n = rng.randint(10, 11 if quick else 13)
+        work.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False))
+    total = Counter()
+    with Pool(workers) as pool:
+        for t in pool.imap_unordered(_definite_job, work, chunksize=8):
+            total.update(t)
+    cex = definite_cex_report()
+    cex_tallies = [dict(check_definite_graph(m, ks=[k])) for m, _, _, k in DEFINITE_CEX] if not quick else []
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(work), "quick": quick,
+              "tally": dict(total), "pinned": cex, "pinned_tallies": cex_tallies,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_definite_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
@@ -931,7 +1141,13 @@ def main():
     ap.add_argument("--random", type=int, default=None, help="random instances at 8-16 vertices")
     ap.add_argument("--model", action="store_true",
                     help="item 07: check the Lean model of Search/Basic.lean")
+    ap.add_argument("--definite", action="store_true",
+                    help="item 08: check Search/DefiniteMove.lean and the counterexamples")
     args = ap.parse_args()
+    if args.definite:
+        print(json.dumps(run_definite(workers=args.workers, quick=args.quick,
+                                      n_random=args.random), indent=1))
+        return
     if args.model:
         print(json.dumps(run_model(workers=args.workers, quick=args.quick), indent=1))
         return

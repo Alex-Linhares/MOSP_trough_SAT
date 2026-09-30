@@ -1,0 +1,86 @@
+{
+ "seconds": 16.0,
+ "graphs": 36911,
+ "quick": false,
+ "tally": {
+  "submodular_pairs": 72689508,
+  "definite_iff": 35666255,
+  "hereditary_vs_matching": 35666255,
+  "hereditary_moves": 29086891,
+  "code_moves": 23978489,
+  "code_not_hereditary": 20857
+ },
+ "pinned": [
+  {
+   "n": 14,
+   "S": [
+    2
+   ],
+   "q": 0,
+   "k": 6,
+   "open": 3,
+   "close": 3,
+   "playable": true,
+   "node_keeps": [
+    0
+   ],
+   "child": [
+    0,
+    2,
+    3,
+    4
+   ],
+   "P_S": true,
+   "P_child": false,
+   "hereditary": false,
+   "optimum": 6,
+   "decide_at_optimum": true
+  },
+  {
+   "n": 16,
+   "S": [
+    2
+   ],
+   "q": 0,
+   "k": 7,
+   "open": 3,
+   "close": 3,
+   "playable": true,
+   "node_keeps": [
+    0
+   ],
+   "child": [
+    0,
+    2,
+    3,
+    4
+   ],
+   "P_S": true,
+   "P_child": false,
+   "hereditary": false,
+   "optimum": 7,
+   "decide_at_optimum": true
+  }
+ ],
+ "pinned_tallies": [
+  {
+   "submodular_pairs": 2000,
+   "definite_iff": 2788,
+   "hereditary_vs_matching": 2788,
+   "hereditary_moves": 2095,
+   "code_moves": 391,
+   "code_not_hereditary": 2,
+   "code_loses_last_solution": 1
+  },
+  {
+   "submodular_pairs": 2000,
+   "definite_iff": 3861,
+   "hereditary_vs_matching": 3861,
+   "hereditary_moves": 2777,
+   "code_moves": 502,
+   "code_not_hereditary": 4,
+   "code_loses_last_solution": 1
+  }
+ ],
+ "failures": 0
+}

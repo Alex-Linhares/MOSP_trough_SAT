@@ -213,3 +213,82 @@ def test_model_catches_a_wrong_cost():
                 for T, c in ((0, 0), (1, 1), (3, 2)))
     assert wrong != sc.m_vs_of_layout(path, [0, 1, 2]) + 1
     assert sc.m_order_cost(path, 0, [0, 1, 2]) == sc.m_vs_of_layout(path, [0, 1, 2]) + 1
+
+
+# --- item 08: the definite move (Search/DefiniteMove.lean) -----------------
+
+
+def test_definite_quick_run_has_no_failures():
+    r = sc.run_definite(quick=True, workers=2)
+    assert r["failures"] == 0
+    assert r["tally"]["hereditary_moves"] > 0 and r["tally"]["code_moves"] > 0
+
+
+def _lean_cex():
+    masks, S, q, k = sc.DEFINITE_CEX[0]
+    edges = [(0, 3), (0, 4), (0, 7), (0, 11), (1, 2), (1, 5), (1, 6), (2, 3), (2, 4), (5, 9),
+             (5, 11), (5, 12), (6, 8), (6, 13), (7, 9), (7, 10), (7, 13), (8, 9), (8, 10),
+             (8, 11), (9, 10), (9, 11), (10, 11), (10, 12), (10, 13), (12, 13)]
+    return masks, S, q, k, edges
+
+
+def test_definite_counterexample_is_the_lean_graph():
+    masks, S, q, k, edges = _lean_cex()
+    assert masks == sc.masks_from_edges(14, edges)       # cexEdges of DefiniteMove.lean
+
+
+@pytest.mark.parametrize("idx", range(len(sc.DEFINITE_CEX)))
+def test_definite_move_loses_the_last_solution(idx):
+    masks, S, q, k = sc.DEFINITE_CEX[idx]
+    n = len(masks)
+    O = sc.d_opened_table(masks)
+    assert sc.m_cl(masks, S) == S and sc.d_open_stacks(O, S) <= k     # a state the search visits
+    op, close = sc.d_counts(masks, O, S, q)
+    assert op <= close and (O[S | 1 << q] & ~S).bit_count() <= k       # the code's premise
+    cfg = {"definite": True, "subset": True, "better": True, "limit": 0, "variant": "fixed",
+           "old_move": False}
+    _, L, _, _, _ = sc.node_filter(masks, (1 << n) - 1, S, 0, k, cfg)
+    assert [c for _, c in L] == [q]                                    # the port keeps q alone
+    P = sc.d_solvable_table(masks, k, O)
+    assert P[S] and not P[sc.d_child(masks, O, S, q)]
+    assert sc.m_searchsol_table(masks, k)[S]
+    assert not sc.d_hereditary(masks, O, S, q)
+
+
+def test_definite_counterexample_lean_certificates():
+    masks, S, q, k, _ = _lean_cex()
+    # the solution of cex_solvable
+    assert sc.m_order_cost(masks, S, [1, 3, 4, 6, 12, 13, 0, 5, 7, 8, 9, 10, 11]) <= k
+    # cexFamily is closed under playable moves and misses the full set
+    fam = {sum(1 << c for c in A) for A in ([0, 2, 3, 4], [0, 1, 2, 3, 4], [0, 2, 3, 4, 5],
+           [0, 1, 2, 3, 4, 5], [0, 2, 3, 4, 6], [0, 1, 2, 3, 4, 6], [0, 2, 3, 4, 7])}
+    assert (1 << 14) - 1 not in fam and sc.m_cl(masks, S | 1 << q) in fam
+    for A in fam:
+        for c in range(14):
+            if not A >> c & 1 and sc.m_step_cost(masks, A, c) <= k:
+                assert A | 1 << c in fam
+    # not_isHereditarilyDefinite_cex: B = {2, 3, 4}
+    O = sc.d_opened_table(masks)
+    assert sc.d_open_stacks(O, 0b11100) == 2 and sc.d_open_stacks(O, 0b11101) == 3
+
+
+def test_definite_repair_and_matching_agree_and_are_sound_on_small_graphs():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_definite_graph(masks)
+            assert not any(v for key, v in t.items() if key.startswith("fail_")), (masks, t)
+
+
+def test_definite_checker_catches_a_planted_fault(monkeypatch):
+    # replace the repaired premise by the code's (B = S only): the checker must then report
+    # the repair as unsound on the pinned instance
+    masks, S, q, k = sc.DEFINITE_CEX[0]
+    assert sc.check_definite_graph(masks, ks=[k]).get("fail_hereditary_sound", 0) == 0
+
+    def code_premise(masks, O, S, q):
+        op, close = sc.d_counts(masks, O, S, q)
+        return op <= close
+
+    monkeypatch.setattr(sc, "d_hereditary", code_premise)
+    t = sc.check_definite_graph(masks, ks=[k])
+    assert t["fail_hereditary_sound"] >= 1

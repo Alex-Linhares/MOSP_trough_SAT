@@ -1,0 +1,276 @@
+# session it08 started 2026-09-30 23:27:29
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "08 Definite" Ralph_Loops/loop0006/iterations.md; wc -l lean/MOSPFormalization/Search/Basic.lean paper2/search_soundness.md; 
+  > $ cd /home/al/dev/MOSP; cat lean/MOSPFormalization/Search/Basic.lean
+  > $ cd /home/al/dev/MOSP; sed -n 44,300p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; ls literature paper2/literature | grep -i -E "chu|stuckey"; ls lean/MOSPFormalization/Search/; cat Ralph_Loops/loop0006/allowed_sorries.tx
+  > $ cd /home/al/dev/MOSP; pdftotext -layout literature/chu_stuckey_2009.pdf /tmp/cs.txt; grep -n -i -B3 -A30 "Theorem 1" /tmp/cs.txt | head -80
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/search_check.py; grep -n "^def " paper2/search_check.py | head -80
+
+Reading done; now brute-forcing the exact form of the proof (moving `q` to the front) before writing the Lean.
+  > $ cd /home/al/dev/MOSP; sed -n 229,240p paper2/search_check.py; sed -n 755,830p paper2/search_check.py
+  > $ mkdir -p /tmp/dm && cat > /tmp/dm/bf.py <<'EOF'
+import itertools, sys
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import labelled_graphs, bi
+  > $ sed -n 150,246p /tmp/cs.txt
+  > $ cat > /tmp/dm/bf2.py <<'EOF'
+import sys
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import labelled_graphs, atlas_graphs, m_opened, m_cl, m_
+  > $ cat > /tmp/dm/bf3.py <<'EOF'
+import sys
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import labelled_graphs, atlas_graphs, m_opened, m_cl, m_
+  > $ cat > /tmp/dm/bf4.py <<'EOF'
+import sys
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import labelled_graphs, atlas_graphs, m_opened, m_cl, bi
+  > $ cat > /tmp/dm/bf5.py <<'EOF'
+import sys, random
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, bits, masks_from_edges
+rn
+  > $ cat > /tmp/dm/bf6.py <<'EOF'
+import sys, itertools
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, bits, m_step_cost, m_o
+  > $ cat > /tmp/dm/bf7.py <<'EOF'
+import sys, random
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, bits, masks_from_edges, m
+  > $ cd /tmp/dm && sed -e 's/new=m_step_cost(masks,T|X,c)/Te=m_cl(masks,T|X); new=m_step_cost(masks,Te,c) if not Te>>c\&1 else 0/' bf7.py > bf8.py && cd /home/al/dev
+  > $ cd /tmp/dm && sed -e 's/if new>old: fail2+=1/if new>old:\n            fail2+=1\n            if fail2<4: print([list(bits(m)) for m in masks],"S",list(bits(S)),"
+  > $ cat > /tmp/dm/bf10.py <<'EOF'
+import sys, random
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, bits, masks_from_edges, 
+  > $ cat > /tmp/dm/bf11.py <<'EOF'
+import sys, random
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, bits, masks_from_edges, 
+  > $ cat > /tmp/dm/bf12.py <<'EOF'
+import sys
+from functools import lru_cache
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_opened, m_cl, 
+  > $ cat >> /tmp/dm/bf12.py <<'EOF'
+X=m_cl(masks,S|2)|S
+Te=m_cl(masks,T|X); print('eager state',list(bits(Te)),'new eager cost',m_step_cost(masks,Te,c), 'noneager', 
+  > $ cat > /tmp/dm/thm.py <<'EOF'
+import sys, random
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import bits, masks_from_edges
+def tables(masks):
+  > $ for s in 1 2 3 4 5 6; do timeout 900 python3 /tmp/dm/thm.py $((9+s)) $s 60 & done; wait
+  > $ which geng nauty-geng 2>/dev/null; python3 -c "import networkx; print(networkx.__version__)"; nproc
+  > $ cat > /tmp/dm/exh.py <<'EOF'
+import sys, subprocess, networkx as nx
+from multiprocessing import Pool
+sys.path.insert(0,'/tmp/dm'); sys.path.insert(0,'/home/al/d
+  > $ (time python3 /tmp/dm/exh.py 10 -c 9:14) > /tmp/dm/exh10.log 2>&1 &
+echo started
+  > $ cat >> /tmp/dm/bf12.py <<'EOF'
+print('new order from X', fin(X))
+A=X
+for x in fin(X): print(x,m_step_cost(masks,A,x),end='; '); A|=1<<x
+print()
+import itertools
+  > $ cd /home/al/dev/MOSP/literature && for f in 2007-Garcia*.pdf 2012-Chu*.pdf; do pdftotext -layout "$f" /tmp/dm/$(echo $f|cut -c1-8).txt; done; grep -n -i -E "clo
+  > $ cd /home/al/dev/MOSP; grep -n "Lemma 1" /tmp/dm/2007-Gar.txt | head -3; n=$(grep -n "Lemma 1" /tmp/dm/2007-Gar.txt | head -1 | cut -d: -f1); sed -n "$((n-15)),$
+  > $ mkdir -p /tmp/dm && cat > /tmp/dm/thm.c <<'EOF'
+// Check Chu & Stuckey Thm 1 (code form) on graphs given as lines: n m0 m1 ... (neighbour masks incl self)
+#incl
+  > $ cat > /tmp/dm/gen.py <<'EOF'
+import sys, random
+seed=int(sys.argv[1]); cnt=int(sys.argv[2]); lo,hi=int(sys.argv[3]),int(sys.argv[4])
+rng=random.Random(seed)
+def
+  > $ sed -n 373,440p paper2/search_check.py && sed -n 438,480p paper2/search_check.py | head -5
+  > $ cat > /tmp/dm/verify.py <<'EOF'
+import sys
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import (bits, m_opened, m_cl, m_step_cost, m_solvable
+  > $ cd /tmp/dm && sed -i 's/if(bad<=5){printf/if(1){printf/' thm.c && sed -i 's|firstonly = argc>1;|firstonly = argc>1; int badg;|' thm.c && gcc -O2 -o thmc thm.c 2
+  > $ cat > /tmp/dm/fr.py <<'EOF'
+import sys, glob
+sys.path.insert(0,'/home/al/dev/MOSP')
+from paper2.search_check import m_solvable_table, native_decide
+lines=set()
+
+  > $ cat > /tmp/dm/fr.c <<'EOF'
+// Whole-instance check: search with free moves + cost cut + definite move (first in index order) + memo, vs exact oracle.
+#include <
+  > $ sleep 60; cd /tmp/dm; grep -h FALSE fr_*.txt | head -5; cat fr_*.txt | grep -c graphs
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/39ac369b-d492-4a17-b894-f8de828cd9c3/tasks/bddxaxlz4.output | tail -5
+  > $ cat > /tmp/dm/minim.py <<'EOF'
+import sys, subprocess, random
+def run(masks):
+    out=subprocess.run(['/tmp/dm/thmc'],input=f"{len(masks)} {' '.join(map(str,mas
+  > $ python3 -c "
+import sys; sys.path.insert(0,'.')
+from paper2.search_check import bits, m_cl, m_opened, m_step_cost, m_solvable_table
+m=[2201,102,30,13,21,6690,85
+  > $ cd /tmp/dm && python3 - <<'EOF'
+src=open('thm.c').read()
+src=src.replace('''          if(close>=__builtin_popcount(own)){''','''          int mode=getenv("MODE"
+  > $ cd /tmp/dm && cat > g6masks.py <<'EOF'
+import sys, networkx as nx
+for line in sys.stdin.buffer:
+    line=line.strip()
+    if not line: continue
+    g=nx.from_gr
+  > $ python3 -c "
+import sys; sys.path.insert(0,'.')
+from paper2.search_check import bits, m_cl, m_opened, m_step_cost, m_solvable_table
+m=[2201,102,30,13,21,6690,85
+  > $ mkdir -p /tmp/dm && cat > MOSPFormalization/Search/Scratch_dm.lean <<'EOF'
+import MOSPFormalization.Search.Basic
+namespace MOSPFormalization.Search
+open Finset
+
+  > $ sed -i 's/^  decide$/  decide +kernel/' MOSPFormalization/Search/Scratch_dm.lean && time lake env lean MOSPFormalization/Search/Scratch_dm.lean 2>&1 | head -30
+  > $ cd /tmp/dm && tail -q -n1 m_*.txt ex8_*.txt 2>/dev/null | awk '{g+=$2;c+=$4;b+=$6}END{print g,c,b}'; ls m_*.txt | wc -l; tail -n1 ex8_*.txt
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/DefiniteMove.lean
+  > $ cd /home/al/dev/MOSP/lean && rm MOSPFormalization/Search/Scratch_dm.lean && time lake env lean MOSPFormalization/Search/DefiniteMove.lean 2>&1 | head -60
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/DefiniteMove.lean'
+s=open(p).read()
+s=s.replace("""theorem opened_union (A B : Finset V) : opened G (A ∪ B) = open
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/DefiniteMove.lean'
+s=open(p).read()
+old_start=s.index("theorem closeCount_eq")
+old_end=s.index("theorem card_opene
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/DefiniteMove.lean'
+s=open(p).read()
+s=s.replace("""      cl G (insert q S) \\ S := by
+    ext d
+    simp only [Fin
+  > $ cd /home/al/dev/MOSP && grep -n "Search" lean/MOSPFormalization.lean; grep -n "Search" paper2/axiom_check.lean | head; cat Ralph_Loops/loop0006/gate.py | head -
+  > $ sed -i 's/^import MOSPFormalization.Search.Basic$/import MOSPFormalization.Search.Basic\nimport MOSPFormalization.Search.DefiniteMove/' lean/MOSPFormalization.l
+  > $ python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+anchor="#print axioms MOSPFormalization.Search.searchSol_mospGraph_iff_mospValue_le\n"
+add="".joi
+
+Lean builds; all new theorems use only `propext`, `Classical.choice` and `Quot.sound`. Next is the Python check section and its tests.
+  > $ cd /home/al/dev/MOSP && sed -n 300,350p paper2/search_check.py && sed -n 828,990p paper2/search_check.py
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+section = r'''
+
+# ----------------------------------------------------------------------------
+# i
+  > $ (time python3 -m paper2.search_check --definite --workers 30) > /tmp/dm/definite_full.log 2>&1; tail -40 /tmp/dm/definite_full.log | head -20; grep -A20 '"tally
+  > $ python3 -c "
+import json; r=json.load(open('paper2/data/search_definite_check.json')); print(r['seconds'],r['graphs'],r['failures']); print(r['pinned_tallies'])
+  > $ sed -i 's/    count = (20 if quick else 300) if n_random is None else n_random/    count = (20 if quick else 2000) if n_random is None else n_random/' paper2/se
+
+Now the hunt tool for reproducibility, and tests.
+  > $ { cat <<'EOF'
+// Hunt for counterexamples to the definite move (loop0006 item 08, paper2/search_soundness.md §4.2).
+//
+// Reads graphs from stdin, one per line:
+  > $ for i in $(seq 1 30); do (python3 paper2/definite_hunt_gen.py $((700+i)) 3000 11 16 4 | /tmp/dm/hunt 1 > /tmp/dm/h_$i.txt) & done; wait; grep -h BAD /tmp/dm/h_*
+
+Reproducible: 4 in 90,000 gadget graphs under the code's rule, 0 under the repair. Now the tests.
+  > $ tail -40 tests/test_search_check.py
+  > $ cat >> tests/test_search_check.py <<'EOF'
+
+
+# --- item 08: the definite move (Search/DefiniteMove.lean) -----------------
+
+
+def test_definite_quick_run_has_no_f
+  > $ python3 - <<'EOF'
+p='tests/test_search_check.py'
+s=open(p).read()
+i=s.index("def test_definite_checker_catches_a_planted_fault")
+s=s[:i]+'''def test_definite_ch
+  > $ sed -n 1,43p paper2/search_soundness.md; sed -n 624,660p paper2/search_soundness.md; sed -n 940,975p paper2/search_soundness.md
+  > $ date; ls -la --time-style=full-iso /home/al/dev/MOSP/Ralph_Loops/loop0006/session_it08.log | cut -c30-
+  > $ head -c 600 /home/al/dev/MOSP/Ralph_Loops/loop0006/session_it08.jsonl | grep -o '"timestamp":"[^"]*"' | head -2; tail -3 /home/al/dev/MOSP/Ralph_Loops/loop0006/
+
+Session started at 23:27, so there is plenty of time left. While I write the docs, a background hunt looks for a whole-instance false refutation among gadget-family graphs.
+  > $ cat > /tmp/dm/frhunt.sh <<'EOF'
+#!/bin/bash
+for i in $(seq 1 30); do (python3 /home/al/dev/MOSP/paper2/definite_hunt_gen.py $((900+i)) 30000 12 19 4 | /tmp/dm/f
+  > $ /tmp/dm/frhunt.sh
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+s=s.replace("""§1–2 were written in loop0006 item 05 and contain no Lean.
+""","""§1–2 were wri
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/39ac369b-d492-4a17-b894-f8de828cd9c3/tasks/bharc24n7.output; ls /tmp/dm/frg_*.txt | wc -l; cat /tmp/dm/frg_*.txt | grep -
+  > $ cat >> paper2/search_soundness.md <<'EOF'
+
+### 4.2 The definite move (item 08): false as stated, repaired and proved
+
+`lean/MOSPFormalization/Search/DefiniteMov
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+s=s.replace("""That inequality fails from 8 customers
+on. The weaker bound `new ≤ max(old, cos
+  > $ ps aux | grep -c "[f]rc"; cat /tmp/dm/frg_*.txt | wc -l
+
+The whole-instance hunt at up to 19 vertices would take about 50 minutes, so I'm stopping it and rerunning at 12–17 vertices with 90,000 graphs.
+  > $ pids=$(pgrep -f "/tmp/dm/frhunt.sh"); pids2=$(pgrep -x frc); echo $pids $pids2; kill $pids $pids2 2>/dev/null; pkill -P $(echo $pids | tr ' ' ',') 2>/dev/null; 
+  > $ pgrep -x frc | wc -l; pgrep -f definite_hunt_gen | wc -l; pgrep -f frhunt | wc -l; head -3 /tmp/dm/frhunt.sh
+  > $ for p in $(pgrep -x frc) $(pgrep -f "paper2/definite_hunt_gen.py"); do kill $p 2>/dev/null; done; true
+  > $ pgrep -x frc | wc -l; pgrep -f "paper2/definite_hunt_gen.py" | wc -l; cat /tmp/dm/frg_*.txt | grep -c FALSE
+  > $ sed -i 's/30000 12 19 4/3000 12 17 4/' /tmp/dm/frhunt.sh && grep -c "3000 12 17" /tmp/dm/frhunt.sh && /tmp/dm/frhunt.sh
+  > $ timeout 1200 python3 -m pytest tests/test_search_soundness_doc.py tests/test_search_check.py -q 2>&1 | tail -3
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Waiting on the whole-instance hunt (90,000 gadget graphs); then the gate, PROGRESS.md and iterations.md.
+  > Monitor {"command": "until grep -q TOTAL /tmp/claude-1000/-home-al-dev-MOSP/39ac369b-d492-4a17-b894-f8de828cd9c3/tasks/bsaba9rj2
+
+90,000 gadget graphs at 12–17 vertices: 0 false refutations. Fixing the doc's figure (it said 900,000 at 12–19), then running the gate.
+  > $ sed -i 's/refutation\*\* on 600,000 random graphs of all five families at 10–18\n//' paper2/search_soundness.md && python3 - <<'EOF'
+p='paper2/search_soundness.
+
+While the gate runs, writing PROGRESS.md and iterations.md.
+  > $ sed -i 's/^- \[ \] \*\*08 Definite move/- [x] **08 Definite move/' Ralph_Loops/loop0006/iterations.md && sed -i 's/^Current: 7\/13 SOLVED/Current: 8\/13 SOLVED/
+  > $ cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 8 — 2026-10-01 00:30
+
+### Completed
+- **08 Definite move. FINDING: Chu & Stuckey's Theorem 1 is FA
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/39ac369b-d492-4a17-b894-f8de828cd9c3/tasks/biete3rle.output
+  > $ sed -i 's/^- Gate: see below.$/- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1300 passed, 2 skipped, 1 xfailed; GATE PASS./' Ralph_Loops/loo
+
+Item 08 is done, and the main result is a finding: **Chu & Stuckey's Theorem 1, the definite move, is false**, both as the paper states it and as `customer_search.c:313–330` and `Py:404–412` implement it. At a single search node it can throw away the last solution. The gate passes: `lake build` ok, still only the one baseline `sorry`, 1,300 tests passed.
+
+**The counterexample, proved in Lean** (`definiteMove_counterexample` in `Search/DefiniteMove.lean`):
+- **The graph:** 14 customers, 26 edges. At state `S = {2}` with `k = 6`, every premise of the code holds. Customer `0` is playable, `close = open = 3`, it is first in index order, and the Python port of the filter keeps only `0`.
+- **The failure:** a solution exists from `{2}`, but none from the child `{0,2,3,4}`. Lean checks the second half over the only 7 states reachable within 6 stacks.
+- **Why the paper's proof breaks:** customers 3 and 4 share one new stack. Closing them first gains two stacks for one; the proof counts them as "extra stacks closed" even when the solution had already closed them.
+- **A second slip in the proof:** its literal reordered sequence isn't a solution even where the theorem holds, because customers that `q` finishes stay open until their turn. The smallest case has 4 customers.
+
+**The repair, proved sound in Lean:**
+- **The rule:** with `b(T)` the number of open stacks after closing `T`, require `b(child) ≤ b(B)` for every state `B` between `S` and the child that avoids `q`. The code's test is only the case `B = S`.
+- **The proof:** it rests on `b` being submodular (`openStacks_submodular`).
+- **A cheap form to implement:** it suffices to match `open − 1` of the customers the move finishes to distinct new stacks. By Hall's theorem this matching form is equivalent to the repair; that equivalence is checked, not proved. In the solver it would cost one small bipartite matching per candidate. I did not change the solver.
+
+**What this means for the corpus:**
+- Every configuration that produced a refutation runs the unsound form, so the soundness claim in §2.9 is false as stated wherever the definite move is on.
+- No wrong `unsat` on a whole instance has been found: none on 600,000 random graphs at 10–18 customers, none on 90,000 targeted graphs at 12–17, and both counterexample instances still get the right answer.
+- Whether a whole instance can ever be falsely refuted is open. Item 12 has to either prove its theorem for the repaired rule or name this gap.
+
+**Checks:**
+- **Where losses appear:** under the code's rule there is no loss on any graph up to 9 vertices (checked exhaustively) or on sparse connected graphs on 10. Losses appear only at 14–16 vertices, in a family of graphs shaped like the failed proof. Deleting vertices and edges never got a counterexample below 14.
+- **The repair:** zero losses in 2.05 G checks, plus 272 M more on the targeted family.
+- **Python:** `python -m paper2.search_check --definite` runs in 16 s on 36,911 graphs with zero failures, and there are 7 new tests, including one that swaps the code's test in for the repair and checks it gets caught.
+- **Docs:** `paper2/search_soundness.md` has a finding box at the top, the finding and repair in §2.2, §2.9 marked false as stated, and a new §4.2.
+- **Search tools:** the C search and generator that found the counterexamples are added as `paper2/definite_hunt.c` and `paper2/definite_hunt_gen.py`.
+
+PROGRESS.md now reads 8/13 and item 08 is checked off. I suggested that item 09 check the subset rule the same way before stating it: the definite move also passed item 06's checks up to 7 customers and only failed at 14. Nothing is committed.
+
+# result: success in 2260s, 88 turns, cost $7.70

@@ -86,6 +86,15 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.orderCost_ofFn_eq_vertexSepOfLayout_add_one
 #print axioms MOSPFormalization.Search.searchSol_empty_iff_pathwidth_add_one_le
 #print axioms MOSPFormalization.Search.searchSol_mospGraph_iff_mospValue_le
+#print axioms MOSPFormalization.Search.openStacks_submodular
+#print axioms MOSPFormalization.Search.isDefinite_iff
+#print axioms MOSPFormalization.Search.solvable_cl_insert_of_hereditarilyDefinite
+#print axioms MOSPFormalization.Search.searchSol_cl_insert_of_hereditarilyDefinite
+#print axioms MOSPFormalization.Search.isHereditarilyDefinite_of_openCount_le_one
+#print axioms MOSPFormalization.Search.isHereditarilyDefinite_of_matching
+#print axioms MOSPFormalization.Search.not_solvable_of_invariant
+#print axioms MOSPFormalization.Search.definiteMove_counterexample
+#print axioms MOSPFormalization.Search.not_isHereditarilyDefinite_cex
 
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

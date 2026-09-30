@@ -62,7 +62,7 @@ assembly and a reserve.
   that the free move is sound (closing a customer with N[c] ⊆ O(S) never
   hurts).
 
-- [ ] **08 Definite move.** `Search/DefiniteMove.lean`: Chu & Stuckey Thm 1
+- [x] **08 Definite move.** `Search/DefiniteMove.lean`: Chu & Stuckey Thm 1
   (the move whose closing opens no more than it closes can be taken first),
   in the form the code uses.
 

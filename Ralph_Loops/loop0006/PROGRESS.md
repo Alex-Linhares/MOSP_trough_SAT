@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 7/13 SOLVED
+Current: 8/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -567,3 +567,91 @@ Current: 7/13 SOLVED
   - The swap argument moves `q` to the front of an optimal order. The customers
     `d` with `o(d) ⊆ o(q)` become free after `q`, which is what
     `solvable_mono` covers.
+
+## Iteration 8 — 2026-10-01 00:30
+
+### Completed
+- **08 Definite move. FINDING: Chu & Stuckey's Theorem 1 is FALSE, both as the paper
+  states it and as the C and Python implement it.** At a node the definite move can discard
+  the last solution. New file `lean/MOSPFormalization/Search/DefiniteMove.lean`, 422 lines,
+  imported from the root. No `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound`
+  only (new lines in `paper2/axiom_check.lean`).
+  - **The counterexample in Lean** is `definiteMove_counterexample`, on `cexGraph`: 14
+    customers, 26 edges. At the free-closed state `S = {2}`, with `k = 6`:
+    - the invariant holds, and `q = 0` is playable with `close = open = 3`;
+    - `q = 0` is first in index order, and the port of the C filter keeps it alone;
+    - `Solvable` and `SearchSol` hold at `S`;
+    - neither holds at the child `{0,2,3,4}`.
+
+    The mechanism: `3` and `4` share the single new stack `0`, so closing them first gains
+    two stacks for one. The paper's proof counts them as "extra stacks closed" even when
+    `U′` had already closed them.
+
+    The negative half is `not_solvable_of_invariant`, applied to the 7 states reachable
+    within 6 stacks, which `decide +kernel` checks in about 30 s.
+
+    A second, independent slip: the literal `S ++ [q] ++ …` is not a solution even where
+    the theorem holds, because free customers stay open. The smallest case has 4 customers.
+  - **The repair, proved sound.** Write `X` for `cl(S ∪ {q})`. The repaired premise,
+    `IsHereditarilyDefinite`, asks `b(X) ≤ b(B)` for all `B` with `S ⊆ B ⊆ X` and
+    `q ∉ B`, where `b(T) = |O(T) ∖ T|`. The code's premise is the case `B = S`
+    (`isDefinite_iff`).
+    - `solvable_cl_insert_of_hereditarilyDefinite` and
+      `searchSol_cl_insert_of_hereditarilyDefinite` prove it sound.
+    - The proof is by uncrossing, from `openStacks_submodular` (`b` is submodular).
+    - Sufficient conditions: `open ≤ 1`, and a matching of `open − 1` customers of
+      `X ∖ S ∖ {q}` to distinct new stacks (`isHereditarilyDefinite_of_matching`). By
+      Hall with deficiency the matching form is equivalent to the repair; that is checked,
+      not proved.
+  - **Does the C implement the right one? No.** `customer_search.c:313–330` and
+    `Py:404–412` use the unsound `close ≥ open`. So does every production configuration
+    (§2.9). The solver is unchanged; the owner decides. The repair costs one small
+    bipartite matching per candidate that passes the current test.
+  - **Consequences.** §2.9's composition claim is false at the node level whenever
+    `definite_move` is on. No wrong answer on a whole instance was found:
+    - a port of the search (free moves, definite move, memo) run at the optimum gave zero
+      false refutations on 600,000 random graphs at 10–18 vertices and on 90,000 gadget
+      graphs at 12–17;
+    - both pinned instances answer correctly.
+
+    It is open whether a whole instance can be refuted falsely. Item 12 must either state
+    its theorem for the repaired rule or name this gap.
+- **Search.** The throwaway C checks, now committed as `paper2/definite_hunt.c` and
+  `definite_hunt_gen.py`, found:
+  - no loss on any graph to 9 vertices (exhaustive), nor on the 88,802 connected graphs on
+    10 vertices with at most 14 edges;
+  - losses only at 14–16 vertices, in a "gadget" family built from the failed proof;
+  - after minimisation by deletion, 14 vertices, never fewer;
+  - under the repair and its matching form, zero losses in 2.05 G checks (all graphs on 8
+    vertices, 60,000 random graphs), plus 272 M checks on gadget graphs.
+- **Python.** `python -m paper2.search_check --definite` takes 16 s and writes
+  `paper2/data/search_definite_check.json`. It covers 36,911 graphs (labelled graphs to 6,
+  the atlas at 7, 2,000 random graphs at 10–13) with zero failures across:
+  - 72.7 M submodularity cases;
+  - 35.7 M cases each of `isDefinite_iff`, repair ⇔ matching, and repair ⇒ code premise;
+  - 29.1 M repair-soundness cases.
+
+  On these graphs the code's rule fires without the repair 20,857 times and never loses a
+  solution. The two pinned counterexamples (`DEFINITE_CEX`) do lose one.
+  `tests/test_search_check.py` has 7 new tests, 25 in total, including a mutation (the
+  code's premise in place of the repair gets caught).
+- **Docs.** `paper2/search_soundness.md`:
+  - a finding box at the top;
+  - a finding and the repair in §2.2;
+  - the §2.9 claim marked false as stated;
+  - a new §4.2 (definitions, theorems, why the paper's proof cannot be patched locally,
+    and the check).
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1300 passed, 2 skipped, 1 xfailed; GATE PASS.
+
+### Blockers
+- None for the item. Open: a whole-instance false refutation from the definite move (none
+  found), and a Lean proof of the matching ⇔ repair converse (Hall).
+
+### Next
+- Item 09, the subset rule. Check before stating: the rule cites dominators over all of
+  `R(S)`, including `Q`, with an index tie-break. Its pair conclusion may have the same
+  collision weakness. Item 06 saw no failure to 16, but the definite move also passed
+  item 06 and failed at 14. Run `definite_hunt`-style exact checks of
+  `Sol(S·r) ⇒ Sol(S·d)` on gadget families first.
+- Items 10–12 must build on the repaired definite move, and item 12's composition theorem
+  must say which rule it covers.

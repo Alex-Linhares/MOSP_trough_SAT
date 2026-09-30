@@ -33,3 +33,8 @@
 [2026-09-30 23:14:58] claude session it07 (cap 4.00 h) -> session_it07.log
 [2026-09-30 23:25:02] session it07: ok (exit 0, 30 tool calls)
 [2026-09-30 23:27:29] tests passed: GATE PASS
+[2026-09-30 23:27:29] committed 8bad2956a: 07 Search model in Lean. `Search/Basic.lean`: closed sets, the
+[2026-09-30 23:27:29] === iteration 8: 08 Definite move. `Search/DefiniteMove.lean`: Chu & Stuckey Thm 1
+[2026-09-30 23:27:29] claude session it08 (cap 4.00 h) -> session_it08.log
+[2026-10-01 00:05:10] session it08: ok (exit 0, 87 tool calls)
+[2026-10-01 00:07:38] tests passed: GATE PASS

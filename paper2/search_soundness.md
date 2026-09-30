@@ -11,11 +11,37 @@ precisely and then proves it.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
-- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07).
+- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it.
 
 §1–2 were written in loop0006 item 05 and contain no Lean.
+
+> **Finding (item 08, 2026-09-30): the definite move is unsound as Chu &
+> Stuckey state it and as the code implements it.** Their Theorem 1
+> (`close(q, S) ≥ open(q, S)` and `q` playable ⇒ some solution from `S`
+> begins with `q`) is false. `Search/DefiniteMove.lean` proves a
+> counterexample, `definiteMove_counterexample`. On a 14-customer graph at
+> the free-closed state `S = {2}` with `k = 6`:
+>
+> - the node invariant holds;
+> - customer `0` is playable, with `close = open = 3`, and is first in index
+>   order;
+> - the Python port of the filter keeps only `0`;
+> - a solution from `S` exists, and none from the child `{0, 2, 3, 4}`.
+>
+> The C (`customer_search.c:313–330`) and the Python (`Py:404–412`) both
+> implement this unsound form, and **every configuration that produced a
+> refutation in the corpus runs it** (§2.9). The rule is sound under a
+> stronger premise, which is proved in Lean (§2.2, §4.2). No wrong `unsat`
+> answer on a whole instance has been found:
+>
+> - the pinned instances answer correctly;
+> - a hunt over 690,000 random graphs found none (§4.2.4);
+> - the harness's zero disagreements stand.
+>
+> But the proof that the corpus refutations are sound no longer covers the
+> definite move as coded. The solver is unchanged; the owner decides.
 
 **Code references** are to the tree at commit `8d824d034`:
 `satisfiability/customer_search.py` (**Py**, the reference implementation),
@@ -37,7 +63,9 @@ over closed sets, on 300 random graphs with 2–8 vertices at every `k`, 1,461
 - the corrected better move for every ordered pair.
 
 There were zero failures. This is evidence, not proof: the statements are
-claims until items 06–12 settle them.
+claims until items 06–12 settle them. *(Item 08: the definite move's
+conclusion is false. Its smallest known counterexample has 14 customers,
+far above this spot check's 8 and item 06's exhaustive 7. See §2.2.)*
 
 ---
 
@@ -297,6 +325,48 @@ covered by it directly.
 playable and that `close ≥ open` over `R(S)`, and makes `q` the cover of every
 other playable candidate. It does not check that `q` is the first in index
 order, which soundness does not need.
+
+**Finding (item 08): the conclusion is false.** `Sol_k(S) ⇒ Sol_k(S·q)` fails
+for the premise above. The counterexample is `cexGraph` of
+`Search/DefiniteMove.lean`, 14 customers and 26 edges:
+
+- `N(0) = {3,4,7,11}`, `N(2) = {1,3,4}`, `N(3) = N(4) = {0,2}`;
+- at `S = {2}` with `k = 6`, `o(0, S) = {0, 7, 11}`;
+- `close(0, S) = |{0, 3, 4}| = 3`.
+
+Closing `3` and `4` first opens only the stack `0` and finishes both of them,
+which leaves 2 open stacks. The rule instead jumps straight to `{0, 2, 3, 4}`,
+which leaves 3 open stacks (`1, 7, 11`). From `S` there is a solution, but
+none from `{0, 2, 3, 4}`: only 7 states are reachable from it within 6
+stacks, and none of them is complete.
+
+The paper's proof (PDF p. 6) moves `q` to the front of a solution `U′` and
+claims that after each prefix there are "at most open(q, S) extra stacks
+open, but at least close(q, S) extra stacks closed". That fails for the
+customers `d` that `U′` had *already* closed before `q`. Two such `d`
+sharing one new stack are counted twice in `close` and gain nothing when `q`
+moves forward.
+
+There is a second, independent slip. The literal sequence
+`S ++ [q, c₁, …]` is not a solution even where the theorem holds, because a
+customer that `q` finishes stays open until its turn comes. The smallest
+case has 4 customers (`§4.2.4`). The argument needs the free moves.
+
+**The repair** (`IsHereditarilyDefinite`, proved sound). Write `b(T)` for
+`|O(T) ∖ T|` and `X` for `cl(S ∪ {q})`. The repair requires
+`b(X) ≤ b(B)` for every `B` with `S ⊆ B ⊆ X` and `q ∉ B`. The code's premise
+is the case `B = S`, because `open ≤ close ⇔ b(X) ≤ b(S)`
+(`isDefinite_iff`).
+
+An equivalent form is cheap to compute. By Hall's theorem with deficiency,
+which is checked here and not proved, the repair holds iff there is a
+matching of size `open(q, S) − 1` from the customers `X ∖ S ∖ {q}` to
+distinct stacks `y ∈ o(d, S)`. The Lean proves the direction that matters,
+`isHereditarilyDefinite_of_matching`, so the matching form is sound. Every
+`q` with `open(q, S) ≤ 1` qualifies. A C implementation would add one small
+bipartite matching per candidate that passes `close ≥ open`.
+
+**What the C does.** It implements the unsound form, with no matching.
 
 ### 2.3 The subset rule (Chu & Stuckey §2, with an index tie-break)
 
@@ -649,6 +719,15 @@ the claim:
 | `recertify` | the C default plus better move with `L = 0`, always | `benchmarks/recertify.py:70–71` |
 | Cert `memo` | free, definite, subset, memo (no old move) | `learning/search_certificate.py` |
 
+**Item 08: the claim is false as stated whenever `definite_move` is on**, and
+it is on in every row of the table. The definite move can discard the last
+solution at a node (§2.2, `definiteMove_counterexample`). The claim holds
+with the repaired premise in place of `close ≥ open`. As stated, the claim is
+now a conjecture about whole instances: it would say that the misfires never
+combine into a wrong `unsat`. Nothing found so far contradicts that (§4.2.4),
+and nothing proves it. Item 12 must either state the theorem for the repaired
+rule or name this gap.
+
 The claim covers the old-move-plus-memo combination (§2.7) and is **false** for
 the variant bits `BM_OLD_CLOSE_COUNT` and `BM_OLD_RULE_ORDER` (§2.4). Item 06
 is to confirm both of those failures by brute force, and item 10 is to prove a
@@ -973,3 +1052,161 @@ The tests (`tests/test_search_check.py`, four new) pin:
 - the `K₂` case where the invariant is needed;
 - a mutation, a step cost that forgets the customer being closed, which
   breaks `cost = vs + 1`.
+
+### 4.2 The definite move (item 08): false as stated, repaired and proved
+
+`lean/MOSPFormalization/Search/DefiniteMove.lean`, namespace
+`MOSPFormalization.Search`, about 450 lines. It has no `sorry`, and its axioms
+are `propext`, `Classical.choice` and `Quot.sound` only (`../paper2/axiom_check.lean`).
+
+#### 4.2.1 Definitions
+
+| §2.2 | Lean |
+|---|---|
+| `b(T) = \|O(T) ∖ T\|`, the open stacks | `openStacks G T` |
+| `o(c, S) = N[c] ∖ O(S)` | `newlyOpened G S c` |
+| `open(c, S)` | `openCount G S c` |
+| `close(q, S)`, counted over `V ∖ S` as the code counts it at a free-closed `S` | `closeCount G S q` |
+| the code's premise `open ≤ close` | `IsDefinite G S q` |
+| the repaired premise | `IsHereditarilyDefinite G S q` |
+
+#### 4.2.2 What is proved
+
+- `openStacks_submodular`: `b(A ∪ B) + b(A ∩ B) ≤ b(A) + b(B)`. The proof
+  combines `|O(A ∪ B)| = |O(A) ∪ O(B)|` and `O(A ∩ B) ⊆ O(A) ∩ O(B)` with
+  `b(T) + |T| = |O(T)|` (`openStacks_add_card`). Every other result here
+  rests on it.
+- `stepCost_eq_openStacks_insert_add_one`: closing `c ∉ T` costs
+  `b(T ∪ {c}) + 1`.
+- `closeCount_eq` and `isDefinite_iff`: `close(q, S) = |cl(S ∪ {q}) ∖ S|`, so
+  the code's premise says exactly `b(cl(S ∪ {q})) ≤ b(S)`.
+- **Soundness of the repair**:
+  - `solvable_cl_insert_of_hereditarilyDefinite`: if `q` is hereditarily
+    definite at `S` and `q ∉ S`, then `P_k(S) → P_k(cl(S ∪ {q}))`. It needs
+    no invariant and no playability.
+  - `searchSol_cl_insert_of_hereditarilyDefinite` gives the search's form:
+    `Sol_k(S) → Sol_k(S·q)` under the node invariant.
+
+  The proof (`solvable_union_cl_of_hereditarilyDefinite`) is by uncrossing.
+  Write `X` for `cl(S ∪ {q})`. Along any solution from `S`, replace each
+  prefix `T` taken before `q` by `T ∪ X`:
+  - a customer already in `X` is skipped;
+  - for any other customer `c`, submodularity at `Z = T ∪ {c}` gives
+    `b(Z ∪ X) ≤ b(Z) + b(X) − b(Z ∩ X) ≤ b(Z)`. The last step is the
+    hypothesis applied to `B = Z ∩ X`, which lies between `S` and `X` and
+    avoids `q` (`stepCost_union_cl_le`).
+
+  Once the solution closes `q`, `T ∪ X` has the same opened set as `T ∪ {q}`
+  and more closed customers, and `solvable_mono` ends the proof.
+- **Sufficient conditions**:
+  - `isHereditarilyDefinite_of_openCount_le_one`: every `q` that opens at
+    most one new stack qualifies. These are the cases where the code's rule
+    is right for free.
+  - `isHereditarilyDefinite_of_matching`: `q` qualifies if the customers
+    `M ⊆ X ∖ (S ∪ {q})` inject into distinct stacks `f(d) ∈ o(d, S)`, with
+    `open(q, S) ≤ |M| + 1`.
+  - `IsHereditarilyDefinite.isDefinite`: the repair implies the code's
+    premise.
+- **The counterexample**:
+  - `definiteMove_counterexample` holds on `cexGraph`, with every premise of
+    the code: `S = cl(S)`, the invariant, `q ∉ S`, playability,
+    `IsDefinite`, and no smaller playable definite customer. Its conclusion
+    is `Solvable` and `SearchSol` at `S` together with `¬ Solvable` and
+    `¬ SearchSol` at the child.
+  - The positive half is an explicit closing order, `cex_solvable`.
+  - The negative half is `not_solvable_of_invariant`, applied to the family
+    of the 7 states reachable from the child within 6 stacks
+    (`cexFamily_closed`). That family is closed under playable moves and
+    misses `V`, and `decide +kernel` checks it in about 30 s.
+  - `not_isHereditarilyDefinite_cex` shows that the repair rejects the
+    counterexample, at `B = {2, 3, 4}`.
+
+#### 4.2.3 Why the paper's proof cannot be patched locally
+
+Take the natural construction, "close `q` and its free customers first, then
+follow `U′`, skipping customers already closed". Its prefixes are `T ∪ X`,
+and the step costs obey `new ≤ old` exactly when
+`|o(q, S) ∖ O(T ∪ {c})| ≤ |X ∖ T|`. That inequality holds on every graph up to 7 customers (exhaustive) and
+fails at 8 (random samples). The weaker bound
+`new ≤ max(old, cost(S, q))` held on 25 M random cases at 9–12 customers.
+It first fails at 14, which is also where the theorem first fails:
+
+- On a 14-customer graph, `U′` closes `11, 9, 4, 5, …` at costs
+  `4, 3, 3, 6, …`.
+- The construction closes `5` at cost 7 > 6.
+- There the theorem still holds, through a different solution that closes
+  `q`'s new stacks early.
+
+Submodularity shows what separates the two cases. If some `B` with
+`S ⊊ B ⊊ X` and `q ∉ B` has `b(B) < b(X)`, then `B` is a strictly better
+place to stand than `X`, and nothing forces a solution through `X`. The
+repair excludes exactly this.
+
+#### 4.2.4 The check
+
+`python -m paper2.search_check --definite` takes 16 s on 30 cores and writes
+`data/search_definite_check.json`. It transcribes the Lean definitions and
+runs on every labelled graph on 1–6 vertices, every atlas graph on 7, and
+2,000 random sparse and cover graphs on 10–13 vertices, 36,911 graphs in all.
+At every free-closed `S` with the invariant, every `k` and every `q`:
+
+| statement | cases | failures |
+|---|---|---|
+| `openStacks_submodular`, all pairs to 5 customers, 2,000 sampled beyond | 72,689,508 | 0 |
+| `isDefinite_iff`, `closeCount_eq` | 35,666,255 | 0 |
+| repair ⇔ matching form (Hall with deficiency, not in Lean) | 35,666,255 | 0 |
+| repair ⇒ code premise; `open ≤ 1` ⇒ repair | 35,666,255 | 0 |
+| repair sound: `P_k(S) ⇒ P_k(cl(S ∪ {q}))` | 29,086,891 | 0 |
+| code rule fires (playable, `open ≤ close`) | 23,978,489 | — |
+| … but the repair does not | 20,857 | — |
+| … and the last solution is lost | 0 here; 1 in each pinned instance | — |
+
+The code's rule fires without the repair in 20,857 cases on these graphs, and
+never loses a solution there. A loss needs a larger instance with a specific
+shape. The two pinned instances (`DEFINITE_CEX`: the Lean graph and the first
+16-customer one found) lose it, and on both `decide` at the optimum still
+answers correctly.
+
+The counterexamples were found with `definite_hunt.c` and
+`definite_hunt_gen.py`, which check every premise-satisfying `(S, q, k)`
+exactly by dynamic programming over all `2ⁿ` sets:
+
+- **Where losses first appear.** Under the code's premise there is no loss
+  on any graph up to 9 vertices (exhaustive, 274,668 graphs at 9). There is
+  none on the 88,802 connected graphs on 10 vertices with at most 14 edges.
+  There are 2 among 90,000 random graphs of the generator's five families at
+  10–16 vertices, both at 16 and both of the gadget's shape.
+- **The gadget family.** It was built from the failed proof: a closed `s`
+  whose open neighbours share one new stack with `q`. It gives 5 of 90,000,
+  and 4 of 90,000 on a rerun from the committed generator.
+- **Minimising.** Deleting vertices and edges while a loss remains reaches 14
+  customers and 26 edges, never fewer.
+- **The repair.** Under the repair and under the matching form there are
+  zero losses in 2.05 G premise checks (60,000 random graphs and all 12,346
+  graphs on 8 vertices). A further 9,000 gadget graphs give 272 M checks,
+  also with zero losses.
+- **Whole instances.** A port of the search with free moves, the cost cut,
+  the definite move and the memo was run at the optimum. It found **no false
+  refutation** on 600,000 random graphs of all five families at 10–18
+  vertices, nor on 90,000 gadget graphs at 12–17.
+
+So far the misfire is local: the search recovers through another branch. No
+proof of that is known.
+
+The tests are `tests/test_search_check.py`, seven new:
+
+- a quick run;
+- the Lean graph equals `DEFINITE_CEX[0]`;
+- the loss on both pinned instances, including that the port's filter keeps
+  `q` alone;
+- the Lean certificates (the solution, the closed family, `B = {2, 3, 4}`);
+- repair and matching sound and equal on every graph to 4 vertices;
+- a mutation: replacing the repaired premise by the code's makes the
+  checker report the repair unsound.
+
+The 4-customer example of the literal-sequence slip in §2.2:
+
+- edges `0–3` and `1–2`, `S = ∅`, `q = 0` (`open = close = 2`);
+- `U′ = [1, 2, 0, 3]` costs 2, but `[0, 1, 2, 3]` costs 3, because `3` stays
+  open while `1` and `2` are closed;
+- closing `3` right after `0` fixes it.
