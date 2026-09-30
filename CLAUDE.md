@@ -703,6 +703,27 @@ python -m benchmarks.solve_all --timeout 120
   count recorded before 2026-09-26 12:19, including the five 125×125
   recertify counts, is a pre-fix number. The invariant test now draws its
   instances at 1–3 products per customer, where the failures live.
+- **Chu & Stuckey's Theorem 1 (the definite move) is false as published, and
+  our C and Python implement it as published** *(found by loop0006 item 08,
+  2026-10-01; verified independently the same day)*. On a 14-customer graph
+  (`DEFINITE_CEX` in `paper2/search_check.py`), at the state S = {2} with
+  k = 6, customer 0 is playable and close(0, S) = open(0, S) = 3, so the rule
+  keeps 0 alone. A solution from S exists (it starts with 1, 3, 4 or 6), but
+  none starts with 0. The published proof counts customers as "extra stacks
+  closed" that the other sequence had already closed. Lean:
+  `definiteMove_counterexample` (`lean/MOSPFormalization/Search/DefiniteMove.lean`),
+  with a repaired, hereditary premise proved sound
+  (`solvable_cl_insert_of_hereditarilyDefinite`). **No whole-instance false
+  refutation has been found**: both counterexample graphs get the right answer
+  from the production search (C and Python, with and without old move), and
+  none turned up in 600,000 random graphs at 10-18 vertices or 90,000 gadget
+  graphs at 12-17. But the rule is on in every production configuration, so
+  every refutation the customer search has made rests on a rule that can
+  discard the last solution at a node. Refutations with an independent proof
+  (the SAT path, DRAT at n <= 40, the lattice oracle at n <= 15) are
+  unaffected. The solver is unchanged; the repair (one small bipartite
+  matching per candidate) is the owner's decision. `paper2/search_soundness.md`
+  §2.2 and §4.2.
 - **Nothing checks that a refutation is sound.** Witness verification, the
   corpus audit and the lower-bound guards all confirm a value is *achievable*.
   A refutation one step too strong is invisible to every one of them, which is
