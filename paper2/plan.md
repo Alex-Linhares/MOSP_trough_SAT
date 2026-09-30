@@ -121,6 +121,15 @@ optimum, a witness layout, the value under every problem in the table, and a
 proof of optimality (a DRAT refutation or a search certificate) that a third
 party can check without our code.
 
+**Scope, decided 2026-09-30: only the problems proved *exactly* equivalent.**
+These are pathwidth, vertex separation, MOSP, gate matrix layout (including
+multiple folding), one-dimensional logic, interval thickness, narrowness,
+node search, and Lengauer's vertex separator game. Dropped: split bandwidth
+and edge search, which are bands, not equalities; simple PLA folding and
+cutwidth / edge separation, which are false as stated. A certified pathwidth
+value is then an exact answer for every problem kept. The hunt's catalogue is
+`benchmarks/README.md`; downloads go to `benchmarks/raw/` (git-ignored).
+
 **Where to look.** Held already, all MOSP: the 2005 Constraint Modelling
 Challenge (Harvey, Miller, Shaw, Simonis, Wilson), Faggioli & Bentivoglio,
 SCOOP and Chu & Stuckey (`../benchmarks/instances/`). Leads to verify, from
