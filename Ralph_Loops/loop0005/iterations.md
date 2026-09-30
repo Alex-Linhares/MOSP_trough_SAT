@@ -33,7 +33,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   `paper2/equivalences.md`; update each row's status. Tests on hand-checked
   graphs (path, star, cycle, K4, K3,3).
 
-- [ ] **03 Gate matrix layout.** `Complex/GateMatrix.lean`: define gate matrix
+- [x] **03 Gate matrix layout.** `Complex/GateMatrix.lean`: define gate matrix
   layout cost from its source (Wing et al. 1985 / Möhring 1990, matrix form),
   prove it equals `mospValue` of the corresponding instance (Linhares &
   Yanasse 2002 Prop. 2: a relabelling of rows/columns or a transposition —

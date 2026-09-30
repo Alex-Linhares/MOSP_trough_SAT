@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 2/14 SOLVED
+Current: 3/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -108,3 +108,40 @@ Current: 2/14 SOLVED
 - The Lean items can take small counterexamples straight from the checker:
   `I_5` (PLA), `K_{1,7}` / `K_{1,9}` (cw / mcw), K_2 (mcw 0 vs Z 2), the
   boundary path instance (item 06, if the variant is formalised).
+
+## Iteration 3 — 2026-09-30
+
+### Completed
+- **03 Gate matrix layout** — `lean/MOSPFormalization/Complex/GateMatrix.lean`,
+  imported from the root. Sorry-free; `#print axioms` shows only `propext`,
+  `Classical.choice`, `Quot.sound`.
+- **Definitions** follow Möhring p. 18: a net–gate relation, the augmented
+  matrix `M^π`, "share a gate", track assignments `h : N → Fin k`,
+  `tracksFor π`, `tracks = t(M)`, and the net adjacency graph (p. 29).
+  Nothing in them mentions stacks or pathwidth.
+- **Proved**, all under the hypothesis "M has a 1":
+  - `tracksFor_eq_maxOpenStacks`: the left-edge theorem, min tracks for a
+    fixed order = max column sum of `M^π`. The lower bound is a pigeonhole;
+    the upper bound is greedy colouring by leftmost gate, by
+    `Finset.induction_on_max_value`.
+  - `tracks_eq_mospValue`: L&Y Prop. 2, identity map on the matrix, no
+    transposition.
+  - `tracks_eq_pathwidth_add_one`: via `netGraph_eq_mospGraph` and
+    `mospValue_eq_pathwidth_add_one`.
+- **Degenerate cases**, stated explicitly: `t = 1` on an all-zero matrix with
+  at least one net, and `t = 0` with no nets.
+- `paper2/equivalences.md`: row 2 updated, and a new section "Item 03".
+
+### Blockers
+- None. One convention difference is recorded: on an all-zero matrix,
+  `complex_check.gate_matrix_tracks` gives 0 (it drops empty rows) and Lean
+  gives 1 (every net gets a track). The two agree whenever M has a 1.
+
+### Next
+- Item 04 (narrowness, Kornai & Tuza Prop. 3.1).
+- `GateMatrix.lean` gives the pattern for item 09: PLA multiple folding is
+  `tracks` with a path-partition constraint. The simple-folding
+  counterexample `I_5` needs a cap of two nets per track on top of
+  `IsTrackAssignment`.
+- Item 06 (one-dimensional logic) can reuse the same track-assignment
+  definitions, with gates restricted per Ohtsuki eqs. (3)–(4).

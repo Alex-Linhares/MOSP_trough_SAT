@@ -1,0 +1,87 @@
+# session it03 started 2026-09-30 12:23:55
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0005/iterations.md; sed -n 1,400p paper2/equivalences.md | head -150; ls lean/MOSPFormalization/ lean/MOSPFormalizatio
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; cat MOSPInstance.lean OpenStacks.lean; wc -l *.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; cat LinearLayout.lean; grep -n "theorem\|lemma\|^def\|^noncomputable def" MOSPGraph.lean | head -60; sed -n 1,60p M
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 380,495p MOSPGraph.lean; cat Pathwidth.lean | sed -n 1,36p
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 60,80p MOSPGraph.lean; sed -n 115,240p MOSPGraph.lean; sed -n 340,372p MOSPGraph.lean; cat Check.lean | head
+  > $ cd /home/al/dev/MOSP/lean; grep -rn "theorem induction_on_max_value" .lake/packages/mathlib/Mathlib/ | head; grep -rn "theorem exists_ne_map_eq_of_card_lt\|theo
+
+Designing the gate-matrix definitions (Möhring p. 18 track assignment) and the left-edge proof; writing the Lean file now.
+  > $ cd /home/al/dev/MOSP/lean; sed -n 360,380p .lake/packages/mathlib/Mathlib/Data/Finset/Max.lean; grep -n "card_image_le\|theorem exists_mem_notMem_of_card_lt_car
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/GateMatrix.lean
+  > $ cd /home/al/dev/MOSP/lean; time lake env lean MOSPFormalization/Complex/GateMatrix.lean 2>&1 | head -80
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/GateMatrix.lean
+python3 - <<'EOF'
+f='MOSPFormalization/Complex/GateMatrix.lean'
+s=open(f).read()
+s=s.repl
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/GateMatrix.lean; sed -n 290,300p $f; sed -n 305,312p $f
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/GateMatrix.lean
+python3 - <<'EOF'
+f='MOSPFormalization/Complex/GateMatrix.lean'
+s=open(f).read()
+s=s.repl
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Complex/GateMatrix.lean
+python3 - <<'EOF'
+f='MOSPFormalization/Complex/GateMatrix.lean'
+s=open(f).read()
+s=s.repl
+
+The file compiles cleanly. Adding the import and checking axioms.
+  > $ cd /home/al/dev/MOSP/lean; echo "import MOSPFormalization.Complex.GateMatrix" >> MOSPFormalization.lean; cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Com
+
+Now checking the Python checker's convention on the degenerate (all-zero) matrix, so the Lean edge case agrees with it.
+  > $ cd /home/al/dev/MOSP; grep -n "def gate_matrix\|def tracks\|def gmlp\|track" paper2/complex_check.py | head -30
+  > $ cd /home/al/dev/MOSP; sed -n 840,903p paper2/complex_check.py; sed -n 1085,1112p paper2/complex_check.py; python3 -c "
+from paper2.complex_check import gate_mat
+  > $ cd /home/al/dev/MOSP; grep -n "^## \|^### " paper2/equivalences.md; tail -40 paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+f='paper2/equivalences.md'
+s=open(f).read()
+old="| 2,130 matrices, 0 fail | — | confirmed |"
+assert s.count(old)==1
+s=s.
+
+Now running the gate.
+  > $ cd /home/al/dev/MOSP; timeout 1200 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -8
+
+While the gate runs, updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+f='Ralph_Loops/loop0005/iterations.md'
+s=open(f).read()
+s=s.replace("- [ ] **03 Gate matrix layout.**","- [x] **03 Gate 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"description": "gate.py finishing", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/64fb36f5-ca6
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/64fb36f5-ca69-4136-9e97-8b7c01730962/tasks/bgz66qddc.output; until grep -qE "GATE|passed|failed" $f; do sleep 5; done; slee
+
+Item 03 is done and the gate passes: `lake build` succeeds, the sorry count is unchanged, and pytest shows 1,231 passed.
+
+The new file is `lean/MOSPFormalization/Complex/GateMatrix.lean`, imported from the root file. It has no `sorry`. The main theorem `tracks_eq_pathwidth_add_one` depends only on Lean's three standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+**What the definitions say.** They follow Möhring (1990) p. 18 and never mention stacks or pathwidth:
+- a net–gate matrix is a relation between nets and gates;
+- for a gate order, the "augmented matrix" fills in each net's row between its leftmost and rightmost gate;
+- two nets conflict if their augmented rows share a column;
+- a track assignment puts no two conflicting nets on the same track;
+- `tracksFor π` is the fewest tracks for a fixed gate order, and `tracks` is the fewest over all orders, which is Möhring's `t(M)`;
+- `netGraph` is Möhring's net adjacency graph (p. 29).
+
+**What is proved.** All three main results assume the matrix has at least one 1:
+- `tracksFor_eq_maxOpenStacks`: for a fixed gate order, the fewest tracks equals the largest column sum of the augmented matrix. This is Möhring's left-edge theorem (p. 31) and the real content of the item. The lower bound is a counting argument at one column. The upper bound colours nets greedily in order of their leftmost gate.
+- `tracks_eq_mospValue`: `t(M)` equals the MOSP value of the same matrix (Linhares & Yanasse 2002, Prop. 2). Nets are the customers and gates are the patterns; nothing is transposed.
+- `tracks_eq_pathwidth_add_one`: `t(M)` equals the pathwidth of the net graph plus one. This goes through `netGraph_eq_mospGraph` and the existing `mospValue_eq_pathwidth_add_one`.
+
+Two edge cases are stated as separate theorems: an all-zero matrix with at least one net needs one track, and a matrix with no nets needs none.
+
+**One disagreement with the checker.** On an all-zero matrix, `paper2/complex_check.py` says 0 tracks because it ignores empty rows, while Lean says 1 because every net must get a track. The two agree whenever the matrix has a 1, which is the case the main theorems cover. It's a convention choice: Möhring's nets always touch at least one gate. I recorded it in `paper2/equivalences.md` rather than change either side.
+
+I also updated `equivalences.md` (row 2 of the table, plus a new section for item 03), marked item 03 `[x]` in `iterations.md`, and added the iteration 3 entry to `PROGRESS.md` (now 3/14). Nothing is committed.
+
+# result: success in 404s, 24 turns, cost $1.52
+
+That notification was the second watcher on the same gate run, and it shows the same result: `GATE PASS`, 1,231 tests passed. Item 03 is finished, nothing is still running, and the session can end.
+
+# result: success in 4s, 1 turns, cost $1.56

@@ -17,3 +17,4 @@ import MOSPFormalization.ForMathlib.Pathwidth
 import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
+import MOSPFormalization.Complex.GateMatrix

@@ -8,3 +8,8 @@
 [2026-09-30 11:59:48] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-09-30 12:20:51] session it02: ok (exit 0, 33 tool calls)
 [2026-09-30 12:23:55] tests passed: GATE PASS
+[2026-09-30 12:23:55] committed c5ca2f973: 02 Brute-force checker. `paper2/complex_check.py`: implement each
+[2026-09-30 12:23:55] === iteration 3: 03 Gate matrix layout. `Complex/GateMatrix.lean`: define gate matrix
+[2026-09-30 12:23:55] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-09-30 12:30:43] session it03: ok (exit 0, 23 tool calls)
+[2026-09-30 12:33:03] tests passed: GATE PASS

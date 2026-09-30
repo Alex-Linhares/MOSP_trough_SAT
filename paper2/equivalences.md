@@ -9,8 +9,8 @@ Item 01 (statement census, 2026-09-30) read every source and filled in the
 table below. Item 02 (brute-force check, 2026-09-30) computed every quantity
 from its own definition and checked every statement exhaustively on small
 inputs; its results fill the "Checked" column and the section *Item 02: the
-brute-force check* at the end. Nothing is formalised beyond what existed
-before the loop. Page numbers are the printed
+brute-force check* at the end. Item 03 (2026-09-30) proved the gate matrix
+row in Lean (section *Item 03* at the end). Page numbers are the printed
 page numbers of the source; where only a preprint is held (Kornai & Tuza,
 Fomin) the preprint's own page or section is given.
 
@@ -47,7 +47,7 @@ column; `vs` = vertex separation of the same graph.
 | # | Problem | Source (Table 1 ref) | Defined on | Graph | Relation (source, theorem) | Checked | Lean | Status |
 |---|---|---|---|---|---|---|---|---|
 | 1 | MOSP | Yanasse 1997 EJOR [1]; Fink & Voss 1999 [4] | 0/1 matrix (piece types × patterns) | MOSP graph: piece types, adjacent iff they share a pattern | `Z = pw + 1`; not in [1] or [4] (definitions only); Yanasse 1997a Prop. 5, Fellows & Langston 1987 Lemma 4.1 + 1989 Thm 7, with L&Y 2002 Prop. 2 | corpus; 2,130 matrices, 0 fail | `mospValue_eq_pathwidth_add_one` | confirmed (needs one requirement) |
-| 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | — | confirmed |
+| 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | `NetGateMatrix.tracks_eq_pathwidth_add_one`, `tracks_eq_mospValue`, `tracksFor_eq_maxOpenStacks` | confirmed; **proved** (needs one 1 in M) |
 | 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | — | confirmed (core problem); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked) |
 | 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | — | **false** as stated (simple folding); confirmed for multiple folding |
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | — | unsourced at [5]; relation confirmed in [6], [9] |
@@ -543,3 +543,58 @@ at small size; items 10–11 prove the monotone relations only.
 **Not checked.** `sb` directly beyond the six graphs above; Lengauer Thm 7 at
 N ≥ 5 (the blow-up has N(N + 1) vertices); edge search above 20 edges;
 Lengauer Thms 2–3 (black–white pebbling on dags, outside the twelve rows).
+
+## Item 03: gate matrix layout in Lean
+
+`lean/MOSPFormalization/Complex/GateMatrix.lean`, namespace
+`MOSPFormalization.Complex.NetGateMatrix`, sorry-free (axioms: `propext`,
+`Classical.choice`, `Quot.sound`).
+
+**Definition, from Möhring p. 18, with no stacks or pathwidth in it.** A
+net–gate matrix is a relation `conn : N → Gt → Prop` (rows nets, columns
+gates). For a gate order `π` (a `LinearLayout Gt`), `augmented π n j` is entry
+`(n, j)` of `M^π`: some gate of `n` is at or before `j` and some at or after.
+`ShareGate π n n'` holds if the two augmented rows have a common column.
+`IsTrackAssignment π h`, for `h : N → Fin k`, says that no two nets on one
+track share a gate. `tracksFor π` is the least `k` for the fixed order, and
+`tracks` (= `t(M)`) is the least `k` over all orders. `netGraph` is Möhring's
+net adjacency graph (p. 29: the intersection graph of the rows of `M`).
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `columnSum_eq_openStacksAt` | column sum of `M^π` at `j` = open stacks of the same matrix at `j` | definitions |
+| `openStacksAt_le_of_isTrackAssignment` | nets open at one column need distinct tracks | pigeonhole |
+| `exists_isTrackAssignment` | `maxOpenStacks π` tracks suffice (if M has a 1) | left-edge algorithm, Möhring p. 31 |
+| `tracksFor_eq_maxOpenStacks` | min tracks for `π` = max column sum of `M^π` (if M has a 1) | Möhring p. 31 |
+| `tracks_eq_mospValue` | `t(M) = Z_MOSP(M)`, identity map `toMOSP` (if M has a 1) | L&Y 2002 Prop. 2 |
+| `tracks_eq_pathwidth_add_one` | `t(M) = pw(netGraph M) + 1` (if M has a 1) | Möhring Prop. 3.5; F&L 1989 Thm 7 |
+| `netGraph_eq_mospGraph` | net adjacency graph = MOSP graph of `toMOSP` | definitions |
+| `tracks_eq_one_of_forall_not` | M all zero, at least one net: `t = 1` | edge case |
+| `tracks_eq_zero_of_isEmpty` | no nets: `t = 0` | edge case |
+
+**The proof.** The map is the identity on the matrix, as item 01 found. Nets
+are customers and gates are patterns; nothing is transposed. The real content
+is the left-edge theorem for a fixed gate order.
+
+- Lower bound: the nets open at one column pairwise share that column, so
+  they need distinct tracks.
+- Upper bound: induct over the nets in order of their leftmost gate
+  (`Finset.induction_on_max_value`). Every earlier net that conflicts with the
+  new net `a` is open at `a`'s leftmost gate, and so is `a`. That makes fewer
+  than `maxOpenStacks π` conflicting nets, so a free colour exists
+  (`isActive_first_of_shareGate`).
+
+`t = Z` then follows by taking a MOSP-optimal order.
+`mospValue_eq_pathwidth_add_one` closes the chain.
+
+**Edge case, and a convention difference from the checker.** The Lean
+definition gives every net a track, so on an all-zero matrix with at least
+one net it gives `t = 1` (and `Z = 0`). `gate_matrix_tracks` in
+`complex_check.py` drops rows with no 1 before assigning tracks, and gives 0.
+The two agree whenever `M` has a 1: an empty net conflicts with nothing and
+can share any track. This is the case the three main theorems cover. The
+all-zero case is a convention; Möhring's nets always meet a gate. The Lean
+theorems state both degenerate values explicitly, so the difference is
+visible rather than hidden.

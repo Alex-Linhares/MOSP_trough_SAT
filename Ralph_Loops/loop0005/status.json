@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 12:20:51",
+  "updated": "2026-09-30 12:30:43",
   "phase": "tests",
-  "started": "2026-09-30 11:59:48",
-  "item": "02 Brute-force checker. `paper2/complex_check.py`: implement each"
+  "started": "2026-09-30 12:23:55",
+  "item": "03 Gate matrix layout. `Complex/GateMatrix.lean`: define gate matrix"
 }
