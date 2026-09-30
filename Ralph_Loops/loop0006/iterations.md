@@ -46,7 +46,7 @@ assembly and a reserve.
   ..."), and the order in which the code applies it. Quote the code lines.
   Say explicitly what composition of rules is being claimed sound. No Lean.
 
-- [ ] **06 Brute-force soundness check.** `paper2/search_check.py`:
+- [x] **06 Brute-force soundness check.** `paper2/search_check.py`:
   implement the rules exactly as item 05 states them and, on every instance
   small enough (every graph to 7 vertices; all k), check for each state that
   every rule's conclusion holds: for the pruned moves, at least one surviving

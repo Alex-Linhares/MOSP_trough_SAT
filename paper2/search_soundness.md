@@ -10,7 +10,7 @@ precisely and then proves it.
 - §1 models the search as a mathematical object.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
-- §3 (item 06) checks every statement by brute force.
+- §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
 - §4 (items 07–11) gives the Lean proofs.
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it.
@@ -653,3 +653,186 @@ The claim covers the old-move-plus-memo combination (§2.7) and is **false** for
 the variant bits `BM_OLD_CLOSE_COUNT` and `BM_OLD_RULE_ORDER` (§2.4). Item 06
 is to confirm both of those failures by brute force, and item 10 is to prove a
 Lean counterexample to each.
+
+---
+
+## 3. The brute-force check (item 06)
+
+`paper2/search_check.py` implements §1–2 **from this document**, sharing no
+code with `satisfiability/` or `learning/`. It checks every statement against
+an exact oracle. Run it with `python -m paper2.search_check`: 1,030 s on 30
+cores, writing `paper2/data/search_check.json`. Tests are in
+`tests/test_search_check.py`.
+
+### 3.1 What is implemented
+
+- **The oracle.** `Model.sol` is `Sol_k` of §1.3, computed by memoised
+  recursion over free-closed states. `Model.plain` is `P_k` of §1.3, over all
+  closed sets with no free-closing. A test checks both against a literal
+  minimum over all closing orders, on every labelled graph with ≤ 4 vertices.
+- **The filter.** `node_filter` computes, in this order:
+  - the candidates (`R(S) ∖ Q` under old move);
+  - the cost cut;
+  - `definite_move` (§2.2: first `q` in index order, `close` counted over
+    `R(S)`);
+  - `subset_pass` (§2.3: dominators range over `R(S)`, index tie-break,
+    all-dominated fallback);
+  - `better_pass` (§2.4: survivors in index order; covers are earlier `q`
+    among the first `L`; premise 3 in the paper's measure; the corrected close
+    count).
+
+  Each variant composes these in its own order (below). Every discard records
+  the link `r → c` that justifies it.
+- **The search.** `search_decide` implements §1.5 steps 1–8: free moves, the
+  memo keyed on the closed set, `Q ← Q ∩ R(S)`, the filter, the sort by
+  (cost, index), and the loop with `seen` and the inheritance test of §2.6.
+- **The variants.**
+  - `fixed`: today's rule, the only one §2.9 claims.
+  - `old_close`: Bug A.
+  - `old_order`: Bug B.
+  - `prefix`: both bugs, the pre-2026-09-26 rule.
+  - `bm_first`: the measured-only `BM_SUBSET_RESTRICTED`.
+
+### 3.2 What is checked
+
+At every `k` from 0 to `n`, the checker runs the following. Here `S·c` is the
+child of §1.3.
+
+1. **Lemma F.** `P_k(T) ⇔ Sol_k(cl T)` for every `T` with `|O(T) ∖ T| ≤ k`.
+2. **Node soundness (§2.0).** The check runs at every free-closed state `S`,
+   for every filter configuration, and for every old-move set `Q` in a family
+   of *genuinely refuted* children: all subsets when at most 4 children are
+   refuted, otherwise ∅, all of them, the singletons, and random subsets up to
+   16. The condition: if some playable candidate has `Sol_k(S·c)`, then some
+   `c ∈ L` has it.
+
+   The filter configurations are:
+   - every subset of {definite, subset, better};
+   - better move with `L ∈ {0, 1, 2}`;
+   - every variant, 46 configurations in all.
+3. **The rule's conclusion, as cited.** Every link `r → c` the filter records
+   satisfies `Sol_k(S·r) ⇒ Sol_k(S·c)`.
+4. **The rule's conclusion, over all pairs.** The same implication is checked
+   for every pair meeting the premise, not only the pairs the filter happens
+   to cite:
+   - `definite`: `Sol_k(S) ⇒ Sol_k(S·q)`;
+   - `subset`: every playable `r` and every `d ∈ R(S)`;
+   - `better`: every ordered playable pair, in the corrected form and in
+     Bug A's. Applications are counted only where `Sol_k(S·r)` holds, the only
+     place the conclusion can fail.
+
+   This is the measure of `better_move_bug.md` §7.
+5. **The covering condition (§2.0).** From every discarded candidate, the
+   cited links reach `L` or `Q`. This is the certificate checker's step 5, and
+   a cycle fails it.
+6. **The whole search.** `search_decide` is run in all 184 flag combinations:
+   the 46 filters × old move on/off × memo on/off. Its answer must equal
+   `Sol_k(cl ∅)`.
+7. **The port is the code.** The same runs go through the C
+   (`decide_native` on a matrix with one product per edge). **Answer and node
+   count** must both agree. Node-for-node agreement is what shows that §2
+   states what the C does. Agreement in answer alone would not show it.
+
+### 3.3 Instances
+
+| family | graphs | what |
+|---|--:|---|
+| `labelled` | 33,867 | every labelled graph on 1–6 vertices; C cross-check to 5 |
+| `atlas7` | 26,100 | every graph on 7 vertices (1,044, networkx atlas) × the identity and 24 random labellings; `Q` families and the C cross-check on the identity |
+| `random` | 6,000 | sparse random graphs and random Chu & Stuckey-shaped matrices (products of 2–3 customers), 8–16 vertices; better-move configurations with `L = 0` only, `k ≥ n/5` |
+| `pinned` | 3 | the 10 × 13 and 17 × 9 minimal instances and the drawn 10 × 20 (`tests/test_customer_search.py`, `tests/test_differential.py`), every `k` |
+
+Labellings matter, because every tie-break in §2 is by index. That is why
+graphs with ≤ 6 vertices are taken labelled and not up to isomorphism.
+Labelled graphs on 7 vertices (2²¹) were out of budget, and their 25
+labellings per graph are a sample.
+
+### 3.4 Results
+
+**The rules as §2 states them: zero failures of any kind.**
+
+| family | node checks | cited links | pair applications (definite + subset + better/fixed) | tree runs | C runs (node-equal) | Lemma F |
+|---|--:|--:|--:|--:|--:|--:|
+| `labelled` | 111,288,536 | 166,758,137 | 23,448,891 | 43,401,920 | 1,196,736 | 10,026,384 |
+| `atlas7` | 90,915,044 | 254,705,231 | 40,831,575 | 38,419,200 | 1,538,240 | 17,261,225 |
+| `random` | 355,181,036 | 2,512,124,140 | 1,821,467,454 | 1,683,108 | 1,683,108 | 834,093,681 |
+
+For `fixed`, the table covers every rule singly and every composition:
+
+- 0 node-soundness failures;
+- 0 link failures and 0 pair failures for `definite`, `subset` and
+  `better/fixed`;
+- 0 covering-condition failures;
+- 0 wrong answers.
+
+Lemma F never fails. **The port equals the C in answer and node count on all
+4,418,084 runs**, and that includes the bad variants. Old move in these
+counts means **old move together with the memo**, which is the §2.7 claim:
+the tree runs with both on and the fixed rule are 7,114,880 at ≤ 7 vertices
+and 240,444 at 8–16, all of them agreeing with the oracle. That is evidence
+for §2.7, not a proof. Item 11 must still prove it.
+
+`bm_first` also never fails, at any level, on any family. This supports the
+C comment's claim that the composition is sound. It is not claimed here.
+
+**Both bad forms fail, and they fail in the two different ways §2.4 says:**
+
+| | Bug A (`old_close`) | Bug B (`old_order`) |
+|---|---|---|
+| kind of fault | the rule's own conclusion is false | every premise is true; the chain has no end |
+| cited-link / pair failures | 146 links, 496 of 1,536,555,241 pair applications (random); 6 pairs on the 17 × 9 | **none**, at any size checked |
+| covering-condition failures (cycles) | none | from **6 vertices** (exhaustive): 11,847 node checks at ≤ 6 with `subset+better/L0` |
+| lost the last solution at a node | above 12 vertices (random, 14 with the rule alone); the 17 × 9 | none at ≤ 7 (exhaustive to 6, sampled at 7); first at **8 vertices** (random) |
+| false refutation (tree) | the 17 × 9 only (none of the 6,000 random) | first at **10 vertices** (random), with Bug B alone |
+| first pair failure | 12 vertices (random) | — |
+
+The C agrees with the port on every one of these runs, so the failures are
+the C's failures. Bug A needs more customers than Bug B, as
+`better_move_bug.md` §7 found ("the second bug needs more customers than the
+first"). Bug B's cycles are common: 712,758 node checks at 8–16 with
+`subset+better/L0`. Only rarely does the cycle take the last solution with
+it.
+
+**Two new small witnesses for Bug B**, both pinned in the tests and both
+candidates for item 10's Lean counterexample:
+
+- **A node, 8 vertices.** Masks `[139, 59, 12, 15, 178, 242, 224, 241]`,
+  `k = 4`, state `S = {2}`, playable `P = [0, 3, 6]`. Better move discards 3
+  citing 0. The subset rule then discards 0 citing 3, since `o(3) ⊆ o(0)`.
+  That leaves `L = [6]`, which has no completion, while 0 and 3 both have one.
+  Under `fixed` and under `bm_first` the node keeps a solution.
+- **A false refutation, 10 vertices, Bug B alone.** Masks
+  `[523, 519, 678, 73, 16, 548, 72, 388, 384, 551]`: optimum 3, and
+  `old_order` answers `unsat` at 3. This is smaller than the 10 × 13
+  (10 customers too), which needs both bugs at the tree level (§31).
+
+**The pinned instances reproduce the record exactly**, in the port and in the
+C, with equal node counts, at the optimum:
+
+- the 17 × 9 falls to `old_close` and `prefix`, and to no other variant;
+- the 10 × 13 falls only to `prefix`, although at the node level it already
+  fails under `old_order` alone;
+- the drawn 10 × 20 falls to `old_order` and `prefix` with the subset rule
+  on.
+
+**A planted fault is caught.** The test suite includes a mutation: better move
+letting *any* candidate cover, not only an earlier one (the `Warwick 1730`
+cycle), but keeping the list when everything would go, as the C's `if (kept)`
+does. It is clean on every labelled graph with ≤ 5 vertices, and it fails on
+60 of the 32,768 labelled graphs on 6. The test pins one of them.
+
+### 3.5 What this does and does not establish
+
+It establishes that §2 is a faithful statement of the C: node-equal on 4.4 M
+runs. It also establishes that every statement of §2 holds on every graph
+with ≤ 6 vertices (labelled), on every graph with 7 vertices under 25
+labellings, and on 6,000 random graphs at 8–16 vertices.
+
+It does not reach the sizes where Bug A lives, except by sampling:
+
+- Bug A has no failure at ≤ 11 vertices;
+- the smallest failure of its pairwise conclusion found here has 12 vertices;
+- the smallest false refutation known is still the 17 × 9.
+
+A check of this kind would have caught Bug B from 8 customers and Bug A only
+from 12. The proofs of items 07–11 are what cover every size.

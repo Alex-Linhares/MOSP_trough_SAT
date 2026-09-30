@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 5/13 SOLVED
+Current: 6/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -385,3 +385,103 @@ Current: 5/13 SOLVED
 - Item 07's connecting lemma: a full order's cost equals `outNarrowness`
   (`outShackBeforeMove`), then `outNarrownessGraph_eq_narrowness` and
   `narrowness_eq_pathwidth_add_one`.
+
+## Iteration 6 — 2026-09-30 23:55
+
+### Completed
+- **06 Brute-force soundness check.** New `paper2/search_check.py`, which
+  implements §1–2 of `paper2/search_soundness.md` from the document. It shares
+  no code with `satisfiability/` or `learning/`. It has four parts:
+  - an exact `Sol_k`/`P_k` oracle;
+  - `node_filter`, which records a covering link for every discard;
+  - `search_decide`, the whole §1.5 search with old move, inheritance and the
+    memo;
+  - five variants: `fixed`, `old_close` (Bug A), `old_order` (Bug B),
+    `prefix` (both) and `bm_first`.
+
+  Run it with `python -m paper2.search_check`: 1,030 s on 30 cores, writing
+  `paper2/data/search_check.json`. The write-up is the new §3 of
+  `paper2/search_soundness.md`.
+- **Checks** at every `k`:
+  - Lemma F;
+  - node soundness at every free-closed state, over 46 filter configurations
+    (every rule subset, better move with `L ∈ {0,1,2}`, every variant) and
+    over families of genuinely refuted `Q`;
+  - every cited link `Sol(S·r) ⇒ Sol(S·c)`;
+  - every rule's premise ⇒ conclusion over *all* pairs;
+  - the covering condition (Cert step 5);
+  - the whole search in 184 flag combinations against the oracle;
+  - the same runs through the C, where answer **and node count** must agree.
+- **Instances:**
+  - every labelled graph on 1–6 vertices (33,867);
+  - every graph on 7 vertices × 25 labellings (26,100);
+  - 6,000 random sparse graphs and Chu & Stuckey-shaped matrices at 8–16
+    vertices;
+  - the three pinned counterexamples.
+- **Result: the rules as §2 states them have zero failures of any kind.** The
+  totals are 557 M node checks, 2.9 G cited links, 1.9 G pair applications,
+  83.5 M tree runs and 862 M Lemma F cases. That covers every rule singly and
+  every composition, including **old move together with the memo** (§2.7):
+  7.1 M tree runs at ≤ 7 vertices and 240 k at 8–16, all agreeing with the
+  oracle. This is evidence for item 11's claim, not a proof of it.
+- **The port equals the C, node for node, on all 4,418,084 runs**, the bad
+  variants included. So §2 is a faithful statement of the code, and the
+  failures below are the C's.
+- **Both bad forms fail, each in its own way:**
+  - **Bug A** (close count) makes the rule's own conclusion false. Its pairs
+    fail 496 times in 1.54 G applications, the first at 12 vertices, and none
+    at ≤ 11. It loses the last solution at a node only above 12 vertices. It
+    gives a false refutation only on the pinned 17 × 9, and on none of the
+    6,000 random instances.
+  - **Bug B** (rule order) never has a false link at any size checked. It
+    forms cycles from **6 vertices** (exhaustive), loses the last solution at
+    a node from **8 vertices**, and gives a false refutation from **10
+    vertices** on its own.
+  - The pinned instances reproduce the record exactly:
+    - 17 × 9 falls to `old_close` and `prefix`;
+    - 10 × 13 falls only to `prefix` at the tree level, but already to
+      `old_order` at a node;
+    - drawn 10 × 20 falls to `old_order` and `prefix`.
+- **New small witnesses for Bug B**, pinned in the tests as candidates for
+  item 10's Lean counterexample:
+  - a node on 8 vertices: masks `[139,59,12,15,178,242,224,241]`, `k = 4`,
+    `S = {2}`, `P = [0,3,6]`. Better move drops 3 citing 0, the subset rule
+    drops 0 citing 3, and `L = [6]` is dead;
+  - a 10-vertex false refutation by Bug B alone: masks
+    `[523,519,678,73,16,548,72,388,384,551]`, optimum 3.
+- `bm_first` (`BM_SUBSET_RESTRICTED`) never fails anywhere. This supports the
+  C comment's argument, and it is not claimed.
+- **A planted fault is caught**: better move with any candidate as cover (the
+  Warwick cycle) but with the C's keep-if-empty guard. It is clean to 5
+  vertices and fails on 60 of 32,768 labelled graphs on 6.
+- **Tests.** `tests/test_search_check.py` has 14 tests:
+  - the oracle against literal permutation minima;
+  - all rules clean on every graph to 4 vertices;
+  - the port against the C node for node;
+  - Bug A on the 17 × 9, as a false conclusion;
+  - Bug B on the 10 × 13, as a cycle of true premises;
+  - the covering-condition unit test;
+  - the subset fallback;
+  - the planted mutation;
+  - the two new Bug B witnesses;
+  - a round trip.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1289
+  passed, 2 skipped, 1 xfailed; GATE PASS. No Lean changed.
+
+### Blockers
+- None. Coverage limits:
+  - graphs on 7 vertices are covered under 25 labellings, not all 5,040;
+  - `Q` families are sampled when more than 4 children are refuted;
+  - the random family runs only better-move configurations with `L = 0` at
+    `k ≥ n/5`;
+  - Bug A lives at ≥ 12 customers, so it was reached only by sampling.
+
+### Next
+- Item 07: `Search/Basic.lean`, covering closed sets, `O`, `fin`, `cl`, the
+  step cost, `Sol_k`, Lemma F, and the connection from a full order's cost to
+  `outNarrowness` (`outShackBeforeMove`), then to
+  `outNarrownessGraph_eq_narrowness` and `narrowness_eq_pathwidth_add_one`.
+- For item 10, the 8-vertex Bug B node is the smallest witness found for the
+  Lean counterexample to the old order. For Bug A the smallest pair failure
+  seen has 12 vertices; a node-level counterexample can use a single state of
+  the 17 × 9.

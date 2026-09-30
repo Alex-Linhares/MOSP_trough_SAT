@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 22:41:55",
+  "updated": "2026-09-30 23:12:30",
   "phase": "tests",
-  "started": "2026-09-30 22:30:43",
-  "item": "05 The search, stated. Write `paper2/search_soundness.md` \u00a71-2:"
+  "started": "2026-09-30 22:44:23",
+  "item": "06 Brute-force soundness check. `paper2/search_check.py`:"
 }

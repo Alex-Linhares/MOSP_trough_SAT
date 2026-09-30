@@ -1,0 +1,189 @@
+# session it06 started 2026-09-30 22:44:23
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ sed -n '/\*\*06/,/\*\*07/p' Ralph_Loops/loop0006/iterations.md && wc -l paper2/search_soundness.md && cat Ralph_Loops/loop0006/gate.py | head -80
+  > $ cat paper2/search_soundness.md
+  > $ sed -n '/## 7/,/## 9/p' reports/better_move_bug.md | head -150; grep -n "^#" reports/better_move_bug.md
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/fefaae11-7851-456f-8e91-99cdb5c832da/tool-results/b3j0rhhb0.txt
+  > $ sed -n 380,500p learning/search_certificate.py; grep -n "variant\|BM_" satisfiability/native.py satisfiability/customer_search.py | head -40; grep -rln "BM_OLD\
+  > $ sed -n 120,230p satisfiability/native.py; grep -n "minimal\|17 x 9\|10 x 13\|17x9\|10x13" -i learning/fix_cost.py learning/differential.py tests/test_native.py 
+
+Reading the rule sources before writing `paper2/search_check.py`.
+  > $ ls learning/data | grep -i -E "diff|shrink|minimal|fix" ; grep -n "shrink" learning/differential.py | head; sed -n 400,500p satisfiability/customer_search.c
+  > $ sed -n 130,400p satisfiability/customer_search.c
+  > $ grep -n "17 × 9\|10 × 13\|17×9\|10×13" reports/*.md | head; grep -rn "17, 9\|minimal" tests/test_native.py | head
+  > $ sed -n 940,960p reports/ml_nature_summary.md; grep -n "MINIMAL\|10 x 13\|_10x13\|17x9\|def test" tests/test_differential.py | head -30
+  > $ sed -n 1,80p tests/test_differential.py
+  > $ sed -n 160,330p tests/test_differential.py
+  > $ sed -n 330,500p tests/test_differential.py; grep -rn "17x9\|17 x 9\|17 × 9\|MIN_17\|_17x" tests/ learning/*.py | head
+  > $ grep -n "MINIMAL_10x13\|MINIMAL_17x9" tests/test_customer_search.py | head; grep -n "^MINIMAL_10x13" -A 40 tests/test_customer_search.py | head -60
+
+Writing `paper2/search_check.py`: an exact `Sol_k` oracle, the §2 rules as stated, node-level and full-tree checks, and a cross-check against the C.
+  > $ sed -n 1,60p paper2/complex_check.py; grep -n "^def run_pebbling_gu\|ProcessPool\|Pool(" paper2/complex_check.py | head; grep -n "def _neighbour_masks" -A 15 sa
+  > $ grep -n "def _neighbour_masks" -A 18 satisfiability/customer_search.py; sed -n 535,575p satisfiability/customer_search.c
+  > $ grep -rn "def _neighbour_masks" -A 18 satisfiability/ | head -30
+  > Write /home/al/dev/MOSP/paper2/search_check.py
+  > $ time python -c "
+import json,time
+from paper2.search_check import *
+print(len(FILTERS), len(SEARCHES))
+print(json.dumps(check_pinned(), indent=0)[:3000])
+import
+
+Port matches the C node-for-node, including the bug variants, and the pinned instances fail exactly as recorded. Timing larger random graphs.
+  > $ python -c "
+import time,random
+from paper2.search_check import *
+rng=random.Random(5)
+for n in (10,12,14,16):
+  m=random_cover(n,rng)
+  t0=time.time(); t=check_
+
+Adding an all-pairs check of each rule's premise ⇒ conclusion (the measure `better_move_bug.md` §7 used), since Bug A fails in only ~1 in 2M applications.
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path('paper2/search_check.py'); s=p.read_text()
+s=s.replace('''                            if links and not chains_e
+  > $ python -c "
+import time
+from paper2.search_check import *
+from tests.test_customer_search import MINIMAL_17x9, MINIMAL_10x13
+for mat,opt in (MINIMAL_17x9, MINIM
+
+Both bad forms fail at node level as predicted. Launching the full sweep.
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path('paper2/search_check.py'); s=p.read_text()
+s=s.replace('''    atlas7 = 0 if quick else 4
+    n_random = (40 if 
+
+While it runs, looking for a mutation the checker must catch (for the tests).
+  > $ python -c "
+import paper2.search_check as sc
+orig=sc.subset_pass
+def bad(P,R,opens,exclude=0):
+    kept,links=[],[]
+    for item in P:
+        r=item[1]; own=op
+  > $ timeout 600 python -c "
+import paper2.search_check as sc
+def bad(P, masks, full, closed, opened, k, limit, old_close=False):
+    if len(P)<=1: return list(P),[]
+  > $ timeout 900 python -c "
+import paper2.search_check as sc
+def bad(P, masks, full, closed, opened, k, limit, old_close=False):
+    if len(P)<=1: return list(P),[]
+
+With the empty-list guard, an unordered better move (the Warwick-style cycle) first fails at 6 vertices — a good mutation test. Checking on the main run.
+  > $ sleep 60; cat /tmp/search_check_time.txt; ps -p 282733 -o etime= ; ls -la paper2/data/search_check.json 2>/dev/null
+
+Meanwhile I'll write the tests.
+  > Write /home/al/dev/MOSP/tests/test_search_check.py
+  > $ timeout 900 python -m pytest tests/test_search_check.py -q 2>&1 | tail -15; cat /tmp/search_check_time.txt
+  > $ sed -n 115,122p satisfiability/native.py
+  > $ sed -i 's/from satisfiability.native import available/from satisfiability.native import native_available as available/' tests/test_search_check.py && timeout 90
+  > Monitor {"command": "until ! ps -p 282733 >/dev/null; do sleep 10; done; cat /tmp/search_check_time.txt"}
+  > $ timeout 590 bash -c 'until ! ps -p 282733 >/dev/null; do sleep 10; done'; cat /tmp/search_check_time.txt; ps -p 282733 -o etime=
+  > $ ps --ppid 282733 -o pid= | head -2; pgrep -P $(pgrep -P 282733 | head -1) | wc -l; top -bn1 | head -15 | tail -8
+
+The full sweep is still running on 30 cores; timing a sample to estimate how long it has left.
+  > $ python -c "
+import time,random
+from paper2.search_check import *
+rng=random.Random(2)
+gs=list(labelled_graphs(6)); tot=0
+for m in rng.sample(gs,20):
+  t0=time.t
+  > $ timeout 590 bash -c 'until ! ps -p 282733 >/dev/null; do sleep 10; done'; cat /tmp/search_check_time.txt; ps -p 282733 -o etime=; top -bn1 | grep python | wc -l
+  > $ head -c 200 /tmp/search_check_full.out; python -c "
+import json; r=json.load(open('paper2/data/search_check.json'))
+print(r['seconds'], r['graphs'])
+for k,v in 
+  > $ cat > /tmp/minsize.py <<'EOF'
+from multiprocessing import Pool
+from collections import defaultdict
+from paper2.search_check import *
+def job(a):
+    kind, masks
+  > $ cat > /tmp/ex8.py <<'EOF'
+import json
+from paper2.search_check import *
+for kind,masks,seed,opts in jobs_random(6000,8,16):
+    n=len(masks)
+    if n>10: contin
+  > $ sed -i 's/if n>10: continue/if n>9: continue/' /tmp/ex8.py && timeout 600 python /tmp/ex8.py | grep '^[89] ' | head
+
+Found an 8-vertex Bug B node witness and a 10-vertex Bug B-alone false refutation. Adding them to the tests, then writing §3 of the doc.
+  > $ cat >> tests/test_search_check.py <<'EOF'
+
+
+# Smallest witnesses found by the item 06 sweep (random sparse graphs at 8-16;
+# every graph to 7 vertices is clean 
+  > $ python -c "
+from paper2.search_check import *
+fx=[c for c in SEARCHES if c['variant']=='fixed']; om=[c for c in fx if c['old_move'] and c['memo']]
+print(len(SEA
+
+Writing §3 of `paper2/search_soundness.md`.
+  > $ cat >> paper2/search_soundness.md <<'EOF'
+
+---
+
+## 3. The brute-force check (item 06)
+
+`paper2/search_check.py` implements §1–2 **from this document**, sharing 
+
+Correcting the pair-application column, which I must compute rather than estimate.
+  > $ python -c "
+import json; r=json.load(open('paper2/data/search_check.json'))
+for k in ('labelled','atlas7','random'):
+  p=r['summary'][k]['pair_by_rule']; print(
+
+The figures are correct. Labelling the column so it says what it sums.
+  > $ sed -i 's/| family | node checks | cited links | pair applications | tree runs | C runs (node-equal) | Lemma F |/| family | node checks | cited links | pair app
+  > $ sed -i 's/6 pairs at the root of the 17 × 9 | \*\*none\*\*, at any size |/6 pairs on the 17 × 9 | **none**, at any size checked |/' paper2/search_soundness.md &
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ python - <<'EOF'
+from pathlib import Path
+it=Path('Ralph_Loops/loop0006/iterations.md'); s=it.read_text()
+s=s.replace('- [ ] **06 Brute-force soundness check.**
+
+Item 06 is done: the pruning rules, as written in `paper2/search_soundness.md` §2, had zero failures in the brute-force check, and both known bad forms of `better_move` fail as expected. The gate passes (1289 tests passed, `lake build` ok, still one `sorry`, the §24 conjecture) and no Lean changed.
+
+**What I built.** `paper2/search_check.py` works from the document's statements and shares no code with the solver. It has three parts:
+- an exact oracle for whether a state still has a solution;
+- a filter that runs the rules in the code's order (`definite_move → subset_rule → better_move`) and records, for every candidate it drops, which move covers it;
+- a full reimplementation of the search: free moves, memo, old move with inheritance, then the rules.
+
+Run it with `python -m paper2.search_check` (about 17 minutes on 30 cores); results go to `paper2/data/search_check.json`.
+
+**The fixed rules.**
+- **Instances:** every labelled graph on 1–6 vertices, every graph on 7 vertices under 25 labellings each, 6,000 random sparse instances at 8–16 vertices, and the three known counterexamples.
+- **Checks:** about 557 M node checks, 2.9 G cited covers, 1.9 G all-pairs checks and 83.5 M full searches. No failure in any single rule, any composition, or the "free moves" lemma.
+- **Old move and memo together:** this is the combination every production refutation used, and item 05 argued it is sound. All 7.3 M full searches with both on agree with the oracle. That is evidence, not proof; item 11 still has to prove it.
+- **The reimplementation matches the C:** same answer and same node count on all 4,418,084 runs, including the bug variants. So §2 describes what the code actually does, and the failures below are the C's own.
+
+**The two bad forms:**
+
+| | Bug A (close count) | Bug B (rule order) |
+|---|---|---|
+| kind of fault | the rule's own conclusion is false | every cited cover is valid, but they form a cycle |
+| first seen | 12 vertices (none up to 11) | cycles from 6 vertices; loses the last solution at a node from 8 |
+| wrong `unsat` at the optimum | only on the known 17 × 9 instance, none of the 6,000 random | from 10 vertices, with Bug B alone |
+
+**Findings:**
+- **Two new, smaller Bug B witnesses**, pinned in the tests and candidates for item 10's Lean counterexample:
+  - an 8-vertex state where better move drops 3 citing 0, the subset rule then drops 0 citing 3, and the only move left has no solution;
+  - a 10-vertex graph that Bug B alone refutes at its optimum of 3. The known 10 × 13 instance needs both bugs to give a wrong answer.
+- **The untested alternative ordering never failed.** This is the "better move first, then subset rule without its discards" ordering in the C (`BM_SUBSET_RESTRICTED`). It is not part of the soundness claim.
+- **The checker catches a planted fault.** Letting better move cite any candidate, not only an earlier one, fails on 60 of the 32,768 labelled 6-vertex graphs.
+
+`tests/test_search_check.py` adds 14 tests. §3 of `paper2/search_soundness.md` and PROGRESS.md (now 6/13) are updated, and the item is ticked.
+
+**Coverage limits:**
+- 7-vertex graphs were checked under 25 of their 5,040 labellings, not all of them.
+- The sets of already-searched moves were sampled when more than 4 children were refuted.
+- Bug A only shows up at 12+ customers, so it was reached by random sampling, not exhaustively.
+
+# result: success in 1686s, 48 turns, cost $3.50
