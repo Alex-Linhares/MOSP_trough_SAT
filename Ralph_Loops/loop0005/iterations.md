@@ -88,7 +88,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   progressive strategies, `vs ≤ s ≤ vs + 2` (their Lemmas 2.1-2.2); state
   LaPaugh's theorem (recontamination does not help) as a named gap if needed.
 
-- [ ] **12 Interval thickness = node search.** `Complex/IntervalSearch.lean`:
+- [x] **12 Interval thickness = node search.** `Complex/IntervalSearch.lean`:
   connect items 05 and 10 (Kirousis & Papadimitriou 1985) and, with item 05,
   close the chain interval thickness = node search = vs + 1 = pw + 1 for the
   monotone game. Add Lean counterexamples for any Table 1 claim items 01-02

@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 11/14 SOLVED
+Current: 12/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -490,3 +490,37 @@ Current: 11/14 SOLVED
   `EdgeSearchMonotonicity` and (via [10] Thm 2.3) `NodeSearchMonotonicity`.
   The `SafeClear` machinery here is the natural starting point for a
   Bienstock–Seymour style proof.
+
+## Iteration 12 — 2026-09-30 14:44
+
+### Completed
+- **12 Interval thickness = node search** — `lean/MOSPFormalization/Complex/IntervalSearch.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only. No new definitions: item 05's `intervalThickness` and
+  item 10's `monotoneNodeSearch` / `nodeSearch`.
+- **Proved** (≥ 1 edge): `monotoneNodeSearch_eq_intervalThickness` ([9]'s
+  Theorem, monotone game) and `intervalSearch_chain`
+  (`θ = mns = vs + 1 = pw + 1`); per-object directions
+  `monotoneNodeSearch_le_cliqueNum` (any interval model in any linear order)
+  and `intervalThickness_le_of_isMonotoneNodeSearch`; full game
+  `nodeSearch_le_intervalThickness` and
+  `nodeSearch_eq_intervalThickness_of_monotonicity` (from the named gap);
+  Möhring Thm 3.9 `NetGateMatrix.tracks_eq_monotoneNodeSearch`.
+- **Counterexamples**: [9]'s "for any graph G" fails on every nonempty
+  edgeless graph (`ns = mns = 0`, `θ = 1`:
+  `nodeSearch_ne_intervalThickness_of_edgeless`, `_K1`); Möhring Thm 3.9
+  literally fails on the 1 × 1 matrix `[1]` (`tracks_ne_monotoneNodeSearch_one`).
+  Every other Table 1 claim items 01–02 found false already had a Lean
+  counterexample (items 08, 09, 10); the remaining non-exact rows are bands or
+  sandwiches, not false.
+- `paper2/equivalences.md`: rows 5 and 6, §5 and §6 status, new section
+  "Item 12". Gate passes (1,231 tests).
+
+### Blockers
+- None. The full-game `θ ≤ ns` remains item 10's `NodeSearchMonotonicity`
+  gap (LaPaugh), item 14's reserve; no `sorry`, `allowed_sorries.txt` unchanged.
+
+### Next
+- Item 13 (assemble): master table, chain diagram, allowed-sorry list (still
+  empty beyond the baseline), `paper2/lean_repo_plan.md`. `intervalSearch_chain`
+  is the node of the diagram joining θ, mns, vs and pw.

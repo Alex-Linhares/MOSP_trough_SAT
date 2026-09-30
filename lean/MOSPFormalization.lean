@@ -27,3 +27,4 @@ import MOSPFormalization.Complex.PLAFolding
 import MOSPFormalization.Complex.NodeSearch
 import MOSPFormalization.Complex.KirousisPapadimitriouGap
 import MOSPFormalization.Complex.EdgeSearch
+import MOSPFormalization.Complex.IntervalSearch

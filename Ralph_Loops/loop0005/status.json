@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-30 14:27:26",
+  "updated": "2026-09-30 14:45:03",
   "phase": "tests",
-  "started": "2026-09-30 14:09:34",
-  "item": "11 Edge search, monotone. `Complex/EdgeSearch.lean`: define edge"
+  "started": "2026-09-30 14:30:00",
+  "item": "12 Interval thickness = node search. `Complex/IntervalSearch.lean`:"
 }
