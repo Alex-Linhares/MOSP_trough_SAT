@@ -51,7 +51,7 @@ column; `vs` = vertex separation of the same graph.
 | 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | `Complex.LogicArray.tracks_eq_intervalThickness`, `tracks_eq_pathwidth_add_one`, `exists_placementGraph_le` (Thm 3), `tracks_eq_gateMatrix_tracks`; boundary: `pathwidth_add_one_le_tracksPinned` only | confirmed (core problem); **proved** (θ form: every net has a gate; pw form: some net meets some gate); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked), lower bound proved |
 | 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | `Complex.NetGateMatrix.pathwidth_add_one_le_plaTracks`, `card_le_two_mul_plaTracks`, `foldTracks_eq_pathwidth_add_one` (multiple folding); counterexamples `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_six`, `plaTracks_pathMatrix_unbounded` (connected) | **false** as stated (simple folding); confirmed for multiple folding; **proved**: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, multiple folding `= pw + 1`, and the counterexamples (unbounded gap, also on connected instances) |
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph) |
-| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`) |
+| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | `Complex.monotoneNodeSearch_eq_vertexSeparation_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`, `monotoneNodeSearch_of_edgeless`, `nodeSearch_le_vertexSeparation_add_one`; gap stated as `NodeSearchMonotonicity` | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`); **proved for the monotone game** (`mns = vs + 1`, ≥ 1 edge; `mns = ns = 0` edgeless) and `ns ≤ vs + 1`; `ns ≥ vs + 1` is the named gap ([10] Thm 2.3) |
 | 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | — | weaker than stated (band of width 2) |
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
 | 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
@@ -252,6 +252,10 @@ form; edge separation, which is also misattributed).
 - **Status.** Confirmed, for graphs with at least one edge. The monotone game
   gives both equalities by elementary arguments (items 10, 12); the full game
   needs monotonicity (item 14).
+  *Item 10*: `mns = vs + 1` proved in Lean for the monotone game; the full
+  game has `ns ≤ vs + 1` proved and `ns = mns` as the named gap
+  `NodeSearchMonotonicity`. [10]'s own proof of `vs ≤ ns − 1` has a gap at
+  its (2), repaired by ordering by clearing time (see "Item 10" below).
 
 ### 7. Edge search game — [10] Kirousis & Papadimitriou 1986
 
@@ -933,3 +937,79 @@ holds exactly for multiple folding.
 alternating cycle), Thm 3.14 in the path-partition vocabulary (degree and
 cycle constraints), Prop. 3.16 (`Z_{m,m}` subgraphs), and block / constrained
 folding. None is needed for the verdict.
+
+## Item 10: node search (monotone) in Lean
+
+`lean/MOSPFormalization/Complex/NodeSearch.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** ([9] p. 181, [10] §2 p. 208), the game itself: a
+`SearchState` is a guard set and a set of contaminated edges; a
+`SearchMove` is `place v` or `remove v`; `searchStep` changes the guards,
+clears every edge whose endpoints are both guarded, then recontaminates every
+edge joined to a still-contaminated one by a searcher-free path
+(`FreeReach`, a path all of whose vertices are unguarded, from an endpoint to
+an endpoint). Start: no searchers, every edge contaminated. `searchCost` is
+the largest guard set over the run, `NoRecontamination` says no move enlarges
+the contaminated set (the checker's `monotone=True` test, `c2 ⊆ c`),
+`nodeSearch` / `monotoneNodeSearch` are the least cost of a (monotone)
+strategy ending with no contaminated edge. The semantics are those of
+`complex_check.node_search`. Moves the source forbids (placing on a guarded
+node, removing from an unguarded one) are allowed and leave the guards
+unchanged; they cannot lower a cost.
+
+**Proved.**
+
+- `monotoneNodeSearch_eq_vertexSeparation_add_one` (≥ 1 edge): **[10]
+  Theorem 4.1 for the monotone game**, and with Kinnersley
+  `monotoneNodeSearch_eq_pathwidth_add_one`.
+  - `≤` by `shackStrategy_isMonotone`: Kornai & Tuza's shack process (item
+    04) played as moves — place `vᵢ`, delete every vertex with no neighbour
+    after position `i` — is recontamination-free, clears every edge, and costs
+    exactly the in-narrowness `ν(σ)`; `ν(σ) = vs(σ reversed) + 1` (item 04).
+    This is [10]'s rules (i)–(ii) with the layout reversed, because the
+    development's `vs` counts suffix vertices. The general facts behind it:
+    placing never recontaminates a closed position (`step_place_subset`), and
+    removing a searcher from a node touching no contaminated edge never does
+    (`step_remove_subset`).
+  - `≥` by `vertexSeparation_add_one_le_of_monotone`: order the vertices by
+    `τ(v)`, the first time no contaminated edge touches `v` (monotonicity keeps
+    it so). At time `τ(vᵢ)` the vertex `vᵢ` carries a searcher (its last
+    contaminated edge was just cleared), and so does every later vertex `w` with
+    an earlier neighbour `u`: either `τ(w)` is the same time, or `w` still has a
+    contaminated edge and, unguarded, would spread the gas to the clear edge
+    `uw`. So `vertexSepAt + 1` searchers are present.
+- `nodeSearch_le_monotoneNodeSearch`, `nodeSearch_le_vertexSeparation_add_one`:
+  the half of Thm 4.1 that needs no monotonicity.
+- Edge cases: `monotoneNodeSearch_of_edgeless`, `nodeSearch_of_edgeless`
+  (`= 0`, the empty strategy) and
+  `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless` (the
+  exception of item 01 is real on every nonempty edgeless graph).
+
+**The named gap.** `NodeSearchMonotonicity G : Prop := nodeSearch G =
+monotoneNodeSearch G` is [10] Theorem 2.3 (from LaPaugh's theorem, [10]
+Thm 2.1), stated as a definition and **not asserted**; no `sorry` stands for
+it, so `allowed_sorries.txt` is unchanged.
+`nodeSearch_eq_vertexSeparation_add_one_of_monotonicity` derives the full
+Theorem 4.1 from it. Proving it is the recontamination argument of LaPaugh
+(or Bienstock & Seymour's crusade proof), item 14's reserve.
+
+**A gap in [10]'s proof.** [10] p. 217 proves `vs ≤ ns − 1` by ordering the
+vertices by the time each first accepts a searcher and claiming (its (2)) that
+at the moment exactly the first `i₀` vertices have accepted one, every one of
+them with a later neighbour carries a searcher. A recontamination-free
+strategy may place a searcher and delete it before any edge at that node is
+clear, and nothing is recontaminated. On `K_{1,3}` (centre `c`, leaves `x, y,
+z`): place and delete `x`, then `y`, then `z`, then search from the centre
+(place `c`; place and delete each leaf). The strategy is monotone and uses 2
+searchers, but first acceptance gives the order `x, y, z, c`, and after the
+third leaf all three leaves have their neighbour `c` still to come: [10]'s
+`D_{i₀}` has 3 elements against `ns − 1 = 1`. The theorem survives
+(deleting useless placements repairs the argument), and the Lean proof avoids
+the repair by ordering by clearing time. Checked by hand, not in Lean: the
+contaminated sets are `Set`s, so `decide` does not apply.
+
+**Agreement with the checker.** Item 02: `ns_mono = vs + 1` on all 1,644
+graphs with an edge, `= 0` on the 8 edgeless ones, `ns_mono = ns` on all
+1,652 (statement S5).
+

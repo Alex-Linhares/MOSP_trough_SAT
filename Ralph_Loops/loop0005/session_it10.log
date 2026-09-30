@@ -1,0 +1,102 @@
+# session it10 started 2026-09-30 13:54:01
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "^- \[ \] \*\*10" Ralph_Loops/loop0005/iterations.md; cat Ralph_Loops/loop0005/allowed_sorries.txt; ls lean/MOSPFormalization
+  > $ cd /home/al/dev/MOSP; grep -n -i -B2 -A40 "node search" paper2/equivalences.md | head -150
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; cat LinearLayout.lean VertexSeparation.lean | head -250; 
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 1,200p Complex/Narrowness.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 200,382p Complex/Narrowness.lean; grep -n "theorem\|lemma\|^def\|^noncomputable def\|section\|namespace" Com
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 84,150p Complex/EdgeSeparation.lean; cat ../MOSPFormalization.lean | tail -15; grep -n "node_search\|def nod
+  > $ cd /home/al/dev/MOSP; sed -n 540,630p paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP; grep -n "Key\|key" lean/MOSPFormalization/Complex/SplitBandwidth.lean lean/MOSPFormalization/Complex/EdgeSeparation.lean | head -30; sed -
+  > $ cd /home/al/dev/MOSP; grep -rn "exists_layout_sorted" lean/MOSPFormalization --include=*.lean | head -3; grep -n -A25 "theorem exists_layout_sorted" -r lean/MOS
+  > $ cd /home/al/dev/MOSP; sed -n 95,118p lean/MOSPFormalization/MOSPGraph.lean; grep -n "^namespace\|^end\|^section\|^variable" lean/MOSPFormalization/MOSPGraph.lea
+  > $ cd /home/al/dev/MOSP/lean; grep -n "^import" MOSPFormalization/Complex/*.lean
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/NodeSearch.lean
+
+Compiling the first part (definitions and basic game lemmas).
+  > $ cd /home/al/dev/MOSP/lean; time lake env lean MOSPFormalization/Complex/NodeSearch.lean 2>&1 | head -60
+  > $ cd /home/al/dev/MOSP/lean; sed -n 212,216p MOSPFormalization/Complex/NodeSearch.lean; sed -i 's/hw _ (SimpleGraph.mem_edgeSet.mpr hadj)/hw _ (G.mem_edgeSet.mpr 
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+s=s.replace("fun e he _ _ _ _ _ _ _ _ => he","fun _ 
+
+Part 1 compiles. Now the run-level lemmas, the lower bound (monotone strategy → layout), and the shack strategy upper bound.
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+tail="\nend Basic\n\nend Complex\n\nend MOSPFormaliz
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+s=s.replace("fun v => Nat.sInf_mem ⟨L, hClearL v⟩","
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+s=s.replace('''        rcases Finset.mem_insert.mp h
+
+Lower bound proved. Now the shack strategy (upper bound).
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+tail="\nend Complex\n\nend MOSPFormalization\n"
+asse
+  > $ cd /home/al/dev/MOSP/lean; grep -rn -A4 "theorem card_shackAfterPut_le_inNarrowness" MOSPFormalization/Complex/SplitBandwidth.lean MOSPFormalization/Complex/*.l
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+a=s.index("theorem card_shackAfterPut_le_inNarrownes
+
+Whole file compiles. Checking the axioms, then verifying my docstring's claim about K&P 1986's own proof against the PDF.
+  > $ cd /home/al/dev/MOSP/lean; cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.Complex.NodeSearch
+open MOSPFormalization.Complex
+#print axioms monotoneNodeSearc
+  > $ cd /home/al/dev/MOSP/paper2/literature; pdftotext -layout 10_kirousis_papadimitriou_1986.pdf - | grep -n -i -A40 "Theorem 4.1" | head -90
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeSearch.lean'
+s=open(p).read()
+old=s[s.index("    (`vertexSeparation_add_one_le_of_
+
+Build passes. Now the documentation: row 6 of the master table and an "Item 10" section in `paper2/equivalences.md`.
+  > $ cd /home/al/dev/MOSP; grep -n "^## \|^### Item" paper2/equivalences.md | tail -12; tail -40 paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; grep -n 'chk("S[0-9]' paper2/complex_check.py | head -20; python3 -c "
+import json;d=json.load(open('paper2/data/complex_check.json'));pri
+
+Checker agrees on all 1,644 graphs with an edge. Writing the docs.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+old="| 1,652 graphs, 0 fail (both games) | — | confirmed for graphs with an 
+
+Now the gate.
+  > $ cd /home/al/dev/MOSP; timeout 3000 python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005; sed -i 's/^Current: 9\/14 SOLVED/Current: 10\/14 SOLVED/' PROGRESS.md; sed -i 's/^- \[ \] \*\*10 Node search, monoton
+
+I finished item 10: `lean/MOSPFormalization/Complex/NodeSearch.lean` proves that monotone node search equals vertex separation + 1 on every graph with at least one edge. It has no `sorry`, uses only the standard axioms (`propext`, `Classical.choice`, `Quot.sound`), is imported from the root file, and the gate passes (lake build, sorry count unchanged at 1, 1,231 tests).
+
+**How the game is defined.** It follows Kirousis & Papadimitriou (1985), p. 181:
+- A move places a searcher on a node or removes one.
+- After each move, every edge whose two endpoints both carry a searcher becomes clear.
+- Contamination then spreads back onto any clear edge that a searcher-free path joins to a contaminated one.
+- A monotone strategy is one where no move enlarges the contaminated set.
+
+These are the same rules as the checker's `node_search`, and nothing in the definitions mentions layouts.
+
+**What is proved:**
+- **Main result:** `monotoneNodeSearch_eq_vertexSeparation_add_one`, which is Theorem 4.1 of the 1986 paper for the monotone game. With the existing vertex separation = pathwidth result, this gives `monotoneNodeSearch_eq_pathwidth_add_one`.
+  - Upper bound: Kornai & Tuza's shack process from item 04, played as searcher moves, never recontaminates, clears every edge, and uses exactly the narrowness ν(σ) searchers.
+  - Lower bound: order the vertices by the time from which no contaminated edge touches them.
+- **Full game (non-monotone), one direction:** node search ≤ vertex separation + 1.
+- **Edgeless graphs:** the search number is 0 (the empty strategy clears everything), so the equality really does fail there.
+
+**Remaining gap.** The full game's other direction (node search ≥ vertex separation + 1) needs Theorem 2.3 of the 1986 paper: recontamination does not help. I did not prove it. It is written as a proposition, `NodeSearchMonotonicity`, that is stated but not assumed anywhere. The full Theorem 4.1 is proved conditional on it. Since no `sorry` stands for it, `allowed_sorries.txt` is unchanged.
+
+**A gap in the 1986 paper's proof (p. 217).** The paper orders vertices by when each first receives a searcher. Its claim (2) fails for monotone strategies that place a searcher and remove it before clearing anything. Example on K₁,₃: place and remove each leaf in turn, then search from the centre. The strategy is monotone and uses 2 searchers, but the paper's count is 3 against its bound of 1. The theorem itself still holds, and the Lean proof avoids the problem by ordering by clearing time. I checked this example by hand only, not in Lean.
+
+**Docs and loop files.** `paper2/equivalences.md` has row 6 of the master table updated and a new "Item 10" section. In `PROGRESS.md`, iteration 10 is appended and the count is now 10/14 SOLVED. Item 10 is marked `[x]` in `iterations.md`. Nothing was committed.
+
+# result: success in 792s, 30 turns, cost $2.74

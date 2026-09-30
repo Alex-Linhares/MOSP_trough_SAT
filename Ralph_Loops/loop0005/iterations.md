@@ -76,7 +76,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   an equivalence up to ±1, prove the correct relation and a counterexample to
   Table 1's claim.
 
-- [ ] **10 Node search, monotone.** `Complex/NodeSearch.lean`: define node
+- [x] **10 Node search, monotone.** `Complex/NodeSearch.lean`: define node
   searching (Kirousis & Papadimitriou) with strategies as sequences of
   place/remove moves and contamination, define *monotone* strategies, and
   prove `monotoneNodeSearch G = vertexSeparation G + 1`. State the full

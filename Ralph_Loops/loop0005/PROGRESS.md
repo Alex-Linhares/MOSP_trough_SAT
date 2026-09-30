@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 9/14 SOLVED
+Current: 10/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -389,3 +389,53 @@ Current: 9/14 SOLVED
   split as `vsg_eq_max` (EdgeSeparation.lean helpers).
 - `finLayout n` (identity layout on `Fin n`, `finLayout_val`) in
   PLAFolding.lean is reusable for concrete examples.
+
+## Iteration 10 — 2026-09-30 14:07
+
+### Completed
+- **10 Node search, monotone** — `lean/MOSPFormalization/Complex/NodeSearch.lean`,
+  imported from the root. Sorry-free; axioms `propext`, `Classical.choice`,
+  `Quot.sound` only.
+- **Definitions** are the game of [9] p. 181 / [10] §2: `SearchState` (guards,
+  contaminated edges), `SearchMove` (`place` / `remove`), `searchStep`
+  (change guards, clear doubly-guarded edges, recontaminate through
+  searcher-free paths, `FreeReach`), `searchCost`, `NoRecontamination`,
+  `nodeSearch`, `monotoneNodeSearch`. Same semantics as the checker's
+  `node_search`. Nothing mentions layouts.
+- **Proved**:
+  - `monotoneNodeSearch_eq_vertexSeparation_add_one` ([10] Thm 4.1, monotone
+    game, ≥ 1 edge) and `monotoneNodeSearch_eq_pathwidth_add_one`.
+    Upper half: `shackStrategy_isMonotone`, Kornai & Tuza's shack process as
+    moves, costs exactly `ν(σ)`; with item 04's `ν(σ) = vs(rev σ) + 1`.
+    Lower half: `vertexSeparation_add_one_le_of_monotone`, order by the time a
+    vertex stops touching contaminated edges.
+  - `nodeSearch_le_vertexSeparation_add_one` (full game, no monotonicity
+    needed); edge cases `monotoneNodeSearch_of_edgeless`,
+    `nodeSearch_of_edgeless` (`= 0`), and the exception is real
+    (`monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless`).
+- **Gap, stated as a Prop, not asserted**: `NodeSearchMonotonicity` (`ns = mns`,
+  [10] Thm 2.3 via LaPaugh); `nodeSearch_eq_vertexSeparation_add_one_of_monotonicity`
+  derives the full theorem from it. No `sorry`, so `allowed_sorries.txt` is
+  unchanged.
+- **Found**: [10]'s proof of `vs ≤ ns − 1` (p. 217, claim (2)) orders by first
+  acceptance of a searcher, and the claim fails for monotone strategies with
+  useless placements: `K_{1,3}`, place/delete each leaf, then search from the
+  centre — cost 2, but `|D_{i₀}| = 3`. The theorem survives; ordering by
+  clearing time avoids the repair. Checked by hand, not in Lean.
+- `paper2/equivalences.md`: row 6, §6 status, new section "Item 10".
+- Gate passes (1,231 tests).
+
+### Blockers
+- None for the item. The full game (`ns ≥ vs + 1`) needs LaPaugh's
+  monotonicity theorem; that is item 14's reserve, not attempted here.
+
+### Next
+- Item 11 (edge search, progressive): the game machinery here (`searchStep`
+  style, `FreeReach`, `step_remove_subset`, the run lemmas
+  `searchCost_append`, `noRecontamination_append`, `runSearch_take_succ`)
+  should adapt to the slide move; the `τ`-ordering argument of
+  `vertexSeparation_add_one_le_of_monotone` is the likely template for EST
+  Lemma 2.1.
+- Item 12 (interval thickness = node search): now a two-line corollary of
+  `monotoneNodeSearch_eq_pathwidth_add_one` and
+  `intervalThickness_eq_pathwidth_add_one` (≥ 1 edge).
