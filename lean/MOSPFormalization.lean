@@ -28,3 +28,5 @@ import MOSPFormalization.Complex.NodeSearch
 import MOSPFormalization.Complex.KirousisPapadimitriouGap
 import MOSPFormalization.Complex.EdgeSearch
 import MOSPFormalization.Complex.IntervalSearch
+import MOSPFormalization.Complex.NodeMonotonicity
+import MOSPFormalization.Complex.EdgeSearchFull

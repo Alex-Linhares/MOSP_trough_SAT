@@ -10,7 +10,9 @@ filled in the census; item 02 computed every quantity from its own definition
 and checked every statement on small inputs (*Item 02: the brute-force check*);
 items 03–12 proved the rows in Lean, one file per problem (*Item 03* …
 *Item 12*); item 13 assembled the section: the master table, the chain figure,
-the gap and sorry inventory, and `lean_repo_plan.md` (*Item 13*). Page numbers
+the gap and sorry inventory, and `lean_repo_plan.md` (*Item 13*); item 14, the
+reserve, proved node search monotone and the full edge-search band, which
+closed one of the two named gaps (*Item 14*). Page numbers
 are the printed page numbers of the source; where only a preprint is held
 (Kornai & Tuza, Fomin) the preprint's own page or section is given.
 
@@ -66,9 +68,9 @@ files under `Complex/`); every one listed here depends only on `propext`,
 | 2 | Gate matrix layout | [6] Möhring 1990 p. 18, Thm 3.2, Prop. 3.5; [8] Wing et al. 1985 Problem 1 | `t(M) = Z(M) = pw + 1` when M has a 1; left edge: min tracks of `M^π` = max column sum | `NetGateMatrix.tracks_eq_mospValue`, `NetGateMatrix.tracks_eq_pathwidth_add_one` (`GateMatrix.lean`) | **proved** |
 | 3 | One-dimensional logic | [7] Ohtsuki et al. 1979 §II, Thm 3 | `tracks = θ(H) = pw(H) + 1` (every net has a gate; the pw form needs one connection); §IV boundary gates: `pw + 1 ≤ tracks_B` | `LogicArray.tracks_eq_intervalThickness`, `LogicArray.tracks_eq_pathwidth_add_one` (`OneDimLogic.lean`) | **proved** (core problem); §IV variant: lower half only, band `{pw + 1, pw + 2}` checked, not proved |
 | 4 | PLA folding | [6] Möhring p. 25 (PLAMPP), Thm 3.14, Prop. 3.15 | simple folding: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, gap unbounded, also on connected net graphs; multiple folding `= pw + 1` | `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_unbounded`; `NetGateMatrix.foldTracks_eq_pathwidth_add_one` (`PLAFolding.lean`) | **false as stated** (simple folding); multiple folding **proved** |
-| 5 | Interval thickness | [5] Kashiwabara & Fujisawa 1979, not held; Möhring Prop. 3.5; [9] K&P 1985 Thm | `θ = pw + 1` (V nonempty); `θ = mns` (≥ 1 edge) | `intervalThickness_eq_pathwidth_add_one` (`IntervalThickness.lean`); `intervalSearch_chain` (`IntervalSearch.lean`) | **proved**; `θ = ns` **monotone only** |
-| 6 | Node search | [9] K&P 1985 Thm (`ns = θ`); [10] K&P 1986 Thm 4.1 (`ns = vs + 1`) | `mns = vs + 1 = pw + 1 = θ` (≥ 1 edge); `ns ≤ vs + 1` always; `ns = mns = 0` on edgeless graphs | `monotoneNodeSearch_eq_vertexSeparation_add_one` (`NodeSearch.lean`), `monotoneNodeSearch_eq_intervalThickness`, `nodeSearch_ne_intervalThickness_of_edgeless` (`IntervalSearch.lean`) | **monotone only**; `ns ≥ vs + 1` a **stated gap** (`NodeSearchMonotonicity`); **false as stated** on edgeless graphs |
-| 7 | Edge search | [10] K&P 1986 p. 209; Ellis, Sudborough & Turner 1994 Thm 2.1 | `vs ≤ pes ≤ vs + 2` (every finite graph); `es ≤ vs + 2` | `vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two` (`EdgeSearch.lean`) | **sandwich**, **monotone only**; `vs ≤ es` a **stated gap** (`EdgeSearchMonotonicity`) |
+| 5 | Interval thickness | [5] Kashiwabara & Fujisawa 1979, not held; Möhring Prop. 3.5; [9] K&P 1985 Thm | `θ = pw + 1` (V nonempty); `θ = ns = mns` (≥ 1 edge) | `intervalThickness_eq_pathwidth_add_one` (`IntervalThickness.lean`); `intervalSearch_chain` (`IntervalSearch.lean`); `nodeSearch_eq_intervalThickness`, `nodeSearch_chain` (`NodeMonotonicity.lean`) | **proved** (item 14 removed "`θ = ns` monotone only") |
+| 6 | Node search | [9] K&P 1985 Thm (`ns = θ`); [10] K&P 1986 Thm 4.1 (`ns = vs + 1`) | `ns = mns = vs + 1 = pw + 1 = θ` (≥ 1 edge); `ns = mns` on every finite graph; `ns = mns = 0` on edgeless graphs | `nodeSearch_eq_vertexSeparation_add_one`, `nodeSearchMonotonicity`, `nodeSearch_chain` (`NodeMonotonicity.lean`); `monotoneNodeSearch_eq_vertexSeparation_add_one` (`NodeSearch.lean`); `nodeSearch_ne_intervalThickness_of_edgeless` (`IntervalSearch.lean`) | **proved**, full game (item 14; `NodeSearchMonotonicity` is now a theorem); **false as stated** on edgeless graphs |
+| 7 | Edge search | [10] K&P 1986 p. 209; Ellis, Sudborough & Turner 1994 Thm 2.1 | `vs ≤ es ≤ vs + 2` and `vs ≤ pes ≤ vs + 2` (every finite graph); `es ≤ pes ≤ es + 2` | `vertexSeparation_le_edgeSearch_le_add_two` (`EdgeSearchFull.lean`); `vertexSeparation_le_progressiveEdgeSearch_le_add_two` (`EdgeSearch.lean`) | **sandwich**, full game (item 14); `es = pes` (LaPaugh) remains a **stated gap** (`EdgeSearchMonotonicity`), on which no row now depends |
 | 8 | Narrowness | [11] Kornai & Tuza 1992 Prop. 3.1, Prop. 2.1 | `ν = pw + 1` (V nonempty); per sequence `ν(σ) = vs(rev σ) + 1` | `narrowness_eq_pathwidth_add_one` (`Narrowness.lean`) | **proved** |
 | 9 | Split bandwidth | [12] Fomin 1998 Thm 8 | `pw ≤ sb ≤ pw + 1` (every finite graph; Fomin assumes connected, ≥ 2 vertices) | `pathwidth_le_splitBandwidth_le_pathwidth_add_one` (`SplitBandwidth.lean`) | **sandwich** |
 | 10 | Path-width | [13] Kinnersley 1992 p. 346 | the reference definition | `pathwidth` (`Pathwidth.lean`) | definition |
@@ -76,10 +78,10 @@ files under `Complex/`); every one listed here depends only on `propext`,
 | 12 | Vertex separation | [13] Kinnersley 1992 Thm 3.1 | `vs = pw` | `vertexSeparation_eq_pathwidth` (`VSEquivPW.lean`) | **proved** |
 
 **Tally.** Proved exactly: MOSP, gate matrix layout, one-dimensional logic,
-interval thickness, narrowness, vertex separation (six), plus multiple folding
-and Lengauer's VSG. Sandwich: split bandwidth, edge search. Monotone only: node
-search, edge search, and with them `θ = ns`. Stated gaps: two, both
-monotonicity. False as stated: PLA folding (simple), edge separation; and, as
+interval thickness, node search (full game), narrowness, vertex separation
+(seven), plus multiple folding and Lengauer's VSG. Sandwich: split bandwidth,
+edge search (full game). Monotone only: none since item 14. Stated gaps: one,
+LaPaugh's `es = pes`, which no row of the table needs any more. False as stated: PLA folding (simple), edge separation; and, as
 edge cases of rows that are otherwise right, `ns = vs + 1` and `ns = θ` on
 edgeless graphs. Nothing in the table is asserted without proof.
 
@@ -90,12 +92,14 @@ edgeless graphs. Nothing in the table is asserted without proof.
 Source `figures/equivalence_chain.dot` (Graphviz; PDF and PNG beside it,
 regenerate with the two `dot` commands in its header). Solid edges are exact
 identities proved in Lean, dashed edges proved inequalities, dotted edges the
-two monotonicity gaps, red edges Table 1 claims that are false. Every edge is
+one remaining monotonicity gap (LaPaugh's `es = pes`), red edges Table 1
+claims that are false. Every edge is
 labelled with its Lean theorem and hypothesis. Read from the right: everything
 is attached to `pw` through three hubs — `vs` (Kinnersley), `θ` (Möhring
 Prop. 3.5) and `Z` (the MOSP graph) — and `intervalSearch_chain`
 (`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge) is the one theorem that joins the
-three search-side hubs.
+three search-side hubs; item 14's `nodeSearch_chain` adds the full game `ns`
+to it.
 
 ## Gaps, sorries and errors found in the sources
 
@@ -111,11 +115,17 @@ in the Lean development is the baseline one, which predates the loop:
 
 | File | Name | Content | Source of the missing theorem | What it would give |
 |---|---|---|---|---|
-| `NodeSearch.lean` | `NodeSearchMonotonicity G` | `nodeSearch G = monotoneNodeSearch G` | [10] Thm 2.3, via LaPaugh (1993); Bienstock & Seymour (1991) | `nodeSearch_eq_vertexSeparation_add_one_of_monotonicity`, `nodeSearch_eq_intervalThickness_of_monotonicity`, `NetGateMatrix.tracks_eq_nodeSearch_of_monotonicity` |
-| `EdgeSearch.lean` | `EdgeSearchMonotonicity G` | `edgeSearch G = progressiveEdgeSearch G` | LaPaugh (1993) | `vertexSeparation_le_edgeSearch_of_monotonicity`, hence `vs ≤ es ≤ vs + 2` for the full game |
+| `EdgeSearch.lean` | `EdgeSearchMonotonicity G` | `edgeSearch G = progressiveEdgeSearch G` | LaPaugh (1993); Bienstock & Seymour (1991) | nothing the table needs: `vs ≤ es ≤ vs + 2` is proved without it (`EdgeSearchFull.lean`); it would sharpen `es ≤ pes ≤ es + 2` to equality |
 
-Both are item 14's reserve. The upper halves of both games (`ns ≤ vs + 1`,
-`es ≤ vs + 2`) need no monotonicity and are proved outright.
+**Closed by item 14:** `NodeSearchMonotonicity G` (`NodeSearch.lean`) is now
+the theorem `nodeSearchMonotonicity G` (`NodeMonotonicity.lean`), for every
+finite graph, by a vertex-set crusade argument (Bienstock & Seymour 1991)
+rather than [10]'s reduction to LaPaugh. The `…_of_monotonicity` corollaries
+are discharged: `nodeSearch_eq_vertexSeparation_add_one`,
+`nodeSearch_eq_intervalThickness`, `NetGateMatrix.tracks_eq_nodeSearch`. The
+same argument gives EST Lemma 2.1 for the full edge game
+(`vertexSeparation_le_edgeSearch`), which `EdgeSearch.lean` had derived only
+from `EdgeSearchMonotonicity`.
 
 **Errors in the sources, each with a Lean proof:**
 
@@ -154,8 +164,8 @@ column; `vs` = vertex separation of the same graph.
 | 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | `Complex.LogicArray.tracks_eq_intervalThickness`, `tracks_eq_pathwidth_add_one`, `exists_placementGraph_le` (Thm 3), `tracks_eq_gateMatrix_tracks`; boundary: `pathwidth_add_one_le_tracksPinned` only | confirmed (core problem); **proved** (θ form: every net has a gate; pw form: some net meets some gate); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked), lower bound proved |
 | 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | `Complex.NetGateMatrix.pathwidth_add_one_le_plaTracks`, `card_le_two_mul_plaTracks`, `foldTracks_eq_pathwidth_add_one` (multiple folding); counterexamples `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_six`, `plaTracks_pathMatrix_unbounded` (connected) | **false** as stated (simple folding); confirmed for multiple folding; **proved**: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, multiple folding `= pw + 1`, and the counterexamples (unbounded gap, also on connected instances) |
 | 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one`; with node search: `monotoneNodeSearch_eq_intervalThickness`, `intervalSearch_chain`, `intervalThickness_of_edgeless` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph); `θ = mns` proved (≥ 1 edge) |
-| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | `Complex.monotoneNodeSearch_eq_vertexSeparation_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`, `monotoneNodeSearch_of_edgeless`, `nodeSearch_le_vertexSeparation_add_one`; `ns = θ` ([9]): `monotoneNodeSearch_eq_intervalThickness`, `intervalSearch_chain`, `nodeSearch_le_intervalThickness`, `NetGateMatrix.tracks_eq_monotoneNodeSearch` (Möhring Thm 3.9); counterexamples `nodeSearch_ne_intervalThickness_of_edgeless`, `nodeSearch_ne_intervalThickness_K1`, `tracks_ne_monotoneNodeSearch_one`; gap stated as `NodeSearchMonotonicity` | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`, `θ = vs + 1 = 1`); **proved for the monotone game** (`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge; `mns = ns = 0` edgeless) and `ns ≤ θ = vs + 1`; `ns ≥ vs + 1` is the named gap ([10] Thm 2.3) |
-| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | `Complex.vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `pathwidth_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two`, `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`, `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch`, `edgeSearch_of_edgeless`; gap stated as `EdgeSearchMonotonicity` | weaker than stated (band of width 2); **proved for the progressive game** (`vs ≤ s ≤ vs + 2`, every finite graph) and `s ≤ vs + 2` for the full game; `vs ≤ s` in the full game is the named gap (LaPaugh 1993) |
+| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | `Complex.monotoneNodeSearch_eq_vertexSeparation_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`, `monotoneNodeSearch_of_edgeless`, `nodeSearch_le_vertexSeparation_add_one`; `ns = θ` ([9]): `monotoneNodeSearch_eq_intervalThickness`, `intervalSearch_chain`, `nodeSearch_le_intervalThickness`, `NetGateMatrix.tracks_eq_monotoneNodeSearch` (Möhring Thm 3.9); counterexamples `nodeSearch_ne_intervalThickness_of_edgeless`, `nodeSearch_ne_intervalThickness_K1`, `tracks_ne_monotoneNodeSearch_one`; gap stated as `NodeSearchMonotonicity`, closed by item 14: `nodeSearchMonotonicity`, `nodeSearch_eq_vertexSeparation_add_one`, `nodeSearch_eq_intervalThickness`, `nodeSearch_chain`, `NetGateMatrix.tracks_eq_nodeSearch` | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`, `θ = vs + 1 = 1`); **proved for the monotone game** (`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge; `mns = ns = 0` edgeless) and `ns ≤ θ = vs + 1`; `ns ≥ vs + 1` was the named gap ([10] Thm 2.3), **proved for the full game by item 14** |
+| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | `Complex.vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `pathwidth_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two`, `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`, `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch`, `edgeSearch_of_edgeless`; gap stated as `EdgeSearchMonotonicity`; item 14: `vertexSeparation_le_edgeSearch_le_add_two`, `pathwidth_le_edgeSearch_le_add_two`, `nodeSearch_sub_one_le_edgeSearch_le_add_one` | weaker than stated (band of width 2); **proved for the progressive game** (`vs ≤ s ≤ vs + 2`, every finite graph) and `s ≤ vs + 2` for the full game; `vs ≤ s` in the full game **proved by item 14** without LaPaugh; `s = ps` (LaPaugh 1993) remains the named gap |
 | 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
 | 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
 | 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
@@ -324,6 +334,7 @@ form; edge separation, which is also misattributed).
 - **Status.** Unsourced at its Table 1 citation; the relation itself is proved
   in [6] and follows from [9] + [10].
   *Item 12*: `θ = mns` proved in Lean (`monotoneNodeSearch_eq_intervalThickness`).
+  *Item 14*: `θ = ns` for the full game (`nodeSearch_eq_intervalThickness`).
 
 ### 6. Node search game — [9] Kirousis & Papadimitriou 1985
 
@@ -363,6 +374,9 @@ form; edge separation, which is also misattributed).
   *Item 12*: [9]'s `ns = θ` proved for the monotone game (≥ 1 edge), the
   whole chain `θ = mns = vs + 1 = pw + 1` in one statement, and the edgeless
   exception proved in Lean for `θ` too (see "Item 12" below).
+  *Item 14*: the full game is proved, `ns = vs + 1` (≥ 1 edge) and
+  `ns = mns` on every finite graph (`nodeSearchMonotonicity`), not via
+  LaPaugh but by a crusade argument on vertex sets (see "Item 14" below).
 
 ### 7. Edge search game — [10] Kirousis & Papadimitriou 1986
 
@@ -394,6 +408,9 @@ form; edge separation, which is also misattributed).
   EST's Lemma 2.1 argument (order by first occupation, after making the
   strategy irredundant) is replaced by ordering by clearing time (see
   "Item 11" below).
+  *Item 14*: `vs ≤ s` proved for the full game without LaPaugh
+  (`vertexSeparation_le_edgeSearch`), so EST Thm 2.1 holds in Lean as EST
+  state it; LaPaugh's `s = ps` itself remains the named gap.
 
 ### 8. Narrowness — [11] Kornai & Tuza 1992
 
@@ -1270,3 +1287,67 @@ placements and stays with the checker.
 - **`lean_repo_plan.md`**: the files that move to the paper's own
   repository, their dependency order, and what they need from
   `lean/MOSPFormalization/`.
+
+## Item 14: the reserve — node search is monotone
+
+The reserve was to attempt the monotonicity theorem behind the two named gaps.
+It closed the node-search gap outright and removed the edge-search gap from
+every row of the table. Two new files, both sorry-free, both on
+`propext`, `Classical.choice`, `Quot.sound` only (11 new lines in
+`axiom_check.lean`, 44 theorems in all):
+
+- `Complex/NodeMonotonicity.lean` — `nodeSearchMonotonicity : NodeSearchMonotonicity G`
+  for every finite graph; `nodeSearch_eq_vertexSeparation_add_one`,
+  `nodeSearch_eq_pathwidth_add_one` ([10] Thm 4.1, full game, ≥ 1 edge);
+  `nodeSearch_eq_intervalThickness` ([9]'s Theorem, full game, ≥ 1 edge);
+  `nodeSearch_chain` (`θ = ns = mns = vs + 1 = pw + 1`);
+  `NetGateMatrix.tracks_eq_nodeSearch` (Möhring Thm 3.9, full game, two nets
+  sharing a gate).
+- `Complex/EdgeSearchFull.lean` — `vertexSeparation_le_edgeSearch` (EST
+  Lemma 2.1, full game), `vertexSeparation_le_edgeSearch_le_add_two` and
+  `pathwidth_le_edgeSearch_le_add_two` (EST Thm 2.1 as stated),
+  `nodeSearch_sub_one_le_edgeSearch_le_add_one` ([10] p. 209 for the full
+  games), `edgeSearch_le_progressiveEdgeSearch_le_add_two`.
+
+**The route is not the sources'.** [10] obtains node monotonicity (Thm 2.3)
+from LaPaugh's theorem for edge search, through a subdivision (Thm 2.5); EST
+obtain Lemma 2.1 from LaPaugh too. Neither was formalised. Instead, the
+*crusade* argument of Bienstock & Seymour (1991) is run on **vertex sets**,
+with the **outer vertex boundary** `∂A = N(A) \ A` as the measure — which
+fits vertex separation directly, since the active suffix of a layout at a
+prefix is that prefix's outer boundary:
+
+1. `|∂A|` is submodular: `|∂A| = |N[A]| − |A|` and `N[·]` is a coverage
+   function (`card_outerBd_inter_add_union`).
+2. A *chain* of width `K` (`IsChain`): vertex sets from `∅` to `V`, each step
+   adding at most one vertex and removing any number, each with `|∂| ≤ K`.
+3. **Crusade lemma** (`exists_monotone_chain`): a chain of width `K` can be
+   made increasing. Minimise `Σ (|∂X_i|·(|V|+1) + |X_i|)`; at a step with
+   `X_j ⊄ X_{j+1}`, either `X_j ∩ X_{j+1}` has boundary `≤ |∂X_j|` and
+   replaces `X_j`, or by submodularity `X_j ∪ X_{j+1}` has boundary
+   `< |∂X_{j+1}|` and replaces `X_{j+1}`. Both keep the chain conditions,
+   and both lower the weight.
+4. An increasing chain is a layout of vertex separation `≤ K`
+   (`vertexSeparation_le_of_monotone_chain`).
+5. **Any strategy gives a chain.** Follow the *clean set*, the vertices
+   touching no contaminated edge. In a closed position its boundary is
+   guarded (otherwise the gas would spread onto a clean edge). In node search,
+   a vertex that becomes clean carries a searcher, so each set between the new
+   clean set and its intersection with the old one contains a searcher and
+   its boundary misses it: width `k − 1` (`exists_chain_step`). The
+   intersection itself is the old clean set unless the move deleted a
+   searcher, and then `k − 1` searchers remain. In edge search the width is
+   `k`: at most one newly clean vertex is left unguarded (`clear_step_unique`),
+   and it is added first (`exists_chain_edgeStep`).
+
+The argument never needs a recontamination-free strategy, so the gap in
+[10]'s proof of Thm 4.1 (`KirousisPapadimitriouGap.lean`) does not arise.
+
+**Not done: LaPaugh's theorem `es = pes`.** The vertex-set chain gives only
+`pes ≤ vs + 2 ≤ es + 2`. Equality needs Bienstock & Seymour's crusades over
+*edge* sets (measure `|δ(X)|`, the vertices meeting both `X` and its
+complement) and a progressive edge strategy built from a progressive edge
+crusade. Their route goes through mixed search and a subdivision; not attempted,
+and not sized. `EdgeSearchMonotonicity`
+stays a named `Prop`, and no table row now depends on it.
+

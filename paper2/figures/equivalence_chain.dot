@@ -6,7 +6,7 @@
 //   dot -Tpng -Gdpi=150 paper2/figures/equivalence_chain.dot -o paper2/figures/equivalence_chain.png
 //
 // Edge styles: solid = exact identity, proved; dashed = inequality or band,
-// proved; dotted = the half that needs monotonicity (a named Prop, not proved);
+// proved; dotted = LaPaugh's es = pes (a named Prop, not proved; no row needs it);
 // red = Table 1's claim is false (counterexample proved). Every label names the
 // Lean theorem. Hypotheses in brackets.
 graph chain {
@@ -55,11 +55,12 @@ graph chain {
   // inequalities and bands, proved
   SB  -- PW  [style=dashed, label="pw ≤ sb ≤ pw + 1\npathwidth_le_splitBandwidth_le_pathwidth_add_one"];
   PES -- VS  [style=dashed, label="vs ≤ pes ≤ vs + 2\nvertexSeparation_le_progressiveEdgeSearch_le_add_two"];
-  ES  -- VS  [style=dashed, label="es ≤ vs + 2\nedgeSearch_le_vertexSeparation_add_two"];
-  NS  -- VS  [style=dashed, label="ns ≤ vs + 1\nnodeSearch_le_vertexSeparation_add_one"];
+  ES  -- VS  [style=dashed, label="vs ≤ es ≤ vs + 2\nvertexSeparation_le_edgeSearch_le_add_two"];
 
-  // the monotonicity halves: named Props, not proved
-  NS  -- MNS [style=dotted, label="ns = mns\nNodeSearchMonotonicity (gap)"];
+  NS  -- MNS [label="ns = mns\nnodeSearchMonotonicity"];
+  NS  -- VS  [label="ns = vs + 1  [≥ 1 edge]\nnodeSearch_eq_vertexSeparation_add_one"];
+
+  // the remaining monotonicity half: a named Prop, not proved
   ES  -- PES [style=dotted, label="es = pes\nEdgeSearchMonotonicity (gap)"];
 
   // Table 1 claims that are false

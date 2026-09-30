@@ -1,0 +1,184 @@
+# session it14 started 2026-09-30 14:58:00
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A15 "14 Reserve" Ralph_Loops/loop0005/iterations.md; cat Ralph_Loops/loop0005/allowed_sorries.txt; wc -l lean/MOSPFormalization/Complex/*.lean
+  > $ sed -n 1,80p lean/MOSPFormalization/Complex/KirousisPapadimitriouGap.lean; grep -n "^theorem\|^lemma\|^def\|^structure\|^inductive" lean/MOSPFormalization/Compl
+  > $ sed -n 1,260p lean/MOSPFormalization/Complex/NodeSearch.lean
+  > $ sed -n 260,755p lean/MOSPFormalization/Complex/NodeSearch.lean
+  > $ cd /home/al/dev/MOSP/lean && grep -rn "theorem exists_layout_sorted\|theorem vertexSepOfLayout_le_iff\|def activeSuffix\|theorem mem_activeSuffix_iff\|def prefi
+  > $ grep -n "theorem vertexSepOfLayout_le_iff" -A8 MOSPFormalization/Complex/*.lean; cat ../Ralph_Loops/loop0005/gate.py | head -60; cat lakefile* | head -30
+
+Writing a new Lean file that proves node-search monotonicity (the full game) by a Bienstock–Seymour-style uncrossing over vertex sets, starting with the submodularity and chain lemmas.
+  > $ sed -n 195,215p MOSPFormalization/Complex/KirousisPapadimitriouGap.lean; grep -n "KirousisPapadimitriouGap\|NodeSearch\|IntervalSearch" MOSPFormalization.lean; 
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/NodeMonotonicity.lean
+  > $ time lake env lean MOSPFormalization/Complex/NodeMonotonicity.lean 2>&1 | head -60
+  > $ sed -i 's/            exact union_univ _/            simp/' MOSPFormalization/Complex/NodeMonotonicity.lean && time lake env lean MOSPFormalization/Complex/Node
+
+Parts A–B compile. Now the layout from an increasing chain.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeMonotonicity.lean'
+s=open(p).read()
+add='''
+/-! ### An increasing chain is a layout -/
+
+variable (G) in
+/-- A
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeMonotonicity.lean'
+s=open(p).read()
+s=s.replace('''            rcases hx with rfl | rfl
+            · exact ⟨
+
+Chain-to-layout works. Now the game part: from any (non-monotone) strategy to a chain.
+  > $ sed -n 100,165p MOSPFormalization/Complex/IntervalSearch.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeMonotonicity.lean'
+s=open(p).read()
+add='''
+/-! ### From any strategy to a chain -/
+
+section Game
+
+open Class
+
+Suspiciously clean; let me confirm with an axiom check.
+  > $ cp MOSPFormalization/Complex/NodeMonotonicity.lean /tmp/nm_test.lean && echo '#print axioms MOSPFormalization.Complex.vertexSeparation_add_one_le_of_isNodeSearc
+
+The full-game lower bound is proved with standard axioms only. Adding the headline theorems.
+  > $ grep -n "theorem intervalThickness_eq_pathwidth_add_one\|theorem intervalThickness_eq_vertexSeparation_add_one\|theorem vertexSeparation_eq_pathwidth\|def track
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeMonotonicity.lean'
+s=open(p).read()
+add='''
+/-! ### The full theorems -/
+
+section Main
+
+variable (G)
+
+/-- **K
+
+Node search is done: `ns = vs + 1` for the full game, with no gap left. Time remains (~3h), so I'll check whether the same argument closes the edge-search gap too.
+  > $ sed -n 1,80p MOSPFormalization/Complex/EdgeSearch.lean | head -100; grep -n "^def\|^noncomputable def\|^theorem\|^structure\|^inductive\|^abbrev" MOSPFormalizat
+  > $ sed -n 115,300p MOSPFormalization/Complex/EdgeSearch.lean
+
+The same argument adapts to edge search, giving `vs ≤ es` for the full game (the missing half of EST Theorem 2.1). Checking the run lemmas' signatures.
+  > $ sed -n 300,360p MOSPFormalization/Complex/EdgeSearch.lean; sed -n 785,830p MOSPFormalization/Complex/EdgeSearch.lean; sed -n 940,1033p MOSPFormalization/Complex
+  > $ grep -n "^import" MOSPFormalization/Complex/EdgeSearch.lean MOSPFormalization/Complex/IntervalSearch.lean MOSPFormalization/Complex/KirousisPapadimitriouGap.lea
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Complex/EdgeSearchFull.lean
+  > $ lake build MOSPFormalization.Complex.NodeMonotonicity 2>&1 | tail -5 && time lake env lean MOSPFormalization/Complex/EdgeSearchFull.lean 2>&1 | head -60
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/EdgeSearchFull.lean'
+s=open(p).read()
+s=s.replace('''    simp only [EdgeState.guards, mem_supp]
+    split_ifs at 
+  > $ cp MOSPFormalization/Complex/EdgeSearchFull.lean /tmp/es_test.lean && printf '#print axioms MOSPFormalization.Complex.vertexSeparation_le_edgeSearch_le_add_two\
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Complex/NodeMonotonicity.lean'
+s=open(p).read()
+doc='''Loop0005 item 14, the reserve. Closes the named gap `NodeSearchMon
+  > $ touch MOSPFormalization/Complex/NodeMonotonicity.lean && lake build 2>&1 | grep -A3 "NodeMonotonicity\|EdgeSearchFull" | grep -i "warn" | head; cd .. && ls pape
+
+No warnings. Adding the new theorems to the axiom check.
+  > $ sed -n 40,60p paper2/axiom_check.lean
+  > $ python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+new='''#print axioms vsg_eq_max
+-- item 14: the full games
+#print axioms nodeSearchMonotonicity
+#
+  > $ lake env lean ../paper2/axiom_check.lean 2>&1 | tr -s ' \n' ' ' | grep -o "'[^']*' depends on axioms: \[[^]]*\]" | awk '{print ($0 ~ /sorryAx/) ? "SORRY " $1 : 
+
+All 44 named theorems are clean, and the control still shows `sorryAx`. Next, `equivalences.md`.
+  > $ cd /home/al/dev/MOSP && grep -n "^#\|monotone only\|stated gap\|Monotonicity\|LaPaugh" paper2/equivalences.md | head -80; wc -l paper2/equivalences.md
+  > $ sed -n 1,145p paper2/equivalences.md
+  > $ python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:60]
+    s=s.replace(a,b,1)
+rep("""items 03–12 pro
+  > $ sed -n 400,410p paper2/equivalences.md; tail -25 paper2/equivalences.md
+  > $ python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:60]
+    s=s.replace(a,b,1)
+rep("""  *Item 12*: `θ
+  > $ python3 - <<'EOF'
+p='paper2/equivalences.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:60]
+    s=s.replace(a,b,1)
+rep("Their route goes 
+
+Updating the chain figure: the node-search edge becomes a proved identity, and the edge-search band becomes a proved full-game band.
+  > $ python3 - <<'EOF'
+p='paper2/figures/equivalence_chain.dot'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert a in s, a[:60]
+    s=s.replace(a,b,1)
+rep(''' 
+  > Read /home/al/dev/MOSP/paper2/figures/equivalence_chain.png
+
+Figure is fine. Now updating `lean_repo_plan.md` and then running the gate.
+  > $ grep -n "IntervalSearch\|6,022\|11 \`Complex\|KirousisPapadimitriouGap" paper2/lean_repo_plan.md | head -20
+  > $ sed -n 15,30p paper2/lean_repo_plan.md; sed -n 80,100p paper2/lean_repo_plan.md; wc -l lean/MOSPFormalization/Complex/NodeMonotonicity.lean lean/MOSPFormalizati
+  > $ python3 - <<'EOF'
+p='paper2/lean_repo_plan.md'
+s=open(p).read()
+s=s.replace("| Section 3 proper (`Complex/`) | 11 | 6,022 |","| Section 3 proper (`Complex/`) | 
+  > $ sed -i 's/left out, copy the lemma (≈ 60 lines with `contaminated_eq_of_searchCost_le_one`)./left out, copy it together with `contaminated_eq_of_searchCost_le_o
+
+Now the gate.
+  > $ time python3 Ralph_Loops/loop0005/gate.py 2>&1 | tail -15
+
+Gate passes. Writing PROGRESS.md and marking the item.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0005 && sed -i 's/^- \[ \] \*\*14 Reserve\.\*\*/- [x] **14 Reserve.**/' iterations.md && grep -c "^- \[ \]" iterations.md; 
+  > $ cat >> PROGRESS.md <<'EOF'
+
+## Iteration 14 — 2026-09-30 15:13
+
+### Completed
+- **14 Reserve.** Node search is monotone: **the named gap
+  `NodeSearchMonotonici
+
+I proved node-search monotonicity in Lean, so the named gap `NodeSearchMonotonicity` is now a theorem. That completes item 14 and the loop (14/14). The gate passes (`lake build`, 1,231 tests, sorry count unchanged at the baseline 1, no new axioms), and nothing is committed.
+
+**What's proved** (two new files, no `sorry`, and only the three standard axioms):
+- **`Complex/NodeMonotonicity.lean`**:
+  - `nodeSearchMonotonicity`: recontamination does not help, on every finite graph.
+  - `ns = vs + 1 = pw + 1` for the full game on graphs with an edge (Kirousis & Papadimitriou 1986, Theorem 4.1).
+  - `ns = θ` for the full game (their 1985 Theorem).
+  - `nodeSearch_chain`: `θ = ns = mns = vs + 1 = pw + 1`.
+  - Möhring's Theorem 3.9 for the full game.
+- **`Complex/EdgeSearchFull.lean`**: `vs ≤ es` for the full edge game. With the existing upper bound this gives Ellis, Sudborough & Turner's Theorem 2.1 (`vs ≤ es ≤ vs + 2`) as they state it, without assuming LaPaugh's theorem. It also gives `ns − 1 ≤ es ≤ ns + 1` for the full games.
+
+**How:** not the sources' route through LaPaugh's theorem. I used Bienstock & Seymour's crusade argument over vertex sets:
+1. The measure is each set's outer boundary (neighbours outside the set). That measure is submodular, and it is exactly what vertex separation counts at a prefix of a layout.
+2. A chain of sets with small boundaries can be rearranged into an increasing one, and an increasing chain reads off as a layout.
+3. Any search strategy, recontaminating or not, yields such a chain by tracking the vertices that touch no contaminated edge.
+
+This never needs a recontamination-free strategy, so it also avoids the error in Kirousis & Papadimitriou's own proof.
+
+**Not done:** LaPaugh's `es = pes` (`EdgeSearchMonotonicity`) was not attempted and remains a named `Prop`. No row of the master table depends on it any more.
+
+**Docs updated:**
+- `paper2/equivalences.md`: rows 5–7, the tally, the gaps section, the census sections, and a new "Item 14" section.
+- The chain figure is redrawn.
+- `paper2/axiom_check.lean` now names 44 theorems, all clean.
+- `lean_repo_plan.md` now lists 13 files.
+- `PROGRESS.md` has the iteration entry and `LOOP_COMPLETE`, and `iterations.md` has the item checked.
+
+One stale note: the rules forbid editing existing files, so `NodeSearch.lean`'s docstring still says the full game is unproved. That can be fixed when the Lean moves to the paper's repository.
+
+# result: success in 956s, 47 turns, cost $4.08

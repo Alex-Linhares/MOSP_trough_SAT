@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 3; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0005/gate.py`.
 
-Current: 13/14 SOLVED
+Current: 14/14 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -567,3 +567,68 @@ Current: 13/14 SOLVED
 - Item 14 (reserve): LaPaugh / Bienstock–Seymour monotonicity, which would
   discharge both named gaps. `EdgeSearch.lean`'s `SafeClear` machinery is the
   starting point.
+
+## Iteration 14 — 2026-09-30 15:13
+
+### Completed
+- **14 Reserve.** Node search is monotone: **the named gap
+  `NodeSearchMonotonicity` is now a theorem.** Two new files, imported from
+  the root, sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound`
+  only (11 new lines in `paper2/axiom_check.lean`; all 44 named theorems
+  clean, control still `sorryAx`).
+- `lean/MOSPFormalization/Complex/NodeMonotonicity.lean` (717 lines):
+  - `nodeSearchMonotonicity : NodeSearchMonotonicity G`, every finite graph;
+  - `nodeSearch_eq_vertexSeparation_add_one`, `nodeSearch_eq_pathwidth_add_one`
+    ([10] Thm 4.1, full game, ≥ 1 edge); `nodeSearch_eq_intervalThickness`
+    ([9]'s Theorem, full game); `nodeSearch_chain`
+    (`θ = ns = mns = vs + 1 = pw + 1`); `NetGateMatrix.tracks_eq_nodeSearch`
+    (Möhring Thm 3.9, full game).
+  - Route: **not** [10]'s reduction to LaPaugh. The Bienstock–Seymour (1991)
+    crusade argument runs on vertex sets with the outer vertex boundary
+    `N(A) \ A` as the measure. That measure is submodular because
+    `|∂A| = |N[A]| − |A|`. `exists_monotone_chain` uncrosses a chain by
+    least weight `Σ |∂X|·(|V|+1) + |X|`, and
+    `vertexSeparation_le_of_monotone_chain` reads a layout off it. Any
+    strategy gives a chain of width `k − 1` by following the clean set: its
+    boundary is guarded, and newly clean vertices are guarded
+    (`exists_chain_step`).
+- `lean/MOSPFormalization/Complex/EdgeSearchFull.lean` (272 lines): the same
+  chain machinery at width `k` (at most one newly clean vertex is left
+  unguarded, by `clear_step_unique`) gives **EST Lemma 2.1 for the full
+  game**: `vertexSeparation_le_edgeSearch`,
+  `vertexSeparation_le_edgeSearch_le_add_two`,
+  `pathwidth_le_edgeSearch_le_add_two`,
+  `nodeSearch_sub_one_le_edgeSearch_le_add_one` ([10] p. 209, full games),
+  `edgeSearch_le_progressiveEdgeSearch_le_add_two`.
+- `paper2/equivalences.md`: rows 5–7 of the master table (node search now
+  **proved**; edge search a **sandwich** for the full game; "monotone only"
+  no longer applies to any row), tally, gaps section (one gap left, which no
+  row needs), census §5–§7, detailed rows 6–7, new section "Item 14".
+  `figures/equivalence_chain.{dot,pdf,png}` redrawn: `ns = mns` and
+  `ns = vs + 1` are solid, `vs ≤ es ≤ vs + 2` is dashed, and only `es = pes`
+  is dotted. `lean_repo_plan.md`: 13 files, 7,011 lines, entries 22a and 22b.
+- Existing files are untouched (only the root import was added), so
+  `NodeSearch.lean`'s docstring still says the full game is unproved. The
+  record of its closure is in `NodeMonotonicity.lean` and
+  `equivalences.md`.
+- Gate passes (1,231 tests); `allowed_sorries.txt` unchanged (empty).
+
+### Blockers
+- LaPaugh's theorem itself, `es = pes` (`EdgeSearchMonotonicity`), was not
+  attempted. The vertex-set chain gives only `pes ≤ vs + 2 ≤ es + 2`.
+  Equality needs Bienstock & Seymour's crusades over edge sets (measure
+  `|δ(X)|`) and a progressive edge strategy built from a progressive edge
+  crusade; their route goes through mixed search. It stays a named `Prop`,
+  and no table row depends on it any more.
+
+### Next
+- Loop complete. For the owner: when the Lean moves to the paper's
+  repository, `NodeSearch.lean`'s "Not proved: the full game" paragraph and
+  `IntervalSearch.lean`'s `…_of_monotonicity` wording can be updated to point
+  at `NodeMonotonicity.lean` (not done here, because the rules forbid editing
+  existing proved files).
+- If LaPaugh is wanted later, the reusable pieces are `IsChain`,
+  `exists_monotone_chain` (its proof uses only submodularity, so it carries
+  over to edge sets with `|δ|`), and `EdgeSearch.lean`'s `SafeClear`.
+
+LOOP_COMPLETE

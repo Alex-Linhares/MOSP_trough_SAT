@@ -18,7 +18,7 @@ section-3 files import. The plan below removes it from the import closure.
 
 | Part | Files | Lines |
 |---|---|---|
-| Section 3 proper (`Complex/`) | 11 | 6,022 |
+| Section 3 proper (`Complex/`) | 13 | 7,011 (6,022 through item 13; item 14 added 989) |
 | Base needed from `lean/MOSPFormalization/` | 10 + an excerpt of `Sandwich.lean` | 1,392 + ~100 |
 | Optional: the pattern-graph counterexample | 3 | 336 |
 
@@ -89,6 +89,12 @@ paths under the present `MOSPFormalization/`.
     since the paper reports the gap.
 21. `EdgeSearch` ← 19 (row 7).
 22. `IntervalSearch` ← 12, 14, 19 (rows 5, 6: `intervalSearch_chain`).
+22a. `NodeMonotonicity` ← 20, 22 (item 14: rows 5, 6 for the full game,
+    `nodeSearchMonotonicity`, `nodeSearch_chain`). It uses only
+    `two_le_of_isNodeSearch` from `KirousisPapadimitriouGap`; if that file is
+    left out, copy it together with `contaminated_eq_of_searchCost_le_one` and whatever that uses.
+22b. `EdgeSearchFull` ← 21, 22a (item 14: row 7 for the full game,
+    `vertexSeparation_le_edgeSearch_le_add_two`).
 
 Parallelism: 12–14 are independent; so are 15–17 once their parents are
 built; 20–22 are independent of each other.

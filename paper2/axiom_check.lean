@@ -45,6 +45,18 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms vertexSeparation_le_progressiveEdgeSearch_le_add_two
 #print axioms vertexSeparation_triangleGraph
 #print axioms vsg_eq_max
+-- item 14: the full games
+#print axioms nodeSearchMonotonicity
+#print axioms nodeSearch_eq_vertexSeparation_add_one
+#print axioms nodeSearch_eq_pathwidth_add_one
+#print axioms nodeSearch_eq_intervalThickness
+#print axioms nodeSearch_chain
+#print axioms NetGateMatrix.tracks_eq_nodeSearch
+#print axioms exists_monotone_chain
+#print axioms vertexSeparation_le_edgeSearch_le_add_two
+#print axioms pathwidth_le_edgeSearch_le_add_two
+#print axioms nodeSearch_sub_one_le_edgeSearch_le_add_one
+#print axioms edgeSearch_le_progressiveEdgeSearch_le_add_two
 
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

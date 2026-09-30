@@ -103,7 +103,7 @@ Phase 3 is graph searching. Then assembly and a reserve.
   repository, their dependency order, and what of the existing
   `lean/MOSPFormalization/` they need.
 
-- [ ] **14 Reserve.** The best remaining gap: attempt the full node search
+- [x] **14 Reserve.** The best remaining gap: attempt the full node search
   theorem (monotonicity, Kirousis & Papadimitriou 1986 / Bienstock &
   Seymour) or LaPaugh's theorem, whichever item 10-11 left closer. One
   session; if it does not close, record how far it got and stop.
