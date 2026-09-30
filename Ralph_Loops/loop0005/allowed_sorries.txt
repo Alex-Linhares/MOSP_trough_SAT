@@ -1,0 +1,4 @@
+# One line per sorry this loop is allowed to leave, beyond the baseline one in
+# Sandwich.lean (the §24 conjecture). Format: file | theorem | why it is a
+# stated gap and not a hard proof abandoned. Only phase-3 items (10-12, 14) may
+# add lines, and each line must also appear in paper2/equivalences.md.
