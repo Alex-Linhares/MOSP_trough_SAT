@@ -6,6 +6,8 @@ engineering. Those live in the rest of the repository.
 
 ## Contents
 
+- `proof_reductions.md` — faults found in published proofs of the reductions,
+  with the corrected arguments (first: Kirousis & Papadimitriou 1986, Thm 4.1).
 - `plan.md` — the plan for the paper, *The pathwidth complex*: five sections,
   what each argues, what exists, what is still to do.
 - `literature/` — source papers, named by their bracket number in Linhares &
