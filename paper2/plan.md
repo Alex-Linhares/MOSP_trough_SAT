@@ -191,7 +191,9 @@ degree or clique bound can close it).
    only cited.
 2. **Section 2:** choose the paper's three figures and write the method
    paragraph, including the relevance correction.
-3. **Section 4:** state the dominance rules as lemmas about layouts. Hunt for
+3. **Section 4:** state the dominance rules as lemmas about layouts. The graph
+   solver and a first benchmark run exist, transferred from `~/dev/pathwidth`
+   (`../pathwidth_solver/TRANSFER.md`). Hunt for
    benchmark collections for every problem in the table, fix the dataset
    format and checker, price the run, and run it.
 4. **Section 5,** then the LaTeX draft of the whole paper.

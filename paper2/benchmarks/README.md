@@ -98,6 +98,16 @@ run.
 
 ## Next
 
+0. **Done first, 2026-09-30: the audit and transfer of `~/dev/pathwidth`**
+   (`../../pathwidth_solver/TRANSFER.md`). It held an exact graph pathwidth
+   solver, the customer search on neighbourhood masks with a C engine up to
+   1,024 vertices, and results on most of the collections above. These are
+   Rome 11,183 / 11,534 (97.0%), VSPLIB trees 50 / 50, grids to 13 × 13,
+   Harwell-Boeing 39 / 73, TreewidthLIB colouring 31 / 58 and freetdi named
+   125 / 150, all at ≤ 600 s per graph. Its instances are the same files as
+   `raw/`. So much of the run below exists already, and the size ceiling for
+   graphs is higher than §1 assumed. The results need two fixes first (see
+   the transfer document).
 1. Deduplicate: the Rome graphs up to isomorphism, the PACE and freetdi sets
    against each other, and VSPLIB against CMPLIB's Harwell-Boeing graphs (5 of
    36 shared names differ in size).

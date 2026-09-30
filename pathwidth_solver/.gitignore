@@ -1,0 +1,5 @@
+# Instances duplicate paper2/benchmarks/raw (verified by sha256 on 2026-09-30); kept locally so bench/ runs unchanged.
+bench/instances/
+*.so
+*.build-*
+__pycache__/

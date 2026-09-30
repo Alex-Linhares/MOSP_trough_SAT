@@ -1,0 +1,12 @@
+[1/11] FibonacciTree_10         n=143  pw=  3 refutation         13515    0.029s C
+[2/11] WorldMap                 n=166  pw=  7 refutation        982630    0.965s C
+[3/11] JohnsonGraph_10_4        n=210  pw=109 budget         572150578  600.068s C
+[4/11] HyperStarGraph_10_5      n=252  pw= 62 budget         728724210  600.074s C
+[5/11] CameronGraph             n=231  pw=161 budget         336334848  600.074s C
+[6/11] RingedTree_8             n=255  pw= 13 budget        1631682560  600.075s C
+[7/11] BalancedTree_3_5         n=364  pw=  5 budget         474575922  600.118s C
+[8/11] Cell120                  n=600  pw= 67 budget         232218624   600.13s C
+[9/11] RingedTree_10            n=1023 pw= 17 budget          80715776  600.133s C
+[10/11] Grid2dGraph_20_40        n=800  pw= 20 budget          79368192  600.139s C
+[11/11] DorogovtsevGoltsevMendesGraph n=3282 pw= 93 budget             15469 4007.603s python
+done: 11 graphs, 2 proved, 4008s wall -> bench/results/named_w.csv

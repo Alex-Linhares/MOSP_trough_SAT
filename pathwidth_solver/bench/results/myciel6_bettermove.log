@@ -1,0 +1,2 @@
+myciel6 {'better_move': True}: width=38 proof=budget nodes=1,686,335,551 lb=25 1500s
+myciel6 {'better_move': True, 'fan_order': 'degree'}: width=38 proof=budget nodes=1,300,471,876 lb=25 1500s

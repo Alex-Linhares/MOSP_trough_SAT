@@ -1,0 +1,36 @@
+[1/35] mulsol.i.1               n=197  pw= 50 bound                  0    0.036s C
+[2/35] mulsol.i.3               n=184  pw= 32 bound              66437    0.155s C
+[3/35] mulsol.i.5               n=186  pw= 31 bound              32796    0.147s C
+[4/35] mulsol.i.4               n=185  pw= 32 bound              67149    0.199s C
+[5/35] mulsol.i.2               n=188  pw= 32 bound              66128    0.217s C
+[6/35] fpsol2.i.1               n=496  pw= 67 refutation       2355931    4.829s C
+[7/35] zeroin.i.2               n=211  pw= 32 bound            6401680      7.3s C
+[8/35] zeroin.i.3               n=206  pw= 32 bound            7184828    8.109s C
+[9/35] queen12_12               n=144  pw=103 refutation     264389515  463.804s C
+[10/35] anna                     n=138  pw= 14 budget         900001912  600.076s C
+[11/35] queen13_13               n=169  pw=121 budget         297321122  600.185s C
+[12/35] myciel7                  n=191  pw= 72 budget         548270653  600.191s C
+[13/35] queen14_14               n=196  pw=140 budget         266832994    600.2s C
+[14/35] le450_15a                n=450  pw=264 budget         141160448  600.349s C
+[15/35] homer                    n=561  pw= 36 budget         187461632  600.355s C
+[16/35] le450_25b                n=450  pw=233 budget         161567484  600.351s C
+[17/35] fpsol2.i.3               n=425  pw= 43 budget         341280701  600.367s C
+[18/35] le450_15b                n=450  pw=273 budget         170750707   600.37s C
+[19/35] fpsol2.i.2               n=451  pw= 43 budget         337017646  600.385s C
+[20/35] le450_25a                n=450  pw=228 budget         153731072  600.385s C
+[21/35] inithx.i.3               n=621  pw= 40 budget         207014025  600.385s C
+[22/35] queen15_15               n=225  pw=162 budget         263246874  600.206s C
+[23/35] inithx.i.1               n=864  pw= 57 budget         289920312  600.389s C
+[24/35] le450_5d                 n=450  pw=270 budget         158179328  600.386s C
+[25/35] le450_15c                n=450  pw=354 budget         123484112  600.391s C
+[26/35] le450_5c                 n=450  pw=267 budget         141299712  600.388s C
+[27/35] inithx.i.2               n=645  pw= 40 budget         214418505  600.398s C
+[28/35] le450_15d                n=450  pw=356 budget         116187136  600.396s C
+[29/35] queen16_16               n=256  pw=184 budget         238630112  600.207s C
+[30/35] le450_5b                 n=450  pw=261 budget         172770139  600.383s C
+[31/35] le450_25c                n=450  pw=321 budget         147837808  600.391s C
+[32/35] le450_5a                 n=450  pw=245 budget         143683941   600.38s C
+[33/35] le450_25d                n=450  pw=334 budget         132124672   600.36s C
+[34/35] school1                  n=385  pw=182 budget         185110528  600.166s C
+[35/35] school1_nsh              n=352  pw=156 budget         214462464  600.151s C
+done: 35 graphs, 9 proved, 600s wall -> bench/results/coloring_w.csv

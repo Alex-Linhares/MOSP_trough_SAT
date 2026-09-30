@@ -1,0 +1,59 @@
+[1/58] huck                     n=74   pw= 10 bound               1432    0.006s C
+[2/58] miles1000                n=128  pw= 49 bound                  0    0.035s C
+[3/58] miles250                 n=128  pw= 10 refutation         12799     0.06s C
+[4/58] myciel2                  n=5    pw=  2 bound                  0      0.0s C
+[5/58] myciel3                  n=11   pw=  5 refutation            15      0.0s C
+[6/58] myciel4                  n=23   pw= 10 refutation           477    0.001s C
+[7/58] miles500                 n=128  pw= 22 bound                  0    0.059s C
+[8/58] miles1500                n=128  pw= 77 bound                  0    0.037s C
+[9/58] miles750                 n=128  pw= 36 refutation          3219    0.075s C
+[10/58] mulsol.i.1               n=197  pw= 50 bound                  0    0.077s python
+[11/58] david                    n=87   pw= 13 refutation        598205     0.53s C
+[12/58] myciel5                  n=47   pw= 20 refutation        685211    0.547s C
+[13/58] jean                     n=80   pw= 10 refutation        948178     0.72s C
+[14/58] queen10_10               n=100  pw= 72 refutation       3386638    3.489s C
+[15/58] mulsol.i.5               n=186  pw= 31 bound              41944    7.065s python
+[16/58] mulsol.i.4               n=185  pw= 32 bound             136533   15.185s python
+[17/58] queen5_5                 n=25   pw= 18 refutation           135    0.001s C
+[18/58] queen6_6                 n=36   pw= 25 refutation           462    0.005s C
+[19/58] queen7_7                 n=49   pw= 35 refutation          5221     0.04s C
+[20/58] queen8_12                n=96   pw= 65 refutation        562363    0.841s C
+[21/58] queen8_8                 n=64   pw= 45 refutation         24172    0.063s C
+[22/58] queen9_9                 n=81   pw= 58 refutation        332998    0.446s C
+[23/58] mulsol.i.3               n=184  pw= 32 bound             128197   17.585s python
+[24/58] mulsol.i.2               n=188  pw= 32 bound             122704   18.053s python
+[25/58] zeroin.i.1               n=211  pw= 50 bound                240    0.015s C
+[26/58] queen11_11               n=121  pw= 87 refutation      33891626   40.386s C
+[27/58] games120                 n=120  pw= 32 refutation     133884909  118.108s C
+[28/58] myciel6                  n=95   pw= 38 budget         809992261  600.012s C
+[29/58] le450_5c                 n=450  pw=269 budget           1188639  600.095s python
+[30/58] fpsol2.i.3               n=425  pw= 45 budget           2416757  600.162s python
+[31/58] fpsol2.i.1               n=496  pw= 68 budget           3554295  600.197s python
+[32/58] anna                     n=138  pw= 15 budget           8522249   600.25s python
+[33/58] le450_25c                n=450  pw=322 budget           1376856  600.194s python
+[34/58] le450_25d                n=450  pw=335 budget           1157334  600.278s python
+[35/58] inithx.i.3               n=621  pw= 43 budget           1740174  600.385s python
+[36/58] le450_25b                n=450  pw=235 budget           1494973  600.361s python
+[37/58] le450_25a                n=450  pw=229 budget           1433600  600.416s python
+[38/58] myciel7                  n=191  pw= 72 budget           4817469  600.323s python
+[39/58] inithx.i.2               n=645  pw= 49 budget           3203778  600.533s python
+[40/58] fpsol2.i.2               n=451  pw= 45 budget           2396189  600.518s python
+[41/58] homer                    n=561  pw= 38 budget           1896448  600.555s python
+[42/58] inithx.i.1               n=864  pw= 59 budget           3276800  600.545s python
+[43/58] le450_5a                 n=450  pw=245 budget           1364351  600.574s python
+[44/58] queen12_12               n=144  pw=103 budget           4473193  600.177s python
+[45/58] le450_15a                n=450  pw=265 budget           1257472  600.906s python
+[46/58] le450_5b                 n=450  pw=261 budget           1311597  600.885s python
+[47/58] queen14_14               n=196  pw=143 budget           3139728  600.197s python
+[48/58] queen13_13               n=169  pw=122 budget           3864737  600.297s python
+[49/58] le450_5d                 n=450  pw=273 budget           1237581  600.899s python
+[50/58] le450_15b                n=450  pw=274 budget           1314816  601.019s python
+[51/58] le450_15c                n=450  pw=354 budget           1231051  601.144s python
+[52/58] le450_15d                n=450  pw=356 budget           1130496  601.228s python
+[53/58] queen15_15               n=225  pw=164 budget           2894623  600.029s python
+[54/58] queen16_16               n=256  pw=187 budget           2396160  600.227s python
+[55/58] school1                  n=385  pw=182 budget           1744896  600.549s python
+[56/58] school1_nsh              n=352  pw=156 budget           1802240   600.19s python
+[57/58] zeroin.i.2               n=211  pw= 39 budget           6272929  600.098s python
+[58/58] zeroin.i.3               n=206  pw= 39 budget           6857086  600.019s python
+done: 58 graphs, 27 proved, 641s wall -> /home/al/dev/pathwidth/bench/results/coloring.csv

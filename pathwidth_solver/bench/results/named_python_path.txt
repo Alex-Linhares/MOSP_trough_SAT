@@ -1,0 +1,11 @@
+FibonacciTree_10
+HyperStarGraph_10_5
+JohnsonGraph_10_4
+BalancedTree_3_5
+CameronGraph
+Grid2dGraph_20_40
+Cell120
+RingedTree_10
+RingedTree_8
+WorldMap
+DorogovtsevGoltsevMendesGraph

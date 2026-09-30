@@ -1,0 +1,12 @@
+set,name,n,m,engine,lower,upper_start,width,proof,nodes,seconds,components
+named,FibonacciTree_10,143,142,C,1,5,3,refutation,13515,0.029,1
+named,WorldMap,166,323,C,4,8,7,refutation,982630,0.965,5
+named,JohnsonGraph_10_4,210,2520,C,35,110,109,budget,572150578,600.068,1
+named,HyperStarGraph_10_5,252,630,C,15,65,62,budget,728724210,600.074,1
+named,CameronGraph,231,3465,C,43,161,161,budget,336334848,600.074,1
+named,RingedTree_8,255,507,C,4,13,13,budget,1631682560,600.075,1
+named,BalancedTree_3_5,364,363,C,1,6,5,budget,474575922,600.118,1
+named,Cell120,600,1200,C,4,67,67,budget,232218624,600.13,1
+named,RingedTree_10,1023,2043,C,3,17,17,budget,80715776,600.133,1
+named,Grid2dGraph_20_40,800,1540,C,2,20,20,budget,79368192,600.139,1
+named,DorogovtsevGoltsevMendesGraph,3282,6561,python,2,192,93,budget,15469,4007.603,1
