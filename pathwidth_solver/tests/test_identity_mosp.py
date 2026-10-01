@@ -91,12 +91,15 @@ FLAG_SETS = [
 
 
 @pytest.mark.skipif(not INSTANCES, reason="no challenge instances found")
+@pytest.mark.parametrize("repaired", [True, False], ids=["repaired", "published"])
 @pytest.mark.parametrize("flags", FLAG_SETS, ids=lambda f: ",".join(f"{k}={v}" for k, v in f.items()) or "default")
-def test_identical_decisions_and_node_counts(flags):
+def test_identical_decisions_and_node_counts(flags, repaired):
     """Descend `k` from a loose upper bound until the first refutation (or a
     budget abort), comparing both implementations at every step. The last step
     is the real refutation at optimum − 1, the hardest decision the search
-    makes on the instance."""
+    makes on the instance. Under the repaired rules (the default since
+    2026-10-01) and the published ones alike."""
+    flags = dict(flags, repaired_rules=repaired)
     budget = 300_000
     compared = refutations = total_nodes = 0
     for name, inst in INSTANCES:
@@ -123,7 +126,8 @@ def test_identical_decisions_and_node_counts(flags):
 @pytest.mark.skipif(not INSTANCES, reason="no challenge instances found")
 def test_the_c_ports_agree_too():
     """Same C file, same masks: MOSP's `decide_native` and ours must match
-    exactly, node counts included, with `better_move` on and off."""
+    exactly, node counts included, with `better_move` on and off, under the
+    repaired rules and the published ones."""
     from satisfiability.native import decide_native as mosp_native, native_available as mosp_ok
     from pathwidth.native import decide_native as our_native, native_available as our_ok
     if not (mosp_ok() and our_ok()):
@@ -132,12 +136,12 @@ def test_the_c_ports_agree_too():
     for name, inst in INSTANCES:
         masks = graph_masks(inst)
         k = _cs_cost(masks, list(range(inst.n_customers))) - 1
-        for better in (False, True):
+        for better, repaired in ((False, True), (True, True), (False, False), (True, False)):
             kk = k
             while kk >= 1:
-                theirs = mosp_native(inst, kk, better_move=better, max_nodes=2_000_000)
-                ours = our_native(masks, kk, better_move=better, max_nodes=2_000_000)
-                assert (ours.status, ours.order, ours.nodes) == (theirs.status, theirs.order, theirs.nodes), (name, kk, better)
+                theirs = mosp_native(inst, kk, better_move=better, repaired_rules=repaired, max_nodes=2_000_000)
+                ours = our_native(masks, kk, better_move=better, repaired_rules=repaired, max_nodes=2_000_000)
+                assert (ours.status, ours.order, ours.nodes) == (theirs.status, theirs.order, theirs.nodes), (name, kk, better, repaired)
                 compared += 1
                 if ours.status != "sat":
                     break

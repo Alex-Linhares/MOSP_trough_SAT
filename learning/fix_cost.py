@@ -118,8 +118,10 @@ def decide_variant(instance: MOSPInstance, k: int, variant: str,
         better_move = bool(sparse_enough_for_better_move(instance))
     deadline = None if deadline_seconds is None else time.monotonic() + deadline_seconds
     started = time.monotonic()
+    # The variants are reverts within the published rules, so those rules are
+    # named: the repaired ones are the default since 2026-10-01 (loop0007).
     answer = decide(instance, k, deadline=deadline, better_move=better_move,
-                    better_move_dominators=0, **VARIANTS[variant])
+                    better_move_dominators=0, repaired_rules=False, **VARIANTS[variant])
     return answer, round(time.monotonic() - started, 4), better_move
 
 

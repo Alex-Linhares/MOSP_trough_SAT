@@ -17,11 +17,12 @@ It declines rather than guesses. The Python is used instead when:
   that fits is used);
 - a flag the C does not implement is asked for (`branch`, `expansion_prune`).
 
-Two differences from the Python worth knowing:
-- `better_move` (Chu & Stuckey's Theorem 2) exists only here. It is
-  O(|R|^3) per node against Theorem 1's O(|R|^2), which the MOSP project
-  measured as the wrong trade in Python and worth it at C speed on sparse
-  instances. `better_move_dominators` caps how many candidates are tried as
+Two things worth knowing:
+- `better_move` (Chu & Stuckey's Theorem 2) existed only here until
+  2026-10-01, when the Python got a port of it (loop0007 item 03); the two
+  now match node for node. It is O(|R|^3) per node against Theorem 1's
+  O(|R|^2), which the MOSP project measured as the wrong trade in Python and
+  worth it at C speed on sparse instances. `better_move_dominators` caps how many candidates are tried as
   the dominating `q`; a subset prunes less but never wrongly.
 - With `old_move` and `memo` both on, the C runs both, as Chu & Stuckey do,
   while the Python drops the memo. The MOSP project's exhaustive tests found
@@ -65,6 +66,7 @@ _ARGTYPES = [
     ctypes.c_int, ctypes.c_longlong,            # restrict, memo_limit
     ctypes.c_int, ctypes.c_int, ctypes.c_int,   # better, dominators, old
     ctypes.c_int, ctypes.c_int,                 # fan_order, better_move_variant
+    ctypes.c_int,                               # repaired_rules
     ctypes.POINTER(ctypes.c_int),               # out_path
     ctypes.POINTER(ctypes.c_longlong),          # out_nodes
     ctypes.POINTER(ctypes.c_int),               # out_len
@@ -127,8 +129,8 @@ def _load_legacy() -> "ctypes.CDLL | None":
         if not _LEGACY_SOURCE.exists() or not _build(_LEGACY_SOURCE, target, []):
             return None
         lib = ctypes.CDLL(str(target))
-        lib.cs_decide_variant.restype = ctypes.c_int
-        lib.cs_decide_variant.argtypes = _ARGTYPES
+        lib.cs_decide_rules.restype = ctypes.c_int
+        lib.cs_decide_rules.argtypes = _ARGTYPES
         _legacy = lib
         return lib
 
@@ -163,7 +165,8 @@ def _pack(masks: Sequence[int], words: int):
 
 
 def _call(fn, n: int, k: int, packed, *, restrict, subset_rule, definite_move, old_move, memo,
-          better_move, better_move_dominators, max_nodes, seconds, memo_limit, fan_order) -> Decision | None:
+          better_move, better_move_dominators, max_nodes, seconds, memo_limit, fan_order,
+          repaired_rules) -> Decision | None:
     path = (ctypes.c_int * n)()
     nodes = ctypes.c_longlong(0)
     length = ctypes.c_int(0)
@@ -174,7 +177,7 @@ def _call(fn, n: int, k: int, packed, *, restrict, subset_rule, definite_move, o
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
         int(better_move), int(better_move_dominators), int(old_move),
-        FAN_ORDERS.index(fan_order), _BM_TODAY,
+        FAN_ORDERS.index(fan_order), _BM_TODAY, int(repaired_rules),
         path, ctypes.byref(nodes), ctypes.byref(length))
     if status in (-2, -3):                 # allocation failure / too large for this build
         return None
@@ -201,6 +204,7 @@ def decide_native(
     memo_limit: int = 4_000_000,
     fan_order: str = "index",
     legacy: bool = False,
+    repaired_rules: bool = True,
 ) -> Decision | None:
     """Decide the search question on `masks` in C, or return None if it cannot.
 
@@ -208,6 +212,10 @@ def decide_native(
     the caller should use the Python. It never means "do not know"; that is
     `Decision("unknown", ...)`, as in the reference. `legacy=True` runs the
     original 128-bit C instead (tests only; None above 128 vertices).
+    `repaired_rules` is the definite and better moves with the repaired
+    premises proved sound in MOSP's `lean/MOSPFormalization/Search/`, as in
+    `search.decide`; the default since 2026-10-01, `False` being the
+    published rules.
     """
     if fan_order not in FAN_ORDERS:
         raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
@@ -217,12 +225,13 @@ def decide_native(
     flags = dict(restrict=restrict, subset_rule=subset_rule, definite_move=definite_move,
                  old_move=old_move, memo=memo, better_move=better_move,
                  better_move_dominators=better_move_dominators, max_nodes=max_nodes,
-                 seconds=seconds, memo_limit=memo_limit, fan_order=fan_order)
+                 seconds=seconds, memo_limit=memo_limit, fan_order=fan_order,
+                 repaired_rules=repaired_rules)
     if legacy:
         lib = _load_legacy()
         if lib is None or n > 128:
             return None
-        return _call(lib.cs_decide_variant, n, k, _pack(masks, 2), **flags)
+        return _call(lib.cs_decide_rules, n, k, _pack(masks, 2), **flags)
     words = words_for(n)
     if words is None:
         return None

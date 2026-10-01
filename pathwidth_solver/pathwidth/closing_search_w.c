@@ -13,6 +13,11 @@
  * indexed by remaining vertex) lives in a heap pool indexed by depth rather
  * than on the stack: a frame for 1024 vertices is ~160 KB and the recursion
  * is as deep as the graph.
+ *
+ * `repaired_rules` (loop0007 item 03) is the definite and better moves with
+ * the repaired premises proved sound in lean/MOSPFormalization/Search/, the
+ * same diff as `cs_decide_rules` in `closing_search.c`; 0 is the rules as
+ * Chu & Stuckey publish them (paper2/revised_algorithm.md, Counterexample 4.5).
  */
 
 #include <stdint.h>
@@ -110,6 +115,7 @@ static void memo_add(memo_t *m, const set_t *key) {
 /* Per-depth scratch: one frame per recursion level, sized by n. */
 typedef struct {
     set_t *opens;
+    set_t *freed;               /* the repaired rules' matching sets */
     int *ids, *sizes, *costs, *who, *index_of, *survives, *deg;
 } frame_t;
 
@@ -119,7 +125,8 @@ typedef struct {
     set_t   *neighbour;
     memo_t   memo;
     int      subset_rule, definite_move, better_move, better_move_dominators,
-             better_move_variant, old_move, fan_order, use_memo, restrict_frontier;
+             better_move_variant, old_move, fan_order, use_memo, restrict_frontier,
+             repaired_rules;    /* the repaired definite and better moves (loop0007) */
     long long nodes, max_nodes;
     double   deadline;
     int      aborted;
@@ -135,6 +142,39 @@ static double monotonic_now(void) {
 }
 
 static int search(search_t *s, set_t closed, set_t opened, set_t seen);
+
+/* Kuhn's augmenting path from freed set `i`, vertices as bit indices. */
+static int augment(const set_t *sets, int i, int *owner, set_t *visited) {
+    set_t bits = sets[i];
+    for (int v; (v = set_next(&bits)) >= 0; ) {
+        if (set_test(visited, v)) continue;
+        set_add(visited, v);
+        if (owner[v] < 0 || augment(sets, owner[v], owner, visited)) {
+            owner[v] = i;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* The matching test of the repaired rules, `has_definite_matching` in
+ * `closing_search.c` and `_has_definite_matching` in the Python: whether
+ * `need` of the `count` sets in `sets` can be matched to distinct members.
+ * `sets` holds o(d, S) for each vertex d != q that closing q frees and `need`
+ * is open(q, S) - 1; by `isHereditarilyDefinite_iff_hasDefiniteMatching` a
+ * matching of that size is exactly q being hereditarily definite at S. */
+static int has_definite_matching(const set_t *sets, int count, int need) {
+    if (need <= 0) return 1;
+    if (count < need) return 0;
+    int owner[MAXN];
+    for (int i = 0; i < MAXN; i++) owner[i] = -1;
+    int matched = 0;
+    for (int i = 0; i < count; i++) {
+        set_t visited = set_empty();
+        if (augment(sets, i, owner, &visited) && ++matched >= need) return 1;
+    }
+    return 0;
+}
 
 static int subset_pass(const search_t *s, const int *ids, const set_t *opens,
                        const int *sizes, int n_remaining, const set_t *exclude,
@@ -159,7 +199,7 @@ static int subset_pass(const search_t *s, const int *ids, const set_t *opens,
 
 static int better_move_pass(const search_t *s, set_t closed, set_t opened,
                             int *costs, int *who, int *index_of, int count,
-                            int *survives, set_t *discarded) {
+                            int *survives, set_t *freed, set_t *discarded) {
     if (count > 1) {
         int limit = s->better_move_dominators > 0 && s->better_move_dominators < count
                     ? s->better_move_dominators : count;
@@ -177,12 +217,20 @@ static int better_move_pass(const search_t *s, set_t closed, set_t opened,
                 set_t t = set_andnot(set_or(opened_r, s->neighbour[q]), closed_r);
                 if (set_popcount(&t) > s->k) continue;
                 set_t own = set_andnot(s->neighbour[q], opened_r);
-                int opened_by = set_popcount(&own), closed_by = 0;
+                int opened_by = set_popcount(&own), closed_by = 0, n_freed = 0;
                 set_t bits = remaining_r;
                 for (int v; (v = set_next(&bits)) >= 0; ) {
                     set_t left = set_andnot(s->neighbour[v], opened_r);
                     if ((!set_is_empty(&left) || count_finished) && set_subset(&left, &own)) closed_by++;
+                    /* the vertices q frees at the child, q excluded */
+                    if (s->repaired_rules && v != q && !set_is_empty(&left) && set_subset(&left, &own))
+                        freed[n_freed++] = left;
                 }
+                /* IsRepairedBetter: premises 3 and 4, and q hereditarily
+                 * definite at cl(S u {r}) by the matching test there. */
+                if (s->repaired_rules && closed_by >= opened_by &&
+                    !has_definite_matching(freed, n_freed, opened_by - 1))
+                    continue;
                 if (closed_by >= opened_by) pruned = 1;
             }
             survives[ri] = !pruned;
@@ -201,7 +249,8 @@ static int dominance_filter(search_t *s, const set_t *candidates,
                             set_t closed, set_t opened,
                             const int *ids, const set_t *opens, const int *sizes,
                             int n_remaining, int open_now,
-                            int *costs, int *who, int *index_of, int *survives, int *deg) {
+                            int *costs, int *who, int *index_of, int *survives, int *deg,
+                            set_t *freed) {
     int count = 0;
     for (int j = 0; j < n_remaining; j++) {
         int c = ids[j];
@@ -218,19 +267,29 @@ static int dominance_filter(search_t *s, const set_t *candidates,
             int opened_by = sizes[at], closed_by = 0;
             for (int j = 0; j < n_remaining; j++)
                 if (sizes[j] <= opened_by && set_subset(&opens[j], own)) closed_by++;
+            if (closed_by >= opened_by && s->repaired_rules) {
+                /* Chu & Stuckey's premise holds; the repaired rule also needs
+                 * q hereditarily definite. A q failing it may not stand for
+                 * the others (Counterexample 4.5); a later q may. */
+                int n_freed = 0;
+                for (int j = 0; j < n_remaining; j++)
+                    if (ids[j] != c && sizes[j] <= opened_by && set_subset(&opens[j], own))
+                        freed[n_freed++] = opens[j];
+                if (!has_definite_matching(freed, n_freed, opened_by - 1)) continue;
+            }
             if (closed_by >= opened_by) { costs[0] = costs[i]; who[0] = c; count = 1; goto sorted; }
         }
     }
     if (s->better_move_variant & BM_SUBSET_RESTRICTED) {
         set_t gone = set_empty();
-        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, &gone);
+        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, freed, &gone);
         if (s->subset_rule) count = subset_pass(s, ids, opens, sizes, n_remaining, &gone, costs, who, index_of, count);
     } else if (s->better_move_variant & BM_OLD_RULE_ORDER) {
-        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, NULL);
+        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, freed, NULL);
         if (s->subset_rule) count = subset_pass(s, ids, opens, sizes, n_remaining, NULL, costs, who, index_of, count);
     } else {
         if (s->subset_rule) count = subset_pass(s, ids, opens, sizes, n_remaining, NULL, costs, who, index_of, count);
-        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, NULL);
+        if (s->better_move) count = better_move_pass(s, closed, opened, costs, who, index_of, count, survives, freed, NULL);
     }
 
 sorted:
@@ -298,7 +357,7 @@ static int search(search_t *s, set_t closed, set_t opened, set_t seen) {
     set_t on = set_andnot(opened, closed);
     int open_now = set_popcount(&on);
     int count = dominance_filter(s, &candidates, closed, opened, ids, opens, sizes, n_remaining, open_now,
-                                 f->costs, f->who, f->index_of, f->survives, f->deg);
+                                 f->costs, f->who, f->index_of, f->survives, f->deg, f->freed);
     int *costs = f->costs, *who = f->who; (void) costs;
 
     for (int i = 0; i < count; i++) {
@@ -335,7 +394,7 @@ int csw_decide(int n, int k,
                int subset_rule, int definite_move, int use_memo,
                int restrict_frontier, long long memo_limit,
                int better_move, int better_move_dominators, int old_move,
-               int fan_order, int better_move_variant,
+               int fan_order, int better_move_variant, int repaired_rules,
                int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0; *out_len = 0;
     if (n <= 0) return 1;
@@ -346,6 +405,7 @@ int csw_decide(int n, int k,
     s.subset_rule = subset_rule; s.definite_move = definite_move; s.better_move = better_move;
     s.better_move_dominators = better_move_dominators; s.better_move_variant = better_move_variant;
     s.old_move = old_move; s.fan_order = fan_order; s.use_memo = use_memo; s.restrict_frontier = restrict_frontier;
+    s.repaired_rules = repaired_rules;
     s.max_nodes = max_nodes; s.deadline = seconds > 0 ? monotonic_now() + seconds : 0;
     s.path = out_path;
 
@@ -357,12 +417,13 @@ int csw_decide(int n, int k,
     /* scratch pool: n+1 frames of n entries each */
     size_t per = (size_t) n;
     s.frames = malloc(sizeof(frame_t) * (size_t) (n + 1));
-    set_t *opens_pool = malloc(sizeof(set_t) * per * (size_t) (n + 1));
+    set_t *opens_pool = malloc(sizeof(set_t) * per * 2 * (size_t) (n + 1));
     int *int_pool = malloc(sizeof(int) * per * 7 * (size_t) (n + 1));
     if (!s.frames || !opens_pool || !int_pool) { free(s.neighbour); free(s.frames); free(opens_pool); free(int_pool); return -2; }
     for (int d = 0; d <= n; d++) {
         frame_t *f = &s.frames[d];
-        f->opens = opens_pool + per * (size_t) d;
+        f->opens = opens_pool + per * 2 * (size_t) d;
+        f->freed = f->opens + per;
         int *base = int_pool + per * 7 * (size_t) d;
         f->ids = base; f->sizes = base + per; f->costs = base + 2 * per; f->who = base + 3 * per;
         f->index_of = base + 4 * per; f->survives = base + 5 * per; f->deg = base + 6 * per;

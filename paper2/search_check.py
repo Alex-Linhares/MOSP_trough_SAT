@@ -424,7 +424,10 @@ def native_decide(masks, k, config):
                       better_move_dominators=config["limit"],
                       old_close_count=config["variant"] in ("old_close", "prefix"),
                       old_rule_order=config["variant"] in ("old_order", "prefix"),
-                      subset_after_better_move=config["variant"] == "bm_first")
+                      subset_after_better_move=config["variant"] == "bm_first",
+                      # the published rules, which this port models; the
+                      # repaired ones are the default since 2026-10-01
+                      repaired_rules=False)
     if d is None:
         return None
     return d.status == "sat", d.nodes

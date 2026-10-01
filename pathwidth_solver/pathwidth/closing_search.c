@@ -116,6 +116,7 @@ typedef struct {
     int      better_move_dominators;   /* how many q to try; 0 for all */
     int      better_move_variant;      /* BM_OLD_* bits; 0 is today's rule */
     int      old_move;
+    int      repaired_rules;    /* the repaired definite and better moves (loop0007) */
     int      fan_order;         /* 0: ties by customer index; 1: by remaining degree, highest first */
     int      use_memo;
     int      restrict_frontier;
@@ -134,6 +135,41 @@ static double monotonic_now(void) {
 }
 
 static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen);
+
+/* Kuhn's augmenting path from freed set `i`, stacks as bit indices. */
+static int augment(const mask_t *sets, int i, int *owner, mask_t *visited) {
+    for (mask_t bits = sets[i]; bits; ) {
+        mask_t bit = LOWEST(bits); bits ^= bit;
+        if (*visited & bit) continue;
+        *visited |= bit;
+        int stack = lowest_index(bit);
+        if (owner[stack] < 0 || augment(sets, owner[stack], owner, visited)) {
+            owner[stack] = i;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* The matching test of the repaired rules, `_has_definite_matching` in the
+ * Python: whether `need` of the `count` sets in `sets` can be matched to
+ * distinct members. `sets` holds o(d, S) for each customer d != q that closing
+ * q frees and `need` is open(q, S) - 1; by Theorem 4.8
+ * (`isHereditarilyDefinite_iff_hasDefiniteMatching`) a matching of that size
+ * is exactly q being hereditarily definite at S. Only the yes/no answer is
+ * used, so the augmenting order need not follow the Python's. */
+static int has_definite_matching(const mask_t *sets, int count, int need) {
+    if (need <= 0) return 1;
+    if (count < need) return 0;
+    int owner[128];
+    for (int i = 0; i < 128; i++) owner[i] = -1;
+    int matched = 0;
+    for (int i = 0; i < count; i++) {
+        mask_t visited = 0;
+        if (augment(sets, i, owner, &visited) && ++matched >= need) return 1;
+    }
+    return 0;
+}
 
 /* The subset rule over the candidates in `costs`/`who`/`index_of`, measured
  * against every remaining customer not in `exclude` (0 in today's rule).
@@ -194,6 +230,7 @@ static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
         /* BM_OLD_CLOSE_COUNT restores the over-count, for measurement only. */
         const int count_finished = s->better_move_variant & BM_OLD_CLOSE_COUNT;
         int survives[128];
+        mask_t freed[128];
         for (int i = 0; i < count; i++) survives[i] = 1;
         for (int ri = 0; ri < count; ri++) {
             int r = who[ri];
@@ -230,6 +267,7 @@ static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
                 mask_t own = s->neighbour[q] & ~opened_r;
                 int opened_by = popcount128(own);
                 int closed_by = 0;
+                int n_freed = 0;
                 for (mask_t bits = remaining_r; bits; ) {
                     mask_t bit = LOWEST(bits); bits ^= bit;
                     mask_t left = s->neighbour[lowest_index(bit)] & ~opened_r;
@@ -246,7 +284,17 @@ static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
                      * `definite_move` and `subset_rule` never counted them:
                      * their `ids` skip size-0 customers. */
                     if ((left || count_finished) && (left & ~own) == 0) closed_by++;
+                    /* The customers q frees at the child, q excluded, for
+                     * the matching test of the repaired rule below. */
+                    if (s->repaired_rules && left && (left & ~own) == 0 &&
+                        bit != BIT(q))
+                        freed[n_freed++] = left;
                 }
+                /* IsRepairedBetter: premises 3 and 4, and q hereditarily
+                 * definite at cl(S u {r}) by the matching test there. */
+                if (s->repaired_rules && closed_by >= opened_by &&
+                    !has_definite_matching(freed, n_freed, opened_by - 1))
+                    continue;
                 if (closed_by >= opened_by) pruned = 1;
             }
             survives[ri] = !pruned;
@@ -321,6 +369,18 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 /* A larger set cannot sit inside a smaller one; the integer
                  * test skips most pairs before any 128-bit work. */
                 if (sizes[j] <= opened_by && (opens[j] & ~own) == 0) closed_by++;
+            if (closed_by >= opened_by && s->repaired_rules) {
+                /* Chu & Stuckey's premise holds; the repaired rule also needs
+                 * q hereditarily definite (the matching test over the
+                 * customers q frees, q excluded). A q failing it may not
+                 * stand for the others (Counterexample 4.5); a later q may. */
+                mask_t freed[128];
+                int n_freed = 0;
+                for (int j = 0; j < n_remaining; j++)
+                    if (ids[j] != c && sizes[j] <= opened_by && (opens[j] & ~own) == 0)
+                        freed[n_freed++] = opens[j];
+                if (!has_definite_matching(freed, n_freed, opened_by - 1)) continue;
+            }
             if (closed_by >= opened_by) {
                 /* q is at least as good as anything else here. */
                 costs[0] = costs[i]; who[0] = c;
@@ -512,15 +572,21 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  *                index, the default) or FAN_ORDER_DEGREE (by remaining degree,
  *                highest first, then index). Order changes which branches are
  *                visited first, never which are visited: the answer is the same.
+ *   repaired_rules : 1 for the definite and better moves with the repaired
+ *                premises proved sound in lean/MOSPFormalization/Search/
+ *                (IsHereditarilyDefinite via HasDefiniteMatching, and
+ *                IsRepairedBetter); 0 for the rules as Chu & Stuckey publish
+ *                them, which can discard the last solution at a node
+ *                (paper2/revised_algorithm.md, Counterexample 4.5).
  */
-int cs_decide_variant(int n, int k,
-                      const uint64_t *neighbours,
-                      long long max_nodes, double seconds,
-                      int subset_rule, int definite_move, int use_memo,
-                      int restrict_frontier, long long memo_limit,
-                      int better_move, int better_move_dominators, int old_move,
-                      int fan_order, int better_move_variant,
-                      int *out_path, long long *out_nodes, int *out_len) {
+int cs_decide_rules(int n, int k,
+                    const uint64_t *neighbours,
+                    long long max_nodes, double seconds,
+                    int subset_rule, int definite_move, int use_memo,
+                    int restrict_frontier, long long memo_limit,
+                    int better_move, int better_move_dominators, int old_move,
+                    int fan_order, int better_move_variant, int repaired_rules,
+                    int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
     if (n <= 0) return 1;
@@ -535,6 +601,7 @@ int cs_decide_variant(int n, int k,
     s.better_move_dominators = better_move_dominators;
     s.better_move_variant = better_move_variant;
     s.old_move = old_move;
+    s.repaired_rules = repaired_rules;
     s.fan_order = fan_order;
     s.use_memo = use_memo;
     s.restrict_frontier = restrict_frontier;
@@ -566,6 +633,25 @@ int cs_decide_variant(int n, int k,
     free(s.neighbour);
     free(s.memo.slots);
     return found ? 1 : (s.aborted ? -1 : 0);
+}
+
+/* `cs_decide_rules` with the published definite and better moves, kept with
+ * its signature for processes that loaded the library before
+ * `repaired_rules` existed (loop0007 item 02). */
+int cs_decide_variant(int n, int k,
+                      const uint64_t *neighbours,
+                      long long max_nodes, double seconds,
+                      int subset_rule, int definite_move, int use_memo,
+                      int restrict_frontier, long long memo_limit,
+                      int better_move, int better_move_dominators, int old_move,
+                      int fan_order, int better_move_variant,
+                      int *out_path, long long *out_nodes, int *out_len) {
+    return cs_decide_rules(n, k, neighbours, max_nodes, seconds,
+                           subset_rule, definite_move, use_memo,
+                           restrict_frontier, memo_limit,
+                           better_move, better_move_dominators, old_move,
+                           fan_order, better_move_variant, 0,
+                           out_path, out_nodes, out_len);
 }
 
 /* `cs_decide` plus the fan-order flag; kept with its signature for the same

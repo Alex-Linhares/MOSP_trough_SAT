@@ -28,9 +28,17 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import functools
+
 from mosp.instance import MOSPInstance
-from satisfiability.customer_search import decide
-from satisfiability.native import decide_native, native_available
+from satisfiability import customer_search, native
+from satisfiability.native import native_available
+
+# The variants are reverts of the 2026-09-26 fix to the *published* rules, and
+# every count pinned here was recorded under them; since 2026-10-01 the
+# repaired rules are the default (loop0007 item 03), so they are named off.
+decide = functools.partial(customer_search.decide, repaired_rules=False)
+decide_native = functools.partial(native.decide_native, repaired_rules=False)
 
 needs_native = pytest.mark.skipif(not native_available(),
                                   reason="the C search did not build here")

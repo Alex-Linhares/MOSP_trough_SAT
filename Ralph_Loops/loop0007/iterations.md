@@ -15,7 +15,7 @@
   Python node for node under both settings, on the inputs
   `tests/test_native.py` uses and on `DEFINITE_CEX` and the Bug B instances.
 
-- [ ] **03 The pathwidth solver.** The same change in
+- [x] **03 The pathwidth solver.** The same change in
   `pathwidth_solver/pathwidth/` (`search.py`, `closing_search.c`,
   `closing_search_w.c` for every WORDS, `native.py`). Tests: its identity
   tests against MOSP still pass under both settings, and multiword equals

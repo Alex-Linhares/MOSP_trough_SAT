@@ -125,7 +125,7 @@ def test_emitter_visits_the_reference_tree(cfg):
         inst = _random(rng)
         opt = _brute(inst)
         for k in range(max(0, opt - 2), opt + 1):
-            ref = decide(inst, k, native=False, **cfg)
+            ref = decide(inst, k, native=False, repaired_rules=False, **cfg)
             cert = emit(inst, k, **cfg)
             assert (ref.status, ref.nodes) == (cert.status, cert.branches)
             if cert.status == "unsat":
@@ -147,7 +147,8 @@ def test_emitter_matches_the_c_with_theorem_2():
     for _ in range(60):
         inst = _sparse(rng)
         for k in range(1, inst.n_customers + 1):
-            native = decide_native(inst, k, better_move=True, better_move_dominators=0, memo=False)
+            native = decide_native(inst, k, better_move=True, better_move_dominators=0, memo=False,
+                                    repaired_rules=False)   # the emitter models the published rules
             if native is None:
                 pytest.skip("C library unavailable")
             cert = emit(inst, k, better_move=True, better_move_dominators=0)

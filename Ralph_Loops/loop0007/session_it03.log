@@ -1,0 +1,179 @@
+# session it03 started 2026-10-01 15:19:53
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A25 '^- \[ \] \*\*03' Ralph_Loops/loop0007/iterations.md; uptime; ls pathwidth_solver pathwidth_solver/pathwidth; wc -l pathwidth
+  > $ cd /home/al/dev/MOSP; ls; ls satisfiability | head -50; find . -name customer_search.c -not -path ./node_modules
+  > $ cd /home/al/dev/MOSP; git show 988e65c1e --stat; git show 988e65c1e -- satisfiability/customer_search.c satisfiability/native.py
+
+Now the pathwidth solver files.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; diff ../../satisfiability/customer_search.c closing_search.c | head -150; cat native.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; git show HEAD~1:satisfiability/customer_search.c > /tmp/cs_old.c; diff /tmp/cs_old.c closing_search.c && echo I
+  > $ cd /home/al/dev/MOSP; git show 8a94dd0b7 -- satisfiability/customer_search.py; git show 988e65c1e -- satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat pathwidth/search.py; ls tests; grep -rn "better_move\|decide_native\|decide(" pathwidth/solve.py pathwidth/__init__.p
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; ls src; diff src/customer_search.py ../satisfiability/customer_search.py | head -5; cat tests/test_identity_mosp.py; sed 
+  > $ cd /home/al/dev/MOSP; grep -rn "src/customer_search\|closing_search.c\b" --include=*.py --include=*.md pathwidth_solver tests | grep -v "^pathwidth_solver/bench
+
+I'm porting the repaired rules into the pathwidth solver now. First step: the 128-bit legacy C becomes a fresh copy of MOSP's C, as it was before.
+  > $ cd /home/al/dev/MOSP; cp satisfiability/customer_search.c pathwidth_solver/pathwidth/closing_search.c; sed -n 25,40p pathwidth_solver/TRANSFER.md
+
+Now the multiword C.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; python3 - <<'EOF'
+import re
+p='closing_search_w.c'
+s=open(p).read()
+def rep(a,b,cnt=1):
+    global s
+    assert
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; python3 - <<'EOF'
+p='closing_search_w.c'
+s=open(p).read()
+a=""" * is as deep as the graph.
+ */"""
+assert a in s
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; python3 - <<'EOF'
+p='native.py'
+s=open(p).read()
+a="""Two differences from the Python worth knowing:
+- `better_
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/pathwidth; python3 - <<'EOF'
+p='native.py'
+s=open(p).read()
+a="""  now match node for node. It is O(|R|^3) per node agains
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/solver_fix_c_check.py; grep -n "^def \|^[A-Z_]* =" paper2/solver_fix_c_check.py paper2/search_check.py | head -60
+  > $ cd /home/al/dev/MOSP; sed -n 80,238p paper2/solver_fix_c_check.py; sed -n 136,160p paper2/search_check.py; sed -n 935,947p paper2/search_check.py; grep -n "BUG_
+
+Code is written in all four places (legacy C, multiword C, native.py, search.py). Smoke-testing before writing the full check.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; timeout 600 python3 - <<'EOF'
+import sys; sys.path.insert(0,'/home/al/dev/MOSP')
+from pathwidth.search import decide
+from
+  > Write /home/al/dev/MOSP/paper2/solver_fix_pw_check.py
+  > $ cd /home/al/dev/MOSP; sed -i 's/compare(masks, ks, WIDE, 20_000, mosp=False/compare(masks, ks, WIDE, 5_000, mosp=False/' paper2/solver_fix_pw_check.py; uptime; 
+
+Meanwhile, the tests. Let me look at the pathwidth test files I'll extend.
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p tests/test_repaired_rules.py; grep -n "def test" tests/test_repaired_rules.py; cat pathwidth_solver/tests/conftest.py; sed -n
+  > Write /home/al/dev/MOSP/pathwidth_solver/tests/test_repaired_rules.py
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/d026a0f9-f163-406f-b90d-147e6bda45b1/tasks/brueygban.output
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python3 - <<'EOF'
+p='tests/test_repaired_rules.py'
+s=open(p).read()
+s=s.replace("        assert q not in [v for _, v in n
+
+Quick check: zero mismatches across 8 implementations on 330k implementation-calls per setting. Launching the full sweep in the background and running the new tests.
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.solver_fix_pw_check --workers 20 > /tmp/pw_check_full.log 2>&1 &
+echo $!
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; timeout 900 python -m pytest tests/test_repaired_rules.py -q -x 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP; sed -n 40,56p tests/test_repaired_rules.py; sed -n 97,120p tests/test_repaired_rules.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python3 - <<'EOF'
+p='tests/test_repaired_rules.py'
+s=open(p).read()
+a="""        playable = sorted((((opened | masks[v]) 
+  > $ cd /home/al/dev/MOSP; grep -rn "repaired_rules" --include=*.py . | grep -v "^./paper2/solver_fix\|^./tests/test_repaired\|^./pathwidth_solver/tests/test_repaire
+  > $ cd /home/al/dev/MOSP; sed -n 57,96p tests/test_repaired_rules.py; sed -n 295,320p tests/test_repaired_rules.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import re
+def edit(p, pairs):
+    s=open(p).read()
+    for a,b in pairs:
+        assert s.count(a)==1,(p,a,s.count(a))
+ 
+
+Defaults flipped in both solvers. Running the gate now (the full sweep is still going in the background).
+  > $ cd /home/al/dev/MOSP; uptime; sed -n 1,200p Ralph_Loops/loop0007/gate.py | grep -n "pytest\|lake\|workers\|-n " | head; tail -3 /tmp/pw_check_full.log
+  > $ cd /home/al/dev/MOSP; python -c "import xdist" 2>&1; (timeout 1800 python -m pytest tests/ -q -p no:cacheprovider -n 6 > /tmp/mosp_tests.log 2>&1; echo EXIT $? 
+  > $ sleep 5; cat /tmp/mosp_tests.log /tmp/pw_tests.log | tail; cd /home/al/dev/MOSP; (timeout 1800 python -m pytest tests/ -q -p no:cacheprovider > /tmp/mosp_tests.
+
+While tests run, I'll read `paper2/solver_fix.md` so I can add the section.
+  > $ cd /home/al/dev/MOSP; wc -l paper2/solver_fix.md; sed -n 1,60p paper2/solver_fix.md; grep -n "^#" paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 189,265p paper2/solver_fix.md
+  > $ sleep 150; tail -5 /tmp/mosp_tests.log; tail -3 /tmp/pw_tests.log; tail -3 /tmp/pw_check_full.log
+  > $ timeout 590 bash -c 'until grep -q EXIT /tmp/mosp_tests.log; do sleep 5; done'; tail -15 /tmp/mosp_tests.log; tail -3 /tmp/pw_tests.log
+
+As expected, a few tests pin the published rules' node counts. Inspecting each.
+  > $ cd /home/al/dev/MOSP; grep -n "Error\|assert " /tmp/mosp_tests.log | grep -v Warning | head -40
+  > $ cd /home/al/dev/MOSP; grep -n "decide\b\|decide(\|decide_native" learning/fix_cost.py learning/search_certificate.py paper2/search_check.py tests/test_fix_cost.
+  > $ cd /home/al/dev/MOSP; sed -n 415,436p paper2/search_check.py; grep -n "decide\|native" learning/fix_cost.py | sed -n 1,40p; sed -n 130,160p tests/test_search_ce
+  > $ cd /home/al/dev/MOSP; sed -n 25,40p tests/test_fix_cost.py; sed -n 1,40p tests/test_search_certificate.py | grep -n "import"; sed -n 105,125p learning/fix_cost.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+def edit(p, pairs):
+    s=open(p).read()
+    for a,b in pairs:
+        assert s.count(a)==1,(p,a,s.count(a))
+        s=s
+  > $ cd /home/al/dev/MOSP; sed -i '128s/native=False, \*\*cfg)/native=False, repaired_rules=False, **cfg)/; 150s/memo=False)/memo=False,\n                           
+
+Those four modules pin the published rules by design and now name them. Checking the pathwidth suite and the full sweep.
+  > $ tail -5 /tmp/pw_tests.log; tail -5 /tmp/pw_check_full.log; ps -p 516717 -o pid,etime
+  > $ timeout 590 bash -c 'until grep -q EXIT /tmp/pw_tests.log; do sleep 5; done'; tail -8 /tmp/pw_tests.log
+
+All 103 pathwidth tests pass. The item asks for the identity tests under both settings; parametrizing them now.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python3 - <<'EOF'
+p='tests/test_identity_mosp.py'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1,a
+
+
+Suspiciously fast — checking the identity tests actually have instances.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/tests; python -c "
+import conftest, test_identity_mosp as t; print(len(t.INSTANCES), t.CHALLENGE, t.CHALLENGE.is_dir())"; 
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+for p,a in (('satisfiability/customer_search.py',"proved sound in `lean/MOSPFormalization/Search/`, under which the whol
+  > $ cat /tmp/pw_check_full.log; python3 -c "
+import json; r=json.load(open('/home/al/dev/MOSP/paper2/data/solver_fix_pw_check.json'))
+for f,t in r['families'].items
+
+Full sweep: **6.29M implementation-calls per setting, zero mismatches**, 1,319 instances at 4–992 vertices. Running the official gate in the background while I write the report.
+  > $ cd /home/al/dev/MOSP; (timeout 3000 python3 Ralph_Loops/loop0007/gate.py > /tmp/gate.log 2>&1; echo EXIT $? >> /tmp/gate.log) & echo ok
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; ls bench; ls bench/* | head; timeout 900 python3 - <<'EOF'
+import time, networkx as nx, pathwidth as pw
+from pathwidth.gr
+
+Now the report section and the status at the top of `paper2/solver_fix.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/solver_fix.md'
+s=open(p).read()
+a="""**Status of the default.** As of item 02, `repaired_rules` exists in the 
+  > $ cd /home/al/dev/MOSP; grep -rln "cs_decide\|decide_native\|customer_search import\|customer_search\.decide" --include=*.py satisfiability benchmarks pathwidth_s
+  > $ cd /home/al/dev/MOSP; grep -n "decide_native\|cs_decide\|repaired" satisfiability/race.py satisfiability/relaxation.py satisfiability/mosp_solver.py benchmarks/
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/solver_fix.md'
+s=open(p).read()
+a="""the repaired premises on top of it, it answers `sat`, because the matchin
+
+Waiting for the gate to finish.
+  > $ timeout 1500 bash -c 'until grep -q EXIT /tmp/gate.log; do sleep 10; done'; tail -15 /tmp/gate.log
+
+Gate passes (1,343 MOSP tests, 110 pathwidth_solver tests). Writing PROGRESS.md and checking off the item.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0007; sed -i 's/^- \[ \] \*\*03 The pathwidth solver/- [x] **03 The pathwidth solver/' iterations.md; sed -i 's/^Current: 2
+  > $ cd /home/al/dev/MOSP; git status --short | grep -v Ralph_Loops; ps -p 516717 >/dev/null && echo running || echo done
+
+Item 03 is done: the pathwidth solver now has the repaired rules, and `repaired_rules=True` is the default in both solvers. The gate passes (lake build, 1 `sorry`, 1,343 MOSP tests, 110 pathwidth_solver tests).
+
+**What changed in `pathwidth_solver/pathwidth/`:**
+- **`closing_search.c`** (the 128-bit C) is again a byte copy of MOSP's `customer_search.c`, so it has item 02's change. The legacy wrapper calls `cs_decide_rules`.
+- **`closing_search_w.c`** (the multiword C, all word sizes from 2 to 16) has the same change. `csw_decide` gained a `repaired_rules` parameter.
+- **`search.py`** has the flag and, for the first time, a Python better move. Before this, `better_move` was silently ignored on the Python path. The code is the same as MOSP's.
+- **`native.py`** passes the flag through.
+- `src/customer_search.py`, the reference copy described as never edited, is untouched.
+
+**The default.** Both solvers' `decide` and `decide_native` default to `True`. Every caller that doesn't name the flag now runs the repaired rules, including `solve_mosp_exact`, `csearch`, `recertify` and `compute_pathwidth`. This is recorded at the top of `paper2/solver_fix.md`. The old C entry points kept for already-running processes still use the published rules.
+
+Seven MOSP tests failed after the flip. All of them pin counts or code written for the published rules. Four tools that model those rules (`learning/fix_cost.py`, `paper2/search_check.py`, `tests/test_fix_cost.py`, `tests/test_search_certificate.py`) now pass `repaired_rules=False`, and their pinned counts are unchanged. One of those failures shows the repair working: on the 10×13 instance, the `prefix` revert's false refutation at the optimum disappears under the repaired rules.
+
+**The check.** A new script, `paper2/solver_fix_pw_check.py`, sends each call through up to eight implementations: the pathwidth Python, the multiword C at each word size, the legacy C, and MOSP's Python and C. Status, node count and closing order must all match.
+
+| | |
+|---|---|
+| Instances | 1,319 |
+| Sizes | 4–24 vertices at every `k`; corpus instances at 9–125 and sparse graphs at 129–992 under node caps |
+| Implementation-calls per setting | 6,291,160 |
+| Disagreements | **0** under either setting |
+| Old vs repaired giving a different answer | 0 (node counts differed on 4,151 pairs) |
+
+Over these capped runs the repaired rules took 0.02% more nodes. That is a hint, not a cost measurement; item 04 measures cost. New tests: `pathwidth_solver/tests/test_repaired_rules.py` (8 tests), and `test_identity_mosp.py` now runs under both settings.
+
+**No certified value changed and no false refutation turned up.** One thing for items 06–08: the certificate emitter in `learning/search_certificate.py` still models only the published rules, so anything compared against it needs the flag off. PROGRESS.md is updated (3/10) and the item is marked `[x]`. Nothing was committed and nothing was written to `solutions/`.
+
+# result: success in 1502s, 59 turns, cost $3.86

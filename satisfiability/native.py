@@ -151,7 +151,7 @@ def decide_native(
     old_close_count: bool = False,
     old_rule_order: bool = False,
     subset_after_better_move: bool = False,
-    repaired_rules: bool = False,
+    repaired_rules: bool = True,
 ) -> Decision | None:
     """Decide "MOSP(instance) <= k?" in C, or return None if it cannot.
 
@@ -169,7 +169,8 @@ def decide_native(
     `repaired_rules` is the definite and better moves with the repaired
     premises proved sound in `lean/MOSPFormalization/Search/`, as in
     `customer_search.decide`; it matches the Python node for node
-    (`tests/test_repaired_rules.py`).
+    (`tests/test_repaired_rules.py`). The default since 2026-10-01
+    (loop0007 item 03); `False` is the rules as Chu & Stuckey publish them.
 
     None means "not applicable here" -- too many customers, no library, or a
     flag the C does not implement -- and the caller should use the Python. It

@@ -50,7 +50,9 @@ branches kept, so a refutation still refutes.
 §4.3.2, §4.3.4): the definite move can discard the last solution at a node, and
 the better move inherits the fault. `repaired_rules=True` applies the premises
 proved sound in `lean/MOSPFormalization/Search/`, under which the whole search
-is proved sound (`exec_repairedFullFilter_mospValue`).
+is proved sound (`exec_repairedFullFilter_mospValue`); it is the default since
+2026-10-01 (loop0007 item 03), and `False` keeps the published rules for
+comparison.
 
 **Old move and the memo, together.** Chu & Stuckey run both -- "better move",
 "old move" and nogood recording on at once -- and the C follows them. The
@@ -142,7 +144,7 @@ def decide(
     fan_order: str = "index",
     better_move: bool = False,
     better_move_dominators: int = 4,
-    repaired_rules: bool = False,
+    repaired_rules: bool = True,
     **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
@@ -215,9 +217,11 @@ def decide(
             The better move cites `q` for `r` only if, besides premises 3 and
             4, `q` passes the same matching test at `cl(S ∪ {r})`
             (`IsRepairedBetter`). The old tests stay in front as cheap
-            prefilters, which the repair implies. Off by default until the
-            pathwidth solver carries it too (loop0007 item 03). Implemented
-            in the C as well (item 02), node for node.
+            prefilters, which the repair implies. Implemented in the C as
+            well (item 02), node for node, and in the pathwidth solver (item
+            03). **The default since 2026-10-01** (loop0007 item 03, the
+            owner's decision); `False` is the published rules, kept for
+            comparison and regression.
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty

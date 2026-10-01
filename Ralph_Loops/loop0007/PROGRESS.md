@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 2/10 SOLVED
+Current: 3/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -104,3 +104,51 @@ Current: 2/10 SOLVED
   of `paper2/solver_fix.md`. Note: `pathwidth_solver/tests/test_identity_mosp.py`
   compares MOSP's C with the pathwidth C, so the two defaults must change
   together.
+
+## Iteration 3 — 2026-10-01 16:05
+
+### Completed
+- **Item 03.** The pathwidth solver now carries `repaired_rules`.
+  `closing_search.c` is again a byte copy of MOSP's `customer_search.c`, and the
+  legacy wrapper calls `cs_decide_rules`. `closing_search_w.c` has the same diff
+  for every WORDS: Kuhn's matching with `owner[64·WORDS]`, a per-frame `freed`
+  scratch array, and `csw_decide` gained the parameter. `search.py` gained the
+  flag and **a Python better move** (before, it was ignored on the Python path).
+  It uses MOSP's `_apply_dominance` / `_subset_survivors` / `_better_move_pass` /
+  `_has_definite_matching`. `native.py` passes the flag through.
+  `src/customer_search.py` (the pristine copy) is untouched.
+- **`repaired_rules=True` is now the default in both solvers**, in `decide` and
+  `decide_native`, MOSP and pathwidth alike. This is recorded at the top of
+  `paper2/solver_fix.md`. Four tools that model the published rules now name
+  `repaired_rules=False`, with their pinned counts unchanged:
+  `learning/fix_cost.py`, `paper2/search_check.native_decide`,
+  `tests/test_fix_cost.py`, and the reference calls in
+  `tests/test_search_certificate.py`. The pre-flag digest test in
+  `tests/test_repaired_rules.py` names it too. On the 10×13 instance, the
+  `prefix` revert's false refutation at the optimum disappears under the
+  repaired premises.
+- `paper2/solver_fix_pw_check.py` runs up to 8 implementations per call: the
+  pathwidth Python, the multiword C at w2/w4/w8/w16, the legacy C, and MOSP's
+  Python and C. It covered 1,319 instances at 4–992 vertices.
+  **12,582,320 implementation-calls, zero disagreements** under either setting.
+  The two settings never gave a different answer, and the repaired rules took
+  0.02% more nodes over these capped runs, which is not a cost measurement.
+  Data: `paper2/data/solver_fix_pw_check.json`.
+- Tests: `pathwidth_solver/tests/test_repaired_rules.py` (8 new tests), and
+  `test_identity_mosp.py` now runs under both settings (7 → 14 Python cases,
+  and the C test covers better move × both settings).
+- Gate: PASS (1,343 MOSP tests, 110 pathwidth_solver tests).
+
+### Blockers
+- None. No certified value changed in anything run here, and no false refutation
+  was found. Note: the certificate emitter (`learning/search_certificate.py`)
+  models only the published rules, so it certifies `repaired_rules=False`
+  searches. Items 06–08 should either extend it or call the solver with the
+  flag off when they compare against it.
+
+### Next
+- Item 04: what the repair costs, in paired runs (old against repaired), in nodes
+  and seconds. Name `repaired_rules` explicitly on both sides, because the
+  default is now `True`. The pathwidth benchmarks go through
+  `pathwidth_solver/bench/run.py`, which uses the default and therefore
+  repaired.

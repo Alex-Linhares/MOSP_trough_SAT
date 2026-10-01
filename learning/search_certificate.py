@@ -89,7 +89,10 @@ all -- the Python reference never had the rule. Two measured reverts,
 `old_close_count` and `old_rule_order`, reproduce the bugs for the tests. The
 emitter agrees with `decide(native=False)` in status and node count on every
 configuration it shares, and with the C under `csearch` (`better_move=True`,
-`better_move_dominators=0`) -- `tests/test_search_certificate.py`.
+`better_move_dominators=0`) -- `tests/test_search_certificate.py`. It certifies
+the search under the rules **as Chu & Stuckey publish them**, i.e.
+`decide(..., repaired_rules=False)`; the repaired rules became the default on
+2026-10-01 (loop0007 item 03) and the emitter does not model them yet.
 
 Run:
 

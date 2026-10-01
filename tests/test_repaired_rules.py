@@ -63,7 +63,8 @@ def test_with_the_flag_off_nothing_changed_node_for_node():
         inst = MOSPInstance.from_matrix(_baseline_rows(rng), name="b")
         for k in range(0, inst.n_customers + 1):
             for ci, c in enumerate(configs):
-                d = decide(inst, k, native=False, **{a: bool(b) for a, b in c.items()})
+                d = decide(inst, k, native=False, repaired_rules=False,
+                           **{a: bool(b) for a, b in c.items()})
                 rows.append((i, k, ci, d.status, d.nodes))
     assert sum(r[4] for r in rows) == BASELINE_NODES
     assert hashlib.sha256(json.dumps(rows).encode()).hexdigest() == BASELINE_DIGEST

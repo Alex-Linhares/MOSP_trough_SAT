@@ -34,8 +34,17 @@ branches kept, so a refutation still refutes.
 - *old move* (their Theorem 3): if `q` was already searched at an ancestor and
   inserting `q` back there leaves the sequence playable, that subtree has been
   seen and `q` goes. Maintained as a set `Q(S)` in `O(n)` per node.
-- *better move* (their Theorem 2) exists only in the MOSP project's C port and
-  is not in this Python.
+- *better move* (their Theorem 2): if `S ++ [q]` and `S ++ [r, q]` are playable
+  and `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then `r` goes. In the C first;
+  the Python port (2026-10-01, loop0007 item 03) matches it node for node.
+
+**Two of the published theorems are false as stated** (MOSP
+`paper2/revised_algorithm.md` §4.3.2, §4.3.4): the definite move can discard
+the last solution at a node, and the better move inherits the fault.
+`repaired_rules=True` applies the premises proved sound in MOSP's
+`lean/MOSPFormalization/Search/`, under which the whole search is proved sound
+(`exec_repairedFullFilter_mospValue`); it is the default since 2026-10-01
+(MOSP loop0007 item 03), and `False` keeps the published rules for comparison.
 
 **Old move and the memo, together.** As in the reference: the Python refuses
 the combination (a failure reached with old-move pruning is a property of the
@@ -91,6 +100,7 @@ def decide(
     native: bool = True,
     better_move: bool = False,
     better_move_dominators: int = 4,
+    repaired_rules: bool = True,
 ) -> Decision:
     """Decide "max over closing orders of `|O(S ∪ {v}) − S|` <= k?" on `masks`.
 
@@ -131,8 +141,23 @@ def decide(
             1024 vertices. Set
             False to force the Python, which is the reference implementation.
             `branch` and `expansion_prune` force the Python: the C has neither.
-        better_move, better_move_dominators: Chu & Stuckey's Theorem 2, which
-            exists only in the C. Ignored on the Python path.
+        better_move, better_move_dominators: Chu & Stuckey's Theorem 2, run
+            after the subset rule over its survivors, each candidate `r`
+            dropped if an *earlier* survivor `q` (among the first
+            `better_move_dominators`, every earlier one if 0) meets premises 3
+            and 4. Ported from the C on 2026-10-01; before, it was ignored on
+            the Python path.
+        repaired_rules: the definite and better moves with the *repaired*
+            premises proved sound in MOSP's `lean/MOSPFormalization/Search/`.
+            The definite move fires on the first playable `q` passing
+            `close ≥ open` *and* the matching test (`HasDefiniteMatching`,
+            equivalent to `IsHereditarilyDefinite`); a `q` failing the
+            matching is passed over. The better move cites `q` for `r` only
+            if `q` also passes the matching test at `cl(S ∪ {r})`
+            (`IsRepairedBetter`). The same as MOSP's
+            `customer_search.decide(repaired_rules=...)`. **The default
+            since 2026-10-01** (MOSP loop0007 item 03, the owner's decision);
+            `False` is the published rules, kept for comparison.
 
     Returns:
         A `Decision`. The "sat" order closes every active vertex.
@@ -146,7 +171,7 @@ def decide(
             masks, k, restrict=restrict, subset_rule=subset_rule,
             definite_move=definite_move, old_move=old_move, memo=memo,
             better_move=better_move, better_move_dominators=better_move_dominators,
-            max_nodes=max_nodes, memo_limit=memo_limit,
+            repaired_rules=repaired_rules, max_nodes=max_nodes, memo_limit=memo_limit,
             seconds=None if deadline is None else max(0.0, deadline - time.monotonic()),
             fan_order=fan_order)
         if answer is not None:
@@ -266,9 +291,12 @@ def decide(
             if cost <= k:
                 playable.append((cost, vertex))
 
-        if playable and (subset_rule or definite_move):
+        if playable and (subset_rule or definite_move or better_move):
             playable = _apply_dominance(
-                playable, opens, subset_rule, definite_move)
+                playable, opens, subset_rule, definite_move,
+                better_move=better_move, dominators=better_move_dominators,
+                repaired=repaired_rules, masks=masks, full=full,
+                closed=closed, opened=opened, k=k)
 
         if fan_order == "index":
             playable.sort()
@@ -337,13 +365,28 @@ def _apply_dominance(
     opens: dict[int, int],
     subset_rule: bool,
     definite_move: bool,
+    *,
+    better_move: bool = False,
+    dominators: int = 4,
+    repaired: bool = False,
+    masks: Sequence[int] | None = None,
+    full: int = 0,
+    closed: int = 0,
+    opened: int = 0,
+    k: int = 0,
 ) -> list[tuple[int, int]]:
-    """Cut the candidate list by the two dominance relations.
+    """Cut the candidate list by the dominance relations, in the order
+    definite move, subset rule, better move, each citing only candidates still
+    standing (MOSP `paper2/revised_algorithm.md` §4.4.1).
 
     `close(q,S) = |{d ∉ S : o(d,S) ⊆ o(q,S)}|` counts the vertices that closing
     `q` releases: `d` is finished once every vertex it touches has been opened,
     which after `q` means `o(d,S) ⊆ o(q,S)`. Both `close` and the subset test
     fall out of the same pass over the remaining vertices.
+
+    `playable` arrives in vertex index order, which is the order the better
+    move's "earlier" and its dominator limit refer to, as in the C.
+    `better_move` needs `masks`, `full`, `closed`, `opened` and `k`.
     """
     if definite_move:
         for cost, q in playable:
@@ -351,13 +394,31 @@ def _apply_dominance(
             opened_by_q = own.bit_count()
             closed_by_q = sum(1 for other in opens.values() if other & ~own == 0)
             if closed_by_q >= opened_by_q:
+                # close(q, S) counts q itself; the vertices q frees are the rest.
+                if repaired and not _has_definite_matching(
+                        [other for d, other in opens.items()
+                         if d != q and other & ~own == 0],
+                        opened_by_q - 1):
+                    # Chu & Stuckey's premise holds but the hereditary one does
+                    # not: a solution may avoid q (Counterexample 4.5), so q
+                    # may not stand for the others. A later q may still.
+                    continue
                 # q is at least as good as anything else here, so every other
                 # branch can go.
                 return [(cost, q)]
 
-    if not subset_rule:
-        return playable
+    kept = _subset_survivors(playable, opens) if subset_rule else playable
+    if better_move and len(kept) > 1:
+        kept = _better_move_pass(kept, masks, full, closed, opened, k,
+                                 dominators, repaired)
+    return kept
 
+
+def _subset_survivors(
+    playable: list[tuple[int, int]],
+    opens: dict[int, int],
+) -> list[tuple[int, int]]:
+    """The subset rule with its index tie-break, dominators from every remaining vertex."""
     kept = []
     for cost, q in playable:
         own = opens[q]
@@ -370,6 +431,103 @@ def _apply_dominance(
     # Every candidate dominated by a non-candidate (possible only under the
     # frontier restriction) would empty the list; keep the original in that case.
     return kept or playable
+
+
+def _better_move_pass(
+    kept: list[tuple[int, int]],
+    masks: Sequence[int],
+    full: int,
+    closed: int,
+    opened: int,
+    k: int,
+    dominators: int,
+    repaired: bool,
+) -> list[tuple[int, int]]:
+    """Theorem 2 over the subset survivors, the C's `better_move_pass`.
+
+    `r` goes if an earlier survivor `q`, among the first `dominators` (all if
+    0), has premise 3, `|(O(S ∪ {r}) ∪ N[q]) − (S ∪ {r})| ≤ k`, and premise 4,
+    `open' ≤ close'` with `close'` counting the `d ∉ S ∪ {r}` with
+    `∅ ≠ N[d] − O(S ∪ {r}) ⊆ N[q] − O(S ∪ {r})`: Theorem 1's premise for `q`
+    at the child `cl(S ∪ {r})`. With `repaired`, also the matching test at
+    that child, which makes the premise `IsRepairedBetter`. Only an earlier
+    candidate may cite, so the first always survives.
+    """
+    count = len(kept)
+    limit = dominators if 0 < dominators < count else count
+    survivors = []
+    for ri, item in enumerate(kept):
+        r = item[1]
+        closed_r = closed | (1 << r)
+        opened_r = opened | masks[r]
+        remaining_r = full & ~closed_r
+        pruned = False
+        for qi in range(min(limit, ri)):
+            q = kept[qi][1]
+            if ((opened_r | masks[q]) & ~closed_r).bit_count() > k:       # premise 3
+                continue
+            own = masks[q] & ~opened_r
+            opened_by = own.bit_count()
+            freed = []
+            closed_by = 0
+            bits = remaining_r
+            while bits:
+                bit = bits & -bits
+                bits ^= bit
+                d = bit.bit_length() - 1
+                left = masks[d] & ~opened_r
+                # Vertices r finishes alone are free in the child and are not
+                # vertices q closes (MOSP reports/better_move_bug.md §7).
+                if left and left & ~own == 0:
+                    closed_by += 1
+                    if d != q:
+                        freed.append(left)
+            if closed_by < opened_by:                                      # premise 4
+                continue
+            if repaired and not _has_definite_matching(freed, opened_by - 1):
+                continue
+            pruned = True
+            break
+        if not pruned:
+            survivors.append(item)
+    return survivors
+
+
+def _has_definite_matching(freed: list[int], need: int) -> bool:
+    """Whether `need` of the sets in `freed` can be matched to distinct members.
+
+    `freed` holds `o(d, S)` for each vertex `d ≠ q` that closing `q` frees, as
+    bitmasks; `need` is `open(q, S) − 1`. By
+    `isHereditarilyDefinite_iff_hasDefiniteMatching` the maximum matching
+    reaching `need` is exactly `q` being hereditarily definite at `S`. Kuhn's
+    augmenting paths, stopping as soon as `need` edges are matched.
+    """
+    if need <= 0:
+        return True
+    if len(freed) < need:
+        return False
+    owner: dict[int, int] = {}          # vertex bit -> index into freed
+
+    def augment(i: int, visited: set[int]) -> bool:
+        bits = freed[i]
+        while bits:
+            bit = bits & -bits
+            bits ^= bit
+            if bit in visited:
+                continue
+            visited.add(bit)
+            if bit not in owner or augment(owner[bit], visited):
+                owner[bit] = i
+                return True
+        return False
+
+    matched = 0
+    for i in range(len(freed)):
+        if augment(i, set()):
+            matched += 1
+            if matched >= need:
+                return True
+    return False
 
 
 @dataclass
