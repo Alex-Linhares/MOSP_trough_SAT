@@ -1616,6 +1616,199 @@ def run_better(workers=None, out=None, quick=False, n_random=None):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 11: the memo and the old move (Search/Memo.lean)
+# ----------------------------------------------------------------------------
+
+# The configurations whose filter is node-sound on every graph item 06 checked (no bad
+# variant); the Exec invariant is asserted for these and only reported for the rest.
+MEMO_FILTERS = [c for c in FILTERS if c["variant"] == "fixed" and c["limit"] in (0, 1)]
+
+# `reinsert_needs_test` in Memo.lean: the path 4-0-2-1-3, S = {}, q = 2, c = 3, k = 2, the
+# smallest graph (exhaustive to 5 vertices) where reinsertion without the test fails.
+REINSERT_CEX = ([21, 14, 7, 10, 17], 0, 2, 3, 2)
+# the smallest graph (exhaustive to 6 vertices, every k, every filter of MEMO_FILTERS) where
+# the search inheriting every `seen` entry, with no test, answers a false `unsat`: k = 2.
+INHERIT_ALL_CEX = ([37, 22, 15, 12, 18, 33], 2)
+
+
+def memo_run(masks, k, config, O, CL, SS, inherit_all=False):
+    """The search of §1.5 with old move and the memo both on, instrumented with the invariant
+    of `Memo.lean`'s `Exec.sound`: at every node entry each old move `q` outside `S` has
+    `¬ Sol_k(S·q)`, every memo entry `T` has `¬ Sol_k(T)`, and every `false` answer is a
+    state with `¬ Sol_k(S)`. `inherit_all` drops the inheritance test (a mutation).
+    Returns (answer, violations Counter)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    memo = set()
+    bad = Counter()
+
+    def search(closed, seen):
+        closed = CL[closed]                                        # free moves
+        if closed == full:
+            return True
+        if closed in memo:
+            return False
+        seen &= full & ~closed
+        for q in bits(seen):
+            if SS[CL[closed | 1 << q]]:
+                bad["q_not_refuted"] += 1
+        opened = O[closed]
+        _, L, _, _, _ = node_filter(masks, full, closed, seen, k, dict(config, old_move=True))
+        for _, c in sorted(L):
+            inh = seen if inherit_all else inherit(masks, seen, closed, opened, c, k)
+            if search(closed | 1 << c, inh):
+                return True
+            seen |= 1 << c
+        if SS[closed]:
+            bad["false_refutation_recorded"] += 1
+        memo.add(closed)
+        return False
+
+    return search(0, 0), bad
+
+
+def check_memo_graph(masks, ks=None, all_sets=True, tree=True):
+    """Every statement of `Search/Memo.lean` on one graph."""
+    n = len(masks)
+    full = (1 << n) - 1
+    O, CL = s_tables(masks)
+    t = Counter()
+    sets = range(full + 1)
+    # cl_insert_cl_insert_comm: cl(q · cl(c · S)) = cl(c · cl(q · S)), every set, no k
+    if all_sets:
+        for S in sets:
+            for q in range(n):
+                for c in range(n):
+                    t["comm_cases"] += 1
+                    if CL[CL[S | 1 << c] | 1 << q] != CL[CL[S | 1 << q] | 1 << c]:
+                        t["fail_comm"] += 1
+    by_cl = {}
+    for T in sets:
+        by_cl.setdefault(CL[T], []).append(T)
+    for k in (range(0, n + 1) if ks is None else ks):
+        SS = s_searchsol_table(masks, k, O, CL)
+        P = d_solvable_table(masks, k, O)
+        # searchSol_reinsert: the one-step old-move lemma, at every set S
+        for S in (sets if all_sets else [S for S in sets if CL[S] == S]):
+            for q in range(n):
+                back = SS[CL[S | 1 << q]]
+                for c in range(n):
+                    if (O[S | 1 << q | 1 << c] & ~(S | 1 << q)).bit_count() > k:
+                        continue
+                    t["reinsert_cases"] += 1
+                    if SS[CL[CL[S | 1 << c] | 1 << q]] and not back:
+                        t["fail_reinsert"] += 1
+                    # the test is needed: without it the lemma fails
+                if not back:
+                    for c in range(n):
+                        if (O[S | 1 << q | 1 << c] & ~(S | 1 << q)).bit_count() > k \
+                                and SS[CL[CL[S | 1 << c] | 1 << q]]:
+                            t["untested_reinsert_fails"] += 1
+        # solvable_iff_of_cl_eq: the memo key, every pair with equal closure and the invariant
+        for group in by_cl.values():
+            inv = [T for T in group if (O[T] & ~T).bit_count() <= k]
+            vals = {P[T] for T in inv}
+            t["memo_key_groups"] += 1
+            if len(vals) > 1:
+                t["fail_memo_key"] += 1
+        # Exec.sound in real runs, the instrumented search with old move and the memo
+        if tree:
+            root = SS[0]
+            for cfg in MEMO_FILTERS:
+                ans, bad = memo_run(masks, k, cfg, O, CL, SS)
+                t["tree_runs"] += 1
+                if ans != root:
+                    t["fail_tree_answer"] += 1
+                for key, v in bad.items():
+                    t["fail_" + key] += v
+            ans, bad = memo_run(masks, k, MEMO_FILTERS[0], O, CL, SS, inherit_all=True)
+            t["mutation_runs"] += 1
+            if ans != root:
+                t["mutation_false_refutations"] += 1
+    return t
+
+
+def memo_path_check(masks, rng, paths=200):
+    """`searchSol_reinsert_path` on random paths: from a state A, moves a_1..a_t each playable
+    and each passing the inheritance test for q; then Sol(cl(q · A_t)) -> Sol(cl(q · A))."""
+    n = len(masks)
+    full = (1 << n) - 1
+    O, CL = s_tables(masks)
+    t = Counter()
+    for k in range(1, n + 1):
+        SS = s_searchsol_table(masks, k, O, CL)
+        states = [S for S in range(full + 1) if CL[S] == S and S != full]
+        for _ in range(paths // n + 1):
+            A = rng.choice(states)
+            q = rng.randrange(n)
+            cur = A
+            for _step in range(n):
+                moves = [c for c in range(n) if not cur >> c & 1
+                         and (O[cur | 1 << c] & ~cur).bit_count() <= k
+                         and (O[cur | 1 << q | 1 << c] & ~(cur | 1 << q)).bit_count() <= k]
+                if not moves:
+                    break
+                cur = CL[cur | 1 << rng.choice(moves)]
+                t["path_cases"] += 1
+                if SS[CL[cur | 1 << q]] and not SS[CL[A | 1 << q]]:
+                    t["fail_path"] += 1
+    return t
+
+
+def _memo_job(args):
+    masks, all_sets, seed = args
+    t = check_memo_graph(masks, all_sets=all_sets)
+    t.update(memo_path_check(masks, random.Random(seed)))
+    return t
+
+
+def run_memo(workers=None, out=None, quick=False, n_random=None):
+    """Item 11's check: every labelled graph on 1-6 vertices (statements at every set), the
+    atlas on 7 (at the free-closed states), random sparse and cover graphs at 8-11, and the
+    pinned definite-move counterexamples for the Exec invariant under the code's filter."""
+    started = time.time()
+    small = [(m, True, i) for n in range(1, (4 if quick else 6) + 1)
+             for i, m in enumerate(labelled_graphs(n))]
+    if not quick:
+        small += [(m, False, i) for i, m in enumerate(atlas_graphs(7))]
+    rng = random.Random(11)
+    count = (10 if quick else 400) if n_random is None else n_random
+    rand = []
+    for i in range(count):
+        n = rng.randint(8, 9 if quick else 11)
+        rand.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False, i))
+    by = {"small": Counter(), "random": Counter()}
+    with Pool(workers) as pool:
+        for tt in pool.imap(_memo_job, small, chunksize=16):
+            by["small"].update(tt)
+        for tt in pool.imap_unordered(_memo_job, rand, chunksize=2):
+            by["random"].update(tt)
+    total = Counter()
+    for tt in by.values():
+        total.update(tt)
+    pinned = {}
+    for i, (m, S, q, k) in enumerate(DEFINITE_CEX):
+        O, CL = s_tables(m)
+        SS = s_searchsol_table(m, k, O, CL)
+        runs = {}
+        for cfg in MEMO_FILTERS:
+            ans, bad = memo_run(m, k, cfg, O, CL, SS)
+            runs[config_name(dict(cfg, old_move=True, memo=True))] = {
+                "answer": ans, "oracle": SS[0], "violations": dict(bad)}
+        pinned[f"definite_cex_{i}"] = runs
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(small) + len(rand),
+              "quick": quick, "filters": [config_name(c) for c in MEMO_FILTERS],
+              "tally": dict(total), "tally_by_family": {k: dict(v) for k, v in by.items()},
+              "pinned": pinned,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_memo_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
@@ -1629,7 +1822,13 @@ def main():
                     help="item 09: check Search/SubsetRule.lean")
     ap.add_argument("--better", action="store_true",
                     help="item 10: check Search/BetterMove.lean")
+    ap.add_argument("--memo", action="store_true",
+                    help="item 11: check Search/Memo.lean")
     args = ap.parse_args()
+    if args.memo:
+        print(json.dumps(run_memo(workers=args.workers, quick=args.quick,
+                                  n_random=args.random), indent=1))
+        return
     if args.better:
         print(json.dumps(run_better(workers=args.workers, quick=args.quick,
                                     n_random=args.random), indent=1))

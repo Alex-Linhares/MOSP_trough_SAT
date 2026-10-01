@@ -1,0 +1,177 @@
+{
+ "seconds": 9.1,
+ "graphs": 35311,
+ "quick": false,
+ "filters": [
+  "none",
+  "better/L0/fixed",
+  "better/L1/fixed",
+  "subset",
+  "subset+better/L0/fixed",
+  "subset+better/L1/fixed",
+  "definite",
+  "definite+better/L0/fixed",
+  "definite+better/L1/fixed",
+  "definite+subset",
+  "definite+subset+better/L0/fixed",
+  "definite+subset+better/L1/fixed"
+ ],
+ "tally": {
+  "comm_cases": 76333666,
+  "reinsert_cases": 385177853,
+  "memo_key_groups": 3178272,
+  "tree_runs": 2980980,
+  "mutation_runs": 248415,
+  "path_cases": 7824902,
+  "untested_reinsert_fails": 20073438,
+  "mutation_false_refutations": 257
+ },
+ "tally_by_family": {
+  "small": {
+   "comm_cases": 76333666,
+   "reinsert_cases": 365735357,
+   "memo_key_groups": 2901390,
+   "tree_runs": 2930784,
+   "mutation_runs": 244232,
+   "path_cases": 7682527,
+   "untested_reinsert_fails": 18685031,
+   "mutation_false_refutations": 251
+  },
+  "random": {
+   "untested_reinsert_fails": 1388407,
+   "reinsert_cases": 19442496,
+   "memo_key_groups": 276882,
+   "tree_runs": 50196,
+   "mutation_runs": 4183,
+   "path_cases": 142375,
+   "mutation_false_refutations": 6
+  }
+ },
+ "pinned": {
+  "definite_cex_0": {
+   "none/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   }
+  },
+  "definite_cex_1": {
+   "none/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "subset+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset+better/L0/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   },
+   "definite+subset+better/L1/fixed/old/memo": {
+    "answer": true,
+    "oracle": true,
+    "violations": {}
+   }
+  }
+ },
+ "failures": 0
+}

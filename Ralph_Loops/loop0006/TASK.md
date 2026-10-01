@@ -41,6 +41,18 @@
   is the customer-search state and `EdgeSeparation.lean` which has
   Lengauer's VSG).
 
+**Owner's decision, 2026-10-01, on the definite-move finding (item 08):** the
+paper states the gap and states the repaired rule, and **the solver will be
+fixed later to match the theorems** (both `satisfiability/` and `pathwidth_solver/`),
+outside this loop. This loop still changes no solver code: the production code
+keeps the published premise `close ≥ open` until then. So item 12's
+theorem must be stated for the repaired rule (the search is sound when the
+definite move uses `IsHereditarilyDefinite`), and must also name, precisely,
+the gap for the rule as coded: node-level unsound (`definiteMove_counterexample`),
+no whole-instance false refutation known. Items 10-13 treat the repaired rule
+as the one the theorem covers, and record which results hold for the code as
+it stands.
+
 ## Current Focus
 Phase A (items 01-04): pebbling. Phase B (05-11): the search. Then 12
 (assemble) and 13 (reserve).

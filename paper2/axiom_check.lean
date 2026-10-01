@@ -122,5 +122,17 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.bugA_counterexample
 #print axioms MOSPFormalization.Search.bugB_counterexample
 
+-- loop0006 item 11: the memo and the old move (Search/Memo.lean)
+#print axioms MOSPFormalization.Search.cl_insert_cl_insert_comm
+#print axioms MOSPFormalization.Search.searchSol_reinsert
+#print axioms MOSPFormalization.Search.searchSol_reinsert_path
+#print axioms MOSPFormalization.Search.not_searchSol_of_oldMove
+#print axioms MOSPFormalization.Search.solvable_iff_of_cl_eq
+#print axioms MOSPFormalization.Search.Exec.sound
+#print axioms MOSPFormalization.Search.exec_root_sound
+#print axioms MOSPFormalization.Search.exec_fake_oldMove
+#print axioms MOSPFormalization.Search.reinsert_needs_test
+#print axioms MOSPFormalization.Search.exec_repairedFullFilter_sound
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

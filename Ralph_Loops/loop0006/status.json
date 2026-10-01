@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-01 00:45:38",
+  "updated": "2026-10-01 00:59:32",
   "phase": "tests",
-  "started": "2026-10-01 00:23:46",
-  "item": "10 Better move. `Search/BetterMove.lean`: Chu & Stuckey Thm 2 in"
+  "started": "2026-10-01 00:48:08",
+  "item": "11 Memo and old move. `Search/Memo.lean`: the memo (a state refuted"
 }

@@ -452,3 +452,56 @@ def test_better_hunt_finds_the_false_link_and_the_repair_nothing(tmp_path):
                                    env={"MODE": mode}, check=True).stdout
     assert "PAIR k=6 S=0 r=2 q=0" in out["0"] and "NODE" not in out["0"]
     assert "PAIR" not in out["2"] and "NODE" not in out["2"]
+
+
+# ----------------------------------------------------------------------------
+# item 11: the memo and the old move (Search/Memo.lean)
+# ----------------------------------------------------------------------------
+
+
+def test_memo_quick_run_has_no_failures():
+    r = sc.run_memo(quick=True, workers=2)
+    assert r["failures"] == 0
+    t = r["tally"]
+    assert t["reinsert_cases"] > 0 and t["tree_runs"] > 0 and t["path_cases"] > 0
+    assert t["untested_reinsert_fails"] > 0          # the lemma needs its test
+
+
+def test_memo_every_statement_on_every_set_to_four_vertices():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_memo_graph(masks, all_sets=True)
+            assert not any(v for key, v in t.items() if key.startswith("fail_")), (masks, t)
+
+
+def test_reinsert_counterexample_is_the_lean_graph():
+    masks, S, q, c, k = sc.REINSERT_CEX
+    assert masks == sc.masks_from_edges(5, [(0, 2), (0, 4), (1, 2), (1, 3)])   # reinsertEdges
+    O, CL = sc.s_tables(masks)
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert (O[S | 1 << c] & ~S).bit_count() <= k                               # c playable
+    assert (O[S | 1 << q | 1 << c] & ~(S | 1 << q)).bit_count() == 3           # test fails
+    assert CL[S | 1 << q] == 0b100 and CL[CL[S | 1 << c] | 1 << q] == 0b1110   # h2, h32
+    assert SS[CL[CL[S | 1 << c] | 1 << q]] and not SS[CL[S | 1 << q]]
+    assert sc.m_order_cost(masks, 0b1110, [0, 4]) <= k
+
+
+def test_inherit_all_mutation_gives_a_false_refutation():
+    masks, k = sc.INHERIT_ALL_CEX
+    O, CL = sc.s_tables(masks)
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[0]
+    cfg = sc.MEMO_FILTERS[0]
+    ans, bad = sc.memo_run(masks, k, cfg, O, CL, SS)
+    assert ans and not bad
+    ans, bad = sc.memo_run(masks, k, cfg, O, CL, SS, inherit_all=True)
+    assert not ans and bad["q_not_refuted"] > 0 and bad["false_refutation_recorded"] > 0
+
+
+def test_memo_checker_catches_inheritance_without_the_test(monkeypatch):
+    masks, k = sc.INHERIT_ALL_CEX
+    t = sc.check_memo_graph(masks, ks=[k], all_sets=False)
+    assert not any(v for key, v in t.items() if key.startswith("fail_"))
+    monkeypatch.setattr(sc, "inherit", lambda masks, seen, closed, opened, c, k: seen)
+    t = sc.check_memo_graph(masks, ks=[k], all_sets=False)
+    assert t["fail_tree_answer"] >= 1 and t["fail_q_not_refuted"] >= 1

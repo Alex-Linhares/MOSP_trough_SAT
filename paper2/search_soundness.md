@@ -11,7 +11,7 @@ precisely and then proves it.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
-- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary; §4.4, the better move, item 10: its corrected form is still unsound, because it is Theorem 1 at the child, and it is repaired and proved, with the composition and Lean counterexamples to Bugs A and B).
+- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary; §4.4, the better move, item 10: its corrected form is still unsound, because it is Theorem 1 at the child, and it is repaired and proved, with the composition and Lean counterexamples to Bugs A and B; §4.5, the memo and the old move, item 11: each sound, and sound together, which settles §2.7's claim; the Python's reason for refusing the combination is a checkability point, not a soundness one).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it.
 
@@ -60,6 +60,20 @@ precisely and then proves it.
 > with both repairs. The C runs the unsound premise whenever `better_move`
 > is on (`csearch` on sparse instances, `recertify` always). The solver is
 > unchanged; the owner decides.
+
+> **Result (item 11, 2026-10-01): old move and the memo are sound, and sound
+> together.** `Search/Memo.lean` proves the old move (Theorem 3, in the form
+> of the code's inheritance test, `searchSol_reinsert`), the memo key
+> (`solvable_iff_of_cl_eq`), and, in a big-step semantics of the search's
+> `false` answers (`Exec`), that a run with both on answers `false` only at a
+> state with no solution, for any node-sound filter (`Exec.sound`). The C has
+> always run the two together, and so has every production refutation. The
+> Python's stated reason for refusing the combination is not a soundness
+> argument. What is true in it is that a memo entry recorded under old move
+> cannot be checked locally (`exec_fake_oldMove`), which is the certificate
+> checker's reason. With both repairs the whole search is proved sound
+> (`exec_repairedFullFilter_sound`). The inheritance test is necessary
+> (`reinsert_needs_test`, a 5-vertex path). §4.5.
 
 **Code references** are to the tree at commit `8d824d034`:
 `satisfiability/customer_search.py` (**Py**, the reference implementation),
@@ -647,6 +661,11 @@ has already made it free. It ends at `S·q = cl(S ∪ {q})`.
 cost is at most the quantity the inheritance test bounds. The paper's remark
 that the playability condition "is in fact crucial" is this test.
 
+*Item 11:* the invariant need not be carried along the path. It suffices
+one step at a time: if `q` is genuinely refuted at `S` and passes the test
+for `c`, it is genuinely refuted at `S·c` (`searchSol_reinsert`), and the
+ancestor form is its iterate (`searchSol_reinsert_path`).
+
 **Premise at the node.** `q ∈ Q(S)`.
 
 **Conclusion.** `¬ Sol_k(S·q)`, as long as the refutation of `cl(A ∪ {q})` is
@@ -719,6 +738,14 @@ The empirical record agrees with the argument:
 Item 11 is to prove this or find the counterexample. Until then it is a
 **claim, not a finding**.
 
+*Item 11: proved.* `Exec.sound` (§4.5) is this induction, over a big-step
+semantics of completed runs, for any node-sound filter. The one-step form of
+the invariant of §2.6 is enough: every `seen` entry at a node is a refutation
+completed earlier in the run, and `searchSol_reinsert` carries it to the
+child that inherits it. The instrumented search agreed with the invariant on
+2,980,980 runs (§4.5.4). So the Python's refusal costs nodes and buys nothing
+in soundness. Cert's refusal is a real limit of its certificate format.
+
 ### 2.8 Out of scope
 
 - **`restrict=True`** (their `ub_MOSP`, Py:277–282, C:456–459) branches only on
@@ -767,6 +794,10 @@ now a conjecture about whole instances: it would say that the misfires never
 combine into a wrong `unsat`. Nothing found so far contradicts that (§4.2.4),
 and nothing proves it. Item 12 must either state the theorem for the repaired
 rule or name this gap.
+
+*(Item 11: old move and the memo are not what breaks it either. Together they
+are sound for any node-sound filter (`Exec.sound`). With both repairs, the
+search of this claim is proved sound: `exec_repairedFullFilter_sound`.)*
 
 *(Item 09: the subset rule is not what breaks it. `definite → subset` is
 node-sound with the repaired premise, `repairedFilter_sound`.)*
@@ -1562,3 +1593,158 @@ The tests are `tests/test_search_check.py`, seven new:
   `fail_repaired_sound`;
 - `better_hunt.c` on `cexGraph`: `MODE=0` prints the false link and no lost
   node, `MODE=2` prints nothing.
+
+### 4.5 The memo and the old move (item 11): each sound, and sound together
+
+`lean/MOSPFormalization/Search/Memo.lean`, namespace
+`MOSPFormalization.Search`, about 390 lines. It has no `sorry`, and its axioms
+are `propext`, `Classical.choice` and `Quot.sound` only
+(`../paper2/axiom_check.lean`). Its general part needs only `DecidableEq` on
+customers. The instantiation with `repairedFullFilter` needs the
+`LinearOrder` of items 09–10. No stated gap was needed: nothing is added to
+`Ralph_Loops/loop0006/allowed_sorries.txt`.
+
+#### 4.5.1 Definitions
+
+| §1.5, §2.6–§2.7 | Lean |
+|---|---|
+| the state reached from `A` by the moves `a₁, …, a_t`, each followed by its free moves | `pathEnd G A l` |
+| every move of the path passes the inheritance test for `q`, `stepCost G (insert q A_j) a_{j+1} ≤ k` | `Inherits G k q A l` |
+| a completed run answering `false`, memo `M` before and `M′` after: a call on `(S, Q)` (`o = none`) or the rest of the loop of node `S` with `seen = Q` (`o = some l`) | `Exec G k F M S Q o M′` |
+| step 2, a memo hit | `Exec.hit` |
+| steps 3–8: `Q ← Q ∩ R(S)`; loop over any enumeration of `F S (Q ∖ S)`; record `S` or not | `Exec.node` |
+| step 7: the child `c` on `cl(c · S)` with any subset of the `q ∈ seen` passing the test; then `c` joins `seen` | `Exec.cons` |
+| the filter is node-sound under the invariant (§2.0) | `FilterSound G k F` |
+| the filter returns playable customers | `FilterPlayable G k F` |
+
+The filter `F` is abstract. Old move off is the case in which every child
+inherits the empty set. Memo off, and `memo_limit`, are the case
+`record = false`. The children's order is free, so the cost sort, the fan
+order and `branch` are covered. Aborted runs produce no `Exec` at all, which
+matches the code: an abort answers `unknown` and records nothing.
+
+#### 4.5.2 What is proved
+
+- **The old move, one step** (`searchSol_reinsert`). Suppose
+  `stepCost G (insert q S) c ≤ k`. Then
+  `Sol_k(cl(q · cl(c · S))) → Sol_k(cl(q · S))`, for every set `S`, with no
+  invariant.
+  - *Proof.* Both routes end at `cl(S ∪ {q, c})`
+    (`cl_insert_cl_insert_comm`, from `cl_insert_cl`). If `q` already made
+    `c` free, the step vanishes (`cl_insert_eq_of_mem_cl`). Otherwise, `c`
+    is a playable move of `Sol_k` at `cl(q · S)`, because free-closing never
+    makes a step dearer (`stepCost_cl_le`).
+- **Along a path** (`searchSol_reinsert_path`), by induction on the path.
+  **The rule** (`not_searchSol_of_oldMove`) follows: if the `q` branch at the
+  ancestor `A` has no solution and every move since passed the test, then
+  `q` has no solution at the node. This is Chu & Stuckey's Theorem 3 in the
+  form the search uses it. The paper's literal statement (if `S′` is
+  playable and `S ++ [q] ++ R` is a solution, so is `S′ ++ R`) is immediate,
+  because both reach the same set before `R`. The content is that the code's
+  single test at each step makes `S′` playable, with the intervening free
+  moves absorbed by `cl`.
+- **The test is needed** (`reinsert_needs_test`). Take the path
+  `4 – 0 – 2 – 1 – 3`, `S = ∅`, `q = 2`, `c = 3` and `k = 2`. Then `c` is
+  playable, `stepCost {2} 3 = 3`, and `Sol_k(cl(2 · cl{3})) = Sol_k({1,2,3})`
+  holds, while `Sol_k({2})` does not. This is the smallest such graph
+  (exhaustive to 5 vertices).
+- **The memo key** (`solvable_iff_of_cl_eq`). Two sets of closed customers
+  with the same free closure, each under the node invariant, are equally
+  solvable. So a state refuted once is refuted whatever path reached it.
+  `SearchSol` is a predicate on sets, and `O(cl T) = O(T)` (`opened_cl`,
+  item 07).
+- **Old move and the memo together** (`Exec.sound`). Assume `F` is
+  node-sound and playable, and that at the start of a run:
+  - the node invariant holds at `S`;
+  - every memo entry is genuinely refuted;
+  - every `q ∈ Q ∖ S` has `¬ Sol_k(S·q)`.
+
+  Then every run leaves a memo of genuine refutations. A call answering
+  `false` has `¬ Sol_k(S)`, and in a loop every child run has
+  `¬ Sol_k(S·c)`.
+  - *Proof.* Induction on the run, which follows the order in which subtrees
+    complete. At `cons`, each inherited `q` is a `seen` entry, so it is
+    either a completed sibling refutation or one of the node's own old
+    moves, and it passed the test. `searchSol_reinsert` then makes it
+    genuinely refuted at the child. At `node`, the loop has refuted every
+    member of `F S (Q ∖ S)`, so node soundness gives `¬ Sol_k(S)`, and
+    recording `S` is correct.
+- **From the root** (`exec_root_sound`): a run from `∅` with an empty memo
+  and no old moves means `¬ Solvable G k ∅`.
+  `exec_repairedFullFilter_sound` instantiates `F` with
+  `repairedFullFilter G k L` for any `L` (via `fullFilter_subset`,
+  `repairedFullFilter_playable` and `repairedFullFilter_filterSound`). The
+  search with free moves, the memo, old move and both repairs, in the code's
+  order, answers `false` only if `¬ Solvable G k ∅`.
+- **Why the Python refuses the combination** (`exec_fake_oldMove`). The
+  Python drops the memo under old move (Py:48–55, Py:217–222) because "a
+  failure reached with old-move pruning depends on which branches an
+  ancestor had searched". Take one isolated customer, `k = 1` and a filter
+  that prunes nothing. The root run with the old move `Q = {0}` has no
+  candidates, answers `false` and records `∅`, although `∅` has a solution.
+  So a node's run *taken on its own* does not refute its state. What makes
+  the code sound is `Exec.sound`'s hypothesis on `Q`, that every old move is
+  a refutation completed earlier in the same run. That is a property of the
+  run, not of the node. It makes the combination sound, and it makes a memo
+  entry impossible to check without re-deriving the cited subtree's `Q`,
+  which is why Cert declines the configuration (Cert:526–528).
+
+**What this does not cover.** `Exec.sound` takes a node-sound filter. The
+code's filter is not node-sound: its definite move is unsound (§4.2), and its
+better move cites falsely (§4.4). For the code as it runs, the theorem gives:
+**if** the code's filter never loses the last solution at a node of the run,
+**then** the answer is sound. Item 12 names that as the gap or states the
+theorem for the repaired filter.
+
+#### 4.5.3 What the certificate checker checks
+
+Old move records no steps. Cert re-derives `Q` from the path with the same
+test (Cert:659–669), and lets chains end in it (Cert:648–649). That is
+`Exec.cons`'s side condition, and `searchSol_reinsert` is its justification.
+Cert checks a memo reference only without old move, where the cited entry's
+subtree has an empty `Q` and is checkable on its own.
+
+#### 4.5.4 The check
+
+`python -m paper2.search_check --memo` takes 9 s on 28 cores and writes
+`data/search_memo_check.json`. It transcribes the Lean statements, and it
+runs the §1.5 search with old move and the memo both on (`memo_run`),
+instrumented with `Exec.sound`'s invariant at every node entry and every
+`false` answer.
+
+The graphs are:
+
+- every labelled graph on 1–6 vertices, with the statements checked at every
+  set;
+- every atlas graph on 7, checked at the free-closed states;
+- 400 random sparse and cover graphs on 8–11;
+- the two `DEFINITE_CEX` graphs.
+
+The search runs every `k` under the 12 filters with `variant = fixed` and
+`L ∈ {0, 1}`: the code's rules, with the definite and better moves as coded.
+
+| statement | cases | failures |
+|---|---|---|
+| `cl_insert_cl_insert_comm` (every set, `q`, `c`) | 76,333,666 | 0 |
+| `searchSol_reinsert` (test passed) | 385,177,853 | 0 |
+| `searchSol_reinsert_path` (random inheriting paths) | 7,824,902 path steps | 0 |
+| `solvable_iff_of_cl_eq` (groups with equal closure) | 3,178,272 groups | 0 |
+| search answer = oracle, old move + memo | 2,980,980 runs | 0 |
+| `Exec` invariant: every `q ∈ Q ∖ S` refuted at node entry | every node of those runs | 0 |
+| `Exec` invariant: every recorded state refuted | every record of those runs | 0 |
+| the lemma's conclusion fails when the test fails | 20,073,438 cases | — |
+| mutation, inherit every `seen` entry without the test: false `unsat` | 257 of 248,415 runs | — |
+
+On the two `DEFINITE_CEX` graphs, all 12 filters answer correctly with no
+invariant violation. The code's definite move does not reach its bad node
+there, as item 08 found. The smallest false `unsat` from the no-test mutation
+has 6 vertices (`INHERIT_ALL_CEX`, `k = 2`, no filter), exhaustive to 6.
+
+There are five new tests in `tests/test_search_check.py`:
+
+- a quick run;
+- every statement at every set to 4 vertices;
+- `reinsert_needs_test`'s graph and its certificates;
+- the no-test mutation's false refutation, with its invariant violations;
+- a mutation of the checker: `inherit` replaced by "keep everything" is
+  caught as `fail_tree_answer` and `fail_q_not_refuted`.

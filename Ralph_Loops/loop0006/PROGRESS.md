@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 10/13 SOLVED
+Current: 11/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -818,3 +818,94 @@ Current: 10/13 SOLVED
   two gaps: the definite move and the better move as coded. It must also say which premise
   the certificate checker certifies, since Cert accepts the false link of
   `betterMove_counterexample`.
+
+## Iteration 11 — 2026-10-01 00:56
+
+### Completed
+- **11 Memo and old move. RESULT: each is sound, and they are sound together. This settles
+  §2.7's claim: the C has always run old move with the memo, and so has every production
+  refutation. The Python's reason for refusing the combination is not a soundness argument.**
+  New file `lean/MOSPFormalization/Search/Memo.lean`, 380 lines, imported from the root. No
+  `sorry`, no stated gap (`allowed_sorries.txt` unchanged); axioms `propext`,
+  `Classical.choice`, `Quot.sound` only (ten new lines in `paper2/axiom_check.lean`). The
+  general part needs only `DecidableEq`.
+  - **Old move (Thm 3)**:
+    - `searchSol_reinsert` is the one-step form, under the code's inheritance test
+      `stepCost (insert q S) c ≤ k`: `Sol_k(cl(q·cl(c·S))) → Sol_k(cl(q·S))`. It holds at
+      every set, with no invariant. Both routes reach `cl(S ∪ {q,c})`
+      (`cl_insert_cl_insert_comm`). If `q` made `c` free, the step vanishes; otherwise
+      `stepCost_cl_le` applies.
+    - `searchSol_reinsert_path` iterates it and `not_searchSol_of_oldMove` is the rule. The
+      ancestor invariant of §2.6 is the iterate of the one-step form; it does not have to
+      be carried along the path.
+    - **`reinsert_needs_test`**: the test is necessary. On the path `4–0–2–1–3` with
+      `S = ∅`, `q = 2`, `c = 3`, `k = 2`, the lemma fails without it. This is the smallest
+      such graph, exhaustive to 5 vertices.
+  - **Memo**: `solvable_iff_of_cl_eq` says two sets with the same free closure are equally
+    solvable under the invariant.
+  - **Together**:
+    - `Exec G k F M S Q o M′` is a big-step semantics of completed `false` runs with an
+      abstract filter. It has four constructors: a memo hit; a node (`Q ← Q ∖ S`, any
+      enumeration of `F S (Q∖S)`, record or not); an empty loop; and a child run with *any*
+      subset of the `seen` entries that pass the test, after which the child joins `seen`.
+      Old move off, memo off, `memo_limit` and every child order are special cases.
+    - **`Exec.sound`**: for a node-sound, playable `F`, a genuine memo and genuine old moves
+      give a genuine memo after the run, and every `false` answer is `¬ Sol_k(S)`. The proof
+      is by induction on the run, i.e. on completion order. It is the §2.7 argument,
+      mechanised.
+    - `exec_root_sound`: from the root, `¬ Solvable G k ∅`.
+    - **`exec_repairedFullFilter_sound`**: the whole search is sound — free moves, memo,
+      old move, and `definite → subset → better` with both repairs in the code's order, for
+      any `L`.
+  - **Why the Python refuses** (`exec_fake_oldMove`). With one isolated customer, `k = 1`,
+    `Q = {0}` and no pruning, the root run answers `false` and records the solvable state
+    `∅`. So a node's run *on its own* is not a refutation. Soundness rests on `Q` being
+    refuted earlier in the same run, which is a property of the run, not of the node. The
+    combination therefore costs local checkability of memo entries (Cert:526–528's reason)
+    and not soundness.
+  - First compile: four local errors (anonymous-constructor parsing, a lemma behind
+    `LinearOrder`, an instance argument, `fin_cases` unavailable). All were fixed in three
+    rounds; no proof was abandoned.
+- **Check before stating.** `python -m paper2.search_check --memo` takes 9 s on 28 cores and
+  writes `paper2/data/search_memo_check.json`. Graphs: labelled graphs on 1–6 at every set,
+  atlas 7 at the states, 400 random graphs at 8–11, and both `DEFINITE_CEX`. **Zero
+  failures** in:
+  - 76.3 M commutation cases;
+  - 385 M reinsertion cases;
+  - 7.8 M inheriting path steps;
+  - 3.18 M memo-key groups;
+  - 2.98 M instrumented search runs with old move and memo, under the 12 code filters
+    (`fixed`, `L ∈ {0,1}`). Every answer equals the oracle, and the `Exec` invariant holds
+    at every node entry and every record.
+
+  Mutations:
+  - without the test, the lemma's conclusion fails in 20.1 M cases;
+  - inheriting every `seen` entry gives 257 false `unsat` in 248 k runs, the smallest on
+    6 vertices (`INHERIT_ALL_CEX`).
+
+  `tests/test_search_check.py` has five new tests, 42 in total, including a checker
+  mutation (`inherit` → keep all is caught).
+- **Docs.** `paper2/search_soundness.md`:
+  - a result box at the top and the §4 bullet;
+  - item 11 notes in §2.6, §2.7 (the claim is now proved) and §2.9;
+  - new §4.5, covering definitions, theorems, what this does not cover, what Cert checks,
+    and the check table.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1317 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None for the item. What `Exec.sound` does not cover: the code's filter is not node-sound
+  (items 08 and 10). For the code as it runs, the theorem is conditional: if its filter never
+  loses the last solution at a node of the run, the answer is sound.
+
+### Next
+- Item 12 (`Search/Decide.lean`). Most of the abstract search now exists as `Exec`, and
+  `exec_repairedFullFilter_sound` is its theorem for the repaired filter. What remains:
+  - the MOSP and pathwidth corollaries via `searchSol_mospGraph_iff_mospValue_le` and
+    `searchSol_empty_iff_pathwidth_add_one_le`; the active-subgraph remark of §4.1.3 if
+    wanted;
+  - for the code's filter, a named `Prop` (e.g. "the code's filter is node-sound at every
+    node of the run") used as a hypothesis, with `Exec.sound` doing the rest;
+  - §5 of `search_soundness.md`: the theorem, the Lean names, and the Cert premise table.
+    Cert's `better` step certifies the code's premise, which `betterMove_counterexample`
+    shows can be false.

@@ -75,7 +75,7 @@ assembly and a reserve.
   counterexamples to the two wrong forms item 06 confirmed (the uncorrected
   close count, and the cross-rule cycle).
 
-- [ ] **11 Memo and old move.** `Search/Memo.lean`: the memo (a state refuted
+- [x] **11 Memo and old move.** `Search/Memo.lean`: the memo (a state refuted
   once is refuted whatever path reached it) and the old move (Thm 3), each
   sound, and the reason the Python never combines them. Stated gaps allowed
   here only as named `Prop`s.

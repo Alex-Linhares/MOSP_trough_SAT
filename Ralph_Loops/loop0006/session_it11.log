@@ -1,0 +1,134 @@
+# session it11 started 2026-10-01 00:48:08
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A12 "\*\*11 Memo" Ralph_Loops/loop0006/iterations.md; cat Ralph_Loops/loop0006/allowed_sorries.txt 2>/dev/null; ls lean/MOSPForma
+
+Let me read the search_soundness.md sections on old move and memo (§2.6–2.7) and §1.5.
+  > $ cd /home/al/dev/MOSP; grep -n "^#" paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; sed -n 150,245p paper2/search_soundness.md; echo ----; sed -n 505,620p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; sed -n 242,262p paper2/search_soundness.md; echo ----; sed -n 617,790p paper2/search_soundness.md
+  > $ cd /home/al/dev/MOSP; grep -n "^theorem\|^lemma\|^def\|^inductive\|^structure\|^abbrev\|^noncomputable def\|^variable\|^namespace\|^open\|^section\|^end\|^impor
+  > $ cd /home/al/dev/MOSP; sed -n 100,200p lean/MOSPFormalization/Search/Basic.lean; sed -n 280,430p lean/MOSPFormalization/Search/Basic.lean
+  > $ cd /home/al/dev/MOSP; grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^variable\|^abbrev" lean/MOSPFormalization/Search/{DefiniteMove,SubsetRule,BetterMove
+  > $ cd /home/al/dev/MOSP; sed -n 100,160p lean/MOSPFormalization/Search/BetterMove.lean; sed -n 250,330p lean/MOSPFormalization/Search/BetterMove.lean; sed -n 100,1
+  > $ cd /home/al/dev/MOSP; sed -n 230,385p satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; wc -l paper2/search_check.py; grep -n "^def \|^class \|^    parser\|add_argument\|^if __name__\|^[A-Z_]* = " paper2/search_check.py | head
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/search_check.py; sed -n 158,230p paper2/search_check.py; sed -n 300,420p paper2/search_check.py
+  > $ cd /home/al/dev/MOSP; sed -n 438,470p paper2/search_check.py; sed -n 940,1010p paper2/search_check.py; sed -n 1165,1230p paper2/search_check.py; sed -n 1574,165
+  > $ cd /home/al/dev/MOSP; sed -n 1226,1330p paper2/search_check.py; sed -n 123,160p paper2/search_check.py
+  > $ cd /home/al/dev/MOSP; cat > /tmp/memo_section.py <<'EOF'
+# ----------------------------------------------------------------------------
+# item 11: the memo and 
+  > $ cd /home/al/dev/MOSP; nproc; nohup python3 -m paper2.search_check --memo --workers 28 > /tmp/memo_full.out 2>&1 &
+echo $!
+
+Python check running in the background (PID 341978). Writing `Search/Memo.lean` now.
+  > $ cd /home/al/dev/MOSP; sed -n 1,75p lean/MOSPFormalization/Search/BetterMove.lean; grep -n "Search" lean/MOSPFormalization.lean; grep -n "Search" paper2/axiom_ch
+
+Now the Lean file.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/Memo.lean
+  > $ cd /home/al/dev/MOSP/lean && timeout 1200 lake env lean MOSPFormalization/Search/Memo.lean 2>&1 | head -60
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Memo.lean'
+s=open(p).read()
+s=s.replace("exact ⟨hM, fun h => by cases h, fun _ h => by cases h; simp⟩","exact ⟨hM,
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Memo.lean'
+s=open(p).read()
+s=s.replace("obtain ⟨hcK, hck⟩ := mem_filter.1 (fullFilter_subset _ _ _ _ hc)","""obta
+  > $ sed -i 's/      S _ hc)/      S _ c hc)/' MOSPFormalization/Search/Memo.lean && timeout 1200 lake env lean MOSPFormalization/Search/Memo.lean 2>&1 | head -40
+
+Compiles cleanly. Adding the root import and axiom checks, and checking the background run.
+  > $ cd /home/al/dev/MOSP && sed -i 's/^import MOSPFormalization.Search.BetterMove$/import MOSPFormalization.Search.BetterMove\nimport MOSPFormalization.Search.Memo/
+  > $ python3 -c "
+import json;r=json.load(open('paper2/data/search_memo_check.json'));print(r['seconds'],r['graphs'],r['failures']);print(json.dumps(r['tally'],inden
+
+Zero failures on 35,311 graphs; the no-test mutation gives 257 false refutations. Let me find the smallest witnesses for the doc/tests.
+  > $ cat > /tmp/smallest.py <<'EOF'
+from paper2.search_check import *
+def lemma_cex():
+    for n in range(1,6):
+        for m in labelled_graphs(n):
+            O,CL
+  > $ sed -n 335,422p lean/MOSPFormalization/Search/DefiniteMove.lean; sed -n 336,360p lean/MOSPFormalization/Search/BetterMove.lean
+
+Adding a small Lean counterexample showing the inheritance test is necessary (5-vertex path).
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/Memo.lean'
+s=open(p).read()
+add='''
+/-! ### The inheritance test is needed -/
+
+/-- The path `4 – 0 – 2 – 1 – 
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/Memo.lean'
+s=open(p).read()
+s=s.replace("""  the form the search uses it; the free mo
+
+Now `lake build` (needed for the axiom check), running in the background while I write tests.
+  > $ cd /home/al/dev/MOSP/lean && (lake build > /tmp/lakebuild.out 2>&1; echo EXIT $? >> /tmp/lakebuild.out; lake env lean ../paper2/axiom_check.lean > /tmp/axiom.ou
+  > $ cd /home/al/dev/MOSP; sed -n 1,30p tests/test_search_check.py; sed -n 300,346p tests/test_search_check.py
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+s=s.replace('''MEMO_FILTERS = [c for c in FILTERS if c["variant"] == "fixed" and c["limit"] in (0,
+
+Tests pass. Now the doc. Let me look at the top of `search_soundness.md` and §4.4's layout.
+  > $ cd /home/al/dev/MOSP; sed -n 1,90p paper2/search_soundness.md; sed -n 1391,1420p paper2/search_soundness.md; sed -n 1505,1600p paper2/search_soundness.md
+  > $ /usr/bin/time -v python3 -m paper2.search_check --memo --workers 28 2>&1 >/dev/null | grep -E "Elapsed|Maximum resident"; python3 -c "
+import json;r=json.load(o
+  > $ sleep 60; cat /tmp/axiom.out | tail -16
+  > $ timeout 600 bash -c 'until grep -q EXIT /tmp/axiom.out; do sleep 3; done'; tail -14 /tmp/axiom.out
+
+Axioms clean. Now the documentation updates.
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+old="with the composition and Lean counterexamples to Bugs A and B)."
+assert old in s
+s=s.repl
+
+Now §4.5 at the end of the document.
+  > $ wc -l lean/MOSPFormalization/Search/Memo.lean && cat >> paper2/search_soundness.md <<'EOF'
+
+### 4.5 The memo and the old move (item 11): each sound, and sound t
+
+Now the gate, in the background.
+  > $ python3 Ralph_Loops/loop0006/gate.py > /tmp/gate.out 2>&1
+
+While the gate runs, writing PROGRESS.md and marking the item.
+  > $ sed -i 's/^- \[ \] \*\*11 Memo and old move.\*\*/- [x] **11 Memo and old move.**/' Ralph_Loops/loop0006/iterations.md && sed -i 's/^Current: 10\/13 SOLVED/Curre
+  > $ cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 11 — 2026-10-01 00:56
+
+### Completed
+- **11 Memo and old move. RESULT: each is sound, and they are
+  > $ timeout 3000 bash -c 'until grep -q "GATE" /tmp/gate.out; do sleep 5; done'; tail -8 /tmp/gate.out
+  > $ sed -i 's/^- Gate: see below.$/- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1317 passed, 2 skipped,\n  1 xfailed; GATE PASS./' Ralph_Loops/
+
+Item 11 is done: the memo and the old move are each sound, and they are also sound together. That combination is how the C has always run, and every refutation in the corpus came from it. The gate passes (`lake build` ok, 1 `sorry` against a limit of 1 — the existing §24 conjecture, 1317 tests passed).
+
+**The Lean file** is `lean/MOSPFormalization/Search/Memo.lean`, 380 lines, imported from the root. It has no `sorry` and needed no stated gap, and it uses only the three standard axioms.
+- **Old move (Chu & Stuckey Theorem 3):** `searchSol_reinsert` proves it one step at a time, under exactly the code's inheritance test. The path form of §2.6 follows by repeating that step, so nothing has to be tracked along the path.
+- **The test is needed:** `reinsert_needs_test` shows the lemma fails without it, on a 5-vertex path. That is the smallest such graph.
+- **Memo:** `solvable_iff_of_cl_eq` shows that two closed sets with the same free closure are equally solvable. So a state refuted once is refuted whichever path reached it.
+- **Both together:** `Exec` is a step-by-step model of the search's runs that answer `false`. The pruning filter is left as a parameter. The model covers old move and memo on or off, the memo size limit, and any child order. `Exec.sound` proves that if the filter never discards the last solution at a node, every `false` answer and every memo entry is a genuine refutation. The proof follows the order in which subtrees finish, which is the §2.7 argument.
+- **Whole search with the repairs:** `exec_repairedFullFilter_sound` proves the full search sound with both of items 08 and 10's fixes to the definite and better moves.
+- **Why the Python refuses the combination:** `exec_fake_oldMove` shows the part of its worry that is true. A single node's run, taken on its own with an old move that was never actually refuted, can record a state that has a solution. What keeps the real search sound is a property of the whole run. So combining old move with the memo only costs the certificate checker the ability to check memo entries locally; it costs no soundness.
+
+**The brute-force check** is `python -m paper2.search_check --memo`, which runs in 9 s. It found zero failures:
+- 385 M one-step reinsertion cases;
+- 76 M cases of the two closure routes agreeing, and 7.8 M path steps;
+- 3.2 M memo-key groups;
+- 2.98 M runs of the real search with old move and memo, instrumented with the proof's conditions. Every answer matched the exact oracle, and the conditions held at every node.
+
+Two deliberate breakages were caught. Letting children inherit every old move without the test gives 257 wrong `unsat` answers, the smallest on 6 vertices. A checker with the test removed is caught by a new test. There are five new tests.
+
+**Docs:** `paper2/search_soundness.md` has a result box at the top, notes in §2.6, §2.7 (the claim is now proved) and §2.9, and a new §4.5.
+
+**Limit:** the code's own filter still includes the definite and better moves as coded, which items 08 and 10 showed unsound. For the solver as it runs, the result is therefore conditional: if its filter never loses the last solution at a node, its refutations are sound. Item 12 either names that as a gap or states its theorem for the repaired filter; `Exec` already provides most of that item's abstract search.
+
+PROGRESS.md is updated (11/13) and the item is marked `[x]`. Items 12 and 13 remain, so I did not add `LOOP_COMPLETE`.
+
+# result: success in 683s, 42 turns, cost $3.26
