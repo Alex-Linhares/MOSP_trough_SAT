@@ -1,0 +1,162 @@
+# session it12 started 2026-10-01 01:02:02
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n "12 Assemble" -A 30 Ralph_Loops/loop0006/iterations.md; cat Ralph_Loops/loop0006/allowed_sorries.txt; ls lean/MOSPFormalization/Se
+  > $ cd /home/al/dev/MOSP; cat lean/MOSPFormalization/Search/Memo.lean
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "theorem searchSol_mospGraph_iff_mospValue_le\|theorem searchSol_empty_iff\|theorem solvable_empty_iff\b\|t
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "^theorem\|^def\|^noncomputable def\|^variable\|^section\|^end" Search/Basic.lean | head -60; sed -n 1,80p 
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 80,200p Search/BetterMove.lean; grep -n "theorem fullFilter_sound\|theorem repairedFullFilter_sound" -A14 Se
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 200,330p Search/BetterMove.lean; grep -n "theorem codeFilter_counterexample\|theorem definiteMove_counterexa
+
+Writing `Search/Decide.lean` next: it adds the MOSP and pathwidth corollaries and states the code's filter as a named per-node condition.
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "instance.*mospGraph\|def mospGraph\|theorem mospValue_eq_pathwidth_add_one" -A3 MOSPGraph.lean | head; sed
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/Decide.lean
+  > $ cd /home/al/dev/MOSP/lean && sed -i 's/^import MOSPFormalization.Search.Memo$/import MOSPFormalization.Search.Memo\nimport MOSPFormalization.Search.Decide/' MOS
+  > $ sed -n 325,332p MOSPFormalization/Search/Decide.lean; sed -n 352,358p MOSPFormalization/Search/Decide.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+s=s.replace("""  codeExec_sound_of_runSound (h.of_nodeSound fun _ _ => nodeSoundAt_c
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+s=s.replace("""  rw [dite_cond_eq_true (eq_true (by decide +kernel))]
+  congr 1""","
+
+Lean compiles cleanly. Next I'll add the axiom audit, then the Python check.
+  > $ cd /home/al/dev/MOSP && tail -30 paper2/axiom_check.lean; grep -n "def main\|argparse\|add_argument\|^def run_\|^def _\|--memo" paper2/search_check.py | tail -6
+  > $ python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+names="""filterSound_iff Exec.execOn ExecOn.exec ExecOn.mono ExecOn.of_nodeSound ExecOn.sound exe
+  > $ grep -n "^def \|^MEMO_FILTERS\|^DEFINITE_CEX\|^[A-Z_]* = " paper2/search_check.py | head -100
+  > $ sed -n 225,350p paper2/search_check.py; sed -n 438,475p paper2/search_check.py; sed -n 940,1005p paper2/search_check.py; sed -n 1165,1225p paper2/search_check.p
+  > $ sed -n 1535,1625p paper2/search_check.py; sed -n 1,54p paper2/search_check.py
+
+First I'll tighten `CodeNodeRepaired` so the better-move clause is only required when the definite move does not fire, which is the case where the code runs it.
+  > $ cd /home/al/dev/MOSP/lean && python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+old="""        (((playable G k S ((univ \\ S) \\ Q)).fi
+  > $ sed -i '272,273s/and every customer the better move drops has some earlier/and, if it does not, every customer the better move drops has some/; 273s/^cited surv
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+old=s[s.index("/-- A checkable condition at one node"):s.index("def CodeNodeRepaired
+  > $ sed -n 76,96p MOSPFormalization/Search/Decide.lean
+  > $ python3 -c "
+for i,l in enumerate(open('MOSPFormalization/Search/Decide.lean'),1):
+    if len(l.rstrip('\n'))>100: print(i,len(l))"; python3 - <<'EOF'
+p='MOSPFo
+
+Lean is clean. Now the Python check (`--decide`).
+  > $ cd /home/al/dev/MOSP && grep -n "def m_vs_of_layout" -A10 paper2/search_check.py && grep -n "def labelled_graphs\|def atlas_graphs" -A6 paper2/search_check.py
+  > $ cat > /tmp/decide_section.py <<'EOF'
+# ----------------------------------------------------------------------------
+# item 12: the search assembled (Search/Deci
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+old="""        for L in DECIDE_LIMITS:
+            visited = []
+
+            def filt(T, Q, m=m, O
+  > $ nproc && time timeout 590 python -m paper2.search_check --decide --workers 28 > /tmp/decide_full.json 2>&1; tail -c 300 /tmp/decide_full.json
+  > $ python3 -c "
+import json; r=json.load(open('paper2/data/search_decide_check.json')); print(r['seconds'],r['graphs'],r['augmented_graphs']); print(json.dumps(r['
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+rep=[
+("""def decide_run(masks, k, filt, O, CL, SS, L=0, inspect=True):""","""def decide_run(masks
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+old="""            if any(SS[CL[closed | 1 << q]] for q in bits(seen)):
+                t["fail_q_
+  > $ grep -n "^def test\|^from\|^import" tests/test_search_check.py | tail -20; grep -n "def test_memo_quick" -A12 tests/test_search_check.py
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+old="""DECIDE_LIMITS = (0, 1)
+"""
+new="""DECIDE_LIMITS = (0, 1)
+
+# a 14-customer augmented definit
+  > $ cat >> tests/test_search_check.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# item 12: the search assembled (Searc
+
+Tests pass. Next I'll read the certificate checker so I can write the premise table for §5.
+  > $ grep -n "^#\|^> \*\*" paper2/search_soundness.md | head -80; wc -l paper2/search_soundness.md learning/search_certificate.py
+  > $ sed -n 1,104p paper2/search_soundness.md; sed -n 1597,1750p paper2/search_soundness.md
+  > $ sed -n 440,720p learning/search_certificate.py
+  > $ cd /home/al/dev/MOSP/lean && grep -n "inductive SearchSol" -A8 MOSPFormalization/Search/Basic.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+anchor="""end General
+"""
+new="""/-! ### The certificate checker's covering conditio
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+s=s.replace("""variable (G k)
+
+/-- `Covered G k S K Q cite c`""","""/-- `Covered K Q
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/Decide.lean'
+s=open(p).read()
+old="""No whole-instance false refutation by the code is known"""
+new="""* **The cer
+  > $ cd /home/al/dev/MOSP && grep -n "# 1. free\|# 2. not\|# 3. memo\|# 4. premises\|# 5. exhaust\|# 6. children\|if rule == \"definite\"\|elif rule == \"subset\"\|e
+  > $ sed -n 198,214p lean/MOSPFormalization/Search/SubsetRule.lean; grep -n "solvable_insert_iff_of_free\|theorem searchSol_cl_of_solvable" lean/MOSPFormalization/Se
+  > $ cat >> paper2/search_soundness.md <<'EOF'
+
+---
+
+## 5. The theorem (item 12)
+
+`lean/MOSPFormalization/Search/Decide.lean`, namespace
+`MOSPFormalization.Search`, 
+  > $ sed -i 's/`MOSPFormalization.Search`, about 470 lines. It has no `sorry`, and its axioms/`MOSPFormalization.Search`, about 450 lines. It has no `sorry`, and its
+  > $ sed -n 1158,1163p paper2/search_soundness.md; git diff -U0 paper2/search_soundness.md | grep -n "^-" | head
+
+The doc is written and the numbers in it match the JSON. Running the loop gate (lake build, sorry count, pytest) now.
+  > $ timeout 3500 python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -15
+  > $ grep -c "^def test" tests/test_search_check.py; date "+%Y-%m-%d %H:%M"
+  > $ python -m pytest --collect-only -q tests/test_search_check.py 2>&1 | tail -1
+  > $ sed -i 's/^There are five new tests in `tests\/test_search_check.py`, 52 in all:$/There are five new tests in `tests\/test_search_check.py`, 47 in all:/' paper2
+  > $ cat >> Ralph_Loops/loop0006/PROGRESS.md <<'EOF'
+
+## Iteration 12 — 2026-10-01 01:20
+
+### Completed
+- **12 Assemble. RESULT: the repaired search is proved sound 
+
+Item 12 is done and marked `[x]`; the gate passes (lake build ok, 1 `sorry` against a limit of 1, the §24 conjecture; 1,322 tests passed). Item 13 is still open, so I did not add `LOOP_COMPLETE`.
+
+**Proved, no `sorry`** (new file `lean/MOSPFormalization/Search/Decide.lean`):
+- **The repaired search.** This is the search with free moves, the memo, old move and `definite → subset → better`, with the definite and better moves in their repaired forms. If it answers "unsat" at `k`, then `mospValue > k` on the MOSP graph and pathwidth > `k − 1`. The main theorems are `exec_repairedFullFilter_mospValue` and `exec_repairedFullFilter_pathwidth`.
+- **The code as it stands.** The gap is a named hypothesis, `CodeRunSound`: the run only visits nodes where the code's filter keeps a solution whenever one exists. Its refutations are proved sound under that hypothesis.
+- **A per-node check that is enough on its own.** `CodeNodeRepaired` asks that the definite pick meets the repaired premise and that every better-move drop has one earlier citation that does. A run of the code that passes it at every node gives `mospValue > k` (`codeExec_mospValue_of_repaired`).
+- **The hypothesis is false in general.** `not_codeFilterSound_cexGraph` shows the code's filter loses the last solution on the 14-customer graph from item 08, for every limit `L`.
+- **The checker's covering step.** `nodeSoundAt_of_covering` proves that the certificate checker's step 5 gives node soundness, provided the cited links are sound.
+
+**Certificate checker table** (`paper2/search_soundness.md` §5.3): each of the checker's six checks is mapped to its Lean lemma. Two of them, the definite step and the better step, check the code's premise rather than the repaired one the lemma needs. So a checker verdict is a full proof only when every definite and better step in the certificate meets the repaired premise. I did not change the checker.
+
+**New finding from the brute-force check** (`python -m paper2.search_check --decide`, 152 s, 570,206 runs, zero failures):
+- In 58 runs the code's own search visits a node where its filter loses the last solution. All are at satisfiable `k`, and every one still answered correctly by finding another branch.
+- The smallest has 14 customers and is pinned in the tests as `RUN_LOST_CEX`.
+- Losses can only happen at satisfiable `k`: if the root has no solution, no node the search visits has one. So a false refutation would need the root to be solvable and a loss on every branch that leads to a solution.
+- No whole-instance false refutation is known, as before.
+
+**Not formalised:** that the checker's Python computes what the table says it does (that rests on item 06's node-for-node agreement with the C), and the remark that customers with no product change nothing.
+
+The suggested reserve item 13, best first:
+1. Prove in Lean that the cheap matching test is equivalent to the repaired definite premise, by Hall's theorem.
+2. Start from the 58 lost-node runs and look for a whole-instance false refutation.
+
+# result: success in 1069s, 50 turns, cost $3.67

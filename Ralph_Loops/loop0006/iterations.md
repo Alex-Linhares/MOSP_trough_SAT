@@ -80,7 +80,7 @@ assembly and a reserve.
   sound, and the reason the Python never combines them. Stated gaps allowed
   here only as named `Prop`s.
 
-- [ ] **12 Assemble.** `Search/Decide.lean`: an abstract search (the tree of
+- [x] **12 Assemble.** `Search/Decide.lean`: an abstract search (the tree of
   states, pruned by the rules of items 07-11 in the code's order) returns
   "unsat" only if `¬ Solvable G k ∅`, so a refutation implies MOSP > k and,
   by `MOSPGraph.lean`, pw > k − 1. Finish `paper2/search_soundness.md` with

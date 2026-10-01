@@ -134,5 +134,30 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.reinsert_needs_test
 #print axioms MOSPFormalization.Search.exec_repairedFullFilter_sound
 
+-- loop0006 item 12: the search assembled (Search/Decide.lean)
+#print axioms MOSPFormalization.Search.filterSound_iff
+#print axioms MOSPFormalization.Search.Exec.execOn
+#print axioms MOSPFormalization.Search.ExecOn.exec
+#print axioms MOSPFormalization.Search.ExecOn.mono
+#print axioms MOSPFormalization.Search.ExecOn.of_nodeSound
+#print axioms MOSPFormalization.Search.ExecOn.sound
+#print axioms MOSPFormalization.Search.execOn_root_sound
+#print axioms MOSPFormalization.Search.nodeSoundAt_of_covering
+#print axioms MOSPFormalization.Search.definite_link
+#print axioms MOSPFormalization.Search.exec_repairedFullFilter_narrowness
+#print axioms MOSPFormalization.Search.exec_repairedFullFilter_pathwidth
+#print axioms MOSPFormalization.Search.exec_repairedFullFilter_mospValue
+#print axioms MOSPFormalization.Search.exec_repairedFullFilter_mospGraph_pathwidth
+#print axioms MOSPFormalization.Search.codeFullFilter_playable
+#print axioms MOSPFormalization.Search.nodeSoundAt_codeFullFilter_of_repaired
+#print axioms MOSPFormalization.Search.codeExec_sound_of_runSound
+#print axioms MOSPFormalization.Search.codeExec_sound_of_codeFilterSound
+#print axioms MOSPFormalization.Search.codeExec_sound_of_repaired
+#print axioms MOSPFormalization.Search.codeExec_pathwidth_of_runSound
+#print axioms MOSPFormalization.Search.codeExec_mospValue_of_runSound
+#print axioms MOSPFormalization.Search.codeExec_mospValue_of_repaired
+#print axioms MOSPFormalization.Search.codeFullFilter_cex
+#print axioms MOSPFormalization.Search.not_codeFilterSound_cexGraph
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

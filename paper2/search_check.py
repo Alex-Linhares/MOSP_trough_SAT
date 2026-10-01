@@ -1809,6 +1809,254 @@ def run_memo(workers=None, out=None, quick=False, n_random=None):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 12: the search assembled (Search/Decide.lean)
+# ----------------------------------------------------------------------------
+
+DECIDE_LIMITS = (0, 1)
+
+# a 14-customer augmented definite-move counterexample (`run_decide`, seed family 3000) on which
+# the code's own run at k = 6 expands the state {1}, where its filter loses the last solution,
+# and still answers `true`, as the oracle does: a lost node inside a real run.
+RUN_LOST_CEX = ([10357, 5378, 229, 13384, 10385, 8805, 621, 404, 898, 2912, 1034, 2577, 4106,
+                 8249], 6, 0b10)
+
+
+def k_parts(masks, O, S, Q, k):
+    """The playable candidates `playable G k S ((univ \\ S) \\ Q)`, in index order."""
+    n = len(masks)
+    K = [c for c in range(n) if not S >> c & 1 and not Q >> c & 1]
+    return s_playable(masks, O, S, k, K)
+
+
+def k_code_filter(masks, O, S, Q, k, L):
+    """`codeFullFilter G k L S Q`, transcribed through `b_full`."""
+    P = k_parts(masks, O, S, Q, k)
+
+    def D(q):
+        o, c = d_counts(masks, O, S, q)
+        return o <= c
+
+    def cite(W, r, q):
+        return b_within(L, W, q) and b_is_better(masks, O, S, k, r, q)
+
+    return b_full(masks, O, S, P, D, cite)
+
+
+def k_repaired_filter(masks, O, CL, S, Q, k, L):
+    """`repairedFullFilter G k L S Q`."""
+    P = k_parts(masks, O, S, Q, k)
+
+    def cite(W, r, q):
+        return b_within(L, W, q) and b_is_repaired(masks, O, CL, S, k, r, q)
+
+    return b_full(masks, O, S, P, lambda q: d_hereditary(masks, O, S, q), cite)
+
+
+def k_node_repaired(masks, O, CL, S, Q, k, L):
+    """`CodeNodeRepaired G k L S Q`: the definite pick, if any, is hereditarily definite; if the
+    definite move does not fire, every better-move drop has some earlier repaired citation."""
+    P = k_parts(masks, O, S, Q, k)
+    F = [q for q in P if (lambda oc: oc[0] <= oc[1])(d_counts(masks, O, S, q))]
+    if F:
+        return d_hereditary(masks, O, S, min(F))
+    W = s_subset_filter(masks, O, S, P)
+    for r in W:
+        if any(q < r and b_within(L, W, q) and b_is_better(masks, O, S, k, r, q) for q in W):
+            if not any(q < r and b_is_repaired(masks, O, CL, S, k, r, q) for q in W):
+                return False
+    return True
+
+
+def decide_run(masks, k, filt, O, CL, SS, L=0, inspect=True, lost=None):
+    """The search of `Exec` (memo on, old move on with the inheritance test, children in index
+    order) with the filter `filt(S, Q)`. At every expanded node (`ExecOn`'s `N`) it records
+    `NodeSoundAt` for the code's filter and `CodeNodeRepaired`; with `inspect=False` it only
+    runs. Returns (answer, Counter)."""
+    n = len(masks)
+    full = (1 << n) - 1
+    memo = set()
+    t = Counter()
+
+    def search(closed, seen):
+        closed = CL[closed]
+        if closed == full:
+            return True
+        if closed in memo:
+            return False
+        seen &= full & ~closed
+        opened = O[closed]
+        out = filt(closed, seen)
+        if inspect:
+            t["nodes"] += 1
+            if (opened & ~closed).bit_count() > k:
+                t["fail_invariant"] += 1
+            # NodeSoundAt's hypothesis on Q; it can fail only downstream of a lost node,
+            # whose refuted-but-solvable child then joins `seen` (asserted per run below)
+            q_ok = not any(SS[CL[closed | 1 << q]] for q in bits(seen))
+            if not q_ok:
+                t["nodes_q_not_refuted"] += 1
+            sound = not q_ok or not SS[closed] or any(SS[CL[closed | 1 << c]] for c in out)
+            rep = k_node_repaired(masks, O, CL, closed, seen, k, L)
+            t["nodes_sound"] += sound
+            t["nodes_repaired"] += rep
+            if rep and not sound:
+                t["fail_repaired_not_sound"] += 1      # nodeSoundAt_codeFullFilter_of_repaired
+            if not sound:
+                t["nodes_unsound"] += 1
+                if lost is not None:
+                    lost.append(closed)
+        for c in sorted(out):
+            if search(closed | 1 << c, inherit(masks, seen, closed, opened, c, k)):
+                return True
+            seen |= 1 << c
+        memo.add(closed)
+        return False
+
+    return search(0, 0), t
+
+
+def check_decide_graph(masks, ks=None, pw=False, examples=None):
+    """Item 12's statements on one graph, at every k (or `ks`)."""
+    n = len(masks)
+    O, CL = s_tables(masks)
+    t = Counter()
+    narrow = None
+    if pw and n:
+        narrow = min(m_vs_of_layout(masks, tau) for tau in itertools.permutations(range(n))) + 1
+    for k in (range(0, n + 1) if ks is None else ks):
+        SS = s_searchsol_table(masks, k, O, CL)
+        root = SS[0]
+        for L in DECIDE_LIMITS:
+            # the repaired search: exec_repairedFullFilter_* (no instrumentation needed)
+            ans, _ = decide_run(masks, k, lambda S, Q: k_repaired_filter(masks, O, CL, S, Q, k, L),
+                                O, CL, SS, L, inspect=False)
+            t["repaired_runs"] += 1
+            if ans != root:
+                t["fail_repaired_answer"] += 1
+            if not ans and narrow is not None:
+                t["pw_cases"] += 1
+                if not k < narrow:                       # k < narrowness, i.e. k <= pw
+                    t["fail_repaired_pw"] += 1
+            # the code's search, instrumented with ExecOn's node predicates
+            lost = []
+            ans, tt = decide_run(masks, k, lambda S, Q: k_code_filter(masks, O, S, Q, k, L),
+                                 O, CL, SS, L, lost=lost)
+            if lost and examples is not None:
+                examples.append({"masks": list(masks), "k": k, "limit": L, "lost_states": lost,
+                                 "answer": ans, "oracle": root})
+            t.update(tt)
+            t["code_runs"] += 1
+            if ans != root:
+                t["code_wrong_answer"] += 1
+            run_sound = tt["nodes_unsound"] == 0
+            if run_sound and tt["nodes_q_not_refuted"]:
+                t["fail_runsound_q_not_refuted"] += 1   # ExecOn.sound's invariant
+            t["code_runs_q_not_refuted"] += tt["nodes_q_not_refuted"] > 0
+            run_repaired = tt["nodes_repaired"] == tt["nodes"]
+            t["code_runs_runsound"] += run_sound
+            t["code_runs_all_repaired"] += run_repaired
+            if not ans and run_sound and root:
+                t["fail_runsound_answer"] += 1          # codeExec_sound_of_runSound
+            if not ans and run_repaired and root:
+                t["fail_allrepaired_answer"] += 1       # codeExec_sound_of_repaired
+    return t
+
+
+def _decide_job(args):
+    masks, pw = args
+    ex = []
+    t = check_decide_graph(masks, pw=pw, examples=ex)
+    return t, ex
+
+
+def _decide_aug_job(args):
+    seed, count = args
+    rng = random.Random(seed)
+    t = Counter()
+    ex = []
+    for _ in range(count):
+        masks = better_augment(rng)
+        O, CL = s_tables(masks)
+        opt = next(k for k in range(len(masks) + 1) if s_searchsol_table(masks, k, O, CL)[0])
+        t.update(check_decide_graph(masks, ks=[max(0, opt - 1), opt], examples=ex))
+    return t, ex
+
+
+def decide_pinned():
+    """`codeFullFilter_cex` and `not_codeFilterSound_cexGraph` on the 14-customer graph, and
+    whether the code's own run at k = 6 ever reaches the state {2}."""
+    masks, S, q, k = DEFINITE_CEX[0]
+    O, CL = s_tables(masks)
+    SS = s_searchsol_table(masks, k, O, CL)
+    out = {"filter_at_cex": {}, "runs": {}}
+    for L in (0, 1, 2, 3):
+        out["filter_at_cex"][L] = k_code_filter(masks, O, S, 0, k, L)
+    for i, (m, S0, _, kk) in enumerate(DEFINITE_CEX):
+        O2, CL2 = s_tables(m)
+        for kq in (kk - 1, kk):
+            SS2 = s_searchsol_table(m, kq, O2, CL2)
+            for L in DECIDE_LIMITS:
+                visited = []
+
+                def filt(T, Q, m=m, O2=O2, kq=kq, L=L, visited=visited):
+                    visited.append(T)
+                    return k_code_filter(m, O2, T, Q, kq, L)
+
+                ans, tt = decide_run(m, kq, filt, O2, CL2, SS2, L)
+                out["runs"][f"definite_cex_{i}/k{kq}/L{L}"] = {
+                    "answer": ans, "oracle": SS2[0], "visits_cex_state": S0 in visited,
+                    "tally": dict(tt)}
+    out["lean_claims_hold"] = (all(v == [0] for v in out["filter_at_cex"].values())
+                               and SS[S] and not SS[CL[S | 1 << q]])
+    return out
+
+
+def run_decide(workers=None, out=None, quick=False, n_random=None, n_aug=800):
+    """Item 12's check: every labelled graph on 1-6 vertices (pathwidth by layouts to 5), the
+    atlas on 7, random sparse and cover graphs at 8-12, augmented definite-move
+    counterexamples at 14-17 at k in {opt-1, opt}, and the pinned counterexample."""
+    started = time.time()
+    small = [(m, n <= 5) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        small += [(m, False) for m in atlas_graphs(7)]
+    rng = random.Random(12)
+    count = (10 if quick else 3000) if n_random is None else n_random
+    rand = []
+    for _ in range(count):
+        n = rng.randint(8, 9 if quick else 12)
+        rand.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False))
+    aug = [] if quick else [(3000 + i, 5) for i in range(n_aug)]
+    by = {"small": Counter(), "random": Counter(), "augmented": Counter()}
+    examples = []
+    with Pool(workers) as pool:
+        for t, ex in pool.imap(_decide_job, small, chunksize=16):
+            by["small"].update(t)
+            examples += ex
+        for t, ex in pool.imap_unordered(_decide_job, rand, chunksize=2):
+            by["random"].update(t)
+            examples += ex
+        for t, ex in pool.imap_unordered(_decide_aug_job, aug):
+            by["augmented"].update(t)
+            examples += ex
+    total = Counter()
+    for t in by.values():
+        total.update(t)
+    pinned = decide_pinned()
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(small) + len(rand),
+              "augmented_graphs": sum(c for _, c in aug), "quick": quick,
+              "limits": list(DECIDE_LIMITS),
+              "tally": dict(total), "tally_by_family": {k: dict(v) for k, v in by.items()},
+              "pinned": pinned, "lost_node_runs": examples,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))
+              + (0 if pinned["lean_claims_hold"] else 1)}
+    out = out or REPORT.parent / "search_decide_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
@@ -1824,7 +2072,13 @@ def main():
                     help="item 10: check Search/BetterMove.lean")
     ap.add_argument("--memo", action="store_true",
                     help="item 11: check Search/Memo.lean")
+    ap.add_argument("--decide", action="store_true",
+                    help="item 12: check Search/Decide.lean")
     args = ap.parse_args()
+    if args.decide:
+        print(json.dumps(run_decide(workers=args.workers, quick=args.quick,
+                                    n_random=args.random), indent=1))
+        return
     if args.memo:
         print(json.dumps(run_memo(workers=args.workers, quick=args.quick,
                                   n_random=args.random), indent=1))

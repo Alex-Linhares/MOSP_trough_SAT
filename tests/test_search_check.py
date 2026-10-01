@@ -505,3 +505,62 @@ def test_memo_checker_catches_inheritance_without_the_test(monkeypatch):
     monkeypatch.setattr(sc, "inherit", lambda masks, seen, closed, opened, c, k: seen)
     t = sc.check_memo_graph(masks, ks=[k], all_sets=False)
     assert t["fail_tree_answer"] >= 1 and t["fail_q_not_refuted"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# item 12: the search assembled (Search/Decide.lean)
+# ---------------------------------------------------------------------------
+
+
+def test_decide_quick_run_has_no_failures():
+    r = sc.run_decide(quick=True, workers=2)
+    assert r["failures"] == 0
+    t = r["tally"]
+    assert t["repaired_runs"] > 0 and t["code_runs"] > 0 and t["pw_cases"] > 0
+    assert r["pinned"]["lean_claims_hold"]
+
+
+def test_decide_every_statement_to_four_vertices_with_pathwidth():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_decide_graph(masks, pw=True)
+            assert not any(v for key, v in t.items() if key.startswith("fail_")), (masks, t)
+            assert t["code_runs_runsound"] == t["code_runs"]
+
+
+def test_code_full_filter_at_the_lean_counterexample():
+    masks, S, q, k = sc.DEFINITE_CEX[0]
+    O, CL = sc.s_tables(masks)
+    for L in range(4):                                    # codeFullFilter_cex, every L
+        assert sc.k_code_filter(masks, O, S, 0, k, L) == [0]
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    assert SS[S] and not SS[CL[S | 1 << q]]              # not_codeFilterSound_cexGraph
+    assert not sc.k_node_repaired(masks, O, CL, S, 0, k, 0)
+
+
+def test_code_run_visits_a_lost_node_and_still_answers_right():
+    masks, k, S = sc.RUN_LOST_CEX
+    O, CL = sc.s_tables(masks)
+    SS = sc.s_searchsol_table(masks, k, O, CL)
+    for L in sc.DECIDE_LIMITS:
+        lost = []
+        ans, t = sc.decide_run(masks, k, lambda T, Q: sc.k_code_filter(masks, O, T, Q, k, L),
+                               O, CL, SS, L, lost=lost)
+        assert lost == [S] and ans and SS[0]
+        assert t["nodes_unsound"] == 1 and t["nodes_repaired"] == t["nodes"] - 1
+        ans, _ = sc.decide_run(masks, k, lambda T, Q: sc.k_repaired_filter(masks, O, CL, T, Q, k, L),
+                               O, CL, SS, L, inspect=False)
+        assert ans
+    # one stack below the optimum nothing can be lost: no visited state has a solution
+    SS = sc.s_searchsol_table(masks, k - 1, O, CL)
+    lost = []
+    ans, t = sc.decide_run(masks, k - 1, lambda T, Q: sc.k_code_filter(masks, O, T, Q, k - 1, 0),
+                           O, CL, SS, 0, lost=lost)
+    assert not ans and not lost
+
+
+def test_decide_checker_catches_a_vacuous_repair_check(monkeypatch):
+    monkeypatch.setattr(sc, "k_node_repaired", lambda *a: True)
+    masks, k, _ = sc.RUN_LOST_CEX
+    t = sc.check_decide_graph(masks, ks=[k])
+    assert t["fail_repaired_not_sound"] > 0

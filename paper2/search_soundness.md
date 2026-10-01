@@ -13,7 +13,11 @@ precisely and then proves it.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
 - §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary; §4.4, the better move, item 10: its corrected form is still unsound, because it is Theorem 1 at the child, and it is repaired and proved, with the composition and Lean counterexamples to Bugs A and B; §4.5, the memo and the old move, item 11: each sound, and sound together, which settles §2.7's claim; the Python's reason for refusing the combination is a checkability point, not a soundness one).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
-  verifies to the Lean lemma that justifies it.
+  verifies to the Lean lemma that justifies it (done: the repaired search is
+  proved sound end to end, `mospValue > k` and `pw > k − 1`; the code as it
+  stands is sound under a named run-local hypothesis or a checkable per-node
+  condition; Cert's definite and better checks are the two whose premise is
+  not the one the Lean lemma needs).
 
 §1–2 were written in loop0006 item 05 and contain no Lean.
 
@@ -74,6 +78,21 @@ precisely and then proves it.
 > checker's reason. With both repairs the whole search is proved sound
 > (`exec_repairedFullFilter_sound`). The inheritance test is necessary
 > (`reinsert_needs_test`, a 5-vertex path). §4.5.
+
+> **Theorem (item 12, 2026-10-01).** `Search/Decide.lean`: a refutation by
+> the customer search with free moves, the memo, old move and
+> `definite → subset → better`, the definite and better moves repaired, means
+> `mospValue > k` on the MOSP graph and `pw > k − 1`
+> (`exec_repairedFullFilter_mospValue`, `exec_repairedFullFilter_pathwidth`).
+> For the code as it stands, the gap is named, `CodeRunSound`: its run expands
+> only nodes where its filter keeps a solution. Under that hypothesis, or a
+> checkable per-node condition (`CodeNodeRepaired`), the same conclusions hold
+> (`codeExec_mospValue_of_runSound`, `codeExec_mospValue_of_repaired`). The
+> hypothesis fails at a node on `cexGraph` (`not_codeFilterSound_cexGraph`),
+> and the code's own runs reach such nodes on 58 of 570,206 runs, always on
+> satisfiable instances. No wrong answer was seen. §5.3 maps each check of
+> the certificate checker to its Lean lemma. Two checks, definite and
+> better, verify the code's premise rather than the repaired one.
 
 **Code references** are to the tree at commit `8d824d034`:
 `satisfiability/customer_search.py` (**Py**, the reference implementation),
@@ -1748,3 +1767,223 @@ There are five new tests in `tests/test_search_check.py`:
 - the no-test mutation's false refutation, with its invariant violations;
 - a mutation of the checker: `inherit` replaced by "keep everything" is
   caught as `fail_tree_answer` and `fail_q_not_refuted`.
+
+---
+
+## 5. The theorem (item 12)
+
+`lean/MOSPFormalization/Search/Decide.lean`, namespace
+`MOSPFormalization.Search`, about 450 lines. It has no `sorry`, and its axioms
+are `propext`, `Classical.choice` and `Quot.sound` only
+(`../paper2/axiom_check.lean`, 23 new lines). Nothing is added to
+`Ralph_Loops/loop0006/allowed_sorries.txt`. The gap left for the code as it
+stands is stated as a named `Prop` and used as an explicit hypothesis, never
+as a `sorry`.
+
+### 5.1 The search, and what a refutation means
+
+The abstract search is item 11's `Exec G k F M S Q o M′` (§4.5.1). It covers:
+
+- the tree of free-closed states;
+- a filter `F` applied at `(S, Q ∖ S)`;
+- the memo under any policy;
+- old moves, with any inherited subset that passes the code's test;
+- any child order.
+
+A refutation is a completed run from the root, `Exec G k F ∅ ∅ ∅ none M′`.
+Item 12 instantiates `F` with the rules of items 07–11 in the code's order,
+`definite → subset → better`.
+
+**Theorem (the repaired search).** Suppose the definite move fires only on a
+hereditarily definite customer (§4.2) and the better move cites only under
+the repaired premise (§4.4), with any limit `L`. Then a refutation of `k` on
+a graph `G` means:
+
+| conclusion | Lean |
+|---|---|
+| `¬ Solvable G k ∅`: no closing order costs at most `k` | `exec_repairedFullFilter_sound` (item 11) |
+| `k < narrowness G` | `exec_repairedFullFilter_narrowness` |
+| `pw(G) > k − 1`, written `k ≤ pathwidth G` (`V` nonempty) | `exec_repairedFullFilter_pathwidth` |
+| on the MOSP graph of an instance `M` with a requirement: `mospValue M > k` | `exec_repairedFullFilter_mospValue` |
+| the same, in pathwidth form: `pw(G_M) > k − 1` | `exec_repairedFullFilter_mospGraph_pathwidth` |
+
+The chain is: `Exec.sound` (item 11), then `solvable_empty_iff` (Lemma F at
+the root, item 07), then `searchSol_empty_iff_pathwidth_add_one_le` (item 07,
+through `Complex.narrowness_eq_pathwidth_add_one`, loop0005), then
+`searchSol_mospGraph_iff_mospValue_le` (item 07, through
+`MOSPGraph.lean`'s `mospValue_eq_pathwidth_add_one`). The search runs on the
+MOSP graph. It drops customers with no product, and `mospGraph` keeps them
+as isolated vertices. They are free at the root, so nothing changes
+(§4.1.3). That remark is not formalised.
+
+### 5.2 The search as coded: the named gap
+
+The code's filter is `codeFullFilter G k L` (`BetterMove.lean`). Its definite
+move uses `close ≥ open` and its better move uses the corrected premise 4.
+**This filter is not node-sound.** On `cexGraph` at `k = 6`, for every `L`,
+it keeps only `0` at the free-closed state `{2}` (`codeFullFilter_cex`). That
+state has a solution and `cl({0, 2})` has none. Against the named property
+this is:
+
+- `CodeFilterSound G k L := FilterSound G k (codeFullFilter G k L)`, which
+  says the code's filter is node-sound at every state of one instance at one
+  `k`;
+- `not_codeFilterSound_cexGraph : ¬ CodeFilterSound cexGraph 6 L`.
+
+What holds for the code is therefore conditional. The condition is the
+run-local form of node soundness. `ExecOn G k F N` is `Exec` in which every
+node the run expands satisfies `N`. Every `Exec` is an `ExecOn` with the
+trivial `N` (`Exec.execOn`), and conversely (`ExecOn.exec`). `ExecOn.sound`
+is `Exec.sound` with the filter required to be node-sound only at the
+expanded nodes (`NodeSoundAt`).
+
+| statement | Lean | status |
+|---|---|---|
+| **the gap, named:** the code's run expands only nodes where its filter keeps a solution whenever one exists, `CodeRunSound G k L M′` | `def CodeRunSound` | a hypothesis, not a proof |
+| a code refutation under the gap is genuine: `¬ Solvable G k ∅` | `codeExec_sound_of_runSound` | proved |
+| … hence `k ≤ pathwidth G`, and `mospValue M > k` on the MOSP graph | `codeExec_pathwidth_of_runSound`, `codeExec_mospValue_of_runSound` | proved |
+| the instance-wide form: `CodeFilterSound G k L` and an `Exec` run give `¬ Solvable G k ∅` | `codeExec_sound_of_codeFilterSound` | proved; its hypothesis is false on `cexGraph` |
+| **a checkable sufficient condition at one node:** if the definite move fires, its pick is hereditarily definite; if not, every customer the better move drops has *some* earlier cited survivor meeting the repaired premise (`CodeNodeRepaired`) | `nodeSoundAt_codeFullFilter_of_repaired` | proved |
+| a run of the code whose every node passes that check is sound, and gives `mospValue M > k` | `codeExec_sound_of_repaired`, `codeExec_mospValue_of_repaired` | proved |
+
+The last two rows are what a certificate would have to carry to certify a
+refutation by the code *as it stands* under the repaired theorems. Every
+definite pick would need a hereditary check, by brute force over subsets or
+by the matching of `isHereditarilyDefinite_of_matching`. Every better-move
+drop would need one repaired witness. The code's
+answer is then sound even though its filter is not, because the node check
+holds at every node the run actually visits. The check passes on 99.94% of
+the code's nodes in the run below. At the nodes where it fails, the filter
+still kept a solution at all but 58 of them.
+
+**Why the run-local hypothesis cannot be checked from the answer alone.**
+Every node the search expands is reached from the root by playable moves.
+So if the root has no solution, no expanded node has one, and every expanded
+node is node-sound for free (the one-line argument is `SearchSol.step` along
+the path). A false refutation therefore needs `Sol_k(∅)` together with a
+lost node on every branch that leads to a solution. Lost nodes inside real
+runs do happen (§5.4). In every case observed the search found a solution
+through another branch.
+
+### 5.3 What the certificate checker checks, and the Lean lemma for each premise
+
+`learning/search_certificate.py` at `0602e1b46` (**Cert**). The checker
+walks the certificate tree from the root and checks six things at each
+node. The table maps each check to the Lean lemma that justifies it, and
+says whether the premise Cert checks is the one that lemma needs.
+
+| Cert check | what it verifies | Lean justification | Cert's premise = the lemma's? |
+|---|---|---|---|
+| status (Cert:517) | the certificate claims `unsat` at `k` | the theorem's conclusion: `exec_root_sound`, then `searchSol_mospGraph_iff_mospValue_le` | yes |
+| step 1, free moves (Cert:545–556) | the listed free customers are exactly those whose `N[c]` is opened | `cl` and Lemma F: `solvable_iff_searchSol_cl`, `solvable_insert_iff_of_free` (item 07) | yes |
+| step 2, not a solution (Cert:557–561) | the closed set is not every customer | `SearchSol.done` is the only way `Sol` holds at `univ` | yes |
+| step 3, memo (Cert:562–575, 526–528) | a memo node cites a completed refutation with the same closed set; refused under old move | `solvable_iff_of_cl_eq` (key) and `Exec.sound` (genuine entries; item 11) | yes; the old-move refusal is about local checkability (`exec_fake_oldMove`), not soundness |
+| candidates and children (Cert:576–594) | children are playable candidates outside `Q`, cost `|(O(S) ∪ N[c]) ∖ S| ≤ k` | `FilterPlayable`; the child keeps the invariant, `card_opened_cl_insert_sdiff_le_of_playable` (item 11) | yes |
+| step 4, definite (Cert:602–616) | `q` playable and `close(q, S) ≥ open(q, S)`; every other playable `r` is covered by `q` | `definite_link`: `Sol(S·r) → Sol(S·q)` when `q` is **hereditarily definite** (from `searchSol_cl_insert_of_hereditarilyDefinite`, item 08) | **no**: Cert checks `IsDefinite` (`isDefinite_iff`), which `definiteMove_counterexample` shows can certify a lost node |
+| step 4, subset (Cert:617–627) | `o(d) ⊆ o(r)`, strictly or `d < r`; `d` any remaining customer | `searchSol_cl_insert_of_newlyOpened_subset` (item 09); acyclicity from `Dominates.trans` and `not_dominates_self` | yes; the tie-break is checked and needed (`noTieBreak_counterexample`) |
+| step 4, better (Cert:628–640) | premise 3 (`S ++ [r, q]` playable) and the corrected premise 4 | `searchSol_cl_insert_of_repairedBetter`: `Sol(S·r) → Sol(S·q)` under **`IsRepairedBetter`** (item 10) | **no**: Cert checks `IsBetter` (`isBetter_iff`), which `betterMove_counterexample` shows can certify a false link |
+| step 5, exhaustiveness (Cert:641–658) | every playable candidate not explored reaches a child or `Q` along cited links, with no cycle | **`nodeSoundAt_of_covering`** (new): with sound links and every candidate `Covered`, the node is node-sound | yes; the cycle check is what makes `Covered` (an inductive, hence finite) hold |
+| step 6, children and `Q` (Cert:659–672) | each child is checked with `Q` re-derived by the reinsertion test | `searchSol_reinsert` (Theorem 3, item 11), `Exec.cons`'s side condition | yes |
+| the whole tree (Cert:674) | every node reachable, the root checked | `ExecOn.sound` / `Exec.sound`, by induction on completion order | yes |
+
+**What a Cert verdict therefore proves.** Cert's acceptance rests on the
+Lean theorems exactly where Cert checks the premise the lemma needs. Two
+checks fall short: the definite step and the better step check the code's
+premises. So a certificate in which every definite step names a
+hereditarily definite customer and every better step names a repaired
+citation proves `mospValue > k` with no trust in the search. The proof is
+`nodeSoundAt_of_covering` at each node, then `ExecOn.sound`, then §5.1's
+chain. A certificate that uses the code's premises proves it only under the
+gap of §5.2. Strengthening Cert's two checks to the repaired premises is one
+subset enumeration (or one matching) per definite step and per better step.
+The checker is not changed in this loop (it is not solver code, but the
+owner's decision covers the fix as one piece).
+
+**What is not formalised.** The table is a reading, not a theorem about the
+Python checker. That Cert's code computes the quantities named in the second
+column is checked by item 06, which re-implemented them from §2 and agreed
+with the C node for node, and by the existing certificate tests. It is not
+proved.
+
+### 5.4 The check
+
+`python -m paper2.search_check --decide` takes 152 s on 28 cores and writes
+`data/search_decide_check.json`. It transcribes `codeFullFilter`,
+`repairedFullFilter` and `CodeNodeRepaired` through the item 10
+transcriptions (`b_full`, `d_hereditary`, `b_is_repaired`). It runs the
+search with memo and old move (`decide_run`) at every `k` and both
+`L ∈ {0, 1}`. The repaired search is checked against the oracle. The code's
+search is instrumented at every expanded node, recording:
+
+- the invariant;
+- `NodeSoundAt`'s hypothesis on `Q`;
+- `NodeSoundAt` itself;
+- `CodeNodeRepaired`.
+
+The graphs are:
+
+- every labelled graph on 1–6 vertices, with pathwidth computed by
+  layouts to 5;
+- every atlas graph on 7;
+- 3,000 random sparse and cover graphs on 8–12;
+- 4,000 augmented definite-move counterexamples on 14–17 (`better_augment`)
+  at `k ∈ {opt − 1, opt}`;
+- the two `DEFINITE_CEX` graphs.
+
+| statement | cases | failures |
+|---|---|---|
+| repaired search answer = oracle (`exec_repairedFullFilter_sound`) | 570,206 runs | 0 |
+| a repaired refutation has `k < narrowness = pw + 1` (layouts, n ≤ 5) | 6,132 refutations | 0 |
+| `CodeNodeRepaired ⇒ NodeSoundAt` at an expanded node (`nodeSoundAt_codeFullFilter_of_repaired`) | 1,781,000 repaired nodes of 1,782,100 | 0 |
+| a code run with no lost node keeps `Q` genuinely refuted (`ExecOn.sound`'s invariant) | 570,148 such runs | 0 |
+| a code refutation from a run with no lost node is genuine (`codeExec_sound_of_runSound`) | every such run | 0 |
+| a code refutation from a run passing the check everywhere is genuine (`codeExec_sound_of_repaired`) | 569,155 such runs | 0 |
+| `codeFullFilter cexGraph 6 L {2} ∅ = {0}`, `L = 0…3`, and the lost solution | pinned | 0 |
+
+What the code does, as opposed to what is proved:
+
+- **The code's own run reaches a lost node.** This happens in 58 of 570,206
+  code runs, all on augmented graphs (29 graphs, both `L`), all at
+  `k = opt`, never at `opt − 1`, as §5.2's argument requires. The smallest
+  example has 14 customers (`RUN_LOST_CEX`, `k = 6`): the run expands
+  `{1}`, where the filter keeps no child with a solution, and then finds a
+  solution through another branch. Every one of the 58 runs answered `sat`
+  correctly. In 26 of them the lost subtree joined `seen` and propagated a
+  non-refuted old move to its siblings. That is the cascade `Exec.sound`'s
+  hypothesis excludes, and it is visible here as 83 nodes with a
+  non-refuted `Q`. It did not change an answer.
+- **The code's filter fails the repaired check at 1,100 expanded nodes.**
+  At all but 58 of them it still kept a solution, or there was none to keep.
+- **Zero wrong answers** from the code's search in 570,206 runs. No
+  whole-instance false refutation is known, as before.
+- On `DEFINITE_CEX`, the code's run at the optimum never reaches the bad
+  state `{2}`: it finds a solution after 14–15 nodes. At `opt − 1` it
+  refutes correctly, and every node is sound for the reason in §5.2.
+
+There are five new tests in `tests/test_search_check.py`, 47 in all:
+
+- a quick run;
+- every statement to 4 vertices, with pathwidth;
+- the Lean counterexample's filter for every `L`;
+- `RUN_LOST_CEX`: a lost node inside a real run with a correct answer, and
+  nothing lost at `opt − 1`;
+- a mutation of the checker: `CodeNodeRepaired` replaced by "always true" is
+  caught as `fail_repaired_not_sound`.
+
+### 5.5 Summary for the paper
+
+- **Proved, unconditionally.** The customer search is a sound decision
+  procedure for `MOSP ≤ k`, and so for `pw ≤ k − 1`. This covers free moves,
+  the memo, old move, the subset rule with its tie-break, and the definite
+  and better moves in their repaired forms, in the code's order, with any
+  `L`, any child order and any memo policy (§5.1).
+- **Proved, conditionally, for the code as it stands.** A refutation is
+  sound if its run expands only nodes where the filter keeps a solution
+  (`CodeRunSound`). It is also sound if every node passes a local check
+  (`CodeNodeRepaired`) that a strengthened certificate could carry (§5.2).
+- **Refuted.** Chu & Stuckey's Theorem 1, and their Theorem 2 in its
+  corrected form, are false as pairwise rules (§4.2, §4.4). The code
+  implements both. Bugs A and B are also refuted (§4.4).
+- **Open.** Whether the code's search ever answers `unsat` wrongly on a
+  whole instance. None is known: zero in this section's 570,206 runs, in
+  item 08's 690,000 graphs, and in the harness's 1.76 M calls.
