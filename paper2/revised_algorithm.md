@@ -304,6 +304,16 @@ and take $S = \{2\}$, $k = 6$, $q = 0$. Then:
   sets are reachable from $X$ by moves of cost at most 6, and none of them is
   $C$.
 
+![The counterexample to Theorem 1](figures/definite_counterexample.png)
+
+*Figure 4.1. The graph of Counterexample 4.5 at the state where the definite
+move fails. Customer 2 is closed, and 1, 3 and 4 are open. Moving 0 opens the
+new stacks 0, 7 and 11, and closes 0, 3 and 4, so open = close = 3 and the rule
+keeps 0 alone. But 3 and 4 have the single new stack 0 between them: closing
+them first gains two stacks for the price of one, which a solution starting
+with 0 cannot match. Regenerate with `python -m paper2.counterexample_figure`,
+which recomputes every labelled fact from the instance (PDF beside it).*
+
 So Theorem 1 is false, both as published and as coded. (Lean:
 `definiteMove_counterexample`, `cexGraph`, `cex_solvable`, and
 `cexFamily_closed` for the seven sets, checked by `decide +kernel`.)
