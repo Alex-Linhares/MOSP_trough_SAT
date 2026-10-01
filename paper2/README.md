@@ -14,6 +14,8 @@ the graph pathwidth solver in `../pathwidth_solver/`.
 - `problem_transformations.md` — section 3 in paper form: each Table 1 problem
   as Instance / Question, then the transformations from equalities to bands to
   what is unproved or false, with sources and Lean names.
+- `revised_algorithm.md` — section 4 in paper form: the customer search, its
+  rules, the repaired Theorems 1 and 2, and the soundness theorem.
 - `proof_reductions.md` — faults found in published proofs of the reductions,
   with the corrected arguments (first: Kirousis & Papadimitriou 1986, Thm 4.1).
 - `equivalences.md` — section 3: the master table of the twelve Table 1

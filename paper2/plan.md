@@ -80,6 +80,12 @@ needed by no row.
 
 ## 4. Chu & Stuckey as a pathwidth solver
 
+**Written (2026-10-01):** `revised_algorithm.md`, "Chu & Stuckey's (revised)
+algorithm": the search as a mathematical object, each rule with its published
+statement and either a proof or a counterexample, repair and proof, the
+composition, and the main soundness theorem, in formal and plain-English form.
+The working record behind it is `search_soundness.md` (loop0006).
+
 **Argues.** Chu & Stuckey's (2009) complete search over customer closing
 orders is, read mathematically, a search over vertex-separation layouts of
 the MOSP graph, and its dominance rules are theorems about layouts. Stated

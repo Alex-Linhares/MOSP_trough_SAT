@@ -45,7 +45,8 @@ state `S`, and keeps only the first such `q` in index order.
   `isHereditarilyDefinite_of_matching` — the form that is cheap to compute: `q` is
   hereditarily definite if `open(q, S) − 1` distinct customers `d ≠ q` with
   `o(d, S) ⊆ o(q, S)` can be matched to distinct stacks `y ∈ o(d, S)` (an injection). The
-  converse holds by Hall's theorem with deficiency (checked, not proved here).
+  converse holds by Hall's theorem with deficiency (proved in `DefiniteMatching.lean`,
+  `isHereditarilyDefinite_iff_hasDefiniteMatching`, loop0006 item 13).
 * `not_isHereditarilyDefinite_cex` — the counterexample violates the repair at
   `B = {2, 3, 4}`.
 

@@ -34,8 +34,8 @@ customers `r` finishes).
   this node the filter still keeps a customer with a solution (`betterMove_counterexample_node`),
   so this is a false link, not yet a lost node.
 * **The repair**, `IsRepairedBetter`: premise 3 and `q` hereditarily definite at `cl(S ∪ {r})`
-  (item 08's repair, at the child). `searchSol_cl_insert_of_repairedBetter`: with `r` and `q`
-  playable at `S`, `Sol_k(S·r) → Sol_k(S·q)`. The proof is the paper's: the repaired Theorem 1
+  (item 08's repair, at the child). `searchSol_cl_insert_of_repairedBetter`: with `r`
+  playable at `S` (`q`'s playability is not needed), `Sol_k(S·r) → Sol_k(S·q)`. The proof is the paper's: the repaired Theorem 1
   at `S·r`, then the swap — `q` first costs at most `k` by playability, `r` second costs at
   most premise 3, and both orders reach `cl(S ∪ {q, r})`. `IsRepairedBetter.isBetter`: the
   repair implies the code's premise, and `isRepairedBetter_of_openCount_le_one` covers every
@@ -209,7 +209,7 @@ theorem card_sdiff_insert_eq {U S : Finset V} {q r : V} (hq : q ∈ U) (hr : r �
   rw [Finset.sdiff_insert, Finset.sdiff_insert, Finset.card_erase_of_mem (by simp [hq, hqS]),
     Finset.card_erase_of_mem (by simp [hr, hrS])]
 
-/-- **The repaired better move is sound**: with `q` playable at `S` and the repaired premise,
+/-- **The repaired better move is sound**: with the repaired premise (no playability hypothesis),
 a solution from `cl(S ∪ {r})` gives one from `cl(S ∪ {q})`. -/
 theorem solvable_cl_insert_of_repairedBetter {k : ℕ} {S : Finset V} {r q : V}
     (hrS : r ∉ S) (hqS : q ∉ S) (hb : IsRepairedBetter G k S r q)
@@ -256,7 +256,7 @@ theorem card_opened_cl_insert_sdiff_le {k : ℕ} {S : Finset V} {r : V} (hrS : r
   exact le_trans (Finset.card_le_card (Finset.sdiff_subset_sdiff le_rfl (subset_cl _)))
     (le_trans (card_opened_insert_sdiff_lt hrS).le hr)
 
-/-- The search's form: with `r` and `q` playable at `S`, `Sol_k(S·r) → Sol_k(S·q)`. -/
+/-- The search's form: with `r` playable at `S`, `Sol_k(S·r) → Sol_k(S·q)`. -/
 theorem searchSol_cl_insert_of_repairedBetter {k : ℕ} {S : Finset V} {r q : V}
     (hrS : r ∉ S) (hqS : q ∉ S) (hr : stepCost G S r ≤ k) (hb : IsRepairedBetter G k S r q)
     (hs : SearchSol G k (cl G (insert r S))) : SearchSol G k (cl G (insert q S)) := by
