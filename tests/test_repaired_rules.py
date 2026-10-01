@@ -365,3 +365,21 @@ def test_the_rule_counters_count_the_repair_and_change_nothing():
                     else:
                         failed += counts["definite_match_fail"] + counts["better_match_fail"]
     assert failed > 0
+
+
+@pytest.mark.skipif(not native_available(), reason="C library unavailable")
+def test_the_c_runs_the_repaired_search_as_the_theorems_state_it():
+    """Item 05: a port of the whole search with the repairs stated from the theorems
+    (`d_hereditary` by enumeration, not a matching) answers the oracle, keeps a solution at
+    every node, and equals the C and the production Python node for node on the two graphs
+    where its runs differ from the published port's."""
+    from paper2.search_check import RUN_LOST_CEX
+    from paper2.solver_fix_soundness import check
+
+    for masks, ks in ((DEFINITE_CEX[0][0], None), (RUN_LOST_CEX[0], [5, 6, 7])):
+        t = check(masks, ks=ks)
+        for bad in ("tree_fail", "node_loss", "native_mismatch", "python_mismatch",
+                    "python_answer_mismatch", "witness_fail"):
+            assert t[bad] == 0, bad
+        assert t["differs_from_published"] > 0
+        assert t["native_runs"] == t["port_runs"]

@@ -32,7 +32,7 @@
   How often does the old test pass but the matching fail, so the rule no
   longer fires? Report the overhead.
 
-- [ ] **05 Soundness of the fixed solver.** Run `paper2/search_check.py`'s
+- [x] **05 Soundness of the fixed solver.** Run `paper2/search_check.py`'s
   whole-search checks against the production code with the repaired rules
   (the port must still equal the C node for node). Run
   `learning.differential` on a sample at n ≤ 40 and 50-75, and the gadget

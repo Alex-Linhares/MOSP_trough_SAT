@@ -1,0 +1,62 @@
+{
+ "seconds": 699.3,
+ "configs": 64,
+ "total": {
+  "sat_k": 158976,
+  "nodes_checked": 39987550,
+  "port_runs": 16279232,
+  "native_runs": 16279232,
+  "python_runs": 16279232,
+  "python_node_runs": 12209424,
+  "graphs": 40592,
+  "unsat_k": 95387,
+  "differs_from_published": 1202
+ },
+ "by_family": {
+  "labelled": {
+   "sat_k": 125536,
+   "nodes_checked": 28641076,
+   "port_runs": 12928832,
+   "native_runs": 12928832,
+   "python_runs": 12928832,
+   "python_node_runs": 9696624,
+   "graphs": 33867,
+   "unsat_k": 76477
+  },
+  "atlas7": {
+   "sat_k": 21800,
+   "nodes_checked": 5593881,
+   "port_runs": 2338560,
+   "native_runs": 2338560,
+   "python_runs": 2338560,
+   "python_node_runs": 1753920,
+   "graphs": 5220,
+   "unsat_k": 14740,
+   "differs_from_published": 344
+  },
+  "random": {
+   "unsat_k": 4148,
+   "port_runs": 1007744,
+   "native_runs": 1007744,
+   "python_runs": 1007744,
+   "python_node_runs": 755808,
+   "nodes_checked": 5727350,
+   "sat_k": 11598,
+   "graphs": 1500,
+   "differs_from_published": 664
+  },
+  "pinned": {
+   "unsat_k": 22,
+   "port_runs": 4096,
+   "native_runs": 4096,
+   "python_runs": 4096,
+   "python_node_runs": 3072,
+   "nodes_checked": 25243,
+   "sat_k": 42,
+   "differs_from_published": 194,
+   "graphs": 5
+  }
+ },
+ "failures": 0,
+ "flagged": []
+}

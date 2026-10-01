@@ -1,0 +1,162 @@
+# session it05 started 2026-10-01 17:58:10
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*05/,/\*\*06/p' Ralph_Loops/loop0007/iterations.md; uptime; date
+  > $ cd /home/al/dev/MOSP; ps -eo pid,pcpu,etime,args --sort=-pcpu | head -15; wc -l paper2/search_check.py paper2/definite_hunt_gen.py paper2/solver_fix_check.py le
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/search_check.py; sed -n 1564,1700p paper2/search_check.py | grep -n "^def " ; grep -n "^def \|__main__\|argv\|argparse
+  > $ cd /home/al/dev/MOSP; sed -n 300,470p paper2/search_check.py; sed -n 556,760p paper2/search_check.py; sed -n 2214,2269p paper2/search_check.py
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/solver_fix_check.py; cat paper2/definite_hunt_gen.py; sed -n 1,80p learning/differential.py; grep -n "def \|add_argume
+  > $ cd /home/al/dev/MOSP; sed -n 1820,2076p paper2/search_check.py
+
+Reading the oracle's port and the differential harness; next I'll write a repaired port of the whole search and the item 05 check script.
+  > $ cd /home/al/dev/MOSP; sed -n 180,300p paper2/search_check.py; sed -n 470,556p paper2/search_check.py; sed -n 950,1030p paper2/search_check.py; sed -n 1156,1230p
+  > $ cd /home/al/dev/MOSP; grep -n "^def decide" -A 25 satisfiability/customer_search.py | head -45; grep -n "def decide_native" -A 20 satisfiability/native.py | hea
+  > $ cd /home/al/dev/MOSP; sed -n 85,104p learning/node_counts.py; sed -n 295,410p learning/differential.py; ls learning/ | grep -i -E "differ|upward|campaign"; grep
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p learning/differential_scale.py; grep -n "add_argument\|def \|repaired" learning/differential_scale.py; grep -n "PARTIAL_CSV\|
+  > $ cd /home/al/dev/MOSP; sed -n 200,300p learning/differential.py; sed -n 60,170p learning/differential_scale.py; sed -n 343,390p learning/differential_scale.py
+  > $ cd /home/al/dev/MOSP; python -c "
+import pandas as pd
+d=pd.read_csv('learning/data/ensemble/differential_scale.csv',low_memory=False)
+print(len(d), d.columns.to
+
+Writing the item 05 check script now: a repaired port of the whole search, checked against the oracle and against the C and Python node for node, plus differential samples.
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p benchmarks/corpus.py; grep -n "write\|open(\|to_csv\|add_argument" benchmarks/corpus.py | head -20; grep -n "BUG_A_CEX\|BUG_B
+  > $ cd /home/al/dev/MOSP; grep -n "^RELABELLINGS\|^ORACLE_MAX\|^DEFAULT_" learning/differential.py; python -c "
+import pandas as pd
+d=pd.read_csv('learning/data/ens
+  > Write /home/al/dev/MOSP/paper2/solver_fix_soundness.py
+  > $ cd /home/al/dev/MOSP; time python -m paper2.solver_fix_soundness --stage port --quick --workers 8 2>&1 | tail -30
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import re
+p='paper2/solver_fix_soundness.py'
+s=open(p).read()
+s=s.replace("""            t["port_runs"] += 1
+            
+  > $ cd /home/al/dev/MOSP; uptime; python - <<'EOF'
+from paper2.solver_fix_soundness import *
+from collections import Counter
+for kind, m, ks, d in [j for j in port_
+
+Port check discriminates (194 runs differ from the published rules on the pinned counterexamples; C and Python match the repaired port on all). Launching the four full stages in the background.
+  > $ cd /home/al/dev/MOSP; mkdir -p /tmp/sfs; for s in "diff40 8" "diff75 6" "port 5" "gadget 5"; do set -- $s; nohup python -m paper2.solver_fix_soundness --stage $
+
+Meanwhile, the corpus check and the state of `solutions/`:
+  > $ cd /home/al/dev/MOSP; python -m benchmarks.corpus; git status --short solutions/ | head; git diff --stat HEAD -- solutions/ | tail -1; git log -1 --format=%cd -
+  > $ cd /home/al/dev/MOSP; python -c "
+import json,glob,hashlib
+v=sorted((json.load(open(p))['instance_name'],json.load(open(p))['mosp_value'],json.load(open(p)).get
+  > $ cd /home/al/dev/MOSP; time python -c "
+from paper2.solver_fix_soundness import *
+from paper2.search_check import DEFINITE_CEX, RUN_LOST_CEX
+t=check(DEFINITE_CEX
+  > $ cd /home/al/dev/MOSP; cat >> tests/test_repaired_rules.py <<'EOF'
+
+
+@pytest.mark.skipif(not native_available(), reason="C library unavailable")
+def test_the_c_r
+  > $ cd /home/al/dev/MOSP; for f in /tmp/sfs/*.log; do echo "== $f"; tail -3 $f; done; uptime
+  > $ cd /home/al/dev/MOSP; kill 571991; sleep 1; python - <<'EOF'
+p='paper2/solver_fix_soundness.py'
+s=open(p).read()
+old='''def gadget_jobs(count=3000, seed=7):
+   
+
+Fixed the gadget stage (it was computing optima serially in the parent); timing one gadget graph before relaunching.
+  > $ cd /home/al/dev/MOSP; python -c "
+import paper2.solver_fix_soundness as M, time
+g=list(M.gadget_graphs(7,20))
+for m in g[:6]:
+    t0=time.time(); r=M._job(('gad
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.solver_fix_soundness --stage gadget --count 12000 --workers 6 > /tmp/sfs/gadget.log 2>&1 & echo $!; sleep 60; for f
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "cd /home/al/dev/MOSP; for p in 571988 571989 571990 572737; do while kill -0 $p 2>/dev/null; do sleep 5; do
+  > $ sleep 240; for f in /tmp/sfs/*.log; do echo "== $f"; tail -2 $f; done
+  > $ cd /home/al/dev/MOSP; for f in /tmp/sfs/*.log; do echo "== $f"; tail -2 $f; done
+
+Four check stages are running; checking progress.
+  > $ date; uptime; ps -o pid,pcpu,etime,args -p 571988,571989,571990,572737
+  > $ until ! kill -0 571988 2>/dev/null; do sleep 5; done; tail -3 /tmp/sfs/diff40.log; tail -1 /tmp/sfs/diff75.log /tmp/sfs/port.log
+  > $ until ! kill -0 571988 2>/dev/null; do sleep 5; done; echo done
+  > $ cd /home/al/dev/MOSP; date; for f in /tmp/sfs/*.log; do echo "== $f"; tail -3 $f; done; ls -la paper2/data/solver_fix_diff40*
+
+diff40 is done. Summarising it, and comparing node counts with the committed run under the published rules:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd
+s=pd.read_csv('paper2/data/solver_fix_diff40_summary.csv',low_memory=False)
+r=pd.read_csv('paper2/dat
+
+diff40: 43,935 instances, 878,700 pairs of calls, zero disagreements, zero contradictions, oracle agrees on 13,612. Waiting for the other three stages.
+  > $ until ! kill -0 571990 2>/dev/null && ! kill -0 571989 2>/dev/null; do sleep 5; done; echo done
+  > $ cd /home/al/dev/MOSP; date; for f in /tmp/sfs/*.log; do echo "== $f"; tail -4 $f; done; uptime
+  > $ cd /home/al/dev/MOSP; until ! kill -0 571989 2>/dev/null; do sleep 5; done; python -m paper2.solver_fix_soundness --stage tables; python -c "
+import json
+for s 
+  > $ cd /home/al/dev/MOSP; python -c "
+import json
+for s in ('port','gadget'):
+    r=json.load(open(f'paper2/data/solver_fix_soundness_{s}.json')); print(s, r['secon
+
+Port and gadget stages: zero failures over 16.3 M + 1.15 M runs. Starting the gate while diff75 finishes its last hard instances.
+  > $ cd /home/al/dev/MOSP; python3 Ralph_Loops/loop0007/gate.py > /tmp/sfs/gate.log 2>&1; echo exit $?; tail -15 /tmp/sfs/gate.log
+  > $ cd /home/al/dev/MOSP; sed -n 1,30p paper2/solver_fix.md; sed -n 409,430p paper2/solver_fix.md
+  > $ until ! kill -0 571989 2>/dev/null; do sleep 5; done; echo done; tail -2 /tmp/sfs/diff75.log
+  > $ until ! kill -0 571989 2>/dev/null; do sleep 5; done; echo done; tail -2 /tmp/sfs/diff75.log; date
+  > $ tail -15 /tmp/sfs/gate.log; date; ps -o pid,etime -p 571989; ps --ppid 571989 -o pid,etime,pcpu | head
+
+Gate passes (1,345 MOSP tests, 110 pathwidth). diff75 has two workers still on hard instances; identifying them.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd
+from learning.differential_scale import targets
+j=[x for x in targets("all") if 50<=int(x["n"])<=75]
+
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd
+o=pd.read_csv('learning/data/ensemble/differential_scale.csv',low_memory=False)
+o=o[o.base_name.str.s
+
+The two remaining workers are on the 75-customer ridge instances (up to ~3 min per refutation, 10 calls each); expect another ~30 min. Waiting.
+  > $ until ! kill -0 571989 2>/dev/null; do sleep 10; done; echo done; date
+  > $ timeout 590 bash -c 'until ! kill -0 571989 2>/dev/null; do sleep 10; done'; date; ps --ppid 571989 -o pid,pcpu | head
+
+While that finishes, writing the report section (diff75 numbers to be filled in).
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import json
+for s in ('port','gadget'):
+    r=json.load(open(f'paper2/data/solver_fix_soundness_{s}.json'))
+    for f,t i
+  > $ timeout 590 bash -c 'until ! kill -0 571989 2>/dev/null; do sleep 10; done'; date; ps --ppid 571989 -o pid,pcpu | head -3
+  > $ timeout 590 bash -c 'until ! kill -0 571989 2>/dev/null; do sleep 10; done'; date; ps --ppid 571989 -o pid,pcpu | head -3
+  > $ cd /home/al/dev/MOSP; tail -2 /tmp/sfs/diff75.log; python -m paper2.solver_fix_soundness --stage tables; python - <<'EOF'
+import pandas as pd
+r=pd.read_csv('pap
+
+All four stages are clean. Writing the report section, PROGRESS.md and the item mark.
+  > $ cd /home/al/dev/MOSP; ls -la paper2/data/solver_fix_diff* paper2/data/solver_fix_soundness*; git status --short | head -20
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 05: soundness of the fixed solver (2026-10-01)
+
+**The answer: no failure anywhere.** The
+  > $ cd /home/al/dev/MOSP; sed -i 's/^- \[ \] \*\*05 Soundness of the fixed solver\.\*\*/- [x] **05 Soundness of the fixed solver.**/' Ralph_Loops/loop0007/iteration
+  > $ ps -eo pid,args | grep solver_fix_soundness | grep -v grep | head
+
+Item 05 is done and marked `[x]`. Nothing failed anywhere: no certified value changed and no false refutation turned up. The gate passes (1,345 MOSP tests, 110 pathwidth_solver tests).
+
+**The whole search, rewritten from the theorems.** I added `paper2/solver_fix_soundness.py`. It contains a second copy of the search with the two repairs written straight from the Lean statements. It uses only functions from `paper2/search_check.py`. In particular, the "hereditarily definite" test there works by listing every intermediate set, so the C and Python matching code are checked against an independent method. Each run is compared four ways: with the exact answer, with node soundness at every node it expands, with the C (answer and node count), and with the production Python.
+- **Coverage:** 17,431,232 runs over 52,592 graphs at 1–17 vertices, under all 64 rule settings. That includes every labelled graph up to 6 vertices, every 7-vertex graph, random graphs at 8–13, the known counterexamples, and 12,000 graphs from the hunt's counterexample-prone family at 12–17.
+- **Result:** zero wrong answers, zero lost nodes (51.5 M checked), and zero mismatches with the C or the Python.
+- **The check can tell the rule sets apart:** 4,203 of these runs come out differently under the published rules. So agreement with the C shows the C really runs the repaired rules.
+
+**Differential harness, with the new defaults.** I ran it on every certified instance, not a sample: 43,935 at 9–40 customers (1.76 M calls) and 1,231 at 50–75 (29,544 calls). It found zero disagreements, contradictions or witness failures, and no call hit its deadline. The independent small-instance oracle agrees on all 13,612 instances it can check.
+
+**Corpus.** `benchmarks.corpus` still reads 6,374 of 6,376 certified, and `solutions/` is unchanged against HEAD.
+
+**Not covered:** 76–125 customers. Item 04's paired refutations remain the only record there.
+
+**One thing to watch:** the committed `learning/data/ensemble/differential.csv.gz` shows +2.5% refutation nodes against today's run at n ≤ 40. Item 04's paired measurement of the repair's cost is +0.004%. So that file must come from older code and shouldn't be read as what the repair costs.
+
+The write-up is the "Item 05" section of `paper2/solver_fix.md`, and the status line at the top of that file now records item 05's result. The results are in `paper2/data/solver_fix_soundness_*` and `paper2/data/solver_fix_diff{40,75}*`; I wrote nothing over the committed differential files. I added one test, `test_the_c_runs_the_repaired_search_as_the_theorems_state_it`, to `tests/test_repaired_rules.py`. PROGRESS.md is updated to 5/10. Nothing is committed, as instructed.
+
+# result: success in 5146s, 58 turns, cost $7.83

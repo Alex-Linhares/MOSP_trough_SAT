@@ -24,7 +24,8 @@ published rules. Four tools that model the published rules now name
 (`learning/search_certificate.py`) still models only the published rules.
 
 **Findings that would stop the loop** (a changed certified value, or a false
-refutation under the old rules): **none so far.**
+refutation under the old rules): **none so far** (item 05: none in 17.4 M
+whole-search runs at 1–17 vertices and 1.79 M differential calls at 9–75).
 
 ---
 
@@ -615,3 +616,127 @@ python -m paper2.solver_fix_cost --stage tables      # paper2/data/solver_fix_co
 ```
 
 Data: `paper2/data/solver_fix_cost_{mosp40,cs,cs125,pw,overhead}.csv`.
+
+---
+
+## Item 05: soundness of the fixed solver (2026-10-01)
+
+**The answer: no failure anywhere.** The repaired search, written out from the
+theorems with the oracle's own predicates, equals the C and the production
+Python node for node on **16,279,232 runs over 40,592 graphs at 1–16 vertices**
+and **1,152,000 runs over 12,000 gadget graphs at 12–17**. It answers the oracle
+on every run, and it keeps a child with a solution at all **51,454,712 nodes
+checked**. The differential harness, run with the solver's defaults (now
+repaired), finds **zero disagreements, zero contradictions and zero witness
+failures** on all **43,935 certified instances at 9–40 customers** (1,757,280
+calls) and on all **1,231 at 50–75** (29,544 calls, none censored). No
+certified value changed: `python -m benchmarks.corpus` still reads 6,374 of
+6,376 certified, and `solutions/` is untouched.
+
+### What changed in the code
+
+Nothing in the solvers. New files:
+
+- `paper2/solver_fix_soundness.py`. `repaired_decide` is `search_check.search_decide`
+  (the §1.5 search ported from the document) with the two repairs stated from
+  the theorems. It uses only `paper2/search_check.py` and nothing from
+  `satisfiability/`:
+  - the definite move picks the first playable `q` in index order with
+    `close ≥ open` **and** `d_hereditary` (`IsHereditarilyDefinite`, by
+    enumerating every intermediate set rather than by a matching);
+  - the better move cites `q` for `r` only under premises 3 and 4 **and**
+    `d_hereditary` at `cl(S ∪ {r})` (`IsRepairedBetter`).
+
+  So the matching code in the C and the Python (`has_definite_matching`,
+  `_has_definite_matching`) is checked here against the enumeration, inside
+  whole searches.
+- One test in `tests/test_repaired_rules.py`,
+  `test_the_c_runs_the_repaired_search_as_the_theorems_state_it` (1.4 s). It
+  covers `DEFINITE_CEX[0]` at every `k` and `RUN_LOST_CEX` at 5–7, which are
+  graphs where the repaired runs differ from the published ones.
+
+### The checks
+
+At every `k` and under all 64 search configurations (the definite move, the
+subset rule, the better move off or at `L` = 0, 1, 2, old move and memo each
+on and off; for gadgets, the 32 with the definite move on), the checks are:
+
+- **answer fails**: the port's answer differs from `Sol_k(∅)` (`s_searchsol_table`);
+- **node losses**: at an expanded node with a solution, and with an old-move
+  set that is genuinely refuted, no kept child has a solution;
+- **C mismatches**: `decide_native(..., repaired_rules=True)` returns a
+  different (answer, nodes) from the port;
+- **Python node mismatches**: `decide(native=False, repaired_rules=True)` gives a
+  different answer, or different nodes. Nodes are compared on the three
+  settings where the Python runs the same search; with old move and memo both
+  on, it drops the memo by design (item 02);
+- **witness fails**: a satisfiable C witness that simulates above `k`;
+- **runs differing from the published port**: the runs on which
+  `search_check.search_decide` (the published rules) gives a different
+  (answer, nodes). These are the runs where the check can tell the two rule
+  sets apart. With zero C mismatches, these runs show the C is running the
+  repaired rules and not the published ones.
+
+| family | graphs | k values | port runs | nodes checked | node losses | answer fails | C mismatches | Python node mismatches | witness fails | runs differing from the published port |
+|---|---|---|---|---|---|---|---|---|---|---|
+| every labelled graph, 1–6 | 33,867 | 202,013 | 12,928,832 | 28,641,076 | 0 | 0 | 0 | 0 | 0 | 0 |
+| atlas 7, identity + 4 labellings | 5,220 | 36,540 | 2,338,560 | 5,593,881 | 0 | 0 | 0 | 0 | 0 | 344 |
+| random sparse / cover, 8–13 | 1,500 | 15,746 | 1,007,744 | 5,727,350 | 0 | 0 | 0 | 0 | 0 | 664 |
+| pinned (both `DEFINITE_CEX`, Bug A, Bug B, `RUN_LOST_CEX`), 8–16 | 5 | 64 | 4,096 | 25,243 | 0 | 0 | 0 | 0 | 0 | 194 |
+| gadgets (`definite_hunt_gen.py` family 4), 12–17, at opt − 1, opt, opt + 1 | 12,000 | 36,000 | 1,152,000 | 11,467,162 | 0 | 0 | 0 | 0 | 0 | 3,001 |
+| **total** | **52,592** | **290,363** | **17,431,232** | **51,454,712** | **0** | **0** | **0** | **0** | **0** | **4,203** |
+
+The repaired rules already change runs at 7 vertices (344 runs in the atlas).
+The old-move hypothesis held at every node checked: no node had an old-move
+set holding a solvable child. That is expected, because such a set can only
+arise downstream of a lost node.
+
+The differential harness is `learning.differential` with the solver's
+defaults. It runs the identity, the relabellings (8 at n ≤ 40, 4 at 50–75) and
+one re-covering, under both configurations (`default`, `csearch`). On each it
+calls `decide(optimum − 1)`, expected `unsat`, and `decide(optimum)`, expected
+`sat`, with the witness simulated. The deadlines are 60 s and 300 s per call.
+The 50–75 set is `learning.differential_scale`'s: the campaign, eight per cell,
+and the whole corpus.
+
+| set | instances | n | calls | censored | disagreements | contradictions | witness fails | lattice oracle checked / mismatches |
+|---|---|---|---|---|---|---|---|---|
+| campaign | 37,800 | 10–40 | 1,511,880 | 0 | 0 | 0 | 0 | 10,800 / 0 |
+| corpus | 6,135 | 9–40 | 245,400 | 0 | 0 | 0 | 0 | 2,812 / 0 |
+| campaign | 1,080 | 50–75 | 25,920 | 0 | 0 | 0 | 0 | — |
+| corpus | 151 | 50–75 | 3,624 | 0 | 0 | 0 | 0 | — |
+
+This is the whole of each set, not a sample. Every refutation came back
+`unsat`, including the 10 refutation calls that §33's budget had skipped. On
+the 12,310 refutations at 50–75 that both this run and the committed
+`differential_scale.csv` (published rules) settled, the repaired search took
+0.998× the nodes. The two runs are separate, not paired in one worker. Item 04
+is the cost measurement.
+
+**Corpus.** `python -m benchmarks.corpus`: 6,372 `certified:refutation`, 2
+`certified:bound`, 2 open. This is the table of 2026-09-30, unchanged.
+`solutions/` has no change against `HEAD` (last touched 2026-09-27). The
+(name, value, provenance) digest over all 6,376 files is `229207b225a666a5`.
+
+**Size range.** Whole-search checks: 1–17 vertices (exhaustive to 6, every
+graph at 7). Differential: 9–75 customers, every certified instance in the
+named sets. The 76–125 range is not re-checked here. Item 04's paired
+refutations at 50–125 (every finished pair `unsat` under both settings) are
+the record there.
+
+### Regenerate
+
+```
+python -m pytest tests/test_repaired_rules.py -q
+python -m paper2.solver_fix_soundness --stage port --workers 5      # ~12 min
+python -m paper2.solver_fix_soundness --stage gadget --count 12000 --workers 6   # ~19 min
+python -m paper2.solver_fix_soundness --stage diff40 --workers 8    # ~11 min, 0.2 core-hours of calls
+python -m paper2.solver_fix_soundness --stage diff75 --workers 6    # ~80 min, 3.7 core-hours of calls
+python -m paper2.solver_fix_soundness --stage tables                # paper2/data/solver_fix_soundness_tables.md
+python -m benchmarks.corpus
+```
+
+Data: `paper2/data/solver_fix_soundness_{port,gadget}.json`,
+`paper2/data/solver_fix_{diff40,diff75}.csv.gz` (one row per instance, labelling and
+configuration), `paper2/data/solver_fix_{diff40,diff75}_summary.csv` (verdicts
+per instance).

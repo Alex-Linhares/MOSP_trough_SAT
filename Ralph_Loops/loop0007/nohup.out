@@ -18,3 +18,8 @@
 [2026-10-01 15:53:53] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-10-01 17:48:37] session it04: ok (exit 0, 67 tool calls)
 [2026-10-01 17:58:10] tests passed: GATE PASS
+[2026-10-01 17:58:10] committed 65a7e9003: 04 What the repair costs. Paired runs, old against repaired, in
+[2026-10-01 17:58:10] === iteration 5: 05 Soundness of the fixed solver. Run `paper2/search_check.py`'s
+[2026-10-01 17:58:10] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-10-01 19:23:57] session it05: ok (exit 0, 57 tool calls)
+[2026-10-01 19:32:54] tests passed: GATE PASS

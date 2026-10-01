@@ -1,0 +1,30 @@
+{
+ "seconds": 1133.5,
+ "configs": 64,
+ "total": {
+  "unsat_k": 12000,
+  "nodes_checked": 11467162,
+  "port_runs": 1152000,
+  "native_runs": 1152000,
+  "python_runs": 1152000,
+  "python_node_runs": 864000,
+  "sat_k": 24000,
+  "graphs": 12000,
+  "differs_from_published": 3001
+ },
+ "by_family": {
+  "gadget": {
+   "unsat_k": 12000,
+   "nodes_checked": 11467162,
+   "port_runs": 1152000,
+   "native_runs": 1152000,
+   "python_runs": 1152000,
+   "python_node_runs": 864000,
+   "sat_k": 24000,
+   "graphs": 12000,
+   "differs_from_published": 3001
+  }
+ },
+ "failures": 0,
+ "flagged": []
+}
