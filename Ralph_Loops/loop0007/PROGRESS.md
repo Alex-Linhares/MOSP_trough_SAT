@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 5/10 SOLVED
+Current: 6/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -238,3 +238,59 @@ Current: 5/10 SOLVED
 ### Next
 - Item 06: which certified values rested only on the customer search. Note
   that `learning/search_certificate.py` still models only the published rules.
+
+## Iteration 6 — 2026-10-01 20:05
+
+### Completed
+- **Item 06.** `paper2/solver_fix_provenance.py` reads only the records. It
+  recomputes the lower bound for the 33 instances where the bound is the only
+  evidence, and all 33 reproduce. Section "Item 06" in `paper2/solver_fix.md`.
+  The list is `paper2/data/solver_fix_provenance.csv`. Every instance with
+  every flag is in `..._all.csv.gz`, and the tables are in `..._tables.md`.
+- **Counted as independent evidence:**
+  - the lattice optimum (n ≤ 15);
+  - a drat-trim-verified refutation of `value − 1`;
+  - a `solved` row from the four SAT sweeps that finished before the ratchet and
+    the customer search existed (shown from the code at `60a68f4e3`: the only
+    writer then was the binary search, with no per-call timeout);
+  - a SAT refutation in a race;
+  - `_lower_bound = value`;
+  - or any of these on an isomorphic copy.
+- **Recorded, not counted:** treewidth and expansion bounds (both are searches
+  with no proof object) and the 1442 overnight file. None of them covers a
+  listed instance, except treewidth on 8.
+- **Result: 115 of 6,374 certified values (113 distinct graphs) rest on the
+  customer search alone.** All are at 40–125 customers: Chu & Stuckey `Random`
+  instances plus SP3 and SP4, each stored twice. That is every certified
+  125 × 125 instance (23), 26 at 100 × 100, 20 at 100 × 50, 22 at 75 × 75,
+  10 at 50 × 100, 12 at 50 × 50 and 2 at 40 × 40. Below 40 customers,
+  everything is covered.
+- **How they were certified:**
+  - 81 by the 2026-09-18 sweep with `solve()` defaults;
+  - 15 by `csearch` without Theorem 2;
+  - 7 by `csearch` with the original `better_move`, re-refuted with the first fix;
+  - 1 by the 09-23 correction run;
+  - 11 by `recertify` with the first fix.
+  - 96 never used Theorem 2. All 115 used the published definite move.
+- **Already refuted at `value − 1` by the repaired solver** in items 04–05:
+  94 of 115. The 21 left:
+  - `Random-100-100-2-{1..5}`, `-4-3`, `-4-5`;
+  - SP4 and SP4_0;
+  - `Random-125-125-2-{1,4,5}`, `-4-{1..5}`, `-6-{2..5}`.
+- New test `tests/test_solver_fix_provenance.py` (5 tests). It re-reads the
+  records and checks that the list is exact.
+- No certified value changed and nothing was written to `solutions/`.
+- Gate: PASS (1,350 MOSP tests, 110 pathwidth_solver tests).
+
+### Blockers
+- None. Caveat: the certifying configuration is read from commit dates and the
+  ledger, not from a provenance field, so it is a reconstruction. It is
+  documented in the CSV (`certified_commit`, `certified_when`, subject).
+
+### Next
+- Item 07: start with the 21 not yet re-refuted. Reuse items 04–05 for the
+  other 94 (or re-run them if a fresh run is wanted). The 125 × 125 ridge and
+  `Random-100-100-2` refutations are 10¹⁰–10¹¹ nodes, so price them with the
+  cost model and expect to mark some censored. `learning/search_certificate.py`
+  models only the published rules. Running it with `repaired_rules=False` gives
+  the old run to check against `CodeNodeRepaired`.

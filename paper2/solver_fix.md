@@ -740,3 +740,147 @@ Data: `paper2/data/solver_fix_soundness_{port,gadget}.json`,
 `paper2/data/solver_fix_{diff40,diff75}.csv.gz` (one row per instance, labelling and
 configuration), `paper2/data/solver_fix_{diff40,diff75}_summary.csv` (verdicts
 per instance).
+
+---
+
+## Item 06: which certified values rested only on the customer search (2026-10-01)
+
+### The question
+
+Every certified value has a witness that re-simulates to it, so its upper half
+is never in doubt. The lower half, that `value − 1` is infeasible, came from one
+of several sources. Until item 03 the customer search applied Chu & Stuckey's
+definite move as published (false as stated), and before 2026-09-26 it applied a
+`better_move` with known bugs. So a refutation that came from the customer search
+alone is not covered by the soundness theorem. This item reads the records and
+sorts every certified instance by the evidence it has that does **not** go
+through the customer search. Nothing was run except bound recomputation, and
+nothing was written to `solutions/`.
+
+### What counts as independent
+
+In order of precedence. The first that applies is the instance's "first
+evidence".
+
+| evidence | what it is | record |
+|---|---|---|
+| lattice | subset-lattice optimum (path counting), equal to the value, n ≤ 15; shares no code with the search | `learning/data/degeneracy.csv` (`min_search = min_construction = value`) |
+| drat | refutation of `value − 1` through the direct SAT encoding, checked by drat-trim | `learning/data/proofs.csv`, `proofs_200k.csv` (`unsat`, `verified`, `k = value − 1`) |
+| sat | the direct SAT binary search reported `solved` at this value | `sweep_full`, `sweep_long`, `overnight_20260917_0033_round{1,2}` (status `solved`, same value); SAT `refutation` in `learning/data/race_*.json` |
+| bound | `_lower_bound` (trivial, clique, contraction degeneracy) equals the value; each part comes with a checkable object, a clique or a contraction sequence | `learning/data/instances.csv` `lb_best`, **recomputed** for the 33 instances where this is the only evidence (all 33 reproduced) |
+| isomorph | an instance with the same MOSP graph (nauty certificate) has one of the above at the same value | `learning/data/canonical.csv` |
+
+Why the SAT sweeps can be trusted, from the code at the time. All four files
+were finished before the ratchet (`859fa9299`, 2026-09-17 16:24) and the customer
+search (`3f5faa03b`, 2026-09-18 19:33) existed. At that time the only writer of
+`solutions/` was `solve_mosp_sat` (checked at `60a68f4e3`). It ran a plain binary
+search over `_sat_decision` with no time limit per call, and saved only after
+the search finished. So a `solved` row was certified by SAT refutation or by the
+clique bound, even when it was served from the cache. The fifth overnight file
+(`overnight_20260917_1442_round1.csv`) overlaps the ratchet's first commit and a
+symmetry-breaking experiment that was found unsound and disabled that afternoon
+(`231f4db73`), so it is **not** counted. It would have added nothing: it covers no
+listed instance. The SAT count, 6,226, matches the figure in `CLAUDE.md`.
+
+**Recorded but not counted** as independent, because each is a search with no
+proof object of its own:
+- `tw_lo + 1`: a refutation by `learning.treewidth`'s decision search. It is a
+  valid bound via `tw ≤ pw`.
+- the expansion bound: `f(t)` is computed by branch and bound.
+
+Treewidth is the only extra evidence for 8 listed instances, all at 40–50
+customers (`secondary_evidence` column). The expansion bound is the only extra
+evidence for none.
+
+**Published optima are not independent either.** For GP1–8 and SP2–4, Frinhani
+et al. (2018) computed the values with Chu & Stuckey's own solver. That solver
+applies the same published Theorem 1. GP1–8 have SAT or bound evidence anyway.
+SP3 and SP4 are on the list. SP2 has SAT evidence.
+
+### Results
+
+First independent evidence, by size (6,374 certified instances; the 2 open
+entries are out of scope):
+
+| customers | lattice | drat | sat | bound | customer search only | all |
+|---|---:|---:|---:|---:|---:|---:|
+| 1–15 | 2,812 | 0 | 0 | 0 | 0 | 2,812 |
+| 16–40 | 0 | 2,902 | 417 | 2 | **2** | 3,323 |
+| 41–75 | 0 | 0 | 79 | 28 | **44** | 151 |
+| 76–100 | 0 | 0 | 14 | 3 | **46** | 63 |
+| 101–134 | 0 | 0 | 2 | 0 | **23** | 25 |
+| all | 2,812 | 2,902 | 512 | 33 | **115** | 6,374 |
+
+No instance was rescued by isomorphism. The 115 listed instances are 113
+distinct graphs, because SP3 and SP4 are each stored twice. Each source counted on its own
+(not exclusive): lattice 2,812, DRAT 5,646, SAT 6,226, bound 4,909. No proved
+bound (including treewidth and expansion) sits above any stored value.
+
+**115 certified values rest on the customer search alone.** All are Chu &
+Stuckey `Random` instances plus SP3 and SP4 (each stored twice), at 40–125 customers:
+
+| size | instances |
+|---|---:|
+| 40 × 40 | 2 |
+| 50 × 50 | 12 |
+| 50 × 100 | 10 |
+| 75 × 75 | 22 (incl. SP3, SP3_0) |
+| 100 × 50 | 20 |
+| 100 × 100 | 26 (incl. SP4, SP4_0) |
+| 125 × 125 | 23 (all certified 125 × 125 Chu & Stuckey instances) |
+
+The run that certified each one. It is read from the commit that first
+recorded the current value as certified (`git log` of the solution file), the
+compute ledger, and `recertify/results.json`. **Every one of these runs applied
+the definite move as published.**
+
+| certifying run | Theorem 2 | `better_move` code | instances |
+|---|---|---|---:|
+| customer-search sweep 2026-09-18 ("Close 111 of the 147"): `solve()` defaults (definite, subset, memo); each re-refuted the same way | off | — | 81 |
+| `benchmarks.csearch` 2026-09-18: `solve()` defaults | off | — | 8 |
+| `benchmarks.csearch` 2026-09-21/22, dense instances | off | — | 7 |
+| `benchmarks.csearch` 2026-09-21/22, sparse instances; re-refuted 2026-09-23 with the first fix (part of the 41 of 55) | on | original (bugs A, B), then first fix | 7 |
+| re-refutation after the first fix, 2026-09-23 (`Random-100-100-2-2_0`, corrected 21 → 20) | on | first fix | 1 |
+| `benchmarks.recertify` 2026-09-24 to 09-29 (the 11 re-certified of the 13 withdrawn) | on | first fix (pre-`0eb33915`) | 11 |
+
+So **96 of the 115 never used Theorem 2**. Their only exposure is the published
+definite move, plus the subset rule, memo and old move, which are proved sound
+as coded. The other 19 also used a `better_move` older than the second fix.
+
+**What item 07 can reuse.** Items 04 and 05 already refuted `value − 1` with
+`repaired_rules=True` on **94 of the 115**: item 04's paired runs (`cs`, `cs125`,
+`mosp40`) and item 05's differential harness (`diff40`, `diff75`). Those
+refutations are covered by `exec_repairedFullFilter_mospValue` as far as the code
+matches the theorem. They are not independent of the search. The 21 not yet
+re-refuted are exactly the hard ones that item 04 censored:
+- `Random-100-100-2-{1..5}`, `-4-3`, `-4-5`;
+- SP4 and SP4_0;
+- `Random-125-125-2-{1,4,5}`, `-4-{1..5}`, `-6-{2..5}`.
+
+Among them are the five day-long recertify refutations at 125 × 125, of 4.9 ×
+10¹⁰ to 4.6 × 10¹¹ nodes. For these, item 07's cheaper path, checking
+`CodeNodeRepaired` along the old run's certificate, is out of reach at the
+current emitter's scale (§32: 10¹¹ nodes are not shippable). They will most
+likely be marked censored.
+
+### Size range
+
+The whole corpus, 9–134 customers. Instances below 40 customers are all covered
+by the lattice, DRAT, SAT or the bound. The list starts at 40 customers.
+
+### Regenerate
+
+```
+python -m paper2.solver_fix_provenance     # ~15 s; reads records and git history, recomputes 33 bounds
+python -m pytest tests/test_solver_fix_provenance.py -q
+```
+
+Data:
+- `paper2/data/solver_fix_provenance.csv`: **the list**, 115 rows. Columns:
+  instance, value, configuration, Theorem 2, `better_move` code, definite move,
+  size, bounds, secondary evidence, certifying commit and date, ledger and
+  recertify node counts, the loop0007 repaired refutations, graph certificate,
+  and files.
+- `paper2/data/solver_fix_provenance_all.csv.gz`: every corpus instance with
+  every evidence flag.
+- `paper2/data/solver_fix_provenance_tables.md`: the tables.

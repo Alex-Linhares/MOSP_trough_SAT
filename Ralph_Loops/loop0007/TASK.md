@@ -45,6 +45,18 @@
   bound.
 - **State the size range** every conclusion covers.
 
+**Item 07's time (owner, 2026-10-01).** The per-session cap is raised to 12
+hours from item 07 on (`knobs.json`), because re-checking refutations is long.
+Use up to 24 cores. Work cheapest first by the cost model's price, and append
+each result to the CSV as it finishes, so a stopped session loses nothing.
+Run long jobs in the foreground with bounded polls. Never end the turn on a
+background wait. Some refutations will not fit in 12 hours: the 125 x 125
+ridge instances are estimated at about 2.7e11 nodes (55 h on one core before
+the 2026-09-26 fix, and the fix made the ridge up to ~20x slower). For those,
+write a resumable runner (one command that continues where the CSV stops),
+price each remaining instance, and list them in `paper2/solver_fix.md` as
+"needs a long run", with the price. Do not mark them done by assumption.
+
 ## Current Focus
 Items 01-03 change the code (Python, C, pathwidth solver). Items 04-05
 measure cost and soundness. Items 06-08 re-check what rested on the old

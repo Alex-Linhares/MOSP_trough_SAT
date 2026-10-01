@@ -40,7 +40,7 @@
   node-level losses and zero disagreements. Re-run
   `python -m benchmarks.corpus` and confirm no certified value changed.
 
-- [ ] **06 Which certified values rested only on the customer search.**
+- [x] **06 Which certified values rested only on the customer search.**
   From the records (compute ledger, sweep CSVs, recertify results, DRAT
   coverage in `learning/data/proofs/`, the lattice oracle at n ≤ 15), list
   every corpus instance whose optimality certificate is a customer-search
