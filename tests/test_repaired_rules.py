@@ -1,0 +1,190 @@
+"""The repaired definite and better moves in the Python reference (loop0007 item 01).
+
+`decide(..., repaired_rules=True)` applies the premises proved sound in
+`lean/MOSPFormalization/Search/`: the definite move needs `q` hereditarily
+definite, tested by the matching condition (`HasDefiniteMatching`), and the
+better move cites only under `IsRepairedBetter`. These tests check the
+production filter against `paper2/search_check.py`, which shares no code with
+the solver, and that with the flag off nothing changed, node for node.
+"""
+
+import hashlib
+import json
+import random
+
+import pytest
+
+from mosp.instance import MOSPInstance
+from paper2.search_check import (
+    BUG_B_CEX,
+    DEFINITE_CEX,
+    d_counts,
+    d_hereditary,
+    k_repaired_filter,
+    labelled_graphs,
+    s_searchsol_table,
+    s_tables,
+)
+from paper2.solver_fix_check import (
+    check_nodes,
+    check_searches,
+    matching_test,
+    production_filter,
+)
+from satisfiability.customer_search import _has_definite_matching, decide
+from satisfiability.native import decide_native, native_available
+
+needs_native = pytest.mark.skipif(not native_available(),
+                                  reason="the C search did not build here")
+
+
+def _baseline_rows(rng, max_customers=12, max_patterns=10):
+    rows = [[1 if rng.random() < rng.choice([0.15, 0.3, 0.5]) else 0
+             for _ in range(rng.randint(1, max_patterns))]
+            for _ in range(rng.randint(1, max_customers))]
+    width = max(len(r) for r in rows)
+    return [r + [0] * (width - len(r)) for r in rows]
+
+
+# Status and node count of `decide(native=False)` on 40 seeded instances, at
+# every k, under all 32 combinations of subset rule, definite move, old move,
+# memo and restrict, computed with the code as it stood before `repaired_rules`
+# existed (2026-10-01, commit 392a2bda2). 9,312 decisions, 19,438 nodes.
+BASELINE_DIGEST = "3d4178fd56ea172cdc5d0a1898d32ab75c9bf2b9a7ec0437707e924e810f2832"
+BASELINE_NODES = 19438
+
+
+def test_with_the_flag_off_nothing_changed_node_for_node():
+    rng = random.Random(7001)
+    configs = [dict(subset_rule=s, definite_move=d, old_move=o, memo=m, restrict=r)
+               for s in (0, 1) for d in (0, 1) for o in (0, 1) for m in (0, 1) for r in (0, 1)]
+    rows = []
+    for i in range(40):
+        inst = MOSPInstance.from_matrix(_baseline_rows(rng), name="b")
+        for k in range(0, inst.n_customers + 1):
+            for ci, c in enumerate(configs):
+                d = decide(inst, k, native=False, **{a: bool(b) for a, b in c.items()})
+                rows.append((i, k, ci, d.status, d.nodes))
+    assert sum(r[4] for r in rows) == BASELINE_NODES
+    assert hashlib.sha256(json.dumps(rows).encode()).hexdigest() == BASELINE_DIGEST
+
+
+@needs_native
+def test_the_python_better_move_is_the_c_node_for_node():
+    """The Python had no Theorem 2 before 2026-10-01; its port must be the C's rule."""
+    rng = random.Random(11)
+    pruned = 0
+    for _ in range(60):
+        rows = [[1 if rng.random() < rng.choice([0.1, 0.2, 0.35]) else 0
+                 for _ in range(rng.randint(1, 12))] for _ in range(rng.randint(2, 13))]
+        width = max(len(r) for r in rows)
+        inst = MOSPInstance.from_matrix([r + [0] * (width - len(r)) for r in rows], name="t")
+        active = {c for c in range(inst.n_customers) if inst.customer_patterns(c)}
+        for k in range(0, inst.n_customers + 1):
+            for dom in (0, 1, 4):
+                for om, me in ((False, False), (False, True), (True, False)):
+                    cfg = dict(old_move=om, memo=me, better_move=True, better_move_dominators=dom)
+                    a = decide(inst, k, native=False, **cfg)
+                    b = decide_native(inst, k, **cfg)
+                    assert (a.status, a.nodes) == (b.status, b.nodes), (k, cfg)
+                    if a.order is not None:
+                        # the C also lists customers with no product; the Python omits them
+                        assert a.order == [c for c in b.order if c in active]
+                    pruned += a.nodes < decide(inst, k, native=False, old_move=om, memo=me).nodes
+    assert pruned, "the better move never pruned; the test proves nothing"
+
+
+def test_on_the_counterexample_the_repaired_filter_no_longer_keeps_0_alone():
+    masks, S, q, k = DEFINITE_CEX[0]
+    O, CL = s_tables(masks)
+    SS = s_searchsol_table(masks, k, O, CL)
+    open_q, close_q = d_counts(masks, O, S, q)
+    assert open_q <= close_q                       # Chu & Stuckey's premise holds
+    assert not matching_test(masks, O, S, q)       # the repaired premise does not
+    assert SS[S] and not SS[CL[S | 1 << q]]        # and indeed 0 leads nowhere
+    for L in (0, 1, 2):
+        assert production_filter(masks, S, 0, k, L, repaired=False) == [q]
+        kept = production_filter(masks, S, 0, k, L, repaired=True)
+        assert kept != [q]
+        assert any(SS[CL[S | 1 << c]] for c in kept)
+        assert kept == sorted(k_repaired_filter(masks, O, CL, S, 0, k, L))
+
+
+def test_on_both_counterexamples_the_whole_search_is_right():
+    for masks, _, _, k in DEFINITE_CEX:
+        t = check_searches(masks, ks=[k - 1, k])
+        assert t["searches_repaired"] and not t["fail_answer_repaired"]
+        assert not t["fail_witness_repaired"]
+
+
+def test_the_bug_b_node_under_the_repaired_filter():
+    masks, S, k = BUG_B_CEX
+    O, CL = s_tables(masks)
+    SS = s_searchsol_table(masks, k, O, CL)
+    for L in (0, 1, 2):
+        kept = production_filter(masks, S, 0, k, L, repaired=True)
+        assert kept == sorted(k_repaired_filter(masks, O, CL, S, 0, k, L))
+        assert not SS[S] or any(SS[CL[S | 1 << c]] for c in kept)
+
+
+def test_the_repaired_filter_is_the_lean_filter_and_node_sound_to_four_vertices():
+    """Every labelled graph on 1-4 vertices, every state, k, refuted old-move set and L."""
+    total = {}
+    for n in range(1, 5):
+        for masks in labelled_graphs(n):
+            for key, v in check_nodes(masks).items():
+                total[key] = total.get(key, 0) + v
+    assert total["nodes"] > 1000
+    for key in ("fail_eq_repaired", "fail_eq_code", "fail_sound_repaired", "fail_matching"):
+        assert total.get(key, 0) == 0, key
+
+
+def test_the_repaired_search_answers_what_the_oracle_answers_to_five_vertices():
+    rng = random.Random(5)
+    graphs = [m for n in range(1, 5) for m in labelled_graphs(n)]
+    graphs += rng.sample(list(labelled_graphs(5)), 150)
+    for masks in graphs:
+        t = check_searches(masks)
+        assert not t["fail_answer_repaired"] and not t["fail_witness_repaired"], masks
+        assert not t["fail_answer_code"], masks
+
+
+def test_the_matching_test_is_the_hereditary_premise_on_the_pinned_graphs():
+    for masks, _, _, _ in DEFINITE_CEX:
+        O, _ = s_tables(masks)
+        full = (1 << len(masks)) - 1
+        rng = random.Random(3)
+        for S in [0, 0b100] + [rng.randrange(full) for _ in range(30)]:
+            for q in range(len(masks)):
+                if S >> q & 1:
+                    continue
+                o, c = d_counts(masks, O, S, q)
+                if o <= c:
+                    assert matching_test(masks, O, S, q) == d_hereditary(masks, O, S, q)
+
+
+def test_the_matching_itself():
+    assert _has_definite_matching([], 0)
+    assert _has_definite_matching([], -1)
+    assert not _has_definite_matching([], 1)
+    assert not _has_definite_matching([0b1, 0b1], 2)          # both need only stack 0
+    assert _has_definite_matching([0b1, 0b11], 2)             # 0 -> stack 0, 1 -> stack 1
+    assert _has_definite_matching([0b11, 0b1], 2)             # needs an augmenting path
+    assert not _has_definite_matching([0b11, 0b11, 0b11], 3)  # Hall fails
+    assert _has_definite_matching([0b11, 0b11, 0b11], 2)
+
+
+def test_open_at_most_one_always_passes():
+    """Corollary to Theorem 4.7: `open(q, S) ≤ 1` is hereditarily definite."""
+    assert _has_definite_matching([], 0)
+    assert _has_definite_matching([0b1], 0)
+
+
+def test_the_flag_forces_the_python_until_the_c_carries_it():
+    masks, _, _, k = DEFINITE_CEX[0]
+    from paper2.search_check import matrix_from_masks
+    inst = MOSPInstance.from_matrix(matrix_from_masks(masks), name="cex")
+    a = decide(inst, k, repaired_rules=True, better_move=True, better_move_dominators=0)
+    b = decide(inst, k, native=False, repaired_rules=True, better_move=True,
+               better_move_dominators=0)
+    assert (a.status, a.nodes, a.order) == (b.status, b.nodes, b.order)

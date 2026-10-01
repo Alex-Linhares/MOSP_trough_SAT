@@ -42,8 +42,15 @@ branches kept, so a refutation still refutes.
   seen and `q` goes. Maintained as a set `Q(S)` in `O(|C|)` per node.
 - *better move* (their Theorem 2): if `S ++ [q]` and `S ++ [r, q]` are playable
   and `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`, then `r` goes. `O(|R|³)` per node
-  against Theorem 1's `O(|R|²)`, implemented in the C only, and **worth it only
-  on sparse instances** -- see `sparse_enough_for_better_move`.
+  against Theorem 1's `O(|R|²)`, and **worth it only on sparse instances** --
+  see `sparse_enough_for_better_move`. Implemented in the C first; the Python
+  port (2026-10-01) matches it node for node.
+
+**Two of the published theorems are false as stated** (`paper2/revised_algorithm.md`
+§4.3.2, §4.3.4): the definite move can discard the last solution at a node, and
+the better move inherits the fault. `repaired_rules=True` applies the premises
+proved sound in `lean/MOSPFormalization/Search/`, under which the whole search
+is proved sound (`exec_repairedFullFilter_mospValue`).
 
 **Old move and the memo, together.** Chu & Stuckey run both -- "better move",
 "old move" and nogood recording on at once -- and the C follows them. The
@@ -133,6 +140,9 @@ def decide(
     branch: "Callable[[int, int, list[tuple[int, int]]], list[tuple[int, int]]] | None" = None,
     expansion_prune: bool = False,
     fan_order: str = "index",
+    better_move: bool = False,
+    better_move_dominators: int = 4,
+    repaired_rules: bool = False,
     **kwargs: object,
 ) -> Decision:
     """Decide "MOSP(instance) <= k?" by searching customer closing orders.
@@ -188,6 +198,26 @@ def decide(
             `branch`, it changes which branches are visited first and never
             which are visited, so the answer is the same under either; the
             node count is what it is measured on (plan 2 §2.5a).
+        better_move: Theorem 2, run after the subset rule over its survivors,
+            each candidate `r` dropped if an *earlier* survivor `q` (among the
+            first `better_move_dominators` of them, every earlier one if 0)
+            meets premises 3 and 4. A port of the C's `better_move_pass`, so
+            that the reference covers every rule the C runs; before
+            2026-10-01 the Python had no Theorem 2 and the flag was inert here.
+        repaired_rules: the definite and better moves with the *repaired*
+            premises proved sound in `lean/MOSPFormalization/Search/`
+            (`paper2/revised_algorithm.md` §4.6.1). The definite move fires on
+            the first playable `q` passing `close ≥ open` *and* the matching
+            test of `HasDefiniteMatching` -- some `open(q, S) − 1` of the
+            customers `q` frees can be matched to distinct stacks among the
+            ones each newly needs, equivalent to `IsHereditarilyDefinite` --
+            and a candidate failing the matching is passed over, not fatal.
+            The better move cites `q` for `r` only if, besides premises 3 and
+            4, `q` passes the same matching test at `cl(S ∪ {r})`
+            (`IsRepairedBetter`). The old tests stay in front as cheap
+            prefilters, which the repair implies. Off by default until the C
+            and the pathwidth solver carry it too (loop0007 items 02-03).
+            **Forces the Python path** until the C implements it.
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty
@@ -196,13 +226,13 @@ def decide(
     if fan_order not in FAN_ORDERS:
         raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
 
-    if native and branch is None and not expansion_prune:
+    if native and branch is None and not expansion_prune and not repaired_rules:
         from satisfiability.native import decide_native
         answer = decide_native(
             instance, k, restrict=restrict, subset_rule=subset_rule,
             definite_move=definite_move, old_move=old_move, memo=memo,
-            better_move=kwargs.pop("better_move", False),
-            better_move_dominators=kwargs.pop("better_move_dominators", 4),
+            better_move=better_move,
+            better_move_dominators=better_move_dominators,
             # Reverts of the 2026-09-26 fix, unsound, for measurement only
             # (learning.fix_cost); meaningless without `better_move`.
             old_close_count=bool(kwargs.pop("old_close_count", False)),
@@ -322,9 +352,12 @@ def decide(
             if cost <= k:
                 playable.append((cost, customer))
 
-        if playable and (subset_rule or definite_move):
+        if playable and (subset_rule or definite_move or better_move):
             playable = _apply_dominance(
-                playable, opens, subset_rule, definite_move)
+                playable, opens, subset_rule, definite_move,
+                better_move=better_move, dominators=better_move_dominators,
+                repaired=repaired_rules, masks=masks, full=full,
+                closed=closed, opened=opened, k=k)
 
         if fan_order == "index":
             playable.sort()
@@ -393,13 +426,28 @@ def _apply_dominance(
     opens: dict[int, int],
     subset_rule: bool,
     definite_move: bool,
+    *,
+    better_move: bool = False,
+    dominators: int = 4,
+    repaired: bool = False,
+    masks: list[int] | None = None,
+    full: int = 0,
+    closed: int = 0,
+    opened: int = 0,
+    k: int = 0,
 ) -> list[tuple[int, int]]:
-    """Cut the candidate list by the two dominance relations.
+    """Cut the candidate list by the dominance relations, in the order
+    definite move, subset rule, better move, each citing only candidates still
+    standing (`paper2/revised_algorithm.md` §4.4.1).
 
     `close(q,S) = |{d ∉ S : o(d,S) ⊆ o(q,S)}|` counts the stacks that closing
     `q` releases: `d` is finished once every stack it touches has been opened,
     which after `q` means `o(d,S) ⊆ o(q,S)`. Both `close` and the subset test
     fall out of the same pass over the remaining customers.
+
+    `playable` arrives in customer index order, which is the order the better
+    move's "earlier" and its dominator limit refer to, as in the C.
+    `better_move` needs `masks`, `full`, `closed`, `opened` and `k`.
     """
     if definite_move:
         for cost, q in playable:
@@ -407,13 +455,31 @@ def _apply_dominance(
             opened_by_q = own.bit_count()
             closed_by_q = sum(1 for other in opens.values() if other & ~own == 0)
             if closed_by_q >= opened_by_q:
+                # close(q, S) counts q itself; the customers q frees are the rest.
+                if repaired and not _has_definite_matching(
+                        [other for d, other in opens.items()
+                         if d != q and other & ~own == 0],
+                        opened_by_q - 1):
+                    # Chu & Stuckey's premise holds but the hereditary one does
+                    # not: a solution may avoid q (Counterexample 4.5), so q
+                    # may not stand for the others. A later q may still.
+                    continue
                 # q is at least as good as anything else here, so every other
                 # branch can go.
                 return [(cost, q)]
 
-    if not subset_rule:
-        return playable
+    kept = _subset_survivors(playable, opens) if subset_rule else playable
+    if better_move and len(kept) > 1:
+        kept = _better_move_pass(kept, masks, full, closed, opened, k,
+                                 dominators, repaired)
+    return kept
 
+
+def _subset_survivors(
+    playable: list[tuple[int, int]],
+    opens: dict[int, int],
+) -> list[tuple[int, int]]:
+    """The subset rule with its index tie-break, dominators from every remaining customer."""
     kept = []
     for cost, q in playable:
         own = opens[q]
@@ -426,6 +492,104 @@ def _apply_dominance(
     # Every candidate dominated by a non-candidate (possible only under the
     # frontier restriction) would empty the list; keep the original in that case.
     return kept or playable
+
+
+def _better_move_pass(
+    kept: list[tuple[int, int]],
+    masks: list[int],
+    full: int,
+    closed: int,
+    opened: int,
+    k: int,
+    dominators: int,
+    repaired: bool,
+) -> list[tuple[int, int]]:
+    """Theorem 2 over the subset survivors, the C's `better_move_pass`.
+
+    `r` goes if an earlier survivor `q`, among the first `dominators` (all if
+    0), has premise 3, `|(O(S ∪ {r}) ∪ N[q]) − (S ∪ {r})| ≤ k`, and premise 4,
+    `open' ≤ close'` with `close'` counting the `d ∉ S ∪ {r}` with
+    `∅ ≠ N[d] − O(S ∪ {r}) ⊆ N[q] − O(S ∪ {r})`: Theorem 1's premise for `q`
+    at the child `cl(S ∪ {r})` (Lemma 4.12). With `repaired`, also the
+    matching test at that child, which makes the premise `IsRepairedBetter`.
+    Only an earlier candidate may cite, so the first always survives.
+    """
+    count = len(kept)
+    limit = dominators if 0 < dominators < count else count
+    survivors = []
+    for ri, item in enumerate(kept):
+        r = item[1]
+        closed_r = closed | (1 << r)
+        opened_r = opened | masks[r]
+        remaining_r = full & ~closed_r
+        pruned = False
+        for qi in range(min(limit, ri)):
+            q = kept[qi][1]
+            if ((opened_r | masks[q]) & ~closed_r).bit_count() > k:       # premise 3
+                continue
+            own = masks[q] & ~opened_r
+            opened_by = own.bit_count()
+            freed = []
+            closed_by = 0
+            bits = remaining_r
+            while bits:
+                bit = bits & -bits
+                bits ^= bit
+                d = bit.bit_length() - 1
+                left = masks[d] & ~opened_r
+                # Customers r finishes alone are free in the child and are not
+                # stacks q closes (Bug A, reports/better_move_bug.md §7).
+                if left and left & ~own == 0:
+                    closed_by += 1
+                    if d != q:
+                        freed.append(left)
+            if closed_by < opened_by:                                      # premise 4
+                continue
+            if repaired and not _has_definite_matching(freed, opened_by - 1):
+                continue
+            pruned = True
+            break
+        if not pruned:
+            survivors.append(item)
+    return survivors
+
+
+def _has_definite_matching(freed: list[int], need: int) -> bool:
+    """Whether `need` of the sets in `freed` can be matched to distinct members.
+
+    `freed` holds `o(d, S)` for each customer `d ≠ q` that closing `q` frees, as
+    stack bitmasks; `need` is `open(q, S) − 1`. By Theorem 4.8
+    (`isHereditarilyDefinite_iff_hasDefiniteMatching`) the maximum matching
+    reaching `need` is exactly `q` being hereditarily definite at `S`. Kuhn's
+    augmenting paths, stopping as soon as `need` edges are matched; the sets
+    are subsets of `o(q, S)`, so the stack side is small.
+    """
+    if need <= 0:
+        return True
+    if len(freed) < need:
+        return False
+    owner: dict[int, int] = {}          # stack -> index into freed
+
+    def augment(i: int, visited: set[int]) -> bool:
+        bits = freed[i]
+        while bits:
+            bit = bits & -bits
+            bits ^= bit
+            if bit in visited:
+                continue
+            visited.add(bit)
+            if bit not in owner or augment(owner[bit], visited):
+                owner[bit] = i
+                return True
+        return False
+
+    matched = 0
+    for i in range(len(freed)):
+        if augment(i, set()):
+            matched += 1
+            if matched >= need:
+                return True
+    return False
 
 
 @dataclass

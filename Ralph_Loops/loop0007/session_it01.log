@@ -1,0 +1,132 @@
+# session it01 started 2026-10-01 14:11:01
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0007/iterations.md; ls Ralph_Loops/loop0007; uptime; ls paper2/solver_fix.md 2>&1
+  > $ cd /home/al/dev/MOSP; wc -l paper2/revised_algorithm.md Ralph_Loops/loop0006/PROGRESS.md satisfiability/customer_search.py paper2/search_check.py lean/MOSPForma
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > Read /home/al/dev/MOSP/satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; ls satisfiability/; grep -n "better_move\|subset_pass\|dominance_filter\|old_close\|old_rule_order\|subset_after" satisfiability/customer_
+  > $ cd /home/al/dev/MOSP; sed -n 1,520p satisfiability/customer_search.c
+
+Reading the C and Python search; next I'll look at the oracle in `paper2/search_check.py` and the existing tests.
+  > $ cd /home/al/dev/MOSP; grep -n "^def \|^class \|^[A-Z_]* = " paper2/search_check.py | head -120; grep -rn "native=False" tests/*.py | grep -i better | head
+  > $ cd /home/al/dev/MOSP; sed -n 150,480p paper2/search_check.py; sed -n 936,1030p paper2/search_check.py; sed -n 1400,1470p paper2/search_check.py; sed -n 1816,193
+  > $ cd /home/al/dev/MOSP; grep -rn "native=False" --include=*.py . | grep -v "^./paper2/search_check" | grep -i "better" | head -20; sed -n 200,230p tests/test_diff
+  > $ cd /home/al/dev/MOSP; grep -rn "old_close_count\|old_rule_order\|subset_after_better_move" --include=*.py . | grep -v "satisfiability/native.py\|paper2/search_c
+  > $ cd /home/al/dev/MOSP; grep -n "def HasDefiniteMatching\|def IsHereditarilyDefinite\|def IsRepairedBetter\|def repairedFullFilter\|def repairedFilter\|def better
+  > $ cd /home/al/dev/MOSP; grep -rn "_apply_dominance" --include=*.py . | grep -v "^./pathwidth_solver/src"; sed -n 1,60p tests/test_native.py; sed -n 130,170p tests
+
+I'm about to edit the Python reference. First I'll save today's node counts as a baseline so I can show nothing changes when the flag is off.
+  > $ cd /home/al/dev/MOSP; mkdir -p /tmp/l7; cat > /tmp/l7/baseline.py <<'EOF'
+import json, random, sys
+from mosp.instance import MOSPInstance
+from satisfiability.cu
+
+Baseline saved. Now the code change in `customer_search.py`.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='satisfiability/customer_search.py'
+s=open(p).read()
+old_sig='''    expansion_prune: bool = False,
+    fan_order: str =
+
+Flag off: identical to today's behaviour on 35,264 decisions (status, nodes and witness). Next I'll check that the new Python better move matches the C node for node.
+  > $ cd /home/al/dev/MOSP; cat > /tmp/l7/bm_vs_c.py <<'EOF'
+import random
+from mosp.instance import MOSPInstance
+from satisfiability.customer_search import decide
+fr
+  > $ cd /home/al/dev/MOSP; sed -i 's/if (a.status,a.nodes,a.order)!=(b.status,b.nodes,b.order)/act=set(c for c in range(inst.n_customers) if inst.customer_patterns(c
+
+The Python better move (old rules) matches the C node for node on all 117,828 runs. Now the oracle check of the repaired filter against `paper2/search_check.py`.
+  > $ cd /home/al/dev/MOSP; sed -n 1,54p paper2/search_check.py; sed -n 110,150p paper2/search_check.py; sed -n 1165,1225p paper2/search_check.py; sed -n 481,492p pap
+  > $ cd /home/al/dev/MOSP; sed -n 1535,1575p paper2/search_check.py; sed -n 1966,2015p paper2/search_check.py; nproc; uptime
+
+Now the checker module: production filter vs the Lean transcription (`k_repaired_filter`) and the oracle, at every state, plus whole-search answers.
+  > Write /home/al/dev/MOSP/paper2/solver_fix_check.py
+  > $ cd /home/al/dev/MOSP; ls paper2/__init__.py paper2/data 2>&1 | head -3; time python -m paper2.solver_fix_check --quick --workers 20 --out /tmp/l7/quick.json 2>&
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.solver_fix_check --workers 22 > /tmp/l7/full.log 2>&1 &
+echo $! > /tmp/l7/full.pid; cat /tmp/l7/full.pid; grep -n "
+  > $ cd /home/al/dev/MOSP; grep -ln "from paper2" tests/*.py | head; python - <<'EOF'
+import json, hashlib
+b=json.load(open('/tmp/l7/before.json'))
+sub=[(i,k,ci,s,n)
+  > Write /home/al/dev/MOSP/tests/test_repaired_rules.py
+  > $ cd /home/al/dev/MOSP; time python -m pytest tests/test_repaired_rules.py -q 2>&1 | tail -15
+
+All 11 pass. Now I'll update the stale "inert" comment in `test_differential.py` and the module docstring, then run the related test files.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='tests/test_differential.py'
+s=open(p).read()
+o="    # the Python reference with the flag set (it has no Theorem 2, so 
+  > $ cd /home/al/dev/MOSP; cat /tmp/l7/full.log | head -40; python -c "
+import json; r=json.load(open('paper2/data/solver_fix_check.json'))
+for f,t in r['by_family']
+
+Full run: zero failures over 11.27M node checks and 3.93M whole searches, in 62 s. Since it was cheap, I'll rerun with 2,000 gadget graphs (instead of 200) and run the gate alongside it.
+  > $ cd /home/al/dev/MOSP; uptime; nohup python -m paper2.solver_fix_check --workers 16 --aug 2000 > /tmp/l7/full2.log 2>&1 &
+echo $! > /tmp/l7/full2.pid; cat Ralph_
+  > $ cd /home/al/dev/MOSP; nohup python3 Ralph_Loops/loop0007/gate.py > /tmp/l7/gate.log 2>&1 & echo $! > /tmp/l7/gate.pid; cat /tmp/l7/gate.pid
+
+While the gate runs, I'll write `paper2/solver_fix.md`.
+  > $ sleep 150; cat /tmp/l7/full2.log | head -30; tail -3 /tmp/l7/gate.log
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! kill -0 $(cat /tmp/l7/full2.pid) 2>/dev/null; do sleep 5; done; head -28 /tmp/l7/full2.log; python -c "
+import json; r=json.load(open('/home/al/dev/MOSP
+
+Zero failures at the larger size too. Writing the report.
+  > Write /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ until ! kill -0 $(cat /tmp/l7/gate.pid) 2>/dev/null; do sleep 5; done; tail -15 /tmp/l7/gate.log
+  > $ cd /home/al/dev/MOSP; python -m pytest tests/test_search_soundness_doc.py -q -x 2>&1 | grep -E "assert|Error|cited|missing" | head -20
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+p='satisfiability/customer_search.py'
+s=open(p).read()
+old=s[s.index('    if definite_move:\n        for cost, q in playa
+
+After the refactor: still identical to the baseline and to the C. I'll rerun the full check on the final code alongside the gate.
+  > $ cd /home/al/dev/MOSP; (python -m paper2.solver_fix_check --workers 12 --aug 2000 > /tmp/l7/full3.log 2>&1 &) ; python3 Ralph_Loops/loop0007/gate.py > /tmp/l7/ga
+
+Meanwhile, I'll update PROGRESS.md and iterations.md (I'll finalise them once the gate result is in).
+  > $ cd /home/al/dev/MOSP; until grep -q '"seconds"' /tmp/l7/full3.log 2>/dev/null || ! pgrep -f "solver_fix_check --workers 12" >/dev/null; do sleep 5; done; head -
+
+Same totals on the final code. I'll fix the timing line and wait for the gate.
+  > $ cd /home/al/dev/MOSP; sed -i 's/loop0006 found. 302 s on 16 workers./loop0006 found. 231 s on 12 workers (final code; an earlier run before a behaviour-neutral 
+  > $ until [ -s /tmp/l7/gate2.log ] && grep -qE "GATE (FAIL|PASS)|passed|^GATE" /tmp/l7/gate2.log && ! pgrep -f "loop0007/gate.py" >/dev/null; do sleep 5; done; tail
+  > $ tail -8 /tmp/l7/gate2.log
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0007; pkill -P $$ -f "until \[ -s /tmp/l7/gate2.log" 2>/dev/null; python - <<'EOF'
+p='iterations.md'; s=open(p).read()
+s=s.
+  > $ pgrep -af "solver_fix_check|loop0007/gate.py|until \[" | grep -v pgrep || echo none
+
+Item 01 is done. The Python reference search now has the repaired definite and better moves behind `repaired_rules` (off by default), and the gate passes: lake build, the sorry count, 1,338 MOSP tests and 95 pathwidth_solver tests. No certified value changed and no false refutation turned up, so nothing triggers the stop condition.
+
+**What changed in `satisfiability/customer_search.py`**
+- **Definite move:** with the flag on, it fires on the first playable customer that passes the old test `close ≥ open` and also the matching test (`HasDefiniteMatching`, equivalent to the hereditary premise). A customer that passes the old test but fails the matching is skipped, and a later one can still fire. That makes the pick the same as the Lean `repairedFullFilter`'s.
+- **Better move:** a customer is dropped only if, besides premises 3 and 4, the citing customer passes the same matching test at `cl(S ∪ {r})` (`IsRepairedBetter`).
+- **The Python had no better move until now:** `better_move=True` did nothing under `native=False`. I ported the C's rule so item 02 can compare the two node for node. On the old rules it matches the C on all 117,828 runs, in answer, node count and witness.
+- **Flag off, nothing changed:** the output is identical to the code before the change on 35,264 decisions (answer, nodes, witness). A test pins this with a digest computed before the edit.
+- **C not used yet:** with the flag on, the search runs in Python until item 02 adds it to the C.
+
+**Check against the independent oracle** (new script `paper2/solver_fix_check.py`, graphs of 1–17 vertices, every graph checked up to 6, sampled above that):
+
+| Check | Count | Failures |
+|---|---|---|
+| Repaired filter output equals the Lean filter | 16,244,090 nodes | 0 |
+| Old filter output equals the Lean filter for the current code | 16,244,090 nodes | 0 |
+| Repaired filter keeps a solution where one exists | 11,109,357 nodes | 0 |
+| Matching test gives the same verdict as the hereditary premise | 36,939,226 candidates | 0 |
+| Whole searches give the right answer (each setting) | 4,016,096 | 0 |
+
+The old filter lost the last solution at 302 nodes, all on the counterexample-derived graphs, but never gave a wrong answer for a whole search. On `DEFINITE_CEX` the repaired filter keeps customer 3, which leads to a solution, where the old one kept 0 alone.
+
+**Files**
+- `tests/test_repaired_rules.py`: 11 tests, about 2 s.
+- `paper2/solver_fix.md`: new, with the item 01 section and the table.
+- `paper2/data/solver_fix_check.json`: the full run's results.
+- `tests/test_differential.py`: corrected a comment that said the Python's better move was inert; the assertion is unchanged.
+- `PROGRESS.md` updated and the item marked `[x]`; 1/10 solved.
+
+`tests/test_search_soundness_doc.py` checks that lines quoted in `paper2/search_soundness.md` still appear verbatim in the code. My first edit broke that, so I put those three lines back unchanged and kept the document as it was. I've noted in PROGRESS.md that the C and pathwidth edits in items 02–03 may trip the same test.
+
+# result: success in 2003s, 43 turns, cost $4.38

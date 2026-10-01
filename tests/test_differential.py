@@ -215,7 +215,7 @@ def test_the_drawn_instance_has_optimum_four_by_three_independent_routes():
         assert answer.status == "sat"
         from learning.differential import witness_value
         assert witness_value(inst, answer.order) == 4
-    # the Python reference with the flag set (it has no Theorem 2, so the flag is inert) agrees
+    # the Python reference with Theorem 2 on (ported from the C on 2026-10-01) agrees
     assert decide(inst, 4, native=False, better_move=True, better_move_dominators=0).status == "sat"
 
 

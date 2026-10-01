@@ -1,6 +1,6 @@
 # loop0007 — fix both solvers to match the theorems: items
 
-- [ ] **01 The repaired rules in the Python reference.** In
+- [x] **01 The repaired rules in the Python reference.** In
   `satisfiability/customer_search.py`, behind `repaired_rules: bool`
   (default `False` for now): the hereditary definite test by matching, run
   only for candidates that pass `close ≥ open`, and the repaired better move.

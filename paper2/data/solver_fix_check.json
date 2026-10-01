@@ -1,0 +1,170 @@
+{
+ "quick": false,
+ "seconds": 230.6,
+ "definite_cex_filter": {
+  "0": {
+   "code": [
+    0
+   ],
+   "repaired": [
+    3
+   ],
+   "repaired_keeps_solution": true
+  },
+  "1": {
+   "code": [
+    0
+   ],
+   "repaired": [
+    3
+   ],
+   "repaired_keeps_solution": true
+  },
+  "2": {
+   "code": [
+    0
+   ],
+   "repaired": [
+    3
+   ],
+   "repaired_keeps_solution": true
+  }
+ },
+ "by_family": {
+  "atlas7": {
+   "code_lost": 0,
+   "definite_premise_without_hereditary": 780,
+   "eq_code": 1551570,
+   "eq_matching": 1782115,
+   "eq_repaired": 1551570,
+   "fail_answer_code": 0,
+   "fail_answer_repaired": 0,
+   "fail_eq_code": 0,
+   "fail_eq_repaired": 0,
+   "fail_matching": 0,
+   "fail_sound_repaired": 0,
+   "fail_witness_code": 0,
+   "fail_witness_repaired": 0,
+   "filters_differ": 276,
+   "matching_checks": 1782115,
+   "nodes": 1551570,
+   "nodes_with_solution": 1110315,
+   "searches_code": 584640,
+   "searches_repaired": 584640,
+   "sound_repaired": 1110315
+  },
+  "gadget": {
+   "code_lost": 296,
+   "definite_premise_without_hereditary": 268128,
+   "eq_code": 5522016,
+   "eq_matching": 23204742,
+   "eq_repaired": 5522016,
+   "fail_answer_code": 0,
+   "fail_answer_repaired": 0,
+   "fail_eq_code": 0,
+   "fail_eq_repaired": 0,
+   "fail_matching": 0,
+   "fail_sound_repaired": 0,
+   "fail_witness_code": 0,
+   "fail_witness_repaired": 0,
+   "filters_differ": 7597,
+   "graphs": 2000,
+   "matching_checks": 23204742,
+   "nodes": 5522016,
+   "nodes_with_solution": 2980090,
+   "searches_code": 96000,
+   "searches_repaired": 96000,
+   "sound_repaired": 2980090
+  },
+  "labelled": {
+   "code_lost": 0,
+   "definite_premise_without_hereditary": 0,
+   "eq_code": 6149187,
+   "eq_matching": 5946920,
+   "eq_repaired": 6149187,
+   "fail_answer_code": 0,
+   "fail_answer_repaired": 0,
+   "fail_eq_code": 0,
+   "fail_eq_repaired": 0,
+   "fail_matching": 0,
+   "fail_sound_repaired": 0,
+   "fail_witness_code": 0,
+   "fail_witness_repaired": 0,
+   "filters_differ": 0,
+   "matching_checks": 5946920,
+   "nodes": 6149187,
+   "nodes_with_solution": 4337313,
+   "searches_code": 3232208,
+   "searches_repaired": 3232208,
+   "sound_repaired": 4337313
+  },
+  "pinned": {
+   "code_lost": 6,
+   "definite_premise_without_hereditary": 1317,
+   "eq_code": 26690,
+   "eq_matching": 109496,
+   "eq_repaired": 26690,
+   "fail_answer_code": 0,
+   "fail_answer_repaired": 0,
+   "fail_eq_code": 0,
+   "fail_eq_repaired": 0,
+   "fail_matching": 0,
+   "fail_sound_repaired": 0,
+   "fail_witness_code": 0,
+   "fail_witness_repaired": 0,
+   "filters_differ": 974,
+   "matching_checks": 109496,
+   "nodes": 26690,
+   "nodes_with_solution": 23312,
+   "searches_code": 1024,
+   "searches_repaired": 1024,
+   "sound_repaired": 23312
+  },
+  "random": {
+   "code_lost": 0,
+   "definite_premise_without_hereditary": 6959,
+   "eq_code": 2994627,
+   "eq_matching": 5895953,
+   "eq_repaired": 2994627,
+   "fail_answer_code": 0,
+   "fail_answer_repaired": 0,
+   "fail_eq_code": 0,
+   "fail_eq_repaired": 0,
+   "fail_matching": 0,
+   "fail_sound_repaired": 0,
+   "fail_witness_code": 0,
+   "fail_witness_repaired": 0,
+   "filters_differ": 1943,
+   "matching_checks": 5895953,
+   "nodes": 2994627,
+   "nodes_with_solution": 2658327,
+   "searches_code": 102224,
+   "searches_repaired": 102224,
+   "sound_repaired": 2658327
+  }
+ },
+ "total": {
+  "code_lost": 302,
+  "definite_premise_without_hereditary": 277184,
+  "eq_code": 16244090,
+  "eq_matching": 36939226,
+  "eq_repaired": 16244090,
+  "fail_answer_code": 0,
+  "fail_answer_repaired": 0,
+  "fail_eq_code": 0,
+  "fail_eq_repaired": 0,
+  "fail_matching": 0,
+  "fail_sound_repaired": 0,
+  "fail_witness_code": 0,
+  "fail_witness_repaired": 0,
+  "filters_differ": 10790,
+  "graphs": 2000,
+  "matching_checks": 36939226,
+  "nodes": 16244090,
+  "nodes_with_solution": 11109357,
+  "searches_code": 4016096,
+  "searches_repaired": 4016096,
+  "sound_repaired": 11109357
+ },
+ "failures": {}
+}
