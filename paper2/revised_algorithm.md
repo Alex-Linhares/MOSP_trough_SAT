@@ -316,7 +316,12 @@ which recomputes every labelled fact from the instance (PDF beside it).*
 
 So Theorem 1 is false, both as published and as coded. (Lean:
 `definiteMove_counterexample`, `cexGraph`, `cex_solvable`, and
-`cexFamily_closed` for the seven sets, checked by `decide +kernel`.)
+`cexFamily_closed` for the seven sets, checked by `decide +kernel`.) The published implication itself is refuted as a universal statement, with
+the bridge from the free-closed child to $S \cup \{q\}$ inside the proof,
+under the code's reading of $\mathrm{close}$ and under the literal one, which
+also counts closed customers and so is a weaker premise
+(`chuStuckey_theorem1_false`, `chuStuckey_theorem1_false_literal`,
+`Search/PublishedTheorems.lean`).
 
 **Why the published proof fails.** The proof moves $q$ to the front of a
 solution $U' = S \mathbin{+\!\!+} [c_1, \dots, c_m, q, \dots]$ and claims that
@@ -569,7 +574,9 @@ $q = 0$, so the code drops $2$ citing $0$. But $S \cdot 2 = \{2\}$ has a
 solution (Counterexample 4.5), and $S \cdot 0 = \{0\}$ has none. The child
 $\{2\}$ is exactly the state at which Theorem 1 wrongly moves $0$ forward.
 (Lean: `betterMove_counterexample`, by an invariant family of 18 sets,
-`bmFamily_closed`.) At this node the filter still keeps customer $1$, which has
+`bmFamily_closed`.) Theorem 2's published implication is refuted the same way, under both
+readings of $\mathrm{close}$ (`chuStuckey_theorem2_false`,
+`chuStuckey_theorem2_false_literal`). At this node the filter still keeps customer $1$, which has
 a solution, so this is a *false link*, not a lost node (Lean:
 `betterMove_counterexample_node`). No node where the better move loses the last
 solution has been found (section 4.5).

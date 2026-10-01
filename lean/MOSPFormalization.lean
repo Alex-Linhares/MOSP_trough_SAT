@@ -39,3 +39,4 @@ import MOSPFormalization.Search.SubsetRule
 import MOSPFormalization.Search.BetterMove
 import MOSPFormalization.Search.Memo
 import MOSPFormalization.Search.Decide
+import MOSPFormalization.Search.PublishedTheorems

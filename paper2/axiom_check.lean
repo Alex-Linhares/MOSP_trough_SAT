@@ -164,5 +164,11 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.exists_matching_of_isHereditarilyDefinite
 #print axioms MOSPFormalization.Search.isHereditarilyDefinite_iff_hasDefiniteMatching
 
+-- The published Theorems 1 and 2, refuted as stated (Search/PublishedTheorems.lean)
+#print axioms MOSPFormalization.Search.chuStuckey_theorem1_false
+#print axioms MOSPFormalization.Search.chuStuckey_theorem1_false_literal
+#print axioms MOSPFormalization.Search.chuStuckey_theorem2_false
+#print axioms MOSPFormalization.Search.chuStuckey_theorem2_false_literal
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
