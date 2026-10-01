@@ -23,7 +23,7 @@
   default in both solvers** (the owner's decision), and record it at the top
   of `paper2/solver_fix.md`.
 
-- [ ] **04 What the repair costs.** Paired runs, old against repaired, in
+- [x] **04 What the repair costs.** Paired runs, old against repaired, in
   nodes and seconds:
   - the corpus at n ≤ 40, refuting optimum − 1;
   - the Chu & Stuckey classes at 50-100;

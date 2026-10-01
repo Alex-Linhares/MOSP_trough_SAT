@@ -403,3 +403,215 @@ cd pathwidth_solver && python -m pytest tests/test_repaired_rules.py tests/test_
 python -m paper2.solver_fix_pw_check --workers 20   # writes paper2/data/solver_fix_pw_check.json, ~7 min
 python -m paper2.solver_fix_pw_check --quick        # ~3 min
 ```
+
+---
+
+## Item 04: what the repair costs (2026-10-01)
+
+**The answer: almost nothing.** Over every measurement below the two
+settings never gave different answers, and no certified value moved: every
+finished refutation of `optimum − 1` came back `unsat` under both. On finished
+pairs the repaired rules visit **+0.004% nodes on the corpus at n ≤ 40, +0.30%
+on the Chu & Stuckey classes at 50–100, −0.01% on the 125 × 125 instances that
+finish, and +2.0% in the pathwidth solver** (its total is dominated by Rome, and
+the median pair there is 1.000). Per node, the repaired rules cost **about 2%**
+in the MOSP C (range −0.1% to +5.8% over six hard instances, measured quietly)
+and **about 6%** in the pathwidth solver's descents. The old test passes and the
+matching then fails on **0.03–0.27%** of definite-move candidates and **0.02%**
+of better-move pairs. The definite move stops firing at a node where it used to
+fire at **0.04–0.08%** of filter calls on the hard classes.
+
+### What changed in the code
+
+Only instrumentation. Nothing about the search changed.
+
+- `customer_search.c`: per-thread rule counters (`RC_*`), reset by every
+  `cs_decide_rules` call and read back with the new entry point
+  `cs_last_rule_counts`. They count: dominance-filter calls; definite-move
+  candidates passing `close ≥ open`; those failing the matching; nodes where the
+  definite move fires; nodes where some candidate passed the old test and none
+  fired (`definite_lost`, the repair alone, since under the published rules a
+  pass always fires); better-move `(r, q)` pairs passing premises 3 and 4; those
+  failing the matching; and candidates pruned. `pathwidth_solver/pathwidth/closing_search.c`
+  is again a byte copy. `closing_search_w.c` has no counters.
+- `satisfiability/native.py`: `last_rule_counts()` and `RULE_COUNT_NAMES`.
+- The counters cost nothing measurable. Against the C as it stood before them
+  (`git show HEAD:`, built to a scratch file), the published rules run 1.4–5.4%
+  *faster* per node with the counters in (table 5). That is code layout, not
+  the counters. Node counts are unchanged, as the test below checks.
+- `paper2/solver_fix_cost.py` (the paired runs, five stages) and
+  `paper2/solver_fix_cost_tables.py` (the tables,
+  `paper2/data/solver_fix_cost_tables.md`).
+
+### Tests
+
+`tests/test_repaired_rules.py::test_the_rule_counters_count_the_repair_and_change_nothing`
+covers both `DEFINITE_CEX` graphs and the two Bug B instances, every `k`, all 36
+matched configurations and both settings. It checks four things:
+
+- reading the counters does not change the node count;
+- the identities hold (fails ≤ passes, fires ≤ filter calls, zero passes for a
+  rule that is off);
+- under the published rules the matching never fails and nothing is lost;
+- under the repaired rules the matching does fail somewhere on these graphs.
+
+Gate: PASS (1,344 MOSP tests, 110 pathwidth_solver tests).
+
+### Method
+
+Each job runs the same decision twice in one worker process, once with
+`repaired_rules=False` and once with `repaired_rules=True`. The order alternates
+from job to job. The configuration is `csearch` (Theorem 2 by
+`sparse_enough_for_better_move`, every earlier survivor a dominator); at
+n ≤ 40 the `default` configuration (no Theorem 2) is run as well. `k` is
+`optimum − 1`, from the certified corpus (`solutions/`, read only). The
+pathwidth stage runs the whole descent `pathwidth.solve(G, time_budget=120)`
+under each setting with default flags (no better move). It then runs one
+counter pass: the refutation of the widest component's width − 1, posed as a
+MOSP instance with one product per edge. Its MOSP graph is the component, and
+the MOSP C equals the pathwidth C node for node. The pass covers components of
+at most 128 vertices and is capped at 5 × 10⁷ nodes. All of this ran on 22
+cores of 32, so the seconds in tables 1–4 carry load noise of ±25% on single
+pairs; table 5 is the per-node measurement.
+
+### Table 1: the corpus at n ≤ 40 (6,135 certified instances, 9–40 customers)
+
+| config | pairs | answers differ | nodes old → repaired | ratio | pairs more / fewer | s old → repaired |
+|---|---|---|---|---|---|---|
+| `default` | 6,135 | 0 | 228,147 → 228,154 | 1.00003 | 2 / 1 | 1.17 → 1.15 |
+| `csearch` | 6,135 | 0 | 202,962 → 202,971 | 1.00004 | 6 / 3 | 1.01 → 0.99 |
+
+Twelve instance-configuration pairs, on nine instances, differ in nodes, by at most 4%: `HS problem 2430`, `Random-30-30-4-3_0`,
+`Random-40-40-2-2_0`, `Warwick 1599`, `p1540n7_0`, `p2540n2_0`, `p3040n2_0`,
+`p3040n5_0`, `p4040n9_0`. Counters, repaired runs: the definite move's old test
+passed 39,260 times (`default`) and 34,711 times (`csearch`), and the matching
+failed 45 and 23 times (0.11%, 0.07%). The definite move stopped firing at a
+node 15 and 6 times, never at 20 customers or fewer. Better-move pairs: 17,268, of
+which 11 failed the matching.
+
+### Table 2: the Chu & Stuckey classes at 50–100 (125 instances, `csearch`, 600 s per call)
+
+| class | pairs | finished | nodes old → repaired (finished) | ratio | max / min pair ratio |
+|---|---|---|---|---|---|
+| 50 × 50, 50 × 100 (all densities) | 50 | 50 | 629,591 → 629,751 | 1.0003 | 1.003 / 1.000 |
+| 75 × 75 (all densities) | 25 | 25 | 17,659,217 → 17,656,974 | 0.9999 | 1.004 / 0.996 |
+| 100 × 50, density 2 | 5 | 5 | 5,877,966 → 5,877,392 | 0.9999 | 1.000 / 0.999 |
+| 100 × 50, density 4 | 5 | 5 | 432,782,522 → 437,145,992 | **1.0101** | 1.013 / 1.001 |
+| 100 × 50, density 6 | 5 | 5 | 71,551,557 → 71,798,460 | 1.0035 | 1.006 / 1.000 |
+| 100 × 50, densities 8, 10 | 10 | 10 | 9,089,136 → 9,095,700 | 1.0007 | 1.001 / 1.000 |
+| 100 × 100, density 4 | 5 | 3 | 800,520,212 → 800,010,791 | 0.9994 | 1.001 / 0.999 |
+| 100 × 100, densities 6, 8, 10 | 15 | 15 | 19,986,470 → 19,990,150 | 1.0002 | 1.001 / 1.000 |
+| 100 × 100, density 2 | 5 | 0 | — (censored, both sides) | — | — |
+| **all** | **125** | **118** | **1,358,096,671 → 1,362,205,210** | **1.0030** | 1.013 / 0.996 |
+
+Seconds on the 118 finished pairs: 1,190.9 → 1,204.1 (+1.1%). The answers
+agree on all 118. Seven pairs hit 600 s on both sides: `Random-100-100-2-1…5_0`,
+`-4-3_0` and `-4-5_0`. Those counts (7.27 × 10⁹ old, 6.87 × 10⁹ repaired nodes in
+total) are lower bounds and say nothing about cost. Counters, repaired runs,
+all 125 instances: the definite move's old test passed 2.38 × 10⁹ times and the
+matching failed 3.04 × 10⁶ times (**0.13%**). The share is highest on the dense
+100-customer classes (1.5% on `100-100-6` and `100-50-8`) and lowest on the
+sparse ones (0.02% on `100-50-2`). The definite move stopped firing at
+1.39 × 10⁶ of 3.61 × 10⁹ filter calls (**0.04%**). Better-move pairs:
+7.00 × 10⁸, of which 1.65 × 10⁵ failed the matching (**0.02%**).
+
+### Table 3: 125 × 125 (23 certified instances, `csearch`, 2 × 10⁸ nodes per call)
+
+| density | pairs | finished | nodes old → repaired | s old → repaired |
+|---|---|---|---|---|
+| 10 | 5 | 5 | 628,798 → 628,799 | 0.94 → 0.88 |
+| 8 | 5 | 5 | 28,482,502 → 28,482,330 | 23.9 → 24.1 |
+| 6 | 5 | 1 | 61,858,208 → 61,850,290 (the finished one) | 52.6 → 52.6 |
+| 4 | 5 | 0 | capped | — |
+| 2 | 3 | 0 | capped | — |
+
+The two open entries (`Random-125-125-2-2_0`, `-2-3_0`) have no certified
+optimum and are not in the sample. On the 11 finished pairs the ratio is
+0.99991 and the answers agree. On the 12 pairs capped on both sides (equal
+nodes), seconds were 2,178.5 → 2,144.6. That is noise under load; table 5 does
+it properly. The tree sizes at density 2 and 4 are 10¹¹ nodes and out of reach
+here. Counters at the cap, all 23: the matching failed on **0.27%** of old-test
+passes (1.08 × 10⁶ of 3.94 × 10⁸). The definite move stopped firing at **0.08%**
+of filter calls. Better pairs failed at **0.02%**.
+
+### Table 4: the pathwidth solver (`solve`, 120 s per descent, 880 graphs)
+
+| set | graphs | both proved | proved by one side only | proved widths differ | nodes old → repaired (both proved) | ratio | s old → repaired |
+|---|---|---|---|---|---|---|---|
+| VSPLIB trees | 50 | 50 | 0 | 0 | 49,539,922 → 49,690,692 | 1.003 | 53.0 → 55.5 |
+| VSPLIB grids | 50 | 9 | 0 | 0 | 42,139,983 → 42,842,268 | 1.017 | 33.7 → 35.4 |
+| VSPLIB HB | 73 | 39 | 0 | 0 | 18,565,935 → 18,789,341 | 1.012 | 37.0 → 38.4 |
+| DIMACS colouring | 58 | 30 | 0 | 0 | 190,513,249 → 192,703,052 | 1.011 | 123.3 → 130.4 |
+| named | 149 | 125 | 0 | 0 | 342,295,019 → 343,456,465 | 1.003 | 187.3 → 191.3 |
+| Rome, 500 sampled (seed 20261001) | 500 | 478 | 0 | 0 | 2,334,795,699 → 2,391,188,899 | 1.024 | 905.9 → 984.8 |
+| **all** | **880** | **731** | **0** | **0** | **2,977,849,807 → 3,038,670,717** | **1.020** | **1,340 → 1,436** |
+
+The 149 graphs unproved under the budget got the same width under both
+settings. Every proved width, under either setting, equals the width recorded
+in `pathwidth_solver/bench/results/*.csv` wherever that run was proved (1,340
+graph-settings, zero differences). On Rome the median pair ratio is 1.000 and
+the maximum 1.13 (`grafo7529.93`, 2.77 × 10⁸ → 3.13 × 10⁸). Excluded: the named
+graph `DorogovtsevGoltsevMendesGraph` (3,282 vertices). It does not respect the
+time budget on the Python path (its recorded run took 4,007 s), and its pool was
+stopped after 1.8 h.
+
+Per node, the pathwidth descents cost 0.388 → 0.412 µs on Rome, +6%. That is
+more than the MOSP C's +2%. These are whole descents under load, including the
+restricted upper-bound DFS. `closing_search_w.c`'s matching (per-frame `freed`
+scratch, `owner[64·WORDS]`) is the candidate cause, unmeasured. Counter pass,
+680 components of ≤ 128 vertices: the matching failed on 1.11 × 10⁵ of
+5.39 × 10⁸ old-test passes (**0.02%**), highest on colouring (0.45%) and zero on
+the trees. The definite move stopped firing at 42,420 of 6.32 × 10⁸ filter calls
+(0.007%). Nodes: 1,355,670,489 → 1,359,336,939 (+0.27%).
+
+### Table 5: per-node overhead, measured quietly (fixed node cap, 5 repetitions)
+
+Six processes, one per instance, beside a 10-worker run. Three variants
+alternate: published, repaired, and published in the pre-counter C. The cap is
+5 × 10⁷ nodes; `Random-100-50-4-1_0` and `Random-75-75-2-1_0` finish below it.
+Each figure is the median of 5.
+
+| instance | µs/node old | µs/node repaired | repaired / old | old / pre-counter C |
+|---|---|---|---|---|
+| Random-75-75-2-1_0 | 0.722 | 0.734 | 1.018 | 0.984 |
+| Random-100-50-4-1_0 | 0.549 | 0.562 | 1.024 | 0.966 |
+| Random-100-100-2-1_0 | 0.549 | 0.564 | 1.028 | 0.987 |
+| Random-125-125-2-1_0 | 0.563 | 0.596 | 1.058 | 0.955 |
+| Random-125-125-4-1_0 | 0.768 | 0.767 | 0.999 | 0.971 |
+| Random-125-125-6-2_0 | 0.660 | 0.671 | 1.016 | 0.946 |
+
+### How often the old test passes and the matching fails
+
+| where | definite: old test passes | matching fails | rate | nodes where the move no longer fires (per filter call) | better pairs failing the matching |
+|---|---|---|---|---|---|
+| corpus n ≤ 40, `csearch` | 34,711 | 23 | 0.07% | 6 (0.007%) | 11 of 17,268 (0.06%) |
+| corpus n ≤ 40, `default` | 39,260 | 45 | 0.11% | 15 (0.016%) | — |
+| Chu & Stuckey 50–100 | 2.38 × 10⁹ | 3.04 × 10⁶ | 0.13% | 1.39 × 10⁶ (0.04%) | 1.65 × 10⁵ of 7.00 × 10⁸ (0.02%) |
+| 125 × 125, to 2 × 10⁸ nodes | 3.94 × 10⁸ | 1.08 × 10⁶ | 0.27% | 6.85 × 10⁵ (0.08%) | 2.65 × 10⁴ of 1.17 × 10⁸ (0.02%) |
+| pathwidth, components ≤ 128 | 5.39 × 10⁸ | 1.11 × 10⁵ | 0.02% | 42,420 (0.007%) | — (better move off) |
+
+A failed matching is usually not a lost firing. Some later candidate passes
+both tests and fires instead, which is why "no longer fires" is a half to a
+third of "matching fails". The rest of the nodes lose the definite move and go
+on to the subset rule and better move. That is where the extra nodes come from.
+
+**Size range.** MOSP: 9–40 customers, the whole certified corpus; 50–100,
+the 125 Chu & Stuckey instances, 118 finished; 125 × 125, 23 instances, 11
+finished, the rest per-node only. Pathwidth: 22–1,000+ vertices over 880
+graphs, 731 proved under both settings. Nothing here measures the tree size of
+the day-long refutations (`Random-100-100-2`, `125-125-2/4`). There the
+per-node figure (+0–6%) and the counter rates are what this item can say.
+
+### Regenerate
+
+```
+python -m pytest tests/test_repaired_rules.py -q
+python -m paper2.solver_fix_cost --stage mosp40 --workers 20                         # ~1 min
+python -m paper2.solver_fix_cost --stage cs --workers 12 --deadline 600              # ~22 min
+python -m paper2.solver_fix_cost --stage cs125 --workers 12 --max-nodes 200000000    # ~8 min
+python -m paper2.solver_fix_cost --stage pw --workers 10 --pw-budget 120 --rome 500  # ~70 min, plus one graph that ignores its budget
+python -m paper2.solver_fix_cost --stage overhead --reps 5 --max-nodes 50000000      # ~10 min
+python -m paper2.solver_fix_cost --stage tables      # paper2/data/solver_fix_cost_tables.md
+```
+
+Data: `paper2/data/solver_fix_cost_{mosp40,cs,cs125,pw,overhead}.csv`.

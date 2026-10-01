@@ -1,0 +1,13 @@
+[500/6135] HS problem 3533 size 30 30 density  0.25 old unsat 9 0.0002s | rep unsat 9 0.0002s | 0s
+[1000/6135] Warwick 1585: balanced orders, 15 orders per product old unsat 1 0.0001s | rep unsat 1 0.0001s | 0s
+[1500/6135] HS problem 3380 size 15 30 density  0.65 old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[2000/6135] Warwick 1176: balanced products, 8 products per order old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[2500/6135] Warwick 433: balanced orders and products, 12 products per order old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[3000/6135] HS problem 1406 size 30 10 density  0.50 old unsat 6 0.0001s | rep unsat 6 0.0001s | 0s
+[3500/6135] HS problem 1689 size 15 15 density  0.20 old unsat 11 0.0001s | rep unsat 11 0.0001s | 0s
+[4000/6135] HS problem 2182 size 15 15 density  0.70 old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[4500/6135] HS problem 2821 size 10 20 density  0.35 old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[5000/6135] HS problem 688 size 20 10 density  0.30 old unsat 7 0.0001s | rep unsat 7 0.0001s | 0s
+[5500/6135] Warwick 40: balanced orders, 5 orders per product old unsat 0 0.0001s | rep unsat 0 0.0001s | 0s
+[6000/6135] HS problem 424 size 10 10 density  0.60 old unsat 0 0.0s | rep unsat 0 0.0001s | 0s
+done: 6135 instances -> /home/al/dev/MOSP/paper2/data/solver_fix_cost_mosp40.csv

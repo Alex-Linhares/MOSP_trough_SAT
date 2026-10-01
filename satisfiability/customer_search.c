@@ -40,6 +40,23 @@ typedef unsigned __int128 mask_t;
  * discarded candidate. Measured as `bm-first`; today's rule is unchanged. */
 #define BM_SUBSET_RESTRICTED 4
 
+/* How often each rule's prefilter and its repaired test pass, for measuring
+ * what the repair costs (loop0007 item 04). Per thread, reset by every call
+ * to `cs_decide_rules` and read back with `cs_last_rule_counts`. Counting
+ * never changes the search. */
+enum {
+    RC_FILTER_CALLS,    /* dominance_filter calls with a candidate left */
+    RC_DEF_PREFILTER,   /* definite: candidates passing close >= open */
+    RC_DEF_MATCH_FAIL,  /* ... of which the matching test fails (repaired) */
+    RC_DEF_FIRES,       /* nodes where the definite move fires */
+    RC_DEF_LOST,        /* nodes with a prefilter pass where none fires */
+    RC_BM_PREFILTER,    /* better: (r, q) pairs passing premises 3 and 4 */
+    RC_BM_MATCH_FAIL,   /* ... of which the matching test fails (repaired) */
+    RC_BM_PRUNED,       /* candidates r the better move drops */
+    RC_COUNT
+};
+static __thread long long rule_counts[RC_COUNT];
+
 #define BIT(i)        (((mask_t) 1) << (i))
 #define LOWEST(x)     ((x) & -(x))
 
@@ -292,12 +309,16 @@ static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
                 }
                 /* IsRepairedBetter: premises 3 and 4, and q hereditarily
                  * definite at cl(S u {r}) by the matching test there. */
+                if (closed_by >= opened_by) rule_counts[RC_BM_PREFILTER]++;
                 if (s->repaired_rules && closed_by >= opened_by &&
-                    !has_definite_matching(freed, n_freed, opened_by - 1))
+                    !has_definite_matching(freed, n_freed, opened_by - 1)) {
+                    rule_counts[RC_BM_MATCH_FAIL]++;
                     continue;
+                }
                 if (closed_by >= opened_by) pruned = 1;
             }
             survives[ri] = !pruned;
+            if (pruned) rule_counts[RC_BM_PRUNED]++;
         }
         int kept = 0;
         mask_t gone = 0;
@@ -337,6 +358,7 @@ static int dominance_filter(search_t *s, mask_t candidates,
     }
     if (!count || (!s->subset_rule && !s->definite_move && !s->better_move))
         goto sorted;
+    rule_counts[RC_FILTER_CALLS]++;
 
     /* Three dominance rules share this one list, and a rule is sound only
      * when every candidate it discards is *covered*: some candidate still
@@ -359,6 +381,7 @@ static int dominance_filter(search_t *s, mask_t candidates,
      * coverings then ends at a better-move survivor or at a `seen` customer,
      * and the answer cannot change -- only the cost. */
     if (s->definite_move) {
+        int prefilter_passed = 0;
         for (int i = 0; i < count; i++) {
             int c = who[i];
             int at = index_of[i];
@@ -369,6 +392,10 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 /* A larger set cannot sit inside a smaller one; the integer
                  * test skips most pairs before any 128-bit work. */
                 if (sizes[j] <= opened_by && (opens[j] & ~own) == 0) closed_by++;
+            if (closed_by >= opened_by) {
+                rule_counts[RC_DEF_PREFILTER]++;
+                prefilter_passed = 1;
+            }
             if (closed_by >= opened_by && s->repaired_rules) {
                 /* Chu & Stuckey's premise holds; the repaired rule also needs
                  * q hereditarily definite (the matching test over the
@@ -379,15 +406,22 @@ static int dominance_filter(search_t *s, mask_t candidates,
                 for (int j = 0; j < n_remaining; j++)
                     if (ids[j] != c && sizes[j] <= opened_by && (opens[j] & ~own) == 0)
                         freed[n_freed++] = opens[j];
-                if (!has_definite_matching(freed, n_freed, opened_by - 1)) continue;
+                if (!has_definite_matching(freed, n_freed, opened_by - 1)) {
+                    rule_counts[RC_DEF_MATCH_FAIL]++;
+                    continue;
+                }
             }
             if (closed_by >= opened_by) {
                 /* q is at least as good as anything else here. */
+                rule_counts[RC_DEF_FIRES]++;
                 costs[0] = costs[i]; who[0] = c;
                 count = 1;
                 goto sorted;
             }
         }
+        /* Reached only when no candidate fired: under the published rules a
+         * prefilter pass always fires, so this counts the repair alone. */
+        if (prefilter_passed) rule_counts[RC_DEF_LOST]++;
     }
 
     /* Today's order is subset rule then better move, for the reason above.
@@ -589,6 +623,7 @@ int cs_decide_rules(int n, int k,
                     int *out_path, long long *out_nodes, int *out_len) {
     *out_nodes = 0;
     *out_len = 0;
+    memset(rule_counts, 0, sizeof rule_counts);
     if (n <= 0) return 1;
 
     search_t s;
@@ -633,6 +668,13 @@ int cs_decide_rules(int n, int k,
     free(s.neighbour);
     free(s.memo.slots);
     return found ? 1 : (s.aborted ? -1 : 0);
+}
+
+/* The rule counters of this thread's last `cs_decide_rules` call, RC_COUNT
+ * of them in the order of the enum above. Returns RC_COUNT. */
+int cs_last_rule_counts(long long *out) {
+    for (int i = 0; i < RC_COUNT; i++) out[i] = rule_counts[i];
+    return RC_COUNT;
 }
 
 /* `cs_decide_rules` with the published definite and better moves, kept with

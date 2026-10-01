@@ -1,0 +1,24 @@
+[1/23] Random-125-125-10-4_0        old unsat 65635 0.0838s | rep unsat 65635 0.0942s | 0s
+[2/23] Random-125-125-10-3_0        old unsat 86581 0.1535s | rep unsat 86581 0.1019s | 0s
+[3/23] Random-125-125-10-1_0        old unsat 71324 0.1382s | rep unsat 71324 0.1259s | 0s
+[4/23] Random-125-125-10-2_0        old unsat 164085 0.2304s | rep unsat 164086 0.2455s | 1s
+[5/23] Random-125-125-10-5_0        old unsat 241173 0.3356s | rep unsat 241173 0.3175s | 1s
+[6/23] Random-125-125-6-1_0         old unsat 61858208 52.5701s | rep unsat 61850290 52.5605s | 105s
+[7/23] Random-125-125-2-1_0         old unknown 200000001 120.1508s | rep unknown 200000001 124.1626s | 244s
+[8/23] Random-125-125-8-1_0         old unsat 1058405 0.877s | rep unsat 1058407 0.874s | 246s
+[9/23] Random-125-125-8-2_0         old unsat 2817916 2.3342s | rep unsat 2817917 2.3236s | 251s
+[10/23] Random-125-125-8-3_0         old unsat 6153668 5.1055s | rep unsat 6153953 5.2165s | 261s
+[11/23] Random-125-125-8-4_0         old unsat 1331897 1.0945s | rep unsat 1331898 1.1005s | 263s
+[12/23] Random-125-125-8-5_0         old unsat 17120616 14.4798s | rep unsat 17120155 14.5467s | 292s
+[13/23] Random-125-125-4-5_0         old unknown 200000001 157.6072s | rep unknown 200000001 160.1124s | 318s
+[14/23] Random-125-125-4-1_0         old unknown 200000001 164.2035s | rep unknown 200000001 166.215s | 330s
+[15/23] Random-125-125-4-2_0         old unknown 200000001 169.8154s | rep unknown 200000001 172.296s | 342s
+[16/23] Random-125-125-2-5_0         old unknown 200000001 154.6083s | rep unknown 200000001 202.2746s | 357s
+[17/23] Random-125-125-2-4_0         old unknown 200000001 187.6813s | rep unknown 200000001 177.6392s | 365s
+[18/23] Random-125-125-6-2_0         old unknown 200000001 206.5855s | rep unknown 200000001 180.5049s | 387s
+[19/23] Random-125-125-4-4_0         old unknown 200000001 191.0939s | rep unknown 200000001 206.6739s | 398s
+[20/23] Random-125-125-6-4_0         old unknown 200000001 220.2079s | rep unknown 200000001 186.8733s | 408s
+[21/23] Random-125-125-6-3_0         old unknown 200000001 192.5377s | rep unknown 200000001 217.6981s | 411s
+[22/23] Random-125-125-6-5_0         old unknown 200000001 165.2916s | rep unknown 200000001 158.9118s | 430s
+[23/23] Random-125-125-4-3_0         old unknown 200000001 248.7608s | rep unknown 200000001 191.2147s | 440s
+done: 23 instances -> /home/al/dev/MOSP/paper2/data/solver_fix_cost_cs125.csv

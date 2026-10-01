@@ -118,8 +118,38 @@ def _load() -> "ctypes.CDLL | None":
         lib.cs_decide_rules.argtypes = (lib.cs_decide_variant.argtypes[:15]
                                         + [ctypes.c_int]   # repaired_rules
                                         + lib.cs_decide_variant.argtypes[15:])
+        # Rule counters of the last call on this thread (loop0007 item 04).
+        lib.cs_last_rule_counts.restype = ctypes.c_int
+        lib.cs_last_rule_counts.argtypes = [ctypes.POINTER(ctypes.c_longlong)]
         _library = lib
         return lib
+
+
+# The counters `cs_last_rule_counts` returns, in the order of customer_search.c's
+# RC_* enum.
+RULE_COUNT_NAMES = (
+    "filter_calls",       # dominance_filter calls with a candidate left
+    "definite_prefilter", # candidates passing close >= open
+    "definite_match_fail",  # ... of which the matching test fails (repaired only)
+    "definite_fires",     # nodes where the definite move fires
+    "definite_lost",      # nodes with a prefilter pass where none fires
+    "better_prefilter",   # (r, q) pairs passing premises 3 and 4
+    "better_match_fail",  # ... of which the matching test fails (repaired only)
+    "better_pruned",      # candidates the better move drops
+)
+
+
+def last_rule_counts() -> dict[str, int] | None:
+    """How often each rule's prefilter and its repaired test passed in the
+    last `decide_native` call made *on this thread*, or None without the
+    library. Counting never changes the search; it is there to measure what
+    the repair costs (loop0007 item 04, `paper2/solver_fix_cost.py`)."""
+    library = _load()
+    if library is None:
+        return None
+    out = (ctypes.c_longlong * len(RULE_COUNT_NAMES))()
+    library.cs_last_rule_counts(out)
+    return dict(zip(RULE_COUNT_NAMES, (int(v) for v in out)))
 
 
 def native_available() -> bool:

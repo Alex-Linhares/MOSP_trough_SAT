@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 3/10 SOLVED
+Current: 4/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -152,3 +152,50 @@ Current: 3/10 SOLVED
   default is now `True`. The pathwidth benchmarks go through
   `pathwidth_solver/bench/run.py`, which uses the default and therefore
   repaired.
+
+## Iteration 4 — 2026-10-01 17:55
+
+### Completed
+- **Item 04.** Paired runs, `repaired_rules=False` against `True`, both named,
+  in one worker per pair with the order alternating. `paper2/solver_fix_cost.py`
+  (stages mosp40, cs, cs125, pw, overhead) and `paper2/solver_fix_cost_tables.py`.
+  Section "Item 04" in `paper2/solver_fix.md`; tables in
+  `paper2/data/solver_fix_cost_tables.md`.
+- **The answers never differed, and no certified value moved.** Every finished
+  refutation of `optimum − 1` was `unsat` under both settings. All 731 pathwidth
+  graphs proved under both settings got the same width, and every proved width
+  equals the recorded bench result.
+- **Cost, nodes on finished pairs:**
+  - corpus n ≤ 40 (6,135): +0.004%;
+  - Chu & Stuckey 50–100 (118 of 125 finished, 600 s per call): +0.30%; worst
+    class `100-50-4` at +1.0%; worst pair 1.013;
+  - 125 × 125 (11 of 23 finished under 2 × 10⁸ nodes): −0.01%;
+  - pathwidth `solve` (880 graphs, 731 proved): +2.0%, mostly Rome; the median
+    pair is 1.000 and the worst 1.13.
+- **Cost per node, measured quietly:** +2% in the MOSP C (−0.1% to +5.8% over
+  six hard instances). About +6% in the pathwidth descents, measured under load.
+- **How often the old test passes and the matching fails:** 0.07–0.13% of
+  definite candidates at 9–100 customers, 0.27% at 125 (to the cap), and 0.02% in
+  the pathwidth counter pass. Better-move pairs fail at 0.02–0.06%. The definite
+  move stops firing at 0.007–0.08% of filter calls. Usually a later candidate
+  fires instead.
+- **Instrumentation, no change to the search:** per-thread rule counters in
+  `customer_search.c` (`cs_last_rule_counts`), copied byte for byte to
+  `closing_search.c`; `native.last_rule_counts()`. They do not slow the
+  published rules against the pre-counter C (0.95–0.99× per node). New test
+  `test_the_rule_counters_count_the_repair_and_change_nothing`.
+- Gate: PASS (1,344 MOSP tests, 110 pathwidth_solver tests).
+
+### Blockers
+- None. Not measured: the tree size of the day-long refutations
+  (`Random-100-100-2`, `125-125-2/4`), which were censored on both sides. For
+  them the item reports per-node cost and counter rates only. Excluded:
+  `DorogovtsevGoltsevMendesGraph` (named, 3,282 vertices), which ignores the time
+  budget on the Python path; its pool was stopped by PID. `closing_search_w.c`
+  has no counters, so the pathwidth counter rates come from the MOSP C on
+  components of at most 128 vertices.
+
+### Next
+- Item 05: soundness of the fixed solver against `paper2/search_check.py`.
+  `native.last_rule_counts()` is available if a check wants to know where the
+  repaired rules changed a run.

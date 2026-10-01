@@ -1,0 +1,202 @@
+# session it04 started 2026-10-01 15:53:53
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*04/,/\*\*05/p' Ralph_Loops/loop0007/iterations.md; uptime; head -60 paper2/solver_fix.md; wc -l paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 60,405p paper2/solver_fix.md | grep -n '^##\|regenerate\|python' | head -40; grep -n "def decide\|stats\|repaired_rules" satisfiabi
+  > $ cd /home/al/dev/MOSP; head -80 learning/fix_cost.py; grep -n "def \|argparse\|add_argument" learning/fix_cost.py | head -50
+  > $ cd /home/al/dev/MOSP; sed -n 100,130p learning/fix_cost.py; sed -n 245,300p learning/fix_cost.py; sed -n 125,260p satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; grep -n "repaired\|has_definite_matching\|^[a-z].*(" satisfiability/customer_search.c | head -80; wc -l satisfiability/customer_search.c; 
+  > $ cd /home/al/dev/MOSP; sed -n 100,130p satisfiability/customer_search.c; sed -n 200,400p satisfiability/customer_search.c; sed -n 560,640p satisfiability/custome
+
+Reading done; I'm adding rule counters to the C so the paired runs can say how often the matching test stops a rule from firing, then running the measurements.
+  > $ cd /home/al/dev/MOSP; sed -n 1,45p satisfiability/customer_search.c; grep -n "cs_decide_rules\|def decide_native\|_build\|CDLL\|argtypes" satisfiability/native.
+  > $ cd /home/al/dev/MOSP; sed -n 40,135p satisfiability/native.py; sed -n 136,240p satisfiability/native.py
+  > $ cd /home/al/dev/MOSP; sed -n 400,460p satisfiability/customer_search.c; grep -n "better_move_pass(" satisfiability/customer_search.c
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/customer_search.c'); s=p.read_text()
+def rep(a,b,cnt=1):
+    global s
+  
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/customer_search.c'); s=p.read_text()
+a="""    if (s->definite_move) {
+  
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/native.py'); s=p.read_text()
+a="""        _library = lib
+        return 
+
+Counters are in and tests pass. Now checking how the pathwidth solver dispatches so I can measure it too.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; grep -n "def \|legacy\|WORDS\|_closing_search" pathwidth/native.py | head -50; ls bench bench/results | head -40
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; sed -n 1,80p bench/run.py; grep -n "def \|decide\|compute_pathwidth" bench/run.py | head -40; head -3 bench/results/named
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; grep -n "def solve\|repaired\|decide\b\|decide(\|decide_native(" pathwidth/solve.py pathwidth/search.py pathwidth/native.
+  > $ cd /home/al/dev/MOSP; grep -n "CONFIG\|better_move" learning/node_counts.py | head -20; grep -n "def corpus_targets" -A40 learning/differential.py | head -60; g
+  > $ cd /home/al/dev/MOSP; find learning/data -name "scale_nodes*"; f=$(find learning/data -name "scale_nodes.csv" | head -1); head -3 $f; python -c "
+import pandas 
+  > $ cd /home/al/dev/MOSP; python -c "
+import pandas as pd; d=pd.read_csv('learning/data/ensemble/scale_nodes.csv'); d=d[d.config=='csearch']
+d['cls']=d.instance_nam
+
+Measuring plan set: corpus ≤40 (both configs), Chu & Stuckey 50–100 under a deadline, 125×125 sample under a node cap, and pathwidth sets. Checking the production configuration first.
+  > $ cd /home/al/dev/MOSP; grep -n "better_move" satisfiability/mosp_solver.py benchmarks/csearch.py benchmarks/recertify.py | head -20
+  > $ cd /home/al/dev/MOSP; sed -n 85,106p pathwidth_solver/pathwidth/search.py; sed -n 74,90p pathwidth_solver/pathwidth/solve.py; grep -n "class Solution" -A12 path
+  > Write /home/al/dev/MOSP/paper2/solver_fix_cost.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_cost.py'); s=p.read_text()
+a=s[s.index("            instance = _edge_
+  > $ cd /home/al/dev/MOSP; uptime; nohup python -m paper2.solver_fix_cost --stage mosp40 --workers 20 > paper2/data/solver_fix_cost_mosp40.log 2>&1 &
+echo $!; python
+  > $ sleep 60; cd /home/al/dev/MOSP; tail -3 paper2/data/solver_fix_cost_mosp40.log; wc -l paper2/data/solver_fix_cost_mosp40.csv
+  > $ cd /home/al/dev/MOSP; tail -3 paper2/data/solver_fix_cost_mosp40.log; wc -l paper2/data/solver_fix_cost_mosp40.csv; ps -p 530667 -o pid,etime
+
+Corpus ≤40 done. Launching the Chu & Stuckey 50–100 stage and the pathwidth stage side by side (12 + 10 workers).
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.solver_fix_cost --stage cs --workers 12 --deadline 600 > paper2/data/solver_fix_cost_cs.log 2>&1 &
+echo cs $!; nohu
+  > Write /home/al/dev/MOSP/paper2/solver_fix_cost_tables.py
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_cost --stage tables 2>&1 | tail -3; head -60 paper2/data/solver_fix_cost_tables.md; tail -5 paper2/data/solver
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+While the runs go, I'm adding a test for the new counters.
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p tests/test_repaired_rules.py; grep -n "^def test\|DEFINITE_CEX" tests/test_repaired_rules.py | head -30
+  > $ cd /home/al/dev/MOSP; sed -n 180,320p tests/test_repaired_rules.py
+  > $ cd /home/al/dev/MOSP; cat >> tests/test_repaired_rules.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# item 04: the
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('tests/test_repaired_rules.py'); s=p.read_text()
+a='''                        assert cou
+  > Monitor {"description": "cs and pw stage completion or errors", "timeout_ms": 600000, "command": "cd /home/al/dev/MOSP; tail -n0
+  > $ cd /home/al/dev/MOSP; tail -2 paper2/data/solver_fix_cost_pw.log; tail -1 paper2/data/solver_fix_cost_cs.log; uptime
+
+Both stages are running (Chu & Stuckey at 50/125, pathwidth at 53/881); waiting on them.
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_cs.log; do sleep 10; done'; tail -2 paper2/data/solver_fix_cost_cs.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_cs.log; do sleep 10; done'; tail -4 paper2/data/solver_fix_cost_cs.
+
+Chu & Stuckey 50–100 is done: answers never differed, and 6 pairs were censored at 600 s. Now launching the 125×125 stage under a 2×10⁸ node cap.
+  > $ cd /home/al/dev/MOSP; nohup python -m paper2.solver_fix_cost --stage cs125 --workers 12 --max-nodes 200000000 > paper2/data/solver_fix_cost_cs125.log 2>&1 & ech
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_cs125.log; do sleep 10; done'; cat paper2/data/solver_fix_cost_cs12
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_cost.py'); s=p.read_text()
+s=s.replace('''- `tables`: `paper2/data/so
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_cost --stage overhead --reps 1 --max-nodes 200000 2>&1 | tail -5; ls paper2/data/ | grep customer_search
+  > $ cd /home/al/dev/MOSP; uptime; nohup python -m paper2.solver_fix_cost --stage overhead --reps 5 --max-nodes 50000000 > paper2/data/solver_fix_cost_overhead.log 2
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_cost_tables.py'); s=p.read_text()
+s=s.replace('''def write_tables(out
+
+The overhead benchmark is running alongside the pathwidth stage. I'm waiting for both to finish.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done" paper2/data/solver_fix_cost_overhead.log; do sleep 10; done'; tail -1 paper2/data/solver_fix_cos
+
+Per-node overhead of the repaired rules is about +2% (range −0.1% to +5.8%), and the counters cost nothing measurable. Running the gate while pathwidth finishes.
+  > $ cd /home/al/dev/MOSP; nohup python3 Ralph_Loops/loop0007/gate.py > /tmp/gate_it04.log 2>&1 & echo $!
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd
+C=["definite_prefilter","definite_match_fail","definite_lost","better_prefilter","better_match_fail",
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd
+d=pd.read_csv('paper2/data/solver_fix_cost_mosp40.csv')
+w=d.pivot_table(index=['instance_name','confi
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while kill -0 535483 2>/dev/null; do sleep 10; done'; tail -15 /tmp/gate_it04.log; tail -1 paper2/data/solver_fix_cos
+
+Gate passes (1,344 MOSP tests, 110 pathwidth tests). Pathwidth stage is at 311/881; waiting.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 15; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 15; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 15; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 15; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 10; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd, sys
+sys.path.insert(0,'pathwidth_solver/bench')
+from readers import SETS
+d=pd.read_csv('paper2/data/
+
+Pathwidth is down to one graph. Every proved width under both settings matches the recorded bench results (1,340 rows). Writing the report section now.
+  > $ cd /home/al/dev/MOSP; tail -30 paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; timeout 500 bash -c 'until grep -q "done:" paper2/data/solver_fix_cost_pw.log; do sleep 10; done'; tail -1 paper2/data/solver_fix_cost_pw.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import sys; sys.path.insert(0,'pathwidth_solver/bench')
+from readers import SETS
+from collections import Counter
+ps=SETS[
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_cost_tables.py'); s=p.read_text()
+a='''    d = pd.read_csv(path)
+    
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv('paper2/data/solver_fix_cost_pw.csv'); d['pair']=np.arange(len(d))//2
+w=d.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option('display.width',200)
+d=pd.read_csv('paper2/data/solver_fix_cost_pw.csv'); 
+
+Data are in. Writing the section of `paper2/solver_fix.md`.
+  > $ cd /home/al/dev/MOSP; date; tail -1 paper2/data/solver_fix_cost_pw.log; python - <<'EOF'
+import pandas as pd
+for st in ['cs','cs125']:
+    d=pd.read_csv(f'paper
+  > $ ps -ef | grep "solver_fix_cost" | grep -v grep | head; grep -i dorog /home/al/dev/MOSP/pathwidth_solver/bench/results/named*.csv
+
+The one remaining graph (DorogovtsevGoltsevMendes, 3,282 vertices) doesn't respect the budget: its recorded bench run took 4,007 s. I'm stopping that pool by PID and recording it as excluded.
+  > $ kill 530811 530940 530941 530942 530943 530944 530945 530946 530947 530948; sleep 1; ps -ef | grep solver_fix_cost | grep -v grep | wc -l
+
+Now the section itself.
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 04: what the repair costs (2026-10-01)
+
+**The answer: almost nothing.** Over every measu
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+print(629591+17659217+5877966+432782522+71551557+9089136+800520212+19986470)
+print(629751+17656974+5877392+437145992+7179
+
+Totals check out. Now updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; ls paper2/data | grep -i "customer_search\|solver_fix_cost"; python3 - <<'EOF'
+from pathlib import Path
+p=Path('Ralph_Loops/loop0007/itera
+  > $ cd /home/al/dev/MOSP; python -m pytest -q tests/test_repaired_rules.py tests/test_search_soundness_doc.py 2>&1 | tail -1; python -m paper2.solver_fix_cost --sta
+
+Item 04 is done: the repaired rules cost almost nothing, and they never gave a different answer from the published rules in any run. Every finished refutation of optimum − 1 came back `unsat` under both settings, so no certified value moved. In the pathwidth solver, all 731 graphs proved under both settings got the same width. Each of those widths also matches the recorded bench results.
+
+**Extra nodes visited by the repaired rules** (pairs where both settings finished):
+
+| Where | Pairs finished | Extra nodes |
+|---|---|---|
+| Corpus, up to 40 customers | 6,135 of 6,135 | +0.004% |
+| Chu & Stuckey, 50–100 customers (600 s per call) | 118 of 125 | +0.30% (worst class `100-50-4` at +1.0%) |
+| 125 × 125 (cap of 2 × 10⁸ nodes) | 11 of 23 | −0.01% |
+| Pathwidth `solve` (VSPLIB, colouring, named, 500 Rome graphs) | 731 of 880 proved | +2.0%, mostly Rome (median pair 1.000, worst 1.13) |
+
+**Time per node:** about +2% in the MOSP C (from −0.1% to +5.8% over six hard instances, measured with repeated runs under a fixed node cap). About +6% in the pathwidth descents, but that was measured on a loaded machine.
+
+**How often the old test passes but the matching fails:**
+- **Definite move:** 0.07–0.13% of candidates at 9–100 customers, 0.27% at 125 × 125 (up to the node cap), and 0.02% on the pathwidth graphs.
+- **Better move:** 0.02–0.06% of candidate pairs.
+- **Nodes where the definite move no longer fires at all:** 0.007–0.08%. Usually a later candidate fires instead, which is why this is lower than the failure rate.
+
+**Gaps:**
+- **The hardest refutations weren't measured for tree size.** `Random-100-100-2` and the 125 × 125 density-2 and density-4 instances hit the budget under both settings. For them the report gives only the per-node cost and how often each rule fires.
+- **One graph is excluded.** `DorogovtsevGoltsevMendesGraph` (3,282 vertices) ignores its time budget; the recorded bench run took 4,007 s. I stopped that worker pool by PID after 1.8 hours.
+
+**Code changes (measurement only, the search is unchanged):**
+- `customer_search.c` now counts how often each rule fires, readable through a new entry point `cs_last_rule_counts`. `closing_search.c` is again a byte copy of it.
+- `satisfiability/native.py` exposes the counts as `last_rule_counts()`.
+- The counters don't slow anything down: compared with the C from before this item, the published rules run 1–5% faster per node.
+- A new test checks that reading the counters leaves node counts unchanged and that the counts are consistent.
+
+The gate passes (1,344 MOSP tests, 110 pathwidth tests). Nothing was written to `solutions/`. The results are a new "Item 04" section in `paper2/solver_fix.md`, with the scripts in `paper2/solver_fix_cost.py` and `paper2/solver_fix_cost_tables.py`. The data are in `paper2/data/solver_fix_cost_*.csv` and the tables in `paper2/data/solver_fix_cost_tables.md`. PROGRESS.md now reads 4/10, and item 04 is marked `[x]` in iterations.md.
+
+# result: success in 6882s, 68 turns, cost $10.86

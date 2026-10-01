@@ -324,3 +324,44 @@ def test_the_old_entry_point_keeps_the_published_rules():
         old = decide_native(inst, kk, better_move=True, better_move_dominators=0,
                             old_move=True, memo=False, repaired_rules=False)
         assert (status, nodes.value) == ({"sat": 1, "unsat": 0}[old.status], old.nodes)
+
+
+# ---------------------------------------------------------------------------
+# item 04: the C's rule counters
+# ---------------------------------------------------------------------------
+
+
+@needs_native
+def test_the_rule_counters_count_the_repair_and_change_nothing():
+    """`last_rule_counts` after each call: under the published rules a
+    prefilter pass always fires and the matching never runs; under the repaired
+    rules the counts satisfy their identities, and on the counterexample graphs
+    the matching fails somewhere. Nodes are those of the call without reading
+    the counters, since counting never changes the search."""
+    from satisfiability.native import RULE_COUNT_NAMES, last_rule_counts
+
+    graphs = [m for m, _, _, _ in DEFINITE_CEX] + [BUG_B_CEX[0], BUG_B_10]
+    failed = 0
+    for i, masks in enumerate(graphs):
+        inst = _from_masks(masks, f"cex{i}")
+        for k in range(1, len(masks) + 1):
+            for cfg in _MATCHED:
+                for repaired in (False, True):
+                    answer = decide_native(inst, k, repaired_rules=repaired, **cfg)
+                    counts = last_rule_counts()
+                    assert tuple(counts) == RULE_COUNT_NAMES
+                    assert decide_native(inst, k, repaired_rules=repaired, **cfg).nodes == answer.nodes
+                    assert counts["definite_prefilter"] >= counts["definite_match_fail"]
+                    assert counts["better_prefilter"] >= counts["better_match_fail"]
+                    assert counts["definite_fires"] <= counts["filter_calls"]
+                    if not cfg["definite_move"]:
+                        assert counts["definite_prefilter"] == 0
+                    if not cfg["better_move"]:
+                        assert counts["better_prefilter"] == 0
+                    if not repaired:
+                        assert counts["definite_match_fail"] == counts["definite_lost"] == 0
+                        assert counts["better_match_fail"] == 0
+                        assert counts["better_pruned"] <= counts["better_prefilter"]
+                    else:
+                        failed += counts["definite_match_fail"] + counts["better_match_fail"]
+    assert failed > 0
