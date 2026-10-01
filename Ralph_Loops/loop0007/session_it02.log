@@ -1,0 +1,167 @@
+# session it02 started 2026-10-01 14:54:39
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '1,200p' Ralph_Loops/loop0007/iterations.md; uptime
+  > $ cd /home/al/dev/MOSP; cat paper2/solver_fix.md; git show --stat HEAD | head -30; wc -l satisfiability/customer_search.py satisfiability/customer_search.c satisf
+  > $ cd /home/al/dev/MOSP; cat satisfiability/customer_search.c
+  > $ cd /home/al/dev/MOSP; cat satisfiability/native.py
+  > $ cd /home/al/dev/MOSP; sed -n 150,719p satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; grep -rn "cs_decide\|decide_native" --include=*.py . | grep -v "^./Ralph_Loops" | head -30; grep -n "customer_search.c\|\.c\b" tests/test_
+  > $ cd /home/al/dev/MOSP; sed -n 1,140p pathwidth_solver/pathwidth/native.py; ls pathwidth_solver pathwidth_solver/src pathwidth_solver/pathwidth; sed -n 110,150p p
+
+I'm adding the repaired-rule flag to the MOSP C search now. Next I'll check that it matches the Python node for node.
+  > $ cd /home/al/dev/MOSP; grep -rn "verbatim\|closing_search.c\b" pathwidth_solver/tests/*.py tests/*.py | head
+
+Now the C edits.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='satisfiability/customer_search.c'
+s=open(p).read()
+def rep(a,b,cnt=1):
+    global s
+    assert s.count(a)==cnt,(a,s.c
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='satisfiability/customer_search.c'
+s=open(p).read()
+a=""" *                visited first, never which are visited: the
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p tests/test_repaired_rules.py; sed -n 170,200p tests/test_repaired_rules.py; sed -n 45,56p satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; grep -n "^def \|^[A-Z_]* = \|^[A-Z_]*: " paper2/search_check.py | head -60; grep -n "^def \|^[A-Z_]* =" paper2/solver_fix_check.py
+  > $ cd /home/al/dev/MOSP; sed -n 136,230p paper2/search_check.py; sed -n 660,700p paper2/search_check.py; sed -n 935,946p paper2/search_check.py; sed -n 150,232p pa
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from satisfiability.native import native_available, build_error
+print(native_available(), build_error())
+from paper2.search_c
+
+The C builds. The first mismatch was expected: by design, the Python drops the memo when old move is on and the C keeps both. I'll compare only the settings where the two run the same search.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2.search_check import DEFINITE_CEX, BUG_B_CEX, matrix_from_masks
+from mosp.instance import MOSPInstance
+from satisf
+  > $ cd /home/al/dev/MOSP; sed -n 80,400p tests/test_native.py | grep -n "def test\|Random\|from_benchmark\|rng = \|range(\|INSTANCE\|load" | head -50
+  > $ cd /home/al/dev/MOSP; sed -n 80,112p tests/test_native.py; sed -n 1535,1556p paper2/search_check.py; sed -n 1815,1825p paper2/search_check.py; grep -n "BUG_A_CE
+  > $ cd /home/al/dev/MOSP; grep -n "10-vertex\|10 vertices\|ten-vertex\|10-customer" paper2/search_check.py lean/MOSPFormalization/Search/*.lean | head; grep -n "MIN
+  > $ cd /home/al/dev/MOSP; grep -rn "Bug B" paper2/*.md Ralph_Loops/loop0006/PROGRESS.md | grep -i "vert\|10\|8-" | head
+  > $ cd /home/al/dev/MOSP; sed -n 985,995p paper2/search_soundness.md; sed -n 448,456p Ralph_Loops/loop0006/PROGRESS.md
+
+Writing the full C-versus-Python comparison script now: random, pinned, gadget, and corpus families, under both rule settings.
+  > $ cd /home/al/dev/MOSP; grep -n "^def " benchmarks/corpus.py benchmarks/ratchet.py | head -20; sed -n 1,40p paper2/solver_fix_check.py | head -60; ls solutions | 
+  > $ cd /home/al/dev/MOSP; grep -n "def \|import" learning/differential.py | head -40; grep -n "def " learning/dataset.py | head
+  > $ cd /home/al/dev/MOSP; sed -n 300,340p learning/differential.py; grep -n "def certified_targets" -A30 learning/node_counts.py
+  > Write /home/al/dev/MOSP/paper2/solver_fix_c_check.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/solver_fix_c_check.py'
+s=open(p).read()
+a="""        for cfg in configs:
+            for repaired in (False, T
+
+Mismatches show up under the old rules as well as the repaired ones, so they look like an existing C/Python difference in one of the extra configs. Checking which.
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_c_check --quick --workers 16 2>&1 | grep MISMATCH | head -8 | cut -c1-400
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/solver_fix_c_check.py'
+s=open(p).read()
+a="""                if (py.status, py.nodes, py.order) != (c.status, 
+
+Zero mismatches on the quick run. Starting the full run in the background (node caps lowered so the Python finishes); meanwhile I'll write the tests.
+  > $ cd /home/al/dev/MOSP; sed -i 's/cap = 100_000 if n <= 40 else 20_000/cap = 30_000 if n <= 40 else 10_000/' paper2/solver_fix_c_check.py; grep -n "cap = " paper2
+  > $ ps -eo pid,pcpu,etime,cmd --sort=-pcpu | head -15 | cut -c1-150
+
+While the full run goes, I'm writing the tests.
+  > $ cd /home/al/dev/MOSP; sed -n 60,80p tests/test_fix_cost.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='tests/test_repaired_rules.py'
+s=open(p).read()
+i=s.index("def test_the_flag_forces_the_python_until_the_c_carries_it(
+  > $ cd /home/al/dev/MOSP; sed -n 196,212p tests/test_repaired_rules.py; cat /tmp/solver_fix_c_check.log | tail -3
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='tests/test_repaired_rules.py'
+s=open(p).read()
+a='''def test_the_c_keeps_the_last_solution_on_definite_cex():
+    """
+  > $ cd /home/al/dev/MOSP; timeout 900 python -m pytest tests/test_search_soundness_doc.py tests/test_native.py tests/test_fix_cost.py tests/test_repaired_rules.py t
+  > $ cd /home/al/dev/MOSP; timeout 900 python -m pytest tests/test_search_soundness_doc.py -q -x 2>&1 | grep -B5 "Error" | head -40; sed -n 1,60p tests/test_search_s
+
+A doc test pins two C lines that `paper2/search_soundness.md` quotes verbatim. I'll restructure the C so those lines stay word for word, as item 01 did for the Python.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='satisfiability/customer_search.c'
+s=open(p).read()
+a="""                    if ((left || count_finished) && (left & ~
+
+The library was rebuilt after that edit, so the background run is on the previous build. Restarting it on the final code.
+  > $ cd /home/al/dev/MOSP; kill 504829; sleep 2; pgrep -f "spawn_main" -P 504829; ps -o pid,cmd --ppid 504829 | head -3; nohup python -m paper2.solver_fix_c_check --
+  > $ cat /home/al/dev/MOSP/Ralph_Loops/loop0007/gate.py | head -40
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -qE \"^seconds|Traceback|Error|MISMATCH\" /tmp/solver_fix_c_check.log || ! kill -0 505832 2>/dev
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 -c "
+import time
+from pathlib import Path
+from benchmarks.ratchet import find_instances
+from satisfiability.customer_s
+  > Monitor {"command": "until grep -qE \"^seconds|Traceback|Error|MISMATCH\" /tmp/solver_fix_c_check.log || ! kill -0 505832 2>/dev
+
+The full check is still running. While it does, I'm starting the gate in parallel; it's mostly a single process and there are spare cores.
+  > $ cd /home/al/dev/MOSP; nohup python3 Ralph_Loops/loop0007/gate.py > /tmp/gate_it02.log 2>&1 & echo $!
+  > Monitor {"command": "while kill -0 505832 2>/dev/null || kill -0 506604 2>/dev/null; do sleep 10; done; tail -3 /tmp/gate_it02.l
+  > $ sleep 240; cat /tmp/solver_fix_c_check.log | tail -5; tail -3 /tmp/gate_it02.log
+
+While the monitors run, I'm writing the `solver_fix.md` section; table numbers go in once the run lands.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/solver_fix.md'
+s=open(p).read()
+a="""**Status of the default.** As of item 01, `repaired_rules` exists in the 
+  > $ until ! kill -0 505832 2>/dev/null; do sleep 5; done; tail -40 /tmp/solver_fix_c_check.log | grep -v '"n_'
+  > $ ps -o pid,etime,cmd -p 505832,506604 | cut -c1-80; ls -la /tmp/solver_fix_c_check.log; tail -c 300 /tmp/gate_it02.log
+
+The check log already has 7.5 KB in it after under a minute. Looking at what's in it.
+  > $ head -c 1500 /tmp/solver_fix_c_check.log
+  > $ ps -eo pid,ppid,etime,cmd | grep spawn_main | grep -v grep | awk '{print $2}' | sort | uniq -c; tr -d '\000' < /tmp/solver_fix_c_check.log | head
+
+Those tracebacks come from the killed run's workers dying on a broken pipe while writing to the shared log. They're harmless: the new run has its own 20 workers. Waiting for the result.
+  > Monitor {"command": "until ! kill -0 505832 2>/dev/null; do sleep 5; done; tr -d '\\000' < /tmp/solver_fix_c_check.log | grep -E
+  > $ until ! kill -0 505832 2>/dev/null; do sleep 5; done; echo finished
+  > $ tr -d '\000' < /tmp/solver_fix_c_check.log | grep -v '"n_\|^  \|^Traceback\|^Process\|File \|^    \|Error' | tail -30; python3 -c "
+import json;r=json.load(open
+
+Zero mismatches across all 1,557,980 calls. Counting how many sampled corpus instances use the high 64-bit word:
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2.solver_fix_c_check import corpus
+ns=[len(m) for _,m,_,_ in corpus(300,120,7)]
+print(len(ns),min(ns),max(ns),sum(n
+
+Now the `solver_fix.md` section.
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 02: the repaired rules in the C (2026-10-01)
+
+### What changed
+
+`satisfiability/customer
+  > $ until ! kill -0 506604 2>/dev/null; do sleep 10; done; tail -15 /tmp/gate_it02.log
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='Ralph_Loops/loop0007/iterations.md'
+s=open(p).read()
+a="- [ ] **02 The repaired rules in the C.**"
+assert a in s; s=s
+
+Item 02 is done: the MOSP C search now carries the repaired rules behind `repaired_rules`, and it matches the Python node for node with the flag on or off. The flag is still off by default; item 03 turns it on in both solvers.
+
+**What changed**
+- **`satisfiability/customer_search.c`:**
+  - A new entry point, `cs_decide_rules`, takes the extra `repaired_rules` argument. `cs_decide_variant` keeps its signature and calls it with the flag off, so a process that loaded the old library still gets the published rules.
+  - A small matching test, `has_definite_matching`, written directly over at most 128 stacks.
+  - The definite move passes over a candidate that fails the matching and tries the next one.
+  - The better move does not let a dominator cite unless it passes the matching at the child.
+- **`satisfiability/native.py`** passes the flag through to the C. **`customer_search.py`:** setting the flag no longer forces the Python path.
+- `paper2/search_soundness.md` quotes two C lines verbatim, and a test checks them. Those lines are unchanged; the repaired test sits in front of them.
+
+**Checks**
+- **`paper2/solver_fix_c_check.py`** ran the C and the Python on the same 1,557,980 calls over 1,529 instances. That covers the `tests/test_native.py` inputs, both `DEFINITE_CEX` graphs, the 8- and 10-vertex Bug B instances, the other pinned counterexamples, gadgets at 14–17 vertices, random graphs at 10–24, and 420 certified corpus instances at 10–125 customers. The corpus runs were capped at 30,000 or 10,000 nodes. The two disagreed on zero calls in status, nodes or witness.
+- **Old against repaired:** they never gave a different answer. Node counts differed on 6,575 configuration-and-k pairs, about 0.03% more nodes in total. That is only a hint from capped runs; item 04 measures the real cost.
+- **Two settings are left out of the comparison on purpose.** With old move and memo both on, the C runs both and the Python drops the memo. And the C lists customers with no products as free moves at the root, while the Python leaves them out. Both differences predate this change, so witnesses are compared over active customers only.
+- **`tests/test_repaired_rules.py`** now has 16 tests, 6 of them new for the C. The gate passes: lake build, one `sorry` (the baseline), 1,343 MOSP tests and 95 pathwidth_solver tests.
+
+The item 02 section is in `paper2/solver_fix.md`. PROGRESS.md reads 2/10 SOLVED, with notes for item 03, and item 02 is marked `[x]` in iterations.md. Nothing was committed and nothing was written to `solutions/`.
+
+# result: success in 1006s, 58 turns, cost $3.56

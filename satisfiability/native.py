@@ -17,7 +17,7 @@ All four dominance rules are now in the C, which is what Chu & Stuckey run:
 they report "better move", "old move" and nogood recording on together. Old
 move lived only in the Python until 2026-09-21, which meant asking for it
 silently gave up the C's 120x -- so nothing used it.
-`better_move` is Theorem 2, which exists only here: it is O(|R|^3) per node
+`better_move` is Theorem 2, which existed only here until 2026-10-01: it is O(|R|^3) per node
 against Theorem 1's O(|R|^2), which was the wrong trade in Python and may be
 the right one at two million nodes a second. `better_move_dominators` caps how
 many candidates are tried as the dominating `q`; a subset prunes less but never
@@ -99,6 +99,8 @@ def _load() -> "ctypes.CDLL | None":
         # `cs_decide_variant` adds the better-move variant bits (item 04 of
         # loop0004, reports/ml_nature.md §31); `cs_decide_fan` and `cs_decide`
         # stay as they were for processes that loaded the library before.
+        # `cs_decide_rules` adds `repaired_rules` (loop0007 item 02), and
+        # `cs_decide_variant` is it with the published rules.
         lib.cs_decide_variant.restype = ctypes.c_int
         lib.cs_decide_variant.argtypes = [
             ctypes.c_int, ctypes.c_int,                 # n, k
@@ -112,6 +114,10 @@ def _load() -> "ctypes.CDLL | None":
             ctypes.POINTER(ctypes.c_longlong),          # out_nodes
             ctypes.POINTER(ctypes.c_int),               # out_len
         ]
+        lib.cs_decide_rules.restype = ctypes.c_int
+        lib.cs_decide_rules.argtypes = (lib.cs_decide_variant.argtypes[:15]
+                                        + [ctypes.c_int]   # repaired_rules
+                                        + lib.cs_decide_variant.argtypes[15:])
         _library = lib
         return lib
 
@@ -145,6 +151,7 @@ def decide_native(
     old_close_count: bool = False,
     old_rule_order: bool = False,
     subset_after_better_move: bool = False,
+    repaired_rules: bool = False,
 ) -> Decision | None:
     """Decide "MOSP(instance) <= k?" in C, or return None if it cannot.
 
@@ -158,6 +165,11 @@ def decide_native(
     (better move first, then the subset rule citing nothing better move
     discarded), measured in the same study and, like the rest, the default of
     nothing.
+
+    `repaired_rules` is the definite and better moves with the repaired
+    premises proved sound in `lean/MOSPFormalization/Search/`, as in
+    `customer_search.decide`; it matches the Python node for node
+    (`tests/test_repaired_rules.py`).
 
     None means "not applicable here" -- too many customers, no library, or a
     flag the C does not implement -- and the caller should use the Python. It
@@ -191,14 +203,14 @@ def decide_native(
     variant = (BM_OLD_CLOSE_COUNT if old_close_count else 0) | \
               (BM_OLD_RULE_ORDER if old_rule_order else 0) | \
               (BM_SUBSET_RESTRICTED if subset_after_better_move else 0)
-    status = library.cs_decide_variant(
+    status = library.cs_decide_rules(
         n, k, packed,
         -1 if max_nodes is None else int(max_nodes),
         0.0 if seconds is None else float(seconds),
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
         int(better_move), int(better_move_dominators), int(old_move),
-        FAN_ORDERS.index(fan_order), variant,
+        FAN_ORDERS.index(fan_order), variant, int(repaired_rules),
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated

@@ -9,7 +9,7 @@
   repaired filter no longer keeps 0 alone; with `repaired_rules=False`
   nothing changes, node for node, against today's behaviour.
 
-- [ ] **02 The repaired rules in the C.** In `customer_search.c` and
+- [x] **02 The repaired rules in the C.** In `customer_search.c` and
   `native.py`, the same flag. The matching is small: write it directly, for
   example by augmenting paths over at most 128 customers. Tests: C equals
   Python node for node under both settings, on the inputs

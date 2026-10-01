@@ -215,9 +215,9 @@ def decide(
             The better move cites `q` for `r` only if, besides premises 3 and
             4, `q` passes the same matching test at `cl(S ∪ {r})`
             (`IsRepairedBetter`). The old tests stay in front as cheap
-            prefilters, which the repair implies. Off by default until the C
-            and the pathwidth solver carry it too (loop0007 items 02-03).
-            **Forces the Python path** until the C implements it.
+            prefilters, which the repair implies. Off by default until the
+            pathwidth solver carries it too (loop0007 item 03). Implemented
+            in the C as well (item 02), node for node.
 
     Returns:
         A `Decision`. The "sat" order closes every customer with a non-empty
@@ -226,7 +226,7 @@ def decide(
     if fan_order not in FAN_ORDERS:
         raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
 
-    if native and branch is None and not expansion_prune and not repaired_rules:
+    if native and branch is None and not expansion_prune:
         from satisfiability.native import decide_native
         answer = decide_native(
             instance, k, restrict=restrict, subset_rule=subset_rule,
@@ -238,6 +238,7 @@ def decide(
             old_close_count=bool(kwargs.pop("old_close_count", False)),
             old_rule_order=bool(kwargs.pop("old_rule_order", False)),
             subset_after_better_move=bool(kwargs.pop("subset_after_better_move", False)),
+            repaired_rules=repaired_rules,
             max_nodes=max_nodes, memo_limit=memo_limit,
             seconds=None if deadline is None else max(0.0, deadline - time.monotonic()),
             fan_order=fan_order)
