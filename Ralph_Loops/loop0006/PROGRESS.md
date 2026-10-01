@@ -3,7 +3,7 @@
 Plan: `paper2/plan.md` section 4 (phase B) and the complex (phase A); items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0006/gate.py`.
 
-Current: 12/13 SOLVED
+Current: 13/13 SOLVED
 
 ## Setup — 2026-09-30
 
@@ -1002,3 +1002,68 @@ Current: 12/13 SOLVED
   2. A hunt for a whole-instance false refutation by the code, seeded by `RUN_LOST_CEX` and the
      58 lost-node runs: perturb these until the recovering branch also loses.
   3. Pebbling in `paper2/figures/equivalence_chain.dot` (item 04's note).
+
+## Iteration 13 — 2026-10-01 01:45
+
+### Completed
+- **13 Reserve: Hall's converse. RESULT: the repaired definite move is *equivalent* to the
+  matching test.** Item 08 had proved one direction (matching ⇒ repair) and only checked the
+  other. This was the first candidate on item 12's list. It makes the cheap test that the
+  owner's planned solver fix (and a strengthened Cert) would compute exact: when the test
+  fails, the repair fails too. New file `lean/MOSPFormalization/Search/DefiniteMatching.lean`,
+  about 200 lines, imported from the root. No `sorry`, no stated gap; axioms `propext`,
+  `Classical.choice`, `Quot.sound` only (4 new lines in `paper2/axiom_check.lean`).
+  - **Definition.** `HasDefiniteMatching G S q`: some `M ⊆ cl(S∪{q}) ∖ (S∪{q})` and some `f`,
+    injective on `M`, with `f d ∈ o(d, S)` and `open(q, S) ≤ |M| + 1`.
+  - **Proved:**
+    - `card_opened_union_eq`: `|O(S ∪ D)| = |O(S)| + |o(D)|`;
+    - `openCount_eq_zero_of_mem` and `card_cl_insert`: `|X| = |S| + 1 + |Y|`;
+    - `hall_of_isHereditarilyDefinite`, the deficiency form: `open + |D| ≤ |o(D)| + |Y| + 1`
+      for every `D ⊆ Y`;
+    - `exists_matching_of_isHereditarilyDefinite`: Hall with deficiency, by the textbook
+      reduction. There are `δ = |Y| + 1 − open` dummy stacks shared by all of `Y`, and the
+      matching comes from Mathlib's `Finset.all_card_le_biUnion_card_iff_existsInjective'`.
+      The customers matched to real stacks are kept;
+    - **`isHereditarilyDefinite_iff_hasDefiniteMatching`**, for every `S` and `q`.
+  - It compiled after two rounds, with five local fixes (a `simp` that had already unfolded
+    `mem_opened`, a `set` placed before the facts it should abstract, a lemma name, a `let`
+    that `omega` could not see through, and a deprecation). No proof was abandoned.
+- **Check before stating.** `python -m paper2.search_check --hall` takes 7 s on 28 cores and
+  writes `paper2/data/search_hall_check.json`. It runs at **every** set `S` (not only
+  free-closed ones) on every labelled graph to 6 and atlas 7, and at the free-closed states of
+  1,000 random graphs at 10–12 and both `DEFINITE_CEX`, for 35,913 graphs. **Zero failures**
+  across:
+  - 70.3 M `card_opened_union_eq` cases;
+  - 15.2 M repair ⇔ matching pairs;
+  - 7.77 M deficiency-form cases;
+  - 7.29 M runs of the proof's construction (`δ` does not truncate, the augmented matching
+    saturates `Y`, and at least `open − 1` customers are matched to real stacks).
+
+  `tests/test_search_check.py` has five new tests, 52 in total, including two checker
+  mutations (the deficiency form without its `+1`, and a matching one short), both caught.
+- **Docs.** `paper2/search_soundness.md`:
+  - the §4 bullet at the top;
+  - §2.2's matching paragraph, which no longer says "not proved";
+  - §4.2.4's table row;
+  - new §4.6 (definition, theorems, the proof route, what it buys, the check table);
+  - a line in §5.5.
+
+  `DefiniteMove.lean`'s docstring still says "checked, not proved here". That stays true of
+  that file, and it is a proved file, so it was not edited.
+- Gate: `lake build` ok; sorry 1 of limit 1 (the §24 conjecture); 1327 passed, 2 skipped,
+  1 xfailed; GATE PASS.
+
+### Blockers
+- None. Not done in this session (the other reserve candidates):
+  - a hunt for a whole-instance false refutation by the code, seeded by `RUN_LOST_CEX`;
+  - pebbling in `paper2/figures/equivalence_chain.dot`.
+
+### Next
+- The loop is complete. For the owner's solver fix after loop0006: the matching test of
+  `isHereditarilyDefinite_iff_hasDefiniteMatching` is the exact repaired definite premise. The
+  repaired better move applies it at the child. The fix touches `customer_search.c:313–330`
+  (definite), `:213–251` (better), the Python reference and `pathwidth_solver/`, and Cert's
+  definite and better steps. Values certified only by the customer search are then
+  re-certified.
+
+LOOP_COMPLETE

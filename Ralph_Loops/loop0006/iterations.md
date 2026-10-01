@@ -88,4 +88,4 @@ assembly and a reserve.
   certificate checker (`learning/search_certificate.py`) verifies to the
   Lean lemma that justifies it.
 
-- [ ] **13 Reserve.** The best remaining gap from items 03-12, one session.
+- [x] **13 Reserve.** The best remaining gap from items 03-12, one session.

@@ -1,0 +1,17 @@
+{
+ "seconds": 7.1,
+ "graphs": 35913,
+ "quick": false,
+ "tally": {
+  "deficiency_cases": 70262554,
+  "pairs": 15229798,
+  "hereditary_pairs": 7286765,
+  "q_in_S": 7461242
+ },
+ "cexGraph_at_S2_q0": {
+  "open": 3,
+  "max_matching": 1,
+  "hereditary": false
+ },
+ "failures": 0
+}

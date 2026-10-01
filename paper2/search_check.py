@@ -2057,6 +2057,157 @@ def run_decide(workers=None, out=None, quick=False, n_random=None, n_aug=800):
     return report
 
 
+# ----------------------------------------------------------------------------
+# item 13: Hall's converse (Search/DefiniteMatching.lean)
+# ----------------------------------------------------------------------------
+#
+# Transcribes `Search/DefiniteMatching.lean`: for every set S (not only free-closed ones)
+# and every q, with Y = cl(S + q) - S - {q}, the repair `IsHereditarilyDefinite`, its
+# deficiency form `open(q, S) + |D| <= |o(D)| + |Y| + 1` for all D <= Y, the matching form
+# (a maximum matching of Y into the new stacks reaches open(q, S) - 1), and the Lean proof's
+# own construction: delta = |Y| + 1 - open dummy stacks shared by every d, Hall's condition
+# on the augmented sets, a Y-saturating matching of them, and at least open - 1 customers
+# matched to real stacks. Also `card_opened_union_eq` and `openCount_eq_zero_of_mem`.
+
+
+def h_hereditary_any(masks, O, S, q):
+    """`IsHereditarilyDefinite` at any S (B ranges over S <= B <= X, q not in B)."""
+    X = d_child(masks, O, S, q)
+    bX = d_open_stacks(O, X)
+    if S >> q & 1:
+        return True
+    D = X & ~S & ~(1 << q)
+    E = D
+    while True:
+        if d_open_stacks(O, S | E) < bX:
+            return False
+        if E == 0:
+            return True
+        E = (E - 1) & D
+
+
+def h_new_union(masks, OS, D):
+    u = 0
+    for d in bits(D):
+        u |= masks[d] & ~OS
+    return u
+
+
+def h_augmented_matching(masks, OS, Y, delta):
+    """Maximum matching of Y into o(d, S) plus `delta` dummies shared by all; returns
+    (size, number matched to real stacks)."""
+    match = {}
+
+    def augment(d, seen):
+        for y in list(bits(masks[d] & ~OS)) + [("dummy", i) for i in range(delta)]:
+            if y in seen:
+                continue
+            seen.add(y)
+            if y not in match or augment(match[y], seen):
+                match[y] = d
+                return True
+        return False
+
+    size = sum(1 for d in bits(Y) if augment(d, set()))
+    real = sum(1 for y in match if not isinstance(y, tuple))
+    return size, real
+
+
+def check_hall_graph(masks, all_sets=True, mutate=False):
+    n = len(masks)
+    full = (1 << n) - 1
+    O = d_opened_table(masks)
+    t = Counter()
+    sets = range(full + 1) if all_sets else [
+        S for S in range(full) if sum(1 << c for c in range(n) if masks[c] & ~O[S] == 0) == S]
+    for S in sets:
+        OS = O[S]
+        for q in range(n):
+            op, _ = d_counts(masks, O, S, q)
+            if S >> q & 1:
+                t["q_in_S"] += 1
+                if op != 0:
+                    t["fail_openCount_eq_zero_of_mem"] += 1
+            X = d_child(masks, O, S, q)
+            Y = X & ~S & ~(1 << q)
+            ny = Y.bit_count()
+            her = h_hereditary_any(masks, O, S, q)
+            mat = d_matching_size(masks, O, S, q) >= op - 1
+            # deficiency form, over every D <= Y (only claimed for q not in S)
+            slack = 0 if mutate else 1
+            defi = True
+            E = Y
+            while True:
+                t["deficiency_cases"] += 1
+                # card_opened_union_eq
+                if O[S | E].bit_count() != OS.bit_count() + h_new_union(masks, OS, E).bit_count():
+                    t["fail_card_opened_union_eq"] += 1
+                if op + E.bit_count() > h_new_union(masks, OS, E).bit_count() + ny + slack:
+                    defi = False
+                if E == 0:
+                    break
+                E = (E - 1) & Y
+            t["pairs"] += 1
+            if her != mat:
+                t["fail_iff_matching"] += 1      # isHereditarilyDefinite_iff_hasDefiniteMatching
+            if not S >> q & 1:
+                if her and not defi:
+                    t["fail_hall_of_hereditary"] += 1   # hall_of_isHereditarilyDefinite
+                if defi != her:
+                    t["deficiency_ne_hereditary"] += 1  # the converse, not claimed in Lean
+                if her:
+                    t["hereditary_pairs"] += 1
+                    if op > ny + 1:
+                        t["fail_delta_truncation"] += 1  # hY: D = empty
+                    delta = ny + 1 - op
+                    size, real = h_augmented_matching(masks, OS, Y, delta)
+                    if size != ny:
+                        t["fail_hall_augmented_saturates"] += 1
+                    if real + 1 < op:
+                        t["fail_real_matched"] += 1      # exists_matching_of_isHereditarilyDefinite
+    return t
+
+
+def _hall_job(args):
+    masks, all_sets = args
+    return check_hall_graph(masks, all_sets=all_sets)
+
+
+def run_hall(workers=None, out=None, quick=False, n_random=None):
+    """Item 13's check: every labelled graph on 1-5 (6 unless quick) at every set S, every
+    atlas graph on 7 at every S, random graphs at 10-12 and the pinned counterexamples at
+    their free-closed states."""
+    started = time.time()
+    work = [(m, True) for n in range(1, (4 if quick else 6) + 1) for m in labelled_graphs(n)]
+    if not quick:
+        work += [(m, True) for m in atlas_graphs(7)]
+    rng = random.Random(13)
+    count = (20 if quick else 1000) if n_random is None else n_random
+    for _ in range(count):
+        n = rng.randint(10, 11 if quick else 12)
+        work.append(((random_sparse if rng.random() < 0.5 else random_cover)(n, rng), False))
+    if not quick:
+        work += [(m, False) for m, _, _, _ in DEFINITE_CEX]
+    total = Counter()
+    with Pool(workers) as pool:
+        for t in pool.imap_unordered(_hall_job, work, chunksize=8):
+            total.update(t)
+    m0 = DEFINITE_CEX[0][0]
+    O = d_opened_table(m0)
+    S, q = DEFINITE_CEX[0][1], DEFINITE_CEX[0][2]
+    op, _ = d_counts(m0, O, S, q)
+    pinned = {"open": op, "max_matching": d_matching_size(m0, O, S, q),
+              "hereditary": h_hereditary_any(m0, O, S, q)}
+    report = {"seconds": round(time.time() - started, 1), "graphs": len(work), "quick": quick,
+              "tally": dict(total), "cexGraph_at_S2_q0": pinned,
+              "failures": sum(v for k, v in total.items() if k.startswith("fail_"))}
+    out = out or REPORT.parent / "search_hall_check.json"
+    if not quick:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(report, indent=1))
+    return report
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--quick", action="store_true")
@@ -2074,7 +2225,13 @@ def main():
                     help="item 11: check Search/Memo.lean")
     ap.add_argument("--decide", action="store_true",
                     help="item 12: check Search/Decide.lean")
+    ap.add_argument("--hall", action="store_true",
+                    help="item 13: check Search/DefiniteMatching.lean")
     args = ap.parse_args()
+    if args.hall:
+        print(json.dumps(run_hall(workers=args.workers, quick=args.quick,
+                                  n_random=args.random), indent=1))
+        return
     if args.decide:
         print(json.dumps(run_decide(workers=args.workers, quick=args.quick,
                                     n_random=args.random), indent=1))

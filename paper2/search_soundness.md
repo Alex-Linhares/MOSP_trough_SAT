@@ -11,7 +11,7 @@ precisely and then proves it.
 - §2 states each rule *as the fixed code implements it*, quotes the code lines,
   and says which composition of rules is claimed sound.
 - §3 (item 06) checks every statement by brute force (done: zero failures for the fixed rules; both bad forms fail).
-- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary; §4.4, the better move, item 10: its corrected form is still unsound, because it is Theorem 1 at the child, and it is repaired and proved, with the composition and Lean counterexamples to Bugs A and B; §4.5, the memo and the old move, item 11: each sound, and sound together, which settles §2.7's claim; the Python's reason for refusing the combination is a checkability point, not a soundness one).
+- §4 (items 07–11) gives the Lean proofs (§4.1, the model and the free move, done in item 07; §4.2, the definite move, item 08: false as stated, repaired and proved; §4.3, the subset rule, item 09: sound as coded, on its own and after the repaired definite move, and its index tie-break is necessary; §4.4, the better move, item 10: its corrected form is still unsound, because it is Theorem 1 at the child, and it is repaired and proved, with the composition and Lean counterexamples to Bugs A and B; §4.5, the memo and the old move, item 11: each sound, and sound together, which settles §2.7's claim; the Python's reason for refusing the combination is a checkability point, not a soundness one; §4.6, item 13: the repaired definite move is *equivalent* to a matching condition, by Hall's theorem with deficiency, so the cheap test is exact).
 - §5 (item 12) states the theorem and maps each premise the certificate checker
   verifies to the Lean lemma that justifies it (done: the repaired search is
   proved sound end to end, `mospValue > k` and `pw > k − 1`; the code as it
@@ -409,11 +409,13 @@ case has 4 customers (`§4.2.4`). The argument needs the free moves.
 is the case `B = S`, because `open ≤ close ⇔ b(X) ≤ b(S)`
 (`isDefinite_iff`).
 
-An equivalent form is cheap to compute. By Hall's theorem with deficiency,
-which is checked here and not proved, the repair holds iff there is a
-matching of size `open(q, S) − 1` from the customers `X ∖ S ∖ {q}` to
-distinct stacks `y ∈ o(d, S)`. The Lean proves the direction that matters,
-`isHereditarilyDefinite_of_matching`, so the matching form is sound. Every
+An equivalent form is cheap to compute. By Hall's theorem with deficiency
+the repair holds iff there is a matching of size `open(q, S) − 1` from the
+customers `X ∖ S ∖ {q}` to distinct stacks `y ∈ o(d, S)`. Item 08 proved
+the direction that makes the matching form sound,
+`isHereditarilyDefinite_of_matching`. Item 13 proved the converse, so the
+two are equivalent (`isHereditarilyDefinite_iff_hasDefiniteMatching`, §4.6):
+the matching test loses nothing against the repair. Every
 `q` with `open(q, S) ≤ 1` qualifies. A C implementation would add one small
 bipartite matching per candidate that passes `close ≥ open`.
 
@@ -1256,7 +1258,7 @@ At every free-closed `S` with the invariant, every `k` and every `q`:
 |---|---|---|
 | `openStacks_submodular`, all pairs to 5 customers, 2,000 sampled beyond | 72,689,508 | 0 |
 | `isDefinite_iff`, `closeCount_eq` | 35,666,255 | 0 |
-| repair ⇔ matching form (Hall with deficiency, not in Lean) | 35,666,255 | 0 |
+| repair ⇔ matching form (Hall with deficiency; proved in item 13, §4.6) | 35,666,255 | 0 |
 | repair ⇒ code premise; `open ≤ 1` ⇒ repair | 35,666,255 | 0 |
 | repair sound: `P_k(S) ⇒ P_k(cl(S ∪ {q}))` | 29,086,891 | 0 |
 | code rule fires (playable, `open ≤ close`) | 23,978,489 | — |
@@ -1768,6 +1770,96 @@ There are five new tests in `tests/test_search_check.py`:
 - a mutation of the checker: `inherit` replaced by "keep everything" is
   caught as `fail_tree_answer` and `fail_q_not_refuted`.
 
+### 4.6 The repair is a matching condition (item 13): Hall's converse
+
+`lean/MOSPFormalization/Search/DefiniteMatching.lean`, namespace
+`MOSPFormalization.Search`, about 200 lines. It has no `sorry`, and its axioms
+are `propext`, `Classical.choice` and `Quot.sound` only
+(`../paper2/axiom_check.lean`, 4 new lines). It closes the open half of
+item 08: §4.2 proved that the matching form implies the repair, and this
+section proves the converse.
+
+#### 4.6.1 Notation and definition
+
+Write `X = cl(S ∪ {q})`, `Y = X ∖ (S ∪ {q})` for the customers the child closes
+beyond `q`, `o(d) = N[d] ∖ O(S)`, and `o(D) = ⋃_{d ∈ D} o(d)`.
+
+| object | Lean |
+|---|---|
+| matching form: `M ⊆ Y`, `f(d) ∈ o(d)` for `d ∈ M`, `f` injective on `M`, `open(q, S) ≤ |M| + 1` | `HasDefiniteMatching G S q` |
+
+#### 4.6.2 What is proved
+
+- `card_opened_union_eq`: `|O(S ∪ D)| = |O(S)| + |o(D)|`, for all `S` and `D`.
+- `openCount_eq_zero_of_mem`: if `q ∈ S` then `open(q, S) = 0`.
+- `card_cl_insert`: for `q ∉ S`, `|X| = |S| + 1 + |Y|`.
+- `hall_of_isHereditarilyDefinite`, **the deficiency form**: for `q ∉ S`, if
+  `q` is hereditarily definite then every `D ⊆ Y` satisfies
+  `open(q, S) + |D| ≤ |o(D)| + |Y| + 1`. This is the repair at `B = S ∪ D`.
+  The three lemmas above write out `b(X)` and `b(S ∪ D)`.
+- `exists_matching_of_isHereditarilyDefinite`, **Hall's converse**: a
+  hereditarily definite `q` has the matching. If `q ∈ S`, the empty matching
+  suffices. Otherwise the proof uses the textbook reduction of the deficiency
+  version to Hall's theorem:
+  1. Let `δ = |Y| + 1 − open(q, S)`. The deficiency form at `D = ∅` shows
+     that this subtraction does not truncate.
+  2. Offer every `d ∈ Y` the stacks `o(d)` together with the same `δ` dummy
+     stacks (`o(d).disjSum univ`, over `V ⊕ Fin δ`).
+  3. Hall's condition holds for every nonempty `s ⊆ Y`: the union contains
+     `o(s)` and all `δ` dummies, and the deficiency form gives
+     `|s| ≤ |o(s)| + δ`.
+  4. Mathlib's `Finset.all_card_le_biUnion_card_iff_existsInjective'` then
+     gives an injective `F : Y → V ⊕ Fin δ` with `F(d)` offered to `d`.
+  5. Keep `M`, the customers that `F` sends to real stacks. Since `F` is
+     injective, at most `δ` customers go to dummies, so
+     `|M| ≥ |Y| − δ = open(q, S) − 1`.
+- **`isHereditarilyDefinite_iff_hasDefiniteMatching`**: for every `S` and `q`,
+  `IsHereditarilyDefinite G S q ↔ HasDefiniteMatching G S q`. No invariant
+  and no free-closedness is needed. The reverse direction is item 08's
+  `isHereditarilyDefinite_of_matching`.
+
+**What this buys.** The repair quantifies over all `2^|Y|` intermediate
+states `B`. Its equivalent costs one maximum bipartite matching of `Y`
+against `o(q, S)`, compared with `open(q, S) − 1`. That is the test the
+owner's planned solver fix would add after the code's `close ≥ open`, and a
+strengthened certificate checker would add it to its definite step
+(Cert:602–616, §5.3). It is also the test inside premise 4 of the repaired
+better move (`IsRepairedBetter`, §4.4), applied at the child `cl(S ∪ {r})`.
+The equivalence means the fix is exact. A node where the matching test
+fails is a node where the repair fails, and at such a node a solution may
+avoid `q` (`not_isHereditarilyDefinite_cex`). So no weaker sufficient
+condition was being used where a stronger one was available.
+
+On `cexGraph` at `S = {2}`, `q = 0`, `open = 3`, and the maximum matching has
+size 1 < 2. That is how the counterexample of §4.2 looks to the matching
+test: `3` and `4` have the same single new stack `0`.
+
+#### 4.6.3 The check
+
+`python -m paper2.search_check --hall` takes 7 s on 28 cores and writes
+`data/search_hall_check.json`. It transcribes the Lean statements and checks
+them at **every** set `S`, free-closed or not, and every `q`, on every
+labelled graph on 1–6 vertices and every atlas graph on 7. It also checks
+them at the free-closed states of 1,000 random sparse and cover graphs on
+10–12 vertices and of both `DEFINITE_CEX`, for 35,913 graphs in all.
+
+| statement | cases | failures |
+|---|---|---|
+| `card_opened_union_eq`, every `D ⊆ Y` | 70,262,554 | 0 |
+| `openCount_eq_zero_of_mem` | 7,461,242 | 0 |
+| repair ⇔ matching (`isHereditarilyDefinite_iff_hasDefiniteMatching`) | 15,229,798 | 0 |
+| repair ⇒ deficiency form (`hall_of_isHereditarilyDefinite`), and its converse | 7,768,556 (q ∉ S) | 0 |
+| the proof's construction on hereditary pairs: no truncation of `δ`, the augmented matching saturates `Y`, at least `open − 1` matched to real stacks | 7,286,765 | 0 |
+
+There are five new tests in `tests/test_search_check.py`, 52 in all:
+
+- a quick run;
+- every statement at every set to 4 vertices;
+- `cexGraph`'s matching;
+- two mutations of the checker. The deficiency form without its `+ 1` is
+  caught as `fail_hall_of_hereditary`. A matching one short is caught as
+  `fail_iff_matching`.
+
 ---
 
 ## 5. The theorem (item 12)
@@ -1976,7 +2068,9 @@ There are five new tests in `tests/test_search_check.py`, 47 in all:
   procedure for `MOSP ≤ k`, and so for `pw ≤ k − 1`. This covers free moves,
   the memo, old move, the subset rule with its tie-break, and the definite
   and better moves in their repaired forms, in the code's order, with any
-  `L`, any child order and any memo policy (§5.1).
+  `L`, any child order and any memo policy (§5.1). The repaired definite
+  premise is equivalent to a single bipartite matching test (§4.6), so the
+  repair is computable at the cost of one matching per candidate.
 - **Proved, conditionally, for the code as it stands.** A refutation is
   sound if its run expands only nodes where the filter keeps a solution
   (`CodeRunSound`). It is also sound if every node passes a local check

@@ -11,6 +11,7 @@ graph.
 """
 
 import itertools
+from collections import Counter
 
 import pytest
 
@@ -564,3 +565,44 @@ def test_decide_checker_catches_a_vacuous_repair_check(monkeypatch):
     masks, k, _ = sc.RUN_LOST_CEX
     t = sc.check_decide_graph(masks, ks=[k])
     assert t["fail_repaired_not_sound"] > 0
+
+
+# --- item 13: Hall's converse (Search/DefiniteMatching.lean) ---------------------------------
+
+
+def test_hall_quick_run_has_no_failures():
+    r = sc.run_hall(quick=True, workers=2)
+    assert r["failures"] == 0 and r["tally"]["hereditary_pairs"] > 0
+
+
+def test_hall_every_statement_at_every_set_to_four_vertices():
+    for n in range(1, 5):
+        for masks in sc.labelled_graphs(n):
+            t = sc.check_hall_graph(masks)
+            assert not any(v for k, v in t.items() if k.startswith("fail_")), masks
+            assert t["deficiency_ne_hereditary"] == 0
+
+
+def test_hall_cex_graph_has_no_matching():
+    masks, S, q, _ = sc.DEFINITE_CEX[0]
+    O = sc.d_opened_table(masks)
+    op, _ = sc.d_counts(masks, O, S, q)
+    assert (op, sc.d_matching_size(masks, O, S, q)) == (3, 1)   # 1 < open - 1 = 2
+    assert not sc.h_hereditary_any(masks, O, S, q)
+
+
+def test_hall_checker_catches_a_deficiency_form_without_the_slack():
+    # the deficiency form with `+ |Y|` but not `+ 1` is false: `q` alone opening one stack
+    t = Counter()
+    for masks in sc.labelled_graphs(3):
+        t.update(sc.check_hall_graph(masks, mutate=True))
+    assert t["fail_hall_of_hereditary"] > 0
+
+
+def test_hall_checker_catches_a_short_matching(monkeypatch):
+    real = sc.d_matching_size
+    monkeypatch.setattr(sc, "d_matching_size", lambda *a: max(real(*a) - 1, 0))
+    t = Counter()
+    for masks in sc.labelled_graphs(4):
+        t.update(sc.check_hall_graph(masks))
+    assert t["fail_iff_matching"] > 0

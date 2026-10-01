@@ -1,0 +1,106 @@
+# session it13 started 2026-10-01 01:22:23
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cat Ralph_Loops/loop0006/iterations.md | tail -20; wc -l lean/MOSPFormalization/Search/*.lean; grep -n "theorem\|def \|lemma\|structure" lean/MOSPFormalization/
+  > $ sed -n 1,340p lean/MOSPFormalization/Search/DefiniteMove.lean
+  > $ grep -n "^def\|^theorem mem_opened\|^theorem opened\|^theorem mem_finished\|^theorem subset_opened\|^theorem.*cl" lean/MOSPFormalization/Search/Basic.lean | hea
+  > $ grep -n -B2 -A6 "theorem Finset.all_card_le_biUnion_card_iff_exists_injective\|theorem all_card_le_biUnion_card_iff_existsInjective\|all_card_le_biUnion_card_if
+  > $ grep -n -A4 "theorem all_card_le_biUnion_card_iff_existsInjective'" lean/.lake/packages/mathlib/Mathlib/Combinatorics/Hall/Finite.lean; sed -n 1,30p lean/MOSPFo
+
+I'm on the reserve item. I chose to prove Hall's converse (that the matching test is equivalent to the repaired definite-move premise) in Lean. I'm checking Mathlib's Hall API now.
+  > $ grep -n -A4 "existsInjective'" lean/.lake/packages/mathlib/Mathlib/Combinatorics/Hall/Finite.lean | head -12
+  > $ sed -n 70,80p lean/MOSPFormalization/Search/Basic.lean; sed -n 1,20p lean/MOSPFormalization/Search/Basic.lean | grep import; grep -n "matching\|def hered\|def .
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/DefiniteMatching.lean
+  > $ cd /home/al/dev/MOSP/lean && timeout 1200 lake env lean MOSPFormalization/Search/DefiniteMatching.lean 2>&1 | head -60
+  > $ grep -rn "theorem.*filter_card_add_filter_neg_card_eq_card\|theorem card_filter_add_card_filter_not\|theorem.*filter_add_filter_neg\b" .lake/packages/mathlib/Ma
+  > $ sed -n 655,666p .lake/packages/mathlib/Mathlib/Data/Finset/Card.lean
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/DefiniteMatching.lean'
+s=open(p).read()
+s=s.replace("exact ⟨⟨d, hd, hy⟩, fun h => hyS (mem_opened.2 h)⟩","exact ⟨⟨
+
+The Lean file compiles except for one `omega` step. I'm fixing that now.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/Search/DefiniteMatching.lean'
+s=open(p).read()
+s=s.replace("fun d hd => by simp only [g, dif_pos hd]","fun d hd => by sim
+
+Compiles clean. Now wiring it in: root import, axiom audit, Python check, docs.
+  > $ cd /home/al/dev/MOSP && grep -n "Search" paper2/axiom_check.lean | head; tail -15 paper2/axiom_check.lean; grep -n "axiom_check" -r Ralph_Loops/loop0006/gate.py
+  > $ python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+add="""#print axioms MOSPFormalization.Search.card_opened_union_eq
+#print axioms MOSPFormalizatio
+
+Lean builds and the axioms are the standard three. Next comes the Python brute-force check.
+  > $ cd /home/al/dev/MOSP && sed -n 925,1110p paper2/search_check.py; grep -n "argparse\|add_argument\|args\.\(definite\|memo\|decide\)" paper2/search_check.py | hea
+  > $ sed -n 1110,1180p paper2/search_check.py; sed -n 2055,2130p paper2/search_check.py
+  > $ grep -n "^def run_decide\|^def labelled_graphs\|^def atlas_graphs\|^def random_sparse\|^def random_cover\|^def bits\|^REPORT\|^def jobs_random" paper2/search_ch
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+block='''
+# ----------------------------------------------------------------------------
+# item 13
+  > $ python3 - <<'EOF'
+p='paper2/search_check.py'
+s=open(p).read()
+s=s.replace('''                if (S | E) & ~0 == S | E:  # card_opened_union_eq
+                 
+
+Quick run is clean. Now the full run:
+  > $ nproc && time timeout 1800 python3 -m paper2.search_check --hall --workers 28 2>&1 | tail -30
+
+Zero failures over 15.2M (S, q) pairs and 70.3M deficiency cases. Next, the tests.
+  > $ sed -n 1,30p tests/test_search_check.py; grep -n "^def test" tests/test_search_check.py | tail -8; tail -30 tests/test_search_check.py
+  > $ cat >> tests/test_search_check.py <<'EOF'
+
+
+# --- item 13: Hall's converse (Search/DefiniteMatching.lean) ---------------------------------
+
+
+def test_hall_quic
+  > $ sed -i '13s/^import itertools$/import itertools\nfrom collections import Counter/' tests/test_search_check.py && timeout 900 python3 -m pytest tests/test_search
+
+Tests pass, mutations included. Now the docs in `paper2/search_soundness.md`.
+  > $ grep -n "^#\|Hall\|checked, not proved\|not proved" paper2/search_soundness.md | head -80
+  > $ sed -n 1,122p paper2/search_soundness.md; sed -n 405,421p paper2/search_soundness.md; sed -n 1200,1262p paper2/search_soundness.md; sed -n 1765,1782p paper2/sea
+  > $ python3 - <<'EOF'
+p='paper2/search_soundness.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1, a[:60]
+    s=s.replace(a,b)
+rep("the Pyth
+
+Docs written. Running the gate:
+  > $ timeout 3500 python3 Ralph_Loops/loop0006/gate.py 2>&1 | tail -8
+
+Gate passes. Now PROGRESS.md and iterations.md:
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0006/iterations.md'
+s=open(p).read()
+a="- [ ] **13 Reserve.**"
+assert a in s
+s=s.replace(a,"- [x] **13 Reserve.**")
+open(p,
+
+Item 13 is done, and with it the loop: 13 of 13 items are solved and `LOOP_COMPLETE` is the last line of PROGRESS.md. The gate passes: `lake build` succeeds, the only `sorry` is still the §24 conjecture, and pytest reports 1327 passed, 2 skipped and 1 expected failure.
+
+**Result.** The repaired definite move is equivalent to a simple matching test, not just implied by it. Item 08 had proved that the test is enough to make the move sound, and had only checked the other direction by brute force. That converse is now proved in Lean. So if the test fails at a node, the repaired move really does fail there. The solver fix you decided on can use one bipartite matching per candidate and lose nothing against the full repair.
+
+**Lean.** The new file `lean/MOSPFormalization/Search/DefiniteMatching.lean` (about 200 lines) has no `sorry`. Its axioms are only `propext`, `Classical.choice` and `Quot.sound`, which I added to the audit in `paper2/axiom_check.lean`. The main theorem is `isHereditarilyDefinite_iff_hasDefiniteMatching`, which holds for every state and customer. The proof gives each candidate the same handful of dummy stacks, applies Mathlib's Hall theorem (`Finset.all_card_le_biUnion_card_iff_existsInjective'`), and keeps the customers matched to real stacks.
+
+**Python check.** I ran it before stating the theorem: `python -m paper2.search_check --hall` takes 7 s. It covers every state, not only free-closed ones, on every graph up to 7 vertices, plus 1,000 random graphs on 10–12 vertices and both counterexample graphs. There were zero failures across 15.2 M checks of the equivalence and 70.3 M checks of the supporting lemmas. Five new tests are in `tests/test_search_check.py`. They include two deliberate faults planted in the checker, and the tests catch both.
+
+**Docs.** `paper2/search_soundness.md` has a new §4.6, and §2.2, §4.2.4 and §5.5 no longer say the equivalence is unproved. `DefiniteMove.lean` still says "checked, not proved here". I left that alone because the loop's rules forbid editing proved Lean files, and it is still true of that file.
+
+The other two reserve candidates were not done:
+- a hunt for a whole instance where the code's search wrongly answers "unsat";
+- adding pebbling to the equivalence-chain figure.
+
+As instructed, nothing was committed and nothing touched `solutions/`.
+
+# result: success in 503s, 30 turns, cost $1.90

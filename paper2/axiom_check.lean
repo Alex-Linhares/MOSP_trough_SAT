@@ -159,5 +159,10 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.codeFullFilter_cex
 #print axioms MOSPFormalization.Search.not_codeFilterSound_cexGraph
 
+#print axioms MOSPFormalization.Search.card_opened_union_eq
+#print axioms MOSPFormalization.Search.hall_of_isHereditarilyDefinite
+#print axioms MOSPFormalization.Search.exists_matching_of_isHereditarilyDefinite
+#print axioms MOSPFormalization.Search.isHereditarilyDefinite_iff_hasDefiniteMatching
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
