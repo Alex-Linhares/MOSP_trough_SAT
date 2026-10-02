@@ -1,0 +1,12 @@
+set,name,n,m,engine,rules,lower,upper_start,width,proof,nodes,seconds,components,error
+named,named/gr/FibonacciTree_10.gr,143,142,C,repaired,1,5,3,refutation,13515,0.028,1,
+named,named/gr/CameronGraph.gr,231,3465,C,repaired,43,161,161,,389971968,600.039,1,
+named,named/gr/HyperStarGraph_10_5.gr,252,630,C,repaired,15,65,62,,838632208,600.042,1,
+named,named/gr/JohnsonGraph_10_4.gr,210,2520,C,repaired,35,110,109,,645297398,600.04,1,
+named,named/gr/BalancedTree_3_5.gr,364,363,C,repaired,1,6,5,,537031730,600.067,1,
+named,named/gr/Cell120.gr,600,1200,C,repaired,4,67,67,,279552000,600.068,1,
+named,named/gr/Grid2dGraph_20_40.gr,800,1540,C,repaired,2,20,20,,92860416,600.071,1,
+named,named/gr/RingedTree_10.gr,1023,2043,C,repaired,3,17,17,,94957568,600.049,1,
+named,named/gr/WorldMap.gr,166,323,C,repaired,4,8,7,refutation,990882,0.901,5,
+named,named/gr/DorogovtsevGoltsevMendesGraph.gr,,,,repaired,,,,,,1020.559,,killed after 1020 s
+named,named/gr/RingedTree_8.gr,255,507,C,repaired,4,13,13,,1869246464,600.015,1,

@@ -195,6 +195,11 @@ is no longer online), freetdi named graphs (150), VSPLIB 2012 (grids/trees/hb), 
 every systematic miss is the 128-vertex C limit. Next: multiword bitsets in the C (phase 6b), then the
 lower-bound work of phase 7 (myciel6, cages).
 
+**Rerun under the repaired rules (2026-10-02, MOSP loop0007 item 08):** every set again at the caps
+above, into `bench/results/repaired/` (new format: `name` is the path, empty `proof` when unproved). Same
+width on all 11,424 graphs both runs proved; Rome 11,194 / 11,534 = 97.05%; nodes +0.3% to +1.7% per set.
+`paper2/solver_fix.md`, item 08.
+
 ### Reference points from Kobayashi–Komuro–Tamaki (SEA 2014), obtained 2026-09-28
 Their search = our search minus the subset / old / better-move rules, in Java with no vertex limit, 30-min cap.
 Table 6 vs ours: queen9_9 94 s → 0.45 s; anna (n=138) they TLE at ub 14, we budget at ub 15 (Python path);

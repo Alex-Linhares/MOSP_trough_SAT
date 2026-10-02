@@ -46,7 +46,12 @@ is left untouched.
     those widths, ⌊5·3^k/6⌋ vertices. All 50 trees are proved.
   - The Rome figure recomputes exactly from the three result files: 11,183 of
     11,534 proved (8,282 by refutation, 2,901 by bound), 97.0%.
-- **Two things to fix before the results enter the dataset.**
+- **Two things to fix before the results enter the dataset.** *(Fixed in
+  `bench/run.py` on 2026-10-02, loop0007 item 08: `name` is the path under
+  `bench/instances/`, `proof` is empty when unproved, errors and kills go to an
+  `error` column, and a `rules` column records the dominance rules. The files
+  written before that date keep the old format; `bench/summary.py` reads both.
+  The rerun under the repaired rules is `bench/results/repaired/`.)*
   - The `proof` column says `budget` for unproved graphs, not empty as in
     MOSP's convention. Only `refutation` and `bound` are certified.
   - The `name` column drops the folder, and VSPLIB's trees come in three

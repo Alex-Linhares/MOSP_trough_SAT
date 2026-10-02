@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 7/10 SOLVED
+Current: 8/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -346,3 +346,55 @@ Current: 7/10 SOLVED
 ### Next
 - Item 08: the pathwidth benchmarks under the repaired rules
   (`pathwidth_solver/bench/run.py` uses the default, which is now repaired).
+
+## Iteration 8 — 2026-10-02 13:45
+
+### Completed
+- **Item 08.** `pathwidth_solver/bench/run.py` was rerun on coloring, named,
+  VSPLIB (grids, hb, trees) and Rome, at the first sweep's caps, with the
+  repaired default. The caps were 600 s; named 120 s, plus 600 s for the 11
+  graphs above 128 vertices; Rome 10 → 120 → 600 s.
+  - Driver: `paper2/solver_fix_bench.py` (`run --lane rome|other`, `compare`).
+  - Results: `pathwidth_solver/bench/results/repaired/`.
+  - Joined data and tables: `paper2/data/solver_fix_bench.csv` and
+    `..._tables.md`.
+  - Section "Item 08" in `paper2/solver_fix.md`.
+- **No width changed.** All 11,424 graphs proved by both runs have the same
+  width, and no proved width contradicts the other side's upper bound.
+  - Every VSPLIB tree is at the width its name encodes. Grids 5–13 are at their
+    side. All 14 held Coudert Table 4 graphs match.
+  - The 13 Rome graphs that only the old run proved (cap effects, 90–100
+    vertices) were rerun at 3,600 s. All 13 prove the old width, at 386–565 s.
+    So every old proved width is reproduced under the repaired rules.
+  - 24 more Rome graphs are newly proved. Rome is 11,194 / 11,534 = 97.05%
+    (old: 11,183).
+- **Cost:** nodes +0.3% to +1.7% per set on graphs refuted by both runs, and
+  the median pair is 1.000. In Rome, 43 of 8,269 pairs cost more than 5% extra.
+  The worst is `grafo6585.97` at 1.64×. Node counts are deterministic: the
+  published setting reproduces the old files' counts exactly.
+- **The two `TRANSFER.md` issues are fixed in `run.py`:**
+  - `name` is the path under `bench/instances/`, so the 50 tree rows get 50
+    keys instead of 35;
+  - `proof` is empty when unproved, and errors go to an `error` column.
+  - Also new: a `rules` column, `--rules`, `--resume`, and a hard per-graph
+    kill (`--hard`). `DorogovtsevGoltsevMendesGraph` had ignored its budget for
+    4,007 s.
+  - `bench/summary.py` reads both formats (`--dir`). Notes added to
+    `TRANSFER.md` and `PLAN.md`. The old result files are unchanged (they are
+    the baseline).
+- New test `pathwidth_solver/tests/test_bench_run.py` (4 tests).
+- Compute: 130.7 core-hours. Nothing was written to `solutions/`.
+- Gate: PASS (1,356 MOSP tests, 114 pathwidth_solver tests).
+
+### Blockers
+- None. Caveats:
+  - The old files key graphs by stem, so trees whose stem is shared by several
+    rotation folders are compared by width only (26 of 50 trees are in the
+    node comparison).
+  - Seconds are not comparable across runs (32 workers then, 24 now), and the
+    "one side only" rows are clock effects.
+
+### Next
+- Item 09: the documents (`paper2/revised_algorithm.md` §4.4.4 and §4.6, and
+  the rest of the item's list). For the pathwidth side, the item 08 table is in
+  `paper2/solver_fix.md`.

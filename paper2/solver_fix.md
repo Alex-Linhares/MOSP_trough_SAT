@@ -28,7 +28,8 @@ refutation under the old rules): **none so far** (item 05: none in 17.4 M
 whole-search runs at 1–17 vertices and 1.79 M differential calls at 9–75;
 item 07: 108 of the 115 values that rested on the customer search alone are
 re-refuted by the repaired solver, with no answer changed, and 7 at 125 × 125
-need a long run).
+need a long run; item 08: the pathwidth benchmarks rerun under the repaired
+rules prove the same width on all 11,424 graphs both runs proved).
 
 ---
 
@@ -1137,3 +1138,185 @@ Every stage continues where its CSV stops. Data in `paper2/data/`:
 
 Compute: 87.1 core-hours for way 1, of which 70.6 are the seven censored
 calls; 5.5 for way 2; 2.1 for way 3. Nothing was written to `solutions/`.
+
+---
+
+## Item 08: the pathwidth benchmarks under the repaired rules (2026-10-02)
+
+### The question
+
+`pathwidth_solver/bench/run.py` uses the solver's default, and that default has
+been the repaired rules since item 03. Does a rerun of every benchmark set, at
+the caps of the first sweep, prove any width differently from the old results?
+
+**No. Every width proved by both runs is the same: 11,424 graphs, 0
+differences.** No proved width contradicts an upper bound from the other run.
+The 13 graphs that only the old run proved within the cap were rerun with a
+longer cap, and all 13 prove at their old width. So every width the old results
+proved is now proved under the repaired rules. On top of that, 24 Rome graphs
+are proved for the first time.
+
+### What changed in the code
+
+`pathwidth_solver/bench/run.py` now writes MOSP's conventions. This fixes the
+two issues `pathwidth_solver/TRANSFER.md` listed:
+
+- `name` is the path under `bench/instances/`, for example
+  `vsplib/tree/2rot/TREE_67_4_rot3.mtx.rnd`. The old stem key gave 50 tree rows
+  only 35 distinct names.
+- `proof` is `refutation` or `bound` for a proved width, and **empty** for an
+  unproved one. It used to say `budget`. Exceptions and kills go to a new
+  `error` column.
+
+The runner also has new options and columns:
+
+- a `rules` column, set by `--rules repaired|published` (default `repaired`);
+- `--resume`, which appends to an existing file and skips names already in it;
+- a hard per-graph kill, `--hard`, default 1.5 × `--time` + 120 s. Each graph
+  runs in its own forked process because the Python path (above 1,024 vertices)
+  does not check the budget during its initial upper bound.
+  `DorogovtsevGoltsevMendesGraph` ran for 4,007 s against a 600 s cap in the
+  first sweep, and is now killed at 1,020 s.
+- `--names` matches either the path key or the stem.
+
+`bench/summary.py` reads both formats and takes `--dir`. The old result files
+are left in their old format, because they are the comparison baseline.
+`TRANSFER.md` records the fix.
+
+Tests: `pathwidth_solver/tests/test_bench_run.py` (4 tests, 6 s):
+
+- the tree folders get 50 distinct keys, where the old stems gave 35;
+- a proved row and an unproved row (the unproved one has an empty `proof` and
+  no error);
+- both rule settings prove the same tree;
+- `--resume` re-runs and loses nothing;
+- the hard cap kills and records `killed`.
+
+They skip when the git-ignored `bench/instances/` is absent.
+
+### Method
+
+The caps are those of the first sweep (`pathwidth_solver/PLAN.md` §3 and phase
+6b):
+
+| set | cap |
+|---|---|
+| coloring | 600 s |
+| VSPLIB grids, hb, trees | 600 s |
+| named | 120 s, then the 11 graphs above 128 vertices at 600 s, as the `_w` rerun did |
+| Rome | 10 s for all 11,534, then the unproved at 120 s, then those still unproved at 600 s |
+
+Only the repaired default was run. The old side is the files already in
+`bench/results/`: the base file, overridden by its `_w` rerun and, for Rome, by
+the 120 s and 600 s passes.
+
+The old files key graphs by stem, so a tree stem that appears in two or three
+rotation folders cannot be matched to a file. Those trees are compared by
+width, which their stems share, and against the width the name encodes
+(`TREE_<n>_<width>_…`, the known pathwidth). They are left out of the node
+comparison.
+
+Load: 16 + 8 workers, then 24 for the Rome 600 s stage. The first sweep ran 32.
+A graph near a cap can cross it either way on the clock alone, so "proved on
+one side only" is a cap effect, not a width change.
+
+Node counts are deterministic. `grafo6585.97` and `grafo9492.80` were rerun
+under `published` today, and they reproduce the old files' counts exactly
+(11,322,729 and 956,733). So a node ratio below is the rule change, not noise.
+
+### Table 1: proved widths, repaired against old, same caps
+
+| set | vertices | graphs | proved old | proved new | both | same width | width differs | new only | old only |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| coloring | 5–864 | 58 | 31 | 31 | 31 | 31 | 0 | 0 | 0 |
+| named | 4–3,282 | 150 | 125 | 125 | 125 | 125 | 0 | 0 | 0 |
+| VSPLIB grids | 25–2,916 | 50 | 9 | 9 | 9 | 9 | 0 | 0 | 0 |
+| VSPLIB hb | 24–960 | 73 | 39 | 39 | 39 | 39 | 0 | 0 | 0 |
+| VSPLIB trees | 22–202 | 50 | 50 | 50 | 50 | 50 | 0 | 0 | 0 |
+| Rome | 10–110 | 11,534 | 11,183 | 11,194 | 11,170 | 11,170 | 0 | 24 | 13 |
+| **all** | | **11,915** | **11,437** | **11,448** | **11,424** | **11,424** | **0** | **24** | **13** |
+
+More detail:
+
+- **Coloring:** all 14 of Coudert et al.'s Table 4 graphs that are held still
+  match their values. myciel6 and myciel7 are unproved, as before.
+- **Grids:** sides 5–13 are proved at width equal to the side.
+- **Trees:** all 50 are proved at the width the name encodes.
+- **Rome, by pass:** 10,522 proved at 10 s (old: 10,502); +390 at 120 s (old:
+  +386); +282 at 600 s (old: +295). That is **11,194 / 11,534 = 97.05%**
+  (old: 97.0%). The 340 still open are all at n ≥ 86.
+
+### Table 2: the 13 that only the old run proved, rerun at 3,600 s (repaired)
+
+All 13 are Rome graphs at 90–100 vertices. The old run proved each one at
+346–597 s, and the new 600 s stage hit the cap. Rerun with 13 workers and a
+3,600 s cap, **all 13 prove the old width**, at 386–565 s. That is under the
+600 s cap, so the miss was the clock under 24-way load.
+
+| graph | n | width (old = new) | old nodes | new nodes | new / old |
+|---|---:|---:|---:|---:|---:|
+| grafo10104.96 | 96 | 10 | 1,225,361,336 | 1,231,336,156 | 1.005 |
+| grafo10153.100 | 100 | 9 | 1,537,829,139 | 1,577,045,938 | 1.026 |
+| grafo10489.95 | 95 | 10 | 1,193,567,600 | 1,262,846,560 | 1.058 |
+| grafo10527.93 | 93 | 11 | 953,819,434 | 1,020,380,560 | 1.070 |
+| grafo10600.93 | 93 | 10 | 1,139,651,896 | 1,168,769,251 | 1.026 |
+| grafo10663.99 | 99 | 10 | 1,135,109,030 | 1,168,449,766 | 1.029 |
+| grafo11470.91 | 91 | 11 | 1,150,778,069 | 1,171,540,004 | 1.018 |
+| grafo11502.100 | 100 | 8 | 1,264,291,316 | 1,261,082,635 | 0.997 |
+| grafo11647.90 | 90 | 11 | 1,125,370,753 | 1,148,748,651 | 1.021 |
+| grafo7587.95 | 95 | 9 | 1,304,823,262 | 1,515,568,902 | 1.162 |
+| grafo8036.94 | 94 | 10 | 1,637,853,596 | 1,720,331,443 | 1.050 |
+| grafo8585.91 | 91 | 10 | 1,213,342,458 | 1,220,965,815 | 1.006 |
+| grafo8647.91 | 91 | 11 | 1,150,778,069 | 1,171,540,004 | 1.018 |
+
+The 24 that only the new run proved are listed in
+`paper2/data/solver_fix_bench_tables.md`. All are Rome graphs at 92–100
+vertices that the old run left at 600 s, and the new run proves each at the old
+upper bound.
+
+### Table 3: cost, nodes where both runs proved by refutation
+
+| set | pairs | nodes old | nodes new | new / old | median pair | max pair | min pair |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| coloring | 18 | 441,082,074 | 443,248,634 | 1.0049 | 1.0000 | 1.023 | 1.000 |
+| named | 102 | 342,295,019 | 343,456,465 | 1.0034 | 1.0000 | 1.016 | 1.000 |
+| VSPLIB grids | 9 | 42,139,983 | 42,842,268 | 1.0167 | 1.0002 | 1.018 | 1.000 |
+| VSPLIB hb | 32 | 18,565,257 | 18,788,663 | 1.0120 | 1.0000 | 1.027 | 0.999 |
+| VSPLIB trees (unique stems) | 26 | 27,438,779 | 27,523,233 | 1.0031 | 1.0000 | 1.009 | 1.000 |
+| Rome | 8,269 | 1.746 × 10¹¹ | 1.772 × 10¹¹ | 1.0152 | 1.0000 | 1.644 | 0.918 |
+
+The repair costs +0.3% to +1.7% of the nodes per set. The median pair is
+unchanged everywhere. This agrees with item 04's +2.0% on 731 pathwidth graphs.
+
+In Rome, 43 of 8,269 pairs cost more than 5% extra, and 1 saves more than 5%.
+The worst is `grafo6585.97` (97 vertices, width 9), at 1.64× (1.13 × 10⁷ →
+1.86 × 10⁷ nodes). The upper and lower starts are identical in every pair, so
+these are the repaired premises declining moves the published rules took.
+Seconds are not compared, because the loads differ.
+
+### Size range
+
+The pathwidth benchmark sets: 4–3,282 vertices. The largest graph proved by
+either run has 957 vertices (`nos2`, VSPLIB hb), and everything above 1,024
+vertices (the Python path) is unproved on both sides. The Rome graphs are
+10–110 vertices. Proved widths are compared wherever both runs proved, at the first
+sweep's caps. The 13 old-only graphs are settled at 3,600 s.
+
+### Regenerate
+
+```
+python paper2/solver_fix_bench.py run --lane other &     # coloring, VSPLIB, named on 8 workers (~2.5 h wall)
+python paper2/solver_fix_bench.py run --lane rome        # Rome 10/120 s on 16, then 600 s on 24 (~6.4 h wall)
+cd pathwidth_solver && python bench/run.py rome --time 3600 --hard 5400 --procs 13 --resume \
+    --names bench/results/repaired/rome_old_only.txt --out bench/results/repaired/rome_3600s.csv
+python paper2/solver_fix_bench.py compare                # paper2/data/solver_fix_bench.csv and _tables.md
+python bench/summary.py --dir bench/results/repaired     # per-set summary against Coudert et al.
+python -m pytest pathwidth_solver/tests/test_bench_run.py -q
+```
+
+Every stage resumes where its CSV stops. The new result files are in
+`pathwidth_solver/bench/results/repaired/`, with their logs. The old files in
+`bench/results/` are unchanged.
+
+Compute: 130.7 core-hours (Rome 111, the other sets 20). Nothing was written to
+`solutions/`.

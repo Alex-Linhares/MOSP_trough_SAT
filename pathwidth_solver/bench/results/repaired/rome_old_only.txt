@@ -1,0 +1,13 @@
+rome/rome/grafo10104.96.graphml
+rome/rome/grafo10153.100.graphml
+rome/rome/grafo10489.95.graphml
+rome/rome/grafo10527.93.graphml
+rome/rome/grafo10600.93.graphml
+rome/rome/grafo10663.99.graphml
+rome/rome/grafo11470.91.graphml
+rome/rome/grafo11502.100.graphml
+rome/rome/grafo11647.90.graphml
+rome/rome/grafo7587.95.graphml
+rome/rome/grafo8036.94.graphml
+rome/rome/grafo8585.91.graphml
+rome/rome/grafo8647.91.graphml

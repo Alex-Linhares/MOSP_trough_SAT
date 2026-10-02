@@ -33,3 +33,8 @@
 [2026-10-01 20:03:22] claude session it07 (cap 12.00 h) -> session_it07.log
 [2026-10-02 06:26:46] session it07: ok (exit 0, 164 tool calls)
 [2026-10-02 06:35:50] tests passed: GATE PASS
+[2026-10-02 06:35:50] committed baa46ce6a: 07 Re-check them, cheapest first. For each instance on item 06's
+[2026-10-02 06:35:50] === iteration 8: 08 The pathwidth benchmarks under the repaired rules. Rerun
+[2026-10-02 06:35:50] claude session it08 (cap 12.00 h) -> session_it08.log
+[2026-10-02 13:33:31] session it08: ok (exit 0, 91 tool calls)
+[2026-10-02 13:42:42] tests passed: GATE PASS

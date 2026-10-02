@@ -1,0 +1,219 @@
+# session it08 started 2026-10-02 06:35:50
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*08/,/\*\*09/p' Ralph_Loops/loop0007/iterations.md; uptime; cat Ralph_Loops/loop0007/knobs.json 2>/dev/null
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat TRANSFER.md; ls; ls bench bench/results | head -50; wc -l bench/run.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat bench/run.py; sed -n 1,200p bench/readers.py | head -120; for f in bench/results/*.csv; do echo "== $f $(wc -l <$f)";
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; grep -n "" PLAN.md | sed -n '/§3\|## 3\|Benchmark\|bench/p' | head -60; wc -l PLAN.md
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; sed -n 175,230p PLAN.md; head -5 bench/results/*.log; tail -3 bench/results/*.log; cat bench/results/rome_still_capped.tx
+
+Reading the old benchmark protocol (caps per set, the Rome 10 s → 120 s → 600 s cascade, the `_w` reruns) so the rerun matches it; next I'll fix the runner's result format and launch.
+  > $ cd /home/al/dev/MOSP; grep -rn "bench/results\|\"budget\"\|'budget'" --include=*.py . | grep -v "^./Ralph" | head -30; grep -n "MAX_VERTICES\s*=" -r pathwidth_s
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results; cat *_w.csv | awk -F, '$5=="python"' ; awk -F, '$11>700' *.csv | head; cat ../summary.py | head -60; ls ../
+  > $ free -g; nproc; cd /home/al/dev/MOSP/pathwidth_solver; sed -n 1,60p pathwidth/native.py | grep -n "def \|_build\|WORD" ; grep -n "repaired_rules" pathwidth/*.py
+
+Now rewriting `bench/run.py`: path names, empty proof when unproved, explicit rules setting, resume, and a hard per-graph kill.
+  > Write /home/al/dev/MOSP/pathwidth_solver/bench/run.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; mkdir -p /tmp/b8; time python bench/run.py vsplib-tree --time 60 --procs 24 --out /tmp/b8/tree.csv | tail -5; head -3 /tm
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; echo DorogovtsevGoltsevMendesGraph > /tmp/b8/dgm.txt; time python bench/run.py named --time 5 --hard 15 --names /tmp/b8/d
+
+Runner works (kill and resume tested). Now the orchestration: Rome cascade (10 s → 120 s → 600 s) on 16 cores beside the other sets on 8, then the Rome 600 s stage on 24.
+  > Write /home/al/dev/MOSP/paper2/solver_fix_bench.py
+  > $ cd /home/al/dev/MOSP; uptime; mkdir -p pathwidth_solver/bench/results/repaired; nohup python paper2/solver_fix_bench.py run --lane other > pathwidth_solver/benc
+
+Both lanes running (PIDs 806187, 806188). Meanwhile I'll update `bench/summary.py` for the new format and add tests.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; sed -n 60,200p bench/summary.py; ls tests; grep -rn "bench" tests/*.py | head
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python - <<'EOF'
+from pathlib import Path
+p=Path("bench/summary.py"); s=p.read_text()
+s=s.replace('''"""Summarise `bench/
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat tests/conftest.py | head -30; tail -5 bench/results/repaired/*.log
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; for f in *.log; do echo "== $f"; tail -n 4 $f; done; wc -l *.csv
+  > Write /home/al/dev/MOSP/pathwidth_solver/tests/test_bench_run.py
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; timeout 600 python -m pytest -q tests/test_bench_run.py 2>&1 | tail -5
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The benchmarks are running. While they do, I'm noting the runner fix in `TRANSFER.md`.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python - <<'EOF'
+from pathlib import Path
+p=Path("TRANSFER.md"); s=p.read_text()
+old="- **Two things to fix before the re
+  > Monitor {"description": "bench rerun progress and errors", "timeout_ms": 600000, "command": "cd /home/al/dev/MOSP/pathwidth_solv
+  > $ cd /home/al/dev/MOSP/paper2; grep -n "^#" solver_fix.md; sed -n 1,40p solver_fix.md
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 580 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo "$f $(($(wc -l <$f)-1
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 570 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo "$f $(($(wc -l <$f)-1
+
+The Rome 10 s pass is done: 1,012 graphs unproved, against 1,032 before. Now comparing the 10 s pass with the old one.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results; python - <<'EOF'
+import csv
+from pathlib import Path
+o={r['name']:r for r in csv.DictReader(open('rome.csv'
+
+At 10 s, 10,500 Rome graphs are proved under both rule sets, and no width differs. Waiting for the 120 s pass and the other sets.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 590 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo "$f $(($(wc -l <$f)-1
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 590 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python bench/summary.py --dir bench/results/repaired coloring 2>&1 | head -40
+
+Coloring: 31 of 58 proved, the same as before, and every Table 4 width matches. Continuing to poll.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python bench/summary.py --dir bench/results/repaired vsplib-grids 2>&1 | head; python bench/summary.py vsplib-grids | hea
+
+Grids: sides 5–13 proved, the same as the old base and `_w` runs combined. Polling on.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; for f in *.csv; do echo -n "$f $(($(wc -l <$f
+
+Rome 120 s pass: 622 still unproved (old: 646). That lane now waits for the other sets to finish, then runs the 600 s stage on 24 cores.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'until [ -e other.done ]; do sleep 20; done'; for f in *.csv; do echo -n "$f $
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'until [ -e other.done ]; do sleep 20; done'; for f in *.csv; do echo -n "$f $
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'until [ -e other.done ]; do sleep 20; done'; timeout 590 bash -c 'until [ -e 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 500 bash -c 'until [ -e other.done ]; do sleep 20; done'; ls; tail -n 3 rome.log other.log
+
+The other sets are done and the Rome 600 s stage started at 09:37 on 24 cores. Running the comparison now on what is finished.
+  > $ cd /home/al/dev/MOSP; python paper2/solver_fix_bench.py compare 2>&1 | head -80
+  > TaskStop {"task_id": "bd9un1s1x"}
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_bench.py"); s=p.read_text()
+old='''    missing = sorted(k for k in old
+
+Nothing differs so far. The 269 "old only" rows are the Rome graphs still waiting in the 600 s stage. Here is the rest of the table:
+  > $ cd /home/al/dev/MOSP; sed -n '/Nodes where/,$p' paper2/data/solver_fix_bench_tables.md
+  > $ cd /home/al/dev/MOSP; grep -n "known = \"\"" -A4 paper2/solver_fix_bench.py; grep -n "for (s, name), r in sorted(new.items()):" paper2/solver_fix_bench.py
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_bench.py"); s=p.read_text()
+s=s.replace('''    for (s, name), r in sor
+
+Waiting for the Rome 600 s stage, about 3.5 h. I'll run the gate after it finishes, so the gate's load doesn't shift Rome graphs near the cap.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while true; do sleep 60; done'; echo $(($(wc -l <rome_600s.csv)-1)); kill -0 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while kill -0 806188 2>/dev/null; do sleep 30; done'; echo $(($(wc -l <rome_6
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while kill -0 806188 2>/dev/null; do sleep 30; done'; echo $(($(wc -l <rome_6
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while kill -0 806188 2>/dev/null; do sleep 30; done'; echo $(($(wc -l <rome_6
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 595 bash -c 'while kill -0 806188 2>/dev/null; do sleep 30; done'; echo $(($(wc -l <rome_6
+
+All benchmark runs are finished. Running the final comparison:
+  > $ cd /home/al/dev/MOSP; python paper2/solver_fix_bench.py compare > /tmp/b8/cmp.txt; sed -n 5,22p /tmp/b8/cmp.txt; grep -c "| rome |" /tmp/b8/cmp.txt; sed -n '/No
+
+Every width proved under both settings is the same, on all 11,424 graphs. Before writing up, I'll check the 1.644 worst node ratio on Rome.
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import csv
+from pathlib import Path
+rs=[r for r in csv.DictReader(open('paper2/data/solver_fix_bench.csv')) if r['old_pro
+
+The upper and lower starts are identical, so the 1.64 comes from the rules. To make sure it isn't run-to-run noise, I'll rerun the worst pair with both settings side by side:
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; python - <<'EOF'
+import sys; sys.path.insert(0,'bench')
+import run
+from readers import SETS
+ps=[p for p in SETS['rome']()
+
+The node counts are deterministic, and the published setting reproduces the old count exactly (11,322,729). So the +64% on grafo6585.97 is the repair's cost. Running the gate now:
+  > $ cd /home/al/dev/MOSP; timeout 1500 python3 Ralph_Loops/loop0007/gate.py > /tmp/b8/gate.txt 2>&1; echo exit $?; tail -n 15 /tmp/b8/gate.txt
+  > $ cd /home/al/dev/MOSP; sed -n '/Proved on one side/,/Nodes where/p' paper2/data/solver_fix_bench_tables.md | head -45; python - <<'EOF'
+import csv
+from collectio
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'until grep -qE "PASS|FAIL" /tmp/b8/gate.txt; do sleep 15; done'; tail -n 12 /tmp/b8/gate.txt
+
+The gate passes (1,356 MOSP tests, 114 pathwidth_solver tests). Now rerunning the 13 graphs:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import csv
+rs=[r for r in csv.DictReader(open('paper2/data/solver_fix_bench.csv')) if r['status']=='proved old only']
+ope
+
+The foreground timeout killed that run. I'll check for leftover workers and relaunch it in the background:
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; pgrep -af "rome_3600s" | head; cat bench/results/repaired/rome_3600s.csv 2>/dev/null | wc -l
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cut -d, -f2,8-12,14 bench/results/repaired/rome_3600s.csv; ps -eo pid,etime,cmd | grep "bench/run.py" | grep -v grep | he
+
+12 of the 13 finished, all at the old width. The missing one is grafo8036.94. Running it alone in the background:
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; nohup python bench/run.py rome --time 3600 --hard 5400 --procs 1 --rules repaired --resume --names bench/results/repaired
+
+While that runs, I'll add the 3,600 s settlement to the compare as its own table, kept apart from the same-cap one:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_bench.py"); s=p.read_text()
+old='''    errs = [r for r in joined if r[
+
+The clock matters here: at 13 processes these graphs finish in 386–556 s, while at 24 they hit the 600 s cap. Now writing the item 08 section of `paper2/solver_fix.md`.
+  > $ cd /home/al/dev/MOSP; tail -n 30 paper2/solver_fix.md; sed -n 26,33p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; timeout 590 bash -c 'while kill -0 1272566 2>/dev/null; do sleep 15; done'; tail -n 2 rome_3600s.l
+
+All 13 are settled at their old width. Final compare:
+  > $ cd /home/al/dev/MOSP; python paper2/solver_fix_bench.py compare > /dev/null; grep -c DIFFERS paper2/data/solver_fix_bench_tables.md; grep grafo8036 paper2/data/
+
+Writing the report section now:
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 08: the pathwidth benchmarks under the repaired rules (2026-10-02)
+
+### The question
+
+`p
+
+Now checking the vertex ranges and other figures I wrote into the section against the data:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import csv
+from collections import defaultdict
+rs=list(csv.DictReader(open('paper2/data/solver_fix_bench.csv')))
+d=defaul
+
+A few ranges were wrong (coloring, named, hb). Fixing them, and the garbled size-range sentence:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix.md"); s=p.read_text()
+rep={"| coloring | 5–1,916 |":"| coloring | 5–86
+
+Now the PLAN.md note, PROGRESS.md and iterations.md:
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("pathwidth_solver/PLAN.md"); s=p.read_text()
+anchor="### Reference points from Kobayashi–
+  > $ cd /home/al/dev/MOSP; ps -eo pid,cmd | grep -E "bench/run.py|solver_fix_bench" | grep -v grep | wc -l; git status --short solutions/ | wc -l; python -m pytest -
+  > $ ps -eo pid,etime,cmd | grep -E "bench/run.py|solver_fix_bench" | grep -v grep | cut -c1-150
+
+Item 08 is done. Under the repaired rules, the pathwidth benchmarks prove no width differently from the old results.
+
+- **Widths:** 11,424 graphs were proved by both the old run and the new one, and all have the same width. No width proved on one side contradicts an upper bound from the other. All 50 VSPLIB trees come out at the width their name encodes, grids with sides 5–13 at their side, and all 14 of Coudert et al.'s Table 4 graphs that we hold at their published values.
+- **Graphs proved on one side only:** 13 Rome graphs were proved by the old run and timed out at 600 s in the new one. Rerun with a 3,600 s cap, all 13 prove the old width, in 386–565 s, so the miss was the clock under heavier load. So every width the old results proved is reproduced under the repaired rules. Another 24 Rome graphs are proved for the first time, which brings Rome to 11,194 of 11,534 (97.05%, against 97.0% before).
+- **Cost in nodes:** on graphs both runs proved by refutation, the repaired rules use 0.3% to 1.7% more nodes per set. The median pair is unchanged. The worst single graph is `grafo6585.97` at 1.64×. Node counts are deterministic: rerunning with the old rules today gives exactly the old counts, so these differences come from the rules, not from noise.
+- **The two result-file issues in `TRANSFER.md` are fixed** in `bench/run.py`:
+  - the `name` column is now the instance's path, so the 50 tree rows get 50 distinct keys instead of 35;
+  - `proof` is empty when a width is unproved, and errors go to their own column.
+- **Other changes to `bench/run.py`:**
+  - a column recording which rules ran;
+  - resume, so a stopped run continues where its file ends;
+  - a hard per-graph kill: `DorogovtsevGoltsevMendesGraph` had ignored its time budget for 4,007 s in the first sweep.
+
+  `bench/summary.py` reads both the old and new formats. The old result files are unchanged, since they are the baseline. There are 4 new tests in `pathwidth_solver/tests/test_bench_run.py`.
+
+The gate passes (1,356 MOSP tests, 114 pathwidth_solver tests). The rerun took about 131 core-hours, and nothing was written to `solutions/`.
+
+**Caveat:** some tree file names repeat across the three rotation folders, and the old results can't say which file a row was. Those trees are compared on width only, so 26 of the 50 trees are in the node comparison.
+
+The report is the "Item 08" section of `paper2/solver_fix.md`, and the joined data is `paper2/data/solver_fix_bench.csv`. PROGRESS.md now reads 8/10, with item 08 marked `[x]`. Items 09 and 10 remain, so I did not add LOOP_COMPLETE.
+
+# result: success in 25061s, 92 turns, cost $13.75

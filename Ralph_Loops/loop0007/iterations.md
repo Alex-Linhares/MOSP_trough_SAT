@@ -59,7 +59,7 @@
   instances may not fit, so mark them censored. Write the results as a CSV
   and a table. Never touch `solutions/`.
 
-- [ ] **08 The pathwidth benchmarks under the repaired rules.** Rerun
+- [x] **08 The pathwidth benchmarks under the repaired rules.** Rerun
   `pathwidth_solver/bench/run.py` on VSPLIB, coloring, named and Rome, at the
   same caps as before, with the repaired default. Compare every proved width
   with the old results; any change is a finding. Fix the two result-file

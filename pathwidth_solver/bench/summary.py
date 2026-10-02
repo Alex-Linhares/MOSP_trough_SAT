@@ -1,5 +1,11 @@
 """Summarise `bench/results/*.csv` and compare with the published values.
-`python bench/summary.py [SET ...]`"""
+`python bench/summary.py [--dir DIR] [SET ...]`
+
+Reads both result formats: the first sweep's (`name` a file stem, `proof`
+`budget` when unproved, errors in `proof`) and the current one (`name` the
+path under `bench/instances/`, `proof` empty when unproved, an `error`
+column). Rows are normalised to the current meaning; `name` becomes the stem
+for the published-value lookups and `path` keeps the key."""
 
 from __future__ import annotations
 
@@ -14,8 +20,8 @@ from reference import COUDERT_MYCIELSKI, COUDERT_TABLE4  # noqa: E402
 RESULTS = Path(__file__).resolve().parent / "results"
 
 
-def load(setname):
-    p = RESULTS / f"{setname}.csv"
+def load(setname, results=RESULTS):
+    p = Path(results) / f"{setname}.csv"
     if not p.exists():
         return []
     with p.open() as fh:
@@ -24,6 +30,13 @@ def load(setname):
         for k in ("n", "m", "lower", "upper_start", "width", "nodes", "components"):
             r[k] = int(r[k]) if r[k] not in ("", None) else None
         r["seconds"] = float(r["seconds"])
+        r["path"] = r["name"]
+        r["name"] = Path(r["name"]).stem.replace(".mtx", "")
+        if r["proof"].startswith("error"):
+            r["error"], r["proof"] = r["proof"][len("error: "):], ""
+        elif r["proof"] == "budget":
+            r["proof"] = ""
+        r.setdefault("error", "")
     return rows
 
 
@@ -32,8 +45,8 @@ def overview(rows):
     proved = c["refutation"] + c["bound"]
     by_engine = Counter((r["engine"], r["proof"] in ("refutation", "bound")) for r in rows)
     print(f"  {len(rows)} graphs, {proved} proved ({100*proved/max(1,len(rows)):.1f}%): "
-          f"{c['refutation']} by refutation, {c['bound']} by bound, {c['budget']} budget, "
-          f"{sum(v for k, v in c.items() if k.startswith('error'))} errors")
+          f"{c['refutation']} by refutation, {c['bound']} by bound, {c['']} unproved, "
+          f"{sum(1 for r in rows if r['error'])} of them errors or kills")
     print(f"  engine C: {by_engine[('C', True)]} proved / {by_engine[('C', True)] + by_engine[('C', False)]};"
           f"  python: {by_engine[('python', True)]} proved / {by_engine[('python', True)] + by_engine[('python', False)]}")
     if rows:
@@ -53,12 +66,12 @@ def coloring(rows):
             print(f"  {name:12s}  (not run)")
             continue
         flag = "" if r["width"] == pw else ("  ** differs" if r["proof"] in ("refutation", "bound") else "  (ub)")
-        print(f"  {name:12s} {r['n']:4d} {r['width']!s:>7} {r['proof']:11s} {r['seconds']:9.3f} | {pw:7d} {sec:8.3f}{flag}")
+        print(f"  {name:12s} {r['n']:4d} {r['width']!s:>7} {r['proof'] or 'unproved':11s} {r['seconds']:9.3f} | {pw:7d} {sec:8.3f}{flag}")
     print("\n  Mycielski (Coudert Table 1):")
     for name, pw in COUDERT_MYCIELSKI.items():
         r = byname.get(name)
         if r:
-            print(f"  {name:12s} n={r['n']:<4d} ours pw={r['width']} {r['proof']:11s} {r['seconds']:8.1f}s | C&al {pw if pw is not None else '<= 72 (open)'}")
+            print(f"  {name:12s} n={r['n']:<4d} ours pw={r['width']} {r['proof'] or 'unproved':11s} {r['seconds']:8.1f}s | C&al {pw if pw is not None else '<= 72 (open)'}")
     others = [r for r in rows if r["name"] not in COUDERT_TABLE4 and r["name"] not in COUDERT_MYCIELSKI and r["proof"] in ("refutation", "bound")]
     if others:
         print(f"\n  also proved, not in their table: " + ", ".join(f"{r['name']}={r['width']}" for r in sorted(others, key=lambda r: r['n'])))
@@ -103,9 +116,13 @@ def rome(rows):
 SPECIAL = {"coloring": coloring, "vsplib-grids": grids, "vsplib-tree": trees, "vsplib-hb": hb, "rome": rome}
 
 if __name__ == "__main__":
-    sets = sys.argv[1:] or ["named", "coloring", "vsplib-grids", "vsplib-tree", "vsplib-hb", "rome"]
+    args = sys.argv[1:]
+    results = RESULTS
+    if args[:1] == ["--dir"]:
+        results, args = Path(args[1]), args[2:]
+    sets = args or ["named", "coloring", "vsplib-grids", "vsplib-tree", "vsplib-hb", "rome"]
     for s in sets:
-        rows = load(s)
+        rows = load(s, results)
         print(f"\n== {s}: " + ("(no results yet)" if not rows else ""))
         if rows:
             overview(rows)
