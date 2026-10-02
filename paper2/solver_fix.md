@@ -1461,3 +1461,114 @@ tests/                          → 1,356 MOSP tests across 73 modules, 114 path
 **7. Key References, Chu & Stuckey (2009): append** "Theorems 1 and 2 are
 false as stated (`Search/PublishedTheorems.lean`); the solvers run the repaired
 rules (`paper2/revised_algorithm.md` §4.6.1)."
+
+## Item 10: the root split, and three of the seven closed (2026-10-02/03)
+
+*(Session it10 built and ran this, then lost its API connection at 18:57
+before writing it up. Its driver marked the item `[!]`. This section was
+written afterwards, from the session log and the run's files, after the run
+stopped at 00:30.)*
+
+### The question
+
+Item 07 left seven 125 × 125 refutations of `value − 1` censored after 10.1 h
+on one core each (*Needs a long run*, above). The search keeps no state across
+calls, so a longer one-core run starts again from zero. Can one refutation be
+spread over many cores, soundly?
+
+### What was built
+
+- **Two C entry points** in `satisfiability/customer_search.c`, with Python
+  wrappers in `native.py`:
+  - `cs_split_expand` (`native.split_expand`) runs the search's top half at a
+    node: the free moves, the candidate set, the repaired dominance filter, and
+    for each child, in loop order, the old moves it inherits from the siblings
+    before it.
+  - `cs_split_decide` (`native.split_decide`) runs the unchanged search from a
+    child's state, with those inherited old moves and an empty memo.
+- **The driver**, `paper2/solver_fix_split.py`. It expands the root breadth
+  first into at least as many tasks as there are workers. It runs every task
+  in its own process. A task that exceeds its node cap is expanded in turn,
+  with the cap doubling with depth to four times the base, and its nodes are
+  counted as waste. Each expansion and result is appended to
+  `paper2/data/solver_fix_split_tasks.csv` as it happens, so a stopped run
+  resumes where it stopped.
+  - The configuration is item 07's `csearch` one: repaired rules, Theorem 2 by
+    `sparse_enough_for_better_move`, memo and old move on.
+  - A SAT task stops everything with a `!!!` line, because it would mean a
+    certified value is wrong.
+- **The proof**: `lean/MOSPFormalization/Search/Split.lean`, sorry-free.
+  - `ExecSplit` models this run exactly: `Exec` with a `task` leaf that runs
+    from an empty memo and leaves the driver's memo unchanged.
+  - `ExecSplit.exec` lifts every split run to an `Exec` run.
+  - `execSplit_repairedFullFilter_mospValue`: a split run of the repaired
+    filter answering `false` means `k < mospValue`.
+
+  The old moves a task inherits are refuted by its earlier siblings, so
+  nothing is claimed until **every** task of an instance answers unsat. The
+  code claims nothing less.
+- **Tests**: `tests/test_solver_fix_split.py`.
+  - With the memo off, the split's node total equals the sequential search's
+    exactly, so the split is the sequential tree cut into pieces.
+  - A task starts where the sequential search would be.
+  - The Lean statement exists.
+  - The records claim only refutations.
+- **Added afterwards** (2026-10-03): `--parallel`, which shares the workers
+  equally among the open instances instead of finishing them in priority
+  order. It is scheduling only: what runs and what is claimed are the same. It
+  was smoke-tested on two 50 × 50 instances in scratch files; both refuted.
+
+### Counting
+
+Nodes are counted as the sequential search counts them: each child of an
+expanded node is one node, plus every task's own count. With the memo on, the
+split total is larger than the sequential count, because memo hits across tasks
+are lost. *Waste* is the nodes of tasks that hit their cap and were split
+again; it is reported beside the total, not inside it.
+
+### Results (run 2026-10-02 15:26 to 2026-10-03 00:30, 24 workers)
+
+| instance | value | `k` | state | tasks done / expanded nodes | nodes (split) | waste | core-hours | item 07 censored at |
+|---|---:|---:|---|---:|---:|---:|---:|---:|
+| `Random-125-125-4-1_0` | 57 | 56 | **refuted** | 669 / 7 | 4.97 × 10¹⁰ | 1.5 × 10¹⁰ | 18.1 | 5.12 × 10¹⁰ |
+| `Random-125-125-4-5_0` | 46 | 45 | **refuted** | 616 / 9 | 7.96 × 10¹⁰ | 2.7 × 10¹⁰ | 26.1 | 5.52 × 10¹⁰ |
+| `Random-125-125-4-2_0` | 57 | 56 | **refuted** | 842 / 9 | 7.64 × 10¹⁰ | 3.3 × 10¹⁰ | 30.2 | 4.99 × 10¹⁰ |
+| `Random-125-125-2-4_0` | 24 | 23 | partial | 1,683 / 39 | ≥ 4.72 × 10¹¹ | 1.82 × 10¹¹ | 148.3 | 6.28 × 10¹⁰ |
+| `Random-125-125-4-4_0` | 51 | 50 | partial | 82 / 2 | ≥ 8.93 × 10⁹ | 3.57 × 10¹⁰ | 12.1 | 5.48 × 10¹⁰ |
+| `Random-125-125-2-1_0` | 24 | 23 | not started | 0 / 3 | — | — | 0.0 | 6.88 × 10¹⁰ |
+| `Random-125-125-2-5_0` | 20 | 19 | not started | 0 / 3 | — | — | 0.0 | 6.78 × 10¹⁰ |
+
+- **Three values are re-certified under the repaired rules, unchanged.**
+  `Random-125-125-4-1_0` = 57, `-4-5_0` = 46 and `-4-2_0` = 57 are refuted
+  at `value − 1` with every task unsat. The wall times were 53 min, 2 h 19 min
+  and 5 h 36 min. Every recorded task in all seven instances is unsat or
+  stopped, with no SAT.
+- **Item 06's 115 now stand at 111 re-refuted, all unsat, and 4 open.**
+  No certified value has changed.
+- **The density-2 ridge instance is far larger than its price.**
+  `Random-125-125-2-4_0` has passed 4.7 × 10¹¹ nodes, 2.5× item 07's price of
+  1.88 × 10¹¹, with 320 tasks still queued. This is the post-fix ridge growth
+  that item 07 flagged ("the prices are low").
+- The partial node counts cover finished tasks only. They are lower bounds on
+  the split tree, not on the sequential one. At 00:30 the run stopped with 24
+  tasks in flight, recorded as `stopped` (pending again on resume).
+
+### Size range
+
+125 × 125, the Chu & Stuckey `Random` classes at densities 2 and 4. The three
+refuted are density 4. No density-2 instance closed in this run.
+
+### Still open, and how to continue
+
+`Random-125-125-2-4_0`, `-4-4_0`, `-2-1_0` and `-2-5_0` keep their values as
+verified upper bounds. Their re-certification is in flight. Continued
+2026-10-03 with a five-day budget, all four sharing 20 workers:
+
+```
+python -m paper2.solver_fix_split --workers 20 --parallel --until 2026-10-08T00:40 \
+    --only Random-125-125-2-4_0 Random-125-125-4-4_0 Random-125-125-2-1_0 Random-125-125-2-5_0
+python -m paper2.solver_fix_split --summary     # progress
+python -m paper2.solver_fix_split --tables      # this table, regenerated
+```
+
+Nothing here writes to `solutions/`.

@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 9/10 SOLVED
+Current: 10/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -440,12 +440,26 @@ Current: 9/10 SOLVED
   - or simply `--stage repaired --retry-censored` for the cheapest of the
     seven (`Random-125-125-4-1_0`, ≥ 12.9 core-hours).
 
-## Iteration 10 — 2026-10-02 18:57:48
+## Iteration 10 — 2026-10-02 18:57:48 (written up 2026-10-03 after the run stopped)
 ### Completed
-- (driver) session ended with outcome `error` without marking the item
+- (driver) The session ended on an API connection error (`EAI_AGAIN`) after
+  4 h 53 min, before writing up, so the driver marked the item `[!]`. The
+  work itself was done and is recorded in `paper2/solver_fix.md` §"Item 10":
+  - the root split (`cs_split_expand` / `cs_split_decide`,
+    `paper2/solver_fix_split.py`), resumable;
+  - its soundness in Lean (`Search/Split.lean`,
+    `execSplit_repairedFullFilter_mospValue`, sorry-free);
+  - tests (`tests/test_solver_fix_split.py`).
+- **Run 2026-10-02 15:26 to 2026-10-03 00:30, 24 workers.**
+  `Random-125-125-4-1_0` (57), `-4-5_0` (46) and `-4-2_0` (57) are refuted at
+  `value − 1`, values unchanged. Item 06's 115 now stand at 111 re-refuted,
+  4 open. No SAT task anywhere.
+- Marked `[x]` by the owner's session.
 ### Blockers
-- see session_it10.log
+- None. Four instances remain open: `Random-125-125-2-4_0`, `-4-4_0`,
+  `-2-1_0` and `-2-5_0`. They are in flight with a five-day budget from
+  2026-10-03 (`--parallel`, 20 workers).
 ### Next
-- revisit or re-open this item
+- loop0008 (paper 2). The split run continues by itself.
 
 ---

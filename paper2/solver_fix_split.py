@@ -307,7 +307,7 @@ class Tree:
 
 
 def drive(workers: int, until: dt.datetime | None, target: int, cap: int,
-          only: list[str] | None) -> None:
+          only: list[str] | None, parallel: bool = False) -> None:
     from paper2.solver_fix_recheck import _instance, load_instances
     from satisfiability.heuristics import _neighbour_masks
 
@@ -333,13 +333,35 @@ def drive(workers: int, until: dt.datetime | None, target: int, cap: int,
             return
         trees[name] = tree
 
-    heap: list = []
+    # One queue per instance. By default the next task comes from the
+    # highest-priority instance with work left (`--only` order); with
+    # `parallel` it comes from the instance with the fewest tasks in flight,
+    # so every open instance gets an equal share of the workers. Scheduling
+    # only: which tasks run, and what is claimed, are the same either way.
+    queues: dict[str, list] = {name: [] for name in trees}
     seq = 0
+
+    def push(name: str, node: Node) -> None:
+        nonlocal seq
+        heapq.heappush(queues[name], (seq, node))
+        seq += 1
+
+    def pop() -> tuple[str, Node]:
+        live = [n for n, q in queues.items() if q]
+        if parallel:
+            name = min(live, key=lambda n: (len(trees[n].in_flight), trees[n].rank))
+        else:
+            name = min(live, key=lambda n: trees[n].rank)
+        return name, heapq.heappop(queues[name])[1]
+
+    def queued() -> int:
+        return sum(len(q) for q in queues.values())
+
     for tree in trees.values():
         for node in tree.pending(target):
-            heapq.heappush(heap, (tree.rank, seq, tree.name, node))
-            seq += 1
-    print(f"{len(trees)} instances, {len(heap)} tasks pending", flush=True)
+            push(tree.name, node)
+    print(f"{len(trees)} instances, {queued()} tasks pending"
+          f"{' (parallel)' if parallel else ''}", flush=True)
 
     ctx = mp.get_context("fork")
     with cf.ProcessPoolExecutor(workers, mp_context=ctx, initializer=_worker_init,
@@ -352,14 +374,13 @@ def drive(workers: int, until: dt.datetime | None, target: int, cap: int,
             return cap * min(4, 2 ** max(0, len(node.key) - 1))
 
         def submit():
-            nonlocal seq
-            while heap and len(flying) < workers:
+            while queued() and len(flying) < workers:
                 left = None
                 if until is not None:
                     left = (until - dt.datetime.now()).total_seconds()
                     if left < 60:
                         return
-                _, _, name, node = heapq.heappop(heap)
+                name, node = pop()
                 tree = trees[name]
                 fut = pool.submit(_worker_task, (name, tree.k, node.key, node.closed,
                                                  node.opened, node.seen, node.prefix,
@@ -403,8 +424,7 @@ def drive(workers: int, until: dt.datetime | None, target: int, cap: int,
                     while pieces and len(pieces) < workers:
                         pieces.extend(tree.record_expand(pieces.pop(0), nodes=0, seconds=0.0))
                     for child in pieces:
-                        heapq.heappush(heap, (tree.rank, seq, name, child))
-                        seq += 1
+                        push(name, child)
                 else:
                     # Stopped by --until: pending again on resume.
                     _append(TASKS, TASK_FIELDS, dict(base, kind="stopped"))
@@ -413,7 +433,7 @@ def drive(workers: int, until: dt.datetime | None, target: int, cap: int,
                     _finish(tree)
                 print(f"{out['finished']} {name} {node.name or 'root'} {out['status']} "
                       f"{out['nodes']:.3g} nodes {out['seconds']:.0f} s; "
-                      f"{len(heap)} queued", flush=True)
+                      f"{queued()} queued", flush=True)
             submit()
 
 
@@ -488,6 +508,8 @@ def main() -> None:
                         help="initial tasks per instance (breadth-first expansion)")
     parser.add_argument("--cap", type=float, default=3e9, help="nodes before a task is split")
     parser.add_argument("--only", nargs="*", help="these instances, in this priority order")
+    parser.add_argument("--parallel", action="store_true",
+                        help="share the workers equally among the open instances")
     parser.add_argument("--summary", action="store_true")
     parser.add_argument("--tables", action="store_true")
     args = parser.parse_args()
@@ -498,7 +520,7 @@ def main() -> None:
         summary()
         return
     until = dt.datetime.fromisoformat(args.until) if args.until else None
-    drive(args.workers, until, args.target, int(args.cap), args.only)
+    drive(args.workers, until, args.target, int(args.cap), args.only, args.parallel)
 
 
 if __name__ == "__main__":
