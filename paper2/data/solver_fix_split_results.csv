@@ -1,2 +1,3 @@
 instance_name,n,m,value,k,status,tasks,expanded,edges,task_nodes,total_nodes,waste_nodes,core_seconds,wall_started,wall_finished,item07_censored_nodes
 Random-125-125-4-1_0,125,125,57,56,unsat,669,7,675,49730104197,49730104872,15000000005,65061.8,2026-10-02T15:26:25,2026-10-02T16:19:38,5.12395e+10
+Random-125-125-4-5_0,125,125,46,45,unsat,616,9,624,79609851518,79609852142,27000000007,94020.9,2026-10-02T18:15:59,2026-10-02T20:34:34,5.52214e+10
