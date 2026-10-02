@@ -21,7 +21,7 @@ its oracle and its proofs do.
 import { discoverStructure, layoutStructure } from "structure-discovery";
 
 const s = discoverStructure({ entities, relations, features, forms });
-const L = layoutStructure(s, { graph: "entities", budgetMs: 200 });
+const L = layoutStructure(s, { budgetMs: 200 });   // lays out ericHarry(s.best)
 // L.width   -> 3                          vertex separation = pathwidth
 // L.proof   -> "refutation" | "bound" | "" (empty means budget ran out, upper bound only)
 // L.order   -> ["c", "a", "f", ...]       a closing order realising the width
@@ -42,7 +42,7 @@ three places:
   layout of the entity relation graph is an order that respects the structure
   rather than reading order. Ties are broken deterministically, so the same
   structure gives the same order across the train pairs.
-- **Correspondence across pairs.** If the input and output entity graphs of a
+- **Correspondence across pairs.** If the transformed graphs of the input and output of a
   pair have the same width and similar frontier profiles, aligning their orders
   is a cheap candidate matching for the rule inducer to test.
 - **Exploration in ARC-AGI-3.** On a graph of game states, the node search
@@ -55,18 +55,22 @@ caller segments the grid. This phase adds one function and one view to the app.
 
 ## Which graph to lay out
 
-`discoverStructure` returns two graphs, and they are not equally interesting:
+The input to the pathwidth solver is the **Eric-Harry transformation from the
+found form**: the graph obtained by applying the Eric-Harry transformation to
+the form `discoverStructure` selects. The solver lays out that graph and nothing else.
 
-- **The cluster graph of the winning form.** Its pathwidth is known in closed
-  form for most forms: a chain has 1, a ring 2, an r × c grid min(r, c), and a
-  tree grows logarithmically with its size. The solver adds nothing here except
-  a check, so the app shows it and skips the search.
-- **The entity graph.** Entities are adjacent when the relation fires (for
-  example `touches`) or when their clusters are adjacent in the form. This is
-  the graph that varies across tasks, so it is the default (`graph: "entities"`).
-- **ARC-AGI-3 state graphs.** States are joined by single actions. These are the
-  largest inputs, hundreds of nodes, and the only ones likely to stress the
-  solver.
+- `layoutStructure(s)` computes the Eric-Harry transformation of `s.best`,
+  then solves its pathwidth. The transformation is its own function,
+  `ericHarry(form)`, with its own tests, so it can be inspected and checked
+  apart from the solver.
+- **Its definition is to be supplied by the owner and is not yet in this plan.**
+  Until it is, everything that depends on it is blocked: the size of the
+  transformed graph, and so the mask width (`Uint32` or multiword), the budget,
+  and whether WebAssembly is needed. No stand-in graph is laid out in its place.
+- The closed-form widths of the bare forms (a chain 1, a ring 2, an r × c grid
+  min(r, c)) remain as checks on the solver. They are not the input.
+- For ARC-AGI-3, the same transformation is applied to the form found over the
+  game's states.
 
 ## The solver in TypeScript
 
@@ -76,8 +80,8 @@ caller segments the grid. This phase adds one function and one view to the app.
   It goes in `pathwidth.ts` beside the module's `forms`, `search`, `score` and
   `index`, and keeps the module under its 2,000-line budget only if the
   structure-discovery core stays near 1,200 lines, which is worth checking first.
-- Neighbourhoods as bitmasks. `Uint32` covers ARC grids (at most 30 entities).
-  A multiword mask (`Uint32Array`) covers state graphs, matching the multiword
+- Neighbourhoods as bitmasks. `Uint32` covers a transformed graph of at most 32 vertices.
+  A multiword mask (`Uint32Array`) covers larger transformed graphs, matching the multiword
   C engine `closing_search_w.c`.
 - **The repaired rules only.** The definite move fires only when the candidate
   passes the matching test (`HasDefiniteMatching`), and the better move only
@@ -90,7 +94,7 @@ caller segments the grid. This phase adds one function and one view to the app.
   responsive. An optional `onStep` callback reports each refuted width, for the
   view below.
 - **WebAssembly is the fallback, not the plan.** If the TypeScript port is too
-  slow on state graphs, compile `closing_search_w.c` with Emscripten and call it
+  slow on the largest transformed graphs, compile `closing_search_w.c` with Emscripten and call it
   from the same interface. Decide on measured state-graph timings, not before.
 
 ## Parity with the Python solver
@@ -141,13 +145,13 @@ Form_Discovery's `PLAN_ARC_AGI_JS.md`.
 - **Correspondence.** On train pairs with a known object matching, measure how
   often aligned layout orders give the matching, against matching by colour and
   position. **Kill** under the same rule.
-- **Exploration.** On ARC-AGI-3 state graphs, compare the frontier of the layout
+- **Exploration.** On the transformed graphs of ARC-AGI-3 forms, compare the frontier of the layout
   sweep with BFS and DFS frontiers at equal coverage. The width is a proved
   minimum, so this measures how far the usual sweeps are from optimal, not
   whether the layout wins.
 - **Cost.** Wall time per call in the browser, in nodes and milliseconds, by
-  graph size. The target is under 50 ms for grids at most 30 entities, and a
-  stated budget per state graph. Report the share of calls that end on budget.
+  graph size. The target is under 50 ms for a transformed graph of at most 32 vertices, and a
+  stated budget for the larger transformed graphs. Report the share of calls that end on budget.
 - **Width as a feature.** Report whether width separates the forms
   `discoverStructure` confuses, chain against tree in particular. This is the
   cheapest possible payoff, and it is measured even if every kill above fires.
