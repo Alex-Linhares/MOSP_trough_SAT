@@ -121,6 +121,22 @@ def _load() -> "ctypes.CDLL | None":
         # Rule counters of the last call on this thread (loop0007 item 04).
         lib.cs_last_rule_counts.restype = ctypes.c_int
         lib.cs_last_rule_counts.argtypes = [ctypes.POINTER(ctypes.c_longlong)]
+        # The root split (loop0007 item 10): expand a node, search from a state.
+        u64p, intp = ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_int)
+        lib.cs_split_expand.restype = ctypes.c_int
+        lib.cs_split_expand.argtypes = [
+            ctypes.c_int, ctypes.c_int, u64p,           # n, k, neighbourhoods
+            ctypes.c_int, ctypes.c_int, ctypes.c_int,   # subset, definite, restrict
+            ctypes.c_int, ctypes.c_int, ctypes.c_int,   # better, dominators, old
+            ctypes.c_int, ctypes.c_int, ctypes.c_int,   # fan, variant, repaired_rules
+            u64p, u64p,                                 # in_state, out_closed
+            intp, intp,                                 # out_free, out_n_free
+            intp, u64p, intp,                           # children, inherited, count
+        ]
+        lib.cs_split_decide.restype = ctypes.c_int
+        lib.cs_split_decide.argtypes = (lib.cs_decide_rules.argtypes[:16]
+                                        + [u64p, intp, ctypes.c_int]
+                                        + lib.cs_decide_rules.argtypes[16:])
         _library = lib
         return lib
 
@@ -270,4 +286,92 @@ def decide_native(
         # A restricted search discards branches it cannot justify, so
         # exhausting what remains proves nothing -- same rule as the reference.
         return Decision("unknown" if restrict else "unsat", None, nodes.value)
+    return Decision("unknown", None, nodes.value)
+
+
+# ----------------------------------------------------------------------------
+# The root split (loop0007 item 10, paper2/solver_fix_split.py)
+# ----------------------------------------------------------------------------
+
+_LOW = (1 << 64) - 1
+
+
+def _pack_masks(*masks: int):
+    out = (ctypes.c_uint64 * (2 * len(masks)))()
+    for i, mask in enumerate(masks):
+        out[2 * i] = mask & _LOW
+        out[2 * i + 1] = (mask >> 64) & _LOW
+    return out
+
+
+def _split_flags(subset_rule=True, definite_move=True, restrict=False, better_move=False,
+                 better_move_dominators=4, old_move=True, fan_order="index",
+                 repaired_rules=True):
+    return [int(subset_rule), int(definite_move), int(restrict), int(better_move),
+            int(better_move_dominators), int(old_move), FAN_ORDERS.index(fan_order), 0,
+            int(repaired_rules)]
+
+
+def split_expand(instance: MOSPInstance, k: int, closed: int, opened: int, seen: int,
+                 **flags) -> tuple[int, list[int], list[tuple[int, int]]] | None:
+    """The node `search` opens at `(closed, opened, seen)`: returns the closed set
+    after the free moves, the free moves in path order, and the filter's
+    children in loop order, each with the old moves it inherits. The children
+    list is None when the free moves close everything. Flags as
+    `decide_native`, memo excluded (a node's expansion does not read it).
+    None without the library or above 128 customers."""
+    library = _load()
+    n = instance.n_customers
+    if library is None or n > _MAX_CUSTOMERS:
+        return None
+    packed = _pack_masks(*_neighbour_masks(instance))
+    state = _pack_masks(closed, opened, seen)
+    out_closed = (ctypes.c_uint64 * 2)()
+    free = (ctypes.c_int * n)()
+    n_free = ctypes.c_int(0)
+    children = (ctypes.c_int * n)()
+    inherited = (ctypes.c_uint64 * (2 * n))()
+    count = ctypes.c_int(0)
+    status = library.cs_split_expand(n, k, packed, *_split_flags(**flags), state, out_closed,
+                                     free, ctypes.byref(n_free), children, inherited,
+                                     ctypes.byref(count))
+    if status == -2:
+        raise MemoryError("cs_split_expand could not allocate")
+    after = out_closed[0] | (out_closed[1] << 64)
+    moves = [free[i] for i in range(n_free.value)]
+    if status == 1:
+        return after, moves, None
+    kids = [(children[i], inherited[2 * i] | (inherited[2 * i + 1] << 64))
+            for i in range(count.value)]
+    return after, moves, kids
+
+
+def split_decide(instance: MOSPInstance, k: int, closed: int, opened: int, seen: int,
+                 prefix: list[int], *, memo: bool = True, memo_limit: int = 4_000_000,
+                 max_nodes: int | None = None, seconds: float | None = None,
+                 **flags) -> Decision | None:
+    """`search` from `(closed, opened, seen)` with an empty memo, the closing
+    order starting with `prefix`. The "sat" order is the whole order."""
+    library = _load()
+    n = instance.n_customers
+    if library is None or n > _MAX_CUSTOMERS:
+        return None
+    f = _split_flags(**flags)
+    packed = _pack_masks(*_neighbour_masks(instance))
+    state = _pack_masks(closed, opened, seen)
+    pre = (ctypes.c_int * max(1, len(prefix)))(*prefix)
+    path = (ctypes.c_int * n)()
+    nodes = ctypes.c_longlong(0)
+    length = ctypes.c_int(0)
+    status = library.cs_split_decide(
+        n, k, packed, -1 if max_nodes is None else int(max_nodes),
+        0.0 if seconds is None else float(seconds),
+        f[0], f[1], int(memo), f[2], int(memo_limit), f[3], f[4], f[5], f[6], f[7], f[8],
+        state, pre, len(prefix), path, ctypes.byref(nodes), ctypes.byref(length))
+    if status == -2:
+        return None
+    if status == 1:
+        return Decision("sat", [path[i] for i in range(length.value)], nodes.value)
+    if status == 0:
+        return Decision("unknown" if flags.get("restrict") else "unsat", None, nodes.value)
     return Decision("unknown", None, nodes.value)

@@ -791,3 +791,175 @@ int cs_decide(int n, int k,
                          better_move, better_move_dominators, old_move,
                          FAN_ORDER_INDEX, out_path, out_nodes, out_len);
 }
+
+/* The root split (loop0007 item 10, paper2/solver_fix.md): one refutation
+ * spread over many processes. The driver (paper2/solver_fix_split.py) expands
+ * the top of the tree itself with `cs_split_expand`, which is exactly what
+ * `search` does at a node before its loop -- free moves, the memo-free
+ * candidate set, the dominance filter and, child by child, the old moves each
+ * child inherits -- and hands every child to `cs_split_decide`, which runs
+ * `search` from that state with an empty memo. Every task answering unsat is
+ * a run of the sequential search in which memo look-ups across tasks missed,
+ * which `Exec` allows (lean/MOSPFormalization/Search/Split.lean). Nothing
+ * here changes `search`. */
+static int split_setup(search_t *s, int n, int k, const uint64_t *neighbours,
+                       long long max_nodes, double seconds,
+                       int subset_rule, int definite_move, int use_memo,
+                       int restrict_frontier, long long memo_limit,
+                       int better_move, int better_move_dominators, int old_move,
+                       int fan_order, int better_move_variant, int repaired_rules,
+                       int *path) {
+    memset(rule_counts, 0, sizeof rule_counts);
+    memset(s, 0, sizeof *s);
+    s->n = n;
+    s->k = k;
+    s->subset_rule = subset_rule;
+    s->definite_move = definite_move;
+    s->better_move = better_move;
+    s->better_move_dominators = better_move_dominators;
+    s->better_move_variant = better_move_variant;
+    s->old_move = old_move;
+    s->repaired_rules = repaired_rules == 1;
+    s->audit_repaired = repaired_rules == 2;
+    s->fan_order = fan_order;
+    s->use_memo = use_memo;
+    s->restrict_frontier = restrict_frontier;
+    s->max_nodes = max_nodes;
+    s->deadline = seconds > 0 ? monotonic_now() + seconds : 0;
+    s->path = path;
+    s->neighbour = malloc(sizeof(mask_t) * (size_t) n);
+    if (!s->neighbour) return 0;
+    for (int i = 0; i < n; i++)
+        s->neighbour[i] = ((mask_t) neighbours[2 * i + 1] << 64) |
+                          (mask_t) neighbours[2 * i];
+    s->full = n == 128 ? ~(mask_t) 0 : (BIT(n) - 1);
+    if (use_memo) {
+        size_t capacity = 1u << 20;
+        while (capacity < (size_t) memo_limit * 2 && capacity < (1u << 26))
+            capacity <<= 1;
+        if (!memo_init(&s->memo, capacity, (size_t) memo_limit)) {
+            free(s->neighbour);
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static inline mask_t unpack_mask(const uint64_t *pair) {
+    return ((mask_t) pair[1] << 64) | (mask_t) pair[0];
+}
+
+static inline void pack_mask(mask_t x, uint64_t *pair) {
+    pair[0] = (uint64_t) x;
+    pair[1] = (uint64_t) (x >> 64);
+}
+
+/* The node at state (closed, opened, seen), as `search` would open it.
+ *
+ *   in_state  : closed, opened, seen as three (low, high) pairs
+ *   out_closed: closed after the free moves, one pair
+ *   out_free  : the free moves in the order `search` appends them to the path
+ *   out_children / out_inherited: the filter's output in loop order, and for
+ *               each child the old moves it inherits (one pair each)
+ *
+ * Returns 1 when the free moves close everything (the node is a solution),
+ * 0 otherwise, -2 on allocation failure. */
+int cs_split_expand(int n, int k, const uint64_t *neighbours,
+                    int subset_rule, int definite_move,
+                    int restrict_frontier,
+                    int better_move, int better_move_dominators, int old_move,
+                    int fan_order, int better_move_variant, int repaired_rules,
+                    const uint64_t *in_state, uint64_t *out_closed,
+                    int *out_free, int *out_n_free,
+                    int *out_children, uint64_t *out_inherited, int *out_count) {
+    *out_n_free = 0;
+    *out_count = 0;
+    search_t s;
+    int scratch[128];
+    if (!split_setup(&s, n, k, neighbours, -1, 0.0, subset_rule, definite_move, 0,
+                     restrict_frontier, 0, better_move, better_move_dominators,
+                     old_move, fan_order, better_move_variant, repaired_rules, scratch))
+        return -2;
+    mask_t closed = unpack_mask(in_state);
+    mask_t opened = unpack_mask(in_state + 2);
+    mask_t seen = unpack_mask(in_state + 4);
+
+    /* As in `search`, line for line, up to the loop. */
+    mask_t opens[128];
+    int    ids[128];
+    int    sizes[128];
+    int    n_remaining = 0;
+    mask_t free_now = 0;
+    for (mask_t bits = s.full & ~closed; bits; ) {
+        mask_t bit = LOWEST(bits); bits ^= bit;
+        int c = lowest_index(bit);
+        mask_t own = s.neighbour[c] & ~opened;
+        int size = popcount128(own);
+        if (!size) { free_now |= bit; continue; }
+        ids[n_remaining] = c;
+        opens[n_remaining] = own;
+        sizes[n_remaining] = size;
+        n_remaining++;
+    }
+    for (mask_t bits = free_now; bits; ) {
+        mask_t bit = LOWEST(bits); bits ^= bit;
+        out_free[(*out_n_free)++] = lowest_index(bit);
+    }
+    closed |= free_now;
+    pack_mask(closed, out_closed);
+    if (closed == s.full) { free(s.neighbour); return 1; }
+
+    mask_t remaining = s.full & ~closed;
+    seen &= remaining;
+    mask_t candidates = s.old_move ? (remaining & ~seen) : remaining;
+    if (s.restrict_frontier) {
+        mask_t narrowed = remaining & opened;
+        if (narrowed) candidates = narrowed;
+    }
+    int costs[128], who[128];
+    int open_now = popcount128(opened & ~closed);
+    int count = dominance_filter(&s, candidates, closed, opened,
+                                 ids, opens, sizes, n_remaining, open_now,
+                                 costs, who);
+    for (int i = 0; i < count; i++) {
+        int c = who[i];
+        mask_t inherited = (s.old_move && seen)
+                         ? inherit_old_moves(&s, seen, closed, opened, c) : 0;
+        out_children[i] = c;
+        pack_mask(inherited, out_inherited + 2 * i);
+        seen |= BIT(c);
+    }
+    *out_count = count;
+    free(s.neighbour);
+    return 0;
+}
+
+/* `search` from the state (closed, opened, seen) with an empty memo, the path
+ * starting with `prefix`. Same returns as `cs_decide_rules`; *out_len is the
+ * whole closing order's length, prefix included. */
+int cs_split_decide(int n, int k, const uint64_t *neighbours,
+                    long long max_nodes, double seconds,
+                    int subset_rule, int definite_move, int use_memo,
+                    int restrict_frontier, long long memo_limit,
+                    int better_move, int better_move_dominators, int old_move,
+                    int fan_order, int better_move_variant, int repaired_rules,
+                    const uint64_t *in_state, const int *prefix, int prefix_len,
+                    int *out_path, long long *out_nodes, int *out_len) {
+    *out_nodes = 0;
+    *out_len = 0;
+    search_t s;
+    if (!split_setup(&s, n, k, neighbours, max_nodes, seconds, subset_rule,
+                     definite_move, use_memo, restrict_frontier, memo_limit,
+                     better_move, better_move_dominators, old_move, fan_order,
+                     better_move_variant, repaired_rules, out_path))
+        return -2;
+    for (int i = 0; i < prefix_len; i++) out_path[i] = prefix[i];
+    s.depth = prefix_len;
+    int found = search(&s, unpack_mask(in_state), unpack_mask(in_state + 2),
+                       unpack_mask(in_state + 4));
+    *out_nodes = s.nodes;
+    *out_len = found ? s.depth : 0;
+    free(s.neighbour);
+    free(s.memo.slots);
+    return found ? 1 : (s.aborted ? -1 : 0);
+}

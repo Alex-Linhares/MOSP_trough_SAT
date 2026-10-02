@@ -1,0 +1,157 @@
+# session it10 started 2026-10-02 14:04:55
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; uptime; nproc; grep -n "root split\|Root split\|root-split" -i paper2/solver_fix.md | head -30; wc -l paper2/solver_fix.md paper2/solver_f
+  > $ cd /home/al/dev/MOSP; grep -n "split\|censored\|long run" paper2/solver_fix.md | head -60; cat paper2/data/solver_fix_recheck*tables.md | head -80; ls paper2/da
+  > $ cd /home/al/dev/MOSP; sed -n 1065,1145p paper2/solver_fix.md; cat paper2/data/solver_fix_recheck_long.csv
+  > $ cd /home/al/dev/MOSP; grep -n "^[a-z].*(\|^static\|^int\|^long\|^typedef\|^struct" satisfiability/customer_search.c | head -80
+  > $ cd /home/al/dev/MOSP; sed -n 1,140p satisfiability/customer_search.c
+  > $ cd /home/al/dev/MOSP; sed -n 140,165p satisfiability/customer_search.c; sed -n 540,793p satisfiability/customer_search.c
+
+Working on item 10 (reserve): building a root-split parallel refutation to make progress on the seven censored 125×125 instances. Checking the configuration those runs use.
+  > $ cd /home/al/dev/MOSP; grep -n "old_move\|use_memo\|better_move\|def _run_repaired\|decide_native\|csearch_config\|def _config" paper2/solver_fix_recheck.py | he
+  > $ cd /home/al/dev/MOSP; sed -n 175,240p paper2/solver_fix_recheck.py; grep -n "def decide\b\|def decide(" -A40 satisfiability/customer_search.py | head -80
+  > $ cd /home/al/dev/MOSP; sed -n 1,128p satisfiability/customer_search.py | grep -n "old\|memo" ; sed -n 170,330p satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search; ls; grep -n "theorem\|lemma\|^def\|^structure\|^inductive" Decide.lean | head -80
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search; sed -n 1,215p Decide.lean; grep -n "theorem\|^def\|^inductive" Memo.lean Basic.lean | head -60
+  > $ cd /home/al/dev/MOSP; sed -n 1,273p satisfiability/native.py; free -g
+
+Writing a C entry point that expands or searches from a given state, so one refutation can be spread over 24 cores. First checking which C lines the soundness doc quotes.
+  > $ cd /home/al/dev/MOSP; grep -n "customer_search.c\|closing_search" tests/test_search_soundness_doc.py | head; grep -rn "closing_search.c" pathwidth_solver/tests/
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p tests/test_search_soundness_doc.py; ls pathwidth_solver/pathwidth/; cmp satisfiability/customer_search.c pathwidth_solver/pat
+  > $ cd /home/al/dev/MOSP/lean; sed -n 180,300p MOSPFormalization/Search/Memo.lean; sed -n 340,400p MOSPFormalization/Search/Memo.lean; sed -n 270,300p MOSPFormaliza
+  > $ cd /home/al/dev/MOSP/satisfiability; sed -n 375,540p customer_search.c
+
+Now appending the split entry points to the C.
+  > $ cd /home/al/dev/MOSP/satisfiability; cat >> customer_search.c <<'EOF'
+
+/* The root split (loop0007 item 10, paper2/solver_fix.md): one refutation
+ * spread over
+  > $ cd /home/al/dev/MOSP/satisfiability; python - <<'EOF'
+from pathlib import Path
+p = Path("native.py"); t = p.read_text()
+old = """        lib.cs_last_rule_counts
+  > $ cd /home/al/dev/MOSP; sed -n 1,175p paper2/solver_fix_recheck.py | grep -v "^\s*$" | head -150
+
+Writing the driver module.
+  > Write /home/al/dev/MOSP/paper2/solver_fix_split.py
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_split.py"); t=p.read_text()
+old='''            elif row["kind"] == "st
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_split.py"); t=p.read_text()
+old='''    for c in order:
+        opened 
+
+The split agrees with the sequential search on 9,576 small cases (same answers, exact node counts with the memo off, valid witnesses). Launching the parallel run on the seven censored instances.
+  > $ cd /home/al/dev/MOSP; uptime; mkdir -p paper2/data; nohup python -m paper2.solver_fix_split --workers 24 --until 2026-10-03T00:15 > paper2/data/solver_fix_split
+  > $ cd /home/al/dev/MOSP; sed -i 's/return \[dict(instance_name=r\["instance_name"\], value/return [dict(instance_name=r["instance"], value/' paper2/solver_fix_spli
+
+Running (PID 1285896). Meanwhile, writing the Lean statement that a split run is a refutation.
+  > $ cd /home/al/dev/MOSP/lean; sed -n 1,80p MOSPFormalization/Search/Memo.lean | head -80; sed -n 30,60p MOSPFormalization.lean; sed -n 296,316p MOSPFormalization/S
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/Split.lean
+  > $ cd /home/al/dev/MOSP/lean; timeout 1200 nice lake build MOSPFormalization.Search.Split 2>&1 | tail -30
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'EOF'
+from pathlib import Path
+p=Path("MOSPFormalization/Search/Split.lean"); t=p.read_text()
+old='''  | task hrun =>
+   
+  > $ cd /home/al/dev/MOSP/lean; sed -i 's/^import MOSPFormalization.Search.PublishedTheorems$/import MOSPFormalization.Search.PublishedTheorems\nimport MOSPFormaliza
+
+Lean composition builds with standard axioms only. Now the byte copy to the pathwidth C and the tests.
+  > $ cd /home/al/dev/MOSP; cp satisfiability/customer_search.c pathwidth_solver/pathwidth/closing_search.c; grep -rn "closing_search.c" pathwidth_solver/tests/*.py t
+  > Write /home/al/dev/MOSP/tests/test_solver_fix_split.py
+  > $ cd /home/al/dev/MOSP; timeout 900 python -m pytest tests/test_solver_fix_split.py -q 2>&1 | tail -5; tail -2 paper2/data/solver_fix_split.log
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("tests/test_solver_fix_split.py"); t=p.read_text()
+old='''    inst = _instances()[-1]
+   
+
+Tests pass. Running the gate now to catch problems early, while the split runs.
+  > $ cd /home/al/dev/MOSP; timeout 2400 python3 Ralph_Loops/loop0007/gate.py 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import csv, collections
+rows=list(csv.DictReader(open("paper2/data/solver_fix_split_tasks.csv")))
+by=collections.defaultd
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/solver_fix.md; grep -n "^## \|^### " paper2/solver_fix.md | tail -30
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"description": "gate result", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/dfbc15aa-4c2b-491b
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_split.py"); t=p.read_text()
+old='''def main() -> None:'''
+new='''def t
+
+Split run is progressing on the cheapest instance (177 tasks done, 7.3×10⁹ nodes); waiting on the gate.
+  > Monitor {"description": "gate result wait", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/dfbc15aa-4c2b
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/dfbc15aa-4c2b-491b-b02e-8efa4259aff7/tasks/b2h2016gz.output | tail -5; cat /home/al/dev/MOSP/Ralph_Loops/loop0007/gate.py
+  > Monitor {"description": "gate finish", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/dfbc15aa-4c2b-491b
+  > $ ps aux | grep -E "gate.py|pytest" | grep -v grep | head; date
+  > Monitor {"description": "gate finish 2", "timeout_ms": 600000, "command": "until ! pgrep -f \"Ralph_Loops/loop0007/gate.py\" >/d
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_split --summary; date
+
+Waiting on the gate (pytest suites) while the split continues on `Random-125-125-4-1_0`.
+  > Monitor {"description": "gate finish 3", "timeout_ms": 600000, "command": "until ! pgrep -f \"Ralph_Loops/loop0007/gate.py\" >/d
+  > $ until ! pgrep -f "Ralph_Loops/loop0007/gate.py" >/dev/null; do sleep 15; done; tail -12 /tmp/claude-1000/-home-al-dev-MOSP/dfbc15aa-4c2b-491b-b02e-8efa4259aff7/
+
+The gate passes (1,361 MOSP tests, 114 pathwidth tests). Checking the split's progress.
+  > $ cd /home/al/dev/MOSP; date; python -m paper2.solver_fix_split --summary | head -3; grep -c split paper2/data/solver_fix_split_tasks.csv; tail -3 paper2/data/sol
+
+Progress: 4-1 at 1.1×10¹⁰ nodes over 180 tasks, and 2-4 has started. Writing the report section while it runs.
+  > $ cd /home/al/dev/MOSP; tail -30 paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+570)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+580)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+590)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+540)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+540)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_split.py"); t=p.read_text()
+old='''                elif out["nodes"] >
+  > $ cd /home/al/dev/MOSP; echo "--- restart $(date -Iseconds): breadth-first split, depth-doubling cap" >> paper2/data/solver_fix_split.log; nohup python -m paper2.
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 20; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+580)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 30; done; gre
+
+Still running the split; polling every ~9 minutes.
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+530)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 30; done; gre
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+530)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 30; done; gre
+  > $ cd /home/al/dev/MOSP; grep -n "split\|expand" paper2/data/solver_fix_split_tasks.csv | tail -8; tail -3 paper2/data/solver_fix_split.log
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+540)); until [ $SECONDS -ge $end ] || grep -qE "===|!!!|Traceback" paper2/data/solver_fix_split.log; do sleep 30; done; gre
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split_results.csv; end=$((SECONDS+520)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+
+The split run continues on `Random-125-125-2-4_0` (6.4×10¹⁰ nodes so far, already past item 07's censored count). Polling.
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; cat > /tmp/pend.py <<'EOF'
+import csv, collections
+rows=list(csv.DictReader(open("paper2/data/solver_fix_split_tasks.csv")))
+for name in s
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+
+`Random-125-125-2-4_0` is at 1.5×10¹¹ nodes with 57 tasks left; still polling.
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/solver_fix_split.py"); t=p.read_text()
+old='''    chosen = [t for t in targets() 
+
+Restarted with the density-4 instances first. Polling.
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+  > $ cd /home/al/dev/MOSP; end=$((SECONDS+560)); until [ $SECONDS -ge $end ] || [ $(grep -cE "===|!!!|Traceback" paper2/data/solver_fix_split.log) -gt 1 ]; do sleep 
+
+API Error: Can't reach the API server — check your internet or DNS (EAI_AGAIN)
+
+# result: success in 17572s, 82 turns, cost $28.84

@@ -72,4 +72,4 @@
   will need: put the proposed text in `paper2/solver_fix.md` §"For CLAUDE.md".
   Do not edit `CLAUDE.md` yourself.
 
-- [ ] **10 Reserve.** The best remaining gap from items 04-08, one session.
+- [!] **10 Reserve.** The best remaining gap from items 04-08, one session.

@@ -439,3 +439,13 @@ Current: 9/10 SOLVED
     per step);
   - or simply `--stage repaired --retry-censored` for the cheapest of the
     seven (`Random-125-125-4-1_0`, ≥ 12.9 core-hours).
+
+## Iteration 10 — 2026-10-02 18:57:48
+### Completed
+- (driver) session ended with outcome `error` without marking the item
+### Blockers
+- see session_it10.log
+### Next
+- revisit or re-open this item
+
+---
