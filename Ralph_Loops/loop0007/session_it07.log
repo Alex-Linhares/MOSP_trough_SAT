@@ -1,0 +1,370 @@
+# session it07 started 2026-10-01 20:03:22
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ sed -n '/\*\*07/,/\*\*08/p' Ralph_Loops/loop0007/iterations.md; uptime; date
+  > $ wc -l paper2/solver_fix.md learning/search_certificate.py paper2/solver_fix_provenance.py learning/cost_model.py; head -5 paper2/data/solver_fix_provenance.csv;
+  > $ cat paper2/data/solver_fix_provenance.csv | cut -c1-400 | head -3; python3 -c "
+import csv
+r=list(csv.DictReader(open('paper2/data/solver_fix_provenance.csv')))
+  > $ sed -n 300,440p lean/MOSPFormalization/Search/Decide.lean
+  > $ sed -n 1,140p learning/search_certificate.py; grep -n "^def \|^class " learning/search_certificate.py
+  > $ grep -n "^#" paper2/solver_fix.md; sed -n '/^## Item 06/,$p' paper2/solver_fix.md
+  > $ sed -n 140,520p learning/search_certificate.py
+
+Reading the certificate emitter and the Lean check condition; next I'll build the item 07 runner.
+  > $ sed -n 520,760p learning/search_certificate.py
+  > $ grep -n "^def \|^class \|^[A-Z_]* = " paper2/solver_fix_check.py | head -50; grep -n "def IsRepairedBetter\|def IsHereditarilyDefinite\|def HasDefiniteMatching"
+  > $ sed -n 1,110p paper2/solver_fix_check.py; grep -n "def stepCost\|def openStacks\|def cl \|def newlyOpened\|def openCount" -A4 lean/MOSPFormalization/Search/*.le
+  > $ ls paper2/data/ | grep -i "fix" ; sed -n '/^### Method/,/^### Table 3/p' paper2/solver_fix.md | head -80
+  > $ head -3 paper2/data/solver_fix_cost_cs.csv; head -3 paper2/data/solver_fix_cost_cs125.csv; python3 - <<'EOF'
+import pandas as pd
+p=pd.read_csv('paper2/data/solv
+  > $ python3 - <<'EOF'
+import pandas as pd
+for f in ['cs','cs125','mosp40']:
+    d=pd.read_csv(f'paper2/data/solver_fix_cost_{f}.csv')
+    g=d.groupby('setting')[['d
+
+Checking whether the C's rule counters measure the matching test on old-rule runs. If they do, the old runs can be checked at full speed.
+  > $ find . -name customer_search.c -not -path "./.git/*"; python3 - <<'EOF'
+import pandas as pd
+pd.set_option('display.width',250)
+for f in ['cs','cs125']:
+    d=pd
+  > $ grep -n "repaired\|rule_counts\|has_definite_matching" satisfiability/customer_search.c | head -60
+  > $ sed -n 40,60p satisfiability/customer_search.c; sed -n 160,440p satisfiability/customer_search.c
+  > $ grep -n "inductive Exec\|inductive ExecOn" -A40 lean/MOSPFormalization/Search/*.lean | head -80
+  > $ sed -n 440,700p satisfiability/customer_search.c
+  > $ python3 - <<'EOF'
+import pandas as pd
+pd.set_option('display.width',250); pd.set_option('display.max_rows',200)
+p=pd.read_csv('paper2/data/solver_fix_provenance
+
+Pricing the 21 hard instances from the compute ledger and the cost model.
+  > $ head -2 benchmarks/results/compute_ledger.csv; grep -E "Random-125-125-(2|4|6)-|Random-100-100-(2-|4-3|4-5)|SP4" benchmarks/results/compute_ledger.csv | cut -c1
+  > $ grep -n "def \|decide_native\|decide(" paper2/solver_fix_cost.py | head -50; grep -n "def decide_native" -A40 satisfiability/native.py | head -60
+  > $ sed -n 85,160p paper2/solver_fix_cost.py; sed -n 206,300p satisfiability/native.py; grep -n "def last_rule_counts" -A25 satisfiability/native.py
+  > $ grep -n "^def decide" -A30 satisfiability/customer_search.py | head -45; grep -n "def sparse_enough_for_better_move" -A12 satisfiability/customer_search.py; gre
+  > $ sed -n 1,60p learning/cost_model.py; grep -n "^def " learning/cost_model.py
+  > $ grep -n "PRED\|to_csv" learning/cost_model.py | head; ls learning/data/ | grep -i pred
+  > $ f=learning/data/ensemble/cost_model_predictions.csv; head -2 $f; python3 - <<'EOF'
+import pandas as pd
+d=pd.read_csv('learning/data/ensemble/cost_model_predicti
+
+Writing the resumable runner; the long repaired refutations start first, so the hard instances get the most wall-clock time.
+  > $ sed -n 1,84p paper2/solver_fix_cost.py | sed -n 40,84p; grep -n "def certified_targets" -A30 learning/node_counts.py | head -40
+  > Write /home/al/dev/MOSP/paper2/solver_fix_recheck.py
+  > $ grep -n "repaired_rules\|decide_native" satisfiability/customer_search.py | head -30; grep -n "RULE_COUNT_NAMES" -A6 satisfiability/native.py | head -12; grep -
+  > $ uptime && time python -m paper2.solver_fix_recheck --stage price 2>&1 | tail -30
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+s=s.replace('''RECERTIFY = ROOT / "recertify" / "results.json
+
+Prices are in. Launching the repaired-solver refutations on 21 workers until 06:15.
+  > $ nohup python -m paper2.solver_fix_recheck --stage repaired --workers 21 --until 2026-10-02T06:15 > paper2/data/solver_fix_recheck_repaired.log 2>&1 &
+echo $! > 
+  > $ grep -rn "last_rule_counts\|RULE_COUNT_NAMES" --include=*.py . | grep -v "^./paper2/solver_fix_recheck" | head; grep -n "customer_search.c" tests/test_search_so
+  > $ sed -n 1,100p satisfiability/native.py | grep -n "def _build\|def _load\|hash\|_LIB\|\.so\|mtime" ; sleep 60; tail -3 paper2/data/solver_fix_recheck_repaired.lo
+  > $ sed -n 120,145p satisfiability/customer_search.c; sleep 50; wc -l paper2/data/solver_fix_recheck_repaired.csv; tail -2 paper2/data/solver_fix_recheck_repaired.l
+
+All remaining jobs are running now, so editing the C is safe (running workers already loaded the library). Adding the audit mode.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/customer_search.c'); s=p.read_text()
+def rep(a,b,count=1):
+    global s
+    assert s.count(a)=
+  > $ sed -n 205,262p satisfiability/customer_search.py; sed -n 126,141p satisfiability/native.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/native.py'); s=p.read_text()
+a='''    "better_pruned",      # candidates the better move drops
+  > $ python3 -c "
+from satisfiability import native
+print(native.native_available(), native.build_error())
+" && ls -la satisfiability/_customer_search.so
+  > $ date; ls -la --time-style=full-iso satisfiability/customer_search.c satisfiability/_customer_search.so; nm -D satisfiability/_customer_search.so | grep cs_; str
+  > $ grep -n "^DEFINITE_CEX\|^BUG_B_CEX\|^BUG_A_CEX\|^RUN_LOST_CEX\|^def better_augment\|^def random_sparse\|^def matrix_from_masks\|^def random_cover\|^def relabel\
+
+Building a validation stage: the C audit against the certificate-based check (own matching code) on small graphs, counterexamples and gadgets.
+  > $ sed -n 1538,1570p paper2/search_check.py; sed -n 95,110p paper2/search_check.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+a='''# ------------------------------------------------------
+  > $ grep -n "^def d_hereditary\|^def s_tables\|^def b_is_repaired\|^def is_repaired_better\|^def b_repaired" -A14 paper2/search_check.py | head -60
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+def rep(a,b):
+    global s
+    assert s.count(a)==1,a
+    s=s
+  > $ tail -4 paper2/data/solver_fix_recheck_repaired.log; wc -l paper2/data/solver_fix_recheck_repaired.csv; uptime
+  > $ nohup python -m paper2.solver_fix_recheck --stage audit --workers 3 --deadline 1200 > paper2/data/solver_fix_recheck_audit.log 2>&1 &
+echo $! > /tmp/recheck_aud
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+def rep(a,b):
+    global s
+    assert s.count(a)==1,a
+    s=s
+  > $ time python -c "
+from paper2.solver_fix_recheck import _cert_job, load_instances
+m=load_instances({'Random-50-50-4-5_0'})
+print(_cert_job(('Random-50-50-4-5_0',
+  > $ free -g; cd /home/al/dev/MOSP; tail -3 paper2/data/solver_fix_recheck_audit.log; tail -2 paper2/data/solver_fix_recheck_validate.log
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_recheck_validate.log | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); [print(f, v) for f,v in d.i
+  > $ sleep 120; cd /home/al/dev/MOSP; wc -l paper2/data/solver_fix_recheck_audit.csv paper2/data/solver_fix_recheck_repaired.csv; tail -3 paper2/data/solver_fix_rech
+  > $ cd /home/al/dev/MOSP; timeout 130 bash -c 'until [ $(wc -l < paper2/data/solver_fix_recheck_audit.csv) -ge 100 ]; do sleep 5; done'; wc -l paper2/data/solver_fi
+  > $ cd /home/al/dev/MOSP; wc -l paper2/data/solver_fix_recheck_audit.csv paper2/data/solver_fix_recheck_repaired.csv; tail -3 paper2/data/solver_fix_recheck_audit.l
+  > $ nohup python -m paper2.solver_fix_recheck --stage cert --workers 2 --max-nodes 2000000 > paper2/data/solver_fix_recheck_cert.log 2>&1 &
+echo $! > /tmp/recheck_c
+  > $ grep -rn "closing_search.c" pathwidth_solver/tests/*.py tests/*.py | head -5; cmp satisfiability/customer_search.c pathwidth_solver/pathwidth/closing_search.c; 
+  > $ grep -rln "closing_search\b\|closing_search.c\|byte copy\|byte for byte" pathwidth_solver/tests/ tests/ | head; ls pathwidth_solver/pathwidth/ | head -30; git d
+  > $ grep -rn "customer_search.c\|closing_search.c" pathwidth_solver/tests/ pathwidth_solver/*.md 2>/dev/null | head; grep -n "legacy\|closing_search.c" pathwidth_so
+  > $ cp satisfiability/customer_search.c pathwidth_solver/pathwidth/closing_search.c && cmp satisfiability/customer_search.c pathwidth_solver/pathwidth/closing_searc
+
+Now the tests for the audit and the recheck records.
+  > $ sed -n 1,60p tests/test_solver_fix_provenance.py; sed -n 330,380p tests/test_repaired_rules.py
+  > Write /home/al/dev/MOSP/tests/test_solver_fix_recheck.py
+  > $ timeout 600 python -m pytest tests/test_solver_fix_recheck.py -q -x 2>&1 | tail -5
+  > $ timeout 600 python -m pytest tests/test_solver_fix_recheck.py -q -x 2>&1 | grep -E "^E" | head -10
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('tests/test_solver_fix_recheck.py'); s=p.read_text()
+a='''            assert r["oracle_disagree"] == 0 and r["
+  > $ cd /home/al/dev/MOSP; date; wc -l paper2/data/solver_fix_recheck_{repaired,audit,cert}.csv; tail -2 paper2/data/solver_fix_recheck_repaired.log; tail -2 paper2/
+  > $ sed -n 1,31p paper2/solver_fix.md
+
+Status: 101 of 115 repaired refutations done (all `unsat`), 14 hard ones running. Starting a larger validation of the audit on the spare cores.
+  > $ nohup python -m paper2.solver_fix_recheck --stage validate --workers 4 --count 500 > paper2/data/solver_fix_recheck_validate.log 2>&1 & echo $! > /tmp/recheck_v
+  > $ cd /home/al/dev/MOSP; timeout 115 bash -c 'while kill -0 $(cat /tmp/recheck_validate.pid) 2>/dev/null; do sleep 5; done'; date; wc -l paper2/data/solver_fix_rec
+  > $ cd /home/al/dev/MOSP; tail -c 300 paper2/data/solver_fix_recheck_validate.log; ps -p $(cat /tmp/recheck_validate.pid) >/dev/null && echo running
+  > $ cd /home/al/dev/MOSP; while kill -0 $(cat /tmp/recheck_validate.pid) 2>/dev/null; do sleep 10; done; python3 -c "
+import json; d=json.load(open('paper2/data/sol
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_recheck --stage tables 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+d=pd.read_csv('paper2/data/solver_fix_recheck_cert.csv')
+u=d[d.status=='unsat']
+print(len(d), len(u), (u.
+
+Certificate walk and C audit agree on every instance so far (48 of 48, same nodes and same failing-node counts). Waiting on the long runs.
+  > $ cd /home/al/dev/MOSP; n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.csv) -eq $n ]; do slee
+  > $ cd /home/al/dev/MOSP; timeout 900 python -m pytest tests/test_repaired_rules.py tests/test_native.py tests/test_search_soundness_doc.py tests/test_fix_cost.py -
+  > $ cd /home/al/dev/MOSP; timeout 300 python -m pytest tests/test_search_soundness_doc.py -q -x 2>&1 | grep -E "^E" | head -12
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('satisfiability/customer_search.c'); s=p.read_text()
+a='''                if (closed_by >= opened_by) {
+      
+  > $ python -c "from satisfiability import native; print(native.native_available(), native.build_error())" && cp satisfiability/customer_search.c pathwidth_solver/pa
+
+Tests pass apart from the records test, which waits for the long runs. Waiting on them.
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/9a0accfe-dabc-426e-a5e6-0e90cd196e4f/tasks/b1v9bcdpy.output /tmp/claude-1000/-home-al-dev-MOSP/9a0accfe-dabc-426e-a5e6-0e
+  > $ cd /home/al/dev/MOSP; sed -n '/^## Item 05/,/^### The checks/p' paper2/solver_fix.md | head -40
+  > $ cd /home/al/dev/MOSP; timeout 560 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/9a0accfe-dabc-426e-a5e6-0e90cd196e4f/tasks/b8j2n3okx.output
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+p=pd.read_csv('paper2/data/solver_fix_provenance.csv')
+r=pd.read_csv('paper2/data/solver_fix_recheck_repa
+
+Twelve hard refutations are still running. Re-running the audit validation against the rebuilt library on the free cores.
+  > $ timeout 590 python -m paper2.solver_fix_recheck --stage validate --workers 5 --count 400 > paper2/data/solver_fix_recheck_validate.log 2>&1; tail -c 1500 paper2
+
+Validation repeated on the rebuilt library: 36,126 calls on 6,005 graphs, zero mismatches, and zero disagreements with the enumeration oracle in 303,895 node checks. Now polling the long runs.
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+d=pd.read_csv('paper2/data/solver_fix_recheck_cert.csv')
+print(d.status.value_counts())
+u=d[d.status=='un
+
+Certificate stage so far: 58 refutations emitted and verified within 2M nodes. 32 have no failing node, and 26 fail only at the definite move. Checking the audit stage's better-move results next.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+d=pd.read_csv('paper2/data/solver_fix_recheck_audit.csv')
+print(d.status.value_counts())
+u=d[d.status=='u
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+r=pd.read_csv('paper2/data/solver_fix_recheck_repaired.csv')
+r['size']=r.n.astype(str)+'x'+r.m.astype(str
+
+Drafting the "needs a long run" table in the tables stage.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+a='''    out.write_text("\\n".join(lines) + "\\n")'''
+assert 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix_recheck.py'); s=p.read_text()
+a='''        price = max(v for v in (lower, model, recert) if
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+a=pd.read_csv('paper2/data/solver_fix_recheck_audit.csv'); print(a[a.status!='unsat'][['instance_name','s
+
+Audit and certificate stages are nearly done. Writing the item 07 section of `paper2/solver_fix.md` now; numbers get refreshed at the end.
+  > $ cd /home/al/dev/MOSP; tail -30 paper2/solver_fix.md; grep -n "exec_repairedFullFilter_mospValue" paper2/solver_fix.md | head -3
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+`Random-100-100-2-5_0` re-refuted: 1.24 × 10¹⁰ nodes in 6,594 s, 13× the cost model's pre-fix price. Ten left: two at 100 × 100 and eight at 125 × 125.
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; tail -4 paper2/data/solver_fix_recheck_audit.log; python3 -c "
+import pandas as pd
+d=pd.read_csv('paper2/data/solver_fix_recheck_audit.csv
+
+Audit stage finished: 103 old-rule refutations completed, 33 with no failing node; 12 were censored at 1,200 s. Ten repaired runs are still going. Writing the report section now.
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_recheck --stage tables 2>&1 | head -12; python3 -c "
+import pandas as pd
+a=pd.read_csv('paper2/data/solver_fix
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+r=pd.read_csv('paper2/data/solver_fix_recheck_repaired.csv')
+r=r[r.status=='unsat']
+p=pd.read_csv('paper2
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 07: re-checking the 115 values, cheapest first (2026-10-01/02)
+
+**The answer: no value c
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+`Random-100-100-2-1_0` re-refuted (1.54 × 10¹⁰ nodes, 8,647 s). Nine left: `Random-100-100-2-3_0` and eight at 125 × 125. Polling continues.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+All 26 at 100 × 100 are now re-refuted (`Random-100-100-2-3_0`: 2.14 × 10¹⁰ nodes). Eight 125 × 125 runs remain, running until 06:15.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Running the gate now, while cores are free, to catch any breakage early.
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0007/gate.py | head -40
+  > $ cd /home/al/dev/MOSP; timeout 590 python -m pytest tests/ -q -x -n 0 --deselect tests/test_solver_fix_recheck.py::test_no_listed_value_changed_and_every_instanc
+  > $ cd /home/al/dev/MOSP; timeout 590 python -m pytest tests/ -q -x --deselect tests/test_solver_fix_recheck.py::test_no_listed_value_changed_and_every_instance_is_
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; timeout 595 python -m pytest -q -x 2>&1 | tail -2
+
+MOSP tests: 1,355 pass, with the records test deselected until the runs end. pathwidth_solver tests: 110 pass. Back to polling the eight 125 × 125 runs.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Still waiting on the eight 125 × 125 refutations (about 4.4 h in, deadline 06:15). Nothing new has finished.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Still waiting on the eight 125 × 125 runs (about 5.4 h in). Nothing new; polling continues until 06:15.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Still waiting (about 6.4 h in): none of the eight 125 × 125 refutations has finished. They stop at 06:15, and then I'll finalize the report.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+`Random-125-125-4-3_0` re-refuted: 3.72 × 10¹⁰ nodes in 26,757 s (7.4 h). Seven 125 × 125 runs left, still going until 06:15.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Still waiting on seven 125 × 125 runs (8.4 h in). They stop at 06:15; then the tables, report and gate.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+
+Seven 125 × 125 runs are still going (9.4 h in) and stop at 06:15. After that: tables, report and gate.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'n=$(wc -l < paper2/data/solver_fix_recheck_repaired.csv); while [ $(wc -l < paper2/data/solver_fix_recheck_repaired.c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while kill -0 $(cat /tmp/recheck_repaired.pid) 2>/dev/null; do sleep 10; done'; date; tail -9 paper2/data/solver_fix_
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_recheck --stage tables 2>&1 | head -11; sed -n '/## Needs/,$p' paper2/data/solver_fix_recheck_tables.md | tail
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+for s in ['repaired','audit','cert']:
+    d=pd.read_csv(f'paper2/data/solver_fix_recheck_{s}.csv')
+    pr
+
+Writing the results into `paper2/solver_fix.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/solver_fix.md'); s=p.read_text()
+summary='''**108 of the 115** listed values (10
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+u=pd.read_csv('paper2/data/solver_fix_recheck_cert.csv'); u=u[u.status=='unsat']
+print(len(u), (u.c_nodes
+
+Report checks out against the data. Running the gate.
+  > $ cd /home/al/dev/MOSP; nohup python3 Ralph_Loops/loop0007/gate.py > /tmp/gate07.log 2>&1 & echo $! > /tmp/gate07.pid; timeout 590 bash -c 'while kill -0 $(cat /t
+
+Gate passed (1,356 MOSP tests, 110 pathwidth_solver tests). Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('Ralph_Loops/loop0007/iterations.md'); s=p.read_text()
+a='- [ ] **07 Re-check them, chea
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('Ralph_Loops/loop0007/PROGRESS.md'); s=p.read_text()
+a='''  nodes in 16.5 core-hours. It
+
+Item 07 is done, with one gap: 108 of the 115 values that rested on the customer search alone are now re-checked, and 7 at 125 × 125 were cut off by the time limit and still need long runs. No certified value changed and no false refutation turned up. No call at `value − 1` came back satisfiable, `benchmarks.corpus` still reads 6,374 / 6,376, and nothing was written to `solutions/`. The gate passed: Lean build, 1,356 MOSP tests and 110 pathwidth_solver tests.
+
+**The repaired solver.** I ran it (`repaired_rules=True`, in C) at `value − 1` on all 115, cheapest first, on 21 cores until 06:15.
+- **108 of 115 refuted**, which is 106 of the 113 distinct graphs. That is every listed instance at 40–100 customers and 16 of the 23 at 125 × 125: 9.7 × 10¹⁰ nodes, 16.5 core-hours.
+- Of the 21 hard ones items 04–05 had not done, 14 finished. The largest were `Random-100-100-2-3_0` at 2.1 × 10¹⁰ nodes (2.9 h) and `Random-125-125-4-3_0` at 3.7 × 10¹⁰ nodes (7.4 h).
+- **7 did not finish:** `Random-125-125-2-{1,4,5}` and `-4-{1,2,4,5}`, each stopped after 10.1 h at 5.0–6.9 × 10¹⁰ nodes. They keep their values as verified upper bounds and are not marked done. `paper2/solver_fix.md` lists them under "Needs a long run", priced at 13 to 153 core-hours each. Those prices are low, because both the cost model and the old recertify counts predate the 2026-09-26 fix that made these refutations larger. The `Random-100-100-2` runs cost 2.5–13× the cost model's figure. To continue them: `python -m paper2.solver_fix_recheck --stage repaired --retry-censored`. This restarts each search from scratch, because the search keeps no state between calls.
+
+**The cheaper check the item names mostly fails.** Checking `CodeNodeRepaired` along the old runs covers few of them:
+- Of 103 old refutations that finished, 33 pass at every node, so they are sound as originally run.
+- The other 70 fail at about 0.11% of their nodes: at the definite move, and also at the better move in all 8 runs with Theorem 2. A failing node only means the repaired premise wasn't met there, not that a solution was lost. All 70 are covered by the repaired re-refutations above.
+- Through the certificate emitter (capped at 2 × 10⁶ nodes), 58 old refutations fit. The independent checker verified all 58, and 32 pass the check.
+
+**Code change (search behaviour unchanged).** To check the old runs at C speed I added an audit mode: `cs_decide_rules(..., repaired_rules=2)`, exposed as `decide_native(audit_repaired=True)`. It runs the published rules unchanged and counts the nodes failing `CodeNodeRepaired`.
+- **Validation:** 36,126 calls on 6,005 small graphs with zero mismatches. It finds the same failing nodes as the certificate walk (which uses its own matching code), and that matching agreed with brute-force enumeration in 303,895 node checks.
+- On the 58 real certificates, the C and the walk give identical counts.
+- `pathwidth_solver/pathwidth/closing_search.c` is again a byte copy.
+- The new tests are in `tests/test_solver_fix_recheck.py`.
+
+I also wrote up, but did not build, a way to finish the seven: split one refutation across cores at the root. It needs a C entry point that starts from a given state, plus a short Lean statement that the pieces combine into a sound refutation.
+
+PROGRESS.md is updated (7/10) and item 07 is marked `[x]`. Nothing is committed.
+
+# result: success in 37404s, 165 turns, cost $76.30

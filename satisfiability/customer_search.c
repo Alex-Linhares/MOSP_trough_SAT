@@ -53,9 +53,18 @@ enum {
     RC_BM_PREFILTER,    /* better: (r, q) pairs passing premises 3 and 4 */
     RC_BM_MATCH_FAIL,   /* ... of which the matching test fails (repaired) */
     RC_BM_PRUNED,       /* candidates r the better move drops */
+    /* The audit of the published rules (`repaired_rules = 2`, loop0007 item
+     * 07): the search is the published one, and at every node it expands the
+     * check `CodeNodeRepaired` of lean/MOSPFormalization/Search/Decide.lean is
+     * evaluated. A run with no failing node is sound by
+     * `codeExec_mospValue_of_repaired`. */
+    RC_AUDIT_DEF_FAIL,  /* nodes whose definite pick is not hereditarily definite */
+    RC_AUDIT_BM_FAIL,   /* nodes with a better-move drop no repaired citation covers */
+    RC_AUDIT_NODE_FAIL, /* nodes failing either */
     RC_COUNT
 };
 static __thread long long rule_counts[RC_COUNT];
+static __thread int audit_node_bad;    /* the current node failed the audit */
 
 #define BIT(i)        (((mask_t) 1) << (i))
 #define LOWEST(x)     ((x) & -(x))
@@ -134,6 +143,7 @@ typedef struct {
     int      better_move_variant;      /* BM_OLD_* bits; 0 is today's rule */
     int      old_move;
     int      repaired_rules;    /* the repaired definite and better moves (loop0007) */
+    int      audit_repaired;    /* published rules, CodeNodeRepaired counted (item 07) */
     int      fan_order;         /* 0: ties by customer index; 1: by remaining degree, highest first */
     int      use_memo;
     int      restrict_frontier;
@@ -186,6 +196,23 @@ static int has_definite_matching(const mask_t *sets, int count, int need) {
         if (augment(sets, i, owner, &visited) && ++matched >= need) return 1;
     }
     return 0;
+}
+
+/* The audit's `IsRepairedBetter G k S r q`, at the child state given by
+ * `closed_r = S u {r}` and `opened_r = O(S u {r})`: S ++ [r, q] playable in the
+ * paper's measure, and q hereditarily definite at cl(S u {r}) by the matching
+ * test over the customers q frees there (q excluded, finished ones gone). */
+static int audit_repaired_better(const search_t *s, mask_t closed_r, mask_t opened_r, int q) {
+    if (popcount128((opened_r | s->neighbour[q]) & ~closed_r) > s->k) return 0;
+    mask_t own = s->neighbour[q] & ~opened_r;
+    mask_t freed[128];
+    int n_freed = 0;
+    for (mask_t bits = s->full & ~closed_r; bits; ) {
+        mask_t bit = LOWEST(bits); bits ^= bit;
+        mask_t left = s->neighbour[lowest_index(bit)] & ~opened_r;
+        if (left && (left & ~own) == 0 && bit != BIT(q)) freed[n_freed++] = left;
+    }
+    return has_definite_matching(freed, n_freed, popcount128(own) - 1);
 }
 
 /* The subset rule over the candidates in `costs`/`who`/`index_of`, measured
@@ -316,6 +343,21 @@ static int better_move_pass(const search_t *s, mask_t closed, mask_t opened,
                     continue;
                 }
                 if (closed_by >= opened_by) pruned = 1;
+                /* The audit: some earlier survivor must meet the repaired
+                 * premise, the citing q or any other (CodeNodeRepaired). */
+                if (pruned && s->audit_repaired) {
+                    if (!audit_repaired_better(s, closed_r, opened_r, q)) {
+                        int covered = 0;
+                        for (int qj = 0; qj < ri && !covered; qj++)
+                            if (qj != qi && who[qj] != r &&
+                                audit_repaired_better(s, closed_r, opened_r, who[qj]))
+                                covered = 1;
+                        if (!covered && !audit_node_bad) {
+                            audit_node_bad = 1;
+                            rule_counts[RC_AUDIT_BM_FAIL]++;
+                        }
+                    }
+                }
             }
             survives[ri] = !pruned;
             if (pruned) rule_counts[RC_BM_PRUNED]++;
@@ -359,6 +401,7 @@ static int dominance_filter(search_t *s, mask_t candidates,
     if (!count || (!s->subset_rule && !s->definite_move && !s->better_move))
         goto sorted;
     rule_counts[RC_FILTER_CALLS]++;
+    audit_node_bad = 0;
 
     /* Three dominance rules share this one list, and a rule is sound only
      * when every candidate it discards is *covered*: some candidate still
@@ -411,6 +454,19 @@ static int dominance_filter(search_t *s, mask_t candidates,
                     continue;
                 }
             }
+            if (closed_by >= opened_by && s->audit_repaired) {
+                /* The audit: the published rule fires on c; CodeNodeRepaired
+                 * needs c hereditarily definite. */
+                mask_t freed[128];
+                int n_freed = 0;
+                for (int j = 0; j < n_remaining; j++)
+                    if (ids[j] != c && sizes[j] <= opened_by && (opens[j] & ~own) == 0)
+                        freed[n_freed++] = opens[j];
+                if (!has_definite_matching(freed, n_freed, opened_by - 1)) {
+                    rule_counts[RC_AUDIT_DEF_FAIL]++;
+                    rule_counts[RC_AUDIT_NODE_FAIL]++;
+                }
+            }
             if (closed_by >= opened_by) {
                 /* q is at least as good as anything else here. */
                 rule_counts[RC_DEF_FIRES]++;
@@ -450,6 +506,7 @@ static int dominance_filter(search_t *s, mask_t candidates,
         if (s->better_move)
             count = better_move_pass(s, closed, opened, costs, who, index_of, count, NULL);
     }
+    if (audit_node_bad) rule_counts[RC_AUDIT_NODE_FAIL]++;
 
 sorted:
     if (s->fan_order == FAN_ORDER_DEGREE) {
@@ -611,7 +668,9 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  *                (IsHereditarilyDefinite via HasDefiniteMatching, and
  *                IsRepairedBetter); 0 for the rules as Chu & Stuckey publish
  *                them, which can discard the last solution at a node
- *                (paper2/revised_algorithm.md, Counterexample 4.5).
+ *                (paper2/revised_algorithm.md, Counterexample 4.5);
+ *                2 for the published rules with `CodeNodeRepaired` counted at
+ *                every node (RC_AUDIT_*), which never changes the search.
  */
 int cs_decide_rules(int n, int k,
                     const uint64_t *neighbours,
@@ -636,7 +695,9 @@ int cs_decide_rules(int n, int k,
     s.better_move_dominators = better_move_dominators;
     s.better_move_variant = better_move_variant;
     s.old_move = old_move;
-    s.repaired_rules = repaired_rules;
+    /* 2 is the published rules with the audit counters (loop0007 item 07). */
+    s.repaired_rules = repaired_rules == 1;
+    s.audit_repaired = repaired_rules == 2;
     s.fan_order = fan_order;
     s.use_memo = use_memo;
     s.restrict_frontier = restrict_frontier;

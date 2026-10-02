@@ -28,3 +28,8 @@
 [2026-10-01 19:32:54] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-10-01 19:54:27] session it06: ok (exit 0, 62 tool calls)
 [2026-10-01 20:03:21] tests passed: GATE PASS
+[2026-10-01 20:03:22] committed 31bcd9abe: 06 Which certified values rested only on the customer search.
+[2026-10-01 20:03:22] === iteration 7: 07 Re-check them, cheapest first. For each instance on item 06's
+[2026-10-01 20:03:22] claude session it07 (cap 12.00 h) -> session_it07.log
+[2026-10-02 06:26:46] session it07: ok (exit 0, 164 tool calls)
+[2026-10-02 06:35:50] tests passed: GATE PASS

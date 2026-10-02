@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 6/10 SOLVED
+Current: 7/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -294,3 +294,55 @@ Current: 6/10 SOLVED
   cost model and expect to mark some censored. `learning/search_certificate.py`
   models only the published rules. Running it with `repaired_rules=False` gives
   the old run to check against `CodeNodeRepaired`.
+
+## Iteration 7 — 2026-10-02 06:40
+
+### Completed
+- **Item 07.** `paper2/solver_fix_recheck.py` (stages price, repaired, audit,
+  cert, validate, tables; resumable, each row appended as it finishes). Section
+  "Item 07" in `paper2/solver_fix.md`. Data in
+  `paper2/data/solver_fix_recheck*.csv`, tables in `..._tables.md`.
+- **No value changed and no false refutation was found.** No call in any of the
+  three ways returned `sat` at `value − 1`. `benchmarks.corpus` still reads
+  6,374 / 6,376, and `solutions/` is clean.
+- **Way 1, the repaired solver** (C, `csearch`, cheapest first, 21 workers until
+  06:15): **108 of 115 re-refuted** (106 of 113 distinct graphs). That is every
+  listed instance at 40–100 customers and 16 of 23 at 125 × 125, 9.73 × 10¹⁰
+  nodes in 16.5 core-hours. Of the 21 that items 04–05 had not done, 14 are
+  now refuted: SP4 and SP4_0 at 4.96 × 10⁷ nodes, `Random-100-100-2-{1..5}` at
+  8.6 × 10⁸–2.1 × 10¹⁰, `-4-3`/`-4-5`, `125-125-6-{2..5}`, and `125-125-4-3` at
+  3.72 × 10¹⁰ (7.4 h). The other 7 are censored.
+- **7 censored, all at 125 × 125**, after 10.1 h each at 5.0–6.9 × 10¹⁰ nodes:
+  `Random-125-125-2-{1,4,5}` and `-4-{1,2,4,5}`. They are listed as "needs a
+  long run" with prices: ≥ 13 to 153 core-hours, and the prices are low because
+  they predate the 09-26 fix. Command to continue:
+  `--stage repaired --retry-censored`.
+- **Way 2, the audit of the old runs:** a new C audit mode,
+  `cs_decide_rules(..., repaired_rules=2)` / `decide_native(audit_repaired=True)`.
+  It runs the published rules unchanged and counts the nodes failing
+  `CodeNodeRepaired`. Of 103 finished old refutations, **33 pass at every node**
+  (sound as run, by `codeExec_mospValue_of_repaired`). **70 do not**: they fail
+  at 0.11% of their nodes, at the definite move, and at the better move in all
+  8 runs with Theorem 2. All 70 are re-refuted by way 1. So the item's cheaper
+  path does not cover most old refutations.
+- **Way 3, the certificate** (≤ 2 × 10⁶ nodes): 58 old refutations were emitted
+  and all were verified by the independent checker; 32 pass the walk's own
+  `CodeNodeRepaired` check. On all 58 the C audit gives the same node count and
+  failing-node count.
+- **Validation of the audit:** 36,126 calls on 6,005 graphs (pinned,
+  gadgets, sparse and covers at 8–20). The audit never changes the search, and
+  the C audit equals the certificate walk everywhere. The walk's matching agrees
+  with `d_hereditary` enumeration in 303,895 node checks. **Zero mismatches.**
+- `tests/test_solver_fix_recheck.py` (6 tests, about 13 s). `closing_search.c`
+  is again a byte copy of the MOSP C. The lines quoted by
+  `search_soundness.md` are unchanged.
+- Gate: PASS (1,356 MOSP tests, 110 pathwidth_solver tests).
+
+### Blockers
+- None for the item. Seven refutations do not fit in a session (see above).
+  They are not marked done. A root-split parallel refutation is proposed in the
+  report (a new C entry point plus a short Lean composition) and was not built.
+
+### Next
+- Item 08: the pathwidth benchmarks under the repaired rules
+  (`pathwidth_solver/bench/run.py` uses the default, which is now repaired).

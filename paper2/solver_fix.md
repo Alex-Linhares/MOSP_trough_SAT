@@ -25,7 +25,10 @@ published rules. Four tools that model the published rules now name
 
 **Findings that would stop the loop** (a changed certified value, or a false
 refutation under the old rules): **none so far** (item 05: none in 17.4 M
-whole-search runs at 1–17 vertices and 1.79 M differential calls at 9–75).
+whole-search runs at 1–17 vertices and 1.79 M differential calls at 9–75;
+item 07: 108 of the 115 values that rested on the customer search alone are
+re-refuted by the repaired solver, with no answer changed, and 7 at 125 × 125
+need a long run).
 
 ---
 
@@ -884,3 +887,253 @@ Data:
 - `paper2/data/solver_fix_provenance_all.csv.gz`: every corpus instance with
   every evidence flag.
 - `paper2/data/solver_fix_provenance_tables.md`: the tables.
+
+---
+
+## Item 07: re-checking the 115 values, cheapest first (2026-10-01/02)
+
+**The answer: no value changed and no false refutation was found.**
+**108 of the 115** listed values (106 of 113 distinct graphs) are re-refuted at
+`value − 1` by the repaired solver. That covers every listed instance at 40–100
+customers and 16 of the 23 at 125 × 125: 9.73 × 10¹⁰ nodes in 16.5 core-hours.
+The other **7, all 125 × 125 on or next to the ridge, are censored** after
+10.1 hours each, at 5.0–6.9 × 10¹⁰ nodes. They keep their values, still
+verified upper bounds, and are listed below under "Needs a long run" with a
+price and the command that continues the CSV. The cheaper path the item names,
+checking `CodeNodeRepaired` along the old run, **does not cover most of the old
+refutations**. Of the 103 old runs that finish, 33 pass at every node and 70 do
+not. Those 70 fail at 0.11% of their nodes (3.10 × 10⁶ of 2.72 × 10⁹), at the
+definite move and, under Theorem 2, at the better move as well. A failing node
+is a node where the repaired premise is not met. It is not a node where a
+solution was lost: every one of those 70 values is re-refuted by the repaired
+solver. `python -m benchmarks.corpus` still reads 6,374 of 6,376 certified,
+and `solutions/` is untouched.
+
+### The question
+
+Item 06 listed 115 certified values (113 distinct graphs, 40–125 customers)
+whose refutation of `value − 1` came from the customer search alone, under the
+published definite move and, for 19 of them, an older `better_move`. This item
+re-checks each of them, cheapest first by price, in three ways. Each way covers
+the refutation by a different theorem of `Search/Decide.lean`:
+
+1. **Re-refute with the repaired solver** (`repaired_rules=True`, the default
+   since item 03), in C, under the `csearch` configuration (Theorem 2 by
+   `sparse_enough_for_better_move`, every earlier survivor a dominator, memo
+   and old move on). An `unsat` is covered by `exec_repairedFullFilter_mospValue`,
+   as far as the code matches the theorem (items 01–05).
+2. **Audit the old run.** Re-run the *published* rules in the configuration
+   that certified the value (Theorem 2 on or off, as item 06 read it; memo and
+   old move on, as in `solve()`), and evaluate `CodeNodeRepaired` at every node
+   the search expands: the definite pick must be hereditarily definite, and
+   every better-move drop must have an earlier subset survivor meeting
+   `IsRepairedBetter`. An `unsat` run with no failing node is a sound
+   refutation by `codeExec_mospValue_of_repaired`, *without* the repaired code.
+3. **The same check through the certificate.** Emit the old run with
+   `learning/search_certificate.py` (Python, old move, no memo), verify it with
+   the independent checker, and walk the tree with this item's own
+   `CodeNodeRepaired` test (`node_repaired`, its own Kuhn matching). This is the
+   path the item names. The emitter is Python and keeps the tree in memory, so
+   it is capped at 2 × 10⁶ nodes.
+
+Way 1 is the one that decides. Ways 2 and 3 ask whether the *old* refutations
+were already sound as run. Most were not covered: see below.
+
+### What changed in the code
+
+- `satisfiability/customer_search.c`: `cs_decide_rules(..., repaired_rules=2)`
+  is the **audit mode**. It runs the published rules unchanged and counts three
+  new per-thread counters, appended to the `RC_*` enum:
+  `RC_AUDIT_DEF_FAIL` (nodes whose definite pick fails the matching test),
+  `RC_AUDIT_BM_FAIL` (nodes with a better-move drop that no earlier survivor
+  covers under `IsRepairedBetter`, the citing `q` first, then every other, with
+  no limit, as `CodeNodeRepaired` states it) and `RC_AUDIT_NODE_FAIL` (nodes
+  failing either). A new helper, `audit_repaired_better`, tests
+  `IsRepairedBetter` at the child. **The search is not changed**: values 0 and 1
+  behave exactly as before (the struct gained a separate `audit_repaired`
+  field, so no existing test of `repaired_rules` changed), and the lines
+  `paper2/search_soundness.md` quotes are kept word for word.
+  `pathwidth_solver/pathwidth/closing_search.c` is again a byte copy.
+- `satisfiability/native.py`: `decide_native(..., audit_repaired=True)` (only
+  with `repaired_rules=False`; otherwise a `ValueError`), and three new names in
+  `RULE_COUNT_NAMES`. `decide` is not touched.
+- `paper2/solver_fix_recheck.py` (new): stages `price`, `repaired`, `audit`,
+  `cert`, `validate`, `tables`. Every row is appended to its CSV as it
+  finishes. Every stage continues where its CSV stops.
+  `--stage repaired --retry-censored --until <time>` re-runs the censored
+  entries. That is a restart, not a resume, since the search keeps no state
+  across calls.
+- `tests/test_solver_fix_recheck.py` (new, 6 tests, about 25 s): the counters
+  include the audit; the audit refuses the repaired rules; the audit never
+  changes the search (answer, nodes and witness, on the pinned counterexamples
+  and 12 gadgets at every `k`, three memo/old-move settings, better move on and
+  off); the C audit counts exactly the failing nodes the certificate walk
+  counts, with the enumeration oracle behind the walk, and the counterexamples
+  do fail somewhere; the walk's matching equals `d_hereditary` at every state
+  of three pinned graphs; and the records: no listed value changed, and every
+  listed instance has a repaired row.
+
+### Validation of the audit
+
+`python -m paper2.solver_fix_recheck --stage validate --workers 5 --count 400`
+ran **36,126 calls on 6,005 graphs**: the pinned counterexamples at every `k`,
+and 2,000 each of `better_augment` gadgets (14–17 vertices), sparse random graphs and
+Chu & Stuckey-shaped covers (8–20) at `opt − 1`, `opt`, `opt + 1`. Each ran with
+better move off and on. Per call:
+
+- the C with and without the audit (same answer, nodes and witness);
+- the emitter (same branch count);
+- `node_repaired` on the emitter's tree, against the C's `audit_nodes_fail`
+  (same count);
+- at ≤ 16 vertices, `node_repaired` against `search_check.d_hereditary` and
+  `b_is_repaired` (enumeration) at every node.
+
+**Zero mismatches** of any kind, and **zero disagreements** with the
+enumeration in **303,895 node checks**. The check does tell the rule sets
+apart: 718 nodes fail `CodeNodeRepaired`, on 662 runs, 223 of them `unsat` runs
+(all on gadgets). At corpus scale, the certificate stage compares the
+C audit with the walk on every certificate it emits (58 instances, up to 1.38 ×
+10⁶ nodes each). The node counts and failing-node counts agree on all 58, and
+the independent checker verified every certificate.
+
+### Results
+
+By size. "repaired `unsat`": re-refuted by way 1. "audit pass" and "cert pass":
+an old `unsat` run with no node failing `CodeNodeRepaired`, by way 2 (the
+certifying configuration, memo on) and way 3 (the emitter's configuration,
+memo off, at most 2 × 10⁶ nodes). The trees differ, so the two counts differ
+slightly.
+
+| size | listed | repaired `unsat` | audit pass | cert pass | re-checked | censored | changed |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 40 × 40 | 2 | 2 | 2 | 2 | 2 | 0 | 0 |
+| 50 × 50 | 12 | 12 | 10 | 9 | 12 | 0 | 0 |
+| 50 × 100 | 10 | 10 | 5 | 5 | 10 | 0 | 0 |
+| 75 × 75 (incl. SP3, SP3_0) | 22 | 22 | 6 | 6 | 22 | 0 | 0 |
+| 100 × 50 | 20 | 20 | 0 | 0 | 20 | 0 | 0 |
+| 100 × 100 (incl. SP4, SP4_0) | 26 | 26 | 6 | 6 | 26 | 0 | 0 |
+| 125 × 125 | 23 | 16 | 4 | 4 | 16 | **7** | 0 |
+| **all** | **115** | **108** | **33** | **32** | **108** | **7** | **0** |
+
+**Way 1, the repaired solver** (`paper2/data/solver_fix_recheck_repaired.csv`,
+one row per instance, the cheapest first, 21 workers, every call allowed to run
+until 06:15). The 108 refutations total 9.73 × 10¹⁰ nodes and 59,469 s. The
+21 that items 04–05 had not refuted are the expensive ones:
+
+| instance | value | Theorem 2 | nodes | seconds |
+|---|---:|---|---:|---:|
+| SP4, SP4_0 | 53 | on | 4.96 × 10⁷ | 37, 53 |
+| `Random-125-125-6-3_0` | 80 | off | 2.75 × 10⁸ | 220 |
+| `Random-125-125-6-4_0` | 80 | off | 4.00 × 10⁸ | 413 |
+| `Random-100-100-2-2_0` | 20 | on | 8.58 × 10⁸ | 545 |
+| `Random-125-125-6-2_0` | 77 | off | 6.26 × 10⁸ | 581 |
+| `Random-100-100-4-5_0` | 42 | on | 9.17 × 10⁸ | 646 |
+| `Random-100-100-4-3_0` | 43 | on | 1.22 × 10⁹ | 849 |
+| `Random-125-125-6-5_0` | 74 | off | 1.52 × 10⁹ | 1,216 |
+| `Random-100-100-2-4_0` | 15 | on | 3.58 × 10⁹ | 1,360 |
+| `Random-100-100-2-5_0` | 19 | on | 1.24 × 10¹⁰ | 6,594 |
+| `Random-100-100-2-1_0` | 24 | on | 1.54 × 10¹⁰ | 8,647 |
+| `Random-100-100-2-3_0` | 23 | on | 2.14 × 10¹⁰ | 10,489 |
+| `Random-125-125-4-3_0` | 54 | on | 3.72 × 10¹⁰ | 26,757 |
+| 7 at 125 × 125 | | on | censored, 5.0–6.9 × 10¹⁰ each | 36,200–36,330 |
+
+("Theorem 2" here is the `csearch` switch, `sparse_enough_for_better_move`, not
+the certifying run's setting.) The `Random-100-100-2` refutations cost 2.5–13
+times the cost model's pre-fix price. That fits item 06's warning that the
+2026-09-26 fix made ridge refutations larger, and it is why the censored prices
+below are low. Counters over every repaired call: the definite move's old test
+passed 1.28 × 10¹¹ times and the matching failed 2.64 × 10⁸ times (0.21%). The
+definite move stopped firing at 1.60 × 10⁸ nodes. Better-move pairs: 4.14 × 10¹⁰,
+of which 9.29 × 10⁶ failed the matching (0.02%).
+
+**Way 2, the audit of the old runs** (`..._audit.csv`, 1,200 s per call). Of
+103 finished `unsat` runs (7.57 × 10⁹ nodes), 33 have no failing node. Every
+one of them has Theorem 2 off and 40–125 customers: both at 40 × 40, 10 of 12
+at 50 × 50, 5 of 10 at 50 × 100, 6 of 22 at 75 × 75, 6 at 100 × 100, 4 at
+125 × 125. Those 33 old refutations are sound as run, by
+`codeExec_mospValue_of_repaired`, independently of the repaired code. The other
+70 fail at 3,103,541 nodes in total (0.11% of 2.72 × 10⁹ filter calls):
+3,020,712 at the definite move and 82,829 at the better move. The better-move
+failures occur in all 8 runs with Theorem 2 on (SP4 twice and six at
+100 × 100), and none of those 8 passes. No old run returned `sat`, and none of
+the 12 censored runs did either.
+
+**Way 3, through the certificate** (`..._cert.csv`, at most 2 × 10⁶ nodes). 58
+of 115 old refutations fit: all with Theorem 2 off, 40–125 customers, up to
+1.38 × 10⁶ nodes and 12.6 MB gzipped. The independent checker verified all 58.
+32 have no node failing `CodeNodeRepaired`, and 26 fail at 2,940 nodes in total,
+all at the definite move. On all 58 the C audit on the same configuration
+gives the same node count and the same failing-node count as the walk. The
+other 57 exceed the cap; for them way 1 is the evidence.
+
+### Needs a long run
+
+Seven 125 × 125 instances, each censored by the repaired solver after
+10.1 hours on one core. Each keeps its value as a verified upper bound. Each
+is a refutation of `value − 1` still to be made. The lower bound is the node
+count the censored call reached. The price is the largest of that, the price
+used for the order, the cost model's `csearch` prediction (trained on
+pre-2026-09-26 counts) and the `recertify` count (first-fix code, pre-09-26).
+Both of the latter predate the fix that made ridge refutations 2–20× larger,
+so **the prices are low**. Core-hours are at 1.1 × 10⁶ nodes/s; these calls
+ran at 1.4–1.9 × 10⁶.
+
+| instance | value | `k` | lower bound (nodes) | cost model | `recertify` | price (nodes) | price (core-hours) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `Random-125-125-4-1_0` | 57 | 56 | 5.12 × 10¹⁰ | — | — | ≥ 5.12 × 10¹⁰ | ≥ 12.9 |
+| `Random-125-125-2-4_0` | 24 | 23 | 6.28 × 10¹⁰ | 1.88 × 10¹¹ | 1.68 × 10¹¹ | 1.88 × 10¹¹ | 47.5 |
+| `Random-125-125-4-5_0` | 46 | 45 | 5.52 × 10¹⁰ | 2.00 × 10¹¹ | 4.89 × 10¹⁰ | 2.00 × 10¹¹ | 50.4 |
+| `Random-125-125-4-2_0` | 57 | 56 | 4.99 × 10¹⁰ | 2.42 × 10¹¹ | 6.08 × 10¹⁰ | 2.42 × 10¹¹ | 61.2 |
+| `Random-125-125-2-1_0` | 24 | 23 | 6.88 × 10¹⁰ | 3.01 × 10¹¹ | 1.62 × 10¹¹ | 3.01 × 10¹¹ | 76.1 |
+| `Random-125-125-2-5_0` | 20 | 19 | 6.78 × 10¹⁰ | — | 4.58 × 10¹¹ | 4.58 × 10¹¹ | 116 |
+| `Random-125-125-4-4_0` | 51 | 50 | 5.48 × 10¹⁰ | 6.08 × 10¹¹ | 2.60 × 10¹¹ | 6.08 × 10¹¹ | 153 |
+
+`Random-125-125-4-5_0` has already passed its `recertify` count (5.52 against
+4.89 × 10¹⁰), another sign that the post-fix tree is larger. All seven old
+runs, audited for 1,200 s each, had nodes failing `CodeNodeRepaired`, so the
+audit cannot cover them; only a repaired refutation can.
+
+To continue, with no deadline per call (one core each, cheapest first):
+
+```
+python -m paper2.solver_fix_recheck --stage repaired --retry-censored --workers 7
+```
+
+That restarts each censored call, because the search keeps no state across calls.
+A faster route, proposed and not built: split the root. The repaired filter is
+node-sound at the root (`repairedFullFilter`'s `FilterSound`), and each root
+child can be refuted in its own process from its state with `Q = ∅` and an
+empty memo, since `Exec.sound` holds from any memo of genuine refutations. That
+spreads one refutation over 24 cores. It needs a C entry point that starts from
+a given state, and a short Lean statement of the composition.
+
+### Size range
+
+The 115 listed instances, 40–125 customers (all Chu & Stuckey `Random` instances
+plus SP3 and SP4, each stored twice). Below 40 customers nothing was listed
+(item 06). The validation of the audit covers graphs at 8–20 vertices. Ways 2
+and 3 are measured only where the old run finishes in 1,200 s or 2 × 10⁶ nodes.
+
+### Regenerate
+
+```
+python -m paper2.solver_fix_recheck --stage price                           # the order and prices
+python -m paper2.solver_fix_recheck --stage repaired --workers 21 --until <ISO time>   # 16.5 core-h finished, + censored
+python -m paper2.solver_fix_recheck --stage audit --workers 3 --deadline 1200          # ~5.5 core-h
+python -m paper2.solver_fix_recheck --stage cert --workers 2 --max-nodes 2000000       # ~2 core-h, a few GB per worker
+python -m paper2.solver_fix_recheck --stage validate --workers 5 --count 400           # ~8 min
+python -m paper2.solver_fix_recheck --stage tables
+python -m pytest tests/test_solver_fix_recheck.py -q
+```
+
+Every stage continues where its CSV stops. Data in `paper2/data/`:
+- `solver_fix_recheck_repaired.csv`, `_audit.csv`, `_cert.csv`: one row per
+  instance and way, with nodes, seconds, the price and the rule and audit
+  counters;
+- `solver_fix_recheck.csv`: one row per instance with the verdict;
+- `solver_fix_recheck_long.csv`: the seven that need a long run, priced;
+- `solver_fix_recheck_validate.json`: the validation of the audit;
+- `solver_fix_recheck_tables.md`: the tables; the `.log` files are the runs.
+
+Compute: 87.1 core-hours for way 1, of which 70.6 are the seven censored
+calls; 5.5 for way 2; 2.1 for way 3. Nothing was written to `solutions/`.

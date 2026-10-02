@@ -1,0 +1,54 @@
+{
+ "pinned": {
+  "calls": 128,
+  "same_search": 128,
+  "same_branches": 128,
+  "same_fail": 128,
+  "fail_nodes": 31,
+  "fail_runs": 28,
+  "fail_unsat_runs": 0,
+  "oracle_checked": 984,
+  "oracle_disagree": 0,
+  "graphs": 5,
+  "mismatches": 0
+ },
+ "gadget": {
+  "calls": 12000,
+  "same_search": 12000,
+  "same_branches": 12000,
+  "same_fail": 12000,
+  "fail_nodes": 665,
+  "fail_runs": 612,
+  "fail_unsat_runs": 223,
+  "oracle_checked": 152130,
+  "oracle_disagree": 0,
+  "graphs": 2000,
+  "mismatches": 0
+ },
+ "sparse": {
+  "calls": 11998,
+  "same_search": 11998,
+  "same_branches": 11998,
+  "same_fail": 11998,
+  "fail_nodes": 6,
+  "fail_runs": 6,
+  "fail_unsat_runs": 0,
+  "oracle_checked": 81919,
+  "oracle_disagree": 0,
+  "graphs": 2000,
+  "mismatches": 0
+ },
+ "cover": {
+  "calls": 12000,
+  "same_search": 12000,
+  "same_branches": 12000,
+  "same_fail": 12000,
+  "fail_nodes": 16,
+  "fail_runs": 16,
+  "fail_unsat_runs": 0,
+  "oracle_checked": 68862,
+  "oracle_disagree": 0,
+  "graphs": 2000,
+  "mismatches": 0
+ }
+}

@@ -48,7 +48,7 @@
   list as a CSV with the instance, the value, the configuration that
   certified it, and its size.
 
-- [ ] **07 Re-check them, cheapest first.** For each instance on item 06's
+- [x] **07 Re-check them, cheapest first.** For each instance on item 06's
   list, run the old-code refutation of `value − 1` with the certificate
   emitter, and check `CodeNodeRepaired` at every node
   (`Search/Decide.lean`: the definite pick is hereditarily definite, and

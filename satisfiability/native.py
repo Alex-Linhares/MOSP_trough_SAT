@@ -136,6 +136,10 @@ RULE_COUNT_NAMES = (
     "better_prefilter",   # (r, q) pairs passing premises 3 and 4
     "better_match_fail",  # ... of which the matching test fails (repaired only)
     "better_pruned",      # candidates the better move drops
+    # The audit of the published rules (`audit_repaired`, loop0007 item 07):
+    "audit_definite_fail",  # nodes whose definite pick is not hereditarily definite
+    "audit_better_fail",  # nodes with a better-move drop no repaired citation covers
+    "audit_nodes_fail",   # nodes failing CodeNodeRepaired, either way
 )
 
 
@@ -182,6 +186,7 @@ def decide_native(
     old_rule_order: bool = False,
     subset_after_better_move: bool = False,
     repaired_rules: bool = True,
+    audit_repaired: bool = False,
 ) -> Decision | None:
     """Decide "MOSP(instance) <= k?" in C, or return None if it cannot.
 
@@ -202,6 +207,16 @@ def decide_native(
     (`tests/test_repaired_rules.py`). The default since 2026-10-01
     (loop0007 item 03); `False` is the rules as Chu & Stuckey publish them.
 
+    `audit_repaired` (with `repaired_rules=False` only) runs the published
+    rules and counts, at every node the search expands, whether the check
+    `CodeNodeRepaired` of `lean/MOSPFormalization/Search/Decide.lean` fails:
+    the definite pick not hereditarily definite, or a better-move drop with no
+    earlier survivor meeting `IsRepairedBetter`. Read the counts with
+    `last_rule_counts()`. An `unsat` with `audit_nodes_fail == 0` is a sound
+    refutation by `codeExec_mospValue_of_repaired` (loop0007 item 07). The
+    audit never changes the search: nodes, answer and witness are the
+    published rules' own.
+
     None means "not applicable here" -- too many customers, no library, or a
     flag the C does not implement -- and the caller should use the Python. It
     never means "do not know"; that is `Decision("unknown", ...)`, as in the
@@ -209,6 +224,8 @@ def decide_native(
     """
     if fan_order not in FAN_ORDERS:
         raise ValueError(f"fan_order must be one of {FAN_ORDERS}, not {fan_order!r}")
+    if audit_repaired and repaired_rules:
+        raise ValueError("audit_repaired audits the published rules: pass repaired_rules=False")
     library = _load()
     if library is None:
         return None
@@ -241,7 +258,8 @@ def decide_native(
         int(subset_rule), int(definite_move), int(memo),
         int(restrict), int(memo_limit),
         int(better_move), int(better_move_dominators), int(old_move),
-        FAN_ORDERS.index(fan_order), variant, int(repaired_rules),
+        FAN_ORDERS.index(fan_order), variant,
+        2 if audit_repaired else int(repaired_rules),
         path, ctypes.byref(nodes), ctypes.byref(length))
 
     if status == -2:                       # the memo could not be allocated
