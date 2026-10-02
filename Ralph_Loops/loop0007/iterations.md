@@ -66,7 +66,7 @@
   issues in `pathwidth_solver/TRANSFER.md` on the way: proof `budget` means
   unproved, and the name must be the path.
 
-- [ ] **09 Documents.** Update `paper2/revised_algorithm.md` §4.4.4 and §4.6
+- [x] **09 Documents.** Update `paper2/revised_algorithm.md` §4.4.4 and §4.6
   ("what holds for the code": it now matches the theorem), and the summary
   and "Known Limitations" paragraphs that a later owner edit to `CLAUDE.md`
   will need: put the proposed text in `paper2/solver_fix.md` §"For CLAUDE.md".

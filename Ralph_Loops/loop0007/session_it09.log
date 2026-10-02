@@ -1,0 +1,114 @@
+# session it09 started 2026-10-02 13:42:42
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*09/,/\*\*10/p' Ralph_Loops/loop0007/iterations.md; wc -l paper2/revised_algorithm.md paper2/solver_fix.md; grep -n '^#' paper
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/revised_algorithm.md; echo ======; sed -n 700,978p paper2/revised_algorithm.md
+  > $ cd /home/al/dev/MOSP; grep -n '^#' paper2/solver_fix.md; sed -n 1,80p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 414,630p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 626,740p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 894,1160p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; sed -n 1160,1322p paper2/solver_fix.md; sed -n 750,870p paper2/solver_fix.md | head -130
+
+Reading done; now drafting the document updates. First checking whether any test pins the text of `revised_algorithm.md`.
+  > $ cd /home/al/dev/MOSP; grep -rln 'revised_algorithm' tests pathwidth_solver/tests paper2/*.py learning 2>/dev/null; grep -n 'repaired_rules\|def decide' satisfia
+  > $ cd /home/al/dev/MOSP; grep -n 'revised_algorithm' paper2/counterexample_figure.py paper2/solver_fix_check.py; grep -n '_has_definite_matching\|def _better_move_
+  > $ cd /home/al/dev/MOSP; sed -n 80,110p learning/search_certificate.py; grep -n 'node_repaired' paper2/solver_fix_recheck.py | head -3; sed -n 360,420p paper2/sear
+
+Now editing `revised_algorithm.md`: the introduction first.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+old="""No wrong answer of the unrepaired code on a whole instance is kn
+
+Now §4.4.4.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+a=s.index("### 4.4.4 What holds for the code as it stands")
+b=s.index("
+  > $ cd /home/al/dev/MOSP; grep -n 'unrepaired premises: \|keeps only \|state \$\|mathrm{cl}(\\\\{0\|Sol\|cap' paper2/revised_algorithm.md | sed -n 1,40p | grep -n '
+  > $ cd /home/al/dev/MOSP; sed -n '/^### 4.4.4/,/^\*\*The published/p' paper2/revised_algorithm.md | grep -n '\\\\\|mathrm\|cup'
+  > $ cd /home/al/dev/MOSP; grep -n '^\*\*\(Theorem\|Lemma\|Proposition\|Corollary\|Counterexample\) 4' paper2/revised_algorithm.md
+
+Good. Now the rest of §4.4.4 (lost nodes, certificate, open).
+  > $ cd /home/al/dev/MOSP; sed -n '/^\*\*Why a false refutation is hard/,/^## 4.5/p' paper2/revised_algorithm.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'PYEOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+old_a="""**Lost nodes do occur in real runs.** In the check of sectio
+
+Now §4.6.
+  > $ cd /home/al/dev/MOSP; python3 - <<'PYEOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+old1="""The free moves, the memo, the old moves with their reinsertio
+  > $ cd /home/al/dev/MOSP; sed -n 181,204p satisfiability/customer_search.c; sed -n 562,580p satisfiability/customer_search.py; grep -n 'has_definite_matching' pathw
+  > $ cd /home/al/dev/MOSP; python3 - <<'PYEOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+reps=[("`customer_search.c` and its copies in `pathwidth_solver/pathw
+
+Checking the rest of the document for statements that the code still runs the published rules.
+  > $ cd /home/al/dev/MOSP; grep -n 'the code\|as coded\|will be\|production' paper2/revised_algorithm.md | sed -n 1,80p
+  > $ cd /home/al/dev/MOSP; sed -n 30,38p paper2/revised_algorithm.md; sed -n 538,546p paper2/revised_algorithm.md; sed -n 236,245p paper2/revised_algorithm.md; sed -
+  > $ cd /home/al/dev/MOSP; python3 - <<'PYEOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+reps=[("Its\nform as the code has run it since 2026-09-26 is still fa
+  > $ cd /home/al/dev/MOSP; python3 - <<'PYEOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+a="keeps $L = [q]$ for the first such $q$ in index order, and nothing
+
+Now the "For CLAUDE.md" section in `solver_fix.md`. Let me look at the exact CLAUDE.md passages it must replace.
+  > $ cd /home/al/dev/MOSP; grep -n "Theorem 1 (the definite move) is false\|Nothing checks that a refutation\|customer search produces no checkable\|Its refutations 
+  > $ cd /home/al/dev/MOSP; ls tests/test_*.py | wc -l; ls pathwidth_solver/tests/test_*.py | wc -l
+  > $ cd /home/al/dev/MOSP; cat >> paper2/solver_fix.md <<'EOF'
+
+---
+
+## Item 09: the documents (2026-10-02)
+
+### What changed
+
+No code. `paper2/revised_algorithm.md`
+  > $ cd /home/al/dev/MOSP; ls lean/MOSPFormalization/Search/; grep -c 'definiteMove_counterexample\|exec_repairedFullFilter_mospValue\|codeExec_mospValue_of_repaired
+  > $ cd /home/al/dev/MOSP; grep -c sorry lean/MOSPFormalization/Search/PublishedTheorems.lean; python3 - <<'PYEOF'
+p='/home/al/dev/MOSP/paper2/revised_algorithm.md'
+
+
+Now the gate.
+  > $ cd /home/al/dev/MOSP; timeout 1500 python3 Ralph_Loops/loop0007/gate.py 2>&1 | tail -15
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0007; sed -i 's/^Current: 8\/10 SOLVED/Current: 9\/10 SOLVED/' PROGRESS.md; sed -i 's/^- \[ \] \*\*09 Documents\.\*\*/- [x]
+
+Item 09 is finished: the documents now say the solvers run the repaired rules. The gate passes (lake build, 1 `sorry` against a limit of 1, 1,356 MOSP tests, 114 pathwidth_solver tests). No code changed and nothing was written to `solutions/`.
+
+**`paper2/revised_algorithm.md`**
+- **§4.4.4**, renamed "What holds for the code":
+  - It says that since 2026-10-01 both solvers run the repaired rules by default, which functions run them, and what still runs the published rules: the `repaired_rules=False` flag, the old C entry points and the certificate emitter.
+  - A table lists the checks from items 01–05 showing the code is the search the main theorem covers. The text says this correspondence is checked by brute force, not proved.
+  - The analysis of the published rules is kept under its own heading.
+  - It adds item 07's audit of the old runs: 33 of the 103 that finished were sound as they ran; the other 70 were not, and all 70 have been re-refuted by the repaired solver.
+- **§4.6**:
+  - §4.6.1 says where the matching test lives in each solver.
+  - §4.6.2 gives the measured cost by size range from items 04 and 08, and says what was not measured.
+  - §4.6.3, renamed "What was redone, and what is left": the solvers are done; 108 of the 115 values have been re-refuted, with the 7 left listed and priced; the certificate route is still to do; splitting the search at the root is proposed.
+- **Smaller fixes:**
+  - §4.1, §4.3.2 and §4.3.4 no longer say the code runs the published premises.
+  - The Lean file count is now eight, adding `PublishedTheorems`.
+
+**`paper2/solver_fix.md`** has a new "Item 09" section. Its "For CLAUDE.md" part holds seven proposed blocks for you to apply, since I did not edit `CLAUDE.md`:
+1. Rewrite the Known Limitations bullet on Theorems 1 and 2.
+2. Add a re-certification paragraph after the provenance table: 108 of 115 re-refuted, no value changed, 7 left.
+3. and 4. Append notes to the two proof-object limitations.
+5. Architecture lines, including updated test counts.
+6. Next Steps.
+7. A note under the Chu & Stuckey key reference.
+
+One thing in block 2 you should know: the seven 125 × 125 instances that are not yet re-refuted still say `certified:refutation` in `solutions/`. Until a long run refutes them under the repaired rules, that label rests only on the published rules.
+
+PROGRESS.md is updated (9/10 solved) and item 09 is marked `[x]`. Item 10, the reserve, is still open, so `LOOP_COMPLETE` was not added.
+
+# result: success in 781s, 32 turns, cost $2.21

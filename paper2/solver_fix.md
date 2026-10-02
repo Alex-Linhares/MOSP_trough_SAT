@@ -29,7 +29,8 @@ whole-search runs at 1–17 vertices and 1.79 M differential calls at 9–75;
 item 07: 108 of the 115 values that rested on the customer search alone are
 re-refuted by the repaired solver, with no answer changed, and 7 at 125 × 125
 need a long run; item 08: the pathwidth benchmarks rerun under the repaired
-rules prove the same width on all 11,424 graphs both runs proved).
+rules prove the same width on all 11,424 graphs both runs proved; item 09:
+documents only).
 
 ---
 
@@ -1320,3 +1321,143 @@ Every stage resumes where its CSV stops. The new result files are in
 
 Compute: 130.7 core-hours (Rome 111, the other sets 20). Nothing was written to
 `solutions/`.
+
+---
+
+## Item 09: the documents (2026-10-02)
+
+### What changed
+
+No code. `paper2/revised_algorithm.md` now says that the code runs the revised
+search:
+
+- **§4.1** (introduction): the owner's decision is carried out, with the
+  re-certification count and pointers to §4.4.4 and §4.6.3.
+- **§4.4.4**, renamed "What holds for the code". It opens with what the code
+  now runs and where, and a table of the checks that the code is the search of
+  Theorem 4.19 (items 01–05). That correspondence is checked, not proved. The
+  analysis of the published rules (`CodeRunSound`, `CodeNodeRepaired`, the
+  lost nodes) is kept under its own heading, "The published rules, as the code
+  ran them until 2026-10-01". It gains item 07's audit of the old refutations
+  (33 of 103 sound as run, 70 not, all 70 re-refuted). The open question now
+  concerns the published rules only.
+- **§4.6.1**: where the matching lives in each solver, and the flag.
+- **§4.6.2**: the measured cost (items 04 and 08), in a table by size range,
+  with what was not measured.
+- **§4.6.3**, renamed "What was redone, and what is left": solvers done;
+  re-certification 108 of 115, with the 7 left listed and priced; the
+  certificate route still to do; the root split proposed.
+- Small consistency edits where §4.1, §4.3.2 and §4.3.4 had said that the code
+  runs the published premises.
+
+The `CLAUDE.md` text below is proposed, not applied. `CLAUDE.md` is the
+owner's.
+
+### For CLAUDE.md
+
+Each block names the passage it replaces or follows. The numbers are those of
+items 01–08 and of `python -m benchmarks.corpus` on 2026-10-02 (6,374 of 6,376
+certified, unchanged).
+
+**1. Known Limitations: replace the bullet that begins "Chu & Stuckey's
+Theorem 1 (the definite move) is false as published, and our C and Python
+implement it as published" with:**
+
+> - **Chu & Stuckey's Theorems 1 and 2 (the definite and better moves) are
+>   false as published; since 2026-10-01 both solvers run the repaired rules**
+>   *(found by loop0006 item 08; fixed by loop0007, `paper2/solver_fix.md`)*.
+>   On a 14-customer graph (`DEFINITE_CEX` in `paper2/search_check.py`), at the
+>   state S = {2} with k = 6, the published definite move keeps customer 0
+>   alone, and no solution from S starts with 0 (Lean:
+>   `definiteMove_counterexample`). The better move inherits the flaw. The
+>   repaired premise, *q hereditarily definite*, is proved sound and equal to a
+>   bipartite matching condition (`Search/DefiniteMatching.lean`), and the
+>   whole repaired search is proved sound (`exec_repairedFullFilter_mospValue`).
+>   **`repaired_rules=True` is the default** in `customer_search.decide`,
+>   `native.decide_native`, `pathwidth.search.decide` and
+>   `pathwidth.native.decide_native`, so `solve_mosp_exact`, `csearch`,
+>   `recertify` and `compute_pathwidth` all run it. `repaired_rules=False` keeps
+>   the published rules for comparison. The C entry points kept for old
+>   processes (`cs_decide_variant`, `cs_decide_fan`, `cs_decide`) still run the
+>   published rules. The Python reference gained the better move, which until
+>   then existed only in the C. That the code is the proved search is checked,
+>   not proved: C = Python = a port written from the theorems, node for node, on
+>   17.4 M whole searches at 1–17 vertices, with the oracle; 1.56 M C/Python
+>   calls to 125 customers; 12.6 M calls across eight implementations of the
+>   graph solver; and the differential harness on every certified instance at
+>   9–75, all with zero failures. **Cost: +0.004% nodes at n ≤ 40, +0.3% at
+>   50–100, −0.01% on the 125 × 125 instances that finish, +0.3–2% on the
+>   pathwidth benchmarks, about 2% per node in the MOSP C.** No answer differed
+>   between the settings anywhere, and no whole-instance false refutation by
+>   the published rules has ever been found.
+
+**2. Certified Optima, after the provenance table: add**
+
+> **115 certified values rested on the customer search under the published
+> rules** *(loop0007 items 06–07, 2026-10-02)*: all Chu & Stuckey `Random`
+> instances at 40–125 customers, plus SP3 and SP4 (each stored twice). Every
+> other certified value has evidence that does not go through the search
+> (lattice, DRAT, the pre-search SAT sweeps, or the bound). The repaired solver
+> re-refutes `value − 1` on **108 of the 115, and no value changed**. This
+> covers all at 40–100 customers and 16 of 23 at 125 × 125, 9.73 × 10¹⁰ nodes
+> in 16.5 core-hours. An audit of the old runs (`CodeNodeRepaired` at every
+> node) finds 33 of 103 sound as run and 70 not, all 70 re-refuted.
+> **Seven are not yet re-refuted**: `Random-125-125-2-{1,4,5}_0` and
+> `-4-{1,2,4,5}_0`, censored after 10.1 h each at 5–7 × 10¹⁰ nodes and priced
+> at 13–153 core-hours each, probably low. They keep their values and their
+> `certified:refutation` provenance in `solutions/`. That provenance rests on
+> the published rules until a long run (`python -m paper2.solver_fix_recheck
+> --stage repaired --retry-censored --workers 7`) refutes them under the
+> repaired rules. `solutions/` was not touched; the results are in
+> `paper2/data/solver_fix_recheck*.csv`.
+
+**3. Known Limitations, "Nothing checks that a refutation is sound": append**
+
+> *2026-10-02*: the refutations of the customer search are now covered by a
+> Lean theorem, as far as the code is the search the theorem describes
+> (`paper2/revised_algorithm.md` §4.4.4). Checking a single refutation
+> independently still needs the certificate of §32, whose emitter and checker
+> model only the published rules (loop0007 item 07's `node_repaired` walk
+> checks the repaired premises outside the checker).
+
+**4. Known Limitations, "The customer search produces no checkable proof
+object": append**
+
+> The certificate checker's definite and better steps check the published
+> premises, which can certify a false link. A certificate of a repaired search
+> needs the repaired premises in both the emitter and the checker: one
+> matching per step. Not yet done.
+
+**5. Architecture.** Replace the `customer_search.py` line with
+
+```
+    customer_search.py              Complete search over customer closing orders
+                                    (repaired definite and better moves by default, 2026-10-01)
+```
+
+add under `paper2/`
+
+```
+    revised_algorithm.md            Section 4: the search, each rule, the repairs, the main theorem
+    solver_fix.md                   loop0007: both solvers fixed to match the theorems; cost, soundness, re-checks
+```
+
+and replace the `tests/` line with
+
+```
+tests/                          → 1,356 MOSP tests across 73 modules, 114 pathwidth_solver tests (2026-10-02)
+```
+
+**6. Next Steps: add, at the top of the numbered work**
+
+> - **Finish the re-certification**: the seven 125 × 125 refutations above,
+>   13–153 core-hours each by a low price. The root split (each root child
+>   refuted in its own process; sound by `Exec.sound` from an empty memo) would
+>   spread each over many cores. It needs a C entry point that starts from a
+>   given state, and a short Lean statement.
+> - **The certificate for the repaired rules**: the emitter and checker of
+>   `learning/search_certificate.py` with the matching test.
+
+**7. Key References, Chu & Stuckey (2009): append** "Theorems 1 and 2 are
+false as stated (`Search/PublishedTheorems.lean`); the solvers run the repaired
+rules (`paper2/revised_algorithm.md` §4.6.1)."

@@ -5,8 +5,9 @@ the working report `search_soundness.md` (Ralph loop0006, items 05 to 13),
 which holds the code references, the full check tables and the history. Every
 statement here is proved in Lean unless it says otherwise. The Lean names
 refer to `../lean/MOSPFormalization/Search/`, namespace
-`MOSPFormalization.Search`: seven files (`Basic`, `DefiniteMove`,
-`SubsetRule`, `BetterMove`, `Memo`, `Decide`, `DefiniteMatching`), with no
+`MOSPFormalization.Search`: eight files (`Basic`, `DefiniteMove`,
+`SubsetRule`, `BetterMove`, `Memo`, `Decide`, `DefiniteMatching`,
+`PublishedTheorems`), with no
 `sorry` and no axioms beyond `propext`, `Classical.choice` and `Quot.sound`
 (`axiom_check.lean`). Page numbers for Chu & Stuckey (2009) are those of the
 preprint `../literature/chu_stuckey_2009.pdf`.
@@ -34,7 +35,7 @@ a fourth, the subset rule, in their §2.
 *definite move*, can discard the last solution at a node. A 14-customer graph
 shows it, and Lean proves the counterexample. Theorem 2, the *better move*,
 rests on Theorem 1 applied one step deeper, and it inherits the fault. Its
-form as the code has run it since 2026-09-26 is still false.
+form as the code ran it from 2026-09-26 to 2026-10-01 is still false.
 
 **The revised algorithm** keeps the search and every rule. It replaces the
 premises of Theorems 1 and 2 by a stronger, *hereditary* premise. That premise
@@ -43,16 +44,18 @@ condition, so it costs one small matching per candidate. With the two repairs,
 the whole search is proved sound in Lean: a refutation at $k$ means
 $Z(M) > k$ and $\mathrm{pw}(G_M) > k - 1$.
 
-No wrong answer of the unrepaired code on a whole instance is known. The gap
-is at the level of a node, and the search has so far always recovered through
-another branch. Section 4.4.4 states exactly what is proved for the code as it
-stands.
+No wrong answer of the unrepaired search on a whole instance is known. The
+gap is at the level of a node, and the search has always recovered through
+another branch.
 
-**The owner's decision** (2026-10-01, `plan.md`, *Decisions*). This paper
-states the gap and the repaired rule. Both solvers, the MOSP customer search
-and the graph pathwidth solver, will be changed to implement the repaired
-rules, and the values that rest only on the customer search will then be
-re-certified.
+**The owner's decision** (2026-10-01, `plan.md`, *Decisions*), now carried
+out. This paper states the gap and the repaired rule. Both solvers, the MOSP
+customer search and the graph pathwidth solver, apply the repaired rules by
+default since 2026-10-01 (Ralph loop0007, `solver_fix.md`), and the published
+rules remain behind a flag. Of the 115 corpus values that rested on the
+customer search alone, 108 have been re-refuted by the repaired solver and none
+changed; the other 7 need a longer run. Section 4.4.4 states what holds for the
+code, and section 4.6.3 what is left.
 
 ---
 
@@ -265,7 +268,9 @@ paper's $d$ ranges over all customers. A closed $d$ has $o(d, S) = \emptyset$
 and would always be counted, so the code's reading, $d \notin S$, is the
 sensible one.) If $\mathrm{open}(q, S) \le \mathrm{close}(q, S)$, the filter
 keeps $L = [q]$ for the first such $q$ in index order, and nothing else runs at
-the node (Lean: `closeCount`, `IsDefinite`).
+the node (Lean: `closeCount`, `IsDefinite`). This was the code's rule until
+2026-10-01 and is `repaired_rules=False` since; section 4.6.1 gives the rule the
+code now runs.
 
 **Claimed soundness.** $\mathrm{Sol}_k(S) \Rightarrow \mathrm{Sol}_k(S \cdot q)$.
 
@@ -537,7 +542,8 @@ a solution there exists a solution U = S ++ [q] ++ R′" (§3.2, PDF p. 6). The
 proof begins: "The conditions imply that if r is played now, q becomes a
 definite move."
 
-**Precise form, as coded** (the C only, since 2026-09-26). The input is the
+**Precise form, as coded** (the published premises; in the C since 2026-09-26, in
+the Python since 2026-10-01, and under `repaired_rules=False` since then). The input is the
 list $W$ of subset survivors, in index order. Let $X_r = O(S \cup \{r\})$. A
 member $r$ is dropped if some earlier $q \in W$, among the first $L$ of $W$ if
 $L > 0$, satisfies
@@ -816,17 +822,59 @@ than one that was tried, and no closing order fits in $k$ stacks. By the
 earlier sections, that means the instance needs more than $k$ stacks and its
 graph has pathwidth at least $k$.
 
-### 4.4.4 What holds for the code as it stands
+### 4.4.4 What holds for the code
 
-The code runs the unrepaired premises: $\mathrm{close} \ge \mathrm{open}$ for
-the definite move, and premises 3 and 4 for the better move. Its filter is
-**not** node-sound. On the graph of Counterexample 4.5 at $k = 6$, for every
-$L$, it keeps only $0$ at the state $\{2\}$, which has a solution, while
-$\mathrm{cl}(\{0, 2\})$ has none (Lean: `codeFullFilter_cex`). Against the named
-property `CodeFilterSound` (the code's filter is node-sound at every state of
-one instance at one $k$), this is `not_codeFilterSound_cexGraph`.
+**The code runs the revised search.** Since 2026-10-01 (Ralph loop0007, items
+01 to 03) the repaired rules are the default in both solvers: in
+`satisfiability.customer_search.decide` and `satisfiability.native.decide_native`
+for MOSP, and in `pathwidth.search.decide` and `pathwidth.native.decide_native`
+for graphs, each with the flag `repaired_rules=True`. Every caller that does not
+name the flag runs them, including `solve_mosp_exact`, `benchmarks.csearch`,
+`benchmarks.recertify` and `pathwidth.compute_pathwidth`. The definite move
+fires on the first playable $q$ in index order that passes the published test
+$\mathrm{close} \ge \mathrm{open}$ and then the matching test of Theorem 4.8. A
+$q$ that fails the matching is passed over, and a later candidate may fire, so
+the pick is `repairedFullFilter`'s. The better move cites $q$ for $r$ only under
+premises 3 and 4 and the same matching at $\mathrm{cl}(S \cup \{r\})$, which is
+`IsRepairedBetter`. The free moves, the subset rule with its index tie-break,
+the order $	ext{definite} 	o 	ext{subset} 	o 	ext{better}$, the old move
+with its reinsertion test and the memo are unchanged, and they are the ones
+proved sound as coded. So a refutation by the code is a refutation by the
+search of Theorem 4.19, and gives $Z(M) > k$ and $\mathrm{pw}(G_M) > k - 1$,
+as far as the code is that search.
 
-What holds is conditional, and the condition is named rather than assumed.
+**That the code is that search is checked, not proved.** Lean models the
+rules; the C and the Python are read against the model and checked against it
+by brute force (`solver_fix.md`, items 01 to 05):
+
+| check | scope | result |
+|---|---|---|
+| production filter against a transcription of the Lean `repairedFullFilter` | 16,244,090 node checks, graphs on 1–17 vertices, exhaustive to 6 | equal everywhere |
+| the matching against the hereditary premise | 36,939,226 candidates | equal everywhere |
+| C against Python, MOSP, both settings | 1,557,980 calls, 1,529 instances at up to 125 customers | equal in answer, nodes and witness |
+| eight implementations of the graph solver (Python, the multiword C at 2–16 words, the single-word C, MOSP's Python and C) | 12,582,320 calls, 1,319 graphs at 4–992 vertices | equal |
+| the whole revised search written from the theorems with the oracle's predicates, against the C, the Python and the oracle | 17,431,232 runs, 52,592 graphs at 1–17 vertices, all 64 configurations | zero answer failures, zero node losses in 51,454,712 nodes, C and Python equal node for node |
+| differential harness (relabellings, re-coverings, both configurations, $\mathrm{opt} - 1$ and $\mathrm{opt}$) | every certified instance at 9–75 customers, 1,786,824 calls | zero disagreements |
+
+The matching is Kuhn's augmenting paths, over at most 128 stacks in the
+single-word C and $64 \cdot 	ext{WORDS}$ in the multiword C. Three things still
+run the published rules: the flag `repaired_rules=False`, kept for comparison;
+the C entry points kept for old processes (`cs_decide_variant`, `cs_decide_fan`,
+`cs_decide`); and the certificate emitter (`learning/search_certificate.py`),
+which does not yet model the repairs. What the published rules give is the rest
+of this section.
+
+**The published rules, as the code ran them until 2026-10-01.** They use the
+unrepaired premises: $\mathrm{close} \ge \mathrm{open}$ for the definite move,
+and premises 3 and 4 for the better move. This filter is **not** node-sound. On
+the graph of Counterexample 4.5 at $k = 6$, for every $L$, it keeps only $0$ at
+the state $\{2\}$, which has a solution, while $\mathrm{cl}(\{0, 2\})$ has none
+(Lean: `codeFullFilter_cex`). Against the named property `CodeFilterSound` (the
+code's filter is node-sound at every state of one instance at one $k$), this is
+`not_codeFilterSound_cexGraph`.
+
+What holds for them is conditional, and the condition is named rather than
+assumed.
 
 - **The gap, named.** `CodeRunSound` says that the code's run expands only
   nodes at which its filter keeps a solution whenever one exists. It is a
@@ -849,8 +897,8 @@ expanded node has one, and every expanded node is node-sound for free. So a
 false refutation needs a $k$ at which a solution exists, together with a lost
 node on every branch that leads to a solution.
 
-**Lost nodes do occur in real runs.** In the check of section 4.5, the code's
-own run reaches a node where its filter loses the last solution in 58 of
+**Lost nodes do occur in real runs.** In the check of section 4.5, a run under
+the published rules reaches a node where its filter loses the last solution in 58 of
 570,206 runs. All 58 are on graphs built around the definite-move
 counterexample (29 graphs, each at two values of $L$), all at
 $k = \mathrm{opt}$ and never at $\mathrm{opt} - 1$, as the previous paragraph
@@ -862,19 +910,41 @@ not change an answer. Over the same runs, `CodeNodeRepaired` held at
 1,781,000 of 1,782,100 expanded nodes and failed at 1,100, most of which still
 kept a solution.
 
+**The refutations made under the published rules, audited** (`solver_fix.md`,
+items 06 and 07). Of the 6,374 certified values in the corpus, 115 (113
+distinct graphs, 40–125 customers, all Chu & Stuckey `Random` instances plus SP3
+and SP4) had no evidence for the refutation of $\text{value} - 1$ outside the
+customer search under the published rules. A C audit mode re-runs those
+searches as they were run and evaluates `CodeNodeRepaired` at every expanded
+node, without changing the search. Of the 103 that finish in 1,200 s, **33
+pass at every node**, so they are sound as run, by
+`codeExec_mospValue_of_repaired`, independently of the repaired code. **70 do
+not**: they fail at 0.11% of their nodes, mostly at the definite move and, in
+all 8 runs with Theorem 2, at the better move too. A failing node is one where
+the repaired premise does not hold, not one where a solution was lost. All 70
+are re-refuted by the repaired solver. So for most of these values the
+evidence is the repaired refutation, not the old one.
+
 **The certificate checker.** The search certificate
 (`learning/search_certificate.py`) checks each pruning step against a premise.
 For the free moves, the memo, the subset rule, the covering condition and the
 old moves, the premise it checks is the one the Lean lemma needs. For the
-definite and better steps it checks the code's premises, which
-Counterexamples 4.5 and 4.13 show can certify a false link. A certificate whose
-definite and better steps meet the repaired premises proves $Z(M) > k$ with no
-trust in the search, by `nodeSoundAt_of_covering` at each node, then
-`ExecOn.sound`, then Theorem 4.19's chain. That the checker's Python computes
-the quantities named is a reading of the code, backed by tests, and not proved.
+definite and better steps it checks the published premises, which
+Counterexamples 4.5 and 4.13 show can certify a false link, and its emitter
+models only the published rules. A certificate whose definite and better steps
+meet the repaired premises proves $Z(M) > k$ with no trust in the search, by
+`nodeSoundAt_of_covering` at each node, then `ExecOn.sound`, then Theorem 4.19's
+chain. Item 07 of `solver_fix.md` does this check outside the checker: it walks
+58 emitted certificates of old refutations with its own matching and finds 32
+that meet the repaired premises at every node. That the checker's Python
+computes the quantities named is a reading of the code, backed by tests, and not
+proved.
 
-**Open.** Whether the unrepaired code ever answers *unsat* wrongly on a whole
-instance. None is known.
+**Open.** Whether the published rules ever answer *unsat* wrongly on a whole
+instance. None is known. None of the 115 values above changed when re-refuted.
+The only open question about the solvers as they now run is the reading that
+the code is the search of Theorem 4.19, which the checks above support and do
+not prove.
 
 ---
 
@@ -945,6 +1015,17 @@ The free moves, the memo, the old moves with their reinsertion test, the cost
 cut and the child order are as before. Keeping the published test in front of
 the matching is only a shortcut, since the repair implies it.
 
+This is what both solvers run by default since 2026-10-01 (section 4.4.4). In
+the code, `MaxMatch(S, q) ≥ open(q, S) − 1` is `_has_definite_matching` in
+`satisfiability/customer_search.py` and `has_definite_matching` in
+`customer_search.c` and its two counterparts in `pathwidth_solver/pathwidth/`
+(`closing_search.c`, a byte copy, and the multiword `closing_search_w.c`). All
+stop at `open − 1` edges and return at once when `open ≤ 1`. In the code the better
+move's freed set at the child is the customers $d \ne q$ outside
+$S \cup \{r\}$ with $\emptyset \ne N[d] \setminus O(S \cup \{r\}) \subseteq
+N[q] \setminus O(S \cup \{r\})$. `repaired_rules=False` gives the published
+filter.
+
 ### 4.6.2 Its cost
 
 The repair adds one bipartite matching per candidate that passes the published
@@ -955,24 +1036,67 @@ $\mathrm{open} \le 1$ passes at once (Corollary to Theorem 4.7). In the better
 move the same matching is computed at the child $\mathrm{cl}(S \cup \{r\})$,
 once per pair $(r, q)$ that passes premises 3 and 4. By Theorem 4.8 the test is
 exact: where it fails, the repaired premise fails, and a solution may avoid
-$q$. So no sound pruning that the repaired theorems allow is given up. How
-often the published test fires without the repair is measured on small graphs
-only (20,857 times in 23,978,489 firings, `search_soundness.md` §4.2.4), and
-the effect on node counts at scale is not yet measured.
+$q$. So no sound pruning that the repaired theorems allow is given up.
 
-### 4.6.3 What has to be redone
+Measured in paired runs, the same decision under both rule sets in one worker
+(`solver_fix.md`, items 04 and 08). Nodes are totals over the pairs that
+finished under both settings; a censored pair says nothing about cost.
 
-- **The solvers.** The definite move and the better move change in the C
-  customer search, in its Python reference, and in the graph pathwidth solver
-  (`../pathwidth_solver/`), as the owner decided.
-- **Re-certification.** Every value in the corpus whose optimality rests only
-  on a customer-search refutation is re-certified with the revised search.
-  Values certified by a checked DRAT refutation through the SAT path, or by a
-  lower bound equal to the value, do not depend on the search and stand as
-  they are. No value is known to be wrong.
-- **The certificate route.** The certificate checker's definite and better
-  steps must check the repaired premises: one subset enumeration or one
-  matching per step. With that change, an accepted certificate proves
-  $Z(M) > k$ by Theorem 4.19's chain without trusting the search, which is the
-  route this paper's dataset relies on for values the SAT path cannot
-  reach.
+| where | size | pairs finished | nodes, repaired / published |
+|---|---|---|---|
+| MOSP corpus, refuting $\mathrm{opt} - 1$ | 9–40 customers | 6,135 of 6,135 (two configurations) | 1.00003, 1.00004 |
+| Chu & Stuckey classes | 50–100 customers | 118 of 125 | 1.0030 (worst class `100-50-4`, 1.010; worst pair 1.013) |
+| Chu & Stuckey classes, to $2 \times 10^8$ nodes | 125 × 125 | 11 of 23 | 0.9999 |
+| graph pathwidth, whole descents | 22 to over 1,000 vertices | 731 of 880 graphs | 1.020 |
+| graph benchmarks rerun at the first sweep's caps, graphs refuted by both runs | up to 957 vertices | 8,456 | 1.003–1.017 per set; median pair 1.000, worst 1.64 |
+
+Per node, measured quietly on six hard instances at 75–125 customers, the
+repaired rules cost about 2% in the MOSP C (from −0.1% to +5.8%). In the graph
+solver's descents, measured under load, they cost about 6%. The published test
+passes and the matching then fails on 0.07–0.27% of definite-move candidates
+(the rate rises with size: 0.07–0.11% at 9–40 customers, 0.13% at 50–100,
+0.27% at 125 × 125 to the node cap) and on 0.02–0.06% of better-move pairs. The definite move
+stops firing at a node on 0.007–0.08% of filter calls; elsewhere a later
+candidate fires instead. No answer differed between the two settings in any of
+these runs, and every width the graph benchmarks had proved was proved again.
+
+Not measured: the tree size of the longest refutations (`Random-100-100-2` and
+the 125 × 125 instances at densities 2 and 4) under the published rules, which
+were censored on both sides. There the per-node cost and the counter rates are
+the evidence.
+
+### 4.6.3 What was redone, and what is left
+
+- **The solvers: done** (2026-10-01). The definite move and the better move
+  are repaired in the C customer search, in its Python reference (which also
+  gained the better move, until then C-only) and in the graph pathwidth solver
+  (`../pathwidth_solver/`), as the owner decided. The repaired rules are the
+  default in both. Section 4.4.4 lists the checks.
+- **Re-certification: 108 of 115 done, 7 left.** Values certified by the
+  subset-lattice oracle, by a checked DRAT refutation through the SAT path, by
+  the SAT binary search before the customer search existed, or by a lower bound
+  equal to the value, do not depend on the search and stand as they are (6,259
+  of the 6,374 certified values). The other 115 rested on the customer search
+  under the published rules. The repaired solver re-refutes $\text{value} - 1$
+  on 108 of them (106 of 113 distinct graphs; every one at 40–100 customers and
+  16 of 23 at 125 × 125), in $9.73 \times 10^{10}$ nodes. **No value changed.**
+  The 7 left are 125 × 125 instances at densities 2 and 4
+  (`Random-125-125-2-{1,4,5}_0`, `Random-125-125-4-{1,2,4,5}_0`), censored
+  after 10.1 hours each at $5.0$–$6.9 \times 10^{10}$ nodes and priced at 13 to
+  153 core-hours each, which is probably low. They keep their values as
+  verified upper bounds. For them the refutation of $\text{value} - 1$ under
+  the repaired rules is still to be made, and none of the old runs passes the
+  audit of section 4.4.4. A resumable runner continues them
+  (`solver_fix.md`, item 07, "Needs a long run").
+- **The certificate route: left.** The certificate checker's definite and
+  better steps must check the repaired premises, and the emitter must model the
+  repaired rules: one matching per step. With that change, an accepted
+  certificate proves $Z(M) > k$ by Theorem 4.19's chain without trusting the
+  search, which is the route this paper's dataset relies on for values the SAT
+  path cannot reach. Item 07's walk is a first form of the check, run outside
+  the checker.
+- **A faster route for the 7, proposed and not built.** The repaired filter is
+  node-sound at the root, and by Theorem 4.18 each root child can be refuted in
+  its own process from its own state with no old moves and an empty memo. That
+  spreads one refutation over many cores. It needs a C entry point that starts
+  from a given state, and a short Lean statement of the composition.

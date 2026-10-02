@@ -4,7 +4,7 @@ Plan: fix both solvers to match `lean/MOSPFormalization/Search/` (owner's
 decision 2026-10-01); items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0007/gate.py`.
 
-Current: 8/10 SOLVED
+Current: 9/10 SOLVED
 
 ## Setup — 2026-10-01
 
@@ -398,3 +398,44 @@ Current: 8/10 SOLVED
 - Item 09: the documents (`paper2/revised_algorithm.md` §4.4.4 and §4.6, and
   the rest of the item's list). For the pathwidth side, the item 08 table is in
   `paper2/solver_fix.md`.
+
+## Iteration 9 — 2026-10-02 14:10
+
+### Completed
+- **Item 09.** No code changed. `paper2/revised_algorithm.md` now states that
+  the code runs the revised search:
+  - §4.1: the owner's decision is carried out; 108 of 115 values re-refuted.
+    The Lean file count is corrected to eight (`PublishedTheorems`).
+  - §4.4.4 is renamed "What holds for the code". It says what the code runs and
+    where, the flag, and what still runs the published rules (the old C entry
+    points and the certificate emitter). It has a table of the checks that the
+    code is Theorem 4.19's search (items 01–05), stated as checked and not
+    proved. The published-rules analysis is kept under its own heading. Item
+    07's audit is added (33 of 103 old runs sound as run, 70 not, all 70
+    re-refuted). The "Open" question now concerns the published rules only.
+  - §4.6.1: where the matching lives in each solver.
+  - §4.6.2: the measured cost by size range (items 04, 08), and what was not
+    measured.
+  - §4.6.3 is renamed "What was redone, and what is left": solvers done;
+    re-certification 108/115, with the 7 left listed and priced; the
+    certificate route still to do; the root split proposed.
+  - Consistency edits in §4.1, §4.3.2 and §4.3.4, which had said the code runs
+    the published premises.
+- `paper2/solver_fix.md`: an "Item 09" section with **"For CLAUDE.md"**: seven
+  proposed blocks. They are the Known Limitations bullet on Theorems 1/2, a
+  re-certification paragraph after the provenance table, appendices to the two
+  proof-object limitations, Architecture lines (with test counts), Next Steps,
+  and a Key References note. `CLAUDE.md` was not edited. The header's
+  "findings" line notes item 09.
+- Gate: PASS (1,356 MOSP tests, 114 pathwidth_solver tests).
+
+### Blockers
+- None. Nothing was run except the gate. Nothing was written to `solutions/`.
+
+### Next
+- Item 10, the reserve. The candidates are:
+  - the root split, to finish the seven censored 125 × 125 refutations;
+  - the certificate emitter and checker for the repaired rules (one matching
+    per step);
+  - or simply `--stage repaired --retry-censored` for the cheapest of the
+    seven (`Random-125-125-4-1_0`, ≥ 12.9 core-hours).
