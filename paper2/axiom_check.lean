@@ -170,5 +170,13 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.chuStuckey_theorem2_false
 #print axioms MOSPFormalization.Search.chuStuckey_theorem2_false_literal
 
+-- loop0008 item 02: Chu (2011) thesis Theorems 6.3.6 and 6.3.8, refuted as stated (Search/ChuThesis.lean)
+#print axioms MOSPFormalization.Search.chuThesis_theorem636_false
+#print axioms MOSPFormalization.Search.chuThesis_theorem636_false_literal
+#print axioms MOSPFormalization.Search.chuThesis_theorem638_false
+#print axioms MOSPFormalization.Search.chuThesis_theorem638_false_literal
+#print axioms MOSPFormalization.Search.chuThesis_theorem638_literal_witness
+#print axioms MOSPFormalization.Search.fink_theorem1_false
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

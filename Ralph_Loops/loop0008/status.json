@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-03 01:07:46",
+  "updated": "2026-10-03 01:56:15",
   "phase": "tests",
-  "started": "2026-10-03 00:33:14",
-  "item": "01 Prior-art sweep of every work citing Chu & Stuckey (2009)."
+  "started": "2026-10-03 01:24:47",
+  "item": "02 The thesis's Theorem 6.3.8 is false, in Lean."
 }

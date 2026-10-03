@@ -1,0 +1,173 @@
+# session it02 started 2026-10-03 01:24:47
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cat Ralph_Loops/loop0008/iterations.md | sed -n '1,200p' | grep -n "" | sed -n '1,400p' | awk 'NR<400' | head -150; cat paper2/data/solver_fix_split.pid; grep -
+  > $ ls lean/MOSPFormalization/Search/ && wc -l lean/MOSPFormalization/Search/*.lean && cat paper2/thesis_check.py | head -150
+  > $ cat lean/MOSPFormalization/Search/PublishedTheorems.lean && grep -n "closeCountLiteral\|def closeCount\|def openCount\|def cexGraph\|def playable\|def Solvable\
+  > $ timeout 600 python3 paper2/thesis_check.py; sed -n 280,423p lean/MOSPFormalization/Search/DefiniteMove.lean
+  > $ sed -n 95,125p lean/MOSPFormalization/Search/Basic.lean; grep -n "6.3.8\|6.3.6" paper2/prior_art_counterexample.md paper2/revised_algorithm.md | head -40
+
+Working on item 02: writing the Lean file that refutes the thesis's Theorem 6.3.8. Next I check the thesis's exact wording.
+  > $ pdftotext -layout literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf /tmp/chu.txt && grep -n "Theorem 6.3.[4-9]\|Definition 6.3.4" /tmp/chu
+  > $ sed -n 5180,5300p /tmp/chu.txt; python3 -c "
+import subprocess
+" ; pdftotext -f 1 -l 300 literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf
+  > $ grep -n "def stepCost\|def nbhd\|def opened\|def newlyOpened" -A3 lean/MOSPFormalization/Search/*.lean
+  > $ cat > /tmp/ord.py <<'EOF'
+E=[(0, 3), (0, 4), (0, 7), (0, 11), (1, 2), (1, 5), (1, 6), (2, 3), (2, 4), (5, 9), (5, 11),(5, 12), (6, 8), (6, 13), (7, 9), (7, 10),
+  > $ cat >> /tmp/ord.py <<'EOF'
+def reach(T):
+    seen={frozenset(T)}; st=[frozenset(T)]
+    while st:
+        A=st.pop()
+        for c in range(n):
+            if c
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/ChuThesis.lean
+  > $ grep -n "Search" lean/MOSPFormalization.lean; cat paper2/axiom_check.lean | head -60
+  > $ sed -n 60,200p paper2/axiom_check.lean
+
+Adding the import and the axiom-check lines, then building.
+  > $ sed -i 's/^import MOSPFormalization.Search.PublishedTheorems$/&\nimport MOSPFormalization.Search.ChuThesis/' lean/MOSPFormalization.lean && python3 - <<'EOF'
+p=
+
+Built first try. Now checking axioms.
+  > $ lake build 2>&1 | tail -2 && lake env lean ../paper2/axiom_check.lean 2>&1 | grep -A1 -i "chuThesis\|sorry" | tail -14
+
+Lean is done and clean. Now the downstream docs.
+  > $ cd /home/al/dev/MOSP && sed -n 1,70p paper2/prior_art_counterexample.md; grep -n "Fink" paper2/prior_art_counterexample.md | head
+  > $ python3 - <<'EOF'
+p='paper2/prior_art_counterexample.md'
+s=open(p).read()
+old='''- A Lean theorem for the thesis's Theorem 6.3.8 would make the claim complete.
+
+  > $ sed -i 's/^\*\*Fink (2012).\*\* His Teorema 1/**Fink (2012).** Fink'"'"'s Teorema 1/' paper2/prior_art_counterexample.md && pdftotext -layout literature/fink_20
+  > $ sed -n 1385,1410p /tmp/fink.txt
+
+Fink's premise turns out to count only dominated customers with a smaller index, which excludes q itself. So my sentence saying the same graph refutes it is unchecked. Checking it now by brute force.
+  > $ cat > /tmp/fink.py <<'EOF'
+exec(open('paper2/thesis_check.py').read().split('res = {}')[0])
+# Fink (2012) Teorema 1: f(j,S) = {i : i,j not in S, i<j, o(i,S) ⊆ o
+  > $ cat > /tmp/finkrand.py <<'EOF'
+import random, sys, time
+pc=lambda x: bin(x).count("1")
+def check(n,M,K):
+    FULL=(1<<n)-1
+    NS=[0]*(1<<n)
+    for S in range(
+
+While that runs, I'll update `revised_algorithm.md`.
+  > $ grep -n "Theorem 1\|Theorem 2\|Chu & Stuckey\|thesis\|PublishedTheorems\|chuStuckey_theorem" paper2/revised_algorithm.md | head -60; wc -l paper2/revised_algori
+  > $ sed -n 1,45p paper2/revised_algorithm.md; echo ----; sed -n 255,335p paper2/revised_algorithm.md; echo ----; sed -n 535,595p paper2/revised_algorithm.md
+  > $ python3 - <<'EOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+def rep(old,new):
+    global s
+    assert s.count(old)==1,old[:60]
+    s=s.replace(old,new)
+r
+  > $ grep -n "Split\|split_sound\|Split.lean" paper2/revised_algorithm.md | head
+  > $ python3 - <<'EOF'
+p='paper2/revised_algorithm.md'
+s=open(p).read()
+def rep(old,new):
+    global s
+    assert s.count(old)==1,old[:70]
+    s=s.replace(old,new)
+r
+  > $ grep -n "The thesis's form" -A28 paper2/revised_algorithm.md
+
+The thesis's Theorem 6.3.8 refutation is now in `revised_algorithm.md`. Checking the Fink random search.
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/ae08bb86-d553-438a-9cbf-85e42a7944af/tasks/bgrczzfs0.output
+
+The random search has printed nothing yet. Meanwhile I'm testing a hand-built variant: `cexGraph` plus a third twin of customers 3 and 4.
+  > $ cat > /tmp/fink2.py <<'EOF'
+import sys
+sys.argv=['x','0','0']
+src=open('/tmp/finkrand.py').read().split('seed=int')[0]
+exec(src)
+E=[(0, 3), (0, 4), (0, 7), (0, 
+  > $ cat > /tmp/fink3.py <<'EOF'
+E=[(0, 3), (0, 4), (0, 7), (0, 11), (1, 2), (1, 5), (1, 6), (2, 3), (2, 4), (5, 9), (5, 11),(5, 12), (6, 8), (6, 13), (7, 9), (7, 10
+
+The witness checks out: f = {0, 4}, open = 2, cost 6, a solution exists from S, and an invariant family of 12 states blocks S ∪ {14}. I'll add a Fink section to the new Lean file.
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/ChuThesis.lean'
+s=open(p).read()
+sec='''
+/-! ### Fink (2012), Teorema 1: a stronger premise, also false
+
+V. F
+  > Write /home/al/dev/MOSP/paper2/fink_check.py
+  > $ ls paper2/__init__.py && time python3 -m paper2.fink_check
+  > $ time python3 -m paper2.fink_check; cat /tmp/claude-1000/-home-al-dev-MOSP/ae08bb86-d553-438a-9cbf-85e42a7944af/tasks/btjni5syv.output
+  > $ for i in $(seq 1 50); do f=/tmp/claude-1000/-home-al-dev-MOSP/ae08bb86-d553-438a-9cbf-85e42a7944af/tasks/btjni5syv.output; grep -q "real" $f && break; sleep 10;
+
+Build passes. Now I'll add the Fink theorem to the axiom check and correct item 01's description of Fink, which called it "the CP premise".
+  > $ sed -i 's/^#print axioms MOSPFormalization.Search.chuThesis_theorem638_literal_witness$/&\n#print axioms MOSPFormalization.Search.fink_theorem1_false/' paper2/a
+  > $ sed -n 200,240p paper2/prior_art_counterexample.md
+  > $ python3 - <<'EOF'
+p='paper2/prior_art_counterexample.md'
+s=open(p).read()
+def rep(old,new):
+    global s
+    assert s.count(old)==1,old[:70]
+    s=s.replace(old
+  > $ python3 - <<'EOF'
+p='paper2/prior_art_counterexample.md'
+s=open(p).read()
+old='''S ++ [6] extends, S ++ [12] does not (an invariant family of four states) |'''
+
+  > $ sed -i 's/have strictly fewer open stacks than the parent. Counterexample 4.5 does not$/have strictly fewer open stacks than the parent. The graph of Counterexa
+  > $ head -40 /tmp/fink.txt | grep -v "^\s*$" | head -15
+  > $ grep -i -m5 "fink" /tmp/fink.txt
+
+I had the author's initial wrong in the Lean docstring: the thesis is by Claudia Fink. Fixing that, then running the gate.
+  > $ sed -i 's/^V\. Fink, \*O problema/C. Fink, *O problema/' lean/MOSPFormalization/Search/ChuThesis.lean && grep -n "Fink, \*O" lean/MOSPFormalization/Search/ChuTh
+  > $ ls tests | grep -i "paper2\|thesis\|search_check" | head; grep -ln "from paper2\|import paper2" tests/*.py | head -3
+  > $ cat > tests/test_fink_check.py <<'EOF'
+"""paper2/fink_check.py: Fink (2012) Teorema 1 fails on finkGraph and not on cexGraph."""
+from paper2.fink_check import C
+
+While the gate runs, I'll draft the PROGRESS entry.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0008/PROGRESS.md'
+s=open(p).read()
+s=s.replace('Current: 1/9 SOLVED','Current: 2/9 SOLVED')
+corr='''
+**Correction (iteratio
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/ae08bb86-d553-438a-9cbf-85e42a7944af/tasks/bnse7hm60.output; for i in $(seq 1 55); do grep -q "exited with code" $f && brea
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/ae08bb86-d553-438a-9cbf-85e42a7944af/tasks/bnse7hm60.output; for i in $(seq 1 55); do grep -q "exited with code" $f && brea
+
+Gate passes. Final axiom check for the Fink theorem, then marking the item.
+  > $ cd /home/al/dev/MOSP/lean && lake env lean ../paper2/axiom_check.lean 2>&1 | grep -A2 "fink\|638_literal_witness" ; cd .. && grep -c '^!!!' paper2/data/solver_f
+  > $ cat >> Ralph_Loops/loop0008/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 2 — 2026-10-03 01:55
+
+### Completed
+- **Item 02: Chu (2011) Theorem 6.3.8 is false, in Lean.*
+
+Item 02 is done: Chu's 2011 thesis Theorem 6.3.8 is now proved false in Lean, in the new file `lean/MOSPFormalization/Search/ChuThesis.lean`, with no `sorry`. The gate passes: Lean builds, the only `sorry` is still the §24 conjecture, MOSP pytest passes 1,364 tests and pathwidth_solver pytest passes 114. The split run's logs have no `!!!` line.
+
+**One of our published claims was wrong, and I fixed it.** Item 01 said Fink (2012) restates Chu & Stuckey's Theorem 1 with the same premise. It doesn't. Fink counts only the dominated customers with a smaller index than q, so q itself is never counted. That makes the premise strictly stronger, and our 14-customer counterexample graph does not refute it under any labelling. I corrected this in `paper2/prior_art_counterexample.md` and noted it at the top of PROGRESS.md.
+
+**Theorem 6.3.8 (the better move).** Its premise is `close(q, S) ≥ open(q, S ∪ {r})`, which differs from the CP paper's. It is false on the same graph at k = 6, under both readings of `close`.
+- **Witness:** S = {2}, r = 3, q = 0, with close 3 ≥ open 2. The thesis's proof goes through Theorem 6.3.6, so it breaks at the same state as the CP counterexample.
+- **Second witness for the literal reading only:** S = {1}, r = 6, q = 12.
+- **Wording:** quoted from the thesis's PDF, §6.3, pp. 141–143.
+
+**Theorem 6.3.6** is CP Theorem 1 word for word. It is recorded under the thesis's number as `chuThesis_theorem636_false` (and the literal-reading version), which refer to the existing CP refutations.
+
+**Fink's version is also false, which goes beyond the item.** A random search over about 41,700 graphs on 6–12 vertices found no failure. Adding one more customer to the counterexample graph, a third twin of customers 3 and 4, gives a 15-customer graph that refutes it at S = {2, 3}, q = 14, k = 6. That is `fink_theorem1_false` in Lean, with an independent brute-force check in `paper2/fink_check.py` (run `python3 -m paper2.fink_check`) and three tests.
+
+**Text updated:**
+- `paper2/prior_art_counterexample.md` has a new section with a table of the Lean theorems.
+- `paper2/revised_algorithm.md` now cites the thesis beside the CP paper wherever a rule is stated or refuted. It has a new paragraph refuting Theorem 6.3.8 and one on Fink.
+- `paper2/axiom_check.lean` lists all six new theorems; their axioms are `propext`, `Classical.choice` and `Quot.sound` only.
+
+The item is marked `[x]`, PROGRESS.md is updated to 2/9, and nothing is committed.
+
+# result: success in 1887s, 51 turns, cost $3.62

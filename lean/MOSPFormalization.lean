@@ -40,4 +40,5 @@ import MOSPFormalization.Search.BetterMove
 import MOSPFormalization.Search.Memo
 import MOSPFormalization.Search.Decide
 import MOSPFormalization.Search.PublishedTheorems
+import MOSPFormalization.Search.ChuThesis
 import MOSPFormalization.Search.Split

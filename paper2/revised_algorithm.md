@@ -5,12 +5,14 @@ the working report `search_soundness.md` (Ralph loop0006, items 05 to 13),
 which holds the code references, the full check tables and the history. Every
 statement here is proved in Lean unless it says otherwise. The Lean names
 refer to `../lean/MOSPFormalization/Search/`, namespace
-`MOSPFormalization.Search`: eight files (`Basic`, `DefiniteMove`,
+`MOSPFormalization.Search`: nine files (`Basic`, `DefiniteMove`,
 `SubsetRule`, `BetterMove`, `Memo`, `Decide`, `DefiniteMatching`,
-`PublishedTheorems`), with no
+`PublishedTheorems`, `ChuThesis`), with no
 `sorry` and no axioms beyond `propext`, `Classical.choice` and `Quot.sound`
 (`axiom_check.lean`). Page numbers for Chu & Stuckey (2009) are those of the
-preprint `../literature/chu_stuckey_2009.pdf`.
+preprint `../literature/chu_stuckey_2009.pdf`. Page numbers for Chu (2011),
+Chu's PhD thesis, which restates the search in its chapter 6, are the printed
+ones of `../literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`.
 
 ---
 
@@ -35,7 +37,10 @@ a fourth, the subset rule, in their §2.
 *definite move*, can discard the last solution at a node. A 14-customer graph
 shows it, and Lean proves the counterexample. Theorem 2, the *better move*,
 rests on Theorem 1 applied one step deeper, and it inherits the fault. Its
-form as the code ran it from 2026-09-26 to 2026-10-01 is still false.
+form as the code ran it from 2026-09-26 to 2026-10-01 is still false. Chu's
+thesis (Chu 2011, §6.3) restates both: its Theorem 6.3.6 is Theorem 1
+verbatim, and its Theorem 6.3.8 is the better move with a different premise.
+The same graph refutes both, in Lean.
 
 **The revised algorithm** keeps the search and every rule. It replaces the
 premises of Theorems 1 and 2 by a stronger, *hereditary* premise. That premise
@@ -259,7 +264,9 @@ visits.
 **Published form.** "**Theorem 1.** Suppose S ++ [q] is playable and
 close(q, S) ≥ open(q, S), then if U′ = S ++ R is a solution, there exists a
 solution U = S ++ [q] ++ R′" (§3.1, PDF p. 6). Here close(q, S) =
-|{d | o(d, S) ⊆ o(q, S)}| (PDF p. 4).
+|{d | o(d, S) ⊆ o(q, S)}| (PDF p. 4). Chu (2011) restates it word for word,
+with the same proof, as Theorem 6.3.6 (p. 142), with the same definition of
+close (Definition 6.3.4, p. 141).
 
 **Precise form, as coded.** At a state $S$, let $q \in P$ and let
 $$\mathrm{close}(q, S) = |\{d \in C \setminus S : o(d, S) \subseteq o(q, S)\}|,$$
@@ -326,7 +333,15 @@ the bridge from the free-closed child to $S \cup \{q\}$ inside the proof,
 under the code's reading of $\mathrm{close}$ and under the literal one, which
 also counts closed customers and so is a weaker premise
 (`chuStuckey_theorem1_false`, `chuStuckey_theorem1_false_literal`,
-`Search/PublishedTheorems.lean`).
+`Search/PublishedTheorems.lean`). The same two theorems refute the thesis's
+Theorem 6.3.6, restated under its number as `chuThesis_theorem636_false` and
+`chuThesis_theorem636_false_literal` (`Search/ChuThesis.lean`). Fink (2012,
+pp. 27–28) restates the rule with a stronger premise: it counts only dominated
+customers of smaller index than $q$, so not $q$ itself, and needs the child to
+have strictly fewer open stacks than the parent. The graph of Counterexample 4.5
+does not refute it under any labelling, but adding a third twin of $3$ and $4$
+gives a 15-customer graph that refutes it (Lean: `fink_theorem1_false`;
+`python3 -m paper2.fink_check`).
 
 **Why the published proof fails.** The proof moves $q$ to the front of a
 solution $U' = S \mathbin{+\!\!+} [c_1, \dots, c_m, q, \dots]$ and claims that
@@ -586,6 +601,29 @@ readings of $\mathrm{close}$ (`chuStuckey_theorem2_false`,
 a solution, so this is a *false link*, not a lost node (Lean:
 `betterMove_counterexample_node`). No node where the better move loses the last
 solution has been found (section 4.5).
+
+**The thesis's form.** Chu (2011) states the better move as "**Theorem 6.3.8.**
+Suppose S is some sequence, and q, r ∉ S are customers such that: S ++ [q] and
+S ++ [r, q] are both k-playable, and close(q, S) ≥ open(q, S ∪ {r}). If
+S ++ [r] has an extension that uses ≤ k stacks, then S ++ [q] also has an
+extension that uses ≤ k stacks" (p. 143). The premise takes close at $S$, not at
+$S \cup \{r\}$. The proof derives the CP premise from it
+("close(q, S ∪ {r}) ≥ close(q, S) ≥ open(q, S ∪ {r}), so after r is played, q
+becomes a definite move") and then appeals to Theorem 6.3.6, so it fails at the
+same step. Counterexample 4.13 does not cover it, but the graph of
+Counterexample 4.5 does: take $S = \{2\}$, $r = 3$, $q = 0$, $k = 6$. Then
+$\mathrm{close}(0, S) = 3 \ge 2 = \mathrm{open}(0, S \cup \{3\})$, both
+$S \mathbin{+\!\!+} [0]$ and $S \mathbin{+\!\!+} [3, 0]$ are playable (costs 6
+and 5), $S \mathbin{+\!\!+} [3]$ extends by
+$1, 4, 6, 12, 13, 0, 5, 7, 8, 9, 10, 11$, and $S \mathbin{+\!\!+} [0]$ has no
+extension, which is Counterexample 4.5's child. Under the literal reading of
+close the premise is weaker and the same witness serves; a second witness,
+$S = \{1\}$, $r = 6$, $q = 12$, holds under the literal reading only.
+(Lean: `chuThesis_theorem638_false`, `chuThesis_theorem638_false_literal`,
+`chuThesis_theorem638_literal_witness`, `Search/ChuThesis.lean`; the brute
+force over all $2^{14}$ sets that found the witnesses is
+`python3 paper2/thesis_check.py`: 13 failing (state, $r$, $q$) triples under
+the code's reading, 22 under the literal one.)
 
 **Repair.** Cite $q$ for $r$ only if premise 3 holds and $q$ is hereditarily
 definite at $\mathrm{cl}(S \cup \{r\})$ (Lean: `IsRepairedBetter`;

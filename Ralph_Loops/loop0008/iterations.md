@@ -17,7 +17,7 @@
     fetch them.
   - Save open-access PDFs that restate the rules in `literature/`.
 
-- [ ] **02 The thesis's Theorem 6.3.8 is false, in Lean.**
+- [x] **02 The thesis's Theorem 6.3.8 is false, in Lean.**
   - **The theorem.** In a new file `lean/MOSPFormalization/Search/ChuThesis.lean`,
     prove that Chu (2011) Theorem 6.3.8 is false on `cexGraph` at k = 6. Its
     premise is `close(q, S) ≥ open(q, S ∪ {r})`, not the CP paper's. State the

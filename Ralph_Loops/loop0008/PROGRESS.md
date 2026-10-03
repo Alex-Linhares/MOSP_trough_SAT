@@ -4,7 +4,17 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 1/9 SOLVED
+Current: 2/9 SOLVED
+
+**Correction (iteration 2, 2026-10-03).** Item 01 recorded that Fink (2012)
+restates CP Theorem 1 "with the CP premise". It does not. Fink's `f(α_j, S)`
+counts only dominated customers `α_i ∉ S` with **`i < j`** (p. 27), so `q`
+itself is not counted and the premise is strictly stronger. `cexGraph` does
+not refute it under any labelling. A 15-customer variant (one more twin of 3
+and 4) does: `fink_theorem1_false` in `Search/ChuThesis.lean`. Fixed in
+`paper2/prior_art_counterexample.md`, in the header note, the citer table
+row, the verdict and "For the paper". The iteration 1 text below is left as
+written.
 
 ## Setup — 2026-10-03
 
@@ -78,3 +88,67 @@ Current: 1/9 SOLVED
 - The paper can also cite Fink (2012) as a restatement refuted by the same
   graph. When item 02 updates `prior_art_counterexample.md`, mention Fink
   there.
+
+---
+
+## Iteration 2 — 2026-10-03 01:55
+
+### Completed
+- **Item 02: Chu (2011) Theorem 6.3.8 is false, in Lean.** The new file is
+  `lean/MOSPFormalization/Search/ChuThesis.lean`. It is imported by
+  `MOSPFormalization.lean` and listed in `paper2/axiom_check.lean`. There is
+  no `sorry`, and the axioms are `propext`, `Classical.choice` and
+  `Quot.sound` only. The thesis wording is quoted from the held PDF: §6.3,
+  Definition 6.3.4 (p. 141), Theorem 6.3.6 (p. 142), Theorem 6.3.8 (p. 143),
+  printed page numbers.
+  - `chuThesis_theorem638_false` and `chuThesis_theorem638_false_literal`
+    state 6.3.8 as published and refute it, in the form of
+    `PublishedTheorems.lean`. The witness is S = {2}, r = 3, q = 0, k = 6,
+    with close(0, S) = 3 ≥ 2 = open(0, S ∪ {3}). The "no extension" half is
+    the CP counterexample's own `cex_not_solvable_child`.
+  - The literal reading follows from the unclosed one, since its premise is
+    weaker. `chuThesis_theorem638_literal_witness` also proves the brute
+    force's literal-only witness, S = {1}, r = 6, q = 12. Its unclosed count
+    is 1 < 2, and an invariant family of four states blocks it.
+  - **Theorem 6.3.6** is recorded as `chuThesis_theorem636_false(_literal)`.
+    These restate `chuStuckey_theorem1_false(_literal)` under the thesis's
+    number, with a docstring saying it is CP Theorem 1 verbatim.
+- **Fink (2012), added beyond the item because item 01's claim about it was
+  wrong** (correction at the top of this file). Fink's Teorema 1 counts only
+  dominated customers with index `i < j`, so its premise is strictly stronger
+  than the CP premise, and `cexGraph` does not refute it under any labelling.
+  - **A random search found nothing.** It covered about 41,700 graphs on
+    6–12 vertices, on 3 cores for 300 s, at every k. The script was not kept.
+  - **A hand-built gadget does refute it.** `finkGraph` is `cexGraph` plus a
+    third twin of 3 and 4, with labels 0 and 14 swapped. At S = {2, 3},
+    q = 14, k = 6, `f = {0, 4}` and open = 2, with a 12-state invariant
+    family. The Lean theorem is `fink_theorem1_false`.
+  - **An independent brute force checks it.** `python3 -m paper2.fink_check`
+    (new, 0.3 s) finds 3 failing states on `finkGraph` and none on `cexGraph`.
+    It is tested by `tests/test_fink_check.py` (3 tests).
+- **Downstream text.**
+  - `paper2/prior_art_counterexample.md` has a new section, "The thesis's
+    theorems in Lean", with a theorem table. The old "has not been written"
+    bullet is struck, and the Fink corrections are made.
+  - `paper2/revised_algorithm.md` now has:
+    - the header file list (nine files) and the thesis page convention;
+    - §4.1, which says the thesis restates both rules;
+    - §4.3.2, which adds the thesis citation for 6.3.6 and the Fink paragraph;
+    - §4.3.4, with a new paragraph "The thesis's form", quoting 6.3.8 and
+      giving its refutation.
+- **The gate passes.** Lake build is ok, the one `sorry` is the §24
+  conjecture, MOSP pytest gives 1,364 passed, and pathwidth_solver pytest
+  gives 114 passed. `ChuThesis` takes 212 s to build, mostly the
+  `decide +kernel` on the 15-vertex family.
+- **The split run is clean.** No `!!!` line in
+  `paper2/data/solver_fix_split*.log`, checked at 01:24 and 01:55.
+
+### Blockers
+- None.
+
+### Next
+- **Item 03**, section 4 in pathwidth language.
+- The rule-by-rule text should note that each published restatement (CP,
+  thesis and Fink) has a refuting graph. Fink's needs one more vertex.
+- The open question whether a random search at 13–16 vertices finds Fink
+  failures without the twin gadget is not important for the paper.

@@ -10,12 +10,18 @@ citing works, and 24 of the 38 that cite the CP paper read in full. There is
 still no correction. A third restatement surfaced: Fink (2012) reproduces
 Theorem 1 as true.
 
+*Corrected 2026-10-03 (loop0008 item 02):* Fink's premise is **not** the CP
+premise, as item 01 said. It counts only dominated customers of smaller index
+than `q`, so `q` itself is excluded and the premise is strictly stronger.
+`cexGraph` does not refute it under any labelling. A 15-customer variant does,
+in Lean (`fink_theorem1_false`). See "The thesis's theorems in Lean" below.
+
 ## What was checked
 
 | Source | What it says about the rules |
 |---|---|
 | Chu & Stuckey (2009), CP, LNCS 5732 (`literature/chu_stuckey_2009.pdf`) | Theorems 1 and 2 as published; false (`Search/PublishedTheorems.lean`). |
-| **Chu (2011), PhD thesis, *Improving combinatorial optimization*, Univ. of Melbourne**, ch. 6 (`literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, Minerva Access hdl:11343/36679) | The later and fuller statement. **Theorem 6.3.6 is Theorem 1 word for word, with the same proof** ("at most open(q, S) extra stacks open, but at least close(q, S) extra stacks closed"). **Theorem 6.3.8, the better move, has a different premise**: `close(q, S) ≥ open(q, S ∪ {r})`, not the CP paper's `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`. Its proof goes through the definite move. Definition 6.3.4 counts `close(c, S) = |{d : o(d, S) ⊆ o(c, S)}|` with `d` unrestricted, which is the literal reading. **Both theorems are false on `cexGraph`** (below). The thesis says its implementation of the better move subsumes the definite move. |
+| **Chu (2011), PhD thesis, *Improving combinatorial optimization*, Univ. of Melbourne**, ch. 6 (`literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, Minerva Access hdl:11343/36679) | The later and fuller statement. **Theorem 6.3.6 is Theorem 1 word for word, with the same proof** ("at most open(q, S) extra stacks open, but at least close(q, S) extra stacks closed"). **Theorem 6.3.8, the better move, has a different premise**: `close(q, S) ≥ open(q, S ∪ {r})`, not the CP paper's `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`. Its proof goes through the definite move. Definition 6.3.4 counts `close(c, S) = |{d : o(d, S) ⊆ o(c, S)}|` with `d` unrestricted, which is the literal reading. **Both theorems are false on `cexGraph`** (below; in Lean, `Search/ChuThesis.lean`). The thesis says its implementation of the better move subsumes the definite move. |
 | Chu, Garcia de la Banda & Stuckey (2012), *Constraints* 17, "Exploiting subproblem dominance" (held) | Uses MOSP as a benchmark for generic subproblem dominance (projection keys). Does not restate the definite or better move. |
 | Chu & Stuckey (2015), *Constraints* 20, "Dominance breaking constraints" (author PDF `domjournal.pdf`) | Mentions the 2009 paper only in related work, among problem-specific methods whose implementations it calls "somewhat non-rigorous", meaning they prune in the search engine instead of propagating. It points to no error. |
 | Beck, Kuroiwa, Lee, **Stuckey** & Zhong (2025), CP 2025, LIPIcs 340, paper 5, "Transition dominance in DIDP" | Cites the 2009 paper as the inspiration for a transition dominance on Graph-Clear (Proposition 14). Does not revisit MOSP or its rules. |
@@ -49,11 +55,58 @@ customers not yet closed, and the literal one that counts every `d`.
 - Cite the thesis next to the CP paper. Say the thesis restates Theorem 1
   unchanged and states the better move with the premise `close(q, S)`, and that
   both are refuted by the same graph.
-- A Lean theorem for the thesis's Theorem 6.3.8 would make the claim complete.
-  It is a finite `decide` on `cexGraph`, in the style of
-  `chuStuckey_theorem2_false`. **It has not been written.** Add it after
-  loop0007 ends, not while its sessions are building Lean.
+- ~~A Lean theorem for the thesis's Theorem 6.3.8 would make the claim
+  complete. **It has not been written.**~~ *Written 2026-10-03 (loop0008 item
+  02), see "The thesis's theorems in Lean" below.*
 - Word the claim as "we found no prior report", not "first".
+
+## The thesis's theorems in Lean (loop0008 item 02, 2026-10-03)
+
+`lean/MOSPFormalization/Search/ChuThesis.lean` states each thesis theorem as
+published, as a universal claim over `cexGraph` at k = 6 in the form of
+`PublishedTheorems.lean`, and proves it false under both readings of `close`.
+No `sorry`; the axioms are `propext`, `Classical.choice` and `Quot.sound`
+(`cd lean && lake env lean ../paper2/axiom_check.lean`). The wording quoted in
+the file's docstring is from the thesis, §6.3, pp. 141–143 (Definition 6.3.4
+on p. 141, Theorem 6.3.6 on p. 142, Theorem 6.3.8 on p. 143, printed page
+numbers).
+
+| Thesis statement | Lean theorem | Witness |
+|---|---|---|
+| Theorem 6.3.6 (= CP Theorem 1 verbatim), unclosed `close` | `chuThesis_theorem636_false` (is `chuStuckey_theorem1_false`) | S = {2}, q = 0 |
+| Theorem 6.3.6, literal `close` | `chuThesis_theorem636_false_literal` (is `chuStuckey_theorem1_false_literal`) | the same |
+| Theorem 6.3.8, unclosed `close` | `chuThesis_theorem638_false` | S = {2}, r = 3, q = 0: close(0, S) = 3 ≥ 2 = open(0, S ∪ {3}); S ++ [3] extends by [1, 4, 6, 12, 13, 0, 5, 7, 8, 9, 10, 11], S ++ [0] has no extension |
+| Theorem 6.3.8, literal `close` | `chuThesis_theorem638_false_literal` | the same (the literal premise is weaker) |
+| Theorem 6.3.8, a witness for the literal reading only | `chuThesis_theorem638_literal_witness` | S = {1}, r = 6, q = 12: literal close = 2 = open, unclosed close = 1; S ++ [6] extends, S ++ [12] does not (an invariant family of four states) |
+| Fink (2012) Teorema 1 (index-restricted `f`) | `fink_theorem1_false` | on `finkGraph` (15 customers), S = {2, 3}, q = 14 |
+
+The "no extension" half at S = {2}, q = 0 is the CP Theorem 1
+counterexample's own (`cex_not_solvable_child`), so the thesis's better move
+fails at exactly the state where its definite move does: the proof of 6.3.8
+goes through 6.3.6 ("after r is played, q becomes a definite move"), and that
+step is the one that breaks.
+
+**Fink (2012), with a stronger premise, is false too.** Fink's Teorema 1
+(p. 28) uses `|f(α_j, S)| ≥ |o(α_j, S)|`, where `f(α_j, S)` is the set of
+items `α_i` with `o(α_i, S) ⊆ o(α_j, S)`, `α_i, α_j ∉ S` and `i < j` (p. 27).
+Because `i < j`, `q` itself is never counted, so the premise asks for
+`close(q, S) − 1 ≥ open(q, S)` at best: the child must have strictly fewer
+open stacks than the parent. That is stronger than the CP premise, and
+`cexGraph` does **not** refute it under any labelling of its vertices: no
+failing state there has `close ≥ open + 1`. A random search found no failure
+either, over about 41,700 random graphs on 6–12 vertices (3 × 300 s, edge
+probability 0.15–0.6, every k; the script was not kept). One more twin
+does it. `finkGraph` is `cexGraph` plus a customer adjacent to 0 and 2, a third
+twin of 3 and 4, with labels 0 and 14 swapped so that the dominated customers
+precede q. At S = {2, 3}, k = 6, q = 14: `f(14, S) = {0, 4}`,
+`open(14, S) = 2`, `S ++ [14]` costs 6, a solution from S exists
+(0, 1, 4, 6, 12, 13, 7, 5, 8, 9, 10, 11, 14), and none from S ∪ {14} (an
+invariant family of 12 states). Lean: `fink_theorem1_false`, with Fink's count
+as `finkCount`. Brute force: `python3 -m paper2.fink_check` (three failing
+states on `finkGraph`, none on `cexGraph`).
+
+Regenerate: `cd lean && lake build MOSPFormalization.Search.ChuThesis`; the
+brute force that found the witnesses is `python3 paper2/thesis_check.py`.
 
 ## Every citer, swept (loop0008 item 01, 2026-10-03)
 
@@ -122,7 +175,7 @@ have nothing to do with the problem.
 | 2012 | Chu & Stuckey | CP 2012, LNCS 7514 | 10.1007/978-3-642-33558-7_4 | yes, author copy | MOSP appears only in related work (§5), among problem-specific dominance methods whose implementations are "often quite ad-hoc", where "it is not clear whether they can be correctly combined with other constraint programming techniques". This is a general caution and names no error. | none |
 | 2012 | Chu & Stuckey | "Inter-problem nogood learning" (report) | — | yes, author copy | Uses MOSP as a benchmark for reusing nogoods; the rules are not mentioned. | none |
 | 2012 | Chu & Stuckey | CP 2012, LNCS 7514, "Inter-instance nogood learning" | 10.1007/978-3-642-33558-7_19 | **no** (the report version above was read) | — | — |
-| **2012** | **Fink** | **PhD thesis, ICMC-USP** | 10.11606/t.55.2012.tde-19022013-084858 | **yes**, saved as `literature/fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf` | **Restates Theorem 1**, the definite move, in Portuguese (pp. 27–28, "Teorema 1"). With `f(α_j, S) = {α_i : o(α_i, S) ⊆ o(α_j, S)}`, the premise is `|f(α_j, S)| ≥ |o(α_j, S)|` and `S ∪ {α_j}` viable; the conclusion is that if a solution extends S, one extends `S ∪ {α_j}`. This is the CP premise, with `close` counted as the size of the dominated set. It is stated, not tested. The better move is not restated. | **none**: the theorem is reproduced as true |
+| **2012** | **Fink** | **PhD thesis, ICMC-USP** | 10.11606/t.55.2012.tde-19022013-084858 | **yes**, saved as `literature/fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf` | **Restates Theorem 1**, the definite move, in Portuguese (pp. 27–28, "Teorema 1"). With `f(α_j, S) = {α_i : o(α_i, S) ⊆ o(α_j, S)}`, the premise is `|f(α_j, S)| ≥ |o(α_j, S)|` and `S ∪ {α_j}` viable; the conclusion is that if a solution extends S, one extends `S ∪ {α_j}`. ~~This is the CP premise, with `close` counted as the size of the dominated set.~~ *Corrected (item 02):* `f` is defined just before (p. 27) by `o(α_i, S) ⊆ o(α_j, S)`, `α_i, α_j ∉ S` **and `i < j`**, so `α_j` itself is not counted and the premise is strictly stronger than the CP one; false on a 15-customer graph, not on `cexGraph` (`fink_theorem1_false`). It is stated, not tested. The better move is not restated. | **none**: the theorem is reproduced as true |
 | 2013 | Chu | IJCAI 2013 (extended abstract of the thesis) | — | yes, ijcai.org | Says the thesis's MOSP solver gains orders of magnitude from "dominance rules and relaxations"; does not state them. | none |
 | 2013 / 2021 | Leo, Mears, Tack & Garcia de la Banda | CP 2013; *AIJ* 2021 | 10.1016/j.artint.2021.103599 | yes, Monash OA (the *AIJ* version) | Cites the paper as an example of a model improvement worth "several orders" of magnitude (§1). | none |
 | 2013 | De Giovanni, Massi & Pezzella | *IJPR* 51(3) | 10.1080/00207543.2012.657256 | **no** | (adaptive genetic algorithm for MOSP) | — |
@@ -170,9 +223,11 @@ Of the **38 works citing the CP paper, 24 were read in full (63%)**; of the 103
 citing only the thesis, 32 (31%).
 
 - **No work read restates the better move.**
-- **One restates the definite move:** Fink (2012), pp. 27–28, with the CP
-  premise. It is reproduced as true, not tested and not corrected, so it is
-  refuted by the same graph.
+- **One restates the definite move:** Fink (2012), pp. 27–28, with a premise
+  stronger than the CP one (it counts only dominated customers of smaller
+  index, not `q`). It is reproduced as true, not tested and not corrected.
+  *Corrected in item 02:* `cexGraph` does not refute it; a 15-customer variant
+  with a third twin does (`fink_theorem1_false`).
 - **Three use an implementation of the rules:**
   - Chu, Garcia de la Banda & Stuckey (2010, 2012): dominance-breaking
     constraints in a CP model;
@@ -192,7 +247,8 @@ remaining guards are unchanged: run Google Scholar by hand, and consider
 writing to the authors.
 
 **For the paper.** Cite Fink (2012) beside the CP paper and the thesis, as a
-later restatement of Theorem 1 that the counterexample also refutes. Cite
+later restatement of Theorem 1, with a stronger premise that a one-vertex
+extension of the counterexample also refutes (`fink_theorem1_false`). Cite
 Frinhani et al. (2018) as the route by which values computed with the
 published rules entered the literature's tables of optima. Cite Beck et al.
 (2025), Prop. 3 and Example 6, as the general observation that mutually
