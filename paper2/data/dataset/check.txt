@@ -1,0 +1,29 @@
+records checked: 16949 in 91.5 s
+provenance (records, i.e. isomorphism classes):
+  certified:refutation    12552   members  15592
+  certified:bound          3535   members   4498
+  solution                  862   members    897
+certified:bound re-established by the minor certificate: 3535 / 3535; by the checker's own bounds alone: 3261 / 3535
+certified:refutation (rests on a search, not checkable here): 12552
+member sources re-read and matched: 20987, skipped (format not read here): 0, missing on disk: 0
+members by collection and provenance:
+  MOSP: Carvalho & Soma 2015: refutation 11, solution 139
+  MOSP: Challenge 2005: refutation 5805, bound 1
+  MOSP: Challenge 2005 (second copy): refutation 45, bound 1
+  MOSP: Chu & Stuckey: refutation 198, solution 2
+  MOSP: Faggioli & Bentivoglio: refutation 300
+  MOSP: SCOOP: refutation 24
+  PACE 2016: refutation 134, bound 80, solution 70
+  PACE 2017 bonus: refutation 23, solution 77
+  PACE 2017 exact: refutation 67, bound 7, solution 115
+  PACE 2017 heuristic: refutation 25, bound 3, solution 58
+  Rome graphs: refutation 8305, bound 2901, solution 327
+  Small (Marti et al. 2008): refutation 32, bound 52
+  TreewidthLIB colouring: refutation 18, bound 13, solution 27
+  VLSI gate matrix circuits: refutation 5, bound 5, solution 1
+  VSPLIB Harwell-Boeing: refutation 32, bound 7, solution 34
+  VSPLIB grids: refutation 9, solution 19
+  VSPLIB trees: refutation 50
+  freetdi control-flow graphs: refutation 406, bound 1406, solution 4
+  freetdi named graphs: refutation 103, bound 22, solution 24
+FAILURES: 0

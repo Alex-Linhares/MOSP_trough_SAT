@@ -165,6 +165,16 @@ the rest: any experimental paper among them had instances. Done 2026-09-30
 (`benchmarks/hunt_citers.md`: about 145 experimental papers, 24 instance
 sets).
 
+**Done (2026-10-03, loop0008 item 04):** the dataset is defined, deduplicated,
+written and checked, and its full run is priced, in `dataset.md`. There are 17,714
+isomorphism classes from 21,754 files in twenty collections, and 16,087 carry
+a certified pathwidth with a witness layout. The independent checker is
+`dataset_check.py`. Two findings: Carvalho & Soma's files are customers ×
+patterns, unlike the Chu & Stuckey files beside them in PT-MOSP; and 10 of
+the 11 VLSI circuits certify at their published best-known track count.
+Still open from the list below: the licences, the four requests, and the
+run beyond this item's 4 cores × 2 hours.
+
 **To do for the dataset.** Choose the collections from the catalogue and get
 their licences; send the four requests of `benchmarks/README.md` §2.
 Deduplicate. Fix a file format and a checker. Record provenance for every value, as

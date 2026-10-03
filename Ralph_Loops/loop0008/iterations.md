@@ -51,7 +51,7 @@
     Nisse's greedy step is the definite move's counterpart (see
     `literature/MISSING.md`). Say what is the same and what differs.
 
-- [ ] **04 Section 4's dataset, defined and priced.**
+- [x] **04 Section 4's dataset, defined and priced.**
   - **Write `paper2/dataset.md`.** It defines the benchmark dataset the paper
     promises: every instance, from the collections in
     `paper2/benchmarks/README.md` and the MOSP corpus, of a problem proved

@@ -102,6 +102,11 @@ pathwidth_solver (≤ 600 s)". The rest must still be priced before a run.
 
 ## Next
 
+*(2026-10-03, loop0008 item 04: steps 1, 2 and 4 are done for every collection
+in §1, in `../dataset.md`. The deduplication is by nauty certificate across
+collections. The price is by collection, and the format and checker are
+`../dataset.py` and `../dataset_check.py`. Step 3, the requests, is still open.)*
+
 0. **Done first, 2026-09-30: the audit and transfer of `~/dev/pathwidth`**
    (`../../pathwidth_solver/TRANSFER.md`). It held an exact graph pathwidth
    solver, the customer search on neighbourhood masks with a C engine up to

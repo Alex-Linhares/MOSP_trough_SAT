@@ -4,7 +4,7 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 3/9 SOLVED
+Current: 4/9 SOLVED
 
 **Correction (iteration 3, 2026-10-03).** Our notes said the definite move
 "is" a depth-1 commitment, Tamaki's commitment lemma
@@ -255,3 +255,97 @@ written.
   step is to measure, on the failing candidates of `solver_fix.md` items 04 and
   08, how many nodes committing to W would save. W always exists there, by
   Proposition 4.23.
+
+---
+
+## Iteration 4 — 2026-10-03 05:05
+
+### Completed
+- **Item 04: section 4's dataset, defined and priced.** It is written up in
+  `paper2/dataset.md`.
+  - **Code.** The builder is `paper2/dataset.py`, with stages `index`,
+    `values`, `run`, `write`, `tables` and `price`. The independent checker is
+    `paper2/dataset_check.py` (standard library only, nothing imported from
+    the repository). The price is `paper2/dataset_price.py`. Tests are
+    `tests/test_dataset.py` (5) and `tests/test_dataset_check.py` (10).
+  - **Data.** Everything is under `paper2/data/dataset/`, about 21 MB. The
+    dataset itself is `pathwidth_dataset.jsonl.gz`.
+- **Scope.** Every collection in `benchmarks/README.md` §1 plus the MOSP
+  corpus: 21,754 instance files in 20 collections.
+- **Deduplication.** nauty certificates, across collections and across
+  problems, give **17,714 classes**.
+  - The MOSP corpus is 3,667 classes, matching `ml_nature.md` §1.
+  - Rome: 11,534 files, 11,199 classes. VSPLIB trees: 50 files, 28 classes.
+    Control-flow graphs: 1,817 files, 1,070 classes.
+  - 78 PACE graphs over 5,000 vertices are deduplicated by file content only.
+- **Format.** One JSON line per class: graph, width, provenance, evidence,
+  witness layout, the value under each of the nine exact problems, members
+  with their isomorphism map to the representative, and, for
+  `certified:bound`, a minor certificate.
+- **The check.** `python paper2/dataset_check.py --sources` reports **0
+  failures on 16,949 records**.
+  - Provenance: 12,552 `certified:refutation`, 3,535 `certified:bound`, 862
+    `solution`.
+  - Every bound certificate replays.
+  - All 20,987 member source files are re-read by the checker's own readers
+    and mapped onto their record by isomorphism.
+- **Published values.**
+  - All 84 Small graphs agree with Mallach (2018) Tables 4–5.
+  - **10 of 11 VLSI circuits certify at their published best-known tracks.**
+    W4 is open at 28 against 27.
+  - All 11 certified Carvalho & Soma values agree with the PT-MOSP sheet.
+    The Random-150-150-10 class mean is 123.9, the same as S1's OPT.
+  - One upper bound beats the published best: Random-200-200-6-7 at 119
+    against 120.
+- **Finding: Carvalho & Soma's files are customers × patterns.** The
+  Chu & Stuckey files beside them in PT-MOSP are patterns × customers.
+  - The evidence is S1 Table's MOSP-graph density `D` and the per-instance
+    values: transposed, Random-150-150-10-2 certifies at 127 against a
+    published 124.
+  - The first pass read them transposed; the published-values comparison
+    caught it and the 150 were rerun.
+  - Our Chu & Stuckey reading is confirmed against all 40 S1 class means.
+  - **Frinhani large's orientation is unsettled**: `D` points both ways. It is
+    read as its description says, and none of its values is certified.
+- **Run.** 5.7 core-hours on 4 workers, 03:15–04:55, of which 1.2 went on the
+  wrongly oriented first pass.
+  - 11,527 witnesses were regenerated at the recorded width (satisfiable side
+    only).
+  - First full runs of 1,756 classes at 30 s each: Small, VLSI, control-flow
+    graphs, PACE within the engine, Carvalho & Soma.
+- **Price**, by collection, in `dataset.md` §6.
+  - One more budget step for every open graph class within the engine costs
+    at most 500 core-hours. On the Rome record, each step closes about 40% of
+    what it attempts.
+  - The MOSP corpus's last five are each priced in the hundreds of
+    core-hours.
+  - Carvalho & Soma beyond density 10, Frinhani, and the 154 classes above
+    1,024 vertices are out of reach. The cost model is extrapolated past
+    125 and is labelled so.
+- **Found while pricing: `Random-125-125-2-4_0` is re-certified.** The split
+  run refuted k = 23 at 02:55 today, 154.1 core-hours over 1,686 tasks, and
+  the value is unchanged. `paper2/solver_fix.md` item 09 still says
+  "partial". This is not a wrong claim, only an out-of-date one; item 07 (the
+  number audit) should update it. Three instances remain in flight.
+- **Pointers added**: `plan.md` §4 and `benchmarks/README.md` "Next".
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,379 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 03:20, 04:08 and 05:01.
+
+### Blockers
+- None for the item. Left beyond its budget:
+  - the next budget steps (about 500 core-hours for the graph sets);
+  - the in-flight and open MOSP values;
+  - licences and the four requests (`benchmarks/README.md` §2);
+  - one Rome witness (`pwc-05529`, certified 9) that did not come back in
+    120 s.
+
+### Next
+- **Item 05**, certificates for the repaired rules. Its proof object is what
+  the dataset's 12,552 `certified:refutation` records lack.
+- **Item 07** should take `Random-125-125-2-4_0`'s re-certification into
+  `solver_fix.md`, and can use `paper2/data/dataset/tables.md` and `price.md`
+  as the sources for the dataset numbers.
+- **Item 08** (LaTeX) can take section 4's dataset paragraph from
+  `dataset.md` §7.

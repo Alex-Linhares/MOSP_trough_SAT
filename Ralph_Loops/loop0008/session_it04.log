@@ -1,0 +1,339 @@
+# session it04 started 2026-10-03 02:59:33
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0008/iterations.md; uptime; cat paper2/data/solver_fix_split.pid; grep -c '^!!!' paper2/data/solver_fix_split*.log
+  > $ cd /home/al/dev/MOSP; wc -l paper2/plan.md paper2/revised_algorithm.md paper2/solver_fix.md paper2/prior_art_counterexample.md; grep -n "^#" paper2/plan.md
+  > $ cd /home/al/dev/MOSP; cat paper2/plan.md; cat paper2/benchmarks/README.md
+  > $ cd /home/al/dev/MOSP; ls pathwidth_solver pathwidth_solver/bench pathwidth_solver/bench/results | head -80; du -sh paper2/benchmarks/raw/* 2>/dev/null
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat TRANSFER.md | head -200; ls bench/results/repaired bench/instances | head; for f in bench/results/*.csv; do echo "== 
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; ls -la bench/results/repaired; for f in bench/results/repaired/*.csv; do echo "== $f $(wc -l <$f)"; head -3 $f; done; gre
+
+Reading the existing benchmark results and solver interfaces to scope the dataset item.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; sed -n 1,126p bench/run.py; cat bench/readers.py | head -120; ls pathwidth; grep -n "^def \|^class \|return" pathwidth/so
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; cat pathwidth/bounds.py | head -150; sed -n 20,170p pathwidth/solve.py
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p learning/canonical.py; grep -n "^def " learning/canonical.py; python3 -c "import pynauty; print(pynauty.__version__)"; ls pap
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw; for d in */unpacked carvalho_soma2015/Carvalho_Soma frinhani2018_large/Frinhani; do echo "== $d: $(find $d -type f |
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks; grep -n -i -A3 "orientation\|rows\|transpos\|W1\|wli" hunt_matrix.md | head -80
+  > $ cd /home/al/dev/MOSP; grep -n "def \|classmethod" mosp/instance.py | head -30; ls benchmarks/instances/ | head; head -3 benchmarks/instances/*/Random-30-30-2-1*
+
+Still scoping: checking instance readers so the dataset can parse every collection the same way.
+  > $ cd /home/al/dev/MOSP; sed -n 92,200p mosp/instance.py; head -3 benchmarks/instances/MOSP_Instances/Chu_Stuckey/Random-125-125-2-2.txt | cut -c1-80; grep -n "def
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p learning/cost_model.py; grep -n "^def " learning/cost_model.py; grep -n "§19" -A30 reports/ml_nature.md | sed -n 1,60p | head
+  > $ cd /home/al/dev/MOSP; sed -n 253,300p learning/cost_model.py; grep -n "class CostModel" -A30 learning/cost_model.py | head -50; ls reports/ | grep -i cost; ls l
+  > $ cd /home/al/dev/MOSP; grep -n "def vertex_separation_masks" -A25 pathwidth_solver/pathwidth/graph.py; grep -n "def masks_from_graph" -A15 pathwidth_solver/pathw
+  > $ cd /home/al/dev/MOSP; ls solutions | head -3; ls solutions | wc -l; cat "solutions/$(ls solutions | head -1)" | head -c 400; echo; head -3 benchmarks/results/co
+  > $ cd /home/al/dev/MOSP; grep -n "core-hour\|core hours" paper2/solver_fix.md | head -30; python -m benchmarks.compute --quote 2>&1 | tail -3; tail -5 paper2/data/
+
+Reviewing the recorded certification costs in `solver_fix.md` so I can price the dataset run.
+  > $ cd /home/al/dev/MOSP; sed -n 1075,1145p paper2/solver_fix.md; sed -n 1300,1330p paper2/solver_fix.md; sed -n 1520,1574p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; head -3 paper2/data/solver_fix_provenance.csv; wc -l paper2/data/solver_fix_provenance.csv; cut -d, -f1-20 paper2/data/solver_fix_provenan
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw; find pace2016_tw/unpacked -name "*.gr" | sed 's|/[^/]*$||' | sort | uniq -c; find pace2017_tw/unpacked pace2017_tw_b
+  > $ cd /home/al/dev/MOSP; grep -n "pathwidth_solver\|sys.path" paper2/solver_fix_bench.py | head; python3 - <<'E'
+import pandas as pd, glob
+for f in sorted(glob.glo
+  > $ cd /home/al/dev/MOSP; sed -n 30,60p paper2/solver_fix_bench.py; ls tests | grep -i "solver_fix_bench\|fink"; sed -n 1,30p tests/test_fink_check.py
+  > Write /home/al/dev/MOSP/paper2/dataset.py
+
+Builder drafted. Now checking VLSI matrix orientation against published track counts before indexing.
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 - <<'E'
+import sys; sys.path.insert(0,'.'); sys.path.insert(0,'pathwidth_solver')
+from paper2.dataset import *
+import 
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 - <<'E'
+import sys; sys.path.insert(0,'.'); sys.path.insert(0,'pathwidth_solver')
+from paper2.dataset import _graph_fr
+
+Meanwhile, testing source enumeration.
+  > $ cd /home/al/dev/MOSP; timeout 300 python3 -c "
+import sys; sys.path.insert(0,'.')
+from paper2.dataset import sources
+from collections import Counter
+s=sources()
+  > $ cd /home/al/dev/MOSP; uptime; nohup python3 -m paper2.dataset index --workers 4 > paper2/data/dataset_index.log 2>&1 &
+echo $! > /tmp/ds_index.pid; sleep 60; ca
+
+Index is fast on the small collections; it's now on PACE and Frinhani. Meanwhile, writing the independent checker.
+  > Write /home/al/dev/MOSP/paper2/dataset_check.py
+  > $ cd /home/al/dev/MOSP; tail -5 paper2/data/dataset_index.log; ps -p $(cat /tmp/ds_index.pid) -o pid,etime,cmd | cat; uptime
+  > Write /home/al/dev/MOSP/tests/test_dataset_check.py
+  > $ cd /home/al/dev/MOSP; timeout 300 python3 -m pytest tests/test_dataset_check.py -q 2>&1 | tail -15; tail -3 paper2/data/dataset_index.log
+  > $ cd /home/al/dev/MOSP; sed -n 60,252p learning/cost_model.py
+  > $ cd /home/al/dev/MOSP; sed -n 422,445p learning/cost_model.py; grep -n "def instance_features" -A25 learning/features.py | head -40; grep -n "tw_min_fill\|g_clus
+  > $ sleep 90; cd /home/al/dev/MOSP; tail -2 paper2/data/dataset_index.log; ps --ppid $(cat /tmp/ds_index.pid) -o pid,etime,time,rss | cat
+  > $ cd /home/al/dev/MOSP; tail -2 paper2/data/dataset_index.log; ps --ppid $(cat /tmp/ds_index.pid) -o pid,etime,time,rss | cat
+
+Index is working through the large PACE and Frinhani files. Meanwhile I'm writing the pricing module.
+  > $ cd /home/al/dev/MOSP; ls paper2/data | grep split; head -3 paper2/data/solver_fix_split_*.csv 2>/dev/null | head -20; grep -n "def summary\|def tables\|core-hou
+  > $ cd /home/al/dev/MOSP; tail -2 paper2/data/dataset_index.log; ls -la paper2/data/dataset/ 2>/dev/null
+  > Write /home/al/dev/MOSP/paper2/dataset_price.py
+  > $ cd /home/al/dev/MOSP; tail -2 paper2/data/dataset_index.log; ls -la paper2/data/dataset/; ps --ppid $(cat /tmp/ds_index.pid) -o pid,etime,time,rss | cat
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw/frinhani2018_large/Frinhani; ls | sed 's/-[0-9]*\.txt$//' | sort | uniq -c | awk '{print $1}' | sort | uniq -c; ls | 
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+s=s.replace('(RAW / "frinhani2018_large" / "Frinhani").glob("*.txt")','(RAW / "fri
+  > $ cd /home/al/dev/MOSP; timeout 600 bash -c 'until grep -q "^index:" paper2/data/dataset_index.log; do sleep 10; done'; tail -3 paper2/data/dataset_index.log
+
+Index done (254 s). Re-running it to drop the description file, then computing the values on record.
+  > $ cd /home/al/dev/MOSP; python3 -m paper2.dataset index --workers 4 2>&1 | tail -2; timeout 1200 python3 -m paper2.dataset values 2>&1 | tail -5
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 - <<'E'
+import sys; sys.path.insert(0,'.')
+from paper2.dataset import *
+from collections import Counter
+by, vals = cla
+
+No conflicts among the 17,712 isomorphism classes. Adjusting the budgets (unproved graphs get the short budget), then launching the 4-core run with a deadline.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+s=s.replace('''            tasks.append((cls, src, "witness", int(v["width"]), bud
+  > $ cd /home/al/dev/MOSP; sleep 5; P=$(cat /tmp/ds_run.pid); ps -p $P -o pid,cmd | cat; kill $P; sleep 3; pkill -P $P 2>/dev/null; ps --ppid $P | cat; cat paper2/da
+
+That's fast: 6,500 witnesses in 10 s, which is expected because most Rome graphs hit the recorded width at once. Relaunching (it resumes) with a 05:10 deadline.
+  > $ cd /home/al/dev/MOSP; nohup python3 -m paper2.dataset run --workers 4 --until 2026-10-03T05:10 > paper2/data/dataset_run.log 2>&1 & echo $! > /tmp/ds_run.pid; s
+  > $ cd /home/al/dev/MOSP; time timeout 1500 python3 -m paper2.dataset write 2>&1 | tail -5; ls -la paper2/data/dataset/
+
+The write stage works (13,717 records so far, 3.3 MB), and every MOSP-derived layout re-measured to its value minus one. Running the independent checker with source re-reading:
+  > $ cd /home/al/dev/MOSP; time timeout 1500 python3 paper2/dataset_check.py --sources 2>&1 | tail -40
+  > $ cd /home/al/dev/MOSP; ls benchmarks/instances/ChallengeInstances2005 | head; f=$(ls benchmarks/instances/ChallengeInstances2005/* | head -1); head -12 "$f" | cu
+  > $ cd /home/al/dev/MOSP; head -20 benchmarks/instances/ChallengeInstances2005/Harvey/wbo_10_10.txt; for d in Miller Shaw Simonis Wilson; do f=$(ls benchmarks/insta
+
+I'll have the builder record each MOSP member's position in its file, and give the checker its own token-stream reader for the multi-instance files.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+old='''                members=[dict(collection=m["collection"], problem=PROBLEM[m
+  > $ cd /home/al/dev/MOSP; timeout 1500 python3 -m paper2.dataset write 2>&1 | tail -2; timeout 600 python3 paper2/dataset_check.py --sources 2>&1 | grep -A3 "member
+
+Every member's source file is now re-read by the checker and matched (17,358 of 17,358), with zero failures. Checking the run's progress and the split log:
+  > $ cd /home/al/dev/MOSP; tail -3 paper2/data/dataset_run.log; grep -c '^!!!' paper2/data/solver_fix_split.log; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 -m paper2.dataset tables 2>&1 | head -80
+  > $ cd /home/al/dev/MOSP; tail -2 paper2/data/dataset_run.log; python3 - <<'E'
+import csv
+r=list(csv.DictReader(open('/home/al/dev/MOSP/paper2/data/dataset/run.csv'
+
+The rate is about 1 s per witness at n ≈ 97, so the queue should drain well before the deadline. Meanwhile I'm checking the cost-model feature groups for the pricing step.
+  > $ cd /home/al/dev/MOSP; grep -n "FEATURE_GROUPS\s*=" -A12 learning/features.py; grep -n "DEFAULT_GROUPS\s*=" learning/features.py
+  > $ cd /home/al/dev/MOSP; timeout 300 python3 - <<'E'
+import sys,time; sys.path.insert(0,'.')
+import numpy as np
+from paper2.dataset import read_matrix_file, RAW
+fr
+  > $ sleep 100; cat /tmp/claude-1000/-home-al-dev-MOSP/75542546-c9f7-4da7-b4e0-5f724162e16f/tasks/b1b8gcmih.output; tail -2 /home/al/dev/MOSP/paper2/data/dataset_run
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/75542546-c9f7-4da7-b4e0-5f724162e16f/tasks/b1b8gcmih.output; tail -2 /home/al/dev/MOSP/paper2/data/dataset_run.log; cd /h
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import openpyxl
+wb=openpyxl.load_workbook('paper2/benchmarks/raw/carvalho_soma2015/PT-MOSP_reference_values_LARGER_AND_HARDER
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset_price.py'; s=open(p).read()
+old='''        if not rep["collection"].startswith(("MOSP: Carvalho", "MOSP:
+
+Witness regeneration is in its slow tail (n ≈ 100–110). I'm waiting for it in bounded polls.
+  > $ cd /home/al/dev/MOSP; timeout 580 bash -c 'until grep -q "6000/6704\|deadline" paper2/data/dataset_run.log || ! ps -p $(cat /tmp/ds_run.pid) >/dev/null; do slee
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; tail -2 paper2/data/dataset_run.log; date; python3
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; tail -2 paper2/data/dataset_run.log; date; python3
+
+About 350 tasks are left, mostly 30 s solves on PACE and Carvalho & Soma. Meanwhile I'm comparing finished results to published values (VLSI, Small).
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import csv, gzip
+from collections import Counter, defaultdict
+idx={(r['source'],r['name']):r for r in csv.DictReader(gzip.
+  > $ cd /home/al/dev/MOSP; pdftotext -layout literature/mallach_2018_linear_ordering_mip_vertex_separation_pathwidth.pdf /tmp/mallach.txt; grep -n "Table 4\|Table 5"
+  > $ sed -n 640,660p /tmp/mallach.txt; sed -n 715,730p /tmp/mallach.txt; grep -c "^ *p[0-9]*_[0-9]*_[0-9]* " /tmp/mallach.txt
+
+Mallach (2018) Tables 4–5 give pw for all 84 Small graphs. I'll compare against them, and against the VLSI best-known values and the Carvalho & Soma spreadsheet, as a published-values table.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset_price.py'; s=open(p).read()
+old='''    text = "\\n".join(lines)
+    TABLES_MD.write_text(text + "\\n")
+ 
+  > $ cd /home/al/dev/MOSP; python3 -W ignore -c "
+import openpyxl
+wb=openpyxl.load_workbook('paper2/benchmarks/raw/carvalho_soma2015/PT-MOSP_reference_values_LARGER_
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset_price.py'; s=open(p).read()
+s=s.replace('''"first value per instance). Read with rows''','''"sheet `best
+
+About 340 tasks remain. Meanwhile I'm collecting the recorded price figures for the open 125×125 instances.
+  > $ cd /home/al/dev/MOSP; grep -n "2.7 × 10¹¹" reports/ml_nature.md | head -3; grep -n "cheapest first\|Recertify's open\|2-2_0\|2-3_0" reports/cost_model_tables.md
+
+The split run's summary now shows `Random-125-125-2-4_0` **refuted** at k = 23, so it is re-certified unchanged. I'll derive the in-flight set from the split run's files instead of hard-coding it.
+  > $ cd /home/al/dev/MOSP; cut -d, -f1-8,13-15 paper2/data/solver_fix_split_results.csv; grep -n "2-4_0" paper2/data/solver_fix_split.log | grep -iv "unsat .*queued"
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+old='''# Re-certification under the repaired rules still in flight (paper2/solver_
+  > $ cd /home/al/dev/MOSP; wc -l < paper2/data/dataset/run.csv; ps -p $(cat /tmp/ds_run.pid) -o etime | cat; uptime
+
+I'll draft `paper2/dataset.md` now; the tables go in once the run ends.
+  > $ cd /home/al/dev/MOSP; zcat paper2/data/dataset/pathwidth_dataset.jsonl.gz | python3 -c "
+import sys,json
+for line in sys.stdin:
+    r=json.loads(line)
+    if r[
+  > $ cd /home/al/dev/MOSP; sed -i 's|evidence += f"; witness regenerated {RUN_CSV.name}"|evidence += f"; witness regenerated by {rel(RUN_CSV)}"|' paper2/dataset.py; 
+  > Write /home/al/dev/MOSP/tests/test_dataset.py
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 -m pytest tests/test_dataset.py tests/test_dataset_check.py -q 2>&1 | tail -15
+
+Builder tests pass too (15 in total). Each MOSP-derived layout is within open stacks − 1, and equals the brute-force pathwidth at the optimum. Waiting for the run to finish.
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; wc -l < paper2/data/dataset/run.csv; date
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; wc -l < paper2/data/dataset/run.csv; date; grep -c
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; wc -l < paper2/data/dataset/run.csv; date; tail -3
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 10; done'; wc -l < paper2/data/dataset/run.csv; date; tail -2
+
+Run complete: all 13,282 tasks, ending 04:22. Now values → write → check → tables → price.
+  > $ cd /home/al/dev/MOSP; (timeout 1200 python3 -m paper2.dataset values && timeout 1200 python3 -m paper2.dataset write && timeout 600 python3 paper2/dataset_check
+
+Zero failures on 16,948 records, and all 20,986 member sources were re-read and matched. Now the tables and the price (the cost-model fit runs on one core):
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 -W ignore -m paper2.dataset tables 2>&1 | sed -n '/Provenance of each/,$p'
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 -W ignore - <<'E'
+import sys; sys.path.insert(0,'.'); sys.path.insert(0,'pathwidth_solver')
+from paper2.dataset import
+
+Rows as customers (no transpose) reproduces the published values exactly, on all four. My Carvalho & Soma reading was transposed. Checking what the collections' own descriptions say about Frinhani:
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw; cat "frinhani2018_large/Frinhani/Dataset_Description - Frinhani, Carvalho & Soma.txt" | head -40; ls carvalho_soma20
+
+The Frinhani description says rows are patterns, which conflicts with the empirical match. The generator fixes pieces per pattern, so row sums against column sums should settle it:
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import numpy as np, sys; sys.path.insert(0,'.')
+from paper2.dataset import read_matrix_file, RAW
+from pathlib import Path
+
+  > $ cd /home/al/dev/MOSP; grep -rn -i "transpos" reports/*.md paper2/benchmarks/*.md README.md 2>/dev/null | grep -i "chu\|random\|orient\|carvalho\|S1" | head -10;
+  > $ cd /home/al/dev/MOSP; pdftotext -layout paper2/benchmarks/raw/frinhani2018_plos_s1/pone.0203076.s001_S1_Table.pdf /tmp/s1.txt; grep -n -i "random\|150\|chu" /tm
+
+The S1 Table gives class-mean optima for the Chu & Stuckey classes. I'll compare our corpus class means (transposed reading) against them:
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import json, re, glob
+from collections import defaultdict
+s1={}
+for line in open('/tmp/s1.txt'):
+    m=re.match(r'\s*(Rand
+
+Our transposed Chu & Stuckey reading matches all 40 of S1's class means, so the corpus orientation is confirmed. S1 also lists 116 classes, which may include Carvalho & Soma's:
+  > $ grep -n "Random-1[5-9]\|Random-2[0-9][0-9]\|Random-[4-9]00\|Random-1000" /tmp/s1.txt | head -40; sed -n 1,20p /tmp/s1.txt
+
+S1 also gives **D, the density of the MOSP graph**, per class. That decides the orientation for every collection directly:
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 - <<'E'
+import re, sys, glob; sys.path.insert(0,'.')
+from pathlib import Path
+from paper2.dataset import read_matrix_f
+  > $ cd /home/al/dev/MOSP; timeout 900 python3 - <<'E'
+import re, sys, glob; sys.path.insert(0,'.')
+from pathlib import Path
+from paper2.dataset import read_matrix_f
+  > $ cd /home/al/dev/MOSP; grep -n -i "carvalho" paper2/benchmarks/hunt_matrix.md | head; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+old='''        out.
+  > $ cd /home/al/dev/MOSP; rm -f paper2/data/dataset/cost_model_mosp.csv; time timeout 1200 python3 -W ignore -c "
+import sys; sys.path.insert(0,'.')
+from paper2.dat
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset_price.py'; s=open(p).read()
+old='''        rows = []
+        for (coll, n), rs in sorted(groups.items())
+
+Now drafting `paper2/dataset.md` while the Carvalho & Soma re-solves finish.
+  > $ cd /home/al/dev/MOSP; timeout 1200 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 15; done'; tail -1 paper2/data/dataset_run2.log; date
+  > Write /home/al/dev/MOSP/paper2/dataset.md
+  > $ cd /home/al/dev/MOSP; ps -p $(cat /tmp/ds_run.pid) -o etime | cat; tail -2 paper2/data/dataset_run2.log; date
+  > $ cd /home/al/dev/MOSP; timeout 590 bash -c 'while ps -p $(cat /tmp/ds_run.pid) >/dev/null; do sleep 10; done'; date; tail -1 paper2/data/dataset_run2.log
+
+Run finished at 04:46. Final pass: values → write → check → tables → price (single-threaded BLAS).
+  > $ cd /home/al/dev/MOSP; export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1; rm -f paper2/data/dataset/cost_model_mosp.csv; (timeout 1200 python3 -m
+  > $ cd /home/al/dev/MOSP; sed -n '/Against published/,$p' paper2/data/dataset/tables.md | tail -5; sed -n '/next step/,$p' paper2/data/dataset/price.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import csv, gzip
+from collections import Counter
+r=list(csv.DictReader(open('paper2/data/dataset/run.csv')))
+print('rows',
+
+The whole 150-150-10 class is certified, so I can check it against S1's class-mean OPT (123.90):
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import csv, gzip
+cls={x['cls']:x['name'] for x in csv.DictReader(gzip.open('paper2/data/dataset/index.csv.gz','rt')) if x[
+
+S1's class mean for Random-150-150-10 is 123.90, and ours is 123.9, so it matches. Filling the generated tables into `dataset.md`:
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import re
+D='paper2/dataset.md'; s=open(D).read()
+check=open('paper2/data/dataset/check.txt').read().strip()
+tables=open('
+
+A few statements in the draft are now stale. Also, the PACE 2016 maximum here is 34,036 vertices against the 24.6 million the hunt recorded, so I'm checking the three `.bz2` files I skipped:
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw/pace2016_tw/unpacked; find . -name "*.bz2" -exec ls -la {} \; ; find . -name "*.txt" | head; grep -n "bz2\|24,643\|24
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks/raw/pace2016_tw/unpacked/PACE-treewidth-testbed-master; ls instances/; head -3 instances/instances.csv 2>/dev/null; find 
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/dataset.py'; s=open(p).read()
+old='''    add("PACE 2016", sorted((RAW / "pace2016_tw" / "unpacked").rglob("*.gr"
+  > $ cd /home/al/dev/MOSP; export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1; timeout 600 python3 -m paper2.dataset run --workers 1 2>&1 | tail -2; tail -1 paper2/data
+
+Zero failures on 16,949 records, with 17,714 classes in all. Now re-embedding the regenerated tables in `dataset.md` and correcting the stale statements:
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import re
+D='paper2/dataset.md'; s=open(D).read()
+check=open('paper2/data/dataset/check.txt').read().strip()
+tables=open('
+  > $ cd /home/al/dev/MOSP; sed -n 388,440p paper2/dataset.md; sed -n 140,148p paper2/dataset.md
+  > $ cd /home/al/dev/MOSP; grep -E "^\| (PACE|MOSP|Rome|freetdi|VLSI|VSPLIB|\*\*all)" paper2/data/dataset/price.md | head -24; python3 -c "
+import csv,gzip
+c=list(cs
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+D='paper2/dataset.md'; s=open(D).read()
+rep=[
+("**Size range.** 21,752 instance files in 20 collections, graphs of 0 to","
+  > $ cd /home/al/dev/MOSP; grep "^| \*\*all" paper2/data/dataset/tables.md | head -2; zcat paper2/data/dataset/pathwidth_dataset.jsonl.gz | python3 -c "
+import sys,j
+  > $ cd /home/al/dev/MOSP; sed -i 's/The dataset.s records cover graphs of 1 to 1,452/The dataset'"'"'s records cover graphs of 0 to 1,024/; s/(77 files, all PACE)/(
+
+Docs are filled. Now a pointer in `plan.md` and the benchmark README, then the gate.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/plan.md'; s=open(p).read()
+old='''**To do for the dataset.** Choose the collections from the catalogue and get''
+  > $ cd /home/al/dev/MOSP; timeout 1800 python3 Ralph_Loops/loop0008/gate.py > /tmp/gate.log 2>&1; echo "exit $?"; tail -25 /tmp/gate.log
+
+While the gate runs, I'm writing the PROGRESS entry.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+s=s.replace('Current: 3/9 SOLVED','Current: 4/9 SOLVED')
+s+='''
+---
+  > $ sleep 240; tail -5 /tmp/gate.log
+  > $ timeout 1500 bash -c 'until grep -q "^exit" /tmp/claude-1000/-home-al-dev-MOSP/75542546-c9f7-4da7-b4e0-5f724162e16f/tasks/btu2k7j5l.output; do sleep 10; done'; 
+
+Gate passes. Recording that and marking the item done.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+old='- **Pointers added**: `plan.md` §4 and `benchmarks/README.md` 
+
+Item 04 is done. The dataset is defined, deduplicated, written, independently checked and priced, and the write-up is `paper2/dataset.md`. The gate passes (lake build ok, one `sorry` as allowed, MOSP pytest 1,379 passed, pathwidth_solver pytest 114 passed). The split run's log has no `!!!` line.
+
+**What the dataset is**
+- **Size:** 21,754 instance files from 20 collections (every collection in `benchmarks/README.md` §1 plus the MOSP corpus) reduce to **17,714 isomorphism classes**. They were deduplicated by nauty certificate across collections and across problems.
+- **Duplicates removed:** the MOSP corpus comes out at 3,667 classes, the same figure as before. Rome goes from 11,534 files to 11,199 classes, the VSPLIB trees from 50 to 28, and the control-flow graphs from 1,817 to 1,070.
+- **Unread graphs:** 78 PACE graphs over 5,000 vertices are matched by file content only, not up to isomorphism.
+- **Values:** 16,087 classes have a certified pathwidth with a witness layout, and 862 more have a witnessed upper bound only.
+- **Format:** one JSON line per class. Each holds the graph, width, provenance, evidence, the witness layout, the value under each of the nine exactly-equivalent problems, and every member with its map onto the representative graph. Bound-certified records also carry a minor certificate as the lower-bound proof.
+
+**The independent check**
+- `paper2/dataset_check.py` uses only the standard library and imports nothing from the repository; 15 tests cover it and the builder.
+- With `--sources` it reports **0 failures on 16,949 records**. Every bound certificate replays, and all 20,987 member files are re-read with the checker's own readers and mapped onto their record.
+- Refutation-certified values (12,552 records) cannot be checked from the record; they rest on the repaired search until item 05 gives them a proof object.
+
+**Against published values**
+- All 84 Small graphs agree with Mallach (2018).
+- 10 of the 11 VLSI circuits certify at their published best-known track counts; W4 is still open at 28 against 27.
+- All 11 certified Carvalho & Soma values agree with the published spreadsheet. One of our upper bounds is better than the published best: Random-200-200-6-7 at 119 against 120.
+
+**Orientation finding**
+- Carvalho & Soma's files list customers as rows, unlike the Chu & Stuckey files in the same repository. My first pass read them the wrong way round. The comparison against published values caught it (one instance certified at 127 against a published 124), and the 150 instances were rerun.
+- Our Chu & Stuckey reading is confirmed against all 40 published class means.
+- The Frinhani large set's orientation is still unsettled: the published densities point both ways. None of its values is certified, so nothing rests on it yet.
+
+**Run and price**
+- **This item's run:** 5.7 core-hours on 4 workers, of which 1.2 went on the wrongly oriented first pass.
+- **Graph sets:** one more budget step for every open graph within the C engine costs at most about 500 core-hours. On the Rome record, each such step closes only about 40% of what it attempts.
+- **MOSP corpus:** the last five values are each priced in the hundreds of core-hours.
+- **Out of reach:** most of Carvalho & Soma (all but the dense class), Frinhani, and the 154 classes above 1,024 vertices. The cost model is used there well beyond the sizes it was tested on, and the write-up says so.
+
+**One thing for item 07:** `Random-125-125-2-4_0` was re-certified by the split run at 02:55 today, unchanged, after 154 core-hours. `solver_fix.md` still says "partial", which is out of date rather than wrong. It is recorded in PROGRESS.md for item 07 to update; three instances remain in flight.
+
+**Left open:** one Rome witness that did not come back within 120 s, the licences, the four data requests, and the runs beyond this item's budget. Everything is uncommitted, as instructed. About 21 MB of new data sits under `paper2/data/dataset/`, which is not git-ignored, so the driver's commit will include it.
+
+# result: success in 8367s, 124 turns, cost $20.13
