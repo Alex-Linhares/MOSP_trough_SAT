@@ -6,7 +6,7 @@ and correct it? **No correction was found anywhere checked. The later restatemen
 by the same group repeats the error.**
 
 *Widened 2026-10-03 (loop0008 item 01, "Every citer, swept" below):* 144
-citing works, and 24 of the 38 that cite the CP paper read in full. There is
+index entries (141 citing works), and 24 of the 38 that cite the CP paper read in full. There is
 still no correction. A third restatement surfaced: Fink (2012) reproduces
 Theorem 1 as true.
 
@@ -37,7 +37,7 @@ special case of their minimum-separator computation.
 | Source | What it says about the rules |
 |---|---|
 | Chu & Stuckey (2009), CP, LNCS 5732 (`literature/chu_stuckey_2009.pdf`) | Theorems 1 and 2 as published; false (`Search/PublishedTheorems.lean`). |
-| **Chu (2011), PhD thesis, *Improving combinatorial optimization*, Univ. of Melbourne**, ch. 6 (`literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, Minerva Access hdl:11343/36679) | The later and fuller statement. **Theorem 6.3.6 is Theorem 1 word for word, with the same proof** ("at most open(q, S) extra stacks open, but at least close(q, S) extra stacks closed"). **Theorem 6.3.8, the better move, has a different premise**: `close(q, S) ≥ open(q, S ∪ {r})`, not the CP paper's `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`. Its proof goes through the definite move. Definition 6.3.4 counts `close(c, S) = |{d : o(d, S) ⊆ o(c, S)}|` with `d` unrestricted, which is the literal reading. **Both theorems are false on `cexGraph`** (below; in Lean, `Search/ChuThesis.lean`). The thesis says its implementation of the better move subsumes the definite move. |
+| **Chu (2011), PhD thesis, *Improving combinatorial optimization*, Univ. of Melbourne**, ch. 6 (`literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, Minerva Access hdl:11343/36679) | The later and fuller statement. **Theorem 6.3.6 is Theorem 1 with the same premise and the same proof, reworded for `k` stacks** ("k-playable", "uses ≤ k stacks"); the proof's key line is the same: "at most open(q, S) extra stacks open, but at least close(q, S) extra stacks closed". *(Number audit, 2026-10-03: this said "word for word".)* **Theorem 6.3.8, the better move, has a different premise**: `close(q, S) ≥ open(q, S ∪ {r})`, not the CP paper's `close(q, S ∪ {r}) ≥ open(q, S ∪ {r})`. Its proof goes through the definite move. Definition 6.3.4 counts `close(c, S) = |{d : o(d, S) ⊆ o(c, S)}|` with `d` unrestricted, which is the literal reading. **Both theorems are false on `cexGraph`** (below; in Lean, `Search/ChuThesis.lean`). The thesis says its implementation of the better move subsumes the definite move. |
 | Chu, Garcia de la Banda & Stuckey (2012), *Constraints* 17, "Exploiting subproblem dominance" (held) | Uses MOSP as a benchmark for generic subproblem dominance (projection keys). Does not restate the definite or better move. |
 | Chu & Stuckey (2015), *Constraints* 20, "Dominance breaking constraints" (author PDF `domjournal.pdf`) | Mentions the 2009 paper only in related work, among problem-specific methods whose implementations it calls "somewhat non-rigorous", meaning they prune in the search engine instead of propagating. It points to no error. |
 | Beck, Kuroiwa, Lee, **Stuckey** & Zhong (2025), CP 2025, LIPIcs 340, paper 5, "Transition dominance in DIDP" | Cites the 2009 paper as the inspiration for a transition dominance on Graph-Clear (Proposition 14). Does not revisit MOSP or its rules. |
@@ -89,7 +89,7 @@ numbers).
 
 | Thesis statement | Lean theorem | Witness |
 |---|---|---|
-| Theorem 6.3.6 (= CP Theorem 1 verbatim), unclosed `close` | `chuThesis_theorem636_false` (is `chuStuckey_theorem1_false`) | S = {2}, q = 0 |
+| Theorem 6.3.6 (= CP Theorem 1, same premise, reworded), unclosed `close` | `chuThesis_theorem636_false` (is `chuStuckey_theorem1_false`) | S = {2}, q = 0 |
 | Theorem 6.3.6, literal `close` | `chuThesis_theorem636_false_literal` (is `chuStuckey_theorem1_false_literal`) | the same |
 | Theorem 6.3.8, unclosed `close` | `chuThesis_theorem638_false` | S = {2}, r = 3, q = 0: close(0, S) = 3 ≥ 2 = open(0, S ∪ {3}); S ++ [3] extends by [1, 4, 6, 12, 13, 0, 5, 7, 8, 9, 10, 11], S ++ [0] has no extension |
 | Theorem 6.3.8, literal `close` | `chuThesis_theorem638_false_literal` | the same (the literal premise is weaker) |
@@ -221,17 +221,25 @@ have nothing to do with the problem.
 ### The works citing only the thesis
 
 There are **103** of them: 100 cite the thesis and 3 the IJCAI abstract.
-**32 were read in full (31%).** Two of those mention open stacks or Chu &
-Stuckey in the text, and neither touches the rules:
-- Medema et al. (2024, *Constraints*) cites the projection-key caching;
-- Prestwich et al. (above) appears in both lists.
+**32 were read in full (31%).** One of those mentions open stacks or Chu &
+Stuckey in the text, and it does not touch the rules:
+- Medema et al. (2024, *Constraints*) cites the projection-key caching.
+
+Two more match "Chu & Stuckey" only in their reference lists, for other
+papers (Geibinger et al. 2019; Kletzander et al. 2026). The two works in
+both lists, Leo et al. and Chu's IJCAI abstract, are counted with the CP
+citers above. *(2026-10-03, number audit: this said "two", with Prestwich et
+al. in both lists; `citers.csv` has Prestwich et al. citing the CP paper only.)*
 
 The rest cite the thesis for lazy clause generation, Chuffed, nogoods or
 symmetry. The unread 71 are listed in `citers.csv`. Judged by title and venue,
 all are constraint-solver applications or techniques, from register allocation
 to rostering. One unread work could touch the rules: Gange, Chu & Stuckey,
 "Certifying optimality in constraint programming" (2019). The author page
-blocked the fetch.
+blocked the fetch. *(Number audit, 2026-10-03: the author list "Gange, Chu &
+Stuckey" is unverified. The only index entry, Semantic Scholar's `W081` in
+`citers.csv`, lists G. Gange and P. J. Stuckey. Settle it from the paper
+before citing.)*
 
 ### Verdict
 

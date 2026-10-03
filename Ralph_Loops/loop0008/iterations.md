@@ -99,7 +99,7 @@
     "For the paper". If a figure needs a print-quality version (vector, legible
     in one column), regenerate it.
 
-- [ ] **07 Audit every number in paper 2.**
+- [x] **07 Audit every number in paper 2.**
   - **Scope.** Every quantitative claim in `paper2/revised_algorithm.md`,
     `equivalences.md`, `problem_transformations.md`, `solver_fix.md`,
     `popularity.md`, `prior_art_counterexample.md` and `plan.md`.

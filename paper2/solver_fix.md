@@ -30,7 +30,10 @@ item 07: 108 of the 115 values that rested on the customer search alone are
 re-refuted by the repaired solver, with no answer changed, and 7 at 125 × 125
 need a long run; item 08: the pathwidth benchmarks rerun under the repaired
 rules prove the same width on all 11,424 graphs both runs proved; item 09:
-documents only).
+documents only; item 10: 4 of the 7 refuted by the root split, so **112 of the
+115** are re-refuted, and 3 are in flight).
+*(2026-10-03, number audit: this status line updated from "108 of 115"; the
+three in flight are `Random-125-125-2-1_0`, `-2-5_0` and `-4-4_0`, item 10.)*
 
 ---
 
@@ -372,7 +375,7 @@ only, since MOSP's C stops at 128).
 | pinned (`DEFINITE_CEX` ×2, Bug A, Bug B 8 and 10, `RUN_LOST_CEX`, 10×13, 17×9, 10×20) | 9 | 8–17 | 0 … n+1 | 6,450 | 51,600 | 0 | 0 | 213 | 0 |
 | gadgets (`better_augment`) | 300 | 14–17 | 0 … n+1 | 270,000 | 2,160,000 | 0 | 0 | 1,403 | 0 |
 | random sparse / C&S-shaped | 300 | 10–24 | 0 … n+1 | 285,850 | 2,286,800 | 0 | 0 | 2,411 | 0 |
-| certified corpus, cap 30,000 nodes (≤ 40) or 10,000 (> 40) | 280 (200 at ≤ 40, 80 at 41–125) | 9–125 | opt−1, opt | 3,360 | 26,880 | 0 | 0 | 16 | 0 |
+| certified corpus, cap 30,000 nodes (≤ 40) or 10,000 (> 40) | 280 (200 at ≤ 40, 80 at 41–125) | 10–125 | opt−1, opt | 3,360 | 26,880 | 0 | 0 | 16 | 0 |
 | wide sparse G(n, c/n), cap 5,000 nodes | 30 | 129–992 | three per graph | 360 | 1,080 | 0 | 0 | 18 | 0 |
 | **total** | **1,319** | | | **786,620** | **6,291,160** | **0** | **0** | **4,151** | **0** |
 
@@ -398,7 +401,7 @@ at `k = pw` (a refutation) and `k = pw + 1`:
 At `k = pw + 1` every one is `sat`, in identical nodes under both settings.
 
 **Size range.** The implementations agree on graphs of 4–24 vertices in full
-(every `k`), on corpus instances of 9–125 customers under node caps, and on
+(every `k`), on corpus instances of 10–125 customers under node caps, and on
 sparse random graphs of 129–992 vertices under a 5,000-node cap. Nothing here
 is a cost measurement.
 
@@ -423,8 +426,8 @@ finish, and +2.0% in the pathwidth solver** (its total is dominated by Rome, and
 the median pair there is 1.000). Per node, the repaired rules cost **about 2%**
 in the MOSP C (range −0.1% to +5.8% over six hard instances, measured quietly)
 and **about 6%** in the pathwidth solver's descents. The old test passes and the
-matching then fails on **0.03–0.27%** of definite-move candidates and **0.02%**
-of better-move pairs. The definite move stops firing at a node where it used to
+matching then fails on **0.02–0.27%** of definite-move candidates and
+**0.02–0.06%** of better-move pairs. The definite move stops firing at a node where it used to
 fire at **0.04–0.08%** of filter calls on the hard classes.
 
 ### What changed in the code
@@ -581,7 +584,7 @@ Each figure is the median of 5.
 |---|---|---|---|---|
 | Random-75-75-2-1_0 | 0.722 | 0.734 | 1.018 | 0.984 |
 | Random-100-50-4-1_0 | 0.549 | 0.562 | 1.024 | 0.966 |
-| Random-100-100-2-1_0 | 0.549 | 0.564 | 1.028 | 0.987 |
+| Random-100-100-2-1_0 | 0.549 | 0.564 | 1.028 | 0.986 |
 | Random-125-125-2-1_0 | 0.563 | 0.596 | 1.058 | 0.955 |
 | Random-125-125-4-1_0 | 0.768 | 0.767 | 0.999 | 0.971 |
 | Random-125-125-6-2_0 | 0.660 | 0.671 | 1.016 | 0.946 |
@@ -603,7 +606,7 @@ on to the subset rule and better move. That is where the extra nodes come from.
 
 **Size range.** MOSP: 9–40 customers, the whole certified corpus; 50–100,
 the 125 Chu & Stuckey instances, 118 finished; 125 × 125, 23 instances, 11
-finished, the rest per-node only. Pathwidth: 22–1,000+ vertices over 880
+finished, the rest per-node only. Pathwidth: 4–2,916 vertices over 880
 graphs, 731 proved under both settings. Nothing here measures the tree size of
 the day-long refutations (`Random-100-100-2`, `125-125-2/4`). There the
 per-node figure (+0–6%) and the counter rates are what this item can say.
@@ -862,7 +865,7 @@ re-refuted are exactly the hard ones that item 04 censored:
 - SP4 and SP4_0;
 - `Random-125-125-2-{1,4,5}`, `-4-{1..5}`, `-6-{2..5}`.
 
-Among them are the five day-long recertify refutations at 125 × 125, of 4.9 ×
+Among them are the six recertify refutations at 125 × 125, of 4.9 ×
 10¹⁰ to 4.6 × 10¹¹ nodes. For these, item 07's cheaper path, checking
 `CodeNodeRepaired` along the old run's certificate, is out of reach at the
 current emitter's scale (§32: 10¹¹ nodes are not shippable). They will most
@@ -1069,6 +1072,10 @@ gives the same node count and the same failing-node count as the walk. The
 other 57 exceed the cap; for them way 1 is the evidence.
 
 ### Needs a long run
+
+*(2026-10-03, number audit: four of these seven have since been refuted by
+item 10's root split, `-4-1_0`, `-4-5_0`, `-4-2_0` and `-2-4_0`; the other three
+are in flight.)*
 
 Seven 125 × 125 instances, each censored by the repaired solver after
 10.1 hours on one core. Each keeps its value as a verified upper bound. Each
@@ -1353,6 +1360,11 @@ search:
 The `CLAUDE.md` text below is proposed, not applied. `CLAUDE.md` is the
 owner's.
 
+*(2026-10-03, number audit: the "108 of 115" and "seven not yet re-refuted"
+below are superseded by item 10. 112 of the 115 are now re-refuted, all unsat,
+no value changed. The three left, `Random-125-125-2-1_0`, `-2-5_0` and
+`-4-4_0`, are in flight under the five-day split run to 2026-10-08.)*
+
 ### For CLAUDE.md
 
 Each block names the passage it replaces or follows. The numbers are those of
@@ -1547,11 +1559,21 @@ again; it is reported beside the total, not inside it.
   No certified value has changed.
 - **The density-2 ridge instance is far larger than its price.**
   `Random-125-125-2-4_0` has passed 4.7 × 10¹¹ nodes, 2.5× item 07's price of
-  1.88 × 10¹¹, with 320 tasks still queued. This is the post-fix ridge growth
-  that item 07 flagged ("the prices are low").
+  1.88 × 10¹¹, with 320 tasks still queued across the four open instances.
+  This is the post-fix ridge growth that item 07 flagged ("the prices are low").
 - The partial node counts cover finished tasks only. They are lower bounds on
   the split tree, not on the sequential one. At 00:30 the run stopped with 24
   tasks in flight, recorded as `stopped` (pending again on resume).
+
+*(2026-10-03, number audit: the table and the two bullets above are the state
+at 00:30. In the continued run, `Random-125-125-2-4_0` = 24 was **refuted** at
+`k = 23` at 02:55 on 2026-10-03 (`solver_fix_split_results.csv`): 1,686 tasks,
+39 expanded nodes, 4.98 × 10¹¹ nodes, waste 1.82 × 10¹¹, 154.1 core-hours, 7.9×
+the 6.28 × 10¹⁰ at which item 07 censored it. Item 06's 115 now stand at **112
+re-refuted**, all unsat, no value changed, and **3 in flight**. `python -m
+paper2.solver_fix_split --summary` at 07:04: `-2-1_0` partial, 196 tasks,
+7.55 × 10¹⁰ nodes, 39.3 core-hours; `-2-5_0` partial, 82 tasks, 3.21 × 10¹⁰,
+36.7; `-4-4_0` partial, 337 tasks, 9.0 × 10¹⁰, 49.2.)*
 
 ### Size range
 
@@ -1563,6 +1585,8 @@ refuted are density 4. No density-2 instance closed in this run.
 `Random-125-125-2-4_0`, `-4-4_0`, `-2-1_0` and `-2-5_0` keep their values as
 verified upper bounds. Their re-certification is in flight. Continued
 2026-10-03 with a five-day budget, all four sharing 20 workers:
+*(2026-10-03, number audit: `-2-4_0` was refuted at 02:55; the three left,
+`-4-4_0`, `-2-1_0` and `-2-5_0`, are in flight under this run to 2026-10-08.)*
 
 ```
 python -m paper2.solver_fix_split --workers 20 --parallel --until 2026-10-08T00:40 \

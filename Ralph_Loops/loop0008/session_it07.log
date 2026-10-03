@@ -1,0 +1,900 @@
+# session it07 started 2026-10-03 07:02:37
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n -A40 "^- \[ \] \*\*07" Ralph_Loops/loop0008/iterations.md; date; uptime; cat paper2/data/solver_fix_split.pid; grep -n '^!!!' pape
+  > $ cd /home/al/dev/MOSP/paper2; wc -l revised_algorithm.md equivalences.md problem_transformations.md solver_fix.md popularity.md prior_art_counterexample.md plan.
+  > $ cd /home/al/dev/MOSP/paper2; cat plan.md | head -120; grep -n '^#' solver_fix.md | head -80
+  > $ cd /home/al/dev/MOSP/paper2; tail -30 data/solver_fix_split.log; cat data/solver_fix_split_tables.md | head -60; sed -n 1460,1574p solver_fix.md
+  > $ cd /home/al/dev/MOSP; grep -n "summary\|def tables\|write_text\|open(" paper2/solver_fix_split.py | head -30
+  > $ cd /home/al/dev/MOSP; sed -n 450,500p paper2/solver_fix_split.py; timeout 300 python -m paper2.solver_fix_split --summary
+
+Auditing paper 2's numbers: I'm splitting the seven documents across five parallel audit agents, then compiling `paper2/number_audit.md`.
+  > $ mkdir -p /home/al/dev/MOSP/paper2/data/number_audit; cd /home/al/dev/MOSP/paper2; grep -n "Notes for the number audit" -A40 popularity.md | head -60; ls data/da
+  > $ cat > /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md <<'EOF'
+# Number audit: shared instructions for every auditor (loop0008 item 07, 2026-10-03)
+
+Y
+  > Agent {"description": "Audit revised_algorithm.md numbers", "subagent_type": "general-purpose", "prompt": "Read /home/al/dev/M
+  > Read /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > $ ls /home/al/dev/MOSP/paper2/data/number_audit/
+  > Agent {"description": "Audit equivalences.md numbers", "subagent_type": "general-purpose", "prompt": "Read /home/al/dev/MOSP/p
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > Read /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md
+  > Agent {"description": "Audit transformations + prior art", "subagent_type": "general-purpose", "prompt": "Read /home/al/dev/MO
+  > Read /home/al/dev/MOSP/paper2/equivalences.md
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > $ ls /home/al/dev/MOSP/literature/ /home/al/dev/MOSP/paper2/data/number_audit/ /home/al/dev/MOSP/lean/MOSPFormalization/Complex/; ls /home/al/dev/MOSP/paper2/data
+  > $ cat /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md; ls /home/al/dev/MOSP/paper2/data/number_audit/
+  > $ cd /home/al/dev/MOSP; ls -la paper2/data/number_audit/; ls paper2/data | head -80; find / -iname "*kornai*" -o -iname "*fomin*1998*" -o -iname "*kirousis*" 2>/d
+  > $ cd /home/al/dev/MOSP && nice -n 10 timeout 300 python3 -m paper2.solver_fix_split --summary 2>&1 | tail -40; ls paper2/data/ | grep -i solver_fix
+  > Read /home/al/dev/MOSP/paper2/prior_art_counterexample.md
+  > Read /home/al/dev/MOSP/paper2/problem_transformations.md
+  > $ cat data/solver_fix_recheck_tables.md | head -150
+  > Agent {"description": "Audit solver_fix.md numbers", "subagent_type": "general-purpose", "prompt": "Read /home/al/dev/MOSP/pap
+  > $ cd /home/al/dev/MOSP; ls literature/ | head -200; ls lean/MOSPFormalization/Complex/ lean/MOSPFormalization/Search/; ls paper2/data/prior_art/ | head; ls paper2
+  > $ grep -v "^| Random\|^| SP" data/solver_fix_recheck_tables.md | sed -n 20,200p
+  > Read /home/al/dev/MOSP/paper2/equivalences.md
+  > $ cat /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md; echo ----; grep -n '!!!' /home/al/dev/MOSP/paper2/data/solver_fix_split.log | head; echo "grep e
+  > $ cd /home/al/dev/MOSP; for n in $(grep -o '`[A-Za-z_.]*`' paper2/problem_transformations.md | tr -d '`' | sort -u); do loc=$(grep -rnE "(theorem|lemma|def|abbrev
+  > Read /home/al/dev/MOSP/paper2/equivalences.md
+  > $ grep -n "Needs a long run" -A 20 data/solver_fix_recheck_tables.md | grep "^.*| Random" | cut -c1-250; grep -n "9.73\|9\.7e\|total\|Total\|6,259\|6259\|distinct
+  > Agent {"description": "Audit popularity.md and plan.md", "subagent_type": "general-purpose", "prompt": "Read /home/al/dev/MOSP
+  > $ cd /home/al/dev/MOSP; grep -c '!!!' paper2/data/solver_fix_split.log; wc -l paper2/solver_fix.md; ls paper2/data/solver_fix_* paper2/solver_fix_*.py tests/test_
+  > Read /home/al/dev/MOSP/paper2/equivalences.md
+
+No `!!!` lines. Now reading the document in full.
+  > Read /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split_results.csv | cut -c1-300
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "theorem tracks_eq_pathwidth_add_one\|theorem pathwidth_add_two_lt\|namespace" Complex/GateMatrix.lean Comp
+  > Read /home/al/dev/MOSP/paper2/solver_fix.md
+  > Read /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ grep -n "9\.73\|106 of 113\|113 distinct\|6,259\|108 of\|0\.11%\|33 pass\|103 \|70 do\|8 runs\|58 emitted\|32 that\|32 \(of\|meet\)" solver_fix.md | head -40
+  > $ cat /home/al/dev/MOSP/paper2/data/number_audit/INSTRUCTIONS.md; ls /home/al/dev/MOSP/paper2/data/number_audit/
+  > Read /home/al/dev/MOSP/paper2/solver_fix.md
+
+Five auditors are running in the background; I'll compile when they report.
+  > ScheduleWakeup {"delaySeconds": 1800, "noop": false, "prompt": "Fallback wake: check whether the number-audit agents have finished; com
+  > Read /home/al/dev/MOSP/paper2/popularity.md
+  > Read /home/al/dev/MOSP/paper2/plan.md
+  > $ cd /home/al/dev/MOSP/paper2/data; for f in complex_check pebbling_check pebbling_gu_check pebbling_strategy_check; do echo "== $f"; wc -c $f.json; python3 -c "
+
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -m paper2.solver_fix_split --summary 2>&1 | tail -40; echo; grep -i 'Random-125-125-2-4_0' paper2/data/solver_fix_split
+  > $ sed -n 1,60p solver_fix.md; grep -n "split" solver_fix.md | head -30; cat data/solver_fix_split_tables.md | head -60
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; for i in $(seq 1 55); do n=$(ls *.md 2>/dev/null | grep -v INSTRUCTIONS | wc -l); [ $n -ge 7 ] && break; sleep 10
+  > $ cd /home/al/dev/MOSP; grep -n "def \|argparse\|add_argument\|savefig\|write\|open(" paper2/section2_figures.py | head -60; ls paper2/data/ | head -80
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n -A3 "theorem two_mul_cutwidth_starGraph\|theorem two_mul_modCutwidth_starGraph\|theorem pathwidth_starGraph
+  > $ cd /home/al/dev/MOSP; sed -n 1,130p paper2/section2_figures.py; sed -n 255,300p paper2/section2_figures.py
+  > $ cd /home/al/dev/MOSP; timeout 600 nice -n 10 python3 -m paper2.section2_figures --numbers 2>&1 | tail -150
+  > $ cd /home/al/dev/MOSP && ls lean/MOSPFormalization/Search/; grep -o '`[A-Za-z_][A-Za-z0-9_.'"'"']*`' paper2/revised_algorithm.md | tr -d '`' | sort -u > /tmp/ra_
+  > $ cd /home/al/dev/MOSP; head -c 3000 paper2/data/complex_check.json; echo; python3 -c "
+import json;d=json.load(open('paper2/data/complex_check.json'));
+def walk(
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split_tables.md; git log --oneline -3 -- paper2/data/solver_fix_split_tables.md; git diff --stat paper2/data/so
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json;d=json.load(open('paper2/data/complex_check.json'));
+print(d['value_sets']); print(list(d['named'].keys()))
+for k
+  > $ cd /home/al/dev/MOSP; head -30 paper2/data/solver_fix_split.log; echo ...; grep -n -i 'start\|stop\|resum\|workers\|REFUTED\|until' paper2/data/solver_fix_split
+  > $ cd /home/al/dev/MOSP && grep -rn "sorry" lean/MOSPFormalization/Search/ | grep -v "^\S*:[0-9]*: *--" | head; grep -rn "all_card_le_biUnion_card_iff_existsInject
+  > $ cd /home/al/dev/MOSP; grep -n "215\|294\|cited_by\|fetched\|1213\|1,213\|scatter" paper2/citation_graph.py paper2/trends.py paper2/relevance.py | head -40; pyth
+  > $ cd /home/al/dev/MOSP/paper2/data; grep -n -i "pla\|I_\|ident\|path" complex_check.json | head -30; for f in pebbling_check pebbling_gu_check pebbling_strategy_c
+  > $ cd /home/al/dev/MOSP && grep -rn "theorem all_card_le_biUnion_card_iff_existsInjective'" lean/.lake/packages/mathlib/Mathlib | head -2; grep -n "execSplit\|Spli
+  > $ cd /home/al/dev/MOSP; grep -n '^---\|^===\|^[0-9]* instances\|stopp\|worker' paper2/data/solver_fix_split.log | head -40; sed -n 3995,4015p paper2/data/solver_f
+  > $ cd /home/al/dev/MOSP && grep -rn "all_card_le_biUnion_card_iff_existsInjective'" lean/.lake/packages/mathlib/Mathlib | grep -v "^\S*:[0-9]*:.*apply\|This is" | 
+  > $ cd /home/al/dev/MOSP; sed -n 215,240p paper2/citation_graph.py; grep -n "TABLE1 = \|TABLE1=" -A16 paper2/citation_graph.py | head -20
+  > $ cd /home/al/dev/MOSP; date; ls Ralph_Loops/loop0007/ | head -50; grep -o 'solver_fix_split[^"\\]\{0,120\}--workers [0-9]*[^"\\]\{0,80\}' Ralph_Loops/loop0007/se
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "K_{3,3}\|K₃₃\|K_{1,3}\|completeBipartite\|K₂\b" Complex/EdgeSearch.lean Complex/EdgeSearchFull.lean | head
+  > $ cd /home/al/dev/MOSP && grep -n "^def \|^DEFINITE_CEX\|^[A-Z_]* = " paper2/search_check.py | head -60; sed -n 1,40p paper2/fink_check.py | head -50
+  > $ cd /home/al/dev/MOSP; grep -o 'solver_fix_split[^"]\{0,200\}' Ralph_Loops/loop0007/session_it10.jsonl | grep -o '\-\-workers[ =][0-9]*' | sort | uniq -c; grep -
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 148,158p equivalences.md; sed -n 450,458p equivalences.md; sed -n 578,590p equivalences.md
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from collections import Counter
+from paper2.citation_graph import TABLE1
+d=json.load(open('paper2/data
+  > $ cd /home/al/dev/MOSP && (time nice -n 10 timeout 600 python3 -m paper2.fink_check) 2>&1 | tail -15; grep -n "cexGraph\b" -A 12 lean/MOSPFormalization/Search/Def
+  > $ cd /home/al/dev/MOSP/paper2/data; python3 -c "
+import json
+for f in ['solver_fix_check.json','solver_fix_c_check.json','solver_fix_pw_check.json']:
+    d=json.l
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "^theorem\|^lemma" Complex/EdgeSeparation.lean | grep -i star; grep -n "^theorem\|^lemma" Complex/PLAFoldin
+  > $ cd /home/al/dev/MOSP; sed -n 790,840p paper2/data/complex_check.json; grep -n "argparse\|add_argument\|cpu_count\|Pool(" paper2/complex_check.py | head -30; gre
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from paper2.trends import CACHE, binned
+b,c,r=binned(json.load(open(CACHE)))
+print(b)
+for k in c: prin
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search && grep -n "def cexEdges" -A4 DefiniteMove.lean; grep -n "bmFamily :" -A6 BetterMove.lean; grep -n "def tieEd
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -m pytest --collect-only -q tests/test_pebbling_check.py 2>&1 | tail -3; sed -n 60,72p tests/test_complex_check.py; git
+  > $ cd /home/al/dev/MOSP; for c in ac807e152 f2fe5a47d 8d824d034; do echo $c $(git show $c:tests/test_pebbling_check.py | grep -c "^def test_") $(git show $c:tests/
+  > $ cd /home/al/dev/MOSP/paper2/data; python3 -c "
+import json
+d=json.load(open('solver_fix_pw_check.json'))
+def walk(x,p=''):
+    if isinstance(x,dict):
+        fo
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from collections import Counter
+d=json.load(open('paper2/data/openalex_citations.json'))
+w=d['works']
+
+  > $ cd /home/al/dev/MOSP; grep -rln "1,109,296\|1109296\|6,222\|6222" --include=*.md --include=*.py --include=*.json --include=*.log --include=*.txt . 2>/dev/null |
+  > $ cd /home/al/dev/MOSP; git show f2fe5a47d:tests/test_pebbling_check.py > /tmp/test_peb_old.py; PYTHONPATH=/home/al/dev/MOSP nice -n 10 python3 -m pytest --collec
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i 'corpus\|300\|58\|62\|200\|80\|cap\|30000\|10000\|129\|wide' solver_fix_c_check.py | head -40; echo ====; grep -n -i 'co
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 170,200p solver_fix_c_check.py; sed -n 75,90p solver_fix_pw_check.py; sed -n 200,225p solver_fix_pw_check.py
+  > $ cd /home/al/dev/MOSP; find / -iname "*kornai*" -o -iname "*fomin*" -o -iname "*bienstock*" -o -iname "*lapaugh*" -o -iname "*kirousis*" -o -iname "*beck*kuroiwa
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from paper2.relevance import CACHE, relevant, kept_works
+c=json.load(open(CACHE))
+ws=c['names']['graph
+  > $ cd /home/al/dev/MOSP; grep -o '`[A-Za-z][A-Za-z0-9_.ₙ₀-₉]*`' paper2/equivalences.md | tr -d '`' | sort -u > /tmp/eqnames.txt; wc -l < /tmp/eqnames.txt; cat lean
+  > $ cd /home/al/dev/MOSP; timeout 600 nice -n 10 python3 -c "
+from paper2 import solver_fix_c_check as c, solver_fix_pw_check as p
+L=[len(m) for _,m,_,_ in c.corpus
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from paper2.relevance import CACHE
+c=json.load(open(CACHE))
+for w in c['names']['graph path-width']:
+ 
+  > $ mkdir -p /tmp/ra && cat > /tmp/ra/chk.py <<'EOF'
+from functools import lru_cache
+def mk(n, E):
+    nb=[{i} for i in range(n)]
+    for a,b in E: nb[a].add(b); nb
+  > $ cd /home/al/dev/MOSP; sed -n 150,165p paper2/solver_fix_pw_check.py; timeout 600 nice -n 10 python3 -c "
+from paper2 import solver_fix_pw_check as p
+import insp
+  > $ cd /home/al/dev/MOSP; git log -1 --format=%ad --date=short bf2fa43d0; ls literature | grep -i -E "linhares|yanasse_2002|ly2002" ; 
+  > $ cd /home/al/dev/MOSP; for f in acyclic_orientations boundary_path_instance cutwidth_dp gate_matrix_tracks is_chordal lengauer_d lengauer_du lengauer_u modified_
+  > $ cd /home/al/dev/MOSP; ls paper2/literature/; mkdir -p /tmp/na_pt; for f in paper2/literature/*.pdf literature/kinnersley_1992_vertex_separation_equals_pathwidth
+  > $ cd /home/al/dev/MOSP/literature; pdftotext -layout "Linhares and Yanasse - 2002 - Connections between cutting-pattern sequencing, VL.pdf" - | grep -n -i -B2 -A3
+  > $ cd /home/al/dev/MOSP && head -20 paper2/thesis_check.py; grep -n "open\|write" paper2/thesis_check.py | head; (time nice -n 10 timeout 600 python3 paper2/thesis
+  > $ cd /home/al/dev/MOSP/paper2; grep -n '600\|range(\|random_sparse\|300\|aug' solver_fix_check.py | head -20; echo ===; cat data/solver_fix_soundness_tables.md
+  > $ cd /home/al/dev/MOSP; grep -rn "\bsorry\b" lean/MOSPFormalization --include=*.lean | grep -v "^\s*--" | grep -v "sorry-free\|no \`sorry\`\|sorry\`" | head; echo
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p": "$0}' "$1"; }; pg 13_kinnersley_1992.txt "path
+  > $ cd /home/al/dev/MOSP; git log --format="%h %ad %s" --date=short -- paper2/axiom_check.lean | tail -6; for c in $(git log --format=%h -- paper2/axiom_check.lean 
+  > $ cd /home/al/dev/MOSP && sed -n 33,36p lean/MOSPFormalization/Search/Memo.lean; grep -n "exhaust\|smallest" paper2/search_soundness.md | head -30
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p": "$0}' "$1"; }; pg Linhares_and_Yanasse_-_2002_
+  > $ cd /home/al/dev/MOSP/paper2; head -3 data/solver_fix_diff75_summary.csv; zcat data/solver_fix_diff75.csv.gz | head -3; grep -n 'differential_scale\|0.998\|skipp
+  > $ cd /home/al/dev/MOSP; sed -n 65,79p paper2/equivalences.md | cut -d'|' -f6 | grep -o '`[A-Za-z][A-Za-z0-9_.]*`' | tr -d '`' | sort -u | while read n; do b=${n##
+  > $ cd /home/al/dev/MOSP; find . -name 'differential_scale*.csv*' -not -path './.git/*' 2>/dev/null; 
+  > $ ls data/search_*; for p in 33,867 26,100 6,000 111,288,536 90,915,044 355,181,036 4,418,084 88,802 "2.05" 600,000 90,000 570,206 "58 of" "29 graphs" "83" 1,781,
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p": "$0}' "$1"; }; pg 06_mohring_1990.txt "proposi
+  > $ cd /home/al/dev/MOSP; ls paper2/literature/; mkdir -p /tmp/eqlit; for f in paper2/literature/*.pdf literature/ellis_sudborough_turner_1994_vertex_separation_sea
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p+16": "$0}' "$1"; }; pg 06_mohring_1990.txt "MPP|
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+p='popularity.md'; s=open(p).read()
+reps=[
+("""- **Defining paper citations** — `cited_by_count` for the Table 1 
+  > $ sed -n 934,955p search_soundness.md; sed -n 2036,2052p search_soundness.md; sed -n 1276,1300p search_soundness.md
+  > $ cd /home/al/dev/MOSP; head -2 learning/data/ensemble/differential_scale.csv; nice -n 10 python3 -c "
+import pandas as pd
+a=pd.read_csv('paper2/data/solver_fix_d
+  > $ sed -n 960,970p search_soundness.md | cut -c1-300; sed -n 1012,1018p search_soundness.md
+  > $ cd /home/al/dev/MOSP; grep -n 'digest\|sha\|229207' paper2/solver_fix_soundness.py | head; grep -n 'open(\|to_csv\|write' benchmarks/corpus.py | head; git log -
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p+16": "$0}' "$1"; }; pg 06_mohring_1990.txt "3\\.
+  > $ cd /home/al/dev/MOSP; grep -rn '229207b225a666a5' --include=*.py --include=*.md --include=*.json --include=*.log . 2>/dev/null | grep -v '^./.git' | head; sed -
+  > $ cat > /tmp/eqlit/pg.py <<'EOF'
+import sys,re
+f,pat=sys.argv[1],sys.argv[2]
+ctx=int(sys.argv[3]) if len(sys.argv)>3 else 0
+pages=open(f).read().split('\f')
+for i
+  > $ cd /tmp/na_pt; grep -n -i "3.15\|Problem 1\|problem 1" 06_mohring_1990.txt 08_wing_huang_wang_1985.txt | head; grep -c . 08_wing_huang_wang_1985.txt; pdfinfo /h
+  > $ for p in 16,244,090 36,939,226 1,557,980 1,529 12,582,320 1,319 "992" 17,431,232 52,592 "64 config" 51,454,712 1,786,824 "1.00003" "1.00004" "118 of 125" "1.003
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+p='popularity.md'; s=open(p).read()
+reps=[
+("""  2026-09-29. Only works judged relevant are counted (Section 2.1)
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -m benchmarks.corpus 2>&1 | tail -12; sed -n 215,235p Ralph_Loops/loop0007/PROGRESS.md
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i "problem 1\b\|Problem 1[^0-9]" equivalences.md literature/MANIFEST.md | head; grep -n -i "wing" equivalences.md | head; 
+  > $ sed -n 418,432p solver_fix.md; sed -n 512,545p solver_fix.md; sed -n 585,600p solver_fix.md
+  > $ cd /tmp/eqlit; L="Linhares_and_Yanasse_-_2002_-_Connections_between_cutting-pattern_sequencing,_VL.txt"; python3 - "$L" <<'EOF'
+import sys
+p=open(sys.argv[1]).r
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+from collections import Counter
+from paper2.citation_graph import TABLE1
+d=json.load(open('paper2/data
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json,hashlib,glob
+rows=[]
+for p in sorted(glob.glob('solutions/*.json')):
+    d=json.load(open(p)); rows.ap
+  > $ cd /tmp/na_pt; grep -n -E "^ *(I|II|III|IV|V)\. |Theorem [0-9]|THEOREM" 07_ohtsuki_et_al_1979.txt | head -20; echo ---; grep -n -E "^ *[0-9]\.? |Section|SECTION
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 178,181p popularity.md
+  > $ cd /tmp/eqlit; L="Linhares_and_Yanasse_-_2002_-_Connections_between_cutting-pattern_sequencing,_VL.txt"; grep -n -A6 "Modi:ed cutwidth (MCUT)" "$L"; grep -n "^ 
+  > $ cd /tmp/na_pt; sed -n 107,130p 11_kornai_tuza_1992.txt; grep -n -E "II\.|IV\. |boundary" 07_ohtsuki_et_al_1979.txt | head; sed -n 262,275p 07_ohtsuki_et_al_1979
+  > $ cd /home/al/dev/MOSP; grep -n 'argparse\|add_argument\|write_text\|open(.*w\|OUT\|\.md' paper2/solver_fix_cost_tables.py | head -20; grep -n "tables" paper2/sol
+  > $ grep -n "8,456\|8456\|1\.64\b\|median pair" solver_fix.md data/solver_fix_bench_tables.md | head; grep -n "1,786,824\|1786824\|1.79 M\|differential" solver_fix.
+  > Edit /home/al/dev/MOSP/paper2/popularity.md
+  > $ cd /tmp/eqlit; L="Linhares_and_Yanasse_-_2002_-_Connections_between_cutting-pattern_sequencing,_VL.txt"; sed -n 95,130p "$L"; grep -n "\[19\]" "$L"
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+from pathlib import Path
+from paper2.solver_fix_cost_tables import write_tables
+write_tables(Path('/tmp/cost_table
+  > $ sed -n 1280,1295p solver_fix.md; sed -n 695,725p solver_fix.md; ls data/ | grep -i diff; 
+  > $ cd /home/al/dev/MOSP; git show bf2fa43d0:paper2/popularity.md | sed -n 1,45p
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p": "$0}' "$1"; }; pg 09_kirousis_papadimitriou_19
+  > $ cd /home/al/dev/MOSP/paper2/data; for f in mosp40 cs cs125 pw overhead; do echo "== $f"; head -1 solver_fix_cost_$f.csv; wc -l < solver_fix_cost_$f.csv; done
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p+204": "$0}' "$1"; }; pg 10_kirousis_papadimitrio
+  > $ grep -n "957" solver_fix.md | head -5; sed -n 1255,1279p solver_fix.md | cut -c1-250; grep -n "6,276\|60 s\|10 instances\|rejected" certificates.md | head; grep
+  > $ cd /tmp/eqlit; L="Linhares_and_Yanasse_-_2002_-_Connections_between_cutting-pattern_sequencing,_VL.txt"; grep -n "19\]\|\[1[0-9],19\|,19\]" "$L" | head; grep -n
+  > $ cd /home/al/dev/MOSP; grep -n "fontsize\|size=" paper2/section2_figures.py | head -40; grep -n "7 pt\|7pt\|fontsize" tests/test_section2_figures.py
+  > $ sed -n 1296,1304p solver_fix.md; sed -n 110,145p certificates.md; sed -n 286,295p certificates.md; grep -n "DEFINITE_CEX\|rejected" certificates.md | head
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p+204": "$0}' "$1"; }; pg 10_kirousis_papadimitrio
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+d=pd.read_csv('solver_fix_cost_mosp40.csv')
+print(d.setting.unique(), d.config.
+  > $ cd /tmp/eqlit; L="Linhares_and_Yanasse_-_2002_-_Connections_between_cutting-pattern_sequencing,_VL.txt"; grep -n -i "trivially" "$L"; python3 pg.py "$L" "trivia
+  > $ cd /home/al/dev/MOSP/paper2/figures; for f in sec2_fig*.pdf; do pdfinfo $f | grep "Page size"; pdffonts $f | tail -n +3 | awk '{print $1,$2,$3}'; done
+  > $ sed -n 145,160p certificates.md; sed -n 186,200p certificates.md
+  > $ cd /tmp/eqlit; python3 pg.py 01_yanasse_1997.txt "stack is opened for every new|Proposition [12]|tool" 0 | head -30; echo ====; python3 pg.py yanasse_1997a_tran
+  > $ cd /tmp/na_pt; head -30 14_lengauer_1981.txt | grep -n "46[0-9]\|47[0-9]"; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){pri
+  > $ cd /home/al/dev/MOSP/paper2; grep -n "at most 6.5 in" -A2 popularity.md
+  > $ sed -n 1045,1075p solver_fix.md; grep -n "1,200 s\|1200" solver_fix.md | head -5; sed -n 910,925p solver_fix.md; grep -n "58 \(emitted\|certificates\)\|32 \|wal
+  > $ cd /tmp/eqlit; grep -n -i "proposition\|property [12]\|theorem" 01_yanasse_1997.txt | head; echo; python3 pg.py 04_fink_voss_1999.txt "1\.1\.1|defined open|rows
+  > $ cd /tmp/na_pt; awk 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} (p==2||p==3) && tolower($0)~/white|progressive|cook|sethi/ {print "pdfp"p": "$0}' 14_lengauer_1981.txt | h
+  > Edit /home/al/dev/MOSP/paper2/popularity.md
+  > $ cd /tmp/eqlit; sed -n 150,215p 01_yanasse_1997.txt | cut -c70-200
+  > $ cd /tmp/na_pt; pg(){ awk -v pat="$2" 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} tolower($0)~tolower(pat){print "pdfp" p": "$0}' "$1"; }; pg 12_fomin_1998.txt "theorem 8
+  > $ cd /home/al/dev/MOSP; timeout 300 nice -n 10 python3 -m pytest -q tests/test_section2_figures.py 2>&1 | tail -3
+  > $ sed -n 684,692p solver_fix.md | cut -c1-90; sed -n 125,134p solver_fix.md | cut -c1-110; sed -n 240,252p solver_fix.md | cut -c1-140; sed -n 368,380p solver_fix
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd, re
+for f in ['cs','cs125']:
+  d=pd.read_csv(f'solver_fix_cost_{f}.csv')
+  o=d[
+  > $ cd /tmp/na_pt; grep -n "Theorem\|heorem" 12_fomin_1998.txt | head -20; grep -n "Proposition 5\|Proposition" 01_yanasse_1997.txt | head; grep -n -i "Theorem 2.1\
+  > $ cd /tmp/na_pt; grep -n -i "proposi[cç]" yanasse_1997a_transformation_pattern_sequencing_wood.txt | head; ls /tmp/*/ | grep -i ellis; pdfinfo /home/al/dev/MOSP/l
+  > $ cd /tmp/eqlit; python3 - <<'EOF'
+import re
+p=open('06_mohring_1990.txt').read().split('\f')
+pats=['Theorem 3\.2','Proposition 3\.5','Theorem 3\.9','Theorem 3\.1
+  > $ cd /tmp; for f in $(ls -d /tmp/*/ellis_sudborough* 2>/dev/null); do echo $f $(wc -c <$f); done; f=$(ls -S /tmp/*/ellis_sudborough* 2>/dev/null| head -1); grep -
+  > $ cd /home/al/dev/MOSP/literature && ls | grep -i -E "chu|kitsunai|kobayashi|coudert|suchan|bodlaender|fink|ore" 
+  > $ cd /tmp/eqlit; python3 - <<'EOF'
+import re
+p=open('06_mohring_1990.txt').read().split('\f')
+for i,pg in enumerate(p):
+    for l in pg.split('\n'):
+        if re
+  > $ grep -n "^Proposition\|^ *Proposition [0-9]:" /tmp/na_pt/yanasse_1997a_transformation_pattern_sequencing_wood.txt; grep -n -i "ellis\|EST\b" /home/al/dev/MOSP/p
+  > $ cd /home/al/dev/MOSP; ls paper2/; ls paper2/data/certificates paper2/data/dataset; ls paper2/figures | head -40
+  > $ cd /home/al/dev/MOSP; ls Ralph_Loops/loop0008/; cat Ralph_Loops/loop0008/status.json | head -50
+  > $ cd /tmp/eqlit; python3 - <<'EOF'
+import re
+p=open('06_mohring_1990.txt').read().split('\f')
+for i,pg in enumerate(p):
+    for l in pg.split('\n'):
+        m=re.
+  > $ cd /home/al/dev/MOSP; cat paper2/data/certificates/tables.md | head -80; echo ----; grep -n "6,276\|6,286\|6276\|6286" paper2/certificates.md | head
+  > $ cd /tmp/ra && cat > pg.sh <<'EOF'
+#!/bin/bash
+# usage: pg.sh pdf pattern  -> pdf page numbers with match and a header/footer line guess
+f="$1"; pat="$2"; n=$(pd
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+d=pd.read_csv('solver_fix_cost_pw.csv')
+print(d.setting.unique(), d.set.unique(
+  > $ cd /tmp/eqlit; grep -n "4\.5\|4\.6" 06_mohring_1990.txt | head; python3 pg.py 06_mohring_1990.txt "4\.[56] *Theorem|Theorem *4\.[56]" 4 | head -40
+  > $ cd /home/al/dev/MOSP; head -60 paper2/data/dataset/tables.md; grep -n "17,714\|21,754\|16,087\|twenty\|10 of the 11\|4 cores\|2 hours" paper2/dataset.md | head 
+  > $ cd /tmp/eqlit; sed -n 1255,1300p 06_mohring_1990.txt; python3 pg.py 06_mohring_1990.txt "Constrained PLA folding is NP" 0
+  > $ cd /home/al/dev/MOSP; sed -n 60,90p paper2/data/dataset/tables.md; sed -n 95,115p paper2/dataset.md; sed -n 420,450p paper2/dataset.md
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 4 -l 5 chu_stuckey_2009.pdf - | grep -n -i -B3 -A2 "nogood\|close(c, S) =\|close(q, S) =\||O(S)"; pdftot
+  > $ cd /tmp/eqlit; python3 pg.py 06_mohring_1990.txt "GMPP|no restriction|p-|more than one row|block folding|constrained" 1 | grep -v "^\s*$" | head -50
+  > $ cd /home/al/dev/MOSP; sed -n 84,96p paper2/dataset.md; sed -n 115,125p paper2/data/dataset/tables.md
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd, numpy as np
+d=pd.read_csv('solver_fix_cost_pw.csv')
+t=d[d.set=='vsplib-tree']
+
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 4 -l 4 chu_stuckey_2009.pdf - | wc -l; pdftotext -layout -f 5 -l 5 chu_stuckey_2009.pdf - | grep -n "nog
+  > $ cd /home/al/dev/MOSP; grep -n -A16 "^| circuit" paper2/data/dataset/tables.md | head -18; grep -n "1,024\|1024\|600 s\|11,183\|97.0\|11,534" pathwidth_solver/TR
+  > $ cd /tmp/eqlit; python3 -c "
+p=open('06_mohring_1990.txt').read().split('\f')
+print(p[5][-800:]); print('====P23'); print(p[6][:2500]); print('====P24');print(p[
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i "145\|24 instance\|instance sets" benchmarks/hunt_citers.md | head; grep -n "^## \|^### " benchmarks/README.md | head -2
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 1 -l 1 chu_stuckey_2009.pdf - | grep -n -i -B2 -A2 "path-width"; pdftotext -layout -f 6 -l 7 chu_stuckey
+  > $ cd /tmp/eqlit; python3 - <<'EOF'
+import re
+p=open('07_ohtsuki_et_al_1979.txt').read().split('\f')
+pats=[r'\(3\)',r'\(4\)',r'\(5\)',r'\(6\)',r'\(14\)','Theorem 3
+  > $ cd /home/al/dev/MOSP/paper2/data; grep -n -i '1340\|1,340\|recorded\|bench/results\|Dorogov\|4007\|1.8 h\|680\|seed\|20261001' solver_fix_cost_tables.md solver_
+  > $ cd /home/al/dev/MOSP; grep -n "^## \|^### " paper2/proof_reductions.md | head -20; grep -n "P\.3" paper2/equivalences.md | head -5; cd lean/MOSPFormalization; f
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 18,24p benchmarks/hunt_citers.md; sed -n 57,68p benchmarks/README.md
+  > $ cd /tmp/eqlit; grep -n "time being\|find a supergraph\|necessary number of\|Theorem 3\|NP-complete\|\[11\]\|NP-" 07_ohtsuki_et_al_1979.txt | head -20; python3 p
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results; ls; head -2 $(ls *.csv | head -1)
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; ls; ls Complex Search; grep -c sorry MOSPGraph.lean; grep -n "theorem\|lemma" MOSPGraph.lean | grep -i "pathwidth\|
+  > $ cd /tmp/na_pt; grep -n "b) Given\|b) For\|^ *b)" 14_lengauer_1981.txt | head -3; grep -n -i "digraph\|acycl" /home/al/dev/MOSP/lean/MOSPFormalization/Complex/Pe
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=1} {n=gsub(/\f/,"&"); print p": "NR": "$0; p+=n}' 07_ohtsuki_et_al_1979.txt | sed -n 185,240p | cut -c1-190
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 <<'EOF'
+import pandas as pd, glob
+rec={}
+for f in sorted(glob.glob('pathwidth_solver/bench/results/*.csv')):
+    r=pd.r
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i "seven\|band\|LaPaugh\|false" equivalences.md | head -30
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 80,88p equivalences.md
+  > $ cd /tmp/eqlit; grep -n -i "complete\|\[11\]\|^ *\[11" 07_ohtsuki_et_al_1979.txt | head; awk 'BEGIN{p=1} {n=gsub(/\f/,"&"); if ($0 ~ /Theorem 3|IV\. |B augment/)
+  > $ cd /home/al/dev/MOSP; grep -n "^## " reports/ml_nature.md | grep -E "^[0-9]+:## (11|15|17|19|25|28|32)\b|§?(11|15|17|19|25|28|32)\." | head -20; grep -n "^## " 
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -rn "theorem.*mospValue.*\(zero\|no_req\|empty\)\|mospValue = 0" --include=*.lean . | head
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=1} {n=gsub(/\f/,"&"); if ($0 ~ /(^|  )(I|II|III|IV|V|VI|VII)\. [A-Z]/ || $0 ~ /boundary/) print p+674": "NR": "substr($0,1,190); p+=
+  > $ cd /home/al/dev/MOSP; sed -n 1,30p reports/better_move_bug.md | cut -c1-200; grep -n -i "found\|discover" reports/better_move_bug.md | head
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 166 -l 166 chu_2011_phd_thesis_improving_combinatorial_optimization.pdf - | grep -n -A8 "Theorem 6.3.8";
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 <<'EOF'
+import pandas as pd, glob, itertools
+d=pd.read_csv('paper2/data/solver_fix_cost_pw.csv')
+p=d[d.proof.isin(['ref
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/prior_art_sweep.py; grep -n "argparse\|add_argument\|def main\|write\|open(" paper2/prior_art_sweep.py | head -40; hea
+  > $ cd /tmp/eqlit; cat 08_wing_huang_wang_1985.txt | head -90; pdfinfo /home/al/dev/MOSP/paper2/literature/08_wing_huang_wang_1985.pdf | grep Pages
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p paper2/solver_fix.md | cut -c1-250; grep -n "112\|115" paper2/solver_fix.md | head
+  > $ cd /home/al/dev/MOSP; grep -n '20261001\|Dorogov\|rome' paper2/solver_fix_cost.py | head; grep -h Dorogov pathwidth_solver/bench/results/named*.csv; grep -n -i 
+  > $ which tesseract pdftoppm; cd /tmp/eqlit; pdftoppm -f 2 -l 3 -r 200 -png /home/al/dev/MOSP/paper2/literature/08_wing_huang_wang_1985.pdf wing 2>&1; ls wing*
+  > $ cd /home/al/dev/MOSP; timeout 120 nice -n 10 python3 -m paper2.solver_fix_split --summary 2>&1 | tail -30
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 - <<'E'
+import csv,collections,json
+R=list(csv.DictReader(open('citers.csv')))
+print('rows',len(R))
+c=collec
+
+No tesseract; I'll look at the page images directly.
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 45 -l 46 fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf - | grep -n -i "CAPÍTULO\|f(j\|Teorema\|movim
+  > $ cd /home/al/dev/MOSP; tail -4 paper2/data/solver_fix_cost_pw.log; grep -rn '1\.8 h' Ralph_Loops/loop0007/PROGRESS.md | head -3; grep -c . paper2/data/solver_fix
+  > Read /tmp/eqlit/wing-02.png
+  > Read /tmp/eqlit/wing-03.png
+  > $ cd /home/al/dev/MOSP; grep -n -i 'dorogov' Ralph_Loops/loop0007/PROGRESS.md | head; grep -o 'Dorogov[^"]\{0,200\}' Ralph_Loops/loop0007/session_it04.jsonl | gre
+  > $ cd /home/al/dev/MOSP/literature && F=kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.pdf; pdfinfo $F | grep Pages; for p in "extremely effective" "feasib
+  > $ cd /home/al/dev/MOSP; ls literature | grep -i -E "linhares|thesis|tese|kashiwabara"; grep -n -i "kashiwabara\|eleven\|held\|linhares" literature/MANIFEST.md | h
+  > $ cd /home/al/dev/MOSP; sed -n 190,196p Ralph_Loops/loop0007/PROGRESS.md
+  > $ cd /home/al/dev/MOSP; find . -name "MANIFEST.md" -not -path "./node_modules/*" 2>/dev/null | head; ls paper2/literature | head -30
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 - <<'E'
+import json,glob
+for f in sorted(glob.glob('*.json')):
+    d=json.load(open(f))
+    if isinstance(d,
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+d=pd.read_csv('solver_fix_cost_overhead.csv')
+print(d.variant.unique(), d.rep.n
+  > $ cd /home/al/dev/MOSP/literature && F=kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.pdf; pdftotext -layout -f 1 -l 2 $F - | grep -n -i "extremely\|depth
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import json
+d=json.load(open('paper2/data/openalex_citations.json'))
+from collections import Counter
+c=Counter()
+f
+  > $ cd /home/al/dev/MOSP; grep -rln "is-referenced-by\|crossref" paper2 --include=*.json --include=*.log --include=*.txt --include=*.md 2>/dev/null | head; grep -rn
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 -c "
+import pandas as pd
+d=pd.read_csv('solver_fix_cost_overhead.csv')
+m=d.groupby(['instance_name','varian
+  > $ cd /tmp/eqlit; for f in 09_kirousis_papadimitriou_1985 10_kirousis_papadimitriou_1986; do echo "=== $f"; awk 'BEGIN{p=1} {n=gsub(/\f/,"&"); if ($0 ~ /Theorem|TH
+  > $ cd /home/al/dev/MOSP/literature && F=kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.pdf; for i in 3 5; do pdftotext -layout -f $i -l $i $F - | wc -l; do
+  > $ cd /home/al/dev/MOSP/literature && F=kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.pdf; pdftotext -layout -f 4 -l 4 $F - | grep -n "d(X) = \|vertex sep
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 -c "
+import pandas as pd
+d=pd.read_csv('solver_fix_cost_overhead.csv')
+m=d.groupby(['instance_name','varian
+  > $ cd /tmp/eqlit; for f in 09_kirousis_papadimitriou_1985 10_kirousis_papadimitriou_1986 11_kornai_tuza_1992 12_fomin_1998 13_kinnersley_1992 14_lengauer_1981 fell
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 - <<'E'
+import csv
+R=list(csv.DictReader(open('citers.csv')))
+for r in R:
+    if r['cites']=='cp2009+thesis2
+  > $ cd /home/al/dev/MOSP/literature; pdftotext -layout "Linhares and Yanasse - 2002 - Connections between cutting-pattern sequencing, VL.pdf" - | grep -n -i "Propos
+  > $ cd /home/al/dev/MOSP/literature && F=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.pdf; pdfinfo $F | grep Pages; fo
+  > $ cd /home/al/dev/MOSP/literature; for f in fellows_langston_1989_search_decision_efficiency_stoc.pdf fellows_langston_1987_nonconstructive_advances_ipl.pdf yanas
+  > $ cd /home/al/dev/MOSP; git log --oneline --grep='loop0007' | head -15; grep -n 'GATE\|tests passed\|committed' Ralph_Loops/loop0007/loop.log | head -40
+  > $ cd /home/al/dev/MOSP/literature; pdftotext -layout ellis_sudborough_turner_1994_vertex_separation_search_number.pdf - 2>/dev/null | grep -n -i -E "theorem|vs\(G
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; grep -n "^=\|^#\|^W[0-9]" hits.txt | head -5; awk '/W085|W143|W080/{f=1} /^(=+|#+) *W[0-9]/{ if($0!~/W085|W143|W080/
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=204} {n=gsub(/\f/,"&"); if ($0 ~ /ns\(G\) *[-—] *1|\(2\)|pb\(G\)|pebbled only once|can be placed at any point|placed on a vertex onl
+  > $ cd /home/al/dev/MOSP; for c in 8a94dd0b7 988e65c1e 65a7e9003 4bd5cb647 baa46ce6a; do echo -n "$c test_repaired_rules: "; git show $c:tests/test_repaired_rules.p
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n "^theorem" Sandwich.lean | cut -c1-110 | head -30; grep -n "^theorem" VSEquivPW.lean | head; grep -n "^theo
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; ls | grep -E "W085|W143|W132|W080"; ls manual 2>/dev/null | head -50; python3 -c "
+import csv
+for r in csv.
+  > $ cd /home/al/dev/MOSP; git show dfd05759d:pathwidth_solver/tests/test_repaired_rules.py | grep -n 'def test\|parametrize'; git show badb92a60:pathwidth_solver/te
+  > $ cd /tmp/eqlit; sed -n 186,200p 10_kirousis_papadimitriou_1986.txt; sed -n 212,222p 10_kirousis_papadimitriou_1986.txt; awk 'BEGIN{p=204} {n=gsub(/\f/,"&"); if (
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; for w in W085 W143 W132; do echo "== $w"; pdftotext W$( echo $w | cut -c2-).pdf - 2>/dev/null | tr '\n' ' '
+  > $ cd /home/al/dev/MOSP/literature && F=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.pdf; /tmp/ra/pg.sh $F "vertex se
+  > $ cd /home/al/dev/MOSP; git ls-tree --name-only 96728a745 tests/ | grep -c 'tests/test_.*\.py$'; git show 8a94dd0b7 --stat | head -30 | grep -i test
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; file W085.pdf W143.pdf; ls -la W085* W143*; ls | grep -v -E "\.pdf$|\.url$"; grep -n "pdftotext\|\.txt" ../
+
+My grep had a bug (W$(...) doubled). Retry.
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=1} {n=gsub(/\f/,"&"); if ($0 ~ /Proposition|Definition|In the i-th step|at least one vertex|^ *[0-9]\. /) print p": "NR": "substr($0
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; for w in W085 W143; do echo "== $w"; pdftotext $w.pdf - 2>/dev/null | tr '\n' ' ' | grep -o -i -E ".{200}(C
+  > $ cd /home/al/dev/MOSP; grep -n '9,312\|9312\|19,438\|19438\|35,264\|35264\|117,828\|117828\|15,518\|15518\|392a2bda2' Ralph_Loops/loop0007/PROGRESS.md tests/test
+  > $ cd /home/al/dev/MOSP/literature && F=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.pdf; pdftotext -layout -f 4 -l 4
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+p='plan.md'; s=open(p).read()
+reps=[
+("""ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
+
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=345} {n=gsub(/\f/,"&"); if ($0 ~ /Theorem|Corollary|path-decomposition of G if|vs_L|V_L|Robertson|gate matrix/) print p": "NR": "sub
+  > $ cd /home/al/dev/MOSP; grep -n '14,281\|14281\|1,433,648\|1433648\|685,211\|631,994\|1,577\|477' Ralph_Loops/loop0007/PROGRESS.md | head; for s in 02 03; do echo
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 - <<'E'
+import json
+for f in ['s2_cites_thesis2011.json','s2_cites_cp2009.json','openalex_cites_thesis2011.j
+  > $ cd /home/al/dev/MOSP; git diff --stat paper2/popularity.md paper2/plan.md; wc -l paper2/popularity.md paper2/plan.md
+  > $ cd /home/al/dev/MOSP/literature && F=coudert_mazauric_nisse_2014_branch_and_bound_pathwidth_sea.pdf; pdfinfo $F | grep Pages; for p in "Lemma 3" "Lemma 4" "^ *3
+  > $ cd /home/al/dev/MOSP; grep -o 'SP2 18 False[^"]\{0,200\}' Ralph_Loops/loop0007/session_it02.jsonl | head -2; grep -o '[^"]\{0,300\}685211/0.274[^"]\{0,400\}' Ra
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=464} {n=gsub(/\f/,"&"); if ($0 ~ /Theorem|Definition|Lemma|min-cut|minimum cut|three pebbles|directed trees|vertex separator version
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import re
+s=open('Ralph_Loops/loop0007/session_it03.jsonl',errors='replace').read()
+i=s.find('685211/0.274')
+print(s[i-8
+  > $ cd /home/al/dev/MOSP/literature && F=coudert_mazauric_nisse_2014_branch_and_bound_pathwidth_sea.pdf; pdftotext -layout -f 3 -l 3 $F - | grep -n "ν\|^ *Branch\|4
+  > $ cd /tmp/eqlit; awk 'BEGIN{p=464} {n=gsub(/\f/,"&"); if ($0 ~ /b\) Given|binary tree|Gd/) print p+1": "NR": "substr($0,1,150); p+=n}' 14_lengauer_1981.txt | head
+  > $ cd /home/al/dev/MOSP; grep -n 'add_argument\|def main\|write\|to_csv' paper2/solver_fix_provenance.py | head -20; cat paper2/data/solver_fix_provenance_tables.m
+  > $ cd /tmp/eqlit; grep -n "Lemma" fellows_langston_1987_nonconstructive_advances_ipl.txt | head; grep -n -A4 "Theorem 7\. " fellows_langston_1989_search_decision_e
+  > $ cd /home/al/dev/MOSP/literature && F=2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC.pdf; for p in "full set" "do not have a neighbor" "Rule 1|Mo
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+d=pd.read_csv('solver_fix_provenance.csv')
+print(len(d), d.columns.tolist())
+fo
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import json;d=json.load(open('s2_cites_cp2009.json'));ys=[x['citingPaper'].get('year') for x in d['data
+  > $ cd /tmp/eqlit; pdfinfo /home/al/dev/MOSP/literature/ellis_sudborough_turner_1994_vertex_separation_search_number.pdf | grep Pages; pdftoppm -f 1 -l 8 -r 90 -gra
+  > $ cd /home/al/dev/MOSP; time nice -n 10 python3 -m paper2.fink_check; sed -n 1,30p paper2/thesis_check.py; grep -n "argparse\|write\|open(" paper2/thesis_check.py
+  > Read /tmp/eqlit/est-05.png
+  > $ cd /home/al/dev/MOSP/literature && F=2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC.pdf; pdfinfo $F | grep Pages; pdftotext -layout -f 1 -l 1 $F
+  > $ cd /home/al/dev/MOSP; time timeout 600 nice -n 10 python3 paper2/thesis_check.py 2>&1 | tail -30
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+d=pd.read_csv('solver_fix_provenance.csv')
+print(d[d.secondary_evidence=='treew
+  > Read /tmp/eqlit/est-04.png
+  > Read /tmp/eqlit/est-08.png
+  > $ cd /home/al/dev/MOSP/literature && pdftotext -layout -f 7 -l 7 2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC.pdf - | sed -n 6,10p; pdftotext -l
+  > Read /tmp/eqlit/est-01.png
+  > Read /tmp/eqlit/est-03.png
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; for n in chuThesis_theorem636_false chuThesis_theorem636_false_literal chuStuckey_theorem1_false chuStuckey_theorem
+  > $ cd /home/al/dev/MOSP; for c in 859fa9299 3f5faa03b 231f4db73 60a68f4e3 0eb33915 392a2bda2 add832af5; do git log -1 --format="%h %ci %s" $c 2>&1 | cut -c1-120; d
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; sed -n 1,72p Search/ChuThesis.lean | grep -n -i "p\. \|pp\.\|6\.3\|invariant\|family\|states" ; sed -n 73,240p Sear
+  > $ cd /home/al/dev/MOSP; grep -n 'def \|TABLES\|_tables.md\|write_text\|to_csv' paper2/solver_fix_recheck.py | head -60
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Complex; for n in plaTracks_idMatrix_unbounded plaTracks_pathMatrix_six plaTracks_idMatrix_five plaTracks_idMatrix p
+  > $ cd /home/al/dev/MOSP/paper2/data; cat solver_fix_recheck_tables.md | head -150
+  > $ grep -n "^## \|^# " search_soundness.md | head -40; grep -n "§4.1.4\|^### 4.1.4\|^## 5.4\|^### 5.4" search_soundness.md | head
+  > $ cd /tmp/na_pt; K=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.txt; head -15 $K; awk 'BEGIN{p=1} /\f/{p+=gsub(/\f/,
+  > $ cd /home/al/dev/MOSP/paper2/data; sed -n '/Every instance/,$p' solver_fix_recheck_tables.md | grep -v '^| Random-\(40\|50\|75\)\|^| Random-100-50' | head -80
+  > $ grep -n "^###\|^####" search_soundness.md | sed -n 1,80p | grep -n "4\.1\|item" | head; sed -n 1,20p search_soundness.md | grep -n -i "item"
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -ln "import MOSPFormalization.Sandwich" Complex/*.lean *.lean; grep -n "bandwidth" Complex/EdgeSeparation.lean
+  > $ cd /tmp/na_pt; K=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.txt; grep -n "^ *25\. \|\[25\]\|^25\." $K | head; aw
+  > $ cd /tmp/na_pt; K=2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tano-Computing-Directed-Pathwidth-1.89n-Algorithmica.txt; grep -n "Tamaki, H" $K; grep -n -A3 "^ *25\b\|^
+  > $ cd /tmp/na_pt; C=chu_2011_phd_thesis_improving_combinatorial_optimization.txt; awk 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} /Definition 6\.3\.4|Theorem 6\.3\.6|Theore
+  > $ cd /home/al/dev/MOSP/paper2/data; head -1 solver_fix_recheck_repaired.csv; nice -n 10 python3 <<'EOF'
+import pandas as pd
+r=pd.read_csv('solver_fix_recheck_repa
+  > $ python3 - <<'EOF'
+p='revised_algorithm.md'; s=open(p).read()
+reps=[
+("`MOSPFormalization.Search`: ten files (`Basic`, `DefiniteMove`,\n`SubsetRule`, `BetterMove
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/popularity.md
+  > $ cd /home/al/dev/MOSP; ls paper2/figures/equivalence_chain.* paper2/lean_repo_plan.md; grep -n "rooted_trees\|def .*tree\|out_trees_by" paper2/complex_check.py |
+  > $ cd /tmp/na_pt; C=chu_2011_phd_thesis_improving_combinatorial_optimization.txt; for p in 164 165 166; do awk -v P=$p 'BEGIN{p=1} /\f/{p+=gsub(/\f/,"")} p==P' $C 
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > $ cd /home/al/dev/MOSP; sed -n 1387,1400p paper2/complex_check.py; sed -n 1530,1560p paper2/complex_check.py
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; awk '/^\| line/{f=1;next} f&&/^\|---/{next} f&&/^\|/{n++; s=$0; if(s~/DRIFT/)d++; else if(s~/STALE/)st++; else if
+  > $ cd /home/al/dev/MOSP; timeout 580 nice -n 10 python3 -c "
+import time,paper2.complex_check as cc
+for n in range(1,10):
+    t=time.time(); g=0; tot=0
+    for tin
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; sed -i 's/^Claims audited: 62 rows.$/Claims audited: 58 rows./; s/^Status counts: REPRODUCED 49, MATCHES-RECORD 3
+  > $ cd /tmp/na_pt; C=chu_2011_phd_thesis_improving_combinatorial_optimization.txt; awk 'BEGIN{p=1} {n=gsub(/\f/,""); p+=n; if(p>=163&&p<=166) print p": "$0}' $C | g
+
+Now the plan report.
+  > $ cd /home/al/dev/MOSP; timeout 590 nice -n 10 python3 -c "
+import time,paper2.complex_check as cc
+from collections import Counter
+gap=Counter(); bad=0; tot=0; t=
+  > $ cd /tmp/na_pt; C=chu_2011_phd_thesis_improving_combinatorial_optimization.txt; awk 'BEGIN{p=1} {n=gsub(/\f/,""); p+=n; if($0~/Definition 6\.3\.4|Theorem 6\.3\.6
+  > $ python3 - <<'EOF'
+p='revised_algorithm.md'; s=open(p).read()
+a="- **Re-certification: 108 of 115 done, 7 left.** Values"
+b="- **Re-certification: 112 of 115 don
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+a=pd.read_csv('solver_fix_recheck_audit.csv'); print(len(a), a.status.value_cou
+  > $ cd /tmp/na_pt; F=fink_2012_phd_thesis_mosp_novas_contribuicoes.txt; awk 'BEGIN{p=1} {n=gsub(/\f/,""); p+=n; if(p>=45&&p<=46) print p": "$0}' $F | grep -v ": *$"
+  > $ cd /tmp/na_pt; F=fink_2012_phd_thesis_mosp_novas_contribuicoes.txt; awk 'BEGIN{p=1} {n=gsub(/\f/,""); p+=n; if(p>=45&&p<=46) print p": "$0}' $F | grep -E "^4[56
+  > $ sed -n 543,560p solver_fix.md | cut -c1-200; grep -n "six hard\|−0.1%" solver_fix.md | head -4
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+c=pd.read_csv('solver_fix_recheck_cert.csv')
+p=pd.read_csv('solver_fix_provenan
+  > $ grep -n "22 to\|22–\|over 1,000\|1,000 vertices" solver_fix.md data/solver_fix_cost_tables.md | head
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext/manual; pdftotext -layout beck_2025_cp.pdf /tmp/na_pt/beck.txt; cd /tmp/na_pt; head -40 beck.txt | grep -n -
+  > $ cd /home/al/dev/MOSP/paper2/data; cat solver_fix_bench_tables.md | head -120
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; for f in manual/*.pdf W*.pdf; do pdftotext -layout "$f" /tmp/na_pt/pa_$(basename "$f" .pdf).txt 2>/dev/null
+  > $ cd /home/al/dev/MOSP/paper2/data; head -2 solver_fix_bench.csv; nice -n 10 python3 <<'EOF'
+import pandas as pd
+b=pd.read_csv('solver_fix_bench.csv'); print(len(
+  > $ cd /tmp/na_pt; f=pa_chu_garcia_stuckey_2010_equivalence.txt; tr '\n' ' ' < $f | grep -o -i -E ".{80}conditional[[:space:]]+dominance.{60}"; grep -n -E "^ *[0-9]
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 <<'EOF'
+import pandas as pd
+b=pd.read_csv('solver_fix_bench.csv')
+print(b[b.n.isna()][['set','name','new_er
+  > $ cd /tmp/na_pt; sec(){ f=$1; pat=$2; awk -v pat="$pat" 'BEGIN{IGNORECASE=1} /^ *([0-9]+(\.[0-9]+)*|[A-Z](\.[0-9]+)*)\.? {1,6}[A-Z][A-Za-z]/ && length($0)<90 {h=$
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/plan.md
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results; ls repaired/; nice -n 10 python3 <<'EOF'
+import pandas as pd, os
+pr=lambda s: s.isin(['refutation','bound']
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; python3 - <<'EOF'
+p='plan.md'; s=open(p).read()
+i=s.index('Two rows of the table above are DRIFT'); j=s.index('##
+  > $ cd /home/al/dev/MOSP; grep 'grafo9492.80' paper2/data/solver_fix_bench.csv; grep -n '130.7\|core-hours\|core-h' Ralph_Loops/loop0007/PROGRESS.md | sed -n 1,30p
+  > $ cd /tmp/na_pt; pdftotext -layout /home/al/dev/MOSP/literature/2012-Chu-Garcia-de-la-Banda-Stuckey-Exploiting-Subproblem-Dominance-Constraint-Programming-Constra
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; sed -i 's/^Claims audited: 45 rows.$/Claims audited: 48 rows./; s/^Status counts: .*$/Status counts: REPRODUCED 1
+  > $ cd /home/al/dev/MOSP/pathwidth_solver/bench/results/repaired; nice -n 10 python3 -c "
+import pandas as pd,glob
+t=0
+for f in sorted(glob.glob('*.csv')):
+    d=pd
+  > $ cd /home/al/dev/MOSP; grep -n '14 of\|Table 4\|myciel\|sides 5\|5–13\|340\|n ≥ 86' Ralph_Loops/loop0007/PROGRESS.md | head; grep -n 'write\|to_csv\|open(' pathw
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; timeout 300 nice -n 10 python3 bench/summary.py --dir bench/results/repaired 2>&1 | grep -i -B2 -A25 'coudert\|table 4\|m
+
+I've audited both documents and written the two reports. Nothing suggests a certified value or a theorem claim is wrong. I ran only the offline `section2_figures --numbers` and read-only scripts over the caches, so nothing was fetched or overwritten. `tests/test_section2_figures.py` passes (3 tests).
+
+**popularity.md** (58 claims): 44 reproduced, 3 match the record, 7 drift (all fixed), 1 stale (fixed), 3 unsourced. The unsourced ones are the 2026-09-17 network counts that were never cached: treewidth 6,222, bandwidth minimization 306, and the four raw unrestricted counts. One small claim, two real 1991 pathwidth works the rule misses, I matched to the record without re-searching the cache.
+
+The three questions from the notes section:
+- **(a) 1,213 vs 1,212:** the paper quotes 1,213, because that is what the figure draws, and footnotes 1,212 distinct. One record (`W4416062387`, 2026) came back twice. The footnote is now in the top table, the Figure 2.1 caption and the method paragraph (1,592 relevant and 2,270 hits, distinct). The duplicate is from 2026, so the heatmap's 1,014 is unaffected.
+- **(b) Citation dates:** the citation column and the prose now use the 2026-09-29 cache, and the column is dated. I checked each value against the cache: Kinnersley 214, Kirousis & Papadimitriou 1986 293, Yanasse 1997 75, Ohtsuki 108. Works per Kinnersley citation goes from 5.6 to 5.7. A note says the unused scatter figure still draws the 09-17 counts; no point changes side of the diagonal.
+- **(c) 74 vs 81:** both recomputed. It is 74 without Linhares & Yanasse (2002), split 72 spanning two disciplines and 2 spanning three, and 81 with it. "74 span two disciplines" is now "two or more".
+
+Other fixes:
+- "Almost all" multi-citing works stay in one discipline is now "most (195 of 269)".
+- A dated note records two small breaks of the print spec: Figure 2.2's PDF is 6.51 in wide, and Figure 2.3's legend is 6.8 pt.
+
+**plan.md** (48 claims): 17 reproduced, 26 match the record, 1 drift (fixed), 4 stale (dated notes added).
+- **Drift:** "two `better_move` bugs found by the differential harness" is wrong. The first was found by profiling the C inner loop (`reports/better_move_bug.md`); only the second came from the harness.
+- **Clarification:** "6,276 of 6,286 certificates" holds for the default configuration; it is 6,275 under `csearch`, with 0 rejected.
+- **Stale:** the definite-move decision and remaining-work items 2, 3 and 5. Each now has a note: the fix has been the default since 2026-10-01, and 112 of 115 values are re-refuted with no answer changed. The `--summary` today shows 4 of the 7 at 125×125 refuted and 3 still running. The pathwidth reruns agree on all 11,424 graphs. Section 2 is done, and of the dataset work only the full run is left.
+- Rome 11,183 / 11,534, 17,714 classes, 21,754 files, 16,087 certified, 10 of 11 VLSI circuits and the 37,800 / 6,747 ensembles all match their sources.
+
+**Drifts in other documents, not edited:**
+- `paper2/solver_fix.md` lines 28–31 still say "108 of 115, 7 need a long run"; it should be 112 and 3.
+- `paper2/citation_graph.py` hard-codes the 09-17 counts in `SCATTER`.
+- `paper2/section2_figures.py` has the 6.8 pt legend.
+- `numbers()` counts the phrase rule by distinct id (1,214) but relevant works by record (1,213). The text quotes the record count, 1,215.
+
+Files are in /home/al/dev/MOSP/paper2/data/number_audit/:
+- popularity.md
+- plan.md
+  > $ cd /home/al/dev/MOSP; grep -n 'range(40)\|range(60)\|range(25)\|150\|_SEEDS\|seeds\|3_000\|3000\|1_000\|max_nodes' tests/test_repaired_rules.py | head -20; grep
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; for t in isHereditarilyDefinite_iff_hasDefiniteMatching repairedFullFilter codeFullFilter IsRepairedBetter IsHeredi
+  > $ cd /home/al/dev/MOSP/paper2; grep -n "^#\+ .*4\.7\|Theorem 4\.7\|Theorem 4\.8\|^### 4\.\|^## 4" revised_algorithm.md | head -20; grep -rn "41,700\|41700\|41 700
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -rn 'def IsRepairedBetter\|def HasDefiniteMatching\|IsRepairedBetter *(' --include=*.lean . | head -3; grep -r
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0008; grep -n "Quot.sound" session_it02.log | head -3; grep -n "Corollary 2\|Lemma 1" session_it03.log 2>/dev/null | head -
+  > $ cd /home/al/dev/MOSP; git show dfd05759d:pathwidth_solver/tests/test_identity_mosp.py | grep -n 'parametrize\|^def test\|CONFIGS\|configs' | head; git show dfd0
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'E'
+import csv,re
+dois={r['doi'].lower() for r in csv.DictReader(open('data/prior_art/citers.csv')) if r['doi']}
+L=open
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'E'
+L=open('prior_art_counterexample.md').read().splitlines()
+rows=[(i+1,l) for i,l in enumerate(L) if 181<=i<219 and l
+  > $ cd /home/al/dev/MOSP; sed -n 3970,3982p paper2/data/solver_fix_split.log; nice -n 10 python3 - <<'EOF'
+import pandas as pd
+t=pd.read_csv('paper2/data/solver_fix
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 - <<'EOF'
+import pandas as pd
+a=pd.read_csv('solver_fix_provenance_all.csv.gz'); print(a.columns.tolist()[:
+  > Edit /home/al/dev/MOSP/paper2/problem_transformations.md
+  > Edit /home/al/dev/MOSP/paper2/problem_transformations.md
+  > $ cd /home/al/dev/MOSP/paper2/data; nice -n 10 python3 - <<'EOF'
+import pandas as pd
+a=pd.read_csv('solver_fix_provenance_all.csv.gz')
+x=a[a.instance_name.str.mat
+  > Edit /home/al/dev/MOSP/paper2/problem_transformations.md
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/revised_algorithm.md
+  > Edit /home/al/dev/MOSP/paper2/problem_transformations.md
+  > $ wc -l revised_algorithm.md; f=data/number_audit/revised_algorithm.md; for s in REPRODUCED MATCHES-RECORD DRIFT STALE UNSOURCED UNCHECKED; do echo "$s $(grep '^|
+
+Correct header counts to match the table.
+  > Edit /home/al/dev/MOSP/paper2/prior_art_counterexample.md
+  > Edit /home/al/dev/MOSP/paper2/prior_art_counterexample.md
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit && python3 - <<'EOF'
+p='revised_algorithm.md'; s=open(p).read()
+s=s.replace("Claims audited: 92 (grouped into 74 r
+  > $ cd /home/al/dev/MOSP/paper2; wc -l problem_transformations.md prior_art_counterexample.md; grep -n "Both ends occur\|K_{3,3}\$ has\|with at$\|Lean proves$" prob
+  > $ cd /home/al/dev/MOSP; grep -n '12 workers\|231 s\|230' Ralph_Loops/loop0007/PROGRESS.md | head -5; grep -n '1\.8 h\|1.8h' Ralph_Loops/loop0007/PROGRESS.md; pyth
+
+I checked every number in `revised_algorithm.md` and found nothing wrong with a certified value or a theorem claim. The only things that were off were stale status lines and two wrong page numbers, all now fixed. The report is at `/home/al/dev/MOSP/paper2/data/number_audit/revised_algorithm.md`.
+
+**Status counts** (94 table rows, about 140 numbers and names):
+
+| status | rows |
+|---|---|
+| REPRODUCED | 23 |
+| MATCHES-RECORD | 64 |
+| DRIFT | 2 (both fixed) |
+| STALE | 4 (updated or given a dated note) |
+| UNSOURCED | 0 |
+| UNCHECKED | 1 (Ore 1955, not in `literature/`) |
+
+**What I reproduced:**
+- **Counterexamples:** a scratch brute force that shares no code with the repository confirms every number in Counterexamples 4.5, 4.11 and 4.13. The same goes for the thesis witnesses, the two-edge example, the reinsertion path and the d(X) values in 4.7.3.
+- **Scripts:** `python3 -m paper2.fink_check` gives 0 failures on the 14-customer graph and 3 on the 15-customer one. `paper2/thesis_check.py` gives 13 failing triples under the code's reading and 22 under the literal one, as the text says.
+- **Lean:** every Lean name cited in the document exists.
+- **Page citations:** all checked against the held PDFs.
+
+**Fixes made in `paper2/revised_algorithm.md`:**
+1. **Lines 8–12:** "ten files" → "eleven files", adding `Split` (added 2026-10-02). It has no `sorry`, but `axiom_check.lean` doesn't print its theorems yet, and the text now says so.
+2. **Lines 66–68 (STALE):** "108 re-refuted, 7 need a longer run" → 112 and 3, with a dated note.
+3. **Line 742 (DRIFT):** the nogood quote is on PDF p. 5, not p. 4.
+4. **Section 4.6.3 status line (STALE):** "108 of 115 done, 7 left" → "112 of 115 done, 3 left". A dated note gives the split run's figures:
+   - four refuted: 4-1_0, 4-5_0, 4-2_0 and 2-4_0;
+   - 7.04 × 10¹¹ nodes and 228.5 core-hours in total;
+   - 110 of 113 distinct graphs, and 20 of 23 at 125 × 125;
+   - 2-4_0 alone took 154.1 core-hours against a price of 47.5, which confirms the text's "prices probably low".
+5. **"Faster route … proposed and not built" (STALE):** dated note that it is now built (solver_fix item 10, `Search/Split.lean`). The note also corrects "no old moves": the tasks do inherit old moves.
+6. **Line 1206 (DRIFT):** Kitsunai et al. "p. 141" → "pp. 141–142". k-feasible is defined on p. 141 and vertex separation on p. 142.
+
+**Problems in other documents (reported, not edited):**
+- **`solver_fix.md`:** the top status paragraph (line 29) and lines 1348 and 1401–1404 still say 108/115 and 7 open.
+- **`data/solver_fix_split_tables.md`:** still shows 2-4_0 as partial. Regenerating it needs `--tables`, which I was told not to run.
+- **"Verbatim" wording:** the document says Chu's thesis Theorem 6.3.6 restates Theorem 1 "verbatim" / "word for word". The content and proof are the same but the wording differs. Not a number, so I left it.
+
+**Alarming:** none.
+  > $ cd /home/al/dev/MOSP; nice -n 10 python3 -c "
+import pandas as pd
+t=pd.read_csv('paper2/data/solver_fix_split_tasks.csv')
+print(t.groupby(['kind','status'],drop
+  > $ cd /home/al/dev/MOSP; grep -rn "176[24]" paper2/literature/MANIFEST.md literature/MANIFEST.md 2>/dev/null | head; git log --format="%h %ad" --date=short -S"1762
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; grep -n -i "spider" tests/test_pebbling_check.py | head; grep -n "1.3\b\|K_{1,3}\|es.*K13\|K13" tests/test_complex_check.py | head -5
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+
+Now item 07, 09 and 10 notes.
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; git log --format="%h %ad %s" --date=iso -- lean/MOSPFormalization/Complex/KirousisPapadimitriouGap.lean | tail -2; git log --format="%h %a
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > $ sleep 1; cat /tmp/claude-1000/-home-al-dev-MOSP/8829a219-b7d6-4bcd-a71b-6b4a7da5f863/tasks/bv23o4x7p.output
+
+Meanwhile, I'll make the two edits.
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+  > Edit /home/al/dev/MOSP/paper2/equivalences.md
+  > $ cd /tmp/na_pt; grep -n "DP2\|DP 2" gon.txt | head -3; grep -n -i "bienstock\|lapaugh" /home/al/dev/MOSP/paper2/equivalences.md | head -3; grep -n -i "doolaard\|
+  > Edit /home/al/dev/MOSP/paper2/solver_fix.md
+
+Now write the two reports.
+  > Edit /home/al/dev/MOSP/paper2/equivalences.md
+  > Edit /home/al/dev/MOSP/paper2/equivalences.md
+  > $ cd /home/al/dev/MOSP; wc -l paper2/solver_fix.md; grep -n 'number audit' paper2/solver_fix.md | cut -c1-80; git diff --stat paper2/solver_fix.md; grep -c '!!!' 
+
+Now writing the report file.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Now I'll write the report while the tree run finishes.
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/problem_transformations.md
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/equivalences.md
+  > $ until [ -s /tmp/claude-1000/-home-al-dev-MOSP/8829a219-b7d6-4bcd-a71b-6b4a7da5f863/tasks/bv23o4x7p.output ]; do sleep 10; done; cat /tmp/claude-1000/-home-al-de
+
+I'm waiting for the full tree rerun to finish (one core, nice'd).
+  > $ ps aux | grep "tree_row" | grep -v grep | awk '{print $2, $10}'
+  > $ ps -o pid,args -p 1675988 | cut -c1-150; cat /home/al/dev/MOSP/paper2/data/solver_fix_split.pid
+  > $ kill 1675988; sleep 1; ps -p 1675988 >/dev/null && echo alive || echo stopped; ps -p 1465015 >/dev/null && echo "split run alive"
+  > Edit /home/al/dev/MOSP/paper2/data/number_audit/equivalences.md
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; for i in $(seq 1 55); do n=$(ls *.md 2>/dev/null | grep -v INSTRUCTIONS | wc -l); [ $n -ge 8 ] && break; sleep 10
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/prior_art.md
+
+Now compute the actual status counts from both tables and fix the headers.
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; for f in problem_transformations.md prior_art.md; do echo "== $f"; python3 - "$f" <<'E'
+import sys,re,collections
+
+I audited 112 claims in `equivalences.md` and found nothing alarming. No theorem claim, Lean name or brute-force count is wrong. I found one wrong attribution and one out-of-date sentence, and fixed both.
+
+**Status counts**
+| Status | Rows |
+|---|---|
+| REPRODUCED | 6 |
+| MATCHES-RECORD | 103 |
+| DRIFT | 1 (fixed) |
+| STALE | 1 (dated note added) |
+| UNSOURCED | 0 |
+| UNCHECKED | 1 |
+
+The one UNCHECKED item is line 1408's remark that pdftotext reads Lengauer's `≤` as `<`. I did not look at the page image for it.
+
+**What was checked**
+- **Lean:** every theorem name cited in the document is defined, and every file named in the master table is the right one. The only `sorry` in the development is `conjecture_sqrt_tw_f6` in `Sandwich.lean`. The axiom-check counts match the history of `axiom_check.lean`: 33 theorems plus the control at item 13, and 11 new lines making 44 at item 14.
+- **Brute-force counts:** every checked/failed pair in the item 02 and P.7 tables matches `complex_check.json` and `pebbling_check.json`. So do the named-instance values, the value sets, the runtimes, and the play counts in `pebbling_gu_check.json` and `pebbling_strategy_check.json`.
+- **Reproduced now:**
+  - The out-tree gap counts by size: none at 6 vertices or fewer, then 7 of 77, 24 of 184 and 99 of 423.
+  - The test counts: 16 new tests, 41 in the file.
+  - The enumeration counts 1,100, 461 and 1,099.
+- **Literature:** every page, theorem and equation number cited checks out against the held PDFs. That covers L&Y 2002, Möhring, Ohtsuki, Wing (read from page images), K&P 1985 and 1986, Kornai & Tuza, Fomin, Kinnersley, Lengauer, EST 1994 (page images), F&L 1987 and 1989, and Yanasse 1997. Two citations hold but are loose: Möhring's GMPP is introduced on p. 22, not only pp. 23–24, and Ohtsuki's §IV starts on p. 679, though the boundary condition is on p. 680.
+
+**Fixes made in `paper2/equivalences.md`**
+1. **Lines 508–510 (DRIFT):** the text said L&Y 2002 Prop. 1 took modified cutwidth "from Garey & Johnson". L&Y p. 1761 actually cites "[3]", which is Downey & Fellows. It now reads "L&Y 2002 Prop. 1, p. 1761, … citing Downey & Fellows [3] for it".
+2. **Line 1144 (STALE):** item 10 says the K_{1,3} gap in Kirousis & Papadimitriou's proof was "checked by hand, not in Lean". It was proved in Lean the same day as `kirousisPapadimitriou_claim2_false` (commit 623189e9b, after item 10's commit). I added a dated audit note rather than rewriting the history.
+
+I also started a full one-core rerun of the 4,394-tree check to 11 vertices. I stopped it myself after about 4 CPU-minutes, because the recorded run took 144 s on 32 cores, over an hour on one core. Those figures (1,559 out-trees with a gap; in-trees never helped by repebbling) still rest on the recorded JSON. The `solver_fix_split` run was not touched and is still alive. I committed nothing and did not touch any `.lean` file or `solutions/`.
+
+The full report is `/home/al/dev/MOSP/paper2/data/number_audit/equivalences.md`.
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; python3 - <<'E'
+p='problem_transformations.md'; s=open(p).read()
+s=s.replace("- Claims audited: 45 rows (repeated
+  > Write /home/al/dev/MOSP/paper2/data/number_audit/solver_fix.md
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; awk '/^## Table/{f=1} /^## Fixes/{f=0} f && /^\| [0-9]/' solver_fix.md | awk -F'|' '{print $(NF-1)}' | sed 's/^ *
+  > Edit /home/al/dev/MOSP/paper2/data/number_audit/solver_fix.md
+
+I audited both documents and wrote the two reports. Nothing I found suggests a certified value or a theorem claim is wrong.
+
+**Status counts**
+
+| Report | Rows | Reproduced | Matches record | Drift (fixed) | Unsourced | Unchecked |
+|---|---|---|---|---|---|---|
+| `problem_transformations` | 44 | 18 | 23 | 4 | 1 | 0 |
+| `prior_art` | 51 | 32 | 15 | 2 | 1 | 1 |
+
+In `problem_transformations`, two rows have two statuses (one per source), so its counts add to 46.
+
+**Fixes in `problem_transformations.md`**
+1. **(B1):** the claim that `sb(K_{1,3}) = 2` now says it is not proved in Lean. The brute-force check only gives `sb ≤ 2`, the lower bound is a hand argument, and `SplitBandwidth.lean` says neither value is proved.
+2. **(B2):** the `es`/`vs` values for `K_2`, `K_{1,3}` and `K_{3,3}` are now marked as brute-force values, not Lean.
+3. **(F1):** "For every matrix" became "For every matrix with at least one 1", which is the hypothesis the Lean theorem has. Without it the bound fails when there are no nets.
+4. **(F2):** added that Lean proves only the lower bounds on cutwidth and modified cutwidth of stars. The equalities come from the brute-force check at n = 7 and 9.
+
+All four fix the document's header promise that every statement is proved in Lean. None changes what is true.
+
+**Fixes in `prior_art_counterexample.md`**
+1. **Line 8:** "144 citing works" became "144 index entries (141 citing works)". Three of the 144 rows are not citing works: the thesis itself, a proceedings volume and the ARCH-COMP report.
+2. **Lines 224–227:** this was a real factual error. `citers.csv` and the Semantic Scholar cache show Prestwich et al. cite only the CP paper, not both. The two works in both lists are Leo et al. and Chu's IJCAI abstract. Of the 32 thesis-only works read, only Medema et al. mention open stacks in the text. I added a dated audit note.
+
+**Reproduced**
+- `fink_check` gives 3 failing states on `finkGraph` and 0 on `cexGraph`.
+- `thesis_check.py` gives failure counts 6/19, 8/27 and 13/22, with the same first examples as the document.
+- All the counts (144, 41, 103, 38, 24, 63%, 32, 31%, 71) and the index totals (27/65/1, 37/100/3, OpenCitations 16) recompute from `citers.csv` and the cached index files.
+- All Lean names in both documents exist with the hypotheses the text states.
+- All page and theorem numbers check against the held PDFs: thesis pp. 141–143, Fink pp. 27–28, Kitsunai et al. p. 142 and Corollary 2 p. 148, Beck et al. Prop. 3, Prop. 14 and Example 6.
+
+**Not run**
+- `prior_art_sweep.py`: it rewrites `citers.csv` and `hits.txt`, and may go to the network.
+- `complex_check.py`: it rewrites its JSON. I checked against the recorded JSON instead.
+
+**Open items**
+- **Unsourced:** the Crossref count of 15 has no cached record. In `problem_transformations`, the Bienstock & Seymour and LaPaugh attributions point to papers that are not held.
+- **Unchecked:** the doc lists "Gange, Chu & Stuckey (2019)", but the index lists only Gange and Stuckey as authors.
+- **Not machine-checkable:** Ellis, Sudborough & Turner (1994) and Wing, Huang & Wang (1985) are scans without a text layer. Their citations match `equivalences.md`.
+- **Unreproducible:** the "about 41,700 random graphs" search matches the session record only, because the script was not kept.
+
+Files are in `/home/al/dev/MOSP/paper2/`:
+- `data/number_audit/problem_transformations.md`
+- `data/number_audit/prior_art.md`
+- `problem_transformations.md` (edited)
+- `prior_art_counterexample.md` (edited)
+
+No `!!!` line in `paper2/data/solver_fix_split.log`, and no SAT task in `solver_fix_split_tasks.csv`. Checked at the start and the end.
+
+I audited all of `paper2/solver_fix.md` (1,574 lines) and nothing alarming turned up. No certified value, refutation or theorem claim is contradicted by the records.
+
+**Status counts (146 rows, repeated mentions grouped):** 70 reproduced, 58 match the records, 6 drift (7 lines fixed), 4 stale, 5 unchecked, 3 unsourced. Two of the "match the record" rows are item 10's 00:30 table and its "Still open" paragraph; they are now out of date and got notes too.
+
+**Reproduced from raw data:**
+- The C/Python and pathwidth check totals.
+- Every table in item 04. Rerunning the `solver_fix_cost_tables` code to `/tmp` gives a file identical to the committed one.
+- Item 05: 12,310 refutations at 0.998×, and the `solutions/` digest `229207b225a666a5`.
+- Every count in items 06 and 07: 108 re-refuted, 9.73 × 10¹⁰ nodes, 16.5 / 87.1 core-hours, audit 33 / 70, certificates 32 / 26, validation 36,126 calls and 303,895 node checks.
+- Item 08's tables, the Rome passes and 130.7 core-hours; `bench/summary.py` confirms the 14 Coudert graphs.
+- `benchmarks.corpus` still reads 6,374 of 6,376 certified.
+- Every Lean name cited exists, and `Split.lean` has no `sorry`.
+
+**Fixes, all in `paper2/solver_fix.md`:**
+1. Lines 375 and 401: the pathwidth corpus sample is 10–125 customers, not 9–125 (recomputed the sample).
+2. Line 426: the matching-fail rates are 0.02–0.27% of definite candidates and 0.02–0.06% of better pairs, not 0.03–0.27% and 0.02%.
+3. Line 584: 0.987 → 0.986. The real ratio is 0.98649; the tables file rounds it twice.
+4. Line 605: the pathwidth graphs span 4–2,916 vertices, not "22–1,000+".
+5. Line 865: there are six recertify refutations among the 21, not five.
+6. Line 1550: the "320 tasks still queued" was the whole queue, not `2-4_0`'s alone. Now says "across the four open instances".
+7. Stale text:
+   - The status line at the top is updated to 112 of 115 re-refuted, 3 in flight.
+   - Dated notes are added in item 07 ("Needs a long run"), item 09, and item 10 (after the results, and in "Still open").
+   - `Random-125-125-2-4_0` = 24 was refuted at k = 23, finishing at 02:55:23 on 2026-10-03 per `solver_fix_split_results.csv`: 1,686 tasks, 4.98 × 10¹¹ nodes, 154.1 core-hours.
+   - The three left (`-2-1_0`, `-2-5_0`, `-4-4_0`) are in flight under the five-day run to 2026-10-08. At 07:04 the summary read 39.3, 36.7 and 49.2 core-hours (your 07:05 figures were older).
+
+**Unsourced:** "12 workers" (item 01), "stopped after 1.8 h" (item 04), and the worker loads in item 08. Nothing in the repository records them.
+
+**Other documents (not edited):**
+- `CLAUDE.md` still says "the five 125×125 recertify counts"; the records hold six.
+- Rome graphs `grafo11470.91` and `grafo8647.91` have identical node counts in both runs, so they are probably duplicates. No claim depends on it.
+
+The full report is at `/home/al/dev/MOSP/paper2/data/number_audit/solver_fix.md`.
+  > $ cd /home/al/dev/MOSP; ls literature | grep -i -E "chu|stuckey"; pdftotext -layout literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf /tmp/c
+  > $ cd /home/al/dev/MOSP; pdftotext -layout literature/chu_stuckey_2009.pdf /tmp/cs.txt; grep -n "Theorem 1" -A8 /tmp/cs.txt | head -24; sed -n 38,46p paper2/revise
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+import re,pathlib
+p=pathlib.Path('revised_algorithm.md'); t=p.read_text()
+a="its Theorem 6.3.6 is Theorem 1\nverb
+
+All five audits are back; I'm following up on the loose ends before writing the combined report.
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i "1,214\|1,215\|1214\|1215" data/number_audit/popularity.md popularity.md | head; grep -rn -i "gange" prior_art_counterex
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 234,242p prior_art_counterexample.md; sed -n 220,226p ../literature/MISSING.md
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+import pathlib
+p=pathlib.Path('prior_art_counterexample.md'); t=p.read_text()
+a='"Certifying optimality in constr
+  > $ cd /home/al/dev/MOSP; git status --short | grep -v Ralph_Loops; git diff --stat -- paper2/
+  > $ cd /home/al/dev/MOSP; git diff -- paper2/solver_fix.md paper2/revised_algorithm.md paper2/plan.md | head -400
+  > $ cd /home/al/dev/MOSP; git diff -- paper2/popularity.md paper2/equivalences.md paper2/problem_transformations.md paper2/prior_art_counterexample.md | head -330
+
+Reviewing the auditors' edits; tidying one awkward sentence and checking one hand argument an auditor added.
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i "K_{1,3}" equivalences.md | grep -i "sb\|split" | head; grep -n -i "K_{1,3}\|K13\|star" ../lean/MOSPFormalization/Comple
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,30p ../lean/MOSPFormalization/Complex/SplitBandwidth.lean | grep -n -i "sb\|split\|both ends\|occur"; grep -n "sb\b\|split
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+import pathlib
+p=pathlib.Path('prior_art_counterexample.md'); t=p.read_text()
+a='reworded for `k` stacks** ("k-pl
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; for f in revised_algorithm equivalences problem_transformations solver_fix popularity prior_art plan; do echo "==
+  > $ cd /home/al/dev/MOSP/paper2/data/number_audit; grep -h "| *UNSOURCED\|| *UNCHECKED\|UNSOURCED |\|UNCHECKED |" *.md | grep -v "^| UNSOURCED\|^| UNCHECKED" | cut 
+
+Now writing `paper2/number_audit.md`.
+  > Write /home/al/dev/MOSP/paper2/number_audit.md
+  > $ cd /home/al/dev/MOSP; git status --short | grep -v "Ralph_Loops\|solver_fix_split"; grep -n "^!!!" paper2/data/solver_fix_split.log; python3 -m paper2.section2_
+
+Clean. Now the gate.
+  > $ cd /home/al/dev/MOSP; uptime; timeout 1500 python3 Ralph_Loops/loop0008/gate.py 2>&1 | tail -15
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/8829a219-b7d6-4bcd-a71b-6b4a7da5f863/tasks/bu6qk902l.output; for i in $(seq 1 58); do grep -q -i "gate passed\|gate failed\
+
+Gate passes. Now PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; date '+%Y-%m-%d %H:%M'; grep -n '^!!!' paper2/data/solver_fix_split.log; ps -p 1465015 -o pid=,etime=; sed -i 's/^- \[ \] \*\*07 Audit eve
+
+Now the corrections block at the top and the iteration section.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import pathlib
+p=pathlib.Path('Ralph_Loops/loop0008/PROGRESS.md'); t=p.read_text()
+anchor="**Correction (iteration 6, 20
+
+Item 07 is done. I audited every number in paper 2's seven source documents, and none of the problems found is a wrong certified value, refutation, theorem or Lean name. The gate passes (1,402 MOSP tests and 114 pathwidth-solver tests).
+
+**Coverage.** 553 claims, checked against their sources:
+
+| Result | Claims |
+|---|---:|
+| Recomputed now and matching | 210 |
+| Matching their recorded data | 292 |
+| Wrong, and fixed in place | 26 |
+| Out of date, updated or given a dated note | 14 |
+| No source found in the repository | 8 |
+| Not checked (would rewrite data or exceed the budget) | 8 |
+
+None of the claims that are unsourced or unchecked carries a conclusion of the paper. The summary is `paper2/number_audit.md`, and the line-by-line tables are in `paper2/data/number_audit/`.
+
+**Fixes that change what the paper may say:**
+- **Chu's thesis.** Theorem 6.3.6 restates Chu & Stuckey's Theorem 1 with the same premise and proof, but reworded for k stacks. It is not "verbatim" or "word for word" as we had it.
+- **A wrong attribution.** `equivalences.md` said Linhares & Yanasse took modified cutwidth "from Garey & Johnson". Their p. 1761 cites Downey & Fellows.
+- **Prior-art counts.** "144 citing works" is 144 index entries, of which 141 are citing works. Prestwich et al. cite only the 2009 paper, not the thesis too.
+- **Bug history.** `plan.md` said the differential harness found both `better_move` bugs. Only the second; the first was found by profiling the C code.
+- **Lean claims.** Four statements in `problem_transformations.md` were presented as proved in Lean but come from the brute-force check or a hand argument. They are now marked that way.
+- **Citation counts.** `popularity.md` now quotes the 2026-09-29 counts. Pathwidth's 1,213 relevant works carry a footnote: 1,212 are distinct, because OpenAlex returned one record twice.
+
+**The open re-certifications.** The 125 × 125 run's own files, read at 07:05, show `Random-125-125-2-4_0` refuted at k = 23. That makes 112 of the 115 values re-refuted, all unsat, with no value changed. Three are still in flight under the five-day run to 2026-10-08: `-2-1_0`, `-2-5_0` and `-4-4_0`. The run's log has no `!!!` line, and I did not touch the run.
+
+**Out-of-date text I did not edit, because it is off limits for this item:**
+- `CLAUDE.md` says there are five recertify counts at 125 × 125; the records hold six.
+- The docstring in `ChuThesis.lean` still says "verbatim".
+- `axiom_check.lean` does not list the theorems in `Split.lean`.
+- `solver_fix_split_tables.md` still shows `-2-4_0` as partial; regenerating it would have meant writing to the run's protected files.
+
+Before the bibliography for item 08 is built, two citations need checking: Gange (2019), whose index entry lists only Gange and Stuckey, not Chu, and the OpenAlex reference "Priem et al. 2022".
+
+PROGRESS.md and iterations.md are updated (7 of 9 done). Nothing is committed.
+
+# result: success in 2546s, 38 turns, cost $23.44

@@ -253,7 +253,9 @@ search nor monotonicity.
 **(B1) Split bandwidth.** For every graph,
 $$\mathrm{pw}(G) \le \mathrm{sb}(G) \le \mathrm{pw}(G) + 1.$$
 Both ends occur: $K_2$ has $\mathrm{sb} = \mathrm{pw} = 1$, and $K_{1,3}$ has
-$\mathrm{pw} = 1$ and $\mathrm{sb} = 2$. Fomin 1998, Thm 8, which assumes a
+$\mathrm{pw} = 1$ and $\mathrm{sb} = 2$ (not in Lean: $\mathrm{sb} \le 2$ by the
+brute-force check, $\mathrm{sb} \ge 2$ by hand, since splits of a tree are trees
+and keep at least three leaves). Fomin 1998, Thm 8, which assumes a
 connected graph with at least two vertices; the Lean proof needs neither. Lean:
 `pathwidth_le_splitBandwidth_le_pathwidth_add_one`.
 
@@ -261,7 +263,8 @@ connected graph with at least two vertices; the Lean proof needs neither. Lean:
 $$\mathrm{vs}(G) \le \mathrm{es}(G) \le \mathrm{vs}(G) + 2,$$
 and the same for $\mathrm{pes}$. All three offsets occur: $K_2$ has
 $\mathrm{es} = \mathrm{vs} = 1$, $K_{1,3}$ has $\mathrm{vs} = 1$,
-$\mathrm{es} = 2$, and $K_{3,3}$ has $\mathrm{vs} = 3$, $\mathrm{es} = 5$. Ellis, Sudborough & Turner 1994, Thm 2.1; Kirousis &
+$\mathrm{es} = 2$, and $K_{3,3}$ has $\mathrm{vs} = 3$, $\mathrm{es} = 5$
+(values from the brute-force check, `complex_check.py`; not in Lean). Ellis, Sudborough & Turner 1994, Thm 2.1; Kirousis &
 Papadimitriou 1986, p. 209. Lean: `vertexSeparation_le_edgeSearch_le_add_two`,
 `vertexSeparation_le_progressiveEdgeSearch_le_add_two`.
 
@@ -281,7 +284,8 @@ occurs is open.
 
 ### 2.4 False as Table 1 states them
 
-**(F1) PLA folding (at most two nets per track).** For every matrix,
+**(F1) PLA folding (at most two nets per track).** For every matrix with at
+least one 1,
 $$\max\!\left(\mathrm{pw}(G_M) + 1,\ \lceil |N|/2 \rceil\right) \le \mathrm{pla}(M),$$
 but the gap to $\mathrm{pw} + 1$ is unbounded. The $5 \times 5$ identity
 matrix needs 3 tracks, while $\mathrm{pw}(G_M) + 1 = 1$. The gap is unbounded
@@ -295,7 +299,9 @@ Prop. 3.15. Lean: `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`,
 always, but on stars
 $$\mathrm{pw}(K_{1,n}) = 1, \qquad \mathrm{cw}(K_{1,n}) = \lceil n/2 \rceil,
 \qquad \mathrm{mcw}(K_{1,n}) = \lceil n/2 \rceil - 1,$$
-so neither cutwidth reading is within any constant of path-width.
+so neither cutwidth reading is within any constant of path-width. (Lean proves
+the lower bounds $n \le 2\,\mathrm{cw}$ and $n \le 2\,\mathrm{mcw} + 2$, which is
+all the claim needs; the equalities are the brute-force check's at $n = 7, 9$.)
 $K_{1,7}$ already breaks $\pm 1$ for $\mathrm{cw}$, and $K_{1,9}$ for
 $\mathrm{mcw}$. Lengauer 1981, p. 468 and Definition 6. Lean:
 `cutwidth_unbounded`, `modCutwidth_unbounded`,

@@ -505,8 +505,9 @@ This is item 01's first specific question. What [14] contains:
   completeness of VSG) builds G' by replacing each vertex by an (N + 1)-clique
   and proves `(G, K)` positive for MMCLA ⇔ `(G', K + N)` positive for VSG, i.e.
   `vs(G') = mcw(G) + N` with `N = |V(G)|`: an offset of N under a blow-up, not
-  a ±1 relation on the same graph. (L&Y 2002 Prop. 1 uses modified cutwidth,
-  from Garey & Johnson, for its own NP-hardness proof of MOSP.)
+  a ±1 relation on the same graph. (L&Y 2002 Prop. 1, p. 1761, uses modified
+  cutwidth, citing Downey & Fellows [3] for it, for its own NP-hardness proof
+  of MOSP.)
 - **What "edge separation" can mean, and why each reading fails.**
   (a) Cutwidth: `cw(K_{1,n}) = ⌈n/2⌉` while `pw = 1`; `K_{1,7}` (8 vertices)
   already gives `cw = 4 = Z + 2`. (b) Modified cutwidth (Def. 6):
@@ -1141,7 +1142,10 @@ third leaf all three leaves have their neighbour `c` still to come: [10]'s
 `D_{i₀}` has 3 elements against `ns − 1 = 1`. The theorem survives
 (deleting useless placements repairs the argument), and the Lean proof avoids
 the repair by ordering by clearing time. Checked by hand, not in Lean: the
-contaminated sets are `Set`s, so `decide` does not apply.
+contaminated sets are `Set`s, so `decide` does not apply. *(2026-10-03, number
+audit: since proved in Lean the same day, outside the loop, as
+`kirousisPapadimitriou_claim2_false`, `Complex/KirousisPapadimitriouGap.lean`;
+see "Errors in the sources" above.)*
 
 **Agreement with the checker.** Item 02: `ns_mono = vs + 1` on all 1,644
 graphs with an edge, `= 0` on the 8 edgeless ones, `ns_mono = ns` on all

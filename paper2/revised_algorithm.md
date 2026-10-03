@@ -5,11 +5,12 @@ the working report `search_soundness.md` (Ralph loop0006, items 05 to 13),
 which holds the code references, the full check tables and the history. Every
 statement here is proved in Lean unless it says otherwise. The Lean names
 refer to `../lean/MOSPFormalization/Search/`, namespace
-`MOSPFormalization.Search`: ten files (`Basic`, `DefiniteMove`,
+`MOSPFormalization.Search`: eleven files (`Basic`, `DefiniteMove`,
 `SubsetRule`, `BetterMove`, `Memo`, `Decide`, `DefiniteMatching`,
-`PublishedTheorems`, `ChuThesis`, `Layout`), with no
+`PublishedTheorems`, `ChuThesis`, `Layout`, and `Split`, added 2026-10-02 for
+the root split of section 4.6.3), with no
 `sorry` and no axioms beyond `propext`, `Classical.choice` and `Quot.sound`
-(`axiom_check.lean`). Page numbers for Chu & Stuckey (2009) are those of the
+(`axiom_check.lean`, which does not yet print `Split`'s theorems). Page numbers for Chu & Stuckey (2009) are those of the
 preprint `../literature/chu_stuckey_2009.pdf`. Page numbers for Chu (2011),
 Chu's PhD thesis, which restates the search in its chapter 6, are the printed
 ones of `../literature/chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`.
@@ -39,7 +40,7 @@ shows it, and Lean proves the counterexample. Theorem 2, the *better move*,
 rests on Theorem 1 applied one step deeper, and it inherits the fault. Its
 form as the code ran it from 2026-09-26 to 2026-10-01 is still false. Chu's
 thesis (Chu 2011, §6.3) restates both: its Theorem 6.3.6 is Theorem 1
-verbatim, and its Theorem 6.3.8 is the better move with a different premise.
+with the same premise, and its Theorem 6.3.8 is the better move with a different premise.
 The same graph refutes both, in Lean.
 
 **The revised algorithm** keeps the search and every rule. It replaces the
@@ -64,8 +65,9 @@ out. This paper states the gap and the repaired rule. Both solvers, the MOSP
 customer search and the graph pathwidth solver, apply the repaired rules by
 default since 2026-10-01 (Ralph loop0007, `solver_fix.md`), and the published
 rules remain behind a flag. Of the 115 corpus values that rested on the
-customer search alone, 108 have been re-refuted by the repaired solver and none
-changed; the other 7 need a longer run. Section 4.4.4 states what holds for the
+customer search alone, 112 have been re-refuted by the repaired solver and none
+changed; the other 3 are still running. *(2026-10-03, number audit: updated
+from 108 and 7, after the root split refuted four of the seven.)* Section 4.4.4 states what holds for the
 code, and section 4.6.3 what is left.
 
 ---
@@ -274,8 +276,9 @@ visits.
 **Published form.** "**Theorem 1.** Suppose S ++ [q] is playable and
 close(q, S) ≥ open(q, S), then if U′ = S ++ R is a solution, there exists a
 solution U = S ++ [q] ++ R′" (§3.1, PDF p. 6). Here close(q, S) =
-|{d | o(d, S) ⊆ o(q, S)}| (PDF p. 4). Chu (2011) restates it word for word,
-with the same proof, as Theorem 6.3.6 (p. 142), with the same definition of
+|{d | o(d, S) ⊆ o(q, S)}| (PDF p. 4). Chu (2011) restates it with the same
+premise, reworded for `k` stacks ("S ++ [q] is k-playable … uses ≤ k
+stacks") and with the same proof, as Theorem 6.3.6 (p. 142), with the same definition of
 close (Definition 6.3.4, p. 141).
 
 **Precise form, as coded.** At a state $S$, let $q \in P$ and let
@@ -740,7 +743,7 @@ is implemented in neither the C nor the Python and is not covered.
 ### 4.3.6 The memo
 
 **Published form.** Nogood recording: "if it failed, we record the nogood and
-return false when we revisit it" (PDF p. 4).
+return false when we revisit it" (PDF p. 5).
 
 **Precise form, as coded.** When a node's loop finishes with no child answering
 *true* and without an abort, its closed set $S$ is recorded. At any later node
@@ -1124,7 +1127,9 @@ the evidence.
   gained the better move, until then C-only) and in the graph pathwidth solver
   (`../pathwidth_solver/`), as the owner decided. The repaired rules are the
   default in both. Section 4.4.4 lists the checks.
-- **Re-certification: 108 of 115 done, 7 left.** Values certified by the
+- **Re-certification: 112 of 115 done, 3 left** *(2026-10-03, number audit:
+  updated from "108 of 115 done, 7 left"; see the note at the end of this
+  item)*. Values certified by the
   subset-lattice oracle, by a checked DRAT refutation through the SAT path, by
   the SAT binary search before the customer search existed, or by a lower bound
   equal to the value, do not depend on the search and stand as they are (6,259
@@ -1140,6 +1145,15 @@ the evidence.
   the repaired rules is still to be made, and none of the old runs passes the
   audit of section 4.4.4. A resumable runner continues them
   (`solver_fix.md`, item 07, "Needs a long run").
+  *(2026-10-03, number audit: the root split below has since refuted
+  $\text{value} - 1$ on four of the seven, `Random-125-125-4-1_0` ($k = 56$),
+  `-4-5_0` ($k = 45$), `-4-2_0` ($k = 56$) and `-2-4_0` ($k = 23$), in
+  $7.04 \times 10^{11}$ nodes and 228.5 core-hours of split tasks, with no
+  value changed. That makes 112 of 115 (110 of 113 distinct graphs, 20 of 23
+  at 125 × 125). `-2-4_0` alone took $4.98 \times 10^{11}$ nodes and 154.1
+  core-hours against a price of 47.5, so the prices were indeed low. The 3
+  left, `Random-125-125-2-1_0`, `-2-5_0` and `-4-4_0`, are in flight.
+  Source: `python3 -m paper2.solver_fix_split --summary`, 2026-10-03 07:05.)*
 - **The certificate route: left.** The certificate checker's definite and
   better steps must check the repaired premises, and the emitter must model the
   repaired rules: one matching per step. With that change, an accepted
@@ -1158,6 +1172,12 @@ the evidence.
   its own process from its own state with no old moves and an empty memo. That
   spreads one refutation over many cores. It needs a C entry point that starts
   from a given state, and a short Lean statement of the composition.
+  *(2026-10-03, number audit: since built, `solver_fix.md` item 10: the C
+  entry points `cs_split_expand` and `cs_split_decide`, the driver
+  `paper2/solver_fix_split.py`, and `Search/Split.lean`, whose
+  `execSplit_repairedFullFilter_mospValue` lifts a split run to a run of
+  Theorem 4.18. Each task runs with an empty memo and inherits the old moves
+  the parent passes it.)*
 
 ---
 
@@ -1203,7 +1223,7 @@ $T$, $N[T] = T \cup N(T)$, and $d(T) = |N(T)|$. This is the notation of
 Kobayashi, Komuro & Tamaki (p. 390). A *vertex sequence* $\sigma = v_1, \dots, v_n$
 is *$w$-feasible* when every prefix has $d \le w$, and the vertex separation
 number $\mathrm{vs}(G)$ is the least $w$ for which some permutation of $V$ is
-$w$-feasible (Kobayashi et al., p. 391; Kitsunai et al., p. 141). Coudert,
+$w$-feasible (Kobayashi et al., p. 391; Kitsunai et al., pp. 141–142). Coudert,
 Mazauric & Nisse use the same quantity, $\nu(L, i) = |N^+(\{v_1, \dots, v_i\})|$
 (SEA, pp. 48–49). Kinnersley's form, which Bodlaender et al. use (p. 428),
 counts the vertices *inside* a prefix with a neighbour outside, which is the

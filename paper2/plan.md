@@ -102,10 +102,13 @@ optimum is pathwidth + 1.
 **Exists.** The implementation (`../satisfiability/customer_search.py` and
 its C core); the certified corpus of 6,376 instances and the generated
 ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
-`better_move` bugs found by the differential harness, the fix, DRAT proofs for
+`better_move` bugs, the first found by profiling the C inner loop
+(`../reports/better_move_bug.md`) and the second by the differential harness,
+the fix, DRAT proofs for
 92% at n ≤ 40, and the search certificate (`../reports/ml_nature.md` §15, §17,
 §32). The certificate for the repaired rules, with an independent checker,
-verifies 6,276 of 6,286 corpus refutations at 9–75 customers (`certificates.md`,
+verifies 6,276 of 6,286 corpus refutations at 9–75 customers (6,275 under the
+`csearch` configuration; none rejected; `certificates.md`,
 loop0008 item 05). The two-key rule as the starting layout (§28; it improves the upper
 bound and small instances, and leaves certification cost at 100-125
 customers unchanged, §28 addendum), and the hardness ridge (§11, §25). The
@@ -208,6 +211,12 @@ degree or clique bound can close it).
   pathwidth solver (`pathwidth_solver/pathwidth/`), after loop0006. Section 4's
   soundness theorem covers the repaired rules. Once the fix is in, the certified
   values that rest only on the customer search are re-certified under it.
+  *(2026-10-03, number audit: the fix is in. `repaired_rules=True` has been
+  the default in both solvers since 2026-10-01 (loop0007, `solver_fix.md`).
+  Of the 115 values that rested on the customer search alone, 112 are
+  re-refuted with no answer changed, and 3 at 125 × 125 are still running
+  (`python -m paper2.solver_fix_split --summary`). The pathwidth benchmarks
+  were rerun under the repaired rules in loop0007 item 08.)*
 - **Venue: INFORMS Journal on Computing first** (decided 2026-09-29). The
   journal expects the code and data behind a paper to be deposited in its
   own repository; check the current rules before submission and build the
@@ -233,17 +242,24 @@ degree or clique bound can close it).
 1. **Section 1:** obtain the thesis PDF and record what it proved and what it
    only cited.
 2. **Section 2:** choose the paper's three figures and write the method
-   paragraph, including the relevance correction.
+   paragraph, including the relevance correction. *(Done 2026-10-03, loop0008
+   item 06; see §2 above.)*
 3. **Section 4:** state the dominance rules as lemmas about layouts. The graph
    solver and a first benchmark run exist, transferred from `~/dev/pathwidth`
    (`../pathwidth_solver/TRANSFER.md`), and the benchmark hunt is done
    (`benchmarks/README.md`). Deduplicate the collections, fix the dataset
    format and checker (and the two result-file fixes the transfer document
-   lists), price the run, and run it.
+   lists), price the run, and run it. *(2026-10-03, number audit: the lemmas
+   are done (loop0008 item 03), and the dataset is deduplicated, formatted,
+   checked and priced (item 04, `dataset.md`). The full run is what is left.)*
 4. **Section 5,** then the LaTeX draft of the whole paper.
 5. **Fix both solvers to match the soundness theorems:** the repaired
    definite and better moves (loop0006 items 08, 10), in the MOSP search and
    the pathwidth solver. Re-certify the values certified only by the customer
    search, and rerun the pathwidth benchmarks under the fixed rules.
+   *(2026-10-03, number audit: done except three re-certifications. The fix
+   is the default since 2026-10-01; 112 of the 115 values are re-refuted and
+   3 at 125 × 125 are in flight; the pathwidth benchmarks prove the same width
+   on all 11,424 graphs both runs proved (`solver_fix.md`).)*
 6. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
    the code, and the dataset, built from the final versions of each.

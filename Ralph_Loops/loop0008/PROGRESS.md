@@ -4,7 +4,33 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 6/9 SOLVED
+Current: 7/9 SOLVED
+
+**Correction (iteration 7, 2026-10-03, the number audit).** 26 claims
+drifted across paper 2's seven documents. All are fixed in place and listed in
+`paper2/number_audit.md`. None changes a certified value, a theorem or a
+conclusion. The ones that change what the paper may say:
+- **The thesis wording.** Chu (2011) Theorem 6.3.6 restates CP Theorem 1 with
+  the same premise and proof, **reworded** for `k` stacks. It is not
+  "verbatim" or "word for word". Fixed in `revised_algorithm.md` and
+  `prior_art_counterexample.md`. `ChuThesis.lean`'s docstring still says
+  "verbatim" and was not edited.
+- **A wrong attribution.** `equivalences.md` had L&Y 2002 Prop. 1 taking
+  modified cutwidth "from Garey & Johnson". Page 1761 cites Downey & Fellows
+  [3].
+- **A wrong count of citers.** `prior_art_counterexample.md` said "144 citing
+  works"; that is 144 index entries, 141 citing works. It also had Prestwich
+  et al. in both citer lists, but they cite the CP paper only.
+- **The bug history.** `plan.md` said the differential harness found both
+  `better_move` bugs. The first was found by profiling.
+- **Marking what Lean proves.** `problem_transformations.md` stated four
+  values or hypotheses as if Lean proved them; they are now marked as
+  brute-force or hand results. These are `sb(K_{1,3}) = 2`, the `es` values,
+  the star cutwidth equalities, and F1's "at least one 1".
+- **Citation counts.** `popularity.md` now quotes the 2026-09-29 counts, and
+  footnotes 1,212 distinct pathwidth works.
+- **Status lines.** These are updated to **112 of 115 re-refuted, 3 in
+  flight**.
 
 **Correction (iteration 6, 2026-10-03).** Three small faults in section 2's
 record; none changes a conclusion.
@@ -524,3 +550,84 @@ written.
 
   Also `Random-125-125-2-4_0`'s re-certification in `solver_fix.md`.
 - **Item 08** takes the figure PDFs and captions as they are.
+
+---
+
+## Iteration 7 — 2026-10-03 07:44
+
+### Completed
+- **Item 07: every number in paper 2, audited.** The summary is
+  `paper2/number_audit.md`. The per-document tables (line, value, source,
+  check, status) are in `paper2/data/number_audit/<document>.md`, with the
+  shared rules in `INSTRUCTIONS.md`.
+  - **How it was done.** Five parallel auditors read the seven documents in
+    full, at most one core each.
+  - **Coverage.** 553 claim rows: 210 reproduced now, 292 matching their
+    record, 26 drifts (all fixed), 14 stale (updated or given a dated note),
+    8 unsourced and 8 unchecked. None of the unsourced or unchecked claims
+    carries a conclusion.
+  - **No certified value, refutation, theorem claim or Lean name is wrong.**
+    The fixes are listed per document in `number_audit.md` and summarised in
+    the correction at the top of this file.
+- **What was reproduced.**
+  - The counterexample numbers of 4.5, 4.11 and 4.13, by a scratch brute
+    force independent of the repository.
+  - `fink_check` (3 / 0) and `thesis_check`.
+  - Every section 2 number, offline (`section2_figures --numbers`).
+  - Every prior-art count, from `citers.csv`.
+  - `solver_fix.md`'s tables from their CSVs. The `cost_tables` code
+    regenerates the committed file identically.
+  - `benchmarks.corpus`: still 6,374 of 6,376.
+  - Every cited page number, against the held PDFs.
+  - Every Lean name, which exists with the stated hypotheses.
+
+  Not rerun, because they rewrite recorded data or exceed 4 cores × 1 h:
+  `complex_check`, `prior_art_sweep`, and the solver runs behind
+  `solver_fix.md` items 04 and 07.
+- **The open re-certifications, from the split run's own files at 07:05.**
+  - `Random-125-125-2-4_0` = 24 was **refuted** at k = 23 at 02:55: 1,686
+    tasks, 4.98 × 10¹¹ nodes, 154.1 core-hours.
+  - So 112 of 115 are re-refuted, all unsat, and no value has changed.
+  - **In flight** under the five-day run to 2026-10-08:
+    - `-2-1_0`: 196 tasks, 36.9 core-hours;
+    - `-2-5_0`: 82 tasks, 35.5 core-hours;
+    - `-4-4_0`: 331 tasks, 49.0 core-hours.
+
+  These figures are stated in `number_audit.md`, `solver_fix.md` items
+  09–10, `revised_algorithm.md` §4.6.3 and `plan.md`.
+- **Drifts outside the seven documents**, reported and not edited:
+  - `CLAUDE.md`: "five" 125 × 125 recertify counts, where the records hold
+    six.
+  - `ChuThesis.lean`'s "verbatim".
+  - `axiom_check.lean` lacks `Split.lean`'s theorems.
+  - `citation_graph.py`'s hand-carried `SCATTER` counts.
+  - `section2_figures.py`'s 6.8 pt legend.
+  - `data/solver_fix_split_tables.md`, still at 00:30, because `--tables`
+    was off limits.
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,402 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 07:02 and 07:44. PID
+  1465015 is alive.
+
+### Blockers
+- None for the item.
+- Left open:
+  - two network counts of 2026-09-17 in `popularity.md` were never cached
+    (treewidth 6,222, bandwidth 306, and the raw unrestricted counts);
+  - Crossref's 15;
+  - the Gange (2019) author list;
+  - Ore (1955), not held.
+
+### Next
+- **Item 08**, the LaTeX draft. Quote the figures as audited:
+  - the 2026-09-29 citation counts;
+  - 1,213 relevant pathwidth works, footnoted "1,212 distinct";
+  - "112 of 115 re-refuted, 3 in flight", re-checked with `--summary` on the
+    day;
+  - Theorem 6.3.6 as "reworded", not verbatim.
+
+  Before `refs.bib`, check the Gange (2019) authors and "Priem et al. 2022".
+- **Item 09 candidates.** Add `Split.lean` to `axiom_check.lean`, and fix the
+  6.8 pt legend.
+

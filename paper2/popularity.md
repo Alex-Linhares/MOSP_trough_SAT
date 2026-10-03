@@ -19,22 +19,30 @@ different answers, and they disagree sharply, so both are given.
   of the words, so every hit was then checked for relevance.
 - **Defining paper citations** — `cited_by_count` for the Table 1 reference that
   Linhares & Yanasse attach to that problem. This measures how much the
-  *result* is used, which is not the same thing.
+  *result* is used, which is not the same thing. The column is OpenAlex's
+  count as cached on 2026-09-29 (`paper2/data/openalex_citations.json`).
+  *(2026-10-03, number audit: it was the 2026-09-17 count until now; four
+  entries moved by one, Kinnersley 215 to 214, Kirousis & Papadimitriou 1986
+  294 to 293, Yanasse 1997 74 to 75, Ohtsuki et al. 107 to 108.)*
 
 | Problem | Relevant works using the name | (search hits) | Table 1 ref | Citations of that paper |
 |---|---:|---:|---|---:|
-| Graph path-width | **1,213** | 1,571 | [13] Kinnersley 1992 | 215 |
+| Graph path-width | **1,213**\* | 1,571 | [13] Kinnersley 1992 | 214 |
 | Gate matrix layout | 110 | 125 | [6] Möhring 1990 / [8] Wing et al. 1985 | 134 / 89 |
 | PLA folding | 68 | 74 | [6] Möhring 1990 | 134 |
-| MOSP | 58 | 60 | [1] Yanasse 1997 / [4] Fink & Voss 1999 | 74 / 71 |
-| Vertex separation | 55 | 100 | [13] Kinnersley 1992 | 215 |
-| Edge search game | 38 | 95 | [10] Kirousis & Papadimitriou 1986 | **294** |
+| MOSP | 58 | 60 | [1] Yanasse 1997 / [4] Fink & Voss 1999 | 75 / 71 |
+| Vertex separation | 55 | 100 | [13] Kinnersley 1992 | 214 |
+| Edge search game | 38 | 95 | [10] Kirousis & Papadimitriou 1986 | **293** |
 | Node search game | 34 | 127 | [9] Kirousis & Papadimitriou 1985 | 124 |
-| One-dimensional logic | 11 | 18 | [7] Ohtsuki et al. 1979 | 107 |
+| One-dimensional logic | 11 | 18 | [7] Ohtsuki et al. 1979 | 108 |
 | Interval thickness | 6 | 10 | [5] Kashiwabara & Fujisawa 1979 | not indexed |
 | Narrowness | **0** | 35 | [11] Kornai & Tuza 1992 | 44 |
 | Split bandwidth | **0** | 35 | [12] Fomin 1998 | 19 |
 | Edge separation | **0** | 21 | [14] Lengauer 1981 | 77 |
+
+\* 1,212 distinct works: OpenAlex returned one record (`W4416062387`, 2026)
+twice in the pathwidth search, and every count in this report counts records.
+The same holds for the 1,571 hits (1,570 distinct).
 
 For scale, outside Table 1 and *not* relevance-checked: **treewidth** 6,222
 search hits; **bandwidth minimization** 306.
@@ -63,10 +71,10 @@ labels. Under the mechanical phrase rule MOSP is fifth, behind vertex
 separation; see "For the paper".)*
 
 **Citation counts do not track name usage, and the gap is informative.**
-Kirousis & Papadimitriou 1986 is the most-cited paper in the table (294) while
+Kirousis & Papadimitriou 1986 is the most-cited paper in the table (293) while
 only 38 works use "edge search game" in its sense. The paper is cited as a
 foundational graph-searching result, not because people work on the edge
-search game as such. The same split is starker for Ohtsuki et al. 1979: 107
+search game as such. The same split is starker for Ohtsuki et al. 1979: 108
 citations against 11 works using "one-dimensional logic" — it is cited for its
 interval-graph characterisation, and the problem name died with the
 technology.
@@ -148,12 +156,17 @@ The scatter puts the report's two measures against each other, using the
 corrected counts. Above the diagonal, the paper Table 1 cites is cited more
 often than the problem's name is used: the result is still in use but the
 name is not. Nine of the eleven indexed problems sit there, including the
-three whose names nobody uses (drawn at the left edge); edge search, with 294
+three whose names nobody uses (drawn at the left edge); edge search, with 293
 citations against 38 works, and one-dimensional logic are furthest out.
 Below the diagonal the name has outgrown its source paper, and only two
-problems are there: pathwidth, far below, with about 5.6 works using the name
+problems are there: pathwidth, far below, with about 5.7 works using the name
 for every citation of Kinnersley (1992), and gate matrix layout, just below.
 MOSP sits just above the line, with the name and the paper at similar counts.
+*(2026-10-03, number audit: the counts in this paragraph are the 2026-09-29
+cache's. The scatter figure itself still draws the 2026-09-17 counts, which
+`SCATTER` in `citation_graph.py` carries by hand: 294, 215 and 107 where the
+cache has 293, 214 and 108, and 5.6 works per citation where the cache gives
+5.7. No point changes side of the diagonal.)*
 
 Regenerate with `python -m paper2.citation_graph` (OpenAlex responses cached in
 `paper2/data/openalex_citations.json`; `--refresh` re-fetches). The network
@@ -163,8 +176,12 @@ distinct works citing them, coloured by OpenAlex field. Kashiwabara & Fujisawa
 (1979) has no OpenAlex record and is absent.
 
 - **The communities barely touch.** 269 of the 844 citing works cite two or
-  more Table 1 papers, but almost all of those stay inside one discipline. 74
-  span two disciplines, and 63 of those join graph theory to VLSI design.
+  more Table 1 papers, but most of those (195) stay inside one discipline. 74
+  span two or more disciplines (72 two, 2 three), counting the eleven problem
+  papers and not Linhares & Yanasse (2002), and 63 of those join graph theory
+  to VLSI design. *(2026-10-03, number audit: this said "almost all" stay
+  inside one discipline, which 195 of 269 is not, and "two disciplines" where
+  the count is two or more.)*
 - **The operations-research side is an island.** Only 6 works cite both a MOSP
   paper (Yanasse 1997, Fink & Voss 1999, or Linhares & Yanasse 2002) and a
   graph-theory paper. Two are from the Table 1 authors themselves (Linhares
@@ -240,7 +257,9 @@ no network access:
 
 The PDFs are vector, with embedded TrueType fonts, at most 6.5 in wide (the
 text width of a one-column page; INFORMS JoC is one-column), and no text is
-below 7 pt at that width. They have no titles; the captions below go in the
+below 7 pt at that width. *(2026-10-03, number audit: two small exceptions.
+Figure 2.2's PDF is 468.8 pt, 6.51 in, wide, and Figure 2.3's legend is set at
+6.8 pt, `fontsize=6.8` in `section2_figures.py`.)* They have no titles; the captions below go in the
 LaTeX. A PNG preview sits beside each PDF in `figures/`.
 
 ### The three figures, and why these three
@@ -286,7 +305,8 @@ which Figure 2.3 already shows by colour.
   the sense of Linhares & Yanasse (2002, Table 1). OpenAlex, fields Computer
   Science, Mathematics, Engineering and Decision Sciences, all years, fetched
   2026-09-29. Only works judged relevant are counted (Section 2.1). Colour
-  gives the discipline that Table 1 assigns the problem.
+  gives the discipline that Table 1 assigns the problem. OpenAlex returned
+  one pathwidth record twice, so pathwidth's 1,213 are 1,212 distinct works.
 - **Figure 2.2.** When each name was in use. The shade is the name's rate,
   relevant works per million works in the same four fields in each five-year
   period, as a fraction of that name's own peak rate. The numbers are raw
@@ -331,7 +351,7 @@ which Figure 2.3 already shows by colour.
 > kept and what it dropped.
 >
 > The check changed the counts and two of the conclusions. Of 2,271 hits, 1,593
-> are relevant (1,213 for pathwidth, 380 for the other eleven names). Three
+> are relevant (1,213 for pathwidth, 380 for the other eleven names).[^dup] Three
 > names (narrowness, split bandwidth and edge separation) have no relevant work
 > at all. The two search-game names keep 27% and 40% of their hits. MOSP
 > moves from seventh to fourth.
@@ -340,6 +360,10 @@ which Figure 2.3 already shows by colour.
 > in its abstract, OpenAlex has few abstracts before about 1990, and its
 > citation counts run below Google Scholar's. The labels, the rule, the cached
 > responses and the code that redraws every figure are in the repository.
+>
+> [^dup]: OpenAlex returned one pathwidth record twice. The counts are of
+> records, as in the figures; there are 1,212 distinct relevant pathwidth
+> works, 1,592 in all, among 2,270 distinct hits.
 
 Sources the paragraph rests on, all regenerated by the command above: the hit
 and relevant counts (`numbers()["names"]`), 2,271 and 700 (`hits_total`,
@@ -396,16 +420,28 @@ literal phrase, with a context term and with no exclusion term.
   distinct count is 1,212. Every conclusion is unchanged. The published
   figure stays 1,213 because it is what `relevance.relevant_counts()` and the
   figures report. The paper should say 1,212 distinct, or footnote it.
+  *Resolved 2026-10-03 (number audit):* the paper quotes records, 1,213, as
+  the figure draws them, and footnotes 1,212 distinct (the method paragraph's
+  footnote and the Figure 2.1 caption above; the top table carries the same
+  footnote). The phrase rule's 1,215 is records too (1,214 distinct).
 - **The citation column of the table at the top is from 2026-09-17; the
   network is from 2026-09-29.** Four counts moved by one: Kinnersley 215 to
   214, Kirousis & Papadimitriou 1986 294 to 293, Yanasse 1997 74 to 75,
   Ohtsuki et al. 107 to 108. The paper should quote one date, and that should
   be the 2026-09-29 cache (`numbers()["cited_by"]`).
+  *Resolved 2026-10-03 (number audit):* the table and the prose now quote the
+  2026-09-29 cache, each count checked against `numbers()["cited_by"]`
+  (Kinnersley 214, Kirousis & Papadimitriou 1986 293, Yanasse 1997 75,
+  Ohtsuki et al. 108; the other eight unchanged). Only the unused scatter
+  still draws the 2026-09-17 counts.
 - **"74 span two disciplines"** (in *Who cites whom*) counts the disciplines
   of the eleven problem papers only. Counting Linhares & Yanasse (2002) as an
   operations-research paper gives 81. The "6 works" in the same section does
   count it, since it is named there as a MOSP paper. Both numbers are right
   under the definition stated in the Figure 2.3 caption.
+  *Checked 2026-10-03 (number audit):* recomputed from the cache, 74 without
+  Linhares & Yanasse (2002) and 81 with it as an operations-research paper.
+  The paper quotes 74, with the caption's definition.
 - `relevance.py`'s docstring said the phrase rule was "the whole of the
   method". It is not; the counts come from the labels and `keep_pathwidth`.
   The docstring was corrected on 2026-10-03.
