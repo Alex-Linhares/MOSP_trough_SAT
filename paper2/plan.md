@@ -98,7 +98,9 @@ its C core); the certified corpus of 6,376 instances and the generated
 ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
 `better_move` bugs found by the differential harness, the fix, DRAT proofs for
 92% at n ≤ 40, and the search certificate (`../reports/ml_nature.md` §15, §17,
-§32). The two-key rule as the starting layout (§28; it improves the upper
+§32). The certificate for the repaired rules, with an independent checker,
+verifies 6,276 of 6,286 corpus refutations at 9–75 customers (`certificates.md`,
+loop0008 item 05). The two-key rule as the starting layout (§28; it improves the upper
 bound and small instances, and leaves certification cost at 100-125
 customers unchanged, §28 addendum), and the hardness ridge (§11, §25). The
 graph version of the search, with a C engine to 1,024 vertices and a first

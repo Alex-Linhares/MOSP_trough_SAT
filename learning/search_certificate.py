@@ -91,8 +91,21 @@ emitter agrees with `decide(native=False)` in status and node count on every
 configuration it shares, and with the C under `csearch` (`better_move=True`,
 `better_move_dominators=0`) -- `tests/test_search_certificate.py`. It certifies
 the search under the rules **as Chu & Stuckey publish them**, i.e.
-`decide(..., repaired_rules=False)`; the repaired rules became the default on
-2026-10-01 (loop0007 item 03) and the emitter does not model them yet.
+`decide(..., repaired_rules=False)`, by default. With `repaired_rules=True`
+(loop0008 item 05, 2026-10-03) it models the repaired rules, which are the
+solvers' default since 2026-10-01, and every definite and better step carries
+the matching of `HasDefiniteMatching` as its witness:
+
+    ["definite", q, [[d, s], ...]]     the repaired Theorem 1 at S
+    ["better", r, q, [[d, s], ...]]    the repaired Theorem 2, matching at cl(S ∪ {r})
+
+each pair matching a customer `d` that the move frees to a stack `s` it newly
+needs, `open − 1` pairs with distinct `d` and distinct `s`. The checker for
+those certificates is `paper2/certificate_check.py`, which imports nothing from
+this repository; `check` below verifies only the published premises and
+ignores the matchings. `start` roots the tree at a closed set other than ∅, so
+that a certificate can claim "no solution extends S" -- used for the
+hand-built failures of `paper2/certificates.md`.
 
 Run:
 
@@ -221,6 +234,7 @@ class Certificate:
     branches: int                  # the search's node count (branch decisions)
     order: list[int] | None = None
     emit_seconds: float = 0.0
+    start: list[int] = field(default_factory=list)
 
     def to_json(self) -> dict:
         return {"format": "mosp-search-certificate-1",
@@ -228,6 +242,7 @@ class Certificate:
                 "n_patterns": self.n_patterns, "matrix_sha256": self.matrix_sha256,
                 "k": self.k, "config": self.config, "status": self.status,
                 "branches": self.branches, "order": self.order,
+                **({"start": self.start} if self.start else {}),
                 "nodes": [node.to_json() for node in self.nodes]}
 
     def dumps(self) -> bytes:
@@ -242,7 +257,8 @@ class Certificate:
                            n_patterns=obj["n_patterns"], matrix_sha256=obj["matrix_sha256"],
                            k=int(obj["k"]), config=dict(obj["config"]), status=obj["status"],
                            nodes=[Node.from_json(d) for d in obj["nodes"]],
-                           branches=int(obj["branches"]), order=obj.get("order"))
+                           branches=int(obj["branches"]), order=obj.get("order"),
+                           start=list(obj.get("start", [])))
 
     def step_counts(self) -> dict[str, int]:
         counts = {rule: 0 for rule in RULES}
@@ -276,6 +292,8 @@ def emit(
     better_move_dominators: int = 0,
     old_close_count: bool = False,
     old_rule_order: bool = False,
+    repaired_rules: bool = False,
+    start: int = 0,
     max_nodes: int | None = None,
     deadline: float | None = None,
 ) -> Certificate:
@@ -286,6 +304,8 @@ def emit(
     the remaining customers, Theorem 2 over the subset survivors with only the
     first `better_move_dominators` (0: all) as dominators. `old_close_count`
     and `old_rule_order` are the two 2026-09-26 bugs, for the tests.
+    `repaired_rules` is `decide`'s flag of the same name, with the matchings
+    recorded; `start` is the closed set (a bitmask) the tree is rooted at.
     """
     if old_move and memo:
         raise ValueError("memo cannot be combined with old_move in a certificate: "
@@ -299,7 +319,8 @@ def emit(
     config = {"subset_rule": subset_rule, "definite_move": definite_move, "old_move": old_move,
               "memo": memo, "better_move": better_move,
               "better_move_dominators": better_move_dominators,
-              "old_close_count": old_close_count, "old_rule_order": old_rule_order}
+              "old_close_count": old_close_count, "old_rule_order": old_rule_order,
+              "repaired_rules": repaired_rules}
 
     nodes: list[Node] = []
     path: list[int] = []
@@ -383,8 +404,13 @@ def emit(
         del path[mark:]
         return False
 
+    start &= full
+    start_opened = 0
+    for c in _bits(start):
+        start_opened |= masks[c]
+    path.extend(_bits(start))
     root = new_node(None, None)
-    found = search(root, 0, 0, 0)
+    found = search(root, start, start_opened, 0)
     if found:
         status, order = "sat", list(path)
     elif state["aborted"]:
@@ -393,7 +419,7 @@ def emit(
         status, order = "unsat", None
     return Certificate(instance.name, instance.n_customers, instance.n_patterns,
                        matrix_sha256(instance), k, config, status, nodes, state["branches"],
-                       order, time.monotonic() - started)
+                       order, time.monotonic() - started, list(_bits(start)))
 
 
 def _filter(playable, opens, masks, closed, opened, k, node, config, full):
@@ -402,7 +428,15 @@ def _filter(playable, opens, masks, closed, opened, k, node, config, full):
         for cost, q in playable:
             own = opens[q]
             if sum(1 for other in opens.values() if other & ~own == 0) >= own.bit_count():
-                node.steps.append(["definite", q])
+                if config.get("repaired_rules"):
+                    freed = [(d, other) for d, other in opens.items()
+                             if d != q and other & ~own == 0]
+                    pairs = _matching(freed, own.bit_count() - 1)
+                    if pairs is None:
+                        continue               # published premise only: pass over q
+                    node.steps.append(["definite", q, pairs])
+                else:
+                    node.steps.append(["definite", q])
                 return [(cost, q)]
     if not config["better_move"]:
         if config["subset_rule"]:
@@ -454,14 +488,64 @@ def _better_pass(playable, masks, closed, opened, k, node, config, full):
             if q == r:
                 continue
             if _better_premise(masks, closed, opened, k, r, q, config["old_close_count"], full):
-                cover = q
+                if config.get("repaired_rules"):
+                    pairs = _better_matching(masks, closed, opened, r, q, full)
+                    if pairs is None:
+                        continue
+                    cover = (q, pairs)
+                else:
+                    cover = (q, None)
                 break
         if cover is None:
             survivors.append((cost_r, r))
+        elif cover[1] is None:
+            steps.append(["better", r, cover[0]])
         else:
-            steps.append(["better", r, cover])
+            steps.append(["better", r, cover[0], cover[1]])
     node.steps.extend(steps)
     return survivors
+
+
+def _matching(freed: list[tuple[int, int]], need: int) -> list[list[int]] | None:
+    """`need` pairs `[d, s]` matching distinct freed customers to distinct stacks
+    `s ∈ o(d)`, or None if the largest matching is smaller (Kuhn's augmenting
+    paths, as `_has_definite_matching` in the search, but returning the edges)."""
+    if need <= 0:
+        return []
+    if len(freed) < need:
+        return None
+    owner: dict[int, int] = {}                 # stack -> index into freed
+
+    def augment(i: int, visited: set[int]) -> bool:
+        for s in _bits(freed[i][1]):
+            if s in visited:
+                continue
+            visited.add(s)
+            if s not in owner or augment(owner[s], visited):
+                owner[s] = i
+                return True
+        return False
+
+    matched = 0
+    for i in range(len(freed)):
+        if augment(i, set()):
+            matched += 1
+            if matched >= need:
+                return sorted([freed[i][0], s] for s, i in owner.items())
+    return None
+
+
+def _better_matching(masks, closed, opened, r, q, full) -> list[list[int]] | None:
+    """The repaired better move's matching: `q` hereditarily definite at cl(S ∪ {r})."""
+    closed_r = closed | (1 << r)
+    opened_r = opened | masks[r]
+    own = masks[q] & ~opened_r
+    freed = []
+    for d in _bits(full & ~closed_r):
+        left = masks[d] & ~opened_r
+        if d != q and left and left & ~own == 0:
+            freed.append((d, left))
+    return _matching(freed, own.bit_count() - 1)
 
 
 def _better_premise(masks, closed, opened, k, r, q, old_close_count=False, full=None) -> bool:
@@ -674,7 +758,11 @@ def _check(instance: MOSPInstance, cert: Certificate, counted: dict) -> None:
         if memo_allowed:
             refuted_states[closed] = node.id
 
-    visit(cert.nodes[0], 0, 0, 0)
+    start, start_opened = 0, 0
+    for c in cert.start:
+        start |= 1 << int(c)
+        start_opened |= masks[int(c)]
+    visit(cert.nodes[0], start & full, start_opened, 0)
     if counted["nodes"] != len(cert.nodes):
         raise Rejected(f"{len(cert.nodes) - counted['nodes']} nodes are not reachable from the root")
 

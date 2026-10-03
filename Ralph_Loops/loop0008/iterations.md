@@ -71,7 +71,7 @@
     Report it in core-hours, by collection.
   - **Run** only what fits in 4 cores × 2 hours, and say what is left.
 
-- [ ] **05 Certificates for the repaired rules.**
+- [x] **05 Certificates for the repaired rules.**
   - **The extension.** Extend the customer search's proof object
     (`learning/search_certificate.py`, `reports/ml_nature.md` §32) to the
     repaired rules. Each definite move and each better-move drop carries its

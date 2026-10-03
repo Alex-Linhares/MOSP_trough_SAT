@@ -1147,6 +1147,12 @@ the evidence.
   search, which is the route this paper's dataset relies on for values the SAT
   path cannot reach. Item 07's walk is a first form of the check, run outside
   the checker.
+  *Done 2026-10-03 (loop0008 item 05, `certificates.md`).* The emitter models
+  the repaired rules, and each definite and better step carries its matching.
+  An independent checker, `certificate_check.py`, verifies the matchings. On
+  the corpus at 9–75 customers, 6,276 refutations verify and none is
+  rejected; 10 instances at 75 customers did not emit within 60 s. The
+  published rules' certificate on `DEFINITE_CEX` from {2} is rejected.
 - **A faster route for the 7, proposed and not built.** The repaired filter is
   node-sound at the root, and by Theorem 4.18 each root child can be refuted in
   its own process from its own state with no old moves and an empty memo. That

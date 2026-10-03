@@ -4,7 +4,7 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 4/9 SOLVED
+Current: 5/9 SOLVED
 
 **Correction (iteration 3, 2026-10-03).** Our notes said the definite move
 "is" a depth-1 commitment, Tamaki's commitment lemma
@@ -349,3 +349,88 @@ written.
   as the sources for the dataset numbers.
 - **Item 08** (LaTeX) can take section 4's dataset paragraph from
   `dataset.md` §7.
+
+---
+
+## Iteration 5 — 2026-10-03 06:10
+
+### Completed
+- **Item 05: certificates for the repaired rules.** It is written up in
+  `paper2/certificates.md`.
+  - **The emitter.** `learning/search_certificate.py` gains `emit(...,
+    repaired_rules=True)`. Each definite step is now `["definite", q, M]` and
+    each better step `["better", r, q, M]`, where `M` is the
+    `HasDefiniteMatching` witness: pairs `[d, s]` matching freed customers to
+    new stacks. The better move's matching is taken at `cl(S ∪ {r})`.
+  - **`start`.** A new option roots the tree at a closed set. The certificate
+    then claims "no solution extends S".
+  - **Defaults.** The emitter's defaults are unchanged, so §32's numbers and
+    tests stand. §32's checker `check` now honours `start`. It still checks
+    published premises only, and its docstring says so.
+  - **Fidelity.** Status and branch count equal
+    `decide(native=False, repaired_rules=True)` at every `k`: 2,463
+    refutations on 300 random instances, three configurations. They equal the
+    C (memo off) on 968 decisions.
+- **The checker**, `paper2/certificate_check.py`, uses the standard library
+  only, and a test parses its imports.
+  - It recomputes `N[c]` and the SHA-256 from the matrix, and walks the tree
+    with an explicit stack.
+  - It verifies each matching: distinct `d`, distinct `s`, `d` freed,
+    `s ∈ o(d)`, and at least `open − 1` edges.
+  - It checks premise 3, the subset rule, free moves, `Q(S)`, memo, and
+    acyclic cover chains.
+  - It rejects any definite or better step without a matching.
+  - CLI: `python paper2/certificate_check.py BUNDLE.json.gz`.
+- **Results** (`paper2/data/certificates/tables.md`), with a 60 s emission
+  budget on 4 workers.
+  - **41–75 customers.** 141 of 151 verify under `default` and 140 under
+    `csearch`; 0 are rejected. The 141 are the same set §32 verified under the
+    published rules. The `csearch` gap is `Random-75-75-4-1_0`, which crossed
+    60 s; `default` verified it in 46 s. The ten unknown are `SP3`, `SP3_0`,
+    `Random-75-75-2-{1..5}_0` and `Random-75-75-4-{3,4,5}_0`.
+  - **9–40 customers.** All 6,135 verify under both configurations.
+  - **Size and time, `csearch`, all 6,275 verified.** 35.5 MB gzipped,
+    checked in 147 s, 44 µs per node. The largest certificate is 11.6 MB
+    gzipped and the slowest check takes 68 s.
+  - **Matchings.** 215,258 edges in all. Most definite steps carry an empty
+    matching, because `open ≤ 1` there.
+- **Hand-built failures** (`failures.json`, `bundles/`).
+  - **`DEFINITE_CEX`.** On both graphs, from `start = {2}`, the published
+    rules emit an exhaustive `unsat` tree, which is a false claim.
+    - §32's published-premise checker **accepts** it.
+    - The new checker rejects it: "no matching witness".
+    - With a largest matching attached it still rejects: "matching has 1
+      edges, open − 1 = 2".
+    - The repaired emitter from {2} finds a solution of cost ≤ k.
+  - **Corrupted matchings.** Seven single corruptions of Warwick 877's
+    repaired certificate are all rejected, as are five tree corruptions.
+  - **Bug B.** The rule-order cycle, emitted under the repaired premises, is
+    still caught as a covering cycle.
+- **C emitter: proposed, not built** (`certificates.md` §5).
+  - A binary stream of about 10 bytes a node, with the matching copied from
+    `has_definite_matching`'s `owner[]`.
+  - It must run with the memo off.
+  - Per-task certificates would come via `start` and the root split.
+  - The 125 × 125 refutations would be about 250 GB: possible, not shippable.
+- **Downstream text.** `revised_algorithm.md` §4.6.3 now says "the
+  certificate route: done", and `plan.md` has a pointer.
+- **Tests.** `tests/test_certificate_check.py` has 20.
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,399 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 05:33, 05:48 and 06:10.
+
+### Blockers
+- None for the item.
+- Left beyond it:
+  - the ten 75-customer instances, which need the C emitter;
+  - checking the graph records of the dataset, which needs an edge-list reader
+    in the checker;
+  - a Lean statement of the checker's acceptance condition, which is argued
+    on paper in `certificates.md` §2.
+
+### Next
+- **Item 06**, section 2: three figures and the method paragraph.
+- Item 08 (LaTeX) can take section 4's proof-object paragraph from
+  `certificates.md` §1–§4.
+- Item 07 should check the numbers here against `tables.md`.

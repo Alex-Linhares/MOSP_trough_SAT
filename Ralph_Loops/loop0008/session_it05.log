@@ -1,0 +1,168 @@
+# session it05 started 2026-10-03 05:33:21
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*05/,/\*\*06/p' Ralph_Loops/loop0008/iterations.md; date; uptime; cat paper2/data/solver_fix_split.pid; grep -c '^!!!' paper2/
+  > $ cd /home/al/dev/MOSP; wc -l learning/search_certificate.py satisfiability/customer_search.py paper2/revised_algorithm.md paper2/solver_fix.md paper2/search_soun
+  > Read /home/al/dev/MOSP/learning/search_certificate.py
+  > Read /home/al/dev/MOSP/satisfiability/customer_search.py
+  > $ cd /home/al/dev/MOSP; sed -n 8510,8700p reports/ml_nature.md
+  > $ cd /home/al/dev/MOSP; grep -n '^#' paper2/revised_algorithm.md | head -80; grep -n 'DEFINITE_CEX\|BETTER_CEX\|^def \|^[A-Z_]* = ' paper2/search_check.py | head 
+
+Reading the existing certificate module and the repaired-rule definitions before extending them.
+  > $ cd /home/al/dev/MOSP; grep -rn 'DEFINITE_CEX' --include=*.py | head; sed -n 1039,1160p paper2/revised_algorithm.md
+  > $ cd /home/al/dev/MOSP; ls lean/MOSPFormalization/Search/; grep -n 'def HasDefiniteMatching\|def IsRepairedBetter\|def IsHereditarilyDefinite\|theorem isHereditar
+  > $ cd /home/al/dev/MOSP; grep -n '^theorem\|^lemma' lean/MOSPFormalization/Search/BetterMove.lean lean/MOSPFormalization/Search/Decide.lean lean/MOSPFormalization/
+  > $ cd /home/al/dev/MOSP; sed -n 90,107p lean/MOSPFormalization/Search/BetterMove.lean; sed -n 214,222p lean/MOSPFormalization/Search/BetterMove.lean; sed -n 268,27
+  > $ cd /home/al/dev/MOSP; grep -n 'DEFINITE_CEX\|BETTER_CEX\|_CEX = ' -A12 paper2/search_check.py | head -80; grep -n 'def test\|repaired\|decide(' tests/test_searc
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2.search_check import DEFINITE_CEX, BETTER_CEX, matrix_from_masks
+from mosp.instance import MOSPInstance
+from learn
+
+Building the extension now: a `start`-state option and repaired-rule witnesses in the emitter, then a standalone stdlib checker.
+  > $ cd /home/al/dev/MOSP; sed -n 1,76p tests/test_search_certificate.py; sed -n 243,306p tests/test_search_certificate.py; cat paper2/dataset_check.py | head -60
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('learning/search_certificate.py'); s=p.read_text()
+def rep(a,b,cnt=1):
+    global s
+    
+  > $ cd /home/al/dev/MOSP; grep -n 'def _better_pass' -A32 learning/search_certificate.py
+  > Write /home/al/dev/MOSP/paper2/certificate_check.py
+  > $ cd /home/al/dev/MOSP; cat > /tmp/fid.py <<'EOF'
+import random, json, time
+from learning.search_certificate import emit, Certificate
+from paper2.certificate_chec
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import random
+from learning.search_certificate import emit
+from satisfiability.customer_search import decide
+from tests.test_
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from paper2.search_check import DEFINITE_CEX, matrix_from_masks
+from mosp.instance import MOSPInstance
+from learn
+  > $ cd /home/al/dev/MOSP; sed -n '/def certified_targets/,/^def /p' learning/node_counts.py | head -50; ls paper2/data | head -30; cat .gitignore | grep -i paper2
+  > Write /home/al/dev/MOSP/paper2/certificates.py
+  > $ cd /home/al/dev/MOSP; uptime; mkdir -p paper2/data/certificates; nohup python -m paper2.certificates --stage run --min-customers 41 --max-customers 75 --workers
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 -c "
+from learning.search_certificate import targets, emit
+from mosp.instance import MOSPInstance
+import numpy as np
+j
+  > $ cd /home/al/dev/MOSP; sed -i 's/^EXAMPLE = "Random-50-50-2-3_0"/EXAMPLE = "Warwick 877: balanced orders, 4 orders per product"/' paper2/certificates.py; timeout
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/certificates.py'); s=p.read_text()
+a='''    d = step[-1][0][0]
+    step[-1][0][1
+  > $ sleep 120; cd /home/al/dev/MOSP; tail -5 paper2/data/certificates/run_41_75.log; uptime; grep -c '^!!!' paper2/data/solver_fix_split*.log
+  > $ cd /home/al/dev/MOSP; tail -5 paper2/data/certificates/run_41_75.log; uptime; grep -c '^!!!' paper2/data/solver_fix_split*.log; ps -o pid,etime,pcpu,cmd --ppid 
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from learning.search_certificate import emit
+from paper2.certificate_check import check
+from mosp.instance import
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import random, json
+from learning.search_certificate import emit
+from tests.test_search_certificate import _sparse, _random
+f
+  > $ cd /home/al/dev/MOSP; python3 -c "
+from paper2.certificates import _example_with_matching
+inst,M,c=_example_with_matching()
+print(c.k, [''.join(map(str,r)) for 
+
+Now the tests.
+  > Write /home/al/dev/MOSP/tests/test_certificate_check.py
+  > $ cd /home/al/dev/MOSP; timeout 900 python -m pytest tests/test_certificate_check.py -q -x 2>&1 | tail -8; tail -3 paper2/data/certificates/run_41_75.log
+  > $ cd /home/al/dev/MOSP; date; ps -o pid,etime,pcpu,rss --ppid $(cat /tmp/cert_run.pid); wc -l paper2/data/certificates/repaired.csv
+  > $ free -g | head -2
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+f=pd.read_csv('learning/data/ensemble/search_certificate.csv'); f=f[f.n>=41]
+for c,p in f.groupby('config
+  > $ cd /home/al/dev/MOSP; grep -n '^static\|^int\|^long\|^void\|^typedef\|^struct' satisfiability/customer_search.c | head -60; wc -l satisfiability/customer_search
+  > $ cd /home/al/dev/MOSP; date; tail -4 paper2/data/certificates/run_41_75.log
+  > $ cd /home/al/dev/MOSP; grep -n '\*\*Theorem 4\.[0-9]*\|\*\*Lemma 4\.[0-9]*\|\*\*Counterexample 4\.[0-9]*\|\*\*Proposition 4\.[0-9]*' paper2/revised_algorithm.md 
+  > $ cd /home/al/dev/MOSP; sed -n 805,876p paper2/revised_algorithm.md
+  > $ cd /home/al/dev/MOSP; date; tail -3 paper2/data/certificates/run_41_75.log
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The 41–75 corpus run is going; I'm waiting for it to finish.
+  > $ cd /home/al/dev/MOSP; P=$(cat /tmp/cert_run.pid); timeout 590 bash -c "while kill -0 $P 2>/dev/null; do sleep 5; done"; date; tail -3 paper2/data/certificates/r
+  > $ cd /home/al/dev/MOSP; cat paper2/data/certificates/tables.md; grep -c . paper2/data/certificates/repaired.csv; grep -c '^!!!' paper2/data/solver_fix_split*.log
+  > $ cd /home/al/dev/MOSP; uptime; timeout 1500 python -m paper2.certificates --stage run --max-customers 40 --workers 4 --deadline 60 > paper2/data/certificates/run
+
+The corpus at ≤ 40 customers also verifies in full: all 6,135 instances, under both configurations. Now writing the report.
+  > $ cd /home/al/dev/MOSP; grep -n -i 'certificate' paper2/plan.md | head; python3 -c "
+import pandas as pd
+f=pd.read_csv('paper2/data/certificates/repaired.csv'); u
+  > $ cd /home/al/dev/MOSP; for f in paper2/data/certificates/bundles/*; do echo -n "$(basename $f): "; python3 paper2/certificate_check.py $f | cut -c1-160; done; se
+  > Write /home/al/dev/MOSP/paper2/certificates.md
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import pandas as pd
+f=pd.read_csv('paper2/data/certificates/repaired.csv'); o=pd.read_csv('learning/data/ensemble/search_cert
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/certificates.md'); s=p.read_text()
+s=s.replace("332 / 519 | 0.04 / 0.1 / 0.4 |",
+
+Now updating the pointers in `revised_algorithm.md` §4.6.3 and `plan.md`.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/revised_algorithm.md'); s=p.read_text()
+a="""  search, which is the route this p
+
+Running the gate.
+  > $ cd /home/al/dev/MOSP; uptime; timeout 3000 python3 Ralph_Loops/loop0008/gate.py 2>&1 | tail -15
+  > $ timeout 590 bash -c 'until [ -s /tmp/claude-1000/-home-al-dev-MOSP/be74ee69-bdd1-4ca9-adfe-51cb483bfc8a/tasks/bmfrkzipu.output ] && ! pgrep -f "loop0008/gate.py
+
+The gate passes. Now updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; grep -c '^!!!' paper2/data/solver_fix_split*.log; date '+%Y-%m-%d %H:%M'; du -sh paper2/data/certificates; sed -i 's/^- \[ \] \*\*05 Certi
+  > $ cd /home/al/dev/MOSP; cat >> Ralph_Loops/loop0008/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 5 — 2026-10-03 06:10
+
+### Completed
+- **Item 05: certificates for the r
+
+Item 05 is done: refutations by the customer search under the repaired rules now come with a certificate that a separate checker verifies. On the corpus at 9–75 customers, 6,276 of 6,286 verify and none is rejected. The write-up is `paper2/certificates.md`, and the gate passes.
+
+**What was built**
+- **The emitter** (`learning/search_certificate.py`) has a new `repaired_rules=True` mode. Each definite-move and better-move step now records its matching, the witness the repaired premise asks for. For the better move, that matching is at the child state.
+  - A new `start` option begins the search from a given set of closed customers instead of from empty. The certificate then only claims that no solution extends that set.
+  - The old defaults are unchanged, so the earlier certificate numbers and tests still stand.
+  - It visits exactly the tree the repaired search visits: same answer and node count on 2,463 refutations of random instances, and the same as the C search (memo off) on 968 decisions.
+- **The checker** (`paper2/certificate_check.py`) uses only the standard library and imports nothing from the repository; a test enforces this. It recomputes every premise from the 0/1 matrix and checks each matching edge by edge. It rejects any definite or better step that has no matching, i.e. any step under the published rules.
+
+**Results**, with a 60-second limit per certificate on 4 cores:
+
+| customers | `default` verified | `csearch` verified | rejected |
+|---|---|---|---|
+| 9–40 | 6,135 of 6,135 | 6,135 of 6,135 | 0 |
+| 41–75 | 141 of 151 | 140 of 151 | 0 |
+
+- The 141 at 41–75 are the same instances the earlier published-rule certificates verified.
+- The `csearch` shortfall is `Random-75-75-4-1_0`, which ran past 60 s; `default` finished it in 46 s.
+- Ten 75-customer instances did not finish under either configuration: SP3, SP3_0, `Random-75-75-2-*` and three of `Random-75-75-4-*`.
+- Size and speed (`csearch`): 35.5 MB gzipped in total, checked in 147 s. The largest certificate is 11.6 MB, and the slowest check takes 68 s.
+
+**Hand-built failures**
+- **`DEFINITE_CEX`:** on both counterexample graphs, starting from {2}, the published rules produce a complete "no solution" tree, which is false.
+  - The earlier checker, which tests the published premises, accepts it.
+  - The new checker rejects it.
+  - It still rejects it when the forged step carries the largest matching that exists: 1 edge, where 2 are needed.
+  - The repaired emitter, run from {2}, finds a solution of cost at most k.
+- **Corrupted matchings:** seven single corruptions of the Warwick 877 certificate are all rejected, as are five tree corruptions and the rule-order cycle bug.
+
+**Proposed, not built: a C emitter.** It would write a binary stream of about 10 bytes per node, with the memo turned off, and one certificate per task through the root split. A 125 × 125 refutation would then be about 250 GB: checkable in principle, but not practical to ship.
+
+**Not formalised:** each rule's soundness is a Lean theorem, but the checker's overall acceptance condition is argued on paper (`certificates.md` §2), not stated in Lean.
+
+**Other changes:** I added pointers in `revised_algorithm.md` §4.6.3 and `plan.md`, plus 20 tests in `tests/test_certificate_check.py`. PROGRESS.md now reads 5/9 and item 05 is marked done. Nothing is committed. The split run's log has no `!!!` line as of 06:10.
+
+# result: success in 2287s, 55 turns, cost $6.34

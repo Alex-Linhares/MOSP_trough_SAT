@@ -18,3 +18,8 @@
 [2026-10-03 02:59:33] claude session it04 (cap 6.00 h) -> session_it04.log
 [2026-10-03 05:19:01] session it04: ok (exit 0, 123 tool calls)
 [2026-10-03 05:33:20] tests passed: GATE PASS
+[2026-10-03 05:33:21] committed e22f2b7d2: 04 Section 4's dataset, defined and priced.
+[2026-10-03 05:33:21] === iteration 5: 05 Certificates for the repaired rules.
+[2026-10-03 05:33:21] claude session it05 (cap 6.00 h) -> session_it05.log
+[2026-10-03 06:11:28] session it05: ok (exit 0, 54 tool calls)
+[2026-10-03 06:24:51] tests passed: GATE PASS

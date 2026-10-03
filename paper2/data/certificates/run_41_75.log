@@ -1,0 +1,204 @@
+151 instances at 41-75 customers, ('default', 'csearch'), 4 workers, deadline 60.0
+  1/151 75 customers ['unsat', 'unsat'] 0 s
+  2/151 75 customers ['unsat', 'unsat'] 0 s
+  3/151 75 customers ['unsat', 'unsat'] 1 s
+  4/151 75 customers ['unsat', 'unsat'] 1 s
+  5/151 75 customers ['unsat', 'unsat'] 1 s
+  6/151 75 customers ['unknown', 'unknown'] 130 s
+  7/151 75 customers ['unknown', 'unknown'] 135 s
+  8/151 75 customers ['unknown', 'unknown'] 135 s
+  9/151 75 customers ['unknown', 'unknown'] 137 s
+  10/151 75 customers ['unknown', 'unknown'] 264 s
+  11/151 75 customers ['unknown', 'unknown'] 268 s
+  12/151 75 customers ['unknown', 'unknown'] 269 s
+  13/151 75 customers ['unsat', 'unknown'] 326 s
+  14/151 75 customers ['unknown', 'unknown'] 398 s
+  15/151 75 customers ['unknown', 'unknown'] 403 s
+  16/151 75 customers ['unsat', 'unsat'] 411 s
+  17/151 75 customers ['unsat', 'unsat'] 420 s
+  18/151 75 customers ['unsat', 'unsat'] 427 s
+  19/151 75 customers ['unsat', 'unsat'] 440 s
+  20/151 75 customers ['unsat', 'unsat'] 441 s
+  21/151 75 customers ['unsat', 'unsat'] 441 s
+  22/151 75 customers ['unsat', 'unsat'] 442 s
+  23/151 75 customers ['unsat', 'unsat'] 443 s
+  24/151 75 customers ['unsat', 'unsat'] 444 s
+  25/151 75 customers ['unsat', 'unsat'] 444 s
+  26/151 75 customers ['unsat', 'unsat'] 446 s
+  27/151 68 customers ['unsat', 'unsat'] 446 s
+  28/151 75 customers ['unsat', 'unsat'] 449 s
+  29/151 50 customers ['unsat', 'unsat'] 449 s
+  30/151 50 customers ['unsat', 'unsat'] 449 s
+  31/151 50 customers ['unsat', 'unsat'] 449 s
+  32/151 50 customers ['unsat', 'unsat'] 449 s
+  33/151 60 customers ['unsat', 'unsat'] 450 s
+  34/151 50 customers ['unsat', 'unsat'] 450 s
+  35/151 50 customers ['unsat', 'unsat'] 450 s
+  36/151 50 customers ['unsat', 'unsat'] 450 s
+  37/151 50 customers ['unsat', 'unsat'] 450 s
+  38/151 50 customers ['unsat', 'unsat'] 455 s
+  39/151 50 customers ['unsat', 'unsat'] 455 s
+  40/151 50 customers ['unsat', 'unsat'] 455 s
+  41/151 50 customers ['unsat', 'unsat'] 455 s
+  42/151 50 customers ['unsat', 'unsat'] 455 s
+  43/151 50 customers ['unsat', 'unsat'] 455 s
+  44/151 75 customers ['unsat', 'unsat'] 456 s
+  45/151 50 customers ['unsat', 'unsat'] 457 s
+  46/151 75 customers ['unknown', 'unknown'] 457 s
+  47/151 50 customers ['unsat', 'unsat'] 466 s
+  48/151 50 customers ['unsat', 'unsat'] 477 s
+  49/151 50 customers ['unsat', 'unsat'] 477 s
+  50/151 50 customers ['unsat', 'unsat'] 477 s
+  51/151 50 customers ['unsat', 'unsat'] 477 s
+  52/151 50 customers ['unsat', 'unsat'] 477 s
+  53/151 50 customers ['unsat', 'unsat'] 477 s
+  54/151 50 customers ['unsat', 'unsat'] 477 s
+  55/151 50 customers ['unsat', 'unsat'] 477 s
+  56/151 50 customers ['unsat', 'unsat'] 477 s
+  57/151 50 customers ['unsat', 'unsat'] 478 s
+  58/151 50 customers ['unsat', 'unsat'] 478 s
+  59/151 50 customers ['unsat', 'unsat'] 478 s
+  60/151 50 customers ['unsat', 'unsat'] 478 s
+  61/151 50 customers ['unsat', 'unsat'] 478 s
+  62/151 50 customers ['unsat', 'unsat'] 478 s
+  63/151 50 customers ['unsat', 'unsat'] 478 s
+  64/151 50 customers ['unsat', 'unsat'] 478 s
+  65/151 50 customers ['unsat', 'unsat'] 478 s
+  66/151 50 customers ['unsat', 'unsat'] 478 s
+  67/151 50 customers ['unsat', 'unsat'] 478 s
+  68/151 50 customers ['unsat', 'unsat'] 478 s
+  69/151 50 customers ['unsat', 'unsat'] 478 s
+  70/151 50 customers ['unsat', 'unsat'] 481 s
+  71/151 50 customers ['unsat', 'unsat'] 484 s
+  72/151 50 customers ['unsat', 'unsat'] 487 s
+  73/151 50 customers ['unsat', 'unsat'] 492 s
+  74/151 50 customers ['unsat', 'unsat'] 493 s
+  75/151 50 customers ['unsat', 'unsat'] 497 s
+  76/151 50 customers ['unsat', 'unsat'] 498 s
+  77/151 50 customers ['unsat', 'unsat'] 499 s
+  78/151 50 customers ['unsat', 'unsat'] 500 s
+  79/151 50 customers ['unsat', 'unsat'] 500 s
+  80/151 50 customers ['unsat', 'unsat'] 500 s
+  81/151 50 customers ['unsat', 'unsat'] 500 s
+  82/151 50 customers ['unsat', 'unsat'] 500 s
+  83/151 50 customers ['unsat', 'unsat'] 500 s
+  84/151 50 customers ['unsat', 'unsat'] 500 s
+  85/151 50 customers ['unsat', 'unsat'] 500 s
+  86/151 50 customers ['unsat', 'unsat'] 500 s
+  87/151 50 customers ['unsat', 'unsat'] 500 s
+  88/151 50 customers ['unsat', 'unsat'] 500 s
+  89/151 50 customers ['unsat', 'unsat'] 500 s
+  90/151 50 customers ['unsat', 'unsat'] 500 s
+  91/151 50 customers ['unsat', 'unsat'] 500 s
+  92/151 50 customers ['unsat', 'unsat'] 500 s
+  93/151 50 customers ['unsat', 'unsat'] 500 s
+  94/151 50 customers ['unsat', 'unsat'] 501 s
+  95/151 50 customers ['unsat', 'unsat'] 501 s
+  96/151 50 customers ['unsat', 'unsat'] 501 s
+  97/151 50 customers ['unsat', 'unsat'] 501 s
+  98/151 50 customers ['unsat', 'unsat'] 501 s
+  99/151 50 customers ['unsat', 'unsat'] 501 s
+  100/151 50 customers ['unsat', 'unsat'] 501 s
+  101/151 50 customers ['unsat', 'unsat'] 501 s
+  102/151 50 customers ['unsat', 'unsat'] 501 s
+  103/151 50 customers ['unsat', 'unsat'] 501 s
+  104/151 50 customers ['unsat', 'unsat'] 501 s
+  105/151 50 customers ['unsat', 'unsat'] 501 s
+  106/151 50 customers ['unsat', 'unsat'] 501 s
+  107/151 50 customers ['unsat', 'unsat'] 502 s
+  108/151 50 customers ['unsat', 'unsat'] 502 s
+  109/151 50 customers ['unsat', 'unsat'] 502 s
+  110/151 50 customers ['unsat', 'unsat'] 502 s
+  111/151 50 customers ['unsat', 'unsat'] 502 s
+  112/151 50 customers ['unsat', 'unsat'] 502 s
+  113/151 50 customers ['unsat', 'unsat'] 503 s
+  114/151 50 customers ['unsat', 'unsat'] 503 s
+  115/151 50 customers ['unsat', 'unsat'] 503 s
+  116/151 50 customers ['unsat', 'unsat'] 503 s
+  117/151 50 customers ['unsat', 'unsat'] 503 s
+  118/151 50 customers ['unsat', 'unsat'] 504 s
+  119/151 50 customers ['unsat', 'unsat'] 504 s
+  120/151 50 customers ['unsat', 'unsat'] 505 s
+  121/151 50 customers ['unsat', 'unsat'] 505 s
+  122/151 50 customers ['unsat', 'unsat'] 506 s
+  123/151 50 customers ['unsat', 'unsat'] 506 s
+  124/151 50 customers ['unsat', 'unsat'] 507 s
+  125/151 50 customers ['unsat', 'unsat'] 507 s
+  126/151 50 customers ['unsat', 'unsat'] 507 s
+  127/151 50 customers ['unsat', 'unsat'] 509 s
+  128/151 50 customers ['unsat', 'unsat'] 509 s
+  129/151 50 customers ['unsat', 'unsat'] 510 s
+  130/151 50 customers ['unsat', 'unsat'] 510 s
+  131/151 50 customers ['unsat', 'unsat'] 511 s
+  132/151 50 customers ['unsat', 'unsat'] 511 s
+  133/151 50 customers ['unsat', 'unsat'] 511 s
+  134/151 50 customers ['unsat', 'unsat'] 512 s
+  135/151 50 customers ['unsat', 'unsat'] 512 s
+  136/151 50 customers ['unsat', 'unsat'] 516 s
+  137/151 50 customers ['unsat', 'unsat'] 516 s
+  138/151 50 customers ['unsat', 'unsat'] 517 s
+  139/151 50 customers ['unsat', 'unsat'] 518 s
+  140/151 50 customers ['unsat', 'unsat'] 518 s
+  141/151 50 customers ['unsat', 'unsat'] 519 s
+  142/151 50 customers ['unsat', 'unsat'] 524 s
+  143/151 50 customers ['unsat', 'unsat'] 524 s
+  144/151 50 customers ['unsat', 'unsat'] 532 s
+  145/151 50 customers ['unsat', 'unsat'] 539 s
+  146/151 50 customers ['unsat', 'unsat'] 540 s
+  147/151 50 customers ['unsat', 'unsat'] 541 s
+  148/151 50 customers ['unsat', 'unsat'] 544 s
+  149/151 50 customers ['unsat', 'unsat'] 544 s
+  150/151 50 customers ['unsat', 'unsat'] 550 s
+  151/151 50 customers ['unsat', 'unsat'] 565 s
+# Certificates for the repaired rules: tables (loop0008 item 05)
+
+*Generated by `python -m paper2.certificates --stage tables` from `paper2/data/certificates/repaired.csv`: 302 rows, 151 instances at 50–75 customers. Checker: `paper2/certificate_check.py`.*
+
+## By size band and configuration
+
+| band   | config   |   instances |   refuted |   unknown (deadline) |   sat below optimum |   verified |   rejected |   definite steps |   better steps |   matching edges | nodes median / max   | gz bytes median / max   | check ms median / p90 / max   |   check s total |   emit s total |
+|:-------|:---------|------------:|----------:|---------------------:|--------------------:|-----------:|-----------:|-----------------:|---------------:|-----------------:|:---------------------|:------------------------|:------------------------------|----------------:|---------------:|
+| 41–50  | csearch  |         120 |       120 |                    0 |                   0 |        120 |          0 |           530424 |         120302 |           152597 | 1244 / 240164        | 12045 / 2242150         | 33.24 / 2150.2 / 6857         |           74.15 |           85.9 |
+| 41–50  | default  |         120 |       120 |                    0 |                   0 |        120 |          0 |           748952 |              0 |           191780 | 1392 / 260859        | 12665 / 2588603         | 37.01 / 2552.1 / 7909         |           92.78 |           95.5 |
+| 51–60  | csearch  |           1 |         1 |                    0 |                   0 |          1 |          0 |             5155 |           2709 |             1885 | 12742 / 12742        | 126508 / 126508         | 278.86 / 278.9 / 279          |            0.28 |            0.3 |
+| 51–60  | default  |           1 |         1 |                    0 |                   0 |          1 |          0 |            24685 |              0 |             8797 | 69336 / 69336        | 661951 / 661951         | 1198.43 / 1198.4 / 1198       |            1.2  |            1.4 |
+| 61–75  | csearch  |          30 |        19 |                   11 |                   0 |         19 |          0 |           103095 |          31404 |            37261 | 3068 / 520327        | 26516 / 5332005         | 143.70 / 7887.0 / 34602       |           64.17 |           70.5 |
+| 61–75  | default  |          30 |        20 |                   10 |                   0 |         20 |          0 |           312897 |              0 |           110118 | 3946 / 1139656       | 34162 / 11555563        | 187.03 / 15057.6 / 68221      |          137.47 |          111.2 |
+
+## Totals per configuration
+
+| config   |   instances |   verified |   rejected |   unknown |   nodes |   steps |   definite |   subset |   better |   matching edges |   gz MB |   check s |   µs per node |
+|:---------|------------:|-----------:|-----------:|----------:|--------:|--------:|-----------:|---------:|---------:|-----------------:|--------:|----------:|--------------:|
+| csearch  |         151 |        140 |          0 |        11 | 3047791 | 1461603 |     638674 |   668514 |   154415 |           191743 |   30.34 |     138.6 |          45.5 |
+| default  |         151 |        141 |          0 |        10 | 4970790 | 2198471 |    1086534 |  1111937 |        0 |           310695 |   48.93 |     231.5 |          46.6 |
+
+## Not refuted within the deadline (or satisfiable)
+
+| instance_name      |   n |   m |   optimum | config   | status   |   branches |   emit_seconds |
+|:-------------------|----:|----:|----------:|:---------|:---------|-----------:|---------------:|
+| SP3                |  75 |  75 |        34 | default  | unknown  |     980224 |        60.0011 |
+| SP3                |  75 |  75 |        34 | csearch  | unknown  |     760320 |        60.0109 |
+| Random-75-75-2-2_0 |  75 |  75 |        17 | default  | unknown  |     942080 |        60.0125 |
+| Random-75-75-2-2_0 |  75 |  75 |        17 | csearch  | unknown  |     783360 |        60.0042 |
+| Random-75-75-2-1_0 |  75 |  75 |        16 | default  | unknown  |     964608 |        60.0103 |
+| Random-75-75-2-1_0 |  75 |  75 |        16 | csearch  | unknown  |     793088 |        60.0168 |
+| SP3_0              |  75 |  75 |        34 | default  | unknown  |    1552384 |        60.0041 |
+| SP3_0              |  75 |  75 |        34 | csearch  | unknown  |    1196032 |        60.001  |
+| Random-75-75-2-3_0 |  75 |  75 |        17 | default  | unknown  |    1050368 |        60.0066 |
+| Random-75-75-2-3_0 |  75 |  75 |        17 | csearch  | unknown  |     856320 |        60.0132 |
+| Random-75-75-2-5_0 |  75 |  75 |        16 | default  | unknown  |    1043200 |        60.0091 |
+| Random-75-75-2-5_0 |  75 |  75 |        16 | csearch  | unknown  |     754432 |        60.0014 |
+| Random-75-75-2-4_0 |  75 |  75 |        13 | default  | unknown  |    1000960 |        60.0062 |
+| Random-75-75-2-4_0 |  75 |  75 |        13 | csearch  | unknown  |    1195776 |        60.0004 |
+| Random-75-75-4-1_0 |  75 |  75 |        35 | csearch  | unknown  |     718336 |        60.0098 |
+| Random-75-75-4-3_0 |  75 |  75 |        37 | default  | unknown  |     903424 |        60.0045 |
+| Random-75-75-4-3_0 |  75 |  75 |        37 | csearch  | unknown  |     723968 |        60.0078 |
+| Random-75-75-4-4_0 |  75 |  75 |        32 | default  | unknown  |    1462016 |        60.0055 |
+| Random-75-75-4-4_0 |  75 |  75 |        32 | csearch  | unknown  |    1151744 |        60.005  |
+| Random-75-75-4-5_0 |  75 |  75 |        32 | default  | unknown  |     942080 |        60.2517 |
+| Random-75-75-4-5_0 |  75 |  75 |        32 | csearch  | unknown  |     751104 |        60.0013 |
+
+## Rejected
+
+*(none)*
+

@@ -1,0 +1,251 @@
+{
+ "definite_cex": [
+  {
+   "instance": "DEFINITE_CEX[0]",
+   "n": 14,
+   "start": [
+    2
+   ],
+   "k": 6,
+   "config": "default",
+   "published_status": "unsat",
+   "published_branches": 7,
+   "root_steps": [
+    [
+     "definite",
+     0
+    ]
+   ],
+   "learning_checker_accepts": true,
+   "checker": "node 0: definite move on 0: no matching witness (a published-rule step)",
+   "open": 3,
+   "largest_matching": [
+    [
+     3,
+     0
+    ]
+   ],
+   "forged_with_largest_matching": "node 0: definite move on 0: matching has 1 edges, open - 1 = 2",
+   "repaired_status": "sat",
+   "repaired_order": [
+    2,
+    3,
+    4,
+    1,
+    6,
+    12,
+    13,
+    0,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "repaired_order_cost": 6
+  },
+  {
+   "instance": "DEFINITE_CEX[0]",
+   "n": 14,
+   "start": [
+    2
+   ],
+   "k": 6,
+   "config": "csearch",
+   "published_status": "unsat",
+   "published_branches": 5,
+   "root_steps": [
+    [
+     "definite",
+     0
+    ]
+   ],
+   "learning_checker_accepts": true,
+   "checker": "node 0: definite move on 0: no matching witness (a published-rule step)",
+   "open": 3,
+   "largest_matching": [
+    [
+     3,
+     0
+    ]
+   ],
+   "forged_with_largest_matching": "node 0: definite move on 0: matching has 1 edges, open - 1 = 2",
+   "repaired_status": "sat",
+   "repaired_order": [
+    2,
+    3,
+    4,
+    1,
+    6,
+    12,
+    13,
+    0,
+    5,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "repaired_order_cost": 6
+  },
+  {
+   "instance": "DEFINITE_CEX[1]",
+   "n": 16,
+   "start": [
+    2
+   ],
+   "k": 7,
+   "config": "default",
+   "published_status": "unsat",
+   "published_branches": 8,
+   "root_steps": [
+    [
+     "definite",
+     0
+    ]
+   ],
+   "learning_checker_accepts": true,
+   "checker": "node 0: definite move on 0: no matching witness (a published-rule step)",
+   "open": 3,
+   "largest_matching": [
+    [
+     3,
+     0
+    ]
+   ],
+   "forged_with_largest_matching": "node 0: definite move on 0: matching has 1 edges, open - 1 = 2",
+   "repaired_status": "sat",
+   "repaired_order": [
+    2,
+    3,
+    4,
+    1,
+    6,
+    12,
+    10,
+    0,
+    8,
+    9,
+    13,
+    5,
+    7,
+    11,
+    14,
+    15
+   ],
+   "repaired_order_cost": 7
+  },
+  {
+   "instance": "DEFINITE_CEX[1]",
+   "n": 16,
+   "start": [
+    2
+   ],
+   "k": 7,
+   "config": "csearch",
+   "published_status": "unsat",
+   "published_branches": 6,
+   "root_steps": [
+    [
+     "definite",
+     0
+    ]
+   ],
+   "learning_checker_accepts": true,
+   "checker": "node 0: definite move on 0: no matching witness (a published-rule step)",
+   "open": 3,
+   "largest_matching": [
+    [
+     3,
+     0
+    ]
+   ],
+   "forged_with_largest_matching": "node 0: definite move on 0: matching has 1 edges, open - 1 = 2",
+   "repaired_status": "sat",
+   "repaired_order": [
+    2,
+    3,
+    4,
+    1,
+    6,
+    12,
+    10,
+    0,
+    8,
+    9,
+    13,
+    5,
+    7,
+    11,
+    14,
+    15
+   ],
+   "repaired_order_cost": 7
+  }
+ ],
+ "corrupted": [
+  {
+   "corruption": "drop an edge",
+   "applied": "node 28: definite on 0, one edge removed",
+   "ok": false,
+   "reason": "node 28: definite move on 0: matching has 1 edges, open - 1 = 2"
+  },
+  {
+   "corruption": "repeat a stack",
+   "applied": "node 28: definite on 0, second edge given the first edge's stack",
+   "ok": false,
+   "reason": "node 28: definite move on 0: stack 8 matched twice"
+  },
+  {
+   "corruption": "repeat a customer",
+   "applied": "node 28: definite on 0, second edge given the first edge's customer",
+   "ok": false,
+   "reason": "node 28: definite move on 0: customer 8 matched twice"
+  },
+  {
+   "corruption": "stack not newly opened",
+   "applied": "node 28: definite on 0, edge (8, 1) with 1 outside N[8]",
+   "ok": false,
+   "reason": "node 28: definite move on 0: edge (8, 1): stack 1 is not newly opened by 8"
+  },
+  {
+   "corruption": "customer not freed",
+   "applied": "node 28: definite on 0, an edge from q itself",
+   "ok": false,
+   "reason": "node 28: definite move on 0: matched customer 0 is not one the move frees"
+  },
+  {
+   "corruption": "better: drop an edge",
+   "applied": "node 0: better (1, 0), one edge removed",
+   "ok": false,
+   "reason": "node 0: better step (1, 0): matching has 1 edges, open - 1 = 2"
+  },
+  {
+   "corruption": "strip the matching",
+   "applied": "node 28: definite on 0, matching stripped (a published step)",
+   "ok": false,
+   "reason": "node 28: definite move on 0: no matching witness (a published-rule step)"
+  }
+ ],
+ "example": {
+  "instance": "Warwick 877: balanced orders, 4 orders per product",
+  "n": 20,
+  "m": 10,
+  "k": 7,
+  "config": {
+   "subset_rule": true,
+   "definite_move": true,
+   "old_move": true,
+   "memo": false,
+   "better_move": true,
+   "better_move_dominators": 0,
+   "old_close_count": false,
+   "old_rule_order": false,
+   "repaired_rules": true
+  },
+  "nodes": 55,
+  "checker": "refutation verified"
+ }
+}
