@@ -4,7 +4,21 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 2/9 SOLVED
+Current: 3/9 SOLVED
+
+**Correction (iteration 3, 2026-10-03).** Our notes said the definite move
+"is" a depth-1 commitment, Tamaki's commitment lemma
+(`pathwidth_solver/PLAN.md`, `CLUSTER_PAPER_PLAN.md`,
+`literature/pathwidth_solvers_README.md`). That is wrong in two ways.
+- A depth-1 commitment is a move with `open(q, S) ≤ 1` (`isCommittable_insert_iff`).
+- The published Theorem 1 checks the commitment condition at the endpoints
+  only, and it is false.
+Only the *repaired* rule is the commitment lemma, at depth `close(q, S)`.
+The three notes are corrected in place.
+
+Also recorded in `prior_art_counterexample.md`: the repair's soundness theorem
+is **known**. It is Kitsunai et al. (2016), Lemma 1, after Tamaki (WG 2011), and
+our Theorem 4.7 proof is theirs. The paper must not claim it as new.
 
 **Correction (iteration 2, 2026-10-03).** Item 01 recorded that Fink (2012)
 restates CP Theorem 1 "with the CP premise". It does not. Fink's `f(α_j, S)`
@@ -152,3 +166,92 @@ written.
   thesis and Fink) has a refuting graph. Fink's needs one more vertex.
 - The open question whether a random search at 13–16 vertices finds Fink
   failures without the twin gadget is not important for the paper.
+
+---
+
+## Iteration 3 — 2026-10-03 02:30
+
+### Completed
+- **Item 03: section 4 in pathwidth language.** It is a new **§4.7** at the
+  end of `paper2/revised_algorithm.md`, "The search in pathwidth language".
+  - **Why at the end.** Inserting it after §4.2.3 would have renumbered every
+    lemma that other documents cite. Pointers to it were added in §4.1, after
+    Theorem 4.3, and after Theorem 4.7. Its results continue the numbering:
+    Lemma 4.20 to Lemma 4.24.
+  - **Contents.**
+    - §4.7.1: the dictionary, as a table with Lean names. Open stacks are the
+      border `d(T) = |N(T)|` of a forward prefix, the free closure is the full
+      set of Suchan & Villanger, and `Sol_k(∅)` is `vs ≤ k − 1`.
+    - §4.7.2: the skeleton is Kobayashi, Komuro & Tamaki's (SEA 2014)
+      Algorithm 1, compared with Coudert, Mazauric & Nisse.
+    - §4.7.3: each rule as a layout lemma with its Lean theorem and its
+      published counterpart: the free move, the definite move (published,
+      repaired, depth 1), the subset rule, the better move, the old move and
+      the memo.
+    - §4.7.4: a table of what is known and what is not.
+- **The main finding: the repaired definite move is a known theorem.** It is
+  Tamaki's commitment lemma, Kitsunai et al. (Algorithmica 2016) Lemma 1,
+  p. 142, and our Theorem 4.7 proof is theirs. The published Theorem 1 checks
+  the commitment condition at the endpoints only. By their Corollary 2
+  (pp. 148–149), the published premise does guarantee a commitment, but to the
+  least-border set W, not to the child. In the counterexample W = {2, 3, 4}.
+  - A second repair that commits to W is **proposed, not built**.
+  - What we found in no held paper:
+    - the matching test for this target (Theorem 4.8), which is a special case
+      of their minimum-separator method;
+    - the subset rule, the better move and the old move;
+    - the memo combined with the old move.
+  - Every published pathwidth greedy rule of this kind lies in the region
+    `open ≤ 1`. That covers Coudert et al.'s greedy step, Suchan & Villanger's
+    Rule 1 and Kobayashi et al.'s depth-1 commitments. In that region the
+    published definite move is right.
+- **Lean: a new file, `lean/MOSPFormalization/Search/Layout.lean`.** It is
+  imported by `MOSPFormalization.lean`, and its 13 theorems are listed in
+  `paper2/axiom_check.lean` under "loop0008 item 03". All print `propext`,
+  `Classical.choice` and `Quot.sound` only. The theorems are:
+  - the dictionary: `opened_sdiff_eq_boundary`, `openStacks_eq_card_boundary`,
+    `opened_eq_union_boundary`, `stepCost_eq_card_boundary_add_one` and
+    `mem_cl_iff`;
+  - the commitment lemma, `solvable_of_isCommittable`;
+  - `isHereditarilyDefinite_iff_isCommittable`;
+  - `solvable_cl_insert_of_hereditarilyDefinite'`;
+  - `isDefinite_iff_endpoint`;
+  - `isCommittable_insert_iff` (depth 1 means `open ≤ 1`);
+  - `isGreedyStep_iff` (Coudert et al.'s greedy step means `open ≤ 1`);
+  - `exists_isCommittable_of_isDefinite`;
+  - `cex_isDefinite_not_isCommittable` and `cex_isCommittable_234`.
+
+  No existing proof was edited. The file builds in seconds.
+- **Downstream text.**
+  - `prior_art_counterexample.md` has a dated note: the repair's soundness is
+    known, and the paper may claim the counterexample, not the repair.
+  - `plan.md` §4 marks the to-do as done.
+  - The three wrong notes on depth-1 commitments are corrected (see the
+    correction at the top of this file).
+- **Sources.** Six held papers were read in full or in their relevant
+  sections with `pdftotext` on 2026-10-03. Nothing was fetched.
+  - Coudert, Mazauric & Nisse, SEA 2014 and JEA 2016;
+  - Kobayashi, Komuro & Tamaki, SEA 2014;
+  - Kitsunai et al. 2016;
+  - Suchan & Villanger 2009;
+  - Bodlaender et al. 2012.
+
+  Tamaki (WG 2011) is not held. It is cited through Kitsunai et al., who
+  restate it with proof.
+- **Split run.** Clean: no `!!!` line, checked at 02:23.
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,364 passed,
+  and pathwidth_solver pytest gives 114 passed.
+
+### Blockers
+- None.
+
+### Next
+- **Item 04**, the dataset.
+- §4.7 changes what section 4 can claim. Item 08 (LaTeX) should credit Tamaki
+  and Kitsunai et al. for the repair's soundness, and present the counterexample
+  as "Theorem 1 drops the interior condition of a commitment".
+- Optional, not in any item: the retargeted repair (commit to W). A cheap first
+  step is to measure, on the failing candidates of `solver_fix.md` items 04 and
+  08, how many nodes committing to W would save. W always exists there, by
+  Proposition 4.23.

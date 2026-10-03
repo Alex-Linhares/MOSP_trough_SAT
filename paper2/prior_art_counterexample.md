@@ -16,6 +16,22 @@ than `q`, so `q` itself is excluded and the premise is strictly stronger.
 `cexGraph` does not refute it under any labelling. A 15-customer variant does,
 in Lean (`fink_theorem1_false`). See "The thesis's theorems in Lean" below.
 
+*Added 2026-10-03 (loop0008 item 03, `revised_algorithm.md` §4.7):* the
+pathwidth literature has the **correct form of the rule**, under another name,
+though not a report of the error. Tamaki's *commitment lemma* (WG 2011, restated
+with proof as Lemma 1 of Kitsunai, Kobayashi, Komuro, Tamaki & Tano,
+*Algorithmica* 75, 2016, p. 142) is exactly the repaired definite move when the
+target is the child `cl(S ∪ {q})` (Lean: `isHereditarilyDefinite_iff_isCommittable`).
+Our soundness proof (Theorem 4.7) is their proof, found independently. The
+published Theorem 1 checks their condition at the endpoints only. Their
+Corollary 2 (pp. 148–149) even shows that the published premise guarantees a
+commitment to *some* intermediate set (Lean: `exists_isCommittable_of_isDefinite`).
+None of these papers cites Chu & Stuckey or mentions MOSP. So the paper may
+claim the counterexample and the observation that Theorem 1 drops the interior
+condition, but **not the repair's soundness as new**. What we found in no
+held paper is the matching test for this target (Theorem 4.8), which is a
+special case of their minimum-separator computation.
+
 ## What was checked
 
 | Source | What it says about the rules |

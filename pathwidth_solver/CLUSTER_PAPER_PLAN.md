@@ -81,7 +81,9 @@ MOSP = pw + 1 (`MOSPGraph`, sorry-free), `Sandwich` (3 sorries: bandwidth/degene
    direction each are cheap; full proofs one week each. Optional for a first submission.
 6. **Pebbling** (Lengauer, KP 1986 §3) — lowest priority; the definitions are the longest.
 7. Stretch: **soundness of the search's dominance rules** (definite move = Tamaki's Commitment Lemma,
-   depth 1; subset rule; old move). The MOSP repo's loop0004 already has "a proof object for the
+   depth 1; subset rule; old move). *Corrected 2026-10-03 (MOSP loop0008 item 03): only the repaired
+   definite move is the Commitment Lemma, at depth close(q, S); depth 1 is the case open ≤ 1; the
+   published rule is false. Done in `paper2/revised_algorithm.md` §4.3, §4.7.*. The MOSP repo's loop0004 already has "a proof object for the
    customer search". Would let the paper say the solver is verified, not just tested.
 
 Sorry-free targets for submission: items 1–4. Everything else stated with citations.
@@ -108,7 +110,8 @@ Done: phases 1–3, 6, 6b; benchmark sweep (coloring, named, VSPLIB, Rome) with 
 3. How popular is each name: the OpenAlex study (method, caveats, the "dead names").
 4. One algorithm: closing-order search on the MOSP graph = vertex-separation search; the rules as
    commitments (Tamaki) and dominances (Chu & Stuckey); what the pathwidth solvers lacked (better move,
-   old move) and what MOSP lacked (nothing; the depth-1 commitment was already there).
+   old move) and what MOSP lacked (nothing; the depth-1 commitment was already there). *Corrected 2026-10-03: what MOSP
+   had was a commitment with its interior condition dropped, which is false (`paper2/revised_algorithm.md` §4.7).*
 5. Experiments: identity with the MOSP implementation; Rome 97.0 % vs 95.6 %; TreewidthLIB Table 4
    parity and speedups; VSPLIB parity plus grids 12–13 and 202-node trees; fpsol2.i.1 in 6 s vs 323 s;
    new exact values (queen11_11 = 87, queen12_12 = 103); open cases.

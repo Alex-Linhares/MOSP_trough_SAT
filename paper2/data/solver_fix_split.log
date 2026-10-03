@@ -3997,3 +3997,22 @@
 2026-10-03T02:07:30 Random-125-125-4-4_0 13.55 unknown 6e+09 nodes 5765 s; 1256 queued
 2026-10-03T02:08:20 Random-125-125-4-4_0 13.85 unknown 6e+09 nodes 5815 s; 1338 queued
 2026-10-03T02:11:32 Random-125-125-4-4_0 13.83 unknown 6e+09 nodes 6008 s; 1420 queued
+2026-10-03T02:18:09 Random-125-125-2-1_0 37.76 unsat 2.19e+09 nodes 1733 s; 1419 queued
+2026-10-03T02:33:36 Random-125-125-2-1_0 37.43 unsat 3.59e+09 nodes 2844 s; 1418 queued
+2026-10-03T02:33:59 Random-125-125-2-1_0 37.33 unsat 3.6e+09 nodes 2868 s; 1417 queued
+2026-10-03T02:42:17 Random-125-125-2-5_0 0.98 unsat 3.96e+09 nodes 3014 s; 1416 queued
+2026-10-03T02:49:35 Random-125-125-2-4_0 46.41.21 unsat 1.03e+10 nodes 8291 s; 1415 queued
+2026-10-03T02:53:37 Random-125-125-2-1_0 37.115 unsat 1.45e+09 nodes 1177 s; 1414 queued
+2026-10-03T02:53:50 Random-125-125-4-4_0 55 unknown 3e+09 nodes 2780 s; 1500 queued
+2026-10-03T02:53:52 Random-125-125-4-4_0 26 unknown 3e+09 nodes 2887 s; 1585 queued
+2026-10-03T02:54:14 Random-125-125-4-4_0 59 unknown 3e+09 nodes 2933 s; 1672 queued
+2026-10-03T02:54:59 Random-125-125-4-4_0 66 unknown 3e+09 nodes 2799 s; 1752 queued
+=== Random-125-125-2-4_0: k = 23 refuted, 4.98e+11 nodes over 1686 tasks, 154.1 core-h
+2026-10-03T02:55:22 Random-125-125-2-4_0 27.41.46.21 unsat 1.08e+10 nodes 8638 s; 1751 queued
+2026-10-03T02:55:24 Random-125-125-2-1_0 37.95 unsat 1.75e+09 nodes 1307 s; 1750 queued
+2026-10-03T02:56:41 Random-125-125-2-1_0 37.89 unsat 2.95e+09 nodes 2312 s; 1749 queued
+2026-10-03T02:57:51 Random-125-125-2-5_0 0.94 unsat 5.46e+09 nodes 4168 s; 1748 queued
+2026-10-03T02:57:53 Random-125-125-2-1_0 37.22 unknown 6e+09 nodes 4486 s; 1802 queued
+2026-10-03T02:58:43 Random-125-125-4-4_0 83 unknown 3e+09 nodes 2830 s; 1883 queued
+2026-10-03T02:58:57 Random-125-125-2-1_0 37.6 unknown 6e+09 nodes 4621 s; 1935 queued
+2026-10-03T02:59:31 Random-125-125-2-1_0 37.24 unsat 2.33e+08 nodes 169 s; 1934 queued

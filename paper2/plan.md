@@ -105,9 +105,12 @@ graph version of the search, with a C engine to 1,024 vertices and a first
 benchmark run (Rome 11,183 / 11,534 proved, 97.0%, at ≤ 600 s per graph), is
 `../pathwidth_solver/`, transferred 2026-09-30 (`TRANSFER.md` there).
 
-**To do.** State each dominance rule as a lemma about vertex-separation
-layouts and prove it (in Lean where feasible — the bugs show why). Decide how
-much of the soundness history belongs in this paper.
+**Done (2026-10-03, loop0008 item 03):** each rule stated as a lemma about
+vertex-separation layouts, `revised_algorithm.md` §4.7, with the dictionary and
+Tamaki's commitment lemma in Lean (`Search/Layout.lean`). The repaired definite
+move is that lemma at the child; its soundness is known, not ours.
+
+**To do.** Decide how much of the soundness history belongs in this paper.
 
 **The benchmark and the dataset** (decided 2026-09-29: benchmark everything,
 and publish the result as a dataset). Because the problems are one complex, a

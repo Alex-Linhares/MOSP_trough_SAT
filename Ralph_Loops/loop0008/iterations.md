@@ -33,7 +33,7 @@
     thesis beside the CP paper wherever the published rules are stated or
     refuted). Add the file to `paper2/axiom_check.lean`.
 
-- [ ] **03 Section 4 in pathwidth language.**
+- [x] **03 Section 4 in pathwidth language.**
   - **The new subsection.** Add one to `paper2/revised_algorithm.md` (its
     place in the section is your call, stated in PROGRESS.md). It restates the
     search and every rule as statements about vertex layouts of a graph: the

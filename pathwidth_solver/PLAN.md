@@ -25,7 +25,7 @@ Mapping, with `U = S ∪ {c}` the vertices closed after the move and
 | cost `|O(S ∪ {c}) − S|`                           | `d(U) + 1`                                         |
 | `MOSP ≤ k`                                        | `vs(G) = pw(G) ≤ k − 1`                            |
 | free move (`N[c] ⊆ O(S)`)                         | fullset rule, Kitsunai et al. 2016 Prop. 3         |
-| definite move (Thm 1)                             | depth-1 commitment (Tamaki 2011 Commitment Lemma)  |
+| definite move (Thm 1)                             | commitment to the full set of `U ∪ {q}`; depth 1 only when `open ≤ 1`. *Corrected 2026-10-03 (MOSP loop0008 item 03): the published Thm 1 checks Tamaki's condition at the endpoints only and is false; the repaired rule is the Commitment Lemma at that target (`paper2/revised_algorithm.md` §4.7).* |
 | memo `prob[S]` / old move                         | subset DP state / Coudert et al. prefix table      |
 
 So `decide_pathwidth(G, w)` is `decide(masks(G), k = w + 1)`, unchanged inside.

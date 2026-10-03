@@ -5,9 +5,9 @@ the working report `search_soundness.md` (Ralph loop0006, items 05 to 13),
 which holds the code references, the full check tables and the history. Every
 statement here is proved in Lean unless it says otherwise. The Lean names
 refer to `../lean/MOSPFormalization/Search/`, namespace
-`MOSPFormalization.Search`: nine files (`Basic`, `DefiniteMove`,
+`MOSPFormalization.Search`: ten files (`Basic`, `DefiniteMove`,
 `SubsetRule`, `BetterMove`, `Memo`, `Decide`, `DefiniteMatching`,
-`PublishedTheorems`, `ChuThesis`), with no
+`PublishedTheorems`, `ChuThesis`, `Layout`), with no
 `sorry` and no axioms beyond `propext`, `Classical.choice` and `Quot.sound`
 (`axiom_check.lean`). Page numbers for Chu & Stuckey (2009) are those of the
 preprint `../literature/chu_stuckey_2009.pdf`. Page numbers for Chu (2011),
@@ -48,6 +48,12 @@ is proved sound, and it is proved equivalent to a bipartite matching
 condition, so it costs one small matching per candidate. With the two repairs,
 the whole search is proved sound in Lean: a refutation at $k$ means
 $Z(M) > k$ and $\mathrm{pw}(G_M) > k - 1$.
+
+**In pathwidth language** (section 4.7) the search is a memoised
+vertex-separation search. The repaired definite move is an instance of
+Tamaki's commitment lemma, and the published one is that lemma with its
+interior condition dropped. The subset rule, the better move and the old move
+have no counterpart in the pathwidth papers we hold.
 
 No wrong answer of the unrepaired search on a whole instance is known. The
 gap is at the level of a node, and the search has always recovered through
@@ -213,6 +219,10 @@ at that moment are the customer itself plus every not-yet-closed customer
 touching the closed group. Read the closing order backwards and this is the
 count that vertex separation takes at each cut. So the best closing order uses
 exactly vertex separation plus one stacks, which is pathwidth plus one.
+
+Section 4.7 restates this, and every rule below, in the vocabulary of the
+pathwidth literature: open stacks are the border $|N(S_i)|$ of a layout
+prefix, read forwards, and the free closure is a full set.
 
 **A modelling remark.** The code drops customers with no product. In $G_M$
 they are isolated vertices, which are free at the root and change nothing.
@@ -416,6 +426,10 @@ $P_k(X)$, hence $\mathrm{Sol}_k(\mathrm{cl}(X)) = \mathrm{Sol}_k(X)$ by Lemma 4.
 again. $\square$ (Lean: `solvable_cl_insert_of_hereditarilyDefinite`, by
 `solvable_union_cl_of_hereditarilyDefinite` and `stepCost_union_cl_le`;
 `searchSol_cl_insert_of_hereditarilyDefinite`.)
+
+The hereditary premise is Tamaki's commitment condition for the jump from $S$
+to $X$, and this proof is the proof of Kitsunai et al.'s (2016) Lemma 1, the
+commitment lemma. Section 4.7.3 gives the details and the sources.
 
 *In plain English.* Take any good closing order and imagine closing $q$, with
 everything it makes free, before anything else. At each moment before the
@@ -1138,3 +1152,361 @@ the evidence.
   its own process from its own state with no old moves and an empty memo. That
   spreads one refutation over many cores. It needs a C entry point that starts
   from a given state, and a short Lean statement of the composition.
+
+---
+
+## 4.7 The search in pathwidth language
+
+Sections 4.2 to 4.6 speak of customers, stacks and closing orders. This section
+says the same things about vertex layouts, for a reader who knows the exact
+pathwidth literature. It shows that the customer search is an exact
+vertex-separation search, that its rules are statements about the borders of
+layout prefixes, and that the repaired definite move is an instance of a known
+theorem, Tamaki's commitment lemma. It also says which rules have a published
+counterpart in that literature and which do not. Chu & Stuckey place MOSP among
+"graph path-width and gate matrix layout", citing Linhares & Yanasse (2002) for
+twelve equivalent problems (PDF p. 1). They do not use pathwidth in the search.
+
+The Lean statements of this section are in `../lean/MOSPFormalization/Search/Layout.lean`.
+They are proved with no `sorry`, and on the axioms `propext`, `Classical.choice`
+and `Quot.sound` only (`axiom_check.lean`). Everything else is cited to the
+results of sections 4.2 to 4.4.
+
+**Sources**, all held in `../literature/` and read for this section, with printed
+page numbers:
+
+- Coudert, Mazauric & Nisse (SEA 2014, LNCS 8504, pp. 46–58,
+  `coudert_mazauric_nisse_2014_branch_and_bound_pathwidth_sea.pdf`) and its
+  journal version (ACM JEA 21, 2016, HAL preprint,
+  `2016-Coudert-Mazauric-Nisse-Branch-and-Bound-Pathwidth-Directed-Pathwidth-JEA.pdf`);
+- Kobayashi, Komuro & Tamaki (SEA 2014, LNCS 8504, pp. 388–399,
+  `kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.pdf`);
+- Kitsunai, Kobayashi, Komuro, Tamaki & Tano (*Algorithmica* 75, 2016,
+  pp. 138–157, `2016-Kitsunai-...-Algorithmica.pdf`), which restates Tamaki's
+  commitments (WG 2011, not held) with proofs;
+- Suchan & Villanger (IWPEC 2009, LNCS 5917, pp. 324–335,
+  `2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC.pdf`);
+- Bodlaender, Fomin, Koster, Kratsch & Thilikos (*Theory Comput. Syst.* 50,
+  2012, pp. 420–432, `2012-Bodlaender-...-Vertex-Ordering-TOCS.pdf`).
+
+### 4.7.1 The dictionary
+
+Let $G = (V, E)$ be a graph. For $T \subseteq V$, write
+$N(T) = \{v \notin T : v \text{ has a neighbour in } T\}$ for the *border* of
+$T$, $N[T] = T \cup N(T)$, and $d(T) = |N(T)|$. This is the notation of
+Kobayashi, Komuro & Tamaki (p. 390). A *vertex sequence* $\sigma = v_1, \dots, v_n$
+is *$w$-feasible* when every prefix has $d \le w$, and the vertex separation
+number $\mathrm{vs}(G)$ is the least $w$ for which some permutation of $V$ is
+$w$-feasible (Kobayashi et al., p. 391; Kitsunai et al., p. 141). Coudert,
+Mazauric & Nisse use the same quantity, $\nu(L, i) = |N^+(\{v_1, \dots, v_i\})|$
+(SEA, pp. 48–49). Kinnersley's form, which Bodlaender et al. use (p. 428),
+counts the vertices *inside* a prefix with a neighbour outside, which is the
+same number for the reversed sequence. That reversal is the one in the proof
+of Theorem 4.3.
+
+Read a MOSP instance through its graph $G_M$, or read any graph as the MOSP
+instance with one product per edge (section 4.1). Then:
+
+| customer search | layout | Lean (`Search/`) |
+|---|---|---|
+| customer | vertex | — |
+| closing order from $\emptyset$ | vertex sequence, read forwards | `orderOfLayout` |
+| closed set $T$ | vertex set of a prefix | — |
+| opened stacks $O(T)$ | $N[T] = T \cup N(T)$ | `opened_eq_union_boundary` |
+| open stacks $b(T) = \lvert O(T) \setminus T \rvert$ | border size $d(T)$ | `openStacks_eq_card_boundary` |
+| $\mathrm{cost}(T, c)$ | $d(T \cup \{c\}) + 1$ | `stepCost_eq_card_boundary_add_one` |
+| $c$ playable at budget $k$ | $T \cup \{c\}$ is a $(k-1)$-feasible step | — |
+| $P_k(T)$ | $T$ extends to a permutation whose prefixes containing $T$ all have $d \le k - 1$ | `Solvable` |
+| $\mathrm{Sol}_k(\emptyset)$ | $\mathrm{vs}(G) \le k - 1$, that is $\mathrm{pw}(G) \le k - 1$ | `searchSol_empty_iff_pathwidth_add_one_le` |
+| free closure $\mathrm{cl}(T)$ | the *full set* of $T$ | `mem_cl_iff` |
+| state ($S = \mathrm{cl}(S)$) | full set | — |
+| new stacks $o(c, S)$ | $N[c] \setminus N[S]$ | `newlyOpened` |
+| $\mathrm{close}(q, S)$ | $\lvert \mathrm{cl}(S \cup \{q\}) \setminus S \rvert$ | `closeCount_eq` |
+| memo | failure table | — |
+
+**Lemma 4.20 (the dictionary).** For every $T \subseteq V$ and $c \notin T$:
+$O(T) \setminus T = N(T)$, so $b(T) = d(T)$;
+$\mathrm{cost}(T, c) = d(T \cup \{c\}) + 1$; and
+$v \in \mathrm{cl}(T)$ iff $v \in N[T]$ and every neighbour of $v$ lies in
+$N[T]$. $\square$ (Lean: `opened_sdiff_eq_boundary`,
+`openStacks_eq_card_boundary`, `stepCost_eq_card_boundary_add_one`,
+`mem_cl_iff`.)
+
+The last clause is the *full set* of Suchan & Villanger (p. 328):
+$U^* = N[U] \setminus N(\tilde U)$ with $\tilde U = V \setminus N[U]$, "the set
+of vertices in $N[U]$ that do not have a neighbor in $V \setminus N[U]$". It
+is Kitsunai et al.'s $\mathrm{fullset}(U)$ (p. 143). Theorem 4.3 in these words
+says that the search, started from $\emptyset$ at budget $k$, decides whether
+$\mathrm{vs}(G) \le k - 1$. In the pathwidth solver (`../pathwidth_solver/`),
+`pathwidth.search.decide_pathwidth(G, w)` is the same search at $k = w + 1$.
+
+*In plain English.* A stack that is open after some customers have closed is a
+vertex outside the closed set with a neighbour inside it. So the number of
+open stacks is the size of the border of the closed set, and the best closing
+order is a vertex ordering whose largest border is as small as possible. That
+smallest largest border is the vertex separation number, which equals
+pathwidth.
+
+### 4.7.2 The same skeleton
+
+Kobayashi, Komuro & Tamaki's Algorithm 1 (p. 393) decides whether a vertex set
+$S$ extends to a $w$-feasible permutation. It first replaces $S$ by a committed
+extension $T = f^*(S)$. It answers *false* if $T$ is in a *failure table*, and
+*true* if $T = V$. Otherwise it recurses on $T \cup \{v\}$ for every $v$ with
+$d(T \cup \{v\}) \le w$, and records $T$ in the table on failure. Chu & Stuckey's
+search is this loop with $w = k - 1$:
+
+- the free closure and the definite move play the part of $f^*$;
+- the memo is the failure table;
+- the cost cut is the test $d(T \cup \{v\}) \le w$.
+
+Coudert, Mazauric & Nisse's branch and bound (SEA, §3.2, pp. 51–52) has the
+same three parts: a greedy extension of the prefix, a table of explored prefix
+sets, and a bound on $\nu$. It minimises against an incumbent rather than
+deciding a fixed $w$. What the customer search adds to the skeleton is the
+subset rule, the better move and the old move (section 4.7.3). The pathwidth
+literature's own additions, the reduction rules of Coudert et al. (SEA §3.1)
+and Kitsunai et al.'s component push (Lemma 2, p. 143), are not in the
+customer search.
+
+Neither line cites the other in the papers held. Chu & Stuckey (CP 2009)
+predates Tamaki's commitments (WG 2011) and both SEA 2014 papers. None of the
+pathwidth papers listed above cites Chu & Stuckey, and Chu & Stuckey's ten
+references include no pathwidth algorithm.
+
+### 4.7.3 The rules as statements about layouts
+
+Throughout, $S$ is a full set with $d(S) \le k$ (the invariant of section
+4.2.1; below the root it is $d(S) \le k - 1$). A move is $q \notin S$, and $X = \mathrm{cl}(S \cup \{q\})$ is the full
+set of $S \cup \{q\}$, the child.
+
+#### Commitments
+
+Tamaki's notion, as Kitsunai et al. state it (p. 142): a $w$-feasible proper
+extension $\tau$ of a $w$-feasible sequence $\sigma$ is *$w$-committable* if
+$$d(X') \ge d(V(\tau)) \quad \text{for every } X' \text{ with } V(\sigma) \subseteq X' \subseteq V(\tau).$$
+Their Lemma 1, the *commitment lemma* (p. 142, proof pp. 142–143, attributed
+to Tamaki 2011), says that if $\sigma$ extends to a $w$-feasible permutation,
+so does $\tau$. A search at $\sigma$ may therefore *commit* to $\tau$ and drop
+every other branch. In set form, write $S \preceq T$ (Lean: `IsCommittable`)
+when $S \subseteq T$ and $d(X') \ge d(T)$ for every $X'$ with
+$S \subseteq X' \subseteq T$.
+
+**Theorem 4.21 (the commitment lemma).** If $S \preceq T$, then
+$P_k(S) \Rightarrow P_k(T)$.
+
+*Proof.* Kitsunai et al.'s, in the notation of section 4.2. Take a closing
+order from $S$ of cost at most $k$, with prefixes $T_i$, and follow it from
+$T$, skipping the customers already in $T$. A step that closes $c \notin T$
+lands on $T_i \cup T$. Since $S \subseteq T_i \cap T \subseteq T$, the
+hypothesis gives $d(T) \le d(T_i \cap T)$, and submodularity of $d$ (Lemma 4.6,
+their Proposition 1, p. 141) gives $d(T_i \cup T) \le d(T_i)$. So no step costs
+more than the step it follows. $\square$ (Lean: `solvable_of_isCommittable`.)
+
+The Lean statement needs no feasibility of the extension itself, because $P_k$
+counts only the steps after its argument. The feasibility half matters only
+for turning a solution from $T$ back into one from $S$, which the search's
+witness does by construction.
+
+#### The free move
+
+**Layout form.** If $v \in N(S)$ and every neighbour of $v$ is in $N[S]$, then
+appending $v$ lowers the border by one and never hurts: $P_k(S) \Rightarrow
+P_k(S \cup \{v\})$, and the converse holds when $d(S) \le k$. So the search may
+stand on full sets only (Lemma 4.2; Lean: `solvable_insert_of_free`,
+`solvable_cl_iff`, with `mem_cl_iff` for the full set).
+
+**Published counterpart.** The same. Suchan & Villanger restrict their dynamic
+programme to full sets (p. 328). Kitsunai et al.'s Proposition 3 (p. 143) shows
+that $\mathrm{fullset}(U)$ is a committable extension of $U$. Coudert et al.'s
+greedy step contains it (below).
+
+#### The definite move
+
+**Lemma 4.22 (what the two premises test).** For $q \notin S$:
+
+1. the published premise, $\mathrm{open}(q, S) \le \mathrm{close}(q, S)$, holds
+   iff $d(X) \le d(S)$, the commitment condition at the single set $X' = S$;
+2. the repaired premise (hereditarily definite) holds iff $S \preceq X$, the
+   commitment condition at every $X'$ between $S$ and $X$.
+
+*Proof.* (1) is Lemma 4.4 with Lemma 4.20. (2): the repair asks
+$d(X) \le d(X')$ for the $X'$ that avoid $q$. If $q \in X' \subseteq X$, then
+$N[X'] = N[X]$, because $N[X] = N[S] \cup N[q] \subseteq N[X'] \subseteq N[X]$.
+Since $|X'| \le |X|$, it follows that $d(X') = |N[X']| - |X'| \ge d(X)$. So the
+sets the repair leaves out meet the condition anyway. $\square$ (Lean:
+`isDefinite_iff_endpoint`, `isHereditarilyDefinite_iff_isCommittable`.)
+
+So **Theorem 4.7 is the commitment lemma at $T = X$** (Lean:
+`solvable_cl_insert_of_hereditarilyDefinite'`, a second proof by
+`solvable_of_isCommittable`). Its proof in section 4.3.2 is the proof of
+Kitsunai et al.'s Lemma 1, found independently, and it is not new.
+
+**What the published rule does wrong, in these terms.** Chu & Stuckey's Theorem
+1, and Chu (2011) Theorem 6.3.6, commit to the full set of $S \cup \{q\}$ after
+checking the commitment condition at the endpoints only. Counterexample 4.5
+shows that the interior cannot be skipped, even when the target is a full set
+one move away. At $S = \{2\}$, $q = 0$, $X = \{0, 2, 3, 4\}$, the endpoint test
+passes with $d(X) = 3 = d(S)$. But the interior set $X' = \{2, 3, 4\}$ has
+$d(X') = 2$ (Lean: `cex_isDefinite_not_isCommittable`).
+
+**The premise is not wasted.** Kitsunai et al.'s Lemma 10 and Corollary 2
+(pp. 148–149) state that if $\tau$ extends $\sigma$ with $d(\tau) \le d(\sigma)$,
+then the set $W$ of least border with $V(\sigma) \subsetneq W \subseteq V(\tau)$
+is committable, and they find it with a minimum $s$–$t$ separator. The published
+premise is exactly that hypothesis, with $\tau$ the move $q$ followed by its
+free customers.
+
+**Proposition 4.23.** If $q \notin S$ and $d(X) \le d(S)$, then some $W$ with
+$S \subsetneq W \subseteq X$ has $S \preceq W$, so $P_k(S) \Rightarrow P_k(W)$.
+$\square$ (Lean: `exists_isCommittable_of_isDefinite`.)
+
+The published rule's error is therefore its target, not its premise. It
+commits to $X$ where the premise only guarantees a commitment to the least-border
+set $W$, which need not contain $q$. In Counterexample 4.5, $W = \{2, 3, 4\}$,
+with border 2 against the child's 3 (Lean: `cex_isCommittable_234`). This
+suggests a second repair that never gives up a pruning the published test
+allows: when the test passes and the matching of Theorem 4.8 fails, commit to
+$W$ instead of skipping $q$. It is **proposed, not built**. The search would then
+move to a set that is not a child $S \cdot c$, so the code, the run semantics of
+section 4.4.2 and the certificate would all need the extra case. Section 4.6.2
+measured that the matching fails on 0.07–0.27% of the candidates that pass the
+published test, so the pruning at stake is small.
+
+**Depth.** Kobayashi, Komuro & Tamaki classify a commitment from $S$ to $T$ by
+its *depth* $|T| - |S|$ (p. 392). The definite move's commitment has depth
+$\mathrm{close}(q, S)$.
+
+**Lemma 4.24 (depth 1).** For $q \notin S$, $S \preceq S \cup \{q\}$ iff
+$\mathrm{open}(q, S) \le 1$. $\square$ (Lean: `isCommittable_insert_iff`.)
+
+Coudert, Mazauric & Nisse's greedy step (SEA Lemma 3, p. 49; JEA Lemma 6)
+appends $v \notin S$ when $N(v) \subseteq S \cup N(S)$, or when $v \in N(S)$ and
+$N(v) \setminus (S \cup N(S))$ is a single vertex $w$. For a symmetric digraph
+this is exactly $\mathrm{open}(v, S) \le 1$ (Lean: `isGreedyStep_iff`). Suchan &
+Villanger's Monotone Push Rule (Rule 1, p. 330) is a case of it: $u \in N(U)$
+with exactly one neighbour outside $N[U]$. So **every published pathwidth rule
+of this kind lies in the region $\mathrm{open} \le 1$**. There the published
+definite move is right (Corollary to Theorem 4.7), and every depth-1
+commitment is a hereditarily definite move. Kobayashi et al. report that
+depth-1 commitments are "extremely effective" on TreewidthLIB and that depth 2
+to 10 adds little (abstract, p. 388; Table 2, p. 394). Chu & Stuckey's
+Theorem 1 reaches past depth 1 into $\mathrm{open} \ge 2$, and that is where it
+fails.
+
+**Cost of the test.** Kobayashi et al. find commitments of depth at most $d$ by
+exhaustive search, at cost $O(n^d)$ (p. 393). Kitsunai et al. decide, for a
+*given* extension, the least border between its ends by a minimum $s$–$t$
+separator, in $O(km)$ (Corollary 2). Theorem 4.8 is that computation for the
+single candidate $T = X$. There the separator problem becomes a bipartite
+matching between the customers $Y = X \setminus (S \cup \{q\})$ and the new
+stacks $N[q] \setminus N[S]$, with target $\mathrm{open}(q, S) - 1$. We found
+this special form in none of the papers held. The general method is theirs.
+
+*In plain English.* The pathwidth literature already has a safe version of the
+definite move, called a commitment. It is safe to jump from one set of placed
+vertices to a bigger one when no set in between has a smaller border than the
+bigger one. Chu & Stuckey checked only the two ends of the jump. The repair
+checks the sets in between, and a small matching does it at once. The
+published check is not useless: it guarantees that some jump is safe, only
+not necessarily the one they made.
+
+#### The subset rule
+
+**Layout form (Lemma 4.9).** If $N[d] \setminus N[S] \subseteq N[r] \setminus N[S]$
+and $d(S \cup \{r\}) \le k - 1$, then $d \in \mathrm{cl}(S \cup \{r\})$, appending
+$d$ is no dearer than appending $r$, and any completion after $r$ gives one
+after $d$ followed by $r$. With the index tie-break, the domination is a strict
+order, so some undominated move with a completion survives (Proposition 4.10).
+Without the tie-break the rule can lose a node (Counterexample 4.11). (Lean:
+`searchSol_cl_insert_of_newlyOpened_subset`, `subsetFilter_sound`,
+`noTieBreak_counterexample`.)
+
+**Published counterpart.** None found in the papers held. It is a dominance
+between sibling moves, not a commitment: it removes $r$ without committing to
+$d$. Coudert et al.'s Lemma 4 (SEA p. 50) compares two orders of the *same*
+prefix set, which is the memo's principle, not this one.
+
+#### The better move
+
+**Layout form (Lemma 4.12, Theorem 4.14).** Suppose $r$ is playable at $S$, and
+$q$ is playable at $S \cup \{r\}$, that is $d(S \cup \{r, q\}) \le k - 1$. If
+the full set of $\mathrm{cl}(S \cup \{r\}) \cup \{q\}$ is a commitment from
+$\mathrm{cl}(S \cup \{r\})$, then a completion after $r$ gives one after $q$,
+so $r$ may be dropped in favour of $q$. Chu & Stuckey's Theorem 2, and Chu
+(2011) Theorem 6.3.8 in its own form, test the commitment condition at the
+endpoints only, and Counterexample 4.13 and section 4.3.4 refute both. The
+repair is the full commitment condition at the child, which is one matching.
+(Lean: `isBetter_iff`, `searchSol_cl_insert_of_repairedBetter`,
+`betterMove_counterexample`, `chuThesis_theorem638_false`.)
+
+**Published counterpart.** None found. It combines a commitment one level down
+with an exchange of $r$ and $q$, and no paper held states such a rule.
+
+#### The old move
+
+**Layout form (Lemma 4.15).** Suppose the prefix set $S \cdot q$ has no
+completion within width $k - 1$. Let $c$ be the next vertex appended instead,
+with $d(S \cup \{q, c\}) \le k - 1$: inserting $q$ before $c$ keeps the step
+feasible. Then $(S \cdot c) \cdot q$ has no completion either. By induction this
+holds along any path whose every step passes the test, so a refuted sibling
+stays refuted below. (Lean: `searchSol_reinsert`, `not_searchSol_of_oldMove`,
+and `reinsert_needs_test` for the necessity of the test.)
+
+**Published counterpart.** None found. Coudert et al.'s table (SEA Lemma 4;
+JEA Lemma 7) prunes a prefix whose *set* was explored before. The old move
+prunes a vertex refuted at an *ancestor*, which is a different set, and that is
+why it needs the feasibility test.
+
+#### The memo
+
+**Layout form (Lemma 4.16).** Whether a full set $S$ with $d(S) \le k$
+extends to a $(k - 1)$-feasible permutation depends on $S$ alone, not on the
+order of the prefix that reached it. (Lean: `solvable_iff_of_cl_eq`.)
+
+**Published counterpart.** The same principle underlies the subset dynamic
+programme for vertex separation (Bodlaender et al., Theorem 1, p. 422, and
+§5.3, p. 428), Coudert et al.'s prefix table (SEA Lemma 4, p. 50; JEA Lemma 7),
+and Kobayashi et al.'s failure table (Algorithm 1, p. 393). What differs is the
+company it keeps. In the customer search the memo runs beside the old move, and
+a refutation then depends on the old moves inherited from ancestors. Theorem
+4.18 proves the combination sound for whole runs. No paper held combines the
+two.
+
+### 4.7.4 What is known and what is not
+
+Stated for the pathwidth reader, and limited to the papers listed at the head
+of this section:
+
+| rule | layout statement | published counterpart | status of the statement |
+|---|---|---|---|
+| free move | append a vertex of the full set | full sets (Suchan & Villanger p. 328; Kitsunai et al. Prop. 3) | known |
+| definite move, $\mathrm{open} \le 1$ | depth-1 commitment | Coudert et al.'s greedy step; Suchan & Villanger Rule 1; Kobayashi et al.'s $f_1$ | known |
+| definite move, published | commit to the child after an endpoint test | — | **false** (Counterexample 4.5) |
+| definite move, repaired | commit to the child after the full condition | Tamaki's commitment lemma (Kitsunai et al. Lemma 1) | known; the matching test for this target (Theorem 4.8) we found nowhere |
+| endpoint test, retargeted | commit to the least-border set $W$ | Kitsunai et al. Lemma 10, Cor. 2 | known; not built in the search |
+| subset rule | sibling dominance by new neighbourhoods | none found | proved here (Lemma 4.9, Prop. 4.10) |
+| better move, published (both forms) | exchange after an endpoint test one level down | none found | **false** (Counterexample 4.13, §4.3.4) |
+| better move, repaired | exchange after a commitment one level down | none found | proved here (Theorem 4.14) |
+| old move | a refuted sibling stays refuted after feasible steps | none found | proved here (Lemma 4.15) |
+| memo | refutation depends on the prefix set only | subset DP; Coudert et al.'s table; Kobayashi et al.'s failure table | known; with the old move, proved here (Theorem 4.18) |
+
+So a pathwidth reader should take three things from this section:
+
+- the customer search is Kobayashi, Komuro & Tamaki's memoised search, with
+  three extra dominance rules that we found nowhere in that literature;
+- its one rule outside the commitment framework, the published definite move,
+  is a commitment whose interior condition was dropped, and the interior
+  condition is necessary;
+- the whole search, with the repair, is proved sound in Lean (Theorem 4.19),
+  and so is the commitment lemma it rests on (Theorem 4.21).
+
+"Found nowhere" covers only the papers listed at the head of this section,
+together with the prior-art sweep of `prior_art_counterexample.md`, which
+looked for reports of the error and not for the rules. It is not a claim of
+priority.
+
+**Regenerate.** `cd lean && lake build MOSPFormalization` checks every
+statement. `cd lean && lake env lean ../paper2/axiom_check.lean` prints their
+axioms, under the heading "loop0008 item 03". The quoted wording and page
+numbers come from the held PDFs, read with `pdftotext -layout` on 2026-10-03.

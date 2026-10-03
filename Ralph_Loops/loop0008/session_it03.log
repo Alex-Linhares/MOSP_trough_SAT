@@ -1,0 +1,147 @@
+# session it03 started 2026-10-03 02:12:38
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0008/iterations.md; date; uptime; cat paper2/data/solver_fix_split.pid; grep -c '^!!!' paper2/data/solver_fix_split*.l
+  > $ cd /home/al/dev/MOSP; ps -p 1465015 -o pid,etime,cmd | cut -c1-150; wc -l paper2/plan.md paper2/revised_algorithm.md paper2/prior_art_counterexample.md paper2/s
+  > $ cd /home/al/dev/MOSP; cat paper2/plan.md
+  > $ cd /home/al/dev/MOSP; cat paper2/revised_algorithm.md
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+  > Read /home/al/dev/MOSP/paper2/revised_algorithm.md
+
+Reading section 4 done; now checking the held pathwidth literature and the Lean names I'll need for the layout dictionary.
+  > $ cd /home/al/dev/MOSP; ls literature/ | grep -i -E "coudert|nisse|bodlaender|solano|treewidth|pathwidth|vertex|kinnersley|ellis|search|bienstock|lapaugh|kirousis
+  > $ cd /home/al/dev/MOSP/literature; mkdir -p /tmp/it3; for f in coudert_mazauric_nisse_2014_branch_and_bound_pathwidth_sea.pdf 2016-Coudert-Mazauric-Nisse-Branch-a
+  > $ cat /tmp/it3/coudert_mazauric_nisse_2014_branch_and_bound_pathwidth_sea.txt | sed -n 1,330p
+  > $ sed -n 1,400p /tmp/it3/kobayashi_komuro_tamaki_2014_commitments_pathwidth_sea.txt
+  > $ cd /tmp/it3; grep -n -i -E "commit|lemma|greedy|without loss|we may assume" 2016-Kitsunai*.txt | head -60; echo ----; grep -n -i -E "lemma|greedy|without loss|m
+  > $ cd /tmp/it3; sed -n 180,345p 2016-Kitsunai*.txt; echo =====; sed -n 270,340p 2009-Suchan*.txt
+  > $ cd /home/al/dev/MOSP; grep -n -i -E "tamaki|commit|coudert|kitsunai|suchan|full set|fullset" paper2/*.md pathwidth_solver/*.md literature/pathwidth_solvers_READ
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search; wc -l *.lean; grep -n -E "^(theorem|lemma|def|abbrev|structure|inductive|noncomputable def)" Basic.lean Defi
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search; sed -n 1,118p Basic.lean; sed -n 60,300p DefiniteMove.lean
+  > $ cd /tmp/it3; grep -n -E "^ *Lemma [0-9]|^ *Theorem [0-9]|Proposition [0-9]+\.|Corollary" 2016-Coudert*.txt | head -30; grep -n -i "full set\|full\b" 2009-Suchan
+  > $ cd /tmp/it3; sed -n 495,580p 2016-Coudert*.txt; sed -n 200,215p 2009-Suchan*.txt; grep -n "Algorithmica (2016) 75:1" 2016-Kitsunai*.txt | head -3
+
+Mapping held-paper page numbers for the citations, then I'll write the Lean dictionary file (boundary, full set, Tamaki's commitment lemma).
+  > $ cd /tmp/it3; for f in 2016-Kitsunai* 2009-Suchan* 2016-Coudert* coudert_* kobayashi_* 2012-Bodlaender*; do echo "== $f"; awk -v RS='\f' '{n++; if ($0 ~ /Commitm
+  > $ cd /tmp/it3; chk(){ awk -v RS='\f' -v pat="$2" '{n++; if ($0 ~ pat) print FILENAME": pdfpage", n, "<-", pat}' "$1"; }; 
+chk 2016-Kitsunai*.txt "Proposition 1 Th
+  > $ cd /tmp/it3; sed -n 1,20p 2012-Bodlaender*.txt; sed -n 436,470p 2012-Bodlaender*.txt; grep -n -B2 -A12 "^Theorem 1 " 2012-Bodlaender*.txt | head -40; awk -v RS=
+  > $ cd /home/al/dev/MOSP/lean; sed -n 283,320p MOSPFormalization/Search/Basic.lean; sed -n 1,40p MOSPFormalization/Search/ChuThesis.lean | head -60; cat MOSPFormali
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization/Search; grep -n -B2 -A6 "theorem not_isHereditarilyDefinite_cex\|theorem definiteMove_counterexample\|^def cexGraph\
+
+Now writing the Lean file.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/Search/Layout.lean
+  > $ cd /home/al/dev/MOSP/lean; time timeout 1200 lake env lean MOSPFormalization/Search/Layout.lean 2>&1 | head -60
+  > $ cd /home/al/dev/MOSP/lean; f=MOSPFormalization/Search/Layout.lean; python3 - <<'E'
+p='MOSPFormalization/Search/Layout.lean'; s=open(p).read()
+s=s.replace("rw [i
+
+Compiles clean. Registering the import and the axiom check.
+  > $ cd /home/al/dev/MOSP; sed -i 's/^import MOSPFormalization.Search.Split$/import MOSPFormalization.Search.Split\nimport MOSPFormalization.Search.Layout/' lean/MOS
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/axiom_check.lean'; s=open(p).read()
+add='''-- loop0008 item 03: the search in pathwidth language; Tamaki's commi
+  > $ cd /home/al/dev/MOSP/pathwidth_solver; sed -n 15,45p PLAN.md; sed -n 78,115p CLUSTER_PAPER_PLAN.md; ls pathwidth; grep -n "^def \|^    def " pathwidth/search.py
+
+Lean part done. Checking Kitsunai §7 (whether they test committability of a given extension in polynomial time) and whether the pathwidth papers cite Chu & Stuckey.
+  > $ cd /tmp/it3; sed -n 520,600p 2016-Kitsunai*.txt; grep -n -i "chu\b\|stuckey\|open stack\|MOSP" 2016-Kitsunai*.txt kobayashi*.txt coudert*.txt 2016-Coudert*.txt 
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+from itertools import combinations
+E_=[(0,3),(0,4),(0,7),(0,11),(1,2),(1,5),(1,6),(2,3),(2,4),(5,9),(5,11),(5,12),(6,8),(6
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'E'
+p='MOSPFormalization/Search/Layout.lean'; s=open(p).read()
+new='''/-- **The published premise does guarantee a commit
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/axiom_check.lean'; s=open(p).read()
+s=s.replace("#print axioms MOSPFormalization.Search.cex_isDefinite_not_isCom
+  > $ cd /home/al/dev/MOSP/lean; python3 - <<'E'
+p='MOSPFormalization/Search/Layout.lean'; s=open(p).read()
+old="""  endpoint test passes and the commitment fails (Co
+  > $ cd /home/al/dev/MOSP; pdftotext -layout literature/chu_stuckey_2009.pdf /tmp/it3/cs.txt; grep -n -i "pathwidth\|path-width\|vertex separation\|treewidth" /tmp/i
+  > $ sed -n 36,50p /tmp/it3/cs.txt; grep -n "^\s*3\. \|\[3\]" /tmp/it3/cs.txt | tail -3; grep -n -A2 "^ *3\. " /tmp/it3/cs.txt | tail -4
+
+Writing §4.7 of `revised_algorithm.md` now.
+  > $ cd /home/al/dev/MOSP; cat >> paper2/revised_algorithm.md <<'EOF'
+
+---
+
+## 4.7 The search in pathwidth language
+
+Sections 4.2 to 4.6 speak of customers, stacks a
+
+Section drafted. Verifying the page numbers and citation claims I used.
+  > $ cd /tmp/it3; chk(){ awk -v RS='\f' -v pat="$2" '{n++; if ($0 ~ pat) print FILENAME": pdfpage", n, "<-", pat}' "$1"; }; chk 2016-Kitsunai*.txt "Lemma 10 Let"; ch
+  > $ cd /tmp/it3; grep -n -i "^ *references\|^ *[0-9]\+\. [A-Z]" cs.txt | tail -20
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/revised_algorithm.md'; s=open(p).read()
+reps=[
+("predates Tamaki's commitments (WG 2011) and both SEA 2014 paper
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/revised_algorithm.md'; s=open(p).read()
+reps=[
+("`MOSPFormalization.Search`: nine files (`Basic`, `DefiniteMove`
+
+Now adding a note to `prior_art_counterexample.md`, since the repair's soundness theorem turns out to be known.
+  > $ cd /home/al/dev/MOSP; grep -n "^#" paper2/prior_art_counterexample.md; sed -n 1,40p paper2/prior_art_counterexample.md
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/prior_art_counterexample.md'; s=open(p).read()
+anchor="## What was checked"
+note='''*Added 2026-10-03 (loop0008 
+  > $ cd /home/al/dev/MOSP; grep -n -i "novel\|is new\|our repair\|we introduce\|first to" paper2/revised_algorithm.md paper2/plan.md paper2/search_soundness.md paper
+
+Correcting our own earlier notes that equated the definite move with a depth-1 commitment (it isn't — depth 1 is only the open ≤ 1 case).
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+import re
+fixes={
+'pathwidth_solver/PLAN.md':[
+("| definite move (Thm 1)                             | depth-1 commitment 
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='paper2/plan.md'; s=open(p).read()
+a="**To do.** State each dominance rule as a lemma about vertex-separation\nlayouts a
+
+Split run clean (no `!!!`). Running the gate.
+  > $ cd /home/al/dev/MOSP; timeout 3000 python3 Ralph_Loops/loop0008/gate.py 2>&1 | tail -15
+
+While the gate runs, writing the PROGRESS entry and marking the item.
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+s=s.replace("Current: 2/9 SOLVED","Current: 3/9 SOLVED",1)
+corr='''
+  > $ cd /home/al/dev/MOSP; cat >> Ralph_Loops/loop0008/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 3 — 2026-10-03 02:30
+
+### Completed
+- **Item 03: section 4 in pathwidth
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+a="A cheap first\n  step is to measure, on the failing candidates o
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/3e233eac-acc6-45da-bdf4-c3a7e4de0805/tasks/b4zszxs9v.output; for i in $(seq 1 55); do [ -s $f ] && break; sleep 10; done; c
+  > $ cd /home/al/dev/MOSP; python3 - <<'E'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+a="- **Gate.** Recorded below."
+b="- **The gate passes** (`python3 
+
+Item 03 is done and marked `[x]` in `iterations.md`. The gate passes: lake build ok, the one `sorry` is still the §24 conjecture, MOSP pytest 1,364 passed and pathwidth_solver pytest 114 passed. The split run's log still has no `!!!` line.
+
+**What was written.** Section 4 now has a new §4.7, "The search in pathwidth language", at the end of `paper2/revised_algorithm.md`. I put it at the end because inserting it earlier would have renumbered lemmas that other documents cite; pointers to it were added in §4.1 and after Theorems 4.3 and 4.7. It has four parts:
+- **Dictionary:** open stacks are the border |N(T)| of a layout prefix, the free closure is Suchan & Villanger's "full set", and the search decides whether vs ≤ k − 1.
+- **Skeleton:** the search is the same loop as Kobayashi, Komuro & Tamaki's Algorithm 1 (SEA 2014), compared with Coudert, Mazauric & Nisse.
+- **Rules:** each rule is stated as a layout lemma, with its Lean theorem and its published pathwidth counterpart, if any.
+- **Summary table:** what is known and what is not.
+
+**Main finding: the repaired definite move is a known theorem.** It is Tamaki's commitment lemma, which Kitsunai et al. (Algorithmica 2016, Lemma 1, p. 142) restate with a proof, and our proof of Theorem 4.7 is the same as theirs. So the paper can claim the counterexample, but not the soundness of the repair. I recorded this in `prior_art_counterexample.md`.
+- **Why the published rule fails:** Chu & Stuckey's Theorem 1 checks the commitment condition only at the two ends of the jump, and the counterexample shows the sets in between matter.
+- **The published premise is not wasted:** by Kitsunai et al.'s Corollary 2, it does guarantee a safe jump, just to a different set than the one the rule jumps to. In the counterexample that set is {2, 3, 4}. A second repair that jumps there instead is proposed, not built.
+- **Every published pathwidth rule of this kind is in the safe region:** Coudert et al.'s greedy step, Suchan & Villanger's Rule 1 and Kobayashi et al.'s depth-1 commitments all cover only moves that open at most one new stack. The published definite move is correct there.
+- **Not found in any paper I held:** the matching test for this target (a special case of Kitsunai et al.'s minimum-separator method), the subset rule, the better move, the old move, and the memo combined with the old move. This covers only the six papers I read.
+
+**Lean.** The new file `lean/MOSPFormalization/Search/Layout.lean` has 13 theorems with no `sorry`, on the three standard axioms only. They cover the dictionary, the commitment lemma, the equivalence between the repaired premise and a commitment, the endpoint-only reading of the published premise, depth 1 meaning "opens at most one new stack", Coudert et al.'s greedy step, Corollary 2, and the counterexample in these terms. The file is imported and listed in `paper2/axiom_check.lean`, and no existing proof was edited.
+
+**One of our own claims was wrong, now corrected.** Three notes (`pathwidth_solver/PLAN.md`, `CLUSTER_PAPER_PLAN.md`, `literature/pathwidth_solvers_README.md`) said the definite move is a depth-1 commitment. A depth-1 commitment is only the case that opens at most one new stack, and the published rule goes beyond that, where it is false. The correction is at the top of PROGRESS.md.
+
+The iteration 3 entry is written in PROGRESS.md, and the counter now reads 3/9. Nothing was committed and nothing was written to `solutions/`.
+
+# result: success in 1860s, 52 turns, cost $6.54

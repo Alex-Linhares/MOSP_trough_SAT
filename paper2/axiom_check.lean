@@ -178,5 +178,20 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.chuThesis_theorem638_literal_witness
 #print axioms MOSPFormalization.Search.fink_theorem1_false
 
+-- loop0008 item 03: the search in pathwidth language; Tamaki's commitment lemma (Search/Layout.lean)
+#print axioms MOSPFormalization.Search.opened_sdiff_eq_boundary
+#print axioms MOSPFormalization.Search.openStacks_eq_card_boundary
+#print axioms MOSPFormalization.Search.stepCost_eq_card_boundary_add_one
+#print axioms MOSPFormalization.Search.mem_cl_iff
+#print axioms MOSPFormalization.Search.solvable_of_isCommittable
+#print axioms MOSPFormalization.Search.isHereditarilyDefinite_iff_isCommittable
+#print axioms MOSPFormalization.Search.solvable_cl_insert_of_hereditarilyDefinite'
+#print axioms MOSPFormalization.Search.isDefinite_iff_endpoint
+#print axioms MOSPFormalization.Search.isCommittable_insert_iff
+#print axioms MOSPFormalization.Search.isGreedyStep_iff
+#print axioms MOSPFormalization.Search.cex_isDefinite_not_isCommittable
+#print axioms MOSPFormalization.Search.exists_isCommittable_of_isDefinite
+#print axioms MOSPFormalization.Search.cex_isCommittable_234
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
