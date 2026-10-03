@@ -33,3 +33,8 @@
 [2026-10-03 07:02:37] claude session it07 (cap 6.00 h) -> session_it07.log
 [2026-10-03 07:45:03] session it07: ok (exit 0, 413 tool calls)
 [2026-10-03 08:02:06] tests passed: GATE PASS
+[2026-10-03 08:02:06] committed fc27f2430: 07 Audit every number in paper 2.
+[2026-10-03 08:02:06] === iteration 8: 08 The LaTeX draft.
+[2026-10-03 08:02:06] claude session it08 (cap 6.00 h) -> session_it08.log
+[2026-10-03 08:39:48] session it08: ok (exit 0, 100 tool calls)
+[2026-10-03 08:56:19] tests passed: GATE PASS

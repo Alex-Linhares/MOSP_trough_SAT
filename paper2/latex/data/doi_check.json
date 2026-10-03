@@ -1,0 +1,254 @@
+{
+ "10.1006/inco.1994.1064": {
+  "fetched": "2026-10-03",
+  "first_author": "Ellis",
+  "registry": "crossref",
+  "title": "The Vertex Separation and Search Number of a Graph",
+  "year": 1994
+ },
+ "10.1007/978-3-319-07959-2_33": {
+  "fetched": "2026-10-03",
+  "first_author": "Kobayashi",
+  "registry": "crossref",
+  "title": "Search Space Reduction through Commitments in Pathwidth Computation: An Experimental Study",
+  "year": 2014
+ },
+ "10.1007/978-3-319-07959-2_5": {
+  "fetched": "2026-10-03",
+  "first_author": "Coudert",
+  "registry": "crossref",
+  "title": "Experimental Evaluation of a Branch and Bound Algorithm for Computing Pathwidth",
+  "year": 2014
+ },
+ "10.1007/978-3-642-04244-7_21": {
+  "fetched": "2026-10-03",
+  "first_author": "Chu",
+  "registry": "crossref",
+  "title": "Minimizing the Maximum Number of Open Stacks by Customer Search",
+  "year": 2009
+ },
+ "10.1007/978-3-642-11269-0_27": {
+  "fetched": "2026-10-03",
+  "first_author": "Suchan",
+  "registry": "crossref",
+  "title": "Computing Pathwidth Faster Than 2 n",
+  "year": 2009
+ },
+ "10.1007/978-3-7091-9076-0_2": {
+  "fetched": "2026-10-03",
+  "first_author": "M\u00f6hring",
+  "registry": "crossref",
+  "title": "Graph Problems Related to Gate Matrix Layout and PLA Folding",
+  "year": 1990
+ },
+ "10.1007/bf00264496": {
+  "fetched": "2026-10-03",
+  "first_author": "Lengauer",
+  "registry": "crossref",
+  "title": "Black-white pebbles and graph separation",
+  "year": 1981
+ },
+ "10.1007/s00224-011-9312-0": {
+  "fetched": "2026-10-03",
+  "first_author": "Bodlaender",
+  "registry": "crossref",
+  "title": "A Note on Exact Algorithms for Vertex Ordering Problems on Graphs",
+  "year": 2011
+ },
+ "10.1007/s00453-015-0015-9": {
+  "fetched": "2026-10-03",
+  "first_author": "Kitsunai",
+  "registry": "crossref",
+  "title": "Computing Directed Pathwidth in $$O(1.89^{n})$$ O ( 1 . 89 n ) Time",
+  "year": 2015
+ },
+ "10.1016/0012-365x(85)90046-9": {
+  "fetched": "2026-10-03",
+  "first_author": "Kirousis",
+  "registry": "crossref",
+  "title": "Interval graphs and seatching",
+  "year": 1985
+ },
+ "10.1016/0020-0190(87)90054-8": {
+  "fetched": "2026-10-03",
+  "first_author": "Fellows",
+  "registry": "crossref",
+  "title": "Nonconstructive advances in polynomial-time complexity",
+  "year": 1987
+ },
+ "10.1016/0020-0190(92)90234-m": {
+  "fetched": "2026-10-03",
+  "first_author": "Kinnersley",
+  "registry": "crossref",
+  "title": "The vertex separation number of a graph equals its path-width",
+  "year": 1992
+ },
+ "10.1016/0166-218x(92)90208-r": {
+  "fetched": "2026-10-03",
+  "first_author": "Kornai",
+  "registry": "crossref",
+  "title": "Narrowness, pathwidth, and their application in natural language processing",
+  "year": 1992
+ },
+ "10.1016/0196-6774(91)90003-h": {
+  "fetched": "2026-10-03",
+  "first_author": "Bienstock",
+  "registry": "crossref",
+  "title": "Monotonicity in graph searching",
+  "year": 1991
+ },
+ "10.1016/0304-3975(86)90146-5": {
+  "fetched": "2026-10-03",
+  "first_author": "Kirousis",
+  "registry": "crossref",
+  "title": "Searching and pebbling",
+  "year": 1986
+ },
+ "10.1016/j.cor.2012.04.017": {
+  "fetched": "2026-10-03",
+  "first_author": "Duarte",
+  "registry": "crossref",
+  "title": "Variable neighborhood search for the Vertex Separation Problem",
+  "year": 2012
+ },
+ "10.1016/j.ejor.2007.02.004": {
+  "fetched": "2026-10-03",
+  "first_author": "Mart\u00ed",
+  "registry": "crossref",
+  "title": "A branch and bound algorithm for the matrix bandwidth minimization",
+  "year": 2008
+ },
+ "10.1016/j.jda.2018.11.012": {
+  "fetched": "2026-10-03",
+  "first_author": "Mallach",
+  "registry": "crossref",
+  "title": "Linear ordering based MIP formulations for the vertex separation or pathwidth problem",
+  "year": 2018
+ },
+ "10.1016/s0166-218x(97)00131-5": {
+  "fetched": "2026-10-03",
+  "first_author": "Fomin",
+  "registry": "crossref",
+  "title": "Helicopter search problems, bandwidth and pathwidth",
+  "year": 1998
+ },
+ "10.1016/s0305-0548(01)00054-5": {
+  "fetched": "2026-10-03",
+  "first_author": "Linhares",
+  "registry": "crossref",
+  "title": "Connections between cutting-pattern sequencing, VLSI design, and flexible machines",
+  "year": 2002
+ },
+ "10.1016/s0305-0548(98)80001-4": {
+  "fetched": "2026-10-03",
+  "first_author": "Fink",
+  "registry": "crossref",
+  "title": "Applications of modern heuristic search methods to pattern sequencing problems",
+  "year": 1999
+ },
+ "10.1016/s0377-2217(97)00268-3": {
+  "fetched": "2026-10-03",
+  "first_author": "Faggioli",
+  "registry": "crossref",
+  "title": "Heuristic and exact methods for the cutting sequencing problem",
+  "year": 1998
+ },
+ "10.1016/s0377-2217(97)84107-0": {
+  "fetched": "2026-10-03",
+  "first_author": "Yanasse",
+  "registry": "crossref",
+  "title": "On a pattern sequencing problem to minimize the maximum number of open stacks",
+  "year": 1997
+ },
+ "10.1016/s0925-7721(96)00005-3": {
+  "fetched": "2026-10-03",
+  "first_author": "Di Battista",
+  "registry": "crossref",
+  "title": "An experimental comparison of four graph drawing algorithms",
+  "year": 1997
+ },
+ "10.1057/jors.2014.60": {
+  "fetched": "2026-10-03",
+  "first_author": "de Carvalho",
+  "registry": "crossref",
+  "title": "A breadth-first search applied to the minimization of the open stacks",
+  "year": 2015
+ },
+ "10.1109/tcad.1985.1270118": {
+  "fetched": "2026-10-03",
+  "first_author": "Omar Wing",
+  "registry": "crossref",
+  "title": "Gate Matrix Layout",
+  "year": 1985
+ },
+ "10.1109/tcad.2002.800454": {
+  "fetched": "2026-10-03",
+  "first_author": "de Oliveira",
+  "registry": "crossref",
+  "title": "A constructive genetic algorithm for gate matrix layout problems",
+  "year": 2002
+ },
+ "10.1109/tcs.1979.1084695": {
+  "fetched": "2026-10-03",
+  "first_author": "Ohtsuki",
+  "registry": "crossref",
+  "title": "One-dimensional logic gate assignment and interval graphs",
+  "year": 1979
+ },
+ "10.1111/itor.13053": {
+  "fetched": "2026-10-03",
+  "first_author": "Martin",
+  "registry": "crossref",
+  "title": "Mathematical models for the minimization of open stacks problem",
+  "year": 2021
+ },
+ "10.1145/151261.151263": {
+  "fetched": "2026-10-03",
+  "first_author": "LaPaugh",
+  "registry": "crossref",
+  "title": "Recontamination does not help to search a graph",
+  "year": 1993
+ },
+ "10.1145/2851494": {
+  "fetched": "2026-10-03",
+  "first_author": "Coudert",
+  "registry": "crossref",
+  "title": "Experimental Evaluation of a Branch-and-Bound Algorithm for Computing Pathwidth and Directed Pathwidth",
+  "year": 2016
+ },
+ "10.1145/73007.73055": {
+  "fetched": "2026-10-03",
+  "first_author": "Fellows",
+  "registry": "crossref",
+  "title": "On search decision and the efficiency of polynomial-time algorithms",
+  "year": 1989
+ },
+ "10.1371/journal.pone.0203076": {
+  "fetched": "2026-10-03",
+  "first_author": "Frinhani",
+  "registry": "crossref",
+  "title": "A PageRank-based heuristic for the minimization of open stacks problem",
+  "year": 2018
+ },
+ "10.4230/lipics.cp.2025.5": {
+  "fetched": "2026-10-03",
+  "first_author": "Beck",
+  "registry": "datacite",
+  "title": "Transition Dominance in Domain-Independent Dynamic Programming",
+  "year": 2025
+ },
+ "10.4230/lipics.ipec.2016.30": {
+  "fetched": "2026-10-03",
+  "first_author": "Dell",
+  "registry": "datacite",
+  "title": "The First Parameterized Algorithms and Computational Experiments Challenge",
+  "year": 2017
+ },
+ "10.4230/lipics.ipec.2017.30": {
+  "fetched": "2026-10-03",
+  "first_author": "Dell",
+  "registry": "datacite",
+  "title": "The PACE 2017 Parameterized Algorithms and Computational Experiments Challenge: The Second Iteration",
+  "year": 2018
+ }
+}

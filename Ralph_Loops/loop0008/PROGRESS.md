@@ -4,7 +4,7 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 7/9 SOLVED
+Current: 8/9 SOLVED
 
 **Correction (iteration 7, 2026-10-03, the number audit).** 26 claims
 drifted across paper 2's seven documents. All are fixed in place and listed in
@@ -631,3 +631,87 @@ written.
 - **Item 09 candidates.** Add `Split.lean` to `axiom_check.lean`, and fix the
   6.8 pt legend.
 
+
+---
+
+## Iteration 8 — 2026-10-03 08:20
+
+### Completed
+- **Item 08: the LaTeX draft.** It is in `paper2/latex/`: `main.tex`, one file
+  per section, `refs.bib`, a `Makefile` and a `README.md`.
+  - **It builds** with `make` (`latexmk -pdf`). There are no undefined
+    references or citations and no overfull boxes. `make check` tests this.
+  - **24 pages**: article class, 11 pt, one column, US letter, 1 in margins.
+- **The class: to obtain.** Every INFORMS author page refused scripted access
+  on 2026-10-03 (HTTP 403), including through WebFetch. So the IJOC class
+  and the journal's formatting rules were not read, and the layout is a
+  stand-in. The JoC software-and-data repository template
+  (`github.com/INFORMSJoC/2019.0000`) was reachable and is recorded as the
+  model for the paper's own repository.
+- **Sections.**
+  - **Sections 1 and 5 are marked placeholders.** Section 1 adds a draft
+    contribution list and the notation.
+  - **Section 2** is written from `popularity.md` "For the paper": the method,
+    the sensitivity reading, Table 2.1 and Figures 2.1–2.3.
+  - **Section 3** is written from `problem_transformations.md`,
+    `equivalences.md` and `proof_reductions.md`. It covers the problems, the
+    master Table 3.1, the Helly and clique lemmas, `vs = pw` and `Z = pw + 1`
+    with proofs, the exact core, the bands, the two false rows, the edge
+    cases, the Kirousis & Papadimitriou gap and pebbling.
+  - **Section 4** is written from `revised_algorithm.md`, `solver_fix.md`,
+    `prior_art_counterexample.md`, `certificates.md` and `dataset.md`.
+    **The counterexample is Figure 4.1** (Counterexample 4.4 in the paper's
+    own numbering). The section credits the repair's soundness to Tamaki and
+    Kitsunai et al., as item 03 requires. It quotes Theorem 6.3.6 as
+    "reworded" and gives "112 of 115, 3 in flight".
+  - **Lean names.** Every theorem carries its Lean names in a footnote,
+    `\lean{...}`. That is 89 names, all declared:
+    `python -m paper2.latex.check_lean`.
+- **Tables from the CSVs.** `python -m paper2.latex.make_tables` writes
+  `tables/{names,cost,split,certificates,dataset}.tex`. Each reproduces its
+  recorded table:
+  - cost: 1.00003 / 1.00004, 118 of 125 at 1.00303, 0.9999, and 731 of 880 at 1.020;
+  - certificates: 6,275 and 6,276 of 6,286, 0 rejected;
+  - dataset: 17,714 classes, 12,552 / 3,535 / 862.
+
+  The split table is read live: at 08:18 it showed 4 refuted and 3 in flight.
+  Tables 3.1, 4.1 and 4.2 are written by hand from the documents.
+- **The bibliography.** `refs.bib` is `table1.bib` with its notes dropped,
+  plus 31 more works (44 entries). `python -m paper2.latex.check_refs` checked all 36 DOIs
+  against Crossref, or DataCite for LIPIcs, on 2026-10-03, with 0
+  disagreements. The responses are cached in `paper2/latex/data/doi_check.json`.
+  Three registry quirks are accepted with reasons: Wing's family field, the
+  "seatching" typo, and MathML residue in Kitsunai's title.
+  - **Priem et al. (2022)** was checked against arXiv 2205.01833, as item 06
+    required.
+  - Entries with no DOI (the two theses, Yanasse 1997a, Smith & Gent, the
+    URLs) were checked against the held PDFs.
+- **Tests.** `tests/test_paper2_latex.py` has 5 tests: the Lean names, the
+  DOI cache, every cite key in the bib, and the cost and certificate totals.
+- **`plan.md`** has a pointer under "Remaining work".
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,407 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 08:05 and 08:18. PID
+  1465015 is alive.
+
+### Blockers
+- **The INFORMS class and the formatting rules.** The owner must download
+  them by hand from the INFORMS author portal (403 to scripts). Then switch
+  `\documentclass` and the bibliography style.
+- **Citations not held**, used for statements already recorded in
+  `equivalences.md`: Bienstock & Seymour (1991) and LaPaugh (1993).
+  - The deficiency form of Hall's theorem is used uncited, because Ore (1955)
+    is not held.
+  - Gange (2019) is not cited, so its author list was not needed.
+
+### Next
+- **Item 09, the reserve.** Candidates:
+  - add `Split.lean`'s theorems to `axiom_check.lean`;
+  - fix the 6.8 pt legend of Figure 2.3;
+  - redraw `equivalence_chain` for print. It is not in the draft: at text
+    width its labels would be about 2.5 pt;
+  - a natbib quirk: Yanasse's EJOR paper prints as "1997a" and the Pesquisa
+    Operacional paper as "1997b", the reverse of the project's names.
+- **Before quoting Table 4.4**, rerun `make tables && make`. The split run
+  ends by 2026-10-08.

@@ -253,6 +253,9 @@ degree or clique bound can close it).
    are done (loop0008 item 03), and the dataset is deduplicated, formatted,
    checked and priced (item 04, `dataset.md`). The full run is what is left.)*
 4. **Section 5,** then the LaTeX draft of the whole paper.
+   *(2026-10-03, loop0008 item 08: the LaTeX draft exists, `latex/`, 24
+   pages, sections 2–4 drafted and sections 1 and 5 placeholders; build with
+   `make` there, see `latex/README.md`. The INFORMS class is still to obtain.)*
 5. **Fix both solvers to match the soundness theorems:** the repaired
    definite and better moves (loop0006 items 08, 10), in the MOSP search and
    the pathwidth solver. Re-certify the values certified only by the customer

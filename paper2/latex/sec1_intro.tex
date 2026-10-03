@@ -1,0 +1,40 @@
+% Section 1. Placeholder: waits on the owner's PhD thesis (plan.md, section 1).
+\section{Introduction}
+\label{sec:intro}
+
+\placeholder{Section~1 waits on the owner's PhD thesis (Linhares, \emph{Industrial
+pattern sequencing problems: some complexity results and new local search
+models}, 2001), which is not yet held. It is to record how the twelve problems of
+Table~1 of \citet{LY2002} were collected, what the thesis proved and what it
+only cited, and why the table appeared with no proofs and no graph
+(\texttt{paper2/plan.md}, section~1). Kashiwabara and Fujisawa (1979), Table~1's
+interval-thickness reference, is still missing.}
+
+\paragraph{Contributions (draft list, for the introduction to argue).}
+\begin{itemize}
+\item A census of how much each of the twelve names is used, after removing the
+  search hits that use the words in other senses; pathwidth has more relevant
+  works than the other eleven names together, three times over
+  (Section~\ref{sec:names}).
+\item Each problem of Table~1 stated as an instance and a question, with the
+  graph it lives on and its exact relation to pathwidth, every relation proved
+  in Lean; two of Table~1's rows are false as stated (Section~\ref{sec:equiv}).
+\item The exact open-stacks search of \citet{ChuStuckey2009} read as a
+  vertex-separation search: two of its published dominance theorems are false,
+  as are their restatements by \citet{Chu2011} and \citet{Fink2012}; the repair,
+  its cost, and a Lean proof that the repaired search is sound; and a proof
+  object for its refutations with an independent checker
+  (Section~\ref{sec:search}).
+\item A dataset of 17,714 isomorphism classes from twenty collections, 16,087 of
+  them with a certified pathwidth and a witness layout, which through
+  Section~\ref{sec:equiv} answers every problem in Table~1's exact core
+  (Section~\ref{sec:dataset}).
+\end{itemize}
+
+\paragraph{Notation.} Graphs are finite and simple, $G=(V,E)$, $n=|V|$. A
+\emph{layout} is a bijection $L:V\to\{1,\dots,n\}$. For a 0/1 matrix $M$ with
+rows $R$ (customers, nets, piece types) and columns $C$ (patterns, gates,
+products), the \emph{MOSP graph} $G_M$ has vertex set $R$, with $r\sim r'$ when
+some column has a 1 in both rows; each column becomes a clique on its rows. For
+an order $\pi$ of the columns, row $r$ is \emph{active} at position $j$ if it
+has 1s in columns $x,y$ with $\pi(x)\le j\le\pi(y)$.

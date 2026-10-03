@@ -1,0 +1,231 @@
+# session it08 started 2026-10-03 08:02:06
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0008/iterations.md; cat paper2/data/solver_fix_split.pid; uptime; grep -c '^!!!' paper2/data/solver_fix_split*.log; ls
+  > $ cd /home/al/dev/MOSP/paper2; wc -l plan.md revised_algorithm.md prior_art_counterexample.md popularity.md problem_transformations.md equivalences.md solver_fix.
+  > $ cd /home/al/dev/MOSP/paper2; cat plan.md
+  > $ cd /home/al/dev/MOSP/paper2; cat ../reports/latex/Makefile; head -60 ../reports/latex/main.tex
+  > $ cd /home/al/dev/MOSP/paper2; grep -n '^#' popularity.md; awk '/^## For the paper/,0' popularity.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,247p popularity.md
+
+Reading the paper's markdown sources before drafting the LaTeX. Next: section 3 and section 4 sources.
+  > $ cd /home/al/dev/MOSP/paper2; grep -n '^#' problem_transformations.md equivalences.md revised_algorithm.md | head -200
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,340p problem_transformations.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 340,470p problem_transformations.md; sed -n 1,186p equivalences.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,300p revised_algorithm.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 300,700p revised_algorithm.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 700,1190p revised_algorithm.md
+
+Still reading section 4's source (`revised_algorithm.md` §4.7), then dataset/certificates, then I'll write the LaTeX.
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1190,1538p revised_algorithm.md
+  > $ cd /home/al/dev/MOSP/paper2; grep -n '^#' dataset.md certificates.md prior_art_counterexample.md; cat data/dataset/tables.md | head -120
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,75p dataset.md; sed -n 278,451p dataset.md
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,250p certificates.md; cat data/certificates/tables.md | head -80
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,80p prior_art_counterexample.md; sed -n 244,279p prior_art_counterexample.md
+  > $ cd /home/al/dev/MOSP/paper2; cat table1.bib; ls literature ../literature | head -150
+  > $ cd /tmp; curl -sL -m 30 -o informs_page.html -w '%{http_code}\n' 'https://pubsonline.informs.org/page/ijoc/submission-guidelines'; ls -la informs_page.html; gre
+  > $ cd /tmp; for u in 'https://pubsonline.informs.org/authorportal/latex-style-files' 'https://www.informs.org/Publications/Author-Portal/LaTeX-Style-Files' 'https:
+
+Checking whether the INFORMS LaTeX class can be fetched; scripted access returns 403, so I'll try one more route.
+  > ToolSearch {"query": "select:WebFetch", "max_results": 1}
+  > WebFetch {"url": "https://pubsonline.informs.org/page/ijoc/submission-guidelines", "prompt": "What are the manuscript formatting 
+  > $ cd /tmp; for u in 'https://www.informs.org/Publish/Author-Portal' 'https://ctan.org/pkg/informs' 'https://github.com/INFORMSJoC/2019.0000' 'https://raw.githubus
+  > $ cd /home/al/dev/MOSP; head -3 paper2/data/prior_art/citers.csv; grep -n -i 'doi' paper2/benchmarks/README.md | head -40; grep -rn -i 'priem\|openalex.*cite' pap
+  > $ cd /home/al/dev/MOSP; sed -n 1,120p paper2/benchmarks/README.md
+  > $ mkdir -p /tmp/cr; cd /tmp/cr; cat > q.py <<'EOF'
+import json,sys,urllib.request,urllib.parse
+qs=[l.strip() for l in open(sys.argv[1]) if l.strip()]
+for q in qs:
+
+Collecting verified bibliography metadata (Crossref and held PDFs) before writing `refs.bib`.
+  > $ cd /home/al/dev/MOSP/literature; pdftotext -layout mallach_2018_linear_ordering_mip_vertex_separation_pathwidth.pdf - | grep -n -i -B2 -A6 'small' | head -60; p
+  > $ cd /home/al/dev/MOSP/literature; for f in yanasse_1997a_transformation_pattern_sequencing_wood.pdf chu_2011_phd_thesis_improving_combinatorial_optimization.pdf 
+  > $ cd /home/al/dev/MOSP/literature; pdftotext -layout fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf - | sed -n 1,40p | grep -v '^\s*$'; pdftotext -layout chu_2
+  > $ cd /tmp/cr; for d in 10.4230/LIPIcs.CP.2025.5 10.4230/LIPIcs.IPEC.2016.30 10.4230/LIPIcs.IPEC.2017.30 10.48550/arXiv.2205.01833; do curl -s -m 30 "https://api.c
+  > $ for d in 10.4230/LIPIcs.CP.2025.5 10.4230/LIPIcs.IPEC.2016.30 10.4230/LIPIcs.IPEC.2017.30; do curl -s -m 30 "https://api.datacite.org/dois/$d" | python3 -c "
+im
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks; grep -n -o -E 'https?://[^ )>`]+' hunt_graphs.md hunt_matrix.md | sort -u -t: -k3 | head -50
+
+Drafting next: a table generator from the CSVs, then the LaTeX sections. Checking data structures first.
+  > $ cd /home/al/dev/MOSP; timeout 120 python3 -m paper2.section2_figures --numbers 2>&1 | head -60; grep -n 'def numbers' -A30 paper2/section2_figures.py | head -50
+  > $ cd /home/al/dev/MOSP; timeout 120 python3 -m paper2.section2_figures --numbers 2>&1 | sed -n 60,200p; grep -n 'summary' paper2/solver_fix_split.py | head -20
+  > $ cd /home/al/dev/MOSP; sed -n 456,512p paper2/solver_fix_split.py
+
+Summary is read-only; running it plus the `!!!` check.
+  > $ cd /home/al/dev/MOSP; date; kill -0 $(cat paper2/data/solver_fix_split.pid) && echo alive; grep -c '^!!!' paper2/data/solver_fix_split*.log; timeout 300 python3
+  > $ cd /home/al/dev/MOSP/paper2/data; zcat dataset/classes.csv.gz | head -3; zcat dataset/index.csv.gz | head -2; head -2 certificates/repaired.csv; head -3 solver_
+  > $ mkdir -p /home/al/dev/MOSP/paper2/latex/tables; cd /home/al/dev/MOSP/paper2/data; python3 - <<'EOF'
+import csv
+from collections import defaultdict
+def pairs(fn,
+  > $ cd /home/al/dev/MOSP/paper2/data; python3 - <<'EOF'
+import csv
+from collections import defaultdict
+d=defaultdict(dict)
+rows=list(csv.DictReader(open('solver_fix
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 540,560p solver_fix.md; grep -n 'stage\|pw' solver_fix_cost_tables.py | head -40
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 60,170p solver_fix_cost_tables.py
+
+Writing `paper2/latex/make_tables.py`, which generates the paper's tables from the CSVs.
+  > Write /home/al/dev/MOSP/paper2/latex/make_tables.py
+  > $ cd /home/al/dev/MOSP; head -2 paper2/data/solver_fix_split_tasks.csv; head -2 paper2/data/solver_fix_split_results.csv; timeout 300 python3 -m paper2.latex.make
+  > $ cd /home/al/dev/MOSP; grep -n -i 'discipl\|"VLSI"\|graph theory\|operations' paper2/section2_figures.py paper2/citation_graph.py | head -30
+  > $ cd /home/al/dev/MOSP; sed -n 38,52p paper2/citation_graph.py; grep -n 'disc = \|disc\[' paper2/section2_figures.py | head
+  > $ cd /home/al/dev/MOSP; grep -n 'QUERIES' paper2/section2_figures.py | head -3; python3 - <<'EOF'
+import re
+p='paper2/latex/make_tables.py'
+s=open(p).read()
+s=s.r
+  > $ cd /home/al/dev/MOSP; sed -i 's|            med = lambda v: v\[len(v) // 2\] if v else 0  # noqa: E731|            med = lambda v: statistics.median(v) if v els
+
+Tables are generated and match the recorded tables. Now verifying the remaining citation metadata (LaPaugh, Beck et al. first names).
+  > $ ls /home/al/dev/MOSP/literature /home/al/dev/MOSP/paper2/literature | grep -i -E 'lapaugh|bienstock|ore|hall|kuhn'; cd /tmp/cr; printf 'LaPaugh Recontamination 
+  > Write /home/al/dev/MOSP/paper2/latex/refs.bib
+  > $ cd /home/al/dev/MOSP/paper2/benchmarks; sed -n 88,100p hunt_graphs.md; sed -n 124,132p hunt_graphs.md
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='refs.bib'; s=open(p).read()
+s=s.replace("""  author       = {Bodlaender, Hans L.},
+  title        = {{Tr
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/author       = {Larisch, Lukas and Salfelder, Felix},/author       = {Larisch, L. and Salfelder, F.},/' refs.bib; g
+  > Write /home/al/dev/MOSP/paper2/latex/check_refs.py
+  > $ cd /home/al/dev/MOSP; timeout 600 python3 -m paper2.latex.check_refs
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='check_refs.py'; s=open(p).read()
+s=s.replace('''UA = {''','''# Disagreements read by hand on 2026-10-03 
+
+Bibliography verified (44 entries, 0 disagreements). Now writing the LaTeX: `main.tex` and the section files.
+  > $ cd /home/al/dev/MOSP/paper2/figures; for f in *.pdf; do echo "$f $(pdfinfo $f | grep 'Page size')"; done; head -20 equivalence_chain.dot
+  > Write /home/al/dev/MOSP/paper2/latex/main.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='main.tex'; s=open(p).read()
+s=s.replace(r'\newcommand{\sb}{\mathrm{sb}}', r'\newcommand{\sbw}{\mathrm{sb
+
+Now section 1 (placeholder) and section 2.
+  > Write /home/al/dev/MOSP/paper2/latex/sec1_intro.tex
+  > Write /home/al/dev/MOSP/paper2/latex/sec2_names.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec2_names.tex'; s=open(p).read()
+s=s.replace("counts run below those of other indexes.","counts run bel
+
+Writing section 3 (the equivalences).
+  > Write /home/al/dev/MOSP/paper2/latex/sec3_equivalences.tex
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization; grep -n '^theorem\|^lemma' MOSPGraphExamples.lean | head; 
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/of pathwidth~1.\\lean{MOSPGraphExamples}/of pathwidth~1.\\lean{star_mospValue, star_pathwidth_agreementGraph, star_
+
+Writing section 4, the main section (the search, the counterexample, the repair, certificates, dataset).
+  > Write /home/al/dev/MOSP/paper2/latex/sec4_search.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec4_search.tex'; s=open(p).read()
+s=s.replace("""and an exact oracle on 17,431,232 runs over 52,592 gra
+  > $ cd /home/al/dev/MOSP/paper2/latex; for p in mathptmx tabularx placeins natbib microtype; do echo "$p $(kpsewhich $p.sty)"; done; sed -i 's/\\usepackage{lmodern}
+  > $ cd /home/al/dev/MOSP/paper2/latex; tail -5 main.log; grep -E '^!' main.log | head; grep -i error main.blg | head; ls -la main.pdf 2>&1
+  > $ cd /home/al/dev/MOSP/paper2/latex; make check; grep -E 'Warning|Overfull|Underfull' main.log | sort | uniq -c | sort -rn | head -30; cat main.blg | grep -i warn
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -c 'Overfull' main.log; grep -A1 'Overfull' main.log | head -20; python3 - <<'EOF'
+p='refs.bib'; s=open(p).read()
+s=s.re
+
+The draft builds (25 pages, no undefined references). Now checking the layout page by page.
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -c Overfull main.log; rm -rf /tmp/pg; mkdir /tmp/pg; pdftoppm -r 50 -png main.pdf /tmp/pg/p; ls /tmp/pg | head -30
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -a -c 'Overfull' main.log; grep -a -A2 'Overfull' main.log | head -40; python3 -c "
+from PIL import Image
+ims=[Image.ope
+  > Read /tmp/pg/sheet0.png
+  > Read /tmp/pg/sheet1.png
+  > Read /tmp/pg/sheet2.png
+  > Read /tmp/pg/sheet3.png
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('main.tex').read()
+s=s.replace(r"\graphicspath{{../figures/}}", r"""\graphicspath{{../figures/}}
+\nu
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -a -B1 -A2 'Yanasse(1997' main.bbl | head -20; sed -n 128,140p sec4_search.tex; grep -a -n 'lines 3--467' -B3 main.log |
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+b=open('refs.bib').read()
+b=b.replace("""  title   = {{\\noopsort{zz}}On a pattern sequencing problem to mi
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -a -A3 Overfull main.log
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+t=open('sec4_search.tex').read()
+t=t.replace("the order $1,3,4,6,12,13,0,5,7,8,9,10,11$ costs at most 6.","
+
+Now checking that every Lean name cited in the draft exists in the Lean sources.
+  > Write /home/al/dev/MOSP/paper2/latex/check_lean.py
+  > $ cd /home/al/dev/MOSP; python3 -m paper2.latex.check_lean | grep -v '^ok '
+
+All 89 cited Lean names exist. Checking for a top-level Makefile to add a target to.
+  > $ cd /home/al/dev/MOSP; ls Makefile paper2/Makefile 2>&1; cat Makefile 2>/dev/null | head -40; git status --short | head -20
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > .gitignore <<'EOF'
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+EOF
+cat > /home/al/dev/MOSP/tests/tes
+  > $ cd /home/al/dev/MOSP/paper2/latex; pdftoppm -r 70 -png -f 12 -l 12 main.pdf /tmp/pg/q; pdftoppm -r 70 -png -f 17 -l 17 main.pdf /tmp/pg/q; ls /tmp/pg/q*
+  > Read /tmp/pg/q-12.png
+  > Read /tmp/pg/q-17.png
+
+Layout looks right. Writing the README for `paper2/latex/`, adding a pointer in `plan.md`, then running the gate.
+  > Write /home/al/dev/MOSP/paper2/latex/README.md
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -a -E 'newlabel\{(tab|fig|cex)' main.aux | sed 's/\\newlabel{\([^}]*\)}{{\([^}]*\)}.*/\1 \2/'
+
+Numbering matches the README. Adding the pointer in `plan.md`, then regenerating, rebuilding and running the gate.
+  > $ cd /home/al/dev/MOSP/paper2; python3 - <<'EOF'
+p='plan.md'; s=open(p).read()
+old="""4. **Section 5,** then the LaTeX draft of the whole paper."""
+new="""4. **Se
+  > $ cd /home/al/dev/MOSP; timeout 1800 python3 Ralph_Loops/loop0008/gate.py 2>&1 | tail -20
+
+The gate is running (~10 min). Meanwhile, drafting the PROGRESS entry; I'll wait on the gate with bounded polls.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/7884aff6-aa71-4f85-a709-a301fa2453ad/tasks/btox2slu8.output; for i in 
+
+Meanwhile, marking the item and writing the PROGRESS entry (gate result to be filled in).
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0008; sed -i 's/^- \[ \] \*\*08 The LaTeX draft.\*\*/- [x] **08 The LaTeX draft.**/' iterations.md; grep -n '08 The LaTeX' 
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0008; sed -i 's/^Current: 7\/9 SOLVED/Current: 8\/9 SOLVED/' PROGRESS.md; cat >> PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 8 —
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0008; sed -i 's/plus 32 more works/plus 31 more works (44 entries)/' PROGRESS.md; grep -n '31 more' PROGRESS.md
+  > $ tail -5 /tmp/claude-1000/-home-al-dev-MOSP/7884aff6-aa71-4f85-a709-a301fa2453ad/tasks/btox2slu8.output; pgrep -f loop0008/gate.py
+
+Gate still running; waiting for the monitor's notification.
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/7884aff6-aa71-4f85-a709-a301fa2453ad/tasks/btox2slu8.output; timeout 580 bash -c "while pgrep -f 'python3 Ralph_Loops/loop0
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0008; sed -i 's/^- \*\*The gate\*\*: GATE_RESULT/- **The gate passes** (`python3 Ralph_Loops\/loop0008\/gate.py`): lake bui
+
+Item 08 is done: the first full LaTeX draft of paper 2 is in `paper2/latex/`. It builds with `make` to **24 pages**, with no undefined references or citations and no overfull boxes. The gate passes: lake build ok, the one `sorry` is the §24 conjecture, MOSP pytest 1,407 passed, pathwidth_solver pytest 114 passed.
+
+**Template: still to obtain.** INFORMS's author pages refused scripted access (HTTP 403), including through the web fetch tool. So the draft uses the `article` class, and I could not read the journal's formatting rules either; the layout is a stand-in. Someone needs to download the class by hand, then switch the document class and the bibliography style.
+
+**What's in it**
+- **Sections 1 and 5** are marked placeholders. Section 1 also has a draft list of contributions and the notation.
+- **Section 2** has the method paragraph, the check against a second labelling rule, Table 2.1 and the three print figures.
+- **Section 3** has:
+  - the twelve problems, each stated precisely;
+  - the master table;
+  - the Helly and clique lemmas, with proofs of vs = pw and Z = pw + 1;
+  - the exact core, the two bands, the two false rows and the edge cases;
+  - the Kirousis & Papadimitriou proof gap, and pebbling.
+- **Section 4**:
+  - The counterexample is **Figure 4.1**. The paper numbers it Counterexample 4.4, not 4.5 as in the markdown.
+  - The repair's soundness is credited to Tamaki and Kitsunai et al.
+  - Chu's Theorem 6.3.6 is described as "reworded", and re-certification is given as "112 of 115, 3 in flight".
+  - The section also covers the cost of the repair, the certificates and the dataset.
+  - Every theorem has its Lean names in a footnote; all 89 names exist.
+- **Tables** come from the CSVs via `python -m paper2.latex.make_tables`, and each matches its recorded table. The exception is the re-certification table, which reads the split run's files live: at 08:18, four refuted and three in flight. Rerun `make tables && make` before quoting it. The master table and the two pathwidth tables of section 4 were written by hand from the source documents.
+- **Bibliography.** `refs.bib` has 44 entries: `table1.bib` with its notes dropped, plus 31 more. All 36 DOIs were checked against Crossref or DataCite, with three registry quirks accepted and their reasons recorded. Priem et al. (2022) was checked against arXiv 2205.01833. Entries without a DOI were checked against the PDFs we hold.
+
+**Gaps in the draft**
+- Bienstock & Seymour (1991) and LaPaugh (1993) are cited but not held.
+- The deficiency form of Hall's theorem is used without a citation, because Ore (1955) is not held.
+- The equivalence-chain figure is left out: at text width its labels would be about 2.5 pt.
+- natbib labels Yanasse's EJOR paper "1997a" and the Pesquisa Operacional paper "1997b", the reverse of the project's names.
+
+**Also added:** `check_refs.py`, `check_lean.py` and 5 tests in `tests/test_paper2_latex.py`; a README in `paper2/latex/`; and a pointer in `plan.md`.
+
+The split run is clean: no `!!!` line, and the process is alive. The item is marked `[x]` and PROGRESS.md now reads 8/9; item 09 (the reserve) remains, so no LOOP_COMPLETE.
+
+# result: success in 2261s, 101 turns, cost $11.38

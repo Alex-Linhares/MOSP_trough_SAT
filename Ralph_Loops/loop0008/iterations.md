@@ -112,7 +112,7 @@
     is still refuting, state their current status from its files, and say they
     are in flight.
 
-- [ ] **08 The LaTeX draft.**
+- [x] **08 The LaTeX draft.**
   - **Location and class.** `paper2/latex/`: `main.tex`, one file per section,
     and `refs.bib`, built from `table1.bib` and every work cited in sections 2-4.
     Use the INFORMS Journal on Computing class if a copy can be obtained from

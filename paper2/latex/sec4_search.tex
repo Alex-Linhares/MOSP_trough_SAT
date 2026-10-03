@@ -1,0 +1,584 @@
+% Section 4. Sources: paper2/revised_algorithm.md (4.1-4.7), search_soundness.md,
+% solver_fix.md (cost, re-certification), prior_art_counterexample.md (prior
+% art), certificates.md (proof object), dataset.md (the dataset). Lean:
+% lean/MOSPFormalization/Search/. Tables from tables/ (make_tables.py).
+% Page numbers for Chu & Stuckey (2009) are those of the preprint
+% literature/chu_stuckey_2009.pdf; for Chu (2011) the printed ones.
+\section{An exact open-stacks search, read as a pathwidth solver}
+\label{sec:search}
+
+The best exact method for MOSP on the standard benchmarks is the \emph{customer
+search} of \citet{ChuStuckey2009}. It searches over the orders in which the
+customers' stacks close, not over product sequences, and prunes with dominance
+rules, three of them stated as theorems (their Theorems~1, 2 and~3) and a fourth,
+the subset rule, in their \S2. \citet{ChuStuckey2009} place MOSP among ``graph
+path-width and gate matrix layout'', citing \citet{LY2002}, but do not use
+pathwidth in the search. By Theorem~\ref{thm:mosp} it is nevertheless a
+pathwidth algorithm: any graph is the MOSP graph of the instance with one
+customer per vertex and one product per edge, whose optimum is pathwidth plus
+one.
+
+This section reads the search that way, and finds three things. Two of the
+published theorems are false, and so are their restatements in Chu's thesis
+\citep{Chu2011} and, with a stronger premise, in \citet{Fink2012}. The repaired
+first rule is an instance of a known pathwidth theorem, Tamaki's commitment
+lemma; the published rule is that lemma with its interior condition dropped. And
+the whole repaired search is proved sound in Lean. All Lean names in this
+section are in \leanfile{lean/MOSPFormalization/Search/}, which has no
+\texttt{sorry} and the standard axioms only.
+
+\subsection{The search decides pathwidth}
+\label{sec:search-def}
+
+\citet[p.~4]{ChuStuckey2009} observe that the products matter only through the
+MOSP graph. So fix a graph $G=(C,E)$ on the customers and an integer $k\ge0$.
+For a customer $c$ and a set $T\subseteq C$ of closed customers, write
+$N[c]$ for the closed neighbourhood of $c$, and
+\begin{align*}
+O(T) &= \textstyle\bigcup_{c\in T}N[c] && \text{the stacks opened once $T$ has closed},\\
+\fin(X) &= \{c : N[c]\subseteq X\} && \text{the customers free to close when $X$ is open},\\
+\cl(T) &= \fin(O(T)) && \text{the \emph{free closure} of $T$},\\
+b(T) &= |O(T)\setminus T| && \text{the stacks open after $T$ has closed},\\
+o(c,T) &= N[c]\setminus O(T),\quad \open(c,T)=|o(c,T)| && \text{the stacks closing $c$ would newly open.}
+\end{align*}
+A \emph{move} at $T$ closes one customer $c\notin T$, at cost
+$\cost(T,c)=|O(T\cup\{c\})\setminus T| = b(T\cup\{c\})+1$, the stacks open at
+that moment counting $c$; it is \emph{playable} when $\cost(T,c)\le k$. Write
+$P_k(T)$ when some order of $C\setminus T$ has every step playable. On entering
+a node the search closes every free customer, so it stands only at
+\emph{states}, sets with $S=\cl(S)$, and the \emph{child} of $S$ by $c$ is
+$S\cdot c=\cl(S\cup\{c\})$. The search's predicate $\Sol_k(S)$ holds when $S=C$,
+or when some playable $c$ has $\Sol_k(S\cdot c)$.\lean{stepCost, Solvable, SearchSol}
+Every node the search visits satisfies the invariant $b(S)\le k$.
+
+\begin{lemma}[free moves never hurt]\label{lem:F}
+If $b(T)\le k$, then $P_k(T)\iff\Sol_k(\cl(T))$.\lean{solvable_iff_searchSol_cl}
+\end{lemma}
+Closing a customer whose neighbourhood is open opens nothing, never makes a
+later step dearer, and leaves one fewer stack open. The hypothesis is needed:
+closing the free customers one by one costs $b(T)$ at each step.
+
+\begin{theorem}[the search decides pathwidth]\label{thm:decides}
+For nonempty $C$, $\Sol_k(\emptyset)\iff\pw(G)+1\le k$; on the MOSP graph of an
+instance $M$ with a requirement, $\Sol_k(\emptyset)\iff Z(M)\le k$.\lean{searchSol_empty_iff_pathwidth_add_one_le, searchSol_mospGraph_iff_mospValue_le}
+\end{theorem}
+\begin{proof}
+For a closing order $c_1,\dots,c_n$ with prefixes $S_i$, the $i$-th step costs
+$1+|\partial S_i|$, where $\partial X$ is the set of vertices outside $X$ with a
+neighbour in $X$. Read backwards as a layout, the cut separating $C\setminus S_i$
+from $S_i$ counts exactly $\partial S_i$. So the cost of the order is the vertex
+separation of the reversed layout plus one, and Lemma~\ref{lem:F} at the root and
+Theorem~\ref{thm:vs} finish the proof. The Lean statement goes through
+narrowness \citep{LY2002ref11}, which counts the forward order directly.
+\end{proof}
+
+So a refutation, $\neg\Sol_k(\emptyset)$, may only mean $\pw(G)>k-1$. The rest
+of the section asks whether the pruning rules preserve that meaning.
+
+\paragraph{What a rule must satisfy.} At a state $S$ the search has a set $Q$ of
+\emph{old moves} (Section~\ref{sec:other-rules}). Its candidates are the
+customers outside $S\cup Q$; the \emph{cost cut} keeps the playable ones, $P$,
+in index order, and a \emph{filter} keeps a sublist $L\subseteq P$. The filter
+is \emph{node-sound} at $(S,Q)$ if, whenever every $q\in Q$ has
+$\neg\Sol_k(S\cdot q)$, $\Sol_k(S)$ implies $\Sol_k(S\cdot c)$ for some $c\in L$.\lean{NodeSoundAt}
+Each rule justifies a discarded move $r$ by a \emph{covering}, a move $c$ with
+$\Sol_k(S\cdot r)\Rightarrow\Sol_k(S\cdot c)$. A node is sound when every link a
+rule cites is a true covering and every chain of links from a discarded
+candidate ends in $L$ or in $Q$; the second condition can fail through a cycle
+even when every link is true. The filter runs the definite move, then the subset
+rule, then the better move, each once.
+
+\subsection{The definite move is false as published}
+\label{sec:definite}
+
+\citet[\S3.1, p.~6]{ChuStuckey2009} state:
+\begin{quote}
+\textbf{Theorem 1.} Suppose S ++ [q] is playable and close(q, S) $\ge$
+open(q, S), then if U$'$ = S ++ R is a solution, there exists a solution
+U = S ++ [q] ++ R$'$,
+\end{quote}
+where $\close(q,S)$ counts the customers $d$ with $o(d,S)\subseteq o(q,S)$
+(p.~4). The rule keeps $q$ alone. We read $d$ as ranging over customers not yet
+closed, as the code does; read literally, closed customers count too, which
+weakens the premise, and both readings are refuted below. \citet[Thm~6.3.6,
+p.~142]{Chu2011} restates the theorem with the same premise and proof, reworded
+for $k$ stacks. Write $X=S\cdot q$.
+
+\begin{lemma}[what the premise says]\label{lem:premise}
+$\close(q,S)=|X\setminus S|$. Hence the premise holds iff $b(X)\le b(S)$: the
+child has no more open stacks than the parent.\lean{closeCount_eq, isDefinite_iff}
+\end{lemma}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\linewidth]{definite_counterexample.pdf}
+\caption{The graph of Counterexample~\ref{cex:definite} at the state where the
+definite move fails. Customer 2 is closed; 1, 3 and 4 are open. Moving 0 opens
+the new stacks 0, 7 and 11 and closes 0, 3 and 4, so open = close = 3 and the
+rule keeps 0 alone. But 3 and 4 have the single new stack 0 between them:
+closing them first gains two stacks for the price of one, which a solution
+starting with 0 cannot match. Regenerate with \texttt{python -m
+paper2.counterexample\_figure}, which recomputes every labelled fact.}
+\label{fig:cex}
+\end{figure}
+
+\begin{counterexample}\label{cex:definite}
+Let $G$ be the graph on customers $0,\dots,13$ with the 26 edges
+\begin{gather*}
+0\text{--}3,\ 0\text{--}4,\ 0\text{--}7,\ 0\text{--}11,\ 1\text{--}2,\ 1\text{--}5,\ 1\text{--}6,\ 2\text{--}3,\ 2\text{--}4,\ 5\text{--}9,\ 5\text{--}11,\ 5\text{--}12,\ 6\text{--}8,\\
+6\text{--}13,\ 7\text{--}9,\ 7\text{--}10,\ 7\text{--}13,\ 8\text{--}9,\ 8\text{--}10,\ 8\text{--}11,\ 9\text{--}10,\ 9\text{--}11,\ 10\text{--}11,\ 10\text{--}12,\ 10\text{--}13,\ 12\text{--}13,
+\end{gather*}
+with $S=\{2\}$, $k=6$ and $q=0$ (Figure~\ref{fig:cex}). Then $O(S)=\{1,2,3,4\}$,
+$o(0,S)=\{0,7,11\}$ and $\cost(S,0)=6$, so $0$ is playable; the customers with
+$o(d,S)\subseteq\{0,7,11\}$ are $0$, $3$ and $4$, so $\close(0,S)=3\ge\open(0,S)$;
+and $0$ comes first in index order, so the rule keeps only $0$. A solution
+exists from $S$: the order
+\[1,3,4,6,12,13,0,5,7,8,9,10,11\]
+costs at most 6. None exists
+from the child $X=\{0,2,3,4\}$: only seven sets are reachable from $X$ by moves
+of cost at most 6, and none is $C$.\lean{definiteMove_counterexample, cexFamily_closed}
+\end{counterexample}
+
+The published implication, as a universal statement, is refuted in Lean under
+both readings of $\close$, and so is the thesis's Theorem~6.3.6.\lean{chuStuckey_theorem1_false, chuStuckey_theorem1_false_literal, chuThesis_theorem636_false}
+The smallest graph on which the rule loses the last solution has 14 customers:
+there is none on any graph to 9 vertices, by exhaustion, and none on the 88,802
+connected graphs on 10 vertices with at most 14 edges. The counterexample was
+found by a search over a family of gadgets built from the failed proof, and
+minimised by deletion. \citet[pp.~27--28]{Fink2012} restates the rule with a
+stronger premise, counting only dominated customers of smaller index than $q$.
+The graph above refutes it under no labelling, but a third twin of 3 and 4 gives
+a 15-customer graph that does.\lean{fink_theorem1_false}
+
+\paragraph{Why the published proof fails.} The proof moves $q$ to the front of a
+solution and claims that after each prefix ``we have at most open(q, S) extra
+stacks open, but at least close(q, S) extra stacks closed'' (p.~6). At a prefix
+$T\supseteq S$ that does not yet contain $q$, moving $q$ forward changes the open
+stacks by $b(T\cup X)-b(T) = |N[q]\setminus O(T)|-|X\setminus T|$. At $T=S$ this
+is $\open-\close\le0$. But customers of $X$ that the solution has \emph{already}
+closed are in $T$ and no longer count as extra stacks closed, while the stacks
+$q$ opens may still be new. In the example, a solution may begin with 3, after
+which 4 is free: at $T=\{2,3,4\}$, moving 0 forward costs one more stack. A
+second, independent slip: even where the conclusion holds, the literal sequence
+$S \mathbin{+\!\!+} [q] \mathbin{+\!\!+} R'$ need not be a solution, because a
+customer that $q$ frees stays open until its turn; the argument needs the free
+moves.
+
+\paragraph{The repair.} Call $q$ \emph{hereditarily definite} at $S$ when
+$b(X)\le b(B)$ for every $B$ with $S\subseteq B\subseteq X$ and $q\notin B$. By
+Lemma~\ref{lem:premise}, the published premise is the case $B=S$. In the
+counterexample the repair fails at $B=\{2,3,4\}$, where $b(B)=2<3=b(X)$.\lean{IsHereditarilyDefinite, not_isHereditarilyDefinite_cex}
+
+\begin{lemma}[open stacks are submodular]\label{lem:submod}
+For all $A,B\subseteq C$, $b(A\cup B)+b(A\cap B)\le b(A)+b(B)$.\lean{openStacks_submodular}
+\end{lemma}
+\begin{proof}
+$b(T)=|O(T)|-|T|$, $O(A\cup B)=O(A)\cup O(B)$ and $O(A\cap B)\subseteq
+O(A)\cap O(B)$; the customers themselves balance exactly.
+\end{proof}
+
+\begin{theorem}[the repaired definite move is sound]\label{thm:repaired}
+If $q\notin S$ is hereditarily definite at $S$, then $P_k(S)\Rightarrow P_k(X)$.
+At a state with the invariant, $\Sol_k(S)\Rightarrow\Sol_k(S\cdot q)$.\lean{solvable_cl_insert_of_hereditarilyDefinite, searchSol_cl_insert_of_hereditarilyDefinite}
+\end{theorem}
+\begin{proof}
+Take an order from $S$ of cost at most $k$ with prefixes $T_i$, in which $q$ is
+the $j$-th step, and follow it from $X$, skipping customers already in $X$. A
+step $i<j$ closes $c_i$ at $T_{i-1}\cup X$. With $Z=T_i$ we have
+$S\subseteq Z\cap X\subseteq X$ and $q\notin Z$, so the hypothesis gives
+$b(X)\le b(Z\cap X)$, and Lemma~\ref{lem:submod} gives $b(Z\cup X)\le b(Z)$: the
+step costs no more than the original. After step $j-1$ the closed set contains
+$T_j$ with the same opened set, and the rest of the order applies. The search's
+form follows by Lemma~\ref{lem:F}.
+\end{proof}
+
+This theorem is not new. The hereditary premise is the commitment condition of
+Tamaki, and the proof is the proof of the commitment lemma,
+\citet[Lemma~1, p.~142]{Kitsunai2016}; Section~\ref{sec:layouts} makes the
+correspondence exact. What we did not find in the papers we hold is the
+following cheap form of the test.
+
+\begin{theorem}[the repair is a matching condition]\label{thm:matching}
+Let $Y=X\setminus(S\cup\{q\})$, and join each $d\in Y$ to the stacks of
+$o(d,S)\subseteq o(q,S)$. Then $q$ is hereditarily definite at $S$ iff this
+bipartite graph has a matching with at least $\open(q,S)-1$ edges.\lean{isHereditarilyDefinite_iff_hasDefiniteMatching}
+\end{theorem}
+\begin{proof}
+The sets of the repair are $B=S\cup D$, $D\subseteq Y$, and
+$b(X)\le b(S\cup D)$ iff $|D|-|o(D)|\le\delta$ with
+$\delta=|Y|+1-\open(q,S)$, where $o(D)$ is the union of the $o(d,S)$. By the
+deficiency form of Hall's theorem the largest matching has size
+$|Y|-\max_D(|D|-|o(D)|)$, which is at least $|Y|-\delta=\open(q,S)-1$ exactly
+when the repair holds. The Lean proof reduces the deficiency form to Mathlib's
+Hall theorem with $\delta$ dummy stacks.
+\end{proof}
+
+In words: the rule is safe exactly when all but one of the new stacks can be
+paired with a different freed customer who needed it. In the counterexample,
+closing 0 opens three new stacks and frees 3 and 4, both of whom needed only
+stack 0: one pairing where two are required. Every $q$ with $\open(q,S)\le1$
+passes at once, so the published rule is right there.\lean{isHereditarilyDefinite_of_openCount_le_one}
+
+\subsection{The other rules}
+\label{sec:other-rules}
+
+\paragraph{The subset rule.} ``If $o(c_i,S)\subseteq o(c_j,S)$ and $i<j$ \dots\
+move $j$ can be removed'' \citep[\S2, p.~5]{ChuStuckey2009}. As coded, $d$
+dominates $r$ when $o(d,S)\subseteq o(r,S)$ and the inclusion is strict or $d<r$;
+every dominated playable $r$ is dropped, with a fallback that keeps $P$ if all
+would go. The covering is sound for every set $S$: if $o(d,S)\subseteq o(r,S)$
+and $r$ is playable, then $d$ is playable and $\Sol_k(S\cdot r)\Rightarrow
+\Sol_k(S\cdot d)$, because $d$ is free after $r$ and closing $d$ then $r$ reaches
+the same state at no greater cost. With the index tie-break, domination is a
+strict order, so an undominated move with a solution survives, and the fallback
+never fires when a solution exists.\lean{searchSol_cl_insert_of_newlyOpened_subset, subsetFilter_sound}
+The tie-break is necessary: without it, two customers with equal new stacks
+dominate each other and both go, which loses a solution on a 7-customer
+graph.\lean{noTieBreak_counterexample}
+
+\paragraph{The better move.} \citet[\S3.2, p.~6]{ChuStuckey2009}: ``Suppose
+S ++ [q] and S ++ [r, q] are playable and close(q, S $\cup$ \{r\}) $\ge$
+open(q, S $\cup$ \{r\}) then if U$'$ = S ++ [r] ++ R is a solution there exists a
+solution U = S ++ [q] ++ R$'$.'' Its premise is Theorem~1's premise for $q$ at the
+child $\cl(S\cup\{r\})$, together with playability of $r$ then $q$, and its
+conclusion swaps $q$ and $r$.\lean{isBetter_iff} The swap is sound; the appeal to
+Theorem~1 is not. On the graph of Counterexample~\ref{cex:definite} at the root
+with $k=6$, the definite move does not fire, customers 0 and 2 both survive the
+subset rule, and the premise holds for $r=2$, $q=0$, so the rule drops 2 citing
+0. But $\{2\}$ has a solution and $\{0\}$ has none.\lean{betterMove_counterexample, chuStuckey_theorem2_false}
+At that node another kept customer still has a solution, so this is a false link
+and not a lost node; no node where the better move loses the last solution has
+been found. \citet[Thm~6.3.8, p.~143]{Chu2011} states the better move with a
+different premise, $\close(q,S)\ge\open(q,S\cup\{r\})$, and proves it through
+Theorem~6.3.6. The same graph refutes it at $S=\{2\}$, $r=3$, $q=0$.\lean{chuThesis_theorem638_false, chuThesis_theorem638_false_literal}
+The repair cites $q$ for $r$ only if $q$ is hereditarily definite at
+$\cl(S\cup\{r\})$, one matching at the child; then the swap argument goes
+through.\lean{IsRepairedBetter, searchSol_cl_insert_of_repairedBetter}
+
+Two earlier faults of this rule in our own implementation are now proved in
+Lean too: a close count that included the customers $r$ finishes on its own,
+and an order of the rules in which the subset rule could cite a customer the
+better move had already dropped, which loses a node through a cycle of true
+links.\lean{bugA_counterexample, bugB_counterexample}
+The second is an instance of the general observation of
+\citet[Prop.~3, Example~6]{Beck2025} that mutually dominating transitions must
+be tie-broken.
+
+\paragraph{The old move.} \citet[Thm~3, p.~7]{ChuStuckey2009} let a child inherit
+a sibling $q$ whose subtree failed, provided that inserting $q$ before each
+later step keeps that step playable. The rule is sound as coded: if
+$\cost(S\cup\{q\},c)\le k$, then
+$\Sol_k(\cl(\{q\}\cup S\cdot c))\Rightarrow\Sol_k(S\cdot q)$, so a refuted
+sibling stays refuted along any path whose steps pass the test.\lean{searchSol_reinsert, not_searchSol_of_oldMove}
+The test is necessary; the smallest graph that shows it is the path on five
+vertices.\lean{reinsert_needs_test}
+
+\paragraph{The memo.} A refuted state is recorded and refused when met again.
+Whether a state with $b(S)\le k$ has a solution depends on the state alone, not
+on the path that reached it.\lean{solvable_iff_of_cl_eq} One implementation of
+ours declined to run the memo beside the old move, on the ground that a
+refutation obtained with inherited old moves depends on the ancestors. A node
+taken on its own, with an old move that is not in fact refuted, can indeed
+record a solvable state;\lean{exec_fake_oldMove} the next theorem shows that this
+never happens in a real run.
+
+\subsection{The repaired search is sound}
+\label{sec:theorem}
+
+\begin{proposition}\label{prop:filter}
+At every state with the invariant, for every set $Q$ of refuted old moves, the
+filter definite $\to$ subset $\to$ better with both repairs is node-sound.\lean{repairedFullFilter_sound}
+\end{proposition}
+\begin{proof}
+If the definite move fires, Theorem~\ref{thm:repaired} applies. Otherwise the
+subset rule keeps a survivor with a solution; let $w$ be the earliest. If the
+better move dropped $w$, it cited an earlier survivor that the repaired
+argument proves solvable, contradicting the choice of $w$.
+\end{proof}
+
+\begin{theorem}[runs are sound]\label{thm:runs}
+Let the filter be node-sound and return only playable customers. If at the start
+of a run the invariant holds, every memo entry is a genuine refutation, and
+every old move is refuted, then the run leaves only genuine memo entries, and if
+it answers \emph{false} at $S$ then $\neg\Sol_k(S)$. This holds for any child
+order and any memo policy, with the old move on or off.\lean{Exec.sound}
+\end{theorem}
+The proof is an induction over the run, in the order in which subtrees complete:
+every old move a node holds is a sibling subtree that completed with \emph{false}
+earlier in the same run, or an inherited one that passed the reinsertion test.
+
+\begin{theorem}[the revised search is sound]\label{thm:main}
+Run the customer search with free moves, the memo, old moves and the filter
+definite $\to$ subset $\to$ better, the definite move firing only on a
+hereditarily definite customer and the better move citing only under the
+repaired premise. If it refutes $k$ from the root, then no closing order costs at
+most $k$, $\pw(G)>k-1$, and on the MOSP graph of an instance $M$ with a
+requirement, $Z(M)>k$.\lean{exec_repairedFullFilter_sound, exec_repairedFullFilter_pathwidth, exec_repairedFullFilter_mospValue}
+\end{theorem}
+
+What the Lean model covers is the search as specified; that our C and Python
+implement it is checked, not proved. A transcription of the Lean filter agreed
+with the production filter on 16,244,090 node checks over graphs on 1 to 17
+vertices; the matching agreed with the hereditary premise on 36,939,226
+candidates; and a search written from the theorems agreed with the C, the Python
+and an exact oracle on 17,431,232 runs over 52,592 graphs on 1 to 17
+vertices.\footnote{\texttt{paper2/solver\_fix.md}, items 01--05, and
+\texttt{paper2/revised\_algorithm.md}, section~4.4.4, with the regenerate
+commands.} Under the published rules the filter is not
+node-sound,\lean{not_codeFilterSound_cexGraph} and in a check of 570,206 runs with
+memo and old move it lost the last solution at a node in 58 runs, all on graphs
+built around Counterexample~\ref{cex:definite} and all at $k$ equal to the
+optimum. Every one found a solution through another branch and answered
+correctly. No whole instance on which the published rules answer \emph{unsat}
+wrongly is known.
+
+\subsection{The search in pathwidth language}
+\label{sec:layouts}
+
+For a set $T$ of vertices write $N(T)$ for its \emph{border}, the vertices
+outside $T$ with a neighbour inside, and $d(T)=|N(T)|$, in the notation of
+\citet[p.~390]{KobayashiKomuroTamaki2014}. A vertex sequence is $w$-feasible when
+every prefix has $d\le w$, and $\vs(G)$ is the least $w$ for which some
+permutation is $w$-feasible. Table~\ref{tab:dictionary} translates.
+
+\begin{table}[t]
+\centering\small
+\caption{The customer search in the vocabulary of exact pathwidth algorithms.}
+\label{tab:dictionary}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright}p{3.6cm}>{\raggedright}X>{\raggedright\arraybackslash}p{5.2cm}@{}}
+\toprule
+Customer search & Layout & Lean \\
+\midrule
+closing order from $\emptyset$ & vertex sequence, read forwards & \path{orderOfLayout} \\
+open stacks $b(T)$ & border size $d(T)$ & \path{openStacks_eq_card_boundary} \\
+$\cost(T,c)$ & $d(T\cup\{c\})+1$ & \path{stepCost_eq_card_boundary_add_one} \\
+$\Sol_k(\emptyset)$ & $\vs(G)\le k-1$ & \path{searchSol_empty_iff_pathwidth_add_one_le} \\
+free closure $\cl(T)$ & full set of $T$ \citep[p.~328]{SuchanVillanger2009} & \path{mem_cl_iff} \\
+memo & failure table & -- \\
+definite move, repaired & commitment to the child & \path{isHereditarilyDefinite_iff_isCommittable} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\citet[Algorithm~1, p.~393]{KobayashiKomuroTamaki2014} decide whether a vertex
+set extends to a $w$-feasible permutation: replace the set by a committed
+extension, answer from a failure table or at $V$, recurse on each feasible
+one-vertex extension, record failures. The customer search is this loop with
+$w=k-1$: the free closure and the definite move play the part of the commitment,
+the memo is the failure table, and the cost cut is the feasibility test.
+\citet[\S3.2]{CoudertMazauricNisse2014} has the same three parts in a branch and
+bound. Neither line cites the other in the papers we hold: \citet{ChuStuckey2009}
+predates the commitments and both 2014 papers, and none of the pathwidth papers
+cites it.
+
+\paragraph{Commitments.} \citet[p.~142]{Kitsunai2016}, stating Tamaki's notion,
+call an extension $\tau$ of $\sigma$ \emph{committable} when $d(X')\ge d(V(\tau))$
+for every $X'$ with $V(\sigma)\subseteq X'\subseteq V(\tau)$; their Lemma~1 says
+that if $\sigma$ extends to a feasible permutation, so does $\tau$.
+
+\begin{lemma}\label{lem:endpoint}
+For $q\notin S$ and $X=\cl(S\cup\{q\})$: the published premise holds iff
+$d(X)\le d(S)$, the commitment condition at the single set $X'=S$; and the
+repaired premise holds iff $X$ is a commitment from $S$, the condition at every
+$X'$ between them.\lean{isDefinite_iff_endpoint, isHereditarilyDefinite_iff_isCommittable}
+\end{lemma}
+
+So Theorem~\ref{thm:repaired} is the commitment lemma at the child, and the
+published Theorem~1 is a commitment whose interior condition was dropped. In
+Counterexample~\ref{cex:definite} the endpoint test passes with $d(X)=3=d(S)$,
+while the interior set $\{2,3,4\}$ has border 2.\lean{cex_isDefinite_not_isCommittable}
+The published premise is not wasted: by \citet[Lemma~10, Cor.~2,
+pp.~148--149]{Kitsunai2016} it guarantees a commitment to the least-border set
+between $S$ and $X$, which need not contain $q$.\lean{exists_isCommittable_of_isDefinite}
+In the counterexample that set is $\{2,3,4\}$.\lean{cex_isCommittable_234}
+Committing there when the matching fails is a second repair that gives up no
+pruning; we have not built it.
+
+A commitment of depth one, $S$ to $S\cup\{q\}$, holds iff $\open(q,S)\le1$.\lean{isCommittable_insert_iff}
+The greedy step of \citet[Lemma~3, p.~49]{CoudertMazauricNisse2014} is exactly
+that condition,\lean{isGreedyStep_iff} and the push rule of
+\citet[Rule~1, p.~330]{SuchanVillanger2009} is a case of it. So every published
+pathwidth rule of this kind lies in the region $\open\le1$, where the published
+definite move is right; \citet[p.~388, Table~2]{KobayashiKomuroTamaki2014} report
+depth-one commitments as ``extremely effective''. Chu and Stuckey's Theorem~1
+reaches into $\open\ge2$, and that is where it fails. For the cost of the test,
+\citet[Cor.~2]{Kitsunai2016} find the least border between the ends of a given
+extension by a minimum $s$--$t$ separator; Theorem~\ref{thm:matching} is that
+computation for the single target $X$, where it becomes a bipartite matching.
+
+Table~\ref{tab:known} sums up what is known, limited to the pathwidth papers we
+hold \citep{SuchanVillanger2009,Bodlaender2012,CoudertMazauricNisse2014,CoudertMazauricNisse2016,KobayashiKomuroTamaki2014,Kitsunai2016}.
+``None found'' is not a claim of priority.
+
+\begin{table}[t]
+\centering\small
+\caption{Each rule of the customer search against the exact-pathwidth literature.}
+\label{tab:known}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright}p{3.2cm}>{\raggedright}X>{\raggedright\arraybackslash}p{4.1cm}@{}}
+\toprule
+Rule & Published counterpart & Status \\
+\midrule
+free move & full sets \citep{SuchanVillanger2009}; \citet[Prop.~3]{Kitsunai2016} & known \\
+definite move, $\open\le1$ & depth-one commitments; greedy step; push rule & known \\
+definite move, published & -- & false (Cex.~\ref{cex:definite}) \\
+definite move, repaired & commitment lemma \citep[Lemma~1]{Kitsunai2016} & known; matching test (Thm~\ref{thm:matching}) not found \\
+subset rule & none found & proved here \\
+better move, published & none found & false \\
+better move, repaired & none found & proved here \\
+old move & none found & proved here \\
+memo & subset DP \citep{Bodlaender2012}; prefix and failure tables & known; with the old move, proved here (Thm~\ref{thm:runs}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Prior reports.} We looked for any earlier report of the error. We
+listed the works citing \citet{ChuStuckey2009}, Chu's thesis and its IJCAI 2013
+abstract in OpenAlex, Semantic Scholar and OpenCitations: 141 works. Of the 38
+that cite the CP paper we read 24 in full (63\%), and of the 103 that cite only
+the thesis, 32 (31\%).\footnote{\texttt{python3 -m paper2.prior\_art\_sweep};
+the table of citers is in \texttt{paper2/prior\_art\_counterexample.md}.} No
+work read gives a counterexample, an erratum or a correction. One,
+\citet{Fink2012}, restates the definite move as true with a stronger premise,
+refuted above. Three use an implementation of the rules and report no failure;
+among them \citet{Frinhani2018} ran the original code to obtain the optima that
+\citet{MartinYanassePinto2022} reuse. We found no prior report of the error.
+The pathwidth literature has the correct form of the rule, as a commitment, and
+none of the pathwidth papers we hold mentions MOSP.
+
+\subsection{The revised algorithm in practice}
+\label{sec:practice}
+
+The revised search changes two tests. The definite move fires on the first
+playable $q$ that passes the published test and then the matching of
+Theorem~\ref{thm:matching}; a $q$ that fails the matching is passed over. The
+better move cites $q$ for $r$ only if the same matching succeeds at
+$\cl(S\cup\{r\})$. The matching joins at most $\close-1$ customers to $\open$
+stacks and stops at $\open-1$ edges. Since 1 October 2026 these are the default
+in both of our solvers, the MOSP customer search and the graph pathwidth solver,
+in C and in Python; the published rules remain behind a flag.
+
+\begin{table}[t]
+\centering\small
+\caption{The cost of the repair: nodes under the published and the repaired
+rules, in paired runs of the same decision in one worker. Totals over the pairs
+that finished under both settings; a censored pair says nothing about cost.
+MOSP rows refute the optimum minus one; the graph row is whole descents at
+120\,s each.}
+\label{tab:cost}
+\resizebox{\linewidth}{!}{\input{tables/cost}}
+\end{table}
+
+Table~\ref{tab:cost} gives the cost in nodes. The repair changes tree sizes by
+at most a few percent and never changed an answer. Per node it costs about 2\% in
+the MOSP C engine, measured on six hard instances at 75--125 customers. The
+published test passes and the matching then fails on 0.07--0.27\% of
+definite-move candidates, a rate that rises with size.
+
+\paragraph{Re-certification.} Of the 6,374 certified optima in our MOSP corpus,
+6,259 do not depend on the customer search: they rest on an exact subset-lattice
+computation, a checked DRAT refutation, an earlier SAT search, or a lower bound
+equal to the value. The other 115 rested on the customer search under the
+published rules. The repaired solver has re-refuted the value minus one on 112
+of them, and no value changed. Table~\ref{tab:split} gives the seven hardest,
+125-customer instances at densities 2 and 4, which needed a split of the root
+over many cores; three are still running at the time of writing, and keep their
+values as verified upper bounds until they finish.\footnote{\texttt{python -m
+paper2.solver\_fix\_split -{}-summary}; the split is proved sound in
+\leanfile{Search/Split.lean}.}
+
+\begin{table}[t]
+\centering\small
+\caption{Re-certification of the hardest corpus values under the repaired rules,
+by a split of the root into independent tasks. \emph{$k$}: the value minus one,
+which must be refuted. For an instance in flight, the nodes and core-hours are
+those of the finished tasks so far.}
+\label{tab:split}
+\input{tables/split}
+\end{table}
+
+\paragraph{Certificates.} A refutation by the search is a claim about a tree of
+$10^{11}$ nodes at 125 customers, and nothing in Theorem~\ref{thm:main} lets a
+reader check that the code ran the search it models. So the search emits a
+certificate: the tree, every pruning step with its rule and witness, and for
+each definite and better step the matching of Theorem~\ref{thm:matching}. An
+independent checker, which shares no code with the search, recomputes every
+premise from the matrix, verifies each matching (distinct customers, distinct
+stacks, each stack newly opened by its customer, at least $\open-1$ edges),
+requires every chain of covers to end at a child or an old move with no cycle,
+and replays the tree. Each accepted link is a Lean theorem; that an acyclic
+covering by such links is sound is a short paper argument, not yet formal.
+Table~\ref{tab:certs} gives the results on the corpus at 9--75 customers.
+Every refutation emitted within 60\,s verifies, 6,275 of 6,286 under the
+\texttt{csearch} configuration, and none is rejected; the 35.5\,MB of
+certificates check in 147\,s. On the graph of Counterexample~\ref{cex:definite}
+rooted at $\{2\}$, the published rules emit an exhaustive tree that claims no
+solution; a checker of the published premises accepts it, and ours rejects it,
+even with a largest matching attached (one edge where two are needed).
+
+\begin{table}[t]
+\centering\small
+\caption{Certificates for the repaired rules on the certified corpus at 9--75
+customers, refuting the optimum minus one, 60\,s emission budget.
+\emph{Unknown}: emission did not finish. Below 41 customers the
+\texttt{default} rows match \texttt{csearch} and are omitted.}
+\label{tab:certs}
+\resizebox{\linewidth}{!}{\input{tables/certificates}}
+\end{table}
+
+\subsection{A dataset with certified pathwidth}
+\label{sec:dataset}
+
+Section~\ref{sec:equiv} makes one certified pathwidth an exact answer to every
+problem in Table~1's exact core: pathwidth, vertex separation and the vertex
+separator game take the width $w$; MOSP, gate matrix layout with multiple
+folding, one-dimensional logic, interval thickness, narrowness and node search
+take $w+1$. We therefore built one dataset from every benchmark collection of
+those problems that we could obtain, and the MOSP corpus. The unit is the
+isomorphism class of the graph, the MOSP graph for a matrix instance: two
+instances with isomorphic graphs have the same value under every problem, so the
+dataset holds one record per class, with its members and their isomorphism maps.
+Each record carries the graph, the width, its provenance (\emph{refutation},
+\emph{bound} or \emph{upper bound}), a witness layout of exactly that width and,
+for a bound, a minor certificate that replays.
+
+\begin{table}[t]
+\centering\small
+\caption{The dataset by collection. \emph{Classes}: isomorphism classes within
+the collection (nauty certificates; 78 graphs above 5,000 vertices by file
+content only). \emph{Owned}: classes whose first member is in this collection,
+so the column sums to the dataset's class count. The provenance columns count
+owned classes with a witness layout.}
+\label{tab:dataset}
+\resizebox{\linewidth}{!}{\input{tables/dataset}}
+\end{table}
+
+Table~\ref{tab:dataset} gives the counts. Twenty collections, 21,754 instance
+files, reduce to 17,714 classes: the MOSP collections
+\citep{SmithGent2005,FaggioliBentivoglio1998,ChuStuckey2009,CarvalhoSoma2015,Frinhani2018},
+eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
+\citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
+graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
+benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the classes, 16,087
+carry a certified pathwidth with a witness layout and 862 a witnessed upper
+bound. An independent checker, sharing no code with the solvers, re-reads all
+20,987 member files with its own readers, maps each onto its record by
+isomorphism, re-measures every witness and replays every bound certificate, and
+reports no failure on the 16,949 records.\footnote{\texttt{python
+paper2/dataset\_check.py -{}-sources}; builder \texttt{python -m paper2.dataset}.}
+
+Against published values: all 84 Small graphs agree with the pathwidths of
+\citet[Tables~4--5]{Mallach2018}, and ten of the eleven VLSI circuits are
+certified at their published best-known track counts \citep[Table~I]{OliveiraLorena2002};
+the eleventh, W4 with 202 nets, is open at 28 against 27. One caution about MOSP
+benchmark files emerged: the same public repository ships the Carvalho and Soma
+instances as customers by patterns and the Chu and Stuckey instances beside them
+as patterns by customers, and only published densities and values tell them
+apart. Read the wrong way round, an instance certifies at a different value.
+
+What is left is priced. One more budget step for every open class that fits our
+engine (1,024 vertices per component) costs at most 500 core-hours, and on the
+Rome graphs each such step has closed about 40\% of what it attempted. The
+largest MOSP instances, 400 to 1,000 customers, and the 154 classes above 1,024
+vertices are beyond an exact search. Refutation-certified records rest on the
+repaired search; for those within reach of the certificate emitter, the proof
+object above is the route by which a third party can check them without our code.
