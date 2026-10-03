@@ -87,7 +87,7 @@
   - **Report.** Write `paper2/certificates.md` and add tests. Propose a C
     emitter; do not build it.
 
-- [ ] **06 Section 2: three figures and the method paragraph.**
+- [x] **06 Section 2: three figures and the method paragraph.**
   - **Choose the three figures** from `paper2/figures/` (popularity, citation
     graph, trends) that best carry section 2, with a one-paragraph reason for
     each.

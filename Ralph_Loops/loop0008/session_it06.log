@@ -1,0 +1,150 @@
+# session it06 started 2026-10-03 06:24:51
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0008/iterations.md; uptime; cat paper2/data/solver_fix_split.pid; grep -n '^!!!' paper2/data/solver_fix_split*.log | h
+  > $ cd /home/al/dev/MOSP; ls -la paper2/figures/ paper2/data | head -60; wc -l paper2/popularity.md paper2/plan.md paper2/relevance.py paper2/trends.py paper2/citat
+  > $ cd /home/al/dev/MOSP; cat paper2/popularity.md
+  > $ cd /home/al/dev/MOSP; ls -la paper2/figures/; grep -n -i -A25 'section 2\|## 2' paper2/plan.md | head -90
+
+Let me look at the figures and the scripts.
+  > Read /home/al/dev/MOSP/paper2/figures/table1_popularity.png
+  > Read /home/al/dev/MOSP/paper2/figures/table1_trends_heatmap.png
+  > Read /home/al/dev/MOSP/paper2/figures/table1_citation_network.png
+  > Read /home/al/dev/MOSP/paper2/figures/table1_name_vs_citations.png
+  > $ cd /home/al/dev/MOSP; cat paper2/trends.py; cat paper2/relevance.py
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from paper2.relevance import relevant_counts, CACHE, LABELS, relevant, kept_works
+d=json.loads(CACHE.read_text())
+  > $ cd /home/al/dev/MOSP; git log --format='%h %ad %s' --date=iso -- paper2/data/relevance_labels.json paper2/relevance.py paper2/popularity.md | head; python3 -c "
+  > $ cd /home/al/dev/MOSP; git show -s db8601d35; head -3 paper2/data/candidates_to_classify.tsv | cut -c1-300; wc -l paper2/data/candidates_to_classify.tsv
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from paper2.relevance import CACHE, relevant, kept_works
+d=json.loads(CACHE.read_text())
+A=B=C=D=0
+for n,ws in d[
+
+Checking the pathwidth relevance rule, where it and the phrase filter disagree on several hundred works; then I'll write the section and redraw the figures.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json,random,re
+from paper2.relevance import CACHE, relevant, kept_works, _norm
+d=json.loads(CACHE.read_text()); n='gra
+  > $ cd /home/al/dev/MOSP; sed -n 1,315p paper2/citation_graph.py
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+d=json.load(open('paper2/data/openalex_citations.json'))
+print(d['fetched'])
+for r,v in d['refs'].items(): print(
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.288/7249f78343f86de47d7f135a848b936e/dataviz; node scripts/validate_palette.js "#d62728,#ff7f0e,#1f77b4" --mode light 2>&
+  > $ cd /home/al/dev/MOSP; nproc; uptime; python3 -c "import matplotlib,networkx;print(matplotlib.__version__,networkx.__version__)"; grep -rn "popularity\|section2\
+
+Writing the print-figure script now (three vector PDFs sized for one column, built from the cached OpenAlex data).
+  > Write /home/al/dev/MOSP/paper2/section2_figures.py
+  > $ cd /home/al/dev/MOSP; time python3 -m paper2.section2_figures 2>&1 | grep -v '^  *"[a-z ]*-*[a-z]*": {$' | head -120
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from collections import Counter
+from paper2.relevance import CACHE
+d=json.loads(CACHE.read_text())
+for n,ws in d[
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from collections import Counter
+from paper2.citation_graph import TABLE1, CACHE as C
+cite=json.loads(C.read_text(
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import re
+p='paper2/section2_figures.py'; s=open(p).read()
+s=s.replace('''        kept = {w["id"] for w in kept_works(na
+  > $ cd /home/al/dev/MOSP; python3 -m paper2.section2_figures >/dev/null && ls -la paper2/figures/sec2*; pdffonts paper2/figures/sec2_fig1_name_usage.pdf | head -5; 
+
+Figures drawn; checking them by eye now.
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig1_name_usage.png
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig2_timeline.png
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig3_citation_network.png
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/section2_figures.py'; s=open(p).read()
+rep=[('''    ax.set_xlabel("relevant works using the name in title or a
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig3_citation_network.png
+  > $ cd /home/al/dev/MOSP; sed -i 's/fig, ax = plt.subplots(figsize=(WIDTH, 3.25))/fig, ax = plt.subplots(figsize=(WIDTH - 0.55, 3.25))/' paper2/section2_figures.py 
+  > $ cd /home/al/dev/MOSP; sed -i 's/fig, ax = plt.subplots(figsize=(WIDTH - 0.55, 3.25))/fig, ax = plt.subplots(figsize=(WIDTH - 0.7, 3.25))/' paper2/section2_figur
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig2_timeline.png
+
+Fixing the colliding period labels on the timeline, then writing the section text.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/section2_figures.py'; s=open(p).read()
+a='''[f"{b}–{str(b + STEP - 1)[2:]}" for b in bins], fontsize=7)'''
+ass
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig2_timeline.png
+  > $ cd /home/al/dev/MOSP; sed -i 's/bbox_to_anchor=(0.5, -0.1), ncol=4/bbox_to_anchor=(0.5, -0.15), ncol=4/; s/ax.text(0.5, -0.27, "Not shown/ax.text(0.5, -0.31, "N
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig1_name_usage.png
+  > $ cd /home/al/dev/MOSP; cat > tests/test_section2_figures.py <<'EOF'
+"""Section 2's caption numbers reproduce from the cached OpenAlex data."""
+import pytest
+
+fro
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from paper2.relevance import CACHE, relevant
+d=json.loads(CACHE.read_text())
+for w in d['names']['split bandwidth
+  > Edit /home/al/dev/MOSP/paper2/relevance.py
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json;d=json.load(open('paper2/data/openalex_trends.json'));print(d['fetched'])"; python3 -c "
+import json
+from paper2.
+
+Numbers all reproduce. Writing the "For the paper" section into `popularity.md` now.
+  > $ cd /home/al/dev/MOSP; cat >> paper2/popularity.md <<'EOF'
+
+## For the paper (added 2026-10-03, loop0008 item 06)
+
+Section 2 uses three of the six figures above,
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/popularity.md'; s=open(p).read()
+rep=[("> at all. The two search-game names keep about a third of their hits. 
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/plan.md'; s=open(p).read()
+a='''**To do.** Decide which three figures go in the paper (suggested: the bar
+char
+
+Text written. Running the gate now (about 10 min) and checking the split run's log.
+  > $ cd /home/al/dev/MOSP; grep -c '^!!!' paper2/data/solver_fix_split*.log; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid,etime | tail -1; timeout 1500 pytho
+  > $ F=/tmp/claude-1000/-home-al-dev-MOSP/2a46c4f8-bdcf-4812-aff5-5b26d07ab5c9/tasks/bghv4a0pc.output; for i in $(seq 1 57); do grep -q -i "gate passed\|gate failed\
+
+Gate passes. Updating PROGRESS.md and iterations.md.
+  > $ cd /home/al/dev/MOSP; date '+%Y-%m-%d %H:%M'; grep -c '^!!!' paper2/data/solver_fix_split.log; sed -i 's/^- \[ \] \*\*06 Section 2/- [x] **06 Section 2/' Ralph_
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='Ralph_Loops/loop0008/PROGRESS.md'; s=open(p).read()
+corr='''**Correction (iteration 6, 2026-10-03).** Three small fau
+
+Item 06 is done and the gate passes. Six of nine items are now solved.
+
+**What's in `paper2/popularity.md`, under "For the paper":**
+- **The three figures.** They are the name-usage bars, the rate heatmap and the citation network. Each has a paragraph on what claim it carries and why the alternative was dropped:
+  - the scatter is secondary and mixes two fetch dates;
+  - the small multiples take three times the space;
+  - the citers-by-decade panels repeat the heatmap.
+
+  Draft captions are included.
+- **Print versions.** They are redrawn by a new script, `python -m paper2.section2_figures`, as `paper2/figures/sec2_fig{1,2,3}_*.pdf`. They are vector, with fonts embedded, at most 6.5 in wide, and no text is below 7 pt. The heatmap now uses one hue, so it prints in grey, and the network's labels no longer overlap. I checked each figure by eye after drawing it.
+- **The method paragraph.** It covers the OpenAlex queries, the four-field restriction, how the search's word matching pulls in unrelated work, the 700 per-work labels, the pathwidth rule, and the corrected counts.
+- **Numbers.** The same script recomputes every number in the captions and paragraph from the cached data, and `tests/test_section2_figures.py` pins them (3 tests).
+- **How much depends on the labels.** One model-assisted session made the labels, and no second labeller has checked them; the text says so. As a second reading I used the mechanical phrase rule already in `relevance.py`; it agrees with the labels on 78% of works.
+  - **Holds both ways:** pathwidth is more than three times the other eleven names together (3.2× or 3.6×), and the three empty names stay empty.
+  - **Does not hold both ways:** MOSP ranks 4th under the labels and 5th under the rule. The paper should say "one of the better-used names", not "fourth".
+
+**Corrections, recorded at the top of PROGRESS.md (none changes a conclusion):**
+- The `relevance.py` docstring said the phrase rule was the whole method. The published counts actually come from the labels and the pathwidth rule. I corrected the docstring.
+- The pathwidth count of 1,213 includes one OpenAlex record twice, so it is 1,212 distinct works.
+- The citation-count column in `popularity.md` is from 2026-09-17 and the network is from 2026-09-29, so four counts differ by one.
+
+The last two are listed for item 07 (the number audit).
+
+**Still open:** the method paragraph cites OpenAlex as "Priem et al. (2022)". I did not fetch that reference this session, so item 08 must check it before it goes into the bibliography.
+
+The background split run is clean: no `!!!` line, and its process is still running.
+
+# result: success in 1389s, 51 turns, cost $3.79

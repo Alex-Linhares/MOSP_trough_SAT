@@ -46,6 +46,12 @@ by decade. Regenerate: `python -m paper2.citation_graph`,
 **To do.** Decide which three figures go in the paper (suggested: the bar
 chart, the heatmap, the citation network). State the relevance check in the
 paper's method paragraph, since it changed two conclusions.
+*Done 2026-10-03 (loop0008 item 06)*: those three, redrawn for print as
+`figures/sec2_fig{1,2,3}_*.pdf` by `python -m paper2.section2_figures`. The
+reasons, draft captions, the method paragraph and a sensitivity check of the
+relevance labels are in `popularity.md`, "For the paper". Under the mechanical
+phrase rule, MOSP ranks fifth, not fourth, so say "one of the better-used
+names".
 
 ## 3. The equivalences, proved
 

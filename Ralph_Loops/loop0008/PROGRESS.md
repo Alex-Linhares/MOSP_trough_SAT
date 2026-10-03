@@ -4,7 +4,22 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 5/9 SOLVED
+Current: 6/9 SOLVED
+
+**Correction (iteration 6, 2026-10-03).** Three small faults in section 2's
+record; none changes a conclusion.
+- `paper2/relevance.py`'s docstring said the phrase rule was "the whole of
+  the method". The published counts come from the per-work labels and
+  `keep_pathwidth`. The two readings disagree on 157 of the 700 labelled works.
+  The docstring is corrected.
+- Pathwidth's 1,213 counts one OpenAlex record twice (`W4416062387`), so it is
+  1,212 distinct works.
+- `popularity.md`'s citation column is from 2026-09-17, and the network is
+  from 2026-09-29. Four counts differ by one.
+
+The last two are recorded in `popularity.md`, "Notes for the number audit",
+for item 07. The claim "MOSP ranks fourth" depends on the labels: under the
+phrase rule it is fifth. A dated note is added beside the claim.
 
 **Correction (iteration 3, 2026-10-03).** Our notes said the definite move
 "is" a depth-1 commitment, Tamaki's commitment lemma
@@ -434,3 +449,78 @@ written.
 - Item 08 (LaTeX) can take section 4's proof-object paragraph from
   `certificates.md` §1–§4.
 - Item 07 should check the numbers here against `tables.md`.
+
+---
+
+## Iteration 6 — 2026-10-03 06:47
+
+### Completed
+- **Item 06: section 2's three figures and the method paragraph.** Both are in
+  `paper2/popularity.md`, under a new heading "For the paper".
+- **The three figures.** These are the name-usage bars, the rate heatmap and
+  the citation network, as `plan.md` suggested. Each has a paragraph saying
+  why it was chosen and why the alternative was not:
+  - the scatter is secondary, mixes fetch dates and lacks one point;
+  - the small multiples take three times the space and hide the order in time;
+  - the citers by decade repeat Figure 2.2.
+
+  Draft captions are included.
+- **Print versions.** A new script, `paper2/section2_figures.py`, redraws all
+  three from the 2026-09-29 caches with no network access, as
+  `paper2/figures/sec2_fig{1_name_usage,2_timeline,3_citation_network}.pdf`,
+  with PNG previews. They are:
+  - vector, with TrueType fonts embedded;
+  - at most 6.5 in wide (468.8, 456.8 and 443.6 pt);
+  - no text below 7 pt;
+  - without titles, which go in the captions.
+
+  The heatmap now uses a single-hue scale that prints in grey. Discipline is
+  shown as a coloured tab, with black label text. The network labels point
+  outward and no longer collide. Each figure was looked at after rendering.
+  The palette passed the dataviz validator; orange's low contrast is relieved
+  by the direct labels.
+- **Caption numbers.** The same script's `numbers()` recomputes every number
+  the paragraph and captions quote. `tests/test_section2_figures.py` pins
+  them in 3 tests, against the published table: 2,271 hits, 700 labelled,
+  1,593 relevant, 844 / 269 / 74 / 63 / 6, and 1,014 / 311.
+- **The method paragraph** is drafted as quoted prose. It covers:
+  - the OpenAlex queries and the four-field restriction;
+  - stem matching, with examples;
+  - fetching every hit, the 700 per-work labels and the pathwidth rule;
+  - the corrected counts and the two changed conclusions;
+  - the limits.
+- **Sensitivity.** The labels were judged by one model-assisted session with
+  no second labeller, and the text says so. The mechanical phrase rule
+  (`relevance.relevant`) is used as a second reading:
+  - it agrees with the labels on 543 of 700 works (78%);
+  - pathwidth is more than 3 times the other eleven names under both
+    readings (3.2 and 3.6);
+  - the three empty names stay empty, apart from one 5G false positive;
+  - MOSP's rank moves from 4th to 5th, so the paper should say "one of the
+    better-used names".
+- **Pathwidth rule.** It keeps 266 works whose cached text lacks the word.
+  261 of them have no abstract in OpenAlex's response and are kept by their
+  theory subfield. The rule also misses at least two real 1991 papers.
+- **Corrections** (top of this file): the `relevance.py` docstring is fixed,
+  and two number drifts are handed to item 07.
+- **`plan.md` §2.** The to-do is marked done, with a pointer.
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,402 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 06:32 and 06:47. PID 1465015
+  is alive.
+
+### Blockers
+- None. One thing is left for item 08: the method paragraph cites OpenAlex as
+  "Priem et al. (2022)". That citation was **not** fetched in this session and
+  must be checked before it goes into `refs.bib`.
+
+### Next
+- **Item 07**, the number audit. Start from `popularity.md`, "Notes for the
+  number audit":
+  - 1,213 against 1,212 distinct;
+  - the two citation-count dates;
+  - the definition behind 74 against 81.
+
+  Also `Random-125-125-2-4_0`'s re-certification in `solver_fix.md`.
+- **Item 08** takes the figure PDFs and captions as they are.

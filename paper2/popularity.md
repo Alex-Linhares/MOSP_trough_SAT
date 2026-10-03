@@ -58,7 +58,9 @@ cites, and nobody adopted it. Interval thickness (6) and one-dimensional logic
 of twelve, behind pathwidth and the two VLSI layout names and ahead of vertex
 separation and both search games. The first version of this report, from the
 uncorrected counts, said the opposite; it was an artefact of searches that
-inflated the graph-theory names with unrelated work.
+inflated the graph-theory names with unrelated work. *(2026-10-03: the rank depends on the
+labels. Under the mechanical phrase rule MOSP is fifth, behind vertex
+separation; see "For the paper".)*
 
 **Citation counts do not track name usage, and the gap is informative.**
 Kirousis & Papadimitriou 1986 is the most-cited paper in the table (294) while
@@ -225,3 +227,185 @@ the figures), which undercounts exactly the early VLSI names, so their decline
 from a peak in the 1980s may be steeper than their real history; and names
 with a few works per period (interval thickness, one-dimensional logic) move
 by whole cells on one paper, so their rows are anecdote, not trend.
+
+## For the paper (added 2026-10-03, loop0008 item 06)
+
+Section 2 uses three of the six figures above, redrawn for print. Everything
+here is regenerated from the caches fetched from OpenAlex on 2026-09-29, with
+no network access:
+
+    python -m paper2.section2_figures            # the three PDFs, and every number below
+    python -m paper2.section2_figures --numbers  # the numbers only
+    python -m pytest tests/test_section2_figures.py
+
+The PDFs are vector, with embedded TrueType fonts, at most 6.5 in wide (the
+text width of a one-column page; INFORMS JoC is one-column), and no text is
+below 7 pt at that width. They have no titles; the captions below go in the
+LaTeX. A PNG preview sits beside each PDF in `figures/`.
+
+### The three figures, and why these three
+
+**Figure 2.1, name usage** (`figures/sec2_fig1_name_usage.pdf`; the bar chart
+above). It carries the section's first two claims, and does it in one glance.
+Pathwidth has more relevant works than the other eleven names together, three
+times over (1,213 against 380), and three names have none at all. The axis is
+linear on purpose, because the claim is about the size of that gap and a log
+axis would hide it. The zero rows say how many search hits each name had
+(21, 35, 35), so the reader sees a name that the search found and that nobody
+uses in this sense, not a name that the search missed. The scatter of name use
+against citations is not used. Its message, that a result can outlive its name,
+is secondary. It mixes two fetch dates (see the notes below), and its
+interval-thickness point has no citation count. It stays in this report and in
+the repository.
+
+**Figure 2.2, when each name was alive** (`figures/sec2_fig2_timeline.pdf`; the
+heatmap above, in a single-hue scale that prints in grey). It carries the
+generations claim: VLSI in the 1980s, graph searching in the 1990s and 2000s,
+MOSP in 2005–14, and pathwidth the only name still rising. The shading is a rate,
+works per million published in the same four fields, so the growth of
+publishing as a whole does not make every row rise. Each row is scaled to its
+own peak, so a name with six works reads as clearly as one with a thousand,
+and the raw counts are printed in the cells so that the scaling cannot
+mislead. The small multiples show the same rates in twelve panels. That is
+three times the space, and the order in time, which is the point, is harder
+to see there.
+
+**Figure 2.3, who cites the Table 1 papers**
+(`figures/sec2_fig3_citation_network.pdf`; the network above). This is the
+only one of the six that shows whether the communities read each other, which
+is the section's last claim. Works that cite one Table 1 paper ring that paper.
+Works that cite several are pulled inside the circle, and the eye finds few of
+them on the operations-research side. The figure is dense, so the caption has
+to state the claim in numbers. The citers-by-decade panels are not used: they
+repeat Figure 2.2's timeline from the citation side and add the citing field,
+which Figure 2.3 already shows by colour.
+
+### Captions (draft)
+
+- **Figure 2.1.** Works that use each problem's name, in title or abstract, in
+  the sense of Linhares & Yanasse (2002, Table 1). OpenAlex, fields Computer
+  Science, Mathematics, Engineering and Decision Sciences, all years, fetched
+  2026-09-29. Only works judged relevant are counted (Section 2.1). Colour
+  gives the discipline that Table 1 assigns the problem.
+- **Figure 2.2.** When each name was in use. The shade is the name's rate,
+  relevant works per million works in the same four fields in each five-year
+  period, as a fraction of that name's own peak rate. The numbers are raw
+  counts. Rows are ordered by the period of their peak. Counts cover 1970–2024,
+  since 2025–26 is not fully indexed; this is why pathwidth's row total is
+  1,014 here, against 1,213 in Figure 2.1. Before 1990 (hatched), OpenAlex
+  has few abstracts, so the early VLSI names are undercounted there.
+- **Figure 2.3.** The twelve Table 1 papers that OpenAlex indexes, on a
+  circle, sized by citations (in brackets) and coloured by discipline, and the
+  844 works that cite them, coloured by OpenAlex field. 269 of the 844 cite
+  two or more Table 1 papers. 74 of them cite papers of two or more
+  disciplines, counting the eleven problem papers and not Table 1's own paper,
+  and 63 of those 74 join graph theory to VLSI. Only 6 cite both a MOSP paper
+  (Yanasse 1997, Fink & Voss 1999 or Linhares & Yanasse 2002) and a
+  graph-theory paper. Kashiwabara & Fujisawa (1979) has no OpenAlex record.
+
+### Method paragraph (draft for Section 2.1)
+
+> We measured how much each name is used with OpenAlex (Priem et al. 2022), on
+> 2026-09-29. For each of the twelve problems we searched titles and abstracts
+> for its name and its common variants (the twelve queries are in the
+> repository, `paper2/trends.py`, `QUERIES`). We restricted the search to the
+> four fields in which the problems are studied: Computer Science, Mathematics,
+> Engineering and Decision Sciences. Without that restriction, several names
+> are ordinary words. "Narrowness" returns over a million works, and "edge
+> separation" returns aerodynamics.
+>
+> Even inside those fields, a search hit is not a work that uses the name.
+> OpenAlex's search stems words and ignores punctuation, so a quoted phrase
+> matches more than the phrase. "Narrowness" matches "narrowing" in term
+> rewriting. "Node searching" matches look-ups in peer-to-peer networks.
+> "Split bandwidth" matches radar interferometry and 5G spectrum assignment.
+> "Path-width" matches the widths of roads, tool paths and datapaths.
+>
+> We therefore fetched all 2,271 hits with their titles, abstracts, topics and
+> venues, and kept a work only if it is about the problem in the sense of
+> Table 1. For the eleven smaller names, the 700 hits were judged one by one.
+> For pathwidth, the 1,571 hits were filtered by a rule: keep a work that
+> uses the one-word spelling, that OpenAlex places in a theory subfield, or
+> that mentions graphs, treewidth or minors and not roads, vehicles,
+> trajectories or datapaths. We checked the rule by reading samples of what it
+> kept and what it dropped.
+>
+> The check changed the counts and two of the conclusions. Of 2,271 hits, 1,593
+> are relevant (1,213 for pathwidth, 380 for the other eleven names). Three
+> names (narrowness, split bandwidth and edge separation) have no relevant work
+> at all. The two search-game names keep 27% and 40% of their hits. MOSP
+> moves from seventh to fourth.
+>
+> The counts are lower bounds. A work can study a problem without naming it
+> in its abstract, OpenAlex has few abstracts before about 1990, and its
+> citation counts run below Google Scholar's. The labels, the rule, the cached
+> responses and the code that redraws every figure are in the repository.
+
+Sources the paragraph rests on, all regenerated by the command above: the hit
+and relevant counts (`numbers()["names"]`), 2,271 and 700 (`hits_total`,
+`labelled`), 1,593 = 1,213 + 380. The 27% and 40% are node search, 34 of 127,
+and edge search, 38 of 95. The seventh-to-fourth move is recorded in the
+*Correction* above. **Priem et al. (2022)** stands for OpenAlex's own
+recommended citation. It was not fetched in this session and is not in
+`table1.bib`, so item 08 must fetch it from OpenAlex's documentation and
+check it before citing it.
+
+### How much the conclusions depend on the judgement
+
+The labels are a judgement. They were made in one model-assisted session on
+2026-09-29, from the `candidates_to_classify.tsv` sheet (title, topic, venue
+and the start of the abstract). They record a yes or no per work and not the
+reason, and no second labeller has checked them. The repository's mechanical
+phrase rule (`relevance.relevant`) gives an independent second reading: the
+literal phrase, with a context term and with no exclusion term.
+
+| | labels / pathwidth rule | phrase rule |
+|---|---:|---:|
+| pathwidth | 1,213 | 1,215 |
+| the other eleven, total | 380 | 335 |
+| pathwidth ÷ the other eleven | 3.2 | 3.6 |
+| MOSP (rank of twelve) | 58 (4th) | 47 (5th; vertex separation 65) |
+| node search, edge search | 34, 38 | 11, 12 |
+| narrowness, split bandwidth, edge separation | 0, 0, 0 | 0, 1, 0 |
+
+- **Agreement on the eleven names.** The two readings agree on 543 of the 700
+  labelled works (78%). Most disagreements are on the search games: the
+  phrase rule drops works that use "searching" without one of its context
+  terms. The single split-bandwidth work the phrase rule keeps is the 5G
+  spectrum paper above.
+- **Agreement on pathwidth.** The rule and the phrase disagree on 528 of the
+  1,570 distinct records, and the totals coincide by accident.
+  - 266 kept works do not contain the word in our cached text. 261 of them
+    have no abstract in OpenAlex's response, and are kept by their theory
+    subfield.
+  - Works the phrase keeps and the rule drops are mostly physical path widths,
+    but they include at least two real ones that the rule misses: "Path-Width
+    and Proper-Path-Width" (1991) and "Mixed-searching and proper-path-width"
+    (1991).
+- **What holds under both readings.** Pathwidth is more than three times the
+  other eleven together. Three names have no relevant work (or one false
+  positive). The search games lose most of their hits.
+- **What is sensitive.** MOSP's rank is fourth or fifth, so the paper should
+  say "one of the better-used names", not "fourth". The search-game counts
+  move by a factor of three.
+
+### Notes for the number audit (item 07)
+
+- **1,213 counts one work twice.** OpenAlex returned `W4416062387` ("A Simple
+  Layered-Wheel-Like Construction") twice in the pathwidth search, so the
+  distinct count is 1,212. Every conclusion is unchanged. The published
+  figure stays 1,213 because it is what `relevance.relevant_counts()` and the
+  figures report. The paper should say 1,212 distinct, or footnote it.
+- **The citation column of the table at the top is from 2026-09-17; the
+  network is from 2026-09-29.** Four counts moved by one: Kinnersley 215 to
+  214, Kirousis & Papadimitriou 1986 294 to 293, Yanasse 1997 74 to 75,
+  Ohtsuki et al. 107 to 108. The paper should quote one date, and that should
+  be the 2026-09-29 cache (`numbers()["cited_by"]`).
+- **"74 span two disciplines"** (in *Who cites whom*) counts the disciplines
+  of the eleven problem papers only. Counting Linhares & Yanasse (2002) as an
+  operations-research paper gives 81. The "6 works" in the same section does
+  count it, since it is named there as a MOSP paper. Both numbers are right
+  under the definition stated in the Figure 2.3 caption.
+- `relevance.py`'s docstring said the phrase rule was "the whole of the
+  method". It is not; the counts come from the labels and `keep_pathwidth`.
+  The docstring was corrected on 2026-10-03.

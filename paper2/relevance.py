@@ -4,12 +4,18 @@ OpenAlex's `title_and_abstract.search` stems words and ignores punctuation,
 so a quoted phrase is looser than it looks: "narrowness" matches "narrowing"
 in term rewriting, "node searching" matches peer-to-peer networks, and "split
 bandwidth" matches radar interferometry and photonic beam splitters. This
-module fetches every candidate work with its abstract, and keeps a work only
-if its title or abstract contains the *literal* phrase (case-insensitive,
-hyphen and space interchangeable) **and** at least one context term showing it
-is about the graph or layout problem. The rules are per name and are the
-whole of the method; `python -m paper2.relevance` prints kept and dropped
-samples so they can be checked by eye.
+module fetches every candidate work with its abstract.
+
+What decides relevance, and so the published counts, is `kept_works`: for the
+eleven smaller names, a per-work label in `data/relevance_labels.json`; for
+pathwidth, the rule `keep_pathwidth`. The phrase rule `relevant` (the
+*literal* phrase, case-insensitive with hyphen and space interchangeable,
+**and** a context term, and no exclusion term) is a mechanical first pass and
+the sensitivity check, not the count; `python -m paper2.relevance` prints its
+kept and dropped samples so they can be checked by eye.
+(Docstring corrected 2026-10-03: it used to say the phrase rule was the whole
+of the method. The two disagree on 157 of the 700 labelled works; see
+`popularity.md`, "For the paper".)
 
 Cache: `paper2/data/openalex_candidates.json` (every candidate, with text).
 """
