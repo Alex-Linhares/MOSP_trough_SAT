@@ -1,6 +1,7 @@
 # Paper 2, "The pathwidth complex": the LaTeX draft
 
-First full draft, Ralph loop0008 item 08, 2026-10-03. **24 pages** (article
+First full draft, Ralph loop0008 item 08, 2026-10-03; item 09 added Figure 3.1 and
+the axiom audit. **25 pages** (article
 class, 11 pt, one column, US letter, 1 in margins), no undefined references or
 citations, no overfull boxes.
 
@@ -10,6 +11,8 @@ make            # latexmk -pdf -> main.pdf
 make check      # fails on any undefined reference; prints the page count
 make tables     # regenerate tables/*.tex from the recorded CSVs (python -m paper2.latex.make_tables)
 make refs       # check every DOI of refs.bib against Crossref / DataCite (python -m paper2.latex.check_refs)
+make axioms     # every theorem the draft cites has a #print axioms line in paper2/axiom_check.lean,
+                # and all are propext / Classical.choice / Quot.sound (python -m paper2.latex.check_axioms)
 python -m paper2.latex.check_lean      # every Lean name the draft cites is declared (run from the repo root)
 python -m pytest tests/test_paper2_latex.py -q
 ```
@@ -21,7 +24,7 @@ python -m pytest tests/test_paper2_latex.py -q
 | `main.tex` | preamble, title, draft abstract | `../plan.md` |
 | `sec1_intro.tex` | **placeholder**: waits on the owner's thesis; draft contribution list, notation | `../plan.md` §1 |
 | `sec2_names.tex` | method, Table 2.1, Figures 2.1–2.3 | `../popularity.md`, "For the paper" |
-| `sec3_equivalences.tex` | the problems, Table 3.1 (master table), theorems with proofs of the core, bands, false rows, edge cases, the Kirousis & Papadimitriou gap, pebbling | `../problem_transformations.md`, `../equivalences.md`, `../proof_reductions.md` |
+| `sec3_equivalences.tex` | the problems, Table 3.1 (master table), Figure 3.1 (`../figures/sec3_fig1_chain.pdf`, `python -m paper2.section3_figure`), theorems with proofs of the core, bands, false rows, edge cases, the Kirousis & Papadimitriou gap, pebbling | `../problem_transformations.md`, `../equivalences.md`, `../proof_reductions.md` |
 | `sec4_search.tex` | the search, Counterexample 4.4 with **Figure 4.1**, the repair, the other rules, the soundness theorem, the pathwidth reading, prior reports, cost, re-certification, certificates, the dataset | `../revised_algorithm.md`, `../solver_fix.md`, `../prior_art_counterexample.md`, `../certificates.md`, `../dataset.md` |
 | `sec5_closing.tex` | **placeholder**: written last | `../plan.md` §5 |
 | `refs.bib` | `../table1.bib` (notes dropped) and every other work cited | checked by `check_refs.py` |
@@ -62,13 +65,15 @@ model for the paper's own repository (`../plan.md`, *Decisions*).
 - Sections 1 and 5 are placeholders, as the item asks.
 - Table 4.4 is a snapshot: three of its seven re-certifications are in flight
   until 2026-10-08. Rerun `make tables && make` before quoting it.
-- natbib labels Yanasse's two 1997 papers by title order: the EJOR paper (the
-  project's "1997b") prints as 1997a and the *Pesquisa Operacional* paper (the
-  project's "1997a") as 1997b. Only the labels differ; the keys say which is which.
+- *(Fixed in item 09.)* natbib breaks ties between same-author, same-year
+  entries by cite key, so the EJOR paper's key is `Yanasse1997b` (table1.bib's
+  `LY2002ref1`), and the labels now match the project's: *Pesquisa Operacional*
+  1997a, EJOR 1997b.
 - Not held, cited for statements recorded in `../equivalences.md`: Bienstock &
   Seymour (1991), LaPaugh (1993). Kashiwabara & Fujisawa (1979) is not held and
   has no DOI. The deficiency form of Hall's theorem is used without a citation
   (Ore 1955 is not held).
-- The equivalence-chain figure (`../figures/equivalence_chain.pdf`, 1,473 pt
-  wide) is not used: at text width its labels would be about 2.5 pt. Table 3.1
-  carries its content. A print version would need a redraw.
+- *(Fixed in item 09.)* The equivalence chain is in the draft as Figure 3.1,
+  redrawn for print by `python -m paper2.section3_figure` (463.7 pt wide, no
+  text below 7 pt, relations without Lean names). The working figure
+  `../figures/equivalence_chain.pdf`, with every Lean name, is unchanged.

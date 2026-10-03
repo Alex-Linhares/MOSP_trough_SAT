@@ -259,7 +259,9 @@ The PDFs are vector, with embedded TrueType fonts, at most 6.5 in wide (the
 text width of a one-column page; INFORMS JoC is one-column), and no text is
 below 7 pt at that width. *(2026-10-03, number audit: two small exceptions.
 Figure 2.2's PDF is 468.8 pt, 6.51 in, wide, and Figure 2.3's legend is set at
-6.8 pt, `fontsize=6.8` in `section2_figures.py`.)* They have no titles; the captions below go in the
+6.8 pt, `fontsize=6.8` in `section2_figures.py`. Both fixed in loop0008 item 09: Figure 2.2
+is now 467.7 pt wide and the legend is at 7 pt, and `tests/test_section2_figures.py` pins
+both limits.)* They have no titles; the captions below go in the
 LaTeX. A PNG preview sits beside each PDF in `figures/`.
 
 ### The three figures, and why these three

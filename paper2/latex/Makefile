@@ -2,6 +2,7 @@
 #   make          latexmk -pdf (pdflatex + bibtex as often as needed)
 #   make tables   regenerate tables/*.tex from the recorded CSVs
 #   make refs     check every DOI in refs.bib against Crossref / DataCite (cached)
+#   make axioms   every theorem the draft cites has a clean axiom line (needs lake build)
 #   make check    fail on undefined references or citations in the last build
 #   make clean    remove build products but the PDF
 all: main.pdf
@@ -15,6 +16,9 @@ tables:
 refs:
 	cd ../.. && python3 -m paper2.latex.check_refs
 
+axioms:
+	cd ../.. && python3 -m paper2.latex.check_axioms
+
 check: main.pdf
 	@! grep -E "undefined|Citation .* undefined|Reference .* undefined" main.log
 	@echo "no undefined references; $$(pdfinfo main.pdf | grep Pages)"
@@ -26,4 +30,4 @@ clean:
 distclean: clean
 	rm -f main.pdf
 
-.PHONY: all tables refs check clean distclean
+.PHONY: all tables refs axioms check clean distclean

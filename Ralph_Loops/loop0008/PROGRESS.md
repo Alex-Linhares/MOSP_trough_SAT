@@ -4,7 +4,7 @@ Plan: strengthen paper 2, "The pathwidth complex", toward a first full draft.
 Items are in `iterations.md`, rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0008/gate.py`.
 
-Current: 8/9 SOLVED
+Current: 9/9 SOLVED
 
 **Correction (iteration 7, 2026-10-03, the number audit).** 26 claims
 drifted across paper 2's seven documents. All are fixed in place and listed in
@@ -715,3 +715,82 @@ written.
     Operacional paper as "1997b", the reverse of the project's names.
 - **Before quoting Table 4.4**, rerun `make tables && make`. The split run
   ends by 2026-10-08.
+
+---
+
+## Iteration 9 — 2026-10-03 09:16
+
+### Completed
+- **Item 09, the reserve: the draft's loose ends from items 07–08.** The
+  choice: sections 1 and 5 wait on the owner (item 08's instruction), so the
+  reserve went to the five gaps that items 07 and 08 handed on. Each is fixed
+  and checked.
+- **The axiom audit now covers the whole draft.**
+  - `paper2/axiom_check.lean` gains a block for `Split.lean`'s five
+    theorems and the six other theorems the LaTeX draft cites that it lacked.
+    The six are `exists_bag_of_isClique`, the three `star_*` theorems,
+    `cexFamily_closed` and `closeCount_eq`.
+  - It now has 170 lines: 169 are `propext`, `Classical.choice` and
+    `Quot.sound` only, and the control shows `sorryAx`.
+  - A new checker, `python -m paper2.latex.check_axioms` (`make axioms`),
+    collects every theorem the draft cites, requires an axiom line for each,
+    runs Lean and parses the output. It reports 89 names cited, 0 uncovered,
+    170 checked, 0 failures.
+  - Section 3's footnote now says the axiom check covers every theorem the
+    paper names. A test (`tests/test_paper2_latex.py`, now 6 tests) pins the
+    coverage half.
+- **Figure 3.1, the equivalence chain for print.** It is drawn by
+  `python -m paper2.section3_figure` as `paper2/figures/sec3_fig1_chain.pdf`.
+  It is 463.7 pt wide with no text below 7 pt, vector, with TrueType fonts.
+  - It has the same relations as `equivalence_chain.dot`, without the Lean
+    names.
+  - Two implied edges are dropped (`mns = θ`, `ns = vs + 1`). The
+    thirteenth member is added in graph form: `mpb(G) = pw(G) + 1`
+    (`mpb_eq_pathwidth_add_one`). Lengauer's `pbw` is on derived dags and
+    is left to the text.
+  - It is in `sec3_equivalences.tex` after Table 3.1, with a caption, and
+    `tests/test_section3_figure.py` (2 tests) checks it. The working figure
+    is unchanged.
+  - Only Graphviz's `dot` engine is installed, and its layout was 1,137 pt
+    wide, so the figure is drawn with matplotlib at fixed positions.
+- **Section 2's print limits.** Figure 2.3's legend goes from 6.8 to 7 pt,
+  and Figure 2.2 goes from 468.8 to 467.7 pt. `popularity.md`'s note says
+  both are fixed. A new test in `tests/test_section2_figures.py` (now 4)
+  pins "no text below 7 pt, at most 6.5 in wide" for all three figures.
+- **The Yanasse labels.** plainnat breaks ties between same-author,
+  same-year entries by cite key, not by title, so the `\noopsort` trick
+  cannot work: the label carries the raw year. The EJOR entry's key is now
+  `Yanasse1997b` (table1.bib's `LY2002ref1`), in `refs.bib`, `sec2_names.tex`
+  and `make_tables.py`. The draft now prints *Pesquisa Operacional* as
+  Yanasse (1997a) and EJOR as Yanasse (1997b), the project's naming.
+- **`ChuThesis.lean`'s "verbatim".** Two docstrings, comments only, now say
+  "the same premise, reworded for `k` stacks", as item 07 corrected
+  elsewhere. No proof was touched. The module rebuilds (191 s).
+- **The draft** builds at **25 pages** (was 24), with no undefined references
+  (`make check`). `latex/README.md`'s known limits, `plan.md` and
+  `equivalences.md` have pointers.
+  - `make tables` re-read the split run at 09:01. Table 4.4 still shows 3 in
+    flight, with larger task counts.
+- **The gate passes** (`python3 Ralph_Loops/loop0008/gate.py`): lake build is
+  ok, the one `sorry` is the §24 conjecture, MOSP pytest gives 1,411 passed,
+  and pathwidth_solver pytest gives 114 passed.
+- **Split run.** Clean: no `!!!` line, checked at 08:56, 09:06 and 09:30. PID
+  1465015 is alive.
+
+### Blockers
+- None for the item. Still open from earlier items:
+  - the INFORMS class (403 to scripts);
+  - the uncited-or-not-held sources (Bienstock & Seymour 1991, LaPaugh 1993,
+    Ore 1955);
+  - `CLAUDE.md`'s "five" recertify counts, which this loop may not edit;
+  - `data/solver_fix_split_tables.md`, which is off limits while the run is
+    live.
+
+### Next
+- loop0008 is complete. For the owner:
+  - write section 1's thesis and section 5;
+  - obtain the IJOC class;
+  - after the split run ends (by 2026-10-08), run `make tables && make` and
+    update "112 of 115" in the documents.
+
+LOOP_COMPLETE

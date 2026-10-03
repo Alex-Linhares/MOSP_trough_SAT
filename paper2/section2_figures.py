@@ -161,7 +161,7 @@ def fig_timeline() -> Path:
                    key=lambda k: (int(np.argmax(rates[k])), -max(rates[k])))
     empty = [k for k in rates if not max(rates[k])]
     M = np.array([[v / max(rates[k]) for v in rates[k]] for k in names])
-    fig, ax = plt.subplots(figsize=(WIDTH - 0.7, 3.25))
+    fig, ax = plt.subplots(figsize=(WIDTH - 0.72, 3.25))
     im = ax.imshow(M, aspect="auto", cmap="Purples", vmin=0, vmax=1)
     for i, k in enumerate(names):
         for j, c in enumerate(counts[k]):
@@ -255,7 +255,7 @@ def fig_network() -> Path:
                           label=f"citing work: other field ({other})"))
     handles.append(Line2D([], [], color="0.1", ls="--", lw=0.6, label="a Table 1 paper cites another"))
     ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.02), ncol=3,
-              frameon=False, fontsize=6.8, handletextpad=0.3, columnspacing=1.0)
+              frameon=False, fontsize=7, handletextpad=0.3, columnspacing=0.8)
     return _save(fig, "sec2_fig3_citation_network")
 
 

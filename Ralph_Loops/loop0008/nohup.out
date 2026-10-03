@@ -38,3 +38,8 @@
 [2026-10-03 08:02:06] claude session it08 (cap 6.00 h) -> session_it08.log
 [2026-10-03 08:39:48] session it08: ok (exit 0, 100 tool calls)
 [2026-10-03 08:56:19] tests passed: GATE PASS
+[2026-10-03 08:56:19] committed 3784bd70d: 08 The LaTeX draft.
+[2026-10-03 08:56:19] === iteration 9: 09 Reserve. The best remaining gap from items 01-08, one session.
+[2026-10-03 08:56:19] claude session it09 (cap 6.00 h) -> session_it09.log
+[2026-10-03 09:30:44] session it09: ok (exit 0, 88 tool calls)
+[2026-10-03 09:44:40] tests passed: GATE PASS

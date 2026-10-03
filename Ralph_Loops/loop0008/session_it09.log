@@ -1,0 +1,244 @@
+# session it09 started 2026-10-03 08:56:19
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid,etime; grep -h '^!!!' paper2/data/solver_fix_sp
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*08/,$p' Ralph_Loops/loop0008/iterations.md; ls paper2/latex paper2/latex/*; cat paper2/latex/README.md; cat paper2/latex/main
+  > $ cd /home/al/dev/MOSP; sed -n 1,30p paper2/axiom_check.lean; sed -n 160,240p paper2/axiom_check.lean; grep -n "^theorem\|^lemma\|^private" lean/MOSPFormalization
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/latex/check_lean.py; sed -n 30,160p paper2/axiom_check.lean | grep -c "#print"
+  > $ cd /home/al/dev/MOSP; sed -n 30,160p paper2/axiom_check.lean
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import re,sys
+sys.path.insert(0,'.')
+from paper2.latex.check_lean import cited
+ax=open('paper2/axiom_check.lean').read()
+
+Picking the reserve item: closing the draft's loose ends from items 07–08, starting with an axiom audit that covers every Lean theorem the LaTeX draft cites, plus Split.lean.
+  > $ cd /home/al/dev/MOSP/lean; for n in exists_bag_of_isClique cexFamily_closed closeCount_eq orderOfLayout star_mospValue star_pathwidth_agreementGraph star_refute
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/axiom_check.lean'
+s=open(p).read()
+block='''-- loop0008 item 09: the root split (Search/Split.lean), and every
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+import re
+t=open('/tmp/ax.txt').read()
+recs=re.findall(r"'([^']+(?:'')?)' depends on axioms: \[([^\]]*)\]",t,re.S)
+recs+
+  > Write /home/al/dev/MOSP/paper2/latex/check_axioms.py
+  > $ cd /home/al/dev/MOSP; python -m paper2.latex.check_axioms; tail -40 tests/test_paper2_latex.py
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/latex/check_axioms.py'
+s=open(p).read()
+s=s.replace('''    expected = len(printed())
+''','''    expected = sum
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat Makefile
+
+Axiom audit done (170 theorems, all clean). Now adding a Makefile target, then fixing the figure legend and the natbib labels.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('Makefile').read()
+s=s.replace("#   make check ","#   make axioms   every theorem the draft cites ha
+  > $ cd /home/al/dev/MOSP; sed -i '258s/fontsize=6.8, handletextpad=0.3, columnspacing=1.0/fontsize=7, handletextpad=0.3, columnspacing=0.8/' paper2/section2_figures
+  > $ cd /home/al/dev/MOSP; sed -n 255,265p paper2/popularity.md; cp paper2/figures/sec2_fig3_citation_network.pdf /tmp/fig3_old.pdf; python -m paper2.section2_figure
+  > $ cd /home/al/dev/MOSP; grep -n "figsize\|def _save\|bbox_inches\|pad_inches" paper2/section2_figures.py; for f in paper2/figures/sec2_fig*.pdf; do pdfinfo $f | g
+  > $ cd /home/al/dev/MOSP; sed -i '164s/WIDTH - 0.7, 3.25/WIDTH - 0.72, 3.25/' paper2/section2_figures.py; python -m paper2.section2_figures >/dev/null 2>&1; for f i
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import fitz,glob
+for f in sorted(glob.glob('paper2/figures/sec2_fig*.pdf')):
+    d=fitz.open(f); sizes=[]
+    for b in d[0].g
+
+Fixed the figure sizes; now verifying the smallest text in each figure PDF.
+  > $ cd /home/al/dev/MOSP; python3 -c "import pdfplumber" 2>&1; python3 -c "import pypdf; print(pypdf.__version__)" 2>&1; which pdftotext mutool
+  > $ cd /home/al/dev/MOSP; grep -n "^def \|plt.close" paper2/section2_figures.py; sed -n 40,62p paper2/section2_figures.py; sed -n 262,290p paper2/section2_figures.p
+
+Adding a test that pins the print limits (≤ 6.5 in wide, no text below 7 pt) by capturing each figure before saving.
+  > $ cd /home/al/dev/MOSP; sed -n 1,25p tests/test_section2_figures.py; cat >> tests/test_section2_figures.py <<'EOF'
+
+
+def test_figures_meet_the_print_limits(tmp_pa
+  > $ cd /home/al/dev/MOSP; python -m pytest tests/test_section2_figures.py -q -k print_limits 2>&1| grep -E "Error|assert" | head
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='tests/test_section2_figures.py'
+s=open(p).read()
+s=s.replace('''        bbox = fig.get_tightbbox(fig.canvas.get_rende
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig3_citation_network.png
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/popularity.md'
+s=open(p).read()
+old='''6.8 pt, `fontsize=6.8` in `section2_figures.py`.)*'''
+new='''6.8 pt, `f
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n -B1 -A12 "Yanasse1997\|^@preamble" refs.bib | head -60; grep -n "Yanasse199" sec*.tex | head; grep -n "Yanasse" main.
+
+Fixing the natbib labels so the Pesquisa Operacional paper prints as Yanasse (1997a), matching the project's naming.
+  > $ cd /home/al/dev/MOSP/paper2/latex; head -12 refs.bib; sed -n 328,345p main.bbl
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('refs.bib').read()
+s=s.replace('''% ----------------------------------------------------------------
+  > $ cd /home/al/dev/MOSP/paper2/latex; latexmk -g -pdf -interaction=nonstopmode main.tex >/dev/null 2>&1; make check; grep -n -A1 "bibitem\[Yanasse" main.bbl; grep 
+  > $ f=$(kpsewhich plainnat.bst); grep -n -A22 "^FUNCTION {presort}" $f; grep -n -A12 "^FUNCTION {sort.format.title}" $f
+  > $ f=$(kpsewhich plainnat.bst); sed -n 1335,1350p $f; grep -n -B2 -A25 "^FUNCTION {presort}" $f | grep -n "SORT\|ITERATE\|REVERSE" ; grep -n "^SORT\|^ITERATE\|^REV
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -rn "LY2002ref1" --include=*.tex --include=*.bib --include=*.py . ../../tests | grep -v main.bbl
+
+The style sorts same-author-year entries by cite key, not title, so I'm moving the `\noopsort` to the year fields instead.
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 28,36p refs.bib; python3 - <<'EOF'
+s=open('refs.bib').read()
+s=s.replace('''  title   = {{\\noopsort{0}}A transformati
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i '33s/year = {1997},/year = {{\\noopsort{1997b}}1997},/' refs.bib; sed -n 33p refs.bib; grep -n "year" check_refs.py | 
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 70,100p check_refs.py; grep -n "def entries" -A25 check_refs.py | head -35
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('check_refs.py').read()
+s=s.replace('''        y_ok = str(r["year"]) == e.get("year")''','''        
+  > $ f=$(kpsewhich plainnat.bst); grep -n -A20 "^FUNCTION {calc.label}" $f; grep -n -A25 "^FUNCTION {forward.pass}" $f
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+import re
+s=open('refs.bib').read()
+s=re.sub(r"% \\noopsort prints nothing.*?@preamble\{[^\n]*\n\n","",s,fl
+
+Rebuilding tables and the PDF to confirm the 1997a/1997b labels.
+  > $ cd /home/al/dev/MOSP/paper2/latex; cp tables/split.tex /tmp/split_before.tex; make tables 2>&1 | tail -3; diff /tmp/split_before.tex tables/split.tex; git diff 
+  > $ cd /home/al/dev/MOSP/paper2/latex; latexmk -C main.tex >/dev/null 2>&1; make >/dev/null 2>&1; make check; grep -n "bibitem\[Yanasse" main.bbl; grep -c "Overfull
+
+Labels fixed (Pesquisa Operacional = 1997a, EJOR = 1997b). Next: the README note, then the "verbatim" docstring in `ChuThesis.lean` that the audit flagged.
+  > $ cd /home/al/dev/MOSP; grep -n -i "verbatim\|word for word" lean/MOSPFormalization/Search/*.lean paper2/*.md paper2/latex/*.tex | head -20
+  > $ cd /home/al/dev/MOSP; sed -n 20,30p lean/MOSPFormalization/Search/ChuThesis.lean; sed -n 66,76p lean/MOSPFormalization/Search/ChuThesis.lean
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/ChuThesis.lean'
+s=open(p).read()
+a='''**Theorem 6.3.6** is Chu & Stuckey's (CP 2009) Th
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/ChuThesis.lean'
+s=open(p).read()
+s=s.replace('''**Theorem 6.3.6** is Chu & Stuckey's (C
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='lean/MOSPFormalization/Search/ChuThesis.lean'
+s=open(p).read()
+s=s.replace('''`chuStuckey_theorem1_false` and `chuStu
+
+Docstring corrected (comment only, no proof touched). Building it in the background while I look at the equivalence-chain figure.
+  > $ cd /home/al/dev/MOSP/lean && nice lake build MOSPFormalization.Search.ChuThesis > /tmp/chu_build.log 2>&1; echo rc=$? >> /tmp/chu_build.log
+  > $ cd /home/al/dev/MOSP; ls paper2/figures/; grep -rln "equivalence_chain" paper2 --include=*.py --include=*.md | head
+  > $ cd /home/al/dev/MOSP; cat paper2/figures/equivalence_chain.dot; grep -n -B3 -A10 "equivalence_chain" paper2/equivalences.md | head -60
+  > $ cd /home/al/dev/MOSP; sed -n 85,135p paper2/latex/sec3_equivalences.tex; grep -n "pebbl" paper2/latex/sec3_equivalences.tex | head
+  > Write /home/al/dev/MOSP/paper2/figures/equivalence_chain_print.dot
+  > $ cd /home/al/dev/MOSP/paper2/figures; dot -Tpdf equivalence_chain_print.dot -o equivalence_chain_print.pdf && dot -Tpng -Gdpi=200 equivalence_chain_print.dot -o 
+  > Read /home/al/dev/MOSP/paper2/figures/equivalence_chain_print.png
+
+The automatic layout is too wide (1,137 pt) and tangled. Switching to pinned positions with `neato` so the figure is drawn at print size.
+  > $ cd /home/al/dev/MOSP/paper2/figures; python3 - <<'EOF'
+import re
+s=open('equivalence_chain_print.dot').read()
+pos={'PLA':(0.6,2.5),'MF':(1.75,2.5),'T':(2.85,2.5
+
+Only Graphviz's `dot` engine is installed, so I'll draw the print figure with matplotlib instead, matching the section 2 figures (TrueType fonts, true point sizes).
+  > Write /home/al/dev/MOSP/paper2/section3_figure.py
+  > $ cd /home/al/dev/MOSP; rm paper2/figures/equivalence_chain_print.*; python -m paper2.section3_figure && pdfinfo paper2/figures/sec3_fig1_chain.pdf | grep "Page s
+  > Read /home/al/dev/MOSP/paper2/figures/sec3_fig1_chain.png
+
+Too crowded, and labels on short horizontal edges are hidden. Narrowing node labels, spreading the bottom row, and putting labels on horizontal edges above the line.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/section3_figure.py'
+s=open(p).read()
+start=s.index('# name: (x, y, label, false-claim?)'); end=s.index('def dr
+  > Read /home/al/dev/MOSP/paper2/figures/sec3_fig1_chain.png
+
+Close. Fixing the one collision (the split-bandwidth and narrowness labels) with a per-edge label position.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/section3_figure.py'
+s=open(p).read()
+s=s.replace('# (a, b, label, style, curvature)','# (a, b, label, style, c
+  > $ cd /home/al/dev/MOSP; sed -i 's/WIDTH, HEIGHT = 6.5, 3.6/WIDTH, HEIGHT = 6.4, 3.6/' paper2/section3_figure.py; python -m paper2.section3_figure && pdfinfo paper
+  > Read /home/al/dev/MOSP/paper2/figures/sec3_fig1_chain.png
+
+Layout is clean. Checking the pebbling edge against section 3 before captioning, since Lengauer has two constructions with different offsets.
+  > $ cd /home/al/dev/MOSP; sed -n 255,280p paper2/latex/sec3_equivalences.tex; grep -n "theorem pbw_eq_pathwidth_lengauerU_add_one\|theorem pbw_lengauerD_eq_pathwidt
+
+The cleanest graph-level pebbling statement is `mpb(G) = pw(G) + 1` (`mpb_eq_pathwidth_add_one`, any nonempty graph); `pbw` lives on derived dags. Relabelling the node to match.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/section3_figure.py'
+s=open(p).read()
+s=s.replace('"PB": (4.95, 3.0, "pbw\\npebbling", False),','"PB": (4.95, 3
+  > $ tail -3 /tmp/chu_build.log; cd /home/al/dev/MOSP; grep -n "\\\\section\|subsection\|tab:master}" paper2/latex/sec3_equivalences.tex | head -20; sed -n 78,84p pa
+
+ChuThesis rebuilt fine. Now inserting Figure 3.1 into section 3.
+  > $ cd /home/al/dev/MOSP; sed -n 18,26p paper2/latex/sec3_equivalences.tex
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/latex/sec3_equivalences.tex'
+s=open(p).read()
+old="uses.} Table~\\ref{tab:master} summarises the result."
+asse
+  > $ cd /home/al/dev/MOSP/paper2/latex; for p in $(seq 1 25); do pdftotext -f $p -l $p main.pdf - | grep -q "Figure 3.1" && echo $p; done | head -3
+  > $ cd /tmp; pdftoppm -f 9 -l 9 -r 80 -png /home/al/dev/MOSP/paper2/latex/main.pdf pg9; ls pg9*
+  > Read /tmp/pg9-09.png
+
+Renders well. Correcting the caption's "top row" (mpb and VSG are graph problems), then adding a test for the new figure.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/latex/sec3_equivalences.tex'
+s=open(p).read()
+old="Matrix problems (top row)\nlive on"
+assert old in s
+s=s.rep
+
+Updating the draft README, `equivalences.md` and `plan.md` pointers.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('README.md').read()
+s=s.replace("First full draft, Ralph loop0008 item 08, 2026-10-03. **24 pages**"
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 255,259p plan.md; python3 - <<'EOF'
+s=open('plan.md').read()
+old="The INFORMS class is still to obtain.)*"
+assert s.count(ol
+
+Split run clean (no `!!!`, PID alive). Running the gate now.
+  > $ cd /home/al/dev/MOSP; timeout 590 python3 Ralph_Loops/loop0008/gate.py > /tmp/gate.log 2>&1; echo rc=$?; tail -15 /tmp/gate.log
+  > $ cd /home/al/dev/MOSP; cat /tmp/gate.log | tail; sed -n 1,40p Ralph_Loops/loop0008/gate.py | grep -n "pytest\|lake\|timeout"
+
+The gate takes longer than one foreground call allows; running it in the background with unbuffered output and polling.
+  > $ cd /home/al/dev/MOSP; python3 -u Ralph_Loops/loop0008/gate.py > /tmp/gate.log 2>&1; echo rc=$? >> /tmp/gate.log
+
+Meanwhile, writing the PROGRESS.md entry.
+  > $ cd /home/al/dev/MOSP; git status --short | grep -v Ralph_Loops; date '+%Y-%m-%d %H:%M'
+  > $ cd /home/al/dev/MOSP; cat >> Ralph_Loops/loop0008/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 9 — 2026-10-03 09:16
+
+### Completed
+- **Item 09, the reserve: the draft
+  > $ sleep 240; cat /tmp/gate.log | tail -20
+  > $ cat /tmp/gate.log | tail -20
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -q \"^rc=\" /tmp/gate.log; do sleep 5; done; tail -8 /tmp/gate.log", "description": "loop0008 ga
+  > $ until grep -q "^rc=" /tmp/gate.log; do sleep 5; done; tail -8 /tmp/gate.log
+
+Gate is still running (Lean build passed; pytest in progress). Checking where it is.
+  > $ cat /tmp/gate.log | tail -5; ps aux | grep -c "[p]ytest"
+
+MOSP pytest passed (1,411); the pathwidth_solver tests are running now.
+  > $ until grep -q "^rc=" /tmp/gate.log; do sleep 5; done; tail -6 /tmp/gate.log
+
+Gate passes. Recording it, marking the item, and closing the loop.
+  > $ cd /home/al/dev/MOSP; grep -n '!!!' paper2/data/solver_fix_split*.log | head -2; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid=; python3 - <<'EOF'
+p='Ral
+  > $ date +%H:%M
+  > $ cd /home/al/dev/MOSP; sed -i 's/checked at 08:56, 09:06 and 09:45/checked at 08:56, 09:06 and 09:30/' Ralph_Loops/loop0008/PROGRESS.md; grep -n "09:30" Ralph_Lo
+
+Item 09 (the reserve) is done and the gate passes, so all nine items of loop0008 are checked and PROGRESS.md ends with `LOOP_COMPLETE`. Sections 1 and 5 of the paper wait on you, so I used the reserve on the loose ends items 07 and 08 left behind.
+
+- **Axiom audit of the whole draft.** `paper2/axiom_check.lean` was missing `Split.lean`'s five theorems and six other theorems the LaTeX draft cites; it now has them. A new checker, `python -m paper2.latex.check_axioms` (also `make axioms`), confirms every cited theorem has an axiom line, then runs Lean. Result: 170 lines checked, all use only `propext`, `Classical.choice` and `Quot.sound`, and the deliberate `sorry` control shows `sorryAx`.
+- **New Figure 3.1, the equivalence chain.** The old diagram was too wide to print, so I redrew it with `python -m paper2.section3_figure`. It is 463.7 pt wide with no text below 7 pt, and it shows the relations without the Lean theorem names.
+  - The pebbling node is `mpb(G) = pw(G) + 1`, the version that holds on any non-empty graph.
+  - Two edges that follow from the others are left out.
+  - It sits after Table 3.1, and the original full diagram is unchanged.
+- **Section 2 figures.** Figure 2.3's legend is now 7 pt instead of 6.8, and Figure 2.2 is now 467.7 pt wide, inside the 468 pt column. A test now checks all three figures against both limits.
+- **The Yanasse 1997 labels.** natbib orders two papers by the same author in the same year by their citation key, not their title. I renamed the EJOR paper's key from `LY2002ref1` to `Yanasse1997b`. The draft now prints the Pesquisa Operacional paper as 1997a and the EJOR paper as 1997b, matching the project's documents.
+- **`ChuThesis.lean`.** Two comments still said Theorem 6.3.6 is CP Theorem 1 "verbatim". They now say "the same premise, reworded for k stacks", as item 07 corrected elsewhere. No proof was changed, and the file rebuilds.
+- **The draft** is now 25 pages with no undefined references. Rebuilding the tables picked up the split run as of 09:01: still 3 in flight.
+- **Gate:** lake build passes with the one known `sorry` (the §24 conjecture). MOSP pytest: 1,411 passed. pathwidth_solver pytest: 114 passed.
+- **Split run:** still alive, and no `!!!` line in its logs at 08:56, 09:06 or 09:30.
+
+Nothing was committed. Still yours to do:
+- write sections 1 and 5;
+- download the IJOC class by hand, since the INFORMS pages refuse scripted access;
+- after the split run ends (by 2026-10-08), run `make tables && make` and update "112 of 115";
+- three cited sources are not held: Bienstock & Seymour (1991), LaPaugh (1993) and Ore (1955).
+
+# result: success in 2063s, 90 turns, cost $5.78

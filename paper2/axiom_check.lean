@@ -193,5 +193,19 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.exists_isCommittable_of_isDefinite
 #print axioms MOSPFormalization.Search.cex_isCommittable_234
 
+-- loop0008 item 09: the root split (Search/Split.lean), and every remaining theorem the
+-- LaTeX draft (paper2/latex/) cites; the draft's definitions need no axiom line
+#print axioms MOSPFormalization.Search.Exec.union_memo
+#print axioms MOSPFormalization.Search.ExecSplit.exec
+#print axioms MOSPFormalization.Search.ExecSplit.exec_root
+#print axioms MOSPFormalization.Search.execSplit_repairedFullFilter_sound
+#print axioms MOSPFormalization.Search.execSplit_repairedFullFilter_mospValue
+#print axioms MOSPFormalization.PathDecomposition.exists_bag_of_isClique
+#print axioms MOSPFormalization.star_mospValue
+#print axioms MOSPFormalization.star_pathwidth_agreementGraph
+#print axioms MOSPFormalization.star_refutes_pattern_graph_bound
+#print axioms MOSPFormalization.Search.cexFamily_closed
+#print axioms MOSPFormalization.Search.closeCount_eq
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

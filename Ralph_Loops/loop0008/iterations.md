@@ -128,4 +128,4 @@
   - **Build.** It must build with `latexmk -pdf` with no undefined references.
     Add a `Makefile` target. Record the page count.
 
-- [ ] **09 Reserve.** The best remaining gap from items 01-08, one session.
+- [x] **09 Reserve.** The best remaining gap from items 01-08, one session.

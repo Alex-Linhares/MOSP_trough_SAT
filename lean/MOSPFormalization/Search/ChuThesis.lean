@@ -21,9 +21,11 @@ pp. 141–143:
 > `close(q, S) ≥ open(q, S ∪ {r})`. If `S ++ [r]` has an extension that uses `≤ k`
 > stacks, then `S ++ [q]` also has an extension that uses `≤ k` stacks.
 
-**Theorem 6.3.6** is Chu & Stuckey's (CP 2009) Theorem 1 word for word, with the same
-premise and the same reading of `close`, so `chuStuckey_theorem1_false` and
-`chuStuckey_theorem1_false_literal` (`PublishedTheorems.lean`) refute it as stated;
+**Theorem 6.3.6** is Chu & Stuckey's (CP 2009) Theorem 1 with the same premise, the same
+proof and the same reading of `close`, reworded for `k` stacks ("k-playable", "uses ≤ k
+stacks"; this docstring said "word for word" until the number audit of 2026-10-03), so
+`chuStuckey_theorem1_false` and `chuStuckey_theorem1_false_literal`
+(`PublishedTheorems.lean`) refute it as stated;
 `chuThesis_theorem636_false` and `chuThesis_theorem636_false_literal` restate them under
 the thesis's number.
 
@@ -68,8 +70,8 @@ open Finset
 /-! ### Theorem 6.3.6 is CP Theorem 1 -/
 
 /-- **Chu (2011) Theorem 6.3.6 is false** (unclosed reading of `close`). It is CP 2009
-Theorem 1 verbatim, so this is `chuStuckey_theorem1_false`: at `S = {2}`, `q = 0` on
-`cexGraph` with `k = 6`. -/
+Theorem 1 with the same premise, reworded for `k` stacks, so this is
+`chuStuckey_theorem1_false`: at `S = {2}`, `q = 0` on `cexGraph` with `k = 6`. -/
 theorem chuThesis_theorem636_false :
     ¬ ∀ (S : Finset (Fin 14)) (q : Fin 14), q ∉ S → stepCost cexGraph S q ≤ 6 →
         openCount cexGraph S q ≤ closeCount cexGraph S q →

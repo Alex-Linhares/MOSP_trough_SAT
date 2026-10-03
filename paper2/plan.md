@@ -256,6 +256,8 @@ degree or clique bound can close it).
    *(2026-10-03, loop0008 item 08: the LaTeX draft exists, `latex/`, 24
    pages, sections 2–4 drafted and sections 1 and 5 placeholders; build with
    `make` there, see `latex/README.md`. The INFORMS class is still to obtain.)*
+   *(Item 09: 25 pages; the chain is Figure 3.1, `section3_figure.py`; every
+   cited theorem is in `axiom_check.lean`, checked by `make axioms`.)*
 5. **Fix both solvers to match the soundness theorems:** the repaired
    definite and better moves (loop0006 items 08, 10), in the MOSP search and
    the pathwidth solver. Re-certify the values certified only by the customer

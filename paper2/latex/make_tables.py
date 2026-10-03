@@ -63,7 +63,7 @@ ORDER = [  # (key in numbers()["names"], printed name, Table 1 ref keys, discipl
     ("split bandwidth", "Split bandwidth", ["12"], "graph theory"),
     ("edge separation", "Edge separation", ["14"], "graph theory"),
 ]
-CITE = {"1": "LY2002ref1", "4": "LY2002ref4", "5": "LY2002ref5", "6": "LY2002ref6",
+CITE = {"1": "Yanasse1997b", "4": "LY2002ref4", "5": "LY2002ref5", "6": "LY2002ref6",
         "7": "LY2002ref7", "8": "LY2002ref8", "9": "LY2002ref9", "10": "LY2002ref10",
         "11": "LY2002ref11", "12": "LY2002ref12", "13": "LY2002ref13", "14": "LY2002ref14"}
 

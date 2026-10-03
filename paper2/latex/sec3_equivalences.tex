@@ -20,9 +20,11 @@ relation to pathwidth that is true, and says where it is proved. Every relation
 stated below is a theorem of our Lean development unless it says otherwise. All
 the theorems named depend only on the axioms \texttt{propext},
 \texttt{Classical.choice} and \texttt{Quot.sound}.\footnote{Printed by
-\texttt{lake env lean paper2/axiom\_check.lean}. The development has one
+\texttt{lake env lean paper2/axiom\_check.lean}, which covers every theorem
+named in this paper. The development has one
 \texttt{sorry}, a conjecture about lower bounds that no result of this paper
-uses.} Table~\ref{tab:master} summarises the result.
+uses.} Table~\ref{tab:master} summarises the result and
+Figure~\ref{fig:chain} draws it.
 
 \subsection{The problems}
 \label{sec:problems}
@@ -109,6 +111,22 @@ Vertex separation & \citet{LY2002ref13} & $\vs=\pw$ & exact \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{sec3_fig1_chain}
+\caption{The equivalences of Table~\ref{tab:master} as a graph around
+pathwidth. Solid edges are exact relations, dashed edges bands, both proved in
+Lean; the dotted edge is LaPaugh's $\mathrm{es}=\mathrm{pes}$, the one relation
+not proved, which no row needs. Dark red marks Table~1's two false claims, each
+refuted by a counterexample family proved in Lean. The four matrix problems (top
+left) live on the MOSP graph $G_M$ or the net graph $H$; $\mathrm{mpb}$ is the minimum
+progressive pebbling number of Section~\ref{sec:thirteenth}. Hypotheses are
+omitted: $M$ has a 1, $V\neq\emptyset$, or $G$ has an edge, as in
+Table~\ref{tab:master}. Two edges that follow from the others,
+$\mathrm{mns}=\theta$ and $\mathrm{ns}=\mathrm{vs}+1$, are not drawn.}
+\label{fig:chain}
+\end{figure}
 
 Two lemmas carry most of the exact rows. For a path decomposition and a vertex
 $v$, let $\mathrm{first}(v)$ and $\mathrm{last}(v)$ be the least and greatest
@@ -259,7 +277,7 @@ claim fails.\lean{kirousisPapadimitriou_claim2_false} The theorem is true. The
 repair orders the vertices by clearing time, as our Lean proof does, or uses the
 paper's own normal form, its Corollary~2.4.
 
-\subsection{A thirteenth member}
+\subsection{A thirteenth member}\label{sec:thirteenth}
 
 Progressive black-white pebbling, which is not in Table~1, belongs to the exact
 core. \citet[Thm~3]{LY2002ref14} gives

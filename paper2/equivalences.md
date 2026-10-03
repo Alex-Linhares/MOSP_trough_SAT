@@ -94,7 +94,10 @@ itself (13a), +1 on `D_u` (13b) and +2 on `G_d` (13c).
 ![The equivalence chain](figures/equivalence_chain.png)
 
 Source `figures/equivalence_chain.dot` (Graphviz; PDF and PNG beside it,
-regenerate with the two `dot` commands in its header). Solid edges are exact
+regenerate with the two `dot` commands in its header). *(2026-10-03, loop0008 item 09: the print
+version, Figure 3.1 of the LaTeX draft, is `figures/sec3_fig1_chain.pdf`, drawn by
+`python -m paper2.section3_figure`; it keeps the relations and drops the Lean
+names.)* Solid edges are exact
 identities proved in Lean, dashed edges proved inequalities, dotted edges the
 one remaining monotonicity gap (LaPaugh's `es = pes`), red edges Table 1
 claims that are false. Every edge is

@@ -43,3 +43,9 @@ def test_certificates_table_reproduces_the_recorded_totals():
     text = make_tables.certificates_table()
     assert "% total csearch: 6275 of 6286 verified, 0 rejected" in text
     assert "% total default: 6276 of 6286 verified, 0 rejected" in text
+
+
+def test_every_cited_theorem_has_an_axiom_line():
+    """Coverage half of check_axioms; the Lean half runs in the gate's build."""
+    from paper2.latex import check_axioms
+    assert check_axioms.uncovered() == []
