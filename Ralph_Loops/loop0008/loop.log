@@ -1,0 +1,5 @@
+[2026-10-03 00:33:14] loop start: up to 12 iterations, cap 6.0 h each, model default
+[2026-10-03 00:33:14] === iteration 1: 01 Prior-art sweep of every work citing Chu & Stuckey (2009).
+[2026-10-03 00:33:14] claude session it01 (cap 6.00 h) -> session_it01.log
+[2026-10-03 01:07:46] session it01: ok (exit 0, 107 tool calls)
+[2026-10-03 01:24:47] tests passed: GATE PASS

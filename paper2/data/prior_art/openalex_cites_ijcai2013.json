@@ -1,0 +1,362 @@
+{
+ "meta": {
+  "count": 1,
+  "db_response_time_ms": 11,
+  "page": 1,
+  "per_page": 200,
+  "groups_count": null,
+  "x_query": {
+   "oql": "works where it cites (W2295506942)",
+   "oqo": {
+    "get_rows": "works",
+    "filter_rows": [
+     {
+      "column_id": "referenced_works",
+      "value": "W2295506942"
+     }
+    ]
+   },
+   "url": "/works?filter=referenced_works:W2295506942&per_page=200"
+  },
+  "cost_usd": 0.0001
+ },
+ "results": [
+  {
+   "id": "https://openalex.org/W2510061404",
+   "doi": "https://doi.org/10.1007/978-3-319-44953-1_4",
+   "title": "Improved Linearization of Constraint Programming Models",
+   "publication_year": 2016,
+   "authorships": [
+    {
+     "author_position": "first",
+     "author": {
+      "id": "https://openalex.org/A5007487633",
+      "display_name": "Gleb Belov",
+      "orcid": "https://orcid.org/0000-0002-6120-8484",
+      "observed_orcids": [
+       "https://orcid.org/0000-0002-6120-8484"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I56590836",
+       "display_name": "Monash University",
+       "ror": "https://ror.org/02bfwt286",
+       "country_code": "AU",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ],
+     "countries": [
+      "AU"
+     ],
+     "is_corresponding": true,
+     "raw_author_name": "Gleb Belov",
+     "raw_affiliation_strings": [
+      "Monash University, Caulfield Campus, Caulfield East, Australia"
+     ],
+     "raw_orcid": null,
+     "affiliations": [
+      {
+       "raw_affiliation_string": "Monash University, Caulfield Campus, Caulfield East, Australia",
+       "institution_ids": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ]
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5064839018",
+      "display_name": "Peter J. Stuckey",
+      "orcid": "https://orcid.org/0000-0003-2186-0459",
+      "observed_orcids": [
+       "https://orcid.org/0000-0003-2186-0459"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I1292875679",
+       "display_name": "Commonwealth Scientific and Industrial Research Organisation",
+       "ror": "https://ror.org/03qn8fb07",
+       "country_code": "AU",
+       "type": "government",
+       "lineage": [
+        "https://openalex.org/I1292875679",
+        "https://openalex.org/I2801453606",
+        "https://openalex.org/I4387156119"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I165779595",
+       "display_name": "The University of Melbourne",
+       "ror": "https://ror.org/01ej9dk98",
+       "country_code": "AU",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I165779595"
+       ]
+      },
+      {
+       "id": "https://openalex.org/I42894916",
+       "display_name": "Data61",
+       "ror": "https://ror.org/03q397159",
+       "country_code": "AU",
+       "type": "other",
+       "lineage": [
+        "https://openalex.org/I1292875679",
+        "https://openalex.org/I2801453606",
+        "https://openalex.org/I42894916",
+        "https://openalex.org/I4387156119"
+       ]
+      }
+     ],
+     "countries": [
+      "AU"
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Peter J. Stuckey",
+     "raw_affiliation_strings": [
+      "Data61, CSIRO, University of Melbourne, Parkville, Australia"
+     ],
+     "raw_orcid": null,
+     "affiliations": [
+      {
+       "raw_affiliation_string": "Data61, CSIRO, University of Melbourne, Parkville, Australia",
+       "institution_ids": [
+        "https://openalex.org/I1292875679",
+        "https://openalex.org/I165779595",
+        "https://openalex.org/I42894916"
+       ]
+      }
+     ]
+    },
+    {
+     "author_position": "middle",
+     "author": {
+      "id": "https://openalex.org/A5022380691",
+      "display_name": "Guido Tack",
+      "orcid": "https://orcid.org/0000-0003-3357-6498",
+      "observed_orcids": [
+       "https://orcid.org/0000-0003-3357-6498"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I56590836",
+       "display_name": "Monash University",
+       "ror": "https://ror.org/02bfwt286",
+       "country_code": "AU",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ],
+     "countries": [
+      "AU"
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Guido Tack",
+     "raw_affiliation_strings": [
+      "Monash University, Caulfield Campus, Caulfield East, Australia"
+     ],
+     "raw_orcid": null,
+     "affiliations": [
+      {
+       "raw_affiliation_string": "Monash University, Caulfield Campus, Caulfield East, Australia",
+       "institution_ids": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ]
+    },
+    {
+     "author_position": "last",
+     "author": {
+      "id": "https://openalex.org/A5013174025",
+      "display_name": "Mark G. Wallace",
+      "orcid": "https://orcid.org/0000-0001-7326-8110",
+      "observed_orcids": [
+       "https://orcid.org/0000-0001-7326-8110"
+      ]
+     },
+     "institutions": [
+      {
+       "id": "https://openalex.org/I56590836",
+       "display_name": "Monash University",
+       "ror": "https://ror.org/02bfwt286",
+       "country_code": "AU",
+       "type": "education",
+       "lineage": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ],
+     "countries": [
+      "AU"
+     ],
+     "is_corresponding": false,
+     "raw_author_name": "Mark Wallace",
+     "raw_affiliation_strings": [
+      "Monash University, Caulfield Campus, Caulfield East, Australia"
+     ],
+     "raw_orcid": null,
+     "affiliations": [
+      {
+       "raw_affiliation_string": "Monash University, Caulfield Campus, Caulfield East, Australia",
+       "institution_ids": [
+        "https://openalex.org/I56590836"
+       ]
+      }
+     ]
+    }
+   ],
+   "primary_location": {
+    "id": "doi:10.1007/978-3-319-44953-1_4",
+    "is_oa": false,
+    "landing_page_url": "https://doi.org/10.1007/978-3-319-44953-1_4",
+    "pdf_url": null,
+    "source": {
+     "id": "https://openalex.org/S106296714",
+     "display_name": "Lecture notes in computer science",
+     "issn_l": "0302-9743",
+     "issn": [
+      "0302-9743",
+      "1611-3349"
+     ],
+     "is_oa": false,
+     "is_in_doaj": false,
+     "is_core": true,
+     "listed_in": [
+      "cwts-core",
+      "jufo-1",
+      "ki-jl-1",
+      "norway-1"
+     ],
+     "host_organization": "https://openalex.org/P4310319900",
+     "host_organization_name": "Springer Science+Business Media",
+     "host_organization_lineage": [
+      "https://openalex.org/P4310319900",
+      "https://openalex.org/P4310319965"
+     ],
+     "host_organization_lineage_names": [
+      "Springer Science+Business Media",
+      "Springer Nature"
+     ],
+     "type": "book series"
+    },
+    "license": null,
+    "license_id": null,
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "Lecture Notes in Computer Science",
+    "raw_type": "book-chapter"
+   },
+   "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+   },
+   "best_oa_location": null,
+   "locations": [
+    {
+     "id": "doi:10.1007/978-3-319-44953-1_4",
+     "is_oa": false,
+     "landing_page_url": "https://doi.org/10.1007/978-3-319-44953-1_4",
+     "pdf_url": null,
+     "source": {
+      "id": "https://openalex.org/S106296714",
+      "display_name": "Lecture notes in computer science",
+      "issn_l": "0302-9743",
+      "issn": [
+       "0302-9743",
+       "1611-3349"
+      ],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": true,
+      "listed_in": [
+       "cwts-core",
+       "jufo-1",
+       "ki-jl-1",
+       "norway-1"
+      ],
+      "host_organization": "https://openalex.org/P4310319900",
+      "host_organization_name": "Springer Science+Business Media",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310319900",
+       "https://openalex.org/P4310319965"
+      ],
+      "host_organization_lineage_names": [
+       "Springer Science+Business Media",
+       "Springer Nature"
+      ],
+      "type": "book series"
+     },
+     "license": null,
+     "license_id": null,
+     "version": "publishedVersion",
+     "is_accepted": true,
+     "is_published": true,
+     "raw_source_name": "Lecture Notes in Computer Science",
+     "raw_type": "book-chapter"
+    },
+    {
+     "id": "mag:3015092885",
+     "is_oa": false,
+     "landing_page_url": "https://findanexpert.unimelb.edu.au/scholarlywork/1101629-improved-linearization-of-constraint-programming-models",
+     "pdf_url": null,
+     "source": {
+      "id": "https://openalex.org/S106296714",
+      "display_name": "Lecture notes in computer science",
+      "issn_l": "0302-9743",
+      "issn": [
+       "0302-9743",
+       "1611-3349"
+      ],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": true,
+      "listed_in": [
+       "cwts-core",
+       "jufo-1",
+       "ki-jl-1",
+       "norway-1"
+      ],
+      "host_organization": "https://openalex.org/P4310319900",
+      "host_organization_name": "Springer Science+Business Media",
+      "host_organization_lineage": [
+       "https://openalex.org/P4310319900",
+       "https://openalex.org/P4310319965"
+      ],
+      "host_organization_lineage_names": [
+       "Springer Science+Business Media",
+       "Springer Nature"
+      ],
+      "type": "book series"
+     },
+     "license": null,
+     "license_id": null,
+     "version": null,
+     "is_accepted": false,
+     "is_published": null,
+     "raw_source_name": "Lecture notes in computer science",
+     "raw_type": null
+    }
+   ],
+   "type": "conference-paper",
+   "ids": {
+    "openalex": "https://openalex.org/W2510061404",
+    "doi": "https://doi.org/10.1007/978-3-319-44953-1_4",
+    "mag": "2510061404"
+   }
+  }
+ ],
+ "group_by": []
+}

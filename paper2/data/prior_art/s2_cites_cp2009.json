@@ -1,0 +1,1135 @@
+{
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "2cefb077e9cb4f40baf314d759cfae4500919f94",
+    "externalIds": {
+     "ArXiv": "2409.04926",
+     "CorpusId": 272524640
+    },
+    "title": "A $\\Delta$-evaluation function for column permutation problems",
+    "venue": "",
+    "year": 2024,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1403034184",
+      "name": "J. R. Lima"
+     },
+     {
+      "authorId": "2320485019",
+      "name": "V. G. M. Santos"
+     },
+     {
+      "authorId": "2150073212",
+      "name": "Marco M. Carvalho"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a254fc002319a2e7a7563565e522f0a56997d60b",
+    "externalIds": {
+     "ArXiv": "2401.13883",
+     "DBLP": "journals/ai/KuroiwaB26",
+     "DOI": "10.1016/j.artint.2026.104506",
+     "CorpusId": 286964950
+    },
+    "title": "Domain-independent dynamic programming",
+    "venue": "Artificial Intelligence",
+    "year": 2024,
+    "openAccessPdf": {
+     "url": "https://arxiv.org/pdf/2401.13883",
+     "status": "GREEN",
+     "license": "CCBYNCND"
+    },
+    "authors": [
+     {
+      "authorId": "39266424",
+      "name": "Ryo Kuroiwa"
+     },
+     {
+      "authorId": "2259948019",
+      "name": "J. C. Beck"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6c13643bf88af3b61e1bd420b67bc27fe6d882c9",
+    "externalIds": {
+     "DBLP": "conf/aips/0002B23",
+     "ArXiv": "2211.14409",
+     "DOI": "10.1609/icaps.v33i1.27200",
+     "CorpusId": 254044175
+    },
+    "title": "Domain-Independent Dynamic Programming: Generic State Space Search for Combinatorial Optimization",
+    "venue": "International Conference on Automated Planning and Scheduling",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://ojs.aaai.org/index.php/ICAPS/article/download/27200/26973",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "39266424",
+      "name": "Ryo Kuroiwa"
+     },
+     {
+      "authorId": "144778460",
+      "name": "J. Christopher Beck"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f256c32fd164ff24663c80752d8394d0a66294ad",
+    "externalIds": {
+     "DBLP": "journals/amai/DoolaardY25",
+     "DOI": "10.1007/s10472-022-09816-z",
+     "CorpusId": 252740865
+    },
+    "title": "Online learning of variable ordering heuristics for constraint optimisation problems",
+    "venue": "Annals of Mathematics and Artificial Intelligence",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10472-022-09816-z.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "100631741",
+      "name": "Floris Doolaard"
+     },
+     {
+      "authorId": "1402807089",
+      "name": "N. Yorke-Smith"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "09247ec6a691e545cea8331244a08af477dd8f0e",
+    "externalIds": {
+     "DBLP": "journals/itor/MartinYP22",
+     "DOI": "10.1111/itor.13053",
+     "CorpusId": 239148394
+    },
+    "title": "Mathematical models for the minimization of open stacks problem",
+    "venue": "International Transactions in Operational Research",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "82200957",
+      "name": "Mateus Martin"
+     },
+     {
+      "authorId": "1783755",
+      "name": "H. Yanasse"
+     },
+     {
+      "authorId": "2066017649",
+      "name": "M. J. Pinto"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4c7d82aef036af9d806e00afa73db04d6195c56d",
+    "externalIds": {
+     "MAG": "2952237808",
+     "DBLP": "conf/wcgo/VisentinPRT19",
+     "DOI": "10.1007/978-3-030-21803-4_42",
+     "CorpusId": 190007123
+    },
+    "title": "Modelling Dynamic Programming-Based Global Constraints in Constraint Programming",
+    "venue": "World Congress on Global Optimization",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "https://www.research.ed.ac.uk/en/publications/b102fc23-2a07-45fb-aa72-af26c774e159",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "2283847465",
+      "name": "Andrea Visentin"
+     },
+     {
+      "authorId": "1709865",
+      "name": "S. Prestwich"
+     },
+     {
+      "authorId": "144273342",
+      "name": "R. Rossi"
+     },
+     {
+      "authorId": "1746581",
+      "name": "Armagan Tarim"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "688b31767518acee3b14f3c8bf4b8e1f4e8a3ac2",
+    "externalIds": {
+     "DBLP": "journals/asc/SantosC18",
+     "MAG": "2888452109",
+     "DOI": "10.1016/J.ASOC.2018.08.017",
+     "CorpusId": 53757270
+    },
+    "title": "Adaptive large neighborhood search applied to the design of electronic circuits",
+    "venue": "Applied Soft Computing",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38846279",
+      "name": "Vin\u00edcius Gandra Martins Santos"
+     },
+     {
+      "authorId": "2462220891",
+      "name": "M. D. de Carvalho"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a34b93a30b067ae3218ae94f8430d0ed0f776728",
+    "externalIds": {
+     "MAG": "2903545960",
+     "DBLP": "conf/gcai/PrestwichRTV18",
+     "DOI": "10.29007/gscn",
+     "CorpusId": 53431385
+    },
+    "title": "Towards a Closer Integration of Dynamic Programming and Constraint Programming",
+    "venue": "Global Conference on Artificial Intelligence",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://easychair.org/publications/open/hksH",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1709865",
+      "name": "S. Prestwich"
+     },
+     {
+      "authorId": "144273342",
+      "name": "R. Rossi"
+     },
+     {
+      "authorId": "1746581",
+      "name": "Armagan Tarim"
+     },
+     {
+      "authorId": "2283847465",
+      "name": "Andrea Visentin"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "c8453a01135b177ceb40f18985e01e7259885178",
+    "externalIds": {
+     "MAG": "2889204587",
+     "PubMedCentral": "6117050",
+     "DOI": "10.1371/journal.pone.0203076",
+     "CorpusId": 52137410,
+     "PubMed": "30161217"
+    },
+    "title": "A PageRank-based heuristic for the minimization of open stacks problem",
+    "venue": "PLoS ONE",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0203076&type=printable",
+     "status": "GOLD",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "2505585743",
+      "name": "Rafael de Magalh\u00e3es Dias Frinhani"
+     },
+     {
+      "authorId": "2462220891",
+      "name": "M. D. de Carvalho"
+     },
+     {
+      "authorId": "34967194",
+      "name": "N. Y. Soma"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "18ebe58d2a45d9d69e86f6f67b742f9ec1cfdc6b",
+    "externalIds": {
+     "MAG": "2963421154",
+     "DBLP": "journals/corr/abs-1804-03954",
+     "ArXiv": "1804.03954",
+     "DOI": "10.1111/ITOR.12671",
+     "CorpusId": 4772997
+    },
+    "title": "A Variable Neighborhood Search for Flying Sidekick Traveling Salesman Problem",
+    "venue": "International Transactions in Operational Research",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://onlinelibrary.wiley.com/doi/pdfdirect/10.1111/itor.12671",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2497917039",
+      "name": "J\u00falia C\u00e1ria de Freitas"
+     },
+     {
+      "authorId": "2756397",
+      "name": "P. H. V. Penna"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "fcfe2823e49737b44189095bfeb176c7f605d036",
+    "externalIds": {
+     "DBLP": "journals/candie/LimaC17",
+     "MAG": "2746333792",
+     "DOI": "10.1016/j.cie.2017.08.016",
+     "CorpusId": 32823544
+    },
+    "title": "Descent search approaches applied to the minimization of open stacks",
+    "venue": "Computers & industrial engineering",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1403034184",
+      "name": "J. R. Lima"
+     },
+     {
+      "authorId": "2462220891",
+      "name": "M. D. de Carvalho"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "8ded0757914a98aaa3019f99ef21368b775a2c87",
+    "externalIds": {
+     "MAG": "2348420909",
+     "DBLP": "journals/informs/DoulabiRP16",
+     "DOI": "10.1287/ijoc.2015.0686",
+     "CorpusId": 21589611
+    },
+    "title": "A Constraint-Programming-Based Branch-and-Price-and-Cut Approach for Operating Room Planning and Scheduling",
+    "venue": "INFORMS journal on computing",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2683477",
+      "name": "S. M. H. Doulabi"
+     },
+     {
+      "authorId": "2719301",
+      "name": "Louis-Martin Rousseau"
+     },
+     {
+      "authorId": "1984991",
+      "name": "G. Pesant"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0472017b7903a86a5dfcb20c3ecb710ee6f79b7e",
+    "externalIds": {
+     "MAG": "2077687786",
+     "DBLP": "journals/jors/CarvalhoS15",
+     "DOI": "10.1057/jors.2014.60",
+     "CorpusId": 11805117
+    },
+    "title": "A breadth-first search applied to the minimization of the open stacks",
+    "venue": "Journal of the Operational Research Society",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2462220891",
+      "name": "M. D. de Carvalho"
+     },
+     {
+      "authorId": "34967194",
+      "name": "N. Y. Soma"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "1cab623f9afb4522bc900c7c08f6ed1418adfcbe",
+    "externalIds": {
+     "MAG": "753461214",
+     "DBLP": "conf/cpaior/ChuS15",
+     "DOI": "10.1007/978-3-319-18008-3_8",
+     "CorpusId": 17324038
+    },
+    "title": "Learning Value Heuristics for Constraint Programming",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "37ac331cf40fd527b8a05ccadca35fe6c1171cab",
+    "externalIds": {
+     "DBLP": "journals/constraints/ChuS15",
+     "MAG": "2024327134",
+     "DOI": "10.1007/s10601-014-9173-7",
+     "CorpusId": 866730
+    },
+    "title": "Dominance breaking constraints",
+    "venue": "Constraints",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-014-9173-7.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "51450a0c1d82d5c5cdad93c1816fd8419a6c92b4",
+    "externalIds": {
+     "MAG": "15946853",
+     "DBLP": "conf/cp/LeoMTB13",
+     "DOI": "10.1007/978-3-642-40627-0_34",
+     "CorpusId": 10861696
+    },
+    "title": "Globalizing Constraint Models",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38395160",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "145187373",
+      "name": "Christopher Mears"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e2539cd39c5640c0157fdfecf262bdfacba7653d",
+    "externalIds": {
+     "DBLP": "journals/itor/GiovanniMPPRV13",
+     "MAG": "1548790034",
+     "DOI": "10.1111/ITOR.12025",
+     "CorpusId": 41760626
+    },
+    "title": "A heuristic and an exact method for the gate matrix connection cost minimization problem",
+    "venue": "International Transactions in Operational Research",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2486435138",
+      "name": "L. De Giovanni"
+     },
+     {
+      "authorId": "144376555",
+      "name": "G. Massi"
+     },
+     {
+      "authorId": "41131571",
+      "name": "F. Pezzella"
+     },
+     {
+      "authorId": "2599498",
+      "name": "M. Pfetsch"
+     },
+     {
+      "authorId": "38399325",
+      "name": "G. Rinaldi"
+     },
+     {
+      "authorId": "2074079710",
+      "name": "P. Ventura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2f4c86dcb0e13c030ee89b70bd711e1a4f95e402",
+    "externalIds": {
+     "MAG": "2295506942",
+     "DBLP": "conf/ijcai/Chu13",
+     "CorpusId": 11609037
+    },
+    "title": "Improving Combinatorial Optimization - Extended Abstract",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b5c6d3af11be6255cdca0d24c22e25cb81e9ab27",
+    "externalIds": {
+     "MAG": "2071948962",
+     "DOI": "10.1080/00207543.2012.657256",
+     "CorpusId": 111272479
+    },
+    "title": "An adaptive genetic algorithm for large-size open stack problems",
+    "venue": "",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2486435138",
+      "name": "L. De Giovanni"
+     },
+     {
+      "authorId": "144376555",
+      "name": "G. Massi"
+     },
+     {
+      "authorId": "41131571",
+      "name": "F. Pezzella"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b90fbcf18099eaead3f298bfa8746ae2db91b55f",
+    "externalIds": {
+     "MAG": "1486847405",
+     "DOI": "10.11606/T.55.2012.TDE-19022013-084858",
+     "CorpusId": 60780686
+    },
+    "title": "O problema de minimiza\u00e7\u00e3o de pilhas abertas - novas contribui\u00e7\u00f5es",
+    "venue": "",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "http://www.teses.usp.br/teses/disponiveis/55/55134/tde-19022013-084858/publico/TeseRevisada.pdf",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2064125107",
+      "name": "Claudia Fink"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "61ee869bd470724a0694838f8138bcae2ba136e8",
+    "externalIds": {
+     "MAG": "3019418811",
+     "DBLP": "conf/cp/ChuS12",
+     "DOI": "10.1007/978-3-642-33558-7_4",
+     "CorpusId": 14373105
+    },
+    "title": "A Generic Method for Identifying and Exploiting Dominance Relations",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "3d8505f122affdebcc5ee70cac498fb3c9669770",
+    "externalIds": {
+     "DBLP": "conf/cp/ChuS12a",
+     "MAG": "1913472343",
+     "DOI": "10.1007/978-3-642-33558-7_19",
+     "CorpusId": 2453557
+    },
+    "title": "Inter-instance Nogood Learning in Constraint Programming",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2f1fc0900870f0cafea819757c66d6dbec59b1ca",
+    "externalIds": {
+     "MAG": "2577478697",
+     "DOI": "10.1016/J.IJPE.2011.12.003",
+     "CorpusId": 14979934
+    },
+    "title": "Batch scheduling in a cutting process with finite buffers",
+    "venue": "",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2290881",
+      "name": "C. Arbib"
+     },
+     {
+      "authorId": "40909523",
+      "name": "F. Marinelli"
+     },
+     {
+      "authorId": "41131571",
+      "name": "F. Pezzella"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ed3a070bfef9dec5dfef138bd1343121ba3af938",
+    "externalIds": {
+     "MAG": "2073303262",
+     "DOI": "10.1590/S0104-530X2011000200006",
+     "CorpusId": 122166387
+    },
+    "title": "M\u00e9todos simplificados para o problema de minimiza\u00e7\u00e3o de pilhas abertas",
+    "venue": "",
+    "year": 2011,
+    "openAccessPdf": {
+     "url": "https://www.scielo.br/j/gp/a/vGSQSv9vJYcyHhNhrdP8Lrg/?lang=pt&format=pdf",
+     "status": "GOLD",
+     "license": "CCBYNC"
+    },
+    "authors": [
+     {
+      "authorId": "2462220891",
+      "name": "M. D. de Carvalho"
+     },
+     {
+      "authorId": "34386275",
+      "name": "N. Soma"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "723f2b73097c0454442bfdd302d0ca5932523358",
+    "externalIds": {
+     "MAG": "87930048",
+     "CorpusId": 116143726
+    },
+    "title": "Pattern sequencing models in cutting stock problems",
+    "venue": "",
+    "year": 2011,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2485214797",
+      "name": "Isabele da Silva Lopes"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e86b42fdf6325a620690eee0e9f1dd3e2d97c551",
+    "externalIds": {
+     "DBLP": "conf/cp/Beck0LSZ25",
+     "DOI": "10.4230/LIPIcs.CP.2025.5",
+     "CorpusId": 280675720
+    },
+    "title": "Transition Dominance in Domain-Independent Dynamic Programming",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2025,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2259948019",
+      "name": "J. C. Beck"
+     },
+     {
+      "authorId": "39266424",
+      "name": "Ryo Kuroiwa"
+     },
+     {
+      "authorId": "2376226218",
+      "name": "J. Lee"
+     },
+     {
+      "authorId": "2195991502",
+      "name": "Peter J. Stuckey"
+     },
+     {
+      "authorId": "2376186916",
+      "name": "Allen Z. Zhong"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4c7cf7a564ce78d6742778e2ab79e61e0552a48c",
+    "externalIds": {
+     "CorpusId": 29169277
+    },
+    "title": "A Variable Neighborhood Search for Flying Sidekick Traveling Salesman Problem",
+    "venue": "",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2498101247",
+      "name": "C. D. de Freitas"
+     },
+     {
+      "authorId": "2756397",
+      "name": "P. H. V. Penna"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "223b97a12b85a825561a6295ec83de3b369f96b2",
+    "externalIds": {
+     "DBLP": "journals/itor/GoncalvesRC16",
+     "MAG": "2103937264",
+     "DOI": "10.1111/itor.12109",
+     "CorpusId": 7997655
+    },
+    "title": "A biased random-key genetic algorithm for the minimization of open stacks problem",
+    "venue": "International Transactions in Operational Research",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "http://repositorio.inesctec.pt/handle/123456789/5384",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "35786563",
+      "name": "J. Gon\u00e7alves"
+     },
+     {
+      "authorId": "2423608474",
+      "name": "M. C. Resende"
+     },
+     {
+      "authorId": "2110432402",
+      "name": "Miguel Costa"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ef26ff6c4b2b5d0bfc012975fd593c2b70059901",
+    "externalIds": {
+     "DBLP": "journals/itor/ArbibMV16",
+     "MAG": "2106915499",
+     "DOI": "10.1111/itor.12134",
+     "CorpusId": 4852948
+    },
+    "title": "One-dimensional cutting stock with a limited number of open stacks: bounds and solutions from a new integer linear programming model",
+    "venue": "International Transactions in Operational Research",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2290881",
+      "name": "C. Arbib"
+     },
+     {
+      "authorId": "40909523",
+      "name": "F. Marinelli"
+     },
+     {
+      "authorId": "2074079710",
+      "name": "P. Ventura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e4d1d0ea0516be0c3450987d7d5354e0e0ee9912",
+    "externalIds": {
+     "DBLP": "conf/cpaior/2015",
+     "MAG": "2487029652",
+     "DOI": "10.1007/978-3-319-18008-3",
+     "CorpusId": 262283683
+    },
+    "title": "Integration of AI and OR Techniques in Constraint Programming: 12th International Conference, CPAIOR 2015, Barcelona, Spain, May 18-22, 2015, Proceedings",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2194725481",
+      "name": "Domenico Salvagnin"
+     },
+     {
+      "authorId": "35458675",
+      "name": "M. Lombardi"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f47238ab3c09a5c59dc4f0bb9803724ba9cf3325",
+    "externalIds": {
+     "CorpusId": 28558701
+    },
+    "title": "Inter-problem Nogood Learning in Constraint Programming",
+    "venue": "",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e9b05a8e75f60f555c028dbdd90e82830b07ec84",
+    "externalIds": {
+     "MAG": "2095067556",
+     "DBLP": "journals/constraints/ChuBS12",
+     "DOI": "10.1007/s10601-011-9112-9",
+     "CorpusId": 12051408
+    },
+    "title": "Exploiting subproblem dominance in constraint programming",
+    "venue": "Constraints",
+    "year": 2011,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a15e7cf954a097fee86d4f82f1c250a63f530198",
+    "externalIds": {
+     "DBLP": "phd/basesearch/Chu11",
+     "MAG": "2278850436",
+     "CorpusId": 30156581
+    },
+    "title": "Improving combinatorial optimization",
+    "venue": "",
+    "year": 2011,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "3b09da508a119154feb8f0dc7b789bf6862b01f8",
+    "externalIds": {
+     "MAG": "2153633961",
+     "DBLP": "journals/informs/BandaSC11",
+     "DOI": "10.1287/ijoc.1090.0378",
+     "CorpusId": 18726289
+    },
+    "title": "Solving Talent Scheduling with Dynamic Programming",
+    "venue": "INFORMS journal on computing",
+    "year": 2011,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "767cabf496be378ecd67f2cf2d49b9004d48357a",
+    "externalIds": {
+     "MAG": "71177841",
+     "CorpusId": 59774029
+    },
+    "title": "Preliminary Computational Experiments with a Genetic Algorithm for the Open Stacks Problem",
+    "venue": "",
+    "year": 2010,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "52579542",
+      "name": "L. DeGiovanni"
+     },
+     {
+      "authorId": "144376555",
+      "name": "G. Massi"
+     },
+     {
+      "authorId": "41131571",
+      "name": "F. Pezzella"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e4119c5bd4388c229e161581fe13c735608bbd5e",
+    "externalIds": {
+     "CorpusId": 14578396
+    },
+    "title": "TRCS Series Cutting Stock with Bounded Open Stacks : a New Integer Linear Programming Model",
+    "venue": "",
+    "year": 2010,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2290881",
+      "name": "C. Arbib"
+     },
+     {
+      "authorId": "40909523",
+      "name": "F. Marinelli"
+     },
+     {
+      "authorId": "2074079710",
+      "name": "P. Ventura"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5cd7bb7d7aaab09aba1b905520dfcbd9194d6831",
+    "externalIds": {
+     "MAG": "1854866150",
+     "DBLP": "phd/basesearch/Stivala10",
+     "CorpusId": 60630110
+    },
+    "title": "Algorithms for the study of RNA and protein structure",
+    "venue": "",
+    "year": 2010,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2381757",
+      "name": "A. Stivala"
+     }
+    ]
+   }
+  }
+ ]
+}

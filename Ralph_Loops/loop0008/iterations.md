@@ -1,6 +1,6 @@
 # loop0008 — strengthen paper 2 toward a first full draft: items
 
-- [ ] **01 Prior-art sweep of every work citing Chu & Stuckey (2009).**
+- [x] **01 Prior-art sweep of every work citing Chu & Stuckey (2009).**
   - **List the citers.** Use OpenAlex (`cites:` filter on the work with DOI
     10.1007/978-3-642-04244-7_21) and Crossref, plus the citers of Chu's 2011
     thesis (hdl:11343/36679) where indexed. Google Scholar blocks automated

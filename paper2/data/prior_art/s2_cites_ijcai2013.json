@@ -1,0 +1,94 @@
+{
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "4e3f70597355482d972a7c15cb5aad2f7462c2be",
+    "externalIds": {
+     "MAG": "3015092885",
+     "DBLP": "conf/cp/BelovSTW16",
+     "DOI": "10.1007/978-3-319-44953-1_4",
+     "CorpusId": 31364729
+    },
+    "title": "Improved Linearization of Constraint Programming Models",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "144043270",
+      "name": "G. Belov"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "48884195",
+      "name": "M. Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6c68a7aa51a96454be080c060dd244941dbe6daa",
+    "externalIds": {
+     "DBLP": "conf/cp/Banda23",
+     "DOI": "10.4230/LIPIcs.CP.2023.1",
+     "CorpusId": 262127836
+    },
+    "title": "Beyond Optimal Solutions for Real-World Problems (Invited Talk)",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2023,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5b5fb322e11bb01f2142c0f9cf81a8abd69e1202",
+    "externalIds": {
+     "DBLP": "conf/latincrypt/GhoshD21",
+     "DOI": "10.1007/978-3-030-88238-9_13",
+     "CorpusId": 236513717
+    },
+    "title": "Automatic Search for Bit-based Division Property",
+    "venue": "IACR Cryptology ePrint Archive",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2124550434",
+      "name": "Shibam Ghosh"
+     },
+     {
+      "authorId": "1683875",
+      "name": "O. Dunkelman"
+     }
+    ]
+   }
+  }
+ ]
+}

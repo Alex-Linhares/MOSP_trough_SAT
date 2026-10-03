@@ -1,0 +1,3427 @@
+{
+ "offset": 0,
+ "data": [
+  {
+   "citingPaper": {
+    "paperId": "b9264ea78a6488cbcdcb4218f09a51ad876d5057",
+    "externalIds": {
+     "DBLP": "journals/corr/abs-2607-20022",
+     "ArXiv": "2607.20022",
+     "DOI": "10.48550/arXiv.2607.20022",
+     "CorpusId": 290443323
+    },
+    "title": "Global Difference Constraint Propagation for Constraint Programming",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "15714360",
+      "name": "Lucas Kletzander"
+     },
+     {
+      "authorId": "36353650",
+      "name": "Jip J. Dekker"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "2170216072",
+      "name": "Peter J. Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "44cafeaa57d7e73d0d39dda03652a7654abb700b",
+    "externalIds": {
+     "ArXiv": "2602.05179",
+     "DBLP": "journals/corr/abs-2602-05179",
+     "DOI": "10.48550/arXiv.2602.05179",
+     "CorpusId": 285303411
+    },
+    "title": "From Sequential to Parallel: Reformulating Dynamic Programming as GPU Kernels for Large-Scale Stochastic Combinatorial Optimization",
+    "venue": "arXiv.org",
+    "year": 2026,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2478801164",
+      "name": "Jing-Yi Zhao"
+     },
+     {
+      "authorId": "2305470082",
+      "name": "Lin-Xin Yang"
+     },
+     {
+      "authorId": "2294421577",
+      "name": "Haohua Zhang"
+     },
+     {
+      "authorId": "2640838",
+      "name": "Qile He"
+     },
+     {
+      "authorId": "2394076139",
+      "name": "Tian Ding"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "24db1c066485ba0f5b48cc070da7b0c99431cee6",
+    "externalIds": {
+     "DBLP": "journals/tplp/EiterGMOK25",
+     "ArXiv": "2507.22774",
+     "DOI": "10.1017/S1471068425100264",
+     "CorpusId": 280391684
+    },
+    "title": "ASP-FZN: A Translation-based Constraint Answer Set Solver",
+    "venue": "Theory and Practice of Logic Programming",
+    "year": 2025,
+    "openAccessPdf": {
+     "url": "https://www.cambridge.org/core/services/aop-cambridge-core/content/view/4B287FE8F3F915006FAAAED25BA08EC3/S1471068425100264a.pdf/div-class-title-asp-fzn-a-translation-based-constraint-answer-set-solver-div.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "2302900906",
+      "name": "Thomas Eiter"
+     },
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "2953376",
+      "name": "J. Oetsch"
+     },
+     {
+      "authorId": "2370915",
+      "name": "T. Kaminski"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "9cac52531fae72a2c6e956a471b7bb6642244ca4",
+    "externalIds": {
+     "ArXiv": "2409.10196",
+     "DBLP": "journals/corr/abs-2409-10196",
+     "DOI": "10.1109/LRA.2025.3592098",
+     "CorpusId": 272689993
+    },
+    "title": "NEUSIS: A Compositional Neuro-Symbolic Framework for Autonomous Perception, Reasoning, and Planning in Complex UAV Search Missions",
+    "venue": "IEEE Robotics and Automation Letters",
+    "year": 2024,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2113442166",
+      "name": "Zhixi Cai"
+     },
+     {
+      "authorId": "2321409869",
+      "name": "Cristian Rojas Cardenas"
+     },
+     {
+      "authorId": "2321407562",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "2357225581",
+      "name": "Chenyuan Zhang"
+     },
+     {
+      "authorId": "2029237212",
+      "name": "Kal Backman"
+     },
+     {
+      "authorId": "2393221599",
+      "name": "Han-Bing Li"
+     },
+     {
+      "authorId": "2322020031",
+      "name": "Boying Li"
+     },
+     {
+      "authorId": "2321405728",
+      "name": "Mahsa Ghorbanali"
+     },
+     {
+      "authorId": "2294569395",
+      "name": "Stavya Datta"
+     },
+     {
+      "authorId": "2321406859",
+      "name": "Lizhen Qu"
+     },
+     {
+      "authorId": "145608972",
+      "name": "Julian Gutierrez"
+     },
+     {
+      "authorId": "2273659991",
+      "name": "Alexey Ignatiev"
+     },
+     {
+      "authorId": "2256011160",
+      "name": "Yuan-Fang Li"
+     },
+     {
+      "authorId": "32326232",
+      "name": "Mor Vered"
+     },
+     {
+      "authorId": "2194675155",
+      "name": "Peter J. Stuckey"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "2307081680",
+      "name": "Hamid Rezatofighi"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "356f46b95ca14830915c56ea4c495d056812ef3e",
+    "externalIds": {
+     "DBLP": "journals/constraints/MedemaBL24",
+     "DOI": "10.1007/s10601-024-09374-7",
+     "CorpusId": 273445325
+    },
+    "title": "Limiting the memory consumption of caching for detecting subproblem dominance in constraint problems",
+    "venue": "Constraints",
+    "year": 2024,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-024-09374-7.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "27100469",
+      "name": "Michel Medema"
+     },
+     {
+      "authorId": "2326589085",
+      "name": "Luc Breeman"
+     },
+     {
+      "authorId": "2326589407",
+      "name": "Alexander Lazovik"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0526b6b559241572b631aad71a2f225cbe27b8bf",
+    "externalIds": {
+     "DBLP": "phd/se/Bjordal21",
+     "DOI": "10.1007/s10601-023-09359-y",
+     "CorpusId": 253880579
+    },
+    "title": "From declarative models to local search",
+    "venue": "Constraints",
+    "year": 2023,
+    "openAccessPdf": {
+     "url": "http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-436139",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": null,
+      "name": "Gustav Bj\u00f6rdal"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "08caeda31f4dd698ee7210e1bf2b3d74cae8bc1a",
+    "externalIds": {
+     "DBLP": "conf/gecco/MischekM23",
+     "DOI": "10.1145/3583131.3590354",
+     "CorpusId": 259833628
+    },
+    "title": "Leveraging problem-independent hyper-heuristics for real-world test laboratory scheduling",
+    "venue": "Annual Conference on Genetic and Evolutionary Computation",
+    "year": 2023,
+    "openAccessPdf": {
+     "url": "https://dl.acm.org/doi/pdf/10.1145/3583131.3590354",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6002d09bbc9268d02b5c85c4de9895ceca3d76bb",
+    "externalIds": {
+     "DBLP": "journals/constraints/CsehE023",
+     "PubMedCentral": "10400706",
+     "DOI": "10.1007/s10601-023-09346-3",
+     "CorpusId": 251107795,
+     "PubMed": "37545838"
+    },
+    "title": "Computing relaxations for the three-dimensional stable matching problem with cyclic preferences",
+    "venue": "Constraints",
+    "year": 2023,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-023-09346-3.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "2424499",
+      "name": "\u00c1gnes Cseh"
+     },
+     {
+      "authorId": "3099898",
+      "name": "Guillaume Escamocher"
+     },
+     {
+      "authorId": "2060229204",
+      "name": "Luis Quesada"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "feb9d2d5bd1f0e6404a6c19d25ea85ba110475aa",
+    "externalIds": {
+     "PubMedCentral": "10011308",
+     "DOI": "10.1007/s10729-022-09613-4",
+     "CorpusId": 252715098,
+     "PubMed": "36197537"
+    },
+    "title": "Nurse rostering with fatigue modelling",
+    "venue": "Health Care Management Science",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10729-022-09613-4.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "65833134",
+      "name": "Kjartan Kastet Klyve"
+     },
+     {
+      "authorId": "2588100",
+      "name": "Ilankaikone Senthooran"
+     },
+     {
+      "authorId": "2052348851",
+      "name": "Mark Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b5d37a4770db52ef8978416d888f68786b4f94d9",
+    "externalIds": {
+     "DBLP": "journals/tist/DanzingerGJMMP23",
+     "DOI": "10.1145/3546871",
+     "CorpusId": 251201215
+    },
+    "title": "A System for Automated Industrial Test Laboratory Scheduling",
+    "venue": "ACM Transactions on Intelligent Systems and Technology",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1740612113",
+      "name": "Philipp Danzinger"
+     },
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     },
+     {
+      "authorId": "2179743480",
+      "name": "David Janneau"
+     },
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "31026843",
+      "name": "C. Poschalko"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "68e4ac3e7b77e2b368773f589fb3eeeb3d65a3fb",
+    "externalIds": {
+     "DBLP": "journals/ia/CicalaDMAT22",
+     "DOI": "10.3233/IA-210132",
+     "CorpusId": 250401399
+    },
+    "title": "A comparison of declarative AI techniques for computer automated design of elevator systems",
+    "venue": "Intelligenza Artificiale",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "49390936",
+      "name": "G. Cicala"
+     },
+     {
+      "authorId": "69893974",
+      "name": "S. Demarchi"
+     },
+     {
+      "authorId": "9560764",
+      "name": "Marco Menapace"
+     },
+     {
+      "authorId": "22599395",
+      "name": "Leopoldo Annunziata"
+     },
+     {
+      "authorId": "1834340",
+      "name": "A. Tacchella"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e18beec172f1e60a63d18a6d36ab057d6b6b383f",
+    "externalIds": {
+     "DBLP": "conf/csfw/TsoupidiLTP23",
+     "ArXiv": "2207.02614",
+     "DOI": "10.1109/CSF57540.2023.00016",
+     "CorpusId": 250311653
+    },
+    "title": "Securing Optimized Code Against Power Side Channels",
+    "venue": "IEEE Computer Security Foundations Symposium",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://arxiv.org/pdf/2207.02614",
+     "status": "GREEN",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1419497661",
+      "name": "R. Tsoupidi"
+     },
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "1912012",
+      "name": "E. Troubitsyna"
+     },
+     {
+      "authorId": "1985771",
+      "name": "Panos Papadimitratos"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e3056ee58a6bf71adc43faa7f8978f639a99b2bc",
+    "externalIds": {
+     "DBLP": "conf/aaai/OuelletQ22",
+     "DOI": "10.1609/aaai.v36i4.20296",
+     "CorpusId": 250288727
+    },
+    "title": "The SoftCumulative Constraint with Quadratic Penalty",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/aaai.v36i4.20296",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "46233987",
+      "name": "Yanick Ouellet"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "08b132e1245051b87e0bd8c4762930ced7a1b1ab",
+    "externalIds": {
+     "PubMedCentral": "9360097",
+     "DBLP": "conf/cp/CsehEGQ21",
+     "DOI": "10.1007/s10601-022-09335-y",
+     "CorpusId": 239021577,
+     "PubMed": "35965949"
+    },
+    "title": "A collection of Constraint Programming models for the three-dimensional stable matching problem with cyclic preferences",
+    "venue": "Constraints",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-022-09335-y.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "2424499",
+      "name": "\u00c1gnes Cseh"
+     },
+     {
+      "authorId": "3099898",
+      "name": "Guillaume Escamocher"
+     },
+     {
+      "authorId": "39918052",
+      "name": "Begum Genc"
+     },
+     {
+      "authorId": "144225285",
+      "name": "L. Quesada"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0de97722deab351ddd83e461295e2da295e9ceb1",
+    "externalIds": {
+     "DBLP": "journals/scheduling/WinterM22",
+     "DOI": "10.1007/s10951-021-00713-7",
+     "CorpusId": 244866390
+    },
+    "title": "A large neighborhood search approach for the paint shop scheduling problem",
+    "venue": "Journal of Scheduling",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10951-021-00713-7.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "38027013",
+      "name": "Felix Winter"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0d68d2b52b0c923c979d50f8e09c3ff700362908",
+    "externalIds": {
+     "ArXiv": "2111.09934",
+     "DBLP": "journals/jair/TsoupidiLB21",
+     "DOI": "10.1613/jair.1.12848",
+     "CorpusId": 244462816
+    },
+    "title": "Constraint-based Diversification of JOP Gadgets",
+    "venue": "Journal of Artificial Intelligence Research",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "https://jair.org/index.php/jair/article/download/12848/26752",
+     "status": "GOLD",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": null,
+      "name": "Rodothea-Myrsini Tsoupidi"
+     },
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "1730420",
+      "name": "B. Baudry"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "1e1f462a29069f1134e0d51de988e808324db4ef",
+    "externalIds": {
+     "DBLP": "conf/gecco/Regnier-Coudert21",
+     "DOI": "10.1145/3449726.3463154",
+     "CorpusId": 235770024
+    },
+    "title": "An empirical evaluation of permutation-based policies for stochastic RCPSP",
+    "venue": "GECCO Companion",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1398627229",
+      "name": "Olivier Regnier-Coudert"
+     },
+     {
+      "authorId": "1413176979",
+      "name": "G. Pov\u00e9da"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "10107d19406de658357e3510c221fad6d1fffd40",
+    "externalIds": {
+     "DBLP": "conf/aips/WinterMMP21",
+     "DOI": "10.1609/icaps.v31i1.15997",
+     "CorpusId": 235428874
+    },
+    "title": "Automated Production Scheduling for Artificial Teeth Manufacturing",
+    "venue": "International Conference on Automated Planning and Scheduling",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/icaps.v31i1.15997",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38027013",
+      "name": "Felix Winter"
+     },
+     {
+      "authorId": "150954211",
+      "name": "Christoph Mrkvicka"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "31446259",
+      "name": "Jakob Preininger"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a9e6b4a893f7934470574a650bb7bb54c6d18c58",
+    "externalIds": {
+     "DOI": "10.1109/EIConCIT50028.2021.9431934",
+     "CorpusId": 234787659
+    },
+    "title": "Bus Scheduling in The City Of Surabaya Using Smooth Transition Method and Equal Average Load",
+    "venue": "2021 3rd East Indonesia Conference on Computer and Information Technology (EIConCIT)",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2327487946",
+      "name": "S. Rahmawati"
+     },
+     {
+      "authorId": "7644150",
+      "name": "A. Djunaidy"
+     },
+     {
+      "authorId": "2703049",
+      "name": "A. Muklason"
+     },
+     {
+      "authorId": "2042696862",
+      "name": "Wiwik Anggraeni"
+     },
+     {
+      "authorId": "2085835823",
+      "name": "Ika Nurkasanah"
+     },
+     {
+      "authorId": "2865604",
+      "name": "Faizal Mahananto"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "dcecf59d0396560395fd7b4f16e362de49889382",
+    "externalIds": {
+     "MAG": "3133821530",
+     "DBLP": "journals/anor/MischekM21",
+     "DOI": "10.1007/s10479-021-04007-1",
+     "CorpusId": 209526086
+    },
+    "title": "A local search framework for industrial test laboratory scheduling",
+    "venue": "Annals of Operations Research",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10479-021-04007-1.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "894f6d4a0cc2c40ffe8f1d630d260f2f0e9856a5",
+    "externalIds": {
+     "DBLP": "conf/ppopp/LozanoCF21",
+     "DOI": "10.1145/3437801.3441603",
+     "CorpusId": 231946800
+    },
+    "title": "Modernizing parallel code with pattern analysis",
+    "venue": "ACM SIGPLAN Symposium on Principles & Practice of Parallel Programming",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "https://www.research.ed.ac.uk/en/publications/94fbb615-bf05-4375-91b6-beb75bfaf3f0",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "1706318",
+      "name": "M. Cole"
+     },
+     {
+      "authorId": "2644436",
+      "name": "Bj\u00f6rn Franke"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "19f2da97a234f9719e93ea7712d0bccb1969c8ce",
+    "externalIds": {
+     "DBLP": "journals/tist/WinterM21",
+     "DOI": "10.1145/3430710",
+     "CorpusId": 197640640
+    },
+    "title": "Constraint-based Scheduling for Paint Shops in the Automotive Supply Industry",
+    "venue": "ACM Transactions on Intelligent Systems and Technology",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38027013",
+      "name": "Felix Winter"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b7b81d2a1bb74db4f9bef4a263409723c96e1170",
+    "externalIds": {
+     "MAG": "3110724672",
+     "DOI": "10.34726/HSS.2020.73541",
+     "CorpusId": 230639267
+    },
+    "title": "Investigating Constraint Programming and Hybrid Answer-set Solving for Industrial Test Laboratory Scheduling",
+    "venue": "",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5fff0ebd51210c6902465de5ac67f50a071dae54",
+    "externalIds": {
+     "DBLP": "conf/cp/LeoGBW20",
+     "MAG": "3083330389",
+     "DOI": "10.1007/978-3-030-58475-7_26",
+     "CorpusId": 221539551
+    },
+    "title": "Core-Guided Model Reformulation",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://research.monash.edu/en/publications/6995a0ef-6665-442c-9127-e67b8ec413a4",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "38395160",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "48884195",
+      "name": "M. Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "dfe6db9a3ff13609bcbf572e57703f5025bf6b46",
+    "externalIds": {
+     "DBLP": "conf/cp/BjordalFPST20",
+     "MAG": "3083047714",
+     "DOI": "10.1007/978-3-030-58475-7_4",
+     "CorpusId": 221349545
+    },
+    "title": "Solving Satisfaction Problems Using Large-Neighbourhood Search",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2398409",
+      "name": "Gustav Bj\u00f6rdal"
+     },
+     {
+      "authorId": "1679287",
+      "name": "P. Flener"
+     },
+     {
+      "authorId": "144460293",
+      "name": "J. Pearson"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "86a1d9c2e515d031b82816861df28348ca7453e2",
+    "externalIds": {
+     "DBLP": "journals/orf/LamGSHD20",
+     "MAG": "3085049663",
+     "DOI": "10.1007/s43069-020-00023-2",
+     "CorpusId": 225253015
+    },
+    "title": "Nutmeg: a MIP and CP Hybrid Solver Using Branch-and-Check",
+    "venue": "SN Operations Research Forum",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://research.monash.edu/en/publications/ed6991e7-5349-444a-88ab-1ae496abed94",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "144825652",
+      "name": "Edward Lam"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "72488634",
+      "name": "P. Van Hentenryck"
+     },
+     {
+      "authorId": "36353650",
+      "name": "Jip J. Dekker"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "013ac89d4678fc8c1969dd4fd7343b622c03f07c",
+    "externalIds": {
+     "MAG": "3090813146",
+     "DBLP": "conf/IEEEpact/LozanoCF20",
+     "DOI": "10.1145/3410463.3414663",
+     "CorpusId": 222001566
+    },
+    "title": "Parallelizing Parallel Programs: A Dynamic Pattern Analysis for Modernization of Legacy Parallel Code",
+    "venue": "International Conference on Parallel Architectures and Compilation Techniques",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://www.research.ed.ac.uk/en/publications/34650916-bb7f-43a7-95d0-cf1620ee0ec9",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": null,
+      "name": "Roberto Casta\u00f1eda Lozano"
+     },
+     {
+      "authorId": "1706318",
+      "name": "M. Cole"
+     },
+     {
+      "authorId": "2644436",
+      "name": "Bj\u00f6rn Franke"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6a5e31c09506783a0e8ec885467899ab0aa38869",
+    "externalIds": {
+     "DBLP": "journals/corr/abs-2007-08955",
+     "MAG": "3043022621",
+     "ArXiv": "2007.08955",
+     "DOI": "10.1007/978-3-030-58475-7_46",
+     "CorpusId": 220633174
+    },
+    "title": "Constraint-Based Software Diversification for Efficient Mitigation of Code-Reuse Attacks",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://arxiv.org/pdf/2007.08955",
+     "status": "GREEN",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1419497661",
+      "name": "R. Tsoupidi"
+     },
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "1730420",
+      "name": "B. Baudry"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "929f6663623eabf43b5976f75f96eb857d17feaf",
+    "externalIds": {
+     "MAG": "3035172757",
+     "DBLP": "conf/ijcai/MenardQG20",
+     "DOI": "10.24963/ijcai.2020/162",
+     "CorpusId": 220483427
+    },
+    "title": "Learning Sensitivity of RCPSP by Analyzing the Search Process",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://www.ijcai.org/proceedings/2020/0162.pdf",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "33108651",
+      "name": "Marc-Andr\u00e9 M\u00e9nard"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     },
+     {
+      "authorId": "3357595",
+      "name": "Jonathan Gaudreault"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "3f6a0b525b14becb0adcf6a02b99d57133a9b4db",
+    "externalIds": {
+     "MAG": "3037219267",
+     "DBLP": "conf/aips/DanzingerGMM20",
+     "DOI": "10.1609/icaps.v30i1.6681",
+     "CorpusId": 219321906
+    },
+    "title": "Solving the Test Laboratory Scheduling Problem with Variable Task Grouping",
+    "venue": "International Conference on Automated Planning and Scheduling",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://ojs.aaai.org/index.php/ICAPS/article/download/6681/6535",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1740612113",
+      "name": "Philipp Danzinger"
+     },
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     },
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0cffceda4c8d708529493f39c872ab25c79dd5ff",
+    "externalIds": {
+     "DBLP": "conf/aaai/WinterMS20",
+     "MAG": "2998568662",
+     "DOI": "10.1609/AAAI.V34I02.5530",
+     "CorpusId": 211267578
+    },
+    "title": "Explaining Propagators for String Edit Distance Constraints",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/aaai.v34i02.5530",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38027013",
+      "name": "Felix Winter"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "b04ae51638a26de6c6b0dcf81b46dbd3bf6b0b8f",
+    "externalIds": {
+     "MAG": "2984757293",
+     "ArXiv": "1911.04766",
+     "DBLP": "journals/scheduling/GeibingerMM24",
+     "DOI": "10.1007/s10951-024-00821-0",
+     "CorpusId": 207863351
+    },
+    "title": "Investigating constraint programming and hybrid methods for real world industrial test laboratory scheduling",
+    "venue": "Journal of Scheduling",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1007/s10951-024-00821-0",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     },
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f83c7e598a060a66c8494ebd76def5993bb021cf",
+    "externalIds": {
+     "DBLP": "conf/cp/SchiendorferR19",
+     "MAG": "2974888260",
+     "DOI": "10.1007/978-3-030-30048-7_30",
+     "CorpusId": 202728735
+    },
+    "title": "Reducing Bias in Preference Aggregation for Multiagent Soft Constraint Problems",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2989121",
+      "name": "Alexander Schiendorfer"
+     },
+     {
+      "authorId": "145731725",
+      "name": "W. Reif"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "041a911250b26db1017f4a0633abd7827e04364c",
+    "externalIds": {
+     "DBLP": "phd/es/Caballero19",
+     "MAG": "2998415374",
+     "DOI": "10.1007/s10601-023-09357-0",
+     "CorpusId": 214571514
+    },
+    "title": "Scheduling through logic-based tools",
+    "venue": "Constraints",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-023-09357-0.pdf",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": null,
+      "name": "Jordi Coll Caballero"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4025fce0d6052a3528cd7c5ec3afff166f1c2be3",
+    "externalIds": {
+     "DBLP": "conf/cpaior/BjordalFP19",
+     "MAG": "2946472574",
+     "DOI": "10.1007/978-3-030-19212-9_7",
+     "CorpusId": 148566851
+    },
+    "title": "Generating Compound Moves in Local Search by Hybridisation with Complete Search",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": null,
+      "name": "Gustav Bj\u00f6rdal"
+     },
+     {
+      "authorId": "1679287",
+      "name": "P. Flener"
+     },
+     {
+      "authorId": "144460293",
+      "name": "J. Pearson"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e1f0d872b15e62d516844bc9691355ee31373970",
+    "externalIds": {
+     "DBLP": "conf/cpaior/GeibingerMM19",
+     "MAG": "2945044967",
+     "DOI": "10.1007/978-3-030-19212-9_20",
+     "CorpusId": 167222062
+    },
+    "title": "Investigating Constraint Programming for Real World Industrial Test Laboratory Scheduling",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "116145548",
+      "name": "Tobias Geibinger"
+     },
+     {
+      "authorId": "79314555",
+      "name": "Florian Mischek"
+     },
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a3339e86531750a947e456327cad7d54522418e3",
+    "externalIds": {
+     "DBLP": "journals/tii/ChivilikhinUSV19",
+     "MAG": "2908682741",
+     "DOI": "10.1109/TII.2019.2891614",
+     "CorpusId": 67929511
+    },
+    "title": "Function Block Finite-State Model Identification Using SAT and CSP Solvers",
+    "venue": "IEEE Transactions on Industrial Informatics",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2711502",
+      "name": "D. Chivilikhin"
+     },
+     {
+      "authorId": "2193907",
+      "name": "V. Ulyantsev"
+     },
+     {
+      "authorId": "1740318",
+      "name": "A. Shalyto"
+     },
+     {
+      "authorId": "144958974",
+      "name": "V. Vyatkin"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "90696dab82ad46bafee43db48e80598a58a38695",
+    "externalIds": {
+     "DBLP": "journals/constraints/UnaGSS19",
+     "MAG": "2900096425",
+     "DOI": "10.1007/s10601-018-9297-2",
+     "CorpusId": 53238232
+    },
+    "title": "Compiling CP subproblems to MDDs and d-DNNFs",
+    "venue": "Constraints",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "3149077",
+      "name": "P. Schachte"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "59f8b3bc6986eca134731e2aae8e8502b1025c1d",
+    "externalIds": {
+     "MAG": "2888547834",
+     "DBLP": "conf/cp/BelovCBKSSW018",
+     "DOI": "10.1007/978-3-319-98334-9_31",
+     "CorpusId": 52074221
+    },
+    "title": "Process Plant Layout Optimization: Equipment Allocation",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://research.monash.edu/en/publications/608acf0d-6afd-4566-aa7c-1c16a8dd29b5",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "144043270",
+      "name": "G. Belov"
+     },
+     {
+      "authorId": "1787711",
+      "name": "Tobias Czauderna"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": null,
+      "name": "Matthias Klapperstueck"
+     },
+     {
+      "authorId": "2588100",
+      "name": "Ilankaikone Senthooran"
+     },
+     {
+      "authorId": "2116645848",
+      "name": "Mitch Smith"
+     },
+     {
+      "authorId": "144353764",
+      "name": "Michael Wybrow"
+     },
+     {
+      "authorId": "48884195",
+      "name": "M. Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "926a2524d490dd366ee8b1dfb017231ab478db87",
+    "externalIds": {
+     "MAG": "3082873728",
+     "DBLP": "conf/cp/GangeS18",
+     "DOI": "10.1007/978-3-319-98334-9_10",
+     "CorpusId": 52074517
+    },
+    "title": "Sequential Precede Chain for Value Symmetry Elimination",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2361ff50596b43c12ca558b402c64c6a6d96ef87",
+    "externalIds": {
+     "MAG": "2888144801",
+     "DBLP": "conf/cp/DemirovicCS18",
+     "DOI": "10.1007/978-3-319-98334-9_7",
+     "CorpusId": 52076904
+    },
+    "title": "Solution-Based Phase Saving for CP: A Value-Selection Heuristic to Simulate Local Search Behavior in Complete Solvers",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2198370",
+      "name": "Emir Demirovic"
+     },
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "3ff6f2261d372c986be2f78a3b7c1d249c39c2ba",
+    "externalIds": {
+     "DBLP": "conf/cp/DekkerBSST18",
+     "MAG": "2888538590",
+     "DOI": "10.1007/978-3-319-98334-9_6",
+     "CorpusId": 52076328
+    },
+    "title": "Solver-Independent Large Neighbourhood Search",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "36353650",
+      "name": "Jip J. Dekker"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "9fd76b0e263179927a60f66d2917f518e89769d4",
+    "externalIds": {
+     "DBLP": "conf/cp/ZeighamiLTB18",
+     "MAG": "2888308116",
+     "DOI": "10.1007/978-3-319-98334-9_27",
+     "CorpusId": 52075701
+    },
+    "title": "Towards Semi-Automatic Learning-Based Model Transformation",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://research.monash.edu/en/publications/1caa6f48-d3ba-49d2-b96f-749075fe08a7",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "51214352",
+      "name": "Kiana Zeighami"
+     },
+     {
+      "authorId": "38395160",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "7682aa5f0152d15a04df7cd6fe2a20e23a3d113e",
+    "externalIds": {
+     "DBLP": "conf/ijcai/UnaRGSS18",
+     "MAG": "2808391653",
+     "DOI": "10.24963/ijcai.2018/178",
+     "CorpusId": 51607564
+    },
+    "title": "Machine Learning and Constraint Programming for Relational-To-Ontology Schema Mapping",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://www.ijcai.org/proceedings/2018/0178.pdf",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     },
+     {
+      "authorId": "1754340",
+      "name": "Nataliia R\u00fcmmele"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "3149077",
+      "name": "P. Schachte"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "8363b6897872db21dac67ed928f527b0e59e41e6",
+    "externalIds": {
+     "MAG": "3081456259",
+     "DBLP": "conf/cpaior/DemirovicS18",
+     "DOI": "10.1007/978-3-319-93031-2_10",
+     "CorpusId": 47019235
+    },
+    "title": "Constraint Programming for High School Timetabling: A Scheduling-Based Model with Hot Starts",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2198370",
+      "name": "Emir Demirovic"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e4b9483f738f70046f241ca89ee24b97d55a04a2",
+    "externalIds": {
+     "DBLP": "conf/cpaior/MusliuSS18",
+     "MAG": "2805181779",
+     "DOI": "10.1007/978-3-319-93031-2_31",
+     "CorpusId": 47020112
+    },
+    "title": "Solver Independent Rotating Workforce Scheduling",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "db5f19916d6799ed468f86fe2c521e445d8f93e9",
+    "externalIds": {
+     "MAG": "2789043486",
+     "DBLP": "conf/aaai/AmadiniGS18",
+     "DOI": "10.1609/aaai.v32i1.12201",
+     "CorpusId": 19083472
+    },
+    "title": "Sweep-Based Propagation for String Constraint Solving",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/aaai.v32i1.12201",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1770349",
+      "name": "R. Amadini"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2e8a0d3fda3de4a50794feba9856c0ea0d589333",
+    "externalIds": {
+     "MAG": "2765507185",
+     "DBLP": "journals/eor/KreterSSZ18",
+     "DOI": "10.1016/j.ejor.2017.10.014",
+     "CorpusId": 207646799
+    },
+    "title": "Mixed-integer linear programming and constraint programming formulations for solving resource availability cost problems",
+    "venue": "European Journal of Operational Research",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2903168",
+      "name": "Stefan Kreter"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "2194675155",
+      "name": "Peter J. Stuckey"
+     },
+     {
+      "authorId": "40811013",
+      "name": "J. Zimmermann"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "45753c79f38b9156cf4b91f7e7f126a30d01ea08",
+    "externalIds": {
+     "MAG": "2795671832",
+     "DBLP": "journals/corr/abs-1804-02452",
+     "ArXiv": "1804.02452",
+     "DOI": "10.1145/3332373",
+     "CorpusId": 4714844
+    },
+    "title": "Combinatorial Register Allocation and Instruction Scheduling",
+    "venue": "ACM Transactions on Programming Languages and Systems",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "https://arxiv.org/pdf/1804.02452",
+     "status": "GREEN",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "145488217",
+      "name": "M. Carlsson"
+     },
+     {
+      "authorId": "2297969",
+      "name": "Gabriel Hjort Blindell"
+     },
+     {
+      "authorId": "6510899",
+      "name": "Christian Schulte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "d9768e79a66eb3125d0bfe68c3f06e2eae5a2c7d",
+    "externalIds": {
+     "MAG": "2754976122",
+     "DBLP": "journals/ai/LeeZ17",
+     "DOI": "10.1016/j.artint.2017.07.006",
+     "CorpusId": 3151286
+    },
+    "title": "Towards breaking more composition symmetries in partial symmetry breaking",
+    "venue": "Artificial Intelligence",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1016/j.artint.2017.07.006",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1520031258",
+      "name": "Jimmy Ho-man Lee"
+     },
+     {
+      "authorId": null,
+      "name": "Zichen Zhu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "369c183064701f387c97c26533bf7198f82b18b4",
+    "externalIds": {
+     "MAG": "2763649607",
+     "DBLP": "conf/ppdp/HoweRK17",
+     "DOI": "10.1145/3131851.3131861",
+     "CorpusId": 28864086
+    },
+    "title": "Theory learning with symmetry breaking",
+    "venue": "ACM-SIGPLAN International Conference on Principles and Practice of Declarative Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://kar.kent.ac.uk/62377/1/main.pdf",
+     "status": "GREEN",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1991567",
+      "name": "J. M. Howe"
+     },
+     {
+      "authorId": "144242294",
+      "name": "E. Robbins"
+     },
+     {
+      "authorId": "48052045",
+      "name": "A. King"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0d011b1e09f50cc6b584877c5ffa846758faef06",
+    "externalIds": {
+     "MAG": "2758563093",
+     "DBLP": "conf/atva/GangeGS17",
+     "DOI": "10.1007/978-3-319-68167-2_5",
+     "CorpusId": 36940021
+    },
+    "title": "Fixing the State Budget: Approximation of Regular Languages with Small DFAs",
+    "venue": "Automated Technology for Verification and Analysis",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1692588",
+      "name": "P. Ganty"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0ee2bb36afdadb2147008210c9f1f8a19fda83dc",
+    "externalIds": {
+     "MAG": "2623418526",
+     "DBLP": "journals/constraints/DekkerBCFM17",
+     "DOI": "10.1007/s10601-017-9270-5",
+     "CorpusId": 8599490
+    },
+    "title": "Auto-tabling for subproblem presolving in MiniZinc",
+    "venue": "Constraints",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-017-9270-5.pdf",
+     "status": "HYBRID",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "36353650",
+      "name": "Jip J. Dekker"
+     },
+     {
+      "authorId": "2398409",
+      "name": "Gustav Bj\u00f6rdal"
+     },
+     {
+      "authorId": "145488217",
+      "name": "M. Carlsson"
+     },
+     {
+      "authorId": "1679287",
+      "name": "P. Flener"
+     },
+     {
+      "authorId": "3149529",
+      "name": "Jean-No\u00ebl Monette"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "8545b62c4adc798c1372d15d9ff060eb55e42155",
+    "externalIds": {
+     "MAG": "2760168827",
+     "DBLP": "journals/tecs/BlindellCLS17",
+     "DOI": "10.1145/3126528",
+     "CorpusId": 146989
+    },
+    "title": "Complete and Practical Universal Instruction Selection",
+    "venue": "ACM Transactions on Embedded Computing Systems",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-213968",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "2297969",
+      "name": "Gabriel Hjort Blindell"
+     },
+     {
+      "authorId": "145488217",
+      "name": "M. Carlsson"
+     },
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "6510899",
+      "name": "Christian Schulte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "181f9ae6a6c96a1802d6ebc444dac4d94749947f",
+    "externalIds": {
+     "MAG": "3009643422",
+     "DBLP": "conf/cp/GoldwaserS17",
+     "DOI": "10.1007/978-3-319-66158-2_22",
+     "CorpusId": 40314528
+    },
+    "title": "Optimal Torpedo Scheduling",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://jair.org/index.php/jair/article/download/11268/26462",
+     "status": "GOLD",
+     "license": "publisher-specific-oa"
+    },
+    "authors": [
+     {
+      "authorId": "10665767",
+      "name": "Adrian Goldwaser"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0de08e78ae2bc4556803e604722d40d7c5c06181",
+    "externalIds": {
+     "DBLP": "conf/cp/YoungFS17",
+     "MAG": "2746303749",
+     "DOI": "10.1007/978-3-319-66158-2_20",
+     "CorpusId": 45105550
+    },
+    "title": "Constraint Programming Applied to the Multi-Skill Project Scheduling Problem",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "52307011",
+      "name": "K. Young"
+     },
+     {
+      "authorId": "2002412",
+      "name": "Thibaut Feydy"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "85587e619f22310d8a404fcbb2848e3f0c306a4f",
+    "externalIds": {
+     "MAG": "2747214722",
+     "DBLP": "conf/cp/AmadiniGST17",
+     "DOI": "10.1007/978-3-319-66158-2_1",
+     "CorpusId": 37779512
+    },
+    "title": "A Novel Approach to String Constraint Solving",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "http://hdl.handle.net/11343/241774",
+     "status": "GREEN",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1770349",
+      "name": "R. Amadini"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "fedd863f4ce7a477c2a7ac6be377fafb7e7edb57",
+    "externalIds": {
+     "MAG": "2750134344",
+     "DBLP": "conf/cp/BelovCDBWW17",
+     "DOI": "10.1007/978-3-319-66158-2_21",
+     "CorpusId": 42005123
+    },
+    "title": "An Optimization Model for 3D Pipe Routing with Flexibility Constraints",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://research.monash.edu/en/publications/8e4665f6-79e5-4ae6-8dfd-3446661d0a61",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "144043270",
+      "name": "G. Belov"
+     },
+     {
+      "authorId": "1787711",
+      "name": "Tobias Czauderna"
+     },
+     {
+      "authorId": "23217394",
+      "name": "Amel Dzaferovic"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     },
+     {
+      "authorId": "144353764",
+      "name": "Michael Wybrow"
+     },
+     {
+      "authorId": "48884195",
+      "name": "M. Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "9c423d5f30f7f08e6dfcbaf95fb42482b8326409",
+    "externalIds": {
+     "MAG": "2744214874",
+     "DBLP": "phd/dnb/Ehlers17",
+     "DOI": "10.21941/kcss/2017/3",
+     "CorpusId": 43374488
+    },
+    "title": "SAT and CP - Parallelisation and Applications",
+    "venue": "",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://macau.uni-kiel.de/servlets/MCRFileNodeServlet/macau_derivate_00003362/kcss_2017_03_print.pdf",
+     "status": "GOLD",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "2732478",
+      "name": "Thorsten Ehlers"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "f505016574f76b139bf67d86bf5719bf133a6634",
+    "externalIds": {
+     "DBLP": "conf/cpaior/HemmiTW17",
+     "MAG": "2619859405",
+     "DOI": "10.1007/978-3-319-59776-8_23",
+     "CorpusId": 32304536
+    },
+    "title": "Scenario-Based Learning for Stochastic Combinatorial Optimisation",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "9270352",
+      "name": "David Hemmi"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "48884195",
+      "name": "M. Wallace"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "64d31400487c0b3114e2cff3a77535074c70d4c6",
+    "externalIds": {
+     "MAG": "2604634674",
+     "DBLP": "conf/aaai/DaviesGS17",
+     "DOI": "10.1609/aaai.v31i1.10654",
+     "CorpusId": 29163561
+    },
+    "title": "Automatic Logic-Based Benders Decomposition with MiniZinc",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/aaai.v31i1.10654",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2052296920",
+      "name": "Toby O. Davies"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "7a67cf1eb97ae47cc46256d2616e01cb2a6ca2fe",
+    "externalIds": {
+     "DBLP": "journals/constraints/KreterSS17",
+     "MAG": "2574295746",
+     "DOI": "10.1007/s10601-016-9266-6",
+     "CorpusId": 33339444
+    },
+    "title": "Using constraint programming for solving RCPSP/max-cal",
+    "venue": "Constraints",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2903168",
+      "name": "Stefan Kreter"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4032ad45aad2516722996559986cf2d82d2402c2",
+    "externalIds": {
+     "MAG": "2572387202",
+     "DBLP": "conf/iclp/GangeS16",
+     "DOI": "10.4230/OASIcs.ICLP.2016.13",
+     "CorpusId": 14567150
+    },
+    "title": "Constraint Propagation and Explanation over Novel Types by Abstract Compilation",
+    "venue": "International Conference on Logic Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "57466e2027833c1e3ccb9280492615bad180c0ad",
+    "externalIds": {
+     "MAG": "2512901124",
+     "DBLP": "conf/cp/UnaGSS16",
+     "DOI": "10.1007/978-3-319-44953-1_13",
+     "CorpusId": 862891
+    },
+    "title": "A Bounded Path Propagator on Directed Graphs",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "3149077",
+      "name": "P. Schachte"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "538d84a1d659b5ac3666a4f5f4448a9fd533afdf",
+    "externalIds": {
+     "MAG": "2517924728",
+     "DBLP": "conf/cp/FeydyS16",
+     "DOI": "10.1007/978-3-319-44953-1_15",
+     "CorpusId": 26160366
+    },
+    "title": "Interval Constraints with Learning: Application to Air Traffic Control",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2002412",
+      "name": "Thibaut Feydy"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "27db01d3ec158e62a956e882b2d32d90004170fe",
+    "externalIds": {
+     "DBLP": "conf/cp/ShishmarevMTB16",
+     "MAG": "2508720266",
+     "DOI": "10.1007/978-3-319-44953-1_29",
+     "CorpusId": 28781895
+    },
+    "title": "Learning from Learning Solvers",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "https://researchmgt.monash.edu/ws/files/444967265/16411242_oa.pdf",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "2180680",
+      "name": "Maxim Shishmarev"
+     },
+     {
+      "authorId": "145187373",
+      "name": "Christopher Mears"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "de68bdd20526ebe6206b8d3c7efca93088f63a5b",
+    "externalIds": {
+     "ArXiv": "1608.03650",
+     "DBLP": "conf/lopstr/AmadiniFPSST16",
+     "MAG": "2952934516",
+     "DOI": "10.1007/978-3-319-63139-4_4",
+     "CorpusId": 5662092
+    },
+    "title": "MiniZinc with Strings",
+    "venue": "International Workshop/Symposium on Logic-based Program Synthesis and Transformation",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "http://hdl.handle.net/11343/241770",
+     "status": "GREEN",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1770349",
+      "name": "R. Amadini"
+     },
+     {
+      "authorId": "1679287",
+      "name": "P. Flener"
+     },
+     {
+      "authorId": "144460293",
+      "name": "J. Pearson"
+     },
+     {
+      "authorId": "25658033",
+      "name": "Joseph D. Scott"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "a5d44000dc4720c4945798af68501adcde80d297",
+    "externalIds": {
+     "MAG": "3107127012",
+     "DBLP": "conf/cpaior/AbioGMS16",
+     "DOI": "10.1007/978-3-319-33954-2_1",
+     "CorpusId": 19402003
+    },
+    "title": "On CNF Encodings of Decision Diagrams",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3290173",
+      "name": "Ignasi Ab\u00edo"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "1403846138",
+      "name": "V. Mayer-Eichberger"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4d9cdfed7a80afa8909d16447d7f1c48e6b18b90",
+    "externalIds": {
+     "MAG": "3083546599",
+     "DBLP": "conf/cpaior/UnaGSS16",
+     "DOI": "10.1007/978-3-319-33954-2_8",
+     "CorpusId": 34336144
+    },
+    "title": "Weighted Spanning Tree Constraint with Explanations",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "3149077",
+      "name": "P. Schachte"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "df3ed7022fc2137fd1709c000e9d1ab8d8cd046a",
+    "externalIds": {
+     "DBLP": "conf/cpaior/EhlersS16",
+     "MAG": "2472934748",
+     "DOI": "10.1007/978-3-319-33954-2_11",
+     "CorpusId": 45633579
+    },
+    "title": "Parallelizing Constraint Programming with Learning",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2732478",
+      "name": "Thorsten Ehlers"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "594e088bb46b720f6bab86384235c07fd93604f1",
+    "externalIds": {
+     "MAG": "2568481784",
+     "DBLP": "conf/aaai/UnaGSS16",
+     "DOI": "10.1609/aaai.v30i1.10435",
+     "CorpusId": 26750260
+    },
+    "title": "Steiner Tree Problems with Side Constraints Using Constraint Programming",
+    "venue": "AAAI Conference on Artificial Intelligence",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "https://doi.org/10.1609/aaai.v30i1.10435",
+     "status": "GOLD",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     },
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "3149077",
+      "name": "P. Schachte"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "cd759760b328709d54ba965cda221cadd55abca6",
+    "externalIds": {
+     "DBLP": "conf/acsc/BaxterCS16",
+     "MAG": "2272937663",
+     "DOI": "10.1145/2843043.2843058",
+     "CorpusId": 13885826
+    },
+    "title": "Symmetry declarations for MiniZinc",
+    "venue": "Australasian Computer Science Week",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "50106159",
+      "name": "N. Baxter"
+     },
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "32a545811cfc5944d1e34b5f1ed006b27952fbcd",
+    "externalIds": {
+     "MAG": "1155831713",
+     "DBLP": "journals/constraints/ShishmarevMTB16",
+     "DOI": "10.1007/s10601-015-9202-1",
+     "CorpusId": 16101305
+    },
+    "title": "Visual search tree profiling",
+    "venue": "Constraints",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "https://link.springer.com/content/pdf/10.1007/s10601-015-9202-1.pdf",
+     "status": "BRONZE",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2180680",
+      "name": "Maxim Shishmarev"
+     },
+     {
+      "authorId": "145187373",
+      "name": "Christopher Mears"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "2086854397",
+      "name": "M. Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "99d6e6d5169fdea7218428276e3c966b6f622747",
+    "externalIds": {
+     "DBLP": "conf/ijcai/LeoT15",
+     "MAG": "2401450435",
+     "CorpusId": 16337236
+    },
+    "title": "Multi-Pass High-Level Presolving",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2015,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38395160",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "e4a911a56f0d19114d788e2e256bc6e1b44f11c5",
+    "externalIds": {
+     "MAG": "164482851",
+     "DBLP": "phd/hal/PrudHomme14",
+     "DOI": "10.70675/34c3d40dz88f3z43c1z96deze678248e8a75",
+     "CorpusId": 169201848
+    },
+    "title": "Contr\u00f4le de la propagation et de la recherche dans un solveur de contraintes. (Controlling propagation and search within a constraint solver)",
+    "venue": "",
+    "year": 2014,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2075832129",
+      "name": "C. Prud'homme"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "51450a0c1d82d5c5cdad93c1816fd8419a6c92b4",
+    "externalIds": {
+     "MAG": "15946853",
+     "DBLP": "conf/cp/LeoMTB13",
+     "DOI": "10.1007/978-3-642-40627-0_34",
+     "CorpusId": 10861696
+    },
+    "title": "Globalizing Constraint Models",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": "CLOSED",
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38395160",
+      "name": "Kevin Leo"
+     },
+     {
+      "authorId": "145187373",
+      "name": "Christopher Mears"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "144684983",
+      "name": "Maria Garcia de la Banda"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "2f4c86dcb0e13c030ee89b70bd711e1a4f95e402",
+    "externalIds": {
+     "MAG": "2295506942",
+     "DBLP": "conf/ijcai/Chu13",
+     "CorpusId": 11609037
+    },
+    "title": "Improving Combinatorial Optimization - Extended Abstract",
+    "venue": "International Joint Conference on Artificial Intelligence",
+    "year": 2013,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145917616",
+      "name": "Geoffrey Chu"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "9f7e55a21cd943c9560613a097353c2f9e21c6fc",
+    "externalIds": {
+     "MAG": "1876846146",
+     "DBLP": "phd/basesearch/Lozano18",
+     "DOI": "10.1007/978-3-642-33558-7_54",
+     "CorpusId": 10352718
+    },
+    "title": "Constraint-Based Register Allocation and Instruction Scheduling",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2012,
+    "openAccessPdf": {
+     "url": "http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-232192",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     },
+     {
+      "authorId": "145488217",
+      "name": "M. Carlsson"
+     },
+     {
+      "authorId": "2888560",
+      "name": "Frej Drejhammar"
+     },
+     {
+      "authorId": "6510899",
+      "name": "Christian Schulte"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "671e2d537b74a556ff1d5f0a71f843c7c7043b8d",
+    "externalIds": {
+     "DBLP": "conf/cp/CloutierQ26",
+     "DOI": "10.4230/LIPIcs.CP.2026.13",
+     "CorpusId": 290218271
+    },
+    "title": "Augmenting the Cumulative Overload Check with Integral Resource Usage Reasoning",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2026,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2318290946",
+      "name": "S. Cloutier"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "9ede1a30c6a8af1d869f1cb34643f5acc50f31ae",
+    "externalIds": {
+     "DBLP": "conf/cp/ChastenayZQG25",
+     "DOI": "10.4230/LIPIcs.CP.2025.7",
+     "CorpusId": 280675930
+    },
+    "title": "Optimizing 2D Cutting: A Bin Packing Approach to Minimize Scraps and Maximize Their Reusability",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2025,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2376188131",
+      "name": "Manuel Chastenay"
+     },
+     {
+      "authorId": "2349611495",
+      "name": "Xavier Zwingmann"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     },
+     {
+      "authorId": "2259366989",
+      "name": "Jonathan Gaudreault"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "8179f3500d7dfbb33dff6fe9d7e1299dd1546e8f",
+    "externalIds": {
+     "DBLP": "conf/cp/CloutierQ24",
+     "DOI": "10.4230/LIPIcs.CP.2024.7",
+     "CorpusId": 272202059
+    },
+    "title": "Cumulative Scheduling with Calendars and Overtime",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2024,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2318290946",
+      "name": "S. Cloutier"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5a9ee9cda80ea44bbcb804f9e11df9247d18d470",
+    "externalIds": {
+     "DBLP": "journals/jair/BofillCGGPSV22",
+     "DOI": "10.1613/jair.1.12670",
+     "CorpusId": 249267510
+    },
+    "title": "Constraint Solving Approaches to the Business-to-Business Meeting Scheduling Problem",
+    "venue": "Journal of Artificial Intelligence Research",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "https://jair.org/index.php/jair/article/download/12670/26802",
+     "status": "GOLD",
+     "license": "CCBY"
+    },
+    "authors": [
+     {
+      "authorId": "1691761",
+      "name": "Miquel Bofill"
+     },
+     {
+      "authorId": "144180474",
+      "name": "Jordi Coll"
+     },
+     {
+      "authorId": "49712677",
+      "name": "Marc Garcia"
+     },
+     {
+      "authorId": "1403832671",
+      "name": "Jes\u00fas Gir\u00e1ldez-Cru"
+     },
+     {
+      "authorId": "1984991",
+      "name": "G. Pesant"
+     },
+     {
+      "authorId": "1843231",
+      "name": "Josep Suy"
+     },
+     {
+      "authorId": "2190635",
+      "name": "Mateu Villaret"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "be4c3334c55cf0fcaea45404f88dd9080367225e",
+    "externalIds": {
+     "DBLP": "conf/cp/BoudreaultSLQ22",
+     "DOI": "10.4230/LIPIcs.CP.2022.10",
+     "CorpusId": 251107800
+    },
+    "title": "A Constraint Programming Approach to Ship Refit Project Scheduling",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2123357481",
+      "name": "Rapha\u00ebl Boudreault"
+     },
+     {
+      "authorId": "116828221",
+      "name": "Vanessa Simard"
+     },
+     {
+      "authorId": "3091848",
+      "name": "Daniel Lafond"
+     },
+     {
+      "authorId": "2216890",
+      "name": "Claude-Guy Quimper"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5f9a1ac9a7f9b39772569610e2681e024dd7a28c",
+    "externalIds": {
+     "DBLP": "conf/cp/EkSST22",
+     "DOI": "10.4230/LIPIcs.CP.2022.21",
+     "CorpusId": 251107410
+    },
+    "title": "Explaining Propagation for Gini and Spread with Variable Mean",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2022,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "143875013",
+      "name": "Alexander Ek"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "2170216072",
+      "name": "Peter J. Stuckey"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "5f698313ba390fef6e169601c5ba8f46f1561646",
+    "externalIds": {
+     "DBLP": "conf/cp/QuesadaB21",
+     "DOI": "10.4230/LIPIcs.CP.2021.46",
+     "CorpusId": 239021627
+    },
+    "title": "Positive and Negative Length-Bound Reachability Constraints",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2060229204",
+      "name": "Luis Quesada"
+     },
+     {
+      "authorId": "2600658",
+      "name": "Kenneth N. Brown"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "c07282680da26a2c9b181c62885b463b14b13efe",
+    "externalIds": {
+     "DBLP": "conf/cp/AhmadiTHK21",
+     "DOI": "10.4230/LIPIcs.CP.2021.11",
+     "CorpusId": 239021654
+    },
+    "title": "Vehicle Dynamics in Pickup-And-Delivery Problems Using Electric Vehicles",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2021,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "40965228",
+      "name": "Saman Ahmadi"
+     },
+     {
+      "authorId": "38448160",
+      "name": "Guido Tack"
+     },
+     {
+      "authorId": "2112919483",
+      "name": "Daniel D. Harabor"
+     },
+     {
+      "authorId": "1994537900",
+      "name": "P. Kilby"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "eec7df9987219f50584f046f71d86e46e28d98e3",
+    "externalIds": {
+     "MAG": "3091498291",
+     "DBLP": "conf/cpaior/GokGSTO20",
+     "DOI": "10.1007/978-3-030-58942-4_15",
+     "CorpusId": 221839925
+    },
+    "title": "Robust Resource Planning for Aircraft Ground Operations",
+    "venue": "Integration of AI and OR Techniques in Constraint Programming",
+    "year": 2020,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1500649649",
+      "name": "Yagmur S. G\u00f6k"
+     },
+     {
+      "authorId": "2559193",
+      "name": "Daniel Guimarans"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     },
+     {
+      "authorId": "34722116",
+      "name": "M. Tomasella"
+     },
+     {
+      "authorId": "145848359",
+      "name": "Cemalettin Ozturk"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "71bdc492fb425ad3f260073093e002e955443d48",
+    "externalIds": {
+     "CorpusId": 277502277
+    },
+    "title": "Certifying Optimality in Constraint Programming",
+    "venue": "",
+    "year": 2019,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "1767337",
+      "name": "G. Gange"
+     },
+     {
+      "authorId": "2262768333",
+      "name": "P. J. Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "6d9a76f975355a9a7698016e4f175bdf138eac3e",
+    "externalIds": {
+     "CorpusId": 195822479
+    },
+    "title": "Solution-Based Phase Saving and Large Neighbourhood Search",
+    "venue": "",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": []
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "4048daa6fe7917009174dab7f3fe84e84fdc36dd",
+    "externalIds": {
+     "CorpusId": 13750061
+    },
+    "title": "2 The Rotating Workforce Scheduling Problem",
+    "venue": "",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "145500747",
+      "name": "N. Musliu"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "1682747",
+      "name": "Peter James Stuckey"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "325bc713f72c035d80ccaa6025ff1521ef20f4d3",
+    "externalIds": {
+     "DBLP": "phd/basesearch/Una18",
+     "MAG": "2900073197",
+     "CorpusId": 125891263
+    },
+    "title": "Discrete optimization over graph problems",
+    "venue": "",
+    "year": 2018,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "3376025",
+      "name": "D. D. U\u00f1a"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0963ac30dfff928a2ea1106a1b300c1c5d584cd8",
+    "externalIds": {
+     "CorpusId": 31938381
+    },
+    "title": "1 Complete and Practical Universal Instruction Selection",
+    "venue": "",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2297969",
+      "name": "Gabriel Hjort Blindell"
+     },
+     {
+      "authorId": "145488217",
+      "name": "M. Carlsson"
+     },
+     {
+      "authorId": "32322891",
+      "name": "R. C. Lozano"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "00e9baf7835abbc3de114d3cf2941786bf55875b",
+    "externalIds": {
+     "MAG": "2765338875",
+     "DBLP": "phd/basesearch/Davies17",
+     "CorpusId": 65099911
+    },
+    "title": "Learning from conflict in multi-agent, classical, and temporal planning",
+    "venue": "",
+    "year": 2017,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2052296920",
+      "name": "Toby O. Davies"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "0e21d067aa0212b016fda154b88dfc59df7a068d",
+    "externalIds": {
+     "MAG": "2477737666",
+     "DBLP": "conf/cpaior/2016",
+     "DOI": "10.1007/978-3-319-33954-2",
+     "CorpusId": 2644109
+    },
+    "title": "Integration of AI and OR Techniques in Constraint Programming",
+    "venue": "Lecture Notes in Computer Science",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "https://inria.hal.science/hal-01355262",
+     "status": "GREEN",
+     "license": "other-oa"
+    },
+    "authors": [
+     {
+      "authorId": "2238229416",
+      "name": "Takeo Kanade"
+     },
+     {
+      "authorId": "145801639",
+      "name": "J. Kittler"
+     },
+     {
+      "authorId": null,
+      "name": "Alfred Kobsa"
+     },
+     {
+      "authorId": "2238328456",
+      "name": "John C. Mitchell"
+     },
+     {
+      "authorId": null,
+      "name": "Moni Naor"
+     },
+     {
+      "authorId": null,
+      "name": "Demetri Terzopoulos"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "94b665ba9325ed08fc1a802af2959e54f7ad2478",
+    "externalIds": {
+     "DBLP": "phd/basesearch/Francis16",
+     "MAG": "2600040943",
+     "CorpusId": 63820338
+    },
+    "title": "Natural optimisation modelling for software developers",
+    "venue": "",
+    "year": 2016,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2067909864",
+      "name": "Kathryn Francis"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ce75dffbc83b61acdf1c5f4f597472f60d692a7e",
+    "externalIds": {
+     "MAG": "2737158325",
+     "CorpusId": 64919046
+    },
+    "title": "d'ordonnancement multi-ressources",
+    "venue": "",
+    "year": 2014,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2079021637",
+      "name": "A. Letort"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "7a573de4882d24fcc13715e6895db1a0e32c6585",
+    "externalIds": {
+     "CorpusId": 9477447
+    },
+    "title": "Contr\u00f4le de la propagation et de la recherche dans un solveur de contraintes. (Controlling propagation and search within a constraint solver)",
+    "venue": "",
+    "year": 2014,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2488332391",
+      "name": "Th\u00e8se de Doctorat"
+     },
+     {
+      "authorId": "2075832129",
+      "name": "C. Prud'homme"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "8e7d5e6de2e36148e093c688cc7cbbc057ea5b43",
+    "externalIds": {
+     "CorpusId": 280982608
+    },
+    "title": "Towards Modern and Modular SAT for LCG",
+    "venue": "",
+    "year": null,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "36353650",
+      "name": "Jip J. Dekker"
+     },
+     {
+      "authorId": "2273659991",
+      "name": "Alexey Ignatiev"
+     },
+     {
+      "authorId": "2195991502",
+      "name": "Peter J. Stuckey"
+     },
+     {
+      "authorId": "2376186916",
+      "name": "Allen Z. Zhong"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "d250730ac4e49ce1a47cb98ad73b77e7e1d033fa",
+    "externalIds": {
+     "CorpusId": 281822280
+    },
+    "title": "Priority Search with MiniZinc",
+    "venue": "",
+    "year": null,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "2002412",
+      "name": "Thibaut Feydy"
+     },
+     {
+      "authorId": "10665767",
+      "name": "Adrian Goldwaser"
+     },
+     {
+      "authorId": "46954251",
+      "name": "A. Schutt"
+     },
+     {
+      "authorId": "2262768333",
+      "name": "P. J. Stuckey"
+     },
+     {
+      "authorId": "11457542",
+      "name": "K. Young"
+     },
+     {
+      "authorId": "2286610015",
+      "name": "Data"
+     },
+     {
+      "authorId": "89907735",
+      "name": "Csiro"
+     },
+     {
+      "authorId": "2330554482",
+      "name": "Australia"
+     }
+    ]
+   }
+  },
+  {
+   "citingPaper": {
+    "paperId": "ffec9d6cc96d0189383c1ed15ba3ba13428cd6b1",
+    "externalIds": {
+     "DBLP": "conf/cp/Winter26",
+     "DOI": "10.4230/LIPIcs.CP.2026.58",
+     "CorpusId": 290282309
+    },
+    "title": "A Two-Stage Constraint Programming Approach for Artificial Teeth Scheduling",
+    "venue": "International Conference on Principles and Practice of Constraint Programming",
+    "year": 2026,
+    "openAccessPdf": {
+     "url": "",
+     "status": null,
+     "license": null
+    },
+    "authors": [
+     {
+      "authorId": "38027013",
+      "name": "Felix Winter"
+     }
+    ]
+   }
+  }
+ ]
+}

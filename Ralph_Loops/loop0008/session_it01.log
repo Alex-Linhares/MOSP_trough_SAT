@@ -1,0 +1,229 @@
+# session it01 started 2026-10-03 00:33:14
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0008/iterations.md; echo ----; cat paper2/prior_art_counterexample.md; echo; cat paper2/data/solver_fix_split.pid; upt
+  > $ cd /home/al/dev/MOSP; wc -l paper2/plan.md paper2/revised_algorithm.md; ls paper2 paper2/data | head -80; ls literature | head -100
+  > $ cd /home/al/dev/MOSP; ls paper2/data | grep split; grep -l '^!!!' paper2/data/*split*.log 2>/dev/null; ps -p 1465015 -o pid,etime,cmd | cut -c1-150; nproc
+  > $ cd /tmp; curl -s "https://api.openalex.org/works/doi:10.1007/978-3-642-04244-7_21?select=id,title,cited_by_count,publication_year" ; echo; curl -s "https://api.
+  > $ mkdir -p /home/al/dev/MOSP/paper2/data/prior_art; cd /home/al/dev/MOSP/paper2/data/prior_art; curl -s "https://api.openalex.org/works?filter=cites:W1493287964&p
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -s "https://api.openalex.org/works?search=Improving%20combinatorial%20optimization%20Chu&filter=author.search:C
+
+I'm collecting the citers of Chu & Stuckey (2009) from OpenAlex and Semantic Scholar. OpenAlex returns 27 and Semantic Scholar 37. Next I'll merge the two lists and find the thesis's citers.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -s "https://api.openalex.org/works?filter=title.search:improving%20combinatorial%20optimization&select=id,title
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -s "https://api.openalex.org/works?filter=cites:W2278850436&per-page=200&select=id,doi,title,publication_year,a
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -s "https://api.opencitations.net/index/v2/citations/doi:10.1007/978-3-642-04244-7_21" -o opencitations_cites_c
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; sleep 2; curl -s "https://api.semanticscholar.org/graph/v1/paper/a15e7cf954a097fee86d4f82f1c250a63f530198/citations?
+  > $ cd /home/al/dev/MOSP; cat .gitignore | head -50; which pdftotext; head -60 paper2/relevance.py; grep -n "Chu\|Stuckey\|Coudert" literature/MISSING.md | head -30
+  > Write /home/al/dev/MOSP/paper2/prior_art_sweep.py
+
+I've written a sweep script. It merges the citers from OpenAlex, Semantic Scholar and OpenCitations, downloads the open-access full texts and searches them for the rules. Running it now.
+  > $ cd /home/al/dev/MOSP; rm -f paper2/data/prior_art/*.json; timeout 3000 python3 -m paper2.prior_art_sweep 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+for r in csv.DictReader(open('citers.csv')):
+  if 'cp2009' in r['cites']: print(r['id'],r['y
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; wc -l hits.txt; grep -c '^====' hits.txt; grep '^====' hits.txt; grep -n '\[definite\]\|\[better\]\|\[customer_searc
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 - <<'EOF'
+import csv,json,urllib.request,urllib.parse
+rows=[r for r in csv.DictReader(open('citers.csv')) if
+  > $ cd /tmp; for u in "https://people.eng.unimelb.edu.au/pstuckey/papers.html" "https://people.eng.unimelb.edu.au/pstuckey/papers/"; do curl -sL -A "Mozilla/5.0" "$
+  > $ cd /tmp; cat stuckey.html | head -30; curl -sL -A "Mozilla/5.0" "https://people.eng.unimelb.edu.au/pstuckey/" | grep -io 'href="[^"]*"' | head -30
+  > $ cd /tmp; try(){ curl -sL -m 60 -A "Mozilla/5.0 (X11; Linux x86_64)" "$1" -o t.bin; printf "%s %s %s\n" "$(head -c4 t.bin | tr -dc '[:print:]')" "$(wc -c <t.bin)
+  > $ cd /tmp; curl -sL -m 60 "https://www.ijcai.org/Proceedings/13/Papers/459.pdf" -o ij.pdf; pdftotext ij.pdf - | head -5; curl -sL -m 60 "https://api.figshare.com/
+  > $ cd /tmp; for r in conf/ijcai/Chu13 conf/cp/ChuS12 conf/cp/ChuS12a conf/cpaior/ChuS15 conf/cpaior/ChuBS10 journals/ijoc/BandaSC11 conf/wcgo/VisentinPRT19 conf/cp
+  > $ cd /tmp; curl -sL -m 30 -A "Mozilla/5.0" "https://dblp.org/search/publ/api?q=Improving%20Combinatorial%20Optimization%20Extended%20Abstract%20Chu&format=json" |
+  > $ cd /tmp; curl -sL -m 30 -A "Mozilla/5.0" "https://www.ijcai.org/Proceedings/13/" | grep -i -B1 -A1 'Improving Combinatorial'
+
+I've found the IJCAI extended abstract and the CP 2025 paper. I'm searching the web for the remaining CP citers: theses, preprints and author copies.
+  > ToolSearch {"query": "select:WebSearch,WebFetch", "max_results": 2}
+  > WebSearch {"query": "\"A Generic Method for Identifying and Exploiting Dominance Relations\" Chu Stuckey pdf"}
+  > WebSearch {"query": "De Giovanni Massi Pezzella \"adaptive genetic algorithm\" \"open stack\" pdf"}
+  > WebSearch {"query": "Isabele da Silva Lopes \"Pattern sequencing models in cutting stock problems\" thesis repositorium"}
+  > $ cd /tmp; for u in https://people.eng.unimelb.edu.au/pstuckey/papers/dominance.pdf https://people.eng.unimelb.edu.au/pstuckey/papers/cp2013a.pdf; do curl -sL -m 
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/papers/dominance.pdf", "prompt": "Find every passage that mentions o
+
+WebFetch can download the PDFs that curl is blocked from, so I'll use it for the author-page copies. Next I'm locating the rest.
+  > WebSearch {"query": "site:people.eng.unimelb.edu.au pstuckey papers \"nogood learning\" OR \"talent scheduling\" OR \"value heuris
+  > $ cd /tmp; try(){ curl -sL -m 90 -A "Mozilla/5.0 (X11; Linux x86_64)" "$1" -o t.bin; printf "%s %s %s\n" "$(head -c4 t.bin | tr -dc '[:print:]')" "$(wc -c <t.bin)
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/papers/autopt.pdf", "prompt": "Return the title and authors only."}
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/interprob/interprob.pdf", "prompt": "Return the title and authors on
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/papers/rehearsal.pdf", "prompt": "Return the title and authors only.
+  > $ cd /home/al/.claude/projects/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tool-results/; for f in webfetch-*.pdf; do echo "$f: $(pdftotext -l 1 $f - 2
+  > WebSearch {"query": "Stivala 2010 \"Algorithms for the study of RNA and protein structure\" thesis University of Melbourne pdf"}
+  > WebSearch {"query": "De Giovanni Massi Pezzella Pfetsch \"gate matrix connection cost\" heuristic exact method pdf"}
+  > WebSearch {"query": "\"Descent search approaches applied to the minimization of open stacks\" pdf"}
+  > WebSearch {"query": "\"A breadth-first search applied to the minimization of the open stacks\" Carvalho Soma pdf"}
+  > $ cd /tmp; curl -sL -m 60 -A "Mozilla/5.0" "https://www2.mathematik.tu-darmstadt.de/~pfetsch/publications.html" | grep -i -B3 -A3 'gate matrix' | grep -io 'href="
+  > WebSearch {"query": "Doulabi Rousseau Pesant \"operating room\" \"branch-and-price-and-cut\" CIRRELT pdf"}
+  > WebSearch {"query": "Arbib Marinelli Ventura \"Cutting stock with bounded open stacks\" TRCS report pdf"}
+  > WebSearch {"query": "Leo Mears Tack Garcia de la Banda \"Globalizing constraint models\" CP 2013 pdf"}
+
+I've found author or repository copies for about ten more CP citers. I'm adding them to the sweep as a manual source map and re-running it.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; mkdir -p fulltext/manual; T=/home/al/.claude/projects/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tool-re
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; head -c 600 fulltext/manual/arbib_2010_trcs.pdf; echo; grep -o 'href="[^"]*"' fulltext/manual/visentin_2019_wcgo.pdf
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; grep -o 'href="[^"]*\.pdf"' fulltext/manual/arbib_2010_trcs.pdf | head -3; pdftotext fulltext/manual/garcia_stuckey_
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -sL -m 120 -A "Mozilla/5.0" https://optimization-online.org/wp-content/uploads/2010/07/2671.pdf -o fulltext/man
+  > WebFetch {"url": "https://www.research.ed.ac.uk/files/94239545/Visentin_et_al_WCGO_2019.pdf", "prompt": "Return title and authors
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; rm fulltext/manual/visentin_2019_wcgo.pdf; python3 -c "
+import csv
+for r in csv.DictReader(open('citers.csv')):
+  if
+
+I'm wiring the manually obtained texts into the script now. After that comes reading the hits in context.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='paper2/prior_art_sweep.py'
+s=open(p).read()
+old=s[s.index('# Works already held in literature/'):s.index('PATTERNS 
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+rs=list(csv.DictReader(open('citers.csv')))
+cp=[r for r in rs if 'cp2009' in r['cites']]
+pri
+
+The CP citers are now 25 of 41 read in full. Next I'm reading every passage where each one mentions open stacks or Chu & Stuckey.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; cat > /tmp/ctx.py <<'EOF'
+import csv,re,subprocess,sys
+from pathlib import Path
+ROOT=Path('/home/al/dev/MOSP')
+rows=
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'MOSP The minimal open stacks|Minimization of Open Stacks Problem In the|\bMOSP\b' 900 W003 W016
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; grep -o 'Minimization of Open Stacks Problem In the.\{0,1500\}' /home/al/.claude/projects/-home-al-dev-MOSP/3780c788
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu\b|CHU\b' 350 W010 W017 W086 W021 | cut -c1-800
+
+Fink's thesis (W017) has a section on Chu & Stuckey (2009) in chapter 2. I'm reading it in full to see whether it restates the rules.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; pdftotext fulltext/W017.pdf - | tr '\n' ' ' | grep -o 'CAPÍTULO 2. O MOSP 27 Chu e Stuckey (2009).\{0,5000\}' | fold
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; pdftotext -layout fulltext/W017.pdf /tmp/fink.txt; grep -n 'Chu e Stuckey (2009)$\|^ *Chu e Stuckey (2009) *$' /tmp/
+  > $ sed -n 1355,1460p /tmp/fink.txt
+
+Fink's thesis (W017, pp. 27–28) restates Theorem 1 in Portuguese, without correction. I'm checking how its paraphrase relates to the published premise.
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p paper2/thesis_check.py
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu\b|CHU\b' 300 W011 W108 | grep -v 'Minimizing the maximum number of open stacks by customer 
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu\b' 250 W064 W129 | grep -v 'customer search\. *In\b' | cut -c1-560 | head -40
+
+Frinhani et al. (2018) ran Chu & Stuckey's original C code to obtain their optima, and say nothing about its correctness. Next are the DIDP papers and the remaining citers.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'customer search is a state|MOSP|Chu (and|&) Stuckey|\[156\]' 500 W119 W139 | cut -c1-1100 | hea
+
+The CP 2025 paper (Beck et al.) states a transition dominance for Graph-Clear, inspired by Chu & Stuckey, with a proof of its own. I'm reading that section and its appendix.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; pdftotext -layout fulltext/manual/beck_2025_cp.pdf /tmp/beck.txt; grep -n 'Theorem\|Proposition\|Definition\|inspire
+  > $ sed -n 150,200p /tmp/beck.txt; sed -n 565,600p /tmp/beck.txt; sed -n 976,1053p /tmp/beck.txt; sed -n 1145,1165p /tmp/beck.txt
+  > $ sed -n 262,300p /tmp/beck.txt
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu\b|\[156\]|\[5\]|open stacks' 250 W122 W132 W065 W080 | grep -iv 'customer search\. *In ' | 
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; pdftotext -layout fulltext/W131.pdf /tmp/k.txt; grep -n 'MOSP' /tmp/k.txt | head -30; python3 /tmp/ctx.py 'open stac
+  > $ sed -n 2919,2960p /tmp/k.txt
+  > $ cd /home/al/dev/MOSP/literature; for f in *.pdf; do t=$(pdftotext "$f" - 2>/dev/null | tr '\n' ' '); if echo "$t" | grep -qiE 'open stacks by customer search'; 
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/papers/cp2013a.pdf", "prompt": "Title only."}
+  > $ f=/home/al/.claude/projects/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tool-results/webfetch-1790984798262-xuxx4o.pdf; pdftotext $f - | head -3; pdf
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+for r in csv.DictReader(open('citers.csv')):
+  if 'cp2009' not in r['cites']: print(r['id'],
+
+Of the 103 works citing only the thesis, two are worth a closer look: "Certifying Optimality in Constraint Programming" (2019) and "Optimizing 2D Cutting" (2025). I'm checking both.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+for r in csv.DictReader(open('citers.csv')):
+  if r['id'] in ('W081','W138','W070','W055','W
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; curl -sL -m 120 -A "Mozilla/5.0" https://drops.dagstuhl.de/storage/00lipics/lipics-vol340-cp2025/LIPIcs.CP.2025.7/LI
+  > WebSearch {"query": "Gange Stuckey \"Certifying Optimality in Constraint Programming\" 2019 pdf"}
+  > WebFetch {"url": "https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf", "prompt": "Title only."}
+  > $ cd /home/al/dev/MOSP; cp paper2/data/prior_art/fulltext/W017.pdf literature/fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf; cat paper2/data/prior_art/fulltex
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import csv
+for r in csv.DictReader(open('paper2/data/prior_art/citers.csv')):
+  if 'cp2009' in r['cites'] and not r['fulltext
+
+Arbib's 2010 report did not match its manual entry, because the normalised-title key was wrong. Fixing that, then writing up.
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import re;t='TRCS Series Cutting Stock with Bounded Open Stacks : a New Integer Linear Programming Model';print(re.sub(r'[^a-
+  > $ cd /home/al/dev/MOSP; sed -i 's/"t:trcsseriescuttingstockwithboundedopenstacksanewintegerlinea"/"t:trcsseriescuttingstockwithboundedopenstacksanewintegerlinear"
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu' 300 W006 | cut -c1-650
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py '\[3\]' 300 W006 | cut -c1-650 | head -5; python3 /tmp/ctx.py '\[17\]|\[4\]' 200 W139 | cut -c1-
+  > $ grep -n -A3 '^ *4 *Geoffrey\|^ *4 \|Chu and Peter' /tmp/beck.txt | head -12
+
+I have what I need for the verdicts. Now I'm writing the table and closing verdict into `paper2/prior_art_counterexample.md`.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+rs=list(csv.DictReader(open('citers.csv')))
+th=[r for r in rs if 'cp2009' not in r['cites']]
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py '\[8\]' 200 W019 | cut -c1-450 | head -4; python3 /tmp/ctx.py '\[4\]' 200 W080 | cut -c1-450 | h
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 -c "
+import csv
+rs=list(csv.DictReader(open('citers.csv')))
+th=[r for r in rs if 'cp2009' not in r['cites']]
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; python3 /tmp/ctx.py 'Chu (and|&) Stuckey' 200 W085 W132 W143 | cut -c1-450
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art; rm unpaywall.json; cd /home/al/dev/MOSP; tail -5 paper2/prior_art_counterexample.md; sed -n 1,12p literature/MISSING
+  > $ cd /home/al/dev/MOSP; cat >> paper2/prior_art_counterexample.md <<'EOF'
+
+## Every citer, swept (loop0008 item 01, 2026-10-03)
+
+**Question.** Has any work that c
+
+I've appended the table and verdict. Before moving on, I'm checking every section number I cited against the texts.
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext/manual; for spec in "chu_garcia_stuckey_2010_equivalence.pdf:complex conditional" "garcia_stuckey_chu_2011_t
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext/manual; pdftotext -layout garcia_stuckey_chu_2011_talent.pdf /tmp/t.txt; grep -n '^ *[0-9]\.\? \+[A-Z][a-z]\
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext/manual; pdftotext -layout chu_stuckey_2012_dominance.pdf /tmp/y.txt; grep -n 'rigorous\|^ *1 \+Introduction\
+  > $ sed -n 515,532p /tmp/y.txt; grep -n 'Minimization of Open Stacks' /tmp/y.txt; grep -n -i 'speed-ups of several\|orders of$' /tmp/z.txt | head -3
+  > $ cd /home/al/dev/MOSP/paper2/data/prior_art/fulltext; pdftotext -layout W024.pdf /tmp/w.txt; n=$(grep -n 'Minimization of Open Stacks problem' /tmp/w.txt | head 
+
+Now applying the corrections to the rows.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/prior_art_counterexample.md'
+s=open(p).read()
+rep={
+'"uses customer search and some complex conditional domina
+
+Now adding the unread citers to `literature/MISSING.md`.
+  > $ cd /home/al/dev/MOSP; cat >> literature/MISSING.md <<'EOF'
+
+## Citers of Chu & Stuckey (2009) not read (loop0008 item 01, 2026-10-03)
+
+The prior-art sweep (`pap
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='paper2/prior_art_counterexample.md'
+s=open(p).read()
+a="**No correction was found anywhere checked. The later restate
+  > $ cd /home/al/dev/MOSP; ls -la literature/fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf; du -sh paper2/data/prior_art --exclude=fulltext; timeout 1500 python3
+
+The gate is running, about 10 minutes. Meanwhile I'm writing PROGRESS.md and marking the item.
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+p='Ralph_Loops/loop0008/iterations.md'
+s=open(p).read()
+a='- [ ] **01 Prior-art sweep'
+assert a in s
+s=s.replace(a,'- [x
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ sleep 420; tail -5 /tmp/claude-1000/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tasks/b6hou01hn.output
+  > Monitor {"command": "F=/tmp/claude-1000/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tasks/b6hou01hn.output; until gre
+
+The gate is still running and a monitor will report when it ends. Nothing else is left on the item but its result.
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tasks/b6hou01hn.output | tail -5
+  > $ F=/tmp/claude-1000/-home-al-dev-MOSP/3780c788-a5fb-42f1-accc-acf3dc2fde45/tasks/b6hou01hn.output; timeout 590 bash -c "until grep -qiE 'gate (passed|failed)|PAS
+  > $ cd /home/al/dev/MOSP; sed -i 's/^- \*\*The split run is clean\.\*\*/- **The gate passes** (`python3 Ralph_Loops\/loop0008\/gate.py`): lake build is ok, one `sor
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "bt38w6u33"}
+
+Item 01 is done and the gate passes. Over everything I could read, I found no earlier report that Chu & Stuckey's definite move or better move is wrong, and nobody has published a correction.
+
+**What was swept.** OpenAlex, Semantic Scholar and OpenCitations list 144 distinct works that cite either the CP 2009 paper, Chu's 2011 thesis, or the thesis's IJCAI 2013 abstract.
+- **CP paper:** 38 real citers. 24 of them (63%) were read in full; for the rest no full text could be found, open or behind a paywall.
+- **Thesis or abstract only:** 103 citers, 32 of them (31%) read in full. Almost all cite it for the Chuffed solver or lazy clause generation, not for the open-stacks rules.
+
+Each full text was searched for the rules and the theorem numbers. Every passage that mentions open stacks or cites the paper was then read in context.
+
+**What turned up:**
+- **One more restatement.** Fink (2012), a PhD thesis at ICMC-USP, restates Theorem 1 (the definite move) on pp. 27–28, with the published premise, as true. Our counterexample graph refutes it too. I saved it as `literature/fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf`. Nobody restates the better move.
+- **Three works use an implementation of the rules, and none reports a failure.**
+  - Chu, Garcia de la Banda & Stuckey (2010, 2012) build them into a constraint-programming model as dominance-breaking constraints.
+  - Frinhani et al. (2018) ran the original C code to get their published optima, and Martin, Yanasse & Pinto (2022) reuse those values.
+- **A related observation, not about the premise.** Beck, Kuroiwa, Lee, Stuckey & Zhong (CP 2025, Prop. 3 and Example 6) warn that two moves which dominate each other can make a satisfiable instance look unsatisfiable. That is the general form of our earlier `better_move` cycle bug.
+
+**Unread.** 14 citers of the CP paper had no copy I could get, plus Gange, Chu & Stuckey (2019), whose author page blocked the fetch. They are listed in `literature/MISSING.md`. The one to fetch first is De Giovanni et al. (2013, *ITOR*), because it is an exact method for gate matrix connection cost and the most likely to reuse the rules. Two other unread entries look like false index links: both are *ITOR* papers on efficiency analysis.
+
+**Where it is:**
+- The table, one row per citer, and the closing verdict are in `paper2/prior_art_counterexample.md`, under "Every citer, swept". I also added a one-line pointer at the top of that file.
+- `python3 -m paper2.prior_art_sweep` regenerates `paper2/data/prior_art/citers.csv` and `hits.txt`.
+- Downloaded PDFs are in `paper2/data/prior_art/fulltext/`, which is git-ignored (about 55 MB). Every URL fetched by hand is recorded in the script.
+
+**Checks.** The gate passed: Lean builds with its one known `sorry`, 1,361 MOSP tests and 114 pathwidth_solver tests pass. The split run's log has no `!!!` line. No published claim of ours needed fixing. PROGRESS.md is updated to 1/9 and the item is marked `[x]`.
+
+# result: success in 2072s, 108 turns, cost $8.62
