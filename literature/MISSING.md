@@ -230,3 +230,27 @@ doi:10.11606/t.55.2012.tde-19022013-084858. It is in `literature/` as
 `fink_2012_phd_thesis_mosp_novas_contribuicoes.pdf`, from
 http://www.teses.usp.br/teses/disponiveis/55/55134/tde-19022013-084858/publico/TeseRevisada.pdf
 (fetched 2026-10-03). Its pp. 27–28 restate CP 2009 Theorem 1.
+
+## IJOC papers to obtain (2026-10-04)
+
+From the IJOC sweep, `paper2/ijoc_literature.md`, in order of importance. All are paywalled or blocked by a bot check; none was circumvented.
+
+- Fischetti, M. & Salvagnin, D. (2010). Pruning moves. *IJOC* 22(1), 108-119. doi:10.1287/ijoc.1090.0329
+- Fukasawa, R. & Poirrier, L. (2017). Numerically safe lower bounds for the capacitated vehicle routing problem. *IJOC* 29(3), 544-557. doi:10.1287/ijoc.2017.0747
+- Garcia de la Banda, M., Stuckey, P.J. & Chu, G. (2011). Solving talent scheduling with dynamic programming. *IJOC* 23(1), 120-137. doi:10.1287/ijoc.1090.0378 (author copy behind a browser check: people.eng.unimelb.edu.au/pstuckey/papers/rehearsal.pdf)
+- Belov, G. & Scheithauer, G. (2007). Setup and open-stacks minimization in one-dimensional stock cutting. *IJOC* 19(1), 27-35. doi:10.1287/ijoc.1050.0132
+- Caprara, A. & Salazar-González, J.J. (2005). Laying out sparse graphs with provably minimum bandwidth. *IJOC* 17(3), 356-373. doi:10.1287/ijoc.1040.0083
+- Halbig, K., Hümbs, L., Rösel, F., Schewe, L. & Weninger, D. (2024). Computing optimality certificates for convex mixed-integer nonlinear problems. *IJOC* 36(6), 1579-1610. doi:10.1287/ijoc.2022.0099 (Edinburgh preprint behind a browser check)
+- Sewell, E.C. & Jacobson, S.H. (2012). A branch, bound, and remember algorithm for the simple assembly line balancing problem. *IJOC* 24(3), 433-442. doi:10.1287/ijoc.1110.0462
+- Gmys, J. (2022). Exactly solving hard permutation flowshop scheduling problems on peta-scale GPU-accelerated supercomputers. *IJOC* 34(5), 2502-2522. doi:10.1287/ijoc.2022.1193 (HAL hal-03689608 behind a browser check)
+- Hicks, I.V. (2005). Planar branch decompositions I: the ratcatcher. *IJOC* 17(4), 402-412. doi:10.1287/ijoc.1040.0075
+- Hicks, I.V. (2005). Planar branch decompositions II: the cycle method. *IJOC* 17(4), 413-421. doi:10.1287/ijoc.1040.0074
+- Bergman, D., Cire, A.A., van Hoeve, W.-J. & Hooker, J.N. (2016). Discrete optimization with decision diagrams. *IJOC* 28(1), 47-66. doi:10.1287/ijoc.2015.0648
+- Cook, W. & Seymour, P. (2003). Tour merging via branch-decomposition. *IJOC* 15(3), 233-248. doi:10.1287/ijoc.15.3.233.16078
+- Cook, W., Dash, S., Fukasawa, R. & Goycoolea, M. (2009). Numerically safe Gomory mixed-integer cuts. *IJOC* 21(4), 641-649. doi:10.1287/ijoc.1090.0324
+- Malapert, A., Cambazard, H., Guéret, C., Jussien, N., Langevin, A. & Rousseau, L.-M. (2012). An optimal constraint programming approach to the open-shop problem. *IJOC* 24(2), 228-244. doi:10.1287/ijoc.1100.0446
+- Barr, R.S. & Hickman, B.L. (1993). Reporting computational experiments with parallel algorithms. *ORSA J. Comput.* 5(1), 2-18. doi:10.1287/ijoc.5.1.2
+- Margulies, S., Ma, J. & Hicks, I.V. (2013). The Cunningham-Geelen method in practice. *IJOC* 25(4), 599-610. doi:10.1287/ijoc.1120.0524
+- Anjos, M.F. & Vannelli, A. (2008). Computing globally optimal solutions for single-row layout problems using semidefinite programming and cutting planes. *IJOC* 20(4), 611-617. doi:10.1287/ijoc.1080.0270
+- Buchheim, C., Wiegele, A. & Zheng, L. (2010). Exact algorithms for the quadratic linear ordering problem. *IJOC* 22(1), 168-177. doi:10.1287/ijoc.1090.0318
+- Qiu, Y., Cherniavskii, M., Goldengorin, B. & Pardalos, P.M. (2026). A computational study of the tool replacement problem. *IJOC* 38(1), 86-101. doi:10.1287/ijoc.2023.0474
