@@ -1596,3 +1596,44 @@ python -m paper2.solver_fix_split --tables      # this table, regenerated
 ```
 
 Nothing here writes to `solutions/`.
+
+### Addendum: all seven refuted (2026-10-04)
+
+The five-day continuation (20 workers, `--parallel`, from 2026-10-03 00:31)
+closed the remaining four:
+
+| instance | value | `k` | tasks | nodes (split) | core-hours | refuted at |
+|---|---:|---:|---:|---:|---:|---|
+| `Random-125-125-2-4_0` | 24 | 23 | 1,686 | 4.98 × 10¹¹ | 154.1 | 2026-10-03 02:55 |
+| `Random-125-125-4-4_0` | 51 | 50 | 2,504 | 4.12 × 10¹¹ | 148.8 | 2026-10-03 21:55 |
+| `Random-125-125-2-1_0` | 24 | 23 | 4,096 | 1.30 × 10¹² | 366.5 | 2026-10-04 20:10 |
+| `Random-125-125-2-5_0` | 20 | 19 | 4,168 | 1.28 × 10¹² | 368.8 | 2026-10-04 20:50 |
+
+**All 115 values that rested only on the customer search are now re-refuted
+under the repaired rules, all unsat, with no value changed.** No task in any
+run was satisfiable.
+
+- **Total cost of the seven:** 1,112.6 core-hours.
+- **The density-2 ridge refutations are larger than predicted.** They took
+  1.3 × 10¹² nodes, about five times the 2.7 × 10¹¹ that the constant-rate
+  ridge law (`reports/ml_nature.md` §35) predicts for pre-fix trees. That is
+  the post-fix growth item 07 warned of.
+
+Regenerate: `python -m paper2.solver_fix_split --tables`.
+
+### Next: the two values never certified (started 2026-10-04 22:45)
+
+The corpus also holds two values with provenance `solution`, which were never
+certified by any method: `Random-125-125-2-2_0` = 25 and
+`Random-125-125-2-3_0` = 21 (`recertify --days 5` ended on 2026-09-29 with
+both open).
+- **The run.** They are listed in `paper2/data/solver_fix_split_extra.csv`
+  and run by the same split runner at `value − 1`:
+  ```
+  python -m paper2.solver_fix_split --workers 20 --parallel --until 2026-10-09T22:45 \
+      --only Random-125-125-2-3_0 Random-125-125-2-2_0
+  ```
+- **What each answer would mean.** A refutation certifies the value. A SAT
+  task would mean the stored value is too high: a better solution, not a
+  wrong certificate. Nothing is written to `solutions/` by the runner; the
+  owner applies the result.

@@ -65,6 +65,7 @@ DATA = ROOT / "paper2" / "data"
 TASKS = DATA / "solver_fix_split_tasks.csv"
 RESULTS = DATA / "solver_fix_split_results.csv"
 LONG = DATA / "solver_fix_recheck_long.csv"
+EXTRA = DATA / "solver_fix_split_extra.csv"   # never-certified values to refute
 
 TASK_FIELDS = ["instance_name", "k", "key", "kind", "status", "nodes", "seconds",
                "children", "cap", "witness", "started", "finished"]
@@ -227,11 +228,18 @@ def _read_rows(path: Path) -> list[dict]:
 
 
 def targets() -> list[dict]:
-    """Item 07's censored seven, cheapest first by its price."""
+    """Item 07's censored seven, cheapest first by its price, then the
+    instances in `EXTRA`: values never certified at all (provenance
+    `solution`), refuted at `value - 1` the same way. For those, `lower` is 0:
+    there was no censored run before."""
     rows = _read_rows(LONG)
     rows.sort(key=lambda r: float(r["price (nodes)"]))
-    return [dict(instance_name=r["instance"], value=int(r["value"]), k=int(r["k"]),
-                 lower=float(r["lower bound (nodes)"])) for r in rows]
+    out = [dict(instance_name=r["instance"], value=int(r["value"]), k=int(r["k"]),
+                lower=float(r["lower bound (nodes)"])) for r in rows]
+    for r in _read_rows(EXTRA):
+        out.append(dict(instance_name=r["instance"], value=int(r["value"]), k=int(r["k"]),
+                        lower=0.0))
+    return out
 
 
 class Tree:
