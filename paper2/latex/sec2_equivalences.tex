@@ -22,6 +22,14 @@ stated below is a theorem of our Lean development unless it says otherwise;
 Appendix~\ref{app:lean} lists the formal statements. Table~\ref{tab:master} summarises the result and
 Figure~\ref{fig:chain} draws it.
 
+\paragraph{Notation.} Graphs are finite and simple, $G=(V,E)$, $n=|V|$. A
+\emph{layout} is a bijection $L:V\to\{1,\dots,n\}$. For a 0/1 matrix $M$ with
+rows $R$ (customers, nets, piece types) and columns $C$ (patterns, gates,
+products), the \emph{MOSP graph} $G_M$ has vertex set $R$, with $r\sim r'$ when
+some column has a 1 in both rows; each column becomes a clique on its rows. For
+an order $\pi$ of the columns, row $r$ is \emph{active} at position $j$ if it
+has 1s in columns $x,y$ with $\pi(x)\le j\le\pi(y)$.
+
 \subsection{The problems}
 \label{sec:problems}
 
@@ -101,7 +109,7 @@ Node search & \citet{LY2002ref9,LY2002ref10}; \citet{BienstockSeymour1991} & $\n
 Edge search & \citet{EllisSudboroughTurner1994}; \citet{LY2002ref10} & $\vs\le\es\le\vs+2$, also for $\pes$ & band \\
 Narrowness & \citet{LY2002ref11} & $\nu=\pw+1$ ($V\ne\emptyset$) & exact \\
 Split bandwidth & \citet{LY2002ref12} & $\pw\le\sbw\le\pw+1$ & band \\
-Path-width & \citet{LY2002ref13} & the reference & definition \\
+Path-width & \citet{LY2002ref13} & the reference & exact \\
 Edge separation & \citet{LY2002ref14} & $\cw,\mcw$ unbounded against $\pw$ (stars); $\VSG=\max(1,\vs)$ & false; VSG exact \\
 Vertex separation & \citet{LY2002ref13} & $\vs=\pw$ & exact \\
 \bottomrule
@@ -255,11 +263,12 @@ proof has a gap that we repair, and one problem outside Table~1 also belongs to
 the exact core; Appendices~\ref{app:edge} and~\ref{app:thirteenth} give the
 details.
 
-\paragraph{Summary.} Seven of Table~1's twelve problems are pathwidth, or
-pathwidth plus one, exactly: MOSP, gate matrix layout, one-dimensional logic,
-interval thickness, node search, narrowness and vertex separation, with pathwidth
-itself as the reference. So are two variants, multiple folding and Lengauer's
-vertex separator game. Split bandwidth and edge search are bands of width one
+\paragraph{Summary.} Eight of the twelve rows of Table~1 are exact, counting
+the pathwidth row itself, which is the reference. The other seven are
+pathwidth, or pathwidth plus one, exactly: MOSP, gate matrix layout,
+one-dimensional logic, interval thickness, node search, narrowness and vertex
+separation. So are two variants of the false rows, multiple folding and
+Lengauer's vertex separator game. Split bandwidth and edge search are bands of width one
 and two, which meet the literal reading of Table~1 and not the fixed offset.
 Simple PLA folding and edge separation are false as stated. One theorem is
 stated and not proved, LaPaugh's $\es=\pes$, and no row needs it. One of

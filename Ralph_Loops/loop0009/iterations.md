@@ -27,7 +27,7 @@
     Fix every cross-reference. Record the old-to-new section map in
     PROGRESS.md for later items.
 
-- [ ] **02 The introduction** (review §7 and change 1; the owner's notes).
+- [x] **02 The introduction** (review §7 and change 1; the owner's notes).
   - **Figure 1.1**, from the verified example. Panel (a) is the matrix, with
     open stacks in the two orders. Panels (b) and (c) are the gate matrix
     layouts of the two orders, with nets as segments, packed into 3 and 5

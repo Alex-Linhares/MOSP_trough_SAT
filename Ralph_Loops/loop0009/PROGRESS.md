@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 1/11 SOLVED
+Current: 2/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -99,3 +99,90 @@ Current: 1/11 SOLVED
   Hall remark, the crusade-argument remark after Thm 2.5) were left in place;
   candidates for Appendix A.
 - Appendix A's names column could be one name per line (item 07).
+
+---
+
+## Iteration 2 — 2026-10-06 (item 02, the introduction)
+
+**Status update, not an error:** `python -m paper2.solver_fix_split --summary`
+(checked 2026-10-06) shows the three re-certifications that Section 5 called
+"still running" (`Random-125-125-2-1_0`, `-2-5_0`, `-4-4_0`) are now REFUTED,
+so all 115 customer-search values are re-refuted, none changed. Section 5's
+sentence now says "all 115 (as of 6 October 2026)" and that Table 5.2 was read
+on 3 October; **Table 5.2 itself (`tables/split.tex`) was not regenerated** —
+`make_tables.split_table()` would now also print the two never-certified
+values (`-2-2_0`, `-2-3_0`, both partial). Item 06 should regenerate it and
+decide how to present those two.
+
+### Completed
+- **`sec1_intro.tex` rewritten** in the review's §7.2 order: (1) MOSP defined
+  on the review's example; (2) the same instance as a gate matrix layout, with
+  density = tracks; (3) the same instance as a graph, bags of order A, so
+  optimum = pathwidth + 1 (points to Thm 2.4); (4) Table 1.1 + the two readings
+  of "±1", ending on the central question (review §2 wording); (5) the owner's
+  account of how the table came to be, kept in substance and voice, with the
+  García de la Banda–Stuckey quote and "so whether it is true matters"; the
+  NP-hardness reduction detail, the duplicated quotation and the "§7.1 does not
+  mention it" aside are cut; (6) "What we find", four bullets with numbers;
+  (7) "How to read the paper", with the one-sentence Lean statement.
+- **Figure 1.1** (`paper2/intro_figure.py` → `paper2/figures/sec1_fig1_example.{pdf,png}`,
+  matplotlib vector, fonts ≥ 7 pt, 6.5 in): (a) matrix with open intervals and
+  both profiles, (b)/(c) gate matrix layouts packed by the left-edge algorithm
+  into 3 and 5 tracks, (d) the MOSP graph and the bags of order A. Every number
+  is recomputed in the script. **Test** `tests/test_intro_figure.py` (5 tests):
+  profiles 2 3 3 2 / 2 4 5 3; peaks over the 24 orders {3: 2, 4: 16, 5: 6};
+  left-edge tracks = peak and no overlap on a track; brute-force vs = 2 = optimum
+  − 1; the bags of A are a path decomposition; print limits.
+- **Table 1.1** has a shaded "This paper" column (exact / band / false, with
+  footnotes for the exact variants of the two false rows); the original caption
+  is now quoted, so its "on the literature" reads as the original's.
+- **Counts made identical** in the abstract, intro (caption, bullet) and
+  Section 2's summary: *eight exact counting the pathwidth row itself, two
+  bands, two false*; the two exact variants (multiple folding, VSG) named
+  separately. Table 2.1's path-width status changed from "definition" to
+  "exact" to match.
+- **Abstract rewritten**: problem, question, then the four results. No
+  "Tamaki" or "both of our solvers".
+- **Notation paragraph moved** verbatim from the intro to the start of
+  Section 2 (item 03 polishes it; the C = columns vs customers clash remains
+  for item 08).
+- `\usepackage{colortbl}` added to `main.tex`.
+- **Numbers verified**: the 2005–24 counts of the owner's table recomputed
+  from `paper2.trends.binned` on `data/openalex_trends.json` (pathwidth 871,
+  MOSP 51, vertex separation 32; gate matrix layout only 9, so "most active
+  over 2005–2024" holds; all-time MOSP is 4th, behind GML and PLA, so the intro
+  says "over 2005–2024"); 1,213 vs 380 (`tables/names.tex`); 844 / six
+  (`sec3_names.tex`, `popularity.md`); ≤ 2% node totals (`tables/cost.tex`,
+  worst total ratio 1.020; single pairs reach 1.040, so the wording is "over
+  each benchmark set … total"); 17,714 / 16,087 (Section 5).
+- **Review points closed:** change 1 (whole); change 2 in part (verdict column,
+  "Linhares–Yanasse table" in the intro and caption, identical counts; the
+  "Proved in" rename and "Table 1" elsewhere are items 03/08); §2 central
+  question (placed at end of P4 and as sentence 2–3 of the abstract);
+  §3 Title/abstract points except the title; §3 Section 1 bullets (one-sentence
+  definition split, NP-hardness detail cut, the duplicated quotation merged,
+  self-assessment now follows the transfer sentence, "so whether it is true
+  matters" added, §7.1 aside cut, contributions → headline results, roadmap
+  added, notation moved); §7.2–7.3 (Figure 1.1 as specified); §6.3 item 5
+  (Φ vs Π: one quotation now).
+- **Pages:** 29 before, 30 after (Figure 1.1 and the verdict column).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  1416 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed, no
+  undefined references, 30 pages). `tests/test_paper2_latex.py` +
+  `tests/test_intro_figure.py`: 11 passed.
+
+### Blockers
+- None. Split run PID 2185545 alive; no `!!!` line in its log.
+- **Not done, deliberately:** the title still overstates (review §3, "one
+  width", "a solver proved sound"); changing it is the owner's call. Noted for
+  item 10 / the owner.
+
+### Next
+- Item 03, the equivalences section. Its opening still quotes the 2002
+  sentence that the intro now quotes; cut it to a back-reference. "Table~1"
+  is still used for the 2002 table in Sections 2–5 (34 occurrences): rename to
+  "the Linhares–Yanasse table" in items 03/04/08. "Exact core" is still used
+  without definition in Section 5 and Appendix A.
+- Item 06: regenerate `tables/split.tex` (see the status note above) and
+  present the two never-certified values with the date checked.
+- The draft date in `main.tex` still reads 3 October 2026.

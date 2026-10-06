@@ -1,0 +1,113 @@
+# session it02 started 2026-10-06 15:45:39
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0009/iterations.md; ls paper2/latex; wc -l paper2/latex/*.tex paper2/review_readability.md; cat paper2/data/solver_fix
+  > $ cd /home/al/dev/MOSP; cat paper2/review_readability.md
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/458f789a-3218-4767-a875-babbaef1c57d/tool-results/ba4doel01.txt
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat main.tex; cat sec1_intro.tex; cat Makefile; cat ../../tests/test_paper2_latex.py | head -80
+  > $ cd /home/al/dev/MOSP/paper2; cat latex/sec2_equivalences.tex; ls figures; ls *.py | head -50
+  > $ cd /home/al/dev/MOSP/paper2; sed -n 1,60p latex/sec4_search.tex; echo ----; cat latex/sec5_results.tex | head -90
+
+I've read the review, draft and plan; now gathering headline numbers and the in-flight run status before rewriting the introduction.
+  > $ cd /home/al/dev/MOSP; sed -n 90,141p paper2/latex/sec5_results.tex; cat paper2/latex/tables/cost.tex; cat paper2/latex/tables/split.tex; timeout 120 python -m p
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n -i -E 'three times|six works|bridg|island|rarely' sec3_names.tex | head; grep -n -E 'percent|\\%|2\\,?%|Theorem~\\ref
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 85,100p sec3_names.tex; sed -n 143,177p sec3_names.tex; sed -n 175,215p sec4_search.tex; sed -n 265,300p sec4_search.t
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p paper2/counterexample_figure.py; ls tests | grep -i paper2; grep -ln counterexample_figure tests/*.py
+  > $ cd /home/al/dev/MOSP; grep -rln "counterexample_figure\|section3_figure" --include=*.py . | grep -v "^./paper2/[a-z_]*\.py$" | head; cat Ralph_Loops/loop0009/ga
+  > $ cd /home/al/dev/MOSP; cat tests/test_section3_figure.py | head -40; sed -n 40,200p paper2/section3_figure.py | grep -n -E "rcParams|savefig|font|matplotlib" | h
+
+Writing the Figure 1.1 script (matplotlib, recomputing every number it draws) and its test.
+  > Write /home/al/dev/MOSP/paper2/intro_figure.py
+  > $ cd /home/al/dev/MOSP; python -m paper2.intro_figure
+  > Read /home/al/dev/MOSP/paper2/figures/sec1_fig1_example.png
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+from pathlib import Path
+p=Path("paper2/intro_figure.py"); s=p.read_text()
+old='''        ax.axvspan(peak - 0.28, peak + 
+  > Read /home/al/dev/MOSP/paper2/figures/sec1_fig1_example.png
+  > $ cd /home/al/dev/MOSP; sed -i 's/nrow + 0.9)/nrow + 1.5)/' paper2/intro_figure.py; grep -c "nrow + 1.5" paper2/intro_figure.py; python -m paper2.intro_figure >/d
+  > Read /home/al/dev/MOSP/paper2/figures/sec1_fig1_example.png
+  > Write /home/al/dev/MOSP/tests/test_intro_figure.py
+  > $ cd /home/al/dev/MOSP; python -m pytest -q tests/test_intro_figure.py 2>&1 | tail -3
+  > $ cd /home/al/dev/MOSP; grep -n "^def \|argv\|__main__" paper2/latex/make_tables.py | head -30; git status --short paper2/ | head
+  > $ cd /home/al/dev/MOSP; sed -n 37,70p paper2/latex/make_tables.py; sed -n 165,197p paper2/latex/make_tables.py; sed -n 278,290p paper2/latex/make_tables.py
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n -A6 "GarciaDeLaBandaStuckey2007\|^@.*{Linhares2001\|{LY2002," refs.bib | head -40; grep -n "Table~1\b\|Table~1[^.0-9]
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n "\\\\label{\|\\\\section\|\\\\subsection" sec9*.tex sec6*.tex sec7*.tex sec3_names.tex | head -30; cat sec6_conclusio
+
+Now writing the new introduction.
+  > Write /home/al/dev/MOSP/paper2/latex/sec1_intro.tex
+  > $ cd /home/al/dev/MOSP/paper2; grep -n -i -E "gate matrix|MOSP|vertex sep|PLA" popularity.md | head -30; sed -n 67,84p latex/sec3_names.tex; cat latex/tables/name
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p paper2/trends.py | head -40; ls paper2/data | grep -i trend
+  > $ cd /home/al/dev/MOSP; grep -n "^def \|counts\b" paper2/trends.py | head -30; python -c "
+import json;d=json.load(open('paper2/data/openalex_trends.json'));print
+  > $ cd /home/al/dev/MOSP; python -c "
+import json
+from paper2.trends import binned
+d=json.load(open('paper2/data/openalex_trends.json'))
+bins,counts,rates=binned(d)
+  > $ cd /home/al/dev/MOSP/paper2/latex; python - <<'EOF'
+from pathlib import Path
+p=Path("sec1_intro.tex"); s=p.read_text()
+reps=[("pathwidth row itself counted as o
+
+Intro drafted; now the abstract, the matching count in Section 2's summary, and moving the notation paragraph.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python - <<'EOF'
+from pathlib import Path
+p=Path("sec1_intro.tex"); s=p.read_text()
+a="open-stacks one, and the best exact se
+  > $ cd /home/al/dev/MOSP/paper2/latex; python - <<'EOF'
+from pathlib import Path
+p=Path("sec2_equivalences.tex"); s=p.read_text()
+notation=r"""\paragraph{Notation.}
+  > $ cd /home/al/dev/MOSP/paper2/latex; python - <<'EOF'
+from pathlib import Path
+p=Path("sec2_equivalences.tex"); s=p.read_text()
+a="Path-width & \\citet{LY2002ref1
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n -i -E "seven of|eight of|nine |exact core|two variants" sec*.tex | grep -v "^sec1"
+  > $ cd /home/al/dev/MOSP/paper2/latex; make 2>&1 | tail -5; make check 2>&1 | tail -3; grep -n -i "warning" main.log | grep -v -i "font\|microtype" | head
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n -E "Overfull|Underfull" main.log | head; pdftoppm -r 70 -f 1 -l 4 -png main.pdf /tmp/p2intro; ls /tmp/p2intro*
+
+Build passes (30 pages); checking the rendered first pages.
+  > Read /tmp/p2intro-01.png
+  > Read /tmp/p2intro-02.png
+  > Read /tmp/p2intro-03.png
+  > $ cd /home/al/dev/MOSP/paper2/latex; python - <<'EOF'
+from pathlib import Path
+p=Path("sec1_intro.tex"); s=p.read_text()
+a="""refutes what is not. Nobody else was
+  > $ for i in $(seq 1 55); do grep -q "GATE" /tmp/claude-1000/-home-al-dev-MOSP/458f789a-3218-4767-a875-babbaef1c57d/tasks/bz0f1pz5r.output && break; sleep 10; done;
+  > $ for i in $(seq 1 57); do grep -q "GATE" /tmp/claude-1000/-home-al-dev-MOSP/458f789a-3218-4767-a875-babbaef1c57d/tasks/bz0f1pz5r.output && break; sleep 10; done;
+  > $ cd /home/al/dev/MOSP; grep -E "passed|lake|sorry" /tmp/claude-1000/-home-al-dev-MOSP/458f789a-3218-4767-a875-babbaef1c57d/tasks/bz0f1pz5r.output | head; python 
+
+Gate passes. Writing the PROGRESS entry and marking the item.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; python - <<'EOF'
+from pathlib import Path
+p=Path("PROGRESS.md"); s=p.read_text()
+s=s.replace("Current: 1/11 SOLVED","
+
+Item 02 (the introduction) is finished and the gate passes: Lean builds, all tests pass, and the LaTeX has no undefined references. The paper went from 29 to 30 pages.
+
+**What changed**
+- **Introduction** (`paper2/latex/sec1_intro.tex`) now runs in the order the review and your notes ask for:
+  1. MOSP defined on the verified example: order P1P2P3P4 peaks at 3, order P1P3P4P2 at 5, and over the 24 orders 2 reach 3, 16 give 4, 6 give 5.
+  2. The same instance as a gate matrix layout, where density equals the number of tracks.
+  3. The same instance as a graph, with the bags of the good order, so the optimum is pathwidth + 1.
+  4. Table 1.1 with the two readings of "±1", ending on the central question.
+  5. Your account of how the table was collected, kept in substance and voice and somewhat shortened.
+  6. Four headline results with numbers.
+  7. A roadmap, with one sentence on Lean.
+- **Figure 1.1** has the four panels the review specifies, drawn as a vector PDF by `paper2/intro_figure.py`. The script recomputes every number it shows, and `tests/test_intro_figure.py` checks them: the two open-stack profiles, the 2/16/6 split, track packing, pathwidth 2 by brute force, the bags forming a path decomposition, and the print size and font limits.
+- **Table 1.1** has a shaded "This paper" column (exact / band / false), with footnotes on the exact variants of the two false rows.
+- **The counts now agree** in the abstract, the introduction and Section 2's summary: eight exact rows (counting the pathwidth row itself), two bands, two false.
+- **The abstract** is rewritten: the problem, then the question, then the four results.
+- **The notation paragraph** moved from the introduction to the start of Section 2.
+
+**Numbers checked**
+- **Names, 2005–2024:** MOSP is second after pathwidth (51 works, against 32 for vertex separation). Over all years it is only fourth, behind gate matrix layout and PLA folding, so the paper says "over 2005–2024".
+- **Cost of the repair:** "at most 2%" holds for the total over each benchmark set. One single instance pair costs 4% more, so the paper words it as a total.
+
+**Status update.** On 6 October the run's summary shows that the three re-certifications Section 5 still called "running" are finished. All 115 values are re-proved and none changed, and the text now says so with the date. Table 5.2 itself was not regenerated: rebuilding it would also add the two never-certified values, and how to present those is left to item 06. Both are noted in PROGRESS.md.
+
+**Left for you:** the title still promises more than the paper delivers ("one width", "a solver proved sound"), as the review points out; I didn't change it because that is your decision. The split run (PID 2185545) is still going, and its log has no `!!!` line. Nothing is committed.
+
+# result: success in 1323s, 46 turns, cost $3.14
