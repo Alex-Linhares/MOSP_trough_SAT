@@ -187,7 +187,8 @@ each piece has a one-sentence intuition.
   failed further down, as long as closing it first would have kept each later
   step within the bound.
 \item \emph{The definite move}: if closing $q$ now leaves no more stacks open
-  than before, it seems safe to close $q$ at once and try nothing else.
+  than before, close $q$ at once and try nothing else
+  (Section~\ref{sec:definite} shows why this looks safe and is not).
 \item \emph{The subset rule}: if $d$ newly opens a subset of what $r$ newly
   opens, then $d$ is at least as good a move as $r$.
 \item \emph{The better move}: if $q$ would be a definite move right after $r$,
@@ -542,7 +543,7 @@ Each rule of the customer search against the exact-pathwidth literature.}
 \toprule
 Rule & Published counterpart & Status \\
 \midrule
-definite move, published & -- & false (Cex.~\ref{cex:definite}) \\
+definite move, published & endpoint case of a commitment (Lemma~\ref{lem:endpoint}) & false (Cex.~\ref{cex:definite}) \\
 better move, published & none found & false \\
 \midrule
 free move & full sets \citep{SuchanVillanger2009}; \citet[Prop.~3]{Kitsunai2016} & known \\

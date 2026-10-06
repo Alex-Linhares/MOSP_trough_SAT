@@ -28,7 +28,9 @@ its port to graphs, are written in C (gcc 15.2, \texttt{-O3
 -march=native}) and driven from Python~3.12. A Python implementation of the
 same rules serves as a reference for cross-checks and emits the certificates
 of Section~\ref{sec:certs}. The repaired tests are the default in every
-implementation; the published tests remain available as an option.
+implementation; the published tests remain available as an option. The C
+implementation handles components of at most 1,024 vertices; 154 classes of
+the dataset of Section~\ref{sec:dataset} are larger.
 
 \paragraph{Runs.} The basic job asks one question: is the optimum of this
 instance at most $k$? A \emph{worker} is one single-threaded process that
@@ -86,6 +88,7 @@ Table~\ref{tab:cost} shows how rarely that matters.
 by at most 2\%. Each pair runs the same question under the published and the
 repaired rules in one worker. Totals are over the pairs that finished under
 both rules; a pair stopped by its budget says nothing about cost.
+\emph{Vertices}: customers in the open-stacks rows (the vertices of $G_M$).
 \emph{Largest pair ratio}: the largest ratio of repaired to published nodes
 over single pairs. Open-stacks pairs refute the optimum minus one, at 600\,s per
 call at 50--100 customers and $2\times10^8$ nodes at 125. The graph pairs run
@@ -129,8 +132,8 @@ Appendix~\ref{app:split}).
 \paragraph{Two values in flight.} The corpus also holds two values that were
 never certified by any method: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
 \texttt{Random-125-125-2-3\_0}. The same split is refuting the value minus one
-on each. As of 6 October 2026 it has refuted 2,196 and 2,601 subtrees, using
-443 and 453 core-hours, and found no order of the smaller value. If the run
+on each. As of 6 October 2026 it has refuted 2,295 and 2,694 subtrees, using
+about 467 core-hours each, and found no order of the smaller value. If the run
 finishes it certifies both values; an order of the smaller value would
 improve the stored value instead.
 

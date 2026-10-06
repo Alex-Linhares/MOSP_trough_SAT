@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 10/11 SOLVED
+Current: 11/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -846,3 +846,50 @@ these numbers, and `tables/split.tex` (Table B.1) was regenerated with
 - Before submission: refresh the two in-flight counts (§5.2, Table B.1 via
   `make_tables.split_table()`, Section 6) on the day; title subtitle and
   affiliations/URL are the owner's.
+
+---
+
+## Iteration 11 — 2026-10-06 ~22:45 (item 11, reserve)
+
+**Status update, not an error:** the two in-flight counts refreshed.
+`--summary` (checked 2026-10-06 22:06): `-2-2_0` (k = 24) 2,295 subtrees,
+467.1 core-hours; `-2-3_0` (k = 20) 2,694, 466.8; both partial, no task with
+a witness in `solver_fix_split_tasks.csv`. §5.2 now prints these ("about 467
+core-hours each") and Table B.1 was regenerated with
+`make_tables.split_table()` alone. Section 6 carries no counts, only the
+date, so it needed no change. No `!!!` line in the split log; PID 2185545
+alive (1 d 23 h).
+
+### Completed
+The reserve went to the five small points left by the second review
+(`paper2/review_readability_2.md` §5 items 7–11). The length cut in Section 4
+was not done, since the review ranks it third and conditional ("if length
+must come down"). Presentation only; no theorem, number or claim changed.
+- **Item 7**, Theorem 2.4(3): "if every net meets at least one gate, the
+  fewest tracks is θ(H); if at least one net meets a gate (the matrix has a
+  1), it is pw(H)+1". This matches the hypotheses of
+  `LogicArray.tracks_eq_intervalThickness` (∀ v, ∃ t, conn) and
+  `tracks_eq_pathwidth_add_one` (∃ v t, conn).
+- **Item 8**, Table 4.2: the published definite move's counterpart is now
+  "endpoint case of a commitment (Lemma 4.9)" instead of "–", which is what
+  Lemma 4.9 says.
+- **Item 9**, Table 5.1: the caption now defines *Vertices* as customers in
+  the open-stacks rows (the vertices of $G_M$). The generator was not changed.
+- **Item 10**, §5.1 *Machine and code*: one sentence gives the 1,024-vertex
+  component limit and the 154 larger dataset classes (`dataset.md` §§ "open,
+  engine", 610 + 154). Section 6 now points back to §5.1.
+- **Item 11**, duplicated intuition: §4.2's definite-move bullet now states
+  the rule and points to §4.3 for why it looks safe and is not. §4.3 keeps
+  the intuition.
+- **Pages:** 37 before, 37 after.
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok, sorry 1/1, 1420 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed, no undefined references, 37 pages).
+
+### Blockers
+- None.
+
+### Next
+- The loop's items are done. Left for the owner (`review_readability_2.md`
+  §8): the title and subtitle, the affiliations and repository URL, freezing
+  or resolving the two in-flight values (refresh §5.2 and Table B.1 on the
+  day), and the optional Section 4 cut if length must come down.
+LOOP_COMPLETE

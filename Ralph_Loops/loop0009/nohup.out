@@ -48,3 +48,8 @@
 [2026-10-06 21:14:29] claude session it10 (cap 6.00 h) -> session_it10.log
 [2026-10-06 21:47:41] session it10: ok (exit 0, 40 tool calls)
 [2026-10-06 22:05:34] tests passed: GATE PASS
+[2026-10-06 22:05:34] committed f2569fa65: 10 A second review. Read the revised PDF cold, as a referee would,
+[2026-10-06 22:05:34] === iteration 11: 11 Reserve. The best remaining readability gap, one session.
+[2026-10-06 22:05:34] claude session it11 (cap 6.00 h) -> session_it11.log
+[2026-10-06 22:22:15] session it11: ok (exit 0, 27 tool calls)
+[2026-10-06 22:37:41] tests passed: GATE PASS

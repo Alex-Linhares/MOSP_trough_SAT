@@ -142,4 +142,4 @@
   - Then fix the top five new problems.
   - Report the three-sentence reconstruction again; it should now come easily.
 
-- [ ] **11 Reserve.** The best remaining readability gap, one session.
+- [x] **11 Reserve.** The best remaining readability gap, one session.

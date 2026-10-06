@@ -1,0 +1,84 @@
+# session it11 started 2026-10-06 22:05:34
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid,etime; ls paper2/data/ | grep -i split; grep -n
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n '/^## 7/,$p' ../review_readability_2.md | head -80; grep -n 'every net\|some gate\|some net' sec2_equivalences.tex tab
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 270,300p sec2_equivalences.tex; grep -n 'One-dimensional\|one-dimensional' sec2_equivalences.tex tables/master*.tex 2>
+  > $ cd /home/al/dev/MOSP/paper2; grep -n 'core-logic' -A4 latex/sec9a_appendix_lean.tex | head; grep -n -i 'one-dimensional\|1-D logic\|onedim' equivalences.md | he
+  > $ cd /home/al/dev/MOSP/lean; grep -n 'theorem tracks_eq_intervalThickness\|theorem tracks_eq_pathwidth_add_one' -A6 MOSPFormalization/Complex/OneDimLogic.lean
+
+I'm working on the reserve item, the last five small fixes from the second review. Now rewording Theorem 2.4(3).
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'E'
+p='sec2_equivalences.tex'; s=open(p).read()
+old="""\\item One-dimensional logic: if every net lies on a gate,
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 215,235p sec4_search.tex; sed -n 480,505p sec4_search.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'E'
+p='sec4_search.tex'; s=open(p).read()
+old="""\\item \\emph{The definite move}: if closing $q$ now leaves no m
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'E'
+p='sec5_results.tex'; s=open(p).read()
+old="""\\emph{Largest pair ratio}: the largest ratio"""
+new="""\\emph{
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 70,100p sec6_conclusion.tex; grep -n 'subsection{Experimental setup' -A40 sec5_results.tex | head -60; grep -rn '154\|
+
+Add one sentence to §5.1's "Machine and code" paragraph giving the limit a home.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'E'
+p='sec5_results.tex'; s=open(p).read()
+old="""implementation; the published tests remain available as an opti
+
+Refreshing the two in-flight counts to today's latest reading.
+  > $ cd /home/al/dev/MOSP; grep -n '2,196\|2,601\|443\|453' paper2/latex/sec*.tex paper2/latex/tables/split.tex; head -3 paper2/data/solver_fix_split_tasks.csv; pyth
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import csv;r=list(csv.DictReader(open('paper2/data/solver_fix_split_tasks.csv')))
+print([x for x in r if x['witness'] or x['s
+  > $ cd /home/al/dev/MOSP; grep -n 'def main' -A25 paper2/latex/make_tables.py | grep -n 'split' ; python3 -c "
+from paper2.latex.make_tables import split_table
+impo
+  > $ cd /home/al/dev/MOSP; git diff paper2/latex/tables/split.tex | grep '^[-+]' ; sed -i 's/it has refuted 2,196 and 2,601 subtrees, using/it has refuted 2,295 and 
+  > $ cd /home/al/dev/MOSP; sed -i 's/^467 and 467 core-hours, and found/about 467 core-hours each, and found/' paper2/latex/sec5_results.tex; make -C paper2/latex >/
+  > $ cd /home/al/dev/MOSP/paper2/latex; pdftotext -layout main.pdf - | grep -n -A3 'endpoint case\|Section 4.3 shows\|at least one net meets\|1,024 vertices\|Vertice
+
+Five fixes and the count refresh are in; the draft builds. Running the gate now.
+  > $ cd /home/al/dev/MOSP; timeout 3000 python3 Ralph_Loops/loop0009/gate.py 2>&1 | tail -15
+
+While the gate runs, I'll write the PROGRESS entry.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; grep -n 'Current:' PROGRESS.md; grep -n '11 Reserve' iterations.md; grep -c '^- \[ \]' iterations.md
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/a41b07d6-4bc0-41d6-bf63-23515c47cd6e/tasks/boos9jx87.output; until gre
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; tail -5 /tmp/claude-1000/-home-al-dev-MOSP/a41b07d6-4bc0-41d6-bf63-23515c47cd6e/tasks/boos9jx87.output
+
+Draft the PROGRESS entry now (gate line filled in after).
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; cat >> PROGRESS.md <<'E'
+
+---
+
+## Iteration 11 — 2026-10-06 ~22:45 (item 11, reserve)
+
+**Status update, not an error:
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/a41b07d6-4bc0-41d6-bf63-23515c47cd6e/tasks/boos9jx87.output; until gre
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/a41b07d6-4bc0-41d6-bf63-23515c47cd6e/tasks/boos9jx87.output; until grep -qE 'GATE (PASS|FAIL)|Traceback' $f; do sleep 5; do
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; grep -n 'lake\|sorry' /tmp/claude-1000/-home-al-dev-MOSP/a41b07d6-4bc0-41d6-bf63-23515c47cd6e/tasks/boos9jx87.output 
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; sed -i 's|^- \*\*Gate:\*\* `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (1420|- **Gate:** `python3 Ralph_Loops/
+
+Item 11 is finished and the gate passes, so all 11 items of loop0009 are now checked. I added `LOOP_COMPLETE` to the end of PROGRESS.md and committed nothing.
+
+I used this last item on the five small points left from the second review (`paper2/review_readability_2.md` §5, items 7–11). Only the wording changed; no theorem, number or claim did.
+- **Theorem 2.4(3)** (one-dimensional logic): the two look-alike conditions are now "if every net meets at least one gate" and "if at least one net meets a gate (the matrix has a 1)". These match the conditions in the two Lean theorems.
+- **Table 4.2**: the dash beside the published definite move now reads "endpoint case of a commitment (Lemma 4.9)", which is what that lemma says.
+- **Table 5.1**: the caption now says that in the open-stacks rows, *Vertices* means customers.
+- **§5.1**: one new sentence states the implementation's limit of 1,024 vertices per component and the 154 dataset classes above it. The conclusion now points back to it, so the two numbers have a place in the body.
+- **§4.2**: the definite-move bullet now just states the rule and points to §4.3. The "why it looks safe" explanation appears only once, in §4.3.
+
+I also updated the counts for the two values still being computed, as read at 22:06 today. `Random-125-125-2-2_0` is at 2,295 subtrees refuted and `-2-3_0` at 2,694, with about 467 core-hours each. No smaller ordering has been found for either. These counts are now in §5.2 and in Table B.1, which I regenerated. The run is still alive and its log has no `!!!` line.
+
+The paper is still 37 pages. The gate result: Lean builds with the one allowed `sorry`; 1,420 main tests and 114 `pathwidth_solver` tests pass; LaTeX has no undefined references.
+
+I did not make the optional cut to Section 4. The second review ranks it third and only needed if the paper must get shorter.
+
+These are left for you:
+- the title and subtitle;
+- the authors' affiliations and the repository URL;
+- freezing or finishing the two values still running, and refreshing §5.2 and Table B.1 on the day you submit;
+- the Section 4 cut, if length must come down.
+
+# result: success in 999s, 28 turns, cost $1.63
