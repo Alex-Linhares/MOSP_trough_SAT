@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 5/11 SOLVED
+Current: 6/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -466,3 +466,104 @@ in 10 min; trees n ≤ 67 = 30; hb 26) are from `pathwidth_solver/bench/referenc
 - **Item 08:** "Theorem 6.3.6/6.3.8" are attached to Chu (2011) everywhere
   in §4, but check the rest of the paper; Section 2's k (|X_i| ≤ k+1) vs §4's
   k is now flagged in §4 only.
+
+---
+
+## Iteration 6 — 2026-10-06 18:45 (item 06, computational results and the dataset)
+
+**Status update, not an error:** Table 5.2 (`tables/split.tex`) was stale
+(read 3 October, three rows "in flight"). Regenerated on 2026-10-06 18:28:
+all seven re-certifications REFUTED, unchanged (18.1–368.8 core-hours,
+1,112.6 total, matching `solver_fix.md`'s addendum); the two never-certified
+values (`-2-2_0` k = 24, `-2-3_0` k = 20) partial at 2,141 / 2,354 tasks
+refuted, 431 / 434 core-hours, **no satisfiable task** (checked in
+`solver_fix_split_tasks.csv`). No `!!!` line in the split log.
+
+### Completed
+- **`sec5_results.tex` rewritten; no number or claim changed.** New opening
+  states the four questions (cost? do values survive? checkable? what dataset?)
+  and answers each in one sentence. Subsections: 5.1 *Experimental setup*
+  (new, `sec:setup`), 5.2 cost and benchmark values (`sec:practice`),
+  5.3 *A checkable proof of a refutation* (new label `sec:certs`), 5.4 the
+  dataset (`sec:dataset`).
+  - **Setup:** machine read with `lscpu`/`/proc/meminfo` today (AMD Ryzen 9
+    9950X, 16 cores / 32 threads, 128 GB, Ubuntu); C via gcc 15.2
+    `-O3 -march=native` (`satisfiability/native.py`, `pathwidth_solver/pathwidth/native.py`),
+    Python 3.12; Python reference emits certificates. *Worker*, *node*,
+    *pair*, *descent* defined; "up to 32 workers" at once (`solver_fix.md`:
+    22, 24 and one sweep of 32), so nodes are compared, time only in
+    core-hours. **Assumption:** that all of the section's runs used this
+    machine; the documents name no other.
+  - **Configurations** defined in plain words: *base* (= `default`, better
+    move off) and *with better move* (= `csearch`, better move on at ≤ 5
+    products per customer on average, `BETTER_MOVE_DENSITY = 5.0`). The words
+    `csearch`/`default` are gone from the body and the tables.
+  - **Definitions:** MOSP corpus (6,376 files, five collections = first rows of
+    Table 5.3), the Chu–Stuckey name key, provenance as a three-item list
+    (certified by search / by bound / upper bound only), DRAT and the
+    subset-lattice computation glossed, nauty and the minor certificate
+    glossed, isomorphism class defined.
+  - Matching-size sentence duplicated from §4.3 cut; "Since 1 October 2026 …
+    both of our solvers" → "the repaired tests are the default in every
+    implementation"; "MOSP C engine" → "the C implementation"; "our MOSP
+    corpus" → defined term; "Table~1's exact core" → "the exact core".
+  - **Re-certification** paragraph now leads with "no published optimum
+    changed"; the split explained in one sentence; the seven folded into one
+    sentence ("18 to 369 core-hours each, 1,112.6 in total").
+  - **Two values in flight**: own paragraph with status and date (6 October
+    2026) and what each outcome would mean.
+  - **Certificates:** the 55-word checker sentence is now a bulleted list.
+  - **Dataset:** Frinhani row explained (included for coverage; exact search
+    out of reach, `dataset.md` §6); the orientation caution kept as its own
+    paragraph; **the pricing paragraph moved** to the conclusion placeholder
+    (verbatim in a LaTeX comment in `sec6_conclusion.tex`, for item 09); the
+    placeholder's "three re-certifications still running" corrected to the
+    two never-certified values.
+- **Tables** (generators in `make_tables.py`, regenerated: cost,
+  certificates, dataset, split):
+  - Table 5.1 (cost) split into an open-stacks part and a graph part with
+    group headings; columns "Instances", "Total ratio", "Largest pair ratio";
+    graph row names its sets; caption leads with "never changed an answer".
+  - Table 5.2 (certificates) cut from 11 to **7 columns**, one configuration;
+    both configurations' totals kept in trailing comments (the test still
+    checks them); the other configuration's totals are in the text.
+  - Table 5.3 (dataset): "Owned" → "Counted here"; "Certified: by search / by
+    bound", "Upper bound only"; footnote on the second copy; caption leads
+    with the conclusion.
+  - The split table **moved to new Appendix B.8** (`app:split`, Table B.1),
+    with a rule before the two never-certified rows; caption leads with the
+    conclusion.
+- §4's pointer to the certificate checker and the data statement now point to
+  `sec:certs`; Appendix B's preamble mentions Section 5; `latex/README.md`
+  updated.
+- **Review points closed:** change 6 (whole: new section done in item 01,
+  setup paragraph, corpus / provenance / configurations / DRAT / subset
+  lattice defined; the three "in flight" runs are finished); §3 Section 4.6
+  and 4.7 bullets (setup, jargon s4:456–479 and s4:512, checker list, own
+  section, provenance definitions, minor certificate and nauty glosses,
+  caution kept, pricing moved); §4 Tables 4.3–4.6 (conclusion captions;
+  cost table split and headings explained, "one worker" defined; split table
+  to the appendix with a name key; certificates to seven columns, configs
+  defined; "Owned" renamed, second copy footnoted, Frinhani sentence); §6.2
+  rows csearch/default, DRAT/subset lattice, "our MOSP corpus", C engine,
+  descents, nauty/minor certificate; §6.4 s4:477–480 and s4:503–508; §6.5
+  s4:477–487; §6.6 "Since 1 October 2026".
+- **Pages:** 34 before, 36 after (setup subsection; Section 5 is pp. 20–24).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  sorry 1/1, 1418 passed / 2 skipped / 1 xfailed, pathwidth_solver 114
+  passed, no undefined references, 36 pages). `tests/test_paper2_latex.py`:
+  6 passed.
+
+### Blockers
+- None. Split run PID 2185545 alive.
+
+### Next
+- **Item 07:** Table 5.1 floats to the top of p. 21, inside 5.1, before its
+  first reference in 5.2; check placement after cuts. Figure 4.1's in-image
+  title still to remove.
+- **Item 09:** the conclusion must use the moved pricing paragraph (comment in
+  `sec6_conclusion.tex`) and the in-flight status; rerun
+  `python -m paper2.solver_fix_split --summary` and `make_tables` (split)
+  on the day. The review says "in flight" will not survive refereeing.
+- The intro bullet and the conclusion placeholder both say "as of 6 October
+  2026"; keep them in step if the run finishes.

@@ -190,22 +190,26 @@ def _pw_pairs():
 
 
 def cost_table() -> str:
-    lines = []
+    # configurations: `default` = base rules, `csearch` = base plus the better move
+    # where the instance has at most five products per customer (Section 5.1)
+    lines = ["\\multicolumn{7}{@{}l}{\\emph{Open stacks: one refutation of the optimum minus one per pair}} \\\\"]
     for stage, config, label, size in [
-        ("mosp40", "default", "MOSP corpus, \\texttt{default}", "9--40"),
-        ("mosp40", "csearch", "MOSP corpus, \\texttt{csearch}", "9--40"),
-        ("cs", "csearch", "Chu \\& Stuckey classes", "50--100"),
-        ("cs125", "csearch", "Chu \\& Stuckey classes, cap $2\\times10^8$ nodes", "125"),
+        ("mosp40", "default", "MOSP corpus, base", "9--40"),
+        ("mosp40", "csearch", "MOSP corpus, with better move", "9--40"),
+        ("cs", "csearch", "Chu \\& Stuckey, with better move", "50--100"),
+        ("cs125", "csearch", "Chu \\& Stuckey, cap $2\\times10^8$ nodes", "125"),
     ]:
         total, both, old, rep, worst = _mosp_pairs(stage, config)
-        lines.append(f"{label} & {size} & {_n(both)} of {_n(total)} & {_n(old)} & {_n(rep)} & "
+        lines.append(f"\\quad {label} & {size} & {_n(both)} of {_n(total)} & {_n(old)} & {_n(rep)} & "
                      f"{rep / old:.5f} & {worst:.3f} \\\\")
     total, both, old, rep = _pw_pairs()
-    lines.append(f"Graph pathwidth, whole descents & 4--2{{,}}916 & {_n(both)} of {_n(total)} & "
+    lines.append("\\addlinespace")
+    lines.append("\\multicolumn{7}{@{}l}{\\emph{Graph pathwidth: one whole descent per pair, 120\\,s each}} \\\\")
+    lines.append(f"\\quad VSPLIB, colouring, named, 500 Rome & 4--2{{,}}916 & {_n(both)} of {_n(total)} & "
                  f"{_n(old)} & {_n(rep)} & {rep / old:.3f} & -- \\\\")
     body = ["\\begin{tabular}{@{}llrrrrr@{}}", "\\toprule",
-            "Where & Vertices & Pairs finished & Nodes, published & Nodes, repaired & Ratio & "
-            "Worst pair \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
+            "Instances & Vertices & Pairs finished & Nodes, published & Nodes, repaired & "
+            "Total ratio & Largest pair ratio \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     return _write("cost.tex", "paper2/data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv", body)
 
 
@@ -215,9 +219,15 @@ def split_table() -> str:
     from paper2.solver_fix_split import RESULTS, TASKS, _read_rows, targets
     rows = _read_rows(TASKS)
     finished = {r["instance_name"]: r for r in _read_rows(RESULTS)}
+    from paper2.solver_fix_split import EXTRA
+    seen: list[str] = []
+    extra = {r["instance"] for r in _read_rows(EXTRA)}
     lines = []
     for t in targets():
         name = t["instance_name"]
+        if name in extra and not any(name2 in extra for name2 in seen):
+            lines.append("\\midrule")
+        seen.append(name)
         mine = [r for r in rows if r["instance_name"] == name and int(r["k"]) == t["k"]]
         done = [r for r in mine if r["kind"] == "task" and r["status"] == "unsat"]
         secs = sum(float(r["seconds"] or 0) for r in mine)
@@ -244,40 +254,35 @@ BANDS = [(9, 10), (11, 20), (21, 30), (31, 40), (41, 50), (51, 60), (61, 75)]
 
 
 def certificates_table() -> str:
+    """Seven columns, one configuration (`csearch`, "with better move") in the
+    table; totals for both configurations in trailing comments."""
     rows = list(csv.DictReader(open(DATA / "certificates" / "repaired.csv")))
+    med = lambda v: statistics.median(v) if v else 0  # noqa: E731
     lines = []
+    for lo, hi in BANDS:
+        x = [r for r in rows if r["config"] == "csearch" and lo <= int(r["n"]) <= hi]
+        if not x:
+            continue
+        ref = [r for r in x if r["status"] == "unsat"]
+        ok = [r for r in ref if r["check_ok"] == "True"]
+        rej = [r for r in ref if r["check_ok"] == "False"]
+        gz = sorted(int(r["gz_bytes"]) for r in ref)
+        ms = sorted(1000 * float(r["check_seconds"]) for r in ref)
+        lines.append(f"{lo}--{hi} & {_n(len(x))} & {_n(len(ok))} & {len(rej)} & "
+                     f"{_n(len(x) - len(ref))} & {_n(round(med(gz)))} & {med(ms):.2f} \\\\")
     tot = Counter()
-    for config in ("csearch", "default"):
-        for lo, hi in BANDS:
-            x = [r for r in rows if r["config"] == config and lo <= int(r["n"]) <= hi]
-            if not x or (config == "default" and hi <= 40):
-                continue
-            ref = [r for r in x if r["status"] == "unsat"]
-            ok = [r for r in ref if r["check_ok"] == "True"]
-            rej = [r for r in ref if r["check_ok"] == "False"]
-            gz = sorted(int(r["gz_bytes"]) for r in ref)
-            ms = sorted(1000 * float(r["check_seconds"]) for r in ref)
-            med = lambda v: statistics.median(v) if v else 0  # noqa: E731
-            lines.append(f"{lo}--{hi} & \\texttt{{{config}}} & {_n(len(x))} & {_n(len(ok))} & "
-                         f"{len(rej)} & {_n(len(x) - len(ref))} & "
-                         f"{_n(sum(int(r['steps_definite']) for r in ok))} & "
-                         f"{_n(sum(int(r['steps_better']) for r in ok))} & "
-                         f"{_n(sum(int(r['matching_edges']) for r in ok))} & "
-                         f"{_n(round(med(gz)))} & {med(ms):.2f} \\\\")
-        if config == "csearch":
-            lines.append("\\midrule")
-        for r in rows:
-            if r["config"] == config:
-                tot[(config, "n")] += 1
-                tot[(config, "ok")] += r["check_ok"] == "True"
-                tot[(config, "rej")] += r["status"] == "unsat" and r["check_ok"] == "False"
-                if r["check_ok"] == "True":
-                    tot[(config, "gz")] += int(r["gz_bytes"])
-                    tot[(config, "s")] += float(r["check_seconds"])
-                    tot[(config, "nodes")] += int(r["nodes"])
-    body = ["\\begin{tabular}{@{}llrrrrrrrrr@{}}", "\\toprule",
-            "Customers & Config. & Inst. & Verified & Rejected & Unknown & Definite & Better & "
-            "Matching edges & gz bytes (median) & Check ms (median) \\\\",
+    for r in rows:
+        c = r["config"]
+        tot[(c, "n")] += 1
+        tot[(c, "ok")] += r["check_ok"] == "True"
+        tot[(c, "rej")] += r["status"] == "unsat" and r["check_ok"] == "False"
+        if r["check_ok"] == "True":
+            tot[(c, "gz")] += int(r["gz_bytes"])
+            tot[(c, "s")] += float(r["check_seconds"])
+            tot[(c, "nodes")] += int(r["nodes"])
+    body = ["\\begin{tabular}{@{}lrrrrrr@{}}", "\\toprule",
+            "Customers & Instances & Verified & Rejected & Not emitted & "
+            "Median size (bytes, gzip) & Median check (ms) \\\\",
             "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     for c in ("csearch", "default"):
         body.append(f"% total {c}: {tot[(c, 'ok')]} of {tot[(c, 'n')]} verified, "
@@ -315,11 +320,15 @@ def dataset_table() -> str:
             if i != 1:
                 tot[i] += v
         label = col.replace("&", "\\&")
+        if "second copy" in col:
+            label += "$^{a}$"
         lines.append(f"{label} & " + " & ".join(_n(v) for v in row) + " \\\\")
     lines.append("\\midrule")
     lines.append("All & " + " & ".join("" if i == 1 else _n(tot[i]) for i in range(7)) + " \\\\")
     body = ["\\begin{tabular}{@{}lrrrrrrr@{}}", "\\toprule",
-            "Collection & Files & Classes & Owned & Refutation & Bound & Upper bound & "
+            " & & & & \\multicolumn{2}{c}{Certified} & & \\\\",
+            "\\cmidrule(lr){5-6}",
+            "Collection & Files & Classes & Counted here & by search & by bound & Upper bound only & "
             "No witnessed value \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     return _write("dataset.tex", "paper2/data/dataset/{index,classes}.csv.gz", body)
 

@@ -91,7 +91,7 @@
   - Move "What a rule must satisfy" to where it is used, and the remaining
     machinery to Appendix B.
 
-- [ ] **06 Computational results and the dataset** (review change 6).
+- [x] **06 Computational results and the dataset** (review change 6).
   - **An experimental setup subsection:** hardware (read it with `lscpu` and
     `free`; state the core count used), language and compiler, budgets,
     instances and configurations, defined in plain words.

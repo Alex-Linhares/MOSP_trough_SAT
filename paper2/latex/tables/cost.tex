@@ -2,12 +2,15 @@
 % Do not edit by hand.
 \begin{tabular}{@{}llrrrrr@{}}
 \toprule
-Where & Vertices & Pairs finished & Nodes, published & Nodes, repaired & Ratio & Worst pair \\
+Instances & Vertices & Pairs finished & Nodes, published & Nodes, repaired & Total ratio & Largest pair ratio \\
 \midrule
-MOSP corpus, \texttt{default} & 9--40 & 6,135 of 6,135 & 228,147 & 228,154 & 1.00003 & 1.009 \\
-MOSP corpus, \texttt{csearch} & 9--40 & 6,135 of 6,135 & 202,962 & 202,971 & 1.00004 & 1.040 \\
-Chu \& Stuckey classes & 50--100 & 118 of 125 & 1,358,096,671 & 1,362,205,210 & 1.00303 & 1.013 \\
-Chu \& Stuckey classes, cap $2\times10^8$ nodes & 125 & 11 of 23 & 90,969,508 & 90,961,419 & 0.99991 & 1.000 \\
-Graph pathwidth, whole descents & 4--2{,}916 & 731 of 880 & 2,977,849,807 & 3,038,670,717 & 1.020 & -- \\
+\multicolumn{7}{@{}l}{\emph{Open stacks: one refutation of the optimum minus one per pair}} \\
+\quad MOSP corpus, base & 9--40 & 6,135 of 6,135 & 228,147 & 228,154 & 1.00003 & 1.009 \\
+\quad MOSP corpus, with better move & 9--40 & 6,135 of 6,135 & 202,962 & 202,971 & 1.00004 & 1.040 \\
+\quad Chu \& Stuckey, with better move & 50--100 & 118 of 125 & 1,358,096,671 & 1,362,205,210 & 1.00303 & 1.013 \\
+\quad Chu \& Stuckey, cap $2\times10^8$ nodes & 125 & 11 of 23 & 90,969,508 & 90,961,419 & 0.99991 & 1.000 \\
+\addlinespace
+\multicolumn{7}{@{}l}{\emph{Graph pathwidth: one whole descent per pair, 120\,s each}} \\
+\quad VSPLIB, colouring, named, 500 Rome & 4--2{,}916 & 731 of 880 & 2,977,849,807 & 3,038,670,717 & 1.020 & -- \\
 \bottomrule
 \end{tabular}

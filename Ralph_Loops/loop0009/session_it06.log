@@ -1,0 +1,155 @@
+# session it06 started 2026-10-06 18:25:56
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; grep -n "06\b\|Computational" Ralph_Loops/loop0009/iterations.md | head; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/sol
+  > $ cd /home/al/dev/MOSP; grep -n "Change 6\|change 6\|^## \|^### " paper2/review_readability.md | head -80
+  > $ cd /home/al/dev/MOSP; sed -n 85,100p Ralph_Loops/loop0009/iterations.md; sed -n 13,50p paper2/review_readability.md; sed -n 162,240p paper2/review_readability.m
+  > $ cd /home/al/dev/MOSP; sed -n 94,115p Ralph_Loops/loop0009/iterations.md; echo ----; sed -n 195,240p paper2/review_readability.md; sed -n 325,366p paper2/review_
+  > $ cd /home/al/dev/MOSP; sed -n 606,617p paper2/review_readability.md; grep -n "§5\|Section 5\|sec:results\|s4:4[5-9][0-9]\|s4:5[0-9][0-9]\|csearch\|Table 4\.[3-6]
+
+Now the current section 5 and its tables.
+  > $ cd /home/al/dev/MOSP/paper2/latex; ls; cat -n sec5_results.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; for f in cost split certificates dataset; do echo "== $f"; cat tables/$f.tex; done; grep -n "def \|^def" make_tables.py | hea
+  > $ cd /home/al/dev/MOSP; sed -n 150,330p paper2/latex/make_tables.py
+  > $ cd /home/al/dev/MOSP; timeout 120 python -m paper2.solver_fix_split --summary 2>&1 | tail -30; tail -3 paper2/data/solver_fix_split.log; grep -c "^!!!" paper2/d
+  > $ cd /home/al/dev/MOSP; lscpu | egrep "Model name|^CPU\(s\)|Thread|Core|Socket|MHz"; free -g | head -2; gcc --version | head -1; python --version; ls paper2/*.md 
+  > $ cd /home/al/dev/MOSP; grep -rn "\-O[23]\|march" --include=*.py --include=Makefile --include=*.toml --include=*.cfg satisfiability pathwidth_solver setup.py 2>/d
+  > $ cd /home/al/dev/MOSP; sed -n 460,500p paper2/solver_fix.md; sed -n 1595,1639p paper2/solver_fix.md
+
+I'm reading the sources for the new setup subsection (hardware, budgets, configurations). Next I'll rewrite Section 5.
+  > $ cd /home/al/dev/MOSP; grep -n -i "budget\|60 s\|workers\|checker\|verif" paper2/certificates.md | head -30; grep -n -i "budget\|minor certificate\|nauty\|core-h
+  > $ cd /home/al/dev/MOSP; sed -n 40,115p paper2/dataset.md; sed -n 66,112p paper2/certificates.md
+  > $ cd /home/al/dev/MOSP; sed -n 116,185p paper2/dataset.md
+  > $ grep MemTotal /proc/meminfo; uname -r; cat /etc/os-release | head -2; cd /home/al/dev/MOSP; grep -n "Ryzen\|9950X\|hardware" -r paper2/*.md pathwidth_solver/PLA
+  > $ cd /home/al/dev/MOSP; grep -rn "def sparse_enough_for_better_move" -A15 satisfiability/ | head -25; grep -n "better move\|Theorem 2\|old move\|memo" paper2/late
+  > $ cd /home/al/dev/MOSP; grep -n "BETTER_MOVE_DENSITY =" satisfiability/*.py; grep -n "old_move\|memo" satisfiability/mosp_solver.py | grep -i "csearch\|config\|de
+
+Checking how the two search configurations differ, so I can define them in plain words.
+  > $ cd /home/al/dev/MOSP; grep -n "old_move\|better_move\|memo\|use_memo\|sparse_enough" benchmarks/csearch.py | head -20; grep -n "def configs\|CONFIG\|\"default\"
+  > $ cd /home/al/dev/MOSP; sed -n 38,60p paper2/certificates.py; sed -n 88,105p paper2/solver_fix_cost.py; sed -n 90,104p benchmarks/csearch.py
+
+Now I'll look at the conclusion placeholder and Appendix B, where moved material will go.
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat sec6_conclusion.tex; grep -n "section\|label" sec9b_appendix_machinery.tex; cat sec7_data.tex | head -60; grep -n "sec:pr
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 150,180p sec1_intro.tex; grep -n "600\|Rome\|Coudert" sec3_names.tex | head; sed -n 455,470p sec4_search.tex; grep -n 
+
+Regenerating the split table and checking which tests touch the table generators.
+  > $ cd /home/al/dev/MOSP; grep -rln "make_tables\|tables/split\|certificates_table\|Owned" tests/ | head; python -c "
+from paper2.latex import make_tables as m; pri
+  > $ cd /home/al/dev/MOSP; grep -n "def targets" -A25 paper2/solver_fix_split.py; grep -n "make_tables\|tables/" tests/test_paper2_latex.py | head
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p tests/test_paper2_latex.py
+  > $ cd /home/al/dev/MOSP; sed -n 395,451p paper2/dataset.md; sed -n 186,250p paper2/dataset.md
+
+Now editing the table generators: plain configuration names, a MOSP/graph split in the cost table, seven columns for certificates, and clearer dataset headers.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("paper2/latex/make_tables.py"); s = p.read_text()
+old_cost = s[s.index("def cost_table() -> str:"):s.index("#
+  > $ cd /home/al/dev/MOSP; grep -n "### Table 4" -A14 paper2/solver_fix.md | head -30; grep -n "addlinespace\|booktabs" paper2/latex/main.tex
+  > $ sed -i 's/\\\\quad Graph benchmark collections/\\\\quad VSPLIB, colouring, named, 500 Rome/' paper2/latex/make_tables.py && grep -n "500 Rome" paper2/latex/make
+
+Now the certificates, split and dataset generators.
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("paper2/latex/make_tables.py"); s = p.read_text()
+# certificates: one configuration in the body, seven column
+  > $ sed -i 's/"Median size (bytes) \& Median check (ms)/"Median size (bytes, gzip) \& Median check (ms)/' paper2/latex/make_tables.py && python -c "
+from paper2.lat
+  > $ cd /home/al/dev/MOSP; grep -n "deadline" paper2/solver_fix_cost.py | head; grep -n "### Table 2\|### Table 3" -A6 paper2/solver_fix.md | head -20; grep -n "def 
+  > $ cd /home/al/dev/MOSP; python - <<'EOF'
+import csv,collections
+c=collections.Counter()
+for r in csv.DictReader(open("paper2/data/solver_fix_split_tasks.csv")):
+ 
+
+Writing the new Section 5 now.
+  > Write /home/al/dev/MOSP/paper2/latex/sec5_results.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex && python - <<'EOF'
+from pathlib import Path
+p=Path("sec5_results.tex"); s=p.read_text()
+rep = {
+"Every computation in this se
+  > $ sed -i 's/and 4, which need hundreds of core-hours each, so their search was split:/and 4. They are too large for one worker, so their search was split:/' sec5_
+
+Adding the split table to Appendix B.
+  > $ tail -15 sec9b_appendix_machinery.tex
+  > $ cat >> sec9b_appendix_machinery.tex <<'EOF'
+
+\subsection{The split re-certification}
+\label{app:split}
+
+Table~\ref{tab:split} gives the seven hardest re-certifi
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path("sec9b_appendix_machinery.tex"); s=p.read_text()
+s=s.replace("This appendix holds the material that supports Se
+  > $ sed -i 's/^Section~\\ref{sec:results} adds a certificate checker for individual/Section~\\ref{sec:certs} adds a certificate checker for individual/' sec4_search
+
+Builds clean; 36 pages. Let me look at the Section 5 pages for layout.
+  > $ pdftotext -layout main.pdf - | grep -n "Computational results and a dataset\|^ *6 *Conclusion\|Experimental setup\|A dataset with certified\|The split re-certif
+  > $ mkdir -p /tmp/p2 && pdftoppm -r 60 -f 20 -l 25 -png main.pdf /tmp/p2/pg && ls /tmp/p2
+  > Read /tmp/p2/pg-21.png
+  > Read /tmp/p2/pg-22.png
+  > Read /tmp/p2/pg-23.png
+  > Read /tmp/p2/pg-24.png
+
+Layout reads fine. Running the gate.
+  > $ cd /home/al/dev/MOSP && timeout 3000 python3 Ralph_Loops/loop0009/gate.py 2>&1 | tail -15
+
+While the gate runs, I'll update the LaTeX README's table list.
+  > $ grep -n "split\|certificates\|cost\|dataset\|sec5\|Table 5\|B\.[0-9]" README.md | head -30
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path("README.md"); s=p.read_text()
+s=s.replace("5 Computational results and a dataset (was §4.6–4.7): cost, re-certi
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"description": "gate.py result for item 06", "timeout_ms": 600000, "command": "f=/tmp/claude-1000/-home-al-dev-MOSP/ac9
+
+Meanwhile, writing the PROGRESS entry and marking the item.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009 && cat >> PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 6 — 2026-10-06 18:45 (item 06, computational results and the dataset)
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/ac98659f-e13b-43d0-af66-0677acbe2e7e/tasks/bdv79bver.output; timeout 590 bash -c "until grep -qE 'GATE (PASS|FAIL)|Tracebac
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/ac98659f-e13b-43d0-af66-0677acbe2e7e/tasks/bdv79bver.output; wc -c $f; tail -5 $f; ps aux | grep -c "[p]ytest"
+
+The gate is still in its test suites (output appears only at the end). Waiting for it.
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/ac98659f-e13b-43d0-af66-0677acbe2e7e/tasks/bdv79bver.output; timeout 590 bash -c "until [ -s $f ]; do sleep 5; done"; cat $
+  > $ python - <<'EOF'
+from pathlib import Path
+p=Path("PROGRESS.md"); s=p.read_text()
+s=s.replace("- **Pages:** 34 before, 36 after (setup subsection; Section 5 is p
+
+Item 06 is done and the gate passes (Lean build ok, one allowed `sorry`, 1,418 + 114 tests passed, no undefined references). The paper grew from 34 to 36 pages, mostly because of the new setup subsection.
+
+**What changed in Section 5 (`sec5_results.tex`):**
+- **Opening:** it now asks four questions and answers each in one sentence. What does the repair cost? Do the benchmark values survive? Can a reader check a refutation? What dataset does this make possible?
+- **5.1 Experimental setup (new):**
+  - The machine: AMD Ryzen 9 9950X, 16 cores, 128 GB. I read this from the current machine and assumed all of the section's runs used it; no document names another.
+  - The code: C built with gcc 15.2 `-O3 -march=native`, driven from Python 3.12.
+  - Plain definitions of worker, node, pair and descent.
+  - The two configurations, renamed "base" and "with better move". `csearch` and `default` are gone from the body and the tables.
+  - Definitions of the MOSP corpus and of the three kinds of provenance.
+- **5.2 Cost and benchmark values:**
+  - It now leads with "no published optimum changed".
+  - DRAT and the exhaustive subset computation are explained in plain words.
+  - The split re-certification is explained in one sentence, and its results are folded into one: 18 to 369 core-hours each, 1,112.6 in total.
+- **Two values in flight:** `Random-125-125-2-2_0` and `-2-3_0` get their own paragraph, with their status as of 6 October 2026: 2,141 and 2,354 subtasks refuted, about 430 core-hours each, and no subtask satisfiable.
+- **5.3 Certificates:** what the checker verifies is now a bulleted list.
+- **5.4 Dataset:**
+  - nauty and the minor certificate are glossed.
+  - The Frinhani row now has an explanation.
+  - The warning about which way round MOSP files are stored is kept.
+  - The paragraph on what the open classes would cost to close is moved to the conclusion placeholder, verbatim in a comment, for item 09.
+
+**Tables** (generators in `make_tables.py`, all regenerated):
+- **Cost table:** split into an open-stacks part and a graph part, with explained column headings.
+- **Certificates table:** cut from 11 columns to 7, showing one configuration.
+- **Dataset table:** "Owned" is now "Counted here", the provenance headings are clearer, and the second copy of the challenge files has a footnote.
+- **Split table:** moved to a new Appendix B.8.
+
+**One thing to know:** the split table in the paper was stale. It was read on 3 October and still showed three runs in flight. Regenerated today, it shows all seven refuted with no value changed, plus the two never-certified values still running. I recorded this as a status update at the top of the iteration entry in PROGRESS.md.
+
+The long refutation run (PID 2185545) is still alive, and its log has no `!!!` line. The item is marked `[x]`, and PROGRESS.md now reads 6/11.
+
+# result: success in 1406s, 57 turns, cost $3.40

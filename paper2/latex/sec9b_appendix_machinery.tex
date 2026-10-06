@@ -5,8 +5,8 @@
 \section{Supporting material}
 \label{app:machinery-all}
 
-This appendix holds the material that supports Sections~\ref{sec:equiv}
-and~\ref{sec:search} without being needed to follow them.
+This appendix holds the material that supports Sections~\ref{sec:equiv},
+\ref{sec:search} and~\ref{sec:results} without being needed to follow them.
 
 \subsection{Formal definitions of eight problems}
 \label{app:defs}
@@ -153,3 +153,24 @@ order and any memo policy, with the old move on or off~\leanref{runs}.
 The proof is an induction over the run, in the order in which subtrees complete:
 every old move a node holds is a sibling subtree that completed with \emph{false}
 earlier in the same run, or an inherited one that passed the reinsertion test.
+
+\subsection{The split re-certification}
+\label{app:split}
+
+Table~\ref{tab:split} gives the seven hardest re-certifications of
+Section~\ref{sec:practice} and the two values never certified, which the same
+split is refuting. Each instance's tree was expanded at the top into
+independent subtrees (tasks), and each task was refuted by one worker. The
+seven re-certifications ended with every task refuted and the value unchanged.
+No task of any instance has found an order of the smaller value.
+
+\begin{table}[h]
+\centering\small
+\caption{All seven hardest values re-certify unchanged, at 18 to 369
+core-hours each; the two values never certified are in flight, with no task
+satisfiable so far (read 6 October 2026). \emph{Value}: the stored optimum;
+\emph{$k$}: the value minus one, which must be refuted. For an instance in
+flight, the nodes and core-hours are those of the tasks finished so far.}
+\label{tab:split}
+\input{tables/split}
+\end{table}
