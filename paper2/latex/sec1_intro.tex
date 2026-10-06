@@ -10,6 +10,47 @@ only cited, and why the table appeared with no proofs and no graph
 (\texttt{paper2/plan.md}, section~1). Kashiwabara and Fujisawa (1979), Table~1's
 interval-thickness reference, is still missing.}
 
+\paragraph{The pathwidth complex.} \citet{LY2002} collected, in their
+Table~1, twelve problems from operations research, VLSI design and graph theory
+that had been studied independently and that compute, on corresponding inputs,
+``a function $f(\Pi)$ that is either equal to the number of open stacks or
+closely related to it (plus or minus one)'' \citep[p.~1764]{LY2002}. The table
+gave references, but no proofs and no graph. Table~\ref{tab:ly2002} reproduces
+it as printed. We call this cluster \emph{the pathwidth complex}. Pathwidth is
+both the name the literature uses most (Section~\ref{sec:names}) and the
+quantity through which every relation in the table is proved
+(Section~\ref{sec:equiv}). Of the twelve rows, eight are exactly pathwidth
+plus a constant, two lie within a band of width one or two, and two are false
+as Table~1 states them (Table~\ref{tab:master}).
+
+\begin{table}[tbp]
+\centering
+\caption{Display of a family of equivalent problems studied independently on
+the literature. Reproduced from \citet[Table~1, p.~1764]{LY2002}, with the
+caption, row order and wording as printed; the references are the ones the
+original cites, given here by author and year.}
+\label{tab:ly2002}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Problem & Discipline & References \\
+\midrule
+MOSP & Operations research & \citet{Yanasse1997b}; \citet{LY2002ref4} \\
+Gate matrix layout & VLSI design & \citet{LY2002ref6}; \citet{LY2002ref8} \\
+One-dimensional logic & VLSI design & \citet{LY2002ref7} \\
+PLA folding & VLSI design & \citet{LY2002ref6} \\
+Interval thickness & Graph theory & \citet{LY2002ref5} \\
+Node search game & Graph theory & \citet{LY2002ref9} \\
+Edge search game & Graph theory & \citet{LY2002ref10} \\
+Narrowness & Graph theory & \citet{LY2002ref11} \\
+Split bandwidth & Graph theory & \citet{LY2002ref12} \\
+Graph path-width & Graph theory & \citet{LY2002ref13} \\
+Edge separation & Graph theory & \citet{LY2002ref14} \\
+Vertex separation & Graph theory & \citet{LY2002ref13} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{Contributions (draft list, for the introduction to argue).}
 \begin{itemize}
 \item A census of how much each of the twelve names is used, after removing the
