@@ -1,14 +1,47 @@
-% Section 1. Placeholder: waits on the owner's PhD thesis (plan.md, section 1).
+% Section 1. Written 2026-10-06 from the first author's thesis
+% (literature/linhares_2001_phd_thesis_industrial_pattern_sequencing.pdf)
+% and the owner's account of how its Table 2.1 was assembled.
 \section{Introduction}
 \label{sec:intro}
 
-\placeholder{Section~1 waits on the owner's PhD thesis (Linhares, \emph{Industrial
-pattern sequencing problems: some complexity results and new local search
-models}, 2001), which is not yet held. It is to record how the twelve problems of
-Table~1 of \citet{LY2002} were collected, what the thesis proved and what it
-only cited, and why the table appeared with no proofs and no graph
-(\texttt{paper2/plan.md}, section~1). Kashiwabara and Fujisawa (1979), Table~1's
-interval-thickness reference, is still missing.}
+In the minimization of open stacks problem (MOSP), patterns are cut in some
+order, every piece type has a stack that opens with the first pattern that
+contains it and closes with the last, and the task is to choose the order that
+keeps the fewest stacks open at once. The first author's doctoral thesis
+\citep{Linhares2001}, supervised by the second, was about this problem and its
+relatives in industrial pattern sequencing. Its complexity chapter proves two
+things. First, MOSP is NP-hard, by a reduction from modified cutwidth: padding
+the edge--vertex incidence matrix of a graph so that every column has the same
+sum $C$ gives an instance whose number of open stacks is the modified cutwidth
+plus $C$ \citep[Proposition~2.1 and Lemma~2.2]{Linhares2001}. Second, the number
+of open stacks equals the number of tracks of a gate matrix layout, ``trivially
+from their definitions'' (Proposition~2.2). From the second it draws, as a
+corollary of the fixed-parameter tractability of gate matrix layout
+\citep{FellowsLangston1987}, that MOSP is fixed-parameter tractable
+(Corollary~2.1).
+
+Between those two results the thesis prints a table (Table~2.1, p.~13). Its
+twelve rows are problems from operations research, VLSI design and graph theory
+that compute, on corresponding inputs, ``a function $f(\Phi)$ that is either
+equal to the number of open stacks or closely related to it (plus or minus
+one)''. The rows were collected over the years of the doctorate, while reading
+the literature of each field. Each comes with a reference and nothing else. No
+row's relation to open stacks was checked, no published proof was restated,
+and no graph says which problem reduces to which. The table appeared again,
+row for row and with the same sentence introducing it, as Table~1 of
+\citet{LY2002}, and it has been read since as a statement of equivalence.
+\citet{GarciaDeLaBandaStuckey2007}, for instance, credit the speed of their
+fixed-$N$ search in this journal to ``the fact that the problem is fixed
+parameter tractable (Linhares and Yanasse 2002)''. The thesis's own summary of
+findings (\S7.1) does not mention the table at all.
+
+Looking back, the table was the thesis's most important finding. Twelve
+problems from three disciplines, each studied independently, are claimed to
+be one problem, and if that is true, then every result about any one of them
+transfers to all the others. This article does what the thesis did not: it
+states each problem precisely, proves what is true and refutes what is not,
+and then takes the strongest exact algorithm in the family through the same
+check.
 
 \paragraph{The pathwidth complex.} \citet{LY2002} collected, in their
 Table~1, twelve problems from operations research, VLSI design and graph theory
@@ -51,7 +84,7 @@ Vertex separation & Graph theory & \citet{LY2002ref13} \\
 \end{tabular}
 \end{table}
 
-\paragraph{Contributions (draft list, for the introduction to argue).}
+\paragraph{Contributions.}
 \begin{itemize}
 \item A census of how much each of the twelve names is used, after removing the
   search hits that use the words in other senses; pathwidth has more relevant
