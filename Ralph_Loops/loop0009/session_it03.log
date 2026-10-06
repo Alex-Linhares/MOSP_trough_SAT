@@ -1,0 +1,101 @@
+# session it03 started 2026-10-06 16:25:44
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid,etime; ls paper2/data/ | grep -i split; grep -n
+  > $ cd /home/al/dev/MOSP; cat paper2/review_readability.md
+  > $ cd /home/al/dev/MOSP; cat -n paper2/latex/sec2_equivalences.tex
+  > $ cd /home/al/dev/MOSP; grep -n '^#' paper2/review_readability.md; grep -n -i 's3:\|sec3_equiv\|Section 3\|§3\|old §3\|equivalence' paper2/review_readability.md |
+  > $ cd /home/al/dev/MOSP; sed -n 141,161p paper2/review_readability.md; sed -n 50,82p paper2/review_readability.md; sed -n 282,298p paper2/review_readability.md; se
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0009/iterations.md; cat -n paper2/latex/sec9b_appendix_machinery.tex; cat -n paper2/latex/sec9a_appendix_lean.tex | he
+
+I've read the review, the item, and the current equivalences section. Next I'll check the intro for overlap, then rewrite Section 2.
+  > $ cd /home/al/dev/MOSP; cat -n paper2/latex/sec1_intro.tex | sed -n 60,180p; ls paper2/*.py | head -40; grep -rn 'sec3_fig1_chain' paper2 --include=*.py --include
+  > $ cd /home/al/dev/MOSP; cat tests/test_paper2_latex.py | head -80; grep -rn 'lem:helly\|thm:vs\b\|tab:master\|fig:chain\|sec:problems\|thm:core\|thm:bands\|thm:fa
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/latex/check_refs.py; grep -c '@' paper2/latex/refs.bib; grep -n 'doi' paper2/latex/refs.bib | wc -l; ls literature | g
+  > $ cd /home/al/dev/MOSP; pdftotext -l 1 literature/yanasse_senne_2010_properties_preprocessing.pdf - | head -40 | grep -i -n 'doi\|journal\|vol\|203\|Yanasse\|titl
+  > $ cd /home/al/dev/MOSP; pdftotext -l 1 literature/yanasse_senne_2010_properties_preprocessing.pdf - | sed -n 1,20p; pdftotext literature/yanasse_senne_2010_proper
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/latex/refs.bib'); t=p.read_text()
+entry='''@article{YanasseSenne2010,
+  author  
+
+Added the Yanasse & Senne (2010) reference (DOI checked). Now checking it registered, then looking at the chain figure script.
+  > $ cd /home/al/dev/MOSP; timeout 60 python -m paper2.latex.check_refs 2>&1 | grep -i senne; sed -n 1,140p paper2/section3_figure.py; ls tests | grep -i 'section3\|
+  > $ cd /home/al/dev/MOSP; cat tests/test_section3_figure.py; grep -n 'figures\|graphicspath' paper2/latex/main.tex paper2/latex/Makefile | head
+  > $ cd /home/al/dev/MOSP; grep -n -i 'brute\|K_{3,3}\|K33\|complex_check\|not from Lean\|not in Lean' paper2/equivalences.md | head -20; grep -n -i 'left-edge\|left
+  > $ cd /home/al/dev/MOSP; grep -n -i 'progressive' paper2/equivalences.md paper2/problem_transformations.md | head -20
+  > $ cd /home/al/dev/MOSP; sed -n 80,100p paper2/problem_transformations.md
+  > $ cd /home/al/dev/MOSP; grep -n 'V_L\|exact core\|connection graph\|net graph\|Table~1\b\|Table~1[^.0-9]' paper2/latex/sec[3-9]*.tex | head -40
+
+Writing the new Section 2 now (problems table, run-in headings, motivated theorems, new captions).
+  > $ cd /home/al/dev/MOSP; sed -n 86,96p paper2/latex/sec5_results.tex; grep -n 'app:edge\|app:thirteenth\|app:machinery-all' paper2/latex/*.tex | grep -v sec9b
+  > Write /home/al/dev/MOSP/paper2/latex/sec2_equivalences.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n 'label{fig:example}\|label{sec:intro}\|label{sec:dataset}' *.tex; python3 - <<'EOF'
+from pathlib import Path
+p=Path('
+
+Now Appendix B gets the formal definitions, and Appendix A the proof-route and computed-facts notes.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+from pathlib import Path
+p=Path('sec9b_appendix_machinery.tex'); t=p.read_text()
+defs=r'''\subsection{Forma
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+from pathlib import Path
+p=Path('sec9a_appendix_lean.tex'); t=p.read_text()
+old="each computed by brute for
+  > Read /home/al/dev/MOSP/paper2/figures/sec3_fig1_chain.png
+  > $ cd /home/al/dev/MOSP; pdfinfo paper2/latex/main.pdf | grep Pages; make -C paper2/latex 2>&1 | tail -3; make -C paper2/latex check 2>&1 | tail -5; pdfinfo paper2
+  > $ cd /tmp && rm -f s2p-*.png; pdftotext -layout /home/al/dev/MOSP/paper2/latex/main.pdf - | grep -n '^\s*2\s*The equivalences\|^\s*3\s*The names\|Table 2.1\|^\f' 
+  > $ cd /tmp && pdftoppm -f 4 -l 10 -r 50 -png /home/al/dev/MOSP/paper2/latex/main.pdf s2p && ls s2p*
+
+Draft builds (32 pages). Checking the page layout of Section 2 for float waste.
+  > $ cd /tmp && python3 -c "
+from PIL import Image
+ims=[Image.open(f's2p-{i:02d}.png') for i in range(4,11)]
+w=sum(i.width for i in ims); h=max(i.height for i in ims
+  > Read /tmp/s2strip.png
+  > $ cd /home/al/dev/MOSP; grep -n 'clearpage\|newpage\|input{sec\|include{sec' paper2/latex/main.tex
+  > $ cd /home/al/dev/MOSP; grep -n 'FloatBarrier\|placeins\|afterpage' paper2/latex/*.tex | head; pdftotext -f 9 -l 9 -layout paper2/latex/main.pdf - | tail -15
+  > $ cd /tmp && pdftoppm -f 5 -l 5 -r 80 -png /home/al/dev/MOSP/paper2/latex/main.pdf p5
+  > Read /tmp/p5-05.png
+  > $ cd /home/al/dev/MOSP; sed -i 's/@{}>{\\raggedright}p{3.2cm}>{\\raggedright\\arraybackslash}X@{}/@{}>{\\raggedright}p{3.6cm}>{\\raggedright\\arraybackslash}X@{}/
+
+Running the gate (lake build, tests, LaTeX check) in the background; meanwhile drafting the PROGRESS entry.
+  > $ cd /home/al/dev/MOSP; grep -c '' paper2/latex/sec2_equivalences.tex; grep -n 'p{3.6cm}\|second rests' paper2/latex/sec2_equivalences.tex; ps -p 2185545 -o pid= 
+  > $ until grep -q 'GATE' /tmp/claude-1000/-home-al-dev-MOSP/4c1715f8-b0e7-4e55-8e14-5859e4f4fe5b/tasks/bjz245jtt.output 2>/dev/null; do sleep 15; done; tail -15 /tm
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/4c1715f8-b0e7-4e55-8e14-5859e4f4fe5b/tasks/bjz245jtt.output | tail -20; ps aux | grep -c pytest
+  > $ until grep -q 'GATE' /tmp/claude-1000/-home-al-dev-MOSP/4c1715f8-b0e7-4e55-8e14-5859e4f4fe5b/tasks/bjz245jtt.output 2>/dev/null; do sleep 15; done; tail -15 /tm
+
+Gate passes. Writing PROGRESS.md and marking the item done.
+  > $ cd /home/al/dev/MOSP; python -m pytest -q tests/test_paper2_latex.py tests/test_section3_figure.py 2>&1 | tail -1; python3 - <<'EOF'
+from pathlib import Path
+p=
+
+Item 03 is done: Section 2 (the equivalences) is rewritten for readability, and the full gate passes. That covers lake build, the tests (1416 passed, plus 114 in `pathwidth_solver`) and no undefined references. No theorem, number or claim changed.
+
+**What changed in `paper2/latex/sec2_equivalences.tex`:**
+- **Opening:** it now says the section answers the first half of the paper's question. It defines exact, band and false using the introduction's two readings of "plus or minus one", gives the answer (8 exact, 2 bands, 2 false) and says how the section is organised. The 2002 quotation the introduction already gives is not repeated.
+- **The problems:** pathwidth, vertex separation, MOSP and gate matrix layout are still defined in full. The other eight now sit in a new Table 2.1, one plain line each. "Progressive" and "bandwidth" are now defined. Their formal definitions moved unchanged to a new Appendix B.1.
+- **What is true:** this part now has four headings: *The hub*, *The exact core*, *Bands*, *False rows*. Each theorem is introduced before it is stated and followed by one sentence on what it means for the table.
+  - The Helly lemma is folded into the proof of the clique lemma.
+  - The MOSP theorem is introduced through Figure 1.1(d).
+  - "Exact core" is now defined, matching Section 5's list.
+  - The left-edge algorithm is cited (Möhring 1990, p. 31).
+  - The arithmetic behind the bands is spelled out.
+- **Pattern graph remark:** it now has a reason to be there, citing Yanasse & Senne (2010). I added that reference to `refs.bib`, checked its DOI, and the DOI cache picked up the new entry.
+- **Moved to Appendix A:** the remark on the proof route for node search (crusade argument), and one sentence on which facts are computed rather than proved in Lean.
+- **Summary table (now Table 2.2):** the column "Proved in" is renamed "Published source", the caption leads with the conclusion, and the misattribution of the edge-separation row is a footnote.
+- **Figure 2.1:** the caption leads with the conclusion. I removed the progressive pebbling node, which is defined only in Appendix B, regenerated the figure and updated its test.
+
+The draft grows from 30 to 32 pages, mainly from the new Table 2.1 and Appendix B.1.
+
+**Left for later items (recorded in PROGRESS.md):**
+- Section 3 starts on a new page, leaving half of page 9 blank (item 04).
+- Section 3 still calls the 2002 table "Table 1" (item 04).
+- The figure file is still named `sec3_fig1_chain` (item 07).
+- Section 5 still says "Table 1's exact core" (item 08).
+
+The long split run (PID 2185545) is still alive and its log has no `!!!` line. PROGRESS.md is at 3/11 and the item is marked `[x]`. Nothing is committed.
+
+# result: success in 1284s, 41 turns, cost $2.85

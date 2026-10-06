@@ -1,4 +1,4 @@
-"""Figure 3.1 of the LaTeX draft: the equivalence chain, drawn for print (loop0008 item 09).
+"""Figure 2.1 of the LaTeX draft (Figure 3.1 before loop0009): the equivalence chain, drawn for print (loop0008 item 09).
 
     python -m paper2.section3_figure          # writes figures/sec3_fig1_chain.{pdf,png}
 
@@ -8,10 +8,10 @@ The same content as `figures/equivalence_chain.dot` (section 3's working figure,
 theorem names, which are in the draft's footnotes and in `equivalences.md`.
 Two edges of the working figure are left out because they follow from the
 others: `mns = θ` (from `mns = vs + 1`, `vs = pw` and `θ = pw + 1`) and
-`ns = vs + 1` (from `ns = mns`). Section 3's thirteenth member is added in its
-graph form: the minimum progressive pebbling number of Kirousis & Papadimitriou
-(1986), `mpb(G) = pw(G) + 1` (`mpb_eq_pathwidth_add_one`, any nonempty graph);
-Lengauer's `pbw` is stated on derived dags and is left to the text. Edge styles:
+`ns = vs + 1` (from `ns = mns`). The thirteenth member (progressive pebbling,
+`mpb(G) = pw(G) + 1`) was drawn here until loop0009 item 03 and is now left to
+Appendix B, where it is defined, so the figure shows only the table's
+problems and the two exact variants of its false rows. Edge styles:
 solid, exact and proved; dashed, a band, proved; dotted, LaPaugh's `es = pes`,
 the one relation not proved (no row needs it); dark red with a cross, a
 Table 1 claim that is false, with a counterexample family proved.
@@ -31,8 +31,7 @@ NODES = {
     "MF": (1.5, 3.0, "multiple\nfolding", False),
     "T": (2.6, 3.0, "$t(M)$\ngate matrix\nlayout", False),
     "Z": (3.75, 3.0, "$Z(M)$\nMOSP", False),
-    "PB": (4.95, 3.0, r"$\mathrm{mpb}(G)$" "\nprogr. pebbling", False),
-    "VSG": (6.15, 3.0, "VSG\nvertex game", False),
+    "VSG": (4.95, 3.0, "VSG\nvertex game", False),
     "L": (0.45, 1.85, "tracks\none-dim.\nlogic", False),
     "TH": (1.75, 1.85, r"$\theta(G)$" "\ninterval\nthickness", False),
     "PW": (3.3, 1.85, r"$\mathrm{pw}(G)$" "\npathwidth", False),
@@ -51,7 +50,6 @@ EDGES = [
     ("MF", "T", r"$=t$", "exact", 0),
     ("T", "Z", r"$=Z$", "exact", 0),
     ("Z", "PW", r"$Z=\mathrm{pw}+1$", "exact", 0),
-    ("PB", "PW", r"$=\mathrm{pw}+1$", "exact", 0),
     ("L", "TH", r"$=\theta(H)$", "exact", 0),
     ("TH", "PW", r"$\theta=\mathrm{pw}+1$", "exact", 0),
     ("VS", "PW", r"$\mathrm{vs}=\mathrm{pw}$", "exact", 0),

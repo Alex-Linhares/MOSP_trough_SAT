@@ -20,6 +20,16 @@ theorem named in the paper. The development has one \texttt{sorry}, a
 conjecture about lower bounds that no result of this paper uses. The part of
 the development behind Section~\ref{sec:search} has no \texttt{sorry} at all.
 
+One Lean proof takes a different route from the published one: the proof
+that node search is monotone (Theorem~\ref{thm:core}(5)) follows the crusade
+argument of \citet{BienstockSeymour1991}, not the reduction to edge search of
+\citet{LaPaugh1993} on which \citet{LY2002ref10} rely. A few facts in the paper
+are computed rather than proved: that every end of the two bands occurs
+(the values of $K_2$, $K_{1,3}$ and $K_{3,3}$ after Theorem~\ref{thm:bands}),
+each computed by brute force from the quantity's own definition; the
+search for smaller counterexamples (Appendix~\ref{app:minimality}); and the
+computational results of Section~\ref{sec:results}.
+
 {\small
 \begin{longtable}{@{}>{\raggedright}p{1.0cm}>{\raggedright}p{6.6cm}>{\raggedright\arraybackslash}p{8.0cm}@{}}
 \caption{Each result of the paper and its formal statement in Lean.}\label{tab:lean}\\

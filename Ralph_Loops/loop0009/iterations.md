@@ -49,7 +49,7 @@
   - **The abstract.** Rewrite it to match: the question, then the four
     results.
 
-- [ ] **03 The equivalences section** (review §3–5 for old §3).
+- [x] **03 The equivalences section** (review §3–5 for old §3).
   - Open with what the section establishes and how it is organised: the
     exact rows, the bands, the false rows.
   - Motivate each theorem before stating it, with one plain sentence after

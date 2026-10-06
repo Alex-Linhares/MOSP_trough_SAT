@@ -8,10 +8,12 @@ def test_every_edge_joins_two_drawn_nodes():
     names = set(s3.NODES)
     assert all(a in names and b in names for a, b, *_ in s3.EDGES)
     # pathwidth is the hub: the reference every exact row is attached to
-    assert {"Z", "TH", "VS", "NU", "SB", "CW", "PB"} <= {a for a, b, *_ in s3.EDGES if b == "PW"}
+    assert {"Z", "TH", "VS", "NU", "SB", "CW"} <= {a for a, b, *_ in s3.EDGES if b == "PW"}
     # the two false rows of Table 1, and nothing else, are drawn as false
     assert {a for a, b, l, kind, *_ in s3.EDGES if kind == "false"} == {"PLA", "CW"}
     assert {n for n, v in s3.NODES.items() if v[3]} == {"PLA", "CW"}
+    # mpb (the thirteenth member) lives in Appendix B, not in the figure
+    assert "PB" not in names
 
 
 def test_print_limits(tmp_path, monkeypatch):

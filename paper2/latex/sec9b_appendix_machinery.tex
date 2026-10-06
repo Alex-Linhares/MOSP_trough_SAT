@@ -8,6 +8,51 @@
 This appendix holds the material that supports Sections~\ref{sec:equiv}
 and~\ref{sec:search} without being needed to follow them.
 
+\subsection{Formal definitions of eight problems}
+\label{app:defs}
+
+These are the formal definitions of the eight problems that
+Table~\ref{tab:problems} states in one line. As in Section~\ref{sec:problems},
+each is a decision problem with an integer $k$, and its value is the least $k$
+for which the answer is yes.
+
+\begin{description}
+\item[One-dimensional logic.] Given gates, nets and the nets each gate connects,
+  is there an order of the gates whose net intervals have an interval graph of
+  clique number at most $k$? Its \emph{net graph} $H$ joins two nets that
+  share a gate. A \emph{boundary} variant pins two gates to the ends
+  \citep[\S\S II--IV]{LY2002ref7}.
+\item[PLA folding $\pla(M)$.] As gate matrix layout, with at most two nets per
+  track. With no such bound (\emph{multiple folding}) it is gate matrix layout
+  itself \citep[pp.~25, 36]{LY2002ref6}.
+\item[Interval thickness $\theta(G)$.] Is there an interval supergraph of $G$ on
+  the same vertices with clique number at most $k$?
+  \citep[p.~182]{LY2002ref9}; \citep[p.~31]{LY2002ref6}.
+\item[Node search $\ns(G)$.] Can searchers, placed on and removed from vertices,
+  clear every edge with at most $k$ on the graph at once, where an edge is
+  cleared when both ends are guarded and a clear edge is recontaminated by a
+  searcher-free path to a contaminated one? $\mns(G)$ is the same over strategies
+  that never recontaminate \citep[p.~181]{LY2002ref9}; \citep[\S2]{LY2002ref10}.
+\item[Edge search $\es(G)$.] The same game with a third move, sliding a searcher
+  along an edge, which clears that edge; $\pes(G)$ for progressive strategies,
+  which never recontaminate an edge
+  \citep[p.~208]{LY2002ref10}; \citep[p.~53]{EllisSudboroughTurner1994}.
+\item[Narrowness $\nu(G)$.] Is there an order $v_1,\dots,v_n$ such that the
+  following process never holds more than $k$ vertices: at step $i$ add $v_i$,
+  then remove every $v_j$, $j\le i$, with no neighbour $v_\ell$, $\ell>i$?
+  \citep[\S2]{LY2002ref11}.
+\item[Split bandwidth $\sbw(G)$.] Is there a graph obtained from $G$ by
+  repeatedly splitting a vertex into an edge, its neighbours partitioned between
+  the two ends, with bandwidth at most $k$? \citep[\S3.2]{LY2002ref12}.
+\item[Edge separation.] The Linhares--Yanasse table cites \citet{LY2002ref14},
+  which supports three
+  readings: cutwidth $\cw(G)$, the least over layouts of the most edges crossing
+  a gap (p.~468); modified cutwidth $\mcw(G)$, counting only edges that pass
+  strictly over a vertex (Definition~6); and Lengauer's vertex separator game
+  $\VSG(G)$, the least $K$ such that the vertices can be pebbled in an order that
+  leaves at most $K$ unpebbled vertices adjacent to pebbled ones (p.~467).
+\end{description}
+
 \subsection{Edge cases and a gap in a published proof}
 \label{app:edge}
 
@@ -34,7 +79,7 @@ paper's own normal form, its Corollary~2.4.
 \subsection{A thirteenth member}
 \label{app:thirteenth}
 
-Progressive black-white pebbling, which is not in Table~1, belongs to the exact
+Progressive black-white pebbling, which is not in the Linhares--Yanasse table, belongs to the exact
 core. \citet[Thm~3]{LY2002ref14} gives
 $\vs(G)\le K\iff\mathrm{pbw}(G_d)\le K+2$ on the dag $G_d$ built from $G$; his
 Theorem~2 gives $\mathrm{pbw}(D)=\vs(D_u)+1$ on a dag $D$, where $D_u$ is the

@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 2/11 SOLVED
+Current: 3/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -186,3 +186,83 @@ decide how to present those two.
 - Item 06: regenerate `tables/split.tex` (see the status note above) and
   present the two never-certified values with the date checked.
 - The draft date in `main.tex` still reads 3 October 2026.
+
+---
+
+## Iteration 3 — 2026-10-06 (item 03, the equivalences section)
+
+### Completed
+- **`sec2_equivalences.tex` rewritten for readability; no theorem, number or
+  claim changed.**
+  - **Opening** now says what the section answers (the first half of the
+    central question), defines exact / band / false in terms of the intro's two
+    readings of "±1", gives the answer (8 / 2 / 2) and the organisation. The
+    2002 quotation and the two readings are no longer repeated (back-reference
+    to Section 1). One sentence on Lean + Appendix A, and "where a result is
+    published we cite the proof and do not repeat it".
+  - **2.1 The problems:** pathwidth, vertex separation, MOSP and gate matrix
+    layout kept in full (with "interval property" named and Figure 1.1
+    referenced); the other eight in a new **Table 2.1**, one line of intuition
+    each ("progressive" now defined; "bandwidth" defined). Their formal
+    definitions moved verbatim to new **Appendix B.1** (`app:defs`).
+  - **2.2 What is true** (`sec:true`) has run-in headings *The hub*, *The exact
+    core*, *Bands*, *False rows*. Each theorem is motivated before and
+    followed by a "For the table, …" sentence.
+  - **Helly lemma folded** into the proof of Lemma 2.1 (cliques sit in a bag);
+    "Two lemmas carry most of the exact rows" replaced by an accurate
+    statement (the lemma serves the MOSP theorem). Theorem 2.2 (vs = pw) is
+    headed "known", sketch cut to three sentences.
+  - **Theorem 2.3 (MOSP = pw + 1)** is announced through Figure 1.1(d) (the
+    active sets of the good order are the bags).
+  - **Pattern graph remark** motivated with Yanasse & Senne (2010), new bib
+    entry `YanasseSenne2010` (DOI 10.1016/j.ejor.2009.09.017, verified by
+    `check_refs`, cache updated).
+  - **"Exact core" defined** (the eight exact rows plus multiple folding and
+    the vertex separator game), matching Section 5's list.
+  - **Left-edge algorithm cited** (Möhring 1990, p. 31, as in
+    `equivalences.md`).
+  - **Bands:** the arithmetic is spelled out (sb ∈ [Z−1, Z], es ∈ [Z−1, Z+1]),
+    in the text and in the summary. The brute-force values are said once to be
+    computed, not proved; "Fomin" now cited by key.
+  - **Crusade-argument remark moved to Appendix A's preamble**, with a new
+    sentence there listing what is computed rather than proved (band ends,
+    the minimality search, Section 5's results).
+  - **Misattribution of edge separation** is now a footnote of Table 2.2.
+  - **Table 2.2 (was 2.1):** column "Proved in" → "Published source"; caption
+    leads with the conclusion.
+  - **Figure 2.1:** caption leads with the conclusion; **mpb removed** from the
+    figure (it is defined only in Appendix B.2); VSG moved into its slot.
+    `paper2/section3_figure.py` regenerated; `tests/test_section3_figure.py`
+    updated (asserts mpb is not drawn).
+  - "Table~1" → "the Linhares–Yanasse table" throughout Section 2 and in
+    Appendix B.2; one name, "net graph H", for the one-dimensional-logic graph
+    in Section 2.
+- **Review points closed:** §3 Section 3 bullets (opening, axioms footnote
+  already gone, 3.1 compact table + appendix definitions, "progressive",
+  connection/net graph, run-in headings, "two lemmas", pattern graph remark,
+  crusade remark, brute-force footnote, misattribution, summary arithmetic);
+  §4 Table 3.1 (rename, conclusion caption, misattribution footnote) and
+  Figure 3.1 (conclusion caption, mpb dropped); §5 rows Lemma 3.1–3.7 and the
+  star remark; change 2's "Published source" rename; §6.2 "exact core",
+  "left-edge algorithm", "crusade argument", "progressive"; §6.3 item 8 within
+  Section 2.
+- **Pages:** 30 before, 32 after (new Table 2.1 and Appendix B.1).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  sorry 1/1, 1416 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed,
+  no undefined references, 32 pages). `tests/test_paper2_latex.py` +
+  `tests/test_section3_figure.py`: pass.
+
+### Blockers
+- None. Split run PID 2185545 alive; no `!!!` line in its log.
+
+### Next
+- Item 04 (names): Section 3 starts on a new page, leaving half of page 9
+  blank (placeins flushes Section 2's floats); check after Section 3 is cut.
+  Section 3 still says "Table~1" (≈10 times) and "This section asks a prior
+  question".
+- Item 07: the figure file is still named `sec3_fig1_chain` (Figure 2.1);
+  rename with the script if desired. Figure 2.1 still has 15 nodes (adds
+  multiple folding, VSG, pes, mns to the twelve); the caption explains them.
+- Item 08: Section 5 says "Table~1's exact core"; now that "exact core" is
+  defined in Section 2, drop "Table~1's". The notation table for Section 2 is
+  item 08's. Theorem and lemma counters are shared (Lemma 2.1, Theorem 2.2).
