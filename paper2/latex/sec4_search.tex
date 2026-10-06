@@ -25,11 +25,13 @@ edge, so the search decides pathwidth for every graph.
 The stakes are these. Two of the published dominance theorems, the
 \emph{definite move} and the \emph{better move}, are false, and so are their
 restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
-\citet{Fink2012}. Yet no wrong answer is known: no whole instance on which the
-published rules answer ``no'' wrongly has been found, and when every benchmark
-optimum that rested on the search was proved again with repaired rules, no
-value changed (Section~\ref{sec:results}). The correct form of the definite
-move was already known for pathwidth, as Tamaki's commitment lemma, and we
+\citet{Fink2012}. Yet no wrong answer is known. No whole instance has been
+found on which the published rules wrongly answer ``no''. And when every
+benchmark optimum that rested on the search was proved again with repaired
+rules, no value changed (Section~\ref{sec:results}). The correct form of the
+definite move was already known for pathwidth, as Tamaki's commitment lemma,
+which says when an exact pathwidth search may commit to one extension of a
+vertex set and try no other (Section~\ref{sec:layouts}). We
 show that it can be tested by one small bipartite matching per candidate. The
 main result, Theorem~\ref{thm:main}, says informally: \emph{with both rules
 repaired, the search is sound; whenever it answers that $k$ stacks do not
@@ -69,7 +71,7 @@ one identity carries the whole translation to pathwidth.
 A \emph{move} at $T$ closes one customer $c\notin T$, at cost
 $\cost(T,c)=|O(T\cup\{c\})\setminus T| = b(T\cup\{c\})+1$, the stacks open at
 that moment counting $c$. It is \emph{playable} when $\cost(T,c)\le k$. Write
-$P_k(T)$ when some order of $C\setminus T$ has every step playable. On entering
+$\Ext_k(T)$ (``$T$ extends'') when some order of $C\setminus T$ has every step playable. On entering
 a node the search closes every free customer, so it stands only at
 \emph{states}, sets with $S=\cl(S)$. The \emph{child} of $S$ by $c$ is
 $S\cdot c=\cl(S\cup\{c\})$. The search's predicate $\Sol_k(S)$ holds when
@@ -87,7 +89,7 @@ $a,b,c,e$ (with $d$ and $f$ closed free) costs $2,3,3,2$, the profile of
 order~A in Figure~\ref{fig:example}(a).
 
 \begin{lemma}[free moves never hurt]\label{lem:F}
-If $b(T)\le k$, then $P_k(T)\iff\Sol_k(\cl(T))$~\leanref{F}.
+If $b(T)\le k$, then $\Ext_k(T)\iff\Sol_k(\cl(T))$~\leanref{F}.
 \end{lemma}
 Closing a customer whose neighbourhood is already open opens nothing, never
 makes a later step dearer, and leaves one fewer stack open. The hypothesis is
@@ -95,7 +97,7 @@ needed: closing the free customers one by one costs $b(T)$ at each step.
 
 \begin{theorem}[the search decides pathwidth]\label{thm:decides}
 For nonempty $C$, $\Sol_k(\emptyset)\iff\pw(G)+1\le k$. On the MOSP graph of an
-instance $M$ with at least one 1, $\Sol_k(\emptyset)\iff Z(M)\le k$~\leanref{decides}.
+instance $M$ that has a 1, $\Sol_k(\emptyset)\iff Z(M)\le k$~\leanref{decides}.
 \end{theorem}
 \begin{proof}
 For a closing order $c_1,\dots,c_n$ with prefixes $S_i$, the $i$-th step costs
@@ -162,8 +164,8 @@ inherits.}
 2 & \quad $S\gets\cl(S)$ & \textcolor{gray}{free moves (Lemma~\ref{lem:F})} \\
 3 & \quad \textbf{if} $S=C$ \textbf{then return} true & \\
 4 & \quad \textbf{if} $S$ is in the memo \textbf{then return} false & \textcolor{gray}{memo} \\
-5 & \quad $P\gets$ the $c\notin S\cup Q$ with $\cost(S,c)\le k$, in index order & \textcolor{gray}{cost cut} \\
-6 & \quad $L\gets$ filter of $P$: definite move, then subset rule, then better move & \textcolor{gray}{Sections~\ref{sec:definite}--\ref{sec:other-rules}} \\
+5 & \quad $A\gets$ the $c\notin S\cup Q$ with $\cost(S,c)\le k$, in index order & \textcolor{gray}{cost cut} \\
+6 & \quad $L\gets$ filter of $A$: definite move, then subset rule, then better move & \textcolor{gray}{Sections~\ref{sec:definite}--\ref{sec:other-rules}} \\
 7 & \quad $\mathit{seen}\gets Q\setminus S$ & \\
 8 & \quad \textbf{for each} $c\in L$: & \\
 9 & \quad\quad $Q'\gets\{q\in\mathit{seen} : \cost(S\cup\{q\},c)\le k\}$ & \textcolor{gray}{old moves} \\
@@ -199,7 +201,7 @@ move fires, it keeps its customer alone.
 
 This loop is the decision procedure of \citet[Algorithm~1,
 p.~393]{KobayashiKomuroTamaki2014}, which asks whether a vertex set extends to
-a $w$-feasible permutation: replace the set by a committed extension, answer
+a $w$-feasible permutation. It has four steps: replace the set by a committed extension, answer
 from a failure table or at the full vertex set, recurse on each feasible
 one-vertex extension, and record failures. The customer search is that loop
 with $w=k-1$. The free closure and the definite move play the part of the
@@ -223,8 +225,9 @@ first. \citet[\S3.1, p.~6]{ChuStuckey2009} state:
 open(q, S), then if U$'$ = S ++ R is a solution, there exists a solution
 U = S ++ [q] ++ R$'$.
 \end{quote}
-Here ++ is concatenation of closing sequences, a \emph{solution} is a complete
-closing order with every step playable, and $\close(q,S)$ counts the customers
+Here ++ is concatenation of closing sequences, $R$ and $R'$ are closing
+sequences, a \emph{solution} is a complete closing order with every step
+playable, and $\close(q,S)$ counts the customers
 $d$ with $o(d,S)\subseteq o(q,S)$ (p.~4). The rule keeps $q$ alone. We read $d$
 as ranging over customers not yet closed, as our implementation does; read
 literally, closed customers count too, which weakens the premise, and both
@@ -304,7 +307,7 @@ O(A)\cap O(B)$; the customers themselves balance exactly.
 \end{proof}
 
 \begin{theorem}[the repaired definite move is sound]\label{thm:repaired}
-If $q\notin S$ is hereditarily definite at $S$, then $P_k(S)\Rightarrow P_k(X)$.
+If $q\notin S$ is hereditarily definite at $S$, then $\Ext_k(S)\Rightarrow \Ext_k(X)$.
 At a state with the invariant, $\Sol_k(S)\Rightarrow\Sol_k(S\cdot q)$~\leanref{repaired}.
 \end{theorem}
 \begin{proof}
@@ -359,7 +362,7 @@ shown to need the test or tie-break it carries.
 \paragraph{The subset rule.} ``If $o(c_i,S)\subseteq o(c_j,S)$ and $i<j$ \dots\
 move $j$ can be removed'' \citep[\S2, p.~5]{ChuStuckey2009}. As implemented,
 $d$ dominates $r$ when $o(d,S)\subseteq o(r,S)$ and the inclusion is strict or
-$d<r$. Every dominated playable $r$ is dropped, with a fallback that keeps $P$
+$d<r$. Every dominated playable $r$ is dropped, with a fallback that keeps $A$
 if all would go. The covering is sound for every set $S$: if
 $o(d,S)\subseteq o(r,S)$ and $r$ is playable, then $d$ is playable and
 $\Sol_k(S\cdot r)\Rightarrow \Sol_k(S\cdot d)$, because $d$ is free after $r$
@@ -398,9 +401,9 @@ through~\leanref{repbetter}.
 \emph{Two requirements.} The close count in the premise must not include the
 customers that $r$ finishes on its own; counting them makes the rule's own
 conclusion false on a 12-customer graph. And the rules must run in the order
-definite, subset, better, each citing only customers still standing: if the
+definite, subset, better, each citing only customers still standing. If the
 better move runs first, the subset rule can cite a customer the better move
-has already dropped, and an 8-customer graph loses a node through a cycle of
+has already dropped. An 8-customer graph then loses a node through a cycle of
 links that are each true~\leanref{bugs}. The second is an instance of the
 general observation of \citet[Prop.~3, Example~6]{Beck2025} that mutually
 dominating transitions must be tie-broken.
@@ -429,8 +432,8 @@ because every old move is a refutation completed earlier in the same run.
 \label{sec:theorem}
 
 \paragraph{What a rule must satisfy.} At a state $S$ with old moves $Q$, the
-cost cut keeps the playable candidates $P$ and the filter keeps a sublist
-$L\subseteq P$. The filter is \emph{node-sound} at $(S,Q)$ if, whenever every
+cost cut keeps the playable candidates $A$ and the filter keeps a sublist
+$L\subseteq A$. The filter is \emph{node-sound} at $(S,Q)$ if, whenever every
 $q\in Q$ has $\neg\Sol_k(S\cdot q)$, $\Sol_k(S)$ implies $\Sol_k(S\cdot c)$ for
 some $c\in L$~\leanref{nodesound}. In terms of coverings, a node is sound when
 two things hold. First, every link a rule cites is a true covering. Second,
@@ -441,13 +444,13 @@ the repaired filter is node-sound, and Theorem~\ref{thm:runs} that node
 soundness, the memo and the old move together give sound runs; both are in
 Appendix~\ref{app:machinery}. Together they give the main theorem.
 
-\begin{theorem}[the revised search is sound]\label{thm:main}
+\begin{theorem}[the repaired search is sound]\label{thm:main}
 Run the customer search with free moves, the memo, old moves and the filter
-definite $\to$ subset $\to$ better, the definite move firing only on a
-hereditarily definite customer and the better move citing only under the
-repaired premise. If it refutes $k$ from the root, then no closing order costs
-at most $k$, $\pw(G)>k-1$, and on the MOSP graph of an instance $M$ with at
-least one 1, $Z(M)>k$~\leanref{main}.
+definite $\to$ subset $\to$ better. Let the definite move fire only on a
+hereditarily definite customer, and the better move cite only under the
+repaired premise. If the search refutes $k$ from the root, then no closing order costs
+at most $k$, $\pw(G)>k-1$, and on the MOSP graph of an instance $M$ that has a 1,
+$Z(M)>k$~\leanref{main}.
 \end{theorem}
 
 In words: each rule throws away only moves that a kept move is proved to be at
@@ -473,7 +476,7 @@ node-sound~\leanref{notsound}. In a check of 570,206 runs with memo and old
 move, it lost the last solution at a node in 58 runs, all on graphs built
 around Counterexample~\ref{cex:definite} and all at $k$ equal to the optimum.
 Every one found a solution through another branch and answered correctly. No
-whole instance on which the published rules answer \emph{unsat} wrongly is
+whole instance on which the published rules wrongly answer ``no'' is
 known.
 
 \subsection{The rules in pathwidth language}

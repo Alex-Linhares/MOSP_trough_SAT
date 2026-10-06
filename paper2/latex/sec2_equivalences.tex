@@ -27,13 +27,43 @@ All theorems below are verified in the Lean proof assistant, unless the text
 says otherwise; Appendix~\ref{app:lean} lists the formal statements. Where a
 result is published, we cite the published proof and do not repeat it.
 
-\paragraph{Notation.} Graphs are finite and simple, $G=(V,E)$, $n=|V|$. A
-\emph{layout} is a bijection $L:V\to\{1,\dots,n\}$. For a 0/1 matrix $M$ with
-rows $R$ (customers, nets, piece types) and columns $C$ (patterns, gates,
-products), the \emph{MOSP graph} $G_M$ has vertex set $R$, with $r\sim r'$ when
-some column has a 1 in both rows; each column becomes a clique on its rows. For
-an order $\pi$ of the columns, row $r$ is \emph{active} at position $j$ if it
-has 1s in columns $x,y$ with $\pi(x)\le j\le\pi(y)$.
+\paragraph{Notation.} Table~\ref{tab:notation} lists the symbols used in the
+rest of the paper. Graphs are finite and simple. A 0/1 matrix $M$ has the
+customers as rows and the patterns as columns; in the VLSI problems the rows
+are nets and the columns gates. Row $r$ is \emph{active} at position $j$ of a
+column order $\pi$ if it has 1s in two columns $x,y$ with
+$\pi(x)\le j\le\pi(y)$, possibly $x=y$: its stack is open there. ``$M$ has a
+1'' excludes only the all-zero matrix. One letter needs care. In this section
+$k$ is the bound in each decision problem, so for pathwidth it bounds a width.
+In Section~\ref{sec:search} $k$ bounds the number of open stacks, which is one
+more than a width; we say so again there.
+
+\begin{table}[tbp]
+\centering\small
+\caption{Notation. Each symbol has one meaning throughout the paper; the
+symbols of the search are defined in Section~\ref{sec:search-def}.}
+\label{tab:notation}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$G=(V,E)$, $n=|V|$ & a graph, its vertices and edges; in Section~\ref{sec:search} the vertices are the customers, $V=C$ \\
+$L$ & a \emph{layout}, a bijection $V\to\{1,\dots,n\}$ \\
+$X_1,\dots,X_r$ & the bags of a path decomposition \\
+$M$; $C$; $P$ & a 0/1 matrix; its rows (customers, nets); its columns (patterns, gates) \\
+$G_M$ & the \emph{MOSP graph}: vertex set $C$, two customers adjacent when some pattern has a 1 in both rows; each pattern becomes a clique \\
+$H$ & the \emph{net graph} of a circuit: two nets adjacent when they share a gate \\
+$\pi$ & an order of the columns \\
+$Z(M)$, $t(M)$ & the MOSP value (fewest open stacks) and the gate matrix layout value (fewest tracks) \\
+$\pw$, $\vs$ & pathwidth and vertex separation \\
+$\theta$, $\ns$, $\mns$, $\es$, $\pes$, $\nu$, $\sbw$, $\cw$, $\mcw$, $\VSG$, $\pla$ & the values of the other problems (Table~\ref{tab:problems}) \\
+$k$ & the bound of a decision problem; in Section~\ref{sec:search}, a bound on open stacks, so width $k-1$ \\
+$w$ & a width, as in ``pathwidth $w$'' \\
+$N[c]$ & the closed neighbourhood of $c$: $c$ and its neighbours \\
+$\partial T$, $b(T)$ & the border of a vertex set $T$, the vertices outside $T$ with a neighbour in $T$; $b(T)=|\partial T|$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{The problems}
 \label{sec:problems}
@@ -139,7 +169,7 @@ Node search & \citet{LY2002ref9,LY2002ref10}; \citet{BienstockSeymour1991} & $\n
 Edge search & \citet{EllisSudboroughTurner1994}; \citet{LY2002ref10} & $\vs\le\es\le\vs+2$, also for $\pes$ & band \\
 Narrowness & \citet{LY2002ref11} & $\nu=\pw+1$ ($V\ne\emptyset$) & exact \\
 Split bandwidth & \citet{LY2002ref12} & $\pw\le\sbw\le\pw+1$ & band \\
-Path-width & \citet{LY2002ref13} & the reference & exact \\
+Pathwidth & \citet{LY2002ref13} & the reference & exact \\
 Edge separation$^{a}$ & \citet{LY2002ref14} & $\cw,\mcw$ unbounded against $\pw$ (stars); $\VSG=\max(1,\vs)$ & false; VSG exact \\
 Vertex separation & \citet{LY2002ref13} & $\vs=\pw$ & exact \\
 \bottomrule
@@ -202,16 +232,17 @@ good order are the bags of a path decomposition of the MOSP graph. The theorem
 says that this always works, in both directions.
 
 \begin{theorem}[MOSP is pathwidth plus one]\label{thm:mosp}
-If $M$ has at least one 1, then $Z(M)=\pw(G_M)+1$~\leanref{mosp}.
+If $M$ has a 1, then $Z(M)=\pw(G_M)+1$~\leanref{mosp}.
 \end{theorem}
 \begin{proof}
-($\le$) Take a decomposition of $G_M$ of width $k$. The rows of each column form
-a clique, so by Lemma~\ref{lem:clique} they lie in a bag $X_{b(c)}$. Order the
-columns by $b(c)$. If row $r$ is active at the position of column $c$, it has
-columns $x,y$ with $b(x)\le b(c)\le b(y)$, and $r\in X_{b(x)}\cap X_{b(y)}$, so the
-interval property gives $r\in X_{b(c)}$. At most $k+1$ rows are active there.
+($\le$) Take a decomposition of $G_M$ of width $k$. The rows of each column $p$
+form a clique, so by Lemma~\ref{lem:clique} they lie in a bag $X_{\beta(p)}$.
+Order the columns by $\beta(p)$. If row $r$ is active at the position of column
+$p$, it has columns $x,y$ with $\beta(x)\le\beta(p)\le\beta(y)$, and
+$r\in X_{\beta(x)}\cap X_{\beta(y)}$, so the interval property gives
+$r\in X_{\beta(p)}$. At most $k+1$ rows are active there.
 
-($\ge$) Take an order with at most $Z$ active rows at every position. The
+($\ge$) Take an order with at most $Z=Z(M)$ active rows at every position. The
 active sets, with a singleton bag for each row with no 1, form a path
 decomposition: rows sharing a column are both active at its position, and a row
 is active on an interval of positions. Its width is $Z-1$, using $Z\ge1$.

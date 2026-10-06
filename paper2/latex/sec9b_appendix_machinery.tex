@@ -29,9 +29,9 @@ for which the answer is yes.
   the same vertices with clique number at most $k$?
   \citep[p.~182]{LY2002ref9}; \citep[p.~31]{LY2002ref6}.
 \item[Node search $\ns(G)$.] Can searchers, placed on and removed from vertices,
-  clear every edge with at most $k$ on the graph at once, where an edge is
-  cleared when both ends are guarded and a clear edge is recontaminated by a
-  searcher-free path to a contaminated one? $\mns(G)$ is the same over strategies
+  clear every edge with at most $k$ on the graph at once? An edge is cleared
+  when both ends are guarded, and a clear edge is recontaminated by a
+  searcher-free path to a contaminated one. $\mns(G)$ is the same over strategies
   that never recontaminate \citep[p.~181]{LY2002ref9}; \citep[\S2]{LY2002ref10}.
 \item[Edge search $\es(G)$.] The same game with a third move, sliding a searcher
   along an edge, which clears that edge; $\pes(G)$ for progressive strategies,
@@ -49,8 +49,8 @@ for which the answer is yes.
   readings: cutwidth $\cw(G)$, the least over layouts of the most edges crossing
   a gap (p.~468); modified cutwidth $\mcw(G)$, counting only edges that pass
   strictly over a vertex (Definition~6); and Lengauer's vertex separator game
-  $\VSG(G)$, the least $K$ such that the vertices can be pebbled in an order that
-  leaves at most $K$ unpebbled vertices adjacent to pebbled ones (p.~467).
+  $\VSG(G)$, the least $k$ such that the vertices can be pebbled in an order that
+  leaves at most $k$ unpebbled vertices adjacent to pebbled ones (p.~467).
 \end{description}
 
 \subsection{Edge cases and a gap in a published proof}
@@ -61,7 +61,7 @@ is proved in Lean. On a nonempty graph with no edges, $\ns=0$ while
 $\vs+1=\theta=1$, so both equalities of \citet{LY2002ref9,LY2002ref10} need an
 edge~\leanref{edgeless-ns}.
 For a matrix with no 1s, $Z=0$ while $\pw+1=1$. Lengauer's Theorem~4 fails at
-$K=0$ on an edgeless graph~\leanref{vsg0}.
+$k=0$ on an edgeless graph~\leanref{vsg0}.
 \citet[Thm~3.9]{LY2002ref6}, $t=\ns$, fails literally on the $1\times1$ matrix
 $[1]$~\leanref{tns}.
 
@@ -79,14 +79,15 @@ paper's own normal form, its Corollary~2.4.
 \subsection{A thirteenth member}
 \label{app:thirteenth}
 
-Progressive black-white pebbling, which is not in the Linhares--Yanasse table, belongs to the exact
-core. \citet[Thm~3]{LY2002ref14} gives
-$\vs(G)\le K\iff\mathrm{pbw}(G_d)\le K+2$ on the dag $G_d$ built from $G$; his
+Progressive black-white pebbling, which is not in the Linhares--Yanasse
+table, belongs to the exact core. Write $\mathrm{pbw}$ for its value and
+$\mathrm{mpb}$ for the minimum progressive pebbling number of
+\citet{LY2002ref10}. \citet[Thm~3]{LY2002ref14} gives
+$\vs(G)\le k\iff\mathrm{pbw}(G_d)\le k+2$ on the dag $G_d$ built from $G$. His
 Theorem~2 gives $\mathrm{pbw}(D)=\vs(D_u)+1$ on a dag $D$, where $D_u$ is the
-MOSP graph of the matrix whose column $v$ is $v$ with its predecessors; and the
-minimum progressive pebbling number of \citet[Thm~3.1]{LY2002ref10} equals
-$\pw+1$. All three are proved in Lean, each with its hypothesis: Lengauer's
-Theorem~2 in its instance form fails at $K=1$ on a dag with no arcs, and
+MOSP graph of the matrix whose column $v$ is $v$ with its predecessors. And
+$\mathrm{mpb}=\pw+1$ \citep[Thm~3.1]{LY2002ref10}. All three are proved in Lean, each with its hypothesis: Lengauer's
+Theorem~2 in its instance form fails at $k=1$ on a dag with no arcs, and
 $\mathrm{mpb}=\ns$ fails on edgeless graphs~\leanref{pebbling}.
 
 \subsection{Why the published proof of the definite move fails}
@@ -138,20 +139,20 @@ filter definite $\to$ subset $\to$ better with both repairs is node-sound~\leanr
 \end{proposition}
 \begin{proof}
 If the definite move fires, Theorem~\ref{thm:repaired} applies. Otherwise the
-subset rule keeps a survivor with a solution; let $w$ be the earliest. If the
-better move dropped $w$, it cited an earlier survivor that the repaired
-argument proves solvable, contradicting the choice of $w$.
+subset rule keeps a survivor with a solution; let $u$ be the earliest. If the
+better move dropped $u$, it cited an earlier survivor that the repaired
+argument proves solvable, contradicting the choice of $u$.
 \end{proof}
 
 \begin{theorem}[runs are sound]\label{thm:runs}
-Let the filter be node-sound and return only playable customers. If at the start
-of a run the invariant holds, every memo entry is a genuine refutation, and
-every old move is refuted, then the run leaves only genuine memo entries, and if
-it answers \emph{false} at $S$ then $\neg\Sol_k(S)$. This holds for any child
+Let the filter be node-sound and return only playable customers. Suppose that
+at the start of a run the invariant holds, every memo entry is a genuine
+refutation, and every old move is refuted. Then the run leaves only genuine memo entries, and if
+it answers \emph{false} at $S$, then $\neg\Sol_k(S)$. This holds for any child
 order and any memo policy, with the old move on or off~\leanref{runs}.
 \end{theorem}
-The proof is an induction over the run, in the order in which subtrees complete:
-every old move a node holds is a sibling subtree that completed with \emph{false}
+The proof is an induction over the run, in the order in which subtrees complete.
+Every old move a node holds is a sibling subtree that completed with \emph{false}
 earlier in the same run, or an inherited one that passed the reinsertion test.
 
 \subsection{The split re-certification}

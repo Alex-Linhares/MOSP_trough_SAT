@@ -110,7 +110,7 @@
   - Regenerate any figure that needs it (vector, legible at one column, no
     text under 7 pt), with its script and test.
 
-- [ ] **08 Notation and vocabulary, whole paper** (review change 8 and §6).
+- [x] **08 Notation and vocabulary, whole paper** (review change 8 and §6).
   - One symbol per object.
   - C for customers or columns, never both.
   - k used consistently between sections, with the off-by-one made explicit

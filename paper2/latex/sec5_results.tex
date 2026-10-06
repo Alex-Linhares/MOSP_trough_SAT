@@ -45,18 +45,18 @@ budget.
 \paragraph{Configurations.} The open-stacks runs use two configurations of the
 rules of Section~\ref{sec:search}, which differ only in the better move. The
 \emph{base} configuration leaves it off. The configuration \emph{with better
-move} switches it on for instances with at most five products per customer on
+move} switches it on for instances whose customers need at most five patterns on
 average. This is the setting under which the customer search certified the
 benchmark values it proved.
 
 \paragraph{Instances.} The \emph{MOSP corpus} is the 6,376 instance files of
-five public open-stacks collections: the 2005 Constraint Modelling Challenge
-\citep{SmithGent2005} with a second copy of 46 of its files, the random
+five public open-stacks collections. They are the 2005 Constraint Modelling
+Challenge \citep{SmithGent2005} with a second copy of 46 of its files, the random
 instances of \citet{ChuStuckey2009} (30 to 125 customers), those of
 \citet{FaggioliBentivoglio1998}, and the 24 industrial SCOOP instances. They
 are the first rows of Table~\ref{tab:dataset}. A Chu--Stuckey name such as
 \texttt{Random-125-125-2-4\_0} gives the number of customers, the number of
-products, the generator's density class and the instance number. The graph
+patterns, the generator's density class and the instance number. The graph
 benchmarks are those of Section~\ref{sec:names} and Table~\ref{tab:dataset}.
 
 \paragraph{Provenance.} Every stored value comes with a witness, an order that
@@ -103,11 +103,17 @@ definite-move candidates, a rate that rises with size.
 
 \paragraph{The benchmark values survive.} No published optimum changed under
 the repaired rules. Of the 6,374 certified values in the MOSP corpus, 6,259 do
-not depend on the customer search at all. They were proved by an exhaustive
-computation over all subsets of customers (up to 15 customers), by a SAT
-refutation whose proof an independent checker accepted (in the DRAT format,
-the standard proof format for SAT solvers), by an earlier SAT search, or by a
-lower bound equal to the value. The other 115 rested on the customer search
+not depend on the customer search at all. Each was proved in one of four ways:
+\begin{itemize}
+\item by an exhaustive computation over all subsets of customers (up to 15
+  customers);
+\item by a refutation from a SAT (Boolean satisfiability) solver whose proof an
+  independent checker accepted, in DRAT, the standard proof format for SAT
+  solvers;
+\item by an earlier SAT search;
+\item or by a lower bound equal to the value.
+\end{itemize}
+The other 115 rested on the customer search
 under the published rules. The repaired search refuted the value minus one on
 all 115, so all 115 values stand (as of 6 October 2026).
 
@@ -176,7 +182,7 @@ trees are too large to ship as certificates.
 \label{sec:dataset}
 
 Section~\ref{sec:equiv} showed that one certified pathwidth $w$ answers every
-problem in the exact core: pathwidth, vertex separation and the vertex
+problem in the exact core. Pathwidth, vertex separation and the vertex
 separator game take the value $w$, and MOSP, gate matrix layout with multiple
 folding, one-dimensional logic, interval thickness, narrowness and node search
 take $w+1$. We therefore built one dataset from every benchmark collection of
@@ -220,7 +226,7 @@ benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the 17,714
 classes, 16,087 carry a certified pathwidth with a witness layout and 862 a
 witnessed upper bound. The 610 large instances of \citet{Frinhani2018}, with
 400 to 1,000 customers, are included so that the dataset covers every
-published MOSP collection we hold; none of them has a value yet, because an
+published MOSP collection we hold. None of them has a value yet, because an
 exact search at that size is out of reach.
 
 An independent checker, sharing no code with the solvers, verifies the

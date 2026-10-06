@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 7/11 SOLVED
+Current: 8/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -632,3 +632,83 @@ refuted, 431 / 434 core-hours, **no satisfiable task** (checked in
   item 08 changes the border symbol, regenerate the figure.
 - The review's optional suggestion to preview Figure 2.1 in the introduction
   was not taken (Table 1.1's verdict column already puts the answer on p. 3).
+
+---
+
+## Iteration 8 — 2026-10-06 ~20:00 (item 08, notation and vocabulary)
+
+### Completed
+- **Notation table** (new Table 2.1, `tab:notation`) at the start of Section 2;
+  the old Notation paragraph is now a short lead-in to it. Later Section 2
+  tables renumber (problems 2.2, master 2.3), all by label. Every symbol has
+  one meaning: $G=(V,E)$ with $V=C$ in §4; $M$, rows $C$ (customers, nets),
+  columns $P$ (patterns, gates); $G_M$; net graph $H$; $\pi$; $Z$, $t$; the
+  problem values; $k$ and its off-by-one; $w$ a width; $N[c]$; $\partial T$,
+  $b(T)$.
+- **Clashes removed** (review §6.3):
+  - *C*: columns are now $P$, customers $C$, everywhere (item 1).
+  - *k*: the off-by-one is stated once in Section 2's notation paragraph and
+    the table, and again in §4.1 as before (item 2).
+  - *Border*: $b(T)$ was also used in §2's MOSP proof for a bag index $b(c)$;
+    that is now $\beta(p)$, so $b$ is only the border size (item 3; $\partial$/
+    $b$ were already unified in §4 by item 05).
+  - *Z*: already used only for the MOSP value; Theorem 2.3's proof now writes
+    $Z=Z(M)$ (item 4).
+  - *P*: the predicate $P_k(T)$ clashed with patterns $P_1,\dots,P_4$ and with
+    the candidate list $P$ of Algorithm 4.1. Now the predicate is $\Ext_k(T)$
+    ("$T$ extends", new macro `\Ext`) and the candidate list is $A$ (§4,
+    Appendix A entry "defs").
+  - *w*: Prop B.1's proof used $w$ for a customer; now $u$.
+  - *K*: Lengauer's $K$ in Appendix B (VSG definition, B.2, B.3, entry vsg0)
+    is now $k$, like every other decision bound.
+  - Undefined *pbw* and *mpb* in Appendix B.3 are now defined.
+- **"Has a 1"** is the one wording: Theorem 2.3 ("has at least one 1"),
+  Theorems 4.2 and 4.8 ("with at least one 1") changed; the notation paragraph
+  says it excludes only the all-zero matrix (review §6.3, §6.2 "with a
+  requirement" — already gone after item 05).
+- **One name, "net graph $H$"**, was already done by item 03; checked
+  whole-paper (review §6.3 item 8). Table 2.3's row "Path-width" → "Pathwidth"
+  (the reproduced Table 1.1 keeps "Graph path-width" as printed).
+- **Vocabulary:** "products" → "patterns" in §3 and §5 (the better-move
+  threshold now reads "customers need at most five patterns on average", same
+  setting); "nogood recording" → "recorded the states already refuted"; SAT
+  glossed at first use (Boolean satisfiability); "\emph{unsat}" → "no";
+  "revised search" → "repaired search" (Theorem 4.8 and its Appendix A entry); `sorry` glossed
+  in Appendix A; "Tamaki's commitment lemma" glossed at first use in §4 with a
+  pointer to §4.6 (review §6.2); $R$, $R'$ in the quoted Theorem 1 glossed;
+  Appendix A's "Theorem 1" gets "(the definite move)". The intro's "Table 2.1
+  of the first author's thesis" now reads as a citation detail
+  (`\citep[Table~2.1, p.~13]`), so it cannot be confused with our Table 2.1.
+  "Table~1" for the 2002 table is gone from the body; it survives only where
+  it cites the 2002 paper's own numbering (intro) and in the conclusion
+  placeholder (reworded).
+- **Long sentences:** a script (sentences over 40 words, math and citations
+  counted as one word) found 13 in the body and appendices; all split or
+  turned into lists (§4 Kobayashi–Komuro–Tamaki loop, "two requirements",
+  §4 opening "no wrong answer", Theorem 4.8; §5 corpus definition, the four
+  ways values were proved (now a list), the exact-core sentence, Frinhani;
+  Appendix A computed facts and Lean routes; Appendix B node search, B.3,
+  Theorem B.2 and its proof; Appendix C edge search). The two left are the
+  counterexample's edge list and the checker's bulleted list.
+- **Project-internal words:** none left in the body (grep for corpus without
+  definition, engine, csearch, default, file paths, `python`); "MOSP corpus"
+  is defined in §5.1.
+- Draft date in `main.tex` → 6 October 2026.
+- **Review points closed:** change 8 (whole); §6.2 rows still open after items
+  02–06 (Tamaki's commitment lemma, "with a requirement", S ++ [q]/U′/R′);
+  §6.3 items 1–4, 6–8 (item 5 was item 02's); §6.4 (all listed sentences
+  are rewritten by earlier items or here; the rest found by script).
+- **Pages:** 36 before, 36 after.
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  sorry 1/1, 1420 passed / 2 skipped / 1 xfailed, pathwidth_solver 114
+  passed, no undefined references, 36 pages). `tests/test_paper2_latex.py`
+  passed.
+
+### Blockers
+- None. Split run PID 2185545 alive; no `!!!` line in its log.
+
+### Next
+- Item 09 (conclusion): the placeholder still lists the open items; it now
+  says "the missing reference of the Linhares–Yanasse table".
+- Figure 2.1 and Figure 4.1 use the same symbols as the text ($b(\cdot)$, pw,
+  vs, θ…); not regenerated, nothing in them changed meaning.

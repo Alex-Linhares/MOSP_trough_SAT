@@ -1,0 +1,128 @@
+# session it08 started 2026-10-06 19:43:21
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/solver_fix_split.pid) -o pid,etime; ls paper2/data/ | grep -i split; grep -n
+  > $ cd /home/al/dev/MOSP; sed -n 1,80p Ralph_Loops/loop0009/iterations.md | grep -n "08\|09" 
+  > $ cd /home/al/dev/MOSP; grep -n "08 Notation" -A25 Ralph_Loops/loop0009/iterations.md; sed -n 397,478p paper2/review_readability.md; grep -c '^!!!' paper2/data/so
+  > $ cd /home/al/dev/MOSP/paper2/latex; wc -l main.tex sec*.tex; ls tables
+  > Read /home/al/dev/MOSP/paper2/latex/sec1_intro.tex
+  > Read /home/al/dev/MOSP/paper2/latex/main.tex
+  > Read /home/al/dev/MOSP/paper2/latex/sec2_equivalences.tex
+
+Working on item 08 (notation pass): read the intro and Section 2, now reading Sections 3–5 to collect every symbol clash before editing.
+  > Read /home/al/dev/MOSP/paper2/latex/sec4_search.tex
+  > Read /home/al/dev/MOSP/paper2/latex/sec3_names.tex
+  > Read /home/al/dev/MOSP/paper2/latex/sec5_results.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat sec6_conclusion.tex sec7_data.tex; cat sec9b_appendix_machinery.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat sec9c_appendix_names.tex | sed -n 1,95p; sed -n 1,40p sec9a_appendix_lean.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n 'P_k\|\$P\$\|P)\|product\|unsat\|\bSAT\b\|at least one 1\|requirement\|\$K\|K=\|K+\|Theorem~1\b\|Theorem 1\|revised\|
+  > $ cd /home/al/dev/MOSP; grep -rn "Table 2\.\|Table~2\.\|tab:problems\|tab:notation" tests/test_paper2_latex.py paper2/latex/*.py paper2/latex/sec*.tex | head; gre
+  > Edit /home/al/dev/MOSP/paper2/latex/sec2_equivalences.tex
+
+Added a notation table to Section 2; now fixing the symbol clashes it exposes (C, P, b, "has a 1").
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+import re
+p='sec2_equivalences.tex'; s=open(p).read()
+s=s.replace(r"If $M$ has at least one 1, then $Z(M)=\
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8.py <<'EOF'
+import re
+def rep(p, pairs):
+    s=open(p).read()
+    for a,b in pairs:
+        assert a in s,(p,a)
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8b.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec3_names.tex',[(r"""They branched on
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/longs.py <<'EOF'
+import re,sys
+for f in sys.argv[1:]:
+    lines=open(f).read().split('\n')
+    txt=[]; 
+    for i,
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 198,206p sec4_search.tex; sed -n 398,406p sec4_search.tex; sed -n 444,451p sec4_search.tex; sed -n 20,30p sec9a_append
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8c.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec4_search.tex',[
+(r"""p.~393]{Kobaya
+
+Splitting the remaining long sentences in the appendices and Section 5.
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8d.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec9b_appendix_machinery.tex',[
+(r"""L
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8e.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec9a_appendix_lean.tex',[(r"""A few f
+
+Now Section 5's long sentences.
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8f.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec5_results.tex',[
+(r"""\paragraph{In
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n "modified cutwidth\|vertex-separation search\|commitment lemma\|crusade\|witness\|playable" sec1_intro.tex sec2_equiv
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/ed8g.py <<'EOF'
+exec(open('/tmp/ed8.py').read().split("rep('sec2")[0])
+rep('sec4_search.tex',[
+(r"""\citet{Fink201
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/^Path-width & \\citet{LY2002ref13} & the reference & exact/Pathwidth \& \\citet{LY2002ref13} \& the reference \& ex
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i "s/Chu and Stuckey's Theorem~1, under both readings/Chu and Stuckey's Theorem~1 (the definite move), under both readin
+  > $ cd /home/al/dev/MOSP/paper2/latex; ls -la --time-style=+%T main.pdf sec2_equivalences.tex; grep -c "Overfull" main.log; grep -n "Overfull\|undefined" main.log |
+
+Build is clean; checking the notation table's layout and one numbering collision with the thesis's "Table 2.1".
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec1_intro.tex'; s=open(p).read()
+a=r"""first printed as Table~2.1 of the first author's doctoral thesis
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec2_equivalences.tex'; s=open(p).read()
+a=r"$\theta,\ns,\mns,\es,\pes,\nu,\sbw,\cw,\mcw,\VSG,\pla$ &"
+b
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n "corpus\|engine\|loop\|python\|\.py\|\.lean\|default\b" sec[1-7]*.tex sec9*.tex main.tex | grep -v ":%" | grep -v "^[
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 /tmp/longs.py sec1_intro.tex sec2_equivalences.tex sec3_names.tex sec4_search.tex sec5_results.tex main.tex sec9*.tex
+
+Text edits done; running the paper tests and the gate.
+  > $ cd /home/al/dev/MOSP; python -m pytest -q tests/test_paper2_latex.py 2>&1 | tail -2; timeout 3000 python3 Ralph_Loops/loop0009/gate.py 2>&1 | tail -15
+
+While the gate runs, I'll write the PROGRESS entry.
+  > $ cd /home/al/dev/MOSP; git diff --stat; grep -c '^!!!' paper2/data/solver_fix_split.log; ps -p 2185545 -o pid= 
+  > $ cd /home/al/dev/MOSP; cat >> Ralph_Loops/loop0009/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 8 — 2026-10-06 ~20:00 (item 08, notation and vocabulary)
+
+### Completed
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/b19c00ce-b033-4bb1-a352-ad2cf0b0fbf8/tasks/bzi5hfiel.output; until gre
+
+Meanwhile, marking the item done in iterations.md (to be reverted if the gate fails).
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; sed -i 's/^- \[ \] \*\*08 Notation/- [x] **08 Notation/' iterations.md; sed -i 's/^Current: 7\/11 SOLVED/Current: 8\/
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/b19c00ce-b033-4bb1-a352-ad2cf0b0fbf8/tasks/bzi5hfiel.output; until gre
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/b19c00ce-b033-4bb1-a352-ad2cf0b0fbf8/tasks/bzi5hfiel.output; for i in $(seq 1 110); do grep -q "GATE" $f && break; sleep 5;
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; head -3 /tmp/claude-1000/-home-al-dev-MOSP/b19c00ce-b033-4bb1-a352-ad2cf0b0fbf8/tasks/bzi5hfiel.output; python3 - <<'
+
+Item 08 is finished and the gate passes: Lean builds, the one expected `sorry` remains, 1,420 tests pass (2 skipped, 1 expected failure), all 114 `pathwidth_solver` tests pass, there are no undefined references, and the paper stays at 36 pages. No theorem, number or claim changed.
+
+**New notation table.** Section 2 now opens with a notation table (Table 2.1), so the two Section 2 tables after it move up one number. It gives each symbol one meaning and says once that in Section 4, k counts open stacks, one more than a width.
+
+**Symbols that meant two things, now fixed:**
+- **C:** it meant customers in one place and columns in another. Now the customers are C and the patterns (columns) are P.
+- **b:** besides the border size, b also named a bag index in the proof of Theorem 2.3. That index is now β(p).
+- **P:** it meant patterns, a predicate in Section 4 and the candidate list in Algorithm 4.1. The predicate is now Ext_k(T) (a new macro), and the candidate list is A.
+- **w:** it also named a customer in the proof of Proposition B.1; that customer is now u.
+- **K:** Lengauer's K in Appendix B is now k, like every other decision bound.
+- **Undefined terms:** pbw and mpb in Appendix B.3 are now defined.
+
+**Wording:**
+- "has a 1" is now the only phrasing; Theorems 2.3, 4.2 and 4.8 used to say "at least one 1".
+- "products" became "patterns" in Sections 3 and 5.
+- "unsat" became "no", and "revised search" became "repaired search".
+- SAT, `sorry`, "nogood recording" and Tamaki's commitment lemma are explained where they first appear.
+- In the introduction, the thesis's "Table 2.1" now appears inside the citation, so it can't be confused with the new notation table.
+
+**Long sentences:** a script found 13 sentences over 40 words in the body and appendices, and I split all of them or turned them into lists. The only two left are the counterexample's edge list and a bulleted list.
+
+I updated the draft date in `main.tex` from 3 to 6 October 2026. I also reworded the conclusion placeholder to say "the Linhares–Yanasse table" instead of "Table 1"; the conclusion itself is item 09.
+
+The split run (PID 2185545) is still running, and its log has no `!!!` line. The item is marked `[x]`, PROGRESS.md has the Iteration 8 entry, and the count is 8/11. Nothing is committed.
+
+# result: success in 1238s, 43 turns, cost $3.95
