@@ -1,0 +1,134 @@
+# session it04 started 2026-10-06 17:05:24
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; sed -n '/\*\*04/,/\*\*05/p' Ralph_Loops/loop0009/iterations.md; cat paper2/data/solver_fix_split.pid; ps -p $(cat paper2/data/solver_fix_s
+  > $ cd /home/al/dev/MOSP; grep -c '^!!!' paper2/data/solver_fix_split.log; cat paper2/latex/sec3_names.tex
+  > $ cd /home/al/dev/MOSP; grep -n -i -B2 -A30 'names\|section 2\b\|change 7\|island' paper2/review_readability.md | head -300
+  > $ cd /home/al/dev/MOSP; grep -n '^#' paper2/review_readability.md; grep -n 's2:\|Section 2\|names\|island\|change 7\|Change 7' paper2/review_readability.md | head
+  > $ cd /home/al/dev/MOSP; sed -n 239,282p paper2/review_readability.md; sed -n 560,606p paper2/review_readability.md
+  > $ cd /home/al/dev/MOSP; ls paper2/latex paper2/figures; cat paper2/latex/tables/names.tex; cat paper2/latex/Makefile | head -40; grep -n 'section\|label' paper2/l
+
+Working on item 04 (the names section): gathering sources now — popularity.md, trends counts, the pathwidth solver's comparison numbers, and Chu & Stuckey §1.
+  > $ cd /home/al/dev/MOSP; wc -l paper2/popularity.md paper2/trends.py paper2/section2_figures.py pathwidth_solver/PLAN.md; grep -n -i 'coudert\|rome\|vsplib\|harwel
+  > $ cd /home/al/dev/MOSP; sed -n 176,235p pathwidth_solver/PLAN.md
+  > $ cd /home/al/dev/MOSP; grep -n -i 'rome\|vsplib\|harwell\|coudert\|challenge\|Garc' paper2/latex/sec*.tex | cut -c1-300
+  > $ cd /home/al/dev/MOSP; grep -n -i 'rome\|vsplib\|hb\b\|trees\|coudert' paper2/solver_fix.md | head -30; ls pathwidth_solver/bench/results/repaired/ 2>/dev/null |
+  > $ cd /home/al/dev/MOSP; sed -n 1205,1265p paper2/solver_fix.md
+  > $ cd /home/al/dev/MOSP; ls literature | grep -i chu; pdftotext -l 3 literature/chu_stuckey_2009.pdf - | head -120
+
+Sources gathered (Chu & Stuckey §1 confirms the challenge story; they even cite the 2002 table for "12 equivalent problems"). Now checking bib keys and the figure scripts before rewriting.
+  > $ cd /home/al/dev/MOSP; grep -n '^@' paper2/latex/refs.bib | grep -i -E 'chu|garcia|coudert|smith|gent|challenge|priem|duarte|rome|dibattista' ; grep -n -i 'secti
+  > $ cd /home/al/dev/MOSP; sed -n 60,271p paper2/section2_figures.py
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from paper2.trends import CACHE, binned
+b,c,r=binned(json.loads(CACHE.read_text()))
+print(b)
+for k in c:
+  i=b.in
+  > $ cd /home/al/dev/MOSP; python3 -c "
+import json
+from collections import Counter
+from paper2.citation_graph import CACHE, TABLE1
+d=json.loads(CACHE.read_text())
+d
+  > $ cd /home/al/dev/MOSP; grep -n 'def \|names' paper2/latex/make_tables.py | head -40; grep -n 'input\|appendix' paper2/latex/main.tex
+  > $ cd /home/al/dev/MOSP; sed -n 1,103p paper2/latex/make_tables.py; sed -n 270,290p paper2/latex/make_tables.py; cat tests/test_paper2_latex.py | head -80
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/section2_figures.py'); s=p.read_text()
+old='''    out["mosp_and_graph_theory"] =
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/latex/make_tables.py'); s=p.read_text()
+a=s.index('    rows = []\n    for d in (
+  > $ cd /home/al/dev/MOSP; sed -n 1,40p paper2/latex/sec4_search.tex; grep -n -i 'port\|graph pathwidth\|pathwidth solver' paper2/latex/sec4_search.tex paper2/latex/
+  > $ cd /home/al/dev/MOSP; sed -n 1,60p paper2/latex/sec5_results.tex; grep -n 'sec:names\|names-method\|fig:names\|tab:names\|fig:timeline\|fig:network' paper2/late
+  > $ cd /home/al/dev/MOSP; sed -n 100,185p paper2/latex/sec1_intro.tex; sed -n 25,45p paper2/latex/sec7_data.tex
+  > $ cd /home/al/dev/MOSP; sed -n '/@inproceedings{SmithGent2005/,/^}/p;/@article{GarciaDeLaBandaStuckey2007/,/^}/p;/@article{CoudertMazauricNisse2016/,/^}/p' paper2
+
+Writing the new Section 3 now.
+  > Write /home/al/dev/MOSP/paper2/latex/sec3_names.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+from pathlib import Path
+p=Path('sec3_names.tex'); s=p.read_text()
+rep=[("Since 1990 the VLSI names have al
+  > $ cd /home/al/dev/MOSP; sed -i 's/"Problem \& Discipline \& Relevant \& Hits \& Table~1 reference \& Citations \\\\\\\\",/"Problem \& Discipline \& Relevant \& Hi
+  > Write /home/al/dev/MOSP/paper2/latex/sec9c_appendix_names.tex
+  > $ cd /home/al/dev/MOSP; sed -i 's/^\\input{sec9b_appendix_machinery}$/\\input{sec9b_appendix_machinery}\n\\input{sec9c_appendix_names}/' paper2/latex/main.tex; gr
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/latex/sec1_intro.tex'); s=p.read_text()
+a="Appendix~\\ref{app:machinery-all} hol
+  > $ cd /home/al/dev/MOSP/paper2/latex; ls -la --time-style=+%T main.pdf sec3_names.tex; pdftotext main.pdf - | grep -n 'bibliometric study\|The names and the commun
+
+Draft builds (32 pages). Now checking the layout of Section 3 and its page count visually.
+  > $ cd /home/al/dev/MOSP/paper2/latex; for p in $(seq 8 14); do echo "== $p"; pdftotext -f $p -l $p main.pdf - | head -4; done
+  > $ cd /tmp && rm -f sec3pg-*.png; pdftoppm -f 9 -l 12 -r 50 -png /home/al/dev/MOSP/paper2/latex/main.pdf sec3pg; ls sec3pg*
+  > Read /tmp/sec3pg-09.png
+  > Read /tmp/sec3pg-10.png
+  > Read /tmp/sec3pg-11.png
+  > Read /tmp/sec3pg-12.png
+
+Layout is good: Section 3 now runs about two pages. Tidying figure labels ("graph path-width" vs "Pathwidth", per review §4).
+  > $ cd /home/al/dev/MOSP; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper2/section2_figures.py'); s=p.read_text()
+s=s.replace('''SHORT = {"Business, Manage
+  > $ cd /home/al/dev/MOSP; cat tests/test_section2_figures.py | head -80
+
+Adding tests for the two new tables' numbers.
+  > $ cd /home/al/dev/MOSP; cat >> tests/test_section2_figures.py <<'EOF'
+
+
+def test_period_table_numbers(nums):
+    """Section 3's period table: the owner's counts (
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n 'names\|sec9\|3\.[123]\|timeline\|network' README.md
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 42,55p README.md
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+from pathlib import Path
+p=Path('README.md'); s=p.read_text()
+s=s.replace("| `sec3_names.tex` | 3 The names
+  > $ cd /home/al/dev/MOSP; make -C paper2/latex >/dev/null 2>&1; make -C paper2/latex check 2>&1 | tail -2; timeout 3000 python3 Ralph_Loops/loop0009/gate.py 2>&1 | 
+
+While the gate runs, checking the regenerated figure.
+  > Read /home/al/dev/MOSP/paper2/figures/sec2_fig1_name_usage.png
+  > $ cd /home/al/dev/MOSP; sed -i 's/("graph path-width", "Path-width", \["13"\], "graph theory"),/("graph path-width", "Pathwidth", ["13"], "graph theory"),/' paper
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Meanwhile, writing the PROGRESS entry draft; first a monitor on the gate.
+  > Monitor {"command": "f=/tmp/claude-1000/-home-al-dev-MOSP/89de9f17-006d-4b43-8d2c-1535745c26af/tasks/bo2gob6ht.output; until gre
+  > $ cd /home/al/dev/MOSP; python -m paper2.solver_fix_split --summary 2>&1 | tail -8; grep -c '^!!!' paper2/data/solver_fix_split.log
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/89de9f17-006d-4b43-8d2c-1535745c26af/tasks/bo2gob6ht.output; until grep -q -E 'GATE|Traceback' $f; do sleep 10; done; tail 
+
+Gate passes. Rebuilding with the final names table, then writing PROGRESS.
+  > $ cd /home/al/dev/MOSP; make -C paper2/latex >/dev/null 2>&1; make -C paper2/latex check 2>&1 | tail -1; python -m pytest -q tests/test_paper2_latex.py tests/test
+  > $ cd /home/al/dev/MOSP; make -C paper2/latex check 2>&1 | grep -E 'undefined|Pages'
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009; sed -i 's/^Current: 3\/11 SOLVED/Current: 4\/11 SOLVED/' PROGRESS.md; python3 - <<'EOF'
+from pathlib import Path
+p=Pa
+
+Item 04 is done and the gate passes: the Lean build is clean with the one allowed `sorry`, both test suites pass (1418 and 114), there are no undefined references, and the draft is 32 pages.
+
+**One number differs from your notes.** You gave Rome as 97.0% against 95.6%. The 97.0% is the count before the repair (11,183 of 11,534). The paper describes the repaired rules as the default, and those prove 11,194 of 11,534, which is 97.05%, so the paper prints **97.1%**. The trees (50 against 30) and Harwell–Boeing (39 against 26) counts are the same under both rule sets. This is at the top of the PROGRESS entry.
+
+**Section 3, "The names and the communities"** (`sec3_names.tex`) is now about two pages:
+- **Opening:** states the two questions — which name the literature uses, and which community besides pathwidth has been most active — and why they matter: a result published under one name is invisible to readers searching under another.
+- **Method:** cut to one paragraph. It says the relevance judgements were made by one annotator with model assistance, and that a mechanical phrase rule agrees on 78% and gives the same conclusions.
+- **3.1, pathwidth:** Figure 3.1, with a caption that states the conclusion. Pathwidth has 1,213 works against 380 for the other eleven names together, and three names have none.
+- **3.2, open stacks:** your period table is now Table 3.1. Over 2005–2024 MOSP is second with 51 works, ahead of vertex separation (32), which led only in 2015–19. The next name is edge search with 28.
+- **3.3, the 2005 challenge:** the story from Chu & Stuckey (2009) §1. Then the benchmark comparison, said to be against published numbers on other hardware, not a head-to-head run. The section ends on the bridge to Sections 4 and 5.
+
+**The "OR is an island" point is now a table.** I dropped the citation-network figure and replaced it with Table 3.2, which counts the works citing each discipline's papers and how many of those also cite another discipline. Of 135 works citing an operations-research paper, 6 also cite graph theory (4%); of 285 citing a VLSI paper, 65 do (23%). The table counts the 2002 paper as operations research, as the existing "six" already did.
+
+**New Appendix C** (`sec9c_appendix_names.tex`) holds what left the body: the full method and robustness check, the old names table with citations, the point that citations do not track name usage, and the timeline figure. The note that pathwidth's 1,213 records are 1,212 distinct works now appears once, there.
+
+**Supporting changes:**
+- The two new tables are generated from the same data as before, through two new functions in `make_tables.py`. I regenerated only the three names tables; `split.tex` is untouched and stays with item 06.
+- Figure labels now match the tables ("pathwidth", "edge search", "node search").
+- Two tests added in `tests/test_section2_figures.py`.
+- `paper2/latex/README.md` and the intro's roadmap now mention Appendix C.
+
+The page count stayed at 32: the body is about a page shorter and Appendix C adds about a page. I updated PROGRESS.md (now 4/11) and marked the item `[x]`. The split run is untouched: it is still running, its log has no `!!!` line, and `-2-2_0` and `-2-3_0` are still partial as of today.
+
+# result: success in 1189s, 54 turns, cost $3.03

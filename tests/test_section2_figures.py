@@ -57,3 +57,29 @@ def test_figures_meet_the_print_limits(tmp_path, monkeypatch):
     for stem, (smallest, width) in seen.items():
         assert smallest >= 7, (stem, smallest)
         assert width <= 6.5, (stem, width)
+
+
+def test_period_table_numbers(nums):
+    """Section 3's period table: the owner's counts (TASK.md, loop0009), 2005-2024."""
+    per = nums["periods_2005_24"]
+    assert per["graph path-width"] == [114, 179, 267, 311]
+    assert per["MOSP"] == [17, 17, 5, 12]
+    assert per["vertex separation"] == [7, 10, 15, 0]
+    totals = sorted(((sum(v), k) for k, v in per.items()), reverse=True)
+    assert [k for _, k in totals[:4]] == ["graph path-width", "MOSP", "vertex separation",
+                                          "edge search game"]
+    assert totals[3][0] == 28 and sum(per["node search game"]) == 20
+    assert sum(per["gate matrix layout"]) == 9 and sum(per["PLA folding"]) == 6
+
+
+def test_communities_table_numbers(nums):
+    """Section 3's island table: works by the set of disciplines they cite."""
+    sets = nums["discipline_sets"]
+    assert sets == {"GT": 438, "VLSI": 208, "OR": 117, "GT+VLSI": 63, "OR+VLSI": 12,
+                    "GT+OR": 4, "GT+OR+VLSI": 2}
+    assert sum(sets.values()) == nums["citing_works"] == 844
+    assert sets["GT+OR"] + sets["GT+OR+VLSI"] == nums["mosp_and_graph_theory"] == 6
+    from paper2.latex import make_tables
+    text = make_tables.communities_table()
+    assert "operations research & 135 & -- & 14 & 6" in text
+    assert "VLSI & 285 & 14 & -- & 65" in text

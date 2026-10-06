@@ -8,6 +8,10 @@ comment which records it was made from.
 
 - `names.tex`        section 2: name usage and citations (`paper2.section2_figures.numbers`,
                      from the OpenAlex caches of 2026-09-29);
+- `periods.tex`      section 3: relevant works per period, 2005-2024, for the three most
+                     used names (same source);
+- `communities.tex`  section 3: works citing the Linhares-Yanasse papers, by discipline cited
+                     (same source, the citation cache of 2026-09-29);
 - `cost.tex`         section 4: nodes, repaired against published rules
                      (`paper2/data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv`);
 - `split.tex`        section 4: the re-certifications of the root split
@@ -50,7 +54,7 @@ def _write(name: str, source: str, body: list[str]) -> str:
 # --- section 2 -------------------------------------------------------------
 
 ORDER = [  # (key in numbers()["names"], printed name, Table 1 ref keys, discipline)
-    ("graph path-width", "Path-width", ["13"], "graph theory"),
+    ("graph path-width", "Pathwidth", ["13"], "graph theory"),
     ("gate matrix layout", "Gate matrix layout", ["6", "8"], "VLSI"),
     ("PLA folding", "PLA folding", ["6"], "VLSI"),
     ("MOSP", "MOSP", ["1", "4"], "operations research"),
@@ -88,7 +92,7 @@ def names_table() -> str:
     body = [
         "\\begin{tabular}{@{}llrrp{4.6cm}r@{}}",
         "\\toprule",
-        "Problem & Discipline & Relevant & Hits & Table~1 reference & Citations \\\\",
+        "Problem & Discipline & Relevant & Hits & Reference in the 2002 table & Citations \\\\",
         "\\midrule", *rows, "\\midrule",
         f"All twelve & & {_n(pw['relevant'] + small)} & {_n(num['hits_total'])} & & \\\\",
         "\\bottomrule", "\\end{tabular}",
@@ -97,6 +101,51 @@ def names_table() -> str:
     ]
     return _write("names.tex", "paper2.section2_figures.numbers() (OpenAlex caches, "
                   f"{num['candidates_fetched']})", body)
+
+
+def periods_table() -> str:
+    """Section 3: relevant works per period for the three most used names since 2005."""
+    from paper2.section2_figures import numbers
+    num = numbers()
+    per = num["periods_2005_24"]
+    rows = []
+    for key, label in (("graph path-width", "Pathwidth"), ("MOSP", "MOSP"),
+                       ("vertex separation", "Vertex separation")):
+        v = per[key]
+        rows.append(f"{label} & " + " & ".join(_n(x) for x in v) + f" & {_n(sum(v))} \\\\")
+    rest = sorted(((sum(v), k) for k, v in per.items()
+                   if k not in ("graph path-width", "MOSP", "vertex separation")), reverse=True)
+    body = ["\\begin{tabular}{@{}lrrrrr@{}}", "\\toprule",
+            "Name & 2005--09 & 2010--14 & 2015--19 & 2020--24 & 2005--24 \\\\", "\\midrule",
+            *rows, "\\bottomrule", "\\end{tabular}",
+            "% check: next names over 2005-24: " + ", ".join(f"{k} {t}" for t, k in rest[:3])]
+    return _write("periods.tex", "paper2.section2_figures.numbers()[\"periods_2005_24\"] "
+                  "(paper2.trends.binned on the OpenAlex trend cache)", body)
+
+
+def communities_table() -> str:
+    """Section 3: works citing the Linhares-Yanasse papers, by the disciplines they cite."""
+    from paper2.section2_figures import numbers
+    num = numbers()
+    sets = num["discipline_sets"]
+    word = {"GT": "graph theory", "VLSI": "VLSI", "OR": "operations research"}
+    rows = []
+    for d in ("OR", "VLSI", "GT"):
+        cites_d = {k: v for k, v in sets.items() if d in k.split("+")}
+        cells = [_n(sum(cites_d.values()))]
+        for e in ("OR", "VLSI", "GT"):
+            cells.append("--" if e == d else _n(sum(v for k, v in cites_d.items() if e in k.split("+"))))
+        rows.append(f"{word[d]} & " + " & ".join(cells) + " \\\\")
+    body = ["\\begin{tabular}{@{}lrrrr@{}}", "\\toprule",
+            "& & \\multicolumn{3}{c}{\\dots\\ of which also cite} \\\\",
+            "\\cmidrule(l){3-5}",
+            "Works citing & All & operations research & VLSI & graph theory \\\\",
+            "\\midrule", *rows, "\\bottomrule", "\\end{tabular}",
+            "% check: by set of disciplines cited: "
+            + ", ".join(f"{k} {v}" for k, v in sorted(sets.items(), key=lambda x: -x[1]))
+            + f"; citing works {num['citing_works']}"]
+    return _write("communities.tex", "paper2.section2_figures.numbers()[\"discipline_sets\"] "
+                  f"(OpenAlex citation cache, {num['citations_fetched']})", body)
 
 
 # --- section 4: cost -------------------------------------------------------
@@ -276,7 +325,7 @@ def dataset_table() -> str:
 
 
 def main() -> None:
-    for f in (names_table, cost_table, split_table, certificates_table, dataset_table):
+    for f in (names_table, periods_table, communities_table, cost_table, split_table, certificates_table, dataset_table):
         text = f()
         print(text.splitlines()[0])
 

@@ -58,7 +58,7 @@
     Table 3.1 and Figure 3.1 captions that state the conclusion.
   - Move notation here from the introduction.
 
-- [ ] **04 The names and the communities** (review change 7; the owner's
+- [x] **04 The names and the communities** (review change 7; the owner's
   notes).
   - Cut to about two pages, and keep one of Table 2.1 and Figure 2.1.
   - Ask and answer: which name does the literature use? (pathwidth, by far).

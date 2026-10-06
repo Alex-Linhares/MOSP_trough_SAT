@@ -40,6 +40,9 @@ FIGS = HERE / "figures"
 WIDTH = 6.5          # inches: one-column text width
 OR_REFS = {"LY2002", "1", "4"}
 SHORT = {"Business, Management and Accounting": "Business & Management"}
+# printed names in the figures, matching the paper's tables (review: one label per name)
+LABEL = {"graph path-width": "pathwidth", "edge search game": "edge search",
+         "node search game": "node search"}
 
 
 def _plt():
@@ -122,6 +125,12 @@ def numbers() -> dict:
     out["span_two_or_more_disciplines"] = sum(v for k, v in spans.items() if len(k) >= 2)
     out["span_gt_vlsi_only"] = spans[frozenset({"GT", "VLSI"})]
     out["mosp_and_graph_theory"] = sum(1 for s in cites.values() if s & OR_REFS and "GT" in {disc[r] for r in s})
+    # citing works by the set of disciplines they cite, Linhares & Yanasse (2002) counted
+    # as operations research (as mosp_and_graph_theory counts it): Section 3's island table
+    sets = Counter("+".join(sorted({disc[r] for r in s})) for s in cites.values())
+    out["discipline_sets"] = dict(sets)
+    # relevant works per five-year period, 2005-2024: Section 3's period table
+    out["periods_2005_24"] = {k: counts[k][bins.index(2005):bins.index(2020) + 1] for k in counts}
     return out
 
 
@@ -140,13 +149,13 @@ def fig_name_usage(n: dict) -> Path:
         else:
             ax.text(12, i, f"0 (of {n[name]['hits']} search hits, none relevant)", va="center",
                     fontsize=7, color="0.35")
-    ax.set_yticks(list(y), [r[0] for r in rows])
+    ax.set_yticks(list(y), [LABEL.get(r[0], r[0]) for r in rows])
     ax.set_xlabel("relevant works using the name in title or abstract")
     ax.set_xlim(0, 1350)
     ax.spines[["top", "right"]].set_visible(False)
     ax.tick_params(axis="y", length=0)
     ax.legend(handles=[Patch(color=c, label=l) for l, c in DISCIPLINE.values()],
-              loc="lower right", frameon=False, title="Table 1 discipline", title_fontsize=7.5)
+              loc="lower right", frameon=False, title="discipline in the 2002 table", title_fontsize=7.5)
     return _save(fig, "sec2_fig1_name_usage")
 
 
@@ -169,7 +178,7 @@ def fig_timeline() -> Path:
                 ax.text(j, i, str(c), ha="center", va="center", fontsize=7,
                         color="white" if M[i, j] > 0.6 else "0.15")
     ax.set_xticks(range(len(bins)), [f"{b}\n–{str(b + STEP - 1)[2:]}" for b in bins], fontsize=7)
-    ax.set_yticks(range(len(names)), [f"{k} ({sum(counts[k])})" for k in names])
+    ax.set_yticks(range(len(names)), [f"{LABEL.get(k, k)} ({sum(counts[k])})" for k in names])
     ax.tick_params(length=0)
     ax.tick_params(axis="y", pad=9)
     # discipline as a coloured tab left of each row; the label text stays black
@@ -190,7 +199,7 @@ def fig_timeline() -> Path:
                          label="before 1990: thin abstract coverage"))
     ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=4,
               frameon=False, fontsize=7, handlelength=1.4, columnspacing=1.2)
-    ax.text(0.5, -0.31, "Not shown, no relevant works: " + ", ".join(empty) + ".",
+    ax.text(0.5, -0.31, "Not shown, no relevant works: " + ", ".join(LABEL.get(k, k) for k in empty) + ".",
             transform=ax.transAxes, ha="center", fontsize=7, color="0.3")
     return _save(fig, "sec2_fig2_timeline")
 

@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 3/11 SOLVED
+Current: 4/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -266,3 +266,91 @@ decide how to present those two.
 - Item 08: Section 5 says "Table~1's exact core"; now that "exact core" is
   defined in Section 2, drop "Table~1's". The notation table for Section 2 is
   item 08's. Theorem and lemma counters are shared (Lemma 2.1, Theorem 2.2).
+
+---
+
+## Iteration 4 — 2026-10-06 (item 04, the names and the communities)
+
+**A number to note, not an error in the draft:** the owner's notes give Rome
+"97.0% against 95.6%". 97.0% is the *pre-repair* count (11,183 / 11,534).
+The repaired rules, which are the default the paper describes, prove 11,194 /
+11,534 = 97.05%, printed as **97.1%** (`paper2/solver_fix.md`, "Table 1:
+proved widths"). The paper uses the repaired figure. VSPLIB trees 50 vs 30 and
+HB 39 vs 26 are the same under both rule sets; Coudert et al.'s figures (95.6%
+in 10 min; trees n ≤ 67 = 30; hb 26) are from `pathwidth_solver/bench/reference.py`.
+
+### Completed
+- **`sec3_names.tex` rewritten and cut to about two pages** (p. 10 bottom to
+  p. 12 top, plus Figure 3.1). Order: opening that states the two questions
+  (which name? besides pathwidth, which community?) and why they matter (a
+  result under one name is invisible under another); one *How we counted*
+  paragraph (one annotator with model assistance; phrase rule agrees on 78%,
+  same conclusions; lower bounds); **3.1 Pathwidth has absorbed the family**
+  (Figure 3.1, caption leads with the conclusion; the "most likely published
+  under pathwidth" sentence); **3.2 Besides pathwidth, open stacks** (new
+  Table 3.1, the owner's period table: pathwidth 871, MOSP 51, vertex
+  separation 32 over 2005–24; vertex separation led only in 2015–19; edge
+  search 28 next; and new Table 3.2, the island); **3.3 From an open-stacks
+  challenge to a pathwidth solver** (Chu & Stuckey 2009 §1: May 2005
+  challenge, 13 entries, García de la Banda & Stuckey won, an order of
+  magnitude faster; Chu & Stuckey branched on closing customers, 5–6 orders
+  faster, closed every open challenge instance in 10 s; then the graph
+  benchmark comparison with the caveat "published numbers on other hardware,
+  not a head-to-head run"), ending on the two consequences (the bridge to §4
+  and §5). "Commitment lemma" replaced by "a theorem already known in the
+  pathwidth literature"; "Table~1" gone from the section.
+- **The island made visible**: the citation-network figure is dropped from the
+  paper (script and PDF kept) and replaced by **Table 3.2**, a 3×3
+  "works citing X, of which also cite Y" table: OR 135 → 6 cite graph theory
+  (4%), VLSI 285 → 65 (23%). The 2002 paper counts as OR, as the existing "six"
+  did; with it counted, the cells sum to 844.
+- **New Appendix C** (`sec9c_appendix_names.tex`, `app:names`): the full
+  method and robustness paragraphs (minus "The check changed the counts and
+  two of the conclusions"), Table C.1 (the old names table with citations; the
+  1,212/1,213 note now said once, here), the citations-vs-usage point and the
+  Fomin aside, and Figure C.1 (timeline; caption leads with the conclusion
+  and explains why row totals differ from Table C.1, which closes the review's
+  57/58, 53/55 consistency point).
+- **Generators**: `paper2.section2_figures.numbers()` now returns
+  `discipline_sets` and `periods_2005_24`; `make_tables.periods_table()` and
+  `communities_table()` write `tables/periods.tex` and `tables/communities.tex`
+  (only these and `names.tex` were regenerated; `split.tex` was not touched,
+  it is item 06's). Names table header → "Reference in the 2002 table", row
+  "Pathwidth". Figure labels unified ("pathwidth", "edge search", "node
+  search"; legend "discipline in the 2002 table"); Figures 3.1 and C.1
+  regenerated. Two tests added to `tests/test_section2_figures.py` (period
+  counts incl. the next names; the discipline sets and the table cells).
+- Intro roadmap mentions Appendix C; `paper2/latex/README.md` updated.
+- **Review points closed:** change 7 (whole: reorder done in item 01; one
+  method paragraph; usage and communities results; bridge to §4; Figure 2.2,
+  citations-vs-usage and method detail moved out; "the check changed" cut);
+  change 9 for Table 2.1/Figure 2.1 (one kept in body), Figure 2.2, Figure
+  2.3 (replaced), the 1,212/1,213 note said once; §3 Section 2 bullets
+  ("prior question" gone, motivation sentence added, method one paragraph,
+  key sentence moved up, citations point and Fomin aside moved, 2.3 to
+  appendix, "commitment lemma" removed); §4 Table 2.1, Figures 2.1–2.3
+  (label consistency, conclusion captions); §6.1 transition End of §1 → names.
+- **Pages:** 32 before, 32 after (body about one page shorter; Appendix C
+  adds about one).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  sorry 1/1, 1418 passed / 2 skipped / 1 xfailed, pathwidth_solver 114
+  passed, no undefined references, 32 pages). Rebuilt afterwards for the
+  names-table label change: `make check` clean, 32 pages;
+  `tests/test_paper2_latex.py` + `tests/test_section2_figures.py`: 12 passed.
+
+### Blockers
+- None. Split run PID 2185545 alive; no `!!!` line. `--summary` (checked
+  2026-10-06): `-2-2_0` and `-2-3_0` still partial; the other six REFUTED.
+
+### Next
+- Item 05 (search): §4's opening should echo the bridge ("If MOSP is
+  pathwidth, the best MOSP algorithm is a pathwidth algorithm"); the review's
+  s4:369–372 point ("this is the isolation measured in Section 3") now refers
+  to Table 3.2. §4 already explains Chu & Stuckey place MOSP among "graph
+  path-width"; avoid repeating §3.3's challenge story there.
+- Item 07/08: Figure files are still named `sec2_fig*` (now Figure 3.1 and
+  C.1); `sec2_fig3_citation_network.pdf` is unused by the paper. Appendix
+  order is A, B, C with C the bibliometrics; if item 05 restructures B, keep
+  `app:names`.
+- The section title is "The names and the communities"; the intro's "How to
+  read" sentence still matches.
