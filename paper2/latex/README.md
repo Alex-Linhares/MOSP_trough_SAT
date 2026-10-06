@@ -22,28 +22,33 @@ python -m pytest tests/test_paper2_latex.py -q
 | file | content | drafted from |
 |---|---|---|
 | `main.tex` | preamble, title, draft abstract | `../plan.md` |
-| `sec1_intro.tex` | **placeholder**: waits on the owner's thesis; draft contribution list, notation | `../plan.md` §1 |
-| `sec2_names.tex` | method, Table 2.1, Figures 2.1–2.3 | `../popularity.md`, "For the paper" |
-| `sec3_equivalences.tex` | the problems, Table 3.1 (master table), Figure 3.1 (`../figures/sec3_fig1_chain.pdf`, `python -m paper2.section3_figure`), theorems with proofs of the core, bands, false rows, edge cases, the Kirousis & Papadimitriou gap, pebbling | `../problem_transformations.md`, `../equivalences.md`, `../proof_reductions.md` |
-| `sec4_search.tex` | the search, Counterexample 4.4 with **Figure 4.1**, the repair, the other rules, the soundness theorem, the pathwidth reading, prior reports, cost, re-certification, certificates, the dataset | `../revised_algorithm.md`, `../solver_fix.md`, `../prior_art_counterexample.md`, `../certificates.md`, `../dataset.md` |
-| `sec5_closing.tex` | **placeholder**: written last | `../plan.md` §5 |
+| `sec1_intro.tex` | 1 Introduction: MOSP, Table 1.1 (the Linhares–Yanasse table), how it came to be, contributions, notation | the first author's thesis; `../plan.md` §1 |
+| `sec2_equivalences.tex` | 2 The equivalences (was §3): the problems, Table 2.1 (master table), Figure 2.1 (`../figures/sec3_fig1_chain.pdf`, `python -m paper2.section3_figure`), theorems of the core, bands, false rows | `../problem_transformations.md`, `../equivalences.md`, `../proof_reductions.md` |
+| `sec3_names.tex` | 3 The names (was §2): method, Table 3.1, Figures 3.1–3.3 | `../popularity.md`, "For the paper" |
+| `sec4_search.tex` | 4 The search read as a pathwidth algorithm (was §4.1–4.5): Counterexample 4.4 with **Figure 4.1**, the repair, the other rules, the soundness theorem, the pathwidth reading, prior reports | `../revised_algorithm.md`, `../search_soundness.md`, `../prior_art_counterexample.md` |
+| `sec5_results.tex` | 5 Computational results and a dataset (was §4.6–4.7): cost, re-certification, certificates, the dataset | `../solver_fix.md`, `../certificates.md`, `../dataset.md` |
+| `sec6_conclusion.tex` | 6 Conclusion: **placeholder**, written last | `../plan.md` §5 |
+| `sec7_data.tex` | Data, code and proofs statement (unnumbered); a comment lists the regenerate commands the body used to carry | — |
+| `sec9a_appendix_lean.tex` | Appendix A, formal names: one entry per result, `\leanentry{key}{result} \leannames{...}`; the text cites it with `\leanref{key}` | the old `\lean{...}` footnotes |
+| `sec9b_appendix_machinery.tex` | Appendix B, supporting material: edge cases and the Kirousis–Papadimitriou gap (old §3.3), the thirteenth member (old §3.4), why the published proof fails, the minimality search, Proposition B.1 and Theorem B.2 (old 4.8, 4.9) | as for §2 and §4 |
 | `refs.bib` | `../table1.bib` (notes dropped) and every other work cited | checked by `check_refs.py` |
 | `tables/*.tex` | generated, do not edit | `make_tables.py` |
 | `data/doi_check.json` | Crossref / DataCite responses, fetched 2026-10-03 | `check_refs.py` |
 
-Every theorem carries its Lean names in a footnote (`\lean{...}`); figures are
-the PDFs in `../figures/`, unchanged.
+Since loop0009 item 01 the Lean names are in Appendix A, not in footnotes; the
+text cites an entry with `\leanref{key}`, and `check_lean.py` / `check_axioms.py`
+read the `\leannames{...}` cells. Figures are the PDFs in `../figures/`.
 
 ## Tables and where their numbers come from
 
 | table | source | regenerated |
 |---|---|---|
-| 2.1 name usage | `paper2.section2_figures.numbers()`, OpenAlex caches of 2026-09-29 | offline |
-| 4.3 cost of the repair | `../data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv` | reproduces `revised_algorithm.md` §4.6.2 exactly |
-| 4.4 re-certification | `../data/solver_fix_split_{tasks,results}.csv`, **read at build time of the tables** | changes while the split run is in flight; rerun `make tables` on the day |
-| 4.5 certificates | `../data/certificates/repaired.csv` | reproduces `certificates.md` §3 |
-| 4.6 dataset | `../data/dataset/{index,classes}.csv.gz` | reproduces `data/dataset/tables.md` |
-| 3.1, 4.1, 4.2 | written from the documents named above | by hand |
+| 3.1 name usage | `paper2.section2_figures.numbers()`, OpenAlex caches of 2026-09-29 | offline |
+| 5.1 cost of the repair | `../data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv` | reproduces `revised_algorithm.md` §4.6.2 exactly |
+| 5.2 re-certification | `../data/solver_fix_split_{tasks,results}.csv`, **read at build time of the tables** | changes while the split run is in flight; rerun `make tables` on the day |
+| 5.3 certificates | `../data/certificates/repaired.csv` | reproduces `certificates.md` §3 |
+| 5.4 dataset | `../data/dataset/{index,classes}.csv.gz` | reproduces `data/dataset/tables.md` |
+| 2.1, 4.1, 4.2, A.1 | written from the documents named above | by hand |
 
 ## The template: to obtain
 

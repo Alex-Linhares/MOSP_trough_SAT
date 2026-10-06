@@ -21,6 +21,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{caption}
 \usepackage[section]{placeins}
 \usepackage{xcolor}
@@ -36,13 +37,19 @@
 \captionsetup{font=small,labelfont=bf}
 \bibliographystyle{plainnat}
 
-% Theorems carry their Lean names in a footnote. \lean{a, b} prints them
-% with breaks at the underscores and dots.
+% Lean names live in Appendix A (sec9a_appendix_lean.tex), one entry per
+% result. In the text, \leanref{key} prints "(Appendix A, A.n)". In the
+% appendix, \leanentry{key}{result} opens a row and \leannames{a, b} prints the
+% names with breaks at the underscores and dots; check_lean.py reads them.
 \makeatletter
 \g@addto@macro{\UrlBreaks}{\do\_\do\.}
+\newcommand{\leannames}[1]{\def\lean@sep{}\@for\lean@n:=#1\do{\lean@sep\expandafter\path\expandafter{\lean@n}\def\lean@sep{, }}}
 \makeatother
-\newcommand{\lean}[1]{\footnote{Lean: \path{#1}.}}
-\newcommand{\leanfile}[1]{\path{#1}}
+\newcounter{leanentry}
+\renewcommand{\theleanentry}{A.\arabic{leanentry}}
+\newcommand{\leanentry}[2]{\leavevmode\refstepcounter{leanentry}\label{lean:#1}\theleanentry & #2 &}
+\newcommand{\leangroup}[1]{\multicolumn{3}{@{}l}{\emph{#1}}\\}
+\newcommand{\leanref}[1]{(Appendix~\ref{app:lean}, \ref{lean:#1})}
 
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
@@ -75,10 +82,9 @@
 \newcommand{\placeholder}[1]{\par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Placeholder.} #1}}\par}
 
 \title{The pathwidth complex:\\twelve problems, one width, and a solver proved sound}
-\author{Alexandre Linhares\thanks{Draft of 3 October 2026, assembled from the
-project's working documents (\texttt{paper2/}). Every number regenerates by the
-command named beside it in those documents; the theorems are checked in Lean~4
-with Mathlib.} \and Horacio Hideki Yanasse}
+% Affiliations are not invented: the owner fills them in.
+\author{Alexandre Linhares\\{\small\fbox{affiliation to be added}} \and
+Horacio Hideki Yanasse\\{\small\fbox{affiliation to be added}}}
 \date{Draft, 3 October 2026}
 
 \begin{document}
@@ -107,11 +113,17 @@ certified pathwidth and a witness layout.
 \end{abstract}
 
 \input{sec1_intro}
-\input{sec2_names}
-\input{sec3_equivalences}
+\input{sec2_equivalences}
+\input{sec3_names}
 \input{sec4_search}
-\input{sec5_closing}
+\input{sec5_results}
+\input{sec6_conclusion}
+\input{sec7_data}
 
 \bibliography{refs}
+
+\appendix
+\input{sec9a_appendix_lean}
+\input{sec9b_appendix_machinery}
 
 \end{document}

@@ -89,7 +89,7 @@ def main() -> int:
     if w.returncode != 0:
         print("GATE FAIL: pathwidth_solver pytest"); ok = False
     # The paper must build cleanly: no undefined references, citations or overfull boxes.
-    m = subprocess.run(["make", "check"], cwd=REPO / "paper2" / "latex", capture_output=True, text=True)
+    m = subprocess.run(["make", "check"], cwd=REPO / "paper2" / "latex", capture_output=True, text=True, errors="replace")
     print("\n".join((m.stdout + m.stderr).splitlines()[-3:]))
     if m.returncode != 0:
         print("GATE FAIL: paper2/latex make check"); ok = False

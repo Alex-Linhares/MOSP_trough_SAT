@@ -1,0 +1,141 @@
+% Section 5, moved as is from old Sections 4.6-4.7 (loop0009 item 01). Sources:
+% paper2/solver_fix.md (cost, re-certification), paper2/certificates.md (proof
+% object), paper2/dataset.md (the dataset). Tables from tables/ (make_tables.py).
+\section{Computational results and a dataset}
+\label{sec:results}
+
+\subsection{The revised algorithm in practice}
+\label{sec:practice}
+
+The revised search changes two tests. The definite move fires on the first
+playable $q$ that passes the published test and then the matching of
+Theorem~\ref{thm:matching}; a $q$ that fails the matching is passed over. The
+better move cites $q$ for $r$ only if the same matching succeeds at
+$\cl(S\cup\{r\})$. The matching joins at most $\close-1$ customers to $\open$
+stacks and stops at $\open-1$ edges. Since 1 October 2026 these are the default
+in both of our solvers, the MOSP customer search and the graph pathwidth solver,
+in C and in Python; the published rules remain behind a flag.
+
+\begin{table}[t]
+\centering\small
+\caption{The cost of the repair: nodes under the published and the repaired
+rules, in paired runs of the same decision in one worker. Totals over the pairs
+that finished under both settings; a censored pair says nothing about cost.
+MOSP rows refute the optimum minus one; the graph row is whole descents at
+120\,s each.}
+\label{tab:cost}
+\resizebox{\linewidth}{!}{\input{tables/cost}}
+\end{table}
+
+Table~\ref{tab:cost} gives the cost in nodes. The repair changes tree sizes by
+at most a few percent and never changed an answer. Per node it costs about 2\% in
+the MOSP C engine, measured on six hard instances at 75--125 customers. The
+published test passes and the matching then fails on 0.07--0.27\% of
+definite-move candidates, a rate that rises with size.
+
+\paragraph{Re-certification.} Of the 6,374 certified optima in our MOSP corpus,
+6,259 do not depend on the customer search: they rest on an exact subset-lattice
+computation, a checked DRAT refutation, an earlier SAT search, or a lower bound
+equal to the value. The other 115 rested on the customer search under the
+published rules. The repaired solver has re-refuted the value minus one on 112
+of them, and no value changed. Table~\ref{tab:split} gives the seven hardest,
+125-customer instances at densities 2 and 4, which needed a split of the root
+over many cores; three are still running at the time of writing, and keep their
+values as verified upper bounds until they finish. The split is proved
+sound~\leanref{split}.
+
+\begin{table}[t]
+\centering\small
+\caption{Re-certification of the hardest corpus values under the repaired rules,
+by a split of the root into independent tasks. \emph{$k$}: the value minus one,
+which must be refuted. For an instance in flight, the nodes and core-hours are
+those of the finished tasks so far.}
+\label{tab:split}
+\input{tables/split}
+\end{table}
+
+\paragraph{Certificates.} A refutation by the search is a claim about a tree of
+$10^{11}$ nodes at 125 customers, and nothing in Theorem~\ref{thm:main} lets a
+reader check that the code ran the search it models. So the search emits a
+certificate: the tree, every pruning step with its rule and witness, and for
+each definite and better step the matching of Theorem~\ref{thm:matching}. An
+independent checker, which shares no code with the search, recomputes every
+premise from the matrix, verifies each matching (distinct customers, distinct
+stacks, each stack newly opened by its customer, at least $\open-1$ edges),
+requires every chain of covers to end at a child or an old move with no cycle,
+and replays the tree. Each accepted link is a Lean theorem; that an acyclic
+covering by such links is sound is a short paper argument, not yet formal.
+Table~\ref{tab:certs} gives the results on the corpus at 9--75 customers.
+Every refutation emitted within 60\,s verifies, 6,275 of 6,286 under the
+\texttt{csearch} configuration, and none is rejected; the 35.5\,MB of
+certificates check in 147\,s. On the graph of Counterexample~\ref{cex:definite}
+rooted at $\{2\}$, the published rules emit an exhaustive tree that claims no
+solution; a checker of the published premises accepts it, and ours rejects it,
+even with a largest matching attached (one edge where two are needed).
+
+\begin{table}[t]
+\centering\small
+\caption{Certificates for the repaired rules on the certified corpus at 9--75
+customers, refuting the optimum minus one, 60\,s emission budget.
+\emph{Unknown}: emission did not finish. Below 41 customers the
+\texttt{default} rows match \texttt{csearch} and are omitted.}
+\label{tab:certs}
+\resizebox{\linewidth}{!}{\input{tables/certificates}}
+\end{table}
+
+\subsection{A dataset with certified pathwidth}
+\label{sec:dataset}
+
+Section~\ref{sec:equiv} makes one certified pathwidth an exact answer to every
+problem in Table~1's exact core: pathwidth, vertex separation and the vertex
+separator game take the width $w$; MOSP, gate matrix layout with multiple
+folding, one-dimensional logic, interval thickness, narrowness and node search
+take $w+1$. We therefore built one dataset from every benchmark collection of
+those problems that we could obtain, and the MOSP corpus. The unit is the
+isomorphism class of the graph, the MOSP graph for a matrix instance: two
+instances with isomorphic graphs have the same value under every problem, so the
+dataset holds one record per class, with its members and their isomorphism maps.
+Each record carries the graph, the width, its provenance (\emph{refutation},
+\emph{bound} or \emph{upper bound}), a witness layout of exactly that width and,
+for a bound, a minor certificate that replays.
+
+\begin{table}[t]
+\centering\small
+\caption{The dataset by collection. \emph{Classes}: isomorphism classes within
+the collection (nauty certificates; 78 graphs above 5,000 vertices by file
+content only). \emph{Owned}: classes whose first member is in this collection,
+so the column sums to the dataset's class count. The provenance columns count
+owned classes with a witness layout.}
+\label{tab:dataset}
+\resizebox{\linewidth}{!}{\input{tables/dataset}}
+\end{table}
+
+Table~\ref{tab:dataset} gives the counts. Twenty collections, 21,754 instance
+files, reduce to 17,714 classes: the MOSP collections
+\citep{SmithGent2005,FaggioliBentivoglio1998,ChuStuckey2009,CarvalhoSoma2015,Frinhani2018},
+eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
+\citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
+graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
+benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the classes, 16,087
+carry a certified pathwidth with a witness layout and 862 a witnessed upper
+bound. An independent checker, sharing no code with the solvers, re-reads all
+20,987 member files with its own readers, maps each onto its record by
+isomorphism, re-measures every witness and replays every bound certificate, and
+reports no failure on the 16,949 records.
+
+Against published values: all 84 Small graphs agree with the pathwidths of
+\citet[Tables~4--5]{Mallach2018}, and ten of the eleven VLSI circuits are
+certified at their published best-known track counts \citep[Table~I]{OliveiraLorena2002};
+the eleventh, W4 with 202 nets, is open at 28 against 27. One caution about MOSP
+benchmark files emerged: the same public repository ships the Carvalho and Soma
+instances as customers by patterns and the Chu and Stuckey instances beside them
+as patterns by customers, and only published densities and values tell them
+apart. Read the wrong way round, an instance certifies at a different value.
+
+What is left is priced. One more budget step for every open class that fits our
+engine (1,024 vertices per component) costs at most 500 core-hours, and on the
+Rome graphs each such step has closed about 40\% of what it attempted. The
+largest MOSP instances, 400 to 1,000 customers, and the 154 classes above 1,024
+vertices are beyond an exact search. Refutation-certified records rest on the
+repaired search; for those within reach of the certificate emitter, the proof
+object above is the route by which a third party can check them without our code.

@@ -1,6 +1,6 @@
 # loop0009 — revise paper 2 for readability (paper2/review_readability.md): items
 
-- [ ] **01 The new structure.** Set the section order and create the
+- [x] **01 The new structure.** Set the section order and create the
   appendices, before any section is rewritten.
   - **Order:**
     1. Introduction;

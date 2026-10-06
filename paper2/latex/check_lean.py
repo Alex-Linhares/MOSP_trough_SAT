@@ -2,7 +2,7 @@
 
     python -m paper2.latex.check_lean
 
-Collects the names in `\\lean{...}` and in `\\path{...}` cells of the section
+Collects the names in `\\leannames{...}` (Appendix A) and `\\lean{...}`, and in `\\path{...}` cells of the section
 files, and looks for a declaration of each (theorem, lemma, def, abbrev,
 structure, inductive, instance, or a structure field) under
 `lean/MOSPFormalization/`. A dotted name such as `NetGateMatrix.tracks_eq_mospValue`
@@ -29,7 +29,7 @@ def cited() -> set[str]:
     names: set[str] = set()
     for f in sorted(HERE.glob("sec*.tex")):
         text = f.read_text()
-        for arg in re.findall(r"\\lean\{([^}]*)\}", text):
+        for arg in re.findall(r"\\lean(?:names)?\{([^}]*)\}", text):
             names.update(n.strip() for n in arg.split(","))
         for arg in re.findall(r"\\path\{([^}]*)\}", text):
             if re.fullmatch(r"[A-Za-z_.']+", arg) and not arg.endswith((".lean", "/")):

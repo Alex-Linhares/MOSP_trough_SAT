@@ -1,0 +1,38 @@
+% The data, code and proofs statement (loop0009 item 01). It replaces the
+% title-page footnote and every file path and `python -m` command that the
+% body used to carry. Those commands, kept here for later items and recorded
+% in the paper2/*.md documents that are the sources of record:
+%   Section 3 figures and numbers  python -m paper2.section2_figures [--numbers]
+%                                  (paper2/relevance.py, paper2/trends.py; offline,
+%                                  from the OpenAlex caches of 29 September 2026)
+%   Tables (generated)             python -m paper2.latex.make_tables
+%   Band values (brute force)      python -m paper2.complex_check
+%   Figure 4.1                     python -m paper2.counterexample_figure
+%   Validation counts, Section 4.4 paper2/solver_fix.md items 01-05;
+%                                  paper2/revised_algorithm.md section 4.4.4
+%   Prior reports                  python3 -m paper2.prior_art_sweep
+%                                  (paper2/prior_art_counterexample.md)
+%   Split re-certification         python -m paper2.solver_fix_split --summary
+%                                  (Lean: Search/Split.lean)
+%   Dataset                        python -m paper2.dataset (builder);
+%                                  python paper2/dataset_check.py --sources (checker)
+%   Axiom audit                    lake env lean paper2/axiom_check.lean
+\section*{Data, code and proofs}
+\label{sec:data}
+\addcontentsline{toc}{section}{Data, code and proofs}
+
+Everything this paper reports can be checked from its repository,
+\fbox{\textbf{URL to be added on release}}. The repository holds:
+\begin{itemize}
+\item the Lean~4 development, with every theorem the paper names
+  (Appendix~\ref{app:lean}) and an axiom check that covers all of them;
+\item the source of both solvers, the open-stacks customer search and the graph
+  pathwidth solver, in C and in Python, with the published and the repaired
+  rules;
+\item the dataset of Section~\ref{sec:dataset}, the certificates of
+  Section~\ref{sec:practice} and the independent checkers of both;
+\item the bibliometric data of Section~\ref{sec:names}: the cached OpenAlex
+  responses, the relevance labels and the mechanical rule;
+\item a script for every table, figure and number in the paper, each of which
+  regenerates it from the recorded data.
+\end{itemize}

@@ -1,0 +1,96 @@
+% Appendix B. Machinery moved out of the body as is (loop0009 item 01); what
+% the body keeps is decided in item 05. Sources as for the sections it came
+% from: paper2/problem_transformations.md, paper2/proof_reductions.md,
+% paper2/revised_algorithm.md, paper2/search_soundness.md.
+\section{Supporting material}
+\label{app:machinery-all}
+
+This appendix holds the material that supports Sections~\ref{sec:equiv}
+and~\ref{sec:search} without being needed to follow them.
+
+\subsection{Edge cases and a gap in a published proof}
+\label{app:edge}
+
+Three of the published equalities fail on degenerate inputs, and each failure
+is proved in Lean. On a nonempty graph with no edges, $\ns=0$ while
+$\vs+1=\theta=1$, so both equalities of \citet{LY2002ref9,LY2002ref10} need an
+edge~\leanref{edgeless-ns}.
+For a matrix with no 1s, $Z=0$ while $\pw+1=1$. Lengauer's Theorem~4 fails at
+$K=0$ on an edgeless graph~\leanref{vsg0}.
+\citet[Thm~3.9]{LY2002ref6}, $t=\ns$, fails literally on the $1\times1$ matrix
+$[1]$~\leanref{tns}.
+
+The published proof of $\vs\le\ns-1$ \citep[Thm~4.1]{LY2002ref10} has a gap. It
+orders the vertices by when they first receive a searcher and claims that every
+vertex counted at the worst cut still holds a searcher, ``since the vertices in
+$D_{i_0}$ are joined to vertices not yet cleared'' (p.~217). A strategy may place
+a searcher and remove it again before clearing anything, which recontaminates
+nothing. On $K_{1,3}$, placing and removing a searcher on each leaf before
+guarding the centre is an optimal recontamination-free strategy for which the
+claim fails~\leanref{kp}. The theorem is true. The
+repair orders the vertices by clearing time, as our Lean proof does, or uses the
+paper's own normal form, its Corollary~2.4.
+
+\subsection{A thirteenth member}
+\label{app:thirteenth}
+
+Progressive black-white pebbling, which is not in Table~1, belongs to the exact
+core. \citet[Thm~3]{LY2002ref14} gives
+$\vs(G)\le K\iff\mathrm{pbw}(G_d)\le K+2$ on the dag $G_d$ built from $G$; his
+Theorem~2 gives $\mathrm{pbw}(D)=\vs(D_u)+1$ on a dag $D$, where $D_u$ is the
+MOSP graph of the matrix whose column $v$ is $v$ with its predecessors; and the
+minimum progressive pebbling number of \citet[Thm~3.1]{LY2002ref10} equals
+$\pw+1$. All three are proved in Lean, each with its hypothesis: Lengauer's
+Theorem~2 in its instance form fails at $K=1$ on a dag with no arcs, and
+$\mathrm{mpb}=\ns$ fails on edgeless graphs~\leanref{pebbling}.
+
+\subsection{Why the published proof of the definite move fails}
+\label{app:whyfails}
+
+The proof moves $q$ to the front of a
+solution and claims that after each prefix ``we have at most open(q, S) extra
+stacks open, but at least close(q, S) extra stacks closed'' (p.~6). At a prefix
+$T\supseteq S$ that does not yet contain $q$, moving $q$ forward changes the open
+stacks by $b(T\cup X)-b(T) = |N[q]\setminus O(T)|-|X\setminus T|$. At $T=S$ this
+is $\open-\close\le0$. But customers of $X$ that the solution has \emph{already}
+closed are in $T$ and no longer count as extra stacks closed, while the stacks
+$q$ opens may still be new. In the example, a solution may begin with 3, after
+which 4 is free: at $T=\{2,3,4\}$, moving 0 forward costs one more stack. A
+second, independent slip: even where the conclusion holds, the literal sequence
+$S \mathbin{+\!\!+} [q] \mathbin{+\!\!+} R'$ need not be a solution, because a
+customer that $q$ frees stays open until its turn; the argument needs the free
+moves.
+
+\subsection{The search for smaller counterexamples}
+\label{app:minimality}
+
+The smallest graph on which the rule loses the last solution has 14 customers:
+there is none on any graph to 9 vertices, by exhaustion, and none on the 88,802
+connected graphs on 10 vertices with at most 14 edges. The counterexample was
+found by a search over a family of gadgets built from the failed proof, and
+minimised by deletion.
+
+\subsection{The filter and the runs are sound}
+\label{app:machinery}
+
+\begin{proposition}\label{prop:filter}
+At every state with the invariant, for every set $Q$ of refuted old moves, the
+filter definite $\to$ subset $\to$ better with both repairs is node-sound~\leanref{filter}.
+\end{proposition}
+\begin{proof}
+If the definite move fires, Theorem~\ref{thm:repaired} applies. Otherwise the
+subset rule keeps a survivor with a solution; let $w$ be the earliest. If the
+better move dropped $w$, it cited an earlier survivor that the repaired
+argument proves solvable, contradicting the choice of $w$.
+\end{proof}
+
+\begin{theorem}[runs are sound]\label{thm:runs}
+Let the filter be node-sound and return only playable customers. If at the start
+of a run the invariant holds, every memo entry is a genuine refutation, and
+every old move is refuted, then the run leaves only genuine memo entries, and if
+it answers \emph{false} at $S$ then $\neg\Sol_k(S)$. This holds for any child
+order and any memo policy, with the old move on or off~\leanref{runs}.
+\end{theorem}
+The proof is an induction over the run, in the order in which subtrees complete:
+every old move a node holds is a sibling subtree that completed with \emph{false}
+earlier in the same run, or an inherited one that passed the reinsertion test.

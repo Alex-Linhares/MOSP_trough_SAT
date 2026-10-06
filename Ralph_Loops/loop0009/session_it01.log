@@ -1,0 +1,181 @@
+# session it01 started 2026-10-06 14:48:30
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ cd /home/al/dev/MOSP; cat Ralph_Loops/loop0009/iterations.md; ls paper2/latex; cat paper2/latex/Makefile; wc -l paper2/latex/*.tex paper2/review_readability.md 
+  > $ cd /home/al/dev/MOSP; ls paper2/data/ | head -30; ps -p 2185545 -o pid,etime,cmd | cut -c1-150; for f in paper2/data/solver_fix_split*.log paper2/data/*split*/*
+  > $ cd /home/al/dev/MOSP; cat paper2/latex/main.tex paper2/latex/sec5_closing.tex; cat tests/test_paper2_latex.py; cat paper2/latex/check_axioms.py; cat Ralph_Loops
+  > $ cd /home/al/dev/MOSP; ls -t paper2/data | head; grep -rl '^!!!' paper2/data/*.log paper2/data/*/ 2>/dev/null | head; cat paper2/latex/check_lean.py
+  > $ cd /home/al/dev/MOSP; tail -3 paper2/data/solver_fix_split.log; cat paper2/review_readability.md
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/1323e98e-623f-4534-a362-41a379cbd2ab/tool-results/bp9y666su.txt
+
+Reading the draft sections now; next I'll restructure files (section order, appendices A/B, data statement).
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat -n sec1_intro.tex; cat -n sec2_names.tex | head -60; grep -n 'section\|label\|\\ref\|lean{\|python\|path{' sec2_names.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat -n sec3_equivalences.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat -n sec4_search.tex
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/1323e98e-623f-4534-a362-41a379cbd2ab/tool-results/bqu7li2ck.txt
+  > $ cd /home/al/dev/MOSP; grep -rln 'sec[1-5]_\(intro\|names\|equivalences\|search\|closing\)' --include=*.py --include=*.md --include=Makefile --include=*.tex . 2>
+  > $ cd /home/al/dev/MOSP/paper2/latex; make check 2>&1 | tail -2; grep -n 'abel{' sec*.tex | awk -F: '{print $1": "$3}' | tr '\n' ' '
+
+Baseline builds at 26 pages. Now renaming/splitting section files into the new order.
+  > $ cd /home/al/dev/MOSP/paper2/latex; git mv sec2_names.tex sec3_names.tmp && git mv sec3_equivalences.tex sec2_equivalences.tex && git mv sec3_names.tmp sec3_name
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n '258,291p' sec2_equivalences.tex > /tmp/b_equiv.tex; sed -i '258,291d' sec2_equivalences.tex; sed -n '250,262p' sec2_e
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n '288,309p' sec4_search.tex > /tmp/b_runs.tex; sed -i '288,309d' sec4_search.tex; sed -n '153,166p' sec4_search.tex > /
+  > Edit /home/al/dev/MOSP/paper2/latex/sec4_search.tex
+  > Edit /home/al/dev/MOSP/paper2/latex/sec2_equivalences.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/the exact core; Appendix~\\ref{app:edge} and~\\ref{app:thirteenth} give the/the exact core; Appendices~\\ref{app:ed
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/progressive pebbling number of Section~\\ref{sec:thirteenth}/progressive pebbling number of Appendix~\\ref{app:thir
+
+Moving the soundness machinery to Appendix B and adding pointers; next I build Appendix A (formal names).
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec4_search.tex'; s=open(p).read()
+s=s.replace("\\label{sec:theorem}\n\n","\\label{sec:theorem}\n\nThe m
+  > $ cat /tmp/b_equiv.tex | head -3; grep -n subsection /tmp/b_equiv.tex; cat /tmp/b_why.tex | head -2; tail -4 /tmp/b_runs.tex
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+eq=open('/tmp/b_equiv.tex').read().rstrip()+"\n"
+eq=eq.replace("\\subsection{Edge cases and a gap in a publ
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+import re,glob
+for f in sorted(glob.glob('sec*.tex')):
+    s=open(f).read()
+    for m in re.finditer(r'\\le
+  > $ cd /home/al/dev/MOSP/paper2/latex; cat > /tmp/conv.py <<'EOF'
+import re
+desc = [
+ # Section 2
+ ("clique", r"Lemma~\ref{lem:clique}, cliques sit in a bag"),
+ ("v
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -h -o '.\{60\}leanref{\(star\|greedy\|kp\|runs\|fakeold\|thm638\|core-vsg\|edgeless-ns\)}.\{0,3\}' sec*.tex; grep -n 'le
+
+Lean footnotes converted to appendix references. Now the dictionary table's Lean column, Appendix A file, data statement and main.tex.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+import re
+p='sec4_search.tex'; s=open(p).read()
+a=s.index(r'\begin{tabularx}{\linewidth}{@{}>{\raggedright}
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+p='sec2_equivalences.tex'; s=open(p).read()
+old=r"""relation to pathwidth that is true, and says where it i
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -n 60,69p sec3_names.tex; sed -n 225,232p sec2_equivalences.tex; sed -n 114,120p sec4_search.tex; sed -n 35,41p sec5_resu
+  > $ cd /home/al/dev/MOSP; grep -n '^theorem\|^lemma' lean/MOSPFormalization/Search/Split.lean | head; grep -n -i split paper2/axiom_check.lean | head
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+def ed(p, old, new):
+    s=open(p).read(); assert old in s, (p, old[:40]); open(p,'w').write(s.replace(old,
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+s=open('sec5_results.tex').read()
+hdr=r"""% Section 5, moved as is from old Sections 4.6-4.7 (loop0009 item
+
+Writing Appendix A (formal names table), the Data/code/proofs statement, and updating main.tex.
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+import re
+lines=open('/tmp/rows.tex').read().splitlines()
+# split into groups
+groups=[]; 
+for l in lines:
+ 
+  > $ cd /home/al/dev/MOSP/paper2/latex; python3 - <<'EOF'
+def ed(s, old, new):
+    assert old in s, old[:50]; return s.replace(old,new)
+p='main.tex'; s=open(p).read(
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -c 'Overfull' main.log; grep -A2 'Overfull' main.log | head -20; git stash list | head -2; git show HEAD:paper2/latex/ma
+  > $ cd /tmp && rm -f pg-*.png; pdftoppm -r 60 -png /home/al/dev/MOSP/paper2/latex/main.pdf pg; ls pg-*.png | wc -l; pdftotext -layout /home/al/dev/MOSP/paper2/latex
+  > $ cd /tmp; pdftotext -layout /home/al/dev/MOSP/paper2/latex/main.pdf - | grep -n '^ *[A-Z0-9.]* *\(Formal names\|Supporting material\|Data, code\|Computational re
+  > $ cd /tmp; for p in 1 2 3 4; do :; done; pdftotext -f 25 -l 29 /home/al/dev/MOSP/paper2/latex/main.pdf - | head -5; python3 -c "
+import subprocess
+for i in range(
+
+Build passes (29 pages). Checking the appendix pages visually.
+  > $ cd /tmp; rm -f ap-*.png; pdftoppm -r 70 -f 25 -l 26 -png /home/al/dev/MOSP/paper2/latex/main.pdf ap; ls ap-*
+  > Read /tmp/ap-25.png
+  > $ cd /home/al/dev/MOSP/paper2/latex; sed -i 's/\\newcommand{\\leanentry}\[2\]{\\refstepcounter/\\newcommand{\\leanentry}[2]{\\leavevmode\\refstepcounter/' main.te
+  > Read /tmp/ap-26.png
+  > $ cd /home/al/dev/MOSP/paper2/latex; grep -n '\(Section\|Table\|Figure\|Theorem\|Lemma\)s\?~[0-9]\.[0-9]' sec*.tex | grep -v 'Theorem~6.3' ; grep -n 'Section [0-9
+  > $ python3 -m paper2.latex.check_lean | grep MISSING; git stash list >/dev/null; git show HEAD:paper2/latex/check_lean.py > /tmp/old_cl.py; 
+  > $ sed -i 's/% \\leanref{key}. check_lean.py and check_axioms.py read the \\leannames{...}/% the leanref macro. check_lean.py and check_axioms.py read the leanname
+  > $ python3 -m pytest tests/test_paper2_latex.py -q 2>&1 | tail -2; pdftotext -layout paper2/latex/main.pdf - | sed -n '925,945p;1050,1082p'
+  > $ cd /home/al/dev/MOSP/paper2/latex && python3 - <<'EOF'
+p='README.md'; s=open(p).read()
+a=s.index('| `sec1_intro.tex`'); b=s.index('| `refs.bib`')
+new=r"""| `sec
+  > $ sed -i 's/^| 2\.1 name usage/| 3.1 name usage/; s/^| 4\.3 cost/| 5.1 cost/; s/^| 4\.4 re-cert/| 5.2 re-cert/; s/^| 4\.5 certif/| 5.3 certif/; s/^| 4\.6 dataset/
+
+Now running the full gate in the background.
+  > $ cd /home/al/dev/MOSP && sed -i 's/^\*\*25 pages\*\*/**29 pages**/' paper2/latex/README.md; nproc; (timeout 5400 python3 Ralph_Loops/loop0009/gate.py > /tmp/gate
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Meanwhile I'll draft PROGRESS.md while the gate runs.
+  > Monitor {"command": "until grep -q '^EXIT' /tmp/gate01.log; do sleep 5; done; grep -E 'GATE|EXIT|passed|failed|sorry in' /tmp/ga
+  > $ cd /home/al/dev/MOSP && cat >> Ralph_Loops/loop0009/PROGRESS.md <<'EOF'
+
+## Iteration 1 — 2026-10-06 (item 01, the new structure)
+
+### Completed
+- **Section ord
+  > $ pdftotext paper2/latex/main.pdf - | grep -oE '^(Theorem|Lemma|Proposition) [0-9B]\.[0-9]+ ?\([^)]*\)?' | head -30; pdftotext paper2/latex/main.pdf - | grep -oE 
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0009/PROGRESS.md'; s=open(p).read()
+s=s.replace("| §4.1–4.5 | §4.1–4.5 (4.4 now holds only Thm 4.6 = old 4.10) |","| §4.1–4
+
+Waiting on the gate to finish.
+  > $ tail -5 /tmp/gate01.log
+  > Monitor {"command": "until grep -q '^EXIT' /tmp/gate01.log; do sleep 5; done; grep -E 'GATE|EXIT|passed|failed|sorry in|ok' /tmp
+  > $ ps -ef | grep -E 'gate.py|pytest|lake' | grep -v grep | cut -c1-150 | head
+
+The gate is in its pytest stage now (lake build passed); waiting for it to finish.
+  > Monitor {"command": "until grep -q '^EXIT' /tmp/gate01.log; do sleep 10; done; grep -E 'GATE|EXIT|passed|failed|sorry in|ok' /tm
+  > $ until grep -q '^EXIT' /tmp/gate01.log; do sleep 15; done; cat /tmp/gate01.log | tail -15
+  > $ until grep -q '^EXIT' /tmp/gate01.log; do sleep 15; done; tail -15 /tmp/gate01.log
+  > $ head -20 /tmp/gate01.log
+
+The gate's only failure is a decode error: `make check` rebuilt the PDF and pdflatex printed a non-UTF-8 byte. Rebuilding first, then re-running the LaTeX step the way the gate does.
+  > $ cd /home/al/dev/MOSP/paper2/latex && make >/dev/null 2>&1; cd /home/al/dev/MOSP && python3 -c "
+import subprocess
+m=subprocess.run(['make','check'],cwd='paper2/
+
+Re-running the full gate with the PDF up to date, to confirm a clean pass.
+  > $ timeout 3000 python3 Ralph_Loops/loop0009/gate.py > /tmp/gate01b.log 2>&1; echo EXIT $?; grep -E 'GATE|passed|ok|Pages' /tmp/gate01b.log
+  > $ until [ -s /tmp/claude-1000/-home-al-dev-MOSP/1323e98e-623f-4534-a362-41a379cbd2ab/tasks/b8fr1qop4.output ]; do sleep 20; done; cat /tmp/claude-1000/-home-al-de
+  > $ until [ -s /tmp/claude-1000/-home-al-dev-MOSP/1323e98e-623f-4534-a362-41a379cbd2ab/tasks/b8fr1qop4.output ]; do sleep 20; done; cat /tmp/claude-1000/-home-al-de
+
+Gate passes. Finalising PROGRESS.md and iterations.md.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0009/PROGRESS.md'; s=open(p).read()
+s=s.replace("Current: 0/11 SOLVED","Current: 1/11 SOLVED",1)
+s=s.replace("""### Blocker
+  > $ git status --short | tail -3
+
+I've finished item 01, and the gate passes: Lean builds with the one allowed `sorry`, both test suites pass (1411 and 114), and the PDF builds with no undefined references. The draft went from 26 to 29 pages, almost all of it the new formal-names table in Appendix A. Nothing was committed, and the split run (PID 2185545) is still running with no `!!!` line in its log.
+
+**Section order is now:**
+1. Introduction
+2. The equivalences (was §3)
+3. The names (was §2)
+4. The search (was §4.1–4.5)
+5. Computational results and a dataset (new, from §4.6–4.7)
+6. Conclusion (still a placeholder)
+7. An unnumbered "Data, code and proofs" statement, then the references
+8. Appendix A (formal names) and Appendix B (supporting material)
+
+The files were renamed to match. I only moved and relabelled; the new text is limited to short pointer sentences and fixed cross-references.
+
+**Appendix A.**
+- All 53 Lean-name footnotes now read "(Appendix A, A.n)" in the text and point into one table, 60 entries grouped by section.
+- Table 4.1's Lean column moved there too.
+- So did the axioms sentence from §2 and the "no `sorry` in the search's Lean files" sentence from §4.
+- The check that every cited Lean name exists now reads the appendix. No name was lost. Two names were added, for the soundness of splitting the search's root, which the draft had cited only as a file path; both already had axiom lines.
+
+**Appendix B** holds, unchanged: the edge cases and the Kirousis–Papadimitriou gap (old §3.3), the thirteenth member (old §3.4), why the published proof fails, the search for smaller counterexamples, and Proposition 4.8 and Theorem 4.9, now B.1 and B.2.
+
+**Data, code and proofs.** This statement replaces the title-page footnote and every file path and `python -m` command in the body. The repository URL and both authors' affiliations are boxed placeholders. The removed commands are kept in a comment in the statement's file (`sec7_data.tex`) for later items.
+
+**Gate problem for later items:** if the PDF is out of date when the gate runs, its LaTeX step rebuilds it and crashes. pdflatex prints a non-UTF-8 byte (from "Möhring") and the gate script fails to decode it. The first run of this session failed that way. Running `make -C paper2/latex` before the gate avoids it, and I recorded this in PROGRESS.md. I did not edit `gate.py`.
+
+**Recorded in PROGRESS.md:**
+- The full old-to-new map of sections, theorems, tables and figures. For example, old Theorem 4.10 is now Theorem 4.8.
+- The review points this closes: change 3 in part, the structure behind change 6, the reordering in change 7, and the appendix moves in change 10.
+- What's left:
+  - The names section still calls itself "a prior question" to the equivalences, which now come before it. Item 04 rewords that.
+  - Some Lean remarks are still inside proofs.
+  - Table 1.1 has no verdict column yet.
+
+Item 01 is marked `[x]`, and the count is now 1/11.
+
+# result: success in 2521s, 67 turns, cost $7.28
