@@ -50,8 +50,9 @@ average. This is the setting under which the customer search certified the
 benchmark values it proved.
 
 \paragraph{Instances.} The \emph{MOSP corpus} is the 6,376 instance files of
-five public open-stacks collections. They are the 2005 Constraint Modelling
-Challenge \citep{SmithGent2005} with a second copy of 46 of its files, the random
+four public open-stacks collections, one of which is distributed twice. They
+are the 2005 Constraint Modelling Challenge \citep{SmithGent2005}, with a
+second copy of 46 of its files under other names, the random
 instances of \citet{ChuStuckey2009} (30 to 125 customers), those of
 \citet{FaggioliBentivoglio1998}, and the 24 industrial SCOOP instances. They
 are the first rows of Table~\ref{tab:dataset}. A Chu--Stuckey name such as
@@ -183,9 +184,9 @@ trees are too large to ship as certificates.
 
 Section~\ref{sec:equiv} showed that one certified pathwidth $w$ answers every
 problem in the exact core. Pathwidth, vertex separation and the vertex
-separator game take the value $w$, and MOSP, gate matrix layout with multiple
-folding, one-dimensional logic, interval thickness, narrowness and node search
-take $w+1$. We therefore built one dataset from every benchmark collection of
+separator game take the value $w$, and MOSP, gate matrix layout (which
+multiple folding equals), one-dimensional logic, interval thickness,
+narrowness and node search take $w+1$: nine problems in all. We therefore built one dataset from every benchmark collection of
 those problems that we could obtain, including the MOSP corpus.
 
 The unit of the dataset is the \emph{isomorphism class}: the set of instances
@@ -203,9 +204,10 @@ and it proves the pathwidth is at least $w$.
 \begin{table}[t]
 \centering\small
 \caption{Twenty collections, 21,754 instance files, reduce to 17,714
-isomorphism classes, and 16,087 of them have a certified pathwidth. The open
-classes are mostly in the PACE sets, the VSPLIB grids and Harwell-Boeing
-graphs, and the MOSP sets of Carvalho and Soma and of Frinhani et al. \emph{Classes}: isomorphism classes within the
+isomorphism classes, and 16,087 of them have a certified pathwidth. Largely
+open: PACE, the VSPLIB grids and Harwell-Boeing, and the MOSP sets of de
+Carvalho and Soma and of Frinhani et al.; Rome's 327 open classes are under
+3\% of it. \emph{Classes}: isomorphism classes within the
 collection (78 graphs above 5,000 vertices are compared by file content only).
 \emph{Counted here}: classes whose first member, in the order of the table,
 is in this collection, so the column sums to the dataset's class count. The

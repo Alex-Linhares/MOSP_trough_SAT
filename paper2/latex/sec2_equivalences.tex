@@ -163,7 +163,7 @@ MOSP & \citet{Yanasse1997a}; \citet{FellowsLangston1989}; \citet{LY2002} &
   $Z(M)=\pw(G_M)+1$ ($M$ has a 1) & exact \\
 Gate matrix layout & \citet{LY2002ref6} & $t(M)=Z(M)=\pw(G_M)+1$ & exact \\
 One-dim.\ logic & \citet{LY2002ref7} & tracks $=\theta(H)=\pw(H)+1$; boundary variant $\ge\pw(H)+1$ & exact \\
-PLA folding & \citet{LY2002ref6} & $\max(\pw+1,\lceil|N|/2\rceil)\le\pla$, gap unbounded; multiple folding $=\pw+1$ & false; variant exact \\
+PLA folding & \citet{LY2002ref6} & $\max(\pw+1,\lceil|C|/2\rceil)\le\pla$, gap unbounded; multiple folding $=\pw+1$ & false; variant exact \\
 Interval thickness & \citet{LY2002ref6}; \citet{LY2002ref9} & $\theta=\pw+1$ ($V\ne\emptyset$) & exact \\
 Node search & \citet{LY2002ref9,LY2002ref10}; \citet{BienstockSeymour1991} & $\ns=\mns=\vs+1=\pw+1=\theta$ ($E\ne\emptyset$) & exact \\
 Edge search & \citet{EllisSudboroughTurner1994}; \citet{LY2002ref10} & $\vs\le\es\le\vs+2$, also for $\pes$ & band \\
@@ -330,8 +330,8 @@ bounds their distance from pathwidth.
 \begin{theorem}[two rows are false]\label{thm:false}
 \leavevmode
 \begin{enumerate}
-\item PLA folding: for a matrix with a 1,
-  $\max(\pw(G_M)+1,\lceil|N|/2\rceil)\le\pla(M)$, and the gap to $\pw+1$ is
+\item PLA folding: for a matrix with a 1 and net set $C$,
+  $\max(\pw(G_M)+1,\lceil|C|/2\rceil)\le\pla(M)$, and the gap to $\pw+1$ is
   unbounded. The $5\times5$ identity needs 3 tracks while $\pw(G_M)+1=1$, and the
   path $P_n$ as a matrix, one gate per edge, has $t=2$ and
   $\pla\ge\lceil n/2\rceil$, so the gap is unbounded on connected instances too

@@ -135,7 +135,7 @@
 
   Bring in no topic that the body does not cover.
 
-- [ ] **10 A second review.** Read the revised PDF cold, as a referee would,
+- [x] **10 A second review.** Read the revised PDF cold, as a referee would,
   against `paper2/review_readability.md` §1–§9.
   - Write `paper2/review_readability_2.md`: what is fixed, what is not, and
     any new problems.

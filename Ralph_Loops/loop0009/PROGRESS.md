@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 9/11 SOLVED
+Current: 10/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -777,3 +777,72 @@ these numbers, and `tables/split.tex` (Table B.1) was regenerated with
 - Item 10, the second review. Check the intro bullet ("as of 6 October 2026")
   and §5.2 and §6 stay in step if the split run finishes before submission.
 - The title still overstates (item 02's note); the owner's call.
+
+---
+
+## Iteration 10 — 2026-10-06 ~22:30 (item 10, a second review)
+
+### Completed
+- **Read the PDF cold** (37 pages, every page, text and rendered) against
+  `paper2/review_readability.md` §1–§9, and wrote
+  **`paper2/review_readability_2.md`**: overall assessment; the
+  three-sentence reconstruction again; the central question; a table of the
+  first report's ten changes (all ten fixed); what is not fixed; eleven new
+  problems ranked; figures, audience, remaining priorities.
+- **Three-sentence reconstruction** (it came easily; each of the first
+  report's four failure points now works):
+  > Linhares and Yanasse (2002) listed twelve problems as equal "plus or
+  > minus one" to the minimum number of open stacks; the paper proves eight
+  > rows exact (counting pathwidth), two bands, two false, all in Lean, and
+  > shows the literature uses "pathwidth" while the open-stacks community,
+  > the most active besides, rarely reads graph theory. Read as a pathwidth
+  > algorithm, the best exact open-stacks search (Chu and Stuckey 2009) rests
+  > on two false dominance theorems; the correct rule is a known commitment
+  > lemma, tested by one bipartite matching, and the repaired search is
+  > proved sound, costs ≤ 2% more nodes per benchmark set and re-proves all
+  > 115 affected optima unchanged. Since one certified pathwidth answers the
+  > whole exact core, the paper releases 17,714 graphs, 16,087 with
+  > certified pathwidth and a witness layout.
+- **Top five new problems fixed** (presentation only; no number, theorem or
+  claim changed):
+  1. Undefined $|N|$ in Theorem 2.6(1) and Table 2.3 (clashing with $N[c]$)
+     → $|C|$, "net set $C$" (source: `card_le_two_mul_plaTracks`,
+     `equivalences.md` row 4).
+  2. "Nine problems" (Section 6) vs a ten-name exact core: §5.4 now says
+     "gate matrix layout (which multiple folding equals) … nine problems in
+     all" (`foldTracks_eq_tracks`).
+  3. §5.1 "five public open-stacks collections" named four → "four …, one of
+     which is distributed twice" (5,806 + 46 + 200 + 300 + 24 = 6,376).
+  4. Table 5.3's caption ranked open classes by share without saying so and
+     omitted Rome (327 open, more than grids + HB); now "Largely open: … ;
+     Rome's 327 open classes are under 3% of it" (326 + 1 of 11,199, from
+     the table); "Carvalho" → "de Carvalho".
+  5. "How to read": "the proofs are given in the text" contradicted §2.2
+     ("We do not reprove them on paper") → "each proof is given or cited in
+     the text".
+  - Also: Appendix A entry A.39 "Two implementation faults of the better
+    move" → "The better move's two requirements: the close count and the
+    rule order" (matches §4.4's reframing; same Lean names).
+- **Pages:** 37 before, 37 after (a longer first wording of fix 5 pushed it
+  to 38; shortened).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS on the final
+  state (lake build ok, 1420 passed / 2 skipped / 1 xfailed,
+  pathwidth_solver 114 passed, no undefined references, 37 pages).
+
+### Blockers
+- None. Split run PID 2185545 alive (1 d 22 h), no `!!!` line.
+  `--summary` (checked 2026-10-06 ~22:00): `-2-2_0` 2,288 subtrees, 460.2
+  core-hours; `-2-3_0` 2,685, 460.6; both partial. The paper still prints the
+  20:21 counts (2,196 / 2,601; 443 / 453) under "as of 6 October 2026" in
+  §5.2 and Table B.1; not regenerated in this item.
+
+### Next
+- **Item 11 (reserve)**, candidates from `review_readability_2.md` §5 items
+  7–11: Theorem 2.4(3)'s two look-alike conditions; Table 4.2's "–" vs "none
+  found"; Table 5.1's "Vertices" header on customer rows; Section 6's
+  1,024-vertex limit and 154 classes have no home in the body (one sentence
+  in §5.1); the definite-move intuition is given twice (§4.2 bullets and
+  §4.3). Or the length cut in Section 4 (§4 of the second review).
+- Before submission: refresh the two in-flight counts (§5.2, Table B.1 via
+  `make_tables.split_table()`, Section 6) on the day; title subtitle and
+  affiliations/URL are the owner's.
