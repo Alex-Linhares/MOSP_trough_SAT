@@ -73,7 +73,7 @@
   - Redo or annotate the "OR is an island" figure so its point is visible,
     or drop the claim.
 
-- [ ] **05 The search section** (review changes 4 and 5).
+- [x] **05 The search section** (review changes 4 and 5).
   - **Open with the stakes:**
     - two published dominance theorems are false;
     - no wrong answer was ever produced;

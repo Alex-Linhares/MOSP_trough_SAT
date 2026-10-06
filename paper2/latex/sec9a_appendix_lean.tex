@@ -20,7 +20,12 @@ theorem named in the paper. The development has one \texttt{sorry}, a
 conjecture about lower bounds that no result of this paper uses. The part of
 the development behind Section~\ref{sec:search} has no \texttt{sorry} at all.
 
-One Lean proof takes a different route from the published one: the proof
+Two Lean proofs take a route that the text does not describe. The proof of
+Theorem~\ref{thm:decides} goes through narrowness \citep{LY2002ref11}, which
+counts the closing order forwards rather than reversing it; and the proof of
+Theorem~\ref{thm:matching} reduces the deficiency form of Hall's theorem to
+Mathlib's Hall theorem by adding $\delta$ dummy stacks. One Lean proof takes a
+different route from the published one: the proof
 that node search is monotone (Theorem~\ref{thm:core}(5)) follows the crusade
 argument of \citet{BienstockSeymour1991}, not the reduction to edge search of
 \citet{LaPaugh1993} on which \citet{LY2002ref10} rely. A few facts in the paper
@@ -62,7 +67,12 @@ Entry & Result in the paper & Lean names \\
 \leanentry{defs}{Step cost, $P_k$ and $\Sol_k$ (Section~\ref{sec:search-def})} \leannames{stepCost, Solvable, SearchSol} \\
 \leanentry{F}{Lemma~\ref{lem:F}, free moves never hurt} \leannames{solvable_iff_searchSol_cl} \\
 \leanentry{decides}{Theorem~\ref{thm:decides}, the search decides pathwidth} \leannames{searchSol_empty_iff_pathwidth_add_one_le, searchSol_mospGraph_iff_mospValue_le} \\
-\leanentry{nodesound}{Node-soundness of a filter (Section~\ref{sec:search-def})} \leannames{NodeSoundAt} \\
+\leanentry{dict1}{Table~\ref{tab:dictionary}: closing order from $\emptyset$} \leannames{orderOfLayout} \\
+\leanentry{dict2}{Table~\ref{tab:dictionary}: open stacks $b(T)$} \leannames{openStacks_eq_card_boundary} \\
+\leanentry{dict3}{Table~\ref{tab:dictionary}: $\cost(T,c)$} \leannames{stepCost_eq_card_boundary_add_one} \\
+\leanentry{dict4}{Table~\ref{tab:dictionary}: $\Sol_k(\emptyset)$} \leannames{searchSol_empty_iff_pathwidth_add_one_le} \\
+\leanentry{dict5}{Table~\ref{tab:dictionary}: free closure $\cl(T)$} \leannames{mem_cl_iff} \\
+\leanentry{dict6}{Table~\ref{tab:dictionary}: definite move, repaired} \leannames{isHereditarilyDefinite_iff_isCommittable} \\
 \leanentry{premise}{Lemma~\ref{lem:premise}, what the premise says} \leannames{closeCount_eq, isDefinite_iff} \\
 \leanentry{cex}{Counterexample~\ref{cex:definite}} \leannames{definiteMove_counterexample, cexFamily_closed} \\
 \leanentry{thm1false}{Chu and Stuckey's Theorem~1, under both readings, and Chu's Theorem~6.3.6 are false} \leannames{chuStuckey_theorem1_false, chuStuckey_theorem1_false_literal, chuThesis_theorem636_false} \\
@@ -83,6 +93,7 @@ Entry & Result in the paper & Lean names \\
 \leanentry{reinsert}{The old move needs its reinsertion test (path on five vertices)} \leannames{reinsert_needs_test} \\
 \leanentry{memo}{Solvability of a state does not depend on the path to it (the memo)} \leannames{solvable_iff_of_cl_eq} \\
 \leanentry{fakeold}{A node with an unrefuted old move can record a solvable state} \leannames{exec_fake_oldMove} \\
+\leanentry{nodesound}{Node-soundness of a filter (Section~\ref{sec:theorem})} \leannames{NodeSoundAt} \\
 \leanentry{main}{Theorem~\ref{thm:main}, the revised search is sound} \leannames{exec_repairedFullFilter_sound, exec_repairedFullFilter_pathwidth, exec_repairedFullFilter_mospValue} \\
 \leanentry{notsound}{Under the published rules the filter is not node-sound} \leannames{not_codeFilterSound_cexGraph} \\
 \leanentry{endpoint}{Lemma~\ref{lem:endpoint}, the premises as commitment conditions} \leannames{isDefinite_iff_endpoint, isHereditarilyDefinite_iff_isCommittable} \\
@@ -91,13 +102,6 @@ Entry & Result in the paper & Lean names \\
 \leanentry{commit234}{In Counterexample~\ref{cex:definite} that set is $\{2,3,4\}$} \leannames{cex_isCommittable_234} \\
 \leanentry{depth1}{A commitment of depth one holds iff $\open(q,S)\le1$} \leannames{isCommittable_insert_iff} \\
 \leanentry{greedy}{The greedy step of Coudert, Mazauric and Nisse is that condition} \leannames{isGreedyStep_iff} \\
-\leangroup{Table~\ref{tab:dictionary}, the dictionary}
-\leanentry{dict1}{Table~\ref{tab:dictionary}: closing order from $\emptyset$} \leannames{orderOfLayout} \\
-\leanentry{dict2}{Table~\ref{tab:dictionary}: open stacks $b(T)$} \leannames{openStacks_eq_card_boundary} \\
-\leanentry{dict3}{Table~\ref{tab:dictionary}: $\cost(T,c)$} \leannames{stepCost_eq_card_boundary_add_one} \\
-\leanentry{dict4}{Table~\ref{tab:dictionary}: $\Sol_k(\emptyset)$} \leannames{searchSol_empty_iff_pathwidth_add_one_le} \\
-\leanentry{dict5}{Table~\ref{tab:dictionary}: free closure $\cl(T)$} \leannames{mem_cl_iff} \\
-\leanentry{dict6}{Table~\ref{tab:dictionary}: definite move, repaired} \leannames{isHereditarilyDefinite_iff_isCommittable} \\
 \leangroup{Section~\ref{sec:results}, computational results}
 \leanentry{split}{The split of the root into independent tasks is sound} \leannames{execSplit_repairedFullFilter_sound, execSplit_repairedFullFilter_mospValue} \\
 \leangroup{Appendix~\ref{app:machinery-all}, supporting material}

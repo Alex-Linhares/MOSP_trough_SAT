@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 4/11 SOLVED
+Current: 5/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -354,3 +354,115 @@ in 10 min; trees n ≤ 67 = 30; hb 26) are from `pathwidth_solver/bench/referenc
   `app:names`.
 - The section title is "The names and the communities"; the intro's "How to
   read" sentence still matches.
+
+---
+
+## Iteration 5 — 2026-10-06 (item 05, the search section)
+
+### Completed
+- **`sec4_search.tex` restructured; no theorem, number or claim changed.**
+  Title now "An exact open-stacks search, read as a pathwidth algorithm".
+  - **Opening:** the bridge sentence of review §6.1 ("If MOSP is pathwidth,
+    the best exact MOSP algorithm is a pathwidth algorithm …"), a back-reference
+    to §3.3's challenge story, then a **stakes paragraph**: two published
+    theorems false (with Chu's thesis and Fink), no wrong whole-instance answer
+    known, no re-proved benchmark value changed, the correct rule is Tamaki's
+    commitment lemma tested by one matching, the main theorem stated
+    informally, ≤ 2% nodes. Then a roadmap of 4.1–4.6.
+  - **4.1 The search decides pathwidth:** the off-by-one in k flagged ("k
+    bounds stacks, one more than a width"); **one border notation**: ∂T is
+    defined here and b(T) = |∂T| is in the display; d(T)/N(T) appear only as
+    "the literature writes"; Lemma 4.9 and the Kitsunai definition now use
+    b and ∂ (the reviewer's §6.3 item 3). **Worked example** on the intro's
+    graph (Figure 1.1(d)), k = 3: b({a}) = 1, o(b,{a}) = {c,d}, cost 3, d free
+    at {a,b,c}, order a,b,c,e costs 2,3,3,2 = order A's profile (checked by a
+    script in the session). Intuition for Lemma 4.1 kept after it; Theorem 4.2's
+    proof now reads in one direction (reversed layout) and the "Lean goes
+    through narrowness" remark moved to Appendix A's preamble. "With a
+    requirement" → "with at least one 1". **Table 4.1 (dictionary) moved here**
+    with a conclusion caption, and the "In pathwidth language" paragraph.
+  - **4.2 The algorithm (new): Algorithm 4.1**, a ruled float (`float`
+    package; `algorithm`/`algpseudocode` are not installed), 13 numbered lines:
+    free closure, memo lookup, cost cut, filter, old-move inheritance with the
+    reinsertion test, memo store (taken from `revised_algorithm.md` §4.3.0,
+    §4.3.5, §4.3.6, §4.4.2). One-sentence intuition per rule (memo, old move,
+    definite, subset, better), the covering notion, the filter order, and the
+    Kobayashi–Komuro–Tamaki skeleton paragraph, now ending "This is the
+    isolation measured in Table 3.2, at the level of one algorithm" (review
+    s4:369–372).
+  - **4.3 The definite move:** intuition first ("seems safe"), quote with a
+    gloss of ++ and "solution", "as our implementation does" (the review asked
+    whose code), Lemma 4.3 as confirmation, "the rule fails because a set
+    between them can be cheaper still", counterexample (Figure 4.1 first),
+    the refutations + Fink, the first two sentences of why the proof fails
+    (the rest stays in App. B.4), the repair, "the proof needs one inequality"
+    before Lemma 4.5, Theorem 4.6 + "not new: commitment lemma", then **"The
+    matching test" as the section's algorithmic contribution**: "seems to
+    require exponentially many sets. It does not", the "In words" paragraph
+    before Theorem 4.7, the Mathlib-Hall remark moved to Appendix A, the
+    matching's size bound (from §5.1's text), open ≤ 1. Z no longer reused in
+    Theorem 4.6's proof (T_i used directly).
+  - **4.4 The other rules:** better move split into run-in parts
+    (counterexample / repair and test / two requirements). The "two earlier
+    faults in our own implementation" paragraph is **reframed as two design
+    requirements** (close count; rule order, with Beck 2025), same Lean entry.
+    "As coded" → "as implemented". Old move points to line 9; memo paragraph
+    reframed ("one concern is…", "one implementation of the search declines…").
+    "Theorem 1" in the body → "the definite move".
+  - **4.5 The repaired search is sound:** "What a rule must satisfy" (node
+    soundness, chains, cycles) **moved here**, where it is used, and split into
+    shorter sentences; Theorem 4.8 with an "In words" paraphrase (from
+    `revised_algorithm.md` §4.4.3); validation as a **three-item list**
+    (counts kept); the published-rules paragraph (58 / 570,206) kept.
+  - **4.6 The rules in pathwidth language:** commitments, Lemma 4.9,
+    depth-one; **Table 4.2 rows grouped by status** (false / known / proved
+    here) with midrules and a conclusion caption; "Prior reports" cut to two
+    sentences, the full paragraph (141 works, 24/38, 32/103, Frinhani, Martin et
+    al.) moved to **new Appendix B.6** (`app:prior`).
+- **Appendix A:** Section 4 entries reordered to the new order of appearance
+  (the separate "dictionary" group folded into Section 4 after Theorem 4.2;
+  node-soundness entry now points to §4.5); preamble gains the two Lean-route
+  remarks (narrowness; Hall with δ dummy stacks). No Lean name added or lost.
+- `main.tex`: `\usepackage{float}`, a ruled `algorithm` float numbered by
+  section.
+- **Review points closed:** change 4 (whole: stakes and informal main theorem
+  first, bridge sentence, pathwidth reading and Table 4.1 and border notation
+  in 4.1, Algorithm 1, "What a rule must satisfy" moved); change 5 (whole:
+  intuition → counterexample → repair → matching test, "In words" before
+  Thm 4.7, "the proof needs one inequality", matching test as contribution);
+  §3 Section 4 subsection notes for 4.1–4.5 (opening restated as findings +
+  stakes, example, ∂ single symbol, k off-by-one, "has a 1", ++ gloss, whose
+  code, s4:142–151 split, proof-failure first two sentences, implementation
+  history reframed, old move / memo intuition, validation as list, stakes
+  repeated, isolation sentence, prior reports shortened); §4 Table 4.1
+  (moved, caption) and Table 4.2 (conclusion caption, rows ordered by status);
+  §5 rows Lemma 4.1, Theorem 4.2 (one direction), Counterexample 4.4 (figure
+  first), Lemma 4.5, Theorem 4.7, Theorem 4.10 (announced informally);
+  §6.1 rows §3→§4 and 4.4→4.5; §6.3 items 3, 4, 7 within §4; §6.4 s4:85–88;
+  §6.5 s4:142–151 and s4:258–265.
+- **Pages:** 32 before, 34 after (Algorithm 4.1, the example, the stakes, and
+  Appendix B.6; Section 4 is pp. 12–20).
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  1418 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed, no
+  undefined references, 34 pages). `tests/test_paper2_latex.py`: 6 passed.
+- **Split run** (`--summary`, checked 2026-10-06 ~17:50): `-2-2_0` (k = 24)
+  and `-2-3_0` (k = 20) still partial; the other seven REFUTED. No `!!!` line.
+
+### Blockers
+- None.
+
+### Next
+- **Item 06:** §5.1's first paragraph now repeats §4.3's matching-size
+  sentence ("joins at most close − 1 customers … stops at open − 1 edges");
+  cut it there. §5.1 still has "Since 1 October 2026", "both of our solvers",
+  "MOSP C engine", "our MOSP corpus", `csearch`/`default`. `tables/split.tex`
+  still needs regenerating (see iteration 2).
+- **Item 07:** Figure 4.1 still prints a title inside the image ("A
+  counterexample to Chu & Stuckey's Theorem 1, at k = 6 …"; script
+  `paper2/counterexample_figure.py`); the review's optional second panel
+  (state {2,3,4}, b = 2 < 3) would show the repair. Algorithm 4.1 and Table
+  4.1 float to the top of the page before their subsection headings; acceptable,
+  but check placement after other cuts.
+- **Item 08:** "Theorem 6.3.6/6.3.8" are attached to Chu (2011) everywhere
+  in §4, but check the rest of the paper; Section 2's k (|X_i| ≤ k+1) vs §4's
+  k is now flagged in §4 only.
