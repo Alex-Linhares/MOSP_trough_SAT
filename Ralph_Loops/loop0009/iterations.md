@@ -124,7 +124,7 @@
   - Sentences over about 40 words split.
   - **Add a notation table** at the start of the equivalences section.
 
-- [ ] **09 The conclusion.** Answer the central question in its first
+- [x] **09 The conclusion.** Answer the central question in its first
   paragraph, then:
   - what transfers between the problems, and what does not (bands, false
     rows);

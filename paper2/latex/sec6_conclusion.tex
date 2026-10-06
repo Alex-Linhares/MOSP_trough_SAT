@@ -1,22 +1,90 @@
-% Section 6. Placeholder: to be written last (plan.md, section 5; loop0009 item 09).
+% Section 6. Written by loop0009 item 09 (review section 3, "Section 5,
+% Closing"). Every claim is from the body: Section 2 summary (rows), Section 3
+% (communities), Sections 4.3-4.5 (rules), Section 5 (cost, values, certificates,
+% dataset). The in-flight status is `python -m paper2.solver_fix_split
+% --summary`, checked 2026-10-06. The price of the open classes is
+% paper2/dataset.md section 6 (moved here from Section 5.4 by item 06).
 \section{Conclusion}
 \label{sec:closing}
 
-\placeholder{Section~\ref{sec:closing} is written last, once
-Sections~\ref{sec:intro}--\ref{sec:results} are final. It is to say what the complex is, what is
-proved and where, and what remains open: the missing reference of the Linhares--Yanasse table
-(Kashiwabara and Fujisawa 1979); the claims of that table that turned out false or only
-bands; LaPaugh's $\es=\pes$, stated and not formalised; the two never-certified
-values still in flight (Section~\ref{sec:practice}); the price of the open
-dataset classes (moved from Section~\ref{sec:dataset}, see the comment below); the certificate's acceptance condition, argued
-on paper and not in Lean; and the gap between pathwidth and treewidth on trees of
-cliques, where no degree or clique bound can close it.}
+We asked which equalities of the Linhares--Yanasse table are true, and what
+follows when results, algorithms and benchmarks are moved between its twelve
+problems through pathwidth. Eight rows are exact, counting the pathwidth row
+itself: each of those eight problems is pathwidth, or pathwidth plus one, on
+every input. Two rows, split bandwidth and edge search, are bands
+one and two wide, and two, PLA folding and edge separation, are false as stated,
+although a variant of each is exact (Table~\ref{tab:master}). Moving between
+the problems paid twice. Read as a pathwidth algorithm, the best exact
+open-stacks search turned out to rest on two false dominance theorems, and the
+rule that corrects them was already known in the pathwidth literature. And one
+certified pathwidth answers every problem in the exact core at once, which is
+what made a single dataset for nine problems possible.
 
-% Moved from Section 5.4 by loop0009 item 06 (review §3, Section 4.7: "the
-% pricing paragraph belongs in the closing section's open problems"). Source:
-% paper2/dataset.md §6 (price). Text as it stood:
-%   What is left is priced. One more budget step for every open class that fits
-%   our engine (1,024 vertices per component) costs at most 500 core-hours, and
-%   on the Rome graphs each such step has closed about 40% of what it attempted.
-%   The largest MOSP instances, 400 to 1,000 customers, and the 154 classes
-%   above 1,024 vertices are beyond an exact search.
+\paragraph{What transfers, and what does not.} Within the exact core, anything
+proved or computed for one problem holds for the others with the offset of
+Table~\ref{tab:master}: an algorithm, a lower bound, a benchmark value. Across
+a band only an approximation transfers. Split bandwidth and edge search stay
+within one of the number of open stacks, as the table's literal reading says,
+but not at a fixed offset, so an exact value of one does not give an exact
+value of the other. Across a false row nothing transfers. Simple PLA folding
+can need arbitrarily more tracks than the pathwidth suggests, and cutwidth is
+not within a constant of pathwidth on stars. Section~\ref{sec:names} showed why
+these distinctions went unchecked for two decades: the communities rarely read
+one another, and most of what is known about the family is published under
+``pathwidth''.
+
+\paragraph{What the search teaches about dominance rules.} The two false
+theorems were published in 2009 and restated in later work, and the
+implementations that use them reported no failure. They give no wrong answer on
+any whole instance we know of: in every run of our checks where the published
+rules lost the last solution at a node, another branch found a solution
+(Section~\ref{sec:theorem}). So the absence of wrong answers was never
+evidence that the rules were sound. Three things in this paper bear on that. Reading the rules in pathwidth language put the correct rule, the
+commitment lemma, beside the published one. Proving each rule on its own was
+not enough: the order in which the rules run matters, because a cycle of true
+links can still lose a node (Section~\ref{sec:theorem}). And a certificate
+whose checker recomputes every premise rejects the false refutation that a
+checker of the published premises accepts (Section~\ref{sec:certs}). The repair
+is cheap, one bipartite matching per candidate and at most 2\% more nodes per
+benchmark set, and it changed none of the 115
+benchmark optima it re-proved.
+
+\paragraph{What a reader can do differently.} Cite the corrected table,
+Table~\ref{tab:master}, rather than the 2002 one. Look for results on MOSP and
+gate matrix layout under ``pathwidth''. And in any implementation of the rules
+of \citet{ChuStuckey2009}, including the code behind the optima of
+\citet{Frinhani2018} that \citet{MartinYanassePinto2022} reuse
+(Appendix~\ref{app:prior}), replace the published definite and better moves
+with the matching test. The values those implementations report are not known
+to be wrong, but their refutations are not proved.
+
+\paragraph{Limits.} Four limits remain.
+\begin{itemize}
+\item The Lean model of the search and the C and Python code that run it are
+  linked by testing and by certificates, not by proof
+  (Section~\ref{sec:theorem}).
+\item That an acyclic covering by checked steps is sound, which is the
+  certificate checker's acceptance condition, is a paper argument
+  (Section~\ref{sec:certs}).
+\item LaPaugh's equality $\es=\pes$ is stated and not formalised. No row
+  needs it (Section~\ref{sec:true}).
+\item One reference of the table, \citet{LY2002ref5}, is not held. Its row,
+  interval thickness, is proved from two other
+  references of the table
+  (Section~\ref{sec:true}).
+\end{itemize}
+
+\paragraph{Open problems.} Two values of the MOSP corpus,
+\texttt{Random-125-125-2-2\_0} and \texttt{Random-125-125-2-3\_0}, have never
+been certified. As of 6 October 2026 the split search is still refuting the
+value minus one on each and has found no order of the smaller value
+(Section~\ref{sec:practice}). Of the 17,714 classes of the dataset, 1,627 have
+no certified pathwidth. One more budget step for every open class within the
+size our implementation handles costs at most 500 core-hours, but on the Rome graphs each such step has closed only about
+40\% of what it attempted, so the graph sets will not close by budget alone.
+The 610 MOSP instances with 400 to 1,000 customers, and the 154 classes above
+1,024 vertices per component, the limit of our implementation, are beyond an
+exact search. Beyond budgets, a class is certified without search
+only when a lower bound meets its witness (Section~\ref{sec:dataset}). The
+open classes are therefore also a test set for stronger lower bounds on
+pathwidth.

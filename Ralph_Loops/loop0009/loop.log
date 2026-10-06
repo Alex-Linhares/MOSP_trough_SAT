@@ -38,3 +38,8 @@
 [2026-10-06 19:43:21] claude session it08 (cap 6.00 h) -> session_it08.log
 [2026-10-06 20:03:59] session it08: ok (exit 0, 42 tool calls)
 [2026-10-06 20:19:48] tests passed: GATE PASS
+[2026-10-06 20:19:48] committed 2c0849f19: 08 Notation and vocabulary, whole paper (review change 8 and §6).
+[2026-10-06 20:19:48] === iteration 9: 09 The conclusion. Answer the central question in its first
+[2026-10-06 20:19:48] claude session it09 (cap 6.00 h) -> session_it09.log
+[2026-10-06 21:00:28] session it09: ok (exit 0, 29 tool calls)
+[2026-10-06 21:14:28] tests passed: GATE PASS

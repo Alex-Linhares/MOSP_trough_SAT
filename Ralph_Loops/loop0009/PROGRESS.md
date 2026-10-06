@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 8/11 SOLVED
+Current: 9/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -712,3 +712,68 @@ refuted, 431 / 434 core-hours, **no satisfiable task** (checked in
   says "the missing reference of the Linhares–Yanasse table".
 - Figure 2.1 and Figure 4.1 use the same symbols as the text ($b(\cdot)$, pw,
   vs, θ…); not regenerated, nothing in them changed meaning.
+
+---
+
+## Iteration 9 — 2026-10-06 ~20:30 (item 09, the conclusion)
+
+**Status update, not an error:** the split run's counts for the two
+never-certified values moved since item 06 read them. `--summary` (checked
+2026-10-06 20:21): `-2-2_0` (k = 24) 2,196 subtrees refuted, 443.2
+core-hours; `-2-3_0` (k = 20) 2,601, 453.2; no task with a witness
+(`solver_fix_split_tasks.csv`). Section 5's in-flight paragraph now carries
+these numbers, and `tables/split.tex` (Table B.1) was regenerated with
+`make_tables.split_table()` alone. No `!!!` line in the split log.
+
+### Completed
+- **`sec6_conclusion.tex` written** (about 1.3 pages, pp. 24–25), replacing
+  the placeholder, in the review's order (§3, "Section 5, Closing"):
+  - **First paragraph answers the central question**: 8 exact (counting
+    pathwidth), 2 bands, 2 false with exact variants; moving between the
+    problems paid twice (the false theorems, already corrected in the
+    pathwidth literature; one dataset for nine problems).
+  - *What transfers, and what does not*: within the exact core everything,
+    with the offset; across a band only an approximation; across a false row
+    nothing (unbounded PLA gap, cutwidth on stars); why it went unchecked
+    (Section 3).
+  - *What the search teaches about dominance rules*: no wrong whole-instance
+    answer, because another branch recovered every lost node in the checks
+    (§4.5's 58 of 570,206), so no failure was never evidence; the three
+    things that bear on it (pathwidth reading, rule order and cycles,
+    certificate checker); the repair's cost and the 115 values.
+  - *What a reader can do differently* (review item 2): cite Table 2.3, look
+    under "pathwidth", adopt the matching test in implementations of Chu &
+    Stuckey's rules, including the Frinhani et al. / Martin et al. code
+    (Appendix B.6).
+  - *Limits*, one list: model vs code (testing and certificates), the
+    certificate's acceptance condition on paper, LaPaugh's es = pes
+    (the `EdgeSearchMonotonicity` gap, named only in words), Kashiwabara &
+    Fujisawa (1979) not held.
+  - *Open problems*: the two in-flight values, dated 6 October 2026; the
+    1,627 dataset classes without a certified pathwidth and their price (the
+    pricing paragraph moved from §5.4 by item 06, now without "our engine");
+    the pathwidth bound work, phrased only through what the body covers
+    (certified-by-bound provenance, §5.4): the open classes are a test set
+    for stronger lower bounds.
+- **Kept out, deliberately:** the placeholder's "gap between pathwidth and
+  treewidth on trees of cliques, where no degree or clique bound can close it"
+  — the review (§3) notes the body never covers it, and the item says bring in
+  no new topic. If the owner wants it, it needs a paragraph in §5.4 first.
+- **Review points closed:** §3 "Section 5, Closing" items 1–4 (central
+  answer; what a reader should do; limits in one list; open problems with no
+  new topic); §2 (the central question is answered in the conclusion's first
+  paragraph); the pricing paragraph's move (§3, Section 4.7) is complete.
+  The "in flight" warning stands: two values are still running (the three of
+  the review's time are finished).
+- **Pages:** 36 before, 37 after.
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  1420 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed, no
+  undefined references, 37 pages). `tests/test_paper2_latex.py` passed.
+
+### Blockers
+- None. Split run PID 2185545 alive (1 d 21 h), no `!!!` line.
+
+### Next
+- Item 10, the second review. Check the intro bullet ("as of 6 October 2026")
+  and §5.2 and §6 stay in step if the split run finishes before submission.
+- The title still overstates (item 02's note); the owner's call.

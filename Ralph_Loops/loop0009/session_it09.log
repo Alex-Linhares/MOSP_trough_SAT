@@ -1,0 +1,92 @@
+# session it09 started 2026-10-06 20:19:48
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  > $ grep -n -A12 "09 The conclusion" Ralph_Loops/loop0009/iterations.md; cat paper2/latex/sec6_conclusion.tex; cat paper2/data/solver_fix_split.pid; ps -p $(cat pap
+  > $ grep -c '^!!!' paper2/data/solver_fix_split.log; timeout 120 python -m paper2.solver_fix_split --summary 2>&1 | tail -20; grep -n -i -B2 -A30 "conclusion\|closi
+  > $ cd /home/al/dev/MOSP/paper2/latex && wc -l sec*.tex main.tex && cat sec1_intro.tex && sed -n 1,140p main.tex | grep -n -i -A25 "begin{abstract}"
+  > $ grep -n -i "treewidth\|tree-width\|lower bound\|Kashiwabara\|EdgeSearchMonot\|LaPaugh\|acceptance\|Frinhani\|Martin\|matching test\|exact core" sec2*.tex sec3*.
+  > $ sed -n 1,40p sec5_results.tex; echo ----; sed -n 95,252p sec5_results.tex
+  > $ sed -n 335,363p sec2_equivalences.tex; echo ----; sed -n 1,60p sec4_search.tex; echo ----; sed -n 440,470p sec4_search.tex; sed -n 505,535p sec4_search.tex; cat
+  > $ cd /home/al/dev/MOSP/paper2 && grep -n -A22 "label{app:prior}" latex/sec9b_appendix_machinery.tex; cat latex/tables/dataset.tex | tail -8; grep -n -i -B2 -A15 "
+
+I'm drafting the conclusion now; checking the dataset price numbers first.
+  > $ grep -n -i "500 core\|40%\|1,024\|154\|beyond" dataset.md | head -20; python3 - <<'E'
+import csv
+rows=list(csv.DictReader(open('data/solver_fix_split_tasks.csv'
+  > $ python3 - <<'E'
+import csv
+from collections import Counter
+rows=list(csv.DictReader(open('data/solver_fix_split_tasks.csv')))
+c=Counter((r['instance_name'],r['s
+  > $ cd /home/al/dev/MOSP/paper2/latex && grep -oh "label{[^}]*}" sec*.tex | tr '\n' ' '; echo; sed -n 15,40p sec9a_appendix_lean.tex; grep -n "split" make_tables.py
+  > $ grep -rn "Monotonicity\|LaPaugh" sec9*.tex sec2*.tex | cut -c1-250; grep -n "Kashiwabara" *.bib | head -3; cd .. && python3 -c "
+import sys; sys.path.insert(0,'
+  > $ cd /home/al/dev/MOSP/paper2/latex && sed -n 40,75p references.bib 2>/dev/null || (ls *.bib; grep -n -A8 "Kashiwabara" *.bib | head -30); sed -n 336,345p make_ta
+  > $ sed -n 43,46p refs.bib; grep -n "LY2002ref5\b\|ref5}" sec1_intro.tex | head -2; grep -n "LY2002ref5" refs.bib
+
+Writing the conclusion section now.
+  > Write /home/al/dev/MOSP/paper2/latex/sec6_conclusion.tex
+  > $ grep -n -i "last solution\|lose\|lost\|58 \|570,206" sec4_search.tex | cut -c1-200
+  > $ sed -n 470,482p sec4_search.tex
+  > $ python3 - <<'E'
+p='sec6_conclusion.tex'; s=open(p).read()
+rep=[("itself: each of the twelve problems in those rows is pathwidth, or pathwidth\nplus one, on ever
+
+Now refreshing Section 5's in-flight counts and the split table to today's latest status.
+  > $ cd /home/al/dev/MOSP && cp paper2/latex/tables/split.tex /tmp/split_old.tex && python3 -c "
+from paper2.latex.make_tables import split_table; print(split_table(
+  > $ python3 - <<'E'
+p='sec5_results.tex'; s=open(p).read()
+a="it has refuted 2,141 and 2,354 subtrees, using\n431 and 434 core-hours"
+assert a in s
+s=s.replace(a,"i
+  > $ pdftotext -layout main.pdf - | sed -n '/^ *6 *Conclusion/,/Data, code and proofs/p' | head -120
+  > $ python3 - <<'E'
+p='sec6_conclusion.tex'; s=open(p).read()
+for a,b in [("none of the 115\npublished optima it re-proved","none of the 115\nbenchmark optima it re
+  > $ head -5 /tmp/claude-1000/-home-al-dev-MOSP/88e1805d-869e-452b-972d-e62a062bdadf/tasks/bd34hoir6.output; grep -c '^!!!' /home/al/dev/MOSP/paper2/data/solver_fix_
+
+While the gate runs, I'll write the progress entry.
+  > $ cd /home/al/dev/MOSP/Ralph_Loops/loop0009 && cat >> PROGRESS.md <<'E'
+
+---
+
+## Iteration 9 — 2026-10-06 ~20:30 (item 09, the conclusion)
+
+**Status update, not a
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/88e1805d-869e-452b-972d-e62a062bdadf/tasks/bd34hoir6.output; for i in $(seq 1 57); do grep -q "GATE" $f && break; sleep 10;
+  > $ f=/tmp/claude-1000/-home-al-dev-MOSP/88e1805d-869e-452b-972d-e62a062bdadf/tasks/bd34hoir6.output; for i in $(seq 1 57); do grep -q "GATE" $f && break; sleep 10;
+
+The gate hit the background time limit; rerunning it with a longer limit, logging to a file.
+  > $ cd /home/al/dev/MOSP && make -C paper2/latex >/dev/null 2>&1; python3 Ralph_Loops/loop0009/gate.py > /tmp/gate_it09.log 2>&1; echo EXIT $?
+  > $ for i in $(seq 1 57); do grep -q "GATE" /tmp/gate_it09.log 2>/dev/null && break; sleep 10; done; tail -12 /tmp/gate_it09.log
+  > $ for i in $(seq 1 57); do grep -q "GATE" /tmp/gate_it09.log 2>/dev/null && break; sleep 10; done; tail -12 /tmp/gate_it09.log; ls -la /tmp/gate_it09.log
+  > $ cd /home/al/dev/MOSP && head -5 /tmp/gate_it09.log; python -m pytest tests/test_paper2_latex.py -q 2>&1 | tail -1; cd Ralph_Loops/loop0009 && python3 - <<'E'
+s=
+
+Item 09 is finished: the conclusion is written, the gate passed, and the item is marked `[x]`. That makes 9 of 11 items done, so LOOP_COMPLETE was not added.
+
+**The conclusion (`paper2/latex/sec6_conclusion.tex`, about 1.3 pages)** replaces the placeholder and follows the order the review asks for:
+- **The answer to the central question comes first:** eight rows are exact (counting the pathwidth row itself), two are bands, and two are false, though each false row has an exact variant. Moving between the problems paid off twice: it exposed the false search theorems, and it made one dataset serve nine problems.
+- **What transfers:** within the exact core, everything carries over with its offset. Across a band, only an approximation carries over. Across a false row, nothing does.
+- **What the search teaches about dominance rules:** not seeing wrong answers was never evidence that the rules were sound. The paragraph then covers what bears on that: reading the rules as pathwidth rules, the order the rules run in, and the certificate checker.
+- **What a reader should do differently:** cite the corrected table, look for MOSP results under "pathwidth", and adopt the matching test in implementations of Chu and Stuckey's rules.
+- **Limits, as one list:**
+  - the Lean model and the code are linked only by testing and certificates;
+  - the certificate's acceptance condition is argued on paper, not in Lean;
+  - LaPaugh's es = pes is stated but not formalised;
+  - the Kashiwabara & Fujisawa (1979) reference is not held.
+- **Open problems:**
+  - the two values still being refuted, dated 6 October 2026;
+  - the 1,627 dataset classes without a certified pathwidth, and what it would cost to close them;
+  - the lower-bound work, worded only through what the body already covers.
+
+**Left out deliberately:** the placeholder's "pathwidth vs treewidth on trees of cliques" point. The body never covers it, and the item rules out new topics. If you want it in, it needs a paragraph in §5.4 first.
+
+**Status refresh:** I checked the long-running refutation of the two never-certified values at 20:21 today. It is still running, with no `!!!` line in its log and no task that found a smaller value. I updated Section 5's counts (2,196 and 2,601 subtrees refuted, 443 and 453 core-hours) and regenerated the split table (Table B.1) to match.
+
+The paper went from 36 to 37 pages. The first gate run hit the background time limit and was stopped. A rerun passed: lake build ok, 1420 tests passed, 114 pathwidth-solver tests passed, no undefined references. Nothing was committed.
+
+The title still overstates the results, as noted in item 02; changing it is your call.
+
+# result: success in 2439s, 30 turns, cost $3.71
