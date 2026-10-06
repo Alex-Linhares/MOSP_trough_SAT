@@ -28,3 +28,8 @@
 [2026-10-06 18:25:56] claude session it06 (cap 6.00 h) -> session_it06.log
 [2026-10-06 18:49:23] session it06: ok (exit 0, 56 tool calls)
 [2026-10-06 19:04:56] tests passed: GATE PASS
+[2026-10-06 19:04:56] committed 74bfa60c0: 06 Computational results and the dataset (review change 6).
+[2026-10-06 19:04:56] === iteration 7: 07 Figures and tables, every one (review §4 and change 9).
+[2026-10-06 19:04:56] claude session it07 (cap 6.00 h) -> session_it07.log
+[2026-10-06 19:28:04] session it07: ok (exit 0, 48 tool calls)
+[2026-10-06 19:43:20] tests passed: GATE PASS

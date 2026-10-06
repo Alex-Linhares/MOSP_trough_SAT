@@ -5,7 +5,7 @@ Plan: revise paper 2's draft (`paper2/latex/`) for readability, following
 in `iterations.md`. Gate: `python3 Ralph_Loops/loop0009/gate.py`. It includes
 `make -C paper2/latex check`.
 
-Current: 6/11 SOLVED
+Current: 7/11 SOLVED
 
 ## Setup — 2026-10-06
 
@@ -567,3 +567,68 @@ refuted, 431 / 434 core-hours, **no satisfiable task** (checked in
   on the day. The review says "in flight" will not survive refereeing.
 - The intro bullet and the conclusion placeholder both say "as of 6 October
   2026"; keep them in step if the run finishes.
+
+---
+
+## Iteration 7 — 2026-10-06 (item 07, figures and tables)
+
+### Completed
+- **Audit of all 19 floats** (5 figures, 13 tables, 1 algorithm): caption,
+  page against the page of the first reference, in-image titles, size and font.
+  Every float now appears on or after the page of its first reference
+  (checked from `main.aux` and `pdftotext` per page). Every text reference says
+  what to see (already true after items 02–06; none needed rewording).
+- **Figure 4.1 redrawn** (`paper2/counterexample_figure.py`): the in-image
+  title is gone; drawn at 6.5 in, the printed width (it was 8.6 in shrunk to
+  0.85 of the text width, so its 8.5 pt labels printed at about 5.5 pt); every
+  text is 7.5 pt; TrueType fonts. **New panel (b)**, as the review suggested:
+  the state B = {2,3,4} with b(B) = 2 (open 0, 1) < 3 = b(X) (open 1, 7, 11),
+  where the repaired rule refuses. The script asserts these values from the
+  bitmasks. The caption leads with the conclusion ("a set between parent and
+  child is cheaper than both"). The text cites panel (a) and panel (b) in
+  §4.3. The float now sits after the counterexample, on p. 16; before, it
+  printed above the §4.3 heading. **New test** `tests/test_counterexample_figure.py`
+  covers the facts, the width, no title, and fonts ≥ 7 pt.
+- **Figure 3.1** printed above the Section 3 heading (top of p. 10). It is now
+  `[H]` after the method paragraph and is cited in the section's opening, as is
+  Table 3.1. `placeins`' `above` option was tried and did not help, because the
+  section opens a page; `main.tex` is unchanged.
+- **Captions now state their conclusion** where they did not: Table 1.1
+  ("Twelve problems from three fields, published as one family: eight rows are
+  exact …"; the counts are those of the abstract), Table 2.1 (they look
+  unrelated, yet each asks for the least k), Algorithm 4.1 (a plain DFS whose
+  pruning sits at lines 4/12, 6 and 9), Table A.1, and Table C.1 ("citations do
+  not track usage", which is the text's point at 293 vs 38 and 108 vs 11). The
+  other captions already led with a conclusion after items 02–06.
+- **The other figures were checked and not regenerated.** Figures 1.1, 2.1,
+  3.1 and C.1 are 6.4–6.5 in vector PDFs with fonts ≥ 7 pt and no title (their
+  tests assert this). 
+- **Duplicates:** none left in the body. Table 1.1's verdict column and
+  Table 2.2 are summary and detail, by design (review change 2), and so are
+  Figure 2.1 and Table 2.2 (the review keeps both). The old names table is in
+  Appendix C only, and the citation network is out of the paper (item 04).
+- **Review points closed:** §4 Figure 4.1 (title removed, second panel); the
+  regenerate command was already gone (item 01); Table 1.1 and Table 4.1–4.2
+  captions; change 9 is now complete. Its other parts were done in items
+  03–06. §4's float-placement remark about Figure 2.3 is moot (figure dropped).
+- **Pages:** 36 before, 36 after.
+- **Gate:** `python3 Ralph_Loops/loop0009/gate.py` → GATE PASS (lake build ok,
+  sorry 1/1, 1420 passed / 2 skipped / 1 xfailed, pathwidth_solver 114 passed,
+  no undefined references, 36 pages). After the gate, one more edit moved
+  Figure 4.1's float in `sec4_search.tex`; it changes LaTeX only. I did not
+  rerun the full gate. I reran `make check` (no undefined references, 36
+  pages) and the five paper2 figure/LaTeX test modules (21 passed).
+
+### Blockers
+- None. Split run PID 2185545 alive; no `!!!` line in its log.
+
+### Next
+- **Figure files still carry old section numbers** (`sec3_fig1_chain` is
+  Figure 2.1, `sec2_fig1_name_usage` is 3.1, `sec2_fig2_timeline` is C.1).
+  Renaming them touches the scripts, the tests and `latex/README.md`; it is
+  cosmetic and was left alone. `sec2_fig3_citation_network.*`, `equivalence_chain.*`
+  and `table1_*.png` are unused by the paper.
+- Item 08: Figure 4.1's panel labels use b(·), matching §4.1's notation. If
+  item 08 changes the border symbol, regenerate the figure.
+- The review's optional suggestion to preview Figure 2.1 in the introduction
+  was not taken (Table 1.1's verdict column already puts the answer on p. 3).

@@ -101,7 +101,7 @@
     the dataset.** Cut Table 4.5 to about seven columns.
   - **The two in-flight values**, with their status and the date checked.
 
-- [ ] **07 Figures and tables, every one** (review §4 and change 9).
+- [x] **07 Figures and tables, every one** (review §4 and change 9).
   - Every caption states the conclusion.
   - No figure has a title printed inside it.
   - Every table and figure is referenced in the text before it appears, and
