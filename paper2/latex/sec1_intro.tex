@@ -69,7 +69,8 @@ rows are exact, counting the pathwidth row itself; two are bands; two are false
 as the table states them. The Linhares--Yanasse table, reproduced from
 \citet[Table~1, p.~1764]{LY2002} with its row order, wording and references as
 printed, and its caption: ``Display of a family of equivalent problems studied
-independently on the literature''. The shaded column is ours. It gives the
+independently on the literature''. The shaded column is ours, and so is the last row, below the rule: a
+thirteenth member that the table missed. It gives the
 relation to pathwidth ($\pw$) that is true, proved in Section~\ref{sec:equiv}
 (Table~\ref{tab:master}).}
 \label{tab:ly2002}
@@ -91,11 +92,17 @@ Split bandwidth & Graph theory & \citet{LY2002ref12} & band: $\pw$ to $\pw+1$ \\
 Graph path-width & Graph theory & \citet{LY2002ref13} & exact: $\pw$ (reference) \\
 Edge separation & Graph theory & \citet{LY2002ref14} & false$^{b}$ \\
 Vertex separation & Graph theory & \citet{LY2002ref13} & exact: $\pw$ \\
+\midrule
+\emph{Progressive pebbling}$^{c}$ & Graph theory & \citet{LY2002ref10} & exact: $\pw+1$ \\
+\multicolumn{4}{@{}l@{}}{\footnotesize\emph{New: not in \citet{LY2002}.}} \\
 \bottomrule
 \multicolumn{4}{@{}p{\linewidth}@{}}{\footnotesize $^{a}$Exact ($\pw+1$) for
 multiple folding, with any number of nets per track.
 $^{b}$As cutwidth; the vertex separator game of the same reference is exact
-($\pw$, for graphs with an edge).}
+($\pw$, for graphs with an edge).
+$^{c}$Added by us. Its relation to pathwidth is proved in two papers the table
+already cites, for other rows: \citet[Thms~2--3]{LY2002ref14} and
+\citet[Thm~3.1]{LY2002ref10}. We prove it in Lean (Appendix~\ref{app:thirteenth}).}
 \end{tabular}
 \end{table}
 
@@ -137,6 +144,19 @@ refutes what is not. The communities that could have checked the table
 rarely read each other: of 844 works that cite the table's papers,
 only six cite both an open-stacks paper and a graph-theory paper
 (Section~\ref{sec:names}).
+
+\paragraph{A thirteenth member.} The table is also incomplete. Progressive
+pebbling, a game in which pebbles are placed on the vertices of a graph and
+each vertex is pebbled once, needs exactly pathwidth plus one pebbles
+\citep[Thm~3.1]{LY2002ref10}, and Lengauer's black-white pebbling of a
+directed acyclic graph equals the pathwidth of its undirected version plus one
+\citep[Thm~2]{LY2002ref14}. Both theorems are in papers that the table
+already cites, for its edge-search and edge-separation rows, yet pebbling
+itself is not among its problems. We add it as the last row of
+Table~\ref{tab:ly2002}, marked as new, and prove both relations in Lean
+(Appendix~\ref{app:thirteenth}). What is new is the membership, not the
+theorems: the equivalences were published, but the table did not include
+pebbling in the family.
 
 \paragraph{What we find.}
 \begin{itemize}
