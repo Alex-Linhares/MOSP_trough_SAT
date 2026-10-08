@@ -24,8 +24,8 @@ certified, and that gives the exact value of every problem in the exact core.
 \paragraph{Machine and code.} Every run in this section used one
 machine, an AMD Ryzen~9 9950X (16 cores, 32 hardware threads) with 128\,GB of
 memory under Ubuntu Linux. Both searches, the open-stacks customer search and
-its port to graphs, are written in C (gcc 15.2, \texttt{-O3
--march=native}) and driven from Python~3.12. A Python implementation of the
+its port to graphs, are written in C, compiled with gcc 15.2 using the
+flags \texttt{-O3} and \texttt{-march=native}, and driven from Python~3.12. A Python implementation of the
 same rules serves as a reference for cross-checks and emits the certificates
 of Section~\ref{sec:certs}. The repaired tests are the default in every
 implementation; the published tests remain available as an option. The C
@@ -168,7 +168,7 @@ at 9--75 customers, with 60\,s to emit each. \emph{Not emitted}: the emitter
 did not finish in time. Size is the compressed certificate; check time is the
 independent checker's.}
 \label{tab:certs}
-\input{tables/certificates}
+\resizebox{\linewidth}{!}{\input{tables/certificates}}
 \end{table}
 
 Table~\ref{tab:certs} gives the results. Every refutation emitted within its
