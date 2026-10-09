@@ -64,10 +64,13 @@ Started 2026-10-09. Check items off as they are done.
       Copy it into `data/false_refutation/drat/` with its SHA-256 and the
       command that checks it, or ship a script that regenerates it (about
       1.5 minutes) and keep the file for the release.
-- [ ] **The two never-certified MOSP values**, `Random-125-125-2-2_0` = 25 and
-      `-2-3_0` = 21. The split run is refuting them, with a watcher continuing
-      it to 2026-10-29. When they close, update Section 5 and Table B.1
-      (`python -m paper2.solver_fix_split --tables`).
+- [ ] **The never-certified MOSP values.** `Random-125-125-2-3_0` = 21 was
+      **certified on 2026-10-09** (k = 20 refuted, 9,665 tasks, 4.25 × 10¹²
+      nodes, 1,128 core-hours). `solutions/Random-125-125-2-3_0.json` still says
+      `solution`; upgrade its provenance to `certified:refutation` (owner).
+      `Random-125-125-2-2_0` = 25 is still in flight, with the watcher continuing
+      to 2026-10-29. When it closes, update Section 5, Table B.1 and the
+      conclusion (`python -m paper2.solver_fix_split --tables`).
 - [ ] **Open question: can the published rules fail with the better move
       on?** The 34-customer instance fails only with the better move off.
       Restart `false_refutation_hunt.py` with fitness on the better-move
@@ -79,6 +82,9 @@ Started 2026-10-09. Check items off as they are done.
       CLAUDE.md"), and record the wrong-optimum instance, Appendix D and the
       DRAT proof in `CLAUDE.md`.
 - [ ] **Push** (`git status` before each push).
+- [x] **Two new rows in Table 1.1** (2026-10-09): the vertex search of Bienstock,
+      Robertson, Seymour & Thomas (1991) and the maximum wavefront of Kumfert &
+      Pothen (1997, proved in Lean, `Complex/Wavefront.lean`); Figure 2.1 redrawn.
 
 ## Paper 3 (idea, 2026-10-09)
 

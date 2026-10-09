@@ -1637,3 +1637,13 @@ both open).
   task would mean the stored value is too high: a better solution, not a
   wrong certificate. Nothing is written to `solutions/` by the runner; the
   owner applies the result.
+
+### Addendum: `Random-125-125-2-3_0` certified (2026-10-09)
+
+The split run on the two never-certified values refuted k = 20 for
+`Random-125-125-2-3_0` at 2026-10-09 15:42, after 9,665 tasks,
+4.25 × 10¹² nodes and 1,127.8 core-hours, with every task unsat. Its stored
+value of 21 is therefore certified optimal. This is the largest refutation on
+record here. `solutions/Random-125-125-2-3_0.json` was not touched; its
+provenance should be upgraded by the owner. `Random-125-125-2-2_0` (k = 24)
+continues: 7,217 tasks and 1,150 core-hours so far, no SAT task.

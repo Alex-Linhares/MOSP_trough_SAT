@@ -20,6 +20,13 @@
   "title": "Experimental Evaluation of a Branch and Bound Algorithm for Computing Pathwidth",
   "year": 2014
  },
+ "10.1007/978-3-540-74839-7_25": {
+  "fetched": "2026-10-09",
+  "first_author": "Suchan",
+  "registry": "crossref",
+  "title": "Pathwidth of Circular-Arc Graphs",
+  "year": 2007
+ },
  "10.1007/978-3-642-04244-7_21": {
   "fetched": "2026-10-03",
   "first_author": "Chu",
@@ -47,6 +54,13 @@
   "registry": "crossref",
   "title": "Black-white pebbles and graph separation",
   "year": 1981
+ },
+ "10.1007/bf02510240": {
+  "fetched": "2026-10-09",
+  "first_author": "Kumfert",
+  "registry": "crossref",
+  "title": "Two improved algorithms for envelope and wavefront reduction",
+  "year": 1997
  },
  "10.1007/s00224-011-9312-0": {
   "fetched": "2026-10-03",
@@ -82,6 +96,13 @@
   "registry": "crossref",
   "title": "The vertex separation number of a graph equals its path-width",
   "year": 1992
+ },
+ "10.1016/0095-8956(91)90068-u": {
+  "fetched": "2026-10-09",
+  "first_author": "Bienstock",
+  "registry": "crossref",
+  "title": "Quickly excluding a forest",
+  "year": 1991
  },
  "10.1016/0166-218x(92)90208-r": {
   "fetched": "2026-10-03",

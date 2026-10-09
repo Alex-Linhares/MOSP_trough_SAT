@@ -72,7 +72,9 @@ attains it, and one of three provenances:
 \item \emph{upper bound only}: the witness is all there is, and optimality is
   not proved.
 \end{itemize}
-Of the 6,376 corpus values, 6,374 are certified and two are upper bounds only.
+Of the 6,376 corpus values, 6,375 are certified and one is an upper bound only
+(as of 9 October 2026; the 6,375th was certified by the split search of
+Section~\ref{sec:practice}).
 
 \subsection{The cost of the repair, and the benchmark values}
 \label{sec:practice}
@@ -106,7 +108,7 @@ published test passes and the matching then fails on only 0.07--0.27\% of
 definite-move candidates, a rate that rises with size.
 
 \paragraph{The benchmark values survive.} No published optimum changed under
-the repaired rules. Of the 6,374 certified values in the MOSP corpus, 6,259 do
+the repaired rules. Of the 6,374 values certified before this work, 6,259 do
 not depend on the customer search at all. Each was proved in one of four ways:
 \begin{itemize}
 \item by an exhaustive computation over all subsets of customers (up to 15
@@ -119,7 +121,7 @@ not depend on the customer search at all. Each was proved in one of four ways:
 \end{itemize}
 The other 115 rested on the customer search
 under the published rules. Our repaired search refuted the value minus one on
-all 115, so all 115 values stand (as of 6 October 2026).
+all 115, so all 115 values stand.
 
 The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
 and 4. They are too large for one worker, so their search was split:
@@ -129,13 +131,15 @@ split is proved sound~\leanref{split}. All seven were refuted at 18 to 369
 core-hours each, 1,112.6 in total (Table~\ref{tab:split},
 Appendix~\ref{app:split}).
 
-\paragraph{Two values in flight.} The corpus also holds two values that were
-never certified by any method: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
-\texttt{Random-125-125-2-3\_0}. The same split is refuting the value minus one
-on each. As of 6 October 2026 it has refuted 2,295 and 2,694 subtrees, using
-about 467 core-hours each, and found no order of the smaller value. If the run
-finishes it certifies both values; an order of the smaller value would
-improve the stored value instead.
+\paragraph{Two values never certified.} The corpus also held two values that
+no method had certified: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
+\texttt{Random-125-125-2-3\_0}. The same split refutes the value minus one on
+each. On 9 October 2026 it refuted 20 for \texttt{Random-125-125-2-3\_0}, after
+9,665 subtrees, $4.25\times10^{12}$ nodes and 1,128 core-hours, which
+certifies 21 as its optimum; it is the largest refutation in this paper. For
+\texttt{Random-125-125-2-2\_0} it has refuted 7,217 subtrees so far, using
+about 1,150 core-hours, and found no order of 24 stacks. If it finishes, it
+certifies 25; an order of 24 would improve the stored value instead.
 
 \subsection{A checkable proof of a refutation}
 \label{sec:certs}
@@ -189,8 +193,8 @@ Section~\ref{sec:equiv} showed that one certified pathwidth $w$ answers every
 problem in the exact core. Pathwidth, vertex separation and the vertex
 separator game take the value $w$, and MOSP, gate matrix layout (which
 multiple folding equals), one-dimensional logic, interval thickness,
-narrowness, node search and progressive pebbling take $w+1$: ten problems
-in all. We therefore built one dataset from every benchmark collection of
+narrowness, node search, progressive pebbling, the vertex search of
+\citet{BRST1991} and the maximum wavefront take $w+1$: twelve problems in all. We therefore built one dataset from every benchmark collection of
 those problems that we could obtain, including the MOSP corpus.
 
 The unit of the dataset is the \emph{isomorphism class}: the set of instances

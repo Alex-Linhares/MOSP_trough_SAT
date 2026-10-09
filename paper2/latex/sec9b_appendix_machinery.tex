@@ -76,7 +76,7 @@ claim fails~\leanref{kp}. The theorem is true. The
 repair orders the vertices by clearing time, as our Lean proof does, or uses the
 paper's own normal form, its Corollary~2.4.
 
-\subsection{A thirteenth member}
+\subsection{Members outside the table}
 \label{app:thirteenth}
 
 Progressive black-white pebbling, which is not in the Linhares--Yanasse
@@ -89,6 +89,31 @@ MOSP graph of the matrix whose column $v$ is $v$ with its predecessors. And
 $\mathrm{mpb}=\pw+1$ \citep[Thm~3.1]{LY2002ref10}. All three are proved in Lean, each with its hypothesis: Lengauer's
 Theorem~2 in its instance form fails at $k=1$ on a dag with no arcs, and
 $\mathrm{mpb}=\ns$ fails on edgeless graphs~\leanref{pebbling}.
+
+\paragraph{The vertex search.} \citet[\S5]{BRST1991} define a search as a
+sequence of vertex sets $X_1=\emptyset,\dots,X_m$, each a subset or a superset
+of the one before; the fugitive may be at any vertex joined to its previous
+region by a path avoiding the current set, and the search succeeds when no such
+vertex remains. Their (5.1) states that a successful search with every
+$|X_i|\le n$ exists if and only if $\pw(G)\le n-1$, so the least $n$ is
+$\pw(G)+1$ on every graph; on an edgeless graph one searcher is needed, where
+node search needs none. We have not formalised it; a brute-force search over
+all graphs with at most six vertices agrees.
+
+\paragraph{The maximum wavefront.} For a symmetric $n\times n$ matrix $A$ with
+nonzero diagonal, \citet[\S2.1]{KumfertPothen1997} call row $k$ active at step
+$i$ if $k\ge i$ and $a_{kl}\ne0$ for some $l\le i$; the $i$th wavefront is the
+set of active rows, and $\max_i|\mathrm{wf}_i(A)|$ is the storage the frontal
+method needs. In the graph $G$ of $A$, $\mathrm{wf}_i=\{v_i\}\cup(N(V_i)\setminus
+V_i)$ with $V_i=\{v_1,\dots,v_i\}$, so $|\mathrm{wf}_i|$ is one more than the
+number of later vertices with a neighbour among the first $i$. Hence for each
+order the maximum wavefront is the vertex separation of that order plus one,
+and the least over symmetric orderings is $\vs(G)+1=\pw(G)+1$ when $n\ge1$; an
+empty matrix gives 0~\leanref{wavefront}. The set $\mathrm{wf}_i$ is the
+shack of narrowness in its out-sequence form, so the least maximum wavefront is
+also $\nu(G)$. The source defines the wavefront but does not state the
+equality. A brute force over all 1,252 graphs with at most seven vertices and
+every ordering, 5.4 million pairs, agrees.
 
 \subsection{Why the published proof of the definite move fails}
 \label{app:whyfails}
@@ -159,8 +184,8 @@ earlier in the same run, or an inherited one that passed the reinsertion test.
 \label{app:split}
 
 Table~\ref{tab:split} gives the seven hardest re-certifications of
-Section~\ref{sec:practice} and the two values never certified, which the same
-split is refuting. Each instance's tree was expanded at the top into
+Section~\ref{sec:practice} and the two values never certified before, one now
+certified by the same split and one still in flight. Each instance's tree was expanded at the top into
 independent subtrees (tasks), and each task was refuted by one worker. The
 seven re-certifications ended with every task refuted and the value unchanged.
 No task of any instance has found an order of the smaller value.
@@ -168,8 +193,10 @@ No task of any instance has found an order of the smaller value.
 \begin{table}[h]
 \centering\small
 \caption{All seven hardest values re-certify unchanged, at 18 to 369
-core-hours each; the two values never certified are in flight, with no task
-satisfiable so far (read 6 October 2026). \emph{Value}: the stored optimum;
+core-hours each. Of the two values never certified before, 21 for
+\texttt{Random-125-125-2-3\_0} is now certified, and 25 for
+\texttt{Random-125-125-2-2\_0} is in flight with no task satisfiable so far
+(read 9 October 2026). \emph{Value}: the stored optimum;
 \emph{$k$}: the value minus one, which must be refuted. For an instance in
 flight, the nodes and core-hours are those of the tasks finished so far.}
 \label{tab:split}

@@ -18,7 +18,8 @@ the problems paid twice. Read as a pathwidth algorithm, the best exact
 open-stacks search turned out to rest on two false dominance theorems, and the
 rule that corrects them was already known in the pathwidth literature. And one
 certified pathwidth answers every problem in the exact core at once, which is
-what made a single dataset for nine problems possible.
+what made a single dataset for twelve problems possible, three of them
+problems the table did not list.
 
 \paragraph{What transfers, and what does not.} Within the exact core, anything
 proved or computed for one problem holds for the others with the offset of
@@ -75,11 +76,11 @@ to be wrong, but their refutations are not proved.
   (Section~\ref{sec:true}).
 \end{itemize}
 
-\paragraph{Open problems.} Two values of the MOSP corpus,
-\path{Random-125-125-2-2_0} and \path{Random-125-125-2-3_0}, have never
-been certified. As of 6 October 2026 the split search is still refuting the
-value minus one on each and has found no order of the smaller value
-(Section~\ref{sec:practice}). Of the 17,714 classes of the dataset, 1,627 have
+\paragraph{Open problems.} One value of the MOSP corpus,
+\path{Random-125-125-2-2_0}, has never been certified. As of 9 October 2026 the
+split search is still refuting the value minus one and has found no order of
+the smaller value; the other value that was open, \path{Random-125-125-2-3_0},
+was certified on 9 October (Section~\ref{sec:practice}). Of the 17,714 classes of the dataset, 1,627 have
 no certified pathwidth. One more budget step for every open class within the
 size our implementation handles costs at most 500 core-hours, but on the Rome graphs each such step has closed only about
 40\% of what it attempted, so the graph sets will not close by budget alone.

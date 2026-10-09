@@ -8,11 +8,14 @@ The same content as `figures/equivalence_chain.dot` (section 3's working figure,
 theorem names, which are in the draft's footnotes and in `equivalences.md`.
 Two edges of the working figure are left out because they follow from the
 others: `mns = θ` (from `mns = vs + 1`, `vs = pw` and `θ = pw + 1`) and
-`ns = vs + 1` (from `ns = mns`). The thirteenth member (progressive pebbling,
-`mpb(G) = pw(G) + 1`) was drawn here until loop0009 item 03 and is now left to
-Appendix B, where it is defined, so the figure shows only the table's
-problems and the two exact variants of its false rows. Edge styles:
-solid, exact and proved; dashed, a band, proved; dotted, LaPaugh's `es = pes`,
+`ns = vs + 1` (from `ns = mns`). The bottom row, shaded blue, holds the three
+members the table missed (2026-10-09): progressive pebbling (`mpb = ns`),
+the maximum wavefront of Kumfert & Pothen 1997 (`min maxwf = ν`, Lean
+`Complex/Wavefront.lean`) and the vertex search of Bienstock, Robertson,
+Seymour & Thomas 1991 (fugitive on the vertices, `= pw + 1` on every graph,
+(5.1); equal to `ns` when there is an edge). Edge styles: solid, exact and
+proved in Lean; solid grey, exact by a published proof and checked by brute
+force, not in Lean; dashed, a band, proved; dotted, LaPaugh's `es = pes`,
 the one relation not proved (no row needs it); dark red with a cross, a
 Table 1 claim that is false, with a counterexample family proved.
 """
@@ -43,7 +46,12 @@ NODES = {
     "MNS": (4.95, 0.65, r"$\mathrm{mns}(G)$" "\nmonotone\nnode search", False),
     "ES": (6.15, 0.65, r"$\mathrm{es}(G)$" "\nedge search", False),
     "NS": (4.95, -0.4, r"$\mathrm{ns}(G)$" "\nnode search", False),
+    # members the table missed (shaded)
+    "WF": (2.6, -0.4, r"$\mathrm{wf}(A)$" "\nmaximum\nwavefront", False),
+    "MPB": (3.75, -0.4, r"$\mathrm{mpb}(G)$" "\nprogressive\npebbling", False),
+    "BS": (6.15, -0.4, "vertex search\n(fugitive on\nvertices)", False),
 }
+NEW = {"WF", "MPB", "BS"}
 
 # (a, b, label, style, curvature[, label position from a along the visible edge])
 EDGES = [
@@ -61,6 +69,9 @@ EDGES = [
     ("PES", "VS", r"$\leq\mathrm{vs}+2$", "band", 0),
     ("ES", "VS", r"$\leq\mathrm{vs}+2$", "band", 0),
     ("ES", "PES", r"$\mathrm{es}=\mathrm{pes}$?", "gap", 0),
+    ("WF", "NU", r"$\min\,\mathrm{wf}=\nu$", "exact", 0),
+    ("MPB", "NS", r"$\mathrm{mpb}=\mathrm{ns}$", "exact", 0),
+    ("BS", "NS", r"$=\mathrm{ns}$", "published", 0),
     ("PLA", "T", "✗ gap unbounded", "false", -0.3),
     ("CW", "PW", "✗ unbounded\non stars", "false", 0),
 ]
@@ -86,12 +97,12 @@ def draw() -> Path:
             x, y, label, ha="center", va="center", fontsize=8 if hub else 7.5,
             fontweight="bold" if hub else "normal", color=RED if false else "0.05",
             linespacing=1.15, zorder=3,
-            bbox=dict(boxstyle="round,pad=0.3", fc="0.9" if hub else "white",
+            bbox=dict(boxstyle="round,pad=0.3", fc="0.9" if hub else ("#e3edf9" if name in NEW else "white"),
                       ec=RED if false else "0.15", lw=1.0 if hub else 0.6))
     fig.canvas.draw()
 
     styles = {"exact": ("-", "0.15"), "band": ((0, (4, 2)), "0.15"),
-              "gap": ((0, (1, 2)), "0.35"), "false": ("-", RED)}
+              "gap": ((0, (1, 2)), "0.35"), "false": ("-", RED), "published": ("-", "0.55")}
     inv = ax.transData.inverted()
 
     def border(name, towards):
