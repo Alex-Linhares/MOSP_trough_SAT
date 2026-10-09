@@ -1,0 +1,10 @@
+Chou et al. Thm 4 (block graphs, n 4-15): 150/150 agree
+Chou Thm 4 on random trees (n 5-16): 100/100 agree
+split criterion (n 3-19; pw=omega-1 on 286, omega on 14): 300/300 agree
+Berge-acyclic matrix => block MOSP graph: 300/300 agree
+row-C1P => MOSP = max column sum: 200/200 agree
+column-C1P => MOSP = max column sum: 200/200 agree
+circular-ones rows => pw <= 2 omega - 1: 150/150 agree
+in-forest dag => moral graph D_u is a block graph: 200/200 agree
+polygon C_n, n 3-14: MOSP = 3: 12/12 agree
+join rule pw = min_i pw(G_i) + n - |V_i|: 100/100 agree
