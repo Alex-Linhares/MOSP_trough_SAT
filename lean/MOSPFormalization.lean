@@ -32,6 +32,7 @@ import MOSPFormalization.Complex.NodeMonotonicity
 import MOSPFormalization.Complex.EdgeSearchFull
 import MOSPFormalization.Complex.Pebbling
 import MOSPFormalization.Complex.PebblingGu
+import MOSPFormalization.Complex.Wavefront
 import MOSPFormalization.Search.Basic
 import MOSPFormalization.Search.DefiniteMove
 import MOSPFormalization.Search.DefiniteMatching

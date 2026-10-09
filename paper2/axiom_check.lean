@@ -208,5 +208,16 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.closeCount_eq
 #print axioms MOSPFormalization.MOSPInstance.encodes_iff_mospValue_le
 
+-- paper3/wavefront.md: maximum wavefront (Kumfert & Pothen 1997) = pathwidth + 1 (Complex/Wavefront.lean)
+#print axioms MOSPFormalization.Complex.wavefront_eq_insert_activeSuffix
+#print axioms MOSPFormalization.Complex.card_wavefront
+#print axioms MOSPFormalization.Complex.maxWavefront_eq_vertexSepOfLayout_add_one
+#print axioms MOSPFormalization.Complex.minMaxWavefront_eq_vertexSeparation_add_one
+#print axioms MOSPFormalization.Complex.minMaxWavefront_eq_pathwidth_add_one
+#print axioms MOSPFormalization.Complex.minMaxWavefront_of_isEmpty
+#print axioms MOSPFormalization.Complex.wavefront_eq_outShackBeforeMove
+#print axioms MOSPFormalization.Complex.wavefront_eq_shackAfterPut_reverse
+#print axioms MOSPFormalization.Complex.minMaxWavefront_eq_narrowness
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
