@@ -155,15 +155,15 @@ def draw() -> Path:
         ax.set_title(title, loc="left", fontsize=8.5)
 
     layout(ax_p, f["pub_prod"], f["pub_spans"], f["pub_tracks"], k + 1,
-           f"(a) The published search's answer, reported as optimal: {k + 1} tracks")
+           f"(a) The published rules (Chu and Stuckey 2009), reported as optimal: {k + 1} tracks")
     layout(ax_a, prod, sp, tracks, k,
-           f"(b) An optimal layout, found by the repaired search: {k} tracks")
+           f"(b) Our repaired search: an optimal layout, {k} tracks")
 
     # (c) open stacks along both orders
     ax_b.step(range(1, m + 1), f["pub_profile"], where="mid", color=copy_b, lw=1.1,
-              label=f"published answer (peak {k + 1})")
+              label=f"published rules (peak {k + 1})")
     ax_b.step(range(1, m + 1), f["profile"], where="mid", color="0.15", lw=1.1,
-              label=f"optimum (peak {k})")
+              label=f"our repaired search (peak {k})")
     ax_b.set_ylim(0, k + 4.2)
     ax_b.set_xlim(0.5, m + 0.5)
     ax_b.set_xlabel("gate (production order)")

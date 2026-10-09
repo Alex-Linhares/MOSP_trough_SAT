@@ -7,7 +7,7 @@
 \section{Computational results and a dataset}
 \label{sec:results}
 
-Section~\ref{sec:search} proved the repaired search sound. This section asks
+Section~\ref{sec:search} proved our repaired search sound. This section asks
 four practical questions about it and answers each with a measurement. What
 does the repair cost? Under the repaired rules, the total number of search
 nodes over each benchmark set changes by at most 2\%. Do the published
@@ -77,7 +77,7 @@ Of the 6,376 corpus values, 6,374 are certified and two are upper bounds only.
 \subsection{The cost of the repair, and the benchmark values}
 \label{sec:practice}
 
-The repaired search adds one matching test to the definite move and to the
+Our repaired search adds one matching test to the definite move and to the
 better move (Section~\ref{sec:definite}). A candidate that fails the matching
 is passed over, so the repaired tree can only differ where the matching fails.
 Table~\ref{tab:cost} shows how rarely that matters.
@@ -118,7 +118,7 @@ not depend on the customer search at all. Each was proved in one of four ways:
 \item or by a lower bound equal to the value.
 \end{itemize}
 The other 115 rested on the customer search
-under the published rules. The repaired search refuted the value minus one on
+under the published rules. Our repaired search refuted the value minus one on
 all 115, so all 115 values stand (as of 6 October 2026).
 
 The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
@@ -240,7 +240,7 @@ dataset. It re-reads all 20,987 member files with its own readers, maps each
 onto its record's graph by its renaming, recomputes the width of every witness
 layout and replays every minor certificate. It reports no failure on the
 16,949 records. A value certified by search cannot be checked from its record;
-it rests on the repaired search, and for instances within reach of the emitter
+it rests on our repaired search, and for instances within reach of the emitter
 the certificate of Section~\ref{sec:certs} is how a third party can check it.
 
 \paragraph{Agreement with published values.} All 84 Small graphs agree with

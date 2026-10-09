@@ -44,7 +44,7 @@ costs at most 2\% more search nodes on each benchmark set
 Section~\ref{sec:search-def} defines the search and shows that it decides
 pathwidth, in both vocabularies. Section~\ref{sec:algorithm} gives the
 algorithm. Sections~\ref{sec:definite} and~\ref{sec:other-rules} take the
-rules one at a time, Section~\ref{sec:theorem} proves the repaired search
+rules one at a time, Section~\ref{sec:theorem} proves our repaired search
 sound, and Section~\ref{sec:layouts} places each rule in the pathwidth
 literature.
 
@@ -431,7 +431,7 @@ record a solvable state~\leanref{fakeold}. Theorem~\ref{thm:runs}
 (Appendix~\ref{app:machinery}) shows that this never happens in a real run,
 because every old move is a refutation completed earlier in the same run.
 
-\subsection{The repaired search is sound}
+\subsection{Our repaired search is sound}
 \label{sec:theorem}
 
 \paragraph{What a rule must satisfy.} At a state $S$ with old moves $Q$, the
@@ -481,7 +481,7 @@ around Counterexample~\ref{cex:definite} and all at $k$ equal to the optimum.
 Every one found a solution through another branch and answered correctly.
 
 \paragraph{A wrong optimum.} A targeted search did produce a whole instance on
-which the published rules give a wrong answer. It started from
+which the published rules \citep{ChuStuckey2009} give a wrong answer. It started from
 Counterexample~\ref{cex:definite}, climbed toward graphs on which the published
 rules refute more and more of the root's solvable branches, and joined two
 copies of a 17-customer near-miss by one edge. On the resulting 34-customer
@@ -489,7 +489,7 @@ instance (Figure~\ref{fig:wrong}), the search with the published definite move,
 the subset rule and the old move answers that 6 stacks do not suffice, and it
 answers yes at 7, so it reports an optimum of 7, with a refutation as its
 proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
-Figure~\ref{fig:wrong}(b) uses 6 tracks; the repaired search finds it and
+Figure~\ref{fig:wrong}(b) uses 6 tracks; our repaired search finds it and
 refutes 5, so the optimum is 6. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
@@ -502,10 +502,10 @@ that needs nothing but Python are in the repository
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{false_refutation_34.pdf}
-\caption{The published rules report a wrong optimum. A 34-customer instance,
-whose 34 nets must be laid out on 61 gates. (a) The layout the published search
-returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
-by the repaired search, which also proves that 5 do not suffice. (c) The open
+\caption{The published rules \citep{ChuStuckey2009} report a wrong optimum. A 34-customer instance,
+whose 34 nets must be laid out on 61 gates. (a) The layout the search with the published
+rules returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
+by our repaired search, which also proves that 5 do not suffice. (c) The open
 stacks at each gate of the two orders: the published order reaches 7 in the
 first copy, where the optimal order never exceeds 6.
 (d) The instance's graph, two copies of a near-miss joined by one edge.}
