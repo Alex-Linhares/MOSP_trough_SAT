@@ -79,25 +79,25 @@ scripted downloads).
 - Arnborg, Corneil & Proskurowski (1987), Complexity of finding embeddings in a k-tree, *SIAM JADM* 8 — https://doi.org/10.1137/0608024
 - Goldberg, Golumbic, Kaplan & Shamir (1995), Four strikes against physical mapping of DNA, *J. Comput. Biol.* 2 — https://doi.org/10.1089/cmb.1995.2.139
 - Kaplan & Shamir (1996), Pathwidth, bandwidth and completion problems to proper interval graphs with small cliques, *SIAM J. Comput.* 25 (search by title)
-- Fomin, Heggernes & Mihai (2010), *Networks* 56 — https://doi.org/10.1002/net.20373
-- Bodlaender & Möhring (1993), *SIAM JDM* 6 — https://doi.org/10.1137/0406014 (technical report held)
-- Bodlaender, Kloks & Kratsch (1995), *SIAM JDM* 8 — https://doi.org/10.1137/S089548019223992X (technical report held)
+- Fomin, Heggernes & Mihai (2010), Mixed search number and linear-width of interval and split graphs, *Networks* 56 (title from memory; check) — https://doi.org/10.1002/net.20373
+- Bodlaender & Möhring (1993), The pathwidth and treewidth of cographs, *SIAM JDM* 6 — https://doi.org/10.1137/0406014 (technical report held)
+- Bodlaender, Kloks & Kratsch (1995), Treewidth and pathwidth of permutation graphs, *SIAM JDM* 8 — https://doi.org/10.1137/S089548019223992X (technical report held)
 - Bodlaender & Fomin (2002), Approximation of pathwidth of outerplanar graphs, *J. Algorithms* 43 — https://doi.org/10.1016/S0196-6774(02)00001-9 (technical report held)
 - Govindan, Langston & Yan (1998), Approximating the pathwidth of outerplanar graphs, *IPL* 68 (PII S0020019098001392)
 - Chandran, Kavitha & Subramanian (2003), Isoperimetric inequalities and the width parameters of graphs, COCOON — https://doi.org/10.1007/3-540-45071-8_39 (**2-page preview held**)
 - Xue, Yang & Zilles (2024), zero-visibility cops and robber on graph products, *TCS* 1007 — https://doi.org/10.1016/j.tcs.2024.114676
 - Gao (2006), On the threshold of having a linear treewidth in random graphs, COCOON — https://doi.org/10.1007/11809678_25 (**2-page preview held**)
-- Fill, Scheinerman & Singer-Cohen (2000), *RSA* 16 (search by title)
+- Fill, Scheinerman & Singer-Cohen (2000), Random intersection graphs when m = ω(n): an equivalence theorem relating the evolution of the G(n,m,p) and G(n,p) models, *RSA* 16 (title from memory; check) (search by title)
 - Suderman (2004), Pathwidth and layered drawings of trees, *IJCGA* — https://doi.org/10.1142/S0218195904001433
 - Bezrukov & Leck (2009), Karakhanyan–Riordan theorem on the even discrete torus, *SIDMA* 23 (search by title)
-- Harper (2004), *Global Methods for Combinatorial Isoperimetric Problems*, CUP (book) — https://doi.org/10.1017/CBO9780511616679
+- Harper (2004), Global Methods for Combinatorial Isoperimetric Problems, CUP (book) — https://doi.org/10.1017/CBO9780511616679
 - Kloks (1994), *Treewidth: Computations and Approximations*, LNCS 842 (book)
 
 ## C. MOSP side, no DOI: ask the authors or the journal
 
 - Yanasse (1996), Minimization of open orders: polynomial algorithms for some special cases, *Pesquisa Operacional* 16(1):1–26 (MOSP on trees and 1-trees)
 - Lins (1989), Traversing trees and scheduling tasks for duplex corrugator machines, *Pesquisa Operacional* 9:40–54
-- Yanasse, Becceneri & Soma (1998), polynomial MOSP for a complete graph with trees attached (cited by Yanasse & Senne 2010, p. 560)
+- Yanasse, Becceneri & Soma (1998), open stacks polynomial complete graph trees (description, not the title; the reference is in Yanasse & Senne 2010, p. 560) (cited by Yanasse & Senne 2010, p. 560)
 - Korach & Solel, Tree-width, path-width, and cutwidth (source of pw ≤ (tw + 1) log n; venue not retrieved)
 
 Pesquisa Operacional is open access (SciELO) for recent volumes; the 1989–1998
