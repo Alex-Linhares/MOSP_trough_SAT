@@ -36,19 +36,36 @@ def inline(text):
     return s
 
 
+def search_url(item):
+    """A Google search for a PDF of the paper: authors and title, filetype:pdf."""
+    from urllib.parse import quote_plus
+    head = item.split(" — ")[0]
+    head = re.sub(r"[*`]", "", head)
+    head = re.sub(r"\(\d{4}\)", "", head)          # the year
+    head = re.sub(r"\s+", " ", head).strip(" ,")
+    return "https://www.google.com/search?q=" + quote_plus(head + " filetype:pdf")
+
+
 def main():
     md = (HERE / "to_fetch.md").read_text()
     out = ["<!doctype html><meta charset=utf-8><title>Paper 3 references to fetch</title>",
            "<style>body{font-family:sans-serif;max-width:62em;margin:2em auto;line-height:1.45}"
-           "li{margin:.35em 0}a{word-break:break-all}</style>"]
+           "li{margin:.35em 0}a{word-break:break-all}a.g{word-break:normal;white-space:nowrap;font-weight:bold}</style>"]
     inlist = False
+    section = ""
     for line in md.splitlines():
         if line.startswith("- "):
             if not inlist:
                 out.append("<ul>")
                 inlist = True
-            out.append("<li>" + inline(line[2:]) + "</li>")
+            item = inline(line[2:])
+            if not section.startswith("Obtained"):
+                item += (f' <a class="g" href="{html.escape(search_url(line[2:]), quote=True)}"'
+                         ' target="_blank">[Google: PDF]</a>')
+            out.append("<li>" + item + "</li>")
             continue
+        if line.startswith("## "):
+            section = line[3:]
         if inlist:
             out.append("</ul>")
             inlist = False

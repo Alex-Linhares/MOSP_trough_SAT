@@ -382,3 +382,31 @@ Each opened and identified from its first page:
 - Kloks (1994), Treewidth and pathwidth of cocomparability graphs of bounded dimension, LNCS 842 ch. 12 (doi 10.1007/BFb0045387) — **2-page Springer preview only, incomplete**: `1994-Kloks-Treewidth-Pathwidth-Cocomparability-Bounded-Dimension-LNCS842-ch12-PREVIEW-2pp.pdf`. The full chapter is still to obtain.
 
 Not obtained: Balogh, Bezrukov, Harper & Seress (2008) — only the ScienceDirect landing page (HTML) was downloaded, not the PDF.
+
+### Obtained 2026-10-09, second batch (owner's browser downloads)
+
+Complete papers, each identified from its first page:
+- Gustedt (1993), On the pathwidth of chordal graphs, *DAM* 45:233–248 — `1993-Gustedt-Pathwidth-Chordal-Graphs-DAM.pdf`
+- Kloks, Kratsch & Spinrad (1997), On treewidth and minimum fill-in of asteroidal triple-free graphs, *TCS* 175:309–335 — `1997-Kloks-Kratsch-Spinrad-Treewidth-Fill-in-AT-Free-Graphs-TCS.pdf`
+- Peng, Ho, Hsu, Ko & Tang (2000), Edge and node searching problems on trees, *TCS* 240:429–446 — `2000-Peng-Ho-Hsu-Ko-Tang-Edge-Node-Searching-Trees-TCS.pdf`
+- Ellis & Markov (2004), Computing the vertex separation of unicyclic graphs, *Inf. Comput.* 192:123–161 — `2004-Ellis-Markov-Computing-Vertex-Separation-Unicyclic-Graphs-IC.pdf`
+- Takahashi, Ueno & Kajitani (1994), Minimal acyclic forbidden minors for the family of graphs with bounded path-width, *Discrete Math.* 127:293–304 — `1994-Takahashi-Ueno-Kajitani-...-DM.pdf`
+- Bienstock, Robertson, Seymour & Thomas (1991), Quickly excluding a forest, *JCTB* 52:274–283 — `1991-Bienstock-Robertson-Seymour-Thomas-Quickly-Excluding-Forest-JCTB.pdf`
+- Flajolet, Raoult & Vuillemin (1979), The number of registers required for evaluating arithmetic expressions, *TCS* 9:99–125 — `1979-Flajolet-Raoult-Vuillemin-...-TCS.pdf`
+- Díaz, Petit, Serna & Trevisan (2001), Approximating layout problems on random graphs, *Discrete Math.* 235:245–253 — `2001-Diaz-Petit-Serna-Trevisan-...-DM.pdf`
+- Karoński & Szymkowiak (2001), On a solution of a randomized three tracks variant of the Gate Matrix Layout problem, *Discrete Math.* 236:179–189 — `2001-Karonski-Szymkowiak-Randomized-Three-Tracks-Gate-Matrix-Layout-DM.pdf`
+- Harper (1966), Optimal numberings and isoperimetric problems on graphs, *J. Combin. Theory* 1:385–393 — `1966-Harper-Optimal-Numberings-Isoperimetric-Problems-Graphs-JCT.pdf`
+- Harper (1999), On an isoperimetric problem for Hamming graphs, *DAM* 95:285–309 — `1999-Harper-Isoperimetric-Problem-Hamming-Graphs-DAM.pdf`
+- Broersma, Dahlhaus & Kloks (2000), A linear time algorithm for minimum fill-in and treewidth for distance hereditary graphs, *DAM* 99:367–400 — `2000-Broersma-Dahlhaus-Kloks-...-DAM.pdf`
+- Böttcher, Pruessmann, Taraz & Würfl (2010), Bandwidth, expansion, treewidth, separators and universality for bounded-degree graphs, *European J. Combin.* 31:1217–1227 — `2010-Bottcher-...-EJC.pdf`
+- Bezrukov, Elsässer, Monien, Preis & Tillich (2004), New spectral lower bounds on the bisection width of graphs, *TCS* 320:155–174 — `2004-Bezrukov-...-TCS.pdf`
+- Nikoletseas, Raptopoulos & Spirakis (2008), Large independent sets in general random intersection graphs, *TCS* 406:215–224 — `2008-Nikoletseas-...-TCS.pdf`
+- Balogh, Bezrukov, Harper & Seress (2008), On the bandwidth of 3-dimensional Hamming graphs, *TCS* 407:488–495 — `2008-Balogh-Bezrukov-Harper-Seress-Bandwidth-3D-Hamming-Graphs-TCS.pdf`
+- Dereniowski (2011), From pathwidth to connected pathwidth (arXiv 1007.1269v2) — `2011-Dereniowski-From-Pathwidth-to-Connected-Pathwidth-STACS-arXiv.pdf`
+- Shang (2022), On the tree-depth and tree-width in heterogeneous random graphs, *Proc. Japan Acad. A* 98:78– — `2022-Shang-...-PJA.pdf`
+- Wang, Wu & Dumitrescu (2009), On explicit formulas for bandwidth and antibandwidth of hypercubes, *DAM* 157:1947–1952 — `2009-Wang-Wu-Dumitrescu-...-DAM.pdf`
+- Kloks & Bodlaender (1992), Only few graphs have bounded treewidth, Utrecht tech report — `1992-Kloks-Bodlaender-Only-Few-Graphs-Bounded-Treewidth-TR-UU.pdf`
+- Lagerås & Lindholm (2008), A note on the component structure in random intersection graphs with tunable clustering, *Electron. J. Combin.* 15 — `2008-Lageras-Lindholm-...-EJC.pdf`
+
+**Springer 2-page previews only** (first pages; the full papers are still to obtain):
+Gao (2006) COCOON; Chandran, Kavitha & Subramanian (2003) COCOON; Kloks, Bodlaender, Müller & Kratsch (1993) ESA; Garbe (1995) WG; Kloks, Kratsch & Müller (1995) Dominoes, WG; Peng & Yang (2007) TAMC; Krishna et al. (2010). Files end in `-PREVIEW-2pp.pdf`.
