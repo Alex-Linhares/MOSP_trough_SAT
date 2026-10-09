@@ -39,6 +39,24 @@ Started 2026-10-09. Check items off as they are done.
       Garcia de la Banda & Stuckey (2007), already held, and the 19 papers to
       obtain listed in `literature/MISSING.md`.
 
+## A replication notebook
+
+- [ ] **"This entire paper can be read and replicated on a Python (with C calls)
+      Jupyter notebook."** One notebook that follows the paper section by section:
+  - the worked example of Figure 1.1;
+  - the equivalences checked by brute force on small graphs (`complex_check.py`);
+  - the census of names (from the cached OpenAlex data);
+  - the counterexample and the repaired search (Python reference and the C
+    through `native.py`);
+  - the 34-customer wrong optimum with both searches, the SAT check and the DRAT
+    check;
+  - the cost tables, the re-certification records and the dataset checker.
+
+  Every number and figure is regenerated from the recorded data, with the
+  expensive runs (the split refutations, the full benchmarks) read from their
+  CSVs rather than rerun. It ships in the paper's repository, and the paper
+  says so in its "Data, code and proofs" statement.
+
 ## Data and proofs
 
 - [ ] **The trimmed DRAT proof for the 34-customer instance:** 27 MB as xz,
