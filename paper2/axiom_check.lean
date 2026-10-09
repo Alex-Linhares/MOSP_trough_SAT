@@ -206,6 +206,7 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.star_refutes_pattern_graph_bound
 #print axioms MOSPFormalization.Search.cexFamily_closed
 #print axioms MOSPFormalization.Search.closeCount_eq
+#print axioms MOSPFormalization.MOSPInstance.encodes_iff_mospValue_le
 
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

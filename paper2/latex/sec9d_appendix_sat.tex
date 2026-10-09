@@ -1,0 +1,57 @@
+% Appendix D: the SAT formulation of MOSP (satisfiability/mosp_encoding.py),
+% written 2026-10-09 from the encoder and lean/MOSPFormalization/Encoding.lean.
+\section{A SAT formulation of MOSP}
+\label{app:sat}
+
+Our SAT formulation encodes the question ``is $Z(M)\le k$?'', for a matrix $M$
+with customers $C$ (rows) and patterns $P$ (columns), $m=|P|$, as a formula
+in conjunctive normal form, and hands it to a SAT solver. It shares no code and
+no pruning rule with the customer search of Section~\ref{sec:search}, so it is
+an independent check on that search's answers. A satisfying assignment gives a
+production order that can be verified by simulation. A refutation can be
+logged as a DRAT proof and checked by an independent checker (drat-trim).
+Write $P_c$ for the patterns of customer $c$, and positions
+$t=0,\dots,m-1$.
+
+\paragraph{Variables.} $x_{p,t}$: pattern $p$ is cut at position $t$.
+$y_{p,t}$: pattern $p$ is cut at or before position $t$. $o_{c,t}$: the stack of
+customer $c$ is open at position $t$. Two auxiliaries per customer and
+position, $\alpha_{c,t}$ (some pattern of $c$ has been cut) and
+$\omega_{c,t}$ (all patterns of $c$ have been cut).
+
+\paragraph{Clauses.}
+\begin{enumerate}
+\item \emph{Permutation.} Every pattern takes at least one position and every
+  position at least one pattern, $\bigvee_t x_{p,t}$ and $\bigvee_p x_{p,t}$;
+  and at most one of each, by a ladder encoding.
+\item \emph{Prefixes.} $x_{p,t}\Rightarrow y_{p,t}$;
+  $y_{p,t}\Rightarrow y_{p,t+1}$; $y_{p,t}\Rightarrow y_{p,t-1}\vee x_{p,t}$
+  for $t>0$; and $y_{p,0}\Rightarrow x_{p,0}$.
+\item \emph{Open stacks.} A stack is open at $t$ if one of its patterns is cut
+  at $t$, $x_{p,t}\Rightarrow o_{c,t}$ for $p\in P_c$, or if some of its
+  patterns are cut by $t$ and some are not:
+  $y_{p,t}\Rightarrow\alpha_{c,t}$ and $\omega_{c,t}\Rightarrow y_{p,t}$ for
+  $p\in P_c$, and $\alpha_{c,t}\wedge\neg\omega_{c,t}\Rightarrow o_{c,t}$.
+  These are $2|P_c|+1$ clauses per customer and position instead of the
+  $|P_c|(|P_c|-1)$ of the direct pairwise form. Only these polarities are
+  needed: no solution gains by setting $o_{c,t}$ true without cause.
+\item \emph{Width.} At most $k$ of the $o_{c,t}$ are true at each position $t$,
+  by a totalizer.
+\item \emph{Symmetry.} Reversing a production order leaves the number of open
+  stacks at each step unchanged \citep[Proposition~1]{Yanasse1997a}, so the
+  pattern with the most customers may be placed in the first
+  $\lfloor m/2\rfloor+1$ positions.
+\end{enumerate}
+
+\paragraph{What is proved.} The formula with clauses 1--4 is satisfiable exactly
+when some production order keeps at most $k$ stacks open~\leanref{encoding}. The proof models the two cardinality constraints by
+their meaning, not by the clauses the ladder and totalizer encodings emit; both
+are standard and independent of MOSP. The symmetry clause~5 is justified by the
+reversal argument above but is not in the Lean model. That the encoder emits
+exactly these clauses is a reading of its source, not a proof.
+
+\paragraph{On the instance of Figure~\ref{fig:wrong}.} The formula has 31,598
+variables and 109,923 clauses. Kissat~4.0.4 answers ``satisfiable'' at $k=7$
+in 9~s and at $k=6$ in 56~s, with an order whose peak simulates to 6, and
+``unsatisfiable'' at $k=5$ in 158~s. So the optimum is 6, independently of
+both versions of the customer search.

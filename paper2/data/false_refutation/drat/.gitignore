@@ -1,0 +1,4 @@
+# DRAT proofs and formulas are large (100+ MB); the certificate record (.json) is kept
+*.drat.gz
+*.cnf.gz
+run.log

@@ -490,7 +490,9 @@ the subset rule and the old move answers that 6 stacks do not suffice, and it
 answers yes at 7, so it reports an optimum of 7, with a refutation as its
 proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
 Figure~\ref{fig:wrong}(b) uses 6 tracks; our repaired search finds it and
-refutes 5, so the optimum is 6. The mechanism is the old move: the definite
+refutes 5, so the optimum is 6. A SAT solver on our encoding of MOSP
+(Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
+finds an order with 6 open stacks and proves that 5 do not suffice. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
 old move, or with the better move switched on, the published search answers
