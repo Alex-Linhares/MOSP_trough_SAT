@@ -13,33 +13,21 @@ scripted downloads).
 - Gustedt (1993), On the pathwidth of chordal graphs, *DAM* 45 — https://doi.org/10.1016/0166-218X(93)90012-D
 - Skodinis (2003), Optimal linear tree layouts for vertex separation in linear time, *J. Algorithms* 47 — https://doi.org/10.1016/S0196-6774(02)00225-0
 - Peng et al. (2000), Edge and node searching problems on trees, *TCS* — https://doi.org/10.1016/S0304-3975(99)00241-8
-- Chou, Ko, Ho & Chen (2008), Node-searching problem on block graphs, *DAM* 156 — https://doi.org/10.1016/j.dam.2007.08.007 (**key**: the block-graph algorithm)
 - Ellis & Markov (2004), Computing the vertex separation of unicyclic graphs, *Inf. Comput.* 192 — https://doi.org/10.1016/j.ic.2004.03.005
-- Fomin & Thilikos (2006), A 3-approximation for the pathwidth of Halin graphs, *J. Discrete Algorithms* 4 — https://doi.org/10.1016/j.jda.2005.06.004
 - Takahashi, Ueno & Kajitani (1994), Minimal acyclic forbidden minors for bounded path-width, *Discrete Math.* 127 — https://doi.org/10.1016/0012-365X(94)90092-2 (DOI unverified)
-- Megiddo, Hakimi, Garey, Johnson & Papadimitriou (1988), The complexity of searching a graph, *J. ACM* 35 — https://doi.org/10.1145/42267.42268
-- Coudert, Huc & Mazauric (2012), A distributed algorithm for the node search number in trees, *Algorithmica* 63 — HAL inria-00587819: https://hal.inria.fr/inria-00587819
-- Updating the vertex separation of a dynamically changing tree (Waterloo thesis, 2004) — https://hdl.handle.net/10012/1163
 - Dereniowski (2011), From pathwidth to connected pathwidth, STACS (LIPIcs, open access)
 
 **Intersection and perfect classes**
 - Kloks, Kratsch & Spinrad (1997), On treewidth and minimum fill-in of AT-free graphs, *TCS* 175 — https://doi.org/10.1016/S0304-3975(96)00206-X (free at research.utwente.nl)
-- Kloks, Kratsch & Spinrad, Treewidth and pathwidth of cocomparability graphs of bounded dimension — https://doi.org/10.1007/BFb0045387 (TU/e repository)
+- Kloks, Kratsch & Spinrad, Treewidth and pathwidth of cocomparability graphs of bounded dimension — https://doi.org/10.1007/BFb0045387 (TU/e repository; **only a 2-page preview obtained so far**)
 - Broersma, Dahlhaus & Kloks (2000), *DAM* (distance-hereditary treewidth, linear) — https://doi.org/10.1016/S0166-218X(99)00146-8
-- Meister (2010), *TCS* 411 (permutation graphs, treewidth = pathwidth, linear) — https://doi.org/10.1016/j.tcs.2010.06.017
 - Möhring (1996), Triangulating graphs without asteroidal triples, *DAM* 64:281–287 (**key**: AT-free ⇒ pw = tw). DOI not resolved; search ScienceDirect by title.
 - Monien & Sudborough (1988), Min cut is NP-complete for edge weighted trees, *TCS* 58:209–229. DOI not resolved; search by title.
 
 **Products, grids and isoperimetry**
-- Ellis & Warren (2008), Lower bounds on the pathwidth of some grid-like graphs, *DAM* 156 — https://doi.org/10.1016/j.dam.2007.02.006 (**key**: tori and cylinders)
-- Kiyomi, Okamoto & Otachi (2016), On the treewidth of toroidal grids, *DAM* 198 — https://doi.org/10.1016/j.dam.2015.06.027
-- Kozawa, Otachi & Yamazaki (2014), Lower bounds for treewidth of product graphs, *DAM* 162 — https://doi.org/10.1016/j.dam.2013.08.005
 - Harper (1966), Optimal numberings and isoperimetric problems on graphs, *J. Combin. Theory* 1 — https://doi.org/10.1016/S0021-9800(66)80059-5 (**key**: the method behind our expansion bound)
 - Harper (1999), On an isoperimetric problem for Hamming graphs, *DAM* 95 — https://doi.org/10.1016/S0166-218X(99)00082-7
-- Balogh, Bezrukov, Harper & Seress (2008), On the bandwidth of 3-dimensional Hamming graphs, *TCS* 407 — https://doi.org/10.1016/j.tcs.2008.07.029
-- Djelloul (2009), Treewidth and logical definability of graph products, *TCS* 410 — https://doi.org/10.1016/j.tcs.2008.10.019
-- Cao, Liu, Lu & Lv (2023), Treewidth of the q-Kneser graphs, *DAM* — free on arXiv: https://arxiv.org/abs/2101.04518
-- Ellis (2023), Computing the pathwidth and bandwidth of solid, convex grids, SSRN — https://doi.org/10.2139/ssrn.4592858 (an accepted version is in a repository, according to Unpaywall)
+- Balogh, Bezrukov, Harper & Seress (2008), On the bandwidth of 3-dimensional Hamming graphs, *TCS* 407 — https://doi.org/10.1016/j.tcs.2008.07.029 (only the landing page came down; use the "View PDF" button)
 
 **Random and extremal**
 - Karoński & Szymkowiak (2001), randomized three-track gate matrix layout, *Discrete Math.* 236 — https://doi.org/10.1016/S0012-365X(00)00441-6 (**key**: the only random-MOSP threshold theorem found)
@@ -56,6 +44,21 @@ scripted downloads).
 **Probably free; check**
 - Kneis, Mölle, Richter & Rossmanith (2009), A bound on the pathwidth of sparse graphs, *SIDMA* 23 — https://doi.org/10.1137/080715482 (an RWTH technical report version is likely)
 - Biedl (2022), Horton–Strahler number, rooted pathwidth and upward drawings of trees, *IPL* 175 — https://doi.org/10.1016/j.ipl.2021.106230 (an arXiv version is likely)
+
+## Obtained 2026-10-09 (in `literature/`, see `MISSING.md`)
+
+- Chou, Ko, Ho & Chen (2008), Node-searching problem on block graphs, *DAM* 156 — https://doi.org/10.1016/j.dam.2007.08.007 (**key**: the block-graph algorithm)
+- Fomin & Thilikos (2006), A 3-approximation for the pathwidth of Halin graphs, *J. Discrete Algorithms* 4 — https://doi.org/10.1016/j.jda.2005.06.004
+- Megiddo, Hakimi, Garey, Johnson & Papadimitriou (1988), The complexity of searching a graph, *J. ACM* 35 — https://doi.org/10.1145/42267.42268
+- Coudert, Huc & Mazauric (2012), A distributed algorithm for the node search number in trees, *Algorithmica* 63 — HAL inria-00587819: https://hal.inria.fr/inria-00587819
+- Updating the vertex separation of a dynamically changing tree (Waterloo thesis, 2004) — https://hdl.handle.net/10012/1163
+- Meister (2010), *TCS* 411 (permutation graphs, treewidth = pathwidth, linear) — https://doi.org/10.1016/j.tcs.2010.06.017
+- Ellis & Warren (2008), Lower bounds on the pathwidth of some grid-like graphs, *DAM* 156 — https://doi.org/10.1016/j.dam.2007.02.006 (**key**: tori and cylinders)
+- Kiyomi, Okamoto & Otachi (2016), On the treewidth of toroidal grids, *DAM* 198 — https://doi.org/10.1016/j.dam.2015.06.027
+- Kozawa, Otachi & Yamazaki (2014), Lower bounds for treewidth of product graphs, *DAM* 162 — https://doi.org/10.1016/j.dam.2013.08.005
+- Djelloul (2009), Treewidth and logical definability of graph products, *TCS* 410 — https://doi.org/10.1016/j.tcs.2008.10.019
+- Cao, Liu, Lu & Lv (2023), Treewidth of the q-Kneser graphs, *DAM* — free on arXiv: https://arxiv.org/abs/2101.04518
+- Ellis (2023), Computing the pathwidth and bandwidth of solid, convex grids, SSRN — https://doi.org/10.2139/ssrn.4592858 (an accepted version is in a repository, according to Unpaywall)
 
 ## B. Paywalled: need a library or the authors
 

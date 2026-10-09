@@ -363,3 +363,22 @@ Downloaded 2026-10-09, each opened and checked against its title page:
 - **Briański, M., Joret, G. & Seweryn, M.T.** (2024). Pathwidth vs cocircumference. *SIAM J. Discrete Math.*, doi:10.1137/23m158663x; arXiv:2306.03621 — `2024-Brianski-Joret-Seweryn-Pathwidth-vs-Cocircumference-SIDMA-arXiv.pdf`.
 
 Still to obtain, mostly Elsevier open archive behind a browser check, none circumvented (full list with DOIs in the survey, §3): Skodinis 2003 (doi:10.1016/S0196-6774(02)00225-0); Scheffler 1990 (doi:10.1007/978-3-642-46908-4_70); Peng et al. 2000 (doi:10.1016/S0304-3975(99)00241-8); Chou, Ko, Ho & Chen 2008, block graphs (doi:10.1016/j.dam.2007.08.007); Ellis & Markov 2004 (doi:10.1016/j.ic.2004.03.005); Fomin & Thilikos 2006, Halin (doi:10.1016/j.jda.2005.06.004); Gustedt 1993 (doi:10.1016/0166-218X(93)90012-D); Takahashi, Ueno & Kajitani 1994 (doi:10.1016/0012-365X(94)90092-2); Megiddo et al. 1988 (doi:10.1145/42267.42268); Kneis et al. 2009 (doi:10.1137/080715482); Biedl 2022 (doi:10.1016/j.ipl.2021.106230); Coudert, Huc & Mazauric 2012 (doi:10.1007/s00453-011-9524-3); Yanasse 1996, *Pesquisa Operacional* 16(1), 1–26 (no DOI found).
+
+### Obtained 2026-10-09 by the owner (browser downloads), copied from ~/Downloads
+
+Each opened and identified from its first page:
+- Chou, Ko, Ho & Chen (2008), Node-searching problem on block graphs, *DAM* 156:55–75 — `2008-Chou-Ko-Ho-Chen-Node-Searching-Block-Graphs-DAM.pdf`
+- Ellis & Warren (2008), Lower bounds on the pathwidth of some grid-like graphs, *DAM* 156:545–555 — `2008-Ellis-Warren-Lower-Bounds-Pathwidth-Grid-Like-Graphs-DAM.pdf`
+- Kozawa, Otachi & Yamazaki (2014), Lower bounds for treewidth of product graphs, *DAM* 162:251–258 — `2014-Kozawa-Otachi-Yamazaki-Lower-Bounds-Treewidth-Product-Graphs-DAM.pdf`
+- Kiyomi, Okamoto & Otachi (2016), On the treewidth of toroidal grids, *DAM* 198:303–306 — `2016-Kiyomi-Okamoto-Otachi-Treewidth-Toroidal-Grids-DAM.pdf`
+- Djelloul (2009), Treewidth and logical definability of graph products, *TCS* 410:696–710 — `2009-Djelloul-Treewidth-Logical-Definability-Graph-Products-TCS.pdf`
+- Meister (2010), Treewidth and minimum fill-in on permutation graphs in linear time, *TCS* 411:3685–3700 — `2010-Meister-Treewidth-Fill-in-Permutation-Graphs-Linear-Time-TCS.pdf`
+- Fomin & Thilikos (2006), A 3-approximation for the pathwidth of Halin graphs, *J. Discrete Algorithms* 4:499–510 — `2006-Fomin-Thilikos-3-Approximation-Pathwidth-Halin-Graphs-JDA.pdf`
+- Megiddo, Hakimi, Garey, Johnson & Papadimitriou (1988), The complexity of searching a graph, *J. ACM* 35:18–44 — `1988-Megiddo-Hakimi-Garey-Johnson-Papadimitriou-Complexity-Searching-Graph-JACM.pdf`
+- Coudert, Huc & Mazauric (2012), A distributed algorithm for computing the node search number in trees, *Algorithmica* 63:158–190 (HAL inria-00587819) — `2012-Coudert-Huc-Mazauric-Distributed-Algorithm-Node-Search-Number-Trees-Algorithmica-HAL.pdf`
+- Olsar (2004), Updating the vertex separation of a dynamically changing tree, MMath thesis, Waterloo (hdl 10012/1163) — `2004-Olsar-Updating-Vertex-Separation-Dynamically-Changing-Tree-MMath-Waterloo.pdf`
+- Cao, Liu, Lu & Lv (2023), Treewidth of the q-Kneser graphs, *DAM* (arXiv 2101.04518v2) — `2023-Cao-Liu-Lu-Lv-Treewidth-q-Kneser-Graphs-DAM-arXiv.pdf`
+- Ellis (2023), Computing the pathwidth and bandwidth of solid, convex grids, SSRN 4592858 (preprint) — `2023-Ellis-Computing-Pathwidth-Bandwidth-Solid-Convex-Grids-SSRN.pdf`
+- Kloks (1994), Treewidth and pathwidth of cocomparability graphs of bounded dimension, LNCS 842 ch. 12 (doi 10.1007/BFb0045387) — **2-page Springer preview only, incomplete**: `1994-Kloks-Treewidth-Pathwidth-Cocomparability-Bounded-Dimension-LNCS842-ch12-PREVIEW-2pp.pdf`. The full chapter is still to obtain.
+
+Not obtained: Balogh, Bezrukov, Harper & Seress (2008) — only the ScienceDirect landing page (HTML) was downloaded, not the PDF.
