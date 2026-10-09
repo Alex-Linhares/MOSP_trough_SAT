@@ -1,0 +1,15 @@
+{
+  "instance_name": "kron_P3_P3",
+  "n_customers": 9,
+  "n_patterns": 4,
+  "mosp_value": 5,
+  "ordering": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 5,
+  "lower_bound_source": "degeneracy"
+}

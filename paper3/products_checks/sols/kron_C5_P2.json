@@ -1,0 +1,16 @@
+{
+  "instance_name": "kron_C5_P2",
+  "n_customers": 10,
+  "n_patterns": 5,
+  "mosp_value": 6,
+  "ordering": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 6,
+  "lower_bound_source": "degeneracy"
+}

@@ -1,0 +1,26 @@
+{
+  "instance_name": "cart_C5_P2",
+  "n_customers": 10,
+  "n_patterns": 15,
+  "mosp_value": 5,
+  "ordering": [
+    0,
+    2,
+    10,
+    1,
+    5,
+    11,
+    3,
+    8,
+    14,
+    4,
+    6,
+    12,
+    7,
+    9,
+    13
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 5,
+  "lower_bound_source": "degeneracy"
+}

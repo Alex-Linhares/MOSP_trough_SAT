@@ -1,0 +1,46 @@
+H(1,2,3)	n=8	pw=4	proof=refutation	lower=3	formula=4	0.0s
+H(1,2,4)	n=16	pw=7	proof=refutation	lower=6	formula=7	0.0s
+H(2,2,4)	n=16	pw=12	proof=refutation	lower=10	formula=12	0.0s
+H(2,2,5)	n=32	pw=22	proof=refutation	lower=15	formula=22	0.0s
+H(3,2,5)	n=32	pw=28	proof=refutation	lower=25	formula=28	0.0s
+H(2,2,6)	n=64	pw=42	proof=refutation	lower=21	formula=42	0.1s
+H(3,2,6)	n=64	pw=53	proof=refutation	lower=41	formula=53	0.0s
+Kneser K(9,2)	n=36	pw=28	proof=refutation	lower=21	formula=tw=27	0.0s
+Kneser K(10,2)	n=45	pw=36	proof=refutation	lower=28	formula=tw=35	0.0s
+Kneser K(9,3)	n=84	pw=55	proof=refutation	lower=28	formula=tw=55	16.1s
+GP(12,1) prism	n=24	pw=4	proof=bound	lower=4	formula=2k+1..2k+2 = 3..4	0.0s
+GP(16,1) prism	n=32	pw=4	proof=bound	lower=4	formula=2k+1..2k+2 = 3..4	0.0s
+GP(20,1) prism	n=40	pw=4	proof=bound	lower=4	formula=2k+1..2k+2 = 3..4	0.0s
+GP(24,1) prism	n=48	pw=4	proof=bound	lower=4	formula=2k+1..2k+2 = 3..4	0.0s
+GP(30,1) prism	n=60	pw=4	proof=bound	lower=4	formula=2k+1..2k+2 = 3..4	0.0s
+GP(12,2)	n=24	pw=6	proof=refutation	lower=4	formula=5..6	0.0s
+GP(16,2)	n=32	pw=6	proof=refutation	lower=4	formula=5..6	0.0s
+GP(20,2)	n=40	pw=6	proof=refutation	lower=4	formula=5..6	0.0s
+GP(30,2)	n=60	pw=6	proof=refutation	lower=4	formula=5..6	0.0s
+GP(40,2)	n=80	pw=6	proof=refutation	lower=4	formula=5..6	0.0s
+GP(15,3)	n=30	pw=8	proof=refutation	lower=4	formula=7..8	0.0s
+GP(21,3)	n=42	pw=8	proof=refutation	lower=4	formula=7..8	0.0s
+GP(30,3)	n=60	pw=8	proof=refutation	lower=4	formula=7..8	0.0s
+GP(40,3)	n=80	pw=8	proof=refutation	lower=4	formula=7..8	0.0s
+king P6⊠P6	n=36	pw=7	proof=refutation	lower=6	formula=	0.0s
+king P7⊠P7	n=49	pw=8	proof=refutation	lower=7	formula=	0.0s
+king P8⊠P8	n=64	pw=9	proof=refutation	lower=7	formula=	0.0s
+strong C4⊠C4	n=16	pw=10	proof=refutation	lower=8	formula=	0.0s
+strong C4⊠C5	n=20	pw=10	proof=refutation	lower=8	formula=	0.0s
+strong C5⊠C5	n=25	pw=12	proof=refutation	lower=9	formula=	0.0s
+strong C4⊠C7	n=28	pw=10	proof=refutation	lower=9	formula=	0.0s
+strong C5⊠C6	n=30	pw=12	proof=refutation	lower=9	formula=	0.0s
+cyl C6xP3 (n<m)	n=18	pw=6	proof=refutation	lower=4	formula=	0.0s
+cyl C8xP3 (n<m)	n=24	pw=6	proof=refutation	lower=4	formula=	0.0s
+cyl C8xP4 (n<m)	n=32	pw=8	proof=refutation	lower=4	formula=	0.0s
+cyl C10xP4 (n<m)	n=40	pw=8	proof=refutation	lower=4	formula=	0.0s
+cyl C12xP5 (n<m)	n=60	pw=10	proof=refutation	lower=4	formula=	0.1s
+torus C3xC9	n=27	pw=6	proof=refutation	lower=4	formula=	0.0s
+torus C4xC9	n=36	pw=8	proof=refutation	lower=5	formula=	0.0s
+torus C5xC9	n=45	pw=10	proof=refutation	lower=5	formula=	0.0s
+torus C7xC7	n=49	pw=13	proof=refutation	lower=5	formula=	0.2s
+torus C7xC8	n=56	pw=14	proof=refutation	lower=5	formula=	0.5s
+grid4d P3^4	n=81	pw=21	proof=refutation	lower=10	formula=conj (8n^3+3n^2+4n)/12 = 21	32.0s
+grid3d P5^3	n=125	pw=21	proof=UNPROVED	lower=9	formula=Otachi-Suda 25-4=21	300.0s
+grid3d P3xP4xP4	n=48	pw=11	proof=refutation	lower=6	formula=12-1=11	0.0s
+Hamming K3^4	n=81	pw=34	proof=refutation	lower=13	formula=	318.0s

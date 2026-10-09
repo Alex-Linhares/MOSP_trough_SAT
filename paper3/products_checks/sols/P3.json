@@ -1,0 +1,13 @@
+{
+  "instance_name": "P3",
+  "n_customers": 3,
+  "n_patterns": 2,
+  "mosp_value": 2,
+  "ordering": [
+    0,
+    1
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 2,
+  "lower_bound_source": "degeneracy"
+}

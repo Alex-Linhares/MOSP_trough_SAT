@@ -1,0 +1,14 @@
+{
+  "instance_name": "C3",
+  "n_customers": 3,
+  "n_patterns": 3,
+  "mosp_value": 3,
+  "ordering": [
+    0,
+    1,
+    2
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 3,
+  "lower_bound_source": "degeneracy"
+}

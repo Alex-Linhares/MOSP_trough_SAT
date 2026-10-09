@@ -1,0 +1,15 @@
+{
+  "instance_name": "C4",
+  "n_customers": 4,
+  "n_patterns": 4,
+  "mosp_value": 3,
+  "ordering": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "provenance": "certified:bound",
+  "lower_bound": 3,
+  "lower_bound_source": "degeneracy"
+}

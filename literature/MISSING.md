@@ -255,3 +255,111 @@ From the IJOC sweep, `paper2/ijoc_literature.md`, in order of importance. All ar
 - Anjos, M.F. & Vannelli, A. (2008). Computing globally optimal solutions for single-row layout problems using semidefinite programming and cutting planes. *IJOC* 20(4), 611-617. doi:10.1287/ijoc.1080.0270
 - Buchheim, C., Wiegele, A. & Zheng, L. (2010). Exact algorithms for the quadratic linear ordering problem. *IJOC* 22(1), 168-177. doi:10.1287/ijoc.1090.0318
 - Qiu, Y., Cherniavskii, M., Goldengorin, B. & Pardalos, P.M. (2026). A computational study of the tool replacement problem. *IJOC* 38(1), 86-101. doi:10.1287/ijoc.2023.0474
+
+## Paper 3 survey (2026-10-09)
+
+### Products and structured classes (`paper3/survey_products_structured.md`)
+
+Obtained 2026-10-09, all open access, each opened and checked against its citation:
+
+- **Otachi, Y. & Suda, R.** (2011). Bandwidth and pathwidth of three-dimensional grids. *Discrete Math.* 311, doi:10.1016/j.disc.2011.02.019 — `2011-Otachi-Suda-Bandwidth-Pathwidth-Three-Dimensional-Grids-DM-arXiv.pdf` (arXiv 1101.0964). pw = bw = vbw for grids and even tori; closed form for 3D grids (Thm 4.2); 4D conjecture (Conj. 5.1).
+- **Wood, D.R.** (2013). Treewidth of Cartesian products of highly connected graphs. *J. Graph Theory* 73(3), 318–321 — `2013-Wood-Treewidth-Cartesian-Products-Highly-Connected-JGT-arXiv.pdf`.
+- **Harvey, D.J. & Wood, D.R.** (2014). Treewidth of the Kneser graph and the Erdős–Ko–Rado theorem. *Electron. J. Combin.* 21(1) #P1.48, doi:10.37236/3971 — `2014-Harvey-Wood-Treewidth-Kneser-Graph-Erdos-Ko-Rado-EJC.pdf`.
+- **Harvey, D.J. & Wood, D.R.** (2015). Treewidth of the line graph of a complete graph. *J. Graph Theory* 79, 48–54, doi:10.1002/jgt.21813 — held as the longer arXiv version with complete multipartite graphs, `2015-Harvey-Wood-Treewidth-Line-Graph-Complete-Multipartite-JGT-arXiv.pdf` (arXiv 1210.8205v2).
+- **Clarke, N.E., Messinger, M.E. & Power, G.** (2019). Bounding the search number of graph products. *Kyungpook Math. J.* 59(1), 175–190, doi:10.5666/kmj.2019.59.1.175 — `2019-Clarke-Messinger-Power-Bounding-Search-Number-Graph-Products-KMJ-arXiv.pdf`. pw(K_m □ K_n) exactly (Cor. 15).
+- **Aidun, I., Dean, F., Morrison, R., Yu, T. & Yuan, J.** (2020). Treewidth and gonality of glued grid graphs. *DAM* 279, 1–11, doi:10.1016/j.dam.2019.10.024 — `2020-Aidun-Dean-Morrison-Yu-Yuan-Treewidth-Gonality-Glued-Grid-Graphs-DAM-arXiv.pdf`.
+- **Liu, K., Cao, M. & Lu, M.** (2022). Treewidth of the generalized Kneser graphs. *Electron. J. Combin.* 29(1) #P1.57, doi:10.37236/10035 — `2022-Liu-Cao-Lu-Treewidth-Generalized-Kneser-Graphs-EJC.pdf`.
+- **Hickingbotham, R. & Wood, D.R.** (2023). Structural properties of graph products. *J. Graph Theory*, doi:10.1002/jgt.23023 — `2023-Hickingbotham-Wood-Structural-Properties-Graph-Products-JGT-arXiv.pdf`.
+- **Fabila-Monroy, R., Gómez-Galicia, S.G., Hernández-Cruz, C. & Trujillo-Negrete, A.** (2025). On the treewidth of token and Johnson graphs. *DAM*, doi:10.1016/j.dam.2025.11.042 — `2025-Fabila-Monroy-et-al-Treewidth-Token-Johnson-Graphs-DAM-arXiv.pdf`.
+- **Gima, T., Morimoto, H., Okada, Y. & Otachi, Y.** (2026). Treewidth of the n × n toroidal grid. arXiv 2605.21015 — `2026-Gima-Morimoto-Okada-Otachi-Treewidth-nxn-Toroidal-Grid-arXiv.pdf`.
+- **Kaul, R.** (2026). Treewidth of products of graphs with high treewidth. arXiv 2607.16778 — `2026-Kaul-Treewidth-Products-High-Treewidth-arXiv.pdf`. pw(G ⊠ H) ≥ (pw(G)+1)(pw(H)+1) − 1 (Thm 2), i.e. MOSP is supermultiplicative under the Kronecker product of instances.
+- **Wang, Y., Cao, M., Lv, Z. & Lu, M.** (2026). Treewidth of generalized Hamming graph, bipartite Kneser graph and generalized Petersen graph. *Electron. J. Combin.* 33(1) #P1.7, doi:10.37236/12892 — `2026-Wang-Cao-Lv-Lu-Treewidth-Generalized-Hamming-Bipartite-Kneser-Generalized-Petersen-EJC.pdf`.
+
+Still to obtain (ScienceDirect blocks scripted download of its open archive; nothing was circumvented):
+
+- **Ellis, J. & Warren, R.** (2008). Lower bounds on the pathwidth of some grid-like graphs. *DAM* 156(5), 545–555. doi:10.1016/j.dam.2007.02.006 — Elsevier open archive; fetch in a browser. Source of pw(C_n □ C_n) = 2n − 1 and the grid and cylinder values.
+- **Lin, L. & Lin, Y.** (2025). *DAM* 363, 201–214. doi:10.1016/j.dam.2024.12.001 — paywalled, no preprint (also listed above under prior art).
+- **Kiyomi, M., Okamoto, Y. & Otachi, Y.** (2016). On the treewidth of toroidal grids. *DAM* 198, 303–306. doi:10.1016/j.dam.2015.06.027 — open archive; browser.
+- **Kozawa, K., Otachi, Y. & Yamazaki, K.** (2014). Lower bounds for treewidth of product graphs. *DAM* 162, 251–258. doi:10.1016/j.dam.2013.08.005 — open archive; browser.
+- **Harper, L.H.** (1966). *J. Combin. Theory* 1(3), 385–393. doi:10.1016/S0021-9800(66)80059-5 — open archive; browser (listed above as not held).
+- **Harper, L.H.** (1999). On an isoperimetric problem for Hamming graphs. *DAM* 95, 285–309. doi:10.1016/S0166-218X(99)00082-7 — open archive; browser.
+- **Balogh, J., Bezrukov, S.L., Harper, L.H. & Seress, Á.** (2008). On the bandwidth of 3-dimensional Hamming graphs. *TCS* 407. doi:10.1016/j.tcs.2008.07.029 — open archive; browser.
+- **Djelloul, S.** (2009). Treewidth and logical definability of graph products. *TCS* 410, 696–710. doi:10.1016/j.tcs.2008.10.019 — open archive; browser.
+- **Chandran, L.S., Kavitha, T. & Subramanian, C.R.** (2003). Isoperimetric inequalities and the width parameters of graphs. COCOON 2003, LNCS 2697, 385–393. doi:10.1007/3-540-45071-8_39 — paywalled.
+- **Ellis, J.** (2023). Computing the pathwidth and bandwidth of solid, convex grids. SSRN, doi:10.2139/ssrn.4592858 — not fetched.
+- **Xue, Y., Yang, B. & Zilles, S.** (2024). The zero-visibility cops and robber game on graph products. *TCS* 1007, 114676. doi:10.1016/j.tcs.2024.114676 — paywalled.
+- **Wang, X., Wu, X. & Dumitrescu, S.** (2009). On explicit formulas for bandwidth and antibandwidth of hypercubes. *DAM* 157, 1947–1952 — DOI not looked up.
+- **Bezrukov, S.L. & Leck, U.** (2009). A simple proof of the Karakhanyan–Riordan theorem on the even discrete torus. *SIAM J. Discrete Math.* 23, 1416–1421 — DOI not looked up.
+- **Cao, M., Liu, K., Lu, M. & Lv, Z.** (2023). Treewidth of the q-Kneser graphs. *DAM*, doi:10.1016/j.dam.2023.09.004 — arXiv 2101.04518 is free; not downloaded.
+
+## Paper 3 survey (2026-10-09)
+
+Random, asymptotic and extremal pathwidth; full table and statements in
+`paper3/survey_random_extremal.md`. **Obtained and verified (open access):**
+
+- `2012-Gao-Treewidth-Erdos-Renyi-Random-Intersection-Scale-Free-Random-Graphs-DAM-arXiv.pdf` — Gao, DAM 160 (2012), arXiv 0907.5481. Thm 2: random intersection graph `G_I(n, m, p)`, `m = n^α`, `p ≥ 2/m` ⇒ treewidth linear whp, i.e. random MOSP optima are `Θ(n)`. §2.2 records that Karoński et al. introduced the model for gate matrix layout.
+- `2024-Do-Erde-Kang-Note-Width-Sparse-Random-Graphs-JGT-arXiv.pdf` — tw of `G(n,(1+ε)/n)` is `Θ(ε³n)` in the weakly supercritical regime (Thm 1.6).
+- `2012-Lee-Lee-Oum-Rank-Width-Random-Graphs-JGT-arXiv.pdf` — tw linear for `G(n, c/n)` iff `c > 1`.
+- `2014-Perarnau-Serra-Tree-Depth-Random-Graphs-DAM-arXiv.pdf` — `td = n − O(√(n/p))` (and the same for tw) for dense `G(n,p)`, which sandwiches pw.
+- `2012-Mitsche-Perarnau-Treewidth-Related-Parameters-Random-Geometric-Graphs-STACS.pdf` — tw/td/pw of random geometric graphs.
+- `2014-Kolesnik-Wormald-Lower-Bounds-Isoperimetric-Numbers-Random-Regular-Graphs-SIDMA-arXiv.pdf` — vertex isoperimetric lower bounds, which give `pw(G_{n,3}) ≥ 0.0721n` a.a.s.
+- `2022-Diaz-Diner-Serna-Serra-Vertex-Bisection-Width-Random-Regular-Graphs-arXiv.pdf`
+- `2023-Lichev-Mitsche-Minimum-Bisection-Random-3-Regular-Graphs-EJC-arXiv.pdf`
+- `2006-Fomin-Hoie-Pathwidth-Cubic-Graphs-Exact-Algorithms-IPL.pdf` — author copy; `pw ≤ (1/6+ε)n` for max degree 3; the gap to 0.082n is open.
+- `2009-Fomin-Gaspers-Saurabh-Stepanov-Two-Techniques-Combining-Branching-Treewidth-Algorithmica-preprint.pdf` — pw bound by degree profile (Lemma 1).
+- `2007-Behrisch-Component-Evolution-Random-Intersection-Graphs-EJC.pdf` — giant component of `G_I` for `m = n^α`, `α ≠ 1`. This corrects the §36 citation from memory, which can now be checked.
+- `2011-Rybarczyk-Equivalence-Random-Intersection-Graph-Gnp-RSA-arXiv.pdf` — `G_I` ≈ `G(n, p̂)` for monotone properties when `m ≥ n³`.
+
+**Still to obtain** (DOIs in the survey §4):
+
+- Karoński, Scheinerman & Singer-Cohen (1999), CPC 8, 10.1017/S0963548398003459. Introduces random intersection graphs with an application to gate matrix layout, the origin of "random MOSP". Highest priority.
+- Karoński & Szymkowiak (2001), Discrete Math. 236:179–189, 10.1016/S0012-365X(00)00441-6. Thresholds for randomized 3-GML (MOSP with 3 stacks). Elsevier open archive; ScienceDirect refuses curl, so a browser download is needed.
+- Díaz, Petit, Serna & Trevisan (2001), Approximating layout problems on random graphs, 10.1016/S0012-365X(00)00278-8 (open archive).
+- Kneis, Mölle, Richter & Rossmanith (2009), SIDMA, 10.1137/080715482.
+- Takahashi, Ueno & Kajitani (1994), minimal acyclic forbidden minors for path-width; Bienstock, Robertson, Seymour & Thomas (1991), 10.1016/0095-8956(91)90068-U; Kloks & Bodlaender (1992), 10.1007/BFb0045380; Böttcher et al. (2010), 10.1016/j.ejc.2009.10.010; Lagerås & Lindholm (2008); Shang (2022), 10.3792/pjaa.98.015; Bezrukov et al. (2004); Flajolet, Raoult & Vuillemin (1979), 10.1016/0304-3975(79)90009-4; Biedl (2021), 10.1016/j.ipl.2021.106230.
+
+## Paper 3 survey (2026-10-09)
+
+Pathwidth on intersection and perfect-graph classes; the survey is
+`paper3/survey_intersection_classes.md`, whose §6 lists everything still to
+obtain, with DOIs. The most important of those are: Gustedt (1993) DAM 45,
+doi:10.1016/0166-218X(93)90012-D, which is bronze OA, but the Elsevier bot check
+refused it. Möhring (1996) "Triangulating graphs without asteroidal triples",
+DAM 64:281–287 (AT-free ⇒ pw = tw). Habib & Möhring (1994) Order 11,
+doi:10.1007/BF01462229. Kloks, Kratsch & Spinrad (1997) TCS,
+doi:10.1016/S0304-3975(96)00206-X, which is OA at research.utwente.nl but a bot
+check refused it. Kloks, Kratsch & Müller "Dominoes",
+doi:10.1007/3-540-59071-4_41. Garbe (1995), doi:10.1007/3-540-59071-4_35.
+
+**Obtained in this sweep** (all opened and read where cited). The Utrecht
+technical reports came through the UU DSpace REST API
+(`https://dspace.library.uu.nl/server/api/pid/find?id=hdl:1874/<n>`), because the
+HTML front end is JavaScript-only:
+
+- `1990-Bodlaender-Mohring-Pathwidth-Treewidth-Cographs-TR-RUU-CS-90-7.pdf` — hdl:1874/16625; TR of SIAM JDM 6 (1993) 181–188, doi:10.1137/0406014. Scanned. Thm 3.2: pw = tw on cographs. Lemma 3.4: pw of a disjoint union is the max, and **pw(G × H) = min(pw(G) + |W|, pw(H) + |V|)** for the join. O(n) algorithms from the cotree.
+- `1992-Bodlaender-Kloks-Kratsch-Treewidth-Pathwidth-Permutation-Graphs-TR-UU.pdf` — hdl:1874/16673; TR of SIAM JDM 8 (1995) 606–616, doi:10.1137/S089548019223992X. pw = tw on permutation graphs, O(nk²) given the matching diagram.
+- `1992-Kloks-Bodlaender-Approximating-Treewidth-Pathwidth-Perfect-Graphs-TR-RUU-CS-92-29.pdf` — hdl:1874/16672; doi:10.1007/3-540-56279-6_64 (ISAAC'92). pw ≤ 3tw + 4 on cotriangulated graphs, ≤ 2tw + 1 on convex graphs, ≤ 2tw on permutation graphs, O(tw²) on cocomparability graphs.
+- `1992-Kloks-Kratsch-Treewidth-Chordal-Bipartite-Graphs-TR-RUU-CS-92-28.pdf` — hdl:1874/16671; TR of J. Algorithms (1995), doi:10.1006/jagm.1995.1037. Treewidth polynomial on chordal bipartite graphs.
+- `1995-Bodlaender-Kloks-Kratsch-Muller-Treewidth-Fill-in-d-Trapezoid-Graphs-TR-UU-CS-95-34.pdf` — TU/e pure; doi:10.1142/9789812777638_0008. d-trapezoid tw = pw in O(n·tw^(d−1)), trapezoid O(n²); p. 2 lists class complexities, and Thm 2.2 (Möhring 1996) is pw = tw on AT-free.
+- `1997-Bodlaender-Treewidth-Algorithmic-Techniques-Results-MFCS.pdf` — hdl:1874/18736. Treewidth is NP-complete on bipartite and cocomparability graphs (p. 2).
+- `2006-Fomin-Hoie-Pathwidth-Cubic-Graphs-Exact-Algorithms-IPL.pdf` — author page; IPL 97:191–196. pw ≤ n/6 + εn for cubic graphs.
+- `2007-Suchan-Todinca-Pathwidth-Circular-Arc-Graphs-WG.pdf` — author copy (univ-orleans.fr); doi:10.1007/978-3-540-74839-7_25. O(n²) pathwidth on circular-arc graphs, where pw ≠ tw.
+- `2014-Adler-Kante-Kwon-Linear-Rank-Width-Distance-Hereditary-Graphs-I-arXiv.pdf` — arXiv:1403.1081. p. 2: pathwidth NP-hard on distance-hereditary graphs [Kloks, Bodlaender, Müller & Kratsch, ESA 1993].
+
+## Paper 3 survey (2026-10-09)
+
+### Trees and sparse classes (`paper3/survey_trees_sparse.md`)
+
+Downloaded 2026-10-09, each opened and checked against its title page:
+
+- **Proskurowski, A. & Telle, J.A.** (1999). Classes of graphs with restricted interval models. *DMTCS* 3, 167–176 — `1999-Proskurowski-Telle-Classes-Graphs-Restricted-Interval-Models-DMTCS.pdf` (dmtcs.episciences.org/263). Thm 6.2: k-caterpillars are the edge-maximal graphs of pathwidth k.
+- **Bodlaender, H.L. & Fomin, F.V.** (2000). Approximation of pathwidth of outerplanar graphs. Tech. rep. UU-CS-2000-23; journal version *J. Algorithms* 43(2), 190–200 (2002), doi:10.1016/S0196-6774(02)00001-9 — `2000-Bodlaender-Fomin-Approximation-Pathwidth-Outerplanar-Graphs-TR-UU-CS-2000-23.pdf` (Utrecht repository, hdl:1874/18990). pw(T*) ≤ pw(G) ≤ 2pw(T*) + 2.
+- **Markov, M.** (2004). *A fast practical algorithm for the vertex separation of unicyclic graphs*. MSc thesis, University of Victoria — `2004-Markov-Fast-Practical-Algorithm-Vertex-Separation-Unicyclic-Graphs-MSc-UVic.pdf` (hdl:1828/612). O(n log n), with an optimal layout. Journal version: Ellis & Markov, *Inf. Comput.* 192 (2004), not held.
+- **Markov, M.** (2007). On the vertex separation of cactus graphs. *Serdica J. Computing* 1, 45–72, doi:10.55630/sjc.2007.1.45-72 — `2007-Markov-Vertex-Separation-Cactus-Graphs-SerdicaJComput.pdf`. Thm 1, p. 62: characterisation; no algorithm.
+- **Markov, M.** (2008). On the vertex separation of maximal outerplanar graphs. *Serdica J. Computing* 2, 207–238, doi:10.55630/sjc.2008.2.207-238 — `2008-Markov-Vertex-Separation-Maximal-Outerplanar-Graphs-SerdicaJComput.pdf`. Thm 2, p. 233: characterisation by affixability.
+- **Mihai, R. & Todinca, I.** (2009). Pathwidth is NP-hard for weighted trees. FAW 2009, LNCS 5598, 181–195, doi:10.1007/978-3-642-02270-8_20 — author copy (univ-orleans.fr/lifo/Members/todinca/PS/pwdhard.pdf), `2009-Mihai-Todinca-Pathwidth-NP-Hard-Weighted-Trees-FAW-author.pdf`. NP-hard on octopus graphs (Thm 3) and weighted trees (Thm 4); both are natural MOSP instances.
+- **Barát, J., Hajnal, P., Lin, Y. & Yang, A.** (2012). On the structure of graphs with path-width at most two. arXiv:0910.4889 — `2012-Barat-Hajnal-Lin-Yang-Structure-Graphs-Path-Width-At-Most-Two-arXiv.pdf`.
+- **Babu, J., Basavaraju, M., Chandran, L.S. & Rajendraprasad, D.** (2014). 2-connecting outerplanar graphs without blowing up the pathwidth. *TCS*, doi:10.1016/j.tcs.2014.04.032; arXiv:1212.6382 — `2014-Babu-Basavaraju-Chandran-Rajendraprasad-2-Connecting-Outerplanar-Graphs-Pathwidth-TCS-arXiv.pdf`.
+- **Briański, M., Joret, G. & Seweryn, M.T.** (2024). Pathwidth vs cocircumference. *SIAM J. Discrete Math.*, doi:10.1137/23m158663x; arXiv:2306.03621 — `2024-Brianski-Joret-Seweryn-Pathwidth-vs-Cocircumference-SIDMA-arXiv.pdf`.
+
+Still to obtain, mostly Elsevier open archive behind a browser check, none circumvented (full list with DOIs in the survey, §3): Skodinis 2003 (doi:10.1016/S0196-6774(02)00225-0); Scheffler 1990 (doi:10.1007/978-3-642-46908-4_70); Peng et al. 2000 (doi:10.1016/S0304-3975(99)00241-8); Chou, Ko, Ho & Chen 2008, block graphs (doi:10.1016/j.dam.2007.08.007); Ellis & Markov 2004 (doi:10.1016/j.ic.2004.03.005); Fomin & Thilikos 2006, Halin (doi:10.1016/j.jda.2005.06.004); Gustedt 1993 (doi:10.1016/0166-218X(93)90012-D); Takahashi, Ueno & Kajitani 1994 (doi:10.1016/0012-365X(94)90092-2); Megiddo et al. 1988 (doi:10.1145/42267.42268); Kneis et al. 2009 (doi:10.1137/080715482); Biedl 2022 (doi:10.1016/j.ipl.2021.106230); Coudert, Huc & Mazauric 2012 (doi:10.1007/s00453-011-9524-3); Yanasse 1996, *Pesquisa Operacional* 16(1), 1–26 (no DOI found).
