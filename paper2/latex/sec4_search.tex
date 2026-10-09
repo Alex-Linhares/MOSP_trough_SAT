@@ -487,8 +487,9 @@ rules refute more and more of the root's solvable branches, and joined two
 copies of a 17-customer near-miss by one edge. On the resulting 34-customer
 instance (Figure~\ref{fig:wrong}), the search with the published definite move,
 the subset rule and the old move answers that 6 stacks do not suffice, and it
-answers yes at 7, so it reports an optimum of 7. Yet the layout of
-Figure~\ref{fig:wrong}(a) uses 6 tracks; the repaired search finds it and
+answers yes at 7, so it reports an optimum of 7, with a refutation as its
+proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
+Figure~\ref{fig:wrong}(b) uses 6 tracks; the repaired search finds it and
 refutes 5, so the optimum is 6. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
@@ -499,12 +500,13 @@ configuration is open.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{false_refutation_34.pdf}
-\caption{The published rules report a wrong optimum. A 34-customer instance:
-(a) an optimal gate matrix layout, its 34 nets packed into 6 tracks; (b) the
-number of open stacks at each gate of that order, at most 6; (c) its graph, two
-copies of a near-miss joined by one edge. The published definite move with the
-old move answers that 6 stacks do not suffice and reports 7. The repaired
-search finds this layout and proves that 5 do not suffice.}
+\caption{The published rules report a wrong optimum. A 34-customer instance,
+whose 34 nets must be laid out on 61 gates. (a) The layout the published search
+returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
+by the repaired search, which also proves that 5 do not suffice. (c) The open
+stacks at each gate of the two orders: the published order reaches 7 in the
+first copy, where the optimal order never exceeds 6.
+(d) The instance's graph, two copies of a near-miss joined by one edge.}
 \label{fig:wrong}
 \end{figure}
 

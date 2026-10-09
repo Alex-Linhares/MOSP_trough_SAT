@@ -3,12 +3,13 @@
     python -m paper2.false_refutation_figure
 
 Panels:
-  (a) a gate matrix layout of an optimal order (the repaired search's witness):
-      gates in production order, nets packed into tracks by the left-edge
-      algorithm, 6 tracks;
-  (b) the number of open stacks (nets crossing each gate) along that order,
-      peaking at 6, with the published search's answer marked;
-  (c) the MOSP graph: two copies of a 17-customer near-miss joined by one edge.
+  (a) the gate matrix layout of the published search's answer: the order its
+      full solver returns, as proved optimal, 7 tracks;
+  (b) the gate matrix layout of an optimal order (the repaired search's
+      answer), 6 tracks; gates in production order, nets packed into tracks by
+      the left-edge algorithm;
+  (c) the number of open stacks (nets crossing each gate) along both orders;
+  (d) the MOSP graph: two copies of a 17-customer near-miss joined by one edge.
 
 Every number drawn is recomputed here: the order's peak by plain simulation and
 by `mosp.verify.max_open_stacks`, the tracks by left-edge packing, and the two
@@ -81,20 +82,32 @@ def facts():
     d, masks, n, edges = load()
     k = d["k"]
     inst = instance(n, edges)
-    rep = decide(inst, k, repaired_rules=True)
+    from satisfiability.customer_search import solve
+    rep = solve(inst, repaired_rules=True)
+    pub = solve(inst, repaired_rules=False)
+    assert (rep.value, pub.value) == (k, k + 1) and rep.proved and pub.proved
     prod = product_order(edges, rep.order)
     sp = spans(n, edges, prod)
     profile = [sum(1 for a, b in sp.values() if a <= t <= b) for t in range(len(prod))]
     tracks = left_edge(sp)
+    pprod = product_order(edges, pub.order)
+    psp = spans(n, edges, pprod)
+    pprofile = [sum(1 for a, b in psp.values() if a <= t <= b) for t in range(len(pprod))]
+    ptracks = left_edge(psp)
     f = dict(n=n, m=len(edges), k=k, prod=prod, spans=sp, profile=profile, tracks=tracks,
              peak=max(profile), verify_peak=max_open_stacks(inst, prod),
              n_tracks=max(tracks.values()) + 1,
-             repaired_k=rep.status,
+             pub_value=pub.value, pub_prod=pprod, pub_spans=psp, pub_profile=pprofile,
+             pub_tracks=ptracks, pub_peak=max(pprofile),
+             pub_verify_peak=max_open_stacks(inst, pprod),
+             pub_n_tracks=max(ptracks.values()) + 1,
+             repaired_k=decide(inst, k, repaired_rules=True).status,
              repaired_k1=decide(inst, k - 1, repaired_rules=True).status,
              published_k=decide(inst, k, repaired_rules=False).status,
              published_k_plus=decide(inst, k + 1, repaired_rules=False).status,
              masks=masks, edges=edges)
     assert f["peak"] == f["verify_peak"] == f["n_tracks"] == k
+    assert f["pub_peak"] == f["pub_verify_peak"] == f["pub_n_tracks"] == k + 1
     assert (f["repaired_k"], f["repaired_k1"]) == ("sat", "unsat")
     assert (f["published_k"], f["published_k_plus"]) == ("unsat", "sat")
     return f
@@ -113,65 +126,70 @@ def draw() -> Path:
     copy_b = "#c0392b"
     col = lambda c: copy_a if c < 17 else copy_b
 
-    fig = plt.figure(figsize=(6.5, 5.4))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.35, 1.0], width_ratios=[1.35, 1.0],
-                          hspace=0.42, wspace=0.18)
-    ax_a = fig.add_subplot(gs[0, :])
-    ax_b = fig.add_subplot(gs[1, 0])
-    ax_c = fig.add_subplot(gs[1, 1])
-
-    # (a) gate matrix layout
+    fig = plt.figure(figsize=(6.5, 7.6))
+    gs = fig.add_gridspec(3, 2, height_ratios=[1.15, 1.0, 1.05], width_ratios=[1.35, 1.0],
+                          hspace=0.5, wspace=0.18)
+    ax_p = fig.add_subplot(gs[0, :])
+    ax_a = fig.add_subplot(gs[1, :])
+    ax_b = fig.add_subplot(gs[2, 0])
+    ax_c = fig.add_subplot(gs[2, 1])
     m = len(prod)
-    for t in range(m):
-        ax_a.plot([t, t], [-0.6, k - 0.4], color="0.85", lw=0.5, zorder=0)
-    pos = {p: t for t, p in enumerate(prod)}
-    for c, (a, b) in sp.items():
-        y = k - 1 - tracks[c]
-        ax_a.plot([a, b], [y, y], color=col(c), lw=2.2, solid_capstyle="round", zorder=2)
-        for p, e in enumerate(f["edges"]):
-            if c in e:
-                ax_a.plot(pos[p], y, "o", ms=2.6, color=col(c), zorder=3)
-    ax_a.set_xlim(-1, m)
-    ax_a.set_ylim(-0.8, k - 0.2)
-    ax_a.set_yticks(range(k), [f"track {k - y}" for y in range(k)])
-    ax_a.set_xticks([0, m - 1], ["gate 1", f"gate {m}"])
-    ax_a.tick_params(length=0)
-    for s in ax_a.spines.values():
-        s.set_visible(False)
-    ax_a.set_title(f"(a) An optimal gate matrix layout: {n} nets on {m} gates in {k} tracks",
-                   loc="left", fontsize=8.5)
 
-    # (b) open stacks along the order
-    ax_b.step(range(1, m + 1), f["profile"], where="mid", color="0.2", lw=1.2)
-    ax_b.axhline(k, color="0.5", lw=0.6, ls=":")
-    ax_b.set_ylim(0, k + 1.8)
+    def layout(ax, order, spans_, tracks_, ntr, title):
+        for t in range(m):
+            ax.plot([t, t], [-0.6, ntr - 0.4], color="0.85", lw=0.5, zorder=0)
+        pos = {p: t for t, p in enumerate(order)}
+        for c, (a, b) in spans_.items():
+            y = ntr - 1 - tracks_[c]
+            ax.plot([a, b], [y, y], color=col(c), lw=2.0, solid_capstyle="round", zorder=2)
+            for p, e in enumerate(f["edges"]):
+                if c in e:
+                    ax.plot(pos[p], y, "o", ms=2.4, color=col(c), zorder=3)
+        ax.set_xlim(-1, m)
+        ax.set_ylim(-0.8, ntr - 0.2)
+        ax.set_yticks(range(ntr), [f"track {ntr - y}" for y in range(ntr)])
+        ax.set_xticks([0, m - 1], ["gate 1", f"gate {m}"])
+        ax.tick_params(length=0)
+        for s in ax.spines.values():
+            s.set_visible(False)
+        ax.set_title(title, loc="left", fontsize=8.5)
+
+    layout(ax_p, f["pub_prod"], f["pub_spans"], f["pub_tracks"], k + 1,
+           f"(a) The published search's answer, reported as optimal: {k + 1} tracks")
+    layout(ax_a, prod, sp, tracks, k,
+           f"(b) An optimal layout, found by the repaired search: {k} tracks")
+
+    # (c) open stacks along both orders
+    ax_b.step(range(1, m + 1), f["pub_profile"], where="mid", color=copy_b, lw=1.1,
+              label=f"published answer (peak {k + 1})")
+    ax_b.step(range(1, m + 1), f["profile"], where="mid", color="0.15", lw=1.1,
+              label=f"optimum (peak {k})")
+    ax_b.set_ylim(0, k + 4.2)
     ax_b.set_xlim(0.5, m + 0.5)
     ax_b.set_xlabel("gate (production order)")
     ax_b.set_ylabel("open stacks")
-    ax_b.text(1.5, k + 0.35, f"peak {k}: optimum (repaired search)", fontsize=7.5, va="bottom")
-    ax_b.text(1.5, k + 1.15, f"published rules: no order with {k}; answer {k + 1}",
-              fontsize=7.5, va="bottom", color=copy_b)
+    ax_b.legend(loc="upper right", fontsize=7.5, frameon=False, ncol=1)
     for s in ("top", "right"):
         ax_b.spines[s].set_visible(False)
-    ax_b.set_title("(b) Open stacks at each gate", loc="left", fontsize=8.5)
+    ax_b.set_title("(c) Open stacks at each gate", loc="left", fontsize=8.5)
 
-    # (c) the MOSP graph: two glued copies
+    # (d) the MOSP graph: two glued copies
     G = nx.Graph()
     G.add_nodes_from(range(n))
     G.add_edges_from(f["edges"])
     half_a = nx.kamada_kawai_layout(G.subgraph(range(17)))
     half_b = nx.kamada_kawai_layout(G.subgraph(range(17, n)))
-    layout = {v: (x - 1.25, y) for v, (x, y) in half_a.items()}
-    layout.update({v: (x + 1.25, y) for v, (x, y) in half_b.items()})
+    pos2 = {v: (x - 1.25, y) for v, (x, y) in half_a.items()}
+    pos2.update({v: (x + 1.25, y) for v, (x, y) in half_b.items()})
     joins = [e for e in f["edges"] if (e[0] < 17) != (e[1] < 17)]
     other = [e for e in f["edges"] if e not in joins]
-    nx.draw_networkx_edges(G, layout, edgelist=other, ax=ax_c, width=0.6, edge_color="0.55")
-    nx.draw_networkx_edges(G, layout, edgelist=joins, ax=ax_c, width=1.6, edge_color="black",
+    nx.draw_networkx_edges(G, pos2, edgelist=other, ax=ax_c, width=0.6, edge_color="0.55")
+    nx.draw_networkx_edges(G, pos2, edgelist=joins, ax=ax_c, width=1.6, edge_color="black",
                            style="dashed")
-    nx.draw_networkx_nodes(G, layout, ax=ax_c, node_size=16,
+    nx.draw_networkx_nodes(G, pos2, ax=ax_c, node_size=16,
                            node_color=[col(v) for v in range(n)], linewidths=0)
     ax_c.set_axis_off()
-    ax_c.set_title("(c) The graph: two copies, one join", loc="left", fontsize=8.5)
+    ax_c.set_title("(d) The graph: two copies, one join", loc="left", fontsize=8.5)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT.with_suffix(".pdf"), bbox_inches="tight")
@@ -184,6 +202,7 @@ def main() -> None:
     path = draw()
     f = facts()
     print(f"{path}: n={f['n']} gates={f['m']} k={f['k']} tracks={f['n_tracks']} "
+          f"published answer={f['pub_value']} ({f['pub_n_tracks']} tracks) "
           f"published(k)={f['published_k']} published(k+1)={f['published_k_plus']}")
 
 
