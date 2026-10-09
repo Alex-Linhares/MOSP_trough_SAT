@@ -64,3 +64,13 @@ def test_figure_numbers():
     from paper2.false_refutation_figure import facts
     f = facts()  # asserts peak == verify peak == tracks == k and both searches' answers
     assert (f["n"], f["m"], f["k"], f["n_tracks"]) == (34, 61, 6, 6)
+
+
+def test_standalone_checker_passes():
+    """The shipped checker (standard library only) confirms both orders."""
+    import subprocess
+    import sys
+    here = HIT.parent
+    r = subprocess.run([sys.executable, "check.py"], cwd=here, capture_output=True, text=True)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "peak 7" in r.stdout and "peak 6" in r.stdout

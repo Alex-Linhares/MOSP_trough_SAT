@@ -268,3 +268,7 @@ degree or clique bound can close it).
    on all 11,424 graphs both runs proved (`solver_fix.md`).)*
 6. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
    the code, and the dataset, built from the final versions of each.
+   Paths the paper already cites in the repository go through the `\repofile` macro in
+   `latex/main.tex`; update it there when the layout is set. So far:
+   `paper2/data/false_refutation/` (the 34-customer wrong-optimum instance, both orders,
+   a standard-library checker; Figure `fig:wrong`).
