@@ -492,7 +492,8 @@ proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
 Figure~\ref{fig:wrong}(b) uses 6 tracks; our repaired search finds it and
 refutes 5, so the optimum is 6. A SAT solver on our encoding of MOSP
 (Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
-finds an order with 6 open stacks and proves that 5 do not suffice. The mechanism is the old move: the definite
+finds an order with 6 open stacks and proves that 5 do not suffice, with a
+DRAT proof that the independent checker drat-trim verifies. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
 old move, or with the better move switched on, the published search answers

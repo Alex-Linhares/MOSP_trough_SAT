@@ -53,5 +53,7 @@ exactly these clauses is a reading of its source, not a proof.
 \paragraph{On the instance of Figure~\ref{fig:wrong}.} The formula has 31,598
 variables and 109,923 clauses. Kissat~4.0.4 answers ``satisfiable'' at $k=7$
 in 9~s and at $k=6$ in 56~s, with an order whose peak simulates to 6, and
-``unsatisfiable'' at $k=5$ in 158~s. So the optimum is 6, independently of
-both versions of the customer search.
+``unsatisfiable'' at $k=5$ in 158~s. CaDiCaL~1.9.5 refutes $k=5$ in 53~s with
+a DRAT proof of 1.4 million lemmas (112\,MB compressed), which drat-trim
+verifies in 44~s. So the optimum is 6, independently of both versions of the
+customer search, with a refutation that a third party can check.
