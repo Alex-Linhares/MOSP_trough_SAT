@@ -130,8 +130,9 @@
     47,
     124
   ],
-  "provenance": "solution",
+  "provenance": "certified:refutation",
   "lower_bound": 13,
   "lower_bound_source": "relaxation",
-  "provenance_note": "optimality withdrawn 2026-09-23: the refutation behind it came from csearch with the better_move cycle bug, which could return a false refutation. The value is still a verified upper bound."
+  "recertified": "2026-10-09, k = 20 refuted by the root split under the repaired rules (paper2/solver_fix_split.py): 9,665 tasks, 4,253,304,410,290 nodes, 1,127.8 core-hours, every task unsat. Record: paper2/data/solver_fix_split_results.csv.",
+  "provenance_history": "optimality withdrawn 2026-09-23: the refutation behind it came from csearch with the better_move cycle bug, which could return a false refutation. The value is still a verified upper bound."
 }
