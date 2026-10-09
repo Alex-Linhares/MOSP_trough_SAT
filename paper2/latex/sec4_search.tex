@@ -25,8 +25,10 @@ edge, so the search decides pathwidth for every graph.
 The stakes are these. Two of the published dominance theorems, the
 \emph{definite move} and the \emph{better move}, are false, and so are their
 restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
-\citet{Fink2012}. Yet no wrong answer is known. No whole instance has been
-found on which the published rules wrongly answer ``no''. And when every
+\citet{Fink2012}. The error is hard to make bite: on every benchmark the
+published search answers correctly, and the first whole instance on which it
+reports a wrong optimum has 34 customers and needs the old move to pass a
+false refutation on to later branches (Figure~\ref{fig:wrong}). And when every
 benchmark optimum that rested on the search was proved again with repaired
 rules, no value changed (Section~\ref{sec:results}). The correct form of the
 definite move was already known for pathwidth, as Tamaki's commitment lemma,
@@ -476,9 +478,35 @@ refutations.
 node-sound~\leanref{notsound}. In a check of 570,206 runs with memo and old
 move, it lost the last solution at a node in 58 runs, all on graphs built
 around Counterexample~\ref{cex:definite} and all at $k$ equal to the optimum.
-Every one found a solution through another branch and answered correctly. No
-whole instance on which the published rules wrongly answer ``no'' is
-known.
+Every one found a solution through another branch and answered correctly.
+
+\paragraph{A wrong optimum.} A targeted search did produce a whole instance on
+which the published rules give a wrong answer. It started from
+Counterexample~\ref{cex:definite}, climbed toward graphs on which the published
+rules refute more and more of the root's solvable branches, and joined two
+copies of a 17-customer near-miss by one edge. On the resulting 34-customer
+instance (Figure~\ref{fig:wrong}), the search with the published definite move,
+the subset rule and the old move answers that 6 stacks do not suffice, and it
+answers yes at 7, so it reports an optimum of 7. Yet the layout of
+Figure~\ref{fig:wrong}(a) uses 6 tracks; the repaired search finds it and
+refutes 5, so the optimum is 6. The mechanism is the old move: the definite
+move falsely refutes a subtree, and the old move passes that refutation on to
+the later branches, which then skip the moves their solutions need. Without the
+old move, or with the better move switched on, the published search answers
+this instance correctly; whether the published rules can also fail in that
+configuration is open.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{false_refutation_34.pdf}
+\caption{The published rules report a wrong optimum. A 34-customer instance:
+(a) an optimal gate matrix layout, its 34 nets packed into 6 tracks; (b) the
+number of open stacks at each gate of that order, at most 6; (c) its graph, two
+copies of a near-miss joined by one edge. The published definite move with the
+old move answers that 6 stacks do not suffice and reports 7. The repaired
+search finds this layout and proves that 5 do not suffice.}
+\label{fig:wrong}
+\end{figure}
 
 \subsection{The rules in pathwidth language}
 \label{sec:layouts}

@@ -35,11 +35,12 @@ one another, and most of what is known about the family is published under
 
 \paragraph{What the search teaches about dominance rules.} The two false
 theorems were published in 2009 and restated in later work, and the
-implementations that use them reported no failure. They give no wrong answer on
-any whole instance we know of: in every run of our checks where the published
-rules lost the last solution at a node, another branch found a solution
-(Section~\ref{sec:theorem}). So the absence of wrong answers was never
-evidence that the rules were sound. Three things in this paper bear on that. Reading the rules in pathwidth language put the correct rule, the
+implementations that use them reported no failure. On every benchmark, and in
+every run of our checks where the published rules lost the last solution at a
+node, another branch found a solution (Section~\ref{sec:theorem}). It took a
+search built for the purpose to find a whole instance with a wrong optimum,
+34 customers and one stack too many (Figure~\ref{fig:wrong}). So the absence of
+wrong answers on benchmarks was never evidence that the rules were sound. Three things in this paper bear on that. Reading the rules in pathwidth language put the correct rule, the
 commitment lemma, beside the published one. Proving each rule on its own was
 not enough: the order in which the rules run matters, because a cycle of true
 links can still lose a node (Section~\ref{sec:theorem}). And a certificate

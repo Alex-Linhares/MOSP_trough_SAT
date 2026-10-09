@@ -57,3 +57,10 @@ def test_repaired_rules_find_the_optimum(native):
     assert sat.status == "sat"
     assert max_open_stacks(inst, _product_order(edges, sat.order)) <= k
     assert decide(inst, k - 1, repaired_rules=True, native=native).status == "unsat"
+
+
+def test_figure_numbers():
+    """Figure fig:wrong draws what is true: 6 tracks, peak 6, published 7."""
+    from paper2.false_refutation_figure import facts
+    f = facts()  # asserts peak == verify peak == tracks == k and both searches' answers
+    assert (f["n"], f["m"], f["k"], f["n_tracks"]) == (34, 61, 6, 6)
