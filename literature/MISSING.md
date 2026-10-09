@@ -416,3 +416,7 @@ Gao (2006) COCOON; Chandran, Kavitha & Subramanian (2003) COCOON; Kloks, Bodlaen
 - Coja-Oghlan, Cooley, Kang & Skubch (2017), The minimum bisection in the planted bisection model, *Theory of Computing* 13(8):1–22 — `2017-Coja-Oghlan-Cooley-Kang-Skubch-Minimum-Bisection-Planted-Bisection-Model-ToC.pdf`. Not on the to-fetch list; it was probably found while searching for Łuczak & McDiarmid (2001), *Bisecting sparse random graphs*, which is still to obtain. It is relevant to the bisection-width lower bounds of the random-graph survey (`paper3/survey_random_extremal.md`).
 
 **The search stopped here (2026-10-09), at diminishing returns.** What is still missing is listed in `paper3/to_fetch.md` (with search links in `to_fetch.html`). Most of it is paywalled, needs a library, or is a Springer chapter of which only a 2-page preview was free. The ones that matter most for paper 3: Möhring (1996), AT-free ⇒ pw = tw; Karoński, Scheinerman & Singer-Cohen (1999), the random intersection model; Scheffler (1990), linear pathwidth of trees; Lin & Lin (2025), hypercubes.
+
+### Obtained 2026-10-09, fourth batch
+
+- Kumfert & Pothen (1997), Two improved algorithms for envelope and wavefront reduction, ICASE Report 97-33 / NASA CR-201714 (the technical-report version of the *BIT* 37 paper) — `1997-Kumfert-Pothen-Two-Improved-Algorithms-Envelope-Wavefront-Reduction-ICASE-97-33.pdf`. It defines the wavefront, for the candidate row "maximum wavefront = pw + 1" (`paper3/complex_members.md`, row 8).
