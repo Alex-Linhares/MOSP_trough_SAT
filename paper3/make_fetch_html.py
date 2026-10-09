@@ -54,7 +54,10 @@ def search_url(item):
     authors = re.sub(r"[*&]", " ", authors)
     authors = re.sub(r"\bet al\.?", "", authors)
     authors = re.sub(r"\s+", " ", authors).strip(" ,")
-    q = f'{authors} "{title}" filetype:pdf' if title else f"{authors} filetype:pdf"
+    if "not the title" in item:            # a description: search its words, unquoted
+        q = f"{authors} {title} filetype:pdf"
+    else:
+        q = f'{authors} "{title}" filetype:pdf' if title else f"{authors} filetype:pdf"
     return "https://www.google.com/search?q=" + quote_plus(q)
 
 
