@@ -115,8 +115,9 @@ $^{c}$Added by us. Its relation to pathwidth is proved in two papers the table
 already cites, for other rows: \citet[Thms~2--3]{LY2002ref14} and
 \citet[Thm~3.1]{LY2002ref10}. We prove it in Lean (Appendix~\ref{app:thirteenth}).
 $^{d}$Added by us. Searchers occupy vertices and an invisible fugitive moves
-along unguarded paths. Exact on every graph, edgeless ones included
-\citep[(5.1)]{BRST1991}; checked by brute force, not proved in Lean.
+along unguarded paths. Exact on every graph with a vertex, edgeless ones
+included \citep[(5.1)]{BRST1991}, and equal to node search when the graph has
+an edge. We prove it in Lean (Appendix~\ref{app:thirteenth}).
 $^{e}$Added by us. The least, over symmetric orderings of a sparse symmetric
 matrix with nonzero diagonal, of the largest wavefront
 \citep[\S2.1]{KumfertPothen1997}; it is narrowness in another form. The source
@@ -173,16 +174,16 @@ directed acyclic graph equals the pathwidth of its undirected version plus one
 already cites, for its edge-search and edge-separation rows, yet pebbling
 itself is not among its problems. \citet[(5.1)]{BRST1991} search for a fugitive
 who hides in the vertices, not the edges, and need exactly pathwidth plus one
-searchers on every graph, including the edgeless graphs where the table's node
-search row fails. From numerical linear algebra, the frontal method for a
+searchers on every graph with a vertex, including the edgeless graphs where the
+table's node search row fails. From numerical linear algebra, the frontal method for a
 sparse symmetric matrix stores, at each step, the \emph{wavefront}: the rows
 still active, the current row together with every later row that has a nonzero
 in a column already eliminated \citep[\S2.1]{KumfertPothen1997}. Ordering the
 matrix so that the largest wavefront is small is the problem of the table: the
 least maximum wavefront is the pathwidth of the matrix's graph plus one, on
 every nonempty matrix. We add the three as the last rows of
-Table~\ref{tab:ly2002}, marked as new, and prove the pebbling and wavefront
-relations in Lean (Appendix~\ref{app:thirteenth}). For pebbling and the vertex
+Table~\ref{tab:ly2002}, marked as new, and prove all three relations in Lean
+(Appendix~\ref{app:thirteenth}). For pebbling and the vertex
 search, what is new is the membership: the equivalences were published, but
 the table did not include them. For the wavefront the equality itself is ours.
 It is elementary, the wavefront being narrowness read in another form, but no

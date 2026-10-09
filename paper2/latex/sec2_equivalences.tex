@@ -175,7 +175,7 @@ Vertex separation & \citet{LY2002ref13} & $\vs=\pw$ & exact \\
 \midrule
 \multicolumn{4}{@{}l@{}}{\emph{Not in the Linhares--Yanasse table}} \\
 Progressive pebbling & \citet{LY2002ref14}; \citet{LY2002ref10} & $\mathrm{mpb}=\pw+1$ ($V\ne\emptyset$), $=\ns$ ($E\ne\emptyset$) & exact \\
-Vertex search & \citet{BRST1991} & $=\pw+1$, every graph (published; not in Lean) & exact \\
+Vertex search & \citet{BRST1991} & $=\pw+1$ ($V\ne\emptyset$), $=\ns$ ($E\ne\emptyset$) & exact \\
 Maximum wavefront & \citet{KumfertPothen1997} & $\min\mathrm{wf}=\pw+1=\nu$ (matrix nonempty) & exact \\
 \bottomrule
 \multicolumn{4}{@{}p{\linewidth}@{}}{\footnotesize $^{a}$Also misattributed:
@@ -196,9 +196,9 @@ on the MOSP graph $G_M$ or the net graph $H$. Hypotheses are omitted: $M$ has
 a 1, $V\neq\emptyset$, or $G$ has an edge, as in Table~\ref{tab:master}. Two
 edges that follow from the others, $\mathrm{mns}=\theta$ and
 $\mathrm{ns}=\mathrm{vs}+1$, are not drawn. The shaded nodes on the bottom
-row are members the table missed; the grey edge is exact by a published proof
-\citep[(5.1)]{BRST1991}, checked by brute force and not in Lean, and holds
-whenever $G$ has an edge (the vertex search is $\pw+1$ on every graph).}
+row are members the table missed. The vertex search edge holds whenever $G$
+has an edge, and the vertex search is $\pw+1$ on every graph with a vertex
+\citep[(5.1)]{BRST1991}~\leanref{vsearch}.}
 \label{fig:chain}
 \end{figure}
 
@@ -313,12 +313,12 @@ members outside the table (Appendix~\ref{app:thirteenth}).
   $G$, $V\ne\emptyset$, the least maximum wavefront is $\pw(G)+1=\nu(G)$, and
   for each order the maximum wavefront is $\vs$ of that order plus
   one~\leanref{wavefront}.
+\item Vertex search: if $V\ne\emptyset$, the least $n$ admitting a successful
+  search of \citet[\S5]{BRST1991} with every $|X_i|\le n$ is $\pw(G)+1$,
+  whether or not the search is monotone, and it equals $\ns(G)$ when $G$ has an
+  edge~\leanref{vsearch}.
 \end{enumerate}
 \end{theorem}
-One more member rests on a published proof that we have checked by brute force
-on every graph with at most six vertices but not formalised: the search of
-\citet[(5.1)]{BRST1991}, with an invisible fugitive on the vertices, needs
-exactly $\pw(G)+1$ searchers on every graph, the edgeless ones included.
 For the table, this makes the gate matrix layout, one-dimensional logic,
 interval thickness, node search and narrowness rows exact, and gives an exact
 variant of each false row. A single certified pathwidth therefore answers

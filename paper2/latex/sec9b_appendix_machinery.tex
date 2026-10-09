@@ -96,9 +96,21 @@ of the one before; the fugitive may be at any vertex joined to its previous
 region by a path avoiding the current set, and the search succeeds when no such
 vertex remains. Their (5.1) states that a successful search with every
 $|X_i|\le n$ exists if and only if $\pw(G)\le n-1$, so the least $n$ is
-$\pw(G)+1$ on every graph; on an edgeless graph one searcher is needed, where
-node search needs none. We have not formalised it; a brute-force search over
-all graphs with at most six vertices agrees.
+$\pw(G)+1$ on every graph with a vertex; on an edgeless graph one searcher is
+needed, where node search needs none. We prove it in Lean~\leanref{vsearch}.
+The upper bound is their construction: from a path decomposition
+$W_0,\dots,W_L$ of least width, the search
+$\emptyset,W_0,W_0\cap W_1,W_1,\dots,W_L$ is monotone and successful, because
+after $W_j$, and again after $W_j\cap W_{j+1}$, the fugitive's region is
+exactly the set of vertices in no bag up to $W_j$. The lower bound reduces to
+node search: playing each change of position as single removals and then
+single placements turns a successful vertex search with at most $n$ searchers
+into a successful node search with at most $n$ searchers, since every
+contaminated edge keeps an endpoint in the fugitive's region. With
+$\ns=\pw+1$ on graphs with an edge (Theorem~\ref{thm:core}), and $\pw=0$ on
+edgeless graphs, this gives $\pw(G)+1$. A graph with no vertices needs no
+searcher. A brute force over all 1,252 graphs with at most seven vertices
+agrees.
 
 \paragraph{The maximum wavefront.} For a symmetric $n\times n$ matrix $A$ with
 nonzero diagonal, \citet[\S2.1]{KumfertPothen1997} call row $k$ active at step

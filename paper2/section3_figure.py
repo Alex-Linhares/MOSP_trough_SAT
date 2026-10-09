@@ -13,9 +13,8 @@ members the table missed (2026-10-09): progressive pebbling (`mpb = ns`),
 the maximum wavefront of Kumfert & Pothen 1997 (`min maxwf = ν`, Lean
 `Complex/Wavefront.lean`) and the vertex search of Bienstock, Robertson,
 Seymour & Thomas 1991 (fugitive on the vertices, `= pw + 1` on every graph,
-(5.1); equal to `ns` when there is an edge). Edge styles: solid, exact and
-proved in Lean; solid grey, exact by a published proof and checked by brute
-force, not in Lean; dashed, a band, proved; dotted, LaPaugh's `es = pes`,
+(5.1), Lean `Complex/VertexSearch.lean`; equal to `ns` when there is an edge).
+Edge styles: solid, exact and proved in Lean; dashed, a band, proved; dotted, LaPaugh's `es = pes`,
 the one relation not proved (no row needs it); dark red with a cross, a
 Table 1 claim that is false, with a counterexample family proved.
 """
@@ -71,7 +70,7 @@ EDGES = [
     ("ES", "PES", r"$\mathrm{es}=\mathrm{pes}$?", "gap", 0),
     ("WF", "NU", r"$\min\,\mathrm{wf}=\nu$", "exact", 0),
     ("MPB", "NS", r"$\mathrm{mpb}=\mathrm{ns}$", "exact", 0),
-    ("BS", "NS", r"$=\mathrm{ns}$", "published", 0),
+    ("BS", "NS", r"$=\mathrm{ns}$", "exact", 0),
     ("PLA", "T", "✗ gap unbounded", "false", -0.3),
     ("CW", "PW", "✗ unbounded\non stars", "false", 0),
 ]

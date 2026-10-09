@@ -219,5 +219,18 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Complex.wavefront_eq_shackAfterPut_reverse
 #print axioms MOSPFormalization.Complex.minMaxWavefront_eq_narrowness
 
+-- paper3/vertex_search_lean.md: vertex search (Bienstock, Robertson, Seymour & Thomas 1991, (5.1)) = pathwidth + 1 (Complex/VertexSearch.lean)
+#print axioms MOSPFormalization.Complex.isNodeSearch_of_isSuccessfulVertexSearch
+#print axioms MOSPFormalization.Complex.nodeSearch_le_vertexSearchNumber
+#print axioms MOSPFormalization.PathDecomposition.isMonotoneVertexSearch
+#print axioms MOSPFormalization.Complex.pathwidth_add_one_le_vertexSearchNumber
+#print axioms MOSPFormalization.Complex.vertexSearchNumber_eq_pathwidth_add_one
+#print axioms MOSPFormalization.Complex.monotoneVertexSearchNumber_eq_pathwidth_add_one
+#print axioms MOSPFormalization.Complex.vertexSearchNumber_eq_monotoneVertexSearchNumber
+#print axioms MOSPFormalization.Complex.vertexSearch_iff
+#print axioms MOSPFormalization.Complex.vertexSearchNumber_eq_nodeSearch
+#print axioms MOSPFormalization.Complex.vertexSearchNumber_of_edgeless
+#print axioms MOSPFormalization.Complex.vertexSearchNumber_of_isEmpty
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

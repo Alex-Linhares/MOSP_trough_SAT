@@ -1949,3 +1949,18 @@ failures on each of the following:
 
 Tests: `tests/test_pebbling_check.py`, 16 new (41 in the file). They include a
 mutation test: dropping step 3 of the four steps makes the play illegal.
+
+## Members outside the table: vertex search and maximum wavefront (2026-10-09)
+
+Both are exact, proved in Lean with no `sorry`, and in the draft's Table 1.1,
+master table, exact-core theorem, Figure 2.1 and Appendix B.
+
+| # | Problem | Source | Relation, proved | Lean (file) | Status |
+|---|---|---|---|---|---|
+| 14 | Vertex search (an invisible fugitive on the vertices) | Bienstock, Robertson, Seymour & Thomas 1991, §5, (5.1), p. 282 | least number of searchers = `pw + 1` (`V` nonempty, edgeless graphs included), monotone or not; `= ns` when `G` has an edge | `vertexSearchNumber_eq_pathwidth_add_one`, `vertexSearchNumber_eq_nodeSearch`, `isNodeSearch_of_isSuccessfulVertexSearch` (`Complex/VertexSearch.lean`) | proved |
+| 15 | Maximum wavefront of a sparse symmetric matrix (frontal elimination; numerical linear algebra) | Kumfert & Pothen 1997, §2.1 (definition only; the equality is ours) | least maximum wavefront = `pw + 1 = ν` (matrix nonempty, nonzero diagonal); per order `= vs + 1` | `minMaxWavefront_eq_pathwidth_add_one`, `minMaxWavefront_eq_narrowness` (`Complex/Wavefront.lean`) | proved |
+
+Reports: `paper3/vertex_search_lean.md`, `paper3/wavefront.md`. Brute force:
+all 1,252 graphs with at most 7 vertices, for each. The vertex search's lower
+bound is a reduction to node search, through `NodeMonotonicity.lean`; its upper
+bound is BRST's construction from a path decomposition.
