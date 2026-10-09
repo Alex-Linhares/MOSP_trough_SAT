@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The subset rule (Chu & Stuckey 2009, §2), with its index tie-break
 
-Loop0006 item 09, `paper2/search_soundness.md` §2.3 and §4.3. Source: Chu & Stuckey,
+Loop0006 item 09, `paper1/search_soundness.md` §2.3 and §4.3. Source: Chu & Stuckey,
 *Minimizing the maximum number of open stacks by customer search*, CP 2009, §2 (preprint p. 5):
 
 > if `o(cᵢ, S) ⊆ o(cⱼ, S)` and `i < j`, then clearly, we can always play `i` before `j` rather
@@ -68,8 +68,8 @@ when the definite move did not fire, before the better move.
 
 ## Checks
 
-`python -m paper2.search_check --subset` (`paper2/search_check.py`) transcribes these
-definitions and checks every statement by brute force; see `paper2/search_soundness.md` §4.3.
+`python -m paper1.search_check --subset` (`paper1/search_check.py`) transcribes these
+definitions and checks every statement by brute force; see `paper1/search_soundness.md` §4.3.
 -/
 
 import MOSPFormalization.Search.DefiniteMove
@@ -347,7 +347,7 @@ theorem codeFilter_counterexample :
 /-! ### Without the tie-break the rule is not sound -/
 
 /-- The edges of the tie-break counterexample, found by random search with the tie-break
-removed (`paper2/search_check.py`, `SUBSET_TIE_CEX`). -/
+removed (`paper1/search_check.py`, `SUBSET_TIE_CEX`). -/
 def tieEdges : List (ℕ × ℕ) :=
   [(0, 2), (0, 3), (0, 6), (1, 4), (1, 6), (3, 6), (4, 5), (4, 6)]
 

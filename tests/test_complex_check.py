@@ -1,4 +1,4 @@
-"""Tests for `paper2.complex_check`: every quantity on graphs and matrices whose
+"""Tests for `paper1.complex_check`: every quantity on graphs and matrices whose
 values can be checked by hand (path, star, cycle, K4, K3,3), plus agreement
 of the prefix-set DPs with the literal minimum over permutations."""
 from __future__ import annotations
@@ -7,7 +7,7 @@ import itertools
 
 import pytest
 
-from paper2 import complex_check as cc
+from paper1 import complex_check as cc
 
 P4 = cc.path_graph(4)
 K13 = cc.star_graph(3)

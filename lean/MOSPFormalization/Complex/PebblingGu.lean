@@ -7,8 +7,8 @@ Released under the MIT license as described in the file LICENSE.
 Sources: Lengauer, *Black-white pebbles and graph separation*, Acta Informatica 16 (1981)
 465–475 (`literature/lengauer_1981_black_white_pebbles_graph_separation.pdf`), Def. 1a and
 Theorem 2 (pp. 468–471); Kirousis & Papadimitriou, *Searching and pebbling*, TCS 47 (1986)
-205–218 (`paper2/literature/10_kirousis_papadimitriou_1986.pdf`), §3, Theorem 3.1 (p. 213).
-Census, edge cases and brute-force checks: `paper2/equivalences.md`, P.1–P.9 (loop0006
+205–218 (`paper1/literature/10_kirousis_papadimitriou_1986.pdf`), §3, Theorem 3.1 (p. 213).
+Census, edge cases and brute-force checks: `paper1/equivalences.md`, P.1–P.9 (loop0006
 items 01–04). The game (`PebblesWithin`, `pbw`) is the one of `Pebbling.lean`.
 
 ## Definitions
@@ -72,7 +72,7 @@ item 01 settled it:
   (`card_shackAfterPut`); take `σ` the reverse of an optimal layout. This is the direct
   proof of census P.3; it avoids node search, LaPaugh and monotonicity.
 
-`python -m paper2.complex_check --pebbling-gu` replays both Theorem 2 constructions on every
+`python -m paper1.complex_check --pebbling-gu` replays both Theorem 2 constructions on every
 layout of `G_u` of every digraph with at most 4 vertices (loops and cycles allowed, 66,067
 digraphs) and of every dag on 5, and checks `pbw(D) = vs(G_u) + 1` there by exact search. It
 also replays the KP black strategy on every layout of every graph with at most 7 vertices

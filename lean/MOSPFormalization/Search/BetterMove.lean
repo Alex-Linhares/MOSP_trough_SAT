@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The better move (Chu & Stuckey 2009, Theorem 2): the corrected form is still unsound
 
-Loop0006 item 10, `paper2/search_soundness.md` §2.4 and §4.4. Source: Chu & Stuckey,
+Loop0006 item 10, `paper1/search_soundness.md` §2.4 and §4.4. Source: Chu & Stuckey,
 *Minimizing the maximum number of open stacks by customer search*, CP 2009, §3.2
 (preprint p. 6):
 
@@ -56,9 +56,9 @@ customers `r` finishes).
 
 ## Checks
 
-`python -m paper2.search_check --better` (`paper2/search_check.py`) transcribes these
-definitions and checks them by brute force, and `paper2/better_hunt.c` hunts for lost nodes;
-see `paper2/search_soundness.md` §4.4.
+`python -m paper1.search_check --better` (`paper1/search_check.py`) transcribes these
+definitions and checks them by brute force, and `paper1/better_hunt.c` hunts for lost nodes;
+see `paper1/search_soundness.md` §4.4.
 -/
 
 import MOSPFormalization.Search.SubsetRule
@@ -386,7 +386,7 @@ theorem betterMove_counterexample_node :
 
 /-! ### Bug A: the uncorrected close count -/
 
-/-- The edges of the Bug A counterexample, found by `paper2/better_hunt.c` (`MODE=1`) on
+/-- The edges of the Bug A counterexample, found by `paper1/better_hunt.c` (`MODE=1`) on
 random sparse graphs at 11–13 customers. -/
 def bugAEdges : List (ℕ × ℕ) :=
   [(0, 1), (0, 2), (0, 3), (0, 5), (0, 8), (0, 10), (0, 11), (1, 3), (1, 4), (1, 10), (2, 3),
@@ -437,7 +437,7 @@ theorem bugA_counterexample :
 /-! ### Bug B: the cross-rule cycle -/
 
 /-- The edges of the Bug B counterexample, the 8-customer node found by item 06
-(`paper2/search_check.py`). -/
+(`paper1/search_check.py`). -/
 def bugBEdges : List (ℕ × ℕ) :=
   [(0, 1), (0, 3), (0, 7), (1, 3), (1, 4), (1, 5), (2, 3), (4, 5), (4, 7), (5, 6), (5, 7), (6, 7)]
 

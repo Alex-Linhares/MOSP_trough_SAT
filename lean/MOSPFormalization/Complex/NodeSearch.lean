@@ -32,7 +32,7 @@ Formalised as the game itself, not as a formula:
   is cleared, and then every edge joined to a still-contaminated edge by a
   searcher-free path (`FreeReach`: a path all of whose vertices are unguarded,
   from an endpoint of the one to an endpoint of the other) is contaminated
-  (`recontaminate`). This is the same semantics as `paper2/complex_check.py`'s
+  (`recontaminate`). This is the same semantics as `paper1/complex_check.py`'s
   `node_search`;
 * `searchCost` — the largest number of searchers over the states of the run;
 * `NoRecontamination` — no move enlarges the contaminated set;
@@ -84,7 +84,7 @@ That recontamination does not help, `ns = mns` ([10] Theorem 2.3, from
 LaPaugh's theorem for edge search, [10] Theorem 2.1), is stated as the
 proposition `NodeSearchMonotonicity` and not asserted. With it,
 `vs + 1 ≤ ns` follows from the theorem proved here. It is recorded in
-`paper2/equivalences.md` as a named gap; no `sorry` stands for it.
+`paper1/equivalences.md` as a named gap; no `sorry` stands for it.
 -/
 
 import MOSPFormalization.Complex.EdgeSeparation

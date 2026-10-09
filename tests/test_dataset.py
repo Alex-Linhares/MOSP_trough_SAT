@@ -1,4 +1,4 @@
-"""paper2/dataset.py: the pieces whose correctness the dataset rests on, checked
+"""paper1/dataset.py: the pieces whose correctness the dataset rests on, checked
 against the independent checker and against brute force."""
 import itertools
 import random
@@ -9,9 +9,9 @@ import numpy as np
 
 from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
-from paper2 import dataset as ds
+from paper1 import dataset as ds
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "paper2"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "paper1"))
 import dataset_check as dc  # noqa: E402
 
 

@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from paper2 import counterexample_figure as cf
+from paper1 import counterexample_figure as cf
 
 
 def test_facts():

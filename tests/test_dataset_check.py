@@ -1,4 +1,4 @@
-"""paper2/dataset_check.py: the independent checker accepts good records and
+"""paper1/dataset_check.py: the independent checker accepts good records and
 rejects each kind of bad one."""
 import copy
 import gzip
@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "paper2"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "paper1"))
 import dataset_check as dc  # noqa: E402
 
 
@@ -115,6 +115,6 @@ def test_check_reads_a_file_and_counts_provenance(tmp_path, capsys):
 
 def test_checker_imports_nothing_from_the_repository():
     text = (Path(dc.__file__)).read_text()
-    for forbidden in ("satisfiability", "pathwidth_solver", "from pathwidth", "paper2.dataset ",
+    for forbidden in ("satisfiability", "pathwidth_solver", "from pathwidth", "paper1.dataset ",
                       "import dataset", "learning", "mosp."):
         assert forbidden not in text.split('"""', 2)[2], forbidden

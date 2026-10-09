@@ -17,7 +17,7 @@
  * `repaired_rules` (loop0007 item 03) is the definite and better moves with
  * the repaired premises proved sound in lean/MOSPFormalization/Search/, the
  * same diff as `cs_decide_rules` in `closing_search.c`; 0 is the rules as
- * Chu & Stuckey publish them (paper2/revised_algorithm.md, Counterexample 4.5).
+ * Chu & Stuckey publish them (paper1/revised_algorithm.md, Counterexample 4.5).
  */
 
 #include <stdint.h>

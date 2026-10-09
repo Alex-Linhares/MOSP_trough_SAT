@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The memo and the old move (Chu & Stuckey 2009, Theorem 3), together
 
-Loop0006 item 11, `paper2/search_soundness.md` §2.6, §2.7 and §4.5. Source: Chu & Stuckey,
+Loop0006 item 11, `paper1/search_soundness.md` §2.6, §2.7 and §4.5. Source: Chu & Stuckey,
 *Minimizing the maximum number of open stacks by customer search*, CP 2009, §3.3
 (preprint p. 7):
 
@@ -63,9 +63,9 @@ with that closed set.
 
 ## Checks
 
-`python -m paper2.search_check --memo` (`paper2/search_check.py`) checks every statement here
+`python -m paper1.search_check --memo` (`paper1/search_check.py`) checks every statement here
 by brute force, and runs the search with old move and the memo instrumented with `Exec.sound`'s
-invariant; see `paper2/search_soundness.md` §4.5.
+invariant; see `paper1/search_soundness.md` §4.5.
 -/
 
 import MOSPFormalization.Search.BetterMove
@@ -302,7 +302,7 @@ theorem exec_fake_oldMove :
 /-! ### The inheritance test is needed -/
 
 /-- The path `4 – 0 – 2 – 1 – 3`, the smallest graph on which reinsertion without the test
-fails (found by `python -m paper2.search_check --memo`'s exhaustive search). -/
+fails (found by `python -m paper1.search_check --memo`'s exhaustive search). -/
 def reinsertEdges : List (ℕ × ℕ) := [(0, 2), (0, 4), (1, 2), (1, 3)]
 
 def reinsertGraph : SimpleGraph (Fin 5) :=

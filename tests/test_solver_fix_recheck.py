@@ -3,7 +3,7 @@
 Two things are tested. The audit of the published rules
 (`decide_native(..., repaired_rules=False, audit_repaired=True)`) never changes
 the search and counts exactly the nodes where `CodeNodeRepaired` fails, as an
-independent walk of the certificate (`paper2.solver_fix_recheck.node_repaired`,
+independent walk of the certificate (`paper1.solver_fix_recheck.node_repaired`,
 its own matching, cross-checked against `search_check.d_hereditary` by
 enumeration) counts them. And the records of the re-check say what the item
 reports: no listed value changed, and every listed instance is either
@@ -18,8 +18,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from paper2 import solver_fix_recheck as recheck
-from paper2.search_check import (BUG_A_CEX, BUG_B_CEX, DEFINITE_CEX, RUN_LOST_CEX,
+from paper1 import solver_fix_recheck as recheck
+from paper1.search_check import (BUG_A_CEX, BUG_B_CEX, DEFINITE_CEX, RUN_LOST_CEX,
                                  better_augment, matrix_from_masks)
 from satisfiability.native import RULE_COUNT_NAMES, decide_native, last_rule_counts, native_available
 
@@ -92,7 +92,7 @@ def test_the_c_audit_counts_what_the_certificate_walk_counts():
 
 def test_the_walks_matching_is_hereditary_definiteness():
     """`hereditarily_definite` against `d_hereditary` at every state of a pinned graph."""
-    from paper2.search_check import d_hereditary, s_tables
+    from paper1.search_check import d_hereditary, s_tables
 
     for masks in PINNED[:2] + [BUG_B_CEX[0]]:
         n = len(masks)

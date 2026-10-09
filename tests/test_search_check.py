@@ -1,4 +1,4 @@
-"""Guards on `paper2.search_check` (loop0006 item 06).
+"""Guards on `paper1.search_check` (loop0006 item 06).
 
 The checker is only worth something if (a) its oracle is right, (b) its port
 of the search is the code and not a paraphrase, and (c) it catches unsound
@@ -15,7 +15,7 @@ from collections import Counter
 
 import pytest
 
-import paper2.search_check as sc
+import paper1.search_check as sc
 from tests.test_customer_search import MINIMAL_10x13, MINIMAL_17x9
 
 

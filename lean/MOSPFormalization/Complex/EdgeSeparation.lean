@@ -69,7 +69,7 @@ pair per edge.
   `pathwidth_add_two_lt_modCutwidth_star9` (`K_{1,9}`, `mcw ≥ 4`), and
   `cutwidth_unbounded`, `modCutwidth_unbounded`: no additive constant relates
   either to pathwidth. The two stars are the instances of item 01; the checker
-  (`paper2/complex_check.py`, item 02) gives `cw(K_{1,7}) = mcw(K_{1,9}) = 4`
+  (`paper1/complex_check.py`, item 02) gives `cw(K_{1,7}) = mcw(K_{1,9}) = 4`
   exactly.
 -/
 

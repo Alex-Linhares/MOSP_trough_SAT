@@ -1,4 +1,4 @@
-"""loop0007 item 10: the root split (`paper2/solver_fix_split.py`).
+"""loop0007 item 10: the root split (`paper1/solver_fix_split.py`).
 
 The split must be the sequential search cut into pieces and nothing else. With
 the memo off the two visit the same tree, so the split's node count (each child
@@ -18,8 +18,8 @@ import numpy as np
 import pytest
 
 from mosp.instance import MOSPInstance
-from paper2 import solver_fix_split as split
-from paper2.search_check import BUG_A_CEX, BUG_B_CEX, DEFINITE_CEX, RUN_LOST_CEX, matrix_from_masks
+from paper1 import solver_fix_split as split
+from paper1.search_check import BUG_A_CEX, BUG_B_CEX, DEFINITE_CEX, RUN_LOST_CEX, matrix_from_masks
 from satisfiability.native import decide_native, native_available
 
 ROOT = Path(__file__).resolve().parent.parent

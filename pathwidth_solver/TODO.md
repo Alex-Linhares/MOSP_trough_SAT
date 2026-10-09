@@ -1,7 +1,7 @@
 # TODO
 
 *Transferred on 2026-09-30 from `~/dev/pathwidth`; see `TRANSFER.md`. Its Lean items are done in Ralph loop0005
-(`lean/MOSPFormalization/Complex/`; the dominance-rule stretch item was not in it), and the current paper plan is `paper2/plan.md`.*
+(`lean/MOSPFormalization/Complex/`; the dominance-rule stretch item was not in it), and the current paper plan is `paper1/plan.md`.*
 
 Decisions recorded 2026-09-28: the tiered "cluster" framing stands (Tier A exact, Tier B sandwiches,
 Tier C variant-dependent); all Lean statements are to compile sorry-free in due time, not necessarily for

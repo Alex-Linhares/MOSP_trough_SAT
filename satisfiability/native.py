@@ -163,7 +163,7 @@ def last_rule_counts() -> dict[str, int] | None:
     """How often each rule's prefilter and its repaired test passed in the
     last `decide_native` call made *on this thread*, or None without the
     library. Counting never changes the search; it is there to measure what
-    the repair costs (loop0007 item 04, `paper2/solver_fix_cost.py`)."""
+    the repair costs (loop0007 item 04, `paper1/solver_fix_cost.py`)."""
     library = _load()
     if library is None:
         return None
@@ -290,7 +290,7 @@ def decide_native(
 
 
 # ----------------------------------------------------------------------------
-# The root split (loop0007 item 10, paper2/solver_fix_split.py)
+# The root split (loop0007 item 10, paper1/solver_fix_split.py)
 # ----------------------------------------------------------------------------
 
 _LOW = (1 << 64) - 1

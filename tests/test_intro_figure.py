@@ -1,7 +1,7 @@
-"""Figure 1.1 (paper2/intro_figure.py): the introduction's worked example recomputes."""
+"""Figure 1.1 (paper1/intro_figure.py): the introduction's worked example recomputes."""
 import re
 
-from paper2 import intro_figure as f1
+from paper1 import intro_figure as f1
 
 
 def test_the_two_orders():

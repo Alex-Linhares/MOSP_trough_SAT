@@ -46,7 +46,7 @@ branches kept, so a refutation still refutes.
   see `sparse_enough_for_better_move`. Implemented in the C first; the Python
   port (2026-10-01) matches it node for node.
 
-**Two of the published theorems are false as stated** (`paper2/revised_algorithm.md`
+**Two of the published theorems are false as stated** (`paper1/revised_algorithm.md`
 §4.3.2, §4.3.4): the definite move can discard the last solution at a node, and
 the better move inherits the fault. `repaired_rules=True` applies the premises
 proved sound in `lean/MOSPFormalization/Search/`, under which the whole search
@@ -208,7 +208,7 @@ def decide(
             2026-10-01 the Python had no Theorem 2 and the flag was inert here.
         repaired_rules: the definite and better moves with the *repaired*
             premises proved sound in `lean/MOSPFormalization/Search/`
-            (`paper2/revised_algorithm.md` §4.6.1). The definite move fires on
+            (`paper1/revised_algorithm.md` §4.6.1). The definite move fires on
             the first playable `q` passing `close ≥ open` *and* the matching
             test of `HasDefiniteMatching` -- some `open(q, S) − 1` of the
             customers `q` frees can be matched to distinct stacks among the
@@ -443,7 +443,7 @@ def _apply_dominance(
 ) -> list[tuple[int, int]]:
     """Cut the candidate list by the dominance relations, in the order
     definite move, subset rule, better move, each citing only candidates still
-    standing (`paper2/revised_algorithm.md` §4.4.1).
+    standing (`paper1/revised_algorithm.md` §4.4.1).
 
     `close(q,S) = |{d ∉ S : o(d,S) ⊆ o(q,S)}|` counts the stacks that closing
     `q` releases: `d` is finished once every stack it touches has been opened,

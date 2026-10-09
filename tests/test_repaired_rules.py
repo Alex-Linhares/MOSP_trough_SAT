@@ -4,7 +4,7 @@
 `lean/MOSPFormalization/Search/`: the definite move needs `q` hereditarily
 definite, tested by the matching condition (`HasDefiniteMatching`), and the
 better move cites only under `IsRepairedBetter`. These tests check the
-production filter against `paper2/search_check.py`, which shares no code with
+production filter against `paper1/search_check.py`, which shares no code with
 the solver, and that with the flag off nothing changed, node for node.
 """
 
@@ -15,7 +15,7 @@ import random
 import pytest
 
 from mosp.instance import MOSPInstance
-from paper2.search_check import (
+from paper1.search_check import (
     BUG_B_CEX,
     DEFINITE_CEX,
     d_counts,
@@ -25,7 +25,7 @@ from paper2.search_check import (
     s_searchsol_table,
     s_tables,
 )
-from paper2.solver_fix_check import (
+from paper1.solver_fix_check import (
     check_nodes,
     check_searches,
     matching_test,
@@ -206,7 +206,7 @@ def _same(instance, k, cfg, repaired, max_nodes=None):
 
 
 def _from_masks(masks, name):
-    from paper2.search_check import matrix_from_masks
+    from paper1.search_check import matrix_from_masks
     return MOSPInstance.from_matrix(matrix_from_masks(masks), name=name)
 
 
@@ -252,7 +252,7 @@ def test_the_c_answers_the_oracle_on_definite_cex():
     k under every matched configuration. (The node where the published filter
     loses the solution, S = {2} at k = 6, has one: `truth[CL[S]]`.)"""
     masks, S, q, k = DEFINITE_CEX[0]
-    from paper2.search_check import s_tables
+    from paper1.search_check import s_tables
     O, CL = s_tables(masks)
     truth = s_searchsol_table(masks, k, O, CL)
     assert truth[CL[S]]
@@ -373,8 +373,8 @@ def test_the_c_runs_the_repaired_search_as_the_theorems_state_it():
     (`d_hereditary` by enumeration, not a matching) answers the oracle, keeps a solution at
     every node, and equals the C and the production Python node for node on the two graphs
     where its runs differ from the published port's."""
-    from paper2.search_check import RUN_LOST_CEX
-    from paper2.solver_fix_soundness import check
+    from paper1.search_check import RUN_LOST_CEX
+    from paper1.solver_fix_soundness import check
 
     for masks, ks in ((DEFINITE_CEX[0][0], None), (RUN_LOST_CEX[0], [5, 6, 7])):
         t = check(masks, ks=ks)

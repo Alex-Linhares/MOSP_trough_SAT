@@ -1,7 +1,7 @@
 """A whole-instance false refutation by Chu & Stuckey's published rules.
 
 Found 2026-10-09 by gluing two copies of a 17-customer near-miss of the
-false-refutation hunt (paper2/near_miss_study.py). On this 34-customer instance
+false-refutation hunt (paper1/near_miss_study.py). On this 34-customer instance
 the published definite move, with the subset rule and old move (memo on or
 off, better move off), answers "unsat" at k = 6, while a closing order with 6
 open stacks exists: the published search would report the optimum as 7. The
@@ -16,7 +16,7 @@ from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
 from satisfiability.customer_search import decide
 
-HIT = Path(__file__).resolve().parents[1] / "paper2" / "data" / "false_refutation" / "instance34.json"
+HIT = Path(__file__).resolve().parents[1] / "paper1" / "data" / "false_refutation" / "instance34.json"
 
 
 def _instance():
@@ -61,7 +61,7 @@ def test_repaired_rules_find_the_optimum(native):
 
 def test_figure_numbers():
     """Figure fig:wrong draws what is true: 6 tracks, peak 6, published 7."""
-    from paper2.false_refutation_figure import facts
+    from paper1.false_refutation_figure import facts
     f = facts()  # asserts peak == verify peak == tracks == k and both searches' answers
     assert (f["n"], f["m"], f["k"], f["n_tracks"]) == (34, 61, 6, 6)
 

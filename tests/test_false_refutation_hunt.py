@@ -1,4 +1,4 @@
-"""The test logic of `paper2/false_refutation_hunt.py`.
+"""The test logic of `paper1/false_refutation_hunt.py`.
 
 The hunt is only worth its compute if (a) it accepts a false refutation
 certified by a witness that simulates to <= k, (b) it rejects one whose witness
@@ -11,8 +11,8 @@ import json
 import random
 import time
 
-from paper2 import false_refutation_hunt as H
-from paper2 import search_check as sc
+from paper1 import false_refutation_hunt as H
+from paper1 import search_check as sc
 
 CEX = sc.DEFINITE_CEX[0][0]
 

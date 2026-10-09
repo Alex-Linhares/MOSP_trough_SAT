@@ -1,7 +1,7 @@
 """Section 2's caption numbers reproduce from the cached OpenAlex data."""
 import pytest
 
-from paper2 import section2_figures as s2
+from paper1 import section2_figures as s2
 
 PUBLISHED = {"graph path-width": 1213, "gate matrix layout": 110, "PLA folding": 68, "MOSP": 58,
              "vertex separation": 55, "edge search game": 38, "node search game": 34,
@@ -34,7 +34,7 @@ def test_network_numbers(nums):
 
 def test_figures_meet_the_print_limits(tmp_path, monkeypatch):
     """No text below 7 pt, nothing wider than the 6.5 in text width (item 09)."""
-    import paper2.section2_figures as s2
+    import paper1.section2_figures as s2
 
     seen = {}
 
@@ -79,7 +79,7 @@ def test_communities_table_numbers(nums):
                     "GT+OR": 4, "GT+OR+VLSI": 2}
     assert sum(sets.values()) == nums["citing_works"] == 844
     assert sets["GT+OR"] + sets["GT+OR+VLSI"] == nums["mosp_and_graph_theory"] == 6
-    from paper2.latex import make_tables
+    from paper1.latex import make_tables
     text = make_tables.communities_table()
     assert "operations research & 135 & -- & 14 & 6" in text
     assert "VLSI & 285 & 14 & -- & 65" in text

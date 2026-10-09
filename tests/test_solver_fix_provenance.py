@@ -1,6 +1,6 @@
 """loop0007 item 06: the list of values that rest only on the customer search.
 
-`paper2/solver_fix_provenance.py` writes the list; these tests re-read the
+`paper1/solver_fix_provenance.py` writes the list; these tests re-read the
 records it was built from and check the list against them, so a regenerated
 list that drops an instance with no independent proof, or keeps one that has
 one, fails here.
@@ -14,14 +14,14 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from paper2 import solver_fix_provenance as prov
+from paper1 import solver_fix_provenance as prov
 
 ROOT = Path(__file__).resolve().parent.parent
-LIST = ROOT / "paper2/data/solver_fix_provenance.csv"
-ALL = ROOT / "paper2/data/solver_fix_provenance_all.csv.gz"
+LIST = ROOT / "paper1/data/solver_fix_provenance.csv"
+ALL = ROOT / "paper1/data/solver_fix_provenance_all.csv.gz"
 
 pytestmark = pytest.mark.skipif(not LIST.exists() or not ALL.exists(),
-                                reason="run python -m paper2.solver_fix_provenance first")
+                                reason="run python -m paper1.solver_fix_provenance first")
 
 
 @pytest.fixture(scope="module")

@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from paper2.latex import check_lean, check_refs, make_tables
+from paper1.latex import check_lean, check_refs, make_tables
 
 HERE = Path(make_tables.__file__).resolve().parent
 
@@ -47,5 +47,5 @@ def test_certificates_table_reproduces_the_recorded_totals():
 
 def test_every_cited_theorem_has_an_axiom_line():
     """Coverage half of check_axioms; the Lean half runs in the gate's build."""
-    from paper2.latex import check_axioms
+    from paper1.latex import check_axioms
     assert check_axioms.uncovered() == []

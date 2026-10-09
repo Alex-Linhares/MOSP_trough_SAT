@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The customer search in pathwidth language
 
-Section 4.7 of `paper2/revised_algorithm.md` (loop0008 item 03). The search of
+Section 4.7 of `paper1/revised_algorithm.md` (loop0008 item 03). The search of
 `Basic.lean` is stated in MOSP words: closed customers, opened stacks. This file proves
 the dictionary to the words of the exact pathwidth literature, so that each rule can be
 read as a statement about vertex layouts, and identifies the repaired definite move with

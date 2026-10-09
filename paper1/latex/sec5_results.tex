@@ -1,0 +1,262 @@
+% Section 5, computational results and the dataset (loop0009 item 06; was old
+% Sections 4.6-4.7). Sources: paper1/solver_fix.md (cost, re-certification, the
+% split and its addendum), paper1/certificates.md (proof object),
+% paper1/dataset.md (the dataset, its checker and its price). Tables from
+% tables/ (make_tables.py). Setup: lscpu and free on the machine that ran
+% everything, read 2026-10-06; compiler flags from satisfiability/native.py.
+\section{Computational results and a dataset}
+\label{sec:results}
+
+Section~\ref{sec:search} proved our repaired search sound. This section asks
+four practical questions about it and answers each with a measurement. What
+does the repair cost? Under the repaired rules, the total number of search
+nodes over each benchmark set changes by at most 2\%. Do the published
+benchmark optima survive? All 115 that rested on the published rules were
+proved again, and none changed. Can a reader check a refutation without
+trusting our code? Yes, up to about 75 customers, through a certificate and an
+independent checker. Finally, what does it make possible? A dataset of 17,714
+graphs from twenty benchmark collections. For 16,087 of them the pathwidth is
+certified, and that gives the exact value of every problem in the exact core.
+
+\subsection{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Machine and code.} Every run in this section used one
+machine, an AMD Ryzen~9 9950X (16 cores, 32 hardware threads) with 128\,GB of
+memory under Ubuntu Linux. Both searches, the open-stacks customer search and
+its port to graphs, are written in C, compiled with gcc 15.2 using the
+flags \texttt{-O3} and \texttt{-march=native}, and driven from Python~3.12. A Python implementation of the
+same rules serves as a reference for cross-checks and emits the certificates
+of Section~\ref{sec:certs}. The repaired tests are the default in every
+implementation; the published tests remain available as an option. The C
+implementation handles components of at most 1,024 vertices; 154 classes of
+the dataset of Section~\ref{sec:dataset} are larger.
+
+\paragraph{Runs.} The basic job asks one question: is the optimum of this
+instance at most $k$? A \emph{worker} is one single-threaded process that
+answers such questions, one at a time. A \emph{node} is one state visited by
+the search, the unit in which we report effort. Up to 32 workers ran at
+once on the machine, so wall-clock times carry load noise. We therefore
+compare node counts and report time only in core-hours. A \emph{pair} runs
+the same question twice in the same worker, once under the published rules
+and once under the repaired rules, alternating which goes first. A
+\emph{descent} solves a whole graph: it lowers $k$ from an upper bound until a
+refutation proves the last value optimal. Each table states its time or node
+budget.
+
+\paragraph{Configurations.} The open-stacks runs use two configurations of the
+rules of Section~\ref{sec:search}, which differ only in the better move. The
+\emph{base} configuration leaves it off. The configuration \emph{with better
+move} switches it on for instances whose customers need at most five patterns on
+average. This is the setting under which the customer search certified the
+benchmark values it proved.
+
+\paragraph{Instances.} The \emph{MOSP corpus} is the 6,376 instance files of
+four public open-stacks collections, one of which is distributed twice. They
+are the 2005 Constraint Modelling Challenge \citep{SmithGent2005}, with a
+second copy of 46 of its files under other names, the random
+instances of \citet{ChuStuckey2009} (30 to 125 customers), those of
+\citet{FaggioliBentivoglio1998}, and the 24 industrial SCOOP instances. They
+are the first rows of Table~\ref{tab:dataset}. A Chu--Stuckey name such as
+\texttt{Random-125-125-2-4\_0} gives the number of customers, the number of
+patterns, the generator's density class and the instance number. The graph
+benchmarks are those of Section~\ref{sec:names} and Table~\ref{tab:dataset}.
+
+\paragraph{Provenance.} Every stored value comes with a witness, an order that
+attains it, and one of three provenances:
+\begin{itemize}
+\item \emph{certified by search}: a search proved that no order does better,
+  by refuting the value minus one;
+\item \emph{certified by bound}: a lower bound equals the witness's value, so
+  no search was needed;
+\item \emph{upper bound only}: the witness is all there is, and optimality is
+  not proved.
+\end{itemize}
+Of the 6,376 corpus values, 6,375 are certified and one is an upper bound only
+(as of 9 October 2026; the 6,375th was certified by the split search of
+Section~\ref{sec:practice}).
+
+\subsection{The cost of the repair, and the benchmark values}
+\label{sec:practice}
+
+Our repaired search adds one matching test to the definite move and to the
+better move (Section~\ref{sec:definite}). A candidate that fails the matching
+is passed over, so the repaired tree can only differ where the matching fails.
+Table~\ref{tab:cost} shows how rarely that matters.
+
+\begin{table}[t]
+\centering\small
+\caption{The repair never changed an answer and changes the total node count
+by at most 2\%. Each pair runs the same question under the published and the
+repaired rules in one worker. Totals are over the pairs that finished under
+both rules; a pair stopped by its budget says nothing about cost.
+\emph{Vertices}: customers in the open-stacks rows (the vertices of $G_M$).
+\emph{Largest pair ratio}: the largest ratio of repaired to published nodes
+over single pairs. Open-stacks pairs refute the optimum minus one, at 600\,s per
+call at 50--100 customers and $2\times10^8$ nodes at 125. The graph pairs run
+whole descents on VSPLIB, the colouring and named graphs, and a sample of 500
+Rome graphs.}
+\label{tab:cost}
+\resizebox{\linewidth}{!}{\input{tables/cost}}
+\end{table}
+
+In every row of Table~\ref{tab:cost} the repaired and the published rules gave
+the same answer, and the total node counts differ by at most 2\%. Single pairs
+differ by at most 4\%. The cost per node is also small: about 2\% in the C
+implementation, measured on six hard instances at 75 to 125 customers. The
+published test passes and the matching then fails on only 0.07--0.27\% of
+definite-move candidates, a rate that rises with size.
+
+\paragraph{The benchmark values survive.} No published optimum changed under
+the repaired rules. Of the 6,374 values certified before this work, 6,259 do
+not depend on the customer search at all. Each was proved in one of four ways:
+\begin{itemize}
+\item by an exhaustive computation over all subsets of customers (up to 15
+  customers);
+\item by a refutation from a SAT (Boolean satisfiability) solver whose proof an
+  independent checker accepted, in DRAT, the standard proof format for SAT
+  solvers;
+\item by an earlier SAT search;
+\item or by a lower bound equal to the value.
+\end{itemize}
+The other 115 rested on the customer search
+under the published rules. Our repaired search refuted the value minus one on
+all 115, so all 115 values stand.
+
+The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
+and 4. They are too large for one worker, so their search was split:
+the top levels of the tree are expanded into independent subtrees, each
+refuted on its own worker, and the value is refuted when every subtree is. The
+split is proved sound~\leanref{split}. All seven were refuted at 18 to 369
+core-hours each, 1,112.6 in total (Table~\ref{tab:split},
+Appendix~\ref{app:split}).
+
+\paragraph{Two values never certified.} The corpus also held two values that
+no method had certified: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
+\texttt{Random-125-125-2-3\_0}. The same split refutes the value minus one on
+each. On 9 October 2026 it refuted 20 for \texttt{Random-125-125-2-3\_0}, after
+9,665 subtrees, $4.25\times10^{12}$ nodes and 1,128 core-hours, which
+certifies 21 as its optimum; it is the largest refutation in this paper. For
+\texttt{Random-125-125-2-2\_0} it has refuted 7,217 subtrees so far, using
+about 1,150 core-hours, and found no order of 24 stacks. If it finishes, it
+certifies 25; an order of 24 would improve the stored value instead.
+
+\subsection{A checkable proof of a refutation}
+\label{sec:certs}
+
+A refutation by the search is a claim about a tree of up to $10^{12}$ nodes,
+and Theorem~\ref{thm:main} proves the rules sound, not the code that runs
+them. So the search emits a \emph{certificate}: the tree it explored, every
+pruning step with its rule and its witness, and for each definite and better
+step the matching of Theorem~\ref{thm:matching}. An independent checker, which
+shares no code with the search, reads the instance matrix and the certificate.
+At every node it checks that
+\begin{itemize}
+\item the premise of every pruning step holds, recomputed from the matrix;
+\item every matching is valid: distinct customers, distinct stacks, each stack
+  newly opened by its customer, and at least $\open-1$ edges;
+\item every candidate within the bound is either a child or covered by a
+  pruning step, and every chain of covers ends at a child or an old move,
+  with no cycle;
+\end{itemize}
+and it replays the tree from the root. Each accepted step is a Lean theorem.
+That an acyclic covering by such steps is sound is a short paper argument, not
+yet a formal proof.
+
+\begin{table}[t]
+\centering\small
+\caption{Every certificate the search emitted verifies, none is rejected, and
+checking takes milliseconds. Certificates for the repaired rules, configuration
+with better move, refuting the optimum minus one on the certified MOSP corpus
+at 9--75 customers, with 60\,s to emit each. \emph{Not emitted}: the emitter
+did not finish in time. Size is the compressed certificate; check time is the
+independent checker's.}
+\label{tab:certs}
+\resizebox{\linewidth}{!}{\input{tables/certificates}}
+\end{table}
+
+Table~\ref{tab:certs} gives the results. Every refutation emitted within its
+budget verifies, 6,275 of 6,286, and none is rejected. All 35.5\,MB of
+certificates check in 147\,s. The base configuration gives the same picture:
+6,276 of 6,286 verify and none is rejected. The checker also catches the error
+of Section~\ref{sec:definite}. On the graph of
+Counterexample~\ref{cex:definite}, rooted at $\{2\}$, the published rules emit
+a complete tree that claims there is no solution. A checker of the published
+premises accepts it. Ours rejects it, even with a largest matching attached,
+because the matching has one edge where two are needed. At 125 customers the
+trees are too large to ship as certificates.
+
+\subsection{A dataset with certified pathwidth}
+\label{sec:dataset}
+
+Section~\ref{sec:equiv} showed that one certified pathwidth $w$ answers every
+problem in the exact core. Pathwidth, vertex separation and the vertex
+separator game take the value $w$, and MOSP, gate matrix layout (which
+multiple folding equals), one-dimensional logic, interval thickness,
+narrowness, node search, progressive pebbling, the vertex search of
+\citet{BRST1991} and the maximum wavefront take $w+1$: twelve problems in all. We therefore built one dataset from every benchmark collection of
+those problems that we could obtain, including the MOSP corpus.
+
+The unit of the dataset is the \emph{isomorphism class}: the set of instances
+whose graphs are the same up to renaming the vertices. For a matrix instance
+the graph is its MOSP graph. Two instances in one class have the same value
+under every problem, so the dataset holds one record per class, with its
+members and the renaming that maps each onto the record's graph. Classes were
+found with nauty, a standard tool that computes a canonical form for each
+graph. Each record carries the graph, the width $w$, its provenance, and a
+witness layout of exactly that width. A record certified by bound also carries
+a \emph{minor certificate}: a list of vertex deletions and edge contractions
+after which every vertex has degree at least $w$. Any checker can replay it,
+and it proves the pathwidth is at least $w$.
+
+\begin{table}[t]
+\centering\small
+\caption{Twenty collections, 21,754 instance files, reduce to 17,714
+isomorphism classes, and 16,087 of them have a certified pathwidth. Largely
+open: PACE, the VSPLIB grids and Harwell-Boeing, and the MOSP sets of de
+Carvalho and Soma and of Frinhani et al.; Rome's 327 open classes are under
+3\% of it. \emph{Classes}: isomorphism classes within the
+collection (78 graphs above 5,000 vertices are compared by file content only).
+\emph{Counted here}: classes whose first member, in the order of the table,
+is in this collection, so the column sums to the dataset's class count. The
+next four columns split those classes by provenance; \emph{No witnessed
+value}: no layout is stored yet. $^{a}$The same 46 files distributed a second
+time under other names; every class is counted under its first copy.}
+\label{tab:dataset}
+\resizebox{\linewidth}{!}{\input{tables/dataset}}
+\end{table}
+
+Table~\ref{tab:dataset} gives the counts. The collections are the MOSP
+collections
+\citep{SmithGent2005,FaggioliBentivoglio1998,ChuStuckey2009,CarvalhoSoma2015,Frinhani2018},
+eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
+\citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
+graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
+benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the 17,714
+classes, 16,087 carry a certified pathwidth with a witness layout and 862 a
+witnessed upper bound. The 610 large instances of \citet{Frinhani2018}, with
+400 to 1,000 customers, are included so that the dataset covers every
+published MOSP collection we hold. None of them has a value yet, because an
+exact search at that size is out of reach.
+
+An independent checker, sharing no code with the solvers, verifies the
+dataset. It re-reads all 20,987 member files with its own readers, maps each
+onto its record's graph by its renaming, recomputes the width of every witness
+layout and replays every minor certificate. It reports no failure on the
+16,949 records. A value certified by search cannot be checked from its record;
+it rests on our repaired search, and for instances within reach of the emitter
+the certificate of Section~\ref{sec:certs} is how a third party can check it.
+
+\paragraph{Agreement with published values.} All 84 Small graphs agree with
+the pathwidths of \citet[Tables~4--5]{Mallach2018}. Ten of the eleven VLSI
+circuits are certified at their published best-known track counts
+\citep[Table~I]{OliveiraLorena2002}; the eleventh, W4 with 202 nets, is open
+at 28 against 27.
+
+\paragraph{A caution about MOSP files.} A MOSP file can be read with rows as
+customers or with rows as patterns, and the two readings give different
+graphs. The same public repository ships the
+\citet{CarvalhoSoma2015} instances as customers by patterns and the
+\citet{ChuStuckey2009} instances beside them as patterns by customers. Only
+published densities and values tell them apart. Read the wrong way round, an
+instance certifies at a different value.

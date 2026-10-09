@@ -1,5 +1,5 @@
-"""paper2/fink_check.py: Fink (2012) Teorema 1 fails on finkGraph and not on cexGraph."""
-from paper2.fink_check import CEX_EDGES, FINK_EDGES, K, failures
+"""paper1/fink_check.py: Fink (2012) Teorema 1 fails on finkGraph and not on cexGraph."""
+from paper1.fink_check import CEX_EDGES, FINK_EDGES, K, failures
 
 
 def test_cexgraph_does_not_refute_fink_under_any_labelling():

@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The repaired definite move is a matching condition (Hall's theorem with deficiency)
 
-Loop0006 item 13 (reserve), closing the open half of item 08 (`paper2/search_soundness.md`
+Loop0006 item 13 (reserve), closing the open half of item 08 (`paper1/search_soundness.md`
 §4.2 and §4.6). `DefiniteMove.lean` proves the repair `IsHereditarilyDefinite G S q` sound and
 proves one direction of its cheap form, `isHereditarilyDefinite_of_matching`. This file proves
 the converse, so the two are **equivalent**.
@@ -35,8 +35,8 @@ sufficient condition.
 
 ## Checks
 
-`python -m paper2.search_check --hall` checks the deficiency form, the matching form and the
-repair against one another by brute force; see `paper2/search_soundness.md` §4.6.
+`python -m paper1.search_check --hall` checks the deficiency form, the matching form and the
+repair against one another by brute force; see `paper1/search_soundness.md` §4.6.
 -/
 
 import MOSPFormalization.Search.DefiniteMove

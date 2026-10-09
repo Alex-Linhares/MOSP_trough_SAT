@@ -668,7 +668,7 @@ static int search(search_t *s, mask_t closed, mask_t opened, mask_t seen) {
  *                (IsHereditarilyDefinite via HasDefiniteMatching, and
  *                IsRepairedBetter); 0 for the rules as Chu & Stuckey publish
  *                them, which can discard the last solution at a node
- *                (paper2/revised_algorithm.md, Counterexample 4.5);
+ *                (paper1/revised_algorithm.md, Counterexample 4.5);
  *                2 for the published rules with `CodeNodeRepaired` counted at
  *                every node (RC_AUDIT_*), which never changes the search.
  */
@@ -792,8 +792,8 @@ int cs_decide(int n, int k,
                          FAN_ORDER_INDEX, out_path, out_nodes, out_len);
 }
 
-/* The root split (loop0007 item 10, paper2/solver_fix.md): one refutation
- * spread over many processes. The driver (paper2/solver_fix_split.py) expands
+/* The root split (loop0007 item 10, paper1/solver_fix.md): one refutation
+ * spread over many processes. The driver (paper1/solver_fix_split.py) expands
  * the top of the tree itself with `cs_split_expand`, which is exactly what
  * `search` does at a node before its loop -- free moves, the memo-free
  * candidate set, the dominance filter and, child by child, the old moves each

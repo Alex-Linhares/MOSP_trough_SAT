@@ -40,7 +40,7 @@ read as `closeCount` (customers not yet closed, the code's reading) or as
 `closeCountLiteral` (every customer, closed ones included, the thesis's Definition 6.3.4
 read literally, since `d` is unrestricted there).
 
-**Witnesses**, from the brute force in `paper2/thesis_check.py`:
+**Witnesses**, from the brute force in `paper1/thesis_check.py`:
 
 * unclosed reading: `S = {2}`, `r = 3`, `q = 0`, with `close(0, S) = 3 ≥ 2 =
   open(0, S ∪ {3})`. The "no extension" half is the CP Theorem 1 counterexample's
@@ -165,7 +165,7 @@ with `o(α_i, S) ⊆ o(α_j, S)`, `α_i, α_j ∉ S` and `i < j`, and states:
 Since `i < j`, `q` itself is not counted, so the premise is `closeCount − 1 ≥ open` at
 best, strictly stronger than the CP premise: the child must have *fewer* open stacks than
 the parent, not merely no more. `cexGraph` does not refute it under any labelling (no
-failing state has `closeCount ≥ open + 1`; `paper2/fink_check.py`). Adding a third twin of
+failing state has `closeCount ≥ open + 1`; `paper1/fink_check.py`). Adding a third twin of
 customers `3` and `4` does: `finkGraph` is `cexGraph` plus a customer adjacent to `0` and
 `2`, with labels `0` and `14` swapped so that the dominated customers precede `q = 14`.
 At `S = {2, 3}`, `k = 6`: `f(14, S) = {0, 4}`, `open(14, S) = 2`, `S ++ [14]` costs 6, a

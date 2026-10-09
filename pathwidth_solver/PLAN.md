@@ -25,7 +25,7 @@ Mapping, with `U = S ∪ {c}` the vertices closed after the move and
 | cost `|O(S ∪ {c}) − S|`                           | `d(U) + 1`                                         |
 | `MOSP ≤ k`                                        | `vs(G) = pw(G) ≤ k − 1`                            |
 | free move (`N[c] ⊆ O(S)`)                         | fullset rule, Kitsunai et al. 2016 Prop. 3         |
-| definite move (Thm 1)                             | commitment to the full set of `U ∪ {q}`; depth 1 only when `open ≤ 1`. *Corrected 2026-10-03 (MOSP loop0008 item 03): the published Thm 1 checks Tamaki's condition at the endpoints only and is false; the repaired rule is the Commitment Lemma at that target (`paper2/revised_algorithm.md` §4.7).* |
+| definite move (Thm 1)                             | commitment to the full set of `U ∪ {q}`; depth 1 only when `open ≤ 1`. *Corrected 2026-10-03 (MOSP loop0008 item 03): the published Thm 1 checks Tamaki's condition at the endpoints only and is false; the repaired rule is the Commitment Lemma at that target (`paper1/revised_algorithm.md` §4.7).* |
 | memo `prob[S]` / old move                         | subset DP state / Coudert et al. prefix table      |
 
 So `decide_pathwidth(G, w)` is `decide(masks(G), k = w + 1)`, unchanged inside.
@@ -198,7 +198,7 @@ lower-bound work of phase 7 (myciel6, cages).
 **Rerun under the repaired rules (2026-10-02, MOSP loop0007 item 08):** every set again at the caps
 above, into `bench/results/repaired/` (new format: `name` is the path, empty `proof` when unproved). Same
 width on all 11,424 graphs both runs proved; Rome 11,194 / 11,534 = 97.05%; nodes +0.3% to +1.7% per set.
-`paper2/solver_fix.md`, item 08.
+`paper1/solver_fix.md`, item 08.
 
 ### Reference points from Kobayashi–Komuro–Tamaki (SEA 2014), obtained 2026-09-28
 Their search = our search minus the subset / old / better-move rules, in Java with no vertex limit, 30-min cap.

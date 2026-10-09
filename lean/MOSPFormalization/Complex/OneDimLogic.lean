@@ -83,7 +83,7 @@ needs a net).
 
 §IV pins `t_l` and `t_r` at the two ends. Item 02 found the pinned optimum
 equal to `pw(H) + 1` or one more on every instance checked, never a fixed
-offset, and whether the gap reaches 2 is open (`paper2/equivalences.md` §3).
+offset, and whether the gap reaches 2 is open (`paper1/equivalences.md` §3).
 Only the trivial direction is proved: `pathwidth_add_one_le_tracksPinned`.
 -/
 

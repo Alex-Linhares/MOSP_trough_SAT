@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The root split: a refutation spread over independent processes
 
-Loop0007 item 10, `paper2/solver_fix.md` ("Item 10"), `paper2/solver_fix_split.py`. The
+Loop0007 item 10, `paper1/solver_fix.md` ("Item 10"), `paper1/solver_fix_split.py`. The
 driver opens the top of the search tree itself, exactly as the search opens a node (free moves,
 the filter, the children in loop order, the old moves each child inherits), and hands each
 child to its own process, which runs the unchanged search from that state with **an empty

@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The definite move (Chu & Stuckey 2009, Theorem 1): false as stated, and its repair
 
-Loop0006 item 08, `paper2/search_soundness.md` §2.2 and §4.2. Source: Chu & Stuckey,
+Loop0006 item 08, `paper1/search_soundness.md` §2.2 and §4.2. Source: Chu & Stuckey,
 *Minimizing the maximum number of open stacks by customer search*, CP 2009, §3.1
 (preprint p. 6):
 
@@ -52,8 +52,8 @@ state `S`, and keeps only the first such `q` in index order.
 
 ## Checks
 
-`python -m paper2.search_check --definite` (`paper2/search_check.py`) transcribes these
-definitions and checks them by brute force; see `paper2/search_soundness.md` §4.2.
+`python -m paper1.search_check --definite` (`paper1/search_check.py`) transcribes these
+definitions and checks them by brute force; see `paper1/search_soundness.md` §4.2.
 -/
 
 import MOSPFormalization.Search.Basic
@@ -352,7 +352,7 @@ theorem not_solvable_of_invariant {k : ℕ} (F : Finset (Finset V)) (huniv : uni
 /-! ### The counterexample to Theorem 1 -/
 
 /-- The edges of the counterexample, found by exhaustive checking of the rule's conclusion
-on random graphs and minimised by vertex and edge deletion (`paper2/search_check.py`). -/
+on random graphs and minimised by vertex and edge deletion (`paper1/search_check.py`). -/
 def cexEdges : List (ℕ × ℕ) :=
   [(0, 3), (0, 4), (0, 7), (0, 11), (1, 2), (1, 5), (1, 6), (2, 3), (2, 4), (5, 9), (5, 11),
    (5, 12), (6, 8), (6, 13), (7, 9), (7, 10), (7, 13), (8, 9), (8, 10), (8, 11), (9, 10),

@@ -101,11 +101,11 @@ the matching of `HasDefiniteMatching` as its witness:
 
 each pair matching a customer `d` that the move frees to a stack `s` it newly
 needs, `open − 1` pairs with distinct `d` and distinct `s`. The checker for
-those certificates is `paper2/certificate_check.py`, which imports nothing from
+those certificates is `paper1/certificate_check.py`, which imports nothing from
 this repository; `check` below verifies only the published premises and
 ignores the matchings. `start` roots the tree at a closed set other than ∅, so
 that a certificate can claim "no solution extends S" -- used for the
-hand-built failures of `paper2/certificates.md`.
+hand-built failures of `paper1/certificates.md`.
 
 Run:
 

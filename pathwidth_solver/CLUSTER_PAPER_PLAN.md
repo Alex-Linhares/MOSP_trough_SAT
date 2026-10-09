@@ -1,9 +1,9 @@
 # Paper plan: "Pathwidth is a cluster of problems"
 
 *Transferred on 2026-09-30 from `~/dev/pathwidth`; see `TRANSFER.md`. Superseded: its Lean items are done in Ralph
-loop0005 (`lean/MOSPFormalization/Complex/`), and the current paper plan is `paper2/plan.md`. "This repo" below is now `pathwidth_solver/`.*
+loop0005 (`lean/MOSPFormalization/Complex/`), and the current paper plan is `paper1/plan.md`. "This repo" below is now `pathwidth_solver/`.*
 
-Draft 2026-09-28, for evaluation. Assets referred to: `~/dev/MOSP/paper2/` (Table 1 corpus, popularity
+Draft 2026-09-28, for evaluation. Assets referred to: `~/dev/MOSP/paper1/` (Table 1 corpus, popularity
 study, `table1.bib`), `~/dev/MOSP/lean/` (Lean 4 development), this repo (solver, benchmarks, literature).
 
 ## 1. Thesis
@@ -14,7 +14,7 @@ different kind of evidence:
 
 | Claim | Evidence | Status |
 |---|---|---|
-| **C1. One cluster, one dominant name.** The twelve names denote the same quantity up to a stated constant; "pathwidth" is where the literature has gone. | Bibliometrics (OpenAlex): pathwidth 1,609 works, 27× MOSP, more than the other eleven together. *(Superseded 2026-09-29: relevant works, pathwidth 1,213 and MOSP 58; `paper2/popularity.md`.)* | Done (`paper2/popularity.md`), needs a refresh and a solver-literature cut. |
+| **C1. One cluster, one dominant name.** The twelve names denote the same quantity up to a stated constant; "pathwidth" is where the literature has gone. | Bibliometrics (OpenAlex): pathwidth 1,609 works, 27× MOSP, more than the other eleven together. *(Superseded 2026-09-29: relevant works, pathwidth 1,213 and MOSP 58; `paper1/popularity.md`.)* | Done (`paper1/popularity.md`), needs a refresh and a solver-literature cut. |
 | **C2. The equivalences are theorems, and here they are, machine-checked.** For each entry: the published statement, the exact graph construction, the exact shift, and a Lean 4 proof. | The twelve source papers (11 held in full; Kashiwabara–Fujisawa 1979 unobtainable); Lean: vs = pw and MOSP = pw + 1 already sorry-free. | Partly done; the rest is §3. |
 | **C3. One algorithm solves all of them.** An exact solver for any member is an exact solver for every member; concretely, Chu & Stuckey's closing-order search for MOSP, run on graphs, is the strongest exact pathwidth solver published. | Node-for-node identity with the MOSP implementation; benchmarks vs Coudert et al. (JEA 2016) and Kobayashi et al. (SEA 2014). | Done here for the plain Chu & Stuckey search; §4 lists the remaining runs. |
 
@@ -83,7 +83,7 @@ MOSP = pw + 1 (`MOSPGraph`, sorry-free), `Sandwich` (3 sorries: bandwidth/degene
 7. Stretch: **soundness of the search's dominance rules** (definite move = Tamaki's Commitment Lemma,
    depth 1; subset rule; old move). *Corrected 2026-10-03 (MOSP loop0008 item 03): only the repaired
    definite move is the Commitment Lemma, at depth close(q, S); depth 1 is the case open ≤ 1; the
-   published rule is false. Done in `paper2/revised_algorithm.md` §4.3, §4.7.*. The MOSP repo's loop0004 already has "a proof object for the
+   published rule is false. Done in `paper1/revised_algorithm.md` §4.3, §4.7.*. The MOSP repo's loop0004 already has "a proof object for the
    customer search". Would let the paper say the solver is verified, not just tested.
 
 Sorry-free targets for submission: items 1–4. Everything else stated with citations.
@@ -111,7 +111,7 @@ Done: phases 1–3, 6, 6b; benchmark sweep (coloring, named, VSPLIB, Rome) with 
 4. One algorithm: closing-order search on the MOSP graph = vertex-separation search; the rules as
    commitments (Tamaki) and dominances (Chu & Stuckey); what the pathwidth solvers lacked (better move,
    old move) and what MOSP lacked (nothing; the depth-1 commitment was already there). *Corrected 2026-10-03: what MOSP
-   had was a commitment with its interior condition dropped, which is false (`paper2/revised_algorithm.md` §4.7).*
+   had was a commitment with its interior condition dropped, which is false (`paper1/revised_algorithm.md` §4.7).*
 5. Experiments: identity with the MOSP implementation; Rome 97.0 % vs 95.6 %; TreewidthLIB Table 4
    parity and speedups; VSPLIB parity plus grids 12–13 and 202-node trees; fpsol2.i.1 in 6 s vs 323 s;
    new exact values (queen11_11 = 87, queen12_12 = 103); open cases.

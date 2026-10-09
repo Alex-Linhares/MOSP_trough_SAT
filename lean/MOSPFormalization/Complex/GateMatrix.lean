@@ -41,7 +41,7 @@ Formalised here without reference to stacks or pathwidth:
   order of their leftmost gate.
 * `tracks_eq_mospValue` (Linhares & Yanasse 2002, Prop. 2): `t(M) = Z_MOSP(M)`
   under the **identity** map `toMOSP` — nets are customers (piece types), gates
-  are patterns; no transposition (item 01, `paper2/equivalences.md` §2).
+  are patterns; no transposition (item 01, `paper1/equivalences.md` §2).
 * `tracks_eq_pathwidth_add_one` (Möhring Prop. 3.5; Fellows & Langston 1989
   Thm. 7): `t(M) = pw(netGraph M) + 1`, where `netGraph` is Möhring's net
   adjacency graph (p. 29: the intersection graph of the rows), shown equal to

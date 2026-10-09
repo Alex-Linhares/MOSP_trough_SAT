@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The customer search as a mathematical object
 
-Section 1 of `paper2/search_soundness.md` (loop0006 item 07), the model on
+Section 1 of `paper1/search_soundness.md` (loop0006 item 07), the model on
 which the soundness proofs of the pruning rules of Chu & Stuckey's (2009)
 customer search are built (items 08–11). Source of the model: Chu & Stuckey,
 *Minimizing the maximum number of open stacks by customer search*, CP 2009,

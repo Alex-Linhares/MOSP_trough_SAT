@@ -15,7 +15,7 @@ is left untouched.
 | `tests/` (95 tests) | `pathwidth_solver/tests/` | One change: `conftest.py` now finds MOSP in the parent directory, with `PATHWIDTH_MOSP_DIR` still an override. |
 | `bench/` scripts (`run.py`, `readers.py`, `summary.py`, `reference.py`) | `pathwidth_solver/bench/` | Unchanged; paths are relative to the file. |
 | `bench/results/` (35 files: CSVs and logs) | `pathwidth_solver/bench/results/` | Committed. |
-| `bench/instances/` (12,247 files, 90 MB) | `pathwidth_solver/bench/instances/`, **git-ignored** | Duplicates `paper2/benchmarks/raw/`, verified by sha256. Copied so `bench/` runs unchanged. |
+| `bench/instances/` (12,247 files, 90 MB) | `pathwidth_solver/bench/instances/`, **git-ignored** | Duplicates `paper1/benchmarks/raw/`, verified by sha256. Copied so `bench/` runs unchanged. |
 | `pyproject.toml` | `pathwidth_solver/pyproject.toml` | |
 | `PLAN.md` | `pathwidth_solver/PLAN.md` | The solver plan and its status log, including the benchmark results. |
 | `TODO.md` | `pathwidth_solver/TODO.md` | Written 2026-09-28, before loop0005; see *Superseded* below. |
@@ -35,7 +35,7 @@ is left untouched.
 - **Tests.** All 95 pass, both in the original folder and in the new location
   (6 min each).
 - **Instances.** VSPLIB, TreewidthLIB's colouring subset and the Rome graphs
-  are byte-identical archives to those in `paper2/benchmarks/raw/`. The
+  are byte-identical archives to those in `paper1/benchmarks/raw/`. The
   freetdi named graphs came as a different archive but are identical file by
   file (452 files, 417 distinct contents). No instance data is new.
 - **Results checked against known values.**
@@ -86,10 +86,10 @@ is left untouched.
 ## Superseded, and what to read instead
 
 - `CLUSTER_PAPER_PLAN.md` and `TODO.md` predate loop0005. Their Lean items
-  are all done (`paper2/equivalences.md`, `paper2/problem_transformations.md`),
+  are all done (`paper1/equivalences.md`, `paper1/problem_transformations.md`),
   and their tiering is refined there. For example, their "Tier C" PLA folding
   is now proved false in the simple form and exact as multiple folding, and
   "edge separation" is settled as misattributed. The current plan is
-  `paper2/plan.md`. The solver items in `TODO.md` (phase 7: certified-minor
+  `paper1/plan.md`. The solver items in `TODO.md` (phase 7: certified-minor
   lower bounds, component push, preprocessing, the open graphs) remain open
-  and are not yet in `paper2/plan.md`.
+  and are not yet in `paper1/plan.md`.

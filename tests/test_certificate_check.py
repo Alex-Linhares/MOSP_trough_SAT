@@ -1,8 +1,8 @@
-"""Certificates for the repaired rules (loop0008 item 05, `paper2/certificates.md`).
+"""Certificates for the repaired rules (loop0008 item 05, `paper1/certificates.md`).
 
 The emitter (`learning.search_certificate.emit(..., repaired_rules=True)`) must
 visit exactly the tree the repaired search visits, and the independent checker
-(`paper2/certificate_check.py`) must accept its refutations and reject every
+(`paper1/certificate_check.py`) must accept its refutations and reject every
 certificate whose matching does not witness `HasDefiniteMatching` -- above all
 the one the published rules emit on `DEFINITE_CEX`, which `learning`'s checker
 of the published premises accepts.
@@ -24,13 +24,13 @@ from learning.search_certificate import check as published_check
 from learning.search_certificate import emit
 from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
-from paper2.certificate_check import check, closed_neighbourhoods, matrix_sha256
-from paper2.certificates import CORRUPTIONS, _max_matching, _order_cost
-from paper2.search_check import DEFINITE_CEX, matrix_from_masks
+from paper1.certificate_check import check, closed_neighbourhoods, matrix_sha256
+from paper1.certificates import CORRUPTIONS, _max_matching, _order_cost
+from paper1.search_check import DEFINITE_CEX, matrix_from_masks
 from satisfiability.customer_search import decide
 from tests.test_search_certificate import CYCLE_10x20, _random, _sparse
 
-CHECKER = Path(__file__).resolve().parent.parent / "paper2" / "certificate_check.py"
+CHECKER = Path(__file__).resolve().parent.parent / "paper1" / "certificate_check.py"
 
 # Warwick 877 (wbo_20_10.txt), optimum 8: its repaired certificate at k = 7 has a
 # definite step and better steps with two-edge matchings.

@@ -1,4 +1,4 @@
-"""Tests for the pebbling part of `paper2.complex_check` (loop0006 item 02):
+"""Tests for the pebbling part of `paper1.complex_check` (loop0006 item 02):
 the four games on dags whose demands can be checked by hand, Lengauer's
 constructions G_u and G_d, and a quick run of every P.5 statement."""
 from __future__ import annotations
@@ -9,7 +9,7 @@ import networkx as nx
 import pytest
 from networkx.generators.atlas import graph_atlas_g
 
-from paper2 import complex_check as cc
+from paper1 import complex_check as cc
 
 ONE = cc.dag(1, [])
 ARC = cc.dag(2, [(0, 1)])

@@ -1,0 +1,51 @@
+Retrieval record for paper1/literature — Table 1 of Linhares & Yanasse (2002).
+Retrieved 2026-09-17. All sources are author-hosted or repository copies.
+
+[4]  04_fink_voss_1999.pdf
+     https://www.bwl.uni-hamburg.de/iwi/forschung/projekte/psp.pdf
+     Authors' own project page, Institut fuer Wirtschaftsinformatik, Univ. Hamburg.
+     Author preprint of Computers & Operations Research 26 (1999) 17-34.
+
+[9]  09_kirousis_papadimitriou_1985.pdf
+     https://doi.org/10.1016/0012-365X(85)90046-9  (ScienceDirect PII 0012365X85900469)
+     Elsevier open archive, free to read. Downloaded manually in a browser on
+     2026-09-17 because ScienceDirect returns HTTP 403 to non-browser clients.
+     Published version, Discrete Mathematics 55 (1985) 181-184, 4 pp.
+
+[10] 10_kirousis_papadimitriou_1986.pdf
+     Copied from ../../literature/kirousis_papadimitriou_1986.pdf (already held).
+     Published version, Theoretical Computer Science 47 (1986) 205-218.
+
+[11] 11_kornai_tuza_1992.pdf
+     http://kornai.com/Papers/kortuz.pdf
+     Andras Kornai's own publications page (kornai.com/pub.html).
+     Author copy, paginated as Discrete Applied Mathematics 36 (1992) 87-92.
+
+[12] 12_fomin_1998.pdf
+     https://web.archive.org/web/20100222171805/http://www.ii.uib.no/~fomin/fedor/articles1/hel.ps
+     Fedor Fomin's University of Bergen page (now dead) via the Wayback Machine,
+     snapshot of 2010-02-22. Retrieved as PostScript, converted with ps2pdf.
+     Author preprint of Discrete Applied Mathematics 85 (1998) 59-70.
+
+Sources checked and found to have nothing for the other seven:
+  OpenAlex (api.openalex.org)          - OA status per DOI
+  Semantic Scholar (api.semanticscholar.org) - openAccessPdf per DOI
+  CORE (api.core.ac.uk)                - rate-limited without an API key
+  Internet Archive Scholar (fatcat)    - api.fatcat.wiki unreachable
+  ScienceDirect                        - HTTP 403 to non-browser clients
+  Academia.edu                         - HTTP 403 / login wall
+  NTUA DSpace                          - connection timed out
+(The ScienceDirect and Academia.edu blocks are what stood between us and [9];
+ a browser got past them.)
+  pure.mpg.de                          - metadata only, no full text
+13_kinnersley_1992.pdf  sent by H. Yanasse by e-mail, 2026-09-27 (published version, DOI 10.1016/0020-0190(92)90234-M); same file as ../../literature/kinnersley_1992_vertex_separation_equals_pathwidth.pdf
+01_yanasse_1997.pdf, 07_ohtsuki_et_al_1979.pdf, 08_wing_huang_wang_1985.pdf,
+14_lengauer_1981.pdf
+     Sent by H. Yanasse by e-mail, 2026-09-27 (publisher versions). Copies also
+     under ../../literature/ with descriptive names.
+06_mohring_1990.pdf
+     Pages 20-54 of the full book PDF "Computational Graph Theory" (Computing
+     Supplementum 7, Springer 1990, DOI 10.1007/978-3-7091-9076-0), obtained via
+     institutional access on 2026-09-27 and kept in ~/Downloads; extracted with
+     pdfseparate/pdfunite. Published version, pp. 17-51, 35 pp. Replaces the
+     two-page Springer preview sent by H. Yanasse the same day.

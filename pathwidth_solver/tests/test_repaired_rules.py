@@ -5,7 +5,7 @@
 multiword C at every word count and the 128-bit legacy C are the same search
 under both settings, node for node, that each equals MOSP's search on the same
 masks, and that the published definite move's counterexample no longer loses
-the node. The full sweep is `python -m paper2.solver_fix_pw_check` in MOSP.
+the node. The full sweep is `python -m paper1.solver_fix_pw_check` in MOSP.
 """
 import random
 
@@ -20,7 +20,7 @@ from pathwidth.search import Decision, _apply_dominance, _has_definite_matching,
 needs_native = pytest.mark.skipif(not native.native_available(),
                                   reason=f"C port unavailable: {native.build_error()}")
 
-# `DEFINITE_CEX` of MOSP's `paper2/search_check.py`: (masks, S, q, k). At the
+# `DEFINITE_CEX` of MOSP's `paper1/search_check.py`: (masks, S, q, k). At the
 # state S with budget k, Chu & Stuckey's definite move keeps q = 0 alone, and
 # no solution from S starts with 0.
 DEFINITE_CEX = [

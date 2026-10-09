@@ -6,7 +6,7 @@ Released under the MIT license as described in the file LICENSE.
 
 Source: Lengauer, *Black-white pebbles and graph separation*, Acta Informatica 16
 (1981) 465–475 (`literature/lengauer_1981_black_white_pebbles_graph_separation.pdf`),
-§1–2. Census and brute-force check: `paper2/equivalences.md`, section "Pebbling",
+§1–2. Census and brute-force check: `paper1/equivalences.md`, section "Pebbling",
 P.1–P.7 (loop0006 items 01–02).
 
 ## The game, as Lengauer states it (pp. 466–467)
@@ -28,7 +28,7 @@ removed, (v)), each exactly once. So a position is a phase per vertex
 `PebblesWithin D K` says that the all-`done` position is reachable from the all-`fresh`
 one through positions with at most `K` pebbles. `IsPositivePBWP D K` adds `0 < K`, and
 `pbw D` is the least `K` (Kirousis & Papadimitriou's `pbw`). This is the same machine
-as `progressive_bw_within(d, k, rules="lengauer")` in `paper2/complex_check.py`, which
+as `progressive_bw_within(d, k, rules="lengauer")` in `paper1/complex_check.py`, which
 decided every statement of P.5; `replay_progressive` there replays single plays under
 exactly these rules. The game is defined on any `Digraph`; Lengauer's dags are the
 acyclic ones, and `G_d` is acyclic (`lengauerD_no_path_two`).
@@ -73,7 +73,7 @@ vertices with a neighbour at or before the cut), which is the natural one for pe
   `a`, and every vertex of `B` carry pebbles, and these are `|B| + 2` distinct vertices
   of `G_d`. Hence `|B| ≤ K`.
 
-The Python replay `python -m paper2.complex_check --pebbling-strategy` runs both
+The Python replay `python -m paper1.complex_check --pebbling-strategy` runs both
 constructions on every layout of every graph on at most 7 vertices (5,378,453 plays): the
 (⇐) play is legal and within the bound, its removal layout satisfies the (⇒) bound, and
 the best layout attains `vs + 2` (`1` if edgeless), with zero failures.

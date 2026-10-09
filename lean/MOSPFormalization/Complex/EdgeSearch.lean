@@ -43,7 +43,7 @@ Formalised as the game itself:
   `u` keeps a searcher, nothing can reach `uv` through `u`; if `u` is left
   empty with another contaminated edge, the gas comes straight back, so the
   slide clears `uv` exactly when the source says it does. This is the
-  semantics of `paper2/complex_check.py`'s `edge_search`;
+  semantics of `paper1/complex_check.py`'s `edge_search`;
 * `edgeCost` — the largest total number of searchers over the run;
   `Progressive` — no move enlarges the contaminated set;
 * `edgeSearch` / `progressiveEdgeSearch` — the least cost of a (progressive)
@@ -97,7 +97,7 @@ LaPaugh (1993), recontamination does not help, is stated as the proposition
 asserted; `vertexSeparation_le_edgeSearch_of_monotonicity` derives the
 missing half of Theorem 2.1 from it. No `sorry` stands for it. That all three
 values `vs, vs + 1, vs + 2` occur (`K₂` has `s = vs = 1`; `K₃,₃` has
-`s = 5 = vs + 2`, EST p. 57) is checked by `paper2/complex_check.py`, not
+`s = 5 = vs + 2`, EST p. 57) is checked by `paper1/complex_check.py`, not
 here.
 -/
 

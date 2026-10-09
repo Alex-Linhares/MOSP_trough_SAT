@@ -1,0 +1,1966 @@
+# The pathwidth complex: the equivalences of Table 1
+
+Section 3 of *The pathwidth complex* (`plan.md`), built by Ralph loop0005.
+Every row states what the source proves, not what Table 1 asserts, and where
+it is checked (brute force, `complex_check.py`) and proved (Lean,
+`../lean/MOSPFormalization/Complex/`).
+
+Built one item per session (2026-09-30). Item 01 read every source and
+filled in the census; item 02 computed every quantity from its own definition
+and checked every statement on small inputs (*Item 02: the brute-force check*);
+items 03–12 proved the rows in Lean, one file per problem (*Item 03* …
+*Item 12*); item 13 assembled the section: the master table, the chain figure,
+the gap and sorry inventory, and `lean_repo_plan.md` (*Item 13*); item 14, the
+reserve, proved node search monotone and the full edge-search band, which
+closed one of the two named gaps (*Item 14*). Page numbers
+are the printed page numbers of the source; where only a preprint is held
+(Kornai & Tuza, Fomin) the preprint's own page or section is given.
+
+## What Table 1 claims, and how it is read here
+
+Linhares & Yanasse (2002), p. 1764 (not p. 1762, which carries Fig. 1 and
+which `literature/MANIFEST.md` gave until 2026-09-30), introduce Table 1 as "a set of problems that
+consist of, given input Π, compute a function f(Π) that is either equal to
+the number of open stacks or closely related to it (plus or minus one)". The
+reference column cites where each problem was studied; the table gives no
+proofs and no graph.
+
+Two readings are kept apart throughout:
+
+- **literal ±1**: for every input, `f` lies in `{Z − 1, Z, Z + 1}`, where
+  `Z = pw(G) + 1` is the number of open stacks of the corresponding MOSP
+  instance (for a graph input `G`, the instance whose matrix is the
+  vertex–edge incidence matrix of `G`, which has MOSP graph `G`);
+- **fixed offset**: `f = Z + c` for a constant `c ∈ {−1, 0, 1}` on every
+  input, which is what "equivalent" needs if computing one is to compute the
+  other.
+
+Status labels: **confirmed** (the fixed-offset reading holds, with the stated
+edge cases); **weaker than stated** (literal ±1 holds, fixed offset does not:
+a band or sandwich); **misattributed** (the cited paper proves something
+else); **unsourced** (only the unheld [5] is cited for it); **false** (not
+within ±1 of `Z`, with a counterexample family).
+
+## Master table (section 3)
+
+One row per Table 1 problem. **Relation** is what is true and proved, with its
+hypothesis; `pw`, `vs` are of the graph the problem lives on (the MOSP / net
+graph for the matrix problems, the input graph otherwise). **Status** uses five
+labels, in this order of strength:
+
+- **proved** — the exact relation to `pw` is a sorry-free Lean theorem;
+- **sandwich** — the true relation is a band (`pw ≤ f ≤ pw + c`), proved in
+  Lean; the literal "±1" wording may still hold, a fixed offset does not;
+- **monotone only** — proved for the monotone (recontamination-free) version
+  of a search game; the full game needs a monotonicity theorem;
+- **stated gap** — that monotonicity theorem, stated in Lean as a named `Prop`
+  and used only as an explicit hypothesis, never asserted (no `sorry`);
+- **false as stated** — Table 1's claim fails; the counterexample is proved in
+  Lean.
+
+All Lean names are in namespace `MOSPFormalization` (with `Complex.` for the
+files under `Complex/`); every one listed here depends only on `propext`,
+`Classical.choice` and `Quot.sound` (`paper1/axiom_check.lean`).
+
+| # | Problem | Source (Table 1 ref; where the relation is proved) | Relation, proved | Headline Lean theorem (file) | Status |
+|---|---|---|---|---|---|
+| 1 | MOSP | [1] Yanasse 1997, [4] Fink & Voss 1999 (definitions only); relation: Yanasse 1997a Prop. 5, Fellows & Langston 1989 Thm 7, L&Y 2002 Prop. 2 | `Z(M) = pw(G_M) + 1` when M has a requirement | `MOSPInstance.mospValue_eq_pathwidth_add_one` (`MOSPGraph.lean`) | **proved** |
+| 2 | Gate matrix layout | [6] Möhring 1990 p. 18, Thm 3.2, Prop. 3.5; [8] Wing et al. 1985 Problem 1 | `t(M) = Z(M) = pw + 1` when M has a 1; left edge: min tracks of `M^π` = max column sum | `NetGateMatrix.tracks_eq_mospValue`, `NetGateMatrix.tracks_eq_pathwidth_add_one` (`GateMatrix.lean`) | **proved** |
+| 3 | One-dimensional logic | [7] Ohtsuki et al. 1979 §II, Thm 3 | `tracks = θ(H) = pw(H) + 1` (every net has a gate; the pw form needs one connection); §IV boundary gates: `pw + 1 ≤ tracks_B` | `LogicArray.tracks_eq_intervalThickness`, `LogicArray.tracks_eq_pathwidth_add_one` (`OneDimLogic.lean`) | **proved** (core problem); §IV variant: lower half only, band `{pw + 1, pw + 2}` checked, not proved |
+| 4 | PLA folding | [6] Möhring p. 25 (PLAMPP), Thm 3.14, Prop. 3.15 | simple folding: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, gap unbounded, also on connected net graphs; multiple folding `= pw + 1` | `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_unbounded`; `NetGateMatrix.foldTracks_eq_pathwidth_add_one` (`PLAFolding.lean`) | **false as stated** (simple folding); multiple folding **proved** |
+| 5 | Interval thickness | [5] Kashiwabara & Fujisawa 1979, not held; Möhring Prop. 3.5; [9] K&P 1985 Thm | `θ = pw + 1` (V nonempty); `θ = ns = mns` (≥ 1 edge) | `intervalThickness_eq_pathwidth_add_one` (`IntervalThickness.lean`); `intervalSearch_chain` (`IntervalSearch.lean`); `nodeSearch_eq_intervalThickness`, `nodeSearch_chain` (`NodeMonotonicity.lean`) | **proved** (item 14 removed "`θ = ns` monotone only") |
+| 6 | Node search | [9] K&P 1985 Thm (`ns = θ`); [10] K&P 1986 Thm 4.1 (`ns = vs + 1`) | `ns = mns = vs + 1 = pw + 1 = θ` (≥ 1 edge); `ns = mns` on every finite graph; `ns = mns = 0` on edgeless graphs | `nodeSearch_eq_vertexSeparation_add_one`, `nodeSearchMonotonicity`, `nodeSearch_chain` (`NodeMonotonicity.lean`); `monotoneNodeSearch_eq_vertexSeparation_add_one` (`NodeSearch.lean`); `nodeSearch_ne_intervalThickness_of_edgeless` (`IntervalSearch.lean`) | **proved**, full game (item 14; `NodeSearchMonotonicity` is now a theorem); **false as stated** on edgeless graphs |
+| 7 | Edge search | [10] K&P 1986 p. 209; Ellis, Sudborough & Turner 1994 Thm 2.1 | `vs ≤ es ≤ vs + 2` and `vs ≤ pes ≤ vs + 2` (every finite graph); `es ≤ pes ≤ es + 2` | `vertexSeparation_le_edgeSearch_le_add_two` (`EdgeSearchFull.lean`); `vertexSeparation_le_progressiveEdgeSearch_le_add_two` (`EdgeSearch.lean`) | **sandwich**, full game (item 14); `es = pes` (LaPaugh) remains a **stated gap** (`EdgeSearchMonotonicity`), on which no row now depends |
+| 8 | Narrowness | [11] Kornai & Tuza 1992 Prop. 3.1, Prop. 2.1 | `ν = pw + 1` (V nonempty); per sequence `ν(σ) = vs(rev σ) + 1` | `narrowness_eq_pathwidth_add_one` (`Narrowness.lean`) | **proved** |
+| 9 | Split bandwidth | [12] Fomin 1998 Thm 8 | `pw ≤ sb ≤ pw + 1` (every finite graph; Fomin assumes connected, ≥ 2 vertices) | `pathwidth_le_splitBandwidth_le_pathwidth_add_one` (`SplitBandwidth.lean`) | **sandwich** |
+| 10 | Path-width | [13] Kinnersley 1992 p. 346 | the reference definition | `pathwidth` (`Pathwidth.lean`) | definition |
+| 11 | Edge separation | [14] Lengauer 1981, misattributed: its edge game is cutwidth (p. 468), Def. 6 modified cutwidth; its vertex game VSG is `vs` | `cw`, `mcw` unbounded against `pw` (stars); `VSG = max(1, vs)`; Thm 4 `vs(G_du) = vs + 1` (≥ 1 edge) | `cutwidth_unbounded`, `modCutwidth_unbounded`, `vsg_eq_max`, `vertexSeparation_triangleGraph` (`EdgeSeparation.lean`) | **false as stated** (and misattributed); VSG **proved** |
+| 12 | Vertex separation | [13] Kinnersley 1992 Thm 3.1 | `vs = pw` | `vertexSeparation_eq_pathwidth` (`VSEquivPW.lean`) | **proved** |
+| 13 | Progressive pebbling (not in Table 1; loop0006, P.1–P.9) | Lengauer 1981 Thms 2, 3; [10] K&P 1986 Thm 3.1 | `mpb = mpbw = vs + 1 = pw + 1` (V nonempty), `= ns` (≥ 1 edge); `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)` (D nonempty, any digraph); `pbw(G_d) = vs + 2 = pw + 2` (≥ 1 edge), `= 1` edgeless | `mpb_eq_mpbw`, `mpb_eq_pathwidth_add_one`, `mpb_eq_nodeSearch`, `pbw_eq_pathwidth_lengauerU_add_one`, `pbw_eq_mospValue_pebbleMatrix` (`PebblingGu.lean`); `pbw_lengauerD_eq_pathwidth` (`Pebbling.lean`) | **proved**; **false as stated** on edge cases: K&P's `mpb = ns` on edgeless graphs, Lengauer's Thm 2 instance form at K = 1 |
+
+**Tally.** Proved exactly: MOSP, gate matrix layout, one-dimensional logic,
+interval thickness, node search (full game), narrowness, vertex separation
+(seven), plus multiple folding and Lengauer's VSG. Sandwich: split bandwidth,
+edge search (full game). Monotone only: none since item 14. Stated gaps: one,
+LaPaugh's `es = pes`, which no row of the table needs any more. False as stated: PLA folding (simple), edge separation; and, as
+edge cases of rows that are otherwise right, `ns = vs + 1` and `ns = θ` on
+edgeless graphs. Nothing in the table is asserted without proof.
+Row 13, added by loop0006, is not a Table 1 row: progressive pebbling is a
+candidate thirteenth member, **proved** exact with offset +1 on the graph
+itself (13a), +1 on `D_u` (13b) and +2 on `G_d` (13c).
+
+## The chain
+
+![The equivalence chain](figures/equivalence_chain.png)
+
+Source `figures/equivalence_chain.dot` (Graphviz; PDF and PNG beside it,
+regenerate with the two `dot` commands in its header). *(2026-10-03, loop0008 item 09: the print
+version, Figure 3.1 of the LaTeX draft, is `figures/sec3_fig1_chain.pdf`, drawn by
+`python -m paper1.section3_figure`; it keeps the relations and drops the Lean
+names.)* Solid edges are exact
+identities proved in Lean, dashed edges proved inequalities, dotted edges the
+one remaining monotonicity gap (LaPaugh's `es = pes`), red edges Table 1
+claims that are false. Every edge is
+labelled with its Lean theorem and hypothesis. Read from the right: everything
+is attached to `pw` through three hubs — `vs` (Kinnersley), `θ` (Möhring
+Prop. 3.5) and `Z` (the MOSP graph) — and `intervalSearch_chain`
+(`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge) is the one theorem that joins the
+three search-side hubs; item 14's `nodeSearch_chain` adds the full game `ns`
+to it.
+
+## Gaps, sorries and errors found in the sources
+
+**Allowed sorries added by this loop: none.**
+`Ralph_Loops/loop0005/allowed_sorries.txt` has no entries. The only `sorry`
+in the Lean development is the baseline one, which predates the loop:
+
+| File | Theorem | Why it stays |
+|---|---|---|
+| `Sandwich.lean` | `conjecture_sqrt_tw_f6` | the §24 conjecture of `reports/ml_nature.md`, kept on purpose as a statement; proving it would prove nothing new (pointwise ≤ `max(lb_best, tw + 1)`). No theorem of this section depends on it (`paper1/axiom_check.lean`), although `SplitBandwidth.lean` and `EdgeSeparation.lean` import the file for `bandwidth`. |
+
+**Stated gaps (named `Prop`s, used only as hypotheses):**
+
+| File | Name | Content | Source of the missing theorem | What it would give |
+|---|---|---|---|---|
+| `EdgeSearch.lean` | `EdgeSearchMonotonicity G` | `edgeSearch G = progressiveEdgeSearch G` | LaPaugh (1993); Bienstock & Seymour (1991) | nothing the table needs: `vs ≤ es ≤ vs + 2` is proved without it (`EdgeSearchFull.lean`); it would sharpen `es ≤ pes ≤ es + 2` to equality |
+
+**Closed by item 14:** `NodeSearchMonotonicity G` (`NodeSearch.lean`) is now
+the theorem `nodeSearchMonotonicity G` (`NodeMonotonicity.lean`), for every
+finite graph, by a vertex-set crusade argument (Bienstock & Seymour 1991)
+rather than [10]'s reduction to LaPaugh. The `…_of_monotonicity` corollaries
+are discharged: `nodeSearch_eq_vertexSeparation_add_one`,
+`nodeSearch_eq_intervalThickness`, `NetGateMatrix.tracks_eq_nodeSearch`. The
+same argument gives EST Lemma 2.1 for the full edge game
+(`vertexSeparation_le_edgeSearch`), which `EdgeSearch.lean` had derived only
+from `EdgeSearchMonotonicity`.
+
+**Errors in the sources, each with a Lean proof:**
+
+- Kirousis & Papadimitriou (1986), proof of Thm 4.1, claim (2) is false for
+  the strategies it quantifies over (`K_{1,3}`; theorem unaffected):
+  `kirousisPapadimitriou_claim2_false` (`Complex/KirousisPapadimitriouGap.lean`,
+  written outside the loop, 2026-09-30; `proof_reductions.md`).
+  `NodeSearch.lean` avoids the step by ordering by clearing time.
+- Kirousis & Papadimitriou (1985), Theorem (`ns = θ` "for any graph") and
+  (1986) Thm 4.1 fail on nonempty edgeless graphs:
+  `nodeSearch_ne_intervalThickness_of_edgeless`,
+  `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless`.
+- Lengauer (1981) Thm 4 fails at `K = 0` on edgeless graphs:
+  `isPositiveVSG_triangleGraph_counterexample`.
+- Möhring (1990) Thm 3.9 (`t = ns`) fails literally on the `1 × 1` matrix
+  `[1]`: `tracks_ne_monotoneNodeSearch_one`.
+- Table 1 itself: PLA (simple) folding and "edge separation" are not within
+  ±1 (rows 4 and 11); Table 1 sits on p. 1764 of L&Y 2002, not p. 1762.
+
+**Not formalised, by choice** (all checked by `complex_check.py` instead):
+that the band ends are attained (`es − vs ∈ {0, 1, 2}` on `K_2`, `K_{3,3}`;
+`sb(K_{1,3}) = 2`; the Ohtsuki boundary gap), which needs lower bounds over
+every strategy, split or placement; Fomin Thms 3 and 6; EST Thm 2.2;
+Lengauer Thms 2, 3, 7; Möhring Prop. 3.15 and Thm 3.14 in path-partition
+form; the Ohtsuki §IV upper bound.
+
+## Detailed table: census, check and Lean
+
+`Z` = number of open stacks; `pw` = pathwidth of the graph in the "Graph"
+column; `vs` = vertex separation of the same graph.
+
+| # | Problem | Source (Table 1 ref) | Defined on | Graph | Relation (source, theorem) | Checked | Lean | Status |
+|---|---|---|---|---|---|---|---|---|
+| 1 | MOSP | Yanasse 1997 EJOR [1]; Fink & Voss 1999 [4] | 0/1 matrix (piece types × patterns) | MOSP graph: piece types, adjacent iff they share a pattern | `Z = pw + 1`; not in [1] or [4] (definitions only); Yanasse 1997a Prop. 5, Fellows & Langston 1987 Lemma 4.1 + 1989 Thm 7, with L&Y 2002 Prop. 2 | corpus; 2,130 matrices, 0 fail | `mospValue_eq_pathwidth_add_one` | confirmed (needs one requirement) |
+| 2 | Gate matrix layout | Möhring 1990 [6]; Wing, Huang & Wang 1985 [8] | 0/1 net–gate matrix | net adjacency (incompatibility) graph = MOSP graph with nets as piece types | `t(M) = Z(M)` on the same matrix (L&Y Prop. 2; Möhring Thm 3.2 + left-edge p. 31); `t = pw + 1` (Möhring Prop. 3.5; F&L 1989 Thm 7) | 2,130 matrices, 0 fail | `NetGateMatrix.tracks_eq_pathwidth_add_one`, `tracks_eq_mospValue`, `tracksFor_eq_maxOpenStacks` | confirmed; **proved** (needs one 1 in M) |
+| 3 | One-dimensional logic | Ohtsuki et al. 1979 [7] | gates × nets list | connection graph `H` (nets, adjacent iff a common gate) | tracks `= θ(H) = pw(H) + 1` without boundary gates (§II, Thm 3); the boundary-gate version (§IV) is a constrained variant, `pw(H) + 1 ≤ tracks_B`, gap 1 attained | 452 instances, 0 fail; boundary: 1,027, gap ≤ 1 | `Complex.LogicArray.tracks_eq_intervalThickness`, `tracks_eq_pathwidth_add_one`, `exists_placementGraph_le` (Thm 3), `tracks_eq_gateMatrix_tracks`; boundary: `pathwidth_add_one_le_tracksPinned` only | confirmed (core problem); **proved** (θ form: every net has a gate; pw form: some net meets some gate); boundary variant weaker than stated (not a fixed offset; ±1 on every instance checked), lower bound proved |
+| 4 | PLA folding | Möhring 1990 [6] | 0/1 net–gate matrix | incompatibility graph `G` | simple folding (≤ 2 nets per track, PLAMPP p. 25): `tracks = |V(G)| − s` (Prop. 3.15), `≥ max(θ, ⌈|V|/2⌉)`; multiple folding (path partition): `= θ` (Thm 3.14) | 2,130 matrices; `I_5`: 3 vs 1 | `Complex.NetGateMatrix.pathwidth_add_one_le_plaTracks`, `card_le_two_mul_plaTracks`, `foldTracks_eq_pathwidth_add_one` (multiple folding); counterexamples `plaTracks_idMatrix_five`, `plaTracks_idMatrix_unbounded`, `plaTracks_pathMatrix_six`, `plaTracks_pathMatrix_unbounded` (connected) | **false** as stated (simple folding); confirmed for multiple folding; **proved**: `max(pw + 1, ⌈|N|/2⌉) ≤ pla`, multiple folding `= pw + 1`, and the counterexamples (unbounded gap, also on connected instances) |
+| 5 | Interval thickness | Kashiwabara & Fujisawa 1979 [5], not held | graph | itself | `θ = pw + 1` (Möhring Prop. 3.5, proved there); `θ = ns` (K&P 1985 Thm) | 1,652 graphs, 0 fail | `Complex.intervalThickness_eq_pathwidth_add_one`, `pathwidth_add_one_le_cliqueNum`, `intervalThickness_le_pathwidth_add_one`; with node search: `monotoneNodeSearch_eq_intervalThickness`, `intervalSearch_chain`, `intervalThickness_of_edgeless` | unsourced at [5]; relation confirmed in [6], [9]; **proved** (needs ≥ 1 vertex; `θ = 0` on the empty graph); `θ = mns` proved (≥ 1 edge) |
+| 6 | Node search game | Kirousis & Papadimitriou 1985 [9] | graph | itself | `ns = θ` ([9] Thm, p. 182); `ns = vs + 1` ([10] Thm 4.1); both use monotonicity ([10] Thm 2.3 ← LaPaugh) | 1,652 graphs, 0 fail (both games) | `Complex.monotoneNodeSearch_eq_vertexSeparation_add_one`, `monotoneNodeSearch_eq_pathwidth_add_one`, `monotoneNodeSearch_of_edgeless`, `nodeSearch_le_vertexSeparation_add_one`; `ns = θ` ([9]): `monotoneNodeSearch_eq_intervalThickness`, `intervalSearch_chain`, `nodeSearch_le_intervalThickness`, `NetGateMatrix.tracks_eq_monotoneNodeSearch` (Möhring Thm 3.9); counterexamples `nodeSearch_ne_intervalThickness_of_edgeless`, `nodeSearch_ne_intervalThickness_K1`, `tracks_ne_monotoneNodeSearch_one`; gap stated as `NodeSearchMonotonicity`, closed by item 14: `nodeSearchMonotonicity`, `nodeSearch_eq_vertexSeparation_add_one`, `nodeSearch_eq_intervalThickness`, `nodeSearch_chain`, `NetGateMatrix.tracks_eq_nodeSearch` | confirmed for graphs with an edge; false on edgeless graphs (`ns = 0`, `θ = vs + 1 = 1`); **proved for the monotone game** (`θ = mns = vs + 1 = pw + 1`, ≥ 1 edge; `mns = ns = 0` edgeless) and `ns ≤ θ = vs + 1`; `ns ≥ vs + 1` was the named gap ([10] Thm 2.3), **proved for the full game by item 14** |
+| 7 | Edge search game | Kirousis & Papadimitriou 1986 [10] | graph (multigraphs allowed) | itself | `ns − 1 ≤ es ≤ ns + 1` ([10] p. 209) ⇔ `vs ≤ es ≤ vs + 2` (Ellis, Sudborough & Turner 1994 Thm 2.1); all three values occur; `es(G) = vs(2-expansion of G)` (EST Thm 2.2) | 1,632 graphs; `es − vs ∈ {0,1,2}` | `Complex.vertexSeparation_le_progressiveEdgeSearch_le_add_two`, `pathwidth_le_progressiveEdgeSearch_le_add_two`, `edgeSearch_le_vertexSeparation_add_two`, `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`, `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch`, `edgeSearch_of_edgeless`; gap stated as `EdgeSearchMonotonicity`; item 14: `vertexSeparation_le_edgeSearch_le_add_two`, `pathwidth_le_edgeSearch_le_add_two`, `nodeSearch_sub_one_le_edgeSearch_le_add_one` | weaker than stated (band of width 2); **proved for the progressive game** (`vs ≤ s ≤ vs + 2`, every finite graph) and `s ≤ vs + 2` for the full game; `vs ≤ s` in the full game **proved by item 14** without LaPaugh; `s = ps` (LaPaugh 1993) remains the named gap |
+| 8 | Narrowness | Kornai & Tuza 1992 [11] | graph | itself | `ν = pw + 1` for ≥ 1 vertex (Prop. 3.1); per sequence `ν(σ) = vs(σ reversed) + 1`; in- = out-narrowness (Prop. 2.1) | 1,652 graphs, 0 fail | `Complex.narrowness_eq_pathwidth_add_one`, `inNarrowness_eq_vertexSepOfLayout_reverse`, `exists_inNarrowness_iff_exists_outNarrowness` | confirmed; **proved** (needs ≥ 1 vertex; `ν = 0` on the empty graph) |
+| 9 | Split bandwidth | Fomin 1998 [12] | connected graph, ≥ 2 vertices (Lean: every finite graph) | itself | **sandwich** `pw ≤ sb ≤ pw + 1` (Thm 8), not an equality; `sb = ib = 1/μ_m` (Thms 3, 6) | 1,302 graphs via `ib`; `ib − pw ∈ {0,1}` | `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_splitBandwidth`, `splitBandwidth_le_pathwidth_add_one`, `pathwidth_le_of_isNodeSplitting`, `splitBandwidth_le_inNarrowness` | weaker than stated (sandwich); **proved** (no hypothesis) |
+| 10 | Graph path-width | Kinnersley 1992 [13] | graph | itself | definition (Robertson & Seymour), p. 346 | reference | `Pathwidth.lean` | definition |
+| 11 | Edge separation | Lengauer 1981 [14] | graph | itself | [14] defines no edge-separation number related to `pw`: its edge game is min-cut linear arrangement (cutwidth, p. 468), its Def. 6 is modified cutwidth; neither is within ±1 (stars); its vertex game VSG is `vs` exactly | `cw`, `mcw` fail ±1 on 341, 738 of 1,644 | `Complex.vsg_eq_pathwidth`, `vsg_eq_one_of_edgeless`, `vertexSeparation_triangleGraph` (Thm 4), `isPositiveVSG_iff_triangleGraph`; counterexamples `pathwidth_add_two_lt_cutwidth_star7`, `pathwidth_add_two_lt_modCutwidth_star9`, `cutwidth_unbounded`, `modCutwidth_unbounded`; `pathwidth_le_cutwidth` | **misattributed and false** under every reading [14] supports; **proved**: VSG = vs = pw (≥ 1 edge; VSG = 1 edgeless), Thm 4, and the star counterexamples |
+| 12 | Vertex separation | Kinnersley 1992 [13] | graph | itself | `vs = pw` (Thm 3.1); Lengauer's VSG `= vs` by reversal | 1,652 graphs, 0 fail | `vertexSeparation_eq_pathwidth`; VSG: `Complex.vsg_eq_vertexSeparation` | confirmed |
+
+Summary: **six confirmed** (MOSP, gate matrix layout, one-dimensional logic,
+narrowness, node search with the edgeless exception, vertex separation), plus
+path-width as the reference definition; **one unsourced** at its citation but
+proved elsewhere (interval thickness); **two weaker than stated** (edge search,
+a band; split bandwidth, a sandwich), both of which still meet the literal ±1
+wording; **two false as stated** (PLA folding in its standard two-nets-per-track
+form; edge separation, which is also misattributed).
+
+## The census, problem by problem
+
+### 1. MOSP — [1] Yanasse 1997 (EJOR), [4] Fink & Voss 1999
+
+- **Definition.** [1] p. 455: "We assume that a stack is opened for every new
+  panel type cut and it remains opened until the last piece of that panel type
+  is cut. We also assume that a completed stack can be removed only after a
+  pattern is completely cut, hence, the maximum number of stacks occurs just
+  after some pattern is cut and before any completed part stack is removed."
+  [4] §1.1.1 (preprint p. 2), with `C` an m × n matrix whose **rows are
+  patterns** and columns order types: "an order j may be defined open at
+  position i₀ of the pattern sequence if (Σ_{i ≤ i₀} c_{π_i,j})(Σ_{i ≥ i₀}
+  c_{π_i,j}) > 0". Linhares & Yanasse 2002, p. 1760, eqs. (1)–(2), with the
+  I × J matrix P whose **rows are piece types**: `q_ij = 1` iff some patterns
+  x, y containing piece i satisfy `π(x) ≤ j ≤ π(y)`, and `Z_MOSP(P) = min_π
+  max_j Σ_i q_ij`. The three agree up to transposition of the matrix.
+- **Input.** 0/1 matrix. **Graph.** The MOSP graph: piece types (customers),
+  adjacent iff some pattern contains both (Yanasse 1997a Prop. 5).
+- **Relation.** Neither [1] nor [4] relates MOSP to any graph parameter; [1]
+  relates it to tool switching (Props. 1–2). The relation `Z = pw + 1` is
+  Yanasse 1997a Prop. 5 (the MOSP graph) with L&Y 2002 Prop. 2 (MOSP = GMLP)
+  and Fellows & Langston 1989 Thm 7 (GMLP cost k ⇔ pathwidth k − 1), whose
+  sketch rests on F&L 1987 Lemma 4.1. Proved in Lean,
+  `mospValue_eq_pathwidth_add_one`, hypothesis: at least one requirement
+  (with none, `Z = 0` while `pw + 1 = 1`).
+- **Status.** Confirmed. The Table 1 references are sources for the problem,
+  not for the equivalence.
+
+### 2. Gate matrix layout — [6] Möhring 1990, [8] Wing, Huang & Wang 1985
+
+- **Definition.** Möhring p. 18: an m × n net–gate matrix M, rows nets,
+  columns gates; for a gate permutation π the augmented matrix M^π fills in
+  every 0 between a row's leftmost and rightmost 1; "Nets of the augmented
+  net-gate matrix may share the same row (called track) if they have no gate
+  in common"; MPP: "Find a permutation of the columns and an assignment of the
+  augmented rows (nets) to tracks such that the number of tracks is minimum",
+  value `t(M)`. The gate matrix permutation problem GMPP (pp. 23–24) is the
+  MPP with no restriction. Wing et al. p. 222, Problem 1: "Given the net-gates
+  sets X(n_i), n_i ∈ N, of a circuit, find a pair of gate and net assignment
+  functions f: G → C and h: N → R, respectively, such that card[R] is
+  minimum." L&Y 2002 p. 1762 eq. (3): `Z_GMLP(P) = max_j Σ_i q_ij`, the same
+  formula as `Z_MOSP`.
+- **Input.** 0/1 matrix. **Graph.** Möhring p. 29: "the intersection graph of
+  the rows ... called the net adjacency graph [DKL87], or incompatibility
+  graph"; Wing p. 222 "connection graph H" (after Ohtsuki). This is the MOSP
+  graph with nets in the role of piece types and gates in the role of
+  patterns.
+- **Relation.** Möhring Thm 3.2 (p. 29): `t(M) = min{χ(H) | H interval, E(G) ⊆
+  E(H)}`; p. 31 (left-edge algorithm): "the minimum number of tracks for an
+  augmented net-gate matrix M^π is equal to the maximum column sum of M^π", so
+  `t(M) = Z_MOSP(M)` on the same matrix, no transposition (rows = nets =
+  piece types, columns = gates = patterns); this is L&Y Prop. 2 (p. 1763,
+  "follows trivially from their definitions"). Prop. 3.5 (p. 32): "pw(G) =
+  t(G) − 1", proved there in both directions. F&L 1989 Thm 7 states the same
+  for graphs (matrix with two 1s per column, one column per edge; Kinnersley
+  p. 346 uses exactly this form).
+- **Caveat.** Wing's full problem (p. 221) also demands that the layout be
+  *realizable* (vertical diffusion runs must not overlap transistors); their
+  Problem 1 drops that constraint, and it is Problem 1 that Table 1's
+  problem is. Möhring (p. 24) likewise sets aside the p/n split and nets that
+  need more than one row.
+- **Status.** Confirmed: `t(M) = Z(M) = pw(G_M) + 1`, exact. For item 03: the
+  map is the identity on the matrix in L&Y's and Möhring's orientation; it is a
+  transposition only against Fink & Voss's orientation.
+
+### 3. One-dimensional logic — [7] Ohtsuki, Mori, Kuh, Kashiwabara & Fujisawa 1979
+
+- **Definition.** §II (pp. 676–677): gates `T = {t_l, t_1, …, t_m, t_r}` with
+  boundary gates `t_l, t_r`, nets `V = {v_1, …, v_n}`, `V(t)` the nets at gate
+  t, assumptions `|V(t)| ≥ 1` and `|T(v)| ≥ 2` (eqs. 3–4); each placement
+  (gate permutation) gives each net a closed interval, "the necessary number of
+  tracks is the chromatic number of the corresponding interval graph", equal to
+  its clique number. Connection graph (eqs. 5–6): `H = (V, E)`, `E = {(x, y) |
+  ∃t: x, y ∈ V(t)}`. The problem (p. 677): "given a graph H, find a supergraph
+  by adding a set of edges, which is an interval graph and has the least
+  clique number", with the boundary gates ignored "for the time being".
+- **Input.** Gate–net incidence (a 0/1 matrix). **Graph.** `H` = MOSP graph
+  with nets as piece types.
+- **Relation.** Every placement gives an interval supergraph of `H` with tracks
+  = clique number (p. 676); Thm 3 (p. 678): from a *minimal* augmentation, a
+  gate sequence realises exactly that interval graph. Together: min tracks =
+  `θ(H)`, hence `pw(H) + 1` by Möhring Prop. 3.5. Not stated as one numbered
+  theorem in [7]. It is the same matrix problem as gate matrix layout (Wing
+  et al. cite [7] as [3] for exactly this).
+- **Boundary gates.** §IV (p. 680) adds the constraint that `t_l, t_r` sit at
+  the two ends (a "B augmentation"), assuming `V(t_l) ∩ V(t_r) = ∅` (eq. 14).
+  *Corrected by item 02.* Item 01 claimed a family `kK_2` (k nets
+  `a_i ∈ V(t_l)`, k nets `b_i ∈ V(t_r)`, inner gates `{a_i, b_i}`) with
+  tracks `k + 1` against `pw + 1 = 2`. That misread `H`: eq. (6) ranges over
+  all of `T`, boundary gates included, so the `a_i` form a clique, as do the
+  `b_i`, and `H` is two `K_k` joined by a perfect matching, with `pw(H) + 1 =
+  k + 1` = the tracks (checked k = 1..4; pinning the boundary gates costs
+  nothing there). The pin does cost something elsewhere: nets a–e with
+  connection graph the path a-b-c-d-e, `t_l = {c}`, `t_r = {a}`, inner gates
+  `{a,b}, {b,c}, {c,d}, {d,e}, {e}` need 3 tracks pinned and 2 free
+  (`boundary_path_instance`). Over 1,027 random instances (3–6 nets, 4–7
+  gates) the pinned optimum exceeds `pw(H) + 1` by 0 on 980 and by 1 on 47,
+  never by more. Always `≥ pw(H) + 1` (a pinned placement is a placement).
+  An upper bound of `pw(H) + 1 + |V(t_l)| + |V(t_r)|` is expected (stretch the
+  pinned nets' intervals to the ends of an optimal model) but not proved
+  here: realising the stretched model as a pinned gate sequence needs
+  Ohtsuki's B-augmentation argument. Whether a gap of 2 occurs is open.
+- **Status.** Confirmed for the problem as posed in §II–III; the boundary
+  version is a constrained variant, the analogue of Möhring's Weinberger MPP:
+  not a fixed offset (gap 0 or 1), within ±1 on everything checked.
+
+### 4. PLA folding — [6] Möhring 1990
+
+- **Definition.** PLAMPP, p. 25: "Find a permutation of the gates G_1, …, G_n
+  and a feasible assignment of at most two nets to a track (PLA layout) such
+  that the number of tracks is minimum." Prop. 3.15 (p. 38): "the minimum
+  number of tracks for a PLA folding is equal to |V(G)| − s, where s is the
+  maximum number of green directed arcs that can be added to G" forming a
+  matching in the complement of G with no alternating cycle. Block,
+  constrained and constrained-block folding (pp. 25–26) are further
+  restrictions. Separately, p. 36: a *path partition* ("multiple folding") of
+  G, tracks as directed paths of any length in the complement.
+- **Input.** 0/1 matrix. **Graph.** The incompatibility graph.
+- **Relation.** Multiple folding: Thm 3.14 (p. 36), a path partition with t
+  paths gives an interval augmentation with ω = t and conversely, so its
+  minimum is `θ = pw + 1`, exact. Simple (two-per-track) folding: every PLA
+  layout is a feasible MPP layout, so `tracks ≥ t(M) = pw + 1`, and each track
+  holds at most two nets, so `tracks ≥ ⌈|V|/2⌉`. Möhring proves only
+  reductions for it (Thm 4.5: gate matrix layout of G reduces to constrained
+  folding of a bipartite double of G, `t(G) = |V(G)| − |F|`), never an
+  equivalence on the same instance.
+- **Counterexample (to be checked by item 02).** The 5 × 5 identity matrix
+  (five nets, each on its own gate): the incompatibility graph is edgeless,
+  `t = pw + 1 = 1`, but two-per-track folding needs `⌈5/2⌉ = 3` tracks, a gap
+  of 2. Connected family: the path P_n as a matrix with one gate per edge,
+  `t = 2`, folding `≥ ⌈n/2⌉`, gap ≥ 2 from n = 7.
+- **Status.** False as stated for PLA folding in the sense Möhring defines it
+  (and the sense the PLA literature he cites uses, [HNS82]); confirmed if
+  "PLA folding" means multiple folding. Item 09 formalised both: the
+  counterexamples (edgeless `I_5` and connected `P_7`, gap unbounded) and
+  multiple folding `= pw + 1`; see "Item 09" below.
+
+### 5. Interval thickness — [5] Kashiwabara & Fujisawa 1979 (not held)
+
+- **Definition.** From [9] p. 182: "The interval thickness of a graph G,
+  denoted by θ(G), is the smallest max-clique over all interval supergraphs
+  of G." Möhring p. 31: "The smallest clique size ω(H) of an interval graph
+  augmentation of G is also called the interval thickness of G", with an
+  interval graph defined by intervals of a linear order, adjacent iff they
+  intersect (p. 28, eq. 3.2). Supergraph means same vertex set, more edges.
+- **Relation.** Möhring Prop. 3.5 (p. 32), `pw(G) = t(G) − 1`, proved there:
+  bags of a path decomposition as maximal cliques of an interval supergraph
+  (Fulkerson–Gross, Thm 3.4), and a consecutive clique arrangement as a path
+  decomposition. [9] Thm: `θ = ns`.
+- **Edge cases.** Empty vertex set: `θ = 0`, while the Lean `pathwidth` is ℕ-
+  valued and 0 there, so `θ = pw + 1` needs at least one vertex.
+- **Status.** Unsourced at its Table 1 citation; the relation itself is proved
+  in [6] and follows from [9] + [10].
+  *Item 12*: `θ = mns` proved in Lean (`monotoneNodeSearch_eq_intervalThickness`).
+  *Item 14*: `θ = ns` for the full game (`nodeSearch_eq_intervalThickness`).
+
+### 6. Node search game — [9] Kirousis & Papadimitriou 1985
+
+- **Definition.** [9] p. 181: "A searching strategy S is a sequence of moves
+  where the player either places a searcher on a node of the graph that
+  carries no searcher or deletes the searcher of a guarded node. The edges of
+  the graph are initially considered contaminated by a gas. The object of a
+  searching strategy is to clear all edges. The clearing of an edge is
+  accomplished once both its endpoints concurrently carry a searcher. A clear
+  edge may be recontaminated once there appears a path that carries no
+  searchers and that connects this edge with a contaminated one." ns(G): the
+  least maximum number of searchers (p. 182). Same in [10] §2 p. 208.
+- **Relation.** [9] Theorem (p. 182): "For any graph G, ns(G) = θ(G)." Its
+  proof of `θ ≤ ns` takes an optimal *recontamination-free* strategy, which
+  exists by [10] Thm 2.3 (`pns = ns`), itself derived from LaPaugh's theorem
+  for edge search ([10] Thm 2.1). [10] Thm 4.1 (p. 216): "For an arbitrary
+  graph G, ns(G) = vs(G) + 1"; its `vs ≤ ns − 1` direction also uses an
+  optimal recontamination-free strategy. The Lemma of [9] (p. 182): a strategy
+  in which each node takes a searcher once and loses it only after all its
+  neighbours have taken one is recontamination-free.
+- **Which paper proves what** (item 01's question): **[9] (1985) proves
+  interval thickness = node search number; [10] (1986) proves node search =
+  vs + 1** (Thm 4.1), monotonicity of node search (Thm 2.3), `es(G) =
+  ns(G_v) − 1` for the three-edge subdivision `G_v` (Thm 2.5), and `mpb = ns =
+  mpbw` (Thm 3.1). Table 1's pairing of node search with [9] is right.
+- **Edge case.** On an edgeless graph there is nothing to clear, so by the
+  letter of the definition `ns = 0`, while `vs + 1 = θ = 1` (with ≥ 1 vertex).
+  Both theorems hold for every graph with at least one edge (then `ns ≥ 2`).
+  Möhring's Thm 3.9 (p. 34) restates [9] with the same gap.
+- **Status.** Confirmed, for graphs with at least one edge. The monotone game
+  gives both equalities by elementary arguments (items 10, 12); the full game
+  needs monotonicity (item 14).
+  *Item 10*: `mns = vs + 1` proved in Lean for the monotone game; the full
+  game has `ns ≤ vs + 1` proved and `ns = mns` as the named gap
+  `NodeSearchMonotonicity`. [10]'s own proof of `vs ≤ ns − 1` has a gap at
+  its (2), repaired by ordering by clearing time (see "Item 10" below).
+  *Item 12*: [9]'s `ns = θ` proved for the monotone game (≥ 1 edge), the
+  whole chain `θ = mns = vs + 1 = pw + 1` in one statement, and the edgeless
+  exception proved in Lean for `θ` too (see "Item 12" below).
+  *Item 14*: the full game is proved, `ns = vs + 1` (≥ 1 edge) and
+  `ns = mns` on every finite graph (`nodeSearchMonotonicity`), not via
+  LaPaugh but by a crusade argument on vertex sets (see "Item 14" below).
+
+### 7. Edge search game — [10] Kirousis & Papadimitriou 1986
+
+- **Definition.** [10] §2 p. 208 (after Megiddo et al.; Parsons 1976): moves
+  are sliding a searcher along an edge, placing a searcher, deleting a
+  searcher; "An edge with at least one guarded endpoint is cleared by sliding
+  along it a searcher, and then placing this searcher on the unguarded
+  endpoint ... If all other edges incident on the first guarded vertex are
+  clear, the guard itself may be used for the sliding"; recontamination by
+  unguarded paths; es(G) the least maximum number of searchers. EST 1994 p. 53
+  gives the same game, and allows multigraphs and loops, which can change es
+  but not vs (p. 50).
+- **Relation.** [10] p. 209 (unnumbered, proved in the text): "for any graph
+  G, ns(G) − 1 ≤ es(G) ≤ ns(G) + 1", with examples of all three cases (Fig. 1:
+  es 1, ns 2; Fig. 2: 2, 2; Fig. 3: es 5, ns 4). With Thm 4.1 this is `vs ≤ es
+  ≤ vs + 2`, stated in [10] p. 216 as due to Turner, and proved as EST 1994
+  Thm 2.1 (p. 54) from Lemma 2.1 (`vs ≤ s`, which uses LaPaugh's theorem) and
+  Lemma 2.2 (`s ≤ vs + 2`, the procedure `search1`). Tightness: K_{3,3} has
+  vs 3, s 5 (EST p. 57, via cutwidth for max degree 3), and there is a tree
+  with the same difference (EST §3.3, Fig. 3.6). Exact under a transformation:
+  EST Thm 2.2, `s(G) = vs(G')` with G' the 2-expansion (each edge subdivided
+  twice).
+- **Status.** Weaker than stated. `es ∈ {pw, pw + 1, pw + 2} = {Z − 1, Z, Z + 1}`
+  meets the literal ±1 wording; it is not a fixed offset (K_2: es = 1 = Z − 1;
+  K_{3,3}: es = 5 = Z + 1).
+  *Item 11*: EST Thm 2.1 proved in Lean for progressive strategies, on every
+  finite graph; for the full game `s ≤ vs + 2` is proved and `vs ≤ s` rests
+  on LaPaugh's theorem, stated as the named gap `EdgeSearchMonotonicity`.
+  EST's Lemma 2.1 argument (order by first occupation, after making the
+  strategy irredundant) is replaced by ordering by clearing time (see
+  "Item 11" below).
+  *Item 14*: `vs ≤ s` proved for the full game without LaPaugh
+  (`vertexSeparation_le_edgeSearch`), so EST Thm 2.1 holds in Lean as EST
+  state it; LaPaugh's `s = ps` itself remains the named gap.
+
+### 8. Narrowness — [11] Kornai & Tuza 1992
+
+- **Definition.** §2 (preprint p. 2): for an in-sequence `(v_1, …, v_n)`, "In
+  the i-th step, put vertex v_i from the IM into the shack; move all v_j (j ≤
+  i) with no neighbors v_k, k > i, from the shack to the OM; then go to the
+  (i+1)-st step. The maximum number of vertices in the shack during this
+  process ... will be called the narrowness of the in-sequence". "Definition.
+  [TK] The narrowness ν(G) of a graph G = (V, E) is the minimum value of
+  ν(v_1, …, v_n) taken over all permutations." Prop. 2.1: in- and
+  out-sequences give the same value (reverse the sequence).
+- **Relation.** Prop. 3.1 (p. 3): "For every graph G with at least one vertex,
+  ν(G) = π(G) + 1", proved both ways from path decompositions.
+- **Note for item 04.** The maximum is reached just after an insertion, so
+  `ν(v_1, …, v_n) = 1 + max_i |{j < i : v_j has a neighbour v_k, k ≥ i}|`,
+  which is the vertex separation of the same sequence plus one; per sequence,
+  not only at the optimum. The empty graph (ν = 0) is excluded by the source.
+- **Status.** Confirmed, exact.
+
+### 9. Split bandwidth — [12] Fomin 1998
+
+- **Definition.** §3.2 (preprint p. 7): node splitting of v: partition its
+  neighbourhood into M and N (either may be empty), "delete vertex v with all
+  incident edges, add new vertices u and w with edge (u, w), and make u
+  adjacent to all vertices of M and w to all vertices of N". "A graph Γ* is
+  said to be a split of Γ if Γ* can be obtained from Γ by a sequence of node
+  splittings. The split bandwidth of graph Γ, denoted by sb(Γ), is min{b(Γ*) :
+  Γ* is a split of Γ}." Bandwidth b as usual (§2). The paper considers "only
+  connected graphs with at least two vertices" (p. 1).
+- **Relation.** Thm 8 (p. 11): "For any graph Γ, pw(Γ) ≤ sb(Γ) ≤ pw(Γ) + 1."
+  Upper bound: a path decomposition with all bags of size k + 1 gives a
+  numbering of interval bandwidth ≤ k + 1, and `sb = ib` (Thm 6). Lower bound:
+  Γ is a minor of any split, and `pw ≤ bandwidth`. Also Thm 3: `1/μ_m = ib`
+  (monotone helicopter search), Thm 2: `1/μ_1 = b`. Fomin's concluding
+  remarks leave open when `pw = sb`.
+- **Both values occur** (by hand; item 02 to check): K_2 has `sb = b = 1 =
+  pw`. K_{1,3} has `pw = 1` but `sb = 2`: splits of a tree are trees, a
+  splitting never reduces the number of leaves, and a tree of bandwidth 1 is a
+  path, which has two.
+- **Status.** Weaker than stated (a sandwich). `sb ∈ {Z − 1, Z}` meets the
+  literal ±1 wording.
+  **Proved in Lean** (item 07, `Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one`),
+  for every finite graph.
+
+### 10. Graph path-width — [13] Kinnersley 1992
+
+- **Definition.** p. 346: "a sequence X_1, …, X_r of subsets of V is a
+  path-decomposition of G if (a) ∪X_i = V, (b) for every edge e of E, some X_i
+  contains both endpoints of e, and (c) for 1 ≤ i ≤ j ≤ k ≤ r, X_i ∩ X_k ⊆
+  X_j. The path-width of G ... is the minimum value h ≥ 0 such that G has a
+  path-decomposition X_1, …, X_r with |X_i| ≤ h + 1". Matches
+  `PathDecomposition.lean` (bags indexed by `Fin (length + 1)`, at least one
+  bag; ℕ-valued width, so `pw = 0` on the empty graph).
+- **Status.** The reference definition.
+
+### 11. Edge separation — [14] Lengauer 1981
+
+This is item 01's first specific question. What [14] contains:
+
+- **Definition 1** (p. 468): the undirected graph `G_u` of a dag (edges plus a
+  clique on each vertex's immediate predecessors), and (p. 469) the dag `G_d`
+  of an undirected graph (a new sink over each edge).
+- **The vertex separator game VSG** (p. 467), unnumbered: "(i) All vertices
+  start out pebble-free. (ii) All vertices end up pebbled. (iii) A move
+  consists of placing a pebble on a pebble-free vertex. The vertex cut after
+  the i-th move consists of all vertices that are pebble-free and adjacent to
+  a pebbled vertex after the i-th move." `(G, K)` is positive "if VSG(S) ≤ K",
+  K a positive integer; VSG(G) is the least such K. The vertex cut is exactly
+  the Lean `activeSuffix`, and reversing the strategy turns it into
+  Kinnersley's `V_L(i)`, so **VSG(G) = vs(G)** for every graph with an edge
+  (on edgeless graphs VSG = 1 by the positivity of K, vs = 0).
+- **The edge version** (p. 468): "if we use edge separators instead of vertex
+  separators in the above definition, we define a well known problem on
+  undirected graphs, namely, the min-cut linear arrangement problem" —
+  **cutwidth**. §4 (p. 475) repeats: VSG "is the vertex separator version of
+  an edge separator game that is better known as the min-cut linear
+  arrangement problem".
+- **Theorems 2–4** (pp. 469, 472), all exact:
+  Thm 2: `(G, K)` positive for PBWP ⇔ `(G_u, K − 1)` positive for VSG, so
+  `pbw(G) = VSG(G_u) + 1`;
+  Thm 3: `(G, K)` positive for VSG ⇔ `(G_d, K + 2)` positive for PBWP;
+  Thm 4: `(G, K)` positive for VSG ⇔ `(G_du, K + 1)` positive for VSG, where
+  `G_du` adds a triangle on every edge, so `vs(G_du) = vs(G) + 1` for G with an
+  edge.
+- **Definition 6** (p. 473), MMCLA, *modified* min-cut: a labelling λ with
+  `width(v_i) = |{{v_j1, v_j2} ∈ E : λ(v_j1) < i < λ(v_j2)}|`, edges passing
+  strictly over a vertex, not between two vertices. **Theorem 7** (NP-
+  completeness of VSG) builds G' by replacing each vertex by an (N + 1)-clique
+  and proves `(G, K)` positive for MMCLA ⇔ `(G', K + N)` positive for VSG, i.e.
+  `vs(G') = mcw(G) + N` with `N = |V(G)|`: an offset of N under a blow-up, not
+  a ±1 relation on the same graph. (L&Y 2002 Prop. 1, p. 1761, uses modified
+  cutwidth, citing Downey & Fellows [3] for it, for its own NP-hardness proof
+  of MOSP.)
+- **What "edge separation" can mean, and why each reading fails.**
+  (a) Cutwidth: `cw(K_{1,n}) = ⌈n/2⌉` while `pw = 1`; `K_{1,7}` (8 vertices)
+  already gives `cw = 4 = Z + 2`. (b) Modified cutwidth (Def. 6):
+  `mcw(K_{1,n}) = ⌈n/2⌉ − 1`, so `K_{1,9}` (10 vertices) gives `mcw = 4 = Z +
+  2`. (c) Lengauer's vertex game is vs exactly, but that is Table 1's
+  "vertex separation" row, attributed there to [13]. Neither (a) nor (b) is a
+  lower-bound failure: `vs ≤ cw` is standard, and `vs ≤ mcw + 1` is a
+  candidate for item 02 to test (it holds on paths and stars).
+- **Status.** Misattributed ([14] is about vertex separation and
+  black–white pebbling) and false under the readings (a) and (b) that [14]
+  supports. Item 08 formalises VSG = vs and Thms 2–4 where in reach, and a
+  star counterexample for the cutwidth readings.
+
+### 12. Vertex separation — [13] Kinnersley 1992
+
+- **Definition.** p. 346: `V_L(i) = {u ∈ V | L(u) ≤ i and there is some v ∈ V
+  such that uv ∈ E and L(v) > i}`, `vs_L(G) = max_{1 ≤ i < |V|} |V_L(i)|`,
+  `vs(G) = min_L vs_L(G)`. [10] p. 216 and EST p. 52 agree. The Lean
+  `vertexSeparation` counts the suffix side (Lengauer's convention); the two
+  agree by reversing the layout.
+- **Relation.** Thm 3.1 (p. 346): "For any graph G, vs(G) = pw(G)"; the proof
+  treats simple connected graphs, and the statement extends to disconnected
+  ones by concatenating layouts. Cor. 3.2 (p. 347): `gml(G) = ns(G) = vs(G) +
+  1`, from Thm 3.1 with F&L 1989 Thm 7 and [10] Thm 4.1.
+- **Status.** Confirmed; `vertexSeparation_eq_pathwidth` in `VSEquivPW.lean`.
+
+## Item 01's specific questions, answered
+
+1. **Edge separation (Lengauer 1981).** No "edge separation" number related to
+   pathwidth appears in [14]. Its edge game is min-cut linear arrangement
+   (cutwidth); its Definition 6 is modified cutwidth; both have unbounded gap
+   to pathwidth on stars. Its Theorems 2–4 are exact relations between PBWP
+   and VSG under transformations, and VSG is vertex separation. Table 1's row
+   is misattributed and, under either edge reading, false.
+2. **Möhring (1990) on PLA folding and gate matrix layout.** Gate matrix
+   layout: `t(M)` = min over interval supergraphs of the incompatibility
+   graph of the chromatic (= clique) number (Thm 3.2), = max column sum of
+   the augmented matrix under the best permutation (p. 31), = `pw + 1`
+   (Prop. 3.5, proved), = node search number (Thm 3.9, citing [9]). PLA
+   folding (at most two nets per track): `|V| − s` for a maximum folding set
+   (Prop. 3.15, citing [HNS82]), equivalent to a maximum Z_{m,m} subgraph
+   (Prop. 3.16), NP-hard (Thms 4.5–4.6); **no ±1 relation** to `pw`. Multiple
+   folding (path partitions) is equivalent to interval graph augmentation
+   exactly (Thm 3.14).
+3. **Ohtsuki et al. (1979) on one-dimensional logic.** Tracks = clique number
+   of the interval graph of the placement (§II); the optimum = least clique
+   number of an interval supergraph of the connection graph (§II–III, with
+   Thm 3 for realisability); NP-complete (citing [11] = [5] of Table 1).
+   Boundary gates are a constrained variant (§IV).
+4. **Kirousis & Papadimitriou.** 1985 [9]: interval thickness = node search
+   number. 1986 [10]: node search = vs + 1 (Thm 4.1), and the edge-search band
+   `ns − 1 ≤ es ≤ ns + 1`.
+
+## Statements for item 02 to check
+
+Every statement below is a candidate for a Lean theorem. Item 02 implements
+each quantity from its own definition above (not via pathwidth) and checks
+on all graphs to 6 vertices, random graphs to 8, matrices to 5 × 5.
+
+1. `Z(M) = t(M)` (gate matrix layout, tracks by feasible track assignment) on
+   every matrix; `Z(M) = pw(G_M) + 1` when M has a 1.
+2. One-dimensional logic without boundary gates `= θ(H) = pw(H) + 1`; with
+   boundary gates, the `kK_2` family exceeds `pw + 2` from k = 3. *(Item 02:
+   false as stated — `H` includes the boundary gates; see §3.)*
+3. Simple PLA folding: `tracks ≥ max(pw + 1, ⌈|V|/2⌉)`; the 5 × 5 identity has
+   tracks 3 against `pw + 1 = 1`; multiple folding `= pw + 1`.
+4. `θ = pw + 1` for ≥ 1 vertex.
+5. `ns = θ = vs + 1` for graphs with ≥ 1 edge, both for the monotone game and,
+   where feasible, with recontamination; `ns = 0` on edgeless graphs.
+6. `vs ≤ es ≤ vs + 2`, all three values attained (K_2, K_{3,3}); `es(G) =
+   vs(2-expansion)`; `ns − 1 ≤ es ≤ ns + 1`.
+7. `ν = pw + 1` for ≥ 1 vertex, and per sequence `ν(seq) = vs(seq) + 1`.
+8. `pw ≤ sb ≤ pw + 1` on connected graphs with ≥ 2 vertices; `sb(K_2) = 1`,
+   `sb(K_{1,3}) = 2`. (Splits are unbounded in number; the checker needs a
+   bound — at most `|E|` splittings suffice? — or `ib` via numberings of
+   bounded length. To settle in item 02.)
+9. `vs = pw`; `VSG = vs` on graphs with an edge.
+10. Lengauer Thm 4: `vs(G_du) = vs(G) + 1` for G with an edge; Thm 7's
+    `vs(G') = mcw(G) + N` on small G.
+11. `cw` and `mcw` are not within ±1 of `pw + 1` (stars `K_{1,7}`, `K_{1,9}`);
+    `vs ≤ cw`; candidate `vs ≤ mcw + 1`.
+
+## Item 02: the brute-force check
+
+`paper1/complex_check.py` (`python -m paper1.complex_check`, 2.5 min on 32
+cores; report in `paper1/data/complex_check.json`; tests in
+`tests/test_complex_check.py`). Every quantity is computed from the source's
+own definition, never through pathwidth:
+
+| Quantity | Implemented as | Source |
+|---|---|---|
+| `pw` | search over bag sequences, state (introduced, current bag), interval property enforced | Kinnersley p. 346 |
+| `vs` | literal minimum over all permutations of `max_i |V_L(i)|` (prefix side) | Kinnersley p. 346 |
+| VSG | literal minimum over pebbling orders of the largest vertex cut | Lengauer p. 467 |
+| `θ` | (a) interval models with integer endpoints in `0..n−1`, adjacent ⇒ intersecting, clique = max point load, n ≤ 6; (b) interval models as open/close event words, all n; (a) = (b) on all 208 graphs to 6 vertices | K&P 1985 p. 182; Möhring p. 31 |
+| `ν` | literal shack process over all in-sequences; out-sequences to 6 vertices | Kornai & Tuza §2, Prop. 2.1 |
+| `ns` | game-state search over (guarded set, contaminated edges), place/remove, clearing, recontamination through unguarded vertices; and the monotone game (recontaminating moves forbidden) | K&P 1985 p. 181 |
+| `es` | the same with searcher multiplicities and slides; slide clears the edge, then recontamination; both games | K&P 1986 p. 208 |
+| `ib` | Fomin's numberings (surjections of any length), decided exactly by a finite automaton over per-vertex gap ages, so no length bound is needed | Fomin §3.1 |
+| `sb` | explicit node splittings (up to 3, isomorphism-deduplicated) and bandwidth; an upper bound, compared with `ib` | Fomin §3.2 |
+| `Z` | L&Y eqs. (1)–(2) over all column orders | L&Y 2002 p. 1760 |
+| `t` | column order plus an explicit track assignment (tracks hold gate-disjoint augmented nets), minimised; not the max column sum | Möhring p. 18 |
+| PLA | the same with at most two nets per track | Möhring p. 25 |
+| 1-dim logic | the same on Ohtsuki instances (`|V(t)| ≥ 1`, `|T(v)| ≥ 2`), optionally with `t_l`, `t_r` pinned | Ohtsuki §II, §IV |
+| `cw`, `mcw` | literal minimum over permutations (DP over prefix sets for the 8- and 10-vertex stars) | Lengauer p. 468, Def. 6 |
+
+The three prefix-set DPs (`vs_dp`, `cutwidth_dp`, `modified_cutwidth_dp`)
+are exact because each layout's cost is a max of terms that depend only on
+the prefix and the next vertex; the tests check each against the literal
+minimum. `vs_dp` is used only on the constructed graphs (2-expansions,
+`G_du`, Lengauer's blow-up), never for the `vs = pw` check itself.
+
+**Inputs.** All 1,252 graphs on 1–7 vertices (networkx atlas); 400 random
+graphs on 7 and 8 vertices (`p ∈ {0.25, 0.4, 0.55, 0.7}`, seed 20260930);
+630 matrices up to 4 × 4, one per class under row and column permutation,
+plus 1,500 random 5 × 5, 2,130 in total; 1,027 random Ohtsuki instances with
+two disjoint boundary gates. Edge search runs to 20 edges (1,632 graphs),
+the 2-expansion check to `n + 2m ≤ 18` (181), `G_du` to `n + m ≤ 16` (680).
+
+**Results** (checked / failed):
+
+| # | Statement (item 01 list) | checked | failed |
+|---|---|---|---|
+| 1 | `Z = t` | 2,130 | 0 |
+| 1 | `Z = pw(G_M) + 1` when M has a 1 | 2,130 | 0 |
+| 2 | 1-dim logic tracks `= θ(H) = pw(H) + 1` | 452 | 0 |
+| 2b | pinned boundary tracks `≥` free tracks `= pw(H) + 1` | 1,027 | 0 |
+| 2b | pinned boundary tracks within 1 of `pw(H) + 1` | 1,027 | 0 (gap 1 on 47) |
+| 3 | PLA `≥ max(pw + 1, ⌈nets/2⌉)` | 2,130 | 0 |
+| 3 | multiple folding (`= t`) `= pw + 1` | 2,130 | 0 |
+| 4 | `θ = pw + 1`, ≥ 1 vertex (event words / model search) | 1,652 / 208 | 0 / 0 |
+| 5 | `ns = vs + 1` and `ns = θ`, ≥ 1 edge | 1,644 | 0 |
+| 5 | monotone `ns` = `ns`; `ns = 0` edgeless | 1,652; 8 | 0; 0 |
+| 6 | `vs ≤ es ≤ vs + 2`; `ns − 1 ≤ es ≤ ns + 1`; monotone `es` = `es` | 1,632 | 0 |
+| 6 | `es = vs(2-expansion)` | 181 | 0 |
+| 7 | `ν = pw + 1`; in- = out-narrowness | 1,652; 208 | 0; 0 |
+| 7 | per sequence `ν(seq) = vs(seq) + 1` | tests (C5, all 120 orders) | 0 |
+| 8 | `pw ≤ ib ≤ pw + 1`, connected, ≥ 2 vertices; `ib ≤ bw` | 1,302 | 0 |
+| 9 | `vs = pw`; VSG `= vs` (≥ 1 edge) | 1,652; 1,644 | 0; 0 |
+| 10 | `vs(G_du) = vs + 1` (Lengauer Thm 4) | 680 | 0 |
+| 10 | `vs(G') = mcw(G) + N` (Thm 7) | 7 graphs, N ≤ 4 | 0 |
+| 11 | `vs ≤ cw`; `vs ≤ mcw + 1` | 1,652 | 0 |
+| 11 | `cw` within 1 of `pw + 1` | 1,644 | 341 |
+| 11 | `mcw` within 1 of `pw + 1` | 1,644 | 738 |
+
+Values attained: `es − vs ∈ {0, 1, 2}` (K_2: 0; K_{1,3}: 1; K_{3,3}: 2,
+es 5 as EST state); `ib − pw ∈ {0, 1}` (K_2, K_4: 0; K_{1,3}, K_{3,3}: 1);
+`cw − (pw + 1)` from −1 to 7; `mcw − (pw + 1)` from −2 to 3 (K_2 has mcw 0
+against Z = 2, so even the literal ±1 reading fails downward). Named values:
+`cw(K_{1,7}) = 4`, `mcw(K_{1,9}) = 4`, as item 01 computed. PLA: identity
+matrices `I_3, I_4, I_5` fold to 2, 2, 3 tracks against `t = 1`; incidence
+matrices of `P_5, P_6, P_7` to 3, 3, 4 against `t = 2` — the gap of 2 appears
+at `I_5` and `P_7`, not in the exhaustive range (to 4 × 4, where PLA −
+(pw + 1) ∈ {0, 1}).
+
+**Split bandwidth, how far.** Item 01's open design point is settled by not
+bounding splits at all: `ib` is decided over numberings of every length by a
+finite automaton (per vertex: unseen, open with the age of its last
+occurrence, closed with that age; ages must stay below `b` while the vertex
+still owes an occurrence), and `sb = ib` is Fomin Thm 6. `sb` from its own
+definition is computed only as an upper bound through at most three explicit
+splittings, on K_2, P_3, K_{1,3}, C_4, K_3, K_4: it equals `ib` on all six
+(K_{1,3}: 2 = pw + 1; the others: pw). So the check of `pw ≤ sb ≤ pw + 1` at
+scale rests on Fomin Thm 6; the six direct values are the independent part.
+
+**Verdict changes.** One: the boundary-gate variant of one-dimensional logic
+(§3), which item 01 called "not ±1" on a misread connection graph, is a band
+`{pw + 1, pw + 2}` on everything checked, not a fixed offset. Everything
+else item 01 stated is confirmed as stated, including every counterexample
+(PLA `I_5`, the two stars, `ns = 0` on edgeless graphs) and every band (es,
+sb). The search games agree with their monotone versions on every graph
+checked, which is the monotonicity theorems (K&P 1986 Thm 2.3; LaPaugh) seen
+at small size; items 10–11 prove the monotone relations only.
+
+**Not checked.** `sb` directly beyond the six graphs above; Lengauer Thm 7 at
+N ≥ 5 (the blow-up has N(N + 1) vertices); edge search above 20 edges;
+Lengauer Thms 2–3 (black–white pebbling on dags, outside the twelve rows).
+
+## Item 03: gate matrix layout in Lean
+
+`lean/MOSPFormalization/Complex/GateMatrix.lean`, namespace
+`MOSPFormalization.Complex.NetGateMatrix`, sorry-free (axioms: `propext`,
+`Classical.choice`, `Quot.sound`).
+
+**Definition, from Möhring p. 18, with no stacks or pathwidth in it.** A
+net–gate matrix is a relation `conn : N → Gt → Prop` (rows nets, columns
+gates). For a gate order `π` (a `LinearLayout Gt`), `augmented π n j` is entry
+`(n, j)` of `M^π`: some gate of `n` is at or before `j` and some at or after.
+`ShareGate π n n'` holds if the two augmented rows have a common column.
+`IsTrackAssignment π h`, for `h : N → Fin k`, says that no two nets on one
+track share a gate. `tracksFor π` is the least `k` for the fixed order, and
+`tracks` (= `t(M)`) is the least `k` over all orders. `netGraph` is Möhring's
+net adjacency graph (p. 29: the intersection graph of the rows of `M`).
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `columnSum_eq_openStacksAt` | column sum of `M^π` at `j` = open stacks of the same matrix at `j` | definitions |
+| `openStacksAt_le_of_isTrackAssignment` | nets open at one column need distinct tracks | pigeonhole |
+| `exists_isTrackAssignment` | `maxOpenStacks π` tracks suffice (if M has a 1) | left-edge algorithm, Möhring p. 31 |
+| `tracksFor_eq_maxOpenStacks` | min tracks for `π` = max column sum of `M^π` (if M has a 1) | Möhring p. 31 |
+| `tracks_eq_mospValue` | `t(M) = Z_MOSP(M)`, identity map `toMOSP` (if M has a 1) | L&Y 2002 Prop. 2 |
+| `tracks_eq_pathwidth_add_one` | `t(M) = pw(netGraph M) + 1` (if M has a 1) | Möhring Prop. 3.5; F&L 1989 Thm 7 |
+| `netGraph_eq_mospGraph` | net adjacency graph = MOSP graph of `toMOSP` | definitions |
+| `tracks_eq_one_of_forall_not` | M all zero, at least one net: `t = 1` | edge case |
+| `tracks_eq_zero_of_isEmpty` | no nets: `t = 0` | edge case |
+
+**The proof.** The map is the identity on the matrix, as item 01 found. Nets
+are customers and gates are patterns; nothing is transposed. The real content
+is the left-edge theorem for a fixed gate order.
+
+- Lower bound: the nets open at one column pairwise share that column, so
+  they need distinct tracks.
+- Upper bound: induct over the nets in order of their leftmost gate
+  (`Finset.induction_on_max_value`). Every earlier net that conflicts with the
+  new net `a` is open at `a`'s leftmost gate, and so is `a`. That makes fewer
+  than `maxOpenStacks π` conflicting nets, so a free colour exists
+  (`isActive_first_of_shareGate`).
+
+`t = Z` then follows by taking a MOSP-optimal order.
+`mospValue_eq_pathwidth_add_one` closes the chain.
+
+**Edge case, and a convention difference from the checker.** The Lean
+definition gives every net a track, so on an all-zero matrix with at least
+one net it gives `t = 1` (and `Z = 0`). `gate_matrix_tracks` in
+`complex_check.py` drops rows with no 1 before assigning tracks, and gives 0.
+The two agree whenever `M` has a 1: an empty net conflicts with nothing and
+can share any track. This is the case the three main theorems cover. The
+all-zero case is a convention; Möhring's nets always meet a gate. The Lean
+theorems state both degenerate values explicitly, so the difference is
+visible rather than hidden.
+
+## Item 04: narrowness in Lean
+
+`lean/MOSPFormalization/Complex/Narrowness.lean`, namespace
+`MOSPFormalization.Complex`, sorry-free (axioms: `propext`,
+`Classical.choice`, `Quot.sound`).
+
+**Definition, from Kornai & Tuza §2 (p. 2), as the process.** An
+in-sequence is a `LinearLayout V` (positions 0-based). `MovedAt σ i v`: at
+step `i`, `v` has been put in and has no neighbour at a position `> i`, so it
+goes to the OM. `shackAfterPut σ i` is every vertex put in at a step `≤ i`
+and moved out at no step `< i`; `shackAfterMove σ i` the same with "no step
+`≤ i`". `inNarrowness σ` is the maximum of both cards over all steps ("the
+maximum number of vertices in the shack during this process"), and
+`narrowness G` the minimum over all in-sequences. The out-sequence version is
+defined as its own process, not as a reversal: `EnteredBy τ i v` says the
+smallest subscript `j` with `v = w_j` or `v ~ w_j` is `≤ i`;
+`outShackBeforeMove` / `outShackAfterMove` are the shack just before and just
+after `wᵢ` leaves; `outNarrowness`, `outNarrownessGraph` as before. (The
+checker's `out_narrowness` only reverses the in-process; the Lean definition
+is independent of it, so Prop. 2.1 has content here.) No definition mentions
+separation or decompositions.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `mem_shackAfterPut_iff` | `v` in the shack after `vᵢ` enters iff `σ v ≤ i` and some `u ∈ N[v]` has `σ u ≥ i` | definitions |
+| `shackAfterMove_subset_shackAfterPut`, `inNarrowness_eq_sup` | the maximum is reached just after an insertion | K&T p. 2 (implicit) |
+| `shackAfterPut_eq_insert_activeSuffix` | shack after `vᵢ` enters = `{vᵢ}` ∪ active suffix of the reversed layout at `n − 1 − i` | — |
+| `inNarrowness_eq_vertexSepOfLayout_reverse` | `ν(σ) = vs(reverse σ) + 1`, `V` nonempty | item 01's note, per sequence |
+| `outShackBeforeMove_reverse`, `outNarrowness_reverse` | the in-sequence `(vᵢ)` and the out-sequence `wᵢ = v_{n+1−i}` have the same narrowness | K&T Prop. 2.1, their proof |
+| `exists_inNarrowness_iff_exists_outNarrowness` | an in-sequence of narrowness `k` exists iff an out-sequence of narrowness `k` does | K&T Prop. 2.1, as stated |
+| `outNarrownessGraph_eq_narrowness` | the dual definition gives the same `ν(G)` | K&T p. 3 |
+| `narrowness_eq_vertexSeparation_add_one` | `ν(G) = vs(G) + 1`, `V` nonempty | — |
+| `narrowness_eq_pathwidth_add_one` | `ν(G) = pw(G) + 1`, `V` nonempty | **K&T Prop. 3.1** |
+| `narrowness_of_isEmpty` | no vertices: `ν = 0` (while `pw + 1 = 1`) | edge case |
+
+**The proof.** Not K&T's direct construction from path decompositions, but
+the per-sequence identity: the shack just after `vᵢ` enters is `vᵢ` plus the
+earlier vertices still owing a neighbour at `i` or later, which is the active
+suffix of the reversed layout at the mirrored position (the development's
+`activeSuffix` counts suffix vertices with a prefix neighbour; K&T's shack
+counts prefix vertices with a suffix neighbour, hence the reversal). Reversal
+is an involution on layouts, so the minima differ by exactly one, and
+`vertexSeparation_eq_pathwidth` (Kinnersley) closes it. K&T's `Xᵢ` is
+`shackAfterPut σ i`.
+
+**Edge cases.** The hypothesis is `Nonempty V`, which is K&T's "at least one
+vertex"; with none, `ν = 0` (`narrowness_of_isEmpty`), as in
+`complex_check.narrowness`. Isolated vertices and disconnected graphs need no
+hypothesis: an isolated vertex enters and leaves in one step. No edge is
+required, unlike node search (row 6).
+
+## Item 05: interval thickness in Lean
+
+`lean/MOSPFormalization/Complex/IntervalThickness.lean`, imported from the
+root; sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions.** From [9] p. 182 and Möhring p. 28, 31, since [5] is not held.
+`IntervalModel α H`: a closed interval `[left v, right v]` of a linear order
+`α` per vertex, distinct vertices adjacent in `H` iff their intervals
+intersect (`left u ≤ right v ∧ left v ≤ right u`). `IsIntervalGraph H`: a model
+in `ℕ` exists. `intervalThickness G`: the least `H.cliqueNum` (Mathlib's
+clique number, not a local definition) over interval graphs `H ≥ G` on the
+same vertex type. No definition mentions bags or separation. The choice of
+`ℕ` is immaterial: the lower bound holds for models in any linear order, and a
+model in `ℕ` attains it.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `bagGraph`, `le_bagGraph`, `bagModel`, `isIntervalGraph_bagGraph` | "share a bag" of a path decomposition is an interval supergraph, each vertex's interval its range of bags | Möhring Prop. 3.5, first half |
+| `cliqueNum_bagGraph_le` | its clique number is `≤ width + 1` (cliques lie in one bag: the Helly lemma of `MOSPGraph.lean`) | Möhring Thm 3.4 (Fulkerson–Gross), the direction needed |
+| `intervalThickness_le_pathwidth_add_one` | `θ ≤ pw + 1`, no hypothesis | — |
+| `pointDecomposition`, `pointDecomposition_bag_isClique` | a model in any linear order gives a path decomposition: bag `i` is the intervals through the `i`-th left endpoint; each bag is a clique | Möhring Prop. 3.5, second half |
+| `pathwidth_add_one_le_cliqueNum` | `pw(G) + 1 ≤ ω(H)` for every interval supergraph `H` (any linear order), `V` nonempty | — |
+| `intervalThickness_eq_pathwidth_add_one` | `θ(G) = pw(G) + 1`, `V` nonempty | **Möhring Prop. 3.5** |
+| `intervalThickness_eq_vertexSeparation_add_one` | `θ(G) = vs(G) + 1`, `V` nonempty | via Kinnersley Thm 3.1 |
+| `intervalThickness_of_isEmpty` | no vertices: `θ = 0` (while `pw + 1 = 1`) | edge case |
+
+**The proof.** Möhring's two constructions directly, not through vertex
+separation. Decomposition → model: intervals `[firstBag v, lastBag v]`;
+intersecting intervals share the bag at the later left endpoint. Model →
+decomposition: the left endpoints, sorted (`Finset.orderEmbOfFin`), are the
+bags' points; an edge `uv` of `G` is an edge of `H`, so the intervals meet
+and both contain the later left endpoint; the interval property is
+monotonicity of the sorted points. Only left endpoints are needed as points,
+which is the Helly property of intervals in its simplest form.
+
+**Edge cases.** The only hypothesis is `Nonempty V`; with no vertices
+`θ = 0` (`intervalThickness_of_isEmpty`), the same convention as
+`complex_check.interval_thickness`. No edge or connectivity is needed: an
+isolated vertex gets its own interval, and an edgeless nonempty graph has
+`θ = 1 = pw + 1`. Item 01's statement check (θ = pw + 1 on 1,652 graphs, two
+independent searches) was the check before stating.
+
+## Item 06: one-dimensional logic in Lean
+
+`lean/MOSPFormalization/Complex/OneDimLogic.lean`, imported from the root;
+sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions.** From Ohtsuki et al. §II, pp. 676–677. `LogicArray N T`: the
+relation `v ∈ V(t)`; `IsOhtsuki`: eqs. (3)–(4); `connectionGraph`: `H` of
+eq. (6); `OnInterval π v j`: position `j` lies in the closed interval of net
+`v` under the gate sequence `π`; `placementGraph π`: the interval graph of the
+placement (nets adjacent iff their intervals intersect); `tracksFor π`: its
+chromatic number, as the least `k` with a Mathlib `Colorable k` ("the
+necessary number of tracks is the chromatic number of the corresponding
+interval graph", p. 676); `tracks`: the least over all gate sequences. The
+boundary gates of §II are ordinary gates, as eq. (6) treats them;
+`tracksPinned tl tr` is the §IV variant. No definition mentions stacks, bags or
+pathwidth.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `connectionGraph_le_placementGraph` | `H` is a subgraph of every placement graph | p. 677 ("It is obvious that H is a subgraph …") |
+| `placementModel`, `isIntervalGraph_placementGraph` | every placement graph is an interval graph (net `v` ↦ `[first v, last v]`), when every net has a gate | p. 676 |
+| `tracksFor_eq_cliqueNum` | chromatic number = clique number of a placement graph (some net meets some gate) | p. 676, "well known"; proved by the left-edge argument of item 03 |
+| `exists_placementGraph_le` | from any interval supergraph `Ĥ ≥ H` with a model in `ℕ`, a gate sequence whose placement graph lies inside `Ĥ` | **Thm 3**, the inclusion `E* ⊆ Ê` of its proof |
+| `tracks_eq_intervalThickness` | `tracks = θ(H)`, when every net has a gate (no other hypothesis; `0 = 0` with no nets) | §II–III: the reformulation as least-clique-number interval supergraph |
+| `tracks_eq_pathwidth_add_one_of_forall_exists` | `tracks = pw(H) + 1`, every net has a gate, ≥ 1 net | with Möhring Prop. 3.5 (item 05) |
+| `IsOhtsuki.tracks_eq_intervalThickness`, `IsOhtsuki.tracks_eq_pathwidth_add_one` | the same under eqs. (3)–(4) | — |
+| `colorable_iff_isTrackAssignment`, `tracks_eq_gateMatrix_tracks` | a colouring of the placement graph is a track assignment of `GateMatrix.lean`; `tracks = t(M)` on the same matrix, no hypothesis | Wing et al. 1985 cite [7] for this problem |
+| `tracks_eq_pathwidth_add_one` | `tracks = pw(H) + 1` whenever some net meets some gate (nets without gates allowed) | through item 03 |
+| `tracks_of_isEmpty`, `tracks_eq_one_of_forall_not` | no nets: 0; nets, no connection: 1 | edge cases |
+| `pathwidth_add_one_le_tracksPinned` | §IV: `pw(H) + 1 ≤ tracks_B` when a pinned placement exists and some net meets some gate | trivial direction |
+
+**The proof, Ohtsuki's route.** Lower bound: an optimal placement's graph is
+an interval supergraph of `H`, so `θ(H) ≤ ω ≤ χ = tracks`. Upper bound: take
+an interval supergraph `Ĥ` attaining `θ(H)` (it exists by item 05's
+`bagGraph`), and give each gate `t` the point `d(t) = max_{v ∈ V(t)} left(v)`
+of `Ĥ`'s model. `V(t)` is a clique of `H`, hence of `Ĥ`, so every interval of
+`V(t)` contains `d(t)` (Helly for intervals, in its one-line form). Sorting the
+gates by `d` (`exists_layout_sorted` of `MOSPGraph.lean`, eq. (11)), a net whose
+interval contains position `j` has two gates around `j`, and by monotonicity
+its `Ĥ`-interval contains `d` of the gate at `j`; so two nets meeting at `j`
+meet in `Ĥ`, the placement graph is inside `Ĥ`, and its chromatic number is
+its clique number, at most `ω(Ĥ) = θ(H)`. Ohtsuki choose `d(t)` among the
+dominant cliques of `Ĥ` and need a *minimal* augmentation for the equality
+`H* = Ĥ` of Thm 3; the track count needs only the inclusion, so minimality is
+not formalised.
+
+**Edge cases.** The θ form needs every net to have a gate (weaker than eq. (4),
+which asks for two): a net with no gate has an empty interval, which
+`IntervalModel` does not allow. The pw form through item 03 needs only one
+connection and allows gateless nets. `complex_check.one_dim_logic_tracks`
+asserts eqs. (3)–(4), so on its inputs the two conventions coincide.
+
+**Not formalised.** The §IV boundary variant beyond its lower bound: item 02
+observed `tracks_B ∈ {pw + 1, pw + 2}` on 1,027 instances and whether the gap
+reaches 2 is open, so no upper bound is stated. The counterexample to a fixed
+offset (`boundary_path_instance`, 3 pinned vs 2) would need a case analysis
+over 120 inner-gate orders and is left to the checker.
+
+## Item 07: split bandwidth in Lean
+
+`lean/MOSPFormalization/Complex/SplitBandwidth.lean`, imported from the root;
+sorry-free, axioms `propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions.** From Fomin §3.2 (preprint p. 7), quoted in §9 above.
+`IsNodeSplitting G H`: `H` arises from `G` by splitting one vertex `v` into
+`u ≠ w` with the edge `uw`, the other vertices corresponding through a
+bijection `f` that preserves adjacency, and every neighbour of `v` adjacent to
+exactly one of `u` (class `M`) and `w` (class `N`), nothing else adjacent to
+them; either class may be empty. `IsSplit G H`: an inductive predicate, a copy
+of `G` (`iso`) followed by any finite number of node splittings (`step`).
+`splitBandwidth G`: `sInf` of `bandwidth H` (Sandwich.lean's bandwidth) over
+all splits `H` with a finite vertex type in the same universe. Vertices are
+named up to bijection, which is what "a sequence of node splittings" means for
+graphs; no definition mentions paths, decompositions or separation.
+
+**Theorems.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `pathwidth_le_of_isNodeSplitting` | one node splitting does not decrease pathwidth | the special case of minor-monotonicity Thm 8's proof uses |
+| `IsSplit.pathwidth_le` | `pw(G) ≤ pw(H)` for every finite split `H` | induction over the splittings |
+| `pathwidth_le_splitBandwidth` | `pw(G) ≤ sb(G)`, no hypothesis | **Thm 8, lower half** (with `pathwidth_le_bandwidth`) |
+| `splitBandwidth_le_bandwidth` | `sb(G) ≤ b(G)` (the empty sequence) | definition |
+| `isSplit_stage`, `isSplit_stage_succ` | the explicit construction below is a split, one node splitting per stage | — |
+| `bandwidth_stage_le`, `splitBandwidth_le_inNarrowness` | `sb(G) ≤ ν(σ)` for every in-sequence `σ` | — |
+| `splitBandwidth_le_pathwidth_add_one` | `sb(G) ≤ pw(G) + 1`, no hypothesis | **Thm 8, upper half** (with Kornai & Tuza Prop. 3.1, item 04) |
+| `pathwidth_le_splitBandwidth_le_pathwidth_add_one` | `pw ≤ sb ≤ pw + 1` | **Thm 8** |
+| `bandwidth_le_of_key` | sorting by an injective key gives bandwidth ≤ the largest number of keys in `[key y, key z)` over edges `yz` | helper |
+
+**The proof.** Lower half: merge `u` and `w` back into `v` in every bag of a
+path decomposition of the split. Bag sizes do not grow; the bags holding `v`
+are the union of those holding `u` and those holding `w`, two intervals that
+meet at the bag covering the edge `uw`, so the result is again an interval.
+This is the only case of minor-monotonicity Fomin's argument needs, and general
+minor-monotonicity is not formalised. Upper half: not Fomin's route (a path
+decomposition with bags of equal size, then `sb = ib`, Thm 6), which would
+need interval bandwidth and helicopter search. The split is built instead from
+an in-sequence `σ`: vertex `v` becomes the path of its copies `(v, i)`, one
+per step `i` at which `v` is in Kornai & Tuza's shack (`σ v ≤ i ≤
+max_{u ∈ N[v]} σ u`), and the edge `uv` joins the copies at step
+`max(σ u, σ v)`. In the order `(i, σ v)`, every edge stretches only over copies
+whose vertices lie in one shack, and a vertex contributes at most one copy to
+the stretch, so the bandwidth is at most `ν(σ) = pw + 1`. That this graph is a
+split is proved by adding the copies in that same order (key `i · n + σ v`):
+at stage `c` the first copy of every vertex and the copies of key `≤ c` are
+present, each edge end sits on the latest present copy not beyond its
+attachment step, stage 0 is isomorphic to `G`, and each new copy `(v, j + 1)`
+splits `(v, j)` — `M` is the previous copy and the attachments at step `j`,
+`N` those at steps `> j`.
+
+**Edge cases.** No hypothesis at all: Fomin restricts to connected graphs with
+at least two vertices, but both halves hold for every finite graph, and on the
+empty graph `pw = sb = 0`.
+
+**Not formalised.** That both ends are attained (`sb(K₂) = 1 = pw`,
+`sb(K_{1,3}) = 2 = pw + 1`, item 02): the second needs a lower bound over every
+split of `K_{1,3}` (splits of a tree are trees with at least as many leaves),
+which is not done. Fomin's Thms 3 and 6 (`sb = ib = 1/μ_m`) are not
+formalised; item 02 checks the sandwich at scale through `ib` and Thm 6, and
+the Lean proof uses neither.
+
+## Item 08: edge separation in Lean
+
+`lean/MOSPFormalization/Complex/EdgeSeparation.lean`, imported from the root.
+Sorry-free; `#print axioms` shows only `propext`, `Classical.choice`,
+`Quot.sound`. Everything in [14] that §11 found is formalised from the source:
+the vertex separator game, `G_du` and Theorem 4, the edge game (min-cut linear
+arrangement, p. 468) and Definition 6.
+
+**Definitions** (nothing mentions bags or pathwidth):
+
+- `VSGStrategy V = Fin n ≃ V` (move `j` pebbles `S j`), `pebbledAfter S i`,
+  `vertexCut S i` (pebble-free vertices adjacent to a pebbled one, p. 467),
+  `vsgOfStrategy S` (the largest cut over moves `0..n`), `IsPositiveVSG G K`
+  (`K > 0` and some `S` with `VSG(S) ≤ K`), `vsg G` (least such `K`).
+- `triangleGraph G` on `V ⊕ G.edgeSet`: Lengauer's `G_du` (p. 472), a new
+  vertex `e'` per edge adjacent to both ends.
+- `cutAt σ i` (edges with one end at position `≤ i` and the other `> i`),
+  `cutwidth`; `modCutAt σ i` (edges with ends strictly either side of position
+  `i`, Def. 6), `modCutwidth`. Edges are counted as ordered pairs, earlier end
+  first, one per edge.
+- `starGraph n` = `K_{1,n}` on `Fin (n + 1)`, centre `0`.
+
+**Proved.**
+
+| Lean | Statement | Source |
+|---|---|---|
+| `vertexCut_succ`, `vsgOfStrategy_eq` | cut after move `i + 1` = `activeSuffix` at `i` of `S⁻¹`; `VSG(S) = vs(S⁻¹)` | — |
+| `isPositiveVSG_iff`, `vsg_eq_max` | `(G, K)` positive ⇔ `0 < K ∧ vs ≤ K`; `VSG = max(1, vs)` | p. 467 |
+| `vsg_eq_vertexSeparation`, `vsg_eq_pathwidth` | `VSG = vs = pw` for every graph with an edge | with Kinnersley Thm 3.1 |
+| `vsg_eq_one_of_edgeless` | `VSG = 1` on edgeless graphs (the empty graph included) | positivity of `K` |
+| `vertexSeparation_triangleGraph`, `pathwidth_triangleGraph` | `vs(G_du) = vs(G) + 1`, `pw(G_du) = pw(G) + 1`, `G` with an edge | **Thm 4** |
+| `isPositiveVSG_iff_triangleGraph` | `(G, K)` positive ⇔ `(G_du, K + 1)` positive, if `G` has an edge or `K > 0` | **Thm 4**, Lengauer's form |
+| `isPositiveVSG_triangleGraph_counterexample` | on an edgeless graph, `(G, 0)` is not positive and `(G_du, 1)` is | the exception to Thm 4 as stated |
+| `vertexSeparation_le_cutwidth`, `pathwidth_le_cutwidth` | `vs ≤ cw` | standard |
+| `pathwidth_starGraph_le_one` | `pw(K_{1,n}) ≤ 1` | — |
+| `two_mul_cutwidth_starGraph` | `n ≤ 2 cw(K_{1,n})` | — |
+| `two_mul_modCutwidth_starGraph` | `n ≤ 2 mcw(K_{1,n}) + 2` | — |
+| `pathwidth_add_two_lt_cutwidth_star7` | `pw(K_{1,7}) + 2 < cw(K_{1,7})` | counterexample |
+| `pathwidth_add_two_lt_modCutwidth_star9` | `pw(K_{1,9}) + 2 < mcw(K_{1,9})` | counterexample |
+| `cutwidth_unbounded`, `modCutwidth_unbounded` | for every `k` a star with `cw ≥ pw + k`, `mcw ≥ pw + k` | — |
+
+**The proof of Theorem 4.** Upper half, Lengauer's construction: from an
+optimal layout `σ` of `G`, order `V ⊕ E` by the key `(2σ(v) + 1)·n` for a
+vertex and `2σ(lo e)·n + σ(hi e)` for an edge vertex, `lo e` its earlier end —
+each `e'` just before the first of its endpoints. After a vertex `x` the cut
+of `G_du` is the cut of `G` at `σ(x)`; after an edge vertex it is inside that
+cut plus the endpoint about to be pebbled. Lower half: not Lengauer's
+normal-form Lemma 5 (moving each `e'` to just before its first endpoint without
+increasing the cut, which he argues by a case analysis), but a direct
+induction along the layout `σ` that a layout `τ` of `G_du` induces on `V`. For
+each position `p` with vertex `x`: if some active vertex `a` of `G` at `p` is
+adjacent to `x`, then either some such `e' = {x, a}` is still unpebbled just
+after `x` in `τ` (it is on the cut of `G_du` beside the whole cut of `G`), or
+all are pebbled before `x`, and just before `x` the cut of `G_du` holds the cut
+of `G` and `x` itself; either way `τ` has width at least `|cut| + 1`.
+Otherwise the cut at `p` is already a cut at `p − 1`. So every nonempty cut of
+`σ` is below the width of `τ`, and a graph with an edge has a nonempty cut.
+
+**Edge cases.** Theorem 4 as Lengauer states it ("`K` a positive integer" for
+both instances) is false at `K = 0` on edgeless graphs, where `(G_du, 1)` is
+positive and `(G, 0)` is not an instance; it holds for every other `(G, K)`.
+The equation `vs(G_du) = vs(G) + 1` needs an edge: on an edgeless graph
+`G_du = G` and both are 0.
+
+**Not formalised.** Theorems 2–3 (black–white pebbling, which is not a Table 1
+problem), Theorem 7 (`vs(G') = mcw(G) + N` under the `(N + 1)`-clique blow-up,
+an NP-hardness gadget, checked by item 02 to `N = 4`), and exact values of
+`cw`, `mcw` on stars (only the lower bounds are needed for the
+counterexamples; item 02 gives `cw(K_{1,7}) = mcw(K_{1,9}) = 4`).
+
+## Item 09: PLA folding in Lean
+
+`lean/MOSPFormalization/Complex/PLAFolding.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** (Möhring p. 25, PLAMPP), on top of item 03's MPP:
+`IsFolding c π h` is a track assignment of `M^π` (`IsTrackAssignment`) with
+at most `c` nets on every track; `foldTracks c` the fewest tracks over all gate
+orders; `plaTracks = foldTracks 2`. Möhring's "two (sometimes also more)
+signals to share a row" is the parameter `c`; with no effective cap
+(`c ≥ |N|`) this is multiple folding, which as a layout problem is the MPP.
+
+**Proved.**
+
+- `tracks_le_plaTracks`, `pathwidth_add_one_le_plaTracks` (some net meets some
+  gate): every PLA layout is an MPP layout, so `pla ≥ t = pw + 1`.
+- `card_le_two_mul_plaTracks`: `|N| ≤ 2 · pla`, for every matrix, by a
+  fibre count; `plaTracks_le_card`.
+- `foldTracks_eq_tracks`, `foldTracks_eq_pathwidth_add_one`: multiple folding
+  is exact, `= t = pw + 1` (the layout form of Thm 3.14 with Prop. 3.5).
+- Identity matrix `idMatrix n`: `plaTracks_idMatrix` (`= ⌈n/2⌉`, exactly),
+  `tracks_idMatrix` (`= 1`), `pathwidth_idMatrix` (`pw + 1 = 1`);
+  `plaTracks_idMatrix_five` (3 against 1, item 01's counterexample) and
+  `plaTracks_idMatrix_unbounded` (for every `c`, `pw + 1 + c < pla` on
+  `I_{2c+3}`).
+- Path incidence matrix `pathMatrix n` (nets the `n + 1` path vertices, gates
+  the `n` edges): `netGraph_pathMatrix_connected`, `tracks_pathMatrix_le_two`
+  (alternate the vertices between two tracks), `plaTracks_pathMatrix_six`
+  (`pw + 1 + 2 ≤ pla` on `P_7`, item 02's connected instance) and
+  `plaTracks_pathMatrix_unbounded`. So restricting Table 1 to connected
+  graphs does not rescue the row.
+
+**Verdict.** Table 1's "±1" fails for PLA folding in the sense of its cited
+source, by an unbounded amount, on edgeless and on connected instances; the
+correct general relation is the one-sided `pla ≥ max(pw + 1, ⌈|N|/2⌉)`. It
+holds exactly for multiple folding.
+
+**Not formalised.** Prop. 3.15 (`pla = |V(G)| − s` over folding sets with no
+alternating cycle), Thm 3.14 in the path-partition vocabulary (degree and
+cycle constraints), Prop. 3.16 (`Z_{m,m}` subgraphs), and block / constrained
+folding. None is needed for the verdict.
+
+## Item 10: node search (monotone) in Lean
+
+`lean/MOSPFormalization/Complex/NodeSearch.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** ([9] p. 181, [10] §2 p. 208), the game itself: a
+`SearchState` is a guard set and a set of contaminated edges; a
+`SearchMove` is `place v` or `remove v`; `searchStep` changes the guards,
+clears every edge whose endpoints are both guarded, then recontaminates every
+edge joined to a still-contaminated one by a searcher-free path
+(`FreeReach`, a path all of whose vertices are unguarded, from an endpoint to
+an endpoint). Start: no searchers, every edge contaminated. `searchCost` is
+the largest guard set over the run, `NoRecontamination` says no move enlarges
+the contaminated set (the checker's `monotone=True` test, `c2 ⊆ c`),
+`nodeSearch` / `monotoneNodeSearch` are the least cost of a (monotone)
+strategy ending with no contaminated edge. The semantics are those of
+`complex_check.node_search`. Moves the source forbids (placing on a guarded
+node, removing from an unguarded one) are allowed and leave the guards
+unchanged; they cannot lower a cost.
+
+**Proved.**
+
+- `monotoneNodeSearch_eq_vertexSeparation_add_one` (≥ 1 edge): **[10]
+  Theorem 4.1 for the monotone game**, and with Kinnersley
+  `monotoneNodeSearch_eq_pathwidth_add_one`.
+  - `≤` by `shackStrategy_isMonotone`: Kornai & Tuza's shack process (item
+    04) played as moves — place `vᵢ`, delete every vertex with no neighbour
+    after position `i` — is recontamination-free, clears every edge, and costs
+    exactly the in-narrowness `ν(σ)`; `ν(σ) = vs(σ reversed) + 1` (item 04).
+    This is [10]'s rules (i)–(ii) with the layout reversed, because the
+    development's `vs` counts suffix vertices. The general facts behind it:
+    placing never recontaminates a closed position (`step_place_subset`), and
+    removing a searcher from a node touching no contaminated edge never does
+    (`step_remove_subset`).
+  - `≥` by `vertexSeparation_add_one_le_of_monotone`: order the vertices by
+    `τ(v)`, the first time no contaminated edge touches `v` (monotonicity keeps
+    it so). At time `τ(vᵢ)` the vertex `vᵢ` carries a searcher (its last
+    contaminated edge was just cleared), and so does every later vertex `w` with
+    an earlier neighbour `u`: either `τ(w)` is the same time, or `w` still has a
+    contaminated edge and, unguarded, would spread the gas to the clear edge
+    `uw`. So `vertexSepAt + 1` searchers are present.
+- `nodeSearch_le_monotoneNodeSearch`, `nodeSearch_le_vertexSeparation_add_one`:
+  the half of Thm 4.1 that needs no monotonicity.
+- Edge cases: `monotoneNodeSearch_of_edgeless`, `nodeSearch_of_edgeless`
+  (`= 0`, the empty strategy) and
+  `monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless` (the
+  exception of item 01 is real on every nonempty edgeless graph).
+
+**The named gap.** `NodeSearchMonotonicity G : Prop := nodeSearch G =
+monotoneNodeSearch G` is [10] Theorem 2.3 (from LaPaugh's theorem, [10]
+Thm 2.1), stated as a definition and **not asserted**; no `sorry` stands for
+it, so `allowed_sorries.txt` is unchanged.
+`nodeSearch_eq_vertexSeparation_add_one_of_monotonicity` derives the full
+Theorem 4.1 from it. Proving it is the recontamination argument of LaPaugh
+(or Bienstock & Seymour's crusade proof), item 14's reserve.
+
+**A gap in [10]'s proof.** [10] p. 217 proves `vs ≤ ns − 1` by ordering the
+vertices by the time each first accepts a searcher and claiming (its (2)) that
+at the moment exactly the first `i₀` vertices have accepted one, every one of
+them with a later neighbour carries a searcher. A recontamination-free
+strategy may place a searcher and delete it before any edge at that node is
+clear, and nothing is recontaminated. On `K_{1,3}` (centre `c`, leaves `x, y,
+z`): place and delete `x`, then `y`, then `z`, then search from the centre
+(place `c`; place and delete each leaf). The strategy is monotone and uses 2
+searchers, but first acceptance gives the order `x, y, z, c`, and after the
+third leaf all three leaves have their neighbour `c` still to come: [10]'s
+`D_{i₀}` has 3 elements against `ns − 1 = 1`. The theorem survives
+(deleting useless placements repairs the argument), and the Lean proof avoids
+the repair by ordering by clearing time. Checked by hand, not in Lean: the
+contaminated sets are `Set`s, so `decide` does not apply. *(2026-10-03, number
+audit: since proved in Lean the same day, outside the loop, as
+`kirousisPapadimitriou_claim2_false`, `Complex/KirousisPapadimitriouGap.lean`;
+see "Errors in the sources" above.)*
+
+**Agreement with the checker.** Item 02: `ns_mono = vs + 1` on all 1,644
+graphs with an edge, `= 0` on the 8 edgeless ones, `ns_mono = ns` on all
+1,652 (statement S5).
+
+## Item 11: edge search (progressive) in Lean
+
+`lean/MOSPFormalization/Complex/EdgeSearch.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only.
+
+**Definitions** (EST 1994 p. 53; [10] §2 p. 208), the game itself: an
+`EdgeState` is a searcher count per vertex (several searchers may share a
+vertex; `search1` needs it) and a set of contaminated edges; an `EdgeMove` is
+`place v`, `remove v` or `slide u v`. `edgeStep` changes the counts; a slide
+from a guarded `u` along an edge `uv` clears `uv`; then every edge joined to a
+still-contaminated edge by a searcher-free path is contaminated (the
+`recontaminate` of item 10). The source's two clearing cases ("a second
+searcher is moved from `x`", or "all edges incident to `x` except `e` are
+clear") are the one rule "clear, then recontaminate": if `u` is left empty
+with another contaminated edge, the gas returns to `uv` in the same step. Start:
+no searchers, every edge contaminated. `edgeCost` is the largest *total*
+number of searchers over the run; `Progressive` says no move enlarges the
+contaminated set (EST p. 53, the checker's `monotone=True`). `edgeSearch` /
+`progressiveEdgeSearch` are the least costs. The semantics are those of
+`complex_check.edge_search`.
+
+**Proved.**
+
+- `progressiveEdgeSearch_le_vertexSeparation_add_two`: **EST Lemma 2.2**, by
+  their procedure `search1` (`edgeStrategy`): place the next vertex `x`; for
+  each earlier neighbour `y`, add a searcher to `y`, slide it to `x`, remove a
+  searcher from `x`; then remove the searchers of vertices with no neighbour
+  still to come. Run on an in-sequence `σ` (item 04), the searchers between
+  phases are one each on Kornai & Tuza's shack minus the entering vertex, and a
+  phase adds at most two more, so `search1` costs `ν(σ) + 1`
+  (`edgeStrategy_isProgressive`), and `ν(σ reversed) = vs(σ) + 1`. It is
+  progressive: the proof keeps the cleared set *safe* (`SafeClear`: an
+  unguarded vertex touching a cleared edge has all its edges cleared), and gas
+  cannot cross into a safe cleared set (`not_mem_of_mem_recontaminate`).
+  EST's proof is the sentence "it can be shown, by induction on i"; the
+  induction is `edgePhase_spec`.
+- `vertexSeparation_le_of_progressive`: **EST Lemma 2.1 for progressive
+  strategies**, by a different argument. EST order the vertices by the step
+  at which each is first occupied, after first making the strategy
+  "irredundant" (removing placements on clear vertices and removals that
+  expose a contaminated one). Here the vertices are ordered by the time `τ(v)`
+  from which no contaminated edge touches them, ties broken by putting first a
+  vertex that is unguarded at that time. At `τ(vᵢ)`, a later vertex `w` with an
+  earlier neighbour `u` carries a searcher: if `τ(w)` is later, `w` still has a
+  contaminated edge and, unguarded, would spread the gas to the clear edge `uw`
+  (closedness, `isClosed_edgeStep`); if `τ(w) = τ(vᵢ)`, the tie-break makes
+  `w` guarded unless both are unguarded, and two unguarded vertices cannot
+  become clear in one step, because a step clears only the edge slid along
+  and its far end receives the searcher (`clear_step_unique`). Unlike node
+  search, `vᵢ` itself need not be guarded (its last edge may be cleared by
+  sliding *away* from it), which is why the bound is `vs`, not `vs + 1`. No
+  irredundancy normal form is needed.
+- Together, **EST Theorem 2.1 for the progressive game**:
+  `vertexSeparation_le_progressiveEdgeSearch_le_add_two` and
+  `pathwidth_le_progressiveEdgeSearch_le_add_two`, with **no hypothesis**
+  (edgeless and empty graphs included, where both sides are 0).
+- Full game: `edgeSearch_le_progressiveEdgeSearch`,
+  `edgeSearch_le_vertexSeparation_add_two`, `edgeSearch_le_pathwidth_add_two`.
+- With item 10, [10] p. 209's band for the monotone games on a graph with an
+  edge: `monotoneNodeSearch_sub_one_le_progressiveEdgeSearch` (`mns − 1 ≤
+  pes`) and `progressiveEdgeSearch_le_monotoneNodeSearch_add_one`.
+- Edge cases: `progressiveEdgeSearch_of_edgeless`, `edgeSearch_of_edgeless`
+  (`= 0`).
+
+**The named gap.** `EdgeSearchMonotonicity G : Prop := edgeSearch G =
+progressiveEdgeSearch G` is LaPaugh (1993), stated and **not asserted**; no
+`sorry` stands for it, so `allowed_sorries.txt` is unchanged.
+`vertexSeparation_le_edgeSearch_of_monotonicity` derives the missing half of
+Thm 2.1 from it. This is the same theorem item 10's `NodeSearchMonotonicity`
+reduces to in [10] (Thm 2.3 from Thm 2.1), so item 14's reserve, if it proves
+LaPaugh, closes both.
+
+**Not formalised, by choice.** That the band is attained at both ends (`K₂`:
+`s = vs = 1`; `K_{1,3}`: `s = vs + 1`; `K₃,₃`: `s = 5 = vs + 2`, EST p. 57,
+which needs a lower bound over all strategies) and EST Thm 2.2 (`s(G) = vs(2-expansion)`); both stay
+with the checker (`es − vs ∈ {0, 1, 2}` on 1,632 graphs, row 6 of item 02's
+table). Multigraphs and loops, which EST allow and `search1` handles, are outside
+`SimpleGraph`.
+
+**Agreement with the checker.** Item 02: the monotone (progressive) `es`
+equals `es`, and `vs ≤ es ≤ vs + 2`, on all 1,632 graphs to 20 edges.
+
+## Item 12: interval thickness = node search in Lean
+
+`lean/MOSPFormalization/Complex/IntervalSearch.lean`, sorry-free, axioms
+`propext`, `Classical.choice`, `Quot.sound` only. No new definitions: both
+sides are item 05's `intervalThickness` ([9] p. 182) and item 10's
+`monotoneNodeSearch` / `nodeSearch` ([9] p. 181, [10] §2).
+
+**Proved.**
+
+- `monotoneNodeSearch_eq_intervalThickness` (≥ 1 edge): **[9]'s Theorem for
+  the monotone game**, `mns(G) = θ(G)`, through `pw + 1` (items 05 and 10),
+  not by [9]'s own sweep construction. `intervalSearch_chain` states
+  `θ = mns ∧ mns = vs + 1 ∧ vs + 1 = pw + 1`, which closes the chain of
+  Table 1's search rows for the monotone game.
+- [9]'s two directions per object: `monotoneNodeSearch_le_cliqueNum` (any
+  interval supergraph `H`, intervals in any linear order: `mns ≤ ω(H)`) and
+  `intervalThickness_le_of_isMonotoneNodeSearch` (a monotone strategy of cost
+  `k` gives `θ ≤ k`).
+- Full game: `nodeSearch_le_intervalThickness` without monotonicity;
+  `nodeSearch_eq_intervalThickness_of_monotonicity` from the named gap
+  `NodeSearchMonotonicity` (not asserted).
+- Möhring Thm 3.9 (`t(M) = ns(G_M)`) for the monotone game:
+  `NetGateMatrix.tracks_eq_monotoneNodeSearch` when two nets share a gate;
+  `tracks_eq_nodeSearch_of_monotonicity` for the full game from the gap.
+
+**Counterexamples.** [9]'s Theorem says "for any graph G". On every nonempty
+edgeless graph `ns = mns = 0` and `θ = 1` (`intervalThickness_of_edgeless`,
+`nodeSearch_ne_intervalThickness_of_edgeless`,
+`monotoneNodeSearch_ne_intervalThickness_of_edgeless`); the smallest instance
+is one vertex (`nodeSearch_ne_intervalThickness_K1`). Möhring's Thm 3.9 read
+literally fails on the `1 × 1` matrix `[1]`: one track, edgeless net graph,
+node search 0 (`tracks_ne_monotoneNodeSearch_one`). Both values stay within
+±1 of the open-stack number, so Table 1's wording survives.
+
+**Other Table 1 claims items 01–02 found false.** Every one already has a Lean
+counterexample: PLA simple folding (item 09), cutwidth and modified cutwidth
+(item 08), `ns = vs + 1` and Lengauer's Thm 4 on edgeless graphs (items 10,
+08), and now `ns = θ`. The remaining non-exact rows — edge search (band),
+split bandwidth (sandwich), Ohtsuki's boundary variant (band) — are weaker
+than stated, not false; that their upper ends are attained (`K₃,₃`, `K_{1,3}`,
+`boundary_path_instance`) needs lower bounds over all strategies, splits or
+placements and stays with the checker.
+
+**Agreement with the checker.** Item 02, rows 4 and 5 of its table: `ns = θ
+= vs + 1` on all 1,644 graphs with an edge, and `θ = pw + 1` on all 1,652, so
+`θ = 1` against `ns = 0` on the 8 edgeless ones.
+
+## Item 13: assembly
+
+- The **master table** above (five status labels) replaces the census table
+  as the section's summary; the census table stays below it as the detailed
+  record (definitions, checked counts, every Lean name).
+- **The chain figure**, `figures/equivalence_chain.{dot,pdf,png}`.
+- **`axiom_check.lean`**: `#print axioms` on all 33 theorems the section
+  names; all 33 depend only on `propext`, `Classical.choice`, `Quot.sound`,
+  and the control `conjecture_sqrt_tw_f6` shows `sorryAx`, so the check can
+  fail.
+- **Sorry inventory**: none added by the loop; the two monotonicity gaps are
+  `Prop`s, not sorries.
+- **`lean_repo_plan.md`**: the files that move to the paper's own
+  repository, their dependency order, and what they need from
+  `lean/MOSPFormalization/`.
+
+## Item 14: the reserve — node search is monotone
+
+The reserve was to attempt the monotonicity theorem behind the two named gaps.
+It closed the node-search gap outright and removed the edge-search gap from
+every row of the table. Two new files, both sorry-free, both on
+`propext`, `Classical.choice`, `Quot.sound` only (11 new lines in
+`axiom_check.lean`, 44 theorems in all):
+
+- `Complex/NodeMonotonicity.lean` — `nodeSearchMonotonicity : NodeSearchMonotonicity G`
+  for every finite graph; `nodeSearch_eq_vertexSeparation_add_one`,
+  `nodeSearch_eq_pathwidth_add_one` ([10] Thm 4.1, full game, ≥ 1 edge);
+  `nodeSearch_eq_intervalThickness` ([9]'s Theorem, full game, ≥ 1 edge);
+  `nodeSearch_chain` (`θ = ns = mns = vs + 1 = pw + 1`);
+  `NetGateMatrix.tracks_eq_nodeSearch` (Möhring Thm 3.9, full game, two nets
+  sharing a gate).
+- `Complex/EdgeSearchFull.lean` — `vertexSeparation_le_edgeSearch` (EST
+  Lemma 2.1, full game), `vertexSeparation_le_edgeSearch_le_add_two` and
+  `pathwidth_le_edgeSearch_le_add_two` (EST Thm 2.1 as stated),
+  `nodeSearch_sub_one_le_edgeSearch_le_add_one` ([10] p. 209 for the full
+  games), `edgeSearch_le_progressiveEdgeSearch_le_add_two`.
+
+**The route is not the sources'.** [10] obtains node monotonicity (Thm 2.3)
+from LaPaugh's theorem for edge search, through a subdivision (Thm 2.5); EST
+obtain Lemma 2.1 from LaPaugh too. Neither was formalised. Instead, the
+*crusade* argument of Bienstock & Seymour (1991) is run on **vertex sets**,
+with the **outer vertex boundary** `∂A = N(A) \ A` as the measure — which
+fits vertex separation directly, since the active suffix of a layout at a
+prefix is that prefix's outer boundary:
+
+1. `|∂A|` is submodular: `|∂A| = |N[A]| − |A|` and `N[·]` is a coverage
+   function (`card_outerBd_inter_add_union`).
+2. A *chain* of width `K` (`IsChain`): vertex sets from `∅` to `V`, each step
+   adding at most one vertex and removing any number, each with `|∂| ≤ K`.
+3. **Crusade lemma** (`exists_monotone_chain`): a chain of width `K` can be
+   made increasing. Minimise `Σ (|∂X_i|·(|V|+1) + |X_i|)`; at a step with
+   `X_j ⊄ X_{j+1}`, either `X_j ∩ X_{j+1}` has boundary `≤ |∂X_j|` and
+   replaces `X_j`, or by submodularity `X_j ∪ X_{j+1}` has boundary
+   `< |∂X_{j+1}|` and replaces `X_{j+1}`. Both keep the chain conditions,
+   and both lower the weight.
+4. An increasing chain is a layout of vertex separation `≤ K`
+   (`vertexSeparation_le_of_monotone_chain`).
+5. **Any strategy gives a chain.** Follow the *clean set*, the vertices
+   touching no contaminated edge. In a closed position its boundary is
+   guarded (otherwise the gas would spread onto a clean edge). In node search,
+   a vertex that becomes clean carries a searcher, so each set between the new
+   clean set and its intersection with the old one contains a searcher and
+   its boundary misses it: width `k − 1` (`exists_chain_step`). The
+   intersection itself is the old clean set unless the move deleted a
+   searcher, and then `k − 1` searchers remain. In edge search the width is
+   `k`: at most one newly clean vertex is left unguarded (`clear_step_unique`),
+   and it is added first (`exists_chain_edgeStep`).
+
+The argument never needs a recontamination-free strategy, so the gap in
+[10]'s proof of Thm 4.1 (`KirousisPapadimitriouGap.lean`) does not arise.
+
+**Not done: LaPaugh's theorem `es = pes`.** The vertex-set chain gives only
+`pes ≤ vs + 2 ≤ es + 2`. Equality needs Bienstock & Seymour's crusades over
+*edge* sets (measure `|δ(X)|`, the vertices meeting both `X` and its
+complement) and a progressive edge strategy built from a progressive edge
+crusade. Their route goes through mixed search and a subdivision; not attempted,
+and not sized. `EdgeSearchMonotonicity`
+stays a named `Prop`, and no table row now depends on it.
+
+
+## Pebbling (loop0006 item 01: the census)
+
+Loop0006 asks whether progressive black-white pebbling is a thirteenth member
+of the complex. Table 1 does not list it; [14] Lengauer (1981), which Table 1
+cites for "edge separation", is in fact mostly about this game (§11 above).
+Two sources, both held: Lengauer, *Black-white pebbles and graph separation*,
+Acta Informatica 16 (1981) 465–475
+(`../literature/lengauer_1981_black_white_pebbles_graph_separation.pdf`), and
+[10] Kirousis & Papadimitriou, *Searching and pebbling*, TCS 47 (1986) 205–218
+(`literature/10_kirousis_papadimitriou_1986.pdf`), §3. Page numbers are the
+printed ones. This section is the census only: it contains no Lean. Item 02
+checks every statement in it by brute force, and items 03–04 prove them.
+
+### P.1 The games, as each source defines them
+
+**Lengauer's black-white pebble game (BWP)**, p. 466. He presents it as
+Cook & Sethi's game ("We introduce their black-white pebble game (BWP) here as
+follows"). Cook & Sethi (1976) is not held, so the definition used here is
+Lengauer's wording, as TASK.md asks. "The game is played on a dag G
+according to the following rules.
+
+ (i) All vertices start out pebble-free.
+ (ii) All vertices end up pebble-free.
+ (iii) Each vertex receives and loses a pebble at least once.
+ (iv) A white pebble can be placed on a pebble-free vertex at any time.
+ (v) A black pebble can be removed from a vertex at any time.
+ (vi) A white pebble on a vertex v may be turned black if all of the
+ immediate predecessors of v are pebbled.
+
+An *instance* (G, K) of BWP (where G is a dag and K is a positive integer) is
+called *positive* if G can be pebbled using at most K pebbles." The cost is
+"the maximum number of pebbles used at any instant in the game" (p. 466).
+Footnote 1 (p. 466): v₀ is an *immediate predecessor* of v₁ when (v₀, v₁) is
+an edge. Three things follow from the rules as written. There is no rule that
+places a black pebble directly: a black pebble is a white one that has been
+turned. A white pebble can never be removed, because (v) removes only black
+ones, so by (ii) every white pebble is eventually turned. A vertex is
+"pebbled" when it carries a pebble of either colour.
+
+**The progressive game PBWP**, p. 467: "By exchanging rule (iii) with the
+following rule: (iii') Each vertex receives and loses a pebble *exactly*
+once, we define a progressive black-white pebble game (PBWP) that
+effectively disallows recomputation." Lengauer gives the number no symbol.
+Here **PBWP(G)** is the least positive K with (G, K) positive, which matches
+his convention for VSG(G) (p. 467).
+
+**Lengauer's vertex separator game VSG**, p. 467: this is §11 above. "A pair
+(G, K) with G being an undirected graph and K being a positive integer is a
+*positive* instance of VSG if VSG(S) ≤ K" (checked on the page image as `≤`;
+pdftotext reads it as `<`). VSG(G) is the least such K, and `VSG = max(1, vs)`
+(`Complex.vsg_eq_max`, `EdgeSeparation.lean`).
+
+**Kirousis & Papadimitriou's games**, [10] pp. 205–206. The black game:
+"(i) A pebble can be placed on a vertex only if all the immediate
+predecessors of that vertex are pebbled. ... (ii) A pebble can be deleted at
+any time." The game "starts with all vertices of the graph pebble-free, and
+ends when the same situation is attained after all vertices have been pebbled
+at least once". The black and white game adds white pebbles, which "can be
+placed at any point on any vertex, but they can be removed only after they
+turn black. A white pebble turns black at the moment when all the immediate
+predecessors of the vertex on which it lies are pebbled. In this version, a
+vertex is considered pebbled when it carries a pebble, whatever its colour."
+Progressive, p. 206: "In these versions, each vertex can be pebbled only
+once. ... The progressive black, and black-white pebble demands for a graph G
+are denoted by pb(G), and pbw(G)." Directives, §3 p. 213: "We define Δ(G) to
+be the set of dags whose underlying directed graph equals G ... we say that D
+is a directive of G. For a graph G, define mpb(G) to be min_{D∈Δ(G)} pb(D),
+the minimum progressive black pebble demand over all directives of G.
+Similarly, mpbw(G) = min_{D∈Δ(G)} pbw(D)."
+
+**How the two black-white definitions differ, and why the numbers agree.**
+
+1. *Turning.* Lengauer's turn is optional ("may be turned black"). KP's is
+   automatic ("turns black at the moment"). Every KP play is a Lengauer play:
+   turn each pebble at the moment KP's rule fires. Conversely, turning earlier
+   never hurts, because a black pebble counts as pebbled exactly as a white
+   one does and may additionally be removed. So the demands agree. KP also
+   keep the black game's direct black placement (rule (i)). Lengauer gets the
+   same move as "place white, turn at once", at the same pebble count, and his
+   own Thm 2 proof writes it as step 2, "Put a black pebble on v".
+2. *Progressiveness.* Lengauer's (iii') ("receives and loses a pebble exactly
+   once") and KP's "pebbled only once", together with "all vertices have been
+   pebbled at least once", say the same thing.
+3. *Positivity.* Lengauer's K is a positive integer, so the empty dag has
+   PBWP = 1 where pbw = 0. On every nonempty dag, **PBWP(G) = pbw(G)**.
+   Throughout, `pbw` means this common number.
+
+*Spot check* (a throwaway script, not item 02's checker). The progressive
+demand under Lengauer's rules and under KP's automatic turning agrees on all
+1,100 labelled dags with at most 5 vertices (the empty dag included), where every edge i → j has i < j.
+Up to isomorphism, that covers every dag of that size.
+
+### P.2 The graphs
+
+- **Dags** are the input to pebbling, with edges from operands to result.
+- **G_u**, Lengauer Def. 1a (p. 468): `E_u = {{v, w} | (v, w) ∈ E} ∪ {{v, w} |
+  (v, u), (w, u) ∈ E for some u ∈ V}`. In words: "G_u makes cliques out of the
+  immediate predecessors of every vertex in G and then ignores edge
+  directions". Equivalently, G_u is the union of the cliques on the closed
+  in-neighbourhoods `N⁻[v] = {v} ∪ pred(v)`. This is what connects PBWP to
+  open stacks. **G_u is the MOSP graph of the |V| × |V| matrix M_G whose
+  column v is N⁻[v]**: a customer per vertex, and one product per vertex that
+  the vertex and its immediate predecessors need.
+- **G_d**, Lengauer Def. 1b (p. 469): `V_d = V ∪ E`, `E_d = {(v, {v, w}),
+  (w, {v, w}) | {v, w} ∈ E}`. It "erects a complete binary tree of height 1
+  over each edge in E, and then discards the edges in E". It is a depth-1
+  dag: the sources are V and the sinks are E, each sink with in-degree 2.
+  (G_d)_u = G_du, the triangle graph of Thm 4 (p. 472). In Lean that is
+  `Complex.triangleGraph G` on `V ⊕ G.edgeSet`.
+- **Which undirected graphs are some G_u?** Exactly the **chordal** graphs.
+  G_u = H forces every predecessor set to be a clique of H, so a topological
+  order of G is a reverse perfect elimination ordering of H. Conversely, a
+  chordal H oriented along the reverse of a perfect elimination ordering
+  gives G_u = H. For example, C₄ is not a G_u: any acyclic orientation has a
+  sink, whose two in-neighbours are opposite corners of the square, so G_u
+  adds a chord. Thm 2 therefore reaches only chordal undirected graphs, and
+  that is why Thm 3 needs the detour through G_d. This observation is ours;
+  Lengauer does not make it.
+- **Directives** of an undirected G, KP p. 213: the acyclic orientations of
+  G. For every directive D, G ⊆ D_u.
+
+### P.3 The relations, as stated and as they hold
+
+**(P-L2) Lengauer Thm 2**, p. 469: "(G, K) is a positive instance of PBWP if
+and only if (G_u, K − 1) is a positive instance of VSG."
+
+- *The proof.* (⇒) Pebble v in G_u at the time v *loses* its pebble in G. If
+  the cut after that placement has size k, then G carried k + 1 pebbles just
+  before the removal: the k cut vertices, which by a three-case argument
+  still hold pebbles, plus v itself. (⇐) Simulate each VSG placement on v in
+  four steps: whiten the pebble-free G_u-neighbours of v that are still
+  unpebbled in G; blacken v; turn the successors of v black; remove v. An
+  induction with invariants (a)–(d) (pp. 470–471) shows the pebble count
+  never exceeds the cut plus one.
+- *Edge case.* At K = 1 the statement fails literally. For an edgeless
+  nonempty dag, (G, 1) is positive, but (G_u, 0) is not an instance, because
+  VSG requires K ≥ 1. The number form fails there too: `PBWP(G) = 1` while
+  `VSG(G_u) + 1 = 2`. The statement holds as written for every K ≥ 2. It holds
+  for every K ≥ 1 if VSG is replaced by `vs` (read "(G_u, K − 1) positive" as
+  `vs(G_u) ≤ K − 1`).
+- **As a number: `pbw(G) = vs(G_u) + 1 = pw(G_u) + 1` for every nonempty
+  dag G.** By `MOSPGraph.lean` this also equals `Z(M_G)`, the MOSP value of
+  the instance above. If G has an edge, `pbw(G) = VSG(G_u) + 1`.
+- **Exact**, offset +1, on the transformed graph G_u. The spot check agrees on
+  all 1,100 dags described in P.1.
+
+**(P-L3) Lengauer Thm 3**, p. 472: "The instance (G, K) of VSG is positive if
+and only if the instance (G_d, K + 2) of PBWP is positive." Proof (p. 472):
+"The proof follows from a combination of Theorem 2 with" Thm 4. That is,
+Thm 2 applied to G_d, using (G_d)_u = G_du, followed by Thm 4
+(`(G, K)` VSG-positive ⇔ `(G_du, K + 1)` VSG-positive, already proved in Lean
+as `Complex.isPositiveVSG_iff_triangleGraph`, under the hypothesis "G has an
+edge or 0 < K").
+
+- *Edge case.* For G edgeless and nonempty, G_d is G with no arcs, so
+  `PBWP(G_d) = 1`. Meanwhile `VSG(G) + 2 = 3` and `vs(G) + 2 = 2`. The
+  instance form still holds on every graph for every K ≥ 1, because on an
+  edgeless graph both sides are positive for all K. With `vs` in place of VSG
+  it holds for **every K ≥ 0**: `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`. Only the
+  number form needs an edge.
+- **As a number: `pbw(G_d) = vs(G) + 2 = pw(G) + 2` for every graph with at
+  least one edge**, and `pbw(G_d) = 1` for an edgeless nonempty graph.
+- **Exact**, offset +2 on pw, on the transformed dag G_d. That is `Z + 1` for
+  the corresponding MOSP instance, so it is a fixed offset `c = +1` in Table
+  1's reading. Spot check: agrees on all 461 labelled graphs with
+  `|V| ≤ 5` and `|V| + |E| ≤ 9`.
+- *Progressiveness is essential here* (Lengauer p. 469). G_d has no path of
+  length 2, so "the graphs it yields can easily be pebbled in the
+  unrestricted BWP using only three pebbles". The unrestricted game is
+  therefore **not** a member of the complex: `bw(G_d) ≤ 3` while
+  `pbw(G_d) = pw(G) + 2` is unbounded (take G = K_n).
+
+**(P-KP) KP Thm 3.1**, p. 213: "For any graph G, mpb(G) = ns(G) = mpbw(G)."
+
+- *The proof.* `mpbw ≤ mpb` is immediate. For `mpb ≤ ns`, take an optimal
+  recontamination-free strategy S "as in Corollary 2.4" (p. 210: "no vertex is
+  visited twice by a searcher, and ... every searcher is deleted immediately
+  after all the edges incident on it have been cleared"). Orient each edge
+  away from its endpoint visited first. S, read as black pebbles on this
+  directive, is a progressive pebbling. For `ns ≤ mpbw`, read the pebbles of
+  a progressive black-white pebbling as searchers. Every edge vw sees both
+  endpoints pebbled at some instant. If w is a predecessor of v, this happens
+  when v's pebble is placed black or turns black; otherwise swap the roles.
+- *On the proof.* KP's last sentence ("all edges of G will be eventually
+  cleared (with no recontamination)") asserts more than the overlap shows.
+  It does follow, though. A vertex can lose its pebble only after every
+  neighbour has received one: a successor pebbled later would need it
+  pebbled in order to turn black, and a predecessor was pebbled when it
+  turned. That is exactly the hypothesis of [9]'s Lemma (§6 above).
+  Alternatively, the pebble intervals form an interval supergraph of G, so
+  `θ(G) ≤ pbw(D)` for every directive D, and `θ = ns`.
+- *Edge case.* On an edgeless nonempty graph, `ns = 0` (there is nothing to
+  clear, §6 above), but `mpb = mpbw = 1`, because every vertex must receive a
+  pebble. **The first equality of Thm 3.1 is false on edgeless graphs with at
+  least one vertex**, which is the same gap as [9] and Thm 4.1 have.
+- **As a number: `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1` for every
+  nonempty graph**, edgeless ones included, and `= ns(G)` when G has an edge.
+  This combines Thm 3.1 with Thm 4.1 (`ns = vs + 1`, ≥ 1 edge). Both halves
+  also have short direct proofs that avoid searching.
+  - (≤) Orient by an optimal layout, place black pebbles in layout order, and
+    remove a vertex once all its neighbours have been placed. When v_i is
+    placed, the pebbled vertices are v_i and the earlier vertices with a
+    neighbour at index ≥ i, which is Kinnersley's `V_L(i − 1)`. That is at
+    most `vs + 1` pebbles.
+  - (≥) The interval argument above.
+  So `mpb = mpbw = pw + 1` needs neither LaPaugh nor node monotonicity.
+- **Exact**, offset +1, on the input graph itself, with no transformation.
+  This is the same offset as θ, ν and ns, so `mpb = mpbw = Z`. Spot check:
+  `mpb = mpbw = vs + 1` on all 1,099 labelled nonempty graphs with at most 5
+  vertices, minimising over every acyclic orientation.
+
+**How the two sources relate.** For a directive D of G, G ⊆ D_u, so
+Lengauer's Thm 2 gives `pbw(D) = pw(D_u) + 1 ≥ pw(G) + 1`. KP's
+`mpbw(G) = pw(G) + 1` then says that `min_D pw(D_u) = pw(G)`. Directly: orient
+along an optimal layout. The earlier neighbours of v_i all lie in the
+separator at step i − 1, so each added predecessor clique lies inside a bag
+together with v_i, and no width is added. KP's mpbw half is thus Lengauer's
+Thm 2 plus this one-line lemma.
+
+**Also in the sources, and outside the complex.**
+
+- KP Thm 3.3 (p. 214): for D with in-degree at most k,
+  `pbw(D) ≤ (k + 1) ns(G)`. This is a multiplicative band.
+- KP's star example (p. 214): `ns(K_{1,n}) = 2` while `bw(D) = n + 1` when
+  every edge points to the centre. So a single directive can be arbitrarily
+  worse than the minimum.
+- KP Prop. 3.2 (p. 214): `ns` of the complete ternary tree of height h is
+  h + 1, while that tree, "directed from the root towards the leaves can be
+  pebbled, allowing repebbling, by just two pebbles".
+- **A scope note on Lengauer p. 467.** Lengauer remarks: "Note, that for
+  directed trees recomputation is of no advantage. Thus BWP and PBWP have the
+  same complexity on trees." KP's example refutes this for trees directed
+  root → leaves: there the progressive demand is at least mpb = h + 1 > 2.
+  The remark can only be meant for **in-trees** (edges towards the root, as
+  in the pebbling literature Lengauer cites), where every vertex has one
+  successor. Neither source proves it. Item 02 is to check it on small
+  in-trees and out-trees. *(Checked in P.7: it holds on every in-tree to 11
+  vertices, and fails already on a 7-vertex out-tree.)*
+
+### P.4 Verdict: does pebbling belong in the complex?
+
+| # | Problem | Source | Relation (census; brute-force checked in P.7; proved in P.8–P.9) | Offset | Status |
+|---|---|---|---|---|---|
+| 13a | Minimum progressive pebbling of a graph (mpb, mpbw) | KP 1986 Thm 3.1 with Thm 4.1 | `mpb(G) = mpbw(G) = vs(G) + 1 = pw(G) + 1`, every nonempty G; `= ns(G)` if G has an edge | +1 on G (`= Z`) | **exact member**; Thm 3.1 false on edgeless graphs (`ns = 0`); **proved in Lean (P.9)** |
+| 13b | Progressive black-white pebbling of a dag (PBWP) | Lengauer 1981 Thm 2 | `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1 = Z(M_D)`, every nonempty dag D | +1 on D_u | **exact**, under the transformation D ↦ D_u (which reaches only chordal graphs); instance form false at K = 1 on edgeless D with VSG, true with vs; **proved in Lean (P.9)**, for every digraph |
+| 13c | PBWP of G_d | Lengauer 1981 Thm 3 | `pbw(G_d) = vs(G) + 2 = pw(G) + 2`, G with an edge; `= 1` if G is edgeless and nonempty | +2 on G (`= Z + 1`) | **exact**, fixed offset; instance form true for every K ≥ 0 with vs; **proved in Lean (P.8)** |
+| — | Unrestricted BWP | Lengauer p. 469 | `bw(G_d) ≤ 3` | none | **not a member** |
+
+In short: pebbling relates to vertex separation **exactly**. It has offset
++1 when the undirected side is D_u (Lengauer Thm 2) or the graph itself with
+the directive chosen optimally (KP), and offset +2 when the dag is built from
+the graph by G_d (Lengauer Thm 3). The progressive restriction is what makes
+this work; the unrestricted game has bounded demand on every G_d. For the
+paper, the natural thirteenth member is **13a** (`mpb = mpbw = pw + 1`, on
+the input graph, the same offset as θ and ν), with 13b and 13c as its
+dag-side transformations. No Table 1 entry names pebbling, and Lengauer
+[14], the paper cited for "edge separation", is where it comes from.
+
+### P.5 Statements for item 02 to check
+
+Implement progressive black-white pebbling from P.1's rules. Use Lengauer's
+optional turning and KP's automatic turning separately, and the black-only
+game for mpb. Compute vs by the existing DP.
+
+1. The Lengauer and KP rules give equal demand on every dag.
+2. `pbw(D) = vs(D_u) + 1` on every nonempty dag. Lengauer's instance form
+   fails at K = 1 exactly on edgeless D when read with VSG, and holds for all
+   K ≥ 1 when read with vs.
+3. `pbw(D) = Z(M_D)`, where M_D is the column-per-vertex matrix of N⁻[v],
+   through `mosp_value`.
+4. `pbw(G_d) = vs(G) + 2` when G has an edge, and `pbw(G_d) = 1` when G is
+   edgeless and nonempty. The instance form `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`
+   holds for every K ≥ 0. Here `|V| + |E|` bounds the state space: 4^(n+m)
+   for the naive search.
+5. `mpb(G) = mpbw(G) = vs(G) + 1` on every nonempty graph. `ns = 0 ≠ mpb` on
+   edgeless nonempty graphs.
+6. G is some D_u if and only if G is chordal (C₄ is the smallest failure).
+   The optimal-layout directive attains `pw(D_u) = pw(G)`.
+7. Unrestricted BWP, and the black pebble game, need at most 3 pebbles on
+   every G_d, so the gap `pbw(G_d) − bw(G_d)` is unbounded.
+8. Lengauer's remark: BWP = PBWP on small in-trees. Out-trees give
+   counterexamples: KP's ternary tree of height 2 (13 vertices) has
+   progressive demand 3 against 2. This needs a black-game solver with
+   repebbling.
+
+### P.6 Notes for the Lean items
+
+- *Item 03, Thm 3.* The route with the least new work is Lengauer's own:
+  Thm 2 specialised to the depth-1 dag G_d, whose `G_u` is already
+  `Complex.triangleGraph`, followed by `isPositiveVSG_iff_triangleGraph`. The
+  pebbling side of G_d is simple because no sink is a predecessor. Stating
+  the result with `vertexSeparation` rather than `vsg` removes the K ≥ 1 and
+  edge hypotheses from the instance form (P-L3).
+- *Item 04, Thm 2.* Stated with `vs`, it needs only "D nonempty". Its (⇒)
+  direction is the removal-time layout, and its (⇐) direction is the
+  four-step simulation. For KP, the direct layout and interval proofs of P-KP
+  avoid node search entirely. `IntervalThickness.lean` supplies the interval
+  half, and a layout supplies the other.
+- A play can be modelled as a list of moves (place white, turn, remove
+  black) with a validity predicate, and progressive as "each vertex placed
+  once and removed once". An equivalent and simpler object is the pair of
+  times (received, lost) per vertex. The interval proofs work with that
+  object.
+
+### P.7 Brute-force check (loop0006 item 02)
+
+`paper1/complex_check.py` now implements the four games of P.1 from the
+source wording and decides each for a pebble budget k by exhaustive search
+over the positions that never hold more than k pebbles:
+
+- `progressive_bw_within(d, k, rules)`: PBWP. `rules="lengauer"` gives rules
+  (i), (ii), (iii'), (iv)–(vi) of pp. 466–467, with optional turning and white
+  pebbles never removed. `rules="kp"` gives KP pp. 205–206, where a white pebble
+  turns at the moment its predecessors are all pebbled.
+- `progressive_black_within`: KP's progressive black game.
+- `unrestricted_bw_within`: BWP with rule (iii), "at least once".
+- `unrestricted_black_within`: KP's black game with repebbling.
+
+Alongside the games it builds the constructions: `lengauer_u` (Def. 1a),
+`lengauer_d` (Def. 1b, numbered like the existing `lengauer_du`),
+`pebble_matrix` (M_D of P.2), `acyclic_orientations` (directives, one per
+topological order, deduplicated) and `is_chordal` (simplicial elimination,
+checked against networkx). vs is the existing prefix DP `vs_dp`, VSG the
+existing literal `vsg`, `Z` the literal `mosp_value`, and ns the existing
+`node_search`. Positivity is monotone in K, so each instance form is read off
+the demand. Each demand is certified exact by also refuting it one pebble
+lower.
+
+Regenerate with `python -m paper1.complex_check --pebbling` (279 s on 32
+cores). This writes `paper1/data/pebbling_check.json`; add `--quick` for a
+one-second version, which `tests/test_pebbling_check.py` runs. The tests also
+check every game on eight hand-computed dags.
+
+**Inputs.**
+
+- **Dags** (statements 1–3):
+  - every dag on 0–6 vertices with arcs i → j only for i < j. That is 33,868
+    labelled dags, which covers every dag on ≤ 6 vertices up to isomorphism.
+  - 20,000 random dags on 7 vertices, arc probability drawn from
+    {0.2, …, 0.8}, seed 20260930.
+- **G_d** (statements 4 and 7): every graph of the networkx atlas (so ≤ 7
+  vertices) with `|V| + |E| ≤ 14`, 299 graphs. The largest G_d has 14
+  vertices.
+- **Directives** (statements 5 and 6): every atlas graph on 1–7 vertices,
+  1,252 graphs, each with all of its acyclic orientations (up to 5,040 for
+  K₇). ns is computed to 6 vertices only (202 graphs with an edge).
+- **Trees** (statement 8): every tree on 1–11 vertices, with every choice of
+  root, directed both ways. That is 4,394 rooted trees.
+- **Plays** (P.3's recontamination lemma): every dag on ≤ 5 vertices, with
+  every play position from which the play can still be completed. That is
+  359,744 live positions.
+
+**Results. Every statement of P.5 holds on every input, with zero
+counterexamples.**
+
+| P.5 | Statement | Checked | Failed |
+|---|---|---|---|
+| 1 | Lengauer's rules and KP's rules give equal pbw | 53,868 dags | 0 |
+| 1 | pbw ≤ pb | 53,868 | 0 |
+| 2 | `pbw(D) = vs(D_u) + 1`, D nonempty | 53,867 | 0 |
+| 2 | instance form with vs holds for every K ≥ 1 | 53,867 | 0 |
+| 2 | instance form with VSG fails exactly at K = 1 on edgeless D, nowhere else (K ≤ n + 1) | 33,867 | 0 |
+| 2 | `pbw(D) = VSG(D_u) + 1`, D with an arc | 33,861 | 0 |
+| 3 | `pbw(D) = Z(M_D)`, D nonempty | 53,867 | 0 |
+| 3 | the MOSP graph of M_D is D_u, literally | 53,868 | 0 |
+| 4 | `(G_d)_u = G_du` (Thm 4's triangle graph), literally | 299 graphs | 0 |
+| 4 | `pbw(G_d) = vs(G) + 2`, G with an edge | 292 | 0 |
+| 4 | `pbw(G_d) = 1`, G edgeless and nonempty | 7 | 0 |
+| 4 | `vs(G) ≤ K ⇔ pbw(G_d) ≤ K + 2`, every K ≥ 0 | 299 | 0 |
+| 4 | Thm 3 as Lengauer states it (VSG, K ≥ 1) | 299 | 0 |
+| 5 | `mpb = vs + 1` and `mpbw = vs + 1`, G nonempty | 1,252 graphs | 0 |
+| 5 | `mpb = ns = mpbw` (KP Thm 3.1), G with an edge, ≤ 6 vertices | 202 | 0 |
+| 5 | `ns = 0` and `mpb = 1`, G edgeless and nonempty (Thm 3.1 fails) | 6 | 0 |
+| 5 | orienting along an optimal layout attains mpb | 1,252 | 0 |
+| 6 | G is some D_u ⇔ G chordal | 1,252 | 0 |
+| 6 | `min_D vs(D_u) = vs(G)`, attained by the optimal-layout directive | 1,252 | 0 |
+| 7 | unrestricted BWP on G_d needs ≤ 3 pebbles; so does the black game | 299 | 0 |
+| 8 | in-trees: BWP = PBWP, and black with repebbling = progressive black | 4,394 | 0 |
+| P.3 | in every completable progressive play, a vertex that has lost its pebble has every neighbour already pebbled | 359,744 positions | 0 |
+
+**Named instances** (all values exact):
+
+| Dag | pbw | pb | bw (unrestricted) | b (unrestricted) | vs of the graph |
+|---|---|---|---|---|---|
+| G_d of K₂ (3 vertices) | 3 | 3 | 3 | 3 | 1 |
+| G_d of K₃ (6) | 4 | 4 | 3 | 3 | 2 |
+| G_d of K₄ (10) | 5 | 5 | 3 | 3 | 3 |
+| G_d of C₄ (8) | 4 | 4 | 3 | 3 | 2 |
+| G_d of P₄, of K₁,₃ (7) | 3 | 3 | 3 | 3 | 1 |
+| KP's ternary out-tree, height 2 (13) | 3 | 3 | **2** | **2** | 2 |
+| the same tree as an in-tree | 5 | 6 | 5 | 6 | — |
+| K₁,₄ with every edge to the centre (KP p. 214) | 5 | 5 | 5 | 5 | mpb(K₁,₄) = 2 |
+
+The G_d rows show statement 7's unbounded gap growing. `pbw(G_d(Kₙ)) − bw`
+is 0, 1, 2 for n = 2, 3, 4, and in general `pbw(G_d(Kₙ)) = n + 1` while `bw ≤ 3`.
+
+**Two findings beyond confirmation.**
+
+1. **The smallest counterexample to Lengauer's remark read for out-trees has
+   7 vertices, not 13.** It is the spider with three legs of length 2,
+   directed away from the root: arcs 0→1→2, 0→3→4, 0→5→6. Its progressive
+   demand is 3 in both games, but with repebbling it is 2. The root is
+   re-placed for each leg, so at most one leg vertex and one other pebble are
+   ever on the dag. Progressively, the root must keep its single pebble until
+   the last leg's first vertex has turned, and on an earlier leg a vertex and
+   its successor must be pebbled together, so three pebbles coincide. No
+   out-tree on ≤ 6 vertices has a gap. By size, the out-trees with
+   `pbw > bw` number 7 of 77 rooted trees at 7 vertices, 24 of 184 at 8 and
+   99 of 423 at 9. Over all 4,394 rooted trees to 11 vertices the gap is 1
+   on 1,559 and 0 on the rest, and never 2 at this size. On in-trees, repebbling never helped,
+   in either game, in any of the 4,394. So Lengauer's remark holds for
+   in-trees as far as checked, which is the reading P.3 proposed.
+2. **KP's "no recontamination" claim, repaired in P.3, holds on every play,**
+   not only on optimal ones: on every position from which a progressive play
+   can still finish. It is a property of the rules, which is what the Lean
+   items need.
+
+Nothing in P.1–P.6 needed correcting. The only error found this session was
+in a hand value in the new tests: the in-spider's demand is 4, not 3,
+because its root turns with three predecessors pebbled. The solver was right.
+
+### P.8 Lengauer's Theorem 3 in Lean (loop0006 item 03)
+
+`lean/MOSPFormalization/Complex/Pebbling.lean`, no `sorry`, axioms `propext`,
+`Classical.choice` and `Quot.sound` only (`paper1/axiom_check.lean`). It proves
+row 13c.
+
+**The definitions.**
+
+- **The game.** Under (iii'), a vertex's history is forced: it is pebble-free,
+  then white, then black, then cleared, each phase entered once. So a position
+  is one of four phases per vertex (`PebblePhase`). The three moves are place
+  white, turn, and remove black (`PebbleMove`). Their legality is rules
+  (iv)–(vi) (`PebbleMove.Legal`), with the turn optional as in Lengauer.
+  `PebblesWithin D K` says the all-cleared position is reachable from the
+  pebble-free one without ever holding more than `K` pebbles.
+  `IsPositivePBWP` adds Lengauer's `K > 0`, and `pbw` is the least `K`. This is
+  the machine `progressive_bw_within(rules="lengauer")` of P.7.
+- **G_d** is `lengauerD G` on `V ⊕ G.edgeSet`. It has no directed path of
+  length two, so it is a dag (`lengauerD_no_path_two`).
+
+**The theorems.**
+
+| Statement | Lean | Hypothesis |
+|---|---|---|
+| `PebblesWithin (G_d) (K + 2) ↔ vs(G) ≤ K` | `pebblesWithin_lengauerD_iff` | none, every K ≥ 0 |
+| Lengauer's Thm 3: `(G, K)` VSG-positive ⇔ `(G_d, K + 2)` PBWP-positive | `isPositiveVSG_iff_isPositivePBWP_lengauerD` | `0 < K` (his instances) |
+| `pbw(G_d) = vs(G) + 2`, `= pw(G) + 2`, `= VSG(G) + 2` | `pbw_lengauerD`, `pbw_lengauerD_eq_pathwidth`, `pbw_lengauerD_eq_vsg` | G has an edge |
+| `pbw(G_d) = 1` | `pbw_lengauerD_of_edgeless` | G edgeless, V nonempty |
+| an edge forces 3 pebbles; a vertex forces 1 | `three_le_of_pebblesWithin`, `one_le_of_pebblesWithin` | — |
+
+These are exactly the edge cases of P.3 and P.7: the instance form needs no
+hypothesis when read with vs, and the number form needs an edge.
+
+**The route differs from P.6's plan.** P.6 proposed Lengauer's own proof:
+Thm 2 on G_d, then Thm 4. The Lean proof works on G_d directly, and so needs
+neither Thm 2's four-step simulation nor the triangle graph. The development's
+vs counts the **outer** boundary (`activeSuffix`: later vertices with a
+neighbour at or before the cut), and in that convention both directions are
+short:
+
+- **(⇐) `pebblesWithin_of_layout`.** Clear the vertices in layout order. To
+  clear v:
+  1. blacken the pebble-free vertices of N[v];
+  2. pass a pebble through every edge vertex at v not yet cleared (place,
+     turn, remove);
+  3. remove v.
+  Between steps the black set is exactly the active suffix (`layoutPos`). So
+  at most `|new active suffix| + 1 + 1` pebbles are ever in play.
+- **(⇒) `vertexSeparation_le_of_pebblesWithin`.** The layout is the order in
+  which vertices lose their pebble. At any cut, take the cut edge that is
+  turned **last** (`outerBoundary_card_le`). At that instant the edge vertex,
+  its endpoint on the cleared side, and the whole active suffix all carry
+  pebbles. That is `|active suffix| + 2` distinct pebbles.
+
+The (⇒) argument chooses a time outside the step it bounds: the last cut edge
+can turn long before the cut's vertex is cleared. That is why the play is
+unfolded into a time-indexed sequence (`exists_seq_of_reflTransGen`), rather
+than handled by an invariant on positions.
+
+**Checked before and after stating.** P.7 checked the statement (row 4 of its
+table). The proof's two constructions are replayed by
+`python -m paper1.complex_check --pebbling-strategy`, which writes
+`paper1/data/pebbling_strategy_check.json` in 9 s on 32 cores. It covers
+every layout of every atlas graph on 1–7 vertices, 1,252 graphs and 5,378,453
+plays. Each play is replayed move by move under the Lean legality
+(`replay_progressive`), and four things are checked:
+
+- the (⇐) play is legal and ends with everything cleared;
+- it uses at most `vs(layout) + 2` pebbles (1 if edgeless), where
+  `vs_outer_of_layout` is the Lean convention;
+- its removal-order layout satisfies the (⇒) bound `vs ≤ pebbles − 2`;
+- an edge forces 3 pebbles, and the best layout attains `vs + 2` exactly.
+
+Zero failures. Tests: `tests/test_pebbling_check.py`, five new, including
+that the outer convention has the same minimum over layouts as Kinnersley's
+inner one.
+
+### P.9 Lengauer's Theorem 2 and KP's Theorem 3.1 in Lean (loop0006 item 04)
+
+`lean/MOSPFormalization/Complex/PebblingGu.lean`, no `sorry`, axioms `propext`,
+`Classical.choice` and `Quot.sound` only (`paper1/axiom_check.lean`). It proves
+rows 13a and 13b. The game is `Pebbling.lean`'s.
+
+**The definitions.**
+
+- `lengauerU D` is `D_u` (Def. 1a): distinct `u, w` are joined iff an arc joins
+  them either way or they have a common immediate successor.
+- `BlackMove`, `BlackPebblesWithin`, `pb` are KP's progressive black game: a
+  pebble goes on a never-pebbled vertex whose immediate predecessors are all
+  pebbled, and is deleted at any time.
+- `IsDirective G D` says D is an acyclic orientation of G. `mpb` and `mpbw`
+  are the least demands over directives.
+- `pebbleMatrix D` is `M_D`: column `p` is `N⁻[p]`.
+
+**The theorems.**
+
+| Statement | Lean | Hypothesis |
+|---|---|---|
+| `PebblesWithin D (K + 1) ↔ vs(D_u) ≤ K` | `pebblesWithin_iff_lengauerU` | none: every digraph, every K ≥ 0 |
+| Lengauer's Thm 2: `(D, K)` PBWP-positive ⇔ `(D_u, K − 1)` VSG-positive | `isPositivePBWP_iff_isPositiveVSG_lengauerU` | `2 ≤ K` |
+| Thm 2 fails at K = 1 | `isPositivePBWP_one_not_isPositiveVSG_zero` | D has no arcs |
+| `pbw(D) = vs(D_u) + 1 = pw(D_u) + 1` | `pbw_eq_vertexSeparation_lengauerU_add_one`, `pbw_eq_pathwidth_lengauerU_add_one` | V nonempty |
+| `pbw(D) = VSG(D_u) + 1` | `pbw_eq_vsg_lengauerU_add_one` | an arc `u → v`, `u ≠ v` |
+| `D_u = G_{M_D}` and `pbw(D) = Z(M_D)` | `mospGraph_pebbleMatrix`, `pbw_eq_mospValue_pebbleMatrix` | V nonempty |
+| `mpb = mpbw = vs + 1 = pw + 1` | `mpb_eq_vertexSeparation_add_one`, `mpbw_eq_vertexSeparation_add_one`, `mpb_eq_mpbw`, `mpb_eq_pathwidth_add_one`, `mpbw_eq_pathwidth_add_one` | V nonempty |
+| KP's Thm 3.1 as stated: `mpb = ns = mpbw` | `mpb_eq_nodeSearch` | G has an edge |
+| `mpb = mpbw = 1`, `ns = 0` | `mpb_ne_nodeSearch_of_edgeless` | G edgeless, V nonempty |
+
+**Stronger than the sources in one respect.** Theorem 2 is proved for the game
+on *any* digraph: acyclicity is never used, in either direction. The Python
+check confirms this on all 66,067 digraphs with at most 4 vertices, loops and
+cycles included. For example, a 2-cycle has `pbw = 2 = vs(K₂) + 1`, and a
+single loop has `pbw = 1`.
+
+**The routes.**
+
+- **Theorem 2 (⇒)** is Lengauer's. Lay the vertices out in the order they lose
+  their pebble. Just before `v` is removed, every `D_u`-neighbour `w` of the
+  cleared set that is not itself cleared still carries a pebble, by the three
+  cases: an arc `u → w`, an arc `w → u`, or a common successor. Each case gives
+  a turn that saw `u` and `w` pebbled together, before `u` was cleared
+  (`outerBoundary_lengauerU_card_le`).
+- **Theorem 2 (⇐)** is Lengauer's four steps, recast as an invariant on
+  positions (`guPos`). After clearing `S`, the outer boundary of `S` in `D_u` is
+  pebbled, and is black exactly where it has a predecessor in `S`. To clear
+  `v`:
+  1. whiten `N_u[v]`;
+  2. turn `v`;
+  3. turn the successors of `v` that are not black;
+  4. remove `v`.
+
+  This is `reach_guPos_insert`. His invariants (a)–(d) collapse into the one
+  position function.
+- **KP (≥)**: every edge of G is an arc of any directive D, so `G ≤ D_u`.
+  Theorem 2 (⇒) and `vertexSeparation_mono` then give `vs(G) + 1 ≤ pbw(D)`, and
+  a black play is a black-white play (`BlackPebblesWithin.pebblesWithin`).
+- **KP (≤)**: orient along a layout (`layoutOrient`, a directive). Place black
+  pebbles in layout order, and clear a vertex once all its neighbours are
+  placed (`blackPebblesWithin_layoutOrient`). The pebbles in play are
+  `Narrowness.lean`'s shack, of size `vs(σ reversed) + 1`, so take σ to be the
+  reverse of an optimal layout.
+
+  This is census P.3's direct proof. It uses neither node search, nor LaPaugh,
+  nor monotonicity. `mpb = ns` then follows from `NodeMonotonicity.lean` alone.
+
+**Checked before and after stating.** P.7 checked the statements. The
+constructions are replayed by `python -m paper1.complex_check --pebbling-gu`,
+which writes `paper1/data/pebbling_gu_check.json` in 9 s on 32 cores. Zero
+failures on each of the following:
+
+- *Theorem 2's strategy*, on every layout of `D_u` for every digraph with at
+  most 4 vertices (66,067, loops allowed) and every dag on 5 vertices (1,024,
+  labelled along a topological order). The play is legal under
+  `replay_progressive`, stays within `vs(layout) + 1`, and its removal layout
+  satisfies the (⇒) bound. The best layout attains `vs(D_u) + 1`, and the
+  statement `pbw(D) = vs(D_u) + 1` is re-decided by exact search on every one of
+  these digraphs.
+- *KP's black strategy*, on every layout of every atlas graph with at most 7
+  vertices (1,252 graphs, 5,378,453 plays). The play is legal under
+  `replay_black` (`BlackMove.Legal`) and stays within the shack bound
+  `vs(reversed layout) + 1`. Converted to black-white moves, it replays
+  legally with the same count, and the best layout attains `vs + 1`.
+
+Tests: `tests/test_pebbling_check.py`, 16 new (41 in the file). They include a
+mutation test: dropping step 3 of the four steps makes the play illegal.
+
+## Members outside the table: vertex search and maximum wavefront (2026-10-09)
+
+Both are exact, proved in Lean with no `sorry`, and in the draft's Table 1.1,
+master table, exact-core theorem, Figure 2.1 and Appendix B.
+
+| # | Problem | Source | Relation, proved | Lean (file) | Status |
+|---|---|---|---|---|---|
+| 14 | Vertex search (an invisible fugitive on the vertices) | Bienstock, Robertson, Seymour & Thomas 1991, §5, (5.1), p. 282 | least number of searchers = `pw + 1` (`V` nonempty, edgeless graphs included), monotone or not; `= ns` when `G` has an edge | `vertexSearchNumber_eq_pathwidth_add_one`, `vertexSearchNumber_eq_nodeSearch`, `isNodeSearch_of_isSuccessfulVertexSearch` (`Complex/VertexSearch.lean`) | proved |
+| 15 | Maximum wavefront of a sparse symmetric matrix (frontal elimination; numerical linear algebra) | Kumfert & Pothen 1997, §2.1 (definition only; the equality is ours) | least maximum wavefront = `pw + 1 = ν` (matrix nonempty, nonzero diagonal); per order `= vs + 1` | `minMaxWavefront_eq_pathwidth_add_one`, `minMaxWavefront_eq_narrowness` (`Complex/Wavefront.lean`) | proved |
+
+Reports: `paper2/vertex_search_lean.md`, `paper2/wavefront.md`. Brute force:
+all 1,252 graphs with at most 7 vertices, for each. The vertex search's lower
+bound is a reduction to node search, through `NodeMonotonicity.lean`; its upper
+bound is BRST's construction from a path decomposition.

@@ -1,4 +1,4 @@
-"""`paper2/search_soundness.md` quotes the search's code; the quotes must still be there.
+"""`paper1/search_soundness.md` quotes the search's code; the quotes must still be there.
 
 §2 of the document states each pruning rule "as the fixed code implements it"
 and quotes the lines. A quote that has drifted from the source would make the
@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DOC = ROOT / "paper2" / "search_soundness.md"
+DOC = ROOT / "paper1" / "search_soundness.md"
 SOURCES = {
     "Py": ROOT / "satisfiability" / "customer_search.py",
     "C": ROOT / "satisfiability" / "customer_search.c",

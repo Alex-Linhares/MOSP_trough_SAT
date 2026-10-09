@@ -1,0 +1,135 @@
+% Section 3, rewritten in loop0009 item 04 (review change 7; the owner's notes).
+% Sources: paper1/popularity.md ("For the paper"), the numbers of
+% paper1.section2_figures.numbers() (OpenAlex caches of 2026-09-29), the period
+% counts of paper1.trends.binned, Chu & Stuckey (2009) section 1
+% (literature/chu_stuckey_2009.pdf, pp. 2-3), and the graph benchmark counts of
+% paper1/solver_fix.md ("Table 1: proved widths", repaired rules) against
+% Coudert, Mazauric & Nisse (2016) as recorded in
+% pathwidth_solver/bench/reference.py. Tables from tables/ (make_tables.py).
+% The method detail, the timeline and the full names table are Appendix C.
+\section{The names and the communities}
+\label{sec:names}
+
+Section~\ref{sec:equiv} showed that eight of the twelve rows of the
+Linhares--Yanasse table are one quantity. A result proved under any of their
+names therefore holds under all of them. But a reader who searches under one
+name will not find a result published under another. This section asks two
+questions about the literature. Which name does it use for the quantity? And,
+besides that name, which community has been most active? The answers are
+pathwidth, by far (Figure~\ref{fig:names}), and open stacks
+(Table~\ref{tab:periods}). The second answer explains where the best
+exact algorithm for the family came from, and leads to Section~\ref{sec:search}.
+
+\paragraph{How we counted.} We searched OpenAlex \citep{Priem2022} on
+29 September 2026 for each problem's name and its common variants, in titles and
+abstracts, within Computer Science, Mathematics, Engineering and Decision
+Sciences. A search hit need not use the name in the table's sense: ``narrowness''
+matches term rewriting, and ``path-width'' matches roads and tool paths. So we
+read the 2,271 hits and kept the 1,593 that are about one of the twelve problems.
+The 700 hits for the eleven smaller names were judged one by one, by one
+annotator with model assistance; the 1,571 pathwidth hits were filtered by a
+stated rule, checked on samples. A mechanical phrase rule agrees with the
+judgements on 78\% of the 700 and leads to the same conclusions. The counts are
+lower bounds, since a work can study a problem without naming it in its
+abstract. Appendix~\ref{app:names} gives the method in full, the robustness
+check and the counts per name. The census covers the twelve names of the
+table. The three members we add (Section~\ref{sec:intro}) are not counted:
+progressive pebbling and the vertex search are graph-theory names, and the
+maximum wavefront belongs to a fourth discipline, numerical linear algebra.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{sec2_fig1_name_usage.pdf}
+\caption{Pathwidth has more relevant works than the other eleven names
+together, three times over, and three names have none. Works using each
+problem's name, in title or abstract, in the sense of the Linhares--Yanasse
+table; all years to September 2026. Colour gives the discipline that the table
+assigns the problem.}
+\label{fig:names}
+\end{figure}
+
+\subsection{Pathwidth has absorbed the family}
+
+Figure~\ref{fig:names} gives the counts. Pathwidth has 1,213 relevant works,
+21 times as many as MOSP and more than three times as many as the other eleven
+names together (380). Three names have no relevant work at all: narrowness,
+split bandwidth and edge separation. Two more are rare: interval thickness has
+6 works and one-dimensional logic 11. Pathwidth is also the only name still
+growing: its 311 works in 2020--2024 are more than the whole history of any
+other name (Appendix~\ref{app:names}). So anything one would want to know about
+algorithms for this class of problems was most likely published under
+``pathwidth''.
+
+\subsection{Besides pathwidth, open stacks}
+
+\begin{table}[t]
+\centering\small
+\caption{Besides pathwidth, the most active name over 2005--2024 is MOSP,
+although vertex separation led in 2015--2019. Relevant works per five-year
+period, for the three names with the most works over 2005--2024; the next are
+edge search (28) and node search (20).}
+\label{tab:periods}
+\input{tables/periods}
+\end{table}
+
+The VLSI names belong to the 1980s: since 2005 gate matrix layout has 9
+relevant works and PLA folding 6. Table~\ref{tab:periods} shows the
+three names with the most works over 2005--2024. MOSP is second, with 51,
+ahead of vertex separation (32) and edge search (28). Vertex separation led
+only in 2015--2019. The open-stacks community, in operations research, is thus
+the one most active besides pathwidth.
+
+\begin{table}[t]
+\centering\small
+\caption{The open-stacks papers are read apart from graph theory. Works citing
+the papers that the Linhares--Yanasse table cites, by the discipline of the
+papers they cite. Of 135 works citing an operations-research paper, 6 also cite
+a graph-theory paper (4\%); of 285 citing a VLSI paper, 65 do (23\%). The 2002
+paper itself counts as operations research. OpenAlex, 29 September 2026; 844
+citing works in all.}
+\label{tab:communities}
+\input{tables/communities}
+\end{table}
+
+It has also worked largely apart from graph theory. Table~\ref{tab:communities}
+counts the 844 works that cite the papers of the table, by the disciplines of
+the papers they cite. Only six works cite both an open-stacks paper and a
+graph-theory paper. Two are by the table's authors, one is open-stacks work on
+graph properties, and three are pathwidth or vertex-separation work from
+computer science. The VLSI papers are read with graph theory about five times as
+often.
+
+\subsection{From an open-stacks challenge to a pathwidth solver}
+
+It is not a coincidence that the best exact algorithm for MOSP came from the
+open-stacks community and is also, on the published evidence, among the
+strongest exact algorithms for pathwidth. The account is
+in \citet[\S1]{ChuStuckey2009}. MOSP was the subject of the first Constraint
+Modelling Challenge \citep{SmithGent2005}, posed in May 2005, which drew 13
+entries. The winning entry, by García de la Banda and Stuckey, combined dynamic
+programming with branch and bound and was an order of magnitude faster than
+any other \citep{GarciaDeLaBandaStuckey2007}. \citet{ChuStuckey2009} built on
+it. They branched on which customer's stack closes next rather than on which
+pattern is made next, recorded the states already refuted, added dominance
+rules, and became
+five to six orders of magnitude faster on hard instances. Their solver closed
+every open instance of the challenge within ten seconds. MOSP's busiest decade
+in Table~\ref{tab:periods}, 2005--2014, is the decade of this work.
+
+The customer search reads an instance only through its MOSP graph
+\citep[p.~4]{ChuStuckey2009}, so it decides pathwidth
+(Section~\ref{sec:search}). Ported to graphs, it proves more instances than
+reported on the benchmarks where published exact pathwidth results exist, those
+of \citet{CoudertMazauricNisse2016}. It proves the pathwidth of 11,194 of the
+11,534 Rome graphs (97.1\%), against their 95.6\%, both within 600 seconds per
+graph. It proves all 50 VSPLIB trees, against their 30, and 39 of the 73
+Harwell--Boeing graphs, against their 26. These are comparisons with published
+numbers obtained on other hardware, not a head-to-head run.
+
+Two consequences shape the rest of the paper. First, a result on any of the
+twelve problems should be stated, and searched for, as a result on pathwidth.
+Section~\ref{sec:search} does this for the customer search. It finds that the
+search's first dominance rule is, in correct form, a theorem already known in
+the pathwidth literature, and that two of its published theorems are false.
+Second, a benchmark for any problem in the exact core is a pathwidth benchmark,
+which is how Section~\ref{sec:dataset} builds its dataset.

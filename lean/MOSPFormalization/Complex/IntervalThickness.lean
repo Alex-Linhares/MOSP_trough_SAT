@@ -55,7 +55,7 @@ Möhring Prop. 3.5 (p. 32), `pw(G) = θ(G) − 1`, by his two constructions:
 
 * No vertices: `intervalThickness_of_isEmpty`, `θ = 0` while `pw + 1 = 1`.
   This is the only exception, and the same convention as
-  `paper2/complex_check.py` (`interval_thickness` returns 0 on the empty
+  `paper1/complex_check.py` (`interval_thickness` returns 0 on the empty
   graph).
 * Isolated vertices and disconnected graphs need nothing: an edgeless nonempty
   graph is its own interval supergraph (disjoint intervals), clique number 1.

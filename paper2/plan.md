@@ -1,274 +1,202 @@
-# The pathwidth complex — plan
+# Paper 3: MOSP on structured instances (plan)
 
-A plan, not a draft. Each section lists what it argues, what already exists in
-this repository to support it, and what is still to do.
+Draft plan, 2026-10-09. Built from the four surveys in this folder:
+- `survey_trees_sparse.md`;
+- `survey_products_structured.md`;
+- `survey_intersection_classes.md`;
+- `survey_random_extremal.md`.
 
-## 1. The story
+It follows paper 2, *The pathwidth complex*, which proved MOSP = pathwidth + 1
+(with the rest of the Linhares–Yanasse table) and built an exact search and a
+certified dataset. Paper 3 asks what that equivalence buys on the instances
+that have structure.
 
-**Argues.** During the PhD (Linhares, *Industrial pattern sequencing problems:
-some complexity results and new local search models*, 2001 in OpenAlex, with
-Yanasse) the twelve problems were collected from operations research, VLSI
-design and graph theory. They appeared as Table 1 of Linhares & Yanasse
-(2002), *Computers & Operations Research* 29, 1759-1772, asserted equivalent
-up to ±1 — with no proofs and no explanation of which graph or which ±1. This
-paper supplies what that table left out.
+## Working title
 
-**Exists.** The table itself (`../literature/`, Linhares & Yanasse 2002); the
-twelve references it rests on, eleven held (`literature/MANIFEST.md`); the
-thesis appears in OpenAlex as the most-connected work in the citation network
-(it cites eleven of the twelve Table 1 papers; `popularity.md`).
+*Open stacks on structured instances: exact layers, formula benchmarks, and
+random MOSP* (to be shortened).
 
-**To do.** Obtain the thesis PDF and record what it proved and what it only
-cited. Kashiwabara & Fujisawa (1979), the interval-thickness reference, is
-still missing and was never digitised.
+## The question
 
-## 2. Why "the pathwidth complex"
+**When does an open-stacks instance have structure that makes its optimum
+computable without search, provable by formula, or predictable in
+expectation, and what do the pathwidth results for special graph classes say
+about MOSP?**
 
-**Argues.** Taken as a whole, the twelve problems are one object seen from
-three disciplines, and the name the literature has converged on is
-pathwidth. The evidence is bibliometric:
+There are three answers, one per part. The audience is OR first, since MOSP is
+the application, and graph theory second, since the classes and formulas come
+from there. Every graph result is translated into MOSP vocabulary.
 
-- pathwidth has 1,213 relevant works, more than three times the other eleven
-  names combined, and is the only name still growing;
-- three of the names (narrowness, split bandwidth, edge separation) have no
-  relevant works at all, and two more have a handful;
-- the VLSI names belong to the 1980s, the graph-searching names peaked in the
-  1990s-2000s, and MOSP is the operations-research generation;
-- the communities barely cite each other: only six works cite both a MOSP
-  paper and a graph-theory paper.
+## Part 1. Exact layers before search
 
-**Exists.** `popularity.md` (method, the 2026-09-29 relevance correction,
-caveats) and six figures in `figures/` — name usage (bars), name usage against
-citations (scatter), citation network, rate heatmap, small multiples, citers
-by decade. Regenerate: `python -m paper2.citation_graph`,
-`python -m paper2.trends`.
+A MOSP graph that falls in a known class is solved exactly, fast, before any
+search.
+- **Interval graphs:** the optimum is ω, the largest clique (Bodlaender 1998,
+  Thm 29). Verified on all 2,524 interval instances of the corpus.
+- **Cographs:** pw = tw, given by the join formula pw(G×H) =
+  min(pw(G)+|H|, pw(H)+|G|) (Bodlaender & Möhring 1990, Lemma 3.4). Verified on
+  all 2,573 cograph instances.
+- **The complement-split rule.** If the complement of the MOSP graph has pieces
+  G_i, then MOSP = min_i (MOSP(G_i) + n − |V_i|). This is an exact
+  preprocessing step that is not among Yanasse & Senne's six. It applies to
+  4,250 of 6,376 corpus instances (33 of them Chu & Stuckey), and on 1,609
+  distinct graphs it shrinks the hardest piece. For example,
+  `Random-50-100-10-2` goes from 50 customers to 6.
+- **AT-free graphs:** pw = tw (Möhring 1996), so treewidth solvers apply. In the
+  corpus, every one of the 375 instances with pw > tw has an asteroidal triple,
+  and tw + 1 = optimum on all 2,830 AT-free instances with exact treewidth.
+- **Block graphs:** polynomial (Chou et al. 2008, read second-hand). Our
+  observation: an instance whose customer–pattern incidence graph is a forest
+  has a block graph as its MOSP graph. That is the "trees of cliques" family
+  that defeats every lower bound in `_lower_bound` (`reports/ml_nature.md` §6).
+- **Circular-arc graphs:** O(n²) (Suchan & Todinca 2007), even though pw ≠ tw.
+- **Trees and unicyclic graphs:** linear time and O(n log n) (Ellis,
+  Sudborough & Turner 1994; Markov).
 
-**To do.** Decide which three figures go in the paper (suggested: the bar
-chart, the heatmap, the citation network). State the relevance check in the
-paper's method paragraph, since it changed two conclusions.
-*Done 2026-10-03 (loop0008 item 06)*: those three, redrawn for print as
-`figures/sec2_fig{1,2,3}_*.pdf` by `python -m paper2.section2_figures`. The
-reasons, draft captions, the method paragraph and a sensitivity check of the
-relevance labels are in `popularity.md`, "For the paper". Under the mechanical
-phrase rule, MOSP ranks fifth, not fourth, so say "one of the better-used
-names".
+**The hardness side**, in MOSP vocabulary:
+- chordal graphs, which Möhring's reduction makes into a MOSP instance with one
+  pattern per maximal clique;
+- bipartite, cobipartite, cocomparability and distance-hereditary graphs;
+- planar graphs of maximum degree 3;
+- weighted trees and octopus graphs (Mihai & Todinca 2009).
 
-## 3. The equivalences, proved
+Hardness with at most two products per customer is **not new**: it is
+Linhares (2001) Prop. 2.1, which is Linhares & Yanasse (2002) Prop. 1.
 
-**Argues.** Each of the twelve problems, stated precisely, with the graph it
-lives on and the exact offset from pathwidth, and a proof. The central chain:
-MOSP = gate matrix layout cost (Linhares & Yanasse 2002, Prop. 2) = pathwidth
-+ 1 of the clique-per-pattern graph (Fellows & Langston 1989, Thm 7, with
-their 1987 Lemma 4.1 = Yanasse 1997a, Prop. 5), and pathwidth = vertex
-separation (Kinnersley 1992). The rest attach to it: interval thickness =
-pathwidth + 1, node search number = vertex separation + 1 (Kirousis &
-Papadimitriou 1985, 1986), edge search within +2 (Ellis, Sudborough & Turner
-1994), narrowness (Kornai & Tuza 1992), split bandwidth (Fomin 1998),
-one-dimensional logic and PLA folding (Ohtsuki et al. 1979; Möhring 1990),
-edge separation (Lengauer 1981).
+**Deliverables:**
+- the layers implemented in front of the customer search;
+- the complement-split rule proved, on paper and in Lean;
+- the speed-up measured on the corpus, in nodes and seconds;
+- the honest negative stated: the 24 industrial SCOOP instances are mostly
+  outside the easy classes.
 
-**Exists, in Lean** (`../lean/MOSPFormalization/`): `mospValue = pathwidth
-(mospGraph) + 1`, both directions, `sorry`-free (`MOSPGraph.lean`);
-vertex separation = pathwidth (`VSEquivPW.lean`); degeneracy ≤ pathwidth ≤
-bandwidth, treewidth ≤ pathwidth, the branch lemma (`Sandwich.lean`). The
-star counterexample showing the pattern graph is the wrong graph
-(`MOSPGraphExamples.lean`).
+## Part 2. Formula-certified benchmarks
 
-**Done (2026-09-30, loop0005).** Every row is settled and proved in Lean.
-The problems and the transformations, with formal and plain-English proofs,
-are in `problem_transformations.md`. The evidence behind each row is in
-`equivalences.md`, and faults in published proofs are in
-`proof_reductions.md`. The Lean is in `../lean/MOSPFormalization/Complex/`.
-In summary: seven problems are equal to pathwidth + 1 or to pathwidth, split
-bandwidth and edge search are bands, and PLA folding and edge separation are
-false as Table 1 states them. The one stated gap, LaPaugh's theorem, is
-needed by no row.
+Instances whose optimum is proved by a formula, at sizes no search reaches.
+- **Hypercubes:** pw(Q_d) = Σ_{m<d} C(m, ⌊m/2⌋) (Chandran & Kavitha 2006,
+  Thm 2), and H(t,2,n) (Wang et al. 2026).
+- **Grids:** 2D and 3D grids, and even tori (Otachi & Suda 2011; Ellis & Warren
+  2008).
+- **Rook graphs and line graphs of complete graphs** (Clarke, Messinger & Power
+  2019; Harvey & Wood 2015).
+- **Complete multipartite graphs and wheels** (the join formula); caterpillars;
+  complete ternary trees (pathwidth = height); and Ellis–Sudborough–Turner's
+  smallest trees of pathwidth k.
+- **Products as MOSP matrices** (*ours*, to prove). The Kronecker product
+  M₁ ⊗ M₂ has MOSP graph G₁ ⊠ G₂, and [M₁ ⊗ I, I ⊗ M₂] has G₁ □ G₂. With
+  Kaul (2026), that gives MOSP(M₁ ⊗ M₂) ≥ MOSP(M₁) · MOSP(M₂). This is a
+  generator of large instances with a known lower bound and, for grids and
+  hypercubes, a known optimum.
 
-## 4. Chu & Stuckey as a pathwidth solver
+**Deliverables:**
+- a benchmark set with the formula, the instance (in `.mosp` format) and a
+  witness layout for each;
+- every formula checked against the exact solver where it reaches; about 190
+  graphs so far, no disagreement (`products_checks/`);
+- a stress test of heuristics and lower bounds at sizes where the optimum is
+  known but search is hopeless.
 
-**Written (2026-10-01):** `revised_algorithm.md`, "Chu & Stuckey's (revised)
-algorithm": the search as a mathematical object, each rule with its published
-statement and either a proof or a counterexample, repair and proof, the
-composition, and the main soundness theorem, in formal and plain-English form.
-The working record behind it is `search_soundness.md` (loop0006).
+**New values to state or prove:**
+- Kneser K(n,2): pw = C(n−1,2) for n = 6…10, one above tw;
+- Hamming K₃³ = 13, K₄³ = 31, K₃⁴ = 34, which are open in the literature;
+- king graphs P_n ⊠ P_n: n + 1;
+- C_m ⊠ C_n: 2m + 2;
+- generalized Petersen G(n,k): 2k + 2 for k ≤ 3;
+- Otachi & Suda's 4D conjecture, confirmed at P₃⁴ = 21;
+- Harper's (isoperimetric) bound exact on all 19 symmetric graphs tried.
 
-**Argues.** Chu & Stuckey's (2009) complete search over customer closing
-orders is, read mathematically, a search over vertex-separation layouts of
-the MOSP graph, and its dominance rules are theorems about layouts. Stated
-that way, it is an exact pathwidth solver, and it solves thousands of
-instances: any graph becomes a MOSP instance with one pattern per edge, whose
-optimum is pathwidth + 1.
+## Part 3. Random MOSP, where the theory runs out
 
-**Exists.** The implementation (`../satisfiability/customer_search.py` and
-its C core); the certified corpus of 6,376 instances and the generated
-ensembles (37,800 at n ≤ 40, 6,747 at 50-75); the soundness story — two
-`better_move` bugs, the first found by profiling the C inner loop
-(`../reports/better_move_bug.md`) and the second by the differential harness,
-the fix, DRAT proofs for
-92% at n ≤ 40, and the search certificate (`../reports/ml_nature.md` §15, §17,
-§32). The certificate for the repaired rules, with an independent checker,
-verifies 6,276 of 6,286 corpus refutations at 9–75 customers (6,275 under the
-`csearch` configuration; none rejected; `certificates.md`,
-loop0008 item 05). The two-key rule as the starting layout (§28; it improves the upper
-bound and small instances, and leaves certification cost at 100-125
-customers unchanged, §28 addendum), and the hardness ridge (§11, §25). The
-graph version of the search, with a C engine to 1,024 vertices and a first
-benchmark run (Rome 11,183 / 11,534 proved, 97.0%, at ≤ 600 s per graph), is
-`../pathwidth_solver/`, transferred 2026-09-30 (`TRANSFER.md` there).
+A random MOSP instance is a random intersection graph, the model Karoński,
+Scheinerman & Singer-Cohen (1999) introduced *with an application to gate
+matrix layout*.
+- **What is proved:** opt = Θ(n) for m = n^α and p ≥ 2/m (Gao 2012); Θ(ε³n)
+  treewidth just above the giant threshold (Do, Erde & Kang 2024); dense
+  scaling n − O(√(n/p)) (Perarnau & Serra 2014); cubic graphs at most
+  (1/6 + ε)n (Fomin & Høie 2006).
+- **What is not proved:**
+  - the slope of E[opt]; our fitted law has a 27/(D + 27) term
+    (`reports/ml_nature.md` §12, §14);
+  - concentration;
+  - the hardness ridge at cover excess ≈ 2–2.4 (§25, §36, §37).
+- **Explained, not discovered:** the q in our fitted formula is Rybarczyk's
+  equivalent edge probability.
 
-**Done (2026-10-03, loop0008 item 03):** each rule stated as a lemma about
-vertex-separation layouts, `revised_algorithm.md` §4.7, with the dictionary and
-Tamaki's commitment lemma in Lean (`Search/Layout.lean`). The repaired definite
-move is that lemma at the child; its soundness is known, not ours.
+**Deliverables:**
+- **The data the theory lacks:** 44,000+ certified optima (corpus plus the
+  generated ensembles, `learning/data/ensemble/`). They fit the constants in
+  the proved Θ(n) and Θ(ε³n) laws, and test the conjectured sharp threshold
+  for linear width at m = Θ(n) ((mp)(np) > 1, *ours*, to state carefully).
+- **The random cubic constant**, an experimental answer to Fomin & Høie's open
+  window [0.072n, 0.167n]. A MOSP instance where each product has two
+  customers is any graph. The lower end is *ours*, from Kolesnik–Wormald plus
+  Harper, and needs checking.
+- **Random trees:** E[pw] up to 10⁶ vertices with the Ellis–Sudborough–Turner
+  algorithm, with no published limit law yet. Counting sequences go to OEIS.
 
-**To do.** Decide how much of the soundness history belongs in this paper.
+## Claims to verify before use
 
-**The benchmark and the dataset** (decided 2026-09-29: benchmark everything,
-and publish the result as a dataset). Because the problems are one complex, a
-single certified pathwidth value answers every problem in the table at once,
-through its offset. So the run covers three kinds of input:
+The surveys label their own derivations *ours*. None has been checked by a
+second reader or the solver, unless noted.
+- [ ] The complement-split rule. The arithmetic was checked in session; the
+      proof needs writing, and Lean.
+- [ ] The Kronecker and cartesian MOSP-matrix identities. Four pairs were
+      checked by isomorphism; the proof needs writing.
+- [ ] MOSP(M₁ ⊗ M₂) ≥ MOSP(M₁) · MOSP(M₂), which rests on Kaul (2026), an
+      arXiv preprint. Read the proof.
+- [ ] Forest incidence graph ⇒ block-graph MOSP graph. Check the block-graph
+      algorithm's source (Chou et al. 2008), not yet read first-hand.
+- [ ] opt ≤ n − α + 1. One-line proof, checked in session; α here is the
+      largest set of customers with pairwise disjoint product sets.
+- [ ] The random-cubic lower bound 0.0721n, from Kolesnik–Wormald and Harper.
+- [ ] The sharp-threshold conjecture: state it as a conjecture unless proved.
+- [ ] Every result marked "read second-hand" or "abstract only" in the
+      surveys: obtain the source and read it.
 
-- **MOSP instances** — the certified corpus as it stands.
-- **Pathwidth benchmarks** — standard graph collections (e.g. the instances of
-  Coudert, Mazauric & Nisse 2014, TreewidthLIB, PACE), each turned into a MOSP
-  instance with one pattern per edge, and compared against published pathwidth
-  solvers.
-- **The other problems in the table** — every published benchmark collection
-  we can find for any of the twelve problems (decided 2026-09-29: all of
-  them, not a sample), each translated through its equivalence. Section 3's
-  proofs are what make each translation sound, so a collection enters only
-  once its equivalence is proved.
+## Data and code
 
-The shared artifact is **a large dataset of instances with certified optimal
-pathwidth**. Each instance has its graph, the problem it came from, the
-optimum, a witness layout, the value under every problem in the table, and a
-proof of optimality (a DRAT refutation or a search certificate) that a third
-party can check without our code.
+- **The corpus and its classes:** `class_scan.py`, `class_scan.json`.
+- **The product checks:** `products_checks/`.
+- **The exact solvers:** `satisfiability/customer_search.py` (MOSP) and
+  `pathwidth_solver/` (graphs).
+- **Certified ensembles:** `learning/data/ensemble/`, with `learning/upward.py`
+  for 50–75.
+- **New code:** the class layers, a product-instance generator, an
+  Ellis–Sudborough–Turner implementation (`pathwidth_solver/TODO.md` phase 5),
+  and a random-cubic and random-tree campaign.
 
-**Scope, decided 2026-09-30: only the problems proved *exactly* equivalent.**
-These are pathwidth, vertex separation, MOSP, gate matrix layout (including
-multiple folding), one-dimensional logic, interval thickness, narrowness,
-node search, and Lengauer's vertex separator game. Dropped: split bandwidth
-and edge search, which are bands, not equalities; simple PLA folding and
-cutwidth / edge separation, which are false as stated. A certified pathwidth
-value is then an exact answer for every problem kept. The hunt's catalogue is
-`benchmarks/README.md`; downloads go to `benchmarks/raw/` (git-ignored).
+## Venue
 
-**Where to look.** Held already, all MOSP: the 2005 Constraint Modelling
-Challenge (Harvey, Miller, Shaw, Simonis, Wilson), Faggioli & Bentivoglio,
-SCOOP and Chu & Stuckey (`../benchmarks/instances/`). Leads as first
-listed, from memory and the papers in hand, with the hunt's findings
-(2026-09-30; details in `benchmarks/README.md`):
+To decide after Part 1 is measured.
+- Part 1 is applied and OR-shaped: *Computers & Operations Research*, *EJOR*.
+- Parts 2–3 are more discrete-mathematics: *Discrete Applied Mathematics*.
+- An arXiv preprint in any case: cs.DS with math.CO cross-listed.
 
-| Problem | Where instances may be | Status |
-|---|---|---|
-| gate matrix layout | the VLSI circuits used in the GMLP heuristic literature (e.g. Oliveira & Lorena 2002, Linhares's own work) | found: 11 circuits, best tracks published (`benchmarks/raw/lorena_vlsi/`) |
-| PLA folding | MCNC / Espresso PLA benchmark circuits | in scope only as multiple folding; MCNC / LGSynth not downloaded yet |
-| one-dimensional logic | same circuit sources as gate matrix layout | found: the same 11 circuits |
-| vertex separation | VSPLIB (cited by Coudert, Mazauric & Nisse 2014), with grids, trees and Harwell-Boeing graphs from the VSP metaheuristic papers | found: VSPLIB and the Small set held |
-| pathwidth | TreewidthLIB; PACE 2016-17 treewidth sets; Coudert et al.'s graphs | found: Rome, PACE 2016-17, freetdi, TreewidthLIB's colouring subset (the rest must be requested) |
-| node / edge search | probably no benchmark sets; the graph-searching papers are theoretical | none exists; edge search is out of scope (a band) |
-| narrowness, split bandwidth, edge separation, interval thickness | almost certainly none, since the names are barely used | none exists; split bandwidth and edge separation are out of scope |
+## Kill criteria
 
-A survey pass through the citers of each Table 1 paper, which
-`data/openalex_citations.json` already lists, is the systematic way to find
-the rest: any experimental paper among them had instances. Done 2026-09-30
-(`benchmarks/hunt_citers.md`: about 145 experimental papers, 24 instance
-sets).
-
-**Done (2026-10-03, loop0008 item 04):** the dataset is defined, deduplicated,
-written and checked, and its full run is priced, in `dataset.md`. There are 17,714
-isomorphism classes from 21,754 files in twenty collections, and 16,087 carry
-a certified pathwidth with a witness layout. The independent checker is
-`dataset_check.py`. Two findings: Carvalho & Soma's files are customers ×
-patterns, unlike the Chu & Stuckey files beside them in PT-MOSP; and 10 of
-the 11 VLSI circuits certify at their published best-known track count.
-Still open from the list below: the licences, the four requests, and the
-run beyond this item's 4 cores × 2 hours.
-
-**To do for the dataset.** Choose the collections from the catalogue and get
-their licences; send the four requests of `benchmarks/README.md` §2.
-Deduplicate. Fix a file format and a checker. Record provenance for every value, as
-`solutions/` does. Price the run with the cost model of
-`../reports/ml_nature.md` §19 before starting it.
-
-## 5. Closing
-
-**Argues.** What the complex is, what is proved and where, what remains open
-(the missing Table 1 reference; any Table 1 claim that turned out false or
-only an inequality; the pathwidth-treewidth gap on trees of cliques, where no
-degree or clique bound can close it).
-
-**To do.** Write last.
-
-## Decisions
-
-- **The definite move** (decided 2026-10-01): Chu & Stuckey's Theorem 1 is
-  false as published (`paper2/search_soundness.md`, loop0006 item 08). The
-  paper states the gap and the repaired rule, which is proved sound in Lean.
-  **The solver will be fixed to match the theorems** (updated 2026-10-01), in
-  both the MOSP search (`satisfiability/customer_search.py` and `.c`) and the
-  pathwidth solver (`pathwidth_solver/pathwidth/`), after loop0006. Section 4's
-  soundness theorem covers the repaired rules. Once the fix is in, the certified
-  values that rest only on the customer search are re-certified under it.
-  *(2026-10-03, number audit: the fix is in. `repaired_rules=True` has been
-  the default in both solvers since 2026-10-01 (loop0007, `solver_fix.md`).
-  Of the 115 values that rested on the customer search alone, 112 are
-  re-refuted with no answer changed, and 3 at 125 × 125 are still running
-  (`python -m paper2.solver_fix_split --summary`). The pathwidth benchmarks
-  were rerun under the repaired rules in loop0007 item 08.)*
-- **Venue: INFORMS Journal on Computing first** (decided 2026-09-29). The
-  journal expects the code and data behind a paper to be deposited in its
-  own repository; check the current rules before submission and build the
-  dataset to satisfy them.
-- **The paper gets its own GitHub repository, holding the Lean, the code and
-  the data** (decided 2026-09-29; scope widened 2026-09-30), separate from
-  this one. The paper cites it. **It is the last thing to do**, once the paper
-  and the dataset are final, so that what is published is what the paper
-  describes. The Lean part follows `lean_repo_plan.md`.
-- **Section 4 benchmarks all three kinds of input** (decided 2026-09-29):
-  MOSP instances, pathwidth benchmarks, and instances of the other problems
-  in the table, released together as one dataset.
-
-## Still open
-
-- Length, and how the proofs of section 3 split between the paper, an
-  appendix and the Lean repository.
-- What to call the dataset, and where to host it beyond the journal's own
-  repository.
+- **Part 1:** if the class layers and the complement-split rule save under 5%
+  of total nodes on the hard corpus instances (Chu & Stuckey 75–125), keep
+  them as a remark in paper 2 and drop Part 1 as a contribution. Most hard
+  instances may sit outside the easy classes, as SCOOP does.
+- **Part 2:** if the benchmark adds nothing that existing VSPLIB grids and trees
+  do not, fold it into Part 1.
+- **Part 3:** if the fitted constants do not stabilise with n (as §14 found for
+  some laws), report the data and no constant.
 
 ## Remaining work, in order
 
-1. **Section 1:** obtain the thesis PDF and record what it proved and what it
-   only cited.
-2. **Section 2:** choose the paper's three figures and write the method
-   paragraph, including the relevance correction. *(Done 2026-10-03, loop0008
-   item 06; see §2 above.)*
-3. **Section 4:** state the dominance rules as lemmas about layouts. The graph
-   solver and a first benchmark run exist, transferred from `~/dev/pathwidth`
-   (`../pathwidth_solver/TRANSFER.md`), and the benchmark hunt is done
-   (`benchmarks/README.md`). Deduplicate the collections, fix the dataset
-   format and checker (and the two result-file fixes the transfer document
-   lists), price the run, and run it. *(2026-10-03, number audit: the lemmas
-   are done (loop0008 item 03), and the dataset is deduplicated, formatted,
-   checked and priced (item 04, `dataset.md`). The full run is what is left.)*
-4. **Section 5,** then the LaTeX draft of the whole paper.
-   *(2026-10-03, loop0008 item 08: the LaTeX draft exists, `latex/`, 24
-   pages, sections 2–4 drafted and sections 1 and 5 placeholders; build with
-   `make` there, see `latex/README.md`. The INFORMS class is still to obtain.)*
-   *(Item 09: 25 pages; the chain is Figure 3.1, `section3_figure.py`; every
-   cited theorem is in `axiom_check.lean`, checked by `make axioms`.)*
-5. **Fix both solvers to match the soundness theorems:** the repaired
-   definite and better moves (loop0006 items 08, 10), in the MOSP search and
-   the pathwidth solver. Re-certify the values certified only by the customer
-   search, and rerun the pathwidth benchmarks under the fixed rules.
-   *(2026-10-03, number audit: done except three re-certifications. The fix
-   is the default since 2026-10-01; 112 of the 115 values are re-refuted and
-   3 at 125 × 125 are in flight; the pathwidth benchmarks prove the same width
-   on all 11,424 graphs both runs proved (`solver_fix.md`).)*
-6. **Last: the paper's repository**, with the Lean (`lean_repo_plan.md`),
-   the code, and the dataset, built from the final versions of each.
-   Paths the paper already cites in the repository go through the `\repofile` macro in
-   `latex/main.tex`; update it there when the layout is set. So far:
-   `paper2/data/false_refutation/` (the 34-customer wrong-optimum instance, both orders,
-   a standard-library checker; Figure `fig:wrong`).
+1. **Obtain the papers.** About 70 are listed in `literature/MISSING.md` under
+   "Paper 3 survey (2026-10-09)". Many are free but bot-blocked, so fetch them in
+   a browser: Gustedt 1993; Kloks, Kratsch & Spinrad 1997; Ellis & Warren 2008;
+   Harper 1966; Karoński & Szymkowiak 2001. Karoński, Scheinerman &
+   Singer-Cohen 1999 is paywalled.
+2. **Part 1, implemented and measured.** Prove the complement-split rule (Lean)
+   and run the layers on the corpus. This decides whether the paper is worth
+   writing.
+3. **The claims to verify** above.
+4. **Part 2:** the benchmark set, and proofs or conjectures for the new values.
+5. **Part 3:** the campaigns (random cubic, random trees, constant fits).
+6. **The draft.**
+
+Paper 2 comes first. None of this should delay it, except possibly the
+complement-split rule, which could appear there as a remark.

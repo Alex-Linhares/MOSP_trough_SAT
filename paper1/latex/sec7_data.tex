@@ -1,0 +1,42 @@
+% The data, code and proofs statement (loop0009 item 01). It replaces the
+% title-page footnote and every file path and `python -m` command that the
+% body used to carry. Those commands, kept here for later items and recorded
+% in the paper1/*.md documents that are the sources of record:
+%   Section 3 figures and numbers  python -m paper1.section2_figures [--numbers]
+%                                  (paper1/relevance.py, paper1/trends.py; offline,
+%                                  from the OpenAlex caches of 29 September 2026)
+%   Tables (generated)             python -m paper1.latex.make_tables
+%   Band values (brute force)      python -m paper1.complex_check
+%   Figure 4.1                     python -m paper1.counterexample_figure
+%   Validation counts, Section 4.4 paper1/solver_fix.md items 01-05;
+%                                  paper1/revised_algorithm.md section 4.4.4
+%   Prior reports                  python3 -m paper1.prior_art_sweep
+%                                  (paper1/prior_art_counterexample.md)
+%   Split re-certification         python -m paper1.solver_fix_split --summary
+%                                  (Lean: Search/Split.lean)
+%   Dataset                        python -m paper1.dataset (builder);
+%                                  python paper1/dataset_check.py --sources (checker)
+%   Axiom audit                    lake env lean paper1/axiom_check.lean
+\section*{Data, code and proofs}
+\label{sec:data}
+\addcontentsline{toc}{section}{Data, code and proofs}
+
+Everything this paper reports can be checked from its repository,
+\fbox{\textbf{URL to be added on release}}. The repository holds:
+\begin{itemize}
+\item the Lean~4 development, with every theorem the paper names
+  (Appendix~\ref{app:lean}) and an axiom check that covers all of them;
+\item the source of both solvers, the open-stacks customer search and the graph
+  pathwidth solver, in C and in Python, with the published and the repaired
+  rules;
+\item the dataset of Section~\ref{sec:dataset}, the certificates of
+  Section~\ref{sec:certs} and the independent checkers of both;
+\item the 34-customer instance of Figure~\ref{fig:wrong}, with the optimum
+  the published rules report and its order, an optimal order, and a checker
+  that uses only the Python standard library
+  (\repofile{paper1/data/false_refutation/});
+\item the bibliometric data of Section~\ref{sec:names}: the cached OpenAlex
+  responses, the relevance labels and the mechanical rule;
+\item a script for every table, figure and number in the paper, each of which
+  regenerates it from the recorded data.
+\end{itemize}

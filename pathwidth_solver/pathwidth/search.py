@@ -39,7 +39,7 @@ branches kept, so a refutation still refutes.
   the Python port (2026-10-01, loop0007 item 03) matches it node for node.
 
 **Two of the published theorems are false as stated** (MOSP
-`paper2/revised_algorithm.md` §4.3.2, §4.3.4): the definite move can discard
+`paper1/revised_algorithm.md` §4.3.2, §4.3.4): the definite move can discard
 the last solution at a node, and the better move inherits the fault.
 `repaired_rules=True` applies the premises proved sound in MOSP's
 `lean/MOSPFormalization/Search/`, under which the whole search is proved sound
@@ -377,7 +377,7 @@ def _apply_dominance(
 ) -> list[tuple[int, int]]:
     """Cut the candidate list by the dominance relations, in the order
     definite move, subset rule, better move, each citing only candidates still
-    standing (MOSP `paper2/revised_algorithm.md` §4.4.1).
+    standing (MOSP `paper1/revised_algorithm.md` §4.4.1).
 
     `close(q,S) = |{d ∉ S : o(d,S) ⊆ o(q,S)}|` counts the vertices that closing
     `q` releases: `d` is finished once every vertex it touches has been opened,

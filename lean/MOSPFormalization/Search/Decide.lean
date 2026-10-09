@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # The customer search, assembled: a refutation means MOSP > k and pw > k − 1
 
-Loop0006 item 12, `paper2/search_soundness.md` §5. Source: Chu & Stuckey, *Minimizing the
+Loop0006 item 12, `paper1/search_soundness.md` §5. Source: Chu & Stuckey, *Minimizing the
 maximum number of open stacks by customer search*, CP 2009, §3 (the search and Theorems 1–3),
 as implemented by `satisfiability/customer_search.py` (`decide`) and
 `satisfiability/customer_search.c` (`search`, `dominance_filter`).
@@ -52,7 +52,7 @@ instantiates it with the rules of items 07–11 in the code's order and draws th
   `definite_link` (repaired premise), `searchSol_cl_insert_of_newlyOpened_subset` (subset)
   and `searchSol_cl_insert_of_repairedBetter` (repaired better move); Cert checks the
   code's premises for the first and the last, which `definiteMove_counterexample` and
-  `betterMove_counterexample` show can certify a false link. `paper2/search_soundness.md`
+  `betterMove_counterexample` show can certify a false link. `paper1/search_soundness.md`
   §5.3 has the table.
 
 No whole-instance false refutation by the code is known (`search_soundness.md` §2.2, §4.2,
@@ -60,9 +60,9 @@ No whole-instance false refutation by the code is known (`search_soundness.md` �
 
 ## Checks
 
-`python -m paper2.search_check --decide` (`paper2/search_check.py`) runs the search with old
+`python -m paper1.search_check --decide` (`paper1/search_check.py`) runs the search with old
 move and the memo on every labelled graph on 1–6 vertices and a sample beyond, and checks at
-every node of every run the conditions named here; see `paper2/search_soundness.md` §5.
+every node of every run the conditions named here; see `paper1/search_soundness.md` §5.
 -/
 
 import MOSPFormalization.Search.Memo

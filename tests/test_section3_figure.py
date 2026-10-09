@@ -1,7 +1,7 @@
-"""Figure 3.1 (paper2/section3_figure.py) draws the master table and meets the print limits."""
+"""Figure 3.1 (paper1/section3_figure.py) draws the master table and meets the print limits."""
 import re
 
-from paper2 import section3_figure as s3
+from paper1 import section3_figure as s3
 
 
 def test_every_edge_joins_two_drawn_nodes():
