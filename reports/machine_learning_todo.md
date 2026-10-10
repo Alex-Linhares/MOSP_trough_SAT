@@ -105,7 +105,7 @@ the corpus: 6,374 of 6,376 certified, two open (`Random-125-125-2-2_0`,
       edge separation, PLA folding, node search, edge search, the
       Kirousis–Papadimitriou proof-gap counterexample. One named gap,
       `EdgeSearchMonotonicity`, used by no row; no new `sorry`
-      (`reports/ml_nature_summary.md` 2.10, `paper2/equivalences.md`).
+      (`reports/ml_nature_summary.md` 2.10, `paper1/equivalences.md`).
 
 ## Literature and bibliography
 
@@ -125,20 +125,20 @@ the corpus: 6,374 of 6,376 certified, two open (`Random-125-125-2-2_0`,
       2026-09-27) and record in `literature/MISSING.md` what it settles for
       Table 1's gate matrix layout and PLA folding entries. Its contents are
       in `literature/MISSING.md`; its definitions and propositions (pp. 18,
-      25, 31, Prop. 3.5) are what `paper2/problem_transformations.md` cites
+      25, 31, Prop. 3.5) are what `paper1/problem_transformations.md` cites
       for the gate matrix, PLA folding and interval rows, and the rows are
       proved in `lean/MOSPFormalization/Complex/`.
 - [ ] Kashiwabara & Fujisawa (1979), the last Table 1 reference not held
       (11 of 12 held as of 2026-09-30; `literature/MISSING.md`).
 - [ ] Trace citations with OpenAlex and Semantic Scholar (both answer per DOI;
       Google Scholar blocks clients) for Kinnersley 1992, Yanasse 1997a and
-      Chu & Stuckey 2009, and file the relevant citers under `paper2/`. The
+      Chu & Stuckey 2009, and file the relevant citers under `paper1/`. The
       Kinnersley list already surfaced pathwidth SAT encodings (2017), exact
       pathwidth branch-and-bound (2014), and VNS for vertex separation (2012)
       that this project has never compared against. *(Partly done
-      2026-09-29/30: `paper2/citation_graph.py`, `trends.py` and `relevance.py`
+      2026-09-29/30: `paper1/citation_graph.py`, `trends.py` and `relevance.py`
       trace the citers of the twelve Table 1 papers, Kinnersley 1992
-      included, through OpenAlex, and `paper2/benchmarks/` holds the citer
+      included, through OpenAlex, and `paper1/benchmarks/` holds the citer
       hunt; Yanasse 1997a and Chu & Stuckey 2009 are not traced.)*
 - [ ] Bodlaender, Koster & Wolle (2006) and the drat-trim paper are cited in
       `reports/latex/references.bib` from standard references; obtain and
@@ -149,7 +149,7 @@ the corpus: 6,374 of 6,376 certified, two open (`Random-125-125-2-2_0`,
 - [ ] Decide whether the body, not only a footnote, should carry the caveat
       that some 125 × 125 optimality claims rest on refutations made under
       the pre-fix rule.
-- [ ] Add the popularity measurement (`paper2/popularity.md`) as a short
+- [ ] Add the popularity measurement (`paper1/popularity.md`) as a short
       section on where the problem lives in the literature.
 - [x] Re-attach the rebuilt PDF to the existing Zotero item (key QN7U6UDH):
       done 2026-09-29 by replacing the attachment's file in

@@ -11,8 +11,8 @@ These papers are referenced in the project but could not be downloaded due to pa
 - **Faggioli, E. & Bentivoglio, C.A.** (1998). Heuristic and exact methods for the cutting sequencing problem. *European Journal of Operational Research*, 110(3), 564-575. DOI: 10.1016/S0377-2217(97)00269-7 — Elsevier paywall.
 
 - ~~**Chu, G. & Stuckey, P.J.** (2009)~~ — NOW AVAILABLE as `chu_stuckey_2009.pdf`.
-- **Linhares, A.** (2001). *Industrial pattern sequencing problems: some complexity results and new local search models*. PhD thesis (Tese de Doutorado em Computação Aplicada), INPE, São José dos Campos, advisor H. H. Yanasse, defended 17 May 2001. In `literature/` as `linhares_2001_phd_thesis_industrial_pattern_sequencing.pdf`, copied from the owner's Zotero library on 2026-10-06 (116 pages, text extractable). The source for section 1 of paper 2 (`paper2/plan.md`, remaining work item 1).
-- **Chu, G.** (2011). *Improving combinatorial optimization*. PhD thesis, University of Melbourne. hdl:11343/36679 — in `literature/` as `chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, downloaded from Minerva Access on 2026-10-02. Chapter 6 restates the customer search. Theorem 6.3.6 is the CP 2009 Theorem 1 unchanged. Theorem 6.3.8 states the better move with premise `close(q, S) ≥ open(q, S ∪ {r})`. Both are false on `cexGraph`; see `paper2/prior_art_counterexample.md`.
+- **Linhares, A.** (2001). *Industrial pattern sequencing problems: some complexity results and new local search models*. PhD thesis (Tese de Doutorado em Computação Aplicada), INPE, São José dos Campos, advisor H. H. Yanasse, defended 17 May 2001. In `literature/` as `linhares_2001_phd_thesis_industrial_pattern_sequencing.pdf`, copied from the owner's Zotero library on 2026-10-06 (116 pages, text extractable). The source for section 1 of the pathwidth complex paper (`paper1/plan.md`, remaining work item 1).
+- **Chu, G.** (2011). *Improving combinatorial optimization*. PhD thesis, University of Melbourne. hdl:11343/36679 — in `literature/` as `chu_2011_phd_thesis_improving_combinatorial_optimization.pdf`, downloaded from Minerva Access on 2026-10-02. Chapter 6 restates the customer search. Theorem 6.3.6 is the CP 2009 Theorem 1 unchanged. Theorem 6.3.8 states the better move with premise `close(q, S) ≥ open(q, S ∪ {r})`. Both are false on `cexGraph`; see `paper1/prior_art_counterexample.md`.
 
 - ~~**Yanasse, H.H. & Senne, E.L.F.** (2010)~~ — NOW AVAILABLE as `yanasse_senne_2010_properties_preprocessing.pdf`. Note the DOI recorded here previously (`10.1016/S0377-2217(09)00632-8`) was wrong; the correct one is **10.1016/j.ejor.2009.09.017**.
 
@@ -45,9 +45,9 @@ authors.
 
 - **39 papers from `~/dev/pathwidth`, transferred 2026-09-30** — the literature folder of the graph pathwidth solver now in `../pathwidth_solver/` (`../pathwidth_solver/TRANSFER.md`), copied here under their original `YEAR-Author-Title-Venue.pdf` names; 11 further files there were byte-identical to papers already held and were skipped. 35 are new papers, mostly on exact and approximate pathwidth and treewidth, with reading notes in `pathwidth_solvers_README.md`; four are second copies of papers held (Yanasse & Senne 2010, the INRIA report version of Coudert, Mazauric & Nisse 2014, Kobayashi, Komuro & Tamaki 2014, Mallach 2018). Among the new ones are three entries this file listed as missing: De La Banda & Stuckey (2007), Yanasse & Limeira (2004) and Lopes & Valério de Carvalho (2015), struck through below.
 
-- **Ding, J., Zhou, T., Lü, Z. & Yuan, Y.** (2017). A quality and distance guided metaheuristic algorithm for vertex separation problem. *IEEE Access*, 5, 19251-19261. doi:10.1109/ACCESS.2017.2740418 — in `literature/` as `ding_zhou_lu_yuan_2017_quality_distance_guided_metaheuristic_vsp_ieee_access.pdf`, obtained 2026-09-30. One of the six works citing both a MOSP paper and a graph-theory paper (`paper2/popularity.md`). Instances: VSPLIB ("http://www.optsicom.es/vsp/", now dead), 162 in total: 62 Harwell-Boeing, plus grids and trees. It improves 33 best-known values, so VSPLIB's HB values are heuristic, not optima. It quotes the HB edge range 34-3721, the same figure `paper2/benchmarks/hunt_graphs.md` found inconsistent with the files (46-7442). Resolved 2026-09-30: the page's range is wrong, and it halves the true counts at both ends; the files match the original Matrix Market matrices.
+- **Ding, J., Zhou, T., Lü, Z. & Yuan, Y.** (2017). A quality and distance guided metaheuristic algorithm for vertex separation problem. *IEEE Access*, 5, 19251-19261. doi:10.1109/ACCESS.2017.2740418 — in `literature/` as `ding_zhou_lu_yuan_2017_quality_distance_guided_metaheuristic_vsp_ieee_access.pdf`, obtained 2026-09-30. One of the six works citing both a MOSP paper and a graph-theory paper (`paper1/popularity.md`). Instances: VSPLIB ("http://www.optsicom.es/vsp/", now dead), 162 in total: 62 Harwell-Boeing, plus grids and trees. It improves 33 best-known values, so VSPLIB's HB values are heuristic, not optima. It quotes the HB edge range 34-3721, the same figure `paper1/benchmarks/hunt_graphs.md` found inconsistent with the files (46-7442). Resolved 2026-09-30: the page's range is wrong, and it halves the true counts at both ends; the files match the original Matrix Market matrices.
 
-- **Devadas, S.** (1986). Topological optimization of multiple level array logic. Memorandum UCB/ERL M86/95, Electronics Research Laboratory, University of California, Berkeley, 12 December 1986. 127 pp. — in `literature/` as `devadas_1986_topological_optimization_multiple_level_array_logic_ucb_erl_m86_95.pdf`, obtained 2026-09-30. PLA / multiple-level array logic folding; appears among the relevant PLA-folding works in `paper2/data/relevance_labels.json`. Not read yet; a candidate source of PLA instances for the benchmark hunt (`paper2/plan.md` section 4). The hunt (2026-09-30) put its area-optimised array circuits out of scope (`paper2/benchmarks/README.md` §5).
+- **Devadas, S.** (1986). Topological optimization of multiple level array logic. Memorandum UCB/ERL M86/95, Electronics Research Laboratory, University of California, Berkeley, 12 December 1986. 127 pp. — in `literature/` as `devadas_1986_topological_optimization_multiple_level_array_logic_ucb_erl_m86_95.pdf`, obtained 2026-09-30. PLA / multiple-level array logic folding; appears among the relevant PLA-folding works in `paper1/data/relevance_labels.json`. Not read yet; a candidate source of PLA instances for the benchmark hunt (`paper1/plan.md` section 4). The hunt (2026-09-30) put its area-optimised array circuits out of scope (`paper1/benchmarks/README.md` §5).
 
 - **Ellis, J.A., Sudborough, I.H. & Turner, J.S.** (1994). The vertex separation and search number of a graph. *Information and Computation*, 113(1), 50-79. doi:10.1006/inco.1994.1064 — in `literature/` as `ellis_sudborough_turner_1994_vertex_separation_search_number.pdf`, obtained 2026-09-28. Read in full. Contents: `vs(G) ≤ s(G) ≤ vs(G) + 2` for the edge search number (Theorem 2.1), `s(G) = vs(G')` for the 2-expansion (Theorem 2.2), a recursive characterization of trees with vertex separation k (Theorem 3.1), smallest trees of vertex separation k have `m(k) = ⌊5·3^k/6⌋` vertices so `vs(T) = O(log n)`, and a linear-time tree algorithm. **It has no general-graph lower bound of any kind**, so it does not anticipate the expansion bound (see *Prior art to settle* below). Its survey paragraph also records that Fellows & Langston (1989) show gate matrix layout cost = path width + 1, the same link our chain uses.
 
@@ -106,7 +106,7 @@ authors.
 Table 1 of `Linhares and Yanasse - 2002 - Connections between cutting-pattern
 sequencing, VL.pdf` (p. 1764) asserts twelve problems equivalent up to ±1,
 resting on twelve distinct references. **Eleven are held** (see
-`../paper2/literature/MANIFEST.md`), including the full Möhring chapter; **one
+`../paper1/literature/MANIFEST.md`), including the full Möhring chapter; **one
 is not**, Kashiwabara & Fujisawa [5]. When this section was written five were
 held and seven were not; two of the seven, Kinnersley [13] and Yanasse [1], are
 listed under **Paywalled** above, and the other five are below, four of them
@@ -114,7 +114,7 @@ since obtained:
 
 - **Kashiwabara, T. & Fujisawa, T.** (1979). NP-completeness of the problem of finding a minimum clique number interval graph containing a given graph as a subgraph. *Proc. 1979 IEEE International Symposium on Circuits and Systems*, Tokyo, 657-660. No DOI — Table 1 ref [5], *interval thickness*. **The hardest of the twelve**: 1979 conference proceedings, not indexed by OpenAlex at all, never digitised by IEEE. Needs a library holding physical IEEE conference records.
 
-- ~~**Möhring, R.H.** (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer-Verlag Wien, 17-51. DOI: 10.1007/978-3-7091-9076-0_2~~ — Table 1 refs [6], *gate matrix layout* and *PLA folding*. **OBTAINED IN FULL 2026-09-27**: the 35-page chapter, extracted (pp. 20–54 of the file) from the full book PDF *Computational Graph Theory* (Tinhofer, Mayr, Noltemeier, Sysło eds., 1990) downloaded via institutional access and kept in `~/Downloads`; in `literature/` as `mohring_1990_gate_matrix_layout_pla_folding.pdf` and in `paper2/literature/` as `06_mohring_1990.pdf`. The two-page Springer preview held earlier that day was deleted. Contents: interval-graph augmentation with minimum clique size (= pathwidth + 1), node search, vertex separation, MPQ-trees / interval orders, matching problems with side constraints.
+- ~~**Möhring, R.H.** (1990). Graph problems related to gate matrix layout and PLA folding. In *Computational Graph Theory*, Computing Supplementum 7, Springer-Verlag Wien, 17-51. DOI: 10.1007/978-3-7091-9076-0_2~~ — Table 1 refs [6], *gate matrix layout* and *PLA folding*. **OBTAINED IN FULL 2026-09-27**: the 35-page chapter, extracted (pp. 20–54 of the file) from the full book PDF *Computational Graph Theory* (Tinhofer, Mayr, Noltemeier, Sysło eds., 1990) downloaded via institutional access and kept in `~/Downloads`; in `literature/` as `mohring_1990_gate_matrix_layout_pla_folding.pdf` and in `paper1/literature/` as `06_mohring_1990.pdf`. The two-page Springer preview held earlier that day was deleted. Contents: interval-graph augmentation with minimum clique size (= pathwidth + 1), node search, vertex separation, MPQ-trees / interval orders, matching problems with side constraints.
 
 - ~~**Ohtsuki, T., Mori, H., Kuh, E.S., Kashiwabara, T. & Fujisawa, T.** (1979). One-dimensional logic gate assignment and interval graphs. *IEEE Transactions on Circuits and Systems*, 26(9), 675-684.~~ — **OBTAINED 2026-09-27**, see below.
 
@@ -126,7 +126,7 @@ Obtained since: **Kirousis, L.M. & Papadimitriou, C.H.** (1985). Interval graphs
 and searching. *Discrete Mathematics*, 55(2), 181-184. DOI:
 10.1016/0012-365X(85)90046-9 — Table 1 ref [9], *node search game*; the
 interval-thickness = node-search-number link. Now in
-`../paper2/literature/09_kirousis_papadimitriou_1985.pdf`. It was never
+`../paper1/literature/09_kirousis_papadimitriou_1985.pdf`. It was never
 paywalled — Elsevier's open archive carries it free — and only ScienceDirect's
 block on non-browser clients stood in the way; a browser fetched it at once.
 Worth remembering for any other Elsevier open-archive item.
@@ -199,8 +199,8 @@ outside this repository.
 
 ## Citers of Chu & Stuckey (2009) not read (loop0008 item 01, 2026-10-03)
 
-The prior-art sweep (`paper2/prior_art_counterexample.md`, "Every citer, swept";
-`python3 -m paper2.prior_art_sweep`) could not get a full text for these 14
+The prior-art sweep (`paper1/prior_art_counterexample.md`, "Every citer, swept";
+`python3 -m paper1.prior_art_sweep`) could not get a full text for these 14
 works citing the CP paper. Neither the indexes nor a web search found an open
 copy. They are listed in order of how likely they are to restate the definite
 or better move:
@@ -234,7 +234,7 @@ http://www.teses.usp.br/teses/disponiveis/55/55134/tde-19022013-084858/publico/T
 
 ## IJOC papers to obtain (2026-10-04)
 
-From the IJOC sweep, `paper2/ijoc_literature.md`, in order of importance. All are paywalled or blocked by a bot check; none was circumvented.
+From the IJOC sweep, `paper1/ijoc_literature.md`, in order of importance. All are paywalled or blocked by a bot check; none was circumvented.
 
 - Fischetti, M. & Salvagnin, D. (2010). Pruning moves. *IJOC* 22(1), 108-119. doi:10.1287/ijoc.1090.0329
 - Fukasawa, R. & Poirrier, L. (2017). Numerically safe lower bounds for the capacitated vehicle routing problem. *IJOC* 29(3), 544-557. doi:10.1287/ijoc.2017.0747
@@ -256,9 +256,9 @@ From the IJOC sweep, `paper2/ijoc_literature.md`, in order of importance. All ar
 - Buchheim, C., Wiegele, A. & Zheng, L. (2010). Exact algorithms for the quadratic linear ordering problem. *IJOC* 22(1), 168-177. doi:10.1287/ijoc.1090.0318
 - Qiu, Y., Cherniavskii, M., Goldengorin, B. & Pardalos, P.M. (2026). A computational study of the tool replacement problem. *IJOC* 38(1), 86-101. doi:10.1287/ijoc.2023.0474
 
-## Paper 3 survey (2026-10-09)
+## Paper 2 survey (2026-10-09)
 
-### Products and structured classes (`paper3/survey_products_structured.md`)
+### Products and structured classes (`paper2/survey_products_structured.md`)
 
 Obtained 2026-10-09, all open access, each opened and checked against its citation:
 
@@ -292,10 +292,10 @@ Still to obtain (ScienceDirect blocks scripted download of its open archive; not
 - **Bezrukov, S.L. & Leck, U.** (2009). A simple proof of the Karakhanyan–Riordan theorem on the even discrete torus. *SIAM J. Discrete Math.* 23, 1416–1421 — DOI not looked up.
 - **Cao, M., Liu, K., Lu, M. & Lv, Z.** (2023). Treewidth of the q-Kneser graphs. *DAM*, doi:10.1016/j.dam.2023.09.004 — arXiv 2101.04518 is free; not downloaded.
 
-## Paper 3 survey (2026-10-09)
+## Paper 2 survey (2026-10-09)
 
 Random, asymptotic and extremal pathwidth; full table and statements in
-`paper3/survey_random_extremal.md`. **Obtained and verified (open access):**
+`paper2/survey_random_extremal.md`. **Obtained and verified (open access):**
 
 - `2012-Gao-Treewidth-Erdos-Renyi-Random-Intersection-Scale-Free-Random-Graphs-DAM-arXiv.pdf` — Gao, DAM 160 (2012), arXiv 0907.5481. Thm 2: random intersection graph `G_I(n, m, p)`, `m = n^α`, `p ≥ 2/m` ⇒ treewidth linear whp, i.e. random MOSP optima are `Θ(n)`. §2.2 records that Karoński et al. introduced the model for gate matrix layout.
 - `2024-Do-Erde-Kang-Note-Width-Sparse-Random-Graphs-JGT-arXiv.pdf` — tw of `G(n,(1+ε)/n)` is `Θ(ε³n)` in the weakly supercritical regime (Thm 1.6).
@@ -318,10 +318,10 @@ Random, asymptotic and extremal pathwidth; full table and statements in
 - Kneis, Mölle, Richter & Rossmanith (2009), SIDMA, 10.1137/080715482.
 - Takahashi, Ueno & Kajitani (1994), minimal acyclic forbidden minors for path-width; Bienstock, Robertson, Seymour & Thomas (1991), 10.1016/0095-8956(91)90068-U; Kloks & Bodlaender (1992), 10.1007/BFb0045380; Böttcher et al. (2010), 10.1016/j.ejc.2009.10.010; Lagerås & Lindholm (2008); Shang (2022), 10.3792/pjaa.98.015; Bezrukov et al. (2004); Flajolet, Raoult & Vuillemin (1979), 10.1016/0304-3975(79)90009-4; Biedl (2021), 10.1016/j.ipl.2021.106230.
 
-## Paper 3 survey (2026-10-09)
+## Paper 2 survey (2026-10-09)
 
 Pathwidth on intersection and perfect-graph classes; the survey is
-`paper3/survey_intersection_classes.md`, whose §6 lists everything still to
+`paper2/survey_intersection_classes.md`, whose §6 lists everything still to
 obtain, with DOIs. The most important of those are: Gustedt (1993) DAM 45,
 doi:10.1016/0166-218X(93)90012-D, which is bronze OA, but the Elsevier bot check
 refused it. Möhring (1996) "Triangulating graphs without asteroidal triples",
@@ -346,9 +346,9 @@ HTML front end is JavaScript-only:
 - `2007-Suchan-Todinca-Pathwidth-Circular-Arc-Graphs-WG.pdf` — author copy (univ-orleans.fr); doi:10.1007/978-3-540-74839-7_25. O(n²) pathwidth on circular-arc graphs, where pw ≠ tw.
 - `2014-Adler-Kante-Kwon-Linear-Rank-Width-Distance-Hereditary-Graphs-I-arXiv.pdf` — arXiv:1403.1081. p. 2: pathwidth NP-hard on distance-hereditary graphs [Kloks, Bodlaender, Müller & Kratsch, ESA 1993].
 
-## Paper 3 survey (2026-10-09)
+## Paper 2 survey (2026-10-09)
 
-### Trees and sparse classes (`paper3/survey_trees_sparse.md`)
+### Trees and sparse classes (`paper2/survey_trees_sparse.md`)
 
 Downloaded 2026-10-09, each opened and checked against its title page:
 
@@ -413,10 +413,10 @@ Gao (2006) COCOON; Chandran, Kavitha & Subramanian (2003) COCOON; Kloks, Bodlaen
 
 ### Obtained 2026-10-09, third batch
 
-- Coja-Oghlan, Cooley, Kang & Skubch (2017), The minimum bisection in the planted bisection model, *Theory of Computing* 13(8):1–22 — `2017-Coja-Oghlan-Cooley-Kang-Skubch-Minimum-Bisection-Planted-Bisection-Model-ToC.pdf`. Not on the to-fetch list; it was probably found while searching for Łuczak & McDiarmid (2001), *Bisecting sparse random graphs*, which is still to obtain. It is relevant to the bisection-width lower bounds of the random-graph survey (`paper3/survey_random_extremal.md`).
+- Coja-Oghlan, Cooley, Kang & Skubch (2017), The minimum bisection in the planted bisection model, *Theory of Computing* 13(8):1–22 — `2017-Coja-Oghlan-Cooley-Kang-Skubch-Minimum-Bisection-Planted-Bisection-Model-ToC.pdf`. Not on the to-fetch list; it was probably found while searching for Łuczak & McDiarmid (2001), *Bisecting sparse random graphs*, which is still to obtain. It is relevant to the bisection-width lower bounds of the random-graph survey (`paper2/survey_random_extremal.md`).
 
-**The search stopped here (2026-10-09), at diminishing returns.** What is still missing is listed in `paper3/to_fetch.md` (with search links in `to_fetch.html`). Most of it is paywalled, needs a library, or is a Springer chapter of which only a 2-page preview was free. The ones that matter most for paper 3: Möhring (1996), AT-free ⇒ pw = tw; Karoński, Scheinerman & Singer-Cohen (1999), the random intersection model; Scheffler (1990), linear pathwidth of trees; Lin & Lin (2025), hypercubes.
+**The search stopped here (2026-10-09), at diminishing returns.** What is still missing is listed in `paper2/to_fetch.md` (with search links in `to_fetch.html`). Most of it is paywalled, needs a library, or is a Springer chapter of which only a 2-page preview was free. The ones that matter most for paper 2: Möhring (1996), AT-free ⇒ pw = tw; Karoński, Scheinerman & Singer-Cohen (1999), the random intersection model; Scheffler (1990), linear pathwidth of trees; Lin & Lin (2025), hypercubes.
 
 ### Obtained 2026-10-09, fourth batch
 
-- Kumfert & Pothen (1997), Two improved algorithms for envelope and wavefront reduction, ICASE Report 97-33 / NASA CR-201714 (the technical-report version of the *BIT* 37 paper) — `1997-Kumfert-Pothen-Two-Improved-Algorithms-Envelope-Wavefront-Reduction-ICASE-97-33.pdf`. It defines the wavefront, for the candidate row "maximum wavefront = pw + 1" (`paper3/complex_members.md`, row 8).
+- Kumfert & Pothen (1997), Two improved algorithms for envelope and wavefront reduction, ICASE Report 97-33 / NASA CR-201714 (the technical-report version of the *BIT* 37 paper) — `1997-Kumfert-Pothen-Two-Improved-Algorithms-Envelope-Wavefront-Reduction-ICASE-97-33.pdf`. It defines the wavefront, for the candidate row "maximum wavefront = pw + 1" (`paper2/complex_members.md`, row 8).

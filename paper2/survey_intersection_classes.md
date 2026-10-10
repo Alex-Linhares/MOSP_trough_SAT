@@ -1,4 +1,4 @@
-# Pathwidth on intersection and perfect-graph classes: a survey for Paper 3
+# Pathwidth on intersection and perfect-graph classes: a survey for Paper 2
 
 *2026-10-09. Literature survey for a possible paper on the applied mathematics
 of pathwidth on special graph classes. Not committed.*

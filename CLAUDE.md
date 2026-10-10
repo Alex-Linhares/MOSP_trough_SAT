@@ -225,7 +225,7 @@ the three are proved; the one `sorry` left is the §24 conjecture in
 Yanasse (2002) Table 1 in `lean/MOSPFormalization/Complex/`, with one named
 gap, `EdgeSearchMonotonicity` (LaPaugh), that no row uses, and axioms
 `propext`, `Classical.choice`, `Quot.sound` only, checked by
-`paper2/axiom_check.lean`.)*
+`paper1/axiom_check.lean`.)*
 
 ### Key References
 
@@ -241,7 +241,7 @@ gap, `EdgeSearchMonotonicity` (LaPaugh), that no row uses, and axioms
 - **Frinhani et al. (2018)** — PageRank heuristic; published optimal values for Challenge/SCOOP instances using Chu & Stuckey's algorithm. *PLOS ONE*, 13(8), e0203076.
 - **Martin, Yanasse & Pinto (2022)** — ILP/CP formulations; comparative benchmarks. *International Transactions in Operational Research*.
 - **Faggioli & Bentivoglio (1998)** — Heuristic approaches and instance generation. *European Journal of Operational Research*, 110(3), 564-575.
-- **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218. *(2026-09-30)*: in the proof of Theorem 4.1, claim (2) fails as written (`K_{1,3}`); it is repaired by their own Corollary 2.4 or by clearing-time order. `paper2/proof_reductions.md`; the counterexample is `Complex/KirousisPapadimitriouGap.lean`.
+- **Kirousis & Papadimitriou (1986)** — Graph searching and pathwidth connections. *Theoretical Computer Science*, 47, 205-218. *(2026-09-30)*: in the proof of Theorem 4.1, claim (2) fails as written (`K_{1,3}`); it is repaired by their own Corollary 2.4 or by clearing-time order. `paper1/proof_reductions.md`; the counterexample is `Complex/KirousisPapadimitriouGap.lean`.
 - **Fellows & Langston (1987)** — Nonconstructive advances in polynomial-time complexity. *Information Processing Letters*, 26, 157-162. In `literature/` since 2026-09-27. Lemma 4.1 is the column-expansion lemma (= Yanasse 1997a Proposition 5), Lemma 4.2 minor-closure of bounded layout cost, Lemma 4.3 the pathwidth branch construction with its proof.
 - **Fellows & Langston (1989)** — FPT algorithms for pathwidth. *Proc. 21st ACM STOC*, 501-512. In `literature/` since 2026-09-27. **Theorem 7**: graphs of gate matrix layout cost k are exactly the graphs of pathwidth k − 1, proved in one direction (decomposition → layout, via column expansion and their 1987 Lemma 4.1); the converse is elementary from the consecutive-ones property. This is the link between open stacks and pathwidth that Linhares & Yanasse (2002) Table 1 rests on.
 
@@ -488,7 +488,7 @@ learning/                       → ML over the certified corpus (instance → o
 
 solutions/                      → Cached SAT solver solutions (JSON)
 
-paper2/                         → Paper 2, "The pathwidth complex" (the mathematics; plan.md is the plan)
+paper1/                         → *The pathwidth complex* (the mathematics; plan.md is the plan)
     problem_transformations.md      Section 3: each Table 1 problem as Instance / Question, every transformation proved
     proof_reductions.md             Faults in published proofs of the reductions, with repairs
     equivalences.md                 Section 3's master table: what each source proves, where checked and proved
@@ -500,6 +500,9 @@ paper2/                         → Paper 2, "The pathwidth complex" (the mathem
     axiom_check.lean                Axiom audit of the Complex/ theorems
     benchmarks/                     The benchmark hunt for the exactly equivalent problems (README.md)
 
+paper2/                         → Paper 2, MOSP on structured instances (plan.md; surveys of graph classes,
+                                    polynomial cases, more members of the complex, the wavefront and vertex-search
+                                    reports; to_fetch.md is the reading list)
 pathwidth_solver/               → Exact graph pathwidth solver, Chu & Stuckey's search ported to graphs
                                     (transferred from ~/dev/pathwidth 2026-09-30, see TRANSFER.md; Rome
                                     11,183 / 11,534 proved, VSPLIB trees 50 / 50, HB 39 / 73)
@@ -706,7 +709,7 @@ python -m benchmarks.solve_all --timeout 120
 - **Chu & Stuckey's Theorem 1 (the definite move) is false as published, and
   our C and Python implement it as published** *(found by loop0006 item 08,
   2026-10-01; verified independently the same day)*. On a 14-customer graph
-  (`DEFINITE_CEX` in `paper2/search_check.py`), at the state S = {2} with
+  (`DEFINITE_CEX` in `paper1/search_check.py`), at the state S = {2} with
   k = 6, customer 0 is playable and close(0, S) = open(0, S) = 3, so the rule
   keeps 0 alone. A solution from S exists (it starts with 1, 3, 4 or 6), but
   none starts with 0. The published proof counts customers as "extra stacks
@@ -728,7 +731,7 @@ python -m benchmarks.solve_all --timeout 120
   published premise. Afterwards, the values certified only by the customer
   search are re-certified. The better move shares the flaw (its premise 4 is
   the definite premise at the child; loop0006 item 10), and its repair is
-  proved sound too. `paper2/search_soundness.md`
+  proved sound too. `paper1/search_soundness.md`
   §2.2 and §4.2.
 - **Nothing checks that a refutation is sound.** Witness verification, the
   corpus audit and the lower-bound guards all confirm a value is *achievable*.
@@ -770,19 +773,19 @@ python -m benchmarks.solve_all --timeout 120
 
 ## Next Steps
 
-**Paper 2, "The pathwidth complex"** *(2026-09-30)*. The plan is
-`paper2/plan.md`; the venue is the INFORMS Journal on Computing first (decided
-2026-09-29). Section 3 is done: `paper2/problem_transformations.md` gives every
+**The pathwidth complex** *(2026-09-30)*. The plan is
+`paper1/plan.md`; the venue is the INFORMS Journal on Computing first (decided
+2026-09-29). Section 3 is done: `paper1/problem_transformations.md` gives every
 Table 1 problem as Instance / Question with a formal and a plain-English proof
-of each transformation, `paper2/equivalences.md` is its master table, and
+of each transformation, `paper1/equivalences.md` is its master table, and
 Ralph loop0005 (14 items, $37) proved the equivalences in
 `lean/MOSPFormalization/Complex/`. Of Table 1's twelve references, eleven are
 held, including the full 35-page Möhring (1990) chapter; only Kashiwabara &
 Fujisawa (1979) is missing (Table 1 is on p. 1764). The benchmark hunt is done
-(`paper2/benchmarks/README.md`), and the graph pathwidth solver was transferred
+(`paper1/benchmarks/README.md`), and the graph pathwidth solver was transferred
 into `pathwidth_solver/`. The paper's own repository (Lean, code and data) is
-the **last** step. Paper 1 (ML on MOSP) is `reports/latex/main.pdf`, 18 pages.
-Popularity counts in `paper2/popularity.md` were corrected on 2026-09-29
+the **last** step. ML studies (ML on MOSP) is `reports/latex/main.pdf`, 18 pages.
+Popularity counts in `paper1/popularity.md` were corrected on 2026-09-29
 (pathwidth 1,213 relevant works, MOSP 58); earlier raw counts are superseded.
 
 **The two-key rule does not speed large certifications** *(measured

@@ -1,7 +1,7 @@
 # More members of the pathwidth complex?
 
 Question (a): besides the twelve rows of Linhares & Yanasse (2002) Table 1 and
-the thirteenth row paper 2 added (progressive pebbling), which problems equal
+the thirteenth row the pathwidth complex paper added (progressive pebbling), which problems equal
 pathwidth (or vertex separation, interval thickness, MOSP, ...) up to a fixed
 constant, or lie in a band of fixed width around it?
 
@@ -39,28 +39,28 @@ separation, `ns` its node search number.
 
 ## 1. The table
 
-| # | Problem | Discipline | Input, and map to the graph | Relation to `pw` | Source: theorem, page (held file) | Brute force | In paper 2? |
+| # | Problem | Discipline | Input, and map to the graph | Relation to `pw` | Source: theorem, page (held file) | Brute force | In the pathwidth complex paper? |
 |---|---|---|---|---|---|---|---|
 | 1 | Linear gate assignment (LGAP) | VLSI | net-gate matrix; nets → vertices, a clique per gate | exact, `pw + 1`: it is gate matrix layout under another name | Linhares 2001 thesis, Ch. 1 p. 2 and Ch. 3 (`linhares_2001_phd_thesis_…`); Fomin 1998 ref. [26] "one dimensional logic gate assignment" (`paper1/literature/12_fomin_1998.pdf`) | — | yes (rows 2, 3) |
 | 2 | Interval graph augmentation, minimum clique (IGAP) | graph theory | graph | exact, `pw + 1` (it is interval thickness) | Möhring 1990 Thm 3.3, p. 32; Bodlaender 1998 Thm 29, p. 13 | — | yes (row 5) |
 | 3 | Minimum path partition with no alternating cycle | VLSI (PLA folding) | incompatibility graph | exact, `pw + 1` (= interval augmentation = multiple folding) | Möhring 1990 Thm 3.14, p. 36 | — | yes (row 4, footnote a) |
 | 4 | Least progressive black, or black-white, pebble demand over all orientations | computation | undirected graph → its acyclic orientations | exact, `pw + 1` | Bodlaender 1998 Thm 2(5–6), p. 4, and Thm 63, p. 29, citing Kirousis & Papadimitriou 1986 | — | yes (row 13) |
 | 5 | Helicopter search with bounded robber speed; interval bandwidth | graph searching | graph | band `pw` to `pw + 1` (equal to split bandwidth) | Fomin 1998 Thms 3, 6, 8 (`paper1/literature/12_fomin_1998.pdf`) | — | yes (row 9) |
-| 6 | Edge search of the 2-expansion | graph searching | each edge subdivided twice | exact via map: `es(G) = vs(G'')` | Ellis, Sudborough & Turner 1994 Thm 2.2, p. 57 | paper 2 did it (181 graphs) | yes (row 7 notes) |
-| 7 | Lengauer's vertex separator game | graph theory | graph | exact, `vs` (graphs with an edge) | Lengauer 1981 p. 467 | paper 2 | yes (row 11, footnote b) |
+| 6 | Edge search of the 2-expansion | graph searching | each edge subdivided twice | exact via map: `es(G) = vs(G'')` | Ellis, Sudborough & Turner 1994 Thm 2.2, p. 57 | the pathwidth complex paper did it (181 graphs) | yes (row 7 notes) |
+| 7 | Lengauer's vertex separator game | graph theory | graph | exact, `vs` (graphs with an edge) | Lengauer 1981 p. 467 | the pathwidth complex paper | yes (row 11, footnote b) |
 | 8 | **Maximum wavefront** (frontal Gaussian elimination of a sparse symmetric matrix) | numerical linear algebra | symmetric matrix → its nonzero graph; an elimination order is a vertex order | **exact, `pw + 1`** on every graph with a vertex | no theorem in a held source; definition via Diaz, Petit & Serna 2002 ref. Everstine 1979 ("matrix profile and wavefront"). Proof sketch in §2 | `wave`: 1,252/1,252 atlas graphs, `wf − pw = 1` | no |
 | 9 | **Search for an invisible fugitive that lives on the vertices**: searchers form sets `X_i`, each a subset or a superset of the one before | graph searching | graph | **exact, `pw + 1` on every graph**, including edgeless graphs, where node search is 0 | Bienstock, Robertson, Seymour & Thomas 1991, (5.1)(i)⇔(iii), p. 282 | `brst`: 208/208 graphs on 1–6 vertices | no (a variant of row 6, without row 6's edgeless exception) |
 | 10 | **Blockages** (the obstruction dual to path decompositions) | structural graph theory | graph | **exact, `pw`**: the largest order of a blockage is `pw` | BRST 1991, (2.1), p. 276: "There is a blockage of order n if and only if G has path-width ≥ n" | not done (needs set systems) | no |
 | 11 | **Edge search of the tripled graph** (every edge replaced by three parallel edges) | graph searching | graph `G` → multigraph `G_e` | **exact, `pw(G) + 2`** for `G` with an edge | Kirousis & Papadimitriou 1986 Thm 2.3 proof, pp. 209–210 (gives `ns(G) ≤ es(G_e) − 1`); EST 1994 Thm 2.1, p. 54 (gives `es ≤ vs + 2`, multigraphs allowed, p. 50) | `triple`: 14/14 graphs with an edge on ≤ 4 vertices, `es(G_e) − pw = 2` (the 5-vertex run did not finish within its 550 s cap) | no |
 | 12 | **Least tool-magazine capacity with no avoidable tool switch** (MTSP threshold) | flexible manufacturing | jobs → patterns, tools → customers | **exact, `pw + 1`**: the least `C` for which the minimum number of switches equals the trivial bound `M − C` is the MOSP optimum | Yanasse 1997b Prop. 1 and the formulation after it, p. 457 (`yanasse_1997b_…`); converse in the text on the same page | `mtsp`: 300/300 random instances (≤ 7 tools, ≤ 6 jobs, switches by KTNS) | no |
-| 13 | Modified cutwidth through the padded incidence matrix | graph theory / OR | `G` → matrix `P'`: a row per edge, then single-1 rows so every column sums to `Δ(G)`; its MOSP graph is the line graph plus pendant cliques | exact via map, one way: `mcw(G) = pw(H_G) + 1 − Δ(G)`; on Δ-regular graphs `mcw(G) = pw(L(G)) + 1 − Δ` | Linhares & Yanasse 2002 Lemma 2, p. 1762; thesis Lemma 2.2, p. 10 | `mcut`: 280/280 atlas graphs with `|E| + padding ≤ 15` | no; paper 2 has only `mcw` against `pw` of the same graph (unbounded) |
+| 13 | Modified cutwidth through the padded incidence matrix | graph theory / OR | `G` → matrix `P'`: a row per edge, then single-1 rows so every column sums to `Δ(G)`; its MOSP graph is the line graph plus pendant cliques | exact via map, one way: `mcw(G) = pw(H_G) + 1 − Δ(G)`; on Δ-regular graphs `mcw(G) = pw(L(G)) + 1 − Δ` | Linhares & Yanasse 2002 Lemma 2, p. 1762; thesis Lemma 2.2, p. 10 | `mcut`: 280/280 atlas graphs with `|E| + padding ≤ 15` | no; the pathwidth complex paper has only `mcw` against `pw` of the same graph (unbounded) |
 | 14 | Directed pathwidth / directed vertex separation; routing reconfiguration in WDM networks | graph theory; optical networks | digraph; a graph `G` → symmetric digraph `Ĝ` | exact via map on symmetric digraphs: `dpw(Ĝ) = pw(G)`; elsewhere a generalisation (acyclic digraphs have `dpw = 0`) | Coudert, Mazauric & Nisse 2016 §1, p. 2 (`2016-Coudert-Mazauric-Nisse-…`): "if D is symmetric … dpw(D) equals the pathwidth of the underlying undirected graph"; `dpw = dvs` p. 4; Kitsunai et al. 2016 §1, p. 2 | — | no |
 | 15 | Weighted pathwidth (vertex weights) | graph theory | weighted `G` → each vertex blown up to a clique module of its weight | exact via map, one way: weighted `pw(G) = pw(blow-up)` | Mihai & Todinca 2009 Observation 1, p. 3 | — | no |
 | 16 | Edge search on sprout trees | graph searching | trees in which every internal vertex has a leaf | exact on the class: `es = ns = pw + 1` | Peng, Ho, Hsu, Ko & Tang 2000 Thm 20, p. 438 | — | no (row 7 is a band) |
 | 17 | **Linear-width** (Thomas) | structural graph theory; ZDD enumeration | graph; an edge order | **band, `pw` to `pw + 1`**, for graphs with `lw ≥ 1` | Kobayashi & Nakahata 2021 Lemma 2, p. 2, correcting Fomin & Thilikos 2006 Lemma 2, p. 502 (false for `K_2`) | `lw`: 1,233 atlas graphs (≤ 16 edges): `lw − pw = 0` on 1,071, `+1` on 150, `−1` on 12, all 12 with `lw = 0` (matchings plus isolated vertices) | no |
 | 18 | **Mixed search** = **3-proper pathwidth** (Takahashi, Ueno & Kajitani) | graph searching | graph | **band, `pw` to `pw + 1`** | `ms = ` 3-proper `pw`: Bodlaender 1998 Thm 62, p. 28 (primary not held). The band follows from the simulations of Bodlaender's Lemma 56, p. 26 (§3) | `mixed`: graphs with an edge on ≤ 6 vertices, `ms − pw = 0` on 171, `+1` on 31 | no |
 | 19 | **Process number** (rerouting in connection-oriented networks) | telecommunications | graph (symmetric digraph) | **band, `vs` to `vs + 1`** | Coudert, Huc & Mazauric 2012 §2.4, p. 5: "It was proved by Coudert et al. [5] that vs(G) ≤ pn(G) ≤ vs(G) + 1" (primary not held) | not done | no |
-| 20 | Weinberger arrays with the input and output gates pinned to the ends (Möhring's WMPP) | VLSI | net-gate matrix with two fixed end columns | band, lower half only: `≥ pw + 1`; gap 0 or 1 in every case tried; no upper bound proved | Möhring 1990 WMPP, p. 21. Fellows & Langston 1987 p. 159 and Kinnersley & Langston 1994 §3 call Weinberger arrays identical to gate matrix layout, which holds when nothing is pinned | `wein`: 275 random instances, gap `{0: 217, 1: 58}`; paper 2's 1,027 for the analogous §IV one-dimensional logic, max 1 | partly (paper 2 row 3 notes, §IV variant) |
+| 20 | Weinberger arrays with the input and output gates pinned to the ends (Möhring's WMPP) | VLSI | net-gate matrix with two fixed end columns | band, lower half only: `≥ pw + 1`; gap 0 or 1 in every case tried; no upper bound proved | Möhring 1990 WMPP, p. 21. Fellows & Langston 1987 p. 159 and Kinnersley & Langston 1994 §3 call Weinberger arrays identical to gate matrix layout, which holds when nothing is pinned | `wein`: 275 random instances, gap `{0: 217, 1: 58}`; the pathwidth complex paper's 1,027 for the analogous §IV one-dimensional logic, max 1 | partly (the pathwidth complex paper row 3 notes, §IV variant) |
 | 21 | Cutwidth on graphs of maximum degree 3 | VLSI / graph theory | subcubic graph | band on the class, `pw` to `pw + 2` (cutwidth = edge search there) | EST 1994 p. 53, citing Makedon & Sudborough 1983 (not held); also p. 57 (`K_{3,3}`: `vs = 3`, `cw = s = 5`) | `cw3`: 253 subcubic atlas graphs, `cw − pw ∈ {0: 128, 1: 122, 2: 3}`; over all atlas graphs the gap reaches 6 | no |
 | 22 | Connected pathwidth; connected search number | graph searching | graph | related: `pw ≤ cpw ≤ 2pw + 1`, "the factor 2 in the bound is tight" | Dereniowski 2011 Thm 2, p. 20, and p. 3 | — | no |
 | 23 | Proper pathwidth (Kaplan & Shamir) = bandwidth | graph theory; sparse matrices | graph | related: `pw ≤ bw`, unbounded (stars) | Bodlaender 1998 Thm 53, p. 25, Thm 44, p. 23; Diaz, Petit & Serna 2002 Thm 3.2, p. 322 | — | no |
@@ -83,18 +83,18 @@ separation, `ns` its node search number.
 | 40 | Minimization of order spread (MORP) | cutting / OR | MOSP matrix | false: not equivalent. MORP is the largest span, so one pattern shared by `k` single-pattern customers gives MOSP `k`, MORP 1 | Linhares & Yanasse 2002 Prop. 3, p. 1767; thesis Prop. 2.3, p. 19 | — | no |
 | 41 | Minimization of discontinuities (MDP) | cutting / OR | MOSP matrix | false: not equivalent (a sum) | Linhares & Yanasse 2002 Props. 4–5, p. 1767 | — | no |
 | 42 | Minimization of tool switches (MTSP), as a value | flexible manufacturing | MOSP matrix plus capacity `C` | false: not equivalent; "MOSP is equivalent to MTSP only when C = C*" (but see row 12) | Yanasse 1997b p. 457; Linhares & Yanasse 2002 Prop. 6, p. 1767; Lopes & Valério de Carvalho 2015 p. 217 | — | no |
-| 43 | "Modified Cutwidth" in the list of problems equivalent to the column permutation problem | — | same graph | false as stated: `mcw` is unbounded against `pw` (stars, paper 2 row 11); true only through the padded map of row 13 | Lima, Santos & de Carvalho 2024, p. 2 | `mcut`: on the same graph, `mcw − pw ∈ {−1: 228, 0: 51, 1: 1}` on the small graphs; stars make it unbounded | yes (row 11 refutes `mcw`); the claim is new |
+| 43 | "Modified Cutwidth" in the list of problems equivalent to the column permutation problem | — | same graph | false as stated: `mcw` is unbounded against `pw` (stars, the pathwidth complex paper row 11); true only through the padded map of row 13 | Lima, Santos & de Carvalho 2024, p. 2 | `mcut`: on the same graph, `mcw − pw ∈ {−1: 228, 0: 51, 1: 1}` on the small graphs; stars make it unbounded | yes (row 11 refutes `mcw`); the claim is new |
 | 44 | Diaz, Petit & Serna Theorem 3.1, "MINVS(G) = MINPW(G) = MINSN(G) − 1 = MINGML(G) + 1" | — | — | false (a misprint): gate matrix layout is `pw + 1`, so the last term should be `MINGML(G) − 1` | Diaz, Petit & Serna 2002 Thm 3.1, p. 322 | — | no |
 | 45 | Makedon et al.: "the node search number is at most the topological bandwidth" | — | — | false: `K_k` has topological bandwidth `k − 1` and node search number `k` | Bodlaender 1998 p. 23 | — | no |
 
-Rows 1–7 restate members that paper 2 already has, under another name or a
+Rows 1–7 restate members that the pathwidth complex paper already has, under another name or a
 transformation. They are listed so that the count of what was checked is
 honest.
 
 ## 2. New exact members: candidates for rows 14, 15, … of Table 1.1
 
 Five relations are exact, hold on every input of a natural class, and are not in
-paper 2. They are ordered by how well they fit the table: a named problem from
+the pathwidth complex paper. They are ordered by how well they fit the table: a named problem from
 another discipline first, then the reformulations.
 
 **(i) Maximum wavefront of a symmetric matrix: `pw + 1`** (row 8; numerical
@@ -122,7 +122,7 @@ of the one before. The fugitive sits on vertices, is invisible, and is
 arbitrarily fast. They prove: "there is a successful search with each
 `|X_i| ≤ n`" ⇔ "G has path-width ≤ n − 1" ⇔ "there is a monotone one". This is
 node search with the fugitive on the vertices instead of the edges. The
-difference matters exactly where paper 2 found row 6 false: on edgeless graphs
+difference matters exactly where the pathwidth complex paper found row 6 false: on edgeless graphs
 node search is 0, but this game needs 1 = `pw + 1`. So BRST's game is the exact
 version of row 6, with no hypothesis, and its monotonicity comes with it,
 proved from the blockage theorem rather than from LaPaugh. Brute force:
@@ -166,7 +166,7 @@ sequence computed by KTNS (Tang & Denardo 1988, optimal for a fixed sequence).
 Of these, (i) and (ii) are new rows in the sense of Table 1.1: a problem, a
 discipline, a fixed offset. (iii) is a dual characterisation. (iv) and (v) are
 exact reformulations of problems the complex already discusses (edge search,
-tool switching). They can be recorded the way paper 2 records 13b and 13c.
+tool switching). They can be recorded the way the pathwidth complex paper records 13b and 13c.
 
 **Exact via a map, not candidates as they stand** (rows 13–16):
 
@@ -219,14 +219,14 @@ tool switching). They can be recorded the way paper 2 records 13b and 13c.
   (FL 1987 p. 159; Devadas 1986 §2.3: "the one-dimensional placement algorithms
   for a Weinberger array apply equally well to a gate matrix"). Möhring's WMPP
   pins the input gate `G_0` and the output gate `G_{n+1}` to the ends. That is
-  the analogue of Ohtsuki's §IV boundary gates, for which paper 2 proved only
+  the analogue of Ohtsuki's §IV boundary gates, for which the pathwidth complex paper proved only
   `≥ pw + 1`. Our 275 new random instances never exceed `pw + 2`, the same as
-  paper 2's 1,027. Not exact: the pin costs a track on some instances (gap 1 on
+  the pathwidth complex paper's 1,027. Not exact: the pin costs a track on some instances (gap 1 on
   58 of 275) and nothing on others.
 - **Cutwidth on subcubic graphs (row 21).** Cutwidth equals the edge search
   number when the maximum degree is 3, so on that class cutwidth inherits row
   7's band `{pw, pw + 2}`. Brute force sees all three values. On general graphs
-  the gap is unbounded (paper 2 row 11). This is the only sense in which Table
+  the gap is unbounded (the pathwidth complex paper row 11). This is the only sense in which Table
   1's "edge separation", read as cutwidth, belongs to the complex.
 - **Hypergraph cutwidth (row 33)** is the nearest near-miss on the matrix side.
   It counts a customer as open *between* two patterns, where MOSP counts it *at*
@@ -288,11 +288,11 @@ tool switching). They can be recorded the way paper 2 records 13b and 13c.
     Gustedt & Telle 1998 (SODA): row 25.
 13. Tang & Denardo 1988, "Models arising from a flexible manufacturing machine,
     part I", *Oper. Res.* 36 (KTNS optimality, used in the row 12 check).
-14. Still missing from paper 2: Kashiwabara & Fujisawa 1979.
+14. Still missing from the pathwidth complex paper: Kashiwabara & Fujisawa 1979.
 
 ## Counts
 
-45 candidates checked (rows 1–45). Of these, 7 restate members paper 2
+45 candidates checked (rows 1–45). Of these, 7 restate members the pathwidth complex paper
 already has (rows 1–7). The other 38:
 
 | class | rows | count |

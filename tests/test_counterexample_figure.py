@@ -1,4 +1,4 @@
-"""Figure 4.1 of paper 2: the definite-move counterexample, two panels."""
+"""Figure 4.1 of the pathwidth complex paper: the definite-move counterexample, two panels."""
 import re
 
 import pytest

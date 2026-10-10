@@ -1,4 +1,4 @@
-# Paper 3 survey: asymptotic, probabilistic and extremal results on pathwidth / vertex separation / MOSP
+# Paper 2 survey: asymptotic, probabilistic and extremal results on pathwidth / vertex separation / MOSP
 
 *2026-10-09. Literature survey for a possible paper on the applied mathematics
 of pathwidth on special graph classes. Nothing here changes code, `solutions/`

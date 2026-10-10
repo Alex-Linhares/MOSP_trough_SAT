@@ -13,7 +13,7 @@ values alive at once, with a proof that no valid order does better.
 
 The solver is the one in this repository (`pathwidth_solver/`): Chu &
 Stuckey's customer search ported to graphs, with the dominance rules repaired
-to match the Lean soundness theorem (`paper2/solver_fix.md`). It is ported to
+to match the Lean soundness theorem (`paper1/solver_fix.md`). It is ported to
 TypeScript inside the Form_Discovery module, so the app stays one
 dependency-free module. The app and module live in Form_Discovery
 (github.com/Alex-Linhares/Form_Discovery, working copy
@@ -151,7 +151,7 @@ oracle:
   `tests/fixtures/pathwidth/*.json`, hashed in `SHA256SUMS`. The set has two
   parts.
   - *Unconstrained*: the DEFINITE_CEX graph and the two Bug B graphs from
-    `paper2/search_check.py`, every graph on at most 7 vertices, random graphs
+    `paper1/search_check.py`, every graph on at most 7 vertices, random graphs
     at 8–30 vertices, the VSPLIB trees and grids, and a Rome sample.
   - *Precedence*: every DAG on at most 7 vertices, random DAGs at 8–30, and
     expression trees.

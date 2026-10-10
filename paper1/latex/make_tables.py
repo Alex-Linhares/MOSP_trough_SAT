@@ -1,4 +1,4 @@
-"""Paper 2's tables, generated from the recorded data (loop0008 item 08).
+"""The pathwidth complex paper's tables, generated from the recorded data (loop0008 item 08).
 
     python -m paper1.latex.make_tables          # writes paper1/latex/tables/*.tex
 

@@ -1,4 +1,4 @@
-"""Paper 2's LaTeX draft: its generated tables, its Lean names, its bibliography (loop0008 item 08)."""
+"""The pathwidth complex paper's LaTeX draft: its generated tables, its Lean names, its bibliography (loop0008 item 08)."""
 
 import json
 import re

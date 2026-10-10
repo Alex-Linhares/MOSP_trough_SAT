@@ -112,7 +112,7 @@ So, point by point:
   Díaz, Petit & Serna, both bibliographic. **The equality is stated in no
   held source.**
 
-## 2. The definition paper 2 should use
+## 2. The definition the pathwidth complex paper should use
 
 ### 2.1 Problem / Instance / Question
 
@@ -177,7 +177,7 @@ this ordering, which is therefore optimal.
 | mean wavefront `(1/n)Σ\|wf_i\|` | `1 + E_size/n`: the profile / sum-cut problem (Díaz, Petit & Serna §2: PROFILE ≡ SUMCUT), not a pathwidth quantity |
 | mean-square `mswf` | a sum-type cost like the profile; not a pathwidth quantity, and no fixed offset |
 
-Only the maximum is in the complex. Paper 2 should use `maxwf` exactly as
+Only the maximum is in the complex. The pathwidth complex paper should use `maxwf` exactly as
 Kumfert & Pothen define it, which gives offset `+1`.
 
 ## 3. The theorem and its proofs

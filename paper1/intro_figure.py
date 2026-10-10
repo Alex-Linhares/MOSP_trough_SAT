@@ -1,4 +1,4 @@
-"""Figure 1.1 of paper 2: one small instance read three ways.
+"""Figure 1.1 of the pathwidth complex paper: one small instance read three ways.
 
 The example of `paper1/review_readability.md` §7.3, as the owner's notes of
 2026-10-06 ask: six customers a-f and four patterns,

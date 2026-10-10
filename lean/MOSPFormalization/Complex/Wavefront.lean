@@ -4,7 +4,7 @@ Released under the MIT license as described in the file LICENSE.
 
 # Maximum wavefront = pathwidth + 1
 
-A candidate fourteenth member of the pathwidth complex (paper 3), from
+A candidate fourteenth member of the pathwidth complex (paper 2), from
 numerical linear algebra: the maximum wavefront of a sparse symmetric matrix,
 the storage of the frontal matrix in a frontal factorisation.
 

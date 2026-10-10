@@ -414,7 +414,7 @@ edge search (`band ≤ es ≤ vs + 2`, full game), interval thickness = node
 search, and a counterexample to the proof of Kirousis & Papadimitriou (1986)
 Theorem 4.1 as written. One named gap, `EdgeSearchMonotonicity` (LaPaugh),
 is a hypothesis used by no row, not a `sorry`; the axioms are `propext`,
-`Classical.choice` and `Quot.sound` only (`paper2/axiom_check.lean`). The
+`Classical.choice` and `Quot.sound` only (`paper1/axiom_check.lean`). The
 development's only `sorry` is still `conjecture_sqrt_tw_f6`.
 *Size range:* every finite graph. *Regenerate:* `cd lean && lake build`.
 *Status:* theorem.

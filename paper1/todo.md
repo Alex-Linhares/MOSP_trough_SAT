@@ -1,4 +1,4 @@
-# Paper 2, "The pathwidth complex": to do
+# *The pathwidth complex*: to do
 
 Started 2026-10-09. Check items off as they are done.
 
@@ -86,7 +86,7 @@ Started 2026-10-09. Check items off as they are done.
       Robertson, Seymour & Thomas (1991) and the maximum wavefront of Kumfert &
       Pothen (1997, proved in Lean, `Complex/Wavefront.lean`); Figure 2.1 redrawn.
 
-## Paper 3 (idea, 2026-10-09)
+## Paper 2 (idea, 2026-10-09)
 
 - [ ] **Read the four surveys** in `paper2/` (trees and sparse classes; products
       and grids; intersection and perfect classes; random and extremal results)

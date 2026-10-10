@@ -1,4 +1,4 @@
-# Pathwidth of structured and product graphs: a literature survey for paper 3
+# Pathwidth of structured and product graphs: a literature survey for paper 2
 
 *Survey of 2026-10-09. Topic: closed formulas and bounds for pathwidth on special
 graph classes and graph products, with an eye to "applied mathematics of

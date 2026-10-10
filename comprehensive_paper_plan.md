@@ -1,6 +1,6 @@
 # Paper Plan: Certified Optimal Solutions for the Minimization of Open Stacks Problem
 
-> **Superseded, 2026-09-30.** The first paper plan (2026-09-16), kept as a record and not updated since 2026-09-27: the certified corpus went into Paper 1 (`reports/latex/main.pdf`), and certified pathwidth optima with checkable proofs are now the dataset of Paper 2, *The pathwidth complex* (`paper2/plan.md`), which is the current plan.
+> **Superseded, 2026-09-30.** The first paper plan (2026-09-16), kept as a record and not updated since 2026-09-27: the certified corpus went into ML studies (`reports/latex/main.pdf`), and certified pathwidth optima with checkable proofs are now the dataset of *The pathwidth complex* (`paper1/plan.md`), which is the current plan.
 
 **Status:** planning document. Figures marked *(measured)* come from runs in this
 repository and are reproducible; everything else is a target or an assumption

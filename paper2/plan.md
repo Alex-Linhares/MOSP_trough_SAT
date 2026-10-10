@@ -1,4 +1,4 @@
-# Paper 3: MOSP on structured instances (plan)
+# Paper 2: MOSP on structured instances (plan)
 
 Draft plan, 2026-10-09. Built from the four surveys in this folder:
 - `survey_trees_sparse.md`;
@@ -6,9 +6,9 @@ Draft plan, 2026-10-09. Built from the four surveys in this folder:
 - `survey_intersection_classes.md`;
 - `survey_random_extremal.md`.
 
-It follows paper 2, *The pathwidth complex*, which proved MOSP = pathwidth + 1
+It follows *The pathwidth complex*, which proved MOSP = pathwidth + 1
 (with the rest of the Linhares–Yanasse table) and built an exact search and a
-certified dataset. Paper 3 asks what that equivalence buys on the instances
+certified dataset. Paper 2 asks what that equivalence buys on the instances
 that have structure.
 
 ## Working title
@@ -176,7 +176,7 @@ To decide after Part 1 is measured.
 
 - **Part 1:** if the class layers and the complement-split rule save under 5%
   of total nodes on the hard corpus instances (Chu & Stuckey 75–125), keep
-  them as a remark in paper 2 and drop Part 1 as a contribution. Most hard
+  them as a remark in the pathwidth complex paper and drop Part 1 as a contribution. Most hard
   instances may sit outside the easy classes, as SCOOP does.
 - **Part 2:** if the benchmark adds nothing that existing VSPLIB grids and trees
   do not, fold it into Part 1.
@@ -186,7 +186,7 @@ To decide after Part 1 is measured.
 ## Remaining work, in order
 
 1. **Obtain the papers.** About 70 are listed in `literature/MISSING.md` under
-   "Paper 3 survey (2026-10-09)". Many are free but bot-blocked, so fetch them in
+   "Paper 2 survey (2026-10-09)". Many are free but bot-blocked, so fetch them in
    a browser: Gustedt 1993; Kloks, Kratsch & Spinrad 1997; Ellis & Warren 2008;
    Harper 1966; Karoński & Szymkowiak 2001. Karoński, Scheinerman &
    Singer-Cohen 1999 is paywalled.
@@ -198,5 +198,5 @@ To decide after Part 1 is measured.
 5. **Part 3:** the campaigns (random cubic, random trees, constant fits).
 6. **The draft.**
 
-Paper 2 comes first. None of this should delay it, except possibly the
+The pathwidth complex paper comes first. None of this should delay it, except possibly the
 complement-split rule, which could appear there as a remark.

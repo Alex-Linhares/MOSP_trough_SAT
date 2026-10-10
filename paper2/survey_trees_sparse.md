@@ -1,4 +1,4 @@
-# Pathwidth of trees and sparse graph classes: a survey for paper 3
+# Pathwidth of trees and sparse graph classes: a survey for paper 2
 
 *Written 2026-10-09 for a possible third paper, "applied mathematics of pathwidth
 on special graph classes". The subject is pathwidth, which is the same number as

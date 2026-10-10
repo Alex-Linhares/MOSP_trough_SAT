@@ -12,7 +12,7 @@ vertex, edgeless graphs included, the least `n` with a successful search of
 BRST with every `|X_i| ≤ n` equals `pw(G) + 1`. The least `n` with a
 *monotone* successful search equals it too. On a graph with an edge, both
 equal the node search number. With no vertices, both are `0`. This was the
-only row of paper 2 not proved in Lean, and now it is.
+only row of the pathwidth complex paper not proved in Lean, and now it is.
 
 ---
 
@@ -155,7 +155,7 @@ false. BRST's integers do not have this artefact.
   `vertexSearchNumber_eq_nodeSearch`, `vertexSearchNumber_of_edgeless`,
   `vertexSearchNumber_of_isEmpty`. The control still shows `sorryAx`.
 
-## 6. Suggested text for paper 2 (not applied; `paper1/latex/` untouched)
+## 6. Suggested text for the pathwidth complex paper (not applied; `paper1/latex/` untouched)
 
 **Table 1.1, footnote d** (`sec1_intro.tex`), replacing "Exact on every graph,
 … not proved in Lean.":

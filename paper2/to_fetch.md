@@ -1,4 +1,4 @@
-# Paper 3: references to fetch (2026-10-09)
+# Paper 2: references to fetch (2026-10-09)
 
 Compiled from the to-obtain sections of the four surveys in this folder. The
 lists overlap, so duplicates are merged and copies we already hold are left
@@ -101,4 +101,4 @@ scripted downloads).
 - Korach & Solel, Tree-width, path-width, and cutwidth (source of pw ≤ (tw + 1) log n; venue not retrieved)
 
 Pesquisa Operacional is open access (SciELO) for recent volumes; the 1989–1998
-volumes may need the authors. Yanasse is a co-author of paper 2.
+volumes may need the authors. Yanasse is a co-author of the pathwidth complex paper.

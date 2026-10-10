@@ -1,4 +1,4 @@
-# Paper 2, "The pathwidth complex": the LaTeX draft
+# *The pathwidth complex*: the LaTeX draft
 
 First full draft, Ralph loop0008 item 08, 2026-10-03; item 09 added Figure 3.1 and
 the axiom audit. **25 pages** (article

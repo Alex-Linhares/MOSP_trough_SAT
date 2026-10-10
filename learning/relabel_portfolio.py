@@ -524,7 +524,10 @@ def race(jobs: list[dict], ways: int = 16, deadline: float = 600.0, early_stop: 
         started = time.monotonic()
         finished: list[dict] = []
         winner = None
-        with multiprocessing.Pool(ways) as pool:
+        # spawn, not fork: forking after threaded libraries (LightGBM, BLAS) have
+        # started can deadlock a child (CLAUDE.md, method notes); under a full
+        # test run this hung test_race_two_ways_on_the_spider.
+        with multiprocessing.get_context("spawn").Pool(ways) as pool:
             for row in pool.imap_unordered(_race_job, [(job, lab, deadline) for lab in labels]):
                 row["wall_at_return"] = round(time.monotonic() - started, 3)
                 finished.append(row)

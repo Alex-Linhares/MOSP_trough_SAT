@@ -1,6 +1,6 @@
 # Polynomial special cases of the pathwidth complex
 
-*2026-10-09. Question (b) for paper 3: which special cases of the pathwidth complex
+*2026-10-09. Question (b) for paper 2: which special cases of the pathwidth complex
 can be solved in polynomial time? This note builds on the four surveys in this
 folder and does not repeat them. It reads first-hand the sixteen papers obtained
 on 2026-10-09 that no agent had read, and it corrects the surveys where those
@@ -182,7 +182,7 @@ recognised in the scan.
   FillFolding(G, Q) for some ordering Q of X. Read with X = the patterns, this is
   exactly "some pattern sequence realises pw(G_M) + 1", an independent 2007
   graph-theoretic proof of MOSP = pw + 1. Mihai & Todinca (Thm 1, p. 4) restate
-  it. Paper 2 should cite it beside Fellows–Langston and Yanasse.
+  it. The pathwidth complex paper should cite it beside Fellows–Langston and Yanasse.
 - The useful *recognisable* layers are, in order of corpus yield: complete,
   interval (ω), cograph or join (formula), split (criterion), block (Chou),
   unicyclic (Ellis–Markov). All of these test G_M, not the matrix. The matrix
@@ -200,10 +200,10 @@ therefore which input condition makes it polynomial.
 |---|---|---|---|
 | **Gate matrix layout** | net–gate matrix (nets = rows) | incompatibility graph = G_M (Möhring Lemma 3.1, Thm 3.2, p. 29, read) | identical to §2. Möhring lists: tree incompatibility graph O(n) (Thm 4.7, p. 45), cographs O(n) (Thm 4.8), the chordal overlap condition (4.6) (Thm 4.9, p. 46, from Gustedt), split graphs (p. 46), a fixed number of tracks O(n²) nonconstructive (Thm 3.8, p. 33), and O(n^(2k²+4k+8)) by DP [EST87] (p. 33). 2 tracks ⇔ caterpillar forest; 3 tracks ⇔ none of 110 obstructions (Kinnersley–Langston). Möhring p. 49: on-line algorithms that fail on interval inputs [DKL87] are fixed by MPQ-trees |
 | **One-dimensional logic** | gates with their net sets | connection graph H = G_M with gates as patterns | identical to §2 (gates ↔ patterns, nets ↔ customers) |
-| **Multiple PLA folding** | net–gate matrix | = GML (paper 2 (E8)) | as GML |
-| Simple PLA folding (≤ 2 nets per track) | net–gate matrix | *not* in the complex (paper 2, false as stated) | Möhring p. 47 (read): constrained PLA folding on trees [Hu & Kuo 1987]; block folding and constrained block folding on partial k-trees; orderability polynomial for constrained folding [Ravi 1988]. NP-hard in general (Thms 4.1–4.6) |
+| **Multiple PLA folding** | net–gate matrix | = GML (the pathwidth complex paper (E8)) | as GML |
+| Simple PLA folding (≤ 2 nets per track) | net–gate matrix | *not* in the complex (the pathwidth complex paper, false as stated) | Möhring p. 47 (read): constrained PLA folding on trees [Hu & Kuo 1987]; block folding and constrained block folding on partial k-trees; orderability polynomial for constrained folding [Ravi 1988]. NP-hard in general (Thms 4.1–4.6) |
 | **Interval thickness, node search, vertex separation, narrowness, Lengauer's VSG, minimum progressive pebbling of a graph** | a graph | the input graph | §1 directly. Node search on trees and block graphs comes with optimal *strategies* in O(n) (Chou Thm 24, p. 73) |
-| **Progressive black–white pebbling of a dag D** | a dag | the moral graph D_u (arcs + a clique on each in-neighbourhood) = G_{M_D}, column v = N⁻[v] (paper 2 (E11)) | **out-forests** (in-degree ≤ 1): D_u = the underlying forest, O(n). **In-forests** (out-degree ≤ 1, expression trees): M_D is Berge-acyclic, so D_u is a **block graph**, O(n²) by Chou (ours; checked 200/200). Any dag whose moral graph is interval, a cograph, split, … |
+| **Progressive black–white pebbling of a dag D** | a dag | the moral graph D_u (arcs + a clique on each in-neighbourhood) = G_{M_D}, column v = N⁻[v] (the pathwidth complex paper (E11)) | **out-forests** (in-degree ≤ 1): D_u = the underlying forest, O(n). **In-forests** (out-degree ≤ 1, expression trees): M_D is Berge-acyclic, so D_u is a **block graph**, O(n²) by Chou (ours; checked 200/200). Any dag whose moral graph is interval, a cograph, split, … |
 | Pebbling of G_d (pw + 2) | a graph | the graph | §1 |
 | Edge search (band vs ≤ es ≤ vs + 2, not exact) | a graph | — | NP-complete (Megiddo et al. 1988 Thm 1, p. 20); **trees: linear value (Thm 3, p. 28), strategy O(n log n) (Thm 4, p. 32)**, linear strategy (Peng et al. 2000 Thm 24, p. 443); sprout trees es = ns (Thm 20, p. 438); es ≤ 3 recognisable in linear time (Megiddo Thm 7, p. 41) (all read). Every polynomial class in §1 gives es within +2 |
 | Split bandwidth (pw ≤ sb ≤ pw + 1) | a graph | — | every §1 class gives sb within 1 |
@@ -440,7 +440,7 @@ The split sample is skewed: 286 of the 300 have pw = ω − 1. The ω-case was h
 | Garbe (1995) WG, full; Krishna et al. (2010), full | cointerval; threshold + 1v |
 | Arnborg, Corneil & Proskurowski (1987) *SIAM JADM* 8 | cobipartite hardness (the "two patterns cover everyone" MOSP result) |
 | Monien & Sudborough (1988) *TCS* 58 | planar degree-3 hardness |
-| Kashiwabara & Fujisawa (1979) | original NP-completeness (also missing for paper 2) |
+| Kashiwabara & Fujisawa (1979) | original NP-completeness (also missing for the pathwidth complex paper) |
 | Booth & Lueker (1976) PQ-trees; Tucker (1970) circular ones | recognition of the matrix conditions in §2 |
 | Heggernes, Suchan, Todinca & Villanger (2006) TR RR-2006-09 (LIFO) | the folding characterisation of minimal interval completions |
 | Hu & Kuo (1987) *Networks* 17; Ravi (1988) | PLA folding on trees |

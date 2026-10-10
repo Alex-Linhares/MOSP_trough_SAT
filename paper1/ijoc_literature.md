@@ -1,4 +1,4 @@
-# IJOC literature for paper 2 ("The pathwidth complex")
+# IJOC literature for the pathwidth complex paper ("The pathwidth complex")
 
 Compiled 2026-10-04 for submission to the *INFORMS Journal on Computing* (IJOC).
 Every entry below comes from a Crossref or OpenAlex record, or from a PDF that

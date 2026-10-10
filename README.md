@@ -715,7 +715,7 @@ lean/
 
 learning/                       ML and measurement over the certified corpus (see learning/README.md)
 pathwidth_solver/               Exact graph pathwidth solver, transferred 2026-09-30 (see its TRANSFER.md)
-paper2/                         Paper 2, "The pathwidth complex" (plan in paper2/plan.md)
+paper1/                         *The pathwidth complex* (plan in paper1/plan.md)
 tools/                          Third-party tools built from source (drat-trim)
 Ralph_Loops/                    Unattended one-item-per-session drivers (loop0001–loop0005)
 

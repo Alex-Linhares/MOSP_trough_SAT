@@ -1,6 +1,6 @@
-# Paper 2: the number audit (2026-10-03, loop0008 item 07)
+# The pathwidth complex paper: the number audit (2026-10-03, loop0008 item 07)
 
-Every quantitative claim in the seven source documents of paper 2 was checked
+Every quantitative claim in the seven source documents of the pathwidth complex paper was checked
 against its source. A claim here means a count, percentage, time, node count,
 core-hour figure, size range, measurement date, a page, section or theorem
 number in a citation, or a Lean theorem named as the source of a fact. The

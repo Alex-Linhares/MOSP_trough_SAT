@@ -63,7 +63,7 @@ def search_url(item):
 
 def main():
     md = (HERE / "to_fetch.md").read_text()
-    out = ["<!doctype html><meta charset=utf-8><title>Paper 3 references to fetch</title>",
+    out = ["<!doctype html><meta charset=utf-8><title>Paper 2 references to fetch</title>",
            "<style>body{font-family:sans-serif;max-width:62em;margin:2em auto;line-height:1.45}"
            "li{margin:.35em 0}a{word-break:break-all}a.g{word-break:normal;white-space:nowrap;font-weight:bold}</style>"]
     inlist = False
