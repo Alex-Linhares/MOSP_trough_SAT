@@ -30,14 +30,14 @@ restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
 previous algorithm answers correctly, and the first whole instance on which it
 reports a wrong optimum has 34 customers and needs the old move to pass a
 false refutation on to later branches (Figure~\ref{fig:wrong}). And when every
-benchmark optimum that rested on the search was proved again with repaired
+benchmark optimum that rested on the search was proved again with corrected
 rules, no value changed (Section~\ref{sec:results}). The correct form of the
 definite move was already known for pathwidth, as Tamaki's commitment lemma,
 which says when an exact pathwidth search may commit to one extension of a
 vertex set and try no other (Section~\ref{sec:layouts}). We
 show that it can be tested by one small bipartite matching per candidate. The
 main result, Theorem~\ref{thm:main}, says informally: \emph{with both rules
-repaired, the search is sound; whenever it answers that $k$ stacks do not
+corrected, the search is sound; whenever it answers that $k$ stacks do not
 suffice, they do not, and the graph has pathwidth at least $k$.} The repair
 costs at most 2\% more search nodes on each benchmark set
 (Section~\ref{sec:results}).
@@ -45,7 +45,7 @@ costs at most 2\% more search nodes on each benchmark set
 Section~\ref{sec:search-def} defines the search and shows that it decides
 pathwidth, in both vocabularies. Section~\ref{sec:algorithm} gives the
 algorithm. Sections~\ref{sec:definite} and~\ref{sec:other-rules} take the
-rules one at a time, Section~\ref{sec:theorem} proves our repaired search
+rules one at a time, Section~\ref{sec:theorem} proves our corrected search
 sound, and Section~\ref{sec:layouts} places each rule in the pathwidth
 literature.
 
@@ -141,7 +141,7 @@ $\cost(T,c)$ & $|\partial(T\cup\{c\})|+1$ \\
 $\Sol_k(\emptyset)$ & $\vs(G)\le k-1$ \\
 free closure $\cl(T)$ & full set of $T$ \citep[p.~328]{SuchanVillanger2009} \\
 memo & failure table \\
-definite move, repaired & commitment to the child \\
+definite move, corrected & commitment to the child \\
 \bottomrule\end{tabularx}
 \end{table}
 
@@ -276,7 +276,7 @@ opens the new stacks 0, 7 and 11 and closes 0, 3 and 4, so open = close = 3 and
 the rule keeps 0 alone. But 3 and 4 have the single new stack 0 between them:
 closing them first gains two stacks for the price of one, which a solution
 starting with 0 cannot match. (b) The intermediate set $B=\{2,3,4\}$ leaves two
-stacks open, fewer than the three of the child $X=\{0,2,3,4\}$, so the repaired
+stacks open, fewer than the three of the child $X=\{0,2,3,4\}$, so the corrected
 rule of this section does not fire.}
 \label{fig:cex}
 \end{figure}
@@ -310,7 +310,7 @@ $b(T)=|O(T)|-|T|$, $O(A\cup B)=O(A)\cup O(B)$ and $O(A\cap B)\subseteq
 O(A)\cap O(B)$; the customers themselves balance exactly.
 \end{proof}
 
-\begin{theorem}[the repaired definite move is sound]\label{thm:repaired}
+\begin{theorem}[the corrected definite move is sound]\label{thm:repaired}
 If $q\notin S$ is hereditarily definite at $S$, then $\Ext_k(S)\Rightarrow \Ext_k(X)$.
 At a state with the invariant, $\Sol_k(S)\Rightarrow\Sol_k(S\cdot q)$~\leanref{repaired}.
 \end{theorem}
@@ -330,7 +330,7 @@ Tamaki, and the proof is the proof of the commitment lemma,
 \citet[Lemma~1, p.~142]{Kitsunai2016}; Section~\ref{sec:layouts} makes the
 correspondence exact.
 
-\paragraph{The matching test.} The repaired rule seems to require checking
+\paragraph{The matching test.} The corrected rule seems to require checking
 exponentially many intermediate sets. It does not, and this cheap test is the
 algorithmic contribution of the section; we did not find it in the papers we
 hold. In words: the rule is safe exactly when all but one of the new stacks
@@ -432,7 +432,7 @@ record a solvable state~\leanref{fakeold}. Theorem~\ref{thm:runs}
 (Appendix~\ref{app:machinery}) shows that this never happens in a real run,
 because every old move is a refutation completed earlier in the same run.
 
-\subsection{Our repaired search is sound}
+\subsection{Our corrected search is sound}
 \label{sec:theorem}
 
 \paragraph{What a rule must satisfy.} At a state $S$ with old moves $Q$, the
@@ -444,15 +444,15 @@ two things hold. First, every link a rule cites is a true covering. Second,
 every chain of links from a discarded candidate ends in $L$ or in $Q$. The
 second condition can fail through a cycle even when every link is true, which
 is why the order of the rules matters. Proposition~\ref{prop:filter} shows that
-the repaired filter is node-sound, and Theorem~\ref{thm:runs} that node
+the corrected filter is node-sound, and Theorem~\ref{thm:runs} that node
 soundness, the memo and the old move together give sound runs; both are in
 Appendix~\ref{app:machinery}. Together they give the main theorem.
 
-\begin{theorem}[the repaired search is sound]\label{thm:main}
+\begin{theorem}[our corrected search is sound]\label{thm:main}
 Run the customer search with free moves, the memo, old moves and the filter
 definite $\to$ subset $\to$ better. Let the definite move fire only on a
 hereditarily definite customer, and the better move cite only under the
-repaired premise. If the search refutes $k$ from the root, then no closing order costs
+corrected premise. If the search refutes $k$ from the root, then no closing order costs
 at most $k$, $\pw(G)>k-1$, and on the MOSP graph of an instance $M$ that has a 1,
 $Z(M)>k$~\leanref{main}.
 \end{theorem}
@@ -491,7 +491,7 @@ with its definite move, the subset rule and the old move and with the better
 move off, answers that 6 stacks do not suffice, and it
 answers yes at 7, so it reports an optimum of 7, with a refutation as its
 proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
-Figure~\ref{fig:wrong}(b) uses 6 tracks; our repaired search finds it and
+Figure~\ref{fig:wrong}(b) uses 6 tracks; our corrected search finds it and
 refutes 5, so the optimum is 6. A SAT solver on our encoding of MOSP
 (Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
 finds an order with 6 open stacks and proves that 5 do not suffice, with a
@@ -510,7 +510,7 @@ that needs nothing but Python are in the repository
 \caption{The previous algorithm \citep{ChuStuckey2009} reports a wrong optimum. A 34-customer instance,
 whose 34 nets must be laid out on 61 gates. (a) The layout the previous algorithm (our
 implementation, better move off) returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
-by our repaired search, which also proves that 5 do not suffice, as does a SAT
+by our corrected search, which also proves that 5 do not suffice, as does a SAT
 solver with a DRAT proof checked by drat-trim. (c) The open
 stacks at each gate of the two orders: the previous algorithm's order reaches 7 in the
 first copy, where the optimal order never exceeds 6.
@@ -532,7 +532,7 @@ extends to a feasible permutation, so does $\tau$.
 \begin{lemma}\label{lem:endpoint}
 For $q\notin S$ and $X=\cl(S\cup\{q\})$: the published premise holds iff
 $b(X)\le b(S)$, the commitment condition at the single set $X'=S$; and the
-repaired premise holds iff $X$ is a commitment from $S$, the condition at every
+corrected premise holds iff $X$ is a commitment from $S$, the condition at every
 $X'$ between them~\leanref{endpoint}.
 \end{lemma}
 
@@ -563,7 +563,7 @@ it becomes a bipartite matching.
 
 Table~\ref{tab:known} sums up, and its rows are grouped by what they say. The
 published definite and better moves are false. The free move, the memo and
-the repaired definite move are known pathwidth results. The subset rule, the repaired
+the corrected definite move are known pathwidth results. The subset rule, the corrected
 better move and the old move have no counterpart we found, and are proved
 here, as is the matching test. The comparison is limited to the pathwidth
 papers we hold
@@ -573,8 +573,8 @@ papers we hold
 \begin{table}[t]
 \centering\small
 \caption{Two rules of the previous algorithm are false; the free move, the memo and the
-repaired definite move are known pathwidth results; the subset rule, the
-repaired better move and the old move, like the matching test, are proved here.
+corrected definite move are known pathwidth results; the subset rule, the
+corrected better move and the old move, like the matching test, are proved here.
 Each rule of the customer search against the exact-pathwidth literature.}
 \label{tab:known}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright}p{3.2cm}>{\raggedright}X>{\raggedright\arraybackslash}p{4.1cm}@{}}
@@ -586,11 +586,11 @@ better move, previous algorithm & none found & false \\
 \midrule
 free move & full sets \citep{SuchanVillanger2009}; \citet[Prop.~3]{Kitsunai2016} & known \\
 definite move, $\open\le1$ & depth-one commitments; greedy step; push rule & known \\
-definite move, repaired & commitment lemma \citep[Lemma~1]{Kitsunai2016} & known; matching test (Thm~\ref{thm:matching}) not found \\
+definite move, corrected & commitment lemma \citep[Lemma~1]{Kitsunai2016} & known; matching test (Thm~\ref{thm:matching}) not found \\
 memo & subset DP \citep{Bodlaender2012}; prefix and failure tables & known; with the old move, proved here (Thm~\ref{thm:runs}) \\
 \midrule
 subset rule & none found & proved here \\
-better move, repaired & none found & proved here \\
+better move, corrected & none found & proved here \\
 old move & none found & proved here \\
 \bottomrule
 \end{tabularx}

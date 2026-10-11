@@ -7,9 +7,9 @@
 \section{Computational results and a dataset}
 \label{sec:results}
 
-Section~\ref{sec:search} proved our repaired search sound. This section asks
+Section~\ref{sec:search} proved our corrected search sound. This section asks
 four practical questions about it and answers each with a measurement. What
-does the repair cost? Under the repaired rules, the total number of search
+does the repair cost? Under our corrected rules, the total number of search
 nodes over each benchmark set changes by at most 2\%. Do the published
 benchmark optima survive? All 115 that rested on the previous algorithm were
 proved again, and none changed. Can a reader check a refutation without
@@ -27,7 +27,7 @@ memory under Ubuntu Linux. Both searches, the open-stacks customer search and
 its port to graphs, are written in C, compiled with gcc 15.2 using the
 flags \texttt{-O3} and \texttt{-march=native}, and driven from Python~3.12. A Python implementation of the
 same rules serves as a reference for cross-checks and emits the certificates
-of Section~\ref{sec:certs}. The repaired tests are the default in every
+of Section~\ref{sec:certs}. The corrected tests are the default in every
 implementation; the tests of the previous algorithm remain available as an option. The C
 implementation handles components of at most 1,024 vertices; 154 classes of
 the dataset of Section~\ref{sec:dataset} are larger.
@@ -39,7 +39,7 @@ the search, the unit in which we report effort. Up to 32 workers ran at
 once on the machine, so wall-clock times carry load noise. We therefore
 compare node counts and report time only in core-hours. A \emph{pair} runs
 the same question twice in the same worker, once under the previous algorithm
-and once under the repaired rules, alternating which goes first. A
+and once under our corrected rules, alternating which goes first. A
 \emph{descent} solves a whole graph: it lowers $k$ from an upper bound until a
 refutation proves the last value optimal. Each table states its time or node
 budget.
@@ -79,19 +79,19 @@ Section~\ref{sec:practice}).
 \subsection{The cost of the repair, and the benchmark values}
 \label{sec:practice}
 
-Our repaired search adds one matching test to the definite move and to the
+Our corrected search adds one matching test to the definite move and to the
 better move (Section~\ref{sec:definite}). A candidate that fails the matching
-is passed over, so the repaired tree can only differ where the matching fails.
+is passed over, so the corrected tree can only differ where the matching fails.
 Table~\ref{tab:cost} shows how rarely that matters.
 
 \begin{table}[t]
 \centering\small
 \caption{The repair never changed an answer and changes the total node count
 by at most 2\%. Each pair runs the same question under the previous algorithm and under the
-repaired rules in one worker. Totals are over the pairs that finished under
+corrected rules in one worker. Totals are over the pairs that finished under
 both rules; a pair stopped by its budget says nothing about cost.
 \emph{Vertices}: customers in the open-stacks rows (the vertices of $G_M$).
-\emph{Largest pair ratio}: the largest ratio of repaired to previous nodes
+\emph{Largest pair ratio}: the largest ratio of corrected to previous nodes
 over single pairs. Open-stacks pairs refute the optimum minus one, at 600\,s per
 call at 50--100 customers and $2\times10^8$ nodes at 125. The graph pairs run
 whole descents on VSPLIB, the colouring and named graphs, and a sample of 500
@@ -100,27 +100,27 @@ Rome graphs.}
 \resizebox{\linewidth}{!}{\input{tables/cost}}
 \end{table}
 
-In every row of Table~\ref{tab:cost} our repaired search and the previous algorithm gave
+In every row of Table~\ref{tab:cost} our corrected search and the previous algorithm gave
 the same answer, and the total node counts differ by at most 2\%. Single
 open-stacks pairs differ by at most 4\%. The cost per node is also small: about 2\% in the C
 implementation, measured on six hard instances at 75 to 125 customers. The
 published test passes and the matching then fails on only 0.07--0.27\% of
 definite-move candidates, a rate that rises with size.
 
-\paragraph{Graph benchmarks.} Ported to graphs, the repaired search is an
+\paragraph{Graph benchmarks.} Ported to graphs, our corrected search is an
 exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the
 11,915 graph benchmarks it was run on, beside the run of the previous
 algorithm under the same caps and the published counts of
 \citet{CoudertMazauricNisse2016}. Where both runs prove a graph, the widths
-agree on every one. The 24 Rome graphs proved only by the repaired run, and the
+agree on every one. The 24 Rome graphs proved only by the corrected run, and the
 13 proved only by the previous one, sit near the 600\,s cap. The comparison with
 \citet{CoudertMazauricNisse2016} is with published numbers obtained on other
 hardware, not a head-to-head run.
 
 \begin{table}[t]
 \centering\small
-\caption{The repaired search as a pathwidth solver. Graphs whose pathwidth it
-proves, under the repaired rules and under the previous algorithm with the same
+\caption{Our corrected search as a pathwidth solver. Graphs whose pathwidth it
+proves, under our corrected rules and under the previous algorithm with the same
 caps (Rome: 10, 120 and 600\,s in stages), and the published counts of
 \citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
 graphs proved by both runs with different widths.}
@@ -129,7 +129,7 @@ graphs proved by both runs with different widths.}
 \end{table}
 
 \paragraph{The benchmark values survive.} No published optimum changed under
-the repaired rules. Of the 6,374 values certified before this work, 6,259 do
+our corrected rules. Of the 6,374 values certified before this work, 6,259 do
 not depend on the customer search at all. Each was proved in one of four ways:
 \begin{itemize}
 \item by an exhaustive computation over all subsets of customers (up to 15
@@ -141,7 +141,7 @@ not depend on the customer search at all. Each was proved in one of four ways:
 \item or by a lower bound equal to the value.
 \end{itemize}
 The other 115 rested on the customer search
-of the previous algorithm. Our repaired search refuted the value minus one on
+of the previous algorithm. Our corrected search refuted the value minus one on
 all 115, so all 115 values stand.
 
 The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
@@ -187,7 +187,7 @@ yet a formal proof.
 \begin{table}[t]
 \centering\small
 \caption{Every certificate the search emitted verifies, none is rejected, and
-checking takes milliseconds. Certificates for the repaired rules, configuration
+checking takes milliseconds. Certificates for our corrected rules, configuration
 with better move, refuting the optimum minus one on the certified MOSP corpus
 at 9--75 customers, with 60\,s to emit each. \emph{Not emitted}: the emitter
 did not finish in time. Size is the compressed certificate; check time is the
@@ -265,7 +265,7 @@ dataset. It re-reads all 20,987 member files with its own readers, maps each
 onto its record's graph by its renaming, recomputes the width of every witness
 layout and replays every minor certificate. It reports no failure on the
 16,949 records. A value certified by search cannot be checked from its record;
-it rests on our repaired search, and for instances within reach of the emitter
+it rests on our corrected search, and for instances within reach of the emitter
 the certificate of Section~\ref{sec:certs} is how a third party can check it.
 
 \paragraph{Agreement with published values.} All 84 Small graphs agree with

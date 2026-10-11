@@ -12,12 +12,12 @@ comment which records it was made from.
                      used names (same source);
 - `communities.tex`  section 3: works citing the Linhares-Yanasse papers, by discipline cited
                      (same source, the citation cache of 2026-09-29);
-- `cost.tex`         section 4: nodes, repaired against published rules
+- `cost.tex`         section 4: nodes, corrected against published rules
                      (`paper1/data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv`);
 - `split.tex`        section 4: the re-certifications of the root split
                      (`paper1/data/solver_fix_split_{tasks,results}.csv`, read as they are now);
-- `certificates.tex` section 4: certificates under the repaired rules
-                     (`paper1/data/certificates/repaired.csv`);
+- `certificates.tex` section 4: certificates under our corrected rules
+                     (`paper1/data/certificates/corrected.csv`);
 - `dataset.tex`      section 4: the dataset by collection
                      (`paper1/data/dataset/classes.csv.gz`, `index.csv.gz`).
 """
@@ -163,7 +163,7 @@ def _mosp_pairs(stage: str, config: str):
         if len(v) < 2:
             continue
         total += 1
-        o, r = v["old"], v["repaired"]
+        o, r = v["old"], v["corrected"]
         if o["status"] in DONE and r["status"] in DONE:
             both += 1
             old += int(o["nodes"])
@@ -179,7 +179,7 @@ def _pw_pairs():
     total = both = old = rep = 0
     for i in range(0, len(rows), 2):
         a, b = rows[i], rows[i + 1]
-        assert {a["setting"], b["setting"]} == {"old", "repaired"}
+        assert {a["setting"], b["setting"]} == {"old", "corrected"}
         o, r = (a, b) if a["setting"] == "old" else (b, a)
         total += 1
         if o["proof"] in ("refutation", "bound") and r["proof"] in ("refutation", "bound"):
@@ -208,7 +208,7 @@ def cost_table() -> str:
     lines.append(f"\\quad VSPLIB, colouring, named, 500 Rome & 4--2{{,}}916 & {_n(both)} of {_n(total)} & "
                  f"{_n(old)} & {_n(rep)} & {rep / old:.3f} & -- \\\\")
     body = ["\\begin{tabular}{@{}llrrrrr@{}}", "\\toprule",
-            "Instances & Vertices & Pairs finished & Nodes, previous & Nodes, repaired & "
+            "Instances & Vertices & Pairs finished & Nodes, previous & Nodes, corrected & "
             "Total ratio & Largest pair ratio \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     return _write("cost.tex", "paper1/data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv", body)
 
@@ -256,7 +256,7 @@ BANDS = [(9, 10), (11, 20), (21, 30), (31, 40), (41, 50), (51, 60), (61, 75)]
 def certificates_table() -> str:
     """Seven columns, one configuration (`csearch`, "with better move") in the
     table; totals for both configurations in trailing comments."""
-    rows = list(csv.DictReader(open(DATA / "certificates" / "repaired.csv")))
+    rows = list(csv.DictReader(open(DATA / "certificates" / "corrected.csv")))
     med = lambda v: statistics.median(v) if v else 0  # noqa: E731
     lines = []
     for lo, hi in BANDS:
@@ -288,7 +288,7 @@ def certificates_table() -> str:
         body.append(f"% total {c}: {tot[(c, 'ok')]} of {tot[(c, 'n')]} verified, "
                     f"{tot[(c, 'rej')]} rejected, {tot[(c, 'gz')] / 1e6:.2f} MB gz, "
                     f"{tot[(c, 's')]:.1f} s, {tot[(c, 'nodes')]} nodes")
-    return _write("certificates.tex", "paper1/data/certificates/repaired.csv", body)
+    return _write("certificates.tex", "paper1/data/certificates/corrected.csv", body)
 
 
 # --- section 4: dataset ------------------------------------------------------

@@ -112,22 +112,24 @@ are exact, counting pathwidth itself: each equals pathwidth or pathwidth plus
 one. Two lie in bands one and two wide, and two are false as stated. We add
 three members the table missed, among them the maximum wavefront of sparse
 matrix elimination, which brings a fourth discipline, numerical linear algebra,
-into the family. Every relation is machine-checked in Lean. We call the
-cluster the \emph{pathwidth} complex because the literature uses that name more
-than three times as often as the other eleven names together; since 2005, the
+into the family. Every relation is machine-checked in Lean. We call this
+cluster the \emph{pathwidth complex} because the literature uses that name more
+than three times as often as the other eleven names together. Since 2005, the
 next most active name is MOSP. That community produced, by way of the 2005
 Constraint Modelling Challenge, the best exact algorithm for MOSP, the customer
 search of \citet{ChuStuckey2009}, which is also a pathwidth algorithm. We prove
 in Lean that two of its published dominance theorems are false, and on a
-34-customer instance the previous algorithm reports an optimum of 7 where the
-optimum is 6, which a SAT solver confirms with a checked DRAT proof. The
+34-customer instance the previous algorithm reports an optimum of 7, where our corrected
+search finds the optimum, 6, which a SAT solver confirms with a checked DRAT
+proof. The
 correct rule was already known for pathwidth; we test it with one bipartite
-matching per candidate and prove the repaired search sound. It costs at most
-2\% more search nodes on each benchmark set, re-proves all 115 benchmark optima
-that rested on the previous algorithm, changing none, and, ported to graphs,
-proves the pathwidth of 11,194 of the 11,534 Rome graphs. We release the
-proofs, both solvers and 17,714 benchmark graphs, distinct up to isomorphism,
-16,087 of them with a certified pathwidth, together with independent checkers.
+matching per candidate and prove our corrected search sound. We re-prove all
+115 benchmark optima that rested on the previous algorithm, changing none, and,
+ported to graphs, our corrected search proves the pathwidth of 11,194 of the
+11,534 Rome graphs. The proofs, both solvers and 17,714 benchmark graphs,
+distinct up to isomorphism, 16,087 of them with a certified pathwidth, are open
+source, together with independent checkers. We believe ours is currently the
+best pathwidth solver openly available.
 \end{abstract}
 
 \input{sec1_intro}

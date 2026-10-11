@@ -73,14 +73,14 @@ Entry & Result in the paper & Lean names \\
 \leanentry{dict3}{Table~\ref{tab:dictionary}: $\cost(T,c)$} \leannames{stepCost_eq_card_boundary_add_one} \\
 \leanentry{dict4}{Table~\ref{tab:dictionary}: $\Sol_k(\emptyset)$} \leannames{searchSol_empty_iff_pathwidth_add_one_le} \\
 \leanentry{dict5}{Table~\ref{tab:dictionary}: free closure $\cl(T)$} \leannames{mem_cl_iff} \\
-\leanentry{dict6}{Table~\ref{tab:dictionary}: definite move, repaired} \leannames{isHereditarilyDefinite_iff_isCommittable} \\
+\leanentry{dict6}{Table~\ref{tab:dictionary}: definite move, corrected} \leannames{isHereditarilyDefinite_iff_isCommittable} \\
 \leanentry{premise}{Lemma~\ref{lem:premise}, what the premise says} \leannames{closeCount_eq, isDefinite_iff} \\
 \leanentry{cex}{Counterexample~\ref{cex:definite}} \leannames{definiteMove_counterexample, cexFamily_closed} \\
 \leanentry{thm1false}{Chu and Stuckey's Theorem~1 (the definite move), under both readings, and Chu's Theorem~6.3.6 are false} \leannames{chuStuckey_theorem1_false, chuStuckey_theorem1_false_literal, chuThesis_theorem636_false} \\
 \leanentry{fink}{Fink's restatement of the definite move is false} \leannames{fink_theorem1_false} \\
 \leanentry{hered}{The hereditarily definite premise, and its failure in Counterexample~\ref{cex:definite}} \leannames{IsHereditarilyDefinite, not_isHereditarilyDefinite_cex} \\
 \leanentry{submod}{Lemma~\ref{lem:submod}, open stacks are submodular} \leannames{openStacks_submodular} \\
-\leanentry{repaired}{Theorem~\ref{thm:repaired}, the repaired definite move is sound} \leannames{solvable_cl_insert_of_hereditarilyDefinite, searchSol_cl_insert_of_hereditarilyDefinite} \\
+\leanentry{repaired}{Theorem~\ref{thm:repaired}, the corrected definite move is sound} \leannames{solvable_cl_insert_of_hereditarilyDefinite, searchSol_cl_insert_of_hereditarilyDefinite} \\
 \leanentry{matching}{Theorem~\ref{thm:matching}, the repair is a matching condition} \leannames{isHereditarilyDefinite_iff_hasDefiniteMatching} \\
 \leanentry{open1}{The published definite move is right when $\open(q,S)\le1$} \leannames{isHereditarilyDefinite_of_openCount_le_one} \\
 \leanentry{subset}{The subset rule is sound} \leannames{searchSol_cl_insert_of_newlyOpened_subset, subsetFilter_sound} \\
@@ -88,14 +88,14 @@ Entry & Result in the paper & Lean names \\
 \leanentry{isbetter}{The better move's premise, restated} \leannames{isBetter_iff} \\
 \leanentry{bettercex}{Chu and Stuckey's Theorem~2 (the better move) is false} \leannames{betterMove_counterexample, chuStuckey_theorem2_false} \\
 \leanentry{thm638}{Chu's Theorem~6.3.8 is false} \leannames{chuThesis_theorem638_false, chuThesis_theorem638_false_literal} \\
-\leanentry{repbetter}{The repaired better move is sound} \leannames{IsRepairedBetter, searchSol_cl_insert_of_repairedBetter} \\
+\leanentry{repbetter}{The corrected better move is sound} \leannames{IsRepairedBetter, searchSol_cl_insert_of_repairedBetter} \\
 \leanentry{bugs}{The better move's two requirements: the close count and the rule order} \leannames{bugA_counterexample, bugB_counterexample} \\
 \leanentry{oldmove}{The old move is sound} \leannames{searchSol_reinsert, not_searchSol_of_oldMove} \\
 \leanentry{reinsert}{The old move needs its reinsertion test (path on five vertices)} \leannames{reinsert_needs_test} \\
 \leanentry{memo}{Solvability of a state does not depend on the path to it (the memo)} \leannames{solvable_iff_of_cl_eq} \\
 \leanentry{fakeold}{A node with an unrefuted old move can record a solvable state} \leannames{exec_fake_oldMove} \\
 \leanentry{nodesound}{Node-soundness of a filter (Section~\ref{sec:theorem})} \leannames{NodeSoundAt} \\
-\leanentry{main}{Theorem~\ref{thm:main}, the repaired search is sound} \leannames{exec_repairedFullFilter_sound, exec_repairedFullFilter_pathwidth, exec_repairedFullFilter_mospValue} \\
+\leanentry{main}{Theorem~\ref{thm:main}, our corrected search is sound} \leannames{exec_repairedFullFilter_sound, exec_repairedFullFilter_pathwidth, exec_repairedFullFilter_mospValue} \\
 \leanentry{notsound}{Under the previous algorithm the filter is not node-sound} \leannames{not_codeFilterSound_cexGraph} \\
 \leanentry{endpoint}{Lemma~\ref{lem:endpoint}, the premises as commitment conditions} \leannames{isDefinite_iff_endpoint, isHereditarilyDefinite_iff_isCommittable} \\
 \leanentry{cexnotcommit}{In Counterexample~\ref{cex:definite} the endpoint test passes and the commitment fails} \leannames{cex_isDefinite_not_isCommittable} \\
@@ -113,7 +113,7 @@ Entry & Result in the paper & Lean names \\
 \leanentry{pebbling}{Progressive pebbling is in the exact core (Appendix~\ref{app:thirteenth})} \leannames{pbw_lengauerD_eq_pathwidth, pbw_eq_mospValue_pebbleMatrix, mpb_eq_pathwidth_add_one} \\
 \leanentry{vsearch}{The vertex search is in the exact core (Appendix~\ref{app:thirteenth})} \leannames{vertexSearchNumber_eq_pathwidth_add_one, monotoneVertexSearchNumber_eq_pathwidth_add_one, isNodeSearch_of_isSuccessfulVertexSearch, vertexSearchNumber_eq_nodeSearch, vertexSearchNumber_of_isEmpty} \\
 \leanentry{wavefront}{The maximum wavefront is in the exact core (Appendix~\ref{app:thirteenth})} \leannames{card_wavefront, maxWavefront_eq_vertexSepOfLayout_add_one, minMaxWavefront_eq_pathwidth_add_one, minMaxWavefront_eq_narrowness, minMaxWavefront_of_isEmpty} \\
-\leanentry{filter}{Proposition~\ref{prop:filter}, the repaired filter is node-sound} \leannames{repairedFullFilter_sound} \\
+\leanentry{filter}{Proposition~\ref{prop:filter}, the corrected filter is node-sound} \leannames{repairedFullFilter_sound} \\
 \leanentry{runs}{Theorem~\ref{thm:runs}, runs are sound} \leannames{Exec.sound} \\
 \leanentry{encoding}{Appendix~\ref{app:sat}, the SAT formulation is faithful (clauses 1--4)} \leannames{encodes_iff_mospValue_le} \\
 \end{longtable}

@@ -32,7 +32,7 @@ patterns, with each customer's open stack shaded in order A; order A keeps at
 most 3 stacks open and order B at most 5, and only 2 of the 24 orders reach 3.
 (b, c) The same matrix as a gate matrix layout: the same two orders need 3 and
 5 tracks (the shaded gate is where the density peaks). (d) The same matrix as a
-graph, one clique per pattern: the open sets of order A are the bags of a path
+\emph{graph}, one clique per pattern: the open sets of order A are the bags of a path
 decomposition of width 2, so the optimum is the pathwidth plus one
 (Theorem~\ref{thm:mosp}).}
 \label{fig:example}
@@ -216,7 +216,7 @@ source we hold states it.
   MOSP, and the best exact search for the whole family came from that
   community, by way of the 2005 Constraint Modelling Challenge
   (Section~\ref{sec:names}).
-\item \emph{A repaired search, and a pathwidth solver.} The best exact
+\item \emph{Our corrected search, and a pathwidth solver.} The best exact
   algorithm for MOSP, the customer search of \citet{ChuStuckey2009}, is also a
   pathwidth algorithm. We prove in Lean that two of its published dominance
   theorems are false, as are their later restatements
@@ -226,12 +226,12 @@ source we hold states it.
   a SAT solver confirms with a DRAT proof checked by drat-trim. The correct
   rule was already known in the exact pathwidth literature; we show that it
   can be tested by one bipartite matching per candidate, and prove the
-  repaired search sound. Over each benchmark set it changes the total number of
+  corrected search sound. Over each benchmark set it changes the total number of
   search nodes by at most 2\%. Ported to graphs, it proves the pathwidth of
   11,194 of the 11,534 Rome graphs within 600 seconds each, all 50 VSPLIB trees
   and 39 of the 73 Harwell--Boeing graphs (Sections~\ref{sec:search}
   and~\ref{sec:results}).
-\item \emph{Benchmarks re-certified, and a dataset.} Our repaired search
+\item \emph{Benchmarks re-certified, and a dataset.} Our corrected search
   re-proved all 115 benchmark optima that rested on the previous algorithm, and
   none changed (as of 9 October 2026). We release 17,714 graphs, distinct up to
   isomorphism, from twenty benchmark collections of the twelve problems; 16,087
@@ -243,7 +243,7 @@ source we hold states it.
 problems and proves what is true. Section~\ref{sec:names} measures which names
 and communities the literature uses. Section~\ref{sec:search} reads the exact
 open-stacks search as a pathwidth algorithm, finds the two false rules and
-proves our repaired search sound. Section~\ref{sec:results} reports its cost
+proves our corrected search sound. Section~\ref{sec:results} reports its cost
 and the dataset, and Section~\ref{sec:closing} answers the question above.
 Every theorem we state is machine-checked in the Lean~4 proof assistant. The
 reader need not read Lean: each proof is given or cited in the text, and
