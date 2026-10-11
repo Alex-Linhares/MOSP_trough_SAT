@@ -8,11 +8,14 @@
 \label{sec:results}
 
 Section~\ref{sec:search} proved our corrected search sound. This section asks
-four practical questions about it and answers each with a measurement. What
-does the repair cost? Under our corrected rules, the total number of search
-nodes over each benchmark set changes by at most 2\%. Do the published
-benchmark optima survive? All 115 that rested on the previous algorithm were
-proved again, and none changed. Can a reader check a refutation without
+five practical questions about it and answers each with a measurement. What
+does our correction cost? At most 2\% more search nodes over each benchmark
+set. Do the published
+benchmark optima survive? All 115 that rested on the previous algorithm
+\citep{ChuStuckey2009} were proved again, and none changed. How good a
+pathwidth solver is it? On every benchmark set with published exact counts it
+proves as many or more graphs than the published branch and bound, and it is
+faster on each of the fourteen graphs whose times are published. Can a reader check a refutation without
 trusting our code? Yes, up to about 75 customers, through a certificate and an
 independent checker. Finally, what does it make possible? A dataset of 17,714
 graphs from twenty benchmark collections. For 16,087 of them the pathwidth is
@@ -27,7 +30,7 @@ memory under Ubuntu Linux. Both searches, the open-stacks customer search and
 its port to graphs, are written in C, compiled with gcc 15.2 using the
 flags \texttt{-O3} and \texttt{-march=native}, and driven from Python~3.12. A Python implementation of the
 same rules serves as a reference for cross-checks and emits the certificates
-of Section~\ref{sec:certs}. The corrected tests are the default in every
+of Section~\ref{sec:certs}. Our corrected tests are the default in every
 implementation; the tests of the previous algorithm remain available as an option. The C
 implementation handles components of at most 1,024 vertices; 154 classes of
 the dataset of Section~\ref{sec:dataset} are larger.
@@ -76,7 +79,7 @@ Of the 6,376 corpus values, 6,375 are certified and one is an upper bound only
 (as of 9 October 2026; the 6,375th was certified by the split search of
 Section~\ref{sec:practice}).
 
-\subsection{The cost of the repair, and the benchmark values}
+\subsection{The cost of our correction, and the benchmark values}
 \label{sec:practice}
 
 Our corrected search adds one matching test to the definite move and to the
@@ -86,8 +89,8 @@ Table~\ref{tab:cost} shows how rarely that matters.
 
 \begin{table}[t]
 \centering\small
-\caption{The repair never changed an answer and changes the total node count
-by at most 2\%. Each pair runs the same question under the previous algorithm and under the
+\caption{Our correction never changed an answer and costs at most 2\% more
+nodes in total. Each pair runs the same question under the previous algorithm and under the
 corrected rules in one worker. Totals are over the pairs that finished under
 both rules; a pair stopped by its budget says nothing about cost.
 \emph{Vertices}: customers in the open-stacks rows (the vertices of $G_M$).
@@ -107,27 +110,6 @@ implementation, measured on six hard instances at 75 to 125 customers. The
 published test passes and the matching then fails on only 0.07--0.27\% of
 definite-move candidates, a rate that rises with size.
 
-\paragraph{Graph benchmarks.} Ported to graphs, our corrected search is an
-exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the
-11,915 graph benchmarks it was run on, beside the run of the previous
-algorithm under the same caps and the published counts of
-\citet{CoudertMazauricNisse2016}. Where both runs prove a graph, the widths
-agree on every one. The 24 Rome graphs proved only by the corrected run, and the
-13 proved only by the previous one, sit near the 600\,s cap. The comparison with
-\citet{CoudertMazauricNisse2016} is with published numbers obtained on other
-hardware, not a head-to-head run.
-
-\begin{table}[t]
-\centering\small
-\caption{Our corrected search as a pathwidth solver. Graphs whose pathwidth it
-proves, under our corrected rules and under the previous algorithm with the same
-caps (Rome: 10, 120 and 600\,s in stages), and the published counts of
-\citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
-graphs proved by both runs with different widths.}
-\label{tab:graphs}
-\resizebox{\linewidth}{!}{\input{tables/graphs}}
-\end{table}
-
 \paragraph{The benchmark values survive.} No published optimum changed under
 our corrected rules. Of the 6,374 values certified before this work, 6,259 do
 not depend on the customer search at all. Each was proved in one of four ways:
@@ -142,7 +124,8 @@ not depend on the customer search at all. Each was proved in one of four ways:
 \end{itemize}
 The other 115 rested on the customer search
 of the previous algorithm. Our corrected search refuted the value minus one on
-all 115, so all 115 values stand.
+all 115, so all 115 values stand. They are 115 benchmark entries on 113
+distinct graphs: SP3 and SP4 are each stored twice.
 
 The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
 and 4. They are too large for one worker, so their search was split:
@@ -161,6 +144,44 @@ certifies 21 as its optimum; it is the largest refutation in this paper. For
 \texttt{Random-125-125-2-2\_0} it has refuted 7,217 subtrees so far, using
 about 1,150 core-hours, and found no order of 24 stacks. If it finishes, it
 certifies 25; an order of 24 would improve the stored value instead.
+
+\subsection{Our corrected search as a pathwidth solver}
+\label{sec:pwsolver}
+
+Ported to graphs, our corrected search is an exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the
+11,915 graph benchmarks it was run on, beside the run of the previous
+algorithm under the same caps and the published counts of
+\citet{CoudertMazauricNisse2016}. Where both runs prove a graph, the widths
+agree on every one. The 24 Rome graphs proved only by the corrected run, and the
+13 proved only by the previous one, sit near the 600\,s cap. The comparison with
+\citet{CoudertMazauricNisse2016} is with published numbers obtained on other
+hardware, not a head-to-head run. On the fourteen colouring graphs whose times
+\citet[Table~4]{CoudertMazauricNisse2016} report, our search proves the same
+pathwidth and is faster on every one: by 150 to 1,800 times on \texttt{david},
+\texttt{miles750} and \texttt{mulsol.i.5}, by 70 to 80 times on
+\texttt{miles1000} and \texttt{zeroin.i.1}, and by 1.4 to 10 times on the
+other nine, where a hardware difference could account for the margin. It also
+proves \texttt{queen11\_11} (pathwidth 87) in 37\,s and \texttt{queen12\_12}
+(103) in 391\,s, beyond their table, and \texttt{fpsol2.i.1} (496 vertices,
+pathwidth 67) in 5.7\,s, against 323\,s for
+\citet{KobayashiKomuroTamaki2014}. One graph goes the other way: the
+Mycielski graph $M_7$ (\texttt{myciel6}, 95 vertices, pathwidth 38), which
+their tuned branch and bound proves in about ten minutes; our search reaches
+width 38 and has not refuted 37 within 25 minutes, because its lower bound
+there is 25. Their branch and bound is openly available in SageMath, and a
+head-to-head run on one machine is the comparison that would settle the
+question; we have not yet made it.
+
+\begin{table}[t]
+\centering\small
+\caption{Our corrected search as a pathwidth solver. Graphs whose pathwidth it
+proves, under our corrected rules and under the previous algorithm with the same
+caps (Rome: 10, 120 and 600\,s in stages), and the published counts of
+\citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
+graphs proved by both runs with different widths.}
+\label{tab:graphs}
+\resizebox{\linewidth}{!}{\input{tables/graphs}}
+\end{table}
 
 \subsection{A checkable proof of a refutation}
 \label{sec:certs}

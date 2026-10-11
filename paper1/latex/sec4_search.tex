@@ -20,25 +20,26 @@ dominance rules. Three of the rules are stated as theorems (their Theorems~1,
 place MOSP among ``graph path-width and gate matrix layout'', citing
 \citet{LY2002}, but they do not use pathwidth in the search. Any graph is the
 MOSP graph of the instance with one customer per vertex and one pattern per
-edge, so the search decides pathwidth for every graph, and ported to graphs it
-is an exact pathwidth solver (Sections~\ref{sec:names} and~\ref{sec:results}).
+edge, so the search decides pathwidth for every graph, and ported to graphs,
+our corrected search is an exact pathwidth solver, which we release (Sections~\ref{sec:names} and~\ref{sec:results}).
 
 The stakes are these. Two of the published dominance theorems, the
 \emph{definite move} and the \emph{better move}, are false, and so are their
 restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
 \citet{Fink2012}. The error is hard to make bite: on every benchmark the
-previous algorithm answers correctly, and the first whole instance on which it
+previous algorithm, the search as \citet{ChuStuckey2009} publish it, answers
+correctly, and the first whole instance on which it
 reports a wrong optimum has 34 customers and needs the old move to pass a
-false refutation on to later branches (Figure~\ref{fig:wrong}). And when every
-benchmark optimum that rested on the search was proved again with corrected
-rules, no value changed (Section~\ref{sec:results}). The correct form of the
-definite move was already known for pathwidth, as Tamaki's commitment lemma,
+false refutation on to later branches (Figure~\ref{fig:wrong}). And when we proved
+every benchmark optimum that rested on the search again with our corrected
+rules, no value changed (Section~\ref{sec:results}). Our corrected definite
+move was also found by Tamaki, as the commitment lemma \citep[Lemma~1]{Kitsunai2016},
 which says when an exact pathwidth search may commit to one extension of a
 vertex set and try no other (Section~\ref{sec:layouts}). We
 show that it can be tested by one small bipartite matching per candidate. The
 main result, Theorem~\ref{thm:main}, says informally: \emph{with both rules
 corrected, the search is sound; whenever it answers that $k$ stacks do not
-suffice, they do not, and the graph has pathwidth at least $k$.} The repair
+suffice, they do not, and the graph has pathwidth at least $k$.} Our correction
 costs at most 2\% more search nodes on each benchmark set
 (Section~\ref{sec:results}).
 
@@ -216,7 +217,7 @@ branch and bound. Neither line cites the other in the papers we hold:
 of the pathwidth papers cites it. This is the isolation measured in
 Table~\ref{tab:communities}, at the level of one algorithm.
 
-\subsection{The definite move is false as published, and its repair is a matching}
+\subsection{The definite move is false as published, and its correction is a matching test}
 \label{sec:definite}
 
 The definite move is the strongest of the rules, since when it fires it
@@ -293,13 +294,13 @@ already closed no longer count as closed by $q$, while the stacks $q$ opens may
 still be new. Appendix~\ref{app:whyfails} gives the full analysis, and
 Appendix~\ref{app:minimality} the search for smaller counterexamples.
 
-\paragraph{The repair.} The fix is to require the comparison at every set
+\paragraph{The correction.} We require the comparison at every set
 between the two ends, not only at $S$. Call $q$ \emph{hereditarily definite} at
 $S$ when $b(X)\le b(B)$ for every $B$ with $S\subseteq B\subseteq X$ and
 $q\notin B$. By Lemma~\ref{lem:premise}, the published premise is the case
-$B=S$. In the counterexample the repair fails at $B=\{2,3,4\}$
+$B=S$. In the counterexample the hereditary condition fails at $B=\{2,3,4\}$
 (Figure~\ref{fig:cex}(b)), where
-$b(B)=2<3=b(X)$~\leanref{hered}. The proof that the repair is sound needs one
+$b(B)=2<3=b(X)$~\leanref{hered}. The proof that the corrected rule is sound needs one
 inequality.
 
 \begin{lemma}[open stacks are submodular]\label{lem:submod}
@@ -325,31 +326,31 @@ $j-1$ the closed set contains $T_j$ with the same opened set, and the rest of
 the order applies. The search's form follows by Lemma~\ref{lem:F}.
 \end{proof}
 
-This theorem is not new. The hereditary premise is the commitment condition of
-Tamaki, and the proof is the proof of the commitment lemma,
+Tamaki also found this theorem, as a lemma. The hereditary premise is the
+commitment condition of Tamaki, and the proof is the proof of the commitment lemma,
 \citet[Lemma~1, p.~142]{Kitsunai2016}; Section~\ref{sec:layouts} makes the
 correspondence exact.
 
 \paragraph{The matching test.} The corrected rule seems to require checking
-exponentially many intermediate sets. It does not, and this cheap test is the
-algorithmic contribution of the section; we did not find it in the papers we
+exponentially many intermediate sets. It does not, and this cheap test is our
+algorithmic contribution in this section; we did not find it in the papers we
 hold. In words: the rule is safe exactly when all but one of the new stacks
 can be paired with a different freed customer who needed it. In the
 counterexample, closing 0 opens three new stacks and frees 3 and 4, both of
 whom needed only stack 0: one pairing where two are required.
 
-\begin{theorem}[the repair is a matching condition]\label{thm:matching}
+\begin{theorem}[the corrected premise is a matching condition]\label{thm:matching}
 Let $Y=X\setminus(S\cup\{q\})$, and join each $d\in Y$ to the stacks of
 $o(d,S)\subseteq o(q,S)$. Then $q$ is hereditarily definite at $S$ iff this
 bipartite graph has a matching with at least $\open(q,S)-1$ edges~\leanref{matching}.
 \end{theorem}
 \begin{proof}
-The sets of the repair are $B=S\cup D$, $D\subseteq Y$, and
+The sets of the hereditary condition are $B=S\cup D$, $D\subseteq Y$, and
 $b(X)\le b(S\cup D)$ iff $|D|-|o(D)|\le\delta$ with
 $\delta=|Y|+1-\open(q,S)$, where $o(D)$ is the union of the $o(d,S)$. By the
 deficiency form of Hall's theorem the largest matching has size
 $|Y|-\max_D(|D|-|o(D)|)$, which is at least $|Y|-\delta=\open(q,S)-1$ exactly
-when the repair holds.
+when the hereditary condition holds.
 \end{proof}
 
 The bipartite graph has at most $\close-1$ customers on one side and $\open$
@@ -397,7 +398,7 @@ p.~143]{Chu2011} states the better move with a different premise,
 $\close(q,S)\ge\open(q,S\cup\{r\})$, and proves it through his Theorem~6.3.6.
 The same graph refutes it at $S=\{2\}$, $r=3$, $q=0$~\leanref{thm638}.
 
-\emph{Repair and test.} Cite $q$ for $r$ only if $q$ is hereditarily definite
+\emph{Correction and test.} Cite $q$ for $r$ only if $q$ is hereditarily definite
 at $\cl(S\cup\{r\})$, which is one matching at the child
 (Theorem~\ref{thm:matching}); then the swap argument goes
 through~\leanref{repbetter}.
@@ -545,7 +546,7 @@ $b(X)=3=b(S)$, while the interior set $\{2,3,4\}$ has border
 commitment to the least-border set between $S$ and $X$, which need not contain
 $q$~\leanref{existscommit}. In the counterexample that set is
 $\{2,3,4\}$~\leanref{commit234}. Committing there when the matching fails is a
-second repair that gives up no pruning; we have not built it.
+second correction, which gives up no pruning; we have not built it.
 
 A commitment of depth one, $S$ to $S\cup\{q\}$, holds iff
 $\open(q,S)\le1$~\leanref{depth1}. The greedy step of

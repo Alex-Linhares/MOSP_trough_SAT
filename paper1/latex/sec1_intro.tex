@@ -21,7 +21,7 @@ $P_1=\{a,b\}$, $P_2=\{b,c,d\}$, $P_3=\{c,d,e\}$ and $P_4=\{e,f\}$. Made in
 order A, $P_1P_2P_3P_4$, the patterns keep at most 3 stacks open. Made in order
 B, $P_1P_3P_4P_2$, they keep 5 open, because customer $b$ is served first but
 waits for $P_2$, which comes last. Of the 24 orders, 2 reach 3 (order A and its
-reverse), 16 give 4 and 6 give 5. MOSP is NP-hard
+reverse), 16 give 4 and 6 give 5. We showed MOSP to be NP-hard
 \citep{Linhares2001,LY2002}.
 
 \begin{figure}[tbp]
@@ -222,18 +222,20 @@ source we hold states it.
   theorems are false, as are their later restatements
   \citep{Chu2011,Fink2012}: each can discard the last solution at a node. On
   every benchmark the previous algorithm happens to answer correctly, but on a
-  34-customer instance it reports an optimum of 7 where the optimum is 6, which
-  a SAT solver confirms with a DRAT proof checked by drat-trim. The correct
-  rule was already known in the exact pathwidth literature; we show that it
-  can be tested by one bipartite matching per candidate, and prove the
-  corrected search sound. Over each benchmark set it changes the total number of
-  search nodes by at most 2\%. Ported to graphs, it proves the pathwidth of
-  11,194 of the 11,534 Rome graphs within 600 seconds each, all 50 VSPLIB trees
-  and 39 of the 73 Harwell--Boeing graphs (Sections~\ref{sec:search}
-  and~\ref{sec:results}).
+  34-customer instance our implementation of it, with the better move off,
+  reports an optimum of 7 where the optimum is 6, which a SAT solver confirms
+  with a DRAT proof checked by drat-trim. Our corrected rule was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016},
+  in the exact pathwidth literature; we show that it can be tested by one
+  bipartite matching per candidate, and prove our corrected search sound. It
+  costs at most 2\% more search nodes over each benchmark set. Ported to
+  graphs, it is an exact pathwidth solver, which we release: it proves the
+  pathwidth of 11,194 of the 11,534 Rome graphs within 600 seconds each, all 50
+  VSPLIB trees and 39 of the 73 Harwell--Boeing graphs, as many or more on each
+  set than the published branch and bound of \citet{CoudertMazauricNisse2016}
+  (Sections~\ref{sec:search} and~\ref{sec:results}).
 \item \emph{Benchmarks re-certified, and a dataset.} Our corrected search
   re-proved all 115 benchmark optima that rested on the previous algorithm, and
-  none changed (as of 9 October 2026). We release 17,714 graphs, distinct up to
+  none changed. We release 17,714 graphs, distinct up to
   isomorphism, from twenty benchmark collections of the twelve problems; 16,087
   have a certified pathwidth with a layout that attains it, and so a certified
   value for every exact problem in the table (Section~\ref{sec:results}).
@@ -243,8 +245,8 @@ source we hold states it.
 problems and proves what is true. Section~\ref{sec:names} measures which names
 and communities the literature uses. Section~\ref{sec:search} reads the exact
 open-stacks search as a pathwidth algorithm, finds the two false rules and
-proves our corrected search sound. Section~\ref{sec:results} reports its cost
-and the dataset, and Section~\ref{sec:closing} answers the question above.
+proves our corrected search sound. Section~\ref{sec:results} reports what our
+corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} answers the question above.
 Every theorem we state is machine-checked in the Lean~4 proof assistant. The
 reader need not read Lean: each proof is given or cited in the text, and
 Appendix~\ref{app:lean} maps each result to its formal statement.
@@ -252,4 +254,5 @@ Appendix~\ref{app:machinery-all} holds the supporting material,
 Appendix~\ref{app:names} the bibliometric method, and the data,
 code and proofs are described at the end of the paper (page~\pageref{sec:data}).
 The Lean development, both solvers, the dataset and an independent checker for
-each are released with the paper.
+each are openly available, the code and proofs as open source under the MIT
+licence (page~\pageref{sec:data}).

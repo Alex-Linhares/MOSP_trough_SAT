@@ -17,8 +17,9 @@ although a variant of each is exact (Table~\ref{tab:master}). This is the
 sense in which the family is a pathwidth complex: its exact members are one
 quantity, and the literature names that quantity pathwidth. Moving between
 the problems paid twice. Read as a pathwidth algorithm, the best exact
-open-stacks search turned out to rest on two false dominance theorems, and the
-rule that corrects them was already known in the pathwidth literature. And one
+open-stacks search turned out to rest on two false dominance theorems; our
+corrected definite move was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016}, and with it and our corrected better
+move the search is sound. And one
 certified pathwidth answers every problem in the exact core at once, which is
 what made a single dataset for twelve problems possible, three of them
 problems the table did not list, one from a fourth discipline, numerical
@@ -40,7 +41,7 @@ one another, and most of what is known about the family is published under
 \paragraph{What the search teaches about dominance rules.} The two false
 theorems were published in 2009 and restated in later work, and the
 implementations that use them reported no failure. On every benchmark, and in
-every run of our checks where the previous algorithm lost the last solution at a
+every run of our checks where the previous algorithm \citep{ChuStuckey2009} lost the last solution at a
 node, another branch found a solution (Section~\ref{sec:theorem}). It took a
 search built for the purpose to find a whole instance with a wrong optimum,
 34 customers and one stack too many (Figure~\ref{fig:wrong}), in our
@@ -51,16 +52,19 @@ commitment lemma, beside the published one. Proving each rule on its own was
 not enough: the order in which the rules run matters, because a cycle of true
 links can still lose a node (Section~\ref{sec:theorem}). And a certificate
 whose checker recomputes every premise rejects the false refutation that a
-checker of the published premises accepts (Section~\ref{sec:certs}). The repair
-is cheap, one bipartite matching per candidate and at most 2\% more nodes per
-benchmark set, and it changed none of the 115
-benchmark optima it re-proved.
+checker of the published premises accepts (Section~\ref{sec:certs}). Our correction
+is cheap: one bipartite matching per candidate and at most 2\% more nodes per
+benchmark set. Our corrected search re-proved all 115 benchmark optima that
+rested on the previous algorithm, and changed none.
 
-\paragraph{What a reader can do differently.} Cite the corrected table,
+\paragraph{What a reader can do differently.} Cite our table as corrected here,
 Table~\ref{tab:master}, rather than the 2002 one. Look for results on MOSP and
 gate matrix layout under ``pathwidth''. Use our corrected search as an exact
-pathwidth solver: on the benchmarks with published exact pathwidth results it
-proves more graphs than reported (Table~\ref{tab:graphs}). And in any implementation of the rules
+pathwidth solver. On every benchmark set with published exact pathwidth counts
+it proves as many or more graphs than the published branch and bound of
+\citet{CoudertMazauricNisse2016} (Table~\ref{tab:graphs}). We believe it is
+currently the strongest exact pathwidth solver openly available, and it is open
+source. And in any implementation of the rules
 of \citet{ChuStuckey2009}, including the code behind the optima of
 \citet{Frinhani2018} that \citet{MartinYanassePinto2022} reuse
 (Appendix~\ref{app:prior}), replace the definite and better moves of the previous algorithm
@@ -83,7 +87,9 @@ to be wrong, but their refutations are not proved.
   (Section~\ref{sec:true}).
 \item The comparisons of the graph solver are with published numbers obtained
   on other hardware, not head-to-head runs, and only against
-  \citet{CoudertMazauricNisse2016}.
+  \citet{CoudertMazauricNisse2016}. On one graph they report, the Mycielski
+  graph $M_7$ (95 vertices, pathwidth 38), their tuned branch and bound proves
+  the pathwidth in about ten minutes, and our search did not within 25 minutes.
 \item The census of names covers the twelve names of the table; the three
   members we add, and the wider treewidth and pebbling literatures, are not
   counted (Section~\ref{sec:names}).

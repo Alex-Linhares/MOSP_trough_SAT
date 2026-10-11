@@ -21,8 +21,10 @@
 \label{sec:data}
 \addcontentsline{toc}{section}{Data, code and proofs}
 
-Everything this paper reports can be re-run from its repository,
-\fbox{\textbf{URL to be added on release}}, and most of it can be checked
+Our code, proofs and data are openly available at
+\url{https://github.com/Alex-Linhares/MOSP_trough_SAT}; the code and the proofs
+are open source under the MIT licence. Everything this paper reports can be
+re-run from there, and most of it can be checked
 without re-running. The Lean proofs check in one build. Witnesses, minor
 certificates and the 34-customer instance have independent checkers, and
 refutations up to about 75 customers carry certificates
@@ -32,11 +34,16 @@ still open (Section~\ref{sec:closing}). The repository holds:
 \begin{itemize}
 \item the Lean~4 development, with every theorem the paper names
   (Appendix~\ref{app:lean}) and an axiom check that covers all of them;
-\item the source of both solvers, the open-stacks customer search and the graph
-  pathwidth solver, in C and in Python, with the rules of the previous algorithm and the
-  corrected rules;
+\item the source of both our solvers, the open-stacks customer search and the
+  graph pathwidth solver, in C and in Python, with our corrected rules as the
+  default and the rules of the previous algorithm \citep{ChuStuckey2009} as an
+  option;
+\item the graph pathwidth solver as a standalone package
+  (\repofile{pathwidth_solver/}), with the scripts that produced
+  Table~\ref{tab:graphs} and the published values it is compared with;
 \item the dataset of Section~\ref{sec:dataset}, the certificates of
-  Section~\ref{sec:certs} and the independent checkers of both;
+  Section~\ref{sec:certs} and the independent checkers of both; the benchmark
+  graphs keep the terms of their original distributions;
 \item the 34-customer instance of Figure~\ref{fig:wrong}, with the optimum
   the previous algorithm reports and its order, an optimal order, and a checker
   that uses only the Python standard library

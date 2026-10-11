@@ -11,7 +11,8 @@ reader need not read Lean to follow the paper. This appendix is for a reader
 who wants to find the formal statement of a result: Table~\ref{tab:lean} maps
 each result, in the order in which it appears, to the names of the Lean
 declarations that state it. Where a row cites a definition rather than a
-theorem, it is the definition the text uses.
+theorem, it is the definition the text uses. Lean names use \texttt{repaired}
+for what the text calls \emph{corrected}.
 
 All the theorems named depend only on the three standard axioms of Lean's
 classical logic, \texttt{propext}, \texttt{Classical.choice} and
@@ -81,7 +82,7 @@ Entry & Result in the paper & Lean names \\
 \leanentry{hered}{The hereditarily definite premise, and its failure in Counterexample~\ref{cex:definite}} \leannames{IsHereditarilyDefinite, not_isHereditarilyDefinite_cex} \\
 \leanentry{submod}{Lemma~\ref{lem:submod}, open stacks are submodular} \leannames{openStacks_submodular} \\
 \leanentry{repaired}{Theorem~\ref{thm:repaired}, the corrected definite move is sound} \leannames{solvable_cl_insert_of_hereditarilyDefinite, searchSol_cl_insert_of_hereditarilyDefinite} \\
-\leanentry{matching}{Theorem~\ref{thm:matching}, the repair is a matching condition} \leannames{isHereditarilyDefinite_iff_hasDefiniteMatching} \\
+\leanentry{matching}{Theorem~\ref{thm:matching}, the corrected premise is a matching condition} \leannames{isHereditarilyDefinite_iff_hasDefiniteMatching} \\
 \leanentry{open1}{The published definite move is right when $\open(q,S)\le1$} \leannames{isHereditarilyDefinite_of_openCount_le_one} \\
 \leanentry{subset}{The subset rule is sound} \leannames{searchSol_cl_insert_of_newlyOpened_subset, subsetFilter_sound} \\
 \leanentry{tiebreak}{The subset rule needs its tie-break (7-customer graph)} \leannames{noTieBreak_counterexample} \\
