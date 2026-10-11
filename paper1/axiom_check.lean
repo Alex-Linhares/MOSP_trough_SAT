@@ -232,5 +232,10 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Complex.vertexSearchNumber_of_edgeless
 #print axioms MOSPFormalization.Complex.vertexSearchNumber_of_isEmpty
 
+-- paper1/false_refutation.md: the previous algorithm reports a wrong optimum on the 34-customer instance (Search/WrongOptimum.lean)
+#print axioms MOSPFormalization.Search.WrongOptimum.previousAlgorithm_wrong_optimum
+#print axioms MOSPFormalization.Search.WrongOptimum.not_filterSound_codeFilter
+#print axioms MOSPFormalization.Search.BitSearch.run_spec
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
