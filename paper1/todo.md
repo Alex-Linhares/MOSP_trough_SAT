@@ -39,6 +39,19 @@ Started 2026-10-09. Check items off as they are done.
       Garcia de la Banda & Stuckey (2007), already held, and the 19 papers to
       obtain listed in `literature/MISSING.md`.
 
+- [ ] **The solver claim: head-to-head against SageMath.** "Best" would hold
+      after a few hours of running SageMath's solver against ours on this
+      machine, which is better done once the split run finishes. SageMath's
+      `vertex_separation(algorithm="BAB")` is Coudert, Mazauric & Nisse's (2016)
+      branch and bound, the one openly available exact competitor of known
+      strength; run both on the same graphs (Rome sample, VSPLIB, TreewidthLIB
+      colouring, Mycielski), same caps. Until then the abstract's closing
+      sentence should read "strongest exact ... openly available", with the
+      published comparison, the hardware caveat and the Mycielski loss
+      (`myciel6` = M7, 95 vertices, pw 38: they prove it in about 10 minutes,
+      we do not in 1,500 s) printed in Section 5
+      (`abstract_nudge_review_2.md` §3).
+
 ## A replication notebook
 
 - [ ] **"This entire paper can be read and replicated on a Python (with C calls)
