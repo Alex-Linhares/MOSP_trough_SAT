@@ -139,7 +139,7 @@ reading, $f$ equals the number of open stacks plus one constant, the same on
 every input. Only the second makes solving one problem the same as solving
 another. We call the problems that are, on every input, pathwidth or
 pathwidth plus one the \emph{pathwidth complex}: most of the table, and three
-problems it missed. Pathwidth is the quantity through which every true relation
+problems we originally missed. Pathwidth is the quantity through which every true relation
 in the table is proved (Section~\ref{sec:equiv}), and it is the name the
 literature uses, more than three times as often as the other eleven names of
 the table together (Section~\ref{sec:names}); a reader who searches under
@@ -149,8 +149,8 @@ the Linhares--Yanasse table are true, and what follows when results,
 algorithms and benchmarks are moved between the twelve problems through
 pathwidth?}
 
-The table is ours, and it has a history that explains why the question is
-still open. It was first printed in 2001, in the first author's doctoral thesis
+The table is ours, and it has a history that explains why that question, which of its equalities are
+true, is still open. It was first printed in 2001, in the first author's doctoral thesis
 \citep[Table~2.1, p.~13]{Linhares2001}, supervised by the second author, which proved MOSP
 NP-hard and equal to gate matrix layout. Its rows were collected over the years
 of the doctorate, while reading the literature of each field. Each came with a
@@ -166,8 +166,8 @@ table for the problems equivalent to it, ``including graph path-width'', and
 credited the second author with the idea of permuting customers rather than
 products \citep{SmithGent2005,Yanasse1997b}, the idea on which the exact search
 of Section~\ref{sec:search} branches. So the table is already used to
-justify algorithms, and whether it is true matters. If it is true, every result
-about any one of the twelve problems transfers to all the others. Looking back,
+justify algorithms, and whether it is true matters. If it is true, \emph{every result}
+about any one of the twelve problems transfers to \emph{all} the others. Looking back,
 the table was the thesis's most important finding, and this article does what
 the thesis did not: it states each problem precisely, proves what is true and
 refutes what is not. The communities that could have checked the table
@@ -175,7 +175,7 @@ rarely read each other: of 844 works that cite the table's papers,
 only six cite both an open-stacks paper and a graph-theory paper
 (Section~\ref{sec:names}).
 
-\paragraph{Three more members.} The table is also incomplete. Progressive
+\paragraph{Three more members.} The table was also incomplete. Progressive
 pebbling, a game in which pebbles are placed on the vertices of a graph and
 each vertex is pebbled once, needs exactly pathwidth plus one pebbles
 \citep[Thm~3.1]{LY2002ref10}, and Lengauer's black-white pebbling of a
@@ -201,10 +201,10 @@ source we hold states it.
 
 \paragraph{What we find.}
 \begin{itemize}
-\item \emph{The table, settled.} Eight of the twelve rows are exact, the
-  pathwidth row itself counted as one of them: the other seven equal pathwidth
-  or pathwidth plus one on every input, outside degenerate cases such as an
-  empty graph. Two rows, split bandwidth and edge
+\item \emph{The table, settled.} Eight of the twelve rows are exact: on every
+  input, outside degenerate cases such as an empty graph, the problem equals
+  pathwidth or pathwidth plus one (the pathwidth row itself is one of the
+  eight). Two rows, split bandwidth and edge
   search, lie in bands one and two wide. Two rows, PLA folding and edge
   separation, are false as stated, with counterexamples. A variant of each
   false row is exact. Three problems outside the table are exact members
@@ -218,13 +218,12 @@ source we hold states it.
   (Section~\ref{sec:names}).
 \item \emph{Our corrected search, and a pathwidth solver.} The best exact
   algorithm for MOSP, the customer search of \citet{ChuStuckey2009}, is also a
-  pathwidth algorithm. We prove in Lean that two of its published dominance
-  theorems are false, as are their later restatements
-  \citep{Chu2011,Fink2012}: each can discard the last solution at a node. On
-  every benchmark the previous algorithm happens to answer correctly, but on a
-  34-customer instance our implementation of it, with the better move off,
-  reports an optimum of 7 where the optimum is 6, which a SAT solver confirms
-  with a DRAT proof checked by drat-trim. Our corrected rule was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016},
+  pathwidth algorithm. We prove in Lean, however, that two of its published
+  dominance theorems are false, as are their later restatements
+  \citep{Chu2011,Fink2012}: each can discard the last solution at a node. We
+  provide a counterexample instance: their algorithm obtains an optimum of 7,
+  while our corrected version obtains 6, provable also by a SAT solver
+  (Section~\ref{sec:search}). Our corrected rule was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016},
   in the exact pathwidth literature; we show that it can be tested by one
   bipartite matching per candidate, and prove our corrected search sound. It
   costs at most 2\% more search nodes over each benchmark set. Ported to
@@ -246,7 +245,8 @@ problems and proves what is true. Section~\ref{sec:names} measures which names
 and communities the literature uses. Section~\ref{sec:search} reads the exact
 open-stacks search as a pathwidth algorithm, finds the two false rules and
 proves our corrected search sound. Section~\ref{sec:results} reports what our
-corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} answers the question above.
+corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} answers the question this paper asks: which
+equalities of the table are true, and what follows from them.
 Every theorem we state is machine-checked in the Lean~4 proof assistant. The
 reader need not read Lean: each proof is given or cited in the text, and
 Appendix~\ref{app:lean} maps each result to its formal statement.

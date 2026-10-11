@@ -52,6 +52,12 @@ Started 2026-10-09. Check items off as they are done.
       we do not in 1,500 s) printed in Section 5
       (`abstract_nudge_review_2.md` §3).
 
+- [ ] **Rome graphs, a longer timeframe.** The Rome graphs (Di Battista et
+      al. 1997, a graph-drawing benchmark: 11,534 graphs of 10–110 vertices)
+      were run in stages of 10, 120 and 600 s per graph; 11,194 are proved and
+      340 are open, all at n ≥ 86. Rerun the 340 with a much longer cap (hours
+      per graph, after the split run) and report the count at each cap.
+
 ## A replication notebook
 
 - [ ] **"This entire paper can be read and replicated on a Python (with C calls)
