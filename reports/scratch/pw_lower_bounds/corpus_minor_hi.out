@@ -1,0 +1,24 @@
+Random-125-125-4-1_0: n=125 opt=57 MMD+ +1=27 expansion(t8)=26 (5s) stored relaxation lb=46
+   minor m=105: min-d >=27 90s; least-c >=27 90s
+   minor m=110: min-d >=27 90s; least-c >=27 90s
+   minor m=115: min-d >=27 90s; least-c >=27 90s
+   minor m=120: min-d >=27 90s; least-c >=27 90s
+   best minor bound 27 vs opt 57
+Random-125-125-6-1_0: n=125 opt=81 MMD+ +1=40 expansion(t8)=63 (6s) stored relaxation lb=71
+   minor m=105: min-d =78 1s; least-c =77 1s
+   minor m=110: min-d =79 3s; least-c =78 3s
+   minor m=115: min-d =80 9s; least-c =80 10s
+   minor m=120: min-d =81 28s; least-c =81 28s
+   best minor bound 81 vs opt 81
+Random-125-125-8-2_0: n=125 opt=93 MMD+ +1=52 expansion(t8)=84 (7s) stored relaxation lb=None
+   minor m=105: min-d =86 0s; least-c =87 0s
+   minor m=110: min-d =90 0s; least-c =91 0s
+   minor m=115: min-d =92 1s; least-c =91 0s
+   minor m=120: min-d =92 1s; least-c =92 1s
+   best minor bound 92 vs opt 93
+SP4: n=100 opt=53 MMD+ +1=27 expansion(t8)=37 (3s) stored relaxation lb=47
+   minor m=84: min-d =52 1s; least-c =52 1s
+   minor m=88: min-d =52 1s; least-c =52 1s
+   minor m=92: min-d =52 2s; least-c =52 2s
+   minor m=96: min-d =53 8s; least-c =53 8s
+   best minor bound 53 vs opt 53

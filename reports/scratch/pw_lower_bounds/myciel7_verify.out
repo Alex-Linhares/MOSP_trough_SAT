@@ -1,0 +1,7 @@
+minor110 default: pw<=70 unsat (2,280,228 nodes, 2.6s); pw<=71 sat
+minor110 {'better_move': True}: pw<=70 unsat (2,222,455 nodes, 2.7s); pw<=71 sat
+minor110 {'repaired_rules': False}: pw<=70 unsat (2,277,850 nodes, 2.6s); pw<=71 sat
+minor115 min-d: pw<=71 sat (8,932 nodes, 0s)
+minor115 least-c: pw<=71 sat (8,982 nodes, 0s)
+minor125 min-d: pw<=71 sat (699 nodes, 0s)
+minor125 least-c: pw<=71 sat (699 nodes, 0s)

@@ -1,0 +1,16 @@
+myciel5 (pw 20) minor m=25 least-c: edges=200 pw(minor) = 17 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=25 min-d: edges=199 pw(minor) = 18 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=30 least-c: edges=210 pw(minor) = 18 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=30 min-d: edges=209 pw(minor) = 19 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=35 least-c: edges=219 pw(minor) = 20 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=35 min-d: edges=218 pw(minor) = 20 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=40 least-c: edges=227 pw(minor) = 20 lower=14 proof='refutation' 0.0s
+myciel5 (pw 20) minor m=40 min-d: edges=226 pw(minor) = 20 lower=14 proof='refutation' 0.0s
+myciel6 (pw 38) minor m=40 least-c: edges=564 pw(minor) = 30 lower=25 proof='refutation' 0.0s
+myciel6 (pw 38) minor m=40 min-d: edges=551 pw(minor) = 32 lower=24 proof='refutation' 0.0s
+myciel6 (pw 38) minor m=50 least-c: edges=674 pw(minor) = 34 lower=25 proof='refutation' 0.0s
+myciel6 (pw 38) minor m=50 min-d: edges=666 pw(minor) = 35 lower=24 proof='refutation' 0.0s
+myciel6 (pw 38) minor m=60 least-c: edges=698 pw(minor) = 37 lower=25 proof='refutation' 0.1s
+myciel6 (pw 38) minor m=60 min-d: edges=693 pw(minor) = 38 lower=25 proof='refutation' 0.1s
+myciel6 (pw 38) minor m=70 least-c: edges=716 pw(minor) = 38 lower=25 proof='refutation' 0.7s
+myciel6 (pw 38) minor m=70 min-d: edges=714 pw(minor) = 38 lower=25 proof='refutation' 0.7s

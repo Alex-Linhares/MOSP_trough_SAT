@@ -1,0 +1,19 @@
+Random-125-125-2-3_0: n=125 recorded 21 (certified:refutation), stored lb 13
+   m=70 min-d: MOSP<=20 on minor: sat nodes=6,043 0s
+   m=70 least-c: MOSP<=20 on minor: unsat nodes=757,009 1s
+   ==> Random-125-125-2-3_0: optimum 21 certified by a 70-vertex minor (least-c)
+Random-125-125-2-2_0: n=125 recorded 25 (solution), stored lb 16
+   m=70 min-d: MOSP<=24 on minor: sat nodes=1,670 0s
+   m=70 least-c: MOSP<=24 on minor: sat nodes=324 0s
+   m=78 min-d: MOSP<=24 on minor: sat nodes=2,796 0s
+   m=78 least-c: MOSP<=24 on minor: sat nodes=20,009 0s
+   m=85 min-d: MOSP<=24 on minor: sat nodes=365 0s
+   m=85 least-c: MOSP<=24 on minor: sat nodes=363 0s
+   m=90 min-d: MOSP<=24 on minor: sat nodes=6,494,084 6s
+   m=90 least-c: MOSP<=24 on minor: sat nodes=6,534,047 6s
+   m=95 min-d: MOSP<=24 on minor: sat nodes=38,228 0s
+   m=95 least-c: MOSP<=24 on minor: sat nodes=34,920 0s
+   m=100 min-d: MOSP<=24 on minor: unknown nodes=68,517,888 120s
+   m=100 least-c: MOSP<=24 on minor: unknown nodes=69,382,144 120s
+   m=105 min-d: MOSP<=24 on minor: unknown nodes=37,457,920 120s
+   m=105 least-c: MOSP<=24 on minor: unknown nodes=14,249,984 121s

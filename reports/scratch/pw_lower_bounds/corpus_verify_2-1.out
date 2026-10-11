@@ -1,0 +1,5 @@
+Random-125-125-2-1_0: minor of 87/125 vertices (min-d) verified as a minor; opt 24
+  default: MOSP<= 23 on minor: unsat nodes=58,007,927 80.2s
+  {'better_move': True}: MOSP<= 23 on minor: unsat nodes=45,692,798 41.6s
+  {'subset_rule': False, 'definite_move': False, 'old_move': False, 'memo': True, 'memo_limit': 50000000}: MOSP<= 23 on minor: unknown nodes=2,240,749,568 900.1s
+  MOSP<= 24 on minor: sat

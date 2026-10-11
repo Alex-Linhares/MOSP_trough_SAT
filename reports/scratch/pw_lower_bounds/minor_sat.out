@@ -1,0 +1,2 @@
+minor58 pw<=38: SAT in 61.5s (59966 vars, 194258 clauses)
+minor58 pw<=37: UNSAT in 1459.0s (60935 vars, 196310 clauses)
