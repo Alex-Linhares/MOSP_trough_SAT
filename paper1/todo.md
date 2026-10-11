@@ -58,6 +58,49 @@ Started 2026-10-09. Check items off as they are done.
       340 are open, all at n ≥ 86. Rerun the 340 with a much longer cap (hours
       per graph, after the split run) and report the count at each cap.
 
+## The contraction-minor lower bound (found 2026-10-11)
+
+The exact pathwidth of a contracted minor is a lower bound
+(`reports/pathwidth_lower_bounds_survey.md`). It proves pw(myciel6) >= 38 on a
+58-vertex minor in under a second, pw(myciel7) >= 71 (published: 52), and
+closes Random-125-125-2-1_0, 2-3_0, 6-1_0 and SP4 in 1-80 s each. The idea is
+known for treewidth (Bodlaender, Koster et al.), so the claim is the
+measurement and that, for pathwidth, it is not capped by treewidth.
+
+- [ ] **Into the solvers.** A budgeted step in the `pathwidth_solver` descent and in
+      the MOSP descent: before refuting UB - 1 on the full graph, contract to
+      about n/2 and upward and try to refute UB - 1 there; a refutation ends the
+      descent with proof "bound" (or a new provenance, "certified:minor"). Measure
+      on every benchmark set: what it closes, what it costs.
+- [ ] **Independent checks before recording anything.** SAT (with DRAT) or a
+      rule-free run on the minors of Random-125-125-2-1_0 and 2-3_0, and on
+      the 110-vertex minor of myciel7. The 2-3_0 minor already holds rule-free;
+      2-1_0 and myciel7 rest on our corrected rules so far.
+- [ ] **myciel7.** Settle 71 against 72 (Coudert et al. 2016 leave it open at
+      pw <= 72). If it is new, say so carefully, after the literature check.
+- [ ] **Lean.** Pathwidth is minor-monotone: contracting an edge never increases
+      pathwidth (Fellows & Langston 1987, Lemma 4.2, for layout cost; nothing
+      on contraction or minors in `lean/MOSPFormalization/` yet). Prove it, and
+      state the bound as a theorem: pathwidth of a contraction <= pathwidth.
+      Then a minor certificate is a contraction sequence plus a refutation.
+- [ ] **A checkable certificate.** The minor certificate is the contraction
+      sequence (checkable by anyone) plus a refutation on the small graph (a
+      DRAT proof, or our search certificate of Section 5). Ship both for every
+      value certified this way.
+- [ ] **Write it up.** A subsection of Section 5 ("A lower bound from minors"),
+      the myciel6 passage rewritten (no longer a loss), the corpus values it
+      re-certifies cheaply, the cost of 2-3_0 falling from 1,128 core-hours to
+      seconds, and an honest line on what remains open (2-2_0: every contraction
+      up to 95 vertices still admits 24).
+- [ ] **Compare with Coudert et al. on the rest.** Their win on myciel6 came from
+      prefix storage, not bounds (JEA 2016, Sec. 4.3); the remaining difference
+      in raw search speed is unexplained. The SageMath head-to-head item above
+      should include the solver with the minor step.
+- [ ] **Fetch the papers** listed under "Pathwidth lower bounds (2026-10-11)" in
+      `literature/MISSING.md` (Bodlaender & Koster 2011 journal version,
+      Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
+      Fraire-Huacuja et al., Solano & Pioro).
+
 ## A replication notebook
 
 - [ ] **"This entire paper can be read and replicated on a Python (with C calls)
