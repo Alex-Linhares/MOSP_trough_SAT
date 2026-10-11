@@ -7,7 +7,7 @@
 % Coudert, Mazauric & Nisse (2016) as recorded in
 % pathwidth_solver/bench/reference.py. Tables from tables/ (make_tables.py).
 % The method detail, the timeline and the full names table are Appendix C.
-\section{The names and the communities}
+\section{Why \emph{pathwidth}: the names and the communities}
 \label{sec:names}
 
 Section~\ref{sec:equiv} showed that eight of the twelve rows of the
@@ -106,7 +106,7 @@ open-stacks community and is also, on the published evidence, among the
 strongest exact algorithms for pathwidth. The account is
 in \citet[\S1]{ChuStuckey2009}. MOSP was the subject of the first Constraint
 Modelling Challenge \citep{SmithGent2005}, posed in May 2005, which drew 13
-entries. The winning entry, by García de la Banda and Stuckey, combined dynamic
+entries. The fastest entry, by García de la Banda and Stuckey, combined dynamic
 programming with branch and bound and was an order of magnitude faster than
 any other \citep{GarciaDeLaBandaStuckey2007}. \citet{ChuStuckey2009} built on
 it. They branched on which customer's stack closes next rather than on which
@@ -124,7 +124,8 @@ of \citet{CoudertMazauricNisse2016}. It proves the pathwidth of 11,194 of the
 11,534 Rome graphs (97.1\%), against their 95.6\%, both within 600 seconds per
 graph. It proves all 50 VSPLIB trees, against their 30, and 39 of the 73
 Harwell--Boeing graphs, against their 26. These are comparisons with published
-numbers obtained on other hardware, not a head-to-head run.
+numbers obtained on other hardware, not a head-to-head run;
+Table~\ref{tab:graphs} in Section~\ref{sec:results} gives the full count.
 
 Two consequences shape the rest of the paper. First, a result on any of the
 twelve problems should be stated, and searched for, as a result on pathwidth.

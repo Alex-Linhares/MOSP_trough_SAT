@@ -102,31 +102,32 @@ Horacio Hideki Yanasse\\{\small\fbox{affiliation to be added}}}
 
 \begin{abstract}
 \noindent
-The minimization of open stacks problem (MOSP) asks for the order in which to
-make a set of patterns so that the fewest customer orders are open at once.
-\citet{LY2002} listed twelve problems from operations research, VLSI design and
-graph theory, MOSP among them, as equal to it ``plus or minus one'', and gave
-no proofs. We ask which of these equalities are true, and what follows when
-results, algorithms and benchmarks are moved between the twelve problems
-through pathwidth, the quantity that connects them. We find four things. First,
-eight of the twelve rows are exact, counting pathwidth itself: each equals
-pathwidth or pathwidth plus one. Two lie in bands one and two wide, and two are
-false as stated; every relation is proved, and machine-checked in Lean.
-Three problems the table missed are exact too, among them the maximum
-wavefront of sparse matrix elimination, which brings a fourth discipline,
-numerical linear algebra, into the family.
-Second, the literature has settled on the name pathwidth, used more than three
-times as often as the other eleven names together, and the three communities
-rarely cite one another. Third, the best exact algorithm for MOSP, the search of
-\citet{ChuStuckey2009}, is a pathwidth algorithm, and two of its published
-dominance theorems are false; on a 34-customer instance the previous algorithm
-reports a wrong optimum. The correct rule was already known for
-pathwidth; we show that it is tested by one bipartite matching per candidate,
-and prove our repaired search sound. In our implementation it costs at most
-2\% more search nodes on each benchmark set, and it re-proved all 115 benchmark
-optima that rested on the previous algorithm, changing none. Fourth, we release
-17,714 benchmark graphs, distinct up to isomorphism, from twenty collections,
-16,087 of them with a certified pathwidth and a layout that attains it.
+In 2001 and 2002 we listed twelve problems from operations research, VLSI
+design and graph theory, the minimization of open stacks problem (MOSP) among
+them, as equal ``plus or minus one'', and gave no proofs
+\citep{Linhares2001,LY2002}. We show that most of them form a \emph{pathwidth
+complex}: problems studied independently, by communities that rarely cite one
+another, that are mathematically pathwidth. We correct our table. Eight rows
+are exact, counting pathwidth itself: each equals pathwidth or pathwidth plus
+one. Two lie in bands one and two wide, and two are false as stated. We add
+three members the table missed, among them the maximum wavefront of sparse
+matrix elimination, which brings a fourth discipline, numerical linear algebra,
+into the family. Every relation is machine-checked in Lean. We call the
+cluster the \emph{pathwidth} complex because the literature uses that name more
+than three times as often as the other eleven names together; since 2005, the
+next most active name is MOSP. That community produced, by way of the 2005
+Constraint Modelling Challenge, the best exact algorithm for MOSP, the customer
+search of \citet{ChuStuckey2009}, which is also a pathwidth algorithm. We prove
+in Lean that two of its published dominance theorems are false, and on a
+34-customer instance the previous algorithm reports an optimum of 7 where the
+optimum is 6, which a SAT solver confirms with a checked DRAT proof. The
+correct rule was already known for pathwidth; we test it with one bipartite
+matching per candidate and prove the repaired search sound. It costs at most
+2\% more search nodes on each benchmark set, re-proves all 115 benchmark optima
+that rested on the previous algorithm, changing none, and, ported to graphs,
+proves the pathwidth of 11,194 of the 11,534 Rome graphs. We release the
+proofs, both solvers and 17,714 benchmark graphs, distinct up to isomorphism,
+16,087 of them with a certified pathwidth, together with independent checkers.
 \end{abstract}
 
 \input{sec1_intro}

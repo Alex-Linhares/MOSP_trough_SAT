@@ -91,7 +91,7 @@ by at most 2\%. Each pair runs the same question under the previous algorithm an
 repaired rules in one worker. Totals are over the pairs that finished under
 both rules; a pair stopped by its budget says nothing about cost.
 \emph{Vertices}: customers in the open-stacks rows (the vertices of $G_M$).
-\emph{Largest pair ratio}: the largest ratio of repaired to published nodes
+\emph{Largest pair ratio}: the largest ratio of repaired to previous nodes
 over single pairs. Open-stacks pairs refute the optimum minus one, at 600\,s per
 call at 50--100 customers and $2\times10^8$ nodes at 125. The graph pairs run
 whole descents on VSPLIB, the colouring and named graphs, and a sample of 500
@@ -101,11 +101,32 @@ Rome graphs.}
 \end{table}
 
 In every row of Table~\ref{tab:cost} our repaired search and the previous algorithm gave
-the same answer, and the total node counts differ by at most 2\%. Single pairs
-differ by at most 4\%. The cost per node is also small: about 2\% in the C
+the same answer, and the total node counts differ by at most 2\%. Single
+open-stacks pairs differ by at most 4\%. The cost per node is also small: about 2\% in the C
 implementation, measured on six hard instances at 75 to 125 customers. The
 published test passes and the matching then fails on only 0.07--0.27\% of
 definite-move candidates, a rate that rises with size.
+
+\paragraph{Graph benchmarks.} Ported to graphs, the repaired search is an
+exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the
+11,915 graph benchmarks it was run on, beside the run of the previous
+algorithm under the same caps and the published counts of
+\citet{CoudertMazauricNisse2016}. Where both runs prove a graph, the widths
+agree on every one. The 24 Rome graphs proved only by the repaired run, and the
+13 proved only by the previous one, sit near the 600\,s cap. The comparison with
+\citet{CoudertMazauricNisse2016} is with published numbers obtained on other
+hardware, not a head-to-head run.
+
+\begin{table}[t]
+\centering\small
+\caption{The repaired search as a pathwidth solver. Graphs whose pathwidth it
+proves, under the repaired rules and under the previous algorithm with the same
+caps (Rome: 10, 120 and 600\,s in stages), and the published counts of
+\citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
+graphs proved by both runs with different widths.}
+\label{tab:graphs}
+\resizebox{\linewidth}{!}{\input{tables/graphs}}
+\end{table}
 
 \paragraph{The benchmark values survive.} No published optimum changed under
 the repaired rules. Of the 6,374 values certified before this work, 6,259 do

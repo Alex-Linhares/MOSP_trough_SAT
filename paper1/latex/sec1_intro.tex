@@ -74,14 +74,14 @@ plus one (Theorem~\ref{thm:core}).
 \centering
 \caption{Twelve problems from three fields, published as one family: eight
 rows are exact, counting the pathwidth row itself; two are bands; two are false
-as the table states them. The Linhares--Yanasse table, reproduced from
+as the table states them. Our own table of 2002, reproduced from
 \citet[Table~1, p.~1764]{LY2002} with its row order, wording and references as
 printed, and its caption: ``Display of a family of equivalent problems studied
-independently on the literature''. The shaded column is ours, and so are the last three rows, below the rule:
-members of the family that the table missed, which bring a fourth field,
-numerical linear algebra. It gives the
+independently on the literature''. The shaded column corrects it: it gives the
 relation to pathwidth ($\pw$) that is true, proved in Section~\ref{sec:equiv}
-(Table~\ref{tab:master}).}
+(Table~\ref{tab:master}). The last three rows, below the rule, are new:
+members of the family that the table missed, which bring a fourth field,
+numerical linear algebra.}
 \label{tab:ly2002}
 \small
 \setlength{\tabcolsep}{3.5pt}
@@ -137,16 +137,20 @@ one'' has two readings. Under the \emph{literal} reading, $f$ is within one of
 the number of open stacks on every input. Under the \emph{fixed-offset}
 reading, $f$ equals the number of open stacks plus one constant, the same on
 every input. Only the second makes solving one problem the same as solving
-another. We call the twelve \emph{the pathwidth complex}, because pathwidth is
-both the name the literature uses most (Section~\ref{sec:names}) and the
-quantity through which every true relation in the table is proved
-(Section~\ref{sec:equiv}). This paper asks: \emph{which of the equalities in
+another. We call the problems that are, on every input, pathwidth or
+pathwidth plus one the \emph{pathwidth complex}: most of the table, and three
+problems it missed. Pathwidth is the quantity through which every true relation
+in the table is proved (Section~\ref{sec:equiv}), and it is the name the
+literature uses, more than three times as often as the other eleven names of
+the table together (Section~\ref{sec:names}); a reader who searches under
+``open stacks'' or ``gate matrix layout'' misses most of what is known. This
+paper asks: \emph{which of the equalities in
 the Linhares--Yanasse table are true, and what follows when results,
 algorithms and benchmarks are moved between the twelve problems through
 pathwidth?}
 
-The table has a history that explains why the question is still open. It was
-first printed in the first author's doctoral thesis
+The table is ours, and it has a history that explains why the question is
+still open. It was first printed in 2001, in the first author's doctoral thesis
 \citep[Table~2.1, p.~13]{Linhares2001}, supervised by the second author, which proved MOSP
 NP-hard and equal to gate matrix layout. Its rows were collected over the years
 of the doctorate, while reading the literature of each field. Each came with a
@@ -156,7 +160,12 @@ The table appeared again, row for row, as Table~1 of \citet{LY2002}, and it has
 been read since as a statement of equivalence.
 \citet{GarciaDeLaBandaStuckey2007}, for instance, credit the speed of their
 search in this journal to ``the fact that the problem is fixed parameter
-tractable (Linhares and Yanasse 2002)''. So the table is already used to
+tractable (Linhares and Yanasse 2002)''. When MOSP was set as the first
+Constraint Modelling Challenge in 2005, the organisers' report pointed to the
+table for the problems equivalent to it, ``including graph path-width'', and
+credited the second author with the idea of permuting customers rather than
+products \citep{SmithGent2005,Yanasse1997b}, the idea on which the exact search
+of Section~\ref{sec:search} branches. So the table is already used to
 justify algorithms, and whether it is true matters. If it is true, every result
 about any one of the twelve problems transfers to all the others. Looking back,
 the table was the thesis's most important finding, and this article does what
@@ -203,20 +212,25 @@ source we hold states it.
   sparse matrix elimination (Section~\ref{sec:equiv}).
 \item \emph{One name.} The literature has settled on ``pathwidth'', which has
   more than three times as many relevant works as the other eleven names
-  together. Besides pathwidth, the most active community over 2005--2024 is the
-  open-stacks one, and the exact search of Section~\ref{sec:search} came
-  from it
+  together. Since 2005, after pathwidth, the most active name of the twelve is
+  MOSP, and the best exact search for the whole family came from that
+  community, by way of the 2005 Constraint Modelling Challenge
   (Section~\ref{sec:names}).
-\item \emph{A repaired search.} The best exact algorithm for MOSP, the search of
-  \citet{ChuStuckey2009}, is also a pathwidth algorithm. Two of its published
-  dominance theorems are false, as are their later restatements
-  \citep{Chu2011,Fink2012}. The correct rule was already known in the exact
-  pathwidth literature, and we show that it can be tested by one bipartite
-  matching per candidate. Our repaired search is proved sound. Over each
-  benchmark set it changes the total number of search nodes by at most 2\%. On
-  every benchmark the previous algorithm happens to answer correctly, but we
-  exhibit a 34-customer instance on which it reports a wrong optimum
-  (Section~\ref{sec:search}).
+\item \emph{A repaired search, and a pathwidth solver.} The best exact
+  algorithm for MOSP, the customer search of \citet{ChuStuckey2009}, is also a
+  pathwidth algorithm. We prove in Lean that two of its published dominance
+  theorems are false, as are their later restatements
+  \citep{Chu2011,Fink2012}: each can discard the last solution at a node. On
+  every benchmark the previous algorithm happens to answer correctly, but on a
+  34-customer instance it reports an optimum of 7 where the optimum is 6, which
+  a SAT solver confirms with a DRAT proof checked by drat-trim. The correct
+  rule was already known in the exact pathwidth literature; we show that it
+  can be tested by one bipartite matching per candidate, and prove the
+  repaired search sound. Over each benchmark set it changes the total number of
+  search nodes by at most 2\%. Ported to graphs, it proves the pathwidth of
+  11,194 of the 11,534 Rome graphs within 600 seconds each, all 50 VSPLIB trees
+  and 39 of the 73 Harwell--Boeing graphs (Sections~\ref{sec:search}
+  and~\ref{sec:results}).
 \item \emph{Benchmarks re-certified, and a dataset.} Our repaired search
   re-proved all 115 benchmark optima that rested on the previous algorithm, and
   none changed (as of 9 October 2026). We release 17,714 graphs, distinct up to
@@ -237,3 +251,5 @@ Appendix~\ref{app:lean} maps each result to its formal statement.
 Appendix~\ref{app:machinery-all} holds the supporting material,
 Appendix~\ref{app:names} the bibliometric method, and the data,
 code and proofs are described at the end of the paper (page~\pageref{sec:data}).
+The Lean development, both solvers, the dataset and an independent checker for
+each are released with the paper.

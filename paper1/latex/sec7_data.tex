@@ -21,8 +21,14 @@
 \label{sec:data}
 \addcontentsline{toc}{section}{Data, code and proofs}
 
-Everything this paper reports can be checked from its repository,
-\fbox{\textbf{URL to be added on release}}. The repository holds:
+Everything this paper reports can be re-run from its repository,
+\fbox{\textbf{URL to be added on release}}, and most of it can be checked
+without re-running. The Lean proofs check in one build. Witnesses, minor
+certificates and the 34-customer instance have independent checkers, and
+refutations up to about 75 customers carry certificates
+(Section~\ref{sec:certs}). The largest refutations can only be re-run, at up
+to 1,128 core-hours each (Section~\ref{sec:results}), and one corpus value is
+still open (Section~\ref{sec:closing}). The repository holds:
 \begin{itemize}
 \item the Lean~4 development, with every theorem the paper names
   (Appendix~\ref{app:lean}) and an axiom check that covers all of them;
