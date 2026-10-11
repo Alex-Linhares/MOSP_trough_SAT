@@ -92,6 +92,12 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       re-certifies cheaply, the cost of 2-3_0 falling from 1,128 core-hours to
       seconds, and an honest line on what remains open (2-2_0: every contraction
       up to 95 vertices still admits 24).
+- [ ] **Say it in the paper:** "The complex gets an excellent lower bound from
+      pathwidth, and an excellent algorithm from the MOSP side." The thesis of
+      the transfer in one line: the minor bound comes from the pathwidth
+      literature, the customer search from the open-stacks community, and the
+      complex is where they meet. Candidate places: the abstract's close, the
+      introduction's findings, and the conclusion's "What transfers".
 - [ ] **Compare with Coudert et al. on the rest.** Their win on myciel6 came from
       prefix storage, not bounds (JEA 2016, Sec. 4.3); the remaining difference
       in raw search speed is unexplained. The SageMath head-to-head item above
