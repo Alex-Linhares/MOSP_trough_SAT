@@ -121,10 +121,10 @@ of that year's Constraint Modelling Challenge, the best exact algorithm for
 MOSP: the \emph{customer search} of \citet{ChuStuckey2009}, which branches on
 the order in which customers' stacks close, and which is also a pathwidth
 algorithm. We prove in Lean that two of its published dominance theorems,
-rules that discard a branch as no better than another, are false. On a
-34-customer instance our implementation of their algorithm, with its better
-move off, reports an optimum of 7; our corrected search proves the optimum is
-6, as does a SAT solver with a checked DRAT proof. Our corrected definite move,
+rules that discard a branch as no better than another, are false, and that on
+a 34-customer instance their algorithm, with its better move off, reports an
+optimum of 7 where the optimum is 6. Our corrected search and a SAT solver with
+a checked DRAT proof confirm the 6. Our corrected definite move,
 the first of the two, was also found by Tamaki as a lemma
 \citep[Lemma~1]{Kitsunai2016}; we test it with one bipartite matching per
 candidate and prove our corrected search sound. We re-prove all 115 benchmark

@@ -492,7 +492,11 @@ do not suffice and that 7 do, so it reports an optimum of 7, with a refutation
 as its proof (Figure~\ref{fig:wrong}(a)). Yet the order of
 Figure~\ref{fig:wrong}(b) keeps at most 6 stacks open (6 tracks, in the
 figure's gate matrix reading); our corrected search finds it and
-refutes 5, so the optimum is 6. A SAT solver on our encoding of MOSP
+refutes 5, so the optimum is 6. The whole run is also checked in Lean. A
+transcription of the previous algorithm, proved to be a run of the search of
+Section~\ref{sec:search-def} with the published filter, refutes 6 and finds 7
+in the Lean kernel, making exactly the calls of our Python implementation,
+while the optimum is proved to be 6 and the pathwidth 5~\leanref{wrong}. A SAT solver on our encoding of MOSP
 (Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
 finds an order with 6 open stacks and proves that 5 do not suffice, with a proof in DRAT, the standard proof format of SAT solvers, which the independent checker drat-trim verifies. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
