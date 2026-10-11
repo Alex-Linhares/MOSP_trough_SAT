@@ -9,16 +9,13 @@
 
 Section~\ref{sec:search} proved our corrected search sound. This section asks
 five practical questions about it and answers each with a measurement. What
-does our correction cost? At most 2\% more search nodes over each benchmark
-set. Do the published
+does our correction cost? At most 2\% more search nodes on each group of benchmarks we measured. Do the published
 benchmark optima survive? All 115 that rested on the previous algorithm
 \citep{ChuStuckey2009} were proved again, and none changed. How good a
-pathwidth solver is it? On every benchmark set with published exact counts it
-proves as many or more graphs than the published branch and bound, and it is
-faster on each of the fourteen graphs whose times are published. Can a reader check a refutation without
+pathwidth solver is it? On every benchmark set with published exact counts it proves as many or more graphs than the published branch and bound of \citet{CoudertMazauricNisse2016}, and it is faster on each of the fourteen graphs whose times they publish. Can a reader check a refutation without
 trusting our code? Yes, up to about 75 customers, through a certificate and an
 independent checker. Finally, what does it make possible? A dataset of 17,714
-graphs from twenty benchmark collections. For 16,087 of them the pathwidth is
+graphs from twenty benchmark collections. For 16,088 of them the pathwidth is
 certified, and that gives the exact value of every problem in the exact core.
 
 \subsection{Experimental setup}
@@ -40,7 +37,7 @@ instance at most $k$? A \emph{worker} is one single-threaded process that
 answers such questions, one at a time. A \emph{node} is one state visited by
 the search, the unit in which we report effort. Up to 32 workers ran at
 once on the machine, so wall-clock times carry load noise. We therefore
-compare node counts and report time only in core-hours. A \emph{pair} runs
+compare node counts and report time only in \emph{core-hours}, the hours of one core summed over workers (32 workers for one hour make 32 core-hours). A \emph{pair} runs
 the same question twice in the same worker, once under the previous algorithm
 and once under our corrected rules, alternating which goes first. A
 \emph{descent} solves a whole graph: it lowers $k$ from an upper bound until a
@@ -51,19 +48,17 @@ budget.
 rules of Section~\ref{sec:search}, which differ only in the better move. The
 \emph{base} configuration leaves it off. The configuration \emph{with better
 move} switches it on for instances whose customers need at most five patterns on
-average. This is the setting under which the customer search certified the
-benchmark values it proved.
+average. This is the setting under which our implementation of the previous algorithm certified the benchmark values it proved.
 
 \paragraph{Instances.} The \emph{MOSP corpus} is the 6,376 instance files of
 four public open-stacks collections, one of which is distributed twice. They
 are the 2005 Constraint Modelling Challenge \citep{SmithGent2005}, with a
 second copy of 46 of its files under other names, the random
 instances of \citet{ChuStuckey2009} (30 to 125 customers), those of
-\citet{FaggioliBentivoglio1998}, and the 24 industrial SCOOP instances. They
+\citet{FaggioliBentivoglio1998}, and the 24 industrial instances of the SCOOP project, real instances from two sawmilling companies \citep{Frinhani2018}. They
 are the first rows of Table~\ref{tab:dataset}. A Chu--Stuckey name such as
 \texttt{Random-125-125-2-4\_0} gives the number of customers, the number of
-patterns, the generator's density class and the instance number. The graph
-benchmarks are those of Section~\ref{sec:names} and Table~\ref{tab:dataset}.
+patterns, the generator's density class (roughly, the number of customers per pattern) and the instance number. The graph benchmarks are those of Table~\ref{tab:dataset}.
 
 \paragraph{Provenance.} Every stored value comes with a witness, an order that
 attains it, and one of three provenances:
@@ -105,12 +100,12 @@ Rome graphs.}
 
 In every row of Table~\ref{tab:cost} our corrected search and the previous algorithm gave
 the same answer, and the total node counts differ by at most 2\%. Single
-open-stacks pairs differ by at most 4\%. The cost per node is also small: about 2\% in the C
+open-stacks pairs differ by at most 4\%. The time per node also rises, by about 2\% in the C
 implementation, measured on six hard instances at 75 to 125 customers. The
 published test passes and the matching then fails on only 0.07--0.27\% of
 definite-move candidates, a rate that rises with size.
 
-\paragraph{The benchmark values survive.} No published optimum changed under
+\paragraph{The benchmark values survive.} None of the 115 values changed under
 our corrected rules. Of the 6,374 values certified before this work, 6,259 do
 not depend on the customer search at all. Each was proved in one of four ways:
 \begin{itemize}
@@ -140,22 +135,19 @@ no method had certified: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
 \texttt{Random-125-125-2-3\_0}. The same split refutes the value minus one on
 each. On 9 October 2026 it refuted 20 for \texttt{Random-125-125-2-3\_0}, after
 9,665 subtrees, $4.25\times10^{12}$ nodes and 1,128 core-hours, which
-certifies 21 as its optimum; it is the largest refutation in this paper. For
-\texttt{Random-125-125-2-2\_0} it has refuted 7,217 subtrees so far, using
-about 1,150 core-hours, and found no order of 24 stacks. If it finishes, it
+certifies 21 as its optimum; it is the largest refutation in this paper. For \texttt{Random-125-125-2-2\_0}, by 11 October 2026, it had refuted 15,604 subtrees using 2,121 core-hours (Table~\ref{tab:split}), and found no order of 24 stacks. If it finishes, it
 certifies 25; an order of 24 would improve the stored value instead.
 
 \subsection{Our corrected search as a pathwidth solver}
 \label{sec:pwsolver}
 
-Ported to graphs, our corrected search is an exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the
-11,915 graph benchmarks it was run on, beside the run of the previous
+Ported to graphs, our corrected search is an exact pathwidth solver. Table~\ref{tab:graphs} gives what it proves on the 11,915 benchmark graphs it was run on, counted as files, beside the run of the previous
 algorithm under the same caps and the published counts of
 \citet{CoudertMazauricNisse2016}. Where both runs prove a graph, the widths
 agree on every one. The 24 Rome graphs proved only by the corrected run, and the
 13 proved only by the previous one, sit near the 600\,s cap. The comparison with
 \citet{CoudertMazauricNisse2016} is with published numbers obtained on other
-hardware, not a head-to-head run. On the fourteen colouring graphs whose times
+hardware, not a head-to-head run. On the fourteen graph-colouring benchmarks of TreewidthLIB whose times
 \citet[Table~4]{CoudertMazauricNisse2016} report, our search proves the same
 pathwidth and is faster on every one: by 150 to 1,800 times on \texttt{david},
 \texttt{miles750} and \texttt{mulsol.i.5}, by 70 to 80 times on
@@ -169,8 +161,7 @@ Mycielski graph $M_7$ (\texttt{myciel6}, 95 vertices, pathwidth 38), which
 their tuned branch and bound proves in about ten minutes; our search reaches
 width 38 and has not refuted 37 within 25 minutes, because its lower bound
 there is 25. Their branch and bound is openly available in SageMath, and a
-head-to-head run on one machine is the comparison that would settle the
-question; we have not yet made it.
+head-to-head run on one machine is the comparison that would settle which solver is stronger; we have not yet made it.
 
 \begin{table}[t]
 \centering\small
@@ -236,7 +227,7 @@ problem in the exact core. Pathwidth, vertex separation and the vertex
 separator game take the value $w$, and MOSP, gate matrix layout (which
 multiple folding equals), one-dimensional logic, interval thickness,
 narrowness, node search, progressive pebbling, the vertex search of
-\citet{BRST1991} and the maximum wavefront take $w+1$: twelve problems in all. We therefore built one dataset from every benchmark collection of
+\citet{BRST1991} and the maximum wavefront take $w+1$: twelve problems in all, counting multiple folding with gate matrix layout. We therefore built one dataset from every benchmark collection of
 those problems that we could obtain, including the MOSP corpus.
 
 The unit of the dataset is the \emph{isomorphism class}: the set of instances
@@ -254,8 +245,8 @@ and it proves the pathwidth is at least $w$.
 \begin{table}[t]
 \centering\small
 \caption{Twenty collections, 21,754 instance files, reduce to 17,714
-isomorphism classes, and 16,087 of them have a certified pathwidth. Largely
-open: PACE, the VSPLIB grids and Harwell-Boeing, and the MOSP sets of de
+isomorphism classes, and 16,088 of them have a certified pathwidth. Largely
+open: PACE, the VSPLIB grids and Harwell--Boeing, and the MOSP sets of de
 Carvalho and Soma and of Frinhani et al.; Rome's 327 open classes are under
 3\% of it. \emph{Classes}: isomorphism classes within the
 collection (78 graphs above 5,000 vertices are compared by file content only).
@@ -275,17 +266,16 @@ eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
 \citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
 graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
 benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the 17,714
-classes, 16,087 carry a certified pathwidth with a witness layout and 862 a
-witnessed upper bound. The 610 large instances of \citet{Frinhani2018}, with
+classes, 16,088 carry a certified pathwidth with a witness layout and 861 a witnessed upper bound, and 765 have no witnessed value yet. The 610 large instances of \citet{Frinhani2018}, with
 400 to 1,000 customers, are included so that the dataset covers every
-published MOSP collection we hold. None of them has a value yet, because an
+published MOSP collection we have. None of them has a value yet, because an
 exact search at that size is out of reach.
 
 An independent checker, sharing no code with the solvers, verifies the
 dataset. It re-reads all 20,987 member files with its own readers, maps each
 onto its record's graph by its renaming, recomputes the width of every witness
 layout and replays every minor certificate. It reports no failure on the
-16,949 records. A value certified by search cannot be checked from its record;
+16,949 records, the 16,088 certified classes and the 861 with an upper bound. A value certified by search cannot be checked from its record;
 it rests on our corrected search, and for instances within reach of the emitter
 the certificate of Section~\ref{sec:certs} is how a third party can check it.
 

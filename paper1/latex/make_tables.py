@@ -319,7 +319,7 @@ def dataset_table() -> str:
         for i, v in enumerate(row):
             if i != 1:
                 tot[i] += v
-        label = col.replace("&", "\\&")
+        label = col.replace("&", "\\&").replace("Harwell-Boeing", "Harwell--Boeing")
         if "second copy" in col:
             label += "$^{a}$"
         lines.append(f"{label} & " + " & ".join(_n(v) for v in row) + " \\\\")

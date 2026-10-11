@@ -13,17 +13,14 @@ problems through pathwidth. Eight rows are exact, counting the pathwidth row
 itself: each of those eight problems is pathwidth, or pathwidth plus one, on
 every input. Two rows, split bandwidth and edge search, are bands
 one and two wide, and two, PLA folding and edge separation, are false as stated,
-although a variant of each is exact (Table~\ref{tab:master}). This is the
-sense in which the family is a pathwidth complex: its exact members are one
-quantity, and the literature names that quantity pathwidth. Moving between
+although a variant of each is exact (Table~\ref{tab:master}). This is the sense in which the exact problems form a pathwidth complex: they
+are one quantity, and the literature names that quantity pathwidth. Moving between
 the problems paid twice. Read as a pathwidth algorithm, the best exact
 open-stacks search turned out to rest on two false dominance theorems; our
 corrected definite move was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016}, and with it and our corrected better
-move the search is sound. And one
-certified pathwidth answers every problem in the exact core at once, which is
-what made a single dataset for twelve problems possible, three of them
-problems the table did not list, one from a fourth discipline, numerical
-linear algebra.
+move the search is sound. And one certified pathwidth answers every problem of the pathwidth complex at
+once, which made a single dataset for all of them possible, including the three
+the table did not list.
 
 \paragraph{What transfers, and what does not.} Within the exact core, anything
 proved or computed for one problem holds for the others with the offset of
@@ -47,14 +44,13 @@ search built for the purpose to find a whole instance with a wrong optimum,
 34 customers and one stack too many (Figure~\ref{fig:wrong}), in our
 implementation of the previous algorithm with the better move off; the optimum
 of 6 is confirmed by a SAT solver with a DRAT proof checked by drat-trim. So the absence of
-wrong answers on benchmarks was never evidence that the rules were sound. Three things in this paper bear on that. Reading the rules in pathwidth language put the correct rule, the
+wrong answers on benchmarks was never evidence that the rules were sound. Three findings of this paper bear on the soundness of dominance rules. Reading the rules in pathwidth language put the correct rule, the
 commitment lemma, beside the published one. Proving each rule on its own was
 not enough: the order in which the rules run matters, because a cycle of true
 links can still lose a node (Section~\ref{sec:theorem}). And a certificate
 whose checker recomputes every premise rejects the false refutation that a
 checker of the published premises accepts (Section~\ref{sec:certs}). Our correction
-is cheap: one bipartite matching per candidate and at most 2\% more nodes per
-benchmark set. Our corrected search re-proved all 115 benchmark optima that
+is cheap: one bipartite matching per candidate and at most 2\% more nodes on each group of benchmarks we measured. Our corrected search re-proved all 115 benchmark optima that
 rested on the previous algorithm, and changed none.
 
 \paragraph{What a reader can do differently.} Cite our table as corrected here,
@@ -81,7 +77,7 @@ to be wrong, but their refutations are not proved.
   (Section~\ref{sec:certs}).
 \item LaPaugh's equality $\es=\pes$ is stated and not formalised. No row
   needs it (Section~\ref{sec:true}).
-\item One reference of the table, \citet{LY2002ref5}, is not held. Its row,
+\item One reference of the table, \citet{LY2002ref5}, is one we could not obtain. Its row,
   interval thickness, is proved from two other
   references of the table
   (Section~\ref{sec:true}).
@@ -96,10 +92,9 @@ to be wrong, but their refutations are not proved.
 \end{itemize}
 
 \paragraph{Open problems.} One value of the MOSP corpus,
-\path{Random-125-125-2-2_0}, has never been certified. As of 9 October 2026 the
-split search is still refuting the value minus one and has found no order of
+\path{Random-125-125-2-2_0}, has never been certified. As of 11 October 2026 (Table~\ref{tab:split}) the split search is still refuting the value minus one and has found no order of
 the smaller value; the other value that was open, \path{Random-125-125-2-3_0},
-was certified on 9 October (Section~\ref{sec:practice}). Of the 17,714 classes of the dataset, 1,627 have
+was certified on 9 October (Section~\ref{sec:practice}). Of the 17,714 classes of the dataset, 1,626 have
 no certified pathwidth. One more budget step for every open class within the
 size our implementation handles costs at most 500 core-hours, but on the Rome graphs each such step has closed only about
 40\% of what it attempted, so the graph sets will not close by budget alone.

@@ -95,7 +95,7 @@
 % Affiliations are not invented: the owner fills them in.
 \author{Alexandre Linhares\\{\small\fbox{affiliation to be added}} \and
 Horacio Hideki Yanasse\\{\small\fbox{affiliation to be added}}}
-\date{Draft, 6 October 2026}
+\date{Draft, 11 October 2026}
 
 \begin{document}
 \maketitle
@@ -107,33 +107,38 @@ design and graph theory, the minimization of open stacks problem (MOSP) among
 them, as equal ``plus or minus one'', and gave no proofs
 \citep{Linhares2001,LY2002}. We show that most of them are, mathematically, one
 quantity, \emph{graph pathwidth}, studied independently by communities that
-rarely cite one another, and we correct our table. Eight rows
-are exact, counting pathwidth itself: each equals pathwidth or pathwidth plus
-one. Two lie in bands one and two wide, and two are false as stated. We add
-three members the table missed, among them the maximum wavefront of sparse
-matrix elimination, which brings a fourth discipline, numerical linear algebra,
-into the family. Every relation is machine-checked in Lean. We call this
-cluster the \emph{pathwidth complex}, as the literature uses that name more
+rarely cite one another, and we correct our table. Eight rows are exact,
+counting pathwidth itself: each equals pathwidth or pathwidth plus one. Two lie
+in \emph{bands}: they stay within one or two of pathwidth, but not at a fixed
+offset. Two are false as stated. We add three members the table missed, among
+them the maximum wavefront of sparse matrix elimination, which brings a fourth
+discipline, numerical linear algebra, into the family. Every relation is
+machine-checked in the Lean proof assistant. We call this cluster the
+\emph{pathwidth complex}, as the literature uses the name \emph{pathwidth} more
 than three times as often as the other eleven names combined. Since 2005, the
 next most active name is MOSP, and the open-stacks community produced, by way
-of the 2005
-Constraint Modelling Challenge, the best exact algorithm for MOSP, the customer
-search of \citet{ChuStuckey2009}, which is also a pathwidth algorithm. We prove
-in Lean that two of its published dominance theorems are false. On a
-34-customer instance our implementation of their algorithm, with one
-rule off, reports an optimum of 7; our corrected search proves the optimum is
-6, as does a SAT solver with a checked DRAT proof. Our corrected rule was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016};
-we test it with one bipartite matching per candidate and prove our corrected
-search sound. We re-prove all 115 benchmark optima that rested on Chu and
-Stuckey's algorithm, changing none. Ported to graphs, our corrected search
-proves, within 600 seconds per graph, the pathwidth of 11,194 of the 11,534
-Rome graphs, a standard graph-drawing benchmark of 10 to 110 vertices, and of
-as many or more graphs than the best published exact solver on every benchmark
-set. Our proofs and our solvers are open source. We also release a dataset of
-17,714 distinct graphs from twenty benchmark collections of the twelve
-problems, MOSP instances and the graph benchmarks above among them, 16,087 of
-them with a certified pathwidth, with independent checkers. We believe ours is currently the strongest exact
-pathwidth solver openly available.
+of that year's Constraint Modelling Challenge, the best exact algorithm for
+MOSP: the \emph{customer search} of \citet{ChuStuckey2009}, which branches on
+the order in which customers' stacks close, and which is also a pathwidth
+algorithm. We prove in Lean that two of its published dominance theorems,
+rules that discard a branch as no better than another, are false. On a
+34-customer instance our implementation of their algorithm, with its better
+move off, reports an optimum of 7; our corrected search proves the optimum is
+6, as does a SAT solver with a checked DRAT proof. Our corrected definite move,
+the first of the two, was also found by Tamaki as a lemma
+\citep[Lemma~1]{Kitsunai2016}; we test it with one bipartite matching per
+candidate and prove our corrected search sound. We re-prove all 115 benchmark
+optima that rested on Chu and Stuckey's algorithm, changing none. Ported to
+graphs, our corrected search proves, within 600 seconds per graph, the
+pathwidth of 11,194 of the 11,534 Rome graphs, a standard graph-drawing
+benchmark of 10 to 110 vertices, and, on every benchmark set with published
+exact counts, as many graphs or more than the published branch and bound of
+Coudert, Mazauric and Nisse (2016). Our proofs and our solvers are open source.
+We also release a dataset of 17,714 graphs, distinct up to isomorphism, from
+twenty benchmark collections for pathwidth and the problems equal to it, the
+MOSP instances and the Rome graphs among them, 16,088 of them with a certified
+pathwidth, with independent checkers. We believe ours is currently the
+strongest exact pathwidth solver openly available.
 \end{abstract}
 
 \input{sec1_intro}

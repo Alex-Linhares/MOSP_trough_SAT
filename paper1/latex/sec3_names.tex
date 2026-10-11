@@ -24,8 +24,7 @@ exact algorithm for the family came from, and leads to Section~\ref{sec:search}.
 29 September 2026 for each problem's name and its common variants, in titles and
 abstracts, within Computer Science, Mathematics, Engineering and Decision
 Sciences. A search hit need not use the name in the table's sense: ``narrowness''
-matches term rewriting, and ``path-width'' matches roads and tool paths. So we
-read the 2,271 hits and kept the 1,593 that are about one of the twelve problems.
+matches term rewriting, and ``path-width'' matches roads and tool paths. So we checked the 2,271 hits and kept the 1,593 that are about one of the twelve problems.
 The 700 hits for the eleven smaller names were judged one by one, by one
 annotator with model assistance; the 1,571 pathwidth hits were filtered by a
 stated rule, checked on samples. A mechanical phrase rule agrees with the
@@ -41,7 +40,7 @@ maximum wavefront belongs to a fourth discipline, numerical linear algebra.
 \centering
 \includegraphics[width=\linewidth]{sec2_fig1_name_usage.pdf}
 \caption{Pathwidth has more relevant works than the other eleven names
-together, three times over, and three names have none. Works using each
+combined, three times over, and three names have none. Works using each
 problem's name, in title or abstract, in the sense of the Linhares--Yanasse
 table; all years to September 2026. Colour gives the discipline that the table
 assigns the problem.}
@@ -52,7 +51,7 @@ assigns the problem.}
 
 Figure~\ref{fig:names} gives the counts. Pathwidth has 1,213 relevant works,
 21 times as many as MOSP and more than three times as many as the other eleven
-names together (380). Three names have no relevant work at all: narrowness,
+names combined (380). Three names have no relevant work at all: narrowness,
 split bandwidth and edge separation. Two more are rare: interval thickness has
 6 works and one-dimensional logic 11. Pathwidth is also the only name still
 growing: its 311 works in 2020--2024 are more than the whole history of any
@@ -102,8 +101,7 @@ often.
 \subsection{From an open-stacks challenge to a pathwidth solver}
 
 It is not a coincidence that the best exact algorithm for MOSP came from the
-open-stacks community and is also, on the published evidence, among the
-strongest exact algorithms for pathwidth. The account is
+open-stacks community and is also, on our measurements (Section~\ref{sec:pwsolver}), among the strongest exact algorithms for pathwidth. The account is
 in \citet[\S1]{ChuStuckey2009}. MOSP was the subject of the first Constraint
 Modelling Challenge \citep{SmithGent2005}, posed in May 2005, which drew 13
 entries. The fastest entry, by García de la Banda and Stuckey, combined dynamic
@@ -118,8 +116,7 @@ in Table~\ref{tab:periods}, 2005--2014, is the decade of this work.
 
 The customer search reads an instance only through its MOSP graph
 \citep[p.~4]{ChuStuckey2009}, so it decides pathwidth
-(Section~\ref{sec:search}). Ported to graphs, it proves more instances than
-reported on the benchmarks where published exact pathwidth results exist, those
+(Section~\ref{sec:search}). Ported to graphs, our corrected version of it proves more instances than reported on the benchmarks where published exact pathwidth results exist, those
 of \citet{CoudertMazauricNisse2016}. It proves the pathwidth of 11,194 of the
 11,534 Rome graphs (97.1\%), against their 95.6\%, both within 600 seconds per
 graph. It proves all 50 VSPLIB trees, against their 30, and 39 of the 73
@@ -129,8 +126,6 @@ Table~\ref{tab:graphs} in Section~\ref{sec:results} gives the full count.
 
 Two consequences shape the rest of the paper. First, a result on any of the
 twelve problems should be stated, and searched for, as a result on pathwidth.
-Section~\ref{sec:search} does this for the customer search. It finds that the
-search's first dominance rule is, in correct form, a theorem already known in
-the pathwidth literature, and that two of its published theorems are false.
+Section~\ref{sec:search} does this for the customer search. It finds that two of the search's published dominance theorems are false, and that the first, the definite move, is in its corrected form a lemma already known in the pathwidth literature.
 Second, a benchmark for any problem in the exact core is a pathwidth benchmark,
 which is how Section~\ref{sec:dataset} builds its dataset.

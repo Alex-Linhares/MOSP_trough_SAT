@@ -26,13 +26,13 @@ our corrected search is an exact pathwidth solver, which we release (Sections~\r
 The stakes are these. Two of the published dominance theorems, the
 \emph{definite move} and the \emph{better move}, are false, and so are their
 restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
-\citet{Fink2012}. The error is hard to make bite: on every benchmark the
-previous algorithm, the search as \citet{ChuStuckey2009} publish it, answers
-correctly, and the first whole instance on which it
-reports a wrong optimum has 34 customers and needs the old move to pass a
-false refutation on to later branches (Figure~\ref{fig:wrong}). And when we proved
-every benchmark optimum that rested on the search again with our corrected
-rules, no value changed (Section~\ref{sec:results}). Our corrected definite
+\citet{Fink2012}. The error rarely shows: on every benchmark the previous algorithm, the search
+as \citet{ChuStuckey2009} publish it, answers correctly, and the only whole
+instance we found on which our implementation of it reports a wrong optimum,
+with the better move off, has 34 customers. There the \emph{old move}, a rule
+that lets a failed sibling prune later branches, passes a false refutation on
+(Figure~\ref{fig:wrong}). And when our corrected search re-proved every
+benchmark optimum that rested on the previous algorithm, no value changed (Section~\ref{sec:results}). Our corrected definite
 move was also found by Tamaki, as the commitment lemma \citep[Lemma~1]{Kitsunai2016},
 which says when an exact pathwidth search may commit to one extension of a
 vertex set and try no other (Section~\ref{sec:layouts}). We
@@ -199,7 +199,7 @@ each piece has a one-sentence intuition.
   then closing $q$ before $r$ is at least as good as closing $r$ first.
 \end{itemize}
 Each of the three filtering rules discards a move $r$ by citing a
-\emph{covering}, a kept move $c$ with
+\emph{covering}, or \emph{link}, from $r$ to a kept move $c$ with
 $\Sol_k(S\cdot r)\Rightarrow\Sol_k(S\cdot c)$. The filter runs the definite
 move, then the subset rule, then the better move, each once. If the definite
 move fires, it keeps its customer alone.
@@ -212,7 +212,7 @@ one-vertex extension, and record failures. The customer search is that loop
 with $w=k-1$. The free closure and the definite move play the part of the
 commitment, the memo is the failure table, and the cost cut is the feasibility
 test. \citet[\S3.2]{CoudertMazauricNisse2014} has the same three parts in a
-branch and bound. Neither line cites the other in the papers we hold:
+branch and bound. Neither line cites the other in the papers we have read:
 \citet{ChuStuckey2009} predates the commitments and both 2014 papers, and none
 of the pathwidth papers cites it. This is the isolation measured in
 Table~\ref{tab:communities}, at the level of one algorithm.
@@ -426,8 +426,7 @@ vertices~\leanref{reinsert}.
 \paragraph{The memo.} Whether a state with $b(S)\le k$ has a solution depends
 on the state alone, not on the path that reached it~\leanref{memo}. One
 concern is that the memo and the old move might not combine: a refutation
-obtained with inherited old moves seems to depend on the ancestors, and one
-implementation of the search declines to run both for that reason. A node
+obtained with inherited old moves seems to depend on the ancestors, and our Python reference implementation of the search declines to run both for that reason. A node
 taken on its own, with an old move that is not in fact refuted, can indeed
 record a solvable state~\leanref{fakeold}. Theorem~\ref{thm:runs}
 (Appendix~\ref{app:machinery}) shows that this never happens in a real run,
@@ -486,30 +485,32 @@ Every one found a solution through another branch and answered correctly.
 which the previous algorithm \citep{ChuStuckey2009} gives a wrong answer. It started from
 Counterexample~\ref{cex:definite}, climbed toward graphs on which the previous
 algorithm refutes more and more of the root's solvable branches, and joined two
-copies of a 17-customer near-miss by one edge. On the resulting 34-customer
-instance (Figure~\ref{fig:wrong}), our implementation of the previous algorithm,
-with its definite move, the subset rule and the old move and with the better
-move off, answers that 6 stacks do not suffice, and it
-answers yes at 7, so it reports an optimum of 7, with a refutation as its
-proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
-Figure~\ref{fig:wrong}(b) uses 6 tracks; our corrected search finds it and
+copies of a 17-customer near-miss by one edge. On the resulting 34-customer instance (Figure~\ref{fig:wrong}), we ran our
+implementation of the previous algorithm with its definite move, the subset
+rule and the old move, and with the better move off. It answers that 6 stacks
+do not suffice and that 7 do, so it reports an optimum of 7, with a refutation
+as its proof (Figure~\ref{fig:wrong}(a)). Yet the order of
+Figure~\ref{fig:wrong}(b) keeps at most 6 stacks open (6 tracks, in the
+figure's gate matrix reading); our corrected search finds it and
 refutes 5, so the optimum is 6. A SAT solver on our encoding of MOSP
 (Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
-finds an order with 6 open stacks and proves that 5 do not suffice, with a
-DRAT proof that the independent checker drat-trim verifies. The mechanism is the old move: the definite
+finds an order with 6 open stacks and proves that 5 do not suffice, with a proof in DRAT, the standard proof format of SAT solvers, which the independent checker drat-trim verifies. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
 old move, or with the better move switched on, the previous algorithm answers
-this instance correctly; whether it can also fail in that
-configuration is open. The instance, the order each search returns and a checker
+this instance correctly; whether it can also fail in that configuration is
+open. The failing configuration separates two rules that Chu and Stuckey run as
+one: ``Our implementation of `better move' subsumes `definite move' so we will
+simply consider them as one improvement'' \citep[p.~6]{ChuStuckey2009}. Run in our implementation, their published configuration, with the better move on, answers this instance correctly. The
+theorems are false whatever the configuration, and the instance shows that a
+false dominance theorem can produce a wrong optimum. The instance, the order each search returns and a checker
 that needs nothing but Python are in the repository
-(\repofile{paper1/data/false_refutation/}, Section~\ref{sec:data}).
+(\repofile{paper1/data/false_refutation/}, page~\pageref{sec:data}).
 
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{false_refutation_34.pdf}
-\caption{The previous algorithm \citep{ChuStuckey2009} reports a wrong optimum. A 34-customer instance,
-whose 34 nets must be laid out on 61 gates. (a) The layout the previous algorithm (our
+\caption{The previous algorithm \citep{ChuStuckey2009} reports a wrong optimum. A 34-customer instance with 61 patterns, drawn as a gate matrix layout of 34 nets on 61 gates. (a) The layout the previous algorithm (our
 implementation, better move off) returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
 by our corrected search, which also proves that 5 do not suffice, as does a SAT
 solver with a DRAT proof checked by drat-trim. (c) The open
@@ -567,7 +568,7 @@ published definite and better moves are false. The free move, the memo and
 the corrected definite move are known pathwidth results. The subset rule, the corrected
 better move and the old move have no counterpart we found, and are proved
 here, as is the matching test. The comparison is limited to the pathwidth
-papers we hold
+papers we have read
 \citep{SuchanVillanger2009,Bodlaender2012,CoudertMazauricNisse2014,CoudertMazauricNisse2016,KobayashiKomuroTamaki2014,Kitsunai2016};
 ``none found'' is not a claim of priority.
 
@@ -600,5 +601,5 @@ old move & none found & proved here \\
 \paragraph{Prior reports.} We found no earlier report of the error in the 56
 works we read in full of the 141 that cite the customer search's papers
 (Appendix~\ref{app:prior}). The pathwidth literature has the correct form of
-the rule, as a commitment, and none of the pathwidth papers we hold mentions
+the rule, as a commitment, and none of the pathwidth papers we have read mentions
 MOSP.

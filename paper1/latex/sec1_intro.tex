@@ -21,8 +21,7 @@ $P_1=\{a,b\}$, $P_2=\{b,c,d\}$, $P_3=\{c,d,e\}$ and $P_4=\{e,f\}$. Made in
 order A, $P_1P_2P_3P_4$, the patterns keep at most 3 stacks open. Made in order
 B, $P_1P_3P_4P_2$, they keep 5 open, because customer $b$ is served first but
 waits for $P_2$, which comes last. Of the 24 orders, 2 reach 3 (order A and its
-reverse), 16 give 4 and 6 give 5. We showed MOSP to be NP-hard
-\citep{Linhares2001,LY2002}.
+reverse), 16 give 4 and 6 give 5.
 
 \begin{figure}[tbp]
 \centering
@@ -68,7 +67,8 @@ method eliminates its rows one at a time and must keep in memory the
 \emph{wavefront}, the rows already touched but not yet eliminated. Eliminating
 the customers in the order $a,b,\dots,f$ keeps at most 3 rows active at once,
 and no order does better: the least maximum wavefront is again the pathwidth
-plus one (Theorem~\ref{thm:core}).
+plus one (Theorem~\ref{thm:core}). This fourth reading is not in our 2002
+table, and we add it below.
 
 \begin{table}[tbp]
 \centering
@@ -127,53 +127,52 @@ defines it but does not state the equality, which we prove in Lean
 \end{tabular}
 \end{table}
 
-\citet{LY2002} collected twelve such problems, from operations research, VLSI
-design and graph theory, in the table that Table~\ref{tab:ly2002} reproduces.
-Each computes, on corresponding inputs, ``a function $f(\Pi)$ that is either
-equal to the number of open stacks or closely related to it (plus or minus
-one)'' \citep[p.~1764]{LY2002}. The table gives a reference for each problem,
-but no proofs and no graph of which problem reduces to which. ``Plus or minus
-one'' has two readings. Under the \emph{literal} reading, $f$ is within one of
-the number of open stacks on every input. Under the \emph{fixed-offset}
-reading, $f$ equals the number of open stacks plus one constant, the same on
-every input. Only the second makes solving one problem the same as solving
-another. We call the problems that are, on every input, pathwidth or
-pathwidth plus one the \emph{pathwidth complex}: most of the table, and three
-problems we originally missed. Pathwidth is the quantity through which every true relation
-in the table is proved (Section~\ref{sec:equiv}), and it is the name the
-literature uses, more than three times as often as the other eleven names of
-the table together (Section~\ref{sec:names}); a reader who searches under
-``open stacks'' or ``gate matrix layout'' misses most of what is known. This
-paper asks: \emph{which of the equalities in
-the Linhares--Yanasse table are true, and what follows when results,
-algorithms and benchmarks are moved between the twelve problems through
-pathwidth?}
+We collected twelve such problems \citep{LY2002}, from operations research,
+VLSI design and graph theory, in the table that Table~\ref{tab:ly2002}
+reproduces. Each computes, on corresponding inputs, ``a function $f(\Pi)$ that
+is either equal to the number of open stacks or closely related to it (plus or
+minus one)'' \citep[p.~1764]{LY2002}. The table gives a reference for each
+problem, but no proofs and no graph of which problem reduces to which. ``Plus
+or minus one'' has two readings. Under the \emph{literal} reading, $f$ is
+within one of the number of open stacks on every input. Under the
+\emph{fixed-offset} reading, $f$ equals the number of open stacks plus one
+constant, the same on every input. Only the second makes solving one problem
+the same as solving another. We call the problems that are, on every input,
+pathwidth or pathwidth plus one the \emph{pathwidth complex}: most of the
+table, and three problems we originally missed. Pathwidth is the quantity
+through which every true relation in the table is proved
+(Section~\ref{sec:equiv}). It is also the name the literature uses, more than
+three times as often as the other eleven names combined (Section~\ref{sec:names}),
+so a reader who searches under ``open stacks'' or ``gate matrix layout''
+misses most of what is known. The communities that could have checked the
+table rarely read each other: of 844 works that cite the table's papers, only
+six cite both an open-stacks paper and a graph-theory paper.
 
-The table is ours, and it has a history that explains why that question, which of its equalities are
-true, is still open. It was first printed in 2001, in the first author's doctoral thesis
-\citep[Table~2.1, p.~13]{Linhares2001}, supervised by the second author, which proved MOSP
-NP-hard and equal to gate matrix layout. Its rows were collected over the years
-of the doctorate, while reading the literature of each field. Each came with a
-reference and nothing else. No row's relation to open stacks was checked, no
-published proof was restated, and no graph said which problem reduces to which.
-The table appeared again, row for row, as Table~1 of \citet{LY2002}, and it has
-been read since as a statement of equivalence.
+The table is ours, and its history explains why no one checked which of its
+equalities are true. It was first printed in 2001, in the first author's
+doctoral thesis \citep[Table~2.1, p.~13]{Linhares2001}, supervised by the
+second author, which proved MOSP NP-hard and equal to gate matrix layout. Its
+rows were collected over the years of the doctorate, while reading the
+literature of each field. Each came with a reference and nothing else: no
+row's relation to open stacks was checked, and no published proof was
+restated. The table appeared again, row for row, as Table~1 of \citet{LY2002},
+and it has been read since as a statement of equivalence.
 \citet{GarciaDeLaBandaStuckey2007}, for instance, credit the speed of their
 search in this journal to ``the fact that the problem is fixed parameter
 tractable (Linhares and Yanasse 2002)''. When MOSP was set as the first
 Constraint Modelling Challenge in 2005, the organisers' report pointed to the
 table for the problems equivalent to it, ``including graph path-width'', and
 credited the second author with the idea of permuting customers rather than
-products \citep{SmithGent2005,Yanasse1997b}, the idea on which the exact search
-of Section~\ref{sec:search} branches. So the table is already used to
-justify algorithms, and whether it is true matters. If it is true, \emph{every result}
-about any one of the twelve problems transfers to \emph{all} the others. Looking back,
-the table was the thesis's most important finding, and this article does what
-the thesis did not: it states each problem precisely, proves what is true and
-refutes what is not. The communities that could have checked the table
-rarely read each other: of 844 works that cite the table's papers,
-only six cite both an open-stacks paper and a graph-theory paper
-(Section~\ref{sec:names}).
+products \citep{SmithGent2005,Yanasse1997b}, the idea on which Chu and
+Stuckey's customer search (Section~\ref{sec:search}) branches. So the table is
+already used to justify algorithms, and whether it is true matters. If it is
+true, \emph{every result} about any one of the twelve problems transfers to
+\emph{all} the others. Looking back, the table was the thesis's most important
+finding, and this article does what the thesis did not: it states each problem
+precisely, proves what is true and refutes what is not. This paper asks:
+\emph{which of the equalities in the Linhares--Yanasse table are true, and what
+follows when results, algorithms and benchmarks are moved between the twelve
+problems through pathwidth?}
 
 \paragraph{Three more members.} The table was also incomplete. Progressive
 pebbling, a game in which pebbles are placed on the vertices of a graph and
@@ -185,19 +184,16 @@ already cites, for its edge-search and edge-separation rows, yet pebbling
 itself is not among its problems. \citet[(5.1)]{BRST1991} search for a fugitive
 who hides in the vertices, not the edges, and need exactly pathwidth plus one
 searchers on every graph with a vertex, including the edgeless graphs where the
-table's node search row fails. From numerical linear algebra, the frontal method for a
-sparse symmetric matrix stores, at each step, the \emph{wavefront}: the rows
-still active, the current row together with every later row that has a nonzero
-in a column already eliminated \citep[\S2.1]{KumfertPothen1997}. Ordering the
-matrix so that the largest wavefront is small is the problem of the table: the
-least maximum wavefront is the pathwidth of the matrix's graph plus one, on
-every nonempty matrix. We add the three as the last rows of
-Table~\ref{tab:ly2002}, marked as new, and prove all three relations in Lean
-(Appendix~\ref{app:thirteenth}). For pebbling and the vertex
-search, what is new is the membership: the equivalences were published, but
-the table did not include them. For the wavefront the equality itself is ours.
-It is elementary, the wavefront being narrowness read in another form, but no
-source we hold states it.
+table's node search row fails. From numerical linear algebra, the wavefront of
+the frontal method, met above \citep[\S2.1]{KumfertPothen1997}, is the problem
+of the table: the least maximum wavefront is the pathwidth of the matrix's
+graph plus one, on every nonempty matrix. We add the three as the last rows of
+Table~\ref{tab:ly2002}, marked as new, and prove all three relations in the
+Lean proof assistant (Appendix~\ref{app:thirteenth}). For pebbling and the
+vertex search, what is new is the membership: the equivalences were published,
+but the table did not include them. For the wavefront the equality itself is
+ours: it is elementary, as the wavefront is narrowness read in another form,
+but no source we have read states it.
 
 \paragraph{What we find.}
 \begin{itemize}
@@ -205,39 +201,49 @@ source we hold states it.
   input, outside degenerate cases such as an empty graph, the problem equals
   pathwidth or pathwidth plus one (the pathwidth row itself is one of the
   eight). Two rows, split bandwidth and edge
-  search, lie in bands one and two wide. Two rows, PLA folding and edge
+  search, lie in \emph{bands}: within one and two of pathwidth, but not at a
+  fixed offset. Two rows, PLA folding and edge
   separation, are false as stated, with counterexamples. A variant of each
   false row is exact. Three problems outside the table are exact members
   too: progressive pebbling, a vertex search, and the maximum wavefront of
   sparse matrix elimination (Section~\ref{sec:equiv}).
 \item \emph{One name.} The literature has settled on ``pathwidth'', which has
   more than three times as many relevant works as the other eleven names
-  together. Since 2005, after pathwidth, the most active name of the twelve is
+  combined. Since 2005, after pathwidth, the most active name of the twelve is
   MOSP, and the best exact search for the whole family came from that
   community, by way of the 2005 Constraint Modelling Challenge
   (Section~\ref{sec:names}).
-\item \emph{Our corrected search, and a pathwidth solver.} The best exact
-  algorithm for MOSP, the customer search of \citet{ChuStuckey2009}, is also a
-  pathwidth algorithm. We prove in Lean, however, that two of its published
-  dominance theorems are false, as are their later restatements
-  \citep{Chu2011,Fink2012}: each can discard the last solution at a node. We
-  provide a counterexample instance: their algorithm obtains an optimum of 7,
-  while our corrected version obtains 6, provable also by a SAT solver
-  (Section~\ref{sec:search}). Our corrected rule was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016},
-  in the exact pathwidth literature; we show that it can be tested by one
-  bipartite matching per candidate, and prove our corrected search sound. It
-  costs at most 2\% more search nodes over each benchmark set. Ported to
-  graphs, it is an exact pathwidth solver, which we release: it proves the
-  pathwidth of 11,194 of the 11,534 Rome graphs within 600 seconds each, all 50
-  VSPLIB trees and 39 of the 73 Harwell--Boeing graphs, as many or more on each
-  set than the published branch and bound of \citet{CoudertMazauricNisse2016}
-  (Sections~\ref{sec:search} and~\ref{sec:results}).
+\item \emph{Two false theorems, and our correction.} The best exact algorithm
+  for MOSP, the \emph{customer search} of \citet{ChuStuckey2009}, which we call
+  the previous algorithm, branches on the order in which customers' stacks
+  close, and it is also a pathwidth algorithm. We prove in Lean, however, that
+  two of its published dominance theorems, the \emph{definite move} and the
+  \emph{better move}, are false, as are their later restatements
+  \citep{Chu2011,Fink2012}: each can discard the last remaining solution at a
+  node of the search tree. We provide a counterexample instance: our
+  implementation of their algorithm, with its better move off, obtains an
+  optimum of 7, while our corrected version obtains 6, provable also by a SAT
+  (Boolean satisfiability) solver (Section~\ref{sec:search}). Our corrected
+  definite move was also found by Tamaki as a lemma
+  \citep[Lemma~1]{Kitsunai2016}, in the exact pathwidth literature; we show
+  that it can be tested by one bipartite matching per candidate, and prove our
+  corrected search sound. Our correction costs at most 2\% more search nodes
+  on each group of benchmarks we measured.
+\item \emph{A pathwidth solver.} Ported to graphs, our corrected search is an
+  exact pathwidth solver, which we release. Within 600 seconds per graph it
+  proves the pathwidth of 11,194 of the 11,534 Rome graphs, a graph-drawing
+  benchmark of 10 to 110 vertices; all 50 trees of VSPLIB, a benchmark library
+  for vertex separation; and 39 of its 73 Harwell--Boeing graphs, the sparsity
+  patterns of engineering matrices. On each set this is as many graphs or more
+  than the published branch and bound of \citet{CoudertMazauricNisse2016}
+  (Section~\ref{sec:results}).
 \item \emph{Benchmarks re-certified, and a dataset.} Our corrected search
-  re-proved all 115 benchmark optima that rested on the previous algorithm, and
-  none changed. We release 17,714 graphs, distinct up to
-  isomorphism, from twenty benchmark collections of the twelve problems; 16,087
-  have a certified pathwidth with a layout that attains it, and so a certified
-  value for every exact problem in the table (Section~\ref{sec:results}).
+  re-proved all 115 benchmark optima, on 113 distinct graphs, that rested on
+  the previous algorithm, and none changed. We release 17,714 graphs, distinct
+  up to isomorphism, from twenty benchmark collections of MOSP, VLSI layout,
+  vertex separation, graph drawing and treewidth; 16,088 have a certified
+  pathwidth with a layout that attains it, and so a certified value for every
+  problem of the pathwidth complex (Section~\ref{sec:results}).
 \end{itemize}
 
 \paragraph{How to read the paper.} Section~\ref{sec:equiv} states the twelve
@@ -245,14 +251,13 @@ problems and proves what is true. Section~\ref{sec:names} measures which names
 and communities the literature uses. Section~\ref{sec:search} reads the exact
 open-stacks search as a pathwidth algorithm, finds the two false rules and
 proves our corrected search sound. Section~\ref{sec:results} reports what our
-corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} answers the question this paper asks: which
-equalities of the table are true, and what follows from them.
-Every theorem we state is machine-checked in the Lean~4 proof assistant. The
+corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} returns to the question this paper asks.
+Every theorem we state is machine-checked in the Lean~4 proof assistant, unless
+the text says otherwise. The
 reader need not read Lean: each proof is given or cited in the text, and
 Appendix~\ref{app:lean} maps each result to its formal statement.
 Appendix~\ref{app:machinery-all} holds the supporting material,
-Appendix~\ref{app:names} the bibliometric method, and the data,
-code and proofs are described at the end of the paper (page~\pageref{sec:data}).
-The Lean development, both solvers, the dataset and an independent checker for
-each are openly available, the code and proofs as open source under the MIT
-licence (page~\pageref{sec:data}).
+and Appendix~\ref{app:names} the bibliometric method. The Lean development,
+both solvers, the dataset and an independent checker for each are openly
+available, the code and proofs as open source under the MIT licence
+(page~\pageref{sec:data}).
