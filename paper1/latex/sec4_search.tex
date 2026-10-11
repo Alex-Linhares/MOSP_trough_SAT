@@ -26,7 +26,7 @@ The stakes are these. Two of the published dominance theorems, the
 \emph{definite move} and the \emph{better move}, are false, and so are their
 restatements in Chu's thesis \citep{Chu2011} and, with a stronger premise, in
 \citet{Fink2012}. The error is hard to make bite: on every benchmark the
-published search answers correctly, and the first whole instance on which it
+previous algorithm answers correctly, and the first whole instance on which it
 reports a wrong optimum has 34 customers and needs the old move to pass a
 false refutation on to later branches (Figure~\ref{fig:wrong}). And when every
 benchmark optimum that rested on the search was proved again with repaired
@@ -353,7 +353,7 @@ when the repair holds.
 
 The bipartite graph has at most $\close-1$ customers on one side and $\open$
 stacks on the other, and the matching can stop at $\open-1$ edges. Every $q$
-with $\open(q,S)\le1$ passes at once, so the published rule is right
+with $\open(q,S)\le1$ passes at once, so the definite move of the previous algorithm is right
 there~\leanref{open1}.
 
 \subsection{The other rules}
@@ -474,19 +474,19 @@ proved. Three checks link them:
 Section~\ref{sec:certs} adds a certificate checker for individual
 refutations.
 
-\paragraph{The published rules.} Under the published rules the filter is not
+\paragraph{The previous algorithm.} Under it, the filter is not
 node-sound~\leanref{notsound}. In a check of 570,206 runs with memo and old
 move, it lost the last solution at a node in 58 runs, all on graphs built
 around Counterexample~\ref{cex:definite} and all at $k$ equal to the optimum.
 Every one found a solution through another branch and answered correctly.
 
 \paragraph{A wrong optimum.} A targeted search did produce a whole instance on
-which the published rules \citep{ChuStuckey2009} give a wrong answer. It started from
-Counterexample~\ref{cex:definite}, climbed toward graphs on which the published
-rules refute more and more of the root's solvable branches, and joined two
+which the previous algorithm \citep{ChuStuckey2009} gives a wrong answer. It started from
+Counterexample~\ref{cex:definite}, climbed toward graphs on which the previous
+algorithm refutes more and more of the root's solvable branches, and joined two
 copies of a 17-customer near-miss by one edge. On the resulting 34-customer
-instance (Figure~\ref{fig:wrong}), the search with the published definite move,
-the subset rule and the old move answers that 6 stacks do not suffice, and it
+instance (Figure~\ref{fig:wrong}), the previous algorithm, with its definite move,
+the subset rule and the old move, answers that 6 stacks do not suffice, and it
 answers yes at 7, so it reports an optimum of 7, with a refutation as its
 proof (Figure~\ref{fig:wrong}(a)). Yet the layout of
 Figure~\ref{fig:wrong}(b) uses 6 tracks; our repaired search finds it and
@@ -496,8 +496,8 @@ finds an order with 6 open stacks and proves that 5 do not suffice, with a
 DRAT proof that the independent checker drat-trim verifies. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
 the later branches, which then skip the moves their solutions need. Without the
-old move, or with the better move switched on, the published search answers
-this instance correctly; whether the published rules can also fail in that
+old move, or with the better move switched on, the previous algorithm answers
+this instance correctly; whether the previous algorithm can also fail in that
 configuration is open. The instance, the order each search returns and a checker
 that needs nothing but Python are in the repository
 (\repofile{paper1/data/false_refutation/}, Section~\ref{sec:data}).
@@ -505,11 +505,11 @@ that needs nothing but Python are in the repository
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=\linewidth]{false_refutation_34.pdf}
-\caption{The published rules \citep{ChuStuckey2009} report a wrong optimum. A 34-customer instance,
-whose 34 nets must be laid out on 61 gates. (a) The layout the search with the published
-rules returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
+\caption{The previous algorithm \citep{ChuStuckey2009} reports a wrong optimum. A 34-customer instance,
+whose 34 nets must be laid out on 61 gates. (a) The layout the previous algorithm
+returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
 by our repaired search, which also proves that 5 do not suffice. (c) The open
-stacks at each gate of the two orders: the published order reaches 7 in the
+stacks at each gate of the two orders: the previous algorithm's order reaches 7 in the
 first copy, where the optimal order never exceeds 6.
 (d) The instance's graph, two copies of a near-miss joined by one edge.}
 \label{fig:wrong}
@@ -569,7 +569,7 @@ papers we hold
 
 \begin{table}[t]
 \centering\small
-\caption{Two published rules are false; the free move, the memo and the
+\caption{Two rules of the previous algorithm are false; the free move, the memo and the
 repaired definite move are known pathwidth results; the subset rule, the
 repaired better move and the old move, like the matching test, are proved here.
 Each rule of the customer search against the exact-pathwidth literature.}
@@ -578,8 +578,8 @@ Each rule of the customer search against the exact-pathwidth literature.}
 \toprule
 Rule & Published counterpart & Status \\
 \midrule
-definite move, published & endpoint case of a commitment (Lemma~\ref{lem:endpoint}) & false (Cex.~\ref{cex:definite}) \\
-better move, published & none found & false \\
+definite move, previous algorithm & endpoint case of a commitment (Lemma~\ref{lem:endpoint}) & false (Cex.~\ref{cex:definite}) \\
+better move, previous algorithm & none found & false \\
 \midrule
 free move & full sets \citep{SuchanVillanger2009}; \citet[Prop.~3]{Kitsunai2016} & known \\
 definite move, $\open\le1$ & depth-one commitments; greedy step; push rule & known \\

@@ -38,7 +38,7 @@ one another, and most of what is known about the family is published under
 \paragraph{What the search teaches about dominance rules.} The two false
 theorems were published in 2009 and restated in later work, and the
 implementations that use them reported no failure. On every benchmark, and in
-every run of our checks where the published rules lost the last solution at a
+every run of our checks where the previous algorithm lost the last solution at a
 node, another branch found a solution (Section~\ref{sec:theorem}). It took a
 search built for the purpose to find a whole instance with a wrong optimum,
 34 customers and one stack too many (Figure~\ref{fig:wrong}). So the absence of
@@ -57,7 +57,7 @@ Table~\ref{tab:master}, rather than the 2002 one. Look for results on MOSP and
 gate matrix layout under ``pathwidth''. And in any implementation of the rules
 of \citet{ChuStuckey2009}, including the code behind the optima of
 \citet{Frinhani2018} that \citet{MartinYanassePinto2022} reuse
-(Appendix~\ref{app:prior}), replace the published definite and better moves
+(Appendix~\ref{app:prior}), replace the definite and better moves of the previous algorithm
 with the matching test. The values those implementations report are not known
 to be wrong, but their refutations are not proved.
 

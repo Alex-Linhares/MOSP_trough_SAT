@@ -208,7 +208,7 @@ def cost_table() -> str:
     lines.append(f"\\quad VSPLIB, colouring, named, 500 Rome & 4--2{{,}}916 & {_n(both)} of {_n(total)} & "
                  f"{_n(old)} & {_n(rep)} & {rep / old:.3f} & -- \\\\")
     body = ["\\begin{tabular}{@{}llrrrrr@{}}", "\\toprule",
-            "Instances & Vertices & Pairs finished & Nodes, published & Nodes, repaired & "
+            "Instances & Vertices & Pairs finished & Nodes, previous & Nodes, repaired & "
             "Total ratio & Largest pair ratio \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     return _write("cost.tex", "paper1/data/solver_fix_cost_{mosp40,cs,cs125,pw}.csv", body)
 
