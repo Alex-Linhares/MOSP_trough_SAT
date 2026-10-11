@@ -20,7 +20,28 @@ and an order beats the published "optimum".
 Reproduce both searches with the repository's solver:
 
     python -m pytest tests/test_false_refutation_instance.py
-    python -m paper2.false_refutation_figure
+    python -m paper1.false_refutation_figure
 
-Found 2026-10-09: `paper2/false_refutation_hunt.py` and
-`paper2/near_miss_study.py`; write-up in `paper2/false_refutation.md`.
+Found 2026-10-09: `paper1/false_refutation_hunt.py` and
+`paper1/near_miss_study.py`; write-up in `paper1/false_refutation.md`.
+
+## The DRAT refutation of k = 5 (`drat/`)
+
+The SAT encoding of Appendix D (`satisfiability/mosp_encoding.py`) at k = 5:
+31,598 variables, 109,923 clauses. CaDiCaL 1.9.5 refutes it in 53 s and logs
+a DRAT proof of 1,403,159 lemmas (112 MB gzipped, not committed); drat-trim
+verifies it in 44 s.
+
+| file | what it is |
+|---|---|
+| `false_refutation_34__k5.json` | the certificate record: encoding parameters, CNF and proof SHA-256 |
+| `false_refutation_34__k5.core.drat.xz` | the proof trimmed by drat-trim (`drat-trim f.cnf p.drat -l core.drat`) to the lemmas the refutation uses, 27 MB as xz |
+| `false_refutation_34__k5.core.drat.xz.sha256` | its SHA-256 |
+| `check_proof.sh` | rebuilds the CNF from the instance, checks its hash against the record, checks the proof |
+
+From the repository root (about 35 s; needs `tools/drat-trim` built):
+
+    bash paper1/data/false_refutation/drat/check_proof.sh
+
+Expected: `s VERIFIED`. With k = 6 satisfiable (the repaired order above),
+the optimum is 6, independently of both customer searches.

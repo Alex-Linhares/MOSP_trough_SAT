@@ -59,11 +59,9 @@ Started 2026-10-09. Check items off as they are done.
 
 ## Data and proofs
 
-- [ ] **The trimmed DRAT proof for the 34-customer instance:** 27 MB as xz,
-      verified by drat-trim. It is in the session scratch folder (`drat/core.drat.xz`).
-      Copy it into `data/false_refutation/drat/` with its SHA-256 and the
-      command that checks it, or ship a script that regenerates it (about
-      1.5 minutes) and keep the file for the release.
+- [x] **The trimmed DRAT proof for the 34-customer instance** (2026-10-11):
+      `data/false_refutation/drat/false_refutation_34__k5.core.drat.xz`, 27 MB,
+      with its SHA-256 and `check_proof.sh` (rebuilds the CNF, `s VERIFIED` in 35 s).
 - [ ] **The never-certified MOSP values.** `Random-125-125-2-3_0` = 21 was
       **certified on 2026-10-09** (k = 20 refuted, 9,665 tasks, 4.25 × 10¹²
       nodes, 1,128 core-hours). `solutions/Random-125-125-2-3_0.json` still says

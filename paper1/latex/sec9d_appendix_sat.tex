@@ -56,4 +56,8 @@ in 9~s and at $k=6$ in 56~s, with an order whose peak simulates to 6, and
 ``unsatisfiable'' at $k=5$ in 158~s. CaDiCaL~1.9.5 refutes $k=5$ in 53~s with
 a DRAT proof of 1.4 million lemmas (112\,MB compressed), which drat-trim
 verifies in 44~s. So the optimum is 6, independently of both versions of the
-customer search, with a refutation that a third party can check.
+customer search, with a refutation that a third party can check. The
+repository holds the proof trimmed by drat-trim to the lemmas the refutation
+uses (27\,MB compressed) and a script that rebuilds the formula from the
+instance and checks the proof in about 35~s
+(\repofile{paper1/data/false_refutation/drat/}).
