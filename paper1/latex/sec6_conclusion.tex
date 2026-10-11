@@ -43,8 +43,9 @@ node, another branch found a solution (Section~\ref{sec:theorem}). It took a
 search built for the purpose to find a whole instance with a wrong optimum,
 34 customers and one stack too many (Figure~\ref{fig:wrong}), in our
 implementation of the previous algorithm with the better move off; the optimum
-of 6 is confirmed by a SAT solver with a DRAT proof checked by drat-trim, and
-the whole run is checked in Lean. So the absence of
+of 6 is confirmed by a SAT solver with a DRAT proof checked by drat-trim, and the whole run is a theorem checked in Lean
+(Theorem~\ref{thm:wrong}): a false dominance theorem, run as published,
+returns a wrong optimum. So the absence of
 wrong answers on benchmarks was never evidence that the rules were sound. Three findings of this paper bear on the soundness of dominance rules. Reading the rules in pathwidth language put the correct rule, the
 commitment lemma, beside the published one. Proving each rule on its own was
 not enough: the order in which the rules run matters, because a cycle of true

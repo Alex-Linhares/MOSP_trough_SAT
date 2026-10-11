@@ -492,11 +492,30 @@ do not suffice and that 7 do, so it reports an optimum of 7, with a refutation
 as its proof (Figure~\ref{fig:wrong}(a)). Yet the order of
 Figure~\ref{fig:wrong}(b) keeps at most 6 stacks open (6 tracks, in the
 figure's gate matrix reading); our corrected search finds it and
-refutes 5, so the optimum is 6. The whole run is also checked in Lean. A
-transcription of the previous algorithm, proved to be a run of the search of
-Section~\ref{sec:search-def} with the published filter, refutes 6 and finds 7
-in the Lean kernel, making exactly the calls of our Python implementation,
-while the optimum is proved to be 6 and the pathwidth 5~\leanref{wrong}. A SAT solver on our encoding of MOSP
+refutes 5, so the optimum is 6. This is a theorem, checked in Lean.
+
+\begin{theorem}[the previous algorithm reports a wrong optimum]\label{thm:wrong}
+Let $G_{34}$ be the MOSP graph of the 34-customer instance of
+Figure~\ref{fig:wrong}. Run with its definite move as published, the subset
+rule, the old move and the memo, and with the better move off, the previous
+algorithm refutes $k=6$ on $G_{34}$ and finds a solution at $k=7$, so it
+reports an optimum of 7. The optimum is 6, and the pathwidth of $G_{34}$ is
+5~\leanref{wrong}.
+\end{theorem}
+
+The proof is a computation checked by the Lean kernel itself, with no
+unverified evaluation. A transcription of the previous algorithm is proved, for
+every graph and every $k$, to produce runs of the search of
+Section~\ref{sec:search-def} with the published filter. On $G_{34}$ it refutes
+6 in 526 nodes with the memo and in 839 without it, the counts of our C and
+Python implementations, and without the memo it makes exactly the calls of our
+Python implementation, in the same order and at the same states. The optimum 6
+is proved in Lean as well, by a sound filter. So the node-level failure of the
+published filter (Counterexample~\ref{cex:definite}) is not only a possibility:
+on this instance it reaches the root, and the answer is wrong. What the theorem
+does not prove is that the transcription matches our code line for line; that
+rests on reading it and on tests, which every node count, the full trace and
+eight mutated traces passed. A SAT solver on our encoding of MOSP
 (Appendix~\ref{app:sat}), which shares no code with either search, agrees: it
 finds an order with 6 open stacks and proves that 5 do not suffice, with a proof in DRAT, the standard proof format of SAT solvers, which the independent checker drat-trim verifies. The mechanism is the old move: the definite
 move falsely refutes a subtree, and the old move passes that refutation on to
@@ -516,8 +535,7 @@ that needs nothing but Python are in the repository
 \includegraphics[width=\linewidth]{false_refutation_34.pdf}
 \caption{The previous algorithm \citep{ChuStuckey2009} reports a wrong optimum. A 34-customer instance with 61 patterns, drawn as a gate matrix layout of 34 nets on 61 gates. (a) The layout the previous algorithm (our
 implementation, better move off) returns and certifies as optimal: 7 tracks. (b) A layout with 6 tracks, found
-by our corrected search, which also proves that 5 do not suffice, as does a SAT
-solver with a DRAT proof checked by drat-trim. (c) The open
+by our corrected search, which also proves that 5 do not suffice, as do a SAT solver with a DRAT proof checked by drat-trim and Lean (Theorem~\ref{thm:wrong}). (c) The open
 stacks at each gate of the two orders: the previous algorithm's order reaches 7 in the
 first copy, where the optimal order never exceeds 6.
 (d) The instance's graph, two copies of a near-miss joined by one edge.}

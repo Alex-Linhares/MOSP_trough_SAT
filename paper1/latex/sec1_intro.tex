@@ -223,8 +223,9 @@ but no source we have read states it.
   node of the search tree. We provide a counterexample instance: our
   implementation of their algorithm, with its better move off, obtains an
   optimum of 7, while our corrected version obtains 6, provable also by a SAT
-  (Boolean satisfiability) solver and in Lean, where the whole run of their
-  algorithm is checked (Section~\ref{sec:search}). Our corrected
+  (Boolean satisfiability) solver. This is a theorem checked in Lean: the
+  whole run of their algorithm on the instance, and its optimum of 6
+  (Theorem~\ref{thm:wrong}). Our corrected
   definite move was also found by Tamaki as a lemma
   \citep[Lemma~1]{Kitsunai2016}, in the exact pathwidth literature; we show
   that it can be tested by one bipartite matching per candidate, and prove our
