@@ -171,7 +171,7 @@ def draw() -> Path:
     ax_b.legend(loc="upper right", fontsize=7.5, frameon=False, ncol=1)
     for s in ("top", "right"):
         ax_b.spines[s].set_visible(False)
-    ax_b.set_title("(c) Open stacks at each gate: the previous algorithm and ours", loc="left", fontsize=8.5)
+    ax_b.set_title("(c) Open stacks at each gate:\nthe previous algorithm and ours", loc="left", fontsize=8.5)
 
     # (d) the MOSP graph: two glued copies
     G = nx.Graph()
