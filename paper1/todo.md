@@ -145,6 +145,16 @@ measurement and that, for pathwidth, it is not capped by treewidth.
         best exact MOSP algorithm, which is also a pathwidth algorithm;
       - **pathwidth -> MOSP:** the new lower bound from contracted minors, which
         settles MOSP instances that the search needed core-days for.
+- [ ] **A light touch, for the reader: Lean versus Kirousis & Papadimitriou.**
+      Mention, with humour, that Lean caught two slips in Kirousis &
+      Papadimitriou (1985, 1986): their equality ns = vs + 1 fails on graphs
+      with no edges (no searcher is needed, so ns = 0 while vs + 1 = 1;
+      `edgeless-ns`), and the proof of their Theorem 4.1 has a gap on the star
+      K_{1,3} (`kirousisPapadimitriou_claim2_false`), repaired by their own
+      Corollary 2.4; the theorem is true. Keep it accurate and affectionate:
+      name both authors, call them slips, not "serious errors", and laugh at
+      ourselves too, since our own 2002 table has the same edge-case flaw.
+      Facts in Appendix B ("Edge cases and a gap in a published proof").
 - [ ] **Say it in the paper:** "The complex gets an excellent lower bound from
       pathwidth, and an excellent algorithm from the MOSP side." The thesis of
       the transfer in one line: the minor bound comes from the pathwidth
