@@ -1,0 +1,40 @@
+2026-10-12 00:12:29 start Random-125-125-2-3_0_m70_k19: 109919 vars 252818 clauses cnf_sha256=87ab87e060b1fbd1941b8f39a449c02871b06452491c7d0bd755e273e6c42e8b
+2026-10-12 00:22:35 start myciel6_m58_k37: 133553 vars 343598 clauses cnf_sha256=cfda64b1d6ae63608dee87f83374e97f64c0402879a12c3172c1526085d26c60
+2026-10-12 00:22:35 start Random-125-125-2-1_0_m87_k22: 192814 vars 436968 clauses cnf_sha256=852b703ce05e2f33bb731249faaec1d32b2404f92f485edb1fe389d364d1edf4
+2026-10-12 00:47:46 vsmemo myciel6_m58 w=37: UNSAT n=58 w=37 outer=1 forced=0 states=24321 stored=24321 secs=0.0 Command exited with non-zero status 20 0.02 s 26912 KB 
+2026-10-12 00:47:46 checkF myciel6_m58 w=37: VERIFIED: n=58 w=37 |F|=24321, 99306 admissible extensions checked 0.02 s 2076 KB  certificate sha256=95a57847922dc98b8d6549ee268e7c373526dfca7500936d1a827778e4140a02 raw=194568 bytes
+2026-10-12 00:47:46 kept myciel6_m58 w=37: xz 63596 bytes -> proofs/myciel6_m58_w37.F.xz
+2026-10-12 00:47:46 vsmemo myciel6_m60 w=37: UNSAT n=60 w=37 outer=1 forced=0 states=46620 stored=46620 secs=0.0 Command exited with non-zero status 20 0.04 s 27424 KB 
+2026-10-12 00:47:46 checkF myciel6_m60 w=37: VERIFIED: n=60 w=37 |F|=46620, 206880 admissible extensions checked 0.06 s 2468 KB  certificate sha256=43a0b333059f806c4c090f6b33540f9ab47d277d284ece3a834fb1fa8d4794ad raw=372960 bytes
+2026-10-12 00:47:46 kept myciel6_m60 w=37: xz 127572 bytes -> proofs/myciel6_m60_w37.F.xz
+2026-10-12 00:47:49 vsmemo Random-125-125-2-3_0_m70 w=19: UNSAT n=70 w=19 outer=1 forced=0 states=2698884 stored=2698884 secs=2.7 Command exited with non-zero status 20 2.78 s 309028 KB 
+2026-10-12 00:47:53 checkF Random-125-125-2-3_0_m70 w=19: VERIFIED: n=70 w=19 |F|=2698884, 15720584 admissible extensions checked 4.42 s 49180 KB  certificate sha256=d172c02e24e06baab4c296c7621e04c1223ecf5ec34e3faf3befc93eeb6ccc13 raw=24289956 bytes
+2026-10-12 00:48:05 solved Random-125-125-2-1_0_m87_k22: rc-15 in 1530.0s, proof 4364.4 MB
+2026-10-12 00:48:21 kept Random-125-125-2-3_0_m70 w=19: xz 10315648 bytes -> proofs/Random-125-125-2-3_0_m70_w19.F.xz
+2026-10-12 00:48:25 vsmemo myciel7_m110 w=70: UNSAT n=110 w=70 outer=1 forced=0 states=3398378 stored=3398378 secs=3.6 Command exited with non-zero status 20 3.70 s 309168 KB 
+2026-10-12 00:48:32 checkF myciel7_m110 w=70: VERIFIED: n=110 w=70 |F|=3398378, 20010136 admissible extensions checked 6.50 s 94748 KB  certificate sha256=506aaefdf4a752d10f07d922dbd3e12ed2d87e397deebcd329a2799480c9b09c raw=47577292 bytes
+2026-10-12 00:49:34 kept myciel7_m110 w=70: xz 13203132 bytes -> proofs/myciel7_m110_w70.F.xz
+2026-10-12 00:49:52 vsmemo SP4_m96 w=51: UNSAT n=96 w=51 outer=1 forced=0 states=11415333 stored=11415333 secs=16.8 Command exited with non-zero status 20 17.22 s 1242924 KB 
+2026-10-12 00:50:14 checkF SP4_m96 w=51: VERIFIED: n=96 w=51 |F|=11415333, 70295525 admissible extensions checked 21.67 s 269340 KB  certificate sha256=db4498832211cbe02a7fe1abb6c769b0e8903d98696839cb00655ae4d8ca0bc0 raw=136983996 bytes
+2026-10-12 00:52:30 solved Random-125-125-2-3_0_m70_k19: rc-15 in 2401.4s, proof 7928.5 MB
+2026-10-12 00:52:55 vsmemo myciel7_m120_min-d w=71: SAT n=120 w=71 outer=1 forced=0 states=54132 stored=54012 secs=0.0 order vs=71: 95 97 98 96 99 93 63 65 70 72 73 75 71 74 76 91 92 90 94 100 103 58 60 106 66 61 68 59 62 64 102 67 104 105 107 108 118 45 28 16 18 30 19 31 17 20  Command exited with non-zero status 10 0.05 s 27680 KB 
+2026-10-12 00:54:15 kept SP4_m96 w=51: xz 44315500 bytes -> proofs/SP4_m96_w51.F.xz
+2026-10-12 00:54:54 vsmemo Random-125-125-6-1_0_m120 w=79: UNSAT n=120 w=79 outer=1 forced=0 states=23576438 stored=23576438 secs=38.4 Command exited with non-zero status 20 39.20 s 2488200 KB 
+2026-10-12 00:56:18 checkF Random-125-125-6-1_0_m120 w=79: VERIFIED: n=120 w=79 |F|=23576438, 140035774 admissible extensions checked 81.15 s 692252 KB  certificate sha256=20078e6e57ea1f70ee218906f9b05dcb46f748ecf1adf3d544034ab7b4a65d30 raw=353646570 bytes
+2026-10-12 01:03:38 vsmemo myciel7_m130_min-d w=71: UNKNOWN n=130 w=71 outer=1 forced=0 states=250000001 stored=249999989 secs=642.1 643.08 s 19690884 KB 
+2026-10-12 01:06:20 not kept Random-125-125-6-1_0_m120 w=79: xz 101670632 bytes
+2026-10-12 01:10:22 vsanneal myciel7 seed 1 900s random start: best vs=73 (cost 2663697) after 311160832 moves
+2026-10-12 01:10:34 vsmemo Random-125-125-2-1_0_m87 w=22: UNSAT n=87 w=22 outer=1 forced=0 states=139289255 stored=139289255 secs=250.5 Command exited with non-zero status 20 254.90 s 19691460 KB 
+2026-10-12 01:12:19 vsmemo myciel7_m130_least-c w=71: UNKNOWN n=130 w=71 outer=1 forced=0 states=250000001 stored=249999991 secs=520.6 521.15 s 19691348 KB 
+2026-10-12 01:14:46 checkF Random-125-125-2-1_0_m87 w=22: VERIFIED: n=87 w=22 |F|=139289255, 1009709391 admissible extensions checked 248.63 s 2994204 KB  certificate sha256=e53875468766885517bb138deb08bbc057973f6fcfb4e6876d86c1e63edf8290 raw=1532181805 bytes
+2026-10-12 01:20:03 not kept Random-125-125-2-1_0_m87 w=22: 1.53 GB raw; xz -9 stopped after 9 min at 69 MB written (would exceed 50 MB)
+2026-10-12 01:20:49 vsmemo myciel7_m140_min-d w=71: UNKNOWN n=140 w=71 outer=1 forced=0 states=250000001 stored=249999989 secs=509.5 510.19 s 19691464 KB 
+2026-10-12 01:25:22 vsanneal myciel7 seed 2 900s random start: best vs=74 (cost 2700934) after 327265280 moves
+2026-10-12 01:40:22 vsanneal myciel7 seed 3 900s random start: best vs=72 (cost 2628545) after 280410112 moves
+2026-10-12 01:49:03 vsmemo -f myciel7_m130_min-d w=71: UNKNOWN n=130 w=71 outer=1 forced=1 states=250000001 stored=249999989 secs=1111.7 1113.11 s 19688816 KB 
+2026-10-12 01:49:12 vsmemo -f myciel7_m110 w=70: UNSAT n=110 w=70 outer=1 forced=1 states=3398378 stored=3398378 secs=8.4 Command exited with non-zero status 20 8.47 s 309016 KB 
+2026-10-12 01:55:22 vsanneal myciel7 seed 4 900s from the w72 layout: best vs=72 (cost 2627401) after 298657792 moves
+2026-10-12 02:25:30 vsanneal myciel7 seed 6 1800s from the w72 layout: best vs=72 (cost 2627401) after 704037888 moves
+2026-10-12 02:25:30 vsanneal myciel7 seed 5 1800s from the w72 layout: best vs=72 (cost 2627401) after 705311744 moves
+2026-10-12 02:25:53 solved myciel6_m58_k37: rc-15 in 7397.6s, proof 9361.8 MB
+2026-10-12 02:26:07 note: every 'rc-15' above is a SAT run stopped by SIGTERM (by this session), not a solver answer
