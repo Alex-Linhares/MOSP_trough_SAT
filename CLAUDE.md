@@ -284,9 +284,20 @@ entry `benchmarks.csearch` certified with that rule was suspect: 55 of them.
 
 | provenance | count |
 |---|---|
-| `certified:refutation` | 6,372 |
+| `certified:refutation` | 6,374 |
 | `certified:bound` | 2 |
-| `solution` (optimality open) | 2 |
+| `solution` (optimality open) | 0 |
+
+**6,376 of 6,376 certified optimal (100%)** *(measured 2026-10-12, `python -m
+benchmarks.corpus`)*. The last two fell to the root split of
+`paper1/solver_fix_split.py` under the corrected rules: `Random-125-125-2-3_0`
+= 21 on 2026-10-09 (k = 20 refuted, 9,665 tasks, 1,128 core-hours) and
+`Random-125-125-2-2_0` = 25 on 2026-10-12 (k = 24 refuted, 17,001 tasks,
+7.38 × 10¹² nodes, 2,231 core-hours, the largest refutation in the project).
+Both rest on the corrected search; 2-3_0 also has an independent rule-free
+contraction-minor certificate (`reports/minor_bound_verification.md`), 2-2_0
+does not yet. `paper1/solver_fix.md`, last two addenda. The paragraph below is
+the 2026-09-30 account, kept as history.
 
 **6,374 of 6,376 certified optimal (99.97%); 2 open** *(measured 2026-09-30,
 `python -m benchmarks.corpus`)*: `Random-125-125-2-2_0` at 25 and

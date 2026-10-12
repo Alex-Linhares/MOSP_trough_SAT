@@ -59,7 +59,7 @@ Classes, not files. A class's value is its best-established member's.
 | MOSP: Challenge 2005 (second copy) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | MOSP: Faggioli & Bentivoglio | 274 | 0 | 0 | 0 | 0 | 0 | 0 |
 | MOSP: SCOOP | 24 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Chu & Stuckey | 199 | 0 | 1 | 0 | 0 | 0 | 0 |
+| MOSP: Chu & Stuckey | 200 | 0 | 0 | 0 | 0 | 0 | 0 |
 | MOSP: Carvalho & Soma 2015 | 11 | 0 | 139 | 0 | 0 | 0 | 0 |
 | MOSP: Frinhani et al. 2018, large | 0 | 0 | 0 | 0 | 0 | 0 | 610 |
 | VLSI gate matrix circuits | 5 | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -75,7 +75,7 @@ Classes, not files. A class's value is its best-established member's.
 | PACE 2017 exact | 61 | 7 | 115 | 0 | 0 | 0 | 10 |
 | PACE 2017 heuristic | 11 | 3 | 45 | 0 | 0 | 0 | 114 |
 | PACE 2017 bonus | 23 | 0 | 77 | 0 | 0 | 0 | 0 |
-| **all** | 12,553 | 3,535 | 861 | 1 | 0 | 22 | 742 |
+| **all** | 12,554 | 3,535 | 860 | 1 | 0 | 22 | 742 |
 
 ## Against published values
 

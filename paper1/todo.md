@@ -158,13 +158,15 @@ measurement and that, for pathwidth, it is not capped by treewidth.
 - [x] **The trimmed DRAT proof for the 34-customer instance** (2026-10-11):
       `data/false_refutation/drat/false_refutation_34__k5.core.drat.xz`, 27 MB,
       with its SHA-256 and `check_proof.sh` (rebuilds the CNF, `s VERIFIED` in 35 s).
-- [ ] **The never-certified MOSP values.** `Random-125-125-2-3_0` = 21 was
-      **certified on 2026-10-09** (k = 20 refuted, 9,665 tasks, 4.25 × 10¹²
-      nodes, 1,128 core-hours). `solutions/Random-125-125-2-3_0.json` still says
-      `solution`; upgrade its provenance to `certified:refutation` (owner).
-      `Random-125-125-2-2_0` = 25 is still in flight, with the watcher continuing
-      to 2026-10-29. When it closes, update Section 5, Table B.1 and the
-      conclusion (`python -m paper1.solver_fix_split --tables`).
+- [x] **The never-certified MOSP values** (closed 2026-10-12). `Random-125-125-2-3_0`
+      = 21 certified 2026-10-09 (k = 20 refuted, 9,665 tasks, 1,128 core-hours);
+      `Random-125-125-2-2_0` = 25 certified 2026-10-12 (k = 24 refuted, 17,001
+      tasks, 7.38 × 10¹² nodes, 2,231 core-hours). Both provenances upgraded;
+      the corpus is 6,376 of 6,376; dataset and paper updated.
+- [ ] **An independent certificate for `Random-125-125-2-2_0`.** It rests on the
+      corrected search alone: no minor up to 95 customers refutes 24, and
+      100-120-customer minors ran out of a 120 s budget. Try them with a long
+      budget and the rule-free checker of `reports/scratch/minor_certificates/`.
 - [ ] **Open question: can the published rules fail with the better move
       on?** The 34-customer instance fails only with the better move off.
       Restart `false_refutation_hunt.py` with fitness on the better-move

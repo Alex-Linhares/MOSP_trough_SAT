@@ -198,8 +198,7 @@ earlier in the same run, or an inherited one that passed the reinsertion test.
 \label{app:split}
 
 Table~\ref{tab:split} gives the seven hardest re-certifications of
-Section~\ref{sec:practice} and the two values never certified before, one now
-certified by the same split and one still in flight. Each instance's tree was expanded at the top into
+Section~\ref{sec:practice} and the two values never certified before, both now certified by the same split. Each instance's tree was expanded at the top into
 independent subtrees (tasks), and each task was refuted by one worker. The
 seven re-certifications ended with every task refuted and the value unchanged.
 No task of any instance has found an order of the smaller value.
@@ -207,12 +206,10 @@ No task of any instance has found an order of the smaller value.
 \begin{table}[h]
 \centering\small
 \caption{All seven hardest values re-certify unchanged, at 18 to 369
-core-hours each. Of the two values never certified before, 21 for
-\texttt{Random-125-125-2-3\_0} is now certified, and 25 for
-\texttt{Random-125-125-2-2\_0} is in flight with no task satisfiable so far
-(read 11 October 2026). \emph{Value}: the stored optimum;
-\emph{$k$}: the value minus one, which must be refuted. For an instance in
-flight, the nodes and core-hours are those of the tasks finished so far.}
+core-hours each. The two values never certified before, 21 for \texttt{Random-125-125-2-3\_0}
+and 25 for \texttt{Random-125-125-2-2\_0}, are now certified (read 12 October
+2026). \emph{Value}: the stored optimum;
+\emph{$k$}: the value minus one, which must be refuted. }
 \label{tab:split}
 \input{tables/split}
 \end{table}

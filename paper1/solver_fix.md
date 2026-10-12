@@ -1647,3 +1647,16 @@ value of 21 is therefore certified optimal. This is the largest refutation on
 record here. `solutions/Random-125-125-2-3_0.json` was not touched; its
 provenance should be upgraded by the owner. `Random-125-125-2-2_0` (k = 24)
 continues: 7,217 tasks and 1,150 core-hours so far, no SAT task.
+
+### Addendum: `Random-125-125-2-2_0` certified (2026-10-12)
+
+The split finished at 2026-10-12T01:58:58: k = 24 refuted on all 17,001
+tasks (407 expansion nodes, 7,384,297,889,973 nodes, 2,230.6 core-hours; run
+2026-10-09T21:20:51 to 2026-10-12T01:58:58, 20 workers), every task unsat.
+The stored order re-simulates to 25 (`python -m mosp.certify check
+Random-125-125-2-2_0`), so 25 is the optimum. `solutions/Random-125-125-2-2_0.json`
+is upgraded to `certified:refutation` with a `recertified` note; the old note
+is kept as `provenance_history`. The corpus is 6,376 of 6,376 certified
+(`python -m benchmarks.corpus`). The dataset rebuilt to 16,089 certified
+classes, 860 upper bound only, 765 without a value. The certificate rests on
+the corrected search alone; the contraction-minor bound does not reach it.

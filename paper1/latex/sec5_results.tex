@@ -15,7 +15,7 @@ benchmark optima survive? All 115 that rested on the previous algorithm
 pathwidth solver is it? On every benchmark set with published exact counts it proves as many or more graphs than the published branch and bound of \citet{CoudertMazauricNisse2016}, and it is faster on each of the fourteen graphs whose times they publish. Can a reader check a refutation without
 trusting our code? Yes, up to about 75 customers, through a certificate and an
 independent checker. Finally, what does it make possible? A dataset of 17,714
-graphs from twenty benchmark collections. For 16,088 of them the pathwidth is
+graphs from twenty benchmark collections. For 16,089 of them the pathwidth is
 certified, and that gives the exact value of every problem in the exact core.
 
 \subsection{Experimental setup}
@@ -70,9 +70,8 @@ attains it, and one of three provenances:
 \item \emph{upper bound only}: the witness is all there is, and optimality is
   not proved.
 \end{itemize}
-Of the 6,376 corpus values, 6,375 are certified and one is an upper bound only
-(as of 9 October 2026; the 6,375th was certified by the split search of
-Section~\ref{sec:practice}).
+All 6,376 corpus values are certified (as of 12 October 2026; the last two were
+certified by the split search of Section~\ref{sec:practice}).
 
 \subsection{The cost of our correction, and the benchmark values}
 \label{sec:practice}
@@ -130,13 +129,18 @@ split is proved sound~\leanref{split}. All seven were refuted at 18 to 369
 core-hours each, 1,112.6 in total (Table~\ref{tab:split},
 Appendix~\ref{app:split}).
 
-\paragraph{Two values never certified.} The corpus also held two values that
+\paragraph{Two values never certified before.} The corpus also held two values that
 no method had certified: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
 \texttt{Random-125-125-2-3\_0}. The same split refutes the value minus one on
 each. On 9 October 2026 it refuted 20 for \texttt{Random-125-125-2-3\_0}, after
 9,665 subtrees, $4.25\times10^{12}$ nodes and 1,128 core-hours, which
-certifies 21 as its optimum; it is the largest refutation in this paper. For \texttt{Random-125-125-2-2\_0}, by 11 October 2026, it had refuted 15,604 subtrees using 2,121 core-hours (Table~\ref{tab:split}), and found no order of 24 stacks. If it finishes, it
-certifies 25; an order of 24 would improve the stored value instead.
+certifies 21 as its optimum. On 12 October 2026 it refuted 24 for
+\texttt{Random-125-125-2-2\_0}, after 17,001 subtrees,
+$7.38\times10^{12}$ nodes and 2,231 core-hours (Table~\ref{tab:split}), which
+certifies 25; it is the largest refutation in this paper. With it, every value
+of the MOSP corpus is certified. Both certificates rest on our corrected
+search, whose rules are proved sound in Lean and whose code is tested, not
+proved.
 
 \subsection{Our corrected search as a pathwidth solver}
 \label{sec:pwsolver}
@@ -245,7 +249,7 @@ and it proves the pathwidth is at least $w$.
 \begin{table}[t]
 \centering\small
 \caption{Twenty collections, 21,754 instance files, reduce to 17,714
-isomorphism classes, and 16,088 of them have a certified pathwidth. Largely
+isomorphism classes, and 16,089 of them have a certified pathwidth. Largely
 open: PACE, the VSPLIB grids and Harwell--Boeing, and the MOSP sets of de
 Carvalho and Soma and of Frinhani et al.; Rome's 327 open classes are under
 3\% of it. \emph{Classes}: isomorphism classes within the
@@ -266,7 +270,7 @@ eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
 \citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
 graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
 benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the 17,714
-classes, 16,088 carry a certified pathwidth with a witness layout and 861 a witnessed upper bound, and 765 have no witnessed value yet. The 610 large instances of \citet{Frinhani2018}, with
+classes, 16,089 carry a certified pathwidth with a witness layout and 860 a witnessed upper bound, and 765 have no witnessed value yet. The 610 large instances of \citet{Frinhani2018}, with
 400 to 1,000 customers, are included so that the dataset covers every
 published MOSP collection we have. None of them has a value yet, because an
 exact search at that size is out of reach.
@@ -275,7 +279,7 @@ An independent checker, sharing no code with the solvers, verifies the
 dataset. It re-reads all 20,987 member files with its own readers, maps each
 onto its record's graph by its renaming, recomputes the width of every witness
 layout and replays every minor certificate. It reports no failure on the
-16,949 records, the 16,088 certified classes and the 861 with an upper bound. A value certified by search cannot be checked from its record;
+16,949 records, the 16,089 certified classes and the 860 with an upper bound. A value certified by search cannot be checked from its record;
 it rests on our corrected search, and for instances within reach of the emitter
 the certificate of Section~\ref{sec:certs} is how a third party can check it.
 
