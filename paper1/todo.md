@@ -154,6 +154,20 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       from MOSP, the minor bound from pathwidth), the slips found only by
       setting the problems side by side (the false rows, Kirousis &
       Papadimitriou's edge cases), and one dataset for every problem.
+- [ ] **A table: hard MOSP instances collapsing from core-days to seconds through
+      the pathwidth lower bound.** One row per instance: its optimum, the cost
+      of the full refutation that certified it, and the minor certificate
+      (minor size, nodes, seconds). What we have now:
+      - Random-125-125-2-3_0 = 21: 1,128 core-hours -> a 69-customer minor,
+        666,153 nodes, under a second;
+      - Random-125-125-2-1_0 = 24: 1.6e11 nodes -> an 87-customer minor, 30 s
+        (large budget);
+      - Random-125-125-6-1_0 = 81 and SP4 = 53: minor bound equals the optimum;
+      - Random-125-125-2-2_0 = 25: 2,231 core-hours, not reached by any minor
+        up to 95 customers (an honest last row).
+      Only 2-3_0 is above 1,000 core-hours so far. The other hard values of
+      Table B.1 (18-369 core-hours each) would need the minor step run on them,
+      which re-runs proved instances: only if the owner asks for it.
 - [ ] **Writing rule: no development history.** When writing about the solver,
       leave out the history of how our algorithm was developed (the bugs, the
       re-certifications, the configurations we tried, the order things were
