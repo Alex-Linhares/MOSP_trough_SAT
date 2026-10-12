@@ -120,6 +120,19 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       re-certifies cheaply, the cost of 2-3_0 falling from 1,128 core-hours to
       seconds, and an honest line on what remains open (2-2_0: every contraction
       up to 95 vertices still admits 24).
+- [ ] **Re-run the dataset's 860 upper-bound-only classes with the minor step.**
+      They were certified under short budgets (about 2.5 core-hours in all), so
+      most are "ran out of time", not "proved hard": PACE 2016/2017 288, Rome
+      326 (292 already closed by the minor step), Carvalho & Soma 139,
+      Harwell-Boeing 33, colouring 27, named 23, grids 19. Run them with the
+      minor step on (default once the solver agent commits), a few cores, a
+      generous cap; then rebuild the dataset (`python -m paper1.dataset values`,
+      `write`, `tables`) and update the counts in the abstract, Section 5 and
+      the conclusion, whose "the graph sets will not close by budget alone" and
+      "certified without search only when a lower bound meets its witness"
+      need rewriting around the minor bound. Also try the ~150 classes above the
+      1,024-vertex limit, whose minors may fall below it; the 610 large
+      Frinhani MOSP instances stay out of reach.
 - [ ] **Say it in the paper:** "The complex gets an excellent lower bound from
       pathwidth, and an excellent algorithm from the MOSP side." The thesis of
       the transfer in one line: the minor bound comes from the pathwidth
