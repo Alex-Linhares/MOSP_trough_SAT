@@ -71,11 +71,16 @@ the old move. (Their p. 6: "Our implementation of 'better move' subsumes
       claim is exact and fair: which configurations fail, which do not, and
       that "answers correctly here" is not soundness (the published better move
       is false as a theorem too).
-- [ ] **Lean, the full table.** Extend the `WrongOptimum.lean` model with the
-      better move as published, prove its runs are `Exec` runs with that
-      filter, and check every row in the kernel (each run is 25-100 s of kernel
-      time; the modelling is the work). Rows without the definite move already
-      follow from the soundness theorem.
+- [ ] **Hunt for instances that break their published configuration** (better
+      move on, old move, memo: the one Chu & Stuckey actually run). Lean will
+      not show a failure there unless one exists, so the question is empirical:
+      search for small instances on which that configuration reports a wrong
+      optimum, starting from the published better move's Lean counterexample
+      (Section 4) the way `false_refutation_hunt.py` started from the definite
+      move's, with the corrected search, SAT/DRAT and the lattice oracle
+      (n <= 15) as referees. If one is found, check it in Lean as Theorem 4.9
+      was; if none is, report the size of the search, so the paper can say how
+      hard the open question is.
 - [ ] **Who runs the definite move alone?** Check Chu (2011), Fink (2012) and
       the code behind Frinhani et al. (2018), reused by Martin, Yanasse & Pinto
       (2022). If any runs it without the better move, the counterexample bears
