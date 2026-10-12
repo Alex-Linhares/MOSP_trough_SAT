@@ -130,8 +130,12 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       `write`, `tables`) and update the counts in the abstract, Section 5 and
       the conclusion, whose "the graph sets will not close by budget alone" and
       "certified without search only when a lower bound meets its witness"
-      need rewriting around the minor bound. Also try the ~150 classes above the
-      1,024-vertex limit, whose minors may fall below it; the 610 large
+      need rewriting around the minor bound. Also try the ~150 classes above the 1,024-vertex limit:
+      their minors may fall below it, but a minor gives only the lower bound,
+      so a class is certified only where a witness layout of the full graph
+      (from the dataset's runs, Python heuristics, annealing, or a known family
+      layout such as row-by-row for grids) meets it; elsewhere record the
+      narrowed interval (as myciel7's 71-72); the 610 large
       Frinhani MOSP instances stay out of reach.
 - [ ] **Say it in the paper:** "The complex gets an excellent lower bound from
       pathwidth, and an excellent algorithm from the MOSP side." The thesis of
