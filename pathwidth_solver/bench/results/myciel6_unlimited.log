@@ -1,0 +1,3 @@
+2026-10-11 20:31:47 start myciel6 {'better_move': False} n=95
+2026-10-11 20:31:47 start myciel6 {'better_move': True} n=95
+2026-10-12 02:17:15 stopped by hand, both runs, after about 5 h 45 min with no answer (minor bound settled pw = 38 meanwhile; reports/minor_bound_verification.md)

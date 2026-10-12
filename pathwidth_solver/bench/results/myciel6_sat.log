@@ -1,0 +1,5 @@
+2026-10-11 22:09:42 start myciel5 pw<=19 cadical195: 35376 vars, 90622 clauses, encoded in 0s
+2026-10-11 22:09:42 start myciel6 pw<=37 kissat404: 246564 vars, 627922 clauses, encoded in 1s
+2026-10-11 22:09:42 start myciel6 pw<=38 cadical195: 248444 vars, 631494 clauses, encoded in 1s
+2026-10-11 22:09:42 start myciel6 pw<=37 cadical195: 246564 vars, 627922 clauses, encoded in 1s
+2026-10-12 02:17:15 stopped by hand, all four runs, after about 4 h 5 min with no answer (myciel6 pw<=37 CaDiCaL and Kissat, pw<=38 CaDiCaL, myciel5 pw<=19 CaDiCaL)
