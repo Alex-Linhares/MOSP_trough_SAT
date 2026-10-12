@@ -236,9 +236,13 @@ but no source we have read states it.
   proves the pathwidth of 11,194 of the 11,534 Rome graphs, a graph-drawing
   benchmark of 10 to 110 vertices; all 50 trees of VSPLIB, a benchmark library
   for vertex separation; and 39 of its 73 Harwell--Boeing graphs, the sparsity
-  patterns of engineering matrices. On each set this is as many graphs or more
-  than the published branch and bound of \citet{CoudertMazauricNisse2016}
-  (Section~\ref{sec:results}).
+  patterns of engineering matrices. On each set this is as many graphs or more than the published branch and bound of
+  \citet{CoudertMazauricNisse2016}. A lower bound from graph minors, the
+  pathwidth of a contracted copy of the graph (Theorem~\ref{thm:minor}, proved
+  in Lean), runs before each refutation: it proves the pathwidth of the
+  Mycielski graph $M_7$ in a fraction of a second, 271 of the 340 Rome graphs
+  left open at 600\,s, and MOSP optima that took up to 1,128 core-hours to
+  refute (Sections~\ref{sec:minor} and~\ref{sec:results}).
 \item \emph{Benchmarks re-certified, and a dataset.} Our corrected search
   re-proved all 115 benchmark optima, on 113 distinct graphs, that rested on
   the previous algorithm, and none changed. We release 17,714 graphs, distinct

@@ -146,6 +146,13 @@
   "title": "The minimization of open stacks problem: A review of some properties and their use in pre-processing operations",
   "year": 2010
  },
+ "10.1016/j.ic.2011.04.003": {
+  "fetched": "2026-10-12",
+  "first_author": "Bodlaender",
+  "registry": "crossref",
+  "title": "Treewidth computations II. Lower bounds",
+  "year": 2011
+ },
  "10.1016/j.jda.2018.11.012": {
   "fetched": "2026-10-03",
   "first_author": "Mallach",

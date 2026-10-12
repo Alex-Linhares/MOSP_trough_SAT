@@ -449,7 +449,13 @@ used on both sides (`pathwidth.minor.MinorConfig`,
 | `restrict_nodes` | 20,000 | Before a minor is searched, three layouts are tried; a minor that admits `w` cannot refute it, so finding one ends that minor's turn. The three are the descent's own layout lifted to the minor (closing each branch set at its last vertex never widens it), the greedy layout, and a restricted search. On TREE_202_5_rot6 this cut the step from 1.4 M to 15.6 k nodes. | No pre-check: the trees paid +38% in the first pass. |
 | `raise_lower` | climbs minors smallest first, keeps the best, stops at the first budget overrun | myciel7: 69 when the first success was returned, 71 when it climbs. | First success only: weaker bounds. |
 
-**Open questions for the owner.**
+**The owner's answers (2026-10-12).** (1) Long runs on unsolved problems use
+the large configuration (`MinorConfig(first_nodes=1_000_000,
+total_nodes=500_000_000, time_fraction=0.9)`); the default stays for ordinary
+runs. (2) `certified:minor` stays a separate label after the Lean proof
+(`lean/MOSPFormalization/Minor.lean`): it records how a value was proved.
+
+**Open questions for the owner** (answered above).
 
 1. Should the re-certification drivers (`benchmarks.csearch`,
    `benchmarks.recertify`) pass the large configuration? They now run the

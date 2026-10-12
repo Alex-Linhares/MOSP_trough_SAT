@@ -625,3 +625,59 @@ works we read in full of the 141 that cite the customer search's papers
 (Appendix~\ref{app:prior}). The pathwidth literature has the correct form of
 the rule, as a commitment, and none of the pathwidth papers we have read mentions
 MOSP.
+
+\subsection{A lower bound from minors}
+\label{sec:minor}
+
+The search spends nearly all its effort on one question: whether the value
+below the best known one can be refuted. Its floor, contraction degeneracy, is
+like every bound built from degrees and cliques a lower bound on treewidth plus
+one, so where pathwidth exceeds treewidth no such floor can meet the optimum:
+on the Mycielski graph \texttt{myciel6} (95 vertices, pathwidth 38) it is 25.
+The pathwidth side of the complex offers a bound with no such ceiling.
+
+\begin{theorem}[minor monotonicity]\label{thm:minor}
+Let $G$ be a graph and $uv$ an edge of $G$, and let $G/uv$ be the graph obtained
+by merging $v$ into $u$: $u$ becomes adjacent to every neighbour of $u$ or $v$
+other than $u$ and $v$, and $v$ is removed. Then $\pw(G/uv)\le\pw(G)$.
+Deleting a vertex or an edge never increases pathwidth either. Hence if a
+sequence of edge contractions and deletions turns $G$ into $H$, then
+$\pw(H)\le\pw(G)$~\leanref{minor}.
+\end{theorem}
+\begin{proof}
+Take a path decomposition $X_1,\dots,X_r$ of $G$ of width $\pw(G)$, and replace
+$v$ by $u$ in every bag. No bag grows. Every edge of $G/uv$ either is an edge of
+$G$ not touching $v$, which keeps its bag, or joins $u$ to a former neighbour
+$x$ of $v$, whose bag held $v$ and $x$ and now holds $u$ and $x$. The bags
+holding $u$ were an interval of the path, and so were the bags holding $v$;
+since $uv$ is an edge, some bag held both, so the two intervals meet and their
+union, the bags now holding $u$, is an interval. So the new bags form a path
+decomposition of $G/uv$ of width at most $\pw(G)$. Deleting a vertex or an
+edge keeps the decomposition valid with every bag the same or smaller, and the
+last claim follows step by step.
+\end{proof}
+
+The theorem is the minor-closure of bounded pathwidth, stated for gate matrix
+layout by \citet[Lemma~4.2]{FellowsLangston1987}. It gives a certificate of a
+lower bound in two parts: a sequence of contractions turning $G$ into a smaller
+graph $H$, which anyone can replay, and a refutation of $\pw(H)\le w$, which
+then proves $\pw(G)\ge w+1$; on the MOSP graph of an instance, by
+Theorem~\ref{thm:mosp}, it proves that every pattern order opens at least
+$w+2$ stacks~\leanref{minor}.
+
+\paragraph{The minor step.} Before our corrected search refutes the value
+below the best known one, $w$, on the whole graph, it tries to refute $w$ on
+minors. It contracts the graph, merging a vertex of least degree into its
+neighbour of least degree (or, as a second rule, into the neighbour it shares
+fewest neighbours with), to sizes from half the vertices to 85\% of them,
+smallest first, and on each minor it runs the same search under a node budget
+that triples from one size to the next. A refutation on any minor ends the
+descent with the value proved; otherwise the largest width refuted on a minor
+raises the lower bound, and the search on the whole graph proceeds as before.
+The cost of a refutation grows about tenfold for every five vertices, so the
+failed attempts on small minors cost a fraction of the first success, and
+climbing from the smallest size costs about as much as knowing the right size
+in advance. The idea of solving a contracted graph exactly for a lower bound
+is used for treewidth \citep{BodlaenderWolleKoster2006,BodlaenderKoster2011};
+for pathwidth it is not capped by treewidth, which is where the rest of the
+floor stops. Section~\ref{sec:pwsolver} reports what it settles.

@@ -138,7 +138,14 @@ certifies 21 as its optimum. On 12 October 2026 it refuted 24 for
 \texttt{Random-125-125-2-2\_0}, after 17,001 subtrees,
 $7.38\times10^{12}$ nodes and 2,231 core-hours (Table~\ref{tab:split}), which
 certifies 25; it is the largest refutation in this paper. With it, every value
-of the MOSP corpus is certified. Both certificates rest on our corrected
+of the MOSP corpus is certified. The minor step of Section~\ref{sec:minor}
+reaches two of these values in seconds: a minor of about 70 customers of \texttt{Random-125-125-2-3\_0} refutes 20 in under a second of search, against
+1,128 core-hours on the full instance, and an 87-customer minor of
+\texttt{Random-125-125-2-1\_0} refutes 23 in 30\,s with a larger budget,
+against $1.6\times10^{11}$ nodes. It does not reach
+\texttt{Random-125-125-2-2\_0}: every minor of up to 95 customers that we tried admits 24. The minor bound
+also equals the optimum on \texttt{Random-125-125-6-1\_0} (81) and SP4 (53),
+which the search refutes on the full instance within a minute. Both certificates rest on our corrected
 search, whose rules are proved sound in Lean and whose code is tested, not
 proved.
 
@@ -160,18 +167,36 @@ other nine, where a hardware difference could account for the margin. It also
 proves \texttt{queen11\_11} (pathwidth 87) in 37\,s and \texttt{queen12\_12}
 (103) in 391\,s, beyond their table, and \texttt{fpsol2.i.1} (496 vertices,
 pathwidth 67) in 5.7\,s, against 323\,s for
-\citet{KobayashiKomuroTamaki2014}. One graph goes the other way: the
-Mycielski graph $M_7$ (\texttt{myciel6}, 95 vertices, pathwidth 38), which
-their tuned branch and bound proves in about ten minutes; our search reaches
-width 38 and has not refuted 37 within 25 minutes, because its lower bound
-there is 25. Their branch and bound is openly available in SageMath, and a
+\citet{KobayashiKomuroTamaki2014}. Without the minor step, one graph goes the other way: the Mycielski graph
+$M_7$ (\texttt{myciel6}, 95 vertices, pathwidth 38), which their tuned branch
+and bound proves in about ten minutes, while the full refutation of 37 by our
+search does not finish in hours, its floor being 25.
+
+\paragraph{With the minor step.} The minor step of Section~\ref{sec:minor}
+changes this. A 58-vertex minor of \texttt{myciel6} already has pathwidth 38,
+and the step proves $\pw=38$ in 0.2\,s. On \texttt{myciel7} (191 vertices),
+which \citet{CoudertMazauricNisse2016} leave open with $\pw\le72$, a
+110-vertex minor proves $\pw\ge71$; the best published lower bound we found is
+the treewidth bound 52 of \citet{BodlaenderWolleKoster2006}, so $\pw$ is 71 or
+72. Of the 340 Rome graphs left open by the 600\,s run of
+Table~\ref{tab:graphs}, the step proves 271 within 60\,s each (median 0.5\,s);
+the Harwell--Boeing count rises from 39 to 43, and the colouring benchmarks
+gain \texttt{anna} and \texttt{myciel6}. On graphs proved both with and without
+the step, it lowers the total node count by 55 to 99\% on Rome, the VSPLIB grids,
+Harwell--Boeing and the colouring graphs, adds 1\% on the named graphs and
+20\% on the VSPLIB trees (about 1.5\,s a tree), and costs 4\% of the time on
+a sample of 120 MOSP corpus instances. The minor bounds for \texttt{myciel6},
+\texttt{myciel7} and the four MOSP instances below were also refuted by a
+separate exact search that uses no dominance rule and writes out every refuted
+set, which an independent checker verifies. Their branch and bound is openly available in SageMath, and a
 head-to-head run on one machine is the comparison that would settle which solver is stronger; we have not yet made it.
 
 \begin{table}[t]
 \centering\small
 \caption{Our corrected search as a pathwidth solver. Graphs whose pathwidth it
 proves, under our corrected rules and under the previous algorithm with the same
-caps (Rome: 10, 120 and 600\,s in stages), and the published counts of
+caps (Rome: 10, 120 and 600\,s in stages), without the minor step of
+Section~\ref{sec:minor}, and the published counts of
 \citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
 graphs proved by both runs with different widths.}
 \label{tab:graphs}
