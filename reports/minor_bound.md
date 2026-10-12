@@ -419,7 +419,17 @@ the step off and on, the same floor, on 2 cores.
 
   The one pre-existing test that changed is described in section 1.3.
 
-## 7. Proposed defaults (pending the owner's confirmation)
+## 7. Defaults (confirmed by the owner, 2026-10-12)
+
+*Proposed by the measurements below and confirmed by the owner on 2026-10-12.
+On the owner's question why the sizes climb rather than binary-search: along
+one contraction sequence a smaller minor is a contraction of a larger one, so
+"refutes w" is monotone in size and binary search would be correct; but the
+cost of a refutation grows about 10x per 5 vertices, so the failed rungs below
+the first success cost a fraction of it (a geometric series), while a binary
+search's first probe sits in the expensive middle, and an over-budget probe
+gives no direction. Closures cluster at the first rung (170 of 271 Rome
+closures at n/2).*
 
 "On by default" is decided. Everything below is proposed. The same values are
 used on both sides (`pathwidth.minor.MinorConfig`,
