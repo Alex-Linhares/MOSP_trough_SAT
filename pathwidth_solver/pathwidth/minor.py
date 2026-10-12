@@ -43,8 +43,9 @@ The descent re-enters the ladder at each new target, so a minor whose exact
 pathwidth is `p` raises the lower bound to `p` as soon as the target reaches
 `p - 1`: the refutation of `p - 1` on the minor is that statement.
 
-**Soundness** rests on minor monotonicity (Fellows & Langston 1987 Lemma 4.2,
-not yet in Lean here) and on the refutation of the minor, which runs `decide`
+**Soundness** rests on minor monotonicity (Fellows & Langston 1987 Lemma 4.2;
+proved in MOSP's `lean/MOSPFormalization/Minor.lean`, `pathwidth_gt_of_minorOf`
+and `pathwidth_gt_of_iso_minorOf`) and on the refutation of the minor, which runs `decide`
 with whatever rules the descent runs -- by default the repaired rules proved
 sound in MOSP's `lean/MOSPFormalization/Search/`.
 """

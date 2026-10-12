@@ -102,11 +102,26 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       on every benchmark set: what it closes, what it costs.
 - [ ] **myciel7.** Settle 71 against 72 (Coudert et al. 2016 leave it open at
       pw <= 72). If it is new, say so carefully, after the literature check.
-- [ ] **Lean.** Pathwidth is minor-monotone: contracting an edge never increases
-      pathwidth (Fellows & Langston 1987, Lemma 4.2, for layout cost; nothing
-      on contraction or minors in `lean/MOSPFormalization/` yet). Prove it, and
-      state the bound as a theorem: pathwidth of a contraction <= pathwidth.
-      Then a minor certificate is a contraction sequence plus a refutation.
+- [x] **Lean** (done 2026-10-12, `lean/MOSPFormalization/Minor.lean`, commit
+      1c24e5d2f): contracting an edge never increases pathwidth
+      (`pathwidth_contractEdge_le`), nor does deleting a vertex or an edge
+      (`pathwidth_induce_le`, `pathwidth_mono`); along any legal contraction
+      sequence (`pathwidth_minorOf_le`); the certificate theorem
+      (`pathwidth_gt_of_minorOf`, and `pathwidth_gt_of_iso_minorOf` for a minor
+      on its own labels); and the MOSP form `MOSPInstance.lt_mospValue_of_minorOf`.
+      Axioms: the three standard ones. Statements checked first on small graphs
+      (`tests/test_lean_minor_statement.py`). Still assumed: that the code's minor
+      is isomorphic to `minorOf` for the recorded sequence (tested), and the
+      soundness of the refutation on the minor. Proposed paper text, for the
+      write-up: Section 5, "Every minor lower bound rests on minor monotonicity
+      (Fellows & Langston 1987, Lemma 4.2): contracting an edge, or deleting a
+      vertex or an edge, never increases pathwidth, so a refutation of
+      pw(H) <= w on a minor H reached by a recorded contraction sequence proves
+      pw(G) >= w + 1, and on the MOSP graph that every pattern order opens at
+      least w + 2 stacks; both are proved in Lean." Appendix A entry `minor`,
+      with \leannames{pathwidth_contractEdge_le, pathwidth_induce_le,
+      pathwidth_mono, pathwidth_minorOf_le, pathwidth_gt_of_minorOf,
+      MOSPInstance.lt_mospValue_of_minorOf}.
 - [ ] **A checkable certificate.** The minor certificate is the contraction
       sequence (checkable by anyone) plus a refutation on the small graph (a
       DRAT proof, or our search certificate of Section 5). Ship both for every
