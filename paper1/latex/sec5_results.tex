@@ -203,6 +203,38 @@ graphs proved by both runs with different widths.}
 \resizebox{\linewidth}{!}{\input{tables/graphs}}
 \end{table}
 
+\paragraph{What a proof costs.} Figure~\ref{fig:cost} plots the search nodes
+of every width our search has proved, on 8,507 graphs, against the number of
+vertices $n$ and against $n$ times the width $w$. On the Rome graphs, sparse
+graph-drawing instances, the cost follows one law,
+\[
+  \log_{10}(\text{nodes}) \approx 1.75 + 0.00705\, n w ,
+\]
+with $r^2=0.96$ and a typical graph within a factor of 2.3 of it: each further
+100 in $nw$ multiplies the work about fivefold. Size alone explains less
+($r^2=0.85$), and so does width alone (0.89); the states of the search are
+vertex sets whose boundary has at most $w$ vertices, and their number grows
+with both. The 48 hardest Rome graphs, which we refuted without a time limit
+(46 so far, the longest in 3.4 hours), lie above the line, so the law ranks
+graphs by hardness but understates the extreme tail. Graphs that the 600\,s
+runs did not finish are absent, so the top of the curve is a lower envelope.
+The structured sets do not follow the Rome law: Harwell--Boeing graphs of up
+to 960 vertices, the colouring and named graphs and the dataset's open classes
+are proved with orders of magnitude fewer nodes than it predicts, mostly
+because a lower bound, often from a minor, meets the width early. Time tracks
+nodes closely ($r^2=0.98$), which is why we report nodes.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{solve_times.pdf}
+\caption{The cost of proving a pathwidth. Search nodes for every width our
+search has proved (8,507 graphs, both axes logarithmic), against $n$ times the
+width (left) and against $n$ alone (right). The dashed line is the fit on the
+Rome graphs, $\text{nodes}=10^{1.75+0.00705\,nw}$. The structured benchmark
+sets fall far below it, and size alone gives no single law.}
+\label{fig:cost}
+\end{figure}
+
 \subsection{A checkable proof of a refutation}
 \label{sec:certs}
 
