@@ -58,6 +58,29 @@ Started 2026-10-09. Check items off as they are done.
       340 are open, all at n ≥ 86. Rerun the 340 with a much longer cap (hours
       per graph, after the split run) and report the count at each cap.
 
+## The 34-customer instance under every configuration (2026-10-12)
+
+Our implementation (definite move on throughout; better move, old move, memo
+switched): the reported optimum is wrong (7) only with the better move off and
+the old move on, memo either way. All four configurations with the better move
+on, including Chu & Stuckey's published one, report 6; so do the two without
+the old move. (Their p. 6: "Our implementation of 'better move' subsumes
+'definite move' so we will simply consider them as one improvement.")
+
+- [ ] **Add the configuration table to Section 4**, beside Theorem 4.9, so the
+      claim is exact and fair: which configurations fail, which do not, and
+      that "answers correctly here" is not soundness (the published better move
+      is false as a theorem too).
+- [ ] **Lean, the full table.** Extend the `WrongOptimum.lean` model with the
+      better move as published, prove its runs are `Exec` runs with that
+      filter, and check every row in the kernel (each run is 25-100 s of kernel
+      time; the modelling is the work). Rows without the definite move already
+      follow from the soundness theorem.
+- [ ] **Who runs the definite move alone?** Check Chu (2011), Fink (2012) and
+      the code behind Frinhani et al. (2018), reused by Martin, Yanasse & Pinto
+      (2022). If any runs it without the better move, the counterexample bears
+      on published work directly.
+
 ## The contraction-minor lower bound (found 2026-10-11)
 
 The exact pathwidth of a contracted minor is a lower bound
