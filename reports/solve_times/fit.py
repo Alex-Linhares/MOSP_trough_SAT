@@ -67,7 +67,7 @@ B = np.column_stack([np.ones(len(ls)), ln]); cb, *_ = np.linalg.lstsq(B, ls, rco
 rb = ls - B @ cb; print(f"  log10 s = {cb[0]:.2f} + {cb[1]:.3f} log10 nodes  r2={1-rb.var()/ls.var():.3f}")
 
 plt.rcParams.update({"font.size": 8})
-fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.2))
+fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.7))
 cols = plt.cm.tab10(np.linspace(0, 1, 10))
 for i, lab in enumerate(labs):
     msk = np.array([d[0] == lab for d in data])
@@ -75,15 +75,17 @@ for i, lab in enumerate(labs):
     axs[1].scatter(n[msk], nodes[msk], s=5, alpha=0.45, color=cols[i % 10], label=f"{lab} ({msk.sum()})")
 xs = np.linspace(nw[rome].min(), nw[rome].max(), 100)
 axs[0].plot(xs * 100, 10 ** (c[0] + c[1] * xs), "k--", lw=1.2,
-            label=f"Rome fit: nodes = 10^({c[0]:.2f} + {c[1]/100:.5f} n w)")
-axs[0].set_xlabel("n x width"); axs[1].set_xlabel("vertices n")
+            label=rf"Rome fit: $\mathrm{{nodes}} = 10^{{{c[0]:.2f} + {c[1]/100:.5f}\,n w}}$")
+axs[0].set_xlabel(r"$n \times w$ (vertices $\times$ width)"); axs[1].set_xlabel(r"vertices $n$")
 for ax in axs:
     ax.set_yscale("log"); ax.set_ylabel("search nodes")
 axs[1].set_xscale("log")
 axs[0].set_xscale("log")
-axs[0].legend(fontsize=5.6, loc="upper left", markerscale=1.5, handletextpad=0.2, borderaxespad=0.3)
-axs[0].set_title("against n x width (Rome fit dashed)", fontsize=8)
-axs[1].set_title("against n alone", fontsize=8)
-fig.tight_layout()
+h, l = axs[0].get_legend_handles_labels()
+fig.legend(h, l, loc="lower center", ncol=3, fontsize=6.5, markerscale=1.8, frameon=False,
+           bbox_to_anchor=(0.5, 0.0), handletextpad=0.2, columnspacing=1.0)
+axs[0].set_title(r"against $n \times w$ (Rome fit dashed)", fontsize=8)
+axs[1].set_title(r"against $n$ alone", fontsize=8)
+fig.tight_layout(rect=(0, 0.13, 1, 1))
 fig.savefig(Path(__file__).with_name("solve_times.png"), dpi=150)
 fig.savefig(ROOT / "paper1/figures/solve_times.pdf", bbox_inches="tight")
