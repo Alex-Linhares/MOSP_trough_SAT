@@ -237,5 +237,19 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.WrongOptimum.not_filterSound_codeFilter
 #print axioms MOSPFormalization.Search.BitSearch.run_spec
 
+-- the contraction-minor lower bound: pathwidth is minor-monotone (Minor.lean)
+#print axioms MOSPFormalization.pathwidth_contractEdge_le
+#print axioms MOSPFormalization.pathwidth_contractEdge_induce_le
+#print axioms MOSPFormalization.pathwidth_applySeq_le
+#print axioms MOSPFormalization.pathwidth_minorOf_le
+#print axioms MOSPFormalization.pathwidth_le_of_le_minorOf
+#print axioms MOSPFormalization.pathwidth_gt_of_minorOf
+#print axioms MOSPFormalization.pathwidth_gt_of_iso_minorOf
+#print axioms MOSPFormalization.pathwidth_le_of_injective
+#print axioms MOSPFormalization.pathwidth_mono
+#print axioms MOSPFormalization.pathwidth_induce_le
+#print axioms MOSPFormalization.pathwidth_eq_of_iso
+#print axioms MOSPFormalization.MOSPInstance.lt_mospValue_of_minorOf
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

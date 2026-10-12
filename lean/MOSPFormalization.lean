@@ -9,6 +9,7 @@ import MOSPFormalization.MOSPInstance
 import MOSPFormalization.OpenStacks
 import MOSPFormalization.Reduction
 import MOSPFormalization.MOSPGraph
+import MOSPFormalization.Minor
 import MOSPFormalization.Examples
 import MOSPFormalization.MOSPGraphExamples
 import MOSPFormalization.ForMathlib.PathDecomposition
