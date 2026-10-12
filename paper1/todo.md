@@ -100,10 +100,6 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       about n/2 and upward and try to refute UB - 1 there; a refutation ends the
       descent with proof "bound" (or a new provenance, "certified:minor"). Measure
       on every benchmark set: what it closes, what it costs.
-- [ ] **Independent checks before recording anything.** SAT (with DRAT) or a
-      rule-free run on the minors of Random-125-125-2-1_0 and 2-3_0, and on
-      the 110-vertex minor of myciel7. The 2-3_0 minor already holds rule-free;
-      2-1_0 and myciel7 rest on our corrected rules so far.
 - [ ] **myciel7.** Settle 71 against 72 (Coudert et al. 2016 leave it open at
       pw <= 72). If it is new, say so carefully, after the literature check.
 - [ ] **Lean.** Pathwidth is minor-monotone: contracting an edge never increases
@@ -198,10 +194,6 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       `Random-125-125-2-2_0` = 25 certified 2026-10-12 (k = 24 refuted, 17,001
       tasks, 7.38 × 10¹² nodes, 2,231 core-hours). Both provenances upgraded;
       the corpus is 6,376 of 6,376; dataset and paper updated.
-- [ ] **An independent certificate for `Random-125-125-2-2_0`.** It rests on the
-      corrected search alone: no minor up to 95 customers refutes 24, and
-      100-120-customer minors ran out of a 120 s budget. Try them with a long
-      budget and the rule-free checker of `reports/scratch/minor_certificates/`.
 - [ ] **Open question: can the published rules fail with the better move
       on?** The 34-customer instance fails only with the better move off.
       Restart `false_refutation_hunt.py` with fitness on the better-move
