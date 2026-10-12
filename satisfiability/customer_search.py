@@ -602,8 +602,10 @@ class Solution:
     """What a descent established, and how -- which is not the same question.
 
     `proof` is "refutation" when the search exhausted `value - 1`, "bound" when
-    `value` met a lower bound that needed no refutation, and empty when the
-    descent ran out of budget. The last is still an upper bound worth keeping
+    `value` met a lower bound that needed no refutation, "minor" when `value -
+    1` was refuted on a contraction (`relaxation.MinorLadder`) or the lower
+    bound a contraction proved was met, and empty when the descent ran out of
+    budget. The last is still an upper bound worth keeping
     but is not an optimality claim, which is the distinction the `provenance`
     field in `solutions/` exists to preserve.
 
@@ -616,6 +618,10 @@ class Solution:
     proof: str
     nodes: int
     seconds: float
+    lower: int | None = None          # the floor at the end, minors included
+    minor: dict | None = None         # MinorCertificate.as_dict() of the best minor
+    minor_nodes: int = 0              # spent by the minor step, inside `nodes`
+    minor_seconds: float = 0.0
 
     @property
     def proved(self) -> bool:
@@ -631,6 +637,7 @@ def solve(
     max_nodes: int | None = None,
     time_budget: float | None = None,
     on_improve: "Callable[[int, list[int]], None] | None" = None,
+    minor: "bool | object" = True,
     **kwargs: object,
 ) -> Solution:
     """Descend `k` with the complete search until it refutes or runs out.
@@ -659,6 +666,16 @@ def solve(
             found in memory until it returns, so an interrupted descent loses
             all of it -- on a multi-day budget that is the difference between a
             crash costing minutes and costing days.
+        minor: the contraction-minor step (`relaxation.MinorLadder`): before
+            each refutation of `k` on the instance, try to refute `k` on
+            contractions of the MOSP graph under a node budget; a refutation
+            there ends the descent with proof "minor", and a contraction's
+            exact optimum raises `lower`. True uses `relaxation.MinorConfig()`,
+            a `MinorConfig` sets the budgets. **On by default** (the owner's
+            decision, 2026-10-12, `reports/minor_bound.md`); False switches
+            it off, for measurements and tests only. Below 40 customers, and
+            on any `k` a 100,000-node probe of the full instance settles, it
+            costs nothing.
 
     Returns:
         A `Solution` whose `order` is a customer closing order; pass it through
@@ -677,13 +694,55 @@ def solve(
         order = []
 
     if value <= lower:
-        return Solution(value, order, "bound", 0, time.monotonic() - started)
+        return Solution(value, order, "bound", 0, time.monotonic() - started, lower)
+
+    ladder = None
+    if minor:
+        from satisfiability.relaxation import MinorConfig, MinorLadder
+        ladder = MinorLadder(instance, minor if isinstance(minor, MinorConfig) else None)
+    certificate = None
+    lower_proof = "bound"
+
+    def finish(proof: str) -> Solution:
+        sol = Solution(value, order, proof, nodes, time.monotonic() - started, lower)
+        if ladder is not None:
+            sol.minor_nodes, sol.minor_seconds = ladder.nodes, ladder.seconds
+            sol.minor = certificate.as_dict() if certificate is not None else None
+        return sol
 
     k = value - 1
     while k >= lower:
         deadline = None if time_budget is None else started + time_budget
-        answer = decide(instance, k, max_nodes=max_nodes, deadline=deadline, **kwargs)
-        nodes += answer.nodes
+        probe = None
+        if ladder is not None and ladder.config.probe_nodes and ladder.applies:
+            # a cheap look at the full instance first: most settle here and
+            # never pay for the contractions
+            probe = decide(instance, k, max_nodes=min(ladder.config.probe_nodes, max_nodes or 1 << 62),
+                           deadline=deadline, **kwargs)
+            nodes += probe.nodes
+            if probe.status == "unknown":
+                probe = None
+        if ladder is not None and probe is None and ladder.applies:
+            before = ladder.nodes
+            cutoff = (None if time_budget is None
+                      else started + ladder.config.time_fraction * time_budget)
+            found = ladder.try_refute(k, deadline=cutoff, max_nodes=max_nodes, order=order, **kwargs)
+            if found is not None:
+                # MOSP >= k + 1 = value, by a contraction: the value is optimal.
+                certificate, lower, lower_proof = found, k + 1, "minor"
+                nodes += ladder.nodes - before
+                break
+            raised = ladder.raise_lower(lower, deadline=cutoff, max_nodes=max_nodes, **kwargs)
+            if raised is not None and raised.refuted + 1 > lower:
+                certificate, lower, lower_proof = raised, raised.refuted + 1, "minor"
+            nodes += ladder.nodes - before
+            if k < lower:
+                break
+        if probe is not None:
+            answer = probe
+        else:
+            answer = decide(instance, k, max_nodes=max_nodes, deadline=deadline, **kwargs)
+            nodes += answer.nodes
 
         if answer.status == "unsat":
             # The refutation says the optimum is above k. Claiming it *is*
@@ -694,11 +753,10 @@ def solve(
             # rests on "measured" rather than "checked here" is the kind this
             # project has had to retract before.
             if value == k + 1:
-                return Solution(value, order, "refutation", nodes,
-                                time.monotonic() - started)
-            return Solution(value, order, "", nodes, time.monotonic() - started)
+                return finish("refutation")
+            return finish("")
         if answer.status == "unknown":
-            return Solution(value, order, "", nodes, time.monotonic() - started)
+            return finish("")
 
         found = answer.order
         achieved = max_open_stacks(
@@ -710,8 +768,11 @@ def solve(
         k = min(k, achieved) - 1
 
     # The descent walked down to the lower bound: nothing below it can be
-    # satisfiable, so no refutation is needed.
-    return Solution(value, order, "bound", nodes, time.monotonic() - started)
+    # satisfiable, so no refutation is needed. The witness is trusted at the
+    # value it simulates to, so `value <= lower` is checked, not assumed.
+    if value <= lower:
+        return finish(lower_proof)
+    return finish("")
 
 
 def _closing_order(instance: MOSPInstance, ordering: list[int]) -> list[int]:

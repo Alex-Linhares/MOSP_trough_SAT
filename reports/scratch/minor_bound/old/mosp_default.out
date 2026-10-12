@@ -1,0 +1,1 @@
+{"instance": "Random-125-125-2-1_0", "config": "default", "budget": 600.0, "recorded": 24, "value": 25, "proof": "", "provenance": "solution", "lower": 23, "lower_source": "minor", "nodes": 633923723, "minor_nodes": 20000001, "search_seconds": 600.0, "wall": 608.1, "cert": {"size": 81, "rule": "least-c", "refuted": 22, "nodes": 2667924}}

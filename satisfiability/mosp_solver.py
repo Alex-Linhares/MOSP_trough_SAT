@@ -316,10 +316,14 @@ PROVENANCE_BOUND = "certified:bound"            # SAT at k, and lower bound = k
 PROVENANCE_RELAXATION = "certified:relaxation"  # as above, but the bound came
                                                 # from a contraction, so the
                                                 # claim also rests on Lemma 1
+PROVENANCE_MINOR = "certified:minor"            # SAT at k, UNSAT at k-1 on a
+                                                # contraction of the MOSP graph
+                                                # (relaxation.MinorLadder); rests
+                                                # also on minor monotonicity
 PROVENANCE_SOLUTION = "solution"                # witness only; optimality open
 
 CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND,
-                       PROVENANCE_RELAXATION})
+                       PROVENANCE_RELAXATION, PROVENANCE_MINOR})
 
 # Lower bounds are recorded with where they came from, because they do not all
 # rest on the same thing. `clique` is proved directly here. `degeneracy` rests
@@ -328,7 +332,10 @@ CERTIFIED = frozenset({PROVENANCE_REFUTATION, PROVENANCE_BOUND,
 # has measured on 3,167 contractions and not proved, from a paper it does not
 # hold. An optimality claim closed by a relaxation bound inherits that, which is
 # why it gets its own provenance rather than being folded into certified:bound.
-BOUND_SOURCES = ("clique", "degeneracy", "expansion", "relaxation")
+# `minor` is a refutation on a min-degree contraction of the MOSP graph
+# (`relaxation.MinorLadder`): it rests on minor monotonicity of pathwidth with
+# `MOSPGraph.lean`, and on the refutation of the contraction.
+BOUND_SOURCES = ("clique", "degeneracy", "expansion", "relaxation", "minor")
 
 
 def _save_solution(
@@ -368,10 +375,14 @@ def _save_solution(
                         _rewrite_bound(path, existing, kept_bound, kept_source)
                     return path
                 # An equal value that is already certified must not be demoted
-                # to a bare solution by a later run that merely re-found it.
+                # to a bare solution by a later run that merely re-found it, nor
+                # a refutation on the instance itself replaced by a certificate
+                # that rests on more (a contraction, a bound).
                 if (existing["mosp_value"] == val
                         and existing.get("provenance") in CERTIFIED
-                        and provenance not in CERTIFIED):
+                        and (provenance not in CERTIFIED
+                             or (existing.get("provenance") == PROVENANCE_REFUTATION
+                                 and provenance != PROVENANCE_REFUTATION))):
                     if kept_bound != previous:
                         _rewrite_bound(path, existing, kept_bound, kept_source)
                     return path
@@ -553,6 +564,9 @@ def solve_mosp_sat(
 # on disjoint instance sets was inherited rather than measured
 # (`reports/learned_search.md` §3).
 DEFAULT_PROCEDURE = "csearch"
+# The contraction-minor step in `solve_mosp_exact`: on by default, the owner's
+# decision of 2026-10-12 (reports/minor_bound.md). False is for measurements.
+DEFAULT_MINOR = True
 PROCEDURES = ("csearch", "sat")
 
 
@@ -565,6 +579,7 @@ def solve_mosp_exact(
     time_budget: float | None = None,
     max_nodes: int | None = None,
     stats: dict | None = None,
+    minor: "bool | object" = None,
 ) -> tuple[int, list[int]]:
     """Solve MOSP to optimality with the project's default decision procedure.
 
@@ -591,7 +606,13 @@ def solve_mosp_exact(
             none, and for a cached answer, which searched nothing), `seconds`,
             `proof` (`"refutation"`, `"bound"`, `""` or `"cached"`) and
             `procedure`. The return value is unchanged; every existing caller
-            keeps unpacking two values.
+            keeps unpacking two values. With the minor step it also gets
+            `minor` (the certificate, or None) and `minor_nodes`.
+        minor: the contraction-minor step of the descent
+            (`relaxation.MinorLadder`, `reports/minor_bound.md`). None uses
+            `DEFAULT_MINOR`; True the default budgets; a
+            `relaxation.MinorConfig` its own; False off. A value it proves is
+            recorded as `certified:minor`.
 
     Returns:
         `(value, pattern_ordering)`. The value is optimal when the descent
@@ -634,9 +655,14 @@ def solve_mosp_exact(
         if recorded and recorded[0] > cheap:
             floor, source = recorded
 
+    if minor is None:
+        minor = DEFAULT_MINOR
     result = csearch_solve(instance, lower=floor, upper_strategy=upper_strategy,
-                           time_budget=time_budget, max_nodes=max_nodes)
-    stats.update(nodes=result.nodes, seconds=result.seconds, proof=result.proof)
+                           time_budget=time_budget, max_nodes=max_nodes, minor=minor)
+    stats.update(nodes=result.nodes, seconds=result.seconds, proof=result.proof,
+                 minor=result.minor, minor_nodes=result.minor_nodes)
+    if result.lower is not None and result.lower > floor:
+        floor, source = result.lower, "minor"           # a contraction proved it
     if not result.order:
         # No closing order means the descent never improved on its start, which
         # only happens when it was handed one; it is not handed one here.
@@ -653,6 +679,7 @@ def solve_mosp_exact(
     if solutions_dir is not None and instance.name:
         provenance = {"refutation": PROVENANCE_REFUTATION,
                       "bound": PROVENANCE_BOUND,
+                      "minor": PROVENANCE_MINOR,
                       "": PROVENANCE_SOLUTION}[result.proof]
         if result.proof == "bound" and source == "relaxation":
             provenance = PROVENANCE_RELAXATION

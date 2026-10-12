@@ -1,0 +1,13 @@
+set,name,n,m,engine,rules,lower,upper_start,width,proof,nodes,seconds,components,error,minor_step,minor_nodes,minor_seconds,minor_size,minor_rule,minor_refuted
+vsplib-grids,vsplib/grids/grid_10.mtx.rnd,100,180,C,repaired,4,10,10,refutation,102165,0.099,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_11.mtx.rnd,121,220,C,repaired,4,11,11,refutation,451003,0.334,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_12.mtx.rnd,144,264,C,repaired,4,12,12,refutation,2012619,1.995,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_13.mtx.rnd,169,312,C,repaired,4,13,13,refutation,40243841,29.441,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_14.mtx.rnd,196,364,C,repaired,4,14,14,,94666752,60.014,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_15.mtx.rnd,225,420,C,repaired,4,15,15,,54620160,60.049,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_16.mtx.rnd,256,480,C,repaired,4,16,16,,32780288,60.026,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_17.mtx.rnd,289,544,C,repaired,4,17,17,,39219200,60.041,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_18.mtx.rnd,324,612,C,repaired,4,18,18,,32727040,60.036,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_19.mtx.rnd,361,684,C,repaired,4,19,19,,30703616,60.036,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_20.mtx.rnd,400,760,C,repaired,4,20,20,,25575424,60.036,1,,off,0,0.0,,,
+vsplib-grids,vsplib/grids/grid_21.mtx.rnd,441,840,C,repaired,2,21,21,,21975040,60.05,1,,off,0,0.0,,,

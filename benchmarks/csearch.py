@@ -27,6 +27,7 @@ from mosp.instance import MOSPInstance
 from mosp.verify import max_open_stacks
 from satisfiability.mosp_solver import (
     PROVENANCE_BOUND,
+    PROVENANCE_MINOR,
     PROVENANCE_REFUTATION,
     PROVENANCE_RELAXATION,
     PROVENANCE_SOLUTION,
@@ -42,6 +43,7 @@ DEFAULT_INSTANCE_DIR = Path("benchmarks/instances")
 PROVENANCE = {
     "refutation": PROVENANCE_REFUTATION,
     "bound": PROVENANCE_BOUND,
+    "minor": PROVENANCE_MINOR,       # only if a caller turns the minor step on
     "": PROVENANCE_SOLUTION,
 }
 
@@ -191,7 +193,7 @@ def sweep(
             if note in PROVENANCE:
                 moved = "" if before is None or after == before else f" (was {before})"
                 tag = {"refutation": "PROVED", "bound": "PROVED (bound)",
-                       "": "open"}[note]
+                       "minor": "PROVED (minor)", "": "open"}[note]
                 print(f"[{done}/{total}] {name}: {after}{moved} {tag} "
                       f"({elapsed:.0f}s)", flush=True)
             else:

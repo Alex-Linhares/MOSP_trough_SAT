@@ -86,13 +86,17 @@ def test_components_are_solved_separately_and_combined():
 
 def test_budget_exhaustion_is_reported_not_claimed():
     G = nx.mycielski_graph(6)      # pw 20; refuting 19 takes ~700k nodes
-    sol = solve(G, max_nodes=2000)
+    # without the minor step: on the full graph the budget runs out
+    sol = solve(G, max_nodes=2000, minor=False)
     assert not sol.proved and sol.proof == ""
     assert sol.width >= 20 and pw.vertex_separation(G, sol.order) == sol.width
     with pytest.raises(RuntimeError):
-        pw.compute_pathwidth(G, max_nodes=2000)
-    sol = solve(G, time_budget=0.02)
+        pw.compute_pathwidth(G, max_nodes=2000, minor=False)
+    sol = solve(G, time_budget=0.02, minor=False)
     assert not sol.proved
+    # with it (the default since 2026-10-12) a 34-vertex minor proves pw = 20 cheaply
+    sol = solve(G, max_nodes=2000)
+    assert sol.proof == "minor" and sol.width == 20
 
 
 def test_on_improve_reports_each_step_and_the_start_is_honoured():

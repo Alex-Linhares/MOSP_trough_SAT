@@ -43,6 +43,7 @@ def survey(solutions_dir: Path = SOLUTIONS_DIR) -> dict:
         "certified": certified,
         "refutation": counts["certified:refutation"],
         "bound": counts["certified:bound"],
+        "minor": counts["certified:minor"],
         "open_files": files - certified,
         "open_distinct": len(distinct_open),
         "open_names": sorted(distinct_open),
@@ -66,6 +67,8 @@ def main() -> None:
 
     print(f"  {s['refutation']:,} certified:refutation")
     print(f"  {s['bound']:,} certified:bound")
+    if s["minor"]:
+        print(f"  {s['minor']:,} certified:minor")
     print(f"  {s['open_files']:,} solution (optimality open)")
     print(f"  ----")
     print(f"  {s['certified']:,} of {s['files']:,} certified ({s['share']:.2%})")

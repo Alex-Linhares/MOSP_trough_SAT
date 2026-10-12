@@ -9,8 +9,9 @@ the two issues `TRANSFER.md` lists):
 
 - `name` is the instance's path relative to `bench/instances/`, so the
   VSPLIB trees in the three rotation folders keep distinct keys;
-- `proof` is `refutation` or `bound` for a proved width and **empty** for an
-  unproved one. An exception goes to the `error` column, not into `proof`.
+- `proof` is `refutation`, `minor` or `bound` for a proved width and **empty**
+  for an unproved one (`minor`: `width - 1` refuted on a contracted minor,
+  `pathwidth/minor.py`; added 2026-10-12). An exception goes to the `error` column, not into `proof`.
 
 `rules` records the dominance rules the search ran with: `repaired` (the
 default since 2026-10-01, the premises proved sound in
@@ -35,8 +36,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from readers import HERE, SETS, read_any  # noqa: E402
 
 FIELDS = ["set", "name", "n", "m", "engine", "rules", "lower", "upper_start", "width", "proof",
-          "nodes", "seconds", "components", "error"]
-PROVED = ("refutation", "bound")
+          "nodes", "seconds", "components", "error", "minor_step", "minor_nodes", "minor_seconds",
+          "minor_size", "minor_rule", "minor_refuted"]
+PROVED = ("refutation", "minor", "bound")
 
 
 def key(path: Path) -> str:
@@ -49,7 +51,7 @@ def stem(name: str) -> str:
     return Path(name).stem.replace(".mtx", "")
 
 
-def one(setname: str, path: Path, time_limit: float, rules: str) -> dict:
+def one(setname: str, path: Path, time_limit: float, rules: str, minor: bool = True) -> dict:
     import networkx as nx
     from pathwidth import solve
     from pathwidth.native import MAX_VERTICES
@@ -57,13 +59,17 @@ def one(setname: str, path: Path, time_limit: float, rules: str) -> dict:
     n, m = G.number_of_nodes(), G.number_of_edges()
     biggest = max((len(c) for c in nx.connected_components(G)), default=0)
     row = dict(set=setname, name=key(path), n=n, m=m, rules=rules,
-               engine="C" if biggest <= MAX_VERTICES else "python", error="")
+               engine="C" if biggest <= MAX_VERTICES else "python", error="",
+               minor_step="on" if minor else "off")
     t = time.perf_counter()
     try:
-        sol = solve(G, time_budget=time_limit, repaired_rules=(rules == "repaired"))
+        sol = solve(G, time_budget=time_limit, repaired_rules=(rules == "repaired"), minor=minor)
+        cert = sol.minor or {}
         row.update(lower=sol.lower, upper_start=sol.upper_start, width=sol.width,
                    proof=sol.proof if sol.proof in PROVED else "", nodes=sol.nodes,
-                   components=len(sol.components) or 1)
+                   components=len(sol.components) or 1, minor_nodes=sol.minor_nodes,
+                   minor_seconds=round(sol.minor_seconds, 3), minor_size=cert.get("size", ""),
+                   minor_rule=cert.get("rule", ""), minor_refuted=cert.get("refuted", ""))
     except Exception as exc:  # keep the sweep alive
         row.update(lower="", upper_start="", width="", proof="", nodes="", components="",
                    error=f"{type(exc).__name__}: {exc}"[:80])
@@ -112,7 +118,7 @@ def run(tasks, procs: int, hard: float):
                 try:
                     row = q.get(timeout=0.5)
                 except Exception:
-                    setname, path, _, rules = args
+                    setname, path, _, rules = args[:4]
                     row = dict(set=setname, name=key(path), n="", m="", engine="", rules=rules,
                                lower="", upper_start="", width="", proof="", nodes="",
                                seconds=round(time.monotonic() - started, 3), components="",
@@ -136,6 +142,8 @@ def main():
     ap.add_argument("--names", default=None,
                     help="file with one graph per line, as a path key or a file stem: run only those")
     ap.add_argument("--rules", choices=("repaired", "published"), default="repaired")
+    ap.add_argument("--minor", choices=("on", "off"), default="on",
+                    help="the contraction-minor step of the descent (default on)")
     ap.add_argument("--resume", action="store_true", help="append, skipping names already in --out")
     a = ap.parse_args()
     paths = SETS[a.set]()
@@ -160,7 +168,7 @@ def main():
         w = csv.DictWriter(fh, fieldnames=FIELDS)
         if fresh:
             w.writeheader()
-        for row in run([(a.set, p, a.time, a.rules) for p in paths], a.procs, hard):
+        for row in run([(a.set, p, a.time, a.rules, a.minor == "on") for p in paths], a.procs, hard):
             w.writerow(row)
             fh.flush()
             done += 1

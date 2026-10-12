@@ -1,0 +1,9 @@
+Random-125-125-2-3_0: 69-customer least-c contraction replays; MOSP <= 20 published: unsat (664,902 nodes, 0.4s)
+Random-125-125-2-3_0: 69-customer least-c contraction replays; MOSP <= 20 memo-only: unsat (6,001,389 nodes, 1.0s)
+Random-125-125-2-3_0: MOSP <= 21 on the contraction: sat
+Random-125-125-2-3_0: 75-customer min-d contraction replays; MOSP <= 20 published: unsat (1,877,158 nodes, 1.0s)
+Random-125-125-2-3_0: 75-customer min-d contraction replays; MOSP <= 20 memo-only: unsat (21,328,748 nodes, 3.9s)
+Random-125-125-2-3_0: MOSP <= 21 on the contraction: sat
+Random-125-125-2-1_0: 87-customer min-d contraction replays; MOSP <= 23 published: unsat (57,408,308 nodes, 26.0s)
+Random-125-125-2-1_0: 87-customer min-d contraction replays; MOSP <= 23 memo-only: unknown (500,000,001 nodes, 64.0s)
+Random-125-125-2-1_0: MOSP <= 24 on the contraction: sat

@@ -1,0 +1,241 @@
+instance,n,m,optimum,floor,mode,value,proof,nodes,minor_nodes,seconds,lower
+Random-40-40-6-3_0,40,40,26,26,off,26,bound,0,0,0.005,26
+Random-40-40-6-3_0,40,40,26,26,on,26,bound,0,0,0.005,26
+GP3_0,50,50,40,40,off,40,bound,0,0,0.148,40
+GP3_0,50,50,40,40,on,40,bound,0,0,0.096,40
+HS problem 3420 size 40 20 density  0.20,40,20,25,24,off,25,refutation,131,0,0.066,24
+HS problem 3420 size 40 20 density  0.20,40,20,25,24,on,25,refutation,131,0,0.064,24
+p4050n7_0,50,40,14,11,off,14,refutation,39355,0,0.129,11
+p4050n7_0,50,40,14,11,on,14,refutation,39355,0,0.127,11
+GP1_0,50,50,45,45,off,45,bound,0,0,0.001,45
+GP1_0,50,50,45,45,on,45,bound,0,0,0.001,45
+HS problem 3417 size 40 20 density  0.20,40,20,25,24,off,25,refutation,272,0,0.073,24
+HS problem 3417 size 40 20 density  0.20,40,20,25,24,on,25,refutation,272,0,0.062,24
+Random-75-75-8-2_0,75,75,61,61,off,61,bound,18,0,0.076,61
+Random-75-75-8-2_0,75,75,61,61,on,61,bound,18,0,0.068,61
+p3050n2_0,50,30,11,8,off,11,refutation,5503,0,0.093,8
+p3050n2_0,50,30,11,8,on,11,refutation,5503,0,0.094,8
+p2040n5_0,40,20,8,6,off,8,refutation,461,0,0.103,6
+p2040n5_0,40,20,8,6,on,8,refutation,461,0,0.104,6
+HS problem 3430 size 40 20 density  0.25,40,20,32,31,off,32,refutation,115,0,0.004,31
+HS problem 3430 size 40 20 density  0.25,40,20,32,31,on,32,refutation,115,0,0.004,31
+Random-75-75-2-1_0,75,75,16,11,off,16,refutation,566702,0,0.506,11
+Random-75-75-2-1_0,75,75,16,11,on,16,minor,274596,8426,0.332,16
+HS problem 3508 size 40 20 density  0.65,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3508 size 40 20 density  0.65,40,20,40,40,on,40,bound,0,0,0.001,40
+Random-40-40-4-1_0,40,40,21,20,off,21,refutation,1193,0,0.097,20
+Random-40-40-4-1_0,40,40,21,20,on,21,refutation,1193,0,0.115,20
+scoop-A_FA+AA-_2_0,75,19,11,10,off,11,refutation,1701,0,0.157,10
+scoop-A_FA+AA-_2_0,75,19,11,10,on,11,refutation,1701,0,0.16,10
+HS problem 3482 size 40 20 density  0.55,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3482 size 40 20 density  0.55,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3512 size 40 20 density  0.70,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3512 size 40 20 density  0.70,40,20,40,40,on,40,bound,0,0,0.001,40
+Random-75-75-6-4_0,75,75,47,42,off,47,refutation,93850,0,0.174,42
+Random-75-75-6-4_0,75,75,47,42,on,47,refutation,93850,0,0.169,42
+Random-75-75-8-1_0,75,75,58,57,off,58,refutation,2670,0,0.08,57
+Random-75-75-8-1_0,75,75,58,57,on,58,refutation,2670,0,0.088,57
+HS problem 3514 size 40 20 density  0.70,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3514 size 40 20 density  0.70,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3433 size 40 20 density  0.30,40,20,35,34,off,35,refutation,28,0,0.001,34
+HS problem 3433 size 40 20 density  0.30,40,20,35,34,on,35,refutation,28,0,0.002,34
+p1050n3_0,50,10,7,7,off,7,bound,28,0,0.146,7
+p1050n3_0,50,10,7,7,on,7,bound,28,0,0.159,7
+p1550n8_0,50,15,8,6,off,8,refutation,580,0,0.096,6
+p1550n8_0,50,15,8,6,on,8,refutation,580,0,0.095,6
+Random-75-75-4-4_0,75,75,32,19,off,32,refutation,2056967,0,2.478,19
+Random-75-75-4-4_0,75,75,32,19,on,32,minor,198327,98271,1.468,32
+Random-50-100-2-3_0,50,100,22,18,off,22,refutation,71514,0,0.211,18
+Random-50-100-2-3_0,50,100,22,18,on,22,refutation,71514,0,0.215,18
+HS problem 3453 size 40 20 density  0.40,40,20,36,36,off,36,bound,0,0,0.001,36
+HS problem 3453 size 40 20 density  0.40,40,20,36,36,on,36,bound,0,0,0.001,36
+p2550n9_0,50,25,10,8,off,10,refutation,1791,0,0.107,8
+p2550n9_0,50,25,10,8,on,10,refutation,1791,0,0.11,8
+Random-75-75-4-1_0,75,75,35,22,off,35,refutation,639643,0,0.566,22
+Random-75-75-4-1_0,75,75,35,22,on,35,refutation,757771,18127,0.816,34
+HS problem 3460 size 40 20 density  0.40,40,20,36,36,off,36,bound,0,0,0.001,36
+HS problem 3460 size 40 20 density  0.40,40,20,36,36,on,36,bound,0,0,0.001,36
+HS problem 3437 size 40 20 density  0.30,40,20,34,34,off,34,bound,0,0,0.078,34
+HS problem 3437 size 40 20 density  0.30,40,20,34,34,on,34,bound,0,0,0.082,34
+Random-100-50-8-5_0,100,50,55,40,off,55,refutation,3942832,0,3.507,40
+Random-100-50-8-5_0,100,50,55,40,on,55,refutation,4680452,437617,4.489,54
+Random-100-100-6-1_0,100,100,68,59,off,68,refutation,3116649,0,2.441,59
+Random-100-100-6-1_0,100,100,68,59,on,68,refutation,3286045,69395,2.626,62
+p1040n7_0,40,10,8,8,off,8,bound,0,0,0.114,8
+p1040n7_0,40,10,8,8,on,8,bound,0,0,0.109,8
+SP3_0,75,75,34,25,off,34,refutation,1473364,0,1.111,25
+SP3_0,75,75,34,25,on,34,refutation,1622321,48956,1.354,33
+p2540n5_0,40,25,10,8,off,10,refutation,1761,0,0.077,8
+p2540n5_0,40,25,10,8,on,10,refutation,1761,0,0.072,8
+p1550n7_0,50,15,6,6,off,6,bound,16,0,0.107,6
+p1550n7_0,50,15,6,6,on,6,bound,16,0,0.117,6
+Random-50-100-4-5_0,50,100,35,34,off,35,refutation,1638,0,0.057,34
+Random-50-100-4-5_0,50,100,35,34,on,35,refutation,1638,0,0.058,34
+p1540n10_0,40,15,8,6,off,8,refutation,531,0,0.077,6
+p1540n10_0,40,15,8,6,on,8,refutation,531,0,0.073,6
+HS problem 3427 size 40 20 density  0.25,40,20,31,30,off,31,refutation,56,0,0.002,30
+HS problem 3427 size 40 20 density  0.25,40,20,31,30,on,31,refutation,56,0,0.002,30
+Random-100-100-8-4_0,100,100,77,74,off,77,refutation,150242,0,0.236,74
+Random-100-100-8-4_0,100,100,77,74,on,77,refutation,250289,46,0.365,74
+p2540n2_0,40,25,11,8,off,11,refutation,1599,0,0.301,8
+p2540n2_0,40,25,11,8,on,11,refutation,1599,0,0.298,8
+HS problem 3443 size 40 20 density  0.35,40,20,34,32,off,34,refutation,24,0,0.001,32
+HS problem 3443 size 40 20 density  0.35,40,20,34,32,on,34,refutation,24,0,0.001,32
+HS problem 3440 size 40 20 density  0.30,40,20,31,30,off,31,refutation,24,0,0.001,30
+HS problem 3440 size 40 20 density  0.30,40,20,31,30,on,31,refutation,24,0,0.001,30
+Random-40-40-2-5_0,40,40,13,11,off,13,refutation,4606,0,0.077,11
+Random-40-40-2-5_0,40,40,13,11,on,13,refutation,4606,0,0.078,11
+Random-50-100-6-4_0,50,100,42,42,off,42,bound,0,0,0.002,42
+Random-50-100-6-4_0,50,100,42,42,on,42,bound,0,0,0.002,42
+Random-75-75-6-1_0,75,75,49,43,off,49,refutation,127581,0,0.223,43
+Random-75-75-6-1_0,75,75,49,43,on,49,refutation,231212,3630,0.42,46
+Random-100-50-8-2_0,100,50,55,43,off,55,refutation,651532,0,0.617,43
+Random-100-50-8-2_0,100,50,55,43,on,55,refutation,784790,33257,0.787,54
+HS problem 3431 size 40 20 density  0.30,40,20,34,33,off,34,refutation,14,0,0.001,33
+HS problem 3431 size 40 20 density  0.30,40,20,34,33,on,34,refutation,14,0,0.001,33
+scoop-A_FA+AA-_12_0,75,20,9,8,off,9,refutation,571,0,0.201,8
+scoop-A_FA+AA-_12_0,75,20,9,8,on,9,refutation,571,0,0.199,8
+p1050n6_0,50,10,9,9,off,9,bound,0,0,0.136,9
+p1050n6_0,50,10,9,9,on,9,bound,0,0,0.134,9
+HS problem 3412 size 40 20 density  0.20,40,20,25,24,off,25,refutation,66,0,0.069,24
+HS problem 3412 size 40 20 density  0.20,40,20,25,24,on,25,refutation,66,0,0.073,24
+GP2_0,50,50,40,40,off,40,bound,0,0,0.002,40
+GP2_0,50,50,40,40,on,40,bound,0,0,0.001,40
+p2550n10_0,50,25,11,7,off,11,refutation,3243,0,0.095,7
+p2550n10_0,50,25,11,7,on,11,refutation,3243,0,0.12,7
+HS problem 3459 size 40 20 density  0.40,40,20,39,38,off,39,refutation,3,0,0.001,38
+HS problem 3459 size 40 20 density  0.40,40,20,39,38,on,39,refutation,3,0,0.001,38
+Random-40-40-6-2_0,40,40,30,29,off,30,refutation,220,0,0.005,29
+Random-40-40-6-2_0,40,40,30,29,on,30,refutation,220,0,0.005,29
+Random-100-50-4-1_0,100,50,26,16,off,26,refutation,47450340,0,25.718,16
+Random-100-50-4-1_0,100,50,26,16,on,26,refutation,48080480,230136,23.746,25
+SP2,50,50,19,14,off,19,refutation,18549,0,0.117,14
+SP2,50,50,19,14,on,19,refutation,18549,0,0.116,14
+Random-75-75-10-5_0,75,75,63,63,off,63,bound,0,0,0.026,63
+Random-75-75-10-5_0,75,75,63,63,on,63,bound,0,0,0.025,63
+HS problem 3473 size 40 20 density  0.50,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3473 size 40 20 density  0.50,40,20,40,40,on,40,bound,0,0,0.001,40
+Random-40-40-6-5_0,40,40,28,28,off,28,bound,0,0,0.063,28
+Random-40-40-6-5_0,40,40,28,28,on,28,bound,0,0,0.064,28
+Random-50-100-8-4_0,50,100,46,46,off,46,bound,0,0,0.001,46
+Random-50-100-8-4_0,50,100,46,46,on,46,bound,0,0,0.001,46
+p3050n9_0,50,30,12,9,off,12,refutation,11419,0,0.104,9
+p3050n9_0,50,30,12,9,on,12,refutation,11419,0,0.102,9
+Random-100-100-8-5_0,100,100,75,71,off,75,refutation,181710,0,0.248,71
+Random-100-100-8-5_0,100,100,75,71,on,75,refutation,282532,821,0.365,71
+Random-50-50-6-1_0,50,50,36,35,off,36,refutation,1173,0,0.097,35
+Random-50-50-6-1_0,50,50,36,35,on,36,refutation,1173,0,0.096,35
+HS problem 3415 size 40 20 density  0.20,40,20,27,26,off,27,refutation,201,0,0.071,26
+HS problem 3415 size 40 20 density  0.20,40,20,27,26,on,27,refutation,201,0,0.068,26
+Random-40-40-4-5_0,40,40,22,21,off,22,refutation,706,0,0.067,21
+Random-40-40-4-5_0,40,40,22,21,on,22,refutation,706,0,0.066,21
+Random-75-75-10-1_0,75,75,66,65,off,66,refutation,534,0,0.021,65
+Random-75-75-10-1_0,75,75,66,65,on,66,refutation,534,0,0.019,65
+Random-100-100-10-5_0,100,100,84,83,off,84,refutation,6979,0,0.335,83
+Random-100-100-10-5_0,100,100,84,83,on,84,refutation,6979,0,0.212,83
+HS problem 3435 size 40 20 density  0.30,40,20,32,32,off,32,bound,0,0,0.002,32
+HS problem 3435 size 40 20 density  0.30,40,20,32,32,on,32,bound,0,0,0.002,32
+HS problem 3510 size 40 20 density  0.65,40,20,40,40,off,40,bound,0,0,0.006,40
+HS problem 3510 size 40 20 density  0.65,40,20,40,40,on,40,bound,0,0,0.001,40
+Random-100-50-4-4_0,100,50,24,15,off,24,,75107546,0,60.018,15
+Random-100-50-4-4_0,100,50,24,15,on,24,minor,671393,383782,1.292,24
+HS problem 3494 size 40 20 density  0.60,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3494 size 40 20 density  0.60,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3426 size 40 20 density  0.25,40,20,31,30,off,31,refutation,62,0,0.107,30
+HS problem 3426 size 40 20 density  0.25,40,20,31,30,on,31,refutation,62,0,0.207,30
+HS problem 3449 size 40 20 density  0.35,40,20,36,36,off,36,bound,0,0,0.001,36
+HS problem 3449 size 40 20 density  0.35,40,20,36,36,on,36,bound,0,0,0.001,36
+Random-100-50-4-2_0,100,50,29,17,off,29,,61096227,0,60.017,17
+Random-100-50-4-2_0,100,50,29,17,on,29,,57911085,276680,60.046,28
+Random-50-100-10-5_0,50,100,47,47,off,47,bound,0,0,0.006,47
+Random-50-100-10-5_0,50,100,47,47,on,47,bound,0,0,0.006,47
+scoop-A_FA+AA-_11_0,99,28,11,10,off,11,refutation,14452,0,0.411,10
+scoop-A_FA+AA-_11_0,99,28,11,10,on,11,refutation,14452,0,0.441,10
+p2050n4_0,50,20,8,6,off,8,refutation,539,0,0.193,6
+p2050n4_0,50,20,8,6,on,8,refutation,539,0,0.233,6
+Random-50-50-10-4_0,50,50,45,44,off,45,refutation,25,0,0.006,44
+Random-50-50-10-4_0,50,50,45,44,on,45,refutation,25,0,0.006,44
+HS problem 3489 size 40 20 density  0.55,40,20,40,40,off,40,bound,0,0,0.007,40
+HS problem 3489 size 40 20 density  0.55,40,20,40,40,on,40,bound,0,0,0.004,40
+p3040n8_0,40,30,12,9,off,12,refutation,2687,0,0.086,9
+p3040n8_0,40,30,12,9,on,12,refutation,2687,0,0.084,9
+Random-40-40-8-1_0,40,40,34,33,off,34,refutation,38,0,0.003,33
+Random-40-40-8-1_0,40,40,34,33,on,34,refutation,38,0,0.003,33
+HS problem 3481 size 40 20 density  0.55,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3481 size 40 20 density  0.55,40,20,40,40,on,40,bound,0,0,0.001,40
+Random-50-50-2-2_0,50,50,13,10,off,13,refutation,58607,0,0.268,10
+Random-50-50-2-2_0,50,50,13,10,on,13,refutation,58607,0,0.256,10
+p1550n5_0,50,15,7,6,off,7,refutation,156,0,0.165,6
+p1550n5_0,50,15,7,6,on,7,refutation,156,0,0.221,6
+HS problem 3492 size 40 20 density  0.60,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3492 size 40 20 density  0.60,40,20,40,40,on,40,bound,0,0,0.001,40
+p1050n2_0,50,10,9,9,off,9,bound,0,0,0.167,9
+p1050n2_0,50,10,9,9,on,9,bound,0,0,0.175,9
+HS problem 3436 size 40 20 density  0.30,40,20,32,32,off,32,bound,0,0,0.001,32
+HS problem 3436 size 40 20 density  0.30,40,20,32,32,on,32,bound,0,0,0.001,32
+Random-40-40-2-1_0,40,40,11,9,off,11,refutation,5103,0,0.123,9
+Random-40-40-2-1_0,40,40,11,9,on,11,refutation,5103,0,0.124,9
+HS problem 3439 size 40 20 density  0.30,40,20,35,35,off,35,bound,0,0,0.001,35
+HS problem 3439 size 40 20 density  0.30,40,20,35,35,on,35,bound,0,0,0.001,35
+Random-125-125-6-5_0,125,125,74,49,off,75,,37918948,0,60.025,49
+Random-125-125-6-5_0,125,125,74,49,on,75,,59333625,9102803,60.014,70
+Random-50-50-8-1_0,50,50,40,40,off,40,bound,0,0,0.002,40
+Random-50-50-8-1_0,50,50,40,40,on,40,bound,0,0,0.002,40
+HS problem 3441 size 40 20 density  0.35,40,20,37,36,off,37,refutation,6,0,0.001,36
+HS problem 3441 size 40 20 density  0.35,40,20,37,36,on,37,refutation,6,0,0.001,36
+GP8_0,100,100,60,60,off,60,bound,0,0,0.004,60
+GP8_0,100,100,60,60,on,60,bound,0,0,0.004,60
+p2540n3_0,40,25,10,8,off,10,refutation,1879,0,0.072,8
+p2540n3_0,40,25,10,8,on,10,refutation,1879,0,0.073,8
+HS problem 3479 size 40 20 density  0.50,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3479 size 40 20 density  0.50,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3513 size 40 20 density  0.70,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3513 size 40 20 density  0.70,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3467 size 40 20 density  0.45,40,20,39,39,off,39,bound,0,0,0.001,39
+HS problem 3467 size 40 20 density  0.45,40,20,39,39,on,39,bound,0,0,0.001,39
+SP4_0,100,100,53,37,off,53,refutation,56116276,0,41.474,37
+SP4_0,100,100,53,37,on,53,refutation,56929834,713557,46.922,52
+Random-50-50-10-1_0,50,50,44,44,off,44,bound,0,0,0.003,44
+Random-50-50-10-1_0,50,50,44,44,on,44,bound,0,0,0.003,44
+Random-50-100-6-2_0,50,100,44,43,off,44,refutation,91,0,0.012,43
+Random-50-100-6-2_0,50,100,44,43,on,44,refutation,91,0,0.006,43
+Random-100-100-2-1_0,100,100,24,15,off,24,,71992481,0,60.039,15
+Random-100-100-2-1_0,100,100,24,15,on,24,minor,5599761,4624430,6.082,24
+Random-100-100-2-5_0,100,100,19,12,off,20,,105280540,0,60.02,12
+Random-100-100-2-5_0,100,100,19,12,on,20,,75485201,10133171,60.019,19
+GP7_0,100,100,75,75,off,75,bound,0,0,0.008,75
+GP7_0,100,100,75,75,on,75,bound,0,0,0.008,75
+p2540n10_0,40,25,10,8,off,10,refutation,1717,0,0.118,8
+p2540n10_0,40,25,10,8,on,10,refutation,1717,0,0.118,8
+scoop-A_FA+AA-_6_0,79,21,13,11,off,13,refutation,2357,0,0.139,11
+scoop-A_FA+AA-_6_0,79,21,13,11,on,13,refutation,2357,0,0.119,11
+Random-50-100-10-2_0,50,100,48,48,off,48,bound,0,0,0.003,48
+Random-50-100-10-2_0,50,100,48,48,on,48,bound,0,0,0.003,48
+"GP8:  100 customers,  100 products,  low path width",100,100,60,60,off,60,bound,0,0,0.007,60
+"GP8:  100 customers,  100 products,  low path width",100,100,60,60,on,60,bound,0,0,0.006,60
+Random-50-100-8-1_0,50,100,47,47,off,47,bound,0,0,0.003,47
+Random-50-100-8-1_0,50,100,47,47,on,47,bound,0,0,0.003,47
+GP4_0,50,50,30,30,off,30,bound,0,0,0.002,30
+GP4_0,50,50,30,30,on,30,bound,0,0,0.002,30
+p1540n8_0,40,15,7,6,off,7,refutation,131,0,0.24,6
+p1540n8_0,40,15,7,6,on,7,refutation,131,0,0.232,6
+p1540n2_0,40,15,6,6,off,6,bound,14,0,0.191,6
+p1540n2_0,40,15,6,6,on,6,bound,14,0,0.214,6
+HS problem 3424 size 40 20 density  0.25,40,20,28,27,off,28,refutation,89,0,0.108,27
+HS problem 3424 size 40 20 density  0.25,40,20,28,27,on,28,refutation,89,0,0.111,27
+p3050n3_0,50,30,8,7,off,8,refutation,1565,0,0.433,7
+p3050n3_0,50,30,8,7,on,8,refutation,1565,0,0.419,7
+HS problem 3480 size 40 20 density  0.50,40,20,39,39,off,39,bound,0,0,0.001,39
+HS problem 3480 size 40 20 density  0.50,40,20,39,39,on,39,bound,0,0,0.001,39
+HS problem 3464 size 40 20 density  0.45,40,20,38,38,off,38,bound,0,0,0.001,38
+HS problem 3464 size 40 20 density  0.45,40,20,38,38,on,38,bound,0,0,0.001,38
+GP5_0,100,100,95,95,off,95,bound,0,0,0.117,95
+GP5_0,100,100,95,95,on,95,bound,0,0,0.12,95
+HS problem 3496 size 40 20 density  0.60,40,20,40,40,off,40,bound,0,0,0.001,40
+HS problem 3496 size 40 20 density  0.60,40,20,40,40,on,40,bound,0,0,0.001,40
+HS problem 3487 size 40 20 density  0.55,40,20,39,39,off,39,bound,0,0,0.001,39
+HS problem 3487 size 40 20 density  0.55,40,20,39,39,on,39,bound,0,0,0.001,39
+scoop-B_REVAL_145_0,60,49,7,7,off,7,bound,143,0,0.136,7
+scoop-B_REVAL_145_0,60,49,7,7,on,7,bound,143,0,0.126,7
+Random-50-50-4-4_0,50,50,27,25,off,27,refutation,7169,0,0.233,25
+Random-50-50-4-4_0,50,50,27,25,on,27,refutation,7169,0,0.278,25
