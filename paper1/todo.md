@@ -148,6 +148,12 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       layout such as row-by-row for grids) meets it; elsewhere record the
       narrowed interval (as myciel7's 71-72); the 610 large
       Frinhani MOSP instances stay out of reach.
+- [ ] **Say it in the paper:** "Comparative graph pathwidth theory is richer than
+      studying each problem in isolation." A thesis line for the introduction
+      or the conclusion: the transfers in both directions (the corrected search
+      from MOSP, the minor bound from pathwidth), the slips found only by
+      setting the problems side by side (the false rows, Kirousis &
+      Papadimitriou's edge cases), and one dataset for every problem.
 - [ ] **Writing rule: no development history.** When writing about the solver,
       leave out the history of how our algorithm was developed (the bugs, the
       re-certifications, the configurations we tried, the order things were
