@@ -137,6 +137,14 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       layout such as row-by-row for grids) meets it; elsewhere record the
       narrowed interval (as myciel7's 71-72); the 610 large
       Frinhani MOSP instances stay out of reach.
+- [ ] **Writing rule: no development history.** When writing about the solver,
+      leave out the history of how our algorithm was developed (the bugs, the
+      re-certifications, the configurations we tried, the order things were
+      found). Focus on two transfers:
+      - **MOSP -> pathwidth:** the correction of Chu & Stuckey's search, the
+        best exact MOSP algorithm, which is also a pathwidth algorithm;
+      - **pathwidth -> MOSP:** the new lower bound from contracted minors, which
+        settles MOSP instances that the search needed core-days for.
 - [ ] **Say it in the paper:** "The complex gets an excellent lower bound from
       pathwidth, and an excellent algorithm from the MOSP side." The thesis of
       the transfer in one line: the minor bound comes from the pathwidth
