@@ -6,6 +6,16 @@ This project tackles the **Minimization of Open Stacks Problem (MOSP)** by reduc
 
 MOSP arises in manufacturing: given a set of customer orders (each requiring some subset of products), find a production sequence for the products that minimizes the maximum number of simultaneously "open" customer stacks. A stack opens when the first product a customer needs is produced and closes when the last one is done.
 
+## Owner's rule on compute (2026-10-12)
+
+**Compute goes to previously unsolved problems.** Do not re-prove, re-certify,
+re-verify or re-run instances that are already proved (benchmark comparisons
+and slowdown samples on proved graphs, "independent" re-runs, re-certification
+sweeps) unless the owner explicitly asks for that run. Before launching a run,
+or briefing an agent to launch one, check whether its instances are already
+proved; if they are, ask first. The priority is to solve problems that have
+never been solved: open optima, unproved widths, intervals not yet closed.
+
 ## Terminology Correction: We Had the Two Graphs Swapped
 
 Yanasse & Senne (2010, `literature/yanasse_senne_2010_properties_preprocessing.pdf`)
