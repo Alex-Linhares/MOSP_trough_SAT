@@ -183,7 +183,10 @@ which \citet{CoudertMazauricNisse2016} leave open with $\pw\le72$, a
 110-vertex minor proves $\pw\ge71$; the best published lower bound we found is
 the treewidth bound 52 of \citet{BodlaenderWolleKoster2006}, so $\pw$ is 71 or
 72. Of the 340 Rome graphs left open by the 600\,s run of
-Table~\ref{tab:graphs}, the step proves 271 within 60\,s each (median 0.5\,s);
+Table~\ref{tab:graphs}, the step proves 271 within 60\,s each (median 0.5\,s),
+and 292 with a larger budget; we refuted the other 48 without a time limit,
+the longest in 25.4 hours, so the pathwidth of every one of the 11,534 Rome
+graphs is now proved;
 the Harwell--Boeing count rises from 39 to 43, and the colouring benchmarks
 gain \texttt{anna} and \texttt{myciel6}. On graphs proved both with and without
 the step, it lowers the total node count by 55 to 99\% on Rome, the VSPLIB grids,
@@ -208,7 +211,7 @@ graphs proved by both runs with different widths.}
 \end{table}
 
 \paragraph{What a proof costs.} Figure~\ref{fig:cost} plots the search nodes
-of every width our search has proved, on 8,507 graphs, against the number of
+of every width our search has proved, on 8,510 graphs, against the number of
 vertices $n$ and against $n$ times the width $w$. On the Rome graphs, sparse
 graph-drawing instances, the cost follows one law,
 \[
@@ -219,7 +222,7 @@ with $r^2=0.96$ and a typical graph within a factor of 2.3 of it: each further
 ($r^2=0.85$), and so does width alone (0.89); the states of the search are
 vertex sets whose boundary has at most $w$ vertices, and their number grows
 with both. The 48 hardest Rome graphs, which we refuted without a time limit
-(46 so far, the longest in 3.4 hours), lie above the line, so the law ranks
+(the longest in 25.4 hours), lie above the line, so the law ranks
 graphs by hardness but understates the extreme tail. Graphs that the 600\,s
 runs did not finish are absent, so the top of the curve is a lower envelope.
 The structured sets do not follow the Rome law: Harwell--Boeing graphs of up
@@ -232,7 +235,7 @@ nodes closely ($r^2=0.98$), which is why we report nodes.
 \centering
 \includegraphics[width=\linewidth]{solve_times.pdf}
 \caption{The cost of proving a pathwidth. Search nodes for every width our
-search has proved (8,507 graphs, both axes logarithmic), against $n$ times the
+search has proved (8,510 graphs, both axes logarithmic), against $n$ times the
 width (left) and against $n$ alone (right). The dashed line is the fit on the
 Rome graphs, $\text{nodes}=10^{1.75+0.00705\,nw}$. The structured benchmark
 sets fall far below it, and size alone gives no single law.}
@@ -312,8 +315,9 @@ and it proves the pathwidth is at least $w$.
 \caption{Twenty collections, 21,754 instance files, reduce to 17,714
 isomorphism classes, and 16,089 of them have a certified pathwidth. Largely
 open: PACE, the VSPLIB grids and Harwell--Boeing, and the MOSP sets of de
-Carvalho and Soma and of Frinhani et al.; Rome's 327 open classes are under
-3\% of it. \emph{Classes}: isomorphism classes within the
+Carvalho and Soma and of Frinhani et al.; Rome's 326 classes with only an upper bound, under 3\% of it, have since been
+closed by the runs of Section~\ref{sec:pwsolver}, which the next build of the
+dataset will record. \emph{Classes}: isomorphism classes within the
 collection (78 graphs above 5,000 vertices are compared by file content only).
 \emph{Counted here}: classes whose first member, in the order of the table,
 is in this collection, so the column sums to the dataset's class count. The
