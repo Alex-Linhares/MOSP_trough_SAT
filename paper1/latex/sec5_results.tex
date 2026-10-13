@@ -146,9 +146,7 @@ nodes, under a second of search, against
 (Table~\ref{tab:split}). It does not reach
 \texttt{Random-125-125-2-2\_0}: every minor of up to 95 customers that we tried admits 24. The minor bound
 also equals the optimum on \texttt{Random-125-125-6-1\_0} (81) and SP4 (53),
-which the search refutes on the full instance within a minute. Both certificates rest on our corrected
-search, whose rules are proved sound in Lean and whose code is tested, not
-proved.
+which the search refutes on the full instance within a minute.
 
 \subsection{Our corrected search as a pathwidth solver}
 \label{sec:pwsolver}
@@ -171,7 +169,12 @@ pathwidth 67) in 5.7\,s, against 323\,s for
 \citet{KobayashiKomuroTamaki2014}. Without the minor step, one graph goes the other way: the Mycielski graph
 $M_7$ (\texttt{myciel6}, 95 vertices, pathwidth 38), which their tuned branch
 and bound proves in about ten minutes, while the full refutation of 37 by our
-search does not finish in hours, its floor being 25.
+search does not finish in hours, its floor being 25. Mycielski graphs are
+built to have no triangles and yet to need many colours, so their largest
+cliques are single edges and their degrees are uneven: the degree and clique
+bounds that make up our floor see almost nothing. Their pathwidth also
+exceeds their treewidth (38 against 35 here), so no bound on treewidth can
+reach it.
 
 \paragraph{With the minor step.} The minor step of Section~\ref{sec:minor}
 changes this. A 58-vertex minor of \texttt{myciel6} already has pathwidth 38,

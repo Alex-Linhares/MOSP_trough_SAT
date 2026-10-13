@@ -78,9 +78,11 @@ to be wrong, but their refutations are not proved.
 \item The Lean model of the search and the C and Python code that run it are
   linked by testing and by certificates, not by proof
   (Section~\ref{sec:theorem}).
-\item That an acyclic covering by checked steps is sound, which is the
-  certificate checker's acceptance condition, is a paper argument
-  (Section~\ref{sec:certs}).
+\item The certificate checker of Section~\ref{sec:certs} accepts a refutation
+  when every move the search discarded is justified by a checked step and the
+  justifications never go round in a circle. That such a certificate really
+  proves the refutation is argued on paper there, and is not yet formalised in
+  Lean; it could be, in the style of our other proofs about the search.
 \item LaPaugh's equality $\es=\pes$ is stated and not formalised. No row
   needs it (Section~\ref{sec:true}).
 \item One reference of the table, \citet{LY2002ref5}, is one we could not obtain. Its row,

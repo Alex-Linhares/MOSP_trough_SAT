@@ -204,6 +204,18 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
+## From the owner's annotations (2026-10-13)
+
+- [ ] **Lean: the certificate checker's acceptance condition.** The checker
+      (Section 5.4) accepts a refutation when every discarded move is justified
+      by a checked step and the justifications are acyclic. That this makes the
+      certificate a proof is argued on paper only (conclusion, Limits). Formalise
+      it beside `lean/MOSPFormalization/Search/`.
+- [ ] **Read every citer in full.** Of the 38 works citing the CP paper 24 were
+      read in full, and of the 103 citing only the thesis, 32 (Appendix B,
+      prior reports). Read the remaining 14 + 71: obtain the open ones, list the
+      rest for fetching, and record any mention of the definite move's error.
+
 ## A replication notebook
 
 - [ ] **"This entire paper can be read and replicated on a Python (with C calls)

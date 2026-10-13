@@ -23,7 +23,7 @@ $\omega_{c,t}$ (all patterns of $c$ have been cut).
 \begin{enumerate}
 \item \emph{Permutation.} Every pattern takes at least one position and every
   position at least one pattern, $\bigvee_t x_{p,t}$ and $\bigvee_p x_{p,t}$;
-  and at most one of each, by a ladder encoding.
+    and at most one of each, by a ladder encoding, shown below.
 \item \emph{Prefixes.} $x_{p,t}\Rightarrow y_{p,t}$;
   $y_{p,t}\Rightarrow y_{p,t+1}$; $y_{p,t}\Rightarrow y_{p,t-1}\vee x_{p,t}$
   for $t>0$; and $y_{p,0}\Rightarrow x_{p,0}$.
@@ -42,6 +42,23 @@ $\omega_{c,t}$ (all patterns of $c$ have been cut).
   pattern with the most customers may be placed in the first
   $\lfloor m/2\rfloor+1$ positions.
 \end{enumerate}
+
+\paragraph{The ladder.} To say that at most one of $z_1,\dots,z_n$ is true,
+the ladder introduces auxiliaries $r_1,\dots,r_n$, where $r_i$ reads ``the true
+literal, if any, comes after position $i$'', and one slack literal $s$ for
+``none is true''. Its clauses are
+\[
+  r_{i+1}\Rightarrow r_i \ (1\le i<n),\qquad
+  z_1\Leftrightarrow\neg r_1,\qquad
+  z_i\Leftrightarrow r_{i-1}\wedge\neg r_i \ (1<i\le n),\qquad
+  s\Leftrightarrow r_n .
+\]
+The first family makes $r_1,\dots,r_n$ a ladder, true up to some point and
+false after it, so it has exactly one step; the channelling clauses make each
+$z_i$ true exactly when the step is at $i$, and $s$ true when there is no step.
+So at most one $z_i$ is true, with $n+1$ auxiliaries and about $4n$ clauses,
+linear in $n$, where the pairwise form needs $n(n-1)/2$ clauses. Our encoder
+emits this form through PySAT's \texttt{EncType.ladder}.
 
 \paragraph{What is proved.} The formula with clauses 1--4 is satisfiable exactly
 when some production order keeps at most $k$ stacks open~\leanref{encoding}. The proof models the two cardinality constraints by
