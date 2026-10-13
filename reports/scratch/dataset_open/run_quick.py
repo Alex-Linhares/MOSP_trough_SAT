@@ -11,7 +11,7 @@ class proved here (see run.py, one()). Resumable.
     python reports/scratch/dataset_open/run_quick.py --procs 14 --hours 2 --then 4   (2026-10-13)
 """
 import csv, json, subprocess, sys, threading, time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
@@ -128,6 +128,9 @@ def main():
     busy = {r["id"] for r in left[:7]}               # run.py's workers take the smallest first
     out = HERE / "results_quick.csv"
     quick_done = {row["id"] for row in csv.DictReader(open(out))} if out.exists() else set()
+    rescued = HERE / "results_quick_rescued.csv"      # results recovered from the old process by gdb
+    if rescued.exists():
+        quick_done |= {row["id"] for row in csv.DictReader(open(rescued))}
     left = [r for r in left if r["id"] not in busy and r["id"] not in quick_done]
     new = not out.exists()
     with open(out, "a", newline="") as f, ThreadPoolExecutor(procs) as ex:
@@ -136,7 +139,10 @@ def main():
             w.writeheader()
         print(f"{datetime.now():%Y-%m-%d %H:%M:%S} {len(left)} classes, {procs} workers, {BUDGET:.0f} s each; "
               f"leaving to run.py: {sorted(busy)}", flush=True)
-        for row in ex.map(one, left):
+        # as_completed, not map: each result is written the moment it finishes (map's ordered
+        # results were held in memory behind a stalled class, 2026-10-13; rescued by gdb).
+        for fut in as_completed([ex.submit(one, r) for r in left]):
+            row = fut.result()
             w.writerow(row); f.flush()
             print(f"{datetime.now():%Y-%m-%d %H:%M:%S} {row['id']} {row['names'][:40]} n={row['n']} "
                   f"recorded={row['recorded']} width={row['width']} proof={row['proof']!r} {row['status']} "
