@@ -35,7 +35,9 @@ def width_closing(masks, order):
 
 def one(r):
     skip = HERE / "skip.txt"      # classes run separately (W4: reports/scratch/w4/), added 2026-10-12
-    if skip.exists() and r["id"] in skip.read_text().split():
+    quick = HERE / "results_quick.csv"   # classes proved by the capped pass (run_quick.py)
+    proved_quick = {x["id"] for x in csv.DictReader(open(quick)) if x.get("proof")} if quick.exists() else set()
+    if (skip.exists() and r["id"] in skip.read_text().split()) or r["id"] in proved_quick:
         return dict(id=r["id"], collections="|".join(sorted({m["collection"] for m in r["members"]})),
                     names="|".join(sorted(stem(m.get("name") or m["source"]) for m in r["members"])),
                     n=r["n"], m=r["m"], recorded=r["width"], started_from_layout=False, width=r["width"],
