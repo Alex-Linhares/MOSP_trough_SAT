@@ -206,7 +206,7 @@ measurement and that, for pathwidth, it is not capped by treewidth.
 
 ## From the owner's annotations (2026-10-13)
 
-- [ ] **Lean: the certificate checker's acceptance condition.** The checker
+- [ ] **Lean: the certificate checker's acceptance condition** (medium priority). The checker
       (Section 5.4) accepts a refutation when every discarded move is justified
       by a checked step and the justifications are acyclic. That this makes the
       certificate a proof is argued on paper only (conclusion, Limits). Formalise
