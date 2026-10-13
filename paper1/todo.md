@@ -160,14 +160,17 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       (minor size, nodes, seconds). What we have now:
       - Random-125-125-2-3_0 = 21: 1,128 core-hours -> a 69-customer minor,
         666,153 nodes, under a second;
-      - Random-125-125-2-1_0 = 24: 1.6e11 nodes -> an 87-customer minor, 30 s
-        (large budget);
+      - Random-125-125-2-1_0 = 24: 366.5 core-hours (Table B.1) -> an
+        87-customer minor, 30 s (large budget);
+      - measured 2026-10-13 at the owner's request (2 cores, 5 min each,
+        reports/scratch/minor_table/): 2-5_0 = 20, 368.8 core-hours -> a
+        63-customer minor, 0.4 s; 2-4_0 = 24, 154.1 -> 69 customers, 0.3 s;
+        4-5_0 = 46, 26.1 -> 99 customers, 82 s; not settled in 5 min: 4-4_0
+        (bound 50 of 51), 4-2_0 (55 of 57), 2-2_0 (24 of 25);
       - Random-125-125-6-1_0 = 81 and SP4 = 53: minor bound equals the optimum;
       - Random-125-125-2-2_0 = 25: 2,231 core-hours, not reached by any minor
         up to 95 customers (an honest last row).
-      Only 2-3_0 is above 1,000 core-hours so far. The other hard values of
-      Table B.1 (18-369 core-hours each) would need the minor step run on them,
-      which re-runs proved instances: only if the owner asks for it.
+      So 5 of Table B.1's 9 values settle in seconds or minutes.
 - [ ] **Writing rule: no development history.** When writing about the solver,
       leave out the history of how our algorithm was developed (the bugs, the
       re-certifications, the configurations we tried, the order things were
