@@ -89,6 +89,28 @@ def jobs():
     return out
 
 
+def guarded(job):
+    """Run one() in its own process with a hard 30 s kill: a step that ignores its
+    budget costs 30 s, not hours (two workers hung for 2 h on 2026-10-13)."""
+    import subprocess, pickle, tempfile
+    with tempfile.NamedTemporaryFile("wb", suffix=".pkl", delete=False) as f:
+        pickle.dump(job, f); path = f.name
+    code = ("import sys, pickle, json; sys.path.insert(0, %r); import run; "
+            "print(json.dumps(run.one(pickle.load(open(%r, 'rb')))))" % (str(HERE), path))
+    try:
+        out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=30)
+        row = json.loads(out.stdout.strip().splitlines()[-1]) if out.returncode == 0 else None
+    except subprocess.TimeoutExpired:
+        row = None
+    Path(path).unlink(missing_ok=True)
+    if row is None:
+        key, coll, name = job[0], job[1], job[2]
+        row = dict(key=key, collection=coll, name=name, n="", m="", upper="", upper_source="killed at 30 s",
+                   lower="", lower_minor_size="", mosp_lower="", mosp_upper="", closed=False, seconds=30,
+                   finished=f"{datetime.now():%Y-%m-%dT%H:%M:%S}")
+    return row
+
+
 def main():
     procs = int(sys.argv[sys.argv.index("--procs") + 1]) if "--procs" in sys.argv else 2
     out = HERE / "results.csv"
@@ -100,10 +122,10 @@ def main():
         if new:
             w.writeheader()
         print(f"{datetime.now():%Y-%m-%d %H:%M:%S} {len(todo)} instances on {procs} workers", flush=True)
-        for row in pool.imap_unordered(one, todo):
+        for row in pool.imap_unordered(guarded, todo):
             w.writerow(row); f.flush()
             print(f"{datetime.now():%H:%M:%S} {row['name'][:28]:28s} n={row['n']} MOSP in "
-                  f"[{row['mosp_lower']}, {row['mosp_upper']}]{' CLOSED' if row['closed'] else ''} "
+                  f"[{row['mosp_lower']}, {row['mosp_upper']}] {row['upper_source'] if 'killed' in row['upper_source'] else ''}{' CLOSED' if row['closed'] else ''} "
                   f"(minor {row['lower_minor_size']}) {row['seconds']}s", flush=True)
 
 
