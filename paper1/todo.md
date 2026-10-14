@@ -204,6 +204,21 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
+## The grid theorem in Lean (high priority, 2026-10-14)
+
+- [ ] **Prove in Lean that an (h, w)-grid has pathwidth min(h, w)** (Ellis &
+      Warren 2008, Theorem 4.1, via node search: Lemma 4.1, the sweep, gives
+      ns <= min(h, w) + 1; Lemma 4.2 the lower bound). 41 VSPLIB grids (sides
+      14-54) are now settled by citing this theorem
+      (`reports/scratch/grids_theorem/grids.csv`, each grid checked by
+      isomorphism, each witness layout checked); with the Lean proof they rest
+      on Lean like the rest of the paper. The upper bound is the row-by-row
+      layout; the lower bound is the hard half (Ellis & Warren's search
+      argument, or a separator / isoperimetric argument, or the grid minor
+      structure). Check the statement on small grids first, as usual. Then give
+      the dataset a provenance for it (e.g. `certified:theorem`, citing the Lean
+      name) and update Table 5.2's grid row.
+
 ## From the owner's annotations (2026-10-13)
 
 - [ ] **Lean: the certificate checker's acceptance condition** (medium priority). The checker
