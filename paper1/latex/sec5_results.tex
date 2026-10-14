@@ -188,7 +188,10 @@ and 292 with a larger budget; we refuted the other 48 without a time limit,
 the longest in 25.4 hours, so the pathwidth of every one of the 11,534 Rome
 graphs is now proved;
 the Harwell--Boeing count rises from 39 to 43, and the colouring benchmarks
-gain \texttt{anna} and \texttt{myciel6}. On graphs proved both with and without
+gain \texttt{anna} and \texttt{myciel6}. The VSPLIB grids need no search: each
+is an $n\times n$ grid, whose pathwidth is $n$ by
+\citet[Theorem~4.1]{EllisWarren2008}, and a row-by-row layout of width $n$
+attains it, so all 50 are settled where search alone proved 9. On graphs proved both with and without
 the step, it lowers the total node count by 55 to 99\% on Rome, the VSPLIB grids,
 Harwell--Boeing and the colouring graphs, adds 1\% on the named graphs and
 20\% on the VSPLIB trees (about 1.5\,s a tree), and costs 4\% of the time on
@@ -205,7 +208,10 @@ proves, under our corrected rules and under the previous algorithm with the same
 caps (Rome: 10, 120 and 600\,s in stages), without the minor step of
 Section~\ref{sec:minor}, and the published counts of
 \citet{CoudertMazauricNisse2016} under a 10-minute cap. \emph{Width differs}:
-graphs proved by both runs with different widths.}
+graphs proved by both runs with different widths. $^{a}$All 50 VSPLIB grids:
+each is an $n\times n$ grid, checked by isomorphism, so its pathwidth is $n$ by
+\citet[Theorem~4.1]{EllisWarren2008}; the 41 that search did not prove carry a
+witness layout of width $n$.}
 \label{tab:graphs}
 \resizebox{\linewidth}{!}{\input{tables/graphs}}
 \end{table}
