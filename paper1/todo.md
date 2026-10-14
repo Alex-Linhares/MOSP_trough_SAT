@@ -204,6 +204,27 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
+## A parameterised bound for our search (high priority, 2026-10-14)
+
+- [ ] **Can our corrected search be proved FPT, or at least XP, in the width k,
+      and does it improve on what is known?** Empirically, on the Rome graphs,
+      nodes ~ 10^(1.75 + 0.00705 n w) (Section 5, Figure 5.1): exponential in
+      n*w, not fixed-parameter. Theory: Bodlaender & Kloks (1996) decide
+      pathwidth <= k in linear time with a 2^O(k^3) constant
+      (`reports/fpt_theory_practice_gap.md`); later improvements exist (Fuerer
+      and others) and must be checked before any claim. Steps:
+      1. survey the parameterised pathwidth literature for the current best
+         bounds (FPT and XP), with what we hold and what to fetch;
+      2. bound our search's state space: its states are vertex sets S with
+         |N(S) \ S| <= k, each fixed by its boundary and a choice of the
+         components of G - N[S] it contains, which suggests an n^O(k) (XP)
+         bound; prove it, and check it on small graphs first;
+      3. ask whether the corrected dominance rules (and the minor step) cut
+         the state space to f(k) * poly(n), which would be FPT; a new idea
+         would be needed, so scope it before investing;
+      4. if a theorem results, formalise it in Lean beside Search/ and decide
+         whether it belongs in this paper or in paper 2.
+
 ## The grid theorem in Lean (high priority, 2026-10-14)
 
 - [x] **Done 2026-10-14** (`lean/MOSPFormalization/Grid.lean`, `pathwidth_grid`, commit cda02ac3b; 1x1 is the one exception, pathwidth 0; in the paper as Appendix A `grid`). **Prove in Lean that an (h, w)-grid has pathwidth min(h, w)** (Ellis &
