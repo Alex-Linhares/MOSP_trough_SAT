@@ -14,8 +14,8 @@ For every record:
    the pathwidth, checked);
 3. every problem value is the width plus that problem's offset
    (0 for pathwidth, vertex separation and Lengauer's game, 1 for the rest);
-4. the provenance is one of `certified:refutation`, `certified:bound`,
-   `solution`;
+4. the provenance is one of `certified:refutation`, `certified:theorem`,
+   `certified:minor`, `certified:bound`, `solution`;
 5. for `certified:bound`, the width **equals** a lower bound computed here:
    the record's minor certificate is replayed (each contraction must be along
    an edge of the current graph) and the minor's minimum degree must reach the
@@ -23,14 +23,29 @@ For every record:
    certificate, the checker's own degeneracy and contraction-degeneracy
    (min-degree vertex into its least-common-neighbour neighbour) are computed
    and reported;
-6. every member's map to the representative is a permutation of the vertices;
+6. for `certified:minor` (a search refuted `width - 1` on a contracted minor),
+   the record's contraction sequence, where it has one, is replayed: every
+   contraction must be along an edge of the current graph, the minor must have
+   the recorded size, and the refuted width must be `width - 1`. The refutation
+   on the minor rests on a search, like `certified:refutation`, and is not
+   checkable here; records without a sequence are counted;
+7. for `certified:theorem`, the theorem must be one this checker knows and
+   its hypothesis is recomputed from the graph: for the grid theorem
+   (pw((h, w)-grid) = min(h, w), Ellis & Warren 2008, Theorem 4.1; Lean
+   `pathwidth_grid`), the graph must be an h x w grid, which is checked by
+   building the coordinates from two corners and testing every edge, and the
+   width must be min(h, w). A flag in the record is never trusted;
+8. every member's map to the representative is a permutation of the vertices;
    with `--sources`, the member's source file is re-read with this file's own
    readers and the map is checked to be an isomorphism onto the record's graph
    (collections in a format this checker does not read are counted as skipped).
 
 A `certified:refutation` cannot be checked from the record: it rests on a
 search (the repaired-rules customer search, `paper1/revised_algorithm.md`).
-The checker reports how many records rest on one.
+Nor can the refutation behind a `certified:minor`: the checker replays the
+contraction sequence, which shows the minor is genuine, but the claim that the
+minor has no layout of width `width - 1` rests on the same search. The checker
+reports how many records rest on one.
 
     python paper1/dataset_check.py                    # every record
     python paper1/dataset_check.py --sources          # also re-read member sources
@@ -56,7 +71,9 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent
 DEFAULT = HERE / "data" / "dataset" / "pathwidth_dataset.jsonl.gz"
 
-PROVENANCES = ("certified:refutation", "certified:bound", "solution")
+PROVENANCES = ("certified:refutation", "certified:theorem", "certified:minor", "certified:bound",
+               "solution")
+GRID_LEAN = "MOSPFormalization.pathwidth_grid"
 OFFSETS = {
     "pathwidth": 0, "vertex separation": 0, "Lengauer's vertex separator game": 0,
     "MOSP": 1, "gate matrix layout (incl. multiple PLA folding)": 1,
@@ -159,6 +176,87 @@ def replay_minor(adj, ops):
     if not alive:
         return 0
     return min(len(adj[v]) for v in alive)
+
+
+def replay_contractions(adj, contractions):
+    """Apply a contraction sequence `[[v, u], ...]` (contract `v` into `u`; `u`
+    null deletes `v`); return the minor's vertex count, or raise ValueError if
+    a contraction is not along an edge of the current graph."""
+    ops = [["d", v] if u is None else ["c", v, u] for v, u in contractions]
+    adj = [set(a) for a in adj]
+    alive = set(range(len(adj)))
+    for op in ops:
+        v = op[1]
+        if not isinstance(v, int) or v not in alive:
+            raise ValueError(f"step {op}: vertex {v} is not in the current graph")
+        if op[0] == "c":
+            u = op[2]
+            if not isinstance(u, int) or u not in alive or u not in adj[v]:
+                raise ValueError(f"contraction {v}->{u} is not along an edge")
+            for w in adj[v]:
+                adj[w].discard(v)
+                if w != u:
+                    adj[w].add(u)
+                    adj[u].add(w)
+        else:
+            for w in adj[v]:
+                adj[w].discard(v)
+        adj[v] = set()
+        alive.discard(v)
+    return len(alive)
+
+
+def _bfs(adj, s):
+    dist = [-1] * len(adj)
+    dist[s] = 0
+    queue = [s]
+    for x in queue:
+        for y in adj[x]:
+            if dist[y] < 0:
+                dist[y] = dist[x] + 1
+                queue.append(y)
+    return dist
+
+
+def grid_shape(adj):
+    """(h, w) with h <= w if the graph is an h x w grid (h, w >= 2), else None.
+
+    A corner `a` (degree 2) and a nearest other corner `b` span one side, of
+    length w - 1. Coordinates follow from the two distance maps,
+    i = (d_a + d_b - (w - 1)) / 2 and j = (d_a - d_b + (w - 1)) / 2; the graph
+    is the grid exactly when these are a bijection onto [0, h) x [0, w) and the
+    edges are exactly the pairs at coordinate distance one."""
+    n = len(adj)
+    corners = [v for v in range(n) if len(adj[v]) == 2]
+    if n < 4 or len(corners) != 4:
+        return None
+    a = corners[0]
+    da = _bfs(adj, a)
+    if min(da) < 0:
+        return None
+    b = min(corners[1:], key=lambda c: da[c])
+    w = da[b] + 1
+    if n % w:
+        return None
+    h = n // w
+    db = _bfs(adj, b)
+    coord = {}
+    for v in range(n):
+        i2, j2 = da[v] + db[v] - (w - 1), da[v] - db[v] + (w - 1)
+        if i2 % 2 or j2 % 2:
+            return None
+        i, j = i2 // 2, j2 // 2
+        if not (0 <= i < h and 0 <= j < w) or (i, j) in coord:
+            return None
+        coord[(i, j)] = v
+    m = sum(len(x) for x in adj) // 2
+    if m != h * (w - 1) + w * (h - 1):
+        return None
+    for (i, j), v in coord.items():
+        want = {coord[p] for p in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)) if p in coord}
+        if set(adj[v]) != want:
+            return None
+    return (min(h, w), max(h, w))
 
 
 # --------------------------------------------------------------------------
@@ -325,6 +423,34 @@ def check_record(rec, sources=False, root=REPO):
         elif own < rec["width"]:
             fails.append(f"certified:bound with no certificate and own bound {own} < {rec['width']}")
         facts["bound_by_certificate"] = cert_ok
+    if rec["provenance"] == "certified:minor":
+        cert = rec.get("minor_certificate")
+        facts["minor_by_certificate"] = False
+        if cert is not None:
+            try:
+                size = replay_contractions(adj, cert["contractions"])
+                if cert.get("refuted") != rec["width"] - 1:
+                    fails.append(f"minor certificate refutes {cert.get('refuted')}, width is {rec['width']}")
+                elif "size" in cert and size != cert["size"]:
+                    fails.append(f"minor certificate leaves {size} vertices, not {cert['size']}")
+                else:
+                    facts["minor_by_certificate"] = True
+            except (ValueError, TypeError, KeyError) as exc:
+                fails.append(f"minor certificate invalid: {exc}")
+    if rec["provenance"] == "certified:theorem":
+        th = rec.get("theorem") or {}
+        if th.get("family") != "grid" or not str(th.get("lean", "")).startswith(GRID_LEAN):
+            fails.append(f"certified:theorem names no theorem this checker knows: {th!r}")
+        else:
+            shape = grid_shape(adj)
+            if shape is None:
+                fails.append("certified:theorem (grid), but the graph is not a grid")
+            elif min(shape) != rec["width"]:
+                fails.append(f"grid {shape[0]} x {shape[1]} has pathwidth {min(shape)}, record says {rec['width']}")
+            elif sorted((th.get("h"), th.get("w"))) != list(shape):
+                fails.append(f"record names a {th.get('h')} x {th.get('w')} grid, the graph is {shape[0]} x {shape[1]}")
+            else:
+                facts["theorem_checked"] = True
     for mem in rec["members"]:
         perm = mem.get("to_representative")
         if perm is not None and sorted(perm) != list(range(n)):
@@ -378,6 +504,12 @@ def check(path=DEFAULT, sources=False, limit=None, out=sys.stdout):
                 totals["bound"] += 1
                 totals["bound_by_certificate"] += facts.get("bound_by_certificate", False)
                 totals["bound_by_own"] += facts.get("own_bound", -1) >= rec["width"]
+            if rec["provenance"] == "certified:minor":
+                totals["minor"] += 1
+                totals["minor_by_certificate"] += facts.get("minor_by_certificate", False)
+            if rec["provenance"] == "certified:theorem":
+                totals["theorem"] += 1
+                totals["theorem_checked"] += facts.get("theorem_checked", False)
             for f in fails:
                 failures.append(f"{rec['id']}: {f}")
     print(f"records checked: {records} in {time.time() - t0:.1f} s", file=out)
@@ -389,6 +521,10 @@ def check(path=DEFAULT, sources=False, limit=None, out=sys.stdout):
           f"by the checker's own bounds alone: {totals['bound_by_own']} / {totals['bound']}", file=out)
     print(f"certified:refutation (rests on a search, not checkable here): {prov['certified:refutation']}",
           file=out)
+    print(f"certified:minor contraction sequences replayed: {totals['minor_by_certificate']} / "
+          f"{totals['minor']} (the refutation on the minor rests on a search, not checkable here)", file=out)
+    print(f"certified:theorem hypotheses recomputed (grid recognised, width = min(h, w)): "
+          f"{totals['theorem_checked']} / {totals['theorem']}", file=out)
     if sources:
         print(f"member sources re-read and matched: {totals['sources_checked']}, "
               f"skipped (format not read here): {totals['sources_skipped']}, "

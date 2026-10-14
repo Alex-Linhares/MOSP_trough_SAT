@@ -15,7 +15,7 @@ benchmark optima survive? All 115 that rested on the previous algorithm
 pathwidth solver is it? On every benchmark set with published exact counts it proves as many or more graphs than the published branch and bound of \citet{CoudertMazauricNisse2016}, and it is faster on each of the fourteen graphs whose times they publish. Can a reader check a refutation without
 trusting our code? Yes, up to about 75 customers, through a certificate and an
 independent checker. Finally, what does it make possible? A dataset of 17,714
-graphs from twenty benchmark collections. For 16,089 of them the pathwidth is
+graphs from twenty benchmark collections. For 16,602 of them the pathwidth is
 certified, and that gives the exact value of every problem in the exact core.
 
 \subsection{Experimental setup}
@@ -318,21 +318,27 @@ graph. Each record carries the graph, the width $w$, its provenance, and a
 witness layout of exactly that width. A record certified by bound also carries
 a \emph{minor certificate}: a list of vertex deletions and edge contractions
 after which every vertex has degree at least $w$. Any checker can replay it,
-and it proves the pathwidth is at least $w$.
+and it proves the pathwidth is at least $w$. A record certified on a minor
+carries, when it is stored, the sequence of edge contractions that gives
+the minor on which our search refuted width $w-1$, which proves $\pw\ge w$ by
+Theorem~\ref{thm:minor}. A record certified by theorem names the theorem and
+its Lean proof; so far these are the VSPLIB grids, whose pathwidth is given by
+the grid theorem~\leanref{grid}.
 
 \begin{table}[t]
 \centering\small
 \caption{Twenty collections, 21,754 instance files, reduce to 17,714
-isomorphism classes, and 16,089 of them have a certified pathwidth. Largely
-open: PACE, the VSPLIB grids and Harwell--Boeing, and the MOSP sets of de
-Carvalho and Soma and of Frinhani et al.; Rome's 326 classes with only an upper bound, under 3\% of it, have since been
-closed by the runs of Section~\ref{sec:pwsolver}, which the next build of the
-dataset will record. \emph{Classes}: isomorphism classes within the
+isomorphism classes, and 16,602 of them have a certified pathwidth with a
+witness layout. Largely open: PACE, the VSPLIB Harwell--Boeing graphs, and the
+MOSP sets of de Carvalho and Soma and of Frinhani et al. \emph{Classes}: isomorphism classes within the
 collection (78 graphs above 5,000 vertices are compared by file content only).
 \emph{Counted here}: classes whose first member, in the order of the table,
 is in this collection, so the column sums to the dataset's class count. The
-next four columns split those classes by provenance; \emph{No witnessed
-value}: no layout is stored yet. $^{a}$The same 46 files distributed a second
+next six columns split those classes by provenance: certified by search on
+the graph, by search on a contracted minor (Theorem~\ref{thm:minor}), by a
+lower bound, or by a theorem; or an upper bound only. \emph{No witnessed
+value}: no layout is stored yet; this includes 26 Rome classes whose pathwidth
+is certified but which have no stored layout of that width. $^{a}$The same 46 files distributed a second
 time under other names; every class is counted under its first copy.}
 \label{tab:dataset}
 \resizebox{\linewidth}{!}{\input{tables/dataset}}
@@ -345,17 +351,20 @@ eleven VLSI gate matrix circuits \citep{OliveiraLorena2002}, the VSPLIB sets
 \citep{Duarte2012} and the Small graphs \citep{MartiCamposPinana2008}, the Rome
 graphs \citep{DiBattista1997}, and treewidth collections used as pathwidth
 benchmarks \citep{TreewidthLIB,freetdi,PACE2016,PACE2017}. Of the 17,714
-classes, 16,089 carry a certified pathwidth with a witness layout and 860 a witnessed upper bound, and 765 have no witnessed value yet. The 610 large instances of \citet{Frinhani2018}, with
+classes, 16,602 carry a certified pathwidth with a witness layout and 344 a witnessed upper bound, and 768 have no witnessed value yet, 26 of them with a certified pathwidth. The 610 large instances of \citet{Frinhani2018}, with
 400 to 1,000 customers, are included so that the dataset covers every
 published MOSP collection we have. None of them has a value yet, because an
 exact search at that size is out of reach.
 
 An independent checker, sharing no code with the solvers, verifies the
-dataset. It re-reads all 20,987 member files with its own readers, maps each
+dataset. It re-reads all 20,984 member files with its own readers, maps each
 onto its record's graph by its renaming, recomputes the width of every witness
-layout and replays every minor certificate. It reports no failure on the
-16,949 records, the 16,089 certified classes and the 860 with an upper bound. A value certified by search cannot be checked from its record;
-it rests on our corrected search, and for instances within reach of the emitter
+layout, replays every minor certificate and every stored contraction sequence
+(392 of the 397 records certified on a minor), and recognises each grid
+certified by theorem from its edges alone. It reports no failure on the
+16,946 records, the 16,602 certified classes and the 344 with an upper bound. A value certified by search cannot be checked from its record,
+and neither can the refutation on a minor;
+both rest on our corrected search, and for instances within reach of the emitter
 the certificate of Section~\ref{sec:certs} is how a third party can check it.
 
 \paragraph{Agreement with published values.} All 84 Small graphs agree with

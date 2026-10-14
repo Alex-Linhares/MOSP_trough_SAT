@@ -7,7 +7,8 @@ checker `paper1/dataset_check.py`, price `paper1/dataset_price.py`, tests
 
 ```bash
 python -m paper1.dataset index  --workers 4    # every source read, nauty certificates (about 4 min)
-python -m paper1.dataset values                # values on record: solutions/, pathwidth_solver repaired runs
+python -m paper1.dataset values                # values on record: solutions/, pathwidth_solver repaired runs,
+                                               # and the later runs' results under reports/scratch/ (§2a)
 python -m paper1.dataset run    --workers 4 --until <ISO time>   # witnesses, first runs (2.5 core-h here)
 python -m paper1.dataset write                 # pathwidth_dataset.jsonl.gz, classes.csv.gz (1 min)
 python paper1/dataset_check.py --sources       # the independent check (2 min)
@@ -115,13 +116,15 @@ one line per isomorphism class with a witnessed value:
 | `id` | `pwc-NNNNN`, stable for a given index (the classes are numbered in collection order) |
 | `n`, `m`, `edges` | the representative graph: vertices `0..n-1`, `m` edges `[u, v]` with `u < v` |
 | `width` | `w`: the pathwidth if certified, an upper bound if `solution` |
-| `provenance` | `certified:refutation` (a search refuted `w − 1`), `certified:bound` (`w` equals a lower bound; no refutation needed), `solution` (witness only), as in `solutions/` |
+| `provenance` | `certified:refutation` (a search refuted `w − 1`), `certified:theorem` (a published theorem, also proved in Lean, gives `w`), `certified:minor` (a search refuted `w − 1` on a contracted minor), `certified:bound` (`w` equals a lower bound; no refutation needed), `solution` (witness only). The first, fourth and fifth are as in `solutions/`. Ranked in that order (`PROV_RANK`); a save never moves a value down it |
 | `evidence` | where the value comes from: the `solutions/` file, or the result CSV with its rules, node count and seconds; and the witness's origin |
 | `layout` | a vertex order of width exactly `w`: `max_i |N(L[:i]) \ L[:i]|`, the largest boundary of a prefix (section 4's closing-order convention, `revised_algorithm.md` §4.7) |
 | `values` | `w` or `w + 1` under each of the nine problems |
 | `problems` | the source problems of the members |
 | `members` | every instance of the class: `collection`, `problem`, `source` (repo-relative path), `name`, `index_in_file` (MOSP files holding several instances), `to_representative` (`perm[v]` is the representative's vertex for member vertex `v`; `null` for the representative) |
 | `lower_bound_certificate` | for `certified:bound` only: `ops`, a list of `["d", v]` (delete) and `["c", v, u]` (contract edge `vu` into `u`) after which every vertex has degree ≥ `w`; since `pw ≥ tw ≥` the minimum degree of any minor, it proves `pw ≥ w` |
+| `minor_certificate` | for `certified:minor`, where one is on record: `contractions`, a list of `[v, u]` (contract `v` into `u`, which must be adjacent at that moment) or `[v, null]` (delete `v`), in the record's labels; `size`, the minor's vertex count; `refuted` = `w − 1`, the width a search refuted on the minor; `rule`, the greedy rule that chose the pairs. Pathwidth is minor-monotone (paper Theorem 4.11; Lean `pathwidth_gt_of_minorOf`, `lean/MOSPFormalization/Minor.lean`), so the refutation proves `pw ≥ w` |
+| `theorem` | for `certified:theorem` only: `family` (`grid`), `h`, `w`, `theorem` (the published statement) and `lean` (the Lean name). The grids: `pw((h, w)-grid) = min(h, w)`, Ellis & Warren (2008), Theorem 4.1; Lean `MOSPFormalization.pathwidth_grid` (`lean/MOSPFormalization/Grid.lean`) |
 
 Beside it, `classes.csv.gz` has one row per class (17,714), including the
 classes without a record, with owner collection, members and provenance;
@@ -150,6 +153,50 @@ classes without a record, with owner collection, members and provenance;
   within the engine, Carvalho & Soma): a full descent at 30 s per graph,
   repaired rules, in this item.
 
+### 2a. Results of later runs, folded in
+
+`values` also reads four result files under `reports/scratch/` (the function
+`fold` in `dataset.py`). It runs no solver: it maps each row to an indexed
+instance, recomputes the width of the row's layout on that instance's graph
+(it must equal the row's width), and offers the row as a value. Per instance,
+a proved value beats an unproved one and a smaller width beats a larger one;
+two proved widths of one class must agree, and no witnessed width may lie
+below a proved one, or the stage stops.
+
+- **Rome, the minor step alone** (`minor_bound/rome_open_step.csv`): 292 of
+  the 340 Rome graphs left open at 600 s are closed by refuting `w − 1` on a
+  contracted minor, `w` being the recorded width. The run stored the
+  minor's size and contraction rule, not the contraction list. The list is
+  rebuilt here from (size, rule) by the deterministic greedy rule
+  (`pathwidth_solver/pathwidth/minor.py`, `contraction_sequence`; no search),
+  and the rebuilt minor must have the recorded size. Caveat: the run predates
+  the commit of that module (2026-10-12 04:48; the run wrote at 02:21), so
+  that the rebuilt list is the one refuted rests on the rule not having
+  changed in between; the checker shows only that it is a genuine minor.
+  Witness: the build's stored one, carried to the instance's labels through
+  the canonical labelling. For 25 of the 292 the stored witness is one wider
+  than the proved width (the run that found width `w` kept no layout), so
+  these classes are `certified:minor` with no witness: they have no record
+  until a witness of width `w` is regenerated.
+- **Rome, the other 48, no time limit** (`rome_unlimited/results.csv`): width,
+  proof (`refutation` 42, `minor` 6) and the layout. The run stored no
+  contraction list; for one of the six, `rome_open_e2e.csv` refuted the same
+  width on a recorded (size, rule), which is rebuilt as above. The other five
+  are `certified:minor` without a sequence.
+- **The dataset's open classes** (`dataset_open/results.csv`,
+  `results_quick.csv`, `results_quick_rescued.csv`): rows keyed by record id,
+  in the representative's labels, with the layout and, for `minor`, the
+  certificate. A row is used if it is proved or improves the width. The id is
+  mapped to its class through the index (ids are stable for a given index),
+  and the representative is the one the previous build used.
+- **Grids** (`grids_theorem/grids.csv`): the 41 VSPLIB grids marked
+  `certified:theorem`, with a layout of width `n` (19 recorded, 22 row-major).
+  The other nine were already `certified:refutation` and stay so.
+
+The Frinhani et al. (2018) lower bounds of `mosp_small_minors/results.csv`
+are not folded in: they are lower bounds without witnesses, and the dataset
+records a value only with a witness of that width.
+
 ## 3. The independent checker
 
 `paper1/dataset_check.py` imports nothing from this repository, neither the
@@ -159,12 +206,23 @@ else (a test asserts the imports). Per record it checks:
 1. the graph is simple and `m` is right;
 2. the layout is a permutation and its width, recomputed, **equals** `w`;
 3. every problem value is `w` plus that problem's offset;
-4. the provenance is one of the three;
+4. the provenance is one of the five;
 5. for `certified:bound`, the minor certificate replays (each contraction
    along an edge of the current graph) to minimum degree ≥ `w`. Separately,
    it computes its own degeneracy and contraction degeneracy and reports how
    many bounds those alone re-establish;
-6. every member's map is a permutation; with `--sources`, each member's
+6. for `certified:minor`, the contraction sequence, where the record has one,
+   replays: every contraction is along an edge of the current graph, the
+   minor has `size` vertices, and `refuted` is `w − 1`. Records without a
+   sequence are counted;
+7. for `certified:theorem`, the checker recognises the theorem (`family`
+   `grid`, the Lean name `MOSPFormalization.pathwidth_grid`) and recomputes
+   its hypothesis from the edges alone: it builds coordinates from two
+   corners and their distance maps, requires them to be a bijection onto
+   `[0, h) × [0, w)` with exactly the grid's edges, and requires
+   `w = min(h, w)` of that grid and the record's `h`, `w`. A flag is never
+   trusted;
+8. every member's map is a permutation; with `--sources`, each member's
    source file is re-read with the checker's own readers and the map is
    checked to be an isomorphism onto the record's graph.
 
@@ -173,13 +231,53 @@ repaired-rules customer search (`revised_algorithm.md`) or, for the MOSP
 corpus, on the refutations `solutions/` records, all of which were
 re-checked under the repaired rules (`solver_fix.md` items 06–09) except the
 three in flight. The checker counts these records. A proof object for them
-is item 05's subject.
+is item 05's subject. The same holds for the refutation behind a
+`certified:minor`: replaying the contractions shows the minor is genuine, but
+that it has no layout of width `w − 1` rests on the search.
 
-**Result** (2026-10-03, `python paper1/dataset_check.py --sources`):
+**Result** (2026-10-14, `python paper1/dataset_check.py --sources`):
 ```
-records checked```
+records checked: 16946 in 62.8 s
+provenance (records, i.e. isomorphism classes):
+  certified:refutation    12629   members  15680
+  certified:theorem          41   members     41
+  certified:minor           397   members    400
+  certified:bound          3535   members   4498
+  solution                  344   members    365
+certified:bound re-established by the minor certificate: 3535 / 3535; by the checker's own bounds alone: 3261 / 3535
+certified:refutation (rests on a search, not checkable here): 12629
+certified:minor contraction sequences replayed: 392 / 397 (the refutation on the minor rests on a search, not checkable here)
+certified:theorem hypotheses recomputed (grid recognised, width = min(h, w)): 41 / 41
+member sources re-read and matched: 20984, skipped (format not read here): 0, missing on disk: 0
+members by collection and provenance:
+  MOSP: Carvalho & Soma 2015: refutation 38, solution 112
+  MOSP: Challenge 2005: refutation 5805, bound 1
+  MOSP: Challenge 2005 (second copy): refutation 45, bound 1
+  MOSP: Chu & Stuckey: refutation 200
+  MOSP: Faggioli & Bentivoglio: refutation 300
+  MOSP: SCOOP: refutation 24
+  PACE 2016: refutation 140, minor 14, bound 80, solution 50
+  PACE 2017 bonus: refutation 24, minor 54, solution 22
+  PACE 2017 exact: refutation 67, minor 61, bound 7, solution 54
+  PACE 2017 heuristic: refutation 30, minor 6, bound 3, solution 47
+  Rome graphs: refutation 8345, minor 262, bound 2901
+  Small (Marti et al. 2008): refutation 32, bound 52
+  TreewidthLIB colouring: refutation 18, bound 13, solution 27
+  VLSI gate matrix circuits: refutation 5, bound 5, solution 1
+  VSPLIB Harwell-Boeing: refutation 32, minor 1, bound 7, solution 33
+  VSPLIB grids: refutation 9, theorem 41
+  VSPLIB trees: refutation 50
+  freetdi control-flow graphs: refutation 406, minor 2, bound 1406, solution 2
+  freetdi named graphs: refutation 110, bound 22, solution 17
+FAILURES: 0
+```
 
-Zero failures. All 3,535 bound certificates replay; the checker's own two bounds alone reach 3,261 of them, which is why the certificate is stored. All 20,987 member files were re-read and mapped onto their record's graph.
+Zero failures. All 3,535 bound certificates replay; the checker's own two
+bounds alone reach 3,261 of them, which is why the certificate is stored. 392
+of the 397 `certified:minor` records carry a contraction sequence and all
+replay; the five without one are Rome graphs whose run stored none. All 41
+grids certified by theorem are recognised as grids from their edges. All
+20,984 member files were re-read and mapped onto their record's graph.
 
 ## 4. Collections, deduplication, provenance
 
@@ -236,29 +334,29 @@ Generated: `paper1/data/dataset/tables.md`.
 
 Classes, not files. A class's value is its best-established member's.
 
-| collection | certified:refutation | certified:bound | solution | certified:refutation (no witness yet) | certified:bound (no witness yet) | solution (no witness yet) | no value |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| MOSP: Challenge 2005 | 3,168 | 1 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Challenge 2005 (second copy) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Faggioli & Bentivoglio | 274 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: SCOOP | 24 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Chu & Stuckey | 198 | 0 | 2 | 0 | 0 | 0 | 0 |
-| MOSP: Carvalho & Soma 2015 | 11 | 0 | 139 | 0 | 0 | 0 | 0 |
-| MOSP: Frinhani et al. 2018, large | 0 | 0 | 0 | 0 | 0 | 0 | 610 |
-| VLSI gate matrix circuits | 5 | 5 | 1 | 0 | 0 | 0 | 0 |
-| VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 |
-| VSPLIB grids | 9 | 0 | 19 | 0 | 0 | 22 | 0 |
-| VSPLIB Harwell-Boeing | 32 | 7 | 33 | 0 | 0 | 0 | 0 |
-| Small (Marti et al. 2008) | 32 | 52 | 0 | 0 | 0 | 0 | 0 |
-| Rome graphs | 8,126 | 2,746 | 326 | 1 | 0 | 0 | 0 |
-| TreewidthLIB colouring | 18 | 13 | 27 | 0 | 0 | 0 | 0 |
-| freetdi named graphs | 97 | 22 | 23 | 0 | 0 | 0 | 1 |
-| freetdi control-flow graphs | 398 | 661 | 4 | 0 | 0 | 0 | 1 |
-| PACE 2016 | 37 | 18 | 51 | 0 | 0 | 0 | 6 |
-| PACE 2017 exact | 61 | 7 | 115 | 0 | 0 | 0 | 10 |
-| PACE 2017 heuristic | 11 | 3 | 45 | 0 | 0 | 0 | 114 |
-| PACE 2017 bonus | 23 | 0 | 77 | 0 | 0 | 0 | 0 |
-| **all** | 12,552 | 3,535 | 862 | 1 | 0 | 22 | 742 |
+| collection | certified:refutation | certified:minor | certified:bound | certified:theorem | solution | certified:refutation (no witness yet) | certified:minor (no witness yet) | certified:bound (no witness yet) | solution (no witness yet) | no value |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MOSP: Challenge 2005 | 3,168 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Challenge 2005 (second copy) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Faggioli & Bentivoglio | 274 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: SCOOP | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Chu & Stuckey | 200 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Carvalho & Soma 2015 | 38 | 0 | 0 | 0 | 112 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Frinhani et al. 2018, large | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 610 |
+| VLSI gate matrix circuits | 5 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB grids | 9 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB Harwell-Boeing | 32 | 1 | 7 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |
+| Small (Marti et al. 2008) | 32 | 0 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Rome graphs | 8,166 | 261 | 2,746 | 0 | 0 | 1 | 25 | 0 | 0 | 0 |
+| TreewidthLIB colouring | 18 | 0 | 13 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |
+| freetdi named graphs | 103 | 0 | 22 | 0 | 17 | 0 | 0 | 0 | 0 | 1 |
+| freetdi control-flow graphs | 398 | 2 | 661 | 0 | 2 | 0 | 0 | 0 | 0 | 1 |
+| PACE 2016 | 38 | 13 | 18 | 0 | 37 | 0 | 0 | 0 | 0 | 6 |
+| PACE 2017 exact | 61 | 61 | 7 | 0 | 54 | 0 | 0 | 0 | 0 | 10 |
+| PACE 2017 heuristic | 11 | 5 | 3 | 0 | 40 | 0 | 0 | 0 | 0 | 114 |
+| PACE 2017 bonus | 24 | 54 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |
+| **all** | 12,629 | 397 | 3,535 | 41 | 344 | 1 | 25 | 0 | 0 | 742 |
 
 Notes on the deduplication:
 - **MOSP: 6,376 instances are 3,667 classes**, as `reports/ml_nature.md` §1
@@ -435,13 +533,17 @@ open in §6, all of which need budgets beyond this item's.
 ## 7. For the paper
 
 - The dataset is **17,714 isomorphism classes from 21,754 instance files in
-  twenty collections. 16,087 of them carry a certified pathwidth with a
+  twenty collections. 16,602 of them carry a certified pathwidth with a
   witness layout, which every problem in Table 1's exact core can read**.
-  862 more carry a witnessed upper bound. Every record passes an independent
-  checker that shares no code with the solvers.
-- State the provenance mix. Bound-certified values carry a checkable minor
-  certificate. Refutation-certified values rest on the repaired search and
-  have no proof object yet (item 05).
+  344 more carry a witnessed upper bound; 768 have no witnessed value, 26 of
+  them (one by refutation, 25 on a minor, all Rome) with a certified
+  pathwidth. Every record passes an independent checker that shares no code
+  with the solvers.
+- State the provenance mix: 12,629 by refutation, 397 on a minor, 3,535 by
+  bound, 41 by theorem. Bound-certified values carry a checkable minor
+  certificate, theorem-certified values a hypothesis the checker recomputes.
+  Refutation-certified values, and the refutations behind minor-certified
+  ones, rest on the repaired search and have no proof object yet (item 05).
 - Report the orientation finding as a caution about MOSP benchmark files:
   the same repository ships two random sets in opposite orientations, and
   only published densities or values tell them apart.

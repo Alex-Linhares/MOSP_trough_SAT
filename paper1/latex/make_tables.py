@@ -314,8 +314,8 @@ def dataset_table() -> str:
     for col in order:
         p = prov[col]
         new = sum(p.values())
-        row = [files[col], len(distinct[col]), new, p["certified:refutation"],
-               p["certified:bound"], p["solution"], p["nowit"] + p["none"]]
+        row = [files[col], len(distinct[col]), new, p["certified:refutation"], p["certified:minor"],
+               p["certified:bound"], p["certified:theorem"], p["solution"], p["nowit"] + p["none"]]
         for i, v in enumerate(row):
             if i != 1:
                 tot[i] += v
@@ -324,12 +324,12 @@ def dataset_table() -> str:
             label += "$^{a}$"
         lines.append(f"{label} & " + " & ".join(_n(v) for v in row) + " \\\\")
     lines.append("\\midrule")
-    lines.append("All & " + " & ".join("" if i == 1 else _n(tot[i]) for i in range(7)) + " \\\\")
-    body = ["\\begin{tabular}{@{}lrrrrrrr@{}}", "\\toprule",
-            " & & & & \\multicolumn{2}{c}{Certified} & & \\\\",
-            "\\cmidrule(lr){5-6}",
-            "Collection & Files & Classes & Counted here & by search & by bound & Upper bound only & "
-            "No witnessed value \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
+    lines.append("All & " + " & ".join("" if i == 1 else _n(tot[i]) for i in range(9)) + " \\\\")
+    body = ["\\begin{tabular}{@{}lrrrrrrrrr@{}}", "\\toprule",
+            " & & & & \\multicolumn{4}{c}{Certified} & & \\\\",
+            "\\cmidrule(lr){5-8}",
+            "Collection & Files & Classes & Counted here & by search & on a minor & by bound & by theorem & "
+            "Upper bound only & No witnessed value \\\\", "\\midrule", *lines, "\\bottomrule", "\\end{tabular}"]
     return _write("dataset.tex", "paper1/data/dataset/{index,classes}.csv.gz", body)
 
 

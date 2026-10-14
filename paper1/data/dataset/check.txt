@@ -1,29 +1,33 @@
-records checked: 16949 in 91.5 s
+records checked: 16946 in 62.8 s
 provenance (records, i.e. isomorphism classes):
-  certified:refutation    12552   members  15592
+  certified:refutation    12629   members  15680
+  certified:theorem          41   members     41
+  certified:minor           397   members    400
   certified:bound          3535   members   4498
-  solution                  862   members    897
+  solution                  344   members    365
 certified:bound re-established by the minor certificate: 3535 / 3535; by the checker's own bounds alone: 3261 / 3535
-certified:refutation (rests on a search, not checkable here): 12552
-member sources re-read and matched: 20987, skipped (format not read here): 0, missing on disk: 0
+certified:refutation (rests on a search, not checkable here): 12629
+certified:minor contraction sequences replayed: 392 / 397 (the refutation on the minor rests on a search, not checkable here)
+certified:theorem hypotheses recomputed (grid recognised, width = min(h, w)): 41 / 41
+member sources re-read and matched: 20984, skipped (format not read here): 0, missing on disk: 0
 members by collection and provenance:
-  MOSP: Carvalho & Soma 2015: refutation 11, solution 139
+  MOSP: Carvalho & Soma 2015: refutation 38, solution 112
   MOSP: Challenge 2005: refutation 5805, bound 1
   MOSP: Challenge 2005 (second copy): refutation 45, bound 1
-  MOSP: Chu & Stuckey: refutation 198, solution 2
+  MOSP: Chu & Stuckey: refutation 200
   MOSP: Faggioli & Bentivoglio: refutation 300
   MOSP: SCOOP: refutation 24
-  PACE 2016: refutation 134, bound 80, solution 70
-  PACE 2017 bonus: refutation 23, solution 77
-  PACE 2017 exact: refutation 67, bound 7, solution 115
-  PACE 2017 heuristic: refutation 25, bound 3, solution 58
-  Rome graphs: refutation 8305, bound 2901, solution 327
+  PACE 2016: refutation 140, minor 14, bound 80, solution 50
+  PACE 2017 bonus: refutation 24, minor 54, solution 22
+  PACE 2017 exact: refutation 67, minor 61, bound 7, solution 54
+  PACE 2017 heuristic: refutation 30, minor 6, bound 3, solution 47
+  Rome graphs: refutation 8345, minor 262, bound 2901
   Small (Marti et al. 2008): refutation 32, bound 52
   TreewidthLIB colouring: refutation 18, bound 13, solution 27
   VLSI gate matrix circuits: refutation 5, bound 5, solution 1
-  VSPLIB Harwell-Boeing: refutation 32, bound 7, solution 34
-  VSPLIB grids: refutation 9, solution 19
+  VSPLIB Harwell-Boeing: refutation 32, minor 1, bound 7, solution 33
+  VSPLIB grids: refutation 9, theorem 41
   VSPLIB trees: refutation 50
-  freetdi control-flow graphs: refutation 406, bound 1406, solution 4
-  freetdi named graphs: refutation 103, bound 22, solution 24
+  freetdi control-flow graphs: refutation 406, minor 2, bound 1406, solution 2
+  freetdi named graphs: refutation 110, bound 22, solution 17
 FAILURES: 0

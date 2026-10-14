@@ -20,7 +20,7 @@ import math
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from paper1.dataset import (CLASSES_CSV, COLLECTIONS, ENGINE_MAX, INDEX, IN_FLIGHT, OUT, PRIORITY,
+from paper1.dataset import (CERTIFIED, CLASSES_CSV, COLLECTIONS, ENGINE_MAX, INDEX, IN_FLIGHT, OUT, PRIORITY,
                             REPAIRED, RESULT_SETS, ROOT, RUN_CSV, VALUES_CSV, classes, read_csv,
                             representative)
 
@@ -98,7 +98,8 @@ def tables() -> str:
         if r["width"] and not int(r["witness"]):
             p += " (no witness yet)"
         prov[r["owner"]][p] += 1
-    kinds = ["certified:refutation", "certified:bound", "solution", "certified:refutation (no witness yet)",
+    kinds = ["certified:refutation", "certified:minor", "certified:bound", "certified:theorem", "solution",
+             "certified:refutation (no witness yet)", "certified:minor (no witness yet)",
              "certified:bound (no witness yet)", "solution (no witness yet)", "no value"]
     rows = [[k] + [_f(prov[k][p]) for p in kinds] for k, _, _ in COLLECTIONS]
     tot = Counter()
@@ -312,14 +313,14 @@ def price() -> str:
     # open work per owner collection
     open_by = defaultdict(list)
     for r in cls_rows:
-        if r["provenance"] not in ("certified:refutation", "certified:bound"):
+        if r["provenance"] not in CERTIFIED:
             open_by[r["owner"]].append(r)
     rows = []
     for key, _, _ in COLLECTIONS:
         own = [r for r in cls_rows if r["owner"] == key]
         if not own:
             continue
-        certified = sum(1 for r in own if r["provenance"] in ("certified:refutation", "certified:bound"))
+        certified = sum(1 for r in own if r["provenance"] in CERTIFIED)
         op = open_by[key]
         beyond = sum(1 for r in op if not r["max_component"] or int(r["max_component"]) > ENGINE_MAX)
         sp = spent.get(key, 0.0) / 3600

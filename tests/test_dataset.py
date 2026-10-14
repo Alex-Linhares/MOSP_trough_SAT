@@ -83,3 +83,45 @@ def test_perm_to_rep_maps_member_onto_representative():
     mem = dict(lab="0 1 2")
     perm = ds._perm_to_rep(mem, rep)
     assert perm == [2, 0, 1]
+
+
+def test_new_provenances_rank_between_refutation_and_solution():
+    r = ds.PROV_RANK
+    for p in ("certified:minor", "certified:theorem"):
+        assert r["solution"] < r[p] < r["certified:refutation"]
+        assert p in ds.CERTIFIED
+    assert "solution" not in ds.CERTIFIED
+    for p in ds.PROV_RANK:
+        if p:
+            assert p in dc.PROVENANCES
+
+
+def test_fold_keeps_saves_monotone():
+    sol = dict(width="9", provenance="solution", layout="")
+    better = dict(width="8", provenance="solution", layout="1 0")
+    proved = dict(width="8", provenance="certified:minor", layout="")
+    # proved beats unproved, then the smaller width
+    assert ds._rank(proved) > ds._rank(better) > ds._rank(sol)
+    assert ds._rank(dict(proved, provenance="certified:refutation")) > ds._rank(proved)
+    ds._consistent([sol, better, proved], "ok")
+    import pytest
+    with pytest.raises(SystemExit):     # two proved widths that differ
+        ds._consistent([proved, dict(proved, width="9", provenance="certified:refutation")], "x")
+    with pytest.raises(SystemExit):     # a witness below a proved width
+        ds._consistent([dict(sol, width="7"), proved], "x")
+
+
+def test_transport_moves_a_layout_between_isomorphic_members():
+    rng = random.Random(4)
+    n = 8
+    edges = _random_graph(rng, n, 0.4)
+    perm = list(range(n))
+    rng.shuffle(perm)
+    other = sorted((min(perm[u], perm[v]), max(perm[u], perm[v])) for u, v in edges)
+    a = dict(lab=" ".join(map(str, ds.canon(n, edges)[1])))
+    b = dict(lab=" ".join(map(str, ds.canon(n, other)[1])))
+    L = list(range(n))
+    rng.shuffle(L)
+    M = ds.transport(L, a, b)
+    assert sorted(M) == list(range(n))
+    assert ds.layout_width(n, other, M) == ds.layout_width(n, edges, L)

@@ -53,29 +53,29 @@ Regenerate: `python -m paper1.dataset tables` (after `index`, `values`, `run`, `
 
 Classes, not files. A class's value is its best-established member's.
 
-| collection | certified:refutation | certified:bound | solution | certified:refutation (no witness yet) | certified:bound (no witness yet) | solution (no witness yet) | no value |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| MOSP: Challenge 2005 | 3,168 | 1 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Challenge 2005 (second copy) | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Faggioli & Bentivoglio | 274 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: SCOOP | 24 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Chu & Stuckey | 200 | 0 | 0 | 0 | 0 | 0 | 0 |
-| MOSP: Carvalho & Soma 2015 | 11 | 0 | 139 | 0 | 0 | 0 | 0 |
-| MOSP: Frinhani et al. 2018, large | 0 | 0 | 0 | 0 | 0 | 0 | 610 |
-| VLSI gate matrix circuits | 5 | 5 | 1 | 0 | 0 | 0 | 0 |
-| VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 |
-| VSPLIB grids | 9 | 0 | 19 | 0 | 0 | 22 | 0 |
-| VSPLIB Harwell-Boeing | 32 | 7 | 33 | 0 | 0 | 0 | 0 |
-| Small (Marti et al. 2008) | 32 | 52 | 0 | 0 | 0 | 0 | 0 |
-| Rome graphs | 8,126 | 2,746 | 326 | 1 | 0 | 0 | 0 |
-| TreewidthLIB colouring | 18 | 13 | 27 | 0 | 0 | 0 | 0 |
-| freetdi named graphs | 97 | 22 | 23 | 0 | 0 | 0 | 1 |
-| freetdi control-flow graphs | 398 | 661 | 4 | 0 | 0 | 0 | 1 |
-| PACE 2016 | 37 | 18 | 51 | 0 | 0 | 0 | 6 |
-| PACE 2017 exact | 61 | 7 | 115 | 0 | 0 | 0 | 10 |
-| PACE 2017 heuristic | 11 | 3 | 45 | 0 | 0 | 0 | 114 |
-| PACE 2017 bonus | 23 | 0 | 77 | 0 | 0 | 0 | 0 |
-| **all** | 12,554 | 3,535 | 860 | 1 | 0 | 22 | 742 |
+| collection | certified:refutation | certified:minor | certified:bound | certified:theorem | solution | certified:refutation (no witness yet) | certified:minor (no witness yet) | certified:bound (no witness yet) | solution (no witness yet) | no value |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MOSP: Challenge 2005 | 3,168 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Challenge 2005 (second copy) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Faggioli & Bentivoglio | 274 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: SCOOP | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Chu & Stuckey | 200 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Carvalho & Soma 2015 | 38 | 0 | 0 | 0 | 112 | 0 | 0 | 0 | 0 | 0 |
+| MOSP: Frinhani et al. 2018, large | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 610 |
+| VLSI gate matrix circuits | 5 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB grids | 9 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB Harwell-Boeing | 32 | 1 | 7 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |
+| Small (Marti et al. 2008) | 32 | 0 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Rome graphs | 8,166 | 261 | 2,746 | 0 | 0 | 1 | 25 | 0 | 0 | 0 |
+| TreewidthLIB colouring | 18 | 0 | 13 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |
+| freetdi named graphs | 103 | 0 | 22 | 0 | 17 | 0 | 0 | 0 | 0 | 1 |
+| freetdi control-flow graphs | 398 | 2 | 661 | 0 | 2 | 0 | 0 | 0 | 0 | 1 |
+| PACE 2016 | 38 | 13 | 18 | 0 | 37 | 0 | 0 | 0 | 0 | 6 |
+| PACE 2017 exact | 61 | 61 | 7 | 0 | 54 | 0 | 0 | 0 | 0 | 10 |
+| PACE 2017 heuristic | 11 | 5 | 3 | 0 | 40 | 0 | 0 | 0 | 0 | 114 |
+| PACE 2017 bonus | 24 | 54 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |
+| **all** | 12,629 | 397 | 3,535 | 41 | 344 | 1 | 25 | 0 | 0 | 742 |
 
 ## Against published values
 
@@ -97,5 +97,5 @@ VLSI circuits, tracks (= pathwidth + 1 of the net graph). Best known from Olivei
 
 Small (Martí et al. 2008): 84 values read from Mallach (2018) Tables 4-5 (pp. 165-166); compared 84, agree 84, differ 0; certified here 84.
 
-Carvalho & Soma (2015), open stacks against the PT-MOSP spreadsheet (`raw/carvalho_soma2015/PT-MOSP_reference_values_LARGER_AND_HARDER_RANDOM.xlsx`, sheet `best solutions larger random`, which is at or below the sheet `optimal solutions known` on all 150 and below it on 15; the latter's legend marks some values as not proved optimal). Read with rows as customers (see `paper1/dataset.md` on orientation): certified =: 11, upper bound <: 1, upper bound =: 38, upper bound >: 100. Disagreements: Random-200-200-6-7: 119 (solution) vs 120
+Carvalho & Soma (2015), open stacks against the PT-MOSP spreadsheet (`raw/carvalho_soma2015/PT-MOSP_reference_values_LARGER_AND_HARDER_RANDOM.xlsx`, sheet `best solutions larger random`, which is at or below the sheet `optimal solutions known` on all 150 and below it on 15; the latter's legend marks some values as not proved optimal). Read with rows as customers (see `paper1/dataset.md` on orientation): certified =: 38, upper bound <: 2, upper bound =: 32, upper bound >: 78. Disagreements: Random-200-200-6-2: 127 (solution) vs 128; Random-200-200-6-7: 119 (solution) vs 120
 

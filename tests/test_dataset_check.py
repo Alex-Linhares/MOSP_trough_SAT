@@ -113,6 +113,102 @@ def test_check_reads_a_file_and_counts_provenance(tmp_path, capsys):
     assert dc.main([str(p)]) == 0
 
 
+def grid(h, w):
+    """The h x w grid, vertex i * w + j at row i, column j."""
+    E = [(i * w + j, i * w + j + 1) for i in range(h) for j in range(w - 1)]
+    E += [(i * w + j, (i + 1) * w + j) for i in range(h - 1) for j in range(w)]
+    return sorted((min(a, b), max(a, b)) for a, b in E)
+
+
+def column_major(h, w):
+    """Column by column: width h. Row by row (`range(h * w)`) has width w."""
+    return [i * w + j for j in range(w) for i in range(h)]
+
+
+def short_side(h, w):
+    return column_major(h, w) if h <= w else list(range(h * w))
+
+
+def theorem_record(h, w, edges=None, width=None, layout=None, claim=None):
+    th = dict(family="grid", h=h, w=w, theorem="Ellis & Warren (2008), Theorem 4.1",
+              lean="MOSPFormalization.pathwidth_grid (lean/MOSPFormalization/Grid.lean)")
+    th.update(claim or {})
+    return record(h * w, grid(h, w) if edges is None else edges, min(h, w) if width is None else width,
+                  short_side(h, w) if layout is None else layout, provenance="certified:theorem", theorem=th)
+
+
+def test_grid_shape_recognises_grids_under_any_labelling():
+    rng = __import__("random").Random(5)
+    for h, w in [(2, 2), (2, 5), (3, 3), (3, 7), (6, 4), (8, 8)]:
+        perm = list(range(h * w))
+        rng.shuffle(perm)
+        edges = [(perm[a], perm[b]) for a, b in grid(h, w)]
+        assert dc.grid_shape(dc.adjacency(h * w, edges)) == (min(h, w), max(h, w))
+    assert dc.grid_shape(dc.adjacency(6, CYCLE6)) is None
+    assert dc.grid_shape(dc.adjacency(4, K4)) is None
+
+
+def test_theorem_records_pass_on_true_grids():
+    for h, w in [(4, 4), (3, 5), (5, 3)]:
+        rec = theorem_record(h, w)
+        assert dc.width_of_layout(dc.adjacency(h * w, rec["edges"]), rec["layout"]) == min(h, w)
+        fails, facts = dc.check_record(rec)
+        assert fails == [] and facts["theorem_checked"], fails
+
+
+def test_forged_grid_record_is_rejected():
+    # one edge of the 4 x 4 grid moved to a diagonal: same n and m, not a grid
+    edges = grid(4, 4)
+    edges.remove((0, 1))
+    edges.append((0, 5))
+    adj = dc.adjacency(16, edges)
+    layout = column_major(4, 4)
+    rec = theorem_record(4, 4, edges=sorted(edges), width=dc.width_of_layout(adj, layout), layout=layout)
+    fails, _ = dc.check_record(rec)
+    assert any("not a grid" in f for f in fails), fails
+    # a true grid with the wrong value: a layout of width 5 claimed as the theorem's value
+    rec = theorem_record(4, 5, width=5, layout=list(range(20)))
+    fails, _ = dc.check_record(rec)
+    assert any("has pathwidth 4" in f for f in fails), fails
+    # the record names another shape
+    fails, _ = dc.check_record(theorem_record(3, 5, claim=dict(h=4)))
+    assert any("names a" in f for f in fails), fails
+    # a theorem this checker does not know, or no Lean proof named, is not trusted
+    for bad in (dict(family="torus"), dict(lean="")):
+        fails, _ = dc.check_record(theorem_record(4, 4, claim=bad))
+        assert any("no theorem" in f for f in fails), fails
+
+
+def minor_record(**cert):
+    c = dict(refuted=1, size=3, rule="min-d", contractions=[[0, 1], [2, 3], [4, 5]])
+    c.update(cert)
+    return record(6, CYCLE6, 2, [0, 1, 5, 2, 4, 3], provenance="certified:minor", minor_certificate=c)
+
+
+def test_minor_record_replays_its_contractions():
+    fails, facts = dc.check_record(minor_record())
+    assert fails == [] and facts["minor_by_certificate"], fails
+    # a deletion (null target) is a minor operation too
+    fails, facts = dc.check_record(minor_record(size=5, contractions=[[3, None]]))
+    assert fails == [] and facts["minor_by_certificate"], fails
+    # without a sequence the record passes, but is not counted as replayed
+    rec = minor_record()
+    del rec["minor_certificate"]
+    fails, facts = dc.check_record(rec)
+    assert fails == [] and not facts["minor_by_certificate"]
+
+
+def test_forged_contraction_step_is_rejected():
+    fails, _ = dc.check_record(minor_record(contractions=[[0, 1], [2, 4], [4, 5]]))   # 2, 4 not adjacent
+    assert any("not along an edge" in f for f in fails), fails
+    fails, _ = dc.check_record(minor_record(contractions=[[0, 1], [0, 2]]))           # 0 already gone
+    assert any("not in the current graph" in f for f in fails), fails
+    fails, _ = dc.check_record(minor_record(size=4))
+    assert any("leaves 3 vertices" in f for f in fails), fails
+    fails, _ = dc.check_record(minor_record(refuted=2))                               # must be width - 1
+    assert any("refutes 2" in f for f in fails), fails
+
+
 def test_checker_imports_nothing_from_the_repository():
     text = (Path(dc.__file__)).read_text()
     for forbidden in ("satisfiability", "pathwidth_solver", "from pathwidth", "paper1.dataset ",

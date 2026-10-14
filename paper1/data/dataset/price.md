@@ -1,6 +1,6 @@
 # Section 4's dataset: the price of the full certification run
 
-Regenerate: `python -m paper2.dataset price`. Core-hours are one core's wall time; a censored call counts what it ran, so every spent figure is a lower bound on the price of what it attempted.
+Regenerate: `python -m paper1.dataset price`. Core-hours are one core's wall time; a censored call counts what it ran, so every spent figure is a lower bound on the price of what it attempted.
 
 ## Where the work stands, by collection (classes)
 
@@ -11,22 +11,22 @@ Regenerate: `python -m paper2.dataset price`. Core-hours are one core's wall tim
 | MOSP: Challenge 2005 | 3,169 | 3,169 | 0 | 0 |  | 0.00 |
 | MOSP: Faggioli & Bentivoglio | 274 | 274 | 0 | 0 |  | 0.00 |
 | MOSP: SCOOP | 24 | 24 | 0 | 0 |  | 0.00 |
-| MOSP: Chu & Stuckey | 200 | 198 | 2 | 0 |  | 0.00 |
-| MOSP: Carvalho & Soma 2015 | 150 | 11 | 139 | 0 |  | 2.37 |
+| MOSP: Chu & Stuckey | 200 | 200 | 0 | 0 |  | 0.00 |
+| MOSP: Carvalho & Soma 2015 | 150 | 38 | 112 | 0 |  | 2.37 |
 | MOSP: Frinhani et al. 2018, large | 610 | 0 | 610 | 0 |  | 0.00 |
 | VLSI gate matrix circuits | 11 | 10 | 1 | 0 |  | 0.01 |
 | VSPLIB trees | 28 | 28 | 0 | 0 | 0.0 | 0.00 |
-| VSPLIB grids | 50 | 9 | 19 | 22 | 6.9 | 0.00 |
-| VSPLIB Harwell-Boeing | 72 | 39 | 33 | 0 | 5.7 | 0.03 |
+| VSPLIB grids | 50 | 50 | 0 | 0 | 6.9 | 0.00 |
+| VSPLIB Harwell-Boeing | 72 | 40 | 32 | 0 | 5.7 | 0.03 |
 | Small (Marti et al. 2008) | 84 | 84 | 0 | 0 |  | 0.00 |
-| Rome graphs | 11,199 | 10,873 | 326 | 0 | 110.9 | 0.69 |
+| Rome graphs | 11,199 | 11,199 | 0 | 0 | 110.9 | 0.69 |
 | TreewidthLIB colouring | 58 | 31 | 27 | 0 | 4.7 | 0.05 |
-| freetdi named graphs | 143 | 119 | 23 | 1 | 2.6 | 0.01 |
-| freetdi control-flow graphs | 1,064 | 1,059 | 4 | 1 |  | 0.05 |
-| PACE 2016 | 112 | 55 | 51 | 6 |  | 0.44 |
-| PACE 2017 exact | 193 | 68 | 115 | 10 |  | 1.00 |
-| PACE 2017 heuristic | 173 | 14 | 45 | 114 |  | 0.39 |
-| PACE 2017 bonus | 100 | 23 | 77 | 0 |  | 0.68 |
+| freetdi named graphs | 143 | 125 | 17 | 1 | 2.6 | 0.01 |
+| freetdi control-flow graphs | 1,064 | 1,061 | 2 | 1 |  | 0.05 |
+| PACE 2016 | 112 | 69 | 37 | 6 |  | 0.44 |
+| PACE 2017 exact | 193 | 129 | 54 | 10 |  | 1.00 |
+| PACE 2017 heuristic | 173 | 19 | 40 | 114 |  | 0.39 |
+| PACE 2017 bonus | 100 | 78 | 22 | 0 |  | 0.68 |
 
 ## The next step for the graph collections, priced
 
@@ -34,19 +34,17 @@ Each open class within the engine, run once more at the next budget. The Rome gr
 
 | collection | open classes (engine) | next budget | core-hours at most |
 |---|---:|---:|---:|
-| MOSP: Carvalho & Soma 2015 | 139 | 600 s (had 30 s) | 23 |
+| MOSP: Carvalho & Soma 2015 | 112 | 600 s (had 30 s) | 19 |
 | VLSI gate matrix circuits | 1 | 600 s (had 30 s) | 0 |
-| VSPLIB grids | 19 | 3,600 s (had 600 s) | 19 |
-| VSPLIB Harwell-Boeing | 33 | 3,600 s (had 600 s) | 33 |
-| Rome graphs | 326 | 3,600 s (had 600 s) | 326 |
+| VSPLIB Harwell-Boeing | 32 | 3,600 s (had 600 s) | 32 |
 | TreewidthLIB colouring | 27 | 3,600 s (had 600 s) | 27 |
-| freetdi named graphs | 23 | 3,600 s (had 600 s) | 23 |
-| freetdi control-flow graphs | 4 | 600 s (had 30 s) | 1 |
-| PACE 2016 | 51 | 600 s (had 30 s) | 8 |
-| PACE 2017 exact | 115 | 600 s (had 30 s) | 19 |
-| PACE 2017 heuristic | 45 | 600 s (had 30 s) | 8 |
-| PACE 2017 bonus | 77 | 600 s (had 30 s) | 13 |
-| **all** |  |  | 500 |
+| freetdi named graphs | 17 | 3,600 s (had 600 s) | 17 |
+| freetdi control-flow graphs | 2 | 600 s (had 30 s) | 0 |
+| PACE 2016 | 37 | 600 s (had 30 s) | 6 |
+| PACE 2017 exact | 54 | 600 s (had 30 s) | 9 |
+| PACE 2017 heuristic | 40 | 600 s (had 30 s) | 7 |
+| PACE 2017 bonus | 22 | 600 s (had 30 s) | 4 |
+| **all** |  |  | 121 |
 
 ## The Rome graphs: what each budget closed (repaired rules, 2026-10-02)
 
@@ -63,11 +61,8 @@ The in-flight values are `certified:refutation` in `solutions/` (certified befor
 
 | instance | state | split run so far (core-h) | item 07 price (core-h) |
 |---|---:|---:|---:|
-| `Random-125-125-2-1_0` | re-certification in flight (`paper2.solver_fix_split`) | 26.5 | 76.1 |
 | `Random-125-125-2-2_0` | optimality open (`solution`) | — | — |
 | `Random-125-125-2-3_0` | optimality open (`solution`) | — | — |
-| `Random-125-125-2-5_0` | re-certification in flight (`paper2.solver_fix_split`) | 23.5 | 116 |
-| `Random-125-125-4-4_0` | re-certification in flight (`paper2.solver_fix_split`) | 36.2 | 153 |
 
 ## Never-certified MOSP collections: the §19 cost model, extrapolated
 
