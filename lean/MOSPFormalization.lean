@@ -18,6 +18,7 @@ import MOSPFormalization.ForMathlib.Pathwidth
 import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
+import MOSPFormalization.Grid
 import MOSPFormalization.Complex.GateMatrix
 import MOSPFormalization.Complex.Narrowness
 import MOSPFormalization.Complex.IntervalThickness

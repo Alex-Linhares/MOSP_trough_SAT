@@ -251,5 +251,16 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.pathwidth_eq_of_iso
 #print axioms MOSPFormalization.MOSPInstance.lt_mospValue_of_minorOf
 
+
+-- the grid theorem: pathwidth (grid h w) = min h w (Ellis & Warren 2008, Thm 4.1; Grid.lean)
+#print axioms MOSPFormalization.pathwidth_grid
+#print axioms MOSPFormalization.pathwidth_grid_le
+#print axioms MOSPFormalization.min_le_pathwidth_grid
+#print axioms MOSPFormalization.pathwidth_grid_one_one
+#print axioms MOSPFormalization.pathwidth_grid_square
+#print axioms MOSPFormalization.grid_adj_iff_manhattan
+#print axioms MOSPFormalization.min_le_vertexSepOfLayout_grid
+#print axioms MOSPFormalization.one_le_pathwidth_of_adj
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6
