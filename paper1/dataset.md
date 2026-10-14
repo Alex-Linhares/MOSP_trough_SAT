@@ -175,9 +175,17 @@ below a proved one, or the stage stops.
   changed in between; the checker shows only that it is a genuine minor.
   Witness: the build's stored one, carried to the instance's labels through
   the canonical labelling. For 25 of the 292 the stored witness is one wider
-  than the proved width (the run that found width `w` kept no layout), so
-  these classes are `certified:minor` with no witness: they have no record
-  until a witness of width `w` is regenerated.
+  than the proved width (the run that found width `w` kept no layout); their
+  witnesses were regenerated on 2026-10-14 at the owner's request by one
+  satisfiable search each at width `w` (`rome_witness/run.py`, all 25 found,
+  each checked with this module's width function), and the fold takes them
+  from `rome_witness/results.csv`.
+- **The minor-step benchmark runs** (`minor_bound/bench_*_on.csv`): seven
+  classes those runs proved (bcsstk20, can__229, can__256, lshp_265, anna,
+  myciel6, RingedTree_8). They stored (size, rule); the contractions are
+  rebuilt as above, with a deletion of every vertex outside the widest
+  component first where the graph is disconnected (bcsstk20). Witness: the
+  build's stored one.
 - **Rome, the other 48, no time limit** (`rome_unlimited/results.csv`): width,
   proof (`refutation` 42, `minor` 6) and the layout. The run stored no
   contraction list; for one of the six, `rome_open_e2e.csv` refuted the same
@@ -235,20 +243,20 @@ is item 05's subject. The same holds for the refutation behind a
 `certified:minor`: replaying the contractions shows the minor is genuine, but
 that it has no layout of width `w − 1` rests on the search.
 
-**Result** (2026-10-14, `python paper1/dataset_check.py --sources`):
+**Result** (2026-10-14, after the Rome witnesses, `python paper1/dataset_check.py --sources`):
 ```
-records checked: 16946 in 62.8 s
+records checked: 16971 in 60.5 s
 provenance (records, i.e. isomorphism classes):
   certified:refutation    12629   members  15680
   certified:theorem          41   members     41
-  certified:minor           397   members    400
+  certified:minor           429   members    433
   certified:bound          3535   members   4498
-  solution                  344   members    365
+  solution                  337   members    357
 certified:bound re-established by the minor certificate: 3535 / 3535; by the checker's own bounds alone: 3261 / 3535
 certified:refutation (rests on a search, not checkable here): 12629
-certified:minor contraction sequences replayed: 392 / 397 (the refutation on the minor rests on a search, not checkable here)
+certified:minor contraction sequences replayed: 424 / 429 (the refutation on the minor rests on a search, not checkable here)
 certified:theorem hypotheses recomputed (grid recognised, width = min(h, w)): 41 / 41
-member sources re-read and matched: 20984, skipped (format not read here): 0, missing on disk: 0
+member sources re-read and matched: 21009, skipped (format not read here): 0, missing on disk: 0
 members by collection and provenance:
   MOSP: Carvalho & Soma 2015: refutation 38, solution 112
   MOSP: Challenge 2005: refutation 5805, bound 1
@@ -273,8 +281,8 @@ FAILURES: 0
 ```
 
 Zero failures. All 3,535 bound certificates replay; the checker's own two
-bounds alone reach 3,261 of them, which is why the certificate is stored. 392
-of the 397 `certified:minor` records carry a contraction sequence and all
+bounds alone reach 3,261 of them, which is why the certificate is stored. 424
+of the 429 `certified:minor` records carry a contraction sequence and all
 replay; the five without one are Rome graphs whose run stored none. All 41
 grids certified by theorem are recognised as grids from their edges. All
 20,984 member files were re-read and mapped onto their record's graph.
@@ -346,17 +354,17 @@ Classes, not files. A class's value is its best-established member's.
 | VLSI gate matrix circuits | 5 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
 | VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | VSPLIB grids | 9 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 0 |
-| VSPLIB Harwell-Boeing | 32 | 1 | 7 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB Harwell-Boeing | 32 | 5 | 7 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |
 | Small (Marti et al. 2008) | 32 | 0 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Rome graphs | 8,166 | 261 | 2,746 | 0 | 0 | 1 | 25 | 0 | 0 | 0 |
-| TreewidthLIB colouring | 18 | 0 | 13 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |
-| freetdi named graphs | 103 | 0 | 22 | 0 | 17 | 0 | 0 | 0 | 0 | 1 |
+| Rome graphs | 8,166 | 286 | 2,746 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
+| TreewidthLIB colouring | 18 | 2 | 13 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |
+| freetdi named graphs | 103 | 1 | 22 | 0 | 16 | 0 | 0 | 0 | 0 | 1 |
 | freetdi control-flow graphs | 398 | 2 | 661 | 0 | 2 | 0 | 0 | 0 | 0 | 1 |
 | PACE 2016 | 38 | 13 | 18 | 0 | 37 | 0 | 0 | 0 | 0 | 6 |
 | PACE 2017 exact | 61 | 61 | 7 | 0 | 54 | 0 | 0 | 0 | 0 | 10 |
 | PACE 2017 heuristic | 11 | 5 | 3 | 0 | 40 | 0 | 0 | 0 | 0 | 114 |
 | PACE 2017 bonus | 24 | 54 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |
-| **all** | 12,629 | 397 | 3,535 | 41 | 344 | 1 | 25 | 0 | 0 | 742 |
+| **all** | 12,629 | 429 | 3,535 | 41 | 337 | 1 | 0 | 0 | 0 | 742 |
 
 Notes on the deduplication:
 - **MOSP: 6,376 instances are 3,667 classes**, as `reports/ml_nature.md` §1
@@ -533,13 +541,12 @@ open in §6, all of which need budgets beyond this item's.
 ## 7. For the paper
 
 - The dataset is **17,714 isomorphism classes from 21,754 instance files in
-  twenty collections. 16,602 of them carry a certified pathwidth with a
+  twenty collections. 16,634 of them carry a certified pathwidth with a
   witness layout, which every problem in Table 1's exact core can read**.
-  344 more carry a witnessed upper bound; 768 have no witnessed value, 26 of
-  them (one by refutation, 25 on a minor, all Rome) with a certified
-  pathwidth. Every record passes an independent checker that shares no code
+  337 more carry a witnessed upper bound; 743 have no witnessed value, one of
+  them (a Rome class certified by refutation) with a certified pathwidth. Every record passes an independent checker that shares no code
   with the solvers.
-- State the provenance mix: 12,629 by refutation, 397 on a minor, 3,535 by
+- State the provenance mix: 12,629 by refutation, 429 on a minor, 3,535 by
   bound, 41 by theorem. Bound-certified values carry a checkable minor
   certificate, theorem-certified values a hypothesis the checker recomputes.
   Refutation-certified values, and the refutations behind minor-certified

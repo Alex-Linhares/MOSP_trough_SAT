@@ -65,17 +65,17 @@ Classes, not files. A class's value is its best-established member's.
 | VLSI gate matrix circuits | 5 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
 | VSPLIB trees | 28 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | VSPLIB grids | 9 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 | 0 |
-| VSPLIB Harwell-Boeing | 32 | 1 | 7 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |
+| VSPLIB Harwell-Boeing | 32 | 5 | 7 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |
 | Small (Marti et al. 2008) | 32 | 0 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Rome graphs | 8,166 | 261 | 2,746 | 0 | 0 | 1 | 25 | 0 | 0 | 0 |
-| TreewidthLIB colouring | 18 | 0 | 13 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |
-| freetdi named graphs | 103 | 0 | 22 | 0 | 17 | 0 | 0 | 0 | 0 | 1 |
+| Rome graphs | 8,166 | 286 | 2,746 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
+| TreewidthLIB colouring | 18 | 2 | 13 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |
+| freetdi named graphs | 103 | 1 | 22 | 0 | 16 | 0 | 0 | 0 | 0 | 1 |
 | freetdi control-flow graphs | 398 | 2 | 661 | 0 | 2 | 0 | 0 | 0 | 0 | 1 |
 | PACE 2016 | 38 | 13 | 18 | 0 | 37 | 0 | 0 | 0 | 0 | 6 |
 | PACE 2017 exact | 61 | 61 | 7 | 0 | 54 | 0 | 0 | 0 | 0 | 10 |
 | PACE 2017 heuristic | 11 | 5 | 3 | 0 | 40 | 0 | 0 | 0 | 0 | 114 |
 | PACE 2017 bonus | 24 | 54 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |
-| **all** | 12,629 | 397 | 3,535 | 41 | 344 | 1 | 25 | 0 | 0 | 742 |
+| **all** | 12,629 | 429 | 3,535 | 41 | 337 | 1 | 0 | 0 | 0 | 742 |
 
 ## Against published values
 

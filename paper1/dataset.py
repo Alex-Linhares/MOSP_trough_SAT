@@ -519,6 +519,8 @@ ROME_UNLIMITED = SCRATCH / "rome_unlimited" / "results.csv"
 OPEN_RUNS = [SCRATCH / "dataset_open" / f for f in
              ("results.csv", "results_quick.csv", "results_quick_rescued.csv")]
 GRIDS = SCRATCH / "grids_theorem" / "grids.csv"
+BENCH_ON = sorted((SCRATCH / "minor_bound").glob("bench_*_on.csv"))   # the minor-step benchmark runs
+ROME_WITNESS = SCRATCH / "rome_witness" / "results.csv"   # witnesses for minor-proved widths kept by no run
 GRID_THEOREM = dict(family="grid",
                     theorem="Ellis & Warren (2008), Theorem 4.1: the (h, w)-grid has pathwidth min(h, w)",
                     lean="MOSPFormalization.pathwidth_grid (lean/MOSPFormalization/Grid.lean)")
@@ -552,7 +554,10 @@ def regenerate_contractions(member: dict, size: int, rule: str, refuted: int) ->
     from pathwidth.minor import contraction_sequence, replay
     G = read_any(BENCH / member["name"])
     n, edges = load(member)
-    if G.number_of_nodes() != n or sorted((min(a, b), max(a, b)) for a, b in G.edges()) != edges:
+    # The bench readers number some formats from 1 (.dgf, .gr, VSPLIB), this module from 0.
+    shift = 1 if set(G.nodes()) == set(range(1, n + 1)) else 0
+    if G.number_of_nodes() != n or \
+            sorted((min(a, b) - shift, max(a, b) - shift) for a, b in G.edges()) != edges:
         raise SystemExit(f"{member['name']}: the run's reader and this module disagree on the graph")
     comp = max(nx.connected_components(G), key=len)
     masks, labels = masks_from_graph(G.subgraph(comp))
@@ -560,8 +565,12 @@ def regenerate_contractions(member: dict, size: int, rule: str, refuted: int) ->
     minor, _, _ = replay(masks, seq)
     if len(minor) != size:
         raise SystemExit(f"{member['name']}: regenerated minor has {len(minor)} vertices, not {size}")
+    # The run took its minor from the widest component; on a disconnected graph the
+    # certificate first deletes every other vertex (deletion never raises pathwidth,
+    # Lean `pathwidth_induce_le`), so that it replays on the whole graph.
+    outside = [[v - shift, None] for v in G.nodes() if v not in comp]
     return dict(refuted=refuted, size=size, rule=rule,
-                contractions=[[labels[v], labels[u] if u >= 0 else None] for v, u in seq],
+                contractions=outside + [[labels[v] - shift, labels[u] - shift if u >= 0 else None] for v, u in seq],
                 origin="regenerated from the run's (size, rule) by the deterministic contraction rule")
 
 
@@ -628,6 +637,7 @@ def fold(idx: list[dict], base: list[dict]) -> list[dict]:
         return transport(lay, rep, m)
 
     cand: list[dict] = []
+    witness = {r["name"]: r for r in read_csv(ROME_WITNESS)} if ROME_WITNESS.exists() else {}
     # 1. Rome, the minor step alone (width - 1 refuted on a minor; the width is the recorded one).
     e2e = {r["name"]: r for r in read_csv(ROME_E2E)} if ROME_E2E.exists() else {}
     for r in read_csv(ROME_STEP) if ROME_STEP.exists() else []:
@@ -642,6 +652,9 @@ def fold(idx: list[dict], base: list[dict]) -> list[dict]:
               f"(size, rule), not the contractions)")
         if layout_width(n, edges, lay) == w:
             ev += "; witness: the build's stored one"
+        elif r["name"] in witness and witness[r["name"]]["layout"]:
+            lay = json.loads(witness[r["name"]]["layout"])
+            ev += f"; witness: a satisfiable search at width {w} in {rel(ROME_WITNESS)}"
         else:
             # the width came from a run that kept no layout, and the stored witness is wider:
             # the value is proved, its witness is not on record (no solver is run here)
@@ -711,6 +724,29 @@ def fold(idx: list[dict], base: list[dict]) -> list[dict]:
                         f"Lean {GRID_THEOREM['lean']}); witness: "
                         + ("the recorded layout" if r["previous"] != "no record" else "the row-major layout"),
                         json.loads(r["layout"]), dict(GRID_THEOREM, h=side, w=side)))
+    # 5. The minor-step benchmark runs (60 s per graph): widths proved there and not elsewhere.
+    #    They stored (size, rule) and no layout: the contractions are regenerated, and the
+    #    witness is the build's stored one when its width matches (otherwise none is on record).
+    for f in BENCH_ON:
+        for r in read_csv(f):
+            if r.get("error") or r["proof"] not in ("minor", "refutation") or r["name"] not in by_name:
+                continue
+            m, w = by_name[r["name"]], int(r["width"])
+            prov = PROOF_PROV[r["proof"]]
+            cert = None
+            if prov == "certified:minor" and r.get("minor_size") and r.get("minor_rule"):
+                cert = regenerate_contractions(m, int(r["minor_size"]), r["minor_rule"], int(r["minor_refuted"]))
+            lay = old_witness(m)
+            n, edges = graph(m)
+            ev = (f"{rel(f)} (proof={r['proof']}, nodes={r['nodes']}, s={r['seconds']}"
+                  + (f"; minor of {r['minor_size']} vertices, rule {r['minor_rule']}" if cert else "") + ")")
+            if layout_width(n, edges, lay) == w:
+                ev += "; witness: the build's stored one"
+            else:
+                ev += (f"; no witness of width {w} on record (the stored one has width "
+                       f"{layout_width(n, edges, lay)})")
+                lay = None
+            cand.append(row(m, w, prov, ev, lay, cert))
     # Merge: per instance, the better row; per class, no conflict. Monotone in both.
     out = {(r["source"], r["name"]): dict(r, certificate=r.get("certificate", "")) for r in base}
     changed = Counter()
