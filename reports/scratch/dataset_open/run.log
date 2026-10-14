@@ -1,0 +1,23 @@
+2026-10-12 12:48:27 527 classes on 7 workers
+2026-10-12 12:48:27 done pwc-17162 RandomBipartite_10_50_3 n=60 recorded=9 width=9 proof='minor' lower=9 0s
+2026-10-12 12:48:27 done pwc-17191 RandomBipartite_25_50_3 n=75 recorded=23 width=23 proof='minor' lower=23 0s
+2026-10-12 12:48:28 done pwc-17701 jgiraldezlevy.2200.9086.08.40.167.gaifma n=92 recorded=34 width=34 proof='minor' lower=34 0s
+2026-10-12 12:48:28 done pwc-17236 dimacs_myciel6 n=94 recorded=29 width=29 proof='minor' lower=29 0s
+2026-10-12 12:48:28 done pwc-17703 jgiraldezlevy.2200.9086.08.40.41.gaifman n=95 recorded=34 width=34 proof='minor' lower=34 0s
+2026-10-12 12:48:29 done pwc-17308 ex062.gr.xz n=99 recorded=21 width=21 proof='minor' lower=21 0s
+2026-10-12 12:48:29 done pwc-17161 RandomBarabasiAlbert_100_2 n=100 recorded=13 width=13 proof='minor' lower=13 0s
+2026-10-12 12:50:53 done pwc-15966 FoldedCubeGraph_7|FoldedCubeGraph_7|he05 n=64 recorded=31 width=31 proof='refutation' lower=25 145s
+2026-10-12 12:50:59 done pwc-17210 RandomNewmanWattsStrogatz_100_5_3|he065. n=100 recorded=20 width=20 proof='minor' lower=20 7s
+2026-10-12 12:51:01 done pwc-16052 SymplecticDualPolarGraph_4_4|SymplecticD n=85 recorded=64 width=64 proof='refutation' lower=50 154s
+2026-10-12 12:51:01 done pwc-17203 RKT_100_80_30_0 n=100 recorded=27 width=27 proof='minor' lower=27 0s
+2026-10-12 12:52:13 done pwc-17187 RKT_100_90_30_0 n=100 recorded=22 width=21 proof='minor' lower=21 224s
+2026-10-12 12:53:17 done pwc-15983 HarriesWongGraph n=70 recorded=15 width=15 proof='refutation' lower=14 290s
+2026-10-12 12:53:18 done pwc-15931 Balaban10Cage n=70 recorded=15 width=15 proof='refutation' lower=14 291s
+2026-10-12 12:53:18 done pwc-17330 ex086.gr.xz n=102 recorded=31 width=31 proof='minor' lower=31 0s
+2026-10-12 12:53:18 done pwc-17309 ex063.gr.xz n=103 recorded=34 width=34 proof='minor' lower=34 0s
+2026-10-12 12:53:20 done pwc-17695 aes_24_4_keyfind_5.gaifman_3.gr.xz n=104 recorded=23 width=23 proof='minor' lower=23 1s
+2026-10-12 12:53:22 done pwc-15982 HarriesGraph|HarriesGraph n=70 recorded=15 width=15 proof='refutation' lower=14 295s
+2026-10-12 12:53:23 done pwc-17704 jgiraldezlevy.2200.9086.08.40.46.gaifman n=105 recorded=34 width=34 proof='minor' lower=34 1s
+2026-10-12 13:04:46 done pwc-15987 HigmanSimsGraph|HigmanSimsGraph|he073.gr n=100 recorded=74 width=74 proof='refutation' lower=61 752s
+2026-10-12 13:59:13 done pwc-17699 atco_enc2_opt2_10_21.gaifman_3.gr.xz n=104 recorded=35 width=35 proof='refutation' lower=34 3953s
+2026-10-12 22:03:23 done pwc-17205 RandomBarabasiAlbert_100_5|he055.gr.xz n=100 recorded=35 width=34 proof='refutation' lower=33 33144s
