@@ -206,7 +206,7 @@ measurement and that, for pathwidth, it is not capped by treewidth.
 
 ## The grid theorem in Lean (high priority, 2026-10-14)
 
-- [ ] **Prove in Lean that an (h, w)-grid has pathwidth min(h, w)** (Ellis &
+- [x] **Done 2026-10-14** (`lean/MOSPFormalization/Grid.lean`, `pathwidth_grid`, commit cda02ac3b; 1x1 is the one exception, pathwidth 0; in the paper as Appendix A `grid`). **Prove in Lean that an (h, w)-grid has pathwidth min(h, w)** (Ellis &
       Warren 2008, Theorem 4.1, via node search: Lemma 4.1, the sweep, gives
       ns <= min(h, w) + 1; Lemma 4.2 the lower bound). 41 VSPLIB grids (sides
       14-54) are now settled by citing this theorem

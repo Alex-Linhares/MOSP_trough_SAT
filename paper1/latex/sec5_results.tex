@@ -190,8 +190,12 @@ graphs is now proved;
 the Harwell--Boeing count rises from 39 to 43, and the colouring benchmarks
 gain \texttt{anna} and \texttt{myciel6}. The VSPLIB grids need no search: each
 is an $n\times n$ grid, whose pathwidth is $n$ by
-\citet[Theorem~4.1]{EllisWarren2008}, and a row-by-row layout of width $n$
-attains it, so all 50 are settled where search alone proved 9. On graphs proved both with and without
+\citet[Theorem~4.1]{EllisWarren2008}, and a row-by-row layout of width $n$ attains it, so all 50 are settled where
+search alone proved 9. We machine-checked the theorem~\leanref{grid}, by a
+direct argument on vertex separation: at the first prefix of any layout that
+completes a row or a column, the boundary meets every column or every row.
+That each VSPLIB grid is an $n\times n$ grid is checked by an isomorphism
+test, not in Lean. On graphs proved both with and without
 the step, it lowers the total node count by 55 to 99\% on Rome, the VSPLIB grids,
 Harwell--Boeing and the colouring graphs, adds 1\% on the named graphs and
 20\% on the VSPLIB trees (about 1.5\,s a tree), and costs 4\% of the time on
