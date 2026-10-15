@@ -39,7 +39,7 @@ Started 2026-10-09. Check items off as they are done.
       Garcia de la Banda & Stuckey (2007), already held, and the 19 papers to
       obtain listed in `literature/MISSING.md`.
 
-- [ ] **The solver claim: head-to-head against SageMath.** "Best" would hold
+- [ ] **The solver claim: head-to-head against SageMath** (high priority; ready to run: `pathwidth_solver/bench/sage_headtohead.py`, SageMath 10.8 in the `sage` conda env; needs a quiet machine). "Best" would hold
       after a few hours of running SageMath's solver against ours on this
       machine, which is better done once the split run finishes. SageMath's
       `vertex_separation(algorithm="BAB")` is Coudert, Mazauric & Nisse's (2016)
