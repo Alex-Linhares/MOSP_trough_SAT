@@ -169,10 +169,12 @@ already used to justify algorithms, and whether it is true matters. If it is
 true, \emph{every result} about any one of the twelve problems transfers to
 \emph{all} the others. Looking back, the table was the thesis's most important
 finding, and this article does what the thesis did not: it states each problem
-precisely, proves what is true and refutes what is not. This paper asks:
-\emph{which of the equalities in the Linhares--Yanasse table are true, and what
-follows when results, algorithms and benchmarks are moved between the twelve
-problems through pathwidth?}
+precisely, proves what is true and refutes what is not. This paper asks two questions:
+\begin{enumerate}
+\item \emph{which of the equalities in the Linhares--Yanasse table are true?}
+\item \emph{and what follows when results, algorithms and benchmarks are moved
+  between the twelve problems through pathwidth?}
+\end{enumerate}
 
 \paragraph{Three more members.} The table was also incomplete. Progressive
 pebbling, a game in which pebbles are placed on the vertices of a graph and
@@ -258,7 +260,7 @@ problems and proves what is true. Section~\ref{sec:names} measures which names
 and communities the literature uses. Section~\ref{sec:search} reads the exact
 open-stacks search as a pathwidth algorithm, finds the two false rules and
 proves our corrected search sound. Section~\ref{sec:results} reports what our
-corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} returns to the question this paper asks.
+corrected search costs, how it performs as a pathwidth solver, and the dataset, and Section~\ref{sec:closing} returns to the two questions this paper asks.
 Every theorem we state is machine-checked in the Lean~4 proof assistant, unless
 the text says otherwise. The
 reader need not read Lean: each proof is given or cited in the text, and
