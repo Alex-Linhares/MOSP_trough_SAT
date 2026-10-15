@@ -37,6 +37,9 @@ def one(r):
     skip = HERE / "skip.txt"      # classes run separately (W4: reports/scratch/w4/), added 2026-10-12
     quick = HERE / "results_quick.csv"   # classes proved by the capped pass (run_quick.py)
     proved_quick = {x["id"] for x in csv.DictReader(open(quick)) if x.get("proof")} if quick.exists() else set()
+    pass2 = HERE / "results_pass2.csv"   # classes proved by the second capped pass (run_pass2.py)
+    if pass2.exists():
+        proved_quick |= {x["id"] for x in csv.DictReader(open(pass2)) if x.get("proof")}
     if (skip.exists() and r["id"] in skip.read_text().split()) or r["id"] in proved_quick:
         return dict(id=r["id"], collections="|".join(sorted({m["collection"] for m in r["members"]})),
                     names="|".join(sorted(stem(m.get("name") or m["source"]) for m in r["members"])),
