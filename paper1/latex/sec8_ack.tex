@@ -4,17 +4,17 @@
 \section*{Acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
 
-\paragraph{Use of AI tools.} This work was carried out with Claude Code
+\paragraph{Use of AI tools.} Much of this work was carried out with Claude Code
 (Anthropic), an AI coding assistant running Claude models. Under the authors'
-direction it wrote most of the software, the Lean proofs and drafts of the
-text, ran the computations, and searched and summarised the literature. The
+direction it wrote most of the C and Python software, the Lean proofs and drafts of the
+text, ran the computations, and also searched and summarised the literature. The
 authors chose the questions, directed the work, read the results and take full
 responsibility for the content of this paper. We did not take the AI's word for any result: every theorem the paper states
-is checked by the Lean kernel, unless the text says otherwise; every value in
+is checked by the Lean kernel (unless the text says otherwise); every value in
 the dataset carries a witness that an independent checker verifies; and the
 refutations behind the central claims (the wrong optimum of
 Theorem~\ref{thm:wrong}, and the minor bounds for the Mycielski graphs and four
-MOSP instances) are re-checked by methods that share no code with our search.
+MOSP instances) are re-checked by methods that share \emph{zero} code with our search.
 The other refutations rest on our corrected search, whose rules are proved
 sound in Lean (Sections \ref{sec:search} and \ref{sec:results}).
 
