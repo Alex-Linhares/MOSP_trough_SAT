@@ -204,6 +204,17 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
+## W4: search for a width-26 layout (2026-10-15)
+
+- [ ] **Try the finding side on W4** (VLSI, 202 nets, dataset class pwc-04432;
+      26 <= pw <= 27, i.e. 27 or 28 tracks). The two running attempts
+      (`reports/scratch/w4/`) both try to refute 26; after 2.5 days nothing
+      found suggests 27 is optimal but proves nothing. A dedicated layout search
+      for width 26 (simulated annealing as for myciel7,
+      `reports/scratch/minor_certificates/vsanneal.c`, or restricted searches
+      from varied orders), one core, an hour or two, when cores are free: a
+      width-26 layout settles W4 at 26 (27 tracks); none adds evidence for 27.
+
 ## A parameterised bound for our search (high priority, 2026-10-14)
 
 - [ ] **Can our corrected search be proved FPT, or at least XP, in the width k,
