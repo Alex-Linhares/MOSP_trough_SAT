@@ -5,8 +5,8 @@
 
 Our SAT formulation encodes the question ``is $Z(M)\le k$?'', for a matrix $M$
 with customers $C$ (rows) and patterns $P$ (columns), $m=|P|$, as a formula
-in conjunctive normal form, and hands it to a SAT solver. It shares no code and
-no pruning rule with the customer search of Section~\ref{sec:search}, so it is
+in conjunctive normal form, and hands it to a SAT solver; \citet{Knuth2015}
+covers the solvers and the encodings used here. It shares no search code and no pruning rule with the customer search of Section~\ref{sec:search}, so it is
 an independent check on that search's answers. A satisfying assignment gives a
 production order that can be verified by simulation. A refutation can be
 logged as a DRAT proof and checked by an independent checker (drat-trim).

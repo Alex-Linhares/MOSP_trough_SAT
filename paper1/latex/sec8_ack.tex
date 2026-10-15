@@ -14,7 +14,9 @@ is checked by the Lean kernel (unless the text says otherwise); every value in
 the dataset carries a witness that an independent checker verifies; and the
 refutations behind the central claims (the wrong optimum of
 Theorem~\ref{thm:wrong}, and the minor bounds for the Mycielski graphs and four
-MOSP instances) are re-checked by methods that share \emph{zero} code with our search.
+MOSP instances) are re-checked by methods independent of our search: a SAT solver with a DRAT
+proof that drat-trim verifies, and a separate exact search with its own
+checker, written from scratch.
 The other refutations rest on our corrected search, whose rules are proved
 sound in Lean (Sections \ref{sec:search} and \ref{sec:results}).
 
