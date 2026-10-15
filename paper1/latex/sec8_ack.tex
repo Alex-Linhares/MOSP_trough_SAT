@@ -1,0 +1,29 @@
+% Acknowledgements, with the disclosure of AI use arXiv asks authors to make
+% (written 2026-10-15 at the owner's request). Software versions from the
+% repository: lean/lean-toolchain, the Python environment, Appendix D.
+\section*{Acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+
+\paragraph{Use of AI tools.} This work was carried out with Claude Code
+(Anthropic), an AI coding assistant running Claude models. Under the authors'
+direction it wrote most of the software, the Lean proofs and drafts of the
+text, ran the computations, and searched and summarised the literature. The
+authors chose the questions, directed the work, read the results and take full
+responsibility for the content of this paper. We did not take the AI's word for any result: every theorem the paper states
+is checked by the Lean kernel, unless the text says otherwise; every value in
+the dataset carries a witness that an independent checker verifies; and the
+refutations behind the central claims (the wrong optimum of
+Theorem~\ref{thm:wrong}, and the minor bounds for the Mycielski graphs and four
+MOSP instances) are re-checked by methods that share no code with our search.
+The other refutations rest on our corrected search, whose rules are proved
+sound in Lean (Sections \ref{sec:search} and \ref{sec:results}).
+
+\paragraph{Software.} The formal proofs use Lean~4 \citep{MouraUllrich2021},
+version 4.34, with the Mathlib library \citep{Mathlib2020}. The SAT checks use
+Kissat~4.0.4 (\url{https://github.com/arminbiere/kissat}) and
+CaDiCaL~1.9.5 \citep{CaDiCaL2024} through PySAT \citep{PySAT2018}, and the
+proofs of unsatisfiability are checked by drat-trim \citep{WetzlerHeuleHunt2014}.
+Isomorphism classes are computed with nauty \citep{McKayPiperno2014}, through
+pynauty, and the graphs are handled with NetworkX. The bibliometric counts use
+OpenAlex \citep{Priem2022}. SageMath provides the openly available
+implementation of the branch and bound of \citet{CoudertMazauricNisse2016}.

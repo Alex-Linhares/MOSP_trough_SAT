@@ -6,6 +6,20 @@
   "title": "The Vertex Separation and Search Number of a Graph",
   "year": 1994
  },
+ "10.1007/978-3-030-79876-5_37": {
+  "fetched": "2026-10-15",
+  "first_author": "Moura",
+  "registry": "crossref",
+  "title": "The Lean 4 Theorem Prover and Programming Language",
+  "year": 2021
+ },
+ "10.1007/978-3-031-65627-9_7": {
+  "fetched": "2026-10-15",
+  "first_author": "Biere",
+  "registry": "crossref",
+  "title": "CaDiCaL 2.0",
+  "year": 2024
+ },
  "10.1007/978-3-319-07959-2_33": {
   "fetched": "2026-10-03",
   "first_author": "Kobayashi",
@@ -19,6 +33,20 @@
   "registry": "crossref",
   "title": "Experimental Evaluation of a Branch and Bound Algorithm for Computing Pathwidth",
   "year": 2014
+ },
+ "10.1007/978-3-319-09284-3_31": {
+  "fetched": "2026-10-15",
+  "first_author": "Wetzler",
+  "registry": "crossref",
+  "title": "DRAT-trim: Efficient Checking and Trimming Using Expressive Clausal Proofs",
+  "year": 2014
+ },
+ "10.1007/978-3-319-94144-8_26": {
+  "fetched": "2026-10-15",
+  "first_author": "Ignatiev",
+  "registry": "crossref",
+  "title": "PySAT: A Python Toolkit for Prototyping with SAT Oracles",
+  "year": 2018
  },
  "10.1007/978-3-540-74839-7_25": {
   "fetched": "2026-10-09",
@@ -167,6 +195,13 @@
   "title": "Linear ordering based MIP formulations for the vertex separation or pathwidth problem",
   "year": 2018
  },
+ "10.1016/j.jsc.2013.09.003": {
+  "fetched": "2026-10-15",
+  "first_author": "McKay",
+  "registry": "crossref",
+  "title": "Practical graph isomorphism, II",
+  "year": 2014
+ },
  "10.1016/s0166-218x(97)00131-5": {
   "fetched": "2026-10-03",
   "first_author": "Fomin",
@@ -257,6 +292,13 @@
   "registry": "crossref",
   "title": "Experimental Evaluation of a Branch-and-Bound Algorithm for Computing Pathwidth and Directed Pathwidth",
   "year": 2016
+ },
+ "10.1145/3372885.3373824": {
+  "fetched": "2026-10-15",
+  "first_author": "The mathlib Community",
+  "registry": "crossref",
+  "title": "The lean mathematical library",
+  "year": 2020
  },
  "10.1145/73007.73055": {
   "fetched": "2026-10-03",
