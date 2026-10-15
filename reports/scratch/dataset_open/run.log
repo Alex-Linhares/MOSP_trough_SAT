@@ -21,3 +21,6 @@
 2026-10-12 13:04:46 done pwc-15987 HigmanSimsGraph|HigmanSimsGraph|he073.gr n=100 recorded=74 width=74 proof='refutation' lower=61 752s
 2026-10-12 13:59:13 done pwc-17699 atco_enc2_opt2_10_21.gaifman_3.gr.xz n=104 recorded=35 width=35 proof='refutation' lower=34 3953s
 2026-10-12 22:03:23 done pwc-17205 RandomBarabasiAlbert_100_5|he055.gr.xz n=100 recorded=35 width=34 proof='refutation' lower=33 33144s
+/home/al/anaconda3/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 6 leaked semaphore objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+2026-10-15 21:12:42 stopped by the owner after 3 days 8 h (7 workers on 7 hard classes, none finished); cores given to the SageMath hunt
