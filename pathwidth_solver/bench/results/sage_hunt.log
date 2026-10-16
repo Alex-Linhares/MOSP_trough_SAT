@@ -1,0 +1,382 @@
+2026-10-15 21:13:01 381 graphs, 8 workers, cap 600 s
+21:13:05 named/gr/HexahedralGraph.gr n=8 sage ok w=4 3.678s
+21:13:05 named/gr/OctahedralGraph.gr n=6 sage ok w=4 3.746s
+21:13:05 named/gr/MoserSpindle.gr n=7 sage ok w=3 3.791s
+21:13:05 coloring/myciel2.dgf n=5 sage ok w=2 3.813s
+21:13:05 named/gr/HouseXGraph.gr n=5 sage ok w=3 3.912s
+21:13:05 named/gr/TetrahedralGraph.gr n=4 sage ok w=3 3.953s
+21:13:05 named/gr/HouseGraph.gr n=5 sage ok w=2 3.951s
+21:13:05 named/gr/ThomsenGraph.gr n=6 sage ok w=3 4.089s
+21:13:07 named/gr/T2starGeneralizedQuadrangleGraph_2.gr n=8 sage ok w=4 2.146s
+21:13:07 named/gr/WagnerGraph.gr n=8 sage ok w=4 2.303s
+21:13:07 named/gr/PasechnikGraph_1.gr n=9 sage ok w=2 2.212s
+21:13:08 named/gr/OrthogonalArrayBlockGraph_4_3.gr n=9 sage ok w=8 2.297s
+21:13:08 named/gr/PetersenGraph.gr n=10 sage ok w=5 2.417s
+21:13:08 named/gr/SwitchedSquaredSkewHadamardMatrixGraph_1.gr n=10 sage ok w=5 2.281s
+21:13:08 named/gr/OddGraph_3.gr n=10 sage ok w=5 2.587s
+21:13:08 named/gr/SquaredSkewHadamardMatrixGraph_1.gr n=9 sage ok w=5 2.921s
+21:13:09 named/gr/KrackhardtKiteGraph.gr n=10 sage ok w=4 1.893s
+21:13:09 named/gr/HerschelGraph.gr n=11 sage ok w=4 2.098s
+21:13:10 named/gr/DurerGraph.gr n=12 sage ok w=4 1.786s
+21:13:10 coloring/myciel3.dgf n=11 sage ok w=5 2.395s
+21:13:10 named/gr/BidiakisCube.gr n=12 sage ok w=4 2.085s
+21:13:10 named/gr/FranklinGraph.gr n=12 sage ok w=5 1.829s
+21:13:10 named/gr/GrotzschGraph.gr n=11 sage ok w=5 2.777s
+21:13:11 named/gr/GoldnerHararyGraph.gr n=11 sage ok w=4 2.928s
+21:13:11 named/gr/FruchtGraph.gr n=12 sage ok w=4 2.061s
+21:13:12 named/gr/ChvatalGraph.gr n=12 sage ok w=6 2.627s
+21:13:13 named/gr/TietzeGraph.gr n=12 sage ok w=5 3.166s
+21:13:13 named/gr/LollipopGraph_7_5.gr n=12 sage ok w=6 2.847s
+21:13:13 named/gr/TruncatedTetrahedralGraph.gr n=12 sage ok w=4 3.275s
+21:13:13 named/gr/IcosahedralGraph.gr n=12 sage ok w=6 3.396s
+21:13:13 named/gr/HeawoodGraph.gr n=14 sage ok w=6 3.021s
+21:13:14 named/gr/PoussinGraph.gr n=15 sage ok w=6 2.573s
+21:13:14 named/gr/SierpinskiGasketGraph_3.gr n=15 sage ok w=4 3.354s
+21:13:15 named/gr/OrthogonalPolarGraph_5_2.gr n=15 sage ok w=10 1.935s
+21:13:15 named/gr/HararyGraph_6_15.gr n=15 sage ok w=6 2.608s
+21:13:15 named/gr/NonisotropicOrthogonalPolarGraph_3_5.gr n=15 sage ok w=10 2.578s
+21:13:16 named/gr/MoebiusKantorGraph.gr n=16 sage ok w=6 2.191s
+21:13:16 named/gr/CompleteGraph_15.gr n=15 sage ok w=14 2.589s
+21:13:16 named/gr/SousselierGraph.gr n=16 sage ok w=5 2.576s
+21:13:16 named/gr/ShrikhandeGraph.gr n=16 sage ok w=9 1.391s
+21:13:16 named/gr/HoffmanGraph.gr n=16 sage ok w=7 2.075s
+21:13:16 named/gr/ClebschGraph.gr n=16 sage ok w=9 2.035s
+21:13:17 named/gr/ErreraGraph.gr n=17 sage ok w=6 2.198s
+21:13:17 named/gr/GoethalsSeidelGraph_2_3.gr n=16 sage ok w=12 2.437s
+21:13:17 named/gr/PaleyGraph_17.gr n=17 sage ok w=12 1.936s
+21:13:18 named/gr/RobertsonGraph.gr n=19 sage ok w=8 1.722s
+21:13:18 named/gr/PappusGraph.gr n=18 sage ok w=7 2.053s
+21:13:18 named/gr/BlanusaSecondSnarkGraph.gr n=18 sage ok w=5 2.074s
+21:13:18 named/gr/CirculantGraph_20_5.gr n=20 sage ok w=2 1.989s
+21:13:18 named/gr/BlanusaFirstSnarkGraph.gr n=18 sage ok w=5 2.608s
+21:13:19 named/gr/DodecahedralGraph.gr n=20 sage ok w=6 1.404s
+21:13:19 named/gr/BrinkmannGraph.gr n=21 sage ok w=8 1.251s
+21:13:20 named/gr/FlowerSnark.gr n=20 sage ok w=6 2.105s
+21:13:20 named/gr/GeneralizedPetersenGraph_10_4.gr n=20 sage ok w=6 1.877s
+21:13:20 named/gr/FriendshipGraph_10.gr n=21 sage ok w=2 1.748s
+21:13:20 named/gr/FolkmanGraph.gr n=20 sage ok w=7 1.951s
+21:13:20 named/gr/DesarguesGraph.gr n=20 sage ok w=6 3.031s
+21:13:21 vsplib/tree/1rot/TREE_22_3_rot2.mtx.rnd n=22 sage ok w=3 1.851s
+21:13:21 vsplib/tree/1rot/TREE_22_3_rot1.mtx.rnd n=22 sage ok w=3 2.841s
+21:13:21 vsplib/tree/1rot/TREE_22_3_rot3.mtx.rnd n=22 sage ok w=3 1.762s
+21:13:21 vsplib/tree/2rot/TREE_22_3_rot1.mtx.rnd n=22 sage ok w=3 1.358s
+21:13:22 vsplib/tree/1rot/TREE_22_3_rot5.mtx.rnd n=22 sage ok w=3 2.204s
+21:13:22 vsplib/tree/1rot/TREE_22_3_rot4.mtx.rnd n=22 sage ok w=3 2.262s
+21:13:22 vsplib/tree/2rot/TREE_22_3_rot2.mtx.rnd n=22 sage ok w=3 2.04s
+21:13:22 vsplib/tree/2rot/TREE_22_3_rot4.mtx.rnd n=22 sage ok w=3 1.551s
+21:13:22 vsplib/tree/2rot/TREE_22_3_rot3.mtx.rnd n=22 sage ok w=3 1.881s
+21:13:23 vsplib/tree/2rot/TREE_22_3_rot5.mtx.rnd n=22 sage ok w=3 2.253s
+21:13:23 vsplib/tree/3rot/TREE_22_3_rot2.mtx.rnd n=22 sage ok w=3 2.23s
+21:13:24 vsplib/tree/3rot/TREE_22_3_rot1.mtx.rnd n=22 sage ok w=3 2.736s
+21:13:24 vsplib/tree/3rot/TREE_22_3_rot5.mtx.rnd n=22 sage ok w=3 1.838s
+21:13:24 vsplib/tree/3rot/TREE_22_3_rot3.mtx.rnd n=22 sage ok w=3 2.202s
+21:13:24 coloring/myciel4.dgf n=23 sage ok w=10 1.711s
+21:13:24 vsplib/tree/3rot/TREE_22_3_rot4.mtx.rnd n=22 sage ok w=3 2.272s
+21:13:24 named/gr/KittellGraph.gr n=23 sage ok w=7 2.18s
+21:13:25 named/gr/MarkstroemGraph.gr n=24 sage ok w=5 1.993s
+21:13:25 named/gr/McGeeGraph.gr n=24 sage ok w=8 1.889s
+21:13:25 vsplib/hb/can___24.mtx.rnd n=24 sage ok w=5 1.571s
+21:13:26 named/gr/NauruGraph.gr n=24 sage ok w=8 1.8s
+21:13:26 named/gr/Klein7RegularGraph.gr n=24 sage ok w=13 1.575s
+21:13:26 named/gr/Toroidal6RegularGrid2dGraph_4_6.gr n=24 sage ok w=9 1.87s
+21:13:26 named/gr/Grid2dGraph_5_5.gr n=25 sage ok w=5 1.755s
+21:13:27 vsplib/grids/grid_5.mtx.rnd n=25 sage ok w=5 2.419s
+21:13:27 coloring/queen5_5.dgf n=25 sage ok w=18 1.935s
+21:13:27 named/gr/BarbellGraph_10_5.gr n=25 sage ok w=9 2.124s
+21:13:27 named/gr/HoltGraph.gr n=27 sage ok w=10 1.894s
+21:13:27 named/gr/SchlaefliGraph.gr n=27 sage ok w=21 1.659s
+21:13:28 named/gr/F26AGraph.gr n=26 sage ok w=8 2.159s
+21:13:28 named/gr/AhrensSzekeresGeneralizedQuadrangleGraph_3.gr n=27 sage ok w=18 2.143s
+21:13:28 named/gr/TaylorTwographDescendantSRG_3.gr n=27 sage ok w=18 2.087s
+21:13:29 named/gr/CoxeterGraph.gr n=28 sage ok w=9 1.662s
+21:13:29 named/gr/JohnsonGraph_8_2.gr n=28 sage ok w=18 2.268s
+21:13:30 named/gr/TaylorTwographSRG_3.gr n=28 sage ok w=22 2.197s
+21:13:30 named/gr/DoubleStarSnark.gr n=30 sage ok w=7 2.136s
+21:13:30 named/gr/DyckGraph.gr n=32 sage ok w=9 2.149s
+21:13:30 named/gr/TutteCoxeterGraph.gr n=30 sage ok w=9 2.345s
+21:13:30 named/gr/WellsGraph.gr n=32 sage ok w=15 2.677s
+21:13:31 vsplib/grids/grid_6.mtx.rnd n=36 sage ok w=6 2.053s
+21:13:31 named/gr/OddGraph_4.gr n=35 sage ok w=13 2.85s
+21:13:31 named/gr/LadderGraph_20.gr n=40 sage ok w=2 1.298s
+21:13:31 coloring/queen6_6.dgf n=36 sage ok w=25 1.688s
+21:13:31 vsplib/hb/bcspwr01.mtx.rnd n=39 sage ok w=4 1.685s
+21:13:31 named/gr/CircularLadderGraph_20.gr n=40 sage ok w=4 1.456s
+21:13:31 named/gr/SylvesterGraph.gr n=36 sage ok w=16 1.998s
+21:13:32 named/gr/SymplecticDualPolarGraph_4_3.gr n=40 sage ok w=28 1.287s
+21:13:32 named/gr/CompleteBipartiteGraph_25_20.gr n=45 sage ok w=20 1.086s
+21:13:32 named/gr/HyperStarGraph_10_2.gr n=45 sage ok w=8 1.355s
+21:13:32 named/gr/WienerArayaGraph.gr n=42 sage ok w=7 1.699s
+21:13:33 named/gr/SymplecticPolarGraph_4_3.gr n=40 sage ok w=29 1.974s
+21:13:33 named/gr/KneserGraph_10_2.gr n=45 sage ok w=36 1.245s
+21:13:33 coloring/myciel5.dgf n=47 sage ok w=20 1.284s
+21:13:33 named/gr/TutteGraph.gr n=46 sage ok w=6 1.685s
+21:13:33 vsplib/hb/bcsstk01.mtx.rnd n=48 sage ok w=13 1.405s
+21:13:34 vsplib/hb/bcspwr02.mtx.rnd n=49 sage ok w=3 1.184s
+21:13:34 vsplib/grids/grid_7.mtx.rnd n=49 sage ok w=7 1.296s
+21:13:34 named/gr/PasechnikGraph_2.gr n=49 sage ok w=36 1.386s
+21:13:34 named/gr/SquaredSkewHadamardMatrixGraph_2.gr n=49 sage ok w=41 1.369s
+21:13:34 named/gr/WatkinsSnarkGraph.gr n=50 sage ok w=7 1.115s
+21:13:34 coloring/queen7_7.dgf n=49 sage ok w=35 1.568s
+21:13:34 named/gr/SzekeresSnarkGraph.gr n=50 sage ok w=7 1.448s
+21:13:35 named/gr/SwitchedSquaredSkewHadamardMatrixGraph_2.gr n=50 sage ok w=39 1.064s
+21:13:35 named/gr/HarborthGraph.gr n=52 sage ok w=5 1.053s
+21:13:35 named/gr/EllinghamHorton54Graph.gr n=54 sage ok w=7 1.292s
+21:13:36 named/gr/GossetGraph.gr n=56 sage ok w=43 1.345s
+21:13:37 vsplib/hb/dwt___59.mtx.rnd n=59 sage ok w=5 1.255s
+21:13:41 named/gr/BuckyBall.gr n=60 sage ok w=10 3.69s
+21:20:51 named/gr/SimsGewirtzGraph.gr n=56 sage ok w=34 436.345s
+21:20:51 vsplib/hb/can___61.mtx.rnd n=61 sage ok w=8 0.526s
+21:20:52 vsplib/hb/can___62.mtx.rnd n=62 sage ok w=4 0.49s
+21:24:04 named/gr/NKStarGraph_8_2.gr n=56 sage timeout w= 630.076s  <== Sage failed, ours proved 18 (refutation) in 0.128s
+21:24:05 named/gr/NonisotropicUnitaryPolarGraph_3_3.gr n=63 sage ok w=54 0.629s
+21:24:06 vsplib/grids/grid_8.mtx.rnd n=64 sage ok w=8 0.686s
+21:24:06 named/gr/KneserGraph_8_3.gr n=56 sage timeout w= 630.139s  <== Sage failed, ours proved 32 (refutation) in 1.613s
+21:24:07 named/gr/HoffmanSingletonGraph.gr n=50 sage timeout w= 630.14s  <== Sage failed, ours proved 27 (refutation) in 3.279s
+21:24:07 named/gr/HanoiTowerGraph_4_3.gr n=64 sage ok w=14 1.579s
+21:24:13 named/gr/T2starGeneralizedQuadrangleGraph_4.gr n=64 sage ok w=47 5.567s
+21:24:13 named/gr/NKStarGraph_5_3.gr n=60 sage timeout w= 630.142s  <== Sage failed, ours proved 15 (refutation) in 1.719s
+21:24:13 named/gr/GrayGraph.gr n=54 sage timeout w= 630.135s  <== Sage failed, ours proved 13 (refutation) in 9.097s
+21:24:14 vsplib/hb/dwt___66.mtx.rnd n=66 sage ok w=2 0.701s
+21:24:14 coloring/queen8_8.dgf n=64 sage ok w=45 0.83s
+21:24:14 named/gr/Klein3RegularGraph.gr n=56 sage timeout w= 630.038s  <== Sage failed, ours proved 13 (refutation) in 9.474s
+21:24:14 vsplib/hb/bcsstk02.mtx.rnd n=66 sage ok w=65 0.727s
+21:25:05 named/gr/PerkelGraph.gr n=57 sage timeout w= 630.148s  <== Sage failed, ours proved 27 (refutation) in 59.227s
+21:31:22 named/gr/RingedTree_6.gr n=63 sage timeout w= 630.115s  <== Sage failed, ours proved 9 (refutation) in 0.128s
+21:34:40 named/gr/CubeGraph_6.gr n=64 sage timeout w= 630.166s  <== Sage failed, ours proved 23 (refutation) in 4.23s
+21:34:44 vsplib/tree/1rot/TREE_67_4_rot2.mtx.rnd n=67 sage timeout w= 630.017s  <== Sage failed, ours proved 4 (refutation) in 0.115s
+21:34:44 vsplib/tree/1rot/TREE_67_4_rot1.mtx.rnd n=67 sage timeout w= 630.088s  <== Sage failed, ours proved 4 (refutation) in 0.103s
+21:34:44 vsplib/tree/1rot/TREE_67_4_rot3.mtx.rnd n=67 sage timeout w= 630.112s  <== Sage failed, ours proved 4 (refutation) in 0.108s
+21:34:44 vsplib/tree/1rot/TREE_67_4_rot4.mtx.rnd n=67 sage timeout w= 630.114s  <== Sage failed, ours proved 4 (refutation) in 0.157s
+21:35:35 vsplib/tree/1rot/TREE_67_4_rot5.mtx.rnd n=67 sage timeout w= 630.061s  <== Sage failed, ours proved 4 (refutation) in 0.107s
+21:37:16 named/gr/FoldedCubeGraph_7.gr n=64 sage timeout w= 630.123s  <== Sage failed, ours proved 31 (refutation) in 158.901s
+21:41:52 vsplib/tree/2rot/TREE_67_4_rot10.mtx.rnd n=67 sage timeout w= 630.046s  <== Sage failed, ours proved 4 (refutation) in 0.11s
+21:45:11 vsplib/tree/2rot/TREE_67_4_rot6.mtx.rnd n=67 sage timeout w= 630.064s  <== Sage failed, ours proved 4 (refutation) in 0.13s
+21:45:14 vsplib/tree/2rot/TREE_67_4_rot7.mtx.rnd n=67 sage timeout w= 630.019s  <== Sage failed, ours proved 4 (refutation) in 0.106s
+21:45:14 vsplib/tree/2rot/TREE_67_4_rot8.mtx.rnd n=67 sage timeout w= 630.116s  <== Sage failed, ours proved 4 (refutation) in 0.128s
+21:45:14 vsplib/tree/2rot/TREE_67_4_rot9.mtx.rnd n=67 sage timeout w= 630.117s  <== Sage failed, ours proved 4 (refutation) in 0.134s
+21:45:14 vsplib/tree/3rot/TREE_67_4_rot11.mtx.rnd n=67 sage timeout w= 630.119s  <== Sage failed, ours proved 4 (refutation) in 0.172s
+21:45:15 named/gr/MeredithGraph.gr n=70 sage ok w=8 0.617s
+21:45:16 vsplib/hb/dwt___72.mtx.rnd n=72 sage ok w=3 0.863s
+21:45:18 vsplib/hb/can___73.mtx.rnd n=73 sage ok w=10 2.0s
+21:46:05 vsplib/tree/3rot/TREE_67_4_rot12.mtx.rnd n=67 sage timeout w= 630.186s  <== Sage failed, ours proved 4 (refutation) in 0.293s
+21:47:46 vsplib/tree/3rot/TREE_67_4_rot13.mtx.rnd n=67 sage timeout w= 630.173s  <== Sage failed, ours proved 4 (refutation) in 0.552s
+21:47:48 named/gr/EllinghamHorton78Graph.gr n=78 sage ok w=6 1.966s
+21:52:23 vsplib/tree/3rot/TREE_67_4_rot14.mtx.rnd n=67 sage timeout w= 630.154s  <== Sage failed, ours proved 4 (refutation) in 0.409s
+21:52:25 vsplib/grids/grid_9.mtx.rnd n=81 sage ok w=9 1.71s
+21:55:41 vsplib/tree/3rot/TREE_67_4_rot15.mtx.rnd n=67 sage timeout w= 630.118s  <== Sage failed, ours proved 4 (refutation) in 0.153s
+21:55:44 coloring/queen9_9.dgf n=81 sage ok w=58 3.614s
+21:55:48 coloring/huck.dgf n=74 sage timeout w= 630.117s  <== Sage failed, ours proved 10 (bound) in 0.152s
+21:55:52 vsplib/hb/ash85.mtx.rnd n=85 sage ok w=8 7.469s
+21:56:06 named/gr/BrouwerHaemersGraph.gr n=81 sage ok w=56 220.977s
+21:57:52 named/gr/M22Graph.gr n=77 sage timeout w= 630.18s  <== Sage failed, ours proved 54 (refutation) in 76.381s
+21:58:19 coloring/jean.dgf n=80 sage timeout w= 630.175s  <== Sage failed, ours proved 10 (minor) in 0.785s
+22:02:02 vsplib/hb/dwt___87.mtx.rnd n=87 sage ok w=8 355.887s
+22:02:20 named/gr/Balaban10Cage.gr n=70 sage timeout w= 630.186s  <== Sage failed, ours proved 15 (refutation) in 396.374s
+22:02:30 named/gr/HarriesGraph.gr n=70 sage timeout w= 630.21s  <== Sage failed, ours proved 15 (refutation) in 405.656s
+22:02:31 vsplib/hb/can___96.mtx.rnd n=96 sage ok w=13 1.241s
+22:02:36 coloring/queen8_12.dgf n=96 sage ok w=65 4.601s
+22:02:36 named/gr/PathGraph_100.gr n=100 sage ok w=1 0.685s
+22:02:37 named/gr/CycleGraph_100.gr n=100 sage ok w=2 0.815s
+22:02:38 named/gr/HarriesWongGraph.gr n=70 sage timeout w= 630.175s  <== Sage failed, ours proved 15 (refutation) in 413.95s
+22:02:39 named/gr/WheelGraph_100.gr n=100 sage ok w=3 0.623s
+22:02:40 vsplib/hb/nos4.mtx.rnd n=100 sage ok w=8 0.723s
+22:03:45 vsplib/grids/grid_10.mtx.rnd n=100 sage ok w=10 68.014s
+22:06:50 named/gr/HortonGrap.gr n=96 sage ok w=8 269.105s
+22:08:23 coloring/david.dgf n=87 sage timeout w= 630.16s  <== Sage failed, ours proved 13 (minor) in 0.622s
+22:08:25 named/gr/StarGraph_100.gr n=101 sage ok w=1 2.22s
+22:10:25 named/gr/SymplecticDualPolarGraph_4_4.gr n=85 sage timeout w= 630.159s  <== Sage failed, ours proved 64 (refutation) in 246.814s
+22:10:40 named/gr/SymplecticPolarGraph_4_4.gr n=85 sage timeout w= 630.08s  <== Sage failed, ours proved 64 (refutation) in 257.649s
+22:12:32 coloring/myciel6.dgf n=95 sage timeout w= 630.117s  <== Sage failed, ours proved 38 (minor) in 0.269s
+22:12:32 vsplib/hb/bcsstk03.mtx.rnd n=112 sage ok w=3 0.588s
+22:14:19 coloring/queen10_10.dgf n=100 sage timeout w= 630.148s  <== Sage failed, ours proved 72 (refutation) in 3.243s
+22:17:24 named/gr/HallJankoGraph.gr n=100 sage timeout w= 630.15s  <== Sage failed, ours proved 82 (refutation) in 4.364s
+22:18:50 named/gr/FosterGraph.gr n=90 sage timeout w= 630.147s  <== Sage failed, ours ok
+22:23:10 named/gr/HigmanSimsGraph.gr n=100 sage timeout w= 630.188s  <== Sage failed, ours ok
+22:24:49 vsplib/hb/bcspwr03.mtx.rnd n=118 sage timeout w= 630.116s  <== Sage failed, ours proved 6 (refutation) in 0.208s
+22:28:39 named/gr/TruncatedIcosidodecahedralGraph.gr n=120 sage timeout w= 630.118s  <== Sage failed, ours proved 12 (refutation) in 44.94s
+22:28:55 named/gr/BiggsSmithGraph.gr n=102 sage timeout w= 630.126s  <== Sage failed, ours ok
+22:30:55 named/gr/Balaban11Cage.gr n=112 sage timeout w= 630.112s  <== Sage failed, ours ok
+22:31:10 named/gr/LjubljanaGraph.gr n=112 sage timeout w= 630.118s  <== Sage failed, ours ok
+22:31:14 named/gr/SquaredSkewHadamardMatrixGraph_3.gr n=121 sage ok w=108 4.362s
+22:31:16 named/gr/PasechnikGraph_3.gr n=121 sage ok w=102 20.948s
+22:31:20 named/gr/SwitchedSquaredSkewHadamardMatrixGraph_3.gr n=122 sage ok w=106 5.601s
+22:32:57 named/gr/SierpinskiGasketGraph_5.gr n=123 sage ok w=6 100.205s
+22:33:03 named/gr/DejterGraph.gr n=112 sage timeout w= 630.196s  <== Sage failed, ours ok
+22:35:37 coloring/games120.dgf n=120 sage timeout w= 630.048s  <== Sage failed, ours proved 32 (minor) in 18.095s
+22:39:10 vsplib/grids/grid_11.mtx.rnd n=121 sage timeout w= 630.118s  <== Sage failed, ours proved 11 (minor) in 0.354s
+22:39:20 named/gr/BubbleSortGraph_5.gr n=120 sage timeout w= 630.116s  <== Sage failed, ours ok
+22:39:59 coloring/queen11_11.dgf n=121 sage timeout w= 630.167s  <== Sage failed, ours proved 87 (refutation) in 33.71s
+22:43:33 coloring/miles250.dgf n=128 sage timeout w= 630.116s  <== Sage failed, ours proved 10 (refutation) in 0.129s
+22:43:40 named/gr/NStarGraph_5.gr n=120 sage timeout w= 630.039s  <== Sage failed, ours ok
+22:46:07 coloring/miles500.dgf n=128 sage timeout w= 630.046s  <== Sage failed, ours proved 22 (bound) in 0.128s
+22:49:40 coloring/miles750.dgf n=128 sage timeout w= 630.075s  <== Sage failed, ours proved 36 (refutation) in 0.151s
+22:49:50 coloring/miles1000.dgf n=128 sage timeout w= 630.078s  <== Sage failed, ours proved 49 (bound) in 0.101s
+22:50:02 named/gr/FibonacciTree_10.gr n=143 sage ok w=3 21.848s
+22:50:02 vsplib/hb/can__144.mtx.rnd n=144 sage ok w=8 0.624s
+22:50:29 coloring/miles1500.dgf n=128 sage timeout w= 630.118s  <== Sage failed, ours proved 77 (bound) in 0.101s
+22:51:50 named/gr/Tutte12Cage.gr n=126 sage timeout w= 630.116s  <== Sage failed, ours ok
+22:52:11 vsplib/hb/can__161.mtx.rnd n=161 sage ok w=18 21.128s
+22:53:27 named/gr/OddGraph_5.gr n=126 sage timeout w= 630.117s  <== Sage failed, ours ok
+22:54:03 vsplib/hb/bcsstk04.mtx.rnd n=132 sage timeout w= 630.114s  <== Sage failed, ours proved 34 (refutation) in 0.131s
+22:54:10 vsplib/hb/bcsstk22.mtx.rnd n=138 sage timeout w= 630.088s  <== Sage failed, ours proved 8 (refutation) in 0.145s
+22:56:40 coloring/anna.dgf n=138 sage timeout w= 630.115s  <== Sage failed, ours proved 14 (minor) in 2.481s
+23:00:21 vsplib/grids/grid_12.mtx.rnd n=144 sage timeout w= 630.114s  <== Sage failed, ours proved 12 (minor) in 0.618s
+23:00:59 vsplib/hb/bcsstk05.mtx.rnd n=153 sage timeout w= 630.112s  <== Sage failed, ours proved 20 (bound) in 0.112s
+23:02:41 vsplib/hb/dwt__162.mtx.rnd n=162 sage timeout w= 630.083s  <== Sage failed, ours proved 10 (refutation) in 0.134s
+23:03:57 named/gr/WorldMap.gr n=166 sage timeout w= 630.115s  <== Sage failed, ours proved 7 (minor) in 0.461s
+23:04:36 vsplib/grids/grid_13.mtx.rnd n=169 sage timeout w= 630.115s  <== Sage failed, ours proved 13 (minor) in 2.55s
+23:06:33 coloring/queen12_12.dgf n=144 sage timeout w= 630.156s  <== Sage failed, ours proved 103 (refutation) in 360.959s
+23:07:10 coloring/mulsol.i.3.dgf n=184 sage timeout w= 630.093s  <== Sage failed, ours proved 32 (bound) in 0.234s
+23:10:51 coloring/mulsol.i.4.dgf n=185 sage timeout w= 630.115s  <== Sage failed, ours proved 32 (bound) in 0.245s
+23:11:30 coloring/mulsol.i.5.dgf n=186 sage timeout w= 630.113s  <== Sage failed, ours proved 31 (bound) in 0.185s
+23:13:12 vsplib/hb/can__187.mtx.rnd n=187 sage timeout w= 630.092s  <== Sage failed, ours proved 12 (refutation) in 0.386s
+23:13:13 vsplib/hb/dwt__198.mtx.rnd n=198 sage ok w=7 0.596s
+23:14:28 coloring/mulsol.i.2.dgf n=188 sage timeout w= 630.025s  <== Sage failed, ours proved 32 (bound) in 0.243s
+23:14:40 coloring/queen13_13.dgf n=169 sage timeout w= 630.063s  <== Sage failed, ours ok
+23:17:04 vsplib/hb/dwt__193.mtx.rnd n=193 sage timeout w= 630.116s  <== Sage failed, ours proved 29 (refutation) in 0.497s
+23:22:00 coloring/mulsol.i.1.dgf n=197 sage timeout w= 630.117s  <== Sage failed, ours proved 50 (bound) in 0.179s
+23:23:45 vsplib/tree/1rot/TREE_202_5_rot1.mtx.rnd n=202 sage timeout w= 630.1s  <== Sage failed, ours proved 5 (refutation) in 2.618s
+23:25:00 vsplib/tree/1rot/TREE_202_5_rot2.mtx.rnd n=202 sage timeout w= 630.058s  <== Sage failed, ours proved 5 (refutation) in 2.613s
+23:25:06 coloring/myciel7.dgf n=191 sage timeout w= 630.111s  <== Sage failed, ours ok
+23:25:13 vsplib/tree/1rot/TREE_202_5_rot3.mtx.rnd n=202 sage timeout w= 630.091s  <== Sage failed, ours proved 5 (refutation) in 2.725s
+23:27:37 vsplib/tree/1rot/TREE_202_5_rot4.mtx.rnd n=202 sage timeout w= 630.115s  <== Sage failed, ours proved 5 (refutation) in 2.554s
+23:27:41 vsplib/grids/grid_14.mtx.rnd n=196 sage timeout w= 630.115s  <== Sage failed, ours ok
+23:31:21 coloring/queen14_14.dgf n=196 sage timeout w= 630.18s  <== Sage failed, ours ok
+23:32:33 vsplib/tree/1rot/TREE_202_5_rot56.mtx.rnd n=202 sage timeout w= 630.084s  <== Sage failed, ours proved 5 (refutation) in 2.456s
+23:34:18 vsplib/tree/1rot/TREE_202_5_rot57.mtx.rnd n=202 sage timeout w= 630.114s  <== Sage failed, ours proved 5 (refutation) in 2.457s
+23:35:33 vsplib/tree/1rot/TREE_202_5_rot58.mtx.rnd n=202 sage timeout w= 630.082s  <== Sage failed, ours proved 5 (refutation) in 2.491s
+23:35:39 vsplib/tree/1rot/TREE_202_5_rot59.mtx.rnd n=202 sage timeout w= 630.051s  <== Sage failed, ours proved 5 (refutation) in 2.501s
+23:35:46 vsplib/tree/1rot/TREE_202_5_rot60.mtx.rnd n=202 sage timeout w= 630.111s  <== Sage failed, ours proved 5 (refutation) in 2.494s
+23:38:10 vsplib/tree/2rot/TREE_202_5_rot10.mtx.rnd n=202 sage timeout w= 630.115s  <== Sage failed, ours proved 5 (refutation) in 3.356s
+23:38:15 vsplib/tree/2rot/TREE_202_5_rot56.mtx.rnd n=202 sage timeout w= 630.115s  <== Sage failed, ours proved 5 (refutation) in 3.901s
+23:41:55 vsplib/tree/2rot/TREE_202_5_rot57.mtx.rnd n=202 sage timeout w= 630.034s  <== Sage failed, ours proved 5 (refutation) in 3.966s
+23:43:07 vsplib/tree/2rot/TREE_202_5_rot59.mtx.rnd n=202 sage timeout w= 630.051s  <== Sage failed, ours proved 5 (refutation) in 4.429s
+23:44:51 vsplib/tree/2rot/TREE_202_5_rot6.mtx.rnd n=202 sage timeout w= 630.117s  <== Sage failed, ours proved 5 (refutation) in 3.232s
+23:46:07 vsplib/tree/2rot/TREE_202_5_rot60.mtx.rnd n=202 sage timeout w= 630.112s  <== Sage failed, ours proved 5 (refutation) in 4.152s
+23:46:12 vsplib/tree/2rot/TREE_202_5_rot7.mtx.rnd n=202 sage timeout w= 630.114s  <== Sage failed, ours proved 5 (refutation) in 3.264s
+23:46:20 vsplib/tree/2rot/TREE_202_5_rot8.mtx.rnd n=202 sage timeout w= 630.115s  <== Sage failed, ours proved 5 (refutation) in 3.642s
+23:48:44 vsplib/tree/2rot/TREE_202_5_rot9.mtx.rnd n=202 sage timeout w= 630.017s  <== Sage failed, ours proved 5 (refutation) in 3.435s
+23:48:50 vsplib/tree/3rot/TREE_202_5_rot11.mtx.rnd n=202 sage timeout w= 630.117s  <== Sage failed, ours proved 5 (refutation) in 5.466s
+23:52:31 vsplib/tree/3rot/TREE_202_5_rot57.mtx.rnd n=202 sage timeout w= 630.111s  <== Sage failed, ours proved 5 (refutation) in 5.239s
+23:53:45 coloring/zeroin.i.3.dgf n=206 sage timeout w= 630.115s  <== Sage failed, ours proved 32 (bound) in 7.395s
+23:55:22 vsplib/hb/dwt__209.mtx.rnd n=209 sage timeout w= 630.112s  <== Sage failed, ours proved 18 (minor) in 0.386s
+23:56:49 coloring/zeroin.i.2.dgf n=211 sage timeout w= 630.115s  <== Sage failed, ours proved 32 (bound) in 6.729s
+23:56:50 coloring/zeroin.i.1.dgf n=211 sage timeout w= 630.113s  <== Sage failed, ours proved 50 (bound) in 0.113s
+23:56:51 vsplib/hb/nos1.mtx.rnd n=237 sage ok w=3 0.58s
+23:59:14 vsplib/hb/dwt__221.mtx.rnd n=221 sage timeout w= 630.114s  <== Sage failed, ours proved 11 (refutation) in 0.178s
+00:04:22 vsplib/hb/can__229.mtx.rnd n=229 sage timeout w= 630.026s  <== Sage failed, ours proved 20 (minor) in 7.196s
+00:06:38 named/gr/JohnsonGraph_10_4.gr n=210 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:07:21 vsplib/hb/dwt__234.mtx.rnd n=234 sage timeout w= 630.118s  <== Sage failed, ours proved 7 (refutation) in 1.825s
+00:09:20 vsplib/grids/grid_15.mtx.rnd n=225 sage timeout w= 630.045s  <== Sage failed, ours ok
+00:13:01 coloring/queen15_15.dgf n=225 sage timeout w= 630.095s  <== Sage failed, ours ok
+00:14:54 named/gr/RingedTree_8.gr n=255 sage timeout w= 630.135s  <== Sage failed, ours proved 13 (minor) in 1.838s
+00:15:52 named/gr/CameronGraph.gr n=231 sage timeout w= 630.144s  <== Sage failed, ours ok
+00:17:21 vsplib/hb/dwt__245.mtx.rnd n=245 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:17:52 vsplib/hb/can__256.mtx.rnd n=256 sage timeout w= 630.03s  <== Sage failed, ours proved 24 (minor) in 0.605s
+00:19:44 named/gr/HyperStarGraph_10_5.gr n=252 sage timeout w= 630.03s  <== Sage failed, ours ok
+00:23:37 vsplib/hb/lshp_265.mtx.rnd n=265 sage timeout w= 630.049s  <== Sage failed, ours proved 17 (minor) in 5.658s
+00:25:25 vsplib/hb/can__268.mtx.rnd n=268 sage timeout w= 630.071s  <== Sage failed, ours proved 22 (minor) in 0.658s
+00:27:08 vsplib/grids/grid_16.mtx.rnd n=256 sage timeout w= 630.053s  <== Sage failed, ours ok
+00:28:25 vsplib/hb/ash292.mtx.rnd n=292 sage timeout w= 630.115s  <== Sage failed, ours proved 15 (refutation) in 3.594s
+00:29:51 coloring/queen16_16.dgf n=256 sage timeout w= 630.141s  <== Sage failed, ours ok
+00:35:55 vsplib/hb/dwt__310.mtx.rnd n=310 sage timeout w= 630.043s  <== Sage failed, ours proved 11 (refutation) in 0.188s
+00:36:22 vsplib/hb/bcspwr04.mtx.rnd n=274 sage timeout w= 630.036s  <== Sage failed, ours ok
+00:37:51 vsplib/grids/grid_17.mtx.rnd n=289 sage timeout w= 630.068s  <== Sage failed, ours ok
+00:40:14 vsplib/hb/can__292.mtx.rnd n=292 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:44:07 vsplib/hb/dwt__307.mtx.rnd n=307 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:46:53 vsplib/hb/dwt__361.mtx.rnd n=361 sage timeout w= 630.116s  <== Sage failed, ours proved 14 (minor) in 0.566s
+00:47:38 vsplib/grids/grid_18.mtx.rnd n=324 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:48:23 vsplib/hb/plat362.mtx.rnd n=362 sage timeout w= 630.116s  <== Sage failed, ours proved 34 (minor) in 1.899s
+00:48:56 vsplib/hb/dwt__346.mtx.rnd n=346 sage timeout w= 630.117s  <== Sage failed, ours ok
+00:50:21 coloring/school1_nsh.dgf n=352 sage timeout w= 630.115s  <== Sage failed, ours ok
+00:56:25 vsplib/grids/grid_19.mtx.rnd n=361 sage timeout w= 630.115s  <== Sage failed, ours ok
+01:00:45 named/gr/BalancedTree_3_5.gr n=364 sage timeout w= 630.112s  <== Sage failed, ours ok
+01:04:37 coloring/school1.dgf n=385 sage timeout w= 630.116s  <== Sage failed, ours ok
+01:07:23 vsplib/grids/grid_20.mtx.rnd n=400 sage timeout w= 630.114s  <== Sage failed, ours ok
+01:08:08 vsplib/hb/lshp_406.mtx.rnd n=406 sage timeout w= 630.114s  <== Sage failed, ours ok
+01:08:53 vsplib/hb/dwt__419.mtx.rnd n=419 sage timeout w= 630.116s  <== Sage failed, ours ok
+01:09:26 vsplib/hb/bcsstk06.mtx.rnd n=420 sage timeout w= 630.116s  <== Sage failed, ours ok
+01:10:51 vsplib/hb/bcsstk07.mtx.rnd n=420 sage timeout w= 630.039s  <== Sage failed, ours ok
+01:16:55 coloring/fpsol2.i.3.dgf n=425 sage timeout w= 630.115s  <== Sage failed, ours ok
+01:21:15 vsplib/grids/grid_21.mtx.rnd n=441 sage timeout w= 630.111s  <== Sage failed, ours ok
+01:25:08 vsplib/hb/bcspwr05.mtx.rnd n=443 sage timeout w= 630.116s  <== Sage failed, ours ok
+01:27:53 vsplib/hb/can__445.mtx.rnd n=445 sage timeout w= 630.115s  <== Sage failed, ours ok
+01:28:39 coloring/le450_5a.dgf n=450 sage timeout w= 630.112s  <== Sage failed, ours ok
+01:29:24 coloring/le450_5b.dgf n=450 sage timeout w= 630.081s  <== Sage failed, ours ok
+01:29:56 coloring/le450_15a.dgf n=450 sage timeout w= 630.115s  <== Sage failed, ours ok
+01:31:21 coloring/le450_15b.dgf n=450 sage timeout w= 630.116s  <== Sage failed, ours ok
+01:37:26 coloring/le450_25a.dgf n=450 sage timeout w= 630.119s  <== Sage failed, ours ok
+01:41:45 coloring/le450_25b.dgf n=450 sage timeout w= 630.114s  <== Sage failed, ours ok
+01:45:38 coloring/le450_5d.dgf n=450 sage timeout w= 630.121s  <== Sage failed, ours ok
+01:48:24 coloring/le450_5c.dgf n=450 sage timeout w= 630.08s  <== Sage failed, ours ok
+01:49:09 coloring/le450_15c.dgf n=450 sage timeout w= 630.117s  <== Sage failed, ours ok
+01:49:54 coloring/le450_15d.dgf n=450 sage timeout w= 630.117s  <== Sage failed, ours ok
+01:50:27 coloring/le450_25c.dgf n=450 sage timeout w= 630.101s  <== Sage failed, ours ok
+01:51:52 coloring/le450_25d.dgf n=450 sage timeout w= 630.123s  <== Sage failed, ours ok
+01:57:56 coloring/fpsol2.i.2.dgf n=451 sage timeout w= 630.119s  <== Sage failed, ours ok
+01:58:55 vsplib/hb/bcsstk20.mtx.rnd n=485 sage timeout w= 630.12s  <== Sage failed, ours proved 10 (minor) in 0.751s
+01:59:40 vsplib/hb/dwt__492.mtx.rnd n=492 sage timeout w= 630.114s  <== Sage failed, ours proved 9 (refutation) in 0.687s
+02:00:58 coloring/fpsol2.i.1.dgf n=496 sage timeout w= 630.119s  <== Sage failed, ours proved 67 (minor) in 0.749s
+02:02:16 vsplib/hb/nos5.mtx.rnd n=468 sage timeout w= 630.073s  <== Sage failed, ours ok
+02:06:08 vsplib/grids/grid_22.mtx.rnd n=484 sage timeout w= 630.025s  <== Sage failed, ours ok
+02:08:27 vsplib/hb/dwt__512.mtx.rnd n=512 sage timeout w= 630.122s  <== Sage failed, ours proved 18 (minor) in 0.57s
+02:10:24 vsplib/hb/494_bus.mtx.rnd n=494 sage timeout w= 630.118s  <== Sage failed, ours ok
+02:12:22 vsplib/hb/dwt__503.mtx.rnd n=503 sage timeout w= 630.117s  <== Sage failed, ours ok
+02:19:25 vsplib/grids/grid_23.mtx.rnd n=529 sage timeout w= 630.032s  <== Sage failed, ours ok
+02:20:10 coloring/homer.dgf n=561 sage timeout w= 630.046s  <== Sage failed, ours ok
+02:21:28 vsplib/grids/grid_24.mtx.rnd n=576 sage timeout w= 630.119s  <== Sage failed, ours ok
+02:22:46 vsplib/hb/lshp_577.mtx.rnd n=577 sage timeout w= 630.12s  <== Sage failed, ours ok
+02:26:39 vsplib/hb/dwt__592.mtx.rnd n=592 sage timeout w= 630.101s  <== Sage failed, ours ok
+02:28:57 named/gr/Cell120.gr n=600 sage timeout w= 630.094s  <== Sage failed, ours ok
+02:30:55 vsplib/hb/dwt__607.mtx.rnd n=607 sage timeout w= 630.121s  <== Sage failed, ours ok
+02:32:53 coloring/inithx.i.3.dgf n=621 sage timeout w= 630.121s  <== Sage failed, ours ok
+02:39:55 vsplib/grids/grid_25.mtx.rnd n=625 sage timeout w= 630.018s  <== Sage failed, ours ok
+02:40:40 vsplib/hb/can__634.mtx.rnd n=634 sage timeout w= 630.122s  <== Sage failed, ours ok
+02:41:58 coloring/inithx.i.2.dgf n=645 sage timeout w= 630.116s  <== Sage failed, ours ok
+02:43:16 vsplib/hb/662_bus.mtx.rnd n=662 sage timeout w= 630.121s  <== Sage failed, ours ok
+02:47:09 vsplib/hb/nos6.mtx.rnd n=675 sage timeout w= 630.12s  <== Sage failed, ours ok
+02:49:27 vsplib/grids/grid_26.mtx.rnd n=676 sage timeout w= 630.105s  <== Sage failed, ours ok
+02:51:25 vsplib/hb/685_bus.mtx.rnd n=685 sage timeout w= 630.12s  <== Sage failed, ours ok
+02:53:23 vsplib/hb/can__715.mtx.rnd n=715 sage timeout w= 630.098s  <== Sage failed, ours ok
+03:00:25 vsplib/grids/grid_27.mtx.rnd n=729 sage timeout w= 630.115s  <== Sage failed, ours ok
+03:01:10 vsplib/hb/nos7.mtx.rnd n=729 sage timeout w= 630.025s  <== Sage failed, ours ok
+03:01:57 vsplib/hb/bcsstk19.mtx.rnd n=817 sage timeout w= 630.019s  <== Sage failed, ours proved 11 (minor) in 1.58s
+03:02:29 vsplib/hb/dwt__758.mtx.rnd n=758 sage timeout w= 630.087s  <== Sage failed, ours ok
+03:03:46 vsplib/hb/lshp_778.mtx.rnd n=778 sage timeout w= 630.114s  <== Sage failed, ours ok
+03:07:39 vsplib/grids/grid_28.mtx.rnd n=784 sage timeout w= 630.099s  <== Sage failed, ours ok
+03:09:58 named/gr/Grid2dGraph_20_40.gr n=800 sage timeout w= 630.112s  <== Sage failed, ours ok
+03:09:58 vsplib/hb/nos2.mtx.rnd n=957 sage ok w=3 0.561s
+03:13:53 vsplib/grids/grid_29.mtx.rnd n=841 sage timeout w= 630.116s  <== Sage failed, ours ok
+03:20:49 vsplib/hb/nos3.mtx.rnd n=960 sage timeout w= 630.119s  <== Sage failed, ours proved 43 (minor) in 20.846s
+03:20:56 coloring/inithx.i.1.dgf n=864 sage timeout w= 630.113s  <== Sage failed, ours ok
+03:21:41 vsplib/hb/dwt__869.mtx.rnd n=869 sage timeout w= 630.119s  <== Sage failed, ours ok
+03:22:27 vsplib/hb/dwt__878.mtx.rnd n=878 sage timeout w= 630.119s  <== Sage failed, ours ok
+03:22:59 vsplib/grids/grid_30.mtx.rnd n=900 sage timeout w= 630.092s  <== Sage failed, ours ok
+03:24:17 vsplib/hb/gr_30_30.mtx.rnd n=900 sage timeout w= 630.117s  <== Sage failed, ours ok
+03:28:10 vsplib/hb/dwt__918.mtx.rnd n=918 sage timeout w= 630.121s  <== Sage failed, ours ok
+03:34:24 vsplib/grids/grid_31.mtx.rnd n=961 sage timeout w= 630.061s  <== Sage failed, ours ok
+03:41:20 named/gr/RingedTree_10.gr n=1023 sage timeout w= 630.2s  <== Sage failed, ours ok
+03:41:26 vsplib/grids/grid_32.mtx.rnd n=1024 sage timeout w= 630.119s  <== Sage failed, ours ok
+03:42:14 vsplib/grids/grid_33.mtx.rnd n=1089 sage timeout w= 630.112s  <== Sage failed, ours ok
+03:42:59 vsplib/grids/grid_34.mtx.rnd n=1156 sage timeout w= 630.123s  <== Sage failed, ours ok
+03:43:31 vsplib/grids/grid_35.mtx.rnd n=1225 sage timeout w= 630.126s  <== Sage failed, ours ok
+03:44:49 vsplib/grids/grid_36.mtx.rnd n=1296 sage timeout w= 630.149s  <== Sage failed, ours ok
+03:48:46 vsplib/grids/grid_37.mtx.rnd n=1369 sage timeout w= 630.141s  <== Sage failed, ours ok
+03:55:01 vsplib/grids/grid_38.mtx.rnd n=1444 sage timeout w= 630.118s  <== Sage failed, ours ok
+04:01:55 vsplib/grids/grid_39.mtx.rnd n=1521 sage timeout w= 630.159s  <== Sage failed, ours ok
+04:02:00 vsplib/grids/grid_40.mtx.rnd n=1600 sage timeout w= 630.151s  <== Sage failed, ours ok
+04:02:55 vsplib/grids/grid_41.mtx.rnd n=1681 sage timeout w= 630.145s  <== Sage failed, ours ok
+04:03:39 vsplib/grids/grid_42.mtx.rnd n=1764 sage timeout w= 630.18s  <== Sage failed, ours ok
+04:04:11 vsplib/grids/grid_43.mtx.rnd n=1849 sage timeout w= 630.16s  <== Sage failed, ours ok
+04:05:21 vsplib/grids/grid_44.mtx.rnd n=1936 sage timeout w= 630.172s  <== Sage failed, ours ok
+04:09:21 vsplib/grids/grid_45.mtx.rnd n=2025 sage timeout w= 630.209s  <== Sage failed, ours ok
+04:15:37 vsplib/grids/grid_46.mtx.rnd n=2116 sage timeout w= 630.172s  <== Sage failed, ours ok
+04:22:32 vsplib/grids/grid_47.mtx.rnd n=2209 sage timeout w= 630.215s  <== Sage failed, ours ok
+04:22:35 vsplib/grids/grid_48.mtx.rnd n=2304 sage timeout w= 630.161s  <== Sage failed, ours ok
+04:23:28 vsplib/grids/grid_49.mtx.rnd n=2401 sage timeout w= 630.16s  <== Sage failed, ours ok
+04:24:14 vsplib/grids/grid_50.mtx.rnd n=2500 sage timeout w= 630.177s  <== Sage failed, ours ok
+04:25:11 vsplib/grids/grid_51.mtx.rnd n=2601 sage timeout w= 630.149s  <== Sage failed, ours timeout
+04:26:22 vsplib/grids/grid_52.mtx.rnd n=2704 sage timeout w= 630.129s  <== Sage failed, ours timeout
+04:30:22 vsplib/grids/grid_53.mtx.rnd n=2809 sage timeout w= 630.165s  <== Sage failed, ours timeout
+04:36:09 vsplib/grids/grid_54.mtx.rnd n=2916 sage timeout w= 630.116s  <== Sage failed, ours ok
+04:43:32 named/gr/DorogovtsevGoltsevMendesGraph.gr n=3282 sage timeout w= 630.125s  <== Sage failed, ours timeout
