@@ -204,6 +204,26 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
+## Contributing to SageMath (after the arXiv preprint, 2026-10-16)
+
+SageMath's `vertex_separation` (maintained by David Coudert, first author of the
+branch and bound we compare against) is where exact pathwidth users already look.
+The Sage hunt (`pathwidth_solver/bench/results/sage_hunt.csv`): of 381 benchmark
+graphs, Sage's BAB settled 164 in 600 s; on the 217 it did not, ours proved 104
+(loaded machine: to be confirmed by the quiet head-to-head).
+
+- [ ] **Write to David Coudert first**, collegially: the results, the minor bound,
+      and whether Sage would welcome the contributions below.
+- [ ] **PR 1, small: the contraction-minor lower bound** as a self-contained
+      function (Theorem 4.11, Lean: `pathwidth_gt_of_minorOf`), usable by Sage's
+      existing BAB at once. Cython, doctests, Sage graph types.
+- [ ] **PR 2: our corrected search as a new `algorithm=` option** of
+      `vertex_separation`, beside "BAB", "MILP" and "exponential". Port the C engine
+      (now called through ctypes) to Cython or a C extension Sage accepts; GPL is
+      fine (our code is MIT).
+- [ ] **Evidence for the reviewers:** the quiet-machine SageMath head-to-head
+      (high-priority item above), and the arXiv preprint to cite.
+
 ## W4: search for a width-26 layout (2026-10-15)
 
 - [ ] **Try the finding side on W4** (VLSI, 202 nets, dataset class pwc-04432;
