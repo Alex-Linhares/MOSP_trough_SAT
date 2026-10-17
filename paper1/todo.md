@@ -204,28 +204,20 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       Clautiaux et al., Lucena, Chandran & Subramanian, Mohar & Poljak,
       Fraire-Huacuja et al., Solano & Pioro).
 
-## The introduction: open with a humorous MOSP (2026-10-17)
+## The introduction: MOSP's other guises (2026-10-17)
 
-- [ ] **Open the introduction with a light, humorous statement of MOSP**, in
-      the owner's words or close to them: "Professor Groncho reads papers and
-      takes notes. Sometimes Prof. Groncho decides to write a new paper. A paper
-      is *open* at the moment of decision, and closed at the moment of
-      publication. Prof. Groncho has realized that he cannot work with too many
-      open papers." Then move to MOSP proper: the cutting industry (patterns,
-      customer stacks), and the problem's other guises, among them the
-      scheduling of scenes in film shooting. Check before citing:
-      - **film shooting / talent scheduling**: Cheng, Diamond & Lin (1993),
-        "Optimal scheduling in film production to minimize talent hold cost"
-        (J. Optimization Theory and Applications), and Garcia de la Banda,
-        Stuckey & Chu (2011), "Solving talent scheduling with dynamic
-        programming" (INFORMS Journal on Computing). Neither is held. Talent
-        scheduling minimizes a weighted *sum* of waiting days, not the *maximum*
-        number of actors on hold at once, so say how it relates to MOSP rather
-        than calling it the same problem;
-      - the other settings the literature gives (VLSI gate matrix layout is
-        already in the paper; check Yanasse & Senne 2010 and Linhares & Yanasse
-        2002 for further applications).
-      Keep the joke short; the Figure 1.1 example follows it.
+- [ ] **Name MOSP's other settings in the introduction**, after the cutting
+      industry: among them the scheduling of scenes in film shooting. (The
+      humorous opening was considered and dropped by the owner.)
+      - **Film shooting / talent scheduling:** Cheng, Diamond & Lin (1993), JOTA
+        79(3) 479-492, doi 10.1007/BF00940554; Garcia de la Banda, Stuckey & Chu
+        (2011), INFORMS JoC 23(1) 120-137, doi 10.1287/ijoc.1090.0378. Both are
+        listed for fetching in `literature/MISSING.md` (browser download).
+        Talent scheduling minimizes a weighted *sum* of waiting days, not the
+        *maximum* number on hold at once: present it as a close relative of
+        MOSP, not the same problem.
+      - Other settings: check Yanasse & Senne (2010) and Linhares & Yanasse
+        (2002) for further applications; VLSI gate matrix layout is already in.
 
 ## Contributing to SageMath (after the arXiv preprint, 2026-10-16)
 
