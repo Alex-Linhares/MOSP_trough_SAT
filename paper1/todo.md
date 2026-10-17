@@ -219,6 +219,36 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       - Other settings: check Yanasse & Senne (2010) and Linhares & Yanasse
         (2002) for further applications; VLSI gate matrix layout is already in.
 
+## Lean the derived random-graph bounds (high priority, 2026-10-17)
+
+`reports/random_graph_pathwidth_survey.md` derives three bounds no paper states
+(marked **[derived]** there, unrefereed). Check them, then prove them in Lean.
+The deterministic cores are within reach of the existing development
+(`VertexSeparation.lean`, `Sandwich.lean`); the probabilistic halves need a G(n, p)
+model Mathlib does not have, so they come second, as finite first-moment
+inequalities rather than asymptotics.
+
+- [ ] **Brute-force check first** (lesson from the false branch lemma): each
+      deterministic core against every graph to 9–10 vertices
+      (`learning/pwtw_exhaust.py` has the census), before any Lean.
+- [ ] **(1) Linear lower bound for average degree c > 4 ln 2 ≈ 2.77.**
+      Deterministic core: if vs(G) ≤ k, there are disjoint A, R with
+      |A| = |R| ≥ ⌈(n − k)/2⌉ − 1 and no A–R edge (survey §1.4). Then the
+      first moment: the expected number of such empty pairs in G(n, c/n)
+      vanishes below β*(c)·n, so whp pw ≥ β*(c)·n, beating Perarnau–Serra's
+      treewidth bound at every c.
+- [ ] **(2) Subcritical c < 1: pw = (1 + o(1)) log₃ log n.** Deterministic
+      cores: a tree on N vertices has pw ≤ log₃(2N + 1); the complete ternary
+      tree of height h has pw = h (classical, Scheffler; to cite, not claim).
+      Probabilistic half: whp every component is a tree or unicyclic of size
+      O(log n), and a ternary tree of size Θ(log n) occurs.
+- [ ] **(3) Dense, constant p: n − pw = Θ(log n)**, between (2 − o(1)) log_b n
+      and (4 + o(1)) log_b n, b = 1/(1 − p), against the published O(√(n/p)).
+      Deterministic cores: pw ≤ n − α(G), and the empty-pair lemma of (1).
+      Probabilistic half: the independence number and empty-pair first moments.
+- [ ] Only after the checks and Lean: decide whether these go in a paper, and
+      search once more that none is already published.
+
 ## Contributing to SageMath (after the arXiv preprint, 2026-10-16)
 
 SageMath's `vertex_separation` (maintained by David Coudert, first author of the
