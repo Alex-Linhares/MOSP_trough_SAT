@@ -379,6 +379,17 @@ compiled implementations.
       Restart `false_refutation_hunt.py` with fitness on the better-move
       configurations if we want the answer.
 
+## Bug: legacy pathwidth_fpt on trees (found 2026-10-18)
+
+- [ ] **`fixed_parameter_algorithm/pathwidth_fpt.compute_pathwidth_fpt` returns
+      pathwidth 1 for every tree over 18 vertices** (e.g. `balanced_tree(3, 3)`,
+      pathwidth 3). Found by the random-intersection report's agent, not yet
+      reproduced or fixed. Below 19 vertices it delegates to the exact DP, so the
+      fault is in the branch and bound or its pendant-removal preprocessing
+      (removing degree-1 vertices does not preserve pathwidth on trees). Not
+      used by `pathwidth_solver/` or any paper result; check what still calls it
+      (`customer_inter/`, tests) and add a tree regression test.
+
 ## Repository housekeeping
 
 - [ ] **Apply item 09's proposed `CLAUDE.md` blocks** (`solver_fix.md`, "For
