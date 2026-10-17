@@ -239,6 +239,24 @@ graphs, Sage's BAB settled 164 in 600 s; on the 217 it did not, ours proved 104
 - [ ] **Evidence for the reviewers:** the quiet-machine SageMath head-to-head
       (high-priority item above), and the arXiv preprint to cite.
 
+## Contributing pathwidth to House of Graphs (2026-10-17)
+
+House of Graphs (Coolsaet, D'hondt & Goedgebeur 2022, arXiv:2210.17253;
+Devillez, D'hondt & Goedgebeur 2026, arXiv:2603.23070; both in `literature/`)
+stores treewidth as an invariant, from a treewidth tester (their ref. [27]), but
+**not pathwidth**. The 2026 paper puts treewidth as its second hardest
+invariant, timing out on about 20% of graphs (~5,400). They say they prefer fast
+compiled implementations.
+
+- [ ] **Offer pathwidth as a new invariant** (high priority): write to the
+      maintainers (Goedgebeur's group, KU Leuven / Ghent), with our solver as
+      the computing tool and the paper as reference.
+- [ ] **Seed it with certified values**: every graph of ours already proved,
+      each with its witness layout, plus the minor certificates where the
+      bound is what proved it.
+- [ ] Companion to the SageMath contributions above: the same outreach, after
+      the arXiv preprint.
+
 ## W4: search for a width-26 layout (2026-10-15)
 
 - [ ] **Try the finding side on W4** (VLSI, 202 nets, dataset class pwc-04432;
