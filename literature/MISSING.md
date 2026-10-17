@@ -462,3 +462,8 @@ For the introduction's list of MOSP's guises (`paper1/todo.md`, "The introductio
 
 - **Cheng, T.C.E., Diamond, J.E. & Lin, B.M.T.** (1993). Optimal scheduling in film production to minimize talent hold cost. *Journal of Optimization Theory and Applications* 79(3), 479–492. [doi:10.1007/BF00940554](https://doi.org/10.1007/BF00940554). **Obtained 2026-10-17** (the owner's download): `1993-Cheng-Diamond-Lin-Film-Production-Talent-Hold-Cost-JOTA.pdf`.
 - **Garcia de la Banda, M., Stuckey, P.J. & Chu, G.** (2011). Solving talent scheduling with dynamic programming. *INFORMS Journal on Computing* 23(1), 120–137. [doi:10.1287/ijoc.1090.0378](https://doi.org/10.1287/ijoc.1090.0378). Open author copy: [people.eng.unimelb.edu.au/pstuckey/papers/rehearsal.pdf](https://people.eng.unimelb.edu.au/pstuckey/papers/rehearsal.pdf) **Obtained 2026-10-17** (the owner's download, the author's preprint in the journal's template): `2011-Garcia-de-la-Banda-Stuckey-Chu-Solving-Talent-Scheduling-Dynamic-Programming-IJOC.pdf`.
+
+## House of Graphs, 2026-10-17 (obtained, the owner's downloads)
+
+- **Coolsaet, K., D'hondt, S. & Goedgebeur, J.** (2022). House of Graphs 2.0: a database of interesting graphs and more. arXiv:2210.17253 (v1) — `2022-Coolsaet-Dhondt-Goedgebeur-House-of-Graphs-2.0-arXiv-2210.17253.pdf`. The journal version should be checked before citing.
+- **Devillez, G., D'hondt, S. & Goedgebeur, J.** (2026). Knowledge management in House of Graphs. arXiv:2603.23070 (v2) — `2026-Devillez-Dhondt-Goedgebeur-Knowledge-Management-House-of-Graphs-arXiv-2603.23070.pdf`.
