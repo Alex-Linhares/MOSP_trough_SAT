@@ -36,3 +36,17 @@
 [17500/29995] 52535 n=30 w=10 tw=9 refutation ok 
 [18000/29995] 14986 n=31 w=12 tw=12 refutation ok 
 [18500/29995] 26467 n=32 w=6 tw=4 refutation ok 
+[19000/29995] 28853 n=34 w=5 tw=4 refutation ok 
+[19500/29995] 29849 n=34 w=5 tw=4 refutation ok 
+[20000/29995] 30504 n=36 w=7 tw=5 refutation ok 
+[20500/29995] 22394 n=38 w=6 tw=5 refutation ok 
+[21000/29995] 28397 n=40 w=23 tw=22 refutation ok 
+[21500/29995] 50893 n=42 w=41 tw=41 bound ok 
+[22000/29995] 18429 n=43 w=7 tw=7 refutation ok 
+[22500/29995] 31616 n=46 w=6 tw=5 refutation ok 
+[23000/29995] 52670 n=48 w=12 tw=11 refutation ok 
+[23500/29995] 36792 n=64 w=9 tw=9 refutation ok 
+[24000/29995] 52376 n=98 w=42 tw=41 refutation ok 
+[24500/29995] 54738 n=30 w=5 tw= refutation ok 
+[25000/29995] 55395 n=42 w=21 tw= refutation ok 
+[25500/29995] 36952 n=72 w=13 tw= refutation ok 
