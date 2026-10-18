@@ -18,14 +18,26 @@ never been solved: open optima, unproved widths, intervals not yet closed.
 
 ## Owner's rule on the pathwidth solver (2026-10-18)
 
-**Never run the Python pathwidth solver** (`pathwidth_solver/pathwidth/`,
-`from pathwidth import solve`): it takes too long. Pathwidth runs use the C
-program `pathwidth_solver/cli/pathwidth` (graph6 on stdin; `-t` seconds, `-l`
-layout; README there), which reproduced the Python widths and proof types on
-453 of 453 checked graphs. The owner is considering deleting the Python solver;
-until that is decided, do not delete it, and do not start new runs on it. Runs
-already going on it when this rule was set (the House of Graphs second pass,
-myciel7, W4) continue unless the owner says otherwise.
+**Do not start runs on the Python pathwidth solver** (`pathwidth_solver/pathwidth/`,
+`from pathwidth import solve`); pathwidth runs use the C program
+`pathwidth_solver/cli/pathwidth` (graph6 on stdin; `-t` seconds, `-l` layout,
+`-u`/`-L` to restart from a stored layout and a proved floor, `-m` minor
+budgets; README there). It reproduced the Python widths and proof types on 453
+of 453 checked graphs.
+
+What the C program does and does not buy, measured on those 453: **the same
+speed on hard graphs** (121 s Python against 112 s C, node counts identical on
+444), because the Python solver is a thin driver and its search already runs
+in the same C engine (`closing_search_w.c`, through ctypes). The C program is
+faster only where Python's start-up (0.3-0.5 s) dominates, 4.5x below 20
+vertices, and it needs no Python or networkx, which is what House of Graphs
+requires. Above 1,024 vertices in one component the Python falls back to a
+pure-Python search and the C program reports the greedy bound only. So moving
+a hard refutation to C changes nothing about its cost.
+
+The owner is considering deleting the Python solver; until that is decided, do
+not delete it. Many scripts import it as a library (bounds, minor
+certificates, the dataset checker), so deletion needs a plan first.
 
 ## Terminology Correction: We Had the Two Graphs Swapped
 
