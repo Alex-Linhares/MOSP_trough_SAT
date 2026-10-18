@@ -19,6 +19,10 @@ import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
 import MOSPFormalization.Grid
+import MOSPFormalization.Hypercube.Order
+import MOSPFormalization.Hypercube.Harper
+import MOSPFormalization.Hypercube.Profile
+import MOSPFormalization.Hypercube
 import MOSPFormalization.Complex.GateMatrix
 import MOSPFormalization.Complex.Narrowness
 import MOSPFormalization.Complex.IntervalThickness
