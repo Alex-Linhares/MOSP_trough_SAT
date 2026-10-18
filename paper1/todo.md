@@ -246,6 +246,18 @@ inequalities rather than asymptotics.
       and (4 + o(1)) log_b n, b = 1/(1 − p), against the published O(√(n/p)).
       Deterministic cores: pw ≤ n − α(G), and the empty-pair lemma of (1).
       Probabilistic half: the independence number and empty-pair first moments.
+- [ ] **The large-n theorem first** (medium priority, owner 2026-10-18): the
+      route to a real theorem about random graphs at every n is (1)'s
+      first moment, "with high probability pw ≥ β*(c)·n", proved by counting,
+      not enumeration; the G(n, c/n) measurements (`reports/scratch/gnp_pilot/`)
+      test it but cannot prove it.
+- [ ] **Exact E[pw] and Var[pw] of G(n, p) for n ≤ 11** (low priority,
+      2026-10-18): exact polynomials in p with integer coefficients, from the
+      census of every graph to 11 vertices (`learning/pwtw_exhaust.py`) and
+      the count of labelled copies of each class. Computation, not proof.
+      In Lean only for n ≤ 5-6, by brute force over the 1,024 / 32,768
+      labelled graphs with kernel `decide` (avoid `native_decide`, which
+      trusts the compiler), as a small fully verified example.
 - [ ] Only after the checks and Lean: decide whether these go in a paper, and
       search once more that none is already published.
 
