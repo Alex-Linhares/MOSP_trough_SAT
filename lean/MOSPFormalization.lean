@@ -23,6 +23,7 @@ import MOSPFormalization.Hypercube.Order
 import MOSPFormalization.Hypercube.Harper
 import MOSPFormalization.Hypercube.Profile
 import MOSPFormalization.Hypercube
+import MOSPFormalization.Mycielski
 import MOSPFormalization.Complex.GateMatrix
 import MOSPFormalization.Complex.Narrowness
 import MOSPFormalization.Complex.IntervalThickness
