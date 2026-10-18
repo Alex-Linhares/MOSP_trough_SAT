@@ -78,3 +78,20 @@ interval 71 ≤ pw(myciel7) ≤ 72, and the one after is 130 for myciel8
 **refuting 71 on myciel7 can never succeed**, and the right search is for a
 width-71 layout. No formula for the pathwidth of Mycielski graphs is known to
 us; literature check first.
+
+## First Lean target: the hypercube (2026-10-18)
+
+`pw(Q_d) = Σ_{i=0}^{d-1} C(i, ⌊i/2⌋)` (A036256; matches our exact values
+Q_1..Q_6). Known mathematics (Harper's vertex-isoperimetric theorem), so the
+contribution is the formalisation, not the theorem.
+
+- **Upper bound, by induction on d:** Harper's simplicial order (by Hamming
+  weight, then lexicographic) has vertex separation equal to the formula;
+  passing from Q_d (two copies make Q_{d+1}) adds the middle layer C(d, ⌊d/2⌋).
+- **Lower bound:** Harper's theorem (Hamming balls minimise the vertex boundary
+  among k-sets, proved by compression), plus "every layout has a prefix of
+  every size, so vs ≥ max_k min-boundary(k)", i.e. our expansion bound.
+  Mathlib has UV-compressions and Kruskal–Katona
+  (`Mathlib.Combinatorics.SetFamily.*`); whether it has Harper's vertex
+  version is to be checked.
+- Assigned to a Lean agent, 2026-10-18 (`lean/MOSPFormalization/Hypercube.lean`).
