@@ -278,14 +278,33 @@ stores treewidth as an invariant, from a treewidth tester (their ref. [27]), but
 invariant, timing out on about 20% of graphs (~5,400). They say they prefer fast
 compiled implementations.
 
-- [ ] **Offer pathwidth as a new invariant** (high priority): write to the
-      maintainers (Goedgebeur's group, KU Leuven / Ghent), with our solver as
-      the computing tool and the paper as reference.
-- [ ] **Seed it with certified values**: every graph of ours already proved,
-      each with its witness layout, plus the minor certificates where the
-      bound is what proved it.
-- [ ] Companion to the SageMath contributions above: the same outreach, after
-      the arXiv preprint.
+How contributions work (2026 paper §4.1, §6.1; 2022 paper §6): **users do not
+submit invariant values**; the server computes every invariant itself, under
+a ~5-minute limit per graph, with invariant programs chosen and reviewed by
+hand. They prefer compiled C/C++ with few dependencies and mature, tested
+code. The 2022 paper invites "practical and well-tested programs to compute an
+interesting graph invariant which is not on the House of Graphs yet".
+Contact: Jan Goedgebeur (jan.goedgebeur@kuleuven.be); also Kris Coolsaet
+(Ghent), Sven D'hondt, Gauvain Devillez (Mons).
+
+Our evidence (first pass, 2026-10-18, `pathwidth_solver/bench/results/hog_pathwidth.csv`):
+all 29,995 graphs at their 5-minute limit, pathwidth proved on 26,432, a
+witness layout for every graph, zero conflicts with their treewidth, 1,948
+proved where their treewidth timed out. Second pass on the 3,563 running.
+
+- [ ] **A standalone pathwidth program in C** (high priority, today,
+      2026-10-18): reads graph6 on stdin, one graph per line; prints the
+      pathwidth, whether it is proved (refutation / bound / minor) or an upper
+      bound, and a witness layout; a time limit; no Python, no networkx. Port
+      the descent of `pathwidth/solve.py`, the bounds of `bounds.py` and the
+      minor step of `minor.py` around the existing C engine
+      (`closing_search.c`). Must reproduce the Python solver's widths.
+- [ ] **Draft the email to Goedgebeur** (high priority, today): the program,
+      the first-pass numbers above, the witness file, the paper. Send after
+      the arXiv preprint, so they have something to cite.
+- [ ] **Offer our values as a cross-check**, not a substitute: the server
+      recomputes, and our witnesses let them verify every upper bound.
+- [ ] Companion to the SageMath contributions above.
 
 ## W4: search for a width-26 layout (2026-10-15)
 
