@@ -180,9 +180,16 @@ reach it.
 changes this. A 58-vertex minor of \texttt{myciel6} already has pathwidth 38,
 and the step proves $\pw=38$ in 0.2\,s. On \texttt{myciel7} (191 vertices),
 which \citet{CoudertMazauricNisse2016} leave open with $\pw\le72$, a
-110-vertex minor proves $\pw\ge71$; the best published lower bound we found is
-the treewidth bound 52 of \citet{BodlaenderWolleKoster2006}, so $\pw$ is 71 or
-72. Of the 340 Rome graphs left open by the 600\,s run of
+110-vertex minor proves $\pw\ge71$ in seconds, and a 132-vertex minor refutes
+71, in $5.2\times10^{9}$ nodes and 1.6 hours, so $\pw=72$; the best published
+lower bound we found is the treewidth bound 52 of
+\citet{BodlaenderWolleKoster2006}. The pathwidths of the Mycielski graphs
+$M_2,\dots,M_8$ are therefore $1, 2, 5, 10, 20, 38, 72$, a sequence in no
+entry of the OEIS, and no closed form we tried survives a hold-out test (the
+Fibonacci convolution that fits the first six terms predicts 71). For every
+graph $G$ its Mycielskian satisfies
+$\pw(G)+1\le\pw(\mu(G))\le2\,\pw(G)+1$~\leanref{mycielski}, the upper bound by
+interleaving each vertex with its shadow, so $73\le\pw(M_9)\le145$. Of the 340 Rome graphs left open by the 600\,s run of
 Table~\ref{tab:graphs}, the step proves 271 within 60\,s each (median 0.5\,s),
 and 292 with a larger budget; we refuted the other 48 without a time limit,
 the longest in 25.4 hours, so the pathwidth of every one of the 11,534 Rome
@@ -200,9 +207,11 @@ the step, it lowers the total node count by 55 to 99\% on Rome, the VSPLIB grids
 Harwell--Boeing and the colouring graphs, adds 1\% on the named graphs and
 20\% on the VSPLIB trees (about 1.5\,s a tree), and costs 4\% of the time on
 a sample of 120 MOSP corpus instances. The minor bounds for \texttt{myciel6},
-\texttt{myciel7} and the four MOSP instances below were also refuted by a
+\texttt{myciel7} (the bound 71) and the four MOSP instances below were also refuted by a
 separate exact search that uses no dominance rule and writes out every refuted
-set, which an independent checker verifies. Their branch and bound is openly available in SageMath, and a
+set, which an independent checker verifies; the refutation of 71 on the
+132-vertex minor of \texttt{myciel7} rests on our corrected search alone, its
+contraction sequence replayed and checked. Their branch and bound is openly available in SageMath, and a
 head-to-head run on one machine is the comparison that would settle which solver is stronger; we have not yet made it.
 
 \begin{table}[t]
