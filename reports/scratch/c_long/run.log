@@ -1,0 +1,8 @@
+2026-10-18 16:20:30 start myciel7_A: refute 71, -m first_nodes=1000000 -m total_nodes=500000000
+2026-10-18 16:20:30 start myciel7_B: refute 71, -m first_nodes=1000000 -m total_nodes=1000000000000000 -m share=1.0 -m max_fraction=0.97 -m step_fraction=0.02
+2026-10-18 16:20:30 start myciel7_C: refute 71, default minor config
+2026-10-18 16:20:30 start myciel7_D: refute 71, -m first_nodes=1000000 -m total_nodes=5000000000 -m start_fraction=0.85 -m max_fraction=0.99 -m step_fraction=0.01
+2026-10-18 16:20:30 start w4_A: refute 26, -m first_nodes=1000000 -m total_nodes=500000000
+2026-10-18 16:20:30 start w4_B: refute 26, -m first_nodes=1000000 -m total_nodes=1000000000000000 -m share=1.0 -m max_fraction=0.97 -m step_fraction=0.02
+2026-10-18 16:20:30 start w4_C: refute 26, default minor config
+2026-10-18 16:20:30 start w4_D: refute 26, -m first_nodes=1000000 -m total_nodes=5000000000 -m start_fraction=0.85 -m max_fraction=0.99 -m step_fraction=0.01

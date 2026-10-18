@@ -196,3 +196,18 @@ tree.
 | `tests/hog_sample.py`, `tests/hog_sample.txt`, `tests/hog_sample_c.jsonl`, `tests/hog_sample_python.jsonl` | the House of Graphs sample, both runs |
 
 MIT licence, as the repository; the header is in `pathwidth.c`.
+
+## Restarting long runs (added 2026-10-18)
+
+- `-u file`: start from a closing order (0-based vertex numbers, the vertex
+  closed first first); its width is recomputed and becomes the starting upper
+  bound. Connected graphs only.
+- `-L k`: a proved lower bound to start from, so the descent goes straight to
+  refuting `k` when the starting width is `k + 1`.
+- `-m key=value`: one `MinorConfig` field (`first_nodes`, `total_nodes`,
+  `share`, `start_fraction`, `step_fraction`, `max_fraction`, `growth`,
+  `min_vertices`, `probe_nodes`, `time_fraction`), repeatable. Defaults are
+  unchanged.
+
+The unit tests still pass 45 of 45 with these options added. Used by
+`reports/scratch/c_long/run.sh` (myciel7, W4).

@@ -335,18 +335,18 @@ static int initial_upper_bound(const graph *g, int *order) {
 
 /* ---- the contraction-minor step (minor.py) ----------------------------- */
 
-/* MinorConfig() defaults */
-#define CFG_MIN_VERTICES 40
-#define CFG_START_FRACTION 0.5
-#define CFG_STEP_FRACTION 0.05
-#define CFG_MAX_FRACTION 0.85
-#define CFG_FIRST_NODES 100000.0
-#define CFG_GROWTH 3.0
-#define CFG_TOTAL_NODES 20000000LL
-#define CFG_TIME_FRACTION 0.25
-#define CFG_PROBE_NODES 100000LL
-#define CFG_SHARE 0.5
-#define CFG_RESTRICT_NODES 20000LL
+/* MinorConfig() defaults; settable with -m key=value */
+static int CFG_MIN_VERTICES = 40;
+static double CFG_START_FRACTION = 0.5;
+static double CFG_STEP_FRACTION = 0.05;
+static double CFG_MAX_FRACTION = 0.85;
+static double CFG_FIRST_NODES = 100000.0;
+static double CFG_GROWTH = 3.0;
+static long long CFG_TOTAL_NODES = 20000000LL;
+static double CFG_TIME_FRACTION = 0.25;
+static long long CFG_PROBE_NODES = 100000LL;
+static double CFG_SHARE = 0.5;
+static long long CFG_RESTRICT_NODES = 20000LL;
 /* on_stall = "retry"; rules = ("min-d", "least-c") */
 #define RULE_MIN_D 0
 #define RULE_LEAST_C 1
@@ -745,6 +745,12 @@ typedef struct {
 
 /* solve_masks: descend from the upper bound with the complete search.
  * time_budget < 0 means none; max_nodes is the per-call node budget. */
+/* -u / -L: a starting closing order (its width is the starting upper bound,
+ * recomputed here) and a proved lower bound, for long runs that restart from
+ * what earlier runs established. Applied to a connected graph only. */
+static const int *seed_order = NULL;
+static int seed_lower = -1;
+
 static solution solve_masks(const graph *g, double time_budget, long long max_nodes) {
     double started = now();
     solution sol;
@@ -754,7 +760,14 @@ static solution solve_masks(const graph *g, double time_budget, long long max_no
     if (n == 0) { sol.width = -1; sol.proof = PROOF_BOUND; return sol; }
 
     int lower = lower_bound(g);
-    int width = initial_upper_bound(g, sol.order);
+    if (seed_lower > lower) lower = seed_lower;
+    int width;
+    if (seed_order) {
+        memcpy(sol.order, seed_order, sizeof(int) * (size_t) n);
+        width = vertex_separation(g, sol.order);
+    } else {
+        width = initial_upper_bound(g, sol.order);
+    }
     sol.upper_start = width;
     if (width <= lower) {
         sol.width = width; sol.lower = lower; sol.proof = PROOF_BOUND;
@@ -870,6 +883,7 @@ static solution solve(const graph *g, double time_budget, long long max_nodes) {
         }
         ncomp++;
     }
+    if (seed_order && ncomp != 1) fatal("-u applies to a connected graph only");
     int *csize = xcalloc((size_t) ncomp, sizeof(int));
     for (int v = 0; v < n; v++) csize[comp[v]]++;
     /* widest (largest) first, stable */
@@ -999,15 +1013,76 @@ static void usage(FILE *f) {
         "  -n nodes    node budget per search call (default none)\n"
         "  -l          also print 'layout v1 ... vn', a vertex order (0-based) of\n"
         "              vertex separation w, checked before printing\n"
-        "  -v          lower bound, starting upper bound, nodes and seconds on stderr\n");
+        "  -v          lower bound, starting upper bound, nodes and seconds on stderr\n"
+        "  -u file     start from this closing order (0-based, the vertex closed\n"
+        "              first first); its width, recomputed, is the starting upper\n"
+        "              bound; connected graphs only\n"
+        "  -L k        a proved lower bound to start from\n"
+        "  -m key=val  a MinorConfig field: min_vertices, start_fraction,\n"
+        "              step_fraction, max_fraction, first_nodes, growth, total_nodes,\n"
+        "              time_fraction, probe_nodes, share (repeatable)\n");
+}
+
+
+/* -m key=value: one MinorConfig field (names as in minor.py) */
+static int set_minor_option(const char *kv) {
+    const char *eq = strchr(kv, '=');
+    if (!eq) return 1;
+    size_t k = (size_t) (eq - kv);
+    char *end;
+    double v = strtod(eq + 1, &end);
+    if (*end || eq[1] == 0) return 1;
+#define OPT(name, var, T) if (k == strlen(name) && !strncmp(kv, name, k)) { var = (T) v; return 0; }
+    OPT("min_vertices", CFG_MIN_VERTICES, int)
+    OPT("start_fraction", CFG_START_FRACTION, double)
+    OPT("step_fraction", CFG_STEP_FRACTION, double)
+    OPT("max_fraction", CFG_MAX_FRACTION, double)
+    OPT("first_nodes", CFG_FIRST_NODES, double)
+    OPT("growth", CFG_GROWTH, double)
+    OPT("total_nodes", CFG_TOTAL_NODES, long long)
+    OPT("time_fraction", CFG_TIME_FRACTION, double)
+    OPT("probe_nodes", CFG_PROBE_NODES, long long)
+    OPT("share", CFG_SHARE, double)
+#undef OPT
+    return 1;
+}
+
+/* -u file: a closing order of the graph's n vertices (0-based, whitespace
+ * separated), checked to be a permutation */
+static int *read_seed(const char *path, int n) {
+    FILE *f = fopen(path, "r");
+    if (!f) fatal("cannot open the -u file");
+    int *order = xmalloc(sizeof(int) * (size_t) (n ? n : 1));
+    char *seen = xcalloc((size_t) (n ? n : 1), 1);
+    int m = 0, v;
+    while (fscanf(f, "%d", &v) == 1) {
+        if (m >= n || v < 0 || v >= n || seen[v]) fatal("the -u file is not a permutation of the vertices");
+        seen[v] = 1; order[m++] = v;
+    }
+    fclose(f);
+    if (m != n) fatal("the -u file is not a permutation of the vertices");
+    free(seen);
+    return order;
 }
 
 int main(int argc, char **argv) {
     double time_budget = 300.0;
     long long max_nodes = NO_LIMIT;
     int print_layout = 0, verbose = 0;
+    const char *seed_file = NULL;
     for (int i = 1; i < argc; i++) {
         const char *a = argv[i];
+        if (!strcmp(a, "-u") && i + 1 < argc) { seed_file = argv[++i]; continue; }
+        if (!strcmp(a, "-L") && i + 1 < argc) {
+            char *end;
+            seed_lower = (int) strtol(argv[++i], &end, 10);
+            if (*end || seed_lower < 0) { usage(stderr); return 1; }
+            continue;
+        }
+        if (!strcmp(a, "-m") && i + 1 < argc) {
+            if (set_minor_option(argv[++i])) { usage(stderr); return 1; }
+            continue;
+        }
         if (!strcmp(a, "-t") && i + 1 < argc) {
             char *end;
             time_budget = strtod(argv[++i], &end);
@@ -1065,7 +1140,14 @@ int main(int argc, char **argv) {
             if (ch == EOF) break;
             continue;
         }
+        int *seed = NULL;
+        if (seed_file) {
+            seed = read_seed(seed_file, g.n);
+            seed_order = seed;
+        }
         solution sol = solve(&g, time_budget, max_nodes);
+        free(seed);
+        seed_order = NULL;
 
         /* checked, not trusted: the closing order's width on the whole graph,
          * and the textbook width of the printed layout, both equal to w */
