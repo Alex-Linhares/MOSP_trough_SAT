@@ -219,6 +219,13 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       - Other settings: check Yanasse & Senne (2010) and Linhares & Yanasse
         (2002) for further applications; VLSI gate matrix layout is already in.
 
+## Closed formulas for recursive families (high leverage, 2026-10-18)
+
+- [ ] **Plan: `reports/closed_formula_families_plan.md`.** Exact pathwidth of
+      small members, guess a formula, prove it by induction on the
+      construction, Lean as for grids. First: Mycielski graphs and hypercubes
+      (2026-10-18, after the G(n, c/n) pilot).
+
 ## Lean the derived random-graph bounds (high priority, 2026-10-17)
 
 `reports/random_graph_pathwidth_survey.md` derives three bounds no paper states
