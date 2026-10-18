@@ -1,0 +1,10 @@
+3563 to do, 0 done
+[26/3563] 38497 n=132 w=12->12 lower 11->11 refutation ok 
+[27/3563] 38535 n=132 w=13->13 lower 12->12 refutation ok 
+[28/3563] 38889 n=144 w=13->13 lower 12->12 refutation ok 
+[128/3563] 38529 n=132 w=13->13 lower 11->11 refutation ok 
+[152/3563] 38539 n=132 w=13->13 lower 11->11 refutation ok 
+[176/3563] 39473 n=160 w=12->12 lower 10->10 refutation ok 
+[250/3563] 41351 n=200 w=14->14 lower 12->12  ok 
+[500/3563] 39063 n=148 w=16->16 lower 13->13  ok 
+2026-10-18 17:26:51 stopped by the owner: a second 5-minute pass adds nothing House of Graphs' own 5-minute server could use, and proved too few
