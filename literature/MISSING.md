@@ -486,3 +486,23 @@ For the introduction's list of MOSP's guises (`paper1/todo.md`, "The introductio
   ENS Lyon, 2024, HAL tel-04990502 (114 pp.); from the owner's downloads.
   Contraction sequences of a different kind from our minor bound's (twin-width
   contracts arbitrary vertex pairs, not edges).
+
+## Width parameters of Mycielskians, 2026-10-18
+
+Searched (arXiv, web, ISGCI) for pathwidth, treewidth, vertex separation,
+bandwidth or cutwidth of μ(G) or of the Mycielski graphs: **no paper found**
+that bounds any of them in terms of G. ISGCI (class gc_1215) lists them as
+unknown. Exact values exist only as benchmark rows: Tamaki (2017/2019,
+already held, `2017-Tamaki-Positive-Instance-Driven-DP-Treewidth-ESA-arXiv.pdf`)
+gives tw(myciel2..6) = 2, 5, 10, 19, 35, with myciel7 open; SageMath's
+`vertex_separation` documentation gives vs(MycielskiGraph(5)) = 10. Nothing
+saved. Findings: `reports/mycielski_pathwidth.md`.
+
+## Chandran, Kavitha & Subramanian (2003), full text, 2026-10-18
+
+- `2003-Chandran-Kavitha-Subramanian-Isoperimetric-Inequalities-Width-Parameters-COCOON.pdf`
+  (10 pp., from the owner's downloads) replaces the 2-page preview listed above as
+  paywalled. The conference version of Chandran & Kavitha (2006): isoperimetric
+  lower bounds for treewidth, pathwidth and carving width, the exact pathwidth of
+  the hypercube (formalised in `lean/MOSPFormalization/Hypercube.lean`), and
+  Hamming graphs.
