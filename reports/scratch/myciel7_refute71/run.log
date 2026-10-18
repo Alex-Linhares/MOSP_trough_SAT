@@ -1,3 +1,4 @@
 2026-10-12 03:20:24 start: upper 72 from the stored layout (checked), refuting 71, minor step on, no limit
 2026-10-12 05:40:11 stopped by hand after 2 h 19 min (default minor budget long spent, full refutation running); relaunched with the large minor budget
 2026-10-12 05:40:20 start: upper 72 from the stored layout (checked), refuting 71, large minor budget, no limit
+2026-10-18 16:14:27 stopped by the owner after 6 d 10 h with no result (refutation of 71 unfinished); to be restarted in the C program

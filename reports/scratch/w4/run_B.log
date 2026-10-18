@@ -1,0 +1,2 @@
+2026-10-12 14:53:49 start B: n=202 m=976 upper 27 (layout checked), refuting 26, MinorConfig(min_vertices=40, start_fraction=0.5, step_fraction=0.02, max_fraction=0.97, rules=('min-d', 'least-c'), first_nodes=1000000, growth=3.0, total_nodes=1000000000000000, time_fraction=0.9, on_stall='retry', probe_nodes=100000, share=1.0, restrict_nodes=20000)
+2026-10-18 16:14:27 stopped by the owner after 6 d 1 h with no result (refutation of 26 unfinished); to be restarted in the C program

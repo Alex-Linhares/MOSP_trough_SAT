@@ -16,6 +16,17 @@ or briefing an agent to launch one, check whether its instances are already
 proved; if they are, ask first. The priority is to solve problems that have
 never been solved: open optima, unproved widths, intervals not yet closed.
 
+## Owner's rule on the pathwidth solver (2026-10-18)
+
+**Never run the Python pathwidth solver** (`pathwidth_solver/pathwidth/`,
+`from pathwidth import solve`): it takes too long. Pathwidth runs use the C
+program `pathwidth_solver/cli/pathwidth` (graph6 on stdin; `-t` seconds, `-l`
+layout; README there), which reproduced the Python widths and proof types on
+453 of 453 checked graphs. The owner is considering deleting the Python solver;
+until that is decided, do not delete it, and do not start new runs on it. Runs
+already going on it when this rule was set (the House of Graphs second pass,
+myciel7, W4) continue unless the owner says otherwise.
+
 ## Terminology Correction: We Had the Two Graphs Swapped
 
 Yanasse & Senne (2010, `literature/yanasse_senne_2010_properties_preprocessing.pdf`)

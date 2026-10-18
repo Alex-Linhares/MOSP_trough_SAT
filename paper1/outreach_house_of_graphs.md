@@ -46,7 +46,8 @@ Graphs, at your 5-minute limit per graph:
 
 A second pass on the remaining 3,563 is running.
 
-The program is a single C file with no dependencies beyond libc. It reads
+The program is plain C99 with no dependencies beyond the C standard library: one driver file
+and our search engine, built with `make`. It reads
 graph6 and prints the pathwidth, how it was proved (an exhausted search, a
 matching lower bound, or a refuted minor), and optionally the layout:
 https://github.com/Alex-Linhares/MOSP_trough_SAT/tree/main/pathwidth_solver/cli. We'd be glad to adapt it to however your invariant
