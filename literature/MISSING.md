@@ -467,3 +467,14 @@ For the introduction's list of MOSP's guises (`paper1/todo.md`, "The introductio
 
 - **Coolsaet, K., D'hondt, S. & Goedgebeur, J.** (2022). House of Graphs 2.0: a database of interesting graphs and more. arXiv:2210.17253 (v1) — `2022-Coolsaet-Dhondt-Goedgebeur-House-of-Graphs-2.0-arXiv-2210.17253.pdf`. The journal version should be checked before citing.
 - **Devillez, G., D'hondt, S. & Goedgebeur, J.** (2026). Knowledge management in House of Graphs. arXiv:2603.23070 (v2) — `2026-Devillez-Dhondt-Goedgebeur-Knowledge-Management-House-of-Graphs-arXiv-2603.23070.pdf`.
+
+## Rihm (2012), 2026-10-18
+
+- `2012-Rihm-Gueltige-Ungleichungen-Pfadweite-Problem-MSc-RWTH-Koster.pdf`:
+  Tom Rihm, *Gültige Ungleichungen für das Pfadweite-Problem* (valid inequalities
+  for the pathwidth problem), master's thesis, RWTH Aachen, January 2012,
+  supervised by Arie Koster; from the owner's downloads. ILP models of pathwidth
+  and their valid inequalities, with a computational study on the Mycielski
+  graphs Myciel3–5 (§9). Its values agree with ours: pw(Myciel3) = 5, and its
+  inequality (7.14) gives the lower bound 10 on Myciel4 (23 vertices), our exact
+  value.
