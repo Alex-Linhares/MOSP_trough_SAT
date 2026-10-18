@@ -10,3 +10,4 @@
 2026-10-18 20:33:22 stopped myciel7_B and myciel7_D (owner): their cores go to a width-71 layout search, reports/scratch/myciel7_w71/
 2026-10-18 20:36:22 stopped myciel7_A and myciel7_C (owner): myciel7_B already refuted 71 (pathwidth 72 minor); B to be re-run with the minor certificate printed
 2026-10-18 20:39:58 start myciel7_B2: re-run of B's config with the minor certificate printed (owner approved)
+2026-10-18 22:16:50 done myciel7_B2: pathwidth 72 minor
