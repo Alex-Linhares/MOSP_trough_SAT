@@ -478,3 +478,11 @@ For the introduction's list of MOSP's guises (`paper1/todo.md`, "The introductio
   graphs Myciel3–5 (§9). Its values agree with ours: pw(Myciel3) = 5, and its
   inequality (7.14) gives the lower bound 10 on Myciel4 (23 vertices), our exact
   value.
+
+## Bonnet (2024), 2026-10-18
+
+- `2024-Bonnet-Twin-Width-Contraction-Sequences-HDR-ENS-Lyon-tel-04990502.pdf`:
+  Édouard Bonnet, *Twin-Width and Contraction Sequences*, habilitation thesis,
+  ENS Lyon, 2024, HAL tel-04990502 (114 pp.); from the owner's downloads.
+  Contraction sequences of a different kind from our minor bound's (twin-width
+  contracts arbitrary vertex pairs, not edges).
