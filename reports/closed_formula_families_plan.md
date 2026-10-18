@@ -57,3 +57,24 @@ far as the solver reaches before guessing.
 Exact pathwidth of M_2 ... M_6 (M_7 is the running myciel7 portfolio) and of
 Q_1 ... Q_d as far as the solver reaches; look the sequences up. Scheduled
 for 2026-10-18, after the G(n, c/n) pilot.
+
+## First results (2026-10-18)
+
+**Hypercubes** (computed now in C, all proved): pw(Q_1..Q_6) = 1, 2, 4, 7, 13, 23,
+which is OEIS A036256, `Σ_{i=0}^{d-1} C(i, ⌊i/2⌋)`, the partial sums of central
+binomial coefficients. This is almost certainly the known vertex-separation
+value of the hypercube from Harper's isoperimetric theory (listed in the
+graph-layout surveys); **literature check before anything is claimed.** It
+predicts pw(Q_7) = 43 (not computed: a known value is not an unsolved problem).
+
+**Mycielski graphs** (no compute: values already proved in
+`pathwidth_solver/bench/results/coloring*.csv`): DIMACS myciel2..myciel6
+(C_5, Grötzsch, 23, 47, 95 vertices) have pw 2, 5, 10, 20, 38; with K_2 (pw 1)
+before them the sequence 1, 2, 5, 10, 20, 38 matches **OEIS A001629**, the
+self-convolution of the Fibonacci numbers, `Σ_k F(k) F(n−k)`, g.f.
+`x²/(1 − x − x²)²`, on every known term. Its next term is **71**, inside our
+interval 71 ≤ pw(myciel7) ≤ 72, and the one after is 130 for myciel8
+(383 vertices). A conjecture from six terms, not a result; if true,
+**refuting 71 on myciel7 can never succeed**, and the right search is for a
+width-71 layout. No formula for the pathwidth of Mycielski graphs is known to
+us; literature check first.
