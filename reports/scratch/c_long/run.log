@@ -6,3 +6,7 @@
 2026-10-18 16:20:30 start w4_B: refute 26, -m first_nodes=1000000 -m total_nodes=1000000000000000 -m share=1.0 -m max_fraction=0.97 -m step_fraction=0.02
 2026-10-18 16:20:30 start w4_C: refute 26, default minor config
 2026-10-18 16:20:30 start w4_D: refute 26, -m first_nodes=1000000 -m total_nodes=5000000000 -m start_fraction=0.85 -m max_fraction=0.99 -m step_fraction=0.01
+2026-10-18 18:07:57 done myciel7_B: pathwidth 72 minor
+2026-10-18 20:33:22 stopped myciel7_B and myciel7_D (owner): their cores go to a width-71 layout search, reports/scratch/myciel7_w71/
+2026-10-18 20:36:22 stopped myciel7_A and myciel7_C (owner): myciel7_B already refuted 71 (pathwidth 72 minor); B to be re-run with the minor certificate printed
+2026-10-18 20:39:58 start myciel7_B2: re-run of B's config with the minor certificate printed (owner approved)

@@ -741,6 +741,11 @@ typedef struct {
     int *order;                  /* closing order over the component's indices */
     long long nodes, minor_nodes;
     double seconds;
+    /* the minor certificate when proof is PROOF_MINOR (MinorCertificate):
+     * width `cert_refuted` refuted on the minor of `cert_size` vertices given
+     * by the first `cert_len` (v, u) pairs of `cert_seq` (u = -1: delete v) */
+    int cert_refuted, cert_size, cert_rule, cert_len;
+    int *cert_seq;
 } solution;
 
 /* solve_masks: descend from the upper bound with the complete search.
@@ -835,6 +840,16 @@ static solution solve_masks(const graph *g, double time_budget, long long max_no
     sol.nodes = nodes;
     sol.minor_nodes = L.nodes;
     sol.seconds = now() - started;
+    if (proof == PROOF_MINOR && L.best_refuted >= 0) {
+        int need = L.n - L.best_size;
+        if (need > L.seq_len[L.best_rule]) need = L.seq_len[L.best_rule];
+        sol.cert_refuted = L.best_refuted;
+        sol.cert_size = L.best_size;
+        sol.cert_rule = L.best_rule;
+        sol.cert_len = need;
+        sol.cert_seq = xmalloc(sizeof(int) * 2 * (size_t) (need ? need : 1));
+        memcpy(sol.cert_seq, L.seq[L.best_rule], sizeof(int) * 2 * (size_t) need);
+    }
     free(answer);
     free(probe_order);
     ladder_free(&L);
@@ -899,6 +914,7 @@ static solution solve(const graph *g, double time_budget, long long max_nodes) {
     int pos = 0, all_proved = 1, width = -1, best_lower = -1, best_upper = -1;
     int widest_has[4] = {0, 0, 0, 0};
     int *proofs = xmalloc(sizeof(int) * (size_t) ncomp), *widths = xmalloc(sizeof(int) * (size_t) ncomp);
+    int widths_cert = -1;
     for (int t = 0; t < ncomp; t++) {
         int c = corder[t], m = 0;
         for (int v = 0; v < n; v++) if (comp[v] == c) { local[v] = m; labels[m++] = v; }
@@ -912,6 +928,17 @@ static solution solve(const graph *g, double time_budget, long long max_nodes) {
         solution sub = m > ENGINE_MAX_VERTICES ? solve_bounds_only(&h) : solve_masks(&h, remaining, max_nodes);
         for (int i = 0; i < m; i++) total.order[pos++] = labels[sub.order[i]];
         proofs[t] = sub.proof; widths[t] = sub.width;
+        if (sub.proof == PROOF_MINOR && sub.cert_seq &&
+            (!total.cert_seq || sub.width > widths_cert)) {
+            free(total.cert_seq);
+            total.cert_refuted = sub.cert_refuted; total.cert_size = sub.cert_size;
+            total.cert_rule = sub.cert_rule; total.cert_len = sub.cert_len;
+            total.cert_seq = xmalloc(sizeof(int) * 2 * (size_t) (sub.cert_len ? sub.cert_len : 1));
+            for (int i = 0; i < 2 * sub.cert_len; i++)
+                total.cert_seq[i] = sub.cert_seq[i] < 0 ? -1 : labels[sub.cert_seq[i]];
+            widths_cert = sub.width;
+        }
+        free(sub.cert_seq);
         if (sub.width > width) width = sub.width;
         if (sub.lower > best_lower) best_lower = sub.lower;
         if (sub.upper_start > best_upper) best_upper = sub.upper_start;
@@ -1162,6 +1189,15 @@ int main(int argc, char **argv) {
             fputs("layout", stdout);
             for (int i = 0; i < g.n; i++) printf(" %d", layout[i]);
             fputc('\n', stdout);
+            if (sol.proof == PROOF_MINOR && sol.cert_seq) {
+                /* the minor certificate: replay the (v, u) pairs (contract v into
+                 * u; u = -1 deletes an isolated v), then pw <= refuted is refuted
+                 * on the result, so pw >= refuted + 1 (Theorem 4.11) */
+                printf("minor refuted %d size %d rule %s contractions", sol.cert_refuted, sol.cert_size,
+                       sol.cert_rule == RULE_MIN_D ? "min-d" : "least-c");
+                for (int i = 0; i < sol.cert_len; i++) printf(" %d,%d", sol.cert_seq[2 * i], sol.cert_seq[2 * i + 1]);
+                fputc('\n', stdout);
+            }
         }
         fflush(stdout);
         if (verbose)
@@ -1171,6 +1207,7 @@ int main(int argc, char **argv) {
                     sol.nodes, sol.minor_nodes, upper_nodes, engine_calls, sol.seconds);
         upper_nodes = engine_calls = 0;
         free(layout);
+        free(sol.cert_seq);
         free(sol.order);
         graph_free(&g);
         if (ch == EOF) break;

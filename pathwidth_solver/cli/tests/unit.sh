@@ -9,7 +9,12 @@ bin="$here/../pathwidth"
 cases="$here/unit_cases.txt"
 out=$(mktemp)
 trap 'rm -f "$out"' EXIT
-awk '{print $1}' "$cases" | "$bin" -l > "$out" || { echo "FAIL: program exited with $?"; exit 1; }
+certs=$(mktemp)
+trap 'rm -f "$out" "$certs"' EXIT
+awk '{print $1}' "$cases" | "$bin" -l > "$out.raw" || { echo "FAIL: program exited with $?"; exit 1; }
+grep -v '^minor ' "$out.raw" > "$out"
+grep '^minor ' "$out.raw" > "$certs"
+rm -f "$out.raw"
 fail=0
 total=0
 exec 3< "$out"
@@ -26,5 +31,9 @@ while read -r g6 width proof name; do
         echo "ok   $name: pathwidth $w $status"
     fi
 done < "$cases"
-echo "$((total - fail)) of $total passed"
+# one certificate line per minor proof
+nminor=$(awk '$3 == "minor"' "$cases" | wc -l)
+ncert=$(wc -l < "$certs")
+if [ "$nminor" != "$ncert" ]; then echo "FAIL: $nminor minor proofs but $ncert certificate lines"; fail=$((fail + 1)); fi
+echo "$((total - fail)) of $total passed ($ncert minor certificates printed)"
 [ "$fail" -eq 0 ]
