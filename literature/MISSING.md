@@ -208,15 +208,15 @@ or better move:
 - **De Giovanni, L., Massi, G., Pezzella, F., Pfetsch, M.E., Rinaldi, G. & Ventura, P.** (2013). A heuristic and an exact method for the gate matrix connection cost minimization problem. *ITOR* 20(5), 627-643. doi:10.1111/itor.12025. **This is an exact method, so it is the first to fetch.**
 - ~~**Chu, G. & Stuckey, P.J.** (2012). Inter-instance nogood learning in constraint programming. CP 2012, LNCS 7514. doi:10.1007/978-3-642-33558-7_19.~~ **Read 2026-10-19** (`chu_stuckey_2012_inter_instance_nogood_learning_cp.pdf`, the author's copy, fetched by the owner in a browser): MOSP is one of four benchmark problems for parameterised nogoods in Chuffed (35 customers, density 0.2, p. 8); the 2009 paper is cited once for the problem's definition; no rule restated or used.
 - **De Giovanni, L., Massi, G. & Pezzella, F.** (2013). An adaptive genetic algorithm for large-size open stack problems. *IJPR* 51(3), 682-697. doi:10.1080/00207543.2012.657256.
-- **DeGiovanni, L., Massi, G. & Pezzella, F.** (2010). Preliminary computational experiments with a genetic algorithm for the open stack problem. Technical report.
+- ~~**DeGiovanni, L., Massi, G. & Pezzella, F.** (2010). Preliminary computational experiments with a genetic algorithm for the open stack problem. Technical report.~~ **Read 2026-10-19** (`de_giovanni_massi_pezzella_2010_genetic_algorithm_open_stack_report.pdf`, 11 pp., the owner's download): compares their genetic algorithm against Chu & Stuckey's code ("DP+", run with Chu's and Stuckey's support) on all 200 random instances and 5,841 instances in all; DP+ proves every random instance, the largest in about 20 minutes; no rule restated, no failure reported. The fourth work to use an implementation of the rules; now cited in Appendix B.
 - **Carvalho, M.A.M. & Soma, N.Y.** (2015). A breadth-first search applied to the minimization of the open stacks. *JORS* 66, 936-946. doi:10.1057/jors.2014.60.
 - **Lima, J.R. & Carvalho, M.A.M.** (2017). Descent search approaches applied to the minimization of open stacks. *C&IE* 112, 175-186. doi:10.1016/j.cie.2017.08.016.
 - **Santos, V.G.M. & Carvalho, M.A.M.** (2018). Adaptive large neighborhood search applied to the design of electronic circuits. *ASOC*. doi:10.1016/j.asoc.2018.08.017.
-- **Arbib, C., Marinelli, F. & Ventura, P.** (2016). One-dimensional cutting stock with a limited number of open stacks. *ITOR*. doi:10.1111/itor.12134. Its 2010 report (TRCS 007/2010) was read.
-- **Arbib, C., Marinelli, F. & Pezzella, F.** (2012). An LP-based tabu search for batch scheduling in a cutting process with finite buffers. *IJPE*. doi:10.1016/j.ijpe.2011.12.003.
+- ~~**Arbib, C., Marinelli, F. & Ventura, P.** (2016). One-dimensional cutting stock with a limited number of open stacks. *ITOR*. doi:10.1111/itor.12134.~~ **Read 2026-10-19** (`arbib_marinelli_ventura_2016_cutting_stock_limited_open_stacks_itor.pdf`, author version): cites Chu & Stuckey once, p. 2, as "a breakthrough ... a smart combinatorial lower bound ... in a branch-and-bound scheme"; no rule restated.
+- ~~**Arbib, C., Marinelli, F. & Pezzella, F.** (2012). An LP-based tabu search for batch scheduling in a cutting process with finite buffers. *IJPE*. doi:10.1016/j.ijpe.2011.12.003.~~ **Read 2026-10-19** (`arbib_marinelli_pezzella_2012_lp_tabu_batch_scheduling_cutting_finite_buffers_ijpe.pdf`, author version): cites Chu & Stuckey once, in the introduction, for the problem; no rule restated.
 - ~~**Visentin, A., Prestwich, S., Rossi, R. & Tarim, S.A.** (2019)~~. Modelling dynamic programming-based global constraints in constraint programming. WCGO 2019. doi:10.1007/978-3-030-21803-4_42. **Read 2026-10-19** (`visentin_2019_dp_global_constraints_wcgo.pdf`, from the CORA repository at UCC): cites Chu & Stuckey once, p. 3, for memoisation; no rule restated.
 - ~~**Stivala, A.** (2010)~~. *Algorithms for the study of RNA and protein structure*. PhD thesis, University of Melbourne. **Read 2026-10-19** (`stivala_2010_phd_thesis_rna_protein.pdf`, Minerva Access): parallelises the 2007 DP for open stacks, §4.3.4; cites Chu & Stuckey once in its conclusions; nothing on the moves.
-- **Doulabi, S.H.H., Rousseau, L.-M. & Pesant, G.** (2016). A constraint-programming-based branch-and-price-and-cut approach for operating room planning and scheduling. *IJOC* 28(3). doi:10.1287/ijoc.2015.0686.
+- ~~**Doulabi, S.H.H., Rousseau, L.-M. & Pesant, G.** (2016). A constraint-programming-based branch-and-price-and-cut approach for operating room planning and scheduling. *IJOC* 28(3). doi:10.1287/ijoc.2015.0686.~~ **Read 2026-10-19** (`doulabi_rousseau_pesant_2016_cp_branch_price_cut_operating_room_ijoc.pdf`, author version): cites Chu & Stuckey once, p. 10, as an example of problem-specific dominance rules; no rule restated.
 - Camanho et al. (2022), *ITOR*, doi:10.1111/itor.13129, and Amirteimoori et al. (2024), *ITOR*, doi:10.1111/itor.13560. Both are probably false index links: their titles concern efficiency analysis.
 
 Among the citers of the thesis only, one unread work could bear on the rules:
@@ -226,12 +226,13 @@ from https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf, 39
 pages): proof logging for the chuffed solver; no mention of MOSP, the customer
 search or the moves; Chu's thesis is cited once as the solver's source.
 
-**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, four
-were obtained (the four struck through; Chu & Stuckey 2012 by the owner in a
-browser) and none restates, uses or doubts either move; the other ten stay closed (Wiley, Springer, Elsevier, IRIS and
+**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, eight
+were obtained (the eight struck through; five by the owner in a browser) and
+none restates or doubts either move; De Giovanni et al. (2010) used Chu &
+Stuckey's implementation and reports no failure; the other six stay closed (Wiley, Springer, Elsevier, IRIS and
 UFOP repositories behind bot checks or authentication; the attempt log is
-`fetch_attempt_2026-10-19.log`). The paper's counts become 27 of 38 CP-paper
-citers and 33 of 103 thesis-only citers read in full, 60 of 141.
+`fetch_attempt_2026-10-19.log`). The paper's counts become 31 of 38 CP-paper
+citers and 33 of 103 thesis-only citers read in full, 64 of 141.
 
 **Obtained in the same sweep.** Fink, C. (2012), *O problema de minimização de
 pilhas abertas — novas contribuições*, PhD thesis, ICMC-USP,
