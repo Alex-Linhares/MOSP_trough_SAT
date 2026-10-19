@@ -12,7 +12,7 @@ OBTAINED (PDF + pdftotext .txt here):
 NOT OBTAINED:
   De Giovanni et al. 2013 ITOR 10.1111/itor.12025: closed everywhere (OpenAlex/S2/CORE: no fulltext); IRIS UnivPM hdl 11566/63155 -> 403 bot check; Pfetsch page links only to DOI; De Giovanni page has no link.
   Chu & Stuckey 2012 CP 10.1007/978-3-642-33558-7_19: Springer pdf -> "Client Challenge" page; pstuckey/papers/interinstance.pdf -> "Pardon Our Interruption" bot check (twice); CiteSeerX unreachable.
-  De Giovanni, Massi & Pezzella 2013 IJPR 10.1080/00207543.2012.657256: closed; IRIS UnivPM 11566/55584 and Padova 11577/2525501 -> 403; author's T&F eprint link (www.tandfonline.com/eprint/PzgJ7Trncyt5AzJj8u9b/full, on www.math.unipd.it/~luigi/research.html) -> Cloudflare "Just a moment" (not circumvented).
+  De Giovanni, Massi & Pezzella 2013 IJPR 10.1080/00207543.2012.657256: closed; IRIS UnivPM 11566/55584 and Padova 11577/2525501 -> 403; author's T&F eprint link (www.tandfonline.com/eprint/PzgJ7Trncyt5AzJj8u9b/full, on www.math.unipd.it/~luigi/research.html) -> Cloudflare "Just a moment" (not circumvented). CORRECTION (owner, browser, same day): that eprint is the entry above it on the page, the 2014 airport ground-handling paper; the open-stacks entry carries no link.
   De Giovanni, Massi & Pezzella 2010 technical report: no record in OpenAlex/CORE; not on the author's page.
   Carvalho & Soma 2015 JORS 10.1057/jors.2014.60: closed; CORE 0 hits by DOI; not in UFOP repository (only the 2011 Pesquisa Operacional paper and the 2018 PLOS one are there).
   Lima & Carvalho 2017 C&IE 10.1016/j.cie.2017.08.016: in UFOP repository (item 5fa443b9-c3fb-4765-b43f-0691bfeece1a, ARTIGO_DescentSearchApproaches.pdf) but bitstream content -> 401 "Authentication is required" (restricted).
