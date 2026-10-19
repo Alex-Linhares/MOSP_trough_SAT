@@ -206,7 +206,7 @@ copy. They are listed in order of how likely they are to restate the definite
 or better move:
 
 - **De Giovanni, L., Massi, G., Pezzella, F., Pfetsch, M.E., Rinaldi, G. & Ventura, P.** (2013). A heuristic and an exact method for the gate matrix connection cost minimization problem. *ITOR* 20(5), 627-643. doi:10.1111/itor.12025. **This is an exact method, so it is the first to fetch.**
-- **Chu, G. & Stuckey, P.J.** (2012). Inter-instance nogood learning in constraint programming. CP 2012, LNCS 7514. doi:10.1007/978-3-642-33558-7_19. The report version, "Inter-problem nogood learning", was read.
+- ~~**Chu, G. & Stuckey, P.J.** (2012). Inter-instance nogood learning in constraint programming. CP 2012, LNCS 7514. doi:10.1007/978-3-642-33558-7_19.~~ **Read 2026-10-19** (`chu_stuckey_2012_inter_instance_nogood_learning_cp.pdf`, the author's copy, fetched by the owner in a browser): MOSP is one of four benchmark problems for parameterised nogoods in Chuffed (35 customers, density 0.2, p. 8); the 2009 paper is cited once for the problem's definition; no rule restated or used.
 - **De Giovanni, L., Massi, G. & Pezzella, F.** (2013). An adaptive genetic algorithm for large-size open stack problems. *IJPR* 51(3), 682-697. doi:10.1080/00207543.2012.657256.
 - **DeGiovanni, L., Massi, G. & Pezzella, F.** (2010). Preliminary computational experiments with a genetic algorithm for the open stack problem. Technical report.
 - **Carvalho, M.A.M. & Soma, N.Y.** (2015). A breadth-first search applied to the minimization of the open stacks. *JORS* 66, 936-946. doi:10.1057/jors.2014.60.
@@ -226,12 +226,12 @@ from https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf, 39
 pages): proof logging for the chuffed solver; no mention of MOSP, the customer
 search or the moves; Chu's thesis is cited once as the solver's source.
 
-**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, three
-were obtained (the three struck through) and none restates, uses or doubts
-either move; the other eleven stay closed (Wiley, Springer, Elsevier, IRIS and
+**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, four
+were obtained (the four struck through; Chu & Stuckey 2012 by the owner in a
+browser) and none restates, uses or doubts either move; the other ten stay closed (Wiley, Springer, Elsevier, IRIS and
 UFOP repositories behind bot checks or authentication; the attempt log is
-`fetch_attempt_2026-10-19.log`). The paper's counts become 26 of 38 CP-paper
-citers and 33 of 103 thesis-only citers read in full, 59 of 141.
+`fetch_attempt_2026-10-19.log`). The paper's counts become 27 of 38 CP-paper
+citers and 33 of 103 thesis-only citers read in full, 60 of 141.
 
 **Obtained in the same sweep.** Fink, C. (2012), *O problema de minimização de
 pilhas abertas — novas contribuições*, PhD thesis, ICMC-USP,
