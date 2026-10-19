@@ -52,4 +52,5 @@ import MOSPFormalization.Search.PublishedTheorems
 import MOSPFormalization.Search.ChuThesis
 import MOSPFormalization.Search.Split
 import MOSPFormalization.Search.Layout
+import MOSPFormalization.Search.TamakiCommitment
 import MOSPFormalization.Search.WrongOptimum

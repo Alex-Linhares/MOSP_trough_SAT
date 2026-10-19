@@ -193,6 +193,19 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.Search.exists_isCommittable_of_isDefinite
 #print axioms MOSPFormalization.Search.cex_isCommittable_234
 
+-- Tamaki's Lemma 1 in Tamaki's own terms, and its relation to the corrected definite move
+-- (Search/TamakiCommitment.lean)
+#print axioms MOSPFormalization.Search.Tamaki.inDeg_submodular
+#print axioms MOSPFormalization.Search.Tamaki.lemma1
+#print axioms MOSPFormalization.Search.Tamaki.corollary1
+#print axioms MOSPFormalization.Search.Tamaki.inDeg_symm
+#print axioms MOSPFormalization.Search.Tamaki.stronglyKFeasible_symm_iff
+#print axioms MOSPFormalization.Search.Tamaki.isCommittableExt_symm_iff_hereditarilyDefinite
+#print axioms MOSPFormalization.Search.Tamaki.stronglyKFeasible_child_of_hereditarilyDefinite
+#print axioms MOSPFormalization.Search.Tamaki.lemma1_symm_of_isCommittable
+#print axioms MOSPFormalization.Search.Tamaki.solvable_cl_insert_of_lemma1
+#print axioms MOSPFormalization.Search.Tamaki.premise_gap
+
 -- loop0008 item 09: the root split (Search/Split.lean), and every remaining theorem the
 -- LaTeX draft (paper1/latex/) cites; the draft's definitions need no axiom line
 #print axioms MOSPFormalization.Search.Exec.union_memo

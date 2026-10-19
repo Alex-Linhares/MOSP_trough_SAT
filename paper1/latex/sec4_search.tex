@@ -321,10 +321,17 @@ $j-1$ the closed set contains $T_j$ with the same opened set, and the rest of
 the order applies. The search's form follows by Lemma~\ref{lem:F}.
 \end{proof}
 
-Tamaki also found this theorem, as a lemma. The hereditary premise is the
-commitment condition of Tamaki, and the proof is the proof of the commitment lemma,
-\citet[Lemma~1, p.~142]{Kitsunai2016}; Section~\ref{sec:layouts} makes the
-correspondence exact.
+The corrected definite move was also found by Tamaki as a lemma: it is the
+commitment lemma of \citet[Lemma~1, p.~142]{Kitsunai2016}, stated there for
+directed pathwidth, read on the symmetric digraph with the committed extension
+fixed to the child $X=\cl(S\cup\{q\})$. The hereditary premise is their
+commitment condition for that extension (Lemma~\ref{lem:endpoint},
+Section~\ref{sec:layouts}) and the proof is theirs. The one difference of
+statement is that their lemma also assumes that the paths to $S$ and to $X$
+stay within budget, which holds at every node the search visits. Both
+statements are transcribed in Lean and each is derived from the other under
+that assumption; a five-vertex graph shows the assumption is not redundant as
+a statement~\leanref{tamaki}.
 
 \paragraph{The matching test.} The corrected rule seems to require checking
 exponentially many intermediate sets. It does not, and this cheap test is our
