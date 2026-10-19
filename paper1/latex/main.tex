@@ -32,6 +32,7 @@
 \usepackage[section]{placeins}
 \usepackage{xcolor}
 \usepackage[hyphens]{url}
+\usepackage[title,titletoc]{appendix}
 \usepackage[authoryear,round]{natbib}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
@@ -139,6 +140,11 @@ pathwidth, with independent checkers. We believe ours is currently the
 strongest exact pathwidth solver openly available.
 \end{abstract}
 
+\clearpage
+\setcounter{tocdepth}{2}
+{\small\tableofcontents}
+\clearpage
+
 \input{sec1_intro}
 \input{sec2_equivalences}
 \input{sec3_names}
@@ -150,10 +156,13 @@ strongest exact pathwidth solver openly available.
 
 \bibliography{refs}
 
-\appendix
-\input{sec9a_appendix_lean}
-\input{sec9b_appendix_machinery}
-\input{sec9c_appendix_names}
-\input{sec9d_appendix_sat}
+% Each appendix starts on a new page, headed "Appendix A" (appendix package,
+% options title and titletoc: the word in the heading and in the contents).
+\begin{appendices}
+\clearpage\input{sec9a_appendix_lean}
+\clearpage\input{sec9b_appendix_machinery}
+\clearpage\input{sec9c_appendix_names}
+\clearpage\input{sec9d_appendix_sat}
+\end{appendices}
 
 \end{document}
