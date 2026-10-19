@@ -10,13 +10,16 @@ direction it wrote most of the C and Python software, the Lean proofs and drafts
 text, ran the computations, and also searched and summarised the literature. The
 authors chose the questions, directed the work, read the results and take full
 responsibility for the content of this paper. We did not take the AI's word for any result: every theorem the paper states
-is checked by the Lean kernel (unless the text says otherwise); every value in
+is checked by the Lean kernel, except the two that the limits of
+Section~\ref{sec:closing} name as not formalised; every value in
 the dataset carries a witness that an independent checker verifies; and the
 refutations behind the central claims (the wrong optimum of
 Theorem~\ref{thm:wrong}, and the minor bounds for the Mycielski graphs and four
 MOSP instances) are re-checked by methods independent of our search: a SAT solver with a DRAT
 proof that drat-trim verifies, and a separate exact search with its own
-checker, written from scratch.
+checker, written from scratch (\repofile{reports/minor_bound_verification.md},
+\repofile{reports/scratch/minor_certificates/} and
+\repofile{tests/test_false_refutation_instance.py}).
 The other refutations rest on our corrected search, whose rules are proved
 sound in Lean (Sections \ref{sec:search} and \ref{sec:results}).
 

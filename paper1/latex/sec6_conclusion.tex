@@ -9,22 +9,25 @@
 
 We asked which equalities of the Linhares--Yanasse table are true, and what
 follows when results, algorithms and benchmarks are moved between its twelve
-problems through pathwidth. Eight rows are exact, counting the pathwidth row
-itself: each of those eight problems is pathwidth, or pathwidth plus one, on
-every input. Two rows, split bandwidth and edge search, are bands
+problems through pathwidth. Eight rows, counting the pathwidth row itself, hold at a fixed offset: each
+of those eight problems equals pathwidth, or pathwidth plus one, on every
+input, and these are the rows we call exact. Two rows, split bandwidth and edge search, are bands
 one and two wide, and two, PLA folding and edge separation, are false as stated,
-although a variant of each is exact (Table~\ref{tab:master}). This is the sense in which the exact problems form a pathwidth complex: they
-are one quantity, and the literature names that quantity pathwidth. Moving between the problems paid in both directions. The complex gets an
-excellent algorithm from the MOSP side and an excellent lower bound from
-pathwidth. Read as a pathwidth algorithm, the best exact
+although a variant of each is exact (Table~\ref{tab:master}). This is the sense in which the exact problems form a \emph{pathwidth
+complex}: they are \emph{one} quantity, and the literature names that quantity
+\emph{pathwidth}. Moving between the problems paid in both directions: the
+complex gets an excellent algorithm from the MOSP side and an excellent lower
+bound from pathwidth. Read as a pathwidth algorithm, the best exact
 open-stacks search turned out to rest on two false dominance theorems; our
-corrected definite move was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016}, and with it and our corrected better
-move the search is sound. Read from the other side, the minor-closure of
-pathwidth gives a lower bound that no degree or clique bound can reach, and it
-settles in seconds MOSP instances whose refutation took core-days
-(Section~\ref{sec:minor}). And one certified pathwidth answers every problem of the pathwidth complex at
+corrected version of the definite move was also found by Tamaki as a lemma \citep[Lemma~1]{Kitsunai2016}, and with it and our corrected better
+move the search is sound. Read from pathwidth to MOSP, the minor lower bound, which rests on
+pathwidth never increasing under contraction, reaches values that no degree or
+clique bound can, and settles in seconds MOSP instances whose refutation took
+core-days (Section~\ref{sec:minor}). And one certified pathwidth answers every problem of the pathwidth complex at
 once, which made a single dataset for all of them possible, including the three
-the table did not list.
+members the table did not list: the maximum wavefront of sparse matrix
+elimination, progressive pebbling and vertex search
+(Section~\ref{sec:true} and Appendix~\ref{app:thirteenth}).
 
 \paragraph{What transfers, and what does not.} Within the exact core, anything
 proved or computed for one problem holds for the others with the offset of
@@ -43,7 +46,7 @@ one another, and most of what is known about the family is published under
 theorems were published in 2009 and restated in later work, and the
 implementations that use them reported no failure. On every benchmark, and in
 every run of our checks where the previous algorithm \citep{ChuStuckey2009} lost the last solution at a
-node, another branch found a solution (Section~\ref{sec:theorem}). It took a
+node, another branch found an optimum (Section~\ref{sec:theorem}). It took a
 search built for the purpose to find a whole instance with a wrong optimum,
 34 customers and one stack too many (Figure~\ref{fig:wrong}), in our
 implementation of the previous algorithm with the better move off; the optimum
@@ -100,9 +103,8 @@ to be wrong, but their refutations are not proved.
 \end{itemize}
 
 \paragraph{Open problems.} Every value of the MOSP corpus is now certified: the
-last two, \path{Random-125-125-2-3_0} and \path{Random-125-125-2-2_0}, fell on
-9 and 12 October 2026 to the split search (Section~\ref{sec:practice}), at
-1,128 and 2,231 core-hours. Of the 17,714 classes of the dataset, 1,079 have no certified pathwidth: 337 have a witnessed upper bound and 742 have no
+last two, \path{Random-125-125-2-3_0} and \path{Random-125-125-2-2_0}, fell to the
+split search (Section~\ref{sec:practice}), at 1,128 and 2,231 core-hours. Of the 17,714 classes of the dataset, 1,079 have no certified pathwidth: 337 have a witnessed upper bound and 742 have no
 value. On the Rome graphs each step up in the time budget closed only about
 40\% of what it attempted, so the other graph sets will not close by budget alone.
 The 610 MOSP instances with 400 to 1,000 customers, and the 132 other open classes above

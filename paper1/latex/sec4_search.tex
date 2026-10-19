@@ -251,13 +251,8 @@ set between them can be cheaper still. Figure~\ref{fig:cex}(a) shows the graph o
 which it fails, and panel~(b) the cheaper set between.
 
 \begin{counterexample}\label{cex:definite}
-Let $G$ be the graph of Figure~\ref{fig:cex}, on customers $0,\dots,13$ with
-the 26 edges
-\begin{gather*}
-0\text{--}3,\ 0\text{--}4,\ 0\text{--}7,\ 0\text{--}11,\ 1\text{--}2,\ 1\text{--}5,\ 1\text{--}6,\ 2\text{--}3,\ 2\text{--}4,\ 5\text{--}9,\ 5\text{--}11,\ 5\text{--}12,\ 6\text{--}8,\\
-6\text{--}13,\ 7\text{--}9,\ 7\text{--}10,\ 7\text{--}13,\ 8\text{--}9,\ 8\text{--}10,\ 8\text{--}11,\ 9\text{--}10,\ 9\text{--}11,\ 10\text{--}11,\ 10\text{--}12,\ 10\text{--}13,\ 12\text{--}13,
-\end{gather*}
-with $S=\{2\}$, $k=6$ and $q=0$. Then $O(S)=\{1,2,3,4\}$,
+Let $G$ be the graph of Figure~\ref{fig:cex}(a), on customers $0,\dots,13$
+with 26 edges, and let $S=\{2\}$, $k=6$ and $q=0$. Then $O(S)=\{1,2,3,4\}$,
 $o(0,S)=\{0,7,11\}$ and $\cost(S,0)=6$, so $0$ is playable. The customers with
 $o(d,S)\subseteq\{0,7,11\}$ are $0$, $3$ and $4$, so $\close(0,S)=3\ge\open(0,S)$,
 and $0$ comes first in index order, so the rule keeps only $0$. A solution

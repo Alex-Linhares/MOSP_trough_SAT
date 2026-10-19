@@ -70,8 +70,8 @@ attains it, and one of three provenances:
 \item \emph{upper bound only}: the witness is all there is, and optimality is
   not proved.
 \end{itemize}
-All 6,376 corpus values are certified (as of 12 October 2026; the last two were
-certified by the split search of Section~\ref{sec:practice}).
+All 6,376 corpus values are certified; the last two were certified by the
+split search of Section~\ref{sec:practice}.
 
 \subsection{The cost of our correction, and the benchmark values}
 \label{sec:practice}
@@ -132,9 +132,9 @@ Appendix~\ref{app:split}).
 \paragraph{Two values never certified before.} The corpus also held two values that
 no method had certified: 25 for \texttt{Random-125-125-2-2\_0} and 21 for
 \texttt{Random-125-125-2-3\_0}. The same split refutes the value minus one on
-each. On 9 October 2026 it refuted 20 for \texttt{Random-125-125-2-3\_0}, after
+each. It refuted 20 for \texttt{Random-125-125-2-3\_0} after
 9,665 subtrees, $4.25\times10^{12}$ nodes and 1,128 core-hours, which
-certifies 21 as its optimum. On 12 October 2026 it refuted 24 for
+certifies 21 as its optimum. It refuted 24 for
 \texttt{Random-125-125-2-2\_0}, after 17,001 subtrees,
 $7.38\times10^{12}$ nodes and 2,231 core-hours (Table~\ref{tab:split}), which
 certifies 25; it is the largest refutation in this paper. With it, every value
@@ -172,9 +172,8 @@ and bound proves in about ten minutes, while the full refutation of 37 by our
 search does not finish in hours, its floor being 25. Mycielski graphs are
 built to have no triangles and yet to need many colours, so their largest
 cliques are single edges and their degrees are uneven: the degree and clique
-bounds that make up our floor see almost nothing. Their pathwidth also
-exceeds their treewidth (38 against 35 here), so no bound on treewidth can
-reach it.
+bounds that make up our floor see almost nothing. And their treewidth, 35 here, lies strictly below their pathwidth, so no
+bound through treewidth can reach 38 either.
 
 \paragraph{With the minor step.} The minor step of Section~\ref{sec:minor}
 changes this. A 58-vertex minor of \texttt{myciel6} already has pathwidth 38,
