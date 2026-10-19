@@ -22,7 +22,9 @@ pass (the hypercube and Mycielski theorems were missing from
 - [ ] **Re-check the novelty claims.**
   - [ ] Read the 14 unread works that cite Chu & Stuckey 2009, listed in
         `literature/MISSING.md` (item 01 of loop0008). De Giovanni et al.
-        (2013, *ITOR*) first.
+        (2013, *ITOR*) first. *2026-10-19: three obtained and read (Gange
+        2019, Visentin 2019, Stivala 2010), none bears on the rules; eleven
+        remain paywalled. Counts in the paper updated to 59 of 141.*
   - [ ] Keep the wording "we found no prior report", never "first"
         (`prior_art_counterexample.md`).
 - [ ] **Decide whether to write to Peter Stuckey** (and Geoffrey Chu) before

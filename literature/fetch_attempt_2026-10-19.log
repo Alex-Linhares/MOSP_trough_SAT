@@ -1,0 +1,23 @@
+Fetch attempt 2026-10-19 for the 14 unread citers of Chu & Stuckey (2009), literature/MISSING.md.
+Sources tried: OpenAlex (open_access/locations/best_oa_location), Semantic Scholar openAccessPdf, CORE v3 search,
+fatcat (timed out), institutional repositories (IRIS UnivPM/Padova/L'Aquila, CORA UCC, Edinburgh PURE, PolyPublie,
+Minerva Access, UFOP), author pages (Stuckey, Pfetsch, De Giovanni), publisher PDF links once each (Springer, Wiley,
+T&F), SSRN, HAL, CIRRELT. No bot check or paywall was circumvented.
+
+OBTAINED (PDF + pdftotext .txt here):
+  gange_2019_certifying_optimality_cp.pdf   people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf (served this time)
+  visentin_2019_dp_global_constraints_wcgo.pdf   CORA UCC DSpace API bitstream 345d7cd4-ee47-434b-929a-6e1b3bed115f
+  stivala_2010_phd_thesis_rna_protein.pdf   Minerva Access DSpace API, item 72dbeddb-3a9e-5ac7-96f8-008141d6bc70
+
+NOT OBTAINED:
+  De Giovanni et al. 2013 ITOR 10.1111/itor.12025: closed everywhere (OpenAlex/S2/CORE: no fulltext); IRIS UnivPM hdl 11566/63155 -> 403 bot check; Pfetsch page links only to DOI; De Giovanni page has no link.
+  Chu & Stuckey 2012 CP 10.1007/978-3-642-33558-7_19: Springer pdf -> "Client Challenge" page; pstuckey/papers/interinstance.pdf -> "Pardon Our Interruption" bot check (twice); CiteSeerX unreachable.
+  De Giovanni, Massi & Pezzella 2013 IJPR 10.1080/00207543.2012.657256: closed; IRIS UnivPM 11566/55584 and Padova 11577/2525501 -> 403; author's T&F eprint link (www.tandfonline.com/eprint/PzgJ7Trncyt5AzJj8u9b/full, on www.math.unipd.it/~luigi/research.html) -> Cloudflare "Just a moment" (not circumvented).
+  De Giovanni, Massi & Pezzella 2010 technical report: no record in OpenAlex/CORE; not on the author's page.
+  Carvalho & Soma 2015 JORS 10.1057/jors.2014.60: closed; CORE 0 hits by DOI; not in UFOP repository (only the 2011 Pesquisa Operacional paper and the 2018 PLOS one are there).
+  Lima & Carvalho 2017 C&IE 10.1016/j.cie.2017.08.016: in UFOP repository (item 5fa443b9-c3fb-4765-b43f-0691bfeece1a, ARTIGO_DescentSearchApproaches.pdf) but bitstream content -> 401 "Authentication is required" (restricted).
+  Santos & Carvalho 2018 ASOC 10.1016/j.asoc.2018.08.017: in UFOP repository (item 6c97b878-4b1e-4f49-bcf9-374f6e7f70b4) but PDF and TEXT bitstreams -> 401 (restricted).
+  Arbib, Marinelli & Ventura 2016 ITOR 10.1111/itor.12134: OpenAlex "green" OA points to the Wiley abstract page only; Wiley pdfdirect -> 403; IRIS UnivPM 11566/223315 -> 403.
+  Arbib, Marinelli & Pezzella 2012 IJPE 10.1016/j.ijpe.2011.12.003: closed; IRIS UnivPM 11566/55585 and L'Aquila 11697/5001 -> 403.
+  Doulabi, Rousseau & Pesant 2016 IJOC 10.1287/ijoc.2015.0686: PolyPublie 35674 says "Ce document n'est pas archivé dans PolyPublie"; CIRRELT search -> 403.
+  Camanho et al. 2022 10.1111/itor.13129 and Amirteimoori et al. 2024 10.1111/itor.13560: OpenAlex does list W1493287964 (Chu & Stuckey 2009) in their referenced_works, but the titles (wastewater-plant efficiency; managerial ability in Asian banking) make a real citation implausible. Amirteimoori: SSRN delivery -> 403, HAL hal-04975786/document -> bot check. Not obtained.

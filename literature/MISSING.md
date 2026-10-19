@@ -214,16 +214,24 @@ or better move:
 - **Santos, V.G.M. & Carvalho, M.A.M.** (2018). Adaptive large neighborhood search applied to the design of electronic circuits. *ASOC*. doi:10.1016/j.asoc.2018.08.017.
 - **Arbib, C., Marinelli, F. & Ventura, P.** (2016). One-dimensional cutting stock with a limited number of open stacks. *ITOR*. doi:10.1111/itor.12134. Its 2010 report (TRCS 007/2010) was read.
 - **Arbib, C., Marinelli, F. & Pezzella, F.** (2012). An LP-based tabu search for batch scheduling in a cutting process with finite buffers. *IJPE*. doi:10.1016/j.ijpe.2011.12.003.
-- **Visentin, A., Prestwich, S., Rossi, R. & Tarim, S.A.** (2019). Modelling dynamic programming-based global constraints in constraint programming. WCGO 2019. doi:10.1007/978-3-030-21803-4_42. The Edinburgh repository returned 403; the GCAI 2018 precursor was read.
-- **Stivala, A.** (2010). *Algorithms for the study of RNA and protein structure*. PhD thesis, University of Melbourne. Not found on Minerva Access by search.
+- ~~**Visentin, A., Prestwich, S., Rossi, R. & Tarim, S.A.** (2019)~~. Modelling dynamic programming-based global constraints in constraint programming. WCGO 2019. doi:10.1007/978-3-030-21803-4_42. **Read 2026-10-19** (`visentin_2019_dp_global_constraints_wcgo.pdf`, from the CORA repository at UCC): cites Chu & Stuckey once, p. 3, for memoisation; no rule restated.
+- ~~**Stivala, A.** (2010)~~. *Algorithms for the study of RNA and protein structure*. PhD thesis, University of Melbourne. **Read 2026-10-19** (`stivala_2010_phd_thesis_rna_protein.pdf`, Minerva Access): parallelises the 2007 DP for open stacks, §4.3.4; cites Chu & Stuckey once in its conclusions; nothing on the moves.
 - **Doulabi, S.H.H., Rousseau, L.-M. & Pesant, G.** (2016). A constraint-programming-based branch-and-price-and-cut approach for operating room planning and scheduling. *IJOC* 28(3). doi:10.1287/ijoc.2015.0686.
 - Camanho et al. (2022), *ITOR*, doi:10.1111/itor.13129, and Amirteimoori et al. (2024), *ITOR*, doi:10.1111/itor.13560. Both are probably false index links: their titles concern efficiency analysis.
 
 Among the citers of the thesis only, one unread work could bear on the rules:
-**Gange, G., Chu, G. & Stuckey, P.J.** (2019). Certifying optimality in
-constraint programming. Copy at
-https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf, where the
-site's bot check refused the fetch.
+~~**Gange, G., Chu, G. & Stuckey, P.J.** (2019). Certifying optimality in
+constraint programming.~~ **Read 2026-10-19** (`gange_2019_certifying_optimality_cp.pdf`,
+from https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf, 39
+pages): proof logging for the chuffed solver; no mention of MOSP, the customer
+search or the moves; Chu's thesis is cited once as the solver's source.
+
+**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, three
+were obtained (the three struck through) and none restates, uses or doubts
+either move; the other eleven stay closed (Wiley, Springer, Elsevier, IRIS and
+UFOP repositories behind bot checks or authentication; the attempt log is
+`fetch_attempt_2026-10-19.log`). The paper's counts become 26 of 38 CP-paper
+citers and 33 of 103 thesis-only citers read in full, 59 of 141.
 
 **Obtained in the same sweep.** Fink, C. (2012), *O problema de minimização de
 pilhas abertas — novas contribuições*, PhD thesis, ICMC-USP,
