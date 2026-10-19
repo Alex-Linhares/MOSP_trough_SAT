@@ -12,8 +12,8 @@ pass (the hypercube and Mycielski theorems were missing from
 `axiom_check.lean`); `pw(M_9) <= 138` and the date are current.
 
 
-- [x] **Affiliations and emails** for both authors (2026-10-19; Yanasse's in the
-      Portuguese form his recent papers use).
+- [x] **Affiliations and emails** for both authors (2026-10-19; Yanasse's in
+      English, the owner's choice).
 - [x] **The paper's repository**: it is this repository, public at
       github.com/Alex-Linhares/MOSP_trough_SAT, which `latex/sec7_data.tex`
       names; the three `\repofile` paths exist in it, and the README's opening
@@ -27,10 +27,11 @@ pass (the hypercube and Mycielski theorems were missing from
         (`prior_art_counterexample.md`).
 - [ ] **Decide whether to write to Peter Stuckey** (and Geoffrey Chu) before
       the counterexample and the 34-customer wrong optimum become public.
-- [ ] **arXiv endorsement.** Needed: neither author has an arXiv paper
-      (export.arxiv.org author query, 2026-10-19), and since 2026-01-21 an
-      institutional email alone no longer endorses. Ask a cs.DS author we know;
-      the abstract page of any recent cs.DS paper lists who can endorse.
+- [ ] **arXiv endorsement.** The first author has arXiv papers in cs.AI
+      (2604.17229, April 2026), so the account exists; endorsement is per
+      category, and cs.DS is new to it. Start the submission: the form says at
+      once whether cs.DS needs an endorser, and emails the request link. The
+      abstract page of any recent cs.DS paper lists who can endorse.
   - Primary category: cs.DS.
   - Cross-lists: math.CO, math.OC, cs.DM, optionally cs.LO.
 - [ ] **IJOC's preprint policy.** Confirm that posting on arXiv before or

@@ -7,7 +7,7 @@ limit of 1,920; the PDF keeps the longer one.
 
 **Title:** The pathwidth complex
 
-**Authors:** Alexandre Linhares (Getulio Vargas Foundation, on leave, and Argo Laboratory; alex@argolab.org), Horacio Hideki Yanasse (Instituto de Ciência e Tecnologia, Universidade Federal de São Paulo; horacio.yanasse@unifesp.br)
+**Authors:** Alexandre Linhares (Getulio Vargas Foundation, on leave, and Argo Laboratory; alex@argolab.org), Horacio Hideki Yanasse (Institute of Science and Technology, Federal University of São Paulo (UNIFESP); horacio.yanasse@unifesp.br)
 
 **Primary category:** cs.DS (Data Structures and Algorithms)
 
