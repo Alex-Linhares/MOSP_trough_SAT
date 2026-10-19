@@ -31,6 +31,7 @@ KNOWN = {
     "LY2002ref8": "Crossref puts the whole name, 'Omar Wing', in the family field",
     "LY2002ref9": "Crossref carries the publisher's typo 'Interval graphs and seatching'",
     "Kitsunai2016": "Crossref's title carries MathML residue; the words agree",
+    "ChandranKavitha2006": "Crossref puts 'Sunil Chandran' in the family field; the author is L. Sunil Chandran",
 }
 UA = {"User-Agent": "paper1-refcheck/0.1 (mailto:none@example.org)"}
 

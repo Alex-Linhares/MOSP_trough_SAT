@@ -4,12 +4,21 @@ Started 2026-10-09. Check items off as they are done.
 
 ## Before posting on arXiv
 
-- [ ] **Affiliations and emails** for both authors. They are boxed placeholders in
-      `latex/main.tex`.
-- [ ] **The paper's repository, at least a stub**, with the data and checkers.
-      Then replace the URL placeholder in the "Data, code and proofs" statement
-      (`latex/sec7_data.tex`), and retarget `\repofile` in `latex/main.tex` to
-      the repository's layout (see `plan.md`, remaining work item 6).
+Done 2026-10-19: the source bundle builds and compiles standalone
+(`python -m paper1.latex.make_arxiv`, `latex/arxiv.tar.gz`); the metadata,
+categories, licence choice and a 1,783-character abstract are in
+`latex/arxiv_metadata.md`; the axiom audit, reference check and paper tests
+pass (the hypercube and Mycielski theorems were missing from
+`axiom_check.lean`); `pw(M_9) <= 138` and the date are current.
+
+
+- [x] **Affiliations and emails** for both authors (2026-10-19; Yanasse's in the
+      Portuguese form his recent papers use).
+- [x] **The paper's repository**: it is this repository, public at
+      github.com/Alex-Linhares/MOSP_trough_SAT, which `latex/sec7_data.tex`
+      names; the three `\repofile` paths exist in it, and the README's opening
+      points at the paper (2026-10-19). A separate paper repository with its own
+      DOI is the IJOC item below, not an arXiv one.
 - [ ] **Re-check the novelty claims.**
   - [ ] Read the 14 unread works that cite Chu & Stuckey 2009, listed in
         `literature/MISSING.md` (item 01 of loop0008). De Giovanni et al.
@@ -18,7 +27,10 @@ Started 2026-10-09. Check items off as they are done.
         (`prior_art_counterexample.md`).
 - [ ] **Decide whether to write to Peter Stuckey** (and Geoffrey Chu) before
       the counterexample and the 34-customer wrong optimum become public.
-- [ ] **arXiv endorsement.** Check whether we need one for cs.DS.
+- [ ] **arXiv endorsement.** Needed: neither author has an arXiv paper
+      (export.arxiv.org author query, 2026-10-19), and since 2026-01-21 an
+      institutional email alone no longer endorses. Ask a cs.DS author we know;
+      the abstract page of any recent cs.DS paper lists who can endorse.
   - Primary category: cs.DS.
   - Cross-lists: math.CO, math.OC, cs.DM, optionally cs.LO.
 - [ ] **IJOC's preprint policy.** Confirm that posting on arXiv before or

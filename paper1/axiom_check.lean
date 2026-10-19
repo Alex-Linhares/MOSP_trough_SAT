@@ -262,5 +262,16 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.min_le_vertexSepOfLayout_grid
 #print axioms MOSPFormalization.one_le_pathwidth_of_adj
 
+-- the hypercube: pathwidth (cubeGraph d) = sum_{i<d} C(i, floor(i/2)) (Chandran & Kavitha 2006, Thm 2; Hypercube.lean, Hypercube/Harper.lean, Hypercube/Profile.lean)
+#print axioms MOSPFormalization.pathwidth_hypercube
+#print axioms MOSPFormalization.pathwidth_cubeGraph
+#print axioms MOSPFormalization.Hypercube.harper
+#print axioms MOSPFormalization.Hypercube.card_nbhd_init_le
+#print axioms MOSPFormalization.Hypercube.exists_init_profile
+
+-- the Mycielskian: pw(G) + 1 <= pw(mu(G)) <= 2 pw(G) + 1 (Mycielski.lean)
+#print axioms MOSPFormalization.pathwidth_mycielskian_le
+#print axioms MOSPFormalization.pathwidth_add_one_le_mycielskian
+
 -- control: the baseline sorry, expected to show sorryAx
 #print axioms conjecture_sqrt_tw_f6

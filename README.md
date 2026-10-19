@@ -8,18 +8,27 @@ Lean 4 formalization: the SAT encoding is [proved faithful](lean/MOSPFormalizati
 and `MOSP = pathwidth + 1` over the MOSP graph is proved in both directions
 (`lean/MOSPFormalization/MOSPGraph.lean`, 2026-09-27).
 
-**6,374 of the 6,376 cached solutions are certified optimal**, each with a
+**All 6,376 cached solutions are certified optimal**, each with a
 witness ordering in `solutions/` that can be checked without trusting this
-code; the other two, `Random-125-125-2-2_0` (25) and `Random-125-125-2-3_0`
-(21), are verified upper bounds whose optimality claim was withdrawn after the
-`better_move` bug and has not been re-proved *(2026-09-30)*. **Every optimal
-value published in the literature is among the certified** — GP1–8, SP1–4,
-Miller and NWRS1–8, all twenty — and so is every other Chu & Stuckey `Random`
-instance, including the rest of the 125×125 sparse and dense classes their
-Table 1 singles out as hardest. *(The whole corpus was first closed on
-2026-09-22; the bug of 2026-09-23 re-opened 13 entries, and 11 have been
-re-certified since.)* What the paper still does not let us check is set out in
-[What Chu & Stuckey's paper does not settle](#what-chu--stuckeys-paper-does-not-settle).
+code. **Every optimal value published in the literature is among them** —
+GP1–8, SP1–4, Miller and NWRS1–8, all twenty — and so is every Chu & Stuckey
+`Random` instance, including the 125×125 sparse and dense classes their
+Table 1 singles out as hardest; the last two, `Random-125-125-2-3_0` (21) and
+`Random-125-125-2-2_0` (25), fell on 2026-10-09 and 2026-10-12 to the split
+search of the corrected rules, at 1,128 and 2,231 core-hours
+(`paper1/solver_fix.md`). What the paper still does not let us check is set
+out in [What Chu & Stuckey's paper does not settle](#what-chu--stuckeys-paper-does-not-settle).
+
+**The paper.** *The pathwidth complex* (Linhares & Yanasse, 2026; source in
+`paper1/latex/`, PDF `paper1/latex/main.pdf`) is the write-up of this
+repository: the Lean proofs that most of the Linhares–Yanasse (2002) table
+is one quantity, graph pathwidth; the Lean counterexamples to two published
+dominance rules of Chu & Stuckey (2009) and the corrected search proved sound;
+the graph pathwidth solver (`pathwidth_solver/`); the minor lower bound; and a
+dataset of 17,714 graphs from twenty benchmark collections with independent
+checkers (`paper1/dataset.md`, `paper1/certificates.md`). Everything the
+paper reports is regenerated from here; the data statement at the end of the
+paper lists where.
 
 Each file records how its value was established, so proofs and good guesses are
 never added together.

@@ -167,6 +167,13 @@
   "title": "Lower bounds on the pathwidth of some grid-like graphs",
   "year": 2008
  },
+ "10.1016/j.disc.2005.12.011": {
+  "fetched": "2026-10-19",
+  "first_author": "Sunil Chandran",
+  "registry": "crossref",
+  "title": "The treewidth and pathwidth of hypercubes",
+  "year": 2006
+ },
  "10.1016/j.ejor.2007.02.004": {
   "fetched": "2026-10-03",
   "first_author": "Mart\u00ed",
@@ -201,6 +208,13 @@
   "registry": "crossref",
   "title": "Practical graph isomorphism, II",
   "year": 2014
+ },
+ "10.1016/s0021-9800(66)80059-5": {
+  "fetched": "2026-10-19",
+  "first_author": "Harper",
+  "registry": "crossref",
+  "title": "Optimal numberings and isoperimetric problems on graphs",
+  "year": 1966
  },
  "10.1016/s0166-218x(97)00131-5": {
   "fetched": "2026-10-03",
