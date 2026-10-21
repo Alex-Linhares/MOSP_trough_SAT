@@ -517,7 +517,8 @@ ROME_STEP = SCRATCH / "minor_bound" / "rome_open_step.csv"
 ROME_E2E = SCRATCH / "minor_bound" / "rome_open_e2e.csv"
 ROME_UNLIMITED = SCRATCH / "rome_unlimited" / "results.csv"
 OPEN_RUNS = [SCRATCH / "dataset_open" / f for f in
-             ("results.csv", "results_quick.csv", "results_quick_rescued.csv")]
+             ("results.csv", "results_quick.csv", "results_quick_rescued.csv",
+              "results_unlimited.csv")]   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
 GRIDS = SCRATCH / "grids_theorem" / "grids.csv"
 BENCH_ON = sorted((SCRATCH / "minor_bound").glob("bench_*_on.csv"))   # the minor-step benchmark runs
 ROME_WITNESS = SCRATCH / "rome_witness" / "results.csv"   # witnesses for minor-proved widths kept by no run
@@ -756,6 +757,12 @@ def fold(idx: list[dict], base: list[dict]) -> list[dict]:
         if old is not None:
             _consistent([old, c], c["name"])
             if _rank(c) <= _rank(old):
+                # the row on record keeps its provenance; a witness of the same width from a
+                # later run is still a witness of it (a layout's width is checked above)
+                if not old.get("layout") and c.get("layout") and int(c["width"]) == int(old["width"]):
+                    old["layout"] = c["layout"]
+                    old["evidence"] += f"; witness: {c['evidence']}"
+                    changed["witness supplied"] += 1
                 continue
         out[key] = c
         changed[(old["provenance"] if old else "none") + " -> " + c["provenance"]] += 1

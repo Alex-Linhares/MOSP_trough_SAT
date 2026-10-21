@@ -71,7 +71,12 @@ pass (the hypercube and Mycielski theorems were missing from
       we do not in 1,500 s) printed in Section 5
       (`abstract_nudge_review_2.md` §3).
 
-- [ ] **Rome graphs, a longer timeframe.** The Rome graphs (Di Battista et
+- [x] **Rome graphs, a longer timeframe.** Done before 2026-10-19 (all 11,534 proved:
+      292 by the minor step, 48 without a time limit, Section 5.3). The one Rome
+      class proved without a stored witness, grafo10809.99 (width 9), got its
+      layout on 2026-10-21 from the C program (`dataset_open/results_unlimited.csv`);
+      the fold now carries a same-width witness onto a proved row that has none.
+      *(The original item follows.)* The Rome graphs (Di Battista et
       al. 1997, a graph-drawing benchmark: 11,534 graphs of 10–110 vertices)
       were run in stages of 10, 120 and 600 s per graph; 11,194 are proved and
       340 are open, all at n ≥ 86. Rerun the 340 with a much longer cap (hours
@@ -151,6 +156,11 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       seconds, and an honest line on what remains open (2-2_0: every contraction
       up to 95 vertices still admits 24).
 - [ ] **Re-run the dataset's 860 upper-bound-only classes with the minor step.**
+      *Running since 2026-10-21 02:50: `reports/scratch/dataset_open/run_unlimited.py`,
+      415 classes (every non-certified class within the engine's limit, Frinhani
+      excluded), the C program, no time limit, 24 workers at nice 19, cheapest
+      first; results fold in from `results_unlimited.csv`. Rebuild with
+      `python -m paper1.dataset values`, `write`, `tables` when it ends.*
       They were certified under short budgets (about 2.5 core-hours in all), so
       most are "ran out of time", not "proved hard": PACE 2016/2017 288, Rome
       326 (292 already closed by the minor step), Carvalho & Soma 139,
