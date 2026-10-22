@@ -13,7 +13,7 @@ limit of 1,920; the PDF keeps the longer one.
 
 **Cross-lists:** math.CO, cs.DM, math.OC (`paper1/todo.md`; cs.LO optional, for the Lean development)
 
-**Comments:** 58 pages, 7 figures. Lean 4 proofs, solvers, dataset and checkers at https://github.com/Alex-Linhares/MOSP_trough_SAT
+**Comments:** 59 pages, 7 figures. Lean 4 proofs, solvers, dataset and checkers at https://github.com/Alex-Linhares/MOSP_trough_SAT
 
 **MSC classes:** 05C85, 68R10, 90C27, 68V20
 
