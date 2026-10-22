@@ -26,9 +26,11 @@ pass (the hypercube and Mycielski theorems were missing from
         Stivala 2010, Chu & Stuckey 2012, Doulabi 2016, Arbib 2012 and 2016,
         De Giovanni 2010); none bears on the rules, and De Giovanni 2010 is a
         fourth work that ran their code without a failure, now cited in
-        Appendix B. Six remain: both De Giovanni 2013 papers, Carvalho & Soma
-        2015, Lima & Carvalho 2017, Santos & Carvalho 2018, and the two
-        mislinked ITOR papers. Counts in the paper: 64 of 141.*
+        Appendix B. 2026-10-22: both De Giovanni 2013 papers received from the author
+        and read; both ran Chu & Stuckey's code without a failure (six such
+        works now). Four remain: Carvalho & Soma 2015, Lima & Carvalho 2017,
+        Santos & Carvalho 2018, and the two mislinked ITOR papers. Counts in
+        the paper: 66 of 141.*
   - [ ] Keep the wording "we found no prior report", never "first"
         (`prior_art_counterexample.md`).
 - [ ] **Decide whether to write to Peter Stuckey** (and Geoffrey Chu) before

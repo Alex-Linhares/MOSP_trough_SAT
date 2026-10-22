@@ -265,6 +265,13 @@
   "title": "A breadth-first search applied to the minimization of the open stacks",
   "year": 2015
  },
+ "10.1080/00207543.2012.657256": {
+  "fetched": "2026-10-22",
+  "first_author": "De Giovanni",
+  "registry": "crossref",
+  "title": "An adaptive genetic algorithm for large-size open stack problems",
+  "year": 2013
+ },
  "10.1109/tcad.1985.1270118": {
   "fetched": "2026-10-03",
   "first_author": "Omar Wing",
@@ -285,6 +292,13 @@
   "registry": "crossref",
   "title": "One-dimensional logic gate assignment and interval graphs",
   "year": 1979
+ },
+ "10.1111/itor.12025": {
+  "fetched": "2026-10-22",
+  "first_author": "De Giovanni",
+  "registry": "crossref",
+  "title": "A heuristic and an exact method for the gate matrix connection cost minimization problem",
+  "year": 2013
  },
  "10.1111/itor.13053": {
   "fetched": "2026-10-03",

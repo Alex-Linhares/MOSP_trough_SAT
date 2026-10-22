@@ -205,9 +205,9 @@ works citing the CP paper. Neither the indexes nor a web search found an open
 copy. They are listed in order of how likely they are to restate the definite
 or better move:
 
-- **De Giovanni, L., Massi, G., Pezzella, F., Pfetsch, M.E., Rinaldi, G. & Ventura, P.** (2013). A heuristic and an exact method for the gate matrix connection cost minimization problem. *ITOR* 20(5), 627-643. doi:10.1111/itor.12025. **This is an exact method, so it is the first to fetch.**
+- ~~**De Giovanni, L., Massi, G., Pezzella, F., Pfetsch, M.E., Rinaldi, G. & Ventura, P.** (2013). A heuristic and an exact method for the gate matrix connection cost minimization problem. *ITOR* 20(5), 627-643. doi:10.1111/itor.12025.~~ **Read 2026-10-22** (`de_giovanni_massi_pezzella_pfetsch_rinaldi_ventura_2013_gate_matrix_connection_cost_itor.pdf`, from the author): the exact method is a branch and cut for the *total* open stacks under a bound λ on the maximum (GMCCP), not for MOSP; Chu & Stuckey's algorithm is applied to certify λ as the optimal MOS on every instance (pp. 639, 641), with GAG's own MOS one above it on six instances; no rule restated, no failure reported.
 - ~~**Chu, G. & Stuckey, P.J.** (2012). Inter-instance nogood learning in constraint programming. CP 2012, LNCS 7514. doi:10.1007/978-3-642-33558-7_19.~~ **Read 2026-10-19** (`chu_stuckey_2012_inter_instance_nogood_learning_cp.pdf`, the author's copy, fetched by the owner in a browser): MOSP is one of four benchmark problems for parameterised nogoods in Chuffed (35 customers, density 0.2, p. 8); the 2009 paper is cited once for the problem's definition; no rule restated or used.
-- **De Giovanni, L., Massi, G. & Pezzella, F.** (2013). An adaptive genetic algorithm for large-size open stack problems. *IJPR* 51(3), 682-697. doi:10.1080/00207543.2012.657256.
+- ~~**De Giovanni, L., Massi, G. & Pezzella, F.** (2013). An adaptive genetic algorithm for large-size open stack problems. *IJPR* 51(3), 682-697. doi:10.1080/00207543.2012.657256.~~ **Read 2026-10-22** (`de_giovanni_massi_pezzella_2013_adaptive_genetic_algorithm_open_stack_ijpr.pdf`, from the author): the journal form of the 2010 report; compares AGA with Chu & Stuckey's code (CS) on the literature benchmarks and on 150 new instances from their generator at 50–150 patterns × 200–250 item types, where CS proves only one optimum in 3 hours (§5.3); describes CS's rules in one sentence (p. 684); no rule restated, no failure reported. Thanks Chu, Stuckey, Mendes and Linhares for support in testing their algorithms.
 - ~~**DeGiovanni, L., Massi, G. & Pezzella, F.** (2010). Preliminary computational experiments with a genetic algorithm for the open stack problem. Technical report.~~ **Read 2026-10-19** (`de_giovanni_massi_pezzella_2010_genetic_algorithm_open_stack_report.pdf`, 11 pp., the owner's download): compares their genetic algorithm against Chu & Stuckey's code ("DP+", run with Chu's and Stuckey's support) on all 200 random instances and 5,841 instances in all; DP+ proves every random instance, the largest in about 20 minutes; no rule restated, no failure reported. The fourth work to use an implementation of the rules; now cited in Appendix B.
 - **Carvalho, M.A.M. & Soma, N.Y.** (2015). A breadth-first search applied to the minimization of the open stacks. *JORS* 66, 936-946. doi:10.1057/jors.2014.60.
 - **Lima, J.R. & Carvalho, M.A.M.** (2017). Descent search approaches applied to the minimization of open stacks. *C&IE* 112, 175-186. doi:10.1016/j.cie.2017.08.016.
@@ -226,13 +226,14 @@ from https://people.eng.unimelb.edu.au/pstuckey/papers/certified-cp.pdf, 39
 pages): proof logging for the chuffed solver; no mention of MOSP, the customer
 search or the moves; Chu's thesis is cited once as the solver's source.
 
-**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, eight
-were obtained (the eight struck through; five by the owner in a browser) and
-none restates or doubts either move; De Giovanni et al. (2010) used Chu &
-Stuckey's implementation and reports no failure; the other six stay closed (Wiley, Springer, Elsevier, IRIS and
+**Re-check of 2026-10-19 before the arXiv posting.** Of the 14 above, ten
+were obtained (the ten struck through; five by the owner in a browser, two from
+De Giovanni on 2026-10-22) and none restates or doubts either move; the three
+De Giovanni works used Chu & Stuckey's implementation and report no failure;
+the other four stay closed (Wiley, Springer, Elsevier, IRIS and
 UFOP repositories behind bot checks or authentication; the attempt log is
-`fetch_attempt_2026-10-19.log`). The paper's counts become 31 of 38 CP-paper
-citers and 33 of 103 thesis-only citers read in full, 64 of 141.
+`fetch_attempt_2026-10-19.log`). The paper's counts become 33 of 38 CP-paper
+citers and 33 of 103 thesis-only citers read in full, 66 of 141.
 
 **Obtained in the same sweep.** Fink, C. (2012), *O problema de minimização de
 pilhas abertas — novas contribuições*, PhD thesis, ICMC-USP,
