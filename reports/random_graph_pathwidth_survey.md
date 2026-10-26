@@ -410,6 +410,115 @@ the finite-size effects are at these sizes.
   appear to be the only systematic exact-pathwidth data set on random intersection
   graphs, and on random graphs of any kind, that we could find.
 
+### (d) The pilot measurement (2026-10-18; added 2026-10-26)
+
+*The one computation in this report. The survey above was written before it.*
+
+`reports/scratch/gnp_pilot/pilot.py` drew `G(n, c/n)` for `c ∈ {0.5, 1, 1.5,
+2, 3, 4, 6, 8, 10}` and `n ∈ {20, …, 60, 70, …, 120}`, seeds recorded, and sent
+each graph to the C program (`pathwidth_solver/cli/pathwidth`, `-l -v`) with a
+240 s cap, one hour of wall clock on 14 processes. Result: **6,715 graphs,
+6,542 proved exactly**, 173 with only an upper and a lower bound (all at
+`n ≥ 80`), 12.4 core-hours of which 11.5 are the 173 timeouts and 0.9 the
+6,542 proofs; 137 samples per cell at `n ≤ 60`, 12–13 at
+`n ≥ 70`. Proof types among the 6,542: 3,503 refutations, 2,318 closed by the
+floor, 721 by a contraction minor. The witness layout of every graph is in
+`results.csv` (committed in `8f59cb0e8`). None of these graphs had been solved
+before.
+
+**Where exact pathwidth reaches at 240 s.** Every cell to `n = 70` is proved,
+almost all in under a second (the slowest cell median is 29 s, at `n = 70,
+c = 8`). Above that the solver fails on the dense side first: at `n = 80` for
+`c ≥ 6` (5–8 of 12 proved), at `n = 90` for `c ≥ 4` (8 of 13 at `c = 4`, at most
+1 of 13 for `c ≥ 6`), at `n = 100` for `c ≥ 4` (2 of 13), at `n = 120` for
+`c ≥ 3` (3 of 13 at `c = 3`, none beyond). The sparse cells `c ≤ 2` are proved
+at every size to 120 in under a second. The unproved graphs have upper–lower
+gaps of 1–3 at `n ≤ 90` and up to 14 at `n = 120, c = 10`. So the full
+measurement is cheap for `n ≤ 70` at every `c` and for `c ≤ 2` at every `n`,
+and needs a different budget, or no cap, for `n ≥ 80, c ≥ 4`.
+
+**Mean `pw/n` (standard deviation of `pw` in parentheses), proved graphs only.**
+Cells with fewer than 10 proved are marked `*`; cells with timeouts are biased
+low, since the unproved graphs are the harder, presumably wider, ones.
+
+| `n` | `c = 0.5` | 1 | 1.5 | 2 | 3 | 4 | 6 | 8 | 10 |
+|---|---|---|---|---|---|---|---|---|---|
+| 20 | 0.051 (0.21) | 0.070 (0.52) | 0.093 (0.58) | 0.121 (0.69) | 0.197 (1.01) | 0.272 (1.01) | 0.393 (0.89) | 0.489 (0.81) | 0.571 (0.79) |
+| 30 | 0.035 (0.25) | 0.047 (0.54) | 0.067 (0.64) | 0.096 (0.83) | 0.165 (1.19) | 0.236 (1.16) | 0.350 (1.18) | 0.446 (1.01) | 0.516 (0.97) |
+| 40 | 0.026 (0.19) | 0.040 (0.55) | 0.058 (0.71) | 0.084 (1.00) | 0.151 (1.23) | 0.220 (1.18) | 0.334 (1.17) | 0.426 (1.20) | 0.493 (1.07) |
+| 50 | 0.021 (0.22) | 0.032 (0.49) | 0.053 (0.77) | 0.074 (1.07) | 0.142 (1.47) | 0.206 (1.43) | 0.325 (1.40) | 0.407 (1.22) | 0.475 (1.10) |
+| 60 | 0.018 (0.23) | 0.028 (0.50) | 0.045 (0.75) | 0.071 (1.01) | 0.136 (1.48) | 0.205 (1.53) | 0.313 (1.43) | 0.401 (1.33) | 0.463 (1.20) |
+| 70 | 0.014 (0.00) | 0.025 (0.60) | 0.038 (0.75) | 0.074 (0.90) | 0.133 (1.89) | 0.185 (1.61) | 0.301 (1.50) | 0.399 (1.11) | 0.461 (1.64) |
+| 80 | 0.016 (0.43) | 0.019 (0.50) | 0.042 (0.85) | 0.058 (1.43) | 0.118 (1.04) | 0.190 (1.72) | 0.300\* | 0.375\* | 0.441\* |
+| 90 | 0.013 (0.36) | 0.020 (0.42) | 0.033 (0.68) | 0.062 (1.60) | 0.124 (1.82) | 0.178\* | — | — | — |
+| 100 | 0.012 (0.36) | 0.018 (0.36) | 0.028 (0.77) | 0.061 (1.49) | 0.118 (1.52) | 0.180\* | — | — | — |
+| 120 | 0.010 (0.36) | 0.017 (0.27) | 0.034 (0.92) | 0.051 (0.92) | 0.100\* | — | — | — | — |
+
+Medians are within one unit of the means everywhere. At `n = 60` the mean
+number of components is 45.6, 30.9, 18.5, 10.7, 4.3, 2.0, 1.1, 1, 1 for the
+nine values of `c`, so the cells `c ≤ 2` are forests-plus-a-few-cycles and
+their pathwidth is that of the largest component, which is why `pw/n` there
+tends to 0 (§2).
+
+**Finite-size behaviour, and the test of §1.4 (item 5 of §7(b)).** `pw/n`
+falls with `n` at every `c`, as Gogate–Dechter's treewidths did. On the cells
+with at least 12 proved graphs, `pw` is linear in `n` to the eye, and a least
+squares fit `pw ≈ β_∞ n + γ` gives:
+
+| `c` | `β_∞` (fit) | `γ` | `β*(c)` (§1.4, derived LB) | PS tw LB | best UB (§7(a)) |
+|---|---|---|---|---|---|
+| 2 | 0.040 | 1.8 | 0 | 0 | 0.162 |
+| 3 | 0.099 | 2.1 | 0.009 | 0 | 0.260 |
+| 4 | 0.158 | 2.4 | 0.061 | 0 | 0.347 |
+| 6 | 0.268 | 2.6 | 0.171 | 0.092 | 0.520 |
+| 8 | 0.360 | 2.6 | 0.263 | 0.214 | 0.693 |
+| 10 | 0.415 | 3.1 | 0.337 | 0.297 | 0.760 |
+
+(`β*` recomputed here from the definition in §1.4 by a scan in steps of
+`10⁻⁴`; it agrees with §7(a).) The fitted slopes sit **above `β*(c)` at every
+`c ≥ 3`, by 0.08–0.10**, and below every upper bound by a factor of 1.8–2.6.
+Stronger than the mean: at `n = 60`, **no single graph** in any cell has
+`pw < β*(c)·n` (the minimum `pw/n` is 0.083, 0.133, 0.267, 0.333, 0.417 at
+`c = 3, 4, 6, 8, 10`, against `β*` of 0.009, 0.061, 0.171, 0.263, 0.337). So
+the derived first-moment bound passes the data test it was given: nothing
+measured falls below it, with a margin that leaves room for the asymptotic
+correction. This is consistency, not proof; the fitted `β_∞` are extrapolations
+from `n ≤ 70–120` and the §14 lesson of `reports/ml_nature.md` applies to them
+exactly (the intercept `γ ≈ 2–3` is the same order as the drift seen there).
+Kneis's `c/11.54` is the closer upper bound at `c ≤ 6` and the independence
+bound at `c ≥ 8`, but neither is within 0.2 of the fit.
+
+One discrepancy to resolve before quoting either side: Gogate–Dechter's exact
+**treewidth** means at `n = 50` (§7(a)) are 0.216 at `c = 4` and 0.346 at
+`c = 6`, where our pathwidth means at `n = 50` are 0.206 and 0.325. A mean
+treewidth cannot exceed a mean pathwidth on the same distribution, so either
+their `c` is not `np` (their generator may fix the edge count or use `c` as
+the average degree in a different convention) or their samples were few. At
+`c = 8` the two agree (0.407 and 0.407). Not checked against their paper.
+
+**Variance (item 3 of §7(b)).** The variance of `pw` at fixed `c` grows with
+`n` for every `c ≥ 1.5`: at `c = 3` it is 1.01, 1.42, 1.52, 2.15, 2.19 for
+`n = 20, 30, 40, 50, 60`, and at `c = 4, 6, 8, 10` likewise about doubles over
+that range. It is therefore not `O(1)` at these sizes, and it grows more slowly
+than `n` (a factor 2.2 while `n` triples). Whether that is a slow approach to
+Azuma's linear scale or to a constant cannot be told from `n ≤ 60`. At
+`c ≤ 1` the variance is flat (0.04–0.3): the pathwidth is that of the largest
+tree component and takes two or three values.
+
+**Not measured.** `pw − tw` on these graphs (item 4; `learning/treewidth.py`
+reaches 64 vertices, so the `n ≤ 60` cells are a cheap follow-up), the
+critical window (item 2; the grid has no points between `c = 1` and `1.5`),
+and anything at `n ≥ 80, c ≥ 4` beyond bounds.
+
+**What the pilot was for.** It priced the full measurement. Scaling each
+cell's mean seconds per proved graph, 1,000 samples per cell over the whole
+`c` grid at `n ≤ 70` is about 16 core-hours, three quarters of it in the three
+cells `n = 70, c ∈ {6, 8, 10}` (9–24 s per graph; every other cell is under
+1.3 s). Above `n = 70` the cost is set by the dense cells, which the cap did
+not resolve, and a cap of 240 s there buys nothing but bounds. The decision on running it is the owner's; the todo item
+is "The large-n theorem first" (`paper1/todo.md`), which these data test and
+cannot prove.
+
 ---
 
 ## PDFs saved to `literature/` in this session

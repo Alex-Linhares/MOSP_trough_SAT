@@ -288,7 +288,10 @@ inequalities rather than asymptotics.
       route to a real theorem about random graphs at every n is (1)'s
       first moment, "with high probability pw ≥ β*(c)·n", proved by counting,
       not enumeration; the G(n, c/n) measurements (`reports/scratch/gnp_pilot/`)
-      test it but cannot prove it.
+      test it but cannot prove it. *Pilot done 2026-10-18 and written up
+      2026-10-26 in `reports/random_graph_pathwidth_survey.md` §7(d): 6,542
+      exact pathwidths, no graph below `β*(c)·n`, fitted slopes 0.08–0.10
+      above `β*` at every `c ≥ 3`; the full measurement is priced there.*
 - [ ] **Exact E[pw] and Var[pw] of G(n, p) for n ≤ 11** (low priority,
       2026-10-18): exact polynomials in p with integer coefficients, from the
       census of every graph to 11 vertices (`learning/pwtw_exhaust.py`) and
