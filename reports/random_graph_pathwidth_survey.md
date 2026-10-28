@@ -488,13 +488,29 @@ exactly (the intercept `γ ≈ 2–3` is the same order as the drift seen there)
 Kneis's `c/11.54` is the closer upper bound at `c ≤ 6` and the independence
 bound at `c ≥ 8`, but neither is within 0.2 of the fit.
 
-One discrepancy to resolve before quoting either side: Gogate–Dechter's exact
+One discrepancy, checked against the paper (2026-10-28): Gogate–Dechter's
 **treewidth** means at `n = 50` (§7(a)) are 0.216 at `c = 4` and 0.346 at
-`c = 6`, where our pathwidth means at `n = 50` are 0.206 and 0.325. A mean
-treewidth cannot exceed a mean pathwidth on the same distribution, so either
-their `c` is not `np` (their generator may fix the edge count or use `c` as
-the average degree in a different convention) or their samples were few. At
-`c = 8` the two agree (0.407 and 0.407). Not checked against their paper.
+`c = 6`, where our pathwidth means at `n = 50` are 0.206 and 0.325, and a
+mean treewidth cannot exceed a mean pathwidth on the same distribution. Their
+§7.1 (p. 206) generates `G(n, m)`: "we select m edges uniformly at random from
+the possible set of n(n − 1)/2 edges", "averages over 100 instances for each
+combination of m and n"; the paper has no parameter `c`, and the `c` in §7(a)
+is our `2m/n`. Our `G(n, c/n)` has `c(n − 1)/2` edges in expectation, 2% fewer
+at `n = 50`: mean `m` 97.3, 148.3, 196.5 in our cells against their fixed 100,
+150, 200. Their own neighbouring rows put the slope near `m = 100` at
+0.13–0.14 per edge, so the edge deficit accounts for 0.35–0.4 of the 0.52
+gap at `c = 4` (10.8 against 10.28) and the rest is one standard error. At
+`c = 6` it accounts for 0.1–0.2 of 0.9 (17.3 against 16.27), and there the
+printed row is off their own curve: increments per 50 edges at `n = 50` are
++7.2, +6.5, **+3.0**, +3.65/50, and interpolating their `m = 100` and `m = 200`
+rows gives 15.6 at `m = 150`, below our 16.27. Dow & Korf (2007, same
+generator) report "a discrepancy between the performance reported by Gogate &
+Dechter (2004) and the performance of the implementation they made available
+to us", disregard QuickBB's anytime answers as non-optimal, and find it unable
+to solve 93 of 100 `(35, 140)` graphs in an hour, against the 2004 claim that
+every 50-vertex graph was solved in under two hours. So their Table 1 is a
+rough finite-`n` reference, not a lower envelope for pathwidth; `c = 4` and
+`c = 8` reconcile, `c = 6` does not and the fault is more likely theirs.
 
 **Variance (item 3 of §7(b)).** The variance of `pw` at fixed `c` grows with
 `n` for every `c ≥ 1.5`: at `c = 3` it is 1.01, 1.42, 1.52, 2.15, 2.19 for
