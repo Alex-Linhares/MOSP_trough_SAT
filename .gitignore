@@ -53,3 +53,5 @@ learning/_pwtw_exhaust.build-*
 
 # item 11 (loop0004): the bound harness adversary's scratch witnesses, regenerable
 learning/data/bound_harness/
+tools/p17/grtd.bin
+tools/p17/tw-exact.bin
