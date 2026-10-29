@@ -521,41 +521,66 @@ Azuma's linear scale or to a constant cannot be told from `n ≤ 60`. At
 `c ≤ 1` the variance is flat (0.04–0.3): the pathwidth is that of the largest
 tree component and takes two or three values.
 
-**`pw − tw` (item 4 of §7(b); computed 2026-10-28, `pwtw.py`, `pwtw.csv`).**
-Exact treewidth of the 6,149 proved graphs at `n ≤ 60` with
-`learning/treewidth.py`: the subset DP at `n ≤ 26`, otherwise the decision
-search from the MMD floor with `pw` as a free upper bound, 5 M nodes per call
-and 20 s per graph; 4.4 core-hours on 4 niced cores. **Exact on 4,510.** The
-search settles every graph at `n ≤ 30` but 11, every graph at `c ≤ 2` at every
-`n`, and `c = 3` at 136, 109, 68 of 137 for `n = 40, 50, 60`; on the dense
-cells `n ≥ 40, c ≥ 6` it settles none (0–2 of 137), where the lower bound
-stays at the MMD floor and top-down fares no better (at `n = 40, c = 10`
-the single call "`tw ≤ 19`?" is unresolved at 30 M nodes). So the random
-graphs at 40–60 vertices and `c ≥ 4` are beyond our exact treewidth code,
-which was built for MOSP graphs with small treewidth. Of the 1,639 censored
-graphs, 76 have `tw ≤ pw − 1` proved by min-fill and the rest carry no
-information. Over the 4,510 exact graphs:
+**`pw − tw` (item 4 of §7(b); computed 2026-10-28/29, `pwtw.py`,
+`p17_censored.py`, data `pwtw.csv` and `p17_censored.csv`).** Exact treewidth
+of the 6,149 proved graphs at `n ≤ 60`, in two passes. First our own
+`learning/treewidth.py` (the subset DP at `n ≤ 26`, otherwise the decision
+search from the MMD floor with `pw` as a free upper bound, 5 M nodes per call,
+20 s per graph): exact on 4,510, 4.4 core-hours, and nothing on the dense cells
+at `n ≥ 40, c ≥ 6`, where the lower bound never leaves the MMD floor and
+top-down fares no better. Then the 1,639 graphs it left censored went to the
+PACE 2017 exact-track winner, Larisch & Salfelder's p17 (`grtd -m 64`, built in
+`tools/p17`, see `tools/README.md`), 600 s per graph on 8 niced cores, 72
+core-hours: **exact on 1,305 more**, every graph at `n ≤ 50` (the slowest
+cell, `n = 50, c = 8`, at a median of 85 s and a maximum of 582 s) and
+`n = 60` up to `c = 4`; at `n = 60` it settled 63 of 134 at `c = 6`, 3 of 132
+at `c = 8` and none at `c = 10` within the cap (a one-hour retry of those 334
+is running). Its decompositions are all checked valid by `check_td.py`, every
+answer lies in our proved interval, and on 120 graphs where both are exact the
+two solvers agree. Tamaki's 2016 solver, also in p17 as `tw-exact`, settles
+only the sparse censored graphs. **5,815 of 6,149 exact** in all:
 
 | `pw − tw` | 0 | 1 | 2 | ≥ 3 |
 |---|---|---|---|---|
-| graphs | 3,343 | 1,162 | 5 | 0 |
+| graphs | 4,341 | 1,468 | 6 | 0 |
 
-`pw = tw` on 74%, and the gap never exceeds 2 (the five 2s are at
-`n = 40–50`, `c = 2–4`). The share with `pw > tw` grows with `n` at fixed
-`c` — at `c = 2` it is 18%, 36%, 36%, 52%, 56% for `n = 20, …, 60` — and the
-mean gap pooled over `c` is 0.16, 0.22, 0.30, 0.37, 0.37, so the gap is
-growing slowly with `n` and is nowhere near linear. At fixed `n` it rises
-with `c` to about `c = 3` and falls again on the dense side where data exist
-(`n = 20`: 0.20 at `c = 3`, 0.15 at `c = 10`). Subcritically (`c ≤ 1`) the
-derived `pw − tw → ∞` of §2 is invisible, as §7(b) predicted: `pw = tw` on
-96–99% at every `n`, maximum gap 1. For comparison, the MOSP corpus has
-`pw > tw` on 48.5–76.3% of its bound-gap instances and a largest gap of 2 at
-10 vertices (`reports/ml_nature.md` §21, §27); random graphs at these sizes
-sit at the same gap scale.
+Mean `pw − tw` and, in parentheses, the share with `pw = tw`; every cell has
+135–137 graphs except `n = 60, c = 6` (63) and `c = 8` (3); `n = 60, c = 10`
+is open:
+
+| `n` | `c = 0.5` | 1 | 1.5 | 2 | 3 | 4 | 6 | 8 | 10 |
+|---|---|---|---|---|---|---|---|---|---|
+| 20 | 0.02 (98%) | 0.12 (88%) | 0.11 (89%) | 0.18 (82%) | 0.20 (80%) | 0.29 (71%) | 0.27 (73%) | 0.14 (86%) | 0.15 (85%) |
+| 30 | 0.01 (99%) | 0.18 (82%) | 0.22 (78%) | 0.36 (64%) | 0.35 (65%) | 0.29 (71%) | 0.20 (80%) | 0.18 (82%) | 0.20 (80%) |
+| 40 | 0.01 (99%) | 0.31 (69%) | 0.36 (64%) | 0.36 (64%) | 0.39 (61%) | 0.36 (64%) | 0.23 (77%) | 0.15 (85%) | 0.12 (88%) |
+| 50 | 0.04 (96%) | 0.26 (74%) | 0.45 (55%) | 0.52 (48%) | 0.54 (48%) | 0.40 (61%) | 0.21 (79%) | 0.15 (85%) | 0.14 (86%) |
+| 60 | 0.02 (98%) | 0.32 (68%) | 0.45 (55%) | 0.56 (44%) | 0.54 (46%) | 0.33 (67%) | 0.24 (76%)\* | 0.33\* | — |
+
+`pw = tw` on 75% overall and the gap never exceeds 2 (six graphs, at
+`n = 40–50`, `c = 2–6`). Two things are visible now that the dense cells are
+in. **The gap peaks at `c ≈ 2–3` and falls on the dense side**: at `n = 50`
+the share with `pw > tw` is 52% at `c = 2–3`, 39% at `c = 4`, 21% at `c = 6`
+and 15% at `c = 8–10`, the same shape at every `n ≥ 30`. The sparse peak is
+the regime of trees of cliques with branching, where the project's bound
+work already found pathwidth above treewidth (`reports/ml_nature.md` §6);
+on the dense side the graph is an expander-like core and the two widths
+coincide. **With `n` the gap grows slowly at every `c ≤ 3`** (at `c = 2`
+the share with a gap is 18%, 36%, 36%, 52%, 56% for `n = 20, …, 60`; the
+pooled mean rises 0.16, 0.22, 0.26, 0.30, 0.36) and is flat at `c ≥ 6`, so
+`pw − tw` at these sizes is at most a slowly growing constant and nowhere
+near linear. Subcritically (`c ≤ 1`) the derived `pw − tw → ∞` of §2 is
+invisible, as §7(b) predicted: `pw = tw` on 96–99% at every `n`, maximum
+gap 1. For comparison, the MOSP corpus has `pw > tw` on 48.5–76.3% of its
+bound-gap instances and a largest gap of 2 at 10 vertices (§21, §27 there);
+random graphs at these sizes sit at the same gap scale. Mean `tw/n` per
+cell is in the data; at `n = 50` it is 0.198 at `c = 4`, 0.321 at `c = 6`
+and 0.405 at `c = 8`, against Gogate–Dechter's 0.216, 0.346 and 0.407 on
+`G(n, m)` with 2% more edges (the discrepancy paragraph above), so the
+`c = 6` row of theirs is now 1.2 stacks above a 136-graph exact mean.
 
 **Not measured.** The critical window (item 2; the grid has no points between
-`c = 1` and `1.5`), treewidth on the dense cells at `n ≥ 40`, and anything at
-`n ≥ 80, c ≥ 4` beyond bounds.
+`c = 1` and `1.5`), treewidth at `n = 60, c = 10` (and most of `c = 8`), and
+anything at `n ≥ 80, c ≥ 4` beyond bounds.
 
 **What the pilot was for.** It priced the full measurement. Scaling each
 cell's mean seconds per proved graph, 1,000 samples per cell over the whole

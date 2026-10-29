@@ -41,9 +41,11 @@ def one(r, cap):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--procs", type=int, default=8); ap.add_argument("--cap", type=float, default=600)
+    ap.add_argument("--retry-timeouts", action="store_true", help="run again the rows recorded as timeout (a later ok row supersedes)")
     a = ap.parse_args()
     src = [r for r in csv.DictReader(open(HERE / "pwtw.csv")) if r["exact"] != "True"]
-    done = {(r["n"], r["c"], r["sample"]) for r in csv.DictReader(open(OUT))} if OUT.exists() else set()
+    done = {(r["n"], r["c"], r["sample"]) for r in csv.DictReader(open(OUT))
+            if not (a.retry_timeouts and r["status"] == "timeout")} if OUT.exists() else set()
     jobs = [r for r in src if (r["n"], r["c"], r["sample"]) not in done]
     jobs.sort(key=lambda r: (int(r["n"]), float(r["c"])))
     new = not OUT.exists()
