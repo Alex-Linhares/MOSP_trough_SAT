@@ -1,0 +1,3 @@
+shrink_hypercube_3_min-d_prot_s0: n=8 m=12 target pw=4
+  round 1: no acceptable step among 12 candidates; |V|=8 |E|=12
+FINAL shrink_hypercube_3_min-d_prot_s0: |V|=8 |E|=12 degrees 3^8; 4 vertices of the G_k copy survive, 4 new-part vertices survive; proved width 4 (refutation) in 0.00s; seq valid True, non-isolated deletions 0; preserves copy True; steps 0; total 0s

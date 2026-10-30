@@ -1,0 +1,23 @@
+shrink_mycielski_7_random_free_s2_del: n=95 m=755 target pw=38
+  step 1: contract 77->10  |V|=94 |E|=754  tried 12  4s
+  step 2: contract 22->81  |V|=93 |E|=753  tried 1  5s
+  step 3: contract 75->94  |V|=92 |E|=751  tried 1  5s
+  step 4: contract 50->43  |V|=91 |E|=750  tried 1  5s
+  step 5: contract 7->71  |V|=90 |E|=749  tried 2  6s
+  step 6: contract 2->67  |V|=89 |E|=748  tried 8  8s
+  step 7: contract 64->23  |V|=88 |E|=747  tried 4  9s
+  step 8: contract 78->11  |V|=87 |E|=746  tried 7  12s
+  step 9: contract 62->30  |V|=86 |E|=745  tried 1  12s
+  step 10: contract 76->11  |V|=85 |E|=739  tried 1  13s
+  step 11: contract 37->56  |V|=84 |E|=738  tried 2  13s
+  step 12: contract 66->27  |V|=83 |E|=737  tried 13  16s
+  step 13: contract 57->42  |V|=82 |E|=736  tried 6  18s
+  step 14: contract 12->70  |V|=81 |E|=734  tried 3  18s
+  step 15: contract 10->79  |V|=80 |E|=729  tried 7  20s
+  step 16: contract 71->85  |V|=79 |E|=725  tried 3  21s
+  step 17: contract 4->83  |V|=78 |E|=724  tried 2  21s
+  step 18: contract 73->11  |V|=77 |E|=718  tried 5  22s
+  step 19: contract 84->5  |V|=76 |E|=717  tried 9  25s
+  step 20: contract 83->88  |V|=75 |E|=711  tried 4  26s
+  step 21: contract 81->91  |V|=74 |E|=704  tried 1  58s
+  step 22: contract 33->63  |V|=73 |E|=703  tried 5  83s

@@ -1,0 +1,12 @@
+# shrink_mycielski_7_min-d_free_s0_del
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 86,1 87,0 88,4 89,0 90,2 81,6 82,5 83,9 84,5 85,7 75,12 76,11 77,15 78,21 79,13 91,8 63,24 64,23 65,27 66,33 67,25 39,48 40,47 41,51 42,57 43,49 70,17 71,16 72,20 73,16 74,18 58,29 59,28 60,32 61,28 62,30 34,53 37,52
+labels(new->old) 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 10:10 11:11 12:12 13:13 14:14 15:15 16:16 17:17 18:18 19:19 20:20 21:21 22:22 23:23 24:24 25:25 26:26 27:27 28:28 29:29 30:30 31:31 32:32 33:33 34:35 35:36 36:38 37:44 38:45 39:46 40:47 41:48 42:49 43:50 44:51 45:52 46:53 47:54 48:55 49:56 50:57 51:68 52:69 53:80 54:92 55:93 56:94
+graph6 x~~~byN^n^}T|Q]fPaZrS~VVqibrRSOOLyY[b~sF^n~}TSh|RQa]edJPabCZrRES~UgFVql?YbrS_rSOW__LyX_Y[b}BzsDI??O?HQ?@??KW?A??@{?A????~}zuF^m|n~~{ihQhQFtLILICRsshShSsWgpGpCLxhbHbCSvEgEgEUNdY?y?iiH@QAQBW?aBCDCCoAKAWCWDOCP~@|@{Bs?N_?O^@???@~{?BrmGFoN_??O???N~_??_?????N~~\pBnv]v]oN~~
+C stdout:
+pathwidth 38 refutation
+
+C stderr:
+line 1: n=57 width=38 status=refutation lower=25 upper_start=38 nodes=14535 minor_nodes=0 upper_bound_nodes=6527 engine_calls=3 seconds=0.030
+# |V|=57 |E|=690 degrees 43^2 41^1 39^1 36^3 33^1 32^1 29^1 28^5 27^3 26^3 25^5 24^8 23^8 20^1 18^1 17^1 16^1 14^2 13^5 12^4; 40 vertices of the G_k copy survive, 17 new-part vertices survive
+# G_k copy preserved: False

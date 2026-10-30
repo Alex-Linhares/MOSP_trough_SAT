@@ -1,0 +1,12 @@
+# shrink_hypercube_3_min-d_prot_s0
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 
+labels(new->old) 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
+graph6 Gr`HOk
+C stdout:
+pathwidth 4 refutation
+
+C stderr:
+line 1: n=8 width=4 status=refutation lower=3 upper_start=4 nodes=8 minor_nodes=0 upper_bound_nodes=8 engine_calls=2 seconds=0.000
+# |V|=8 |E|=12 degrees 3^8; 4 vertices of the G_k copy survive, 4 new-part vertices survive
+# G_k copy preserved: True

@@ -1,0 +1,19 @@
+shrink_mycielski_6_random_free_s1_del: n=47 m=236 target pw=20
+  step 1: contract 30->12  |V|=46 |E|=235  tried 11  1s
+  step 2: contract 34->8  |V|=45 |E|=234  tried 4  2s
+  step 3: contract 40->10  |V|=44 |E|=233  tried 8  2s
+  step 4: contract 42->10  |V|=43 |E|=229  tried 1  3s
+  step 5: contract 1->41  |V|=42 |E|=228  tried 2  3s
+  step 6: contract 22->35  |V|=41 |E|=227  tried 5  3s
+  step 7: contract 11->29  |V|=40 |E|=226  tried 16  4s
+  step 8: contract 20->25  |V|=39 |E|=225  tried 1  4s
+  step 9: contract 43->35  |V|=38 |E|=221  tried 1  4s
+  step 10: contract 37->46  |V|=37 |E|=219  tried 8  4s
+  step 11: contract 38->7  |V|=36 |E|=217  tried 17  4s
+  step 12: contract 14->28  |V|=35 |E|=216  tried 37  4s
+  step 13: contract 19->23  |V|=34 |E|=215  tried 15  5s
+  step 14: contract 10->39  |V|=33 |E|=211  tried 27  5s
+  step 15: contract 36->9  |V|=32 |E|=209  tried 93  5s
+  step 16: contract 26->16  |V|=31 |E|=208  tried 140  6s
+  round 17: no acceptable step among 447 candidates; |V|=31 |E|=208
+FINAL shrink_mycielski_6_random_free_s1_del: |V|=31 |E|=208 degrees 22^3 18^1 16^3 15^10 12^4 11^1 10^2 9^2 8^2 7^3; 16 vertices of the G_k copy survive, 15 new-part vertices survive; proved width 20 (refutation) in 0.00s; seq valid True, non-isolated deletions 0; preserves copy False; steps 16; total 8s

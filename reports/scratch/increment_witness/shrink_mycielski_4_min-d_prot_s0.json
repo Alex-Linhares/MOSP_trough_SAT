@@ -1,0 +1,148 @@
+{
+ "name": "shrink_mycielski_4_min-d_prot_s0",
+ "family": "mycielski",
+ "k": 4,
+ "target": 5,
+ "n": 11,
+ "H_nodes": 6,
+ "H_edges": 15,
+ "H_width": 5,
+ "H_status": "bound",
+ "seq": [
+  [
+   5,
+   1
+  ],
+  [
+   6,
+   2
+  ],
+  [
+   7,
+   4
+  ],
+  [
+   8,
+   0
+  ],
+  [
+   9,
+   3
+  ]
+ ],
+ "preserves_copy": true,
+ "describe": "|V|=6 |E|=15 degrees 5^6; 5 vertices of the G_k copy survive, 1 new-part vertices survive",
+ "trace": [
+  [
+   0,
+   [
+    5,
+    1
+   ],
+   5,
+   "refutation",
+   0.0
+  ],
+  [
+   1,
+   [
+    6,
+    0
+   ],
+   4,
+   "bound",
+   0.0
+  ],
+  [
+   1,
+   [
+    6,
+    2
+   ],
+   5,
+   "bound",
+   0.0
+  ],
+  [
+   2,
+   [
+    7,
+    4
+   ],
+   5,
+   "bound",
+   0.0
+  ],
+  [
+   3,
+   [
+    8,
+    0
+   ],
+   5,
+   "bound",
+   0.0
+  ],
+  [
+   4,
+   [
+    9,
+    3
+   ],
+   5,
+   "bound",
+   0.0
+  ],
+  [
+   5,
+   [
+    10,
+    0
+   ],
+   null,
+   "too-small",
+   0.0
+  ],
+  [
+   5,
+   [
+    10,
+    1
+   ],
+   null,
+   "too-small",
+   0.0
+  ],
+  [
+   5,
+   [
+    10,
+    2
+   ],
+   null,
+   "too-small",
+   0.0
+  ],
+  [
+   5,
+   [
+    10,
+    3
+   ],
+   null,
+   "too-small",
+   0.0
+  ],
+  [
+   5,
+   [
+    10,
+    4
+   ],
+   null,
+   "too-small",
+   0.0
+  ]
+ ],
+ "seconds": 0.018838882446289062
+}

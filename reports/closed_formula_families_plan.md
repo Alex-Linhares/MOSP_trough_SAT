@@ -95,3 +95,67 @@ contribution is the formalisation, not the theorem.
   (`Mathlib.Combinatorics.SetFamily.*`); whether it has Harper's vertex
   version is to be checked.
 - Assigned to a Lean agent, 2026-10-18 (`lean/MOSPFormalization/Hypercube.lean`).
+
+## Second results: increment witnesses (2026-10-31, one agent, 4.6 h; `reports/scratch/increment_witness/REPORT.md`)
+
+The question was whether the lower-bound half of an induction can be carried
+by a *minor*: for each consecutive pair, the smallest contraction minor of
+member k + 1 whose width the C program proves equal to the member's. 78
+witnesses saved as graph6 with the C output and contraction sequence; every
+rejection in the searches proved; three claims spot-checked independently by
+the coordinator (Q_5/e = 12, the Grötzsch witness is K_6, the Q_7 layout has
+vertex separation 43).
+
+- **Trees** (control): the greedy recovers the extremal trees of 7, 22, 67
+  vertices, a centre with three copies of the previous witness: the branch
+  lemma, found without being told.
+- **Hypercubes: no small witness.** Q_3 and Q_5 are contraction-critical
+  (any one contraction drops the width; one test is exhaustive by
+  edge-transitivity); Q_4 and Q_6 allow one and two parallel contractions and
+  then none (a full census of second steps on Q_6: 15 of 382 keep 23, all
+  parallel to the first in the same colour class). Deleting a vertex drops
+  the width at d = 3..6, deleting an edge never does. *Parity conjecture,
+  untested beyond 6*: Q_d is contraction-critical iff d is odd. So the
+  increment C(d, ⌊d/2⌋) is not an attachment; the only induction the data
+  supports is Harper's profile, max_i Φ_{d+1}(i) = max_i Φ_d(i) + C(d, ⌊d/2⌋),
+  checked to d = 8, with the peak attained inside a layer and never at the
+  half-cube, so the induction must carry the whole profile. Trap recorded:
+  "weight, then ascending integer order" is *not* Harper's order (widths
+  14/25/50 on Q_5/6/7 instead of 13/23/43); the within-layer order is the
+  set containing the smaller element of the symmetric difference first.
+- **Q_7 ≤ 43 verified**: Harper's layout has vertex separation 43, checked
+  in Python with no shared code and re-checked by the coordinator. One
+  CPU-hour from that layout with floor 42 did not refute 42 (5.0 × 10⁹
+  nodes). A minor certificate cannot help if the parity conjecture holds.
+  The route to Q_7 = 43 is Harper's theorem in Lean, as planned.
+- **Mycielski: the witnesses are a dense fold and do not nest.** Best
+  witnesses 6 (= K_6), 14, 27, 57 vertices for M_4..M_7 (networkx indexing;
+  0.55–0.6 n), every one made by folding shadow vertices onto adjacent
+  originals; the copy of M_k is never induced and increasingly not intact;
+  the M_k witness applied inside M_{k+1} drops the width every time
+  (10 → 7, 20 → 14, 38 → 29). No K_11 minor in M_5, no K_21 in M_6 found.
+  **No structural induction step is supported.** One inequality survived
+  244 random graphs with both widths proved: pw(M(G)) ≤ 2·pw(G) + 1, equality
+  on 56; pw(M(G)) ≥ 2·pw(G) fails (and fails at M_7: 38 < 40). Data only.
+- **Recurrences: nothing survives the spare-term rule** (≥ 2 spare terms)
+  on any value, increment or witness-size sequence; six or seven terms are
+  too few. The zero-spare holonomic fit to the Mycielski values is a
+  recurrence of A001629 (predicting 71 for myciel7), the plan's conjecture
+  rederived and still a conjecture; the same shape fitted to the hypercubes
+  predicts a non-integer for Q_7, which is the right warning.
+- **Dense structured families** (213 new graphs, all proved): with Ḡ the
+  complement, n − pw ∈ [ω(Ḡ), Δ(Ḡ) + 1] (independence bound above,
+  degeneracy bound below); at the bottom for complete multipartite graphs
+  and Kneser(n, 2), at the top for co-paths, co-cycles and cycle powers,
+  strictly between for L(K_n), where the values to n = 11 match the known
+  formula ⌊n²/4⌋ + ⌊(n − 3)/2⌋ (Harvey & Wood 2015; Fabila-Monroy et al.
+  2025; `paper2/survey_products_structured.md`). Nothing new about the
+  dense deficit beyond this frame.
+
+**Verdict on the method.** Minor-carried induction works exactly where the
+increment is an attachment (trees) and fails where it is global (hypercubes:
+the whole graph is the certificate; Mycielski: a fold that does not nest).
+For the two open families the lower bound is isoperimetric or unknown, not
+operational. Next, if resumed: Harper's profile recurrence in Lean for the
+hypercube; a layout proof of pw(M(G)) ≤ 2·pw(G) + 1; the parity conjecture
+tested on Q_7/e with floor 41.

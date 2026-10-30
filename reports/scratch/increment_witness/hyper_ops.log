@@ -1,0 +1,12 @@
+{'d': 3, 'op': 'delete vertex 0', 'n': 7, 'm': 9, 'width': 3, 'status': 'bound', 'seconds': 0.0}
+{'d': 3, 'op': 'delete edge 0-1', 'n': 8, 'm': 11, 'width': 3, 'status': 'bound', 'seconds': 0.0}
+{'d': 3, 'op': 'contract edge 1->0', 'n': 7, 'm': 11, 'width': 3, 'status': 'bound', 'seconds': 0.0}
+{'d': 4, 'op': 'delete vertex 0', 'n': 15, 'm': 28, 'width': 6, 'status': 'refutation', 'seconds': 0.0}
+{'d': 4, 'op': 'delete edge 0-1', 'n': 16, 'm': 31, 'width': 7, 'status': 'refutation', 'seconds': 0.0}
+{'d': 4, 'op': 'contract edge 1->0', 'n': 15, 'm': 31, 'width': 7, 'status': 'refutation', 'seconds': 0.0}
+{'d': 5, 'op': 'delete vertex 0', 'n': 31, 'm': 75, 'width': 12, 'status': 'refutation', 'seconds': 0.01}
+{'d': 5, 'op': 'delete edge 0-1', 'n': 32, 'm': 79, 'width': 13, 'status': 'refutation', 'seconds': 0.03}
+{'d': 5, 'op': 'contract edge 1->0', 'n': 31, 'm': 79, 'width': 12, 'status': 'refutation', 'seconds': 0.01}
+{'d': 6, 'op': 'delete vertex 0', 'n': 63, 'm': 186, 'width': 22, 'status': 'refutation', 'seconds': 3.34}
+{'d': 6, 'op': 'delete edge 0-1', 'n': 64, 'm': 191, 'width': 23, 'status': 'refutation', 'seconds': 6.18}
+{'d': 6, 'op': 'contract edge 1->0', 'n': 63, 'm': 191, 'width': 23, 'status': 'refutation', 'seconds': 6.29}

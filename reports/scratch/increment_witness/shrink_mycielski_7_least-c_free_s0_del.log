@@ -1,0 +1,41 @@
+shrink_mycielski_7_least-c_free_s0_del: n=95 m=755 target pw=38
+  step 1: contract 86->1  |V|=94 |E|=754  tried 1  0s
+  step 2: contract 87->0  |V|=93 |E|=753  tried 1  1s
+  step 3: contract 88->4  |V|=92 |E|=752  tried 1  1s
+  step 4: contract 89->10  |V|=91 |E|=749  tried 1  1s
+  step 5: contract 90->2  |V|=90 |E|=748  tried 1  1s
+  step 6: contract 81->6  |V|=89 |E|=747  tried 1  1s
+  step 7: contract 82->5  |V|=88 |E|=746  tried 1  2s
+  step 8: contract 83->9  |V|=87 |E|=745  tried 1  2s
+  step 9: contract 84->5  |V|=86 |E|=740  tried 1  2s
+  step 10: contract 85->7  |V|=85 |E|=739  tried 1  2s
+  step 11: contract 75->12  |V|=84 |E|=738  tried 1  2s
+  step 12: contract 76->11  |V|=83 |E|=737  tried 1  3s
+  step 13: contract 77->15  |V|=82 |E|=736  tried 1  3s
+  step 14: contract 78->21  |V|=81 |E|=733  tried 1  3s
+  step 15: contract 79->13  |V|=80 |E|=732  tried 1  3s
+  step 16: contract 91->8  |V|=79 |E|=729  tried 1  4s
+  step 17: contract 63->24  |V|=78 |E|=728  tried 1  4s
+  step 18: contract 64->23  |V|=77 |E|=727  tried 1  4s
+  step 19: contract 65->27  |V|=76 |E|=726  tried 1  4s
+  step 20: contract 66->33  |V|=75 |E|=723  tried 1  4s
+  step 21: contract 67->25  |V|=74 |E|=722  tried 1  5s
+  step 22: contract 39->48  |V|=73 |E|=721  tried 1  5s
+  step 23: contract 40->47  |V|=72 |E|=720  tried 1  5s
+  step 24: contract 41->51  |V|=71 |E|=719  tried 1  5s
+  step 25: contract 42->57  |V|=70 |E|=716  tried 1  5s
+  step 26: contract 43->49  |V|=69 |E|=715  tried 1  6s
+  step 27: contract 70->17  |V|=68 |E|=714  tried 1  7s
+  step 28: contract 71->16  |V|=67 |E|=713  tried 1  7s
+  step 29: contract 72->20  |V|=66 |E|=712  tried 1  7s
+  step 30: contract 73->11  |V|=65 |E|=707  tried 1  8s
+  step 31: contract 74->18  |V|=64 |E|=706  tried 1  8s
+  step 32: contract 58->29  |V|=63 |E|=705  tried 1  8s
+  step 33: contract 59->28  |V|=62 |E|=704  tried 1  8s
+  step 34: contract 60->32  |V|=61 |E|=703  tried 1  8s
+  step 35: contract 61->28  |V|=60 |E|=696  tried 6  9s
+  step 36: contract 62->30  |V|=59 |E|=695  tried 1  9s
+  step 37: contract 34->53  |V|=58 |E|=694  tried 1  9s
+  step 38: contract 37->52  |V|=57 |E|=693  tried 25  10s
+  round 39: no acceptable step among 1443 candidates; |V|=57 |E|=693
+FINAL shrink_mycielski_7_least-c_free_s0_del: |V|=57 |E|=693 degrees 44^2 42^2 36^2 35^1 32^2 29^3 28^4 27^2 26^3 25^5 24^7 23^9 20^1 18^1 17^1 16^1 14^2 13^5 12^4; 40 vertices of the G_k copy survive, 17 new-part vertices survive; proved width 38 (refutation) in 0.03s; seq valid True, non-isolated deletions 0; preserves copy False; steps 38; total 54s

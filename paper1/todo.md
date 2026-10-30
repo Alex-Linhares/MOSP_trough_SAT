@@ -256,6 +256,12 @@ measurement and that, for pathwidth, it is not capped by treewidth.
       small members, guess a formula, prove it by induction on the
       construction, Lean as for grids. First: Mycielski graphs and hypercubes
       (2026-10-18, after the G(n, c/n) pilot).
+      *2026-10-31: increment-witness experiment done (plan, "Second
+      results"): minor-carried induction works for trees only; hypercubes
+      are contraction-critical at odd d (Harper's profile is the induction),
+      Mycielski witnesses are non-nesting folds; Q_7 ≤ 43 verified by
+      Harper's layout, 42 not refuted in an hour; no recurrence fit survives
+      the spare-term rule.*
 
 ## Lean the derived random-graph bounds (high priority, 2026-10-17)
 

@@ -1,0 +1,12 @@
+shrink_mycielski_5_random_free_s13: n=23 m=71 target pw=10
+  step 1: contract 20->2  |V|=22 |E|=70  tried 3  0s
+  step 2: contract 22->19  |V|=21 |E|=69  tried 2  1s
+  step 3: contract 16->1  |V|=20 |E|=68  tried 1  1s
+  step 4: contract 7->15  |V|=19 |E|=67  tried 2  1s
+  step 5: contract 14->9  |V|=18 |E|=66  tried 2  1s
+  step 6: contract 17->0  |V|=17 |E|=64  tried 7  1s
+  step 7: contract 10->18  |V|=16 |E|=61  tried 2  1s
+  step 8: contract 8->11  |V|=15 |E|=60  tried 18  2s
+  step 9: contract 5->12  |V|=14 |E|=59  tried 3  2s
+  round 10: no acceptable step among 118 candidates; |V|=14 |E|=59
+FINAL shrink_mycielski_5_random_free_s13: |V|=14 |E|=59 degrees 11^1 10^2 9^6 8^2 6^2 5^1; 7 vertices of the G_k copy survive, 7 new-part vertices survive; proved width 10 (refutation) in 0.01s; seq valid True, non-isolated deletions 0; preserves copy False; steps 9; total 4s

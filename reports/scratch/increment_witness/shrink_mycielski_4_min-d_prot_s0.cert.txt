@@ -1,0 +1,12 @@
+# shrink_mycielski_4_min-d_prot_s0
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 5,1 6,2 7,4 8,0 9,3
+labels(new->old) 0:0 1:1 2:2 3:3 4:4 5:10
+graph6 E~~w
+C stdout:
+pathwidth 5 bound
+
+C stderr:
+line 1: n=6 width=5 status=bound lower=5 upper_start=5 nodes=0 minor_nodes=0 upper_bound_nodes=0 engine_calls=1 seconds=0.000
+# |V|=6 |E|=15 degrees 5^6; 5 vertices of the G_k copy survive, 1 new-part vertices survive
+# G_k copy preserved: True

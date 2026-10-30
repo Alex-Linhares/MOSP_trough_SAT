@@ -1,0 +1,15 @@
+Q_3: simplicial profile [3, 4, 4, 3, 3, 2, 1, 0]
+     brute-force profile [3, 4, 4, 3, 3, 2, 1, 0]
+     equal: True
+Q_4: simplicial profile [4, 6, 7, 7, 6, 7, 7, 6, 6, 5, 4, 4, 3, 2, 1, 0]
+     brute-force profile [4, 6, 7, 7, 6, 7, 7, 6, 6, 5, 4, 4, 3, 2, 1, 0]
+     equal: True
+
+Q_1: max Phi = 1 at |S| in [1]; formula 1; Phi(2^(d-1)) = 1; C(d-1,floor((d-1)/2)) = 1
+Q_2: max Phi = 2 at |S| in [1, 2]; formula 2; Phi(2^(d-1)) = 2; C(d-1,floor((d-1)/2)) = 1
+Q_3: max Phi = 4 at |S| in [2, 3]; formula 4; Phi(2^(d-1)) = 3; C(d-1,floor((d-1)/2)) = 2
+Q_4: max Phi = 7 at |S| in [3, 4, 6, 7]; formula 7; Phi(2^(d-1)) = 6; C(d-1,floor((d-1)/2)) = 3
+Q_5: max Phi = 13 at |S| in [8, 9, 11, 12]; formula 13; Phi(2^(d-1)) = 10; C(d-1,floor((d-1)/2)) = 6
+Q_6: max Phi = 23 at |S| in [14, 15, 17, 18, 24, 25, 27, 28]; formula 23; Phi(2^(d-1)) = 20; C(d-1,floor((d-1)/2)) = 10
+Q_7: max Phi = 43 at |S| in [36, 37, 39, 40, 46, 47, 49, 50]; formula 43; Phi(2^(d-1)) = 35; C(d-1,floor((d-1)/2)) = 20
+Q_8: max Phi = 78 at |S| in [65, 66, 68, 69, 75, 76, 78, 79, 100, 101, 103, 104, 110, 111, 113, 114]; formula 78; Phi(2^(d-1)) = 70; C(d-1,floor((d-1)/2)) = 35

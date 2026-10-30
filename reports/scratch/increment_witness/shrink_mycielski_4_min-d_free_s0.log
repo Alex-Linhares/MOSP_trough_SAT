@@ -1,0 +1,8 @@
+shrink_mycielski_4_min-d_free_s0: n=11 m=20 target pw=5
+  step 1: contract 5->1  |V|=10 |E|=19  tried 1  0s
+  step 2: contract 6->2  |V|=9 |E|=18  tried 2  0s
+  step 3: contract 7->4  |V|=8 |E|=17  tried 1  0s
+  step 4: contract 8->0  |V|=7 |E|=16  tried 1  0s
+  step 5: contract 9->3  |V|=6 |E|=15  tried 1  0s
+  round 6: no acceptable step among 30 candidates; |V|=6 |E|=15
+FINAL shrink_mycielski_4_min-d_free_s0: |V|=6 |E|=15 degrees 5^6; 5 vertices of the G_k copy survive, 1 new-part vertices survive; proved width 5 (bound) in 0.00s; seq valid True, non-isolated deletions 0; preserves copy True; steps 5; total 0s

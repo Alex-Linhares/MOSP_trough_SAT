@@ -1,0 +1,11 @@
+# baseline_mycielski_7
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 86,1 87,0 88,4 89,0 90,2 81,6 82,5 83,9 84,5 85,7 75,12 76,11 77,15 78,21 79,13 91,8 63,24 64,23 65,27 66,33 67,25 39,48 40,47 41,51 42,57 43,49 70,17 71,16 72,20 73,16 74,18 58,29 59,28 60,32 61,28
+labels(new->old) 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7 8:8 9:9 10:10 11:11 12:12 13:13 14:14 15:15 16:16 17:17 18:18 19:19 20:20 21:21 22:22 23:23 24:24 25:25 26:26 27:27 28:28 29:29 30:30 31:31 32:32 33:33 34:34 35:35 36:36 37:37 38:38 39:44 40:45 41:46 42:47 43:48 44:49 45:50 46:51 47:52 48:53 49:54 50:55 51:56 52:57 53:62 54:68 55:69 56:80 57:92 58:93 59:94
+graph6 {~~~byN^n^}T|Q]fPaZrS~VVqibrRSOOLyY[b~sF^n~}TSh|RQa]edJPabCZrRES~UgFVql?YaOS__SOW__HyX_Y[b}BzsAd??O?Sg?@??Qc?A??bC?A??EK?@???N_?O???@~|vKBnv]v~~~dTITIINiYSYSSHyYSiScebDEHEIGZrREREEII@SASAi?gBODOEc?QAcCcDK?P@aAaBE?@_R?b?e_?b}ByBw@y?p_?Hb?G??N_?O^?O???N~_?^fOOFoN_??C???@~{??@??????N~~vOO\}zuze?^~~
+C stdout:
+pathwidth 38 refutation
+
+C stderr:
+line 1: n=60 width=38 status=refutation lower=25 upper_start=38 nodes=40080 minor_nodes=0 upper_bound_nodes=8159 engine_calls=5 seconds=0.072
+# C certificate line on G_7: minor refuted 37 size 60 rule min-d contractions 86,1 87,0 88,4 89,0 90,2 81,6 82,5 83,9 84,5 85,7 75,12 76,11 77,15 78,21 79,13 91,8 63,24 64,23 65,27 66,33 67,25 39,48 40,47 41,51 42,57 43,49 70,17 71,16 72,20 73,16 74,18 58,29 59,28 60,32 61,28

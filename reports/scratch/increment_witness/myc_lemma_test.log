@@ -1,0 +1,13 @@
+244 graphs with both values proved
+L1 pw(M) <= 2pw+1 violations: []
+L1' pw(M) <= 2pw violations: 56 e.g. [(4, 1, 3, 'Cq'), (5, 1, 3, 'DM_'), (5, 1, 3, 'DEg'), (5, 1, 3, 'DCw'), (5, 2, 5, 'DL{')]
+L2 pw(M) >= 2pw violations: 92 e.g. [(4, 3, 5, 'C~'), (4, 3, 5, 'C~'), (4, 3, 5, 'C~'), (4, 3, 5, 'C~'), (4, 3, 5, 'C~')]
+L3 pw(M) >= pw+1 violations: 0
+distribution of pw(M) - 2pw: [(-6, 4), (-5, 4), (-4, 14), (-3, 15), (-2, 17), (-1, 38), (0, 96), (1, 56)]
+distribution of pw(M) - pw: [(1, 4), (2, 49), (3, 87), (4, 66), (5, 34), (6, 4)]
+increment pw(M)-pw vs n - alpha: equal 62, inc<= 244, inc>= 62 of 244
+increment pw(M)-pw vs pw: equal 96, inc<= 188, inc>= 152 of 244
+increment pw(M)-pw vs n: equal 0, inc<= 244, inc>= 0 of 244
+increment pw(M)-pw vs pw + 1: equal 56, inc<= 244, inc>= 56 of 244
+increment pw(M)-pw vs ceil(n/2): equal 92, inc<= 239, inc>= 97 of 244
+pw(M) == n - alpha(M)? (M has alpha >= n): 92 (crude: alpha(M) >= n always)

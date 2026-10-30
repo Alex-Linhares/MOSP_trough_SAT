@@ -1,0 +1,3 @@
+shrink_hypercube_5_min-d_free_s0: n=32 m=80 target pw=13
+  round 1: no acceptable step among 160 candidates; |V|=32 |E|=80
+FINAL shrink_hypercube_5_min-d_free_s0: |V|=32 |E|=80 degrees 5^32; 16 vertices of the G_k copy survive, 16 new-part vertices survive; proved width 13 (refutation) in 0.02s; seq valid True, non-isolated deletions 0; preserves copy True; steps 0; total 2s

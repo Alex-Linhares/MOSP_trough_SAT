@@ -1,0 +1,12 @@
+# shrink_hypercube_4_min-d_free_s0
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 0,1
+labels(new->old) 0:1 1:2 2:3 3:4 4:5 5:6 6:7 7:8 8:9 9:10 10:11 11:12 12:13 13:14 14:15
+graph6 N{dP[A@OP@aGAH@D?PW
+C stdout:
+pathwidth 7 refutation
+
+C stderr:
+line 1: n=15 width=7 status=refutation lower=6 upper_start=7 nodes=94 minor_nodes=0 upper_bound_nodes=101 engine_calls=2 seconds=0.000
+# |V|=15 |E|=31 degrees 6^1 4^14; 7 vertices of the G_k copy survive, 8 new-part vertices survive
+# G_k copy preserved: False

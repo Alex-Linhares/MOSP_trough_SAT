@@ -1,0 +1,146 @@
+
+== hypercube pw(Q_d), d=1..6: [1, 2, 4, 7, 13, 23]  (N=6 terms)
+  linear order 1: P=1 E=5 spare=4: inconsistent
+  linear order 1 + const: P=2 E=5 spare=3: inconsistent
+  linear order 2: P=2 E=4 spare=2: inconsistent
+  linear order 2 + const: P=3 E=4 spare=1: inconsistent
+  linear order 3: P=3 E=3 spare=0: coeffs [1, 2, -1]  holdout None->None  [numerology (spare < 2)]
+  linear order 3 + const: P=4 E=3 spare=-1: underdetermined
+  linear order 4: P=4 E=2 spare=-2: underdetermined
+  linear order 4 + const: P=5 E=2 spare=-3: underdetermined
+  holonomic order 1 degree 1: P=3 E=5 spare=2: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=5 spare=0: polys [-12*n**2/25 + 118*n/25 - 238/25, n**2 - 239*n/25 + 478/25]  holdout None->None  [numerology (spare < 2)]
+  holonomic order 2 degree 1: P=5 E=4 spare=-1: underdetermined
+  holonomic order 2 degree 2: P=8 E=4 spare=-4: underdetermined
+  holonomic order 3 degree 1: P=7 E=3 spare=-4: underdetermined
+  holonomic order 3 degree 2: P=11 E=3 spare=-8: underdetermined
+  holonomic order 4 degree 1: P=9 E=2 spare=-7: underdetermined
+  holonomic order 4 degree 2: P=14 E=2 spare=-12: underdetermined
+
+== hypercube pw(Q_d), d=0..6: [0, 1, 2, 4, 7, 13, 23]  (N=7 terms)
+  linear order 1: P=1 E=6 spare=5: inconsistent
+  linear order 1 + const: P=2 E=6 spare=4: inconsistent
+  linear order 2: P=2 E=5 spare=3: inconsistent
+  linear order 2 + const: P=3 E=5 spare=2: inconsistent
+  linear order 3: P=3 E=4 spare=1: coeffs [1, 2, -1]  holdout 23->True  [numerology (spare < 2)]
+  linear order 3 + const: P=4 E=4 spare=0: coeffs [1, 2, -1, 0]  holdout None->None  [numerology (spare < 2)]
+  linear order 4: P=4 E=3 spare=-1: underdetermined
+  linear order 4 + const: P=5 E=3 spare=-2: underdetermined
+  holonomic order 1 degree 1: P=3 E=6 spare=3: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=6 spare=1: nullspace dim 0
+  holonomic order 2 degree 1: P=5 E=5 spare=0: polys [2 - 3*n/4, 3*n/4 - 5/2, n - 3/2]  holdout None->None  [numerology (spare < 2)]
+  holonomic order 2 degree 2: P=8 E=5 spare=-3: underdetermined
+  holonomic order 3 degree 1: P=7 E=4 spare=-3: underdetermined
+  holonomic order 3 degree 2: P=11 E=4 spare=-7: underdetermined
+  holonomic order 4 degree 1: P=9 E=3 spare=-6: underdetermined
+  holonomic order 4 degree 2: P=14 E=3 spare=-11: underdetermined
+
+== hypercube increments: [1, 2, 3, 6, 10]  (N=5 terms)
+  linear order 1: P=1 E=4 spare=3: inconsistent
+  linear order 1 + const: P=2 E=4 spare=2: inconsistent
+  linear order 2: P=2 E=3 spare=1: inconsistent
+  linear order 2 + const: P=3 E=3 spare=0: coeffs [1/2, 5/2, -1/2]  holdout None->None  [numerology (spare < 2)]
+  linear order 3: P=3 E=2 spare=-1: underdetermined
+  linear order 3 + const: P=4 E=2 spare=-2: underdetermined
+  linear order 4: P=4 E=1 spare=-3: underdetermined
+  linear order 4 + const: P=5 E=1 spare=-4: underdetermined
+  holonomic order 1 degree 1: P=3 E=4 spare=1: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=4 spare=-1: underdetermined
+  holonomic order 2 degree 1: P=5 E=3 spare=-2: underdetermined
+  holonomic order 2 degree 2: P=8 E=3 spare=-5: underdetermined
+  holonomic order 3 degree 1: P=7 E=2 spare=-5: underdetermined
+  holonomic order 3 degree 2: P=11 E=2 spare=-9: underdetermined
+  holonomic order 4 degree 1: P=9 E=1 spare=-8: underdetermined
+  holonomic order 4 degree 2: P=14 E=1 spare=-13: underdetermined
+
+== mycielski pw(M_k), k=2..7: [1, 2, 5, 10, 20, 38]  (N=6 terms)
+  linear order 1: P=1 E=5 spare=4: inconsistent
+  linear order 1 + const: P=2 E=5 spare=3: inconsistent
+  linear order 2: P=2 E=4 spare=2: inconsistent
+  linear order 2 + const: P=3 E=4 spare=1: inconsistent
+  linear order 3: P=3 E=3 spare=0: coeffs [12/5, 0, -2]  holdout None->None  [numerology (spare < 2)]
+  linear order 3 + const: P=4 E=3 spare=-1: underdetermined
+  linear order 4: P=4 E=2 spare=-2: underdetermined
+  linear order 4 + const: P=5 E=2 spare=-3: underdetermined
+  holonomic order 1 degree 1: P=3 E=5 spare=2: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=5 spare=0: polys [-n**2/2 + 7*n/2 - 5, n**2 - 7*n + 10]  holdout None->None  [numerology (spare < 2)]
+  holonomic order 2 degree 1: P=5 E=4 spare=-1: underdetermined
+  holonomic order 2 degree 2: P=8 E=4 spare=-4: underdetermined
+  holonomic order 3 degree 1: P=7 E=3 spare=-4: underdetermined
+  holonomic order 3 degree 2: P=11 E=3 spare=-8: underdetermined
+  holonomic order 4 degree 1: P=9 E=2 spare=-7: underdetermined
+  holonomic order 4 degree 2: P=14 E=2 spare=-12: underdetermined
+
+== mycielski pw(M_k), k=1..7 (K_1 first): [0, 1, 2, 5, 10, 20, 38]  (N=7 terms)
+  linear order 1: P=1 E=6 spare=5: inconsistent
+  linear order 1 + const: P=2 E=6 spare=4: inconsistent
+  linear order 2: P=2 E=5 spare=3: inconsistent
+  linear order 2 + const: P=3 E=5 spare=2: inconsistent
+  linear order 3: P=3 E=4 spare=1: inconsistent
+  linear order 3 + const: P=4 E=4 spare=0: coeffs [2, 1/2, -3/2, 1/2]  holdout None->None  [numerology (spare < 2)]
+  linear order 4: P=4 E=3 spare=-1: underdetermined
+  linear order 4 + const: P=5 E=3 spare=-2: underdetermined
+  holonomic order 1 degree 1: P=3 E=6 spare=3: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=6 spare=1: nullspace dim 0
+  holonomic order 2 degree 1: P=5 E=5 spare=0: polys [1 - n, n, n + 1]  holdout None->None  [numerology (spare < 2)]
+  holonomic order 2 degree 2: P=8 E=5 spare=-3: underdetermined
+  holonomic order 3 degree 1: P=7 E=4 spare=-3: underdetermined
+  holonomic order 3 degree 2: P=11 E=4 spare=-7: underdetermined
+  holonomic order 4 degree 1: P=9 E=3 spare=-6: underdetermined
+  holonomic order 4 degree 2: P=14 E=3 spare=-11: underdetermined
+
+== mycielski increments: [1, 3, 5, 10, 18]  (N=5 terms)
+  linear order 1: P=1 E=4 spare=3: inconsistent
+  linear order 1 + const: P=2 E=4 spare=2: inconsistent
+  linear order 2: P=2 E=3 spare=1: inconsistent
+  linear order 2 + const: P=3 E=3 spare=0: coeffs [1, 3/2, 1/2]  holdout None->None  [numerology (spare < 2)]
+  linear order 3: P=3 E=2 spare=-1: underdetermined
+  linear order 3 + const: P=4 E=2 spare=-2: underdetermined
+  linear order 4: P=4 E=1 spare=-3: underdetermined
+  linear order 4 + const: P=5 E=1 spare=-4: underdetermined
+  holonomic order 1 degree 1: P=3 E=4 spare=1: nullspace dim 0
+  holonomic order 1 degree 2: P=5 E=4 spare=-1: underdetermined
+  holonomic order 2 degree 1: P=5 E=3 spare=-2: underdetermined
+  holonomic order 2 degree 2: P=8 E=3 spare=-5: underdetermined
+  holonomic order 3 degree 1: P=7 E=2 spare=-5: underdetermined
+  holonomic order 3 degree 2: P=11 E=2 spare=-9: underdetermined
+  holonomic order 4 degree 1: P=9 E=1 spare=-8: underdetermined
+  holonomic order 4 degree 2: P=14 E=1 spare=-13: underdetermined
+
+== ternary tree pw(T_h): [1, 2, 3, 4]  (N=4 terms)
+  linear order 1: P=1 E=3 spare=2: inconsistent
+  linear order 1 + const: P=2 E=3 spare=1: coeffs [1, 1]  holdout 4->True  [numerology (spare < 2)]
+  linear order 2: P=2 E=2 spare=0: coeffs [2, -1]  holdout None->None  [numerology (spare < 2)]
+  linear order 2 + const: P=3 E=2 spare=-1: underdetermined
+  linear order 3: P=3 E=1 spare=-2: underdetermined
+  linear order 3 + const: P=4 E=1 spare=-3: underdetermined
+  linear order 4: P=4 E=0 spare=-4: underdetermined
+  linear order 4 + const: P=5 E=0 spare=-5: underdetermined
+  holonomic order 1 degree 1: P=3 E=3 spare=0: polys [-n, n + 1]  holdout None->None  [numerology (spare < 2)]
+  holonomic order 1 degree 2: P=5 E=3 spare=-2: underdetermined
+  holonomic order 2 degree 1: P=5 E=2 spare=-3: underdetermined
+  holonomic order 2 degree 2: P=8 E=2 spare=-6: underdetermined
+  holonomic order 3 degree 1: P=7 E=1 spare=-6: underdetermined
+  holonomic order 3 degree 2: P=11 E=1 spare=-10: underdetermined
+  holonomic order 4 degree 1: P=9 E=0 spare=-9: underdetermined
+  holonomic order 4 degree 2: P=14 E=0 spare=-14: underdetermined
+
+hypercube formula sum_{i<d} C(i, floor(i/2)): [0, 1, 2, 4, 7, 13, 23, 43, 78]
+A001629 from g.f. x^2/(1-x-x^2)^2: 235*x**10 + 130*x**9 + 71*x**8 + 38*x**7 + 20*x**6 + 10*x**5 + 5*x**4 + 2*x**3 + x**2
+A001629 closed form ((n-1)F_n + 2n F_{n-1})/5: [0, 0, 1, 2, 5, 10, 20, 38, 71, 130, 235]
+Traceback (most recent call last):
+  File "/home/al/dev/MOSP/reports/scratch/increment_witness/recurrences.py", line 126, in <module>
+    print("rsolve A001629 recurrence:", sp.simplify(rsolve(rec, a(n), {a(0): 0, a(1): 0, a(2): 1, a(3): 2})))
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/sympy/simplify/simplify.py", line 618, in simplify
+    original_expr = expr = collect_abs(signsimp(expr))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/sympy/simplify/radsimp.py", line 623, in collect_abs
+    return expr.replace(
+           ^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'replace'
+
+Mycielski order-2 degree-1 fit holds on A001629 for i=2..79 except: [] ; it predicts a_7 = 71 (myciel7 would be 71) and a_8 = 130
+Hypercube order-2 degree-1 fit predicts pw(Q_7) = 539/13 = 41.46153846153846 ; the formula gives 43 -> the fit is wrong
+Hypercube linear order-3 fit predicts pw(Q_7) = 42 ; formula 43 -> wrong
+Mycielski linear order-3 fit a_n = 12/5 a_{n-1} - 2 a_{n-3} predicts pw(M_8) = 356/5 -> not an integer, wrong

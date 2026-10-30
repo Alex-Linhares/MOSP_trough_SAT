@@ -1,0 +1,11 @@
+# baseline_mycielski_4
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 5,1
+labels(new->old) 0:0 1:1 2:2 3:3 4:4 5:6 6:7 7:8 8:9 9:10
+graph6 ImMaSOoPw
+C stdout:
+pathwidth 5 refutation
+
+C stderr:
+line 1: n=10 width=5 status=refutation lower=4 upper_start=5 nodes=11 minor_nodes=0 upper_bound_nodes=8 engine_calls=2 seconds=0.000
+# C certificate line on G_4: minor refuted 4 size 10 rule min-d contractions 5,1

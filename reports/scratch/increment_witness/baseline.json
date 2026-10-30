@@ -1,0 +1,462 @@
+[
+ {
+  "family": "hypercube",
+  "k": 2,
+  "n": 4,
+  "m": 4,
+  "known": 2,
+  "width": 2,
+  "status": "bound",
+  "seconds": 0.01,
+  "stderr": "line 1: n=4 width=2 status=bound lower=2 upper_start=2 nodes=0 minor_nodes=0 upper_bound_nodes=0 engine_calls=1 seconds=0.000",
+  "minor_line": null
+ },
+ {
+  "family": "hypercube",
+  "k": 3,
+  "n": 8,
+  "m": 12,
+  "known": 4,
+  "width": 4,
+  "status": "refutation",
+  "seconds": 0.01,
+  "stderr": "line 1: n=8 width=4 status=refutation lower=3 upper_start=4 nodes=8 minor_nodes=0 upper_bound_nodes=8 engine_calls=2 seconds=0.000",
+  "minor_line": null
+ },
+ {
+  "family": "hypercube",
+  "k": 4,
+  "n": 16,
+  "m": 32,
+  "known": 7,
+  "width": 7,
+  "status": "refutation",
+  "seconds": 0.01,
+  "stderr": "line 1: n=16 width=7 status=refutation lower=6 upper_start=7 nodes=96 minor_nodes=0 upper_bound_nodes=80 engine_calls=2 seconds=0.000",
+  "minor_line": null
+ },
+ {
+  "family": "hypercube",
+  "k": 5,
+  "n": 32,
+  "m": 80,
+  "known": 13,
+  "width": 13,
+  "status": "refutation",
+  "seconds": 0.03,
+  "stderr": "line 1: n=32 width=13 status=refutation lower=12 upper_start=13 nodes=13437 minor_nodes=6149 upper_bound_nodes=4672 engine_calls=16 seconds=0.027",
+  "minor_line": null
+ },
+ {
+  "family": "hypercube",
+  "k": 6,
+  "n": 64,
+  "m": 192,
+  "known": 23,
+  "width": 23,
+  "status": "refutation",
+  "seconds": 7.01,
+  "stderr": "line 1: n=64 width=23 status=refutation lower=22 upper_start=23 nodes=10613037 minor_nodes=2958071 upper_bound_nodes=20001 engine_calls=40 seconds=7.008",
+  "minor_line": null
+ },
+ {
+  "family": "mycielski",
+  "k": 3,
+  "n": 5,
+  "m": 5,
+  "known": 2,
+  "width": 2,
+  "status": "bound",
+  "seconds": 0.0,
+  "stderr": "line 1: n=5 width=2 status=bound lower=2 upper_start=2 nodes=0 minor_nodes=0 upper_bound_nodes=0 engine_calls=1 seconds=0.000",
+  "minor_line": null
+ },
+ {
+  "family": "mycielski",
+  "k": 4,
+  "n": 11,
+  "m": 20,
+  "known": 5,
+  "width": 5,
+  "status": "minor",
+  "seconds": 0.01,
+  "stderr": "line 1: n=11 width=5 status=minor lower=5 upper_start=5 nodes=19 minor_nodes=19 upper_bound_nodes=10 engine_calls=3 seconds=0.000",
+  "minor_line": "minor refuted 4 size 10 rule min-d contractions 5,1",
+  "cert_refuted": 4,
+  "cert_size": 10,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    5,
+    1
+   ]
+  ],
+  "H_nodes": 10,
+  "H_edges": 19,
+  "H_width": 5,
+  "H_status": "refutation",
+  "H_seconds": 0.0,
+  "preserves_copy": true,
+  "describe": "|V|=10 |E|=19 degrees 5^2 4^4 3^4; 5 vertices of the G_k copy survive, 5 new-part vertices survive"
+ },
+ {
+  "family": "mycielski",
+  "k": 5,
+  "n": 23,
+  "m": 71,
+  "known": 10,
+  "width": 10,
+  "status": "minor",
+  "seconds": 0.01,
+  "stderr": "line 1: n=23 width=10 status=minor lower=10 upper_start=10 nodes=74 minor_nodes=74 upper_bound_nodes=77 engine_calls=4 seconds=0.000",
+  "minor_line": "minor refuted 9 size 17 rule min-d contractions 16,1 17,0 18,4 19,0 20,2 11,6",
+  "cert_refuted": 9,
+  "cert_size": 17,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    16,
+    1
+   ],
+   [
+    17,
+    0
+   ],
+   [
+    18,
+    4
+   ],
+   [
+    19,
+    0
+   ],
+   [
+    20,
+    2
+   ],
+   [
+    11,
+    6
+   ]
+  ],
+  "H_nodes": 17,
+  "H_edges": 63,
+  "H_width": 10,
+  "H_status": "refutation",
+  "H_seconds": 0.0,
+  "preserves_copy": true,
+  "describe": "|V|=17 |E|=63 degrees 10^5 9^2 8^1 6^5 5^4; 11 vertices of the G_k copy survive, 6 new-part vertices survive"
+ },
+ {
+  "family": "mycielski",
+  "k": 6,
+  "n": 47,
+  "m": 236,
+  "known": 20,
+  "width": 20,
+  "status": "minor",
+  "seconds": 0.01,
+  "stderr": "line 1: n=47 width=20 status=minor lower=20 upper_start=20 nodes=2960 minor_nodes=2960 upper_bound_nodes=609 engine_calls=9 seconds=0.007",
+  "minor_line": "minor refuted 19 size 35 rule min-d contractions 39,1 40,0 41,4 42,0 43,2 34,6 35,5 36,9 37,5 38,7 28,12 29,11",
+  "cert_refuted": 19,
+  "cert_size": 35,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    39,
+    1
+   ],
+   [
+    40,
+    0
+   ],
+   [
+    41,
+    4
+   ],
+   [
+    42,
+    0
+   ],
+   [
+    43,
+    2
+   ],
+   [
+    34,
+    6
+   ],
+   [
+    35,
+    5
+   ],
+   [
+    36,
+    9
+   ],
+   [
+    37,
+    5
+   ],
+   [
+    38,
+    7
+   ],
+   [
+    28,
+    12
+   ],
+   [
+    29,
+    11
+   ]
+  ],
+  "H_nodes": 35,
+  "H_edges": 218,
+  "H_width": 20,
+  "H_status": "refutation",
+  "H_seconds": 0.01,
+  "preserves_copy": true,
+  "describe": "|V|=35 |E|=218 degrees 21^1 20^1 19^4 18^1 17^1 16^4 15^2 12^3 11^1 10^3 9^5 8^5 7^4; 23 vertices of the G_k copy survive, 12 new-part vertices survive"
+ },
+ {
+  "family": "mycielski",
+  "k": 7,
+  "n": 95,
+  "m": 755,
+  "known": 38,
+  "width": 38,
+  "status": "minor",
+  "seconds": 0.45,
+  "stderr": "line 1: n=95 width=38 status=minor lower=38 upper_start=39 nodes=289629 minor_nodes=289560 upper_bound_nodes=20001 engine_calls=57 seconds=0.448",
+  "minor_line": "minor refuted 37 size 60 rule min-d contractions 86,1 87,0 88,4 89,0 90,2 81,6 82,5 83,9 84,5 85,7 75,12 76,11 77,15 78,21 79,13 91,8 63,24 64,23 65,27 66,33 67,25 39,48 40,47 41,51 42,57 43,49 70,17 71,16 72,20 73,16 74,18 58,29 59,28 60,32 61,28",
+  "cert_refuted": 37,
+  "cert_size": 60,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    86,
+    1
+   ],
+   [
+    87,
+    0
+   ],
+   [
+    88,
+    4
+   ],
+   [
+    89,
+    0
+   ],
+   [
+    90,
+    2
+   ],
+   [
+    81,
+    6
+   ],
+   [
+    82,
+    5
+   ],
+   [
+    83,
+    9
+   ],
+   [
+    84,
+    5
+   ],
+   [
+    85,
+    7
+   ],
+   [
+    75,
+    12
+   ],
+   [
+    76,
+    11
+   ],
+   [
+    77,
+    15
+   ],
+   [
+    78,
+    21
+   ],
+   [
+    79,
+    13
+   ],
+   [
+    91,
+    8
+   ],
+   [
+    63,
+    24
+   ],
+   [
+    64,
+    23
+   ],
+   [
+    65,
+    27
+   ],
+   [
+    66,
+    33
+   ],
+   [
+    67,
+    25
+   ],
+   [
+    39,
+    48
+   ],
+   [
+    40,
+    47
+   ],
+   [
+    41,
+    51
+   ],
+   [
+    42,
+    57
+   ],
+   [
+    43,
+    49
+   ],
+   [
+    70,
+    17
+   ],
+   [
+    71,
+    16
+   ],
+   [
+    72,
+    20
+   ],
+   [
+    73,
+    16
+   ],
+   [
+    74,
+    18
+   ],
+   [
+    58,
+    29
+   ],
+   [
+    59,
+    28
+   ],
+   [
+    60,
+    32
+   ],
+   [
+    61,
+    28
+   ]
+  ],
+  "H_nodes": 60,
+  "H_edges": 693,
+  "H_width": 38,
+  "H_status": "refutation",
+  "H_seconds": 0.08,
+  "preserves_copy": false,
+  "describe": "|V|=60 |E|=693 degrees 43^2 41^1 39^1 36^3 33^1 32^1 29^1 28^5 27^3 26^3 25^5 24^8 23^5 20^1 18^1 17^1 16^1 14^3 13^7 12^6 11^1; 42 vertices of the G_k copy survive, 18 new-part vertices survive"
+ },
+ {
+  "family": "ternary",
+  "k": 2,
+  "n": 13,
+  "m": 12,
+  "known": 2,
+  "width": 2,
+  "status": "minor",
+  "seconds": 0.01,
+  "stderr": "line 1: n=13 width=2 status=minor lower=2 upper_start=2 nodes=24 minor_nodes=24 upper_bound_nodes=9 engine_calls=3 seconds=0.000",
+  "minor_line": "minor refuted 1 size 11 rule min-d contractions 4,1 5,1",
+  "cert_refuted": 1,
+  "cert_size": 11,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    4,
+    1
+   ],
+   [
+    5,
+    1
+   ]
+  ],
+  "H_nodes": 11,
+  "H_edges": 10,
+  "H_width": 2,
+  "H_status": "refutation",
+  "H_seconds": 0.0,
+  "preserves_copy": false,
+  "describe": "|V|=11 |E|=10 degrees 4^2 3^1 2^1 1^7; 2 vertices of the G_k copy survive, 9 new-part vertices survive"
+ },
+ {
+  "family": "ternary",
+  "k": 3,
+  "n": 40,
+  "m": 39,
+  "known": 3,
+  "width": 3,
+  "status": "minor",
+  "seconds": 0.01,
+  "stderr": "line 1: n=40 width=3 status=minor lower=3 upper_start=3 nodes=2339 minor_nodes=2339 upper_bound_nodes=27 engine_calls=17 seconds=0.005",
+  "minor_line": "minor refuted 2 size 38 rule min-d contractions 13,4 14,4",
+  "cert_refuted": 2,
+  "cert_size": 38,
+  "cert_rule": "min-d",
+  "seq": [
+   [
+    13,
+    4
+   ],
+   [
+    14,
+    4
+   ]
+  ],
+  "H_nodes": 38,
+  "H_edges": 37,
+  "H_width": 3,
+  "H_status": "refutation",
+  "H_seconds": 0.01,
+  "preserves_copy": false,
+  "describe": "|V|=38 |E|=37 degrees 4^11 3^1 2^1 1^25; 11 vertices of the G_k copy survive, 27 new-part vertices survive"
+ },
+ {
+  "family": "ternary",
+  "k": 4,
+  "n": 121,
+  "m": 120,
+  "known": 4,
+  "width": 4,
+  "status": "refutation",
+  "seconds": 1.04,
+  "stderr": "line 1: n=121 width=4 status=refutation lower=3 upper_start=5 nodes=1075571 minor_nodes=401271 upper_bound_nodes=202 engine_calls=47 seconds=1.031",
+  "minor_line": null
+ }
+]

@@ -1,0 +1,5 @@
+shrink_hypercube_6_min-d_free_s0: n=64 m=192 target pw=23
+  step 1: contract 0->1  |V|=63 |E|=191  tried 4  6s
+  step 2: contract 6->7  |V|=62 |E|=190  tried 28  27s
+  round 3: no acceptable step among 380 candidates; |V|=62 |E|=190
+FINAL shrink_hypercube_6_min-d_free_s0: |V|=62 |E|=190 degrees 10^2 6^60; 30 vertices of the G_k copy survive, 32 new-part vertices survive; proved width 23 (refutation) in 5.91s; seq valid True, non-isolated deletions 0; preserves copy False; steps 2; total 248s

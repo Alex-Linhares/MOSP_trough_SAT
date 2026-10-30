@@ -1,0 +1,12 @@
+# shrink_mycielski_5_random_free_s28
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 18,22 5,12 19,4 22,16 14,12 2,20 0,17
+labels(new->old) 0:1 1:3 2:4 3:6 4:7 5:8 6:9 7:10 8:11 9:12 10:13 11:15 12:16 13:17 14:20 15:21
+graph6 OGga@~SytcH_w^|S}Yw{c
+C stdout:
+pathwidth 10 refutation
+
+C stderr:
+line 1: n=16 width=10 status=refutation lower=8 upper_start=10 nodes=47 minor_nodes=0 upper_bound_nodes=35 engine_calls=2 seconds=0.000
+# |V|=16 |E|=59 degrees 11^1 10^2 9^3 8^1 7^1 6^5 5^3; 8 vertices of the G_k copy survive, 8 new-part vertices survive
+# G_k copy preserved: False

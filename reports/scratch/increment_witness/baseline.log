@@ -1,0 +1,14 @@
+hypercube 2 n=4 known=2 C: 2 bound 0.01s | no minor certificate
+hypercube 3 n=8 known=4 C: 4 refutation 0.01s | no minor certificate
+hypercube 4 n=16 known=7 C: 7 refutation 0.01s | no minor certificate
+hypercube 5 n=32 known=13 C: 13 refutation 0.03s | no minor certificate
+hypercube 6 n=64 known=23 C: 23 refutation 7.01s | no minor certificate
+mycielski 3 n=5 known=2 C: 2 bound 0.0s | no minor certificate
+mycielski 4 n=11 known=5 C: 5 minor 0.01s | minor H: |V|=10 |E|=19 refuted 4 rule min-d; H proved 5 refutation in 0.0s; preserves copy True
+mycielski 5 n=23 known=10 C: 10 minor 0.01s | minor H: |V|=17 |E|=63 refuted 9 rule min-d; H proved 10 refutation in 0.0s; preserves copy True
+mycielski 6 n=47 known=20 C: 20 minor 0.01s | minor H: |V|=35 |E|=218 refuted 19 rule min-d; H proved 20 refutation in 0.01s; preserves copy True
+mycielski 7 n=95 known=38 C: 38 minor 0.45s | minor H: |V|=60 |E|=693 refuted 37 rule min-d; H proved 38 refutation in 0.08s; preserves copy False
+ternary 2 n=13 known=2 C: 2 minor 0.01s | minor H: |V|=11 |E|=10 refuted 1 rule min-d; H proved 2 refutation in 0.0s; preserves copy False
+ternary 3 n=40 known=3 C: 3 minor 0.01s | minor H: |V|=38 |E|=37 refuted 2 rule min-d; H proved 3 refutation in 0.01s; preserves copy False
+ternary 4 n=121 known=4 C: 4 refutation 1.04s | no minor certificate
+total 7 s

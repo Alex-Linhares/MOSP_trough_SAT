@@ -1,0 +1,12 @@
+# shrink_ternary_2_min-d_free_s0
+# contraction sequence (v,u): contract v into u; (v,-1) deletes v; original labels
+seq 4,1 5,1 7,2 8,2 10,3 11,3
+labels(new->old) 0:0 1:1 2:2 3:3 4:6 5:9 6:12
+graph6 FsO__
+C stdout:
+pathwidth 2 refutation
+
+C stderr:
+line 1: n=7 width=2 status=refutation lower=1 upper_start=2 nodes=6 minor_nodes=0 upper_bound_nodes=6 engine_calls=2 seconds=0.000
+# |V|=7 |E|=6 degrees 3^1 2^3 1^3; 2 vertices of the G_k copy survive, 5 new-part vertices survive
+# G_k copy preserved: False
