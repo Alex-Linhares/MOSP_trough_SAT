@@ -1,0 +1,2 @@
+hist n=18 pw=1 count=16512
+hist n=18 pw=2 count=107355

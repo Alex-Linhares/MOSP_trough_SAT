@@ -1,0 +1,10 @@
+N=21 starts: 80, their pw: {2: 80}
+  N=21 round 0: 12160 neighbours, pw hist {2: 12160}, best 2
+  N=21 round 1: 893 neighbours, pw hist {2: 893}, best 2
+  N=21 round 2: 1064 neighbours, pw hist {2: 1064}, best 2
+N=21: K=2, evaluated 14117, hits 0, overall hist {2: 14117}
+N=66 starts: 27, their pw: {3: 27}
+  N=66 round 0: 46656 neighbours, pw hist {3: 46656}, best 3
+  N=66 round 1: 10560 neighbours, pw hist {3: 10560}, best 3
+  N=66 round 2: 10880 neighbours, pw hist {3: 10880}, best 3
+N=66: K=3, evaluated 68096, hits 0, overall hist {3: 68096}

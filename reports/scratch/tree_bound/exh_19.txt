@@ -1,0 +1,2 @@
+hist n=19 pw=1 count=32896
+hist n=19 pw=2 count=285059

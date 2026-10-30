@@ -1,0 +1,3 @@
+hist n=27 pw=1 count=8390656
+hist n=27 pw=2 count=742479189
+hist n=27 pw=3 count=195615

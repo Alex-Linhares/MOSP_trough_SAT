@@ -1,0 +1,3 @@
+hist n=26 pw=1 count=4196352
+hist n=26 pw=2 count=275561255
+hist n=26 pw=3 count=35843

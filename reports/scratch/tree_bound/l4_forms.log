@@ -1,0 +1,15 @@
+N=2 trees=1 | (D) W-B distribution {0: 1} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 0
+N=3 trees=1 | (D) W-B distribution {0: 1} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 0
+N=4 trees=2 | (D) W-B distribution {0: 2} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 0
+N=5 trees=3 | (D) W-B distribution {0: 3} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 0
+N=6 trees=6 | (D) W-B distribution {0: 6} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 1
+N=7 trees=11 | (D) W-B distribution {0: 11} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 0
+N=8 trees=23 | (D) W-B distribution {0: 23} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 3
+N=9 trees=47 | (D) W-B distribution {0: 47} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 14
+N=10 trees=106 | (D) W-B distribution {0: 106} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 10
+N=11 trees=235 | (D) W-B distribution {0: 235} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 56
+N=12 trees=551 | (D) W-B distribution {0: 551} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 231
+N=13 trees=1301 | (D) W-B distribution {0: 1301} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 270
+N=14 trees=3159 | (D) W-B distribution {0: 3159} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 1146
+N=15 trees=7741 | (D) W-B distribution {0: 7741} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 4026
+N=16 trees=19320 | (D) W-B distribution {0: 19320} violations=0 | (C) leaf-leaf path not optimal on 0 trees | (B) trees with a vertex r no path through r reaches < ceil(N/3): 6046

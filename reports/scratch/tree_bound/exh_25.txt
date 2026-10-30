@@ -1,0 +1,3 @@
+hist n=25 pw=1 count=2098176
+hist n=25 pw=2 count=102532804
+hist n=25 pw=3 count=5910

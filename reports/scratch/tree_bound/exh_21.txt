@@ -1,0 +1,2 @@
+hist n=21 pw=1 count=131328
+hist n=21 pw=2 count=2013177

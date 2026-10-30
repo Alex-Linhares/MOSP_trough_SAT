@@ -1,0 +1,8 @@
+N=17 done in 0 s: hist n=17 pw=1 count=8256;hist n=17 pw=2 count=40373; pw>=3 trees: 0
+N=18 done in 3 s: hist n=18 pw=1 count=16512;hist n=18 pw=2 count=107355; pw>=3 trees: 0
+N=19 done in 0 s: hist n=19 pw=1 count=32896;hist n=19 pw=2 count=285059; pw>=3 trees: 0
+N=20 done in 4 s: hist n=20 pw=1 count=65792;hist n=20 pw=2 count=757273; pw>=3 trees: 0
+N=21 done in 4 s: hist n=21 pw=1 count=131328;hist n=21 pw=2 count=2013177; pw>=3 trees: 0
+N=22 done in 15 s: hist n=22 pw=1 count=262656;hist n=22 pw=2 count=5361090;hist n=22 pw=3 count=10; pw>=3 trees: 10
+N=23 done in 33 s: hist n=23 pw=1 count=524800;hist n=23 pw=2 count=14303174;hist n=23 pw=3 count=100; pw>=3 trees: 100
+N=24 done in 70 s: hist n=24 pw=1 count=1049600;hist n=24 pw=2 count=38249443;hist n=24 pw=3 count=854; pw>=3 trees: 854

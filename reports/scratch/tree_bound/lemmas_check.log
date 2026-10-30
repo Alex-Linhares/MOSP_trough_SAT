@@ -1,0 +1,29 @@
+L3: pw(T) <= 1 + max pw(C) over components of T - P, every tree, every path
+  N=2 trees=1 (tree,path) pairs=3 violations=0 tight=3
+  N=3 trees=1 (tree,path) pairs=6 violations=0 tight=4
+  N=4 trees=2 (tree,path) pairs=20 violations=0 tight=11
+  N=5 trees=3 (tree,path) pairs=45 violations=0 tight=21
+  N=6 trees=6 (tree,path) pairs=126 violations=0 tight=47
+  N=7 trees=11 (tree,path) pairs=308 violations=0 tight=113
+  N=8 trees=23 (tree,path) pairs=828 violations=0 tight=280
+  N=9 trees=47 (tree,path) pairs=2115 violations=0 tight=778
+  N=10 trees=106 (tree,path) pairs=5830 violations=0 tight=2333
+L4: path P with all components of T - P of size < m, m = ceil(N/3) (the binding case)
+  N=1 m=1 trees=1 violations=0 min-over-paths max-component hist={0: 1}
+  N=2 m=1 trees=1 violations=0 min-over-paths max-component hist={0: 1}
+  N=3 m=1 trees=1 violations=0 min-over-paths max-component hist={0: 1}
+  N=4 m=2 trees=2 violations=0 min-over-paths max-component hist={0: 1, 1: 1}
+  N=5 m=2 trees=3 violations=0 min-over-paths max-component hist={0: 1, 1: 2}
+  N=6 m=2 trees=6 violations=0 min-over-paths max-component hist={0: 1, 1: 5}
+  N=7 m=3 trees=11 violations=0 min-over-paths max-component hist={0: 1, 1: 9, 2: 1}
+  N=8 m=3 trees=23 violations=0 min-over-paths max-component hist={0: 1, 1: 19, 2: 3}
+  N=9 m=3 trees=47 violations=0 min-over-paths max-component hist={0: 1, 1: 35, 2: 11}
+  N=10 m=4 trees=106 violations=0 min-over-paths max-component hist={0: 1, 1: 71, 2: 30, 3: 4}
+  N=11 m=4 trees=235 violations=0 min-over-paths max-component hist={0: 1, 1: 135, 2: 83, 3: 16}
+  N=12 m=4 trees=551 violations=0 min-over-paths max-component hist={0: 1, 1: 271, 2: 212, 3: 67}
+  N=13 m=5 trees=1301 violations=0 min-over-paths max-component hist={0: 1, 1: 527, 2: 537, 3: 216, 4: 20}
+  N=14 m=5 trees=3159 violations=0 min-over-paths max-component hist={0: 1, 1: 1055, 2: 1319, 3: 674, 4: 110}
+  N=15 m=5 trees=7741 violations=0 min-over-paths max-component hist={0: 1, 1: 2079, 2: 3206, 3: 1945, 4: 510}
+  N=16 m=6 trees=19320 violations=0 min-over-paths max-component hist={0: 1, 1: 4159, 2: 7677, 3: 5478, 4: 1840, 5: 165}
+  N=17 m=6 trees=48629 violations=0 min-over-paths max-component hist={0: 1, 1: 8255, 2: 18228, 3: 14907, 4: 6173, 5: 1065}
+  N=18 m=6 trees=123867 violations=0 min-over-paths max-component hist={0: 1, 1: 16511, 2: 42906, 3: 39931, 4: 19238, 5: 5280}
