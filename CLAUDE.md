@@ -481,6 +481,10 @@ lean/
         EmptyPair.lean                  Harper's vertex-isoperimetric bound in layout form (∀ j ∃ |A| = j, |N[A]| ≤ j + pw) and the
                                         sharp empty-pair bound n − 2s* − 2 ≤ pw behind the random-graph first moment; sorry-free (2026-10-30)
         IndependenceBound.lean          pathwidth ≤ n − α(G), by the bags (V ∖ I) ∪ {v}; against Mathlib's indepNum; sorry-free (2026-10-30)
+        TreeBound.lean                  trees: pw ≤ k whenever |V| ≤ treeBound k (1, 6, 21, 66, …, i.e. 2·treeBound k + 3 = 5·3^k), sharp
+                                        (extremalTree k has treeBound k + 1 vertices and pw k + 1); the survey's pw ≤ ⌊log₃(2N+1)⌋ as a
+                                        corollary; complete ternary tree of height h has pw = h; the gluing, path and centroid lemmas
+                                        behind it are general; sorry-free (2026-10-30, a prover agent checked by a refuter agent)
         ForMathlib/                     Candidates for Mathlib contribution
         Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
             GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1

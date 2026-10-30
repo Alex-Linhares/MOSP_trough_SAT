@@ -281,7 +281,14 @@ inequalities rather than asymptotics.
       of Harper's bound `∀ j ∃ |A| = j, |N[A]| ≤ j + pw` (sorry-free, standard
       axioms); the probabilistic half remains. (3)'s core proved in Lean the
       same day, `IndependenceBound.lean`, `pathwidth ≤ n − indepNum`. (2)'s
-      tree bounds not yet in Lean.*
+      tree bounds proved in Lean the same evening, `TreeBound.lean`, by a prover
+      agent with a refuter agent attacking every lemma first (gossip in
+      `reports/scratch/tree_bound/gossip.md`): `tree_pathwidth_le_log` (the
+      survey's bound), its sharp form `tree_pathwidth_le_treeBound` with
+      `treeBound_sharp`, and `pathwidth_ternaryTree`; no counterexample to
+      anything, trees exhaustively checked to 26+ vertices. All three
+      deterministic cores are now theorems; only the probabilistic halves
+      remain, blocked on a G(n, p) model.*
 - [ ] **(1) Linear lower bound for average degree c > 4 ln 2 ≈ 2.77.**
       Deterministic core: if vs(G) ≤ k, there are disjoint A, R with
       |A| = |R| ≥ ⌈(n − k)/2⌉ − 1 and no A–R edge (survey §1.4). Then the

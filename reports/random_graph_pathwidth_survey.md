@@ -184,6 +184,18 @@ So for large `c`: **`1 − pw/n ∈ [(2 − o(1)) ln c/c, (4 + o(1)) ln c/c]`**
   - *Upper bound:* components have at most `(1+o(1)) ln n/(c − 1 − ln c)` vertices
     and are trees or unicyclic. A tree on `N` vertices has `pw ≤ log₃(2N+1)`
     (Scheffler; classical, UNVERIFIED reference), and a unicyclic graph adds 1.
+    **Proved in Lean 2026-10-30**, `lean/MOSPFormalization/TreeBound.lean`,
+    `tree_pathwidth_le_log`, as a corollary of the sharp threshold
+    `tree_pathwidth_le_treeBound`: a tree on at most `treeBound k` vertices
+    (`1, 6, 21, 66, 201, …`, `2·treeBound k + 3 = 5·3^k`) has pathwidth at most
+    `k`, and `treeBound_sharp` exhibits a tree on `treeBound k + 1` vertices of
+    pathwidth `k + 1`; so `pw ≤ 1 + log₃((2N + 3)/5)`, about `0.46` below the
+    `log₃(2N+1)` above. The complete ternary tree of height `h` has pathwidth
+    exactly `h` (`pathwidth_ternaryTree`). Standard axioms only; the proof is
+    elementary (a path lemma and a centroid splitting lemma), not the
+    Ellis–Sudborough–Turner characterisation. A refuter agent checked every
+    lemma on small trees first and found none false
+    (`reports/scratch/tree_bound/gossip.md`).
   - *Lower bound:* a fixed tree `T` on `k` vertices appears as a component with
     expectation `≈ n c^{k−1} e^{−ck}/|Aut T|`. This tends to infinity for the
     complete ternary tree with `k = Θ(log n)` vertices, so a whp copy follows by
