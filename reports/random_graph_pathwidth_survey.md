@@ -534,19 +534,22 @@ PACE 2017 exact-track winner, Larisch & Salfelder's p17 (`grtd -m 64`, built in
 core-hours: **exact on 1,305 more**, every graph at `n ≤ 50` (the slowest
 cell, `n = 50, c = 8`, at a median of 85 s and a maximum of 582 s) and
 `n = 60` up to `c = 4`; at `n = 60` it settled 63 of 134 at `c = 6`, 3 of 132
-at `c = 8` and none at `c = 10` within the cap (a one-hour retry of those 334
-is running). Its decompositions are all checked valid by `check_td.py`, every
+at `c = 8` and none at `c = 10` within the cap. A one-hour cap on those 334
+(258 core-hours more) settled 170: `n = 60` now stands at 114 of 134 at
+`c = 6`, 66 of 132 at `c = 8` and 56 of 133 at `c = 10`, the solved ones at
+a median of 20–40 minutes each; the 164 still open are the hardest of their
+cells, so those three cells are biased toward the easier graphs. Its decompositions are all checked valid by `check_td.py`, every
 answer lies in our proved interval, and on 120 graphs where both are exact the
 two solvers agree. Tamaki's 2016 solver, also in p17 as `tw-exact`, settles
-only the sparse censored graphs. **5,815 of 6,149 exact** in all:
+only the sparse censored graphs. **5,985 of 6,149 exact** in all:
 
 | `pw − tw` | 0 | 1 | 2 | ≥ 3 |
 |---|---|---|---|---|
-| graphs | 4,341 | 1,468 | 6 | 0 |
+| graphs | 4,478 | 1,501 | 6 | 0 |
 
 Mean `pw − tw` and, in parentheses, the share with `pw = tw`; every cell has
-135–137 graphs except `n = 60, c = 6` (63) and `c = 8` (3); `n = 60, c = 10`
-is open:
+135–137 graphs except the three starred, `n = 60` at `c = 6, 8, 10` with 114,
+66 and 56 (the easier part of each cell):
 
 | `n` | `c = 0.5` | 1 | 1.5 | 2 | 3 | 4 | 6 | 8 | 10 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -554,7 +557,7 @@ is open:
 | 30 | 0.01 (99%) | 0.18 (82%) | 0.22 (78%) | 0.36 (64%) | 0.35 (65%) | 0.29 (71%) | 0.20 (80%) | 0.18 (82%) | 0.20 (80%) |
 | 40 | 0.01 (99%) | 0.31 (69%) | 0.36 (64%) | 0.36 (64%) | 0.39 (61%) | 0.36 (64%) | 0.23 (77%) | 0.15 (85%) | 0.12 (88%) |
 | 50 | 0.04 (96%) | 0.26 (74%) | 0.45 (55%) | 0.52 (48%) | 0.54 (48%) | 0.40 (61%) | 0.21 (79%) | 0.15 (85%) | 0.14 (86%) |
-| 60 | 0.02 (98%) | 0.32 (68%) | 0.45 (55%) | 0.56 (44%) | 0.54 (46%) | 0.33 (67%) | 0.24 (76%)\* | 0.33\* | — |
+| 60 | 0.02 (98%) | 0.32 (68%) | 0.45 (55%) | 0.56 (44%) | 0.54 (46%) | 0.33 (67%) | 0.22 (78%)\* | 0.21 (79%)\* | 0.18 (82%)\* |
 
 `pw = tw` on 75% overall and the gap never exceeds 2 (six graphs, at
 `n = 40–50`, `c = 2–6`). Two things are visible now that the dense cells are
@@ -579,8 +582,8 @@ and 0.405 at `c = 8`, against Gogate–Dechter's 0.216, 0.346 and 0.407 on
 `c = 6` row of theirs is now 1.2 stacks above a 136-graph exact mean.
 
 **Not measured.** The critical window (item 2; the grid has no points between
-`c = 1` and `1.5`), treewidth at `n = 60, c = 10` (and most of `c = 8`), and
-anything at `n ≥ 80, c ≥ 4` beyond bounds.
+`c = 1` and `1.5`), treewidth on the 164 hardest graphs at `n = 60, c ≥ 6`
+(an hour each was not enough), and anything at `n ≥ 80, c ≥ 4` beyond bounds.
 
 **What the pilot was for.** It priced the full measurement. Scaling each
 cell's mean seconds per proved graph, 1,000 samples per cell over the whole
