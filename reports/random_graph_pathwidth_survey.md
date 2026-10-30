@@ -643,6 +643,47 @@ not resolve, and a cap of 240 s there buys nothing but bounds. The decision on r
 is "The large-n theorem first" (`paper1/todo.md`), which these data test and
 cannot prove.
 
+### (e) The sharp tree bound against the data (2026-10-31)
+
+`TreeBound.lean` gives, for a tree on `N` vertices, `pw ≤ tb(N)`, the least `k`
+with `N ≤ (5·3^k − 3)/2`, i.e. `⌊log₃((6N + 3)/5)⌋` for `N ≥ 2`, stepping up at
+7, 22, 67, 202, 607 vertices; with the cyclomatic number this is the upper
+bound `pw(G) ≤ max_C [tb(|C|) + (m_C − |C| + 1)]` over the components `C`,
+computable from vertex, edge and component counts alone. Measured by
+`reports/scratch/tree_bound/compare_bound.py` (`compare_bound.log`), zero
+violations in either data set.
+
+**Against the other upper bounds of §1.4, on the pilot graphs** (mean excess
+over the exact pathwidth; "best" is the share of graphs on which it is the
+smallest of the four; the edge-count column omits Kneis et al.'s `O(log n)`
+term and the independence column uses a greedy independent set):
+
+| `n` | `c` | mean pw | tree + cyc (sharp) | tree + cyc (old `log₃(2N+1)`) | `m/5.769` | `n − α_greedy` | best | exact |
+|---|---|---|---|---|---|---|---|---|
+| 60 | 0.5 | 1.06 | 0.15 | 0.74 | 1.44 | 9.2 | 99% | 85% |
+| 60 | 1.0 | 1.70 | 0.82 | 1.28 | 3.43 | 14.7 | 99% | 36% |
+| 60 | 1.5 | 2.71 | 3.34 | 3.80 | 5.06 | 17.9 | 81% | 7% |
+| 60 | 2.0 | 4.26 | 9.12 | 10.05 | 6.09 | 19.5 | 21% | 1% |
+| 60 | 3.0 | 8.13 | 27.3 | 28.3 | 7.14 | 20.4 | 0% | 0% |
+| 60 | 4.0 | 12.27 | 51.7 | 52.7 | 8.35 | 19.9 | 0% | 0% |
+
+(`n = 30` is the same picture.) The sharpening is worth about half a unit over
+the old form throughout; the bound is the best available below `c ≈ 1.5`, is
+overtaken by the edge-count bound at `c = 2`, and is useless from `c = 3`,
+where the cyclomatic term grows linearly. That is the shape §1.4 predicted
+(cyclomatic best for `1 < c ≲ 2.2`).
+
+**Against every certified class of the pathwidth dataset** (16,635 classes,
+1 s): exact on 109, within 2 on 578, and otherwise far off, the gap being the
+cyclomatic number: median gap 14 on the 11,199 Rome graphs, 3 on the 1,061
+control-flow graphs (within 2 on 406 of them), 430 on Harwell–Boeing, 617 on
+the Chu & Stuckey MOSP graphs, 2,816 on the 2,916-vertex grid of width 54. On
+the 176 trees and forests in the dataset it is exact on 102 and within 2 on
+167; on **all 28 VSPLIB trees it is exact**, including the seven on 202 vertices
+at width 5: 202 is the threshold size for pathwidth 5, so those benchmark
+trees are the extremal trees of the theorem (`extremalTree 4`), on which no
+size bound can do better.
+
 ---
 
 ## PDFs saved to `literature/` in this session

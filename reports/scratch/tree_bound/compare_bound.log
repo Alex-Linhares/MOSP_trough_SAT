@@ -1,0 +1,36 @@
+A. pilot graphs; violations: 0
+  n    c    pw | sharp tree+cyc  old tree+cyc  m/5.769  n−α_greedy | best  exact(sharp/old)
+ 30  0.5  1.05 |           0.08          0.48     0.23        4.15 |  65%   92% /  52%
+ 30  1.0  1.42 |           0.58          1.10     1.09        6.66 |  85%   51% /  15%
+ 30  1.5  2.01 |           1.58          2.08     1.65        8.16 |  64%   21% /   7%
+ 30  2.0  2.89 |           4.81          5.05     2.10        8.82 |  18%    4% /   0%
+ 30  3.0  4.96 |          13.72         13.72     2.50        9.31 |   0%    0% /   0%
+ 30  4.0  7.09 |          25.72         25.72     3.01        9.10 |   0%    0% /   0%
+ 60  0.5  1.06 |           0.15          0.74     1.44        9.21 |  99%   85% /  26%
+ 60  1.0  1.70 |           0.82          1.28     3.43       14.73 |  99%   36% /  10%
+ 60  1.5  2.71 |           3.34          3.80     5.06       17.92 |  81%    7% /   1%
+ 60  2.0  4.26 |           9.12         10.05     6.09       19.45 |  21%    1% /   0%
+ 60  3.0  8.13 |          27.29         28.29     7.14       20.35 |   0%    0% /   0%
+ 60  4.0 12.27 |          51.68         52.68     8.35       19.93 |   0%    0% /   0%
+
+B. dataset: 16635 certified classes; violations: 0
+  gap: exact 109  1: 469  2–5: 2188  6–20: 6737  >20: 7132
+  Rome graphs                               11199  exact    61  ≤2   671  median gap    14.0  max n 110
+  MOSP: Challenge 2005                       3169  exact     8  ≤2    57  median gap   108.0  max n 100
+  freetdi control-flow graphs                1061  exact     6  ≤2   406  median gap     3.0  max n 637
+  MOSP: Faggioli & Bentivoglio                274  exact     0  ≤2     0  median gap    66.0  max n 50
+  MOSP: Chu & Stuckey                         200  exact     0  ≤2     0  median gap   616.5  max n 125
+  PACE 2017 exact                             129  exact     0  ≤2     0  median gap   383.0  max n 963
+  freetdi named graphs                        126  exact     2  ≤2     7  median gap    22.0  max n 255
+  Small (Marti et al. 2008)                    84  exact     0  ≤2    21  median gap     4.0  max n 24
+  PACE 2017 bonus                              78  exact     0  ≤2     0  median gap   201.5  max n 331
+  PACE 2016                                    69  exact     3  ≤2     3  median gap   116.0  max n 589
+  VSPLIB grids                                 50  exact     0  ≤2     0  median gap   789.0  max n 2916
+  VSPLIB Harwell-Boeing                        44  exact     0  ≤2     0  median gap   429.5  max n 960
+  MOSP: Carvalho & Soma 2015                   38  exact     0  ≤2     0  median gap  5428.5  max n 200
+  TreewidthLIB colouring                       33  exact     1  ≤2     1  median gap  1025.0  max n 496
+  VSPLIB trees                                 28  exact    28  ≤2    28  median gap     0.0  max n 202
+  MOSP: SCOOP                                  24  exact     0  ≤2     0  median gap    32.5  max n 134
+  PACE 2017 heuristic                          19  exact     0  ≤2     0  median gap   303.0  max n 500
+  VLSI gate matrix circuits                    10  exact     0  ≤2     0  median gap    33.0  max n 84
+  trees/forests: 176 exact 102 gaps {0: 102, 1: 43, 2: 22, 3: 8, 4: 1}
