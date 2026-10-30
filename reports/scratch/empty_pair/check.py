@@ -67,7 +67,7 @@ def one(line):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--max-n", type=int, default=9); ap.add_argument("--workers", type=int, default=16)
-    ap.add_argument("--selftest", action="store_true"); a = ap.parse_args()
+    ap.add_argument("--selftest", action="store_true"); ap.add_argument("--min-n", type=int, default=1); a = ap.parse_args()
     if a.selftest:
         import networkx as nx
         from fixed_parameter_algorithm.pathwidth import compute_pathwidth
@@ -78,7 +78,7 @@ def main():
                 tot += 1
                 if vs(nn, adj) != compute_pathwidth(G)[0]: bad += 1
         print(f"selftest: {tot} graphs to 7 vertices, {bad} pathwidth disagreements"); return
-    for n in range(1, a.max_n + 1):
+    for n in range(a.min_n, a.max_n + 1):
         lines = subprocess.run(["nauty-geng", "-q", str(n)], capture_output=True, text=True).stdout.splitlines()
         with Pool(a.workers) as p: res = p.map(one, lines, chunksize=256)
         slack1 = collections.Counter(); slack2 = collections.Counter(); viol1 = viol2 = 0

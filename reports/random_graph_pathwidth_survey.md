@@ -114,7 +114,14 @@ rounding stated above (`|A| = |R| ≥ ⌈(n−k)/2⌉ − 1`, i.e. with
 at least 1 on every graph to 9 vertices, so `pw ≥ n − 2 s′ − 1` is what the
 data suggest for that form (unproved; the sharp form above is the one to
 formalise). Pathwidth by a vertex-separation subset DP cross-checked against
-`fixed_parameter_algorithm.pathwidth` on every graph to 7 vertices.
+`fixed_parameter_algorithm.pathwidth` on every graph to 7 vertices. The other two
+deterministic cores of this report were checked the same way
+(`check23.py`): §2's tree bound `pw ≤ ⌊log₃(2N+1)⌋` on every tree to 16
+vertices (32,547 trees, zero violations, tight for N = 7–12, where the
+largest pathwidth is 2) and `pw = h` for the complete ternary trees of height
+1, 2, 3 (4, 13 and 40 vertices, the C program with refutations); §3's
+`pw ≤ n − α(G)` on every graph to 9 vertices, zero violations, tight on 6.5%
+at n = 9.
 
 **Upper bounds** (any graph, applied to `G(n,c/n)`):
 - **Cyclomatic number** [derived]: `pw ≤ pw(spanning forest) + (m − n + #components)`.
