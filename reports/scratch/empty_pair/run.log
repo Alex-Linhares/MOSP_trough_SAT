@@ -1,0 +1,9 @@
+n=1 graphs=1 | sharp form: violations=0 slack {1: 1} | survey rounding: violations=0 slack {1: 1}
+n=2 graphs=2 | sharp form: violations=0 slack {0: 1, 1: 1} | survey rounding: violations=0 slack {1: 1, 2: 1}
+n=3 graphs=4 | sharp form: violations=0 slack {0: 1, 1: 2, 2: 1} | survey rounding: violations=0 slack {1: 2, 2: 2}
+n=4 graphs=11 | sharp form: violations=0 slack {0: 3, 1: 6, 2: 2} | survey rounding: violations=0 slack {1: 4, 2: 5, 3: 2}
+n=5 graphs=34 | sharp form: violations=0 slack {0: 7, 1: 17, 2: 8, 3: 2} | survey rounding: violations=0 slack {1: 13, 2: 15, 3: 6}
+n=6 graphs=156 | sharp form: violations=0 slack {0: 40, 1: 68, 2: 42, 3: 6} | survey rounding: violations=0 slack {1: 48, 2: 78, 3: 26, 4: 4}
+n=7 graphs=1044 | sharp form: violations=0 slack {0: 243, 1: 452, 2: 305, 3: 40, 4: 4} | survey rounding: violations=0 slack {1: 325, 2: 532, 3: 167, 4: 20}
+n=8 graphs=12346 | sharp form: violations=0 slack {0: 2592, 1: 6135, 2: 3256, 3: 343, 4: 20} | survey rounding: violations=0 slack {1: 4437, 2: 5710, 3: 2030, 4: 158, 5: 11}
+n=9 graphs=274668 | sharp form: violations=0 slack {0: 61823, 1: 146366, 2: 61076, 3: 5185, 4: 207, 5: 11} | survey rounding: violations=0 slack {1: 106966, 2: 121136, 3: 44506, 4: 1970, 5: 90}

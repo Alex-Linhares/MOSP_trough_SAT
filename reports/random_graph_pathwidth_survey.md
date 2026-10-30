@@ -103,6 +103,19 @@ Lemma 3 (g5)) proves `VS ≥ (1/2 − ε)n − 1` on mixing graphs, which holds 
 position `(1−ε)n` is used instead of `n/2`. [pub for the lemma; the improvement
 is derived]
 
+*Deterministic core checked by brute force, 2026-10-30
+(`reports/scratch/empty_pair/check.py`, per the todo's "check before Lean").*
+In checkable form: with `s*(G) = max_A min(|A| − 1, n − |N[A]|)` (a set `A`
+with at least `s* + 1` vertices and at least `s*` vertices outside its closed
+neighbourhood), **`pw(G) ≥ n − 2 s*(G) − 2`** for every graph on ≤ 9 vertices,
+all 288,266 of them, zero violations; tight on 22.5% at `n = 9`. The weaker
+rounding stated above (`|A| = |R| ≥ ⌈(n−k)/2⌉ − 1`, i.e. with
+`min(|A|, n − |N[A]|)`) also holds everywhere and is never tight: its slack is
+at least 1 on every graph to 9 vertices, so `pw ≥ n − 2 s′ − 1` is what the
+data suggest for that form (unproved; the sharp form above is the one to
+formalise). Pathwidth by a vertex-separation subset DP cross-checked against
+`fixed_parameter_algorithm.pathwidth` on every graph to 7 vertices.
+
 **Upper bounds** (any graph, applied to `G(n,c/n)`):
 - **Cyclomatic number** [derived]: `pw ≤ pw(spanning forest) + (m − n + #components)`.
   The forest term is `O(log n)`. Whp `m − n + κ = n[c/2 − 1 + (x − x²/2)/c] + o(n)`,

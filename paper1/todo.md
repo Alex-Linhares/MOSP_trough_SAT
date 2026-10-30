@@ -269,6 +269,10 @@ inequalities rather than asymptotics.
 - [ ] **Brute-force check first** (lesson from the false branch lemma): each
       deterministic core against every graph to 9–10 vertices
       (`learning/pwtw_exhaust.py` has the census), before any Lean.
+      *(1)'s core done 2026-10-30: `pw ≥ n − 2 s* − 2` with
+      `s* = max_A min(|A| − 1, n − |N[A]|)`, zero violations on all 288,266
+      graphs to 9 vertices (`reports/scratch/empty_pair/`, survey §1.4);
+      10 vertices running. (2)'s and (3)'s cores not yet checked.*
 - [ ] **(1) Linear lower bound for average degree c > 4 ln 2 ≈ 2.77.**
       Deterministic core: if vs(G) ≤ k, there are disjoint A, R with
       |A| = |R| ≥ ⌈(n − k)/2⌉ − 1 and no A–R edge (survey §1.4). Then the
