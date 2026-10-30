@@ -7,3 +7,4 @@ n=6 graphs=156 | sharp form: violations=0 slack {0: 40, 1: 68, 2: 42, 3: 6} | su
 n=7 graphs=1044 | sharp form: violations=0 slack {0: 243, 1: 452, 2: 305, 3: 40, 4: 4} | survey rounding: violations=0 slack {1: 325, 2: 532, 3: 167, 4: 20}
 n=8 graphs=12346 | sharp form: violations=0 slack {0: 2592, 1: 6135, 2: 3256, 3: 343, 4: 20} | survey rounding: violations=0 slack {1: 4437, 2: 5710, 3: 2030, 4: 158, 5: 11}
 n=9 graphs=274668 | sharp form: violations=0 slack {0: 61823, 1: 146366, 2: 61076, 3: 5185, 4: 207, 5: 11} | survey rounding: violations=0 slack {1: 106966, 2: 121136, 3: 44506, 4: 1970, 5: 90}
+n=10 graphs=12005168 | sharp form: violations=0 slack {0: 3431743, 1: 5912222, 2: 2525380, 3: 132544, 4: 3189, 5: 90} | survey rounding: violations=0 slack {1: 4346095, 2: 5911021, 3: 1697546, 4: 49257, 5: 1215, 6: 34}

@@ -76,15 +76,7 @@ theorem cubeGraph_adj {d : ℕ} {x y : CubeV d} : (cubeGraph d).Adj x y ↔ Hype
 
 /-! ### Layouts: prefixes and their boundaries -/
 
-theorem card_prefixSet {V : Type*} [Fintype V] [DecidableEq V] (σ : LinearLayout V) {i : ℕ}
-    (hi : i < Fintype.card V) : (prefixSet σ i).card = i + 1 := by
-  have : (prefixSet σ i).map σ.toEmbedding = Finset.Iic ⟨i, hi⟩ := by
-    ext j
-    simp only [mem_map, mem_prefixSet_iff, Equiv.coe_toEmbedding, mem_Iic, Fin.le_def]
-    constructor
-    · rintro ⟨v, hv, rfl⟩; exact hv
-    · intro hj; exact ⟨σ.symm j, by simpa using hj, by simp⟩
-  rw [← card_map σ.toEmbedding, this, Fin.card_Iic]
+/-! `card_prefixSet` lives in `LinearLayout.lean` (moved 2026-10-30). -/
 
 /-- The prefix of a layout, as a family of subsets of `range d`. -/
 def prefixFam {d : ℕ} (σ : LinearLayout (CubeV d)) (i : ℕ) : Finset (Finset ℕ) :=

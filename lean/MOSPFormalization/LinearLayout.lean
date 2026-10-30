@@ -14,6 +14,7 @@ We define prefix sets (vertices at or before position i) and suffix sets
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Order.Interval.Finset.Fin
 
 set_option linter.unusedSectionVars false
 
@@ -89,5 +90,14 @@ theorem card_prefixSet_add_card_suffixSet (σ : V ≃ Fin n) (i : ℕ)
   rw [← Finset.card_union_of_disjoint (disjoint_prefix_suffix σ i)]
   rw [prefixSet_union_suffixSet]
   rw [Finset.card_univ, hn]
+
+/-- The prefix at a position `i < n` has exactly `i + 1` vertices. -/
+theorem card_prefixSet (σ : LinearLayout V) {i : ℕ} (hi : i < Fintype.card V) :
+    (prefixSet σ i).card = i + 1 := by
+  have h : (prefixSet σ i).map σ.toEmbedding = Finset.Iic (⟨i, hi⟩ : Fin (Fintype.card V)) := by
+    ext j
+    simp only [Finset.mem_map_equiv, mem_prefixSet_iff, Finset.mem_Iic, Fin.le_def,
+      Equiv.apply_symm_apply]
+  rw [← Finset.card_map σ.toEmbedding, h, Fin.card_Iic]
 
 end MOSPFormalization

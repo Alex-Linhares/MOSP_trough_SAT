@@ -1,0 +1,1 @@
+n=10 graphs=12005168 | sharp form: violations=0 slack {0: 3431743, 1: 5912222, 2: 2525380, 3: 132544, 4: 3189, 5: 90} | survey rounding: violations=0 slack {1: 4346095, 2: 5911021, 3: 1697546, 4: 49257, 5: 1215, 6: 34}

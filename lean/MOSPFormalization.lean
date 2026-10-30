@@ -18,6 +18,7 @@ import MOSPFormalization.ForMathlib.Pathwidth
 import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
+import MOSPFormalization.EmptyPair
 import MOSPFormalization.Grid
 import MOSPFormalization.Hypercube.Order
 import MOSPFormalization.Hypercube.Harper

@@ -108,13 +108,27 @@ is derived]
 In checkable form: with `s*(G) = max_A min(|A| − 1, n − |N[A]|)` (a set `A`
 with at least `s* + 1` vertices and at least `s*` vertices outside its closed
 neighbourhood), **`pw(G) ≥ n − 2 s*(G) − 2`** for every graph on ≤ 9 vertices,
-all 288,266 of them, zero violations; tight on 22.5% at `n = 9`. The weaker
+all 288,266 of them, zero violations; tight on 22.5% at `n = 9`; and on all
+12,005,168 graphs on 10 vertices (0 violations, tight on 28.6%). The weaker
 rounding stated above (`|A| = |R| ≥ ⌈(n−k)/2⌉ − 1`, i.e. with
 `min(|A|, n − |N[A]|)`) also holds everywhere and is never tight: its slack is
 at least 1 on every graph to 9 vertices, so `pw ≥ n − 2 s′ − 1` is what the
 data suggest for that form (unproved; the sharp form above is the one to
 formalise). Pathwidth by a vertex-separation subset DP cross-checked against
-`fixed_parameter_algorithm.pathwidth` on every graph to 7 vertices. The other two
+`fixed_parameter_algorithm.pathwidth` on every graph to 7 vertices.
+**Proved in Lean the same day**, `lean/MOSPFormalization/EmptyPair.lean`,
+`card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth`, axioms `propext`,
+`Classical.choice`, `Quot.sound` only. The proof is shorter than the argument
+above: in the repository's convention (the active suffix at position `i` is
+the set of suffix vertices with a prefix neighbour), the prefix at `i` and the
+*inactive* suffix are already an empty pair of sizes `i + 1` and
+`≥ n − i − 1 − k`, at every position; so the "last `i` with `a(i) ≤ n − i`"
+step is unnecessary. What the file actually proves first is the general
+statement `∀ j ≤ n, ∃ A, |A| = j ∧ |N[A]| ≤ j + pw(G)`
+(`exists_closedNbhd_card_le`), which is Harper's vertex-isoperimetric bound
+on pathwidth in layout form, the expansion bound of
+`satisfiability/expansion_bound.py`; the empty-pair bound is its corollary at
+`j = ⌈(n − k)/2⌉`, and `exists_empty_pair` restates it in the words above. The other two
 deterministic cores of this report were checked the same way
 (`check23.py`): §2's tree bound `pw ≤ ⌊log₃(2N+1)⌋` on every tree to 16
 vertices (32,547 trees, zero violations, tight for N = 7–12, where the
