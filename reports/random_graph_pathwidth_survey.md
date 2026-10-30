@@ -155,8 +155,11 @@ at n = 9.
   branching and treewidth", *Algorithmica* 54:181–207 (2009),
   DOI 10.1007/s00453-007-9133-3: `pw ≤ n₃/6 + n₄/3 + 13n₅/30 + n_{≥6} + εn`
   [pub, as quoted in search results; coefficient list not read in the PDF].
-- **Independence number** [derived, standard]: bags `(V∖I) ∪ {v}`, `v ∈ I`, give
-  `pw ≤ n − α(G)`. Random greedy gives `α ≥ (ln(1+c)/c)·n` whp, so
+- **Independence number** [derived, standard; **proved in Lean 2026-10-30**,
+  `lean/MOSPFormalization/IndependenceBound.lean`,
+  `pathwidth_le_card_sub_indepNum`, against Mathlib's `indepNum`, standard
+  axioms only; brute-force checked on every graph to 9 vertices the same day]:
+  bags `(V∖I) ∪ {v}`, `v ∈ I`, give `pw ≤ n − α(G)`. Random greedy gives `α ≥ (ln(1+c)/c)·n` whp, so
   `pw/n ≤ 1 − ln(1+c)/c`. (The greedy constant is a classical result; its
   reference was not re-checked.) As `c → ∞`, `α ≈ 2n ln c / c` (Frieze 1990),
   so `1 − pw/n ≥ (2 − o(1)) ln c / c`.

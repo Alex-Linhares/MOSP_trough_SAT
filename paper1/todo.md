@@ -279,7 +279,9 @@ inequalities rather than asymptotics.
       graphs to 9 vertices, zero violations. All three cores checked.
       (1)'s core proved in Lean the same day, `EmptyPair.lean`, as a corollary
       of Harper's bound `∀ j ∃ |A| = j, |N[A]| ≤ j + pw` (sorry-free, standard
-      axioms); the probabilistic half remains. (2) and (3) not yet in Lean.*
+      axioms); the probabilistic half remains. (3)'s core proved in Lean the
+      same day, `IndependenceBound.lean`, `pathwidth ≤ n − indepNum`. (2)'s
+      tree bounds not yet in Lean.*
 - [ ] **(1) Linear lower bound for average degree c > 4 ln 2 ≈ 2.77.**
       Deterministic core: if vs(G) ≤ k, there are disjoint A, R with
       |A| = |R| ≥ ⌈(n − k)/2⌉ − 1 and no A–R edge (survey §1.4). Then the

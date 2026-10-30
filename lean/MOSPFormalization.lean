@@ -19,6 +19,7 @@ import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
 import MOSPFormalization.EmptyPair
+import MOSPFormalization.IndependenceBound
 import MOSPFormalization.Grid
 import MOSPFormalization.Hypercube.Order
 import MOSPFormalization.Hypercube.Harper

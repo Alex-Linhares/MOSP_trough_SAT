@@ -480,6 +480,7 @@ lean/
                                         (corrected) and its separator form — all proved; one sorry left, the §24 conjecture (2026-09-28)
         EmptyPair.lean                  Harper's vertex-isoperimetric bound in layout form (∀ j ∃ |A| = j, |N[A]| ≤ j + pw) and the
                                         sharp empty-pair bound n − 2s* − 2 ≤ pw behind the random-graph first moment; sorry-free (2026-10-30)
+        IndependenceBound.lean          pathwidth ≤ n − α(G), by the bags (V ∖ I) ∪ {v}; against Mathlib's indepNum; sorry-free (2026-10-30)
         ForMathlib/                     Candidates for Mathlib contribution
         Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
             GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1
