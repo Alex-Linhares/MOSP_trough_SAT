@@ -21,3 +21,20 @@ shrink_mycielski_7_random_free_s2_del: n=95 m=755 target pw=38
   step 20: contract 83->88  |V|=75 |E|=711  tried 4  26s
   step 21: contract 81->91  |V|=74 |E|=704  tried 1  58s
   step 22: contract 33->63  |V|=73 |E|=703  tried 5  83s
+  step 23: contract 38->54  |V|=72 |E|=702  tried 39  404s
+  step 24: contract 80->17  |V|=71 |E|=701  tried 6  435s
+  step 25: contract 48->39  |V|=70 |E|=700  tried 15  491s
+  step 26: contract 24->65  |V|=69 |E|=698  tried 10  588s
+  step 27: contract 82->67  |V|=68 |E|=694  tried 24  674s
+  step 28: contract 72->9  |V|=67 |E|=691  tried 38  829s
+  step 29: contract 79->86  |V|=66 |E|=686  tried 32  873s
+  step 30: contract 89->94  |V|=65 |E|=681  tried 1  875s
+  step 31: contract 91->41  |V|=64 |E|=674  tried 31  904s
+  step 32: contract 47->40  |V|=63 |E|=672  tried 16  912s
+  step 33: contract 31->58  |V|=62 |E|=671  tried 5  913s
+  step 34: contract 32->61  |V|=61 |E|=670  tried 15  918s
+  step 35: contract 94->87  |V|=60 |E|=664  tried 132  1068s
+  step 36: contract 90->87  |V|=59 |E|=658  tried 57  1074s
+  step 37: contract 34->55  |V|=58 |E|=657  tried 419  1104s
+  round 38: no acceptable step among 1372 candidates; |V|=58 |E|=657
+FINAL shrink_mycielski_7_random_free_s2_del: |V|=58 |E|=657 degrees 46^1 41^2 37^1 35^1 32^2 30^3 29^2 28^2 27^2 25^4 24^5 23^9 22^1 20^2 19^1 18^2 17^2 16^4 14^3 13^4 12^2 11^2 10^1; 34 vertices of the G_k copy survive, 24 new-part vertices survive; proved width 38 (refutation) in 0.07s; seq valid True, non-isolated deletions 0; preserves copy False; steps 37; total 1199s
