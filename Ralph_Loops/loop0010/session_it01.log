@@ -1,0 +1,153 @@
+# session it01 started 2026-10-31 22:30:47
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan and the data sources this item depends on, then build `learning/excess.py`.
+  > $ uptime && cat reports/excess_phase_plan.md | head -250
+
+Load is low. Now the data sources and reusable code, in one pass.
+  > $ head -3 learning/data/instances.csv | cut -c1-600; echo; wc -l learning/data/instances.csv learning/data/ensemble/results*.csv reports/scratch/clique_cover_mome
+  > $ sed -n 1,80p learning/cover_excess.py; echo ======; grep -n "^def \|^class \|^    def " learning/cover_excess.py learning/ensemble.py learning/dataset.py learni
+  > $ sed -n 100,165p learning/ensemble.py; echo ====PEEL; sed -n 315,370p learning/cover_excess.py; echo ====DATASET; sed -n 1,64p learning/dataset.py; sed -n 125,14
+  > $ cut -d, -f2 learning/data/instances.csv | sed 1d | sed 's#/[^/]*$##' | sort | uniq -c; echo ====; cut -d, -f3 learning/data/instances.csv | sort | uniq -c; echo
+  > $ cat reports/scratch/clique_cover_moment/gen_candidates.py; echo ====RT; grep -n "def load_frames\|def excess\|def giant_threshold_col_mean\|def branching_factor
+  > $ sed -n 18,30p .gitignore; echo ====GENS; cut -d, -f1 reports/scratch/clique_cover_moment/floor_violation.csv | sort | uniq -c; cut -d, -f2,4 reports/scratch/cli
+
+Gathering the last pieces I need before writing the module: the Bernoulli generator's repair, how the upward frame's late finish is applied, and the dataviz skill for the one figure.
+  > $ sed -n 22,66p benchmarks/generator.py; echo ====FINISH; sed -n "$(grep -n '^def apply_finish' learning/ridge_theory.py | cut -d: -f1),+20p" learning/ridge_theor
+  > $ grep -n "apply_finish" learning/*.py | head -3; f=$(grep -ln "def apply_finish" learning/*.py); sed -n "$(grep -n 'def apply_finish' $f | cut -d: -f1),+22p" $f
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/8ae48e3ee449aad59f9c1f826b66bbcf/dataviz && sed -n 1,80p references/palette.md | grep -v "^$" | head -70
+  > $ sed -n 64,90p learning/dataset.py; grep -n "def find_benchmark_files" -A12 benchmarks/solve_parallel.py | head -20; python3 -c "
+import pandas as pd; d=pd.read_
+
+Everything I need is in hand. Writing `learning/excess.py` now.
+  > Write /home/al/dev/MOSP/learning/excess.py
+
+Smoke-testing the three sources on single instances before the full build.
+  > $ nice -n 19 python3 -c "
+import numpy as np, pandas as pd, time
+from learning.excess import *
+# forest: path c0-p0-c1-p1-c2
+M=np.array([[1,0],[1,1],[0,1]]); prin
+  > $ nice -n 19 python3 -c "
+import numpy as np, pandas as pd, time
+import learning.excess as X
+t=time.time(); print(X._ensemble_job(('upward','f:100:100:2',7,'ens_f
+
+Both sources regenerate and match the record. Running the full build now.
+  > $ uptime && time nice -n 19 python3 -m learning.excess --stage build --workers 8 2>&1 | tail -8
+
+Four seconds for 64,291 rows, every regenerated `n_ones` matching its record. Now the tables and the figure.
+  > $ nice -n 19 python3 -m learning.excess --stage tables > /tmp/excess_tables.md 2>/tmp/excess_err.txt; echo exit $?; tail -3 /tmp/excess_err.txt; wc -l /tmp/excess
+  > $ sed -n "$(grep -n '### The stated check' /tmp/excess_tables.md | cut -d: -f1),$(grep -n '### Per ensemble series' /tmp/excess_tables.md | cut -d: -f1)p" /tmp/ex
+  > Read /home/al/dev/MOSP/reports/figures/excess_giant_component.png
+  > $ sed -n 77,120p learning/cover_excess.py; sed -n 186,206p learning/cover_excess.py; echo ====; grep -n "### Per ensemble series\|### Per simulation cell\|### The
+
+Next I'll make four independent changes: the repaired-generator threshold beside `e_g(r)` in the check table, the figure's legend and y-label, the CSV reader's dtype warning, and the test module.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess.py"); s = p.read_text()
+
+# 1. repaired threshold column in the check table
+s = s.replace(''
+  > $ nice -n 19 python3 -c "
+from learning.excess import *
+from learning.cover_excess import core_threshold_col_mean, core_quantities
+for gen in ('fixed','bernoulli'
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_excess.py"); s = p.read_text()
+s = s.replace('''    # the padded generators have a higher thresh
+  > Read /home/al/dev/MOSP/reports/figures/excess_giant_component.png
+  > $ (nice -n 19 python3 Ralph_Loops/loop0010/gate.py > /tmp/gate.log 2>&1; echo "GATE EXIT $?" >> /tmp/gate.log) &
+sleep 1; cd /home/al/dev/MOSP && git status --sho
+  > $ python3 -c "
+import pandas as pd, numpy as np; from learning.excess import *
+d=load(); c=d[d.source=='corpus']; g=c[c.bound_gap]
+print('gap e q', g.e.quantile([
+
+Writing the report section now, with the tables embedded in full.
+  > $ cat > /tmp/report_head.md <<'EOF'
+# The excess phase diagram of MOSP
+
+*Ralph loop0010, executing `reports/excess_phase_plan.md`. One section per
+item; each stat
+  > $ grep -E "^\|   Random-125-125-(2|4) |^\|   Random-100-50-2 |^\|   Random-50-100-2 |^\|   Random-100-50-4 " reports/excess_phase_diagram.md | cut -d'|' -f2,3,6,9
+  > $ python3 -c "
+from learning.excess import load; d=load(); c=d[(d.source=='corpus')&(d.collection=='Chu & Stuckey')]
+for s in ['Random-125-125-2','Random-125-125-
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/excess_phase_diagram.md"); s = p.read_text()
+reps = [
+ ("class is at 1.66–1.78 and `d = 4` at 3.37–
+  > $ python3 - <<'EOF'
+import re
+from pathlib import Path
+p = Path("reports/excess_phase_diagram.md"); s = p.read_text()
+reps = [
+ ("class is at 1.66–1.78 and `d = 4
+  > $ for i in $(seq 1 55); do if grep -q "GATE EXIT" /tmp/gate.log; then break; fi; sleep 10; done; cat /tmp/gate.log | tail -15
+
+The gate failed on one pre-existing test, `tests/test_sandwich.py::test_lean_theorems_are_sorry_free`, which I did not touch. I'll see why it fails and whether it fails on a clean tree.
+  > $ nice -n 19 python3 -m pytest tests/test_sandwich.py::test_lean_theorems_are_sorry_free -q 2>&1 | grep -v Warning | tail -25; echo ====; grep -n "def test_lean_t
+
+The failure is a stale pin, not Lean: `conjecture_sqrt_tw_f6` was proved on 2026-10-31 and `learning/sandwich.py` still expects it to carry `sorryAx`. I'll find the pin.
+  > $ grep -n "conjecture_sqrt_tw_f6\|STATED\|PROVED\|stated\b" learning/sandwich.py | head -20; grep -n "def axioms_verdict" -A22 learning/sandwich.py | head -40
+  > $ sed -n 100,115p learning/sandwich.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/sandwich.py"); s = p.read_text()
+old = '''    "branch_lemma_of_separator",
+)
+#: Statements committ
+  > $ sed -n 174,192p tests/test_sandwich.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+text = Path("lean/MOSPFormalization/Sandwich.lean").read_text()
+body = text.split("/-! ### Tree decompositions -/", 1
+  > $ (nice -n 19 python3 Ralph_Loops/loop0010/gate.py > /tmp/gate2.log 2>&1; echo "GATE EXIT $?" >> /tmp/gate2.log) & echo started
+
+The gate is re-running in the background. While it runs I'll write the PROGRESS.md entry with the gate line left to fill in once it finishes.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+s = s.replace("Current: 0/13 SOLVED", "Current: 1/13 
+  > $ for i in $(seq 1 58); do if grep -q "GATE EXIT" /tmp/gate2.log; then break; fi; sleep 10; done; grep -E "lake build|sorry in code|passed|failed|GATE|undefined|u
+  > $ cat /tmp/gate2.log | tail -5; echo ===; pgrep -af "gate.py|pytest|lake" | head -5; uptime
+
+The gate is still in its pytest stage (the load jumped to 30 from other work, so it is slower than the first run). Waiting on it with a bounded poll.
+  > $ for i in $(seq 1 58); do if grep -q "GATE EXIT" /tmp/gate2.log; then break; fi; sleep 10; done; grep -E "lake build|sorry in code|passed|failed|GATE|undefined|u
+  > $ grep -n "not imported" /tmp/gate.log; echo ===; git status --short | grep -v loop0010; echo ===; ls -la lean/MOSPFormalization/Search/ | head; git log --oneline
+  > $ grep -n "^import" lean/MOSPFormalization/Search/WrongOptimum.lean | head; ls -la lean/MOSPFormalization/Search/WrongOptimumData.lean; git log --oneline -1 -- le
+
+While the third gate runs, I'll record the import fix in the PROGRESS entry, leaving only the final verdict to fill in.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+old = "tree-decomposition section). No Lean file touc
+
+Only the gate result remains outstanding. Waiting on it again with a bounded poll.
+  > $ for i in $(seq 1 58); do if grep -q "GATE EXIT" /tmp/gate3.log; then break; fi; sleep 10; done; grep -E "lake build|not imported|sorry in code|passed|failed|GAT
+  > $ cat /tmp/gate3.log; echo ===; pgrep -af "gate.py|pytest -q" | grep -v "claude -p" | cut -c1-120; for i in $(seq 1 58); do if grep -q "GATE EXIT" /tmp/gate3.log;
+
+The gate passes. Final bookkeeping: fill in the verdict and check the working tree.
+  > $ sed -i 's/Third gate run: GATE_RESULT_PLACEHOLDER/Third gate run: **PASS** (lake build ok, every file imported, sorry 0, MOSP pytest 1,529 passed, pathwidth_sol
+
+Item 01 is done, the gate passes, and nothing is left to request.
+
+**Outcome.** The map exists: `learning/excess.py` places all 64,291 instances we hold by their excess, with every regenerated ensemble and simulation matrix matching its recorded ones count, and `reports/excess_phase_diagram.md` §1 holds the findings, every table in full, the figure and the regenerate commands. Eight new tests pass. PROGRESS.md and iterations.md are updated to 1 of 13 solved. Nothing was solved or re-solved and `solutions/` was not touched.
+
+**What the map says.**
+- **The corpus has no forest regime.** Zero corpus instances sit below the giant-component line, 12 sit between it and 1, and exactly 2 of 6,376 are incidence forests. A forest theorem would describe nothing we hold directly.
+- **Industry sits between the threshold and the ridge; the benchmark generators do not.** SCOOP has a median excess of 1.35 with 19 of 24 instances in [1, 2), and 10 of 24 decompose. Harvey, Simonis, Shaw, Wilson and Challenge are 80 to 100 percent above 2.4.
+- **The ridge lies between the Chu & Stuckey classes.** With equal customers and patterns, density 2 sits at 1.48 to 2.02 and density 4 at 2.83 to 3.73. The paper's Appendix E sentence placing the hardest classes on the ridge still needs the correction item 12 owns.
+- **The bound-gap instances are the sparse ones at their size.** The median gap instance's excess sits at the 7th percentile of its size cell. That is §6's "connected and sparse" in one parameter.
+- **The stated check is not met.** The largest component of the incidence graph reaches one half at excess 0.83 to 0.93 on the five observable series, which is 0.21 to 0.43 above the predicted line, outside the ±0.15 tolerance. The criterion could not have been met: at the branching-factor-one point the giant fraction is zero by definition. So the line is not to be used later as a half-point. What the data show it does separate is "mostly forests" below it from "a few cycles" above it, and excess 1 separates "a few cycles" from none.
+
+**Two pre-existing gate faults fixed, outside the item's paths.** Both were already failing in the first gate run and neither touches a Lean proof. The test pin in `learning/sandwich.py` still expected the §24 conjecture to carry a sorry after it was proved on 2026-10-31, so I promoted it and updated the inventory test. The file `Search/WrongOptimumData.lean` had no line in the root import file, so I added one. The third gate run passed every stage.
+
+**Next** is item 02, the optimum over customers against the excess. The excess-matched series it needs already exist and every cell's realised excess is in `learning/data/excess.csv`, so no regeneration is needed there.
+
+# result: success in 3441s, 51 turns, cost $16.24

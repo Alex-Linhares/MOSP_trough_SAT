@@ -172,8 +172,8 @@ def test_branch_lemma_hypotheses_matter_on_hand_instances():
 
 
 def test_inventory_names_are_declared_in_the_lean_file():
-    """Every name the axiom check asks for is a declaration in Sandwich.lean, and the
-    only `sorry` left is the conjecture's."""
+    """Every name the axiom check asks for is a declaration in Sandwich.lean, and no
+    `sorry` is left: the conjecture was proved on 2026-10-31."""
     text = (sw.LEAN_DIR / "MOSPFormalization" / "Sandwich.lean").read_text()
     # Three of the MOSP-terms names are proved in MOSPGraph.lean and re-exported here.
     both = text + (sw.LEAN_DIR / "MOSPFormalization" / "MOSPGraph.lean").read_text()
@@ -185,9 +185,10 @@ def test_inventory_names_are_declared_in_the_lean_file():
     assert "branch_lemma" in sw.PROVED
     assert "branch_lemma_separator" in sw.PROVED
     assert "branch_lemma_of_separator" in sw.PROVED
-    assert sw.STATED == ("conjecture_sqrt_tw_f6",)
+    assert "conjecture_sqrt_tw_f6" in sw.PROVED
+    assert sw.STATED == ()
     body = text.split("/-! ### Tree decompositions -/", 1)[1]
-    assert body.count("\n  sorry") == 1
+    assert body.count("\n  sorry") == 0
 
 
 # ---------------------------------------------------------------------------

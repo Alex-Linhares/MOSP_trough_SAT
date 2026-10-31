@@ -17,7 +17,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
 13 is the reserve. Every item: one session, `nice -n 19`, at most 8 workers
 (4 if the one-minute load in `uptime` is above 24), nothing solved twice.
 
-- [ ] **01 The map: every instance on record placed by its excess.**
+- [x] **01 The map: every instance on record placed by its excess.**
   - **Question.** Where does every instance we hold sit in the excess, how
     far is each from an incidence forest, and do the three lines (`e_g`, 1,
     the ridge) separate the collections?

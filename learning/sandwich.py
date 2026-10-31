@@ -103,11 +103,12 @@ PROVED = (
     "branch_lemma_separator_treewidth",
     "induce_singleton_connected",
     "branch_lemma_of_separator",
-)
-#: Statements committed with `sorry`: item 09's fitted conjecture, kept as a statement.
-STATED = (
+    # item 09's fitted conjecture, proved on 2026-10-31 as a corollary of `tw ≤ pw`
+    # and Harper's `f(6) ≤ pw + 6`, so promoted from STATED (loop0010 item 01's gate)
     "conjecture_sqrt_tw_f6",
 )
+#: Statements committed with `sorry`: none since 2026-10-31.
+STATED: tuple[str, ...] = ()
 
 
 # ----------------------------------------------------------------------------
