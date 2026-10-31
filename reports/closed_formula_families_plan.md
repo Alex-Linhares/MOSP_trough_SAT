@@ -134,9 +134,15 @@ vertex separation 43).
   originals; the copy of M_k is never induced and increasingly not intact;
   the M_k witness applied inside M_{k+1} drops the width every time
   (10 → 7, 20 → 14, 38 → 29). No K_11 minor in M_5, no K_21 in M_6 found.
-  **No structural induction step is supported.** One inequality survived
-  244 random graphs with both widths proved: pw(M(G)) ≤ 2·pw(G) + 1, equality
-  on 56; pw(M(G)) ≥ 2·pw(G) fails (and fails at M_7: 38 < 40). Data only.
+  **No structural induction step is supported.** The agent also tested
+  pw(M(G)) ≤ 2·pw(G) + 1 on 244 random graphs with both widths proved
+  (equality on 56) and found pw(M(G)) ≥ 2·pw(G) false (and false at M_7:
+  38 < 40). **The upper inequality is already a theorem of this repository**,
+  `lean/MOSPFormalization/Mycielski.lean`, `pathwidth_mycielskian_le`
+  (2026-10-18, sorry-free; the layout puts each shadow immediately before its
+  original, apex last), with `pathwidth_add_one_le_mycielskian` as the lower
+  companion; neither the agent nor the coordinator checked the file before
+  calling it data (corrected 2026-10-31).
 - **Recurrences: nothing survives the spare-term rule** (≥ 2 spare terms)
   on any value, increment or witness-size sequence; six or seven terms are
   too few. The zero-spare holonomic fit to the Mycielski values is a
