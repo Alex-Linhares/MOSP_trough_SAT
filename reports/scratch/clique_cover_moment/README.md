@@ -63,7 +63,12 @@ a net loss as a search floor.
 3. Paper: a table of the class floors against the certified optima (Section 5 or Appendix E) —
    the generator's parameters predict the benchmark table to within a few percent at d ≥ 6.
 4. ~~The threshold~~ **closed form** (`REPORT_generator.md` §3): g(1/2) = ln 2·(1 + μ(1 − d)), so
-   β* > 0 iff μ(d − 1) > 1, i.e. *excess* > 1; the ridge of `ml_nature.md` §25 is excess 2–2.4 —
-   the same family one unit higher. Gao 2012's Theorem 2 is the same first moment with a factor
+   β* > 0 iff μ(d − 1) > 1, i.e. *excess* > 1; the ridge of `ml_nature.md` §25 (generated
+   ensembles) is excess 2.3–2.5. **Correction 2026-10-31 (loop0010 planning):** the Chu & Stuckey
+   d = 2 classes that cost thousands of core-hours have excess 1.66–1.78 by the files, not 2–2.5
+   (an earlier version of this README, the coordinator's messages and the paper's Appendix E said
+   2–2.5; the paper is corrected). Also: excess 1 is edges = vertices of the incidence graph, not a
+   forest; the incidence graph's giant component appears at excess ≈ 0.62 when m = n
+   (`reports/excess_phase_plan.md` §0). Gao 2012's Theorem 2 is the same first moment with a factor
    dropped between two lines of its proof (harmless for m = o(n), not at m = Θ(n)); the
    restored condition at m = n is c > 2.46, not 2. Why the ridge sits at excess 2 is open.
