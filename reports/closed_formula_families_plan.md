@@ -146,9 +146,13 @@ vertex separation 43).
 - **Recurrences: nothing survives the spare-term rule** (≥ 2 spare terms)
   on any value, increment or witness-size sequence; six or seven terms are
   too few. The zero-spare holonomic fit to the Mycielski values is a
-  recurrence of A001629 (predicting 71 for myciel7), the plan's conjecture
-  rederived and still a conjecture; the same shape fitted to the hypercubes
-  predicts a non-integer for Q_7, which is the right warning.
+  recurrence of A001629 (predicting 71 for myciel7); but **myciel7 = 72**,
+  settled before this experiment (`reports/mycielski_pathwidth.md`, the
+  paper's §5: a 132-vertex minor refutes 71), so the A001629 guess is
+  refuted and the sequence 1, 2, 5, 10, 20, 38, 72 matches no OEIS entry.
+  The "First results" above and the brief given to the agent were out of
+  date on this point (corrected 2026-10-31). The same shape fitted to the
+  hypercubes predicts a non-integer for Q_7, which is the right warning.
 - **Dense structured families** (213 new graphs, all proved): with Ḡ the
   complement, n − pw ∈ [ω(Ḡ), Δ(Ḡ) + 1] (independence bound above,
   degeneracy bound below); at the bottom for complete multipartite graphs

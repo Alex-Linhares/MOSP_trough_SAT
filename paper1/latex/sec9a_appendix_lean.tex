@@ -17,9 +17,8 @@ for what the text calls \emph{corrected}.
 All the theorems named depend only on the three standard axioms of Lean's
 classical logic, \texttt{propext}, \texttt{Classical.choice} and
 \texttt{Quot.sound}; an axiom check in the repository prints this for every
-theorem named in the paper. The development has one \texttt{sorry}, Lean's marker for a statement
-left unproved: a conjecture about lower bounds that no result of this paper uses. The part of
-the development behind Section~\ref{sec:search} has no \texttt{sorry} at all.
+theorem named in the paper. The development has no \texttt{sorry}, Lean's marker for a statement left
+unproved.
 
 Two Lean proofs take a route that the text does not describe. The proof of
 Theorem~\ref{thm:decides} goes through narrowness \citep{LY2002ref11}, which
@@ -104,6 +103,9 @@ Entry & Result in the paper & Lean names \\
 \leanentry{grid}{The $(h,w)$-grid has pathwidth $\min(h,w)$, except the $1\times1$ grid (pathwidth $0$); \citet[Theorem~4.1]{EllisWarren2008}. Upper bound by the row-major layout's bandwidth; lower bound directly on vertex separation, at the first prefix that completes a row or a column} \leannames{pathwidth_grid, pathwidth_grid_le, min_le_pathwidth_grid, pathwidth_grid_one_one, pathwidth_grid_square} \\
 \leanentry{hypercube}{The $d$-dimensional hypercube has pathwidth $\sum_{i<d}\binom{i}{\lfloor i/2\rfloor}$ \citep[Theorem~2]{ChandranKavitha2006}, with Harper's vertex-isoperimetric theorem \citep{Harper1966} proved by compression. Upper bound by the layout along Harper's simplicial order, lower bound at a prefix of every size, both by induction on $d$ and on vertex separation} \leannames{pathwidth_hypercube, pathwidth_cubeGraph, Hypercube.harper, Hypercube.card_nbhd_init_le, Hypercube.exists_init_profile} \\
 \leanentry{mycielski}{For every graph $G$, its Mycielskian $\mu(G)$ (originals, a shadow of each vertex adjacent to its neighbours, and an apex adjacent to the shadows) has $\mathrm{pw}(G)+1\le\mathrm{pw}(\mu(G))\le 2\,\mathrm{pw}(G)+1$. The upper bound interleaves each vertex with its shadow and places the apex last; we found no published statement of it. The lower bound keeps the bags meeting the apex and the shadows} \leannames{pathwidth_mycielskian_le, pathwidth_add_one_le_mycielskian} \\
+\leanentry{emptypair}{Step~1 of Appendix~\ref{app:random}: at every position of every layout the prefix and the inactive suffix are an empty pair, so for every $j\le n$ some $j$-set has closed neighbourhood of size at most $j+\pw$ (Harper's bound in layout form), and $n-2s^{*}-2\le\pw$ for the empty-pair index $s^{*}$} \leannames{exists_empty_pair_of_layout, exists_closedNbhd_card_le, exists_empty_pair, card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth} \\
+\leanentry{firstmoment}{Step~2 of Appendix~\ref{app:random}: the number of graphs on $n$ labelled vertices of pathwidth at most $k$ is at most $\binom nt\binom{n-t}{t-1}2^{\binom n2-t(t-1)}$, $t=\lceil(n-k)/2\rceil$, and the $G(n,p)$-weighted sum of those graphs is at most $\binom nt\binom{n-t}{t-1}(1-p)^{t(t-1)}$; there are $2^{\binom n2}$ graphs on $n$ labelled vertices} \leannames{card_pathwidth_le_le, weightedSum_graphsOfPathwidthLe_le, card_emptyPairGraphs, card_simpleGraph} \\
+\leanentry{firstmomentA}{Theorem~\ref{thm:firstmoment} and its consequence: the weighted sum is at most $\exp(-\delta n+3\ln n+ca)$ for $n\ge\max(3,c)$, at most $e^{c/2}n^{3}e^{-\delta n}$, and tends to $0$ when $\delta>0$; the trinomial entropy bound from the binomial theorem} \leannames{firstMoment_pathwidth_le_fin, firstMoment_pathwidth_le_fin', tendsto_firstMoment_pathwidth, choose_mul_choose_le_exp_entropy} \\
 \leanentry{endpoint}{Lemma~\ref{lem:endpoint}, the premises as commitment conditions} \leannames{isDefinite_iff_endpoint, isHereditarilyDefinite_iff_isCommittable} \\
 \leanentry{cexnotcommit}{In Counterexample~\ref{cex:definite} the endpoint test passes and the commitment fails} \leannames{cex_isDefinite_not_isCommittable} \\
 \leanentry{existscommit}{The published premise gives a commitment to the least-border set} \leannames{exists_isCommittable_of_isDefinite} \\

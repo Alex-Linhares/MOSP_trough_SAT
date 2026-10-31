@@ -286,5 +286,23 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.pathwidth_mycielskian_le
 #print axioms MOSPFormalization.pathwidth_add_one_le_mycielskian
 
--- control: the baseline sorry, expected to show sorryAx
+-- the former control: the §24 candidate, a sorry until 2026-10-31, now proved (Sandwich.lean)
 #print axioms conjecture_sqrt_tw_f6
+
+-- the empty-pair lemma and Harper's bound in layout form (EmptyPair.lean)
+#print axioms MOSPFormalization.exists_empty_pair_of_layout
+#print axioms MOSPFormalization.exists_closedNbhd_card_le
+#print axioms MOSPFormalization.exists_empty_pair
+#print axioms MOSPFormalization.card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth
+
+-- the first-moment count (FirstMoment.lean)
+#print axioms MOSPFormalization.card_pathwidth_le_le
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le
+#print axioms MOSPFormalization.card_emptyPairGraphs
+#print axioms MOSPFormalization.card_simpleGraph
+
+-- Theorem A, the finite first-moment bound (FirstMomentAsymptotics.lean)
+#print axioms MOSPFormalization.firstMoment_pathwidth_le_fin
+#print axioms MOSPFormalization.firstMoment_pathwidth_le_fin'
+#print axioms MOSPFormalization.tendsto_firstMoment_pathwidth
+#print axioms MOSPFormalization.choose_mul_choose_le_exp_entropy

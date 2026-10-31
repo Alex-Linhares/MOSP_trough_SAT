@@ -1,0 +1,188 @@
+% Appendix E: the first-moment lower bound on the pathwidth of sparse random
+% graphs, in plain language (owner's request, 2026-10-31). Source:
+% reports/random_graph_first_moment.md (Theorems A, A', A'' and the literature
+% verdict); Lean: EmptyPair.lean, FirstMoment.lean, FirstMomentAsymptotics.lean.
+% The beta*(c) values: reports/scratch/first_moment/beta_star.log (two codes agree).
+\section{The pathwidth of sparse random graphs}
+\label{app:random}
+
+The equivalences of Section~\ref{sec:equiv} make every statement about the
+pathwidth of a graph a statement about the open stacks of an instance. This
+appendix proves one such statement for random graphs, in plain language, and
+records what of it is checked in Lean. The result is that a sparse random
+graph has pathwidth proportional to its number of vertices, with an explicit
+constant. The argument is a first moment, an old tool; what is new here is the
+exact form of its deterministic step, the constant it yields, and the
+machine check. We found no prior statement of the constant.
+
+\subsection{The statement}
+
+$G(n,p)$ is the random graph on $n$ labelled vertices in which each of the
+$\binom n2$ possible edges is present with probability $p$, independently. We
+take $p=c/n$, so that a vertex has about $c$ neighbours. Write
+$\mathrm{pw}$ for pathwidth, $\ln$ for the natural logarithm, and
+\[
+  \phi(x) = -x\ln x \quad(\phi(0)=0),\qquad
+  H(x,y,z) = \phi(x)+\phi(y)+\phi(z)
+\]
+for the entropy of a probability vector with three entries.
+
+\begin{theorem}[first moment, finite form]
+\label{thm:firstmoment}
+Let $c>0$ and $0<\beta<1$, and put $a=(1-\beta)/2$ and
+\[
+  \delta(\beta,c) \;=\; c\,a^{2} \;-\; H(a,a,1-2a).
+\]
+For every integer $n\ge\max(3,c)$,
+\[
+  \Pr\bigl[\mathrm{pw}(G(n,c/n))\le\beta n\bigr]
+  \;\le\; \exp\bigl(-\delta(\beta,c)\,n+3\ln n+c\,a\bigr)
+  \;\le\; e^{c/2}\,n^{3}\,e^{-\delta(\beta,c)\,n}.
+\]
+\end{theorem}
+
+So whenever $\delta(\beta,c)>0$, the probability that the pathwidth is as small
+as $\beta n$ is exponentially small, and the pathwidth is at least $\beta n$
+with high probability. The next statement says for which $\beta$ that happens.
+
+\begin{theorem}[the admissible region]
+\label{thm:betastar}
+If $c\le4\ln2$ there is no $\beta\in(0,1)$ with $\delta(\beta,c)>0$. If
+$c>4\ln2$ there is a number $\beta^{*}(c)\in(0,1)$ such that
+$\delta(\beta,c)>0$ exactly when $\beta<\beta^{*}(c)$; it is the root in
+$(0,1)$ of
+\[
+  -(1-\beta)\ln\tfrac{1-\beta}{2}-\beta\ln\beta \;=\; \tfrac{c}{4}(1-\beta)^{2}.
+\]
+Hence $\mathrm{pw}(G(n,c/n))\ge\beta n$ with probability $1-O(n^{3}e^{-\delta n})$
+for every $\beta<\beta^{*}(c)$, and as $c\to\infty$,
+$1-\beta^{*}(c)=\bigl(4\ln c-4\ln\ln c+O(1)\bigr)/c$.
+\end{theorem}
+
+Table~\ref{tab:betastar} gives $\beta^{*}(c)$ at a few values of $c$, beside the
+only published explicit lower bound we know for a width parameter of
+$G(n,c/n)$, the treewidth bound $1-\sqrt{9\ln3/(2c)}$ of
+\citet{PerarnauSerra2014}, which is a lower bound on pathwidth too since
+treewidth never exceeds pathwidth.
+
+\begin{table}[htbp]
+\centering
+\caption{The constant $\beta^{*}(c)$ of Theorem~\ref{thm:betastar}, to four
+decimals, and the treewidth bound of \citet{PerarnauSerra2014} at the same
+$c$ (blank where that bound is not positive). Two independent programs agree
+on every digit of $\beta^{*}$.}
+\label{tab:betastar}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+$c$ & 3 & 4 & 6 & 8 & 10 & 20 & 50 & 100 \\
+\midrule
+$\beta^{*}(c)$ & 0.0087 & 0.0613 & 0.1706 & 0.2628 & 0.3371 & 0.5535 & 0.7606 & 0.8574 \\
+$1-\sqrt{9\ln3/(2c)}$ & & & 0.0918 & 0.2136 & 0.2966 & 0.5027 & 0.6855 & 0.7776 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The threshold $4\ln2\approx2.77$ in Theorem~\ref{thm:betastar} belongs to the
+method, not to the graphs: it is the point at which an edge-free split of the
+vertices into two equal halves stops being likely, and below it the first
+moment simply says nothing. The pathwidth of $G(n,c/n)$ is in fact linear in
+$n$ for every $c>1$ \citep{LeeLeeOum2012}, with a constant that no one has
+made explicit.
+
+\subsection{The proof, in four steps}
+
+\paragraph{Step 1: a narrow layout leaves an empty pair.}
+Put the vertices in a line and look at any position $i$. The first $i+1$
+vertices are the prefix; the rest are the suffix. A suffix vertex is
+\emph{active} if it has a neighbour in the prefix. The vertex separation of
+the line is the largest number of active vertices at any position, and by
+Theorem~\ref{thm:vs} the smallest vertex separation over all lines is the
+pathwidth. Now take a line of vertex separation $k$ and any position $i$. The
+suffix has $n-i-1$ vertices, at most $k$ of them active, so at least $n-i-1-k$
+suffix vertices have no neighbour at all in the prefix. Call that set $R$ and
+the prefix $A$. Then $A$ and $R$ are disjoint, $|A|=i+1$, $|R|\ge n-i-1-k$, and
+there is no edge between them: an \emph{empty pair}. This holds at every
+position of every line, so a graph of pathwidth $k$ has an empty pair with
+$|A|=t$ and $|R|\ge n-t-k$ for every $t\le n$. With $t=\lceil(n-k)/2\rceil$
+both parts have about $(n-k)/2$ vertices~\leanref{emptypair}.
+
+\paragraph{Step 2: count the graphs that have one.}
+Fix a pair of disjoint sets $A$ and $R$ with $|A|=t$ and $|R|=t-1$. In
+$G(n,p)$ the $t(t-1)$ possible edges between them are all absent with
+probability $(1-p)^{t(t-1)}$. There are $\binom nt\binom{n-t}{t-1}$ such
+pairs. A graph of pathwidth at most $k$ has at least one of them empty, so by
+the union bound
+\[
+  \Pr[\mathrm{pw}\le k]\;\le\;\binom nt\binom{n-t}{t-1}\,(1-p)^{t(t-1)},
+  \qquad t=\lceil(n-k)/2\rceil .
+\]
+This is the whole probabilistic content of the proof, and it is a Lean
+theorem over the finite sum of the weights $p^{|E|}(1-p)^{\binom n2-|E|}$ of
+all graphs on $n$ vertices, with no probability model needed; the count of
+graphs with a given empty pair is exact there, $2^{\binom n2-t(t-1)}$ of
+them~\leanref{firstmoment}.
+
+\paragraph{Step 3: estimate the count.}
+Two standard inequalities turn the right-hand side into an exponential in
+$n$. The number of ways to choose the pair is the trinomial coefficient
+$n!/\bigl(t!\,(t-1)!\,(n-2t+1)!\bigr)$, and a trinomial coefficient is at most
+$\exp(nH)$ with $H$ the entropy of the three proportions $t/n$, $(t-1)/n$ and
+$(n-2t+1)/n$ \citep[Theorem~11.1.3]{CoverThomas2006}: expand
+$(x+y+z)^{n}=1$ at $x=t/n$, $y=(t-1)/n$, $z=(n-2t+1)/n$ and keep one term of
+the sum. And $(1-p)^{m}\le e^{-pm}$ because $1-p\le e^{-p}$. With $p=c/n$ the
+second factor is at most $\exp(-c\,t(t-1)/n)$.
+
+\paragraph{Step 4: the bookkeeping.}
+The three proportions are not exactly $a$, $a$ and $1-2a$: with
+$k=\lfloor\beta n\rfloor$, each is within $1/n$ of its target. A shift of $d$
+in one argument of $\phi$ changes $\phi$ by at most $\phi(d)$ when $d\le1/e$,
+and $\phi(1/n)=(\ln n)/n$; three shifts cost $3\ln n$ in the exponent, which
+is the $3\ln n$ of the theorem and the reason for $n\ge3$. Likewise
+$t(t-1)\ge a^{2}n^{2}-an$, and the $-an$ costs the term $c\,a$. Multiplying
+the two estimates of Step~3 into the bound of Step~2 gives
+$\exp(nH(a,a,1-2a)-ca^{2}n+3\ln n+ca)$, which is Theorem~\ref{thm:firstmoment};
+$a\le1/2$ gives its second form. Nothing is hidden in an error term: the
+inequalities of Step~3 are exact bounds on the two factors, and the two
+corrections are the ones just named~\leanref{firstmomentA}.
+
+\paragraph{The admissible region.}
+On $(0,\tfrac12]$ the function $g(a)=H(a,a,1-2a)-ca^{2}$ is strictly concave,
+tends to $0$ as $a\to0$, and equals $\ln2-c/4$ at $a=\tfrac12$. If
+$c\le4\ln2$ it is nonnegative throughout, so $\delta=-g$ is never positive.
+If $c>4\ln2$ it has exactly one zero $a^{*}$ in $(0,\tfrac12)$, is positive
+before it and negative after it, so $\delta(\beta,c)>0$ exactly when
+$a=(1-\beta)/2>a^{*}$, that is when $\beta<1-2a^{*}=:\beta^{*}(c)$.
+Substituting $a=(1-\beta)/2$ into $g(a)=0$ gives the equation of
+Theorem~\ref{thm:betastar}, and the asymptotic form follows from the
+two-sided estimate $2\ln(1/a)-ca\le g(a)/a\le2\ln(1/a)+2-ca$. This part is
+proved on paper only.
+
+\subsection{What is checked, and what is known}
+
+Steps 1, 2, 3 and 4 and the two inequalities of Theorem~\ref{thm:firstmoment}
+are Lean theorems with the statement exactly as printed, including the
+constant~3; so is the consequence that the probability tends to zero whenever
+$\delta(\beta,c)>0$. The entropy bound on trinomial coefficients is not in
+Mathlib and is proved there from the binomial theorem. Theorem~\ref{thm:betastar}
+is proved on paper, and the values in Table~\ref{tab:betastar} were computed
+by two programs written independently.
+
+The argument is published twice in cruder form. \citet{Turner1986} used the
+same empty pair, with the count $(en/k)^{2k}$ in place of the entropy, to
+prove that almost every $G(n,p)$ with $p$ fixed has bandwidth at least
+$n-4\log_{1/(1-p)}n$; since bandwidth is at least pathwidth, our dense
+statement implies his and not conversely. \citet{DiazPetitSernaTrevisan2001}
+used it for vertex separation on mixing graphs, with a $3^{n}$ count and
+Chernoff slack at a single position, which gives no positive constant below
+$c\approx227$. Neither states the entropy form, a value of $\beta^{*}(c)$, the
+threshold $4\ln2$ or the asymptotics, and we found no later work that does.
+
+One computation says how far the finite inequality is from the truth. On
+133 random graphs with 60 vertices and $c=10$ whose pathwidth we computed
+exactly, the smallest pathwidth is 25, while Theorem~\ref{thm:firstmoment}'s
+first inequality, evaluated exactly rather than through Step~3, puts the
+probability of pathwidth at most 23 below $0.35$ and of at most 21 below
+$10^{-3}$. The gap between $\beta^{*}(c)$ and the slopes fitted to such data
+is of the order of $0.1$ and does not close with $n$; closing it would need a
+second moment or a count over structured pairs, not a sharper estimate of
+this one.

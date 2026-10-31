@@ -11,8 +11,9 @@ Two checks.
    skipped: they carry no proof.
 2. **Axioms.** `lake env lean ../paper1/axiom_check.lean` is run from `lean/`,
    and every line must report exactly `propext`, `Classical.choice` and
-   `Quot.sound`, except the control `conjecture_sqrt_tw_f6`, which must show
-   `sorryAx`. Needs a built `lean/` (`lake build`), takes a few seconds.
+   `Quot.sound` (until 2026-10-31 `conjecture_sqrt_tw_f6` was a control
+   expected to show `sorryAx`; it is proved now). Needs a built `lean/`
+   (`lake build`), takes a few seconds.
 
 Exits non-zero on any failure.
 """
@@ -28,7 +29,6 @@ from paper1.latex.check_lean import LEAN, cited
 
 ROOT = Path(__file__).resolve().parents[2]
 AXIOM_CHECK = ROOT / "paper1" / "axiom_check.lean"
-CONTROL = "conjecture_sqrt_tw_f6"
 EXPECTED = {"propext", "Classical.choice", "Quot.sound"}
 THEOREM = re.compile(r"^\s*(?:@\[[^\]]*\]\s*)?(?:private\s+|protected\s+)*"
                      r"(?:theorem|lemma)\s+([^\s:({\[]+)", re.M)
@@ -65,10 +65,7 @@ def run_lean() -> tuple[int, list[str]]:
     records += [(n, "") for n in re.findall(r"'(\S+)' does not depend on any axioms", text)]
     for name, axioms in records:
         found = {a.strip() for a in axioms.split(",") if a.strip()}
-        if name.endswith(CONTROL):
-            if "sorryAx" not in found:
-                failures.append(f"control {name} does not show sorryAx")
-        elif found != EXPECTED:
+        if found != EXPECTED:
             failures.append(f"{name}: {sorted(found)}")
     expected = sum(line.startswith("#print axioms")
                    for line in AXIOM_CHECK.read_text().splitlines())
