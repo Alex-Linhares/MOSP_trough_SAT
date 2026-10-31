@@ -521,6 +521,17 @@ above it.
 
 ## 6. What remains
 
+*Update 2026-10-31, later the same day: Theorem A, its corollary and the
+limit statement (`P(pw ≤ βn) → 0` whenever `δ(β, c) > 0`) are Lean theorems,
+`lean/MOSPFormalization/FirstMomentAsymptotics.lean` (`firstMoment_pathwidth_le`,
+`firstMoment_pathwidth_le_fin'`, `tendsto_firstMoment_pathwidth`), sorry-free,
+standard axioms, the statement exactly as in §1 with the constant 3; the
+multinomial entropy bound (I1), absent from Mathlib, is proved there from the
+binomial theorem, and (I3) from `log x ≤ x − 1` without concavity. Not
+formalised: Theorem A′ (`δ > 0 ⟺ β < β*(c)`), A″ and B. Item 1 below is
+therefore done except for A′.*
+
+
 1. **Lean.** Theorem A is written so that each step is one lemma: (I1) the multinomial
    entropy bound (Mathlib has `Nat.multinomial` and the multinomial theorem; the entropy
    form is a short lemma), (I2) `1 − p ≤ e^(−p)` (`Real.add_one_le_exp`), (I3) the shift

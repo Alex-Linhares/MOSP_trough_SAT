@@ -293,7 +293,9 @@ inequalities rather than asymptotics.
       the finite form `e^{c/2} n³ e^{−δn}`. Literature: the argument is
       Turner 1986 (bandwidth) and DPST 2001 (vertex separation, crude count);
       the entropy constant, threshold and asymptotics are new; cite both.
-      Lean of Theorem A (four lemmas + assembly) is the remaining step. (3)'s core proved in Lean the
+      Theorem A and the limit statement are in Lean the same day
+      (`FirstMomentAsymptotics.lean`); A′ (the β*(c) characterisation), A″
+      and B are not. (3)'s core proved in Lean the
       same day, `IndependenceBound.lean`, `pathwidth ≤ n − indepNum`. (2)'s
       tree bounds proved in Lean the same evening, `TreeBound.lean`, by a prover
       agent with a refuter agent attacking every lemma first (gossip in

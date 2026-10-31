@@ -1,0 +1,15 @@
+grid points (n, c, beta): 1285619
+violations: 0
+tightest 10 (slack in nats = ln target - ln RHS0; n, c, beta):
+   slack=2.197225  n=3 c=0.5 beta=1.000000
+   slack=2.197225  n=3 c=1 beta=1.000000
+   slack=2.197225  n=3 c=2 beta=1.000000
+   slack=2.223275  n=3 c=0.5 beta=0.999000
+   slack=2.223525  n=3 c=1 beta=0.999000
+   slack=2.224024  n=3 c=2 beta=0.999000
+   slack=2.275256  n=3 c=0.5 beta=0.996499
+   slack=2.276127  n=3 c=1 beta=0.996499
+   slack=2.277868  n=3 c=2 beta=0.996499
+   slack=2.321266  n=3 c=0.5 beta=0.993997
+mpmath re-check of the 30 tightest: 0 violations
+RESULT: OK, zero violations

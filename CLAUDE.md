@@ -494,6 +494,9 @@ lean/
         FirstMoment.lean                the counting half of the random-graph first moment: #{G on n vertices : pw ≤ k} ≤
                                         C(n,t)·C(n−t,t−1)·2^(C(n,2) − t(t−1)), t = ⌈(n−k)/2⌉, and the G(n,p) weighted form
                                         P(pw ≤ k) ≤ C(n,t)·C(n−t,t−1)·(1−p)^(t(t−1)); also #SimpleGraph V = 2^C(n,2); sorry-free (2026-10-31)
+        FirstMomentAsymptotics.lean     Theorem A of reports/random_graph_first_moment.md: P(pw(G(n,c/n)) ≤ βn) ≤ exp(−δn + 3 log n + c·a),
+                                        δ = c a² − H(a,a,1−2a), a = (1−β)/2, n ≥ max(3, c), and → 0 when δ > 0; the multinomial entropy
+                                        bound (absent from Mathlib) proved from the binomial theorem; sorry-free (2026-10-31)
         ForMathlib/                     Candidates for Mathlib contribution
         Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
             GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1
