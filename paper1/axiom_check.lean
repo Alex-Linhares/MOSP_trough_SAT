@@ -306,3 +306,9 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.firstMoment_pathwidth_le_fin'
 #print axioms MOSPFormalization.tendsto_firstMoment_pathwidth
 #print axioms MOSPFormalization.choose_mul_choose_le_exp_entropy
+
+-- the first moment on random clique covers, the Chu & Stuckey model (CliqueCoverMoment.lean)
+#print axioms MOSPFormalization.prob_coversOfMospValueLe_le
+#print axioms MOSPFormalization.prob_coversOfPathwidthLe_le
+#print axioms MOSPFormalization.card_coversOfPathwidthLe_le
+#print axioms MOSPFormalization.card_filter_avoid

@@ -8,9 +8,10 @@ is empty iff no pattern meets both sides, which factorises over the independent 
 
 **What the files are.** `benchmarks/instances/MOSP_Instances/Chu_Stuckey/Random-n-m-d-k.txt`
 holds patterns × pieces (first line `m n`). The pattern sizes are *not* fixed at d: for d = 2
-they run from 2 to 9 with mean 2.7, for d = 10 from 3 to 24 with mean 10, and every customer has
-at least two patterns (the repository's generator note "exactly d customers per pattern" is
-not what the files show). So the model used here takes each class's *empirical* pattern sizes
+they run from 2 to 9 with mean 2.7, for d = 10 from 3 to 24 with mean 10, every *pattern* has at
+least two customers and customers with a single pattern are common (the repository's generator
+note "exactly d customers per pattern" is not what the files show; an earlier version of this
+README had the padding the wrong way round — corrected after `REPORT_generator.md` §0). So the model used here takes each class's *empirical* pattern sizes
 as given and assumes the customer sets are uniform given their sizes; the finite bound is
 rigorous in that model, and its empirical check is that no certified optimum falls below it.
 
@@ -46,10 +47,12 @@ a net loss as a search floor.
 
 ## Next steps
 
-1. Settle the generator: the sizes are not fixed and the "≥ 2 patterns per customer" rule
-   breaks exact uniformity; either obtain Chu & Stuckey's generator or test uniformity by
-   simulation (regenerate with `benchmarks/generator.py` variants and compare the empty-pair
-   frequency to the formula).
+1. ~~Settle the generator~~ **done**, `REPORT_generator.md`: Chu & Stuckey 2009 §4.2 describe
+   Bernoulli entries at the density giving d customers per pattern and rejection of disconnected
+   instances; the files add "every customer ≥ 1 pattern, every pattern ≥ 2 customers"; that
+   generator fits all 40 classes (mean z² 2.0). Under it, padding and rejection make empty pairs
+   *rarer* than the uniform model (ratio 1.0 → 0.6), so the bound stays valid; 7,200 fresh
+   instances at 30–40 customers, zero below the 0.01 floor. Measured, not proved.
 2. ~~Lean~~ **done the same day**, `lean/MOSPFormalization/CliqueCoverMoment.lean`:
    `prob_coversOfPathwidthLe_le` / `prob_coversOfMospValueLe_le`, exactly the inequality of
    `finite_bound_cs.py`, in MOSP vocabulary (`coverInstance`), sorry-free, standard axioms,
@@ -59,4 +62,8 @@ a net loss as a search floor.
    The Python uses integer arithmetic and is unaffected.
 3. Paper: a table of the class floors against the certified optima (Section 5 or Appendix E) —
    the generator's parameters predict the benchmark table to within a few percent at d ≥ 6.
-4. The asymptotic threshold d > 2.003 at μ = 1 against the ridge: a formula for the ridge?
+4. ~~The threshold~~ **closed form** (`REPORT_generator.md` §3): g(1/2) = ln 2·(1 + μ(1 − d)), so
+   β* > 0 iff μ(d − 1) > 1, i.e. *excess* > 1; the ridge of `ml_nature.md` §25 is excess 2–2.4 —
+   the same family one unit higher. Gao 2012's Theorem 2 is the same first moment with a factor
+   dropped between two lines of its proof (harmless for m = o(n), not at m = Θ(n)); the
+   restored condition at m = n is c > 2.46, not 2. Why the ridge sits at excess 2 is open.

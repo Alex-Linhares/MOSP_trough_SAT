@@ -1,0 +1,453 @@
+(30, 30, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs    81.4 sim    75.9 z=  5.38 | row_var z=  7.14 col_var z=  9.85 col_min z=   inf frac_row2 z= -0.30
+(30, 30, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs    81.4 sim    75.2 z=  3.11 | row_var z= -4.77 col_var z=  8.49 col_min z=   inf frac_row2 z=  8.42
+(30, 30, 2) iii_fixed_padC2_conn     n_sim=200 acc=0.9901 ones obs    81.4 sim    75.7 z=  5.69 | row_var z=  9.23 col_var z=  9.21 col_min z=   inf frac_row2 z= -0.13
+(30, 30, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.8547 ones obs    81.4 sim    78.1 z=  1.57 | row_var z=  0.57 col_var z=  0.92 col_min z=  0.00 frac_row2 z= -1.68
+(30, 30, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs    81.4 sim    77.9 z=  1.50 | row_var z=  0.73 col_var z=  1.20 col_min z=  0.00 frac_row2 z= -1.66
+(30, 30, 2) bern_truncP2_conn        n_sim=200 acc=0.2070 ones obs    81.4 sim    88.0 z= -2.42 | row_var z= -0.45 col_var z= -0.21 col_min z= -0.22 frac_row2 z=  3.26
+(30, 30, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   127.6 sim   122.8 z=  6.60 | row_var z=113.93 col_var z=  2.77 col_min z=   inf frac_row2 z=   inf
+(30, 30, 2) bern_padC1_conn          n_sim=200 acc=0.1431 ones obs    81.4 sim    70.2 z=  4.45 | row_var z= -4.53 col_var z=  2.33 col_min z=  0.00 frac_row2 z=  8.42
+(30, 30, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   127.6 sim   122.6 z=  1.20 | row_var z= -1.19 col_var z=  3.44 col_min z=   inf frac_row2 z=  2.27
+(30, 30, 4) bern_padP2_conn          n_sim=200 acc=0.6826 ones obs   127.6 sim   124.4 z=  0.82 | row_var z= -0.34 col_var z=  1.59 col_min z= -0.96 frac_row2 z= -0.60
+(30, 30, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   127.6 sim   122.6 z=  7.12 | row_var z=120.72 col_var z=  3.36 col_min z=   inf frac_row2 z=   inf
+(30, 30, 2) fixed_padC1_conn         n_sim=200 acc=0.4329 ones obs    81.4 sim    64.3 z= 25.19 | row_var z= 32.75 col_var z=  4.66 col_min z=  0.00 frac_row2 z=-13.92
+(30, 30, 4) paper_bern_conn          n_sim=200 acc=0.7042 ones obs   127.6 sim   122.4 z=  1.09 | row_var z= -1.22 col_var z=  2.28 col_min z= -0.99 frac_row2 z=  1.90
+(30, 30, 4) bern_padC1_padP2_conn    n_sim=200 acc=0.9950 ones obs   127.6 sim   123.7 z=  1.04 | row_var z= -0.04 col_var z=  1.57 col_min z= -0.94 frac_row2 z= -0.53
+(30, 30, 4) bern_truncP2_conn        n_sim=200 acc=0.7220 ones obs   127.6 sim   129.5 z= -0.46 | row_var z=  0.45 col_var z=  0.86 col_min z= -1.01 frac_row2 z=  1.69
+(30, 30, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   127.6 sim   120.4 z= 27.60 | row_var z=347.87 col_var z=  1.48 col_min z= -0.68 frac_row2 z=   inf
+(30, 30, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   176.4 sim   180.4 z=-13.62 | row_var z=460.95 col_var z=  1.20 col_min z= -6.36 frac_row2 z=   inf
+(30, 30, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   176.4 sim   179.4 z= -0.54 | row_var z=  0.33 col_var z=  1.91 col_min z= -6.41 frac_row2 z=  0.49
+(30, 30, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   127.6 sim   123.0 z=  1.07 | row_var z= -0.03 col_var z=  1.27 col_min z= -0.76 frac_row2 z= -0.63
+(30, 30, 4) bern_padC1_conn          n_sim=200 acc=0.9662 ones obs   127.6 sim   121.4 z=  1.42 | row_var z= -1.09 col_var z=  1.93 col_min z= -0.66 frac_row2 z=  1.93
+(30, 30, 4) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   127.6 sim   123.1 z=  1.13 | row_var z= -0.05 col_var z=  1.51 col_min z= -0.84 frac_row2 z= -0.71
+(30, 30, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.9091 ones obs    81.4 sim    78.5 z=  1.40 | row_var z=  0.68 col_var z=  0.46 col_min z=  0.00 frac_row2 z= -1.09
+(30, 30, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   176.4 sim   180.4 z=-13.61 | row_var z=500.27 col_var z=  1.14 col_min z= -6.36 frac_row2 z=   inf
+(30, 30, 6) paper_bern_conn          n_sim=200 acc=0.9524 ones obs   176.4 sim   180.7 z= -0.78 | row_var z= -0.04 col_var z=  1.52 col_min z= -3.17 frac_row2 z=  0.44
+(30, 30, 6) bern_truncP2_conn        n_sim=200 acc=0.9346 ones obs   176.4 sim   180.1 z= -0.73 | row_var z=  0.67 col_var z=  1.51 col_min z= -2.86 frac_row2 z=  0.14
+(30, 30, 6) bern_padP2_conn          n_sim=200 acc=0.9756 ones obs   176.4 sim   179.7 z= -0.59 | row_var z=  0.29 col_var z=  1.66 col_min z= -3.22 frac_row2 z= -0.34
+(30, 30, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   176.4 sim   180.2 z= -0.74 | row_var z=  0.44 col_var z=  1.23 col_min z= -2.90 frac_row2 z=  0.10
+(30, 30, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   176.4 sim   181.5 z= -0.96 | row_var z=  0.15 col_var z=  1.55 col_min z= -2.95 frac_row2 z= -0.14
+(30, 30, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   176.4 sim   179.9 z= -0.66 | row_var z=  0.03 col_var z=  1.60 col_min z= -3.01 frac_row2 z=  0.45
+(30, 30, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   176.4 sim   180.2 z= -0.73 | row_var z=  0.22 col_var z=  1.41 col_min z= -3.13 frac_row2 z= -0.35
+(30, 30, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   234.8 sim   239.7 z= -0.82 | row_var z= -1.47 col_var z=  1.54 col_min z= -2.13 frac_row2 z= -0.92
+(30, 30, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   234.8 sim   240.0 z=-95.69 | row_var z=2799.03 col_var z=  1.48 col_min z= -2.06 frac_row2 z=  0.00
+(30, 30, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   176.4 sim   180.0 z=-39.22 | row_var z=1544.57 col_var z=  1.29 col_min z= -2.92 frac_row2 z=   inf
+(30, 30, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   234.8 sim   240.0 z=-53.13 | row_var z=1567.90 col_var z=  1.07 col_min z= -1.99 frac_row2 z=  0.00
+(30, 30, 8) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs   234.8 sim   240.9 z= -1.00 | row_var z= -1.01 col_var z=  1.78 col_min z= -2.13 frac_row2 z= -0.96
+(30, 30, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   234.8 sim   240.3 z= -0.91 | row_var z= -1.09 col_var z=  1.42 col_min z= -2.05 frac_row2 z= -0.96
+(30, 30, 8) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs   234.8 sim   238.8 z= -0.64 | row_var z= -1.17 col_var z=  1.36 col_min z= -1.30 frac_row2 z= -0.97
+(30, 30, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   234.8 sim   240.5 z= -1.09 | row_var z= -0.88 col_var z=  1.54 col_min z= -1.98 frac_row2 z= -0.92
+(30, 30, 8) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   234.8 sim   240.3 z= -1.03 | row_var z= -1.11 col_var z=  1.23 col_min z= -2.02 frac_row2 z= -0.94
+(30, 30, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   234.8 sim   239.6 z= -0.76 | row_var z= -1.06 col_var z=  1.60 col_min z= -1.89 frac_row2 z= -0.99
+(30, 30, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   234.8 sim   240.0 z=   inf | row_var z=   inf col_var z=  1.39 col_min z= -1.86 frac_row2 z=  0.00
+(30, 30, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   295.6 sim   300.0 z=   inf | row_var z=   inf col_var z=  1.37 col_min z= -2.92 frac_row2 z=  0.00
+(30, 30, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   295.6 sim   300.0 z= -0.69 | row_var z= -1.98 col_var z=  2.28 col_min z= -3.00 frac_row2 z= -0.22
+(30, 30, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   234.8 sim   240.9 z= -1.02 | row_var z= -1.49 col_var z=  1.26 col_min z= -2.05 frac_row2 z= -0.94
+(30, 30, 10) bern_padP2_conn          n_sim=200 acc=0.9901 ones obs   295.6 sim   300.3 z= -0.78 | row_var z= -1.99 col_var z=  1.51 col_min z= -2.94 frac_row2 z= -0.39
+(30, 30, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   295.6 sim   300.0 z=   inf | row_var z=   inf col_var z=  1.20 col_min z= -2.67 frac_row2 z=  0.00
+(30, 30, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   295.6 sim   299.3 z= -0.60 | row_var z= -1.68 col_var z=  1.80 col_min z= -2.72 frac_row2 z= -0.28
+(30, 30, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   295.6 sim   300.5 z= -0.80 | row_var z= -1.87 col_var z=  1.92 col_min z= -2.89 frac_row2 z= -0.16
+(30, 30, 10) bern_truncP2_conn        n_sim=200 acc=0.9950 ones obs   295.6 sim   300.0 z= -0.71 | row_var z= -1.98 col_var z=  2.17 col_min z= -3.24 frac_row2 z= -0.46
+(30, 30, 2) bern_padP2_conn          n_sim=200 acc=0.0736 ones obs    81.4 sim    79.0 z=  1.10 | row_var z=  0.06 col_var z=  1.18 col_min z=  0.00 frac_row2 z= -1.52
+(30, 30, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   295.6 sim   300.3 z= -0.79 | row_var z= -1.82 col_var z=  1.63 col_min z= -2.50 frac_row2 z= -0.32
+(30, 30, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   295.6 sim   299.4 z= -0.66 | row_var z= -1.56 col_var z=  1.70 col_min z= -2.83 frac_row2 z= -0.16
+(30, 30, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   295.6 sim   300.0 z=   inf | row_var z=   inf col_var z=  1.28 col_min z= -2.70 frac_row2 z=  0.00
+(30, 30, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   295.6 sim   299.2 z= -0.58 | row_var z= -1.78 col_var z=  1.74 col_min z= -2.61 frac_row2 z= -0.39
+(40, 40, 2) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   111.2 sim   101.5 z=  7.70 | row_var z= 16.94 col_var z=  9.89 col_min z=   inf frac_row2 z=  0.79
+(40, 40, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   111.2 sim   101.1 z=  3.89 | row_var z= -3.76 col_var z=  8.44 col_min z=   inf frac_row2 z= 11.48
+(40, 40, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   111.2 sim   100.8 z=  8.77 | row_var z= 15.84 col_var z=  9.99 col_min z=   inf frac_row2 z=  0.42
+(40, 40, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   111.2 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(40, 40, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.8511 ones obs   111.2 sim   105.1 z=  2.49 | row_var z=  3.76 col_var z= -0.26 col_min z=  0.00 frac_row2 z= -0.44
+(40, 40, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   111.2 sim   104.1 z=  2.78 | row_var z=  3.91 col_var z=  0.65 col_min z=  0.00 frac_row2 z= -1.29
+(40, 40, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   168.8 sim   163.7 z=  6.07 | row_var z=131.55 col_var z=  2.10 col_min z=   inf frac_row2 z=   inf
+(40, 40, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   168.8 sim   163.4 z=  1.03 | row_var z= -1.76 col_var z=  2.16 col_min z=   inf frac_row2 z=  2.71
+(40, 40, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.8547 ones obs   111.2 sim   104.4 z=  2.82 | row_var z=  3.86 col_var z=  0.36 col_min z=  0.00 frac_row2 z= -1.16
+(40, 40, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   168.8 sim   163.8 z=  5.94 | row_var z=124.83 col_var z=  2.61 col_min z=   inf frac_row2 z=   inf
+(40, 40, 4) paper_bern_conn          n_sim=200 acc=0.5277 ones obs   168.8 sim   162.1 z=  1.22 | row_var z= -1.89 col_var z=  1.23 col_min z= -0.66 frac_row2 z=  2.92
+(40, 40, 4) bern_truncP2_conn        n_sim=200 acc=0.6154 ones obs   168.8 sim   172.7 z= -0.80 | row_var z= -0.09 col_var z=  0.48 col_min z= -0.90 frac_row2 z=  2.04
+(40, 40, 4) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   168.8 sim   166.3 z=  0.54 | row_var z= -0.65 col_var z=  0.33 col_min z= -0.51 frac_row2 z= -0.47
+(40, 40, 4) bern_padP2_conn          n_sim=200 acc=0.6349 ones obs   168.8 sim   165.4 z=  0.72 | row_var z= -0.62 col_var z=  1.06 col_min z= -0.54 frac_row2 z= -0.66
+(40, 40, 4) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   168.8 sim   164.6 z=  0.79 | row_var z= -0.53 col_var z=  0.96 col_min z= -0.22 frac_row2 z= -0.72
+(40, 40, 4) bern_padC1_conn          n_sim=200 acc=0.9390 ones obs   168.8 sim   159.8 z=  1.68 | row_var z= -1.67 col_var z=  0.70 col_min z= -0.32 frac_row2 z=  2.06
+(40, 40, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   168.8 sim   160.6 z= 23.27 | row_var z=302.89 col_var z=  0.50 col_min z= -0.28 frac_row2 z=   inf
+(40, 40, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   238.4 sim   240.6 z= -5.78 | row_var z=402.24 col_var z=  0.12 col_min z= -0.86 frac_row2 z=   inf
+(40, 40, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   168.8 sim   164.1 z=  0.93 | row_var z= -0.62 col_var z=  0.56 col_min z= -0.56 frac_row2 z= -0.96
+(40, 40, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   238.4 sim   241.2 z= -0.45 | row_var z= -1.72 col_var z=  0.33 col_min z= -0.92 frac_row2 z=  0.17
+(40, 40, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   238.4 sim   240.6 z= -5.38 | row_var z=439.50 col_var z=  0.46 col_min z= -0.82 frac_row2 z=   inf
+(40, 40, 2) fixed_padC1_conn         n_sim=200 acc=0.3175 ones obs   111.2 sim    85.9 z= 34.85 | row_var z= 66.61 col_var z=  3.32 col_min z=  0.00 frac_row2 z=-15.04
+(40, 40, 6) bern_padP2_conn          n_sim=200 acc=0.9479 ones obs   238.4 sim   240.7 z= -0.36 | row_var z= -1.72 col_var z=  0.14 col_min z=  0.59 frac_row2 z= -0.83
+(40, 40, 2) bern_truncP2_conn        n_sim=200 acc=0.1002 ones obs   111.2 sim   117.8 z= -2.25 | row_var z=  2.24 col_var z= -0.89 col_min z=  0.00 frac_row2 z=  4.99
+(40, 40, 6) bern_truncP2_conn        n_sim=200 acc=0.9390 ones obs   238.4 sim   243.4 z= -0.76 | row_var z= -1.54 col_var z=  0.17 col_min z=  0.52 frac_row2 z= -0.11
+(40, 40, 6) paper_bern_conn          n_sim=200 acc=0.9174 ones obs   238.4 sim   240.3 z= -0.29 | row_var z= -1.73 col_var z= -0.04 col_min z=  0.58 frac_row2 z=  0.17
+(40, 40, 2) bern_padC1_conn          n_sim=200 acc=0.0864 ones obs   111.2 sim    93.1 z=  6.23 | row_var z= -2.90 col_var z=  2.41 col_min z=  0.00 frac_row2 z= 10.62
+(40, 40, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   238.4 sim   239.2 z= -0.13 | row_var z= -1.64 col_var z=  0.10 col_min z=  0.80 frac_row2 z= -0.44
+(40, 40, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   317.8 sim   320.1 z=-16.30 | row_var z=1499.09 col_var z= -0.77 col_min z=  0.87 frac_row2 z=   inf
+(40, 40, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   317.8 sim   320.2 z= -0.34 | row_var z= -1.73 col_var z= -0.54 col_min z=  0.71 frac_row2 z= -0.37
+(40, 40, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   238.4 sim   240.9 z= -0.39 | row_var z= -1.33 col_var z=  0.14 col_min z=  0.85 frac_row2 z= -0.38
+(40, 40, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   238.4 sim   238.5 z= -0.01 | row_var z= -1.66 col_var z=  0.20 col_min z=  0.75 frac_row2 z=  0.35
+(40, 40, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   317.8 sim   320.1 z=-23.03 | row_var z=2129.70 col_var z= -0.72 col_min z=  1.05 frac_row2 z=   inf
+(40, 40, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   238.4 sim   240.1 z=-16.89 | row_var z=1732.25 col_var z= -0.19 col_min z=  1.07 frac_row2 z=   inf
+(40, 40, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   238.4 sim   241.1 z= -0.40 | row_var z= -1.29 col_var z=  0.10 col_min z=  0.72 frac_row2 z= -0.48
+(40, 40, 8) paper_bern_conn          n_sim=200 acc=0.9950 ones obs   317.8 sim   319.2 z= -0.20 | row_var z= -2.22 col_var z= -0.45 col_min z=  0.78 frac_row2 z= -0.36
+(40, 40, 8) bern_truncP2_conn        n_sim=200 acc=0.9852 ones obs   317.8 sim   319.9 z= -0.28 | row_var z= -1.70 col_var z= -0.58 col_min z=  0.81 frac_row2 z= -0.23
+(40, 40, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   317.8 sim   321.6 z= -0.52 | row_var z= -1.84 col_var z= -0.67 col_min z=  1.12 frac_row2 z= -0.45
+(40, 40, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   317.8 sim   320.2 z= -0.37 | row_var z= -1.89 col_var z= -0.49 col_min z=  0.93 frac_row2 z= -0.43
+(40, 40, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   392.8 sim   400.0 z=-227.84 | row_var z=7465.74 col_var z= -0.14 col_min z=  1.32 frac_row2 z=  0.00
+(40, 40, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   317.8 sim   320.0 z=   inf | row_var z=   inf col_var z= -0.55 col_min z=  0.79 frac_row2 z=   inf
+(40, 40, 8) bern_padP2_conn          n_sim=200 acc=0.9950 ones obs   317.8 sim   321.0 z= -0.43 | row_var z= -1.75 col_var z= -0.44 col_min z=  0.66 frac_row2 z= -0.38
+(40, 40, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   392.8 sim   398.3 z= -0.66 | row_var z= -2.38 col_var z=  0.04 col_min z=  1.21 frac_row2 z= -0.41
+(40, 40, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   392.8 sim   400.0 z=-132.39 | row_var z=4331.99 col_var z= -0.10 col_min z=  1.16 frac_row2 z=  0.00
+(40, 40, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   317.8 sim   319.9 z= -0.28 | row_var z= -1.99 col_var z= -0.64 col_min z=  0.94 frac_row2 z= -0.47
+(40, 40, 10) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs   392.8 sim   400.8 z= -1.04 | row_var z= -2.38 col_var z= -0.05 col_min z=  1.16 frac_row2 z= -0.47
+(40, 40, 10) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs   392.8 sim   401.0 z= -1.06 | row_var z= -2.03 col_var z=  0.12 col_min z=  0.75 frac_row2 z= -0.46
+(40, 40, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   392.8 sim   400.5 z= -1.03 | row_var z= -2.27 col_var z= -0.08 col_min z=  1.11 frac_row2 z= -0.36
+(40, 40, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   317.8 sim   320.5 z= -0.38 | row_var z= -1.74 col_var z= -0.61 col_min z=  1.07 frac_row2 z= -0.05
+(40, 40, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   392.8 sim   400.3 z= -0.98 | row_var z= -2.09 col_var z= -0.18 col_min z=  1.20 frac_row2 z= -0.51
+(40, 40, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   392.8 sim   398.4 z= -0.75 | row_var z= -2.11 col_var z=  0.32 col_min z=  0.95 frac_row2 z= -0.34
+(40, 40, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   392.8 sim   400.0 z=   inf | row_var z=   inf col_var z= -0.29 col_min z=  1.30 frac_row2 z=  0.00
+(50, 50, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   142.2 sim   126.7 z=  5.58 | row_var z= -4.83 col_var z=  8.94 col_min z=   inf frac_row2 z= 10.23
+(50, 50, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   142.2 sim   126.4 z= 11.93 | row_var z= 18.58 col_var z=  9.58 col_min z=   inf frac_row2 z= -1.03
+(40, 40, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   392.8 sim   399.5 z= -0.90 | row_var z= -2.12 col_var z=  0.06 col_min z=  0.88 frac_row2 z= -0.36
+(40, 40, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   392.8 sim   398.8 z= -0.81 | row_var z= -2.02 col_var z=  0.18 col_min z=  1.12 frac_row2 z= -0.36
+(50, 50, 2) iii_fixed_padC2_conn     n_sim=200 acc=0.9852 ones obs   142.2 sim   127.2 z= 10.92 | row_var z= 16.46 col_var z=  8.68 col_min z=   inf frac_row2 z= -0.55
+(50, 50, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   142.2 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(50, 50, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   142.2 sim   129.9 z=  4.65 | row_var z=  3.97 col_var z=  0.25 col_min z=  0.00 frac_row2 z= -3.25
+(50, 50, 2) bern_truncP2_conn        n_sim=200 acc=0.0670 ones obs   142.2 sim   148.3 z= -1.92 | row_var z=  1.86 col_var z= -1.59 col_min z=  0.00 frac_row2 z=  4.86
+(50, 50, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.7782 ones obs   142.2 sim   131.3 z=  3.57 | row_var z=  2.60 col_var z= -0.14 col_min z=  0.00 frac_row2 z= -2.85
+(50, 50, 2) fixed_padC1_conn         n_sim=200 acc=0.2262 ones obs   142.2 sim   107.6 z= 39.80 | row_var z= 61.11 col_var z=  3.27 col_min z=  0.00 frac_row2 z=-18.71
+(50, 50, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.7874 ones obs   142.2 sim   131.2 z=  4.09 | row_var z=  3.96 col_var z= -0.48 col_min z=  0.00 frac_row2 z= -2.08
+(50, 50, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   218.6 sim   204.9 z= 16.03 | row_var z=163.38 col_var z=  2.58 col_min z=   inf frac_row2 z=   inf
+(50, 50, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   218.6 sim   205.2 z= 13.61 | row_var z=138.54 col_var z=  2.60 col_min z=   inf frac_row2 z=   inf
+(50, 50, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   218.6 sim   206.1 z=  2.30 | row_var z= -1.81 col_var z=  2.48 col_min z=   inf frac_row2 z=  1.80
+(50, 50, 4) bern_padP2_conn          n_sim=200 acc=0.4854 ones obs   218.6 sim   206.8 z=  2.17 | row_var z= -0.18 col_var z=  1.16 col_min z=  1.42 frac_row2 z= -2.02
+(50, 50, 4) bern_truncP2_conn        n_sim=200 acc=0.5731 ones obs   218.6 sim   217.9 z=  0.14 | row_var z=  0.27 col_var z=  0.62 col_min z=  1.06 frac_row2 z=  0.92
+(50, 50, 4) paper_bern_conn          n_sim=200 acc=0.4348 ones obs   218.6 sim   202.7 z=  2.66 | row_var z= -1.61 col_var z=  1.61 col_min z=  1.82 frac_row2 z=  1.29
+(50, 50, 4) bern_padC1_conn          n_sim=200 acc=0.9302 ones obs   218.6 sim   201.3 z=  3.06 | row_var z= -1.38 col_var z=  1.22 col_min z=  2.87 frac_row2 z=  1.23
+(50, 50, 4) bern_padP2_padC1_conn    n_sim=200 acc=0.9950 ones obs   218.6 sim   207.4 z=  2.02 | row_var z= -0.37 col_var z=  0.69 col_min z=  3.39 frac_row2 z= -2.00
+(50, 50, 4) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   218.6 sim   205.9 z=  2.32 | row_var z= -0.27 col_var z=  0.80 col_min z=  6.17 frac_row2 z= -2.41
+(50, 50, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   313.0 sim   300.7 z= 33.26 | row_var z=635.56 col_var z=  0.70 col_min z= -7.28 frac_row2 z=   inf
+(50, 50, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   218.6 sim   200.8 z= 51.60 | row_var z=459.75 col_var z=  1.27 col_min z=  6.17 frac_row2 z=   inf
+(50, 50, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   313.0 sim   300.9 z= 27.19 | row_var z=544.23 col_var z=  0.82 col_min z= -6.20 frac_row2 z=   inf
+(50, 50, 6) paper_bern_conn          n_sim=200 acc=0.9259 ones obs   313.0 sim   299.8 z=  1.71 | row_var z= -1.00 col_var z=  0.83 col_min z= -0.78 frac_row2 z=  0.25
+(30, 30, 2) paper_bern_conn          n_sim=200 acc=0.0052 ones obs    81.4 sim    73.0 z=  2.96 | row_var z= -4.96 col_var z=  2.61 col_min z=  0.00 frac_row2 z=  9.18
+(50, 50, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   218.6 sim   205.3 z=  2.62 | row_var z= -0.24 col_var z=  0.95 col_min z=  4.26 frac_row2 z= -2.28
+(50, 50, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   313.0 sim   299.3 z=  1.81 | row_var z= -0.96 col_var z=  0.80 col_min z= -6.41 frac_row2 z=  0.12
+(50, 50, 6) bern_padP2_conn          n_sim=200 acc=0.9091 ones obs   313.0 sim   301.3 z=  1.64 | row_var z= -0.87 col_var z=  0.89 col_min z= -0.84 frac_row2 z= -0.87
+(50, 50, 6) bern_truncP2_conn        n_sim=200 acc=0.9217 ones obs   313.0 sim   303.0 z=  1.40 | row_var z= -0.63 col_var z=  0.75 col_min z= -1.08 frac_row2 z= -0.03
+(50, 50, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   313.0 sim   302.5 z=  1.46 | row_var z= -0.67 col_var z=  0.58 col_min z= -0.67 frac_row2 z= -0.76
+(50, 50, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   313.0 sim   301.7 z=  1.55 | row_var z= -1.03 col_var z=  0.88 col_min z= -0.96 frac_row2 z= -0.81
+(50, 50, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   413.8 sim   400.1 z=118.93 | row_var z=2622.83 col_var z=  0.63 col_min z=  1.60 frac_row2 z=   inf
+(50, 50, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   313.0 sim   300.1 z= 93.82 | row_var z=1746.03 col_var z=  0.26 col_min z= -0.40 frac_row2 z=   inf
+(50, 50, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   413.8 sim   401.9 z=  1.48 | row_var z= -1.04 col_var z=  1.09 col_min z=  1.66 frac_row2 z=  0.41
+(50, 50, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   413.8 sim   400.1 z=103.25 | row_var z=2277.60 col_var z=  0.83 col_min z=  1.68 frac_row2 z=   inf
+(50, 50, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   313.0 sim   299.8 z=  1.79 | row_var z= -0.75 col_var z=  0.57 col_min z= -0.51 frac_row2 z= -0.93
+(50, 50, 8) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   413.8 sim   401.3 z=  1.66 | row_var z= -0.92 col_var z=  0.88 col_min z=  1.46 frac_row2 z=  0.36
+(50, 50, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   313.0 sim   300.0 z=  1.85 | row_var z= -0.94 col_var z=  0.67 col_min z= -0.60 frac_row2 z=  0.03
+(50, 50, 8) bern_truncP2_conn        n_sim=200 acc=0.9950 ones obs   413.8 sim   400.6 z=  1.52 | row_var z= -0.65 col_var z=  0.39 col_min z=  1.59 frac_row2 z=  0.19
+(50, 50, 8) bern_padP2_conn          n_sim=200 acc=0.9804 ones obs   413.8 sim   401.0 z=  1.62 | row_var z= -1.15 col_var z=  0.42 col_min z=  1.70 frac_row2 z= -0.27
+(50, 50, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   413.8 sim   400.3 z=  1.72 | row_var z= -1.11 col_var z=  0.90 col_min z=  1.54 frac_row2 z= -0.32
+(50, 50, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   413.8 sim   397.8 z=  1.81 | row_var z= -0.93 col_var z=  0.94 col_min z=  1.60 frac_row2 z= -0.25
+(50, 50, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   511.6 sim   500.0 z=259.81 | row_var z=8144.04 col_var z= -0.89 col_min z=  1.12 frac_row2 z=  0.00
+(50, 50, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   413.8 sim   400.0 z=436.24 | row_var z=9527.07 col_var z=  0.55 col_min z=  1.67 frac_row2 z=   inf
+(50, 50, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   413.8 sim   397.7 z=  1.89 | row_var z= -0.95 col_var z=  1.29 col_min z=  1.49 frac_row2 z=  0.23
+(50, 50, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   511.6 sim   499.4 z=  1.34 | row_var z= -1.14 col_var z= -0.61 col_min z=  0.76 frac_row2 z= -0.56
+(50, 50, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   413.8 sim   400.9 z=  1.62 | row_var z= -1.13 col_var z=  0.76 col_min z=  1.61 frac_row2 z=  0.33
+(50, 50, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   511.6 sim   500.0 z=   inf | row_var z=   inf col_var z= -0.63 col_min z=  0.88 frac_row2 z=  0.00
+(50, 50, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   511.6 sim   499.7 z=  1.29 | row_var z= -0.89 col_var z= -0.48 col_min z=  0.77 frac_row2 z= -0.62
+(50, 50, 2) bern_padC1_conn          n_sim=200 acc=0.0437 ones obs   142.2 sim   116.8 z=  7.46 | row_var z= -3.82 col_var z=  1.58 col_min z=  0.00 frac_row2 z=  9.64
+(50, 50, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   511.6 sim   496.9 z=  1.67 | row_var z= -1.34 col_var z= -0.67 col_min z=  0.99 frac_row2 z= -0.61
+(50, 50, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   511.6 sim   499.4 z=  1.42 | row_var z= -0.98 col_var z= -0.57 col_min z=  0.88 frac_row2 z= -0.56
+(50, 50, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   511.6 sim   500.9 z=  1.11 | row_var z= -1.06 col_var z= -0.79 col_min z=  0.66 frac_row2 z= -0.59
+(50, 50, 10) bern_truncP2_conn        n_sim=200 acc=0.9950 ones obs   511.6 sim   502.8 z=  1.03 | row_var z= -1.00 col_var z= -0.37 col_min z=  0.62 frac_row2 z= -0.46
+(50, 50, 10) bern_padP2_conn          n_sim=200 acc=0.9950 ones obs   511.6 sim   498.5 z=  1.50 | row_var z= -0.90 col_var z= -0.85 col_min z=  1.08 frac_row2 z= -0.54
+(50, 50, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   511.6 sim   497.6 z=  1.56 | row_var z= -0.76 col_var z= -0.79 col_min z=  1.07 frac_row2 z= -0.66
+(50, 50, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   511.6 sim   500.0 z=   inf | row_var z=   inf col_var z= -0.73 col_min z=  0.86 frac_row2 z=  0.00
+(50, 100, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   259.6 sim   205.2 z= 56.54 | row_var z= 97.72 col_var z=  3.60 col_min z=   inf frac_row2 z=-30.40
+(50, 100, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   259.6 sim   203.9 z=  8.91 | row_var z= -6.85 col_var z=  3.80 col_min z=   inf frac_row2 z= 19.72
+(50, 100, 2) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   259.6 sim   205.4 z= 55.41 | row_var z=100.68 col_var z=  4.16 col_min z=   inf frac_row2 z=-29.42
+(50, 100, 2) paper_bern_conn          n_sim=200 acc=0.2299 ones obs   259.6 sim   207.1 z=  8.80 | row_var z= -6.93 col_var z=  1.85 col_min z= -0.42 frac_row2 z= 19.49
+(50, 100, 2) bern_truncP2_conn        n_sim=200 acc=0.8889 ones obs   259.6 sim   289.1 z= -5.94 | row_var z= -0.84 col_var z= -2.25 col_min z= -1.79 frac_row2 z=  9.24
+(50, 100, 2) bern_padC1_conn          n_sim=200 acc=0.4684 ones obs   259.6 sim   203.0 z=  9.63 | row_var z= -6.95 col_var z=  2.15 col_min z= -0.42 frac_row2 z= 18.00
+(50, 100, 2) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   259.6 sim   253.6 z=  1.46 | row_var z=  1.93 col_var z= -0.99 col_min z= -1.18 frac_row2 z= -0.39
+(50, 100, 2) fixed_padC1_conn         n_sim=200 acc=0.9569 ones obs   259.6 sim   200.9 z=148.84 | row_var z=253.80 col_var z=  1.82 col_min z= -0.16 frac_row2 z=-83.26
+(50, 100, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   416.8 sim   400.2 z= 90.58 | row_var z=1840.23 col_var z= -1.04 col_min z=  1.03 frac_row2 z=   inf
+(50, 100, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.9950 ones obs   259.6 sim   252.8 z=  1.88 | row_var z=  2.21 col_var z= -0.91 col_min z= -1.01 frac_row2 z= -0.60
+(50, 100, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   416.8 sim   399.1 z=  2.15 | row_var z= -1.60 col_var z= -0.65 col_min z=  0.68 frac_row2 z=  4.93
+(50, 100, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   416.8 sim   400.1 z=115.48 | row_var z=2330.42 col_var z= -0.92 col_min z=  0.89 frac_row2 z=   inf
+(50, 100, 4) paper_bern_conn          n_sim=200 acc=0.9756 ones obs   416.8 sim   399.1 z=  1.92 | row_var z= -1.09 col_var z= -0.91 col_min z=  1.08 frac_row2 z=  4.78
+(50, 100, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   259.6 sim   252.8 z=  1.66 | row_var z=  1.77 col_var z= -0.47 col_min z= -1.20 frac_row2 z= -0.64
+(50, 100, 4) bern_truncP2_conn        n_sim=200 acc=0.9950 ones obs   416.8 sim   428.9 z= -1.51 | row_var z=  1.99 col_var z= -1.38 col_min z=  0.19 frac_row2 z=  3.83
+(50, 100, 4) bern_padP2_conn          n_sim=200 acc=0.9950 ones obs   416.8 sim   409.4 z=  0.92 | row_var z=  0.97 col_var z= -0.90 col_min z=  0.36 frac_row2 z= -0.26
+(50, 100, 4) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   416.8 sim   408.2 z=  1.13 | row_var z=  0.85 col_var z= -0.80 col_min z=  0.82 frac_row2 z= -0.52
+(50, 100, 4) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   416.8 sim   409.7 z=  0.88 | row_var z=  0.80 col_var z= -1.16 col_min z=  0.66 frac_row2 z= -0.45
+(50, 100, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   416.8 sim   400.0 z=531.10 | row_var z=10637.36 col_var z= -0.94 col_min z=  1.41 frac_row2 z=   inf
+(50, 100, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   416.8 sim   410.5 z=  0.77 | row_var z=  0.85 col_var z= -1.05 col_min z=  0.46 frac_row2 z= -0.27
+(50, 100, 4) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   416.8 sim   402.0 z=  1.77 | row_var z= -1.19 col_var z= -1.17 col_min z=  0.95 frac_row2 z=  5.36
+(50, 100, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   607.2 sim   600.0 z=   inf | row_var z=   inf col_var z= -0.90 col_min z=  0.66 frac_row2 z=   inf
+(50, 100, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   607.2 sim   601.5 z=  0.56 | row_var z=  0.64 col_var z= -0.77 col_min z=  0.60 frac_row2 z=  1.98
+(50, 100, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   607.2 sim   600.0 z=161.18 | row_var z=12292.67 col_var z= -0.96 col_min z=  0.66 frac_row2 z=   inf
+(50, 100, 6) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   607.2 sim   600.5 z=  0.58 | row_var z=  0.58 col_var z= -0.63 col_min z=  0.51 frac_row2 z=  1.59
+(50, 100, 2) bern_padP2_conn          n_sim=200 acc=0.7273 ones obs   259.6 sim   254.3 z=  1.23 | row_var z=  1.56 col_var z= -0.69 col_min z= -1.20 frac_row2 z= -0.31
+(50, 100, 6) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs   607.2 sim   605.7 z=  0.14 | row_var z=  1.53 col_var z= -0.76 col_min z=  0.23 frac_row2 z=  1.32
+(50, 100, 6) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs   607.2 sim   603.7 z=  0.36 | row_var z=  0.90 col_var z= -0.58 col_min z=  0.38 frac_row2 z=  0.38
+(50, 100, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   607.2 sim   600.0 z=   inf | row_var z=   inf col_var z= -1.02 col_min z=  0.64 frac_row2 z=   inf
+(50, 100, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   607.2 sim   601.9 z=  0.51 | row_var z=  0.94 col_var z= -0.82 col_min z=  0.28 frac_row2 z= -0.06
+(50, 100, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   607.2 sim   601.9 z=  0.57 | row_var z=  1.10 col_var z= -0.82 col_min z=  0.48 frac_row2 z=  0.21
+(50, 100, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   607.2 sim   600.1 z=  0.66 | row_var z=  0.61 col_var z= -0.46 col_min z=  0.47 frac_row2 z=  1.49
+(50, 100, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   799.6 sim   800.0 z=   inf | row_var z=   inf col_var z= -0.52 col_min z=  0.82 frac_row2 z=   inf
+(50, 100, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   799.6 sim   801.1 z= -0.13 | row_var z=  2.39 col_var z= -0.08 col_min z=  0.37 frac_row2 z=  1.48
+(50, 100, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   799.6 sim   800.0 z=   inf | row_var z=   inf col_var z= -0.53 col_min z=  0.88 frac_row2 z=   inf
+(50, 100, 8) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   799.6 sim   800.7 z= -0.09 | row_var z=  2.97 col_var z= -0.14 col_min z=  0.61 frac_row2 z=  1.59
+(50, 100, 8) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs   799.6 sim   799.1 z=  0.05 | row_var z=  2.40 col_var z=  0.01 col_min z=  0.60 frac_row2 z=  1.06
+(50, 100, 8) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs   799.6 sim   801.8 z= -0.19 | row_var z=  2.34 col_var z= -0.26 col_min z=  0.74 frac_row2 z=  1.59
+(50, 100, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   607.2 sim   598.6 z=  0.82 | row_var z=  1.10 col_var z= -0.77 col_min z=  0.66 frac_row2 z= -0.08
+(40, 40, 2) bern_padP2_conn          n_sim=200 acc=0.0280 ones obs   111.2 sim   104.1 z=  2.82 | row_var z=  3.52 col_var z=  0.82 col_min z=  0.00 frac_row2 z= -1.28
+(50, 100, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   799.6 sim   799.4 z=  0.02 | row_var z=  2.42 col_var z= -0.28 col_min z=  0.42 frac_row2 z=  1.15
+(50, 100, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   799.6 sim   797.5 z=  0.19 | row_var z=  2.30 col_var z= -0.38 col_min z=  0.77 frac_row2 z=  0.99
+(50, 100, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   799.6 sim   800.8 z= -0.11 | row_var z=  2.28 col_var z= -0.33 col_min z=  0.51 frac_row2 z=  1.32
+(50, 100, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   799.6 sim   799.4 z=  0.01 | row_var z=  2.38 col_var z= -0.17 col_min z=  0.86 frac_row2 z=  1.56
+(50, 100, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   799.6 sim   800.0 z=   inf | row_var z=   inf col_var z= -0.67 col_min z=  1.11 frac_row2 z=   inf
+(50, 100, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs  1000.0 sim  1000.0 z=  0.00 | row_var z=   inf col_var z= -0.16 col_min z=  0.25 frac_row2 z=   inf
+(50, 100, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs  1000.0 sim  1000.0 z=  0.00 | row_var z=   inf col_var z= -0.56 col_min z=  0.49 frac_row2 z=   inf
+(50, 100, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs  1000.0 sim   995.5 z=  0.33 | row_var z=  1.68 col_var z= -0.14 col_min z=  0.37 frac_row2 z=  0.60
+(50, 100, 10) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs  1000.0 sim   997.0 z=  0.25 | row_var z=  1.38 col_var z= -0.13 col_min z=  0.19 frac_row2 z=  0.58
+(50, 100, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs  1000.0 sim  1001.6 z= -0.12 | row_var z=  1.28 col_var z= -0.30 col_min z=  0.13 frac_row2 z=  0.15
+(50, 100, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs  1000.0 sim  1002.5 z= -0.19 | row_var z=  1.41 col_var z= -0.44 col_min z= -0.24 frac_row2 z=  0.74
+(50, 100, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs  1000.0 sim   999.6 z=  0.04 | row_var z=  1.55 col_var z= -0.19 col_min z=  0.43 frac_row2 z=  0.92
+(50, 100, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs  1000.0 sim   998.0 z=  0.16 | row_var z=  1.84 col_var z= -0.22 col_min z=  0.30 frac_row2 z=  0.37
+(50, 100, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs  1000.0 sim  1000.0 z=  0.00 | row_var z=   inf col_var z= -0.27 col_min z=  0.40 frac_row2 z=   inf
+(50, 100, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs  1000.0 sim   998.1 z=  0.18 | row_var z=  1.25 col_var z= -0.17 col_min z=  0.36 frac_row2 z=  0.99
+(50, 100, 10) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs  1000.0 sim   998.5 z=  0.11 | row_var z=  1.25 col_var z=  0.16 col_min z=  0.06 frac_row2 z=  0.82
+(75, 75, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   209.6 sim   189.9 z= 10.76 | row_var z= 16.45 col_var z= 12.94 col_min z=   inf frac_row2 z= -1.83
+(75, 75, 2) iii_fixed_padC2_conn     n_sim=200 acc=0.9950 ones obs   209.6 sim   189.4 z= 12.57 | row_var z= 16.81 col_var z= 12.55 col_min z=   inf frac_row2 z= -2.44
+(75, 75, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   209.6 sim   189.6 z=  6.12 | row_var z= -7.29 col_var z= 10.53 col_min z=   inf frac_row2 z= 14.32
+(75, 75, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   209.6 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(75, 75, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.6969 ones obs   209.6 sim   196.4 z=  3.80 | row_var z=  1.84 col_var z= -0.06 col_min z=  0.00 frac_row2 z= -3.62
+(75, 75, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.7143 ones obs   209.6 sim   196.6 z=  3.81 | row_var z=  2.41 col_var z= -1.20 col_min z=  0.00 frac_row2 z= -3.08
+(75, 75, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   318.8 sim   308.0 z=  9.12 | row_var z=176.24 col_var z=  2.25 col_min z=   inf frac_row2 z=   inf
+(75, 75, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   209.6 sim   194.8 z=  4.42 | row_var z=  2.51 col_var z= -0.13 col_min z=  0.00 frac_row2 z= -4.24
+(75, 75, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   318.8 sim   307.7 z=  1.67 | row_var z= -1.85 col_var z=  2.11 col_min z=   inf frac_row2 z=  3.04
+(75, 75, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   318.8 sim   307.7 z=  9.58 | row_var z=195.76 col_var z=  2.53 col_min z=   inf frac_row2 z=   inf
+(75, 75, 4) paper_bern_conn          n_sim=200 acc=0.2581 ones obs   318.8 sim   306.2 z=  1.79 | row_var z= -1.73 col_var z=  0.63 col_min z= -0.28 frac_row2 z=  3.16
+(75, 75, 4) bern_padP2_conn          n_sim=200 acc=0.3021 ones obs   318.8 sim   311.8 z=  1.02 | row_var z= -0.19 col_var z=  0.55 col_min z=  0.00 frac_row2 z= -1.34
+(75, 75, 4) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   318.8 sim   309.9 z=  1.33 | row_var z= -0.02 col_var z=  0.40 col_min z= -0.22 frac_row2 z= -1.41
+(75, 75, 4) bern_truncP2_conn        n_sim=200 acc=0.3914 ones obs   318.8 sim   326.2 z= -1.21 | row_var z=  0.62 col_var z= -0.35 col_min z= -0.28 frac_row2 z=  2.45
+(75, 75, 4) bern_padP2_padC1_conn    n_sim=200 acc=0.9901 ones obs   318.8 sim   309.3 z=  1.41 | row_var z=  0.07 col_var z=  0.40 col_min z=  0.00 frac_row2 z= -1.53
+(75, 75, 4) bern_padC1_conn          n_sim=200 acc=0.9050 ones obs   318.8 sim   301.4 z=  2.35 | row_var z= -1.74 col_var z=  0.45 col_min z=  0.00 frac_row2 z=  3.04
+(75, 75, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   318.8 sim   307.7 z=  1.52 | row_var z=  0.20 col_var z=  0.08 col_min z=  0.00 frac_row2 z= -1.80
+(75, 75, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   463.6 sim   451.1 z= 25.10 | row_var z=773.71 col_var z=  1.37 col_min z= -4.71 frac_row2 z=   inf
+(75, 75, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   318.8 sim   301.3 z= 34.53 | row_var z=484.37 col_var z=  0.33 col_min z=  0.00 frac_row2 z=   inf
+(75, 75, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   463.6 sim   451.5 z=  1.43 | row_var z= -0.49 col_var z=  1.51 col_min z=   inf frac_row2 z=  0.32
+(75, 75, 6) paper_bern_conn          n_sim=200 acc=0.8333 ones obs   463.6 sim   449.7 z=  1.46 | row_var z= -0.37 col_var z=  1.24 col_min z=  1.79 frac_row2 z=  0.14
+(75, 75, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   463.6 sim   451.1 z= 24.42 | row_var z=806.07 col_var z=  1.68 col_min z= -4.71 frac_row2 z=   inf
+(75, 75, 6) bern_truncP2_conn        n_sim=200 acc=0.8439 ones obs   463.6 sim   458.5 z=  0.56 | row_var z=  0.09 col_var z=  1.48 col_min z=  1.22 frac_row2 z=  0.43
+(75, 75, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   463.6 sim   450.6 z=  1.54 | row_var z=  0.18 col_var z=  1.36 col_min z=  1.84 frac_row2 z= -1.07
+(75, 75, 6) bern_padP2_conn          n_sim=200 acc=0.8584 ones obs   463.6 sim   451.9 z=  1.33 | row_var z= -0.16 col_var z=  1.29 col_min z=  1.63 frac_row2 z= -0.96
+(75, 75, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   463.6 sim   453.7 z=  1.12 | row_var z= -0.11 col_var z=  0.79 col_min z=  1.94 frac_row2 z= -0.87
+(75, 75, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   463.6 sim   451.9 z=  1.23 | row_var z= -0.49 col_var z=  1.18 col_min z=  1.78 frac_row2 z=  0.28
+(75, 75, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   463.6 sim   451.0 z=  1.40 | row_var z= -0.10 col_var z=  1.19 col_min z=  1.84 frac_row2 z= -0.97
+(75, 75, 2) fixed_padC1_conn         n_sim=200 acc=0.1235 ones obs   209.6 sim   161.3 z= 52.20 | row_var z= 63.00 col_var z=  3.93 col_min z=  0.00 frac_row2 z=-25.72
+(75, 75, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   619.2 sim   600.2 z= 89.93 | row_var z=2421.11 col_var z=  0.00 col_min z=  1.76 frac_row2 z=  0.00
+(75, 75, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   463.6 sim   450.2 z= 77.95 | row_var z=2317.06 col_var z=  0.87 col_min z=  2.43 frac_row2 z=   inf
+(75, 75, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   619.2 sim   600.0 z=  1.92 | row_var z= -0.76 col_var z=  0.03 col_min z=  2.04 frac_row2 z= -1.77
+(75, 75, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   619.2 sim   600.2 z= 79.65 | row_var z=1915.24 col_var z=  0.19 col_min z=  1.85 frac_row2 z=  0.00
+(75, 75, 8) paper_bern_conn          n_sim=200 acc=0.9662 ones obs   619.2 sim   601.6 z=  1.63 | row_var z= -0.64 col_var z=  0.62 col_min z=  1.29 frac_row2 z= -1.73
+(75, 75, 8) bern_padP2_conn          n_sim=200 acc=0.9709 ones obs   619.2 sim   599.8 z=  1.89 | row_var z= -0.42 col_var z=  0.70 col_min z=  1.70 frac_row2 z= -2.14
+(75, 75, 8) bern_truncP2_conn        n_sim=200 acc=0.9804 ones obs   619.2 sim   602.0 z=  1.67 | row_var z= -0.27 col_var z=  0.17 col_min z=  1.76 frac_row2 z= -1.78
+(75, 75, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   619.2 sim   598.6 z=  2.08 | row_var z= -0.67 col_var z=  0.28 col_min z=  1.59 frac_row2 z= -2.09
+(75, 75, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   619.2 sim   599.6 z=  2.03 | row_var z= -1.12 col_var z=  0.26 col_min z=  1.79 frac_row2 z= -2.27
+(75, 75, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   619.2 sim   601.0 z=  1.83 | row_var z= -0.63 col_var z=  0.07 col_min z=  1.54 frac_row2 z= -2.01
+(75, 75, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   619.2 sim   598.6 z=  2.00 | row_var z= -0.50 col_var z=  0.34 col_min z=  1.59 frac_row2 z= -1.96
+(75, 75, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   755.6 sim   750.0 z= 67.54 | row_var z=7401.75 col_var z= -1.62 col_min z=  1.04 frac_row2 z=  0.00
+(75, 75, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   755.6 sim   750.0 z= 88.90 | row_var z=9716.61 col_var z= -1.30 col_min z=  0.70 frac_row2 z=  0.00
+(75, 75, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   755.6 sim   752.0 z=  0.32 | row_var z= -0.80 col_var z= -1.14 col_min z=  0.72 frac_row2 z= -0.64
+(75, 75, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   619.2 sim   600.0 z=352.04 | row_var z=9329.49 col_var z= -0.08 col_min z=  1.98 frac_row2 z=  0.00
+(75, 75, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs   755.6 sim   748.8 z=  0.59 | row_var z= -0.75 col_var z= -1.48 col_min z=  0.71 frac_row2 z= -0.66
+(75, 75, 10) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs   755.6 sim   749.6 z=  0.53 | row_var z= -0.71 col_var z= -1.42 col_min z=  0.63 frac_row2 z= -0.69
+(75, 75, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   755.6 sim   749.0 z=  0.58 | row_var z= -0.53 col_var z= -1.44 col_min z=  0.95 frac_row2 z= -0.83
+(75, 75, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   755.6 sim   746.9 z=  0.86 | row_var z= -0.96 col_var z= -1.20 col_min z=  0.80 frac_row2 z= -0.81
+(75, 75, 10) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs   755.6 sim   751.8 z=  0.35 | row_var z= -0.94 col_var z= -1.39 col_min z=  0.70 frac_row2 z= -0.82
+(75, 75, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   755.6 sim   752.5 z=  0.28 | row_var z= -1.12 col_var z= -1.34 col_min z=  0.86 frac_row2 z= -0.68
+(75, 75, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   755.6 sim   751.6 z=  0.33 | row_var z= -0.80 col_var z= -1.17 col_min z=  0.81 frac_row2 z= -0.79
+(75, 75, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   755.6 sim   750.0 z=176.93 | row_var z=19286.66 col_var z= -1.49 col_min z=  1.01 frac_row2 z=  0.00
+(100, 50, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   174.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 2) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   174.4 sim   209.9 z=-29.40 | row_var z=  0.33 col_var z= 24.88 col_min z=   inf frac_row2 z= 15.49
+(100, 50, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   174.4 sim   209.9 z=-27.69 | row_var z=  0.71 col_var z= 21.73 col_min z=   inf frac_row2 z= 15.40
+(100, 50, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   174.4 sim   210.2 z=-20.41 | row_var z= -4.76 col_var z= 19.18 col_min z=   inf frac_row2 z= 11.95
+(100, 50, 2) bern_truncP2_conn        n_sim=  0 acc=0.0000 ones obs   174.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 2) bern_padP2_conn          n_sim=  0 acc=0.0000 ones obs   174.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   174.4 sim   151.6 z=  9.18 | row_var z=  2.99 col_var z=  2.13 col_min z=  0.00 frac_row2 z= -5.09
+(75, 75, 2) bern_truncP2_conn        n_sim=200 acc=0.0144 ones obs   209.6 sim   222.8 z= -3.08 | row_var z= -0.02 col_var z= -2.06 col_min z=  0.00 frac_row2 z=  4.80
+(100, 50, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   235.2 sim   252.8 z=-10.09 | row_var z= 24.74 col_var z=  7.26 col_min z=   inf frac_row2 z=   inf
+(100, 50, 2) bern_padC1_conn          n_sim=  0 acc=0.0000 ones obs   174.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   235.2 sim   252.3 z= -4.06 | row_var z= -2.75 col_var z=  6.88 col_min z=   inf frac_row2 z=  2.60
+(100, 50, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   235.2 sim   253.0 z= -9.64 | row_var z= 25.40 col_var z=  7.53 col_min z=   inf frac_row2 z=   inf
+(100, 50, 4) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   235.2 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 2) fixed_padC1_conn         n_sim=  0 acc=0.0000 ones obs   174.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 4) bern_truncP2_conn        n_sim=  0 acc=0.0000 ones obs   235.2 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 4) bern_padP2_conn          n_sim=  0 acc=0.0000 ones obs   235.2 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 50, 4) bern_padC1_padP2_conn    n_sim=200 acc=0.7905 ones obs   235.2 sim   218.6 z=  3.20 | row_var z=  0.01 col_var z= -1.46 col_min z=  0.00 frac_row2 z= -2.67
+(100, 50, 4) bern_padP2_padC1_conn    n_sim=200 acc=0.8368 ones obs   235.2 sim   219.8 z=  3.12 | row_var z= -0.13 col_var z= -1.42 col_min z=  0.00 frac_row2 z= -2.95
+(100, 50, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   235.2 sim   216.4 z=  3.45 | row_var z=  0.03 col_var z= -1.16 col_min z=  0.00 frac_row2 z= -3.44
+(100, 50, 4) bern_padC1_conn          n_sim=200 acc=0.4556 ones obs   235.2 sim   216.9 z=  3.31 | row_var z= -1.21 col_var z= -1.28 col_min z=  0.00 frac_row2 z= -0.11
+(100, 50, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   324.6 sim   323.7 z=  0.49 | row_var z= 94.60 col_var z=  2.13 col_min z=   inf frac_row2 z=   inf
+(100, 50, 4) fixed_padC1_conn         n_sim=200 acc=0.9950 ones obs   235.2 sim   213.1 z= 18.30 | row_var z= 90.60 col_var z= -1.43 col_min z=  0.00 frac_row2 z=   inf
+(100, 50, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   324.6 sim   323.6 z=  0.55 | row_var z= 87.21 col_var z=  2.19 col_min z=   inf frac_row2 z=   inf
+(100, 50, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   324.6 sim   324.2 z=  0.07 | row_var z= -0.63 col_var z=  1.89 col_min z=   inf frac_row2 z=  1.26
+(50, 50, 2) bern_padP2_conn          n_sim=200 acc=0.0114 ones obs   142.2 sim   131.1 z=  3.81 | row_var z=  3.26 col_var z=  0.50 col_min z=  0.00 frac_row2 z= -2.45
+(100, 50, 6) bern_padC1_padP2_conn    n_sim=200 acc=0.9950 ones obs   324.6 sim   303.8 z=  3.03 | row_var z=  0.30 col_var z= -1.57 col_min z=  0.00 frac_row2 z= -1.17
+(100, 50, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   324.6 sim   305.9 z=  2.64 | row_var z=  0.23 col_var z= -1.59 col_min z=  0.00 frac_row2 z= -1.16
+(100, 50, 6) bern_padC1_conn          n_sim=200 acc=0.9615 ones obs   324.6 sim   304.6 z=  2.64 | row_var z= -0.21 col_var z= -1.56 col_min z=  0.00 frac_row2 z= -0.25
+(100, 50, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   324.6 sim   307.5 z=  2.54 | row_var z=  0.04 col_var z= -1.98 col_min z=  0.00 frac_row2 z= -1.27
+(100, 50, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   324.6 sim   304.3 z= 25.35 | row_var z=316.37 col_var z= -2.16 col_min z=  0.00 frac_row2 z=   inf
+(100, 50, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   412.0 sim   410.0 z=  1.53 | row_var z=254.58 col_var z=  0.79 col_min z=   inf frac_row2 z=   inf
+(100, 50, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   412.0 sim   409.1 z=  0.36 | row_var z=  0.75 col_var z=  0.98 col_min z=   inf frac_row2 z=  0.96
+(100, 50, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   412.0 sim   410.1 z=  1.34 | row_var z=247.11 col_var z=  0.76 col_min z=   inf frac_row2 z=   inf
+(100, 50, 8) paper_bern_conn          n_sim=200 acc=0.2296 ones obs   412.0 sim   408.4 z=  0.45 | row_var z=  0.78 col_var z= -0.93 col_min z=  0.00 frac_row2 z=  0.51
+(100, 50, 8) bern_padP2_conn          n_sim=200 acc=0.1898 ones obs   412.0 sim   406.7 z=  0.64 | row_var z=  0.86 col_var z= -0.69 col_min z=  0.00 frac_row2 z=  0.33
+(100, 50, 8) bern_truncP2_conn        n_sim=200 acc=0.2099 ones obs   412.0 sim   406.5 z=  0.67 | row_var z=  1.04 col_var z= -0.59 col_min z=  0.00 frac_row2 z=  0.77
+(100, 50, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   412.0 sim   402.8 z=  1.10 | row_var z=  0.97 col_var z= -1.05 col_min z=  0.00 frac_row2 z=  0.46
+(100, 50, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   412.0 sim   403.7 z=  1.02 | row_var z=  0.89 col_var z= -1.10 col_min z=  0.00 frac_row2 z= -0.04
+(100, 50, 8) bern_padC1_conn          n_sim=200 acc=0.9950 ones obs   412.0 sim   402.0 z=  1.15 | row_var z=  0.84 col_var z= -1.15 col_min z=  0.00 frac_row2 z=  0.70
+(100, 50, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   412.0 sim   400.4 z=  1.33 | row_var z=  1.39 col_var z= -1.18 col_min z=  0.00 frac_row2 z=  0.03
+(100, 50, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   412.0 sim   401.6 z= 20.67 | row_var z=763.50 col_var z= -1.37 col_min z=  0.00 frac_row2 z=   inf
+(100, 50, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   507.8 sim   503.5 z=  5.19 | row_var z=531.44 col_var z=  0.22 col_min z=   inf frac_row2 z=   inf
+(100, 50, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   507.8 sim   504.6 z=  0.35 | row_var z=  0.14 col_var z= -0.09 col_min z=   inf frac_row2 z=  0.99
+(100, 50, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   507.8 sim   503.9 z=  4.06 | row_var z=460.77 col_var z= -0.31 col_min z=   inf frac_row2 z=   inf
+(100, 50, 10) paper_bern_conn          n_sim=200 acc=0.6452 ones obs   507.8 sim   503.7 z=  0.46 | row_var z=  0.17 col_var z= -0.61 col_min z= -0.56 frac_row2 z=  1.06
+(100, 50, 6) paper_bern_conn          n_sim=200 acc=0.0100 ones obs   324.6 sim   313.9 z=  1.56 | row_var z= -0.36 col_var z= -1.22 col_min z=  0.00 frac_row2 z=  0.26
+(100, 50, 6) bern_padP2_conn          n_sim=200 acc=0.0100 ones obs   324.6 sim   313.4 z=  1.74 | row_var z= -0.45 col_var z= -1.35 col_min z=  0.00 frac_row2 z= -0.77
+(100, 50, 10) bern_padP2_conn          n_sim=200 acc=0.5935 ones obs   507.8 sim   499.3 z=  0.85 | row_var z=  0.27 col_var z= -0.62 col_min z= -0.56 frac_row2 z=  0.76
+(100, 50, 10) bern_truncP2_conn        n_sim=200 acc=0.5634 ones obs   507.8 sim   502.4 z=  0.57 | row_var z=  0.03 col_var z= -0.26 col_min z= -0.46 frac_row2 z=  1.06
+(100, 50, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   507.8 sim   501.2 z=  0.72 | row_var z=  0.31 col_var z= -0.83 col_min z= -0.32 frac_row2 z=  0.64
+(100, 50, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   507.8 sim   502.0 z=  0.64 | row_var z=  0.24 col_var z= -0.95 col_min z= -0.48 frac_row2 z=  0.93
+(100, 50, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   507.8 sim   501.3 z=  0.70 | row_var z= -0.04 col_var z= -1.13 col_min z= -0.32 frac_row2 z=  0.99
+(100, 50, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   507.8 sim   498.6 z=  1.04 | row_var z= -0.10 col_var z= -0.79 col_min z= -0.36 frac_row2 z=  0.45
+(100, 50, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   507.8 sim   500.6 z= 20.75 | row_var z=1338.75 col_var z= -1.12 col_min z= -0.32 frac_row2 z=   inf
+(75, 75, 2) bern_padP2_conn          n_sim= 14 acc=0.0012 ones obs   209.6 sim   200.1 z=  2.04 | row_var z=  0.99 col_var z=  0.37 col_min z=  0.00 frac_row2 z= -2.55
+(100, 50, 6) bern_truncP2_conn        n_sim=200 acc=0.0110 ones obs   324.6 sim   315.9 z=  1.27 | row_var z= -0.15 col_var z= -1.72 col_min z=  0.00 frac_row2 z= -0.17
+(100, 100, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   274.4 sim   252.9 z=  5.40 | row_var z= -7.30 col_var z= 12.23 col_min z=   inf frac_row2 z= 17.60
+(100, 100, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   274.4 sim   253.8 z= 10.44 | row_var z= 22.65 col_var z= 14.22 col_min z=   inf frac_row2 z=  0.42
+(100, 100, 2) iii_fixed_padC2_conn     n_sim=200 acc=0.9950 ones obs   274.4 sim   253.4 z= 10.77 | row_var z= 21.44 col_var z= 14.22 col_min z=   inf frac_row2 z=  0.39
+(100, 100, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.6006 ones obs   274.4 sim   263.5 z=  2.68 | row_var z=  3.68 col_var z= -1.60 col_min z=  0.00 frac_row2 z= -1.45
+(100, 100, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.7168 ones obs   274.4 sim   262.6 z=  3.07 | row_var z=  3.42 col_var z= -0.17 col_min z=  0.00 frac_row2 z= -2.42
+(100, 100, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   274.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 100, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   274.4 sim   261.2 z=  3.09 | row_var z=  3.31 col_var z= -0.22 col_min z=  0.00 frac_row2 z= -2.84
+(100, 100, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   425.8 sim   410.5 z= 11.40 | row_var z=240.78 col_var z=  1.65 col_min z=   inf frac_row2 z=   inf
+(100, 100, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   425.8 sim   405.9 z=  2.55 | row_var z= -0.57 col_var z=  1.86 col_min z=   inf frac_row2 z=  6.26
+(100, 100, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   425.8 sim   410.2 z= 11.29 | row_var z=231.52 col_var z=  1.92 col_min z=   inf frac_row2 z=   inf
+(100, 100, 4) paper_bern_conn          n_sim=200 acc=0.1571 ones obs   425.8 sim   407.0 z=  2.02 | row_var z= -0.76 col_var z=  0.27 col_min z=  0.00 frac_row2 z=  5.32
+(100, 100, 4) bern_padP2_conn          n_sim=200 acc=0.1925 ones obs   425.8 sim   416.8 z=  1.10 | row_var z=  1.49 col_var z= -0.34 col_min z=  0.00 frac_row2 z=  0.61
+(100, 100, 2) bern_padP2_conn          n_sim=  0 acc=0.0000 ones obs   274.4 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(100, 100, 4) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   425.8 sim   411.2 z=  1.94 | row_var z=  1.97 col_var z= -0.93 col_min z=  0.00 frac_row2 z=  0.06
+(100, 100, 4) bern_truncP2_conn        n_sim=200 acc=0.2688 ones obs   425.8 sim   433.8 z= -0.98 | row_var z=  2.53 col_var z= -0.97 col_min z=  0.00 frac_row2 z=  4.62
+(100, 100, 4) bern_padP2_padC1_conn    n_sim=200 acc=0.9950 ones obs   425.8 sim   410.7 z=  1.86 | row_var z=  1.72 col_var z= -0.54 col_min z=  0.00 frac_row2 z=  0.04
+(100, 100, 4) bern_padC1_conn          n_sim=200 acc=0.8333 ones obs   425.8 sim   403.8 z=  2.77 | row_var z= -0.68 col_var z= -0.58 col_min z=  0.00 frac_row2 z=  5.10
+(100, 100, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   425.8 sim   410.8 z=  1.81 | row_var z=  2.02 col_var z= -0.59 col_min z=  0.00 frac_row2 z=  0.19
+(100, 100, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   425.8 sim   401.6 z= 46.28 | row_var z=676.17 col_var z= -0.50 col_min z=  0.00 frac_row2 z=   inf
+(100, 100, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   616.4 sim   601.8 z= 22.57 | row_var z=872.22 col_var z=  0.85 col_min z=   inf frac_row2 z=   inf
+(100, 100, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   616.4 sim   599.7 z=  1.46 | row_var z=  0.86 col_var z=  1.15 col_min z=   inf frac_row2 z=  0.91
+(100, 100, 6) paper_bern_conn          n_sim=200 acc=0.8439 ones obs   616.4 sim   601.7 z=  1.45 | row_var z=  0.61 col_var z=  0.81 col_min z=  1.28 frac_row2 z=  1.01
+(100, 100, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   616.4 sim   601.6 z= 24.96 | row_var z=988.23 col_var z=  1.23 col_min z=   inf frac_row2 z=   inf
+(100, 100, 6) bern_padP2_conn          n_sim=200 acc=0.8403 ones obs   616.4 sim   605.3 z=  1.11 | row_var z=  1.00 col_var z=  0.76 col_min z=  1.43 frac_row2 z= -0.67
+(100, 100, 6) bern_truncP2_conn        n_sim=200 acc=0.8584 ones obs   616.4 sim   608.3 z=  0.76 | row_var z=  1.92 col_var z=  0.50 col_min z=  1.66 frac_row2 z=  1.06
+(100, 100, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   616.4 sim   600.6 z=  1.47 | row_var z=  1.08 col_var z=  0.88 col_min z=  1.80 frac_row2 z= -0.78
+(100, 100, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   616.4 sim   602.7 z=  1.32 | row_var z=  1.23 col_var z=  0.87 col_min z=  2.14 frac_row2 z= -0.60
+(75, 75, 2) bern_padC1_conn          n_sim=200 acc=0.0080 ones obs   209.6 sim   174.2 z=  8.65 | row_var z= -6.11 col_var z=  2.15 col_min z=  0.00 frac_row2 z= 12.31
+(100, 100, 6) bern_padC1_conn          n_sim=200 acc=0.9950 ones obs   616.4 sim   602.4 z=  1.35 | row_var z=  0.57 col_var z=  0.68 col_min z=  2.09 frac_row2 z=  1.06
+(100, 100, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   616.4 sim   603.1 z=  1.23 | row_var z=  1.16 col_var z=  0.69 col_min z=  1.77 frac_row2 z= -0.58
+(100, 100, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   810.4 sim   800.2 z= 60.11 | row_var z=4691.55 col_var z=  2.21 col_min z=  2.18 frac_row2 z=   inf
+(100, 100, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   616.4 sim   600.2 z= 79.45 | row_var z=2905.50 col_var z=  0.71 col_min z=  1.88 frac_row2 z=   inf
+(100, 100, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   810.4 sim   798.9 z=  0.94 | row_var z=  0.97 col_var z=  2.27 col_min z=  1.91 frac_row2 z= -0.31
+(100, 100, 2) fixed_padC1_conn         n_sim=200 acc=0.0657 ones obs   274.4 sim   215.4 z= 49.72 | row_var z= 75.53 col_var z=  4.11 col_min z=  0.00 frac_row2 z=-24.89
+(100, 100, 8) bern_padP2_conn          n_sim=200 acc=0.9662 ones obs   810.4 sim   798.1 z=  0.96 | row_var z=  1.70 col_var z=  2.19 col_min z=  1.94 frac_row2 z= -0.80
+(100, 100, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   810.4 sim   800.2 z= 41.02 | row_var z=3249.59 col_var z=  2.02 col_min z=  2.20 frac_row2 z=   inf
+(100, 100, 8) paper_bern_conn          n_sim=200 acc=0.9756 ones obs   810.4 sim   799.1 z=  0.94 | row_var z=  1.42 col_var z=  1.98 col_min z=  1.94 frac_row2 z=  0.01
+(100, 100, 8) bern_truncP2_conn        n_sim=200 acc=0.9901 ones obs   810.4 sim   801.3 z=  0.77 | row_var z=  1.29 col_var z=  1.90 col_min z=  2.23 frac_row2 z= -0.33
+(100, 100, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   810.4 sim   800.1 z=  0.84 | row_var z=  1.70 col_var z=  1.94 col_min z=  2.18 frac_row2 z= -0.77
+(100, 100, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   810.4 sim   801.3 z=  0.76 | row_var z=  1.40 col_var z=  1.87 col_min z=  2.05 frac_row2 z= -0.74
+(100, 100, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   810.4 sim   802.3 z=  0.72 | row_var z=  1.50 col_var z=  1.75 col_min z=  1.55 frac_row2 z= -0.68
+(100, 100, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   810.4 sim   799.1 z=  0.91 | row_var z=  1.35 col_var z=  2.26 col_min z=  1.62 frac_row2 z= -0.36
+(100, 100, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs  1010.2 sim  1001.5 z=  0.68 | row_var z=  0.37 col_var z=  1.37 col_min z=  0.67 frac_row2 z= -0.99
+(100, 100, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs  1010.2 sim  1000.0 z=145.36 | row_var z=13201.16 col_var z=  1.18 col_min z=  0.60 frac_row2 z=  0.00
+(100, 100, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   810.4 sim   800.0 z=148.22 | row_var z=11406.29 col_var z=  1.92 col_min z=  2.14 frac_row2 z=   inf
+(100, 100, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs  1010.2 sim  1000.1 z= 99.25 | row_var z=9040.09 col_var z=  1.67 col_min z=  0.58 frac_row2 z=  0.00
+(100, 100, 10) paper_bern_conn          n_sim=200 acc=1.0000 ones obs  1010.2 sim   997.8 z=  0.94 | row_var z=  0.07 col_var z=  1.90 col_min z=  0.42 frac_row2 z= -0.84
+(100, 100, 10) bern_padP2_conn          n_sim=200 acc=0.9950 ones obs  1010.2 sim   999.9 z=  0.79 | row_var z=  0.40 col_var z=  1.26 col_min z=  0.85 frac_row2 z= -0.91
+(100, 100, 10) bern_truncP2_conn        n_sim=200 acc=0.9901 ones obs  1010.2 sim   998.2 z=  0.88 | row_var z=  0.10 col_var z=  1.42 col_min z=  0.64 frac_row2 z= -0.87
+(100, 100, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs  1010.2 sim   998.5 z=  0.90 | row_var z=  0.69 col_var z=  1.45 col_min z=  0.66 frac_row2 z= -0.96
+(100, 100, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs  1010.2 sim   997.2 z=  0.90 | row_var z=  0.31 col_var z=  1.59 col_min z=  0.56 frac_row2 z= -1.02
+(100, 100, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs  1010.2 sim  1003.3 z=  0.50 | row_var z=  0.22 col_var z=  1.54 col_min z=  0.34 frac_row2 z= -0.86
+(100, 100, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs  1010.2 sim  1000.7 z=  0.63 | row_var z=  0.16 col_var z=  1.38 col_min z=  0.40 frac_row2 z= -0.97
+(100, 100, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs  1010.2 sim  1000.0 z=228.43 | row_var z=20714.47 col_var z=  1.42 col_min z=  0.58 frac_row2 z=  0.00
+(125, 125, 2) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   339.8 sim   317.0 z= 10.74 | row_var z= 18.55 col_var z= 16.50 col_min z=   inf frac_row2 z=  0.15
+(125, 125, 2) iii_fixed_padC2_conn     n_sim=200 acc=0.9950 ones obs   339.8 sim   317.1 z= 11.15 | row_var z= 17.11 col_var z= 15.49 col_min z=   inf frac_row2 z= -0.08
+(125, 125, 2) paper_bern_conn          n_sim=  0 acc=0.0000 ones obs   339.8 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(125, 125, 2) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   339.8 sim   316.4 z=  5.15 | row_var z= -8.62 col_var z= 13.09 col_min z=   inf frac_row2 z= 19.33
+(100, 50, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.0204 ones obs   174.4 sim   162.7 z=  5.42 | row_var z=  3.45 col_var z= -1.09 col_min z=  0.00 frac_row2 z=  1.18
+(125, 125, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.5405 ones obs   339.8 sim   329.0 z=  2.38 | row_var z=  1.32 col_var z= -0.54 col_min z=  0.00 frac_row2 z= -2.61
+(125, 125, 2) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   339.8 sim   327.5 z=  2.50 | row_var z=  1.28 col_var z= -0.58 col_min z=  0.00 frac_row2 z= -3.15
+(125, 125, 2) bern_padP2_padC1_conn    n_sim=200 acc=0.5141 ones obs   339.8 sim   327.6 z=  2.59 | row_var z=  2.34 col_var z= -1.46 col_min z=  0.00 frac_row2 z= -2.04
+(125, 125, 4) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   525.6 sim   513.2 z=  7.56 | row_var z=218.49 col_var z=  2.18 col_min z=   inf frac_row2 z=   inf
+(125, 125, 4) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   525.6 sim   512.4 z=  1.38 | row_var z= -3.06 col_var z=  2.40 col_min z=   inf frac_row2 z=  6.01
+(125, 125, 4) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   525.6 sim   512.6 z=  9.64 | row_var z=272.29 col_var z=  2.47 col_min z=   inf frac_row2 z=   inf
+(100, 100, 2) bern_padC1_conn          n_sim=  9 acc=0.0009 ones obs   274.4 sim   232.4 z= 11.31 | row_var z= -6.37 col_var z=  2.07 col_min z=  0.00 frac_row2 z= 14.14
+(125, 125, 2) bern_truncP2_conn        n_sim=  1 acc=0.0003 ones obs   339.8 sim   380.0 z=   inf | row_var z=   inf col_var z=   inf col_min z=  0.00 frac_row2 z=   inf
+(125, 125, 4) paper_bern_conn          n_sim=200 acc=0.0952 ones obs   525.6 sim   508.4 z=  2.02 | row_var z= -2.45 col_var z=  0.60 col_min z=  0.00 frac_row2 z=  6.07
+(125, 125, 4) bern_padC1_padP2_conn    n_sim=200 acc=0.9901 ones obs   525.6 sim   518.5 z=  0.79 | row_var z= -0.14 col_var z= -0.38 col_min z=  0.00 frac_row2 z= -0.25
+(125, 125, 4) bern_truncP2_conn        n_sim=200 acc=0.1925 ones obs   525.6 sim   544.8 z= -2.00 | row_var z=  0.53 col_var z= -0.84 col_min z=  0.00 frac_row2 z=  4.48
+(125, 125, 2) bern_padP2_conn          n_sim=  0 acc=0.0000 ones obs   339.8 sim     nan z=   nan | row_var z=   nan col_var z=   nan col_min z=   nan frac_row2 z=   nan
+(125, 125, 4) bern_padP2_padC1_conn    n_sim=200 acc=0.9901 ones obs   525.6 sim   517.2 z=  0.95 | row_var z= -0.07 col_var z= -0.18 col_min z=  0.00 frac_row2 z= -0.44
+(125, 125, 4) bern_padC1_conn          n_sim=200 acc=0.8000 ones obs   525.6 sim   503.4 z=  2.50 | row_var z= -2.46 col_var z=  0.29 col_min z=  0.00 frac_row2 z=  5.67
+(125, 125, 4) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   525.6 sim   514.9 z=  1.10 | row_var z=  0.32 col_var z= -0.26 col_min z=  0.00 frac_row2 z= -0.45
+(125, 125, 4) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   525.6 sim   502.2 z= 42.35 | row_var z=706.71 col_var z=  0.33 col_min z=  0.00 frac_row2 z=   inf
+(125, 125, 6) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs   760.2 sim   755.1 z=  0.45 | row_var z=  0.06 col_var z=  0.15 col_min z=   inf frac_row2 z=  3.65
+(125, 125, 6) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs   760.2 sim   752.4 z= 11.06 | row_var z=960.32 col_var z=  0.20 col_min z=   inf frac_row2 z=   inf
+(125, 125, 6) paper_bern_conn          n_sim=200 acc=0.7692 ones obs   760.2 sim   748.4 z=  0.97 | row_var z=  0.22 col_var z=  0.19 col_min z=  0.81 frac_row2 z=  3.13
+(125, 125, 6) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs   760.2 sim   752.3 z= 12.24 | row_var z=1159.08 col_var z=  0.12 col_min z=   inf frac_row2 z=   inf
+(125, 125, 6) bern_padP2_conn          n_sim=200 acc=0.7326 ones obs   760.2 sim   750.9 z=  0.78 | row_var z=  0.47 col_var z= -0.14 col_min z=  0.80 frac_row2 z=  1.11
+(125, 125, 2) bern_padC1_conn          n_sim=  2 acc=0.0006 ones obs   339.8 sim   291.5 z=  7.27 | row_var z= -5.68 col_var z=  0.20 col_min z=  0.00 frac_row2 z= 22.24
+(125, 125, 6) bern_truncP2_conn        n_sim=200 acc=0.7435 ones obs   760.2 sim   761.6 z= -0.12 | row_var z=  1.13 col_var z= -0.15 col_min z=  1.19 frac_row2 z=  3.23
+(125, 125, 6) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs   760.2 sim   750.6 z=  0.85 | row_var z=  0.58 col_var z= -0.32 col_min z=  1.56 frac_row2 z=  0.82
+(125, 125, 6) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs   760.2 sim   752.1 z=  0.72 | row_var z=  0.62 col_var z=  0.11 col_min z=  1.62 frac_row2 z=  1.12
+(125, 125, 6) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs   760.2 sim   751.0 z=  0.78 | row_var z=  0.12 col_var z= -0.16 col_min z=  1.67 frac_row2 z=  3.61
+(125, 125, 6) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs   760.2 sim   752.9 z=  0.62 | row_var z=  0.71 col_var z= -0.11 col_min z=  1.41 frac_row2 z=  1.15
+(125, 125, 4) bern_padP2_conn          n_sim=200 acc=0.1376 ones obs   525.6 sim   520.3 z=  0.59 | row_var z= -0.16 col_var z=  0.24 col_min z=  0.00 frac_row2 z= -0.33
+(125, 125, 8) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs  1002.0 sim  1001.6 z=  0.02 | row_var z=  0.29 col_var z=  0.49 col_min z=  1.16 frac_row2 z=  1.14
+(125, 125, 8) paper_bern_conn          n_sim=200 acc=0.9709 ones obs  1002.0 sim   997.9 z=  0.28 | row_var z=  0.49 col_var z=  0.74 col_min z=  1.20 frac_row2 z=  1.47
+(125, 125, 8) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs  1002.0 sim  1000.4 z=  5.85 | row_var z=3453.89 col_var z=  0.52 col_min z=  0.88 frac_row2 z=   inf
+(125, 125, 6) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs   760.2 sim   750.3 z= 41.83 | row_var z=2806.16 col_var z= -0.29 col_min z=  1.99 frac_row2 z=   inf
+(125, 125, 8) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs  1002.0 sim  1000.3 z=  6.44 | row_var z=3732.79 col_var z=  0.38 col_min z=  1.24 frac_row2 z=   inf
+(125, 125, 8) bern_padP2_conn          n_sim=200 acc=0.9709 ones obs  1002.0 sim   998.2 z=  0.29 | row_var z=  0.49 col_var z=  0.72 col_min z=  1.29 frac_row2 z=  0.42
+(125, 125, 8) bern_truncP2_conn        n_sim=200 acc=0.9950 ones obs  1002.0 sim  1003.6 z= -0.11 | row_var z=  0.72 col_var z=  0.53 col_min z=  1.32 frac_row2 z=  1.17
+(125, 125, 8) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs  1002.0 sim  1002.5 z= -0.04 | row_var z=  0.36 col_var z=  0.69 col_min z=  1.16 frac_row2 z=  0.67
+(125, 125, 8) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs  1002.0 sim  1001.9 z=  0.00 | row_var z=  0.41 col_var z=  0.30 col_min z=  1.65 frac_row2 z=  1.04
+(125, 125, 8) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs  1002.0 sim   995.3 z=  0.47 | row_var z=  0.65 col_var z=  0.40 col_min z=  1.70 frac_row2 z=  0.20
+(125, 125, 8) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs  1002.0 sim  1001.8 z=  0.02 | row_var z=  0.36 col_var z=  0.77 col_min z=  1.46 frac_row2 z=  0.64
+(125, 125, 8) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs  1002.0 sim  1000.0 z= 23.85 | row_var z=11668.61 col_var z=  0.59 col_min z=  1.51 frac_row2 z=   inf
+(125, 125, 10) ii_bern_padC2            n_sim=200 acc=1.0000 ones obs  1250.6 sim  1245.8 z=  0.33 | row_var z=  0.86 col_var z=  1.35 col_min z=  1.75 frac_row2 z=  0.65
+(125, 125, 10) i_fixed_padC2            n_sim=200 acc=1.0000 ones obs  1250.6 sim  1250.0 z=  5.43 | row_var z=11813.50 col_var z=  1.10 col_min z=  2.10 frac_row2 z=   inf
+(125, 125, 10) paper_bern_conn          n_sim=200 acc=0.9901 ones obs  1250.6 sim  1252.2 z= -0.12 | row_var z=  1.06 col_var z=  1.06 col_min z=  1.42 frac_row2 z=  0.82
+(125, 125, 10) iii_fixed_padC2_conn     n_sim=200 acc=1.0000 ones obs  1250.6 sim  1250.0 z=  6.09 | row_var z=13021.66 col_var z=  1.03 col_min z=  2.00 frac_row2 z=   inf
+(125, 125, 10) bern_truncP2_conn        n_sim=200 acc=1.0000 ones obs  1250.6 sim  1246.6 z=  0.24 | row_var z=  1.22 col_var z=  1.40 col_min z=  1.45 frac_row2 z=  1.21
+(125, 125, 10) bern_padC1_padP2_conn    n_sim=200 acc=1.0000 ones obs  1250.6 sim  1251.5 z= -0.05 | row_var z=  1.02 col_var z=  1.00 col_min z=  1.71 frac_row2 z=  0.43
+(125, 125, 10) bern_padP2_conn          n_sim=200 acc=1.0000 ones obs  1250.6 sim  1250.2 z=  0.03 | row_var z=  1.10 col_var z=  1.05 col_min z=  1.61 frac_row2 z=  0.33
+(125, 125, 10) bern_padP2_padC1_conn    n_sim=200 acc=1.0000 ones obs  1250.6 sim  1252.0 z= -0.08 | row_var z=  1.00 col_var z=  1.02 col_min z=  1.77 frac_row2 z=  0.80
+(125, 125, 10) bern_padC1_padP2         n_sim=200 acc=1.0000 ones obs  1250.6 sim  1252.9 z= -0.15 | row_var z=  0.69 col_var z=  1.22 col_min z=  1.55 frac_row2 z=  0.49
+(125, 125, 10) bern_padC1_conn          n_sim=200 acc=1.0000 ones obs  1250.6 sim  1248.7 z=  0.12 | row_var z=  1.13 col_var z=  1.25 col_min z=  1.55 frac_row2 z=  1.65
+(125, 125, 10) fixed_padC1_conn         n_sim=200 acc=1.0000 ones obs  1250.6 sim  1250.0 z= 18.82 | row_var z=38611.66 col_var z=  1.67 col_min z=  1.65 frac_row2 z=   inf
+(125, 125, 2) fixed_padC1_conn         n_sim=200 acc=0.0234 ones obs   339.8 sim   269.1 z= 54.31 | row_var z= 76.89 col_var z=  4.72 col_min z=  0.00 frac_row2 z=-28.79
+(100, 100, 2) bern_truncP2_conn        n_sim=200 acc=0.0028 ones obs   274.4 sim   299.1 z= -4.91 | row_var z=  0.77 col_var z= -2.51 col_min z=  0.00 frac_row2 z=  7.51
+(100, 50, 2) bern_padC1_padP2_conn    n_sim=200 acc=0.0046 ones obs   174.4 sim   162.3 z=  5.85 | row_var z=  0.85 col_var z=  0.38 col_min z=  0.00 frac_row2 z= -2.78
+
+candidate | classes simulated | mean z^2 over (class, statistic) | share |z| > 3 | min acceptance
+i_fixed_padC2            | 40 |  3658.89 | 0.634 | 1.0000
+ii_bern_padC2            | 40 |  1065.40 | 0.245 | 1.0000
+iii_fixed_padC2_conn     | 40 |  3621.28 | 0.636 | 0.9852
+paper_bern_conn          | 33 |     3.42 | 0.047 | 0.0052
+bern_padP2_conn          | 36 |     1.29 | 0.020 | 0.0012
+bern_truncP2_conn        | 38 |   241.70 | 0.081 | 0.0003
+bern_padC1_padP2_conn    | 40 |     2.00 | 0.048 | 0.0046
+bern_padP2_padC1_conn    | 40 |     2.29 | 0.059 | 0.0204
+bern_padC1_conn          | 39 |    30.56 | 0.091 | 0.0006
+bern_padC1_padP2         | 40 |     2.38 | 0.057 | 1.0000
+fixed_padC1_conn         | 39 |  3222.62 | 0.538 | 0.0234

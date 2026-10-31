@@ -157,6 +157,75 @@ Theorem~\ref{thm:betastar}, and the asymptotic form follows from the
 two-sided estimate $2\ln(1/a)-ca\le g(a)/a\le2\ln(1/a)+2-ca$. This part is
 proved on paper only.
 
+\subsection{The benchmark generator}
+\label{app:random-cs}
+
+The random instances of Section~\ref{sec:results} are not $G(n,p)$. The
+generator of \citet{ChuStuckey2009} fills a customer-by-pattern table with
+independent entries at a density chosen to give $d$ customers per pattern on
+average, and discards any instance whose MOSP graph is disconnected; the
+files show two further rules the paper does not state, every customer given
+at least one pattern and every pattern at least two customers, and with those
+rules a simulated generator reproduces the size statistics of all forty
+classes. The MOSP graph of such an instance is the union of one clique per
+pattern. Steps 1 and 2 of the proof survive this change unaltered: a graph of
+pathwidth $k$ still has an empty pair, and a pair is empty exactly when no
+pattern contains a customer of each side. If the patterns are independent
+random customer sets of sizes $s_1,\dots,s_m$, the probability that a given
+pair $(A,R)$ with $|A|=t$, $|R|=t-1$ is empty factorises over the patterns,
+and the union bound gives
+\[
+  \Pr[\mathrm{pw}\le k]\;\le\;\binom nt\binom{n-t}{t-1}\prod_{j=1}^{m}
+  \frac{\binom{n-t}{s_j}+\binom{n-t+1}{s_j}-\binom{n-2t+1}{s_j}}{\binom{n}{s_j}},
+\]
+the fraction being the share of $s_j$-sets that miss $A$ or miss $R$. This is
+a Lean theorem in the paper's own vocabulary, with the instance built from the
+patterns and the event stated as $\mathrm{MOSP}\le k+1$~\leanref{clique-cover}.
+It is computable from the pattern sizes alone, so it predicts the benchmark
+from the generator's parameters. Table~\ref{tab:cs-floor} gives, for each of
+the forty classes, the mean certified optimum of its five instances beside
+the floor the inequality gives at confidence $0.01$, that is, the largest
+value it does not rule out at that level plus one. None of the 200 certified
+optima lies below its floor. At $d=10$ the floor is within $5\%$ of the
+optimum, at $d=4$ within $20\%$; at $d=2$ it is a third short, and
+asymptotically it says nothing there: with $m=\mu n$ patterns of $d$
+customers, the exponent of the expected number of balanced empty pairs is
+$\ln2\,\bigl(1+\mu(1-d)\bigr)$, so the method gives a positive constant
+exactly when $\mu(d-1)>1$. That quantity is the mean number of patterns per
+customer minus one, the number of ones in the table minus the number of
+patterns, per customer; call it the excess. The classes of
+Section~\ref{sec:results} that took thousands of core-hours to certify, the
+sparsest ones, have excess between 2 and 2.5, one unit inside the region where
+this argument already proves linear pathwidth. We do not know whether the
+hardest excess and the threshold excess are the same curve shifted by one.
+
+\begin{table}[htbp]
+\centering
+\caption{The Chu \& Stuckey classes: mean certified optimum of the five
+instances, and the floor from the first-moment inequality at confidence
+$0.01$, computed from the pattern sizes of each file. No certified optimum
+lies below its floor.}
+\label{tab:cs-floor}
+\small
+\input{tables/cs_firstmoment}
+\end{table}
+
+The inequality assumes the patterns are uniform given their sizes, which the
+padding and the rejection break. Measured by simulation under the fitted
+generator, both make empty pairs rarer than the uniform model says, by a
+factor that falls from $1.0$ to $0.6$ as the sets grow, so the bound stays
+valid; and on 7{,}200 fresh instances at 30 and 40 customers solved exactly,
+none has an optimum below its $0.01$ floor. That is a measurement, not a
+proof; a proof would couple the padded instance to the unpadded one, which
+has only more edges.
+
+The same first moment appears in \citet{Gao2012} for random intersection
+graphs, with treewidth in place of pathwidth. His proof drops the factor
+corresponding to the product above between two lines, which is harmless when
+the number of patterns is sublinear in $n$ and changes the constant when it is
+linear; his threshold of two patterns per customer is the dropped factor's
+artefact, and with it restored the condition at $m=n$ is about $2.46$.
+
 \subsection{What is checked, and what is known}
 
 Steps 1, 2, 3 and 4 and the two inequalities of Theorem~\ref{thm:firstmoment}

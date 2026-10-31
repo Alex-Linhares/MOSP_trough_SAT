@@ -181,6 +181,13 @@
   "title": "Lower bounds on the pathwidth of some grid-like graphs",
   "year": 2008
  },
+ "10.1016/j.dam.2011.10.013": {
+  "fetched": "2026-10-31",
+  "first_author": "Gao",
+  "registry": "crossref",
+  "title": "Treewidth of Erd\u0151s\u2013R\u00e9nyi random graphs, random intersection graphs, and scale-free random graphs",
+  "year": 2012
+ },
  "10.1016/j.dam.2012.10.031": {
   "fetched": "2026-10-31",
   "first_author": "Perarnau",

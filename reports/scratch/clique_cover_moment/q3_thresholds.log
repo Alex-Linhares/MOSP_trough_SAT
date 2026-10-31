@@ -1,0 +1,18 @@
+mu=m/n | d0 bisection | 1+1/mu (exact, g(1/2)=0) | annealed Bernoulli d0 | Gao c>2 => d>2/mu | ridge 1+2.4/mu | ridge measured (fixed gen., ml_nature §25) | giant (fixed) (1+sqrt(1+4/mu))/2 | excess mu(d-1) at: d0, ridge
+ 0.125 |  9.0230 |  9.0000 | 12.4747 | 16.0000 |  20.200 | 20.7 [18.7, 21.6]  |  3.372 | 1.003, 2.400
+  0.25 |  5.0116 |  5.0000 |  6.8995 |  8.0000 |  10.600 | 9.17-10.63         |  2.562 | 1.003, 2.400
+   0.5 |  3.0060 |  3.0000 |  4.0202 |  4.0000 |   5.800 | 5.24-5.64          |  2.000 | 1.003, 2.400
+     1 |  2.0031 |  2.0000 |  2.4559 |  2.0000 |   3.400 | 3.31-3.47          |  1.618 | 1.003, 2.400
+     2 |  1.5017 |  1.5000 |  1.5583 |  1.0000 |   2.200 | 2.01 (grid edge)   |  1.366 | 1.003, 2.400
+     4 |  1.2510 |  1.2500 |  1.0179 |  0.5000 |   1.600 | -                  |  1.207 | 1.004, 2.400
+     8 |  1.1255 |  1.1250 |  0.6796 |  0.2500 |   1.300 | -                  |  1.112 | 1.004, 2.400
+
+beta*(d, mu) at the measured ridge (fixed generator, d = ridge col_mean), i.e. how far above the threshold the ridge sits:
+mu=     2 ridge d= 2.01: beta* = 0.123; at the threshold d0=1.502; at excess 2: d=2.00, beta*=0.121
+mu=     1 ridge d= 3.40: beta* = 0.200; at the threshold d0=2.003; at excess 2: d=3.00, beta*=0.140
+mu=   0.5 ridge d= 5.40: beta* = 0.193; at the threshold d0=3.006; at excess 2: d=5.00, beta*=0.158
+mu=  0.25 ridge d= 9.90: beta* = 0.213; at the threshold d0=5.012; at excess 2: d=9.00, beta*=0.171
+mu= 0.125 ridge d=20.70: beta* = 0.270; at the threshold d0=9.023; at excess 2: d=17.00, beta*=0.178
+mu=0.5: g(0.5)=+4.37e-08, g(0.49)=+0.1139, g(0.45)=+0.3972  (positive just below 1/2 => beta*=0 exactly at d0)
+mu=1: g(0.5)=+4.47e-08, g(0.49)=+0.1230, g(0.45)=+0.4297  (positive just below 1/2 => beta*=0 exactly at d0)
+mu=2: g(0.5)=+4.67e-08, g(0.49)=+0.1358, g(0.45)=+0.4626  (positive just below 1/2 => beta*=0 exactly at d0)
