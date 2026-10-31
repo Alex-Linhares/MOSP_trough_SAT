@@ -1,0 +1,83 @@
+pilot statuses: ['bound', 'minor', 'refutation', 'upper']
+
+   n    c  k:B<1  k:B<.01  k:A<1  beta*n  pilot N  exact  min pw(exact)  min LB(unproved)
+  60    3      1       -1     -1    0.52      136    136              5              None
+  60    4      5        3      0    3.68      136    136              8              None
+  60    6     11       11      6   10.24      134    134             16              None
+  60    8     17       17     11   15.77      132    132             20              None
+  60   10     23       21     15   20.23      133    133             25              None
+ 120    3      1        1     -1    1.04       13      3             11                12
+ 120    4      9        7      3    7.36       13      0           None                17
+ 120    6     21       21     15   20.48       13      0           None                25
+ 120    8     33       33     26   31.54       13      0           None                34
+ 120   10     43       41     35   40.45       13      0           None                41
+
+n = 60, c = 10: the bound B(k) for k = 0..30, and the relaxed bound (A):
+  k= 0  t=30  log10 B =   -50.338   B = 4.595e-51    log10 A =  -39.576
+  k= 1  t=30  log10 B =   -50.338   B = 4.595e-51    log10 A =  -35.551
+  k= 2  t=29  log10 B =   -43.584   B = 2.607e-44    log10 A =  -32.172
+  k= 3  t=29  log10 B =   -43.584   B = 2.607e-44    log10 A =  -29.064
+  k= 4  t=28  log10 B =   -37.541   B = 2.876e-38    log10 A =  -26.147
+  k= 5  t=28  log10 B =   -37.541   B = 2.876e-38    log10 A =  -23.383
+  k= 6  t=27  log10 B =   -32.010   B = 9.770e-33    log10 A =  -20.751
+  k= 7  t=27  log10 B =   -32.010   B = 9.770e-33    log10 A =  -18.237
+  k= 8  t=26  log10 B =   -26.904   B = 1.248e-27    log10 A =  -15.828
+  k= 9  t=26  log10 B =   -26.904   B = 1.248e-27    log10 A =  -13.519
+  k=10  t=25  log10 B =   -22.173   B = 6.713e-23    log10 A =  -11.303
+  k=11  t=25  log10 B =   -22.173   B = 6.713e-23    log10 A =   -9.175
+  k=12  t=24  log10 B =   -17.787   B = 1.632e-18    log10 A =   -7.132
+  k=13  t=24  log10 B =   -17.787   B = 1.632e-18    log10 A =   -5.170
+  k=14  t=23  log10 B =   -13.725   B = 1.882e-14    log10 A =   -3.287
+  k=15  t=23  log10 B =   -13.725   B = 1.882e-14    log10 A =   -1.481
+  k=16  t=22  log10 B =    -9.972   B = 1.067e-10    log10 A =    0.250
+  k=17  t=22  log10 B =    -9.972   B = 1.067e-10    log10 A =    1.908
+  k=18  t=21  log10 B =    -6.516   B = 3.051e-07    log10 A =    3.495
+  k=19  t=21  log10 B =    -6.516   B = 3.051e-07    log10 A =    5.010
+  k=20  t=20  log10 B =    -3.348   B = 4.485e-04    log10 A =    6.456
+  k=21  t=20  log10 B =    -3.348   B = 4.485e-04    log10 A =    7.834
+  k=22  t=19  log10 B =    -0.464   B = 3.438e-01    log10 A =    9.143
+  k=23  t=19  log10 B =    -0.464   B = 3.438e-01    log10 A =   10.385
+  k=24  t=18  log10 B =     2.143   B = 1.389e+02    log10 A =   11.560
+  k=25  t=18  log10 B =     2.143   B = 1.389e+02    log10 A =   12.668
+  k=26  t=17  log10 B =     4.474   B = 2.980e+04    log10 A =   13.711
+  k=27  t=17  log10 B =     4.474   B = 2.980e+04    log10 A =   14.688
+  k=28  t=16  log10 B =     6.533   B = 3.412e+06    log10 A =   15.599
+  k=29  t=16  log10 B =     6.533   B = 3.412e+06    log10 A =   16.446
+  k=30  t=15  log10 B =     8.320   B = 2.090e+08    log10 A =   17.227
+
+n = 120, c = 10: the bound B(k) for k = 30..50:
+  k=30  t=45  log10 B =   -20.413
+  k=31  t=45  log10 B =   -20.413
+  k=32  t=44  log10 B =   -16.815
+  k=33  t=44  log10 B =   -16.815
+  k=34  t=43  log10 B =   -13.364
+  k=35  t=43  log10 B =   -13.364
+  k=36  t=42  log10 B =   -10.057
+  k=37  t=42  log10 B =   -10.057
+  k=38  t=41  log10 B =    -6.894
+  k=39  t=41  log10 B =    -6.894
+  k=40  t=40  log10 B =    -3.870
+  k=41  t=40  log10 B =    -3.870
+  k=42  t=39  log10 B =    -0.987
+  k=43  t=39  log10 B =    -0.987
+  k=44  t=38  log10 B =     1.760
+  k=45  t=38  log10 B =     1.760
+  k=46  t=37  log10 B =     4.369
+  k=47  t=37  log10 B =     4.369
+  k=48  t=36  log10 B =     6.843
+  k=49  t=36  log10 B =     6.843
+  k=50  t=35  log10 B =     9.182
+
+n = 60 and 120: the distribution of the pilot's exact pathwidths at c = 10 (value: count), and lower bounds of the unproved:
+  n=60: exact {25: 5, 26: 10, 27: 39, 28: 40, 29: 32, 30: 6, 32: 1}; unproved lower bounds {}
+  n=120: exact {}; unproved lower bounds {41: 6, 42: 7}
+
+From which n on is B(n, floor(beta n), c/n) < 1 for all larger n (checked to 3000), c = 10?
+  beta = 0.1686: from n = 12
+  beta = 0.2500: from n = 12
+  beta = 0.3000: from n = 12
+  beta = 0.3300: from n = 12
+And the relaxed bound (A) < 1, c = 10?
+  beta = 0.1686: from n = 19
+  beta = 0.2500: from n = 45
+  beta = 0.3000: from n = 141

@@ -1,0 +1,13 @@
+c | Turner-implied bw/n >= 1-2eps (crude count) | beta*(pw, entropy) | PS tw
+   3 |                vacuous | 0.009 | nan
+   4 |                vacuous | 0.061 | nan
+   5 |                vacuous | 0.117 | 0.006
+   6 |                vacuous | 0.171 | 0.092
+   8 |      0.100 (eps=0.450) | 0.263 | 0.214
+  10 |      0.222 (eps=0.389) | 0.337 | 0.297
+  12 |      0.311 (eps=0.344) | 0.397 | 0.358
+  16 |      0.434 (eps=0.283) | 0.488 | 0.444
+  20 |      0.516 (eps=0.242) | 0.553 | 0.503
+  50 |      0.753 (eps=0.124) | 0.761 | 0.686
+ 100 |      0.855 (eps=0.072) | 0.857 | 0.778
+threshold where Turner's crude count first gives anything: c eps > 2+2ln(1/eps) at eps=1/2 -> c > 4 + 4 ln 2 = 6.772588722239782

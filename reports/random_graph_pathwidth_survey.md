@@ -141,7 +141,31 @@ over those graphs). What remains of the bound `pw ≥ β*(c)·n` whp is the
 asymptotic estimate of that right-hand side at `p = c/n`, `k = βn`: its
 logarithm is `n[H(a, a, 1−2a) − c a²] + o(n)` with `a = (1−β)/2`, which is
 the entropy bound on binomials and `(1 − c/n)^m ≤ e^{−cm/n}`; on paper first
-(`paper1/todo.md`). The other two
+(`paper1/todo.md`). **Done on paper 2026-10-31**,
+`reports/random_graph_first_moment.md` (an analyst agent, every inequality
+attacked and confirmed by a checker agent): Theorem A in finite form,
+`P(pw(G(n, c/n)) ≤ βn) ≤ e^{c/2} n³ e^{−δ(β,c) n}` for `n ≥ max(3, c)` with
+`δ = c a² − H(a, a, 1 − 2a)`, `a = (1 − β)/2`; Theorem A′, `δ > 0` iff
+`β < β*(c)`, and `β* > 0` iff `c > 4 ln 2`; Theorem A″, the asymptotics
+`1 − β* = (4 ln c − 4 ln ln c + O(1))/c`, confirming `4 ln c / c` above and
+adding the second-order term; Theorem B, the dense case `n − (4 + ε) log_b n`
+(§3). **Literature, settled by the checker (Turner 1986 and Díaz–Petit–
+Serna–Trevisan 2001 read in full):** the empty-pair first moment is
+published twice — Turner, *SIAM J. Comput.* 15 (1986) 561–580, Lemmas
+2.1–2.2 and Theorem 2.1, for **bandwidth**, with the count `(en/k)^{2k}` and
+nothing at `p = c/n`; and DPST 2001 Lemma 3 (g5), for vertex separation on
+mixing graphs, with a `3^n` count and Chernoff slack, vacuous below
+`c ≈ 227` as stated. Nobody states the entropy form, any `β(c)`, the
+`4 ln 2` threshold or the asymptotics. The honest claim is a sharpening of a
+published argument: new are the exact empty-pair lemma, the entropy count,
+`β*(c)` with its threshold and asymptotics, and the Lean finite inequality.
+The `4 ln 2` threshold is an artefact of the method (an edge-free balanced
+bipartition), not of pathwidth, which is linear for every `c > 1`
+(Lee–Lee–Oum). Against the pilot: at `n = 60, c = 10` the finite inequality
+is below 1 for `k ≤ 23` and below 0.01 for `k ≤ 21`, two stacks under the
+observed minimum of 25; at `n = 120` it gives `pw ≥ 44` with probability
+`≥ 0.89`, where the solver's floors are 41–42. The `0.08–0.10` gap between
+`β*` and the fitted slopes is asymptotic, not finite-size. The other two
 deterministic cores of this report were checked the same way
 (`check23.py`): §2's tree bound `pw ≤ ⌊log₃(2N+1)⌋` on every tree to 16
 vertices (32,547 trees, zero violations, tight for N = 7–12, where the
@@ -233,7 +257,11 @@ So for large `c`: **`1 − pw/n ∈ [(2 − o(1)) ln c/c, (4 + o(1)) ln c/c]`**
   knowledge, the tree-width of a dense random graph has not been studied before".
 - **[pub, abstract]** Wang–Liu–Cui–Xu (2011): `tw ≥ n − o(n)` for `p ≫ 1/n`.
 - **[pub]** Lee–Lee–Oum: `rw = ⌈n/3⌉ − O(1)` for constant `p` (rank-width, not tw).
-- **[derived] Sharper, by the same first moment as §1.4:** an empty pair of sizes
+- **[pub, Turner 1986 for bandwidth; the pathwidth form derived and proved on
+  paper 2026-10-31, `reports/random_graph_first_moment.md` Theorem B]**
+  Turner, *SIAM J. Comput.* 15 (1986), Theorem 2.1: almost all `G(n, p)` have
+  `bw > n − 4 log_b n`; since `pw ≤ bw` the pathwidth statement implies his
+  and not conversely. Sharper, by the same first moment as §1.4: an empty pair of sizes
   `a, a` has expectation `≤ n^{2a}(1−p)^{a²}`, which vanishes for
   `a > (2+o(1)) log_b n` with `b = 1/(1−p)`. With `pw ≤ n − α` and
   `α = (2+o(1)) log_b n`, this gives

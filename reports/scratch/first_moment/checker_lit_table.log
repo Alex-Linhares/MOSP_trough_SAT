@@ -1,0 +1,14 @@
+c | beta*(FM) | PS2014 tw: 1-sqrt(9ln3/(2c)) | DPST2001 (g5) as stated: 1/2-eps, eps=sqrt(3(1+ln3)/c) (gamma->1), needs eps<1/6 i.e. c>=226.6 | DPST improved (1-2eps) | DPST with exact empty-pair count 3^n: eps=sqrt(ln3/c), 1-2eps
+    3 | 0.009 | nan | nan (informal, eps<1/2 only: nan) | nan | nan
+    4 | 0.061 | nan | nan (informal, eps<1/2 only: nan) | nan | nan
+    5 | 0.117 | 0.006 | nan (informal, eps<1/2 only: nan) | nan | 0.063
+    6 | 0.171 | 0.092 | nan (informal, eps<1/2 only: nan) | nan | 0.144
+    8 | 0.263 | 0.214 | nan (informal, eps<1/2 only: nan) | nan | 0.259
+   10 | 0.337 | 0.297 | nan (informal, eps<1/2 only: nan) | nan | 0.337
+   12 | 0.397 | 0.358 | nan (informal, eps<1/2 only: nan) | nan | 0.395
+   16 | 0.488 | 0.444 | nan (informal, eps<1/2 only: nan) | nan | 0.476
+   20 | 0.553 | 0.503 | nan (informal, eps<1/2 only: nan) | nan | 0.531
+   50 | 0.761 | 0.686 | nan (informal, eps<1/2 only: 0.145) | 0.290 | 0.704
+  100 | 0.857 | 0.778 | nan (informal, eps<1/2 only: 0.249) | 0.498 | 0.790
+  227 | 0.925 | 0.852 | 0.333 (informal, eps<1/2 only: 0.333) | 0.667 | 0.861
+ 1000 | 0.978 | 0.930 | 0.421 (informal, eps<1/2 only: 0.421) | 0.841 | 0.934

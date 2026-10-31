@@ -287,8 +287,13 @@ inequalities rather than asymptotics.
       of Harper's bound `∀ j ∃ |A| = j, |N[A]| ≤ j + pw` (sorry-free, standard
       axioms); the probabilistic half's *counting* part proved 2026-10-31,
       `FirstMoment.lean`: `P(pw ≤ k) ≤ C(n,t)·C(n−t,t−1)·(1−p)^(t(t−1))` in
-      G(n, p), t = ⌈(n−k)/2⌉; what remains is the entropy asymptotics at
-      p = c/n (on paper, then Lean if wanted). (3)'s core proved in Lean the
+      G(n, p), t = ⌈(n−k)/2⌉; the entropy asymptotics done on paper the same
+      day (`reports/random_graph_first_moment.md`, Theorems A, A′, A″, B;
+      checked by a second agent): `pw ≥ β*(c)·n` whp for `c > 4 ln 2`, with
+      the finite form `e^{c/2} n³ e^{−δn}`. Literature: the argument is
+      Turner 1986 (bandwidth) and DPST 2001 (vertex separation, crude count);
+      the entropy constant, threshold and asymptotics are new; cite both.
+      Lean of Theorem A (four lemmas + assembly) is the remaining step. (3)'s core proved in Lean the
       same day, `IndependenceBound.lean`, `pathwidth ≤ n − indepNum`. (2)'s
       tree bounds proved in Lean the same evening, `TreeBound.lean`, by a prover
       agent with a refuter agent attacking every lemma first (gossip in
