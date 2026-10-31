@@ -1,0 +1,4 @@
+2026-10-21 02:50:26 415 classes, 24 workers, no time limit
+2026-10-21 02:50:51 pwc-17202 GTFS_VBB_EndeApr_Dez2016.zip_tram.gr.bz2 n=589 recorded=7 width=7 proof='minor' ok 24.4s
+2026-10-28 10:09:34 pwc-17631 NY_11.gr.xz n=226 recorded=11 width=11 proof='refutation' ok 634748.1s
+2026-10-31 22:01:35 killed by the owner: driver and 24 workers; the 24 unfinished classes and their core-hours are in unsolved_unlimited.csv
