@@ -179,6 +179,10 @@ bandwidth`, are proved in `lean/MOSPFormalization/Sandwich.lean` with no
 gap list (Mathlib lacks `pathGraph.IsTree`). *(Superseded 2026-09-28, §39–§40:
 both are proved, the branch lemma after correcting a false statement; the only
 `sorry` left in the development is the §24 conjecture, kept on purpose.)*
+*(Superseded 2026-10-31: the §24 conjecture is proved too — it is a corollary
+of `tw ≤ pw` and Harper's `f(6) ≤ pw + 6`, with `0.9428 = 2√2/3` rounded down
+and K₆,₆ the tight case, so the mining had found a theorem; the development
+has no `sorry` left.)*
 
 Still on record and still unobtained:
 
@@ -477,7 +481,9 @@ lean/
         Encoding.lean                   The direct SAT encoding is faithful (clause families as modelled; 2026-09-17)
         Check.lean                      Small instances where the Lean open-stack count agrees with the implementation
         Sandwich.lean                   degeneracy ≤ pathwidth ≤ bandwidth; treewidth ≤ pathwidth; the branch lemma
-                                        (corrected) and its separator form — all proved; one sorry left, the §24 conjecture (2026-09-28)
+                                        (corrected) and its separator form; and, since 2026-10-31, the §24 "conjecture"
+                                        ⌊0.9428·√(tw·f(6))⌋ ≤ pw + 1 proved from tw ≤ pw and f(6) ≤ pw + 6 (Harper), tight at
+                                        K₆,₆ with 0.9428 = 2√2/3 rounded down. **No sorry anywhere in the development.**
         EmptyPair.lean                  Harper's vertex-isoperimetric bound in layout form (∀ j ∃ |A| = j, |N[A]| ≤ j + pw) and the
                                         sharp empty-pair bound n − 2s* − 2 ≤ pw behind the random-graph first moment; sorry-free (2026-10-30)
         IndependenceBound.lean          pathwidth ≤ n − α(G), by the bags (V ∖ I) ∪ {v}; against Mathlib's indepNum; sorry-free (2026-10-30)

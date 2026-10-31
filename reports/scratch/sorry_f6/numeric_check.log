@@ -1,0 +1,20 @@
+c^2 = 0.88887184
+quadratic 0.11112816 p^2 + -1.33323104 p + 4 ; discriminant -0.000545554
+with 2*sqrt(2)/3 = 0.9428090415820635: discriminant -1.554e-15 (zero), root p = 5.9999999999999964
+p= 0  0.9428*sqrt(p(p+6)) = 0.000000  <  p+2 = 2  floor = 0 <= p+1 = 1
+p= 1  0.9428*sqrt(p(p+6)) = 2.494414  <  p+2 = 3  floor = 2 <= p+1 = 2
+p= 2  0.9428*sqrt(p(p+6)) = 3.771200  <  p+2 = 4  floor = 3 <= p+1 = 3
+p= 3  0.9428*sqrt(p(p+6)) = 4.898933  <  p+2 = 5  floor = 4 <= p+1 = 4
+p= 4  0.9428*sqrt(p(p+6)) = 5.962791  <  p+2 = 6  floor = 5 <= p+1 = 5
+p= 5  0.9428*sqrt(p(p+6)) = 6.991992  <  p+2 = 7  floor = 6 <= p+1 = 6
+p= 6  0.9428*sqrt(p(p+6)) = 7.999923  <  p+2 = 8  floor = 7 <= p+1 = 7
+p= 7  0.9428*sqrt(p(p+6)) = 8.993739  <  p+2 = 9  floor = 8 <= p+1 = 8
+p= 8  0.9428*sqrt(p(p+6)) = 9.977657  <  p+2 = 10  floor = 9 <= p+1 = 9
+p= 9  0.9428*sqrt(p(p+6)) = 10.954346  <  p+2 = 11  floor = 10 <= p+1 = 10
+p=10  0.9428*sqrt(p(p+6)) = 11.925582  <  p+2 = 12  floor = 11 <= p+1 = 11
+p=11  0.9428*sqrt(p(p+6)) = 12.892596  <  p+2 = 13  floor = 12 <= p+1 = 12
+p=12  0.9428*sqrt(p(p+6)) = 13.856274  <  p+2 = 14  floor = 13 <= p+1 = 13
+p=40  0.9428*sqrt(p(p+6)) = 40.441615  <  p+2 = 42  floor = 40 <= p+1 = 41
+largest lhs - rhs over p = 0..40 at p = 6: -0.000077
+K_6,6: pw = 6 (witness [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]), tw <= 6 (min-degree), degeneracy = 6 so tw = 6 exactly, f(6) = 12
+K_6,6: 0.9428*sqrt(tw*f6) = 7.999923, floor = 7, pw+1 = 7; exact constant would give 2sqrt2/3*sqrt(72) = 8.000000 = 8 = pw + 2

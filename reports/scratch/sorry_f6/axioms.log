@@ -1,0 +1,3 @@
+'MOSPFormalization.conjecture_sqrt_tw_f6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.minClosedNeighborhood_le_add_pathwidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.closedNeighborhood_prefix_subset' depends on axioms: [propext, Classical.choice, Quot.sound]

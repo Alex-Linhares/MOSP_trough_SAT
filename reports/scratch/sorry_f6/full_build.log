@@ -1,0 +1,52 @@
+⚠ [1026/1182] Replayed MOSPFormalization.Encoding
+warning: MOSPFormalization/Encoding.lean:176:4: Unused tactic linter: `simp [Finset.filter_congr_decidable]` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: MOSPFormalization/Encoding.lean:184:6: `dif_neg` has been deprecated: Use `dite_eq_right` instead
+⚠ [1647/1691] Replayed MOSPFormalization.Hypercube.Order
+warning: MOSPFormalization/Hypercube/Order.lean:126:23: Variable name `y` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: MOSPFormalization/Hypercube/Order.lean:262:6: Variable name `y` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _y
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [1673/1691] Built MOSPFormalization.EmptyPair (3.8s)
+✔ [1674/1691] Built MOSPFormalization.Hypercube (4.0s)
+✔ [1675/1691] Built MOSPFormalization.Grid (5.9s)
+✔ [1676/1691] Built MOSPFormalization.Mycielski (7.3s)
+✔ [1677/1691] Built MOSPFormalization.FirstMoment (4.9s)
+✔ [1678/1691] Built MOSPFormalization.Complex.SplitBandwidth (8.6s)
+✔ [1679/1691] Built MOSPFormalization.Complex.EdgeSeparation (8.0s)
+✔ [1680/1691] Built MOSPFormalization.Complex.NodeSearch (6.4s)
+✔ [1681/1691] Built MOSPFormalization.Complex.IntervalSearch (2.2s)
+⚠ [1682/1691] Built MOSPFormalization.TreeBound (27s)
+warning: MOSPFormalization/TreeBound.lean:688:5: Variable name `hSR` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hSR
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+warning: MOSPFormalization/TreeBound.lean:774:22: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: MOSPFormalization/TreeBound.lean:779:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: MOSPFormalization/TreeBound.lean:779:25: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: MOSPFormalization/TreeBound.lean:784:6: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: MOSPFormalization/TreeBound.lean:784:25: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: MOSPFormalization/TreeBound.lean:922:22: `if_pos` has been deprecated: Use `ite_eq_left` instead
+warning: MOSPFormalization/TreeBound.lean:927:22: `if_neg` has been deprecated: Use `ite_eq_right` instead
+warning: MOSPFormalization/TreeBound.lean:927:41: `if_neg` has been deprecated: Use `ite_eq_right` instead
+✔ [1683/1691] Built MOSPFormalization.Complex.KirousisPapadimitriouGap (4.0s)
+✔ [1684/1691] Built MOSPFormalization.Complex.EdgeSearch (7.3s)
+✔ [1685/1691] Built MOSPFormalization.Complex.NodeMonotonicity (5.0s)
+✔ [1686/1691] Built MOSPFormalization.Complex.EdgeSearchFull (5.2s)
+✔ [1687/1691] Built MOSPFormalization.Complex.VertexSearch (6.4s)
+✔ [1688/1691] Built MOSPFormalization.Complex.Pebbling (26s)
+✔ [1689/1691] Built MOSPFormalization.Complex.PebblingGu (9.6s)
+✔ [1690/1691] Built MOSPFormalization (3.6s)
+Build completed successfully (1691 jobs).
+exit 0

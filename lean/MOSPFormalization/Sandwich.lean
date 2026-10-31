@@ -91,12 +91,27 @@ connects them through Kinnersley's theorem (`VSEquivPW`).
   branches are the components of `G − v` (hence connected) that `v` is
   attached to.
 
-## Stated, not proved
+## The fitted candidate (proved 2026-10-31; nothing left stated without proof)
 
+* `minClosedNeighborhood G t` — `f(t)`, the smallest closed neighbourhood of a
+  `t`-set; `minClosedNeighborhood_le_add_pathwidth` is Harper's bound
+  `f(t) ≤ t + pathwidth G` for `t ≤ n`, re-proved here in three lines because
+  `EmptyPair.lean`, which carries it as `exists_closedNbhd_card_le`, imports
+  this file: the closed neighbourhood of a layout's prefix lies in the prefix
+  together with the active suffix (`closedNeighborhood_prefix_subset`).
 * `conjecture_sqrt_tw_f6` — item 09's one surviving fitted candidate,
-  `optimum ≥ ⌊0.9428 √(tw · f(6))⌋`, stated with the optimum read as
-  `pathwidth + 1` and labelled worthless there because it is pointwise below
-  the proved pair on every certified instance. Left as a statement on purpose.
+  `optimum ≥ ⌊0.9428 √(tw · f(6))⌋` with the optimum read as `pathwidth + 1`,
+  carried as the development's last `sorry` from 2026-09-28 and **proved on
+  2026-10-31** from `treewidth ≤ pathwidth` and `f(6) ≤ pathwidth + 6`: the
+  argument of the floor is at most `0.9428 √(p (p + 6)) < p + 2` for every real
+  `p ≥ 0`, a quadratic with negative discriminant once `0.9428² = 0.88887184`
+  is written out. The constant is tight: with `2√2/3 = 0.94280904…` in place of
+  `0.9428` the discriminant is zero and `K_{6,6}` (`tw = pw = 6`, `f(6) = 12`)
+  gives `√(6 · 12) · 2√2/3 = 8 = pw + 2`, so the fitted constant stopped one
+  digit short of the first counterexample. It was labelled worthless in
+  `reports/ml_nature.md` §24 because it is pointwise below the proved pair on
+  every certified instance; the proof confirms that it carries no information
+  beyond `treewidth ≤ pathwidth` and the expansion bound.
 -/
 
 import MOSPFormalization.VSEquivPW
@@ -990,7 +1005,7 @@ theorem treewidth_add_one_le_mospValue (h : ∃ c p, M.requires c p) :
 
 end MOSPInstance
 
-/-! ### Statements without proofs -/
+/-! ### The fitted candidate of item 09 -/
 
 /-- `f(t)`: the smallest closed neighbourhood of a set of `t` vertices (`0` when no
 such set exists). The expansion bound of `satisfiability/expansion_bound.py`. -/
@@ -998,14 +1013,117 @@ noncomputable def minClosedNeighborhood (t : ℕ) : ℕ :=
   sInf ((fun S : Finset V => (S ∪ S.biUnion (fun v => Finset.univ.filter (G.Adj v))).card) ''
     {S | S.card = t})
 
-/-- **Item 09's surviving fitted candidate**, stated as a conjecture with the optimum
-read as `pathwidth + 1`. Valid on 50,948 certified instances, undefeated by 20,100
-adversarial evaluations, and pointwise at most `max(lb_best, tw + 1)` on every one of
-them, so proving it would prove nothing new (`reports/ml_nature.md` §24). -/
+/-- The closed neighbourhood of a layout's prefix lies in the prefix together with the
+active suffix: a neighbour of a prefix vertex is either in the prefix or a suffix vertex
+with a prefix neighbour. -/
+theorem closedNeighborhood_prefix_subset (σ : LinearLayout V) (i : ℕ) :
+    prefixSet σ i ∪ (prefixSet σ i).biUnion (fun v => Finset.univ.filter (G.Adj v))
+      ⊆ prefixSet σ i ∪ activeSuffix G σ i := by
+  intro w hw
+  rw [Finset.mem_union] at hw ⊢
+  rcases hw with hw | hw
+  · exact Or.inl hw
+  · rw [Finset.mem_biUnion] at hw
+    obtain ⟨u, hu, hadj⟩ := hw
+    rw [Finset.mem_filter] at hadj
+    by_cases hwp : w ∈ prefixSet σ i
+    · exact Or.inl hwp
+    · right
+      rw [mem_activeSuffix_iff]
+      rw [mem_prefixSet_iff] at hwp
+      exact ⟨by omega, u, hu, hadj.2⟩
+
+/-- **Harper's bound** for `f`: `f(t) ≤ t + pathwidth G` whenever `t ≤ n`. The same
+statement as `EmptyPair.lean`'s `exists_closedNbhd_card_le`, which cannot be imported
+here (that file imports this one); the proof takes a layout attaining the vertex
+separation and the prefix of its first `t` vertices, whose closed neighbourhood has at
+most `t + vertexSepAt` vertices by `closedNeighborhood_prefix_subset`. -/
+theorem minClosedNeighborhood_le_add_pathwidth (t : ℕ) (ht : t ≤ Fintype.card V) :
+    minClosedNeighborhood G t ≤ t + pathwidth G := by
+  rcases Nat.eq_zero_or_pos t with rfl | hpos
+  · -- the empty set has an empty closed neighbourhood
+    have hmem : (0 : ℕ) ∈
+        ((fun S : Finset V => (S ∪ S.biUnion (fun v => Finset.univ.filter (G.Adj v))).card) ''
+          {S | S.card = 0}) :=
+      ⟨∅, by simp, by simp⟩
+    exact (Nat.sInf_le hmem).trans (by simp)
+  · -- a layout attaining the vertex separation
+    have hne : (Set.range (fun σ : LinearLayout V => vertexSepOfLayout G σ)).Nonempty :=
+      ⟨_, ⟨Fintype.equivFin V, rfl⟩⟩
+    obtain ⟨σ, hσ⟩ := Nat.sInf_mem hne
+    have hσpw : vertexSepOfLayout G σ = pathwidth G := by
+      rw [← vertexSeparation_eq_pathwidth]; exact hσ
+    have hi : t - 1 < Fintype.card V := by omega
+    have hcard : (prefixSet σ (t - 1)).card = t := by rw [card_prefixSet σ hi]; omega
+    have hsep : vertexSepAt G σ (t - 1) ≤ vertexSepOfLayout G σ :=
+      vertexSepAt_le_vertexSepOfLayout G σ ⟨t - 1, hi⟩
+    calc minClosedNeighborhood G t
+        ≤ (prefixSet σ (t - 1) ∪
+            (prefixSet σ (t - 1)).biUnion (fun v => Finset.univ.filter (G.Adj v))).card :=
+          Nat.sInf_le ⟨prefixSet σ (t - 1), hcard, rfl⟩
+      _ ≤ (prefixSet σ (t - 1) ∪ activeSuffix G σ (t - 1)).card :=
+          Finset.card_le_card (closedNeighborhood_prefix_subset G σ (t - 1))
+      _ ≤ (prefixSet σ (t - 1)).card + (activeSuffix G σ (t - 1)).card :=
+          Finset.card_union_le _ _
+      _ = t + vertexSepAt G σ (t - 1) := by rw [hcard]; rfl
+      _ ≤ t + pathwidth G := by rw [← hσpw]; exact Nat.add_le_add_left hsep t
+
+/-- **Item 09's surviving fitted candidate**, with the optimum read as `pathwidth + 1`:
+`⌊0.9428 √(tw · f(6))⌋ ≤ pathwidth + 1`. Valid on 50,948 certified instances,
+undefeated by 20,100 adversarial evaluations, and pointwise at most
+`max(lb_best, tw + 1)` on every one of them (`reports/ml_nature.md` §24); carried as
+the development's last `sorry` from 2026-09-28 and proved on 2026-10-31.
+
+The proof has two ingredients and one real inequality: `treewidth G ≤ pathwidth G`
+(`treewidth_le_pathwidth`) and `f(6) ≤ 6 + pathwidth G`
+(`minClosedNeighborhood_le_add_pathwidth`, Harper's bound), so with `p = pathwidth G`
+the argument of the floor is at most `0.9428 √(p (p + 6))`; and
+`0.9428 √(p (p + 6)) < p + 2` for every real `p ≥ 0`, because after squaring it reads
+`0.11112816 p² − 1.33323104 p + 4 > 0`, a quadratic of discriminant
+`1.33323104² − 16 · 0.11112816 ≈ −0.00055 < 0`. The floor is then below `p + 2`, hence
+at most `p + 1`.
+
+*Remark (tightness of the constant).* With `2√2/3 = 0.94280904…` in place of `0.9428`
+the discriminant is exactly zero, with double root `p = 6`, and `K_{6,6}` realises it:
+`tw = pw = 6`, `f(6) = 12` (a side of the bipartition sees everything), and
+`(2√2/3) √(6 · 12) = 8 = pw + 2`, so the floor would be `8 > pw + 1 = 7`. The fitted
+constant `0.9428` gives `7.99992… `, floor `7`, and is therefore the largest four-digit
+constant for which the statement holds; `reports/scratch/sorry_f6/numeric_check.py`
+checks both sides at `p = 0, …, 40` and the `K_{6,6}` values. -/
 theorem conjecture_sqrt_tw_f6 (hV : 6 ≤ Fintype.card V) :
     ⌊(0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ))⌋₊
       ≤ pathwidth G + 1 := by
-  sorry
+  set p := pathwidth G with hp
+  have h1 : minClosedNeighborhood G 6 ≤ 6 + p := minClosedNeighborhood_le_add_pathwidth G 6 hV
+  have h2 : treewidth G ≤ p := treewidth_le_pathwidth
+  have h1r : (minClosedNeighborhood G 6 : ℝ) ≤ 6 + p := by exact_mod_cast h1
+  have h2r : (treewidth G : ℝ) ≤ p := by exact_mod_cast h2
+  have hp0 : (0 : ℝ) ≤ p := Nat.cast_nonneg _
+  -- the product under the root is at most `p (p + 6)`
+  have hprod : (treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ) ≤ (p : ℝ) * (p + 6) :=
+    calc (treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ)
+        ≤ (p : ℝ) * (6 + p) := mul_le_mul h2r h1r (Nat.cast_nonneg _) hp0
+      _ = (p : ℝ) * (p + 6) := by ring
+  -- the real inequality `0.9428 √(p (p + 6)) < p + 2`
+  have hq : (0 : ℝ) ≤ (p : ℝ) * (p + 6) := by positivity
+  have key : (0.9428 : ℝ) * Real.sqrt ((p : ℝ) * (p + 6)) < (p : ℝ) + 2 := by
+    have hlt : ((0.9428 : ℝ) * Real.sqrt ((p : ℝ) * (p + 6))) ^ 2 < ((p : ℝ) + 2) ^ 2 := by
+      rw [mul_pow, Real.sq_sqrt hq]
+      nlinarith [sq_nonneg ((p : ℝ) - 5.9987), hp0]
+    exact lt_of_pow_lt_pow_left₀ 2 (by linarith) hlt
+  have hx : (0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ))
+      < (p : ℝ) + 2 :=
+    calc (0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ))
+        ≤ (0.9428 : ℝ) * Real.sqrt ((p : ℝ) * (p + 6)) :=
+          mul_le_mul_of_nonneg_left (Real.sqrt_le_sqrt hprod) (by norm_num)
+      _ < (p : ℝ) + 2 := key
+  have hx0 : (0 : ℝ) ≤
+      (0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ)) :=
+    mul_nonneg (by norm_num) (Real.sqrt_nonneg _)
+  have hfl : ⌊(0.9428 : ℝ) * Real.sqrt ((treewidth G : ℝ) * (minClosedNeighborhood G 6 : ℝ))⌋₊
+      < p + 2 := by
+    rw [Nat.floor_lt hx0]; exact_mod_cast hx
+  omega
 
 /-! ### Hand-checked values
 
