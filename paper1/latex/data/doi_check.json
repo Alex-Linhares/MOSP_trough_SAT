@@ -1,4 +1,18 @@
 {
+ "10.1002/047174882x": {
+  "fetched": "2026-10-31",
+  "first_author": "Cover",
+  "registry": "crossref",
+  "title": "Elements of Information Theory",
+  "year": 2005
+ },
+ "10.1002/jgt.20620": {
+  "fetched": "2026-10-31",
+  "first_author": "Lee",
+  "registry": "crossref",
+  "title": "Rank\u2010width of random graphs",
+  "year": 2011
+ },
  "10.1006/inco.1994.1064": {
   "fetched": "2026-10-03",
   "first_author": "Ellis",
@@ -167,6 +181,13 @@
   "title": "Lower bounds on the pathwidth of some grid-like graphs",
   "year": 2008
  },
+ "10.1016/j.dam.2012.10.031": {
+  "fetched": "2026-10-31",
+  "first_author": "Perarnau",
+  "registry": "crossref",
+  "title": "On the tree-depth of random graphs",
+  "year": 2014
+ },
  "10.1016/j.disc.2005.12.011": {
   "fetched": "2026-10-19",
   "first_author": "Sunil Chandran",
@@ -208,6 +229,13 @@
   "registry": "crossref",
   "title": "Practical graph isomorphism, II",
   "year": 2014
+ },
+ "10.1016/s0012-365x(00)00278-8": {
+  "fetched": "2026-10-31",
+  "first_author": "D\u0131\u0301az",
+  "registry": "crossref",
+  "title": "Approximating layout problems on random graphs",
+  "year": 2001
  },
  "10.1016/s0021-9800(66)80059-5": {
   "fetched": "2026-10-19",
@@ -306,6 +334,13 @@
   "registry": "crossref",
   "title": "Mathematical models for the minimization of open stacks problem",
   "year": 2021
+ },
+ "10.1137/0215041": {
+  "fetched": "2026-10-31",
+  "first_author": "Turner",
+  "registry": "crossref",
+  "title": "On the Probable Performance of Heuristics for Bandwidth Minimization",
+  "year": 1986
  },
  "10.1145/151261.151263": {
   "fetched": "2026-10-03",
