@@ -1,0 +1,31 @@
+import MOSPFormalization.FirstMoment
+open MOSPFormalization
+#print axioms MOSPFormalization.mem_edges
+#print axioms MOSPFormalization.edges_injective
+#print axioms MOSPFormalization.card_edges_top
+#print axioms MOSPFormalization.mem_edges_top
+#print axioms MOSPFormalization.edges_subset_top
+#print axioms MOSPFormalization.mem_forbidden
+#print axioms MOSPFormalization.card_forbidden
+#print axioms MOSPFormalization.forbidden_subset_top
+#print axioms MOSPFormalization.mem_emptyPairGraphs
+#print axioms MOSPFormalization.edges_subset_of_isEmptyPair
+#print axioms MOSPFormalization.edges_fromEdgeSet
+#print axioms MOSPFormalization.isEmptyPair_fromEdgeSet
+#print axioms MOSPFormalization.image_edges_emptyPairGraphs
+#print axioms MOSPFormalization.card_emptyPairGraphs
+#print axioms MOSPFormalization.card_simpleGraph
+#print axioms MOSPFormalization.mem_emptyPairIndices
+#print axioms MOSPFormalization.disjoint_of_mem_emptyPairIndices
+#print axioms MOSPFormalization.card_emptyPairIndices
+#print axioms MOSPFormalization.mem_graphsOfPathwidthLe
+#print axioms MOSPFormalization.mem_biUnion_emptyPairIndices
+#print axioms MOSPFormalization.card_graphsOfPathwidthLe_le
+#print axioms MOSPFormalization.card_pathwidth_le_le
+#print axioms MOSPFormalization.mul_pred_le_choose_two
+#print axioms MOSPFormalization.card_pathwidth_le_mul_pow_le
+#print axioms MOSPFormalization.gnpWeight_nonneg
+#print axioms MOSPFormalization.sum_biUnion_le_sum_of_nonneg
+#print axioms MOSPFormalization.sum_gnpWeight_emptyPairGraphs
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le
+#print axioms MOSPFormalization.weightedSum_pathwidth_le_le

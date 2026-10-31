@@ -19,6 +19,7 @@ import MOSPFormalization.Check
 import MOSPFormalization.Encoding
 import MOSPFormalization.Sandwich
 import MOSPFormalization.EmptyPair
+import MOSPFormalization.FirstMoment
 import MOSPFormalization.IndependenceBound
 import MOSPFormalization.TreeBound
 import MOSPFormalization.Grid

@@ -285,7 +285,10 @@ inequalities rather than asymptotics.
       graphs to 9 vertices, zero violations. All three cores checked.
       (1)'s core proved in Lean the same day, `EmptyPair.lean`, as a corollary
       of Harper's bound `∀ j ∃ |A| = j, |N[A]| ≤ j + pw` (sorry-free, standard
-      axioms); the probabilistic half remains. (3)'s core proved in Lean the
+      axioms); the probabilistic half's *counting* part proved 2026-10-31,
+      `FirstMoment.lean`: `P(pw ≤ k) ≤ C(n,t)·C(n−t,t−1)·(1−p)^(t(t−1))` in
+      G(n, p), t = ⌈(n−k)/2⌉; what remains is the entropy asymptotics at
+      p = c/n (on paper, then Lean if wanted). (3)'s core proved in Lean the
       same day, `IndependenceBound.lean`, `pathwidth ≤ n − indepNum`. (2)'s
       tree bounds proved in Lean the same evening, `TreeBound.lean`, by a prover
       agent with a refuter agent attacking every lemma first (gossip in

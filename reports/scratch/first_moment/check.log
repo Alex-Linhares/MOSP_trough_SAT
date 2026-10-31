@@ -1,0 +1,33 @@
+n=1: 1 graphs = 2^0; pathwidth histogram {0: 1}
+  k=0 t=1: #{pw<=k}=1 <= C(1,1)*C(0,0)*2^(0-0)=1 OK; mult OK; weighted(p=0.3) 1.000000 <= 1.000000 OK
+  card_graphs_avoiding: 3 disjoint (A, R) pairs checked, all equal to 2^(C(n,2) - |A||R|)
+n=2: 2 graphs = 2^1; pathwidth histogram {0: 1, 1: 1}
+  k=0 t=1: #{pw<=k}=1 <= C(2,1)*C(1,0)*2^(1-0)=4 OK; mult OK; weighted(p=0.3) 0.700000 <= 2.000000 OK
+  k=1 t=1: #{pw<=k}=2 <= C(2,1)*C(1,0)*2^(1-0)=4 OK; mult OK; weighted(p=0.3) 1.000000 <= 2.000000 OK
+  card_graphs_avoiding: 9 disjoint (A, R) pairs checked, all equal to 2^(C(n,2) - |A||R|)
+n=3: 8 graphs = 2^3; pathwidth histogram {0: 1, 1: 6, 2: 1}
+  k=0 t=2: #{pw<=k}=1 <= C(3,2)*C(1,1)*2^(3-2)=6 OK; mult OK; weighted(p=0.3) 0.343000 <= 1.470000 OK
+  k=1 t=1: #{pw<=k}=7 <= C(3,1)*C(2,0)*2^(3-0)=24 OK; mult OK; weighted(p=0.3) 0.973000 <= 3.000000 OK
+  k=2 t=1: #{pw<=k}=8 <= C(3,1)*C(2,0)*2^(3-0)=24 OK; mult OK; weighted(p=0.3) 1.000000 <= 3.000000 OK
+  card_graphs_avoiding: 27 disjoint (A, R) pairs checked, all equal to 2^(C(n,2) - |A||R|)
+n=4: 64 graphs = 2^6; pathwidth histogram {0: 1, 1: 37, 2: 25, 3: 1}
+  k=0 t=2: #{pw<=k}=1 <= C(4,2)*C(2,1)*2^(6-2)=192 OK; mult OK; weighted(p=0.3) 0.117649 <= 5.880000 OK
+  k=1 t=2: #{pw<=k}=38 <= C(4,2)*C(2,1)*2^(6-2)=192 OK; mult OK; weighted(p=0.3) 0.892486 <= 5.880000 OK
+  k=2 t=1: #{pw<=k}=63 <= C(4,1)*C(3,0)*2^(6-0)=256 OK; mult OK; weighted(p=0.3) 0.999271 <= 4.000000 OK
+  k=3 t=1: #{pw<=k}=64 <= C(4,1)*C(3,0)*2^(6-0)=256 OK; mult OK; weighted(p=0.3) 1.000000 <= 4.000000 OK
+  card_graphs_avoiding: 81 disjoint (A, R) pairs checked, all equal to 2^(C(n,2) - |A||R|)
+n=5: 1024 graphs = 2^10; pathwidth histogram {0: 1, 1: 290, 2: 622, 3: 110, 4: 1}
+  k=0 t=3: #{pw<=k}=1 <= C(5,3)*C(2,2)*2^(10-6)=160 OK; mult OK; weighted(p=0.3) 0.028248 <= 1.176490 OK
+  k=1 t=2: #{pw<=k}=291 <= C(5,2)*C(3,1)*2^(10-2)=7680 OK; mult OK; weighted(p=0.3) 0.746495 <= 14.700000 OK
+  k=2 t=2: #{pw<=k}=913 <= C(5,2)*C(3,1)*2^(10-2)=7680 OK; mult OK; weighted(p=0.3) 0.993784 <= 14.700000 OK
+  k=3 t=1: #{pw<=k}=1023 <= C(5,1)*C(4,0)*2^(10-0)=5120 OK; mult OK; weighted(p=0.3) 0.999994 <= 5.000000 OK
+  k=4 t=1: #{pw<=k}=1024 <= C(5,1)*C(4,0)*2^(10-0)=5120 OK; mult OK; weighted(p=0.3) 1.000000 <= 5.000000 OK
+  card_graphs_avoiding: 243 disjoint (A, R) pairs checked, all equal to 2^(C(n,2) - |A||R|)
+n=6: 32768 graphs = 2^15; pathwidth histogram {0: 1, 1: 2931, 2: 18492, 3: 10782, 4: 561, 5: 1}
+  k=0 t=3: #{pw<=k}=1 <= C(6,3)*C(3,2)*2^(15-6)=30720 OK; mult OK; weighted(p=0.3) 0.004748 <= 7.058940 OK
+  k=1 t=3: #{pw<=k}=2932 <= C(6,3)*C(3,2)*2^(15-6)=30720 OK; mult OK; weighted(p=0.3) 0.551330 <= 7.058940 OK
+  k=2 t=2: #{pw<=k}=21424 <= C(6,2)*C(4,1)*2^(15-2)=491520 OK; mult OK; weighted(p=0.3) 0.971209 <= 29.400000 OK
+  k=3 t=2: #{pw<=k}=32206 <= C(6,2)*C(4,1)*2^(15-2)=491520 OK; mult OK; weighted(p=0.3) 0.999862 <= 29.400000 OK
+  k=4 t=1: #{pw<=k}=32767 <= C(6,1)*C(5,0)*2^(15-0)=196608 OK; mult OK; weighted(p=0.3) 1.000000 <= 6.000000 OK
+  k=5 t=1: #{pw<=k}=32768 <= C(6,1)*C(5,0)*2^(15-0)=196608 OK; mult OK; weighted(p=0.3) 1.000000 <= 6.000000 OK
+violations: 0

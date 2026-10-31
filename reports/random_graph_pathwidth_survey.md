@@ -128,7 +128,20 @@ statement `∀ j ≤ n, ∃ A, |A| = j ∧ |N[A]| ≤ j + pw(G)`
 (`exists_closedNbhd_card_le`), which is Harper's vertex-isoperimetric bound
 on pathwidth in layout form, the expansion bound of
 `satisfiability/expansion_bound.py`; the empty-pair bound is its corollary at
-`j = ⌈(n − k)/2⌉`, and `exists_empty_pair` restates it in the words above. The other two
+`j = ⌈(n − k)/2⌉`, and `exists_empty_pair` restates it in the words above.
+**The counting half, proved in Lean 2026-10-31**
+(`lean/MOSPFormalization/FirstMoment.lean`, an agent, sorry-free, standard
+axioms, brute-force checked on every labelled graph to 6 vertices first):
+with `t = ⌈(n − k)/2⌉`, the number of labelled graphs on `n` vertices with
+`pw ≤ k` is at most `C(n,t)·C(n−t,t−1)·2^(C(n,2) − t(t−1))`
+(`card_pathwidth_le_le`), and in `G(n, p)` for any `0 ≤ p ≤ 1`,
+`P(pw ≤ k) ≤ C(n,t)·C(n−t,t−1)·(1−p)^(t(t−1))`
+(`weightedSum_graphsOfPathwidthLe_le`, the sum of `p^|E|(1−p)^(C(n,2)−|E|)`
+over those graphs). What remains of the bound `pw ≥ β*(c)·n` whp is the
+asymptotic estimate of that right-hand side at `p = c/n`, `k = βn`: its
+logarithm is `n[H(a, a, 1−2a) − c a²] + o(n)` with `a = (1−β)/2`, which is
+the entropy bound on binomials and `(1 − c/n)^m ≤ e^{−cm/n}`; on paper first
+(`paper1/todo.md`). The other two
 deterministic cores of this report were checked the same way
 (`check23.py`): §2's tree bound `pw ≤ ⌊log₃(2N+1)⌋` on every tree to 16
 vertices (32,547 trees, zero violations, tight for N = 7–12, where the

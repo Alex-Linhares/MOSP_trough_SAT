@@ -485,6 +485,9 @@ lean/
                                         (extremalTree k has treeBound k + 1 vertices and pw k + 1); the survey's pw ≤ ⌊log₃(2N+1)⌋ as a
                                         corollary; complete ternary tree of height h has pw = h; the gluing, path and centroid lemmas
                                         behind it are general; sorry-free (2026-10-30, a prover agent checked by a refuter agent)
+        FirstMoment.lean                the counting half of the random-graph first moment: #{G on n vertices : pw ≤ k} ≤
+                                        C(n,t)·C(n−t,t−1)·2^(C(n,2) − t(t−1)), t = ⌈(n−k)/2⌉, and the G(n,p) weighted form
+                                        P(pw ≤ k) ≤ C(n,t)·C(n−t,t−1)·(1−p)^(t(t−1)); also #SimpleGraph V = 2^C(n,2); sorry-free (2026-10-31)
         ForMathlib/                     Candidates for Mathlib contribution
         Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
             GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1
