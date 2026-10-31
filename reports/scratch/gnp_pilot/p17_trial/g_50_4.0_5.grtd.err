@@ -1,0 +1,9 @@
+try bagsize = 8
+try bagsize = 9
+try bagsize = 10
+try bagsize = 11
+try bagsize = 12
+make_td nvt 16
+TERM handler
+1.50 s 38696 KB
+exit 0

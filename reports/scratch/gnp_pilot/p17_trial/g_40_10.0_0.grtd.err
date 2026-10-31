@@ -1,0 +1,13 @@
+try bagsize = 13
+try bagsize = 14
+try bagsize = 15
+try bagsize = 16
+try bagsize = 17
+try bagsize = 18
+try bagsize = 19
+try bagsize = 20
+try bagsize = 21
+make_td nvt 11
+TERM handler
+1.70 s 38464 KB
+exit 0

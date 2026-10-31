@@ -55,3 +55,9 @@ learning/_pwtw_exhaust.build-*
 learning/data/bound_harness/
 tools/p17/grtd.bin
 tools/p17/tw-exact.bin
+# fetched papers and build leftovers (never committed)
+reports/scratch/**/lit/
+reports/scratch/**/code_snapshot/
+reports/scratch/minor_certificates/vsanneal
+reports/scratch/mycielski_rec/anneal
+paper1/latex/main.toc

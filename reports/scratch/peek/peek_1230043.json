@@ -1,0 +1,112 @@
+[
+ {
+  "thread": 124858434885504,
+  "stack": [
+   [
+    "<string>",
+    "_peek",
+    16,
+    {}
+   ],
+   [
+    "<string>",
+    "<module>",
+    21,
+    {
+     "n": 202
+    }
+   ],
+   [
+    "<string>",
+    "<module>",
+    1,
+    {
+     "n": 202
+    }
+   ],
+   [
+    "native.py",
+    "_call",
+    173,
+    {
+     "n": 189,
+     "k": 27,
+     "max_nodes": 999999997238369,
+     "nodes": "c_long"
+    }
+   ],
+   [
+    "native.py",
+    "decide_native",
+    241,
+    {
+     "k": 27,
+     "max_nodes": 999999997238369,
+     "n": 189
+    }
+   ],
+   [
+    "search.py",
+    "decide",
+    170,
+    {
+     "k": 27,
+     "max_nodes": 999999997238369,
+     "deadline": null
+    }
+   ],
+   [
+    "minor.py",
+    "try_refute",
+    401,
+    {
+     "self": "MinorLadder",
+     "w": 26,
+     "deadline": null,
+     "max_nodes": null,
+     "n": 202,
+     "budget": 3.1381059609e+16,
+     "cap": 1000000000000000,
+     "sizes": [
+      101,
+      105,
+      109,
+      113,
+      117,
+      121,
+      125,
+      129,
+      133,
+      137,
+      141,
+      145
+     ],
+     "size": 189,
+     "rule": "min-d"
+    }
+   ],
+   [
+    "solve.py",
+    "solve_masks",
+    164,
+    {
+     "upper": 27,
+     "lower": 23,
+     "max_nodes": null,
+     "n": 202,
+     "w": 26,
+     "deadline": null,
+     "nodes": 100001
+    }
+   ],
+   [
+    "run.py",
+    "<module>",
+    44,
+    {
+     "n": 202
+    }
+   ]
+  ]
+ }
+]

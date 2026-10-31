@@ -1,0 +1,723 @@
+key,collection,name,n,m,upper,upper_source,lower,lower_minor_size,mosp_lower,mosp_upper,closed,seconds,finished
+pwc-03678,Carvalho & Soma 2015,Random-150-150-2-1,150,406,22,recorded layout,20,60,21,23,False,3.0,2026-10-13T14:46:14
+pwc-03679,Carvalho & Soma 2015,Random-150-150-2-10,150,429,25,recorded layout,23,60,24,26,False,4.4,2026-10-13T14:46:15
+pwc-03680,Carvalho & Soma 2015,Random-150-150-2-2,150,437,30,recorded layout,23,60,24,31,False,4.3,2026-10-13T14:46:18
+pwc-03681,Carvalho & Soma 2015,Random-150-150-2-3,150,406,26,recorded layout,20,60,21,27,False,4.3,2026-10-13T14:46:20
+pwc-03682,Carvalho & Soma 2015,Random-150-150-2-4,150,435,27,recorded layout,21,50,22,28,False,4.2,2026-10-13T14:46:23
+pwc-03683,Carvalho & Soma 2015,Random-150-150-2-5,150,434,28,recorded layout,24,60,25,29,False,4.5,2026-10-13T14:46:24
+pwc-03684,Carvalho & Soma 2015,Random-150-150-2-6,150,393,27,recorded layout,21,60,22,28,False,4.4,2026-10-13T14:46:27
+pwc-03685,Carvalho & Soma 2015,Random-150-150-2-7,150,401,26,recorded layout,21,75,22,27,False,3.6,2026-10-13T14:46:28
+pwc-03686,Carvalho & Soma 2015,Random-150-150-2-8,150,373,21,recorded layout,19,60,20,22,False,4.3,2026-10-13T14:46:31
+pwc-03687,Carvalho & Soma 2015,Random-150-150-2-9,150,415,27,recorded layout,22,60,23,28,False,4.4,2026-10-13T14:46:32
+pwc-03688,Carvalho & Soma 2015,Random-150-150-4-1,150,1082,56,recorded layout,47,80,48,57,False,2.7,2026-10-13T14:46:34
+pwc-03689,Carvalho & Soma 2015,Random-150-150-4-10,150,1214,64,recorded layout,52,80,53,65,False,2.6,2026-10-13T14:46:35
+pwc-03690,Carvalho & Soma 2015,Random-150-150-4-2,150,1082,60,recorded layout,48,75,49,61,False,3.4,2026-10-13T14:46:37
+pwc-03691,Carvalho & Soma 2015,Random-150-150-4-3,150,1167,64,recorded layout,50,80,51,65,False,2.8,2026-10-13T14:46:38
+pwc-03692,Carvalho & Soma 2015,Random-150-150-4-4,150,1384,68,recorded layout,52,80,53,69,False,2.3,2026-10-13T14:46:40
+pwc-03693,Carvalho & Soma 2015,Random-150-150-4-5,150,1169,65,recorded layout,50,80,51,66,False,2.7,2026-10-13T14:46:40
+pwc-03694,Carvalho & Soma 2015,Random-150-150-4-6,150,1242,67,recorded layout,50,80,51,68,False,2.5,2026-10-13T14:46:42
+pwc-03695,Carvalho & Soma 2015,Random-150-150-4-7,150,1002,55,recorded layout,45,75,46,56,False,3.6,2026-10-13T14:46:44
+pwc-03696,Carvalho & Soma 2015,Random-150-150-4-8,150,1054,61,recorded layout,46,75,47,62,False,2.7,2026-10-13T14:46:45
+pwc-03698,Carvalho & Soma 2015,Random-150-150-6-1,150,2501,90,recorded layout,77,100,78,91,False,1.3,2026-10-13T14:46:46
+pwc-03697,Carvalho & Soma 2015,Random-150-150-4-9,150,1166,68,recorded layout,52,80,53,69,False,3.2,2026-10-13T14:46:47
+pwc-03699,Carvalho & Soma 2015,Random-150-150-6-10,150,2358,94,recorded layout,75,100,76,95,False,1.6,2026-10-13T14:46:48
+pwc-03700,Carvalho & Soma 2015,Random-150-150-6-2,150,2396,95,recorded layout,76,100,77,96,False,1.6,2026-10-13T14:46:49
+pwc-03701,Carvalho & Soma 2015,Random-150-150-6-3,150,2397,92,recorded layout,77,100,78,93,False,1.8,2026-10-13T14:46:50
+pwc-03702,Carvalho & Soma 2015,Random-150-150-6-4,150,2384,91,recorded layout,75,100,76,92,False,1.3,2026-10-13T14:46:50
+pwc-03703,Carvalho & Soma 2015,Random-150-150-6-5,150,2332,91,recorded layout,76,100,77,92,False,1.6,2026-10-13T14:46:51
+pwc-03704,Carvalho & Soma 2015,Random-150-150-6-6,150,2461,95,recorded layout,76,100,77,96,False,1.3,2026-10-13T14:46:51
+pwc-03706,Carvalho & Soma 2015,Random-150-150-6-8,150,2709,100,recorded layout,80,100,81,101,False,1.3,2026-10-13T14:46:53
+pwc-03705,Carvalho & Soma 2015,Random-150-150-6-7,150,2325,92,recorded layout,74,100,75,93,False,1.6,2026-10-13T14:46:53
+pwc-03707,Carvalho & Soma 2015,Random-150-150-6-9,150,2211,90,recorded layout,75,100,76,91,False,1.9,2026-10-13T14:46:54
+pwc-03728,Carvalho & Soma 2015,Random-175-175-2-1,175,459,27,recorded layout,22,58,23,28,False,4.5,2026-10-13T14:46:57
+pwc-03729,Carvalho & Soma 2015,Random-175-175-2-10,175,530,31,recorded layout,26,58,27,32,False,4.4,2026-10-13T14:46:59
+pwc-03730,Carvalho & Soma 2015,Random-175-175-2-2,175,492,28,recorded layout,23,58,24,29,False,4.4,2026-10-13T14:47:02
+pwc-03731,Carvalho & Soma 2015,Random-175-175-2-3,175,494,32,recorded layout,24,58,25,33,False,4.4,2026-10-13T14:47:03
+pwc-03732,Carvalho & Soma 2015,Random-175-175-2-4,175,531,34,recorded layout,26,58,27,35,False,4.7,2026-10-13T14:47:06
+pwc-03733,Carvalho & Soma 2015,Random-175-175-2-5,175,498,32,recorded layout,24,60,25,33,False,4.3,2026-10-13T14:47:08
+pwc-03734,Carvalho & Soma 2015,Random-175-175-2-6,175,535,34,recorded layout,24,58,25,35,False,4.4,2026-10-13T14:47:11
+pwc-03735,Carvalho & Soma 2015,Random-175-175-2-7,175,443,27,recorded layout,22,58,23,28,False,4.4,2026-10-13T14:47:12
+pwc-03736,Carvalho & Soma 2015,Random-175-175-2-8,175,602,34,recorded layout,26,58,27,35,False,4.2,2026-10-13T14:47:15
+pwc-03737,Carvalho & Soma 2015,Random-175-175-2-9,175,528,31,recorded layout,25,58,26,32,False,4.3,2026-10-13T14:47:16
+pwc-03738,Carvalho & Soma 2015,Random-175-175-4-1,175,1418,78,recorded layout,54,80,55,79,False,3.4,2026-10-13T14:47:18
+pwc-03739,Carvalho & Soma 2015,Random-175-175-4-10,175,1479,75,recorded layout,54,80,55,76,False,3.3,2026-10-13T14:47:20
+pwc-03740,Carvalho & Soma 2015,Random-175-175-4-2,175,1434,75,recorded layout,54,80,55,76,False,3.5,2026-10-13T14:47:22
+pwc-03741,Carvalho & Soma 2015,Random-175-175-4-3,175,1623,82,recorded layout,60,87,61,83,False,2.8,2026-10-13T14:47:22
+pwc-03742,Carvalho & Soma 2015,Random-175-175-4-4,175,1344,74,recorded layout,52,80,53,75,False,3.5,2026-10-13T14:47:25
+pwc-03743,Carvalho & Soma 2015,Random-175-175-4-5,175,1382,74,recorded layout,54,80,55,75,False,3.5,2026-10-13T14:47:26
+pwc-03744,Carvalho & Soma 2015,Random-175-175-4-6,175,1317,73,recorded layout,52,80,53,74,False,3.6,2026-10-13T14:47:29
+pwc-03745,Carvalho & Soma 2015,Random-175-175-4-7,175,1147,65,recorded layout,49,80,50,66,False,3.8,2026-10-13T14:47:30
+pwc-03746,Carvalho & Soma 2015,Random-175-175-4-8,175,1467,76,recorded layout,55,80,56,77,False,3.5,2026-10-13T14:47:33
+pwc-03747,Carvalho & Soma 2015,Random-175-175-4-9,175,1446,80,recorded layout,56,87,57,81,False,3.0,2026-10-13T14:47:33
+pwc-03748,Carvalho & Soma 2015,Random-175-175-6-1,175,3117,109,recorded layout,79,100,80,110,False,1.3,2026-10-13T14:47:34
+pwc-03749,Carvalho & Soma 2015,Random-175-175-6-10,175,3008,108,recorded layout,79,100,80,109,False,1.3,2026-10-13T14:47:34
+pwc-03750,Carvalho & Soma 2015,Random-175-175-6-2,175,2711,107,recorded layout,78,100,79,108,False,1.5,2026-10-13T14:47:35
+pwc-03751,Carvalho & Soma 2015,Random-175-175-6-3,175,2827,108,recorded layout,79,100,80,109,False,1.3,2026-10-13T14:47:35
+pwc-03753,Carvalho & Soma 2015,Random-175-175-6-5,175,2849,107,recorded layout,78,100,79,108,False,1.2,2026-10-13T14:47:37
+pwc-03752,Carvalho & Soma 2015,Random-175-175-6-4,175,3025,114,recorded layout,80,100,81,115,False,1.4,2026-10-13T14:47:37
+pwc-03754,Carvalho & Soma 2015,Random-175-175-6-6,175,2920,111,recorded layout,79,100,80,112,False,1.3,2026-10-13T14:47:38
+pwc-03755,Carvalho & Soma 2015,Random-175-175-6-7,175,2806,105,recorded layout,77,100,78,106,False,1.4,2026-10-13T14:47:38
+pwc-03756,Carvalho & Soma 2015,Random-175-175-6-8,175,2821,107,recorded layout,78,100,79,108,False,1.3,2026-10-13T14:47:39
+pwc-03757,Carvalho & Soma 2015,Random-175-175-6-9,175,2899,111,recorded layout,79,100,80,112,False,1.4,2026-10-13T14:47:40
+pwc-03758,Carvalho & Soma 2015,Random-175-175-8-1,175,4280,126,recorded layout,98,120,99,127,False,0.3,2026-10-13T14:47:40
+pwc-03760,Carvalho & Soma 2015,Random-175-175-8-2,175,4637,129,recorded layout,101,120,102,130,False,0.2,2026-10-13T14:47:40
+pwc-03759,Carvalho & Soma 2015,Random-175-175-8-10,175,4825,130,recorded layout,102,120,103,131,False,0.3,2026-10-13T14:47:40
+pwc-03761,Carvalho & Soma 2015,Random-175-175-8-3,175,4635,130,recorded layout,101,120,102,131,False,0.2,2026-10-13T14:47:40
+pwc-03763,Carvalho & Soma 2015,Random-175-175-8-5,175,4620,131,recorded layout,101,120,102,132,False,0.2,2026-10-13T14:47:40
+pwc-03762,Carvalho & Soma 2015,Random-175-175-8-4,175,4235,127,recorded layout,100,120,101,128,False,0.6,2026-10-13T14:47:40
+pwc-03764,Carvalho & Soma 2015,Random-175-175-8-6,175,4469,128,recorded layout,101,120,102,129,False,0.3,2026-10-13T14:47:41
+pwc-03766,Carvalho & Soma 2015,Random-175-175-8-8,175,4636,129,recorded layout,102,120,103,130,False,0.2,2026-10-13T14:47:41
+pwc-03765,Carvalho & Soma 2015,Random-175-175-8-7,175,4704,128,recorded layout,102,120,103,129,False,0.3,2026-10-13T14:47:41
+pwc-03769,Carvalho & Soma 2015,Random-200-200-10-10,200,7909,161,recorded layout,109,120,110,162,False,0.1,2026-10-13T14:47:41
+pwc-03767,Carvalho & Soma 2015,Random-175-175-8-9,175,4638,129,recorded layout,101,120,102,130,False,0.3,2026-10-13T14:47:41
+pwc-03774,Carvalho & Soma 2015,Random-200-200-10-6,200,7286,161,recorded layout,107,120,108,162,False,0.1,2026-10-13T14:47:41
+pwc-03778,Carvalho & Soma 2015,Random-200-200-2-1,200,635,41,recorded layout,29,66,30,42,False,3.6,2026-10-13T14:47:45
+pwc-03779,Carvalho & Soma 2015,Random-200-200-2-10,200,535,31,recorded layout,25,66,26,32,False,3.8,2026-10-13T14:47:45
+pwc-03780,Carvalho & Soma 2015,Random-200-200-2-2,200,633,41,recorded layout,29,66,30,42,False,3.5,2026-10-13T14:47:48
+pwc-03781,Carvalho & Soma 2015,Random-200-200-2-3,200,573,33,recorded layout,27,66,28,34,False,4.0,2026-10-13T14:47:49
+pwc-03782,Carvalho & Soma 2015,Random-200-200-2-4,200,533,33,recorded layout,25,60,26,34,False,3.8,2026-10-13T14:47:52
+pwc-03783,Carvalho & Soma 2015,Random-200-200-2-5,200,586,34,recorded layout,28,66,29,35,False,4.5,2026-10-13T14:47:53
+pwc-03784,Carvalho & Soma 2015,Random-200-200-2-6,200,667,40,recorded layout,31,66,32,41,False,4.0,2026-10-13T14:47:56
+pwc-03785,Carvalho & Soma 2015,Random-200-200-2-7,200,625,39,recorded layout,29,66,30,40,False,3.9,2026-10-13T14:47:57
+pwc-03786,Carvalho & Soma 2015,Random-200-200-2-8,200,619,41,recorded layout,27,66,28,42,False,3.7,2026-10-13T14:48:00
+pwc-03787,Carvalho & Soma 2015,Random-200-200-2-9,200,638,37,recorded layout,27,66,28,38,False,3.4,2026-10-13T14:48:01
+pwc-03788,Carvalho & Soma 2015,Random-200-200-4-1,200,1498,82,recorded layout,54,80,55,83,False,2.7,2026-10-13T14:48:02
+pwc-03789,Carvalho & Soma 2015,Random-200-200-4-10,200,1723,88,recorded layout,57,80,58,89,False,2.4,2026-10-13T14:48:03
+pwc-03790,Carvalho & Soma 2015,Random-200-200-4-2,200,1606,87,recorded layout,55,80,56,88,False,2.5,2026-10-13T14:48:05
+pwc-03791,Carvalho & Soma 2015,Random-200-200-4-3,200,1680,90,recorded layout,55,80,56,91,False,2.4,2026-10-13T14:48:05
+pwc-03792,Carvalho & Soma 2015,Random-200-200-4-4,200,1586,82,recorded layout,55,80,56,83,False,2.5,2026-10-13T14:48:07
+pwc-03793,Carvalho & Soma 2015,Random-200-200-4-5,200,1542,86,recorded layout,54,80,55,87,False,2.5,2026-10-13T14:48:08
+pwc-03794,Carvalho & Soma 2015,Random-200-200-4-6,200,1602,87,recorded layout,55,80,56,88,False,2.5,2026-10-13T14:48:10
+pwc-03795,Carvalho & Soma 2015,Random-200-200-4-7,200,1539,80,recorded layout,54,80,55,81,False,2.5,2026-10-13T14:48:10
+pwc-03796,Carvalho & Soma 2015,Random-200-200-4-8,200,1507,82,recorded layout,55,80,56,83,False,2.7,2026-10-13T14:48:12
+pwc-03797,Carvalho & Soma 2015,Random-200-200-4-9,200,1572,85,recorded layout,54,80,55,86,False,2.5,2026-10-13T14:48:13
+pwc-03798,Carvalho & Soma 2015,Random-200-200-6-1,200,3090,120,recorded layout,79,100,80,121,False,1.4,2026-10-13T14:48:14
+pwc-03799,Carvalho & Soma 2015,Random-200-200-6-10,200,3123,115,recorded layout,79,100,80,116,False,1.3,2026-10-13T14:48:14
+pwc-03800,Carvalho & Soma 2015,Random-200-200-6-2,200,3678,128,recorded layout,82,100,83,129,False,1.2,2026-10-13T14:48:15
+pwc-03801,Carvalho & Soma 2015,Random-200-200-6-3,200,3321,124,recorded layout,81,100,82,125,False,1.3,2026-10-13T14:48:16
+pwc-03802,Carvalho & Soma 2015,Random-200-200-6-4,200,3372,127,recorded layout,80,100,81,128,False,1.3,2026-10-13T14:48:16
+pwc-03803,Carvalho & Soma 2015,Random-200-200-6-5,200,3002,121,recorded layout,80,100,81,122,False,1.4,2026-10-13T14:48:17
+pwc-03804,Carvalho & Soma 2015,Random-200-200-6-6,200,3440,128,recorded layout,81,100,82,129,False,1.2,2026-10-13T14:48:18
+pwc-03805,Carvalho & Soma 2015,Random-200-200-6-7,200,3114,118,recorded layout,78,100,79,119,False,1.3,2026-10-13T14:48:18
+pwc-03806,Carvalho & Soma 2015,Random-200-200-6-8,200,2995,120,recorded layout,79,100,80,121,False,1.4,2026-10-13T14:48:19
+pwc-03808,Carvalho & Soma 2015,Random-200-200-8-1,200,5290,145,recorded layout,102,120,103,146,False,0.2,2026-10-13T14:48:19
+pwc-03809,Carvalho & Soma 2015,Random-200-200-8-10,200,5589,150,recorded layout,103,120,104,151,False,0.2,2026-10-13T14:48:19
+pwc-03810,Carvalho & Soma 2015,Random-200-200-8-2,200,5477,149,recorded layout,103,120,104,150,False,0.2,2026-10-13T14:48:20
+pwc-03807,Carvalho & Soma 2015,Random-200-200-6-9,200,3038,120,recorded layout,79,100,80,121,False,1.4,2026-10-13T14:48:20
+pwc-03811,Carvalho & Soma 2015,Random-200-200-8-3,200,5487,147,recorded layout,103,120,104,148,False,0.2,2026-10-13T14:48:20
+pwc-03812,Carvalho & Soma 2015,Random-200-200-8-4,200,5266,144,recorded layout,102,120,103,145,False,0.3,2026-10-13T14:48:20
+pwc-03813,Carvalho & Soma 2015,Random-200-200-8-5,200,5858,151,recorded layout,104,120,105,152,False,0.2,2026-10-13T14:48:20
+pwc-03814,Carvalho & Soma 2015,Random-200-200-8-6,200,5410,150,recorded layout,103,120,104,151,False,0.3,2026-10-13T14:48:20
+pwc-03815,Carvalho & Soma 2015,Random-200-200-8-7,200,5380,148,recorded layout,102,120,103,149,False,0.3,2026-10-13T14:48:20
+pwc-03816,Carvalho & Soma 2015,Random-200-200-8-8,200,5256,148,recorded layout,102,120,103,149,False,0.2,2026-10-13T14:48:20
+pwc-03817,Carvalho & Soma 2015,Random-200-200-8-9,200,5467,147,recorded layout,104,120,105,148,False,0.3,2026-10-13T14:48:21
+Random-400-400-10-1,"Frinhani et al. 2018, large",Random-400-400-10-1,400,17179,330,greedy (checked),125,133,126,331,False,1.5,2026-10-13T14:48:22
+Random-400-400-10-10,"Frinhani et al. 2018, large",Random-400-400-10-10,400,17077,327,greedy (checked),125,133,126,328,False,1.5,2026-10-13T14:48:22
+Random-400-400-10-2,"Frinhani et al. 2018, large",Random-400-400-10-2,400,17609,333,greedy (checked),124,133,125,334,False,1.4,2026-10-13T14:48:23
+Random-400-400-10-3,"Frinhani et al. 2018, large",Random-400-400-10-3,400,17481,330,greedy (checked),125,133,126,331,False,1.5,2026-10-13T14:48:24
+Random-400-400-10-4,"Frinhani et al. 2018, large",Random-400-400-10-4,400,16794,325,greedy (checked),124,133,125,326,False,1.4,2026-10-13T14:48:25
+Random-400-400-10-5,"Frinhani et al. 2018, large",Random-400-400-10-5,400,17890,328,greedy (checked),125,133,126,329,False,1.4,2026-10-13T14:48:25
+Random-400-400-10-6,"Frinhani et al. 2018, large",Random-400-400-10-6,400,17077,330,greedy (checked),124,133,125,331,False,1.4,2026-10-13T14:48:26
+Random-400-400-10-7,"Frinhani et al. 2018, large",Random-400-400-10-7,400,18208,337,greedy (checked),125,133,126,338,False,1.4,2026-10-13T14:48:26
+Random-400-400-10-8,"Frinhani et al. 2018, large",Random-400-400-10-8,400,17722,332,greedy (checked),125,133,126,333,False,1.4,2026-10-13T14:48:28
+Random-400-400-10-9,"Frinhani et al. 2018, large",Random-400-400-10-9,400,18076,325,greedy (checked),125,133,126,326,False,1.4,2026-10-13T14:48:28
+Random-400-400-14-1,"Frinhani et al. 2018, large",Random-400-400-14-1,400,30036,360,greedy (checked),189,200,190,361,False,0.6,2026-10-13T14:48:28
+Random-400-400-14-10,"Frinhani et al. 2018, large",Random-400-400-14-10,400,30411,359,greedy (checked),190,200,191,360,False,0.6,2026-10-13T14:48:29
+Random-400-400-14-2,"Frinhani et al. 2018, large",Random-400-400-14-2,400,30698,362,greedy (checked),190,200,191,363,False,0.6,2026-10-13T14:48:29
+Random-400-400-14-3,"Frinhani et al. 2018, large",Random-400-400-14-3,400,30321,360,greedy (checked),190,200,191,361,False,0.6,2026-10-13T14:48:29
+Random-400-400-14-4,"Frinhani et al. 2018, large",Random-400-400-14-4,400,29550,356,greedy (checked),189,200,190,357,False,0.6,2026-10-13T14:48:29
+Random-400-400-14-5,"Frinhani et al. 2018, large",Random-400-400-14-5,400,31395,358,greedy (checked),190,200,191,359,False,0.6,2026-10-13T14:48:30
+Random-400-400-14-6,"Frinhani et al. 2018, large",Random-400-400-14-6,400,30221,361,greedy (checked),190,200,191,362,False,0.6,2026-10-13T14:48:30
+Random-400-400-14-7,"Frinhani et al. 2018, large",Random-400-400-14-7,400,31841,359,greedy (checked),190,200,191,360,False,0.6,2026-10-13T14:48:30
+Random-400-400-14-8,"Frinhani et al. 2018, large",Random-400-400-14-8,400,31457,363,greedy (checked),190,200,191,364,False,0.5,2026-10-13T14:48:30
+Random-400-400-14-9,"Frinhani et al. 2018, large",Random-400-400-14-9,400,31574,361,greedy (checked),190,200,191,362,False,0.5,2026-10-13T14:48:31
+Random-400-400-18-1,"Frinhani et al. 2018, large",Random-400-400-18-1,400,42948,374,greedy (checked),194,200,195,375,False,0.6,2026-10-13T14:48:31
+Random-400-400-18-10,"Frinhani et al. 2018, large",Random-400-400-18-10,400,44121,374,greedy (checked),194,200,195,375,False,0.6,2026-10-13T14:48:31
+Random-400-400-18-2,"Frinhani et al. 2018, large",Random-400-400-18-2,400,44082,373,greedy (checked),194,200,195,374,False,0.6,2026-10-13T14:48:32
+Random-400-400-18-3,"Frinhani et al. 2018, large",Random-400-400-18-3,400,44349,376,greedy (checked),194,200,195,377,False,0.6,2026-10-13T14:48:32
+Random-400-400-18-4,"Frinhani et al. 2018, large",Random-400-400-18-4,400,42633,372,greedy (checked),193,200,194,373,False,0.6,2026-10-13T14:48:32
+Random-400-400-18-5,"Frinhani et al. 2018, large",Random-400-400-18-5,400,44937,375,greedy (checked),194,200,195,376,False,0.6,2026-10-13T14:48:33
+Random-400-400-18-6,"Frinhani et al. 2018, large",Random-400-400-18-6,400,44067,375,greedy (checked),194,200,195,376,False,0.5,2026-10-13T14:48:33
+Random-400-400-18-7,"Frinhani et al. 2018, large",Random-400-400-18-7,400,45005,376,greedy (checked),194,200,195,377,False,0.6,2026-10-13T14:48:33
+Random-400-400-18-8,"Frinhani et al. 2018, large",Random-400-400-18-8,400,44898,373,greedy (checked),194,200,195,374,False,0.6,2026-10-13T14:48:33
+Random-400-400-18-9,"Frinhani et al. 2018, large",Random-400-400-18-9,400,45457,376,greedy (checked),194,200,195,377,False,0.6,2026-10-13T14:48:34
+Random-400-400-2-1,"Frinhani et al. 2018, large",Random-400-400-2-1,400,1213,94,greedy (checked),36,60,37,95,False,5.4,2026-10-13T14:48:39
+Random-400-400-2-10,"Frinhani et al. 2018, large",Random-400-400-2-10,400,1250,96,greedy (checked),35,60,36,97,False,5.4,2026-10-13T14:48:39
+Random-400-400-2-2,"Frinhani et al. 2018, large",Random-400-400-2-2,400,1240,90,greedy (checked),36,60,37,91,False,5.5,2026-10-13T14:48:44
+Random-400-400-2-3,"Frinhani et al. 2018, large",Random-400-400-2-3,400,1159,91,greedy (checked),35,60,36,92,False,5.5,2026-10-13T14:48:45
+Random-400-400-2-4,"Frinhani et al. 2018, large",Random-400-400-2-4,400,1193,91,greedy (checked),35,60,36,92,False,5.5,2026-10-13T14:48:50
+Random-400-400-2-5,"Frinhani et al. 2018, large",Random-400-400-2-5,400,1285,91,greedy (checked),37,60,38,92,False,5.4,2026-10-13T14:48:50
+Random-400-400-2-6,"Frinhani et al. 2018, large",Random-400-400-2-6,400,1149,80,greedy (checked),34,60,35,81,False,5.4,2026-10-13T14:48:55
+Random-400-400-2-7,"Frinhani et al. 2018, large",Random-400-400-2-7,400,1005,85,greedy (checked),31,60,32,86,False,5.6,2026-10-13T14:48:56
+Random-400-400-2-8,"Frinhani et al. 2018, large",Random-400-400-2-8,400,1303,100,greedy (checked),35,60,36,101,False,5.3,2026-10-13T14:49:00
+Random-400-400-20-1,"Frinhani et al. 2018, large",Random-400-400-20-1,400,49487,377,greedy (checked),195,200,196,378,False,0.6,2026-10-13T14:49:01
+Random-400-400-2-9,"Frinhani et al. 2018, large",Random-400-400-2-9,400,1153,91,greedy (checked),34,60,35,92,False,5.4,2026-10-13T14:49:01
+Random-400-400-20-10,"Frinhani et al. 2018, large",Random-400-400-20-10,400,50315,379,greedy (checked),195,200,196,380,False,0.6,2026-10-13T14:49:01
+Random-400-400-20-2,"Frinhani et al. 2018, large",Random-400-400-20-2,400,50226,381,greedy (checked),195,200,196,382,False,0.6,2026-10-13T14:49:02
+Random-400-400-20-3,"Frinhani et al. 2018, large",Random-400-400-20-3,400,50560,380,greedy (checked),195,200,196,381,False,0.6,2026-10-13T14:49:02
+Random-400-400-20-4,"Frinhani et al. 2018, large",Random-400-400-20-4,400,49082,378,greedy (checked),194,200,195,379,False,0.6,2026-10-13T14:49:02
+Random-400-400-20-5,"Frinhani et al. 2018, large",Random-400-400-20-5,400,50820,379,greedy (checked),195,200,196,380,False,0.6,2026-10-13T14:49:03
+Random-400-400-20-6,"Frinhani et al. 2018, large",Random-400-400-20-6,400,50066,380,greedy (checked),195,200,196,381,False,0.6,2026-10-13T14:49:03
+Random-400-400-20-7,"Frinhani et al. 2018, large",Random-400-400-20-7,400,50797,380,greedy (checked),195,200,196,381,False,0.6,2026-10-13T14:49:03
+Random-400-400-20-8,"Frinhani et al. 2018, large",Random-400-400-20-8,400,50806,382,greedy (checked),195,200,196,383,False,0.6,2026-10-13T14:49:03
+Random-400-400-20-9,"Frinhani et al. 2018, large",Random-400-400-20-9,400,51451,380,greedy (checked),195,200,196,381,False,0.5,2026-10-13T14:49:04
+Random-400-400-24-1,"Frinhani et al. 2018, large",Random-400-400-24-1,400,60226,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:04
+Random-400-400-24-10,"Frinhani et al. 2018, large",Random-400-400-24-10,400,60632,385,greedy (checked),196,200,197,386,False,0.6,2026-10-13T14:49:04
+Random-400-400-24-2,"Frinhani et al. 2018, large",Random-400-400-24-2,400,60736,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:05
+Random-400-400-24-3,"Frinhani et al. 2018, large",Random-400-400-24-3,400,61051,386,greedy (checked),197,200,198,387,False,0.6,2026-10-13T14:49:05
+Random-400-400-24-4,"Frinhani et al. 2018, large",Random-400-400-24-4,400,60335,386,greedy (checked),197,200,198,387,False,0.6,2026-10-13T14:49:05
+Random-400-400-24-5,"Frinhani et al. 2018, large",Random-400-400-24-5,400,61105,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:06
+Random-400-400-24-6,"Frinhani et al. 2018, large",Random-400-400-24-6,400,60488,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:06
+Random-400-400-24-7,"Frinhani et al. 2018, large",Random-400-400-24-7,400,61814,386,greedy (checked),197,200,198,387,False,0.6,2026-10-13T14:49:06
+Random-400-400-24-8,"Frinhani et al. 2018, large",Random-400-400-24-8,400,61433,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:07
+Random-400-400-24-9,"Frinhani et al. 2018, large",Random-400-400-24-9,400,61184,385,greedy (checked),197,200,198,386,False,0.6,2026-10-13T14:49:07
+Random-400-400-28-1,"Frinhani et al. 2018, large",Random-400-400-28-1,400,68880,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:07
+Random-400-400-28-10,"Frinhani et al. 2018, large",Random-400-400-28-10,400,68307,389,greedy (checked),199,200,200,390,False,0.6,2026-10-13T14:49:08
+Random-400-400-28-2,"Frinhani et al. 2018, large",Random-400-400-28-2,400,68748,388,greedy (checked),199,200,200,389,False,0.6,2026-10-13T14:49:08
+Random-400-400-28-3,"Frinhani et al. 2018, large",Random-400-400-28-3,400,68913,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:08
+Random-400-400-28-4,"Frinhani et al. 2018, large",Random-400-400-28-4,400,68979,389,greedy (checked),199,200,200,390,False,0.6,2026-10-13T14:49:09
+Random-400-400-28-5,"Frinhani et al. 2018, large",Random-400-400-28-5,400,68452,389,greedy (checked),199,200,200,390,False,0.6,2026-10-13T14:49:09
+Random-400-400-28-6,"Frinhani et al. 2018, large",Random-400-400-28-6,400,68719,388,greedy (checked),199,200,200,389,False,0.6,2026-10-13T14:49:09
+Random-400-400-28-7,"Frinhani et al. 2018, large",Random-400-400-28-7,400,68197,389,greedy (checked),199,200,200,390,False,0.6,2026-10-13T14:49:09
+Random-400-400-28-8,"Frinhani et al. 2018, large",Random-400-400-28-8,400,68864,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:10
+Random-400-400-28-9,"Frinhani et al. 2018, large",Random-400-400-28-9,400,68516,389,greedy (checked),199,200,200,390,False,0.6,2026-10-13T14:49:10
+Random-400-400-30-1,"Frinhani et al. 2018, large",Random-400-400-30-1,400,71513,391,greedy (checked),199,200,200,392,False,0.6,2026-10-13T14:49:10
+Random-400-400-30-10,"Frinhani et al. 2018, large",Random-400-400-30-10,400,71351,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:11
+Random-400-400-30-2,"Frinhani et al. 2018, large",Random-400-400-30-2,400,71661,392,greedy (checked),199,200,200,393,False,0.6,2026-10-13T14:49:11
+Random-400-400-30-3,"Frinhani et al. 2018, large",Random-400-400-30-3,400,71714,391,greedy (checked),199,200,200,392,False,0.6,2026-10-13T14:49:11
+Random-400-400-30-4,"Frinhani et al. 2018, large",Random-400-400-30-4,400,71855,391,greedy (checked),199,200,200,392,False,0.6,2026-10-13T14:49:12
+Random-400-400-30-5,"Frinhani et al. 2018, large",Random-400-400-30-5,400,71324,389,greedy (checked),199,200,200,390,False,0.7,2026-10-13T14:49:12
+Random-400-400-30-6,"Frinhani et al. 2018, large",Random-400-400-30-6,400,71539,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:12
+Random-400-400-30-7,"Frinhani et al. 2018, large",Random-400-400-30-7,400,71021,390,greedy (checked),199,200,200,391,False,0.6,2026-10-13T14:49:13
+Random-400-400-30-8,"Frinhani et al. 2018, large",Random-400-400-30-8,400,71709,391,greedy (checked),199,200,200,392,False,0.6,2026-10-13T14:49:13
+Random-400-400-30-9,"Frinhani et al. 2018, large",Random-400-400-30-9,400,71363,390,greedy (checked),199,200,200,391,False,0.7,2026-10-13T14:49:13
+Random-400-400-34-1,"Frinhani et al. 2018, large",Random-400-400-34-1,400,75414,393,greedy (checked),199,200,200,394,False,0.6,2026-10-13T14:49:14
+Random-400-400-34-10,"Frinhani et al. 2018, large",Random-400-400-34-10,400,75461,393,greedy (checked),199,200,200,394,False,0.6,2026-10-13T14:49:14
+Random-400-400-34-2,"Frinhani et al. 2018, large",Random-400-400-34-2,400,75380,393,greedy (checked),199,200,200,394,False,0.6,2026-10-13T14:49:14
+Random-400-400-34-3,"Frinhani et al. 2018, large",Random-400-400-34-3,400,75613,393,greedy (checked),199,200,200,394,False,0.6,2026-10-13T14:49:15
+Random-400-400-34-4,"Frinhani et al. 2018, large",Random-400-400-34-4,400,75559,392,greedy (checked),199,200,200,393,False,0.6,2026-10-13T14:49:15
+Random-400-400-34-5,"Frinhani et al. 2018, large",Random-400-400-34-5,400,75343,392,greedy (checked),199,200,200,393,False,0.6,2026-10-13T14:49:15
+Random-400-400-34-6,"Frinhani et al. 2018, large",Random-400-400-34-6,400,75478,392,greedy (checked),199,200,200,393,False,0.6,2026-10-13T14:49:15
+Random-400-400-34-7,"Frinhani et al. 2018, large",Random-400-400-34-7,400,75284,392,greedy (checked),199,200,200,393,False,0.7,2026-10-13T14:49:16
+Random-400-400-34-8,"Frinhani et al. 2018, large",Random-400-400-34-8,400,75621,393,greedy (checked),199,200,200,394,False,0.6,2026-10-13T14:49:16
+Random-400-400-34-9,"Frinhani et al. 2018, large",Random-400-400-34-9,400,75255,393,greedy (checked),199,200,200,394,False,0.7,2026-10-13T14:49:17
+Random-400-400-4-1,"Frinhani et al. 2018, large",Random-400-400-4-1,400,2784,171,greedy (checked),61,80,62,172,False,4.4,2026-10-13T14:49:20
+Random-400-400-4-10,"Frinhani et al. 2018, large",Random-400-400-4-10,400,3491,185,greedy (checked),75,100,76,186,False,4.0,2026-10-13T14:49:21
+Random-400-400-4-2,"Frinhani et al. 2018, large",Random-400-400-4-2,400,3265,182,greedy (checked),62,80,63,183,False,4.3,2026-10-13T14:49:25
+Random-400-400-4-3,"Frinhani et al. 2018, large",Random-400-400-4-3,400,3102,178,greedy (checked),63,80,64,179,False,4.4,2026-10-13T14:49:25
+Random-400-400-4-4,"Frinhani et al. 2018, large",Random-400-400-4-4,400,3248,184,greedy (checked),74,100,75,185,False,4.3,2026-10-13T14:49:29
+Random-400-400-4-5,"Frinhani et al. 2018, large",Random-400-400-4-5,400,3485,184,greedy (checked),77,100,78,185,False,4.2,2026-10-13T14:49:29
+Random-400-400-4-7,"Frinhani et al. 2018, large",Random-400-400-4-7,400,3216,170,greedy (checked),74,100,75,171,False,4.2,2026-10-13T14:49:33
+Random-400-400-4-6,"Frinhani et al. 2018, large",Random-400-400-4-6,400,3371,200,greedy (checked),64,80,65,201,False,4.4,2026-10-13T14:49:33
+Random-400-400-4-9,"Frinhani et al. 2018, large",Random-400-400-4-9,400,3383,188,greedy (checked),75,100,76,189,False,4.0,2026-10-13T14:49:37
+Random-400-400-6-1,"Frinhani et al. 2018, large",Random-400-400-6-1,400,6268,248,greedy (checked),101,120,102,249,False,2.7,2026-10-13T14:49:40
+Random-400-400-6-10,"Frinhani et al. 2018, large",Random-400-400-6-10,400,6979,255,greedy (checked),112,133,113,256,False,2.4,2026-10-13T14:49:42
+Random-400-400-6-2,"Frinhani et al. 2018, large",Random-400-400-6-2,400,6841,253,greedy (checked),102,120,103,254,False,2.5,2026-10-13T14:49:45
+Random-400-400-6-3,"Frinhani et al. 2018, large",Random-400-400-6-3,400,6674,252,greedy (checked),102,120,103,253,False,2.5,2026-10-13T14:49:48
+Random-400-400-6-4,"Frinhani et al. 2018, large",Random-400-400-6-4,400,7026,264,greedy (checked),103,120,104,265,False,2.5,2026-10-13T14:49:50
+Random-400-400-6-5,"Frinhani et al. 2018, large",Random-400-400-6-5,400,6761,251,greedy (checked),102,120,103,252,False,2.6,2026-10-13T14:49:53
+Random-400-400-6-6,"Frinhani et al. 2018, large",Random-400-400-6-6,400,7187,256,greedy (checked),102,120,103,257,False,2.5,2026-10-13T14:49:55
+Random-400-400-6-7,"Frinhani et al. 2018, large",Random-400-400-6-7,400,6938,257,greedy (checked),103,120,104,258,False,2.5,2026-10-13T14:49:58
+Random-400-400-6-8,"Frinhani et al. 2018, large",Random-400-400-6-8,400,6600,251,greedy (checked),109,133,110,252,False,2.5,2026-10-13T14:50:00
+Random-400-400-6-9,"Frinhani et al. 2018, large",Random-400-400-6-9,400,7568,261,greedy (checked),114,133,115,262,False,2.1,2026-10-13T14:50:02
+Random-400-400-8-1,"Frinhani et al. 2018, large",Random-400-400-8-1,400,10710,296,greedy (checked),119,133,120,297,False,1.4,2026-10-13T14:50:04
+Random-400-400-8-10,"Frinhani et al. 2018, large",Random-400-400-8-10,400,11692,302,greedy (checked),120,133,121,303,False,1.4,2026-10-13T14:50:05
+Random-400-400-8-2,"Frinhani et al. 2018, large",Random-400-400-8-2,400,11536,300,greedy (checked),120,133,121,301,False,1.4,2026-10-13T14:50:06
+Random-400-400-8-3,"Frinhani et al. 2018, large",Random-400-400-8-3,400,11334,297,greedy (checked),120,133,121,298,False,1.4,2026-10-13T14:50:08
+Random-400-400-8-4,"Frinhani et al. 2018, large",Random-400-400-8-4,400,12004,298,greedy (checked),121,133,122,299,False,1.4,2026-10-13T14:50:09
+Random-400-400-8-5,"Frinhani et al. 2018, large",Random-400-400-8-5,400,11588,304,greedy (checked),120,133,121,305,False,1.4,2026-10-13T14:50:11
+Random-400-400-8-6,"Frinhani et al. 2018, large",Random-400-400-8-6,400,12092,302,greedy (checked),121,133,122,303,False,1.4,2026-10-13T14:50:12
+Random-400-400-8-7,"Frinhani et al. 2018, large",Random-400-400-8-7,400,11595,302,greedy (checked),120,133,121,303,False,1.4,2026-10-13T14:50:14
+Random-400-400-8-8,"Frinhani et al. 2018, large",Random-400-400-8-8,400,11960,303,greedy (checked),120,133,121,304,False,1.4,2026-10-13T14:50:15
+Random-400-400-8-9,"Frinhani et al. 2018, large",Random-400-400-8-9,400,12796,304,greedy (checked),121,133,122,305,False,1.4,2026-10-13T14:50:16
+Random-600-600-10-1,"Frinhani et al. 2018, large",Random-600-600-10-1,600,27416,491,greedy (checked),187,200,188,492,False,2.2,2026-10-13T14:50:19
+Random-600-600-10-10,"Frinhani et al. 2018, large",Random-600-600-10-10,600,27747,496,greedy (checked),187,200,188,497,False,2.0,2026-10-13T14:50:21
+Random-600-600-10-2,"Frinhani et al. 2018, large",Random-600-600-10-2,600,27252,494,greedy (checked),186,200,187,495,False,2.3,2026-10-13T14:50:23
+Random-600-600-10-3,"Frinhani et al. 2018, large",Random-600-600-10-3,600,28790,495,greedy (checked),187,200,188,496,False,2.3,2026-10-13T14:50:25
+Random-600-600-10-4,"Frinhani et al. 2018, large",Random-600-600-10-4,600,27199,486,greedy (checked),186,200,187,487,False,2.3,2026-10-13T14:50:27
+Random-600-600-10-5,"Frinhani et al. 2018, large",Random-600-600-10-5,600,26990,497,greedy (checked),185,200,186,498,False,2.2,2026-10-13T14:50:30
+Random-600-600-10-6,"Frinhani et al. 2018, large",Random-600-600-10-6,600,27819,498,greedy (checked),186,200,187,499,False,2.3,2026-10-13T14:50:32
+Random-600-600-10-7,"Frinhani et al. 2018, large",Random-600-600-10-7,600,26090,489,greedy (checked),185,200,186,490,False,1.9,2026-10-13T14:50:34
+Random-600-600-10-8,"Frinhani et al. 2018, large",Random-600-600-10-8,600,27744,493,greedy (checked),186,200,187,494,False,1.8,2026-10-13T14:50:36
+Random-600-600-10-9,"Frinhani et al. 2018, large",Random-600-600-10-9,600,28146,489,greedy (checked),186,200,187,490,False,1.8,2026-10-13T14:50:38
+Random-600-600-14-1,"Frinhani et al. 2018, large",Random-600-600-14-1,600,50625,536,greedy (checked),193,200,194,537,False,1.8,2026-10-13T14:50:39
+Random-600-600-14-10,"Frinhani et al. 2018, large",Random-600-600-14-10,600,49409,541,greedy (checked),193,200,194,542,False,1.9,2026-10-13T14:50:41
+Random-600-600-14-2,"Frinhani et al. 2018, large",Random-600-600-14-2,600,49160,537,greedy (checked),192,200,193,538,False,1.9,2026-10-13T14:50:43
+Random-600-600-14-3,"Frinhani et al. 2018, large",Random-600-600-14-3,600,48917,537,greedy (checked),192,200,193,538,False,1.9,2026-10-13T14:50:45
+Random-600-600-14-4,"Frinhani et al. 2018, large",Random-600-600-14-4,600,49342,539,greedy (checked),192,200,193,540,False,1.9,2026-10-13T14:50:47
+Random-600-600-14-5,"Frinhani et al. 2018, large",Random-600-600-14-5,600,49291,536,greedy (checked),192,200,193,537,False,1.9,2026-10-13T14:50:49
+Random-600-600-14-6,"Frinhani et al. 2018, large",Random-600-600-14-6,600,49854,540,greedy (checked),193,200,194,541,False,2.2,2026-10-13T14:50:51
+Random-600-600-14-7,"Frinhani et al. 2018, large",Random-600-600-14-7,600,48737,537,greedy (checked),192,200,193,538,False,2.2,2026-10-13T14:50:53
+Random-600-600-14-8,"Frinhani et al. 2018, large",Random-600-600-14-8,600,50112,539,greedy (checked),193,200,194,540,False,2.2,2026-10-13T14:50:56
+Random-600-600-14-9,"Frinhani et al. 2018, large",Random-600-600-14-9,600,50763,544,greedy (checked),193,200,194,545,False,2.3,2026-10-13T14:50:58
+Random-600-600-18-1,"Frinhani et al. 2018, large",Random-600-600-18-1,600,75789,563,greedy (checked),290,300,291,564,False,1.4,2026-10-13T14:50:59
+Random-600-600-18-10,"Frinhani et al. 2018, large",Random-600-600-18-10,600,74381,562,greedy (checked),289,300,290,563,False,1.1,2026-10-13T14:51:00
+Random-600-600-18-2,"Frinhani et al. 2018, large",Random-600-600-18-2,600,73847,562,greedy (checked),290,300,291,563,False,1.1,2026-10-13T14:51:02
+Random-600-600-18-3,"Frinhani et al. 2018, large",Random-600-600-18-3,600,73697,561,greedy (checked),289,300,290,562,False,2.0,2026-10-13T14:51:03
+Random-600-600-18-4,"Frinhani et al. 2018, large",Random-600-600-18-4,600,74186,559,greedy (checked),290,300,291,560,False,1.8,2026-10-13T14:51:05
+Random-600-600-18-5,"Frinhani et al. 2018, large",Random-600-600-18-5,600,74257,561,greedy (checked),290,300,291,562,False,1.6,2026-10-13T14:51:07
+Random-600-600-18-6,"Frinhani et al. 2018, large",Random-600-600-18-6,600,74735,560,greedy (checked),289,300,290,561,False,1.1,2026-10-13T14:51:08
+Random-600-600-18-7,"Frinhani et al. 2018, large",Random-600-600-18-7,600,73611,562,greedy (checked),290,300,291,563,False,1.0,2026-10-13T14:51:09
+Random-600-600-18-8,"Frinhani et al. 2018, large",Random-600-600-18-8,600,74881,562,greedy (checked),290,300,291,563,False,1.1,2026-10-13T14:51:10
+Random-600-600-18-9,"Frinhani et al. 2018, large",Random-600-600-18-9,600,75243,561,greedy (checked),290,300,291,562,False,1.2,2026-10-13T14:51:11
+Random-600-600-2-1,"Frinhani et al. 2018, large",Random-600-600-2-1,600,1728,128,greedy (checked),37,60,38,129,False,5.6,2026-10-13T14:51:17
+Random-600-600-2-10,"Frinhani et al. 2018, large",Random-600-600-2-10,600,1841,135,greedy (checked),40,60,41,136,False,5.7,2026-10-13T14:51:23
+Random-600-600-2-2,"Frinhani et al. 2018, large",Random-600-600-2-2,600,1790,126,greedy (checked),37,60,38,127,False,5.7,2026-10-13T14:51:28
+Random-600-600-2-3,"Frinhani et al. 2018, large",Random-600-600-2-3,600,1832,132,greedy (checked),39,60,40,133,False,5.7,2026-10-13T14:51:34
+Random-400-400-4-8,"Frinhani et al. 2018, large",Random-400-400-4-8,400,3442,185,greedy (checked),76,100,77,186,False,4.1,2026-10-13T16:56:03
+Random-600-600-2-4,"Frinhani et al. 2018, large",Random-600-600-2-4,600,1857,137,greedy (checked),38,60,39,138,False,5.6,2026-10-13T16:56:05
+Random-600-600-2-5,"Frinhani et al. 2018, large",Random-600-600-2-5,600,1884,148,greedy (checked),40,60,41,149,False,5.6,2026-10-13T16:56:09
+Random-600-600-2-6,"Frinhani et al. 2018, large",Random-600-600-2-6,600,1900,137,greedy (checked),40,60,41,138,False,5.6,2026-10-13T16:56:11
+Random-600-600-2-7,"Frinhani et al. 2018, large",Random-600-600-2-7,600,1839,128,greedy (checked),39,60,40,129,False,5.6,2026-10-13T16:56:15
+Random-600-600-2-8,"Frinhani et al. 2018, large",Random-600-600-2-8,600,1953,148,greedy (checked),41,60,42,149,False,5.6,2026-10-13T16:56:16
+Random-600-600-20-1,"Frinhani et al. 2018, large",Random-600-600-20-1,600,86347,568,greedy (checked),291,300,292,569,False,1.1,2026-10-13T16:56:18
+Random-600-600-20-10,"Frinhani et al. 2018, large",Random-600-600-20-10,600,88374,568,greedy (checked),292,300,293,569,False,1.1,2026-10-13T16:56:19
+Random-600-600-20-2,"Frinhani et al. 2018, large",Random-600-600-20-2,600,87957,569,greedy (checked),292,300,293,570,False,1.1,2026-10-13T16:56:20
+Random-600-600-2-9,"Frinhani et al. 2018, large",Random-600-600-2-9,600,1808,135,greedy (checked),38,60,39,136,False,5.6,2026-10-13T16:56:21
+Random-600-600-20-3,"Frinhani et al. 2018, large",Random-600-600-20-3,600,86541,568,greedy (checked),291,300,292,569,False,1.1,2026-10-13T16:56:21
+Random-600-600-20-4,"Frinhani et al. 2018, large",Random-600-600-20-4,600,87489,568,greedy (checked),292,300,293,569,False,1.1,2026-10-13T16:56:22
+Random-600-600-20-5,"Frinhani et al. 2018, large",Random-600-600-20-5,600,87185,568,greedy (checked),292,300,293,569,False,1.3,2026-10-13T16:56:23
+Random-600-600-20-6,"Frinhani et al. 2018, large",Random-600-600-20-6,600,88714,569,greedy (checked),292,300,293,570,False,1.2,2026-10-13T16:56:23
+Random-600-600-20-7,"Frinhani et al. 2018, large",Random-600-600-20-7,600,89498,571,greedy (checked),292,300,293,572,False,1.1,2026-10-13T16:56:24
+Random-600-600-20-8,"Frinhani et al. 2018, large",Random-600-600-20-8,600,88748,570,greedy (checked),292,300,293,571,False,1.1,2026-10-13T16:56:24
+Random-600-600-20-9,"Frinhani et al. 2018, large",Random-600-600-20-9,600,85322,566,greedy (checked),291,300,292,567,False,1.1,2026-10-13T16:56:25
+Random-600-600-24-1,"Frinhani et al. 2018, large",Random-600-600-24-1,600,109439,576,greedy (checked),294,300,295,577,False,1.2,2026-10-13T16:56:26
+Random-600-600-24-10,"Frinhani et al. 2018, large",Random-600-600-24-10,600,111133,575,greedy (checked),294,300,295,576,False,1.2,2026-10-13T16:56:26
+Random-600-600-24-2,"Frinhani et al. 2018, large",Random-600-600-24-2,600,110609,577,greedy (checked),294,300,295,578,False,1.2,2026-10-13T16:56:27
+Random-600-600-24-3,"Frinhani et al. 2018, large",Random-600-600-24-3,600,111987,575,greedy (checked),294,300,295,576,False,1.2,2026-10-13T16:56:28
+Random-600-600-24-4,"Frinhani et al. 2018, large",Random-600-600-24-4,600,110380,576,greedy (checked),294,300,295,577,False,1.2,2026-10-13T16:56:28
+Random-600-600-24-5,"Frinhani et al. 2018, large",Random-600-600-24-5,600,111013,578,greedy (checked),294,300,295,579,False,1.4,2026-10-13T16:56:29
+Random-600-600-24-6,"Frinhani et al. 2018, large",Random-600-600-24-6,600,112558,576,greedy (checked),295,300,296,577,False,1.4,2026-10-13T16:56:30
+Random-600-600-24-7,"Frinhani et al. 2018, large",Random-600-600-24-7,600,111475,579,greedy (checked),294,300,295,580,False,1.2,2026-10-13T16:56:31
+Random-600-600-24-8,"Frinhani et al. 2018, large",Random-600-600-24-8,600,111680,577,greedy (checked),294,300,295,578,False,1.2,2026-10-13T16:56:31
+Random-600-600-24-9,"Frinhani et al. 2018, large",Random-600-600-24-9,600,112464,579,greedy (checked),295,300,296,580,False,1.2,2026-10-13T16:56:32
+Random-600-600-28-1,"Frinhani et al. 2018, large",Random-600-600-28-1,600,130064,583,greedy (checked),296,300,297,584,False,1.4,2026-10-13T16:56:33
+Random-600-600-28-10,"Frinhani et al. 2018, large",Random-600-600-28-10,600,131483,584,greedy (checked),296,300,297,585,False,1.4,2026-10-13T16:56:33
+Random-600-600-28-2,"Frinhani et al. 2018, large",Random-600-600-28-2,600,131844,583,greedy (checked),296,300,297,584,False,1.2,2026-10-13T16:56:34
+Random-600-600-28-3,"Frinhani et al. 2018, large",Random-600-600-28-3,600,131996,584,greedy (checked),296,300,297,585,False,1.1,2026-10-13T16:56:35
+Random-600-600-28-4,"Frinhani et al. 2018, large",Random-600-600-28-4,600,130294,582,greedy (checked),296,300,297,583,False,1.3,2026-10-13T16:56:35
+Random-600-600-28-5,"Frinhani et al. 2018, large",Random-600-600-28-5,600,131328,583,greedy (checked),296,300,297,584,False,1.1,2026-10-13T16:56:36
+Random-600-600-28-6,"Frinhani et al. 2018, large",Random-600-600-28-6,600,132517,583,greedy (checked),295,300,296,584,False,1.2,2026-10-13T16:56:37
+Random-600-600-28-7,"Frinhani et al. 2018, large",Random-600-600-28-7,600,131316,583,greedy (checked),296,300,297,584,False,1.1,2026-10-13T16:56:37
+Random-600-600-28-8,"Frinhani et al. 2018, large",Random-600-600-28-8,600,131249,583,greedy (checked),296,300,297,584,False,1.2,2026-10-13T16:56:38
+Random-600-600-28-9,"Frinhani et al. 2018, large",Random-600-600-28-9,600,132693,583,greedy (checked),296,300,297,584,False,1.2,2026-10-13T16:56:38
+Random-600-600-30-1,"Frinhani et al. 2018, large",Random-600-600-30-1,600,141096,584,greedy (checked),297,300,298,585,False,1.3,2026-10-13T16:56:39
+Random-600-600-30-10,"Frinhani et al. 2018, large",Random-600-600-30-10,600,140251,586,greedy (checked),296,300,297,587,False,1.2,2026-10-13T16:56:40
+Random-600-600-30-2,"Frinhani et al. 2018, large",Random-600-600-30-2,600,139940,586,greedy (checked),296,300,297,587,False,1.2,2026-10-13T16:56:41
+Random-600-600-30-3,"Frinhani et al. 2018, large",Random-600-600-30-3,600,140772,585,greedy (checked),296,300,297,586,False,1.2,2026-10-13T16:56:41
+Random-600-600-30-4,"Frinhani et al. 2018, large",Random-600-600-30-4,600,141232,585,greedy (checked),297,300,298,586,False,1.2,2026-10-13T16:56:42
+Random-600-600-30-5,"Frinhani et al. 2018, large",Random-600-600-30-5,600,140977,586,greedy (checked),296,300,297,587,False,1.2,2026-10-13T16:56:42
+Random-600-600-30-6,"Frinhani et al. 2018, large",Random-600-600-30-6,600,139193,586,greedy (checked),296,300,297,587,False,1.2,2026-10-13T16:56:43
+Random-600-600-30-7,"Frinhani et al. 2018, large",Random-600-600-30-7,600,139639,585,greedy (checked),296,300,297,586,False,1.1,2026-10-13T16:56:44
+Random-600-600-30-9,"Frinhani et al. 2018, large",Random-600-600-30-9,600,139052,585,greedy (checked),296,300,297,586,False,1.1,2026-10-13T16:56:45
+Random-600-600-30-8,"Frinhani et al. 2018, large",Random-600-600-30-8,600,139537,585,greedy (checked),297,300,298,586,False,1.2,2026-10-13T16:56:45
+Random-600-600-34-1,"Frinhani et al. 2018, large",Random-600-600-34-1,600,154410,589,greedy (checked),298,300,299,590,False,1.2,2026-10-13T16:56:46
+Random-600-600-34-10,"Frinhani et al. 2018, large",Random-600-600-34-10,600,154682,588,greedy (checked),298,300,299,589,False,1.2,2026-10-13T16:56:46
+Random-600-600-34-2,"Frinhani et al. 2018, large",Random-600-600-34-2,600,153341,589,greedy (checked),298,300,299,590,False,1.3,2026-10-13T16:56:47
+Random-600-600-34-3,"Frinhani et al. 2018, large",Random-600-600-34-3,600,154389,589,greedy (checked),298,300,299,590,False,1.2,2026-10-13T16:56:48
+Random-600-600-34-4,"Frinhani et al. 2018, large",Random-600-600-34-4,600,154566,588,greedy (checked),298,300,299,589,False,1.2,2026-10-13T16:56:49
+Random-600-600-34-5,"Frinhani et al. 2018, large",Random-600-600-34-5,600,154808,588,greedy (checked),298,300,299,589,False,1.2,2026-10-13T16:56:49
+Random-600-600-34-6,"Frinhani et al. 2018, large",Random-600-600-34-6,600,153442,588,greedy (checked),298,300,299,589,False,1.2,2026-10-13T16:56:50
+Random-600-600-34-7,"Frinhani et al. 2018, large",Random-600-600-34-7,600,153379,589,greedy (checked),298,300,299,590,False,1.2,2026-10-13T16:56:50
+Random-600-600-34-8,"Frinhani et al. 2018, large",Random-600-600-34-8,600,153872,589,greedy (checked),298,300,299,590,False,1.2,2026-10-13T16:56:51
+Random-600-600-34-9,"Frinhani et al. 2018, large",Random-600-600-34-9,600,153190,589,greedy (checked),298,300,299,590,False,1.2,2026-10-13T16:56:52
+Random-600-600-38-1,"Frinhani et al. 2018, large",Random-600-600-38-1,600,163751,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:56:53
+Random-600-600-38-10,"Frinhani et al. 2018, large",Random-600-600-38-10,600,163166,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:56:53
+Random-600-600-38-2,"Frinhani et al. 2018, large",Random-600-600-38-2,600,164447,589,greedy (checked),299,300,300,590,False,1.2,2026-10-13T16:56:54
+Random-600-600-38-3,"Frinhani et al. 2018, large",Random-600-600-38-3,600,163504,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:56:54
+Random-600-600-38-5,"Frinhani et al. 2018, large",Random-600-600-38-5,600,162522,591,greedy (checked),299,300,300,592,False,1.1,2026-10-13T16:56:55
+Random-600-600-38-4,"Frinhani et al. 2018, large",Random-600-600-38-4,600,163354,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:56:56
+Random-600-600-38-6,"Frinhani et al. 2018, large",Random-600-600-38-6,600,163234,592,greedy (checked),299,300,300,593,False,1.1,2026-10-13T16:56:57
+Random-600-600-38-7,"Frinhani et al. 2018, large",Random-600-600-38-7,600,164021,590,greedy (checked),299,300,300,591,False,1.2,2026-10-13T16:56:57
+Random-600-600-38-8,"Frinhani et al. 2018, large",Random-600-600-38-8,600,163642,591,greedy (checked),299,300,300,592,False,1.1,2026-10-13T16:56:58
+Random-600-600-38-9,"Frinhani et al. 2018, large",Random-600-600-38-9,600,162898,590,greedy (checked),299,300,300,591,False,1.2,2026-10-13T16:56:58
+Random-600-600-4-1,"Frinhani et al. 2018, large",Random-600-600-4-1,600,4571,253,greedy (checked),80,100,81,254,False,4.9,2026-10-13T16:57:03
+Random-600-600-4-10,"Frinhani et al. 2018, large",Random-600-600-4-10,600,5026,268,greedy (checked),81,100,82,269,False,4.7,2026-10-13T16:57:03
+Random-600-600-4-2,"Frinhani et al. 2018, large",Random-600-600-4-2,600,4740,264,greedy (checked),80,100,81,265,False,4.9,2026-10-13T16:57:08
+Random-600-600-4-3,"Frinhani et al. 2018, large",Random-600-600-4-3,600,4994,272,greedy (checked),81,100,82,273,False,4.8,2026-10-13T16:57:08
+Random-600-600-4-5,"Frinhani et al. 2018, large",Random-600-600-4-5,600,5342,277,greedy (checked),81,100,82,278,False,4.7,2026-10-13T16:57:13
+Random-600-600-4-4,"Frinhani et al. 2018, large",Random-600-600-4-4,600,4790,261,greedy (checked),80,100,81,262,False,4.9,2026-10-13T16:57:13
+Random-600-600-4-6,"Frinhani et al. 2018, large",Random-600-600-4-6,600,5195,287,greedy (checked),81,100,82,288,False,4.8,2026-10-13T16:57:18
+Random-600-600-4-7,"Frinhani et al. 2018, large",Random-600-600-4-7,600,5180,271,greedy (checked),81,100,82,272,False,4.8,2026-10-13T16:57:18
+Random-600-600-4-8,"Frinhani et al. 2018, large",Random-600-600-4-8,600,5212,274,greedy (checked),81,100,82,275,False,4.8,2026-10-13T16:57:23
+Random-600-600-4-9,"Frinhani et al. 2018, large",Random-600-600-4-9,600,4971,272,greedy (checked),80,100,81,273,False,4.7,2026-10-13T16:57:23
+Random-600-600-40-1,"Frinhani et al. 2018, large",Random-600-600-40-1,600,167161,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:57:24
+Random-600-600-40-10,"Frinhani et al. 2018, large",Random-600-600-40-10,600,167354,592,greedy (checked),299,300,300,593,False,1.1,2026-10-13T16:57:24
+Random-600-600-40-3,"Frinhani et al. 2018, large",Random-600-600-40-3,600,167391,591,greedy (checked),299,300,300,592,False,1.1,2026-10-13T16:57:25
+Random-600-600-40-2,"Frinhani et al. 2018, large",Random-600-600-40-2,600,167070,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:57:25
+Random-600-600-40-4,"Frinhani et al. 2018, large",Random-600-600-40-4,600,167612,592,greedy (checked),299,300,300,593,False,1.1,2026-10-13T16:57:26
+Random-600-600-40-5,"Frinhani et al. 2018, large",Random-600-600-40-5,600,167021,592,greedy (checked),299,300,300,593,False,1.3,2026-10-13T16:57:27
+Random-600-600-40-6,"Frinhani et al. 2018, large",Random-600-600-40-6,600,168147,592,greedy (checked),299,300,300,593,False,1.2,2026-10-13T16:57:28
+Random-600-600-40-7,"Frinhani et al. 2018, large",Random-600-600-40-7,600,167974,592,greedy (checked),299,300,300,593,False,1.3,2026-10-13T16:57:28
+Random-600-600-40-8,"Frinhani et al. 2018, large",Random-600-600-40-8,600,167104,591,greedy (checked),299,300,300,592,False,1.3,2026-10-13T16:57:29
+Random-600-600-40-9,"Frinhani et al. 2018, large",Random-600-600-40-9,600,167258,591,greedy (checked),299,300,300,592,False,1.2,2026-10-13T16:57:29
+Random-600-600-6-1,"Frinhani et al. 2018, large",Random-600-600-6-1,600,10351,378,greedy (checked),107,120,108,379,False,3.8,2026-10-13T16:57:33
+Random-600-600-6-10,"Frinhani et al. 2018, large",Random-600-600-6-10,600,10759,380,greedy (checked),130,150,131,381,False,3.5,2026-10-13T16:57:33
+Random-600-600-6-2,"Frinhani et al. 2018, large",Random-600-600-6-2,600,10342,369,greedy (checked),106,120,107,370,False,3.7,2026-10-13T16:57:37
+Random-600-600-6-3,"Frinhani et al. 2018, large",Random-600-600-6-3,600,10704,383,greedy (checked),130,150,131,384,False,3.7,2026-10-13T16:57:37
+Random-600-600-6-5,"Frinhani et al. 2018, large",Random-600-600-6-5,600,10719,383,greedy (checked),130,150,131,384,False,3.5,2026-10-13T16:57:40
+Random-600-600-6-4,"Frinhani et al. 2018, large",Random-600-600-6-4,600,9727,366,greedy (checked),106,120,107,367,False,3.7,2026-10-13T16:57:41
+Random-600-600-6-6,"Frinhani et al. 2018, large",Random-600-600-6-6,600,10897,389,greedy (checked),130,150,131,390,False,3.5,2026-10-13T16:57:44
+Random-600-600-6-7,"Frinhani et al. 2018, large",Random-600-600-6-7,600,10895,392,greedy (checked),106,120,107,393,False,3.7,2026-10-13T16:57:44
+Random-600-600-6-8,"Frinhani et al. 2018, large",Random-600-600-6-8,600,10906,388,greedy (checked),131,150,132,389,False,3.4,2026-10-13T16:57:48
+Random-600-600-6-9,"Frinhani et al. 2018, large",Random-600-600-6-9,600,10578,384,greedy (checked),107,120,108,385,False,3.7,2026-10-13T16:57:48
+Random-600-600-8-1,"Frinhani et al. 2018, large",Random-600-600-8-1,600,17896,450,greedy (checked),138,150,139,451,False,2.7,2026-10-13T16:57:50
+Random-600-600-8-10,"Frinhani et al. 2018, large",Random-600-600-8-10,600,18373,447,greedy (checked),139,150,140,448,False,2.8,2026-10-13T16:57:51
+Random-600-600-8-2,"Frinhani et al. 2018, large",Random-600-600-8-2,600,18049,449,greedy (checked),138,150,139,450,False,2.7,2026-10-13T16:57:53
+Random-600-600-8-3,"Frinhani et al. 2018, large",Random-600-600-8-3,600,19159,453,greedy (checked),139,150,140,454,False,2.8,2026-10-13T16:57:54
+Random-600-600-8-4,"Frinhani et al. 2018, large",Random-600-600-8-4,600,17646,448,greedy (checked),138,150,139,449,False,2.8,2026-10-13T16:57:56
+Random-600-600-8-5,"Frinhani et al. 2018, large",Random-600-600-8-5,600,17334,443,greedy (checked),138,150,139,444,False,2.8,2026-10-13T16:57:57
+Random-600-600-8-6,"Frinhani et al. 2018, large",Random-600-600-8-6,600,18244,458,greedy (checked),137,150,138,459,False,2.8,2026-10-13T16:57:59
+Random-600-600-8-7,"Frinhani et al. 2018, large",Random-600-600-8-7,600,17327,443,greedy (checked),137,150,138,444,False,2.7,2026-10-13T16:58:00
+Random-600-600-8-8,"Frinhani et al. 2018, large",Random-600-600-8-8,600,18453,457,greedy (checked),139,150,140,458,False,2.8,2026-10-13T16:58:02
+Random-600-600-8-9,"Frinhani et al. 2018, large",Random-600-600-8-9,600,18177,451,greedy (checked),138,150,139,452,False,2.7,2026-10-13T16:58:03
+Random-800-800-10-1,"Frinhani et al. 2018, large",Random-800-800-10-1,800,37278,650,greedy (checked),189,200,190,651,False,3.5,2026-10-13T16:58:06
+Random-800-800-10-10,"Frinhani et al. 2018, large",Random-800-800-10-10,800,37483,655,greedy (checked),189,200,190,656,False,3.5,2026-10-13T16:58:06
+Random-800-800-10-2,"Frinhani et al. 2018, large",Random-800-800-10-2,800,37350,651,greedy (checked),189,200,190,652,False,3.5,2026-10-13T16:58:09
+Random-800-800-10-3,"Frinhani et al. 2018, large",Random-800-800-10-3,800,38202,659,greedy (checked),189,200,190,660,False,3.5,2026-10-13T16:58:10
+Random-800-800-10-4,"Frinhani et al. 2018, large",Random-800-800-10-4,800,37111,657,greedy (checked),189,200,190,658,False,3.5,2026-10-13T16:58:13
+Random-800-800-10-5,"Frinhani et al. 2018, large",Random-800-800-10-5,800,38895,655,greedy (checked),190,200,191,656,False,3.5,2026-10-13T16:58:13
+Random-800-800-10-6,"Frinhani et al. 2018, large",Random-800-800-10-6,800,37665,653,greedy (checked),189,200,190,654,False,3.5,2026-10-13T16:58:16
+Random-800-800-10-7,"Frinhani et al. 2018, large",Random-800-800-10-7,800,37828,657,greedy (checked),190,200,191,658,False,3.5,2026-10-13T16:58:17
+Random-800-800-10-8,"Frinhani et al. 2018, large",Random-800-800-10-8,800,37843,655,greedy (checked),189,200,190,656,False,3.5,2026-10-13T16:58:20
+Random-800-800-10-9,"Frinhani et al. 2018, large",Random-800-800-10-9,800,37650,657,greedy (checked),189,200,190,658,False,3.5,2026-10-13T16:58:21
+Random-800-800-14-1,"Frinhani et al. 2018, large",Random-800-800-14-1,800,69265,718,greedy (checked),256,266,257,719,False,2.8,2026-10-13T16:58:23
+Random-800-800-14-10,"Frinhani et al. 2018, large",Random-800-800-14-10,800,70030,717,greedy (checked),256,266,257,718,False,2.8,2026-10-13T16:58:23
+Random-800-800-14-2,"Frinhani et al. 2018, large",Random-800-800-14-2,800,69212,717,greedy (checked),256,266,257,718,False,2.8,2026-10-13T16:58:26
+Random-800-800-14-3,"Frinhani et al. 2018, large",Random-800-800-14-3,800,70118,719,greedy (checked),256,266,257,720,False,2.8,2026-10-13T16:58:26
+Random-800-800-14-4,"Frinhani et al. 2018, large",Random-800-800-14-4,800,69361,714,greedy (checked),256,266,257,715,False,2.8,2026-10-13T16:58:29
+Random-800-800-14-5,"Frinhani et al. 2018, large",Random-800-800-14-5,800,70686,724,greedy (checked),256,266,257,725,False,2.7,2026-10-13T16:58:29
+Random-800-800-14-6,"Frinhani et al. 2018, large",Random-800-800-14-6,800,69403,719,greedy (checked),256,266,257,720,False,2.8,2026-10-13T16:58:32
+Random-800-800-14-7,"Frinhani et al. 2018, large",Random-800-800-14-7,800,69676,716,greedy (checked),256,266,257,717,False,2.8,2026-10-13T16:58:32
+Random-800-800-14-8,"Frinhani et al. 2018, large",Random-800-800-14-8,800,69976,724,greedy (checked),256,266,257,725,False,2.8,2026-10-13T16:58:34
+Random-800-800-14-9,"Frinhani et al. 2018, large",Random-800-800-14-9,800,70161,720,greedy (checked),256,266,257,721,False,2.7,2026-10-13T16:58:35
+Random-800-800-18-1,"Frinhani et al. 2018, large",Random-800-800-18-1,800,107163,747,greedy (checked),271,400,272,748,False,2.9,2026-10-13T16:58:37
+Random-800-800-18-10,"Frinhani et al. 2018, large",Random-800-800-18-10,800,106726,747,greedy (checked),269,400,270,748,False,2.9,2026-10-13T16:58:38
+Random-800-800-18-2,"Frinhani et al. 2018, large",Random-800-800-18-2,800,106055,748,greedy (checked),269,400,270,749,False,2.9,2026-10-13T16:58:41
+Random-800-800-18-3,"Frinhani et al. 2018, large",Random-800-800-18-3,800,105167,747,greedy (checked),270,400,271,748,False,2.9,2026-10-13T16:58:41
+Random-800-800-18-4,"Frinhani et al. 2018, large",Random-800-800-18-4,800,106903,749,greedy (checked),271,400,272,750,False,2.9,2026-10-13T16:58:44
+Random-800-800-18-5,"Frinhani et al. 2018, large",Random-800-800-18-5,800,106548,746,greedy (checked),272,400,273,747,False,2.9,2026-10-13T16:58:44
+Random-800-800-18-6,"Frinhani et al. 2018, large",Random-800-800-18-6,800,105693,742,greedy (checked),269,400,270,743,False,2.9,2026-10-13T16:58:47
+Random-800-800-18-7,"Frinhani et al. 2018, large",Random-800-800-18-7,800,105775,748,greedy (checked),268,400,269,749,False,2.9,2026-10-13T16:58:47
+Random-800-800-18-8,"Frinhani et al. 2018, large",Random-800-800-18-8,800,106770,750,greedy (checked),271,400,272,751,False,2.9,2026-10-13T16:58:50
+Random-800-800-18-9,"Frinhani et al. 2018, large",Random-800-800-18-9,800,106709,747,greedy (checked),269,400,270,748,False,2.9,2026-10-13T16:58:50
+Random-800-800-2-1,"Frinhani et al. 2018, large",Random-800-800-2-1,800,2271,185,greedy (checked),40,60,41,186,False,6.0,2026-10-13T16:58:56
+Random-800-800-2-10,"Frinhani et al. 2018, large",Random-800-800-2-10,800,2444,189,greedy (checked),42,60,43,190,False,6.0,2026-10-13T16:58:56
+Random-800-800-2-2,"Frinhani et al. 2018, large",Random-800-800-2-2,800,2291,158,greedy (checked),41,60,42,159,False,6.0,2026-10-13T16:59:02
+Random-800-800-2-3,"Frinhani et al. 2018, large",Random-800-800-2-3,800,2457,179,greedy (checked),42,60,43,180,False,6.0,2026-10-13T16:59:02
+Random-800-800-2-4,"Frinhani et al. 2018, large",Random-800-800-2-4,800,2437,178,greedy (checked),51,80,52,179,False,5.9,2026-10-13T16:59:08
+Random-800-800-2-5,"Frinhani et al. 2018, large",Random-800-800-2-5,800,2542,188,greedy (checked),43,60,44,189,False,6.0,2026-10-13T16:59:08
+Random-800-800-2-6,"Frinhani et al. 2018, large",Random-800-800-2-6,800,2365,180,greedy (checked),40,60,41,181,False,6.0,2026-10-13T16:59:14
+Random-800-800-2-7,"Frinhani et al. 2018, large",Random-800-800-2-7,800,2497,181,greedy (checked),42,60,43,182,False,6.0,2026-10-13T16:59:14
+Random-800-800-2-8,"Frinhani et al. 2018, large",Random-800-800-2-8,800,2273,165,greedy (checked),41,60,42,166,False,6.0,2026-10-13T16:59:20
+Random-800-800-2-9,"Frinhani et al. 2018, large",Random-800-800-2-9,800,2421,171,greedy (checked),42,60,43,172,False,6.0,2026-10-13T16:59:20
+Random-800-800-20-1,"Frinhani et al. 2018, large",Random-800-800-20-1,800,123001,752,greedy (checked),388,400,389,753,False,2.4,2026-10-13T16:59:23
+Random-800-800-20-10,"Frinhani et al. 2018, large",Random-800-800-20-10,800,125048,754,greedy (checked),388,400,389,755,False,2.4,2026-10-13T16:59:23
+Random-800-800-20-2,"Frinhani et al. 2018, large",Random-800-800-20-2,800,121156,756,greedy (checked),388,400,389,757,False,2.5,2026-10-13T16:59:25
+Random-800-800-20-3,"Frinhani et al. 2018, large",Random-800-800-20-3,800,121356,757,greedy (checked),388,400,389,758,False,2.5,2026-10-13T16:59:26
+Random-800-800-20-4,"Frinhani et al. 2018, large",Random-800-800-20-4,800,126646,760,greedy (checked),388,400,389,761,False,2.4,2026-10-13T16:59:28
+Random-800-800-20-5,"Frinhani et al. 2018, large",Random-800-800-20-5,800,126276,756,greedy (checked),388,400,389,757,False,2.4,2026-10-13T16:59:28
+Random-800-800-20-6,"Frinhani et al. 2018, large",Random-800-800-20-6,800,125936,756,greedy (checked),388,400,389,757,False,2.3,2026-10-13T16:59:30
+Random-800-800-20-7,"Frinhani et al. 2018, large",Random-800-800-20-7,800,126997,755,greedy (checked),388,400,389,756,False,2.4,2026-10-13T16:59:31
+Random-800-800-20-8,"Frinhani et al. 2018, large",Random-800-800-20-8,800,127775,759,greedy (checked),389,400,390,760,False,2.4,2026-10-13T16:59:33
+Random-800-800-20-9,"Frinhani et al. 2018, large",Random-800-800-20-9,800,127399,757,greedy (checked),389,400,390,758,False,2.4,2026-10-13T16:59:33
+Random-800-800-24-1,"Frinhani et al. 2018, large",Random-800-800-24-1,800,165117,768,greedy (checked),392,400,393,769,False,2.2,2026-10-13T16:59:35
+Random-800-800-24-10,"Frinhani et al. 2018, large",Random-800-800-24-10,800,164195,770,greedy (checked),392,400,393,771,False,2.2,2026-10-13T16:59:35
+Random-800-800-24-2,"Frinhani et al. 2018, large",Random-800-800-24-2,800,165820,770,greedy (checked),392,400,393,771,False,2.2,2026-10-13T16:59:38
+Random-800-800-24-3,"Frinhani et al. 2018, large",Random-800-800-24-3,800,162868,767,greedy (checked),391,400,392,768,False,2.2,2026-10-13T16:59:38
+Random-800-800-24-4,"Frinhani et al. 2018, large",Random-800-800-24-4,800,163739,769,greedy (checked),392,400,393,770,False,2.2,2026-10-13T16:59:40
+Random-800-800-24-5,"Frinhani et al. 2018, large",Random-800-800-24-5,800,164367,768,greedy (checked),392,400,393,769,False,2.2,2026-10-13T16:59:40
+Random-800-800-24-6,"Frinhani et al. 2018, large",Random-800-800-24-6,800,162871,771,greedy (checked),392,400,393,772,False,2.2,2026-10-13T16:59:42
+Random-800-800-24-7,"Frinhani et al. 2018, large",Random-800-800-24-7,800,161817,768,greedy (checked),391,400,392,769,False,2.2,2026-10-13T16:59:42
+Random-800-800-24-8,"Frinhani et al. 2018, large",Random-800-800-24-8,800,163938,768,greedy (checked),391,400,392,769,False,2.1,2026-10-13T16:59:44
+Random-800-800-24-9,"Frinhani et al. 2018, large",Random-800-800-24-9,800,162525,768,greedy (checked),391,400,392,769,False,2.2,2026-10-13T16:59:45
+Random-800-800-28-1,"Frinhani et al. 2018, large",Random-800-800-28-1,800,202185,776,greedy (checked),394,400,395,777,False,2.3,2026-10-13T16:59:47
+Random-800-800-28-10,"Frinhani et al. 2018, large",Random-800-800-28-10,800,199364,777,greedy (checked),394,400,395,778,False,2.3,2026-10-13T16:59:47
+Random-800-800-28-2,"Frinhani et al. 2018, large",Random-800-800-28-2,800,201945,777,greedy (checked),394,400,395,778,False,2.2,2026-10-13T16:59:49
+Random-800-800-28-3,"Frinhani et al. 2018, large",Random-800-800-28-3,800,198716,777,greedy (checked),394,400,395,778,False,2.2,2026-10-13T16:59:49
+Random-800-800-28-4,"Frinhani et al. 2018, large",Random-800-800-28-4,800,198486,776,greedy (checked),393,400,394,777,False,2.2,2026-10-13T16:59:51
+Random-800-800-28-5,"Frinhani et al. 2018, large",Random-800-800-28-5,800,200368,777,greedy (checked),394,400,395,778,False,2.2,2026-10-13T16:59:52
+Random-800-800-28-6,"Frinhani et al. 2018, large",Random-800-800-28-6,800,201717,777,greedy (checked),394,400,395,778,False,2.1,2026-10-13T16:59:54
+Random-800-800-28-7,"Frinhani et al. 2018, large",Random-800-800-28-7,800,198479,777,greedy (checked),394,400,395,778,False,2.2,2026-10-13T16:59:54
+Random-800-800-28-8,"Frinhani et al. 2018, large",Random-800-800-28-8,800,200635,776,greedy (checked),393,400,394,777,False,2.1,2026-10-13T16:59:56
+Random-800-800-28-9,"Frinhani et al. 2018, large",Random-800-800-28-9,800,199824,777,greedy (checked),394,400,395,778,False,2.3,2026-10-13T16:59:56
+Random-800-800-30-1,"Frinhani et al. 2018, large",Random-800-800-30-1,800,216039,781,greedy (checked),395,400,396,782,False,2.1,2026-10-13T16:59:58
+Random-800-800-30-10,"Frinhani et al. 2018, large",Random-800-800-30-10,800,216280,779,greedy (checked),395,400,396,780,False,2.3,2026-10-13T16:59:59
+Random-800-800-30-2,"Frinhani et al. 2018, large",Random-800-800-30-2,800,217753,780,greedy (checked),395,400,396,781,False,2.1,2026-10-13T17:00:00
+Random-800-800-30-3,"Frinhani et al. 2018, large",Random-800-800-30-3,800,217678,779,greedy (checked),395,400,396,780,False,2.3,2026-10-13T17:00:01
+Random-800-800-30-4,"Frinhani et al. 2018, large",Random-800-800-30-4,800,214509,779,greedy (checked),395,400,396,780,False,2.1,2026-10-13T17:00:02
+Random-800-800-30-5,"Frinhani et al. 2018, large",Random-800-800-30-5,800,216541,780,greedy (checked),395,400,396,781,False,2.3,2026-10-13T17:00:04
+Random-800-800-30-6,"Frinhani et al. 2018, large",Random-800-800-30-6,800,215961,780,greedy (checked),395,400,396,781,False,2.1,2026-10-13T17:00:05
+Random-800-800-30-7,"Frinhani et al. 2018, large",Random-800-800-30-7,800,216589,780,greedy (checked),395,400,396,781,False,2.3,2026-10-13T17:00:06
+Random-800-800-30-8,"Frinhani et al. 2018, large",Random-800-800-30-8,800,215727,780,greedy (checked),395,400,396,781,False,2.1,2026-10-13T17:00:07
+Random-800-800-30-9,"Frinhani et al. 2018, large",Random-800-800-30-9,800,217362,780,greedy (checked),395,400,396,781,False,2.3,2026-10-13T17:00:08
+Random-800-800-34-1,"Frinhani et al. 2018, large",Random-800-800-34-1,800,243842,784,greedy (checked),396,400,397,785,False,2.2,2026-10-13T17:00:09
+Random-800-800-34-10,"Frinhani et al. 2018, large",Random-800-800-34-10,800,245956,785,greedy (checked),396,400,397,786,False,2.4,2026-10-13T17:00:11
+Random-800-800-34-2,"Frinhani et al. 2018, large",Random-800-800-34-2,800,242425,783,greedy (checked),396,400,397,784,False,2.2,2026-10-13T17:00:11
+Random-800-800-34-3,"Frinhani et al. 2018, large",Random-800-800-34-3,800,246152,785,greedy (checked),396,400,397,786,False,2.4,2026-10-13T17:00:13
+Random-800-800-34-4,"Frinhani et al. 2018, large",Random-800-800-34-4,800,245027,785,greedy (checked),396,400,397,786,False,2.3,2026-10-13T17:00:14
+Random-800-800-34-5,"Frinhani et al. 2018, large",Random-800-800-34-5,800,244584,785,greedy (checked),396,400,397,786,False,2.3,2026-10-13T17:00:16
+Random-800-800-34-6,"Frinhani et al. 2018, large",Random-800-800-34-6,800,243324,784,greedy (checked),396,400,397,785,False,2.3,2026-10-13T17:00:16
+Random-800-800-34-7,"Frinhani et al. 2018, large",Random-800-800-34-7,800,245475,783,greedy (checked),396,400,397,784,False,2.3,2026-10-13T17:00:18
+Random-800-800-34-8,"Frinhani et al. 2018, large",Random-800-800-34-8,800,243276,785,greedy (checked),396,400,397,786,False,2.3,2026-10-13T17:00:19
+Random-800-800-34-9,"Frinhani et al. 2018, large",Random-800-800-34-9,800,245865,785,greedy (checked),396,400,397,786,False,2.4,2026-10-13T17:00:21
+Random-800-800-38-1,"Frinhani et al. 2018, large",Random-800-800-38-1,800,268214,788,greedy (checked),397,400,398,789,False,2.4,2026-10-13T17:00:21
+Random-800-800-38-10,"Frinhani et al. 2018, large",Random-800-800-38-10,800,265677,788,greedy (checked),397,400,398,789,False,2.3,2026-10-13T17:00:23
+Random-800-800-38-2,"Frinhani et al. 2018, large",Random-800-800-38-2,800,266035,788,greedy (checked),397,400,398,789,False,2.5,2026-10-13T17:00:24
+Random-800-800-38-3,"Frinhani et al. 2018, large",Random-800-800-38-3,800,267729,786,greedy (checked),397,400,398,787,False,2.4,2026-10-13T17:00:26
+Random-800-800-38-4,"Frinhani et al. 2018, large",Random-800-800-38-4,800,266764,788,greedy (checked),397,400,398,789,False,2.3,2026-10-13T17:00:26
+Random-800-800-38-5,"Frinhani et al. 2018, large",Random-800-800-38-5,800,266673,787,greedy (checked),397,400,398,788,False,2.4,2026-10-13T17:00:28
+Random-800-800-38-6,"Frinhani et al. 2018, large",Random-800-800-38-6,800,267007,787,greedy (checked),397,400,398,788,False,2.4,2026-10-13T17:00:29
+Random-800-800-38-7,"Frinhani et al. 2018, large",Random-800-800-38-7,800,265756,787,greedy (checked),397,400,398,788,False,2.4,2026-10-13T17:00:31
+Random-800-800-38-8,"Frinhani et al. 2018, large",Random-800-800-38-8,800,266816,788,greedy (checked),397,400,398,789,False,2.4,2026-10-13T17:00:31
+Random-800-800-38-9,"Frinhani et al. 2018, large",Random-800-800-38-9,800,265941,787,greedy (checked),397,400,398,788,False,2.4,2026-10-13T17:00:33
+Random-800-800-4-1,"Frinhani et al. 2018, large",Random-800-800-4-1,800,6825,373,greedy (checked),97,120,98,374,False,5.0,2026-10-13T17:00:36
+Random-800-800-4-10,"Frinhani et al. 2018, large",Random-800-800-4-10,800,6488,356,greedy (checked),83,100,84,357,False,5.2,2026-10-13T17:00:39
+Random-800-800-4-2,"Frinhani et al. 2018, large",Random-800-800-4-2,800,6579,369,greedy (checked),83,100,84,370,False,5.2,2026-10-13T17:00:42
+Random-800-800-4-3,"Frinhani et al. 2018, large",Random-800-800-4-3,800,6705,360,greedy (checked),83,100,84,361,False,5.1,2026-10-13T17:00:44
+Random-800-800-4-4,"Frinhani et al. 2018, large",Random-800-800-4-4,800,6239,343,greedy (checked),83,100,84,344,False,5.2,2026-10-13T17:00:47
+Random-800-800-4-5,"Frinhani et al. 2018, large",Random-800-800-4-5,800,7100,367,greedy (checked),98,120,99,368,False,4.7,2026-10-13T17:00:49
+Random-800-800-4-6,"Frinhani et al. 2018, large",Random-800-800-4-6,800,6612,353,greedy (checked),84,100,85,354,False,5.2,2026-10-13T17:00:52
+Random-800-800-4-7,"Frinhani et al. 2018, large",Random-800-800-4-7,800,6330,348,greedy (checked),83,100,84,349,False,5.2,2026-10-13T17:00:54
+Random-800-800-4-8,"Frinhani et al. 2018, large",Random-800-800-4-8,800,7007,361,greedy (checked),98,120,99,362,False,5.0,2026-10-13T17:00:58
+Random-800-800-4-9,"Frinhani et al. 2018, large",Random-800-800-4-9,800,6302,349,greedy (checked),83,100,84,350,False,5.2,2026-10-13T17:00:59
+Random-800-800-40-1,"Frinhani et al. 2018, large",Random-800-800-40-1,800,276552,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:00
+Random-800-800-40-10,"Frinhani et al. 2018, large",Random-800-800-40-10,800,276936,788,greedy (checked),398,400,399,789,False,2.4,2026-10-13T17:01:02
+Random-800-800-40-2,"Frinhani et al. 2018, large",Random-800-800-40-2,800,276167,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:03
+Random-800-800-40-3,"Frinhani et al. 2018, large",Random-800-800-40-3,800,277862,789,greedy (checked),398,400,399,790,False,2.5,2026-10-13T17:01:04
+Random-800-800-40-4,"Frinhani et al. 2018, large",Random-800-800-40-4,800,277595,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:05
+Random-800-800-40-5,"Frinhani et al. 2018, large",Random-800-800-40-5,800,276302,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:07
+Random-800-800-40-6,"Frinhani et al. 2018, large",Random-800-800-40-6,800,277489,790,greedy (checked),398,400,399,791,False,2.4,2026-10-13T17:01:08
+Random-800-800-40-7,"Frinhani et al. 2018, large",Random-800-800-40-7,800,275482,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:09
+Random-800-800-40-8,"Frinhani et al. 2018, large",Random-800-800-40-8,800,277420,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:10
+Random-800-800-40-9,"Frinhani et al. 2018, large",Random-800-800-40-9,800,276692,789,greedy (checked),398,400,399,790,False,2.4,2026-10-13T17:01:12
+Random-800-800-44-1,"Frinhani et al. 2018, large",Random-800-800-44-1,800,291647,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:13
+Random-800-800-44-10,"Frinhani et al. 2018, large",Random-800-800-44-10,800,292774,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:14
+Random-800-800-44-2,"Frinhani et al. 2018, large",Random-800-800-44-2,800,291023,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:15
+Random-800-800-44-3,"Frinhani et al. 2018, large",Random-800-800-44-3,800,291227,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:17
+Random-800-800-44-4,"Frinhani et al. 2018, large",Random-800-800-44-4,800,291384,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:18
+Random-800-800-44-5,"Frinhani et al. 2018, large",Random-800-800-44-5,800,291260,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:19
+Random-800-800-44-6,"Frinhani et al. 2018, large",Random-800-800-44-6,800,291523,792,greedy (checked),399,400,400,793,False,2.3,2026-10-13T17:01:20
+Random-800-800-44-7,"Frinhani et al. 2018, large",Random-800-800-44-7,800,290514,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:22
+Random-800-800-44-8,"Frinhani et al. 2018, large",Random-800-800-44-8,800,291011,790,greedy (checked),399,400,400,791,False,2.5,2026-10-13T17:01:23
+Random-800-800-44-9,"Frinhani et al. 2018, large",Random-800-800-44-9,800,291149,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:24
+Random-800-800-48-1,"Frinhani et al. 2018, large",Random-800-800-48-1,800,302211,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:25
+Random-800-800-48-10,"Frinhani et al. 2018, large",Random-800-800-48-10,800,301668,793,greedy (checked),399,400,400,794,False,2.5,2026-10-13T17:01:27
+Random-800-800-48-2,"Frinhani et al. 2018, large",Random-800-800-48-2,800,301861,793,greedy (checked),399,400,400,794,False,2.4,2026-10-13T17:01:28
+Random-800-800-48-3,"Frinhani et al. 2018, large",Random-800-800-48-3,800,301653,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:30
+Random-800-800-48-4,"Frinhani et al. 2018, large",Random-800-800-48-4,800,301786,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:30
+Random-800-800-48-5,"Frinhani et al. 2018, large",Random-800-800-48-5,800,301985,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:32
+Random-800-800-48-6,"Frinhani et al. 2018, large",Random-800-800-48-6,800,302071,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:33
+Random-800-800-48-7,"Frinhani et al. 2018, large",Random-800-800-48-7,800,301215,791,greedy (checked),399,400,400,792,False,2.4,2026-10-13T17:01:35
+Random-800-800-48-8,"Frinhani et al. 2018, large",Random-800-800-48-8,800,301447,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:35
+Random-800-800-48-9,"Frinhani et al. 2018, large",Random-800-800-48-9,800,301219,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:37
+Random-800-800-50-1,"Frinhani et al. 2018, large",Random-800-800-50-1,800,304391,793,greedy (checked),399,400,400,794,False,2.3,2026-10-13T17:01:38
+Random-800-800-50-10,"Frinhani et al. 2018, large",Random-800-800-50-10,800,306523,793,greedy (checked),399,400,400,794,False,2.4,2026-10-13T17:01:40
+Random-800-800-50-2,"Frinhani et al. 2018, large",Random-800-800-50-2,800,305910,794,greedy (checked),399,400,400,795,False,2.3,2026-10-13T17:01:40
+Random-800-800-50-3,"Frinhani et al. 2018, large",Random-800-800-50-3,800,306030,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:42
+Random-800-800-50-4,"Frinhani et al. 2018, large",Random-800-800-50-4,800,305329,793,greedy (checked),399,400,400,794,False,2.2,2026-10-13T17:01:43
+Random-800-800-50-5,"Frinhani et al. 2018, large",Random-800-800-50-5,800,304832,793,greedy (checked),399,400,400,794,False,2.4,2026-10-13T17:01:45
+Random-800-800-50-6,"Frinhani et al. 2018, large",Random-800-800-50-6,800,305619,792,greedy (checked),399,400,400,793,False,2.4,2026-10-13T17:01:45
+Random-800-800-50-7,"Frinhani et al. 2018, large",Random-800-800-50-7,800,305582,793,greedy (checked),399,400,400,794,False,2.4,2026-10-13T17:01:47
+Random-800-800-50-8,"Frinhani et al. 2018, large",Random-800-800-50-8,800,305614,793,greedy (checked),399,400,400,794,False,2.2,2026-10-13T17:01:47
+Random-800-800-50-9,"Frinhani et al. 2018, large",Random-800-800-50-9,800,306298,792,greedy (checked),399,400,400,793,False,2.2,2026-10-13T17:01:50
+Random-800-800-6-1,"Frinhani et al. 2018, large",Random-800-800-6-1,800,14042,503,greedy (checked),109,120,110,504,False,4.2,2026-10-13T17:01:52
+Random-800-800-6-10,"Frinhani et al. 2018, large",Random-800-800-6-10,800,13838,509,greedy (checked),108,120,109,510,False,4.1,2026-10-13T17:01:54
+Random-800-800-6-2,"Frinhani et al. 2018, large",Random-800-800-6-2,800,13900,498,greedy (checked),109,120,110,499,False,4.2,2026-10-13T17:01:56
+Random-800-800-6-3,"Frinhani et al. 2018, large",Random-800-800-6-3,800,13894,502,greedy (checked),109,120,110,503,False,4.1,2026-10-13T17:01:58
+Random-800-800-6-4,"Frinhani et al. 2018, large",Random-800-800-6-4,800,13591,497,greedy (checked),109,120,110,498,False,4.2,2026-10-13T17:02:00
+Random-800-800-6-5,"Frinhani et al. 2018, large",Random-800-800-6-5,800,13937,493,greedy (checked),109,120,110,494,False,4.2,2026-10-13T17:02:02
+Random-800-800-6-6,"Frinhani et al. 2018, large",Random-800-800-6-6,800,14149,500,greedy (checked),109,120,110,501,False,4.2,2026-10-13T17:02:05
+Random-800-800-6-7,"Frinhani et al. 2018, large",Random-800-800-6-7,800,14595,507,greedy (checked),109,120,110,508,False,4.2,2026-10-13T17:02:07
+Random-800-800-6-8,"Frinhani et al. 2018, large",Random-800-800-6-8,800,14228,512,greedy (checked),109,120,110,513,False,4.2,2026-10-13T17:02:09
+Random-800-800-6-9,"Frinhani et al. 2018, large",Random-800-800-6-9,800,13713,494,greedy (checked),109,120,110,495,False,4.2,2026-10-13T17:02:11
+Random-800-800-8-1,"Frinhani et al. 2018, large",Random-800-800-8-1,800,23916,600,greedy (checked),183,200,184,601,False,4.2,2026-10-13T17:02:13
+Random-800-800-8-10,"Frinhani et al. 2018, large",Random-800-800-8-10,800,23867,598,greedy (checked),183,200,184,599,False,4.1,2026-10-13T17:02:15
+Random-800-800-8-2,"Frinhani et al. 2018, large",Random-800-800-8-2,800,24410,591,greedy (checked),184,200,185,592,False,4.1,2026-10-13T17:02:18
+Random-800-800-8-3,"Frinhani et al. 2018, large",Random-800-800-8-3,800,24738,599,greedy (checked),184,200,185,600,False,4.0,2026-10-13T17:02:19
+Random-800-800-8-4,"Frinhani et al. 2018, large",Random-800-800-8-4,800,24336,599,greedy (checked),183,200,184,600,False,3.9,2026-10-13T17:02:22
+Random-800-800-8-5,"Frinhani et al. 2018, large",Random-800-800-8-5,800,25455,608,greedy (checked),183,200,184,609,False,3.7,2026-10-13T17:02:23
+Random-800-800-8-6,"Frinhani et al. 2018, large",Random-800-800-8-6,800,23901,591,greedy (checked),183,200,184,592,False,3.9,2026-10-13T17:02:26
+Random-800-800-8-7,"Frinhani et al. 2018, large",Random-800-800-8-7,800,24050,587,greedy (checked),183,200,184,588,False,3.9,2026-10-13T17:02:27
+Random-800-800-8-8,"Frinhani et al. 2018, large",Random-800-800-8-8,800,24155,602,greedy (checked),183,200,184,603,False,3.9,2026-10-13T17:02:30
+Random-800-800-8-9,"Frinhani et al. 2018, large",Random-800-800-8-9,800,23741,598,greedy (checked),183,200,184,599,False,4.0,2026-10-13T17:02:31
+Random-1000-1000-10-1,"Frinhani et al. 2018, large",Random-1000-1000-10-1,1000,46998,818,greedy (checked),235,250,236,819,False,4.5,2026-10-13T17:02:34
+Random-1000-1000-10-10,"Frinhani et al. 2018, large",Random-1000-1000-10-10,1000,47202,821,greedy (checked),235,250,236,822,False,4.5,2026-10-13T17:02:36
+Random-1000-1000-10-2,"Frinhani et al. 2018, large",Random-1000-1000-10-2,1000,48068,823,greedy (checked),236,250,237,824,False,4.5,2026-10-13T17:02:39
+Random-1000-1000-10-3,"Frinhani et al. 2018, large",Random-1000-1000-10-3,1000,44937,814,greedy (checked),236,250,237,815,False,5.2,2026-10-13T17:02:41
+Random-1000-1000-10-4,"Frinhani et al. 2018, large",Random-1000-1000-10-4,1000,45533,807,greedy (checked),235,250,236,808,False,4.6,2026-10-13T17:02:44
+Random-1000-1000-10-5,"Frinhani et al. 2018, large",Random-1000-1000-10-5,1000,48653,818,greedy (checked),236,250,237,819,False,4.5,2026-10-13T17:02:46
+Random-1000-1000-10-6,"Frinhani et al. 2018, large",Random-1000-1000-10-6,1000,48323,818,greedy (checked),236,250,237,819,False,4.5,2026-10-13T17:02:48
+Random-1000-1000-10-7,"Frinhani et al. 2018, large",Random-1000-1000-10-7,1000,48378,821,greedy (checked),236,250,237,822,False,4.7,2026-10-13T17:02:51
+Random-1000-1000-10-8,"Frinhani et al. 2018, large",Random-1000-1000-10-8,1000,49163,826,greedy (checked),237,250,238,827,False,4.5,2026-10-13T17:02:53
+Random-1000-1000-10-9,"Frinhani et al. 2018, large",Random-1000-1000-10-9,1000,46151,818,greedy (checked),235,250,236,819,False,4.9,2026-10-13T17:02:56
+Random-1000-1000-14-1,"Frinhani et al. 2018, large",Random-1000-1000-14-1,1000,87901,896,greedy (checked),319,333,320,897,False,4.2,2026-10-13T17:02:57
+Random-1000-1000-14-10,"Frinhani et al. 2018, large",Random-1000-1000-14-10,1000,90694,896,greedy (checked),320,333,321,897,False,4.3,2026-10-13T17:03:00
+Random-1000-1000-14-2,"Frinhani et al. 2018, large",Random-1000-1000-14-2,1000,88502,899,greedy (checked),319,333,320,900,False,4.0,2026-10-13T17:03:01
+Random-1000-1000-14-3,"Frinhani et al. 2018, large",Random-1000-1000-14-3,1000,90238,897,greedy (checked),320,333,321,898,False,4.3,2026-10-13T17:03:04
+Random-1000-1000-14-4,"Frinhani et al. 2018, large",Random-1000-1000-14-4,1000,89243,897,greedy (checked),320,333,321,898,False,4.3,2026-10-13T17:03:06
+Random-1000-1000-14-5,"Frinhani et al. 2018, large",Random-1000-1000-14-5,1000,88470,893,greedy (checked),320,333,321,894,False,4.5,2026-10-13T17:03:09
+Random-1000-1000-14-6,"Frinhani et al. 2018, large",Random-1000-1000-14-6,1000,88330,895,greedy (checked),320,333,321,896,False,4.2,2026-10-13T17:03:10
+Random-1000-1000-14-7,"Frinhani et al. 2018, large",Random-1000-1000-14-7,1000,90276,899,greedy (checked),320,333,321,900,False,4.3,2026-10-13T17:03:14
+Random-1000-1000-14-8,"Frinhani et al. 2018, large",Random-1000-1000-14-8,1000,88601,898,greedy (checked),320,333,321,899,False,4.1,2026-10-13T17:03:14
+Random-1000-1000-14-9,"Frinhani et al. 2018, large",Random-1000-1000-14-9,1000,91474,897,greedy (checked),320,333,321,898,False,4.3,2026-10-13T17:03:18
+Random-1000-1000-18-1,"Frinhani et al. 2018, large",Random-1000-1000-18-1,1000,137464,936,greedy (checked),325,333,326,937,False,4.1,2026-10-13T17:03:18
+Random-1000-1000-18-10,"Frinhani et al. 2018, large",Random-1000-1000-18-10,1000,135814,934,greedy (checked),324,333,325,935,False,4.1,2026-10-13T17:03:22
+Random-1000-1000-18-2,"Frinhani et al. 2018, large",Random-1000-1000-18-2,1000,135240,930,greedy (checked),325,333,326,931,False,4.1,2026-10-13T17:03:23
+Random-1000-1000-18-3,"Frinhani et al. 2018, large",Random-1000-1000-18-3,1000,136796,933,greedy (checked),325,333,326,934,False,3.9,2026-10-13T17:03:26
+Random-1000-1000-18-4,"Frinhani et al. 2018, large",Random-1000-1000-18-4,1000,136219,933,greedy (checked),325,333,326,934,False,4.2,2026-10-13T17:03:27
+Random-1000-1000-18-5,"Frinhani et al. 2018, large",Random-1000-1000-18-5,1000,139984,934,greedy (checked),325,333,326,935,False,3.9,2026-10-13T17:03:30
+Random-1000-1000-18-6,"Frinhani et al. 2018, large",Random-1000-1000-18-6,1000,139480,936,greedy (checked),324,333,325,937,False,4.2,2026-10-13T17:03:31
+Random-1000-1000-18-7,"Frinhani et al. 2018, large",Random-1000-1000-18-7,1000,138337,934,greedy (checked),325,333,326,935,False,3.9,2026-10-13T17:03:34
+Random-1000-1000-18-8,"Frinhani et al. 2018, large",Random-1000-1000-18-8,1000,141012,936,greedy (checked),325,333,326,937,False,4.2,2026-10-13T17:03:36
+Random-1000-1000-18-9,"Frinhani et al. 2018, large",Random-1000-1000-18-9,1000,141694,936,greedy (checked),325,333,326,937,False,3.9,2026-10-13T17:03:38
+Random-1000-1000-2-1,"Frinhani et al. 2018, large",Random-1000-1000-2-1,1000,3133,231,greedy (checked),55,80,56,232,False,5.0,2026-10-13T17:03:41
+Random-1000-1000-2-10,"Frinhani et al. 2018, large",Random-1000-1000-2-10,1000,2976,228,greedy (checked),55,80,56,229,False,5.5,2026-10-13T17:03:44
+Random-1000-1000-2-2,"Frinhani et al. 2018, large",Random-1000-1000-2-2,1000,3013,217,greedy (checked),54,80,55,218,False,5.3,2026-10-13T17:03:46
+Random-1000-1000-2-3,"Frinhani et al. 2018, large",Random-1000-1000-2-3,1000,3031,212,greedy (checked),55,80,56,213,False,5.1,2026-10-13T17:03:49
+Random-1000-1000-2-4,"Frinhani et al. 2018, large",Random-1000-1000-2-4,1000,3058,227,greedy (checked),55,80,56,228,False,5.3,2026-10-13T17:03:51
+Random-1000-1000-2-5,"Frinhani et al. 2018, large",Random-1000-1000-2-5,1000,3012,226,greedy (checked),55,80,56,227,False,5.5,2026-10-13T17:03:55
+Random-1000-1000-2-6,"Frinhani et al. 2018, large",Random-1000-1000-2-6,1000,2972,222,greedy (checked),54,80,55,223,False,5.1,2026-10-13T17:03:57
+Random-1000-1000-2-7,"Frinhani et al. 2018, large",Random-1000-1000-2-7,1000,3005,225,greedy (checked),44,60,45,226,False,5.7,2026-10-13T17:04:00
+Random-1000-1000-2-8,"Frinhani et al. 2018, large",Random-1000-1000-2-8,1000,3004,222,greedy (checked),54,80,55,223,False,5.2,2026-10-13T17:04:02
+Random-1000-1000-2-9,"Frinhani et al. 2018, large",Random-1000-1000-2-9,1000,2942,216,greedy (checked),44,60,45,217,False,5.5,2026-10-13T17:04:06
+Random-1000-1000-20-1,"Frinhani et al. 2018, large",Random-1000-1000-20-1,1000,163786,946,greedy (checked),329,500,330,947,False,3.9,2026-10-13T17:04:06
+Random-1000-1000-20-10,"Frinhani et al. 2018, large",Random-1000-1000-20-10,1000,163301,946,greedy (checked),330,500,331,947,False,4.0,2026-10-13T17:04:10
+Random-1000-1000-20-3,"Frinhani et al. 2018, large",Random-1000-1000-20-3,1000,163466,944,greedy (checked),329,500,330,945,False,4.3,2026-10-13T17:04:14
+Random-1000-1000-20-4,"Frinhani et al. 2018, large",Random-1000-1000-20-4,1000,166985,947,greedy (checked),336,500,337,948,False,4.2,2026-10-13T17:04:19
+Random-1000-1000-20-2,"Frinhani et al. 2018, large",Random-1000-1000-20-2,1000,160873,944,greedy (checked),484,500,485,945,False,16.7,2026-10-13T17:04:23
+Random-1000-1000-20-5,"Frinhani et al. 2018, large",Random-1000-1000-20-5,1000,164075,941,greedy (checked),333,500,334,942,False,4.2,2026-10-13T17:04:23
+Random-1000-1000-20-6,"Frinhani et al. 2018, large",Random-1000-1000-20-6,1000,162923,944,greedy (checked),328,500,329,945,False,4.0,2026-10-13T17:04:27
+Random-1000-1000-20-7,"Frinhani et al. 2018, large",Random-1000-1000-20-7,1000,166830,947,greedy (checked),333,500,334,948,False,4.3,2026-10-13T17:04:28
+Random-1000-1000-20-8,"Frinhani et al. 2018, large",Random-1000-1000-20-8,1000,164130,943,greedy (checked),332,500,333,944,False,4.0,2026-10-13T17:04:31
+Random-1000-1000-20-9,"Frinhani et al. 2018, large",Random-1000-1000-20-9,1000,165034,943,greedy (checked),334,500,335,944,False,4.3,2026-10-13T17:04:32
+Random-1000-1000-24-1,"Frinhani et al. 2018, large",Random-1000-1000-24-1,1000,219186,961,greedy (checked),489,500,490,962,False,3.6,2026-10-13T17:04:35
+Random-1000-1000-24-10,"Frinhani et al. 2018, large",Random-1000-1000-24-10,1000,219620,961,greedy (checked),489,500,490,962,False,3.9,2026-10-13T17:04:36
+Random-1000-1000-24-2,"Frinhani et al. 2018, large",Random-1000-1000-24-2,1000,220215,962,greedy (checked),489,500,490,963,False,3.7,2026-10-13T17:04:39
+Random-1000-1000-24-3,"Frinhani et al. 2018, large",Random-1000-1000-24-3,1000,218473,962,greedy (checked),489,500,490,963,False,4.0,2026-10-13T17:04:40
+Random-1000-1000-24-4,"Frinhani et al. 2018, large",Random-1000-1000-24-4,1000,220970,962,greedy (checked),490,500,491,963,False,3.7,2026-10-13T17:04:42
+Random-1000-1000-24-5,"Frinhani et al. 2018, large",Random-1000-1000-24-5,1000,219665,961,greedy (checked),489,500,490,962,False,3.6,2026-10-13T17:04:44
+Random-1000-1000-24-6,"Frinhani et al. 2018, large",Random-1000-1000-24-6,1000,215402,961,greedy (checked),489,500,490,962,False,3.6,2026-10-13T17:04:46
+Random-1000-1000-24-7,"Frinhani et al. 2018, large",Random-1000-1000-24-7,1000,217558,962,greedy (checked),489,500,490,963,False,3.6,2026-10-13T17:04:48
+Random-1000-1000-24-8,"Frinhani et al. 2018, large",Random-1000-1000-24-8,1000,221167,960,greedy (checked),489,500,490,961,False,3.9,2026-10-13T17:04:50
+Random-1000-1000-24-9,"Frinhani et al. 2018, large",Random-1000-1000-24-9,1000,217848,961,greedy (checked),489,500,490,962,False,3.6,2026-10-13T17:04:51
+Random-1000-1000-28-1,"Frinhani et al. 2018, large",Random-1000-1000-28-1,1000,269996,969,greedy (checked),492,500,493,970,False,3.8,2026-10-13T17:04:54
+Random-1000-1000-28-10,"Frinhani et al. 2018, large",Random-1000-1000-28-10,1000,269112,971,greedy (checked),492,500,493,972,False,3.5,2026-10-13T17:04:55
+Random-1000-1000-28-2,"Frinhani et al. 2018, large",Random-1000-1000-28-2,1000,268863,971,greedy (checked),491,500,492,972,False,3.5,2026-10-13T17:04:58
+Random-1000-1000-28-3,"Frinhani et al. 2018, large",Random-1000-1000-28-3,1000,278065,973,greedy (checked),493,500,494,974,False,3.8,2026-10-13T17:04:59
+Random-1000-1000-28-4,"Frinhani et al. 2018, large",Random-1000-1000-28-4,1000,269131,969,greedy (checked),492,500,493,970,False,3.8,2026-10-13T17:05:01
+Random-1000-1000-28-5,"Frinhani et al. 2018, large",Random-1000-1000-28-5,1000,274666,971,greedy (checked),492,500,493,972,False,3.8,2026-10-13T17:05:03
+Random-1000-1000-28-6,"Frinhani et al. 2018, large",Random-1000-1000-28-6,1000,273723,970,greedy (checked),492,500,493,971,False,3.6,2026-10-13T17:05:05
+Random-1000-1000-28-7,"Frinhani et al. 2018, large",Random-1000-1000-28-7,1000,271759,970,greedy (checked),492,500,493,971,False,3.8,2026-10-13T17:05:07
+Random-1000-1000-28-8,"Frinhani et al. 2018, large",Random-1000-1000-28-8,1000,272080,972,greedy (checked),492,500,493,973,False,3.4,2026-10-13T17:05:09
+Random-1000-1000-28-9,"Frinhani et al. 2018, large",Random-1000-1000-28-9,1000,268937,970,greedy (checked),492,500,493,971,False,3.8,2026-10-13T17:05:10
+Random-1000-1000-30-1,"Frinhani et al. 2018, large",Random-1000-1000-30-1,1000,295888,975,greedy (checked),493,500,494,976,False,3.9,2026-10-13T17:05:13
+Random-1000-1000-30-10,"Frinhani et al. 2018, large",Random-1000-1000-30-10,1000,296661,975,greedy (checked),493,500,494,976,False,3.8,2026-10-13T17:05:14
+Random-1000-1000-30-2,"Frinhani et al. 2018, large",Random-1000-1000-30-2,1000,297141,974,greedy (checked),493,500,494,975,False,3.8,2026-10-13T17:05:17
+Random-1000-1000-30-3,"Frinhani et al. 2018, large",Random-1000-1000-30-3,1000,292285,974,greedy (checked),493,500,494,975,False,3.8,2026-10-13T17:05:18
+Random-1000-1000-30-4,"Frinhani et al. 2018, large",Random-1000-1000-30-4,1000,293606,975,greedy (checked),493,500,494,976,False,3.8,2026-10-13T17:05:20
+Random-1000-1000-30-5,"Frinhani et al. 2018, large",Random-1000-1000-30-5,1000,298953,976,greedy (checked),493,500,494,977,False,3.8,2026-10-13T17:05:22
+Random-1000-1000-30-6,"Frinhani et al. 2018, large",Random-1000-1000-30-6,1000,295580,974,greedy (checked),493,500,494,975,False,3.8,2026-10-13T17:05:24
+Random-1000-1000-30-7,"Frinhani et al. 2018, large",Random-1000-1000-30-7,1000,292474,974,greedy (checked),493,500,494,975,False,3.8,2026-10-13T17:05:26
+Random-1000-1000-30-8,"Frinhani et al. 2018, large",Random-1000-1000-30-8,1000,292566,975,greedy (checked),493,500,494,976,False,3.8,2026-10-13T17:05:28
+Random-1000-1000-30-9,"Frinhani et al. 2018, large",Random-1000-1000-30-9,1000,299580,974,greedy (checked),493,500,494,975,False,3.9,2026-10-13T17:05:30
+Random-1000-1000-34-1,"Frinhani et al. 2018, large",Random-1000-1000-34-1,1000,339590,982,greedy (checked),495,500,496,983,False,3.9,2026-10-13T17:05:32
+Random-1000-1000-34-10,"Frinhani et al. 2018, large",Random-1000-1000-34-10,1000,343020,982,greedy (checked),495,500,496,983,False,4.0,2026-10-13T17:05:34
+Random-1000-1000-34-2,"Frinhani et al. 2018, large",Random-1000-1000-34-2,1000,343879,981,greedy (checked),495,500,496,982,False,4.0,2026-10-13T17:05:36
+Random-1000-1000-34-3,"Frinhani et al. 2018, large",Random-1000-1000-34-3,1000,339563,979,greedy (checked),494,500,495,980,False,3.9,2026-10-13T17:05:38
+Random-1000-1000-34-4,"Frinhani et al. 2018, large",Random-1000-1000-34-4,1000,342686,981,greedy (checked),495,500,496,982,False,4.0,2026-10-13T17:05:40
+Random-1000-1000-34-5,"Frinhani et al. 2018, large",Random-1000-1000-34-5,1000,345639,980,greedy (checked),495,500,496,981,False,3.9,2026-10-13T17:05:42
+Random-1000-1000-34-6,"Frinhani et al. 2018, large",Random-1000-1000-34-6,1000,342523,981,greedy (checked),495,500,496,982,False,3.6,2026-10-13T17:05:44
+Random-1000-1000-34-7,"Frinhani et al. 2018, large",Random-1000-1000-34-7,1000,342484,980,greedy (checked),495,500,496,981,False,3.9,2026-10-13T17:05:46
+Random-1000-1000-34-8,"Frinhani et al. 2018, large",Random-1000-1000-34-8,1000,342182,980,greedy (checked),495,500,496,981,False,3.6,2026-10-13T17:05:48
+Random-1000-1000-34-9,"Frinhani et al. 2018, large",Random-1000-1000-34-9,1000,340369,981,greedy (checked),494,500,495,982,False,4.0,2026-10-13T17:05:50
+Random-1000-1000-38-1,"Frinhani et al. 2018, large",Random-1000-1000-38-1,1000,380006,984,greedy (checked),496,500,497,985,False,3.7,2026-10-13T17:05:52
+Random-1000-1000-38-10,"Frinhani et al. 2018, large",Random-1000-1000-38-10,1000,382995,985,greedy (checked),496,500,497,986,False,4.1,2026-10-13T17:05:54
+Random-1000-1000-38-2,"Frinhani et al. 2018, large",Random-1000-1000-38-2,1000,379351,985,greedy (checked),496,500,497,986,False,3.7,2026-10-13T17:05:55
+Random-1000-1000-38-3,"Frinhani et al. 2018, large",Random-1000-1000-38-3,1000,379480,983,greedy (checked),496,500,497,984,False,4.1,2026-10-13T17:05:59
+Random-1000-1000-38-4,"Frinhani et al. 2018, large",Random-1000-1000-38-4,1000,384549,985,greedy (checked),496,500,497,986,False,3.7,2026-10-13T17:05:59
+Random-1000-1000-38-5,"Frinhani et al. 2018, large",Random-1000-1000-38-5,1000,382564,982,greedy (checked),496,500,497,983,False,4.0,2026-10-13T17:06:03
+Random-1000-1000-38-6,"Frinhani et al. 2018, large",Random-1000-1000-38-6,1000,380499,984,greedy (checked),496,500,497,985,False,3.9,2026-10-13T17:06:03
+Random-1000-1000-38-7,"Frinhani et al. 2018, large",Random-1000-1000-38-7,1000,380381,983,greedy (checked),495,500,496,984,False,4.0,2026-10-13T17:06:07
+Random-1000-1000-38-8,"Frinhani et al. 2018, large",Random-1000-1000-38-8,1000,384084,984,greedy (checked),496,500,497,985,False,4.0,2026-10-13T17:06:07
+Random-1000-1000-38-9,"Frinhani et al. 2018, large",Random-1000-1000-38-9,1000,382613,984,greedy (checked),496,500,497,985,False,4.0,2026-10-13T17:06:11
+Random-1000-1000-4-1,"Frinhani et al. 2018, large",Random-1000-1000-4-1,1000,8298,434,greedy (checked),101,120,102,435,False,5.3,2026-10-13T17:06:13
+Random-1000-1000-4-10,"Frinhani et al. 2018, large",Random-1000-1000-4-10,1000,8211,446,greedy (checked),100,120,101,447,False,5.3,2026-10-13T17:06:16
+Random-1000-1000-4-2,"Frinhani et al. 2018, large",Random-1000-1000-4-2,1000,7992,440,greedy (checked),99,120,100,441,False,5.3,2026-10-13T17:06:18
+Random-1000-1000-4-3,"Frinhani et al. 2018, large",Random-1000-1000-4-3,1000,8703,459,greedy (checked),101,120,102,460,False,5.1,2026-10-13T17:06:22
+Random-1000-1000-4-4,"Frinhani et al. 2018, large",Random-1000-1000-4-4,1000,8049,450,greedy (checked),101,120,102,451,False,5.5,2026-10-13T17:06:24
+Random-1000-1000-4-5,"Frinhani et al. 2018, large",Random-1000-1000-4-5,1000,8595,451,greedy (checked),101,120,102,452,False,5.2,2026-10-13T17:06:27
+Random-1000-1000-4-6,"Frinhani et al. 2018, large",Random-1000-1000-4-6,1000,7976,439,greedy (checked),99,120,100,440,False,5.3,2026-10-13T17:06:29
+Random-1000-1000-4-7,"Frinhani et al. 2018, large",Random-1000-1000-4-7,1000,8336,448,greedy (checked),100,120,101,449,False,5.1,2026-10-13T17:06:32
+Random-1000-1000-4-8,"Frinhani et al. 2018, large",Random-1000-1000-4-8,1000,7942,431,greedy (checked),99,120,100,432,False,5.5,2026-10-13T17:06:35
+Random-1000-1000-4-9,"Frinhani et al. 2018, large",Random-1000-1000-4-9,1000,8210,437,greedy (checked),100,120,101,438,False,5.3,2026-10-13T17:06:38
+Random-1000-1000-40-1,"Frinhani et al. 2018, large",Random-1000-1000-40-1,1000,398301,985,greedy (checked),497,500,498,986,False,4.1,2026-10-13T17:06:39
+Random-1000-1000-40-10,"Frinhani et al. 2018, large",Random-1000-1000-40-10,1000,398502,986,greedy (checked),496,500,497,987,False,4.0,2026-10-13T17:06:42
+Random-1000-1000-40-2,"Frinhani et al. 2018, large",Random-1000-1000-40-2,1000,399966,986,greedy (checked),497,500,498,987,False,4.0,2026-10-13T17:06:43
+Random-1000-1000-40-3,"Frinhani et al. 2018, large",Random-1000-1000-40-3,1000,399239,985,greedy (checked),496,500,497,986,False,4.1,2026-10-13T17:06:46
+Random-1000-1000-40-4,"Frinhani et al. 2018, large",Random-1000-1000-40-4,1000,398102,985,greedy (checked),497,500,498,986,False,4.0,2026-10-13T17:06:47
+Random-1000-1000-40-5,"Frinhani et al. 2018, large",Random-1000-1000-40-5,1000,395180,985,greedy (checked),496,500,497,986,False,3.9,2026-10-13T17:06:50
+Random-1000-1000-40-6,"Frinhani et al. 2018, large",Random-1000-1000-40-6,1000,399333,983,greedy (checked),496,500,497,984,False,4.1,2026-10-13T17:06:52
+Random-1000-1000-40-7,"Frinhani et al. 2018, large",Random-1000-1000-40-7,1000,398710,987,greedy (checked),496,500,497,988,False,4.0,2026-10-13T17:06:54
+Random-1000-1000-40-8,"Frinhani et al. 2018, large",Random-1000-1000-40-8,1000,396277,987,greedy (checked),496,500,497,988,False,4.0,2026-10-13T17:06:56
+Random-1000-1000-40-9,"Frinhani et al. 2018, large",Random-1000-1000-40-9,1000,396662,986,greedy (checked),496,500,497,987,False,4.2,2026-10-13T17:06:58
+Random-1000-1000-44-1,"Frinhani et al. 2018, large",Random-1000-1000-44-1,1000,427246,988,greedy (checked),497,500,498,989,False,4.1,2026-10-13T17:07:00
+Random-1000-1000-44-10,"Frinhani et al. 2018, large",Random-1000-1000-44-10,1000,428608,988,greedy (checked),497,500,498,989,False,4.1,2026-10-13T17:07:03
+Random-1000-1000-44-2,"Frinhani et al. 2018, large",Random-1000-1000-44-2,1000,427081,988,greedy (checked),497,500,498,989,False,4.0,2026-10-13T17:07:04
+Random-1000-1000-44-3,"Frinhani et al. 2018, large",Random-1000-1000-44-3,1000,428484,989,greedy (checked),497,500,498,990,False,4.1,2026-10-13T17:07:07
+Random-1000-1000-44-4,"Frinhani et al. 2018, large",Random-1000-1000-44-4,1000,425184,989,greedy (checked),497,500,498,990,False,4.0,2026-10-13T17:07:08
+Random-1000-1000-44-5,"Frinhani et al. 2018, large",Random-1000-1000-44-5,1000,427484,987,greedy (checked),497,500,498,988,False,3.8,2026-10-13T17:07:11
+Random-1000-1000-44-6,"Frinhani et al. 2018, large",Random-1000-1000-44-6,1000,427604,987,greedy (checked),497,500,498,988,False,4.0,2026-10-13T17:07:12
+Random-1000-1000-44-7,"Frinhani et al. 2018, large",Random-1000-1000-44-7,1000,425455,988,greedy (checked),497,500,498,989,False,3.7,2026-10-13T17:07:14
+Random-1000-1000-44-8,"Frinhani et al. 2018, large",Random-1000-1000-44-8,1000,426475,987,greedy (checked),497,500,498,988,False,4.1,2026-10-13T17:07:16
+Random-1000-1000-44-9,"Frinhani et al. 2018, large",Random-1000-1000-44-9,1000,427459,989,greedy (checked),497,500,498,990,False,3.8,2026-10-13T17:07:18
+Random-1000-1000-48-1,"Frinhani et al. 2018, large",Random-1000-1000-48-1,1000,448420,990,greedy (checked),498,500,499,991,False,4.1,2026-10-13T17:07:21
+Random-1000-1000-48-10,"Frinhani et al. 2018, large",Random-1000-1000-48-10,1000,449126,990,greedy (checked),498,500,499,991,False,3.8,2026-10-13T17:07:22
+Random-1000-1000-48-2,"Frinhani et al. 2018, large",Random-1000-1000-48-2,1000,447540,990,greedy (checked),498,500,499,991,False,4.1,2026-10-13T17:07:25
+Random-1000-1000-48-3,"Frinhani et al. 2018, large",Random-1000-1000-48-3,1000,451199,990,greedy (checked),499,500,500,991,False,4.0,2026-10-13T17:07:26
+Random-1000-1000-48-4,"Frinhani et al. 2018, large",Random-1000-1000-48-4,1000,448975,991,greedy (checked),499,500,500,992,False,4.0,2026-10-13T17:07:29
+Random-1000-1000-48-5,"Frinhani et al. 2018, large",Random-1000-1000-48-5,1000,448341,990,greedy (checked),498,500,499,991,False,4.0,2026-10-13T17:07:31
+Random-1000-1000-48-6,"Frinhani et al. 2018, large",Random-1000-1000-48-6,1000,450140,990,greedy (checked),499,500,500,991,False,3.8,2026-10-13T17:07:33
+Random-1000-1000-48-7,"Frinhani et al. 2018, large",Random-1000-1000-48-7,1000,449541,990,greedy (checked),499,500,500,991,False,4.0,2026-10-13T17:07:35
+Random-1000-1000-48-8,"Frinhani et al. 2018, large",Random-1000-1000-48-8,1000,450262,990,greedy (checked),499,500,500,991,False,3.9,2026-10-13T17:07:37
+Random-1000-1000-48-9,"Frinhani et al. 2018, large",Random-1000-1000-48-9,1000,451787,991,greedy (checked),499,500,500,992,False,3.8,2026-10-13T17:07:39
+Random-1000-1000-50-1,"Frinhani et al. 2018, large",Random-1000-1000-50-1,1000,457837,991,greedy (checked),499,500,500,992,False,3.8,2026-10-13T17:07:41
+Random-1000-1000-50-10,"Frinhani et al. 2018, large",Random-1000-1000-50-10,1000,457669,991,greedy (checked),499,500,500,992,False,3.8,2026-10-13T17:07:42
+Random-1000-1000-50-2,"Frinhani et al. 2018, large",Random-1000-1000-50-2,1000,458060,992,greedy (checked),499,500,500,993,False,3.8,2026-10-13T17:07:45
+Random-1000-1000-50-3,"Frinhani et al. 2018, large",Random-1000-1000-50-3,1000,458629,991,greedy (checked),499,500,500,992,False,3.8,2026-10-13T17:07:46
+Random-1000-1000-50-4,"Frinhani et al. 2018, large",Random-1000-1000-50-4,1000,457457,990,greedy (checked),499,500,500,991,False,4.1,2026-10-13T17:07:49
+Random-1000-1000-50-5,"Frinhani et al. 2018, large",Random-1000-1000-50-5,1000,459076,991,greedy (checked),499,500,500,992,False,4.0,2026-10-13T17:07:51
+Random-1000-1000-50-6,"Frinhani et al. 2018, large",Random-1000-1000-50-6,1000,457656,991,greedy (checked),499,500,500,992,False,4.3,2026-10-13T17:07:53
+Random-1000-1000-50-7,"Frinhani et al. 2018, large",Random-1000-1000-50-7,1000,459305,991,greedy (checked),499,500,500,992,False,4.4,2026-10-13T17:07:55
+Random-1000-1000-50-8,"Frinhani et al. 2018, large",Random-1000-1000-50-8,1000,459577,991,greedy (checked),499,500,500,992,False,4.0,2026-10-13T17:07:58
+Random-1000-1000-50-9,"Frinhani et al. 2018, large",Random-1000-1000-50-9,1000,459620,992,greedy (checked),499,500,500,993,False,4.0,2026-10-13T17:07:59
+Random-1000-1000-54-1,"Frinhani et al. 2018, large",Random-1000-1000-54-1,1000,473005,992,greedy (checked),499,500,500,993,False,4.1,2026-10-13T17:08:02
+Random-1000-1000-54-10,"Frinhani et al. 2018, large",Random-1000-1000-54-10,1000,470916,991,greedy (checked),499,500,500,992,False,4.0,2026-10-13T17:08:03
+Random-1000-1000-54-2,"Frinhani et al. 2018, large",Random-1000-1000-54-2,1000,472484,992,greedy (checked),499,500,500,993,False,3.8,2026-10-13T17:08:06
+Random-1000-1000-54-3,"Frinhani et al. 2018, large",Random-1000-1000-54-3,1000,472587,992,greedy (checked),499,500,500,993,False,4.1,2026-10-13T17:08:08
+Random-1000-1000-54-4,"Frinhani et al. 2018, large",Random-1000-1000-54-4,1000,473623,993,greedy (checked),499,500,500,994,False,3.7,2026-10-13T17:08:10
+Random-1000-1000-54-5,"Frinhani et al. 2018, large",Random-1000-1000-54-5,1000,473932,992,greedy (checked),499,500,500,993,False,4.1,2026-10-13T17:08:12
+Random-1000-1000-54-6,"Frinhani et al. 2018, large",Random-1000-1000-54-6,1000,472266,992,greedy (checked),499,500,500,993,False,4.0,2026-10-13T17:08:14
+Random-1000-1000-54-7,"Frinhani et al. 2018, large",Random-1000-1000-54-7,1000,472874,992,greedy (checked),499,500,500,993,False,3.9,2026-10-13T17:08:16
+Random-1000-1000-54-8,"Frinhani et al. 2018, large",Random-1000-1000-54-8,1000,472333,992,greedy (checked),499,500,500,993,False,4.0,2026-10-13T17:08:18
+Random-1000-1000-54-9,"Frinhani et al. 2018, large",Random-1000-1000-54-9,1000,471624,992,greedy (checked),499,500,500,993,False,3.7,2026-10-13T17:08:20
+Random-1000-1000-6-1,"Frinhani et al. 2018, large",Random-1000-1000-6-1,1000,18251,639,greedy (checked),111,120,112,640,False,5.1,2026-10-13T17:08:23
+Random-1000-1000-6-10,"Frinhani et al. 2018, large",Random-1000-1000-6-10,1000,18359,640,greedy (checked),112,120,113,641,False,4.9,2026-10-13T17:08:25
+Random-1000-1000-6-2,"Frinhani et al. 2018, large",Random-1000-1000-6-2,1000,17887,638,greedy (checked),111,120,112,639,False,5.1,2026-10-13T17:08:28
+Random-1000-1000-6-3,"Frinhani et al. 2018, large",Random-1000-1000-6-3,1000,16665,628,greedy (checked),110,120,111,629,False,4.9,2026-10-13T17:08:30
+Random-1000-1000-6-4,"Frinhani et al. 2018, large",Random-1000-1000-6-4,1000,17399,622,greedy (checked),111,120,112,623,False,5.4,2026-10-13T17:08:34
+Random-1000-1000-6-5,"Frinhani et al. 2018, large",Random-1000-1000-6-5,1000,17652,637,greedy (checked),111,120,112,638,False,4.9,2026-10-13T17:08:35
+Random-1000-1000-6-6,"Frinhani et al. 2018, large",Random-1000-1000-6-6,1000,18516,641,greedy (checked),112,120,113,642,False,5.1,2026-10-13T17:08:39
+Random-1000-1000-6-7,"Frinhani et al. 2018, large",Random-1000-1000-6-7,1000,17173,613,greedy (checked),110,120,111,614,False,5.0,2026-10-13T17:08:40
+Random-1000-1000-6-8,"Frinhani et al. 2018, large",Random-1000-1000-6-8,1000,18411,638,greedy (checked),111,120,112,639,False,5.1,2026-10-13T17:08:44
+Random-1000-1000-6-9,"Frinhani et al. 2018, large",Random-1000-1000-6-9,1000,18367,639,greedy (checked),111,120,112,640,False,5.0,2026-10-13T17:08:45
+Random-1000-1000-8-1,"Frinhani et al. 2018, large",Random-1000-1000-8-1,1000,31285,752,greedy (checked),131,333,132,753,False,5.2,2026-10-13T17:08:49
+Random-1000-1000-8-10,"Frinhani et al. 2018, large",Random-1000-1000-8-10,1000,30450,751,greedy (checked),129,333,130,752,False,5.2,2026-10-13T17:08:50
+Random-1000-1000-8-2,"Frinhani et al. 2018, large",Random-1000-1000-8-2,1000,30550,738,greedy (checked),128,333,129,739,False,5.2,2026-10-13T17:08:55
+Random-1000-1000-8-3,"Frinhani et al. 2018, large",Random-1000-1000-8-3,1000,31110,743,greedy (checked),130,333,131,744,False,5.2,2026-10-13T17:08:56
+Random-1000-1000-8-4,"Frinhani et al. 2018, large",Random-1000-1000-8-4,1000,31023,747,greedy (checked),130,333,131,748,False,5.2,2026-10-13T17:09:00
+Random-1000-1000-8-5,"Frinhani et al. 2018, large",Random-1000-1000-8-5,1000,31477,751,greedy (checked),130,333,131,752,False,5.2,2026-10-13T17:09:01
+Random-1000-1000-8-6,"Frinhani et al. 2018, large",Random-1000-1000-8-6,1000,31202,749,greedy (checked),131,333,132,750,False,5.2,2026-10-13T17:09:05
+Random-1000-1000-8-7,"Frinhani et al. 2018, large",Random-1000-1000-8-7,1000,30420,747,greedy (checked),129,333,130,748,False,5.2,2026-10-13T17:09:06
+Random-1000-1000-8-8,"Frinhani et al. 2018, large",Random-1000-1000-8-8,1000,30018,736,greedy (checked),127,333,128,737,False,5.2,2026-10-13T17:09:11
+Random-1000-1000-8-9,"Frinhani et al. 2018, large",Random-1000-1000-8-9,1000,31178,745,greedy (checked),128,333,129,746,False,5.2,2026-10-13T17:09:11

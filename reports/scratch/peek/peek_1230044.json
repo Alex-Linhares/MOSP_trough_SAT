@@ -1,0 +1,82 @@
+[
+ {
+  "thread": 127911878580096,
+  "stack": [
+   [
+    "<string>",
+    "_peek",
+    16,
+    {}
+   ],
+   [
+    "<string>",
+    "<module>",
+    21,
+    {
+     "n": 202
+    }
+   ],
+   [
+    "<string>",
+    "<module>",
+    1,
+    {
+     "n": 202
+    }
+   ],
+   [
+    "native.py",
+    "_call",
+    173,
+    {
+     "n": 202,
+     "k": 27,
+     "max_nodes": null,
+     "nodes": "c_long"
+    }
+   ],
+   [
+    "native.py",
+    "decide_native",
+    241,
+    {
+     "k": 27,
+     "max_nodes": null,
+     "n": 202
+    }
+   ],
+   [
+    "search.py",
+    "decide",
+    170,
+    {
+     "k": 27,
+     "max_nodes": null,
+     "deadline": null
+    }
+   ],
+   [
+    "solve.py",
+    "solve_masks",
+    180,
+    {
+     "upper": 27,
+     "lower": 26,
+     "max_nodes": null,
+     "n": 202,
+     "w": 26,
+     "deadline": null,
+     "nodes": 1046749
+    }
+   ],
+   [
+    "run.py",
+    "<module>",
+    44,
+    {
+     "n": 202
+    }
+   ]
+  ]
+ }
+]
