@@ -50,8 +50,13 @@ a net loss as a search floor.
    breaks exact uniformity; either obtain Chu & Stuckey's generator or test uniformity by
    simulation (regenerate with `benchmarks/generator.py` variants and compare the empty-pair
    frequency to the formula).
-2. Lean: the union bound with a product measure over independent patterns (a new file beside
-   `FirstMoment.lean`; the deterministic step and the trinomial count are already there).
+2. ~~Lean~~ **done the same day**, `lean/MOSPFormalization/CliqueCoverMoment.lean`:
+   `prob_coversOfPathwidthLe_le` / `prob_coversOfMospValueLe_le`, exactly the inequality of
+   `finite_bound_cs.py`, in MOSP vocabulary (`coverInstance`), sorry-free, standard axioms,
+   checked by enumeration of every cover at n ≤ 6, m ≤ 3 first (1,604 cases). One correction
+   found by that check: with ℕ subtraction the term `C(n − 2t + 1, s)` is wrong at 2t = n + 1
+   (k = 0, n odd); the Lean states `avoidCount n a r s = C(n−a,s) + C(n−r,s) − C(n−(a+r),s)`.
+   The Python uses integer arithmetic and is unaffected.
 3. Paper: a table of the class floors against the certified optima (Section 5 or Appendix E) —
    the generator's parameters predict the benchmark table to within a few percent at d ≥ 6.
 4. The asymptotic threshold d > 2.003 at μ = 1 against the ridge: a formula for the ridge?

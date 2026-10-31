@@ -1,0 +1,22 @@
+counting/probability/MOSP checks: 1604 (n, m, sizes, k) cases, 0 violations
+Nat-truncated README formula differs from avoidCount in 131 (case, pattern) places (expected > 0: it truncates at 2t = n + 1, i.e. k = 0 with n - k + 1 even)
+avoidCount against enumeration: 7107 (n, A, R, s) cases, 0 violations
+ALL OK
+
+=== Lean axiom audit (lake env lean, 2026-10-31) ===
+'MOSPFormalization.card_covers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.coverGraph_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.isEmptyPair_coverGraph_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_powersetCard_filter_disjoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.avoidCount_eq' depends on axioms: [propext, Quot.sound]
+'MOSPFormalization.card_filter_avoid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_emptyPairCovers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.mem_biUnion_emptyPairCovers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_coversOfPathwidthLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.prob_coversOfPathwidthLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_requires_of_mem_covers' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.coversOfMospValueLe_eq_coversOfPathwidthLe' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.card_coversOfMospValueLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.prob_coversOfMospValueLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]

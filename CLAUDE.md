@@ -497,6 +497,9 @@ lean/
         FirstMomentAsymptotics.lean     Theorem A of reports/random_graph_first_moment.md: P(pw(G(n,c/n)) ≤ βn) ≤ exp(−δn + 3 log n + c·a),
                                         δ = c a² − H(a,a,1−2a), a = (1−β)/2, n ≥ max(3, c), and → 0 when δ > 0; the multinomial entropy
                                         bound (absent from Mathlib) proved from the binomial theorem; sorry-free (2026-10-31)
+        CliqueCoverMoment.lean          the same first moment on random clique covers (the Chu & Stuckey model: independent uniform
+                                        patterns of given sizes): P(mospValue ≤ k+1) ≤ C(n,t)·C(n−t,t−1)·∏_j avoidCount(s_j)/C(n,s_j),
+                                        in MOSP vocabulary via coverInstance; sorry-free (2026-10-31)
         ForMathlib/                     Candidates for Mathlib contribution
         Complex/                        Linhares & Yanasse (2002) Table 1 in Lean (loop0005, 2026-09-30):
             GateMatrix.lean                 gate matrix layout = MOSP = pathwidth + 1
