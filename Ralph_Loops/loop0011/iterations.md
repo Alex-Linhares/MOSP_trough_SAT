@@ -25,7 +25,7 @@ reserve. Every item: one session, `nice -n 19`, at most 8 workers (4 if the
 one-minute load in `uptime` is above 24), nothing solved twice, every new
 layout persisted under `reports/scratch/separator_moment/<item>/`.
 
-- [ ] **01 Literature: who counts separators, and what the inner probability is known to be.**
+- [x] **01 Literature: who counts separators, and what the inner probability is known to be.**
   - **Question.** G of the brief. Has anyone counted balanced *vertex*
     separators (or bisections, or cuts) of sparse random graphs with an
     inner probability finer than the product over edges, for pathwidth or

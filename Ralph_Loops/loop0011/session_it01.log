@@ -1,0 +1,139 @@
+# session it01 started 2026-11-01 12:37:26
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the task files, and the data on record, then do the literature work for item 01.
+  > $ uptime && cat reports/separator_moment_plan.md | head -400
+  > $ ls literature/ | head -200 && echo ---- && ls reports/scratch/first_moment/lit/ reports/scratch/ 2>/dev/null && echo ---- && cat literature/MISSING.md | head -1
+  > $ ls literature/ | grep -iE "diaz|lichev|coja|perarnau|lee-lee|do-erde|bezrukov|feige|behrisch|lageras|dembo|andreis|connell|puhalskii|kolesnik|luczak|bollobas|kl
+
+The held papers are nearly all present. Next I'll extract text from them, and read the record sections the task names, in parallel.
+  > $ mkdir -p reports/scratch/separator_moment/lit && cd literature && for f in 2022-Diaz-Diner-Serna-Serra-Vertex-Bisection-Width-Random-Regular-Graphs-arXiv.pdf 20
+
+Now I'll fetch the open preprints and, in parallel, read the record sections the task requires.
+  > $ cd /home/al/dev/MOSP && mkdir -p /tmp/sepmom_dl && cd /tmp/sepmom_dl && for id in 1503.03923 1912.13383 1109.0689; do curl -sL -A "Mozilla/5.0" -o "$id.pdf" "ht
+  > ToolSearch {"query": "select:WebSearch,WebFetch", "max_results": 2}
+  > WebSearch {"query": "Andreis K\u00f6nig Patterson \"large-deviations principle for all the cluster sizes of a sparse Erd\u0151s\u2
+  > WebSearch {"query": "O'Connell 1998 \"Some large deviation results for sparse random graphs\" Probability Theory and Related Field
+  > WebSearch {"query": "Puhalskii \"Stochastic processes in random graphs\" Annals of Probability 2005 large deviations giant compone
+  > WebSearch {"query": "D\u00edaz Serna Wormald 2007 \"Bounds on the bisection width for random d-regular graphs\" Theoretical Comput
+  > WebSearch {"query": "Luczak McDiarmid 2001 \"Bisecting sparse random graphs\" Random Structures Algorithms pdf", "mode": "standard
+  > WebSearch {"query": "Bollob\u00e1s 1988 \"The isoperimetric number of random regular graphs\" European Journal of Combinatorics", 
+  > $ grep -n "^## \|^### " reports/excess_phase_diagram.md | head -80; echo ----; grep -n "^## \|^### " reports/random_graph_first_moment.md; echo ----; grep -n "^##
+  > $ cd /tmp/sepmom_dl && UA="Mozilla/5.0 (X11; Linux x86_64)"; 
+curl -sL -A "$UA" -o akp_wias.pdf "https://www.wias-berlin.de/people/koenig/www/AKP19Revision.pdf"; 
+  > $ sed -n 14,241p reports/excess_phase_diagram.md
+  > $ sed -n 4214,4660p reports/excess_phase_diagram.md
+  > $ grep -n "^## 14\|^## 13\|^## 15" reports/excess_phase_diagram.md; sed -n "$(grep -n '^## 14' reports/excess_phase_diagram.md | cut -d: -f1),\$p" reports/excess_
+  > $ cat reports/random_graph_first_moment.md
+  > $ cat reports/scratch/clique_cover_moment/README.md; echo =====; cat reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ sed -n 29,209p reports/random_graph_pathwidth_survey.md; echo =====; sed -n 503,690p reports/random_graph_pathwidth_survey.md; echo ====; sed -n 730,756p report
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization && for f in EmptyPair.lean FirstMoment.lean FirstMomentAsymptotics.lean CliqueCoverMoment.lean ForestCover.lean; do 
+  > $ cd /home/al/dev/MOSP && sed -n 319,557p reports/random_graph_first_moment.md
+  > $ grep -n "^## \|^### " reports/scratch/clique_cover_moment/REPORT_generator.md; sed -n "$(grep -n '^## 3' reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ cd /tmp/sepmom_dl && UA="Mozilla/5.0 (X11; Linux x86_64)"; gunzip -kf dsw_tr.ps.gz && (ps2pdf dsw_tr.ps dsw_tr.pdf 2>&1 | head -2; file -b dsw_tr.pdf | cut -c1-
+  > $ cd /tmp/sepmom_dl && for f in 1503.03923 akp_wias puhalskii_arxiv 1109.0689; do pdftotext -layout $f.pdf $f.txt 2>/dev/null; echo "$f: $(wc -w < $f.txt) words; 
+  > $ cd /tmp/sepmom_dl && rm -f 1109.0689.pdf 1109.0689.txt && UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safa
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/lit && head -c 45000 2022-Diaz-Diner-Serna-Serra-Vertex-Bisection-Width-Random-Regular-Graphs-arXiv.txt
+  > $ cat 2014-Perarnau-Serra-Tree-Depth-Random-Graphs-DAM-arXiv.txt
+  > $ cat 2007-Behrisch-Component-Evolution-Random-Intersection-Graphs-EJC.txt; echo "=========LAGERAS"; cat 2008-Lageras-Lindholm-Component-Structure-Random-Intersec
+  > $ cat 2001-Diaz-Petit-Serna-Trevisan-Approximating-Layout-Problems-Random-Graphs-DM.txt; echo "=========LLO"; cat 2012-Lee-Lee-Oum-Rank-Width-Random-Graphs-JGT-ar
+
+Reading the extracted papers now, in chunks small enough to come back inline.
+  > $ f=2022-Diaz-Diner-Serna-Serra-Vertex-Bisection-Width-Random-Regular-Graphs-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 28000
+  > $ f=2022-Diaz-Diner-Serna-Serra-Vertex-Bisection-Width-Random-Regular-Graphs-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | tail -c +28001 | head -c 30000
+  > $ f=2014-Perarnau-Serra-Tree-Depth-Random-Graphs-DAM-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 28000
+  > $ f=2014-Perarnau-Serra-Tree-Depth-Random-Graphs-DAM-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | tail -c +28001 | head -c 30000
+  > $ f=2007-Behrisch-Component-Evolution-Random-Intersection-Graphs-EJC.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 28000
+  > $ f=2007-Behrisch-Component-Evolution-Random-Intersection-Graphs-EJC.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | tail -c +28001 | head -c 30000
+  > $ f=2008-Lageras-Lindholm-Component-Structure-Random-Intersection-Graphs-EJC.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 30000
+  > $ f=2001-Diaz-Petit-Serna-Trevisan-Approximating-Layout-Problems-Random-Graphs-DM.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 30000
+  > $ f=2012-Lee-Lee-Oum-Rank-Width-Random-Graphs-JGT-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 30000; echo "=======KLOKS"; sed 's/^ \{20,\}//' 1994-Klo
+  > $ f=2014-Kolesnik-Wormald-Lower-Bounds-Isoperimetric-Numbers-Random-Regular-Graphs-SIDMA-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 28000
+  > $ f=2014-Kolesnik-Wormald-Lower-Bounds-Isoperimetric-Numbers-Random-Regular-Graphs-SIDMA-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | tail -c +28001 | head -c 
+  > $ f=2014-Kolesnik-Wormald-Lower-Bounds-Isoperimetric-Numbers-Random-Regular-Graphs-SIDMA-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | tail -c +56001 | head -c 
+  > $ f=2023-Lichev-Mitsche-Minimum-Bisection-Random-3-Regular-Graphs-EJC-arXiv.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 26000; echo; echo "=====GREP"; grep 
+  > $ f=2017-Coja-Oghlan-Cooley-Kang-Skubch-Minimum-Bisection-Planted-Bisection-Model-ToC.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 24000; echo "=====GREP"; g
+  > $ f=2004-Bezrukov-Elsasser-Monien-Preis-Tillich-Spectral-Lower-Bounds-Bisection-Width-TCS.txt; sed 's/^ \{20,\}//' $f | tr -s ' ' | head -c 16000; echo "=====GREP
+  > $ f=2024-Do-Erde-Kang-Note-Width-Sparse-Random-Graphs-JGT-arXiv.txt; grep -n -i "kloks\|first moment\|separator\|balanced\|union bound\|2.36\|Gao" $f | head -40; 
+  > $ f=2012-Gao-Treewidth-Erdos-Renyi-Random-Intersection-Scale-Free-Random-Graphs-DAM-arXiv.txt; grep -n -i "kloks\|balanced\|first moment\|Theorem 1\|Theorem 2\|1.
+  > $ cd /tmp/sepmom_dl && sed 's/^ \{20,\}//' 1503.03923.txt | tr -s ' ' | head -c 26000
+  > $ cd /tmp/sepmom_dl && grep -n -i "o'connell\|connell\|largest component\|giant\|Theorem 1\|Corollary\|lower tail\|macroscopic" akp_wias.txt | head -60; echo ====
+  > $ cd /tmp/sepmom_dl && grep -n -i "largest component\|giant\|Theorem [0-9]\|large deviation\|rate function\|O'Connell\|Connell" puhalskii_arxiv.txt | head -80
+  > $ cd /tmp/sepmom_dl && sed 's/^ \{20,\}//' dsw_tr.txt | tr -s ' ' | head -c 36000
+  > $ cd /home/al/dev/MOSP/reports/scratch/first_moment/lit && grep -n -i "planted\|Lemma 2\|Theorem 2\|first moment\|k-partition\|balanced" turner1986.txt | head -30
+  > WebFetch {"url": "https://eprints.lse.ac.uk/17554/", "prompt": "Does this repository record for \"Bisecting sparse random graphs\
+  > WebFetch {"url": "https://link.springer.com/article/10.1007/s004400050149", "prompt": "For O'Connell 1998 \"Some large deviation 
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/3d0376bd-2c82-42d0-bb0a-a9a308847d25/tool-results/bd0oi5l8d.txt
+  > $ cd /tmp/sepmom_dl && sed -n 370,470p puhalskii_arxiv.txt | sed 's/^ \{20,\}//' | tr -s ' '; echo "=====COR2.4 and O'Connell"; sed -n 640,730p puhalskii_arxiv.tx
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/3d0376bd-2c82-42d0-bb0a-a9a308847d25/tool-results/bcx75nzag.txt
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/lit && f=2012-Gao-Treewidth-Erdos-Renyi-Random-Intersection-Scale-Free-Random-Graphs-DAM-arXiv.txt; sed -n
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/3d0376bd-2c82-42d0-bb0a-a9a308847d25/tool-results/bjkctnw8t.txt
+  > $ cd /tmp/sepmom_dl && UA="Mozilla/5.0 (X11; Linux x86_64)"; curl -sL -A "$UA" -o lampis.pdf "https://arxiv.org/pdf/1211.0524"; echo "lampis: $(file -b lampis.pdf
+  > WebFetch {"url": "https://researchonline.lse.ac.uk/id/eprint/17554/", "prompt": "Does this repository record for \"Bisecting spar
+  > $ cd /tmp/sepmom_dl && sed 's/^ \{20,\}//' lampis.txt | tr -s ' ' | tail -c +20001 | grep -n -i "table\|Bollob\|0\.\|Theorem\|∆ = \|improve" | head -80
+  > $ cd /tmp/sepmom_dl && sed -n 300,372p puhalskii_arxiv.txt | sed 's/^ \{20,\}//' | tr -s ' '; echo "=====COR2.3-2.4"; sed -n 560,640p puhalskii_arxiv.txt | sed 's
+  > $ cd /tmp/sepmom_dl && sed -n 440,520p akp_wias.txt | sed 's/^ \{20,\}//' | tr -s ' '
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/lit && f=2023-Lichev-Mitsche-Minimum-Bisection-Random-3-Regular-Graphs-EJC-arXiv.txt; grep -n "0\.10[0-9]*
+  > $ cd /home/al/dev/MOSP && ls paper1/latex/*.bib 2>/dev/null | head; grep -n "doi\s*=" paper1/latex/*.bib 2>/dev/null | head -3; sed -n 1,60p paper1/latex/check_re
+  > $ sed -n 1,40p reports/excess_phase_diagram.md; echo ====; sed -n 1,30p Ralph_Loops/loop0011/gate.py; cat Ralph_Loops/loop0011/knobs.json; echo; grep -n "literatu
+  > $ cd /tmp/sepmom_dl && sed 's/^ \{20,\}//' lampis.txt | tr -s ' ' > lampis_flat.txt; awk 'NR>=1' lampis_flat.txt | grep -n "Table 1\|4 Local\|5 Asymp\|Theorem 2" 
+  > $ cd /tmp/sepmom_dl && grep -n "Corollary 2.4\|β n\b\|largest component" puhalskii_arxiv.txt | head -20; L=$(grep -n "^Corollary 2.4" puhalskii_arxiv.txt | head -
+  > $ cd /tmp && UA="paper1-refcheck/0.1 (mailto:none@example.org)"; q() { curl -s -A "$UA" "https://api.crossref.org/works?query.bibliographic=$(python3 -c "import u
+  > $ L=literature; cp /tmp/sepmom_dl/1503.03923.pdf "$L/2017-Dembo-Montanari-Sen-Extremal-Cuts-Sparse-Random-Graphs-AOP-arXiv.pdf"; cp /tmp/sepmom_dl/akp_wias.pdf "$
+  > $ mkdir -p reports/scratch/separator_moment && cat > reports/scratch/separator_moment/rate_check.py <<'EOF'
+"""Check, before it is quoted, the rate function for t
+  > $ cat > reports/scratch/separator_moment/rate_preview.py <<'EOF'
+"""Preview for items 05-06, from the quoted rate function only (rate_check.py):
+the *relaxed* sep
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0011/gate.py > /tmp/sepmom_dl/gate_it01.log 2>&1; echo "EXIT $?" >> /tmp/sepmom_dl/gate_it01.log) &
+sleep 2; echo 
+  > Write /home/al/dev/MOSP/reports/separator_moment.md
+  > $ tail -c 1500 /tmp/sepmom_dl/gate_it01.log; echo; grep -c "" /tmp/sepmom_dl/gate_it01.log
+  > $ pgrep -af "gate.py" | grep -v pgrep; ls -la /tmp/sepmom_dl/gate_it01.log; uptime
+
+The gate is still running (PID 126924, log buffered). While it runs, I'll write the MISSING.md entries, PROGRESS.md and the iterations mark.
+  > $ grep -n "^## " literature/MISSING.md | head; tail -5 literature/MISSING.md | cut -c1-200
+  > $ sed -n 1,30p Ralph_Loops/loop0011/iterations.md | cut -c1-120; grep -n "^- \[ \] \*\*01" Ralph_Loops/loop0011/iterations.md
+  > $ cat >> literature/MISSING.md <<'EOF'
+
+## The separator first moment (loop0011 item 01, 2026-11-01)
+
+Read for `reports/separator_moment.md` §1. Obtained this ite
+  > $ cat >> Ralph_Loops/loop0011/PROGRESS.md <<'EOF'
+
+## Iteration 1 — 2026-11-01 12:55
+
+Item 01, the literature: who counts separators, and what the inner
+probabili
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path('reports/separator_moment.md'); s=p.read_text()
+old="at `c = 6–10` (5.5 at `c = 3`, 7.2 at `c = 2`; `rate_previe
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^EXIT" /tmp/sepmom_dl/gate_it01.log 2>/dev/null; do sleep 5; if ! kill -0 126924 2>/dev/null; then break; fi; done; tail -c 2500 /tmp/sepmom_dl/g
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path('Ralph_Loops/loop0011/PROGRESS.md'); s=p.read_text()
+old="- Gate: `python3 Ralph_Loops/loop0011/gate.py` — see t
+  > $ rm -rf reports/scratch/separator_moment/__pycache__ && git status --short reports/ | head
+
+Item 01 is complete. Everything is written, the gate passed, and the working tree holds only the item's paths.
+
+**What was done**
+
+- Read the twelve held papers in full (Lichev–Mitsche's long middle skimmed), fetched five open preprints into `literature/` with the repository's naming, and extracted text for twenty papers into `reports/scratch/separator_moment/lit/`.
+- Created `reports/separator_moment.md` with the header (three events, notation) and §1: Table A "who counts what", Table B "the rates", Table C "representative counts and what they bought", the brief's paragraph, what items 05–08 take from it, corrections to the item, and the non-claims.
+- Added a MISSING.md section for the five papers not obtainable without a login, each with the restatement it is cited through. All DOIs resolved through Crossref.
+
+**Main findings**
+
+- **Stop rule did not fire.** Nobody states a separator first moment for pathwidth of `G(n, c/n)` with an exact inner probability. Nearest: Do–Erde–Kang 2024 count separators with a deterministic `2^{Δ(T)|S|}` inner bound (thresholds only); Kolesnik–Wormald 2014 have the exact inner count for a single vertex cut in the configuration model.
+- **The relaxed event's rate is in print.** The LDP for the largest component (O'Connell 1998 via Puhalskii 2005, Cor. 2.4(3)) gives `P(no component > N/2) ≤ e^{−I(½)N}` with `I(½) > 0` exactly when `c′ > 2 ln 2`. Checked numerically on the quoted formula. The planner's two routes for this rate were both wrong: at `c = 6` the LDP gives 0.595 against the plan's bracket `[0.552, 1.245]`.
+- **Preview for item 06** (labelled, from the quotation alone): the relaxed separator count lifts `β*` by +0.028, +0.011, +0.004 at `c = 3, 6, 10`, and is positive for every `c > 2 ln 2`.
+- **Representative counts in print bought 1.7% to 25% of a gap** (Gao's rigid partitions, Lampis's locally optimal sets, Lichev–Mitsche's structural count).
+- **Corrections to the brief:** the Kolesnik–Wormald arXiv number was wrong; Puhalskii is in Annals of Probability; the "Díaz–Serna–Wormald locally optimal bisections" are actually Lampis 2012; the held Kloks preview is a different chapter.
+
+**Gate:** PASS. PROGRESS.md updated to 1/13, item marked `[x]`. Nothing committed.
+
+# result: success in 1208s, 87 turns, cost $12.27

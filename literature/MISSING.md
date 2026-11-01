@@ -516,3 +516,54 @@ saved. Findings: `reports/mycielski_pathwidth.md`.
   lower bounds for treewidth, pathwidth and carving width, the exact pathwidth of
   the hypercube (formalised in `lean/MOSPFormalization/Hypercube.lean`), and
   Hamming graphs.
+
+## The separator first moment (loop0011 item 01, 2026-11-01)
+
+Read for `reports/separator_moment.md` §1. Obtained this item, in `literature/`
+with the repository's naming: Dembo, Montanari & Sen 2017 (arXiv 1503.03923;
+*Ann. Probab.* 45(2), doi:10.1214/15-AOP1084), Andreis, König & Patterson 2021
+(the authors' revision from WIAS; *Random Structures Algorithms* 59(4) 522–553,
+doi:10.1002/rsa.21007), Puhalskii 2005 (arXiv math/0402183; *Ann. Probab.* 33(1)
+337–412, doi:10.1214/009117904000000784), Díaz, Serna & Wormald 2003 (the
+ALCOM-FT technical report TR-03-44, the preprint of the 2007 paper below) and
+Lampis 2012 (arXiv 1211.0524, no journal version found). Not obtained:
+
+- **O'Connell, N.** (1998). Some large deviation results for sparse random
+  graphs. *Probability Theory and Related Fields*, 110, 277–285.
+  doi:10.1007/s004400050149 — Springer paywall (Semantic Scholar lists a
+  "bronze" PDF at the publisher, which is not served without a login). Its
+  LDP for the largest component is restated, with the rate function in his
+  form and the note that his Theorem 3.1 "has a misprint", by Puhalskii
+  (2005), remark after Corollary 2.5; Andreis–König–Patterson §1.4 say both
+  his LDPs are contractions of theirs. Cite through those.
+- **Luczak, M.J. & McDiarmid, C.** (2001). Bisecting sparse random graphs.
+  *Random Structures & Algorithms*, 18(1), 31–38.
+  doi:10.1002/1098-2418(200101)18:1<31::AID-RSA3>3.0.CO;2-1 — Wiley paywall;
+  LSE Research Online record 17554 has no full text. The `ln 4` threshold for
+  a linear bisection width (the giant exceeds `n/2`) is restated by
+  Lichev–Mitsche 2023 p. 2, Coja-Oghlan et al. 2017 p. 4 and
+  Dembo–Montanari–Sen 2017 p. 1; its spanning-tree technique by Do–Erde–Kang
+  2024 §1.3.
+- **Bollobás, B.** (1988). The isoperimetric number of random regular graphs.
+  *European Journal of Combinatorics*, 9(3), 241–244.
+  doi:10.1016/S0195-6698(88)80014-3 — Elsevier (the direct download is
+  blocked). Its first-moment bound `i_E(d) ≥ d/2 − √(d ln 2)` and its exact
+  pairing-model count are re-derived in Kolesnik–Wormald 2014 §§1, 2, 7 (held)
+  and Lampis 2012 §3 (held).
+- **Díaz, J., Serna, M.J. & Wormald, N.C.** (2007). Bounds on the bisection
+  width for random d-regular graphs. *Theoretical Computer Science*, 382(2),
+  120–130. doi:10.1016/j.tcs.2007.03.003 — Elsevier, blocked; the 2003
+  technical report is held and carries the same Table 1 of upper bounds, with
+  an analysis it calls non-rigorous.
+- **Kloks, T.** (1994). *Treewidth: Computations and Approximations*, LNCS 842,
+  doi:10.1007/BFb0045375 — the chapter with the first moment over balanced
+  partitions of `G(n, d/n)` (linear treewidth for `d ≥ 2.36`). The held
+  two-page preview is of chapter 12 (cocomparability graphs of bounded
+  dimension) and contains none of it; the result is cited only as restated by
+  Do–Erde–Kang 2024 p. 1, Gao 2006 p. 226, Gao 2012 §3 and Perarnau–Serra
+  2014 pp. 4, 9.
+
+Two corrections to the loop's brief recorded here so they are not repeated:
+Kolesnik & Wormald 2014 is arXiv 1311.6555 (1109.0689 is a paper on payment
+systems); Díaz–Diner–Serna–Serra's vertex bisection paper is published as
+*J. Comput. System Sci.* 2024, doi:10.1016/j.jcss.2024.103550.
