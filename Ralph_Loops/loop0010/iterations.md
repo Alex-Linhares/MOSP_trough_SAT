@@ -257,7 +257,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** Tightness of F1 (it is a factor `ω` loose on chains
     of cliques); anything above `e_g(r)` for random instances.
 
-- [ ] **07 `β⁺` on paper: the provable constructions analysed.**
+- [x] **07 `β⁺` on paper: the provable constructions analysed.**
   - **Question.** B(ii), second half. An explicit upper constant
     `β⁺(d, μ)` for the random cover model, with a proof or a precisely
     stated conjecture, from the constructions whose width is analysable.

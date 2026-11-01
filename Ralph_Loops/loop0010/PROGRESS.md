@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 6/13 SOLVED
+Current: 7/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -512,3 +512,105 @@ item 03's `pw = ω − 1` (a measurement) — say so rather than quote F1′'s
 pathwidth argument that is not degree-based, exact beyond block graphs on a
 few small random instances; a `learning/bound_harness.py` run on the 338
 bound-gap corpus instances would say whether it is worth anything there.
+
+---
+
+## Iteration 7 — 2026-11-01 03:45
+
+Item 07, `β⁺` on paper: the provable constructions analysed.
+
+### Completed
+
+- **`learning/beta_plus.py`**: the layer lemma (`layer_bound`,
+  `bfs_components` — item 05's random choices in the same order, so the
+  layout is its layout — `layer_lemma_check`); the exploration recursion for
+  the uniform model (`bfs_recursion_uniform`, (R) of §7.2), its degree- and
+  size-aware configuration form (`bfs_recursion`), the fixed generator's leaf
+  form (`padded_layers`), the phase scan (`bfs_phase_scan`,
+  `padded_phase_scan`) and the observed-state extractor (`bfs_state`); the
+  greedy independent sets in the slot picture (`greedy_ode` for the
+  pattern-count and random policies, (G) of §7.3; the closed form
+  `random_greedy_uniform`, (C); `greedy_simulation` with witnesses). 
+  `tests/test_beta_plus.py`, 14 tests (the lemma against brute-force vertex
+  separation; the layers against item 05's; (R) at `d = 2` equals the
+  `G(n, c/n)` recursion to `1e-12`; the general form reduces to (R) for
+  Poisson degrees; the phase scan is periodic; (C) at `d = 2` is
+  `ln(1 + c)/c`; (G) random reproduces (C); witnesses independent and
+  maximal; (G) and (R) against simulation on the uniform model at
+  `n = 8000`; the leaf form). `reports/scratch/beta_plus/recursion.py`: the
+  lemma on 1,000 random graphs, all 2,024 accepted item 05 instances
+  regenerated from their seeds (`n_ones` and the recorded layer bound
+  asserted equal on every one), 180 fresh unpadded uniform-model instances
+  (5 per cell at `n = 1000, 5000`), every comparison with relative errors;
+  `instances.csv`, `pure.csv`, `beta_plus_table.csv`, `tables.md`,
+  `run.log`. 49 s wall on 8 workers at nice 19, 315 s of instance time; no
+  solver, `solutions/` and the ledger untouched.
+- **`reports/excess_phase_diagram.md` §7**: Lemma L with proof; the
+  derivation of (R) from the exact conditional law of the unrevealed
+  patterns, its reduction to `G(n, c/n)` at `d = 2`, the configuration
+  form, the leaf form, and the phase (the limit of the layer bound per
+  customer is a band over the phase, the constant its supremum); the slot
+  picture, the invariance of alive degrees, (G) with its phases, (C) with
+  the `ln(1 + c)/c` check; why the min-degree greedy and the two-key rule
+  are not analysed; the comparison; the `β⁺` table; findings, kill, what it
+  does not claim; every table of `tables.md`.
+- **Numbers.** Layer lemma: 0 violations on 1,000 graphs (tight on 104) and
+  150 more against brute force. Phase-matched, (R) predicts the observed
+  layer bound at `n = 5000` to median relative error 0.0029 at `d = 4`,
+  0.0007 at `d = 6`, 0.0002 at `d = 8–10` (largest 0.044, 0.009, 0.009),
+  0.005 at `d = 3` (0.065); the observed values lie in the phase band on
+  314 of 345 instances at `d ≥ 3`, excursions ≤ 0.011, and spread across it
+  (within-cell sd 0.04–0.57 of the band's width, median 0.21, against
+  0.002–0.003 for the rule): **the BFS layer bound per customer does not
+  concentrate; its limit depends on the phase of the exploration.** At
+  `d = 2` the fixed generator's padding defeats the marginal form (growth
+  factor 1.47 against 1 at `(2, ½)`, a 10% giant predicted where there is
+  none) and the leaf form is right (`(2, 1)`: band `[0.335, 0.346]` against
+  observed 0.334–0.355). (G) agrees with its greedy to median 0.5% (largest
+  3.5%) on the uniform model, 0.8% / 4.1% on the generators at `d ≥ 4`,
+  2–6% (over-estimating) on the fixed generator at `d ≤ 3`, the leaves
+  again. `β⁺ = min(β⁺_BFS, 1 − α⁺_pc)` on the uniform model: the BFS wins
+  at `e ≤ 1`, the greedy from `e = 1.5`; `β⁺ − β*` is 0.080 at `(10, 2)`,
+  0.116 at `(8, 2)`, 0.17–0.23 at `(10, 1)`, `(6, 2)`, `(8, 1)`, 0.30–0.33
+  at `(4, 2)`, `(6, 1)`, `(10, ½)`, 0.296 at `(2, 1)` and 0.40–0.49 at every
+  cell with `1 ≤ e ≤ 3.5` (0.494 at `(4, ½)`), 0 at the degenerate `(2, ½)`
+  (no giant component, both constants zero). The analysed greedy is within
+  0.022 per customer of item 05's min-degree greedy on the same instances;
+  the rule's measured `β⁺` is 0.057 (`(10, 2)`) to 0.36 (`(2, 2)`) below the
+  analysed constant on the trusted cells.
+- **Kill verdict: not met** — `β⁺ − β* > 0.5` on 0 of 18 cells (largest
+  0.494); informative at `e ≥ 14` (gap ≤ 0.12), nearly uninformative on the
+  ridge; the gap is attributed to the constructions (finding 3), and no
+  further analysis item is proposed. Concentration (Wormald / the
+  branching-process coupling) is cited from memory, no held copy, marked
+  not verified. No certified value is wrong, no theorem is false, no
+  published claim of ours drifts.
+- **Literature.** We found no prior statement of (R), (G) or (C) for the
+  passive random intersection graph (patterns choosing customers); the held
+  Nikoletseas–Raptopoulos–Spirakis (2008) treats greedy independent sets on
+  the active model `G_{n,m,p}` and was not used.
+- **Gate: PASS** (one run, 2026-11-01 04:07–04:18 at load 0.4–1): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,603 passed (2 skipped,
+  1 xfailed; +14 new), pathwidth_solver 123 passed, paper check ok (66
+  pages, no undefined references). Log: `Ralph_Loops/loop0010/gate_it07.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 08, the structured count. From this item: `β*` is now bracketed on the
+uniform model by a provable `β⁺` that is 0.08 away at `(10, 2)` and 0.4–0.5
+on the ridge, so a lift of `β*` by 0.03 at `(6, 1)` (item 08's kill) would
+close a tenth of the remaining 0.32 there; the ridge is where both ends are
+worst. For item 09: the BFS band is widest on the ridge (0.08–0.10), a
+non-concentration that the rule does not share. For item 10: the padding is
+a leaf correlation the two marginals cannot express — a uniform-model
+statement transfers to the fixed generator within 1% at `d ≥ 4` and only
+through the leaves at `d ≤ 3` (§7.6 (6)). For item 11: Lemma L is a small,
+self-contained deterministic statement (BFS layers of a `SimpleGraph`, the
+layer-by-layer layout, `vs ≤ max (|L_i| + |L_{i+1}|) − 1`) and the natural
+third Lean target the plan names. For item 12: the sandwich to state is
+`β* ≤ lim inf opt/n ≤ lim sup opt/n ≤ β⁺` with the concentration step
+cited, and the phase band is a one-sentence caveat on any BFS-based bound.

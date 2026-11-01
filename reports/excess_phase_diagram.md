@@ -3415,3 +3415,565 @@ Censored rows of the record, not counted above: seven clique trees of item
 (`F1` 23–191, `F3 = 8` for `CT(6,2,2)`), three of them with `pw(B)` censored
 too (`CT(3,3,3)`, `CT(4,4,1)`, `CT(6,3,1)`); and the two random block trees at
 `n = 120` of item 03 §3.5 (`pw ∈ [6, 7]` and `[7, 8]`, F1 27 and 31).
+
+## 7. `β⁺` on paper: the provable constructions analysed (item 07, 2026-11-01)
+
+**Question.** B(ii), second half, of the plan. Item 05 measured four
+constructions at `n = 100–5000`; two of them, the BFS layer layout and a
+greedy independent set, have a width per customer whose limit can be written
+down. This item writes it down: a deterministic lemma for the layer layout
+and the two-type exploration recursion for the layer fractions of a random
+cover; the differential-equation limit of a greedy independent set in the
+cover model; `β⁺(d, μ)` as the smaller of the two, beside `β*(d, μ)`, item
+02's certified slope `b` and item 05's measured rule. Every limit is checked
+against simulation at every cell of item 05's grid, on the instances item 05
+drew (regenerated from their seeds) and on fresh instances of the unpadded
+uniform model; nothing is solved.
+
+**What was done.** `learning/beta_plus.py` (the lemma check, the recursions,
+the ODEs, the closed form, the greedy simulations), `tests/test_beta_plus.py`
+(14 tests: the lemma against brute-force vertex separation; the BFS layers
+against item 05's; the recursion at `d = 2` against the `G(n, c/n)`
+recursion to `1e-12`; the general form against the uniform one for Poisson
+degrees; the phase scan's periodicity; the random greedy's closed form at
+`d = 2` against `ln(1 + c) / c`; its ODE against the closed form; the greedy
+simulations' witnesses independent and maximal; both ODEs and the recursion
+against simulation on the uniform model at `n = 8000`; the padded form's
+leaf count), and the script `reports/scratch/beta_plus/recursion.py`, which
+checks the lemma on 1,000 random graphs, regenerates all 2,024 accepted
+item 05 instances from their seeds (the recorded `n_ones` and the recorded
+layer bound asserted equal on every one), draws 180 fresh instances of the
+unpadded uniform model (5 per cell at `n = 1000` and `5000`), and compares:
+the phase-matched recursion with the observed layers, the phase band with
+the observed layer bound, each greedy's ODE yield with its simulation. 49 s
+of wall time on 8 workers at `nice -n 19` (315 s of instance time); no
+solver, `solutions/` and the ledger untouched.
+
+**Size range.** Recursions checked against simulation at `n = 100–5000`
+(item 05's instances, both generators) and `n = 1000, 5000` (the uniform
+model); `β⁺` is a limit statement on the uniform model at the 18 `(d, μ)`
+cells of item 05's grid; `β*`, `b` and the rule are as in §2 and §5.
+
+**Regenerate.**
+
+```
+nice -n 19 python3 reports/scratch/beta_plus/recursion.py      # instances.csv, pure.csv, beta_plus_table.csv, tables.md, run.log
+python -m pytest tests/test_beta_plus.py -q
+```
+
+### 7.1 The layer lemma (deterministic)
+
+**Lemma L.** Let `L_0, L_1, …, L_h` be the BFS layers of a connected graph
+from any root, and list the vertices layer by layer (any order inside a
+layer). The vertex separation of that layout is at most
+`max_i (|L_i| + |L_{i+1}|) − 1` (and `|L_0| − 1 = 0` if there is one layer).
+For a disconnected graph, list the components one after another; the bound
+is the maximum over components.
+
+*Proof.* Every edge joins two vertices of the same layer or of consecutive
+layers. Consider the cut after the `j`-th vertex of `L_{i+1}`, `1 ≤ j ≤
+|L_{i+1}|`. A vertex is separated at this cut if it is placed and has a
+neighbour placed later. A vertex of `L_h` with `h ≤ i − 1` has all its
+neighbours in `L_{h−1} ∪ L_h ∪ L_{h+1} ⊆ L_0 ∪ … ∪ L_i`, all placed, so it is
+not separated. The separated set is therefore inside `L_i` together with the
+first `j` vertices of `L_{i+1}`, of size at most `|L_i| + j`. For `j ≤
+|L_{i+1}| − 1` this is at most `|L_i| + |L_{i+1}| − 1`. For `j = |L_{i+1}|`
+the whole of `L_{i+1}` is placed, so a vertex of `L_i` has no later
+neighbour either, the separated set is inside `L_{i+1}`, and its size is at
+most `|L_{i+1}| ≤ |L_i| + |L_{i+1}| − 1` since `|L_i| ≥ 1`. The cuts inside
+`L_0` are the case `i = −1` with `L_{−1} = ∅`. A cut between two components
+separates nothing of the earlier component. ∎
+
+Checked before it was stated: `layer_lemma_check` on 1,000 random graphs
+(`G(n, p)`, random clique covers, random trees with extra edges, `n ≤ 60`),
+**0 violations**, tight on 104; and `tests/test_beta_plus.py` repeats it
+against brute-force vertex separation on 150 graphs. Item 05's
+`bfs_layer_bound` is exactly this bound (its maximum over consecutive entries
+of the concatenated list equals the maximum over components, since a last
+layer `a` followed by a root layer of size 1 contributes `a ≤` that
+component's own bound). The lemma says nothing about *which* root or layer
+order is good; it bounds the layout item 05 measured.
+
+### 7.2 The exploration recursion for the layer fractions
+
+**The uniform model.** `n` customers, `m = μ n` patterns, each an
+independent uniform `d`-subset (the model of `β*` and of
+`CliqueCoverMoment.lean`). Explore the MOSP graph from a root: `L_0 =
+{root}`, `R_i = L_0 ∪ … ∪ L_i`, `U_i = V ∖ R_i` the unreached customers,
+`u_i = |U_i| / n`, `x_i = |L_i| / n`. Reveal a pattern the first time it
+meets a layer. A pattern meeting `R_{i−1}` was revealed at the first layer it
+meets and all its customers are in `R_i`; so after layer `i − 1` the
+*unrevealed* patterns are exactly those avoiding `R_{i−1}`, and conditional
+on the history each of them is an independent uniform `d`-subset of
+`V ∖ R_{i−1}` — the conditioning event (avoid `R_0`, …, avoid `R_{i−1}`)
+depends only on the pattern's own set and on layers that are now fixed. A
+customer `v ∈ U_i` enters `L_{i+1}` iff some unrevealed pattern contains `v`
+and meets `L_i`. With `W = |V ∖ R_{i−1}| = u_{i−1} n`, an unrevealed pattern
+contains `v` and meets `L_i` with probability
+
+    (d / W) · [1 − C(W − 1 − |L_i|, d − 1) / C(W − 1, d − 1)]  ≈  (d / (u_{i−1} n)) · (1 − (u_i / u_{i−1})^{d−1}),
+
+there are about `m u_{i−1}^d` unrevealed patterns, and they are independent,
+so the number containing `v` and meeting `L_i` is asymptotically Poisson with
+mean `λ_i = μ d (u_{i−1}^{d−1} − u_i^{d−1})`, and
+
+    x_{i+1} = u_i (1 − exp(−μ d (u_{i−1}^{d−1} − u_i^{d−1}))),     u_{i+1} = u_i − x_{i+1}.        (R)
+
+At `d = 2` the cover is `G(n, m)` with `m = μ n` edges, `c = 2 μ`, and
+`λ_i = 2 μ (u_{i−1} − u_i) = c x_i`: (R) is `x_{i+1} = u_i (1 − e^{−c x_i})`,
+the `G(n, c/n)` recursion of the brief (checked to `1e-12`,
+`test_uniform_recursion_is_gnp_recursion_at_d_two`). The branching factor
+of the two-type process (a customer has `Poisson(μ d)` further patterns, each
+with `d − 1` further customers) is `ρ = μ d (d − 1)`; `ρ ≤ 1` is `e ≤
+e_g(r)` of §0, where there is no giant component and every layer is `o(n)`.
+
+**The degree- and size-aware form** (`bfs_recursion`), needed because both
+generators pad: a bipartite configuration model with customer-degree law
+`p_k` and pattern-size law `ν_s` (patterns of size `s` per customer). State
+at layer `i`: `u_k` unreached customers of degree `k`, `ν_s` unrevealed
+patterns of size `s`, `ℓ` the slots of `L_i`'s customers in unrevealed
+patterns, `T = Σ_s s ν_s`. An unrevealed pattern of size `s` meets `L_i` with
+probability `1 − (1 − ℓ / T)^s`; a slot of an unreached customer lies in such
+a pattern with probability `ρ_i = Σ_s (s ν_s / T)(1 − (1 − ℓ / T)^{s−1})`; a
+degree-`k` unreached customer is reached with probability `1 − (1 − ρ_i)^k`;
+then `u_k ← u_k (1 − ρ_i)^k`, `ν_s ← ν_s (1 − ℓ / T)^s`, and the new
+layer's unrevealed slots are `ℓ ← (1 − ρ_i) Σ_k k u_k^{old} − Σ_k k u_k^{new}`
+(the slot count balances: `T_{new} = ℓ_{new} + Σ_k k u_k^{new}`, checked
+algebraically). For Poisson degrees and a single size it reproduces (R)
+(`test_general_recursion_reduces_to_uniform_for_poisson_degrees`). **Its
+limitation**: the configuration model carries the two marginals only. The
+fixed generator's padding re-attaches each isolated customer (a fraction
+`e^{−μ d}`) as a degree-1 *leaf* of one uniform pattern; the marginal form
+treats a leaf as an ordinary degree-1 customer and overstates the growth
+factor (1.47 against 1 at `(2, ½)`, where the leaves are 37% of the
+customers). The right description is (R) on all `n` customers plus
+`e^{−μ d} (u_{i−1}^d − u_i^d)` leaves in layer `i + 1` — the leaves of the
+patterns revealed at step `i` — with the growth factor unchanged
+(`padded_layers`). The fitted generator's padding is of the same kind and is
+left at the marginal form; its `d ≤ 3` cells exist only at `n ≤ 2000`.
+
+**The phase, and what the limit is.** (R) is autonomous in `(u_{i−1}, u_i)`
+and its orbit from a seed `u_0 = 1 − ε` is *not* a time shift of the orbit
+from `ε / ρ`, except in the limit `ε → 0` where the two interleave: the
+layer fractions at the linear scale depend on where, within one factor
+`ρ`, the early (sub-linear, branching-process) growth lands when it becomes
+linear. So `max_i (x_i + x_{i+1})` along the orbit is a function of the
+phase `θ = log_ρ ε mod 1`, periodic in `θ`, and the honest constant for the
+layout is its supremum:
+
+    β⁺_BFS(d, μ) = sup_θ max_i (x_i(θ) + x_{i+1}(θ)),
+
+with the infimum and the mean over the phase beside it (`bfs_phase_scan`:
+48 phases, `ε = 10⁻⁷`; one more period changes nothing at `10⁻⁶`). In the
+simulation the phase is set by the random early growth (the martingale
+limit of the branching process and `log_ρ n`), so the observed layer bound
+per customer has, as `n → ∞`, a non-degenerate limit law supported on
+`[inf, sup]` — a prediction the data bear out (finding 2). **Concentration**
+of the layer sizes around the orbit, given the phase, is the differential-
+equation method of Wormald (1995, *Ann. Appl. Probab.* 5(4) 1217–1235; the
+1999 lecture notes) or the branching-process coupling of the exploration
+process; **neither is held in `literature/`, and the step is cited, not
+verified**. What is checked is the conclusion: §7.4.
+
+### 7.3 Greedy independent sets, and the slot picture
+
+`pw ≤ n − α` is `pathwidth_le_card_sub_indepNum` (`IndependenceBound.lean`),
+so any independent set of size `α_greedy n` is a proved upper bound
+`1 − α_greedy` per customer on the instance it is found in. Item 05 ran the
+*min-degree* greedy (a vertex of minimum remaining degree in the MOSP graph,
+its closed neighbourhood deleted); this item analyses two greedies that are
+tractable in the cover model and measures the third beside them.
+
+**The slot picture.** A pattern of size `s` has `s` slots. Let `I` be the
+independent set built so far; call a pattern *alive* if it avoids `I`, a
+customer *alive* if it is not in `I` and lies in no pattern meeting `I`.
+The degree of an alive customer is its number of alive patterns. When an
+alive customer `v` is taken, every pattern containing `v` dies and every
+customer of those patterns is deleted. **The degree of an alive customer
+never changes**: a pattern of `u` dies only when it contains the chosen `v`,
+and then `u` is deleted with it. So a greedy by *fewest alive patterns* (the
+pattern-count greedy) runs through phases `k = 0, 1, 2, …`, each taking
+customers of degree `k` until none is left, and the minimum degree never
+falls back. Conditional on what the greedy has looked at (the degrees of the
+alive customers, the members of the dead patterns), the slots of the alive
+patterns are matched to customers uniformly given the degrees — the
+configuration-model approximation, exact up to the `O(1/n)` chance that one
+pattern hits a customer twice. Write `x_j` for the alive customers of degree
+`j` per `n`, `y_s` for the alive patterns of size `s` per `n`, `T = Σ_s s y_s`
+(alive slots, dead-customer slots included), `a = Σ_s s (s − 1) y_s / T` (the
+mean number of other slots of a size-biased pattern). Taking a degree-`k`
+customer kills `k` size-biased patterns, whose `k a` other slots each belong
+to an alive customer of degree `j` with probability `j x_j / T`; that
+customer is deleted. Time `t = |I| / n`; in phase `k`:
+
+    dx_j/dt = −[j = k] − k · a · j x_j / T,     dy_s/dt = −k · s y_s / T,                       (G)
+
+the phase ends when `x_k = 0`, and `α⁺_pc = ` the terminal `t` (`greedy_ode`,
+Euler at `dt = 10⁻⁴`, the phase ends by interpolation). The **random
+greedy** (a uniformly random alive customer) has `[j = k]` replaced by
+`x_j / Σ x` and `k` by the mean alive degree `k̄ = Σ j x_j / Σ x`. For the
+uniform model (Poisson degrees, single size) it integrates in closed form:
+the alive-customer fraction `υ` satisfies `υ' = −1 − μ d (d − 1)(1 − t)^{d−2} υ`,
+whose solution vanishes at the `t*` with
+
+    ∫_0^{t*} exp(μ d (1 − (1 − s)^{d−1})) ds = 1,          α⁺_random = t*,                     (C)
+
+and at `d = 2`, `c = 2 μ`, `t* = ln(1 + c) / c` — the classical random-greedy
+constant for `G(n, c/n)` that the survey (§1.4) quotes with its reference
+"not re-checked"; (C) reproduces it (`test_random_greedy_closed_form_at_d_two_is_log_one_plus_c_over_c`),
+and (G) with the random policy reproduces (C) to `2 × 10⁻⁴` at four cells.
+
+**What is not analysed, and why.** The *min-degree* greedy's key is the
+degree in the alive MOSP graph, `|∪_{P ∋ v alive} (P ∩ alive)| − 1`: to
+compute it the greedy reveals how many alive members every alive pattern has,
+a joint state of patterns and customers the slot picture does not carry (it
+would need the law of the alive-member count per pattern jointly with the
+customers' pattern counts, and the uniform-matching step fails once those
+are revealed). It is measured beside the analysed greedies in §7.4: it
+yields 0.000–0.022 more per customer than the pattern-count greedy, and the
+difference falls with `d`. The *two-key rule* is a greedy with state — its
+first key counts the stacks a closing would newly open, which depends on
+the whole opened set and on the order so far, and its second key on the
+unclosed neighbourhood — and no exploration-process description of it is on
+record; item 05's measurement is all there is, and §7.5 puts the analysed
+constants beside it.
+
+### 7.4 The recursions against simulation
+
+Per instance: the BFS layers rebuilt with item 05's random choices
+(`bfs_components` makes the same calls in the same order; the layer bound
+agrees with the recorded one on all 2,024); the exploration state at the
+first layer of `≥ max(10, n / 500)` customers of the largest component (the
+unreached customers' degree histogram, the unrevealed patterns' size
+histogram, the layer's unrevealed slots); the recursion run from that state
+(phase-matched) and its `max_i (x_i + x_{i+1})` against the observed one;
+the phase band from the instance's own histograms (and, for the fixed
+generator, from the leaf form); the pattern-count and random greedies
+simulated (one random tie-break each) and their ODE yields from the same
+histograms; item 05's min-degree `α_greedy` read from its csv. The tables
+are §7.7 in full; what they say:
+
+1. **Phase-matched, the recursion predicts the layer bound to under 1% from
+   `d = 4` and to 0.5% at `d = 3`.** At `n = 5000`, the median relative error
+   of the predicted maximum is 0.0029 at `d = 4` (largest 0.044), 0.0007 at
+   `d = 6` (0.009), 0.0001–0.0002 at `d = 8–10` (0.009, 0.002), 0.005 at
+   `d = 3` (0.065), over the uniform model and both generators alike; the
+   per-layer rmse is of the same order. The error is the last-layer noise
+   of one random BFS, not a bias: the median signed error is `−0.000` at
+   every `n` for every generator.
+
+2. **The limit is a band, not a number, and the data sit in it.** At
+   `n = 5000`, `d ≥ 3`, the observed layer bound per customer lies inside
+   `[inf, sup]` of the phase on 314 of 345 instances; the excursions are at
+   most 0.011 above `sup` (24 instances) and 0.007 below `inf` (5), the
+   finite-size scale of item 05. Within a cell the observed values spread
+   across the band: their standard deviation is 0.04–0.57 of the band's
+   width (median 0.21), where the rule's and `n − α`'s are 0.002–0.003 per
+   customer (§5.1 (1)); e.g. `(4, 1)` fixed: observed 0.861–0.929, band
+   `[0.824, 0.928]`; `(6, ½)` fitted: 0.881–0.946 in `[0.850, 0.948]`. The
+   band is widest on the ridge and its dense shoulder (0.09–0.10 at `d =
+   3–4`, `μ = 1–2`) and narrows to 0.02–0.03 at `(10, 2)`, `(8, 2)`. This is
+   the mechanism of item 05's remark that the BFS separation is "noisier
+   than the others since one random root decides it": not the root, the
+   phase.
+
+3. **At `d = 2` the marginal form fails on the fixed generator, and the leaf
+   form is right.** `(2, ½)` fixed (`e = 0.87`, 37% of customers padded):
+   observed 0.008–0.020 per customer (the largest component is 9.5% of the
+   customers), the marginal configuration model predicts a band
+   `[0.099, 0.100]` — it has made the leaves propagate, growth factor 1.47 —
+   while the leaf form has growth factor `ρ = 1`, no giant component, band
+   `[0, 0]`, which the uniform model's own instances confirm (0.003–0.013,
+   largest component 4.9%). `(2, 1)` fixed: observed 0.334–0.355, marginal
+   band `[0.358, 0.372]` (1 of 10 inside), leaf band `[0.335, 0.346]` (5 of
+   10 inside, the rest within 0.009). From `d = 3` the two bands agree to
+   0.01, from `d = 4` to 0.005 and from `d = 6` to 0.003 or better. On the uniform model there is no such
+   effect: `(2, 1)` pure, observed 0.290–0.301, band `[0.286, 0.295]`.
+
+4. **The greedy ODEs agree with their greedies to 0.5% on the model they
+   describe, and to 1–2% on the padded generators.** Uniform model at
+   `n = 5000`: pattern-count greedy, median |relative error| 0.005, largest
+   0.035; random greedy 0.008 / 0.063 (one random order per instance, so
+   the simulation itself fluctuates). Both generators at `d ≥ 4`: 0.008 /
+   0.041 and 0.014 / 0.073. Fixed generator at `d ≤ 3`: 0.021 / 0.062, the
+   ODE *over*-estimating the yield by 3–5% at `(2, ½)`, `(3, ½)`, `(2, 1)` —
+   the same leaf correlation as finding 3 (a leaf's single pattern is a
+   uniform pattern, not a size-biased one). The errors are flat or falling
+   in `n` from 1000 to 5000 for every generator (pooled table in §7.7).
+
+5. **The min-degree greedy beats the pattern-count greedy by 0.000–0.022
+   per customer, the pattern-count greedy beats the random one by
+   0.009–0.062.** At `n = 5000`: `α_mindeg − α_pc` is 0.000–0.003 at `μ = ½`
+   and `d ≤ 4`, 0.006–0.012 at `μ = 1`, 0.013–0.022 at `μ = 2` on the fixed
+   generator (the fitted one within 0.002 of it), largest at `(2, 2)` and
+   `(3, 2)`, smallest at `d = 10`. So the analysed greedy costs at most 0.02
+   per customer against the proved bound item 05 measured, and (G) is
+   within 0.03 of `n − α_mindeg` at every cell of the grid.
+
+### 7.5 `β⁺(d, μ)` on the uniform model, beside `β*`, `b` and the rule
+
+`β⁺ = min(β⁺_BFS, 1 − α⁺_pc)` on the uniform model (Poisson(`μ d`) degrees,
+size `d`): the BFS supremum over the phase and the pattern-count greedy's
+terminal time of (G); the random greedy's closed form (C) beside them;
+`β*` the first-moment constant (`learning.first_moment.beta_star`); `b` item
+02's certified slope on the fixed generator at `n ≤ 100`; `rule β⁺` and
+`n − α_mindeg β⁺` item 05's extrapolations on the fixed generator, the rule
+quotable on the 11 trusted cells only (§5.2).
+
+| `μ` | `d` | `e` | `ρ` | `β⁺_BFS` sup | inf | `1 − α⁺_pc` | `1 − α⁺_random` (C) | **`β⁺`** | `β*` | `β⁺ − β*` | `b` | rule `β⁺` | trusted | `n − α_mindeg β⁺` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ½ | 2 | 0.5 | 1 | 0.000 | 0.000 | 0.275 | 0.307 | **0.000** | 0.000 | 0.000 | 0.005 | 0.044 | no | 0.582 |
+| ½ | 3 | 1.0 | 3 | 0.429 | 0.401 | 0.446 | 0.495 | **0.429** | 0.000 | 0.429 | 0.048 | 0.103 | no | 0.618 |
+| ½ | 4 | 1.5 | 6 | 0.700 | 0.622 | 0.566 | 0.620 | **0.566** | 0.072 | 0.494 | 0.151 | 0.191 | no | 0.659 |
+| ½ | 6 | 2.5 | 15 | 0.901 | 0.803 | 0.716 | 0.769 | **0.716** | 0.244 | 0.472 | 0.323 | 0.377 | no | 0.739 |
+| ½ | 8 | 3.5 | 28 | 0.962 | 0.879 | 0.802 | 0.847 | **0.802** | 0.398 | 0.404 | 0.463 | 0.523 | no | 0.803 |
+| ½ | 10 | 4.5 | 45 | 0.984 | 0.919 | 0.855 | 0.891 | **0.855** | 0.522 | 0.332 | 0.585 | 0.636 | no | 0.852 |
+| 1 | 2 | 1.0 | 2 | 0.296 | 0.286 | 0.406 | 0.451 | **0.296** | 0.000 | 0.296 | 0.038 | 0.055 | yes | 0.483 |
+| 1 | 3 | 2.0 | 6 | 0.772 | 0.688 | 0.596 | 0.650 | **0.596** | 0.140 | 0.457 | 0.200 | 0.236 | no | 0.610 |
+| 1 | 4 | 3.0 | 12 | 0.912 | 0.809 | 0.709 | 0.759 | **0.709** | 0.286 | 0.423 | 0.348 | 0.396 | no | 0.705 |
+| 1 | 6 | 5.0 | 30 | 0.981 | 0.906 | 0.830 | 0.867 | **0.830** | 0.513 | 0.317 | 0.577 | 0.608 | yes | 0.821 |
+| 1 | 8 | 7.0 | 56 | 0.994 | 0.940 | 0.889 | 0.916 | **0.889** | 0.661 | 0.228 | 0.706 | 0.733 | yes | 0.882 |
+| 1 | 10 | 9.0 | 90 | 0.998 | 0.959 | 0.922 | 0.942 | **0.922** | 0.757 | 0.166 | 0.795 | 0.809 | yes | 0.917 |
+| 2 | 2 | 2.0 | 4 | 0.692 | 0.627 | 0.551 | 0.598 | **0.551** | 0.121 | 0.430 | 0.167 | 0.191 | yes | 0.538 |
+| 2 | 3 | 4.0 | 12 | 0.935 | 0.831 | 0.731 | 0.773 | **0.731** | 0.355 | 0.375 | 0.409 | 0.446 | no | 0.714 |
+| 2 | 4 | 6.0 | 24 | 0.980 | 0.895 | 0.821 | 0.854 | **0.821** | 0.525 | 0.296 | 0.568 | 0.606 | no | 0.807 |
+| 2 | 6 | 10.0 | 60 | 0.996 | 0.946 | 0.904 | 0.925 | **0.904** | 0.724 | 0.180 | 0.755 | 0.775 | yes | 0.895 |
+| 2 | 8 | 14.0 | 112 | 0.999 | 0.968 | 0.940 | 0.954 | **0.940** | 0.825 | 0.116 | 0.847 | 0.857 | yes | 0.935 |
+| 2 | 10 | 18.0 | 180 | 1.000 | 0.977 | 0.959 | 0.969 | **0.959** | 0.880 | 0.080 | 0.894 | 0.902 | yes | 0.955 |
+
+(`reports/scratch/beta_plus/beta_plus_table.csv`.) The provable sandwich on
+the uniform model is now, with the concentration step cited and not
+re-proved,
+
+    β*(d, μ) ≤ lim inf opt / n ≤ lim sup opt / n ≤ β⁺(d, μ),
+
+and the table says where it is worth what.
+
+### 7.6 Findings
+
+1. **Which construction wins switches at the threshold `e = 1`.** The BFS
+   layout is the smaller of the two at `e ≤ 1` (`(2, ½)`, `(3, ½)`, `(2, 1)`:
+   0, 0.429, 0.296 against 0.275–0.446 for the greedy; at `(2, ½)` the
+   greedy is the only one that says anything about the instance, since the
+   BFS bound per customer is 0 because there is no giant component) and the
+   greedy from `e = 1.5` on, by a margin that grows with `d` (0.134 at
+   `(4, ½)`, 0.185 at `(6, ½)`, 0.20 at `(4, 1)`; the BFS bound is above
+   0.9 wherever `ρ ≥ 12`, two consecutive layers holding almost every
+   customer). This is item 05's finding 4 (the edge bound against `n − α`)
+   with a provable construction on the sparse side instead of a cited one:
+   at `e ≤ 1` the layer layout is the better *analysable* bound, and at
+   `ρ ≤ 1` it gives `lim pw / n = 0` for free (no giant component), which
+   is the random-model content of the forest regime in a second form
+   (item 06's Corollary R gives `O(ω log log n)` under its hypotheses; the
+   layer lemma gives `o(n)` with none beyond the component size).
+
+2. **The gap to `β*` is 0.08–0.49: smallest where the cover is dense,
+   largest on the ridge and the sparse flank.** `β⁺ − β*` is 0.080 at
+   `(10, 2)`, 0.116 at `(8, 2)`, 0.166 at `(10, 1)`, 0.180 at `(6, 2)`,
+   0.228 at `(8, 1)`, 0.30–0.33 at `(4, 2)`, `(6, 1)`, `(10, ½)`, 0.296 at
+   `(2, 1)`, and 0.40–0.49 at every cell with `1 ≤ e ≤ 3.5` except that one
+   and the degenerate `(2, ½)` (both constants zero): 0.457 at `(3, 1)`,
+   0.494 at `(4, ½)`, 0.472 at `(6, ½)`, 0.430 at `(2, 2)`, 0.429 at
+   `(3, ½)`, 0.423 at `(4, 1)`, 0.404 at `(8, ½)`. Beside the certified slope `b`
+   the picture is the same from the other side: `β⁺ − b` is 0.065 at
+   `(10, 2)`, 0.09–0.13 at `(8, 2)`, `(10, 1)`, 0.15–0.26 at `(6, 2)`,
+   `(8, 1)`, `(4, 2)`, `(6, 1)`, `(2, 1)`, and 0.27–0.42 on the ridge, its
+   shoulders and the sparse flank. So the analysed constructions are informative — within
+   0.1 of the truth's bracket — only at `e ≥ 14`, and the ridge is where
+   both the lower bound (§2: `b − β*` peaks there) and the provable upper
+   bound are at their worst.
+
+3. **The analysis costs little against the measured proved bound.** On
+   the same instances the pattern-count greedy yields 0.000–0.022 per
+   customer less than item 05's min-degree greedy (§7.4 (5)): what was given
+   up to make the greedy analysable (the degree of the alive MOSP graph as
+   the key) is worth at most 0.02 per customer, and the 0.08–0.49 gap is
+   the construction, not the analysis. In the table the uniform model's
+   `1 − α⁺_pc` and the fixed generator's extrapolated `n − α_mindeg` agree to
+   0.02 at `e ≥ 2` and diverge below it (0.08 at `(2, 1)`, 0.31 at `(2, ½)`),
+   because the uniform model's isolated customers, a fraction `e^{−μ d}`,
+   are free members of any independent set and the generator pads them
+   away — the two columns are two models there, not two constructions.
+
+4. **The rule stays far below everything provable except at the dense end.**
+   On the 11 trusted cells the rule's measured `β⁺` is below the analysed
+   `β⁺` by 0.057 at `(10, 2)`, 0.083 at `(8, 2)`, 0.113 at `(10, 1)`, 0.129
+   at `(6, 2)`, 0.156 at `(8, 1)`, 0.222 at `(6, 1)`, 0.241 at `(2, 1)` and
+   0.360 at `(2, 2)`; and below `1 − α⁺_pc` by 0.22–0.36 wherever `e ≤ 5`.
+   The provable constructions reach the rule's neighbourhood only where the
+   graph is nearly complete (`β⁺ ≥ 0.9`), and nothing on paper describes
+   what the rule does on the ridge.
+
+5. **The BFS layer bound per customer does not concentrate.** Finding 2 of
+   §7.4: the limit depends on the phase of the exploration, the observed
+   values spread across the predicted band and sit inside it on 232 of 265
+   instances at `n = 5000`, `d ≥ 3`, with excursions of `≤ 0.003`. The
+   constant for the layout has to be the supremum, which is 0.03–0.10 above
+   the mean over the phase and makes the BFS construction worse than its
+   typical instance by that much. Choosing the root to land at the best
+   phase would gain the band's width (0.02–0.10), and is not analysed.
+
+6. **The padded generators are not the uniform model at small `d`, in a way
+   the two marginals cannot express.** Findings 3 and 4 of §7.4: a padded
+   customer is a leaf of a uniform pattern, which neither propagates in the
+   exploration nor is size-biased in the greedy; the marginal configuration
+   model gets the giant component wrong at `(2, ½)` (10% against none) and
+   the greedy yield 3–5% high at `(2, ½)`, `(3, ½)`, `(2, 1)`; the leaf form
+   of (R) repairs the first. This is the mechanism behind item 05's finding
+   6 (realised `e` above nominal) seen from the other side, and a caution for
+   item 10: a statement about the uniform model transfers to the fixed
+   generator at `d ≥ 4` to within 1%, and at `d ≤ 3` only through the leaves.
+
+### 7.7 Tables, in full
+
+`reports/scratch/beta_plus/tables.md`, from `recursion.py` (2026-11-01
+03:57, workers 8, load 0.5; layer lemma 1,000 graphs, 0 violations, tight on
+104; 2,024 item 05 instances in 283 s of instance time, 180 uniform-model
+instances in 32 s; 49 s wall).
+
+#### The recursions against simulation, per cell at the largest `n` (per customer)
+
+| generator | mu | d | n | inst. | layer bound observed | phase-matched prediction | rel. err. median | rel. err. max abs | phase band [inf, sup] | in band | padded band (fixed gen.) | in band | pc greedy sim | pc ODE | rel. err. | random sim | random ODE | rel. err. | min-degree sim (item 05) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fitted | 0.5 | 2 | 100 | 10 | 0.516 | 0.517 | -0.019 | 0.121 | [0.493, 0.530] | 1/10 | — | — | 0.3580 | 0.3782 | +0.0473 | 0.2990 | 0.3282 | +0.1099 | 0.3580 |
+| fitted | 0.5 | 3 | 500 | 5 | 0.670 | 0.660 | -0.025 | 0.119 | [0.619, 0.682] | 4/5 | — | — | 0.3488 | 0.3599 | +0.0428 | 0.2980 | 0.3047 | +0.0089 | 0.3500 |
+| fitted | 0.5 | 4 | 1000 | 10 | 0.810 | 0.811 | -0.001 | 0.033 | [0.743, 0.836] | 8/10 | — | — | 0.3179 | 0.3183 | +0.0047 | 0.2550 | 0.2598 | +0.0254 | 0.3196 |
+| fitted | 0.5 | 6 | 5000 | 10 | 0.918 | 0.917 | -0.003 | 0.007 | [0.850, 0.948] | 10/10 | — | — | 0.2423 | 0.2417 | -0.0031 | 0.1870 | 0.1865 | -0.0070 | 0.2478 |
+| fitted | 0.5 | 8 | 5000 | 10 | 0.949 | 0.949 | 0.000 | 0.009 | [0.901, 0.980] | 10/10 | — | — | 0.1793 | 0.1791 | -0.0015 | 0.1331 | 0.1340 | +0.0099 | 0.1863 |
+| fitted | 0.5 | 10 | 5000 | 10 | 0.981 | 0.981 | 0.000 | 0.001 | [0.928, 0.990] | 9/10 | — | — | 0.1368 | 0.1372 | -0.0015 | 0.1009 | 0.1006 | +0.0015 | 0.1439 |
+| fitted | 1.0 | 2 | 1000 | 9 | 0.688 | 0.679 | -0.024 | 0.058 | [0.642, 0.708] | 6/9 | — | — | 0.4039 | 0.4110 | +0.0152 | 0.3463 | 0.3571 | +0.0306 | 0.4148 |
+| fitted | 1.0 | 3 | 2000 | 10 | 0.852 | 0.849 | -0.004 | 0.020 | [0.775, 0.871] | 7/10 | — | — | 0.3259 | 0.3266 | -0.0001 | 0.2715 | 0.2733 | +0.0133 | 0.3379 |
+| fitted | 1.0 | 4 | 5000 | 10 | 0.925 | 0.922 | -0.003 | 0.005 | [0.845, 0.942] | 7/10 | — | — | 0.2546 | 0.2536 | -0.0009 | 0.2053 | 0.2053 | -0.0031 | 0.2659 |
+| fitted | 1.0 | 6 | 5000 | 10 | 0.980 | 0.980 | -0.000 | 0.003 | [0.914, 0.985] | 7/10 | — | — | 0.1572 | 0.1570 | +0.0009 | 0.1216 | 0.1215 | +0.0061 | 0.1675 |
+| fitted | 1.0 | 8 | 5000 | 10 | 0.986 | 0.987 | -0.000 | 0.000 | [0.946, 0.995] | 10/10 | — | — | 0.1047 | 0.1036 | -0.0104 | 0.0778 | 0.0779 | +0.0047 | 0.1111 |
+| fitted | 1.0 | 10 | 5000 | 10 | 0.977 | 0.978 | -0.000 | 0.000 | [0.962, 0.998] | 10/10 | — | — | 0.0737 | 0.0736 | -0.0039 | 0.0544 | 0.0545 | +0.0020 | 0.0797 |
+| fitted | 2.0 | 2 | 5000 | 10 | 0.850 | 0.842 | -0.004 | 0.040 | [0.794, 0.896] | 8/10 | — | — | 0.3077 | 0.3100 | +0.0087 | 0.2656 | 0.2657 | +0.0014 | 0.3263 |
+| fitted | 2.0 | 3 | 5000 | 10 | 0.922 | 0.921 | -0.000 | 0.005 | [0.869, 0.962] | 10/10 | — | — | 0.2188 | 0.2189 | +0.0026 | 0.1808 | 0.1805 | -0.0044 | 0.2355 |
+| fitted | 2.0 | 4 | 5000 | 10 | 0.973 | 0.974 | 0.000 | 0.008 | [0.912, 0.986] | 9/10 | — | — | 0.1559 | 0.1552 | -0.0022 | 0.1242 | 0.1244 | +0.0016 | 0.1684 |
+| fitted | 2.0 | 6 | 5000 | 10 | 0.986 | 0.986 | -0.000 | 0.000 | [0.953, 0.997] | 10/10 | — | — | 0.0862 | 0.0864 | +0.0027 | 0.0670 | 0.0671 | +0.0007 | 0.0953 |
+| fitted | 2.0 | 8 | 5000 | 10 | 0.977 | 0.977 | -0.000 | 0.003 | [0.970, 0.999] | 10/10 | — | — | 0.0551 | 0.0549 | -0.0041 | 0.0426 | 0.0421 | -0.0078 | 0.0608 |
+| fitted | 2.0 | 10 | 5000 | 10 | 0.999 | 0.999 | 0.000 | 0.001 | [0.979, 1.000] | 10/10 | — | — | 0.0379 | 0.0380 | +0.0003 | 0.0287 | 0.0291 | +0.0010 | 0.0420 |
+| fixed | 0.5 | 2 | 5000 | 10 | 0.012 | 0.099 | 9.355 | 17.290 | [0.099, 0.100] | 0/10 | [0.000, 0.000] | 0/10 | 0.4188 | 0.4390 | +0.0483 | 0.3784 | 0.3959 | +0.0484 | 0.4189 |
+| fixed | 0.5 | 3 | 5000 | 10 | 0.551 | 0.553 | 0.007 | 0.054 | [0.527, 0.567] | 9/10 | [0.522, 0.560] | 7/10 | 0.3803 | 0.3943 | +0.0352 | 0.3227 | 0.3345 | +0.0359 | 0.3810 |
+| fixed | 0.5 | 4 | 5000 | 10 | 0.784 | 0.783 | -0.004 | 0.044 | [0.718, 0.807] | 6/10 | [0.722, 0.812] | 8/10 | 0.3370 | 0.3452 | +0.0239 | 0.2750 | 0.2800 | +0.0183 | 0.3397 |
+| fixed | 0.5 | 6 | 5000 | 10 | 0.923 | 0.923 | -0.000 | 0.009 | [0.842, 0.946] | 9/10 | [0.845, 0.947] | 10/10 | 0.2556 | 0.2573 | +0.0033 | 0.1942 | 0.1979 | +0.0265 | 0.2612 |
+| fixed | 0.5 | 8 | 5000 | 10 | 0.947 | 0.947 | -0.001 | 0.008 | [0.895, 0.979] | 8/10 | [0.896, 0.979] | 8/10 | 0.1898 | 0.1896 | -0.0005 | 0.1413 | 0.1418 | -0.0003 | 0.1965 |
+| fixed | 0.5 | 10 | 5000 | 10 | 0.988 | 0.989 | 0.000 | 0.001 | [0.924, 0.990] | 7/10 | [0.924, 0.990] | 8/10 | 0.1431 | 0.1423 | -0.0066 | 0.1048 | 0.1043 | -0.0081 | 0.1491 |
+| fixed | 1.0 | 2 | 5000 | 10 | 0.344 | 0.370 | 0.082 | 0.123 | [0.358, 0.372] | 1/10 | [0.335, 0.346] | 5/10 | 0.5085 | 0.5237 | +0.0307 | 0.4526 | 0.4681 | +0.0311 | 0.5160 |
+| fixed | 1.0 | 3 | 5000 | 10 | 0.759 | 0.756 | -0.004 | 0.021 | [0.720, 0.808] | 10/10 | [0.724, 0.812] | 10/10 | 0.3786 | 0.3817 | +0.0091 | 0.3181 | 0.3230 | +0.0107 | 0.3892 |
+| fixed | 1.0 | 4 | 5000 | 10 | 0.907 | 0.906 | -0.001 | 0.010 | [0.824, 0.928] | 8/10 | [0.826, 0.928] | 8/10 | 0.2822 | 0.2829 | +0.0045 | 0.2298 | 0.2307 | +0.0040 | 0.2944 |
+| fixed | 1.0 | 6 | 5000 | 10 | 0.952 | 0.952 | -0.000 | 0.004 | [0.908, 0.983] | 8/10 | [0.908, 0.983] | 9/10 | 0.1708 | 0.1701 | -0.0038 | 0.1321 | 0.1321 | +0.0030 | 0.1793 |
+| fixed | 1.0 | 8 | 5000 | 10 | 0.988 | 0.988 | -0.000 | 0.000 | [0.941, 0.994] | 10/10 | [0.941, 0.994] | 10/10 | 0.1112 | 0.1110 | -0.0033 | 0.0839 | 0.0839 | -0.0041 | 0.1187 |
+| fixed | 1.0 | 10 | 5000 | 10 | 0.978 | 0.978 | -0.000 | 0.000 | [0.959, 0.998] | 10/10 | [0.959, 0.998] | 10/10 | 0.0780 | 0.0777 | -0.0030 | 0.0573 | 0.0578 | +0.0044 | 0.0839 |
+| fixed | 2.0 | 2 | 5000 | 10 | 0.675 | 0.671 | -0.008 | 0.021 | [0.636, 0.701] | 10/10 | [0.637, 0.704] | 10/10 | 0.4405 | 0.4428 | +0.0060 | 0.3895 | 0.3944 | +0.0079 | 0.4621 |
+| fixed | 2.0 | 3 | 5000 | 10 | 0.912 | 0.914 | 0.001 | 0.018 | [0.832, 0.937] | 8/10 | [0.834, 0.937] | 8/10 | 0.2699 | 0.2691 | -0.0034 | 0.2260 | 0.2259 | +0.0020 | 0.2857 |
+| fixed | 2.0 | 4 | 5000 | 10 | 0.933 | 0.933 | 0.000 | 0.003 | [0.895, 0.980] | 10/10 | [0.895, 0.980] | 10/10 | 0.1793 | 0.1790 | -0.0019 | 0.1445 | 0.1451 | +0.0076 | 0.1924 |
+| fixed | 2.0 | 6 | 5000 | 10 | 0.988 | 0.988 | -0.000 | 0.000 | [0.946, 0.996] | 10/10 | [0.946, 0.996] | 10/10 | 0.0958 | 0.0959 | +0.0001 | 0.0753 | 0.0750 | -0.0086 | 0.1047 |
+| fixed | 2.0 | 8 | 5000 | 10 | 0.977 | 0.977 | 0.000 | 0.000 | [0.968, 0.999] | 10/10 | [0.968, 0.999] | 10/10 | 0.0597 | 0.0596 | -0.0007 | 0.0467 | 0.0460 | -0.0166 | 0.0658 |
+| fixed | 2.0 | 10 | 5000 | 10 | 0.990 | 0.991 | -0.000 | 0.002 | [0.977, 1.000] | 8/10 | [0.977, 1.000] | 8/10 | 0.0411 | 0.0407 | -0.0064 | 0.0317 | 0.0312 | -0.0107 | 0.0450 |
+| pure | 0.5 | 2 | 5000 | 5 | 0.007 | 0.006 | -0.007 | 0.611 | [0.000, 0.000] | 0/5 | — | — | 0.7262 | 0.7245 | -0.0023 | 0.6933 | 0.6926 | -0.0014 | 0.7284 |
+| pure | 0.5 | 3 | 5000 | 5 | 0.425 | 0.422 | -0.007 | 0.065 | [0.401, 0.430] | 2/5 | — | — | 0.5538 | 0.5550 | +0.0023 | 0.5045 | 0.5066 | +0.0028 | 0.5573 |
+| pure | 0.5 | 4 | 5000 | 5 | 0.662 | 0.654 | -0.016 | 0.035 | [0.622, 0.700] | 5/5 | — | — | 0.4331 | 0.4336 | +0.0022 | 0.3796 | 0.3791 | -0.0019 | 0.4394 |
+| pure | 0.5 | 6 | 5000 | 5 | 0.890 | 0.890 | -0.002 | 0.006 | [0.803, 0.901] | 5/5 | — | — | 0.2837 | 0.2834 | -0.0035 | 0.2298 | 0.2307 | +0.0060 | 0.2921 |
+| pure | 0.5 | 8 | 5000 | 5 | 0.935 | 0.934 | -0.001 | 0.006 | [0.881, 0.963] | 5/5 | — | — | 0.1984 | 0.1980 | +0.0014 | 0.1533 | 0.1529 | +0.0005 | 0.2062 |
+| pure | 0.5 | 10 | 5000 | 5 | 0.982 | 0.982 | 0.000 | 0.002 | [0.920, 0.984] | 4/5 | — | — | 0.1454 | 0.1451 | -0.0007 | 0.1080 | 0.1081 | +0.0045 | 0.1516 |
+| pure | 1.0 | 2 | 5000 | 5 | 0.295 | 0.292 | -0.006 | 0.026 | [0.286, 0.295] | 3/5 | — | — | 0.5924 | 0.5936 | +0.0033 | 0.5478 | 0.5490 | +0.0028 | 0.6062 |
+| pure | 1.0 | 3 | 5000 | 5 | 0.751 | 0.755 | 0.003 | 0.020 | [0.687, 0.772] | 5/5 | — | — | 0.4026 | 0.4049 | +0.0070 | 0.3509 | 0.3517 | +0.0056 | 0.4154 |
+| pure | 1.0 | 4 | 5000 | 5 | 0.897 | 0.902 | 0.005 | 0.013 | [0.810, 0.911] | 5/5 | — | — | 0.2915 | 0.2916 | +0.0017 | 0.2378 | 0.2418 | +0.0136 | 0.3033 |
+| pure | 1.0 | 6 | 5000 | 5 | 0.970 | 0.969 | -0.001 | 0.008 | [0.906, 0.981] | 5/5 | — | — | 0.1693 | 0.1701 | +0.0030 | 0.1326 | 0.1327 | -0.0041 | 0.1800 |
+| pure | 1.0 | 8 | 5000 | 5 | 0.989 | 0.989 | -0.000 | 0.000 | [0.941, 0.994] | 5/5 | — | — | 0.1116 | 0.1108 | -0.0156 | 0.0842 | 0.0837 | -0.0192 | 0.1190 |
+| pure | 1.0 | 10 | 5000 | 5 | 0.981 | 0.981 | -0.000 | 0.000 | [0.959, 0.998] | 5/5 | — | — | 0.0778 | 0.0772 | -0.0149 | 0.0578 | 0.0575 | -0.0095 | 0.0835 |
+| pure | 2.0 | 2 | 5000 | 5 | 0.643 | 0.644 | 0.003 | 0.023 | [0.626, 0.692] | 5/5 | — | — | 0.4500 | 0.4496 | -0.0014 | 0.4028 | 0.4026 | -0.0048 | 0.4720 |
+| pure | 2.0 | 3 | 5000 | 5 | 0.918 | 0.916 | 0.000 | 0.011 | [0.831, 0.935] | 5/5 | — | — | 0.2709 | 0.2693 | -0.0074 | 0.2271 | 0.2266 | +0.0030 | 0.2874 |
+| pure | 2.0 | 4 | 5000 | 5 | 0.941 | 0.944 | 0.001 | 0.009 | [0.894, 0.980] | 5/5 | — | — | 0.1796 | 0.1789 | -0.0010 | 0.1461 | 0.1451 | -0.0054 | 0.1916 |
+| pure | 2.0 | 6 | 5000 | 5 | 0.987 | 0.988 | -0.000 | 0.000 | [0.946, 0.996] | 5/5 | — | — | 0.0970 | 0.0964 | -0.0030 | 0.0755 | 0.0753 | -0.0009 | 0.1052 |
+| pure | 2.0 | 8 | 5000 | 5 | 0.978 | 0.978 | 0.000 | 0.000 | [0.968, 0.999] | 5/5 | — | — | 0.0595 | 0.0594 | -0.0008 | 0.0460 | 0.0459 | -0.0035 | 0.0660 |
+| pure | 2.0 | 10 | 5000 | 5 | 0.993 | 0.993 | -0.000 | 0.001 | [0.977, 1.000] | 5/5 | — | — | 0.0410 | 0.0406 | -0.0068 | 0.0312 | 0.0312 | -0.0054 | 0.0452 |
+
+#### Relative error by `n`, pooled over cells (median and max |.|)
+
+| generator | n | cells | layer max: median | max abs | pc greedy: median | max abs | random: median | max abs |
+|---|---|---|---|---|---|---|---|---|
+| fitted | 100 | 18 | -0.000 | 0.121 | -0.0005 | 0.2808 | +0.0169 | 0.5117 |
+| fitted | 200 | 17 | -0.000 | 0.144 | +0.0051 | 0.1997 | +0.0056 | 0.3700 |
+| fitted | 500 | 17 | -0.000 | 0.119 | +0.0060 | 0.0996 | +0.0051 | 0.2154 |
+| fitted | 1000 | 16 | -0.000 | 0.058 | +0.0032 | 0.0844 | +0.0054 | 0.1598 |
+| fitted | 2000 | 14 | -0.000 | 0.038 | -0.0036 | 0.0899 | -0.0020 | 0.0887 |
+| fitted | 5000 | 13 | -0.000 | 0.040 | -0.0014 | 0.0310 | -0.0001 | 0.0732 |
+| fixed | 100 | 18 | -0.000 | 0.571 | +0.0042 | 0.2465 | +0.0176 | 0.5911 |
+| fixed | 200 | 18 | -0.000 | 0.637 | +0.0066 | 0.2107 | +0.0122 | 0.5201 |
+| fixed | 500 | 18 | -0.000 | 1.374 | +0.0067 | 0.1430 | +0.0141 | 0.2100 |
+| fixed | 1000 | 18 | -0.000 | 4.335 | +0.0085 | 0.0741 | +0.0157 | 0.1424 |
+| fixed | 2000 | 18 | -0.000 | 7.805 | +0.0062 | 0.0731 | +0.0154 | 0.0909 |
+| fixed | 5000 | 18 | -0.000 | 17.290 | +0.0022 | 0.0620 | +0.0076 | 0.0667 |
+| pure | 1000 | 18 | -0.000 | 0.078 | -0.0018 | 0.1202 | -0.0048 | 0.1435 |
+| pure | 5000 | 18 | -0.000 | 0.611 | -0.0009 | 0.0346 | +0.0005 | 0.0627 |
+
+#### `beta+(d, mu)` from the analysed constructions (uniform model), beside `beta*`, `b`, item 05
+
+| mu | d | e | rho | beta+_BFS (sup over phase) | inf over phase | 1 - alpha+ pattern-count | 1 - alpha+ random (closed form) | **beta+ = min** | beta* | beta+ - beta* | b certified (item 02) | rule beta+ (item 05) | rule trusted | n - alpha_mindeg beta+ (item 05) | kill (> 0.5) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0.5 | 2 | 0.5 | 1 | 0.000 | 0.000 | 0.275 | 0.307 | **0.000** | 0.000 | 0.000 | 0.005 | 0.044 | no | 0.582 | not met |
+| 0.5 | 3 | 1.0 | 3 | 0.429 | 0.401 | 0.446 | 0.495 | **0.429** | 0.000 | 0.429 | 0.048 | 0.103 | no | 0.618 | not met |
+| 0.5 | 4 | 1.5 | 6 | 0.700 | 0.622 | 0.566 | 0.620 | **0.566** | 0.072 | 0.494 | 0.151 | 0.191 | no | 0.659 | not met |
+| 0.5 | 6 | 2.5 | 15 | 0.901 | 0.803 | 0.716 | 0.769 | **0.716** | 0.244 | 0.472 | 0.323 | 0.377 | no | 0.739 | not met |
+| 0.5 | 8 | 3.5 | 28 | 0.962 | 0.879 | 0.802 | 0.847 | **0.802** | 0.398 | 0.404 | 0.463 | 0.523 | no | 0.803 | not met |
+| 0.5 | 10 | 4.5 | 45 | 0.984 | 0.919 | 0.855 | 0.891 | **0.855** | 0.522 | 0.332 | 0.585 | 0.636 | no | 0.852 | not met |
+| 1.0 | 2 | 1.0 | 2 | 0.296 | 0.286 | 0.406 | 0.451 | **0.296** | 0.000 | 0.296 | 0.038 | 0.055 | yes | 0.483 | not met |
+| 1.0 | 3 | 2.0 | 6 | 0.772 | 0.688 | 0.596 | 0.650 | **0.596** | 0.140 | 0.457 | 0.200 | 0.236 | no | 0.610 | not met |
+| 1.0 | 4 | 3.0 | 12 | 0.912 | 0.809 | 0.709 | 0.759 | **0.709** | 0.286 | 0.423 | 0.348 | 0.396 | no | 0.705 | not met |
+| 1.0 | 6 | 5.0 | 30 | 0.981 | 0.906 | 0.830 | 0.867 | **0.830** | 0.513 | 0.317 | 0.577 | 0.608 | yes | 0.821 | not met |
+| 1.0 | 8 | 7.0 | 56 | 0.994 | 0.940 | 0.889 | 0.916 | **0.889** | 0.661 | 0.228 | 0.706 | 0.733 | yes | 0.882 | not met |
+| 1.0 | 10 | 9.0 | 90 | 0.998 | 0.959 | 0.922 | 0.942 | **0.922** | 0.757 | 0.166 | 0.795 | 0.809 | yes | 0.917 | not met |
+| 2.0 | 2 | 2.0 | 4 | 0.692 | 0.627 | 0.551 | 0.598 | **0.551** | 0.121 | 0.430 | 0.167 | 0.191 | yes | 0.538 | not met |
+| 2.0 | 3 | 4.0 | 12 | 0.935 | 0.831 | 0.731 | 0.773 | **0.731** | 0.355 | 0.375 | 0.409 | 0.446 | no | 0.714 | not met |
+| 2.0 | 4 | 6.0 | 24 | 0.980 | 0.895 | 0.821 | 0.854 | **0.821** | 0.525 | 0.296 | 0.568 | 0.606 | no | 0.807 | not met |
+| 2.0 | 6 | 10.0 | 60 | 0.996 | 0.946 | 0.904 | 0.925 | **0.904** | 0.724 | 0.180 | 0.755 | 0.775 | yes | 0.895 | not met |
+| 2.0 | 8 | 14.0 | 112 | 0.999 | 0.968 | 0.940 | 0.954 | **0.940** | 0.825 | 0.116 | 0.847 | 0.857 | yes | 0.935 | not met |
+| 2.0 | 10 | 18.0 | 180 | 1.000 | 0.977 | 0.959 | 0.969 | **0.959** | 0.880 | 0.080 | 0.894 | 0.902 | yes | 0.955 | not met |
+
+Kill: `beta+ - beta* > 0.5` on 0 of 18 cells; below 0.5 on 18; smallest gap 0.000 at (d, mu) = (2, 0.5); largest 0.494.
+
+
+### 7.8 Kill verdict
+
+**Not met.** `β⁺(d, μ) − β*(d, μ) > 0.5` holds on **0 of 18** cells; the
+largest gap is 0.494 at `(4, ½)` and the gaps on the ridge and the sparse
+flank (`e ≤ 3.5`) are 0.38–0.49, within 0.1 of the line. Per the criterion,
+the analytic constant is not recorded as uninformative; per its spirit, it
+is informative at `e ≥ 14` (gap `≤ 0.12`) and nearly uninformative on the
+ridge, and finding 3 attributes the gap to the constructions, not to the
+analysis (the analysable greedy is within 0.02 of the measured min-degree
+one). The one cell with gap 0 is degenerate (`(2, ½)`, both constants 0 by
+the absence of a giant component). No further analysis item is proposed by
+this item. No certified value is wrong, no theorem is false, no published
+claim of ours drifts.
+
+### 7.9 What this does not claim
+
+- **That `β⁺` is near the truth.** The table's own columns say it is not:
+  `β⁺ − b` is 0.07–0.42, and `b` is itself a slope at `n ≤ 100`.
+- **That the concentration step is proved here.** (R), its general form and
+  (G) are mean-field limits; the step from the Markov chain to its orbit is
+  Wormald's theorem or the branching-process coupling, cited from memory
+  (no held copy, marked not verified), and what this item verifies is the
+  conclusion on simulations at `n ≤ 5000` — 0.1–1% on the model, with the
+  deviations of the padded generators identified and, for the exploration,
+  repaired. The layer lemma is a theorem (proved above, checked); `pw ≤
+  n − α` is a Lean theorem; the constants are not.
+- **That `sup` over the phase is the limit of the BFS layout's width.** It
+  is the limit of the layer *bound* of the lemma over the worst phase; the
+  layout's exact vertex separation is below it (item 05: 1.1–2.4× below
+  the rule's width, where the bound is 0.35–1.0), and no recursion for the
+  separation itself is given.
+- **Anything about the min-degree greedy or the two-key rule on paper.**
+  Both are measured only (§7.3 says why).
+- **Anything off the uniform model at `d ≤ 3`.** The fixed generator's
+  leaves and the fitted generator's rejection are not in (G); the leaf form
+  of (R) covers the fixed generator's exploration only.
+- **The literature.** We found no prior statement of (R), (G) or (C) for the
+  passive random intersection graph (patterns choosing customers); the held
+  Nikoletseas, Raptopoulos & Spirakis (2008) analyse greedy independent sets
+  on the *active* model `G_{n,m,p}` (vertices choosing features), a
+  different ensemble, and were not used. "We found no prior statement" is
+  all that is claimed.

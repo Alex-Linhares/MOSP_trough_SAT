@@ -1,0 +1,142 @@
+# session it07 started 2026-11-01 03:44:31
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's §5 (item 05's simulation this item must compare against), and the constructions code, then derive the two recursions, write the script, and the §7 section.
+  > $ uptime && wc -l reports/excess_phase_plan.md reports/excess_phase_diagram.md learning/excess_constructions.py learning/first_moment.py && sed -n 1,200p reports/
+  > $ sed -n 200,255p reports/excess_phase_plan.md && grep -n '^## \|^### ' reports/excess_phase_diagram.md
+  > $ sed -n 2302,2560p reports/excess_phase_diagram.md
+  > $ sed -n 2560,2700p reports/excess_phase_diagram.md
+  > $ ls reports/scratch/excess_constructions/ && head -c 6000 reports/scratch/excess_constructions/tables.md | cut -c1-400 && echo ---- && head -2 learning/data/exce
+  > $ sed -n 120,330p learning/excess_constructions.py
+
+Reading the generator and the first-moment library next, plus checking what literature is held for the concentration citations (Wormald, Karp–Sipser).
+  > $ grep -n "def generate_structured_instance" -A 45 benchmarks/generator.py | head -80; echo ----; sed -n 1,80p learning/first_moment.py; echo ----; grep -n "^def 
+  > $ ls literature/ | grep -i -E "wormald|karp|sipser|frieze|gamarnik|differential|molloy|reed|perarnau|bollobas|janson|hoeffding|independent|greedy|survey|random" ;
+  > $ sed -n 190,210p reports/random_graph_pathwidth_survey.md; echo ----; sed -n 690,712p reports/random_graph_pathwidth_survey.md; echo ----; pdftotext -l 2 literat
+  > $ python3 - <<'EOF'
+import pandas as pd
+df = pd.read_csv("learning/data/excess_constructions.csv")
+acc = df[df.accepted]
+print(len(df), len(acc), acc.draw_seconds
+  > $ sed -n 330,400p learning/excess_constructions.py && sed -n 1,40p tests/test_excess_constructions.py && ls Ralph_Loops/loop0010/ && cat Ralph_Loops/loop0010/gate
+
+Writing the library now. First a quick look at the two helpers I will reuse.
+  > $ grep -n "^def _map" -A 22 learning/excess.py | head -40; grep -n "^def _ols" -A 12 learning/excess.py | head -16; python3 -c "
+from learning import excess_const
+  > Write /home/al/dev/MOSP/learning/beta_plus.py
+  > $ nice -n 19 python3 - <<'EOF'
+import math, time, numpy as np
+from learning import beta_plus as bp
+from learning import excess_constructions as ec
+# (1) d=2 reduc
+  > $ nice -n 19 python3 - <<'EOF'
+import numpy as np, time
+from learning import beta_plus as bp
+def pure(n,mu,d,seed):
+    rng=np.random.default_rng(seed); m=int(mu*
+  > Write /home/al/dev/MOSP/reports/scratch/beta_plus/recursion.py
+  > $ uptime && timeout 900 nice -n 19 python3 reports/scratch/beta_plus/recursion.py --quick --workers 8 2>&1 | tail -70
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/scratch/beta_plus/recursion.py"); s = p.read_text()
+s = s.replace('out["observed_in_phase_band"] = 
+  > $ nice -n 19 python3 reports/scratch/beta_plus/recursion.py --workers 8 > reports/scratch/beta_plus/stdout.txt 2>&1; echo EXIT $?; tail -5 reports/scratch/beta_pl
+
+The full run is going in the background. Meanwhile, the tests.
+  > Write /home/al/dev/MOSP/tests/test_beta_plus.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_beta_plus.py"); s = p.read_text()
+old = s[s.index("def test_greedy_simulations_return_independen
+
+Tests pass. The full run finished; reading its tables.
+  > $ head -6 reports/scratch/beta_plus/run.log; grep -n "wall\|done" reports/scratch/beta_plus/run.log | head; cat reports/scratch/beta_plus/tables.md | head -75
+  > $ sed -n 75,111p reports/scratch/beta_plus/tables.md | head -12; python3 - <<'EOF'
+import pandas as pd, numpy as np
+inst = pd.read_csv("reports/scratch/beta_plus/
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/beta_plus.py"); s = p.read_text()
+anchor = "def bfs_state("
+add = '''def padded_layers(mu: float, 
+  > $ cat >> tests/test_beta_plus.py <<'EOF'
+
+
+def test_padded_layers_add_leaves_and_keep_the_growth_factor():
+    """The fixed generator's limit: the uniform orbit p
+  > $ python3 -c "
+import math
+from learning import beta_plus as bp
+eps=1e-7
+padded=bp.padded_layers(1.0,2,eps); uniform=[eps]+bp.bfs_recursion_uniform(1.0,2,1.0,1.0-
+  > $ timeout 300 nice -n 19 python3 -m pytest tests/test_beta_plus.py -q -k padded 2>&1 | grep -E "assert|Error" | head -5; sed -i 's/assert bp.padded_phase_scan(0.5
+  > $ sed -n '/^### Relative error/,$p' reports/scratch/beta_plus/tables.md; echo; python3 - <<'EOF'
+import pandas as pd, numpy as np
+inst = pd.read_csv("reports/scra
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+inst = pd.read_csv("reports/scratch/beta_plus/instances.csv"); pure = pd.read_csv("reports/scratch/beta_plus/
+
+I have all the numbers. Writing §7 of the report now, then PROGRESS.md and iterations.md, then the gate.
+  > $ tail -5 reports/excess_phase_diagram.md && grep -n "pathwidth_le_card_sub_indepNum" lean/MOSPFormalization/IndependenceBound.lean | head -2 && grep -n "Godehard
+  > $ du -sh reports/scratch/beta_plus/instances.csv reports/scratch/beta_plus/pure.csv && cat .gitignore | grep -n "scratch\|learning/data" | head
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 7. `β⁺` on paper: the provable constructions analysed (item 07, 2026-11-01)
+
+**Question.** B(ii), second half
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+inst = pd.read_csv("reports/scratch/beta_plus/instances.csv"); pure = pd.read_csv("reports/scratch/beta_plus/
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/excess_phase_diagram.md"); s = p.read_text()
+reps = [
+("`[inf, sup]` of the phase on 232 of 265 ins
+  > $ grep -n "^- \[.\] \*\*0[678]" Ralph_Loops/loop0010/iterations.md && grep -n "^Current:" Ralph_Loops/loop0010/PROGRESS.md && git status --short | head -20
+
+The report section is in place. Next I write the PROGRESS.md entry, tick the item in iterations.md, and launch the gate; the three are independent of each other, so all go now.
+  > $ sed -i 's/^- \[ \] \*\*07 `β⁺` on paper: the provable constructions analysed.\*\*/- [x] **07 `β⁺` on paper: the provable constructions analysed.**/' Ralph_Loops
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it07.log 2>&1; echo "GATE EXIT $?" >> Ralph_Loops/loop0010/gate_it07.log)
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ sed -n 3578,3640p reports/excess_phase_diagram.md
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/beta_plus.py"); s = p.read_text()
+old = "    customer-degree and pattern-size laws), needed becaus
+  > $ until grep -q "GATE EXIT" /home/al/dev/MOSP/Ralph_Loops/loop0010/gate_it07.log; do sleep 10; done; cat /home/al/dev/MOSP/Ralph_Loops/loop0010/gate_it07.log | ta
+
+The gate is still running (lake build, two pytest suites, the paper check; usually 10 to 25 minutes). Everything else for this item is done: the library, the tests, the scratch script with its outputs, §7 of the report, the PROGRESS.md entry and the tick in iterations.md. I am waiting on the gate's completion notification, which is the only outstanding dependency.
+
+# result: success in 1410s, 42 turns, cost $10.22
+  > $ cat Ralph_Loops/loop0010/gate_it07.log | tail -15; date
+
+Gate passed. Recording it in PROGRESS.md and checking the working tree for strays.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+old = "- **Gate.** See below.\n"
+new = ("- **Gate: PA
+
+Item 07 is done: `β⁺` on paper, with both recursions derived, checked against item 05's simulation at every cell, tabulated beside `β*`, and the gate passed. Six items remain unchecked, so the loop is not complete and no `LOOP_COMPLETE` line was added.
+
+**What was built**
+
+- `learning/beta_plus.py`: the BFS layer lemma, the two-type exploration recursion for the uniform cover model (which reduces exactly to the `G(n, c/n)` recursion at `d = 2`), its degree-aware configuration form, a leaf form for the fixed generator's padding, the phase scan, and the greedy independent set in the slot picture: a differential-equation system for the pattern-count greedy, and a closed form for the random greedy that gives `ln(1 + c)/c` at `d = 2`.
+- `tests/test_beta_plus.py`, 14 tests, all passing.
+- `reports/scratch/beta_plus/recursion.py`: checks the lemma on 1,000 random graphs, regenerates all 2,024 item 05 instances from their seeds, draws 180 fresh unpadded instances, and compares every recursion with simulation. Nothing was solved; `solutions/` is untouched.
+- `reports/excess_phase_diagram.md` §7 with proofs, derivations, the comparison, the `β⁺` table, kill verdict and non-claims. PROGRESS.md and iterations.md are updated.
+
+**What it found**
+
+- The recursions agree with simulation to under 1% at `d ≥ 4` and under 0.5% for the greedy on the model they describe. At `d ≤ 3` the generators' padding breaks the marginal form: padded customers are leaves of uniform patterns, which the two marginals cannot express. The leaf form repairs the exploration.
+- The BFS layer bound per customer does not concentrate. Its limit depends on the phase of the exploration, so the constant is a supremum over a band 0.02 to 0.10 wide, and the observed values spread across that band.
+- `β⁺ − β*` runs from 0.08 at the densest cell to 0.49 on the sparse flank. The kill (`> 0.5` everywhere) is not met on any of the 18 cells. The gap is attributed to the constructions: the analysable greedy is within 0.022 per customer of item 05's min-degree greedy on the same instances.
+- Concentration (Wormald's method or the branching-process coupling) is cited from memory, with no held copy, and marked not verified.
+
+**Gate**: PASS at 04:18 (lake build ok, sorry 0, MOSP pytest 1,603 passed, pathwidth_solver 123 passed, paper check ok). Log in `Ralph_Loops/loop0010/gate_it07.log`.
+
+Next is item 08, the structured count. Nothing was committed, per the loop's rules.
+
+# result: success in 22s, 3 turns, cost $13.56
