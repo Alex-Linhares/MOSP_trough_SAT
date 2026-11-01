@@ -163,3 +163,18 @@ important possible finding.
   the paper, PNG for the report, no title inside the figure.
 - Print mode: **ending your turn ends the session.** Never end on a
   background wait.
+
+## Owner's note, 2026-11-01 (added while the loop runs; read at session start)
+
+A second literature pass (`reports/random_graph_pathwidth_literature_2.md`, on
+branch `appendix-picture`, to be merged after this loop) found: (1) the best
+published upper bound on `pw(G(n, c/n))` is Edwards & McDermid 2015
+(*Algorithmica* 72:940, Cor 5.2, degree-sequence bound; on Poisson degrees
+0.183, 0.458, 0.656 at c = 3, 6, 10; well below the project's analysed `β⁺`
+on the sparse flank) — items 05–07 and 12 should carry it as the published
+upper line in the `β` figure and the cover grid, and the sandwich paragraph
+should use it; (2) Cheung & Girardet 2020 (OJDM 10:13, Lemma 12) publish the
+prefix-at-`(1−ε)n` empty-pair variant (dense `p`); (3) for item 01: the
+random-cubic bisection constant is in dispute between Kostochka–Melnikov as
+quoted by Lichev–Mitsche (0.10101 n) and by Bezrukov et al. (n/4.95); do not
+quote either without the source.

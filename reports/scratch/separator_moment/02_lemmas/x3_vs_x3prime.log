@@ -1,0 +1,3 @@
+geng n=7: X3' < X3 on 29 graphs, equal on 1015
+geng n=8: X3' < X3 on 222 graphs, equal on 12124
+random n=10-12 (600 graphs): X3' < X3 on 5, equal on 570, X3' not computed (X1 > 200) on 25

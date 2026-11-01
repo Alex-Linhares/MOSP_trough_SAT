@@ -1,0 +1,126 @@
+# session it02 started 2026-11-01 13:09:51
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the existing report, the Lean headers and the two brute-force check scripts the item points at, then write and run the check before writing §2.
+  > $ uptime && wc -l reports/separator_moment_plan.md reports/separator_moment.md reports/random_graph_first_moment.md && sed -n 1,140p reports/separator_moment_plan
+  > $ sed -n 140,341p reports/separator_moment_plan.md
+  > $ sed -n 1,80p reports/separator_moment.md && echo ---- && grep -n '^## \|^### ' reports/separator_moment.md
+  > $ sed -n 1,60p reports/random_graph_first_moment.md && echo ---- && grep -n 'Lemma\|Theorem' reports/random_graph_first_moment.md | head -40
+  > $ grep -n 'theorem\|lemma\|^def\|structure' lean/MOSPFormalization/EmptyPair.lean | head -40; echo ----; grep -n 'IsEmptyPair\|isEmptyPair_coverGraph\|def coverGr
+  > $ sed -n 1,54p lean/MOSPFormalization/EmptyPair.lean && sed -n 60,135p lean/MOSPFormalization/EmptyPair.lean && sed -n 185,200p lean/MOSPFormalization/EmptyPair.l
+
+Finished the Lean read. Next I need the two existing brute-force scripts for their enumeration pattern, the DP and generator signatures, and the tools (geng) on the box, all independent reads.
+  > $ cat reports/scratch/empty_pair/check.py | head -120; echo ----; which geng nauty-geng; ls reports/scratch/separator_moment/
+  > $ grep -n 'def generate_structured_instance' -A 30 benchmarks/generator.py | head -60; echo ----; grep -n 'def compute_pathwidth' -A 12 fixed_parameter_algorithm/
+  > $ grep -rln 'reports/scratch' tests/ | head; echo ----; grep -n 'self.matrix\|def from_matrix\|def n_customers\|def n_patterns\|self.name' mosp/instance.py | head
+  > $ grep -n 'scratch' tests/test_first_moment.py | head -5; grep -n 'importlib\|spec_from' tests/test_first_moment.py | head -5; python3 -c "
+from benchmarks.genera
+  > Write /home/al/dev/MOSP/learning/separator_moment.py
+  > Write /home/al/dev/MOSP/reports/scratch/separator_moment/02_lemmas/check.py
+
+Smoke test first on a tiny range, with the load checked beside it.
+  > $ uptime && time nice -n 19 python3 reports/scratch/separator_moment/02_lemmas/check.py --max-n 7 --random 60 --covers 30 --workers 2 --out /tmp/smoke.csv 2>&1 | 
+  > $ python3 - <<'EOF'
+import re
+p='learning/separator_moment.py'; s=open(p).read()
+old=s[s.index('def closure_sequence'):s.index('def close_pair')]
+new='''def closu
+  > $ uptime && nohup nice -n 19 python3 reports/scratch/separator_moment/02_lemmas/check.py --max-n 9 --random 20000 --covers 2000 --workers 4 > reports/scratch/sepa
+  > Write /home/al/dev/MOSP/tests/test_separator_moment.py
+  > $ nice -n 19 python3 -m pytest tests/test_separator_moment.py -q 2>&1 | tail -5
+  > $ python3 - <<'EOF'
+p='tests/test_separator_moment.py'; s=open(p).read()
+old=s[s.index('def test_the_two_closure_orders_can_differ'):s.index('@pytest.mark.paramet
+
+While the 9-vertex pass runs, I'll load the Monitor tool to poll the log with a bound, and draft the report section in the meantime.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n +1 -f /home/al/dev/MOSP/reports/scratch/separator_moment/02_lemmas/check.log | grep -E --line-buffe
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+---
+
+## 2. The deterministic lemmas: balanced separator, its relaxation, the closed pair (item 02, 2026-11-01)
+
+**Qu
+
+The run is done: 310,266 graphs, zero violations, 113 s. Now I need the summary rows for the table and to stop the watch, which are independent.
+  > $ python3 - <<'EOF'
+import csv
+rows=list(csv.DictReader(open('reports/scratch/separator_moment/02_lemmas/summary.csv')))
+for r in rows:
+    print(r['set'], r['gra
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "btr0v0by8"}
+  > $ python3 - <<'EOF'
+import csv
+rows=list(csv.DictReader(open('reports/scratch/separator_moment/02_lemmas/summary.csv')))
+def f(x, d=1):
+    try: v=float(x)
+    ex
+
+Next: a per-graph comparison of X₃ against X₃′ to support one sentence I wrote, and the gate, which does not depend on the report wording, so it can start now in the background.
+  > $ (nohup nice -n 19 python3 Ralph_Loops/loop0011/gate.py > /tmp/gate_it02.log 2>&1 &) ; echo started; sleep 1; pgrep -f gate.py | head -2
+  > $ nice -n 19 python3 - <<'EOF'
+import sys, subprocess
+sys.path.insert(0,'reports/scratch/separator_moment/02_lemmas'); sys.path.insert(0,'.')
+from check import pa
+  > $ ps -o pid,etime,args -p 161551,219743 | cut -c1-120
+  > $ cat > reports/scratch/separator_moment/02_lemmas/x3_vs_x3prime.py <<'EOF'
+"""Per-graph comparison of X₃ (all closed pairs of the forced sizes) with X₃′
+(the ima
+  > $ cat /tmp/gate_it02.log; echo ---; pgrep -af 'gate.py' | grep -v 'claude -p' | cut -c1-100; uptime
+  > $ sed -n '/^## 2\. The deterministic/,/^### 2.1/p' reports/separator_moment.md | head -30; grep -n 'closures differ\|0.3–8%' reports/separator_moment.md | head
+  > $ until grep -q 'GATE\|Traceback' /tmp/gate_it02.log 2>/dev/null || ! kill -0 219746 2>/dev/null; do sleep 15; done; echo GATE_WATCH_DONE; tail -15 /tmp/gate_it02
+  > $ git status --short | grep -v 'Ralph_Loops/loop0011/\(loop.log\|nohup.out\|status.json\|session_it0\)' ; echo ---; grep -n '^- \[ \] \*\*02 The deterministic' Ra
+  > $ sed -i 's/^- \[ \] \*\*02 The deterministic lemmas: balanced separator, its relaxation, the closed pair\.\*\*/- [x] **02 The deterministic lemmas: balanced sepa
+
+One fix while the gate runs: the Lean-ready table has seventeen rows, not sixteen.
+  > $ sed -i 's/^- Sixteen Lean-ready statements/- Seventeen Lean-ready statements/' Ralph_Loops/loop0011/PROGRESS.md && grep -c '^| `\|^| ' reports/separator_moment.
+  > $ for i in $(seq 1 38); do if grep -q 'GATE\|Traceback' /tmp/gate_it02.log 2>/dev/null || ! kill -0 219746 2>/dev/null; then break; fi; sleep 15; done; date; cat 
+
+The gate is still running under a load near 60. I'll keep polling in bounded foreground waits.
+  > $ for i in $(seq 1 38); do if grep -q 'GATE\|Traceback' /tmp/gate_it02.log 2>/dev/null || ! kill -0 219746 2>/dev/null; then break; fi; sleep 15; done; date; upti
+
+The gate is past the Lean build and into the pytest suites. One more bounded poll.
+  > $ for i in $(seq 1 38); do if grep -q 'GATE\|Traceback' /tmp/gate_it02.log 2>/dev/null || ! kill -0 219746 2>/dev/null; then break; fi; sleep 15; done; date; cat 
+  > $ sed -i 's/^- Gate: `python3 Ralph_Loops\/loop0011\/gate.py` GATE_RESULT_PLACEHOLDER/- Gate: `python3 Ralph_Loops\/loop0011\/gate.py` **PASS** (lake build ok, 0 
+  > $ git status --short | grep -v 'Ralph_Loops/loop0011/\(loop.log\|nohup.out\|status.json\|session_it0\)'; ls reports/scratch/separator_moment/02_lemmas/; grep -c '
+
+Two things to verify before finishing: TASK.md shows as modified though I did not edit it, and the scratch folder has a `__pycache__` that must not be committed.
+  > $ git diff --stat Ralph_Loops/loop0011/TASK.md; git diff Ralph_Loops/loop0011/TASK.md | head -20; echo ---; git check-ignore -v reports/scratch/separator_moment/0
+
+The owner appended a note to TASK.md during the loop. It is addressed to items 05–07, 12 and 01, but I'll read it to the end to check nothing bears on item 02.
+  > $ sed -n '/^## Owner.s note, 2026-11-01/,$p' Ralph_Loops/loop0011/TASK.md
+
+The note bears on items 05–07, 12 and 01, not on this item. I'll leave a pointer to it in the PROGRESS entry's "Next" so the later sessions pick it up, and then the item is complete.
+  > $ cat >> Ralph_Loops/loop0011/PROGRESS.md <<'EOF'
+
+Note for items 05–07 and 12: the owner appended a note to `TASK.md` during
+this session (Edwards & McDermid 201
+
+Item 02 is done and marked `[x]`; the kill criterion was not met.
+
+**What was done.** The three deterministic lemmas are stated and proved on paper in `reports/separator_moment.md` §2, in the numbered-step style of the first-moment report: L1 (balanced separator at exact sizes, from `exists_empty_pair_of_layout` at the prefix of size `t`), L1′ (the events `E_bip` ⊆ `E_relax`, with `3K₂` at `k = 0` as the strictness example and the proof that "some `k`-set is in `E_bip`" is the same event as "an exact-size empty pair exists"), L2 (the closed pair) and L3 (the MOSP forms). The reusable structures live in `learning/separator_moment.py`, with 21 tests in `tests/test_separator_moment.py`.
+
+**The check, before anything was called a lemma.** Every graph on 1–9 vertices (288,266), 20,000 random graphs at 10–12 and 2,000 random covers at 4–10 customers, at `k = pw` by the subset DP:
+
+| graphs | closures checked | violations |
+|---|---|---|
+| 310,266 | 4,027,298 | 0 |
+
+Script, log and summary are in `reports/scratch/separator_moment/02_lemmas/`, 113 s on 4 workers at nice 19 because the load was above 24.
+
+**Two findings beyond the item's text.**
+- **The closure stops after one round.** The item expected an iteration `A ⊆ A₁ ⊆ A₂ ⊆ …`. The Galois step gives `R₁ = V ∖ N[A]`, `A₁ = V ∖ N[R₁]`, and then `R₂ = R₁`, `A₂ = A₁`. Monotonicity holds as asserted, with equality from the second step. This corrects the item's expectation and is not a counterexample.
+- **The fixpoint is a representative, not canonical.** Closing `A` first and closing `R` first disagree on 7–10% of exact-size pairs at 7–9 vertices. The union bound needs only a map, which L2 supplies. Also, the closure's image is a proper subset of all closed pairs of the forced sizes on about 1–3% of graphs, so item 03 should report both counts.
+
+**Slack visible already at nine vertices.** At `k = pw − 1` the structures still exist on 39–46% of graphs at 7–9 vertices and on 27% of the covers, with `E_relax` adding under one point over L1.
+
+**Lean.** Seventeen Lean-ready statements are tabulated in §2.6 for item 10, each with hypotheses, conclusion and the existing lemma it rests on. The one obstacle named is the component form of `E_bip`, which needs connected components of an induced subgraph as finite sets. The pair form is cheap and is what item 08 needs.
+
+**Gate.** `gate.py` passed: Lean builds with zero `sorry` and zero `axiom`, 1,677 tests passed including the 21 new ones, pathwidth_solver 123 passed, and the paper builds with no undefined references.
+
+**Housekeeping.** PROGRESS.md has the iteration 2 entry and reads 2/13 solved. The working tree holds only the item's files, the rebuilt paper PDF from the gate, and the owner's note appended to TASK.md during the session, which concerns items 05–07, 12 and 01 and is flagged in PROGRESS.md for those sessions. Nothing was committed and nothing under `solutions/` was touched.
+
+# result: success in 1946s, 44 turns, cost $9.89

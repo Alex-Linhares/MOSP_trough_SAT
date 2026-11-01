@@ -3,3 +3,8 @@
 [2026-11-01 12:37:26] claude session it01 (cap 4.00 h) -> session_it01.log
 [2026-11-01 12:57:34] session it01: ok (exit 0, 86 tool calls)
 [2026-11-01 13:09:50] tests passed: GATE PASS
+[2026-11-01 13:09:51] committed 9a15c32cc: 01 Literature: who counts separators, and what the inner probability i
+[2026-11-01 13:09:51] === iteration 2: 02 The deterministic lemmas: balanced separator, its relaxation, the closed pair.
+[2026-11-01 13:09:51] claude session it02 (cap 4.00 h) -> session_it02.log
+[2026-11-01 13:42:18] session it02: ok (exit 0, 43 tool calls)
+[2026-11-01 13:52:56] tests passed: GATE PASS

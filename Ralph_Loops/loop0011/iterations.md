@@ -99,7 +99,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     statement" is the strongest wording allowed, and only after (a) and
     (b) were done.
 
-- [ ] **02 The deterministic lemmas: balanced separator, its relaxation, the closed pair.**
+- [x] **02 The deterministic lemmas: balanced separator, its relaxation, the closed pair.**
   - **Question.** A of the brief. Exactly which structures does
     `pw(G) ≤ k < n` force, in a form a first moment can count once per
     separator?

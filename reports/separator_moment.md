@@ -358,3 +358,311 @@ loop:
 - The fractions of a gap in §1.4 use the best *upper bounds* where the
   truth is unknown (edge expansion at small `Δ`, cubic bisection), so they
   are lower bounds on the fraction of the true gap.
+
+---
+
+## 2. The deterministic lemmas: balanced separator, its relaxation, the closed pair (item 02, 2026-11-01)
+
+**Question (A of the brief).** Exactly which structures does
+`pw(G) ≤ k < n` force, in a form a first moment can count once per
+separator? Three, each one line from `exists_empty_pair_of_layout`
+(`EmptyPair.lean`), and each checked by brute force before being called a
+lemma: on every graph on 1–9 vertices from `nauty-geng` (288,266 graphs),
+on 20,000 random `G(n, p)` graphs at `n = 10, 11, 12` and on 2,000 random
+clique covers at 4–10 customers (§2.4). **Zero counterexamples.** The
+kill criterion (a counterexample to L1, L1′ or L2) is **not met**.
+
+Notation, for the whole section: `G` is a graph on the vertex set `V`,
+`|V| = n`; `N[X] = X ∪ N(X)` is the closed neighbourhood and
+`N(X) = N[X] ∖ X` the *outer* boundary of `X`; a pair `(A, R)` of disjoint
+sets is **empty** when no edge joins `A` to `R`, equivalently
+`R ∩ N[A] = ∅`; `k` is an integer with `pw(G) ≤ k < n`,
+`N = n − k`, `t = ⌈N/2⌉`, so that `t ≥ N − t ≥ 0` and `t ≥ 1`. Nothing in
+this section is probabilistic.
+
+### 2.1 L1 — the balanced separator at exact sizes
+
+**Lemma L1.** If `pw(G) ≤ k < n`, there are pairwise disjoint `A, R, S`
+with `A ∪ R ∪ S = V`, `|A| = t`, `|R| = N − t`, `|S| = k` and no `A–R`
+edge.
+
+*Proof.* (Layout step) By `vertexSeparation_eq_pathwidth` there is a
+layout `σ` with `vs(σ) = pw(G) ≤ k`. (Prefix step) Apply
+`exists_empty_pair_of_layout` at position `i = t − 1`, which is `< n`
+because `t ≤ N ≤ n`: the prefix `A` of size `t` and the inactive suffix
+`R₀` are disjoint, no edge joins them, and
+`n ≤ |A| + |R₀| + vs(σ) ≤ t + |R₀| + k`, i.e. `|R₀| ≥ N − t`
+(`card_inactiveSuffix`). (Shrink step) Take `R ⊆ R₀` with `|R| = N − t`;
+the edge condition is universally quantified over `R₀`, so it holds on
+`R`, and `R ⊆ R₀` is disjoint from `A`. (Complement step)
+`S = V ∖ (A ∪ R)` has `n − t − (N − t) = k` vertices and is disjoint from
+both. ∎
+
+*Remarks.* (i) The sizes are exact: `|R| = N − t = ⌊N/2⌋`, which is the
+item's `n − t − k`. The Lean corollary `exists_empty_pair` rounds it to
+`|R| ≥ t − 1`, which coincides with `N − t` for `N` odd and is one less
+for `N` even; the count on record (`FirstMoment.lean`,
+`card_emptyPairIndices`) uses `|R| = t − 1`, and plan §0 correction 2 is
+about this rounding. L1 is the sharper form and is what §2.4 checks.
+(ii) `S` is the active suffix at position `t − 1` padded to exactly `k`
+vertices with vertices of `R₀`; which vertices are moved is immaterial,
+and the lemma says nothing about `S` beyond its size — that is what L2
+adds.
+
+### 2.2 L1′ — the separator events `E_bip` and `E_relax`
+
+For a `k`-set `S ⊆ V` write `G − S` for the subgraph induced on
+`V ∖ S` (which has `N` vertices) and define two events:
+
+    E_bip(S):   the components of G − S can be grouped into two classes
+                whose vertex counts are t and N − t;
+    E_relax(S): no component of G − S has more than t vertices.
+
+**Lemma L1′.** (a) If `pw(G) ≤ k < n`, some `k`-set `S` satisfies
+`E_bip(S)`. (b) For every `k`-set `S`, `E_bip(S)` implies `E_relax(S)`.
+(c) For every `k`-set `S`, `E_bip(S)` holds iff `G` has an exact-size
+empty pair `(A, R)` (`|A| = t`, `|R| = N − t`, no `A–R` edge) with
+`V ∖ (A ∪ R) = S`. Hence *"some `k`-set is in `E_bip`"* and *"an
+exact-size empty pair exists"* are the same event; the two counts `X₂`
+(separators) and `X₁` (pairs) count it differently. (d) The inclusion in
+(b) is strict: on the graph `3K₂` (six vertices, edges `03, 14, 25`) with
+`k = 0`, `S = ∅` satisfies `E_relax` (components of sizes `2, 2, 2 ≤ t = 3`)
+and not `E_bip` (no sub-family of `{2, 2, 2}` sums to `3`). This is the
+first graph on six vertices in `nauty-geng` order with a `k`-set in
+`E_relax ∖ E_bip` (`check.log`, first line); its pathwidth is `1`, so at
+`k = pw` the two events agree on it.
+
+*Proof.* (a) Take `A, R, S` from L1. (Connectivity step) A component `C`
+of `G − S` is connected and lies in `A ∪ R`; if it met both `A` and `R`,
+some edge of `C` — a path inside `C` from a vertex of `A` to a vertex of
+`R` has a first `A–R` edge — would join `A` to `R`, contradicting
+emptiness. So `C ⊆ A` or `C ⊆ R`. (Grouping step) The components inside
+`A` partition `A` and sum to `t`; those inside `R` sum to `N − t`.
+(b) Each component lies in a class of size `t` or `N − t ≤ t`.
+(c, ⇒) Let `A` be the union of the class of size `t` and `R` the union
+of the other; they partition `V ∖ S`, have the right sizes, and an edge
+of `G − S` joins two vertices of one component, hence of one class, so
+no edge joins `A` to `R` (an `A–R` edge of `G` would have both ends
+outside `S`, so it would be an edge of `G − S`). (c, ⇐) is (a)'s
+argument applied to the given pair. (d) is checked directly. ∎
+
+*Remark.* `E_relax` is the Lean-cheap and LDP-shaped form (plan §0,
+correction 3; §1.6): it is a statement about component sizes only, and
+`P_N(E_relax)` on `G(N, p)` is the lower tail of the largest component.
+`E_bip` is the event the pair count actually witnesses, and items 05–06
+compute `P_N(E_bip)` from the full component-size partition, not from
+the largest component alone. On the graphs checked the two differ at
+`k = pw` on `0.3%` of graphs at 7 vertices and `2.2%` at 9 (§2.4,
+column "`E_relax ⊋ E_bip`"), so at these sizes the relaxation is nearly
+free; nothing here says what it costs at the scale of the rate.
+
+### 2.3 L2 — the closed pair, by the alternating closure
+
+**Lemma L2.** Let `(A, R)` be an empty pair with `|A| ≥ t`,
+`|R| ≥ N − t` and `|V ∖ (A ∪ R)| ≤ k`. Put
+
+    R* = V ∖ N[A],      A* = V ∖ N[R*],      S* = V ∖ (A* ∪ R*).
+
+Then: (i) `A ⊆ A*` and `R ⊆ R*` (monotone); (ii) `(A*, R*)` is an empty
+pair; (iii) `R* = V ∖ N[A*]` and `A* = V ∖ N[R*]` (a **closed pair**), so
+the alternating closure `R₁ = V ∖ N[A]`, `A₁ = V ∖ N[R₁]`, `R₂ = V ∖ N[A₁]`,
+`A₂ = V ∖ N[R₂]`, … is constant from `(A₁, R₁) = (A*, R*)` on — it stops
+after **one round**, not after an unbounded iteration; (iv)
+`S* = N(A*) ∩ N(R*)`; (v) `|A*| ≥ t`, `|R*| ≥ N − t`, `|S*| ≤ k`.
+Conversely, every closed pair `(A, R)` (one with `A = V ∖ N[R]` and
+`R = V ∖ N[A]`) is empty with `V ∖ (A ∪ R) = N(A) ∩ N(R)`, and is
+determined by either side.
+
+*Proof.* (Galois step) For any `X, Y ⊆ V`: `Y ⊆ V ∖ N[X]` iff `Y ∩ X = ∅`
+and no edge joins `X` to `Y`, iff `X ⊆ V ∖ N[Y]`, by the symmetry of
+adjacency; and `X ⊆ X′` implies `N[X] ⊆ N[X′]` (monotone step).
+(i) `(A, R)` is empty, so `R ⊆ V ∖ N[A] = R*` by the Galois step.
+`R* ∩ N[A] = ∅` by definition, so `(A, R*)` is empty and the Galois step
+gives `A ⊆ V ∖ N[R*] = A*`. (ii) `A* ∩ N[R*] = ∅` by definition.
+(iii) From (ii) and the Galois step, `R* ⊆ V ∖ N[A*]`; from `A ⊆ A*` and
+the monotone step, `V ∖ N[A*] ⊆ V ∖ N[A] = R*`. So `R* = V ∖ N[A*]`, and
+`A* = V ∖ N[R*]` is the definition. Hence `R₂ = V ∖ N[A₁] = R₁` and
+`A₂ = V ∖ N[R₂] = A₁`, and by induction every later term equals these.
+(iv) `v ∈ S*` iff `v ∉ A*` and `v ∉ R*`; `v ∉ A* = V ∖ N[R*]` means
+`v ∈ N[R*]`, which with `v ∉ R*` is `v ∈ N(R*)`; symmetrically
+`v ∈ N(A*)`. Conversely a vertex of `N(A*) ∩ N(R*)` is outside `A*` and
+outside `R*` by the definition of the outer boundary. (v) From (i),
+`|A*| ≥ |A| ≥ t` and `|R*| ≥ |R| ≥ N − t`; then
+`|S*| = n − |A*| − |R*| ≤ n − t − (N − t) = k`. The converse is (ii)–(iv)
+read with `A* = A`, `R* = R`; "determined by either side" is
+`R = V ∖ N[A]`. ∎
+
+*Remarks.* (i) **The fixpoint is a representative, not the
+representative.** Closing `R` first gives `(V ∖ N[R], V ∖ N[V ∖ N[R]])`,
+which can differ from `(A*, R*)`: on the graphs checked the two maps
+disagree on `7–10%` of exact-size pairs at 7–9 vertices (§2.4, column
+"closures differ"). A union bound over closed pairs needs only *a*
+map from exact-size pairs to closed pairs of the forced sizes, and L2
+gives one (`A` first; the mirror is another); it does not need the map
+to be canonical, and this document never says it is. (ii) The item
+expected an iteration `A ⊆ A₁ ⊆ A₂ ⊆ …`; (iii) says the chain is
+`A ⊆ A₁ = A₂ = …`, `R ⊆ R₁ = R₂ = …`. Monotonicity holds as asserted
+(with equality from the second step), which is what the check verifies
+at every step — the item's expectation is corrected, not contradicted.
+(iii) Because every closed pair is determined by `A`, the closed pairs
+of the forced sizes (`X₃` below) are enumerated exactly by running over
+all `A ⊆ V`, setting `R = V ∖ N[A]` and testing `A = V ∖ N[R]` and the
+sizes; no pair is reached twice. (iv) The image of the exact-size pairs
+under the `A`-first closure (`X₃′`) can be a proper subset of `X₃`: a
+closed pair of the forced sizes contains exact-size sub-pairs, but
+closing a sub-pair may land on a *larger* closed pair (its `V ∖ N[A′]`
+contains `V ∖ N[A]`). Both counts are valid first moments; item 03
+measures both.
+
+### 2.4 The check, before any of the above was called a lemma
+
+`reports/scratch/separator_moment/02_lemmas/check.py` (log beside it),
+on the functions of `learning/separator_moment.py` (tested in
+`tests/test_separator_moment.py`, which also re-enumerates every
+labelled graph to 6 vertices and pins the subset DP to
+`learning.first_moment.vertex_separation_brute` and
+`fixed_parameter_algorithm.pathwidth.compute_pathwidth`). For each graph,
+`k = pw(G)` by the subset DP; then
+
+* **L1**: `X₁ > 0`, where `X₁` is the number of ordered exact-size empty
+  pairs (`|A| = t`, `|R| = N − t`; for `N` even `(A, R)` and `(R, A)` are
+  both counted);
+* **L1′**: `X₂ > 0`, `X₂ ≤ X₂′`, and `X₁ > 0 ⟺ X₂ > 0`, where `X₂`, `X₂′`
+  are the numbers of `k`-sets `S` in `E_bip` and `E_relax`, computed from
+  the components of `G − S` and a subset-sum over their sizes;
+* **L2**: from every exact-size pair (all of them when `X₁ ≤ 200`, the
+  first 200 otherwise), the closure sequence is monotone at every step,
+  the second round repeats the first, the fixpoint is closed, empty, of
+  the forced sizes, with `S* = N(A*) ∩ N(R*)`, and lies in `X₃` (all
+  closed pairs of the forced sizes, by the enumeration of remark (iii));
+  the share of pairs whose `A`-first and `R`-first fixpoints differ;
+* **L3** (covers only): a pair is empty iff no pattern meets both sides
+  (on every exact-size pair and on 20 random disjoint pairs per
+  instance), and every customer of `S*` shares a pattern with `A*` and
+  with `R*`;
+* at `k = pw − 1`: whether an exact-size pair (equivalently a `k`-set in
+  `E_bip`) and whether a `k`-set in `E_relax` still exist — the necessary
+  condition's slack at these sizes.
+
+**Results** (`check.log`, `summary.csv`; 2026-11-01, 4 workers at nice 19, 113 s wall; the
+rows for 1–3 vertices — 7 graphs, zero violations — are omitted). Medians and
+maxima are over the graphs of the row at `k = pw`; `X₃′` is computed only on
+graphs with `X₁ ≤ 200`, so its maximum at `n ≥ 10` is over that subset;
+"`E_relax ⊋ E_bip`" is the share of graphs with `X₂′ > X₂`; "closures differ"
+is the share of closed pairs whose `A`-first and `R`-first fixpoints differ,
+over the pairs closed; the last two columns are the shares of graphs with
+`pw ≥ 1` on which the structure still exists at `k = pw − 1`.
+
+| graphs | count | viol. | `X₁` med / max | `X₂` med / max | `X₂′` med / max | `X₃` med / max | `X₃′` med / max | `E_relax ⊋ E_bip` | pairs closed | closures differ | L1 at `pw − 1` | `E_relax` at `pw − 1` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| geng n=4 | 11 | 0 | 4 / 8 | 2 / 4 | 2 / 4 | 2 / 6 | 2 / 6 | 0.0% | 48 | 4.2% | 40.0% | 40.0% |
+| geng n=5 | 34 | 0 | 6 / 18 | 3 / 9 | 3 / 9 | 3 / 10 | 3 / 10 | 0.0% | 218 | 8.7% | 42.4% | 42.4% |
+| geng n=6 | 156 | 0 | 6.5 / 36 | 4 / 16 | 4 / 16 | 4 / 20 | 4 / 20 | 0.0% | 1,318 | 10.1% | 43.9% | 44.5% |
+| geng n=7 | 1,044 | 0 | 8 / 84 | 4 / 25 | 4 / 25 | 4 / 35 | 4 / 35 | 0.3% | 10,530 | 9.9% | 45.6% | 46.1% |
+| geng n=8 | 12,346 | 0 | 8 / 200 | 5 / 52 | 5 / 52 | 5 / 70 | 5 / 70 | 1.0% | 137,152 | 8.4% | 43.1% | 43.6% |
+| geng n=9 | 274,668 | 0 | 9 / 450 | 6 / 105 | 6 / 105 | 6 / 126 | 6 / 126 | 2.2% | 3,243,462 | 6.7% | 38.5% | 39.0% |
+| random n=10 | 6,667 | 0 | 13 / 1050 | 7 / 92 | 7 / 92 | 8 / 252 | 8 / 127 | 4.4% | 187,528 | 14.4% | 44.1% | 44.6% |
+| random n=11 | 6,667 | 0 | 14 / 2310 | 8 / 145 | 8 / 145 | 9 / 420 | 8 / 122 | 5.9% | 209,294 | 11.6% | 43.2% | 43.7% |
+| random n=12 | 6,666 | 0 | 16 / 3192 | 9 / 161 | 9 / 161 | 10 / 582 | 10 / 141 | 7.9% | 224,689 | 9.9% | 42.8% | 43.2% |
+| covers n<=10 | 2,000 | 0 | 5 / 74 | 4 / 30 | 4 / 30 | 2 / 30 | 2 / 30 | 2.2% | 13,042 | 3.1% | 27.0% | 27.2% |
+
+**Total: 310,266 graphs, 4,027,298 closures checked, zero violations of any
+kind** (the script's fourteen violation flags all stayed at zero; `grep -c
+VIOLATION check.log` is `0`). Read across: `X₁ ≥ X₂` always (several pairs per
+separator), `X₂ = X₂′` in every maximum and median at these sizes (the
+relaxation adds separators on 0.3–8% of graphs, growing with `n` and with
+the random graphs' density), `X₃′ < X₃` on 2.8% of graphs at 7 vertices, 1.8% at 8
+and 0.9% of the random graphs at 10–12 where computed (closed pairs that
+the closure of no exact-size pair reaches, remark (iv) of §2.3;
+`x3_vs_x3prime.log`), and the covers behave like sparse graphs (fewer closed pairs than
+separators, the closure orders rarely differing).
+
+### 2.5 L3 — the MOSP forms
+
+Let the instance have customers `C` (`|C| = n`) and patterns
+`S_1, …, S_m ⊆ C`; its MOSP graph `mospGraph` (`MOSPGraph.lean`;
+`coverGraph` in `CliqueCoverMoment.lean`) joins two distinct customers
+iff some pattern contains both, and `mospValue = pw(mospGraph) + 1`
+(`MOSPGraph.lean`, both directions). With `k = mospValue − 1 < n`:
+
+**Lemma L3.** (a) For disjoint `A, R ⊆ C`, `(A, R)` is an empty pair of
+`mospGraph` iff no pattern meets both `A` and `R`
+(`isEmptyPair_coverGraph_iff`). (b) L1, L1′ and L2 hold for `mospGraph`
+with `S` a set of `k` customers; in particular every instance with
+`mospValue ≤ k + 1` has `k` customers whose removal leaves customer
+classes of sizes `t` and `N − t` such that no pattern meets both classes.
+(c) In a closed pair `(A*, R*)` of `mospGraph`, a customer `c` lies in
+`S* = N(A*) ∩ N(R*)` iff `c ∉ A* ∪ R*`, some pattern contains `c` and a
+customer of `A*`, and some pattern contains `c` and a customer of `R*`.
+
+*Proof.* (a) is the cited lemma. (b) is L1, L1′, L2 applied to the graph
+`mospGraph`, with `k ≥ pw` given by the equality theorem. (c) `c ∈ N(X)`
+for `mospGraph` means `c ∉ X` and `c` is adjacent to some `x ∈ X`, i.e.
+some pattern contains both `c` and `x`; apply L2 (iv). ∎
+
+The check of §2.4 runs L1, L1′, L2 on the MOSP graphs of 2,000 random
+covers and tests (a) and (c) directly against the matrix.
+
+### 2.6 Lean-ready statements for item 10
+
+All over `{V : Type*} [Fintype V] [DecidableEq V] (G : SimpleGraph V)
+[DecidableRel G.Adj]`, in the vocabulary of `EmptyPair.lean`
+(`closedNbhd`, `IsEmptyPair` from `FirstMoment.lean`), with `n = Fintype.card V`,
+`t = (n − k + 1) / 2`, `N − t = (n − k) / 2` in `ℕ` arithmetic.
+
+| name | hypotheses | conclusion | rests on |
+|---|---|---|---|
+| `exists_balanced_separator` (L1) | `pathwidth G ≤ k`, `k < n` | `∃ A R S : Finset V`, pairwise disjoint, `A ∪ R ∪ S = univ`, `A.card = t`, `R.card = N − t`, `S.card = k`, `∀ u ∈ A, ∀ v ∈ R, ¬ G.Adj u v` | `vertexSeparation_eq_pathwidth`, `exists_empty_pair_of_layout` at `i = t − 1`, `Finset.exists_subset_card_eq`, `Finset.card_sdiff` |
+| `IsBalancedBip G S k` (def) | — | `∃ A R, Disjoint A R ∧ A ∪ R = univ \ S ∧ A.card = t ∧ R.card = N − t ∧ IsEmptyPair G A R` — the pair form of `E_bip`, which L1′ (c) shows equivalent to the component form | — |
+| `exists_isBalancedBip` (L1′ a) | `pathwidth G ≤ k`, `k < n` | `∃ S, S.card = k ∧ IsBalancedBip G S k` | `exists_balanced_separator` |
+| `connectedComponent_subset_side` (connectivity step) | `IsEmptyPair G A R`, `C` a connected component of `G.induce (A ∪ R)` | `C ⊆ A ∨ C ⊆ R` | induction on `SimpleGraph.Walk` in the induced graph |
+| `isBalancedBip_iff_components` (L1′ c) | `S.card = k` | `IsBalancedBip G S k ↔` the components of `G.induce (univ \ S)` admit a grouping into sizes `t`, `N − t` | the previous row; the converse by taking unions |
+| `IsRelax G S k` (def) and `isRelax_of_isBalancedBip` (L1′ b) | `IsBalancedBip G S k` | every component of `G.induce (univ \ S)` has `card ≤ t` | `connectedComponent_subset_side`, `Finset.card_le_card` |
+| `not_isBalancedBip_threeEdges` (L1′ d) | the graph `3K₂` on `Fin 6`, `k = 0`, `S = ∅` | `IsRelax ∧ ¬ IsBalancedBip` | `decide` |
+| `subset_compl_closedNbhd_iff` (Galois step) | — | `R ⊆ univ \ closedNbhd G A ↔ Disjoint A R ∧ ∀ u ∈ A, ∀ v ∈ R, ¬ G.Adj u v` | `mem_closedNbhd_iff`, `G.adj_symm` |
+| `closedNbhd_mono` | `A ⊆ A'` | `closedNbhd G A ⊆ closedNbhd G A'` | `Finset.biUnion_subset_biUnion_of_subset_left` |
+| `IsClosedPair G A R` (def) | — | `A = univ \ closedNbhd G R ∧ R = univ \ closedNbhd G A` | — |
+| `closure_subset` (L2 i) | `IsEmptyPair G A R` | `A ⊆ univ \ closedNbhd G (univ \ closedNbhd G A)` and `R ⊆ univ \ closedNbhd G A` | `subset_compl_closedNbhd_iff` twice |
+| `closure_isClosedPair` (L2 ii–iii) | `IsEmptyPair G A R` | `IsClosedPair G (univ \ closedNbhd G (univ \ closedNbhd G A)) (univ \ closedNbhd G A)` | `closure_subset`, `closedNbhd_mono`, `subset_compl_closedNbhd_iff` |
+| `sdiff_isClosedPair_eq_inter_boundary` (L2 iv) | `IsClosedPair G A R` | `univ \ (A ∪ R) = (closedNbhd G A \ A) ∩ (closedNbhd G R \ R)` | `mem_closedNbhd_iff` |
+| `closure_card` (L2 v) | `IsEmptyPair G A R`, `t ≤ A.card`, `N − t ≤ R.card`, `(univ \ (A ∪ R)).card ≤ k` | the same three bounds for the closed pair | `closure_subset`, `Finset.card_le_card`, `Finset.card_sdiff` |
+| `exists_closedPair_of_pathwidth_le` (L1 + L2) | `pathwidth G ≤ k`, `k < n` | `∃ A R, IsClosedPair G A R ∧ IsEmptyPair G A R ∧ t ≤ A.card ∧ N − t ≤ R.card ∧ (univ \ (A ∪ R)).card ≤ k` | the two rows above and `exists_balanced_separator` |
+| `mem_boundary_coverGraph_iff` (L3 c) | `S : Fin m → Finset C` | `c ∈ closedNbhd (coverGraph S) A \ A ↔ c ∉ A ∧ ∃ j, c ∈ S j ∧ ∃ a ∈ A, a ≠ c ∧ a ∈ S j` | `coverGraph`'s adjacency, `mem_closedNbhd_iff` |
+| `exists_balanced_separator_cover` (L3 b) | an instance with `mospValue ≤ k + 1`, `k < n` | `exists_balanced_separator` for `mospGraph`, with the empty pair stated as "no pattern meets both" | `MOSPGraph.lean`'s equality, `isEmptyPair_coverGraph_iff` |
+
+Obstacle noted for item 10, not for this item: `isBalancedBip_iff_components`
+needs connected components of an induced subgraph as `Finset`s with their
+cardinalities, which the development has not used so far (Mathlib's
+`SimpleGraph.ConnectedComponent` is a quotient type; `Fintype` instances
+exist, the union-of-supports bookkeeping does not). The pair form
+`IsBalancedBip` is what the probabilistic statement of item 08 needs, and
+it is cheap; the component form is for the LDP comparison and can be
+left as a named `Prop` with this obstacle if it does not fit.
+
+### 2.7 Regenerate, size range, kill verdict, what this does not claim
+
+* **Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/02_lemmas/check.py --max-n 9 --workers 8`
+  (run with 4 workers on 2026-11-01 because the one-minute load was
+  above 24; the log says the wall time); `python3 -m pytest tests/test_separator_moment.py`.
+* **Size range.** Every graph on 1–9 vertices; 20,000 random `G(n, p)`
+  graphs at `n = 10, 11, 12` with `p ∈ {0.15, 0.3, 0.45, 0.6}` (seed = job
+  index); 2,000 random covers with 4–10 customers, `m ∈ {n, 2n}`, 2–4
+  customers per pattern (`generate_structured_instance(n, m, cpp, seed = index)`).
+  The lemmas are for every graph; the counts in the table are for these
+  sizes only.
+* **Kill verdict: not met.** Zero counterexamples to L1, L1′, L2 or L3 on
+  310,266 graphs. The item's premise — that a narrow layout forces a
+  balanced separator, a balanced empty bipartition and a closed pair at the
+  forced sizes — stands; the three structures exist on every graph checked
+  at `k = pw`, and at `k = pw − 1` they exist on 39–46% of graphs at
+  7–9 vertices (27% of the covers), so at these sizes the *necessary* condition is far from
+  sufficient — the slack the loop is about is already visible on nine
+  vertices, and it is the condition's, not only the union bound's.
+* **Does not claim.** Anything probabilistic: no rate, no constant, no
+  statement about `P_N(E_bip)`. That the closed pair is canonical (the
+  `A`-first and `R`-first fixpoints differ on 3–14% of the pairs
+  checked). That `E_relax` is a cheap relaxation at scale (it differs from
+  `E_bip` on 2.2% of graphs at 9 vertices and 8% of the random graphs at
+  12; the rate question is item 05's). That the share of graphs with a structure at `k = pw − 1` says
+  anything beyond nine vertices. The Lean rows of §2.6 are statements,
+  not proofs; item 10 proves them or names the obstacle.

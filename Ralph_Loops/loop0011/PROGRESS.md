@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 1/13 SOLVED
+Current: 2/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -134,3 +134,77 @@ any is called a lemma. Items 05–06 should compare their relaxed-event rate
 against `I_{c′}^β(½)` of `rate_check.py` and not fit it to the planner's two
 routes (`reports/separator_moment.md` §1.6); item 07 has no LDP to quote for
 covers and must compute the giant's lower tail itself.
+
+---
+
+## Iteration 2 — 2026-11-01 13:10
+
+Item 02, the deterministic lemmas: the balanced separator at exact sizes
+(L1), the separator events `E_bip` ⊆ `E_relax` (L1′), the closed pair by
+the alternating closure (L2), the MOSP forms (L3). **Done.** Deliverable:
+`reports/separator_moment.md` §2 (statements, proofs with every step
+named, the check's table, the Lean-ready list for item 10, regenerate /
+size range / kill verdict / non-claims); `learning/separator_moment.py`
+(forced sizes, the subset DP, exact-size pairs, components, `E_bip` /
+`E_relax`, the closure, closed-pair enumeration, the cover forms);
+`reports/scratch/separator_moment/02_lemmas/{check.py, check.log,
+summary.csv, x3_vs_x3prime.py, x3_vs_x3prime.log}`;
+`tests/test_separator_moment.py` (21 tests: every labelled graph to 6
+vertices, the DP pinned to `vertex_separation_brute` and
+`compute_pathwidth`, the `3K₂` example, the two closure orders, covers).
+
+### Completed
+
+- **Kill criterion: not met.** Every graph on 1–9 vertices (288,266),
+  20,000 random `G(n, p)` at 10–12 and 2,000 random covers at 4–10
+  customers: **310,266 graphs, 4,027,298 closures, zero violations** of
+  L1, L1′, L2 or L3 at `k = pw` (113 s on 4 workers at nice 19; the load
+  was above 24). The loop's premise stands.
+- **The closure stops after one round, not after an iteration.** The
+  item expected `A ⊆ A₁ ⊆ A₂ ⊆ …`; the Galois step gives
+  `R₁ = V ∖ N[A]`, `A₁ = V ∖ N[R₁]` and then `R₂ = R₁`, `A₂ = A₁` (L2 iii,
+  proved from `A ⊆ A₁ ⟹ N[A] ⊆ N[A₁]`). Monotonicity holds as asserted,
+  with equality from the second step; checked at every step on every
+  closure. A correction to the item's expectation, not a counterexample.
+- **The fixpoint is a representative, not canonical**: the `A`-first and
+  `R`-first closures differ on 7–10% of exact-size pairs at 7–9 vertices,
+  10–14% on the random graphs, 3% on covers. The union bound needs only a
+  map, and L2 gives one.
+- **`E_bip` and "an exact-size pair exists" are the same event** (L1′ c);
+  `X₁` and `X₂` count it differently (`X₁ ≥ X₂` always). `E_relax` is
+  strictly weaker — `3K₂` with `k = 0` is the first 6-vertex example in
+  geng order — but adds separators at `k = pw` on only 0.3–8% of graphs
+  at these sizes (growing with `n` and density).
+- **The closure's image `X₃′` is a proper subset of all closed pairs
+  `X₃`** on 2.8% of graphs at 7, 1.8% at 8, 0.9% of random graphs at
+  10–12 (§2.3 remark iv); both are valid first moments, item 03 measures
+  both.
+- **The necessary condition's slack is visible at nine vertices**: at
+  `k = pw − 1` the structures still exist on 39–46% of graphs at 7–9
+  vertices and 27% of the covers (`E_relax` within 0.6 points of L1).
+- Seventeen Lean-ready statements listed for item 10 with hypotheses,
+  conclusions and the existing lemma each rests on; the one obstacle
+  named (components of an induced subgraph as `Finset`s, for the
+  component form of `E_bip`; the pair form is cheap and is what item 08
+  needs).
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,677 passed / 2 skipped / 1 xfailed in 15:01 under a load of 20–60, the 21 new tests among them; pathwidth_solver 123 passed in 7:05; paper builds with no undefined references).
+
+### Blockers
+
+None.
+
+### Next
+
+Item 03 (the clumping decomposed): `X₁`, `X₂`, `X₃`, `X₄` on graphs with
+exact pathwidth at 14–24 and certified covers at `n ≤ 22`, using
+`learning.separator_moment` (`exact_pairs`, `count_separators`,
+`closed_pairs`, `close_pair`) — note that `closed_pairs` enumerates all
+`2^n` subsets and `count_separators` all `C(n, k)` sets, fine to 24 and
+not beyond, and that `X₃` and `X₃′` differ (§2.3 remark iv): report
+both. Item 10 takes §2.6's list.
+
+Note for items 05–07 and 12: the owner appended a note to `TASK.md` during
+this session (Edwards & McDermid 2015 as the published upper line in the `β`
+figure and the cover grid; Cheung & Girardet 2020's prefix-at-`(1 − ε)n`
+variant; the disputed random-cubic bisection constant, not to be quoted
+without the source). It does not touch item 02.
