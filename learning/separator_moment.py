@@ -2593,3 +2593,99 @@ def weighted_exponent(c: float, beta: float) -> float:
 def beta_weighted(c: float) -> float:
     """`β_W(c)`: the root in `β` of `weighted_exponent(c, ·)`."""
     return _root_beta(lambda b: weighted_exponent(c, b), tol=1e-6)
+
+
+# --- item 11: the slack ledger ----------------------------------------------------
+#
+# Harper's vertex-isoperimetric bound in graph form, and the floor convention
+# on the pathwidth scale, for `reports/scratch/separator_moment/11_ledger/run.py`
+# (`reports/separator_moment.md` §11).  `satisfiability.expansion_bound` computes
+# the same bound from a MOSP matrix and returns it on the MOSP scale (`vs + 1`);
+# the pilot graphs are not MOSP instances, so the graph form takes adjacency
+# masks and returns the bound on `vs = pw`.  Same exact `f(t) = min_{|C| = t}
+# |N[C]|` by branch and bound (`_f_exact`), same anytime cap rule (a level is
+# usable once the next level is exact; a level abandoned on budget is discarded,
+# never used as an estimate), and `max_t` is not clipped at that module's
+# `MAX_LEVEL`.
+
+
+from dataclasses import dataclass as _dataclass, field as _field
+
+
+@_dataclass
+class HarperBound:
+    """`value` is a lower bound on the vertex separation (= pathwidth); `levels`
+    is `f(1) … f(t_max)`, each exact; `cap` the deepest `T` with `f(T + 1)`
+    known; `complete` whether every requested level finished in budget.  Under a
+    cap or a budget `value` is a lower bound on the true Harper value."""
+    value: int
+    cap: int
+    levels: list[int] = _field(default_factory=list)
+    complete: bool = True
+    seconds: float = 0.0
+
+
+def harper_bound_graph(adj: list[int], max_t: int = 12, time_budget: float | None = 60.0) -> HarperBound:
+    """Harper's bound `vs(G) ≥ max_i (i − M(i))`, `M(i) = max{t : f(t) ≤ i}`, on a
+    graph given by adjacency masks (the graph form of
+    `satisfiability.expansion_bound.expansion_bound`, on the `vs` scale)."""
+    import time as _time
+    from satisfiability.expansion_bound import _f_exact
+    n = len(adj)
+    started = _time.monotonic()
+    deadline = None if time_budget is None else started + time_budget
+    if n == 0:
+        return HarperBound(0, 0, [], True, 0.0)
+    masks = [adj[v] | (1 << v) for v in range(n)]
+    order = sorted(range(n), key=lambda v: masks[v].bit_count())
+    max_t = max(1, min(max_t, n - 1))
+    levels: list[int] = []
+    best_value, best_cap, complete = 0, 0, True
+    for t in range(1, max_t + 2):
+        value = _f_exact(masks, n, t, order, deadline)
+        if value is None:
+            complete = False
+            break
+        levels.append(value)
+        cap = t - 1
+        if cap >= 1:
+            limit = min(n, levels[t - 1] - 1)
+            for i in range(1, limit + 1):
+                m = 0
+                for s in range(cap, 0, -1):
+                    if levels[s - 1] <= i:
+                        m = s
+                        break
+                if i - m > best_value:
+                    best_value, best_cap = i - m, cap
+    return HarperBound(best_value, best_cap, levels, complete, _time.monotonic() - started)
+
+
+def floor_pw(log_bounds: dict[int, float], thresh: float = 0.01) -> int:
+    """The floor on the *pathwidth* scale from log bounds on `P(pw ≤ k)` indexed
+    by `k`: the largest `k` with the bound below `thresh`, plus one (`pw ≥ k + 1`
+    with failure probability below `thresh`); `0` if no `k` qualifies.  The
+    record's `learning.first_moment.floors` is this plus one more (the optimum
+    `pw + 1`)."""
+    best = -1
+    for k in sorted(log_bounds):
+        if log_bounds[k] < math.log(thresh):
+            best = k
+    return best + 1
+
+
+def layout_vertex_separation(adj: list[int], order: list[int]) -> int:
+    """The vertex separation of one layout in the loop's convention (the
+    header of `reports/separator_moment.md`; `vertex_separation`'s DP): the
+    largest, over the prefixes, number of vertices *outside* the prefix with a
+    neighbour inside it (the active suffix `S`)."""
+    n = len(adj)
+    full = (1 << n) - 1
+    placed = 0
+    nb = 0
+    worst = 0
+    for v in order:
+        placed |= 1 << v
+        nb |= adj[v]
+        worst = max(worst, popcount(nb & ~placed & full))
+    return worst

@@ -1,0 +1,6 @@
+== gnp: the pilot's c = 10 cells at n = 30–60, proved graphs; Harper with max_t 16, budget 60 s ==
+  543 graphs in the four cells, 543 proved (38 by a minor certificate)
+  layout check: 543 of 543 layouts have the recorded width in one orientation, 0 do not
+  cell bounds: 180 (n, k) rows in 1 s
+gnp: 543 graphs in 2924 s wall (4.87 core-hours of Harper)
+EXIT 0

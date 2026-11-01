@@ -1223,3 +1223,81 @@ def test_three_k2_is_relaxed_and_not_bipartitioned_at_k_zero():
     assert relax and not bip
     assert count_exact_pairs(adj, 0) == 0
     assert all(popcount(c) <= 3 for c in components(adj, 63))
+
+
+# --- item 11: the slack ledger ---------------------------------------------------
+
+def test_harper_graph_is_a_lower_bound_on_vertex_separation():
+    """`harper_bound_graph` (the graph form of Harper's bound, on the `vs`
+    scale) never exceeds the exact vertex separation, at every cap."""
+    from learning.separator_moment import harper_bound_graph, gnp_masks, layout_vertex_separation
+    rng = random.Random(11)
+    for trial in range(60):
+        n = rng.randint(4, 9)
+        adj = gnp_masks(n, rng.choice([0.2, 0.4, 0.6]), seed=rng.randint(0, 10**6))
+        vs = vertex_separation(adj)
+        for max_t in (1, 3, n - 1):
+            hb = harper_bound_graph(adj, max_t=max_t, time_budget=None)
+            assert hb.complete and hb.value <= vs, (adj, max_t, hb, vs)
+            assert hb.levels == sorted(hb.levels)          # f is non-decreasing
+            assert len(hb.levels) == min(max_t, n - 1) + 1
+        full = harper_bound_graph(adj, max_t=n - 1, time_budget=None)
+        # the layout form: every layout has a prefix of size i with ≥ i − M(i) active vertices
+        assert full.value <= layout_vertex_separation(adj, list(range(n)))
+
+
+def test_harper_graph_equals_expansion_bound_on_the_edge_cover():
+    """On the MOSP instance whose patterns are the edges (one column per edge,
+    one per isolated vertex) the MOSP graph is the graph, and
+    `expansion_bound` returns the same levels, cap and value `+ 1`."""
+    from mosp.instance import MOSPInstance
+    from satisfiability.expansion_bound import expansion_bound
+    from learning.separator_moment import harper_bound_graph, gnp_masks
+    rng = random.Random(7)
+    for trial in range(40):
+        n = rng.randint(3, 10)
+        adj = gnp_masks(n, rng.choice([0.25, 0.5]), seed=rng.randint(0, 10**6))
+        cols = []
+        for u in range(n):
+            for v in range(u + 1, n):
+                if (adj[u] >> v) & 1:
+                    col = [0] * n
+                    col[u] = col[v] = 1
+                    cols.append(col)
+            if adj[u] == 0:
+                col = [0] * n
+                col[u] = 1
+                cols.append(col)
+        inst = MOSPInstance.from_matrix(np.array(cols, dtype=np.int8).T, name=f"edges_{trial}")
+        for max_t in (2, 4):
+            eb = expansion_bound(inst, max_t=max_t, time_budget=None)
+            hb = harper_bound_graph(adj, max_t=max_t, time_budget=None)
+            assert hb.levels == eb.levels and hb.cap == eb.cap
+            assert eb.value == (hb.value + 1 if hb.value else 0)
+
+
+def test_floor_pw_convention_matches_the_record_minus_one():
+    """`floor_pw` is the record's `floors` (optimum scale) minus one."""
+    from learning.first_moment import floors, log_bound
+    from learning.separator_moment import floor_pw
+    assert floor_pw({0: -5.0, 1: -3.0, 2: -1.0, 3: 0.5}, 1.0) == 3
+    assert floor_pw({0: -5.0, 1: -3.0, 2: -1.0, 3: 0.5}, 0.01) == 1
+    assert floor_pw({0: 0.2, 1: 0.5}, 1.0) == 0
+    n, sizes = 20, [4] * 20
+    lb = {k: log_bound(n, sizes, k) for k in range(n)}
+    f1, f2 = floors(n, sizes)
+    assert floor_pw(lb, 1.0) == f1 - 1 and floor_pw(lb, 0.01) == f2 - 1
+
+
+def test_layout_vertex_separation_of_an_optimal_layout_is_the_vertex_separation():
+    from learning.separator_moment import gnp_masks, layout_vertex_separation
+    from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+    rng = random.Random(3)
+    for trial in range(20):
+        n = rng.randint(4, 9)
+        adj = gnp_masks(n, 0.4, seed=rng.randint(0, 10**6))
+        G = nx.Graph()
+        G.add_nodes_from(range(n))
+        G.add_edges_from((u, v) for u in range(n) for v in range(u + 1, n) if (adj[u] >> v) & 1)
+        pw, order = compute_pathwidth(G)
+        assert layout_vertex_separation(adj, list(order)) == pw == vertex_separation(adj)

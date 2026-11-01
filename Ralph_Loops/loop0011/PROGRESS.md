@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 10/13 SOLVED
+Current: 11/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -998,3 +998,111 @@ list at the head of `sec9e_appendix_random.tex`), and say that Theorem Cl's
 independence step and Lemma J are on paper. Item 13's reserve could be the
 product-over-blocks lemma (Theorem Cl into Lean) if nothing from 01–12 is
 more pressing.
+
+---
+
+## Iteration 11 — 2026-11-01 22:50
+
+Item 11, the slack ledger: in stacks, on certified instances, what each
+count buys and what is left — the union bound (floor to Harper) against the
+necessary condition (Harper to pathwidth). **Done.** Deliverable:
+`reports/separator_moment.md` §11 (conventions and the ladder, the covers
+table at `n = 30–75`, the `G(n, 10/n)` table at `n = 30–60`, the paragraph
+per model, the Harper censoring table, the figure, regenerate / size range /
+kill verdict / corrections / non-claims);
+`reports/scratch/separator_moment/11_ledger/` (`run.py` with stages
+`covers`, `gnp`, `stats`, `draw`; `ledger_6_1.csv` and `ledger_gnp.csv`
+with every instance's ladder; `cells_gnp.csv`; `summary.csv`; `ladder.png`;
+`run.log`; `gnp_stdout.log`; `gate.log`); `learning/separator_moment.py`
+extended (`harper_bound_graph` — Harper's bound in graph form on the `vs`
+scale, `_f_exact` reused, cap not clipped at `MAX_LEVEL`; `HarperBound`;
+`floor_pw`; `layout_vertex_separation`); `tests/test_separator_moment.py`
+(4 new tests, 91 in the module: Harper ≤ exact vertex separation at every
+cap; equal levels, cap and value `+ 1` to `expansion_bound` on the edge
+cover; the floor convention against the record's `floors`; the layout
+function against `compute_pathwidth`).
+
+### Completed
+
+- **Instances, nothing re-solved.** The 600 certified `(6, 1)` fixed
+  generator instances at `n = m = 30–75` with Harper on record
+  (`slack_6_1.csv`, read; the item and the plan say 650 — the record's own
+  table sums to 600), sizes regenerated from the seeds with the record's
+  old and exact-size floors reproduced on all 600 (asserted); the pilot's
+  543 proved `c = 10` graphs at `n = 30, 40, 50, 60`, regenerated from
+  their seeds with the edge counts asserted and **every recorded layout
+  re-checked to its width** (543 / 543 in one orientation). Everything on
+  the `pw` scale; floors at `< 0.01` (the paper's) and `< 1` (the record's).
+- **Stop condition: did not fire.** Zero floors above a certified
+  pathwidth at `< 0.01` for every count on all 1,143 instances; at `< 1`
+  the expected handful (covers: exact-size 1, closed 4, flip 1; graphs: 2
+  per count, the two minimum-pathwidth graphs at `n = 30`).
+- **What the counts buy, in stacks.** Covers at `n = 75`: the old pair
+  floor is 7.0 stacks below `pw` (mean); exact sizes buy 0.8, the closed
+  count 0.8 more, the flips nothing (equal to the exact-size floor on every
+  instance but the parity cell at 50; `0.03` decades at `k = pw`): **1.6 of
+  the seven**. The closed count is higher than the exact-size floor on
+  150 / 150 at 40, 47 / 50 at 50, 41 / 50 at 75 and on none at 30, 35, 60 —
+  §7.2's `+0.011` in `β` is `0.3–0.8` stacks here and rounds by parity.
+  `G(n, 10/n)` at `n = 60`: old floor 5.8 stacks below the mean `pw`; the
+  separator and closed counts buy **one stack** (`22 → 23`, the same one:
+  their floors coincide in all four cells), nothing at `n ≤ 50` (§6.7's
+  `+0.004–0.008` in `β` is `0.2–0.5` stacks). The `n = 60` row is §6.5's
+  `(60, 10)` row on the `pw` scale.
+- **Where the leftover sits.** Covers: of the `3.5 → 5.4` stacks from the
+  best count to `pw`, **at least 77–88% is the union bound** (`Harper −
+  best`: median 3 at 30–50, 4 at 60–75; Harper at or above the best count
+  on all 600) and **at most 12–23% the necessary condition** (`pw − Harper`
+  mean `0.40 → 1.24`, inflated by the cap from `n = 50`). Graphs: **90–93%
+  union bound at `n ≤ 50`**, where Harper equals `pw` on two thirds of the
+  graphs (91 / 137, 95 / 137, 92 / 136) and the necessary condition's slack
+  is at most `0.3` stacks; at `n = 60` the split (68 / 32, `Harper = pw` on
+  4 / 133) is the cap's. The leftover grows with `n` in stacks (`pw − best`
+  `3.5 → 5.4` on covers, `3.5 → 4.8` on graphs) and falls as a fraction of
+  `n` (`0.115 → 0.072`, `0.116 → 0.080`). **The slack of the first moment
+  is the union bound on both models, and the counts of this loop reach a
+  fifth of it**; the necessary condition is tight to within a stack
+  wherever Harper reaches the forced prefix.
+- **Censoring, stated as §8.5 (b) does.** Covers: the record's runs
+  complete but clipped at `MAX_LEVEL = 12`, below the forced `t = 14–16`
+  at `n = 75`. Graphs: 16 levels under 60 s ran out of budget inside
+  level 12–14 on every graph at `n ≥ 50` (cap 8–13 against `t = 12–18`);
+  `pw − Harper` is an upper bound and `Harper − floor` a lower bound
+  throughout, and the `n ≥ 50` graph rows carry the cap.
+- **Figure** `ladder.png`: median gap to `pw` per rung and `n`, two
+  panels, rungs dodged within each `n`, direct labels at the largest `n`;
+  palette slots 1, 2, 3, 4, 7 validated (contrast warning on slots 3–4
+  relieved by direct labels and the tables).
+- **Corrections to the item**: 600 not 650; `nested_floors(1, …)` is the
+  exact-size pair floor (one rung, not two; equal to `cover_log_pair_bound`'s
+  on every instance); the record's `harper` is on the MOSP scale; the
+  pilot's `lower` column is the solver's starting bound and `status` the
+  proof; the Harper pass with 16 levels cost **4.87 core-hours against the
+  item's 0.5** (49 min on 6 workers at nice 19; a first launch failed on a
+  wrong `lower == width` assertion and was relaunched), and reached the
+  caps a 12-level run (18–50 s per graph at `n = 60` in the probe, about
+  2 core-hours) would have.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,747 passed / 2 skipped / 1 xfailed in 4:32, the 4 new tests among them; pathwidth_solver 123 passed in 6:25; paper 71 pages, no undefined references; the one-minute load was below 4). Log: `reports/scratch/separator_moment/11_ledger/gate.log`.
+
+### Blockers
+
+None. The one-minute load was 1–6 (our own workers) throughout; the
+owner's `run_unlimited.py` was not running.
+
+### Next
+
+Item 12 (the write-up): §0 of the report and the paper's Appendix E
+paragraph. From §11 it can say, in stacks: the counts of this loop buy
+one to two stacks at `n = 60–75` on both models (the exact-size pair one,
+the closed count one on half the sizes, the separator one at `c = 10`,
+`n = 60`, the flips none on `(6, 1)`), the remaining 4–5 stacks are at
+least three-quarters the union bound by Harper's deterministic
+instrument, and the necessary condition is tight to within a stack where
+Harper reaches the forced prefix — with Harper's cap stated beside every
+such number. Theorem S from Lean, Theorem Cl with its paper step, Edwards
+& McDermid as the upper line (§6, §7), the finer-`c` table of §9.6, and
+the ladder figure as the candidate for the paper's "Why the first moment
+is loose" paragraph (print it as a vector then). Item 13's reserve: the
+product-over-blocks lemma (Theorem Cl into Lean), or a 12-level Harper
+rerun at `n = 60–75` with no budget if the exact split at the largest
+sizes is wanted.

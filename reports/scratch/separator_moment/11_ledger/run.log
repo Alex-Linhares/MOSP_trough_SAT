@@ -1,0 +1,75 @@
+== covers: the 600 certified (6, 1) instances with Harper on record ==
+covers: 600 instances in 58 s wall (0.10 core-hours of bounds; Harper read from the record)
+== gnp: the pilot's c = 10 cells at n = 30–60, proved graphs; Harper with max_t 16, budget 60 s ==
+  543 graphs in the four cells, 543 proved (38 by a minor certificate)
+  layout check: 543 of 543 layouts have the recorded width in one orientation, 0 do not
+  cell bounds: 180 (n, k) rows in 1 s
+gnp: 543 graphs in 2924 s wall (4.87 core-hours of Harper)
+
+
+== stats ==
+
+covers (6, 1), fixed generator, m = n, floors at < 0.01 (pw scale; quantiles 10 / 50 / 90, mean in brackets)
+  n   N | xpair−old | closed−xpair | flip−xpair | Harper−best | pw−Harper | pw−best | share union-bound | Harper≥best | Harper=pw | viol
+  30 150 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 2 / 3 / 4 (3.03) | 0 / 0 / 1 (0.43) | 2 / 3 / 4 (3.46) | 0.88 | 150 | 87 | 0
+  35 150 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 2 / 3 / 4 (2.87) | 0 / 0 / 1 (0.40) | 2 / 3 / 4 (3.27) | 0.88 | 150 | 91 | 0
+  40 150 | 0 / 0 / 0 (0.00) | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 2 / 3 / 4 (2.78) | 0 / 0 / 1 (0.43) | 2 / 3 / 4 (3.21) | 0.87 | 150 | 90 | 0
+  50  50 | 1 / 1 / 1 (0.94) | 1 / 1 / 1 (0.94) | 1 / 1 / 1 (0.94) | 2 / 3 / 5 (3.26) | 0 / 1 / 1 (0.66) | 3 / 4 / 5 (3.92) | 0.83 | 50 | 19 | 0
+  60  50 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 2 / 4 / 6 (4.20) | 0 / 1 / 1 (0.60) | 3 / 5 / 6 (4.80) | 0.88 | 50 | 22 | 0
+  75  50 | 0 / 1 / 1 (0.82) | 0 / 1 / 1 (0.82) | 0 / 0 / 0 (0.00) | 2 / 4 / 6 (4.16) | 0 / 1 / 2 (1.24) | 4 / 6 / 7 (5.40) | 0.77 | 50 | 6 | 0
+
+G(n, 10/n), pilot, proved, floors at < 0.01 (pw scale; quantiles 10 / 50 / 90, mean in brackets)
+  n   N | xpair−old | sep−xpair | closed−xpair | Harper−best | pw−Harper | pw−best | share union-bound | Harper≥best | Harper=pw | viol
+  30 137 | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 2 / 3 / 4 (3.13) | 0 / 0 / 1 (0.34) | 2 / 3 / 5 (3.47) | 0.90 | 137 | 91 | 0
+  40 137 | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 2 / 3 / 5 (3.40) | 0 / 0 / 1 (0.31) | 2 / 4 / 5 (3.72) | 0.92 | 137 | 95 | 0
+  50 136 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 3 / 4 / 6 (4.42) | 0 / 0 / 1 (0.32) | 3 / 5 / 6 (4.74) | 0.93 | 136 | 92 | 0
+  60 133 | 0 / 0 / 0 (0.00) | 1 / 1 / 1 (1.00) | 1 / 1 / 1 (1.00) | 2 / 3 / 5 (3.26) | 1 / 2 / 2 (1.55) | 3 / 5 / 6 (4.80) | 0.68 | 132 | 4 | 0
+
+covers (6, 1), fixed generator, m = n, floors at < 1.0 (pw scale; quantiles 10 / 50 / 90, mean in brackets)
+  n   N | xpair−old | closed−xpair | flip−xpair | Harper−best | pw−Harper | pw−best | share union-bound | Harper≥best | Harper=pw | viol
+  30 150 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 1 / 2 (1.03) | 0 / 0 / 1 (0.43) | 0 / 1 / 2 (1.46) | 0.71 | 143 | 87 | 1
+  35 150 | 0 / 0 / 0 (0.02) | 1 / 1 / 1 (0.98) | 0 / 0 / 0 (0.00) | 0 / 1 / 2 (0.87) | 0 / 0 / 1 (0.40) | 0 / 1 / 2 (1.27) | 0.69 | 144 | 91 | 3
+  40 150 | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.09) | 0 / 0 / 0 (0.00) | 0 / 2 / 3 (1.69) | 0 / 0 / 1 (0.43) | 1 / 2 / 3 (2.13) | 0.80 | 149 | 90 | 0
+  50  50 | 1 / 1 / 1 (1.00) | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 1 / 3 (1.26) | 0 / 1 / 1 (0.66) | 1 / 2 / 3 (1.92) | 0.66 | 46 | 19 | 0
+  60  50 | 0 / 0 / 0 (0.00) | 1 / 1 / 1 (1.00) | 0 / 0 / 1 (0.12) | 0 / 2 / 4 (2.20) | 0 / 1 / 1 (0.60) | 1 / 3 / 4 (2.80) | 0.79 | 50 | 22 | 0
+  75  50 | 1 / 1 / 1 (1.00) | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 2 / 4 (2.16) | 0 / 1 / 2 (1.24) | 2 / 4 / 5 (3.40) | 0.64 | 47 | 6 | 0
+
+G(n, 10/n), pilot, proved, floors at < 1.0 (pw scale; quantiles 10 / 50 / 90, mean in brackets)
+  n   N | xpair−old | sep−xpair | closed−xpair | Harper−best | pw−Harper | pw−best | share union-bound | Harper≥best | Harper=pw | viol
+  30 137 | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 1 / 2 (1.13) | 0 / 0 / 1 (0.34) | 0 / 1 / 3 (1.47) | 0.77 | 129 | 91 | 2
+  40 137 | 1 / 1 / 1 (1.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 1 / 2 / 4 (2.40) | 0 / 0 / 1 (0.31) | 1 / 3 / 4 (2.72) | 0.88 | 137 | 95 | 0
+  50 136 | 0 / 0 / 0 (0.00) | 1 / 1 / 1 (1.00) | 1 / 1 / 1 (1.00) | 1 / 2 / 4 (2.42) | 0 / 0 / 1 (0.32) | 1 / 3 / 4 (2.74) | 0.88 | 136 | 92 | 0
+  60 133 | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 0 / 0 / 0 (0.00) | 1 / 2 / 4 (2.26) | 1 / 2 / 2 (1.55) | 2 / 4 / 5 (3.80) | 0.59 | 129 | 4 | 0
+
+violations (floor > pw), by count and threshold:
+  covers < 1.0: {'old': 0, 'xpair': 1, 'closed': 4, 'flip': 1}
+  covers < 0.01: {'old': 0, 'xpair': 0, 'closed': 0, 'flip': 0}
+  gnp < 1.0: {'old': 2, 'xpair': 2, 'sep': 2, 'closed': 2}
+  gnp < 0.01: {'old': 0, 'xpair': 0, 'sep': 0, 'closed': 0}
+
+Harper under the cap: covers (record, max_t 12, 60 s) and gnp (this item)
+  covers n=30: cap min/median/max 2/4/5; forced t at pw: 4–6; complete 150/150; secs mean/max 0.0/0
+  covers n=35: cap min/median/max 3/5/6; forced t at pw: 5–7; complete 150/150; secs mean/max 0.1/0
+  covers n=40: cap min/median/max 4/6/7; forced t at pw: 6–8; complete 150/150; secs mean/max 0.2/0
+  covers n=50: cap min/median/max 6/8/9; forced t at pw: 8–10; complete 50/50; secs mean/max 0.9/1
+  covers n=60: cap min/median/max 7/10/11; forced t at pw: 10–13; complete 50/50; secs mean/max 3.9/6
+  covers n=75: cap min/median/max 9/12/12; forced t at pw: 14–16; complete 50/50; secs mean/max 20.9/48
+  gnp n=30: cap min/median/max 4/6/8; forced t at pw: 6–9; complete 137/137; secs mean/max 0.4/1
+  gnp n=40: cap min/median/max 5/8/11; forced t at pw: 9–12; complete 137/137; secs mean/max 9.9/22
+  gnp n=50: cap min/median/max 8/11/13; forced t at pw: 12–15; complete 3/136; secs mean/max 59.9/60
+  gnp n=60: cap min/median/max 10/11/13; forced t at pw: 14–18; complete 0/133; secs mean/max 60.0/60
+
+gnp cells: floors (pw scale) at < 1 / < 0.01 and min/mean/max pw; log10 of each bound at k = min pw
+  n=30: old 14/12 (-0.21); xpair 14/12 (-0.21); sep 14/12 (-0.30); closed 14/12 (-0.54); pw 13/15.5/18
+  n=40: old 16/16 (+0.59); xpair 17/16 (+0.59); sep 17/16 (+0.46); closed 17/16 (+0.09); pw 17/19.7/23
+  n=50: old 20/18 (+1.37); xpair 20/19 (+1.37); sep 21/19 (+1.20); closed 21/19 (+0.69); pw 21/23.7/27
+  n=60: old 24/22 (+2.14); xpair 24/22 (+2.14); sep 24/23 (+1.93); closed 24/23 (+1.29); pw 25/27.8/32
+
+covers: mean log10 of each count's bound at k = pw (the instance's own pathwidth)
+  n=30: old +2.38, xpair +1.99, closed +1.53, flip +1.98
+  n=35: old +2.69, xpair +2.25, closed +1.68, flip +2.23
+  n=40: old +2.97, xpair +2.60, closed +1.92, flip +2.58
+  n=50: old +3.59, xpair +3.17, closed +2.29, flip +3.14
+  n=60: old +4.26, xpair +3.91, closed +2.82, flip +3.86
+  n=75: old +5.35, xpair +4.83, closed +3.47, flip +4.77
+draw: ladder.png

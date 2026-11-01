@@ -3675,3 +3675,312 @@ that Theorem S is a Lean theorem and Theorem Cl's independence step is not.
   is proved, which is all admissibility needs. Nothing probabilistic beyond
   finite weighted counts; Propositions T and T-cover stay on paper with
   their hypotheses. Nothing re-solved; `solutions/` untouched.
+
+---
+
+## 11. The slack ledger: in stacks, what each count buys and what is left (item 11, 2026-11-01)
+
+*Item 11 of `Ralph_Loops/loop0011/iterations.md`. Deliverable:
+`reports/scratch/separator_moment/11_ledger/` (`run.py` with stages
+`covers`, `gnp`, `stats`, `draw`; `ledger_6_1.csv` and `ledger_gnp.csv`
+with every instance's ladder; `cells_gnp.csv` with every `(n, k)` bound on
+the pilot cells; `summary.csv`; `ladder.png`; `run.log`);
+`learning/separator_moment.py` extended (`harper_bound_graph`, the graph
+form of Harper's bound on the `vs` scale; `floor_pw`; `layout_vertex_separation`);
+`tests/test_separator_moment.py` (4 new tests, 91 in the module).
+Regenerate: `nice -n 19 python3 reports/scratch/separator_moment/11_ledger/run.py --workers 6`.*
+
+**The question.** For a reader of the paper: on certified instances, how
+far is each count's floor from the pathwidth, and where does the remaining
+slack sit — in the union bound (floor to Harper) or in the necessary
+condition (Harper to pathwidth)? §8.5 (b) of `excess_phase_diagram.md`
+answered it for the single pair on the `(6, 1)` covers; this section puts
+every count of this loop on the same ladder and adds the `G(n, c/n)` side.
+
+### 11.1 The ladder, and the conventions
+
+Everything here is on the **pathwidth scale**: `pw = optimum − 1` on
+covers (Yanasse's equality, `MOSPGraph.lean`), the proved width on the
+pilot graphs. A **floor at threshold `θ`** is the largest `k` with the
+count's bound on `P(pw ≤ k)` below `θ`, plus one — "`pw ≥ k + 1` unless
+an event of probability below `θ` occurred" (`floor_pw`; the record's
+`learning.first_moment.floors` is this plus one more, for the optimum).
+`< 0.01` is the floor the paper quotes; `< 1` is a statement with up to
+99% failure probability and is carried for the record only. Per instance
+the ladder is
+
+    old pair → exact-size pair → best count → Harper → pw,
+
+with the *best count* `max(closed, flip, exact-size)` on covers and
+`max(separator, closed, exact-size)` on `G(n, c/n)`. Each rung is the
+floor of the named count on *that instance's own sizes* (covers: the
+empirical pattern sizes and `m`; graphs: the cell's `n` and `p`, so the
+four count rungs are the same for every graph of a cell and only Harper
+and `pw` vary).
+
+**Harper** is the vertex-isoperimetric bound `vs ≥ max_i (i − M(i))`,
+`M(i) = max{t : f(t) ≤ i}`, `f(t) = min_{|C| = t} |N[C]|`
+(`satisfiability/expansion_bound.py`; `EmptyPair.lean`,
+`exists_closedNbhd_card_le` is its layout form), computed exactly by
+branch and bound up to a level cap and a time budget. Under a cap it is a
+**lower bound on the true Harper value**, which is itself `≤ pw`. So, as
+§8.5 (b) states it, `pw − Harper` as measured is an **upper** bound on
+the necessary condition's slack (the instance has empty pairs at `k`
+although `pw > k`) and `Harper − floor` a **lower** bound on the union
+bound's. Where the forced prefix `t = ⌈(n − pw)/2⌉` exceeds the cap, the
+instrument does not reach the forced pair and both statements hold with
+room (§11.4).
+
+Two reads of the same ledger: the floors of the *counts* are model
+statements (a bound on `P(pw ≤ k)` over the generator, evaluated at the
+instance's sizes) and the two *deterministic* rungs (Harper, `pw`) are
+instance statements; a count's floor above an instance's `pw` is a
+model event of probability at most `θ`, not a contradiction, and at
+`< 0.01` on certified instances it is the stop condition of `TASK.md`.
+
+### 11.2 Covers: the 600 certified `(6, 1)` instances at `n = m = 30–75`
+
+The fixed generator's `(6, 1)` instances of `learning/data/ensemble/
+results.csv` and `results_upward.csv` (`generator = fixed`, `param = 6`,
+`m = n`, `n ≥ 30`; every one `certified`), whose Harper values are on
+record in `reports/scratch/structured_count/slack_6_1.csv` (`max_t = 12`,
+60 s, §8.5 (b) of `excess_phase_diagram.md`; read here, never re-run) —
+**600 instances, not the 650 the item and the plan say** (150 at each of
+30, 35, 40 and 50 at each of 50, 60, 75; the record's own table sums to
+600). Pattern sizes regenerated from the seeds (`learning.ensemble.generate`;
+the regenerated old and exact-size floors equal the record's `floor_old*`,
+`floor_1*` on all 600, asserted); the closed-pair floor is the NA/tangent
+bound of §7.1 (a′), the flip floor the exact weighted count of §7.1 (b),
+both scanned over `k` from five below the exact-size floor to past `pw`.
+Floors at `< 0.01` on the `pw` scale; means per `n`, then the consecutive
+differences as quantiles 10 / 50 / 90 with the mean in brackets
+(`ledger_6_1.csv`, `summary.csv`, `run.log`):
+
+| `n` | `N` | old | exact-size | closed | flip | best | Harper | `pw` | exact − old | best − exact | Harper − best | `pw` − Harper | `pw` − best | union-bound share |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 30 | 150 | 16.00 | 17.00 | 17.00 | 17.00 | 17.00 | 20.03 | 20.46 | 1.00 | 0.00 | 2 / 3 / 4 (3.03) | 0 / 0 / 1 (0.43) | 2 / 3 / 4 (3.46) | 0.88 |
+| 35 | 150 | 19.00 | 20.00 | 20.00 | 20.00 | 20.00 | 22.87 | 23.27 | 1.00 | 0.00 | 2 / 3 / 4 (2.87) | 0 / 0 / 1 (0.40) | 2 / 3 / 4 (3.27) | 0.88 |
+| 40 | 150 | 22.00 | 22.00 | 23.00 | 22.00 | 23.00 | 25.78 | 26.21 | 0.00 | 1.00 | 2 / 3 / 4 (2.78) | 0 / 0 / 1 (0.43) | 2 / 3 / 4 (3.21) | 0.87 |
+| 50 | 50 | 26.12 | 27.06 | 28.00 | 28.00 | 28.00 | 31.26 | 31.92 | 0.94 | 0.94 | 2 / 3 / 5 (3.26) | 0 / 1 / 1 (0.66) | 3 / 4 / 5 (3.92) | 0.83 |
+| 60 | 50 | 32.00 | 33.00 | 33.00 | 33.00 | 33.00 | 37.20 | 37.80 | 1.00 | 0.00 | 2 / 4 / 6 (4.20) | 0 / 1 / 1 (0.60) | 3 / 5 / 6 (4.80) | 0.88 |
+| 75 | 50 | 39.36 | 40.18 | 41.00 | 40.18 | 41.00 | 45.16 | 46.40 | 0.82 | 0.82 | 2 / 4 / 6 (4.16) | 0 / 1 / 2 (1.24) | 4 / 6 / 7 (5.40) | 0.77 |
+
+("union-bound share" is `Σ(Harper − best) / Σ(pw − best)` over the
+instances of the row: the part of the leftover that is *at least* the
+union bound's. The `< 1` table is in `run.log`.)
+
+* **The exact-size pair buys one stack over the old pair** (`|R| = N − t`
+  against `t − 1`) at every size but 40, where the two round to the same
+  floor; in decades at `k = pw` the exact-size count is 0.4–0.5 below the
+  old one (mean `log₁₀` at `pw`: old `+2.38 … +5.35`, exact-size
+  `+1.99 … +4.83` from `n = 30` to 75; `run.log`).
+* **The closed count buys one more stack on half the sizes and nothing on
+  the other half**: higher than the exact-size floor on 150 / 150 at
+  `n = 40`, 47 / 50 at 50, 41 / 50 at 75, on none at 30, 35, 60, lower on
+  none. In decades it is uniformly 0.5–1.4 below the exact-size count at
+  `k = pw` (`+1.53 … +3.47`), which is §7.2's `+0.011` in `β` — `0.3–0.8`
+  stacks at these `n`, rounding to one stack or to none by the parity of
+  the floor.
+* **The flips buy nothing on `(6, 1)`**: equal to the exact-size floor on
+  every instance except the 47 at `n = 50` where both it and the closed
+  count cross the same threshold; `0.03` decades below the exact-size
+  count at `k = pw`; never above the closed count. Item 07 priced the
+  flips at `0.001–0.006` in `β` at `μ = 1`, `d ≥ 4` (§7.2): `0.1–0.4`
+  stacks here, invisible.
+* **Harper is 2–6 stacks above the best count and 0–2 below `pw`.**
+  `Harper − best`: median 3 at `n = 30–50`, 4 at 60–75, mean `2.8 → 4.2`;
+  `pw − Harper`: median 0 at 30–40, 1 at 50–75, mean `0.40 → 1.24`
+  (`Harper = pw` on 87–91 of 150 at 30–40, on 19–22 of 50 at 50–60, on 6
+  of 50 at 75, where the cap binds, §11.4). Harper is at or above the best
+  count on all 600.
+* **Where the leftover sits**: of the `3.5 → 5.4` stacks between the best
+  count's floor and `pw`, **at least 77–88% is the union bound** (Harper
+  above the floor) and **at most 12–23% the necessary condition** (`pw`
+  above Harper), and the second figure is inflated by the cap from
+  `n = 50` on. The leftover grows with `n` in stacks (`3.5, 3.3, 3.2,
+  3.9, 4.8, 5.4`) and shrinks as a fraction of `n` (`0.115 → 0.072`).
+* **Violations.** At `< 0.01`: **zero, for every count, on all 600**; the
+  stop condition of `TASK.md` did not fire. At `< 1` (a 99%-failure
+  statement): exact-size 1, closed 4, flip 1, old 0 — what such a
+  statement is allowed to do (§7.5 saw the same on the Chu & Stuckey
+  files).
+
+### 11.3 `G(n, 10/n)`: the pilot's four cells at `n = 30, 40, 50, 60`
+
+The pilot's `c = 10` graphs with a proof (`status ≠ upper`; 137, 137, 136,
+133 — all of them, 38 by a minor certificate), regenerated from their
+seeds by the pilot's own generator (`networkx.gnp_random_graph(n, 10/n,
+seed)`; edge counts asserted against the record) with the recorded layout
+re-checked: **543 of 543 layouts have the proved width in one of the two
+orientations** (`layout_vertex_separation`). The four count rungs are
+cell quantities (`cells_gnp.csv`: the old pair, the exact-size pair, the
+separator count `C(n, k) P_N(E_bip)` with `P_N(E_bip)` exact by item 05's
+partition recursion, and item 06's closed count, for every `k`); Harper
+is per graph, `harper_bound_graph` with 16 levels requested under 60 s
+(§11.4 for what that bought). Floors at `< 0.01`, `pw` scale
+(`ledger_gnp.csv`, `summary.csv`):
+
+| `n` | `N` | old | exact-size | separator | closed | best | Harper | `pw` (min / mean / max) | exact − old | best − exact | Harper − best | `pw` − Harper | `pw` − best | union-bound share | Harper = `pw` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 30 | 137 | 12 | 12 | 12 | 12 | 12 | 15.13 | 13 / 15.47 / 18 | 0 | 0 | 2 / 3 / 4 (3.13) | 0 / 0 / 1 (0.34) | 2 / 3 / 5 (3.47) | 0.90 | 91 |
+| 40 | 137 | 16 | 16 | 16 | 16 | 16 | 19.40 | 17 / 19.72 / 23 | 0 | 0 | 2 / 3 / 5 (3.40) | 0 / 0 / 1 (0.31) | 2 / 4 / 5 (3.72) | 0.92 | 95 |
+| 50 | 136 | 18 | 19 | 19 | 19 | 19 | 23.42 | 21 / 23.74 / 27 | 1 | 0 | 3 / 4 / 6 (4.42) | 0 / 0 / 1 (0.32) | 3 / 5 / 6 (4.74) | 0.93 | 92 |
+| 60 | 133 | 22 | 22 | 23 | 23 | 23 | 26.26 | 25 / 27.80 / 32 | 0 | 1 | 2 / 3 / 5 (3.26) | 1 / 2 / 2 (1.55) | 3 / 5 / 6 (4.80) | 0.68 | 4 |
+
+The `n = 60` row is §6.5's `(60, 10)` row shifted to the `pw` scale
+(`k = 21 / 21 / 22 / 22` there, floors `22 / 22 / 23 / 23` here), as it
+must be. The decades at the cell's minimum pathwidth (`run.log`): at
+`n = 60`, `k = 25`: old `+2.14`, exact-size `+2.14`, separator `+1.93`,
+closed `+1.29`; at `k = 22`: `−0.46 / −1.89 / −2.26 / −2.46`; at
+`k = 23`: `−0.46 / −0.46 / −0.65 / −1.12` — the closed count is 0.4–0.9
+decades below the exact-size count around the floor, the separator count
+0.2–0.4, and the floors move by one stack at `n = 60` and not at all at
+`n ≤ 50` (where `k = 19` at `n = 50` reads `−1.30 / −1.30 / −1.44 /
+−1.79`: all four below `0.01`, so all four floors are 19).
+
+* **The counts buy at most one stack at `c = 10`**: the exact-size pair
+  one at `n = 50`; the separator and closed counts one at `n = 60`, and
+  always the same one (their floors coincide in all four cells at both
+  thresholds). §6.7's `+0.004` (separator) and `+0.008` (closed) in `β` at
+  `c = 10` are `0.2–0.5` stacks at `n = 60`.
+* **Harper is 2–6 stacks above the best count and, where the cap does
+  not bind, equal to `pw` on two thirds of the graphs** (91 / 137, 95 /
+  137, 92 / 136 at `n = 30–50`, `pw − Harper` mean `0.31–0.34`); at
+  `n = 60` the budget stops the branch and bound at cap 10–13 against a
+  forced `t = 14–18` and `pw − Harper` rises to `1.55` (median 2, `Harper
+  = pw` on 4 of 133) — an artefact of the instrument, not of the
+  instances (§11.4). Harper is at or above the best count on 542 of 543
+  (one graph at `n = 60` sits one below, under the cap).
+* **Where the leftover sits**: of the `3.5 → 4.8` stacks from the best
+  count to `pw`, **at least 90–93% is the union bound at `n ≤ 50`**, and
+  the necessary condition's slack is at most `0.3` stacks there; at
+  `n = 60` the measured split (68 / 32) is the cap's.
+* **Violations.** At `< 0.01`: **zero, for every count, on all 543**. At
+  `< 1`: 2 for every count — the two graphs of minimum pathwidth 13 at
+  `n = 30`, where every count's `< 1` floor is 14 (bounds `10^{−0.21}` to
+  `10^{−0.54}` at `k = 13`: a 60%-failure statement that failed twice in
+  137).
+
+### 11.4 What the separator and closed counts buy, and what is left (the paragraph per model)
+
+**Random clique covers `(6, 1)` at `n = 75`** (50 certified instances).
+The old pair's floor sits **7.0 stacks** below the pathwidth (`39.4`
+against `46.4`, mean). Exact sizes recover `0.8` of them, the closed
+count `0.8` more, the flips nothing: the counts of this loop together
+move the floor to `41.0`, **1.6 stacks of the seven**, in line with the
+constants (§7.2: `+0.011` in `β` for the closed count, `+0.002` for the
+flips, at `n = 75` `0.8` and `0.2` stacks). Of the **5.4 stacks** left,
+**at least 4.2 (77%) are the union bound** — Harper's deterministic
+necessary condition holds on the instance 4.2 stacks above the best
+count's floor — and **at most 1.2 the necessary condition**, this upper
+bound being loose because Harper's branch and bound stops at level 9–12
+where the forced prefix has 14–16 vertices. The leftover grows with `n`:
+`Harper − best` runs `3.0, 2.9, 2.8, 3.3, 4.2, 4.2` from `n = 30` to 75
+(median 3 → 4), `pw − best` `3.5 → 5.4`; as a fraction of `n` both fall
+(`0.10 → 0.056`, `0.115 → 0.072`). **On covers the slack of the first
+moment is the union bound, and the counts of this loop reach a fifth of
+it.** This is §4.6 and §9.2 again in stacks: the measured union-bound
+slack at `β*` was `0.015` in `β` on `(6, 1)` at `n ≤ 28` (about one
+stack at `n = 75`) against a *total* `Harper − best` of four; the
+remainder is the necessary condition's rounding at `θ = 0.01` (two
+decades, 1–2 stacks at these slopes) plus whatever the planted instrument
+at `n ≤ 32` did not see.
+
+**`G(n, 10/n)` at `n = 60`** (133 proved graphs). The old pair's floor is
+**5.8 stacks** below the mean pathwidth (`22` against `27.8`; `3` below
+the minimum). The separator and closed counts recover **one stack**
+(`23`), the exact-size pair none at this `n`; §6.7's `+0.004–0.008` in
+`β` is `0.2–0.5` stacks, rounded up here and down at `n ≤ 50`. Of the
+**4.8 stacks** left, Harper under the cap sits `3.3` above the best count
+(68%) and `1.6` below `pw`; at `n = 50`, where the cap reaches the forced
+prefix on most graphs, the split is `4.4` to `0.3` (93% union bound) and
+Harper equals the pathwidth on two thirds of the graphs. **On `G(n, 10/n)`
+the necessary condition is tight to within a stack wherever the
+instrument reaches, and what the first moment loses is the counting of
+witnesses**, of which the separator and closed counts remove one stack in
+five. The leftover grows with `n` in stacks (`pw − best`: `3.5, 3.7, 4.7,
+4.8`) and falls as a fraction of `n` (`0.116 → 0.080`); `Harper − best`
+grows `3.1, 3.4, 4.4` to `n = 50` and the `3.3` at 60 is the cap.
+
+### 11.5 Harper under the cap: censoring
+
+| model | `n` | levels completed (cap min / median / max) | forced `t` at `pw` | runs complete | seconds (mean / max) |
+|---|---|---|---|---|---|
+| covers (record, `max_t = 12`, 60 s) | 30 | 2 / 4 / 5 | 4–6 | 150 / 150 | 0.0 / 0 |
+| | 35 | 3 / 5 / 6 | 5–7 | 150 / 150 | 0.1 / 0 |
+| | 40 | 4 / 6 / 7 | 6–8 | 150 / 150 | 0.2 / 0 |
+| | 50 | 6 / 8 / 9 | 8–10 | 50 / 50 | 0.9 / 1 |
+| | 60 | 7 / 10 / 11 | 10–13 | 50 / 50 | 3.9 / 6 |
+| | 75 | 9 / 12 / 12 | 14–16 | 50 / 50 | 20.9 / 48 |
+| `G(n, 10/n)` (this item, 16 levels, 60 s) | 30 | 4 / 6 / 8 | 6–9 | 137 / 137 | 0.4 / 1 |
+| | 40 | 5 / 8 / 11 | 9–12 | 137 / 137 | 9.9 / 22 |
+| | 50 | 8 / 11 / 13 | 12–15 | 3 / 136 | 59.9 / 60 |
+| | 60 | 10 / 11 / 13 | 14–18 | 0 / 133 | 60.0 / 60 |
+
+"Cap" is the deepest level whose successor is exact; "complete" whether
+every requested level finished. On covers the record's runs all
+completed but were clipped at the module's `MAX_LEVEL = 12`, below the
+forced `t` from `n = 60` on; on the pilot graphs the 60 s budget ran out
+inside level 12–14 on every graph at `n ≥ 50` (the load was the six
+workers' own). In both cases Harper is read as what it is: a lower bound
+on the true Harper value, so every `pw − Harper` above is an upper bound
+and every `Harper − floor` a lower bound, and the rows at `n ≥ 50` (covers
+`≥ 60`) carry the cap. The 60 s budget with 16 levels cost **4.87
+core-hours** against the item's 0.5 (`run.log`); the probe at 12 levels
+ran 18–50 s per graph at `n = 60` and would have reached the same caps.
+
+### 11.6 The figure
+
+`reports/scratch/separator_moment/11_ledger/ladder.png` (PNG for the
+report; `run.py --stage draw`): per model, for each `n`, the five rungs
+as the median gap to the pathwidth (pathwidth at 0 on top, floors below;
+rungs dodged within each `n` so tied medians stay visible, a grey ladder
+through each `n`, direct labels at the largest `n`, legend on the left
+panel). Palette: reference categorical slots 1, 2, 3, 4, 7, validated by
+`validate_palette.js` (all checks pass; the contrast warning on slots 3
+and 4 is relieved by the direct labels and the tables above). Nothing
+is drawn that the tables do not state.
+
+### 11.7 Regenerate, size range, kill verdict, corrections, what this does not claim
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/11_ledger/run.py --workers 6`
+(stages `covers` 1 min, `gnp` 49 min on 6 workers — 4.87 core-hours of
+Harper, `--max-t 12` would be about 2 — `stats`, `draw`); the covers'
+Harper values are read from `reports/scratch/structured_count/slack_6_1.csv`
+and the pilot's widths and layouts from `reports/scratch/gnp_pilot/results.csv`;
+nothing is re-solved and `solutions/` is not read. Tests: `python3 -m
+pytest tests/test_separator_moment.py -k "harper or floor_pw or layout_vertex"`.
+
+**Size range.** `n = m = 30–75`, `(d, μ) = (6, 1)`, the fixed generator,
+600 certified instances; `G(n, 10/n)` at `n = 30, 40, 50, 60`, 543 proved
+graphs. Harper to level 12 (covers) and 10–13 (graphs at `n ≥ 50`).
+
+**Kill verdict.** None (descriptive). The stop condition — a count's
+floor at `< 0.01` above a certified pathwidth — **did not fire** on any of
+the 1,143 instances for any of the counts.
+
+**Where the record corrects the item.** (i) 600 instances, not 650 (the
+record's own §8.5 (b) table sums to 600; the heading there and the plan
+carry the miscount). (ii) `nested_floors(1, …)` *is* the exact-size pair
+floor and equals `cover_log_pair_bound`'s floor on every instance
+(asserted), so the item's "exact-size pair floor (`nested_floors(1, …)`)"
+is one rung, not two. (iii) The record's `harper` column is on the MOSP
+scale; the ledger subtracts one. (iv) The pilot's `lower` column is the
+solver's starting bound, not a proof; the proof type is `status`
+(`bound`, `refutation`, `minor`; `upper` is unproved), as item 05 read
+it. (v) Harper on the pilot graphs with 16 levels under 60 s is
+budget-bound at `n ≥ 50` and cost ten times the item's estimate; the cap
+it reached is the probe's at 12 levels.
+
+**What this does not claim.** Nothing above 75 customers or 60 vertices,
+and nothing at other `(d, μ)` or `c` (the 200 Chu & Stuckey floors of
+§7.5 are the other cover sizes, without Harper). Harper under a cap is a
+lower bound on the true Harper value and the differences are stated in
+the direction that survives that (§8.5 (b)): `pw − Harper` is an upper
+bound on the necessary condition's slack, `Harper − floor` a lower bound
+on the union bound's; at `n ≥ 50` on graphs and `≥ 60` on covers the cap
+is binding and the split is not the instances'. The counts' floors are
+model statements evaluated at the instance's sizes, not instance
+statements; a `< 1` floor above `pw` is not a violation. No rate is
+fitted here; "grows with `n`" is read off six (four) sizes. The medians
+are of 50–150 instances per size.

@@ -596,7 +596,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     inner count stays a finite weighted sum in Lean and is evaluated on
     paper (item 05).
 
-- [ ] **11 The slack ledger: in stacks, what each count buys and what is left.**
+- [x] **11 The slack ledger: in stacks, what each count buys and what is left.**
   - **Question.** For a reader of the paper: on certified instances, how
     far is each floor from the pathwidth, and where does the remaining
     slack sit — in the union bound (floor to Harper) or in the necessary

@@ -1,0 +1,159 @@
+# session it11 started 2026-11-01 21:36:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the data files item 11 depends on.
+  > $ uptime && date && wc -l reports/separator_moment.md reports/separator_moment_plan.md learning/separator_moment.py learning/first_moment.py && head -3 reports/sc
+  > $ grep -n "^## \|^### " reports/separator_moment.md | head -120
+  > $ sed -n 1,52p reports/separator_moment.md && echo ====46 && sed -n 1227,1290p reports/separator_moment.md && echo ====52 && sed -n 1423,1480p reports/separator_m
+  > $ sed -n 2403,2490p reports/separator_moment.md && echo ====EPD85 && grep -n "8.5\|censor" reports/excess_phase_diagram.md | head -30
+  > $ grep -n "^## \|^### " reports/excess_phase_diagram.md | sed -n 1,80p
+  > $ sed -n 4475,4590p reports/excess_phase_diagram.md
+
+I'm reading the code the ledger reuses (item 07's floors stage, item 06's finite stage, the Harper bound, the pilot and structured-count scripts) before writing the run script.
+  > $ grep -n "^def \|^class " learning/separator_moment.py | sed -n 1,200p
+  > $ grep -n "def \|floor" reports/scratch/separator_moment/07_cover/run.py | grep -n "floor\|def " | head -60; echo ======; grep -n "def floors\|def nested_floors\|
+  > $ sed -n 370,445p reports/scratch/separator_moment/07_cover/run.py
+  > $ sed -n 140,170p learning/first_moment.py && echo ==== && sed -n 575,600p learning/first_moment.py && echo ==== && sed -n 900,912p learning/first_moment.py
+  > $ grep -n "expansion\|harper\|Harper\|generate\|Cell\|def " reports/scratch/structured_count/run.py | head -80
+  > $ sed -n 232,275p reports/scratch/structured_count/run.py
+  > $ wc -l satisfiability/expansion_bound.py && cat satisfiability/expansion_bound.py
+  > $ grep -n "def stage_finite" -A 60 reports/scratch/separator_moment/06_constants/run.py | head -90; echo =====PLAN; grep -n "11\b" reports/separator_moment_plan.m
+  > $ sed -n 255,290p reports/separator_moment_plan.md; echo ====05; grep -n "exact\|logB_sep\|logB_xpair\|logB_pair\|def inner_task\|def finite_task" reports/scratch
+  > $ sed -n 130,162p reports/scratch/separator_moment/05_inner/run.py; echo ====PILOTGEN; ls reports/scratch/gnp_pilot/; grep -n "seed\|def \|graph6\|gnp\|erdos" rep
+
+Next: the dataviz skill (needed before the figure) and a timing probe of the Harper bound on a few pilot graphs at the largest cell, to size the run against the 0.5 core-hour budget.
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/985e64a3ab7eb77fe073542f25a45cd8/dataviz && grep -n -i "categorical" references/palette.md | head -20; sed -n 1,60p r
+  > $ nice -n 19 python3 - <<'EOF'
+import time, math, networkx as nx, pandas as pd
+from satisfiability.expansion_bound import _f_exact
+def harper_graph(adj, max_t=12,
+  > $ nice -n 19 python3 - <<'EOF'
+import time, math, numpy as np, pandas as pd
+from learning.ensemble import Cell, generate
+from learning import separator_moment as 
+  > $ sed -n 1,40p tests/test_separator_moment.py && grep -n "^def test_" tests/test_separator_moment.py | tail -8 && tail -25 tests/test_separator_moment.py && grep 
+
+I have what I need. Writing three things at once: the graph form of the Harper bound in the library, its tests, and the ledger script.
+  > $ cat >> learning/separator_moment.py <<'EOF'
+
+
+# --- item 11: the slack ledger ----------------------------------------------------
+#
+# Harper's vertex-isoperime
+  > $ cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 11: the slack ledger ---------------------------------------------------
+
+def test_harper_graph_is_a_
+  > $ nice -n 19 python3 -m pytest tests/test_separator_moment.py -q -k "layout_vertex" 2>&1 | grep -B 12 "AssertionError" | head -30; grep -n "def compute_pathwidth"
+  > $ python3 - <<'EOF'
+import re
+p="learning/separator_moment.py"; s=open(p).read()
+old=s[s.index("def layout_vertex_separation"):]
+new='''def layout_vertex_separati
+
+Now the ledger script itself: stages `covers` (record Harper plus the four floors from regenerated sizes), `gnp` (per-cell bounds, per-graph Harper with a layout check), `stats` and `draw`.
+  > $ mkdir -p reports/scratch/separator_moment/11_ledger && cat > reports/scratch/separator_moment/11_ledger/run.py <<'EOF'
+"""loop0011 item 11: the slack ledger — i
+  > $ uptime && nice -n 19 python3 reports/scratch/separator_moment/11_ledger/run.py --stage gnp --workers 6 > reports/scratch/separator_moment/11_ledger/gnp_stdout.l
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The background stage ended quickly, which is suspicious for a 25-minute job. Checking its log.
+  > $ tail -30 reports/scratch/separator_moment/11_ledger/gnp_stdout.log
+  > $ python3 - <<'EOF'
+p="reports/scratch/separator_moment/11_ledger/run.py"; s=open(p).read()
+s=s.replace('''    for r in proved:
+        assert int(r["lower"]) == 
+
+While that runs, two independent things: validate the figure's palette with the skill's script, and compute a preliminary covers-only summary so I can start drafting the section.
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/985e64a3ab7eb77fe073542f25a45cd8/dataviz && node scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a,#eda100,#0b0b0b
+
+The pathwidth rung can't be text black in a categorical palette. I'll swap it for the violet slot and revalidate, and check the run's progress at the same time.
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/985e64a3ab7eb77fe073542f25a45cd8/dataviz && node scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a,#eda100,#6250d6
+
+Palette passes, all 543 layouts carry their recorded width, and the Harper pass is under way. While it runs, I'll compute the covers half of the statistics so the section can be drafted.
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | tail -40
+import sys, importlib.util, numpy as np
+spec = importlib.util.spec_from_file_location("run", "reports/scratch/separ
+  > Monitor {"command": "until grep -q \"EXIT\" /home/al/dev/MOSP/reports/scratch/separator_moment/11_ledger/gnp_stdout.log; do slee
+  > $ python3 -m pyflakes reports/scratch/separator_moment/11_ledger/run.py 2>&1 | head; ls -la reports/scratch/separator_moment/11_ledger/; cat reports/scratch/separ
+
+Only the Harper results are outstanding. The per-cell floors on the pilot graphs don't depend on them, so I'll tabulate those now.
+  > $ rm -rf reports/scratch/separator_moment/11_ledger/__pycache__ && nice -n 19 python3 - <<'EOF'
+import csv, math, numpy as np
+from learning.separator_moment impor
+  > $ cat > /tmp/sec11_head.md <<'EOF'
+
+---
+
+## 11. The slack ledger: in stacks, what each count buys and what is left (item 11, 2026-11-01)
+
+*Item 11 of `Ralph_Loops
+
+I'm waiting on the Harper pass only; I'll hold with a bounded foreground wait on its exit line.
+  > $ timeout 560 bash -c 'until grep -q EXIT reports/scratch/separator_moment/11_ledger/gnp_stdout.log; do sleep 15; done'; tail -2 reports/scratch/separator_moment/
+
+Still running as expected (the six workers are the load). Waiting another bounded interval.
+  > $ timeout 570 bash -c 'until grep -q EXIT reports/scratch/separator_moment/11_ledger/gnp_stdout.log; do sleep 15; done'; tail -2 reports/scratch/separator_moment/
+  > $ timeout 570 bash -c 'until grep -q EXIT reports/scratch/separator_moment/11_ledger/gnp_stdout.log; do sleep 15; done'; tail -3 reports/scratch/separator_moment/
+
+Thirty minutes in; the estimate was about thirty-two. One more bounded wait.
+  > $ timeout 570 bash -c 'until grep -q EXIT reports/scratch/separator_moment/11_ledger/gnp_stdout.log; do sleep 15; done'; tail -3 reports/scratch/separator_moment/
+
+Forty minutes in. I'll inspect the worker processes' elapsed CPU to see which cell they're on, and keep waiting.
+  > $ ps -eo pid,ppid,etimes,time,ni,args | grep "11_ledger/run.py" | grep -v grep; timeout 500 bash -c 'until grep -q EXIT reports/scratch/separator_moment/11_ledger
+
+The Harper pass has finished. Running the stats and draw stages.
+  > $ tail -2 reports/scratch/separator_moment/11_ledger/gnp_stdout.log && nice -n 19 python3 reports/scratch/separator_moment/11_ledger/run.py --stage stats 2>&1 | t
+
+Two things now: fix the summary writer (rows have different columns per model) and rerun the stats stage, and look at the drawn figure.
+  > $ python3 - <<'EOF'
+p="reports/scratch/separator_moment/11_ledger/run.py"; s=open(p).read()
+s=s.replace('''    with open(path, "w", newline="") as f:
+        w = 
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0011/gate.py > reports/scratch/separator_moment/11_ledger/gate.log 2>&1; echo "GATE_EXIT $?" >> reports/scratch/sep
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/11_ledger/ladder.png
+  > $ python3 - <<'EOF'
+p="reports/scratch/separator_moment/11_ledger/run.py"; s=open(p).read()
+old=s[s.index("            ax.plot([n, n], [max(meds), min(meds)]"):s.
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/11_ledger/ladder.png
+
+The figure reads cleanly now. I need the mean rung heights per size for the tables, then I'll write the section.
+  > $ python3 - <<'EOF'
+import csv
+rows=list(csv.DictReader(open("reports/scratch/separator_moment/11_ledger/summary.csv")))
+for r in rows:
+    if r["thresh"]!="0.01"
+
+I have everything for the write-up. Writing §11 to the report, the PROGRESS entry and the iterations mark in one go; the gate is still running in the background.
+  > $ cat /tmp/sec11_head.md >> reports/separator_moment.md && cat >> reports/separator_moment.md <<'EOF'
+
+### 11.2 Covers: the 600 certified `(6, 1)` instances at `n
+
+§11 is in and the item is marked. Now I'll check the gate's progress and draft the PROGRESS entry, filling in the gate line once it finishes.
+  > $ cat reports/scratch/separator_moment/11_ledger/gate.log; echo ---; tail -5 /tmp/claude-1000/-home-al-dev-MOSP/c821cc2c-f627-4785-bc52-942e492e87f6/tasks/bkhd2iu
+
+The gate buffers its output until it finishes, so the empty log is expected. I'll wait on its exit line and then write the PROGRESS entry with the result.
+  > $ timeout 570 bash -c 'until grep -q GATE_EXIT reports/scratch/separator_moment/11_ledger/gate.log; do sleep 15; done'; tail -15 reports/scratch/separator_moment/
+
+Gate passes. Writing the PROGRESS entry and updating the count.
+  > $ grep -n "axiom" reports/scratch/separator_moment/11_ledger/gate.log | head -3; sed -i 's/^Current: 10\/13 SOLVED/Current: 11\/13 SOLVED/' Ralph_Loops/loop0011/P
+
+One last check that the gate log backs the "0 axiom" claim and that the item directory holds every listed deliverable.
+  > $ grep -in "axiom\|sorry" reports/scratch/separator_moment/11_ledger/gate.log | head -5; ls reports/scratch/separator_moment/11_ledger/; wc -l reports/scratch/sep
+  > $ grep -rn "^\s*axiom " lean/MOSPFormalization lean/MOSPFormalization.lean | wc -l; grep -n "axiom" Ralph_Loops/loop0011/gate.py | head -3
+
+Item 11 is complete; nothing further depends on anything outstanding. The Lean sources have no `axiom` declaration (the gate checks it on line 73 and reported pass), so the PROGRESS claim stands as written.
+
+**Recap of iteration 11 (the slack ledger).**
+
+- **What was done.** On 600 certified `(6, 1)` covers at `n = 30–75` (Harper read from the record, nothing re-solved) and 543 proved pilot graphs `G(n, 10/n)` at `n = 30–60` (every layout re-checked to its width), every count's floor was put on one ladder with Harper and the pathwidth, all on the pathwidth scale. Deliverables: `reports/separator_moment.md` §11, `reports/scratch/separator_moment/11_ledger/` (script, two per-instance ledgers, cell bounds, summary, figure, logs), `harper_bound_graph` plus two helpers in `learning/separator_moment.py`, four tests.
+- **The numbers at the largest sizes.** Covers at 75: the old pair floor sits 7 stacks below the pathwidth; exact sizes buy 0.8, the closed count 0.8 more, the flips nothing. Graphs at 60: the old floor is 5.8 below, the separator and closed counts buy the same one stack. Of what is left, at least 77–93% is the union bound (Harper above the best floor) and the necessary condition is tight to within a stack wherever Harper reaches the forced prefix.
+- **Stop condition.** No floor at the 0.01 threshold exceeded a certified pathwidth on any of the 1,143 instances.
+- **Honest caveats.** Harper is censored by its level cap at `n ≥ 50` on graphs and `≥ 60` on covers, so the split at those sizes carries the cap, stated in the direction that survives it. The Harper pass cost 4.87 core-hours against the item's 0.5 estimate, because 16 levels under a 60 s budget were requested; a 12-level run would have reached the same caps at about 2.
+- **Record keeping.** Gate passed (1,747 tests, pathwidth_solver 123, Lean clean, paper builds). PROGRESS.md has the iteration entry and reads 11/13; item 11 is marked done in `iterations.md`. Items 12 and 13 remain, so no LOOP_COMPLETE line. Nothing committed; no stray files outside the item's paths.
+
+# result: success in 4279s, 57 turns, cost $23.38
