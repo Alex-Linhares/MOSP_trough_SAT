@@ -383,7 +383,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     is proved (its hypothesis is cited or marked not verified); the
     constant (`β_sep` is a lower bound on the truth whatever the rate).
 
-- [ ] **07 The MOSP version: random clique covers.**
+- [x] **07 The MOSP version: random clique covers.**
   - **Question.** E of the brief. On random clique covers (`m = μ n`
     patterns, sizes `d` or the empirical law), what do the closed-pair
     count, the component flips and the half-giant line give, against

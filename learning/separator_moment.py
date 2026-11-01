@@ -48,6 +48,16 @@ __all__ = [
     "connected_probs", "log_connected", "partitions", "log_prob_partition",
     "log_prob_bip", "log_prob_rel", "log_prob_bip_enum", "log_prob_bip_mc",
     "log_connected_enum", "log_connected_mc", "log_product_bound",
+    # item 07: the MOSP version
+    "closed_cover_log_prob_exact", "closed_cover_log_count_exact", "closed_cover_log_prob_na",
+    "closed_cover_log_bound", "cover_log_pair_bound", "cover_pair_exponent",
+    "cover_pair_exponent_beta", "cover_exponent_slope_at", "cover_lambda",
+    "closed_cover_exponent_ind", "closed_cover_exponent_na", "closed_cover_rate",
+    "beta_star_cover", "beta_closed_cover", "isolated_binomial_moments", "isolated_pgf",
+    "isolated_pmf", "flip_joint_moments", "flip_joint_pmf", "flip_log_bound",
+    "rig_branching_factor", "rig_giant", "half_giant_line", "cover_degree_law",
+    "edwards_mcdermid_cover", "flip_cover_tail_exponent", "flip_cover_exponent_na",
+    "flip_cover_exponent_beta", "beta_flip_cover", "flip_log_bound_fast", "_root_above",
 ]
 
 
@@ -1402,3 +1412,709 @@ def edwards_mcdermid_poisson(c: float, dmax: int = 200) -> float:
             out += math.exp(lp) * g[d]
         lp += math.log(c) - math.log(d + 1)
     return out
+
+
+# ---------------------------------------------------------------------------
+# item 07: the MOSP version — random clique covers
+# ---------------------------------------------------------------------------
+#
+# The cover model of `CliqueCoverMoment.lean`: `m` independent patterns, pattern
+# `j` a uniform `s_j`-subset of the `n` customers, the MOSP graph the union of
+# the cliques.  For a partition `(A, R, S)` of the customers, `(A, R)` is empty
+# iff no pattern meets both (L3 a), and `(A, R)` is a *closed* pair with
+# separator `S` iff in addition every `v ∈ S` shares a pattern with `A` and one
+# with `R` (L3 c).  Three quantities of this item:
+#
+# * `closed_cover_log_prob_exact`: `P(closed | A, R, S)` by inclusion–exclusion
+#   over the "bad" vertices of `S` — those sharing no pattern with `A`
+#   (`T_A`) or none with `R` (`T_R`).  Given `T_A`, `T_R`, a pattern is
+#   allowed iff it lies in `S`, or meets `R` inside `R ∪ (S ∖ T_R)`, or meets
+#   `A` inside `A ∪ (S ∖ T_A)`; the count depends only on `u = |S ∖ T_R|` and
+#   `w = |S ∖ T_A|`, so the `4^|S|` terms collapse to `(|S| + 1)²`, summed in
+#   exact integers (the alternation cancels catastrophically in floating point).
+# * `closed_cover_log_prob_na`: a cancellation-free upper bound on the same
+#   probability.  Conditional on each pattern's type (`A`-type: meets `A`,
+#   avoids `R`; `R`-type; inside `S`) and on `|P_j ∩ A|`, the `S`-parts of the
+#   patterns are independent uniform subsets of `S` of fixed sizes, whose
+#   membership indicators are negatively associated (sampling without
+#   replacement; Joag-Dev & Proschan 1983, Theorem 2.11 and property P7), so the
+#   coverage indicators `C_v = max_j Y_{jv}` (nondecreasing functions of
+#   disjoint index sets, property P6) are negatively associated and
+#   `P(all covered | τ) ≤ Π_v P(C_v | τ)` = `(1 − e^{−L̃_A})^{|S|} (1 − e^{−L̃_R})^{|S|}`
+#   with `L̃_A = −Σ_{j A-type} ln(1 − (s_j − i_j)/|S|)`.  `ln(1 − e^{−L})` is
+#   concave, so the tangent at any `ℓ*` gives
+#   `F(L̃) ≤ F(ℓ*) e^{θ (min(L̃, M) − ℓ*)}`, `θ = |S| e^{−ℓ*}/(1 − e^{−ℓ*})`,
+#   `M = ℓ* − ln F(ℓ*)/θ` (the cap handles a pattern covering all of `S`), and
+#   the expectation over the types factorises over the patterns.  Valid for
+#   every `ℓ*`; minimised over `ℓ*`.
+# * the flips (the weighted count `Y = Σ_P 1[P empty] / C(I_A + I_R, I_A)`,
+#   with `I_A` the customers of `A` isolated in the `A`-side graph): the
+#   binomial moments of `(I_A, I_R)` jointly with the empty event, exactly, and
+#   the isolated-customer generating function of a random cover.
+
+
+def _hist(sizes) -> dict[int, int]:
+    from learning.first_moment import _histogram
+    return _histogram(sizes)
+
+
+def closed_cover_log_prob_exact(n: int, a: int, r: int, s: int, sizes) -> float:
+    """`log P((A, R) closed with separator S)` for fixed disjoint `A, R, S` of
+    sizes `a, r, s` (`a + r + s = n`) in the cover model, exactly (integers)."""
+    if a + r + s != n or min(a, r, s) < 0:
+        raise ValueError("a + r + s must equal n")
+    hist = _hist(sizes)
+    num = 0
+    for u in range(s + 1):
+        for w in range(s + 1):
+            term = comb(s, u) * comb(s, w)
+            for sz, cnt in hist.items():
+                allowed = comb(s, sz) + comb(r + u, sz) - comb(u, sz) + comb(a + w, sz) - comb(w, sz)
+                term *= allowed ** cnt
+            num += -term if (u + w) & 1 else term
+    if num < 0:
+        raise ArithmeticError("negative probability numerator")
+    if num == 0:
+        return -math.inf
+    den = 0.0
+    for sz, cnt in hist.items():
+        den += cnt * math.log(comb(n, sz))
+    return math.log(num) - den
+
+
+def closed_cover_log_count_exact(n: int, k: int, sizes) -> float:
+    """`log E[X₃]` on covers: `Σ_{a ≥ t, r ≥ N − t, s ≤ k} n!/(a! r! s!) P(closed)`,
+    the exact probability per triple (small `n` only)."""
+    N, t = forced_sizes(n, k)
+    terms = []
+    for s in range(0, k + 1):
+        for a in range(t, n - s + 1):
+            r = n - s - a
+            if r < N - t:
+                continue
+            lp = closed_cover_log_prob_exact(n, a, r, s, sizes)
+            if lp == -math.inf:
+                continue
+            terms.append(math.lgamma(n + 1) - math.lgamma(a + 1) - math.lgamma(r + 1) - math.lgamma(s + 1) + lp)
+    return _lse(terms)
+
+
+def _type_tables(n: int, a: int, r: int, s: int, sz: int):
+    """Per pattern size: `(w_S, wA, lA, wR, lR)` — the weight of "inside S",
+    and for the `A`-type (`R`-type) outcomes `i = 1..sz` the weights
+    `C(a, i) C(s, sz − i)` and the coverage increments `ℓ̃_i = −ln(1 − (sz − i)/s)`
+    (`inf` where the pattern covers all of `S`)."""
+    i = np.arange(1, sz + 1)
+    wA = np.array([comb(a, int(x)) * comb(s, sz - int(x)) for x in i], dtype=float)
+    wR = np.array([comb(r, int(x)) * comb(s, sz - int(x)) for x in i], dtype=float)
+    with np.errstate(divide="ignore"):
+        frac = (sz - i) / s if s > 0 else np.where(sz - i > 0, np.inf, 0.0)
+        ell = np.where(frac < 1, -np.log1p(-np.minimum(frac, 1 - 1e-300)), np.inf)
+    ell = np.where(sz - i == 0, 0.0, ell)
+    return float(comb(s, sz)), wA, ell, wR, ell.copy()
+
+
+def closed_cover_log_prob_na(n: int, a: int, r: int, s: int, sizes, ells=None,
+                             optimise: bool = True) -> float:
+    """Upper bound on `log P(closed | A, R, S)`: the negative-association /
+    tangent bound above, minimised over the tangent points `(ℓ*_A, ℓ*_R)`
+    (from the candidates `ells`, a list of pairs, then Nelder–Mead if
+    `optimise`), and never above the empty-pair probability itself."""
+    hist = _hist(sizes)
+    lq_pair = sum(cnt * lq_sides(n, a, r, sz) for sz, cnt in hist.items())
+    if s == 0 or lq_pair == -math.inf:
+        return lq_pair
+    tables = {sz: _type_tables(n, a, r, s, sz) for sz in hist}
+    logC = {sz: math.log(comb(n, sz)) for sz in hist}
+
+    def bound(lA, lR):
+        if lA <= 0 or lR <= 0:
+            return math.inf
+        lA, lR = min(lA, 40.0), min(lR, 40.0)
+        out = 0.0
+        pars = []
+        for l in (lA, lR):
+            F = s * math.log(-math.expm1(-l))
+            th = s * math.exp(-l) / (-math.expm1(-l))
+            cap = l - F / th
+            out += F - th * l
+            pars.append((th, cap))
+        (thA, capA), (thR, capR) = pars
+        with np.errstate(over="ignore", invalid="ignore"):
+            for sz, cnt in hist.items():
+                wS, wA, eA, wR, eR = tables[sz]
+                tot = wS + float(np.dot(wA, np.exp(thA * np.minimum(eA, capA)))) \
+                    + float(np.dot(wR, np.exp(thR * np.minimum(eR, capR))))
+                if not (tot > 0) or math.isinf(tot):
+                    return math.inf
+                out += cnt * (math.log(tot) - logC[sz])
+        return out
+
+    # the conditional means of L̃_A, L̃_R given the pair is empty: the natural start
+    means = []
+    for side in (0, 1):
+        num = den = 0.0
+        for sz, cnt in hist.items():
+            wS, wA, eA, wR, eR = tables[sz]
+            w, e = (wA, eA) if side == 0 else (wR, eR)
+            q = wS + wA.sum() + wR.sum()
+            if q > 0:
+                num += cnt * float(np.dot(w, np.where(np.isfinite(e), e, 0.0))) / q
+            den += cnt
+        means.append(max(num, 1e-9))
+    cands = list(ells) if ells is not None else []
+    for fA in (0.6, 0.8, 1.0, 1.25):
+        for fR in (0.6, 0.8, 1.0, 1.25):
+            cands.append((means[0] * fA, means[1] * fR))
+    best = min(((bound(lA, lR), lA, lR) for lA, lR in cands), key=lambda x: x[0])
+    if optimise and math.isfinite(best[0]):
+        try:
+            from scipy.optimize import minimize
+            res = minimize(lambda x: bound(math.exp(min(max(x[0], -12.0), 4.0)), math.exp(min(max(x[1], -12.0), 4.0))),
+                           [math.log(best[1]), math.log(best[2])], method="Nelder-Mead",
+                           options={"xatol": 1e-4, "fatol": 1e-9, "maxiter": 400})
+            if res.fun < best[0]:
+                best = (float(res.fun), math.exp(res.x[0]), math.exp(res.x[1]))
+        except ImportError:  # pragma: no cover
+            pass
+    return min(best[0], lq_pair)
+
+
+def closed_cover_log_bound(n: int, k: int, sizes, optimise: bool = False) -> float:
+    """`log` of the closed-pair first moment on covers at width `k`, every
+    admissible triple bounded by `closed_cover_log_prob_na` (the candidate
+    tangent points only unless `optimise`); a valid upper bound on
+    `P(mospValue ≤ k + 1)` by L2/L3 and the union bound."""
+    N, t = forced_sizes(n, k)
+    terms = []
+    for s in range(0, k + 1):
+        for a in range(t, n - s + 1):
+            r = n - s - a
+            if r < N - t:
+                continue
+            lp = closed_cover_log_prob_na(n, a, r, s, sizes, optimise=optimise)
+            if lp == -math.inf:
+                continue
+            terms.append(math.lgamma(n + 1) - math.lgamma(a + 1) - math.lgamma(r + 1) - math.lgamma(s + 1) + lp)
+    return _lse(terms)
+
+
+def cover_log_pair_bound(n: int, k: int, sizes, exact_sizes: bool = True) -> float:
+    """The pair count on covers at the exact forced sizes (`|A| = t`,
+    `|R| = N − t`; the Lean statement) or at the record's `|R| = t − 1`."""
+    from learning.first_moment import lchoose, log_bound
+    if not exact_sizes:
+        return log_bound(n, sizes, k)
+    N, t = forced_sizes(n, k)
+    r = N - t
+    hist = _hist(sizes)
+    return lchoose(n, t) + lchoose(n - t, r) + sum(cnt * lq_sides(n, t, r, sz) for sz, cnt in hist.items())
+
+
+# the asymptotic exponents -------------------------------------------------------
+
+def _hist_fracs(sizes) -> list[tuple[int, float]]:
+    hist = _hist(sizes)
+    tot = sum(hist.values())
+    return [(sz, cnt / tot) for sz, cnt in hist.items()]
+
+
+def cover_pair_exponent(alpha: float, rho: float, sigma: float, mu: float, sizes) -> float:
+    """`H(α, ρ, σ) + μ E_s ln[(1 − α)^s + (1 − ρ)^s − σ^s]`: the pair count's
+    exponent at general side fractions (`learning.first_moment.rate` at
+    `α = ρ`)."""
+    out = H3(alpha, rho, sigma)
+    for sz, p in _hist_fracs(sizes):
+        q = (1 - alpha) ** sz + (1 - rho) ** sz - sigma ** sz
+        out += mu * p * math.log(max(q, 1e-300))
+    return out
+
+
+def cover_pair_exponent_beta(beta: float, mu: float, sizes) -> float:
+    a = (1 - beta) / 2
+    return cover_pair_exponent(a, a, beta, mu, sizes)
+
+
+def cover_exponent_slope_at(beta: float, mu: float, sizes, h: float = 1e-4) -> float:
+    """`d/dβ` of the pair exponent (nats per unit of `β`): the conversion."""
+    return (cover_pair_exponent_beta(beta + h, mu, sizes) - cover_pair_exponent_beta(beta - h, mu, sizes)) / (2 * h)
+
+
+def cover_lambda(alpha: float, rho: float, sigma: float, mu: float, sizes) -> tuple[float, float]:
+    """`(λ_A, λ_R)`: the mean number of `A`-type (`R`-type) patterns containing
+    a given `v ∈ S`, given the pair is empty (asymptotic)."""
+    lA = lR = 0.0
+    for sz, p in _hist_fracs(sizes):
+        q = (1 - alpha) ** sz + (1 - rho) ** sz - sigma ** sz
+        lA += mu * p * sz * ((1 - rho) ** (sz - 1) - sigma ** (sz - 1)) / q
+        lR += mu * p * sz * ((1 - alpha) ** (sz - 1) - sigma ** (sz - 1)) / q
+    return lA, lR
+
+
+def closed_cover_exponent_ind(alpha: float, rho: float, sigma: float, mu: float, sizes) -> float:
+    """The closed-pair exponent *if the coverage events of the `σ n` separator
+    customers were independent*: `pair exponent + σ [ln(1 − e^{−λ_A}) + ln(1 − e^{−λ_R})]`.
+    An approximation, not a bound (coverage events are positively associated
+    through shared patterns); it is the `G(n, c/n)` form of §6 (b)."""
+    out = cover_pair_exponent(alpha, rho, sigma, mu, sizes)
+    if sigma <= 0:
+        return out
+    lA, lR = cover_lambda(alpha, rho, sigma, mu, sizes)
+    return out + sigma * (math.log(-math.expm1(-lA)) + math.log(-math.expm1(-lR)))
+
+
+def _log_closed_na_mgf(alpha: float, rho: float, sigma: float, thA: float, thR: float, sz: int) -> float:
+    """`ln[σ^s + (α + σ e^{ϑ_A})^s − (σ e^{ϑ_A})^s + (ρ + σ e^{ϑ_R})^s − (σ e^{ϑ_R})^s]`,
+    each of the three non-negative pieces in log form (`ϑ` may be large)."""
+    ls = math.log(sigma)
+    parts = [sz * ls]
+    for x, th in ((alpha, thA), (rho, thR)):
+        if x <= 0:
+            continue
+        inner = sz * math.log1p(x * math.exp(-th) / sigma)       # ln (1 + x e^{−ϑ}/σ)^s
+        if inner > 0:
+            parts.append(sz * (ls + th) + (math.log(math.expm1(inner)) if inner < 700 else inner))
+    return _lse(parts)
+
+
+def closed_cover_exponent_na(alpha: float, rho: float, sigma: float, mu: float, sizes,
+                             return_argmin: bool = False):
+    """The negative-association / tangent exponent of the closed-pair count
+    at side fractions `(α, ρ, σ)`: `H(α, ρ, σ) + inf_{ℓ_A, ℓ_R > 0} [σ ln(1 − e^{−ℓ_A})
+    + σ ln(1 − e^{−ℓ_R}) − σ(ϑ_A ℓ_A + ϑ_R ℓ_R) + μ E_s ln M_s(ϑ_A, ϑ_R)]`,
+    `ϑ = e^{−ℓ}/(1 − e^{−ℓ})`, `M_s` the per-pattern generating function of the
+    `S`-incidences of `A`- and `R`-type patterns (with the empty event).  A valid
+    exponent of an upper bound (the limit of `closed_cover_log_prob_na`)."""
+    if sigma <= 0:
+        v = cover_pair_exponent(alpha, rho, sigma, mu, sizes)
+        return (v, (math.nan, math.nan)) if return_argmin else v
+    fr = _hist_fracs(sizes)
+    H = H3(alpha, rho, sigma)
+
+    def f(x):
+        lA, lR = math.exp(min(max(x[0], -12.0), 4.0)), math.exp(min(max(x[1], -12.0), 4.0))
+        thA = math.exp(-lA) / (-math.expm1(-lA))
+        thR = math.exp(-lR) / (-math.expm1(-lR))
+        out = sigma * (math.log(-math.expm1(-lA)) + math.log(-math.expm1(-lR))) - sigma * (thA * lA + thR * lR)
+        for sz, p in fr:
+            out += mu * p * _log_closed_na_mgf(alpha, rho, sigma, thA, thR, sz)
+        return out
+
+    lA0, lR0 = cover_lambda(alpha, rho, sigma, mu, sizes)
+    x0 = [math.log(max(lA0, 1e-6)), math.log(max(lR0, 1e-6))]
+    from scipy.optimize import minimize
+    res = minimize(f, x0, method="Nelder-Mead", options={"xatol": 1e-6, "fatol": 1e-10, "maxiter": 2000})
+    v = H + min(float(res.fun), f(x0))
+    if return_argmin:
+        return v, (math.exp(res.x[0]), math.exp(res.x[1]))
+    return v
+
+
+def closed_cover_rate(beta: float, mu: float, sizes, method: str = "na", grid: int = 12) -> tuple[float, float, float]:
+    """`sup` over the admissible region (`α, ρ ≥ (1 − β)/2`, `σ ≤ β`) of the
+    closed-pair exponent on covers (`method` `na` or `ind`); `(value, α, ρ)`."""
+    fn = closed_cover_exponent_na if method == "na" else closed_cover_exponent_ind
+    lo = (1 - beta) / 2
+    best = (-math.inf, lo, lo)
+    for i in range(grid + 1):
+        a = lo + (1 - 2 * lo) * i / grid
+        for j in range(grid + 1 - i):
+            r = lo + (1 - 2 * lo) * j / grid
+            s = max(0.0, 1 - a - r)
+            v = fn(a, r, s, mu, sizes)
+            if v > best[0]:
+                best = (v, a, r)
+    from scipy.optimize import minimize
+
+    def neg(x):
+        a, r = x
+        s = 1 - a - r
+        if a < lo or r < lo or s < -1e-12:
+            return 1e9
+        return -fn(a, r, max(s, 0.0), mu, sizes)
+    res = minimize(neg, [best[1], best[2]], method="Nelder-Mead",
+                   options={"xatol": 1e-7, "fatol": 1e-10, "maxiter": 1000})
+    if -res.fun > best[0]:
+        best = (-float(res.fun), float(res.x[0]), float(res.x[1]))
+    return best
+
+
+def _root_beta_bisect(f, lo: float = 1e-6, hi: float = 1 - 1e-6, tol: float = 1e-7) -> float:
+    """The root of an increasing `f` on `(0, 1)`; 0 if `f(lo) ≥ 0`, 1 if `f(hi) < 0`."""
+    if f(lo) >= 0:
+        return 0.0
+    if f(hi) < 0:
+        return 1.0
+    while hi - lo > tol:
+        mid = (lo + hi) / 2
+        if f(mid) >= 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def _root_above(f, lo: float, step: float = 0.005, tol: float = 1e-6) -> float:
+    """The first root of `f` above `lo`: scan upward in steps of `step` to the
+    first `b` with `f(b) ≥ 0`, then bisect (for exponents that rise through
+    zero once above `β*` and fall back to zero at `β → 1`); 1 if none."""
+    b = lo
+    while b + step < 1:
+        nb = b + step
+        if f(nb) >= 0:
+            hi = nb
+            while hi - b > tol:
+                mid = (b + hi) / 2
+                if f(mid) >= 0:
+                    hi = mid
+                else:
+                    b = mid
+            return (b + hi) / 2
+        b = nb
+    return 1.0
+
+
+def beta_star_cover(mu: float, sizes) -> float:
+    """`β*(d, μ)` by bisection on the pair exponent (agrees with
+    `learning.first_moment.beta_star` to its scan step)."""
+    return _root_beta_bisect(lambda b: cover_pair_exponent_beta(b, mu, sizes))
+
+
+def beta_closed_cover(mu: float, sizes, method: str = "na") -> float:
+    """`β_closed(d, μ)`: the root in `β` of the closed-pair exponent's supremum
+    (the first root above `β*`; the exponent returns to zero at `β → 1`)."""
+    bs = beta_star_cover(mu, sizes)
+    if bs == 0.0:
+        return 0.0
+    return _root_above(lambda b: closed_cover_rate(b, mu, sizes, method)[0], bs)
+
+
+# the flips: isolated customers and the weighted count ------------------------------
+
+def isolated_binomial_moments(a: int, sizes) -> list:
+    """`B_i = C(a, i) Π_j C(a − i, s_j) / C(a, s_j)` (exact `Fraction`s): the
+    binomial moments of the number `I` of isolated customers of a random cover
+    of `a` customers (patterns of size 1 ignored: they isolate nobody), so that
+    `E[z^I] = Σ_i (z − 1)^i B_i`."""
+    from fractions import Fraction
+    hist = {sz: cnt for sz, cnt in _hist(sizes).items() if sz >= 2}
+    out = []
+    for i in range(a + 1):
+        B = Fraction(comb(a, i))
+        for sz, cnt in hist.items():
+            B *= Fraction(comb(a - i, sz), comb(a, sz)) ** cnt
+        out.append(B)
+    return out
+
+
+def isolated_pgf(a: int, sizes, z) -> float:
+    """`E[z^I]` for the isolated-customer count of a random cover of `a` customers."""
+    return float(sum(B * (z - 1) ** i for i, B in enumerate(isolated_binomial_moments(a, sizes))))
+
+
+def isolated_pmf(a: int, sizes) -> list:
+    """`P(I = i)`, `i = 0..a`, from the binomial moments by Möbius inversion
+    (`P(I = i) = Σ_{u ≥ i} (−1)^{u − i} C(u, i) B_u`), exact."""
+    B = isolated_binomial_moments(a, sizes)
+    return [sum((-1) ** (u - i) * comb(u, i) * B[u] for u in range(i, a + 1)) for i in range(a + 1)]
+
+
+def flip_joint_moments(n: int, a: int, r: int, sizes):
+    """`B(u, u′) = C(a, u) C(r, u′) P(no pattern meets both A and R, and u given
+    customers of A and u′ of R are isolated on their side)` for all `u ≤ a`,
+    `u′ ≤ r` (exact `Fraction`s, an `(a + 1) × (r + 1)` list of lists).  A
+    pattern of size `s` is allowed iff it lies in `S`, or in `A ∪ S` with at
+    most one customer of `A` or none of the `u` isolated ones, or likewise in
+    `R ∪ S`: `C(a − u + s, s_j) + u C(s, s_j − 1) + C(r − u′ + s, s_j) + u′ C(s, s_j − 1) − C(s, s_j)`."""
+    from fractions import Fraction
+    s = n - a - r
+    hist = _hist(sizes)
+    out = []
+    for u in range(a + 1):
+        row = []
+        for up in range(r + 1):
+            B = Fraction(comb(a, u) * comb(r, up))
+            for sz, cnt in hist.items():
+                allowed = comb(a - u + s, sz) + u * comb(s, sz - 1) + comb(r - up + s, sz) + up * comb(s, sz - 1) - comb(s, sz)
+                B *= Fraction(allowed, comb(n, sz)) ** cnt
+            row.append(B)
+        out.append(row)
+    return out
+
+
+def flip_joint_pmf(n: int, a: int, r: int, sizes):
+    """`P(I_A = i, I_R = i′, (A, R) empty)`, exact, by two-dimensional Möbius inversion."""
+    B = flip_joint_moments(n, a, r, sizes)
+    out = []
+    for i in range(a + 1):
+        row = []
+        for ip in range(r + 1):
+            v = 0
+            for u in range(i, a + 1):
+                cu = (-1) ** (u - i) * comb(u, i)
+                for up in range(ip, r + 1):
+                    v += cu * (-1) ** (up - ip) * comb(up, ip) * B[u][up]
+            row.append(v)
+        out.append(row)
+    return out
+
+
+def flip_log_bound(n: int, k: int, sizes) -> tuple[float, float]:
+    """`(log E[Y], log E[X])` at the exact forced sizes: the weighted count
+    `Y = Σ_P 1[P empty] / C(I_A + I_R, I_A)` (every swap of equally many isolated
+    customers between the sides is another exact-size empty pair, so
+    `Z(P) ≤ X` and `Y ≥ 1[X > 0]`) beside the pair count; exact, small `n`."""
+    from fractions import Fraction
+    from learning.first_moment import lchoose
+    N, t = forced_sizes(n, k)
+    r = N - t
+    pmf = flip_joint_pmf(n, t, r, sizes)
+    EY = sum(pmf[i][ip] / comb(i + ip, i) for i in range(t + 1) for ip in range(r + 1))
+    EX = sum(pmf[i][ip] for i in range(t + 1) for ip in range(r + 1))
+    lp = lchoose(n, t) + lchoose(n - t, r)
+    return (lp + math.log(EY) if EY > 0 else -math.inf, lp + math.log(EX) if EX > 0 else -math.inf)
+
+
+# the giant of the random intersection graph ----------------------------------------
+
+def rig_branching_factor(mu: float, sizes) -> float:
+    """`μ E_s[s (s − 1)]`: the mean number of customers two steps away in the
+    two-type branching process (customer → patterns → customers)."""
+    return mu * sum(p * sz * (sz - 1) for sz, p in _hist_fracs(sizes))
+
+
+def rig_giant(mu: float, sizes, tol: float = 1e-12) -> float:
+    """`θ(d, μ)`: the survival probability of the customer → patterns → customers
+    branching process, i.e. the limiting fraction of customers in the giant
+    component of the MOSP graph of a random cover with `m = μ n` patterns of
+    the given sizes (Behrisch 2007; Lagerås & Lindholm 2008): the largest
+    root of `1 − θ = exp(−μ E_s[s (1 − (1 − θ)^{s − 1})])`; 0 iff the
+    branching factor `μ E[s(s − 1)] ≤ 1`.  Real sizes are accepted."""
+    fr = _hist_fracs(sizes) if not isinstance(sizes, dict) or all(isinstance(k, int) for k in sizes) \
+        else [(sz, c / sum(sizes.values())) for sz, c in sizes.items()]
+    if mu * sum(p * sz * (sz - 1) for sz, p in fr) <= 1:
+        return 0.0
+    th = 1.0
+    for _ in range(100000):
+        nt = -math.expm1(-mu * sum(p * sz * (1 - (1 - th) ** (sz - 1)) for sz, p in fr))
+        if abs(nt - th) < tol:
+            return nt
+        th = nt
+    return th
+
+
+def half_giant_line(mu: float, lo: float = 1.0, hi: float = 40.0, iterations: int = 60) -> float:
+    """The real pattern size `d` at which `θ(d, μ) = ½` (fixed size `d`), by
+    bisection; the half-giant line in the `(d, μ)` plane.  In excess:
+    `e = μ (d − 1)`."""
+    for _ in range(iterations):
+        mid = (lo + hi) / 2
+        if rig_giant(mu, {mid: 1}) >= 0.5:
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
+# the published upper line on covers ---------------------------------------------------
+
+def cover_degree_law(mu: float, sizes, kmax: int = 400) -> np.ndarray:
+    """The limiting degree law of a customer of the MOSP graph: the number of
+    patterns of size `s` containing it is `Poisson(μ p_s s)`, each contributing
+    `s − 1` neighbours (overlaps vanish as `n → ∞`): a compound Poisson,
+    returned as `P(deg = d)` for `d = 0..kmax` (mass above `kmax` dropped)."""
+    law = np.zeros(kmax + 1)
+    law[0] = 1.0
+    for sz, p in _hist_fracs(sizes):
+        if sz < 2:
+            continue
+        lam = mu * p * sz
+        step = sz - 1
+        kk = np.arange(0, kmax // step + 1)
+        pois = np.exp(-lam + kk * math.log(lam) - np.array([math.lgamma(k + 1) for k in kk])) if lam > 0 else np.eye(1, len(kk))[0]
+        new = np.zeros_like(law)
+        for k, pk in zip(kk, pois):
+            if pk < 1e-300:
+                continue
+            new[k * step:] += pk * law[: kmax + 1 - k * step]
+        law = new
+    return law
+
+
+def edwards_mcdermid_cover(mu: float, sizes, kmax: int = 400) -> float:
+    """`Σ_{d ≥ 3} P(deg = d) g_{1/6}(d)` on the cover degree law: Edwards &
+    McDermid (2015, Cor. 5.2) applied to the MOSP graph of a random cover, the
+    published upper line `pw/n ≤ …` (owner's note of 2026-11-01)."""
+    law = cover_degree_law(mu, sizes, kmax)
+    g = edwards_mcdermid_g(kmax)
+    return float(sum(law[d] * g[d] for d in range(3, kmax + 1)))
+
+
+# the flips, asymptotically (negative association + Chernoff, valid) -----------------
+#
+# E[1[(A, R) empty] / C(I_A + I_R, I_A)] = Σ_{i, i′} P(I = (i, i′), empty) / C(i + i′, i)
+# ≤ Σ_{cells} e^{−g(lower corner)} P(I_A ≤ x n, I_R ≤ y n, empty), g = ln C; and for
+# θ_A, θ_R ≥ 0, P(I_A ≤ xn, I_R ≤ yn, empty) ≤ e^{θ_A xn + θ_R yn} E[e^{−θ_A I_A − θ_R I_R} 1[empty]].
+# Given the types and the sizes |P_j ∩ A| (τ), the A-parts are independent uniform
+# subsets of A, so the indicators D_v = 1[v lies in a pattern with ≥ 2 customers of
+# A] (v ∈ A) and D′_v (v ∈ R) are negatively associated, and with I_A = Σ_v (1 − D_v):
+#   E[e^{−θ_A I_A − θ_R I_R} | τ] ≤ e^{−θ_A a − θ_R r} (1 + c_A (1 − e^{−K_A}))^a (1 + c_R (1 − e^{−K_R}))^r,
+# c = e^θ − 1, K_A = −Σ_{j: |P_j ∩ A| ≥ 2} ln(1 − |P_j ∩ A| / a).  The function
+# a ln(1 + c (1 − e^{−K})) is concave increasing in K, so its tangent at K* makes the
+# expectation over τ factorise over the patterns.  In the limit the per-pattern
+# factor is M_s(η̂_A, η̂_R) = σ^s + Σ_i C(s, i) α^i σ^{s−i} e^{η̂_A i 1[i ≥ 2]} + (R likewise),
+# η̂ = c e^{−K*} / (1 + c (1 − e^{−K*})).
+
+
+def _log_flip_mgf(alpha: float, rho: float, sigma: float, etaA: float, etaR: float, sz: int) -> float:
+    parts = [sz * math.log(sigma)] if sigma > 0 else []
+    for x, eta in ((alpha, etaA), (rho, etaR)):
+        if x <= 0:
+            continue
+        for i in range(1, sz + 1):
+            v = math.log(comb(sz, i)) + i * math.log(x) + (sz - i) * math.log(sigma) if sigma > 0 or i == sz else -math.inf
+            if sz - i > 0 and sigma <= 0:
+                continue
+            if i >= 2:
+                v += eta * i
+            parts.append(v)
+    return _lse(parts)
+
+
+def flip_cover_tail_exponent(x: float, y: float, alpha: float, rho: float, sigma: float, mu: float, sizes) -> float:
+    """`Φ(x, y)`: the exponent per customer of the bound on
+    `P(I_A ≤ x n, I_R ≤ y n, (A, R) empty)` (the Chernoff / negative-association
+    bound above, minimised over `θ_A, θ_R ≥ 0` and the tangent points)."""
+    fr = _hist_fracs(sizes)
+
+    def f(z):
+        thA, thR = math.exp(min(z[0], 6.0)), math.exp(min(z[1], 6.0))
+        KA, KR = math.exp(min(max(z[2], -12.0), 5.0)), math.exp(min(max(z[3], -12.0), 5.0))
+        out = thA * (x - alpha) + thR * (y - rho)
+        etas = []
+        for side, th, K in ((alpha, thA, KA), (rho, thR, KR)):
+            c = math.expm1(th)
+            u = -math.expm1(-K)
+            out += side * math.log1p(c * u)
+            eta = c * math.exp(-K) / (1 + c * u)
+            out -= eta * side * K
+            etas.append(eta)
+        for sz, p in fr:
+            out += mu * p * _log_flip_mgf(alpha, rho, sigma, etas[0], etas[1], sz)
+        return out
+
+    from scipy.optimize import minimize
+    # the conditional mean of K on each side, the natural tangent point
+    Ks = []
+    for side in (alpha, rho):
+        num = den = 0.0
+        for sz, p in fr:
+            q = (1 - alpha) ** sz + (1 - rho) ** sz - sigma ** sz
+            num += mu * p * sum(comb(sz, i) * side ** i * sigma ** (sz - i) * i for i in range(2, sz + 1)) / q
+        Ks.append(math.log(max(num / side, 1e-6)) if side > 0 else 0.0)
+    best = math.inf
+    for zA in (-30.0, -1.0, 2.5):
+        for zR in (-30.0, -1.0, 2.5):
+            z0 = [zA, zR, Ks[0], Ks[1]]
+            best = min(best, f(z0))
+            for method in ("Powell", "Nelder-Mead"):
+                res = minimize(f, z0, method=method, options={"xtol": 1e-5, "ftol": 1e-10} if method == "Powell"
+                               else {"xatol": 1e-5, "fatol": 1e-10, "maxiter": 2000})
+                best = min(best, float(res.fun))
+    # θ = 0 is always admissible and gives the pair exponent's pattern term
+    best = min(best, sum(mu * p * math.log((1 - alpha) ** sz + (1 - rho) ** sz - sigma ** sz) for sz, p in fr))
+    return best
+
+
+def flip_cover_exponent_na(alpha: float, rho: float, sigma: float, mu: float, sizes, grid: int = 8):
+    """The exponent per customer of the weighted count `Y = Σ_P 1[P empty] /
+    C(I_A + I_R, I_A)` at exact sizes `(α, ρ, σ)`, as `(value, x*, y*)`:
+    `H(α, ρ, σ) + sup_{x ≤ α, y ≤ ρ} [−(x + y) H₂(x / (x + y)) + Φ(x, y)]`.  Its
+    difference from the pair exponent is minus the flip gain in nats per
+    customer."""
+    H = H3(alpha, rho, sigma)
+
+    def obj(x, y):
+        x, y = min(max(x, 0.0), alpha), min(max(y, 0.0), rho)
+        g = (x + y) * H2(x / (x + y)) if x + y > 0 else 0.0
+        return -g + flip_cover_tail_exponent(x, y, alpha, rho, sigma, mu, sizes)
+
+    best = (-math.inf, 0.0, 0.0)
+    xs = [0.0] + [alpha * 10 ** (-3 + 3 * i / grid) for i in range(grid + 1)]
+    ys = [0.0] + [rho * 10 ** (-3 + 3 * i / grid) for i in range(grid + 1)]
+    for x in xs:
+        for y in ys:
+            v = obj(x, y)
+            if v > best[0]:
+                best = (v, x, y)
+    from scipy.optimize import minimize
+    res = minimize(lambda z: -obj(z[0], z[1]), [best[1], best[2]], method="Nelder-Mead",
+                   options={"xatol": 1e-6, "fatol": 1e-10, "maxiter": 400})
+    if -res.fun > best[0]:
+        best = (-float(res.fun), float(min(max(res.x[0], 0.0), alpha)), float(min(max(res.x[1], 0.0), rho)))
+    return H + best[0], best[1], best[2]
+
+
+def flip_cover_exponent_beta(beta: float, mu: float, sizes) -> float:
+    a = (1 - beta) / 2
+    return flip_cover_exponent_na(a, a, beta, mu, sizes)[0]
+
+
+def beta_flip_cover(mu: float, sizes) -> float:
+    """`β_flip(d, μ)`: the root in `β` of the weighted count's exponent (the
+    first above `β*`)."""
+    bs = beta_star_cover(mu, sizes)
+    if bs == 0.0:
+        return 0.0
+    return _root_above(lambda b: flip_cover_exponent_beta(b, mu, sizes), bs, tol=1e-5)
+
+
+def flip_log_bound_fast(n: int, k: int, sizes) -> tuple[float, float]:
+    """`flip_log_bound` with the Möbius inversion in integers over a common
+    denominator and separated into its two one-dimensional sums (`n = 125`
+    in seconds)."""
+    from fractions import Fraction
+    from learning.first_moment import lchoose
+    N, t = forced_sizes(n, k)
+    a, r = t, N - t
+    s = n - a - r
+    hist = _hist(sizes)
+    Bn = [[0] * (r + 1) for _ in range(a + 1)]
+    for u in range(a + 1):
+        for up in range(r + 1):
+            v = comb(a, u) * comb(r, up)
+            for sz, cnt in hist.items():
+                allowed = comb(a - u + s, sz) + u * comb(s, sz - 1) + comb(r - up + s, sz) + up * comb(s, sz - 1) - comb(s, sz)
+                v *= allowed ** cnt
+            Bn[u][up] = v
+    # inner inversion over u′ for every (u, i′), then over u for every (i, i′)
+    inner = [[0] * (r + 1) for _ in range(a + 1)]
+    for u in range(a + 1):
+        row = Bn[u]
+        for ip in range(r + 1):
+            acc = 0
+            for up in range(ip, r + 1):
+                term = comb(up, ip) * row[up]
+                acc += -term if (up - ip) & 1 else term
+            inner[u][ip] = acc
+    Pn = [[0] * (r + 1) for _ in range(a + 1)]
+    for ip in range(r + 1):
+        for i in range(a + 1):
+            acc = 0
+            for u in range(i, a + 1):
+                term = comb(u, i) * inner[u][ip]
+                acc += -term if (u - i) & 1 else term
+            Pn[i][ip] = acc
+    logD = sum(cnt * math.log(comb(n, sz)) for sz, cnt in hist.items())
+    EY = Fraction(0)
+    EX = 0
+    for i in range(a + 1):
+        for ip in range(r + 1):
+            if Pn[i][ip] < 0:
+                raise ArithmeticError("negative probability numerator")
+            EY += Fraction(Pn[i][ip], comb(i + ip, i))
+            EX += Pn[i][ip]
+    lp = lchoose(n, t) + lchoose(n - t, r)
+    lY = lp + (math.log(EY.numerator) - math.log(EY.denominator) - logD) if EY > 0 else -math.inf
+    lX = lp + (math.log(EX) - logD) if EX > 0 else -math.inf
+    return lY, lX

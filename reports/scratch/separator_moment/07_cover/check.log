@@ -1,0 +1,13 @@
+== check: closed-pair probability against enumeration of every cover ==
+  66 (n, sizes, A, R, S) cases at n = 3..8, m <= 3: max |log diff| = 8.88e-16; NA bound >= exact on all, gap 0.295..3.060 nats (mean 1.296)
+== check: NA bound >= exact on 60 random (n, sizes, A, R, S) at n = 8..16 ==
+  zero violations; gap 0.392..4.919 nats on 50 with positive probability
+== check: isolated-customer pmf and the joint (I_A, I_R, empty) pmf against enumeration ==
+  36 pmf cases and 30 joint cases at n = 2..7, m <= 3: exact agreement; pgf(1) = 1
+== check: theta(d, mu) = 0 exactly at branching factor <= 1 ==
+  mu = 0.5000, d = 2: branching factor 1.000, theta = 0.0000
+  mu = 0.1667, d = 3: branching factor 1.000, theta = 0.0000
+  mu = 0.0833, d = 4: branching factor 1.000, theta = 0.0000
+  mu = 0.2500, d = 2: branching factor 0.500, theta = 0.0000
+  mu = 0.1000, d = 3: branching factor 0.600, theta = 0.0000
+check: 0 s

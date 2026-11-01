@@ -2023,3 +2023,533 @@ maximisers differ (§3.3's two regimes). The separator prediction
   found no prior statement" is the strongest wording.
 * Nothing about covers (item 07), and nothing about the weighted count
   (item 09) beyond the §4.6 ceiling the gains here are measured against.
+
+---
+
+## 7. The MOSP version: random clique covers (item 07, 2026-11-01)
+
+**Question (E of the brief).** On random clique covers — `m = μ n` patterns,
+each a uniform subset of the `n` customers of size `d` (or of the class's
+empirical size law), the MOSP graph their union of cliques
+(`CliqueCoverMoment.lean`, `coverGraph`) — what do the closed-pair count, the
+component flips and the half-giant line give against `β*(d, μ)` and the
+certified slopes `b` of `excess_phase_diagram.md` §2.5, and where does the
+floor turn on in excess coordinates?
+
+**Events counted.** Three, each a valid upper bound on
+`P(mospValue ≤ k + 1)` by L3 of §2 (L1, L1′, L2 hold for `mospGraph`) and the
+union bound:
+
+1. the **pair count** on record, at the exact forced sizes (`|A| = t`,
+   `|R| = N − t`, the Lean statement) and at the record's `|R| = t − 1`;
+2. the **closed-pair count** `E[X₃]`: ordered triples `(A, R, S)` partitioning
+   the customers, `|A| ≥ t`, `|R| ≥ N − t`, `|S| ≤ k`, no pattern meeting
+   both `A` and `R`, and every customer of `S` sharing a pattern with `A` and
+   one with `R` (L3 c);
+3. the **weighted count** `Y = Σ_P 1[P empty] / C(I_A + I_R, I_A)` over the
+   exact-size pairs, with `I_A` the customers of `A` isolated in the `A`-side
+   graph (in no pattern with another customer of `A`): swapping any `i`
+   isolated customers of `A` with any `i` of `R` gives another exact-size
+   empty pair (an isolated customer's patterns lie in itself and `S`), the
+   `Σ_i C(I_A, i) C(I_R, i) = C(I_A + I_R, I_A)` swapped pairs are distinct
+   empty pairs of the same sizes, so `Z(P) = C(I_A + I_R, I_A) ≤ X` and
+   `Y ≥ 1[X > 0]` — the first instance of item 08's L4, on covers.
+
+The **separator count** is not computed on covers: item 01 found no
+large-deviation principle for the giant of the random intersection graph,
+and §6.3 (3) showed that bounding the colourings of the components costs
+more than the separator gains; what the item does with the separator event
+is the threshold proposition of §7.4, stated conditionally.
+
+**Size range.** Asymptotic constants (roots of exponents per customer,
+`n → ∞` at fixed `(d, μ)` or the pooled 125 × 125 size law); the
+cancellation-free bound checked against the exact alternating sum at
+`n = 8–26`; the floors on the 200 Chu & Stuckey instances at 30–125
+customers; the half-giant check against the measured largest-component
+fractions at `n = 50–75` (the `fixed` ensemble frames in
+`learning/data/excess.csv`).
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/07_cover/run.py --workers 4`
+(stages `check`, `slack`, `grid`, `giant`, `floors`; outputs beside it:
+`check.log`, `slack.csv`, `grid.csv`, `giant.csv`, `half_giant.csv`,
+`floors_cs.csv`, `run.log`). Tests: `python3 -m pytest tests/test_separator_moment.py`
+(74 tests, 4 new). Nothing was solved; `solutions/` was not read (the
+optima come from `learning/data/excess.csv`, provenance
+`certified:refutation` on all 200).
+
+### 7.1 Method
+
+**(a) The closed pair, exactly.** For fixed `(A, R, S)` of sizes
+`(a, r, s)`, inclusion–exclusion over the set `T_A ⊆ S` of customers sharing
+no pattern with `A` and `T_R ⊆ S` of those sharing none with `R`:
+
+    P(closed) = Σ_{T_A, T_R ⊆ S} (−1)^{|T_A| + |T_R|} P(no pattern meets A and R, and T_A, T_R are bad).
+
+Given `(T_A, T_R)` the event is a product over the independent patterns, and
+a pattern of size `s_j` is allowed iff it lies inside `S`, or meets `R`
+inside `R ∪ (S ∖ T_R)`, or meets `A` inside `A ∪ (S ∖ T_A)` (a pattern meeting
+`A` cannot contain a customer of `T_A`; one meeting `R` cannot contain one of
+`T_R`; the three cases are disjoint). The count depends on `T_A, T_R` only
+through `u = |S ∖ T_R|` and `w = |S ∖ T_A|`:
+
+    allowed(u, w; s_j) = C(s, s_j) + [C(r + u, s_j) − C(u, s_j)] + [C(a + w, s_j) − C(w, s_j)],
+
+so the `4^s` terms collapse to `(s + 1)²`:
+
+    P(closed) = Σ_{u, w = 0}^{s} (−1)^{u + w} C(s, u) C(s, w) Π_j allowed(u, w; s_j) / C(n, s_j),
+
+summed in exact integers (`closed_cover_log_prob_exact`; at `u = w = s`,
+`T_A = T_R = ∅`, the summand is the empty-pair probability
+`avoidCount` of `CliqueCoverMoment.lean`). This is the item's 4-cell
+structure `(A, R, T, F)` with `T` split by side; the `NestedStructure`
+machinery is not needed because the Möbius coefficients are explicit. The
+alternation cancels catastrophically in floating point (terms up to `4^s`
+against a sum of order `e^{−Θ(n)}`), which is why the sum is in integers;
+it is affordable to about `n = 30` for the whole count (every admissible
+triple) and at any `n` for one triple with `s ≲ 100`.
+
+**(a′) The closed pair, without cancellation.** Condition on each pattern's
+*type* (`A`-type: meets `A` and avoids `R`; `R`-type; inside `S`) and on
+`i_j = |P_j ∩ A|` (resp. `|P_j ∩ R|`). Given this vector `τ`, the `S`-parts
+of the patterns are independent uniform subsets of `S` of sizes `s_j − i_j`,
+whose membership indicators are negatively associated (sampling without
+replacement: Joag-Dev & Proschan 1983, *Ann. Statist.* 11, Theorem 2.11 and
+property P7 for independent unions), so the coverage indicators
+`C_v^A = max_{j A-type} Y_{jv}`, `C_v^R` — nondecreasing functions of
+disjoint index sets (property P6) — are negatively associated, and
+
+    P(every v ∈ S covered on both sides | τ) ≤ Π_v P(C_v^A | τ) P(C_v^R | τ) = (1 − e^{−L̃_A})^s (1 − e^{−L̃_R})^s,
+    L̃_A = −Σ_{j A-type} ln(1 − (s_j − i_j)/s).
+
+`ln(1 − e^{−L})` is concave, so for any `ℓ* > 0`, with
+`θ = s e^{−ℓ*}/(1 − e^{−ℓ*})` and the cap `M = ℓ* − ln F(ℓ*)/θ` (for a
+pattern covering all of `S`), `F(L̃) ≤ F(ℓ*) e^{θ (min(L̃, M) − ℓ*)}`, and the
+expectation over `τ` factorises over the patterns:
+
+    P(closed) ≤ F(ℓ*_A) F(ℓ*_R) e^{−θ_A ℓ*_A − θ_R ℓ*_R} Π_j M_j(θ_A, θ_R),
+    M_j = [C(s, s_j) + Σ_{i ≥ 1} C(a, i) C(s, s_j − i) e^{θ_A min(ℓ̃_i, M_A)} + Σ_{i ≥ 1} C(r, i) C(s, s_j − i) e^{θ_R min(ℓ̃_i, M_R)}] / C(n, s_j),
+
+valid for every `(ℓ*_A, ℓ*_R)`, minimised over them, and never above the
+empty-pair probability (`closed_cover_log_prob_na`). Its limit per customer
+at fractions `(α, ρ, σ)` is
+
+    g_NA(α, ρ, σ) = H(α, ρ, σ) + inf_{ℓ_A, ℓ_R > 0} [σ ln(1 − e^{−ℓ_A}) + σ ln(1 − e^{−ℓ_R}) − σ (ϑ_A ℓ_A + ϑ_R ℓ_R) + μ E_s ln M_s(ϑ_A, ϑ_R)],
+    ϑ = e^{−ℓ}/(1 − e^{−ℓ}),   M_s = σ^s + (α + σ e^{ϑ_A})^s − (σ e^{ϑ_A})^s + (ρ + σ e^{ϑ_R})^s − (σ e^{ϑ_R})^s
+
+(`closed_cover_exponent_na`; `M_s(0, 0)` is the avoid probability
+`(1 − α)^s + (1 − ρ)^s − σ^s`, so at `ϑ = 0` the exponent is the pair
+exponent plus the `ln F` terms). Beside it, the **independent-sites form**
+`g_ind = pair exponent + σ [ln(1 − e^{−λ_A}) + ln(1 − e^{−λ_R})]`,
+`λ_A = μ E_s s [(1 − ρ)^{s−1} − σ^{s−1}] / Q_s` the mean number of `A`-type
+patterns containing a given separator customer — the `G(n, c/n)` form of
+§6 (b), **an approximation and not a bound** here (coverage events are
+positively associated through shared patterns), reported for comparison.
+`g_NA ≥ g_ind` always (the Chernoff optimum includes the tilting cost);
+`β_closed` is the root of `sup` of `g_NA` over L2's admissible region.
+
+**(b) The flips.** The binomial moments of the number `I` of isolated
+customers of a random cover of `a` customers are
+`B_i = C(a, i) Π_j C(a − i, s_j)/C(a, s_j)` (patterns of size 1 isolate
+nobody and are dropped), the item's generating function
+`E[z^I] = Σ_i (z − 1)^i B_i` (`isolated_pgf`), and the pmf follows by Möbius
+inversion (`isolated_pmf`). Jointly with the empty event, for `u` given
+customers of `A` and `u′` of `R` to be isolated on their sides a pattern of
+size `s_j` must lie in `S`, or in `A ∪ S` with at most one customer of `A`
+or none of the `u`, or likewise in `R ∪ S`:
+
+    B(u, u′) = C(a, u) C(r, u′) Π_j [C(a − u + s, s_j) + u C(s, s_j − 1) + C(r − u′ + s, s_j) + u′ C(s, s_j − 1) − C(s, s_j)] / C(n, s_j)
+
+(`flip_joint_moments`), the joint pmf `P(I_A = i, I_R = i′, empty)` by a
+two-dimensional inversion (`flip_joint_pmf`; in integers over the common
+denominator and separated into two one-dimensional sums,
+`flip_log_bound_fast`, which does `n = 125` in under a second), and
+`E[Y] = C(n, t) C(N, N − t) Σ_{i, i′} P(i, i′, empty) / C(i + i′, i)` exactly.
+Asymptotically the same negative-association argument applies to the
+indicators `D_v = 1[v lies in a pattern with ≥ 2 customers of A]` (given
+`τ`, nondecreasing in the memberships of disjoint patterns' `A`-parts), so
+for `θ_A, θ_R ≥ 0`
+
+    P(I_A ≤ x n, I_R ≤ y n, empty) ≤ e^{θ_A x n + θ_R y n} e^{−θ_A a − θ_R r} E_τ[1[empty] (1 + c_A (1 − e^{−K_A}))^a (1 + c_R (1 − e^{−K_R}))^r],
+    c = e^θ − 1,   K_A = −Σ_{j: |P_j ∩ A| ≥ 2} ln(1 − |P_j ∩ A| / a),
+
+and `a ln(1 + c (1 − e^{−K}))` is concave increasing in `K`, so a tangent
+at `K*` factorises the expectation over the patterns. Summing
+`e^{−ln C(i + i′, i)} P(I = (i, i′), empty)` over cells (polynomially
+many) gives the exponent
+
+    E[Y] ≈ exp n · { H(α, ρ, σ) + sup_{x ≤ α, y ≤ ρ} [ −(x + y) H₂(x/(x + y)) + Φ(x, y) ] },
+
+`Φ` the tail exponent above minimised over `(θ_A, θ_R, K*_A, K*_R)`
+(`flip_cover_tail_exponent`, `flip_cover_exponent_na`); the **flip gain** is
+the pair exponent minus this, `≥ 0`, and `β_flip` the root.
+
+**(c) The half-giant line.** The customer → patterns → customers branching
+process of the random intersection graph with `m = μ n` patterns and size
+law `p`: a customer lies in `Poisson(μ p_s s)` patterns of size `s`, each
+bringing `s − 1` new customers, so the survival probability `θ(d, μ)` — the
+limiting fraction of customers in the giant component of the MOSP graph
+(Behrisch 2007, *Electron. J. Combin.* 14, R17, Theorem 1; Lagerås & Lindholm
+2008, *Electron. J. Combin.* 15, R10) — is the largest root of
+
+    1 − θ = exp(−μ Σ_s p_s s (1 − (1 − θ)^{s−1})),
+
+zero iff the branching factor `μ E_s[s (s − 1)] ≤ 1` (`rig_giant`, checked at
+the critical cells exactly). At fixed size `d` the branching factor is
+`μ d (d − 1)`, which is one exactly on loop0010's `e_g(r)` line (with
+`e = μ(d − 1)`: `e (1 + e/μ) = 1`), so `e_g` is the giant's onset and the
+half-giant line `θ = ½` lies above it (`half_giant_line`, bisection in a
+real `d`, the device of `threshold_d`).
+
+**(d), (e)** are the tables of §7.2–§7.3 and §7.5; the floors use the
+exact-size and old pair bounds (`cover_log_pair_bound`,
+`learning.first_moment.floors`), the closed count with the candidate tangent
+points only (valid at every `k`; optimising the tangent point per triple
+lowers the bound by up to 7.8 decades at the top of the window on the
+densest 30 × 30 instance and changes a floor on 1 of 46 `(instance, k)`
+cases checked at 30–50, so the closed floors below are valid and not
+the largest this count can give) and the exact flip count over the `k` window
+`[xpair₀.₀₁ − 4, xpair₁ + 6]` (floors in `k + 2`); a floor is the largest `k` *in the window*
+with bound below the threshold, plus 2, so every reported floor is a valid
+statement and possibly not the largest.
+
+### 7.2 The constants on the grid
+
+(`grid.csv`; `b` is the certified slope of `excess_phase_diagram.md` §2.5 —
+for the `(d, μ)` cells the `fixed` generator's, whose repairs lift the
+realised mean size above `d` at `d ≤ 3`, and for the five Chu & Stuckey
+rows the classes' own; E&M is Edwards & McDermid's Corollary 5.2 on the
+compound-Poisson degree law of the cover graph, `edwards_mcdermid_cover`;
+the gains in nats are at `β*`; the "additive estimate" is the root of
+`pair exponent − closed gain − flip gain` with both gains held at their
+`β*` values, an *estimate* and not a count — no single count realises both
+mechanisms; `θ` is §7.1 (c)'s giant fraction; the slope is
+`d/dβ` of the pair exponent at `β*`, the conversion from nats to `β`.)
+
+| cell | `β*` | `b` | E&M upper | `β_closed` (NA) | gain | `β_closed` (ind.) | `β_flip` | gain | additive estimate | slope at `β*` | closed gain (nats, ind.) | flip gain (nats) | `θ` | kill `< 0.02` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| d=2 μ=½ | 0 | 0.005 | 0.017 | 0 | — | 0 | 0 | — | 0 | — | — | — | 0.000 | — |
+| d=3 μ=½ | 0 | 0.048 | 0.190 | 0 | — | 0 | 0 | — | 0 | — | — | — | 0.756 | — |
+| d=4 μ=½ | 0.0717 | 0.151 | 0.409 | 0.0780 | +0.0064 | 0.0790 | 0.0891 | +0.0174 | 0.0950 (+0.0233) | 3.73 | 0.0212 (0.0242) | 0.0616 | 0.864 | met |
+| d=6 μ=½ | 0.2437 | 0.323 | 0.696 | 0.2613 | +0.0176 | 0.2627 | 0.2543 | +0.0106 | 0.2704 (+0.0267) | 2.83 | 0.0436 (0.0466) | 0.0293 | 0.950 | met |
+| d=8 μ=½ | 0.3977 | 0.463 | 0.831 | 0.4188 | **+0.0211** | 0.4197 | 0.4039 | +0.0062 | 0.4231 (+0.0254) | 2.54 | 0.0470 (0.0488) | 0.0155 | 0.982 | **not met** |
+| d=10 μ=½ | 0.5225 | 0.585 | 0.898 | 0.5421 | +0.0196 | 0.5427 | 0.5261 | +0.0036 | 0.5441 (+0.0215) | 2.43 | 0.0420 (0.0430) | 0.0086 | 0.993 | met |
+| d=2 μ=1 | 0 | 0.038 | 0.085 | 0 | — | 0 | 0 | — | 0 | — | — | — | 0.797 | — |
+| d=3 μ=1 | 0.1399 | 0.200 | 0.425 | 0.1467 | +0.0068 | 0.1472 | 0.1491 | +0.0092 | 0.1554 (+0.0155) | 3.61 | 0.0225 (0.0242) | 0.0321 | 0.950 | met |
+| **d=4 μ=1** | 0.2859 | 0.348 | 0.660 | 0.2969 | **+0.0110** | 0.2975 | 0.2917 | +0.0059 | 0.3020 (+0.0161) | 3.12 | 0.0312 (0.0326) | 0.0179 | 0.982 | **met** |
+| **d=6 μ=1** | 0.5132 | 0.577 | 0.861 | 0.5244 | **+0.0111** | 0.5247 | 0.5155 | +0.0023 | 0.5259 (+0.0126) | 2.82 | 0.0287 (0.0293) | 0.0063 | 0.998 | **met** |
+| d=8 μ=1 | 0.6614 | 0.706 | 0.928 | 0.6691 | +0.0077 | 0.6693 | 0.6623 | +0.0009 | 0.6696 (+0.0081) | 2.81 | 0.0201 (0.0205) | 0.0025 | 1.000 | met |
+| d=10 μ=1 | 0.7567 | 0.795 | 0.957 | 0.7614 | +0.0048 | 0.7616 | 0.7570 | +0.0004 | 0.7616 (+0.0049) | 2.91 | 0.0130 (0.0133) | 0.0010 | 1.000 | met |
+| d=2 μ=2 | 0.1206 | 0.167 | 0.285 | 0.1240 | +0.0034 | 0.1242 | 0.1264 | +0.0058 | 0.1295 (+0.0089) | 4.16 | 0.0134 (0.0141) | 0.0232 | 0.980 | met |
+| d=3 μ=2 | 0.3555 | 0.409 | 0.686 | 0.3626 | +0.0071 | 0.3628 | 0.3583 | +0.0029 | 0.3650 (+0.0096) | 3.36 | 0.0222 (0.0227) | 0.0094 | 0.998 | met |
+| d=4 μ=2 | 0.5251 | 0.568 | 0.839 | 0.5316 | +0.0065 | 0.5317 | 0.5264 | +0.0013 | 0.5326 (+0.0075) | 3.19 | 0.0194 (0.0198) | 0.0042 | 1.000 | met |
+| d=6 μ=2 | 0.7244 | 0.755 | 0.937 | 0.7278 | +0.0034 | 0.7279 | 0.7247 | +0.0003 | 0.7280 (+0.0036) | 3.25 | 0.0105 (0.0107) | 0.0010 | 1.000 | met |
+| d=8 μ=2 | 0.8247 | 0.847 | 0.967 | 0.8263 | +0.0016 | 0.8263 | 0.8248 | +0.0001 | 0.8263 (+0.0016) | 3.48 | 0.0053 (0.0054) | 0.0003 | 1.000 | met |
+| d=10 μ=2 | 0.8798 | 0.894 | 0.980 | 0.8806 | +0.0008 | 0.8806 | 0.8799 | +0.0000 | 0.8806 (+0.0008) | 3.74 | 0.0028 (0.0028) | 0.0001 | 1.000 | met |
+| CS 125×125 d=2, pooled sizes | 0.0983 | 0.146 | 0.392 | 0.1039 | +0.0056 | 0.1045 | 0.1096 | +0.0113 | 0.1147 (+0.0164) | 3.80 | 0.0194 (0.0213) | 0.0409 | 0.928 | met |
+| CS 125×125 d=4 | 0.3208 | 0.396 | 0.729 | 0.3345 | +0.0137 | 0.3352 | 0.3268 | +0.0059 | 0.3394 (+0.0186) | 2.93 | 0.0359 (0.0374) | 0.0171 | 0.985 | met |
+| CS 125×125 d=6 | 0.5300 | 0.599 | 0.880 | 0.5426 | +0.0126 | 0.5430 | 0.5324 | +0.0024 | 0.5441 (+0.0141) | 2.71 | 0.0310 (0.0317) | 0.0063 | 0.998 | met |
+| CS 125×125 d=8 | 0.6700 | 0.722 | 0.936 | 0.6784 | +0.0084 | 0.6786 | 0.6709 | +0.0009 | 0.6788 (+0.0088) | 2.73 | 0.0212 (0.0217) | 0.0025 | 1.000 | met |
+| CS 125×125 d=10 | 0.7626 | 0.804 | 0.960 | 0.7677 | +0.0051 | 0.7678 | 0.7629 | +0.0004 | 0.7678 (+0.0052) | 2.85 | 0.0136 (0.0139) | 0.0010 | 1.000 | met |
+
+What the table says:
+
+1. **The closed-pair count gains `+0.0111` at `(6, 1)` and `+0.0110` at
+   `(4, 1)`: the brief's kill is met** at both named cells, as it was on
+   `G(n, c/n)` (§6.7, `+0.0097 / +0.0082` at `c = 6 / 10`). The supremum of
+   the exponent sits at the corner (`α = ρ = (1 − β)/2`, `σ = β`) in every
+   cell (`closed_cover_rate` returns the corner to `10⁻⁷`), so the gain is
+   the coverage term alone: on covers `σ · 2 ln(1 − e^{−λ})` with
+   `λ = 3.57` at `(6, 1)` (`cover_lambda`), the probability that every
+   separator customer shares a pattern with both sides. It is 17–18% of
+   the gap to the certified slope at `μ = 1`, `d = 4–8`, 12% at `d = 10`,
+   5–15% at `μ = 2`.
+2. **The gain is a sparse-side one, largest at few, large patterns.** At
+   `μ = ½` it is `+0.018, +0.021, +0.020` at `d = 6, 8, 10` — **above the
+   `0.02` line at `(8, ½)`** and within `0.0004` of it at `(10, ½)`, 22–32% of
+   the gap to `b` — because `λ_A` is small there (`2.4–3.2` against
+   `3.6–4.7` at `μ = 1`): fewer patterns per customer make "every separator
+   customer sees both sides" a rarer event. The brief's kill names `(6, 1)`
+   and `(4, 1)`, and at those it is met; the `μ = ½` cells are recorded as
+   the place where this count is worth most, not as a reversal of the
+   verdict (the gain is `0.02` of `β` where `b − β* ≈ 0.07`).
+3. **The negative-association bound costs nothing at the exponential
+   scale**: `β_closed` from the valid NA/tangent exponent and from the
+   independent-sites approximation differ by `0.0001–0.0010` in `β`
+   (`0.0003–0.003` nats), and §7.3's finite check puts the NA bound's slack
+   at a *constant* `0.2` nats, not a rate. So the exact closed-pair rate on
+   covers is the independent-sites one to the fit's accuracy, and the
+   `G(n, c/n)` form of §6 (b) carries over with `q(a) → 1 − e^{−λ}`.
+4. **The flips are worth `0.001–0.006` in `β` at `μ ≥ 1` and `d ≥ 4`**, and
+   the mechanism is the one item 09 was told to expect: the supremum over
+   the isolated fractions `(x, y)` sits at **one side with no isolated
+   customer** (`x* = 0` or `y* = 0` in 21 of 21 cells with `β* > 0`), where
+   the swap entropy vanishes and the cost is the one-sided lower tail
+   `α ln(1 − e^{−λ′})` (`−0.0069` nats at `(6, 1)`, tilted to `−0.0063`).
+   The flip count is a *sparse*-side gain too: `+0.017` at `(4, ½)`,
+   `+0.011` at the Chu & Stuckey `d = 2` sizes, `+0.009` at `(3, 1)` —
+   where it beats the closed count — and `< 0.001` at `d ≥ 8`.
+5. **Edwards & McDermid's line is far above the truth on covers**:
+   `0.66, 0.86, 0.96` at `(4, 1), (6, 1), (10, 1)` against certified slopes
+   `0.35, 0.58, 0.80` — a degree-sequence bound sees the clique-dense
+   degrees (`Poisson(μ d) × (d − 1)`) and not the cliques. The published
+   sandwich on covers is therefore `[β_closed, E&M]` = `[0.297, 0.660]`,
+   `[0.524, 0.861]`, `[0.761, 0.957]` at `μ = 1`, `d = 4, 6, 10`, wide on
+   the upper side; the project's own `β⁺` (`excess_phase_diagram.md` §7)
+   is the tighter upper end and is not a published line.
+6. **The additive estimate** reaches `+0.023–0.027` at `μ = ½`, `d = 4–10`
+   and `+0.016` at `(4, 1)` and `(3, 1)`: if a single count realised both
+   mechanisms it would pass the `0.02` line on the sparse side at `μ ≤ 1`.
+   No such count is constructed here (a closed pair's isolated customers
+   need not swap into another *closed* pair), and the number is an
+   estimate.
+
+### 7.3 The checks: the exact alternating sum against the cancellation-free bound, and the half-giant line against the ensembles
+
+**The NA/tangent bound's slack is a constant, not a rate** (`slack.csv`;
+`log E[X₃]` exactly by the `(u, w)` sum over every admissible triple
+against `closed_cover_log_bound` with the per-triple optimisation, at
+`k = round(β* n)`, `n = 8–26` in steps of 2; fitted slopes of
+`NA − exact` in nats per customer): `−0.002` at `(6, 1)` (intercept 0.22),
+`+0.002` at `(4, 1)` (0.17), `−0.040` at `(10, 1)` (1.07, on eight finite
+points with `k` close to `n`, where the bound's candidate tangent points
+are poor; the `n ≤ 10` points have no admissible triple). The exact closed
+count sits `0.05–0.3` nats below the NA bound at every size; the pair
+count sits above the exact closed count by a growing margin
+(`+0.017, +0.026` nats per customer fitted at `(6, 1), (4, 1)`, noisy
+because `k` is rounded). The check of §7.1 (a) is on record in `check.log`:
+66 `(n, sizes, A, R, S)` cases at `n = 3–8`, `m ≤ 3`, against the
+enumeration of every cover, maximum `|log diff| = 9 × 10⁻¹⁶`; the NA bound
+above the exact probability on all of them and on 60 random cases at
+`n = 8–16` (gap `0.3–4.9` nats on single triples, which is where the
+constant comes from); 36 isolated-customer and 30 joint `(I_A, I_R, empty)`
+pmf cases in exact agreement with enumeration; `pgf(1) = 1`; `θ = 0` at
+branching factor exactly one.
+
+**The half-giant line** (`half_giant.csv`; `θ = ½` at a real size `d`, in
+excess `e = μ(d − 1)`; `e_g` is loop0010's giant-onset line, `e = 1` the
+pair count's threshold):
+
+| `μ` | `d` at `θ = ½` | `e` at `θ = ½` | `e_g(μ)` | `e = 1` at `d` |
+|---|---|---|---|---|
+| ⅛ | 5.758 | 0.595 | 0.297 | 9 |
+| ¼ | 3.413 | 0.603 | 0.390 | 5 |
+| ½ | 2.316 | 0.658 | 0.500 | 3 |
+| 1 | 1.736 | 0.736 | 0.618 | 2 |
+| 2 | 1.408 | 0.816 | 0.732 | 1.5 |
+
+The line lies between `e_g` and `1` at every `μ`, as the plan predicted
+(§0: "between `e_g(r)` and 1, inside regime II"), at `e = 0.60–0.82`, i.e.
+`0.26–0.30` above `e_g` on the sparse side and `0.18–0.40` below the pair
+threshold. For integer sizes it says: at `μ = 1` and `μ = 2` *every*
+integer `d ≥ 2` is above it (`θ(2, 1) = 0.80`, `θ(2, 2) = 0.98`), so for
+`m ≥ n` the separator count's floor would be positive on every class,
+including the `d = 2` classes where `β* = 0` at fixed size (`0.098` at the
+realised sizes); at `μ = ½` it separates `d = 2` (`θ = 0`, the branching
+factor is exactly one) from `d = 3` (`0.75`); at `μ = ¼` it passes between
+`d = 3` (`0.33`) and `d = 4` (`0.60`); at `μ = ⅛` between `d = 5` and `6`.
+
+**Against the measured largest-component fractions** (`giant.csv`, the
+`fixed` ensemble frames at `n = 50–75`, 150 instances per cell; the
+Chu & Stuckey classes from the files): the uniform model's `θ` is **below
+the measured fraction in every cell**, by `0.1–0.4` where `θ < 0.95` — the
+`fixed` generator repairs (every customer in a pattern, every pattern with
+two customers), which lifts the realised mean size to `4.95` at nominal
+`(3, ¼)` and `9.07` at `(4, ⅛)` and with it the giant (`0.65` and `0.62`
+measured against `θ(d) = 0.33, 0.23` and `θ(mean size) = 0.70, 0.66`); and
+the Chu & Stuckey generator rejects disconnected instances, so all 200
+files have `lcc = 1` against `θ = 0.81–0.94` for their `d = 2` size laws.
+So the check the item asked for cannot confirm the line on the ensembles
+on record: the measured fractions are those of repaired and
+connectivity-conditioned models, and the line is a statement about the
+i.i.d. model of `CliqueCoverMoment.lean`. What the measurements do show is
+the ordering: the one cell on record near the line, `(d, μ) = (2, ½)`
+(`e = 0.86` realised, branching factor exactly 1 at the nominal size), has
+measured fraction `0.39`, the only cell below one half, and `(3, ¼)`
+(`e = 0.96`) has `0.65` — consistent with a half-point near `e ≈ 0.6–0.9`
+on the realised scale and with nothing finer.
+
+### 7.4 The half-giant line, and the threshold proposition
+
+**Proposition 7.1 (conditional).** Fix a bounded size law `p` and `μ > 0`,
+and let `θ = θ(p, μ)` be the survival probability of §7.1 (c). *Hypothesis
+(not verified by us):* the largest component `L₁` of the MOSP graph of the
+random cover has an exponentially small lower tail — for every `u < θ`
+there is `I(u) > 0` with `P(L₁ ≤ u n) ≤ e^{−I(u) n + o(n)}`. Then, if
+`θ(p, μ) > ½`, the separator count's constant is positive:
+`lim inf P(mospValue ≥ β n) → 1` for some `β > 0`, i.e. the first-moment
+floor turns on strictly below the pair count's threshold `e = 1`.
+
+*Proof.* By L3 (b) every instance with `mospValue ≤ k + 1`, `k = βn`, has a
+set `S` of `k` customers whose removal leaves no component larger than
+`t = ⌈(n − k)/2⌉` (`E_relax`). For a fixed `S`, the patterns restricted to
+`V ∖ S` are independent and, given their restricted sizes, uniform subsets
+of the `N = n − k` remaining customers (a uniform `s`-subset of `V` meets
+`V ∖ S` in a uniform subset of its size), so `G − S` is the MOSP graph of a
+random cover on `N` customers with `μ_β = μ/(1 − β)` patterns per customer
+and the sizes thinned by `1 − β`; its survival probability `θ_β → θ` as
+`β → 0`. So `P(mospValue ≤ βn + 1) ≤ C(n, βn) · P(L₁(G − S) ≤ N/2)
+≤ exp(n [H(β) − (1 − β) I_β(½)])` by the hypothesis applied to the thinned
+cover, and for `θ > ½` the bracket is negative for all small `β > 0`
+(`H(β) → 0`, `I_β(½) → I(½) > 0`). ∎
+
+The citation status is the same as §6.4's: for `G(n, c/n)` the hypothesis is
+O'Connell's theorem; for random intersection graphs item 01 found the giant's
+*law of large numbers* (Behrisch 2007; Lagerås & Lindholm 2008) and no large
+deviation principle in any held paper, so the proposition is stated with its
+hypothesis and the line is a prediction of where the floor would turn on,
+not a theorem that it does. What is unconditional is the deterministic part
+(L3 b and the thinning), and the location of the line (§7.3).
+
+### 7.5 The finite floors on the 200 Chu & Stuckey instances
+
+(`floors_cs.csv`; per instance with its empirical pattern sizes and its
+`m`; the optima from `learning/data/excess.csv`, all 200
+`certified:refutation`; "old" is the record's single pair with
+`|R| = t − 1` (`learning.first_moment.floors`), "exact-size" the pair at
+`|R| = N − t`, "closed" the closed-pair count with the NA/tangent bound of
+§7.1 (a′), "flip" the exact weighted count of §7.1 (b); a floor is the
+largest `k` with bound below the threshold, plus 2; `< 1` is a statement
+with up to 99% failure probability and is not a floor the paper quotes.
+0.60 core-hours on 4 workers at nice 19, against 1 budgeted.)
+
+| floor | violations (`< 1`) | violations (`< 0.01`) | mean floor `< 1` / `< 0.01` | mean gap to optimum `< 1` / `< 0.01` |
+|---|---|---|---|---|
+| old single pair | 1 | 0 | 36.76 / 35.13 | 4.39 / 6.03 |
+| exact-size pair | 2 | 0 | 37.28 / 35.72 | 3.87 / 5.44 |
+| closed pair (NA) | 3 | 0 | 37.99 / 36.28 | 3.17 / 4.87 |
+| flip (weighted count) | 2 | 0 | 37.52 / 35.90 | 3.64 / 5.25 |
+
+**Zero violations at the 0.01 floor for every count, as required**; the
+stop condition of `TASK.md` did not fire. (The old and exact-size rows
+reproduce §8.4 of `excess_phase_diagram.md` to the instance.) At `< 1`
+the closed count exceeds the optimum on three instances (`Random-30-30-10-3`, `Random-40-40-8-3`, `Random-50-50-4-5`), the
+two of §8.4 and one more, which is what a 99%-failure statement is allowed
+to do and says nothing about the 0.01 floor.
+
+Against the exact-size pair floor at `< 0.01`, the **closed floor is
+higher on 97 instances, equal on 103 and lower on none** (it is never
+lower by construction: the per-triple bound is capped by the pair
+probability and the pair is one of the triples); the **flip floor is
+higher on 35, equal on 165, lower on none** (`Y ≤ X` always). Class means:
+
+| `(n, m, d)` | opt | old | exact | closed | flip | old `< 0.01` | exact `< 0.01` | closed `< 0.01` | flip `< 0.01` | log10 at the exact floor's `k`: exact / closed / flip |
+|---|---|---|---|---|---|---|---|---|---|---|
+| (30, 30, 2) | 8.6 | 5.4 | 6.2 | 6.2 | 6.2 | 4.6 | 4.8 | 4.8 | 4.8 | −2.72 / −2.79 / −2.88 |
+| (30, 30, 4) | 16.0 | 13.4 | 14.0 | 14.6 | 14.2 | 11.8 | 12.4 | 12.6 | 12.4 | −2.71 / −2.96 / −2.73 |
+| (30, 30, 6) | 21.2 | 19.0 | 19.8 | 20.2 | 19.8 | 17.8 | 18.2 | 18.6 | 18.2 | −2.77 / −2.96 / −2.77 |
+| (30, 30, 8) | 25.2 | 23.8 | 24.4 | 24.4 | 24.4 | 21.8 | 22.6 | 22.8 | 22.6 | −2.97 / −3.05 / −2.97 |
+| (30, 30, 10) | 27.0 | 26.6 | 27.0 | 26.4 | 27.0 | 24.6 | 25.6 | 25.6 | 25.6 | −2.83 / −2.85 / −2.83 |
+| (40, 40, 2) | 11.0 | 7.4 | 7.6 | 7.8 | 8.0 | 5.4 | 6.2 | 6.6 | 6.6 | −3.01 / −3.17 / −3.27 |
+| (40, 40, 4) | 20.2 | 17.0 | 17.4 | 17.8 | 17.4 | 15.0 | 15.6 | 15.8 | 15.6 | −2.66 / −3.07 / −2.71 |
+| (40, 40, 6) | 28.2 | 24.6 | 25.4 | 26.0 | 25.4 | 23.4 | 23.8 | 24.2 | 23.8 | −2.56 / −2.88 / −2.57 |
+| (40, 40, 8) | 32.6 | 30.6 | 31.2 | 31.6 | 31.2 | 29.0 | 29.6 | 29.6 | 29.6 | −2.76 / −2.93 / −2.76 |
+| (40, 40, 10) | 35.4 | 34.6 | 34.8 | 34.6 | 34.8 | 32.6 | 33.0 | 33.2 | 33.0 | −2.90 / −2.99 / −2.90 |
+| (50, 50, 2) | 13.2 | 9.4 | 9.6 | 9.6 | 9.6 | 7.4 | 7.6 | 8.2 | 8.4 | −3.36 / −3.63 / −3.71 |
+| (50, 50, 4) | 23.8 | 21.0 | 21.6 | 22.4 | 21.6 | 19.0 | 19.8 | 20.4 | 19.8 | −2.80 / −3.35 / −2.87 |
+| (50, 50, 6) | 35.2 | 31.8 | 32.2 | 32.6 | 32.2 | 30.2 | 30.4 | 30.6 | 30.4 | −2.55 / −2.99 / −2.56 |
+| (50, 50, 8) | 40.4 | 38.6 | 39.0 | 39.2 | 39.0 | 36.6 | 37.2 | 37.6 | 37.2 | −2.76 / −3.00 / −2.77 |
+| (50, 50, 10) | 44.4 | 42.6 | 43.0 | 43.0 | 43.0 | 41.4 | 41.6 | 41.6 | 41.6 | −2.49 / −2.62 / −2.49 |
+| (50, 100, 2) | 21.2 | 16.6 | 17.2 | 18.2 | 17.2 | 15.8 | 16.2 | 16.2 | 16.2 | −2.40 / −2.80 / −2.49 |
+| (50, 100, 4) | 34.6 | 31.8 | 32.2 | 33.0 | 32.2 | 30.2 | 31.0 | 31.2 | 31.0 | −2.51 / −2.82 / −2.51 |
+| (50, 100, 6) | 42.4 | 40.6 | 41.0 | 41.2 | 41.0 | 38.6 | 39.6 | 39.6 | 39.6 | −2.71 / −2.82 / −2.71 |
+| (50, 100, 8) | 46.2 | 45.0 | 45.2 | 45.4 | 45.2 | 43.0 | 43.8 | 43.8 | 43.8 | −3.12 / −3.16 / −3.12 |
+| (50, 100, 10) | 47.8 | 47.0 | 47.6 | 47.6 | 47.6 | 45.0 | 46.0 | 46.0 | 46.0 | −3.83 / −3.83 / −3.83 |
+| (75, 75, 2) | 15.8 | 10.8 | 11.8 | 12.2 | 12.2 | 9.6 | 10.2 | 10.8 | 10.8 | −3.07 / −3.56 / −3.80 |
+| (75, 75, 4) | 34.2 | 28.4 | 29.2 | 30.2 | 29.2 | 26.4 | 27.2 | 28.2 | 27.2 | −2.89 / −3.83 / −3.08 |
+| (75, 75, 6) | 50.0 | 44.4 | 45.4 | 46.4 | 45.4 | 43.2 | 43.8 | 44.4 | 43.8 | −2.45 / −3.22 / −2.48 |
+| (75, 75, 8) | 59.4 | 55.6 | 56.0 | 57.0 | 56.0 | 54.4 | 54.6 | 55.0 | 54.6 | −2.49 / −2.95 / −2.49 |
+| (75, 75, 10) | 64.8 | 61.6 | 62.0 | 62.2 | 62.0 | 59.6 | 60.4 | 61.0 | 60.4 | −2.85 / −3.11 / −2.85 |
+| (100, 50, 2) | 11.6 | 5.8 | 6.2 | 6.6 | 8.2 | 4.6 | 5.2 | 5.6 | 6.6 | −2.77 / −3.04 / −5.68 |
+| (100, 50, 4) | 26.4 | 17.0 | 17.6 | 18.8 | 19.0 | 15.4 | 16.2 | 17.2 | 17.2 | −2.54 / −3.77 / −4.01 |
+| (100, 50, 6) | 44.0 | 33.4 | 34.0 | 36.2 | 34.6 | 31.8 | 32.4 | 34.0 | 32.8 | −2.46 / −4.27 / −3.05 |
+| (100, 50, 8) | 56.2 | 47.4 | 48.2 | 50.2 | 48.2 | 45.4 | 46.2 | 48.0 | 46.4 | −2.34 / −4.14 / −2.58 |
+| (100, 50, 10) | 67.2 | 59.4 | 59.8 | 62.0 | 60.2 | 57.4 | 58.0 | 59.8 | 58.2 | −2.58 / −4.08 / −2.67 |
+| (100, 100, 2) | 20.2 | 13.0 | 13.6 | 14.2 | 14.6 | 11.8 | 12.2 | 13.0 | 13.0 | −3.13 / −3.80 / −4.31 |
+| (100, 100, 4) | 45.0 | 37.0 | 37.6 | 39.0 | 37.8 | 35.4 | 36.0 | 37.2 | 36.2 | −2.48 / −3.87 / −2.80 |
+| (100, 100, 6) | 64.6 | 58.2 | 58.8 | 60.2 | 59.0 | 57.0 | 57.2 | 58.2 | 57.2 | −2.55 / −3.66 / −2.60 |
+| (100, 100, 8) | 76.6 | 72.2 | 72.6 | 73.6 | 72.8 | 70.2 | 70.8 | 71.6 | 70.8 | −2.85 / −3.54 / −2.86 |
+| (100, 100, 10) | 84.6 | 81.0 | 81.4 | 82.0 | 81.4 | 79.4 | 79.8 | 80.2 | 79.8 | −2.74 / −3.14 / −2.74 |
+| (125, 125, 2) | 22.8 | 15.2 | 15.6 | 16.6 | 17.0 | 13.6 | 14.4 | 15.2 | 15.4 | −2.90 / −3.77 / −4.54 |
+| (125, 125, 4) | 53.0 | 44.4 | 44.8 | 46.6 | 45.2 | 42.4 | 43.2 | 44.8 | 43.6 | −2.54 / −4.30 / −3.01 |
+| (125, 125, 6) | 78.4 | 70.8 | 71.4 | 73.2 | 71.6 | 69.6 | 69.8 | 71.2 | 69.8 | −2.52 / −3.99 / −2.61 |
+| (125, 125, 8) | 93.6 | 88.4 | 88.8 | 89.8 | 89.0 | 86.8 | 87.4 | 88.0 | 87.4 | −2.38 / −3.34 / −2.40 |
+| (125, 125, 10) | 103.2 | 99.6 | 100.2 | 100.8 | 100.2 | 98.0 | 98.6 | 99.0 | 98.6 | −2.74 / −3.30 / −2.74 |
+
+In stacks: at 125 × 125 the closed floor is **1.6 stacks above the
+exact-size pair floor at `d = 4`, 1.4 at `d = 6`, 0.8 at `d = 2`, 0.6 at
+`d = 8`, 0.4 at `d = 10`** (`< 0.01`), and 1.6–1.8 on the `(100, 50)`
+classes at `d = 6–10`, where the closed count sits 1.5–1.8 decades below
+the pair count at the pair floor's `k`. The flip floor is the sparse classes' count:
+**0.8–1.4 stacks above the pair floor on the `d = 2` classes at 100–125**
+(1.2–2.9 decades below the pair count there, where a third of the
+customers are isolated on their side), and equal to it at `d ≥ 6`. The
+asymptotic picture of §7.2 is the finite one: the closed count is a
+dense-side gain of a stack or two, the flips a sparse-side one, both small
+beside the 5–8 stacks the pair floor misses at `d = 2–6`.
+
+### 7.6 Kill verdict
+
+**The brief's kill criterion is met**: the closed-pair count gains
+`+0.0111` over `β*` at `(6, 1)` and `+0.0110` at `(4, 1)`, both below
+`0.02`; with the flips added (an additive estimate, not a count) `+0.0126`
+and `+0.0161`. **The route is closed for the headline constants on covers
+as it was on `G(n, c/n)` (§6.7).** The pre-registered separate findings
+stand on their own: the half-giant line (`e = 0.60–0.82` for
+`μ = ⅛ … 2`, between `e_g` and `1`, with Proposition 7.1 conditional on an
+unverified lower-tail hypothesis), the floors (zero violations; the closed
+count is the best valid first moment on 97 of 200 instances, by 0.4–2.0
+stacks at 100–125 customers), and one cell outside the kill's scope where
+the closed count alone passes the line, `(8, ½)` at `+0.021`.
+
+### 7.7 Where the record corrects the item
+
+1. The item's inclusion–exclusion over `T ⊆ S` with the `NestedStructure`
+   machinery is not needed: the bad set splits by side into `(T_A, T_R)`,
+   the allowed-pattern count depends only on `|S ∖ T_R|` and `|S ∖ T_A|`,
+   and the sum is `(s + 1)²` explicit terms; it is done in integers, not in
+   `mpmath` — exact, and faster.
+2. The item's flip formula `E[z^I] = Σ_i (z − 1)^i C(a, i) Π_j C(a − i, s_j)/C(a, s_j)`
+   is the law of an unconditioned cover of `a` customers; given the pair is
+   empty the two sides are *not* that model (a pattern's `A`-part has the
+   size the empty event leaves it), and `I_A`, `I_R` are not independent
+   (a pattern is of one type). The joint binomial moments of §7.1 (b) are
+   what the weighted count needs, and are exact.
+3. The exact alternating sum over every admissible triple is affordable to
+   about `n = 30`, not `n = 125`; the floors use the cancellation-free
+   negative-association bound, which §7.3 shows loses a constant and not
+   a rate. The inequality it rests on (negative association of sampling
+   without replacement, closed under independent unions and nondecreasing
+   functions of disjoint coordinates) is cited, checked against the exact
+   probability on 126 cases with no violation, and is a theorem of
+   Joag-Dev & Proschan, not of this project.
+4. "The half-giant check at `n = 50–75` against the ensemble's
+   largest-component fractions" cannot confirm the line (§7.3): the
+   ensembles are repaired and the benchmark files connectivity-conditioned,
+   and `θ` describes the i.i.d. model.
+5. Two root-finding defects in the first run of the grid: a bisection on
+   `(0, 1)` returned `1.0` for the independent-sites root at `(10, 2)` and
+   for every additive estimate, because those exponents fall back to zero
+   as `β → 1`; the roots are now the first above `β*` (`_root_above`),
+   recomputed by the `grid_fix` stage from the stored expensive columns
+   (`run.log` holds both tables).
+
+### 7.8 What this does not claim
+
+* That the closed-pair or flip count moves the constant: at the named
+  cells neither does, and the one cell above `0.02` is at `μ = ½`.
+* The exact inner probability for covers: no partition sum is attempted on
+  covers, and the separator count's constant on covers is not computed;
+  Proposition 7.1 is conditional on a large-deviation hypothesis that no
+  held paper states for random intersection graphs.
+* Validity under the padded generator beyond what §10 of
+  `excess_phase_diagram.md` proved: the floors are statements in the
+  i.i.d.-pattern model with the files' sizes, as §8.4 of that report and
+  `finite_bound_cs.py` are; the certified optima were checked against
+  them, not derived from them.
+* That the additive estimate is attainable by any count.
+* That Edwards & McDermid's bound is the best published upper line on
+  covers; it is the one the owner's note names, applied to the cover
+  degree law, and it is loose there.
+* Rates fitted from `n ≤ 26` (§7.3) are fitted; the asymptotic constants
+  of §7.2 are roots of exponents computed in closed form and are not
+  fits.

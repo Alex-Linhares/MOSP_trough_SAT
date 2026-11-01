@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 6/13 SOLVED
+Current: 7/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -587,3 +587,115 @@ component law. Item 08 can state the separator inequality with
 hypothesis, and the closed-pair count's exponent; item 11's ledger gets
 the closed floor as the best count at `c = 10`. Item 12 should carry
 Edwards & McDermid as the upper line (now in `edwards_mcdermid_poisson`).
+
+---
+
+## Iteration 7 — 2026-11-01 18:01
+
+Item 07, the MOSP version: the closed-pair count, the component flips and
+the half-giant line on random clique covers, against `β*(d, μ)` and the
+certified slopes; the floors on the 200 Chu & Stuckey instances. **Done.**
+Deliverable: `reports/separator_moment.md` §7 (the three events on covers,
+the method with the exact `(u, w)` inclusion–exclusion and the
+negative-association / tangent bound, the 23-cell grid, the checks, the
+half-giant line with the conditional threshold proposition, the floors
+table, the kill verdict, corrections, non-claims);
+`learning/separator_moment.py` extended (`closed_cover_log_prob_exact`,
+`closed_cover_log_count_exact`, `closed_cover_log_prob_na`,
+`closed_cover_log_bound`, `cover_log_pair_bound`, the cover exponents
+`cover_pair_exponent*`, `closed_cover_exponent_na/ind`, `closed_cover_rate`,
+`beta_star_cover`, `beta_closed_cover`, the flips `isolated_binomial_moments`,
+`isolated_pgf`, `isolated_pmf`, `flip_joint_moments`, `flip_joint_pmf`,
+`flip_log_bound`, `flip_log_bound_fast`, `flip_cover_tail_exponent`,
+`flip_cover_exponent_na`, `beta_flip_cover`, the giant `rig_branching_factor`,
+`rig_giant`, `half_giant_line`, and `cover_degree_law`,
+`edwards_mcdermid_cover`, `_root_above`);
+`reports/scratch/separator_moment/07_cover/` (`run.py` with stages `check`,
+`slack`, `grid`, `grid_fix`, `giant`, `floors`; `check.log`, `slack.csv`,
+`grid.csv`, `giant.csv`, `half_giant.csv`, `floors_cs.csv`, `run.log`,
+the `stdout_*.log` of each stage); `tests/test_separator_moment.py` (4 new
+tests, 74 in the module).
+
+### Completed
+
+- **Kill criterion (the brief's): met.** `β_closed − β* = +0.0111` at
+  `(6, 1)` and `+0.0110` at `(4, 1)`, below `0.02` at both; the flips add
+  `+0.002` and `+0.006` (additive estimate `+0.0126`, `+0.0161`). **The
+  route is closed for the headline constants on covers**, as on
+  `G(n, c/n)` (§6.7). The supremum sits at the corner in every cell, so the
+  gain is the coverage term `2β ln(1 − e^{−λ})`, `λ = 3.57` at `(6, 1)`;
+  17–18% of the gap to the certified slope at `μ = 1`, `d = 4–8`.
+- **Separately pre-registered findings.** (i) The closed count is a
+  sparse-side gain, largest at few, large patterns: `+0.018, +0.021,
+  +0.020` at `(6, ½), (8, ½), (10, ½)` — **above `0.02` at `(8, ½)`**,
+  22–32% of the gap to `b` there — outside the kill's named cells and
+  recorded as where the count is worth most. (ii) The flips are worth
+  `0.001–0.006` in `β` at `μ ≥ 1`, `d ≥ 4`, up to `+0.017` at `(4, ½)` and
+  `+0.011` at the Chu & Stuckey `d = 2` sizes; the supremum sits at *one
+  side with no isolated customer* in 21 of 21 cells — the mechanism item
+  09 was told to expect, the one-sided lower tail (`−0.0063` nats at
+  `(6, 1)`). (iii) **The half-giant line**: `θ = ½` at `e = 0.595, 0.603,
+  0.658, 0.736, 0.816` for `μ = ⅛, ¼, ½, 1, 2`, between `e_g` and `1`
+  at every `μ`, as the plan predicted; at `μ ≥ 1` every integer `d ≥ 2` is
+  above it. Proposition 7.1 (the separator count's floor is positive above
+  the line) is proved in three lines from L3 and the thinning of patterns,
+  **conditional on an exponentially small lower tail of the giant of the
+  random intersection graph, which no held paper states** (Behrisch 2007
+  and Lagerås–Lindholm 2008 give the law of large numbers only). (iv)
+  **Floors on the 200 instances: zero violations at `< 0.01` for all four
+  counts**; the closed floor is higher than the exact-size pair floor on 97
+  instances, equal on 103, lower on none — `+1.6, +1.4, +0.8, +0.6, +0.4`
+  stacks at 125 × 125, `d = 4, 6, 2, 8, 10` — and the flip floor higher on
+  35 (the `d = 2` classes, `+0.8–1.4` stacks at 100–125), equal on 165.
+  Stop condition of TASK.md: did not fire.
+- **The negative-association bound is free at the exponential scale.** The
+  cancellation-free bound (NA of sampling without replacement, Joag-Dev &
+  Proschan 1983, plus a tangent of the concave `ln(1 − e^{−L})`) sits a
+  constant `0.2` nats above the exact `(u, w)` alternating sum
+  (fitted slope `−0.002 / +0.002` nats per customer at `(6, 1), (4, 1)`,
+  `n = 8–26`), and `β_closed` from it differs from the independent-sites
+  approximation by `≤ 0.001`: the `G(n, c/n)` closed-pair form carries
+  over to covers with `q → 1 − e^{−λ}`.
+- **Edwards & McDermid on the cover degree law is loose**: `0.66, 0.86,
+  0.96` at `(4, 1), (6, 1), (10, 1)` against `b = 0.35, 0.58, 0.80`; the
+  published sandwich on covers is wide on the upper side.
+- **Checks on record** (`check.log`): the exact closed probability against
+  the enumeration of every cover at `n = 3–8`, `m ≤ 3` (66 cases, `9 × 10⁻¹⁶`);
+  the NA bound above it on all and on 60 random cases at `n = 8–16`; the
+  isolated and joint pmfs exact against enumeration (66 cases); `pgf(1) = 1`;
+  `θ = 0` at branching factor one. The half-giant check against the
+  ensembles' largest-component fractions **cannot confirm the line**: the
+  `fixed` generator's repairs and the Chu & Stuckey connectivity rejection
+  put every measured fraction above `θ` (all 200 files have `lcc = 1`).
+- **Corrections to the item**: the inclusion–exclusion needs no
+  `NestedStructure` (the count depends on two sizes; `(s + 1)²` integer
+  terms, no `mpmath`); the item's isolated-customer pgf is the
+  unconditioned cover's and the sides given the empty event are neither
+  that model nor independent — the joint binomial moments are what the
+  weighted count needs; the exact sum over every triple reaches `n ≈ 30`,
+  not 125; two root-finding defects in the first grid run (`1.0` returned
+  where an exponent falls back to zero at `β → 1`) fixed by `_root_above`
+  and the `grid_fix` stage. Compute: 0.60 core-hours for the floors,
+  1.4 for the grid (the five pooled-size cells 0.9 of it), seconds for
+  the rest: 2.0 against 1 budgeted, the overrun in the flip roots.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,730 passed / 2 skipped / 1 xfailed in 4:25, the 4 new tests among them; pathwidth_solver 123 passed in 6:26; paper builds with no undefined references; the one-minute load was 1–8).
+
+### Blockers
+
+None. The one-minute load was below 10 throughout (the owner's
+`run_unlimited.py` was not running).
+
+### Next
+
+Item 08 (the theorems on paper): the closed-pair theorem on covers can
+state the `(u, w)` formula of §7.1 (a) as its finite form and the
+negative-association bound as a corollary with its citation; L4's first
+instance is the cover flip count of §7.1 (b) (`Z = C(I_A + I_R, I_A)`,
+every swap an exact-size empty pair), exact and checked; the threshold
+proposition for covers is §7.4 verbatim with its hypothesis. Item 09 has
+its mechanism measured on covers already (one side with no movable
+customer); item 11's ledger can take the closed and flip floors from
+`floors_cs.csv`; item 12 carries Edwards & McDermid on both the `β` figure
+(§6) and the cover grid (§7.2) and the half-giant line as the proposed
+one-line addition to `paper1/latex/figures/excess_phase_diagram.py`
+(`e = 0.736` at `r = 1`, dashed, between `e_g` and `e = 1`; not made).

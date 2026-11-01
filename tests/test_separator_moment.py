@@ -753,3 +753,139 @@ def test_edwards_mcdermid_and_the_slope_conversion():
     assert [round(edwards_mcdermid_poisson(c), 3) for c in (3, 6, 10)] == [0.183, 0.458, 0.656]
     assert exponent_slope_at(6.0, beta_star_gnp(6.0)) == pytest.approx(3.38, abs=0.02)
     assert exponent_slope_at(10.0, beta_star_gnp(10.0)) == pytest.approx(3.30, abs=0.02)
+
+
+# --- item 07: the MOSP version — random clique covers -----------------------------
+
+from fractions import Fraction
+
+from learning.separator_moment import (
+    beta_closed_cover, beta_star_cover, closed_cover_exponent_ind, closed_cover_exponent_na,
+    closed_cover_log_count_exact, closed_cover_log_prob_exact, closed_cover_log_prob_na,
+    closed_cover_rate, cover_log_pair_bound, cover_pair_exponent, cover_pair_exponent_beta,
+    edwards_mcdermid_cover, flip_cover_exponent_na, flip_joint_pmf, flip_log_bound,
+    flip_log_bound_fast, half_giant_line, isolated_pgf, isolated_pmf, rig_branching_factor,
+    rig_giant,
+)
+
+
+def all_covers(n, sizes):
+    choices = [[sum(1 << c for c in cs) for cs in combinations(range(n), s)] for s in sizes]
+    for masks in __import__("itertools").product(*choices):
+        yield masks
+
+
+def _closed_prob_enum(n, A, R, S, sizes):
+    tot = cnt = 0
+    for masks in all_covers(n, sizes):
+        cnt += 1
+        if any(m & A and m & R for m in masks):
+            continue
+        if all(any((m >> v & 1) and (m & A) for m in masks) and any((m >> v & 1) and (m & R) for m in masks)
+               for v in range(n) if S >> v & 1):
+            tot += 1
+    return Fraction(tot, cnt)
+
+
+def test_closed_cover_probability_against_enumeration_and_the_na_bound_above_it():
+    rng = random.Random(7)
+    for n in range(3, 7):
+        for m in range(1, 4):
+            sizes = [rng.randint(1, min(4, n)) for _ in range(m)]
+            a = rng.randint(1, n - 1)
+            r = rng.randint(0, n - a)
+            s = n - a - r
+            A, R = (1 << a) - 1, ((1 << r) - 1) << a
+            S = ((1 << n) - 1) & ~(A | R)
+            pe = _closed_prob_enum(n, A, R, S, sizes)
+            lp = closed_cover_log_prob_exact(n, a, r, s, sizes)
+            if pe == 0:
+                assert lp == -math.inf
+            else:
+                assert lp == pytest.approx(math.log(pe), abs=1e-9)
+            if s > 0:
+                assert closed_cover_log_prob_na(n, a, r, s, sizes) >= lp - 1e-9
+    # the NA/tangent bound never falls below the exact probability (random, larger)
+    for _ in range(10):
+        n = rng.randint(8, 14)
+        sizes = [rng.randint(2, 5) for _ in range(rng.randint(2, n))]
+        a = rng.randint(1, n - 2)
+        r = rng.randint(1, n - a - 1)
+        s = n - a - r
+        assert closed_cover_log_prob_na(n, a, r, s, sizes) >= closed_cover_log_prob_exact(n, a, r, s, sizes) - 1e-9
+
+
+def test_closed_cover_count_is_below_the_pair_count_and_the_corner_reduces_to_the_pair_exponent():
+    sizes = [3, 3, 2, 4, 3]
+    for n, k in ((9, 3), (10, 4), (11, 5)):
+        exact = closed_cover_log_count_exact(n, k, sizes)
+        assert exact <= cover_log_pair_bound(n, k, sizes) + 1e-9
+    d, mu = 6, 1.0
+    b = 0.5
+    a = (1 - b) / 2
+    from learning.first_moment import rate
+    assert cover_pair_exponent(a, a, b, mu, {d: 1}) == pytest.approx(rate(a, mu, {d: 1}), abs=1e-12)
+    assert closed_cover_exponent_na(a, a, b, mu, {d: 1}) <= cover_pair_exponent_beta(b, mu, {d: 1})
+    assert closed_cover_exponent_ind(a, a, b, mu, {d: 1}) <= closed_cover_exponent_na(a, a, b, mu, {d: 1}) + 1e-9
+    from learning.first_moment import beta_star
+    assert beta_star_cover(mu, {d: 1}) == pytest.approx(beta_star(mu, {d: 1}), abs=3e-4)
+    bc = beta_closed_cover(mu, {d: 1})
+    assert beta_star_cover(mu, {d: 1}) < bc < beta_star_cover(mu, {d: 1}) + 0.02
+    assert closed_cover_rate(bc, mu, {d: 1})[0] == pytest.approx(0.0, abs=1e-4)
+
+
+def test_isolated_and_flip_laws_against_enumeration():
+    rng = random.Random(11)
+    for n in range(2, 6):
+        for m in range(1, 4):
+            sizes = [rng.randint(1, min(4, n)) for _ in range(m)]
+            counts = [0] * (n + 1)
+            tot = 0
+            for masks in all_covers(n, sizes):
+                tot += 1
+                counts[sum(1 for v in range(n) if not any((mk >> v & 1) and popcount(mk) >= 2 for mk in masks))] += 1
+            assert isolated_pmf(n, sizes) == [Fraction(c, tot) for c in counts]
+            assert isolated_pgf(n, sizes, 1.0) == pytest.approx(1.0)
+    for n in range(3, 7):
+        for m in range(1, 4):
+            sizes = [rng.randint(1, min(4, n)) for _ in range(m)]
+            a = rng.randint(1, n - 1)
+            r = rng.randint(1, n - a)
+            A, R = (1 << a) - 1, ((1 << r) - 1) << a
+            counts = {}
+            tot = 0
+            for masks in all_covers(n, sizes):
+                tot += 1
+                if any(mk & A and mk & R for mk in masks):
+                    continue
+                iA = sum(1 for v in range(a) if not any((mk >> v & 1) and (mk & A & ~(1 << v)) for mk in masks))
+                iR = sum(1 for v in range(a, a + r) if not any((mk >> v & 1) and (mk & R & ~(1 << v)) for mk in masks))
+                counts[(iA, iR)] = counts.get((iA, iR), 0) + 1
+            pmf = flip_joint_pmf(n, a, r, sizes)
+            assert all(pmf[i][ip] == Fraction(counts.get((i, ip), 0), tot) for i in range(a + 1) for ip in range(r + 1))
+    for n, k in ((7, 2), (9, 3)):
+        sizes = [2, 3, 2, 4]
+        slow, fast = flip_log_bound(n, k, sizes), flip_log_bound_fast(n, k, sizes)
+        assert slow == pytest.approx(fast, abs=1e-9)
+        assert slow[0] <= slow[1] + 1e-12       # the weighted count never exceeds the pair count
+        assert slow[1] == pytest.approx(cover_log_pair_bound(n, k, sizes), abs=1e-9)
+    d, mu = 6, 1.0
+    b = beta_star_cover(mu, {d: 1})
+    a = (1 - b) / 2
+    v, x, y = flip_cover_exponent_na(a, a, b, mu, {d: 1}, grid=4)
+    assert -0.02 < v < 0.0 and 0 <= x <= a and 0 <= y <= a
+
+
+def test_rig_giant_and_the_half_giant_line():
+    assert rig_giant(0.5, {2: 1}) == 0.0                       # branching factor exactly 1
+    assert rig_branching_factor(0.5, {2: 1}) == pytest.approx(1.0)
+    assert rig_giant(0.25, {3: 1}) > 0 and rig_giant(1.0, {2: 1}) == pytest.approx(0.7968, abs=1e-3)
+    th = rig_giant(1.0, {6: 1})
+    assert 1 - th == pytest.approx(math.exp(-6 * (1 - (1 - th) ** 5)), abs=1e-9)
+    for mu in (0.25, 0.5, 1.0, 2.0):
+        d = half_giant_line(mu)
+        e = mu * (d - 1)
+        e_g = (math.sqrt(mu * mu + 4 * mu) - mu) / 2
+        assert e_g < e < 1.0
+        assert rig_giant(mu, {d: 1}) == pytest.approx(0.5, abs=1e-6)
+    assert 0 < edwards_mcdermid_cover(1.0, {6: 1}) < 1

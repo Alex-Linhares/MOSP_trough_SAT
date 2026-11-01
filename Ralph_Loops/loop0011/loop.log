@@ -28,3 +28,8 @@
 [2026-11-01 17:21:48] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-11-01 17:50:32] session it06: ok (exit 0, 38 tool calls)
 [2026-11-01 18:01:16] tests passed: GATE PASS
+[2026-11-01 18:01:17] committed 0f5fdee88: 06 `β_sep(c)` and `β_closed(c)`: the constants, against `β*(c)` and th
+[2026-11-01 18:01:17] === iteration 7: 07 The MOSP version: random clique covers.
+[2026-11-01 18:01:17] claude session it07 (cap 4.00 h) -> session_it07.log
+[2026-11-01 19:18:02] session it07: ok (exit 0, 69 tool calls)
+[2026-11-01 19:28:54] tests passed: GATE PASS

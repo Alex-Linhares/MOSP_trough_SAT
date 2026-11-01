@@ -1,0 +1,216 @@
+# session it07 started 2026-11-01 18:01:17
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the code this item reuses, then build the cover-side counts.
+  > $ uptime && wc -l reports/separator_moment_plan.md reports/separator_moment.md learning/separator_moment.py learning/first_moment.py reports/excess_phase_diagram.
+  > $ cat reports/separator_moment_plan.md
+  > $ sed -n 1,120p reports/separator_moment.md
+  > $ grep -n '^## \|^### ' reports/separator_moment.md | sed -n 1,200p; echo ---; grep -n '^## \|^### ' reports/excess_phase_diagram.md | head -80
+  > $ sed -n 1632,1760p reports/separator_moment.md
+  > $ grep -n '^def \|^class \|^    def ' learning/first_moment.py
+
+Still reading the code this item builds on: the cover first-moment functions, the existing cover helpers in the separator module, the excess tables and floor formats.
+  > $ sed -n 60,185p learning/first_moment.py
+  > $ grep -n '^def \|^class \|^    def ' learning/separator_moment.py
+  > $ sed -n 257,300p learning/separator_moment.py && echo ----- && sed -n 604,745p learning/separator_moment.py
+  > $ sed -n 1052,1070p learning/separator_moment.py && echo ----- && sed -n 1144,1300p learning/separator_moment.py
+  > $ sed -n 262,400p learning/first_moment.py
+  > $ sed -n 1301,1420p reports/excess_phase_diagram.md
+  > $ sed -n 4397,4475p reports/excess_phase_diagram.md && echo ----- && sed -n 27,57p reports/excess_phase_diagram.md
+  > $ cat reports/scratch/clique_cover_moment/README.md && echo ----- && grep -n '^## \|^### ' reports/scratch/clique_cover_moment/REPORT_generator.md && echo ----- &
+  > $ sed -n 580,606p reports/separator_moment.md && echo ----- && sed -n 1,60p tests/test_separator_moment.py && grep -c 'def test' tests/test_separator_moment.py
+  > $ sed -n 1,110p reports/scratch/separator_moment/06_constants/run.py
+  > $ sed -n 1376,1404p learning/separator_moment.py && grep -n 'def \|floor' reports/scratch/separator_moment/06_constants/run.py | sed -n 1,80p && date
+  > $ ls reports/ | grep -i literature; grep -rn "Edwards" reports/random_graph_pathwidth_literature_2.md 2>/dev/null | head -5; grep -rln "Edwards" reports/*.md lite
+  > $ tail -40 tests/test_separator_moment.py && echo ----- && sed -n 1,53p learning/separator_moment.py && echo ----- && tail -5 learning/separator_moment.py
+  > $ nice -n 19 python3 -c "
+import pandas as pd
+f=pd.read_csv('learning/data/excess.csv')
+g=f[(f.generator=='fixed')&(f.n>=50)&(f.n<=75)]
+print(g.groupby(['r_label'
+  > $ grep -n "e_g\|axvline\|axhline\|def \|LINE\|line" paper1/latex/figures/excess_phase_diagram.py | head -40 && echo ----- && sed -n 367,450p reports/scratch/separ
+  > $ grep -n -i "edwards" reports/random_graph_pathwidth_survey.md | head -5 && nice -n 19 python3 -c "
+import pandas as pd
+f=pd.read_csv('learning/data/excess.csv',
+  > $ sed -n 183,192p reports/random_graph_pathwidth_survey.md && grep -n "sec_closed\|lcc_cust" learning/excess.py | head -3 && python3 -c "import mpmath, scipy; pri
+  > $ cat >> learning/separator_moment.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# item 07: the MOSP version — random
+  > $ mkdir -p reports/scratch/separator_moment/07_cover && cat > /tmp/quick07.py <<'EOF'
+import math, itertools, random, time
+from fractions import Fraction
+from mat
+  > $ python3 - <<'EOF'
+src=open('learning/separator_moment.py').read()
+old='''    def bound(lA, lR):
+        if lA <= 0 or lR <= 0:
+            return math.inf
+     
+  > $ python3 - <<'EOF'
+src=open('learning/separator_moment.py').read()
+old='''    lq_pair = sum(cnt * lq_sides(n, a, r, sz) for sz, cnt in hist.items())
+    if s == 
+
+Formulas all verified against enumeration. Next I'm timing the pieces that scale (the 125-customer floor bound and the asymptotic root) before writing the run script.
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | grep -v Warning
+import time, math
+import learning.separator_moment as sm
+from learning.first_moment import chu_stuckey_sizes
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | grep -v Warning
+import time, math
+import learning.separator_moment as sm
+for d, mu in [(6,1.0),(4,1.0)]:
+    bs = sm.beta_st
+  > $ python3 - <<'EOF'
+src=open('learning/separator_moment.py').read()
+old='''def _closed_na_mgf(alpha: float, rho: float, sigma: float, thA: float, thR: float, sz: 
+  > $ cat >> learning/separator_moment.py <<'EOF'
+
+
+# the flips, asymptotically (negative association + Chernoff, valid) -----------------
+#
+# E[1[(A, R) empty] / C(I
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | grep -v Warning
+import math
+import learning.separator_moment as sm
+d=6; mu=1.0; bs=sm.beta_star_cover(mu,{d:1}); a0=(1-bs)/2
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | grep -v Warning
+import math
+import learning.separator_moment as sm
+d=6; mu=1.0; bs=sm.beta_star_cover(mu,{d:1}); a0=(1-bs)/2
+  > $ python3 - <<'EOF'
+src=open('learning/separator_moment.py').read()
+old='''    from scipy.optimize import minimize
+    best = math.inf
+    for z0 in ([-1.0, -1.0,
+
+Flip machinery works and is symmetric. Now I'm writing the tests and the run script, then launching the computations.
+  > $ uptime && cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 07: the MOSP version — random clique covers -----------------------------
+
+from fractions i
+  > $ cat > reports/scratch/separator_moment/07_cover/run.py <<'EOF'
+"""loop0011 item 07: the MOSP version — random clique covers.
+
+Stages (`--stage check|slack|grid|
+
+Checks pass with exact agreement. Launching the compute stages now: slack, grid and giant in one process, the 200-instance floors in another, four workers each.
+  > $ uptime && nohup nice -n 19 python3 reports/scratch/separator_moment/07_cover/run.py --stage slack --workers 4 > reports/scratch/separator_moment/07_cover/stdout
+  > $ nohup nice -n 19 python3 reports/scratch/separator_moment/07_cover/run.py --stage floors --workers 4 > reports/scratch/separator_moment/07_cover/stdout_floors.l
+  > $ sleep 60; cat reports/scratch/separator_moment/07_cover/stdout_slack.log | grep -v Warning | tail -40; echo ---; tail -3 reports/scratch/separator_moment/07_cov
+  > $ grep -v Warning reports/scratch/separator_moment/07_cover/stdout_floors.log | tail -60
+  > $ python3 - <<'EOF'
+p='reports/scratch/separator_moment/07_cover/run.py'
+s=open(p).read()
+old='''    opt = dict(zip(cs.instance_name, cs.optimum))'''
+new='''    o
+  > $ nohup nice -n 19 python3 reports/scratch/separator_moment/07_cover/run.py --stage floors --workers 4 > reports/scratch/separator_moment/07_cover/stdout_floors.l
+  > $ python3 - <<'EOF'
+p='reports/scratch/separator_moment/07_cover/run.py'
+s=open(p).read()
+old='''        sl = np.polyfit(xs, ys, 1)
+        sl2 = np.polyfit(xs, y
+  > $ cat > /tmp/sec7_head.md <<'EOF'
+
+---
+
+## 7. The MOSP version: random clique covers (item 07, 2026-11-01)
+
+**Question (E of the brief).** On random clique covers
+
+Both compute stages are running. Meanwhile I'm verifying a claim in my draft: whether optimising the tangent point per triple would change any floor at 30–50 customers.
+  > $ nice -n 19 timeout 900 python3 - <<'EOF' 2>&1 | grep -v Warning
+import math, time
+import learning.separator_moment as sm
+from learning.first_moment import chu_s
+  > $ grep -v Warning reports/scratch/separator_moment/07_cover/stdout_grid.log | tail -30; echo; grep -v Warning reports/scratch/separator_moment/07_cover/stdout_flo
+  > $ cat > /tmp/sec7_prop.md <<'EOF'
+
+### 7.4 The half-giant line, and the threshold proposition
+
+**Proposition 7.1 (conditional).** Fix a bounded size law `p` and `
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -qE \"^grid:|Traceback\" reports/scratch/separator_moment/07_cover/stdout_grid.log; do sleep 5; 
+  > $ until grep -qE "^grid:|Traceback" reports/scratch/separator_moment/07_cover/stdout_grid.log; do sleep 10; done; grep -v Warning reports/scratch/separator_moment
+
+The floors stage finished; the grid is still computing. Reading the floors output now.
+  > $ grep -v Warning reports/scratch/separator_moment/07_cover/stdout_floors.log | tail -55; echo; grep -v Warning reports/scratch/separator_moment/07_cover/stdout_g
+  > $ python3 - <<'EOF'
+p='reports/scratch/separator_moment/07_cover/run.py'
+s=open(p).read()
+old='''    fl = {}
+    for k in ks:
+        if k - 2 < x2 - 3 or k - 2 >
+  > $ until grep -qE "^grid:|Traceback" reports/scratch/separator_moment/07_cover/stdout_grid.log; do sleep 10; done; nohup nice -n 19 python3 reports/scratch/separat
+  > $ until grep -qE "^grid:|Traceback" reports/scratch/separator_moment/07_cover/stdout_grid.log; do sleep 10; done; grep -v Warning reports/scratch/separator_moment
+  > $ pgrep -f "07_cover/run.py --stage grid" | head; uptime; date; ls -la reports/scratch/separator_moment/07_cover/
+  > $ until grep -qE "^grid:|Traceback" reports/scratch/separator_moment/07_cover/stdout_grid.log; do sleep 10; done; grep -v Warning reports/scratch/separator_moment
+  > $ grep -v Warning reports/scratch/separator_moment/07_cover/stdout_giant.log; echo; tail -2 reports/scratch/separator_moment/07_cover/stdout_floors.log | cut -c1-
+  > $ python3 - <<'EOF'
+p='learning/separator_moment.py'; s=open(p).read()
+old='''def beta_star_cover(mu: float, sizes) -> float:'''
+new='''def _root_above(f, lo: flo
+  > $ nice -n 19 timeout 900 python3 -m pytest tests/test_separator_moment.py -q -x 2>&1 | tail -2
+  > $ python3 - <<'EOF'
+import csv, math
+rows=list(csv.DictReader(open('reports/scratch/separator_moment/07_cover/grid.csv')))
+f=lambda r,k: float(r[k])
+print("| cell
+  > $ cat > /tmp/sec7_body.md <<'EOF'
+
+### 7.2 The constants on the grid
+
+(`grid.csv`; `b` is the certified slope of `excess_phase_diagram.md` §2.5 —
+for the `(d, μ)`
+
+The floors are in with zero violations at the 0.01 threshold for all four counts. Writing the remaining report subsections and appending §7 to the report now.
+  > $ cat > /tmp/sec7_tail.md <<'EOF'
+
+### 7.5 The finite floors on the 200 Chu & Stuckey instances
+
+(`floors_cs.csv`; per instance with its empirical pattern sizes a
+  > $ python3 - <<'EOF'
+import csv
+rows=list(csv.DictReader(open('reports/scratch/separator_moment/07_cover/floors_cs.csv')))
+for key in ('old','xpair','closed','flip
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0011/gate.py > /tmp/gate07.log 2>&1; echo GATE_EXIT=$?
+  > $ grep -n "^- \[ \] \*\*07\|^- \[x\] \*\*06" Ralph_Loops/loop0011/iterations.md && sed -i 's/^- \[ \] \*\*07 The MOSP version: random clique covers\.\*\*/- [x] **
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'; s=open(p).read()
+s=s.replace("Current: 6/13 SOLVED","Current: 7/13 SOLVED",1)
+s += '''
+---
+
+## Iteration
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'; s=open(p).read()
+old="Compute: 0.60 core-hours for the floors,\n  0.53 for the grid, seconds for the res
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/d18e1e5c-be10-4026-a9cc-cded248cca2c/tasks/bz6a70vt0.output | tail -3; grep -iE "pass|fail|sorry|axiom|passed|error" /tmp
+  > $ grep -E "lake|lean|pages|undefined|paper" /tmp/gate07.log | head -6; python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'; s=open(p).read()
+s=s.replace("- Gat
+
+Item 07 is complete and the gate passed. Six items remain unchecked, so no LOOP_COMPLETE line is added.
+
+**What was done.** Item 07, the MOSP version of the separator first moment on random clique covers, is finished. Deliverables: `reports/separator_moment.md` §7, the cover functions in `learning/separator_moment.py`, four new tests, and the scratch outputs under `reports/scratch/separator_moment/07_cover/`.
+
+**Findings.**
+- **Kill criterion met.** The closed-pair count lifts the constant by +0.0111 at (6, 1) and +0.0110 at (4, 1), below the 0.02 line at both named cells. The route is closed for the headline constants on covers, as it was on G(n, c/n).
+- **Where the count is worth most.** The gain is a sparse-side one, largest at few and large patterns: +0.021 at (8, ½), above the line, and +0.018 to +0.020 at (6, ½) and (10, ½). Recorded as a separate finding outside the kill's scope.
+- **The flips** add 0.001 to 0.006 in β at μ ≥ 1, up to +0.017 at (4, ½). The supremum sits at one side with no isolated customer in every cell, the mechanism item 09 was told to expect.
+- **Half-giant line.** θ = ½ at excess 0.60 to 0.82 for μ from ⅛ to 2, between the giant-onset line and the pair threshold, as the plan predicted. The threshold proposition is proved from L3 and pattern thinning, conditional on a large-deviation hypothesis that no held paper states for random intersection graphs. The ensemble check cannot confirm the line because the generators repair and reject disconnected instances.
+- **Floors on the 200 Chu & Stuckey instances.** Zero violations at the 0.01 threshold for all four counts. The closed floor beats the exact-size pair floor on 97 instances and loses on none, by 0.4 to 1.6 stacks at 125×125. The flip floor beats it on 35, the d = 2 classes.
+- **The cancellation-free bound costs nothing.** The negative-association bound sits a constant 0.2 nats above the exact alternating sum, so the exact closed-pair rate is the independent-sites one to the fit's accuracy.
+
+**Corrections to the item** are in §7.7: the inclusion–exclusion collapses to (s+1)² integer terms with no mpmath, the item's isolated-customer generating function is the wrong conditional law, and two root-finding defects in the first grid run were fixed and the cheap columns recomputed.
+
+**Compute.** About 2.0 core-hours against 1 budgeted; the overrun is in the flip roots on the pooled-size cells. Gate: PASS, with 1,730 tests passed and zero sorry or axiom.
+
+**Next.** Item 08 can take the closed-pair formula, the negative-association corollary, the cover flip count and the conditional threshold proposition verbatim from §7; item 12 should carry Edwards & McDermid on the cover grid and the half-giant line as the proposed figure addition.
+
+# result: success in 4604s, 70 turns, cost $35.38
