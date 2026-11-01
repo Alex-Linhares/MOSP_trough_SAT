@@ -40,6 +40,9 @@ __all__ = [
     "closed_pairs_pruned", "closure_image", "move_classes", "overlap_tables",
     "second_moment_rate_gnp", "second_moment_exact_gnp", "second_moment_enum_gnp",
     "gnp_masks",
+    # item 04: the planted cluster
+    "beta_star_gnp", "plant_pair", "plant_cover", "overlap_table", "hamming_distance",
+    "lq_sides", "second_moment_exact_cover", "planted_mean_gnp", "planted_mean_cover",
 ]
 
 
@@ -557,3 +560,160 @@ def gnp_masks(n: int, p: float, seed: int) -> list[int]:
         adj[u] |= 1 << v
         adj[v] |= 1 << u
     return adj
+
+
+# --- item 04: the planted cluster ------------------------------------------------
+#
+# Condition on one exact-size empty pair `P₀ = (A, R)` and count the *other*
+# exact-size empty pairs `X′ = X − 1`. On `G(n, p)` the conditional law given
+# `P₀` empty is `G(n, p)` with the `A–R` edges deleted (`plant_pair`); in the
+# clique-cover model with i.i.d. uniform patterns it is the model with every
+# pattern drawn uniformly among those meeting at most one side (`plant_cover`).
+# By exchangeability `E[X²] = Σ_P P(P empty) · E[X | P empty] = E[X] · E[X | P₀
+# empty]`, so the planted mean is `E[X′ | P₀ empty] = E[X²] / E[X] − 1`
+# (`planted_mean_gnp`, `planted_mean_cover`): the second moment's ratio
+# `E[X²]/E[X]²` *is* the planted mean over the unconditional mean.
+
+
+def beta_star_gnp(c: float, tol: float = 1e-7) -> float:
+    """`β*(c)`: the root in `β` of `g(a) = H(a, a, 1 − 2a) − c a²`, `a = (1 − β)/2`
+    (the pair count's constant on `G(n, c/n)`; `0.1706` at `c = 6`, `0.3371` at
+    `c = 10`). Zero when `g` is non-negative just below `a = ½` (`c ≤ 4 ln 2`)."""
+    hi = 0.5 - 1e-9
+    if gnp_pair_rate(hi, c) >= 0:
+        return 0.0
+    lo = 0.01
+    while gnp_pair_rate(lo, c) <= 0:
+        lo /= 2
+        if lo < 1e-12:
+            return 1.0
+    while hi - lo > tol:
+        mid = (lo + hi) / 2
+        if gnp_pair_rate(mid, c) < 0:
+            hi = mid
+        else:
+            lo = mid
+    return 1 - 2 * hi
+
+
+def plant_pair(adj: list[int], A: int, R: int) -> list[int]:
+    """The graph with every `A–R` edge deleted: the law of `G(n, p)` conditioned
+    on `(A, R)` being an empty pair (`A`, `R` disjoint masks)."""
+    if A & R:
+        raise ValueError("A and R must be disjoint")
+    out = []
+    for v, nb in enumerate(adj):
+        if A >> v & 1:
+            out.append(nb & ~R)
+        elif R >> v & 1:
+            out.append(nb & ~A)
+        else:
+            out.append(nb)
+    return out
+
+
+def plant_cover(n: int, m: int, d: int, A: int, R: int, rng: np.random.Generator) -> np.ndarray:
+    """A `customers × patterns` 0/1 matrix with `m` patterns, each a uniform
+    `d`-subset of the `n` customers conditioned to meet at most one of `A`, `R`
+    (rejection sampling): the clique-cover model given `(A, R)` empty."""
+    if A & R:
+        raise ValueError("A and R must be disjoint")
+    M = np.zeros((n, m), dtype=np.int8)
+    j = 0
+    while j < m:
+        rows = rng.choice(n, d, replace=False)
+        mask = sum(1 << int(c) for c in rows)
+        if mask & A and mask & R:
+            continue
+        M[rows, j] = 1
+        j += 1
+    return M
+
+
+def overlap_table(P: tuple[int, int], Q: tuple[int, int], n: int) -> list[int]:
+    """The `3 × 3` overlap table of two pairs, `(|A ∩ A′|, |A ∩ R′|, |A ∩ S′|,
+    |R ∩ A′|, |R ∩ R′|, |R ∩ S′|, |S ∩ A′|, |S ∩ R′|, |S ∩ S′|)`; sums to `n`."""
+    full = (1 << n) - 1
+    A, R = P
+    A2, R2 = Q
+    cls = (A, R, full & ~(A | R))
+    cls2 = (A2, R2, full & ~(A2 | R2))
+    return [popcount(x & y) for x in cls for y in cls2]
+
+
+def hamming_distance(P: tuple[int, int], Q: tuple[int, int], n: int) -> int:
+    """The number of vertices whose class (`A`, `R` or `S`) differs between the
+    two pairs: `n − |A ∩ A′| − |R ∩ R′| − |S ∩ S′|`."""
+    full = (1 << n) - 1
+    A, R = P
+    A2, R2 = Q
+    S, S2 = full & ~(A | R), full & ~(A2 | R2)
+    return n - popcount(A & A2) - popcount(R & R2) - popcount(S & S2)
+
+
+def lq_sides(n: int, t: int, r: int, s: int) -> float:
+    """`log P(a uniform s-subset of n meets at most one of two disjoint sets of
+    sizes t and r)` = `log [(C(n−t, s) + C(n−r, s) − C(n−t−r, s)) / C(n, s)]`
+    (the general-`r` form of `learning.first_moment.lq`, which has `r = t − 1`)."""
+    from learning.first_moment import lchoose
+    terms = [lchoose(n - t, s), lchoose(n - r, s)]
+    neg = lchoose(n - t - r, s)
+    m = max(terms)
+    if m == -math.inf:
+        return -math.inf
+    val = math.exp(terms[0] - m) + math.exp(terms[1] - m) - (math.exp(neg - m) if neg > -math.inf else 0.0)
+    if val <= 0:
+        return -math.inf
+    return m + math.log(val) - lchoose(n, s)
+
+
+def second_moment_exact_cover(n: int, t: int, r: int, sizes) -> tuple[float, float, float]:
+    """`(log E[X], log E[X²], E[X²] / E[X]²)` for `X` the number of ordered empty
+    pairs `(A, R)`, `|A| = t`, `|R| = r`, in the cover model with the given
+    pattern sizes (a list or `{size: count}`), exactly, by the sum over the
+    `3 × 3` overlap table. The general-`r` form of
+    `learning.first_moment.second_moment_exact` (`r = t − 1` there)."""
+    from math import lgamma
+    from learning.first_moment import _histogram, _lchoose_table, _pair_square_structure, lchoose
+    hist = _histogram(sizes)
+    st = _pair_square_structure()
+    o = n - t - r
+    if o < 0:
+        return math.inf, math.inf, math.nan
+    logEX = lchoose(n, t) + lchoose(n - t, r) + sum(cnt * lq_sides(n, t, r, s) for s, cnt in hist.items())
+    tabs = []
+    for aa in range(t + 1):
+        for ar in range(t - aa + 1):
+            ao = t - aa - ar
+            for ra in range(min(r, t - aa) + 1):
+                for rr in range(min(r - ra, r - ar) + 1):
+                    ro = r - ra - rr
+                    oa = t - aa - ra
+                    orr = r - ar - rr
+                    oo = o - oa - orr
+                    if oo < 0:
+                        continue
+                    tabs.append((aa, ar, ao, ra, rr, ro, oa, orr, oo))
+    tabs = np.array(tabs, dtype=int)
+    logmult = lgamma(n + 1) - np.vectorize(lgamma)(tabs + 1).sum(axis=1)
+    logp = np.zeros(len(tabs))
+    for s, cnt in hist.items():
+        lch = _lchoose_table(n, s)
+        logp += cnt * st.log_avoid(tabs.astype(float), n, s, lch)
+    terms = logmult + logp
+    mx = terms.max()
+    logEX2 = float(mx + math.log(np.exp(terms - mx).sum()))
+    return logEX, logEX2, math.exp(logEX2 - 2 * logEX)
+
+
+def planted_mean_gnp(n: int, t: int, r: int, p: float) -> float:
+    """`E[X′ | P₀ empty] = E[X²] / E[X] − 1` on `G(n, p)`: the expected number of
+    *other* exact-size empty pairs given one planted pair."""
+    logEX, logEX2, _ = second_moment_exact_gnp(n, t, r, p)
+    return math.exp(logEX2 - logEX) - 1
+
+
+def planted_mean_cover(n: int, t: int, r: int, sizes) -> float:
+    """`E[X′ | P₀ empty] = E[X²] / E[X] − 1` in the cover model."""
+    logEX, logEX2, _ = second_moment_exact_cover(n, t, r, sizes)
+    return math.exp(logEX2 - logEX) - 1

@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-01 15:46:32",
+  "updated": "2026-11-01 16:29:37",
   "phase": "tests",
-  "started": "2026-11-01 13:52:56",
-  "item": "03 The clumping decomposed: pairs, separators, closed pairs and move-classes on instances "
+  "started": "2026-11-01 15:57:20",
+  "item": "04 The planted cluster: typical, or a rare-instance artefact of `E[X\u00b2]`?"
 }

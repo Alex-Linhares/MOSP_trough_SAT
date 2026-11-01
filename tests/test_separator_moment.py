@@ -327,3 +327,172 @@ def test_overlap_tables_shape_and_margins():
     assert T.shape == (len(pairs) * (len(pairs) - 1), 9)
     assert np.all(T[:, :3].sum(axis=1) == t) and np.all(T[:, 3:6].sum(axis=1) == N - t)
     assert np.all(T[:, [0, 3, 6]].sum(axis=1) == t) and np.all(T.sum(axis=1) == 10)
+
+
+# --- item 04: the planted cluster --------------------------------------------------
+
+from learning.separator_moment import (  # noqa: E402
+    beta_star_gnp, enumerate_empty_pairs, hamming_distance, lq_sides, overlap_table, plant_cover,
+    plant_pair, planted_mean_gnp, second_moment_exact_cover, second_moment_exact_gnp,
+)
+
+
+def test_beta_star_gnp_reproduces_the_record():
+    # reports/random_graph_first_moment.md §3: 0.1706 at c = 6, 0.3371 at c = 10; zero at c ≤ 4 ln 2
+    assert abs(beta_star_gnp(6) - 0.1706) < 2e-4
+    assert abs(beta_star_gnp(10) - 0.3371) < 2e-4
+    assert beta_star_gnp(2.5) == 0.0
+
+
+@pytest.mark.parametrize("n,p,seed", [(12, 0.4, 1), (16, 0.3, 2), (20, 0.5, 3)])
+def test_planting_deletes_exactly_the_forbidden_edges(n, p, seed):
+    rng = random.Random(seed)
+    adj = [0] * n
+    for u, v in combinations(range(n), 2):
+        if rng.random() < p:
+            adj[u] |= 1 << v
+            adj[v] |= 1 << u
+    t, r = n // 3, n // 4
+    A = (1 << t) - 1
+    R = ((1 << r) - 1) << t
+    planted = plant_pair(adj, A, R)
+    for u in range(n):
+        for v in range(n):
+            before = adj[u] >> v & 1
+            after = planted[u] >> v & 1
+            crossing = (A >> u & 1 and R >> v & 1) or (R >> u & 1 and A >> v & 1)
+            assert after == (0 if crossing else before)
+    assert is_empty_pair(planted, A, R)
+    # symmetric
+    for u in range(n):
+        for v in range(n):
+            assert (planted[u] >> v & 1) == (planted[v] >> u & 1)
+
+
+def test_planting_is_idempotent_and_rejects_overlap():
+    adj = [0b0110, 0b1001, 0b1001, 0b0110]
+    assert plant_pair(plant_pair(adj, 1, 2), 1, 2) == plant_pair(adj, 1, 2)
+    with pytest.raises(ValueError):
+        plant_pair(adj, 0b11, 0b10)
+
+
+def test_plant_cover_meets_at_most_one_side_and_has_the_right_shape():
+    n, m, d = 14, 20, 4
+    A, R = 0b1111, 0b1110000
+    M = plant_cover(n, m, d, A, R, np.random.default_rng(5))
+    assert M.shape == (n, m)
+    assert (M.sum(axis=0) == d).all()
+    for j in range(m):
+        mask = sum(1 << int(c) for c in np.flatnonzero(M[:, j]))
+        assert not (mask & A and mask & R)
+    assert not pattern_meets_both(M, A, R)
+    assert is_empty_pair(mosp_masks(M), A, R)
+
+
+def test_overlap_table_sums_to_n_and_matches_hamming():
+    n = 10
+    P = (0b0000001111, 0b0001110000)
+    Q = (0b0000011100, 0b1100000000)
+    T = overlap_table(P, Q, n)
+    assert sum(T) == n
+    assert len(T) == 9
+    # rows A, R, S of P; columns A′, R′, S′ of Q
+    assert T[0] == popcount(P[0] & Q[0]) and T[4] == popcount(P[1] & Q[1])
+    assert hamming_distance(P, Q, n) == n - T[0] - T[4] - T[8]
+    assert hamming_distance(P, P, n) == 0
+    # the reverse of an equal-sized pair differs on every side vertex
+    P2 = (0b00001111, 0b11110000)
+    assert hamming_distance(P2, (P2[1], P2[0]), 8) == 8
+
+
+def test_overlap_table_agrees_with_overlap_tables():
+    from learning.separator_moment import overlap_tables
+    n = 9
+    pairs = [(0b000000111, 0b000111000), (0b000001011, 0b110000000), (0b100000011, 0b000011100)]
+    T = overlap_tables(pairs, n)
+    k = 0
+    for i, P in enumerate(pairs):
+        for j, Q in enumerate(pairs):
+            if i == j:
+                continue
+            assert list(T[k]) == overlap_table(P, Q, n)
+            k += 1
+
+
+def test_lq_sides_reduces_to_lq_and_to_counting():
+    from learning.first_moment import lq
+    for n, t, s in [(12, 4, 3), (20, 7, 6), (15, 5, 2)]:
+        assert abs(lq_sides(n, t, t - 1, s) - lq(n, t, s)) < 1e-12
+    # by counting: 8 vertices, A = 3, R = 2, patterns of size 2 — the crossing pairs are 6 of 28
+    assert abs(math.exp(lq_sides(8, 3, 2, 2)) - 22 / 28) < 1e-12
+
+
+def test_second_moment_exact_cover_reduces_to_the_recorded_form():
+    from learning.first_moment import second_moment_exact
+    for n, t, sizes in [(12, 4, {3: 12}), (14, 5, {6: 14}), (16, 6, {4: 10, 6: 6})]:
+        a = second_moment_exact(n, t, sizes)
+        b = second_moment_exact_cover(n, t, t - 1, sizes)
+        assert abs(a[0] - b[0]) < 1e-9 and abs(a[1] - b[1]) < 1e-9
+
+
+def test_planted_mean_is_the_mean_of_the_other_pairs_on_gnp():
+    # E[X′ | P₀ empty] = E[X²]/E[X] − 1, checked against a simulation of the planted law at n = 9
+    n, k, p = 9, 3, 0.45
+    N, t = forced_sizes(n, k)
+    r = N - t
+    A = (1 << t) - 1
+    R = ((1 << r) - 1) << t
+    rng = random.Random(11)
+    reps = 1500
+    tot = 0
+    for _ in range(reps):
+        adj = [0] * n
+        for u, v in combinations(range(n), 2):
+            if rng.random() < p:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+        pairs = enumerate_empty_pairs(plant_pair(adj, A, R), k)
+        assert (A, R) in pairs
+        tot += len(pairs) - 1
+    pred = planted_mean_gnp(n, t, r, p)
+    sim = tot / reps
+    assert abs(sim - pred) < 0.12 * pred + 0.3, (sim, pred)
+
+
+def test_planted_mean_identity_against_the_enumerated_second_moment():
+    # E[X²] = E[X] (1 + E[X′ | planted]) with both sides from the finite forms
+    for n, t, r, p in [(8, 3, 2, 0.3), (10, 4, 3, 0.5)]:
+        logEX, logEX2, _ = second_moment_exact_gnp(n, t, r, p)
+        assert abs(math.exp(logEX2 - logEX) - 1 - planted_mean_gnp(n, t, r, p)) < 1e-9
+
+
+def test_planted_inverse_mean_is_the_union_bound_slack():
+    # Σ_P 1[P empty] / X = 1[X > 0], and by exchangeability E[Σ_P 1[P empty] f(X)] = E[X] · E[f(X) | P₀ empty],
+    # so P(X > 0) / E[X] = E[1/X | P₀ empty]; checked exactly on every labelled graph at n = 6, k = 2
+    n, k, p = 6, 2, 0.35
+    N, t = forced_sizes(n, k)
+    r = N - t
+    A = (1 << t) - 1
+    R = ((1 << r) - 1) << t
+    edges = list(combinations(range(n), 2))
+    forbidden = {e for e in edges if (A >> e[0] & 1 and R >> e[1] & 1) or (R >> e[0] & 1 and A >> e[1] & 1)}
+    EX = Ppos = 0.0
+    planted = 0.0
+    for mask in range(1 << len(edges)):
+        adj = [0] * n
+        w = 1.0
+        crosses = False
+        for i, (u, v) in enumerate(edges):
+            if mask >> i & 1:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+                w *= p
+                crosses |= (u, v) in forbidden
+            else:
+                w *= 1 - p
+        X = count_exact_pairs(adj, k)
+        EX += w * X
+        Ppos += w * (X > 0)
+        if not crosses:
+            planted += w / (1 - p) ** len(forbidden) / X    # the conditional weight; X ≥ 1 here
+    assert abs(Ppos / EX - planted) < 1e-12

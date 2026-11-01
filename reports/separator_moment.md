@@ -943,3 +943,401 @@ measurement cannot be replaced by typical instances.
   cell (`n = 20`, `c = 10`, 20 graphs) is the picture at other `c` or
   sizes. The `pw + 2` rows are at a fixed offset from the pathwidth, not
   at a fixed `β`, and their slopes are not rates of anything.
+
+
+---
+
+## 4. The planted cluster: typical, or a rare-instance artefact of `E[X²]`? (item 04, 2026-11-01)
+
+**Question.** Given one exact-size empty pair, how many *other* exact-size
+empty pairs does the instance typically have, how far away are they, and
+by what mechanism? §8.5 (a) of `reports/excess_phase_diagram.md` found
+`E[X²]/E[X]² = e^{0.23 n}` at `(6, 1)`, `β*`, and §3 of this report found
+that typical instances at their own pathwidth carry no such cluster. The
+planted model is the large-deviation regime itself: `E[X²]/E[X]²` is the
+mean of `X` under the law `P(· | P₀ empty)`, over the unconditional mean.
+If the *median* of `X′ = X − 1` under that law grows at the mean's rate,
+the cluster is typical and a representative that merges it gains the
+whole exponent; if the median grows far slower, the second moment is
+carried by rare planted instances.
+
+**What the planted measure is, and is not.** `P(· | P₀ empty)` weights an
+instance by the number of its empty pairs: an instance with `X` pairs is
+drawn with probability proportional to `X`. Nothing here is a value of
+`P(X > 0)` or of `P(pw ≤ k)`; the planted measure is the *right* measure
+for the cluster question precisely because it is tilted by `X`. No
+pathwidth is computed: the planted pair makes `X ≥ 1` by construction and
+the pathwidth of a planted instance is irrelevant to the question.
+
+**Two identities, used throughout** (both from exchangeability of the
+vertex labels, which `G(n, p)` and the uniform-pattern cover model have;
+both checked exactly against enumeration in `tests/test_separator_moment.py`):
+
+1. `E[X² ] = Σ_P P(P empty) · E[X | P empty] = E[X] · E[X | P₀ empty]`, so
+   **`E[X′ | P₀ empty] = E[X²]/E[X] − 1`** — the planted mean is the
+   second-moment ratio times the unconditional mean, computed exactly at
+   the cell's `(n, t, r)` by the `3 × 3` overlap sum (`planted_mean_gnp`,
+   `planted_mean_cover`; `second_moment_exact_cover` is the general-`r`
+   form of `second_moment_exact`, pinned to it at `r = t − 1`). Checked
+   against a simulation of the planted law at `n = 9`
+   (`test_planted_mean_is_the_mean_of_the_other_pairs_on_gnp`).
+2. `Σ_P 1[P empty] / X = 1[X > 0]`, so **`P(X > 0) / E[X] = E[1/X | P₀
+   empty]`** — the whole slack of the union bound at a cell is the mean of
+   `1/X` under the planted law, a bounded statistic that 200 planted
+   instances estimate with a standard error of `0.01–0.03`, where the mean
+   of `X` itself is dominated by the tail. Checked on every labelled graph
+   at `n = 6` (`test_planted_inverse_mean_is_the_union_bound_slack`).
+
+**The events counted.** On `G(n, c/n)`: delete every `A–R` edge of a
+fresh graph for a fixed `A` (`|A| = t`) and `R` (`|R| = r = N − t`), which
+is exactly the conditional law. On covers at `(6, 1)`: `m = n` patterns,
+each a uniform 6-set conditioned to meet at most one side (rejection
+sampling; acceptance 0.28–0.43), which is exactly the conditional law
+of the i.i.d.-pattern model of `CliqueCoverMoment.lean` (not the
+ensemble's `fixed` generator, which repairs empty rows). `X` is the number
+of ordered exact-size empty pairs (item 03's enumerator); `X′ = X − 1`;
+for every other pair its `3 × 3` overlap table with `P₀` (`overlap_table`),
+its Hamming distance `d = n − |A ∩ A′| − |R ∩ R′| − |S ∩ S′|` from `P₀`,
+and the same distance from the *reversed* planted pair `(R, A)`, which is
+itself an exact-size empty pair whenever `N` is even (`has_reverse`) and
+sits at distance `N`; "far" means `d > 0.2 n`. `X₂`, `X₃`, `X₃′`, `X₄` and
+the move-class of `P₀` as in §3.
+
+### 4.1 Instances
+
+| model | cells | per cell | instances | `k` |
+|---|---|---|---|---|
+| planted `G(n, c/n)` | `n ∈ {16, 20, 24, 28, 32}` × `c ∈ {6, 10}` × `β ∈ {β*(c), β*(c) + 0.1}` | 200 | 4,000 | `round(β n)`; `β*(6) = 0.1706`, `β*(10) = 0.3371` (`beta_star_gnp`, the root of `H(a, a, 1 − 2a) − c a²`) |
+| planted covers `(6, 1)` | `n ∈ {16, 20, 24, 28}` × `β ∈ {β*, β* + 0.1}` | 200 | 1,600 | `β*(6, 1) = 0.5132` (`beta_star`) |
+
+Seeds `crc32("sep04:{source}:{n}:{c}:{β label}:{i}")`; the planted sides are
+the first `t` and the next `r` vertices. The realised `β = k/n` is in the
+table below (rounding moves it by up to `0.03`); every prediction uses the
+realised `(n, t, r)`. The whole run is **305 s on 8 workers at nice 19**
+(0.6 core-hours against 3 budgeted); 7 instances of the 5,600 are censored
+(more than 2 million pairs, `G(32, 6/32)` at `β* + 0.1`) and enter the
+medians as "above the cap", the means without them (which biases those two
+means down), and `E[1/X]` as zero.
+
+### 4.2 The table: median against mean against prediction
+
+Per cell; `gm` is the geometric mean over `X′ > 0`; `E[X′ | planted]` is
+identity 1 at the realised sizes; the last column is the asymptotic
+exponent `sup − g(a)` of `second_moment_rate_gnp` / `second_moment_rate`
+at `a = (1 − β)/2`, for reference only. (`cells.csv`.)
+
+| model | `β` | `n` | `k` | `N`, `t`, `r` | `X′ = 0` | median `X′` | p90 | max | gm (`X′ > 0`) | mean ± se | `E[X′ ∣ planted]` | top 10% share of `ΣX′` | `log med / n` | `log mean / n` | `log E / n` | asymptotic `sup − g` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | `β*` | 16 | 3 | 13, 7, 6 | 30% | 2 | 29.1 | 486 | 5.72 | 12.37 ± 2.79 | 16.49 | 0.64 | 0.043 | 0.157 | 0.175 | 0.396 |
+| `G(n, 6/n)` | `β*` | 20 | 3 | 17, 9, 8 | 18% | 3 | 62.1 | 1493 | 8.99 | 42.32 ± 10.84 | 29.7 | 0.79 | 0.055 | 0.187 | 0.170 | 0.338 |
+| `G(n, 6/n)` | `β*` | 24 | 4 | 20, 10, 10 | 0% | 19 | 316.2 | 3173 | 15.96 | 126.69 ± 24.48 | 168 | 0.75 | 0.123 | 0.202 | 0.213 | 0.364 |
+| `G(n, 6/n)` | `β*` | 28 | 5 | 23, 12, 11 | 4% | 39 | 988.9 | 17712 | 54.93 | 639.75 ± 152.57 | 928.54 | 0.84 | 0.131 | 0.231 | 0.244 | 0.382 |
+| `G(n, 6/n)` | `β*` | 32 | 5 | 27, 14, 13 | 7% | 64 | 737.4 | 120314 | 70.02 | 1478.51 ± 655.35 | 1538 | 0.94 | 0.130 | 0.228 | 0.229 | 0.348 |
+| `G(n, 6/n)` | `β* + 0.1` | 16 | 4 | 12, 6, 6 | 0% | 13 | 87 | 3813 | 10.26 | 64.35 ± 20.48 | 50.5 | 0.76 | 0.160 | 0.260 | 0.245 | 0.490 |
+| `G(n, 6/n)` | `β* + 0.1` | 20 | 5 | 15, 8, 7 | 3% | 35 | 371.9 | 6800 | 38.86 | 179.81 ± 39.34 | 291.83 | 0.67 | 0.178 | 0.260 | 0.284 | 0.490 |
+| `G(n, 6/n)` | `β* + 0.1` | 24 | 6 | 18, 9, 9 | 0% | 146 | 3561.8 | 25899 | 161.14 | 1442.13 ± 268.8 | 1791.02 | 0.74 | 0.208 | 0.303 | 0.312 | 0.490 |
+| `G(n, 6/n)` | `β* + 0.1` | 28 | 8 | 20, 10, 10 | 0% | 3219 | 38406.6 | 739273 | 2518.27 | 21400 ± 4951.56 | 35937.9 | 0.72 | 0.288 | 0.356 | 0.375 | 0.537 |
+| `G(n, 6/n)` | `β* + 0.1` | 32 | 9 | 23, 12, 11 | 0% | 11067 | 161619 | 1.65489e+06 | 10440.4 | 78278.7 ± 14632.4 (7 censored) | 230946 | 0.67 | 0.291 | 0.352 | 0.386 | 0.531 |
+| `G(n, 10/n)` | `β*` | 16 | 5 | 11, 6, 5 | 74% | 0 | 2 | 11 | 2.11 | 0.83 ± 0.15 | 0.7 | 0.78 | −∞ | -0.012 | -0.022 | 0.273 |
+| `G(n, 10/n)` | `β*` | 20 | 7 | 13, 7, 6 | 53% | 0 | 10 | 38 | 3.22 | 3.02 ± 0.46 | 4.23 | 0.66 | −∞ | 0.055 | 0.072 | 0.315 |
+| `G(n, 10/n)` | `β*` | 24 | 8 | 16, 8, 8 | 0% | 1 | 33 | 251 | 2.83 | 11.58 ± 1.99 | 11.56 | 0.64 | 0.000 | 0.102 | 0.102 | 0.296 |
+| `G(n, 10/n)` | `β*` | 28 | 9 | 19, 10, 9 | 36% | 1 | 43.2 | 6724 | 7.31 | 58.92 ± 34.32 | 22.61 | 0.92 | 0.000 | 0.146 | 0.111 | 0.283 |
+| `G(n, 10/n)` | `β*` | 32 | 11 | 21, 11, 10 | 14% | 5.5 | 127.4 | 1104 | 11.29 | 47.09 ± 8.47 | 112.05 | 0.68 | 0.053 | 0.120 | 0.147 | 0.308 |
+| `G(n, 10/n)` | `β* + 0.1` | 16 | 7 | 9, 5, 4 | 45% | 1 | 9.1 | 113 | 3.13 | 4.12 ± 0.86 | 3.54 | 0.69 | 0.000 | 0.089 | 0.079 | 0.431 |
+| `G(n, 10/n)` | `β* + 0.1` | 20 | 9 | 11, 6, 5 | 14% | 8 | 62 | 367 | 10.85 | 23.34 ± 3.09 | 25.37 | 0.52 | 0.104 | 0.158 | 0.162 | 0.448 |
+| `G(n, 10/n)` | `β* + 0.1` | 24 | 10 | 14, 7, 7 | 0% | 14 | 125.6 | 2813 | 11.28 | 78.05 ± 19.98 | 59.84 | 0.79 | 0.110 | 0.182 | 0.171 | 0.403 |
+| `G(n, 10/n)` | `β* + 0.1` | 28 | 12 | 16, 8, 8 | 0% | 58 | 707.8 | 11727 | 52.12 | 396.66 ± 91.84 | 377.72 | 0.76 | 0.145 | 0.214 | 0.212 | 0.419 |
+| `G(n, 10/n)` | `β* + 0.1` | 32 | 14 | 18, 9, 9 | 0% | 227 | 3220.4 | 69365 | 190.47 | 1792.35 ± 462.26 | 2534.07 | 0.78 | 0.170 | 0.234 | 0.245 | 0.431 |
+| cover `(6, 1)` | `β*` | 16 | 8 | 8, 4, 4 | 0% | 1 | 9 | 29 | 1.4 | 2.39 ± 0.28 | 3.03 | 0.48 | 0.000 | 0.054 | 0.069 | 0.223 |
+| cover `(6, 1)` | `β*` | 20 | 10 | 10, 5, 5 | 0% | 1 | 11 | 111 | 1.68 | 4.41 ± 0.79 | 5.61 | 0.59 | 0.000 | 0.074 | 0.086 | 0.223 |
+| cover `(6, 1)` | `β*` | 24 | 12 | 12, 6, 6 | 0% | 1 | 15 | 167 | 2.75 | 10.66 ± 1.87 | 10.79 | 0.65 | 0.000 | 0.099 | 0.099 | 0.223 |
+| cover `(6, 1)` | `β*` | 28 | 14 | 14, 7, 7 | 0% | 1 | 44.4 | 911 | 4.15 | 22.92 ± 5.76 | 21.4 | 0.73 | 0.000 | 0.112 | 0.109 | 0.223 |
+| cover `(6, 1)` | `β* + 0.1` | 16 | 10 | 6, 3, 3 | 0% | 1 | 19 | 39 | 2.75 | 5.69 ± 0.53 | 6.26 | 0.41 | 0.000 | 0.109 | 0.115 | 0.322 |
+| cover `(6, 1)` | `β* + 0.1` | 20 | 12 | 8, 4, 4 | 0% | 3 | 29 | 251 | 4.11 | 12.4 ± 2.04 | 12.72 | 0.55 | 0.055 | 0.126 | 0.127 | 0.298 |
+| cover `(6, 1)` | `β* + 0.1` | 24 | 15 | 9, 5, 4 | 8% | 20 | 154.2 | 1538 | 21.84 | 63.45 ± 11.47 | 62.97 | 0.61 | 0.125 | 0.173 | 0.173 | 0.322 |
+| cover `(6, 1)` | `β* + 0.1` | 28 | 17 | 11, 6, 5 | 4% | 28.5 | 206.9 | 3498 | 28.42 | 110.01 ± 22.61 | 124.86 | 0.65 | 0.120 | 0.168 | 0.172 | 0.304 |
+
+What the table says:
+
+- **The formula and the enumerator agree where the tail is sampled.** In
+  20 of the 26 uncensored cells the sample mean of `X′` is within two
+  standard errors of `E[X²]/E[X] − 1`; the six exceptions are *all below*
+  the prediction (`z = −2.3` to `−7.7`), the largest at `G(32, 10/32)`,
+  `β*` (47 ± 8 against 112), and the censored cell is below it by its
+  censoring. A sample mean under a heavy tail is biased down when the
+  instances that carry the mean are rarer than one in 200, and these
+  cells are where the top 10% carry 68–94% of the sum. The identity is
+  checked exactly at small `n` in the tests; here the agreement in 20
+  cells and the sign of every disagreement are what the enumerator and
+  the formula could show.
+- **The mean is carried by the tail.** The top 10% of instances carry
+  48–94% of `ΣX′` at `β*` (42–79% at `β* + 0.1`); at `G(32, 6/32)`, `β*`,
+  the median is 64 against a mean of 1,479 and a maximum of 120,314. The
+  planted mean is not what a planted instance looks like.
+- **At `β*` the median planted instance has a small cluster.** `G(n, 6/n)`:
+  median `X′` = 2, 3, 19, 39, 64 at `n = 16 … 32`; `G(n, 10/n)`: 0, 0, 1, 1,
+  5.5 (the "1" is the reversed pair where `N` is even); covers `(6, 1)`:
+  **`X′ = 1` at every size, the reversed pair and nothing else** (`N` is
+  even in all four cells), with `X′ ≥ 2` on 16, 21, 36 and 47% of the
+  instances at `n = 16, 20, 24, 28` — growing with `n`, but not yet the
+  median — and `X′ = 1` on the rest. At `β* + 0.1` the counts are large everywhere (median
+  11,067 at `G(32, 6/32)`), but there `E[X] = e^{g n}` with `g > 0` and the
+  other pairs are the instance's own population, not a cluster of `P₀`
+  (§4.4).
+- **Finite sizes.** The exact planted mean's exponent at `n = 32` is
+  `0.23` (`c = 6`), `0.15` (`c = 10`), `0.11` (covers, `n = 28`) against
+  asymptotic `0.35, 0.31, 0.22`: at these `n` nothing is near its limit,
+  and the asymptotic `0.23` of §8.5 (a) is at `n = ∞`; the finite exact
+  value is what the medians are compared with.
+
+### 4.3 Growth in `n`, and the fork
+
+OLS slopes in `n` (nats per vertex, fitted over five sizes for the cell
+statistics and over 645–987 instances for the per-instance one; `slopes.csv`):
+
+| model | `β` | sizes | slope `log(median X′)` | slope `log E[X′]` | slope `log(mean X′)` | per-instance slope `log X′` (`X′ > 0`) | at the largest `n`: `log med / n` | `log E / n` | ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| cover `(6, 1)` | `β*` | 16–28 | 0.000 ± 0.000 | 0.163 ± 0.003 | 0.192 ± 0.009 | 0.094 ± 0.010 | 0.000 | 0.109 | **0.00** |
+| cover `(6, 1)` | `β* + 0.1` | 16–28 | 0.299 ± 0.051 | 0.265 ± 0.032 | 0.263 ± 0.035 | 0.216 ± 0.012 | 0.120 | 0.172 | **0.69** |
+| `G(n, 6/n)` | `β*` | 16–32 | 0.237 ± 0.033 | 0.313 ± 0.034 | 0.307 ± 0.015 | 0.172 ± 0.012 | 0.130 | 0.229 | **0.57** |
+| `G(n, 6/n)` | `β* + 0.1` | 16–32 | 0.450 ± 0.050 | 0.542 ± 0.031 | 0.475 ± 0.039 | 0.450 ± 0.012 | 0.291 | 0.386 | **0.75** |
+| `G(n, 10/n)` | `β*` | 16–32 | 0.213 ± 0.123 | 0.296 ± 0.027 | 0.276 ± 0.045 | 0.116 ± 0.013 | 0.053 | 0.147 | **0.36** |
+| `G(n, 10/n)` | `β* + 0.1` | 16–32 | 0.321 ± 0.029 | 0.396 ± 0.026 | 0.375 ± 0.010 | 0.249 ± 0.012 | 0.170 | 0.245 | **0.69** |
+
+**The fork, by the item's letter** (`log(median X′)/n` against `log
+E[X′ | planted]/n` at the largest `n`): ratio **0.57** at `G(32, 6/32)`,
+`β*` (within a factor 2 — "typical"); **0.36** at `G(32, 10/32)`, `β*`
+(between a quarter and a half — "both"); **0 on covers at `β*`** (the
+median has no pair beyond the reverse at any size — "artefact"); 0.69–0.75
+at `β* + 0.1` ("typical", but see §4.4: there the pairs are not a cluster
+of `P₀`). The growth rates say the same with less noise: at `β*` the
+median grows at `0.24 ± 0.03` (`c = 6`) against the mean's `0.31 ± 0.03`,
+and the per-instance geometric mean at `0.17 ± 0.01` (`c = 6`) and `0.12 ±
+0.01` (`c = 10`) against `0.31` and `0.30`; on covers the median does not
+grow at all (`0.00`) against `0.16`. So at `β*`: **the cluster exists on
+the typical planted instance and grows exponentially on `G(n, c/n)` at
+roughly half the mean's rate, and does not grow at all on the `(6, 1)`
+covers, where §8.5's `e^{0.23 n}` lives.** The second moment at `(6, 1)`
+is a rare-instance artefact; on `G(n, c/n)` it is half typical and half
+tail, and the "in between" branch of the fork applies.
+
+### 4.4 Where the other pairs are: two lobes, and an empty middle
+
+![Hamming distance of the other exact-size empty pairs from the planted pair, per cell at the largest n](scratch/separator_moment/04_planted/distance_hist.png)
+
+*Distance from the planted pair in units of `n`, pooled over the 200
+planted instances of each cell at the largest `n` (`distance_hist.csv`);
+the solid line is the far/near cut at `0.2 n`, the dashed line the
+position of the reversed pair, `N/n`.*
+
+At `β*` the histogram is **bimodal with an empty middle**: one lobe at
+`d ≈ 0.1–0.4 n` (perturbations of `P₀`), one at `d ≈ N/n ± 0.15` (perturbations
+of the reversed pair), and almost nothing at `d ≈ 0.5–0.6 n` on `G(32, 6/32)`
+(5,000 of 295,701 pairs at `d = 17–19`, 1.7%) and nothing at all on covers
+(none at `d = 10–11`, four of 4,584 at `d = 9–12`). At `β* + 0.1` on `G(n, c/n)` the middle
+fills and the distribution is broad and unimodal around `0.55–0.6 n`:
+the other pairs are then the instance's whole pair population. The shares
+(pooled over pairs; `cells.csv`):
+
+| model | `β` | `n` | share far (`d > 0.2 n`) | within `0.05 n` of `P₀` / of `P₀` or its reverse | `0.1 n` | `0.2 n` | `0.3 n` | per-instance median share within `0.2 n` of `P₀` or reverse | far pairs with `∣A′ ∩ R∣ ≥ ∣A′ ∩ A∣` | median move-class of `P₀` (max) | `X/X₄` |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | `β*` | 16 | 0.77 | 0.000 / 0.000 | 0.000 / 0.033 | 0.234 / 0.434 | 0.390 / 0.675 | 0.79 | 0.53 | 1 (356) | 1.81 |
+| `G(n, 6/n)` | `β*` | 24 | 0.87 | 0.000 / 0.008 | 0.039 / 0.086 | 0.134 / 0.276 | 0.295 / 0.598 | 0.86 | 0.59 | 2 (1423) | 3.50 |
+| `G(n, 6/n)` | `β*` | 28 | 0.90 | 0.000 / 0.001 | 0.012 / 0.020 | 0.102 / 0.183 | 0.296 / 0.548 | 0.63 | 0.54 | 9 (10680) | 4.79 |
+| `G(n, 6/n)` | `β*` | 32 | 0.90 | 0.000 / 0.001 | 0.011 / 0.019 | 0.098 / 0.176 | 0.289 / 0.507 | 0.88 | 0.50 | 8 (71548) | 5.17 |
+| `G(n, 6/n)` | `β* + 0.1` | 16 | 0.93 | 0.000 / 0.015 | 0.000 / 0.015 | 0.073 / 0.162 | 0.137 / 0.290 | 0.55 | 0.60 | 1 (3810) | 2.76 |
+| `G(n, 6/n)` | `β* + 0.1` | 24 | 0.97 | 0.000 / 0.001 | 0.006 / 0.013 | 0.034 / 0.068 | 0.160 / 0.322 | 0.24 | 0.54 | 37.5 (25712) | 7.38 |
+| `G(n, 6/n)` | `β* + 0.1` | 28 | 0.99 | 0.000 / 0.000 | 0.001 / 0.002 | 0.012 / 0.024 | 0.082 / 0.163 | 0.07 | 0.54 | 1151 (243332) | 16.44 |
+| `G(n, 6/n)` | `β* + 0.1` | 32 | 0.99 | 0.000 / 0.000 | 0.001 / 0.001 | 0.012 / 0.023 | 0.062 / 0.122 | 0.08 | 0.51 | 4196 (267543) | 20.38 |
+| `G(n, 10/n)` | `β*` | 16 | 0.43 | 0.000 / 0.000 | 0.000 / 0.066 | 0.572 / 0.958 | 0.602 / 1.000 | 1.00 | 0.93 | 1 (7) | 1.15 |
+| `G(n, 10/n)` | `β*` | 24 | 0.68 | 0.000 / 0.086 | 0.160 / 0.406 | 0.320 / 0.726 | 0.421 / 0.929 | 1.00 | 0.80 | 1 (125) | 1.66 |
+| `G(n, 10/n)` | `β*` | 28 | 0.84 | 0.000 / 0.004 | 0.046 / 0.074 | 0.156 / 0.289 | 0.357 / 0.711 | 1.00 | 0.60 | 1 (2759) | 1.87 |
+| `G(n, 10/n)` | `β*` | 32 | 0.64 | 0.000 / 0.004 | 0.102 / 0.175 | 0.361 / 0.672 | 0.493 / 0.903 | 1.00 | 0.72 | 1 (654) | 2.19 |
+| `G(n, 10/n)` | `β* + 0.1` | 16 | 0.73 | 0.000 / 0.000 | 0.000 / 0.028 | 0.267 / 0.481 | 0.445 / 0.766 | 1.00 | 0.55 | 1 (96) | 1.36 |
+| `G(n, 10/n)` | `β* + 0.1` | 24 | 0.89 | 0.000 / 0.013 | 0.039 / 0.091 | 0.112 / 0.237 | 0.262 / 0.537 | 0.78 | 0.57 | 1 (1407) | 2.37 |
+| `G(n, 10/n)` | `β* + 0.1` | 28 | 0.90 | 0.000 / 0.003 | 0.016 / 0.034 | 0.095 / 0.193 | 0.278 / 0.558 | 0.46 | 0.57 | 9 (5652) | 3.54 |
+| `G(n, 10/n)` | `β* + 0.1` | 32 | 0.94 | 0.000 / 0.001 | 0.006 / 0.013 | 0.059 / 0.119 | 0.159 / 0.319 | 0.34 | 0.55 | 19 (67758) | 4.05 |
+| cover `(6, 1)` | `β*` | 16 | 0.74 | 0.000 / 0.418 | 0.000 / 0.418 | 0.264 / 0.946 | 0.291 / 1.000 | 1.00 | 0.96 | 1 (15) | 1.28 |
+| cover `(6, 1)` | `β*` | 28 | 0.63 | 0.000 / 0.044 | 0.158 / 0.359 | 0.370 / 0.784 | 0.478 / 1.000 | 1.00 | 0.83 | 1 (456) | 2.92 |
+| cover `(6, 1)` | `β* + 0.1` | 16 | 0.71 | 0.000 / 0.176 | 0.000 / 0.176 | 0.292 / 0.759 | 0.390 / 0.951 | 1.00 | 0.84 | 1 (20) | 1.98 |
+| cover `(6, 1)` | `β* + 0.1` | 28 | 0.77 | 0.000 / 0.002 | 0.060 / 0.082 | 0.227 / 0.328 | 0.567 / 0.810 | 0.70 | 0.42 | 7.5 (2898) | 5.90 |
+
+Three readings. (i) **Few other pairs are small perturbations of `P₀`
+alone**: within `0.05 n` of `P₀` or its reverse sit 0–4% of the other
+pairs at the largest `n` (the single-swap neighbours are a negligible
+share); within `0.1 n` of `P₀` itself, 1% (`c = 6`), 10% (`c = 10`) and 16%
+(covers); within `0.1 n` of `P₀` *or its reverse*, 2%, 18% and 36%. Within
+`0.3 n` of either, 51% (`c = 6`), 90% (`c = 10`) and 99.96% (covers). (ii) **The per-instance
+median is tighter than the pool**: on the median planted instance at
+`β*`, 88% (`c = 6`), 100% (`c = 10`, covers) of the other pairs sit within
+`0.2 n` of `P₀` or its reverse, against 18%, 67%, 78% pooled — the far pairs
+belong to the rare instances with large `X′`, which is the tail of §4.2
+again. (iii) **The reversed pair is half the cluster.** At `c = 6` the far
+pairs split evenly between the two orientations (50–59% have `|A′ ∩ R| ≥
+|A′ ∩ A|` over the five sizes); at `c = 10` and on covers the reversed
+lobe dominates (72%, 83% at the largest `n`). The move-class of `P₀`
+(single swaps) holds 8–9 pairs at the median on `G(n, 6/n)`, `β*`, at
+`n = 28–32` (1–2 below; max 71,548), and 1 — `P₀` alone — at `c = 10` and
+on covers; `X/X₄` is 1.2–5.2 at `β*` and up to 20 at `β* + 0.1`.
+
+The far and near pairs have different mean overlap tables
+(`overlap_far_near.csv`, `n = 32`, `c = 6`, `β*`, in units of `n`): near
+pairs keep `A ∩ A′ = 0.39`, `R ∩ R′ = 0.36`, `S ∩ S′ = 0.095` with
+`A ∩ R′ = R ∩ A′ = 0.02` (`P₀` with a few swaps); far pairs average `A ∩ A′
+= A ∩ R′ = R ∩ A′ = 0.19` — the average of the two lobes, not a table any
+pair has. At `c = 10` the far table is the reversed pair's (`A ∩ R′ = R ∩
+A′ = 0.21`, `A ∩ A′ = 0.08`), which is §8.5 (a)'s extremal table with
+`S ∩ S′ = 0.25` of `|S| = 0.34 n`.
+
+### 4.5 The mechanism
+
+For every far pair, the vertices of `S` that joined a side (`S ∩ (A′ ∪
+R′)`), their degree into the planted sides `A ∪ R`, and how many of those
+neighbours were *evicted* into `S′` (a side neighbour of a vertex now in
+`A′` must be in `A′` or in `S′`); against the degree law of all `S`
+vertices (`mechanism.csv`, `mechanism_summary.csv`; the mechanism is
+sampled at 200,000 far pairs per instance where there are more):
+
+| model | `β` | `n` | moved `S` vertices (far pairs) | their planted-side degree: mean | share `≤ 1` | all `S` vertices: mean | share `≤ 1` | evicted neighbours: mean | share 0 | share `≤ 1` |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | `β*` | 16 | 3,141 | 2.87 | 0.23 | 4.95 | 0.017 | 0.80 | 0.42 | 0.80 |
+| `G(n, 6/n)` | `β*` | 32 | 864,223 | 2.67 | 0.24 | 5.11 | 0.028 | 0.64 | 0.51 | 0.87 |
+| `G(n, 6/n)` | `β* + 0.1` | 16 | 24,378 | 2.21 | 0.35 | 4.53 | 0.028 | 0.83 | 0.38 | 0.82 |
+| `G(n, 6/n)` | `β* + 0.1` | 32 | 38,802,029 | 3.07 | 0.14 | 4.29 | 0.056 | 1.11 | 0.30 | 0.69 |
+| `G(n, 10/n)` | `β*` | 16 | 65 | 3.79 | 0.00 | 6.83 | 0.000 | 0.69 | 0.42 | 0.89 |
+| `G(n, 10/n)` | `β*` | 32 | 17,567 | 4.45 | 0.02 | 6.59 | 0.004 | 1.35 | 0.18 | 0.60 |
+| `G(n, 10/n)` | `β* + 0.1` | 16 | 1,136 | 3.18 | 0.09 | 5.58 | 0.003 | 1.29 | 0.17 | 0.64 |
+| `G(n, 10/n)` | `β* + 0.1` | 32 | 1,697,525 | 3.80 | 0.03 | 5.68 | 0.009 | 1.91 | 0.10 | 0.38 |
+| cover `(6, 1)` | `β*` | 28 | 5,636 | 5.10 | 0.00 | 9.09 | 0.000 | 1.27 | 0.21 | 0.64 |
+| cover `(6, 1)` | `β* + 0.1` | 28 | 58,721 | 4.25 | 0.04 | 6.72 | 0.004 | 2.08 | 0.07 | 0.33 |
+
+**The hypothesis holds in direction and not in its strong form.** The
+separator vertices that recombine into a side have about half the
+planted-side degree of a typical `S` vertex (2.7 against 5.1 at `c = 6`,
+4.4 against 6.6 at `c = 10`, 5.1 against 9.1 on covers at `β*`), but they
+are not degree-zero vertices: at the largest sizes 0–1% have no side
+neighbour (14% at `G(16, 6/16)`) and 0.1–24% at most one. What is small is the number they *evict*: at `β*` the
+moved vertex evicts no neighbour in 18–51% of cases and at most one in
+60–87%, with a mean of 0.6–1.4 — the rest of its side neighbours are on
+its own new side. So the recombination is "a low-degree separator vertex
+whose side neighbours mostly lie on one side joins that side, pushing
+one or two of its other-side neighbours into the separator", and on the
+reversed lobe the same with the sides exchanged.
+
+### 4.6 The union bound's slack, measured directly
+
+By identity 2, `P(X > 0)/E[X] = E[1/X | P₀ empty]`, and the planted sample
+gives it with a standard error of `0.01–0.03` (`cells.csv`,
+`inv_X_mean`). The conversion to `β` uses the pair exponent's slope at
+`β*`: `3.38` per unit of `β` at `c = 6`, `3.30` at `c = 10`, `2.82` on
+`(6, 1)` covers (computed here by central differences of
+`gnp_pair_rate` / `rate`; the header's `3.3–3.4` for `c = 6–10`).
+
+| model | `β` | `n` | `E_planted[1/X]` ± se | `−log E_planted[1/X]` (nats) | per vertex | in `β` | `log E[X′ ∣ planted] / n` |
+|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | `β*` | 16 | 0.453 ± 0.027 | 0.79 | 0.050 | 0.015 | 0.175 |
+| `G(n, 6/n)` | `β*` | 20 | 0.337 ± 0.025 | 1.09 | 0.054 | 0.016 | 0.170 |
+| `G(n, 6/n)` | `β*` | 24 | 0.155 ± 0.013 | 1.86 | 0.078 | 0.023 | 0.213 |
+| `G(n, 6/n)` | `β*` | 28 | 0.116 ± 0.016 | 2.15 | 0.077 | 0.023 | 0.244 |
+| `G(n, 6/n)` | `β*` | 32 | 0.124 ± 0.018 | 2.08 | 0.065 | 0.019 | 0.229 |
+| `G(n, 6/n)` | `β* + 0.1` | 16 | 0.183 ± 0.014 | 1.70 | 0.106 | 0.031 | 0.245 |
+| `G(n, 6/n)` | `β* + 0.1` | 20 | 0.105 ± 0.014 | 2.25 | 0.113 | 0.033 | 0.284 |
+| `G(n, 6/n)` | `β* + 0.1` | 24 | 0.043 ± 0.007 | 3.14 | 0.131 | 0.039 | 0.312 |
+| `G(n, 6/n)` | `β* + 0.1` | 28 | 0.004 ± 0.001 | 5.41 | 0.193 | 0.057 | 0.375 |
+| `G(n, 6/n)` | `β* + 0.1` | 32 | 0.003 ± 0.001 | 5.95 | 0.186 | 0.055 | 0.386 |
+| `G(n, 10/n)` | `β*` | 16 | 0.835 ± 0.021 | 0.18 | 0.011 | 0.003 | -0.022 |
+| `G(n, 10/n)` | `β*` | 20 | 0.667 ± 0.027 | 0.41 | 0.020 | 0.006 | 0.072 |
+| `G(n, 10/n)` | `β*` | 24 | 0.344 ± 0.014 | 1.07 | 0.044 | 0.013 | 0.102 |
+| `G(n, 10/n)` | `β*` | 28 | 0.499 ± 0.029 | 0.70 | 0.025 | 0.008 | 0.111 |
+| `G(n, 10/n)` | `β*` | 32 | 0.291 ± 0.024 | 1.23 | 0.039 | 0.012 | 0.147 |
+| `G(n, 10/n)` | `β* + 0.1` | 16 | 0.613 ± 0.027 | 0.49 | 0.031 | 0.009 | 0.079 |
+| `G(n, 10/n)` | `β* + 0.1` | 20 | 0.260 ± 0.023 | 1.35 | 0.067 | 0.020 | 0.162 |
+| `G(n, 10/n)` | `β* + 0.1` | 24 | 0.176 ± 0.014 | 1.74 | 0.072 | 0.022 | 0.171 |
+| `G(n, 10/n)` | `β* + 0.1` | 28 | 0.081 ± 0.010 | 2.51 | 0.090 | 0.027 | 0.212 |
+| `G(n, 10/n)` | `β* + 0.1` | 32 | 0.039 ± 0.007 | 3.25 | 0.102 | 0.031 | 0.245 |
+| cover `(6, 1)` | `β*` | 16 | 0.439 ± 0.010 | 0.82 | 0.051 | 0.018 | 0.069 |
+| cover `(6, 1)` | `β*` | 20 | 0.416 ± 0.012 | 0.88 | 0.044 | 0.016 | 0.086 |
+| cover `(6, 1)` | `β*` | 24 | 0.348 ± 0.015 | 1.06 | 0.044 | 0.016 | 0.099 |
+| cover `(6, 1)` | `β*` | 28 | 0.298 ± 0.016 | 1.21 | 0.043 | 0.015 | 0.109 |
+| cover `(6, 1)` | `β* + 0.1` | 16 | 0.323 ± 0.014 | 1.13 | 0.071 | 0.025 | 0.115 |
+| cover `(6, 1)` | `β* + 0.1` | 20 | 0.274 ± 0.015 | 1.29 | 0.065 | 0.023 | 0.127 |
+| cover `(6, 1)` | `β* + 0.1` | 24 | 0.172 ± 0.020 | 1.76 | 0.073 | 0.026 | 0.173 |
+| cover `(6, 1)` | `β* + 0.1` | 28 | 0.117 ± 0.015 | 2.15 | 0.077 | 0.027 | 0.172 |
+
+At `β*` and the largest sizes the union bound is loose by **0.065 nats
+per vertex at `c = 6`, 0.039 at `c = 10`, 0.043 on `(6, 1)` covers** —
+**0.019, 0.012 and 0.015 in `β`** — against planted-mean exponents of
+0.23, 0.15 and 0.11 that the second-moment ratio would suggest. The
+total slack in nats (`−log E[1/X]`) is 0.8, 1.1, 1.9, 2.2, 2.1 at `n = 16
+… 32` on `G(n, 6/n)` and 0.8, 0.9, 1.1, 1.2 on covers at `n = 16 … 28`:
+growing slowly and sub-linearly at these sizes, so the per-vertex figures
+above are upper estimates of the rate and the limit is not determined by
+this instrument. The rows at `β* + 0.1` are not a gain in the constant:
+there `E[X] = e^{g n}` with `g > 0` and `E[X]/P(X > 0) ≥ E[X]`.
+
+This is the number items 09, 11 and 12 need, and it is small: the *entire*
+union-bound slack at these cells, if the per-vertex figure held
+asymptotically, is `0.012–0.019` in `β`, below the brief's kill of `0.02`
+for any single representative count and consistent with §3's prediction
+(`≤ 0.003` for the separator and closure) plus the reversed lobe (a factor
+2 where `N` is even) plus the component flips. The ideal weighted count
+`Y = Σ_P 1[P empty]/X` is exactly `1[X > 0]`, so no choice of `Z ≤ X` in
+item 09 can gain more than this at the same `(n, k)`.
+
+### 4.7 Kill verdict (the fork), and what it sends on
+
+**Stated as a fork, decided per model.** On `G(n, c/n)` at `β*` the
+ratio is 0.57 (`c = 6`) and 0.36 (`c = 10`): the letter says "typical" at
+`c = 6` and "in between" at `c = 10`; the growth rates (median at about
+half the mean's rate; per-instance geometric mean at 0.4–0.55 of it) put
+both in the item's middle branch, and **both are written up with the
+numbers**. On `(6, 1)` covers at `β*` the median `X′` is 1 — the reversed
+pair — at every size and the ratio is 0: **the `e^{0.23 n}` of §8.5 (a)
+is a rare-instance artefact of `E[X²]` on the cell it was computed for**,
+and the closed-pair count is near-tight for `P(X > 0)` there in the sense
+of identity 2: the union bound's measured slack is `0.04` nats per vertex
+(`0.015` in `β`).
+
+For **item 09**: the weighted count's gain is bounded by §4.6 at these
+sizes (`0.012–0.019` in `β` at `β*`), and the planted lower tail is
+dominated by instances with `X ≤ 2` (the pair and its reverse) on covers
+(53–84% of planted instances at `n = 28 … 16`) and by `X ≤ 65` on
+`G(32, 6/32)`: item 09 is
+reduced to the paragraph the fork prescribes, with the Laplace-transform
+computation optional. For **item 12**: say that `P(X > 0)` is within
+`e^{0.04–0.07 n}` of `E[X]` at `n ≤ 32` (measured, by identity 2), that the
+remaining gap to the fitted slopes (`0.08–0.10` in `β` on `G(n, c/n)`,
+`0.06` on `(6, 1)`) is therefore mostly the **necessary condition** — empty
+pairs exist on instances whose pathwidth is larger — and not the union
+bound; and that the cluster around a planted pair is two lobes (the pair
+and its reverse, each with its single-swap perturbations) with an empty
+middle at `β*`.
+
+### 4.8 Regenerate, size range, what this does not claim
+
+* **Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/04_planted/run.py --workers 8`
+  (stages `run`, `stats`, `draw`; 305 + 1 + 1 s; `--probe` times the
+  largest cells on three instances each); `python3 -m pytest
+  tests/test_separator_moment.py` (50 tests, 14 new: planting deletes
+  exactly the forbidden edges and is symmetric and idempotent; the planted
+  cover meets at most one side per pattern; the overlap table sums to `n`,
+  agrees with `overlap_tables` and with the Hamming distance; `lq_sides`
+  against `lq` and against counting; `second_moment_exact_cover` against
+  `second_moment_exact` at `r = t − 1`; identity 1 against simulation and
+  against the finite forms; identity 2 on every labelled graph at `n = 6`;
+  `beta_star_gnp` against the record).
+* **Size range.** `n = 16–32` planted `G(n, c/n)` at `c = 6, 10`; `n =
+  16–28` planted `(6, 1)` covers; `β ∈ {β*, β* + 0.1}` rounded to integer
+  `k`; 200 instances per cell.
+* **Does not claim.** A value of `P(X > 0)` or `P(pw ≤ k)`: the planted
+  law weights instances by `X`. Anything asymptotic: the fork is decided
+  at `n ≤ 32` with the growth in `n` beside it, the per-vertex slack of
+  §4.6 is sub-linear in `n` over the range and is an upper estimate of its
+  rate, and the exact planted mean at `n = 32` is itself a third below its
+  limit. That the mechanism of §4.5 is the only one: it is the dominant
+  one on far pairs at these sizes. That `β_sep` or `β_closed` fail item
+  06's kill — §4.6 makes that likelier than §3 did, and item 06 decides
+  it. That the `0.23` of §8.5 (a) is wrong: it is the planted mean's
+  asymptotic exponent and this item measured its finite form exactly
+  (identity 1) and found it correct; what is withdrawn is the reading that
+  it is the typical cluster.

@@ -1,0 +1,225 @@
+# session it04 started 2026-11-01 15:57:20
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 4 of loop0011, doing item 04 (the planted cluster). I'll read the plan, the report so far, and the code I'm extending, then run the planted experiment.
+  > $ uptime && cat reports/separator_moment_plan.md | head -200
+  > $ sed -n 200,400p reports/separator_moment_plan.md
+  > $ wc -l reports/separator_moment.md learning/separator_moment.py tests/test_separator_moment.py && grep -n '^#' reports/separator_moment.md
+  > $ sed -n 1,52p reports/separator_moment.md && sed -n 672,945p reports/separator_moment.md
+  > $ cat learning/separator_moment.py
+  > $ cat reports/scratch/separator_moment/03_clumping/run.py
+
+Still reading item 03's artefacts; next I'll pull the cover-side machinery and the earlier second-moment code, then write the planted experiment.
+  > $ grep -n "^def \|^class \|^    def " learning/first_moment.py | head -80 && sed -n '/^def beta_star/,/^def /p' learning/first_moment.py | head -60
+  > $ sed -n 60,110p learning/first_moment.py && sed -n '/^def second_moment_exact/,/^def empty_pair_count_brute/p' learning/first_moment.py
+  > $ grep -n "0.23\|8.5\|second_moment" reports/excess_phase_diagram.md | head -40
+  > $ awk '/^## 8\./,/^## 9\./' reports/excess_phase_diagram.md | grep -n "8.5\|clump\|0.23\|E\[X²\]\|planted\|extremal" | head -40
+  > $ awk '/^## 8\./,/^## 9\./' reports/excess_phase_diagram.md | sed -n 262,345p
+  > $ sed -n '/^def lchoose/,/^def floors/p' learning/first_moment.py && sed -n '/^def _pair_square_structure/,/^def second_moment_exact/p' learning/first_moment.py &
+  > $ sed -n '/^def _lchoose_table/,/^def nested_log_bound/p' learning/first_moment.py && grep -n "def generate\|class Cell\|def parse\|fixed\|choice\|rng" learning/e
+  > $ sed -n 1,40p learning/ensemble.py && sed -n 150,165p learning/ensemble.py && grep -n "def generate_structured_instance" -A 30 benchmarks/generator.py | head -50
+  > $ sed -n 1,40p tests/test_separator_moment.py && grep -n "^def test" tests/test_separator_moment.py | tail -8 && cat Ralph_Loops/loop0011/gate.py | head -60
+  > $ cat >> learning/separator_moment.py <<'EOF'
+
+
+# --- item 04: the planted cluster ------------------------------------------------
+#
+# Condition on one exact-siz
+
+The library functions reproduce the recorded constants. Now, in parallel: load the dataviz skill for the figure, and write the run script with a timing probe for the largest cell.
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/7bece8c4ce854180e74c29481a10bc00/dataviz && grep -n "categorical\|#2a78d6\|#eb6834\|#1baf7a\|surface\|light" referenc
+  > $ mkdir -p reports/scratch/separator_moment/04_planted && cat > reports/scratch/separator_moment/04_planted/run.py <<'EOF'
+"""loop0011 item 04: the planted cluste
+
+The probe is fast (worst 15 s per instance at `n = 32`, `c = 6`; milliseconds on covers), so the full 5,600-instance run fits in well under an hour. Launching it, and writing the tests while it runs.
+  > $ rm -f probe.csv && nice -n 19 python3 run.py --workers 8 > run_stdout.log 2>&1; tail -5 run_stdout.log
+  > $ cd /home/al/dev/MOSP && cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 04: the planted cluster --------------------------------------------------
+
+f
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted && tail -3 run_stdout.log; wc -l planted.csv; uptime
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n +1 -f /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted/run_stdout.log | grep -E --line
+  > $ cd /home/al/dev/MOSP && nice -n 19 python3 - <<'EOF'
+import sys, math
+sys.path.insert(0, "reports/scratch/separator_moment/04_planted")
+from run import cells, C
+
+Run is at 100 of 5,600 after a minute, hardest cells first. I'm waiting on the monitor events; the predictions table above is in hand for the report.
+  > $ sleep 240; tail -2 /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted/run_stdout.log; uptime
+  > Monitor {"command": "until grep -qE \"stage run|Traceback\" /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted/run_st
+
+Nothing else can proceed until the run writes its CSVs; the stats, figure and report section all depend on them. Waiting on the monitor.
+
+# result: success in 450s, 29 turns, cost $4.80
+
+Still running (200 of 5,600 at 96 s; the slow `c = 6`, `n = 32` cells go first). Waiting for the completion event.
+
+# result: success in 2s, 1 turns, cost $4.86
+
+Progressing (300 at 99 s). Waiting for the run-complete event.
+
+# result: success in 2s, 1 turns, cost $4.91
+
+Waiting; the `c = 10` cells are fast.
+
+# result: success in 1s, 1 turns, cost $4.96
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.01
+
+Waiting; the slow cell is nearly through.
+
+# result: success in 2s, 1 turns, cost $5.06
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.11
+
+Waiting; `n = 32` is done and the remaining cells are faster.
+
+# result: success in 2s, 1 turns, cost $5.16
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.21
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.26
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.31
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.36
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.41
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.46
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.51
+
+Waiting; the rest are small cells.
+
+# result: success in 2s, 1 turns, cost $5.56
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.61
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.66
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.71
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.76
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.82
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $5.87
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $5.92
+
+The run finished in 305 s. Running the stats and the figure now.
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted && nice -n 19 python3 run.py --stage stats 2>&1 | tail -80
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+h=pd.read_csv("distance_hist.csv"); c=pd.read_csv("cells.csv").set_index("cell")
+for key in ["g_n32_c6_star",
+  > $ python3 - <<'EOF'
+p="run.py"; s=open(p).read()
+s=s.replace('''          *[f"within_{e}" for e in EPS], "far", "far_reversed", "mech_pairs", "seconds", "note"]''
+  > $ python3 - <<'EOF'
+p="run.py"; s=open(p).read()
+s=s.replace('''        row["seconds_mean"] = round(float(g["seconds"].mean()), 3)
+        row["seconds_max"] = ro
+  > $ cd /home/al/dev/MOSP && cat >> tests/test_separator_moment.py <<'EOF'
+
+
+def test_planted_inverse_mean_is_the_union_bound_slack():
+    # Σ_P 1[P empty] / X = 1[X
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted/distance_hist.png
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted && python3 - <<'EOF'
+p="run.py"; s=open(p).read()
+s=s.replace('''        ax.set_xlabel(f"Hammin
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/04_planted/distance_hist.png
+
+The figure reads cleanly. The code is final, so I'm starting the gate in the background now (about 15 minutes) and generating the report tables from the CSVs while it runs.
+  > $ cd /home/al/dev/MOSP && nice -n 19 python3 Ralph_Loops/loop0011/gate.py > Ralph_Loops/loop0011/gate_it04.log 2>&1; tail -15 Ralph_Loops/loop0011/gate_it04.log
+  > $ python3 - <<'EOF' > tables.md
+import pandas as pd, numpy as np, math
+c=pd.read_csv("cells.csv"); s=pd.read_csv("slopes.csv"); m=pd.read_csv("mechanism_summary.c
+  > $ python3 - <<'PYEOF'
+tabs = {}
+cur = None
+for line in open("tables.md"):
+    if line.startswith("TABLE"):
+        cur = line.strip(); tabs[cur] = []
+    else:
+  
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+c=pd.read_csv("cells.csv").set_index("cell"); d=pd.read_csv("planted.csv")
+c["z"]=(c.Xp_mean-c.Xp_pred)/c.Xp_
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p="reports/separator_moment.md"; s=open(p).read()
+reps=[
+("""- **The formula and the enumerator agree.** In every unce
+  > $ grep -n "0.28\`;" reports/separator_moment.md | head; grep -n "against \`0.31\`" reports/separator_moment.md; echo ---; cat Ralph_Loops/loop0011/gate_it04.log |
+
+Re-applying the report corrections (one pattern missed because of a line break), and checking the gate's state.
+  > $ python3 - <<'EOF'
+p="reports/separator_moment.md"; s=open(p).read()
+reps=[
+("""- **The formula and the enumerator agree.** In every uncensored cell the
+  sample
+  > Monitor {"command": "until grep -qE \"GATE (PASS|FAIL)\" /home/al/dev/MOSP/Ralph_Loops/loop0011/gate_it04.log; do sleep 10; done
+  > $ grep -n "TABLE\|PLACEHOLDER" reports/separator_moment.md Ralph_Loops/loop0011/PROGRESS.md; grep -n "^### 4\|^## 4" reports/separator_moment.md; ls Ralph_Loops/l
+
+Everything is in place except the gate result. Waiting on the gate monitor; then I'll fill the gate line in PROGRESS.md and remove the temporary gate log.
+
+# result: success in 864s, 18 turns, cost $12.36
+  > $ cat Ralph_Loops/loop0011/gate_it04.log | grep -vE "^\s*$" | tail -12
+
+Gate passed. Filling in the gate line and removing the temporary log.
+  > $ python3 - <<'EOF'
+p="Ralph_Loops/loop0011/PROGRESS.md"; s=open(p).read()
+s=s.replace("- Gate: GATE_LINE_PLACEHOLDER","- Gate: `python3 Ralph_Loops/loop0011/gate
+
+Item 04 is done, the gate passed, and nothing is left to request: PROGRESS.md and iterations.md are updated, the working tree holds only the item's paths, and the driver commits. Nine items remain, so no LOOP_COMPLETE line.
+
+**What the planted cluster measurement found** (4,000 planted `G(n, c/n)` at `n = 16–32`, `c = 6, 10`, and 1,600 planted `(6, 1)` covers at `n = 16–28`, 200 per cell, 305 s of compute; `reports/separator_moment.md` §4):
+
+- **The fork, decided per model.** The ratio of the median's exponent to the mean's at the largest `n` is 0.57 at `c = 6`, 0.36 at `c = 10`, and 0 on the `(6, 1)` covers, where the median planted instance has no pair beyond the reversed one at any size. So the `e^{0.23 n}` on record for `(6, 1)` is a rare-instance artefact of the second moment, while on `G(n, c/n)` the cluster is half typical and half tail, the item's middle branch.
+- **The cluster is two lobes with an empty middle at `β*`**: perturbations of the planted pair and of its reverse, with almost nothing halfway between. On the median instance 88–100% of the other pairs sit within `0.2 n` of one of the two; the far pairs belong to the rare instances that carry the mean (the top 10% carry 48–94% of the sum).
+- **Mechanism**: the separator vertices that recombine have about half the planted-side degree of a typical separator vertex, but they are not isolated from the sides; what is small is what they evict (at most one neighbour in 60–87% of cases).
+- **Two identities** carry the item and are checked by enumeration in the tests: the planted mean is `E[X²]/E[X] − 1`, and the union bound's whole slack is `E[1/X]` under the planted law. The second gives a bounded estimator of the slack: 0.065, 0.039 and 0.043 nats per vertex at `β*` (0.019, 0.012 and 0.015 in `β`), sub-linear in `n` over the range. Since the ideal weighted count equals `1[X > 0]`, no choice of `Z` in item 09 can gain more than that at the same sizes; the report says what items 09 and 12 should take from it.
+
+The sample means disagreed with the exact prediction in 6 of 26 uncensored cells, all on the low side, which is the heavy tail not being sampled at 200 instances; this is stated in §4.2 rather than smoothed over. One correction to the item is recorded: its mechanism statistic was orientation-dependent and wrong on the reversed lobe, so an orientation-free degree and eviction count replaced it.
+
+# result: success in 29s, 3 turns, cost $15.71

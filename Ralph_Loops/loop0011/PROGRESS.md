@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 3/13 SOLVED
+Current: 4/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -302,3 +302,97 @@ overlap, so the planted measurement is the one that decides whether the
 `second_moment_rate_gnp` (whose extremal table at `β*` is the reversed
 pair on `G(n, c/n)`, `checks.log`). Items 05–06 carry the prediction of
 §3.5 and decide it.
+
+---
+
+## Iteration 4 — 2026-11-01 15:57
+
+Item 04, the planted cluster: condition on one exact-size empty pair and
+count the others, their distance and the mechanism; the median against
+the second-moment prediction. **Done.** Deliverable:
+`reports/separator_moment.md` §4 (the two identities, the instance table,
+the 28-cell table median / gm / mean / prediction, the growth and the
+fork, the distance histogram with its figure, the far/near overlap
+tables, the mechanism table, the union-bound slack measured directly, the
+verdict, regenerate / size range / non-claims);
+`reports/scratch/separator_moment/04_planted/` (`run.py` with stages
+`run`, `stats`, `draw` and `--probe`; `planted.csv` with every seed,
+every count and every within-ε share of the 5,600 instances;
+`distance_hist.csv`, `mechanism.csv`, `overlap_far_near.csv`,
+`cells.csv`, `slopes.csv`, `mechanism_summary.csv`, `run.log`,
+`run_stdout.log`, `distance_hist.png`); `learning/separator_moment.py`
+extended (`beta_star_gnp`, `plant_pair`, `plant_cover`, `overlap_table`,
+`hamming_distance`, `lq_sides`, `second_moment_exact_cover`,
+`planted_mean_gnp`, `planted_mean_cover`); `tests/test_separator_moment.py`
+(14 new tests, 50 in the module).
+
+### Completed
+
+- **Instances.** 4,000 planted `G(n, c/n)` (`n = 16–32`, `c = 6, 10`,
+  `β ∈ {β*, β* + 0.1}`, 200 per cell) and 1,600 planted `(6, 1)` covers
+  (`n = 16–28`), every exact-size empty pair enumerated; 305 s on 8
+  workers (0.6 core-hours against 3 budgeted); 7 instances censored above
+  2 million pairs.
+- **Two identities carry the item**: `E[X′ | P₀ empty] = E[X²]/E[X] − 1`
+  (the second-moment ratio *is* the planted mean) and
+  `P(X > 0)/E[X] = E[1/X | P₀ empty]` (the union bound's whole slack is a
+  bounded planted statistic). Both checked exactly by enumeration in the
+  tests; the first also against the sample means (20 of 26 uncensored
+  cells within two standard errors, the six exceptions all below, where
+  the top 10% of instances carry 68–94% of the sum).
+- **The fork, decided per model.** `log(median X′)/n` over `log E[X′]/n`
+  at the largest `n`: **0.57** at `G(32, 6/32)`, `β*`; **0.36** at
+  `G(32, 10/32)`, `β*`; **0** on `(6, 1)` covers at `β*` (median `X′ = 1`
+  at every size: the reversed pair and nothing else); 0.69–0.75 at
+  `β* + 0.1`, where the other pairs are the instance's own population.
+  Growth: the median at `0.24 ± 0.03` nats per vertex against the mean's
+  `0.31 ± 0.03` (`c = 6`); per-instance geometric mean at `0.17` / `0.12`
+  against `0.31` / `0.30`; covers `0.00` against `0.16`. **§8.5's
+  `e^{0.23 n}` at `(6, 1)` is a rare-instance artefact of `E[X²]`; on
+  `G(n, c/n)` the cluster is half typical and half tail** (the item's
+  middle branch, both written up).
+- **The cluster is two lobes with an empty middle** at `β*`: perturbations
+  of `P₀` and of its reverse, nothing at `d ≈ 0.5–0.6 n` (1.7% of pairs on
+  `G(32, 6/32)`, 4 of 4,584 on covers). On the median planted instance
+  88–100% of the other pairs are within `0.2 n` of `P₀` or its reverse;
+  pooled, 18–78%, the far pairs belonging to the rare large-`X′`
+  instances. The move-class of `P₀` holds 8–9 pairs at `c = 6`, `n = 28–32`
+  and `P₀` alone at `c = 10` and on covers.
+- **Mechanism, in direction and not in its strong form**: the `S`
+  vertices that join a side have half the planted-side degree of a
+  typical `S` vertex (2.7 vs 5.1 at `c = 6`; 5.1 vs 9.1 on covers) but are
+  not isolated from the sides; what is small is what they evict (none in
+  18–51% of cases, at most one in 60–87%, mean 0.6–1.4).
+- **The union bound's slack, measured**: `0.065` (`c = 6`), `0.039`
+  (`c = 10`), `0.043` (covers) nats per vertex at `β*` and the largest `n`
+  — **`0.019`, `0.012`, `0.015` in `β`** — against planted-mean exponents
+  of 0.23, 0.15, 0.11; sub-linear in `n` over the range (total 0.8 → 2.1
+  nats at `c = 6`, 0.8 → 1.2 on covers), so an upper estimate of the rate.
+  The ideal weighted count `Σ 1[P empty]/X` equals `1[X > 0]`, so no `Z`
+  in item 09 gains more than this at the same `(n, k)`: item 09 is
+  reduced to the paragraph the fork prescribes; item 12 is to say the
+  remaining gap to the slopes is mostly the necessary condition.
+- **Corrections to the item.** The mechanism statistic as the item
+  phrases it ("neighbours on that side") is orientation-dependent and
+  wrong on the reversed lobe; replaced by the orientation-free
+  planted-side degree and the eviction count. The reversed pair is an
+  exact-size pair at distance `N` whenever `N` is even, so distances are
+  reported to `P₀` and to the nearer of `P₀` and its reverse. The cover
+  model planted is the i.i.d.-pattern model of `CliqueCoverMoment.lean`,
+  not the ensemble's repairing generator.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,706 passed / 2 skipped / 1 xfailed in 4:17, the 14 new tests among them; pathwidth_solver 123 passed in 6:24; paper 71 pages, no undefined references; the one-minute load was 1–4).
+
+### Blockers
+
+None. The one-minute load was below 5 throughout.
+
+### Next
+
+Item 05 (the inner probability, exact): `P_N(E_bip)` by Gilbert's
+recursion and a sum over partitions to `N = 60–80`, the relaxed event by
+the `O(N²)` DP to `N = 400`, against the product bound and the pilot
+cells; compare the relaxed rate against `I_{c′}^β(½)` of item 01's
+`rate_check.py` (§1.6). Items 06 and 09 carry §4.6's measured slack
+(`0.012–0.019` in `β` at `β*`, `n ≤ 32`) as the ceiling any
+representative count can reach at these sizes; item 11's ledger can use
+identity 2 directly on planted samples at the pilot cells.

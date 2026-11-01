@@ -218,7 +218,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     small-size end (CLAUDE.md, §14 of `reports/ml_nature.md`), reported
     with their standard errors and no extrapolation.
 
-- [ ] **04 The planted cluster: typical, or a rare-instance artefact of `E[X²]`?**
+- [x] **04 The planted cluster: typical, or a rare-instance artefact of `E[X²]`?**
   - **Question.** Given one empty pair, how many other empty pairs of the
     forced sizes does the instance *typically* have, how far away are
     they, and by what mechanism? `E[X²]/E[X]² = e^{0.23 n}` at `(6, 1)`
