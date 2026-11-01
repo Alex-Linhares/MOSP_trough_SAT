@@ -3977,3 +3977,449 @@ claim of ours drifts.
   on the *active* model `G_{n,m,p}` (vertices choosing features), a
   different ensemble, and were not used. "We found no prior statement" is
   all that is claimed.
+
+## 8. The structured count: can a richer first moment lift `β*`? (item 08, 2026-11-01)
+
+**Question (C of the plan).** The first moment over single empty pairs
+gives `β*(d, μ)`, 0.06–0.10 below the certified `opt / n` at 125 × 125. A
+layout of width `k` has an empty pair at *every* prefix size, and they are
+nested. Does the first moment over `ℓ` nested empty pairs give a larger
+constant? **Answer: no, at every `ℓ ≥ 2`, every spacing and every cell —
+it gives a smaller one** — and the diagnostic says why the single pair is
+loose: the empty pairs *cluster*, so the union bound over-counts them by
+an exponential factor, while the necessary condition itself (an empty pair
+of the forced sizes exists) is within one stack of the pathwidth on the
+record instances. The kill criterion is met. Nothing is solved, nothing
+re-run; `solutions/` is not read.
+
+**Size range.** Asymptotic constants (`n → ∞`, `m = μ n`, fixed pattern
+size `d`); the finite floors on the 200 Chu & Stuckey instances at
+30–125 customers (their empirical pattern sizes); the second moment exact
+in the model at `n = 125` and checked by simulation at `n = 10–14`;
+Harper's bound on the 650 certified `(6, 1)` record instances at 30–75
+customers and on the five `Random-125-125-6`.
+
+**Regenerate.** Library: `learning/first_moment.py` (`nested_*`,
+`beta_star_nested`, `second_moment_*`), `python -m learning.first_moment
+nested` (the `β*_ℓ` table, about a minute); tests
+`python -m pytest tests/test_first_moment.py -q` (31, of which 15 new).
+Scratch: `reports/scratch/structured_count/run.py {table, floors, second,
+harper, slack}` (logs and CSVs beside it; `positions_6_1.log` is the
+position grid of §8.3). Wall: table 2 min on 2 workers, floors 12 s of
+instance time, second moment 1 min, Harper 10 min on 6 workers, slack
+8 min on 6 workers; about 1.3 core-hours in all at nice 19, load 0.1–2.
+
+### 8.1 The structure, and that a layout forces it (checked)
+
+Fix a layout `σ` of vertex separation `≤ k` and prefix sizes
+`p_1 < ⋯ < p_ℓ`. At each `p_j` the prefix `A_j` and the *inactive* suffix
+`R_j` (suffix vertices with no prefix neighbour) have no edge between them
+and `|R_j| ≥ n − p_j − k` (`EmptyPair.lean`,
+`exists_prefix_closedNbhd_card_le`, for every `j`). The prefixes grow and
+the inactive suffixes shrink: a vertex inactive at `p_{j+1}` is in the
+suffix at `p_j` and has no neighbour in `A_j ⊂ A_{j+1}`, so
+`R_{j+1} ⊆ R_j`. Trim them to nested `R'_j ⊆ R_j` of size exactly
+`r_j = n − p_j − k` (from the last position backward, keeping `R'_{j+1}`
+inside `R'_j`). Write `D_j = A_j ∖ A_{j−1}`, `L_i = R'_i ∖ R'_{i+1}`
+(`L_ℓ = R'_ℓ`), `T` the suffix after `p_ℓ`; then `|L_i| = p_{i+1} − p_i =
+|D_{i+1}|` for `i < ℓ`. A block `D_{j'}` may meet `L_i` for `i < j'`
+(vertices placed between `p_i` and `p_{j'}` with no neighbour before
+`p_i`), in `δ_{j',i}` vertices. The vertex set is partitioned into
+
+    D_{j'} ∖ R'_1,   D_{j'} ∩ L_i (i < j'),   T ∩ L_i (i = 1..ℓ),   F (the rest),
+
+`ℓ(ℓ+1)/2 + ℓ + 1` cells (3, 6, 10, 15 for `ℓ = 1..4`), with the forbidden
+crossings `A_j × R'_j`, `j = 1..ℓ`. For given `δ` the number of such cell
+assignments is a multinomial; a random pattern of size `s` avoids every
+crossing with probability `Σ_{U} c(U) · C(|U|, s) / C(n, s)` over unions `U`
+of cells, the signed coefficients `c` being the Möbius transform of the
+feasible hit patterns (computed once per `ℓ`; the support has 3, 5, 7, 9
+unions). Summing over `δ`,
+
+    P(pw ≤ k) ≤ E[#structures] = Σ_δ multinomial(n; cells(δ)) · ∏_j P_{s_j}(avoid | cells(δ)),
+
+and the exponent at `m = μ n` is `g_ℓ(β) = sup_δ [ H(cells) + μ E_s log
+P_s(avoid) ]` with `k = β n`; `β*_ℓ` is the first `β` at which `g_ℓ ≥ 0`.
+At `ℓ = 1` the cells are `A`, `R`, `F` and the balanced position
+`p_1 = (n − k)/2` gives exactly `g(a) = 2φ(a) + φ(1 − 2a) + μ E_s log(2(1−a)^s
+− (1−2a)^s)` of §2 (`test_ell_one_reproduces_beta_star_at_every_grid_point`:
+equal to `1e-12` on the 36 grid points). The item's "`2ℓ + 1` cells" was
+the count without the overlaps `δ`; they are forced by the layout (a
+vertex of `D_{j'}` that is inactive at `p_i` *is* in `R_i`), so the honest
+structure has them, as a sum over `δ` rather than a single multinomial.
+
+Checked before anything was called a lemma (`tests/test_first_moment.py`):
+
+- **Necessity.** 60 random covers at `n = 5–7`, a random layout each, its
+  separation `k` computed; at every choice of `ℓ ≤ 3` positions (over 200
+  choices in all) `nested_structure_from_layout` builds the structure from
+  the layout and asserts the nesting, the exact cell sizes and the absence
+  of every crossing edge; at `k − 1`, at the position where the separation
+  is attained, it is refused.
+- **The count.** `nested_log_bound` equals the log of the brute-force
+  enumeration — every assignment of the `n` vertices to the cells, every
+  integer `δ`, and for each the exact fraction of `s`-subsets whose hit
+  pattern is feasible — to `1e-9` on 16 cases at `ℓ = 2`, `n ≤ 7`, and
+  one at `ℓ = 3`.
+- **The Möbius coefficients** against the definition on random feasibility
+  tables; the optimiser's sup at `ℓ = 2` against a 4,001-point grid in `δ`
+  (within `1e-3`, never below).
+
+### 8.2 `β*_ℓ` at equal spacing, `ℓ ≤ 4`
+
+Positions `p_j = j (n − k)/(ℓ + 1)` (balanced at `ℓ = 1`); the sup over `δ`
+by multi-start SLSQP from random vertices of the feasible polytope with a
+200-point random cloud as a check (`nested_rate_sup`); `β*_ℓ` by a coarse
+scan at 0.005 and bisection to `1e-4`. The sup over `δ` is interior (at
+`(6, 1)`, `β = 0.5`: `δ = 0.042 n` of the `0.125 n` block).
+
+| `d` | `μ` | `e` | `β*` | `β*_1` | `β*_2` | `β*_3` | `β*_4` | `β*_2 − β*` |
+|---|---|---|---|---|---|---|---|---|
+| 2 | ½ | 0.5 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 1 | 1.0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2 | 2 | 2.0 | 0.1206 | 0.1206 | 0.1018 | 0.0898 | 0.0811 | −0.0188 |
+| 3 | ½ | 1.0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 3 | 1 | 2.0 | 0.1398 | 0.1398 | 0.1178 | 0.1036 | 0.0934 | −0.0220 |
+| 3 | 2 | 4.0 | 0.3554 | 0.3554 | 0.3143 | 0.2868 | 0.2665 | −0.0411 |
+| 4 | ½ | 1.5 | 0.0716 | 0.0716 | 0.0596 | 0.0518 | 0.0464 | −0.0120 |
+| 4 | 1 | 3.0 | 0.2858 | 0.2858 | 0.2469 | 0.2215 | 0.2029 | −0.0389 |
+| 4 | 2 | 6.0 | 0.5250 | 0.5250 | 0.4797 | 0.4483 | 0.4247 | −0.0453 |
+| 6 | ½ | 2.5 | 0.2436 | 0.2436 | 0.2080 | 0.1848 | 0.1681 | −0.0356 |
+| **6** | **1** | **5.0** | **0.5132** | **0.5132** | **0.4626** | **0.4280** | **0.4020** | **−0.0506** |
+| 6 | 2 | 10.0 | 0.7242 | 0.7242 | 0.6890 | 0.6633 | 0.6432 | −0.0352 |
+| 8 | ½ | 3.5 | 0.3976 | 0.3976 | 0.3479 | 0.3148 | 0.2905 | −0.0497 |
+| 8 | 1 | 7.0 | 0.6614 | 0.6614 | 0.6152 | 0.5822 | 0.5568 | −0.0462 |
+| 8 | 2 | 14.0 | 0.8246 | 0.8246 | 0.8006 | 0.7829 | 0.7702 | −0.0240 |
+| 10 | ½ | 4.5 | 0.5224 | 0.5224 | 0.4678 | 0.4303 | 0.4022 | −0.0546 |
+| 10 | 1 | 9.0 | 0.7566 | 0.7566 | 0.7191 | 0.6916 | 0.6698 | −0.0375 |
+| 10 | 2 | 18.0 | 0.8798 | 0.8798 | 0.8635 | 0.8513 | 0.8417 | −0.0163 |
+
+`β*_ℓ` **falls** with `ℓ` on every one of the 15 cells with `β* > 0`: by
+0.012–0.055 at `ℓ = 2`, a further 0.012–0.037 at `ℓ = 3`, and again at
+`ℓ = 4`. The threshold is unchanged (`β*_ℓ = 0` exactly where `β* = 0`,
+i.e. `e ≤ 1`), as it must be: at `β → 0` every structure degenerates to the
+balanced bipartition. Since each `E[#structures]` is a valid upper bound on
+`P(pw ≤ k)`, the valid constant is `max_ℓ β*_ℓ = β*_1 = β*`.
+
+### 8.3 Every spacing, not just equal spacing (`ℓ = 2`), and the limit
+
+The bound holds at any positions, and as `p_1 → p_2` the `ℓ = 2` structure
+degenerates to the single pair at `p_2`; so the right question is whether
+*any* spacing beats `β*`. At `β = β* + 0.005` on every cell with `β* > 0`,
+the exponent `g_2` minimised over a 31 × 31 grid of `(p_1, p_2)`
+(`beta_ell.csv`, columns `g2_min`, `g2_argmin`, `g2_negative`, `g1_at_probe`):
+
+| `(d, μ)` | min `g_2` over 465 pairs | at `(p_1, p_2)/n` | pairs with `g_2 < 0` | single pair `g_1` |
+|---|---|---|---|---|
+| (2, 2) | +0.1228 | (0.409, 0.437) | 0 | +0.0206 |
+| (3, 1) | +0.1303 | (0.400, 0.428) | 0 | +0.0176 |
+| (3, 2) | +0.1060 | (0.320, 0.341) | 0 | +0.0165 |
+| (4, ½) | +0.1123 | (0.311, 0.612) | 0 | +0.0182 |
+| (4, 1) | +0.1191 | (0.332, 0.355) | 0 | +0.0152 |
+| (4, 2) | +0.0840 | (0.235, 0.250) | 0 | +0.0156 |
+| (6, ½) | +0.1308 | (0.351, 0.376) | 0 | +0.0138 |
+| (6, 1) | +0.0889 | (0.226, 0.241) | 0 | +0.0139 |
+| (6, 2) | +0.0542 | (0.127, 0.135) | 0 | +0.0154 |
+| (8, ½) | +0.1107 | (0.280, 0.299) | 0 | +0.0125 |
+| (8, 1) | +0.0657 | (0.156, 0.167) | 0 | +0.0138 |
+| (8, 2) | +0.0398 | (0.080, 0.085) | 0 | +0.0167 |
+| (10, ½) | +0.0909 | (0.221, 0.236) | 0 | +0.0117 |
+| (10, 1) | +0.0503 | (0.119, 0.127) | 0 | +0.0142 |
+| (10, 2) | +0.0326 | (0.054, 0.058) | 0 | +0.0181 |
+
+No position pair gives a negative exponent anywhere, and the minimum is
+always at the two adjacent grid points nearest the balanced single-pair
+position: the best `ℓ = 2` structure is the one closest to being a single
+pair. At `(6, 1)`, `β = β* − 0.005` (where the single pair has `g_1 =
+−0.0143`), the minimum over 990 pairs on a finer grid is `+0.0447`, again
+at the adjacent pair (`positions_6_1.log`). The same log shows that for
+`ℓ = 1` the balanced position is the best position exactly, at `β* ± 0.02`
+(97-point grids).
+
+**The limit, and the mechanism.** With `p_1` balanced and `p_2 = p_1 + ε n`
+at `(6, 1)`, `β = β* − 0.005`:
+
+| `ε` | `g_2` | `g_2 − g_1` | `ε log(1/ε)` |
+|---|---|---|---|
+| 0.1 | +0.1931 | +0.2074 | 0.2303 |
+| 0.03 | +0.0948 | +0.1091 | 0.1052 |
+| 0.01 | +0.0420 | +0.0563 | 0.0461 |
+| 0.003 | +0.0096 | +0.0239 | 0.0174 |
+| 0.001 | −0.0042 | +0.0102 | 0.0069 |
+| 0.0003 | −0.0105 | +0.0038 | 0.0024 |
+| 0.0001 | −0.0128 | +0.0015 | 0.0009 |
+
+`g_2 → g_1` from above, at about `1.5 ε log(1/ε)`. That is the mechanism,
+and it is general: a second pair adds cells of size `ε n` (the block `D_2`
+split by its overlap with `R'_1`, and the layer `L_1 = R'_1 ∖ R'_2` of the
+same size), whose entropy per customer is `Θ(ε log(1/ε))` — the cost of
+*naming* the extra vertices — while the extra constraint, that no pattern
+crosses `A_1 × L_1`, is worth only `Θ(ε)` per customer (each pattern meets
+`L_1` with probability `O(ε)`). For small `ε` the entropy wins, and the
+grid shows the constraint never catches up at any `ε`. The nesting does not
+rescue it: nested or not, the union bound sums over *all* structures, and
+the `ℓ`-structures are more numerous than the pairs by more than their
+probability is smaller.
+
+### 8.4 The finite floors on the 200 Chu & Stuckey instances (`ℓ = 2`)
+
+Per instance, with its empirical pattern sizes and `m = n` or `m = n/2` or
+`2n` as in the file: the old single-pair floor (`floors`, `|R| = t − 1`),
+the single pair at the exact size (`|R| = n − p − k`, the Lean statement;
+a different valid bound, and neither dominates — at even `n − k` it counts
+more pairs each less likely), `ℓ = 2` at rounded equal spacing, and
+`ℓ = 2` with a `±3` search in both positions; the floor is the largest `k`
+with bound `< 1` (or `< 0.01`) plus 2, scanned over every `k`.
+`floors_cs.csv`, `floors.log`; the optima from `learning/data/excess.csv`
+(all 200 `certified`).
+
+| floor | violations (`< 1`) | violations (`< 0.01`) | mean floor | mean gap to optimum |
+|---|---|---|---|---|
+| old single pair | 1 | 0 | 36.76 / 35.13 | 4.39 / 6.03 |
+| `ℓ = 1`, exact size | 2 | 0 | 37.28 / 35.72 | 3.87 / 5.44 |
+| `ℓ = 2`, equal spacing | 0 | 0 | 35.12 / 34.05 | 6.03 / 7.11 |
+| `ℓ = 2`, `±3` positions | 0 | — | 35.74 | 5.41 |
+
+**Zero violations at the 0.01 floor for every variant**, as required. At
+the `< 1` floor — a statement with up to 99% failure probability, not a
+floor the paper quotes — the old bound is exceeded by `Random-50-50-4-5_0`
+(optimum 22, floor 23) and the exact-size one also by
+`Random-30-30-10-3_0` (27 against 28); at 0.01 both are below. (The
+record's zero of 200 is at 0.01, `finite_bound_cs.log`; this run
+reproduces it and adds the `< 1` count.) `ℓ = 2` is **never higher** than
+`ℓ = 1` on the same `|R|` convention: lower on 182 instances, equal on 18;
+with the position search lower on 148, equal on 52, higher on 0. The
+exact-size `ℓ = 1` floor is higher than the old one on 105 of 200 and lower
+on none — the one free gain in this item, half a stack on average,
+obtained from the rounding, not from the structure. Class means:
+
+| `(n, m, d)` | opt | old | `ℓ = 1` | `ℓ = 2` | `ℓ = 2` pos | old `< 0.01` | `ℓ = 1 < 0.01` | `ℓ = 2 < 0.01` |
+|---|---|---|---|---|---|---|---|---|
+| (30, 30, 2) | 8.6 | 5.4 | 6.2 | 5.8 | 5.8 | 4.6 | 4.8 | 4.8 |
+| (30, 30, 4) | 16.0 | 13.4 | 14.0 | 13.2 | 13.4 | 11.8 | 12.4 | 12.0 |
+| (30, 30, 6) | 21.2 | 19.0 | 19.8 | 19.2 | 19.6 | 17.8 | 18.2 | 17.6 |
+| (30, 30, 8) | 25.2 | 23.8 | 24.4 | 23.6 | 24.2 | 21.8 | 22.6 | 22.2 |
+| (30, 30, 10) | 27.0 | 26.6 | 27.0 | 26.6 | 26.8 | 24.6 | 25.6 | 25.4 |
+| (40, 40, 2) | 11.0 | 7.4 | 7.6 | 7.0 | 7.0 | 5.4 | 6.2 | 6.2 |
+| (40, 40, 4) | 20.2 | 17.0 | 17.4 | 15.6 | 15.8 | 15.0 | 15.6 | 14.8 |
+| (40, 40, 6) | 28.2 | 24.6 | 25.4 | 24.0 | 24.8 | 23.4 | 23.8 | 22.6 |
+| (40, 40, 8) | 32.6 | 30.6 | 31.2 | 30.4 | 30.8 | 29.0 | 29.6 | 29.0 |
+| (40, 40, 10) | 35.4 | 34.6 | 34.8 | 33.8 | 34.4 | 32.6 | 33.0 | 32.6 |
+| (50, 50, 2) | 13.2 | 9.4 | 9.6 | 8.6 | 8.6 | 7.4 | 7.6 | 7.6 |
+| (50, 50, 4) | 23.8 | 21.0 | 21.6 | 19.6 | 19.8 | 19.0 | 19.8 | 18.4 |
+| (50, 50, 6) | 35.2 | 31.8 | 32.2 | 30.2 | 31.2 | 30.2 | 30.4 | 28.8 |
+| (50, 50, 8) | 40.4 | 38.6 | 39.0 | 37.6 | 38.4 | 36.6 | 37.2 | 36.2 |
+| (50, 50, 10) | 44.4 | 42.6 | 43.0 | 41.6 | 42.8 | 41.4 | 41.6 | 41.0 |
+| (50, 100, 2) | 21.2 | 16.6 | 17.2 | 15.8 | 16.2 | 15.8 | 16.2 | 15.2 |
+| (50, 100, 4) | 34.6 | 31.8 | 32.2 | 30.8 | 32.0 | 30.2 | 31.0 | 29.2 |
+| (50, 100, 6) | 42.4 | 40.6 | 41.0 | 40.0 | 40.6 | 38.6 | 39.6 | 38.6 |
+| (50, 100, 8) | 46.2 | 45.0 | 45.2 | 44.2 | 45.0 | 43.0 | 43.8 | 43.8 |
+| (50, 100, 10) | 47.8 | 47.0 | 47.6 | 47.0 | 47.0 | 45.0 | 46.0 | 46.6 |
+| (75, 75, 2) | 15.8 | 10.8 | 11.8 | 10.4 | 10.4 | 9.6 | 10.2 | 9.6 |
+| (75, 75, 4) | 34.2 | 28.4 | 29.2 | 26.2 | 26.2 | 26.4 | 27.2 | 25.2 |
+| (75, 75, 6) | 50.0 | 44.4 | 45.4 | 42.4 | 43.0 | 43.2 | 43.8 | 41.0 |
+| (75, 75, 8) | 59.4 | 55.6 | 56.0 | 53.8 | 55.0 | 54.4 | 54.6 | 52.2 |
+| (75, 75, 10) | 64.8 | 61.6 | 62.0 | 60.0 | 61.4 | 59.6 | 60.4 | 59.0 |
+| (100, 50, 2) | 11.6 | 5.8 | 6.2 | 5.6 | 5.6 | 4.6 | 5.2 | 5.0 |
+| (100, 50, 4) | 26.4 | 17.0 | 17.6 | 15.6 | 15.8 | 15.4 | 16.2 | 14.8 |
+| (100, 50, 6) | 44.0 | 33.4 | 34.0 | 30.2 | 30.6 | 31.8 | 32.4 | 29.4 |
+| (100, 50, 8) | 56.2 | 47.4 | 48.2 | 43.4 | 43.6 | 45.4 | 46.2 | 42.2 |
+| (100, 50, 10) | 67.2 | 59.4 | 59.8 | 55.4 | 56.0 | 57.4 | 58.0 | 53.8 |
+| (100, 100, 2) | 20.2 | 13.0 | 13.6 | 12.0 | 12.2 | 11.8 | 12.2 | 11.2 |
+| (100, 100, 4) | 45.0 | 37.0 | 37.6 | 33.6 | 33.8 | 35.4 | 36.0 | 32.8 |
+| (100, 100, 6) | 64.6 | 58.2 | 58.8 | 54.6 | 55.4 | 57.0 | 57.2 | 53.0 |
+| (100, 100, 8) | 76.6 | 72.2 | 72.6 | 68.6 | 70.6 | 70.2 | 70.8 | 67.8 |
+| (100, 100, 10) | 84.6 | 81.0 | 81.4 | 78.4 | 80.8 | 79.4 | 79.8 | 77.6 |
+| (125, 125, 2) | 22.8 | 15.2 | 15.6 | 14.0 | 14.0 | 13.6 | 14.4 | 13.0 |
+| (125, 125, 4) | 53.0 | 44.4 | 44.8 | 39.8 | 40.2 | 42.4 | 43.2 | 39.0 |
+| (125, 125, 6) | 78.4 | 70.8 | 71.4 | 65.8 | 66.8 | 69.6 | 69.8 | 64.6 |
+| (125, 125, 8) | 93.6 | 88.4 | 88.8 | 84.0 | 85.6 | 86.8 | 87.4 | 82.8 |
+| (125, 125, 10) | 103.2 | 99.6 | 100.2 | 96.6 | 98.6 | 98.0 | 98.6 | 95.2 |
+
+The finite picture is the asymptotic one: at 125 × 125 the `ℓ = 2` floor is
+5 stacks below the single pair at `d = 4–8`, 1–2 at `d = 2` and 10.
+
+### 8.5 The diagnostic: where the slack is
+
+Two instruments, because the question has two halves. The first moment is
+`P(pw ≤ k) ≤ P(X > 0) ≤ E[X]` for `X` the number of empty pairs of the
+forced sizes; the slack of `β*` against the truth is the slack of the
+*union bound* (`P(X > 0)` against `E[X]`) plus the slack of the *necessary
+condition* (`P(pw ≤ k)` against `P(X > 0)`: empty pairs exist on instances
+whose pathwidth is larger). A second moment bounds `P(X > 0) ≥ E[X]² /
+E[X²]` — from *below*, the wrong direction for a pathwidth lower bound, so
+it cannot lift `β*` by itself (plan §0, point 3); what it says is whether
+the union bound is exponentially loose. The necessary condition's slack is
+measured directly: Harper's bound on the instance *is* the empty-pair
+condition in layout form (`exists_prefix_closedNbhd_card_le`, maximised
+over the prefix size; `satisfiability/expansion_bound.py`, CLAUDE.md), so
+`pw − Harper` is that slack and `Harper − floor` is the union bound's, on
+every certified instance where Harper's branch and bound completes.
+
+**(a) The second moment of `X` at `(6, 1)`.** Exact in the model
+(`second_moment_exact`: the sum over the `3 × 3` overlap table of two pairs,
+each term a multinomial times the inclusion–exclusion avoid probability
+over the 9 cells), at `n = 125`, `m = 125`, `d = 6`, `|A| = t = ⌈(n − k)/2⌉`,
+`|R| = t − 1`:
+
+| `k` | `t` | `log₁₀ E[X]` | `log₁₀ E[X²]` | `E[X²] / E[X]²` | `log₁₀ P(a fixed pair is empty)` |
+|---|---|---|---|---|---|
+| 50 | 38 | −25.31 | −18.09 | 3.4 × 10³² | −82.3 |
+| 56 | 35 | −15.56 | −7.13 | 9.9 × 10²³ | −71.5 |
+| 62 | 32 | −6.91 | 2.91 | 5.4 × 10¹⁶ | −61.4 |
+| 65 | 30 | −1.76 | 9.12 | 4.3 × 10¹² | −54.9 |
+| 68 | 29 | 0.63 | 12.08 | 6.7 × 10¹⁰ | −51.8 |
+| 71 | 27 | 5.03 | 17.75 | 5.0 × 10⁷ | −45.8 |
+| 77 | 24 | 10.66 | 25.71 | 2.5 × 10⁴ | −37.4 |
+| 83 | 21 | 15.08 | 32.72 | 358 | −29.6 |
+
+At the floor (`k ≈ 68`, `E[X] ≈ 4`) the ratio is `7 × 10¹⁰`: the second
+moment certifies `P(X > 0) ≥ 1.5 × 10⁻¹¹` and nothing more. The last column
+is why the item's "by simulation over 2,000 instances" cannot be done at
+`n = 125`: a fixed pair is empty with probability `10⁻⁵²` near the floor,
+so no sample of pairs, and no sample of instances, sees one. Asymptotically
+(`second_moment_rate`: the sup over the four free fractions of the table,
+multi-start SLSQP from the product table and random starts):
+
+| `β` | `a = (1 − β)/2` | `g(a)` | sup over tables | `2 g(a)` | ratio exponent | `max |table − product|` |
+|---|---|---|---|---|---|---|
+| 0.4132 | 0.2934 | −0.3261 | −0.1512 | −0.6521 | +0.5009 | 0.168 |
+| 0.4632 | 0.2684 | −0.1522 | +0.0489 | −0.3044 | +0.3533 | 0.163 |
+| 0.4932 | 0.2534 | −0.0583 | +0.1604 | −0.1166 | +0.2770 | 0.156 |
+| **0.5132 = β*** | 0.2434 | −0.0001 | +0.2313 | −0.0002 | **+0.2314** | 0.150 |
+| 0.5332 | 0.2334 | +0.0546 | +0.2995 | +0.1093 | +0.1902 | 0.143 |
+| 0.5632 | 0.2184 | +0.1300 | +0.3970 | +0.2600 | +0.1370 | 0.129 |
+
+`E[X²] / E[X]² = e^{0.23 n}` at `β*`, and the maximising table is far from
+the product of the margins: at `β*` it puts `0.186 n` in `A ∩ R'` and in
+`R ∩ A'` with `0.007 n` in `A ∩ A'` — the second pair is the first one
+*reversed* (`A' ≈ R`, `R' ≈ A`), and at other `β` the optimiser finds the
+mirror image (`A' ≈ A`); both are the same cluster, since `(A, R)` and
+`(R, A)` are empty together. So `X` is not concentrated: `E[X]` is carried
+by the rare instances on which a whole cluster of near-identical pairs is
+empty at once, and the union bound counts every member of the cluster. On
+`G(n, c/n)` this is the familiar failure of the plain second moment for
+large-deviation structures, and the remedy there (counting a canonical
+representative per cluster, or conditioning) is exactly what the single
+pair lacks and what the nested count does not supply.
+
+The formula is checked by simulation where `X` can be enumerated
+(`empty_pair_count_brute`, 2,000 instances per cell; `second_moment.log`):
+
+| `n` | `m` | `d` | `t` | mean `X` (± se) | `E[X]` | mean `X²` (± se) | `E[X²]` | ratio sim | ratio exact | `P(X > 0)` |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 12 | 12 | 6 | 3 | 0.014 ± 0.005 | 0.006 | 0.05 ± 0.02 | 0.04 | — | 1001 | 0.006 |
+| 14 | 14 | 6 | 3 | 0.175 ± 0.022 | 0.166 | 1.02 ± 0.33 | 1.53 | — | 55.6 | 0.081 |
+| 12 | 12 | 4 | 3 | 21.1 ± 0.6 | 20.24 | 1,102 ± 114 | 949 | 2.47 | 2.32 | 0.973 |
+| 14 | 8 | 4 | 3 | 1,133 ± 9 | 1,132 | 1.453 × 10⁶ ± 2.5 × 10⁴ | 1.451 × 10⁶ | 1.132 | 1.133 | 1.000 |
+| 14 | 14 | 3 | 4 | 617 ± 10 | 624 | 5.64 × 10⁵ ± 2.5 × 10⁴ | 5.67 × 10⁵ | 1.482 | 1.455 | 1.000 |
+
+Means within two standard errors everywhere; the ratio agrees to 1–7%
+where `X > 0` is common (the two `(6, 1)`-like cells at `n = 12–14` see `X
+> 0` on 0.6% and 8% of instances, and their sample ratio is not an
+estimate of anything). `test_second_moment_against_simulation_at_small_n`
+repeats the `n = 10` case.
+
+**(b) Harper's bound on the record instances, against the floor and the
+pathwidth.** The 650 certified `(6, 1)` instances of the fixed generator at
+`n = m = 30–75` (`learning/data/ensemble/results.csv`, `results_upward.csv`,
+regenerated from their seeds), `expansion_bound` with `max_t = 12` and a
+60 s budget; `pw = opt − 1`, `Harper` the bound on `vs = pw`, `floor` the
+exact-size single-pair floor from the instance's own sizes, all three on
+the `pw` scale (`slack_6_1.csv`, `slack.log`):
+
+| `n` | `N` | complete | cap min / median | mean `pw` | mean Harper | mean floor | `pw − Harper` | `Harper − floor` | Harper ≥ floor | Harper = `pw` | s (mean / max) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 30 | 150 | 150 | 2 / 4 | 20.46 | 20.03 | 19.00 | 0.43 | 1.03 | 143 | 87 | 0.0 / 0 |
+| 35 | 150 | 150 | 3 / 5 | 23.27 | 22.87 | 21.02 | 0.40 | 1.85 | 150 | 91 | 0.1 / 0 |
+| 40 | 150 | 150 | 4 / 6 | 26.21 | 25.78 | 24.00 | 0.43 | 1.78 | 150 | 90 | 0.2 / 0 |
+| 50 | 50 | 50 | 6 / 8 | 31.92 | 31.26 | 29.00 | 0.66 | 2.26 | 50 | 19 | 0.9 / 1 |
+| 60 | 50 | 50 | 7 / 10 | 37.80 | 37.20 | 34.00 | 0.60 | 3.20 | 50 | 22 | 3.9 / 7 |
+| 75 | 50 | 50 | 9 / 12 | 46.40 | 45.16 | 42.00 | 1.24 | 3.16 | 49 | 6 | 20.9 / 48 |
+
+Quantiles (10 / 50 / 90) of `pw − Harper`: 0 / 0 / 1 at 30–40, 0 / 1 / 1
+at 50–60, 0 / 1 / 2 at 75; of `Harper − floor`: 0 / 1 / 2 at 30, 1 / 2 / 3
+at 35–50, 1 / 3 / 5 at 60–75. Harper's value under a cap is a *lower*
+bound on the true Harper value, which is itself `≤ pw`; so `pw − Harper` as
+measured is an upper bound on the necessary condition's slack, and
+`Harper − floor` a lower bound on the union bound's: the first is **at
+most 0.4–1.2 stacks** and the second **at least 1–3 stacks, growing with
+`n`**. The empty-pair condition is tight to within a stack on these
+instances; what the first moment loses is in counting the pairs. Floor
+violations at `< 0.01`: zero at every size.
+
+On the five `Random-125-125-6` (120 s, cap 10–11 reached, every run on
+budget; `harper.log`): Harper 56–71 against optima 74–81 and random floors
+66–73 — *below* the floor on all five. The instrument does not reach: the
+forced pair has `t ≈ 27–38` and the branch and bound stops at `t = 10–11`,
+so at 125 the measurement is inconclusive and only (a) speaks.
+
+### 8.6 Findings
+
+1. **The structured count lowers the constant.** `β*_ℓ < β*` on all 15
+   cells with `β* > 0`, by 0.012–0.055 at `ℓ = 2` and more at every
+   further `ℓ`, at equal spacing (§8.2); at every spacing on a 31 × 31
+   grid, no `ℓ = 2` exponent is negative where the single pair's is barely
+   positive, and the best spacing is always the one nearest the degenerate
+   single pair (§8.3). The finite floors say the same on the 200 instances:
+   never higher, lower on 182 (§8.4).
+2. **The mechanism is entropy against constraint at the margin.** An extra
+   cell of `ε n` vertices costs `Θ(ε log(1/ε))` per customer to name and
+   buys `Θ(ε)` of constraint; the limit `g_2 − g_1 ≈ 1.5 ε log(1/ε)` is
+   measured to `ε = 10⁻⁴` (§8.3). Any first moment that adds *more
+   specified vertices* to the single pair pays this; a richer count must
+   instead specify *fewer* (merge pairs into clusters), not more.
+3. **The slack is in the union bound.** At `(6, 1)` the empty pairs
+   cluster (`E[X²]/E[X]² = e^{0.23 n}` at `β*`, the extremal overlap being
+   the reversed or identical pair; §8.5 (a)); on 650 certified instances at
+   30–75 the empty-pair condition is within 0.4–1.2 stacks of the
+   pathwidth while the floor sits 1–3 stacks below it (§8.5 (b)). The
+   0.06–0.10 of `β*` against `opt / n` at 125 is, by both instruments, the
+   over-counting of clustered pairs, not the weakness of the necessary
+   condition. A second moment cannot repair it (wrong direction); a
+   cluster-representative count might, and is not attempted here.
+4. **One free half-stack.** The single pair at the exact size `|R| = n −
+   p − k` (the Lean statement) is a different valid bound from the old
+   `|R| = t − 1`; on the 200 instances its floor is higher on 105 and lower
+   on none (0.5 stacks on average), with the same zero violations at 0.01.
+   It is a rounding, not a structure.
+5. **The balanced position is optimal for the single pair**, exactly, on
+   97-point grids at `β* ± 0.02` (§8.3) — the scan of §2 and Appendix E
+   lost nothing to the choice of `t`.
+
+### 8.7 Kill verdict
+
+**Met.** `β*_ℓ(6, 1) − β*(6, 1) = −0.051, −0.085, −0.111` for `ℓ = 2, 3, 4`
+at equal spacing, all below 0.03 — below zero; and no spacing does
+better (§8.3). The structured count does not pay, and the diagnostic says
+where the slack is: in the union bound, by clustering (finding 3). No
+certified value is wrong, no theorem is false, no published claim of ours
+drifts; the record's zero-of-200 at the 0.01 floor is reproduced.
+
+### 8.8 What this does not claim
+
+- **The constant.** A first moment is a lower bound on the truth whatever
+  `ℓ`; `β*` stays the best proved constant and the measured `opt / n` stays
+  0.06–0.10 above it at 125 × 125.
+- **That no richer first moment can lift `β*`.** What is shown is that
+  *this* family — more nested pairs, any spacing, any overlap — cannot,
+  and why (finding 2). A count over cluster representatives (one canonical
+  pair per connected family of empty pairs, as in the second-moment method
+  with conditioning) is the kind that could, and is not attempted.
+- **That the second moment locates the slack by itself.** `E[X²]/E[X]²`
+  exponentially large is consistent with the union bound being loose and
+  with it being tight on a rare event; it is (b), the deterministic
+  measurement on certified instances, that attributes the slack, and (b)
+  reaches 75 customers, not 125.
+- **Exactness of Harper's bound.** Under a cap it is a lower bound on the
+  true Harper value; the inequalities in §8.5 (b) are stated in the
+  direction that survives that.
+- **Anything about the padded generators.** Every exponent and the second
+  moment are for the uniform cover model given sizes; the floors on the
+  200 instances use their empirical sizes in that model, as Appendix E
+  does; item 10 is where the generator's validity is settled.
+- **The literature.** The nested-pair count and its failure by
+  `ε log(1/ε)` are, as far as we found, not stated anywhere; the clustering
+  failure of the plain second moment for first-moment thresholds is a
+  standard phenomenon on `G(n, p)` and is not claimed as new. "We found no
+  prior statement" is all that is claimed.

@@ -297,7 +297,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** That `β⁺` is near the truth; that the concentration
     step is re-proved here.
 
-- [ ] **08 The structured count: can a richer first moment lift `β*`?**
+- [x] **08 The structured count: can a richer first moment lift `β*`?**
   - **Question.** C. The first moment over single empty pairs gives
     `β*(d, μ)`, 0.06–0.10 below the certified `opt / n` at 125 × 125. A
     layout of width `k` has an empty pair at *every* position, nested

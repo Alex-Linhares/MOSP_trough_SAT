@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 7/13 SOLVED
+Current: 8/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -614,3 +614,95 @@ layer-by-layer layout, `vs ≤ max (|L_i| + |L_{i+1}|) − 1`) and the natural
 third Lean target the plan names. For item 12: the sandwich to state is
 `β* ≤ lim inf opt/n ≤ lim sup opt/n ≤ β⁺` with the concentration step
 cited, and the phase band is a one-sentence caveat on any BFS-based bound.
+
+---
+
+## Iteration 8 — 2026-11-01 04:28
+
+Item 08, the structured count: can a richer first moment lift `β*`?
+
+### Completed
+
+- **`learning/first_moment.py`, the structured count**: the `ℓ`-nested
+  empty-pair structure a width-`k` layout forces at `ℓ` prefix sizes
+  (`nested_cells`, `nested_sizes`, `nested_masks`; `ℓ(ℓ+1)/2 + ℓ + 1` cells,
+  with the overlaps `δ_{j',i}` of each block with the earlier inactive layers
+  — forced by the layout, so the honest count is a sum over `δ`, not the
+  item's single multinomial), the per-pattern avoid probability by
+  inclusion–exclusion as a Möbius transform over unions of cells
+  (`NestedStructure`), the asymptotic exponent with its sup over `δ`
+  (`nested_rate_sup`, multi-start SLSQP plus a random cloud; `ℓ = 2`
+  against a 4,001-point grid), `β*_ℓ` (`beta_star_nested`; `ℓ = 1` is the
+  single-pair scan on the same grid and reproduces `β*` to `1e-12` on all
+  36 grid points), the finite bound summed exactly over every integer `δ`
+  (`nested_log_bound`, `nested_floors`), the second moment of the
+  single-pair count exact in the model (`second_moment_exact`, the `3 × 3`
+  overlap table) and asymptotic (`second_moment_rate`), the brute-force
+  references (`nested_count_brute`, `empty_pair_count_brute`) and the
+  layout-to-structure constructor that asserts the lemma
+  (`nested_structure_from_layout`). CLI `python -m learning.first_moment
+  nested`. `tests/test_first_moment.py`: 15 new tests (31 in all) — the
+  count equals the enumeration at `n ≤ 7` (`ℓ = 2`: 16 cases; `ℓ = 3`: 1),
+  60 random layouts force the structure at every position choice (> 200)
+  and are refused at `k − 1`, the Möbius transform against its definition,
+  the second-moment formula against 2,000 enumerated instances at `n = 10`.
+- **`reports/scratch/structured_count/`**: `run.py` (stages `table`,
+  `floors`, `second`, `harper`, `slack`), logs and CSVs; `positions_6_1.log`.
+  About 1.3 core-hours at nice 19, load 0.1–2; nothing solved, `solutions/`
+  not read, the 650 record instances regenerated from their seeds.
+- **`reports/excess_phase_diagram.md` §8**, every table in full.
+- **Numbers.** `β*_ℓ` **falls** with `ℓ` on all 15 cells with `β* > 0`:
+  `β*_2 − β*` from −0.012 (`(4, ½)`) to −0.055 (`(10, ½)`), −0.051 at
+  `(6, 1)` (0.513 → 0.463 → 0.428 → 0.402 for `ℓ = 1..4`); the threshold
+  `e = 1` is unchanged. Over a 31 × 31 grid of positions at `ℓ = 2`, no
+  pair gives a negative exponent at `β* + 0.005` on any cell, and the
+  minimum is always at the pair nearest the balanced single-pair position;
+  the degenerate limit `p_2 − p_1 = ε n` approaches the single pair from
+  above at `≈ 1.5 ε log(1/ε)` (measured to `ε = 10⁻⁴`): an extra cell of
+  `ε n` vertices costs `Θ(ε log(1/ε))` of entropy and buys `Θ(ε)` of
+  constraint. For `ℓ = 1` the balanced position is exactly optimal. Finite
+  floors on the 200 Chu & Stuckey instances: zero violations at 0.01 for
+  every variant (the record's figure reproduced); `ℓ = 2` never above
+  `ℓ = 1`, below on 182 (148 with a `±3` position search), 5 stacks below
+  at 125 × 125 for `d = 4–8`; the single pair at the exact size `|R| = n −
+  p − k` (the Lean statement) is above the old `|R| = t − 1` floor on 105
+  of 200 and below on none, half a stack on average, a rounding not a
+  structure. Diagnostic: at `(6, 1)`, `n = 125`, `E[X²]/E[X]² = 7 × 10¹⁰`
+  at the floor and `e^{0.23 n}` asymptotically at `β*`, the extremal overlap
+  being the reversed (or identical) pair — the empty pairs cluster; the
+  formula agrees with enumeration at `n = 12–14` (means within 2 se, ratio
+  to 1–7% where `X > 0` is common); a fixed pair is empty with probability
+  `10⁻⁵²` near the floor, so the item's simulation at 125 is impossible and
+  is said so. Harper's bound on 650 certified `(6, 1)` instances at 30–75
+  (all complete): `pw − Harper` 0.40–1.24 on average (median 0–1), `Harper
+  − floor` 1.0–3.2 and growing with `n`: the necessary condition is tight
+  to a stack and the union bound carries the slack. On the five
+  `Random-125-125-6` the cap (10–11 in 120 s) stops far below the forced
+  pair size (27–38): inconclusive there, reported as such.
+- **Kill verdict: met.** `β*_ℓ(6, 1) − β*(6, 1) = −0.051, −0.085, −0.111`
+  for `ℓ = 2, 3, 4`, all below 0.03, and no spacing does better; the slack
+  is in the union bound by clustering, not in the necessary condition. No
+  certified value is wrong, no theorem is false, no published claim of ours
+  drifts.
+- **Gate: PASS** (one run, 2026-11-01 05:00–05:10 at load 1–2): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,618 passed (2 skipped,
+  1 xfailed; +15 new), pathwidth_solver 123 passed, paper check ok (66
+  pages, no undefined references). Log: `Ralph_Loops/loop0010/gate_it08.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 09, the ridge hypothesis. From this item: `β*` is the best proved
+constant and will stay so under any count that *adds* specified vertices
+to the single pair; the finite floor per instance should use the exact-size
+single pair (`nested_floors(1, …)`, half a stack better, same zero
+violations). For item 12: the sentence on the slack of `β*` is now
+measured — the union bound over clustered pairs, not the empty-pair
+condition, on certified instances to 75 — and the second moment is the
+wrong instrument to repair it; the cluster-representative count is the
+open idea, not attempted. For item 11: `nested_structure_from_layout` is
+the lemma's constructive content (nesting of inactive suffixes), small and
+not proposed for Lean since the count it serves is dead.

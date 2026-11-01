@@ -1,0 +1,8 @@
+Random-125-125-6, budget 120 s per instance, max_t 12: instance | optimum | Harper bound (cap reached, complete) | random floor <1 (old / exact size) | levels f(1..) | s
+Random-125-125-6-1_0 | 81.0 | 71 (cap 10, budget) | 72 / 73 | [12, 23, 35, 43, 50, 55, 62, 66, 71, 76, 81] | 120
+Random-125-125-6-2_0 | 77.0 | 60 (cap 11, budget) | 72 / 72 | [4, 13, 21, 30, 37, 44, 50, 55, 59, 63, 67, 71] | 120
+Random-125-125-6-3_0 | 80.0 | 67 (cap 11, budget) | 72 / 73 | [7, 15, 24, 33, 41, 48, 54, 61, 66, 71, 74, 78] | 120
+Random-125-125-6-4_0 | 80.0 | 67 (cap 10, budget) | 72 / 72 | [13, 24, 32, 40, 45, 52, 59, 63, 68, 72, 77] | 120
+Random-125-125-6-5_0 | 74.0 | 56 (cap 10, budget) | 66 / 67 | [8, 15, 23, 29, 35, 41, 47, 52, 57, 61, 66] | 120
+
+means: optimum 78.40, Harper 64.20, floor old 70.80, floor exact-size 71.40; Harper - floor_1 -7.20; optimum - Harper 14.20; Harper >= floor_1 on 0 of 5

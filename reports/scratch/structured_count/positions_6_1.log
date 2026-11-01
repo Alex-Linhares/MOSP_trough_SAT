@@ -1,0 +1,7 @@
+(d, mu) = (6, 1), beta* = 0.5132
+ell=1 beta=0.4932: min exponent -0.05830 at pi_1=0.2534 (balanced 0.2534, exponent -0.05830)
+ell=1 beta=0.5132: min exponent -0.00007 at pi_1=0.2434 (balanced 0.2434, exponent -0.00007)
+ell=1 beta=0.5332: min exponent +0.05463 at pi_1=0.2334 (balanced 0.2334, exponent +0.05463)
+ell=2 beta=0.5182: min exponent over 990 position pairs +0.07258 at (0.23040454545457242, 0.24090000000002826), negative on 0; single pair at this beta +0.01393  (4 s)
+ell=2 beta=0.5432: min exponent over 990 position pairs +0.13835 at (0.21847272727275424, 0.22840000000002825), negative on 0; single pair at this beta +0.08066  (4 s)
+ell=2 beta=0.5082: min exponent +0.04466 at (0.24590000000002826, 0.2566227272727568); single pair -0.01430; balanced 0.2459
