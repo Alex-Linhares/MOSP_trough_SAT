@@ -332,7 +332,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** The constant: a first moment is a lower bound on
     the truth whatever `ℓ`.
 
-- [ ] **09 The ridge mechanism: one hypothesis, one test.**
+- [x] **09 The ridge mechanism: one hypothesis, one test.**
   - **Question.** D. §36 found the ridge is where the number of closed
     sets reachable through fitting steps peaks, and could not say where
     that is in terms of the generator. Test: **H1, the ridge is where the

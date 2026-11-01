@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 8/13 SOLVED
+Current: 9/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -706,3 +706,87 @@ wrong instrument to repair it; the cluster-representative count is the
 open idea, not attempted. For item 11: `nested_structure_from_layout` is
 the lemma's constructive content (nesting of inactive suffixes), small and
 not proposed for Lean since the count it serves is dead.
+
+---
+
+## Iteration 9 — 2026-11-01 05:20
+
+Item 09, the ridge mechanism: one hypothesis, one test.
+
+### Completed
+
+- **`learning/excess_ridge.py`** (stages `ridge`, `ridge-lattice`,
+  `ridge-tables`, `figure-ridge` of `learning.excess`): for §25's 25 series
+  at `n ∈ {50, 60, 75}` (9,497 certified instances, 190 cells, through
+  `ridge_theory.load_frames` so the node peaks are §25's to the digit) the
+  two finite floors per instance from item 02's size histograms, `β*` per
+  cell from the pooled histogram, the two gaps, their cell means with
+  standard errors, each gap's peak by §25 (b)'s parabola with a bootstrap
+  interval over instances, §25 (d)'s score against the node peak and its
+  interval, the kill, and the profile shapes; a vectorised lattice over the
+  `2^20` closed-customer sets (both edge costs of `learning.degeneracy`,
+  equal to it on every edge, minimum and count in the tests) for the
+  secondary. `learning/data/excess_ridge_{instances,cells,peaks,lattice}.csv`
+  (git-ignored), `reports/scratch/excess_ridge/` (logs, `tables.md`),
+  `reports/figures/excess_ridge.png` (reference palette, open markers for
+  grid-edge maxima). `tests/test_excess_ridge.py`, 10 tests. H1: 10 s.
+  Lattice: 5,400 instances at `n = 20`, 3.44 core-hours (2.3 s per
+  instance), 26 min wall on 8 workers at nice 19 — above the item's 2
+  core-hours because the idle-machine timing did not hold with 8 workers
+  sharing memory bandwidth; all 150 per cell as the item asked, nothing
+  sampled. Nothing solved, `solutions/` not read, the ledger untouched.
+- **`reports/excess_phase_diagram.md` §9**: method, the per-series table in
+  full, the profiles, the lattice per series and per cell, findings, kill,
+  what it does not claim.
+- **Numbers.** H1: the floor gap's peak lies outside the node peak's
+  bootstrap interval on **22 of 25** series, the `β*` gap's on **23 of 25**
+  (the kill allows 12); mean scores 0.109 and 0.135 decades (max 0.25);
+  signed +0.092 and +0.135 — the gap's maximum sits on the *dense* side of
+  the ridge, at excess 2.2–5.3 (floor) and 2.1–4.4 (`β*`) against the
+  ridge's 1.8–3.0, and its location is less constant across ratios than the
+  excess (CV 0.24 / 0.19 against 0.15), with a residual that changes sign
+  between `m ≥ n / 4` (+0.07 to +0.12) and `n / 8` (−0.03). The gap is a
+  broad plateau over `e ≈ 2–5`: at the node peak the floor gap is within
+  0.000–0.022 per customer of its own maximum on every series (one stack at
+  `n = 50`; 0–1.2 se on the Bernoulli series, 0.3–6.6 on the fixed). Its
+  height orders the ratios backwards from the ridge's (0.10 at `m = 2n` to
+  0.20 at `n / 8`, where the ridge is highest at `2n`). Free audits: zero
+  violations of the 0.01 floor on all 9,497 (19 of the bound-below-1
+  floor, one stack each but one); the lattice minimum equals the certified
+  optimum under both measures on 5,400 of 5,400 at `n = 20` (§8's audit
+  reached 15). Secondary: the number of optimal closing orders is
+  **monotone increasing in density** on every series (connected instances;
+  the sparse Bernoulli dips are disconnected instances multiplying their
+  components), Spearman −0.77 to −0.98 with the nodes across cells, −0.54
+  to −0.91 per instance; the share of `20!` tracks `opt / n` at 0.69 (0.70
+  at `n ≤ 15`); 0 of 5,400 unique up to twins. §36's reachable count on
+  the same instances is the only quantity on the table that moves with the
+  nodes.
+- **Kill verdict: met — H1 is dead** on both readings (interval test failed
+  by both; the score test passed by the floor reading alone, 0.109 against
+  0.15). A dead H1 is the result. No certified value is wrong, no theorem is
+  false, no published claim of ours drifts.
+- **Gate: PASS** (one run, 2026-11-01 05:58–06:10 at load 8 while the
+  lattice workers were finishing): lake build ok, every file imported,
+  sorry 0, MOSP pytest 1,628 passed (2 skipped, 1 xfailed; +10 new),
+  pathwidth_solver 123 passed, paper check ok (66 pages, no undefined
+  references). Log: `Ralph_Loops/loop0010/gate_it09.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 10, validity under the real generator. From this item, for item 12:
+the sentence on the ridge mechanism stays §36's (reachability in the subset
+lattice), and the paper should say that the first-moment gap does *not*
+locate the ridge — it is a plateau on which the ridge sits, maximal on the
+dense shoulder — so the two coincidences on record (gap ≥ 2 concentrated on
+the ridge, §6; the ridge at excess 2) are not one fact. For the bound work
+(outside this loop): the floor gap's growth as `m / n` falls is where `β*`
+is loosest (few, large patterns), which §8 attributed to clustering; the
+same ordering should hold for any cluster-representative count. The
+vectorised lattice (`lattice_weights`, 2.3 s at `n = 20`) is the tool for
+any further `n ≤ 25` lattice question; §36's reachable count could be
+re-derived on it in one pass.

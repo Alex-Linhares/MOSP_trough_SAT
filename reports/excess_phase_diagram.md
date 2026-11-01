@@ -4423,3 +4423,294 @@ drifts; the record's zero-of-200 at the 0.01 floor is reproduced.
   failure of the plain second moment for first-moment thresholds is a
   standard phenomenon on `G(n, p)` and is not claimed as new. "We found no
   prior statement" is all that is claimed.
+
+## 9. The ridge mechanism: one hypothesis, one test (item 09, 2026-11-01)
+
+**Question (D of the plan).** §36 of `reports/ml_nature.md` found that the
+hardness ridge — the density at which the nodes to refute `optimum − 1` peak
+at fixed `n` — is where the number of closed sets *reachable* through
+fitting steps peaks, and could not say where that is in terms of the
+generator. One hypothesis, one test: **H1, the ridge is where the gap
+between the exact optimum and the first-moment floor is largest.** Two
+readings of "the floor", both from `learning/first_moment.py`: the finite
+floor at bound < 0.01 from each instance's own pattern sizes (`floors`, the
+form of `finite_bound_cs.py` and Appendix E), giving
+`(opt − floor₀.₀₁) / n` per instance; and the asymptotic constant `β*(d, μ)`
+at the cell's size law (`beta_star` on the cell's pooled histogram,
+`μ = m / n` exact), giving `opt / n − β*`. **Answer: H1 is dead on both
+readings** — the gap's peak lies outside the node peak's bootstrap interval
+on 22 and 23 of the 25 series (the kill allows 12), at a mean score of 0.109
+and 0.135 decades (the kill allows 0.15), and the miss is one-sided: the gap
+peaks on the *dense* side of the ridge, at excess 2.2–5.3 against the
+ridge's 1.8–3.0. What survives is weaker and says less: the gap is a broad
+plateau over `e ≈ 2–5` on which the ridge sits within one stack of the
+maximum. Secondary, at `n = 20`: §9.4. Nothing is solved, nothing re-run;
+`solutions/` is not read.
+
+**Size range.** H1 on §25's 25 series at `n ∈ {50, 60, 75}`,
+`m / n ∈ {2, 1, ½, ¼, ⅛ (n = 75, fixed only)}`, both generators, 9,497
+certified instances in 190 cells (the §25 frames through
+`learning.ridge_theory.load_frames`, so the node peaks are §25's to the
+digit). The secondary at `n = 20`, `m ∈ {n, 2n}`, 36 cells of 150, 5,400
+certified campaign instances. Nothing here is evidence above 75 customers.
+
+**Regenerate.** `python -m learning.excess --stage ridge` (the instance,
+cell and peak frames `learning/data/excess_ridge_{instances,cells,peaks}.csv`,
+git-ignored; 10 s), `--stage ridge-lattice --workers 8` (the `n = 20`
+counts, `learning/data/excess_ridge_lattice.csv`; see §9.4 for the cost),
+`--stage ridge-tables` (every table, `reports/scratch/excess_ridge/tables.md`),
+`--stage figure-ridge` (`reports/figures/excess_ridge.png`); tests
+`python -m pytest tests/test_excess_ridge.py -q` (10). Logs beside the
+tables under `reports/scratch/excess_ridge/`. Library: `learning/excess_ridge.py`.
+
+### 9.1 Method
+
+Per instance, from item 02's size histogram (`excess_rule.csv`, present for
+all 9,497; `n_ones` asserted equal to the ensemble record): `floor_1` and
+`floor_001` by `first_moment.floors`, and the two gaps. Per cell (generator,
+ratio, `n`, `param`): the censoring-aware median of `log10(1 + nodes)` (as
+§25), the mean of each gap with its standard error, `β*` of the pooled
+histogram. Per series: the node peak with its 95% bootstrap interval from
+`ridge_theory.peak_table` (500 resamples, seed 0); for each gap the cell
+with the largest mean, the vertex of the parabola in `log10 col_mean`
+through it and its two neighbours when interior (§25 (b)), and a bootstrap
+interval over instances within those three cells with the cell means
+recomputed on each resample; when the largest cell is at the grid edge the
+peak is that cell and carries no interval. Score as §25 (d):
+`log10(gap peak / node peak)` per series; "within" means inside the node
+peak's interval, or within 0.05 decades of the cell when the node peak is at
+the grid edge (the three fixed `m = 2n` series, as in §36). **Kill**: H1 is
+dead if a reading's peak is outside the interval on more than half the
+series or its mean |score| exceeds 0.15 decades; H1 survives if either
+reading passes both.
+
+A free audit on the way: on all 9,497 certified random covers at 50–75 the
+0.01 floor is **never** above the optimum, and the floor at bound < 1 is
+above it on 19 (by one stack on 18, two on 1; 15 of them in the fixed
+`m = 2n` series). A bound below 1 on a probability is no guarantee and the
+19 are what it looks like when the event happens; the 0.01 floor's record
+of zero violations now covers 9,697 instances (200 Chu & Stuckey, 9,497
+here).
+
+### 9.2 The test
+
+| gap | series | mean \|log10 err\| | max | signed mean | within CI | outside | gap peak interior | signed err 2n / n / n/2 / n/4 / n/8 |
+|---|---|---|---|---|---|---|---|---|
+| `(opt − floor₀.₀₁) / n` | 25 | **0.109** | 0.252 | +0.092 | 3 | **22** | 19 | +0.069 / +0.124 / +0.093 / +0.103 / −0.034 |
+| `opt / n − β*` | 25 | **0.135** | 0.250 | +0.135 | 2 | **23** | 17 | +0.106 / +0.152 / +0.163 / +0.130 / +0.069 |
+
+**Both readings fail the interval test** (22 and 23 outside against 12
+allowed) and the floor reading passes the score test only by 0.04 decades.
+The signed errors are positive on 21 of 25 series for the floor gap and 24
+of 25 for the `β*` gap: the gap's maximum is on the dense side of the ridge.
+Per series:
+
+| generator | m | n | node peak `col_mean` [95%] | node excess | floor-gap peak (interior?) [95%] | its excess | err | `β*`-gap peak (interior?) [95%] | its excess | err |
+|---|---|---|---|---|---|---|---|---|---|---|
+| bernoulli | 2n | 50 | 2.43 [2.38, 2.47] | 2.91 | 2.19 (yes) [1.88, 2.37] | 2.49 | −0.046 | 2.50 (yes) [2.30, 3.19] | 3.14 | +0.013 |
+| bernoulli | 2n | 60 | 2.40 [2.30, 2.51] | 2.97 | 1.75 (edge) | 1.51 | −0.136 | 2.66 (yes) [2.07, 3.10] | 3.51 | +0.044 |
+| bernoulli | 2n | 75 | 2.06 (edge) | 2.12 | 2.06 (edge) | 2.12 | 0.000 | 2.06 (edge) | 2.12 | 0.000 |
+| bernoulli | n | 50 | 3.11 [3.01, 3.38] | 2.16 | 3.77 (yes) [2.64, 5.10] | 2.77 | +0.084 | 4.82 (yes) [3.78, 5.23] | 3.78 | +0.191 |
+| bernoulli | n | 60 | 3.48 [3.35, 3.56] | 2.53 | 4.00 (yes) [3.50, 4.24] | 3.05 | +0.061 | 4.25 (yes) [3.23, 5.09] | 3.30 | +0.087 |
+| bernoulli | n | 75 | 3.63 [3.52, 3.72] | 2.66 | 3.94 (yes) [3.59, 5.50] | 2.97 | +0.035 | 4.56 (yes) [3.93, 5.53] | 3.57 | +0.099 |
+| bernoulli | n/2 | 50 | 5.11 [4.56, 5.25] | 2.06 | 5.89 (yes) [5.55, 7.06] | 2.50 | +0.062 | 7.06 (yes) [5.73, 7.92] | 3.12 | +0.141 |
+| bernoulli | n/2 | 60 | 4.87 [4.76, 5.01] | 1.95 | 6.14 (yes) [5.27, 6.73] | 2.59 | +0.101 | 7.60 (yes) [5.97, 9.08] | 3.33 | +0.193 |
+| bernoulli | n/2 | 75 | 5.44 [5.05, 5.67] | 2.21 | 6.35 (yes) [5.79, 7.58] | 2.67 | +0.067 | 7.68 (yes) [6.42, 8.27] | 3.34 | +0.150 |
+| bernoulli | n/4 | 50 | 8.43 [6.92, 10.08] | 1.79 | 10.08 (edge) | 2.18 | +0.078 | 10.08 (edge) | 2.18 | +0.078 |
+| bernoulli | n/4 | 60 | 8.19 [7.89, 9.33] | 1.80 | 12.07 (edge) | 2.77 | +0.168 | 12.07 (edge) | 2.77 | +0.168 |
+| bernoulli | n/4 | 75 | 8.40 [7.66, 9.78] | 1.78 | 11.52 (yes) [9.78, 12.88] | 2.52 | +0.137 | 14.92 (edge) | 3.34 | +0.250 |
+| fixed | 2n | 50 | 2.01 (edge) | 2.02 | 3.59 (yes) [3.25, 3.74] | 5.26 | +0.252 | 3.19 (yes) [3.02, 3.59] | 4.42 | +0.200 |
+| fixed | 2n | 60 | 2.01 (edge) | 2.02 | 3.38 (yes) [2.99, 4.00] | 4.82 | +0.225 | 3.14 (yes) [2.94, 4.00] | 4.34 | +0.195 |
+| fixed | 2n | 75 | 2.01 (edge) | 2.01 | 2.65 (yes) [2.57, 2.72] | 3.38 | +0.121 | 3.09 (yes) [2.95, 3.44] | 4.23 | +0.187 |
+| fixed | n | 50 | 3.31 [3.24, 3.43] | 2.34 | 5.73 (yes) [5.64, 5.81] | 4.75 | +0.239 | 5.31 (yes) [4.39, 6.00] | 4.33 | +0.206 |
+| fixed | n | 60 | 3.47 [3.37, 3.54] | 2.51 | 4.36 (yes) [4.15, 5.00] | 3.38 | +0.098 | 5.05 (yes) [4.74, 6.00] | 4.07 | +0.162 |
+| fixed | n | 75 | 3.41 [3.31, 3.52] | 2.44 | 5.75 (yes) [5.64, 5.83] | 4.77 | +0.227 | 5.01 (yes) [4.64, 6.00] | 4.03 | +0.167 |
+| fixed | n/2 | 50 | 5.50 [5.05, 6.00] | 2.26 | 7.30 (yes) [6.66, 8.00] | 3.16 | +0.123 | 8.30 (yes) [7.76, 9.00] | 3.66 | +0.179 |
+| fixed | n/2 | 60 | 5.64 [5.13, 6.08] | 2.33 | 6.09 (yes) [5.96, 6.26] | 2.55 | +0.034 | 8.40 (yes) [7.52, 9.00] | 3.71 | +0.173 |
+| fixed | n/2 | 75 | 5.24 [5.08, 5.50] | 2.10 | 7.76 (yes) [7.05, 8.27] | 3.34 | +0.171 | 7.23 (yes) [7.01, 8.03] | 3.08 | +0.140 |
+| fixed | n/4 | 50 | 9.17 [8.50, 9.56] | 1.96 | 12.17 (edge) | 2.68 | +0.123 | 12.17 (edge) | 2.68 | +0.123 |
+| fixed | n/4 | 60 | 10.63 [9.40, 10.96] | 2.41 | 12.13 (edge) | 2.78 | +0.058 | 12.13 (edge) | 2.78 | +0.058 |
+| fixed | n/4 | 75 | 9.59 [9.37, 10.33] | 2.06 | 10.84 (yes) [10.20, 11.52] | 2.37 | +0.053 | 12.22 (edge) | 2.69 | +0.106 |
+| fixed | n/8 | 75 | 20.66 [18.72, 21.87] | 2.36 | 19.08 (yes) [18.36, 20.56] | 2.17 | −0.034 | 24.22 (edge) | 2.79 | +0.069 |
+
+### 9.3 What the gap does along the density grid
+
+The profiles (`profile_table`; every series' shape, range and Spearman
+correlation of the cell means with the median log nodes are in the tables
+file) say three things.
+
+1. **The gap is peaked, but on a plateau.** The floor gap rises from the
+   sparse edge to a maximum and falls slowly past it on 19 of 25 series
+   (monotone or dipped on the six `m ≤ n / 4` and sparse Bernoulli ones,
+   whose grids end before the plateau does). Its whole range along a
+   series is 0.05–0.08 per customer at `m ≥ n / 2`; and **at the node peak
+   it is within 0.000–0.022 per customer of its own maximum** on every
+   series — one stack at `n = 50` — at 0.0–1.2 standard errors on the
+   twelve Bernoulli series and 0.3–6.6 on the thirteen fixed ones (the
+   fixed `m ∈ {n, 2n}` series, with 150 instances per cell, resolve the
+   difference; a 0.01–0.02 difference in the mean is real there and still
+   one stack). The `β*` gap is more clearly peaked away from the ridge
+   (2.0–7.2 standard errors on 19 series). So the ridge sits *on* the
+   gap's plateau, near but not at its top, and the plateau is about twice
+   the width of the ridge's interval in `col_mean`.
+2. **The gap peak's location is not a constant of the ratio either.**
+   §25 (c)'s constancy test: the excess at the node peak has CV 0.146
+   across ratios at fixed (generator, `n`), range 1.78–2.97; the excess at
+   the floor-gap peak has CV 0.240, range 1.51–5.26 (2n: 1.5–5.3, n:
+   2.8–4.8, n/2: 2.5–3.3, n/4: 2.2–2.8, n/8: 2.2); the `β*`-gap peak CV
+   0.190, range 2.1–4.4. The signed error is +0.07 to +0.12 at
+   `m ≥ n / 4` and −0.03 at `n / 8` for the floor gap: a residual that
+   changes sign across ratios is §36's method note (1) — not the same line.
+3. **The gap's height runs the other way from the ridge's.** The peak
+   gap grows as `m / n` falls — 0.08–0.11 at `m = 2n`, 0.09–0.12 at `n`,
+   0.11–0.14 at `n / 2`, 0.15–0.19 at `n / 4`, 0.20 at `n / 8` for the
+   floor; 0.10–0.14 to 0.33 for `β*` — because the first moment is weakest
+   where the patterns are few and large (§2, §8). The ridge's height goes
+   the opposite way: 1–1.5 decades *per doubling of `m`* at fixed `n`
+   (§25 (g)), highest at `m = 2n`. A quantity whose size orders the ratios
+   backwards cannot be what sets the ridge's height, and §37 already needs
+   `m` separately for that.
+
+The Spearman correlations of the gap with the nodes along a series are high
+on the `m ≥ n` series (0.80–1.00 for the floor gap: both rise from the
+sparse edge together, which is the plateau's rising flank) and fall to
+0.2–0.6 at `m = n / 2` where the grid resolves the two maxima apart.
+
+### 9.4 The secondary: optimal closing orders at `n = 20`
+
+On the 5,400 certified campaign instances at `n = 20` (`m ∈ {20, 40}`,
+both generators, 9 densities each, 150 per cell), the number of closing
+orders that realise the certified optimum under the construction value, and
+under Chu & Stuckey's search measure, counted exactly by a vectorised path
+count over the `2^20` closed-customer sets (`lattice_weights`,
+`lattice_count_np`; the same two edge costs as `learning.degeneracy`, equal
+to it on every edge, minimum and count of 40 random small instances in the
+tests). Instances regenerated from their seeds (`n_ones` asserted); 3.44
+core-hours of lattice time (2.3 s per instance, max 5.0), 26 min wall on 8
+workers at nice 19, load 8; §36's reachable-set counts joined from
+`cover_excess_states.csv` for the same instances.
+
+**Audit, free and new.** The lattice minimum under the construction value
+and under the search measure equals the certified optimum on **5,400 of
+5,400** — §8's lattice audit, which shared no code with the search, reached
+`n ≤ 15`; this extends it to every campaign instance at 20 with an
+independent second implementation. No certified value is wrong.
+
+**The count is monotone, not peaked** — as §8's `ρ = 0.70` with `opt / n`
+predicted. Along every series the median `log10` count rises with density
+to `log10 20! = 18.39` where the graph is complete and every order is
+optimal; on the Bernoulli grids it dips at the sparse end only because
+disconnected instances multiply their components' counts (on connected
+instances alone the minimum is at the sparsest connected cell on all four
+series, and the shape is increasing). Spearman with the median log nodes
+across cells: −0.77 to −0.98; per instance −0.54 to −0.91; the share of
+`20!` tracks `opt / n` at `ρ = 0.69` pooled (0.70 at `n ≤ 15`, §8). The
+search-measure count moves with the construction count (`ρ = 0.93`) and
+is the larger on 38% of instances. No instance has a unique optimal order
+up to twins (0 of 5,400, as 0 of 2,812 at `n ≤ 15`); 919 are complete
+graphs. §36's reachable count, on the same instances, peaks where the nodes
+peak on the fixed `m = n` series and is decreasing on the other three grids
+whose node peak is at the sparse edge — the one quantity on this table that
+moves *with* the nodes. So the ridge is where the optimum is *least*
+degenerate among connected instances of its size only in the sense that
+degeneracy grows monotonically with density; nothing in the count peaks.
+
+Per series:
+
+| generator   |   m |   node peak col_mean |   node peak e | #optimal orders: shape   |   its max at col_mean |   ρ(cells) with nodes | reachable (§36): shape   |   its ρ(cells) |   ρ(inst) #orders, nodes |   ρ(inst) search-measure count, nodes |   ρ(inst) opt/n, nodes |   ρ(inst) share, opt/n |
+|:------------|----:|---------------------:|--------------:|:-------------------------|----------------------:|----------------------:|:-------------------------|---------------:|-------------------------:|--------------------------------------:|-----------------------:|-----------------------:|
+| bernoulli   |  20 |                2.250 |         1.250 | dipped                   |                10.000 |                -0.767 | decreasing               |          0.533 |                   -0.536 |                                -0.721 |                 -0.529 |                  0.166 |
+| bernoulli   |  40 |                2.125 |         2.250 | peaked                   |                 7.987 |                -0.966 | decreasing               |          0.765 |                   -0.793 |                                -0.829 |                 -0.734 |                  0.662 |
+| fixed       |  20 |                3.050 |         2.050 | increasing               |                10.000 |                -0.979 | peaked                   |          1.000 |                   -0.749 |                                -0.842 |                 -0.908 |                  0.905 |
+| fixed       |  40 |                2.000 |         2.000 | increasing               |                 8.000 |                -0.974 | decreasing               |          1.000 |                   -0.908 |                                -0.914 |                 -0.949 |                  0.988 |
+
+Per cell:
+
+| generator   |   m |   param |   col_mean |     e |   opt_n |   connected |   med log10 nodes |   med log10 reachable (§36) |   med log10 #optimal closing orders |   med log10 share of 20! |   med log10 #orders, search measure |   audit ok (of 150) |
+|:------------|----:|--------:|-----------:|------:|--------:|------------:|------------------:|----------------------------:|------------------------------------:|-------------------------:|------------------------------------:|--------------------:|
+| bernoulli   |  20 |    0.03 |       1.40 |  0.40 |    0.17 |           0 |              1.08 |                        4.09 |                               17.83 |                    -0.56 |                               15.45 |                 150 |
+| bernoulli   |  20 |    0.05 |       1.60 |  0.60 |    0.19 |           0 |              1.11 |                        3.43 |                               17.18 |                    -1.21 |                               13.93 |                 150 |
+| bernoulli   |  20 |    0.07 |       1.85 |  0.85 |    0.23 |           5 |              1.38 |                        2.87 |                               16.09 |                    -2.30 |                               12.28 |                 150 |
+| bernoulli   |  20 |    0.10 |       2.25 |  1.25 |    0.28 |          37 |              1.62 |                        2.29 |                               14.69 |                    -3.70 |                               10.96 |                 150 |
+| bernoulli   |  20 |    0.15 |       3.10 |  2.10 |    0.44 |         126 |              1.60 |                        1.83 |                               14.60 |                    -3.78 |                               11.60 |                 150 |
+| bernoulli   |  20 |    0.20 |       4.05 |  3.05 |    0.60 |         147 |              1.33 |                        1.43 |                               14.69 |                    -3.70 |                               12.81 |                 150 |
+| bernoulli   |  20 |    0.30 |       6.05 |  5.05 |    0.80 |         150 |              0.78 |                        0.78 |                               15.96 |                    -2.43 |                               15.50 |                 150 |
+| bernoulli   |  20 |    0.40 |       7.95 |  6.95 |    0.92 |         150 |              0.30 |                        0.30 |                               17.17 |                    -1.22 |                               17.07 |                 150 |
+| bernoulli   |  20 |    0.50 |      10.00 |  9.00 |    0.98 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+| bernoulli   |  40 |    0.03 |       1.19 |  0.38 |    0.15 |           0 |              1.15 |                        3.91 |                               16.47 |                    -1.91 |                               15.55 |                 150 |
+| bernoulli   |  40 |    0.05 |       1.40 |  0.80 |    0.20 |           4 |              1.42 |                        2.85 |                               13.92 |                    -4.46 |                               12.55 |                 150 |
+| bernoulli   |  40 |    0.07 |       1.73 |  1.45 |    0.29 |          44 |              1.72 |                        2.20 |                               12.59 |                    -5.80 |                               10.93 |                 150 |
+| bernoulli   |  40 |    0.10 |       2.12 |  2.25 |    0.42 |         116 |              1.73 |                        1.89 |                               12.79 |                    -5.60 |                               11.65 |                 150 |
+| bernoulli   |  40 |    0.15 |       3.05 |  4.10 |    0.64 |         147 |              1.34 |                        1.36 |                               14.01 |                    -4.37 |                               13.45 |                 150 |
+| bernoulli   |  40 |    0.20 |       4.00 |  6.00 |    0.78 |         150 |              0.90 |                        0.90 |                               15.17 |                    -3.21 |                               15.11 |                 150 |
+| bernoulli   |  40 |    0.30 |       6.01 | 10.03 |    0.93 |         150 |              0.30 |                        0.30 |                               17.39 |                    -1.00 |                               17.39 |                 150 |
+| bernoulli   |  40 |    0.40 |       7.99 | 13.97 |    0.99 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+| bernoulli   |  40 |    0.50 |      10.04 | 18.08 |    1.00 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+| fixed       |  20 |    2.00 |       2.10 |  1.10 |    0.18 |          78 |              1.54 |                        1.82 |                               13.90 |                    -4.49 |                                9.18 |                 150 |
+| fixed       |  20 |    3.00 |       3.05 |  2.05 |    0.37 |         150 |              1.73 |                        1.88 |                               13.95 |                    -4.43 |                               10.63 |                 150 |
+| fixed       |  20 |    4.00 |       4.00 |  3.00 |    0.55 |         150 |              1.49 |                        1.56 |                               14.28 |                    -4.11 |                               12.28 |                 150 |
+| fixed       |  20 |    5.00 |       5.00 |  4.00 |    0.68 |         150 |              1.18 |                        1.22 |                               14.94 |                    -3.44 |                               13.69 |                 150 |
+| fixed       |  20 |    6.00 |       6.00 |  5.00 |    0.78 |         150 |              0.95 |                        0.95 |                               15.68 |                    -2.71 |                               15.06 |                 150 |
+| fixed       |  20 |    7.00 |       7.00 |  6.00 |    0.84 |         150 |              0.60 |                        0.65 |                               16.07 |                    -2.32 |                               15.90 |                 150 |
+| fixed       |  20 |    8.00 |       8.00 |  7.00 |    0.90 |         150 |              0.30 |                        0.30 |                               16.81 |                    -1.58 |                               16.65 |                 150 |
+| fixed       |  20 |    9.00 |       9.00 |  8.00 |    0.95 |         150 |              0.00 |                        0.00 |                               17.69 |                    -0.70 |                               17.69 |                 150 |
+| fixed       |  20 |   10.00 |      10.00 |  9.00 |    0.97 |         150 |              0.00 |                        0.00 |                               17.78 |                    -0.60 |                               17.78 |                 150 |
+| fixed       |  40 |    2.00 |       2.00 |  2.00 |    0.31 |         150 |              1.92 |                        2.01 |                               11.68 |                    -6.71 |                               10.50 |                 150 |
+| fixed       |  40 |    3.00 |       3.00 |  4.00 |    0.58 |         150 |              1.60 |                        1.61 |                               13.48 |                    -4.91 |                               12.99 |                 150 |
+| fixed       |  40 |    4.00 |       4.00 |  6.00 |    0.74 |         150 |              1.13 |                        1.13 |                               14.81 |                    -3.57 |                               14.73 |                 150 |
+| fixed       |  40 |    5.00 |       5.00 |  8.00 |    0.84 |         150 |              0.70 |                        0.70 |                               16.10 |                    -2.28 |                               16.07 |                 150 |
+| fixed       |  40 |    6.00 |       6.00 | 10.00 |    0.91 |         150 |              0.30 |                        0.30 |                               16.74 |                    -1.65 |                               16.74 |                 150 |
+| fixed       |  40 |    7.00 |       7.00 | 12.00 |    0.96 |         150 |              0.00 |                        0.00 |                               17.56 |                    -0.82 |                               17.56 |                 150 |
+| fixed       |  40 |    8.00 |       8.00 | 14.00 |    0.99 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+| fixed       |  40 |    9.00 |       9.00 | 16.00 |    1.00 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+| fixed       |  40 |   10.00 |      10.00 | 18.00 |    1.00 |         150 |              0.00 |                        0.00 |                               18.39 |                     0.00 |                               18.39 |                 150 |
+
+
+### 9.5 Findings
+
+1. **H1 is dead** on both readings of the floor: 22 and 23 of 25 series
+   outside the node peak's interval, mean scores 0.109 and 0.135 decades,
+   the miss one-sided toward the dense side (excess 2.2–5.3 at the gap's
+   maximum against 1.8–3.0 at the ridge).
+2. **The ridge sits on the gap's plateau, not at its top.** On every
+   series the floor gap at the ridge is within one stack (0.000–0.022 per
+   customer) of its maximum; the plateau spans `e ≈ 2–5`, twice the width
+   of the ridge's own interval, and the ridge is on its sparse flank. This
+   is consistent with the record (§2: the bound gap peaks on the ridge
+   *and* on its dense shoulder) and is not a mechanism: it does not pick
+   the ridge out of the plateau.
+3. **The gap's location is less constant across ratios than the excess**
+   (CV 0.24 against 0.15) and its height orders the ratios backwards from
+   the ridge's height (finding 3 of §9.3).
+4. **Free audit.** Zero violations of the 0.01 floor on 9,497 certified
+   random covers at 50–75; 19 of the bound-below-1 floor, one stack each
+   but one.
+5. **The lattice at `n = 20`**: §9.4.
+
+### 9.6 Kill verdict
+
+**Met — H1 is dead.** Outside the interval on 22 of 25 (floor) and 23 of
+25 (`β*`) series against the 12 the kill allows; mean scores 0.109 and
+0.135 decades (the kill's 0.15 is passed by the floor reading alone, and the
+interval test is failed by both). A dead H1 is the result the item asked
+for. No certified value is wrong, no theorem is false, no published claim
+of ours drifts.
+
+### 9.7 What this does not claim
+
+- **A mechanism.** A coincidence of peaks on 25 series would have been
+  evidence for one; the absence of a coincidence is evidence against
+  *this* one and says nothing about what the mechanism is. The derivation
+  of the reachable count in the random model (§36 (f)) is the open problem
+  and is not attempted.
+- **That the gap is unrelated to hardness.** The gap and the nodes rise
+  together from the sparse edge on every series, and the ridge is within a
+  stack of the gap's maximum; what is dead is the claim that the gap's
+  *maximum* locates the ridge.
+- **Anything about the floor's slack as a bound.** The gap here is a
+  property of where `β*` is loose (few, large patterns; §8's clustering),
+  not of the search.
+- **Anything above 75 customers**, or about the padded generators' limit:
+  the finite floors are the uniform-model statement at the instance's own
+  sizes, as Appendix E states them.
+- **That the secondary count is peaked** — see §9.4 for what it is.

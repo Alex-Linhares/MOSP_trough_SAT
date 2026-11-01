@@ -39,6 +39,10 @@ Usage:
     python -m learning.excess --stage constructions-tables   # item 05: the tables
     python -m learning.excess --stage figure-constructions   # item 05: reports/figures/excess_beta_plus.png
     python -m learning.excess --stage forest_check           # item 06: F1, F2, F3 and Lemma P by brute force -> reports/scratch/forest_check/
+    python -m learning.excess --stage ridge                  # item 09: H1, the gap peaks against the node peaks -> excess_ridge_*.csv
+    python -m learning.excess --stage ridge-lattice          # item 09: optimal closing orders at n = 20 (about 1.5 core-hours)
+    python -m learning.excess --stage ridge-tables           # item 09: every table -> reports/scratch/excess_ridge/tables.md
+    python -m learning.excess --stage figure-ridge           # item 09: reports/figures/excess_ridge.png
     python -m pytest tests/test_excess.py -q
 """
 from __future__ import annotations
@@ -1003,10 +1007,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--stage", choices=("build", "tables", "figure", "all", "rule", "slopes", "figure-opt",
                                         "constructions", "constructions-tables", "figure-constructions",
-                                        "forest_check"),
+                                        "forest_check", "ridge", "ridge-lattice", "ridge-tables", "figure-ridge"),
                     default="all")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--out", type=Path, default=OUT_CSV)
+    ap.add_argument("--per-cell", type=int, default=None, help="ridge-lattice: instances per cell (default all)")
     args = ap.parse_args()
     workers = args.workers if args.workers is not None else default_workers()
     if args.stage == "rule":
@@ -1021,6 +1026,19 @@ def main() -> None:
     if args.stage == "forest_check":
         from learning import forest_theorems as ft
         print(ft.run(workers))
+        return
+    if args.stage in ("ridge", "ridge-lattice", "ridge-tables", "figure-ridge"):
+        from learning import excess_ridge as er
+        if args.stage == "ridge":
+            inst, cells, peaks = er.run_h1()
+            print(er.h1_tables(inst, cells, peaks))
+        elif args.stage == "ridge-lattice":
+            er.run_lattice(workers, args.per_cell)
+        elif args.stage == "ridge-tables":
+            print(er.tables())
+        else:
+            _inst, cells, peaks = er.load_h1()
+            print(f"figure -> {er.figure(peaks, cells)}")
         return
     if args.stage.endswith("constructions") or args.stage == "constructions-tables":
         from learning import excess_constructions as ec

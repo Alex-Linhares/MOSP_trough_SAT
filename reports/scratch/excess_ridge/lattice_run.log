@@ -1,0 +1,1 @@
+lattice: 5400 instances at n = 20, 3.44 core-hours of lattice time, 1555 s wall on 8 workers; audit failures: 0 -> learning/data/excess_ridge_lattice.csv

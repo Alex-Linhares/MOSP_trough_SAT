@@ -1,0 +1,179 @@
+# session it09 started 2026-11-01 05:21:18
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the ridge sections of `reports/ml_nature.md` (§25, §36, §37), and the code I need to reuse (`ridge_theory.py`, `excess.py`, `first_moment.py`, `degeneracy.py`).
+  > $ uptime && cat reports/excess_phase_plan.md | head -400 && wc -l reports/excess_phase_plan.md learning/excess.py learning/ridge_theory.py learning/first_moment.p
+  > $ grep -n "^## §25\|^## §36\|^## §37\|^## §38\|^## §8\b\|^## §9\b" reports/ml_nature.md | head; awk '/^## §25/,/^## §26/' reports/ml_nature.md
+  > $ grep -n "^#.*§25\|^#.*§36\|^#.*§37\|^#.*§26\|^#.*§38\|^#.*§8 \|^#.*§9 " reports/ml_nature.md | head -20
+  > $ grep -n "^## 25\.\|^## 26\.\|^## 36\.\|^## 37\.\|^## 38\.\|^## 8\.\|^## 9\." reports/ml_nature.md
+  > $ sed -n 6623,6912p reports/ml_nature.md
+  > $ sed -n 9575,9700p reports/ml_nature.md
+
+Still reading the record I must reproduce (§36's scoring method and the code it names), then I'll build the stage. Fetching the rest of §36 (e), §37's peak table, and the four code files at once.
+  > $ sed -n 9700,9881p reports/ml_nature.md
+  > $ grep -n "^def \|^class \|^    def " learning/ridge_theory.py learning/cover_excess.py learning/first_moment.py learning/degeneracy.py && grep -n "^def \|^STAGES
+  > $ sed -n 1,60p learning/ridge_theory.py && sed -n 256,404p learning/ridge_theory.py && sed -n 431,500p learning/ridge_theory.py
+  > $ sed -n 1,70p learning/first_moment.py && sed -n 81,165p learning/first_moment.py
+  > $ sed -n 263,315p learning/cover_excess.py; echo ======; sed -n 116,300p learning/degeneracy.py
+  > $ sed -n 399,487p learning/degeneracy.py; echo =====; sed -n 707,770p learning/cover_excess.py; echo =====; sed -n 650,730p learning/excess.py; echo =====; sed -n
+  > $ head -c 600 learning/data/excess_rule.csv; echo; echo ====; ls -la learning/data/ensemble/ | head -30; echo ====; python3 - <<'EOF'
+import pandas as pd, numpy a
+  > $ python3 - <<'EOF'
+import pandas as pd
+t = pd.read_csv("learning/data/ensemble/cover_excess_states.csv"); print(t.columns.tolist(), len(t)); print(t.head(2).T)
+E
+  > $ sed -n 1,85p learning/excess.py; echo ====TEST; sed -n 1,40p tests/test_excess.py; echo ====GEN; grep -n "^def generate\|^class Cell\|    def parse\|^def load_r
+  > $ grep -n "^## \|^### " reports/excess_phase_diagram.md | tail -30; echo ====; tail -45 reports/excess_phase_diagram.md; echo ====FIG; sed -n 945,1000p learning/e
+  > $ grep -n "QUANTITY_COLOURS\s*=" -A6 learning/excess.py | head -12; echo ====; sed -n 3981,4012p reports/excess_phase_diagram.md
+  > Skill {"skill": "dataviz"}
+  > $ sed -n 1,80p /tmp/claude-1000/bundled-skills/2.1.314/15e2fcde93840fb3d0dd0c1ecf5f4fb0/dataviz/references/palette.md | grep -v "^$" | head -60
+  > Write /home/al/dev/MOSP/learning/excess_ridge.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess_ridge.py"); s = p.read_text()
+old = "            np.minimum(acc[has], np.maximum(best[src],
+  > Edit /home/al/dev/MOSP/learning/excess.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess.py"); s = p.read_text()
+s = s.replace('''                                        "construct
+  > $ mkdir -p reports/scratch/excess_ridge && nohup nice -n 19 python3 -m learning.excess --stage ridge-lattice --workers 8 > reports/scratch/excess_ridge/lattice_ru
+  > $ nice -n 19 python3 -m learning.excess --stage ridge 2>&1 | tee reports/scratch/excess_ridge/h1_run.log | head -120
+  > $ cat reports/scratch/excess_ridge/lattice_run.log; pgrep -f "learning.excess --stage ridge-lattice" | head -3; sed -n 12,45p reports/scratch/excess_ridge/h1_run.
+  > $ ps -p 17306 -o pid,cmd --no-headers; python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess_ridge.py"); s = p.read_text()
+old = """def _lattice_jo
+  > Write /home/al/dev/MOSP/tests/test_excess_ridge.py
+  > Edit /home/al/dev/MOSP/tests/test_excess_ridge.py
+  > $ nice -n 19 python3 -m learning.excess --stage figure-ridge && tail -3 reports/scratch/excess_ridge/lattice_run.log; ls -la learning/data/excess_ridge_lattice.cs
+  > Read /home/al/dev/MOSP/reports/figures/excess_ridge.png
+
+The open markers are invisible (white edge on white fill), the log-axis tick labels collide and some markers sit on the panel edge. Patching the figure function.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess_ridge.py"); s = p.read_text()
+old = """            for col, mk in (("gap_floor", "s"), ("ga
+  > Read /home/al/dev/MOSP/reports/figures/excess_ridge.png
+
+The figure reads clearly now. Next, together: run the new tests, read the profile and cell tables from the H1 run, and check the lattice run.
+  > $ (nice -n 19 python3 -m pytest tests/test_excess_ridge.py -q 2>&1 | tail -5) ; echo ====; tail -2 reports/scratch/excess_ridge/lattice_run.log; ls -la learning/d
+  > $ ps -p 17374 -o pid,etime,pcpu,cmd --no-headers; pgrep -P 17374 | wc -l; nice -n 19 python3 - <<'EOF'
+import pandas as pd, numpy as np
+pk = pd.read_csv("learning
+  > $ ps -p 17374 -o etime,pcpu --no-headers; awk '/^## Cells, in full/,0' reports/scratch/excess_ridge/h1_run.log | wc -l; python3 - <<'EOF'
+import pandas as pd
+c = 
+  > $ python3 - <<'EOF'
+import pandas as pd
+c = pd.read_csv("learning/data/excess_ridge_cells.csv")
+i = pd.read_csv("learning/data/excess_ridge_instances.csv", low_me
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 9. The ridge mechanism: one hypothesis, one test (item 09, 2026-11-01)
+
+**Question (D of the plan).** §36 of 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until [ -f learning/data/excess_ridge_lattice.csv ] || ! kill -0 17374 2>/dev/null; do sleep 5; done; echo "done at $(date +%H:%M:%S)"; tail -4 reports/scratch/
+
+While the run finishes, one independent check: that the new data files are git-ignored and nothing stray sits outside the item's paths.
+  > $ git status --short | grep -v "Ralph_Loops/loop0010/" ; git check-ignore learning/data/excess_ridge_cells.csv learning/data/excess_ridge_lattice.csv && echo igno
+
+Nothing else can proceed until the lattice CSV exists. Arming a Monitor on the output file as well, so the session is re-woken either way.
+  > Monitor {"command": "until [ -f learning/data/excess_ridge_lattice.csv ] || ! kill -0 17374 2>/dev/null; do sleep 5; done; echo 
+
+Waiting on the lattice run (CSV expected within a few minutes); the H1 half of §9, the figure, tests and data files are done.
+
+# result: success in 845s, 46 turns, cost $9.85
+  > $ ps -p 17374 -o etime,pcpu --no-headers; pgrep -P 17374 | wc -l; ls -la learning/data/excess_ridge_lattice.csv 2>&1; tail -3 reports/scratch/excess_ridge/lattice
+
+The run is alive with all 8 workers busy (14.5 minutes elapsed; it prints only at the end). Re-arming the wait.
+  > Monitor {"command": "until [ -f learning/data/excess_ridge_lattice.csv ] || ! kill -0 17374 2>/dev/null; do sleep 5; done; echo 
+
+While the run finishes I'll draft the PROGRESS entry (H1 part) and tick the item; the lattice numbers get filled in afterwards.
+  > $ grep -n "09 The ridge mechanism" Ralph_Loops/loop0010/iterations.md && sed -i 's/^- \[ \] \*\*09 The ridge mechanism: one hypothesis, one test.\*\*/- [x] **09 T
+
+Item ticked and the count updated. Everything left (§9.4, the lattice tables, the PROGRESS entry, the gate) depends on the lattice CSV, so I'm waiting on the second watch.
+
+# result: success in 29s, 4 turns, cost $12.98
+  > $ ps -p 17374 -o etime,pcpu --no-headers; ls -la learning/data/excess_ridge_lattice.csv 2>&1; tail -3 reports/scratch/excess_ridge/lattice_run.log; uptime; ps --p
+
+The run is healthy (8 workers at 100%, 24 minutes in) but slower than my idle-machine estimate; the per-instance times are recorded in the CSV so the real cost will be reported. Re-arming the watch.
+  > Monitor {"command": "until [ -f learning/data/excess_ridge_lattice.csv ] || ! kill -0 17374 2>/dev/null; do sleep 5; done; echo 
+
+Nothing further can start until the lattice CSV lands; waiting on the third watch.
+
+# result: success in 19s, 3 turns, cost $16.04
+  > $ ps -p 17374 -o etime --no-headers; ls -la learning/data/excess_ridge_lattice.csv 2>&1 | tail -1; tail -2 reports/scratch/excess_ridge/lattice_run.log
+
+That expiry was the second watch, armed before the third; the third is still active and the run is at 24 minutes 40 seconds with no CSV yet. Waiting on it.
+
+# result: success in 6s, 2 turns, cost $16.19
+
+The lattice run is done: 5,400 instances, 3.44 core-hours, zero audit failures (the lattice minimum under both measures equals the certified optimum on every instance). Now the tables stage and the numbers for §9.4.
+  > $ nice -n 19 python3 -m learning.excess --stage ridge-tables > /dev/null && awk '/^## Lattice at/,/^## Per cell/' reports/scratch/excess_ridge/tables.md | cut -c1
+
+Two independent things now: launch the gate (all code is final) and read the remaining columns of the lattice series table for §9.4.
+  > $ nohup nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it09.log 2>&1 &
+echo "gate pid $!"
+  > $ python3 - <<'EOF'
+import pandas as pd
+pd.set_option("display.width", 250)
+f = pd.read_csv("learning/data/excess_ridge_lattice.csv")
+from learning.excess_ridge i
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/excess_ridge_lattice.csv")
+c = f[f.g_components==1]
+for (g,m),s in c.groupby([
+
+On connected instances the count is monotone increasing in density on all four series. §9.4 and the PROGRESS entry can now be written; both are independent of the gate, which is still running.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+import pandas as pd, numpy as np
+from learning.excess_ridge import lattice_cells, lattice_series
+f = pd.read_csv("lea
+  > $ grep -c "LATTICE" reports/excess_phase_diagram.md; grep -n "^## 9\.\|^### 9\." reports/excess_phase_diagram.md; git status --short | grep -v "Ralph_Loops/loop00
+
+Only the gate result is outstanding. Watching its log for the pass or fail lines.
+  > Monitor {"command": "tail -n +1 -f Ralph_Loops/loop0010/gate_it09.log | grep -E --line-buffered \"GATE|FAIL|Error|Traceback|pass
+
+Nothing else to request: every deliverable is written and the only pending item is the gate, whose log the watch is reading.
+
+# result: success in 113s, 8 turns, cost $17.29
+  > $ cat Ralph_Loops/loop0010/gate_it09.log | grep -v "^  " | tail -12; pgrep -f "loop0010/gate.py" | wc -l
+
+Gate PASS. Recording it in the PROGRESS entry.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+old = """- **Gate:** see the line below (run after ev
+
+Item 09 is done; four items remain unchecked, so no `LOOP_COMPLETE`.
+
+**Result: H1 is dead on both readings of the floor.** The first-moment gap's peak lies outside the node peak's bootstrap interval on 22 of 25 series (finite floor) and 23 of 25 (`β*`), against the 12 the kill allows. Mean scores are 0.109 and 0.135 decades. The miss is one-sided: the gap's maximum sits on the dense side of the ridge, at excess 2.2–5.3 against the ridge's 1.8–3.0, and its location is less constant across product ratios than the excess itself. What survives is weaker: the gap is a broad plateau over `e ≈ 2–5`, and at the ridge it is within one stack per 50 customers of its own maximum on every series. The gap's height also orders the ratios backwards from the ridge's height, so it cannot be what sets the ridge.
+
+**Secondary at `n = 20`.** The number of optimal closing orders is monotone increasing in density on all four series (connected instances), Spearman −0.77 to −0.98 with the node count across cells, as §8's correlation with `opt / n` predicted. Nothing in the count peaks.
+
+**Two free audits.** The 0.01 floor is never above the optimum on all 9,497 certified random covers at 50–75. The lattice minimum under both measures equals the certified optimum on 5,400 of 5,400 campaign instances at `n = 20`, extending §8's code-independent audit from 15 to 20 customers.
+
+**Deliverables.**
+- `learning/excess_ridge.py` with stages `ridge`, `ridge-lattice`, `ridge-tables`, `figure-ridge` in `learning.excess`; a vectorised `2^20` closing-order lattice checked against `learning.degeneracy` on every edge.
+- `tests/test_excess_ridge.py`, 10 tests.
+- `reports/excess_phase_diagram.md` §9 with every table, `reports/figures/excess_ridge.png`, scratch logs and tables under `reports/scratch/excess_ridge/`.
+- PROGRESS.md entry written, item marked `[x]`, count now 9 of 13.
+
+**Gate: PASS** (lake build, imports, sorry 0, MOSP pytest 1,628 passed, pathwidth_solver 123 passed, paper check ok).
+
+**One deviation to flag.** The lattice run cost 3.44 core-hours against the item's 2, because the idle-machine timing of 1 s per instance became 2.3 s with 8 workers sharing memory bandwidth. All 150 instances per cell were run as the item asked, nothing was sampled, and nothing was solved or written under `solutions/`.
+
+# result: success in 27s, 3 turns, cost $20.60
+
+That was the gate-log watch expiring after its one event; the gate had already reported PASS and nothing is still running. Item 09 is complete as recapped above: H1 dead on both readings, the secondary count monotone, two free audits clean, gate passed, PROGRESS and iterations updated, 9 of 13 solved.
+
+# result: success in 3s, 1 turns, cost $20.69
+
+A late line from the already-expired gate-log watch (the `GATE PASS` line itself). No process is running and nothing changed; the item stands as reported.
+
+# result: success in 3s, 1 turns, cost $20.76
