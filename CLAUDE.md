@@ -1337,6 +1337,50 @@ loop0003, whose sessions ended on a bare wait; the driver's `git add -A`
 sweeps unrelated working-tree changes (the full Möhring chapter landed in
 item 07's commit).
 
+**The excess phase diagram** *(loop0010, 2026-10-31 to 2026-11-01;
+`reports/excess_phase_diagram.md`, §0 is the two-page summary; the
+paper's Appendix E, subsection "The excess, and a phase diagram")*. The
+**excess** `e = (n_ones − m) / n` — mean patterns per customer minus one,
+`r (c − 1)`, cyclomatic number per customer of the incidence graph plus
+`1 − κ / n` — always *realised* from the matrix, never the nominal
+`r (d − 1)` (the generators' pads inflate it by 0.1–1.1 at `d ≤ 3`). Three
+lines: `e_g(r) = (√(r² + 4r) − r)/2` (0.62 at `m = n`), below which the
+incidence graph is mostly a forest (measured; **not** a half-point of the
+giant component); `e = 1`, where the first-moment constant `β*(d, μ)`
+turns positive (on paper from `CliqueCoverMoment.lean`); and the ridge at
+`e ≈ 2–2.4`, where refutation cost peaks (§25). **The hardest Chu &
+Stuckey classes are not on the ridge**: `d = 2` sits at `e = 1.66–1.78`
+(sparse flank), `d = 4` at 2.9–3.4 (dense shoulder); the paper's Appendix
+E says so since 2026-11-01. **Theorems** (`ForestCover.lean`, no `sorry`):
+`MOSP ≤ ω (pw(B) + 1)` for every instance (`mospValue_le_maxPatternSize_mul`,
+the blow-up of a path decomposition of the incidence graph `B`), hence
+`MOSP ≤ ω (⌊log₃((6(n+m)+3)/5)⌋ + 1)` when `B` is a forest
+(`mospValue_le_of_incidence_isAcyclic`); the layer lemma
+`pw ≤ max_i (|L_i| + |L_{i+1}|) − 1` (`pathwidth_le_layerWidth_dist`); the
+coupling inclusion (`isEmptyPair_coverGraph_of_subset`); subinstance
+monotonicity `mospValue_mono` (Yanasse 1997a Prop. 2). The blow-up bound
+is 2–5.5× loose and on random forests `pw = ω − 1` on 99.8% (measured);
+the exact theory on block graphs is Chou, Ko, Ho & Chen (2008), and no
+closed form on clique trees is conjectured. **Dead** (with kill criteria):
+`lim opt / n` as a function of `e` alone (the slope falls with `μ` at
+fixed `e`, twenty standard errors at `e = 2`; the coordinate is `(d, μ)`
+or `β*`, `b = 0.057 + 0.984 β*` to 0.024); the structured (nested-pair)
+first moment (lowers `β*` on every cell; the slack is the union bound over
+clustered pairs, a second moment bounds the wrong side); the ridge as the
+first-moment gap's maximum (the gap peaks on the dense shoulder). The
+provable sandwich `β* ≤ lim inf opt/n ≤ lim sup opt/n ≤ β⁺` (§7, upper end
+on paper up to concentration) is 0.08 wide at `e = 18` and 0.4–0.5 on the
+ridge: both ends are worst where the search is slowest. The first moment
+with pre-repair sizes is proved for the padded generator (§10); the
+rejection is not a monotone event, so it costs `1 / P(accepted)`,
+measured. **24 SCOOP instances** sit at `e = 0.97–2.50` (19 in `[1, 2)`),
+none a forest, all refuted in ≤ 22,433 nodes; one (`B_REVAL_145`) is two
+stacks below its 0.01 floor — the floor measures distance from random, not
+a bound. Nothing re-solved; `solutions/` untouched. Figure:
+`paper1/latex/figures/excess_phase_diagram.py`; data
+`learning/data/excess*.csv` (git-ignored, 10 s to rebuild) and the
+committed `paper1/latex/data/excess_phase_diagram.csv`.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,
