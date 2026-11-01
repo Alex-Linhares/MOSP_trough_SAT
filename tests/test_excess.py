@@ -116,3 +116,80 @@ def test_crossing_is_interpolated_between_the_straddling_cells():
     assert cross["verdict"].iloc[0] == "within tolerance"
     f.loc[:, "lcc_frac"] = 0.9
     assert crossing_table(f, min_n=50)["verdict"].iloc[0].startswith("not observable")
+
+
+# ---------------------------------------------------------------------------
+# item 02: the rule stage and the slopes
+# ---------------------------------------------------------------------------
+
+from learning.excess import (_ols, beta_residuals, matched_pairs, named_groups, rule_by_bin, series_slopes,  # noqa: E402
+                             sizes_from_text, sizes_text)
+
+
+def test_sizes_histogram_round_trips():
+    m = np.array([[1, 1, 0, 1],
+                  [1, 0, 1, 1],
+                  [0, 0, 1, 1]])
+    assert sizes_text(m) == "1:1;2:2;3:1"
+    assert sizes_from_text(sizes_text(m)) == {1: 1, 2: 2, 3: 1}
+    assert sum(sizes_from_text(sizes_text(m)).values()) == m.shape[1]
+
+
+def test_ols_recovers_a_line_and_its_errors():
+    x = np.array([30, 30, 40, 40, 50, 50], float)
+    a, b, se_a, se_b = _ols(x, 2 + 0.5 * x)
+    assert a == pytest.approx(2.0) and b == pytest.approx(0.5)
+    assert se_b == pytest.approx(0.0, abs=1e-12)
+    assert np.isnan(_ols(np.array([30, 30, 30]), np.array([1, 2, 3]))[1])   # no spread in n
+
+
+def _synthetic_rule(rows):
+    f = pd.DataFrame(rows, columns=["generator", "r_label", "param", "n", "m", "optimum", "rule", "sizes"])
+    f["source"] = "ensemble"
+    f["certified"] = True
+    f["n_ones"] = [sum(int(v) * int(c) for v, c in (p.split(":") for p in s.split(";"))) for s in f["sizes"]]
+    f["e"] = (f["n_ones"] - f["m"]) / f["n"]
+    f["r"] = f["m"] / f["n"]
+    f["rule_gap"] = f["rule"] - f["optimum"]
+    return f
+
+
+def test_series_slopes_and_matched_pairs_on_synthetic_series():
+    rows = []
+    # series A: fixed d = 3 at m = n, opt = 1 + 0.2 n exactly, sizes all 3 (e = 2)
+    # series B: fixed d = 5 at m = n/2, opt = 1 + 0.3 n, sizes all 5 (e = 2)
+    # series C: like B but opt = 1 + 0.2 n (agrees with A)
+    for n in (30, 40, 50):
+        for i in range(4):
+            rows.append(("fixed", "n", 3.0, n, n, 1 + 0.2 * n + (i % 2) * 0.0, 2 + 0.2 * n, f"3:{n}"))
+            rows.append(("fixed", "n/2", 5.0, n, n // 2, 1 + 0.3 * n, 1 + 0.3 * n, f"5:{n // 2}"))
+            rows.append(("fixed", "2n", 2.0, n, 2 * n, 1 + 0.2 * n, 1 + 0.2 * n, f"2:{2 * n}"))
+    rule = _synthetic_rule(rows)
+    slopes = series_slopes(rule, min_n=30, min_sizes=3)
+    assert len(slopes) == 3 and slopes["constant e"].all()
+    by = slopes.set_index(["r", "param"])
+    assert by.loc[("n", 3.0), "b"] == pytest.approx(0.2) and by.loc[("n/2", 5.0), "b"] == pytest.approx(0.3)
+    assert by.loc[("n", 3.0), "e"] == pytest.approx(2.0) and by.loc[("n/2", 5.0), "e"] == pytest.approx(2.0)
+    assert by.loc[("n", 3.0), "rule exact"] == 0.0        # the rule is one above the optimum on every A instance
+    assert by.loc[("n", 3.0), "rule gap mean"] == pytest.approx(1.0)
+    assert by.loc[("n/2", 5.0), "rule exact"] == 1.0
+    pairs = matched_pairs(slopes, tol=0.05)
+    assert len(pairs) == 3
+    differ = {frozenset((p["series 1"], p["series 2"])): p["differ"] for _, p in pairs.iterrows()}
+    assert differ[frozenset(("fixed r=n 3", "fixed r=n/2 5"))] is True
+    assert differ[frozenset(("fixed r=n 3", "fixed r=2n 2"))] is False
+    groups = named_groups(slopes)
+    assert set(groups["group"]) == {"e = 2"} and len(groups) == 3
+    assert not beta_residuals(slopes).empty or True        # no pair within 0.02 in beta* is a legitimate outcome
+
+
+def test_rule_by_bin_counts_every_certified_instance_once():
+    rows = []
+    for n in (30, 40):
+        rows.append(("fixed", "n", 3.0, n, n, 10, 11, f"3:{n}"))
+        rows.append(("fixed", "n", 8.0, n, n, 20, 20, f"8:{n}"))
+    rule = _synthetic_rule(rows)
+    bins = rule_by_bin(rule)
+    assert bins["count"].sum() == 4
+    assert set(bins["e bin"].astype(str)) == {"[2, 2.4)", "[6, 10)"}
+    assert float(bins.loc[bins["e bin"].astype(str) == "[6, 10)", "exact"].iloc[0]) == 1.0

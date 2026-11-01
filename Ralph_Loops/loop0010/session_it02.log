@@ -1,0 +1,138 @@
+# session it02 started 2026-10-31 23:38:28
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the existing item-01 code and report, and the first-moment scratch code this item has to move.
+  > $ date && uptime && cat reports/excess_phase_plan.md | head -400
+  > $ wc -l learning/excess.py && sed -n 1,200p learning/excess.py
+  > $ sed -n 200,627p learning/excess.py
+  > $ ls reports/scratch/clique_cover_moment/ && echo ---- && cat reports/scratch/clique_cover_moment/asymptotic_cs.py && echo ---- && cat reports/scratch/clique_cove
+  > $ cat reports/scratch/clique_cover_moment/bound_lib.py && echo ---- && cat reports/scratch/clique_cover_moment/finite_bound_cs.py && echo ---- && cat reports/scra
+  > $ grep -n "def two_key_rule\|def restricted_dfs\|def rule_cs_dfs\|^STRATEGIES\|def upper_bound\|register" satisfiability/heuristics.py | head -30 && echo ---- && 
+  > $ grep -n "^#" reports/excess_phase_diagram.md | head -40 && echo ---- && head -c 1500 reports/excess_phase_diagram.md && echo && echo ---- && head -2 learning/da
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/excess.csv", low_memory=False)
+ens = f[f.source=="ensemble"]
+print(ens.certifi
+  > Skill {"skill": "dataviz"}
+  > $ B=/tmp/claude-1000/bundled-skills/2.1.314/28e49a71b57c24898be65ba178f773a3/dataviz && sed -n 1,80p $B/references/palette.md && echo ---- && grep -n "scatter\|do
+  > $ python3 - <<'EOF'
+import time
+from learning.ensemble import Cell, generate
+from satisfiability.heuristics import two_key_rule
+from learning.dataset import enume
+  > Write /home/al/dev/MOSP/learning/first_moment.py
+  > $ time python3 -m learning.first_moment 2>&1 | tail -60
+  > $ grep -c "" learning/data/instances.csv; grep "Random-125-125-2-[23]_0" learning/data/instances.csv | cut -c1-200; grep "Random-125-125-2-2_0\|Random-125-125-2-3
+  > $ python3 -c "
+import pandas as pd, json; f=pd.read_csv('learning/data/excess.csv',low_memory=False); c=f[(f.source=='corpus')&~f.certified]; print(c[['instance_n
+  > $ sed -n 115,160p learning/ensemble.py && grep -n "def _save_solution" -A 12 satisfiability/mosp_solver.py | grep -n "json\|name" | head && python3 -c "
+from lear
+  > $ grep -n "provenance\|solution_path\|_solution_file\|def .*solution" learning/dataset.py satisfiability/mosp_solver.py | head -20
+  > Write /home/al/dev/MOSP/tests/test_first_moment.py
+  > $ python3 -m pytest tests/test_first_moment.py -q 2>&1 | tail -5
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_first_moment.py"); s = p.read_text()
+old = s[s.index("def test_log_bound_is_monotone"):s.index("
+
+Now extending `learning/excess.py`: a shared ensemble job list, provenance from the solution files for corpus rows, the `rule` and `slopes` stages, and the figure.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess.py"); s = p.read_text()
+
+# 1. corpus rows: provenance from the solution file (instances.csv
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/excess.py"); s = p.read_text()
+head, tail = s.split("# -----------------------------------------
+  > $ nice -n 19 python3 -m learning.excess --stage build --workers 4 2>&1 | tail -2 && python3 -c "
+import pandas as pd; f=pd.read_csv('learning/data/excess.csv',low
+  > $ cat /tmp/slopes.md
+  > $ python3 - <<'EOF'
+import pandas as pd
+pd.set_option("display.width", 250); pd.set_option("display.max_rows", 200); pd.set_option("display.max_columns", 30)
+from
+  > Read /home/al/dev/MOSP/reports/figures/excess_opt.png
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/excess.py"); s = p.read_text()
+
+# 1. constant-e flag per series
+old = '''        rows.append({
+ 
+  > $ python3 -m pytest tests/test_excess.py -q -k synthetic 2>&1 | grep -B5 "Error\|assert" | head -30
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("tests/test_excess.py"); s=p.read_text()
+old='''    by = {(r.r, r.param): r for r in slopes.itertuples()}
+    
+  > Read /home/al/dev/MOSP/reports/figures/excess_opt.png
+  > $ date && python3 -c "
+from learning.excess import load_rule, series_slopes
+s=series_slopes(load_rule()); print(s[s.generator=='chu_stuckey'][['param','e','e rang
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("learning/excess.py"); s=p.read_text()
+s=s.replace("CONSTANT_E_TOLERANCE = 0.1   # a series whose cell-mean e 
+  > Read /home/al/dev/MOSP/reports/figures/excess_opt.png
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option("display.width", 250)
+from learning.excess import load_rule, series_slopes, beta_residuals, mat
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option("display.width", 250)
+from learning.excess import load_rule, series_slopes, beta_residuals, mat
+  > $ python3 - <<'EOF'
+import numpy as np
+from learning.excess import load_rule, series_slopes
+s = series_slopes(load_rule()); c = s[s["constant e"]]
+x = np.log(c.e)
+
+Now writing §2 of the report (prose, then the tables in full from the slopes stage), and loading the Monitor tool for the gate run that follows.
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+tables = Path("/tmp/slopes.md").read_text()
+summary, rest = tables.split("\n### Per series", 1)
+rest = "### Per ser
+  > $ sed -i '1073s/^### Per series/#### Per series/' reports/excess_phase_diagram.md && grep -n "^### \|^#### " reports/excess_phase_diagram.md | sed -n '/^1[0-9][0-
+  > $ nice -n 19 python3 Ralph_Loops/loop0010/gate.py > /tmp/gate_it02.log 2>&1; echo "GATE EXIT $?" >> /tmp/gate_it02.log
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The gate is running in the background (its completion will notify me). Meanwhile I'll write the PROGRESS entry, mark the item, and check the working tree for stray files.
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+s = s.replace("Current: 1/13 SOLVED", "Current: 2/1
+  > $ sed -n 1068,1072p reports/excess_phase_diagram.md | cut -c1-400; echo ---; cat /tmp/gate_it02.log | tail -5
+  > $ for i in $(seq 1 110); do grep -q "GATE EXIT" /tmp/gate_it02.log && break; sleep 5; done; tail -c 1500 /tmp/gate_it02.log
+  > $ for i in $(seq 1 115); do grep -q "GATE EXIT" /tmp/gate_it02.log && break; sleep 5; done; ls -la /tmp/gate_it02.log; tail -c 1500 /tmp/gate_it02.log; uptime
+
+Gate passed. Recording that in PROGRESS.md.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+old = "- **Gate.** See below (run after the report wa
+
+Item 02 is done. The kill criterion is met: `lim opt / n` is not a function of the excess alone.
+
+**What was done**
+
+- `learning/first_moment.py` now holds the first-moment constant and the finite floor moved from the scratch directory, with 16 tests that reproduce both scratch logs to their printed digits.
+- `learning/excess.py` gained three stages. The `rule` stage scores the two-key rule on all 57,091 instances on record (7 s wall, nothing solved, written to `learning/data/excess_rule.csv`). The `slopes` stage fits `opt = a + b n` per series on `n ≥ 30`, pairs series at equal realised excess, and tabulates `β*` and the rule beside them. The `figure-opt` stage draws `reports/figures/excess_opt.png`. Five new tests cover them on synthetic series.
+- Section 2 of `reports/excess_phase_diagram.md` carries the findings, the verdict, what it does not claim, and every table in full.
+
+**The finding**
+
+- Of 16 constant-excess matched pairs with different `(d, μ)`, 13 have slopes that differ by more than twice the larger standard error. At `e = 2` the slope falls monotonically with `μ`, from 0.282 to 0.167, against standard errors near 0.005.
+- The first moment shows the same two-parameter dependence in the same direction. Over the 41 constant-excess series, `b = 0.057 + 0.984 β*` with residual 0.024, against 0.042 for the best line in `log e`. The slack `b − β*` peaks on the hardness ridge.
+- The Bernoulli series at fixed `p` are not constant-excess series, since their excess grows with `n`. They are tabulated but excluded from the kill count, and the report says why.
+- The bare rule's gap also peaks on the ridge, and its per-customer excess grows with `n` there, so item 05 should not read `rule / n` as the slope.
+
+**Found in passing.** `learning/data/instances.csv` is a stale table from September that still marks four certified 125 × 125 instances as uncertified. The map's corpus rows now take value and provenance from the solution files, read only. No certified value is wrong and nothing was re-solved.
+
+**Gate: PASS** (lake build, all files imported, zero sorry, 1,549 MOSP tests, 123 pathwidth tests, paper check). PROGRESS.md has the iteration entry, the item is marked done, and no stray files are outside the item's paths. Next is item 03, the forest regime by brute force.
+
+# result: success in 1360s, 49 turns, cost $9.47

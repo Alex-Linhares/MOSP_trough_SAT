@@ -884,3 +884,397 @@ Rows: 64291 (corpus 6376, ensemble 50715, simulation 7200); max |e − r(c − 1
 | 125 | 125 |    23 |      2 |           5.09 |            9.3  |                4.1   |                 8.31  |                  0 |                   0 | Chu & Stuckey                         |
 | 134 |  37 |     1 |      0 |           1.34 |          nan    |                0.343 |               nan     |                  0 |                 nan | SCOOP                                 |
 
+## 2. `opt / n` against the excess: one parameter, or two? (item 02, 2026-11-01)
+
+**Question.** B(i) and B(iii) of the plan. On random clique covers, is
+`lim opt / n` a function of the excess `e` alone, or of `(d, μ)` separately?
+And how far is the two-key closing rule from the exact optimum as a function
+of `e`?
+
+**What was done.** No instance was solved. Two computations on what is on
+record:
+
+1. **The two-key rule on every instance** (`satisfiability.heuristics.two_key_rule`,
+   registered 2026-09-27, after the ensemble campaign ran, so the four frames
+   lacked it): the 50,715 ensemble instances regenerated from their seeds and
+   the 6,376 corpus instances, one call each, 30 s of rule time in all and 7 s
+   wall on 8 workers, written with the certified optimum and the pattern-size
+   histogram to `learning/data/excess_rule.csv` (57,091 rows; git-ignored
+   under `learning/data/*`; never the compute ledger).
+2. **Per series `(generator, r, d or p)` with three or more sizes at `n ≥ 30`**,
+   the fit `opt = a + b n` by least squares over the certified instances (one
+   point per instance, so the standard error of `b` carries the within-cell
+   spread), the same fit for the rule's value, the realised `e` (mean over the
+   fitted instances), `β*(d, μ)` of `learning/first_moment.py` at the series'
+   pooled size histogram and `μ = m / n`, and the rule's exactness and gap.
+   72 series: 36 fixed-`d`, 31 Bernoulli, and the 5 Chu & Stuckey `m = n`
+   classes across `n = 30, 40, 50, 75, 100, 125`.
+
+`learning/first_moment.py` is the asymptotic constant of
+`reports/scratch/clique_cover_moment/asymptotic_cs.py` and the finite floor of
+`bound_lib.py` / `finite_bound_cs.py`, moved with the same formulas;
+`tests/test_first_moment.py` reproduces `asymptotic_cs.log` (the `β*(d, μ)`
+table at every entry, the threshold `d > 2.0031`, five classes at empirical
+sizes) and `finite_bound_cs.log` (five classes' mean floors) to the printed
+digits, and checks that the histogram interface agrees with the list one to
+10⁻¹².
+
+**Size range.** `n = 10–100` for the rule (30–125 with the Chu & Stuckey
+classes); slopes fitted on `n ≥ 30` (30–100 ensemble, 30–125 Chu & Stuckey).
+
+**Regenerate.**
+
+```
+python -m learning.excess --stage rule          # -> learning/data/excess_rule.csv, 7 s on 8 workers
+python -m learning.excess --stage slopes        # the tables below
+python -m learning.excess --stage figure-opt    # reports/figures/excess_opt.png
+python -m learning.first_moment                 # the two scratch tables from the benchmark files
+python -m pytest tests/test_first_moment.py tests/test_excess.py -q
+```
+
+### 2.1 Findings
+
+1. **Which series test the hypothesis.** A fixed-`d` series has `e = r (d − 1)`
+   up to the generator's padding and is constant in `n` (range over `n` at most
+   0.01 of its mean); the Chu & Stuckey classes vary by 5–8% of their mean
+   across `n` (the `n = 100` cell sits 0.3–1.7 below the others at every `d`).
+   A **Bernoulli series at fixed `p` is not a constant-excess series**: `e = r (n p − 1)`
+   grows with `n`, by 0.16 to 17.9 across the fitted sizes, its intercepts
+   `a` run to −26 and its "slopes" exceed 1 (the optimum cannot exceed `n`), so
+   those fits are the local slope along a path of rising density and say
+   nothing about `opt / n` at fixed `e`. The kill count is therefore taken on
+   the pairs of two constant-`e` series (fixed `d` or Chu & Stuckey, `e`
+   constant to within 10% of its mean), with the all-pairs count beside it.
+
+2. **The one-parameter hypothesis is dead.** Of the 16 constant-`e` pairs
+   with realised `e` within ±0.05 and different `(generator, d, μ)`, **13 differ
+   by more than twice the larger standard error** (26 of all 30 pairs). The
+   item's own groups, all on record at `n = 50–100`:
+
+   | nominal `e` | `(d, μ)` | realised `e` | `b` | `β*` | `b − β*` |
+   |---|---|---|---|---|---|
+   | 2 | (9, ¼) | 2.05 | 0.282 ± 0.006 | 0.180 | 0.10 |
+   | 2 | (5, ½) | 2.06 | 0.232 ± 0.005 | 0.169 | 0.06 |
+   | 2 | (3, 1) | 2.04 | 0.200 ± 0.003 | 0.147 | 0.05 |
+   | 2 | (2, 2) | 2.02 | 0.167 ± 0.002 | 0.123 | 0.04 |
+   | 3 | (7, ½) | 3.01 | 0.400 ± 0.005 | 0.327 | 0.07 |
+   | 3 | (4, 1) | 3.02 | 0.348 ± 0.003 | 0.288 | 0.06 |
+   | 3 | (12, ¼) | 2.73 (outside ±0.05) | 0.405 ± 0.006 | 0.306 | 0.10 |
+   | 4 | (9, ½) | 3.99 | 0.517 ± 0.011 | 0.463 | 0.05 |
+   | 4 | (5, 1) | 4.00 | 0.479 ± 0.003 | 0.411 | 0.07 |
+   | 4 | (3, 2) | 4.00 | 0.409 ± 0.003 | 0.356 | 0.05 |
+   | 6 | (7, 1) | 6.00 | 0.651 ± 0.003 | 0.595 | 0.06 |
+   | 6 | (4, 2) | 6.00 | 0.568 ± 0.003 | 0.525 | 0.04 |
+   | 8 | (9, 1) | 8.00 | 0.752 ± 0.002 | 0.714 | 0.04 |
+   | 8 | (5, 2) | 8.00 | 0.685 ± 0.002 | 0.642 | 0.04 |
+
+   (`±` is one standard error.) At every excess, **the slope falls with `μ`
+   at fixed `e`**: at `e = 2` from 0.282 (few, large patterns, `μ = ¼`) to
+   0.167 (many small ones, `μ = 2`), a spread of 0.115 against a standard
+   error of 0.006 — twenty times the noise. The three pairs that do not
+   differ are `(4, ¼)` against `(2, 1)` at `e ≈ 1.1` (both near the
+   threshold, slopes 0.03–0.04), `(7, ¼)` against `(4, ½)` at `e ≈ 1.62`, and
+   the fixed `(10, 1)` series against the Chu & Stuckey `d = 10` class, which
+   is the same model with padding. `e` sets the scale of `opt / n`
+   (correlation of `b` with `log e` 0.988 over the 41 constant-`e` series) and
+   `μ` moves it by up to 0.1 at fixed `e`; so **`lim opt / n`, if it exists,
+   is a function of `(d, μ)` and not of `e` alone.**
+
+3. **The first moment has the two-parameter dependence in the right
+   direction.** `β*(d, μ)` falls with `μ` at fixed `e` exactly as `b` does
+   (at `e = 2`: 0.180, 0.169, 0.147, 0.123 against 0.282, 0.232, 0.200,
+   0.167), and over the 41 constant-`e` series `b = 0.057 + 0.984 β*` with
+   residual standard deviation **0.024** (0.015 with a quadratic), against
+   0.042 for the best line in `log e` (0.033 for a cubic). The slack
+   `b − β*` is 0.005–0.108, median 0.053, and **peaks on the ridge**: mean
+   0.026 at `e ≤ 1.5`, 0.069–0.071 at `e = 1.5–4`, 0.036 at `e > 6`, largest
+   on the `μ = ¼` series at `e = 1.8–2.7` (0.09–0.11). `β*` is not the
+   constant either: of 30 pairs matched in `β*` to ±0.02, 14 differ in `b`.
+   But the first moment is a far better one-parameter coordinate for
+   `opt / n` than the excess is, which is what item 08's structured count has
+   to improve on and item 09's ridge hypothesis stands on.
+
+4. **The rule.** Over all 57,077 certified instances the bare two-key rule
+   (no DFS behind it) is exact on 83.3% of the corpus and 62.2% of the
+   ensembles; on the 200 Chu & Stuckey instances it is exact on 27%, mean
+   gap 2.35, worst 10 (the `125 × 125` `d = 2` and `d = 4` classes, mean
+   gaps 6.8). **Its gap peaks on the ridge** in every source: on the
+   ensembles the exact share falls from 98% at `e < 0.62` to 22% at
+   `e ∈ [1.5, 2)` and 27% at `[2.4, 3)`, then climbs to 91% at `e ≥ 10`; the
+   mean gap per customer is 0.03–0.04 at `e = 1.5–3` and below 0.002 at the
+   ends. The worst gap is 14 (`n = 100`, `m = 50`, `e = 2.5`, optimum 37,
+   rule 51), and every one of the ten worst cases is at `n = 100` with
+   `m ≤ n / 2`. Per constant-`e` series, the rule's `width / n` at the largest
+   `n` sits 0.04–0.15 above `b` (median 0.08), by more at small `μ`; and on
+   the ridge the rule's excess per customer grows with `n` (0.03 at `n = 30`,
+   0.046 at 75, 0.058 at 100), so the rule's `width / n` is not an estimate
+   of the slope at the largest sizes, and item 05 should expect it to drift
+   upward at `n = 1,000–5,000`.
+
+5. **A stale table, corrected in passing.** `learning/data/instances.csv`
+   (2026-09-25) carries `provenance = solution` for four `125 × 125`
+   instances certified in October 2026 (`Random-125-125-2-2_0`, `2-3_0`,
+   `2-5_0`, `4-4_0`); item 01's build took its corpus optima from it, so
+   `learning/data/excess.csv` had 6,372 certified corpus rows. `corpus_rows`
+   now reads the value and provenance from the solution file (read only), the
+   map is rebuilt with 6,376 of 6,376 certified, and no number in §1 changes
+   (none of its tables uses the optimum). The four values are right in
+   `solutions/`; nothing was re-solved.
+
+### 2.2 Kill verdict
+
+**Met: the hypothesis "a function of `e` alone" is dead.** 13 of the 16
+constant-`e` matched pairs (26 of all 30) have slopes that differ by more
+than twice the larger standard error; the dependence on `μ` at fixed `e` is
+monotone, twenty standard errors wide at `e = 2`, and the first moment has
+it in the same direction. The finding recorded for items 05, 07, 08 and 09:
+**the parameter of the constant is `(d, μ)`, or, to a residual of 0.024,
+`β*(d, μ)`; the excess sets the threshold, the ridge and the scale, not the
+value.**
+
+### 2.3 What this does not claim
+
+- **A limit.** `b` is a finite-range slope on `n = 30–100` (30–125 for the
+  Chu & Stuckey classes). `opt / n` at the largest `n` is above `b` on every
+  series (the intercepts `a` are 3–9), `pw / n` falls with `n` at every fixed
+  density to 75, and §14 showed that constants fitted at `n ≤ 40` fail at
+  125. Whether the two slopes of a differing pair converge as `n → ∞` is not
+  tested here; what is shown is that at `n = 30–100` they differ by twenty
+  standard errors, and that the first-moment constants, which are limits,
+  differ in the same direction.
+- **That `β*` is the constant.** `b = 0.057 + 0.984 β*` is a description of
+  41 series, not a theorem; 14 of 30 `β*`-matched pairs still differ, and the
+  slack peaks on the ridge where the solver also struggles.
+- **Anything about the Bernoulli generator at fixed `p`.** Its series are not
+  constant-excess series and were excluded from the kill count; its 31 fits
+  are tabulated for completeness only.
+- **That the rule is a bound.** It is a heuristic, exact on 83% of the corpus
+  and worst on the ridge; `rule / n` is an upper envelope that drifts up with
+  `n` there.
+
+### 2.4 Figure
+
+`reports/figures/excess_opt.png`: one panel per product ratio `r = m / n`,
+the 41 constant-`e` series only (circles the fixed generator at `n = 30–100`,
+squares the Chu & Stuckey classes at `n = 30–125`); against the realised `e`,
+the certified slope `b` with its ±2 se bar (the bars are smaller than the
+markers), the rule's `width / n` at the largest `n`, and `β*` at the realised
+sizes. The grey line is `e = 1`, the band `e = 2–2.4`. Three quantities on
+three categorical slots; the Bernoulli series are left out for the reason in
+finding 1.
+
+![opt / n against the excess](figures/excess_opt.png)
+
+### 2.5 Tables, in full
+
+Scored: 57077 certified instances (corpus 6376, ensemble 50701), rule time 30.1 s in all; series with >= 3 sizes at n >= 30: 72 (41 with e constant in n to within 10% of its mean; the Bernoulli series at fixed p have e growing with n and are not constant-e series). e-matched pairs (|Δe| <= 0.05, different (generator, d or p, mu)): 30, of which 26 differ by more than twice the larger standard error; among the 16 pairs of two constant-e series, 13 differ. Verdict: the one-parameter hypothesis is DEAD (slopes differ on at least half of the constant-e matched pairs).
+
+
+#### Per series: opt = a + b n on n >= 30, the rule, beta*
+
+| generator   | r   |   param |      e |   e range over n |    mu |   mean size | n sizes                     |   instances |        a |       b |     se b |   b rule |   opt/n at max n |   rule/n at max n |   beta* (sizes) |   beta* (fixed d) |   rule exact |   rule gap mean |   rule gap max |
+|:------------|:----|--------:|-------:|-----------------:|------:|------------:|:----------------------------|------------:|---------:|--------:|---------:|---------:|-----------------:|------------------:|----------------:|------------------:|-------------:|----------------:|---------------:|
+| fixed       | n/4 |   3     |  0.96  |         0.00433  | 0.243 |        4.95 | 50, 60, 75                  |         150 |   6.62   | 0.0166  | 0.00685  |   0.0501 |           0.106  |            0.128  |          0      |            0      |      0.313   |          1.2    |              5 |
+| fixed       | n/4 |   4     |  1.09  |         0.0044   | 0.243 |        5.5  | 50, 60, 75                  |         150 |   6.97   | 0.0282  | 0.00634  |   0.072  |           0.122  |            0.164  |          0.0106 |            0      |      0.06    |          2.53   |              7 |
+| fixed       | n/4 |   5     |  1.25  |         0.0172   | 0.243 |        6.16 | 50, 60, 75                  |         150 |   6.1    | 0.0787  | 0.00774  |   0.122  |           0.16   |            0.206  |          0.0344 |            0      |      0.02    |          2.93   |              7 |
+| fixed       | n/4 |   6     |  1.44  |         0.0453   | 0.244 |        6.89 | 50, 60, 75, 100             |         180 |   6.6    | 0.12    | 0.00463  |   0.171  |           0.186  |            0.233  |          0.0658 |            0.0292 |      0.0222  |          3.32   |              8 |
+| fixed       | n/4 |   7     |  1.62  |         0.0349   | 0.243 |        7.65 | 50, 60, 75                  |         150 |   7.53   | 0.156   | 0.00972  |   0.197  |           0.255  |            0.305  |          0.0986 |            0.0694 |      0.02    |          3.17   |              8 |
+| fixed       | n/4 |   8     |  1.84  |         0.0702   | 0.244 |        8.51 | 50, 60, 75, 100             |         180 |   6.41   | 0.232   | 0.00549  |   0.282  |           0.301  |            0.351  |          0.139  |            0.116  |      0.0278  |          3.33   |              9 |
+| fixed       | n/4 |   9     |  2.05  |         0.0803   | 0.244 |        9.38 | 50, 60, 75, 100             |         180 |   6.86   | 0.282   | 0.00577  |   0.334  |           0.352  |            0.404  |          0.18   |            0.162  |      0.0667  |          3.42   |             10 |
+| fixed       | n/4 |  10     |  2.27  |         0.0954   | 0.244 |       10.3  | 50, 60, 75, 100             |         180 |   7.1    | 0.332   | 0.00597  |   0.398  |           0.406  |            0.457  |          0.223  |            0.209  |      0.0778  |          3.14   |              8 |
+| fixed       | n/4 |  12     |  2.73  |         0.111    | 0.244 |       12.2  | 50, 60, 75, 100             |         180 |   8.72   | 0.405   | 0.00632  |   0.465  |           0.492  |            0.54   |          0.306  |            0.299  |      0.0944  |          2.69   |             11 |
+| fixed       | n/2 |   2     |  0.864 |         0.0119   | 0.498 |        2.74 | 50, 60, 75                  |         150 |   4.72   | 0.00516 | 0.00586  |   0.0364 |           0.0677 |            0.0875 |          0      |            0      |      0.393   |          1.02   |              4 |
+| fixed       | n/2 |   3     |  1.21  |         0.0082   | 0.498 |        3.44 | 50, 60, 75                  |         150 |   4.74   | 0.0483  | 0.00624  |   0.0966 |           0.112  |            0.158  |          0.0262 |            0      |      0.00667 |          2.8    |              7 |
+| fixed       | n/2 |   4     |  1.63  |         0.0123   | 0.498 |        4.27 | 50, 60, 75, 100             |         180 |   4.19   | 0.151   | 0.00431  |   0.2    |           0.193  |            0.242  |          0.0932 |            0.0706 |      0.0222  |          3.14   |              8 |
+| fixed       | n/2 |   5     |  2.06  |         0.0333   | 0.498 |        5.14 | 50, 60, 75, 100             |         180 |   5.3    | 0.232   | 0.00531  |   0.291  |           0.285  |            0.334  |          0.169  |            0.157  |      0.0389  |          3.16   |              8 |
+| fixed       | n/2 |   6     |  2.53  |         0.0412   | 0.498 |        6.09 | 50, 60, 75, 100             |         180 |   5.48   | 0.323   | 0.00525  |   0.391  |           0.379  |            0.432  |          0.249  |            0.242  |      0.05    |          2.84   |              9 |
+| fixed       | n/2 |   7     |  3.01  |         0.0451   | 0.498 |        7.05 | 50, 60, 75, 100             |         180 |   6.01   | 0.4     | 0.00509  |   0.452  |           0.459  |            0.501  |          0.327  |            0.323  |      0.0667  |          2.58   |              7 |
+| fixed       | n/2 |   8     |  3.5   |         0.0497   | 0.498 |        8.03 | 50, 60, 75, 100             |         180 |   6.7    | 0.463   | 0.00586  |   0.524  |           0.532  |            0.581  |          0.398  |            0.396  |      0.0833  |          2.54   |              8 |
+| fixed       | n/2 |   9     |  3.99  |         0.0514   | 0.498 |        9.02 | 50, 60, 75                  |         150 |   7.29   | 0.517   | 0.0108   |   0.56   |           0.613  |            0.647  |          0.463  |            0.462  |      0.147   |          1.85   |              5 |
+| fixed       | n/2 |  10     |  4.48  |         0.0611   | 0.498 |       10    | 50, 60, 75                  |         150 |   6.55   | 0.585   | 0.00965  |   0.622  |           0.673  |            0.701  |          0.521  |            0.521  |      0.133   |          1.61   |              5 |
+| fixed       | n   |   2     |  1.13  |         0.0131   | 1     |        2.13 | 30, 35, 40, 50, 60, 75, 100 |         625 |   3.11   | 0.0378  | 0.00141  |   0.0637 |           0.0692 |            0.0904 |          0.0134 |            0      |      0.362   |          0.885  |              4 |
+| fixed       | n   |   3     |  2.04  |         0.009    | 1     |        3.04 | 30, 35, 40, 50, 60, 75      |         600 |   3.54   | 0.2     | 0.00267  |   0.245  |           0.245  |            0.284  |          0.147  |            0.14   |      0.203   |          1.43   |              6 |
+| fixed       | n   |   4     |  3.02  |         0.00547  | 1     |        4.02 | 30, 35, 40, 50, 60, 75, 100 |         601 |   4.17   | 0.348   | 0.00288  |   0.399  |           0.38   |            0.45   |          0.288  |            0.286  |      0.253   |          1.37   |              9 |
+| fixed       | n   |   5     |  4     |         0.00378  | 1     |        5    | 30, 35, 40, 50, 60, 75      |         600 |   4.11   | 0.479   | 0.00324  |   0.525  |           0.534  |            0.569  |          0.411  |            0.411  |      0.332   |          1.08   |              6 |
+| fixed       | n   |   6     |  5     |         0.00183  | 1     |        6    | 30, 35, 40, 50, 60, 75      |         600 |   4.11   | 0.577   | 0.00299  |   0.615  |           0.632  |            0.658  |          0.513  |            0.513  |      0.437   |          0.857  |              5 |
+| fixed       | n   |   7     |  6     |         0.00107  | 1     |        7    | 30, 35, 40, 50, 60, 75      |         600 |   4.12   | 0.651   | 0.00289  |   0.686  |           0.706  |            0.731  |          0.595  |            0.595  |      0.48    |          0.733  |              5 |
+| fixed       | n   |   8     |  7     |         0.0004   | 1     |        8    | 30, 35, 40, 50, 60, 75      |         600 |   4.19   | 0.706   | 0.00246  |   0.737  |           0.762  |            0.783  |          0.661  |            0.661  |      0.638   |          0.487  |              4 |
+| fixed       | n   |   9     |  8     |         0.0004   | 1     |        9    | 30, 35, 40, 50, 60, 75      |         600 |   4.12   | 0.752   | 0.00231  |   0.777  |           0.805  |            0.821  |          0.714  |            0.714  |      0.71    |          0.365  |              3 |
+| fixed       | n   |  10     |  9     |         0        | 1     |       10    | 30, 35, 40, 50, 60, 75      |         600 |   3.71   | 0.795   | 0.00218  |   0.817  |           0.843  |            0.858  |          0.757  |            0.757  |      0.75    |          0.298  |              3 |
+| fixed       | 2n  |   2     |  2.02  |         0.00473  | 2     |        2.01 | 30, 35, 40, 50, 60, 75      |         599 |   2.88   | 0.167   | 0.00231  |   0.2    |           0.204  |            0.236  |          0.123  |            0.121  |      0.282   |          1.12   |              5 |
+| fixed       | 2n  |   3     |  4     |         0.00137  | 2     |        3    | 30, 35, 40, 50, 60, 75      |         600 |   3.35   | 0.409   | 0.00275  |   0.447  |           0.454  |            0.484  |          0.356  |            0.355  |      0.272   |          1.23   |              5 |
+| fixed       | 2n  |   4     |  6     |         0.000333 | 2     |        4    | 30, 35, 40, 50, 60, 75      |         600 |   3.66   | 0.568   | 0.00274  |   0.601  |           0.617  |            0.643  |          0.525  |            0.525  |      0.4     |          0.88   |              5 |
+| fixed       | 2n  |   5     |  8     |         0        | 2     |        5    | 30, 35, 40, 50, 60, 75      |         600 |   3.25   | 0.685   | 0.00243  |   0.712  |           0.728  |            0.75   |          0.642  |            0.642  |      0.485   |          0.667  |              3 |
+| fixed       | 2n  |   6     | 10     |         0        | 2     |        6    | 30, 35, 40, 50, 60, 75      |         600 |   3.24   | 0.755   | 0.00219  |   0.776  |           0.799  |            0.814  |          0.724  |            0.724  |      0.635   |          0.433  |              3 |
+| fixed       | 2n  |   7     | 12     |         0        | 2     |        7    | 30, 35, 40, 50, 60, 75      |         600 |   2.96   | 0.811   | 0.0019   |   0.832  |           0.851  |            0.864  |          0.782  |            0.782  |      0.712   |          0.318  |              3 |
+| fixed       | 2n  |   8     | 14     |         0        | 2     |        8    | 30, 35, 40, 50, 60, 75      |         600 |   2.92   | 0.847   | 0.00179  |   0.861  |           0.885  |            0.894  |          0.825  |            0.825  |      0.818   |          0.19   |              2 |
+| fixed       | 2n  |   9     | 16     |         0        | 2     |        9    | 30, 35, 40, 50, 60, 75      |         600 |   2.82   | 0.873   | 0.00153  |   0.886  |           0.91   |            0.919  |          0.856  |            0.856  |      0.867   |          0.143  |              2 |
+| fixed       | 2n  |  10     | 18     |         0        | 2     |       10    | 30, 35, 40, 50, 60, 75      |         600 |   2.72   | 0.894   | 0.00159  |   0.905  |           0.93   |            0.937  |          0.88   |            0.88   |      0.92    |          0.085  |              2 |
+| bernoulli   | n/4 |   0.05  |  0.976 |         0.165    | 0.243 |        5.06 | 50, 60, 75                  |         150 |   3.97   | 0.0848  | 0.01     |   0.18   |           0.138  |            0.177  |          0      |          nan      |      0.32    |          1.61   |              7 |
+| bernoulli   | n/4 |   0.075 |  1.21  |         0.306    | 0.243 |        6.06 | 50, 60, 75                  |         150 |  -2.21   | 0.234   | 0.0128   |   0.376  |           0.206  |            0.274  |          0.0306 |          nan      |      0.0733  |          3.33   |              9 |
+| bernoulli   | n/4 |   0.1   |  1.6   |         1.08     | 0.244 |        7.91 | 50, 60, 75, 100             |         180 | -19.4    | 0.584   | 0.0122   |   0.668  |           0.411  |            0.477  |          0.112  |          nan      |      0.0333  |          4.29   |             12 |
+| bernoulli   | n/4 |   0.125 |  1.77  |         0.686    | 0.243 |        8.45 | 50, 60, 75                  |         150 | -18      | 0.636   | 0.0191   |   0.743  |           0.397  |            0.463  |          0.135  |          nan      |      0.06    |          3.72   |              9 |
+| bernoulli   | n/4 |   0.15  |  2.11  |         0.823    | 0.243 |        9.89 | 50, 60, 75                  |         150 | -21.1    | 0.77    | 0.0192   |   0.829  |           0.491  |            0.548  |          0.202  |          nan      |      0.0467  |          3.66   |              8 |
+| bernoulli   | n/4 |   0.2   |  2.78  |         1.15     | 0.243 |       12.7  | 50, 60, 75                  |         150 | -23.9    | 0.962   | 0.021    |   0.974  |           0.641  |            0.679  |          0.329  |          nan      |      0.0867  |          2.75   |              7 |
+| bernoulli   | n/2 |   0.025 |  0.765 |         0.164    | 0.498 |        2.56 | 50, 60, 75                  |         150 |   3.63   | 0.0414  | 0.00803  |   0.11   |           0.0896 |            0.116  |          0      |          nan      |      0.487   |          0.967  |              7 |
+| bernoulli   | n/2 |   0.05  |  1.41  |         1.03     | 0.498 |        4.01 | 50, 60, 75, 100             |         180 | -17      | 0.462   | 0.0114   |   0.552  |           0.31   |            0.377  |          0.0728 |          nan      |      0.0333  |          3.93   |             11 |
+| bernoulli   | n/2 |   0.075 |  1.9   |         0.801    | 0.498 |        4.94 | 50, 60, 75                  |         150 | -20.3    | 0.644   | 0.0186   |   0.69   |           0.378  |            0.433  |          0.153  |          nan      |      0       |          3.46   |              9 |
+| bernoulli   | n/2 |   0.1   |  2.61  |         1.14     | 0.498 |        6.41 | 50, 60, 75                  |         150 | -25.7    | 0.87    | 0.0217   |   0.887  |           0.532  |            0.575  |          0.277  |          nan      |      0.0467  |          3.11   |              7 |
+| bernoulli   | n/2 |   0.15  |  4.11  |         1.71     | 0.498 |        9.49 | 50, 60, 75                  |         150 | -23.4    | 1.04    | 0.0166   |   1.05   |           0.73   |            0.758  |          0.494  |          nan      |      0.113   |          1.97   |              5 |
+| bernoulli   | n/2 |   0.2   |  5.66  |         2.34     | 0.498 |       12.7  | 50, 60, 75                  |         150 | -19.2    | 1.11    | 0.0136   |   1.09   |           0.849  |            0.86   |          0.65   |          nan      |      0.307   |          1.07   |              3 |
+| bernoulli   | n   |   0.025 |  0.651 |         0.649    | 1     |        1.71 | 30, 35, 40, 50, 60, 75      |         600 |   0.506  | 0.101   | 0.00331  |   0.178  |           0.121  |            0.169  |          0      |          nan      |      0.685   |          0.667  |              7 |
+| bernoulli   | n   |   0.05  |  1.36  |         1.91     | 1     |        2.53 | 30, 35, 40, 50, 60, 75      |         600 | -12.7    | 0.539   | 0.00658  |   0.604  |           0.402  |            0.446  |          0.074  |          nan      |      0.238   |          1.57   |              7 |
+| bernoulli   | n   |   0.075 |  2.23  |         3.09     | 1     |        3.52 | 30, 35, 40, 50, 60, 75      |         600 | -18.7    | 0.835   | 0.00692  |   0.867  |           0.611  |            0.646  |          0.23   |          nan      |      0.16    |          1.61   |              7 |
+| bernoulli   | n   |   0.1   |  3.2   |         4.48     | 1     |        4.61 | 30, 35, 40, 50, 60, 75      |         600 | -19.7    | 0.998   | 0.00602  |   1.01   |           0.752  |            0.775  |          0.38   |          nan      |      0.223   |          1.35   |              6 |
+| bernoulli   | n   |   0.15  |  5.26  |         6.69     | 1     |        6.88 | 30, 35, 40, 50, 60, 75      |         600 | -15.1    | 1.08    | 0.00485  |   1.08   |           0.886  |            0.895  |          0.6    |          nan      |      0.397   |          0.812  |              4 |
+| bernoulli   | n   |   0.2   |  7.36  |         9.12     | 1     |        9.19 | 30, 35, 40, 50, 60, 75      |         600 | -10.4    | 1.08    | 0.00362  |   1.08   |           0.944  |            0.947  |          0.734  |          nan      |      0.675   |          0.362  |              2 |
+| bernoulli   | n   |   0.3   |  9.48  |         2.96     | 1     |       10.6  | 30, 35, 40                  |         450 |  -5.41   | 1.08    | 0.00843  |   1.07   |           0.941  |            0.942  |          0.783  |          nan      |      0.924   |          0.0778 |              2 |
+| bernoulli   | n   |   0.4   | 13     |         3.97     | 1     |       14.2  | 30, 35, 40                  |         450 |  -2.49   | 1.05    | 0.00664  |   1.05   |           0.989  |            0.989  |          0.867  |          nan      |      1       |          0      |              0 |
+| bernoulli   | n   |   0.5   | 16.5   |         4.94     | 1     |       17.8  | 30, 35, 40                  |         450 |  -0.18   | 1       | 0.00226  |   1      |           1      |            1      |          0.911  |          nan      |      1       |          0      |              0 |
+| bernoulli   | 2n  |   0.025 |  0.899 |         1.55     | 2     |        1.52 | 30, 35, 40, 50, 60, 75      |         598 |  -7.71   | 0.334   | 0.00575  |   0.412  |           0.267  |            0.314  |          0.003  |          nan      |      0.503   |          0.962  |              8 |
+| bernoulli   | 2n  |   0.05  |  2.57  |         4.07     | 2     |        2.47 | 30, 35, 40, 50, 60, 75      |         650 | -20.1    | 0.86    | 0.00598  |   0.892  |           0.621  |            0.651  |          0.27   |          nan      |      0.2     |          1.51   |              6 |
+| bernoulli   | 2n  |   0.075 |  4.34  |         6.53     | 2     |        3.47 | 30, 35, 40, 50, 60, 75      |         600 | -19      | 1.04    | 0.00536  |   1.05   |           0.791  |            0.812  |          0.478  |          nan      |      0.26    |          1.16   |              4 |
+| bernoulli   | 2n  |   0.1   |  6.38  |         8.91     | 2     |        4.6  | 30, 35, 40, 50, 60, 75      |         600 | -15      | 1.08    | 0.00432  |   1.08   |           0.877  |            0.887  |          0.629  |          nan      |      0.425   |          0.752  |              4 |
+| bernoulli   | 2n  |   0.15  | 10.5   |        13.6      | 2     |        6.87 | 30, 35, 40, 50, 60, 75      |         600 |  -8.97   | 1.08    | 0.00289  |   1.07   |           0.954  |            0.957  |          0.793  |          nan      |      0.692   |          0.332  |              2 |
+| bernoulli   | 2n  |   0.2   | 14.7   |        17.9      | 2     |        9.15 | 30, 35, 40, 50, 60, 75      |         600 |  -4.96   | 1.05    | 0.00204  |   1.05   |           0.982  |            0.982  |          0.871  |          nan      |      0.873   |          0.127  |              1 |
+| bernoulli   | 2n  |   0.3   | 19     |         6.08     | 2     |       10.7  | 30, 35, 40                  |         450 |  -2.1    | 1.04    | 0.00623  |   1.04   |           0.991  |            0.991  |          0.896  |          nan      |      1       |          0      |              0 |
+| bernoulli   | 2n  |   0.4   | 26.1   |         7.93     | 2     |       14.2  | 30, 35, 40                  |         450 |  -0.0767 | 1       | 0.000937 |   1      |           1      |            1      |          0.937  |          nan      |      1       |          0      |              0 |
+| bernoulli   | 2n  |   0.5   | 33     |         9.94     | 2     |       17.7  | 30, 35, 40                  |         450 |   0      | 1       | 0        |   1      |           1      |            1      |          0.958  |          nan      |      1       |          0      |              0 |
+| bernoulli   | 4n  |   0.04  |  4.53  |         2.61     | 4     |        2.17 | 40, 50, 60                  |         150 | -22.2    | 0.972   | 0.0168   |   1      |           0.603  |            0.635  |          0.419  |          nan      |      0.167   |          1.55   |              5 |
+| chu_stuckey | n   |   2     |  1.77  |         0.131    | 1     |        2.76 | 30, 40, 50, 75, 100, 125    |          30 |   5.04   | 0.146   | 0.0117   |   0.206  |           0.182  |            0.237  |          0.105  |            0      |      0.1     |          3.57   |             10 |
+| chu_stuckey | n   |   4     |  3.26  |         0.167    | 1     |        4.25 | 30, 40, 50, 75, 100, 125    |          30 |   4.3    | 0.396   | 0.0142   |   0.453  |           0.424  |            0.478  |          0.327  |            0.286  |      0.0667  |          3.17   |             10 |
+| chu_stuckey | n   |   6     |  5.09  |         0.38     | 1     |        6.11 | 30, 40, 50, 75, 100, 125    |          30 |   4.35   | 0.599   | 0.0112   |   0.626  |           0.627  |            0.653  |          0.532  |            0.513  |      0.2     |          1.57   |              7 |
+| chu_stuckey | n   |   8     |  7.07  |         0.449    | 1     |        8.09 | 30, 40, 50, 75, 100, 125    |          30 |   4.06   | 0.722   | 0.00785  |   0.76   |           0.749  |            0.778  |          0.673  |            0.661  |      0.367   |          1.43   |              5 |
+| chu_stuckey | n   |  10     |  9.01  |         0.412    | 1     |       10    | 30, 40, 50, 75, 100, 125    |          30 |   3.61   | 0.804   | 0.00818  |   0.824  |           0.826  |            0.843  |          0.763  |            0.757  |      0.567   |          0.7    |              4 |
+
+#### The e-matched groups named by the item (fixed generator)
+
+| group   |   d |    mu |    e | within tolerance   |      b |    se b |   beta* |   b - beta* |   rule/n at max n |   rule/n - b |
+|:--------|----:|------:|-----:|:-------------------|-------:|--------:|--------:|------------:|------------------:|-------------:|
+| e = 1   |   2 | 1     | 1.13 | True               | 0.0378 | 0.00141 |  0.0134 |      0.0244 |            0.0904 |       0.0526 |
+| e = 1   |   3 | 0.498 | 1.21 | False              | 0.0483 | 0.00624 |  0.0262 |      0.0221 |            0.158  |       0.11   |
+| e = 1   |   4 | 0.243 | 1.09 | True               | 0.0282 | 0.00634 |  0.0106 |      0.0176 |            0.164  |       0.136  |
+| e = 2   |   3 | 1     | 2.04 | True               | 0.2    | 0.00267 |  0.147  |      0.0532 |            0.284  |       0.0842 |
+| e = 2   |   5 | 0.498 | 2.06 | True               | 0.232  | 0.00531 |  0.169  |      0.0629 |            0.334  |       0.102  |
+| e = 2   |   2 | 2     | 2.02 | True               | 0.167  | 0.00231 |  0.123  |      0.0442 |            0.236  |       0.0692 |
+| e = 2   |   9 | 0.244 | 2.05 | True               | 0.282  | 0.00577 |  0.18   |      0.101  |            0.404  |       0.122  |
+| e = 3   |   4 | 1     | 3.02 | True               | 0.348  | 0.00288 |  0.288  |      0.0604 |            0.45   |       0.102  |
+| e = 3   |   7 | 0.498 | 3.01 | True               | 0.4    | 0.00509 |  0.327  |      0.0733 |            0.501  |       0.101  |
+| e = 3   |  12 | 0.244 | 2.73 | False              | 0.405  | 0.00632 |  0.306  |      0.0991 |            0.54   |       0.134  |
+| e = 4   |   5 | 1     | 4    | True               | 0.479  | 0.00324 |  0.411  |      0.0678 |            0.569  |       0.0899 |
+| e = 4   |   9 | 0.498 | 3.99 | True               | 0.517  | 0.0108  |  0.463  |      0.0546 |            0.647  |       0.129  |
+| e = 4   |   3 | 2     | 4    | True               | 0.409  | 0.00275 |  0.356  |      0.0533 |            0.484  |       0.0754 |
+| e = 6   |   7 | 1     | 6    | True               | 0.651  | 0.00289 |  0.595  |      0.0555 |            0.731  |       0.08   |
+| e = 6   |   4 | 2     | 6    | True               | 0.568  | 0.00274 |  0.525  |      0.0433 |            0.643  |       0.0749 |
+| e = 8   |   9 | 1     | 8    | True               | 0.752  | 0.00231 |  0.714  |      0.0378 |            0.821  |       0.0685 |
+| e = 8   |   5 | 2     | 8    | True               | 0.685  | 0.00243 |  0.642  |      0.0424 |            0.75   |       0.0654 |
+
+#### The e-matched pairs
+
+| series 1              | series 2              |   e 1 |   e 2 |     b 1 |    b 2 |     diff |   2 max se |   |diff| / 2 max se | differ   | both constant e   |   beta* 1 |   beta* 2 |   rule/n 1 |   rule/n 2 |
+|:----------------------|:----------------------|------:|------:|--------:|-------:|---------:|-----------:|--------------------:|:---------|:------------------|----------:|----------:|-----------:|-----------:|
+| fixed r=n/2 2         | bernoulli r=2n 0.025  | 0.864 | 0.899 | 0.00516 | 0.334  | -0.328   |    0.0117  |              28     | True     | False             |    0      |    0.003  |     0.0875 |     0.314  |
+| fixed r=n/4 3         | bernoulli r=n/4 0.05  | 0.96  | 0.976 | 0.0166  | 0.0848 | -0.0682  |    0.0201  |               3.39  | True     | False             |    0      |    0      |     0.128  |     0.177  |
+| fixed r=n/4 4         | fixed r=n 2           | 1.09  | 1.13  | 0.0282  | 0.0378 | -0.00955 |    0.0127  |               0.753 | False    | True              |    0.0106 |    0.0134 |     0.164  |     0.0904 |
+| fixed r=n/2 3         | bernoulli r=n/4 0.075 | 1.21  | 1.21  | 0.0483  | 0.234  | -0.186   |    0.0256  |               7.25  | True     | False             |    0.0262 |    0.0306 |     0.158  |     0.274  |
+| fixed r=n/4 5         | fixed r=n/2 3         | 1.25  | 1.21  | 0.0787  | 0.0483 |  0.0304  |    0.0155  |               1.96  | True     | True              |    0.0344 |    0.0262 |     0.206  |     0.158  |
+| fixed r=n/4 5         | bernoulli r=n/4 0.075 | 1.25  | 1.21  | 0.0787  | 0.234  | -0.155   |    0.0256  |               6.06  | True     | False             |    0.0344 |    0.0306 |     0.206  |     0.274  |
+| fixed r=n/4 6         | bernoulli r=n/2 0.05  | 1.44  | 1.41  | 0.12    | 0.462  | -0.342   |    0.0229  |              14.9   | True     | False             |    0.0658 |    0.0728 |     0.233  |     0.377  |
+| fixed r=n/4 7         | fixed r=n/2 4         | 1.62  | 1.63  | 0.156   | 0.151  |  0.00457 |    0.0194  |               0.235 | False    | True              |    0.0986 |    0.0932 |     0.305  |     0.242  |
+| fixed r=n/4 7         | bernoulli r=n/4 0.1   | 1.62  | 1.6   | 0.156   | 0.584  | -0.429   |    0.0243  |              17.6   | True     | False             |    0.0986 |    0.112  |     0.305  |     0.477  |
+| fixed r=n/2 4         | bernoulli r=n/4 0.1   | 1.63  | 1.6   | 0.151   | 0.584  | -0.433   |    0.0243  |              17.8   | True     | False             |    0.0932 |    0.112  |     0.242  |     0.477  |
+| bernoulli r=n/4 0.125 | chu_stuckey r=n 2     | 1.77  | 1.77  | 0.636   | 0.146  |  0.49    |    0.0383  |              12.8   | True     | False             |    0.135  |    0.105  |     0.463  |     0.237  |
+| fixed r=n 3           | fixed r=2n 2          | 2.04  | 2.02  | 0.2     | 0.167  |  0.0329  |    0.00533 |               6.16  | True     | True              |    0.147  |    0.123  |     0.284  |     0.236  |
+| fixed r=n/4 9         | fixed r=n/2 5         | 2.05  | 2.06  | 0.282   | 0.232  |  0.05    |    0.0115  |               4.33  | True     | True              |    0.18   |    0.169  |     0.404  |     0.334  |
+| fixed r=n/4 9         | fixed r=n 3           | 2.05  | 2.04  | 0.282   | 0.2    |  0.0818  |    0.0115  |               7.09  | True     | True              |    0.18   |    0.147  |     0.404  |     0.284  |
+| fixed r=n/4 9         | fixed r=2n 2          | 2.05  | 2.02  | 0.282   | 0.167  |  0.115   |    0.0115  |               9.94  | True     | True              |    0.18   |    0.123  |     0.404  |     0.236  |
+| fixed r=n/2 5         | fixed r=n 3           | 2.06  | 2.04  | 0.232   | 0.2    |  0.0318  |    0.0106  |               3     | True     | True              |    0.169  |    0.147  |     0.334  |     0.284  |
+| fixed r=n/2 5         | fixed r=2n 2          | 2.06  | 2.02  | 0.232   | 0.167  |  0.0647  |    0.0106  |               6.09  | True     | True              |    0.169  |    0.123  |     0.334  |     0.236  |
+| fixed r=n/2 5         | bernoulli r=n/4 0.15  | 2.06  | 2.11  | 0.232   | 0.77   | -0.539   |    0.0385  |              14     | True     | False             |    0.169  |    0.202  |     0.334  |     0.548  |
+| fixed r=n/4 10        | bernoulli r=n 0.075   | 2.27  | 2.23  | 0.332   | 0.835  | -0.504   |    0.0138  |              36.4   | True     | False             |    0.223  |    0.23   |     0.457  |     0.646  |
+| fixed r=n/2 6         | bernoulli r=2n 0.05   | 2.53  | 2.57  | 0.323   | 0.86   | -0.538   |    0.012   |              45     | True     | False             |    0.249  |    0.27   |     0.432  |     0.651  |
+| bernoulli r=n/2 0.1   | bernoulli r=2n 0.05   | 2.61  | 2.57  | 0.87    | 0.86   |  0.00996 |    0.0434  |               0.23  | False    | False             |    0.277  |    0.27   |     0.575  |     0.651  |
+| fixed r=n/4 12        | bernoulli r=n/4 0.2   | 2.73  | 2.78  | 0.405   | 0.962  | -0.557   |    0.042   |              13.2   | True     | False             |    0.306  |    0.329  |     0.54   |     0.679  |
+| fixed r=n/2 7         | fixed r=n 4           | 3.01  | 3.02  | 0.4     | 0.348  |  0.0515  |    0.0102  |               5.07  | True     | True              |    0.327  |    0.288  |     0.501  |     0.45   |
+| fixed r=n/2 9         | fixed r=n 5           | 3.99  | 4     | 0.517   | 0.479  |  0.0382  |    0.0217  |               1.76  | True     | True              |    0.463  |    0.411  |     0.647  |     0.569  |
+| fixed r=n/2 9         | fixed r=2n 3          | 3.99  | 4     | 0.517   | 0.409  |  0.109   |    0.0217  |               5.01  | True     | True              |    0.463  |    0.356  |     0.647  |     0.484  |
+| fixed r=n 5           | fixed r=2n 3          | 4     | 4     | 0.479   | 0.409  |  0.0703  |    0.00647 |              10.9   | True     | True              |    0.411  |    0.356  |     0.569  |     0.484  |
+| fixed r=n/2 10        | bernoulli r=4n 0.04   | 4.48  | 4.53  | 0.585   | 0.972  | -0.387   |    0.0336  |              11.5   | True     | False             |    0.521  |    0.419  |     0.701  |     0.635  |
+| fixed r=n 7           | fixed r=2n 4          | 6     | 6     | 0.651   | 0.568  |  0.0825  |    0.00577 |              14.3   | True     | True              |    0.595  |    0.525  |     0.731  |     0.643  |
+| fixed r=n 9           | fixed r=2n 5          | 8     | 8     | 0.752   | 0.685  |  0.0673  |    0.00485 |              13.9   | True     | True              |    0.714  |    0.642  |     0.821  |     0.75   |
+| fixed r=n 10          | chu_stuckey r=n 10    | 9     | 9.01  | 0.795   | 0.804  | -0.00946 |    0.0164  |               0.578 | False    | True              |    0.757  |    0.763  |     0.858  |     0.843  |
+
+#### Is b a function of beta* alone? Residuals of b about beta* on the constant-e series
+
+| series 1       | series 2           |   beta* 1 |   beta* 2 |    e 1 |    e 2 |     b 1 |     b 2 |     diff |   2 max se | differ   |
+|:---------------|:-------------------|----------:|----------:|-------:|-------:|--------:|--------:|---------:|-----------:|:---------|
+| fixed r=n/4 3  | fixed r=n/4 4      |    0      |    0.0106 |  0.96  |  1.09  | 0.0166  | 0.0282  | -0.0116  |    0.0137  | False    |
+| fixed r=n/4 3  | fixed r=n/2 2      |    0      |    0      |  0.96  |  0.864 | 0.0166  | 0.00516 |  0.0115  |    0.0137  | False    |
+| fixed r=n/4 3  | fixed r=n 2        |    0      |    0.0134 |  0.96  |  1.13  | 0.0166  | 0.0378  | -0.0211  |    0.0137  | True     |
+| fixed r=n/2 2  | fixed r=n 2        |    0      |    0.0134 |  0.864 |  1.13  | 0.00516 | 0.0378  | -0.0326  |    0.0117  | True     |
+| fixed r=n/4 4  | fixed r=n/2 3      |    0.0106 |    0.0262 |  1.09  |  1.21  | 0.0282  | 0.0483  | -0.0201  |    0.0127  | True     |
+| fixed r=n/4 4  | fixed r=n 2        |    0.0106 |    0.0134 |  1.09  |  1.13  | 0.0282  | 0.0378  | -0.00955 |    0.0127  | False    |
+| fixed r=n/4 4  | fixed r=n/2 2      |    0.0106 |    0      |  1.09  |  0.864 | 0.0282  | 0.00516 |  0.0231  |    0.0127  | True     |
+| fixed r=n/2 3  | fixed r=n 2        |    0.0262 |    0.0134 |  1.21  |  1.13  | 0.0483  | 0.0378  |  0.0106  |    0.0125  | False    |
+| fixed r=n/4 5  | fixed r=n/2 3      |    0.0344 |    0.0262 |  1.25  |  1.21  | 0.0787  | 0.0483  |  0.0304  |    0.0155  | True     |
+| fixed r=n/2 4  | chu_stuckey r=n 2  |    0.0932 |    0.105  |  1.63  |  1.77  | 0.151   | 0.146   |  0.00488 |    0.0233  | False    |
+| fixed r=n/4 7  | fixed r=n/2 4      |    0.0986 |    0.0932 |  1.62  |  1.63  | 0.156   | 0.151   |  0.00457 |    0.0194  | False    |
+| fixed r=n/4 7  | chu_stuckey r=n 2  |    0.0986 |    0.105  |  1.62  |  1.77  | 0.156   | 0.146   |  0.00945 |    0.0233  | False    |
+| fixed r=2n 2   | chu_stuckey r=n 2  |    0.123  |    0.105  |  2.02  |  1.77  | 0.167   | 0.146   |  0.0209  |    0.0233  | False    |
+| fixed r=n/4 8  | fixed r=n 3        |    0.139  |    0.147  |  1.84  |  2.04  | 0.232   | 0.2     |  0.0325  |    0.011   | True     |
+| fixed r=n/4 8  | fixed r=2n 2       |    0.139  |    0.123  |  1.84  |  2.02  | 0.232   | 0.167   |  0.0654  |    0.011   | True     |
+| fixed r=n/4 9  | fixed r=n/2 5      |    0.18   |    0.169  |  2.05  |  2.06  | 0.282   | 0.232   |  0.05    |    0.0115  | True     |
+| fixed r=n/4 12 | fixed r=n 4        |    0.306  |    0.288  |  2.73  |  3.02  | 0.405   | 0.348   |  0.0569  |    0.0126  | True     |
+| fixed r=n/2 7  | chu_stuckey r=n 4  |    0.327  |    0.327  |  3.01  |  3.26  | 0.4     | 0.396   |  0.0037  |    0.0283  | False    |
+| fixed r=n/2 8  | fixed r=n 5        |    0.398  |    0.411  |  3.5   |  4     | 0.463   | 0.479   | -0.0164  |    0.0117  | True     |
+| fixed r=n 6    | chu_stuckey r=n 6  |    0.513  |    0.532  |  5     |  5.09  | 0.577   | 0.599   | -0.0216  |    0.0224  | False    |
+| fixed r=n 6    | fixed r=2n 4       |    0.513  |    0.525  |  5     |  6     | 0.577   | 0.568   |  0.00894 |    0.00598 | True     |
+| fixed r=n/2 10 | fixed r=2n 4       |    0.521  |    0.525  |  4.48  |  6     | 0.585   | 0.568   |  0.0164  |    0.0193  | False    |
+| fixed r=n/2 10 | chu_stuckey r=n 6  |    0.521  |    0.532  |  4.48  |  5.09  | 0.585   | 0.599   | -0.0141  |    0.0224  | False    |
+| fixed r=n/2 10 | fixed r=n 6        |    0.521  |    0.513  |  4.48  |  5     | 0.585   | 0.577   |  0.00746 |    0.0193  | False    |
+| fixed r=2n 4   | chu_stuckey r=n 6  |    0.525  |    0.532  |  6     |  5.09  | 0.568   | 0.599   | -0.0305  |    0.0224  | True     |
+| fixed r=n 8    | fixed r=2n 5       |    0.661  |    0.642  |  7     |  8     | 0.706   | 0.685   |  0.0215  |    0.00493 | True     |
+| fixed r=n 8    | chu_stuckey r=n 8  |    0.661  |    0.673  |  7     |  7.07  | 0.706   | 0.722   | -0.0162  |    0.0157  | True     |
+| fixed r=n 9    | fixed r=2n 6       |    0.714  |    0.724  |  8     | 10     | 0.752   | 0.755   | -0.00342 |    0.00462 | False    |
+| fixed r=n 10   | chu_stuckey r=n 10 |    0.757  |    0.763  |  9     |  9.01  | 0.795   | 0.804   | -0.00946 |    0.0164  | False    |
+| fixed r=2n 7   | chu_stuckey r=n 10 |    0.782  |    0.763  | 12     |  9.01  | 0.811   | 0.804   |  0.00725 |    0.0164  | False    |
+
+#### The rule against the optimum, per excess bin
+
+| source   | e bin     |   count | n range   |   exact |   gap mean |   gap q90 |   gap max |   gap/n mean |   opt/n mean |   rule/n mean |
+|:---------|:----------|--------:|:----------|--------:|-----------:|----------:|----------:|-------------:|-------------:|--------------:|
+| corpus   | [0.62, 1) |      12 | 10-50     |   0.667 |     0.333  |       1   |         1 |     0.00769  |        0.195 |         0.203 |
+| corpus   | [1, 1.5)  |     273 | 10-134    |   0.568 |     0.857  |       2.8 |         8 |     0.0219   |        0.238 |         0.26  |
+| corpus   | [1.5, 2)  |     326 | 10-125    |   0.414 |     1.21   |       3   |        10 |     0.0341   |        0.396 |         0.43  |
+| corpus   | [2, 2.4)  |     458 | 9-50      |   0.624 |     0.546  |       2   |         4 |     0.0224   |        0.501 |         0.523 |
+| corpus   | [2.4, 3)  |     434 | 9-125     |   0.682 |     0.502  |       2   |         7 |     0.0173   |        0.622 |         0.64  |
+| corpus   | [3, 4)    |     877 | 10-125    |   0.774 |     0.392  |       1   |        10 |     0.011    |        0.719 |         0.73  |
+| corpus   | [4, 6)    |    1627 | 10-125    |   0.897 |     0.136  |       1   |         7 |     0.00455  |        0.86  |         0.864 |
+| corpus   | [6, 10)   |    1602 | 10-125    |   0.958 |     0.0655 |       0   |         5 |     0.00132  |        0.948 |         0.95  |
+| corpus   | >= 10     |     767 | 10-100    |   0.993 |     0.0117 |       0   |         3 |     0.000209 |        0.989 |         0.989 |
+| ensemble | [0, 0.62) |    2899 | 10-60     |   0.982 |     0.0183 |       0   |         2 |     0.000578 |        0.199 |         0.199 |
+| ensemble | [0.62, 1) |    2323 | 10-75     |   0.663 |     0.483  |       2   |         7 |     0.0116   |        0.181 |         0.193 |
+| ensemble | [1, 1.5)  |    4258 | 10-100    |   0.369 |     1.38   |       4   |         9 |     0.0295   |        0.212 |         0.241 |
+| ensemble | [1.5, 2)  |    2621 | 10-100    |   0.225 |     2.22   |       5   |        12 |     0.0407   |        0.313 |         0.354 |
+| ensemble | [2, 2.4)  |    4525 | 10-100    |   0.352 |     1.51   |       4   |        12 |     0.0317   |        0.355 |         0.386 |
+| ensemble | [2.4, 3)  |    2181 | 10-100    |   0.267 |     1.93   |       4   |        14 |     0.0346   |        0.465 |         0.499 |
+| ensemble | [3, 4)    |    3738 | 10-100    |   0.403 |     1.21   |       3   |        10 |     0.0256   |        0.55  |         0.576 |
+| ensemble | [4, 6)    |    6854 | 10-75     |   0.53  |     0.767  |       2   |         6 |     0.0178   |        0.668 |         0.686 |
+| ensemble | [6, 10)   |   10602 | 10-75     |   0.747 |     0.344  |       1   |         5 |     0.00783  |        0.847 |         0.855 |
+| ensemble | >= 10     |   10700 | 10-75     |   0.913 |     0.0982 |       0   |         3 |     0.00202  |        0.955 |         0.957 |
+
+#### The rule's worst cases
+
+| source   | instance_name             |   n |   m |    e |   optimum |   rule |   rule_gap |
+|:---------|:--------------------------|----:|----:|-----:|----------:|-------:|-----------:|
+| ensemble | ens_b_n100_m50_p0.06_i018 | 100 |  50 | 2.48 |        37 |     51 |         14 |
+| ensemble | ens_b_n100_m25_p0.07_i022 | 100 |  25 | 1.71 |        25 |     37 |         12 |
+| ensemble | ens_b_n100_m25_p0.08_i004 | 100 |  25 | 1.92 |        32 |     44 |         12 |
+| ensemble | ens_b_n100_m25_p0.1_i019  | 100 |  25 | 2.37 |        43 |     55 |         12 |
+| ensemble | ens_b_n100_m50_p0.04_i011 | 100 |  50 | 1.56 |        18 |     30 |         12 |
+| ensemble | ens_f_n100_m25_d12_i005   | 100 |  25 | 2.79 |        49 |     60 |         11 |
+| ensemble | ens_b_n100_m25_p0.09_i012 | 100 |  25 | 2.2  |        37 |     48 |         11 |
+| ensemble | ens_b_n100_m25_p0.09_i010 | 100 |  25 | 2.04 |        35 |     46 |         11 |
+| ensemble | ens_b_n100_m25_p0.1_i006  | 100 |  25 | 2.43 |        42 |     53 |         11 |
+| ensemble | ens_b_n100_m25_p0.12_i008 | 100 |  25 | 2.64 |        46 |     57 |         11 |
+

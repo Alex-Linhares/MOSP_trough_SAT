@@ -58,7 +58,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** Anything about the optimum; the map is a
     description of the instances we happen to hold.
 
-- [ ] **02 `opt / n` against the excess: one parameter, or two?**
+- [x] **02 `opt / n` against the excess: one parameter, or two?**
   - **Question.** B(i) and B(iii) of the plan. On random clique covers, is
     `lim opt / n` a function of `e` alone, or of `(d, μ)` separately? And how
     far is the two-key closing rule from the exact optimum as a function of

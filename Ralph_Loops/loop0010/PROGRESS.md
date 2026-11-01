@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 1/13 SOLVED
+Current: 2/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -111,3 +111,73 @@ Item 02: `opt / n` against the excess. From this map: the `e`-matched
 series it needs exist (`e = 2`: `(3, 1)`, `(5, ½)`, `(2, 2)`, `(9, ¼)`),
 and the realised `e` of every cell is in `learning/data/excess.csv`
 (`learning.excess.load()`), so no regeneration is needed there.
+
+---
+
+## Iteration 2 — 2026-10-31 23:38 (ends past midnight)
+
+Item 02, `opt / n` against the excess: one parameter, or two?
+
+### Completed
+
+- **`learning/first_moment.py`**: the asymptotic constant `β*(d, μ)` of
+  `reports/scratch/clique_cover_moment/asymptotic_cs.py` and the finite
+  floor of `bound_lib.py` / `finite_bound_cs.py`, moved as a library with the
+  same formulas and a histogram interface; `tests/test_first_moment.py` (16
+  tests) reproduces `asymptotic_cs.log` (the whole `β*(d, μ)` table, the
+  threshold `d > 2.0031`, five classes at empirical sizes) and
+  `finite_bound_cs.log` (five classes' mean floors) to the printed digits.
+  Reads the benchmark files and `instances.csv`, never `solutions/`.
+- **`learning/excess.py --stage rule`**: the two-key rule on every ensemble
+  instance (regenerated from its seed) and every corpus instance, 57,091
+  rows with the certified optimum and the pattern-size histogram, 30 s of
+  rule time, 7 s wall on 8 workers, to `learning/data/excess_rule.csv`
+  (git-ignored). **`--stage slopes`**: per series `opt = a + b n` on
+  `n ≥ 30` with standard errors, `β*` at the realised sizes, the
+  `e`-matched pairs, the named groups, a `β*`-matched control, the rule per
+  excess bin and its worst cases. **`--stage figure-opt`**:
+  `reports/figures/excess_opt.png`. Five new tests in `tests/test_excess.py`
+  (synthetic series with known slopes and verdicts).
+- **`reports/excess_phase_diagram.md` §2**, tables in full.
+- **Numbers.** 72 series with ≥ 3 sizes at `n ≥ 30`; 41 are constant-`e`
+  (fixed `d`, and the 5 Chu & Stuckey `m = n` classes across 30–125). The
+  31 Bernoulli series at fixed `p` are **not** constant-excess series
+  (`e = r (n p − 1)` grows with `n`, intercepts to −26, slopes above 1) and
+  are excluded from the kill count. Of the 16 constant-`e` matched pairs
+  (`|Δe| ≤ 0.05`, different `(d, μ)`), **13 differ by more than twice the
+  larger standard error** (26 of all 30). At `e = 2` the slope is 0.282,
+  0.232, 0.200, 0.167 for `μ = ¼, ½, 1, 2` (se 0.002–0.006): it falls with
+  `μ` at fixed `e`, and `β*` falls the same way (0.180, 0.169, 0.147,
+  0.123). Over the 41 series `b = 0.057 + 0.984 β*` with residual sd 0.024,
+  against 0.042 for the best line in `log e`; `b − β*` is 0.005–0.108 and
+  peaks on the ridge (0.07 at `e = 1.5–4`, 0.03 at the ends). The bare rule
+  is exact on 83.3% of the corpus, 62.2% of the ensembles, 27% of the 200
+  Chu & Stuckey (mean gap 2.35, worst 10); its gap peaks on the ridge (exact
+  22% at `e ∈ [1.5, 2)`, gap/n 0.03–0.04) and its per-customer excess grows
+  with `n` there (0.03 at 30, 0.058 at 100), so `rule / n` is not the slope.
+- **Kill verdict: met — "a function of `e` alone" is dead.** The parameter
+  of `lim opt / n` is `(d, μ)`, or to 0.024 `β*(d, μ)`; `e` sets the
+  threshold, the ridge and the scale.
+- **A stale table found and routed around.** `learning/data/instances.csv`
+  (2026-09-25) says `solution` for four `125 × 125` instances certified in
+  October (`2-2_0`, `2-3_0`, `2-5_0`, `4-4_0`); item 01's map therefore had
+  6,372 certified corpus rows. `corpus_rows` now reads value and provenance
+  from the solution file; the map is rebuilt (6,376 of 6,376), no §1 number
+  changes (its tables do not use the optimum). Nothing re-solved; no
+  certified value is wrong.
+- **Gate: PASS** (one run, 2026-11-01 00:00, 11 min at load 1–10): lake build ok, every file
+  imported, sorry 0, MOSP pytest 1,549 passed (2 skipped, 1 xfailed), pathwidth_solver 123
+  passed, paper check ok (66 pages, no undefined references).
+
+### Blockers
+
+None.
+
+### Next
+
+Item 03, the forest regime by brute force (the C program on clique trees).
+From item 02: items 05, 07, 08 and 09 should carry `(d, μ)` — or `β*` — as
+the coordinate of the constant, with `e` as the coordinate of the threshold
+and the ridge; the rule's `width / n` drifts upward with `n` on the ridge,
+so item 05's extrapolation should be checked against the certified slope at
+`n ≤ 100` as its kill says.
