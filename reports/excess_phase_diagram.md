@@ -1278,3 +1278,624 @@ Scored: 57077 certified instances (corpus 6376, ensemble 50701), rule time 30.1 
 | ensemble | ens_b_n100_m25_p0.1_i006  | 100 |  25 | 2.43 |        42 |     53 |         11 |
 | ensemble | ens_b_n100_m25_p0.12_i008 | 100 |  25 | 2.64 |        46 |     57 |         11 |
 
+
+## 3. The forest regime, by brute force (item 03, 2026-11-01)
+
+**Question.** A, first half. When the incidence graph `B` is a forest the
+MOSP graph is a block graph whose blocks are the pattern cliques. What is its
+pathwidth as a function of the largest pattern `ω` and the shape of the
+forest: additive in `ω` and a depth, or multiplicative?
+
+**What was done.** Exact pathwidths by the C program
+`pathwidth_solver/cli/pathwidth` (graph6 on stdin, `-t 600 -l -v`, `nice -n
+19`, 6 workers while the one-minute load was below 24), every layout checked
+against the printed width by an independent vertex-separation routine
+(`learning.block_trees.vertex_separation`) and kept as the witness of the
+upper bound; nothing through the Python solvers, nothing written to
+`solutions/`. Four families:
+
+1. **Clique trees `CT(s, h, b)`** (`learning.block_trees.clique_tree`): one
+   root clique `K_s`; every customer at depth `d < h` is the hub of `b` new
+   cliques of size `s`, each adding `s − 1` customers at depth `d + 1`;
+   `n = s · Σ_{d ≤ h} (b (s − 1))^d`. `CT(2, h, b)` is a tree in which every
+   customer has `b` children (the root pair adjacent): `CT(2, h, 1)` a path,
+   `CT(2, h, 3)` two complete ternary trees of height `h` joined at their
+   roots, the tree `branch_lemma` bites on at every level. The item's grid is
+   `s ∈ {2, 3, 4, 5}`, `h ∈ {1, 2, 3}`, `b ∈ {1, 2, 3}`, `n ≤ 400`: 29 of the
+   36 cells. An **extension beyond the item's range** was added because the
+   grid proved in seconds: `s ≤ 8`, `h ≤ 4`, `400 < n ≤ 1000` (or `s > 5`,
+   `n ≤ 400`), 18 more cells; it is reported apart and the kill verdict is
+   decided on the grid alone.
+2. **The caterpillar of cliques** (`caterpillar_of_cliques`): a chain of
+   `L` cliques `K_s`, consecutive ones sharing one customer, with a pendant
+   `K_s` at every non-shared customer; `s ∈ {2, 3, 4, 5}`,
+   `L ∈ {1, 2, 3, 5, 8, 12}`, 24 graphs, `n ≤ 201`.
+3. **Random block trees** (`random_block_tree`): one pattern, then patterns
+   of random size — Chu & Stuckey's size law, `Binomial(n, d / n)` with 0 and
+   1 moved up to 2 (`REPORT_generator.md` §1.2) — attached at a uniformly
+   random existing customer until `n` customers; `d ∈ {2, 3, 4}`,
+   `n ∈ {20, 40, 60, 80, 100, 120}`, 50 per cell, 900 instances, every one
+   regenerable from `(n, d, seed)` with `seed = 100000 d + 100 n + i`. For a
+   connected incidence forest `e = 1 − 1/n` by the identity `γ / n = e − 1 +
+   κ / n`, so these sit at `e = 0.95–0.99`.
+4. **The forest instances on record** (item 01's map, `γ = 0`): 2 corpus and
+   3,446 ensemble instances with certified optima, `pw = optimum − 1`, nothing
+   solved; `n = 10–75`, `e = 0–0.98`, `κ` median 9 (they are mostly small
+   components).
+
+For every instance: `ω`, the block height `h` (the radius of the pattern
+adjacency forest in pattern steps, `h` for `CT(s, h, b)`), `pw(B)` by the C
+program on the incidence forest, and the candidates of the item, each a
+function of the forest: `ω − 1`, `ω − 1 + pw(B)`, `ω − 1 + h`,
+`ω (pw(B) + 1) − 1` (the blow-up of a path decomposition of `B`),
+`ω (tb(n + m) + 1) − 1` with `tb(N)` the least `k` with `N ≤ (5·3^k − 3)/2`
+(`TreeBound.lean`), and one of ours, `max(ω − 1, ω − 2 + pw(B))`, exact on
+the caterpillars of cliques with `s ≤ 4`. A would-be upper bound is scored by
+its violations (candidate below the exact value), its exact share and its
+slack.
+
+**Two independent checks of the C program.** (i) `learning/chou_block.py`
+implements the characterisation of Chou, Ko, Ho & Chen (2008; finding 1
+below) as a recursion memoised on vertex sets — exact, but exponential in
+the number of modified blocks as written, so usable to about 30 vertices;
+on every clique tree and caterpillar with `n ≤ 30` and 300 random block
+trees at `n = 8–24`, `d ∈ {2, 3, 4, 6}`, **328 of 328 agree with the C
+program** (`cross_check.log`). (ii) The one incidence tree of the grid the
+C program left censored (`B` of `CT(4, 2, 3)`, 485 vertices, upper bound 5
+at 600 s) is settled by the complete-ternary-subtree lower bound
+(`ternary_subtree_height`; `pathwidth_ternaryTree` of `TreeBound.lean` plus
+monotonicity under subgraphs): it contains the complete ternary tree of
+height 5, so `pw(B) = 5` exactly. The same bound settles one of the four
+censored incidence trees of the extension; the three left are excluded from
+the candidate scores, where a censored `pw(B)` would only inflate a
+candidate. (iii) Induced-subgraph monotonicity between neighbouring cells of
+the family (finding 3) settles two censored extension cells and bounds the
+other five from below; the inclusions `CT(s − 1, h, b)`, `CT(s, h − 1, b)`,
+`CT(s, h, b − 1) ⊆ CT(s, h, b)` are checked by VF2 on 30 small cells and
+the ternary subtree of `CT(2, h, 3)` to `h = 4` (`monotone_check.log`).
+
+**Size range.** Clique trees `n = 4–365` (grid), `36–936` (extension);
+caterpillars `n = 4–201`; random block trees `n = 20–120`; forests on record
+`n = 10–75`.
+
+**Regenerate** (`reports/scratch/forest_regime/`, ≈ 1.3 core-hours for the
+grid, caterpillars, random trees and the record; the extension and the
+reruns below are priced where they are reported):
+
+```
+nice -n 19 python3 reports/scratch/forest_regime/run_ct.py 6            # ct_values.csv, ct/*.g6, ct_layouts.txt (29 graphs, < 1 min)
+nice -n 19 python3 reports/scratch/forest_regime/run_caterpillar.py     # caterpillar_values.csv (24 graphs, seconds)
+nice -n 19 python3 reports/scratch/forest_regime/run_random.py 6        # random_block_trees.csv, random_layouts.txt (900, 10 min wall)
+nice -n 19 python3 reports/scratch/forest_regime/score_record.py 6      # record_forests.csv (3,448, 8 s)
+nice -n 19 python3 reports/scratch/forest_regime/run_ct_ext.py 6        # ct_ext_values.csv, the extension (18 graphs, up to 20 min each)
+nice -n 19 python3 reports/scratch/forest_regime/rerun_censored.py      # random_censored_rerun.csv (2 graphs, 1 h each)
+nice -n 19 python3 reports/scratch/forest_regime/cross_check.py         # cross_check.log (328 graphs, 10 s)
+python3 reports/scratch/forest_regime/monotone_check.py                 # monotone_check.log (the induced-subgraph claims)
+python3 reports/scratch/forest_regime/fit.py > reports/scratch/forest_regime/fit.log   # every table below
+python -m pytest tests/test_block_trees.py tests/test_chou_block.py -q
+```
+
+### 3.1 Findings
+
+1. **The literature has the exact answer, and it is polynomial.** Neither
+   held survey (`reports/random_graph_pathwidth_survey.md`,
+   `paper1/ijoc_literature.md`) mentions block graphs. OpenAlex and a web
+   search do: Chou, Ko, Ho & Chen, *Node-searching problem on block graphs*,
+   Discrete Applied Mathematics 156 (2008) 55–75,
+   doi:10.1016/j.dam.2007.08.007, answer the question of Peng et al. (whether
+   node searching on block graphs is polynomial) with an
+   `O(c² + b c + n)` algorithm (`c` cut vertices, `b` blocks; their Theorem
+   26) built on **Theorem 4**: for a block graph and `k ≥ 2`, `ns(G) ≤ k` iff
+   (`VC_k`) every vertex has at most two branches with `ns ≥ k` and (`BC_k`)
+   every block `K` has an edge `(x, y)` whose *enclosure subgraph*
+   `{G}_{x,y}` — `K − x` together with the non-block branches at the vertices
+   of `K` other than `x` and `y` — has `ns < k`. `VC_k` alone is the tree
+   rule of Ellis, Sudborough & Turner (1994); `BC_k` is what the cliques
+   add, and `ns = pathwidth + 1`. Pathwidth is NP-hard on chordal graphs
+   (Gustedt 1993), of which block graphs are a subclass. **We found no prior
+   statement** of a closed form on clique trees; what finding 3 states is a
+   description of the values solved, not a conjecture.
+2. **The kill criterion is met: no `α (ω − 1) + β h + γ` fits the grid.** Of
+   the 325 forms with `α, β ∈ {0..4}`, `γ ∈ {−6..6}`, none is exact on the 29
+   values; the best (`2 (ω − 1) + h − 2`) misses 14. Even one form per `b`
+   misses 2–3 of its 8–11 values. The reason is in the differences: at
+   fixed `(h, b)` the value grows in `s` by `2, 1, 2` at `h = 1`, `2, 2, 2`
+   at `h = 2` and `3, 2` at `h = 3` — the slope in `ω` **rises with the
+   depth** (3/2, 2, 5/2), which no form linear in `ω` and `h` can do.
+3. **The values are multiplicative in `ω` and the depth: each level costs
+   `(ω − 2) / 2`.** After the grid a closed form was stated,
+   `C1(s, h, b) = ⌈(h + 2)(s − 2) / 2⌉ + pw(CT(2, h, b))` (the clique part
+   plus the underlying tree's own pathwidth, read from the `s = 2` row), and
+   it fits all 29 grid values. **The extension refutes it**: `CT(3, 3, 3)`
+   (777 vertices) has a verified layout of width 5 where `C1` says 6, and 5
+   is exact because `CT(3, 3, 2)`, of pathwidth 5 by refutation, is an
+   induced subgraph (`CT(s − 1, h, b)`, `CT(s, h − 1, b)` and `CT(s, h, b − 1)`
+   are induced subgraphs of `CT(s, h, b)`, which settles two censored cells
+   and bounds the rest, the censored table in 3.4). What fits every exact value with
+   `s ≥ 3` — 33 of 33, grid and extension, `h ≤ 3`, `s ≤ 8` — is
+
+       C2(s, h, b) = ⌈(h + 2)(s − 2) / 2⌉ + 1 + [b ≥ 2][h ≥ 2]:
+
+   the clique floor `ω − 1` at `h = 0`, `(ω − 2) / 2` per level of depth,
+   and the branching `b` worth a single stack, once. The trees (`s = 2`)
+   follow their own law (measured: 1, 2, 3 for `CT(2, h, 3)`, 1, 2, 2 for
+   `CT(2, h, 2)`, 1, 1, 1 for `CT(2, h, 1)` at `h = 1, 2, 3`; and
+   `CT(2, h, 3)` contains the complete ternary tree of height `h`, so its
+   pathwidth is at least `h` for every `h`), and that shows `C2` cannot be
+   the rule for `s = 3` at large `h` either: `CT(2, h, 3)` is an induced
+   subgraph of `CT(3, h, 3)`, so `pw(CT(3, h, 3)) ≥ h`, while `C2` grows
+   like `h / 2` and falls below `h` from `h = 8`. The honest reading is two mechanisms —
+   the clique condition `BC_k` of finding 1, worth `(ω − 2) / 2` per level,
+   and the branching condition `VC_k`, worth one per level at branching
+   three — of which the clique one dominates on the whole range solved, and
+   whose combination is not a sum. At `h = 1` both forms give `⌈3ω/2⌉ − 2`
+   for every `b`, the value the caterpillar of cliques takes at every length
+   (1, 3, 4, 6 for `s = 2..5`): a clique whose `s − 2` other vertices each
+   carry a clique of the same size forces half of those cliques through its
+   own bag. The censored extension cells are consistent with `C2` where it
+   is defined (their intervals contain it: `CT(4, 4, 1) ∈ [6, 7]` against 7,
+   `CT(5, 3, 1) ∈ [7, 9]` against 9, `CT(6, 3, 1) ∈ [9, 13]` against 11,
+   `CT(8, 2, 1) ∈ [11, 13]` against 13, `CT(6, 2, 2) ∈ [9, 10]` against 10).
+
+4. **The additive candidates are not upper bounds; only the multiplicative
+   ones are, and they are loose.** On the grid, `ω − 1 + pw(B)` is violated
+   once (`CT(5, 2, 2)`: 7 against 8), `ω − 2 + pw(B)` five times (worst by
+   2), `ω − 1 + h` seven times (worst by 2); the blow-up bound
+   `ω (pw(B) + 1) − 1` and the TreeBound form are never violated and never
+   exact, with mean slack 7.4 and 9.9 on the grid, 14.5 and 24.8 on the
+   extension, 5.5 and 10.3 on the caterpillars, 17 and 25 on the random
+   block trees. The ratio of the blow-up bound to the exact value on the
+   grid is 1.9–5. On the extension the additive candidates fail outright:
+   `ω − 1 + pw(B)` is below the truth on 6 of 12 cells (by up to 2),
+   `ω − 2 + pw(B)` on 10, `ω − 1 + h` on all 12. The caterpillar is
+   the case the item named as discriminating, and there `ω − 2 + pw(B)` is
+   exact on the 18 with `s ≤ 4` and one below on the six with `s = 5`
+   (`⌈3s/2⌉ − 2 = 6` against `s = 5`), while `ω − 1 + pw(B)` is exact at
+   `s = 5` and one above below it; it is the clique trees with `h ≥ 2`, not
+   the caterpillars, that separate additive from multiplicative.
+5. **Off the structured family the pathwidth is the largest pattern.** On
+   the 3,448 forests on record `pw = ω − 1` on 3,442 (99.8%; the six
+   exceptions are one above, all Bernoulli instances with `ω ≤ 5` and
+   `pw(B) ≤ 3`); on the 898 random block trees solved `pw ∈ {ω − 1, ω}`,
+   `ω − 1` on 833 (92.8%) and `ω` on 65, never more, at `ω` means 4.6–8.8
+   and `pw(B) ≤ 3`. The random size law never builds the nested structure
+   of finding 3: a block tree needs `s − 2` loaded vertices on one clique,
+   repeated down a path of cliques, to climb above `ω − 1`, and random
+   attachment at a uniform customer spreads the load. So in the forest
+   regime of the map (`e < e_g(r)`, where 74–92% of the ensemble instances
+   are forests), the MOSP optimum is the largest pattern on all but a few
+   per thousand instances, and `max(ω − 1, ω − 2 + pw(B))` is never below
+   the truth there (0 violations on 4,346 random and record instances).
+6. **The search is the wrong tool for block graphs, and the record's forest
+   values were free.** Two random block trees at `n = 120` (`d = 2`, index
+   8, and `d = 3`, index 13) were censored at 600 s after `2.2 × 10⁹` and
+   `2.3 × 10⁹` nodes with intervals `[6, 7]` and `[7, 8]` (floor `ω − 1`,
+   upper bound the layout); the median refutation at `n = 120` is `10⁴–10⁵`
+   nodes and the 99th percentile `1.7 × 10⁶`. Chou et al.'s algorithm is
+   quadratic. The 3,448 record values cost nothing here because the
+   customer search had certified them at `n ≤ 75` in the ensemble campaign.
+   In the extension 7 of 18 cells were censored at 600 s (wall-clock, under
+   a one-minute load of 40–60 from work that is not ours) after
+   `0.5–2.0 × 10⁸` nodes; two of them are settled by induced-subgraph
+   monotonicity (`CT(3, 3, 3) = 5`, `CT(5, 2, 3) = 8`) and the other five
+   are the intervals of finding 3. The reruns of the two random block trees
+   are in 3.5.
+
+### 3.2 Kill verdict
+
+**Met: the additive theorem is dropped; item 06 proves the blow-up bound
+only.** No `α (ω − 1) + β h + γ` with small integer constants fits the
+clique trees (0 of 325 forms; the best misses 14 of 29), because the slope
+in `ω` grows with the depth. What item 06 should carry instead of an
+additive theorem: (i) the blow-up bound `pw ≤ ω (pw(B) + 1) − 1 ≤ ω (tb(n +
+m) + 1) − 1`, never violated here and loose by a factor 2–5; (ii) the
+citation of Chou, Ko, Ho & Chen (2008) for the exact polynomial
+characterisation, which makes an exact theorem of ours on block graphs
+unnecessary; (iii) if a sharper statement is wanted, the lower bound behind
+finding 3 — a clique `K_s` whose `s − 2` other vertices each carry a
+pendant `K_s` has pathwidth `≥ ⌈3s/2⌉ − 2` — is the `h = 1` case and is
+checkable by the bag argument (the pendant cliques' bags lie on two sides of
+`K`'s bag, and the nearer bag on the fuller side holds its own `s` vertices
+and one vertex or hub of every farther one). No closed form is proposed as
+a conjecture: the one stated after the grid was refuted by the extension
+within the hour, and the description `C2` that replaced it is provably not
+the law at `s = 3` beyond `h = 7`.
+
+### 3.3 What this does not claim
+
+- **A theorem, or a closed form.** `C2` describes 33 values with `s ≥ 3`,
+  `h ≤ 3`, `s ≤ 8` on one family and is known not to extend; `C1` fitted
+  29 values and was false at the 30th. The exact theory of block graphs is
+  Chou et al. (2008); item 06 proves the blow-up bound.
+- **Anything about non-forest instances.** Every graph here is a block
+  graph. The corpus has two incidence forests and SCOOP none (§1), so the
+  forest regime is a regime of the random model below `e_g(r)` and of the
+  structured family, not of the benchmarks.
+- **That `pw = ω − 1` in the forest regime.** It holds on 99.8% of the record
+  forests and 92.8% of the random block trees, both at `n ≤ 120` and
+  `ω ≤ 15`; the clique trees show the exceptions are unbounded in `ω` and
+  `h`.
+- **A value for a censored run.** The two random block trees and the
+  extension's censored cells are intervals; the reruns below report nodes
+  with seconds beside them, under a one-minute load of 40–60 from work that
+  is not ours, so the seconds are not comparable with the first pass.
+- **That the oracle is a second solver.** `learning/chou_block.py` is a
+  faithful transcription of Theorem 4 as far as 328 agreements show, and
+  exponential as written; it is a check at `n ≤ 30`, not an algorithm.
+
+### 3.4 Tables, in full
+
+`reports/scratch/forest_regime/fit.log`, regenerated by `python3
+reports/scratch/forest_regime/fit.py`. Statuses are the C program's
+(`refutation`, `minor`, `bound` are proofs; `upper` is censored) with two
+resolutions of ours named in the table (`upper = ternary subtree lower
+bound`, `upper = induced-subgraph lower bound`). `nodes` and `seconds` are
+the C program's own counts; seconds under a one-minute load of 10–60.
+
+incidence trees censored: 3 left after the ternary-subtree bound resolved 2
+
+#### Clique trees: 47 solved (29 in the item's grid, 18 in the extension), 7 censored
+
+#### CT(s, h, b = 1): exact pathwidth (rows s, columns h)
+
+|   s | h=1       | h=2                                | h=3                               | h=4                             |
+|----:|:----------|:-----------------------------------|:----------------------------------|:--------------------------------|
+|   2 | 1 [n=4]   | 1 [n=6]                            | 1 [n=8]                           |                                 |
+|   3 | 3 [n=9]   | 3 [n=21]                           | 4 [n=45]                          |                                 |
+|   4 | 4 [n=16]  | 5 [n=52]                           | 6 [n=160]                         | 7 (censored: in [6, 7]) [n=484] |
+|   5 | 6 [n=25]  | 7 [n=105]                          | 9 (censored: in [7, 9]) [n=425]   |                                 |
+|   6 | 7 [n=36]  | 9 [n=186]                          | 13 (censored: in [5, 13]) [n=936] |                                 |
+|   7 | 9 [n=49]  | 11 [n=301]                         |                                   |                                 |
+|   8 | 10 [n=64] | 13 (censored: in [11, 13]) [n=456] |                                   |                                 |
+
+#### CT(s, h, b = 2): exact pathwidth (rows s, columns h)
+
+|   s | h=1        | h=2                               | h=3       |
+|----:|:-----------|:----------------------------------|:----------|
+|   2 | 1 [n=6]    | 2 [n=14]                          | 2 [n=30]  |
+|   3 | 3 [n=15]   | 4 [n=63]                          | 5 [n=255] |
+|   4 | 4 [n=28]   | 6 [n=172]                         |           |
+|   5 | 6 [n=45]   | 8 [n=365]                         |           |
+|   6 | 7 [n=66]   | 10 (censored: in [9, 10]) [n=666] |           |
+|   7 | 9 [n=91]   |                                   |           |
+|   8 | 10 [n=120] |                                   |           |
+
+#### CT(s, h, b = 3): exact pathwidth (rows s, columns h)
+
+|   s | h=1        | h=2                             | h=3                             |
+|----:|:-----------|:--------------------------------|:--------------------------------|
+|   2 | 1 [n=8]    | 2 [n=26]                        | 3 [n=80]                        |
+|   3 | 3 [n=21]   | 4 [n=129]                       | 5 (censored: in [4, 5]) [n=777] |
+|   4 | 4 [n=40]   | 6 [n=364]                       |                                 |
+|   5 | 6 [n=65]   | 8 (censored: in [7, 8]) [n=785] |                                 |
+|   6 | 7 [n=96]   |                                 |                                 |
+|   7 | 9 [n=133]  |                                 |                                 |
+|   8 | 10 [n=176] |                                 |                                 |
+
+#### Every clique tree solved
+
+| grid      |   s |   h |   b |   n |   m |   pw | status     |     nodes |   seconds |   pw_B | status_B                            |   ternary_lb_B |   omega-1 |   omega-1+pw(B) |   omega-2+pw(B) |   omega-1+h |   omega(pw(B)+1)-1 |   omega(tb+1)-1 |
+|:----------|----:|----:|----:|----:|----:|-----:|:-----------|----------:|----------:|-------:|:------------------------------------|---------------:|----------:|----------------:|----------------:|------------:|-------------------:|----------------:|
+| item      |   2 |   1 |   1 |   4 |   3 |    1 | bound      |         0 |     0     |      1 | bound                               |              0 |         1 |               2 |               1 |           2 |                  3 |               5 |
+| item      |   2 |   2 |   1 |   6 |   5 |    1 | bound      |         0 |     0     |      1 | bound                               |              0 |         1 |               2 |               1 |           3 |                  3 |               5 |
+| item      |   2 |   3 |   1 |   8 |   7 |    1 | bound      |         0 |     0     |      1 | bound                               |              0 |         1 |               2 |               1 |           4 |                  3 |               5 |
+| item      |   3 |   1 |   1 |   9 |   4 |    3 | refutation |         6 |     0     |      2 | refutation                          |              1 |         2 |               4 |               3 |           3 |                  8 |               8 |
+| item      |   3 |   2 |   1 |  21 |  10 |    3 | refutation |        25 |     0     |      2 | refutation                          |              1 |         2 |               4 |               3 |           4 |                  8 |              11 |
+| item      |   3 |   3 |   1 |  45 |  22 |    4 | refutation |       644 |     0.001 |      3 | refutation                          |              1 |         2 |               5 |               4 |           5 |                 11 |              14 |
+| item      |   4 |   1 |   1 |  16 |   5 |    4 | refutation |        14 |     0     |      2 | refutation                          |              1 |         3 |               5 |               4 |           4 |                 11 |              11 |
+| item      |   4 |   2 |   1 |  52 |  17 |    5 | refutation |       447 |     0.001 |      3 | refutation                          |              1 |         3 |               6 |               5 |           5 |                 15 |              19 |
+| item      |   4 |   3 |   1 | 160 |  53 |    6 | refutation |     95116 |     0.125 |      4 | minor                               |              1 |         3 |               7 |               6 |           6 |                 19 |              23 |
+| extension |   4 |   4 |   1 | 484 | 161 |    7 | upper      | 110229014 |   600     |      5 | upper                               |              1 |         3 |               8 |               7 |           7 |                 23 |              27 |
+| item      |   5 |   1 |   1 |  25 |   6 |    6 | refutation |        47 |     0     |      2 | refutation                          |              1 |         4 |               6 |               5 |           5 |                 14 |              19 |
+| item      |   5 |   2 |   1 | 105 |  26 |    7 | refutation |     10621 |     0.012 |      3 | refutation                          |              1 |         4 |               7 |               6 |           6 |                 19 |              24 |
+| extension |   5 |   3 |   1 | 425 | 106 |    9 | upper      | 137849794 |   600     |      4 | minor                               |              1 |         4 |               8 |               7 |           7 |                 24 |              29 |
+| extension |   6 |   1 |   1 |  36 |   7 |    7 | refutation |        74 |     0     |      2 | refutation                          |              1 |         5 |               7 |               6 |           6 |                 17 |              23 |
+| extension |   6 |   2 |   1 | 186 |  37 |    9 | minor      |    373145 |     0.491 |      3 | minor                               |              1 |         5 |               8 |               7 |           7 |                 23 |              35 |
+| extension |   6 |   3 |   1 | 936 | 187 |   13 | upper      |  94522248 |   600     |     31 | upper                               |              1 |         5 |              36 |              35 |           8 |                191 |              41 |
+| extension |   7 |   1 |   1 |  49 |   8 |    9 | refutation |       236 |     0     |      2 | refutation                          |              1 |         6 |               8 |               7 |           7 |                 20 |              27 |
+| extension |   7 |   2 |   1 | 301 |  50 |   11 | minor      |   4358202 |     4.93  |      3 | minor                               |              1 |         6 |               9 |               8 |           8 |                 27 |              41 |
+| extension |   8 |   1 |   1 |  64 |   9 |   10 | refutation |       357 |     0.001 |      2 | refutation                          |              1 |         7 |               9 |               8 |           8 |                 23 |              39 |
+| extension |   8 |   2 |   1 | 456 |  65 |   13 | upper      | 204801466 |   600     |      3 | minor                               |              1 |         7 |              10 |               9 |           9 |                 31 |              47 |
+| item      |   2 |   1 |   2 |   6 |   5 |    1 | bound      |         0 |     0     |      2 | refutation                          |              1 |         1 |               3 |               2 |           2 |                  5 |               5 |
+| item      |   2 |   2 |   2 |  14 |  13 |    2 | refutation |        16 |     0     |      2 | refutation                          |              1 |         1 |               3 |               2 |           3 |                  5 |               7 |
+| item      |   2 |   3 |   2 |  30 |  29 |    2 | refutation |        75 |     0     |      3 | refutation                          |              1 |         1 |               4 |               3 |           4 |                  7 |               7 |
+| item      |   3 |   1 |   2 |  15 |   7 |    3 | refutation |        15 |     0     |      2 | refutation                          |              1 |         2 |               4 |               3 |           3 |                  8 |              11 |
+| item      |   3 |   2 |   2 |  63 |  31 |    4 | refutation |      1273 |     0.001 |      3 | refutation                          |              1 |         2 |               5 |               4 |           4 |                 11 |              14 |
+| item      |   3 |   3 |   2 | 255 | 127 |    5 | refutation |   1278878 |     1.57  |      4 | minor                               |              1 |         2 |               6 |               5 |           5 |                 14 |              17 |
+| item      |   4 |   1 |   2 |  28 |   9 |    4 | refutation |        30 |     0     |      2 | refutation                          |              2 |         3 |               5 |               4 |           4 |                 11 |              15 |
+| item      |   4 |   2 |   2 | 172 |  57 |    6 | refutation |     61495 |     0.093 |      3 | refutation                          |              2 |         3 |               6 |               5 |           5 |                 15 |              23 |
+| item      |   5 |   1 |   2 |  45 |  11 |    6 | refutation |       127 |     0     |      2 | refutation                          |              2 |         4 |               6 |               5 |           5 |                 14 |              19 |
+| item      |   5 |   2 |   2 | 365 |  91 |    8 | refutation |   4524896 |    13.9   |      3 | minor                               |              2 |         4 |               7 |               6 |           6 |                 19 |              29 |
+| extension |   6 |   1 |   2 |  66 |  13 |    7 | refutation |       194 |     0     |      2 | refutation                          |              2 |         5 |               7 |               6 |           6 |                 17 |              29 |
+| extension |   6 |   2 |   2 | 666 | 133 |   10 | upper      | 137186572 |   600     |      3 | minor                               |              2 |         5 |               8 |               7 |           7 |                 23 |              41 |
+| extension |   7 |   1 |   2 |  91 |  15 |    9 | refutation |       712 |     0.001 |      2 | refutation                          |              2 |         6 |               8 |               7 |           7 |                 20 |              34 |
+| extension |   8 |   1 |   2 | 120 |  17 |   10 | refutation |      1077 |     0.002 |      2 | refutation                          |              2 |         7 |               9 |               8 |           8 |                 23 |              39 |
+| item      |   2 |   1 |   3 |   8 |   7 |    1 | bound      |         0 |     0     |      2 | refutation                          |              1 |         1 |               3 |               2 |           2 |                  5 |               5 |
+| item      |   2 |   2 |   3 |  26 |  25 |    2 | refutation |        42 |     0     |      3 | refutation                          |              1 |         1 |               4 |               3 |           3 |                  7 |               7 |
+| item      |   2 |   3 |   3 |  80 |  79 |    3 | refutation |      6740 |     0.009 |      4 | refutation                          |              1 |         1 |               5 |               4 |           4 |                  9 |               9 |
+| item      |   3 |   1 |   3 |  21 |  10 |    3 | refutation |        27 |     0     |      3 | refutation                          |              2 |         2 |               5 |               4 |           3 |                 11 |              11 |
+| item      |   3 |   2 |   3 | 129 |  64 |    4 | refutation |      6047 |     0.008 |      4 | refutation                          |              2 |         2 |               6 |               5 |           4 |                 14 |              14 |
+| extension |   3 |   3 |   3 | 777 | 388 |    5 | upper      | 101764247 |   600     |      7 | upper                               |              2 |         2 |               9 |               8 |           5 |                 23 |              20 |
+| item      |   4 |   1 |   3 |  40 |  13 |    4 | refutation |        50 |     0     |      3 | refutation                          |              3 |         3 |               6 |               5 |           4 |                 15 |              15 |
+| item      |   4 |   2 |   3 | 364 | 121 |    6 | minor      |    472319 |     1.23  |      5 | upper = ternary subtree lower bound |              5 |         3 |               8 |               7 |           5 |                 23 |              23 |
+| item      |   5 |   1 |   3 |  65 |  16 |    6 | refutation |       232 |     0     |      3 | refutation                          |              3 |         4 |               7 |               6 |           5 |                 19 |              24 |
+| extension |   5 |   2 |   3 | 785 | 196 |    8 | upper      |  53784818 |   600     |      5 | upper = ternary subtree lower bound |              5 |         4 |               9 |               8 |           6 |                 29 |              34 |
+| extension |   6 |   1 |   3 |  96 |  19 |    7 | refutation |       350 |     0.001 |      3 | refutation                          |              3 |         5 |               8 |               7 |           6 |                 23 |              29 |
+| extension |   7 |   1 |   3 | 133 |  22 |    9 | refutation |      1342 |     0.003 |      3 | refutation                          |              3 |         6 |               9 |               8 |           7 |                 27 |              34 |
+| extension |   8 |   1 |   3 | 176 |  25 |   10 | refutation |      2029 |     0.005 |      3 | refutation                          |              3 |         7 |              10 |               9 |           8 |                 31 |              39 |
+
+#### Kill criterion: alpha (omega - 1) + beta h + gamma on the item's grid
+
+forms tried: 325; forms exact on every value: 0 of 325; best form misses 14 of 29 values
+
+|   alpha |   beta |   gamma |   misses |   max |err| |
+|--------:|-------:|--------:|---------:|------------:|
+|       2 |      1 |      -2 |       14 |           2 |
+|       2 |      1 |      -3 |       16 |           1 |
+|       2 |      2 |      -4 |       16 |           3 |
+|       2 |      0 |      -1 |       18 |           2 |
+|       1 |      1 |       0 |       18 |           3 |
+|       2 |      0 |       0 |       19 |           2 |
+|       1 |      0 |       1 |       19 |           3 |
+|       1 |      2 |      -1 |       20 |           5 |
+
+##### The same per b (an alpha, beta, gamma of its own for each b)
+
+|   b |   values |   best alpha |   best beta |   best gamma |   misses |
+|----:|---------:|-------------:|------------:|-------------:|---------:|
+|   1 |       11 |            2 |           1 |           -3 |        3 |
+|   2 |       10 |            2 |           1 |           -2 |        3 |
+|   3 |        8 |            2 |           1 |           -2 |        2 |
+
+##### Growth in s at fixed (h, b), and in h at fixed (s, b)
+
+|   h |   b | s values   | pw      | differences in s   |
+|----:|----:|:-----------|:--------|:-------------------|
+|   1 |   1 | 2 3 4 5    | 1 3 4 6 | 2 1 2              |
+|   1 |   2 | 2 3 4 5    | 1 3 4 6 | 2 1 2              |
+|   1 |   3 | 2 3 4 5    | 1 3 4 6 | 2 1 2              |
+|   2 |   1 | 2 3 4 5    | 1 3 5 7 | 2 2 2              |
+|   2 |   2 | 2 3 4 5    | 2 4 6 8 | 2 2 2              |
+|   2 |   3 | 2 3 4      | 2 4 6   | 2 2                |
+|   3 |   1 | 2 3 4      | 1 4 6   | 3 2                |
+|   3 |   2 | 2 3        | 2 5     | 3                  |
+|   3 |   3 | 2          | 3       |                    |
+
+|   s |   b | h values   | pw    | differences in h   |
+|----:|----:|:-----------|:------|:-------------------|
+|   2 |   1 | 1 2 3      | 1 1 1 | 0 0                |
+|   2 |   2 | 1 2 3      | 1 2 2 | 1 0                |
+|   2 |   3 | 1 2 3      | 1 2 3 | 1 1                |
+|   3 |   1 | 1 2 3      | 3 3 4 | 0 1                |
+|   3 |   2 | 1 2 3      | 3 4 5 | 1 1                |
+|   3 |   3 | 1 2        | 3 4   | 1                  |
+|   4 |   1 | 1 2 3      | 4 5 6 | 1 1                |
+|   4 |   2 | 1 2        | 4 6   | 2                  |
+|   4 |   3 | 1 2        | 4 6   | 2                  |
+|   5 |   1 | 1 2        | 6 7   | 1                  |
+|   5 |   2 | 1 2        | 6 8   | 2                  |
+|   5 |   3 | 1          | 6     |                    |
+
+#### Censored clique trees settled by induced-subgraph monotonicity: 2
+
+| grid      |   s |   h |   b |   n |   lower |   monotone_lb |   pw | status                               |
+|:----------|----:|----:|----:|----:|--------:|--------------:|-----:|:-------------------------------------|
+| extension |   3 |   3 |   3 | 777 |       4 |             5 |    5 | upper = induced-subgraph lower bound |
+| extension |   5 |   2 |   3 | 785 |       7 |             8 |    8 | upper = induced-subgraph lower bound |
+
+#### Two closed forms against every exact clique tree (grid and extension)
+
+C1(s, h, b) = ceil((h + 2)(s - 2) / 2) + pw(CT(2, h, b)), stated after the grid; C2(s, h, b) = ceil((h + 2)(s - 2) / 2) + 1 + [b >= 2][h >= 2], stated after the extension.
+
+pw(CT(2, h, b)) from the s = 2 row: {(1, 1): 1, (1, 2): 1, (1, 3): 1, (2, 1): 1, (2, 2): 2, (2, 3): 2, (3, 1): 1, (3, 2): 2, (3, 3): 3}
+
+C1: checked on 42 exact values: 41 exact, 1 misses; C2: checked on 42: 41 exact, 1 misses, of which 0 with s >= 3
+
+| grid      |   s |   h |   b |   n |   pw | status                               |   C1 |   C2 |   tree_lb |
+|:----------|----:|----:|----:|----:|-----:|:-------------------------------------|-----:|-----:|----------:|
+| item      |   2 |   1 |   1 |   4 |    1 | bound                                |    1 |    1 |         1 |
+| item      |   2 |   2 |   1 |   6 |    1 | bound                                |    1 |    1 |         1 |
+| item      |   2 |   3 |   1 |   8 |    1 | bound                                |    1 |    1 |         1 |
+| item      |   3 |   1 |   1 |   9 |    3 | refutation                           |    3 |    3 |         1 |
+| item      |   3 |   2 |   1 |  21 |    3 | refutation                           |    3 |    3 |         1 |
+| item      |   3 |   3 |   1 |  45 |    4 | refutation                           |    4 |    4 |         1 |
+| item      |   4 |   1 |   1 |  16 |    4 | refutation                           |    4 |    4 |         1 |
+| item      |   4 |   2 |   1 |  52 |    5 | refutation                           |    5 |    5 |         1 |
+| item      |   4 |   3 |   1 | 160 |    6 | refutation                           |    6 |    6 |         1 |
+| item      |   5 |   1 |   1 |  25 |    6 | refutation                           |    6 |    6 |         1 |
+| item      |   5 |   2 |   1 | 105 |    7 | refutation                           |    7 |    7 |         1 |
+| extension |   6 |   1 |   1 |  36 |    7 | refutation                           |    7 |    7 |         1 |
+| extension |   6 |   2 |   1 | 186 |    9 | minor                                |    9 |    9 |         1 |
+| extension |   7 |   1 |   1 |  49 |    9 | refutation                           |    9 |    9 |         1 |
+| extension |   7 |   2 |   1 | 301 |   11 | minor                                |   11 |   11 |         1 |
+| extension |   8 |   1 |   1 |  64 |   10 | refutation                           |   10 |   10 |         1 |
+| item      |   2 |   1 |   2 |   6 |    1 | bound                                |    1 |    1 |         1 |
+| item      |   2 |   2 |   2 |  14 |    2 | refutation                           |    2 |    2 |         2 |
+| item      |   2 |   3 |   2 |  30 |    2 | refutation                           |    2 |    2 |         2 |
+| item      |   3 |   1 |   2 |  15 |    3 | refutation                           |    3 |    3 |         1 |
+| item      |   3 |   2 |   2 |  63 |    4 | refutation                           |    4 |    4 |         2 |
+| item      |   3 |   3 |   2 | 255 |    5 | refutation                           |    5 |    5 |         2 |
+| item      |   4 |   1 |   2 |  28 |    4 | refutation                           |    4 |    4 |         1 |
+| item      |   4 |   2 |   2 | 172 |    6 | refutation                           |    6 |    6 |         2 |
+| item      |   5 |   1 |   2 |  45 |    6 | refutation                           |    6 |    6 |         1 |
+| item      |   5 |   2 |   2 | 365 |    8 | refutation                           |    8 |    8 |         2 |
+| extension |   6 |   1 |   2 |  66 |    7 | refutation                           |    7 |    7 |         1 |
+| extension |   7 |   1 |   2 |  91 |    9 | refutation                           |    9 |    9 |         1 |
+| extension |   8 |   1 |   2 | 120 |   10 | refutation                           |   10 |   10 |         1 |
+| item      |   2 |   1 |   3 |   8 |    1 | bound                                |    1 |    1 |         1 |
+| item      |   2 |   2 |   3 |  26 |    2 | refutation                           |    2 |    2 |         2 |
+| item      |   2 |   3 |   3 |  80 |    3 | refutation                           |    3 |    2 |         3 |
+| item      |   3 |   1 |   3 |  21 |    3 | refutation                           |    3 |    3 |         1 |
+| item      |   3 |   2 |   3 | 129 |    4 | refutation                           |    4 |    4 |         2 |
+| extension |   3 |   3 |   3 | 777 |    5 | upper = induced-subgraph lower bound |    6 |    5 |         3 |
+| item      |   4 |   1 |   3 |  40 |    4 | refutation                           |    4 |    4 |         1 |
+| item      |   4 |   2 |   3 | 364 |    6 | minor                                |    6 |    6 |         2 |
+| item      |   5 |   1 |   3 |  65 |    6 | refutation                           |    6 |    6 |         1 |
+| extension |   5 |   2 |   3 | 785 |    8 | upper = induced-subgraph lower bound |    8 |    8 |         2 |
+| extension |   6 |   1 |   3 |  96 |    7 | refutation                           |    7 |    7 |         1 |
+| extension |   7 |   1 |   3 | 133 |    9 | refutation                           |    9 |    9 |         1 |
+| extension |   8 |   1 |   3 | 176 |   10 | refutation                           |   10 |   10 |         1 |
+
+##### Censored clique trees: the interval [monotone lower bound, upper bound] against the forms
+
+| grid      |   s |   h |   b |   n |   lower |   monotone_lb |   pw |   C1 |   C2 |     nodes |   seconds |
+|:----------|----:|----:|----:|----:|--------:|--------------:|-----:|-----:|-----:|----------:|----------:|
+| extension |   4 |   4 |   1 | 484 |       6 |             6 |    7 |  nan |    7 | 110229014 |       600 |
+| extension |   5 |   3 |   1 | 425 |       7 |             7 |    9 |    9 |    9 | 137849794 |       600 |
+| extension |   6 |   3 |   1 | 936 |       5 |             9 |   13 |   11 |   11 |  94522248 |       600 |
+| extension |   8 |   2 |   1 | 456 |      11 |            11 |   13 |   13 |   13 | 204801466 |       600 |
+| extension |   6 |   2 |   2 | 666 |       9 |             9 |   10 |   10 |   10 | 137186572 |       600 |
+
+#### Candidates: clique-tree rows excluded because pw(B) is censored: 1
+
+#### Candidates as would-be upper bounds: violations (candidate < exact), exact share, slack
+
+| family                               |   count | candidate        |   violations |   worst violation |   exact |   mean slack |   max slack |
+|:-------------------------------------|--------:|:-----------------|-------------:|------------------:|--------:|-------------:|------------:|
+| clique trees (item grid)             |      29 | omega-1          |           24 |                 4 | 0.172   |     -1.55    |           0 |
+| clique trees (item grid)             |      29 | omega-1+pw(B)    |            1 |                 1 | 0.138   |      1.1     |           2 |
+| clique trees (item grid)             |      29 | omega-2+pw(B)    |            5 |                 2 | 0.517   |      0.103   |           1 |
+| clique trees (item grid)             |      29 | omega-1+h        |            7 |                 2 | 0.379   |      0.241   |           3 |
+| clique trees (item grid)             |      29 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |      7.41    |          17 |
+| clique trees (item grid)             |      29 | omega(tb+1)-1    |            0 |                 0 | 0       |      9.93    |          21 |
+| clique trees (extension)             |      12 | omega-1          |           12 |                 5 | 0       |     -3.08    |          -2 |
+| clique trees (extension)             |      12 | omega-1+pw(B)    |            6 |                 2 | 0.333   |     -0.417   |           1 |
+| clique trees (extension)             |      12 | omega-2+pw(B)    |           10 |                 3 | 0.167   |     -1.42    |           0 |
+| clique trees (extension)             |      12 | omega-1+h        |           12 |                 3 | 0       |     -1.83    |          -1 |
+| clique trees (extension)             |      12 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |     14.5     |          21 |
+| clique trees (extension)             |      12 | omega(tb+1)-1    |            0 |                 0 | 0       |     24.8     |          30 |
+| caterpillars of cliques              |      24 | omega-1          |           18 |                 2 | 0.25    |     -1       |           0 |
+| caterpillars of cliques              |      24 | omega-1+pw(B)    |            0 |                 0 | 0.25    |      0.75    |           1 |
+| caterpillars of cliques              |      24 | omega-2+pw(B)    |            6 |                 1 | 0.75    |     -0.25    |           0 |
+| caterpillars of cliques              |      24 | omega-1+h        |            1 |                 1 | 0.167   |      2.33    |           7 |
+| caterpillars of cliques              |      24 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |      5.5     |           8 |
+| caterpillars of cliques              |      24 | omega(tb+1)-1    |            0 |                 0 | 0       |     10.3     |          23 |
+| random block trees                   |     898 | omega-1          |           65 |                 1 | 0.928   |     -0.0724  |           0 |
+| random block trees                   |     898 | omega-1+pw(B)    |            0 |                 0 | 0       |      2.52    |           3 |
+| random block trees                   |     898 | omega-2+pw(B)    |            0 |                 0 | 0.0167  |      1.52    |           2 |
+| random block trees                   |     898 | omega-1+h        |            0 |                 0 | 0       |      4.38    |           8 |
+| random block trees                   |     898 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |     17.2     |          36 |
+| random block trees                   |     898 | omega(tb+1)-1    |            0 |                 0 | 0       |     24.9     |          48 |
+| random block trees d = 2             |     299 | omega-1          |           34 |                 1 | 0.886   |     -0.114   |           0 |
+| random block trees d = 2             |     299 | omega-1+pw(B)    |            0 |                 0 | 0       |      2.65    |           3 |
+| random block trees d = 2             |     299 | omega-2+pw(B)    |            0 |                 0 | 0.00669 |      1.65    |           2 |
+| random block trees d = 2             |     299 | omega-1+h        |            0 |                 0 | 0       |      4.9     |           8 |
+| random block trees d = 2             |     299 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |     15.1     |          27 |
+| random block trees d = 2             |     299 | omega(tb+1)-1    |            0 |                 0 | 0       |     20.7     |          36 |
+| random block trees d = 3             |     299 | omega-1          |           22 |                 1 | 0.926   |     -0.0736  |           0 |
+| random block trees d = 3             |     299 | omega-1+pw(B)    |            0 |                 0 | 0       |      2.55    |           3 |
+| random block trees d = 3             |     299 | omega-2+pw(B)    |            0 |                 0 | 0.0134  |      1.55    |           2 |
+| random block trees d = 3             |     299 | omega-1+h        |            0 |                 0 | 0       |      4.31    |           8 |
+| random block trees d = 3             |     299 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |     17.7     |          33 |
+| random block trees d = 3             |     299 | omega(tb+1)-1    |            0 |                 0 | 0       |     24.8     |          44 |
+| random block trees d = 4             |     300 | omega-1          |            9 |                 1 | 0.97    |     -0.03    |           0 |
+| random block trees d = 4             |     300 | omega-1+pw(B)    |            0 |                 0 | 0       |      2.35    |           3 |
+| random block trees d = 4             |     300 | omega-2+pw(B)    |            0 |                 0 | 0.03    |      1.35    |           2 |
+| random block trees d = 4             |     300 | omega-1+h        |            0 |                 0 | 0       |      3.93    |           7 |
+| random block trees d = 4             |     300 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |     18.9     |          36 |
+| random block trees d = 4             |     300 | omega(tb+1)-1    |            0 |                 0 | 0       |     29.2     |          48 |
+| forests on record (certified optima) |    3448 | omega-1          |            6 |                 1 | 0.998   |     -0.00174 |           0 |
+| forests on record (certified optima) |    3448 | omega-1+pw(B)    |            0 |                 0 | 0       |      1.5     |           3 |
+| forests on record (certified optima) |    3448 | omega-2+pw(B)    |            0 |                 0 | 0.501   |      0.503   |           2 |
+| forests on record (certified optima) |    3448 | omega-1+h        |            0 |                 0 | 0       |      1.74    |           7 |
+| forests on record (certified optima) |    3448 | omega(pw(B)+1)-1 |            0 |                 0 | 0       |      5.5     |          30 |
+| forests on record (certified optima) |    3448 | omega(tb+1)-1    |            0 |                 0 | 0       |     10.9     |          60 |
+
+#### Random block trees: by (d, n)
+
+|   d |   n |   count |   censored |   omega_mean |   h_mean |   pwB_mean |   pw_mean |   pw_min |   pw_max |   nodes_max |   seconds_max |
+|----:|----:|--------:|-----------:|-------------:|---------:|-----------:|----------:|---------:|---------:|------------:|--------------:|
+|   2 |  20 |      50 |          0 |         4.6  |     2.86 |       2.02 |      3.62 |        2 |        7 |   87        |         0     |
+|   2 |  40 |      50 |          0 |         4.98 |     4.26 |       2.6  |      4.04 |        3 |        7 |    2.43e+03 |         0.003 |
+|   2 |  60 |      50 |          0 |         5.54 |     4.92 |       2.98 |      4.68 |        3 |        8 |    4.65e+04 |         0.038 |
+|   2 |  80 |      50 |          0 |         5.64 |     5.6  |       3    |      4.74 |        4 |        8 |    4.93e+05 |         0.325 |
+|   2 | 100 |      50 |          0 |         5.8  |     6.14 |       3    |      5.04 |        4 |        7 |    5.29e+06 |         2.61  |
+|   2 | 120 |      50 |          1 |         6.14 |     6.32 |       3    |      5.28 |        4 |        8 |    2.16e+09 |       600     |
+|   3 |  20 |      50 |          0 |         5.52 |     2.4  |       1.98 |      4.54 |        3 |        7 |   65        |         0     |
+|   3 |  40 |      50 |          0 |         6.48 |     3.64 |       2.24 |      5.5  |        3 |        7 |  419        |         0.001 |
+|   3 |  60 |      50 |          0 |         6.82 |     4.24 |       2.52 |      5.86 |        4 |        9 |    1.6e+04  |         0.019 |
+|   3 |  80 |      50 |          0 |         6.8  |     4.98 |       2.98 |      5.94 |        4 |        8 |    2.65e+05 |         0.173 |
+|   3 | 100 |      50 |          0 |         7.24 |     5.24 |       3    |      6.36 |        5 |        9 |    8.8e+05  |         0.483 |
+|   3 | 120 |      50 |          1 |         7.48 |     5.82 |       3    |      6.6  |        5 |       10 |    2.32e+09 |       600     |
+|   4 |  20 |      50 |          0 |         6.2  |     2.24 |       1.92 |      5.2  |        3 |        9 |   24        |         0     |
+|   4 |  40 |      50 |          0 |         7.24 |     3.12 |       2    |      6.24 |        4 |       11 |  336        |         0.002 |
+|   4 |  60 |      50 |          0 |         8.18 |     3.9  |       2.26 |      7.26 |        5 |       11 |    7.34e+03 |         0.008 |
+|   4 |  80 |      50 |          0 |         8.38 |     4.32 |       2.52 |      7.4  |        6 |       11 |    4.29e+04 |         0.042 |
+|   4 | 100 |      50 |          0 |         8.38 |     5.08 |       2.74 |      7.4  |        5 |       10 |    4.03e+05 |         0.272 |
+|   4 | 120 |      50 |          0 |         8.76 |     5.1  |       2.86 |      7.82 |        6 |       11 |    1.72e+06 |         0.791 |
+
+##### pw - (omega - 1) against pw(B) and h on the random block trees
+
+|   pw_B |   count |   mean_excess |   max_excess |   omega_mean |
+|-------:|--------:|--------------:|-------------:|-------------:|
+|      1 |       5 |        0      |            0 |         6.8  |
+|      2 |     359 |        0.0279 |            1 |         6.59 |
+|      3 |     534 |        0.103  |            1 |         6.73 |
+
+#### Forests on record: by n
+
+|   n |      count |   omega_mean |   h_mean |   pwB_mean |   pw_mean |   pw_max |
+|----:|-----------:|-------------:|---------:|-----------:|----------:|---------:|
+|  10 |   1.09e+03 |         2.77 |     1.31 |       1.26 |      1.77 |        5 |
+|  15 | 714        |         3.09 |     1.53 |       1.38 |      2.09 |        6 |
+|  20 | 457        |         3.37 |     1.71 |       1.55 |      2.37 |        5 |
+|  25 | 356        |         3.59 |     1.88 |       1.63 |      2.59 |        6 |
+|  30 | 250        |         3.74 |     2.15 |       1.79 |      2.74 |        5 |
+|  35 | 184        |         3.98 |     2.43 |       1.84 |      2.99 |        6 |
+|  40 | 122        |         4.11 |     2.66 |       1.98 |      3.12 |        6 |
+|  50 | 119        |         6.02 |     2.39 |       1.83 |      5.02 |        9 |
+|  60 |  86        |         6    |     2.88 |       1.95 |      5    |        9 |
+|  75 |  66        |         7.76 |     3.06 |       1.95 |      6.77 |       14 |
+
+#### The caterpillar of cliques: exact against the forms
+
+|   s |   length |   n |   m |   h |   pw | status     |   pw_B |   omega-1+pw(B) |   omega-2+pw(B) |   omega-1+h |   omega(pw(B)+1)-1 |   omega(tb+1)-1 |   ceil(3s/2)-2 |
+|----:|---------:|----:|----:|----:|-----:|:-----------|-------:|----------------:|----------------:|------------:|-------------------:|----------------:|---------------:|
+|   2 |        1 |   4 |   3 |   1 |    1 | bound      |      1 |               2 |               1 |           2 |                  3 |               5 |              1 |
+|   2 |        2 |   5 |   4 |   2 |    1 | bound      |      1 |               2 |               1 |           3 |                  3 |               5 |              1 |
+|   2 |        3 |   6 |   5 |   2 |    1 | bound      |      1 |               2 |               1 |           3 |                  3 |               5 |              1 |
+|   2 |        5 |   8 |   7 |   3 |    1 | bound      |      1 |               2 |               1 |           4 |                  3 |               5 |              1 |
+|   2 |        8 |  11 |  10 |   5 |    1 | bound      |      1 |               2 |               1 |           6 |                  3 |               5 |              1 |
+|   2 |       12 |  15 |  14 |   7 |    1 | bound      |      1 |               2 |               1 |           8 |                  3 |               7 |              1 |
+|   3 |        1 |   9 |   4 |   1 |    3 | refutation |      2 |               4 |               3 |           3 |                  8 |               8 |              3 |
+|   3 |        2 |  13 |   6 |   2 |    3 | refutation |      2 |               4 |               3 |           4 |                  8 |               8 |              3 |
+|   3 |        3 |  17 |   8 |   2 |    3 | refutation |      2 |               4 |               3 |           4 |                  8 |              11 |              3 |
+|   3 |        5 |  25 |  12 |   3 |    3 | refutation |      2 |               4 |               3 |           5 |                  8 |              11 |              3 |
+|   3 |        8 |  37 |  18 |   5 |    3 | refutation |      2 |               4 |               3 |           7 |                  8 |              11 |              3 |
+|   3 |       12 |  53 |  26 |   7 |    3 | refutation |      2 |               4 |               3 |           9 |                  8 |              14 |              3 |
+|   4 |        1 |  16 |   5 |   1 |    4 | refutation |      2 |               5 |               4 |           4 |                 11 |              11 |              4 |
+|   4 |        2 |  25 |   8 |   2 |    4 | refutation |      2 |               5 |               4 |           5 |                 11 |              15 |              4 |
+|   4 |        3 |  34 |  11 |   2 |    4 | refutation |      2 |               5 |               4 |           5 |                 11 |              15 |              4 |
+|   4 |        5 |  52 |  17 |   3 |    4 | refutation |      2 |               5 |               4 |           6 |                 11 |              19 |              4 |
+|   4 |        8 |  79 |  26 |   5 |    4 | refutation |      2 |               5 |               4 |           8 |                 11 |              19 |              4 |
+|   4 |       12 | 115 |  38 |   7 |    4 | refutation |      2 |               5 |               4 |          10 |                 11 |              19 |              4 |
+|   5 |        1 |  25 |   6 |   1 |    6 | refutation |      2 |               6 |               5 |           5 |                 14 |              19 |              6 |
+|   5 |        2 |  41 |  10 |   2 |    6 | refutation |      2 |               6 |               5 |           6 |                 14 |              19 |              6 |
+|   5 |        3 |  57 |  14 |   2 |    6 | refutation |      2 |               6 |               5 |           6 |                 14 |              24 |              6 |
+|   5 |        5 |  89 |  22 |   3 |    6 | refutation |      2 |               6 |               5 |           7 |                 14 |              24 |              6 |
+|   5 |        8 | 137 |  34 |   5 |    6 | refutation |      2 |               6 |               5 |           9 |                 14 |              24 |              6 |
+|   5 |       12 | 201 |  50 |   7 |    6 | refutation |      2 |               6 |               5 |          11 |                 14 |              29 |              6 |
+
+
+
+### 3.5 The two censored random block trees, rerun for an hour each
+
+`rerun_censored.py`: restarted from the stored width-7 and width-8 layouts
+(`-u`, the closing order) and the clique floor `ω − 1` (`-L`), 3600 s of
+wall-clock each under `nice -n 19` at a one-minute load of 45–55 from work
+that is not ours (the C program's budget is wall-clock, so the node counts
+are the measure). **Both are still censored**; the intervals stand and are
+not values.
+
+| instance | n | d | seed | ω | interval after 600 s | nodes at 600 s | interval after 3600 s | nodes at 3600 s |
+|---|---|---|---|---|---|---|---|---|
+| `RBT_n120_d2_i08` | 120 | 2 | 212008 | 7 | [6, 7] | 2.16 × 10⁹ | [6, 7] | 1.255 × 10¹⁰ |
+| `RBT_n120_d3_i13` | 120 | 3 | 312013 | 8 | [7, 8] | 2.32 × 10⁹ | [7, 8] | 1.245 × 10¹⁰ |
+
+The open question on each is whether `pw = ω − 1`, as on 833 of the other
+898, or `ω`, as on 65. At `1.2 × 10¹⁰` nodes these two refutations of
+`k = ω − 1` are three decades above the 99th percentile of their cell and
+four above its median; the search has no rule for the clique condition of
+Chou et al.'s Theorem 4, which is what decides these instances. Layouts in
+`RBT_*.layout_rerun`, closing orders in `RBT_*.closing`,
+`random_censored_rerun.csv` for the counts. 2 core-hours.

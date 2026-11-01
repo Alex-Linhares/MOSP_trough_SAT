@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 2/13 SOLVED
+Current: 3/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -181,3 +181,77 @@ the coordinate of the constant, with `e` as the coordinate of the threshold
 and the ridge; the rule's `width / n` drifts upward with `n` on the ridge,
 so item 05's extrapolation should be checked against the certified slope at
 `n ≤ 100` as its kill says.
+
+---
+
+## Iteration 3 — 2026-11-01 00:12
+
+Item 03, the forest regime by brute force.
+
+### Completed
+
+- **`learning/block_trees.py`**: the families (`clique_tree` `CT(s, h, b)`,
+  `caterpillar_of_cliques`, `random_block_tree` with Chu & Stuckey's size
+  law), the graphs (MOSP graph, incidence graph, pattern adjacency), the
+  invariants (`ω`, block height `h`, `tree_bound`, `ternary_subtree_height`),
+  the six candidates, the driver for the C program
+  `pathwidth_solver/cli/pathwidth` (one niced process per graph, layouts
+  kept and re-checked by an independent `vertex_separation`). **`learning/chou_block.py`**:
+  Chou, Ko, Ho & Chen's Theorem 4 as an exact oracle (exponential as
+  written, `n ≤ 30`). `tests/test_block_trees.py` (10) and
+  `tests/test_chou_block.py` (4).
+- **`reports/scratch/forest_regime/`**: scripts, graph6 files, logs, layouts
+  (the witnesses), CSVs: 29 clique trees of the item's grid (`n ≤ 365`, all
+  exact, < 1 min), 18 of an extension to `s ≤ 8`, `h ≤ 4`, `n ≤ 936` (11
+  exact, 7 censored at 600 s wall under load 40–60, two of them settled by
+  induced-subgraph monotonicity), 24 caterpillars of cliques, 900 random
+  block trees at `n = 20–120` (898 exact, 2 censored at 600 s and still
+  censored after 3600 s more each at `1.25 × 10¹⁰` nodes, intervals [6, 7]
+  and [7, 8]), 3,448 forests on record scored for free from their certified
+  optima; `cross_check.log`: the oracle agrees with the C program on 328 of
+  328 small graphs. About 4.5 core-hours in all (the reruns included).
+  Nothing through the Python solvers; `solutions/` untouched.
+- **`reports/excess_phase_diagram.md` §3**, with every table of `fit.log`.
+- **Literature.** Chou, Ko, Ho & Chen, DAM 156 (2008) 55–75,
+  doi:10.1016/j.dam.2007.08.007: node search on block graphs is polynomial,
+  `O(c² + bc + n)`, by Theorem 4 (`ns ≤ k` iff at most two branches with
+  `ns ≥ k` at every vertex and, at every block, an edge whose enclosure
+  subgraph has `ns < k`). Pathwidth is NP-hard on chordal graphs (Gustedt
+  1993). We found no prior statement of a closed form on clique trees.
+- **Numbers.** Grid: `CT(s, 1, b) = ⌈3s/2⌉ − 2` for every `b` (1, 3, 4, 6),
+  the same value as the caterpillar of cliques at every length; `CT(s, 2, 1)
+  = 2s − 3`, `CT(s, 2, 2) = CT(s, 2, 3) = 2s − 2`; the slope in `ω` rises
+  with the depth (3/2, 2, 5/2). The additive candidates are not upper
+  bounds (`ω − 1 + pw(B)` violated on the grid once and on the extension 6
+  of 12; `ω − 1 + h` 7 and 12); the blow-up bound and the TreeBound form are
+  never violated and never exact (mean slack 7.4 / 9.9 on the grid, 17 / 25
+  on the random trees). Off the structured family `pw = ω − 1` on 99.8% of
+  the 3,448 record forests and 92.8% of the random block trees (`ω` on the
+  rest, never more). Two random block trees at `n = 120` needed `> 2 × 10⁹`
+  nodes at `k = ω − 1`; the exact theory is quadratic.
+- **A stated form refuted before it was called anything.** After the grid,
+  `C1 = ⌈(h + 2)(s − 2)/2⌉ + pw(CT(2, h, b))` fitted all 29 values; the
+  extension's `CT(3, 3, 3)` has a verified width-5 layout against `C1 = 6`,
+  and 5 is exact since `CT(3, 3, 2)` (pathwidth 5) is an induced subgraph.
+  `C2 = ⌈(h + 2)(s − 2)/2⌉ + 1 + [b ≥ 2][h ≥ 2]` fits all 33 values with
+  `s ≥ 3` and is provably not the law at `s = 3` from `h = 8` (the ternary
+  subtree forces `≥ h`). No closed form is conjectured.
+- **Kill verdict: met.** No `α (ω − 1) + β h + γ` fits the grid (0 of 325
+  forms; the best misses 14 of 29). Item 06 proves the blow-up bound only,
+  cites Chou et al. for exactness, and may add the `h = 1` lower bound
+  `⌈3ω/2⌉ − 2` for a clique with pendant cliques at `ω − 2` vertices.
+- **Gate: PASS** (one run, 2026-11-01 00:45–01:05 at load 45–55): lake build ok, every file
+  imported, sorry 0, MOSP pytest 1,563 passed (2 skipped, 1 xfailed; +14 new), pathwidth_solver 123
+  passed, paper check ok. The gate ran while the reruns ran; nothing under test depends on them.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 04, the SCOOP instances. For item 06: cite Chou et al. (2008) rather
+than prove exactness; prove the blow-up bound; the forest regime's
+practical content is `pw = ω − 1` almost surely under the random model
+(finding 5), which the random corollary should state. For item 11 the
+blow-up lemma is the Lean target as planned.

@@ -8,3 +8,8 @@
 [2026-10-31 23:38:28] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-11-01 00:01:09] session it02: ok (exit 0, 45 tool calls)
 [2026-11-01 00:12:14] tests passed: GATE PASS
+[2026-11-01 00:12:15] committed 10eebd065: 02 `opt / n` against the excess: one parameter, or two?
+[2026-11-01 00:12:15] === iteration 3: 03 The forest regime, by brute force.
+[2026-11-01 00:12:15] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-11-01 01:44:20] session it03: ok (exit 0, 106 tool calls)
+[2026-11-01 01:54:40] tests passed: GATE PASS

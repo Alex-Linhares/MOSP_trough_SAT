@@ -1,0 +1,3 @@
+{'name': 'RBT_n120_d2_i08', 'n': 120, 'd': 2, 'index': 8, 'seed': 212008, 'omega': '7', 'pw_600s': '7', 'floor': 6, 'width': 7, 'status': 'upper', 'nodes': 12550721242, 'seconds': 3600.01, 'wall': 3600.0, 'stderr': 'line 1: n=120 width=7 status=upper lower=6 upper_start=7 nodes=12550721242 minor_nodes=251961 upper_bound_nodes=0 engine_calls=13 seconds=3600.010'}
+{'name': 'RBT_n120_d3_i13', 'n': 120, 'd': 3, 'index': 13, 'seed': 312013, 'omega': '8', 'pw_600s': '8', 'floor': 7, 'width': 8, 'status': 'upper', 'nodes': 12452553839, 'seconds': 3600.011, 'wall': 3600.0, 'stderr': 'line 1: n=120 width=8 status=upper lower=7 upper_start=8 nodes=12452553839 minor_nodes=499150 upper_bound_nodes=0 engine_calls=24 seconds=3600.011'}
+done

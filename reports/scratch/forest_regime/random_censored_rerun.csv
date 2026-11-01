@@ -1,0 +1,3 @@
+name,n,d,index,seed,omega,pw_600s,floor,width,status,nodes,seconds,wall,stderr
+RBT_n120_d2_i08,120,2,8,212008,7,7,6,7,upper,12550721242,3600.01,3600.0,line 1: n=120 width=7 status=upper lower=6 upper_start=7 nodes=12550721242 minor_nodes=251961 upper_bound_nodes=0 engine_calls=13 seconds=3600.010
+RBT_n120_d3_i13,120,3,13,312013,8,8,7,8,upper,12452553839,3600.011,3600.0,line 1: n=120 width=8 status=upper lower=7 upper_start=8 nodes=12452553839 minor_nodes=499150 upper_bound_nodes=0 engine_calls=24 seconds=3600.011

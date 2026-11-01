@@ -1,0 +1,264 @@
+# session it03 started 2026-11-01 00:12:15
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the relevant code, then build the forest-regime study.
+  > $ uptime && cat reports/excess_phase_plan.md | head -250
+  > $ cat pathwidth_solver/cli/README.md 2>/dev/null | head -120; ls pathwidth_solver/cli/; ls reports/scratch/tree_bound/; sed -n 1,80p reports/scratch/tree_bound/co
+  > $ sed -n 1,60p learning/cover_excess.py; grep -n "def " learning/cover_excess.py learning/excess.py | head -60; sed -n 1,40p reports/scratch/clique_cover_moment/R
+  > $ grep -n -i "block graph\|block-graph\|chordal\|clique tree\|interval" reports/random_graph_pathwidth_survey.md paper1/ijoc_literature.md | head -40; grep -n "br
+  > $ grep -n "forest\|gamma\|is_forest" learning/excess.py | head -30; python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/excess.csv')
+print(d.columns.tol
+
+Next I need the generator's size law, the tree pathwidth helper in the scratch dir, the item-01 section of the report, and how ensemble instances regenerate. Requesting all of those now.
+  > $ sed -n 42,120p reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ sed -n 1,40p reports/scratch/tree_bound/treepw.c; sed -n 1,30p reports/scratch/tree_bound/treelib.py; ls reports/scratch/tree_bound/treepw* ; grep -n "treepw" r
+  > $ grep -n "^## \|^### \|^#### " reports/excess_phase_diagram.md | head -60; grep -n -i "forest" reports/excess_phase_diagram.md | head -30
+  > $ sed -n 218,262p learning/excess.py; grep -n "def generate\|def load_cell\|class Cell\|def instance_of\|def regenerate" learning/ensemble.py | head; python3 - <<
+  > $ ls pathwidth_solver/cli/pathwidth && echo 'E???' | pathwidth_solver/cli/pathwidth -l -v; python3 -c "
+import networkx as nx
+G=nx.balanced_tree(3,3)
+print(nx.to_
+
+Load the web tools for the literature check, and check the Chou et al. reference I recall for node searching on block graphs.
+  > ToolSearch {"query": "select:WebSearch,WebFetch", "max_results": 2}
+  > WebSearch {"query": "\"node-searching problem on block graphs\" Chou Ko Ho Chen Discrete Applied Mathematics", "mode": "standard"}
+  > WebSearch {"query": "pathwidth of block graphs polynomial algorithm chordal graphs NP-hard Gustedt", "mode": "standard"}
+  > $ curl -s 'https://api.openalex.org/works?search=node-searching%20problem%20on%20block%20graphs&per_page=5&select=id,title,publication_year,doi,primary_location,c
+  > WebFetch {"url": "https://scholars.lib.ntu.edu.tw/bitstreams/a1f03480-b8af-4f43-8612-3a067702458c/download", "prompt": "This is t
+  > $ sed -n 1,80p learning/excess.py | grep -n "import\|SOLUTIONS_DIR\|=" | head -40; sed -n 195,217p learning/excess.py; sed -n 115,200p learning/ensemble.py
+  > $ sed -n 1,60p tests/test_excess.py; grep -n "def from_matrix\|def from_benchmark_file\|def from_file\|def load" mosp/instance.py | head; grep -n "def enumerate\|
+
+Next I need the paper's text from the saved PDF, and the library itself; these are independent, so I'll extract the text and write the module together.
+  > $ cd /tmp && mkdir -p chou2008 && cp /home/al/.claude/projects/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tool-results/webfetch-1793492211274-unnqic.p
+  > Write /home/al/dev/MOSP/learning/block_trees.py
+
+Now I need three independent things: the paper's definitions and running time, a sanity run of the module on small cases, and the test file. Requesting all three.
+  > $ cd /tmp/chou2008 && sed -n 140,200p paper.txt; grep -n -i "time complexity\|O(n\|O(m\|running time\|Theorem 1[0-9]\|Theorem [0-9]\b" paper.txt | head -20; sed -
+  > $ python3 - <<'EOF'
+from learning.block_trees import *
+import networkx as nx
+for (s,h,b) in [(2,1,2),(2,2,2),(2,3,2),(2,2,3),(3,1,1),(3,2,1),(3,1,2)]:
+    P,dep =
+  > Write /home/al/dev/MOSP/tests/test_block_trees.py
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/forest_regime/ct && cat > /home/al/dev/MOSP/reports/scratch/forest_regime/run_ct.py <<'EOF'
+"""Item 03 (a): exact pat
+  > $ cat > /home/al/dev/MOSP/reports/scratch/forest_regime/run_caterpillar.py <<'EOF'
+"""Item 03 (c): the caterpillar of cliques -- a chain of `length` cliques K_s w
+  > $ tail -3 reports/scratch/forest_regime/run_ct.log && (nice -n 19 python3 reports/scratch/forest_regime/run_caterpillar.py > reports/scratch/forest_regime/run_cat
+  > $ cat > /home/al/dev/MOSP/reports/scratch/forest_regime/score_record.py <<'EOF'
+"""Item 03 (b), second half: the forest instances on record (item 01's map, gamma 
+  > $ cat reports/scratch/forest_regime/run_random.log; sed -e 's/if ct_size(s, h, b) <= 400\]/if 400 < ct_size(s, h, b) <= 1000 or (s > 5 and ct_size(s, h, b) <= 400
+  > Write /home/al/dev/MOSP/learning/chou_block.py
+  > $ python3 - <<'EOF'
+import re
+p='learning/chou_block.py'; s=open(p).read()
+old=s[s.index("            best = None\n            for x in K:"):s.index("            
+  > $ tail -2 reports/scratch/forest_regime/run_ct.log; ls reports/scratch/forest_regime/; ps -eo pid,etime,pcpu,args | grep "cli/pathwidth" | grep -v grep | head; up
+  > $ timeout 900 python3 - <<'EOF'
+import csv, re, time
+from learning.block_trees import *
+from learning.chou_block import pathwidth_block_graph, is_block_graph
+bad=
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bif34gh45.output; cd /home/al/dev/MOSP && tail -2 reports/scratch/forest_regim
+  > Write /home/al/dev/MOSP/reports/scratch/forest_regime/fit.py
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bif34gh45.output; cd /home/al/dev/MOSP && tail -1 reports/scratch/forest_regim
+
+The oracle is too slow on 172 vertices, so I'll profile it on a 63-vertex clique tree to see whether the subset count or the networkx calls dominate, and at the same time check the three run logs.
+  > $ timeout 100 python3 - <<'EOF'
+import time, cProfile, pstats
+from learning.block_trees import *
+from learning.chou_block import BlockSearch
+for (s,h,b) in [(3,2,
+
+Nothing printed before the timeout even for 63 vertices, so the oracle has a blow-up, not just overhead. I'll instrument it on tiny graphs to find it.
+  > $ timeout 60 python3 - <<'EOF'
+import time
+from learning.block_trees import *
+from learning import chou_block
+from learning.chou_block import BlockSearch
+calls=[0
+
+The oracle is exact but exponential in the number of modified blocks, so it stays a small-graph cross-check. I'll write that cross-check script and its tests now, and poll the runs.
+  > $ cat > /home/al/dev/MOSP/reports/scratch/forest_regime/cross_check.py <<'EOF'
+"""Item 03: the C program against an independent exact method on small block graphs
+  > $ timeout 60 python3 -m pytest tests/test_block_trees.py -q -k forest_incidence 2>&1 | grep -E "assert|Error|where" | head -8; ps -eo pid,etime,args | grep "cli/p
+  > Edit /home/al/dev/MOSP/tests/test_block_trees.py
+  > $ timeout 100 python3 -m pytest tests/test_chou_block.py tests/test_block_trees.py -q 2>&1 | tail -1; sleep 60; cat reports/scratch/forest_regime/run_ct_ext.log; 
+  > $ ps -eo pid,ni,pcpu,etime,comm --sort=-pcpu | head -40 | awk '{print $1,$2,$3,$4,$5}' | sort -k5 | uniq -c -f4 | sort -rn | head; echo; python3 - <<'EOF'
+import 
+  > $ python3 reports/scratch/forest_regime/fit.py 2>&1 | sed -n 1,140p
+
+Three things to check in parallel: how many incidence trees were censored across the data, what the C program's restart flags offer for a longer run, and the rest of the analysis output.
+  > $ grep -n -B2 -A6 "\-u\b\|-L " pathwidth_solver/cli/README.md | sed -n 1,60p; python3 - <<'EOF'
+import pandas as pd
+for f in ['record_forests.csv','random_block_t
+  > $ python3 reports/scratch/forest_regime/fit.py 2>&1 | sed -n '/## Candidates as would-be/,$p'
+  > $ cat reports/scratch/forest_regime/run_ct_ext.log | grep -c "pw=" ; ls reports/scratch/forest_regime/ct_ext_values.csv 2>/dev/null; python3 - <<'EOF'
+import csv,
+  > $ python3 - <<'EOF'
+p='learning/block_trees.py'; s=open(p).read()
+s=s.replace('''def largest_pattern(patterns: Patterns) -> int:''','''def ternary_subtree_height(
+  > $ timeout 100 python3 -m pytest tests/test_block_trees.py -q 2>&1 | grep -E "^E |assert" | head -6
+
+The lower bound of 1 for a binary tree is right, since an interior vertex has three neighbours. My expectation in the test was wrong; I'll fix it, re-run, and poll the extension run in the same call.
+  > $ sed -i 's/assert ternary_subtree_height(nx.balanced_tree(2, 4)) == 0/assert ternary_subtree_height(nx.balanced_tree(2, 4)) == 1      # an interior vertex has th
+  > $ cat > /home/al/dev/MOSP/reports/scratch/forest_regime/rerun_censored.py <<'EOF'
+"""Item 03 (b): the random block trees censored at 600 s re-run for 3600 s each,
+  > $ for i in 1 2 3 4 5 6; do if [ -f reports/scratch/forest_regime/ct_ext_values.csv ]; then break; fi; sleep 55; done; tail -4 reports/scratch/forest_regime/run_ct
+  > $ sed -n 887,935p reports/excess_phase_diagram.md; sed -n 1024,1070p reports/excess_phase_diagram.md
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bioz62zds.output 2>/dev/null; ls reports/scratch/forest_regime/ | grep -E "ext
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 3. The forest regime, by brute force (item 03, 2026-11-01)
+
+**Question.** A, first half. When the incidence g
+
+Two independent things now: how far the extension's last three processes are, and the verdict and does-not-claim subsections of the report, which do not depend on those numbers.
+  > $ ps -eo pid,ni,etime,time,args | grep "cli/pathwidth" | grep -v grep; cat /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bioz62zds
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+### 3.2 Kill verdict
+
+**Met: the additive theorem is dropped; item 06 proves the blow-up bound
+only.** No `α (ω 
+  > $ sleep 100; ps -C pathwidth -o pid,etime,time | tail -n +2; ls reports/scratch/forest_regime/ | grep -E "ext_values|rerun_censored.log"; tail -3 reports/scratch/
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until [ -f reports/scratch/forest_regime/ct_ext_values.csv ]; do sleep 5; done; echo EXT_READY; tail -3 reports/scratch/forest_regime/run_ct_ext.log; ls reports
+  > $ grep -n "clock_gettime\|CLOCK_" pathwidth_solver/cli/pathwidth.c | head -5; git status --short | head -30; du -sh reports/scratch/forest_regime
+  > $ timeout 115 bash -c 'until [ -f reports/scratch/forest_regime/ct_ext_values.csv ]; do sleep 5; done'; ls reports/scratch/forest_regime/ct_ext_values.csv 2>/dev/
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bioz62zds.output | tail -2; timeout 110 bash -c 'until [ -f reports/scratch/fo
+  > $ uptime && (nice -n 19 python3 reports/scratch/forest_regime/rerun_censored.py > reports/scratch/forest_regime/rerun_censored.log 2>&1 &); echo launched
+  > $ python3 reports/scratch/forest_regime/fit.py > reports/scratch/forest_regime/fit.log 2>&1; sed -n '1,3p' reports/scratch/forest_regime/fit.log; grep -A 30 "^## 
+  > $ python3 - <<'EOF'
+p='reports/scratch/forest_regime/fit.py'; s=open(p).read()
+start=s.index("# 3. the conjectured form"); end=s.index("# 4. candidates as would-b
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it03.log 2>&1; echo GATE_EXIT=$?; tail -15 Ralph_Loops/loop0010/gate_it03.
+  > $ python3 - <<'EOF'
+p='reports/scratch/forest_regime/fit.py'; s=open(p).read()
+s=s.replace('''families = [("clique trees (item grid)", ct[(ct.grid == "item") & (c
+  > $ python3 - <<'EOF'
+p='reports/excess_phase_diagram.md'; s=open(p).read()
+old_start=s.index("3. **The values are multiplicative in `ω` and the depth, with the tre
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0010/PROGRESS.md'; s=open(p).read()
+s=s.replace("Current: 2/13 SOLVED","Current: 3/13 SOLVED")
+s+='''
+---
+
+## Iteration 3 —
+  > $ python3 - <<'EOF'
+p='reports/excess_phase_diagram.md'; s=open(p).read()
+s=s.replace("and bounds the rest, table 3.5)","and bounds the rest, the censored table i
+
+Waiting on two background jobs now: the gate (about 25 minutes) and the reruns (up to an hour). Meanwhile I'll proofread the new section and soften two tree statements that rest on three points.
+  > $ python3 - <<'EOF'
+p='reports/excess_phase_diagram.md'; s=open(p).read()
+s=s.replace("""   follow their own law (`CT(2, h, 3)` has pathwidth `h`, `CT(2, h, 2)`
+ 
+  > $ python3 - <<'EOF'
+p='reports/excess_phase_diagram.md'; s=open(p).read()
+s=s.replace("""**We found no prior
+   statement** of a closed form on clique trees; the 
+
+Now I only need to wait: for the gate's exit line and for the reruns' log. I'll arm a monitor that reports either event.
+  > Monitor {"command": "cd /home/al/dev/MOSP; while true; do if grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-
+
+While the monitor waits, one check is worth doing for the record: that the induced-subgraph claims behind the monotone lower bounds hold by code, logged in the scratch directory.
+  > $ cat > reports/scratch/forest_regime/monotone_check.py <<'EOF'
+"""The induced-subgraph claims behind finding 3's monotone lower bounds, by code: CT(s-1, h, b),
+C
+  > $ python3 - <<'EOF'
+p='reports/excess_phase_diagram.md'; s=open(p).read()
+s=s.replace("""(iii) Induced-subgraph monotonicity between neighbouring cells of
+the fam
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+
+Nothing new is needed beyond the two pending jobs, so I'll keep waiting on the gate.
+  > $ timeout 115 bash -c 'until grep -q GATE_EXIT /tmp/claude-1000/-home-al-dev-MOSP/44e8c6d7-9d93-4ce6-b6cb-7af364193448/tasks/bal82dz6z.output 2>/dev/null; do slee
+
+The gate passed. Let me read its summary for the PROGRESS entry and check on the reruns.
+  > $ grep -E "passed|failed|sorry|import|lake|check|PASS|FAIL|pages|error" Ralph_Loops/loop0010/gate_it03.log | tail -15; cat reports/scratch/forest_regime/rerun_cen
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0010/PROGRESS.md'; s=open(p).read()
+s=s.replace("- **Gate:** see below.","- **Gate: PASS** (one run, 2026-11-01 00:45–01:05
+
+Only the reruns remain (about 35 more minutes of wall-clock). I'll keep waiting in two-minute blocks and then write the last subsection.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the reruns remain; I'll keep waiting.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the two reruns are outstanding, and nothing else depends on anything but their result, so one wait call is all that is needed.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the reruns' result is outstanding; I'll keep waiting.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+The only thing needed next is the reruns' result, which nothing else depends on, so one wait call is the whole request.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Nothing is needed next except the reruns' result, which is not ready yet and has no independent sibling tasks, so I'll wait once more.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+The only outstanding need is the reruns' result, with nothing independent to request beside it.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+The reruns are the only outstanding need; nothing independent remains.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the reruns' result is needed next, and it has no independent sibling.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+The only thing needed next is the reruns' result, and it depends on nothing else, so one wait call is the full request.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the reruns' result is needed next, with nothing independent beside it.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+The only thing needed next is the reruns' result, which should land within the next few minutes; nothing independent remains.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+
+Only the reruns' result is needed next; nothing else is independent of it.
+  > $ timeout 115 bash -c 'until [ -s reports/scratch/forest_regime/rerun_censored.log ]; do sleep 10; done'; cat reports/scratch/forest_regime/rerun_censored.log; ps
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+### 3.5 The two censored random block trees, rerun for an hour each
+
+`rerun_censored.py`: restarted from the sto
+  > $ rm -f Ralph_Loops/loop0010/gate_it03.log && grep -n "Current:" Ralph_Loops/loop0010/PROGRESS.md && grep -c "^- \[x\]" Ralph_Loops/loop0010/iterations.md && tail
+
+Item 03 is done and marked `[x]`; the gate passed; nothing further is pending.
+
+**Outcome.** The kill criterion is met: no form `α(ω − 1) + βh + γ` with small integer constants fits the clique trees, so the additive theorem is dropped and item 06 proves the blow-up bound only. The pathwidth of a clique tree is multiplicative in the clique size and the depth: each level of depth costs `(ω − 2)/2` stacks, so the slope in `ω` rises with the depth (3/2, 2, 5/2 at h = 1, 2, 3).
+
+**What was built and measured** (all under `reports/scratch/forest_regime/`, library in `learning/block_trees.py` and `learning/chou_block.py`, 14 new tests):
+- 29 clique trees of the item's grid, all exact in under a minute, plus an 18-cell extension to 936 vertices (11 exact, 7 censored, two of those settled by induced-subgraph monotonicity).
+- 24 caterpillars of cliques, 900 random block trees at n ≤ 120 (898 exact), and the 3,448 incidence-forest instances on record scored for free from their certified optima. Nothing re-solved, `solutions/` untouched, about 4.5 core-hours in all.
+- The C program's values cross-checked against an independent oracle implementing Chou, Ko, Ho and Chen's Theorem 4: 328 of 328 agree on small graphs.
+
+**Findings worth carrying forward.**
+- The literature has the exact answer: node search on block graphs is polynomial, O(c² + bc + n), Discrete Applied Mathematics 156 (2008). Item 06 should cite it rather than prove exactness.
+- A closed form stated after the grid fitted all 29 values and was refuted within the hour by the extension: CT(3,3,3) has a verified width-5 layout where the form said 6. No closed form is conjectured; the description that fits all 33 values with s ≥ 3 is shown to be provably wrong at s = 3 beyond h = 7.
+- Off the structured family the pathwidth is simply the largest pattern: `pw = ω − 1` on 99.8% of the record forests and 92.8% of the random block trees, never more than ω.
+- The additive candidates are not upper bounds; the two multiplicative ones never fail and are loose by a factor of 2 to 5.
+- Two random block trees at n = 120 stayed censored after an hour each at 1.25 × 10¹⁰ nodes; their intervals [6, 7] and [7, 8] stand as intervals.
+
+**Next.** Item 04, the SCOOP instances. Ten items remain, so no `LOOP_COMPLETE` line.
+
+# result: success in 5524s, 107 turns, cost $15.38

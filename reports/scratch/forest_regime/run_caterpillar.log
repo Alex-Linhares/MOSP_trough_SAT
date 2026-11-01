@@ -1,0 +1,25 @@
+CAT(s=2, L=1) n=4 m=3 h=1: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=2, L=2) n=5 m=4 h=2: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=2, L=3) n=6 m=5 h=2: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=2, L=5) n=8 m=7 h=3: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=2, L=8) n=11 m=10 h=5: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=2, L=12) n=15 m=14 h=7: pw=1 bound nodes=0 0.0s | pw(B)=1
+CAT(s=3, L=1) n=9 m=4 h=1: pw=3 refutation nodes=6 0.0s | pw(B)=2
+CAT(s=3, L=2) n=13 m=6 h=2: pw=3 refutation nodes=8 0.0s | pw(B)=2
+CAT(s=3, L=3) n=17 m=8 h=2: pw=3 refutation nodes=10 0.0s | pw(B)=2
+CAT(s=3, L=5) n=25 m=12 h=3: pw=3 refutation nodes=14 0.0s | pw(B)=2
+CAT(s=3, L=8) n=37 m=18 h=5: pw=3 refutation nodes=20 0.0s | pw(B)=2
+CAT(s=3, L=12) n=53 m=26 h=7: pw=3 refutation nodes=28 0.0s | pw(B)=2
+CAT(s=4, L=1) n=16 m=5 h=1: pw=4 refutation nodes=14 0.0s | pw(B)=2
+CAT(s=4, L=2) n=25 m=8 h=2: pw=4 refutation nodes=22 0.0s | pw(B)=2
+CAT(s=4, L=3) n=34 m=11 h=2: pw=4 refutation nodes=30 0.0s | pw(B)=2
+CAT(s=4, L=5) n=52 m=17 h=3: pw=4 refutation nodes=46 0.0s | pw(B)=2
+CAT(s=4, L=8) n=79 m=26 h=5: pw=4 refutation nodes=70 0.0s | pw(B)=2
+CAT(s=4, L=12) n=115 m=38 h=7: pw=4 refutation nodes=102 0.0s | pw(B)=2
+CAT(s=5, L=1) n=25 m=6 h=1: pw=6 refutation nodes=47 0.0s | pw(B)=2
+CAT(s=5, L=2) n=41 m=10 h=2: pw=6 refutation nodes=128 0.0s | pw(B)=2
+CAT(s=5, L=3) n=57 m=14 h=2: pw=6 refutation nodes=244 0.0s | pw(B)=2
+CAT(s=5, L=5) n=89 m=22 h=3: pw=6 refutation nodes=584 0.001s | pw(B)=2
+CAT(s=5, L=8) n=137 m=34 h=5: pw=6 refutation nodes=1364 0.002s | pw(B)=2
+CAT(s=5, L=12) n=201 m=50 h=7: pw=6 refutation nodes=2908 0.006s | pw(B)=2
+done

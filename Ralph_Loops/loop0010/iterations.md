@@ -102,7 +102,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
     density to 75 and §14 showed `n ≤ 40` constants fail at 125; `b` is a
     finite-range slope. The rule is a heuristic, not a bound.
 
-- [ ] **03 The forest regime, by brute force.**
+- [x] **03 The forest regime, by brute force.**
   - **Question.** A, first half. When the incidence graph is a forest the
     MOSP graph is a block graph whose blocks are the pattern cliques. What is
     its pathwidth as a function of the largest pattern `ω` and the shape of
