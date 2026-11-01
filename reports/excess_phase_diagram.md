@@ -5927,9 +5927,12 @@ in the plan's §0.
 
 In rough order of value against cost:
 
-1. **A cluster-representative first moment** (§8): one canonical pair per
+1. ~~**A cluster-representative first moment** (§8): one canonical pair per
    connected family of empty pairs. It is the only route on the table that
-   could lift `β*`; the second moment cannot, and nested pairs lower it.
+   could lift `β*`; the second moment cannot, and nested pairs lower it.~~ —
+   *done by loop0011, `reports/separator_moment.md` (§0): the separator,
+   closed-pair and weighted counts are valid and below `0.02` at the headline
+   cells; the `e^{0.23 n}` is a rare-instance artefact on `(6, 1)`.*
 2. **The ridge mechanism** (§9, `ml_nature.md` §36): the number of closed
    sets reachable by fitting steps, as a first-passage problem on the
    subset lattice, in the random model. The vectorised lattice of

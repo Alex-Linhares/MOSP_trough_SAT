@@ -1,0 +1,134 @@
+# session it12 started 2026-11-01 22:58:43
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the report, the plan, the paper appendix section and the relevant scratch data before writing anything.
+  > $ uptime && git status --short | head && wc -l reports/separator_moment.md reports/separator_moment_plan.md paper1/latex/sec9e_appendix_random.tex && grep -n '^##
+  > $ sed -n 1,120p reports/separator_moment.md
+  > $ cat reports/separator_moment_plan.md
+  > $ cat -n paper1/latex/sec9e_appendix_random.tex
+  > $ grep -n '14\.\|^## ' reports/excess_phase_diagram.md | tail -30 && echo ---- && awk '/^## 14/,0' reports/excess_phase_diagram.md | head -60
+  > $ ls paper1/latex/ && grep -n 'SeparatorMoment\|CliqueCoverMoment\|FirstMomentAsymptotics' paper1/latex/*.tex | head -40 && grep -n 'SeparatorMoment' paper1/axiom
+  > $ sed -n 120,1000p reports/separator_moment.md
+  > $ sed -n 1000,2030p reports/separator_moment.md
+  > $ sed -n 2030,3025p reports/separator_moment.md
+  > $ sed -n 3025,3986p reports/separator_moment.md
+  > $ grep -n 'leanref' paper1/latex/main.tex | head; grep -n 'newcommand' paper1/latex/main.tex | head -20; echo ----; grep -n 'emptypair\|firstmoment\|clique-cover\
+  > $ sed -n 1,80p paper1/latex/check_refs.py; echo ----; grep -n '^@' paper1/latex/refs.bib | wc -l; grep -n -i 'oconnell\|puhalskii\|andreis\|DoErdeKang\|Kolesnik\|
+  > $ sed -n 330,420p paper1/axiom_check.lean; echo ----; sed -n 1,60p paper1/latex/check_axioms.py; echo ----; pdfinfo paper1/latex/main.pdf | grep Pages; ls -la pap
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/b4726b81c.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/bbmp6rwp2.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/b3xxd685b.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/be9k3hr3h.txt
+
+Reading the remaining halves of the four chunks.
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/b4726b81c.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/bbmp6rwp2.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/b3xxd685b.txt
+  > Read /home/al/.claude/projects/-home-al-dev-MOSP/705e2dc1-3bd5-4ca7-a2e8-b0a1809ff2f3/tool-results/be9k3hr3h.txt
+  > $ sed -n 680,730p paper1/latex/refs.bib && echo ---- && grep -n '^@' paper1/latex/refs.bib | tail -15 && echo ---- && sed -n 1,80p paper1/latex/check_lean.py && e
+  > $ grep -n 'cluster-representative\|^1\. \*\*A cluster' reports/excess_phase_diagram.md | head && echo ---- && grep -n 'sec9\|input{\|include{' paper1/latex/main.t
+  > $ sed -n 100,130p paper1/latex/sec9a_appendix_lean.tex && echo ---- && grep -n 'PerarnauSerra2014\|LeeLeeOum2012' paper1/latex/refs.bib && sed -n "$(grep -n '@art
+  > $ sed -n 1,35p tests/test_paper1_latex.py && echo ---- && git show appendix-picture:reports/random_graph_pathwidth_literature_2.md 2>/dev/null | grep -n -i -B2 -A
+  > $ cd /tmp && for d in 10.1007/s004400050149 10.1214/009117904000000784 10.1002/rsa.21007 10.1002/jgt.23081 10.1137/120891265 "10.1002/1098-2418(200101)18:1<31::AI
+  > $ sed -n 165,180p reports/excess_phase_diagram.md && echo ---- && sed -n 5926,5935p reports/excess_phase_diagram.md && echo ---- && grep -n 'edwards_mcdermid' lea
+  > $ grep -n 'leangroup' paper1/latex/sec9a_appendix_lean.tex && grep -n 'leanentry{pendant}\|leanentry{mono}\|leanentry{endpoint}' paper1/latex/sec9a_appendix_lean.
+  > $ grep -n 'newtheorem' paper1/latex/main.tex | head && grep -n 'Edwards\|EdwardsMcDermid' paper1/latex/*.tex | head -3; grep -c '' paper1/latex/refs.bib; tail -5 
+  > $ cat >> paper1/latex/refs.bib <<'EOF'
+
+@article{OConnell1998,
+  author  = {O'Connell, Neil},
+  title   = {Some large deviation results for sparse random graphs},
+  > $ sed -i 's/author  = {{\\L}uczak, Malwina J. and McDiarmid, Colin},/author  = {Luczak, Malwina J. and McDiarmid, Colin},/' paper1/latex/refs.bib && grep -n 'Lucz
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("paper1/latex/sec9e_appendix_random.tex")
+s = p.read_text()
+
+def rep(old, new, count=1):
+    global s
+    
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("paper1/latex/sec9a_appendix_lean.tex")
+s = p.read_text()
+anchor = "MOSPInstance.mospValue_ge_of_pendant_p
+
+Now building the paper and the axiom audit in the background while I write the report's summary.
+  > $ cd /home/al/dev/MOSP/paper1/latex && (nice -n 19 make > /tmp/paper_build.log 2>&1; echo "BUILD EXIT $?" >> /tmp/paper_build.log; nice -n 19 make check >> /tmp/p
+
+While the build runs: writing the report's §0 and the CLAUDE.md paragraph.
+  > $ cat > /tmp/sec0.md <<'EOF'
+## 0. Summary: what counting events bought, and what it did not (item 12, 2026-11-01)
+
+**The question.** The first-moment lower bound
+  > $ tail -4 /tmp/paper_build.log && tail -3 /tmp/paper_axioms.log && pdfinfo paper1/latex/main.pdf | grep Pages && grep -c 'Warning' paper1/latex/main.log; grep -n 
+  > $ sed -n 640,652p paper1/latex/main.log && pdftotext -layout paper1/latex/main.pdf /tmp/main.txt && grep -n 'Why the first moment is loose\|separators, finite for
+  > $ awk 'NR<=648 && /\(\.\/sec/ {last=$0; n=NR} END{print n": "last}' paper1/latex/main.log && grep -n 'Overfull' reports/scratch/separator_moment/11_ledger/gate.lo
+  > Read /tmp/pg-70.png
+  > Read /tmp/pg-71.png
+  > $ grep -n 'sec1_intro\|sec2_equiv\|sec9a' paper1/latex/main.log | head -5 && sed -n 95,104p paper1/latex/sec1_intro.tex | cut -c1-120
+  > Read /tmp/pg-72.png
+
+Trimming the new appendix text to one page, then rebuilding; after that the CLAUDE.md paragraph, the §14 pointer, and the gate.
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("paper1/latex/sec9e_appendix_random.tex")
+s = p.read_text()
+def rep(old, new):
+    global s
+    assert s.c
+  > $ cd /home/al/dev/MOSP && python3 - <<'PYEOF'
+from pathlib import Path
+# (d) excess_phase_diagram.md §14 item 1
+p = Path("reports/excess_phase_diagram.md")
+s = p.
+  > $ uptime && mkdir -p reports/scratch/separator_moment/12_writeup && cp /tmp/paper_build2.log reports/scratch/separator_moment/12_writeup/paper_build.log && cp /tm
+  > $ nice -n 19 python3 Ralph_Loops/loop0011/gate.py > reports/scratch/separator_moment/12_writeup/gate.log 2>&1; echo "GATE EXIT $?" >> reports/scratch/separator_mo
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("reports/separator_moment.md"); s = p.read_text()
+def rep(old, new):
+    global s
+    assert s.count(old) 
+  > $ nice -n 19 python3 -m pytest tests/test_paper1_latex.py -q 2>&1 | tail -3
+  > $ git diff --stat && git diff paper1/latex/sec9e_appendix_random.tex | grep '^[-+]' | grep -v '^+++\|^---' | wc -l && grep -n 'iterations' Ralph_Loops/loop0011/it
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The gate is running in the background; I'll wait for it with a bounded poll, then write the PROGRESS entry and mark the item.
+  > $ for i in $(seq 1 100); do if grep -q 'GATE EXIT' reports/scratch/separator_moment/12_writeup/gate.log 2>/dev/null; then break; fi; sleep 10; done; tail -20 repo
+  > $ cat reports/scratch/separator_moment/12_writeup/gate.log | tail -12; uptime
+  > $ for i in $(seq 1 58); do if grep -q 'GATE EXIT' reports/scratch/separator_moment/12_writeup/gate.log 2>/dev/null; then break; fi; sleep 10; done; tail -20 repor
+
+Gate passed. Writing the PROGRESS entry and marking the item.
+  > $ grep -n 'axiom' reports/scratch/separator_moment/12_writeup/gate.log | head -3; sed -i 's/^Current: 11\/13 SOLVED$/Current: 12\/13 SOLVED/' Ralph_Loops/loop0011
+  > $ cat >> Ralph_Loops/loop0011/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 12 — 2026-11-01 23:22
+
+Item 12, the write-up: the report's summary, the paper's paragraph, th
+
+Item 12 is done; the gate passed and nothing was committed.
+
+**What was delivered**
+
+- **Report summary.** `reports/separator_moment.md` now opens with §0: the one-paragraph answer, the three events and the two planted identities, a ladder table giving each count's status (Lean name, on paper, measured with range, fitted, conditional), constants tables for `G(n, c/n)` and for covers with the basis of every column, the two threshold propositions with their hypotheses' status, the clumping in one paragraph, the ledger in stacks, a kill-verdict table for all twelve items, "What this is not", "Open", and "Where everything is". §12 holds the `CLAUDE.md` paragraph in the format of the excess paragraph. `CLAUDE.md` itself is untouched.
+- **Paper.** In Appendix E the last two sentences of "Why the first moment is loose" are replaced by Theorem E.6 (Theorem S, cited to Lean) and about a page on the separator and closed-pair counts, the threshold `2 ln 2` conditional on the cited LDP, the constants at `c = 3` and `c = 10` with their basis, the planted cluster, and the honest sentence that the two slack instruments are not reconciled. The closing sentence now gives the sandwich with Edwards & McDermid's upper line. Five Appendix A rows and seven bibliography entries with Crossref-checked DOIs were added. Page count 71 before, 74 after; the new text is about 1.1 pages.
+- **Pointer.** `reports/excess_phase_diagram.md` §14 item 1 is struck through with a pointer to the new report.
+
+**Checks**
+
+| check | result |
+|---|---|
+| `make -C paper1/latex` and `make check` | builds, no undefined references |
+| `make axioms` | 296 theorems, 0 failures |
+| `check_refs` | 67 DOIs, 0 disagreements |
+| gate | PASS (1,747 tests, pathwidth_solver 123, 0 sorry, 0 axiom) |
+
+**Scoped down, stated in PROGRESS.** Sections 1–11 were not rewritten for one voice; they are kept as their items wrote them, and §0.10 says so. Two cells of the constants table are blank because item 09 never computed them.
+
+**Next.** Item 13, the reserve, is the only unchecked item, so no `LOOP_COMPLETE`. The candidates recorded in PROGRESS are the product-over-blocks lemma that would put Theorem Cl fully into Lean, or the reconciliation of the planted and Harper instruments at larger sizes.
+
+# result: success in 1315s, 56 turns, cost $14.44

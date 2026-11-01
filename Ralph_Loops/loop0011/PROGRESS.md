@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 11/13 SOLVED
+Current: 12/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -1106,3 +1106,86 @@ is loose" paragraph (print it as a vector then). Item 13's reserve: the
 product-over-blocks lemma (Theorem Cl into Lean), or a 12-level Harper
 rerun at `n = 60–75` with no budget if the exact split at the largest
 sizes is wanted.
+
+---
+
+## Iteration 12 — 2026-11-01 23:22
+
+Item 12, the write-up: the report's summary, the paper's paragraph, the
+`CLAUDE.md` paragraph, the pointer in the excess report. **Done.**
+Deliverable: `reports/separator_moment.md` §0 (the one-paragraph answer; the
+three events and the two identities; the ladder of counts with each rung's
+status — Lean name, on paper, measured with its range and section, fitted,
+conditional; the constants tables for `G(n, c/n)` at eight `c` and for covers
+at six cells, each column with its basis; the two threshold propositions with
+their hypotheses' status; the clumping decomposed in one paragraph; the ledger
+in stacks; the kill verdicts of all twelve items in one table; "What this is
+not"; "Open"; "Where everything is" with page counts and regenerate commands)
+and §12, the `CLAUDE.md` paragraph in the format of "The excess phase diagram"
+(drafted, `CLAUDE.md` not edited); `paper1/latex/sec9e_appendix_random.tex`
+(the last two sentences of "Why the first moment is loose" replaced by
+Theorem~E.6 — Theorem S in finite form, cited to Lean — and about a page on the
+separator count, its rate from the cited LDP, `β_sep = 0.037` at `c = 3` and
+`0.341` at `c = 10` with their basis, the threshold `2 ln 2` conditional on the
+cited upper bound, the closed-pair count with its independence step marked
+on paper, the weighted count, the planted measurement, and the honest sentence
+on the two unreconciled instruments; the section's closing sentence replaced by
+the sandwich with Edwards & McDermid's upper line; one sentence in the cover
+sandwich paragraph and one in "What is checked"; the header comment);
+`paper1/latex/sec9a_appendix_lean.tex` (five Appendix A rows, A.64–A.68, for
+the 30 new Lean theorems, all already audited by `paper1/axiom_check.lean`);
+`paper1/latex/refs.bib` (seven entries: O'Connell 1998, Puhalskii 2005,
+Andreis–König–Patterson 2021, Do–Erde–Kang 2024, Luczak–McDiarmid 2001,
+Kolesnik–Wormald 2014, Edwards–McDermid 2015, every DOI resolved through
+Crossref, cache updated); `reports/excess_phase_diagram.md` §14 item 1 struck
+through with a pointer; `reports/scratch/separator_moment/12_writeup/`
+(`paper_build.log`, `axiom_check.log`, `check_refs.log`, `gate.log`).
+
+### Completed
+
+- **The paper builds: 71 pages before, 74 after** (`make -C paper1/latex`,
+  `make check`: no undefined references; `make axioms`: 296 theorems, 0
+  failures; `check_refs`: 79 entries, 67 DOIs, 0 disagreements; `check_lean`:
+  193 names cited, 0 missing). The new text runs from the bottom of page 70
+  to the top of page 72, about 1.1 pages with the paragraph's kept opening
+  and the theorem environment — the item said at most one page, and this is
+  the length after one trim; cutting further would drop a named fact.
+  The one `Overfull \hbox` in the log is in `main.tex` (line 102), not new.
+- **Wording checked against the rules**: "we found no prior statement" (twice,
+  never "first"); every rate from a fit is "fitted"; `β_sep` is tied to the
+  cited LDP in the theorem's paragraph and again in "What is checked"; the
+  threshold is "conditional on the cited large-deviation upper bound"; the
+  planted numbers carry `n ≤ 32`; the ledger carries the cap; the two
+  instruments' disagreement is stated, not resolved.
+- **§0 states, per count, exactly what is proved where**: Theorem S in Lean
+  (`weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`), Theorem Cl's
+  union bound and characterisation in Lean and its independence step on
+  paper, Lemma W and Fl in Lean and Lemma J on paper, Lemma Rc and `Ẑ₀` on
+  paper, the combined count fitted only, Propositions T and T-cover
+  conditional with (H_G) cited and (H_C) in no held paper. Two cells of the
+  constants table (`β_W` at `c = 2, 2.8`) are "—" because item 09 did not
+  compute them.
+- **The one-voice edit of §1–§11 was not done**: the sections are kept as
+  their items wrote them (each self-contained, each with its own regenerate
+  command and non-claims), and §0.10 says so. The header was edited and §0
+  and §12 added. A rewrite would have risked drifting numbers for no new
+  content, and the summary is the single document the item asked for.
+- Kill criterion: none. Size range: as stated per claim in §0 (every number
+  there carries its section). Compute: none (builds and checks only).
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,747 passed / 2 skipped / 1 xfailed in 4:32; pathwidth_solver 123 passed in 6:24; paper 74 pages, no undefined references; the one-minute load was about 1). Log: `reports/scratch/separator_moment/12_writeup/gate.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 13, the reserve. Candidates from §0.9, in the order the record suggests:
+the product-over-blocks lemma that puts Theorem Cl's independence step into
+Lean (§10.3, a session on its own; after it the paper may say "Theorem Cl in
+Lean"); or the reconciliation of the two slack instruments — a Harper run
+with no level cap at `n = 60–75` on the `(6, 1)` covers (about 2–5 core-hours
+at nice 19, nothing re-solved) and the planted `E[1/X]` at `n = 48–64` —
+which would decide whether the union bound's slack grows with `n` or the
+ledger sees the `θ = 0.01` rounding. The owner's `CLAUDE.md` paragraph is
+§12 of the report, ready to paste.

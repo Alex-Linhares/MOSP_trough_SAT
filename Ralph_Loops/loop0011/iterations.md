@@ -629,7 +629,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     lower bound on the true Harper value and the differences are stated in
     the direction that survives that (§8.5 (b)).
 
-- [ ] **12 The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph.**
+- [x] **12 The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph.**
   - **Question.** H of the brief. One document a reader can follow, and
     the paper's text.
   - **Method.** (a) `reports/separator_moment.md` §0, a two-page opening:

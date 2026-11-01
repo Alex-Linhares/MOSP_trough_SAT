@@ -6,8 +6,8 @@ pathwidth of random graphs and on the optimum of random MOSP instances
 moves when the count runs over the **event** a narrow layout forces
 instead of over the **witnesses** of that event. Sections are the items,
 in order; each states its size range, its regenerate command, its kill
-verdict and what it does not claim. §0 (the summary) is written by item
-12.*
+verdict and what it does not claim. §0 is the summary (item 12); the
+paragraph for `CLAUDE.md` is the last section.*
 
 ## The three events, and the notation
 
@@ -46,6 +46,303 @@ vertex" is a rate on the scale of `n` unless the scale `N` is named.
 Conversion: the pair exponent's slope at `β*` is `3.3–3.4` per unit of `β`
 at `c = 6–10` (3.9 at `c = 4`, 5.5 at `c = 3`; `rate_preview.log`), so a gain
 of `g` nats per vertex of `n` is `g / 3.3` in `β` there.
+
+---
+
+## 0. Summary: what counting events bought, and what it did not (item 12, 2026-11-01)
+
+**The question.** The first-moment lower bound on the pathwidth of `G(n, c/n)`
+and on the optimum of random MOSP instances (`β*(c)`, `β*(d, μ)`;
+`FirstMoment.lean`, `CliqueCoverMoment.lean`) counts *witnesses* — ordered
+empty pairs `(A, R)` at the forced sizes — and misses the fitted slopes by
+`0.08–0.10` in `β` on `G(n, c/n)` and `0.04–0.06` on covers. loop0010 located
+the slack in the union bound over clustered witnesses. This loop asked whether
+counting the **event** a narrow layout forces — once per separator, once per
+closed pair, or with a weight that divides each witness by the size of its
+cluster — moves the constant, and by how much, and where.
+
+**The answer in one paragraph.** Three new first moments are valid and two
+are theorems in finite form (one in Lean). None moves the headline constants
+by the `0.02` the brief set as worth a page: on `G(n, c/n)` the separator
+count gains `+0.011` at `c = 6` and `+0.004` at `c = 10`, the closed-pair count
+`+0.010` and `+0.008`; on random covers the closed-pair count gains `+0.011`
+at `(d, μ) = (4, 1)` and `(6, 1)`. **The route is closed for the headline
+constants**, as the plan's pre-registered estimates said it would be. What it
+bought instead: a near-threshold gain (`+0.029` at `c = 3`, a third of the gap
+to the fitted slope), the method's threshold moved from `4 ln 2` to `2 ln 2`
+conditional on a cited large-deviation principle, a provable sandwich with the
+published upper line of Edwards & McDermid (2015), a direct measurement of
+what the cluster of witnesses is (two lobes through the separator; on covers
+the reversed pair and nothing else, so loop0010's `e^{0.23 n}` is a
+rare-instance artefact there), the whole union-bound slack as a bounded
+planted statistic (`0.012–0.019` in `β` at `n ≤ 32`), and a ledger in stacks
+on 1,143 certified instances. The literature search found the separator as the
+object of a width first moment once (Do, Erde & Kang 2024, with a
+deterministic inner bound) and the inner rate in a different literature
+(O'Connell 1998); we found no prior statement of the inner probability of the
+bipartition event, nor of its use for a width constant.
+
+### 0.1 The three events, and the weighted identity
+
+With `k < n`, `N = n − k`, `t = ⌈N/2⌉`, `r = N − t`, a layout of vertex
+separation `≤ k` gives at the prefix of size `t` three disjoint sets
+`A ∪ R ∪ S = V`, `|A| = t`, `|R| = r`, `|S| = k`, with no `A–R` edge (L1, §2.1;
+Lean `exists_balanced_separator`). Three events, three counts:
+
+| count | what is counted | one event per |
+|---|---|---|
+| **pair** (on record) | `X` = ordered exact-size empty pairs `(A, R)` | witness |
+| **separator** | `k`-sets `S` with `E_bip(S)`: the components of `G − S` can be grouped into sides of sizes `t`, `r` (`E_relax`: no component larger than `t`; strictly weaker, `3K₂`) | separator |
+| **closed pair** | pairs with `S = N(A) ∩ N(R)`, sides at least the forced sizes, `|S| ≤ k`; the fixpoint of one round of `R* = V ∖ N[A]`, `A* = V ∖ N[R*]` | closed pair |
+| **weighted** | `Y = Σ_P 1[P empty]/Z(P)` for any `1 ≤ Z ≤ X` on the empty pairs; `Y ≥ 1[X > 0]` pointwise, `= 1[X > 0]` at `Z = X` | cluster (as `Z` sees it) |
+
+"An exact-size pair exists" and "some `k`-set is in `E_bip`" are the same
+event, counted differently (L1′ c). Two identities carry the measurements:
+`E[X′ | P₀ empty] = E[X²]/E[X] − 1` (the second-moment ratio *is* the planted
+mean) and `P(X > 0)/E[X] = E[1/X | P₀ empty]` (the union bound's whole slack is
+a bounded planted statistic).
+
+### 0.2 The ladder, with the status of each rung
+
+| rung | theorem (Lean name) | on paper | measured (size range; section) | fitted | conditional / conjectured |
+|---|---|---|---|---|---|
+| L1, L1′ (a, b, d), L2, L3: the structures a narrow layout forces | `exists_balanced_separator`, `exists_balanced_separator_cover`, `exists_isBalancedBip`, `card_componentOff_le_of_isBalancedBip`, `closeStep_isClosedPair`, `closeStep_closeStep`, `exists_closedPair_of_pathwidth_le`, `isClosedPair_iff_sees_both`, … (30 names, §10.1) | L1′ (c) converse, §2.2 | checked on every graph to 9 vertices, 20,000 random at 10–12, 2,000 covers: zero violations (§2.4) | — | — |
+| exact-size pair count | the `Z ≡ 1` instance of `weightedSum_graphsOfPathwidthLe_le_weighted` | §8.1 | floors on 200 Chu & Stuckey and 1,143 certified instances (§7.5, §11) | — | — |
+| **Theorem S** (separator count, finite form) | `weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip` (inner probability as a weighted count; relabelling `innerBip_eq_of_card_eq`) | the inner probability by the partition formula (Lemma P) and Gilbert's recursion (Lemmas G, F), §8.1–§8.2; exact to `N = 120` (`E_bip`), `N = 400` (`E_relax`), §5 | `n = 60, 120`, `c = 3–10` in stacks (§5.2, §6.5, §9.6) | the rate of `E_bip` beyond `N = 120`; `β_sep(fitted)` (§6.1) | `β_sep(cited)` rests on the LDP for the largest component (O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3)); `E_bip` and `E_relax` of equal rate beyond `N = 120` (§5.3) |
+| **Theorem Cl** (closed-pair count) | union bound `weightedSum_graphsOfPathwidthLe_le_sum_closedPairs`; characterisation `isClosedPair_iff_sees_both` | the independence step and the exact expectation, §8.1; `β_closed` the root of a closed-form exponent, §6.1 (b) | floors (§6.5, §7.5, §11) | — | the supremum at the corner at every `c` (numerical, ten `c`) |
+| Theorem Cl-cover, the NA bound | — | the `(u, w)` inclusion–exclusion, §7.1 (a); the cancellation-free bound by negative association (Joag-Dev & Proschan 1983, cited), §7.1 (a′) | exact against enumeration at `n ≤ 8`; the NA bound's slack a constant `0.2` nats at `n = 8–26` (§7.3) | the NA bound's slope | — |
+| **Lemma W** (weighted count), Lemma Fl (flips), Corollary W-flip | `weightedCount_ge_indicator`, `weightedSum_graphsOfPathwidthLe_le_weighted`, `flipPair_*`, `card_flips_le`, `weightedSum_graphsOfPathwidthLe_le_flipWeighted` | Lemma J (joint binomial moments), the evaluation of `E[Y]`, §8.1 | `E[Y]` within 1.7 s.e. of 1,000 Monte Carlo covers (§8.3) | — | — |
+| Lemma Rc (recombinations), `Ẑ₀`, `β_W` | — | §9.1, §9.3 (the transform of `Ẑ₀` a binomial sum) | every labelled graph to 6 vertices; planted lower tail at `n ≤ 32` (§9.2) | — | — |
+| the combined count | — | §6.1 (c), valid, not the best | — | fitted only (no LDP for the tilted event) | — |
+| Harper (the necessary condition's instrument) | `exists_closedNbhd_card_le` (`EmptyPair.lean`) | — | 1,143 instances under a level cap and a budget (§11) | — | — |
+| Proposition T (threshold `2 ln 2`), T-cover (half-giant line) | — | §6.4, §7.4, §8.1 | `N ≤ 400` consistent at `c = 2, 2.5`, undecided at `1.5` (§6.4) | — | (H_G) cited, not verified by us; (H_C) stated in no held paper |
+
+Every Lean theorem of the loop is in `lean/MOSPFormalization/SeparatorMoment.lean`
+(78 theorems, 21 definitions; no `sorry`, no `axiom`; `propext`,
+`Classical.choice`, `Quot.sound` only, `paper1/axiom_check.lean`); what is on
+paper and not in Lean is named with its obstacle in §10.3 (components of
+`G − S` as finsets; the product-over-blocks lemma; inclusion–exclusion over
+pattern sets).
+
+### 0.3 The constants
+
+`G(n, c/n)` (§6.3, §9.3, §9.6; `constants.csv`, `beta_w.csv`,
+`threshold_fine.csv`). `β_sep` (cited) is the root of
+`H(β) = (1 − β) I(c(1 − β))` with `I` the LDP rate of O'Connell as restated by
+Puhalskii, **cited**; `β_sep` (fitted) uses the log-corrected fit of the exact
+`−log P_N(E_relax)` over `N = 100–400`, **fitted**; `β_closed` and `β_W` are
+roots of closed-form exponents (on paper, the supremum located numerically);
+the slope is the pilot's fitted `β_∞` (survey §7(d), `n ≤ 70–120`,
+**fitted**); E&M is Edwards & McDermid (2015) Cor. 5.2 on Poisson(`c`)
+degrees, the published upper line (owner's note).
+
+| `c` | `β*` | `β_sep` cited | `β_sep` fitted | `β_closed` | `β_W` (`Ẑ₀`) | best valid | fitted slope | E&M upper | share of the gap closed |
+|---|---|---|---|---|---|---|---|---|---|
+| 2 | 0 | 0.0056 | 0.0059 | 0 | — | 0.006 | 0.040 | 0.085 | 15% |
+| 2.8 | 0.0008 | 0.0290 | 0.0294 | 0.0008 | — | 0.029 | — | 0.162 | — |
+| 3 | 0.0087 | 0.0368 | 0.0374 | 0.0096 | 0.0096 | 0.037 | 0.099 | 0.183 | 32% |
+| 4 | 0.0613 | 0.0827 | 0.0833 | 0.0671 | 0.0671 | 0.083 | 0.158 | 0.285 | 23% |
+| 6 | 0.1706 | 0.1817 | 0.1820 | 0.1803 | 0.1801 | 0.182 | 0.268 | 0.458 | 12% |
+| 8 | 0.2628 | 0.2690 | 0.2691 | 0.2722 | 0.2720 | 0.272 | 0.360 | 0.576 | 10% |
+| 10 | 0.3371 | 0.3409 | 0.3410 | 0.3453 | 0.3451 | 0.345 | 0.415 | 0.656 | 11% |
+| 20 | 0.5535 | 0.5542 | 0.5543 | 0.5573 | 0.5572 | 0.557 | — | 0.826 | — |
+
+The separator count's gain is a sparse-side one and peaks in `β` at the pair
+count's own threshold `c = 4 ln 2` (`+0.029`); the closed count's is a
+dense-side one (the `q` terms, `2β ln q((1 − β)/2)` nats) and wins from
+`c = 8`. The combined count (closed pairs grouped by separator with a `2^κ`
+bound on the colourings) is below the closed count everywhere and below `β*`
+at `c ≤ 4`. Conversion: the pair exponent's slope at `β*` is `5.5, 3.9, 3.4,
+3.3, 3.3` nats per unit of `β` at `c = 3, 4, 6, 8, 10`, so a gain of `g` nats
+per vertex is `g/3.3` in `β` at `c ≥ 6`.
+
+Random clique covers (`m = μ n` patterns of `d` customers, the i.i.d. model of
+`CliqueCoverMoment.lean`; §7.2, `grid.csv`). `β_closed` by the valid
+negative-association bound (the independent-sites approximation differs by
+`≤ 0.001`); `β_flip` the exact weighted count with the flip weight; `b` the
+certified slope of `excess_phase_diagram.md` §2.5 (**measured**, 30–100
+customers); E&M on the cover degree law.
+
+| `(d, μ)` | `β*` | `β_closed` | `β_flip` | best | `b` | E&M upper | share of the gap |
+|---|---|---|---|---|---|---|---|
+| (4, 1) | 0.2859 | 0.2969 | 0.2917 | 0.297 | 0.348 | 0.660 | 18% |
+| (6, 1) | 0.5132 | 0.5244 | 0.5155 | 0.524 | 0.577 | 0.861 | 18% |
+| (10, 1) | 0.7567 | 0.7614 | 0.7570 | 0.761 | 0.795 | 0.957 | 12% |
+| (8, ½) | 0.3977 | 0.4188 | 0.4039 | 0.419 | 0.463 | 0.831 | 32% |
+| CS 125×125, `d = 2` (pooled sizes) | 0.0983 | 0.1039 | 0.1096 | 0.110 | 0.146 | 0.392 | 24% |
+| CS 125×125, `d = 4` | 0.3208 | 0.3345 | 0.3268 | 0.335 | 0.396 | 0.729 | 18% |
+
+The separator count's constant is not computed on covers (no LDP to cite for
+the giant of a random intersection graph); the closed count is a sparse-side
+gain there, largest at few large patterns (`+0.021` at `(8, ½)`, the one cell
+above `0.02`, outside the kill's named cells); the flips are worth
+`0.001–0.006` at `μ ≥ 1`, `d ≥ 4` and `+0.011` at the Chu & Stuckey `d = 2`
+sizes. E&M is loose on covers (it sees the degrees of a union of cliques, not
+the cliques); the project's own `β⁺` (`excess_phase_diagram.md` §7) is the
+tighter upper end there.
+
+### 0.4 The thresholds, with their hypotheses
+
+* **Proposition T** (§6.4, §8.1). *If* for every `c′ > 2 ln 2` there is
+  `I(c′) > 0`, continuous, with `P(no component of G(N, c′/N) exceeds N/2) ≤
+  e^{−(I(c′) − o(1)) N}`, *then* `β_sep(c) > 0` for every `c > 2 ln 2`. The
+  hypothesis is the upper-bound half of the LDP for the largest component on
+  the closed set `[0, ½]`: O'Connell 1998 (not held) as restated by
+  Puhalskii 2005 (Cor. 2.4(3), held) and Andreis–König–Patterson 2021
+  (Cor. 1.3, held); `I_{c′}(½) > 0` iff `c′ > 2 ln 2` on the quoted formula.
+  **Cited, not verified by us as a theorem.** What is verified: the value of
+  the quoted formula against the exact finite computation at seven `c′`
+  (`0.0003–0.002`, §5.3), and the finite rate bounded away from zero at
+  `c = 2, 2.5` to `N = 400`, undecided at `c = 1.5`. The method's threshold
+  was `4 ln 2 = 2.77`; this moves it to `2 ln 2 = 1.39`, the bisection
+  threshold of Luczak–McDiarmid for the same reason; the truth is `1`
+  (Lee–Lee–Oum 2012).
+* **Proposition T-cover** (§7.4). *If* the largest component of the MOSP
+  graph of a random cover has an exponentially small lower tail below its
+  typical fraction `θ(d, μ)`, *then* the separator count's floor is positive
+  wherever `θ > ½`. **The hypothesis is stated in no held paper** (Behrisch
+  2007 and Lagerås–Lindholm 2008 give the law of large numbers only). The
+  half-giant line `θ = ½` sits at excess `e = 0.595, 0.603, 0.658, 0.736,
+  0.816` for `μ = ⅛, ¼, ½, 1, 2`, between loop0010's `e_g(r)` and the pair
+  count's `e = 1`; the ensembles on record cannot confirm it (repaired and
+  connectivity-conditioned generators).
+
+### 0.5 The clumping, decomposed (items 03, 04, 09)
+
+On instances with exact pathwidth at `n ≤ 24` and `k = pw`, a typical
+instance has 8–62 exact-size empty pairs; one separator carries one pair and
+its reverse (`X₁/X₂ = 1.03–1.6` with `N` odd), the closure merges `1.3–1.6`
+(graphs) and `1.7–3.3` (covers), the single-swap classes `1.4–2.5`, and **no
+ratio grows with `n`** (`0.000 ± 0.003` nats per vertex at `c = 10` against
+the `0.066` a `0.02` gain needs). The second moment's `e^{0.23–0.39 n}` is a
+statement about the rare-instance regime at `β*`, where the maximising
+overlap is the pair itself or its reverse perturbed through `S`, not the
+symmetric table typical instances show. Planting a pair and enumerating the
+others (`n ≤ 32`, 200 per cell) measures that regime directly: the cluster is
+**two lobes with an empty middle** (perturbations of `P₀` and of its reverse;
+the moved separator vertices have half the planted-side degree of a typical
+one and evict at most one neighbour in 60–87% of cases), the median cluster
+grows at about half the mean's rate on `G(n, c/n)` (`0.24 ± 0.03` against
+`0.31 ± 0.03` nats per vertex at `c = 6`) and **not at all on `(6, 1)`
+covers** (median `X′ = 1`, the reversed pair, at every size): loop0010's
+`e^{0.23 n}` is a rare-instance artefact of `E[X²]` there. The union bound's
+whole slack, `−log E[1/X | P₀ empty]`, is `0.065, 0.039, 0.043` nats per
+vertex at the largest sizes (`0.019, 0.012, 0.015` in `β`), sub-linear in `n`
+over the range; the recombinations through the separator (Lemma Rc, `Z_4`)
+recover 54%, 79% and 98% of it, the computable `Ẑ₀` a third, and the lower
+tail of every `Z` with a closed-form transform is the event *the planted pair
+is closed*, which is why `β_W = β_closed − 0.0002`.
+
+### 0.6 In stacks, on certified instances (item 11)
+
+600 certified `(6, 1)` covers at `n = m = 30–75` and 543 proved `G(n, 10/n)`
+graphs at `n = 30–60`, floors at `< 0.01` on the `pw` scale, **zero floors
+above a certified pathwidth for any count**. At `n = 75` on covers the old
+pair's floor is 7.0 stacks below the pathwidth; exact sizes buy 0.8, the
+closed count 0.8 more, the flips nothing: **1.6 of the seven**. At
+`G(60, 10/60)` the old floor is 5.8 below the mean pathwidth and the
+separator and closed counts buy **one stack**, the same one. Of the 4.8–5.4
+stacks left, Harper's vertex-isoperimetric bound sits at or above the best
+count on 1,142 of 1,143 instances and within a stack of the pathwidth
+wherever its branch and bound reaches the forced prefix (`n ≤ 40` on covers,
+`n ≤ 50` on graphs), so **at least 77–93% of the leftover is the union bound
+by that instrument** and at most a stack the necessary condition; at larger
+`n` the level cap binds and the split is the cap's (§11.5). This does not
+agree in size with §0.5's planted `0.012–0.019` in `β` (about one stack at
+`n = 75`): the two instruments see different sizes (`n ≤ 32` against 30–75)
+and different quantities (a planted mean against a deterministic bound at
+`θ = 0.01`), and the reconciliation is open (§0.9).
+
+### 0.7 Kill verdicts
+
+| item | criterion | verdict |
+|---|---|---|
+| 01 literature | stop rule: a prior separator first moment with an exact inner probability for pathwidth of `G(n, c/n)` | **did not fire** |
+| 02 lemmas | a counterexample to L1, L1′, L2, L3 | **not met** (310,266 graphs, 4,027,298 closures, zero) |
+| 03 clumping | (1) `X₁/X₂`, `X₁/X₃` grow at `< 0.035` nats per vertex at `c = 10`; (2) `X₁/X₄` grows at `≥ 0.15` | (1) **met** (`0.000 ± 0.003`, `−0.003 ± 0.003`); (2) **not met** |
+| 04 planted | the fork: typical / in between / artefact | `G(n, c/n)`: in between (ratios 0.57, 0.36); covers: **artefact** (0) |
+| 05 inner | separator floor at most one stack over the pair floor at every pilot cell | **met for `c ≥ 6`** (all six cells); 2–3 stacks at `c = 3–4` |
+| 06 constants | `β_sep − β* < 0.02` at `c = 6, 10` | **met** (`+0.0113`, `+0.0038`); separate: `+0.029` at `c = 3`, threshold `2 ln 2` conditional |
+| 07 covers | `β_closed − β* < 0.02` at `(6, 1)`, `(4, 1)` | **met** (`+0.0111`, `+0.0110`); `(8, ½)` at `+0.0211` outside the named cells; zero floor violations on 200 |
+| 08 theorems | a counterexample at `n ≤ 7` | **not met** (zero violations in exact rationals) |
+| 09 weighted | a computable `Z` beating the closed count by `0.02` | **met** (`β_W − β_closed = −0.0002`) |
+| 10 Lean | none | everything of (a)–(d) proved; obstacles named |
+| 11 ledger | none; stop condition: a floor above a certified pathwidth | **did not fire** (1,143 instances) |
+| 12 write-up | none | — |
+
+### 0.8 What this is not
+
+* **Not a new headline constant.** `β_sep`, `β_closed`, `β_W` are valid lower
+  bounds on `lim inf pw/n` under the stated bases; none moves `β*` by `0.02`
+  at `c = 6, 10` or at `(4, 1), (6, 1)`; the gaps "closed" are fractions of
+  fitted slopes.
+* **Not a theorem about rates.** Theorem S and Theorem Cl are finite
+  inequalities; every rate is either cited (the LDP, not proved here) or
+  fitted (labelled). `E_bip = E_relax` in rate is exact to `N = 120` and
+  conjectural beyond. Propositions T and T-cover are conditional.
+* **Not asymptotic where it is measured.** The planted cluster is at
+  `n ≤ 32`, the ledger at 30–75, the clumping at `n ≤ 24`; the per-vertex
+  slacks are sub-linear over their ranges and are upper estimates of a rate.
+* **Not a priority claim.** The separator object is in Do–Erde–Kang 2024;
+  the inner rate is O'Connell's; the threshold `2 ln 2` is Luczak–McDiarmid's
+  bisection threshold; "we found no prior statement" is the wording.
+* **Not canonical.** The closure is a representative (the `A`-first and
+  `R`-first fixpoints differ on 3–14% of pairs); a union bound needs only a
+  map.
+* **Not re-solved.** No certified value was recomputed; `solutions/` was
+  not read; the only new exact solves are 4,800 fresh graphs at `n ≤ 24`
+  (item 03), layouts kept.
+
+### 0.9 Open
+
+1. **Theorem Cl into Lean**: the product-over-blocks lemma for weighted sums
+   over edge subsets (a session; §10.3). Lemmas P, G, F and Corollary S′ need
+   components of `G − S` as finsets; Lemma J and Theorem Cl-cover need
+   inclusion–exclusion over pattern sets.
+2. **The hypotheses.** (H_G): verify the quoted LDP statement against the
+   held sources in full (O'Connell 1998 is not held). (H_C): an exponentially
+   small lower tail for the giant of a random intersection graph, in no held
+   paper.
+3. **The two instruments.** The planted slack (`0.012–0.019` in `β` at
+   `n ≤ 32`) against the Harper ledger (three quarters of 4–5 stacks at
+   30–75): a Harper run with no level cap at `n = 60–75`, and the planted
+   measurement at `n = 48–64`, would say whether the union bound's slack
+   grows with `n` or the necessary condition's rounding is what the ledger
+   sees.
+4. **A count that merges both lobes.** `Z_4`'s transform (the two-sided and
+   reversed-lobe moves, which need the edge-free pairs inside `G[S]`) has no
+   closed form here and is worth twice `Ẑ₀` at `n = 32`; and a combined
+   count with the closedness condition inside the component law (not a
+   `2^κ` tilt).
+5. **Near the threshold.** `β_sep` at `c = 2–4` is the best lower bound on
+   record and the sandwich to E&M is `5–14×` wide; nothing exact is known
+   there, and the pilot has no fitted slope between `c = 2` and `3`.
+6. **The sparse cover cells.** The closed count passes `0.02` at `(8, ½)` and
+   the additive closed-plus-flip estimate passes it at `μ ≤ 1`, `d = 3–4`; no
+   single count realises both mechanisms.
+7. **The half-giant line on the i.i.d. model**, measured (the ensembles on
+   record are repaired or connectivity-conditioned).
+
+### 0.10 Where everything is
+
+Sections 1–11 are the items in order, each with its question, its events,
+its size range, its regenerate command, its kill verdict and what it does not
+claim. Code: `learning/separator_moment.py` (tested by
+`tests/test_separator_moment.py`, 91 tests); scratch, logs and CSVs under
+`reports/scratch/separator_moment/NN_*/`; Lean in
+`lean/MOSPFormalization/SeparatorMoment.lean`; five papers added to
+`literature/` and five recorded missing in `literature/MISSING.md`; the paper's
+Appendix E (`paper1/latex/sec9e_appendix_random.tex`, the paragraph "Why the
+first moment is loose", the section's closing, one sentence in the sandwich
+paragraph and one in "What is checked", five Appendix A rows and seven
+references with checked DOIs; 71 pages before, 74 after; regenerate with
+`make -C paper1/latex && make -C paper1/latex check` and `make -C paper1/latex
+axioms`, logs in `reports/scratch/separator_moment/12_writeup/`). Compute:
+about 8.5 core-hours in all against 12 planned, 4.9 of them item 11's Harper
+pass. Sections 1–11 are kept as their items wrote them, each self-contained;
+this item edited the header and added §0 and §12 and did not rewrite them.
+The paragraph the owner will need for `CLAUDE.md` is §12, the last section
+of this document.
 
 ---
 
@@ -3984,3 +4281,67 @@ model statements evaluated at the instance's sizes, not instance
 statements; a `< 1` floor above `pw` is not a violation. No rate is
 fitted here; "grows with `n`" is read off six (four) sizes. The medians
 are of 50–150 instances per size.
+
+---
+
+## 12. For CLAUDE.md (item 12, 2026-11-01)
+
+*Drafted here as the item asks, in the format of the existing "The excess
+phase diagram" paragraph; `CLAUDE.md` is not edited.*
+
+> **Counting events, not witnesses** *(loop0011, 2026-11-01;
+> `reports/separator_moment.md`, §0 is the summary; the paper's Appendix E,
+> the paragraph "Why the first moment is loose" and the section's closing
+> sentence, five Appendix A rows)*. The first-moment floor `β*` on
+> `pw(G(n, c/n))` and on random MOSP covers counts *witnesses* (exact-size
+> empty pairs `(A, R)`); this loop counted the *event* a narrow layout forces,
+> three ways: once per **separator** `S` (`P(pw ≤ k) ≤ C(n, k) · P_N(E_bip)`,
+> the inner probability from the component structure of `G − S = G(N, p)`,
+> exact to `N = 120` by a partition sum, its relaxation to `N = 400`), once
+> per **closed pair** (`S = N(A) ∩ N(R)`, the fixpoint of one round of
+> `R* = V ∖ N[A]`, `A* = V ∖ N[R*]`), and the **weighted count**
+> `Σ_P 1[P empty]/Z(P) ≥ 1[X > 0]` for any `1 ≤ Z ≤ X`. **Theorems**
+> (`SeparatorMoment.lean`, 78 theorems, no `sorry`, no `axiom`): Theorem S
+> in finite form with the inner probability as a weighted count
+> (`weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`; the union bound
+> over `S` is the only inequality), the deterministic lemmas L1 / L1′ / L2
+> and their cover forms, Lemma W, the flip lemma, Theorem Cl's union bound;
+> on paper: Theorem Cl's independence step, the partition formula (Lemmas P,
+> G, F) and the cover inclusion–exclusion (§10.3 names the obstacles).
+> **Constants** (asymptotic; `β_sep` rests on the *cited* LDP for the
+> largest component, O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3),
+> reproduced by exact computation and *fitted* over `N = 100–400`):
+> `β_sep − β* = +0.029, +0.022, +0.011, +0.004` at `c = 3, 4, 6, 10`;
+> `β_closed − β* = +0.001, +0.006, +0.010, +0.008`; on covers
+> `β_closed − β* = +0.011` at `(4, 1)` and `(6, 1)`, the flips `+0.002–0.006`,
+> `+0.021` at `(8, ½)` the one cell above `0.02`. **The brief's kill
+> (`< 0.02` at `c = 6, 10` and at `(4, 1), (6, 1)`) is met: the route is
+> closed for the headline constants**, as the plan's estimates said. What it
+> bought: the near-threshold gain (a third of the gap at `c = 3`); the
+> method's threshold `4 ln 2 → 2 ln 2`, **conditional** on the cited LDP
+> (Proposition T; the truth is `1`); the half-giant line `e = 0.60–0.82` on
+> covers (Proposition T-cover, conditional on a lower-tail hypothesis no held
+> paper states); the published sandwich `[0.037, 0.183]`, `[0.182, 0.458]`,
+> `[0.345, 0.656]` at `c = 3, 6, 10` with Edwards & McDermid 2015 Cor. 5.2 as
+> the upper line (loose on covers); and the planted-cluster measurement
+> (`n ≤ 32`, 200 per cell): the cluster is two lobes through the separator,
+> loop0010's `e^{0.23 n}` at `(6, 1)` is a rare-instance artefact of `E[X²]`
+> (the median planted instance has the reversed pair and nothing else), and
+> the union bound's whole slack is `E[1/X]` under the planted law,
+> `0.012–0.019` in `β`. **In stacks** (§11, 1,143 certified instances, zero
+> floor violations at `< 0.01`): the counts buy 1–2 stacks at `n = 60–75`;
+> of the 4–5 left, at least three quarters is the union bound by Harper's
+> instrument where it reaches the forced prefix (level cap stated), and the
+> two instruments (planted at `n ≤ 32`, Harper at 30–75) are **not
+> reconciled** (§0.9). **Dead**: the combined count (a `2^κ` colouring bound
+> gives the separator's gain back); every weighted count with a closed-form
+> transform (`β_W = β_closed − 0.0002`: the lower tail is "the pair is
+> closed"); the typical-instance instrument for the constant (no ratio grows
+> at `k = pw`, `n ≤ 24`, while the constant is decided in the rare-instance
+> regime). Literature: the separator object is in Do–Erde–Kang 2024 (a
+> deterministic inner bound), the inner rate in O'Connell 1998; representative
+> counts in print bought 2–25% of a gap; five PDFs added to `literature/`,
+> five recorded missing; "we found no prior statement", never "first".
+> Nothing re-solved; `solutions/` untouched; about 8.5 core-hours. Code
+> `learning/separator_moment.py` (91 tests); data under
+> `reports/scratch/separator_moment/`.

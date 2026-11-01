@@ -6,12 +6,33 @@
   "title": "Elements of Information Theory",
   "year": 2005
  },
+ "10.1002/1098-2418(200101)18:1<31::aid-rsa3>3.0.co;2-1": {
+  "fetched": "2026-11-01",
+  "first_author": "Luczak",
+  "registry": "crossref",
+  "title": "Bisecting sparse random graphs",
+  "year": 2000
+ },
  "10.1002/jgt.20620": {
   "fetched": "2026-10-31",
   "first_author": "Lee",
   "registry": "crossref",
   "title": "Rank\u2010width of random graphs",
   "year": 2011
+ },
+ "10.1002/jgt.23081": {
+  "fetched": "2026-11-01",
+  "first_author": "Do",
+  "registry": "crossref",
+  "title": "A note on the width of sparse random graphs",
+  "year": 2024
+ },
+ "10.1002/rsa.21007": {
+  "fetched": "2026-11-01",
+  "first_author": "Andreis",
+  "registry": "crossref",
+  "title": "A large\u2010deviations principle for all the cluster sizes of a sparse Erd\u0151s\u2013R\u00e9nyi graph",
+  "year": 2021
  },
  "10.1006/inco.1994.1064": {
   "fetched": "2026-10-03",
@@ -110,6 +131,20 @@
   "registry": "crossref",
   "title": "A Note on Exact Algorithms for Vertex Ordering Problems on Graphs",
   "year": 2011
+ },
+ "10.1007/s004400050149": {
+  "fetched": "2026-11-01",
+  "first_author": "O'Connell",
+  "registry": "crossref",
+  "title": "Some large deviation results for sparse random graphs",
+  "year": 1998
+ },
+ "10.1007/s00453-014-9883-7": {
+  "fetched": "2026-11-01",
+  "first_author": "Edwards",
+  "registry": "crossref",
+  "title": "A General Reduction Theorem with Applications to Pathwidth and the Complexity of MAX 2-CSP",
+  "year": 2014
  },
  "10.1007/s00453-015-0015-9": {
   "fetched": "2026-10-03",
@@ -356,6 +391,13 @@
   "title": "On the Probable Performance of Heuristics for Bandwidth Minimization",
   "year": 1986
  },
+ "10.1137/120891265": {
+  "fetched": "2026-11-01",
+  "first_author": "Kolesnik",
+  "registry": "crossref",
+  "title": "Lower Bounds for the Isoperimetric Numbers of Random Regular Graphs",
+  "year": 2014
+ },
  "10.1145/151261.151263": {
   "fetched": "2026-10-03",
   "first_author": "LaPaugh",
@@ -383,6 +425,13 @@
   "registry": "crossref",
   "title": "On search decision and the efficiency of polynomial-time algorithms",
   "year": 1989
+ },
+ "10.1214/009117904000000784": {
+  "fetched": "2026-11-01",
+  "first_author": "Puhalskii",
+  "registry": "crossref",
+  "title": "Stochastic processes in random graphs",
+  "year": 2005
  },
  "10.1287/ijoc.1060.0205": {
   "fetched": "2026-10-06",

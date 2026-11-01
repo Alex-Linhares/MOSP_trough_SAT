@@ -1,0 +1,84 @@
+ok    LY2002                       crossref 10.1016/S0305-0548(01)00054-5
+ok    Yanasse1997b                 crossref 10.1016/S0377-2217(97)84107-0
+ok    LY2002ref4                   crossref 10.1016/S0305-0548(98)80001-4
+--   LY2002ref5                   no DOI (checked by hand, see its comment)
+ok    LY2002ref6                   crossref 10.1007/978-3-7091-9076-0_2
+ok    LY2002ref7                   crossref 10.1109/TCS.1979.1084695
+known LY2002ref8                   crossref 10.1109/TCAD.1985.1270118
+     registry: 'Gate Matrix Layout' / Omar Wing; accepted: Crossref puts the whole name, 'Omar Wing', in the family field
+known LY2002ref9                   crossref 10.1016/0012-365X(85)90046-9
+     registry: 'Interval graphs and seatching' / Kirousis; accepted: Crossref carries the publisher's typo 'Interval graphs and seatching'
+ok    LY2002ref10                  crossref 10.1016/0304-3975(86)90146-5
+ok    LY2002ref11                  crossref 10.1016/0166-218X(92)90208-R
+ok    LY2002ref12                  crossref 10.1016/S0166-218X(97)00131-5
+ok    LY2002ref13                  crossref 10.1016/0020-0190(92)90234-M
+ok    LY2002ref14                  crossref 10.1007/BF00264496
+--   Yanasse1997a                 no DOI (checked by hand, see its comment)
+ok    YanasseSenne2010             crossref 10.1016/j.ejor.2009.09.017
+ok    FellowsLangston1987          crossref 10.1016/0020-0190(87)90054-8
+ok    FellowsLangston1989          crossref 10.1145/73007.73055
+ok    EllisSudboroughTurner1994    crossref 10.1006/inco.1994.1064
+ok    BienstockSeymour1991         crossref 10.1016/0196-6774(91)90003-H
+ok    LaPaugh1993                  crossref 10.1145/151261.151263
+--   Priem2022                    no DOI (checked by hand, see its comment)
+ok    ChuStuckey2009               crossref 10.1007/978-3-642-04244-7_21
+--   Linhares2001                 no DOI (checked by hand, see its comment)
+ok    GarciaDeLaBandaStuckey2007   crossref 10.1287/ijoc.1060.0205
+--   Chu2011                      no DOI (checked by hand, see its comment)
+--   Fink2012                     no DOI (checked by hand, see its comment)
+ok    Frinhani2018                 crossref 10.1371/journal.pone.0203076
+ok    MartinYanassePinto2022       crossref 10.1111/itor.13053 (year: bib 2022, crossref 2021)
+ok    Beck2025                     datacite 10.4230/LIPIcs.CP.2025.5
+ok    SuchanVillanger2009          crossref 10.1007/978-3-642-11269-0_27
+ok    Bodlaender2012               crossref 10.1007/s00224-011-9312-0 (year: bib 2012, crossref 2011)
+ok    CoudertMazauricNisse2014     crossref 10.1007/978-3-319-07959-2_5
+ok    CoudertMazauricNisse2016     crossref 10.1145/2851494
+ok    KobayashiKomuroTamaki2014    crossref 10.1007/978-3-319-07959-2_33
+known Kitsunai2016                 crossref 10.1007/s00453-015-0015-9 (year: bib 2016, crossref 2015)
+     registry: 'Computing Directed Pathwidth in $$O(1.89^{n})$$ O ( 1 . 89 n ) Time' / Kitsunai; accepted: Crossref's title carries MathML residue; the words agree
+ok    FaggioliBentivoglio1998      crossref 10.1016/S0377-2217(97)00268-3
+--   SmithGent2005                no DOI (checked by hand, see its comment)
+ok    CarvalhoSoma2015             crossref 10.1057/jors.2014.60
+ok    OliveiraLorena2002           crossref 10.1109/TCAD.2002.800454
+ok    Duarte2012                   crossref 10.1016/j.cor.2012.04.017
+ok    MartiCamposPinana2008        crossref 10.1016/j.ejor.2007.02.004
+ok    Mallach2018                  crossref 10.1016/j.jda.2018.11.012
+ok    DiBattista1997               crossref 10.1016/S0925-7721(96)00005-3
+ok    PACE2016                     datacite 10.4230/LIPIcs.IPEC.2016.30
+ok    PACE2017                     datacite 10.4230/LIPIcs.IPEC.2017.30
+--   TreewidthLIB                 no DOI (checked by hand, see its comment)
+--   freetdi                      no DOI (checked by hand, see its comment)
+ok    BRST1991                     crossref 10.1016/0095-8956(91)90068-U
+ok    KumfertPothen1997            crossref 10.1007/BF02510240
+ok    SuchanTodinca2007            crossref 10.1007/978-3-540-74839-7_25
+--   BodlaenderWolleKoster2006    no DOI (checked by hand, see its comment)
+ok    BodlaenderKoster2011         crossref 10.1016/j.ic.2011.04.003
+ok    EllisWarren2008              crossref 10.1016/j.dam.2007.02.006
+ok    MouraUllrich2021             crossref 10.1007/978-3-030-79876-5_37
+ok    Mathlib2020                  crossref 10.1145/3372885.3373824
+ok    CaDiCaL2024                  crossref 10.1007/978-3-031-65627-9_7
+ok    WetzlerHeuleHunt2014         crossref 10.1007/978-3-319-09284-3_31
+ok    PySAT2018                    crossref 10.1007/978-3-319-94144-8_26
+ok    McKayPiperno2014             crossref 10.1016/j.jsc.2013.09.003
+--   DeGiovanni2010               no DOI (checked by hand, see its comment)
+ok    DeGiovanni2013a              crossref 10.1080/00207543.2012.657256
+ok    DeGiovanni2013b              crossref 10.1111/itor.12025
+--   Knuth2015                    no DOI (checked by hand, see its comment)
+ok    Harper1966                   crossref 10.1016/S0021-9800(66)80059-5
+known ChandranKavitha2006          crossref 10.1016/j.disc.2005.12.011
+     registry: 'The treewidth and pathwidth of hypercubes' / Sunil Chandran; accepted: Crossref puts 'Sunil Chandran' in the family field; the author is L. Sunil Chandran
+ok    Turner1986                   crossref 10.1137/0215041
+ok    DiazPetitSernaTrevisan2001   crossref 10.1016/S0012-365X(00)00278-8
+ok    PerarnauSerra2014            crossref 10.1016/j.dam.2012.10.031
+ok    LeeLeeOum2012                crossref 10.1002/jgt.20620 (year: bib 2012, crossref 2011)
+ok    CoverThomas2006              crossref 10.1002/047174882X (year: bib 2006, crossref 2005)
+ok    Gao2012                      crossref 10.1016/j.dam.2011.10.013
+ok    ChouKoHoChen2008             crossref 10.1016/j.dam.2007.08.007
+ok    OConnell1998                 crossref 10.1007/s004400050149
+ok    Puhalskii2005                crossref 10.1214/009117904000000784
+ok    AndreisKonigPatterson2021    crossref 10.1002/rsa.21007
+ok    DoErdeKang2024               crossref 10.1002/jgt.23081
+ok    LuczakMcDiarmid2001          crossref 10.1002/1098-2418(200101)18:1<31::AID-RSA3>3.0.CO;2-1 (year: bib 2001, crossref 2000)
+ok    KolesnikWormald2014          crossref 10.1137/120891265
+ok    EdwardsMcDermid2015          crossref 10.1007/s00453-014-9883-7 (year: bib 2015, crossref 2014)
+79 entries, 67 with a DOI, 0 disagree

@@ -3,6 +3,11 @@
 % reports/random_graph_first_moment.md (Theorems A, A', A'' and the literature
 % verdict); Lean: EmptyPair.lean, FirstMoment.lean, FirstMomentAsymptotics.lean.
 % The beta*(c) values: reports/scratch/first_moment/beta_star.log (two codes agree).
+% The paragraph "Why the first moment is loose" and the closing of the section
+% (loop0011 item 12, 2026-11-01): reports/separator_moment.md (section 0 is the
+% summary; Theorem S is its section 8, the constants sections 6, 7 and 9, the
+% planted cluster section 4, the ledger in stacks section 11); Lean:
+% SeparatorMoment.lean.
 \section{The pathwidth of sparse random graphs}
 \label{app:random}
 
@@ -355,7 +360,11 @@ and the slope $b$ of $\mathrm{opt}=a+bn$ on the certified instances at
 30--100 customers. The sandwich
 $\beta^{*}\le\liminf\mathrm{opt}/n\le\limsup\mathrm{opt}/n\le\beta^{+}$ has
 width below $0.12$ at $e\ge14$ and $0.42$--$0.49$ for $1\le e\le3.5$: it says
-least where the search works hardest. The greedy closing rule we use for
+least where the search works hardest. The best published upper bound we know,
+the degree-sequence bound of \citet[Corollary~5.2]{EdwardsMcDermid2015}, is
+wider still on the cover degree law, $0.66$, $0.86$ and $0.96$ at $d=4$, $6$,
+$10$ with $\mu=1$, because it sees the degrees of a union of cliques and not
+the cliques. The greedy closing rule we use for
 upper bounds cannot be analysed this way; at 5,000 customers its width per
 customer is $0.06$--$0.36$ below $\beta^{+}$ (measured, no exact solve).
 
@@ -379,11 +388,88 @@ $0.051$ at $\ell=2$, $d=6$, $\mu=1$, and more for larger $\ell$, at every
 spacing): naming $\varepsilon n$ more vertices costs
 $\Theta(\varepsilon\log(1/\varepsilon))$ of entropy and buys
 $\Theta(\varepsilon)$ of constraint. The slack is in the union bound. The
-empty pairs cluster ($E[X^{2}]/E[X]^{2}=e^{0.23n}$ at $\beta^{*}$ for $d=6$,
-$\mu=1$), and on 650 certified instances at 30--75 customers the empty-pair
-condition is within a stack of the pathwidth while the floor sits one to
-three stacks lower. A second moment bounds $\Pr[X>0]$ from the wrong side; a
-count over one representative per cluster is the route not taken.
+other direction is a count that names \emph{fewer} vertices, and we tried
+three: the event itself, counted once per separator; the closed pair; and a
+weighted count. A layout of width $k<n$ forces a set $S$ of $k$ vertices whose
+removal leaves the other $N=n-k$ vertices split into two sides of sizes
+$\lceil N/2\rceil$ and $\lfloor N/2\rfloor$ with no edge between them, and
+for a fixed $S$ the probability of that event depends only on the component
+structure of $G-S$, which is $G(N,p)$.
+
+\begin{theorem}[separators, finite form]
+\label{thm:separator}
+For $0\le p\le1$ and $k<n$,
+$\Pr[\pw(G(n,p))\le k]\le\binom nk\,P_N(E_{\mathrm{bip}})$, where
+$P_N(E_{\mathrm{bip}})$ is the probability that the components of $G(N,p)$ can
+be grouped into two classes of sizes $\lceil N/2\rceil$ and $\lfloor N/2\rfloor$.
+\end{theorem}
+
+The union bound over the $\binom nk$ sets $S$ is the only inequality: the
+graphs on $n$ vertices with a given restriction to $V\setminus S$ have total
+weight equal to the restriction's $G(N,p)$ weight, and the inner probability
+is the same for every $S$. It is a Lean theorem with the inner probability as a
+finite weighted count~\leanref{theoremS}; on paper that count is a sum over the
+integer partitions of $N$ with Gilbert's connectedness recursion, which we
+evaluate exactly to $N=120$. Step~2 bounds the same event by its number of
+witnesses, $\binom Nt(1-p)^{t(N-t)}$; the theorem merges every balanced empty
+bipartition of $G-S$ into one event. Writing $c'=c(1-\beta)$ for the mean
+degree of $G-S$ and $I(c')$ for the rate at which the probability that no
+component of $G(N,c'/N)$ exceeds $N/2$ decays, the constant becomes the root
+$\beta_{\mathrm{sep}}(c)$ of $H(\beta)=(1-\beta)\,I(c(1-\beta))$. That rate is a corollary of the
+large-deviation principle for the largest component
+\citep{OConnell1998,Puhalskii2005,AndreisKonigPatterson2021}, whose rate
+function at one half is positive exactly when $c'>2\ln2$; our exact inner
+probabilities reproduce the quoted rate to $0.002$ at seven values of $c'$
+(fitted over $N=100$--$400$), and the bipartition event has the same rate as
+its relaxation to $N=120$. With it, $\beta_{\mathrm{sep}}=0.037$ at $c=3$
+against $\beta^{*}=0.009$, and $0.341$ at $c=10$ against $0.337$: a third of
+the gap to the slope fitted to exact pathwidths ($0.099$) at $c=3$, a
+twentieth at $c=10$ ($0.415$). Conditional on the cited large-deviation upper
+bound, the threshold of the method moves from $4\ln2$ to $2\ln2$, the density
+at which the giant component passes half the vertices and the bisection width
+becomes linear \citep{LuczakMcDiarmid2001}; the true threshold is $1$. The
+separator as the object of a width first moment is in \citet{DoErdeKang2024},
+with a deterministic bound on the bipartitions per separator in place of their
+probability, and the exact inner count of a single vertex cut of a random
+regular graph in \citet{KolesnikWormald2014}; we found no prior statement of
+the inner probability of the bipartition event, nor of its use for a width
+constant.
+
+The closed pair, in which every separator vertex is adjacent to both sides
+($S=N(A)\cap N(R)$; a layout forces one with sides at least the forced sizes),
+is the dense-side counterpart. Its expected number is exactly
+$\sum n!/(a!\,r!\,s!)\,(1-p)^{ar}\bigl((1-(1-p)^{a})(1-(1-p)^{r})\bigr)^{s}$ over
+the admissible size triples (the union bound and the characterisation in
+Lean~\leanref{theoremCl}, the independence step on paper), and its constant
+exceeds $\beta^{*}$ by $0.007$--$0.010$ at $c=6$--$12$, and by $0.011$ on random
+covers with $d=4$ and $d=6$, $\mu=1$, where the separator count has no
+large-deviation rate to cite. A weighted count, each empty pair divided by the
+number of pairs reachable from it by moving low-degree separator vertices
+across, is valid too~\leanref{weightedcount} and adds nothing to the closed
+pair on this record, its lower tail being the event that the pair is closed.
+None of the three moves the headline constants by the $0.02$ we had set as
+worth a page; at $c=6$ and $10$ the best of them closes $12\%$ and $11\%$ of
+the gap to the fitted slope.
+
+What the cluster is we measured directly, by planting an empty pair and
+enumerating the others ($n\le32$ on $G(n,c/n)$ at $c=6$ and $10$, $n\le28$ on
+covers at $d=6$, $\mu=1$, 200 instances per cell). The other empty pairs form
+two lobes, perturbations of the planted pair and of its reverse through the
+separator, with nothing between; on the covers the median planted instance
+has no pair but the reverse, so the $e^{0.23n}$ is carried by rare instances,
+and on $G(n,c/n)$ the median cluster grows at about half the rate of the mean.
+The whole slack of the union bound at a cell is the mean of $1/X$ under the
+planted law, a bounded statistic: $0.065$, $0.039$ and $0.043$ nats per vertex
+at the largest sizes, $0.019$, $0.012$ and $0.015$ in $\beta$, sub-linear in
+$n$ over the range (measured). In stacks, on certified instances, the counts
+of this paragraph move the floor by one to two at 60 to 75 vertices and the
+pathwidth sits four to five higher; Harper's vertex-isoperimetric bound, a
+deterministic consequence of the empty pair, is within a stack of the
+pathwidth wherever our branch and bound reaches the forced prefix, which puts
+at least three quarters of the leftover in the union bound as read on
+instances, where the planted measurement at $n\le32$ reads $0.012$--$0.019$ in
+$\beta$; the two instruments see different sizes, and we do not reconcile
+them.
 
 \paragraph{One parameter, or two.}
 The excess sets the threshold, the ridge and the scale, not the value. At
@@ -435,7 +521,12 @@ constant~3; so is the consequence that the probability tends to zero whenever
 $\delta(\beta,c)>0$. The entropy bound on trinomial coefficients is not in
 Mathlib and is proved there from the binomial theorem. Theorem~\ref{thm:betastar}
 is proved on paper, and the values in Table~\ref{tab:betastar} were computed
-by two programs written independently.
+by two programs written independently. Theorem~\ref{thm:separator} is a Lean
+theorem with its inner probability as a finite weighted count; of the
+closed-pair count, the union bound and the characterisation of a closed pair
+are in Lean and the independence step is on paper; the constants
+$\beta_{\mathrm{sep}}$ rest on a cited large-deviation rate, and every rate we
+fitted is called fitted.
 
 The argument is published twice in cruder form. \citet{Turner1986} used the
 same empty pair, with the count $(en/k)^{2k}$ in place of the entropy, to
@@ -453,5 +544,12 @@ exactly, the smallest pathwidth is 25, while Theorem~\ref{thm:firstmoment}'s
 first inequality, evaluated exactly rather than through Step~3, puts the
 probability of pathwidth at most 23 below $0.35$ and of at most 21 below
 $10^{-3}$. The gap between $\beta^{*}(c)$ and the slopes fitted to such data
-is of the order of $0.1$ and does not close with $n$; closing it would need a count over one representative per cluster of empty
-pairs (Appendix~\ref{app:excess}), not a sharper estimate of this one.
+is of the order of $0.1$ and does not close with $n$. Counting the event a
+narrow layout forces instead of its witnesses, once per separator or once per
+closed pair (the paragraph \emph{Why the first moment is loose} in
+Appendix~\ref{app:excess}), closes a third of it at $c=3$ and a tenth at $c=6$
+and $10$; the best published upper bound, the degree-sequence bound of
+\citet[Corollary~5.2]{EdwardsMcDermid2015}, gives $0.183$, $0.458$ and $0.656$
+on Poisson degrees at $c=3$, $6$ and $10$, so the provable sandwich on
+$\pw/n$ is $[0.037,0.183]$, $[0.182,0.458]$ and $[0.345,0.656]$ there, against
+fitted slopes of $0.099$, $0.268$ and $0.415$.
