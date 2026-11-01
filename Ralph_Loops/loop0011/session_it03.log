@@ -1,0 +1,159 @@
+# session it03 started 2026-11-01 13:52:56
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the existing `learning/separator_moment.py` module from item 02, then build the item 03 pipeline.
+  > $ uptime && date && wc -l reports/separator_moment_plan.md reports/separator_moment.md learning/separator_moment.py learning/first_moment.py satisfiability/expans
+  > $ cat reports/separator_moment_plan.md
+  > $ cat learning/separator_moment.py && echo ===== && cat tests/test_separator_moment.py
+  > $ sed -n 1,60p reports/separator_moment.md && echo ... && grep -n "^## \|^### " reports/separator_moment.md && echo ===== && awk '/^## 2/,0' reports/separator_mom
+  > $ sed -n 459,520p reports/separator_moment.md && echo ===== && sed -n 642,668p reports/separator_moment.md
+  > $ grep -n "^def \|^class \|^    def " learning/first_moment.py | head -80 && echo ===== && grep -n "def second_moment_rate" -A 120 learning/first_moment.py | head
+  > $ sed -n 700,760p learning/first_moment.py && sed -n 60,100p learning/first_moment.py && sed -n 1107,1145p learning/first_moment.py
+  > $ grep -n "def _f_exact" -A 60 satisfiability/expansion_bound.py | head -80; echo =====PILOT; head -3 reports/scratch/gnp_pilot/results.csv | cut -c1-300; python3
+
+Next I need: how the pilot regenerates a graph from its seed, which ensemble cells exist for the covers, the C program's usage, and the dataviz skill. These are independent.
+  > $ ls reports/scratch/gnp_pilot/ && grep -n "seed\|gnp\|fast_gnp\|erdos" reports/scratch/gnp_pilot/*.py | head -30; echo ====ENS; python3 - <<'EOF'
+import pandas a
+
+Now the dataviz skill (I'll draw the overlap histogram later) and the cover generator's matrix orientation.
+  > Skill {"skill": "dataviz"}
+  > $ sed -n 1,80p /tmp/claude-1000/bundled-skills/2.1.314/d631d04be3afe6a943474d3d8f4e6754/dataviz/references/palette.md | grep -n "#[0-9A-Fa-f]\{6\}" | head -20; gr
+  > $ grep -n "^### 8.5\|^### 8.6\|^## 8\|^### 8" reports/excess_phase_diagram.md; awk '/^### 8.5/,/^### 8.6/' reports/excess_phase_diagram.md | head -90
+  > $ python3 - <<'EOF'
+import re
+p = "learning/separator_moment.py"
+s = open(p).read()
+s = s.replace('''__all__ = [
+    "forced_sizes", "vertex_separation", "closed_
+  > $ python3 -c "
+import networkx as nx
+for s in range(3):
+    G = nx.gnp_random_graph(20, 0.5, seed=s)
+    print(nx.to_graph6_bytes(G, header=False).decode().strip(
+
+Now the run script with stages `solve`, `count`, `rates`, `overlap`.
+  > $ mkdir -p reports/scratch/separator_moment/03_clumping && cat > reports/scratch/separator_moment/03_clumping/run.py <<'EOF'
+"""loop0011 item 03: the clumping dec
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import csv, time, sys
+sys.path.insert(0, "reports/scratch/separator_moment/03_clumping")
+from run import count_one
+row
+
+Each instance takes about 0.2 s at the hardest cells, so the full count stage is minutes, not hours. Running `count`, `rates` and `overlap` in the foreground now.
+  > $ uptime && time nice -n 19 python3 reports/scratch/separator_moment/03_clumping/run.py --stage count --workers 8 2>&1 | tail -4
+  > $ nice -n 19 python3 reports/scratch/separator_moment/03_clumping/run.py --stage rates 2>&1 | tail -40 && nice -n 19 python3 reports/scratch/separator_moment/03_c
+  > $ cd /home/al/dev/MOSP/reports/scratch/separator_moment/03_clumping && python3 - <<'EOF'
+import pandas as pd
+pd.set_option("display.width", 250)
+c = pd.read_csv("
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF' 2>&1 | tee reports/scratch/separator_moment/03_clumping/checks.log
+import numpy as np, pandas as pd, itertools, math
+f
+  > $ cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 03: the clumping decomposed ------------------------------------------
+
+from learning.first_moment im
+  > $ sed -i 's/^    closed_pairs_pruned, closure_image, enumerate_empty_pairs, gnp_pair_rate, move_classes,$/    closed_nbhd, closed_pairs_pruned, closure_image, enu
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "b1ugveezi"}
+  > $ pgrep -f "pytest tests/test_separator_moment" >/dev/null && echo "still running" || echo "stopped"; python3 - <<'EOF'
+p = "tests/test_separator_moment.py"
+s = o
+
+All 37 tests pass in 13 s. Two independent things now: confirm no stale pytest process survived the stop, and look at the overlap histogram.
+  > $ ps -eo pid,etimes,args | grep -v grep | grep "pytest" | head
+
+The grep matched only the driver's own command line, so no pytest process survived. Next, two independent things: view the histogram, and append §3 to the report.
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/03_clumping/overlap_hist.png
+  > $ python3 - <<'EOF'
+p = "reports/scratch/separator_moment/03_clumping/run.py"
+s = open(p).read()
+old = s[s.index("def draw("):s.index("def main()")]
+new = '''def 
+
+Now, in one go: view the redrawn figure, save the checks script beside its log (it ran inline before), check whether `__pycache__` is git-ignored, and append §3 to the report.
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/03_clumping/overlap_hist.png
+  > $ git check-ignore -q reports/scratch/separator_moment/03_clumping/__pycache__ && echo "pycache ignored" || echo "pycache NOT ignored"; rm -rf reports/scratch/sep
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+---
+
+## 3. The clumping decomposed: pairs, separators, closed pairs and move-classes on instances with exact pathwid
+  > $ sed -n 1,40p Ralph_Loops/loop0011/gate.py | grep -n "argparse\|add_argument\|def main\|timeout" ; uptime
+
+The load has jumped to 60 from the owner's other work, so the gate will run slowly. I'll start it under `nice` in the background and load the Monitor tool to poll it.
+  > $ nice -n 19 python3 Ralph_Loops/loop0011/gate.py > /tmp/gate_it03.log 2>&1; echo "GATE EXIT $?" >> /tmp/gate_it03.log
+
+While the gate runs I'll draft the PROGRESS.md entry with a placeholder gate line to fill in afterwards, and load the Monitor tool for polling.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ python3 - <<'EOF'
+p = "Ralph_Loops/loop0011/PROGRESS.md"
+s = open(p).read()
+s = s.replace("Current: 2/13 SOLVED", "Current: 3/13 SOLVED")
+s += '''
+---
+
+## Itera
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /tmp/gate_it03.log; do sleep 15; done; grep -E \"PASS|FAIL|passed|failed|error|
+
+While the gate runs, a look at its interim output to see which stage it is on.
+  > $ tail -c 1500 /tmp/gate_it03.log; echo; uptime
+
+The log is still empty (the gate is in its lake build stage). I'll hold with a bounded foreground poll rather than ending the turn.
+  > $ for i in $(seq 1 115); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; tail -c 2000 /tmp/gate_it03.log
+  > $ ps -eo pid,ppid,etimes,pcpu,args --sort=etimes | grep -E "gate.py|lake|pytest|lean" | grep -v grep | cut -c1-150 | head; echo ---; for i in $(seq 1 110); do gre
+
+The gate is in the MOSP pytest stage (running about 10 min so far under a load of 60; iteration 2 saw 15 min there). I'll keep polling in bounded calls.
+  > $ for i in $(seq 1 118); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; tail -c 2500 /tmp/gate_it03.log; echo; ps -eo pid,etimes,args | grep -
+  > $ grep -n "subprocess\|run(\|def \|print" Ralph_Loops/loop0011/gate.py | head -40
+  > $ for i in $(seq 1 118); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; cat /tmp/gate_it03.log; echo; ps -eo pid,etimes,args | grep -E "pytest
+
+The pathwidth_solver suite is at 26 minutes under heavy load (it took 7 minutes in iteration 2). Still within the session's cap; polling again with the load shown.
+  > $ uptime; for i in $(seq 1 116); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; cat /tmp/gate_it03.log; echo; ps -eo pid,etimes,pcpu,args | gr
+  > $ ps -eo pid,ppid,etimes,pcpu,args --ppid 519459 | cut -c1-120; readlink /proc/519459/cwd; ls -l /proc/519459/fd 2>/dev/null | grep -vE "pipe|/dev/|socket" | head
+
+My `ps` flags were wrong (listing everything). Redo the inspection properly, and poll the gate in a separate call in the same turn.
+  > $ ps -o pid,etimes,pcpu,args --ppid 519459 | cut -c1-120; readlink /proc/519459/cwd; which py-spy || echo "no py-spy"; ls -l /proc/519459/fd 2>/dev/null | grep -E
+  > $ cd /home/al/dev/MOSP/pathwidth_solver && ls tests/ && grep -rn "time_budget=\|timeout=\|budget=" tests/*.py | grep -v "None" | sort -t= -k2 -n | tail -12
+  > $ grep -rn "time_budget\|timeout\|max_nodes" tests/*.py | grep -v "None" | head -20; grep -rn "slow\|skip" tests/conftest.py | head
+  > $ for i in $(seq 1 118); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; cat /tmp/gate_it03.log; echo; ps -o pid,etimes,pcpu,args -p 519459 | c
+  > $ nice -n 19 python3 -m pytest -v -p no:cacheprovider --durations=15 > /tmp/pwtest_it03.log 2>&1; echo "PWTEST EXIT $?" >> /tmp/pwtest_it03.log
+  > $ for i in $(seq 1 110); do grep -q "GATE EXIT" /tmp/gate_it03.log && break; sleep 5; done; echo "--- gate:"; cat /tmp/gate_it03.log; echo "--- diagnostic (last l
+  > $ ps -o pid,ppid,etimes,args -p 435267,435268,519459 | cut -c1-90; kill 519459 435268 435267 2>/dev/null; sleep 2; ps -o pid,args -p 435267,435268,519459 | cut -c
+
+The hung gate is stopped. Restarting it under the light load and polling.
+  > $ cd /home/al/dev/MOSP && uptime && nice -n 19 python3 -u Ralph_Loops/loop0011/gate.py > /tmp/gate_it03b.log 2>&1; echo "GATE EXIT $?" >> /tmp/gate_it03b.log
+  > $ for i in $(seq 1 118); do grep -q "GATE EXIT" /tmp/gate_it03b.log && break; sleep 5; done; cat /tmp/gate_it03b.log; uptime
+
+MOSP tests pass: 1,693 passed in 4 min 17 s with the 16 new ones. The pathwidth_solver suite and the paper check remain; one more poll.
+  > $ for i in $(seq 1 118); do grep -q "GATE EXIT" /tmp/gate_it03b.log && break; sleep 5; done; tail -8 /tmp/gate_it03b.log
+
+Gate passed. Now fill in the gate line in PROGRESS.md (with the note about the first gate's hang), and confirm no stray files are left outside the item's paths.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p = "Ralph_Loops/loop0011/PROGRESS.md"
+s = open(p).read()
+assert s.count("GATE_PLACEHOLDER") == 1
+s = s.replace("- Gat
+
+Item 03 is done and gated; nothing remains to request.
+
+**What was done.** On 4,800 fresh `G(n, c/n)` graphs at `n = 14–24` (every pathwidth proved by the C program in 7 s, layouts kept, the subset DP agreeing on all 1,600 at `n ≤ 16`), the pilot's 548 graphs at `n = 20` and 1,200 certified covers, I enumerated at `k = pw − 1 … pw + 2` the exact-size empty pairs `X₁`, the distinct separators `X₂`, the closed pairs `X₃` (and the closure image `X₃′`), and the move-classes `X₄`. The counts took 66 s on 8 workers, about 0.15 core-hours against the 3 budgeted.
+
+**Findings.**
+- **Kill criterion 1 met.** At `c = 10`, `k = pw`, the slopes of `log(X₁/X₂)` and `log(X₁/X₃)` against `n` are 0.000 ± 0.003 and −0.003 ± 0.003 nats per vertex, twenty standard errors below the 0.066 a 0.02 gain in `β` needs. The prediction is recorded: the separator and closed-pair counts fail item 06's kill, merging at most 0.003 in `β` by this instrument; items 05–06 are kept and decide it, item 09 is the route pointed to.
+- **Kill criterion 2 not met.** `X₁/X₄` is flat too (clusters merge a factor 1.4–2.5), so §8.5's `e^{0.23n}` is not the typical cluster at these sizes; item 04's planted model is where the rare-instance cluster must be measured.
+- **A typical instance at its own pathwidth has 8–62 witnesses**; a separator carries one pair plus its reverse (the parity split isolates the reversal: `X₁/X₂` is 1.03–1.6 with `N` odd, 2.0–2.4 with `N` even); `X₃′ = X₃` on every graph at `k = pw`.
+- **The Bernoulli second moment** (`second_moment_rate_gnp`, checked against pairs-of-pairs enumeration and a `61⁴` grid) reproduces §8.5 (a)'s reversed-pair maximiser at `β*` on `G(n, c/n)` (ratio exponent 0.30–0.39), while at the typical `β` the maximiser is symmetric: the two regimes differ, which is why this item cannot replace item 04.
+- **Overlap at `n = 20`, `c = 10`:** pairs on an instance share 80% of their separators, more than the extremal or product table, and are small perturbations of each other through `S`.
+
+**Deliverables.** `reports/separator_moment.md` §3 with the tables and the four-panel histogram; `learning/separator_moment.py` extended; 16 new tests (37 in the module); `reports/scratch/separator_moment/03_clumping/` with `run.py`, `checks.py`, instances with seeds and layouts, counts, slopes, overlap data and logs; PROGRESS.md updated to 3/13 and the item marked done.
+
+**One incident.** The first gate run, started while the load was 60, hung in the pathwidth_solver suite for 65 minutes with no child process even after the load fell to 1. A verbose copy of that suite passed beside it in 6 min 28 s, so I stopped the hung run by PID and reran the gate from the start. The rerun passed: lake build ok, 0 sorry, 1,693 MOSP tests in 4:17, 123 pathwidth_solver tests in 6:23, paper 71 pages with no undefined references. This is recorded in PROGRESS.md.
+
+**Next** is item 04, the planted cluster, which can reuse `enumerate_empty_pairs`, `move_classes`, `overlap_tables` and `second_moment_rate_gnp`.
+
+# result: success in 6815s, 57 turns, cost $34.07

@@ -151,7 +151,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
   - **Does not claim.** Anything probabilistic; that the closed pair is
     canonical (it is a representative, not the representative).
 
-- [ ] **03 The clumping decomposed: pairs, separators, closed pairs and move-classes on instances with exact pathwidth.**
+- [x] **03 The clumping decomposed: pairs, separators, closed pairs and move-classes on instances with exact pathwidth.**
   - **Question.** B of the brief. On a graph of pathwidth `k`, how many
     exact-size empty pairs `X₁` are there, how many distinct separators
     `X₂` among them, how many closed pairs `X₃` (sides `≥` forced sizes,

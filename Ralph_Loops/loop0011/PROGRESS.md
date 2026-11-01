@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 2/13 SOLVED
+Current: 3/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -208,3 +208,97 @@ this session (Edwards & McDermid 2015 as the published upper line in the `β`
 figure and the cover grid; Cheung & Girardet 2020's prefix-at-`(1 − ε)n`
 variant; the disputed random-cubic bisection constant, not to be quoted
 without the source). It does not touch item 02.
+
+---
+
+## Iteration 3 — 2026-11-01 13:53
+
+Item 03, the clumping decomposed: exact-size empty pairs `X₁`, distinct
+separators `X₂`, closed pairs `X₃` (and the closure image `X₃′`) and
+move-classes `X₄` on instances with exact pathwidth. **Done.** Deliverable:
+`reports/separator_moment.md` §3 (the events counted, the instance table,
+the counts at `k = pw`, the rate table with standard errors, the Bernoulli
+second moment beside them, the overlap distribution with its figure, the
+kill verdict, regenerate / size range / non-claims);
+`learning/separator_moment.py` extended (`small_nbhd_sets`,
+`enumerate_empty_pairs`, `separators_of`, `closed_pairs_pruned`,
+`closure_image`, `move_classes`, `overlap_tables`, `second_moment_rate_gnp`,
+`second_moment_exact_gnp`, `second_moment_enum_gnp`, `gnp_masks`);
+`reports/scratch/separator_moment/03_clumping/` (`run.py` with stages
+`solve`, `count`, `rates`, `overlap`; `instances.csv` with every seed and
+every layout of the 4,800 fresh graphs; `counts.csv` at
+`k = pw − 1 … pw + 2`; `cells.csv`, `slopes.csv`, `second_moment_gnp.csv`,
+`rates.log`; `overlap_*.csv`, `overlap.log`, `overlap_hist.png`;
+`checks.py` / `checks.log`); `tests/test_separator_moment.py` (16 new
+tests, 37 in the module).
+
+### Completed
+
+- **Instances.** 4,800 fresh `G(n, c/n)` at `n = 14–24`, `c = 4, 6, 8, 10`
+  (200 per cell), every one proved by the C program in 7 s of wall time
+  with the layout kept, the subset DP agreeing on all 1,600 at `n ≤ 16`;
+  the pilot's 548 `n = 20` graphs and 1,200 certified covers
+  (`n = 10–25`, `d = 4, 6`, `m = n`) read from the record. The counts took
+  66 s on 8 workers (516 s of enumeration; about 0.15 core-hours against
+  3 budgeted); no cap was hit.
+- **Kill criterion 1: met.** At `c = 10`, `k = pw`, the slope of
+  `log(X₁/X₂)` is `0.000 ± 0.003` and of `log(X₁/X₃)` is `−0.003 ± 0.003`
+  nats per vertex against the `0.066` a `0.02` gain in `β` needs —
+  twenty standard errors below. **Prediction recorded: the separator and
+  closed-pair counts fail item 06's kill**; by this instrument each merges
+  at most `0.01` nats per vertex, `0.003` in `β`. Items 05–06 are kept
+  (the prediction is at `k = pw` on typical instances, not at `β*`), item
+  09 is the route the item points to.
+- **Kill criterion 2: not met.** `X₁/X₄` does not grow (`−0.003 ± 0.004`
+  at `c = 10`); the move-classes merge a factor 1.4–2.5, flat in `n`.
+  The `e^{0.23 n}` of §8.5 is not the typical cluster; item 04's planted
+  model is where the rare-instance cluster must be measured.
+- **What a typical instance looks like at its own pathwidth** (`n ≤ 24`):
+  8–62 exact-size pairs (geometric mean), growing at `0.09–0.13` nats per
+  vertex (fitted); one separator carries one pair and its reverse — with
+  `N` odd `X₁/X₂ = 1.08, 1.14, 1.23, 1.57` at `c = 10, 8, 6, 4` and
+  `1.03–1.09` on covers, with `N` even `2.0–2.4`; the closure merges
+  1.3–1.6 (graphs) and 1.7–3.3 (covers); **`X₃′ = X₃` on every fresh and
+  pilot graph at `k = pw`** (99.8% of covers), separating only at `pw + 2`
+  (27–40% of instances). At `k = pw − 1`, 43–74% of graphs have no
+  exact-size pair at all.
+- **The Bernoulli second moment** (`second_moment_rate_gnp`, exact finite
+  form checked against the enumeration of pairs of pairs at `n = 8, 10`,
+  the sup against a `61⁴` grid): at `β*` it reproduces §8.5 (a) on
+  `G(n, c/n)` — ratio exponent `0.39, 0.37, 0.34, 0.30` at `c = 4, 6, 8,
+  10`, maximiser the same or the reversed pair — while at the typical `β`
+  of the cells the maximiser is the symmetric table and the exponent is
+  `0.02–0.16`. The two regimes have different maximisers, which is why
+  this item cannot stand in for item 04.
+- **The overlap at `n = 20`, `c = 10`** (20 graphs, 23,412 ordered pairs
+  of distinct pairs): two pairs share `0.45 n` of their separators (80%
+  of `S`) against `0.35 n` for the extremal table at this `a` and `0.32 n`
+  for the product; `A′` meets `A` and `R` equally (medians one vertex
+  each); `A ∩ S′` below both reference tables. Pairs on an instance are
+  small perturbations of each other through `S`, not the reversed pair.
+- **Corrections to the item.** "One vertex changed class" cannot happen at
+  exact sizes, so the move-class adjacency is one swap between two classes
+  (stated as "labellings differing on at most two vertices"); the direct
+  closed-pair enumeration at `n ≤ 16` and the pruned one agree on all 2,200
+  rows, and the pruned one is what runs at `n > 16`; `X₃` and `X₃′` turned
+  out to coincide at `k = pw` on every graph, so the "report both" of item
+  02 is one number there.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,693 passed / 2 skipped / 1 xfailed in 4:17, the 16 new tests among them; pathwidth_solver 123 passed in 6:23; paper 71 pages, no undefined references). A first gate run, started while the one-minute load was 60, hung in the pathwidth_solver suite (65 min at full CPU after the load had fallen to 1, no child process); a verbose copy of that suite run beside it passed in 6:28, the hung run was stopped by PID and the gate rerun from the start under load 1 — the PASS above is that rerun.
+
+### Blockers
+
+None. The one-minute load rose from 1 to 60 during the session (the
+owner's other work); the counts had finished by then and only the gate
+ran under it.
+
+### Next
+
+Item 04 (the planted cluster): condition on an empty pair and count the
+other exact-size pairs — this item says the typical regime has small
+clusters and the large-deviation regime has a different maximising
+overlap, so the planted measurement is the one that decides whether the
+`e^{0.23 n}` is a cluster or a rare-instance artefact. Reuse
+`enumerate_empty_pairs`, `move_classes`, `overlap_tables` and
+`second_moment_rate_gnp` (whose extremal table at `β*` is the reversed
+pair on `G(n, c/n)`, `checks.log`). Items 05–06 carry the prediction of
+§3.5 and decide it.

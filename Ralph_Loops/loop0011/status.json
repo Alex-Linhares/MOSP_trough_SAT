@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-01 13:42:18",
+  "updated": "2026-11-01 15:46:32",
   "phase": "tests",
-  "started": "2026-11-01 13:09:51",
-  "item": "02 The deterministic lemmas: balanced separator, its relaxation, the closed pair."
+  "started": "2026-11-01 13:52:56",
+  "item": "03 The clumping decomposed: pairs, separators, closed pairs and move-classes on instances "
 }

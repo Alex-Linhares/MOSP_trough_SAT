@@ -14,6 +14,7 @@ graph to 9 vertices, 20,000 random at 10–12, 2,000 covers) is
 """
 from __future__ import annotations
 
+import math
 import random
 from itertools import combinations
 
@@ -165,3 +166,164 @@ def test_random_graphs_at_10():
         assert count_exact_pairs(adj, k) > 0
         X2, X2r = count_separators(adj, k)
         assert 0 < X2 <= X2r
+
+
+# --- item 03: the clumping decomposed ------------------------------------------
+
+from learning.first_moment import empty_pair_count_brute  # noqa: E402
+from learning.separator_moment import (  # noqa: E402
+    closed_nbhd, closed_pairs_pruned, closure_image, enumerate_empty_pairs, gnp_pair_rate, move_classes,
+    overlap_tables, second_moment_enum_gnp, second_moment_exact_gnp, second_moment_rate_gnp,
+    separators_of, small_nbhd_sets,
+)
+
+
+def _edge_masks(adj):
+    """The MOSP-style pattern masks of a graph: one two-customer pattern per edge."""
+    n = len(adj)
+    return [(1 << u) | (1 << v) for u in range(n) for v in range(u + 1, n) if adj[u] >> v & 1]
+
+
+@pytest.mark.parametrize("n,p,seed", [(8, 0.3, 1), (10, 0.3, 2), (10, 0.5, 3), (12, 0.25, 4), (12, 0.5, 5)])
+def test_enumeration_against_exact_pairs_and_the_brute_count(n, p, seed):
+    adj = random_graph(n, p, seed)
+    k = vertex_separation(adj)
+    for kk in (k - 1, k, k + 1):
+        if kk < 0:
+            continue
+        pairs = enumerate_empty_pairs(adj, kk)
+        assert sorted(pairs) == sorted(exact_pairs(adj, kk))
+        assert len(pairs) == count_exact_pairs(adj, kk)
+        N, t = forced_sizes(n, kk)
+        if N - t == t - 1:
+            # the brute count of first_moment uses |R| = t − 1
+            assert len(pairs) == empty_pair_count_brute(_edge_masks(adj), n, t)
+        # separators among the pairs are exactly the k-sets in E_bip (L1′ c)
+        assert len(separators_of(pairs, n)) == count_separators(adj, kk)[0]
+        for A, R in pairs:
+            assert is_empty_pair(adj, A, R)
+
+
+@pytest.mark.parametrize("n,p,seed", [(8, 0.3, 1), (10, 0.4, 2), (12, 0.3, 3), (14, 0.35, 4)])
+def test_pruned_closed_pairs_match_the_direct_enumeration(n, p, seed):
+    adj = random_graph(n, p, seed)
+    k = vertex_separation(adj)
+    for kk in (k, k + 1, k + 2):
+        if kk >= n:
+            continue
+        assert sorted(closed_pairs_pruned(adj, kk)) == sorted(closed_pairs(adj, kk))
+        pairs = enumerate_empty_pairs(adj, kk)
+        image = closure_image(adj, pairs)
+        assert image <= set(closed_pairs(adj, kk)), "X₃′ ⊆ X₃"
+        for A, R in image:
+            assert is_closed_pair(adj, A, R)
+            assert close_pair(adj, A, R) == (A, R), "closure is idempotent on closed pairs"
+
+
+def test_small_nbhd_sets_is_the_down_closed_family():
+    adj = random_graph(10, 0.3, 7)
+    for limit in (3, 5, 7):
+        fam = set(small_nbhd_sets(adj, limit))
+        brute = {A for A in range(1 << 10) if popcount(closed_nbhd(adj, A)) <= limit}
+        assert fam == brute
+        assert set(small_nbhd_sets(adj, limit, 2, 3)) == {A for A in brute if 2 <= popcount(A) <= 3}
+    with pytest.raises(OverflowError):
+        small_nbhd_sets(adj, 10, max_sets=5)
+
+
+def test_move_classes_on_a_hand_built_example():
+    # the path 0-1-2-3-4-5 has pathwidth 1; at k = 1, N = 5, t = 3, |R| = 2:
+    # every exact-size pair is (A, R) with A three vertices, R two, no A–R edge
+    n = 6
+    adj = [0] * n
+    for u in range(n - 1):
+        adj[u] |= 1 << (u + 1)
+        adj[u + 1] |= 1 << u
+    assert vertex_separation(adj) == 1
+    pairs = enumerate_empty_pairs(adj, 1)
+    # the cut vertex S = {3}: A = {0,1,2}, R = {4,5}; S = {2}: A = {3,4,5}, R = {0,1}
+    assert set(pairs) == {(0b000111, 0b110000), (0b111000, 0b000011)}
+    cls = move_classes(pairs, n)
+    assert max(cls) + 1 == 2, "the two pairs differ on every vertex: two classes"
+    # a disjoint union of two triangles with a pendant: pairs sharing a separator differ by swaps
+    adj = [0] * 7
+    for u, v in [(0, 1), (1, 2), (0, 2), (3, 4), (4, 5), (3, 5), (2, 6)]:
+        adj[u] |= 1 << v
+        adj[v] |= 1 << u
+    k = vertex_separation(adj)
+    pairs = enumerate_empty_pairs(adj, k)
+    cls = move_classes(pairs, 7)
+    # the pair (A, R) and the pair with one A-vertex swapped against one S-vertex
+    # are adjacent: check the adjacency relation directly on every pair
+    index = {P: i for i, P in enumerate(pairs)}
+    full = (1 << 7) - 1
+    for (A, R), i in index.items():
+        for (A2, R2), j in index.items():
+            S, S2 = full & ~(A | R), full & ~(A2 | R2)
+            moved = popcount(A ^ A2 | R ^ R2 | S ^ S2) // 2 * 1  # vertices whose class differs
+            differing = popcount((A & ~A2) | (R & ~R2) | (S & ~S2))
+            if differing <= 2:
+                assert cls[i] == cls[j]
+    # and every class is connected through such steps: a BFS over the relation reproduces the classes
+    seen = {}
+    for P in pairs:
+        if P in seen:
+            continue
+        stack = [P]
+        seen[P] = len(seen)
+        while stack:
+            A, R = stack.pop()
+            S = full & ~(A | R)
+            for Q in pairs:
+                if Q in seen and seen[Q] == seen[P]:
+                    continue
+                A2, R2 = Q
+                S2 = full & ~(A2 | R2)
+                if popcount((A & ~A2) | (R & ~R2) | (S & ~S2)) <= 2:
+                    if Q not in seen:
+                        seen[Q] = seen[P]
+                        stack.append(Q)
+    assert len(set(seen.values())) == max(cls) + 1
+
+
+@pytest.mark.parametrize("n,t,r,p", [(8, 3, 2, 0.3), (10, 3, 2, 0.3), (10, 4, 3, 0.5)])
+def test_bernoulli_second_moment_against_enumeration(n, t, r, p):
+    logEX, logEX2, ratio = second_moment_exact_gnp(n, t, r, p)
+    EX, EX2 = second_moment_enum_gnp(n, t, r, p)
+    assert abs(math.exp(logEX) - EX) < 1e-9 * EX
+    assert abs(math.exp(logEX2) - EX2) < 1e-9 * EX2
+    assert abs(ratio - EX2 / EX ** 2) < 1e-9
+
+
+def test_bernoulli_second_moment_rate_is_consistent_with_the_finite_form():
+    # the sup over tables bounds the finite exponent from above, and the finite
+    # exponent per vertex approaches it as n grows (p = c/n, sides a n)
+    a, c = 0.3, 6.0
+    sup, twog, T = second_moment_rate_gnp(a, c)
+    assert abs(twog - 2 * gnp_pair_rate(a, c)) < 1e-12
+    assert sup >= twog - 1e-9, "the product table is one candidate, so sup ≥ 2 g(a) − c-order terms"
+    assert abs(T.sum() - 1) < 1e-9 and np.all(T >= -1e-9)
+    # the finite sum has order t⁴ terms, so n stays small here; the polynomial
+    # correction to the exponent is at most 9 log(n + 1) / (2 n) (nine cells)
+    prev = None
+    for n in (30, 60, 120):
+        t = round(a * n)
+        _, logEX2, _ = second_moment_exact_gnp(n, t, t, c / n)
+        val = logEX2 / n
+        corr = 9 * math.log(n + 1) / (2 * n)
+        assert val <= sup + corr + 1e-9
+        assert val >= sup - corr - 0.05
+        if prev is not None:
+            assert abs(val - sup) < abs(prev - sup) + 1e-9
+        prev = val
+
+
+def test_overlap_tables_shape_and_margins():
+    adj = random_graph(10, 0.4, 11)
+    k = vertex_separation(adj)
+    pairs = enumerate_empty_pairs(adj, k)
+    T = overlap_tables(pairs, 10)
+    N, t = forced_sizes(10, k)
+    assert T.shape == (len(pairs) * (len(pairs) - 1), 9)
+    assert np.all(T[:, :3].sum(axis=1) == t) and np.all(T[:, 3:6].sum(axis=1) == N - t)
+    assert np.all(T[:, [0, 3, 6]].sum(axis=1) == t) and np.all(T.sum(axis=1) == 10)

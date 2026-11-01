@@ -666,3 +666,280 @@ left as a named `Prop` with this obstacle if it does not fit.
   12; the rate question is item 05's). That the share of graphs with a structure at `k = pw − 1` says
   anything beyond nine vertices. The Lean rows of §2.6 are statements,
   not proofs; item 10 proves them or names the obstacle.
+
+---
+
+## 3. The clumping decomposed: pairs, separators, closed pairs and move-classes on instances with exact pathwidth (item 03, 2026-11-01)
+
+**Question (B of the brief).** On a graph of pathwidth `k`, how many
+exact-size empty pairs are there (`X₁`), how many distinct separators
+among them (`X₂`), how many closed pairs of the forced sizes (`X₃`; and
+`X₃′`, the image of the exact-size pairs under the `A`-first closure of
+L2), and how many move-classes (`X₄`)? How fast do the ratios `X₁/X₂`,
+`X₁/X₃`, `X₁/X₄` grow with `n`, in nats per vertex, against the `0.066`
+that a `0.02` gain in `β` needs at `c = 10` (the pair exponent's slope at
+`β*` is `3.3` per unit of `β` there; `3.4, 3.9` at `c = 6, 4`;
+`rate_preview.log`)? Each ratio is what one representative count merges:
+`X₂` merges every pair with the same separator (the component flips of
+plan §0, and the reversal), `X₃` merges every pair with the same closure,
+`X₄` merges every pair reachable by single swaps.
+
+**The events counted, exactly.** `X₁` is the number of ordered pairs
+`(A, R)` with `|A| = t`, `|R| = N − t`, no `A–R` edge (the count of
+`FirstMoment.lean`). `X₂` is the number of distinct `S = V ∖ (A ∪ R)` over
+those pairs, which by L1′ (c) is the number of `k`-sets in `E_bip`. `X₃` is
+the number of ordered closed pairs with `|A| ≥ t`, `|R| ≥ N − t`,
+`|S| ≤ k` (§2.3; enumerated by the pruned search of
+`closed_pairs_pruned`, which agrees with the `2ⁿ` enumeration of
+`closed_pairs` on all 2,200 rows at `n ≤ 16`, `k = pw`). `X₄` is the
+number of connected components of the graph on exact-size pairs in which
+two pairs are adjacent when their labellings `V → {A, R, S}` differ on at
+most two vertices; at exact sizes a single vertex cannot change class, so
+an edge is exactly one swap of two vertices between two classes
+(`A ↔ S`, `R ↔ S` or `A ↔ R`). When `N` is even, `(R, A)` is an exact-size
+pair whenever `(A, R)` is, with the same `S`: the reversal is in `X₁` and
+not in `X₂`, and the parity split below separates it from everything else.
+
+### 3.1 Instances
+
+| source | cells | per cell | instances | exact value from |
+|---|---|---|---|---|
+| fresh `G(n, c/n)` | `n ∈ {14, 16, 18, 20, 22, 24}` × `c ∈ {4, 6, 8, 10}` | 200 | 4,800 | the C program `pathwidth_solver/cli/pathwidth -l -t 60` (every graph proved, `refutation` or `bound`; the layout kept in `instances.csv`); at `n ≤ 16` the subset DP `vertex_separation` agrees on all 1,600 |
+| pilot `G(20, c/20)` | `c ∈ {4, 6, 8, 10}` | 137 | 548 | on record (`gnp_pilot/results.csv`); the overlap check at one size |
+| certified covers, fixed generator | `n ∈ {10, 15, 20, 25}` × `d ∈ {4, 6}`, `m = n` | 150 | 1,200 | on record (`learning/data/ensemble/results.csv`, `pw = optimum − 1`); regenerated from seed; the DP agrees at `n ≤ 16` |
+
+Seeds of the fresh graphs: `crc32("sep03:{n}:{c}:{i}")`, `i < 200`;
+generator `networkx.gnp_random_graph(n, c/n, seed)` as in the pilot.
+Nothing on record was re-solved. The counts are taken at
+`k = pw − 1, pw, pw + 1, pw + 2` on every instance (caps on the
+enumeration were never reached: no row is marked skipped). The whole run
+is **7 s** for the solves and **66 s** for the counts on 8 workers at nice 19
+(516 s of enumeration in total, about 0.15 core-hours against the 3
+budgeted; the one-minute load was below 2).
+
+### 3.2 The counts at `k = pw`
+
+Geometric means over the cell (every instance has `X₁ > 0` at `k = pw`, as
+L1 says). `X₁/X₂` and the others are geometric means of the per-instance
+ratios. (`cells.csv`; the medians and maxima are there too.)
+
+**Fresh `G(n, c/n)`:**
+
+| `c` | `n` | mean `pw/n` | `X₁` | `X₁/X₂` | `X₁/X₃` | `X₁/X₃′` | `X₁/X₄` | max `X₁/X₂` | max `X₁/X₃` | max `X₁/X₄` |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 4 | 14 | 0.310 | 18.8 | 1.82 | 1.55 | 1.55 | 2.15 | 8.4 | 7.4 | 200 |
+| 4 | 16 | 0.291 | 27.8 | 1.94 | 1.59 | 1.59 | 2.29 | 5.6 | 9.9 | 120 |
+| 4 | 18 | 0.280 | 32.1 | 1.81 | 1.54 | 1.54 | 2.02 | 6.3 | 10.2 | 44.5 |
+| 4 | 20 | 0.269 | 54.1 | 2.05 | 1.64 | 1.64 | 2.53 | 6.7 | 11.9 | 97.5 |
+| 4 | 22 | 0.266 | 61.2 | 2.04 | 1.57 | 1.57 | 2.27 | 11.5 | 15.5 | 41.7 |
+| 4 | 24 | 0.259 | 62.4 | 1.99 | 1.48 | 1.48 | 2.03 | 6.4 | 5.4 | 37.3 |
+| 6 | 14 | 0.449 | 12.5 | 1.63 | 1.39 | 1.39 | 1.57 | 7.3 | 7.6 | 18.4 |
+| 6 | 24 | 0.370 | 33.1 | 1.63 | 1.41 | 1.41 | 1.62 | 4.5 | 9.5 | 19.0 |
+| 8 | 14 | 0.562 | 9.4 | 1.58 | 1.37 | 1.37 | 1.48 | 4.0 | 6.1 | 15.3 |
+| 8 | 24 | 0.468 | 26.0 | 1.58 | 1.40 | 1.40 | 1.52 | 4.0 | 17.0 | 34.0 |
+| 10 | 14 | 0.654 | 8.0 | 1.38 | 1.39 | 1.39 | 1.44 | 3.0 | 4.7 | 6.6 |
+| 10 | 16 | 0.621 | 9.5 | 1.62 | 1.29 | 1.29 | 1.36 | 3.7 | 4.5 | 10.0 |
+| 10 | 18 | 0.594 | 12.4 | 1.41 | 1.35 | 1.35 | 1.42 | 2.8 | 5.0 | 9.0 |
+| 10 | 20 | 0.573 | 14.7 | 1.44 | 1.32 | 1.32 | 1.37 | 2.5 | 5.2 | 6.7 |
+| 10 | 22 | 0.556 | 17.4 | 1.53 | 1.33 | 1.33 | 1.39 | 2.9 | 5.6 | 9.8 |
+| 10 | 24 | 0.545 | 19.6 | 1.43 | 1.31 | 1.31 | 1.39 | 2.4 | 7.0 | 10.3 |
+| pilot 10 | 20 | 0.571 | 13.7 | 1.50 | 1.30 | 1.30 | 1.36 | 2.6 | 4.9 | 7.5 |
+| pilot 4 | 20 | 0.272 | 44.4 | 1.90 | 1.58 | 1.58 | 2.21 | 5.5 | 7.5 | 82.6 |
+
+**Certified covers (`m = n`):**
+
+| `d` | `n` | mean `pw/n` | `X₁` | `X₁/X₂` | `X₁/X₃` | `X₁/X₄` |
+|---|---|---|---|---|---|---|
+| 4 | 10 | 0.612 | 5.6 | 1.64 | 1.75 | 2.07 |
+| 4 | 15 | 0.540 | 12.3 | 1.44 | 1.95 | 2.22 |
+| 4 | 20 | 0.496 | 16.9 | 1.49 | 1.71 | 1.88 |
+| 4 | 25 | 0.468 | 28.3 | 1.47 | 2.03 | 2.26 |
+| 6 | 10 | 0.846 | 4.8 | 1.43 | 3.30 | 4.71 |
+| 6 | 15 | 0.764 | 6.6 | 1.45 | 2.02 | 2.32 |
+| 6 | 20 | 0.729 | 11.5 | 1.40 | 1.91 | 2.03 |
+| 6 | 25 | 0.695 | 11.0 | 1.44 | 1.69 | 1.80 |
+
+What the table says, at these sizes:
+
+- **A typical instance at its own pathwidth has few witnesses.** `X₁` is
+  8–62 (geometric mean) on `G(n, c/n)` at `n = 14–24`, 5–28 on the covers,
+  falling with density and rising with `n` at `0.09–0.13` nats per vertex
+  (fitted, §3.3). The pilot's `n = 20` cells agree with the fresh ones
+  (`pw` means within 0.1, `X₁` and the ratios within 10–20%).
+- **One separator carries, at the median, one pair — and its reverse.**
+  `X₁/X₂` is 1.4–2.0 on the graphs and 1.4–1.6 on the covers, and the
+  parity split shows what it is (`checks.log`): when `N` is odd (no
+  reversal) the ratio is **1.08, 1.14, 1.23, 1.57** at `c = 10, 8, 6, 4`
+  and **1.03–1.09** on the covers; when `N` is even it is **2.04, 2.05,
+  2.14, 2.43** and `2.0–2.04`. So beyond the reversal a separator merges
+  a factor of `1.03–1.6` of pairs, more on sparse graphs; `X₂ = X₁` outright
+  on 13–14% of the graphs and 29% of the covers. The maximum over 200
+  instances is 2.4–11.5.
+- **The closure merges a factor 1.3–1.6 on the graphs, 1.7–3.3 on the
+  covers**, and **`X₃′ = X₃` on every fresh and pilot graph at `k = pw`**
+  (99.8% of the covers): at the pathwidth, every closed pair of the forced
+  sizes is the closure of some exact-size pair, so the two counts of §2.3
+  remark (iv) are one count here. They separate at `pw + 2` (`X₃′ < X₃`
+  on 27–40% of instances), where the closed pairs that no exact-size
+  pair reaches appear.
+- **The move-classes merge a factor 1.4–2.5 on the graphs**, `X₄ = X₁` on
+  39% of the graphs (every pair alone in its class), and the maximum over
+  a cell is 7–200: the clusters a typical instance carries at `k = pw`
+  are small, and the large ones are rare instances.
+
+### 3.3 The rates
+
+OLS slope of the per-instance `log` against `n` at fixed `c` (fresh graphs,
+`n = 14–24`, 1,200 instances per `c`) and against `n` on the covers
+(`n = 10–25`, 600 per `d`), with its standard error; nats per vertex of
+`n`. (`slopes.csv`.)
+
+| source | `c` or `d` | `k` | slope `log X₁` | slope `log X₁/X₂` | slope `log X₁/X₃` | slope `log X₁/X₃′` | slope `log X₁/X₄` |
+|---|---|---|---|---|---|---|---|
+| fresh | 4 | `pw` | 0.127 ± 0.011 | 0.010 ± 0.003 | −0.003 ± 0.004 | −0.003 ± 0.004 | −0.001 ± 0.007 |
+| fresh | 6 | `pw` | 0.100 ± 0.010 | 0.004 ± 0.003 | 0.002 ± 0.004 | 0.002 ± 0.004 | 0.003 ± 0.005 |
+| fresh | 8 | `pw` | 0.100 ± 0.009 | 0.002 ± 0.003 | 0.002 ± 0.003 | 0.002 ± 0.003 | 0.003 ± 0.004 |
+| **fresh** | **10** | **`pw`** | 0.092 ± 0.008 | **0.000 ± 0.003** | **−0.003 ± 0.003** | −0.003 ± 0.003 | **−0.003 ± 0.004** |
+| cover | 4 | `pw` | 0.104 ± 0.007 | −0.006 ± 0.002 | 0.006 ± 0.005 | 0.006 ± 0.005 | 0.002 ± 0.006 |
+| cover | 6 | `pw` | 0.060 ± 0.007 | −0.000 ± 0.003 | −0.041 ± 0.005 | −0.041 ± 0.005 | −0.061 ± 0.005 |
+| fresh | 10 | `pw + 1` | 0.193 ± 0.006 | 0.001 ± 0.003 | 0.007 ± 0.002 | 0.005 ± 0.002 | −0.070 ± 0.006 |
+| fresh | 10 | `pw + 2` | 0.328 ± 0.004 | 0.005 ± 0.002 | 0.060 ± 0.002 | 0.038 ± 0.002 | −0.152 ± 0.007 |
+| fresh | 4 | `pw + 2` | 0.280 ± 0.007 | 0.015 ± 0.003 | 0.015 ± 0.003 | 0.014 ± 0.003 | −0.126 ± 0.010 |
+
+At `k = pw` **no ratio grows**: every slope of `log X₁/X₂`, `log X₁/X₃`,
+`log X₁/X₄` is within `0.01` of zero at every `c` and both `d`, and at
+`c = 10` the two the kill names are `0.000 ± 0.003` and `−0.003 ± 0.003`
+— more than twenty standard errors below `0.066`. In the conversion of the
+header, the separator and the closure merge **at most `0.01` nats per
+vertex, i.e. at most `0.003` in `β`** at these sizes, against the `0.02`
+the brief's kill asks for. The covers at `d = 6` show the closure and
+move-class ratios *falling* with `n` (the `n = 10` cell, `pw/n = 0.85`, is
+nearly complete and its forced sizes are 1–2, where everything closes to
+everything). At `k = pw + 2`, with 100× more pairs, the closure merges
+more as `n` grows (`0.06` per vertex at `c = 10`, `0.04` for the image
+`X₃′`) while the move-classes multiply *faster* than the pairs (`−0.15`):
+abundant pairs fragment into many small classes rather than one fat one.
+These `pw + 2` rows are at a fixed offset, not a fixed `β`, and are not
+comparable across `n` as rates.
+
+At `k = pw − 1` the share of instances with no exact-size pair at all
+(the necessary condition alone refutes `pw − 1`) is 43–57% at `c = 4`,
+60–68% at `c = 6`, 62–72% at `c = 8` and 65–74% at `c = 10` on the graphs,
+47–87% on the covers, with no trend in `n` at these sizes; where a pair
+exists the median count is 1–4 (two is a pair and its reverse).
+
+**Beside them, the second moment on `G(n, c/n)`** (`second_moment_rate_gnp`,
+the `3 × 3` overlap table of `second_moment_rate` with Bernoulli edges:
+two pairs are empty together iff no edge lies in `A × R ∪ A′ × R′`, of size
+`2 t r − |A ∩ A′||R ∩ R′| − |A ∩ R′||R ∩ A′|`; exact finite form checked
+against the enumeration of every pair of pairs at `n = 8, 10`; the
+asymptotic sup checked against a `61⁴` grid at five `(a, c)`, agreeing to
+four decimals; `second_moment_gnp.csv`, `checks.log`):
+
+| `c` | at the cells' mean `β` (`n = 14 → 24`): `g(a)` | ratio exponent `sup − 2g` | maximiser | at `β*`: ratio exponent | maximiser |
+|---|---|---|---|---|---|
+| 4 | 0.62 → 0.54 | 0.12 → 0.16 | symmetric (`AA′ = AR′ = RA′ = RR′`) | 0.390 | same pair (`AA′ = RR′ = 0.221`) |
+| 6 | 0.61 → 0.50 | 0.08 → 0.13 | symmetric | 0.370 | same pair (`0.259`) |
+| 8 | 0.61 → 0.49 | 0.04 → 0.09 | symmetric | 0.335 | reversed pair (`AR′ = RA′ = 0.252`) |
+| 10 | 0.59 → 0.49 | 0.02 → 0.06 | symmetric | 0.300 | reversed pair (`0.233`) |
+
+At `β*` the Bernoulli second moment reproduces §8.5 (a)'s picture
+exactly: `E[X²]/E[X]² = e^{0.30–0.39 n}`, carried by the pair itself or
+its reverse perturbed through `S` (the two are mirror images of one
+cluster). At the `β` where typical instances sit (`g(a) ≈ 0.5–0.6 > 0`,
+`E[X] = e^{0.5 n}`) the maximiser is the *symmetric* table — the second
+pair overlaps `A` and `R` equally — and the ratio exponent is `0.02–0.16`.
+So the `e^{0.23 n}` is a statement about the large-deviation regime, where
+`E[X]` is carried by rare instances; this item measures the typical
+regime, and the two are different questions (the kill criterion says so).
+
+### 3.4 The overlap distribution at `n = 20`, `c = 10`
+
+Twenty fresh graphs (`pw` mean `11.25`, `β = 0.5625`, `a = 0.219`), every
+ordered pair of *distinct* exact-size empty pairs at `k = pw` (23,412 of
+them), the `3 × 3` table in units of `n` (`overlap_summary.csv`,
+`overlap_hist.csv`, `overlap_per_graph.csv`):
+
+| cell | measured mean | median | p90 | extremal table at this `a` | product table |
+|---|---|---|---|---|---|
+| `A ∩ A′` | 0.061 | 0.05 | 0.15 | 0.056 | 0.048 |
+| `A ∩ R′` | 0.059 | 0.05 | 0.15 | 0.056 | 0.048 |
+| `A ∩ S′` | 0.084 | 0.10 | 0.15 | 0.106 | 0.123 |
+| `S ∩ S′` | **0.453** | 0.45 | 0.55 | 0.350 | 0.316 |
+
+![Overlap of pairs of exact-size empty pairs at n = 20, c = 10, k = pw](scratch/separator_moment/03_clumping/overlap_hist.png)
+
+*The overlap of two empty pairs on the same instance, `n = 20`, `c = 10`,
+`k = pw`, over 23,412 ordered pairs of distinct pairs on 20 graphs: the
+shares of `n` in `A ∩ A′`, `A ∩ R′`, `A ∩ S′` and `S ∩ S′`, with the
+maximising table of the Bernoulli second moment at this `a` (solid) and
+the product of the margins (dashed).*
+
+**Is §8.5 (a)'s extremal table what instances show?** Not at `k = pw`. On
+the instances, two pairs share **`0.45 n` of their separators** (`|S| =
+0.56 n`, so 80% of `S`; median one vertex of `A` in `A′` and one in `R′`),
+against `0.35 n` for the extremal table at this `a` and `0.32 n` for
+the product: pairs on an instance are *closer* to each other through `S`
+than the extremal table says, and `A′` meets `A` and `R` equally (the
+symmetric picture of §3.3, not the reversed pair of the large-deviation
+regime). `A ∩ S′` sits *below* both reference tables: fewer vertices of
+`A` move into `S′` than independence would give, i.e. the second pair is a
+small perturbation of the first that keeps most of the separator and
+swaps one or two vertices — the move-class picture, with the small
+classes §3.2 counts.
+
+### 3.5 Kill verdict
+
+**Pre-registered criterion 1: met.** At `c = 10`, `k = pw`, the slope of
+`log(X₁/X₂)` is `0.000 ± 0.003` and of `log(X₁/X₃)` is `−0.003 ± 0.003`
+nats per vertex, below `0.066` by more than twice the standard error (by
+twenty times). **Prediction recorded: the separator count and the
+closed-pair count fail item 06's kill** (`β_sep − β* < 0.02` and
+`β_closed − β* < 0.02` at `c = 6` and `10`); by this instrument each
+merges at most `0.01` nats per vertex, `0.003` in `β`. The prediction is at
+`k = pw` on typical instances at `n ≤ 24`, not in the large-deviation
+regime at `β*`, where the maximising overlap is a different table (§3.3);
+**items 05–06 are kept and only item 06 decides.** Item 09, the weighted
+count, is the route this item points to.
+
+**Pre-registered criterion 2: not met.** `X₁/X₄` does not grow at
+`≥ 0.15` nats per vertex (`−0.003 ± 0.004` at `c = 10`; within `0.01` of
+zero everywhere at `k = pw`). The clusters on typical instances are not
+fat: the move-classes merge a factor 1.4–2.5, flat in `n`. §8.5's
+`e^{0.23 n}` is therefore **not the typical cluster** at these sizes — it
+is the second moment's statement about the rare instances that carry
+`E[X]` at `β*`, and item 04 (the planted model, which *is* that regime)
+is where its cluster is measured; this item's finding is that the planted
+measurement cannot be replaced by typical instances.
+
+### 3.6 Regenerate, size range, what this does not claim
+
+* **Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/03_clumping/run.py --workers 8`
+  (stages `solve`, `count`, `rates`, `overlap`; 7 + 66 + 1 + 1 s on 8
+  workers); `python3 reports/scratch/separator_moment/03_clumping/checks.py`
+  (the grid check of the maximiser, the parity split, the `X₃` cross-check,
+  the pilot against the fresh cells); `python3 -m pytest tests/test_separator_moment.py`
+  (37 tests, 16 new: the enumeration against `exact_pairs`,
+  `count_exact_pairs`, `empty_pair_count_brute` and `count_separators`;
+  the pruned closed pairs against the direct enumeration and
+  `X₃′ ⊆ X₃`; the down-closed family against brute force; move-classes on
+  the path `P₆` and on two triangles with a pendant, against a BFS over the
+  relation; the Bernoulli second moment against the enumeration of pairs
+  of pairs at `n = 8, 10` and the rate against the finite form at
+  `n = 30–120`; the overlap tables' margins).
+* **Size range.** `n = 14–24` for the fresh graphs (`c = 4, 6, 8, 10`,
+  200 per cell), `n = 20` for the pilot (137 per `c`), `n = 10–25` for the
+  covers (`d = 4, 6`, `m = n`, 150 per cell); `k = pw − 1 … pw + 2`.
+* **Does not claim.** Anything asymptotic: the slopes are fitted over
+  six sizes at the small-size end (`n ≤ 24`, where §14 of
+  `reports/ml_nature.md` found `n ≤ 40` constants failing at 125) and are
+  reported with their standard errors and no extrapolation; "flat in `n`"
+  means within `0.01` nats per vertex over `14–24`. Anything about the
+  large-deviation regime at `β*`: the counts here are at `k = pw` on
+  typical instances, and the second-moment table says the two regimes
+  have different maximisers. That `β_sep` or `β_closed` will fail item
+  06's kill — that is a *prediction* from this instrument, recorded as
+  the kill asks, and item 06 decides it. That the overlap histogram at one
+  cell (`n = 20`, `c = 10`, 20 graphs) is the picture at other `c` or
+  sizes. The `pw + 2` rows are at a fixed offset from the pathwidth, not
+  at a fixed `β`, and their slopes are not rates of anything.

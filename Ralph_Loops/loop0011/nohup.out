@@ -8,3 +8,8 @@
 [2026-11-01 13:09:51] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-11-01 13:42:18] session it02: ok (exit 0, 43 tool calls)
 [2026-11-01 13:52:56] tests passed: GATE PASS
+[2026-11-01 13:52:56] committed 4fac24d67: 02 The deterministic lemmas: balanced separator, its relaxation, the c
+[2026-11-01 13:52:56] === iteration 3: 03 The clumping decomposed: pairs, separators, closed pairs and move-classes on instances 
+[2026-11-01 13:52:56] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-11-01 15:46:32] session it03: ok (exit 0, 55 tool calls)
+[2026-11-01 15:57:20] tests passed: GATE PASS

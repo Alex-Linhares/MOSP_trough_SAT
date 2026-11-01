@@ -22,6 +22,7 @@ probabilistic. Checked on every graph to 9 vertices, 20,000 random graphs at
 """
 from __future__ import annotations
 
+import math
 from itertools import combinations
 from math import comb
 from typing import Iterator
@@ -34,6 +35,11 @@ __all__ = [
     "separator_events", "count_separators", "close_pair", "closure_sequence",
     "is_closed_pair", "closed_pairs", "popcount", "mosp_masks",
     "pattern_meets_both", "shares_pattern",
+    # item 03: the clumping decomposed
+    "small_nbhd_sets", "enumerate_empty_pairs", "separators_of",
+    "closed_pairs_pruned", "closure_image", "move_classes", "overlap_tables",
+    "second_moment_rate_gnp", "second_moment_exact_gnp", "second_moment_enum_gnp",
+    "gnp_masks",
 ]
 
 
@@ -272,3 +278,282 @@ def shares_pattern(matrix: np.ndarray, c: int, A: int) -> bool:
         if mask & other:
             return True
     return False
+
+
+# --- item 03: the clumping decomposed ------------------------------------------
+#
+# `X₁` exact-size empty pairs, `X₂` distinct separators among them (= the
+# `k`-sets in `E_bip`, L1′ c), `X₃` closed pairs of the forced sizes, `X₃′` the
+# image of the exact-size pairs under the `A`-first closure, `X₄` move-classes:
+# the connected components of the graph on exact-size pairs in which two pairs
+# are adjacent when their class labellings `V → {A, R, S}` differ on at most two
+# vertices (at exact sizes that is exactly one swap of two vertices between two
+# classes; a single vertex changing class would change the sizes).
+
+
+def small_nbhd_sets(adj: list[int], limit: int, min_size: int = 0,
+                    max_size: int | None = None, max_sets: int | None = None) -> list[int]:
+    """Every vertex set `A` with `|N[A]| ≤ limit` and `min_size ≤ |A| ≤ max_size`,
+    by a depth-first search in index order; the family `{A : |N[A]| ≤ limit}` is
+    closed under subsets, so pruning a branch whose closed neighbourhood is
+    already too large is exact (the cut of `expansion_bound._f_exact`, listing
+    the sets instead of minimising). Raises `OverflowError` past `max_sets`."""
+    n = len(adj)
+    if max_size is None:
+        max_size = n
+    out: list[int] = []
+
+    def dfs(start: int, chosen: int, size: int, union: int) -> None:
+        if size >= min_size:
+            out.append(chosen)
+            if max_sets is not None and len(out) > max_sets:
+                raise OverflowError(f"more than {max_sets} sets with |N[A]| <= {limit}")
+        if size == max_size:
+            return
+        for v in range(start, n):
+            u = union | adj[v] | (1 << v)
+            if popcount(u) <= limit:
+                dfs(v + 1, chosen | (1 << v), size + 1, u)
+
+    dfs(0, 0, 0, 0)
+    return out
+
+
+def enumerate_empty_pairs(adj: list[int], k: int, max_pairs: int | None = None) -> list[tuple[int, int]]:
+    """Every ordered exact-size empty pair `(A, R)` at width `k` (`|A| = t`,
+    `|R| = N − t`, `R ∩ N[A] = ∅`), by the pruned search over `t`-sets `A` with
+    `|N[A]| ≤ n − (N − t)` and then every `(N − t)`-subset of `V ∖ N[A]`. The
+    same list as `exact_pairs`, faster when few `t`-sets qualify."""
+    n = len(adj)
+    N, t = forced_sizes(n, k)
+    full = (1 << n) - 1
+    r = N - t
+    out: list[tuple[int, int]] = []
+    for A in small_nbhd_sets(adj, n - r, t, t):
+        outside = full & ~closed_nbhd(adj, A)
+        verts = [v for v in range(n) if outside >> v & 1]
+        for rc in combinations(verts, r):
+            out.append((A, sum(1 << v for v in rc)))
+        if max_pairs is not None and len(out) > max_pairs:
+            raise OverflowError(f"more than {max_pairs} exact-size pairs")
+    return out
+
+
+def separators_of(pairs: Iterator[tuple[int, int]] | list[tuple[int, int]], n: int) -> set[int]:
+    """The distinct separators `S = V ∖ (A ∪ R)` of a list of pairs (`X₂` when
+    the pairs are all exact-size empty pairs, by L1′ c)."""
+    full = (1 << n) - 1
+    return {full & ~(A | R) for A, R in pairs}
+
+
+def closed_pairs_pruned(adj: list[int], k: int, max_sets: int | None = None) -> list[tuple[int, int]]:
+    """`X₃` as `closed_pairs` but by the pruned search: a closed pair of the
+    forced sizes has `|A| ≥ t` and `|N[A]| = n − |R| ≤ n − (N − t)`, so `A` is
+    in the down-closed family of `small_nbhd_sets`; then `R = V ∖ N[A]` and the
+    pair is closed iff `A = V ∖ N[R]`. Works beyond `n = 16`."""
+    n = len(adj)
+    N, t = forced_sizes(n, k)
+    full = (1 << n) - 1
+    out = []
+    for A in small_nbhd_sets(adj, n - (N - t), t, max_sets=max_sets):
+        R = full & ~closed_nbhd(adj, A)
+        if A == full & ~closed_nbhd(adj, R):
+            out.append((A, R))
+    return out
+
+
+def closure_image(adj: list[int], pairs, side: str = "A") -> set[tuple[int, int]]:
+    """`X₃′`: the set of closed pairs reached from the given pairs by
+    `close_pair` (the `A`-first map by default)."""
+    return {close_pair(adj, A, R, side) for A, R in pairs}
+
+
+def move_classes(pairs: list[tuple[int, int]], n: int) -> list[int]:
+    """`X₄`: the move-classes of a list of (exact-size empty) pairs — the
+    connected components of the graph in which two pairs are adjacent when
+    their labellings `V → {A, R, S}` differ on at most two vertices. Returns
+    the class index of every pair (classes numbered from 0 in order of first
+    appearance); `X₄ = max + 1`."""
+    full = (1 << n) - 1
+    index = {P: i for i, P in enumerate(pairs)}
+    parent = list(range(len(pairs)))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i: int, j: int) -> None:
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[max(ri, rj)] = min(ri, rj)
+
+    for i, (A, R) in enumerate(pairs):
+        S = full & ~(A | R)
+        av = [v for v in range(n) if A >> v & 1]
+        rv = [v for v in range(n) if R >> v & 1]
+        sv = [v for v in range(n) if S >> v & 1]
+        for a in av:
+            Aa = A & ~(1 << a)
+            for s in sv:                       # A ↔ S
+                j = index.get((Aa | (1 << s), R))
+                if j is not None:
+                    union(i, j)
+            for r in rv:                       # A ↔ R
+                j = index.get((Aa | (1 << r), (R & ~(1 << r)) | (1 << a)))
+                if j is not None:
+                    union(i, j)
+        for r in rv:
+            Rr = R & ~(1 << r)
+            for s in sv:                       # R ↔ S
+                j = index.get((A, Rr | (1 << s)))
+                if j is not None:
+                    union(i, j)
+    roots = {}
+    out = []
+    for i in range(len(pairs)):
+        r = find(i)
+        out.append(roots.setdefault(r, len(roots)))
+    return out
+
+
+def overlap_tables(pairs: list[tuple[int, int]], n: int) -> np.ndarray:
+    """For every ordered pair of *distinct* pairs `(P, P′)`, the `3 × 3`
+    overlap table `(|A ∩ A′|, |A ∩ R′|, |A ∩ S′|, |R ∩ A′|, |R ∩ R′|, |R ∩ S′|,
+    |S ∩ A′|, |S ∩ R′|, |S ∩ S′|)` as an integer array of shape `(X₁(X₁ − 1), 9)`."""
+    full = (1 << n) - 1
+    rows = []
+    cls = [(A, R, full & ~(A | R)) for A, R in pairs]
+    for i, P in enumerate(cls):
+        for j, Q in enumerate(cls):
+            if i == j:
+                continue
+            rows.append([popcount(x & y) for x in P for y in Q])
+    return np.array(rows, dtype=int).reshape(-1, 9)
+
+
+# --- the second moment of the pair count on G(n, p) -----------------------------
+#
+# Two pairs `(A, R)`, `(A′, R′)` are empty together iff no edge lies in
+# `A × R ∪ A′ × R′`, whose size is `|A||R| + |A′||R′| − |A ∩ A′||R ∩ R′| −
+# |A ∩ R′||R ∩ A′|` (an unordered pair lies in both products iff it joins
+# `A ∩ A′` to `R ∩ R′` or `A ∩ R′` to `R ∩ A′`). So `E[X²]` is a sum over the
+# `3 × 3` overlap table of a multinomial times `(1 − p)^{that size}`, and with
+# `p = c/n` and both sides `a n` its exponent per vertex at a table of fractions
+# `T` is `H(T) − c (2a² − T_AA′ T_RR′ − T_AR′ T_RA′)`.
+
+
+def _entropy(T: np.ndarray) -> float:
+    T = np.asarray(T, dtype=float)
+    pos = T[T > 1e-300]
+    return float(-(pos * np.log(pos)).sum())
+
+
+def gnp_pair_rate(a: float, c: float) -> float:
+    """`g(a)`: the exponent per vertex of `E[X]` on `G(n, c/n)` with both sides
+    `a n`: `H(a, a, 1 − 2a) − c a²`."""
+    return _entropy(np.array([a, a, 1 - 2 * a])) - c * a * a
+
+
+def second_moment_rate_gnp(a: float, c: float, starts: int = 16, seed: int = 0) -> tuple[float, float, np.ndarray]:
+    """The asymptotic exponent of `E[X²]` on `G(n, c/n)` (sup over the overlap
+    table of two pairs with both sides `a n`) beside `2 g(a)`; their difference
+    is the exponent of `E[X²] / E[X]²`. Returns `(sup, 2 g(a), table)` with the
+    table in the order of `overlap_tables` (`AA′, AR′, AS′, RA′, RR′, RS′, SA′,
+    SR′, SS′`). The Bernoulli form of `learning.first_moment.second_moment_rate`."""
+    from scipy.optimize import minimize
+
+    def table(v):
+        aa, ar, ra, rr = v
+        ao = a - aa - ar
+        ro = a - ra - rr
+        oa = a - aa - ra
+        orr = a - ar - rr
+        oo = 1 - 2 * a - oa - orr
+        return np.array([aa, ar, ao, ra, rr, ro, oa, orr, oo])
+
+    def exponent(v):
+        T = table(v)
+        return _entropy(T) - c * (2 * a * a - T[0] * T[4] - T[1] * T[3])
+
+    f = lambda v: -exponent(v)  # noqa: E731
+    cons = {"type": "ineq", "fun": lambda v: table(v)}
+    rng = np.random.default_rng(seed)
+    prod = np.array([a * a, a * a, a * a, a * a])
+    best_v, best = prod, exponent(prod)
+    pts = [prod, np.array([0.0, a, a, 0.0]) * 0.9, np.array([a, 0.0, 0.0, a]) * 0.9]
+    pts += [rng.uniform(0, a, 4) for _ in range(starts)]
+    for v0 in pts:
+        if np.any(table(v0) < 0):
+            v0 = prod * rng.uniform(0.5, 1.5)
+            if np.any(table(v0) < 0):
+                continue
+        res = minimize(f, v0, method="SLSQP", constraints=[cons], options={"maxiter": 500, "ftol": 1e-13})
+        if np.all(table(res.x) >= -1e-9):
+            val = exponent(res.x)
+            if val > best:
+                best, best_v = val, res.x
+    return float(best), 2 * gnp_pair_rate(a, c), table(best_v)
+
+
+def second_moment_exact_gnp(n: int, t: int, r: int, p: float) -> tuple[float, float, float]:
+    """`(log E[X], log E[X²], E[X²] / E[X]²)` for `X` the number of ordered empty
+    pairs `(A, R)`, `|A| = t`, `|R| = r`, of `G(n, p)`, exactly, by the sum over
+    the `3 × 3` overlap table."""
+    from math import lgamma
+    o = n - t - r
+    if o < 0:
+        return math.inf, math.inf, math.nan
+    lq1 = math.log1p(-p)
+    logEX = lgamma(n + 1) - lgamma(t + 1) - lgamma(r + 1) - lgamma(o + 1) + t * r * lq1
+    terms = []
+    for aa in range(t + 1):
+        for ar in range(t - aa + 1):
+            ao = t - aa - ar
+            for ra in range(min(r, t - aa) + 1):
+                for rr in range(min(r - ra, r - ar) + 1):
+                    ro = r - ra - rr
+                    oa = t - aa - ra
+                    orr = r - ar - rr
+                    oo = o - oa - orr
+                    if oo < 0:
+                        continue
+                    cells = (aa, ar, ao, ra, rr, ro, oa, orr, oo)
+                    logmult = lgamma(n + 1) - sum(lgamma(x + 1) for x in cells)
+                    forbidden = 2 * t * r - aa * rr - ar * ra
+                    terms.append(logmult + forbidden * lq1)
+    m = max(terms)
+    logEX2 = m + math.log(sum(math.exp(x - m) for x in terms))
+    return logEX, logEX2, math.exp(logEX2 - 2 * logEX)
+
+
+def second_moment_enum_gnp(n: int, t: int, r: int, p: float) -> tuple[float, float]:
+    """`(E[X], E[X²])` by enumerating every ordered pair of pairs and summing
+    `(1 − p)^{|A × R ∪ A′ × R′|}`; the check of `second_moment_exact_gnp` (`n ≤ 10`)."""
+    verts = range(n)
+    pairs = []
+    for ac in combinations(verts, t):
+        A = sum(1 << v for v in ac)
+        rest = [v for v in verts if not A >> v & 1]
+        for rc in combinations(rest, r):
+            pairs.append((A, sum(1 << v for v in rc)))
+    EX = len(pairs) * (1 - p) ** (t * r)
+    EX2 = 0.0
+    for A, R in pairs:
+        for A2, R2 in pairs:
+            forb = 2 * t * r - popcount(A & A2) * popcount(R & R2) - popcount(A & R2) * popcount(R & A2)
+            EX2 += (1 - p) ** forb
+    return EX, EX2
+
+
+def gnp_masks(n: int, p: float, seed: int) -> list[int]:
+    """Adjacency masks of `networkx.gnp_random_graph(n, p, seed=seed)` (the
+    pilot's generator, `reports/scratch/gnp_pilot/pilot.py`)."""
+    import networkx as nx
+    G = nx.gnp_random_graph(n, p, seed=seed)
+    adj = [0] * n
+    for u, v in G.edges():
+        adj[u] |= 1 << v
+        adj[v] |= 1 << u
+    return adj
