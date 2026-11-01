@@ -1,0 +1,9 @@
+                 family  rows  both exact (L2)  L2 violations  L2 slack min  pw exact (L4)  L4 violations  L4 slack min  tb(n+m) max
+ caterpillar of cliques    24               24              0             2             24              0             4            5
+clique tree (extension)    18               11              0            10             11              0            16            5
+     clique tree (grid)    29               29              0             2             29              0             4            5
+       forest on record  3448             3448              0             1           3448              0             3            4
+      random block tree   900              898              0             5            898              0             9            5
+                    all  4419             4410              0             1           4410              0             3            5
+forest cover: 4419 rows, 0 L2 violations, 0 L4 violations; tb identity on 3001 values
+wrote reports/scratch/forest_cover/tables.md

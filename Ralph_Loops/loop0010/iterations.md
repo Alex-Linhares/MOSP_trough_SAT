@@ -404,7 +404,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** The inequality with *realised* sizes under the
     generator; that stays measured.
 
-- [ ] **11 Lean: the forest regime.**
+- [x] **11 Lean: the forest regime.**
   - **Question.** G. Which of items 06, 07 and 10 is within a session in
     Lean, and prove it.
   - **Method.** In order of reach, stop at the first that fills the

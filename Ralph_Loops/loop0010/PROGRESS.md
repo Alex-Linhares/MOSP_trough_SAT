@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 10/13 SOLVED
+Current: 11/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -901,3 +901,95 @@ never the realised-size ones as theorems; the sentence on `(100, 50, 2)`
 worth one line. For the bound work: a sharper tail than Chernoff on the
 size sum (the exact distribution is computable) would move the quenched
 floor toward the typical instance, up to 10 stacks at `(125, 125, 4)`.
+
+---
+
+## Iteration 11 — 2026-11-01 07:13
+
+Item 11, Lean: the forest regime.
+
+### Completed
+
+- **All three targets of the item are proved**, in its order, in one new file
+  `lean/MOSPFormalization/ForestCover.lean` (545 lines, imported by
+  `lean/MOSPFormalization.lean`); no `sorry`, no `axiom`, every theorem on
+  `propext`, `Classical.choice`, `Quot.sound` only. Each statement had been
+  checked by brute force in items 06 and 07 before it was stated.
+  - **(a) F1, the blow-up lemma** (§6.5 L1–L4): `MOSPInstance.incidence M :
+    SimpleGraph (C ⊕ Pt)`; `maxPatternSize` (`ω`, the largest pattern) with
+    `one_le_maxPatternSize_iff`; `blowUp D : PathDecomposition M.mospGraph`
+    from any `D : PathDecomposition M.incidence` (bags: the customers of the
+    bag plus the customers of its patterns; the interval step is the
+    union-of-intervals lemma as `PathDecomposition.mem_bag_of_meet`, a
+    four-line case split); `blowUp_width_add_one_le`;
+    `pathwidth_mospGraph_add_one_le : 1 ≤ ω → pw(G_M) + 1 ≤ (pw(B) + 1) ω`;
+    **`mospValue_le_maxPatternSize_mul : mospValue M ≤ ω (pw(B) + 1)` for every
+    instance, no hypothesis**; `treeBoundInv N = Nat.log 3 ((6N + 3) / 5)` with
+    `le_treeBound_treeBoundInv` and `treeBound_lt_of_lt_treeBoundInv` (Lemma 5
+    of §6.2: the least `k` with `N ≤ treeBound k`, by `omega` from the parity
+    of `3^k`); `pathwidth_le_treeBoundInv_of_isAcyclic` for every forest
+    (per component through `pathwidth_induce_le_of_forall_connected` and
+    `tree_pathwidth_le_treeBound`); **`mospValue_le_of_incidence_isAcyclic :
+    (incidence M).IsAcyclic → mospValue M ≤ ω (treeBoundInv (n + m) + 1)`**.
+    Also `mospGraph_mono` and `mospValue_mono` (Yanasse 1997a Proposition 2,
+    subinstance monotonicity, no hypothesis).
+  - **(c) The coupling inclusion** (item 10, Lemma V2): `isEmptyPair_anti`,
+    `coverGraph_mono`, `isEmptyPair_coverGraph_of_subset : (∀ j, S j ⊆ S' j) →
+    IsEmptyPair (coverGraph S') A R → IsEmptyPair (coverGraph S) A R`, and
+    `pathwidth_coverGraph_mono` through `Minor.lean`'s `pathwidth_mono`.
+  - **(b) The layer lemma** (item 07, Lemma L), generalised to any 1-Lipschitz
+    level function: `IsLayering`, `layer`, `layerWidth`, `layerDecomposition`
+    (bags `L_i ∪ L_{i+1}`), `pathwidth_le_layerWidth : pathwidth G ≤ max_i
+    (|L_i| + |L_{i+1}|) − 1`, `vertexSeparation_le_layerWidth` (via
+    `vertexSeparation_eq_pathwidth`), `isLayering_dist` (BFS distance from a
+    root of a connected graph is a layering) and the BFS form
+    `pathwidth_le_layerWidth_dist`.
+- **`learning/sandwich.py`**: `FOREST_COVER_PROVED` (22 names), `ALL_PROVED`
+  (54), `print_axioms` now imports the whole library; `--stage forest`
+  (`forest_cover_check`, `tree_bound_lean`, `tree_bound_identity_check`) pins
+  the Lean statements to item 03's record through item 06's CSV: **4,419 rows,
+  0 violations of (L2) on the 4,410 with both pathwidths exact (slack ≥ 1) and
+  0 of (L4) on every row with `pw(G_M)` exact (slack ≥ 3)**; `treeBoundInv`
+  equals the least `k` on every `N ≤ 3000`. Log and tables under
+  `reports/scratch/forest_cover/` (with the paper's axiom-check log: 260
+  lines, zero `sorryAx`). `tests/test_sandwich.py`: 7 new tests (17 in all):
+  inventory, the `tb` identity against `block_trees.tree_bound`, (L2) and the
+  MOSP form on 60 tiny instances with both pathwidths by the exact DP and the
+  MOSP value by brute force over orders, the forest form on the forests among
+  them, monotonicity on 30 pairs, the coupling inclusion on 30 cover pairs and
+  every small `(A, R)`, the layer lemma on 40 connected graphs under BFS and a
+  non-BFS layering, the record pin. `paper1/axiom_check.lean`: 13 new lines.
+  `reports/sandwich_tables.md` regenerated (`python -m learning.sandwich`).
+- **`reports/excess_phase_diagram.md` §11**: every statement as Lean states
+  it, the proof routes, the pin table, the axiom lines, findings, kill, what it
+  does not claim.
+- **Numbers.** `lake build` 2,364 jobs; the new module compiles in about one
+  second; nothing solved, `solutions/` untouched, no solver run. The module's
+  first compile failed on three Mathlib-API points (`Std.Symm` / `Std.Irrefl`
+  structure fields, a `rw` on a `Fin` index needing `show`, `Nat.log 3 0 = 0`
+  in the minimality direction), fixed in two rounds.
+- **Kill verdict: none** (the item carries none); nothing blocked, no named
+  `Prop` gap needed. No certified value is wrong, no theorem is false, no
+  published claim of ours drifts.
+- **Gate: PASS** (one run, 2026-11-01 07:27–07:38 at load 0.5–1): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,648 passed (2 skipped,
+  1 xfailed; +7 new), pathwidth_solver 123 passed, paper check ok (67 pages,
+  no undefined references). Log: `Ralph_Loops/loop0010/gate_it11.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 12, the write-up. From this item, for Appendix A / the Lean appendix
+(`sec9a_appendix_lean.tex`): the forest regime's formal content is
+`mospValue_le_maxPatternSize_mul` (every instance) and
+`mospValue_le_of_incidence_isAcyclic`; the layer lemma is
+`pathwidth_le_layerWidth_dist`; the coupling is `isEmptyPair_coverGraph_of_subset`
+with `pathwidth_coverGraph_mono`; subinstance monotonicity (`mospValue_mono`)
+is a one-line citation for `relaxation.py`'s Proposition 2. What stays on
+paper: every random-model corollary, the per-layout vertex separation of the
+layer order, Lemma P and F2 (§6.5 L5–L6, not attempted). For item 13 (the
+reserve), L5 (Lemma P, `pathwidth_ge_of_pendant_cliques`) is the next Lean
+target of §6.5 and is a pathwidth argument that is not degree-based.

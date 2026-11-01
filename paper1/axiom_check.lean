@@ -312,3 +312,20 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.prob_coversOfPathwidthLe_le
 #print axioms MOSPFormalization.card_coversOfPathwidthLe_le
 #print axioms MOSPFormalization.card_filter_avoid
+
+-- loop0010 item 11: the blow-up bound and the forest regime (ForestCover.lean)
+#print axioms MOSPFormalization.MOSPInstance.mospValue_le_maxPatternSize_mul
+#print axioms MOSPFormalization.MOSPInstance.pathwidth_mospGraph_add_one_le
+#print axioms MOSPFormalization.MOSPInstance.blowUp_width_add_one_le
+#print axioms MOSPFormalization.pathwidth_le_treeBoundInv_of_isAcyclic
+#print axioms MOSPFormalization.le_treeBound_treeBoundInv
+#print axioms MOSPFormalization.treeBound_lt_of_lt_treeBoundInv
+#print axioms MOSPFormalization.MOSPInstance.mospValue_le_of_incidence_isAcyclic
+#print axioms MOSPFormalization.MOSPInstance.mospValue_mono
+-- item 10's coupling inclusion, Lemma V2 (ForestCover.lean)
+#print axioms MOSPFormalization.isEmptyPair_coverGraph_of_subset
+#print axioms MOSPFormalization.pathwidth_coverGraph_mono
+-- item 07's layer lemma, Lemma L (ForestCover.lean)
+#print axioms MOSPFormalization.pathwidth_le_layerWidth
+#print axioms MOSPFormalization.vertexSeparation_le_layerWidth
+#print axioms MOSPFormalization.pathwidth_le_layerWidth_dist

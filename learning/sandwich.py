@@ -107,6 +107,38 @@ PROVED = (
     # and Harper's `f(6) ≤ pw + 6`, so promoted from STATED (loop0010 item 01's gate)
     "conjecture_sqrt_tw_f6",
 )
+#: loop0010 item 11, `lean/MOSPFormalization/ForestCover.lean`: the blow-up bound
+#: `mospValue ≤ ω (pathwidth (incidence) + 1)` for every instance, its forest form
+#: through `TreeBound.lean`, subinstance monotonicity, and the coupling inclusion
+#: of item 10 (Lemma V2) over `CliqueCoverMoment.lean`'s covers, and the layer
+#: lemma of item 07 (Lemma L: a layering `lvl` gives `pathwidth ≤ max (|L_i| + |L_{i+1}|) − 1`).
+FOREST_COVER_PROVED = (
+    "PathDecomposition.mem_bag_of_meet",
+    "isEmptyPair_anti",
+    "MOSPInstance.incidence",
+    "MOSPInstance.one_le_maxPatternSize_iff",
+    "MOSPInstance.blowUp",
+    "MOSPInstance.blowUp_width_add_one_le",
+    "MOSPInstance.pathwidth_mospGraph_add_one_le",
+    "MOSPInstance.mospValue_le_maxPatternSize_mul",
+    "le_treeBound_treeBoundInv",
+    "treeBound_lt_of_lt_treeBoundInv",
+    "pathwidth_le_treeBoundInv_of_isAcyclic",
+    "MOSPInstance.mospValue_le_of_incidence_isAcyclic",
+    "MOSPInstance.mospGraph_mono",
+    "MOSPInstance.mospValue_mono",
+    "coverGraph_mono",
+    "isEmptyPair_coverGraph_of_subset",
+    "pathwidth_coverGraph_mono",
+    # the layer lemma of item 07 (Lemma L), pathwidth and vertex-separation forms
+    "layerDecomposition",
+    "pathwidth_le_layerWidth",
+    "vertexSeparation_le_layerWidth",
+    "isLayering_dist",
+    "pathwidth_le_layerWidth_dist",
+)
+#: Every proved name the axiom check asks for.
+ALL_PROVED = PROVED + FOREST_COVER_PROVED
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 
@@ -258,12 +290,14 @@ def lake_build(timeout: int = 3600) -> tuple[bool, str]:
     return proc.returncode == 0, tail
 
 
-def print_axioms(names: tuple[str, ...] = PROVED + STATED,
+def print_axioms(names: tuple[str, ...] = ALL_PROVED + STATED,
                  namespace: str = "MOSPFormalization") -> pd.DataFrame:
-    """`#print axioms` for each theorem, via `lake env lean` on a scratch file."""
+    """`#print axioms` for each theorem, via `lake env lean` on a scratch file
+    importing the whole library (the names span `Sandwich.lean`, `MOSPGraph.lean`
+    and `ForestCover.lean`)."""
     scratch = LEAN_DIR / ".lake" / "sandwich_axioms.lean"
     scratch.parent.mkdir(exist_ok=True)
-    lines = [f"import {namespace}.Sandwich"] + \
+    lines = [f"import {namespace}"] + \
         [f"#print axioms {namespace}.{name}" for name in names]
     scratch.write_text("\n".join(lines) + "\n")
     proc = subprocess.run(["lake", "env", "lean", str(scratch)], cwd=LEAN_DIR,
@@ -278,7 +312,7 @@ def print_axioms(names: tuple[str, ...] = PROVED + STATED,
         axioms = [a.strip() for a in m.group(1).split(",")] if m else []
         rows.append({
             "theorem": name,
-            "role": "proved" if name in PROVED else "stated (sorry)",
+            "role": "proved" if name in ALL_PROVED else "stated (sorry)",
             "found": m is not None,
             "axioms": ", ".join(axioms),
             "uses_sorry": "sorryAx" in axioms,
@@ -339,13 +373,96 @@ def corpus_check(path: Path = INSTANCES) -> pd.DataFrame:
 # Driver
 # ----------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------
+# loop0010 item 11: the statements of ForestCover.lean against the record
+# ----------------------------------------------------------------------------
+FOREST_RECORD = ROOT / "reports" / "scratch" / "forest_check" / "record_check.csv"
+
+
+def tree_bound_lean(N: int) -> int:
+    """`treeBoundInv N = Nat.log 3 ((6 N + 3) / 5)` exactly as `ForestCover.lean` defines it:
+    the largest `k` with `3^k ≤ (6N + 3) // 5` (and `0` when that quotient is `0`)."""
+    q = (6 * N + 3) // 5
+    k = 0
+    while 3 ** (k + 1) <= q:
+        k += 1
+    return k
+
+
+def tree_bound_rec(k: int) -> int:
+    """`treeBound k` of `TreeBound.lean`: `1, 6, 21, 66, …`."""
+    t = 1
+    for _ in range(k):
+        t = 3 * t + 3
+    return t
+
+
+def tree_bound_least(N: int) -> int:
+    """The least `k` with `N ≤ treeBound k`, by search: what `treeBoundInv` is proved to be
+    (`le_treeBound_treeBoundInv`, `treeBound_lt_of_lt_treeBoundInv`)."""
+    k = 0
+    while tree_bound_rec(k) < N:
+        k += 1
+    return k
+
+
+def forest_cover_check(path: Path = FOREST_RECORD) -> pd.DataFrame:
+    """The Lean statements of `ForestCover.lean` on item 03's record (item 06's CSV,
+    nothing re-solved): per family, the rows where both pathwidths are exact, violations
+    of (L2) `pw(G_M) + 1 ≤ (pw(B) + 1) ω`, of (L4) `pw(G_M) + 1 ≤ ω (tb(n + m) + 1)` on every
+    row with `pw(G_M)` exact (the incidence graph of every record row is a forest), and the
+    least slack of each. `pw(G_M) + 1` is the MOSP value (`mospValue_eq_pathwidth_add_one`);
+    on the forests on record it is the certified optimum, asserted equal."""
+    frame = pd.read_csv(path)
+    rows = []
+    for family, part in frame.groupby("family", sort=True):
+        exact = part[part.pw_exact & part.pwB_exact]
+        pw = exact.pw.round().astype(int)
+        pwb = exact.pw_B.round().astype(int)
+        omega = exact.omega.round().astype(int)
+        l2_slack = (pwb + 1) * omega - (pw + 1)
+        exact_m = part[part.pw_exact]
+        n_plus_m = (exact_m.n + exact_m.m).round().astype(int)
+        tb = n_plus_m.map(tree_bound_lean)
+        l4_slack = exact_m.omega.round().astype(int) * (tb + 1) - (exact_m.pw.round().astype(int) + 1)
+        if family == "forest on record":
+            opt = exact_m.optimum.round().astype(int)
+            assert (opt == exact_m.pw.round().astype(int) + 1).all(), "optimum ≠ pw + 1 on a record forest"
+        rows.append({
+            "family": family, "rows": len(part),
+            "both exact (L2)": len(exact), "L2 violations": int((l2_slack < 0).sum()),
+            "L2 slack min": int(l2_slack.min()) if len(exact) else None,
+            "pw exact (L4)": len(exact_m), "L4 violations": int((l4_slack < 0).sum()),
+            "L4 slack min": int(l4_slack.min()) if len(exact_m) else None,
+            "tb(n+m) max": int(tb.max()) if len(exact_m) else None,
+        })
+    out = pd.DataFrame(rows)
+    total = {"family": "all", "rows": int(out["rows"].sum()),
+             "both exact (L2)": int(out["both exact (L2)"].sum()),
+             "L2 violations": int(out["L2 violations"].sum()),
+             "L2 slack min": int(out["L2 slack min"].min()),
+             "pw exact (L4)": int(out["pw exact (L4)"].sum()),
+             "L4 violations": int(out["L4 violations"].sum()),
+             "L4 slack min": int(out["L4 slack min"].min()),
+             "tb(n+m) max": int(out["tb(n+m) max"].max())}
+    return pd.concat([out, pd.DataFrame([total])], ignore_index=True)
+
+
+def tree_bound_identity_check(max_n: int = 3000) -> int:
+    """`treeBoundInv N` equals the least `k` with `N ≤ treeBound k` for every `N ≤ max_n`
+    (Lemma 5 of §6.2, proved in Lean as the pair of inequalities); returns the number of `N`."""
+    for N in range(max_n + 1):
+        assert tree_bound_lean(N) == tree_bound_least(N), N
+    return max_n + 1
+
+
 def _md(frame: pd.DataFrame) -> str:
     return frame.to_markdown(index=False)
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus"], default="all")
+    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus", "forest"], default="all")
     ap.add_argument("--max-n", type=int, default=5)
     ap.add_argument("--out", type=Path, default=TABLES)
     args = ap.parse_args(argv)
@@ -383,6 +500,23 @@ def main(argv=None) -> int:
         total = corpus[corpus.band == "all"].iloc[0]
         ok &= total["degeneracy+1 ≤ optimum"] == total.instances == total["optimum ≤ bw_rcm+1"]
         print(corpus.to_string(index=False))
+
+    if args.stage in ("all", "forest"):
+        forest = forest_cover_check()
+        n_ident = tree_bound_identity_check()
+        sections += ["## `ForestCover.lean` against item 03's record "
+                     "(`reports/scratch/forest_check/record_check.csv`)", "",
+                     "(L2) `pw(G_M) + 1 ≤ (pw(B) + 1) ω` on the rows where both pathwidths are "
+                     "exact; (L4) `pw(G_M) + 1 ≤ ω (tb(n + m) + 1)` on every row with `pw(G_M)` "
+                     "exact (every record row's incidence graph is a forest); `tb` is "
+                     "`treeBoundInv` as Lean defines it, equal to the least `k` with "
+                     f"`N ≤ treeBound k` for every `N < {n_ident}` (checked).", "",
+                     _md(forest), ""]
+        total = forest[forest.family == "all"].iloc[0]
+        ok &= total["L2 violations"] == 0 and total["L4 violations"] == 0
+        print(forest.to_string(index=False))
+        print(f"forest cover: {total['rows']} rows, {total['L2 violations']} L2 violations, "
+              f"{total['L4 violations']} L4 violations; tb identity on {n_ident} values")
 
     if args.stage in ("all", "lean"):
         if not lake_available():

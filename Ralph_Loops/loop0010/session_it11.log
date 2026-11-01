@@ -1,0 +1,126 @@
+# session it11 started 2026-11-01 07:12:44
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the Lean files this item builds on, then decide which of the three targets fits the session.
+  > $ uptime && ls lean/MOSPFormalization/ && wc -l lean/MOSPFormalization/{CliqueCoverMoment,TreeBound,MOSPGraph,PathDecomposition,Pathwidth,MOSPInstance,EmptyPair,I
+  > $ cat lean/MOSPFormalization/PathDecomposition.lean lean/MOSPFormalization/Pathwidth.lean lean/MOSPFormalization/MOSPInstance.lean
+  > $ sed -n 1,140p lean/MOSPFormalization/MOSPGraph.lean && echo ---- && grep -n "theorem\|def \|lemma\|structure\|^namespace\|^end\|^section" lean/MOSPFormalization
+  > $ sed -n 140,180p lean/MOSPFormalization/MOSPGraph.lean && sed -n 420,436p lean/MOSPFormalization/MOSPGraph.lean && echo ==== TREEBOUND && sed -n 1,120p lean/MOSP
+  > $ sed -n 136,250p lean/MOSPFormalization/TreeBound.lean && echo ==== && sed -n 585,660p lean/MOSPFormalization/TreeBound.lean && echo ==== && sed -n 1750,1810p le
+  > $ sed -n 1,130p lean/MOSPFormalization/CliqueCoverMoment.lean && grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^structure" lean/MOSPFormalization/CliqueCov
+  > $ grep -n "def IsEmptyPair\|theorem IsEmptyPair\|IsEmptyPair" lean/MOSPFormalization/EmptyPair.lean | head -20 && sed -n '/def IsEmptyPair/,/^$/p' lean/MOSPFormal
+  > $ grep -rn "IsEmptyPair" lean/MOSPFormalization/*.lean | head -5; grep -n "def IsEmptyPair" -A6 lean/MOSPFormalization/FirstMoment.lean lean/MOSPFormalization/Emp
+  > $ sed -n 80,116p learning/sandwich.py && sed -n 248,292p learning/sandwich.py && echo ==== TEST && sed -n 105,135p tests/test_sandwich.py && sed -n 174,192p tests
+  > $ cat Ralph_Loops/loop0010/gate.py | head -80; echo ==== PLAN; grep -n "Item 11\|item 11\|## 11\|Lean" reports/excess_phase_plan.md | head -20
+  > $ sed -n 170,182p reports/excess_phase_plan.md; echo ==== REPORT65; grep -n "^## \|^### 6.5\|Lean-ready" reports/excess_phase_diagram.md | head -40
+  > $ sed -n 3330,3419p reports/excess_phase_diagram.md; echo ==== TAIL; tail -25 reports/excess_phase_diagram.md
+
+Context is in hand. Now checking the toolchain, the Mathlib lemma names I'll lean on, the data columns for the numerical check, and the git baseline, all in one go.
+  > $ cat lean/lean-toolchain; ls lean/.lake/packages/; ls lean/.lake/build/lib/lean/MOSPFormalization/ 2>/dev/null | head -3; git status --short | head; echo ==== CS
+  > $ M=lean/.lake/packages/mathlib/Mathlib; grep -rn "card_biUnion_le" $M/Data/Finset/*.lean $M/Algebra/BigOperators/*.lean 2>/dev/null | grep "theorem\|lemma" | hea
+  > $ M=lean/.lake/packages/mathlib/Mathlib; grep -rn "card_biUnion_le\b" $M --include=*.lean | grep -v "^.*:.*card_biUnion_le_card_mul" | head -3; grep -rn "card_sum
+  > $ grep -rn "ofLE\|pathwidth_le_of_le\|pathwidth_mono\|pathwidth_anti\|theorem pathwidth_le_pathwidth_of" lean/MOSPFormalization/*.lean | head -5; echo ==== REC; h
+
+The record CSV already carries ω, n, m and both pathwidths, so the numerical pin is a pandas job. `pathwidth_mono` already exists for the coupling half. Writing the Lean file now.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/ForestCover.lean
+  > $ sed -i 's/^import MOSPFormalization.TreeBound$/import MOSPFormalization.TreeBound\nimport MOSPFormalization.ForestCover/' lean/MOSPFormalization.lean && grep -n
+  > $ nice -n 19 lake build MOSPFormalization.ForestCover 2>&1 | grep -n "error" | head -20
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("MOSPFormalization/ForestCover.lean")
+s = p.read_text()
+s = s.replace("""  symm := by
+    intro x y h
+    ca
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("MOSPFormalization/ForestCover.lean")
+s = p.read_text()
+s = s.replace("""  symm := fun x y h => by
+    cases
+  > $ sed -i 's/  symm := ⟨fun x y h => by cases x <;> cases y <;> simpa using h⟩/  symm := ⟨fun x y h => by cases x <;> cases y <;> first | exact h | simp at h⟩/' MO
+  > $ cd /home/al/dev/MOSP && sed -i 's/cases x <;> cases y <;> first | exact h | simp at h⟩/cases x <;> cases y <;> exact h⟩/' lean/MOSPFormalization/ForestCover.lea
+  > $ grep -n "^def " fixed_parameter_algorithm/pathwidth.py | head; echo ==== TFT; sed -n 1,45p tests/test_forest_theorems.py; echo ==== FT; sed -n 1,73p learning/fo
+  > $ grep -n "^def " mosp/verify.py; sed -n 150,186p learning/block_trees.py; sed -n 247,260p learning/block_trees.py; echo ==== GIT; git ls-files reports/sandwich_t
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/sandwich.py")
+s = p.read_text()
+
+# 1. the inventory of ForestCover.lean
+s = s.replace('''#: Statem
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/sandwich.py")
+s = p.read_text()
+new = '''
+# ------------------------------------------------------
+
+Zero violations on all 4,419 record rows and the `tb` identity holds on 3,001 values. Next, in one go: the tests for the new inventory and statements, and the axiom-check block for the paper.
+  > $ cat >> tests/test_sandwich.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# loop0010 item 11: ForestCover.lean — the
+  > $ cd /home/al/dev/MOSP/lean && nice -n 19 lake build 2>&1 | grep -v "^⚠\|^✔\|warning\|^$\|Note:\|Hint:\|\[apply\]\|linter" | tail -5; cd /home/al/dev/MOSP; (cd le
+  > $ date; M=lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph; grep -n "theorem Connected.dist_triangle\|theorem dist_triangle\|dist_eq_one_iff_adj\|the
+
+The toolchain is fast here, so time is ample. Writing the layer lemma section into the file now and compiling.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("lean/MOSPFormalization/ForestCover.lean")
+s = p.read_text()
+new = r'''
+/-! ### The layer lemma (item 07, Le
+  > $ sed -i 's/G\.symm huv/huv.symm/g; s/^theorem vertexSeparation_le_layerWidth (lvl : V → ℕ)/theorem vertexSeparation_le_layerWidth [DecidableRel G.Adj] (lvl : V →
+
+All three fixes took; (b) compiles. Now the bookkeeping for it: the docstring, the inventory names, the axiom lines, and a brute-force test, all independent, in one go.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+from pathlib import Path
+p = Path("lean/MOSPFormalization/ForestCover.lean")
+s = p.read_text()
+s = s.replace('''## The
+  > $ cd /home/al/dev/MOSP && (cd lean && nice -n 19 lake env lean ../paper1/axiom_check.lean > ../reports/scratch/forest_cover/axiom_check.log 2>&1; echo AX_RC=$?; e
+  > $ cd /home/al/dev/MOSP && nice -n 19 python -m pytest tests/test_sandwich.py -q 2>&1 | head -30
+
+Seventeen tests pass (the earlier "no tests ran" was a working-directory slip). Starting the gate in the background now, and writing the report section and marking the item while it runs.
+  > $ date && nohup nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it11.log 2>&1 &
+cd /home/al/dev/MOSP && sed -i 's/^- \[ \] \*\*11 Lean
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 11. Lean: the forest regime, the layer lemma and the coupling inclusion (item 11, 2026-11-01)
+
+**Question G.*
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "GATE PASS\|GATE FAIL\|Traceback" Ralph_Loops/loop0010/gate_it11.log; do sleep 15; done; tail -12 Ralph_Loops/loop0010/gate_it11.log; date
+  > $ git status --short; echo ---; git check-ignore -v lean/.lake/forest_axioms.lean lean/.lake/sandwich_axioms.lean learning/data/excess.csv 2>&1; echo ---; grep -c
+  > Monitor {"command": "until grep -q \"GATE PASS\\|GATE FAIL\\|Traceback\" /home/al/dev/MOSP/Ralph_Loops/loop0010/gate_it11.log; d
+
+Waiting on the gate; nothing else is pending that doesn't depend on its result.
+
+# result: success in 986s, 42 turns, cost $8.38
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/2cc768c0-f7ec-44be-8bc1-282e0dd8d320/tasks/bz9c3l5bf.output; grep -n "lake build\|sorry in code\|passed\|failed\|check\|G
+  > $ nice -n 19 python -m learning.sandwich 2>&1 | tail -4; git diff --stat reports/sandwich_tables.md | tail -1
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md")
+s = p.read_text()
+s = s.replace("Current: 10/13 SOLVED", "Current: 11/13
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/2cc768c0-f7ec-44be-8bc1-282e0dd8d320/tasks/bsqaqn12t.output | tail -5; sed -i 's/(650 lines, imported by/(545 lines, impo
+
+Item 11 is done and the loop stands at 11 of 13.
+
+**What was proved.** All three targets of the item are in Lean, in one new file `lean/MOSPFormalization/ForestCover.lean`, imported by the root module, with no `sorry`, no `axiom`, and every theorem on the three standard axioms only.
+
+- **F1, the blow-up lemma.** The incidence graph of an instance as a graph on customers plus patterns, and a path decomposition of the MOSP graph built from any decomposition of it. The MOSP form holds for every instance with no hypothesis: the MOSP value is at most the largest pattern times one more than the incidence graph's pathwidth. The forest form follows through the tree size bound, with the §6 integer identity for the log form proved as the least such index.
+- **The coupling inclusion** of item 10. An empty pair of a larger cover's graph is an empty pair of the smaller cover's graph, and pathwidth is monotone in the cover. Subinstance monotonicity of the MOSP value came free, which formalises the proposition behind the relaxation code.
+- **The layer lemma** of item 07, generalised to any level function in which adjacent vertices differ by at most one. BFS distance from a root is one such function, so the BFS form of the report is a corollary. The vertex separation of the specific layer-by-layer order is not what is proved, and the report says so.
+
+**Checks.** The Lean definitions are pinned to the record through a new stage of `learning/sandwich.py`: zero violations on all 4,419 rows of item 03's record, slack at least one everywhere, and the log form identity on every size to 3,000. Seven new tests brute-force each statement on tiny instances with no solver and nothing persisted. The paper's axiom check gained 13 lines and prints 260 lines with no `sorryAx`. Nothing was solved and `solutions/` was not touched.
+
+**Gate.** Passed in one run: lake build ok, sorry 0, 1,648 MOSP tests, 123 pathwidth-solver tests, paper check ok at 67 pages.
+
+**Records.** Report §11 is appended, the PROGRESS entry is written, the sandwich tables are regenerated, and the item is marked done. Items 12 and 13 remain, so the loop is not complete. The next Lean target, if the reserve item wants one, is Lemma P from the report's Lean-ready list.
+
+# result: success in 61s, 5 turns, cost $11.76

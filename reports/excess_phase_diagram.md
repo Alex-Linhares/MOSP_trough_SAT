@@ -5357,3 +5357,216 @@ Classes where |rigorous − measured| > 1 stack (best form, with the rejection):
 | (125,125,6) | 58 | 62 | 66 | 60 | 64 | 66 | 69.6 |
 | (125,125,8) | 82 | 86 | 88 | 82 | 86 | 88 | 86.8 |
 | (125,125,10) | 96 | 98 | 100 | 96 | 98 | 100 | 98.0 |
+
+## 11. Lean: the forest regime, the layer lemma and the coupling inclusion (item 11, 2026-11-01)
+
+**Question G.** Which of items 06, 07 and 10 is within a session in Lean, and
+prove it. **All three targets of the item are proved**, in the order the item
+gives, in one new file `lean/MOSPFormalization/ForestCover.lean` (imported by
+`lean/MOSPFormalization.lean`): (a) F1's blow-up lemma with its forest form
+through `TreeBound.lean`, (c) item 10's coupling inclusion, and (b) item 07's
+layer lemma in pathwidth form. No `sorry`, no `axiom`; every theorem depends on
+`propext`, `Classical.choice`, `Quot.sound` only. Nothing was solved; the
+numerical pin reads item 06's record CSV.
+
+Regenerate: `cd lean && lake build` (2,364 jobs); `cd lean && lake env lean
+../paper1/axiom_check.lean` (260 `#print axioms` lines, zero `sorryAx`; log
+`reports/scratch/forest_cover/axiom_check.log`); `python -m learning.sandwich
+--stage forest --out reports/scratch/forest_cover/tables.md` (the pin, log
+`reports/scratch/forest_cover/check.log`); `python -m learning.sandwich --stage
+lean` (the inventory, 54 names, every one found and `sorryAx`-free);
+`python -m pytest tests/test_sandwich.py` (17 tests, 7 new).
+
+### 11.1 The statements, as Lean states them
+
+All in namespace `MOSPFormalization`; `M : MOSPInstance C Pt` with
+`[DecidableRel M.requires]`, `C` and `Pt` finite with decidable equality.
+
+**(L1) The incidence graph.** `MOSPInstance.incidence M : SimpleGraph (C ⊕ Pt)`,
+`Adj (inl c) (inr p) ↔ M.requires c p` (and symmetrically), no edge inside `C`
+or inside `Pt` (`incidence_adj_inl_inr`, `incidence_adj_inr_inl`,
+`incidence_not_adj_inl_inl`, `incidence_not_adj_inr_inr`, all `@[simp]`).
+`MOSPInstance.maxPatternSize M = Finset.univ.sup (fun p => (M.customers p).card)`
+is `ω`, the largest pattern; `one_le_maxPatternSize_iff : 1 ≤ ω ↔ ∃ c p, M.requires c p`.
+
+**(L2) The blow-up.** `MOSPInstance.blowUp M D : PathDecomposition M.mospGraph`
+for every `D : PathDecomposition M.incidence`, with bag `i` equal to `blowBag M D i`
+= the customers in `D.bag i` together with the customers of every pattern in
+`D.bag i`; `blowUp_width_add_one_le : 1 ≤ ω → (blowUp D).width + 1 ≤ (D.width + 1) * ω`.
+Hence
+
+- `MOSPInstance.pathwidth_mospGraph_add_one_le : 1 ≤ ω → pathwidth M.mospGraph + 1 ≤ (pathwidth M.incidence + 1) * ω`;
+- `MOSPInstance.mospValue_le_maxPatternSize_mul : M.mospValue ≤ ω * (pathwidth M.incidence + 1)`
+  — **F1 in MOSP terms, for every instance, no hypothesis** (when `ω = 0` the
+  instance has no requirement and `mospValue_eq_zero_of_forall_not` closes it).
+
+The interval step is the union-of-intervals lemma (§6.2 Lemma 2) in the form
+`PathDecomposition.mem_bag_of_meet`: for `x ∈ bag i`, `y ∈ bag k`, `x, z` together
+in a bag `l`, `y, z` together in a bag `l'`, and `i ≤ j ≤ k`, one of `x`, `y`, `z`
+is in `bag j` (a four-way case split on `l ≤ j` and `j ≤ l'`). A customer `c` is in
+`blowBag i` through a *reason* `IsReason M c x` (`x = inl c`, or `x = inr p` with
+`M.requires c p`), and every reason shares a bag with `inl c`
+(`exists_bag_of_isReason`: vertex coverage for `inl c`, edge coverage of
+`inl c — inr p` for a pattern). The width step is
+`card_bagCustomers_add_card_bagPatterns_le` (`a + b ≤ |D.bag i|`, by the disjoint
+images under `inl` and `inr`) and `card_blowBag_le` (`|blowBag i| ≤ a + b·ω`, by
+`Finset.card_biUnion_le`), then `a + b·ω ≤ (a + b)·ω` from `1 ≤ ω`.
+
+**(L3) The forest bound.** `treeBoundInv N = Nat.log 3 ((6 * N + 3) / 5)` with
+`le_treeBound_treeBoundInv : N ≤ treeBound (treeBoundInv N)` and
+`treeBound_lt_of_lt_treeBoundInv : k < treeBoundInv N → treeBound k < N` — Lemma 5
+of §6.2 as the pair of inequalities that make `treeBoundInv N` the least `k` with
+`N ≤ treeBound k`; the proof is `Nat.lt_pow_succ_log_self`, the identity
+`2·treeBound k + 3 = 5·3^k` of `TreeBound.lean` and the parity of `3^k`, closed by
+`omega`. `pathwidth_le_treeBoundInv_of_isAcyclic : G.IsAcyclic → pathwidth G ≤ treeBoundInv (Fintype.card V)`
+for every graph, through `pathwidth_le_pathwidth_induce_add_card_compl` at
+`S = univ`, `pathwidth_induce_le_of_forall_connected` and
+`tree_pathwidth_le_treeBound` on each connected piece (a tree by
+`IsAcyclic.induce`).
+
+**(L4) The forest corollary, F1′.**
+`MOSPInstance.mospValue_le_of_incidence_isAcyclic : M.incidence.IsAcyclic → M.mospValue ≤ ω * (treeBoundInv (Fintype.card C + Fintype.card Pt) + 1)`,
+no other hypothesis (`Fintype.card_sum` gives `n + m`).
+
+**Subinstance monotonicity**, which the coupling needed on the MOSP side:
+`MOSPInstance.mospGraph_mono` and
+`MOSPInstance.mospValue_mono : (∀ c p, M.requires c p → M'.requires c p) → M.mospValue ≤ M'.mospValue`,
+no hypothesis — Yanasse (1997a) Proposition 2 in Lean, through
+`mospValue_le_pathwidth_add_one`, `pathwidth_mono` (`Minor.lean`) and
+`pathwidth_add_one_le_mospValue`, with `mospValue_eq_zero_of_forall_not` for an
+empty `M`.
+
+**(c) The coupling inclusion** (item 10, Lemma V2 (ii)), over
+`CliqueCoverMoment.lean`'s covers `S : Fin m → Finset C`:
+`isEmptyPair_anti : G ≤ G' → IsEmptyPair G' A R → IsEmptyPair G A R` (any graphs on one
+vertex set), `coverGraph_mono : (∀ j, S j ⊆ S' j) → coverGraph S ≤ coverGraph S'`,
+`isEmptyPair_coverGraph_of_subset : (∀ j, S j ⊆ S' j) → IsEmptyPair (coverGraph S') A R → IsEmptyPair (coverGraph S) A R`
+— every empty pair of the padded graph is an empty pair of the base graph —
+and `pathwidth_coverGraph_mono : (∀ j, S j ⊆ S' j) → pathwidth (coverGraph S) ≤ pathwidth (coverGraph S')`,
+the two halves of V2 the plan named. The item's wording `A ⊆ A'` is the
+pointwise inclusion of covers; the statement is about finsets as asked.
+
+**(b) The layer lemma** (item 07, Lemma L), for any graph `G` on a finite `V`:
+`IsLayering G lvl := ∀ u v, G.Adj u v → lvl u ≤ lvl v + 1` (adjacent vertices at
+most one level apart), `layer lvl i` the vertices at level `i`,
+`layerWidth lvl h = max_{i ≤ h} (|layer i| + |layer (i + 1)|)`;
+`layerDecomposition` has bags `L_i ∪ L_{i+1}` for `i ≤ h`, and
+
+- `pathwidth_le_layerWidth : IsLayering G lvl → (∀ v, lvl v ≤ h) → pathwidth G ≤ layerWidth lvl h − 1`;
+- `vertexSeparation_le_layerWidth` — the same with `vertexSeparation G`
+  (`vertexSeparation_eq_pathwidth`, Kinnersley 1992);
+- `isLayering_dist : G.Connected → IsLayering G (G.dist r)` for any root `r`
+  (`Connected.dist_triangle` and `dist_eq_one_iff_adj`), and
+  `pathwidth_le_layerWidth_dist : G.Connected → pathwidth G ≤ layerWidth (G.dist r) (univ.sup (G.dist r)) − 1`,
+  the BFS form of §7.1 with `h` the eccentricity of `r`.
+
+The Lean statement is more general than §7.1's: any 1-Lipschitz level function,
+not only BFS distance, and the proof is the two-layer bag decomposition rather
+than the layer-by-layer layout. What it bounds is the *graph's* pathwidth (and
+vertex separation); it does not say that the layer-by-layer layout itself
+attains the bound as a layout (the decomposition-to-layout construction of
+`DecompositionToLayout.lean` would produce a layout of that width, not
+necessarily the layer order).
+
+### 11.2 Checked before stated, and the numerical pin
+
+Every statement above was checked on paper and by brute force in item 06
+(§6.3: 4,410 record rows with both pathwidths exact, 594 depth-one graphs,
+2,000 random instances, zero violations) and item 07 (Lemma L on 1,150 graphs)
+before it was stated in Lean. For this item `learning/sandwich.py` gained
+`--stage forest` and `FOREST_COVER_PROVED`, so the Lean definitions are pinned
+to the record as the sandwich's are:
+
+| family | rows | both exact (L2) | L2 violations | L2 slack min | pw exact (L4) | L4 violations | L4 slack min | tb(n+m) max |
+|---|---|---|---|---|---|---|---|---|
+| caterpillar of cliques | 24 | 24 | 0 | 2 | 24 | 0 | 4 | 5 |
+| clique tree (extension) | 18 | 11 | 0 | 10 | 11 | 0 | 16 | 5 |
+| clique tree (grid) | 29 | 29 | 0 | 2 | 29 | 0 | 4 | 5 |
+| forest on record | 3,448 | 3,448 | 0 | 1 | 3,448 | 0 | 3 | 4 |
+| random block tree | 900 | 898 | 0 | 5 | 898 | 0 | 9 | 5 |
+| all | 4,419 | 4,410 | 0 | 1 | 4,410 | 0 | 3 | 5 |
+
+(L2) is `pw(G_M) + 1 ≤ (pw(B) + 1)·ω` on the rows where both pathwidths are
+exact; (L4) is `pw(G_M) + 1 ≤ ω·(treeBoundInv(n + m) + 1)` on every row with
+`pw(G_M)` exact — every record row's incidence graph is a forest — with
+`treeBoundInv` computed exactly as Lean defines it (`tree_bound_lean`); on the
+3,448 forests on record `pw(G_M) + 1` is the certified optimum (asserted equal
+in the stage). `treeBoundInv N` equals the least `k` with `N ≤ treeBound k` on
+every `N ≤ 3000` (`tree_bound_identity_check`), and `#eval` in Lean gives
+`treeBoundInv` on `0..29` as `0, 0, 1, 1, 1, 1, 1, 2, …, 2, 3, …` (steps at
+`N = 2, 7, 22`) and `treeBound` on `0..5` as `1, 6, 21, 66, 201, 606`. The
+nine censored record rows (seven clique trees with `pw` an interval, two
+random block trees) are consistent and not counted.
+
+`tests/test_sandwich.py` (7 new tests): the inventory names are declarations of
+`ForestCover.lean`, which has no `sorry` and no `axiom` and is imported by the
+root; the `treeBoundInv` identity against `learning.block_trees.tree_bound`;
+(L2) and `mospValue ≤ ω(pw(B) + 1)` on 60 random tiny instances (`n ≤ 7`,
+`m ≤ 5`) with both pathwidths by the exact subset DP and the MOSP value by brute
+force over pattern orders (no solver, nothing persisted), the forest form on
+the ≥ 10 of them whose incidence graph is a forest; `mospValue_mono` on 30
+instance pairs; the coupling inclusion and `pathwidth_coverGraph_mono` on 30
+cover pairs over every pair `(A, R)` with `|A| ≤ 2`, `|R| = 1`; the layer
+lemma on 40 random connected graphs (`n ≤ 8`) for BFS layers and for a
+non-BFS 1-Lipschitz layering, tight on at least one; and the record pin above.
+`test_lean_theorems_are_sorry_free` now runs `#print axioms` on all 54
+inventory names through `import MOSPFormalization` (it imported
+`Sandwich.lean` alone before).
+
+### 11.3 Axiom lines
+
+`paper1/axiom_check.lean` gained thirteen lines (`mospValue_le_maxPatternSize_mul`,
+`pathwidth_mospGraph_add_one_le`, `blowUp_width_add_one_le`,
+`pathwidth_le_treeBoundInv_of_isAcyclic`, `le_treeBound_treeBoundInv`,
+`treeBound_lt_of_lt_treeBoundInv`, `mospValue_le_of_incidence_isAcyclic`,
+`mospValue_mono`, `isEmptyPair_coverGraph_of_subset`, `pathwidth_coverGraph_mono`,
+`pathwidth_le_layerWidth`, `vertexSeparation_le_layerWidth`,
+`pathwidth_le_layerWidth_dist`); the run prints 260 lines, each
+`[propext, Classical.choice, Quot.sound]` (the `def incidence` alone depends on
+`propext`), zero `sorryAx`, zero errors. `learning/sandwich.py`'s inventory:
+`FOREST_COVER_PROVED` has 22 names, `STATED` stays empty, `ALL_PROVED` has 54.
+
+### 11.4 Findings
+
+1. **F1 is a theorem of every instance in Lean, as §6 said on paper**: the forest
+   hypothesis enters only through `TreeBound.lean`, in (L4). The MOSP-side
+   statement needs no `1 ≤ ω` hypothesis; the pathwidth-side one does (with
+   `ω = 0` the right side is `0` and the MOSP graph may still have `n` vertices
+   of pathwidth `0`, so `pathwidth + 1 ≤ 0` would be false).
+2. **The union-of-intervals lemma has a four-line Lean proof** once stated on
+   bag indices with a common vertex (`mem_bag_of_meet`); no interval
+   arithmetic on `Finset ℕ` was needed, which §6.5 had expected.
+3. **Lemma 5's integer identity closes by `omega`** given the parity of `3^k`;
+   the `N = 0` case (`Nat.log 3 0 = 0`) is the one the minimality direction has
+   to handle by hand.
+4. **The layer lemma generalises for free** to any 1-Lipschitz level function;
+   BFS distance is one instance, by `Connected.dist_triangle`.
+5. **Subinstance monotonicity of the MOSP value is in Lean** with no hypothesis,
+   a by-product of the coupling: `relaxation.py`'s Proposition 2 of Yanasse
+   (1997a) now has a formal statement (`mospValue_mono`).
+
+### 11.5 Kill verdict
+
+None (the item carries no kill criterion); nothing is blocked, so no named
+`Prop` gap was needed. No certified value is wrong, no theorem is false, no
+published claim of ours drifts.
+
+### 11.6 What this does not claim
+
+- **Anything the Lean statements do not say.** The random-model corollaries
+  (Corollary R of §6, the phase band of §7, the first moment's survival of
+  the pads in §10) stay on paper; Lean has (L1)–(L4), the coupling inclusion
+  and pathwidth monotonicity, subinstance monotonicity, and the layer lemma in
+  pathwidth and vertex-separation form.
+- **The vertex separation of the layer layout itself.** `vertexSeparation_le_layerWidth`
+  bounds the graph's vertex separation (through Kinnersley's equality), not the
+  cost of the specific layer-by-layer order; item 07's `layer_lemma_check`
+  measured that order and the two agree numerically, but the per-layout
+  statement is not formalised.
+- **(L5) Lemma P and (L6) F2's exact form** of §6.5 are not attempted: the item
+  listed (a), (b), (c) only.
+- **Tightness.** Slack of F1 on the record is at least one on every exact row
+  (a measurement, §6.7); nothing about it is proved.
+- **`ω` is the largest pattern**, as §6 defined it, not the clique number of
+  the MOSP graph (three patterns of size 2 can form a triangle); the bound
+  with the largest pattern is the stronger one and is what is proved.

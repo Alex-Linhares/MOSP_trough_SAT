@@ -24,6 +24,7 @@ import MOSPFormalization.FirstMomentAsymptotics
 import MOSPFormalization.CliqueCoverMoment
 import MOSPFormalization.IndependenceBound
 import MOSPFormalization.TreeBound
+import MOSPFormalization.ForestCover
 import MOSPFormalization.Grid
 import MOSPFormalization.Hypercube.Order
 import MOSPFormalization.Hypercube.Harper

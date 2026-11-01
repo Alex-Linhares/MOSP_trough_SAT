@@ -48,3 +48,8 @@
 [2026-11-01 06:19:16] claude session it10 (cap 4.00 h) -> session_it10.log
 [2026-11-01 07:02:13] session it10: ok (exit 0, 60 tool calls)
 [2026-11-01 07:12:44] tests passed: GATE PASS
+[2026-11-01 07:12:44] committed 23c12f556: 10 Validity under the real generator, on paper.
+[2026-11-01 07:12:44] === iteration 11: 11 Lean: the forest regime.
+[2026-11-01 07:12:44] claude session it11 (cap 4.00 h) -> session_it11.log
+[2026-11-01 07:38:57] session it11: ok (exit 0, 45 tool calls)
+[2026-11-01 07:49:26] tests passed: GATE PASS

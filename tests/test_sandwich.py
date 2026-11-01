@@ -236,3 +236,167 @@ def test_separator_branch_lemma_hypotheses_matter_on_hand_instances():
     assert compute_pathwidth(_branches_through_separator(tri, False, {0: 100, 1: 101, 2: 101}))[0] == 2
     # The case S = {v} is `branch_lemma` (`branch_lemma_of_separator`): the spider.
     assert sw.vertex_separation(_spider()) == 2
+
+
+# ---------------------------------------------------------------------------
+# loop0010 item 11: ForestCover.lean — the blow-up bound, the forest form, the
+# coupling inclusion — against brute force on tiny instances
+# ---------------------------------------------------------------------------
+
+def _tiny_instances(count=60, seed=1101):
+    """Random tiny instances as pattern lists (`n ≤ 7`, `m ≤ 5`, sizes 1–3); the
+    incidence graph is a forest on a fair share of them."""
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    out = []
+    for _ in range(count):
+        n = int(rng.integers(2, 8))
+        m = int(rng.integers(1, 6))
+        pats = [sorted(rng.choice(n, size=int(rng.integers(1, min(3, n) + 1)), replace=False).tolist())
+                for _ in range(m)]
+        out.append((n, pats))
+    return out
+
+
+def _brute_mosp(n, pats):
+    """The MOSP value by brute force over pattern orders (no solver, nothing persisted)."""
+    import itertools
+    best = None
+    for order in itertools.permutations(range(len(pats))):
+        first, last = {}, {}
+        for pos, j in enumerate(order):
+            for c in pats[j]:
+                first.setdefault(c, pos)
+                last[c] = pos
+        width = 0
+        for pos in range(len(order)):
+            width = max(width, sum(1 for c in first if first[c] <= pos <= last[c]))
+        best = width if best is None else min(best, width)
+    return best
+
+
+def _exact_pw(g):
+    from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+    return 0 if g.number_of_nodes() == 0 else compute_pathwidth(g)[0]
+
+
+def test_forest_cover_inventory_names_are_declared():
+    """Every name of `FOREST_COVER_PROVED` is a declaration in ForestCover.lean, which has
+    no `sorry` and no `axiom`, and is imported by the root module."""
+    text = (sw.LEAN_DIR / "MOSPFormalization" / "ForestCover.lean").read_text()
+    for name in sw.FOREST_COVER_PROVED:
+        short = name.split(".")[-1]
+        assert f"theorem {short}" in text or f"def {short}" in text, name
+    code = text.split("-/", 1)[1]  # past the module docstring
+    assert "sorry" not in code and "\naxiom" not in code
+    root = (sw.LEAN_DIR / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.ForestCover\n" in root
+    assert set(sw.FOREST_COVER_PROVED) <= set(sw.ALL_PROVED)
+    assert "MOSPInstance.mospValue_le_maxPatternSize_mul" in sw.FOREST_COVER_PROVED
+
+
+def test_tree_bound_inverse_is_the_least_k():
+    """`treeBoundInv N = ⌊log₃((6N + 3)/5)⌋` is the least `k` with `N ≤ treeBound k`
+    (`le_treeBound_treeBoundInv`, `treeBound_lt_of_lt_treeBoundInv`), and agrees with
+    `learning.block_trees.tree_bound`."""
+    from learning.block_trees import tree_bound
+    assert [sw.tree_bound_rec(k) for k in range(6)] == [1, 6, 21, 66, 201, 606]
+    assert [sw.tree_bound_lean(N) for N in (0, 1, 2, 6, 7, 21, 22, 66, 67)] == [0, 0, 1, 1, 2, 2, 3, 3, 4]
+    assert sw.tree_bound_identity_check(2000) == 2001
+    for N in range(0, 700):
+        assert sw.tree_bound_lean(N) == tree_bound(N)
+
+
+def test_blowup_bound_on_tiny_instances():
+    """`mospValue ≤ ω (pw(B) + 1)` (`mospValue_le_maxPatternSize_mul`) and
+    `pw(G_M) + 1 ≤ (pw(B) + 1) ω` (`pathwidth_mospGraph_add_one_le`) on random tiny
+    instances, forest or not, with both pathwidths by the exact subset DP and the MOSP
+    value by brute force over orders; and the forest form
+    `mospValue ≤ ω (treeBoundInv (n + m) + 1)` where the incidence graph is a forest."""
+    from learning.block_trees import incidence_graph, is_incidence_forest, largest_pattern, mosp_graph
+    forests = 0
+    for n, pats in _tiny_instances():
+        omega = largest_pattern(pats)
+        pw_m = _exact_pw(mosp_graph(pats, n))
+        pw_b = _exact_pw(incidence_graph(pats, n))
+        mosp = _brute_mosp(n, pats)
+        assert mosp == pw_m + 1  # mospValue_eq_pathwidth_add_one, the instance has a requirement
+        assert mosp <= omega * (pw_b + 1)
+        assert pw_m + 1 <= (pw_b + 1) * omega
+        if is_incidence_forest(pats, n):
+            forests += 1
+            assert mosp <= omega * (sw.tree_bound_lean(n + len(pats)) + 1)
+    assert forests >= 10
+
+
+def test_subinstance_monotonicity_on_tiny_instances():
+    """`mospValue_mono`: adding requirements never lowers the MOSP value."""
+    import numpy as np
+    rng = np.random.default_rng(1102)
+    for n, pats in _tiny_instances(30, seed=1103):
+        bigger = [sorted(set(p) | set(rng.choice(n, size=1).tolist())) for p in pats]
+        assert _brute_mosp(n, pats) <= _brute_mosp(n, bigger)
+
+
+def test_coupling_inclusion_on_tiny_covers():
+    """`isEmptyPair_coverGraph_of_subset`: every empty pair of the larger cover's graph is
+    an empty pair of the smaller's; `pathwidth_coverGraph_mono`: pathwidth is monotone."""
+    import itertools
+    import numpy as np
+    from learning.block_trees import mosp_graph
+    rng = np.random.default_rng(1104)
+    for n, pats in _tiny_instances(30, seed=1105):
+        bigger = [sorted(set(p) | set(rng.choice(n, size=1).tolist())) for p in pats]
+        g, g2 = mosp_graph(pats, n), mosp_graph(bigger, n)
+        assert set(g.edges()) <= set(g2.edges())
+        assert _exact_pw(g) <= _exact_pw(g2)
+        verts = range(n)
+        for a_size in range(1, 3):
+            for A in itertools.combinations(verts, a_size):
+                rest = [v for v in verts if v not in A]
+                for R in itertools.combinations(rest, 1):
+                    empty2 = not any(g2.has_edge(a, r) for a in A for r in R)
+                    empty1 = not any(g.has_edge(a, r) for a in A for r in R)
+                    assert (not empty2) or empty1
+
+
+def test_forest_cover_record_has_no_violation():
+    """The Lean statements on item 03's record (item 06's CSV): zero violations of (L2)
+    and (L4), slack at least one on every row."""
+    if not sw.FOREST_RECORD.exists():
+        pytest.skip("item 06's record CSV is absent")
+    frame = sw.forest_cover_check()
+    total = frame[frame.family == "all"].iloc[0]
+    assert total["rows"] == 4419 and total["both exact (L2)"] == 4410
+    assert total["L2 violations"] == 0 and total["L4 violations"] == 0
+    assert total["L2 slack min"] >= 1 and total["L4 slack min"] >= 1
+
+
+def test_layer_lemma_on_small_connected_graphs():
+    """`pathwidth_le_layerWidth_dist`: on random small connected graphs, with `L_i` the BFS
+    layers from vertex 0, `pathwidth ≤ max_i (|L_i| + |L_{i+1}|) − 1` (exact DP pathwidth);
+    and any 1-Lipschitz level function works (`pathwidth_le_layerWidth`), not only BFS."""
+    import numpy as np
+    rng = np.random.default_rng(1106)
+    checked = tight = 0
+    while checked < 40:
+        n = int(rng.integers(2, 9))
+        g = nx.gnp_random_graph(n, float(rng.uniform(0.2, 0.7)), seed=int(rng.integers(1 << 30)))
+        if not nx.is_connected(g):
+            continue
+        dist = nx.single_source_shortest_path_length(g, 0)
+        h = max(dist.values())
+        sizes = [sum(1 for v in g if dist[v] == i) for i in range(h + 2)]
+        width = max(sizes[i] + sizes[i + 1] for i in range(h + 1))
+        pw = _exact_pw(g)
+        assert pw <= width - 1
+        tight += pw == width - 1
+        # a non-BFS layering: levels shifted by a random 1-Lipschitz perturbation along levels
+        lvl = {v: dist[v] // 2 for v in g}
+        for u, v in g.edges():
+            assert abs(lvl[u] - lvl[v]) <= 1
+        hh = max(lvl.values())
+        sizes2 = [sum(1 for v in g if lvl[v] == i) for i in range(hh + 2)]
+        assert pw <= max(sizes2[i] + sizes2[i + 1] for i in range(hh + 1)) - 1
+        checked += 1
+    assert tight >= 1
