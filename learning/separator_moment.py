@@ -797,12 +797,15 @@ def _log_q(p) -> float:
     return math.log1p(-float(p))
 
 
-def _part_weights(N: int, p, logC: list[float] | None = None) -> list[float]:
-    """`a(s) = log C_s − log s! − (s²/2) log(1 − p)` for `s = 0 … N`."""
+def _part_weights(N: int, p, logC: list[float] | None = None, tilt: float = 0.0) -> list[float]:
+    """`a(s) = log C_s − log s! − (s²/2) log(1 − p) + tilt` for `s = 0 … N`.
+    A `tilt` of `ln 2` weights every partition by `2^{#parts}` (item 06's
+    combined count, which bounds the number of balanced 2-colourings of the
+    components by `2^κ`)."""
     if logC is None:
         logC = log_connected(N, p)
     lq_ = _log_q(p)
-    return [-math.inf] + [logC[s] - math.lgamma(s + 1) - (s * s / 2) * lq_ for s in range(1, N + 1)]
+    return [-math.inf] + [logC[s] - math.lgamma(s + 1) - (s * s / 2) * lq_ + tilt for s in range(1, N + 1)]
 
 
 def log_prob_partition(parts, N: int, p, logC: list[float] | None = None) -> float:
@@ -850,22 +853,48 @@ def _coefficient_table(N: int, a: list[float], max_part: int) -> list[list[float
     return W
 
 
-def log_prob_rel(N: int, p, M: int, logC: list[float] | None = None) -> float:
+def log_prob_rel(N: int, p, M: int, logC: list[float] | None = None, tilt: float = 0.0) -> float:
     """`log P(no component of G(N, p) has more than M vertices)`, by the
     `O(N · M)` recursion over the component of the first vertex
     (`R_j = Σ_{i ≤ min(j, M)} C(j−1, i−1) C_i (1−p)^{i(j−i)} R_{j−i}`, `R_0 = 1`),
-    computed as the coefficient `N! (1−p)^{N²/2} [x^N] exp(Σ_{s ≤ M} e^{a(s)} x^s)`."""
-    if M >= N:
+    computed as the coefficient `N! (1−p)^{N²/2} [x^N] exp(Σ_{s ≤ M} e^{a(s)} x^s)`.
+    With `tilt = τ` it is `log E[1[no component > M] · e^{τ κ}]`, `κ` the
+    number of components (not a probability; `τ = ln 2` is item 06's use)."""
+    if M >= N and tilt == 0.0:
         return 0.0
     if M <= 0:
         return -math.inf if N > 0 else 0.0
-    a = _part_weights(N, p, logC)
+    M = min(M, N)
+    a = _part_weights(N, p, logC, tilt)
     W = _coefficient_table(N, a, M)
-    return min(0.0, math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + W[N][M])
+    val = math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + W[N][M]
+    return min(0.0, val) if tilt == 0.0 else val
+
+
+def log_prob_rel_fast(N: int, p, M: int, logC: list[float] | None = None, tilt: float = 0.0) -> float:
+    """The same quantity as `log_prob_rel` by the derivative recursion of the
+    exponential formula: with `f = exp(Σ_{s ≤ M} e^{a(s)} x^s)`,
+    `r [x^r] f = Σ_{s ≤ min(r, M)} s e^{a(s)} [x^{r−s}] f`, which is `O(N · M)`
+    with one log-sum-exp per `r` (no multiplicity loop).  Used for the rate
+    grids of item 06; pinned to `log_prob_rel` in the tests."""
+    if M <= 0:
+        return -math.inf if N > 0 else 0.0
+    M = min(M, N)
+    a = _part_weights(N, p, logC, tilt)
+    la = np.array([(-math.inf if s == 0 else a[s] + math.log(s)) for s in range(M + 1)])
+    W = np.full(N + 1, -math.inf)
+    W[0] = 0.0
+    for r in range(1, N + 1):
+        top = min(r, M)
+        terms = la[1:top + 1] + W[r - 1::-1][:top]
+        mx = terms.max()
+        W[r] = mx + math.log(np.exp(terms - mx).sum()) - math.log(r)
+    val = math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + W[N]
+    return min(0.0, val) if tilt == 0.0 else val
 
 
 def log_prob_bip(N: int, p, t: int | None = None, logC: list[float] | None = None,
-                 stats: dict | None = None) -> float:
+                 stats: dict | None = None, t_hi: int | None = None, tilt: float = 0.0) -> float:
     """`log P_N(E_bip)`: the probability that the components of `G(N, p)` can be
     grouped into two sides of sizes `t` and `N − t` (`t = ⌈N/2⌉` by default),
     exactly, as the sum of `P(λ)` over the partitions `λ ⊢ N` with a sub-multiset
@@ -873,22 +902,29 @@ def log_prob_bip(N: int, p, t: int | None = None, logC: list[float] | None = Non
     (largest first) with the set of achievable sub-sums as a bitset; a branch
     whose bitset already contains `t` is closed by the coefficient table (every
     completion qualifies), a part larger than `t` closes a branch at zero.
-    `stats`, if given, receives the number of memo states."""
+    `stats`, if given, receives the number of memo states.
+    With `t_hi` the event is the *window* form `E_win`: a sub-multiset summing
+    to some `x ∈ [t, t_hi]` (one side between `t` and `t_hi` vertices); with
+    `tilt = τ` the sum is `E[1[E] e^{τ κ}]` over the number of components `κ`
+    (item 06's combined count; not a probability when `τ ≠ 0`)."""
     if t is None:
         t = (N + 1) // 2
-    if not 0 <= t <= N:
-        raise ValueError("need 0 <= t <= N")
+    if t_hi is None:
+        t_hi = t
+    if not 0 <= t <= t_hi <= N:
+        raise ValueError("need 0 <= t <= t_hi <= N")
     if N == 0:
         return 0.0
-    a = _part_weights(N, p, logC)
-    smax = max(t, N - t)
+    a = _part_weights(N, p, logC, tilt)
+    smax = max(t_hi, N - t)
     W = _coefficient_table(N, a, smax)
     memo: dict[tuple[int, int, int], float] = {}
-    full_t = (1 << (t + 1)) - 1
+    full_t = (1 << (t_hi + 1)) - 1
+    window = full_t & ~((1 << t) - 1)
 
     def F(r: int, s: int, B: int) -> float:
         # partitions of r into parts <= s, weighted, given the achievable sums B
-        if B >> t & 1:
+        if B & window:
             return W[r][s]
         lo = t - r
         Bm = B & full_t
@@ -926,7 +962,8 @@ def log_prob_bip(N: int, p, t: int | None = None, logC: list[float] | None = Non
         sys.setrecursionlimit(old)
     if stats is not None:
         stats["states"] = len(memo)
-    return min(0.0, math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + inner)
+    val = math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + inner
+    return min(0.0, val) if tilt == 0.0 else val
 
 
 def log_product_bound(N: int, p, t: int | None = None) -> float:
@@ -999,3 +1036,369 @@ def log_prob_bip_mc(N: int, p, t: int | None = None, samples: int = 10000, seed:
         hits += _subset_sum(sizes, t)
     phat = hits / samples
     return (math.log(phat) if hits else -math.inf), math.sqrt(phat * (1 - phat) / samples)
+
+
+# --- item 06: the constants β_sep, β_closed, β_comb on G(n, c/n) ---------------
+#
+# Exponents are per vertex of n, in nats; β = k/n; c′ = c(1 − β) is the mean
+# degree of G − S; q(x) = 1 − e^{−cx}.  Every "rate" argument is a function
+# I(c′) (or I(c′, u)) giving the exponential rate in N of the inner event; the
+# three sources are the fitted rate (item 05 / the grids of item 06), the
+# bracket's ends and the cited LDP rate of the largest component.
+
+LN2 = math.log(2)
+
+
+def H2(b: float) -> float:
+    """Binary entropy in nats."""
+    if b <= 0.0 or b >= 1.0:
+        return 0.0
+    return -b * math.log(b) - (1 - b) * math.log(1 - b)
+
+
+def H3(a: float, r: float, s: float) -> float:
+    """Entropy of (a, r, s) in nats, zeros allowed."""
+    out = 0.0
+    for x in (a, r, s):
+        if x > 0:
+            out -= x * math.log(x)
+    return out
+
+
+def ldp_K(rho: float, u: float) -> float:
+    if u <= 0:
+        return 0.0
+    return u * math.log(rho * u / (1 - math.exp(-rho * u))) - rho * u * u / 2
+
+
+def ldp_L(c: float, u: float) -> float:
+    if u >= 1:
+        return (c - math.log(c)) - c / 2
+    return (1 - u) * math.log(1 - u) + (c - math.log(c)) * u - c * u * u / 2
+
+
+def ldp_x_k(c: float, k: int) -> float:
+    """The solution of `x/(1 − e^{−cx}) = 1 − k x` on `(0, 1/k)`, or 0."""
+    lo, hi = 1e-12, 1.0 / k - 1e-12
+    f = lambda x: x / (1 - math.exp(-c * x)) - (1 - k * x)
+    if f(lo) > 0:
+        return 0.0
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if f(mid) > 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def ldp_rate(c: float, u: float = 0.5) -> float:
+    """`I_c^β(u)`: the large-deviation rate (scale `N`) for the largest
+    component of `G(N, c/N)` to have `uN` vertices, in O'Connell's (1998) form
+    as restated by Puhalskii (2005, *Ann. Probab.* 33, (2.13)–(2.14)):
+    `I = k K_c(u) + L_c(k u)` on `[x_k, x_{k−1}]`.  Ported from item 01's
+    `rate_check.py`; `P(no component > uN) ≤ e^{−(I(u) − o(1)) N}` for
+    `u` below the typical giant, zero at and above it.  Checked by item 05
+    against the exact finite computation to `0.0003–0.002` at seven `c`."""
+    if c <= 0:
+        return 0.0
+    giant = _giant(c)
+    if u >= giant:
+        return 0.0
+    if u <= 0:
+        return ldp_L(c, max(0.0, 1 - 1 / c))
+    k = 1
+    while k <= 10000:
+        xk = ldp_x_k(c, k)
+        xk1 = 1.0 if k == 1 else ldp_x_k(c, k - 1)
+        if xk <= u <= xk1 + 1e-15:
+            return max(0.0, k * ldp_K(c, u) + ldp_L(c, k * u))
+        k += 1
+    return float("nan")
+
+
+def _giant(c: float) -> float:
+    if c <= 1:
+        return 0.0
+    lo, hi = 1e-12, 1 - 1e-12
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if 1 - mid - math.exp(-c * mid) > 0:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2
+
+
+def rate_bracket(cp: float) -> tuple[float, float]:
+    """The plan's analytic bracket on the rate of `E_bip` at mean degree `c′`:
+    `[c′/4 − ln 2, min(c′/4, thinning)]` (lower end from the product bound,
+    upper from one fixed bipartition and the thinning route); item 05 found the
+    truth near the lower end plus the component gain."""
+    lower = max(0.0, cp / 4 - LN2)
+    thinning = cp / 2 - LN2 + LN2 * math.log(2 * LN2 / cp) if cp > 2 * LN2 else 0.0
+    upper = min(cp / 4, thinning) if cp > 2 * LN2 else 0.0
+    return lower, max(lower, upper)
+
+
+def pair_exponent_beta(c: float, beta: float) -> float:
+    """The pair count's exponent per vertex as a function of `β`:
+    `H(β) − (1 − β)(c′/4 − ln 2)`, `c′ = c(1 − β)`; equal to
+    `gnp_pair_rate((1 − β)/2, c)`."""
+    cp = c * (1 - beta)
+    return H2(beta) - (1 - beta) * (cp / 4 - LN2)
+
+
+def sep_exponent(c: float, beta: float, rate) -> float:
+    """The separator count's exponent `H(β) − (1 − β) I(c(1 − β))`, with `I`
+    the rate of the inner event (`E_bip` or `E_relax`) in `N`."""
+    return H2(beta) - (1 - beta) * rate(c * (1 - beta))
+
+
+def _root_beta(f, tol: float = 1e-7) -> float:
+    """The smallest `β ∈ (0, 1)` with `f(β) ≥ 0`, `f` scanned upward from
+    `β = 0⁺`; 0 if `f(0⁺) ≥ 0` (the count excludes nothing)."""
+    lo = 1e-6
+    if f(lo) >= 0:
+        return 0.0
+    step = 1e-3
+    b = lo
+    while b < 1 - 1e-9:
+        nb = min(b + step, 1 - 1e-9)
+        if f(nb) >= 0:
+            for _ in range(80):
+                mid = (b + nb) / 2
+                if f(mid) >= 0:
+                    nb = mid
+                else:
+                    b = mid
+                if nb - b < tol:
+                    break
+            return (b + nb) / 2
+        b = nb
+    return 1.0
+
+
+def beta_sep(c: float, rate=ldp_rate) -> float:
+    """`β_sep(c)`: the root of the separator exponent for the given rate
+    function.  With `rate = lambda cp: rate_bracket(cp)[0]` it is `β*(c)`
+    exactly (the lower end is the pair count's own rate); with `ldp_rate` it
+    is the cited column; with a fitted rate the fitted column."""
+    return _root_beta(lambda b: sep_exponent(c, b, rate))
+
+
+def exponent_slope_at(c: float, beta: float, h: float = 1e-4) -> float:
+    """`d/dβ` of the pair exponent at `β` (nats per unit of `β`), the
+    conversion from a gain in nats per vertex to a gain in `β`."""
+    return (pair_exponent_beta(c, beta + h) - pair_exponent_beta(c, beta - h)) / (2 * h)
+
+
+# closed pairs ------------------------------------------------------------------
+
+def _log_q_frac(c: float, x: float) -> float:
+    """`ln q(x) = ln(1 − e^{−cx})`, `−∞` at `x = 0`."""
+    if x <= 0:
+        return -math.inf
+    return math.log(-math.expm1(-c * x))
+
+
+def closed_exponent(a: float, r: float, s: float, c: float, with_q: bool = True) -> float:
+    """Exponent per vertex of the closed-pair first moment at side fractions
+    `(a, r, s)`, `a + r + s = 1`: `H(a, r, s) − c a r + s ln q(a) + s ln q(r)`.
+    Derivation (L2 of §2 and the Bernoulli edges): ordered triples `(A, R, S)`
+    with no `A–R` edge, probability `(1 − p)^{|A||R|} → e^{−c a r n}`, and every
+    vertex of `S` adjacent to `A` and to `R` — for distinct `v ∈ S` these
+    events involve disjoint edge sets, so given `(A, R)` they are independent
+    with probability `(1 − (1 − p)^{|A|})(1 − (1 − p)^{|R|}) → q(a) q(r)`.
+    `with_q=False` drops the two `q` terms (used to pin the exponent to the
+    pair exponent at the corner `a = r = (1 − β)/2`, `s = β`)."""
+    out = H3(a, r, s) - c * a * r
+    if with_q and s > 0:
+        out += s * (_log_q_frac(c, a) + _log_q_frac(c, r))
+    return out
+
+
+def closed_rate(beta: float, c: float, grid: int = 60) -> tuple[float, float, float]:
+    """`sup` of the closed exponent over the admissible region
+    `a, r ≥ (1 − β)/2`, `s = 1 − a − r ∈ [0, β]` (L2: sides at least the
+    forced sizes, `|S| ≤ k`); returns `(value, a, r)`.  A grid over the
+    triangle followed by a local refinement from the best grid point."""
+    lo = (1 - beta) / 2
+    best = (-math.inf, lo, lo)
+    for i in range(grid + 1):
+        a = lo + (1 - 2 * lo) * i / grid
+        for j in range(grid + 1 - i):
+            r = lo + (1 - 2 * lo) * j / grid
+            s = max(0.0, 1 - a - r)
+            v = closed_exponent(a, r, s, c)
+            if v > best[0]:
+                best = (v, a, r)
+    try:
+        from scipy.optimize import minimize
+    except ImportError:  # pragma: no cover
+        return best
+    def neg(x):
+        a, r = x
+        s = 1 - a - r
+        if a < lo or r < lo or s < -1e-12:
+            return 1e9
+        return -closed_exponent(a, r, max(s, 0.0), c)
+    res = minimize(neg, [best[1], best[2]], method="Nelder-Mead",
+                   options={"xatol": 1e-9, "fatol": 1e-12, "maxiter": 4000})
+    if -res.fun > best[0]:
+        a, r = res.x
+        best = (-res.fun, a, r)
+    return best
+
+
+def beta_closed(c: float) -> float:
+    """`β_closed(c)`: the root in `β` of `closed_rate(β, c)`."""
+    return _root_beta(lambda b: closed_rate(b, c, grid=40)[0], tol=1e-6)
+
+
+def log_closed_count(n: int, k: int, p: float) -> float:
+    """`log E[X₃]` on `G(n, p)`: the finite closed-pair count
+    `Σ_{a ≥ t, r ≥ N − t, a + r + s = n, s ≤ k} n!/(a! r! s!) (1 − p)^{ar}
+    (1 − (1 − p)^a)^s (1 − (1 − p)^r)^s`, ordered pairs `(A, R)` (L2's sizes:
+    `N = n − k`, `t = ⌈N/2⌉`)."""
+    N, t = forced_sizes(n, k)
+    lq_ = _log_q(p)
+    terms = []
+    for s in range(0, k + 1):
+        for a in range(t, n - s + 1):
+            r = n - s - a
+            if r < N - t:
+                continue
+            v = (math.lgamma(n + 1) - math.lgamma(a + 1) - math.lgamma(r + 1) - math.lgamma(s + 1)
+                 + a * r * lq_)
+            if s > 0:
+                if a == 0 or r == 0:
+                    continue  # a separator vertex cannot see an empty side
+                v += s * (math.log(-math.expm1(a * lq_)) + math.log(-math.expm1(r * lq_)))
+            terms.append(v)
+    return _lse(terms)
+
+
+# the combined count ----------------------------------------------------------------
+#
+# Closed pairs grouped by their separator S* (|S*| = s′ ≤ k).  Given G − S, the
+# empty bipartitions (A, R) with |A| ∈ [t, t + k − s′] (the window, so that
+# |R| ≥ N − t) are 2-colourings of the components, at most 2^κ of them, and
+# each is closed with probability Π_{v ∈ S} q_{|A|} q_{|R|} ≤ Qmax(s′)^{s′}
+# (edges from S to G − S are independent of G − S).  So
+#
+#   P(pw ≤ k) ≤ Σ_{s′ ≤ k} C(n, s′) Qmax(s′)^{s′} E_{N′ = n − s′}[1[E_win] 2^κ],
+#
+# with E_win relaxed, if wanted, to "no component larger than t + k − s′".
+
+def _log_qmax(n: int, k: int, s: int, p: float) -> float:
+    """`max` over the window of `ln[(1 − (1−p)^a)(1 − (1−p)^r)]`, attained at the
+    most balanced split (`ln q` is concave)."""
+    N, t = forced_sizes(n, k)
+    Np = n - s
+    lq_ = _log_q(p)
+    best = -math.inf
+    for a in range(t, Np - (N - t) + 1):
+        r = Np - a
+        if a == 0 or r == 0:
+            continue
+        v = math.log(-math.expm1(a * lq_)) + math.log(-math.expm1(r * lq_))
+        best = max(best, v)
+    return best
+
+
+def log_combined_count(n: int, k: int, p: float, form: str = "rel", s_min: int = 0,
+                       logC_cache: dict | None = None) -> float:
+    """`log` of the combined first moment above, with the inner factor exact:
+    `form="rel"` uses the relaxed window event (`log_prob_rel_fast`, `O(N²)`),
+    `form="bip"` the bipartition window event (`log_prob_bip` with `t_hi`,
+    exact but slow above `N ≈ 120`).  `s_min` restricts the sum to
+    `s′ ≥ s_min` (a lower bound on the count, for timing)."""
+    N, t = forced_sizes(n, k)
+    terms = []
+    for s in range(s_min, k + 1):
+        Np = n - s
+        t_hi = Np - (N - t)
+        key = Np
+        if logC_cache is not None and key in logC_cache:
+            lc = logC_cache[key]
+        else:
+            lc = log_connected(Np, p)
+            if logC_cache is not None:
+                logC_cache[key] = lc
+        if form == "rel":
+            inner = log_prob_rel_fast(Np, p, t_hi, lc, tilt=LN2)
+        elif form == "bip":
+            inner = log_prob_bip(Np, p, t, lc, t_hi=t_hi, tilt=LN2)
+        else:
+            raise ValueError(form)
+        v = lchoose(n, s) + inner
+        if s > 0:
+            v += s * _log_qmax(n, k, s, p)
+        terms.append(v)
+    return _lse(terms)
+
+
+def lchoose(n: int, k: int) -> float:
+    if k < 0 or k > n:
+        return -math.inf
+    return math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1)
+
+
+def combined_exponent(c: float, beta: float, s: float, tilted_rate) -> float:
+    """Per-vertex exponent of the combined count's `s′ = s n` term:
+    `H(s) + 2 s ln q((1 − s)/2) − (1 − s) J(c(1 − s), u)`, with
+    `u = ((1 + β)/2 − s)/(1 − s)` the largest allowed component as a fraction
+    of `N′` and `J(c′, u)` the rate of `E[1[no component > uN′] 2^κ]` in `N′`
+    (fitted; there is no LDP to cite for the tilted event)."""
+    if s > beta + 1e-12:
+        return -math.inf
+    u = ((1 + beta) / 2 - s) / (1 - s)
+    out = H2(s) - (1 - s) * tilted_rate(c * (1 - s), u)
+    if s > 0:
+        out += 2 * s * _log_q_frac(c, (1 - s) / 2)
+    return out
+
+
+def combined_rate(c: float, beta: float, tilted_rate, points: int = 41) -> tuple[float, float]:
+    """`sup_{s ∈ [0, β]}` of `combined_exponent`; returns `(value, s)`."""
+    best = (-math.inf, 0.0)
+    for i in range(points + 1):
+        s = beta * i / points
+        v = combined_exponent(c, beta, s, tilted_rate)
+        if v > best[0]:
+            best = (v, s)
+    return best
+
+
+def beta_combined(c: float, tilted_rate) -> float:
+    """`β_comb(c)`: the root of `combined_rate(c, β)`."""
+    return _root_beta(lambda b: combined_rate(c, b, tilted_rate)[0], tol=1e-6)
+
+
+# the published upper line --------------------------------------------------------
+
+def edwards_mcdermid_g(dmax: int, alpha: float = 1 / 6) -> list[float]:
+    """`g_α(d)` of Edwards & McDermid (2015, *Algorithmica* 72:940, p. 6):
+    `g(2) = 0`, `g(3) = α`, `d g(d) = (d − 2) g(d − 1) + g(d − 2) + 1`."""
+    g = [0.0] * (dmax + 1)
+    if dmax >= 3:
+        g[3] = alpha
+    for d in range(4, dmax + 1):
+        g[d] = ((d - 2) * g[d - 1] + g[d - 2] + 1) / d
+    return g
+
+
+def edwards_mcdermid_poisson(c: float, dmax: int = 200) -> float:
+    """`Σ_{d ≥ 3} P(Poisson(c) = d) g_{1/6}(d)`: Corollary 5.2 of Edwards &
+    McDermid (2015) on the limiting degree distribution of `G(n, c/n)`, the
+    published upper line `pw/n ≤ …` whp (0.183, 0.458, 0.656 at c = 3, 6, 10;
+    `reports/random_graph_pathwidth_literature_2.md` §3.3)."""
+    g = edwards_mcdermid_g(dmax)
+    out = 0.0
+    lp = -c
+    for d in range(0, dmax + 1):
+        if d >= 3:
+            out += math.exp(lp) * g[d]
+        lp += math.log(c) - math.log(d + 1)
+    return out

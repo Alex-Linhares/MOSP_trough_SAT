@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 5/13 SOLVED
+Current: 6/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -487,3 +487,103 @@ given the analogue of `C_j` for a random clique cover, which is the
 thing to compute. Item 08 can state the separator inequality
 `P(pw ≤ k) ≤ C(n, k) P_N(E_bip)` with `P_N(E_bip)` defined by the
 partition sum of §5.1.
+
+---
+
+## Iteration 6 — 2026-11-01 17:40
+
+Item 06, `β_sep(c)`, `β_closed(c)` and the combination against `β*(c)` and
+the fitted slopes; the threshold. **Done.** Deliverable:
+`reports/separator_moment.md` §6 (method for the three counts, the rate
+grid against item 05 and the LDP, the constants table at ten `c`, the
+threshold proposition with its hypothesis and citation status and the
+`N ≤ 400` check, the finite form in stacks, the figure, the kill verdict,
+corrections / non-claims); `learning/separator_moment.py` extended
+(`ldp_rate` ported from `rate_check.py`, `rate_bracket`,
+`pair_exponent_beta`, `sep_exponent`, `beta_sep`, `exponent_slope_at`,
+`closed_exponent`, `closed_rate`, `beta_closed`, `log_closed_count`,
+`log_combined_count`, `combined_exponent`, `combined_rate`, `beta_combined`,
+`edwards_mcdermid_g` / `edwards_mcdermid_poisson`, `log_prob_rel_fast`; a
+window `t_hi` and a tilt in `log_prob_bip` / `log_prob_rel`);
+`reports/scratch/separator_moment/06_constants/` (`run.py` with stages
+`check`, `grid`, `constants`, `threshold`, `finite`, `draw`; `rate_grid.csv`,
+`rate_fits.csv`, `constants.csv`, `threshold.csv`, `finite.csv`,
+`finite_floors.csv`, `check.log`, `run.log`, `beta_vs_c.png`);
+`tests/test_separator_moment.py` (10 new tests, 70 in the module).
+
+### Completed
+
+- **Kill criterion (the brief's): met.** `β_sep(fitted) − β* = +0.0113`
+  at `c = 6` and `+0.0038` at `c = 10`, below `0.02` at both: **the
+  separator route is closed for the headline constants**, as §3.5 and
+  §5.5 predicted. Beside it: closed pairs `+0.0097 / +0.0082` (the
+  planner's `0.1803 / 0.3453` reproduced exactly), the combined count
+  `+0.0076 / +0.0080`; no count or maximum of counts reaches `0.02`.
+- **The pre-registered separate findings.** Near the threshold the
+  separator count gains `+0.029` at `c = 3` (32% of the gap to the fitted
+  slope `0.099`; the plan's bracket was `[0.009, 0.056]`, the answer
+  `0.037`) and `+0.022` at `c = 4` (23%), and is a positive constant at
+  `c = 2, 2.5` (`0.006, 0.019`) where `β* = 0`. The threshold moves from
+  `4 ln 2` to `2 ln 2`, stated as a proposition conditional on the cited
+  LDP upper bound (O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3), p. 8 of
+  the arXiv version; AKP 2021 Cor. 1.3), proved in three lines from L1′;
+  the hypothesis is cited, not verified by us. Numerically at `N ≤ 400`
+  the relaxed rate is bounded away from zero at `c = 2, 2.5` (fits
+  `0.0375, 0.1025` against cited `0.0362, 0.1006`), undecided at `c = 1.5`
+  (finite `0.0046` still falling, limit `0.0015`), and falls like `1/N`
+  at and below `2 ln 2`.
+- **Three rates, three columns.** The fitted rate (log-corrected fits over
+  `N = 100–400` on a 77-point `c′` grid) reproduces item 05's seven values
+  to `10⁻⁴` and the LDP to `0.002` for `c′ ≤ 10`; fitted and cited
+  `β_sep` agree to `0.0006` at every `c`. The bracket's lower end gives
+  `β*` *exactly* (an identity, tested), so the bracket is `[β*, β_opt]`
+  with `β_opt` far above the truth (`0.248` against `0.182` at `c = 6`).
+- **The closed count's supremum sits at the corner at every `c`**, so its
+  gain is the `q` terms alone, `2β ln q((1 − β)/2)` nats: a dense-side
+  gain (`+0.008–0.010` at `c = 6–12`) where the separator's is a sparse-
+  side one; the separator wins at `c ≤ 6`, the closed count at `c ≥ 8`.
+- **The combined count is valid and not the best**: bounding the balanced
+  2-colourings of the components by `2^κ` costs more than the separator
+  count gained (tilted-minus-untilted rate `0.161, 0.098, 0.051, 0.028,
+  0.009, 0.003` at `c′ = 3 … 10` against gains `0.126, 0.073, 0.043, 0.026,
+  0.009, 0.003`), so it falls below the closed count everywhere and below
+  `β*` at `c ≤ 4`. The best valid first moment per `c` is
+  `max(β_sep, β_closed)`: `0.037, 0.083, 0.182, 0.272, 0.345` at
+  `c = 3, 4, 6, 8, 10`, 32%, 23%, 12%, 10%, 11% of the gap to the slopes;
+  the sandwich with Edwards & McDermid's published upper line (owner's
+  note; reproduced from the recurrence: `0.183, 0.458, 0.656`) is
+  `[0.037, 0.183]`, `[0.182, 0.458]`, `[0.345, 0.656]`.
+- **In stacks** (`n = 60, 120`): the separator count leads by 2–3 stacks
+  at `c = 3–4`, the closed count ties or leads by one at `c ≥ 6`
+  (`P(pw ≤ 44) ≤ 0.10` at `(120, 10)` against solver floors of 41–42);
+  the window and relaxed forms of the combined count agree to 0.01
+  decades at `n = 60`.
+- **A correction to the loop's own prediction**: §3.5's typical-instance
+  instrument put the closed count's merge at `≤ 0.003` in `β` at `c = 10`;
+  the constant gains `0.008`. The first moment is decided in the
+  rare-instance regime (§3.3's two maximisers); the separator prediction
+  held.
+- Checks on record: window/tilt recursions against every labelled graph
+  at `N ≤ 6` (`3 × 10⁻¹³`), fast relaxed recursion against the table one,
+  finite closed count against the enumeration of closed pairs at `n ≤ 6`
+  and Monte Carlo at `n = 7, 8`. Compute: about 0.05 core-hours (0.2
+  budgeted). Figure: two panels, palette validated (six slots pass; the
+  contrast warning relieved by the legend).
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,726 passed / 2 skipped / 1 xfailed in 4:20, the 10 new tests among them; pathwidth_solver 123 passed in 6:26; paper 71 pages, no undefined references; the one-minute load was below 2).
+
+### Blockers
+
+None. The one-minute load was below 2 throughout.
+
+### Next
+
+Item 07 (the MOSP version): the closed-pair count on random clique covers
+by inclusion–exclusion over `S` and the component flips; there is no LDP
+to quote, and §6.3 (3) says a `2^κ` bound on the colourings gives the
+separator's gain back, so the cover version should count the closed pair
+(the `q` terms, which dominate at `c ≥ 8` here) before it attempts a
+component law. Item 08 can state the separator inequality with
+`P_N(E_relax)`, the threshold proposition of §6.4 verbatim with its
+hypothesis, and the closed-pair count's exponent; item 11's ledger gets
+the closed floor as the best count at `c = 10`. Item 12 should carry
+Edwards & McDermid as the upper line (now in `edwards_mcdermid_poisson`).

@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-01 17:11:02",
+  "updated": "2026-11-01 17:50:32",
   "phase": "tests",
-  "started": "2026-11-01 16:40:21",
-  "item": "05 The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)`."
+  "started": "2026-11-01 17:21:48",
+  "item": "06 `\u03b2_sep(c)` and `\u03b2_closed(c)`: the constants, against `\u03b2*(c)` and the slopes."
 }

@@ -23,3 +23,8 @@
 [2026-11-01 16:40:21] claude session it05 (cap 4.00 h) -> session_it05.log
 [2026-11-01 17:11:02] session it05: ok (exit 0, 37 tool calls)
 [2026-11-01 17:21:48] tests passed: GATE PASS
+[2026-11-01 17:21:48] committed 268eeeea4: 05 The inner probability, exactly: `P(G(N, p)` has a balanced empty bi
+[2026-11-01 17:21:48] === iteration 6: 06 `β_sep(c)` and `β_closed(c)`: the constants, against `β*(c)` and the slopes.
+[2026-11-01 17:21:48] claude session it06 (cap 4.00 h) -> session_it06.log
+[2026-11-01 17:50:32] session it06: ok (exit 0, 38 tool calls)
+[2026-11-01 18:01:16] tests passed: GATE PASS

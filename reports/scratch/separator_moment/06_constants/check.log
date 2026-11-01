@@ -1,0 +1,10 @@
+window/tilt bipartition recursion = enumeration of every labelled graph at N <= 6 (every window, tilt 0 and ln 2, p in {0.15, 0.4}): max |diff| 2.8e-13  ok
+log_prob_rel_fast = log_prob_rel at N <= 6 (every M, both tilts) and at N = 60, 120, 200: max |diff| 5.7e-14  ok
+finite closed-pair count = enumeration of closed pairs over every labelled graph at n <= 6 (every k, p in {0.2, 0.5}): max |diff| 3.0e-13  ok
+  Monte Carlo n=7 k=2 p=0.3: E[X3] = 9.0200 ± 0.0487 (20,000 graphs) against the formula 9.1204 (2.1 s.e.)
+  Monte Carlo n=8 k=3 p=0.3: E[X3] = 17.2953 ± 0.0798 (20,000 graphs) against the formula 17.3606 (0.8 s.e.)
+  Monte Carlo n=8 k=2 p=0.5: E[X3] = 0.7607 ± 0.0137 (20,000 graphs) against the formula 0.7578 (0.2 s.e.)
+beta_sep with the bracket's lower end = beta* at c = 2, 3, 4, 6, 10, 20 (to 2e-6)  ok
+Edwards-McDermid Cor 5.2 on Poisson degrees: [0.183, 0.458, 0.656] at c = 3, 6, 10  ok
+pair_exponent_beta = gnp_pair_rate; closed exponent without the q terms at the corner = pair exponent  ok
+check: 18 s

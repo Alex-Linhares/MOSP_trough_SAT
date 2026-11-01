@@ -1626,3 +1626,400 @@ at `k = pw` on typical instances) is consistent with the `0.004` at `β*`.
 * Nothing about covers (item 07): there is no LDP to quote there and the
   inner probability of a random clique cover minus a customer set is not
   `G(N, p)`.
+
+---
+
+## 6. `β_sep(c)`, `β_closed(c)` and `β_comb(c)`: the constants, against `β*(c)` and the slopes (item 06, 2026-11-01)
+
+**Question (D of the brief).** What constant does the separator first
+moment give on `G(n, c/n)` — the root `β_sep(c)` of
+`H(β) − (1 − β) I(c(1 − β)) = 0`, `I(c′)` the rate in `N` of the inner event —
+what does the closed-pair count give (`β_closed`), what does a combination
+give (`β_comb`), how do the three compare with `β*(c)` and with the fitted
+slopes at `c = 2–20`, and does the method's threshold move from `4 ln 2`?
+
+**Events counted.** Three first moments, each a valid upper bound on
+`P(pw(G(n, c/n)) ≤ βn)` by L1′ and L2 of §2 and the union bound:
+
+1. the **separator count** `C(n, k) · P_N(E_bip)`, `N = n − k`, and its
+   relaxation with `P_N(E_relax)`; item 05 found the two inner
+   probabilities equal in rate to `N = 120`, and the rate used here is the
+   relaxed one (exact to `N = 400`, fitted beyond; the cited LDP rate is for
+   `E_relax`);
+2. the **closed-pair count** `E[X₃]`: ordered triples `(A, R, S)` partitioning
+   `V`, `|A| ≥ t`, `|R| ≥ N − t`, `|S| ≤ k`, no `A–R` edge, every vertex of `S`
+   adjacent to `A` and to `R` (`S = N(A) ∩ N(R)`, §2.3);
+3. the **combined count**: closed pairs grouped by their separator `S*`,
+   `|S*| = s′ ≤ k`. Given `G − S`, the empty bipartitions `(A, R)` with
+   `|A| ∈ [t, t + k − s′]` (so that `|R| ≥ N − t`) are 2-colourings of the
+   components of `G − S`, at most `2^κ` of them (`κ` the number of
+   components), and each is closed with probability
+   `Π_{v∈S} q_{|A|} q_{|R|} ≤ Qmax(s′)^{s′}` (`q_x = 1 − (1 − p)^x`; the edges
+   from `S` to `G − S` are independent of `G − S`, and for distinct `v ∈ S`
+   they are disjoint edge sets). Hence
+
+       P(pw ≤ k) ≤ Σ_{s′ ≤ k} C(n, s′) · Qmax(s′)^{s′} · E_{N′ = n − s′}[ 1[E_win] · 2^κ ],
+
+   with `E_win` the window bipartition event (one side between `t` and
+   `t + k − s′` vertices; `E_bip` at `s′ = k`) or its relaxation (no
+   component larger than `t + k − s′`). The inner factor is a *tilted*
+   partition sum, computed exactly by the recursions of §5.1 with every
+   part weighted by 2 (`tilt = ln 2` in `log_prob_bip` / `log_prob_rel`).
+
+**Size range.** Asymptotic constants (roots of exponents per vertex);
+fitted rates from exact inner sums at `N = 100–400`; the threshold check at
+`N ≤ 400`; the finite form at `n = 60, 120`, `c = 3, 4, 6, 8, 10`, every `k`
+around the floors. Checks on record (`check.log`): the window and tilted
+recursions against the enumeration of every labelled graph at `N ≤ 6`
+(every window, both tilts; max difference `3 × 10⁻¹³`); the fast relaxed
+recursion against the table one at `N ≤ 6` and `N = 60, 120, 200`
+(`6 × 10⁻¹⁴`); the finite closed count against the enumeration of closed
+pairs over every labelled graph at `n ≤ 6` (`3 × 10⁻¹³`) and Monte Carlo
+at `n = 7, 8` (20,000 graphs each: `2.1, 0.8, 0.2` standard errors);
+`β_sep` with the bracket's lower end equals `β*` at six `c` (to `2 × 10⁻⁶`);
+Edwards & McDermid's Corollary 5.2 reproduces `0.183, 0.458, 0.656`.
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/06_constants/run.py`
+(stages `check`, `grid`, `constants`, `threshold`, `finite`, `draw`; 18 + 8 +
+30 + 4 + 5 + 2 s, the grid and the finite stage on 8 workers at nice 19;
+about 0.05 core-hours against 0.2 budgeted). Outputs beside it:
+`rate_grid.csv` (every `(c′, N, u)`), `rate_fits.csv` (the fitted rates per
+`c′`), `constants.csv` (the table), `threshold.csv`, `finite.csv` and
+`finite_floors.csv`, `check.log`, `run.log`, `beta_vs_c.png`. Tests:
+`python3 -m pytest tests/test_separator_moment.py` (70 tests, 10 new).
+
+### 6.1 Method
+
+**(a) `β_sep(c)` from three rates.** `sep_exponent(c, β, I) = H(β) − (1 − β) I(c(1 − β))`
+and `beta_sep(c, I)` its root, for three rate functions `I(c′)`:
+
+* **fitted**: the log-corrected fit `−log P_N(E_relax) = I N + b log N + a`
+  over `N = 100, 150, …, 400` (item 05's `logfit`, the form a polynomial
+  prefactor gives), on a grid of 77 values `c′ = 1.00, 1.25, …, 20.00`,
+  linearly interpolated between them (`rate_fits.csv`, column
+  `fit_rel_half`; `load_fitted` in `run.py`);
+* **bracket**: the plan's two analytic ends, `c′/4 − ln 2` (the product
+  bound, i.e. the pair count's own rate) and `min(c′/4, thinning)`, each
+  giving a root; the lower end gives `β*(c)` *exactly*, because
+  `H(a, a, 1 − 2a) − c a² = H(β) − (1 − β)(c′/4 − ln 2)` at `a = (1 − β)/2`
+  (`pair_exponent_beta`; tested);
+* **cited**: `I_{c′}(½)`, the large-deviation rate of the largest component
+  of `G(N, c′/N)` at `u = ½` in O'Connell's form as restated by Puhalskii
+  (2005, *Ann. Probab.* 33, Cor. 2.4(3) and (2.13)–(2.14); §1.3 Table B),
+  ported from item 01's `rate_check.py` into `ldp_rate`, whose value item 05
+  checked against the exact computation to `0.0003–0.002` at seven `c′`.
+
+**(b) `β_closed(c)`.** The closed-pair exponent per vertex at side
+fractions `(a, r, s)`, `a + r + s = 1`, is
+
+    g_closed(a, r, s) = H(a, r, s) − c a r + s ln q(a) + s ln q(r),   q(x) = 1 − e^{−cx}:
+
+the multinomial counts the ordered triples; `(1 − p)^{|A||R|} → e^{−c a r n}`
+is the empty-pair probability; and given `(A, R)` the events "`v` sees `A`
+and `v` sees `R`" for the `s n` vertices of `S` are independent (disjoint
+edge sets) with probability `(1 − (1 − p)^{an})(1 − (1 − p)^{rn}) → q(a) q(r)`.
+`closed_rate(β, c)` is its supremum over the admissible region of L2
+(`a, r ≥ (1 − β)/2`, `s = 1 − a − r ∈ [0, β]`; a grid over the triangle then
+Nelder–Mead), and `β_closed(c)` the root of the supremum. Checks: without
+the `q` terms the exponent at the corner `a = r = (1 − β)/2`, `s = β` is
+the pair exponent (tested); the finite count
+`Σ n!/(a! r! s!) (1 − p)^{ar} q_a^s q_r^s` over the admissible integer sizes
+(`log_closed_count`) equals the enumeration of `closed_pairs` over every
+labelled graph at `n ≤ 6` for every `k` (§6's check). **At every `c` of the
+table the supremum sits at the corner** (`a = r = (1 − β)/2`, `s = β`;
+`constants` stage), so the closed count's gain over the pair count is the
+`q` terms alone: `2β ln q((1 − β)/2)` nats per vertex at `β*`
+(`−0.027` at `c = 10`, `−0.033` at `c = 6`, `−0.005` at `c = 3`), the
+probability that every separator vertex of the planted pair sees both
+sides.
+
+**(c) `β_comb(c)`.** The combined count's `s′`-term exponent per vertex is
+
+    g_comb(s′; β) = H(s′) + 2 s′ ln q((1 − s′)/2) − (1 − s′) J(c(1 − s′), u),   u = ((1 + β)/2 − s′)/(1 − s′),
+
+where `J(c′, u)` is the rate in `N′` of `E[1[no component > uN′] 2^κ]`
+(`u` is the largest allowed component as a fraction of `N′`; at `s′ = β`,
+`u = ½`). `J` is **fitted only**: there is no LDP to cite for the tilted
+event, and the fit is the same log-corrected fit over `N = 100–400` on the
+grid `c′ × u ∈ {0.5, 0.55, …, 0.8}` (`rate_fits.csv`, columns
+`fit_tilted_u*`), bilinearly interpolated. `combined_rate(c, β)` is the
+supremum over `s′ ∈ [0, β]` on 42 points and `β_comb` its root; at every
+`c` in the table the supremum is at `s′ = β` (`run.log`, the profiles at
+`c = 3, 6, 10`: the exponent rises monotonically in `s′` to `0` at `s′ = β`).
+
+### 6.2 The rates on the grid, against item 05 and the LDP
+
+(`rate_fits.csv`; `fit_rel(½)` is the fitted rate used for the "fitted"
+column; `item05` is item 05's `logfit_rel_slope_N100` at its seven `c′`.)
+
+| `c′` | fitted `I(½)` | LDP `I(½)` | fitted − LDP | item 05 | tilted fit `u = 0.5` | `0.6` | `0.7` | `0.8` |
+|---|---|---|---|---|---|---|---|---|
+| 1.0 | 0.0001 | 0 | +0.0001 | — | −0.4431 | −0.4431 | −0.4431 | −0.4431 |
+| 1.5 | 0.0021 | 0.0015 | +0.0006 | — | −0.3181 | −0.3181 | −0.3181 | −0.3181 |
+| 2.0 | 0.0375 | 0.0362 | +0.0013 | 0.0375 | −0.1928 | −0.1930 | −0.1932 | −0.1932 |
+| 2.5 | 0.1025 | 0.1006 | +0.0019 | — | −0.0894 | −0.0987 | −0.1041 | −0.1038 |
+| 3.0 | 0.1852 | 0.1831 | +0.0022 | 0.1853 | 0.0238 | −0.0019 | −0.0297 | −0.0526 |
+| 4.0 | 0.3812 | 0.3796 | +0.0017 | 0.3812 | 0.2829 | 0.2269 | 0.1553 | 0.0744 |
+| 5.0 | 0.6005 | 0.5997 | +0.0009 | 0.6005 | 0.5499 | 0.4804 | 0.3654 | 0.2260 |
+| 6.0 | 0.8328 | 0.8324 | +0.0004 | — | 0.8052 | 0.7375 | 0.5873 | 0.3879 |
+| 8.0 | 1.3164 | 1.3161 | +0.0003 | 1.3163 | 1.3072 | 1.2343 | 1.0382 | 0.7232 |
+| 10.0 | 1.8115 | 1.8102 | +0.0013 | 1.8115 | 1.8081 | 1.7229 | 1.4743 | 1.0627 |
+| 12.0 | 2.3116 | 2.3081 | +0.0035 | — | 2.3101 | 2.2081 | 1.9039 | 1.3996 |
+| 16.0 | 3.3178 | 3.3070 | +0.0108 | — | 3.3175 | 3.1769 | 2.7558 | 2.0573 |
+| 20.0 | 4.3298 | 4.3069 | +0.0230 | — | 4.3298 | 4.1489 | 3.6077 | 2.7104 |
+
+The fitted rate reproduces item 05's at all seven of its `c′` (to
+`10⁻⁴`) and the LDP to `0.0004–0.002` for `c′ ≤ 10`; above `c′ = 12` the
+fit drifts above the LDP (`+0.004` to `+0.023`), the `log N` term growing
+with `c′` — the fit is a fit, and the LDP is what the "cited" column uses.
+The constants only ever need `c′ = c(1 − β) ≤ 8.9` (at `c = 20`), where the
+two agree to `0.0005`. **The tilted rate is negative for `c′ ≤ 2.5`** at
+every `u` (the `2^κ` factor grows faster than the probability decays: the
+number of components of `G(N, c′/N)` is a positive fraction of `N` there)
+and costs, at `u = ½`, `0.161, 0.098, 0.051, 0.028, 0.009, 0.003` nats per
+vertex of `N` relative to the untilted rate at `c′ = 3, 4, 5, 6, 8, 10`,
+**more than the separator count gained over the product bound at the same
+`c′`** (§5.4: `0.126, 0.073, 0.043, 0.026, 0.009, 0.003`; the
+`E[2^κ 1[E]]` is dominated by partitions with more components than those
+dominating `P(E)`, Jensen's inequality in the exponent).
+
+### 6.3 The table
+
+(`constants.csv`. `β_sep` three ways: fitted rate / bracket `[β*, root of
+the optimistic end]` / cited LDP rate; `β_comb` fitted only; the slope is
+the pilot's fitted `β_∞` where the cell has one, survey §7(d); E–M is
+Edwards & McDermid 2015 Cor. 5.2 on Poisson(`c`) degrees, the published
+upper line (owner's note of 2026-11-01); `dg/dβ` is the pair exponent's slope
+at `β*` in nats per unit of `β`, the conversion of the gains.)
+
+| `c` | `β*` | `β_closed` | `β_sep` fitted | bracket | `β_sep` cited | `β_comb` fitted | slope | E–M | `dg/dβ` | gain sep (fitted) | gain closed | gain comb |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | 0 | 0 | 0.0059 | [0, 0.0087] | 0.0056 | 0 | 0.040 | 0.085 | 7.21 | +0.0059 (0.043 nats) | 0 | 0 |
+| 2.5 | 0 | 0 | 0.0190 | [0, 0.0283] | 0.0185 | 0 | — | 0.132 | 7.46 | +0.0190 (0.142) | 0 | 0 |
+| 3 | 0.0087 | 0.0096 | 0.0374 | [0.0087, 0.0558] | 0.0368 | 0.0035 | 0.099 | 0.183 | 5.53 | **+0.0287** (0.159) | +0.0009 (0.005) | −0.0052 |
+| 4 | 0.0613 | 0.0671 | 0.0833 | [0.0613, 0.1210] | 0.0827 | 0.0594 | 0.158 | 0.285 | 3.91 | **+0.0220** (0.086) | +0.0058 (0.023) | −0.0019 |
+| 6 | 0.1706 | 0.1803 | 0.1820 | [0.1706, 0.2480] | 0.1817 | 0.1782 | 0.268 | 0.458 | 3.38 | +0.0113 (0.038) | +0.0097 (0.033) | +0.0076 |
+| 8 | 0.2628 | 0.2722 | 0.2691 | [0.2628, 0.3490] | 0.2690 | 0.2716 | 0.360 | 0.576 | 3.29 | +0.0063 (0.021) | +0.0094 (0.031) | +0.0088 |
+| 10 | 0.3371 | 0.3453 | 0.3410 | [0.3371, 0.4266] | 0.3409 | 0.3451 | 0.415 | 0.656 | 3.30 | +0.0038 (0.013) | +0.0082 (0.027) | +0.0080 |
+| 12 | 0.3973 | 0.4043 | 0.3999 | [0.3973, 0.4871] | 0.3998 | 0.4043 | — | 0.711 | 3.34 | +0.0025 (0.009) | +0.0069 (0.023) | +0.0069 |
+| 16 | 0.4882 | 0.4933 | 0.4895 | [0.4882, 0.5750] | 0.4895 | 0.4934 | — | 0.782 | 3.45 | +0.0013 (0.005) | +0.0050 (0.017) | +0.0051 |
+| 20 | 0.5535 | 0.5573 | 0.5543 | [0.5535, 0.6356] | 0.5542 | 0.5574 | — | 0.826 | 3.56 | +0.0008 (0.003) | +0.0038 (0.014) | +0.0038 |
+
+What the table says:
+
+1. **The separator count's gain is a near-threshold gain.** `+0.029` at
+   `c = 3` (32% of the gap of 0.090 to the fitted slope), `+0.022` at `c = 4`
+   (23%), `+0.011` at `c = 6` (12%), `+0.004` at `c = 10` (5%), `+0.0008` at
+   `c = 20`; and a positive constant at `c = 2` and `2.5`, where `β* = 0`
+   (`+0.006` and `+0.019`; 15% of the gap at `c = 2`). The fitted and the
+   cited columns agree to `0.0006` everywhere; the bracket's optimistic end
+   is far above both (`0.248` against `0.182` at `c = 6`) and is not the
+   truth, as §5.3 said. §1.6's preview from the quotation alone is
+   reproduced to `0.0005` at every `c`.
+2. **The closed-pair count's gain is a dense-side gain**: `+0.001` at
+   `c = 3`, `+0.006` at 4, `+0.010` at 6, `+0.009` at 8, `+0.008` at 10,
+   `+0.004` at 20 — 1%, 6%, 10%, 10%, 11% of the gap where a slope exists.
+   The planner's `0.1803 / 0.3453` at `c = 6 / 10` (plan §0) are reproduced
+   exactly. The separator count wins at `c ≤ 6` (by a hair at 6: `0.1820`
+   against `0.1803`), the closed count at `c ≥ 8`.
+3. **The combined count, as constructed, is not the best on the ladder.**
+   Its constant lies below the closed count's at every `c` and *below `β*`*
+   at `c ≤ 4` (`0.0035` against `0.0087` at `c = 3`): the `2^κ` bound on the
+   number of balanced 2-colourings of the components costs more than the
+   separator count gained (§6.2), so grouping the closed pairs by `S` with
+   that bound gives the separator's gain back and keeps only the `q` terms,
+   less a little. At `c ≥ 8` it is within `0.0006` of the closed count. The
+   best *valid* first moment at each `c` is the larger of `β_sep` and
+   `β_closed`, both valid separately; a combination that beats both needs
+   the closedness condition inside the component law (the probability that
+   *some* balanced colouring of the components of `G − S` has every vertex
+   of `S` adjacent to both colours), which is not a tilt of the partition
+   sum and is not computed here.
+4. **Against the data**: the best of the three constants sits at `0.037,
+   0.083, 0.182, 0.272, 0.345` against fitted slopes `0.099, 0.158, 0.268,
+   0.360, 0.415` at `c = 3, 4, 6, 8, 10`, closing 32%, 23%, 12%, 10%, 11%
+   of the gap. The provable sandwich with the published upper line is
+   `[0.037, 0.183]`, `[0.182, 0.458]`, `[0.345, 0.656]` at `c = 3, 6, 10`
+   (was `[0.009, 0.183]`, `[0.171, 0.458]`, `[0.337, 0.656]` with `β*`);
+   the ratio upper/lower at `c = 3` falls from 21 to 4.9.
+5. **In nats**: the separator gain at `β*` is `0.159, 0.086, 0.038, 0.021,
+   0.013` nats per vertex of `n` at `c = 3, 4, 6, 8, 10` (the slopes `dg/dβ`
+   are `5.53, 3.91, 3.38, 3.29, 3.30`, so `g/3.3` is the conversion at
+   `c ≥ 6` and `g/5.5` at `c = 3`); the closed gain `0.005, 0.023, 0.033,
+   0.031, 0.027`. Item 04's measured union-bound slack on `G(n, c/n)` at `β*`
+   and `n ≤ 32` was `0.065` and `0.039` nats at `c = 6` and `10` (§4.6):
+   the separator count recovers 59% and 33% of it, the closed count 51%
+   and 69%, and neither both.
+
+### 6.4 The threshold
+
+**Proposition (conditional).** *Suppose that for every `c′ > 2 ln 2` there
+is `I(c′) > 0` with `P(no component of G(N, c′/N) has more than N/2
+vertices) ≤ e^{−(I(c′) − o(1)) N}`, with `I` continuous in `c′`. Then
+`β_sep(c) > 0` for every `c > 2 ln 2`: there is `β₀ = β₀(c) > 0` with
+`P(pw(G(n, c/n)) ≤ β₀ n) → 0`.* Proof: by L1′ (§2.2) and the union bound,
+`P(pw ≤ βn) ≤ C(n, βn) P_{N}(E_relax) ≤ e^{n[H(β) − (1 − β) I(c(1 − β)) + o(1)]}`;
+as `β → 0`, `H(β) → 0` and `(1 − β) I(c(1 − β)) → I(c) > 0`, so the exponent
+is negative for all small `β > 0`. ∎ (The pair count's exponent at `β → 0`
+is `ln 2 − c/4`, negative only for `c > 4 ln 2`; the true threshold of linear
+pathwidth is `c = 1`, Lee–Lee–Oum 2012 via `tw ≤ pw`, survey §1.1.)
+
+**Status of the hypothesis: cited, not verified by us as a theorem.** It is
+the upper-bound half of the large-deviation principle for the largest
+component of `G(N, c′/N)` at scale `N`, applied to the closed set
+`[0, ½]`: O'Connell 1998 (*not held*; Theorem 3.1 as restated), Puhalskii
+2005 (*Ann. Probab.* 33(2), held; Cor. 2.4(3), p. 8 of the arXiv version,
+with the rate function (2.13)–(2.14) and the remark that O'Connell's
+statement has a misprint), Andreis–König–Patterson 2021 (held; Cor. 1.3
+gives the macroscopic contraction). `I_{c′}(½) > 0` iff `c′ > 2 ln 2`
+(§1.4, `rate_check.log`), and continuity in `c′` is read off the formula.
+What *is* verified here is the value of the quoted formula at finite `N`
+(§5.3; §6.2), not the principle.
+
+**Numerical check at `N ≤ 400`** (`threshold.csv`; `−log P_N(E_relax)/N` by
+the exact recursion; the log-corrected fit over `N ≥ 100`):
+
+| `c` | `I_c(½)` | `N = 50` | 100 | 200 | 300 | 400 | log-fit `I` (`b`) |
+|---|---|---|---|---|---|---|---|
+| 1.2 (control, below) | 0 | 0.0042 | 0.0013 | 0.0003 | 0.0001 | 0.00005 | +0.0002 (−0.12) |
+| 2 ln 2 (threshold) | 0 | 0.0111 | 0.0055 | 0.0029 | 0.0020 | 0.0015 | +0.0001 (+0.02) |
+| 1.5 | 0.0015 | 0.0175 | 0.0102 | 0.0066 | 0.0053 | 0.0046 | +0.0021 (+0.12) |
+| 2 | 0.0362 | 0.0646 | 0.0514 | 0.0449 | 0.0427 | 0.0414 | +0.0375 (+0.16) |
+| 2.5 | 0.1006 | 0.1372 | 0.1191 | 0.1107 | 0.1080 | 0.1066 | +0.1025 (−0.01) |
+
+At `c = 2` and `2.5` the finite rate is bounded away from zero at every
+`N` and the fit lands `0.001–0.002` above the cited value; at `c = 1.5` the
+finite values are still falling at `N = 400` (`0.0046` against a cited
+limit of `0.0015`) and the fit gives `0.0021`, of the limit's order but
+not a confirmation; the controls at and below `2 ln 2` fall like `1/N`
+(`b ≈ 0`, `I ≈ 0`). So the check is consistent with the proposition at
+`c = 2, 2.5`, undecided by itself at `c = 1.5`, and no finite computation
+can establish a limit. `P_N(E_bip)` at `N = 100` equals `P_N(E_relax)` to
+four decimals at every `c` in the table (column `rate_bip`).
+
+### 6.5 The finite form at `n = 60` and `120`, in stacks
+
+Largest `k` with each bound below `1` and below `0.01` (`finite_floors.csv`;
+pair, exact-size pair and separator from item 05's `inner.csv`; the closed
+and combined counts new; `comb` is the relaxed-window form, `comb_bip` the
+bipartition-window form at `n = 60` only; the pilot's observed minimum
+pathwidth at 60 and the solver's lower bound at 120, §5.2):
+
+| `n` | `c` | pair `<1` / `<.01` | xpair | **sep** | **closed** | comb | comb_bip | `β*n` | min pw / LB |
+|---|---|---|---|---|---|---|---|---|---|
+| 60 | 3 | 1 / −1 | 1 / 0 | **3 / 1** | 1 / 0 | 0 / −1 | 0 / −1 | 0.5 | 5 |
+| 60 | 4 | 5 / 3 | 5 / 3 | **6 / 4** | 5 / 4 | 4 / 3 | 4 / 3 | 3.7 | 8 |
+| 60 | 6 | 11 / 11 | 12 / 11 | 12 / 11 | **13 / 11** | 12 / 10 | 12 / 10 | 10.2 | 16 |
+| 60 | 8 | 17 / 17 | 18 / 17 | 18 / 17 | **19 / 17** | 18 / 16 | 18 / 16 | 15.8 | 20 |
+| 60 | 10 | 23 / 21 | 23 / 21 | 23 / 22 | 23 / 22 | 23 / 21 | 23 / 21 | 20.2 | 25 |
+| 120 | 3 | 1 / 1 | 2 / 1 | **5 / 4** | 2 / 1 | 0 / −1 | — | 1.0 | 11 / 12 |
+| 120 | 4 | 9 / 7 | 9 / 7 | **11 / 10** | 9 / 8 | 8 / 6 | — | 7.4 | — / 17 |
+| 120 | 6 | 21 / 21 | 22 / 21 | 24 / 22 | 24 / 22 | 22 / 21 | — | 20.5 | — / 25 |
+| 120 | 8 | 33 / 33 | 34 / 33 | 34 / 33 | **35 / 34** | 34 / 33 | — | 31.5 | — / 34 |
+| 120 | 10 | 43 / 41 | 43 / 42 | 44 / 42 | **44 / 43** | 43 / 42 | — | 40.5 | — / 41 |
+
+In stacks the picture is the asymptotic one: at `c = 3–4` the separator
+count is the best by 2–3 stacks over everything else; at `c ≥ 6` the
+closed count ties or beats the separator count by one stack (`+1` at
+`(60, 6)`, `(60, 8)` at `< 1`; `+1` at `(120, 8)`, `(120, 10)` at `< 0.01`),
+and both are one to two stacks above the pair count; the combined count
+is one stack below the closed count or worse. At `(120, 10)` the closed
+count says `P(pw ≤ 44) ≤ 0.10` where the separator count said `0.68` and
+the pair count nothing, against solver lower bounds of 41–42; the decades
+around the floor (`run.log`): `k = 43`: closed `−2.28`, sep `−1.38`, pair
+`−0.99`; `k = 44`: closed `−0.98`, sep `−0.17`, pair `+1.76`; `k = 45`:
+closed `+0.28`. The bipartition-window and the relaxed-window forms of
+the combined count agree to `0.01` decades at every `(60, c, k)`: the
+number-partitioning condition is free here too (§5.4).
+
+### 6.6 The figure
+
+`beta_vs_c.png`: left, `β` against `c` — `β*`, `β_sep` (cited rate) with
+the bracket shaded, `β_closed`, the pilot's fitted slopes, and Edwards &
+McDermid's published upper line, with the two thresholds `2 ln 2` and
+`4 ln 2` marked; right, the gains over `β*` — the separator count (cited
+and fitted), the closed count, the combined count, the bracket, and the
+gap to the fitted slope, with the brief's kill line at `0.02`. The four
+lower curves on the left are indistinguishable at the scale of the
+sandwich, which is the finding; the right panel is where they separate.
+(Categorical palette validated: six slots, all checks pass with the
+contrast warning on three, relieved by the legend and direct labels.)
+
+### 6.7 Kill verdict
+
+**The brief's kill: met.** `β_sep(fitted) − β* = +0.0113` at `c = 6` and
+`+0.0038` at `c = 10`, both below `0.02`; **the separator route is closed
+for the headline constants**, as items 03 and 05 predicted (§3.5: at most
+`0.003` at `c = 10`; §5.5: `+0.011` and `+0.004`). Beside it, as the item
+asks: the closed-pair gain is `+0.0097 / +0.0082`, the combined count's
+`+0.0076 / +0.0080`; none of the three, nor their maximum, reaches `0.02`
+at either `c`.
+
+**The pre-registered separate findings, and what they are worth.**
+
+* *Near the threshold* the separator count is not a rounding: `+0.029` at
+  `c = 3` and `+0.022` at `c = 4` in `β`, 32% and 23% of the gap to the
+  fitted slopes — above the brief's kill and at the top of what §1.4's
+  record of representative counts ever bought (1.7–25% of a gap) — and a
+  positive constant at `c = 2, 2.5` where the pair count is vacuous. The
+  plan's bracket at `c = 3` was `[0.009, 0.056]`; the answer is `0.037`,
+  against a slope of `0.099`. These rest on the relaxed event's rate,
+  cited (the LDP) and reproduced by exact computation to `N = 400`.
+* *The threshold* moves from `4 ln 2 = 2.77` to `2 ln 2 = 1.39`,
+  conditional on the cited LDP upper bound (§6.4, hypothesis explicit);
+  the truth is `1`. In the logarithm this is half of the way.
+* *The closed-pair count* is the better of the two at `c ≥ 8`, by the `q`
+  terms alone (the supremum sits at the corner at every `c`); its gain is
+  `+0.008–0.010` at `c = 6–12`, exactly the planner's estimate.
+
+**Where this corrects the loop's own predictions.** §3.5 predicted from
+typical instances at `k = pw` that the closed count merges at most `0.003`
+in `β` at `c = 10`; the asymptotic constant gains `0.008`. The instrument
+of §3 (ratios of counts on typical instances) sees the typical regime;
+the first moment is decided in the rare-instance regime, where the
+maximisers differ (§3.3's two regimes). The separator prediction
+(`0.003` measured, `0.004` asymptotic) held.
+
+### 6.8 Where the record corrects the item
+
+* The item's "combined count … stated as the best valid first moment on
+  the ladder" is not what the construction gives: with the `2^κ` bound on
+  the colourings it is weaker than the closed count at every `c` and weaker
+  than the pair count at `c ≤ 4` (§6.3 (3)). It is stated, valid, and
+  not the best; the best valid bound at each `c` is `max(β_sep, β_closed)`.
+* The item's test "`β_closed ≥ β*` at every `c`" holds numerically at every
+  `c` tested (the supremum is at least the corner value, and at the corner
+  the `q` terms lower the exponent — so the inequality is not automatic
+  from the formula, and is tested, not proved).
+* The bracket's lower end reproduces `β*` *exactly*, not approximately
+  (an identity, §6.1 (a)), so "the bracket on `β_sep`" is `[β*, β_opt]`.
+* The item's threshold check at `c = 1.5` is undecidable at `N ≤ 400`
+  (§6.4): the limit is `0.0015`, the finite rate `0.0046` and still
+  falling.
+* The fitted rate's drift above the LDP at `c′ ≥ 12` (§6.2) is outside the
+  range the constants use, and the "cited" column is the one quoted.
+
+### 6.9 What this does not claim
+
+* **A limit, or a theorem.** `β_sep` (fitted) rests on a fit of exact
+  values at `N ≤ 400`; `β_sep` (cited) on an LDP we cite and did not prove;
+  `β_comb` on a fit alone. The finite inequalities of §6.5 are exact and
+  valid (L1′, L2, the union bound, the recursions checked by enumeration),
+  and the separator and closed-pair ones are item 08's to write on paper
+  and item 10's to formalise; `B_pair` is the only one in Lean.
+* **The constant.** Every `β` here is a lower bound on `lim inf pw/n`
+  whatever the rate, and none is claimed to be the limit; the fitted
+  slopes are fits from `n ≤ 70–120` (survey §7(d)) and the gaps "closed"
+  are fractions of a fitted number.
+* **That `E_bip` and `E_relax` have the same rate** beyond `N = 120`
+  (§5.6); the "fitted" and "cited" columns use `E_relax`, which is the
+  valid relaxation either way.
+* **That the closed count's supremum is at the corner for every `c`**: it
+  is, at the ten `c` of the table, by numerical search; no proof.
+* **Priority** for the separator count, the closed-pair count or the
+  threshold statement: §1 found no prior separator first moment with an
+  exact inner probability for pathwidth, and the threshold `2 ln 2` is the
+  bisection threshold of Luczak–McDiarmid for the same reason (§1.3); "we
+  found no prior statement" is the strongest wording.
+* Nothing about covers (item 07), and nothing about the weighted count
+  (item 09) beyond the §4.6 ceiling the gains here are measured against.

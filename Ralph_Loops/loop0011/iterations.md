@@ -325,7 +325,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     bracketed, not proved; the finite inequality is exact and is the
     only thing quoted as proved (after item 08).
 
-- [ ] **06 `β_sep(c)` and `β_closed(c)`: the constants, against `β*(c)` and the slopes.**
+- [x] **06 `β_sep(c)` and `β_closed(c)`: the constants, against `β*(c)` and the slopes.**
   - **Question.** D of the brief. What constant does the separator first
     moment give, `H(β) + (1 − β)·log P_{N}(E_bip)/N → 0`, what does the
     closed-pair count give, what does their combination give, and how do

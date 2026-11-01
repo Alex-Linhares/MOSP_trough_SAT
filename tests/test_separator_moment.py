@@ -610,3 +610,146 @@ def test_prob_bip_monte_carlo():
     exact = math.exp(log_prob_bip(N, p))
     mc, se = log_prob_bip_mc(N, p, samples=3000, seed=3)
     assert abs(exact - math.exp(mc)) < 4 * se + 1e-12
+
+
+# --- item 06: the constants β_sep, β_closed, β_comb ----------------------------
+
+from learning.separator_moment import (  # noqa: E402
+    LN2, beta_closed, beta_combined, beta_sep, beta_star_gnp, closed_exponent, closed_rate,
+    combined_exponent, components, edwards_mcdermid_poisson, exponent_slope_at, gnp_pair_rate,
+    ldp_rate, log_closed_count, log_combined_count, log_connected, log_prob_bip, log_prob_rel,
+    log_prob_rel_fast, pair_exponent_beta, rate_bracket,
+)
+
+
+def _enum_tilted_window(N, p, t_lo, t_hi, tilt):
+    full = (1 << N) - 1
+    E = N * (N - 1) // 2
+    tot = 0.0
+    for adj in all_labelled_graphs(N):
+        m = sum(popcount(a) for a in adj) // 2
+        comps = components(adj, full)
+        reach = 1
+        for cm in comps:
+            reach |= reach << popcount(cm)
+        if any(reach >> x & 1 for x in range(t_lo, t_hi + 1)):
+            tot += p ** m * (1 - p) ** (E - m) * math.exp(tilt * len(comps))
+    return math.log(tot) if tot > 0 else -math.inf
+
+
+def test_window_and_tilt_recursion_against_enumeration():
+    for N in range(1, 6):
+        p = 0.3
+        lc = log_connected(N, p)
+        for t_lo in range(0, N + 1):
+            for t_hi in range(t_lo, N + 1):
+                for tilt in (0.0, LN2):
+                    a = log_prob_bip(N, p, t_lo, lc, t_hi=t_hi, tilt=tilt)
+                    b = _enum_tilted_window(N, p, t_lo, t_hi, tilt)
+                    assert a == pytest.approx(b, abs=1e-9)
+
+
+def test_fast_relaxed_recursion_pinned_to_the_table_one():
+    for N, cp in ((6, 2.0), (30, 3.0), (80, 6.0)):
+        p = cp / N
+        lc = log_connected(N, p)
+        for M in sorted({1, N // 3, N // 2, N}):
+            for tilt in (0.0, LN2, 0.3):
+                a = log_prob_rel(N, p, M, lc, tilt=tilt)
+                b = log_prob_rel_fast(N, p, M, lc, tilt=tilt)
+                assert a == pytest.approx(b, abs=1e-8, rel=1e-9)
+    # the tilted sum over every partition is E[e^{tilt κ}], exceeding 1
+    assert log_prob_rel(10, 0.1, 10, tilt=LN2) > 0
+
+
+def _enum_closed_count(n, k, p):
+    E = n * (n - 1) // 2
+    tot = 0.0
+    for adj in all_labelled_graphs(n):
+        m = sum(popcount(a) for a in adj) // 2
+        tot += p ** m * (1 - p) ** (E - m) * len(closed_pairs(adj, k))
+    return math.log(tot) if tot > 0 else -math.inf
+
+
+def test_finite_closed_count_against_enumeration():
+    for n in range(2, 6):
+        for p in (0.25, 0.6):
+            for k in range(0, n):
+                assert log_closed_count(n, k, p) == pytest.approx(_enum_closed_count(n, k, p), abs=1e-9)
+
+
+def test_combined_count_is_a_valid_bound_at_small_sizes():
+    # E[Σ_{S} 1[E_win(G − S)] 2^κ Qmax^{|S|}] ≥ P(pw ≤ k): check against every labelled graph at n = 5
+    # (vertex separation by the brute-force DP) and that the two inner forms agree
+    n, p = 5, 0.4
+    E = n * (n - 1) // 2
+    for k in range(0, n):
+        prob = 0.0
+        for adj in all_labelled_graphs(n):
+            m = sum(popcount(a) for a in adj) // 2
+            if vertex_separation(adj) <= k:
+                prob += p ** m * (1 - p) ** (E - m)
+        bip = log_combined_count(n, k, p, form="bip")
+        rel = log_combined_count(n, k, p, form="rel")
+        assert bip <= rel + 1e-12
+        assert math.log(prob) <= bip + 1e-12
+        closed = log_closed_count(n, k, p)
+        assert math.log(prob) <= closed + 1e-12
+
+
+def test_pair_exponent_in_beta_and_the_closed_exponent_at_the_corner():
+    for c in (3.0, 6.0, 10.0):
+        for b in (0.02, 0.17, 0.3):
+            a = (1 - b) / 2
+            assert pair_exponent_beta(c, b) == pytest.approx(gnp_pair_rate(a, c), abs=1e-12)
+            assert closed_exponent(a, a, b, c, with_q=False) == pytest.approx(gnp_pair_rate(a, c), abs=1e-12)
+            assert closed_exponent(a, a, b, c) < gnp_pair_rate(a, c)  # the q terms only lower it
+        # the sup is at least the corner value, so β_closed ≥ β* is not automatic: test it
+        assert closed_rate(0.17, c)[0] >= closed_exponent((1 - 0.17) / 2, (1 - 0.17) / 2, 0.17, c) - 1e-12
+
+
+def test_beta_sep_with_the_brackets_lower_end_is_beta_star():
+    for c in (2.0, 3.0, 4.0, 6.0, 10.0, 20.0):
+        assert beta_sep(c, lambda cp: rate_bracket(cp)[0]) == pytest.approx(beta_star_gnp(c), abs=2e-6)
+
+
+def test_the_constants_are_ordered():
+    for c in (2.5, 3.0, 4.0, 6.0, 10.0, 16.0):
+        bs = beta_star_gnp(c)
+        lo, hi = rate_bracket(c * (1 - bs))
+        assert lo <= ldp_rate(c * (1 - bs), 0.5) <= hi + 1e-12
+        b_cited = beta_sep(c)
+        b_hi = beta_sep(c, lambda cp: rate_bracket(cp)[1])
+        assert bs <= b_cited <= b_hi
+        assert beta_closed(c) >= bs
+    # the separator count is positive strictly above 2 ln 2 and zero below (cited rate)
+    assert beta_sep(1.2) == 0.0
+    assert beta_sep(2.0) > 0.0
+    assert beta_star_gnp(2.0) == 0.0
+
+
+def test_ldp_rate_zero_at_the_giant_and_positive_below_half():
+    assert ldp_rate(3.0, 0.5) == pytest.approx(0.18309, abs=1e-4)
+    assert ldp_rate(10.0, 0.5) == pytest.approx(1.81023, abs=1e-4)
+    assert ldp_rate(1.2, 0.5) == 0.0
+    assert ldp_rate(3.0, 0.99) == 0.0
+    assert 0 < ldp_rate(3.0, 0.7) < ldp_rate(3.0, 0.5)
+
+
+def test_combined_exponent_reduces_to_the_separator_form_at_the_corner():
+    # at s = β the window is the balanced bipartition (u = ½) and the exponent is
+    # H(β) + 2β ln q((1−β)/2) − (1−β) J(c′, ½)
+    c, b = 6.0, 0.18
+    J = lambda cp, u: 0.5 + 0.1 * u
+    v = combined_exponent(c, b, b, J)
+    q = math.log(-math.expm1(-c * (1 - b) / 2))
+    H = -b * math.log(b) - (1 - b) * math.log(1 - b)
+    assert v == pytest.approx(H + 2 * b * q - (1 - b) * J(c * (1 - b), 0.5), abs=1e-12)
+    assert combined_exponent(c, b, b + 0.01, J) == -math.inf
+    assert 0 < beta_combined(c, J) < 1
+
+
+def test_edwards_mcdermid_and_the_slope_conversion():
+    assert [round(edwards_mcdermid_poisson(c), 3) for c in (3, 6, 10)] == [0.183, 0.458, 0.656]
+    assert exponent_slope_at(6.0, beta_star_gnp(6.0)) == pytest.approx(3.38, abs=0.02)
+    assert exponent_slope_at(10.0, beta_star_gnp(10.0)) == pytest.approx(3.30, abs=0.02)
