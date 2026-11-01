@@ -1,0 +1,7 @@
+n = 5000: 297 instances done, 405 rows, 690 s wall
+n = 2000: 306 instances done, 711 rows, 737 s wall
+n = 1000: 324 instances done, 1035 rows, 747 s wall
+n = 500: 333 instances done, 1368 rows, 750 s wall
+n = 200: 333 instances done, 1701 rows, 750 s wall
+n = 100: 342 instances done, 2043 rows, 751 s wall
+constructions: 2043 rows, 2024 accepted, 13 fitted cells not accepted at their cap, 5810 s of instance time, 751 s wall -> learning/data/excess_constructions.csv

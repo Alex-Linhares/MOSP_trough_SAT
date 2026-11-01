@@ -181,7 +181,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
     say "24 instances from the SCOOP set, all under excess 2.5". No new
     certification.
 
-- [ ] **05 `β⁺` by simulation: the width of explicit constructions at large `n`.**
+- [x] **05 `β⁺` by simulation: the width of explicit constructions at large `n`.**
   - **Question.** B(ii), first half. For the random cover model at fixed
     `(d, μ)`, what width per customer do explicit layouts reach as `n`
     grows: the two-key closing rule, the BFS-layer layout, the

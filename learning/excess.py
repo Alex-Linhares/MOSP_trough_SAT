@@ -35,6 +35,9 @@ Usage:
     python -m learning.excess --stage rule          # item 02: the two-key rule on every instance -> excess_rule.csv
     python -m learning.excess --stage slopes        # item 02: opt = a + b n per series, e-matched pairs, beta*
     python -m learning.excess --stage figure-opt    # item 02: reports/figures/excess_opt.png
+    python -m learning.excess --stage constructions          # item 05: the constructions grid -> excess_constructions.csv
+    python -m learning.excess --stage constructions-tables   # item 05: the tables
+    python -m learning.excess --stage figure-constructions   # item 05: reports/figures/excess_beta_plus.png
     python -m pytest tests/test_excess.py -q
 """
 from __future__ import annotations
@@ -997,7 +1000,8 @@ def figure_opt(rule: pd.DataFrame, out: Path = FIGURE_OPT) -> Path:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--stage", choices=("build", "tables", "figure", "all", "rule", "slopes", "figure-opt"),
+    ap.add_argument("--stage", choices=("build", "tables", "figure", "all", "rule", "slopes", "figure-opt",
+                                        "constructions", "constructions-tables", "figure-constructions"),
                     default="all")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--out", type=Path, default=OUT_CSV)
@@ -1011,6 +1015,15 @@ def main() -> None:
         return
     if args.stage == "figure-opt":
         print(f"figure -> {figure_opt(load_rule())}")
+        return
+    if args.stage.endswith("constructions") or args.stage == "constructions-tables":
+        from learning import excess_constructions as ec
+        if args.stage == "constructions":
+            ec.run(ec.grid_jobs(), workers)
+        elif args.stage == "constructions-tables":
+            print(ec.tables(ec.load()))
+        else:
+            print(f"figure -> {ec.figure(ec.load())}")
         return
     if args.stage in ("build", "all"):
         frame = build(workers, args.out)

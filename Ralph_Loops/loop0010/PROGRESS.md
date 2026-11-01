@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 4/13 SOLVED
+Current: 5/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -341,3 +341,88 @@ REVAL is the example that the floor is a random-model statement. For item 08:
 REVAL (optimum 7 against a 0.01 floor of 9) is a test case a structured count
 must not "fix" — a stronger random floor would move further from it, which is
 correct, and the paragraph should say so.
+
+---
+
+## Iteration 5 — 2026-11-01 02:25
+
+Item 05, `β⁺` by simulation: the width of explicit constructions at large `n`.
+
+### Completed
+
+- **`learning/excess_constructions.py`** (stages `constructions`,
+  `constructions-tables`, `figure-constructions` of `learning.excess`): fresh
+  random covers at `d ∈ {2, 3, 4, 6, 8, 10}`, `μ ∈ {½, 1, 2}`,
+  `n ∈ {100, 200, 500, 1000, 2000, 5000}`, 10 per cell, from the fixed-size
+  generator (`generate_structured_instance`, the generator of item 02's
+  certified series) and the fitted Chu & Stuckey generator of
+  `gen_candidates.py` (`bern_padC1_padP2_conn`, with a draw cap per `n`
+  and one probe draw per cell). Per instance the two-key rule's product
+  order valued by a sweep (the `O(n m)` Python simulation replaced; agrees
+  with `two_key_rule` on every test), the BFS-layer layout's exact vertex
+  separation and the layer bound, `n − α_greedy`, `|E| / 5.769`; per cell
+  and construction the fit `width / n = β⁺ + a / n` with `β*` and item 02's
+  `b` beside it, and the kill flag. 2,043 rows (2,024 accepted) in
+  `learning/data/excess_constructions.csv` (git-ignored), 1.61 core-hours
+  (98% the rule, `O(n²)`: 11–22 s at `n = 5000`), 751 s wall on 8 workers at
+  nice 19, load 1–9. **No exact solve**; `solutions/` and the ledger
+  untouched. `tests/test_excess_constructions.py`, 10 tests (the sweeps
+  against `mosp.verify.max_open_stacks` and brute-force vertex separation
+  on 200 random instances each, the rule's value against `two_key_rule`,
+  BFS layers and the greedy set checked structurally, proved constructions
+  above the certified optimum − 1 on 20 solved instances, seeds, the fit,
+  the tables). Figure `reports/figures/excess_beta_plus.png` (dataviz
+  reference palette, validated). `reports/excess_phase_diagram.md` §5 with
+  every table; scratch log and tables under
+  `reports/scratch/excess_constructions/`.
+- **Numbers.** The rule's `width / n` **falls** with `n` in all 36 cells
+  (item 02 expected an upward drift), the `1 / n` form fits with residuals
+  within ±0.009, and `β⁺` moves by ≤ 0.01 under `1 / √n` or `log n / n`.
+  `rule β⁺ − b` is 0.007–0.060: smallest at the ends of the excess (0.007 at
+  `(10, 2)`, 0.017 at `(2, 1)`), 0.035–0.047 at `d = 3–4` (ridge and
+  shoulder), 0.04–0.06 at every `μ = ½` cell; `rule β⁺` is below the
+  certified `opt / n` at `n = 75–125` on 20 of 23 cells. The proved
+  constructions: `n − α_greedy` 0.48–0.96 (flat in `n`), the edge bound
+  better only at `e ≲ 2–2.5` and above 1 from `(4, 1)`; best proved minus
+  `β*` 0.075 (`(10, 2)`) to 0.61, below 0.5 on 29 of 35 cells, so item 07's
+  kill is not met in advance but no proved construction is within 0.07 of
+  `β*` anywhere. BFS separation 0.13–0.96, 1.1–2.4× the rule — except on
+  the fixed `(2, ½)` cell (`e = 0.87`, 652 components at 5000), where the
+  BFS width is sublinear (0.073 → 0.005 per customer, 25 stacks at 5000)
+  and **the rule's is linear** (0.044 ± 0.002, 215 stacks; certified
+  `b = 0.005 ± 0.006`). The fitted generator is not accepted at large `n`
+  and small `d` (`(2, ½)` from `n = 200`, `(3, ½)` from 1000, `(4, ½)` and
+  `(2, 1)` from 2000, `(3, 1)` at 5000; acceptance `exp(−c n)`), and where
+  accepted its realised `e` is 0.1–1.1 above nominal and its `β⁺` 0.005–0.035
+  above the fixed generator's.
+- **Kill verdict: met on 12 of the 23 cells with a certified `b`.** Not
+  trusted (|rule/n at max `n` − `b`| > 0.03): all six `μ = ½` cells
+  (0.038–0.062), fixed `(3, 1)`, `(4, 1)`, `(3, 2)`, `(4, 2)`, fitted
+  `(2, 1)`, `(4, 1)`. Trusted: fixed `(2, 1)`, `(6, 1)`, `(8, 1)`, `(10, 1)`,
+  `(2, 2)`, `(6, 2)`, `(8, 2)`, `(10, 2)`, fitted `(6, 1)`, `(8, 1)`,
+  `(10, 1)`. 13 fitted cells have no certified series and are untested;
+  neither group is to be quoted by later items. No certified value is
+  wrong, no theorem is false, no published claim of ours drifts.
+- **Gate: PASS** (one run, 2026-11-01 02:49–03:00 at load 1–4): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,581 passed (2 skipped,
+  1 xfailed; +10 new), pathwidth_solver 123 passed, paper check ok (66
+  pages, no undefined references). Log: `Ralph_Loops/loop0010/gate_it05.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 06, the forest regime on paper. From this item, for item 07: the
+limits to prove are those of `n − α_greedy` (flat in `n` to ±0.005, so the
+differential-equation constant is what the table shows) and the BFS layer
+fractions (the layer bound is 0.35–1.0 per customer and never binding; the
+exact separation of the layer layout is what matters, and it is 1.1–2.4×
+the rule's); the table says in advance that neither will be within 0.07 of
+`β*`, and that the rule's measured `β⁺` is the envelope to beat. For items
+08 and 09: quote `β⁺` only on the 11 trusted cells. For item 10: the fitted
+generator's rejection is a finite-size object at `d ≤ 3` (finding 6), which
+the validity statement should say. For item 12: the rule's linear width on
+the many-component sparse cell against the BFS layout's sublinear one is a
+one-sentence caveat on the rule as a bound.

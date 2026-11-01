@@ -1,0 +1,163 @@
+# session it05 started 2026-11-01 02:25:02
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll begin by reading the plan, the existing `learning/excess.py`, the generator, the rule, and the fitted generator script, then time the rule at n = 1000 before sizing the grid.
+  > $ uptime && wc -l reports/excess_phase_plan.md learning/excess.py reports/excess_phase_diagram.md reports/scratch/clique_cover_moment/gen_candidates.py satisfiabi
+  > $ sed -n 200,255p reports/excess_phase_plan.md && echo ---- && cat reports/scratch/clique_cover_moment/gen_candidates.py && echo ---- && cat benchmarks/generator.
+  > $ sed -n 1,140p learning/excess.py && grep -n "^def \|^class \|^STAGES\|add_argument\|stage ==" learning/excess.py
+  > $ sed -n 640,1026p learning/excess.py
+  > $ grep -n "def two_key_rule" -A 60 satisfiability/heuristics.py | head -120; echo ----; grep -n "def beta_star" -A 30 learning/first_moment.py | head -60; echo --
+  > $ sed -n 175,200p reports/random_graph_pathwidth_survey.md; echo ----; sed -n 690,715p reports/random_graph_pathwidth_survey.md; echo ----; grep -n "def two_key_c
+
+Done with the plan and the rule's code. Next: how item 01 regenerated the fitted-generator simulations, the report's section style, and a timing of the rule at n = 1000 before I size the grid.
+  > $ grep -n "def _neighbour_masks\|def max_open_stacks" -A 22 satisfiability/heuristics.py | head -60; echo ----; sed -n 262,290p learning/excess.py; echo ----; gre
+  > $ ls -la learning/data/excess_rule.csv learning/data/excess.csv && free -g | head -2 && nproc && sed -n 887,935p reports/excess_phase_diagram.md
+  > $ sed -n 150,200p satisfiability/heuristics.py && grep -n "def customer_patterns\|def pattern_customers\|def from_matrix" -A 8 mosp/instance.py | head -50 && grep
+
+Now I'll write the constructions module, then time the rule and the three layouts at n = 1000 and 2000 on the densest cell before fixing the grid size.
+  > $ grep -n "^def max_open_stacks" -A 30 satisfiability/heuristics.py | head -45; grep -n "def max_open_stacks\|def count_open_stacks\|def simulate" mosp/verify.py 
+  > $ sed -n 17,80p mosp/verify.py && grep -n "def generate\b" -A 40 learning/ensemble.py | head -80
+  > Write /home/al/dev/MOSP/learning/excess_constructions.py
+  > $ python - <<'EOF'
+import re
+p = "learning/excess_constructions.py"
+s = open(p).read()
+# drop the fragile positional version, promote the by-name one
+start = s.in
+  > $ python - <<'EOF'
+import re
+p = "learning/excess_constructions.py"
+s = open(p).read()
+s = s.replace("FITTED_CAP = {100: 200, 200: 200, 500: 100, 1000: 40, 2000: 
+
+Sweeps agree with the reference on 300 random instances. Now I'll wire the stages into `learning/excess.py` and launch the grid in the background at nice 19, then write the tests while it runs.
+  > $ python - <<'EOF'
+p = "learning/excess.py"
+s = open(p).read()
+s = s.replace('''    python -m learning.excess --stage figure-opt    # item 02: reports/figures/exc
+  > Write /home/al/dev/MOSP/tests/test_excess_constructions.py
+  > $ python - <<'EOF'
+p = "tests/test_excess_constructions.py"
+s = open(p).read()
+s = s.replace("def test_constructions_on_small_instance_bounds():", "def test_const
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n +1 -f reports/scratch/excess_constructions/run.log | grep -E --line-buffered \"n = |constructions:|
+  > Skill {"skill": "dataviz"}
+
+The grid is running in the background. While it runs, I'm checking the figure's palette with the dataviz validator and reading the report's §2 findings for the section's style.
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/40a4e68927658b4212773391f5ef2816/dataviz && node scripts/validate_palette.js "#eb6834,#8a6bd1,#2a78d6,#1baf7a" --mode
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/40a4e68927658b4212773391f5ef2816/dataviz && node scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a,#eda100" --mode
+  > $ python - <<'EOF'
+p = "learning/excess_constructions.py"
+s = open(p).read()
+s = s.replace('COLOURS = {"rule": "#eb6834", "bfs_vs": "#8a6bd1", "n_minus_alpha": "#
+  > $ python - <<'EOF'
+p = "learning/excess_constructions.py"
+s = open(p).read()
+old_start = s.index("def cell_seed(")
+old_end = s.index("def _job(")
+s = s[:old_start
+  > $ sed -n 1,60p Ralph_Loops/loop0010/gate.py | grep -n "def \|run(\|pytest\|lake\|make" | head -20; sleep 45; cat reports/scratch/excess_constructions/run.log; upt
+
+I'll draft the static part of the report section (question, method, regenerate commands) while the grid runs; the numbers get filled in when the csv lands.
+  > Write /home/al/dev/MOSP/reports/scratch/excess_constructions/section_header.md
+  > $ cat reports/scratch/excess_constructions/run.log; uptime; ls -la learning/data/excess_constructions.csv 2>/dev/null; ps -o pid,etime,pcpu,rss,cmd -p 4158928 | t
+  > $ nice -n 19 python - <<'EOF'
+import pandas as pd, numpy as np
+r = pd.read_csv("learning/data/excess_rule.csv", low_memory=False)
+f = r[(r.generator=="fixed") & r
+  > $ sleep 90; cat reports/scratch/excess_constructions/run.log; uptime; ps -o pid,etime,pcpu,rss -p 4158928 | tail -1; ls -la learning/data/excess_constructions.csv
+  > $ until [ -f learning/data/excess_constructions.csv ]; do sleep 10; done; cat reports/scratch/excess_constructions/run.log; uptime
+
+While the grid runs I'll run the pathwidth_solver half of the gate's test suite in the foreground, since it does not depend on this item's results.
+  > $ cd /home/al/dev/MOSP/pathwidth_solver && nice -n 19 python -m pytest -q -x 2>&1 | tail -3; cat /home/al/dev/MOSP/reports/scratch/excess_constructions/run.log; u
+  > $ cd /home/al/dev/MOSP && cat reports/scratch/excess_constructions/run.log; ps --ppid 4158928 -o pid,etime,pcpu,rss | head; ps -o pid,etime,pcpu,rss -p 4158928 | 
+  > Monitor {"command": "tail -n +1 -f reports/scratch/excess_constructions/run.log | grep -E --line-buffered \"n = |constructions:|
+
+The n = 5000 batch is running on 8 workers (about 8 minutes in). The pathwidth_solver tests passed (123). I'm waiting on the batch's first csv write, with a monitor on the run log and a background wait on the csv; the next step is the per-size table and the fit once it lands.
+
+# result: success in 1047s, 35 turns, cost $7.55
+  > $ cat reports/scratch/excess_constructions/run.log; ls -la learning/data/excess_constructions.csv 2>/dev/null; uptime
+
+Still inside the n = 5000 batch (no batch line yet). The re-armed log monitor and the background csv wait are both active; I'll pick up the per-size table and the fit when either fires.
+
+# result: success in 5s, 2 turns, cost $7.67
+  > $ nice -n 19 python - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/excess_constructions.csv")
+print(len(f), f.groupby(["generator","n"]).size().to_s
+  > $ until grep -q "constructions:" reports/scratch/excess_constructions/run.log; do sleep 10; done; cat reports/scratch/excess_constructions/run.log; uptime
+  > $ nice -n 19 python -m learning.excess --stage constructions-tables 2>&1 | head -30; nice -n 19 python -m learning.excess --stage figure-constructions 2>&1 | tail
+  > $ python - <<'EOF'
+p = "learning/excess_constructions.py"
+s = open(p).read()
+# certified_slopes: carry opt/n at the largest small n too
+s = s.replace('''         
+
+The grid finished: 2,043 rows in 12.5 minutes wall, 1.6 core-hours. One test needs its synthetic slopes frame updated for the new columns; then I'll produce the full tables.
+  > $ nice -n 19 python -m pytest tests/test_excess_constructions.py -q -k synthetic_frame 2>&1 | grep -E "Error|assert|KeyError" | head -5
+  > $ sed -i 's/"b_source": "test", "rule_n_small": 0.45, "rule_small_max_n": 100}\])/"b_source": "test", "rule_n_small": 0.45, "opt_n_small": 0.38, "small_max_n": 10
+  > $ sed -n 1,50p reports/scratch/excess_constructions/tables.md | cut -c1-400
+  > $ python - <<'EOF'
+p = "learning/excess_constructions.py"
+s = open(p).read()
+s = s.replace('''        f"Cells: {len(cells)}; fitted cells not accepted at the cap:
+  > $ nice -n 19 python -m learning.excess --stage constructions-tables > reports/scratch/excess_constructions/tables.md 2>&1; head -c 700 reports/scratch/excess_cons
+  > Read /home/al/dev/MOSP/reports/figures/excess_beta_plus.png
+
+The figure reads correctly. Writing the report section now (findings, kill verdict, non-claims, figure, tables in full), then PROGRESS.md and iterations.md, then the gate.
+  > Write /home/al/dev/MOSP/reports/scratch/excess_constructions/section_body.md
+  > $ nice -n 19 python - <<'EOF'
+from learning import excess_constructions as ec
+c = ec.cell_table(ec.load())
+print(c[["generator","mu","d","rule beta+","rule se","r
+  > $ sed -n 83,95p reports/scratch/clique_cover_moment/REPORT_generator.md | cut -c1-200; sed -n 105,112p reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ nohup nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it05.log 2>&1 &
+echo "gate pid $!"; date
+  > $ python - <<'EOF'
+p = "reports/scratch/excess_constructions/section_body.md"
+s = open(p).read()
+rep = [
+ ("""   order `b < rule β⁺` holds in every cell and `rule
+  > $ grep -n "GATE" Ralph_Loops/loop0010/gate.py | tail -5; cat Ralph_Loops/loop0010/gate_it05.log; uptime
+  > $ until grep -q "^GATE " Ralph_Loops/loop0010/gate_it05.log; do sleep 15; done; cat Ralph_Loops/loop0010/gate_it05.log | tail -25; date; uptime
+  > $ python - <<'EOF'
+p = "Ralph_Loops/loop0010/PROGRESS.md"
+s = open(p).read()
+s = s.replace("Current: 4/13 SOLVED", "Current: 5/13 SOLVED")
+s += """
+---
+
+## Iterat
+
+PROGRESS.md entry is drafted with the gate line pending. The report §5, the figure, the tests, the module and the item mark are in place; I'm now waiting on the gate (lake build, two pytest suites, paper check), after which I'll fill in the gate line.
+
+# result: success in 349s, 19 turns, cost $10.64
+  > $ cat Ralph_Loops/loop0010/gate_it05.log; date; uptime
+
+Gate still in the lake build stage (about 3 minutes in; earlier runs took 11–23 minutes). The background wait on its verdict line is armed; nothing else is pending.
+
+# result: success in 5s, 2 turns, cost $10.77
+  > $ cat Ralph_Loops/loop0010/gate_it05.log | tail -20; date
+  > $ python - <<'EOF'
+p = "Ralph_Loops/loop0010/PROGRESS.md"
+s = open(p).read()
+s = s.replace("- **Gate:** GATE_LINE", """- **Gate: PASS** (one run, 2026-11-01 02:49
+
+Item 05 is done; eight items remain unchecked, so no LOOP_COMPLETE line. Nothing is committed, nothing under `solutions/` was touched, and no stray files sit outside the item's paths.
+
+**What was done.** `learning/excess_constructions.py` runs fresh random covers at 36 `(d, μ)` cells and `n = 100–5000`, 10 per cell, from both generators, and scores four constructions per instance: the two-key rule, the BFS-layer layout's exact vertex separation with the layer bound, `n − α_greedy`, and the edge-count bound. It then fits `width / n = β⁺ + a / n` per cell beside `β*` and item 02's certified slope `b`. 2,024 accepted instances in 1.6 core-hours, no exact solve. Ten new tests pass, and the gate passed in one run.
+
+**Findings.**
+- The rule's `width / n` falls with `n` in every cell, against item 02's expectation of an upward drift. The `1 / n` form fits with residuals within 0.009, and the extrapolated constant moves by at most 0.01 under two alternative forms.
+- The rule's `β⁺` sits 0.007 to 0.060 above the certified slope. The gap is smallest at both ends of the excess and largest on the ridge and at every `μ = ½` cell.
+- The proved constructions are far from the first moment. `n − α_greedy` runs 0.48 to 0.96 per customer, the edge bound is only better below `e ≈ 2.5`, and no proved construction comes within 0.07 of `β*` on any cell.
+- On the sparse many-component cell `(2, ½)` the rule's width is linear in `n` while the BFS layout's is sublinear. At `n = 5000` that is 215 stacks against 25.
+- The fitted Chu & Stuckey generator cannot be realised at large `n` and small `d`, since its connectivity rejection accepts with probability falling like `exp(−c n)`.
+
+**Kill verdict: met on 12 of 23 cells.** Those extrapolations, and the 13 cells with no certified series, are not to be quoted by later items. Eleven cells are trusted, all at `e ≥ 5` or at `d = 2` with `μ ≥ 1`.
+
+**Next** is item 06, the forest regime on paper. The PROGRESS entry records what items 07 to 12 should take from this one.
+
+# result: success in 19s, 3 turns, cost $13.74

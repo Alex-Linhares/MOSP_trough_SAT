@@ -18,3 +18,8 @@
 [2026-11-01 01:54:40] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-11-01 02:14:44] session it04: ok (exit 0, 54 tool calls)
 [2026-11-01 02:25:01] tests passed: GATE PASS
+[2026-11-01 02:25:02] committed 61da8e8da: 04 Industrial instances: the 24 SCOOP instances in the excess.
+[2026-11-01 02:25:02] === iteration 5: 05 `β⁺` by simulation: the width of explicit constructions at large `n`.
+[2026-11-01 02:25:02] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-11-01 03:00:10] session it05: ok (exit 0, 55 tool calls)
+[2026-11-01 03:10:26] tests passed: GATE PASS
