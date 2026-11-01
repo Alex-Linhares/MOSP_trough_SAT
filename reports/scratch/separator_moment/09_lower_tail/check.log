@@ -1,0 +1,4 @@
+n=4: 64 labelled graphs, 24 exact-size pairs at widths with min(t, r) >= 2, 24 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 1; Ẑ₀ ≤ Z ≤ X on every pair
+n=5: 1024 labelled graphs, 2080 exact-size pairs at widths with min(t, r) >= 2, 5760 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 9; Ẑ₀ ≤ Z ≤ X on every pair
+n=6: 32768 labelled graphs, 216320 exact-size pairs at widths with min(t, r) >= 2, 1345280 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 33; Ẑ₀ ≤ Z ≤ X on every pair
+Lemma W with Z = Z_4 and Z = Ẑ₀ on 300 random G(10, p) at every width: 2100 (graph, k) pairs, Y ≥ 1[X > 0] and Y(Ẑ₀) ≥ Y(Z_4): 0 violations

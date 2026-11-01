@@ -1,0 +1,111 @@
+# session it09 started 2026-11-01 20:14:00
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll read the plan, the report sections this item rests on (§4, §6, §8), and the code, then do the item.
+  > $ uptime && wc -l reports/separator_moment.md learning/separator_moment.py reports/separator_moment_plan.md && grep -n '^## \|^### ' reports/separator_moment.md |
+  > $ sed -n 1,52p reports/separator_moment.md && sed -n 950,1346p reports/separator_moment.md
+  > $ sed -n 950,1130p reports/separator_moment.md
+  > $ sed -n 1130,1346p reports/separator_moment.md
+  > $ sed -n 1,120p reports/separator_moment_plan.md
+  > $ grep -n 'item 09\|Item 09\|09 ' reports/separator_moment_plan.md | head -20; echo ---; sed -n 2592,2716p reports/separator_moment.md
+  > $ sed -n 1691,1760p reports/separator_moment.md && echo ----- && sed -n 1854,1900p reports/separator_moment.md
+  > $ sed -n 1786,1853p reports/separator_moment.md; echo ----CONST; cat reports/scratch/separator_moment/06_constants/constants.csv | head -20; echo ----LS; ls repor
+  > $ grep -n '^def \|^class ' learning/separator_moment.py | head -200; echo ----; grep -n 'def \|seed\|plant_pair\|enumerate_empty_pairs' reports/scratch/separator_
+  > $ sed -n 30,130p reports/scratch/separator_moment/04_planted/run.py; echo ----CODE; sed -n 316,364p learning/separator_moment.py; sed -n 572,660p learning/separat
+  > $ grep -n 'def \|^[A-Z_]* = ' reports/scratch/separator_moment/06_constants/run.py | head -50; echo ----FINITE; grep -n 'def stage_finite' -A 60 reports/scratch/s
+  > $ sed -n 367,386p reports/scratch/separator_moment/06_constants/run.py; echo ----; head -2 reports/scratch/separator_moment/05_inner/floors.csv; head -2 reports/s
+  > $ sed -n 130,165p reports/scratch/separator_moment/05_inner/run.py; sed -n 64,73p reports/scratch/separator_moment/06_constants/run.py; sed -n 204,217p reports/sc
+
+All the pieces are in hand. Now I'll write the library extension (recombinations, the computable `Ẑ`, its Laplace transform and `β_W`), then the runner and tests.
+  > $ grep -n 'def forced_sizes' -A 7 learning/separator_moment.py && grep -n 'def pair_count_exact' -A 8 learning/separator_moment.py && grep -n 'def H2\|def H3\|^LN
+  > $ cat >> learning/separator_moment.py <<'EOF'
+
+
+# --- item 09: the weighted count's lower tail --------------------------------------
+#
+# Lemma W (§8.1) admits an
+  > $ grep -n '__all__' learning/separator_moment.py | head -3; python3 - <<'EOF'
+import sys; sys.path.insert(0,'.')
+import learning.separator_moment as sm
+import mat
+  > $ python3 - <<'EOF'
+import re
+src = open('learning/separator_moment.py').read()
+old = """            lz = _lse([lchoose(lr + t, t), lchoose(la + r, r)])  # ≥ log(
+  > $ python3 - <<'EOF'
+src = open('learning/separator_moment.py').read()
+old = """    "weighted_graph_count",
+]"""
+new = """    "weighted_graph_count",
+    # item 09
+  > $ python3 - <<'EOF'
+src = open('learning/separator_moment.py').read()
+start = src.index('# --- item 09: the weighted count')
+head, tail = src[:start], src[start:]
+  > $ mkdir -p reports/scratch/separator_moment/09_lower_tail && cat > reports/scratch/separator_moment/09_lower_tail/run.py <<'EOF'
+#!/usr/bin/env python3
+"""Item 09
+
+The lemma check passes on every graph to 6 vertices. Running the remaining stages now (planted tail, stats, the Laplace transform, the near-threshold branch).
+  > $ nice -n 19 python3 run.py --stage tail --workers 8 2>&1 | tail -3 && nice -n 19 python3 run.py --stage stats 2>&1 | tail -45
+
+Next I need the `laplace` and `threshold` stages' output, and independently the tests; both can go now.
+  > $ nice -n 19 python3 run.py --stage laplace 2>&1 | tail -32 && nice -n 19 python3 run.py --stage threshold --workers 8 2>&1 | tail -32
+  > $ cd /home/al/dev/MOSP && tail -30 tests/test_separator_moment.py && cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 09: the weighted count's lower tai
+  > $ sed -n 1082p tests/test_separator_moment.py; grep -n '^    beta_star_gnp\|plant_pair\|gnp_masks' tests/test_separator_moment.py | head -5; python3 - <<'EOF'
+src
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0011/gate.py > Ralph_Loops/loop0011/gate_it09.log 2>&1; echo "GATE EXIT $?" >> Ralph_Loops/loop0011/gate_it09.log)
+
+The gate is running in the background. Meanwhile I'll write §9 of the report.
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+## 9. The branch: the weighted count's lower tail — can any computable `Z` merge the far pairs? (item 09, 2026-11-01
+  > $ python3 - <<'EOF'
+src = open('Ralph_Loops/loop0011/iterations.md').read()
+old = "- [ ] **09 The branch: the weighted count's lower tail"
+assert old in src
+open(
+  > $ python3 - <<'EOF'
+p='reports/separator_moment.md'; s=open(p).read()
+old="(divided by the pair exponent's slope at the cell's `β`: `3.4–3.5` at\n`c = 6`, `3.3–3.
+  > $ rm -rf reports/scratch/separator_moment/09_lower_tail/__pycache__ && cat >> Ralph_Loops/loop0011/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 9 — 2026-11-01 20:14
+
+It
+  > $ sed -i 's/^Current: 8\/13 SOLVED$/Current: 9\/13 SOLVED/' Ralph_Loops/loop0011/PROGRESS.md && grep -n '^Current:' Ralph_Loops/loop0011/PROGRESS.md && cat Ralph_
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Waiting on the gate (Lean build, both test suites, paper check); it is the only remaining dependency. I'll watch its log for completion.
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/Ralph_Loops/loop0011/gate_it09.log 2>/dev/null; do sleep 15; 
+
+Nothing else is pending beyond the gate: the report section, the library code, the tests, the runner outputs, the PROGRESS body and the item mark are all written. The remaining edits (the gate line, Blockers and Next in PROGRESS, deleting the gate log) depend on the gate's exit code, so I'm waiting for that event.
+
+# result: success in 1197s, 33 turns, cost $8.89
+  > $ tail -25 Ralph_Loops/loop0011/gate_it09.log
+
+The gate passed. Finishing: the gate line, Blockers and Next in PROGRESS, and removing the gate log so the driver's `git add -A` does not sweep it.
+  > $ cat >> Ralph_Loops/loop0011/PROGRESS.md <<'EOF'
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,738 passed / 2
+
+Item 09 is done, marked `[x]`, and the gate passed. Four items remain unchecked, so no `LOOP_COMPLETE` line.
+
+**Kill verdict: met.** The weighted count is closed on this record. For the computable `Ẑ₀`, `β_W − β_closed = −0.0002` at both `c = 6` and `c = 10`, against the kill at `0.02`. The reason is exact: `Ẑ₀ = 1` precisely when the planted pair is closed, so `E[1/Ẑ₀] ≥ P(closed | empty)` and the weighted count can never beat the closed-pair count at the forced sizes. The typical `Ẑ₀` is exponentially large but none of that reaches the constant, because the cost of emptying the movable sets falls faster than the move entropy grows. The planner's pre-registered expectation holds to `0.0002` in `β`.
+
+**What was built and checked**
+- Lemma Rc, the two-lobe recombination count as an admissible `Z` for Lemma W, checked on every labelled graph to 6 vertices: 1,351,064 recombined pairs, zero violations. The closed-form count matches the explicit enumeration everywhere.
+- The measured lower tail on item 04's 2,800 planted instances at `β*`. The recombinations `Z_4` recover 54% / 79% / 98% of the measured union-bound slack at `c = 6`, `c = 10`, covers; `Ẑ₀` recovers 26% / 28% / 37%. The lower tail of `Z_4` lives inside the closed pairs.
+- The exact transform of `Ẑ₀` to `n = 3,200`, converging to the variational exponent and reproducing the planted measurement at `n = 32`.
+- The (d) branch: `β_sep` at eleven `c` from 2.0 to 4.0 and exact floors at `n = 60`. The separator count's gain over `β*` peaks at `+0.029` at `c = 2.8`, the pair count's own threshold `4 ln 2`.
+
+**Deliverables**: report §9, eleven new library functions, 5 new tests (82 in the module, 1,738 in the suite), and `09_lower_tail/` with the runner and nine data files. Compute was about 0.03 core-hours against 0.5 budgeted. Nothing was committed and `solutions/` is untouched.
+
+**Next**: item 10 (Lean) in §8.4's order; §9.1's Lemma Rc is a later candidate but nothing in §9 depends on it being formalised.
+
+# result: success in 25s, 3 turns, cost $12.13

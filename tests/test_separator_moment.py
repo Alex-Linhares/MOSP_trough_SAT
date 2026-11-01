@@ -1023,3 +1023,122 @@ def test_flip_lemma_and_lemma_W_on_random_graphs():
             assert 1 <= Yf <= X and Ym == len(size) <= X                                    # Lemma W
     with pytest.raises(ValueError):
         weighted_count([(1, 2)], lambda P: 0)
+
+
+# --- item 09: the weighted count's lower tail -------------------------------------
+
+from learning.separator_moment import (  # noqa: E402
+    beta_closed, beta_star_gnp, beta_weighted, enumerate_empty_pairs, forced_sizes, gnp_masks, log_pair_count,
+    log_weighted_bound, plant_pair, recombination_pairs, recombinations, side_avoiders, vertex_separation, z_hat0,
+    z_hat_exponent, z_hat_log_laplace, z_recomb,
+)
+
+
+def _all_graphs(n):
+    pairs = list(combinations(range(n), 2))
+    for bits in range(1 << len(pairs)):
+        adj = [0] * n
+        for i, (u, v) in enumerate(pairs):
+            if bits >> i & 1:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+        yield adj
+
+
+def test_recombination_lemma_on_every_labelled_graph_to_five():
+    """Every recombined pair is an exact-size empty pair, distinct, not P₀; the
+    closed-form count equals the explicit enumeration; Ẑ₀ ≤ Z ≤ X."""
+    checked = 0
+    for n in (4, 5):
+        for adj in _all_graphs(n):
+            for k in range(n):
+                N, t = forced_sizes(n, k)
+                r = N - t
+                if min(t, r) < 2:
+                    continue
+                ex = set(enumerate_empty_pairs(adj, k))
+                jm = min(4, min(t, r) - 1)
+                for (A, R) in ex:
+                    imgs = recombination_pairs(adj, A, R, jm)
+                    cnt = recombinations(adj, A, R, jm)
+                    assert len(imgs) == len(set(imgs)) == sum(cnt.values())
+                    assert all(P in ex and P != (A, R) for P in imgs)
+                    la, lr = side_avoiders(adj, A, R)
+                    zfull = z_recomb(adj, A, R, min(max(jm, la, lr), min(t, r) - 1))
+                    assert 1 <= z_hat0(adj, A, R) <= zfull <= len(ex)
+                    checked += 1
+    assert checked > 2000
+
+
+def test_recombined_pairs_are_empty_on_planted_instances():
+    """200 planted G(16, 6/16) instances at β*: every recombined pair is in the
+    enumerated set of exact-size empty pairs, and Ẑ₀ ≤ Z_4 ≤ X."""
+    n, c = 16, 6.0
+    k = int(round(beta_star_gnp(c) * n))
+    N, t = forced_sizes(n, k)
+    r = N - t
+    A = (1 << t) - 1
+    R = ((1 << r) - 1) << t
+    for i in range(200):
+        adj = plant_pair(gnp_masks(n, c / n, 1000 + i), A, R)
+        ex = set(enumerate_empty_pairs(adj, k))
+        assert (A, R) in ex
+        jm = min(4, min(t, r) - 1)
+        imgs = recombination_pairs(adj, A, R, jm)
+        assert all(P in ex for P in imgs) and (A, R) not in imgs
+        assert len(set(imgs)) == len(imgs) == z_recomb(adj, A, R, jm) - 1
+        la, lr = side_avoiders(adj, A, R)
+        assert z_hat0(adj, A, R) <= z_recomb(adj, A, R, min(max(jm, la, lr), min(t, r) - 1)) <= len(ex)
+
+
+def test_z_hat_laplace_against_the_planted_enumeration():
+    """`E[1/Ẑ₀ | P₀ empty]` by the binomial double sum equals the average over
+    every planted graph (all A–R edges deleted, the rest Bernoulli(p))."""
+    from fractions import Fraction
+    n, k, p = 6, 2, Fraction(1, 3)
+    N, t = forced_sizes(n, k)
+    r = N - t
+    A = (1 << t) - 1
+    R = ((1 << r) - 1) << t
+    pairs = [(u, v) for u, v in combinations(range(n), 2) if not ((A >> u & 1 and R >> v & 1) or (R >> u & 1 and A >> v & 1))]
+    total = Fraction(0)
+    for bits in range(1 << len(pairs)):
+        adj = [0] * n
+        e = 0
+        for i, (u, v) in enumerate(pairs):
+            if bits >> i & 1:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+                e += 1
+        total += p ** e * (1 - p) ** (len(pairs) - e) / z_hat0(adj, A, R)
+    assert abs(math.log(total) - z_hat_log_laplace(n, k, float(p))) < 1e-9
+
+
+def test_weighted_bound_is_valid_on_every_labelled_graph_at_five():
+    """`P(pw ≤ k) ≤ E[X] · E[1/Ẑ₀ | planted]` (Lemma W with Z = Ẑ₀) at p = 1/2 on
+    every labelled graph with five vertices, every k; and the bound is below
+    the pair count."""
+    n = 5
+    graphs = list(_all_graphs(n))
+    for k in range(1, n - 2):
+        N, t = forced_sizes(n, k)
+        if min(t, N - t) < 1:
+            continue
+        prob = sum(1 for adj in graphs if vertex_separation(adj) <= k) / len(graphs)
+        lw = log_weighted_bound(n, k, 0.5)
+        assert math.log(prob) <= lw + 1e-12
+        assert lw <= log_pair_count(n, k, 0.5) + 1e-12
+
+
+def test_z_hat_exponent_is_the_closed_corner_and_beta_W_is_beta_closed():
+    """The exponent of `E[1/Ẑ₀]` sits at the lower tail: within 0.001 nats of
+    `2β ln q(a)` (the closed count's gain, §6.1 (b)), minimiser at λ ≈ 0; and
+    `β_W(c)` is within 0.0005 of `β_closed(c)` at c = 6 and 10."""
+    for c in (6.0, 10.0):
+        b = beta_star_gnp(c)
+        a = (1 - b) / 2
+        corner = 2 * b * math.log(-math.expm1(-c * a))
+        expo, lamA, lamR = z_hat_exponent(c, b, grid=100)
+        assert corner - 1e-9 <= expo <= corner + 0.001
+        assert lamA < 0.002 and lamR < 0.002
+        assert abs(beta_weighted(c) - beta_closed(c)) < 5e-4

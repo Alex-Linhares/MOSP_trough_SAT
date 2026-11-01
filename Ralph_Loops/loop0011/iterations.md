@@ -499,7 +499,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     weighted count; its asymptotics are item 06's and are fitted or
     bracketed, not proved here.
 
-- [ ] **09 The branch: the weighted count's lower tail — can any computable `Z` merge the far pairs?**
+- [x] **09 The branch: the weighted count's lower tail — can any computable `Z` merge the far pairs?**
   - **Question.** Item 04 measured whether the `e^{0.23 n}` cluster is
     typical under the planted measure. If it is, Lemma W with
     `Z(P)` = the number of recombinations around `P` (low-degree separator

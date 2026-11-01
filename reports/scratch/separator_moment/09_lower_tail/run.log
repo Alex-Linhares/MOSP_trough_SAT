@@ -1,0 +1,103 @@
+=== run 2026-11-01 20:25:57 stage=check workers=8 load=0.1
+== check ==
+n=4: 64 labelled graphs, 24 exact-size pairs at widths with min(t, r) >= 2, 24 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 1; Ẑ₀ ≤ Z ≤ X on every pair
+n=5: 1024 labelled graphs, 2080 exact-size pairs at widths with min(t, r) >= 2, 5760 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 9; Ẑ₀ ≤ Z ≤ X on every pair
+n=6: 32768 labelled graphs, 216320 exact-size pairs at widths with min(t, r) >= 2, 1345280 recombined pairs checked (empty, exact-size, distinct, not P0, in the enumeration; closed form = explicit count), max per pair 33; Ẑ₀ ≤ Z ≤ X on every pair
+Lemma W with Z = Z_4 and Z = Ẑ₀ on 300 random G(10, p) at every width: 2100 (graph, k) pairs, Y ≥ 1[X > 0] and Y(Ẑ₀) ≥ Y(Z_4): 0 violations
+check: 3 s
+=== run 2026-11-01 20:26:07 stage=tail workers=8 load=0.1
+== tail ==
+tail: 2800 planted instances in 0 s wall; 0 order violations (Ẑ₀ ≤ Z_all ≤ X)
+=== run 2026-11-01 20:26:08 stage=stats workers=8 load=0.1
+== stats ==
+cell                 n  k  |  Z4: med p10 p25 gm  share=1 | same/rev med | Zhat0: med share=1 | Zfl med | X med | slack per vertex (nats): X  Z4  Zall  Zhat0  Zfl  closed-share | in β
+g_n16_c6_star       16  3 |    2.0   1.0   1.0   2.55 0.46 |   0.0/  0.0 |   1.0 0.76 |  1.0 |     3.0 | 0.049 0.032 0.034 0.015 0.004  0.76 | 0.015 0.010 0.011 0.005
+g_n16_c10_star      16  5 |    1.0   1.0   1.0   1.30 0.80 |   0.0/  0.0 |   1.0 0.92 |  1.0 |     1.0 | 0.011 0.009 0.009 0.004 -0.000  0.92 | 0.003 0.003 0.003 0.001
+g_n20_c6_star       20  3 |    2.0   1.0   1.0   3.03 0.42 |   0.0/  1.0 |   1.0 0.75 |  1.0 |     4.0 | 0.054 0.029 0.035 0.013 0.007  0.75 | 0.015 0.008 0.010 0.004
+g_n20_c10_star      20  7 |    1.0   1.0   1.0   1.82 0.59 |   0.0/  0.0 |   1.0 0.85 |  1.0 |     1.0 | 0.020 0.017 0.017 0.007 0.000  0.85 | 0.006 0.005 0.005 0.002
+g_n24_c6_star       24  4 |    4.0   2.0   2.0   7.22 0.00 |   1.0/  2.0 |   1.0 0.62 |  1.0 |    20.0 | 0.078 0.053 0.058 0.018 0.007  0.62 | 0.023 0.015 0.017 0.005
+g_n24_c10_star      24  8 |    2.0   2.0   2.0   3.90 0.00 |   0.0/  1.0 |   1.0 0.79 |  1.0 |     2.0 | 0.044 0.041 0.041 0.009 0.000  0.79 | 0.013 0.012 0.012 0.003
+g_n28_c6_star       28  5 |    7.5   1.0   2.0  10.90 0.16 |   3.5/  2.0 |   1.0 0.54 |  1.0 |    40.0 | 0.077 0.044 0.050 0.020 0.008  0.54 | 0.023 0.013 0.015 0.006
+g_n28_c10_star      28  9 |    2.0   1.0   1.0   3.21 0.44 |   0.0/  1.0 |   1.0 0.77 |  1.0 |     2.0 | 0.025 0.020 0.020 0.008 0.001  0.77 | 0.007 0.006 0.006 0.002
+g_n32_c6_star       32  5 |    5.5   1.0   2.0   9.82 0.19 |   2.0/  2.0 |   1.0 0.55 |  1.0 |    65.0 | 0.065 0.035 0.042 0.017 0.010  0.55 | 0.018 0.010 0.012 0.005
+g_n32_c10_star      32 11 |    4.0   1.0   2.0   6.26 0.21 |   1.0/  1.0 |   1.0 0.69 |  1.0 |     6.5 | 0.039 0.031 0.031 0.011 0.001  0.69 | 0.012 0.010 0.010 0.003
+f_n16_d6_star       16  8 |    2.0   2.0   2.0   2.55 0.00 |   0.0/  1.0 |   1.0 0.86 |  1.0 |     2.0 | 0.051 0.051 0.051 0.008 0.000  0.86 | 0.017 0.017 0.017 0.003
+f_n20_d6_star       20 10 |    2.0   2.0   2.0   2.93 0.00 |   0.0/  1.0 |   1.0 0.81 |  1.0 |     2.0 | 0.044 0.043 0.044 0.009 0.000  0.81 | 0.015 0.015 0.015 0.003
+f_n24_d6_star       24 12 |    2.0   2.0   2.0   4.30 0.00 |   0.0/  1.0 |   1.0 0.67 |  1.0 |     2.0 | 0.044 0.044 0.044 0.014 0.000  0.67 | 0.015 0.015 0.015 0.005
+f_n28_d6_star       28 14 |    2.0   2.0   2.0   5.83 0.00 |   0.0/  1.0 |   1.0 0.59 |  1.0 |     2.0 | 0.043 0.042 0.042 0.016 0.000  0.59 | 0.015 0.014 0.014 0.006
+slopes in n of −log E[1/·] (nats per vertex, OLS over the sizes): X / Z4 / Zall / Zhat0
+  gnp c=6: X +0.091 ± 0.020   Z4 +0.047 ± 0.020   Zall +0.058 ± 0.019   Zhat0 +0.024 ± 0.004   
+  gnp c=10: X +0.060 ± 0.020   Z4 +0.048 ± 0.021   Zall +0.048 ± 0.021   Zhat0 +0.016 ± 0.002   
+  cover c=6: X +0.034 ± 0.005   Z4 +0.031 ± 0.004   Zall +0.031 ± 0.004   Zhat0 +0.029 ± 0.004   
+lower tail: share Z4 = 1 / share Ẑ₀ = 1 (= P₀ closed) / share Z4 = 1 among closed / E[1/Z4] − P(Z4 = 1) (the rest of the transform)
+  g_n16_c6_star      0.460 / 0.755 / 0.609 / 0.142
+  g_n16_c10_star     0.795 / 0.920 / 0.864 / 0.069
+  g_n20_c6_star      0.425 / 0.750 / 0.567 / 0.140
+  g_n20_c10_star     0.595 / 0.850 / 0.700 / 0.124
+  g_n24_c6_star      0.000 / 0.625 / 0.000 / 0.281
+  g_n24_c10_star     0.000 / 0.785 / 0.000 / 0.376
+  g_n28_c6_star      0.160 / 0.540 / 0.296 / 0.130
+  g_n28_c10_star     0.440 / 0.770 / 0.571 / 0.136
+  g_n32_c6_star      0.190 / 0.545 / 0.349 / 0.139
+  g_n32_c10_star     0.210 / 0.685 / 0.307 / 0.163
+  f_n16_d6_star      0.000 / 0.860 / 0.000 / 0.442
+  f_n20_d6_star      0.000 / 0.815 / 0.000 / 0.420
+  f_n24_d6_star      0.000 / 0.670 / 0.000 / 0.352
+  f_n28_d6_star      0.000 / 0.590 / 0.000 / 0.310
+=== run 2026-11-01 20:26:26 stage=laplace workers=8 load=0.1
+== laplace ==
+c=6.0: β*=0.1706  exponent of E[1/Ẑ₀] = -0.02902 at λ=(0.00057, 0.00057); 2β ln q(a) = -0.02960; typical |L| per vertex = β e^{−c a} = 0.0142
+   n=   32 k=   5: log E[1/Ẑ₀] =    -0.581 (-0.01815 per vertex); log P(P₀ closed) =    -0.562 (-0.01756); typical log Ẑ₀ per vertex ≈ 0.0000
+   n=   64 k=  11: log E[1/Ẑ₀] =    -1.607 (-0.02511 per vertex); log P(P₀ closed) =    -1.599 (-0.02498); typical log Ẑ₀ per vertex ≈ 0.0521
+   n=  128 k=  22: log E[1/Ẑ₀] =    -3.493 (-0.02729 per vertex); log P(P₀ closed) =    -3.598 (-0.02811); typical log Ẑ₀ per vertex ≈ 0.0571
+   n=  256 k=  44: log E[1/Ẑ₀] =    -7.279 (-0.02843 per vertex); log P(P₀ closed) =    -7.428 (-0.02902); typical log Ẑ₀ per vertex ≈ 0.0608
+   n=  512 k=  87: log E[1/Ẑ₀] =   -14.596 (-0.02851 per vertex); log P(P₀ closed) =   -14.736 (-0.02878); typical log Ẑ₀ per vertex ≈ 0.0569
+   n= 1024 k= 175: log E[1/Ẑ₀] =   -29.722 (-0.02903 per vertex); log P(P₀ closed) =   -30.054 (-0.02935); typical log Ẑ₀ per vertex ≈ 0.0584
+   n= 2048 k= 349: log E[1/Ẑ₀] =   -59.410 (-0.02901 per vertex); log P(P₀ closed) =   -60.167 (-0.02938); typical log Ẑ₀ per vertex ≈ 0.0610
+   n= 3200 k= 546: log E[1/Ẑ₀] =   -93.061 (-0.02908 per vertex); log P(P₀ closed) =   -94.467 (-0.02952); typical log Ẑ₀ per vertex ≈ 0.0610
+c=10.0: β*=0.3371  exponent of E[1/Ẑ₀] = -0.02448 at λ=(0.00049, 0.00049); 2β ln q(a) = -0.02497; typical |L| per vertex = β e^{−c a} = 0.0123
+   n=   32 k=  11: log E[1/Ẑ₀] =    -0.402 (-0.01255 per vertex); log P(P₀ closed) =    -0.360 (-0.01124); typical log Ẑ₀ per vertex ≈ 0.0000
+   n=   64 k=  22: log E[1/Ẑ₀] =    -1.192 (-0.01862 per vertex); log P(P₀ closed) =    -1.259 (-0.01968); typical log Ẑ₀ per vertex ≈ 0.0483
+   n=  128 k=  43: log E[1/Ẑ₀] =    -2.668 (-0.02085 per vertex); log P(P₀ closed) =    -2.643 (-0.02065); typical log Ẑ₀ per vertex ≈ 0.0296
+   n=  256 k=  86: log E[1/Ẑ₀] =    -5.789 (-0.02261 per vertex); log P(P₀ closed) =    -5.916 (-0.02311); typical log Ẑ₀ per vertex ≈ 0.0453
+   n=  512 k= 173: log E[1/Ẑ₀] =   -12.236 (-0.02390 per vertex); log P(P₀ closed) =   -12.317 (-0.02406); typical log Ẑ₀ per vertex ≈ 0.0476
+   n= 1024 k= 345: log E[1/Ẑ₀] =   -24.747 (-0.02417 per vertex); log P(P₀ closed) =   -24.981 (-0.02440); typical log Ẑ₀ per vertex ≈ 0.0490
+   n= 2048 k= 690: log E[1/Ẑ₀] =   -49.921 (-0.02438 per vertex); log P(P₀ closed) =   -50.632 (-0.02472); typical log Ẑ₀ per vertex ≈ 0.0515
+   n= 3200 k=1079: log E[1/Ẑ₀] =   -78.358 (-0.02449 per vertex); log P(P₀ closed) =   -79.397 (-0.02481); typical log Ẑ₀ per vertex ≈ 0.0518
+c     β*      β_closed  β_W      β_W−β_closed  β_sep(fitted)  gain_W (β)  gain_W (nats)  λ at the minimiser
+ 3.0  0.0087  0.0096    0.0096   +0.0000       0.0374         +0.0009     0.0044        (0.00001, 0.00001)
+ 4.0  0.0613  0.0671    0.0671   -0.0001       0.0833         +0.0058     0.0201        (0.00026, 0.00026)
+ 6.0  0.1706  0.1803    0.1801   -0.0002       0.1820         +0.0095     0.0290        (0.00057, 0.00057)
+ 8.0  0.2628  0.2722    0.2720   -0.0002       0.2691         +0.0092     0.0277        (0.00057, 0.00057)
+10.0  0.3371  0.3453    0.3451   -0.0002       0.3410         +0.0080     0.0245        (0.00049, 0.00049)
+12.0  0.3973  0.4043    0.4041   -0.0001       0.3999         +0.0068     0.0213        (0.00040, 0.00040)
+16.0  0.4882  0.4933    0.4932   -0.0001       0.4895         +0.0050     0.0161        (0.00027, 0.00027)
+20.0  0.5535  0.5573    0.5572   -0.0001       0.5543         +0.0037     0.0126        (0.00019, 0.00019)
+=== run 2026-11-01 20:27:59 stage=threshold workers=8 load=0.8
+== threshold (the (d) branch: finer c near the threshold) ==
+fitted rates on 51 c′ points in 5 s; max |fit − LDP| = 0.0022
+c    β*      β_sep(cited)  β_sep(fitted)  β_closed  gain_sep(β)  gain_sep(nats)  dg/dβ   slope  share_of_gap  E–M
+2.0  0.0000  0.0056        0.0059         0.0000    +0.0059      nan          7.21   0.040  0.15         0.085
+2.2  0.0000  0.0100        0.0103         0.0000    +0.0103      nan          7.31   nan  nan         0.103
+2.4  0.0000  0.0154        0.0158         0.0000    +0.0158      nan          7.41   nan  nan         0.122
+2.6  0.0000  0.0218        0.0222         0.0000    +0.0222      nan          7.51   nan  nan         0.142
+2.8  0.0008  0.0290        0.0294         0.0008    +0.0287      0.1416          7.61   nan  nan         0.162
+3.0  0.0087  0.0368        0.0373         0.0096    +0.0286      0.1270          5.53   0.099  0.32         0.183
+3.2  0.0181  0.0452        0.0458         0.0201    +0.0277      0.1144          4.87   nan  nan         0.203
+3.4  0.0284  0.0541        0.0547         0.0314    +0.0263      0.1034          4.49   nan  nan         0.224
+3.6  0.0391  0.0634        0.0640         0.0431    +0.0249      0.0938          4.24   nan  nan         0.245
+3.8  0.0501  0.0730        0.0735         0.0551    +0.0234      0.0854          4.05   nan  nan         0.265
+4.0  0.0613  0.0827        0.0832         0.0671    +0.0219      0.0779          3.91   0.158  0.23         0.285
+n = 60: c   pair<.01 pair<1 | sep<.01 sep<1 | rel<.01 | closed<.01 | β*·n  β_sep·n | pilot: graphs, min exact pw, min lower bound (unproved)
+  2.0    -1      -1   |   -1      0  |    -1    |     -1     |  0.00   0.34  | 137,   2,   2
+  2.2    -1      -1   |    0      1  |     0    |     -1     |  0.00   0.60  |   0,    ,    
+  2.4    -1      -1   |    0      1  |     0    |     -1     |  0.00   0.92  |   0,    ,    
+  2.6    -1       0   |    0      2  |     0    |     -1     |  0.00   1.31  |   0,    ,    
+  2.8    -1       0   |    1      2  |     1    |     -1     |  0.05   1.74  |   0,    ,    
+  3.0     0       1   |    1      3  |     1    |      0     |  0.52   2.21  | 136,   5,    
+  3.2     1       2   |    2      3  |     2    |      1     |  1.09   2.71  |   0,    ,    
+  3.4     1       2   |    3      4  |     3    |      1     |  1.70   3.25  |   0,    ,    
+  3.6     2       3   |    3      5  |     3    |      2     |  2.34   3.80  |   0,    ,    
+  3.8     3       4   |    4      5  |     4    |      3     |  3.01   4.38  |   0,    ,    
+  4.0     3       5   |    4      6  |     4    |      4     |  3.68   4.96  | 136,   8,    
+floors at n = 60: 1 s; threshold stage 7 s

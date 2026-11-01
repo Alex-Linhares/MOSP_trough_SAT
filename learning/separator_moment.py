@@ -62,6 +62,10 @@ __all__ = [
     "connected_probs_exact", "prob_relax_exact", "prob_bip_exact", "pair_count_exact",
     "closed_count_exact", "isolated_in", "flip_swaps", "flip_count", "weighted_count",
     "weighted_graph_count",
+    # item 09: the weighted count's lower tail
+    "recombinations", "recombination_pairs", "z_recomb", "side_avoiders", "z_hat0",
+    "z_hat_log_laplace", "log_pair_count", "log_weighted_bound", "z_hat_exponent",
+    "weighted_exponent", "beta_weighted",
 ]
 
 
@@ -2287,3 +2291,305 @@ def weighted_count(pairs, Z) -> "Fraction":
             raise ValueError("Z must be at least 1")
         total += Fraction(1, z)
     return total
+
+
+# --- item 09: the weighted count's lower tail --------------------------------------
+#
+# Lemma W (§8.1) admits any `Z(P)` with `1 ≤ Z(P) ≤ X` on `{P empty}`, and the
+# weighted count `Y = Σ_P 1[P empty]/Z(P)` gives `P(pw ≤ k) ≤ E[X] · E[1/Z | P₀ empty]`.
+# `Z` here counts *recombinations* of `P₀ = (A, R, S)` — the mechanism of §4.5:
+# separator vertices join a side, their few neighbours on the other side are
+# evicted into the new separator, and vertices of the other side are drawn into
+# the separator to keep the sizes.  Two lobes (§4.4).  With `W_A, W_R ⊆ S`
+# disjoint and no `W_A–W_R` edge, `U_A ⊆ A`, `U_R ⊆ R`:
+#
+#   same lobe:      A′ = (A ∖ U_A) ∪ W_A,  R′ = (R ∖ U_R) ∪ W_R,
+#                   |U_A| = |W_A|, |U_R| = |W_R|, N_R(W_A) ⊆ U_R, N_A(W_R) ⊆ U_A;
+#   reversed lobe:  A′ = (R ∖ U_R) ∪ W_A,  R′ = (A ∖ U_A) ∪ W_R,
+#                   |W_A| = |U_R| + (t − r), |W_R| = |U_A| − (t − r), N_A(W_A) ⊆ U_A, N_R(W_R) ⊆ U_R.
+#
+# Each image is an exact-size empty pair of the planted graph (every `A′–R′`
+# edge class is excluded by one of the four conditions), the map
+# `(W_A, W_R, U_A, U_R) ↦ (A′, R′)` is injective on each lobe (`U_A = A ∖ A′`,
+# `W_A = A′ ∩ S`, … on the same lobe; `U_R = R ∖ A′`, … on the reversed), the
+# lobes are disjoint (`A′ ∩ A ≠ ∅` on one, `= ∅` on the other, for `|U_A| < t`)
+# and only the identity (same lobe, `W = ∅`) is `P₀` itself.  So
+# `Z_j := 1 + #(recombinations with |U_A|, |U_R| ≤ j)` satisfies `1 ≤ Z_j ≤ X`.
+# Brute-force checked on every labelled graph to six vertices and on the
+# planted instances (`tests/test_separator_moment.py`, `09_lower_tail/run.py`).
+#
+# The *computable* bound `Ẑ₀` keeps the same-lobe moves with one side's `W`
+# empty: `W_A ⊆ L_R := {w ∈ S : N_R(w) = ∅}` with `U_A` any `|W_A|`-subset of
+# `A`, which gives `Σ_i C(|L_R|, i) C(t, i) = C(|L_R| + t, t)` pairs (the identity
+# included), and symmetrically; `Ẑ₀ = C(|L_R| + t, t) + C(|L_A| + r, r) − 1`.
+# Given `(A, R)`, `|L_A|` and `|L_R|` are independent `Bin(k, (1−p)^t)`,
+# `Bin(k, (1−p)^r)` (disjoint edge sets), so `E[1/Ẑ₀ | P₀ empty]` is a finite
+# double sum of binomial probabilities (`z_hat_log_laplace`).
+
+
+def _or_masks(masks) -> int:
+    out = 0
+    for m in masks:
+        out |= m
+    return out
+
+
+def _subsets_with_small_nbhd(adj: list[int], verts: list[int], side: int, limit: int,
+                             max_size: int) -> list[tuple[int, int, int]]:
+    """Every `W ⊆ verts` with `|W| ≤ max_size` and `|N_side(W)| ≤ limit`, as
+    `(mask, |W|, |N_side(W)|)`; the family is closed under subsets, so the
+    depth-first search prunes exactly."""
+    out: list[tuple[int, int, int]] = []
+
+    def dfs(start: int, chosen: int, size: int, nb: int) -> None:
+        out.append((chosen, size, popcount(nb)))
+        if size == max_size:
+            return
+        for i in range(start, len(verts)):
+            v = verts[i]
+            nb2 = nb | (adj[v] & side)
+            if popcount(nb2) <= limit:
+                dfs(i + 1, chosen | (1 << v), size + 1, nb2)
+
+    dfs(0, 0, 0, 0)
+    return out
+
+
+def recombinations(adj: list[int], A: int, R: int, jmax: int = 4,
+                   lobes: tuple[str, ...] = ("same", "rev")) -> dict[tuple[str, int, int], int]:
+    """The number of recombinations of the pair `(A, R)` per `(lobe, |U_A|, |U_R|)`
+    with `|U_A|, |U_R| ≤ jmax` (the identity excluded), by enumerating the
+    separator subsets `W_A`, `W_R` and counting the admissible `(U_A, U_R)` in
+    closed form: `C(t − |N_A(W_R)|, |U_A| − |N_A(W_R)|) · C(r − |N_R(W_A)|, |U_R| − |N_R(W_A)|)`
+    on the same lobe, and with `N_A(W_A)`, `N_R(W_R)` on the reversed one.
+    `recombination_pairs` lists the same pairs explicitly."""
+    n = len(adj)
+    full = (1 << n) - 1
+    S = full & ~(A | R)
+    t, r = popcount(A), popcount(R)
+    if jmax >= min(t, r):
+        raise ValueError("jmax must be below both side sizes (so that no image is P itself)")
+    sv = [v for v in range(n) if S >> v & 1]
+    d = t - r
+    out: dict[tuple[str, int, int], int] = {}
+
+    def add(key, val):
+        if val:
+            out[key] = out.get(key, 0) + val
+
+    if "same" in lobes:
+        # W_A: |W_A| = |U_A| ≤ jmax and |N_R(W_A)| ≤ |U_R| ≤ jmax; W_R symmetric
+        WA = _subsets_with_small_nbhd(adj, sv, R, jmax, jmax)
+        WR = _subsets_with_small_nbhd(adj, sv, A, jmax, jmax)
+        for wa, ia, nR in WA:
+            forb = wa | (_or_masks(adj[v] for v in sv if wa >> v & 1) & S)  # W_R must avoid W_A and N_S(W_A)
+            for wr, ir, nA in WR:
+                if wr & forb or (ia == 0 and ir == 0):
+                    continue
+                if nA > ia or nR > ir:
+                    continue
+                add(("same", ia, ir), comb(t - nA, ia - nA) * comb(r - nR, ir - nR))
+    if "rev" in lobes:
+        # |U_R| = |W_A| − d ≤ jmax, |U_A| = |W_R| + d ≤ jmax; N_A(W_A) ⊆ U_A, N_R(W_R) ⊆ U_R
+        WA = _subsets_with_small_nbhd(adj, sv, A, jmax, jmax + d)
+        WR = _subsets_with_small_nbhd(adj, sv, R, jmax, max(0, jmax - d))
+        for wa, ia, nA in WA:
+            jR = ia - d
+            if jR < 0 or jR > jmax:
+                continue
+            forb = wa | (_or_masks(adj[v] for v in sv if wa >> v & 1) & S)
+            for wr, ir, nR in WR:
+                jA = ir + d
+                if wr & forb or jA > jmax or nA > jA or nR > jR:
+                    continue
+                add(("rev", jA, jR), comb(t - nA, jA - nA) * comb(r - nR, jR - nR))
+    return out
+
+
+def recombination_pairs(adj: list[int], A: int, R: int, jmax: int = 4,
+                        lobes: tuple[str, ...] = ("same", "rev")) -> list[tuple[int, int]]:
+    """Every recombined pair `(A′, R′)` explicitly (the identity excluded), for
+    the lemma check: the list has `Σ recombinations(...)` entries, all distinct,
+    all exact-size empty pairs when `(A, R)` is."""
+    n = len(adj)
+    full = (1 << n) - 1
+    S = full & ~(A | R)
+    t, r = popcount(A), popcount(R)
+    if jmax >= min(t, r):
+        raise ValueError("jmax must be below both side sizes")
+    sv = [v for v in range(n) if S >> v & 1]
+    av = [v for v in range(n) if A >> v & 1]
+    rv = [v for v in range(n) if R >> v & 1]
+    d = t - r
+    out: list[tuple[int, int]] = []
+
+    def supersets(base: int, verts: list[int], size: int) -> Iterator[int]:
+        rest = [v for v in verts if not base >> v & 1]
+        need = size - popcount(base)
+        if need < 0:
+            return
+        for extra in combinations(rest, need):
+            yield base | sum(1 << v for v in extra)
+
+    nbS = {v: adj[v] & S for v in sv}
+    for lobe in lobes:
+        if lobe == "same":
+            WA = _subsets_with_small_nbhd(adj, sv, R, jmax, jmax)
+            WR = _subsets_with_small_nbhd(adj, sv, A, jmax, jmax)
+        else:
+            WA = _subsets_with_small_nbhd(adj, sv, A, jmax, jmax + d)
+            WR = _subsets_with_small_nbhd(adj, sv, R, jmax, max(0, jmax - d))
+        for wa, ia, na in WA:
+            forb = wa | _or_masks(nbS[v] for v in sv if wa >> v & 1)
+            for wr, ir, nr in WR:
+                if wr & forb:
+                    continue
+                if lobe == "same":
+                    if ia == 0 and ir == 0:
+                        continue
+                    jA, jR = ia, ir
+                    baseA = _or_masks(adj[v] & A for v in sv if wr >> v & 1)   # N_A(W_R) ⊆ U_A
+                    baseR = _or_masks(adj[v] & R for v in sv if wa >> v & 1)   # N_R(W_A) ⊆ U_R
+                else:
+                    jA, jR = ir + d, ia - d
+                    if jR < 0:
+                        continue
+                    baseA = _or_masks(adj[v] & A for v in sv if wa >> v & 1)   # N_A(W_A) ⊆ U_A
+                    baseR = _or_masks(adj[v] & R for v in sv if wr >> v & 1)   # N_R(W_R) ⊆ U_R
+                if jA > jmax or jR > jmax or popcount(baseA) > jA or popcount(baseR) > jR:
+                    continue
+                for UA in supersets(baseA, av, jA):
+                    for UR in supersets(baseR, rv, jR):
+                        if lobe == "same":
+                            out.append(((A & ~UA) | wa, (R & ~UR) | wr))
+                        else:
+                            out.append(((R & ~UR) | wa, (A & ~UA) | wr))
+    return out
+
+
+def z_recomb(adj: list[int], A: int, R: int, jmax: int = 4,
+             lobes: tuple[str, ...] = ("same", "rev")) -> int:
+    """`Z_j(P) = 1 + #recombinations` with `|U_A|, |U_R| ≤ jmax`: admissible in Lemma W."""
+    return 1 + sum(recombinations(adj, A, R, jmax, lobes).values())
+
+
+def side_avoiders(adj: list[int], A: int, R: int) -> tuple[int, int]:
+    """`(|L_A|, |L_R|)`: the separator vertices with no neighbour in `A`, in `R`."""
+    n = len(adj)
+    S = ((1 << n) - 1) & ~(A | R)
+    la = lr = 0
+    T = S
+    while T:
+        low = T & -T
+        T ^= low
+        nb = adj[low.bit_length() - 1]
+        la += (nb & A) == 0
+        lr += (nb & R) == 0
+    return la, lr
+
+
+def z_hat0(adj: list[int], A: int, R: int) -> int:
+    """`Ẑ₀ = C(|L_R| + t, t) + C(|L_A| + r, r) − 1`: the computable lower bound on
+    the recombination count (same lobe, one side's `W` empty)."""
+    la, lr = side_avoiders(adj, A, R)
+    t, r = popcount(A), popcount(R)
+    return comb(lr + t, t) + comb(la + r, r) - 1
+
+
+def _log_binom_pmf(k: int, pi: float) -> list[float]:
+    if pi <= 0.0:
+        return [0.0] + [-math.inf] * k
+    if pi >= 1.0:
+        return [-math.inf] * k + [0.0]
+    lp, lq = math.log(pi), math.log1p(-pi)
+    return [lchoose(k, i) + i * lp + (k - i) * lq for i in range(k + 1)]
+
+
+def z_hat_log_laplace(n: int, k: int, p: float) -> float:
+    """`log E[1/Ẑ₀ | P₀ empty]` on `G(n, p)` at width `k`, exactly: the double sum
+    over `|L_A| ~ Bin(k, (1−p)^t)`, `|L_R| ~ Bin(k, (1−p)^r)` (independent) of the
+    binomial probabilities over `C(|L_R| + t, t) + C(|L_A| + r, r) − 1`."""
+    N, t = forced_sizes(n, k)
+    r = N - t
+    piA = (1 - p) ** t
+    piR = (1 - p) ** r
+    lA = _log_binom_pmf(k, piA)
+    lR = _log_binom_pmf(k, piR)
+    terms = []
+    for la in range(k + 1):
+        if lA[la] == -math.inf:
+            continue
+        for lr in range(k + 1):
+            if lR[lr] == -math.inf:
+                continue
+            z = comb(lr + t, t) + comb(la + r, r) - 1
+            terms.append(lA[la] + lR[lr] - math.log(z))
+    return _lse(terms)
+
+
+def log_pair_count(n: int, k: int, p: float) -> float:
+    """`log E[X]` at exact sizes: `C(n, t) C(n − t, r) (1 − p)^{t r}`."""
+    N, t = forced_sizes(n, k)
+    r = N - t
+    return lchoose(n, t) + lchoose(n - t, r) + t * r * math.log1p(-p)
+
+
+def log_weighted_bound(n: int, k: int, p: float) -> float:
+    """`log E[Y]` for `Z = Ẑ₀`: `log E[X] + log E[1/Ẑ₀ | P₀ empty]` (Lemma W)."""
+    return log_pair_count(n, k, p) + z_hat_log_laplace(n, k, p)
+
+
+def _kl(x: float, pi: float) -> float:
+    if x <= 0.0:
+        return -math.log1p(-pi)
+    if x >= 1.0:
+        return -math.log(pi)
+    return x * math.log(x / pi) + (1 - x) * math.log((1 - x) / (1 - pi))
+
+
+def z_hat_exponent(c: float, beta: float, grid: int = 400) -> tuple[float, float, float]:
+    """The exponent per vertex of `E[1/Ẑ₀ | P₀ empty]` on `G(n, c/n)` at `β`
+    (a non-positive number): `−inf_{λ_A, λ_R ∈ [0, β]} [β KL(λ_A/β ‖ π) + β KL(λ_R/β ‖ π)
+    + max((λ_R + a) H(λ_R/(λ_R + a)), (λ_A + a) H(λ_A/(λ_A + a)))]` with `a = (1 − β)/2`,
+    `π = e^{−c a}` (the two sides have the same fraction in the limit); returns
+    `(exponent, λ_A, λ_R)` at the minimiser.  At `λ = 0` the value is
+    `2β ln q(a)`, the closed count's gain (§6.1 (b))."""
+    a = (1 - beta) / 2
+    pi = math.exp(-c * a)
+
+    def gain(lam: float) -> float:
+        if lam <= 0.0:
+            return 0.0
+        return (lam + a) * H2(lam / (lam + a))
+
+    def f(lamA: float, lamR: float) -> float:
+        return beta * (_kl(lamA / beta, pi) + _kl(lamR / beta, pi)) + max(gain(lamR), gain(lamA))
+
+    best = (math.inf, 0.0, 0.0)
+    for i in range(grid + 1):
+        lamA = beta * i / grid
+        for j in range(grid + 1):
+            lamR = beta * j / grid
+            v = f(lamA, lamR)
+            if v < best[0]:
+                best = (v, lamA, lamR)
+    try:
+        from scipy.optimize import minimize
+        res = minimize(lambda x: f(min(max(x[0], 0.0), beta), min(max(x[1], 0.0), beta)),
+                       [best[1], best[2]], method="Nelder-Mead", options={"xatol": 1e-10, "fatol": 1e-13})
+        if res.fun < best[0]:
+            best = (float(res.fun), float(min(max(res.x[0], 0.0), beta)), float(min(max(res.x[1], 0.0), beta)))
+    except ImportError:  # pragma: no cover
+        pass
+    return -best[0], best[1], best[2]
+
+
+def weighted_exponent(c: float, beta: float) -> float:
+    """The weighted count's exponent per vertex with `Z = Ẑ₀`: the pair exponent
+    plus `z_hat_exponent`."""
+    return pair_exponent_beta(c, beta) + z_hat_exponent(c, beta, grid=120)[0]
+
+
+def beta_weighted(c: float) -> float:
+    """`β_W(c)`: the root in `β` of `weighted_exponent(c, ·)`."""
+    return _root_beta(lambda b: weighted_exponent(c, b), tol=1e-6)

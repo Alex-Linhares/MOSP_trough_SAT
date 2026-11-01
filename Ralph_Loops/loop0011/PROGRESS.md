@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 8/13 SOLVED
+Current: 9/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -787,3 +787,106 @@ in the recommended order (Lemma W first; Theorem S via `sum_gnpWeight_fiber`;
 Lemmas P, G, F only if components-as-`Finset`s is cheap). Item 12 quotes
 Theorem S and Theorem Cl from §8.1 and Propositions T / T-cover with their
 hypotheses, never as theorems.
+
+---
+
+## Iteration 9 — 2026-11-01 20:14
+
+Item 09, the branch: the weighted count's lower tail — can any computable
+`Z` merge the far pairs? **Done.** Deliverable: `reports/separator_moment.md`
+§9 (Lemma Rc, the recombination count as an admissible `Z`, with its
+brute-force check; the measured lower tail on item 04's planted instances;
+the computable `Ẑ₀`, its exact transform and exponent, `β_W(c)` against
+`β_closed(c)`; the kill verdict with the mechanism; the (d) branch: the
+separator count at `c = 2.0, 2.2, …, 4.0` and the exact floors at `n = 60`;
+regenerate / size range / non-claims); `learning/separator_moment.py`
+extended (`recombinations`, `recombination_pairs`, `z_recomb`,
+`side_avoiders`, `z_hat0`, `z_hat_log_laplace`, `log_pair_count`,
+`log_weighted_bound`, `z_hat_exponent`, `weighted_exponent`,
+`beta_weighted`); `reports/scratch/separator_moment/09_lower_tail/`
+(`run.py` with stages `check`, `tail`, `stats`, `laplace`, `threshold`;
+`check.log`, `tail.csv`, `cells.csv`, `laplace.csv`, `beta_w.csv`,
+`rate_fits_fine.csv`, `threshold_fine.csv`, `floors_60_rows.csv`,
+`floors_60.csv`, `run.log`); `tests/test_separator_moment.py` (5 new tests,
+82 in the module).
+
+### Completed
+
+- **Kill criterion: met.** `β_W − β_closed = −0.0002` at `c = 6` and at
+  `c = 10` (`0.1801` against `0.1803`; `0.3451` against `0.3453`), against
+  the kill at `0.02`: **the weighted count is closed on this record** for
+  every `Z` with a closed-form transform. Mechanism: `Ẑ₀ = 1` iff the
+  planted pair is *closed* (every separator vertex sees both sides), so
+  `E[1/Ẑ₀] ≥ P(closed | empty) = (q_t q_r)^k` exactly and the weighted
+  count is at least the closed count at the forced sizes; the exponent's
+  minimiser is interior at `λ = 0.0006` and `0.0006` nats above the corner
+  `2β ln q(a)` (`0.030` nats at `c = 6`, `0.025` at `c = 10`). The typical
+  `Ẑ₀` is `e^{0.05–0.06 n}` and none of it reaches the constant: the cost
+  of emptying `L_A`, `L_R` falls faster than the entropy of the moves
+  grows. The planner's pre-registered expectation (plan §0) holds to
+  `0.0002` in `β`.
+- **Lemma Rc, checked before it was called a lemma**: every labelled graph
+  on 4–6 vertices, every width with `min(t, r) ≥ 2`, every exact-size pair
+  (218,424), every recombined pair (1,351,064) empty, exact-size, distinct,
+  not `P₀`, in the enumeration, closed-form count = explicit count,
+  `Ẑ₀ ≤ Z ≤ X`; Lemma W pointwise with `Z_4` and `Ẑ₀` on 2,100 random
+  `(G(10, p), k)`; zero violations, 3 s. The general form has both lobes
+  and `d = t − r ∈ {0, 1}`; the item's definition is the reversed lobe at
+  `N` odd; `1 + Σ_j Z_j` is admissible (the level is recoverable from
+  `|U_A|`) and is what was measured.
+- **The measured lower tail** (2,800 planted instances at `β*`, `j ≤ 4`,
+  order `Ẑ₀ ≤ Z_all ≤ X` on all; under a second): at the largest `n`, the
+  recombinations `Z_4` recover 54% / 79% / 98% of item 04's measured
+  union-bound slack (`0.035 / 0.031 / 0.042` of `0.065 / 0.039 / 0.043`
+  nats per vertex at `c = 6`, `c = 10`, covers), `Ẑ₀` 26% / 28% / 37%
+  (`0.017 / 0.011 / 0.016`); the flips `≤ 0.010`. `Z_4 = 1` on 16–21% of
+  instances where `N` is odd, on 30–35% of the closed planted pairs and
+  never on an open one; `P(Z_4 = 1)` is 56–58% of `E[1/Z_4]`. The price
+  of computability at `n = 32` is `0.018–0.026` nats per vertex
+  (`0.005–0.008` in `β`), from the two-sided and reversed-lobe moves whose
+  transform needs the edge-free pairs inside `G[S]` and has no closed form
+  here. On covers `Z_4` is the whole measured slack to two decimals (the
+  cluster there is the reversed pair, §4.3).
+- **The transform, exact to `n = 3,200`**: `(1/n) log E[1/Ẑ₀]` runs
+  `−0.018 → −0.0291` at `c = 6` (asymptotic `−0.0290`) and `−0.013 →
+  −0.0245` at `c = 10` (`−0.0245`), within `0.001` per vertex of
+  `log P(P₀ closed)` at every `n`; at `n = 32` it reproduces the planted
+  measurement. Checks: against the average over every planted graph at
+  `n = 6`; the bound above `P(pw ≤ k)` on every labelled graph at `n = 5`
+  and below the pair count.
+- **The (d) branch, near the threshold**: `β_sep` at eleven `c` from `2.0`
+  to `4.0` (cited LDP rate and a fit on a `0.05` grid of `c′`, within
+  `0.0022` of each other). **The separator count's gain over `β*` peaks at
+  the pair count's threshold**: `+0.0294` at `c = 2.8 ≈ 4 ln 2`, falling to
+  `+0.0059` at `c = 2` and `+0.0219` at `c = 4`; in nats at `β*` it is
+  monotone (`0.142 → 0.078`), the peak in `β` being the slope `dg/dβ`
+  falling from 7.6 to 3.9. Sandwich with Edwards & McDermid: `[0.006,
+  0.085]`, `[0.029, 0.162]`, `[0.037, 0.183]`, `[0.083, 0.285]` at `c = 2,
+  2.8, 3, 4`. At `n = 60` (exact `P_N(E_bip)`) the separator floor at
+  `< 0.01` is `−1, 0, 0, 0, 1, 1, 2, 3, 3, 4, 4` across the eleven `c`, one
+  to two stacks above the exact-size pair count's from `c = 2.2` on, one
+  above the closed count's through `c = 3.8`, equal to the relaxed form's
+  everywhere, and `1 / 5`, `4 / 8` against the pilot's minimum exact
+  pathwidth at `c = 3, 4`: real in the constant, small in stacks at sixty.
+- Compute: about 0.03 core-hours (0.5 budgeted); the one-minute load was
+  below 1 throughout. No figure (none in the deliverable).
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,738 passed / 2 skipped / 1 xfailed in 4:31, the 5 new tests among them; pathwidth_solver 123 passed in 6:26; paper 71 pages, no undefined references; the one-minute load was below 1).
+
+### Blockers
+
+None. The one-minute load was below 1 throughout.
+
+### Next
+
+Item 10 (Lean) takes §8.4's table in its recommended order (Lemma W first,
+via `sum_gnpWeight_fiber` for Theorem S); Lemma Rc of §9.1 is a candidate
+after those — its proof is four edge classes and a reconstruction of
+`(W, U)` from `(A′, R′)`, and `z_recomb` is pinned to the explicit
+enumeration on every graph to six vertices — but nothing in §9 depends on
+it being formalised, since `β_W = β_closed` to `0.0002` and the closed
+count is Theorem Cl. Item 11's ledger takes, per cell at `n ≤ 32`, the
+three measured slacks of §9.2 (`X`, `Z_4`, `Ẑ₀`) beside §4.6's; item 12
+should say that the weighted count is closed (the lower tail is the closed
+pair), that the recombinations are half the cluster's logarithm on
+`G(n, c/n)` and all of it on covers, and carry §9.6's finer-`c` table and
+the gain's peak at `c = 4 ln 2` in the `β` figure's near-threshold region.

@@ -3021,3 +3021,393 @@ and Corollary S′ only if components-as-`Finset`s turns out cheap.
   obstacle. The one correction to a later item's brief: item 10's
   "termination by `|V ∖ (A ∪ R)|` strictly decreasing" is unnecessary, by
   L2 (iii).
+
+## 9. The branch: the weighted count's lower tail — can any computable `Z` merge the far pairs? (item 09, 2026-11-01)
+
+**Question.** Lemma W (§8.1) turns any `Z(P)` with `1 ≤ Z ≤ X` on `{P
+empty}` into a valid first moment, `P(pw ≤ k) ≤ E[X] · E[1/Z | P₀ empty]`,
+whose gain over the pair count is `−log E[1/Z | P₀ empty]`: a **lower-tail**
+statistic of `Z` under the planted law. Item 04 measured the ceiling,
+`−log E[1/X | P₀ empty] = 0.065, 0.039, 0.043` nats per vertex at `n ≤ 32`
+(`G(n, 6/n)`, `G(n, 10/n)`, `(6, 1)` covers at `β*`; §4.6), and found the
+cluster around a planted pair to be two lobes of recombinations through the
+separator (§4.4–§4.5), typical on `G(n, c/n)` at about half the mean's
+rate and absent on covers (§4.7, the fork's middle branch and its artefact
+branch). This item writes the recombination count down as a `Z`, checks it,
+measures its lower tail on the same planted instances, writes the cleanest
+*computable* lower bound `Ẑ₀` whose transform is a finite sum of binomial
+probabilities, and gives the constant `β_W(c)` it yields. Per the item's
+(d), the rest of the session went to the near-threshold numbers at finer
+`c` (§9.6).
+
+**The events counted.** Three `Z` on the ordered exact-size empty pairs
+(`|A| = t`, `|R| = r = N − t`, `S = V ∖ (A ∪ R)`, `|S| = k`):
+
+* `Z_j(P) = 1 + #{recombinations of P with |U_A|, |U_R| ≤ j}` (§9.1; `j = 4`
+  measured, `Z_4`); `Z_all = Z_{j′} + Z_fl − 1` adds the flips of Lemma Fl
+  with `j′ = max(4, |L_A|, |L_R|)` so that `Ẑ₀ ≤ Z_all`;
+* `Ẑ₀(P) = C(|L_R| + t, t) + C(|L_A| + r, r) − 1`, with `L_A`, `L_R` the
+  separator vertices with no neighbour in `A`, in `R` (§9.3);
+* `X` itself (the ideal `Z`, `Y = 1[X > 0]`; §4.6).
+
+The item's `Z = 1 + max_j Z_j` is below the `1 + Σ_j` used here, which is
+admissible because the levels are distinguished by `|U_A|` (§9.1 (iii)).
+
+### 9.1 The recombination lemma (deterministic), and its check
+
+**Definition.** For an exact-size empty pair `P = (A, R)` with separator
+`S`, `d = t − r ∈ {0, 1}`, and `W_A, W_R ⊆ S` disjoint with no `W_A–W_R`
+edge, `U_A ⊆ A`, `U_R ⊆ R`:
+
+    same lobe:      A′ = (A ∖ U_A) ∪ W_A,  R′ = (R ∖ U_R) ∪ W_R,
+                    |U_A| = |W_A|, |U_R| = |W_R|, N_R(W_A) ⊆ U_R, N_A(W_R) ⊆ U_A;
+    reversed lobe:  A′ = (R ∖ U_R) ∪ W_A,  R′ = (A ∖ U_A) ∪ W_R,
+                    |W_A| = |U_R| + d, |W_R| = |U_A| − d, N_A(W_A) ⊆ U_A, N_R(W_R) ⊆ U_R.
+
+The separator vertices `W_A` join the `A′` side and `W_R` the `R′` side;
+their neighbours on the side they are joining against are *evicted* into
+the new separator (`U_A`, `U_R` must contain them), and the rest of `U_A`,
+`U_R` is drawn freely to keep the sizes. This is §4.5's mechanism, with
+§4.4's two lobes.
+
+**Lemma Rc.** (i) Every image `(A′, R′)` is an exact-size empty pair of
+`G`: `|A′| = t`, `|R′| = r` by the size conditions, and each of the four
+edge classes of `A′ × R′` is excluded — `(A ∖ U_A) × (R ∖ U_R)` by `P`
+empty, `W_A × (R ∖ U_R)` by `N_R(W_A) ⊆ U_R`, `(A ∖ U_A) × W_R` by
+`N_A(W_R) ⊆ U_A`, `W_A × W_R` by hypothesis (same lobe; the reversed lobe
+is the same four lines with the sides exchanged). (ii) On each lobe the
+map `(W_A, W_R, U_A, U_R) ↦ (A′, R′)` is injective: on the same lobe
+`U_A = A ∖ A′`, `W_A = A′ ∩ S`, `U_R = R ∖ R′`, `W_R = R′ ∩ S`; on the
+reversed lobe `U_R = R ∖ A′`, `W_A = A′ ∩ S`, `U_A = A ∖ R′`, `W_R = R′ ∩ S`.
+(iii) For `|U_A| < t`, the two lobes are disjoint (`A′ ∩ A = A ∖ U_A ≠ ∅`
+on the same lobe, `A′ ∩ A = ∅` on the reversed), the levels are
+distinguished by `|U_A|` and `|U_R|`, and the only image equal to `P` is
+the identity (same lobe, `W_A = W_R = ∅`). Hence
+`Z_j := 1 + #{images with |U_A|, |U_R| ≤ j < min(t, r)}` satisfies
+`1 ≤ Z_j ≤ X` on `{P empty}` and is admissible in Lemma W. ∎
+
+**Counting without enumerating `U`.** Given `(W_A, W_R)`, the admissible
+`(U_A, U_R)` are the supersets of the evicted neighbourhoods at the forced
+sizes, so on the same lobe the number of images is
+`C(t − |N_A(W_R)|, |U_A| − |N_A(W_R)|) · C(r − |N_R(W_A)|, |U_R| − |N_R(W_A)|)`
+(and with `N_A(W_A)`, `N_R(W_R)` on the reversed lobe); the families of
+`W` with a small evicted neighbourhood are closed under subsets, so a
+pruned depth-first search lists them exactly (`recombinations`;
+`recombination_pairs` lists the images themselves).
+
+**The check** (`09_lower_tail/check.log`; before the above was called a
+lemma): on **every labelled graph on 4, 5 and 6 vertices** (64 + 1,024 +
+32,768), at every width `k` with `min(t, r) ≥ 2`, for **every exact-size
+empty pair** (24 + 2,080 + 216,320 pairs), every image (24 + 5,760 +
+**1,345,280** recombined pairs) is in the enumerated set of exact-size
+empty pairs, has the forced sizes, is not `P`, the images are distinct, and
+the closed-form count equals the explicit enumeration; `Ẑ₀ ≤ Z ≤ X` on
+every pair; and Lemma W holds pointwise with `Z = Z_4` and `Z = Ẑ₀` on 300
+random `G(10, p)` at every width (2,100 `(graph, k)` pairs, `Y ≥ 1[X > 0]`
+and `Y(Ẑ₀) ≥ Y(Z_4)`). **Zero violations**, 3 s on 8 workers. The same
+check on 200 planted `G(16, 6/16)` instances is a test
+(`test_recombined_pairs_are_empty_on_planted_instances`).
+
+### 9.2 The measured lower tail on the planted instances
+
+Item 04's planted instances at `β*` (14 cells, 200 each, regenerated from
+their seeds by item 04's `planted_instance`; `X` read from `planted.csv`;
+`tail.csv`): `Z_4` with both lobes and its split, `Z_1 … Z_3`, the flip
+count `Z_fl`, `Ẑ₀`, `|L_A|`, `|L_R|`, and the order `Ẑ₀ ≤ Z_all ≤ X` on
+every instance (2,800 of 2,800; under a second of wall time on 8
+workers). The `β* + 0.1` cells are not a gain in the constant (§4.6) and
+were not run.
+
+| cell | `n` | `k` | `Z_4`: median | p10 | gm | share `Z_4 = 1` | same / rev lobe (median) | `Ẑ₀` median | share `Ẑ₀ = 1` (= `P₀` closed) | `Z_fl` median | `X` median | median `log Z_4 / log X` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | 16 | 3 | 2 | 1 | 2.55 | 0.46 | 0 / 0 | 1 | 0.76 | 1 | 3 | 0.50 |
+| | 20 | 3 | 2 | 1 | 3.03 | 0.42 | 0 / 1 | 1 | 0.75 | 1 | 4 | 0.44 |
+| | 24 | 4 | 4 | 2 | 7.22 | 0.00 | 1 / 2 | 1 | 0.62 | 1 | 20 | 0.46 |
+| | 28 | 5 | 7.5 | 1 | 10.90 | 0.16 | 3.5 / 2 | 1 | 0.54 | 1 | 40 | 0.52 |
+| | 32 | 5 | 5.5 | 1 | 9.82 | 0.19 | 2 / 2 | 1 | 0.55 | 1 | 65 | 0.43 |
+| `G(n, 10/n)` | 16 | 5 | 1 | 1 | 1.30 | 0.80 | 0 / 0 | 1 | 0.92 | 1 | 1 | — |
+| | 20 | 7 | 1 | 1 | 1.82 | 0.59 | 0 / 0 | 1 | 0.85 | 1 | 1 | — |
+| | 24 | 8 | 2 | 2 | 3.90 | 0.00 | 0 / 1 | 1 | 0.79 | 1 | 2 | 1.00 |
+| | 28 | 9 | 2 | 1 | 3.21 | 0.44 | 0 / 1 | 1 | 0.77 | 1 | 2 | 1.00 |
+| | 32 | 11 | 4 | 1 | 6.26 | 0.21 | 1 / 1 | 1 | 0.69 | 1 | 6.5 | 0.67 |
+| cover `(6, 1)` | 16 | 8 | 2 | 2 | 2.55 | 0.00 | 0 / 1 | 1 | 0.86 | 1 | 2 | 1.00 |
+| | 20 | 10 | 2 | 2 | 2.93 | 0.00 | 0 / 1 | 1 | 0.81 | 1 | 2 | 1.00 |
+| | 24 | 12 | 2 | 2 | 4.30 | 0.00 | 0 / 1 | 1 | 0.67 | 1 | 2 | 1.00 |
+| | 28 | 14 | 2 | 2 | 5.83 | 0.00 | 0 / 1 | 1 | 0.59 | 1 | 2 | 1.00 |
+
+(The medians of the lobe splits are of the counts without the identity;
+`N` is even at `n = 24` on `G(n, c/n)` and in every cover cell, where the
+reversed pair itself is a level-0 recombination, which is why `Z_4 ≥ 2`
+there. `cells.csv`.)
+
+**The three slacks**, `−log E[1/Z | P₀ empty]` per vertex (nats) and in `β`
+(divided by the pair exponent's slope at the cell's realised `β`: `3.2–3.6`
+at `c = 6`, `3.2–3.5` at `c = 10`, `2.9` on covers; `cells.csv`), with the closed share
+beside them:
+
+| cell | `n` | `−log E[1/X]` / n | `Z_4` | `Z_all` | `Ẑ₀` | `Z_fl` | in `β`: `X` | `Z_4` | `Z_all` | `Ẑ₀` | share `Z_4 = 1` | share `Ẑ₀ = 1` | `Z_4 = 1` among closed | `E[1/Z_4] − P(Z_4 = 1)` |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `G(n, 6/n)` | 16 | 0.049 | 0.032 | 0.034 | 0.015 | 0.004 | 0.015 | 0.010 | 0.011 | 0.005 | 0.46 | 0.76 | 0.61 | 0.14 |
+| | 20 | 0.054 | 0.029 | 0.035 | 0.013 | 0.007 | 0.015 | 0.008 | 0.010 | 0.004 | 0.42 | 0.75 | 0.57 | 0.14 |
+| | 24 | 0.078 | 0.053 | 0.058 | 0.018 | 0.007 | 0.023 | 0.015 | 0.017 | 0.005 | 0.00 | 0.62 | 0.00 | 0.28 |
+| | 28 | 0.077 | 0.044 | 0.050 | 0.020 | 0.008 | 0.023 | 0.013 | 0.015 | 0.006 | 0.16 | 0.54 | 0.30 | 0.13 |
+| | 32 | **0.065** | **0.035** | **0.042** | **0.017** | 0.010 | **0.018** | **0.010** | **0.012** | **0.005** | 0.19 | 0.55 | 0.35 | 0.14 |
+| `G(n, 10/n)` | 16 | 0.011 | 0.009 | 0.009 | 0.004 | 0.000 | 0.003 | 0.003 | 0.003 | 0.001 | 0.80 | 0.92 | 0.86 | 0.07 |
+| | 20 | 0.020 | 0.017 | 0.017 | 0.007 | 0.000 | 0.006 | 0.005 | 0.005 | 0.002 | 0.59 | 0.85 | 0.70 | 0.12 |
+| | 24 | 0.044 | 0.041 | 0.041 | 0.009 | 0.000 | 0.013 | 0.012 | 0.012 | 0.003 | 0.00 | 0.79 | 0.00 | 0.38 |
+| | 28 | 0.025 | 0.020 | 0.020 | 0.008 | 0.001 | 0.007 | 0.006 | 0.006 | 0.002 | 0.44 | 0.77 | 0.57 | 0.14 |
+| | 32 | **0.039** | **0.031** | **0.031** | **0.011** | 0.001 | **0.012** | **0.010** | **0.010** | **0.003** | 0.21 | 0.69 | 0.31 | 0.16 |
+| cover `(6, 1)` | 16 | 0.051 | 0.051 | 0.051 | 0.008 | 0.000 | 0.017 | 0.017 | 0.017 | 0.003 | 0.00 | 0.86 | 0.00 | 0.44 |
+| | 20 | 0.044 | 0.043 | 0.044 | 0.009 | 0.000 | 0.015 | 0.015 | 0.015 | 0.003 | 0.00 | 0.81 | 0.00 | 0.42 |
+| | 24 | 0.044 | 0.044 | 0.044 | 0.014 | 0.000 | 0.015 | 0.015 | 0.015 | 0.005 | 0.00 | 0.67 | 0.00 | 0.35 |
+| | 28 | **0.043** | **0.042** | **0.042** | **0.016** | 0.000 | **0.015** | **0.014** | **0.014** | **0.006** | 0.00 | 0.59 | 0.00 | 0.31 |
+
+Growth in `n` of the total slack `−log E[1/·]` (OLS over the sizes, nats
+per vertex): `G(n, 6/n)`: `X` `0.091 ± 0.020`, `Z_4` `0.047 ± 0.020`,
+`Z_all` `0.058 ± 0.019`, `Ẑ₀` `0.024 ± 0.004`; `G(n, 10/n)`: `0.060`,
+`0.048`, `0.048`, `0.016 ± 0.002`; covers: `0.034`, `0.031`, `0.031`,
+`0.029 ± 0.004`.
+
+What the tables say:
+
+1. **The recombinations are most of the measured union-bound slack at
+   these sizes, and the computable bound is a third of it.** At the largest
+   `n`, `Z_4` recovers 54% (`c = 6`), 79% (`c = 10`) and 98% (covers) of
+   `−log E[1/X]`; `Ẑ₀` recovers 26%, 28% and 37%. The flips (Lemma Fl)
+   are worth 0.000–0.010 nats per vertex and are inside `Z_all`. On
+   covers `Z_4` *is* the whole slack to two decimals: the cluster there is
+   the reversed pair and nothing else (§4.3), and `Z_4` contains it.
+2. **The lower tail of `Z_4` is `Z_4 = 1`, and `Z_4 = 1` lives inside the
+   closed pairs.** `Z_4 = 1` on 16–21% of the planted instances at `n =
+   28–32` where `N` is odd (0% where `N` is even, by the reversed pair), on
+   30–35% of the *closed* planted pairs, and never on an open one (every
+   `S` vertex avoiding a side is a level-0 move); `P(Z_4 = 1)` is 58%
+   (`c = 6`) and 56% (`c = 10`) of `E[1/Z_4]` at `n = 32`. So the
+   recombination count's transform is carried by the instances whose
+   planted pair is closed *and* has no two-sided move at `j ≤ 4`.
+3. **What `Z_4` has and `Ẑ₀` has not** is the two-sided moves (an `S`
+   vertex with one or two neighbours on the far side, evicted by a vertex
+   of `S` joining the other side) and the reversed lobe: on the median
+   planted instance at `n = 32`, `c = 6`, the same lobe holds 2 and the
+   reversed 2 recombinations beyond the identity, `Ẑ₀ = 1`. The price of
+   computability at `n = 32` is `0.018, 0.020, 0.026` nats per vertex
+   (`c = 6, 10`, covers) — `0.005, 0.007, 0.008` in `β`.
+4. **`log Z_4 / log X` is about a half on `G(n, c/n)` and one on
+   covers** (medians 0.43–0.52 at `c = 6`, 0.67–1.00 at `c = 10`): the
+   recombinations at `j ≤ 4` account for half the cluster's logarithm on
+   `G(n, 6/n)`, and the half they miss is at distance beyond four
+   evictions.
+
+### 9.3 The computable bound `Ẑ₀`, its transform, and `β_W(c)`
+
+**`Ẑ₀`.** Keep the same-lobe moves with one side's `W` empty: `W_R = ∅`
+forces `U_R = ∅`, hence `N_R(W_A) = ∅`, so `W_A` is any subset of
+`L_R = {w ∈ S : N_R(w) = ∅}` and `U_A` any `|W_A|`-subset of `A`;
+`Σ_i C(|L_R|, i) C(t, i) = C(|L_R| + t, t)` images with the identity, and
+symmetrically `C(|L_A| + r, r)`; the two families share the identity, so
+
+    Ẑ₀ = C(|L_R| + t, t) + C(|L_A| + r, r) − 1  ≤  Z_{max(|L_A|, |L_R|)}  ≤  X.
+
+Given `(A, R)`, the degrees `|N_A(w)|`, `|N_R(w)|` for `w ∈ S` are
+independent across `w` and across the two sides (disjoint edge sets, none
+of them an `A–R` edge), so `|L_A| ~ Bin(k, (1 − p)^t)` and `|L_R| ~ Bin(k,
+(1 − p)^r)` are independent under the planted law and
+
+    E[1/Ẑ₀ | P₀ empty] = Σ_{ℓ_A, ℓ_R = 0}^{k} Bin(k, (1−p)^t)(ℓ_A) · Bin(k, (1−p)^r)(ℓ_R) / (C(ℓ_R + t, t) + C(ℓ_A + r, r) − 1)
+
+(`z_hat_log_laplace`; checked against the average of `1/Ẑ₀` over every
+planted graph at `n = 6`, `test_z_hat_laplace_against_the_planted_enumeration`;
+the resulting bound `E[X] · E[1/Ẑ₀]` is above `P(pw ≤ k)` on every labelled
+graph at `n = 5` and below the pair count,
+`test_weighted_bound_is_valid_on_every_labelled_graph_at_five`).
+
+**`Ẑ₀ = 1` iff `P₀` is closed.** `|L_A| = |L_R| = 0` says every separator
+vertex sees both sides, i.e. `S = N(A) ∩ N(R)` (L2). So
+`E[1/Ẑ₀ | P₀ empty] ≥ P(P₀ closed | P₀ empty) = (q_t q_r)^k`, and the
+weighted count with `Ẑ₀` is at least the closed-pair count at the forced
+sizes (the corner term of Theorem Cl): **`β_W ≤ β_closed` for this `Ẑ₀`**,
+exactly. The question is how much below.
+
+**The exponent.** With `a = (1 − β)/2`, `π = e^{−ca}` and `λ_A, λ_R` the
+fractions of `n` in `L_A`, `L_R`,
+
+    (1/n) log E[1/Ẑ₀]  →  − inf_{λ_A, λ_R ∈ [0, β]} [ β KL(λ_A/β ‖ π) + β KL(λ_R/β ‖ π) + max( (λ_R + a) H(λ_R/(λ_R + a)), (λ_A + a) H(λ_A/(λ_A + a)) ) ]
+
+(`z_hat_exponent`; the entropy terms are `(1/n) log C(λ n + a n, a n)`).
+At `λ = 0` the bracket is `2β(−ln q(a))`, the closed count's gain (§6.1
+(b)); the derivative along `λ_A = λ_R = λ → 0` is `2 ln(λ/(βπ)) − ln(λ/a) +
+O(1) → −∞`, so the minimiser is interior but at `λ = 0.0006`, and the value
+is `0.0006` nats below the corner (`laplace.csv`, `beta_w.csv`):
+
+| `c` | `β*` | `β_closed` | **`β_W`** | `β_W − β_closed` | `β_sep` (fitted) | gain of `β_W` over `β*` | in nats at `β*` | `2β ln q(a)` | minimiser `λ` |
+|---|---|---|---|---|---|---|---|---|---|
+| 3 | 0.0087 | 0.0096 | 0.0096 | +0.0000 | 0.0374 | +0.0009 | 0.0044 | −0.0044 | 0.00001 |
+| 4 | 0.0613 | 0.0671 | 0.0671 | −0.0001 | 0.0833 | +0.0058 | 0.0201 | −0.0204 | 0.0003 |
+| 6 | 0.1706 | 0.1803 | **0.1801** | **−0.0002** | 0.1820 | +0.0095 | 0.0290 | −0.0296 | 0.0006 |
+| 8 | 0.2628 | 0.2722 | 0.2720 | −0.0002 | 0.2691 | +0.0092 | 0.0277 | −0.0283 | 0.0006 |
+| 10 | 0.3371 | 0.3453 | **0.3451** | **−0.0002** | 0.3410 | +0.0080 | 0.0245 | −0.0250 | 0.0005 |
+| 12 | 0.3973 | 0.4043 | 0.4041 | −0.0001 | 0.3999 | +0.0068 | 0.0213 | −0.0217 | 0.0004 |
+| 16 | 0.4882 | 0.4933 | 0.4932 | −0.0001 | 0.4895 | +0.0050 | 0.0161 | −0.0164 | 0.0003 |
+| 20 | 0.5535 | 0.5573 | 0.5572 | −0.0001 | 0.5543 | +0.0037 | 0.0126 | −0.0128 | 0.0002 |
+
+The finite transform converges to the exponent from above
+(`laplace.csv`, `G(n, 6/n)` at `β*`): `(1/n) log E[1/Ẑ₀] = −0.018, −0.025,
+−0.027, −0.028, −0.029, −0.029, −0.029, −0.0291` at `n = 32, 64, 128, 256,
+512, 1024, 2048, 3200` against the asymptotic `−0.0290`, and `log P(P₀
+closed)` beside it within `0.001` per vertex at every `n`; at `c = 10`:
+`−0.013 → −0.0245` against `−0.0245`. At `n = 32` the transform
+(`−0.0182`, `−0.0126` per vertex) reproduces the planted measurement of
+§9.2 (`0.017`, `0.011`) to the sampling error. **The typical `Ẑ₀` is
+exponentially large** — `|L| ≈ β e^{−ca} n = 0.014 n` vertices avoid a
+side, giving `log Ẑ₀ ≈ 0.06 n` at `c = 6` and `0.05 n` at `c = 10` — and
+none of it reaches the constant: the transform is the lower tail.
+
+**Why no level-`j` `Ẑ` with a clean transform does better.** A one-sided
+level-1 family (reversed lobe, `N` odd, `W_R = ∅`, so `|N_A(W_A)| ≤ 1`)
+has the vertices with exactly one `A`-neighbour entering *linearly* — only
+the degree-zero vertices combine freely — so its transform is the
+one-sided level-0 tail `β(−ln q)`, worse than `Ẑ₀`'s two-sided one. A
+two-sided level-1 family (an `S` vertex with one far-side neighbour,
+evicted by an `S` vertex joining the other side) needs *no edge* between
+`W_A` and `W_R` inside `G[S]`: linearly many such pairs have a linear
+number of cross pairs, the edge-free count is a function of `G[S]` and
+not of the side degrees, and its transform is not a sum of binomial
+probabilities. That count is inside `Z_4`, which is why `Z_4`'s measured
+slack is twice `Ẑ₀`'s at `n = 32` (§9.2 (3)); its transform is what
+`tail.csv` measures and what no closed form here evaluates.
+
+### 9.4 Kill verdict
+
+**Met.** `β_W(6) − β_closed(6) = −0.0002` and `β_W(10) − β_closed(10) =
+−0.0002`, against the kill at `0.02`: **the weighted count is closed on
+this record** for every `Z` written down here with a Laplace transform in
+closed form. The mechanism: the lower tail of `Ẑ₀` is the event *every
+separator vertex sees both sides* — `P₀` is a closed pair — at cost
+`2β(−ln q(a))` nats per vertex (`0.030` at `c = 6`, `0.025` at `c = 10`),
+and the exponential size of the typical `Ẑ₀` (`0.05–0.06` nats per
+vertex) does not enter because the cost of emptying `L_A` and `L_R`
+(`2 ln(λ/(βπ))` per vertex of `λ`) falls faster than the entropy of the
+moves (`ln(a/λ)`) grows. The pre-registered expectation of the plan
+(`β_W` near `β_closed`, the lower tail "no movable vertex" at `qβ` per
+side) is confirmed to `0.0002` in `β` and `0.0006` nats. The price of
+computability, measured at `n = 32`: `Z_4` gains `0.035 / 0.031 / 0.042`
+nats per vertex against `Ẑ₀`'s `0.017 / 0.011 / 0.016` (`c = 6`, `c = 10`,
+covers), i.e. `0.005–0.008` in `β` more at these sizes, from the
+two-sided and reversed-lobe moves whose transform has no closed form.
+
+### 9.5 Where the record corrects the item
+
+* The item's recombination is the reversed lobe at `N` odd (`|W_A| = |U_R|
+  + 1`, `|W_R| = |U_A| − 1`); the general form has `d = t − r ∈ {0, 1}`
+  and both lobes, and the same lobe is where the computable bound lives.
+* `Z = 1 + max_j Z_j` is weaker than `1 + Σ_j Z_j`, which is admissible
+  because `|U_A|` recovers the level (Lemma Rc (iii)); the sum is what was
+  measured.
+* The planner's "`q β` per side" is `β(−ln q(a))` per side in nats, with
+  `q(a) = 1 − e^{−ca}` the probability that a separator vertex sees a side;
+  the mechanism is as stated.
+* `Ẑ₀`'s exponent is not exactly the corner value: the minimiser is
+  interior at `λ ≈ 0.0006` and the exponent `0.0006` nats *above* the
+  corner, so `β_W` is `0.0002` *below* `β_closed`, consistent with the
+  exact inequality `E[1/Ẑ₀] ≥ P(closed)`.
+* The item's (d) applies to the cover branch (§4.7: the `e^{0.23 n}` is a
+  rare-instance artefact there) and not to `G(n, c/n)` (the middle
+  branch); (a)–(c) were done in full for both models and the
+  near-threshold numbers follow.
+
+### 9.6 The (d) branch: the separator count at finer `c` near the threshold
+
+`β_sep(c)` at `c = 2.0, 2.2, …, 4.0` from the cited LDP rate and from a
+fitted rate on a finer `c′` grid (`1.50, 1.55, …, 4.00`, the log-corrected
+fit of `−log P_N(E_relax)` over `N = 100 … 400` by `log_prob_rel_fast`;
+fitted and cited within `0.0022` at every `c′`), `β_closed(c)`, the pair
+exponent's slope, Edwards & McDermid's Poisson(`c`) upper line, and the
+share of the gap to the pilot's fitted slope where it exists
+(`threshold_fine.csv`, `rate_fits_fine.csv`):
+
+| `c` | `β*` | `β_sep` cited | `β_sep` fitted | `β_closed` | gain sep (`β`) | gain sep (nats at `β*`) | `dg/dβ` | slope | share of gap | E–M | sandwich |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2.0 | 0 | 0.0056 | 0.0059 | 0 | +0.0059 | — | 7.21 | 0.040 | 0.15 | 0.085 | [0.006, 0.085] |
+| 2.2 | 0 | 0.0100 | 0.0103 | 0 | +0.0103 | — | 7.31 | — | — | 0.103 | [0.010, 0.103] |
+| 2.4 | 0 | 0.0154 | 0.0158 | 0 | +0.0158 | — | 7.41 | — | — | 0.122 | [0.016, 0.122] |
+| 2.6 | 0 | 0.0218 | 0.0222 | 0 | +0.0222 | — | 7.51 | — | — | 0.142 | [0.022, 0.142] |
+| 2.8 | 0.0008 | 0.0290 | 0.0294 | 0.0008 | **+0.0287** | 0.142 | 7.61 | — | — | 0.162 | [0.029, 0.162] |
+| 3.0 | 0.0087 | 0.0368 | 0.0373 | 0.0096 | +0.0286 | 0.127 | 5.53 | 0.099 | 0.32 | 0.183 | [0.037, 0.183] |
+| 3.2 | 0.0181 | 0.0452 | 0.0458 | 0.0201 | +0.0277 | 0.114 | 4.87 | — | — | 0.203 | [0.046, 0.203] |
+| 3.4 | 0.0284 | 0.0541 | 0.0547 | 0.0314 | +0.0263 | 0.103 | 4.49 | — | — | 0.224 | [0.055, 0.224] |
+| 3.6 | 0.0391 | 0.0634 | 0.0640 | 0.0431 | +0.0249 | 0.094 | 4.24 | — | — | 0.245 | [0.064, 0.245] |
+| 3.8 | 0.0501 | 0.0730 | 0.0735 | 0.0551 | +0.0234 | 0.085 | 4.05 | — | — | 0.265 | [0.074, 0.265] |
+| 4.0 | 0.0613 | 0.0827 | 0.0832 | 0.0671 | +0.0219 | 0.078 | 3.91 | 0.158 | 0.23 | 0.285 | [0.083, 0.285] |
+
+**The separator count's gain over `β*` peaks at the pair count's own
+threshold**: `+0.029` in `β` at `c = 2.8 ≈ 4 ln 2 = 2.77`, where `β*`
+vanishes and `β_sep = 0.029`, and falls on both sides — to `+0.006` at
+`c = 2` (where `β_sep` is `0.0059` against `β* = 0`) and `+0.022` at
+`c = 4`. In nats at `β*` it is monotone (`0.142 → 0.078` from `c = 2.8` to
+`4.0`), the peak in `β` being the slope `dg/dβ` falling from 7.6 to 3.9.
+The closed count is worth `≤ 0.006` on this range and the separator count
+is the best valid first moment at every `c ≤ 6` (§6.3). The provable
+sandwich with the published upper line is `[0.006, 0.085]` at `c = 2`,
+`[0.029, 0.162]` at `2.8`, `[0.037, 0.183]` at `3.0`: the ratio upper /
+lower is 14 at `c = 2`, 5.6 at `2.8`, 4.9 at `3.0`, 3.4 at `4.0`.
+
+**In stacks at `n = 60`** (the exact `P_N(E_bip)` of §5.1 at `N = 60 − k`,
+`k ≤ 15`; `floors_60.csv`; the floor is the largest `k` whose bound is
+below the threshold, `−1` if none; the pilot column is the minimum exact
+pathwidth over the pilot's 136–137 proved graphs at that `c`, survey §7):
+
+| `c` | pair `< 0.01` | pair `< 1` | sep `< 0.01` | sep `< 1` | relaxed `< 0.01` | closed `< 0.01` | `β* n` | `β_sep n` | pilot min pw |
+|---|---|---|---|---|---|---|---|---|---|
+| 2.0 | −1 | −1 | −1 | 0 | −1 | −1 | 0.0 | 0.3 | 2 |
+| 2.2 | −1 | −1 | 0 | 1 | 0 | −1 | 0.0 | 0.6 | — |
+| 2.4 | −1 | −1 | 0 | 1 | 0 | −1 | 0.0 | 0.9 | — |
+| 2.6 | −1 | 0 | 0 | 2 | 0 | −1 | 0.0 | 1.3 | — |
+| 2.8 | −1 | 0 | 1 | 2 | 1 | −1 | 0.0 | 1.7 | — |
+| 3.0 | 0 | 1 | 1 | 3 | 1 | 0 | 0.5 | 2.2 | 5 |
+| 3.2 | 1 | 2 | 2 | 3 | 2 | 1 | 1.1 | 2.7 | — |
+| 3.4 | 1 | 2 | 3 | 4 | 3 | 1 | 1.7 | 3.2 | — |
+| 3.6 | 2 | 3 | 3 | 5 | 3 | 2 | 2.3 | 3.8 | — |
+| 3.8 | 3 | 4 | 4 | 5 | 4 | 3 | 3.0 | 4.4 | — |
+| 4.0 | 3 | 5 | 4 | 6 | 4 | 4 | 3.7 | 5.0 | 8 |
+
+At `n = 60` the separator count's floor (`< 0.01`) is one to two stacks
+above the exact-size pair count's from `c = 2.2` on, one above the closed
+count's through `c = 3.8`, and equal to the relaxed form's everywhere
+(§5.2's finding again); at `c = 2.0–2.6` it is the only one of the four
+that excludes anything at the 1% level (`pw ≥ 1`), and against the truth
+it stands at `1 / 5` at `c = 3` and `4 / 8` at `c = 4`: the near-threshold
+gain is real in the constant and small in stacks at sixty vertices, where
+`β_sep n` is itself `0.3–5`.
+
+### 9.7 Regenerate, size range, what this does not claim
+
+* **Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/09_lower_tail/run.py --workers 8`
+  (stages `check` 3 s, `tail` < 1 s, `stats` 1 s, `laplace` 90 s, `threshold`
+  7 s; about 0.03 core-hours in all against 0.5 budgeted); `python3 -m
+  pytest tests/test_separator_moment.py` (82 tests, 5 new: Lemma Rc on every
+  labelled graph to five vertices; the images on 200 planted instances;
+  the transform against the planted enumeration at `n = 6`; the weighted
+  bound valid on every labelled graph at `n = 5`; the exponent at the
+  corner and `β_W` against `β_closed`). Code: `recombinations`,
+  `recombination_pairs`, `z_recomb`, `side_avoiders`, `z_hat0`,
+  `z_hat_log_laplace`, `log_pair_count`, `log_weighted_bound`,
+  `z_hat_exponent`, `weighted_exponent`, `beta_weighted` in
+  `learning/separator_moment.py`.
+* **Size range.** The lemma: every labelled graph on 4–6 vertices (and the
+  tests to 5); the tail: item 04's planted instances at `β*`, `n = 16–32`
+  (`G(n, c/n)`, `c = 6, 10`) and `16–28` (`(6, 1)` covers), 200 per cell,
+  `j ≤ 4`; the transform: exact at `n ≤ 3,200`, the exponent asymptotic;
+  the near-threshold constants asymptotic (fitted over `N = 100–400`;
+  cited through the LDP of §6.4 with its hypothesis), the floors exact at
+  `n = 60`.
+* **Does not claim.** That no `Z` exists that moves the constant: only
+  that none of the ones written down here with a Laplace transform in
+  closed form does, and that the measured recombination count `Z_4` —
+  whose transform has no closed form here — is worth at most the measured
+  slack of §4.6 at `n ≤ 32`, which is itself below the kill. That `Z_4`'s
+  per-vertex slack is a rate: the totals grow sub-linearly over the range
+  (§4.6). That the cover transform of `Ẑ₀` is a binomial sum: on covers
+  `|L_A|`, `|L_R|` are not binomial and were only measured. That the
+  near-threshold `β_sep` values are more than the cited LDP rate and a fit
+  make them (§6.4); the `n = 60` floors are exact and are the finite
+  statement. Nothing re-solved; `solutions/` untouched.
