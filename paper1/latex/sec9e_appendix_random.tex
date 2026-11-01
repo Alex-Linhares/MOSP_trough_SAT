@@ -493,6 +493,16 @@ used it for vertex separation on mixing graphs, with a $3^{n}$ count and
 Chernoff slack at a single position, which gives no positive constant below
 $c\approx227$. Neither states the entropy form, a value of $\beta^{*}(c)$, the
 threshold $4\ln2$ or the asymptotics, and we found no later work that does.
+Three more things are known. The best published upper bound on the pathwidth
+of $G(n,c/n)$ is the degree-sequence bound of \citet{EdwardsMcDermid2015},
+which on Poisson degrees gives $0.183$, $0.458$ and $0.656$ at $c=3,6,10$,
+so the measured slopes sit near the middle of the sandwich between
+$\beta^{*}(c)$ and it. The prefix-at-$(1-\varepsilon)n$ variant of the
+empty-pair argument is published by \citet{CheungGirardet2020}, who reach
+pathwidth $(1-o(1))n$ for every $p\ge n^{-1+\varepsilon}$, still nothing at
+$p=c/n$. And a sharp constant for vertex separation is known for one random
+model only, dense random geometric graphs \citep{DiazPenrosePetitSerna2001},
+and for none of $G(n,c/n)$, random regular graphs or random clique covers.
 
 One computation says how far the finite inequality is from the truth. On
 133 random graphs with 60 vertices and $c=10$ whose pathwidth we computed

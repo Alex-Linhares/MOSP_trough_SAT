@@ -20,6 +20,13 @@
   "title": "The Vertex Separation and Search Number of a Graph",
   "year": 1994
  },
+ "10.1006/jagm.2000.1149": {
+  "fetched": "2026-11-01",
+  "first_author": "D\u0131\u0301az",
+  "registry": "crossref",
+  "title": "Approximating Layout Problems on Random Geometric Graphs",
+  "year": 2001
+ },
  "10.1007/978-3-030-79876-5_37": {
   "fetched": "2026-10-15",
   "first_author": "Moura",
@@ -110,6 +117,13 @@
   "registry": "crossref",
   "title": "A Note on Exact Algorithms for Vertex Ordering Problems on Graphs",
   "year": 2011
+ },
+ "10.1007/s00453-014-9883-7": {
+  "fetched": "2026-11-01",
+  "first_author": "Edwards",
+  "registry": "crossref",
+  "title": "A General Reduction Theorem with Applications to Pathwidth and the Complexity of MAX 2-CSP",
+  "year": 2014
  },
  "10.1007/s00453-015-0015-9": {
   "fetched": "2026-10-03",
@@ -418,5 +432,12 @@
   "registry": "datacite",
   "title": "The PACE 2017 Parameterized Algorithms and Computational Experiments Challenge: The Second Iteration",
   "year": 2018
+ },
+ "10.4236/ojdm.2020.101003": {
+  "fetched": "2026-11-01",
+  "first_author": "Cheung",
+  "registry": "crossref",
+  "title": "Improved Approximation of Layout Problems on Random Graphs",
+  "year": 2020
  }
 }
