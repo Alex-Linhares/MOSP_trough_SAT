@@ -1341,3 +1341,288 @@ middle at `β*`.
   asymptotic exponent and this item measured its finite form exactly
   (identity 1) and found it correct; what is withdrawn is the reading that
   it is the typical cluster.
+
+---
+
+## 5. The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)` (item 05, 2026-11-01)
+
+**Question (C of the brief).** For a fixed `k`-set `S`, `G − S` is
+`G(N, p)` with `N = n − k`. What is `P_N(E_bip)` exactly at small `N`, what
+is its exponential rate in `N`, and how much smaller is it than the
+product bound `C(N, t)(1 − p)^{t(N − t)}` that the pair count uses for the
+same event?
+
+**Events counted.** `E_bip` = the components of `G(N, p)` can be grouped
+into two sides of sizes `t = ⌈N/2⌉` and `N − t`; `E_relax` = no component
+has more than `t` vertices (`E_bip ⊆ E_relax`, §2.2). The product bound is
+the union bound over the `C(N, t)` bipartitions, each empty with
+probability `(1 − p)^{t(N − t)}`; when `N` is even it counts every
+bipartition twice. The finite bounds at a pilot cell are
+`B_pair = C(n, t) C(n − t, t − 1)(1 − p)^{t(t − 1)}` (the Lean convention of
+`FirstMoment.lean`, `finite_bound.py`, with `|R| = t − 1`),
+`B_xpair = C(n, k) · C(N, t)(1 − p)^{t(N − t)}` (the exact-size pair count,
+sides `t` and `N − t`), `B_sep = C(n, k) · P_N(E_bip)` and
+`B_rel = C(n, k) · P_N(E_relax)`; each is an upper bound on `P(pw ≤ k)`
+(L1′, §2.2; the separator form is item 08's theorem on paper).
+
+**Size range.** `P_N(E_bip)` exact for `N ≤ 120` (the item asked for 60,
+80 if cheap); `P_N(E_relax)` exact to `N = 400`; the finite table at
+`n = 60, 120`, `c = 3, 4, 6, 8, 10`, every `k`; the rate at
+`c′ ∈ {2, 3, 4, 5, 6.6, 8, 10}`. Checks: Gilbert's recursion against the
+enumeration of every labelled graph at `j ≤ 6` and Monte Carlo at `j = 20`;
+the partition law sums to one at `N ≤ 20`; `P_N(E_bip)` against the
+enumeration of every labelled graph at `N ≤ 6` (every `t`) and at `N = 7`
+(2,097,152 graphs) and Monte Carlo at `N = 20`, `p = 0.1`;
+`P(E_bip) ≤ P(E_relax) ≤ 1` and `P(E_bip) ≤` product bound on a grid
+(`run.log`).
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/05_inner/run.py --max-N 120`
+(stages `check`, `inner`, `rates`, `draw`; 9 + 193 + 24 + 2 s on 8 workers
+at nice 19, about 0.5 core-hours against 1 budgeted; `--max-N 60` is the
+item's command and takes 40 s less). Outputs beside it: `inner.csv` (every
+`(n, c, k)`: the four finite bounds and the three inner quantities),
+`floors.csv`, `rates.csv` (every `(N, c′)`), `rate_fits.csv`, `rates.png`,
+`run.log`. Tests: `python3 -m pytest tests/test_separator_moment.py`
+(60 tests, 10 new).
+
+### 5.1 Method
+
+Four functions in `learning/separator_moment.py`:
+
+* `connected_probs(N, p)` / `log_connected`: Gilbert's recursion
+  `C_1 = 1`, `C_j = 1 − Σ_{i<j} C(j−1, i−1) C_i (1−p)^{i(j−i)}` in `mpmath`;
+  the subtraction cancels to `C_j ≈ e^{−j(1−p)^j}` at small `p`, so the
+  working precision is `60 + 0.6 · N(1−p)^{N−1}` digits (94 at `N = 400`,
+  `c′ = 2`). The item's 60 digits would have failed at `N = 400`, `c′ = 2`
+  (`C_400 ≈ e^{−54}`, 24 digits of cancellation, and the terms carry the
+  rounding of 400 further subtractions).
+* `log_prob_partition(λ, N, p)`: `N!/(Π λ_i! Π_s m_s!) · Π C_{λ_i} · (1−p)^{(N² − Σ λ_i²)/2}`.
+  With `a(s) = log C_s − log s! − (s²/2) log(1−p)` this is
+  `N! (1−p)^{N²/2} Π_s e^{m_s a(s)}/m_s!`, i.e. the exponential formula:
+  the sum over all partitions is `[x^N] exp(Σ_s e^{a(s)} x^s)`.
+* `log_prob_rel(N, p, M)`: that coefficient with the sum cut at `s ≤ M`,
+  the `O(N · M)` recursion the item asked for (over the multiplicity of the
+  largest part rather than the component of the first vertex; the two are
+  the same table). `N = 400` in under a second once `C_j` is known.
+* `log_prob_bip(N, p, t)`: the sum over the partitions with a sub-multiset
+  summing to `t`, by a **memoised recursion over the part sizes** (largest
+  first) carrying the set of achievable sub-sums as a bitset, with two
+  closures: a branch whose bitset already contains `t` is closed by the
+  coefficient table (every completion qualifies; this is what makes it
+  fast), and a part larger than `t` closes a branch at zero. The bitset is
+  reduced to the bits in `[t − r, t]` before memoisation (`r` the vertices
+  left to place), which is what keeps the state count polynomial-looking in
+  practice: 20,863 states at `N = 60` (0.1 s), 115,065 at 80 (0.5 s),
+  514,206 at 100 (2.5 s), 1,980,380 at 120 (18 s). The item's plain
+  enumeration of the 966,467 partitions of 60 was never needed; `N = 160`
+  would be about 8 M states and was not run.
+
+All sums are of positive terms and are done in floating-point logs; only
+the connectedness recursion needs multiple precision.
+
+### 5.2 The finite table at the pilot cells
+
+Largest `k` with each bound below `1` and below `0.01`; `β*(c)·n` the
+asymptotic threshold of the pair count; the pilot's observed minimum
+pathwidth where the cell is proved (`n = 60`) and the solver's smallest
+lower bound where it is not (`n = 120`, 13 graphs per cell, none proved
+at `c ≥ 4`, 3 of 13 at `c = 3`; `reports/scratch/gnp_pilot/results.csv`).
+
+| `n` | `c` | pair `< 1` | pair `< .01` | xpair `< 1` | xpair `< .01` | **sep `< 1`** | **sep `< .01`** | relax `< 1` | relax `< .01` | `β*n` | graphs | exact | min pw | min LB |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 60 | 3 | 1 | — | 1 | 0 | **3** | **1** | 3 | 1 | 0.5 | 136 | 136 | 5 | — |
+| 60 | 4 | 5 | 3 | 5 | 3 | **6** | **4** | 6 | 4 | 3.7 | 136 | 136 | 8 | — |
+| 60 | 6 | 11 | 11 | 12 | 11 | **12** | **11** | 12 | 11 | 10.2 | 134 | 134 | 16 | — |
+| 60 | 8 | 17 | 17 | 18 | 17 | **18** | **17** | 18 | 17 | 15.8 | 132 | 132 | 20 | — |
+| 60 | 10 | 23 | 21 | 23 | 21 | **23** | **22** | 23 | 22 | 20.2 | 133 | 133 | 25 | — |
+| 120 | 3 | 1 | 1 | 2 | 1 | **5** | **4** | 5 | 4 | 1.0 | 13 | 3 | 11 | 12 |
+| 120 | 4 | 9 | 7 | 9 | 7 | **11** | **10** | 11 | 10 | 7.4 | 13 | 0 | — | 17 |
+| 120 | 6 | 21 | 21 | 22 | 21 | **24** | **22** | 24 | 22 | 20.5 | 13 | 0 | — | 25 |
+| 120 | 8 | 33 | 33 | 34 | 33 | **34** | **33** | 34 | 33 | 31.5 | 13 | 0 | — | 34 |
+| 120 | 10 | 43 | 41 | 43 | 42 | **44** | **42** | 44 | 42 | 40.5 | 13 | 0 | — | 41 |
+
+(`inner.csv`, `floors.csv`.) Read it by the 0.01 column, where the pair
+count's parity rounding (`B_pair` depends on `k` only through `t`) does
+not confuse the count:
+
+* **At `c ≥ 6` the separator floor is the pair floor or one stack above
+  it** in all six cells (`+0, +0, +1` at `n = 60`; `+1, +0, +1` at 120),
+  and never above the exact-size pair floor by more than one. That is the
+  kill criterion, met (§5.5).
+* **At `c = 3–4` it is two to three stacks above**: `−1 → 1` and `3 → 4`
+  at `n = 60`; `1 → 4` and `7 → 10` at `n = 120`. Against the data these
+  are still far below the truth (observed minimum 5 at `(60, 3)`, 8 at
+  `(60, 4)`; lower bounds 12 and 17 at `n = 120`): the separator count
+  moves the floor from "excludes nothing" to "excludes a few stacks" on
+  the sparse flank and no further.
+* **The relaxed and the bipartition floors coincide in every cell** at
+  both thresholds. The number-partitioning condition costs nothing at
+  these sizes (§5.4).
+* The gain per vertex `(log B_pair − log B_sep)/n` at the pair's 0.01
+  floor: `0.058, 0.023, 0.011, 0.006` at `c = 4, 6, 8, 10` (`n = 60`);
+  `0.113, 0.065, 0.026, 0.013, 0.007` at `c = 3 … 10` (`n = 120`). Against
+  the exact-size pair at the separator's own floor:
+  `0.106, 0.062, 0.023, 0.011, 0.014` and `0.116, 0.068, 0.028, 0.013,
+  0.010`. In `β` (÷ 3.3 at `c ≥ 6`): `0.003–0.008` at `c = 6–10`,
+  `0.015–0.020` at `c = 4`, `0.02–0.035` at `c = 3` (÷ 5.5).
+
+At `(120, 10)` around the floors, in decades: `k = 43`: pair `−0.99`,
+xpair `−0.99`, sep `−1.38`; `k = 44`: pair `+1.76`, xpair `+0.40`,
+**sep `−0.17`**, relax `−0.16`; `k = 45`: sep `+1.33`. So at `n = 120` the
+separator count says `P(pw ≤ 44) ≤ 0.68` where the pair count says
+nothing, and the solver's lower bounds there are 41–42 with the truth
+`≥ 44` almost surely by either count. The inner numbers behind that row:
+`log` product bound `−75.36`, `log P(E_bip)` `−76.65`, `log P(E_relax)`
+`−76.64` — the separator count is 1.3 nats below the product bound at
+`N = 76`, `c′ = 6.3`, of which `ln 2 = 0.69` is the double count of each
+bipartition at even `N`.
+
+### 5.3 The rate
+
+`−log P_N(E_bip)/N` at `N = 20 … 120` and `−log P_N(E_relax)/N` to
+`N = 400`, with linear fits in `N` (intercept free; "fitted"), fits with a
+`log N` term (`−log P = I N + b log N + a`, the form a polynomial
+prefactor gives), the plan's analytic routes — the pair count's rate
+`c′/4 − ln 2` (a lower bound on the rate, from `P(E_bip) ≤` product
+bound), `c′/4` (an upper bound, from one fixed bipartition) and the
+thinning route `c′/2 − ln 2 + ln 2 · ln(2 ln 2/c′)` — and the LDP rate
+`I_{c′}(½)` for `E_relax` quoted in §1.4 (`rate_check.py`).
+
+| `c′` | `−log P_bip/N` at `N = 20` | at 60 | at 120 | linear fit, bip, `N ≥ 60` | log-fit, bip, `N ≥ 40` | `−log P_rel/N` at 400 | linear fit, rel, `N ≥ 200` | log-fit, rel, `N ≥ 100` | `c′/4 − ln 2` | `c′/4` | thinning | **LDP `I(½)`** |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | 0.107 | 0.060 | 0.049 | 0.0383 | 0.0392 | 0.0414 | 0.0380 | 0.0375 | 0 | 0.500 | 0.053 | **0.0362** |
+| 3 | 0.308 | 0.221 | 0.202 | 0.1825 | 0.1864 | 0.1896 | 0.1846 | 0.1853 | 0.057 | 0.750 | 0.272 | **0.1831** |
+| 4 | 0.571 | 0.436 | 0.407 | 0.3767 | 0.3818 | 0.3877 | 0.3799 | 0.3812 | 0.307 | 1.000 | 0.572 | **0.3796** |
+| 5 | 0.877 | 0.682 | 0.639 | 0.5955 | 0.6013 | 0.6107 | 0.5991 | 0.6005 | 0.557 | 1.250 | 0.918 | **0.5997** |
+| 6.6 | 1.432 | 1.110 | 1.040 | 0.9704 | 0.9793 | 0.9938 | 0.9744 | 0.9759 | 0.957 | 1.650 | 1.525 | **0.9756** |
+| 8 | 1.983 | 1.504 | 1.407 | 1.3097 | 1.3256 | 1.3421 | 1.3148 | 1.3163 | 1.307 | 2.000 | 2.092 | **1.3161** |
+| 10 | 2.894 | 2.091 | 1.945 | 1.7995 | 1.8358 | 1.8496 | 1.8091 | 1.8115 | 1.807 | 2.500 | 2.937 | **1.8102** |
+
+(`rates.csv`, `rate_fits.csv`; standard errors of the linear slopes
+`0.0001–0.0025`, meaningless as uncertainty since the residual is the
+`log N` term, not noise.) Figure: `rates.png`, `−log P/N` against `N` per
+`c′` with the bracket shaded, the LDP rate dashed.
+
+**What the table says.**
+
+1. **The exact computation reproduces the quoted large-deviation rate.**
+   The log-corrected fit of `E_relax` over `N = 100–400` agrees with
+   `I_{c′}(½)` to `0.0003–0.002` at every `c′`, and the linear fit over
+   `N ≥ 200` to `0.001–0.002`. Item 01 could check the quoted formula only
+   at its zero and its sign (§1.8); this is an independent check of its
+   *value* at `u = ½` for seven `c′`, by an exact finite computation that
+   shares nothing with the formula. The misprint risk recorded in §1.6 is
+   retired for the form used in `rate_check.py`.
+2. **`E_bip` has the rate of `E_relax`.** `log P(E_bip) − log P(E_relax)`
+   at `N = 120` is `−0.0001` to `−0.008` nats in total (not per vertex),
+   and the bip fits sit on the relax fits. The reading of the AKP
+   minimiser in §1.8 ("the rate of `E_bip` equals that of `E_relax`") is
+   confirmed to `N = 120` by exact computation and remains unproved as a
+   limit; the finite inequality `P(E_bip) ≤ P(E_relax)` is exact.
+3. **The bracket holds, in the form the finite computation can test.**
+   The fitted rate lies in `[c′/4 − ln 2, min(c′/4, thinning)]` at every
+   `c′` for the log-corrected fit, and for the linear fit at every `c′`
+   but 10, where the linear slope over `N = 60–120` (`1.7995`) falls
+   `0.007` below the asymptotic lower end (`1.8069`). That is the `log N`
+   term, not an error: the lower route is the product bound, and the same
+   linear fit of `−log` product bound over the same `N` gives `1.7927`,
+   below the bip fit as it must be (`rate_fits.csv`,
+   `above_finite_lower = True` at every `c′`); the log-corrected fit
+   gives `1.836`, inside. The item's "the fitted rate must lie in the
+   bracket, or the computation is wrong" is satisfied once the bracket is
+   read at finite `N`; the asymptotic ends are limits and a linear fit
+   on `N ≤ 120` is biased by `b/N` with `b ≈ −½` to `−3`.
+4. **The thinning route is never the binding end** and at `c′ ≥ 5` lies
+   above `c′/4`. Both of the planner's routes sit far above the truth at
+   every `c′` (at `c′ = 5`: 0.918 and 1.25 against 0.600), as §1.6
+   predicted from the quotation. The plan's bracket at `c = 6` was
+   `[0.552, 1.245]`; the rate is `0.600` at `c′ = 5`.
+
+### 5.4 How much smaller than the product bound
+
+`log[C(N, t)(1−p)^{t(N−t)}] − log P_N(E_bip)`, total nats and per vertex of
+`N` (`N` even throughout, so `ln 2 = 0.693` of it is the double count):
+
+| `c′` | `N = 20` | 40 | 60 | 80 | 100 | 120 | per vertex at 120 | growth per vertex, 60 → 120 |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 3.74 | 7.99 | 12.41 | 16.89 | 21.41 | 25.96 | 0.216 | 0.226 |
+| 3 | 2.03 | 4.11 | 6.39 | 8.75 | 11.15 | 13.60 | 0.113 | 0.120 |
+| 4 | 1.23 | 2.23 | 3.40 | 4.65 | 5.96 | 7.29 | 0.061 | 0.065 |
+| 5 | 0.89 | 1.35 | 1.93 | 2.58 | 3.28 | 4.00 | 0.033 | 0.035 |
+| 6.6 | 0.72 | 0.84 | 1.01 | 1.22 | 1.45 | 1.70 | 0.014 | 0.012 |
+| 8 | 0.70 | 0.73 | 0.78 | 0.84 | 0.92 | 1.01 | 0.008 | 0.004 |
+| 10 | 0.69 | 0.70 | 0.70 | 0.71 | 0.73 | 0.74 | 0.006 | 0.0007 |
+
+**At `c′ ≥ 8` the whole gain is the factor 2**: the gap is `ln 2` plus
+`0.01–0.3` nats at `N = 120` and grows at under `0.004` nats per vertex.
+What the separator count merges there is the two orientations of one
+bipartition and nothing else, as item 03 measured on typical instances
+(`X₁/X₂ = 2.0–2.4` with `N` even, §3.2) and as the LDP says in the limit
+(`I(½) − (c′/4 − ln 2) = 0.009` at `c′ = 8`, `0.003` at 10). **Below
+`c′ ≈ 5` the gap is linear in `N`** at `0.035, 0.065, 0.120, 0.226` nats
+per vertex of `N` for `c′ = 5, 4, 3, 2`, the limit values being
+`I(½) − max(0, c′/4 − ln 2) = 0.043, 0.073, 0.126, 0.036`
+(at `c′ = 2` the pair count's rate is negative, so the pair bound is
+vacuous and the gap per vertex is `ln 2 − c′/4` plus the rate: the
+finite table's `0.226` has the product bound still *growing*). This is
+the component structure doing real work: the bipartitions of `G(N, c′/N)`
+that are empty cluster onto the same component partition, and the
+smaller `c′` the more of them per partition.
+
+In the loop's units (nats per vertex of `n`, then `β`): at a pilot cell
+`N = (1 − β) n`, so the gain per vertex of `n` is `(1 − β)` times the
+column above at `c′ = c(1 − β)`. Linearising the pair exponent at `β*`
+with the LDP value of the gain gives `+0.023, +0.020, +0.011, +0.006,
++0.004` in `β` at `c = 3, 4, 6, 8, 10` — the same numbers as §1.6's
+preview from the quotation (`+0.028, +0.021, +0.011, +0.004` at
+`c = 3, 4, 6, 10`, by the exact root rather than the linearisation), now
+resting on the exact finite computation at `N ≤ 120` and the fitted
+rate beyond. Item 06 computes `β_sep(c)` properly; this is the preview
+it inherits.
+
+### 5.5 Kill verdict
+
+**Met for the headline cells.** At every pilot cell with `c ≥ 6` the
+separator floor at `< 0.01` exceeds the pair floor by at most one stack
+(`+0, +0, +1, +1, +0, +1`), so **the separator count is recorded as a
+rounding at these sizes**, as the exact-size pair was in
+`excess_phase_diagram.md` §8.6 (4), and item 06 is told so. The rate
+comparison ran as the item requires, and is where the item's value is:
+§5.3 (1)–(2) settle the two open readings of item 01, and §5.4 locates
+the gain on the sparse flank (`c′ ≤ 5`, i.e. `c ≤ 6` at `β*`), two to
+three stacks at `n = 120`, `c = 3–4`.
+
+**Prediction for item 06**: `β_sep(c) = β_relax(c)` of §1.6 to the
+accuracy of the fit (the two events have the same rate to `N = 120` and
+to three decimals in the fit); gains of `+0.011` at `c = 6` and `+0.004`
+at 10 against the kill of `0.02`, so **item 06's kill is predicted met
+at `c = 6` and `10`**, and not met at `c ≤ 4`. The prediction of §3.5
+(the separator count merges at most `0.003` in `β` at `c = 10`, measured
+at `k = pw` on typical instances) is consistent with the `0.004` at `β*`.
+
+### 5.6 What this does not claim
+
+* **A limit.** The rate of `E_bip` is computed exactly to `N = 120` and
+  fitted beyond; the rate of `E_relax` is exact to `N = 400` and fitted
+  beyond. That either equals `I_{c′}(½)` is a fit agreeing to three
+  decimals, not a theorem; the LDP itself is cited (O'Connell 1998 via
+  Puhalskii 2005), not proved here, and the upper-bound half of it is
+  what a separator first moment would use. That `E_bip` and `E_relax`
+  have the same rate is exact to `N = 120` and conjectural beyond.
+* **The finite inequalities are the only things proved**, and the
+  separator one on paper only after item 08 (the deterministic lemma is
+  §2's L1′; the union bound over `S` with the inner probability is the
+  statement item 08 writes and item 10 formalises). `B_pair` is the
+  Lean theorem; `B_xpair`, `B_sep`, `B_rel` are valid by L1′ and the
+  union bound and are not yet in Lean.
+* The floors at `n = 120` are against the solver's *lower bounds* on
+  unproved graphs (3 of 13 proved at `c = 3`, none at `c ≥ 4`), not
+  against pathwidths; the comparison with the truth is at `n = 60` only.
+* The `β` conversions in §5.4 are linearisations at `β*` for a preview;
+  item 06 owns the constants.
+* The thinning route's formula is the plan's, evaluated as written; the
+  plan's value `1.19` at `c′ = 4.98` does not reproduce from it (`0.91`),
+  and nothing rests on it since it is never the binding end.
+* Nothing about covers (item 07): there is no LDP to quote there and the
+  inner probability of a random clique cover minus a customer set is not
+  `G(N, p)`.

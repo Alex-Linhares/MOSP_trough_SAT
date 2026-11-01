@@ -496,3 +496,117 @@ def test_planted_inverse_mean_is_the_union_bound_slack():
         if not crosses:
             planted += w / (1 - p) ** len(forbidden) / X    # the conditional weight; X ≥ 1 here
     assert abs(Ppos / EX - planted) < 1e-12
+
+
+# ---------------------------------------------------------------------------
+# item 05: the inner probability P_N(E_bip), exactly
+# ---------------------------------------------------------------------------
+
+from learning.separator_moment import (  # noqa: E402
+    connected_probs, log_connected, log_connected_enum, log_prob_bip, log_prob_bip_enum,
+    log_prob_bip_mc, log_prob_partition, log_prob_rel, log_product_bound, partitions,
+)
+from learning.separator_moment import _lse  # noqa: E402
+
+
+def test_connected_probs_against_enumeration():
+    # the connected labelled graphs on j vertices number 1, 1, 4, 38, 728 (OEIS A001187)
+    for p in (0.1, 0.5):
+        lc = log_connected(5, p)
+        for j in range(1, 6):
+            assert lc[j] == pytest.approx(log_connected_enum(j, p), abs=1e-9)
+    counts = [round(math.exp(log_connected(5, 0.5)[j]) * 2 ** (j * (j - 1) // 2)) for j in range(1, 6)]
+    assert counts == [1, 1, 4, 38, 728]
+
+
+def test_connected_probs_small_p_precision():
+    # at small p the recursion cancels to C_N ~ e^{-N (1-p)^{N-1}}; the mpmath value is positive and monotone in p
+    C = [connected_probs(40, p)[40] for p in (0.02, 0.05, 0.1)]
+    assert all(c > 0 for c in C)
+    assert C[0] < C[1] < C[2]
+    assert float(C[2]) == pytest.approx(math.exp(log_connected(40, 0.1)[40]))
+
+
+def test_partitions_count_and_shape():
+    assert sum(1 for _ in partitions(10)) == 42
+    assert sum(1 for _ in partitions(20)) == 627
+    assert list(partitions(0)) == [()]
+    for lam in partitions(8, 3):
+        assert sum(lam) == 8 and max(lam) <= 3 and list(lam) == sorted(lam, reverse=True)
+
+
+def test_partition_law_sums_to_one():
+    for N in (1, 4, 9, 14):
+        for p in (0.05, 0.3):
+            lc = log_connected(N, p)
+            assert _lse([log_prob_partition(lam, N, p, lc) for lam in partitions(N)]) == pytest.approx(0.0, abs=1e-9)
+    with pytest.raises(ValueError):
+        log_prob_partition((2, 2), 5, 0.3)
+
+
+def test_prob_bip_against_enumeration():
+    for N in range(1, 6):
+        for p in (0.1, 0.5):
+            for t in range(N + 1):
+                a = log_prob_bip(N, p, t)
+                b = log_prob_bip_enum(N, p, t)
+                if b == -math.inf:
+                    assert a == -math.inf
+                else:
+                    assert a == pytest.approx(b, abs=1e-9)
+
+
+def test_prob_bip_edge_cases_and_orderings():
+    # t = 0 or t = N: the event always holds (one empty side); the two sides are exchangeable
+    for N in (3, 8, 13):
+        assert log_prob_bip(N, 0.2, 0) == pytest.approx(0.0, abs=1e-12)
+        assert log_prob_bip(N, 0.2, N) == pytest.approx(0.0, abs=1e-12)
+        for t in range(1, N):
+            assert log_prob_bip(N, 0.2, t) == pytest.approx(log_prob_bip(N, 0.2, N - t), abs=1e-9)
+    assert log_prob_bip(0, 0.5) == 0.0
+    with pytest.raises(ValueError):
+        log_prob_bip(5, 0.2, 6)
+
+
+def test_prob_bip_below_relaxed_and_product_bound():
+    for N in (10, 25, 40):
+        for cp in (1.0, 3.0, 8.0):
+            p = cp / N
+            lc = log_connected(N, p)
+            for t in range(0, N + 1, 5):
+                a = log_prob_bip(N, p, t, lc)
+                r = log_prob_rel(N, p, max(t, N - t), lc)
+                assert a <= r + 1e-9 <= 1e-9
+                assert a <= log_product_bound(N, p, t) + 1e-9
+
+
+def test_prob_rel_edge_cases_and_recursion():
+    assert log_prob_rel(7, 0.3, 7) == 0.0
+    assert log_prob_rel(7, 0.3, 10) == 0.0
+    assert log_prob_rel(7, 0.3, 0) == -math.inf
+    # M = 1: every vertex isolated, probability (1-p)^{C(N,2)}
+    for N in (2, 5, 9):
+        assert log_prob_rel(N, 0.3, 1) == pytest.approx(N * (N - 1) / 2 * math.log1p(-0.3), abs=1e-9)
+    # M = N - 1: everything but "connected"
+    N, p = 9, 0.25
+    assert log_prob_rel(N, p, N - 1) == pytest.approx(math.log1p(-math.exp(log_connected(N, p)[N])), abs=1e-9)
+    # the relaxed law is the partition sum over partitions with parts <= M
+    N, p, M = 12, 0.15, 5
+    lc = log_connected(N, p)
+    direct = _lse([log_prob_partition(lam, N, p, lc) for lam in partitions(N) if max(lam) <= M])
+    assert log_prob_rel(N, p, M, lc) == pytest.approx(direct, abs=1e-9)
+
+
+def test_prob_bip_is_the_partition_sum():
+    N, p, t = 12, 0.15, 6
+    lc = log_connected(N, p)
+    from learning.separator_moment import _subset_sum
+    direct = _lse([log_prob_partition(lam, N, p, lc) for lam in partitions(N) if _subset_sum(list(lam), t)])
+    assert log_prob_bip(N, p, t, lc) == pytest.approx(direct, abs=1e-9)
+
+
+def test_prob_bip_monte_carlo():
+    N, p = 14, 0.12
+    exact = math.exp(log_prob_bip(N, p))
+    mc, se = log_prob_bip_mc(N, p, samples=3000, seed=3)
+    assert abs(exact - math.exp(mc)) < 4 * se + 1e-12

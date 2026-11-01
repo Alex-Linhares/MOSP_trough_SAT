@@ -23,6 +23,7 @@ probabilistic. Checked on every graph to 9 vertices, 20,000 random graphs at
 from __future__ import annotations
 
 import math
+import random
 from itertools import combinations
 from math import comb
 from typing import Iterator
@@ -43,6 +44,10 @@ __all__ = [
     # item 04: the planted cluster
     "beta_star_gnp", "plant_pair", "plant_cover", "overlap_table", "hamming_distance",
     "lq_sides", "second_moment_exact_cover", "planted_mean_gnp", "planted_mean_cover",
+    # item 05: the inner probability, exactly
+    "connected_probs", "log_connected", "partitions", "log_prob_partition",
+    "log_prob_bip", "log_prob_rel", "log_prob_bip_enum", "log_prob_bip_mc",
+    "log_connected_enum", "log_connected_mc", "log_product_bound",
 ]
 
 
@@ -717,3 +722,280 @@ def planted_mean_cover(n: int, t: int, r: int, sizes) -> float:
     """`E[X′ | P₀ empty] = E[X²] / E[X] − 1` in the cover model."""
     logEX, logEX2, _ = second_moment_exact_cover(n, t, r, sizes)
     return math.exp(logEX2 - logEX) - 1
+
+
+# ---------------------------------------------------------------------------
+# item 05: the inner probability P_N(E_bip) and P_N(E_relax) of G(N, p), exactly
+# ---------------------------------------------------------------------------
+#
+# For a fixed k-set S, G − S is G(N, p) with N = n − k, and the separator count
+# is C(n, k) · P_N(E_bip) (§2, L1′).  P_N(E_bip) is a sum over the multiset λ of
+# component sizes of G(N, p): the probability of the multiset is
+#     P(λ) = N! / (Π λ_i! Π_s m_s!) · Π C_{λ_i}(p) · (1 − p)^{(N² − Σ λ_i²)/2},
+# with C_j(p) the probability that G(j, p) is connected (Gilbert's recursion,
+# which cancels catastrophically at small p and is done in mpmath), and E_bip
+# holds iff a sub-multiset of λ sums to t.  Writing a(s) = log C_s − log s! −
+# (s²/2) log(1 − p), P(λ) = N! (1 − p)^{N²/2} Π_s e^{m_s a(s)} / m_s!, which is
+# the exponential formula: Σ_λ Π_s e^{m_s a(s)} / m_s! = [x^N] exp(Σ_s e^{a(s)} x^s).
+# E_relax (no component larger than M) is that coefficient with the sum cut at
+# s ≤ M, an O(N · M) recursion; E_bip needs the subset-sum condition, which is
+# carried as a bitset through a memoised recursion over the part sizes.
+
+
+def connected_probs(N: int, p, dps: int | None = None) -> list:
+    """`[C_0, C_1, …, C_N]` as `mpmath.mpf`: `C_j` is the probability that
+    `G(j, p)` is connected, by Gilbert's recursion
+    `C_1 = 1`, `C_j = 1 − Σ_{i<j} C(j−1, i−1) C_i (1−p)^{i(j−i)}`
+    (the sum is the probability that the component of vertex 1 has `i < j`
+    vertices).  The subtraction cancels to `C_j ≈ e^{−j(1−p)^{j}}` at small `p`,
+    so the working precision grows with the expected number of isolated
+    vertices (`dps = 60 + 0.6·N·(1−p)^N` digits by default)."""
+    import mpmath as mp
+    if dps is None:
+        iso = N * (1 - float(p)) ** max(N - 1, 0)
+        dps = 60 + int(0.6 * iso) + 2
+    with mp.workdps(dps):
+        q = mp.mpf(1) - mp.mpf(p)
+        qpow = [mp.mpf(1)]
+        for _ in range(N * N // 4 + N + 1):
+            qpow.append(qpow[-1] * q)
+        C = [mp.mpf(0)] * (N + 1)
+        if N >= 1:
+            C[1] = mp.mpf(1)
+        for j in range(2, N + 1):
+            s = mp.mpf(0)
+            for i in range(1, j):
+                s += comb(j - 1, i - 1) * C[i] * qpow[i * (j - i)]
+            C[j] = 1 - s
+        return [+c for c in C]
+
+
+def log_connected(N: int, p, dps: int | None = None) -> list[float]:
+    """`[−inf, log C_1, …, log C_N]` as floats, from `connected_probs`."""
+    import mpmath as mp
+    C = connected_probs(N, p, dps)
+    out = [-math.inf]
+    for c in C[1:]:
+        out.append(float(mp.log(c)) if c > 0 else -math.inf)
+    return out
+
+
+def partitions(N: int, max_part: int | None = None) -> Iterator[tuple[int, ...]]:
+    """The partitions of `N` with parts `≤ max_part`, each as a non-increasing
+    tuple; `partitions(0)` yields the empty tuple once."""
+    if max_part is None or max_part > N:
+        max_part = N
+    if N == 0:
+        yield ()
+        return
+    for s in range(min(N, max_part), 0, -1):
+        for rest in partitions(N - s, s):
+            yield (s,) + rest
+
+
+def _log_q(p) -> float:
+    return math.log1p(-float(p))
+
+
+def _part_weights(N: int, p, logC: list[float] | None = None) -> list[float]:
+    """`a(s) = log C_s − log s! − (s²/2) log(1 − p)` for `s = 0 … N`."""
+    if logC is None:
+        logC = log_connected(N, p)
+    lq_ = _log_q(p)
+    return [-math.inf] + [logC[s] - math.lgamma(s + 1) - (s * s / 2) * lq_ for s in range(1, N + 1)]
+
+
+def log_prob_partition(parts, N: int, p, logC: list[float] | None = None) -> float:
+    """`log P(the component sizes of G(N, p) are the multiset `parts`)`,
+    `N!/(Π λ_i! Π_s m_s!) · Π C_{λ_i}(p) · (1−p)^{(N² − Σ λ_i²)/2}`;
+    requires `sum(parts) == N`."""
+    parts = tuple(parts)
+    if sum(parts) != N:
+        raise ValueError("the parts must sum to N")
+    if logC is None:
+        logC = log_connected(N, p)
+    lq_ = _log_q(p)
+    out = math.lgamma(N + 1) + ((N * N - sum(s * s for s in parts)) / 2) * lq_
+    mult: dict[int, int] = {}
+    for s in parts:
+        mult[s] = mult.get(s, 0) + 1
+    for s, m in mult.items():
+        out += m * (logC[s] - math.lgamma(s + 1)) - math.lgamma(m + 1)
+    return out
+
+
+def _lse(values) -> float:
+    vals = [v for v in values if v != -math.inf]
+    if not vals:
+        return -math.inf
+    mx = max(vals)
+    return mx + math.log(sum(math.exp(v - mx) for v in vals))
+
+
+def _coefficient_table(N: int, a: list[float], max_part: int) -> list[list[float]]:
+    """`W[r][s] = log [x^r] exp(Σ_{u ≤ s} e^{a(u)} x^u)` for `r ≤ N`, `s ≤ max_part`:
+    the weight of all partitions of `r` into parts `≤ s`, by the recursion on
+    the multiplicity of the largest part."""
+    W = [[-math.inf] * (max_part + 1) for _ in range(N + 1)]
+    for s in range(max_part + 1):
+        W[0][s] = 0.0
+    for s in range(1, max_part + 1):
+        for r in range(1, N + 1):
+            terms = [W[r][s - 1]]
+            m = 1
+            while m * s <= r:
+                terms.append(m * a[s] - math.lgamma(m + 1) + W[r - m * s][s - 1])
+                m += 1
+            W[r][s] = _lse(terms)
+    return W
+
+
+def log_prob_rel(N: int, p, M: int, logC: list[float] | None = None) -> float:
+    """`log P(no component of G(N, p) has more than M vertices)`, by the
+    `O(N · M)` recursion over the component of the first vertex
+    (`R_j = Σ_{i ≤ min(j, M)} C(j−1, i−1) C_i (1−p)^{i(j−i)} R_{j−i}`, `R_0 = 1`),
+    computed as the coefficient `N! (1−p)^{N²/2} [x^N] exp(Σ_{s ≤ M} e^{a(s)} x^s)`."""
+    if M >= N:
+        return 0.0
+    if M <= 0:
+        return -math.inf if N > 0 else 0.0
+    a = _part_weights(N, p, logC)
+    W = _coefficient_table(N, a, M)
+    return min(0.0, math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + W[N][M])
+
+
+def log_prob_bip(N: int, p, t: int | None = None, logC: list[float] | None = None,
+                 stats: dict | None = None) -> float:
+    """`log P_N(E_bip)`: the probability that the components of `G(N, p)` can be
+    grouped into two sides of sizes `t` and `N − t` (`t = ⌈N/2⌉` by default),
+    exactly, as the sum of `P(λ)` over the partitions `λ ⊢ N` with a sub-multiset
+    summing to `t`.  The sum runs by a memoised recursion over the part sizes
+    (largest first) with the set of achievable sub-sums as a bitset; a branch
+    whose bitset already contains `t` is closed by the coefficient table (every
+    completion qualifies), a part larger than `t` closes a branch at zero.
+    `stats`, if given, receives the number of memo states."""
+    if t is None:
+        t = (N + 1) // 2
+    if not 0 <= t <= N:
+        raise ValueError("need 0 <= t <= N")
+    if N == 0:
+        return 0.0
+    a = _part_weights(N, p, logC)
+    smax = max(t, N - t)
+    W = _coefficient_table(N, a, smax)
+    memo: dict[tuple[int, int, int], float] = {}
+    full_t = (1 << (t + 1)) - 1
+
+    def F(r: int, s: int, B: int) -> float:
+        # partitions of r into parts <= s, weighted, given the achievable sums B
+        if B >> t & 1:
+            return W[r][s]
+        lo = t - r
+        Bm = B & full_t
+        if lo > 0:
+            Bm &= ~((1 << lo) - 1)
+        if Bm == 0:
+            return -math.inf
+        if r == 0:
+            return -math.inf  # t not reachable (bit t was not set)
+        if s == 0:
+            return -math.inf
+        s = min(s, r)
+        key = (r, s, Bm)
+        got = memo.get(key)
+        if got is not None:
+            return got
+        terms = [F(r, s - 1, Bm)]
+        Bs = Bm
+        m = 1
+        while m * s <= r:
+            Bs = Bs | (Bs << s)
+            terms.append(m * a[s] - math.lgamma(m + 1) + F(r - m * s, s - 1, Bs))
+            m += 1
+        val = _lse(terms)
+        memo[key] = val
+        return val
+
+    import sys
+    old = sys.getrecursionlimit()
+    if old < 4 * N + 100:
+        sys.setrecursionlimit(4 * N + 100)
+    try:
+        inner = F(N, smax, 1)
+    finally:
+        sys.setrecursionlimit(old)
+    if stats is not None:
+        stats["states"] = len(memo)
+    return min(0.0, math.lgamma(N + 1) + (N * N / 2) * _log_q(p) + inner)
+
+
+def log_product_bound(N: int, p, t: int | None = None) -> float:
+    """`log [C(N, t) (1 − p)^{t(N − t)}]`, the union bound over the bipartitions
+    that the pair count uses for the same event."""
+    if t is None:
+        t = (N + 1) // 2
+    return math.lgamma(N + 1) - math.lgamma(t + 1) - math.lgamma(N - t + 1) + t * (N - t) * _log_q(p)
+
+
+def _labelled_graphs(N: int):
+    pairs = list(combinations(range(N), 2))
+    for mask in range(1 << len(pairs)):
+        adj = [0] * N
+        e = 0
+        for i, (u, v) in enumerate(pairs):
+            if mask >> i & 1:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+                e += 1
+        yield adj, e
+
+
+def log_connected_enum(N: int, p) -> float:
+    """`log C_N(p)` by enumeration of every labelled graph on `N ≤ 7` vertices."""
+    lp, lq_ = math.log(float(p)), _log_q(p)
+    terms = []
+    full = (1 << N) - 1
+    for adj, e in _labelled_graphs(N):
+        if len(components(adj, full)) == 1:
+            terms.append(e * lp + (N * (N - 1) // 2 - e) * lq_)
+    return _lse(terms)
+
+
+def log_prob_bip_enum(N: int, p, t: int | None = None) -> float:
+    """`log P_N(E_bip)` by enumeration of every labelled graph on `N ≤ 7` vertices."""
+    if t is None:
+        t = (N + 1) // 2
+    lp, lq_ = math.log(float(p)), _log_q(p)
+    terms = []
+    full = (1 << N) - 1
+    for adj, e in _labelled_graphs(N):
+        sizes = [popcount(c) for c in components(adj, full)]
+        if _subset_sum(sizes, t):
+            terms.append(e * lp + (N * (N - 1) // 2 - e) * lq_)
+    return _lse(terms)
+
+
+def log_connected_mc(N: int, p, samples: int, seed: int = 0) -> tuple[float, float]:
+    """Monte Carlo `(log Ĉ_N, standard error of Ĉ_N)` with `networkx` graphs."""
+    import networkx as nx
+    rng = random.Random(seed)
+    hits = 0
+    for _ in range(samples):
+        G = nx.fast_gnp_random_graph(N, float(p), seed=rng.randrange(1 << 30))
+        hits += nx.is_connected(G)
+    phat = hits / samples
+    return (math.log(phat) if hits else -math.inf), math.sqrt(phat * (1 - phat) / samples)
+
+
+def log_prob_bip_mc(N: int, p, t: int | None = None, samples: int = 10000, seed: int = 0) -> tuple[float, float]:
+    """Monte Carlo `(log P̂_N(E_bip), standard error of P̂)` on `gnp_masks`."""
+    if t is None:
+        t = (N + 1) // 2
+    full = (1 << N) - 1
+    hits = 0
+    for i in range(samples):
+        adj = gnp_masks(N, float(p), seed + i)
+        sizes = [popcount(c) for c in components(adj, full)]
+        hits += _subset_sum(sizes, t)
+    phat = hits / samples
+    return (math.log(phat) if hits else -math.inf), math.sqrt(phat * (1 - phat) / samples)

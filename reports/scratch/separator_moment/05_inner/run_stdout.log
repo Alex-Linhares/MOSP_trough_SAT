@@ -1,0 +1,90 @@
+
+# run at 2026-11-01 16:57 stage=all max_N=120 workers=8 load=2.2
+== check ==
+C_j (Gilbert, mpmath) = enumeration of all labelled graphs at j <= 6, p in {0.1, 0.3, 0.5}: ok (counts at p = 1/2: [1, 1, 4, 38, 728, 26704])
+C_20(0.15) = 0.38628; Monte Carlo 20,000 networkx graphs: 0.38845 +- 0.00345 (z = -0.63)
+C_20(0.3) = 0.97740; Monte Carlo 20,000 networkx graphs: 0.97615 +- 0.00108 (z = +1.16)
+sum over all partitions of P(component sizes = lambda) = 1 at N in {1, 2, 5, 10, 15, 20}, p in {0.02, 0.1, 0.5}: ok (p(20) = 627 partitions)
+P_N(E_bip) = enumeration of all labelled graphs, N <= 6 every t and p in {0.1, 0.3, 0.5}; N = 7, t = 4, p = 0.2 (2,097,152 graphs): ok; P(E_bip) <= P(E_relax) and <= C(N, t)(1 - p)^{t(N - t)} there: ok
+P_20(E_bip) at p = 0.1, t = 10: exact 0.11665; Monte Carlo 20,000 graphs 0.11485 +- 0.00225 (z = +0.80)
+P_20(E_relax) at p = 0.1, M = 10: exact 0.11832; product bound 4.90738
+P(E_bip) <= P(E_relax) <= 1 and P(E_bip) <= product bound on N in {10..60}, c' in {1..12}, six t each: 0 violations
+check: 9 s
+== inner: the finite bounds at the pilot cells ==
+  cell n=60 c=3: 60 k in 1 s
+  cell n=60 c=4: 60 k in 1 s
+  cell n=60 c=6: 60 k in 1 s
+  cell n=60 c=8: 60 k in 1 s
+  cell n=60 c=10: 60 k in 1 s
+  cell n=120 c=3: 120 k in 196 s
+  cell n=120 c=4: 120 k in 196 s
+  cell n=120 c=6: 120 k in 196 s
+  cell n=120 c=8: 120 k in 196 s
+  cell n=120 c=10: 120 k in 196 s
+
+   n   c | pair<1 pair<.01 | xpair<1 xpair<.01 | sep<1 sep<.01 | rel<1 rel<.01 | beta*n | graphs exact min pw min LB | (lgBpair-lgBsep)/n @pair.01  @sep.01 (lgBxpair-lgBsep)/n @sep.01
+  60   3 |      1       -1 |       1         0 |     3       1 |     3       1 |   0.52 |    136   136      5   None |                        nan   0.1059                     0.1059
+  60   4 |      5        3 |       5         3 |     6       4 |     6       4 |   3.68 |    136   136      8   None |                     0.0576   0.1228                     0.0619
+  60   6 |     11       11 |      12        11 |    12      11 |    12      11 |  10.24 |    134   134     16   None |                     0.0231   0.0231                     0.0231
+  60   8 |     17       17 |      18        17 |    18      17 |    18      17 |  15.77 |    132   132     20   None |                     0.0113   0.0113                     0.0113
+  60  10 |     23       21 |      23        21 |    23      22 |    23      22 |  20.23 |    133   133     25   None |                     0.0060   0.0690                     0.0144
+ 120   3 |      1        1 |       2         1 |     5       4 |     5       4 |   1.04 |     13     3     11     12 |                     0.1133   0.1490                     0.1164
+ 120   4 |      9        7 |       9         7 |    11      10 |    11      10 |   7.36 |     13     0   None     17 |                     0.0647   0.0968                     0.0678
+ 120   6 |     21       21 |      22        21 |    24      22 |    24      22 |  20.48 |     13     0   None     25 |                     0.0263   0.0555                     0.0283
+ 120   8 |     33       33 |      34        33 |    34      33 |    34      33 |  31.54 |     13     0   None     34 |                     0.0131   0.0131                     0.0131
+ 120  10 |     43       41 |      43        42 |    44      42 |    44      42 |  40.45 |     13     0   None     41 |                     0.0071   0.0378                     0.0103
+
+n = 60 and 120, c = 10, around the floors (log10 of each bound):
+  n=60 k= 16 N= 44 t= 22  log10: pair   -9.972  xpair  -11.826  sep  -12.164  rel  -12.159   inner: prod   -59.869 bip   -60.648 rel   -60.636
+  n=60 k= 17 N= 43 t= 22  log10: pair   -9.972  xpair   -9.972  sep  -10.088  rel  -10.087   inner: prod   -56.551 bip   -56.818 rel   -56.817
+  n=60 k= 18 N= 42 t= 21  log10: pair   -6.516  xpair   -8.222  sep   -8.570  rel   -8.564   inner: prod   -53.392 bip   -54.195 rel   -54.181
+  n=60 k= 19 N= 41 t= 21  log10: pair   -6.516  xpair   -6.516  sep   -6.650  rel   -6.650   inner: prod   -50.257 bip   -50.567 rel   -50.566
+  n=60 k= 20 N= 40 t= 20  log10: pair   -3.348  xpair   -4.911  sep   -5.272  rel   -5.264   inner: prod   -47.279 bip   -48.111 rel   -48.094
+  n=60 k= 21 N= 39 t= 20  log10: pair   -3.348  xpair   -3.348  sep   -3.505  rel   -3.504   inner: prod   -44.326 bip   -44.687 rel   -44.685
+  n=60 k= 22 N= 38 t= 19  log10: pair   -0.464  xpair   -1.885  sep   -2.262  rel   -2.253   inner: prod   -41.530 bip   -42.397 rel   -42.376
+  n=60 k= 23 N= 37 t= 19  log10: pair   -0.464  xpair   -0.464  sep   -0.646  rel   -0.644   inner: prod   -38.759 bip   -39.178 rel   -39.175
+  n=60 k= 24 N= 36 t= 18  log10: pair    2.143  xpair    0.860  sep    0.465  rel    0.476   inner: prod   -36.143 bip   -37.054 rel   -37.028
+  n=60 k= 25 N= 35 t= 18  log10: pair    2.143  xpair    2.143  sep    1.932  rel    1.933   inner: prod   -33.555 bip   -34.041 rel   -34.036
+  n=120 k= 36 N= 84 t= 42  log10: pair  -10.057  xpair  -11.700  sep  -12.176  rel  -12.171   inner: prod   -97.708 bip   -98.805 rel   -98.793
+  n=120 k= 37 N= 83 t= 42  log10: pair  -10.057  xpair  -10.057  sep  -10.377  rel  -10.376   inner: prod   -94.747 bip   -95.482 rel   -95.481
+  n=120 k= 38 N= 82 t= 41  log10: pair   -6.894  xpair   -8.465  sep   -8.960  rel   -8.955   inner: prod   -91.860 bip   -93.001 rel   -92.989
+  n=120 k= 39 N= 81 t= 41  log10: pair   -6.894  xpair   -6.894  sep   -7.237  rel   -7.237   inner: prod   -88.986 bip   -89.777 rel   -89.776
+  n=120 k= 40 N= 80 t= 40  log10: pair   -3.870  xpair   -5.371  sep   -5.887  rel   -5.882   inner: prod   -86.186 bip   -87.374 rel   -87.361
+  n=120 k= 41 N= 79 t= 40  log10: pair   -3.870  xpair   -3.870  sep   -4.240  rel   -4.239   inner: prod   -83.399 bip   -84.250 rel   -84.249
+  n=120 k= 42 N= 78 t= 39  log10: pair   -0.987  xpair   -2.418  sep   -2.956  rel   -2.950   inner: prod   -80.686 bip   -81.925 rel   -81.912
+  n=120 k= 43 N= 77 t= 39  log10: pair   -0.987  xpair   -0.987  sep   -1.384  rel   -1.383   inner: prod   -77.986 bip   -78.901 rel   -78.900
+  n=120 k= 44 N= 76 t= 38  log10: pair    1.760  xpair    0.397  sep   -0.165  rel   -0.159   inner: prod   -75.360 bip   -76.654 rel   -76.641
+  n=120 k= 45 N= 75 t= 38  log10: pair    1.760  xpair    1.760  sep    1.332  rel    1.333   inner: prod   -72.746 bip   -73.730 rel   -73.729
+inner: 197 s wall on 8 workers
+== rates ==
+  175 (N, c') points in 24 s wall; the slowest point 12 s
+
+c prime | -logP_bip/N at N=20   at 60  at max |  fit bip (N>=40)     +-  fit bip (N>=60) | -logP_rel/N at 400 fit rel (N>=200)     +- | pair c/4-ln2    c/4 thinning LDP I(1/2) | bip-rel at max
+    2.0 |              0.1074  0.0601  0.0492 |           0.0381 0.0001           0.0383 |             0.0414           0.0380 0.0000 |       0.0000  0.500    0.053     0.0362 |       -0.00007
+    3.0 |              0.3077  0.2206  0.2015 |           0.1818 0.0003           0.1825 |             0.1896           0.1846 0.0000 |       0.0569  0.750    0.272     0.1831 |       -0.00102
+    4.0 |              0.5709  0.4364  0.4065 |           0.3759 0.0003           0.3767 |             0.3877           0.3799 0.0000 |       0.3069  1.000    0.572     0.3796 |       -0.00113
+    5.0 |              0.8765  0.6822  0.6388 |           0.5945 0.0004           0.5955 |             0.6107           0.5991 0.0000 |       0.5569  1.250    0.918     0.5997 |       -0.00272
+    6.6 |              1.4322  1.1097  1.0400 |           0.9688 0.0006           0.9704 |             0.9938           0.9744 0.0000 |       0.9569  1.650    1.525     0.9756 |       -0.00752
+    8.0 |              1.9827  1.5043  1.4069 |           1.3070 0.0011           1.3097 |             1.3421           1.3148 0.0000 |       1.3069  2.000    2.092     1.3161 |       -0.00766
+   10.0 |              2.8941  2.0914  1.9452 |           1.7933 0.0025           1.7995 |             1.8496           1.8091 0.0000 |       1.8069  2.500    2.937     1.8102 |       -0.00305
+
+c prime | logfit bip I (N>=40) logN coef | logfit rel I (N>=100) logN coef | linfit of product bound logfit of product bound | LDP I(1/2) | linear in bracket logfit in bracket bip fit >= prod fit
+    2.0 |               0.0392    -0.081 |                0.0375     0.160 |                 -0.1866                 -0.1929 |     0.0362 |              True              True                True
+    3.0 |               0.1864    -0.339 |                0.1853    -0.173 |                  0.0630                  0.0574 |     0.1831 |              True              True                True
+    4.0 |               0.3818    -0.444 |                0.3812    -0.369 |                  0.3124                  0.3082 |     0.3796 |              True              True                True
+    5.0 |               0.6013    -0.511 |                0.6005    -0.422 |                  0.5612                  0.5596 |     0.5997 |              True              True                True
+    6.6 |               0.9793    -0.779 |                0.9759    -0.431 |                  0.9580                  0.9636 |     0.9756 |              True              True                True
+    8.0 |               1.3256    -1.389 |                1.3163    -0.450 |                  1.3034                  1.3197 |     1.3161 |              True              True                True
+   10.0 |               1.8358    -3.177 |                1.8115    -0.663 |                  1.7927                  1.8347 |     1.8102 |             False              True                True
+
+The gap to the product bound, log[C(N,t)(1-p)^{t(N-t)}] - log P_N(E_bip), total nats and per vertex of N:
+  c'= 2.0: N=20: 3.74 (0.1870)  N=40: 7.99 (0.1997)  N=60: 12.41 (0.2068)  N=80: 16.89 (0.2112)  N=100: 21.41 (0.2141)  N=120: 25.96 (0.2163)
+  c'= 3.0: N=20: 2.03 (0.1014)  N=40: 4.11 (0.1028)  N=60: 6.39 (0.1064)  N=80: 8.75 (0.1093)  N=100: 11.15 (0.1115)  N=120: 13.60 (0.1133)
+  c'= 4.0: N=20: 1.23 (0.0615)  N=40: 2.23 (0.0558)  N=60: 3.40 (0.0567)  N=80: 4.65 (0.0582)  N=100: 5.96 (0.0596)  N=120: 7.29 (0.0608)
+  c'= 5.0: N=20: 0.89 (0.0444)  N=40: 1.35 (0.0338)  N=60: 1.93 (0.0322)  N=80: 2.58 (0.0323)  N=100: 3.28 (0.0328)  N=120: 4.00 (0.0333)
+  c'= 6.6: N=20: 0.72 (0.0362)  N=40: 0.84 (0.0210)  N=60: 1.01 (0.0168)  N=80: 1.22 (0.0152)  N=100: 1.45 (0.0145)  N=120: 1.70 (0.0142)
+  c'= 8.0: N=20: 0.70 (0.0349)  N=40: 0.73 (0.0182)  N=60: 0.78 (0.0130)  N=80: 0.84 (0.0105)  N=100: 0.92 (0.0092)  N=120: 1.01 (0.0084)
+  c'=10.0: N=20: 0.69 (0.0347)  N=40: 0.70 (0.0174)  N=60: 0.70 (0.0117)  N=80: 0.71 (0.0089)  N=100: 0.73 (0.0073)  N=120: 0.74 (0.0062)
+rates: 24 s
+drew rates.png
+DONE

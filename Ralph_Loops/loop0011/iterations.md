@@ -271,7 +271,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     `P(· | one pair empty)`, which weights instances by `X`, and the item
     says so in its first paragraph.
 
-- [ ] **05 The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)`.**
+- [x] **05 The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)`.**
   - **Question.** C of the brief. For a fixed `S`, `G − S` is `G(N, p)` with
     `N = n − k`; what is `P_N(E_bip)` exactly at small `N`, what is its
     exponential rate in `N`, and how much smaller is it than the product

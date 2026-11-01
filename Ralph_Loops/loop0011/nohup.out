@@ -18,3 +18,8 @@
 [2026-11-01 15:57:20] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-11-01 16:29:37] session it04: ok (exit 0, 46 tool calls)
 [2026-11-01 16:40:21] tests passed: GATE PASS
+[2026-11-01 16:40:21] committed be0343a38: 04 The planted cluster: typical, or a rare-instance artefact of `E[X²]
+[2026-11-01 16:40:21] === iteration 5: 05 The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)`.
+[2026-11-01 16:40:21] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-11-01 17:11:02] session it05: ok (exit 0, 37 tool calls)
+[2026-11-01 17:21:48] tests passed: GATE PASS

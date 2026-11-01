@@ -1,0 +1,123 @@
+# session it05 started 2026-11-01 16:40:21
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, the existing module, and the pilot data layout, then build the four functions, run the computation, and write §5.
+  > $ uptime && wc -l reports/separator_moment_plan.md reports/separator_moment.md learning/separator_moment.py learning/first_moment.py && ls reports/scratch/separat
+  > $ cat reports/separator_moment_plan.md
+  > $ sed -n 1,120p reports/separator_moment.md
+  > $ grep -n "^## \|^### " reports/separator_moment.md | head -60 && echo ---- && awk '/^### 1.6/,/^## 2/' reports/separator_moment.md | head -150
+  > $ cat reports/scratch/separator_moment/rate_check.py && echo ---- && cat reports/scratch/separator_moment/rate_check.log | head -40
+  > $ sed -n 1,80p learning/separator_moment.py && grep -n "^def \|^class " learning/separator_moment.py && echo ---- && grep -n "^def \|^class " learning/first_momen
+  > $ cat reports/scratch/first_moment/finite_bound.py && echo ----LOG---- && head -60 reports/scratch/first_moment/finite_bound.log
+  > $ sed -n 1,40p tests/test_separator_moment.py && echo ---- && awk '/^### 3.6/,/^## 4/' reports/separator_moment.md && echo ---- && grep -n "## 5" reports/random_g
+  > Skill {"skill": "dataviz"}
+  > $ cat /tmp/claude-1000/bundled-skills/2.1.314/7dc2bdf70a338fa5cd82ec9d932a1198/dataviz/references/palette.md | head -80; ls reports/scratch/separator_moment/04_pl
+  > $ sed -n 137,190p learning/separator_moment.py && tail -30 learning/separator_moment.py
+  > $ python3 - <<'EOF'
+import re
+path = "learning/separator_moment.py"
+src = open(path).read()
+src = src.replace('''    "lq_sides", "second_moment_exact_cover", "pla
+  > $ nice -n 19 python3 - <<'EOF'
+import math, time
+from learning.separator_moment import *
+# C_j against enumeration at j<=6 (counts 1,1,4,38,728,26704 at p=1/2)
+fo
+  > $ nice -n 19 python3 - <<'EOF'
+import math, time
+from learning.separator_moment import *
+from learning.separator_moment import _lse
+for N in (1, 5, 10, 15, 20):
+ 
+  > $ uptime && nice -n 19 python3 - <<'EOF'
+import math, time
+from learning.separator_moment import *
+for N, c in ((80,6),(100,6),(120,6),(120,3),(160,6),(200,6),(20
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "bllo2rrnk"}
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/cba2c2ba-5816-43aa-8494-5f91637f4c84/tasks/bllo2rrnk.output | tail -3; cd /home/al/dev/MOSP && python3 -c "
+import csv; f
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/separator_moment/05_inner && cat > /home/al/dev/MOSP/reports/scratch/separator_moment/05_inner/run.py <<'EOF'
+"""loop
+
+The check stage passed every exact comparison; it crashed only on my grid putting `p > 1` at `N = 10`, `c′ = 12`. I'll fix that, clear the partial log, and rerun the check.
+  > $ sed -i 's/        for cp in (1, 2, 3, 5, 8, 12):\n            p = cp \/ N/X/' reports/scratch/separator_moment/05_inner/run.py && python3 - <<'EOF'
+p="reports/s
+  > $ uptime && nice -n 19 python3 reports/scratch/separator_moment/05_inner/run.py --stage inner 2>&1 | tail -40
+  > $ uptime && nice -n 19 python3 reports/scratch/separator_moment/05_inner/run.py --stage rates --max-N 120 2>&1 | tail -25
+  > $ python3 - <<'EOF'
+p="reports/scratch/separator_moment/05_inner/run.py"
+s=open(p).read()
+s=s.replace('''def stage_rates(max_N: int, workers: int) -> None:''','''
+  > Read /home/al/dev/MOSP/reports/scratch/separator_moment/05_inner/rates.png
+
+The figure reads cleanly: the exact `E_bip` points sit on the `E_relax` curve at every `c′`, and both converge onto the dashed LDP line. Now the tests.
+  > $ cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# item 05: the inner probability P
+  > $ python3 -c "
+from learning.separator_moment import log_prob_bip
+for N in (3,8,13):
+    print(N, log_prob_bip(N,0.2,0), log_prob_bip(N,0.2,N), [round(log_prob_bi
+  > $ python3 - <<'EOF'
+p="tests/test_separator_moment.py"
+s=open(p).read()
+s=s.replace('''        assert log_prob_bip(N, 0.2, 0) == 0.0
+        assert log_prob_bip(N
+  > $ rm -f reports/scratch/separator_moment/05_inner/run.log && (nice -n 19 python3 reports/scratch/separator_moment/05_inner/run.py --max-N 120 > reports/scratch/se
+  > $ nice -n 19 python3 - <<'EOF'
+import importlib.util, math
+spec = importlib.util.spec_from_file_location("rc", "reports/scratch/separator_moment/rate_check.py"); 
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+---
+
+## 5. The inner probability, exactly: `P(G(N, p)` has a balanced empty bipartition`)` (item 05, 2026-11-01)
+
+**
+
+The rerun is in its inner stage. PROGRESS.md and the iterations mark don't depend on it, so I'll write both now, then verify the regenerated outputs and run the gate.
+  > $ python3 - <<'EOF'
+p="Ralph_Loops/loop0011/iterations.md"
+s=open(p).read()
+old="- [ ] **05 The inner probability, exactly:"
+assert s.count(old)==1
+s=s.replace(ol
+  > $ sed -n 1,60p Ralph_Loops/loop0011/gate.py | grep -v "^$" | head -50; echo ----; git status --short | grep -v "^ M Ralph_Loops/loop0011/\(loop.log\|nohup.out\|st
+
+No stray files outside the item's paths. The gate (~15 min) doesn't touch the rerun's outputs, so I'll launch it in the background now and, at the same time, wait for the rerun with a bounded poll.
+  > $ nice -n 19 python3 Ralph_Loops/loop0011/gate.py > /tmp/gate_it05.log 2>&1; echo "GATE_EXIT=$?" >> /tmp/gate_it05.log
+  > $ for i in $(seq 1 50); do if grep -q DONE reports/scratch/separator_moment/05_inner/run_stdout.log; then break; fi; sleep 10; done; grep -c "" reports/scratch/se
+
+Regenerated outputs match the report's numbers exactly (floors, fits, LDP agreement). Now only the gate remains; polling it with bounded waits.
+  > $ for i in $(seq 1 56); do if grep -q GATE_EXIT /tmp/gate_it05.log; then break; fi; sleep 10; done; tail -15 /tmp/gate_it05.log; uptime
+  > $ for i in $(seq 1 57); do if grep -q GATE_EXIT /tmp/gate_it05.log; then break; fi; sleep 10; done; tail -15 /tmp/gate_it05.log; tail -5 /tmp/claude-1000/-home-al
+
+Gate passed. Filling in the gate line in PROGRESS.md and doing a final check of the working tree.
+  > $ python3 - <<'EOF'
+p="Ralph_Loops/loop0011/PROGRESS.md"
+s=open(p).read()
+s=s.replace("- Gate: GATE_RESULT_PLACEHOLDER","- Gate: `python3 Ralph_Loops/loop0011/gat
+
+Item 05 is done, gate passed, PROGRESS.md and iterations.md updated, nothing committed, and the working tree holds only the item's paths. Nothing further is pending.
+
+**What was done.** The inner probability `P_N(E_bip)` of `G(N, p)` is now computed exactly from the component structure. A memoised recursion over part sizes, carrying the achievable sub-sums as a bitset and closing branches through the exponential-formula coefficient table, reaches `N = 120` in 18 s. The item asked for 60. The relaxed event `E_relax` is exact to `N = 400`. Every function is checked against enumeration of all labelled graphs (`N ≤ 7`, 2.1M graphs at 7) and Monte Carlo. Ten tests were added, 60 in the module.
+
+**Findings, in order of weight.**
+- **Kill criterion met for `c ≥ 6`.** In all six pilot cells with `c ≥ 6` the separator floor at `< 0.01` is the pair floor or one stack above. The separator count is recorded as a rounding at these sizes. Item 06 is told so.
+- **At `c = 3–4` the gain is two to three stacks** at `n = 120`, still far below the solver's lower bounds there.
+- **The exact computation reproduces item 01's quoted LDP rate** to three decimals at all seven `c′`. Item 01 could only check that formula at its zero and sign. The misprint risk is retired.
+- **`E_bip` has the rate of `E_relax`.** They differ by under 0.008 nats in total at `N = 120`. The number-partitioning condition is free.
+- **The bracket holds when read at finite `N`.** The plain linear fit at `c′ = 10` sits 0.007 below the asymptotic lower end because of the `log N` term. A log-corrected fit is inside everywhere, and the bip fit exceeds the product-bound fit at every `c′`.
+- **Where the gain lives.** At `c′ ≥ 8` the gap to the product bound is `ln 2` plus a few tenths of a nat. That is the double count of a bipartition's two orientations and nothing more. At `c′ ≤ 5` the gap is linear in `N`.
+
+**Corrections recorded.** Sixty digits of precision fail at `N = 400`, `c′ = 2`; the plan's thinning value at `c′ = 4.98` does not reproduce from the plan's own formula; the plain partition enumeration was never needed.
+
+**Prediction for item 06**, now on record in §5.5: `β_sep = β_relax` of §1.6 to the fit's accuracy; its kill is met at `c = 6, 10` and not at `c ≤ 4`.
+
+Deliverables sit at `reports/separator_moment.md` §5, `reports/scratch/separator_moment/05_inner/`, and `learning/separator_moment.py`. Progress: 5 of 13 solved.
+
+# result: success in 1840s, 40 turns, cost $9.25
