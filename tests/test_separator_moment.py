@@ -889,3 +889,137 @@ def test_rig_giant_and_the_half_giant_line():
         assert e_g < e < 1.0
         assert rig_giant(mu, {d: 1}) == pytest.approx(0.5, abs=1e-6)
     assert 0 < edwards_mcdermid_cover(1.0, {6: 1}) < 1
+
+
+# --- item 08: the theorems on paper, in exact rationals (§8) -------------------------
+#
+# Theorem S  P(pw(G(n, p)) ≤ k) ≤ C(n, k) · P_N(E_bip), with the factorisation of
+#            the G(n, p) weight over G[V ∖ S] as the step item 10 must formalise;
+# Cor. S′    the same with E_relax, by Lemmas G (Gilbert) and F (first-vertex component);
+# Lemma P    P_N(E_bip) as a sum over the partitions of N;
+# Theorem Cl P(pw ≤ k) ≤ E[X₃] = Σ n!/(a! r! s!) (1−p)^{ar} (1−(1−p)^a)^s (1−(1−p)^r)^s;
+# Lemma W    Y = Σ_P 1[P empty]/Z(P) ≥ 1[X > 0] for 1 ≤ Z ≤ X, first instance the flips.
+# The full check (every labelled graph to 7 vertices, 1,000 random instances at
+# n = 10, Monte Carlo covers) is reports/scratch/separator_moment/08_theorems/check.py.
+
+from fractions import Fraction  # noqa: E402
+from math import comb  # noqa: E402
+
+from learning.separator_moment import (  # noqa: E402
+    closed_count_exact, components, connected_probs_exact, flip_count, flip_swaps, isolated_in,
+    log_closed_count, log_prob_bip, log_prob_rel, pair_count_exact, prob_bip_exact,
+    prob_relax_exact, weighted_count, weighted_graph_count,
+)
+
+
+def _weighted(n, p, pred):
+    """Σ_G w_p(G) · pred(adj) over every labelled graph on n vertices, exactly."""
+    q = 1 - p
+    Cn = n * (n - 1) // 2
+    total = Fraction(0)
+    for adj in all_labelled_graphs(n):
+        e = sum(popcount(a) for a in adj) // 2
+        v = pred(adj)
+        if v:
+            total += v * p ** e * q ** (Cn - e)
+    return total
+
+
+def test_gilbert_and_the_first_vertex_recursion_against_enumeration():
+    # A001187: labelled connected graphs 1, 1, 4, 38, 728, 26704, 1866256
+    C = connected_probs_exact(7, Fraction(1, 2))
+    assert [c * 2 ** (j * (j - 1) // 2) for j, c in enumerate(C)] == [1, 1, 1, 4, 38, 728, 26704, 1866256]
+    p = Fraction(1, 3)
+    for N in range(1, 6):
+        full = (1 << N) - 1
+        C = connected_probs_exact(N, p)
+        assert weighted_graph_count(N, p, lambda adj: len(components(adj, full)) == 1) == C[N]
+        t = (N + 1) // 2
+        bip = weighted_graph_count(N, p, lambda adj: _bip(adj, t))
+        assert bip == prob_bip_exact(N, p)                                   # Lemma P
+        assert math.log(bip) == pytest.approx(log_prob_bip(N, float(p)), abs=1e-9)
+        for M in range(1, N + 1):
+            rel = weighted_graph_count(N, p, lambda adj, M=M: max(popcount(c) for c in components(adj, full)) <= M)
+            assert rel == prob_relax_exact(N, p, M, C)                       # Lemma F
+            assert math.log(rel) == pytest.approx(log_prob_rel(N, float(p), M), abs=1e-9)
+        assert prob_bip_exact(N, p) <= prob_relax_exact(N, p, t)             # E_bip ⊆ E_relax
+
+
+def _bip(adj, t):
+    full = (1 << len(adj)) - 1
+    reach = 1
+    for c in components(adj, full):
+        reach |= reach << popcount(c)
+    return bool(reach >> t & 1)
+
+
+def test_theorems_S_and_Cl_and_the_factorisation_on_every_labelled_graph_to_five():
+    for p in (Fraction(1, 2), Fraction(1, 3)):
+        for n in range(1, 6):
+            pw = {}
+            for adj in all_labelled_graphs(n):
+                pw[tuple(adj)] = vertex_separation(adj)
+            for k in range(n):
+                N, t = forced_sizes(n, k)
+                lhs = _weighted(n, p, lambda adj: int(pw[tuple(adj)] <= k))
+                inner = prob_bip_exact(N, p)
+                assert lhs <= comb(n, k) * inner                                            # Theorem S
+                assert comb(n, k) * inner <= comb(n, k) * prob_relax_exact(N, p, t)          # Corollary S′
+                ex3 = _weighted(n, p, lambda adj: len(closed_pairs(adj, k)))
+                assert ex3 == closed_count_exact(n, k, p)                                    # Cl's formula = E[X₃]
+                assert lhs <= ex3                                                           # Theorem Cl
+                assert math.log(ex3) == pytest.approx(log_closed_count(n, k, float(p)), abs=1e-9)
+                ex1 = _weighted(n, p, lambda adj: count_exact_pairs(adj, k))
+                assert ex1 == pair_count_exact(n, k, p) and lhs <= ex1                      # the count on record
+                # the factorisation: for every k-set S the weighted count of {E_bip(S)} is P_N(E_bip)
+                full = (1 << n) - 1
+                for combo in combinations(range(n), k):
+                    S = sum(1 << v for v in combo)
+                    got = _weighted(n, p, lambda adj, S=S: int(_bip_minus(adj, S, full, t)))
+                    assert got == inner
+
+
+def _bip_minus(adj, S, full, t):
+    reach = 1
+    for c in components(adj, full & ~S):
+        reach |= reach << popcount(c)
+    return bool(reach >> t & 1)
+
+
+def test_flip_lemma_and_lemma_W_on_random_graphs():
+    for seed in range(40):
+        n = 8 + seed % 3
+        adj = random_graph(n, (0.2, 0.35, 0.5, 0.65)[seed % 4], seed)
+        pw = vertex_separation(adj)
+        for k in (pw, pw - 1):
+            if k < 0:
+                continue
+            ps = enumerate_empty_pairs(adj, k)
+            X = len(ps)
+            pset = set(ps)
+            if k == pw:
+                assert X > 0                                                                # L1
+            if not X:
+                assert weighted_count([], lambda P: 1) == 0
+                continue
+            cls = move_classes(ps, n)
+            size = {}
+            for c in cls:
+                size[c] = size.get(c, 0) + 1
+            Zm = {P: size[c] for P, c in zip(ps, cls)}
+            for (A, R) in ps:
+                IA, IR = isolated_in(adj, A), isolated_in(adj, R)
+                assert all(adj[v] & A == 0 for v in range(n) if IA >> v & 1)
+                sw = flip_swaps(adj, A, R)
+                ia, ir, Z = flip_count(adj, A, R)
+                assert (ia, ir) == (popcount(IA), popcount(IR)) and Z == comb(ia + ir, ia)
+                assert sw[0] == (A, R) and len(sw) == len(set(sw)) == Z                     # injective
+                assert all(Q in pset for Q in sw)                                           # exact-size empty pairs
+                assert all(popcount(Q[0]) == popcount(A) and popcount(Q[1]) == popcount(R)
+                           and is_empty_pair(adj, *Q) for Q in sw)
+                assert 1 <= Z <= X and 1 <= Zm[(A, R)] <= X
+            Yf = weighted_count(ps, lambda P: flip_count(adj, *P)[2])
+            Ym = weighted_count(ps, lambda P: Zm[P])
+            assert 1 <= Yf <= X and Ym == len(size) <= X                                    # Lemma W
+    with pytest.raises(ValueError):
+        weighted_count([(1, 2)], lambda P: 0)

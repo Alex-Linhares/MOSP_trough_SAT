@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 7/13 SOLVED
+Current: 8/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -699,3 +699,91 @@ customer); item 11's ledger can take the closed and flip floors from
 (§6) and the cover grid (§7.2) and the half-giant line as the proposed
 one-line addition to `paper1/latex/figures/excess_phase_diagram.py`
 (`e = 0.736` at `r = 1`, dashed, between `e_g` and `e = 1`; not made).
+
+---
+
+## Iteration 8 — 2026-11-01 19:41
+
+Item 08, the theorems on paper: the separator first moment in finite form,
+the closed-pair count, the weighted-count identity and its first instance,
+the threshold propositions with their hypotheses explicit. **Done.**
+Deliverable: `reports/separator_moment.md` §8 (§8.1 the statements —
+Theorem S with the factorisation stated as an exact identity per `S`,
+Lemma P, Lemmas G and F, Corollary S′, Theorem Cl, Lemma W, Lemma Fl (the
+flip lemma), Lemma J, Corollary W-flip, Theorem Cl-cover, Propositions T
+and T-cover; §8.2 the proofs with every step named; §8.3 the check with
+the `n = 7` table and the Monte Carlo table; §8.4 the Lean targets for
+item 10, each with the lemma it rests on and its one new ingredient; §8.5
+regenerate / size range / kill verdict / non-claims);
+`learning/separator_moment.py` extended with the exact-rational forms
+(`connected_probs_exact`, `prob_relax_exact`, `prob_bip_exact`,
+`pair_count_exact`, `closed_count_exact`, `weighted_graph_count`,
+`isolated_in`, `flip_swaps`, `flip_count`, `weighted_count`);
+`reports/scratch/separator_moment/08_theorems/{check.py, check.log,
+lemma_w_n10.csv}`; `tests/test_separator_moment.py` (3 new tests, 77 in
+the module).
+
+### Completed
+
+- **Kill criterion: not met.** Every labelled graph on 1–7 vertices
+  (2,097,152 at `n = 7`) in exact rationals at `p = 1/2` and `1/3`, for
+  every `k < n`: Theorem S, Corollary S′, Theorem Cl and the pair count
+  all above the weighted count of `{pw ≤ k}`; Theorem Cl's formula
+  *equal* to the enumerated `E[X₃]`; Lemmas G, F, P equal to the
+  enumerated connectedness, `E_relax(M)` for every `M`, and `E_bip`
+  (Gilbert's recursion returns OEIS A001187 at `p = 1/2`); the
+  factorisation identity `P_n(E_bip(S)) = P_N(E_bip)` exact on all 120
+  `(n, k, S)` triples at `n ≤ 6`; the flip lemma on 1,422,005 exact-size
+  pairs; Lemma W on 1,000 random instances at `n = 10` with `Z` the
+  move-class size and the flip count; Lemma J on 24 enumerated cover
+  cases; `E[Y]`, `E[X]` of `flip_log_bound` within 1.7 s.e. of 1,000
+  Monte Carlo covers in four cells. **Zero violations**, 29 s on 8 workers.
+  No statement withdrawn; stop condition of TASK.md did not fire.
+- **What is now a theorem on paper, finite and unconditional**: the
+  separator bound with its inner probability an exact weighted count and
+  the union bound over `S` the only inequality (the inner probability is
+  the same for every `S`, by the bijection graphs(V) ≅ graphs(V ∖ S) ×
+  𝒫(pairs meeting S), written out for item 10); the closed-pair bound as
+  an exact expectation (closed ⟺ empty ∧ every separator vertex sees both
+  sides, `1 + 2s` independent events on disjoint pair sets); the
+  weighted-count identity `Y ≥ 1[X > 0]` pointwise, equality at `Z = X`;
+  the flips as an admissible `Z` (four-case emptiness, injectivity,
+  Vandermonde), and their exact evaluation on random covers by the joint
+  binomial moments and a two-variable inversion. The thresholds stay
+  propositions conditional on (H_G) (cited: O'Connell via Puhalskii Cor.
+  2.4(3), AKP Cor. 1.3) and (H_C) (in no held paper).
+- **Two corrections to later briefs.** Item 10 needs no termination
+  argument for the closure (L2 iii: a fixpoint after one round, so two
+  applications of `V ∖ closedNbhd`); and Theorem S can be formalised with
+  the inner probability *defined* as the weighted count of the pair-form
+  event, so Lemma P (components as `Finset`s, the obstacle of §2.6) is
+  not on Theorem S's path — only Corollary S′ and Lemmas G, F need it.
+- **Seven-vertex observations, quoted as nothing more**: `E_bip` and
+  `E_relax` first differ in measure at `N = 6` (0.1156 vs 0.1188 at
+  `p = 1/2`); the separator count is below the closed count at
+  `k = 0–1` and above it at `k = 2–4` (an echo of §6.3's sparse/dense
+  split); at `k = n − 1` the closed count exceeds the pair count (sides
+  larger than forced). At `n = 10` the flips merge 1.2–1.3 at the
+  median, the move-classes 2.4; at `k = 3` on `(10, 10, 3)` covers the
+  weighted count is 1.35 against a sampled `P(X > 0)` of 0.42 — the lower
+  tail of `Z` (pairs with no isolated vertex) is the gap, as item 09
+  expects.
+- Compute: 29 s of wall on 8 workers (0.1 core-hours budgeted; about 0.05
+  used); the one-minute load was below 2 throughout.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,733 passed / 2 skipped / 1 xfailed in 4:25, the 3 new tests among them; pathwidth_solver 123 passed in 6:25; paper builds with no undefined references; the one-minute load was below 2).
+
+### Blockers
+
+None.
+
+### Next
+
+Item 09 (the branch): §4.6 says no `Z` gains more than the measured
+slack (`0.012–0.019` in `β` at `β*`, `n ≤ 32`), so the item is the one
+page the fork prescribes; Lemma W and Lemma Fl of §8.1 are its statements,
+and the recombination count `Z_j` must be checked as Lemma Fl was (every
+image pair empty, injective) before it is used. Item 10 takes §8.4's table
+in the recommended order (Lemma W first; Theorem S via `sum_gnpWeight_fiber`;
+Lemmas P, G, F only if components-as-`Finset`s is cheap). Item 12 quotes
+Theorem S and Theorem Cl from §8.1 and Propositions T / T-cover with their
+hypotheses, never as theorems.

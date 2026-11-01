@@ -58,6 +58,10 @@ __all__ = [
     "rig_branching_factor", "rig_giant", "half_giant_line", "cover_degree_law",
     "edwards_mcdermid_cover", "flip_cover_tail_exponent", "flip_cover_exponent_na",
     "flip_cover_exponent_beta", "beta_flip_cover", "flip_log_bound_fast", "_root_above",
+    # item 08: the theorems on paper, in exact rationals
+    "connected_probs_exact", "prob_relax_exact", "prob_bip_exact", "pair_count_exact",
+    "closed_count_exact", "isolated_in", "flip_swaps", "flip_count", "weighted_count",
+    "weighted_graph_count",
 ]
 
 
@@ -2118,3 +2122,168 @@ def flip_log_bound_fast(n: int, k: int, sizes) -> tuple[float, float]:
     lY = lp + (math.log(EY.numerator) - math.log(EY.denominator) - logD) if EY > 0 else -math.inf
     lX = lp + (math.log(EX) - logD) if EX > 0 else -math.inf
     return lY, lX
+
+
+# --- item 08: the theorems on paper, in exact rationals ------------------------------
+#
+# Theorem S:  P(pw(G(n, p)) ≤ k) ≤ C(n, k) · P_N(E_bip),  P_N(E_bip) the weighted count
+#             of the graphs on N = n − k labelled vertices whose components can be
+#             grouped into sides of sizes t = ⌈N/2⌉ and N − t   (`prob_bip_exact`, by
+#             the partition formula, Lemma P; `weighted_graph_count` enumerates it);
+# Cor. S′:    the same with E_relax (no component larger than t), computed by the
+#             first-vertex-component recursion (Lemma F, `prob_relax_exact`) on
+#             Gilbert's connectedness recursion (Lemma G, `connected_probs_exact`);
+# Theorem Cl: P(pw ≤ k) ≤ Σ_{a ≥ t, r ≥ N − t, a + r + s = n} n!/(a! r! s!) (1 − p)^{ar}
+#             (1 − (1 − p)^a)^s (1 − (1 − p)^r)^s = E[X₃]            (`closed_count_exact`);
+# Lemma W:    Y = Σ_P 1[P empty] / Z(P) ≥ 1[X > 0] for any 1 ≤ Z ≤ X on {P empty}
+#             (`weighted_count`), first instance Z = C(I_A + I_R, I_A), the flips
+#             (`flip_swaps`, `flip_count`: every swap of equally many vertices isolated
+#             on their sides is another exact-size empty pair).
+# Every formula here is checked against the enumeration of all labelled graphs at
+# n ≤ 7 by reports/scratch/separator_moment/08_theorems/check.py (exact rationals at
+# p = 1/2 and 1/3).
+
+
+def connected_probs_exact(N: int, p) -> list:
+    """`C_j(p)`, `j = 0..N`, exactly (`Fraction` when `p` is one): Gilbert's recursion
+    `C_1 = 1`, `C_j = 1 − Σ_{i=1}^{j−1} C(j−1, i−1) C_i (1−p)^{i(j−i)}` (Lemma G: the
+    component of vertex 1 has `i` vertices, is connected, and sends no edge to the
+    other `j − i`). `C_0 = 1` by convention."""
+    from fractions import Fraction
+    p = Fraction(p)
+    q = 1 - p
+    C = [Fraction(1), Fraction(1)]
+    for j in range(2, N + 1):
+        C.append(1 - sum(comb(j - 1, i - 1) * C[i] * q ** (i * (j - i)) for i in range(1, j)))
+    return C[:N + 1]
+
+
+def prob_relax_exact(N: int, p, M: int, C: list | None = None):
+    """`P(no component of G(N, p) has more than M vertices)`, exactly, by the
+    first-vertex-component recursion (Lemma F): `R_0 = 1`,
+    `R_j = Σ_{i=1}^{min(M, j)} C(j−1, i−1) C_i (1−p)^{i(j−i)} R_{j−i}`."""
+    from fractions import Fraction
+    p = Fraction(p)
+    q = 1 - p
+    if C is None:
+        C = connected_probs_exact(N, p)
+    R = [Fraction(1)]
+    for j in range(1, N + 1):
+        R.append(sum(comb(j - 1, i - 1) * C[i] * q ** (i * (j - i)) * R[j - i]
+                     for i in range(1, min(M, j) + 1)))
+    return R[N]
+
+
+def prob_bip_exact(N: int, p, t: int | None = None, C: list | None = None):
+    """`P_N(E_bip)`, exactly: `Σ_λ N!/(Π λ_i! Π_s m_s!) Π C_{λ_i} (1−p)^{(N² − Σ λ_i²)/2}`
+    over the partitions `λ ⊢ N` with a sub-multiset summing to `t` (Lemma P; the
+    multinomial counts the vertex assignments to the parts, each part is
+    connected independently, and `(N² − Σ λ_i²)/2` pairs cross between parts)."""
+    from fractions import Fraction
+    p = Fraction(p)
+    q = 1 - p
+    if t is None:
+        t = (N + 1) // 2
+    if N == 0:
+        return Fraction(1)
+    if C is None:
+        C = connected_probs_exact(N, p)
+    total = Fraction(0)
+    for lam in partitions(N):
+        if not _subset_sum(list(lam), t):
+            continue
+        hist = _hist(lam)
+        w = Fraction(math.factorial(N))
+        for s, m in hist.items():
+            w /= Fraction(math.factorial(s)) ** m * math.factorial(m)
+        for s in lam:
+            w *= C[s]
+        w *= q ** ((N * N - sum(s * s for s in lam)) // 2)
+        total += w
+    return total
+
+
+def pair_count_exact(n: int, k: int, p):
+    """`E[X₁] = C(n, t) C(n − t, N − t) (1 − p)^{t(N − t)}`, exactly (the count on
+    record at exact sizes)."""
+    from fractions import Fraction
+    N, t = forced_sizes(n, k)
+    return comb(n, t) * comb(n - t, N - t) * (1 - Fraction(p)) ** (t * (N - t))
+
+
+def closed_count_exact(n: int, k: int, p):
+    """`E[X₃]` on `G(n, p)`, exactly: Theorem Cl's right-hand side
+    `Σ_{a ≥ t, r ≥ N − t, a + r + s = n} n!/(a! r! s!) (1 − p)^{ar} (1 − (1 − p)^a)^s (1 − (1 − p)^r)^s`."""
+    from fractions import Fraction
+    N, t = forced_sizes(n, k)
+    q = 1 - Fraction(p)
+    total = Fraction(0)
+    for a in range(t, n + 1):
+        for r in range(N - t, n - a + 1):
+            s = n - a - r
+            w = Fraction(math.factorial(n), math.factorial(a) * math.factorial(r) * math.factorial(s))
+            w *= q ** (a * r) * (1 - q ** a) ** s * (1 - q ** r) ** s
+            total += w
+    return total
+
+
+def weighted_graph_count(N: int, p, event) -> "Fraction":
+    """`Σ_{H on N labelled vertices, event(adj)} p^{|E(H)|} (1 − p)^{C(N,2) − |E(H)|}`,
+    exactly, by enumeration (`N ≤ 7`); `event` takes the adjacency masks."""
+    from fractions import Fraction
+    p = Fraction(p)
+    q = 1 - p
+    Cn = N * (N - 1) // 2
+    counts = [0] * (Cn + 1)
+    for adj, e in _labelled_graphs(N):
+        if event(adj):
+            counts[e] += 1
+    return sum(c * p ** e * q ** (Cn - e) for e, c in enumerate(counts) if c)
+
+
+def isolated_in(adj: list[int], A: int) -> int:
+    """The vertices of `A` with no neighbour in `A` (isolated in `G[A]`), as a mask."""
+    out = 0
+    T = A
+    while T:
+        low = T & -T
+        T ^= low
+        if adj[low.bit_length() - 1] & A == 0:
+            out |= low
+    return out
+
+
+def flip_swaps(adj: list[int], A: int, R: int) -> list[tuple[int, int]]:
+    """Every pair `((A ∖ J) ∪ J′, (R ∖ J′) ∪ J)` with `J ⊆ I_A`, `J′ ⊆ I_R`, `|J| = |J′|`
+    (`I_A` the vertices of `A` isolated in `G[A]`), the identity swap included: the
+    flip lemma says each is an empty pair of the same sizes when `(A, R)` is, and
+    the map is injective, so their number `C(I_A + I_R, I_A)` is a valid `Z`."""
+    IA, IR = isolated_in(adj, A), isolated_in(adj, R)
+    ia = [v for v in range(len(adj)) if IA >> v & 1]
+    ir = [v for v in range(len(adj)) if IR >> v & 1]
+    out = []
+    for j in range(min(len(ia), len(ir)) + 1):
+        for J in combinations(ia, j):
+            Jm = sum(1 << v for v in J)
+            for Jp in combinations(ir, j):
+                Jpm = sum(1 << v for v in Jp)
+                out.append(((A & ~Jm) | Jpm, (R & ~Jpm) | Jm))
+    return out
+
+
+def flip_count(adj: list[int], A: int, R: int) -> tuple[int, int, int]:
+    """`(|I_A|, |I_R|, C(|I_A| + |I_R|, |I_A|))`: the flip count `Z` of the pair."""
+    ia, ir = popcount(isolated_in(adj, A)), popcount(isolated_in(adj, R))
+    return ia, ir, comb(ia + ir, ia)
+
+
+def weighted_count(pairs, Z) -> "Fraction":
+    """`Y = Σ_P 1 / Z(P)` over a list of (empty) pairs, exactly; `Z(P) ≥ 1`."""
+    from fractions import Fraction
+    total = Fraction(0)
+    for P in pairs:
+        z = Z(P)
+        if z < 1:
+            raise ValueError("Z must be at least 1")
+        total += Fraction(1, z)
+    return total

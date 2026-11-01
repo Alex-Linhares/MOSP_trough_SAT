@@ -454,7 +454,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     covers (the partition sum is not attempted on covers; the closed pair
     and the flips are the rigorous instances).
 
-- [ ] **08 The theorems on paper: the separator first moment in finite form, the closed-pair count, the weighted-count identity.**
+- [x] **08 The theorems on paper: the separator first moment in finite form, the closed-pair count, the weighted-count identity.**
   - **Question.** F of the brief, first half. What exactly is proved, in a
     form items 10 and 12 can carry?
   - **Method.** Write `reports/separator_moment.md` §8 in the style of

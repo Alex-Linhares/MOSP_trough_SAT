@@ -1,0 +1,104 @@
+# session it08 started 2026-11-01 19:28:54
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the code the check script will reuse, then write §8 and the check.
+  > $ uptime && wc -l reports/separator_moment.md reports/separator_moment_plan.md reports/random_graph_first_moment.md learning/separator_moment.py reports/scratch/f
+  > $ sed -n 1,200p reports/separator_moment_plan.md
+  > $ sed -n 200,341p reports/separator_moment_plan.md
+  > $ grep -n '^## \|^### ' reports/separator_moment.md
+  > $ sed -n 1,52p reports/separator_moment.md && sed -n 364,672p reports/separator_moment.md
+  > $ sed -n 1388,1423p reports/separator_moment.md && echo ---- && sed -n 1691,1750p reports/separator_moment.md && echo ---- && sed -n 1854,1900p reports/separator_
+  > $ sed -n 2080,2215p reports/separator_moment.md && echo ---- && sed -n 2371,2403p reports/separator_moment.md
+  > $ grep -n '^## \|^### ' reports/random_graph_first_moment.md | head -30 && echo ---- && sed -n 1,140p reports/random_graph_first_moment.md
+  > $ cat reports/scratch/first_moment/check.py && echo ==== && grep -n '^def \|^class ' learning/separator_moment.py && echo ==== && grep -n 'theorem\|lemma\|^def \|
+  > $ sed -n 60,75p learning/separator_moment.py && sed -n 118,205p learning/separator_moment.py && echo ==== && sed -n 340,400p learning/separator_moment.py && echo 
+  > $ sed -n 1,60p learning/separator_moment.py && sed -n 76,118p learning/separator_moment.py && sed -n 244,267p learning/separator_moment.py && sed -n 389,440p lear
+  > $ sed -n 793,806p learning/separator_moment.py && python3 - <<'EOF'
+import re
+p='learning/separator_moment.py'
+s=open(p).read()
+s=s.replace('''    "flip_cover_exp
+  > $ mkdir -p reports/scratch/separator_moment/08_theorems && cat > reports/scratch/separator_moment/08_theorems/check.py <<'EOF'
+"""Brute-force check of the theorem
+
+Stage 1 passes at `n ≤ 5` with zero violations. Now the full run in the background, and while it runs I'll write the test additions and the report section.
+  > $ uptime && nohup nice -n 19 python3 check.py --max-n 7 --workers 8 > check.log 2>&1 &
+echo started
+  > $ cd /home/al/dev/MOSP && grep -n '^from learning.separator_moment import' -A 12 tests/test_separator_moment.py | head -40 && grep -n '^def test_' tests/test_sepa
+  > $ cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --- item 08: the theorems on paper, in exact rationals (§8) -------------------------
+#
+# Theorem S  P(pw(G(n,
+  > $ python3 - <<'EOF'
+p='tests/test_separator_moment.py'
+s=open(p).read()
+s=s.replace('''from fractions import Fraction  # noqa: E402
+
+from learning.separator_momen
+  > $ timeout 300 python3 -m pytest tests/test_separator_moment.py -q -k "flip_lemma" 2>&1 | grep -B2 -A6 'Error\|assert' | head -30; python3 - <<'EOF'
+p='tests/test_
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+---
+
+## 8. The theorems on paper: the separator first moment in finite form, the closed-pair count, the weighted-cou
+  > $ L=reports/scratch/separator_moment/08_theorems/check.log && grep -o 'factorisation identity on [0-9]* sets' $L | awk '{s+=$4} END{print "S-triples per p:", s/2}
+  > $ sed -i 's/equality on all 441/equality on all 120/; s/1,421,965/1,422,005/g' reports/separator_moment.md && grep -c '1,422,005' reports/separator_moment.md && g
+  > $ sed -i 's/^Current: 7\/13 SOLVED/Current: 8\/13 SOLVED/' Ralph_Loops/loop0011/PROGRESS.md && cat >> Ralph_Loops/loop0011/PROGRESS.md <<EOF
+
+---
+
+## Iteration 8 
+  > $ uptime && (timeout 3000 python3 Ralph_Loops/loop0011/gate.py > /tmp/gate08.log 2>&1; echo "exit $?" >> /tmp/gate08.log) ; tail -25 /tmp/gate08.log
+  > ToolSearch {"query": "select:TaskStop,Monitor", "max_results": 2}
+  > $ grep -n 'PASS\|FAIL\|print(' Ralph_Loops/loop0011/gate.py | tail -12; cat /tmp/gate08.log 2>/dev/null | tail -3
+  > TaskStop {"task_id": "bkg6flavq"}
+  > $ sleep 3; L=$(ps -eo pid,etimes,cmd | grep -E 'gate\.py|pytest|lake build' | grep -v grep); if [ -n "$L" ]; then echo "LINGERING:"; echo "$L"; else echo "clean";
+  > $ L=$(ps -eo pid,etimes,args | grep -E 'gate\.py|pytest|lake build' | grep -v -E 'grep|claude -p' | cut -c1-120); if [ -n "$L" ]; then echo "LINGERING:"; echo "$L
+  > Monitor {"command": "until grep -q -E 'GATE PASS|GATE FAIL' /tmp/gate08.log 2>/dev/null; do if ! kill -0 697187 2>/dev/null; the
+  > $ git status --short | grep -v 'Ralph_Loops/loop0011/\(loop.log\|nohup.out\|status.json\|session_it08\)' ; echo ----; ls -la reports/scratch/separator_moment/08_t
+  > $ cat /tmp/gate08.log; echo ----; ps -eo pid,etimes,args | grep -E 'gate\.py|pytest|lake' | grep -v -E 'grep|claude -p' | cut -c1-100
+  > Monitor {"command": "until grep -q -E 'GATE PASS|GATE FAIL' /tmp/gate08.log 2>/dev/null; do if ! kill -0 697188 2>/dev/null; the
+
+While the gate runs I'll proofread the statements block of §8 once, since that is the part items 10 and 12 will quote verbatim.
+  > $ awk '/^### 8.1 Statements/,/^### 8.2 Proofs/' reports/separator_moment.md | grep -n 'Theorem\|Lemma\|Corollary\|Proposition' | grep '^\([0-9]*\):\*\*' 
+
+Everything for item 08 is in place except the gate verdict, which the monitor on PID 697188 will deliver; the only remaining edit, the gate line in the PROGRESS entry, depends on it.
+
+Status so far:
+- §8 of `reports/separator_moment.md` is written: twelve named statements with proofs, the `n = 7` check table, the Monte Carlo table, and the Lean target list for item 10.
+- The check ran with zero violations over every labelled graph to 7 vertices, 1,000 random instances at `n = 10`, and the cover checks.
+- Three new tests pass; `iterations.md` marks item 08 done; the PROGRESS entry is written with the gate line pending.
+
+# result: success in 1417s, 34 turns, cost $9.98
+  > $ cat /tmp/gate08.log; echo ----; ps -eo pid,etimes,args | grep -E 'gate\.py|pytest|lake|make' | grep -v -E 'grep|claude -p' | cut -c1-100
+
+The gate is in its last long stage (the pathwidth_solver suite, 6 minutes in of about 6.5) and only prints at the end, so the silence was expected. Re-arming the watch; nothing else is pending.
+  > Monitor {"command": "until grep -q -E 'GATE PASS|GATE FAIL' /tmp/gate08.log 2>/dev/null; do if ! kill -0 697188 2>/dev/null; the
+
+Waiting on the gate verdict; it is the only outstanding item and the PROGRESS gate line depends on it.
+
+# result: success in 13s, 3 turns, cost $12.94
+
+The gate passed. I'll record it in the PROGRESS entry and confirm the paper line from the log.
+  > $ grep -i 'pages\|undefined\|make' /tmp/gate08.log | head -3; python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'
+s=open(p).read()
+s=s.replace('- Gate: see bel
+
+Item 08 is done. The gate passed, the PROGRESS entry carries the result, and the working tree holds only the item's files.
+
+**What was proved and checked.** §8 of `reports/separator_moment.md` states twelve finite results with named-step proofs. Theorem S bounds `P(pw ≤ k)` by `C(n, k)` times an exact weighted count on `N = n − k` vertices, with the inner probability shown to be the same for every separator by an explicit bijection. Theorem Cl gives the closed-pair bound as an exact expectation. Lemma W is the weighted-count identity, Lemma Fl the flip lemma as its first admissible `Z`, and Lemma J with Corollary W-flip the exact evaluation on random covers. The two threshold propositions are stated with their hypotheses explicit and cited, not claimed as theorems.
+
+**The check found zero violations.** Every labelled graph on 1 to 7 vertices in exact rationals at two values of `p`, the factorisation identity on all 120 separator triples at `n ≤ 6`, the flip lemma on 1,422,005 pairs, Lemma W on 1,000 random instances at ten vertices, and the Monte Carlo covers all agreed. It took 29 seconds. The one thing the enumeration shows beyond the theorems is that the separator and closed counts already trade places between sparse and dense `k` at seven vertices, recorded as an observation only.
+
+**Two corrections for later items.** Item 10 needs no termination argument for the closure, since it is a fixpoint after one round. And Theorem S can be formalised with the inner probability defined as the pair-form weighted count, so the components-as-Finsets obstacle only blocks Corollary S′ and the three recursions, not the main theorem.
+
+**Deliverables.** New exact-rational functions in `learning/separator_moment.py`, the check script and log under `reports/scratch/separator_moment/08_theorems/`, three new tests, the item marked done in `iterations.md`, and the Iteration 8 entry in `PROGRESS.md` with the count at 8 of 13. Nothing was committed, and nothing under `solutions/` was touched.
+
+**Next** is item 09, the branch on the weighted count's lower tail, which §4.6 already reduced to the one page the fork prescribes.
+
+# result: success in 16s, 2 turns, cost $13.14

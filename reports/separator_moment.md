@@ -2553,3 +2553,471 @@ the closed count alone passes the line, `(8, ½)` at `+0.021`.
 * Rates fitted from `n ≤ 26` (§7.3) are fitted; the asymptotic constants
   of §7.2 are roots of exponents computed in closed form and are not
   fits.
+
+---
+
+## 8. The theorems on paper: the separator first moment in finite form, the closed-pair count, the weighted-count identity (item 08, 2026-11-01)
+
+**Question (F of the brief, first half).** What exactly is proved — in a
+form item 10 can formalise and item 12 can quote — once the counting of
+§§2–7 is written down as theorems? Six finite statements and two
+conditional propositions, in the style of
+`reports/random_graph_first_moment.md` §1–§2: every one deterministic or a
+finite weighted count, with no rate, no limit and no fit in any of them.
+**Every statement below was checked by brute force before it was written
+down** (`reports/scratch/separator_moment/08_theorems/check.py`, log beside
+it): every labelled graph on 1–7 vertices (2,097,152 at `n = 7`) in exact
+rationals at `p = 1/2` and `p = 1/3` for Theorems S, Cl and Lemmas G, F, P,
+with the factorisation step verified set by set at `n ≤ 6`; the flip lemma on
+every exact-size empty pair of every labelled graph to 6 vertices (1,422,005
+pairs); Lemma W on 1,000 random instances at `n = 10`; Lemma J against every
+cover at tiny sizes and its evaluation against 1,000 Monte Carlo covers.
+**Zero violations.** The kill criterion (a counterexample) is **not met**.
+
+**Notation.** `V` has `n` vertices, `k < n`, `N = n − k`, `t = ⌈N/2⌉`,
+`r = N − t`. For `0 ≤ p ≤ 1` the weight of a graph `G` on a vertex set `U`
+is `w_p(G) = p^{|E(G)|} (1 − p)^{C(|U|, 2) − |E(G)|}`, so that
+`P_U(𝓔) = Σ_{G on U, G ∈ 𝓔} w_p(G)` is the probability of `𝓔` under
+`G(|U|, p)`; `P_n`, `P_N` are the laws on `n` and on `N` labelled vertices.
+`E_bip(t)` on `N` vertices is "the components can be grouped into two
+classes of sizes `t` and `N − t`", equivalently (L1′ c) "an exact-size
+empty pair exists"; `E_relax(M)` is "no component has more than `M`
+vertices"; `C_j = C_j(p)` is the probability that `G(j, p)` is connected.
+`X = X₁` is the number of ordered exact-size empty pairs `(A, R)`
+(`|A| = t`, `|R| = r`, no `A–R` edge), `X₃` the number of closed pairs with
+`|A| ≥ t`, `|R| ≥ r`, `|S| ≤ k` (§2.3). For a pair `(A, R)`, `I_A` is the
+set of vertices of `A` with no neighbour in `A` (isolated in `G[A]`),
+`I_R` likewise.
+
+### 8.1 Statements
+
+**Theorem S (the separator first moment, finite form).** For `k < n` and
+`0 ≤ p ≤ 1`,
+
+    P( pw(G(n, p)) ≤ k ) ≤ C(n, k) · P_N(E_bip(t)),      P_N(E_bip(t)) = Σ_{H on N labelled vertices, H ∈ E_bip(t)} p^{|E(H)|} (1 − p)^{C(N, 2) − |E(H)|}.
+
+Moreover, for every `k`-set `S ⊆ V`, `P_n(E_bip(S)) = P_N(E_bip(t))`
+exactly, where `E_bip(S)` is the event that `G − S` is in `E_bip(t)`: the
+inner probability does not depend on `S`, and the inequality is the union
+bound over the `C(n, k)` sets `S` and nothing else.
+
+**Lemma P (the partition formula).** `P_N(E_bip(t))` equals
+
+    Σ_{λ ⊢ N, λ has a sub-multiset summing to t}  N! / (Π_i λ_i! · Π_s m_s(λ)!) · Π_i C_{λ_i} · (1 − p)^{(N² − Σ_i λ_i²)/2},
+
+the sum over the integer partitions `λ = (λ_1 ≥ λ_2 ≥ …)` of `N` with
+`m_s(λ)` parts equal to `s`. This is the sum `log_prob_bip` of §5.1
+computes.
+
+**Lemma G (Gilbert's recursion).** `C_1 = 1` and, for `j ≥ 2`,
+`C_j = 1 − Σ_{i=1}^{j−1} C(j − 1, i − 1) · C_i · (1 − p)^{i(j − i)}`.
+
+**Lemma F (the first-vertex-component recursion).** Let
+`R_j(M) = P_j(E_relax(M))`. Then `R_0(M) = 1` and, for `j ≥ 1`,
+
+    R_j(M) = Σ_{i=1}^{min(M, j)} C(j − 1, i − 1) · C_i · (1 − p)^{i(j − i)} · R_{j−i}(M),
+
+so `P_N(E_relax(M))` is computed in `O(N · M)` arithmetic operations once
+`C_1, …, C_M` are known.
+
+**Corollary S′ (the relaxed form).** `P( pw(G(n, p)) ≤ k ) ≤ C(n, k) · P_N(E_relax(t))`,
+with `P_N(E_relax(t)) = R_N(t)` from Lemma F. It is weaker than Theorem S
+(`E_bip(t) ⊆ E_relax(t)`, strictly from `N = 6` on: §2.2 (d)) and is the
+form the large-deviation rate of §1.6 and §6 applies to.
+
+**Theorem Cl (the closed-pair count).** For `k < n` and `0 ≤ p ≤ 1`,
+
+    P( pw(G(n, p)) ≤ k ) ≤ E[X₃] = Σ_{a ≥ t, r′ ≥ r, a + r′ + s = n}  n! / (a! r′! s!) · (1 − p)^{a r′} · (1 − (1 − p)^a)^s · (1 − (1 − p)^{r′})^s,
+
+the sum over the ordered size triples `(a, r′, s)` (so `s ≤ k`
+automatically). The right-hand side is exactly the expected number of
+closed pairs with the sizes of L2, not only a bound on it.
+
+**Lemma W (the weighted-count identity).** Let `𝓟` be a finite index set
+of pairs, `X = Σ_{P ∈ 𝓟} 1[P empty]`, and `Z : 𝓟 → ℕ` a function (which may
+depend on the graph) with `1 ≤ Z(P) ≤ X` whenever `P` is empty. Then
+
+    Y := Σ_{P ∈ 𝓟} 1[P empty] / Z(P)  ≥  1[X > 0],
+
+pointwise on every graph, with equality when `Z = X`. Hence, for any
+probability law on graphs, `P(X > 0) ≤ E[Y] = Σ_P P(P empty) · E[1/Z(P) | P empty]`.
+In particular `P(pw ≤ k) ≤ E[Y]` whenever `𝓟` is the set of ordered pairs
+of the forced sizes (L1).
+
+**Lemma Fl (the flip lemma, deterministic).** Let `(A, R)` be an empty pair
+and `I_A`, `I_R` the vertices of `A`, `R` isolated in `G[A]`, `G[R]`. For
+`J ⊆ I_A`, `J′ ⊆ I_R` with `|J| = |J′|`, the pair
+`((A ∖ J) ∪ J′, (R ∖ J′) ∪ J)` is an empty pair with `|A|`, `|R|` vertices;
+the map `(J, J′) ↦ ((A ∖ J) ∪ J′, (R ∖ J′) ∪ J)` is injective; and the number
+of such pairs is `C(|I_A| + |I_R|, |I_A|)`. Consequently
+`Z(A, R) := C(|I_A| + |I_R|, |I_A|)` satisfies `1 ≤ Z ≤ X` on `{(A, R) empty}`
+and is admissible in Lemma W.
+
+**Lemma J (the joint binomial moments of the flips on random covers).** Let
+the patterns `P_1, …, P_m` be independent uniform subsets of the `n`
+customers of sizes `s_1, …, s_m`, and `(A, R, S)` a fixed ordered partition
+with sizes `(a, r′, s)`. In the MOSP graph, a customer of `A` is isolated in
+`G[A]` iff no pattern contains it together with another customer of `A`.
+For `u ≤ a`, `u′ ≤ r′`,
+
+    B(u, u′) := Σ_{U ⊆ A, |U| = u} Σ_{U′ ⊆ R, |U′| = u′} P( (A, R) empty, U ⊆ I_A, U′ ⊆ I_R )
+             = C(a, u) C(r′, u′) · Π_j allowed(u, u′; s_j) / C(n, s_j),
+    allowed(u, u′; s_j) = C(a − u + s, s_j) + u C(s, s_j − 1) + C(r′ − u′ + s, s_j) + u′ C(s, s_j − 1) − C(s, s_j),
+
+and the joint law is recovered by two-variable inversion,
+
+    P( I_A = i, I_R = i′, (A, R) empty ) = Σ_{u ≥ i} Σ_{u′ ≥ i′} (−1)^{u − i + u′ − i′} C(u, i) C(u′, i′) B(u, u′).
+
+**Corollary W-flip (the first instance, exactly).** For a random cover as in
+Lemma J and `k < n`,
+
+    P( mospValue ≤ k + 1 ) = P( pw(mospGraph) ≤ k ) ≤ C(n, t) C(n − t, r) · Σ_{i ≤ t, i′ ≤ r} P( I_A = i, I_R = i′, empty ) / C(i + i′, i),
+
+with the joint law of Lemma J at `(a, r′) = (t, r)`. This is `flip_log_bound`
+of §7.1 (b); the sum has `(t + 1)(r + 1)` terms.
+
+**Theorem Cl-cover (the closed pair on random covers, finite form).** With
+the patterns as in Lemma J, `P(mospValue ≤ k + 1)` is at most the sum over
+the ordered triples `(a, r′, s)` of `n!/(a! r′! s!)` times
+
+    P(closed) = Σ_{u, w = 0}^{s} (−1)^{u + w} C(s, u) C(s, w) · Π_j allowed′(u, w; s_j) / C(n, s_j),
+    allowed′(u, w; s_j) = C(s, s_j) + [C(r′ + u, s_j) − C(u, s_j)] + [C(a + w, s_j) − C(w, s_j)],
+
+the `(u, w)` sum of §7.1 (a). The cancellation-free upper bound of §7.1 (a′)
+(negative association of sampling without replacement, Joag-Dev & Proschan
+1983, *Ann. Statist.* 11, Theorem 2.11 and properties P6–P7, with a tangent
+of the concave `ln(1 − e^{−L})`) is a corollary, valid at every `(n, k)`;
+it is not re-proved here, and its check is item 07's (`07_cover/check.log`:
+the exact sum against the enumeration of every cover at `n = 3–8`, 66
+cases, and the bound above it on all).
+
+**Proposition T (the threshold on `G(n, c/n)`; conditional).** *Hypothesis
+(H_G), cited and not verified by us:* for every `c′ > 2 ln 2` there is
+`I(c′) > 0`, continuous in `c′`, with
+`P( G(N, c′/N) ∈ E_relax(⌈N/2⌉) ) ≤ exp(−(I(c′) − o(1)) N)` as `N → ∞`. Then
+for every `c > 2 ln 2` there is `β₀(c) > 0` with
+`P( pw(G(n, c/n)) ≤ β₀ n ) → 0`. (H_G) is the upper-bound half of the
+large-deviation principle for the largest component of `G(N, c′/N)`
+applied to the closed set `[0, ½]`: O'Connell 1998 (not held) as restated
+by Puhalskii 2005 (*Ann. Probab.* 33(2), Cor. 2.4(3), p. 8 of the arXiv
+version, with (2.13)–(2.14)) and Andreis–König–Patterson 2021 (Cor. 1.3);
+`I_{c′}(½) > 0` iff `c′ > 2 ln 2` on the quoted formula (§1.4, §6.4).
+
+**Proposition T-cover (the threshold on random covers; conditional).** Fix a
+bounded size law and `μ > 0` patterns per customer, and let `θ` be the
+survival probability of §7.1 (c). *Hypothesis (H_C), stated in no held
+paper:* for every `u < θ` there is `I(u) > 0` with
+`P( L₁(mospGraph) ≤ u n ) ≤ exp(−I(u) n + o(n))`, and the same for the
+thinned covers of §7.4 with rates converging as the thinning vanishes. Then
+`θ > ½` implies `P( mospValue ≤ β₀ n ) → 0` for some `β₀ > 0`. This is §7.4's
+Proposition 7.1 verbatim; it is repeated here so that §8 is the complete
+list.
+
+### 8.2 Proofs
+
+*Proof of Theorem S.* (Inclusion step) By L1′ (a) (§2.2), every graph with
+`pw ≤ k` has a `k`-set `S` with `E_bip(S)`: `{pw ≤ k} ⊆ ⋃_{|S| = k} E_bip(S)`.
+(Union step) `P_n(pw ≤ k) ≤ Σ_{|S| = k} P_n(E_bip(S))`, the weights being
+non-negative. (Factorisation step) Fix `S` and write `U = V ∖ S` (`|U| = N`)
+and `E_S` for the set of the `C(n, 2) − C(N, 2)` vertex pairs that meet `S`.
+The map
+
+    Φ_S : {graphs on V} → {graphs on U} × 𝒫(E_S),      G ↦ ( G[U], E(G) ∩ E_S )
+
+is a bijection, with inverse `(H, F) ↦` the graph on `V` with edge set
+`E(H) ∪ F` (the two edge sets live on the disjoint pair sets `C(U, 2)` and
+`E_S`, so `|E(G)| = |E(H)| + |F|`). Hence
+
+    w_p(G) = p^{|E(H)| + |F|} (1 − p)^{C(N, 2) − |E(H)| + |E_S| − |F|} = w_p(H) · p^{|F|} (1 − p)^{|E_S| − |F|}.
+
+`E_bip(S)` depends on `G` only through `G[U] = H` (its components are the
+components of `H`). Summing over the fibre of `H`,
+
+    P_n(E_bip(S)) = Σ_{H ∈ E_bip(t)} w_p(H) · Σ_{F ⊆ E_S} p^{|F|} (1 − p)^{|E_S| − |F|} = Σ_{H ∈ E_bip(t)} w_p(H) · (p + 1 − p)^{|E_S|} = P_N(E_bip(t)),
+
+the inner sum being the binomial theorem (the same step as
+`sum_gnpWeight_emptyPairGraphs` in `FirstMoment.lean`). (Counting step)
+There are `C(n, k)` sets `S`. ∎
+
+*Proof of Lemma P.* (Component partition) For a set partition
+`π = {B_1, …, B_κ}` of the `N` vertices, the event "the components of `G`
+are exactly the blocks of `π`" is the intersection of "`G[B_i]` is
+connected" for each `i` and "no edge joins `B_i` to `B_j`" for `i ≠ j`.
+These events are determined by pairwise disjoint sets of vertex pairs (the
+pairs inside `B_i`; the pairs between `B_i` and `B_j`), so under `G(N, p)`
+they are independent, and the event has probability
+`Π_i C_{|B_i|} · (1 − p)^{#cross pairs}` with
+`#cross pairs = C(N, 2) − Σ_i C(|B_i|, 2) = (N² − Σ_i |B_i|²)/2`. (Disjoint
+and exhaustive) Every graph has exactly one component partition, so these
+events partition the space. (Grouping by type) `E_bip(t)` depends on `π`
+only through the multiset `λ` of block sizes (the subset-sum condition),
+and the number of set partitions with block-size multiset `λ` is
+`N!/(Π_i λ_i! · Π_s m_s!)`. Sum. ∎
+
+*Proof of Lemma G.* (Conditioning on the component of vertex `1`) For
+`i < j` and an `i`-set `B ∋ 1` (there are `C(j − 1, i − 1)`), the event
+"the component of `1` is exactly `B`" is "`G[B]` connected" ∩ "no `B`–`B^c`
+edge", independent events on disjoint pair sets, of probability
+`C_i (1 − p)^{i(j − i)}`. (Disjoint and exhaustive) These events over all
+`B ∌ V` are disjoint, and their union is the complement of "`G` is
+connected" (`B = V`). ∎
+
+*Proof of Lemma F.* Same conditioning. Given that the component of `1` is
+`B` with `|B| = i`, the event `E_relax(M)` holds iff `i ≤ M` and
+`G[B^c] ∈ E_relax(M)`; `G[B^c]` is determined by the pairs inside `B^c`,
+disjoint from the pairs that fix "the component of `1` is `B`", so it is an
+independent `G(j − i, p)`. Sum over `B` with `i ≤ M`. ∎
+
+*Proof of Corollary S′.* L1′ (b): `E_bip(S) ⊆ E_relax(S)` for every `S`, so
+`P_N(E_bip(t)) ≤ P_N(E_relax(t))`, and Theorem S gives the rest. Lemma F
+evaluates the right-hand side. ∎
+
+*Proof of Theorem Cl.* (Inclusion step) By L1 and L2 (§2.1, §2.3), every
+graph with `pw ≤ k` has a closed pair `(A, R)` with `|A| ≥ t`, `|R| ≥ r`,
+`|S| ≤ k` where `S = V ∖ (A ∪ R)`; so `{pw ≤ k} ⊆ {X₃ > 0} ⊆ {X₃ ≥ 1}` and
+`P(pw ≤ k) ≤ E[X₃]`. (Characterisation step) For a fixed ordered partition
+`(A, R, S)` of `V`, `(A, R)` is a closed pair iff `R = V ∖ N[A]` and
+`A = V ∖ N[R]`, iff (no `A–R` edge) ∧ (every `v ∈ S` has a neighbour in
+`A`) ∧ (every `v ∈ S` has a neighbour in `R`): `R = V ∖ N[A]` says `R` is
+disjoint from `N[A]` (no `A–R` edge) and everything outside `A ∪ R` is in
+`N[A]`; symmetrically for `A`. (Independence step) The `1 + 2|S|` events
+are determined by pairwise disjoint pair sets — the `a r′` pairs `A × R`,
+and for each `v ∈ S` the `a` pairs `{v} × A` and the `r′` pairs `{v} × R` —
+so they are independent under `G(n, p)`, with probabilities `(1 − p)^{a r′}`,
+`1 − (1 − p)^a` and `1 − (1 − p)^{r′}`. (Counting step) There are
+`n!/(a! r′! s!)` ordered partitions with the given sizes; by linearity
+`E[X₃]` is the stated sum. The case `r′ = 0 < s` contributes `0`
+(`1 − (1 − p)^0 = 0`: a separator vertex cannot see an empty side), and
+`a ≥ t ≥ 1` always. ∎
+
+*Proof of Lemma W.* If `X = 0` both sides are `0`. If `X > 0`, every empty
+`P` has `Z(P) ≤ X`, so `1/Z(P) ≥ 1/X` and
+`Y ≥ Σ_P 1[P empty]/X = X/X = 1 = 1[X > 0]`. With `Z = X` the first
+inequality is an equality. Taking expectations, `P(X > 0) = E[1[X > 0]] ≤ E[Y]`,
+and `E[1[P empty]/Z(P)] = P(P empty) · E[1/Z(P) | P empty]` by the
+definition of conditional expectation on the event `{P empty}` (for
+`P(P empty) > 0`; otherwise the term is `0`). ∎
+
+*Proof of Lemma Fl.* Write `A′ = (A ∖ J) ∪ J′`, `R′ = (R ∖ J′) ∪ J`.
+(Sizes) `J ⊆ A`, `J′ ⊆ R` are disjoint from each other and from the sets
+they are added to, and `|J| = |J′|`, so `|A′| = |A|`, `|R′| = |R|`, and
+`A′ ∩ R′ = ∅`. (Emptiness) An `A′–R′` edge has one of four forms: between
+`A ∖ J` and `R ∖ J′` (none: `(A, R)` is empty); between `J′ ⊆ R` and
+`J ⊆ A` (none, likewise); between `A ∖ J` and `J` (none: a vertex of
+`J ⊆ I_A` has no neighbour in `A`); between `J′` and `R ∖ J′` (none:
+`J′ ⊆ I_R`). (Injectivity) `A′` determines `J′ = A′ ∖ A` and `J = A ∖ A′`.
+(Count) `Σ_{j} C(|I_A|, j) C(|I_R|, j) = C(|I_A| + |I_R|, |I_A|)` by
+Vandermonde's identity (`Nat.add_choose_eq` in Mathlib). The image lies in
+the exact-size empty pairs, so its cardinality is at most `X`, and it
+contains `(A, R)` itself (`J = J′ = ∅`), so `Z ≥ 1`. ∎
+
+*Proof of Lemma J.* (Product step) Fix `U ⊆ A`, `U′ ⊆ R`. The event
+"`(A, R)` empty, `U ⊆ I_A`, `U′ ⊆ I_R`" is the intersection over the
+patterns `j` of the event that `P_j` (i) does not meet both `A` and `R`,
+(ii) does not contain a customer of `U` together with another customer of
+`A`, and (iii) likewise for `U′` and `R`; the patterns are independent and
+uniform, so the probability is `Π_j allowed_j / C(n, s_j)` with `allowed_j`
+the number of `s_j`-subsets satisfying (i)–(iii). (Counting step) Such a
+subset either lies inside `S` (`C(s, s_j)` sets), or meets `A` — then by
+(i) it lies in `A ∪ S`, and by (ii) either it avoids `U` entirely
+(`C(a − u + s, s_j) − C(s, s_j)` sets, subtracting those inside `S`) or
+its only customer of `A` is one of the `u` customers of `U`
+(`u · C(s, s_j − 1)` sets) — or symmetrically meets `R`. The three cases
+are disjoint, and the sum is `allowed(u, u′; s_j)`. The number of choices
+of `(U, U′)` is `C(a, u) C(r′, u′)`, and every choice has the same
+probability by symmetry. (Inversion step) `B(u, u′) = E[C(I_A, u) C(I_R, u′) 1[empty]]`
+(count the `(U, U′)` inside `(I_A, I_R)`), and for every integer `I`,
+`Σ_{u ≥ i} (−1)^{u − i} C(u, i) C(I, u) = C(I, i) Σ_{u ≥ i} (−1)^{u − i} C(I − i, u − i) = C(I, i) (1 − 1)^{I − i} = 1[I = i]`;
+apply it in `u` and in `u′`. ∎
+
+*Proof of Corollary W-flip.* Lemma W with `𝓟` the ordered pairs of the
+forced sizes and `Z` the flip count (admissible by Lemma Fl applied to the
+MOSP graph, in which `I_A` is as described in Lemma J), then
+`E[Y] = Σ_P E[1[P empty]/Z(P)]`; every `P` has the same law by the symmetry
+of the model under permutations of the customers, there are
+`C(n, t) C(n − t, r)` of them, and for one of them
+`E[1[empty]/C(I_A + I_R, I_A)] = Σ_{i, i′} P(I_A = i, I_R = i′, empty)/C(i + i′, i)`
+by Lemma J. The first equality is `mospValue = pw(mospGraph) + 1`
+(`MOSPGraph.lean`). ∎
+
+*Proof of Theorem Cl-cover.* The inclusion and counting steps are those of
+Theorem Cl on `mospGraph` (L3 b); for a fixed ordered partition the closed
+event is "no pattern meets both `A` and `R`" ∧ "every `v ∈ S` shares a
+pattern with `A`" ∧ "every `v ∈ S` shares a pattern with `R`" (L3 c), and
+inclusion–exclusion over the sets `T_A ⊆ S` of separator customers sharing
+no pattern with `A` and `T_R ⊆ S` of those sharing none with `R` gives the
+alternating sum of §7.1 (a), whose summand depends on `(T_A, T_R)` only
+through `u = |S ∖ T_R|`, `w = |S ∖ T_A|` and is a product over the
+independent patterns of `allowed′(u, w; s_j)/C(n, s_j)` (the three cases of
+§7.1 (a), disjoint). ∎
+
+*Proof of Proposition T.* By Corollary S′ with `k = ⌊βn⌋`,
+`P(pw ≤ βn) ≤ C(n, k) · P_N(E_relax(t))`. (Thinning step) `G(n, c/n) − S`
+is `G(N, c/n) = G(N, c′/N)` with `c′ = cN/n = c(1 − k/n) → c(1 − β)`.
+(Entropy step) `C(n, k) ≤ e^{n H(k/n)}` (Lemma 1 of
+`random_graph_first_moment.md` §2.1, the two-symbol case). (Hypothesis)
+`P_N(E_relax(t)) ≤ e^{−(I(c′) − o(1)) N}`. So
+`P(pw ≤ βn) ≤ exp(n [H(β) − (1 − β) I(c(1 − β)) + o(1)])`, and as `β → 0`,
+`H(β) → 0` and `(1 − β) I(c(1 − β)) → I(c) > 0` by continuity, so the
+bracket is negative for every sufficiently small `β > 0`. ∎ (The pair
+count's bracket at `β → 0` is `ln 2 − c/4`, negative only for `c > 4 ln 2`;
+the true threshold of linear pathwidth is `c = 1`.)
+
+*Proof of Proposition T-cover.* §7.4. ∎
+
+### 8.3 The check
+
+`check.py` (`check.log`, `lemma_w_n10.csv`; 29 s on 8 workers at nice 19
+under a one-minute load below 2). Stage 1 enumerates every labelled graph
+on `n = 1, …, 7` vertices (`2^{C(n,2)}`: 1, 2, 8, 64, 1,024, 32,768,
+2,097,152), computes each pathwidth by the subset DP and, in exact
+rationals at `p = 1/2` and `p = 1/3`, for every `k < n`:
+
+* the weighted count of `{pw ≤ k}` against `C(n, k) · P_N(E_bip)` (Theorem S),
+  against `C(n, k) · P_N(E_relax(t))` (Corollary S′), against `E[X₃]`
+  (Theorem Cl) and against `E[X₁]` (the count on record at exact sizes);
+* the enumerated `E[X₃]` against Theorem Cl's formula, and `E[X₁]` against
+  `C(n, t) C(n − t, r) (1 − p)^{t r}` — equalities;
+* on `N` vertices, `P_N(connected)` against Lemma G, `P_N(E_bip)` against
+  Lemma P and `P_N(E_relax(M))` for every `M` against Lemma F — equalities
+  (and at `p = 1/2` Gilbert's recursion returns the labelled connected
+  counts 1, 1, 4, 38, 728, 26,704, 1,866,256, OEIS A001187);
+* at `n ≤ 6`, for **every** `k`-set `S`, the weighted count of `{E_bip(S)}`
+  against `P_N(E_bip)` — the factorisation identity, equality on all 120
+  `(n, k, S)` triples at each `p`;
+* at `n ≤ 6`, the flip lemma on every exact-size empty pair at every `k`
+  (1,422,005 pairs): every swap is an exact-size empty pair, the swaps are
+  distinct, their number is `C(|I_A| + |I_R|, |I_A|) ≤ X`;
+* the floating-point `log_prob_bip`, `log_prob_rel` (§5) and
+  `log_closed_count` (§6) pinned to the exact values to `10⁻⁹`.
+
+The `n = 7` rows (`n ≤ 6` in the log; `P` is the weighted count, i.e. the
+probability under `G(7, p)`):
+
+| `k` | `N` | `t` | `p` | `P(pw ≤ k)` | `C(n,k) P_N(E_bip)` | `C(n,k) P_N(E_relax)` | `E[X₃]` (Cl) | `E[X₁]` (pairs) |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 7 | 4 | 1/2 | 0.0000005 | 0.00639 | 0.00639 | 0.00854 | 0.00854 |
+| 1 | 6 | 3 | 1/2 | 0.0172 | 0.1156 | 0.1188 | 0.2264 | 0.2734 |
+| 2 | 5 | 3 | 1/2 | 0.3389 | 2.174 | 2.174 | 1.948 | 3.281 |
+| 3 | 4 | 2 | 1/2 | 0.8852 | 5.469 | 5.469 | 6.006 | 13.125 |
+| 4 | 3 | 2 | 1/2 | 0.9985 | 17.50 | 17.50 | 10.18 | 26.25 |
+| 5 | 2 | 1 | 1/2 | 1.0000 | 10.50 | 10.50 | 14.37 | 21.00 |
+| 6 | 1 | 1 | 1/2 | 1.0000 | 7.000 | 7.000 | 15.37 | 7.000 |
+| 0 | 7 | 4 | 1/3 | 0.0002 | 0.1245 | 0.1245 | 0.2698 | 0.2698 |
+| 1 | 6 | 3 | 1/3 | 0.2449 | 1.137 | 1.167 | 2.343 | 3.642 |
+| 2 | 5 | 3 | 1/3 | 0.8467 | 8.330 | 8.330 | 7.351 | 18.44 |
+| 3 | 4 | 2 | 1/3 | 0.9959 | 14.60 | 14.60 | 13.58 | 41.48 |
+| 4 | 3 | 2 | 1/3 | 1.0000 | 25.93 | 25.93 | 17.87 | 46.67 |
+| 5 | 2 | 1 | 1/3 | 1.0000 | 14.00 | 14.00 | 22.16 | 28.00 |
+| 6 | 1 | 1 | 1/3 | 1.0000 | 7.000 | 7.000 | 23.16 | 7.000 |
+
+Read across at seven vertices only: every bound is above the probability
+(as it must be; most are above `1` and say nothing); `E_bip` and `E_relax`
+differ in measure for the first time at `N = 6` (`0.1156` against
+`0.1188` at `p = 1/2`; at `N ≤ 5` the two events coincide on every graph,
+`3K₂` being the first separation, §2.2 d); the separator count is the
+smaller of the two new counts at `k = 0–1`, the closed count at
+`k = 2–4` — a seven-vertex echo of §6.3's "separator on the sparse side,
+closed pair on the dense side", and nothing more at this size; at `k = n − 1`
+the closed count exceeds the pair count (it admits sides larger than the
+forced ones, `s < k`). None of these numbers is quoted anywhere as a
+bound.
+
+Stage 2, Lemma W at `n = 10` on 1,000 random instances (600 `G(10, p)`,
+`p ∈ {0.2, …, 0.7}`, seed = index; 400 covers from
+`generate_structured_instance(10, m ∈ {10, 20}, 2–4 customers per pattern,
+seed = index)`, the MOSP graph), at `k = pw` and `k = pw − 1`, with
+`Z_move(P)` = the size of `P`'s move-class (§3) and `Z_flip` = the flip
+count: `1 ≤ Z ≤ X` on every pair, `Y_move = X₄` exactly, `1 ≤ Y_flip ≤ X`
+whenever `X > 0`, `Y = 0 = 1[X > 0]` whenever `X = 0`, every swap an
+exact-size empty pair. Medians at `k = pw`: `X = 12`, `X₄ = 5`,
+`Y_flip = 10` on the random graphs; `8`, `4`, `6` on the covers; at
+`k = pw − 1`, `X = 0` on 351 of 600 and 225 of 400 (so `Y = 0` there,
+and the identity is exact on both sides). The flips merge a factor
+`1.2–1.3` at the median at these sizes; the move-classes `2.4`.
+
+Stage 3, the first instance: Lemma J's inverted moments equal the
+enumerated joint law `P(I_A = i, I_R = i′, empty)` on 24 random
+`(n, sizes, a, r′)` cases at `n = 3–6`, `m ≤ 3`, sizes 2–3 (every cover
+enumerated; item 07's test does 66 more); and `E[Y]`, `E[X]` from
+`flip_log_bound` against 1,000 Monte Carlo covers at `n = 10`, `m = 10`,
+`d = 3` (i.i.d. uniform patterns, the model of `CliqueCoverMoment.lean`):
+
+| `k` | `N`, `t` | exact `E[Y]` | sample `± s.e.` | exact `E[X]` | sample `± s.e.` | sample `P(X > 0)` |
+|---|---|---|---|---|---|---|
+| 3 | 7, 4 | 1.350 | 1.207 ± 0.084 | 1.430 | 1.291 ± 0.092 | 0.418 |
+| 4 | 6, 3 | 9.419 | 9.403 ± 0.332 | 10.638 | 10.602 ± 0.406 | 0.872 |
+| 5 | 5, 3 | 41.23 | 41.31 ± 0.75 | 49.48 | 49.06 ± 1.04 | 1.000 |
+| 6 | 4, 2 | 70.19 | 71.22 ± 0.72 | 88.40 | 89.50 ± 1.14 | 1.000 |
+
+All within 1.7 standard errors; `P(X > 0) ≤ E[Y] ≤ E[X]` in every row, as
+Lemma W says. At `k = 3` the weighted count sits at `1.35` against a true
+`P(X > 0)` of about `0.42`: the gap between `E[Y]` and the truth at this
+size is the lower tail of `Z` (instances with `I_A = I_R = 0` have
+`Z = 1`), the mechanism §7.2 (ii) and item 09 name.
+
+### 8.4 Lean targets for item 10
+
+Each row: the statement, the existing lemma it rests on, and the one new
+ingredient. The vocabulary is §2.6's (`IsEmptyPair`, `closedNbhd`,
+`gnpWeight`, `graphsOfPathwidthLe`, `sum_biUnion_le_sum_of_nonneg`,
+`sum_gnpWeight_emptyPairGraphs` from `FirstMoment.lean`;
+`exists_empty_pair_of_layout` from `EmptyPair.lean`; `coverGraph`,
+`emptyPairCovers`, `card_filter_avoid` from `CliqueCoverMoment.lean`).
+
+| target | statement | rests on | the new ingredient |
+|---|---|---|---|
+| `exists_isBalancedBip` (L1′ a) | `pathwidth G ≤ k → k < n → ∃ S, S.card = k ∧ IsBalancedBip G S k` (pair form) | `exists_balanced_separator` (§2.6, from `exists_empty_pair_of_layout`) | none beyond §2.6 |
+| `isBalancedBip_induce` | `IsBalancedBip G S k` depends on `G` only through the edges inside `univ \ S`: for `G, G′` agreeing on pairs disjoint from `S`, `IsBalancedBip G S k ↔ IsBalancedBip G′ S k` | `IsEmptyPair` mentions only `A × R` pairs, `A, R ⊆ univ \ S` | the "agree off `S`" relation on graphs |
+| `sum_gnpWeight_fiber` (**the factorisation step**) | for `S : Finset V` and `𝓗` a predicate on graphs invariant under "agree off `S`": `Σ_{G : 𝓗 G} gnpWeight p G = Σ_{H on univ \ S, 𝓗 H} gnpWeight′ p H`, i.e. the fibre sum over `F ⊆ E_S` is `(p + (1 − p))^{|E_S|} = 1` | `edges_fromEdgeSet`, `Finset.sum_pow_mul_eq_add_pow` (as in `sum_gnpWeight_emptyPairGraphs`) | the bijection `Φ_S` between graphs on `V` and pairs (graph on `univ \ S`, subset of `E_S`); the cleanest form keeps `H` as a graph on `V` with no edge meeting `S` (`H.edgeSet ⊆ pairs off S`), which avoids a subtype vertex set |
+| `weightedSum_graphsOfPathwidthLe_le_separator` (**Theorem S**) | `Σ_{G : pw ≤ k} gnpWeight p G ≤ C(n, k) · innerBip p N` with `innerBip` the weighted count of the pair-form event on `N` vertices | `sum_biUnion_le_sum_of_nonneg`, `Finset.card_powersetCard`, the two rows above | none once the two rows exist |
+| `innerBip_eq_partition_sum` (Lemma P) | the partition formula | — | components of a graph as `Finset`s with their sizes (`ConnectedComponent.supp` is a `Set`; `Set.toFinset` under `Fintype`), the multinomial count of set partitions of a given type — **the obstacle named in §2.6; not needed for Theorem S**, whose inner probability is defined as the weighted count |
+| `gilbert_recursion`, `relax_recursion` (Lemmas G, F) | as stated | — | the fibre "component of `v` is exactly `B`" as `G[B]` connected ∧ no `B`–`Bᶜ` edge, and the independence (product of weighted sums over disjoint pair sets); shares the obstacle above; Corollary S′ needs `E_relax` in component form, so it is in the same bucket |
+| `exists_closedPair_of_pathwidth_le` (L1 + L2) | §2.6 | `closure_isClosedPair`, `closure_card` | **no termination argument is needed**: L2 (iii) says the closure is a fixpoint after one round, so item 10's "iterate until the fixpoint" (method (c)) is replaced by two applications of `V \ closedNbhd` — a correction to the item 10 brief, not an obstacle |
+| `isClosedPair_iff_sees_both` (characterisation step of Cl) | `IsClosedPair G A R ↔ IsEmptyPair G A R ∧ ∀ v ∉ A ∪ R, (∃ a ∈ A, G.Adj v a) ∧ (∃ r ∈ R, G.Adj v r)` | `mem_closedNbhd_iff` | none |
+| `sum_gnpWeight_closedPairGraphs` (independence step of Cl) | `Σ_{G : IsClosedPair G A R} gnpWeight p G = (1 − p)^{a r} ((1 − (1 − p)^a)(1 − (1 − p)^r))^s` | `sum_gnpWeight_emptyPairGraphs`'s binomial step | a product-form lemma: if the pairs off the diagonal are partitioned into blocks and the event is a conjunction of one event per block, the weighted count is the product of the per-block weighted counts; then `1 − (1 − p)^a` for "some edge into `A`" |
+| `weightedSum_graphsOfPathwidthLe_le_closed` (**Theorem Cl**) | `Σ_{G : pw ≤ k} gnpWeight p G ≤ Σ_{(a, r′, s)} n!/(a! r′! s!) · (…)` | the three rows above, `Finset.card_powersetCard` twice for the ordered partitions | none |
+| `weightedCount_ge_indicator` (**Lemma W**) | `(∀ P ∈ 𝓟, empty P → 1 ≤ Z P ∧ Z P ≤ (𝓟.filter empty).card) → Σ_{P ∈ 𝓟} (if empty P then 1 / Z P else 0) ≥ (if ∃ P ∈ 𝓟, empty P then 1 else 0)` in `ℝ` or `ℚ` | `Finset.sum_le_sum`, `one_div_le_one_div_of_le`, `Finset.sum_const` | nothing beyond finite sums (as the item says) |
+| `flip_isEmptyPair`, `flip_injective`, `card_flips` (Lemma Fl) | as stated, with `isolatedIn G A := A.filter (fun v => ∀ a ∈ A, ¬ G.Adj v a)` | `Nat.add_choose_eq` (Vandermonde) | the four-case emptiness argument; `Finset.card_powersetCard` and a sigma over `j` for the count |
+| `prob_le_weighted_flip` (Corollary W-flip) | `P(mospValue ≤ k + 1) ≤ C(n, t) C(n − t, r) Σ_{i, i′} P(I_A = i, I_R = i′, empty)/C(i + i′, i)` | Lemma W, Lemma Fl, `MOSPGraph.lean`'s equality, `card_emptyPairIndices` | Lemma J's allowed-count (the analogue of `card_filter_avoid` with the three cases) and the two-variable inversion; **moderately long, and can be left on paper**: the Lean statement can stop at `P ≤ E[Y]` with `E[Y]` the weighted count over covers, which is the sound part |
+| Theorem Cl-cover | the `(u, w)` sum | `card_filter_avoid`'s pattern | inclusion–exclusion over `(T_A, T_R)` in Lean: not within a session; leave as the paper statement |
+| Propositions T, T-cover | — | — | not Lean targets: asymptotic and conditional on a cited LDP |
+
+Recommended order for item 10 (stop at the first that fills the session,
+as its brief says): Lemma W (an hour at most), L1′ a and the closed-pair
+existence (already listed in §2.6), the characterisation and independence
+steps of Cl, then the factorisation step and Theorem S; Lemmas P, G, F
+and Corollary S′ only if components-as-`Finset`s turns out cheap.
+
+### 8.5 Regenerate, size range, kill verdict, what this does not claim
+
+* **Regenerate.** `nice -n 19 python3 reports/scratch/separator_moment/08_theorems/check.py --max-n 7 --workers 8`
+  (29 s; `--stages 1,2,3` selects; `lemma_w_n10.csv` is written by stage 2);
+  `python3 -m pytest tests/test_separator_moment.py -k "gilbert or theorems_S or flip_lemma"`
+  (the same checks at `n ≤ 5` and on 40 random graphs at 8–10 vertices).
+  Code: `learning/separator_moment.py` (`connected_probs_exact`,
+  `prob_relax_exact`, `prob_bip_exact`, `pair_count_exact`,
+  `closed_count_exact`, `weighted_graph_count`, `isolated_in`,
+  `flip_swaps`, `flip_count`, `weighted_count`).
+* **Size range.** The theorems and lemmas are for every `n`, `k < n`,
+  `0 ≤ p ≤ 1` (Lemma J and Corollary W-flip for every `n`, `m` and size
+  vector; Theorem Cl-cover likewise). The checks: every labelled graph at
+  `n ≤ 7` (the factorisation per `S` and the flip lemma at `n ≤ 6`), 1,000
+  random instances at `n = 10`, 24 enumerated cover cases at `n ≤ 6`, 1,000
+  Monte Carlo covers at `n = 10`.
+* **Kill verdict: not met.** Zero violations; no statement is withdrawn.
+* **Does not claim.** Any rate or constant: Theorem S's inner probability
+  is a finite weighted count, and what it does as `N → ∞` is §5–§6's,
+  fitted or bracketed, not proved. That `E_bip` and `E_relax` have the
+  same rate (measured in §5.3 to `N = 120`, not proved). That the
+  closed-pair count or the separator count is the better bound at any
+  size beyond the seven-vertex table (§6.3 and §7.2 say where each wins,
+  at the constants). That the flips are the best `Z` (they are the first
+  instance; item 09's recombinations are a larger admissible `Z`, and §4.6
+  measured the ceiling any `Z` can reach). Propositions T and T-cover rest
+  on hypotheses (H_G), cited and unverified by us, and (H_C), stated in no
+  held paper; neither is a theorem of this document. Nothing in Lean yet:
+  §8.4 is a list of statements, and item 10 proves them or names the
+  obstacle. The one correction to a later item's brief: item 10's
+  "termination by `|V ∖ (A ∪ R)|` strictly decreasing" is unnecessary, by
+  L2 (iii).

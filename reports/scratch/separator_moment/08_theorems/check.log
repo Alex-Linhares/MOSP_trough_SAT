@@ -1,0 +1,105 @@
+n=1: 1 labelled graphs enumerated in 0 s (1 chunks, per-S factorisation on)
+n=2: 2 labelled graphs enumerated in 0 s (2 chunks, per-S factorisation on)
+n=3: 8 labelled graphs enumerated in 0 s (8 chunks, per-S factorisation on)
+n=4: 64 labelled graphs enumerated in 0 s (32 chunks, per-S factorisation on)
+n=5: 1024 labelled graphs enumerated in 0 s (32 chunks, per-S factorisation on)
+n=6: 32768 labelled graphs enumerated in 1 s (32 chunks, per-S factorisation on)
+n=7: 2097152 labelled graphs enumerated in 29 s (128 chunks, per-S factorisation off)
+
+== Lemmas G, F, P: the inner probabilities, enumerated against the formulas ==
+  N=1 p=1/2: P(conn)=1.000000 = C_N (Gilbert) OK; P_N(E_bip)=1.000000 = partition formula OK; P_N(E_relax(t=1))=1.000000 = recursion OK (all M)
+  N=1 p=1/3: P(conn)=1.000000 = C_N (Gilbert) OK; P_N(E_bip)=1.000000 = partition formula OK; P_N(E_relax(t=1))=1.000000 = recursion OK (all M)
+  N=2 p=1/2: P(conn)=0.500000 = C_N (Gilbert) OK; P_N(E_bip)=0.500000 = partition formula OK; P_N(E_relax(t=1))=0.500000 = recursion OK (all M)
+  N=2 p=1/3: P(conn)=0.333333 = C_N (Gilbert) OK; P_N(E_bip)=0.666667 = partition formula OK; P_N(E_relax(t=1))=0.666667 = recursion OK (all M)
+  N=3 p=1/2: P(conn)=0.500000 = C_N (Gilbert) OK; P_N(E_bip)=0.500000 = partition formula OK; P_N(E_relax(t=2))=0.500000 = recursion OK (all M)
+  N=3 p=1/3: P(conn)=0.259259 = C_N (Gilbert) OK; P_N(E_bip)=0.740741 = partition formula OK; P_N(E_relax(t=2))=0.740741 = recursion OK (all M)
+  N=4 p=1/2: P(conn)=0.593750 = C_N (Gilbert) OK; P_N(E_bip)=0.156250 = partition formula OK; P_N(E_relax(t=2))=0.156250 = recursion OK (all M)
+  N=4 p=1/3: P(conn)=0.275720 = C_N (Gilbert) OK; P_N(E_bip)=0.417010 = partition formula OK; P_N(E_relax(t=2))=0.417010 = recursion OK (all M)
+  N=5 p=1/2: P(conn)=0.710938 = C_N (Gilbert) OK; P_N(E_bip)=0.103516 = partition formula OK; P_N(E_relax(t=3))=0.103516 = recursion OK (all M)
+  N=5 p=1/3: P(conn)=0.330996 = C_N (Gilbert) OK; P_N(E_bip)=0.396687 = partition formula OK; P_N(E_relax(t=3))=0.396687 = recursion OK (all M)
+  N=6 p=1/2: P(conn)=0.814941 = C_N (Gilbert) OK; P_N(E_bip)=0.016510 = partition formula OK; P_N(E_relax(t=3))=0.016968 = recursion OK (all M)
+  N=6 p=1/3: P(conn)=0.410321 = C_N (Gilbert) OK; P_N(E_bip)=0.162497 = partition formula OK; P_N(E_relax(t=3))=0.166778 = recursion OK (all M)
+  N=7 p=1/2: P(conn)=0.889900 = C_N (Gilbert) OK; P_N(E_bip)=0.006386 = partition formula OK; P_N(E_relax(t=4))=0.006386 = recursion OK (all M)
+  N=7 p=1/3: P(conn)=0.502815 = C_N (Gilbert) OK; P_N(E_bip)=0.124486 = partition formula OK; P_N(E_relax(t=4))=0.124486 = recursion OK (all M)
+
+== Theorems S and Cl at every (n, k, p): the weighted count of {pw <= k} against the bounds ==
+  columns: P(pw<=k) | C(n,k)·P_N(E_bip) | C(n,k)·P_N(E_relax) | E[X3] (Cl) | E[X1] (pairs) | E[X3]/E[X1]
+  n=1 k=0 N=1 t=1 p=1/2: 1.000000 <= 1.000000 <= 1.000000 OK; Cl 1.000000 OK; pairs 1.000000 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=1 k=0 N=1 t=1 p=1/3: 1.000000 <= 1.000000 <= 1.000000 OK; Cl 1.000000 OK; pairs 1.000000 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=1: flip lemma on 1 exact-size pairs, 0 violations
+  n=2 k=0 N=2 t=1 p=1/2: 0.500000 <= 0.500000 <= 0.500000 OK; Cl 1.000000 OK; pairs 1.000000 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=2 k=1 N=1 t=1 p=1/2: 1.000000 <= 2.000000 <= 2.000000 OK; Cl 2.000000 OK; pairs 2.000000 OK; X3/X1 1.000; factorisation identity on 2 sets S OK
+  n=2 k=0 N=2 t=1 p=1/3: 0.666667 <= 0.666667 <= 0.666667 OK; Cl 1.333333 OK; pairs 1.333333 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=2 k=1 N=1 t=1 p=1/3: 1.000000 <= 2.000000 <= 2.000000 OK; Cl 2.333333 OK; pairs 2.000000 OK; X3/X1 1.167; factorisation identity on 2 sets S OK
+  n=2: flip lemma on 6 exact-size pairs, 0 violations
+  n=3 k=0 N=3 t=2 p=1/2: 0.125000 <= 0.500000 <= 0.500000 OK; Cl 0.750000 OK; pairs 0.750000 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=3 k=1 N=2 t=1 p=1/2: 0.875000 <= 1.500000 <= 1.500000 OK; Cl 2.250000 OK; pairs 3.000000 OK; X3/X1 0.750; factorisation identity on 3 sets S OK
+  n=3 k=2 N=1 t=1 p=1/2: 1.000000 <= 3.000000 <= 3.000000 OK; Cl 3.250000 OK; pairs 3.000000 OK; X3/X1 1.083; factorisation identity on 3 sets S OK
+  n=3 k=0 N=3 t=2 p=1/3: 0.296296 <= 0.740741 <= 0.740741 OK; Cl 1.333333 OK; pairs 1.333333 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=3 k=1 N=2 t=1 p=1/3: 0.962963 <= 2.000000 <= 2.000000 OK; Cl 3.111111 OK; pairs 4.000000 OK; X3/X1 0.778; factorisation identity on 3 sets S OK
+  n=3 k=2 N=1 t=1 p=1/3: 1.000000 <= 3.000000 <= 3.000000 OK; Cl 4.111111 OK; pairs 3.000000 OK; X3/X1 1.370; factorisation identity on 3 sets S OK
+  n=3: flip lemma on 54 exact-size pairs, 0 violations
+  n=4 k=0 N=4 t=2 p=1/2: 0.015625 <= 0.156250 <= 0.156250 OK; Cl 0.375000 OK; pairs 0.375000 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=4 k=1 N=3 t=2 p=1/2: 0.593750 <= 2.000000 <= 2.000000 OK; Cl 2.000000 OK; pairs 3.000000 OK; X3/X1 0.667; factorisation identity on 4 sets S OK
+  n=4 k=2 N=2 t=1 p=1/2: 0.984375 <= 3.000000 <= 3.000000 OK; Cl 4.000000 OK; pairs 6.000000 OK; X3/X1 0.667; factorisation identity on 6 sets S OK
+  n=4 k=3 N=1 t=1 p=1/2: 1.000000 <= 4.000000 <= 4.000000 OK; Cl 5.000000 OK; pairs 4.000000 OK; X3/X1 1.250; factorisation identity on 4 sets S OK
+  n=4 k=0 N=4 t=2 p=1/3: 0.087791 <= 0.417010 <= 0.417010 OK; Cl 1.185185 OK; pairs 1.185185 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=4 k=1 N=3 t=2 p=1/3: 0.855967 <= 2.962963 <= 2.962963 OK; Cl 3.358025 OK; pairs 5.333333 OK; X3/X1 0.630; factorisation identity on 4 sets S OK
+  n=4 k=2 N=2 t=1 p=1/3: 0.998628 <= 4.000000 <= 4.000000 OK; Cl 5.629630 OK; pairs 8.000000 OK; X3/X1 0.704; factorisation identity on 6 sets S OK
+  n=4 k=3 N=1 t=1 p=1/3: 1.000000 <= 4.000000 <= 4.000000 OK; Cl 6.629630 OK; pairs 4.000000 OK; X3/X1 1.657; factorisation identity on 4 sets S OK
+  n=4: flip lemma on 856 exact-size pairs, 0 violations
+  n=5 k=0 N=5 t=3 p=1/2: 0.000977 <= 0.103516 <= 0.103516 OK; Cl 0.156250 OK; pairs 0.156250 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=5 k=1 N=4 t=2 p=1/2: 0.284180 <= 0.781250 <= 0.781250 OK; Cl 1.367188 OK; pairs 1.875000 OK; X3/X1 0.729; factorisation identity on 5 sets S OK
+  n=5 k=2 N=3 t=2 p=1/2: 0.891602 <= 5.000000 <= 5.000000 OK; Cl 3.828125 OK; pairs 7.500000 OK; X3/X1 0.510; factorisation identity on 10 sets S OK
+  n=5 k=3 N=2 t=1 p=1/2: 0.999023 <= 5.000000 <= 5.000000 OK; Cl 6.445312 OK; pairs 10.000000 OK; X3/X1 0.645; factorisation identity on 10 sets S OK
+  n=5 k=4 N=1 t=1 p=1/2: 1.000000 <= 5.000000 <= 5.000000 OK; Cl 7.445312 OK; pairs 5.000000 OK; X3/X1 1.489; factorisation identity on 5 sets S OK
+  n=5 k=0 N=5 t=3 p=1/3: 0.017342 <= 0.396687 <= 0.396687 OK; Cl 0.877915 OK; pairs 0.877915 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=5 k=1 N=4 t=2 p=1/3: 0.673068 <= 2.085048 <= 2.085048 OK; Cl 3.584819 OK; pairs 5.925926 OK; X3/X1 0.605; factorisation identity on 5 sets S OK
+  n=5 k=2 N=3 t=2 p=1/3: 0.988467 <= 7.407407 <= 7.407407 OK; Cl 6.419753 OK; pairs 13.333333 OK; X3/X1 0.481; factorisation identity on 10 sets S OK
+  n=5 k=3 N=2 t=1 p=1/3: 0.999983 <= 6.666667 <= 6.666667 OK; Cl 9.272977 OK; pairs 13.333333 OK; X3/X1 0.695; factorisation identity on 10 sets S OK
+  n=5 k=4 N=1 t=1 p=1/3: 1.000000 <= 5.000000 <= 5.000000 OK; Cl 10.272977 OK; pairs 5.000000 OK; X3/X1 2.055; factorisation identity on 5 sets S OK
+  n=5: flip lemma on 25120 exact-size pairs, 0 violations
+  n=6 k=0 N=6 t=3 p=1/2: 0.000031 <= 0.016510 <= 0.016968 OK; Cl 0.039062 OK; pairs 0.039062 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=6 k=1 N=5 t=3 p=1/2: 0.089478 <= 0.621094 <= 0.621094 OK; Cl 0.712891 OK; pairs 0.937500 OK; X3/X1 0.760; factorisation identity on 6 sets S OK
+  n=6 k=2 N=4 t=2 p=1/2: 0.653809 <= 2.343750 <= 2.343750 OK; Cl 3.166504 OK; pairs 5.625000 OK; X3/X1 0.563; factorisation identity on 15 sets S OK
+  n=6 k=3 N=3 t=2 p=1/2: 0.982849 <= 10.000000 <= 10.000000 OK; Cl 6.459473 OK; pairs 15.000000 OK; X3/X1 0.431; factorisation identity on 20 sets S OK
+  n=6 k=4 N=2 t=1 p=1/2: 0.999969 <= 7.500000 <= 7.500000 OK; Cl 9.811035 OK; pairs 15.000000 OK; X3/X1 0.654; factorisation identity on 15 sets S OK
+  n=6 k=5 N=1 t=1 p=1/2: 1.000000 <= 6.000000 <= 6.000000 OK; Cl 10.811035 OK; pairs 6.000000 OK; X3/X1 1.802; factorisation identity on 6 sets S OK
+  n=6 k=0 N=6 t=3 p=1/3: 0.002284 <= 0.162497 <= 0.166778 OK; Cl 0.520246 OK; pairs 0.520246 OK; X3/X1 1.000; factorisation identity on 1 sets S OK
+  n=6 k=1 N=5 t=3 p=1/3: 0.450166 <= 2.380125 <= 2.380125 OK; Cl 3.164829 OK; pairs 5.267490 OK; X3/X1 0.601; factorisation identity on 6 sets S OK
+  n=6 k=2 N=4 t=2 p=1/3: 0.948633 <= 6.255144 <= 6.255144 OK; Cl 7.502921 OK; pairs 17.777778 OK; X3/X1 0.422; factorisation identity on 15 sets S OK
+  n=6 k=3 N=3 t=2 p=1/3: 0.999612 <= 14.814815 <= 14.814815 OK; Cl 11.025691 OK; pairs 26.666667 OK; X3/X1 0.413; factorisation identity on 20 sets S OK
+  n=6 k=4 N=2 t=1 p=1/3: 1.000000 <= 10.000000 <= 10.000000 OK; Cl 14.551508 OK; pairs 20.000000 OK; X3/X1 0.728; factorisation identity on 15 sets S OK
+  n=6 k=5 N=1 t=1 p=1/3: 1.000000 <= 6.000000 <= 6.000000 OK; Cl 15.551508 OK; pairs 6.000000 OK; X3/X1 2.592; factorisation identity on 6 sets S OK
+  n=6: flip lemma on 1395968 exact-size pairs, 0 violations
+  n=7 k=0 N=7 t=4 p=1/2: 0.000000 <= 0.006386 <= 0.006386 OK; Cl 0.008545 OK; pairs 0.008545 OK; X3/X1 1.000
+  n=7 k=1 N=6 t=3 p=1/2: 0.017224 <= 0.115570 <= 0.118774 OK; Cl 0.226440 OK; pairs 0.273438 OK; X3/X1 0.828
+  n=7 k=2 N=5 t=3 p=1/2: 0.338908 <= 2.173828 <= 2.173828 OK; Cl 1.948456 OK; pairs 3.281250 OK; X3/X1 0.594
+  n=7 k=3 N=4 t=2 p=1/2: 0.885196 <= 5.468750 <= 5.468750 OK; Cl 6.006439 OK; pairs 13.125000 OK; X3/X1 0.458
+  n=7 k=4 N=3 t=2 p=1/2: 0.998497 <= 17.500000 <= 17.500000 OK; Cl 10.178070 OK; pairs 26.250000 OK; X3/X1 0.388
+  n=7 k=5 N=2 t=1 p=1/2: 1.000000 <= 10.500000 <= 10.500000 OK; Cl 14.370209 OK; pairs 21.000000 OK; X3/X1 0.684
+  n=7 k=6 N=1 t=1 p=1/2: 1.000000 <= 7.000000 <= 7.000000 OK; Cl 15.370209 OK; pairs 7.000000 OK; X3/X1 2.196
+  n=7 k=0 N=7 t=4 p=1/3: 0.000200 <= 0.124486 <= 0.124486 OK; Cl 0.269757 OK; pairs 0.269757 OK; X3/X1 1.000
+  n=7 k=1 N=6 t=3 p=1/3: 0.244897 <= 1.137476 <= 1.167449 OK; Cl 2.342891 OK; pairs 3.641721 OK; X3/X1 0.643
+  n=7 k=2 N=5 t=3 p=1/3: 0.846671 <= 8.330437 <= 8.330437 OK; Cl 7.351319 OK; pairs 18.436214 OK; X3/X1 0.399
+  n=7 k=3 N=4 t=2 p=1/3: 0.995899 <= 14.595336 <= 14.595336 OK; Cl 13.579352 OK; pairs 41.481481 OK; X3/X1 0.327
+  n=7 k=4 N=3 t=2 p=1/3: 0.999995 <= 25.925926 <= 25.925926 OK; Cl 17.869008 OK; pairs 46.666667 OK; X3/X1 0.383
+  n=7 k=5 N=2 t=1 p=1/3: 1.000000 <= 14.000000 <= 14.000000 OK; Cl 22.159138 OK; pairs 28.000000 OK; X3/X1 0.791
+  n=7 k=6 N=1 t=1 p=1/3: 1.000000 <= 7.000000 <= 7.000000 OK; Cl 23.159138 OK; pairs 7.000000 OK; X3/X1 3.308
+
+== Lemma W on 1,000 random instances at n = 10 (600 G(n, p), 400 random covers) ==
+  G(     k=pw  : 600 instances, X=0 on 0; median X 12, X4 5, Y_flip 10.000; max X 234, Y_flip range [2.000, 126.000]; Y >= 1[X>0] on all; violations 0
+  G(     k=pw-1: 600 instances, X=0 on 351; median X 0, X4 0, Y_flip 0.000; max X 47, Y_flip range [0.000, 30.000]; Y >= 1[X>0] on all; violations 0
+  cover  k=pw  : 400 instances, X=0 on 0; median X 8, X4 4, Y_flip 6.000; max X 82, Y_flip range [1.000, 74.000]; Y >= 1[X>0] on all; violations 0
+  cover  k=pw-1: 400 instances, X=0 on 225; median X 0, X4 0, Y_flip 0.000; max X 21, Y_flip range [0.000, 21.000]; Y >= 1[X>0] on all; violations 0
+
+== Lemma J: the joint binomial moments of the flips against every cover at tiny sizes ==
+  24 cases (n = 3–6, m ≤ 3, sizes 2–3): the inverted moments equal the enumerated joint law on all
+
+== E[Y] and E[X] from the generating function against 1000 Monte Carlo covers at n = 10, m = 10, d = 3 ==
+  k=3 (N=7, t=4): exact E[Y]=1.3499, sample 1.2070 ± 0.0835 (-1.7 s.e.); exact E[X]=1.4301, sample 1.2910 ± 0.0923 (-1.5 s.e.); P(X>0) sample 0.4180 <= E[Y]
+  k=4 (N=6, t=3): exact E[Y]=9.4192, sample 9.4030 ± 0.3321 (-0.0 s.e.); exact E[X]=10.6384, sample 10.6020 ± 0.4059 (-0.1 s.e.); P(X>0) sample 0.8720 <= E[Y]
+  k=5 (N=5, t=3): exact E[Y]=41.2295, sample 41.3070 ± 0.7545 (+0.1 s.e.); exact E[X]=49.4810, sample 49.0640 ± 1.0386 (-0.4 s.e.); P(X>0) sample 1.0000 <= E[Y]
+  k=6 (N=4, t=2): exact E[Y]=70.1882, sample 71.2150 ± 0.7161 (+1.4 s.e.); exact E[X]=88.3968, sample 89.5000 ± 1.1355 (+1.0 s.e.); P(X>0) sample 1.0000 <= E[Y]
+
+violations: 0; wall 29 s

@@ -33,3 +33,8 @@
 [2026-11-01 18:01:17] claude session it07 (cap 4.00 h) -> session_it07.log
 [2026-11-01 19:18:02] session it07: ok (exit 0, 69 tool calls)
 [2026-11-01 19:28:54] tests passed: GATE PASS
+[2026-11-01 19:28:54] committed 9e1e34dbd: 07 The MOSP version: random clique covers.
+[2026-11-01 19:28:54] === iteration 8: 08 The theorems on paper: the separator first moment in finite form, the closed-pair count
+[2026-11-01 19:28:54] claude session it08 (cap 4.00 h) -> session_it08.log
+[2026-11-01 20:03:07] session it08: ok (exit 0, 36 tool calls)
+[2026-11-01 20:14:00] tests passed: GATE PASS
