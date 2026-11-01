@@ -315,6 +315,28 @@ largest pattern (measured). The exact theory on block graphs is polynomial
 $(\omega-2)/2$ per level of depth, no formula linear in $\omega$ and the depth
 fits them, and we conjecture no closed form.
 
+\begin{lemma}[pendant cliques]
+\label{lem:pendant}
+If a clique $R$ has $q\ge1$ cliques of size at least $t$ pendant at distinct
+vertices of $R$, each meeting $R$ in its attachment vertex only, then
+$\pw\ge t+\lceil q/2\rceil-2$.
+\end{lemma}
+Every clique lies inside one bag; if a pendant's bag is the bag of $R$ the two
+share a bag of size $|R|+t-1$, and otherwise at least $\lceil q/2\rceil$
+pendants have their bags on one side of $R$'s, and the one nearest $R$ holds
+its own clique together with the attachment vertices of the others, by the
+interval property. It is a Lean theorem~\leanref{pendant}, and with
+$t=q=|R|$ it gives the exact value $\lceil 3s/2\rceil-2$ of a clique $K_s$
+with a pendant $K_s$ at every vertex, the depth-one clique tree; with the
+matching decomposition (on paper), $K_s$ with a pendant $K_t$ at $q$ of its
+vertices has pathwidth exactly $\max(s-1,\,t+\lceil q/2\rceil-2)$. It is a
+pathwidth argument that is not degree-based, and on the certified instances
+it is worth little: evaluated over the maximal cliques of the MOSP graph it is
+above the clique floor $\omega-1$ on 554 of the $6{,}376$ and tight on
+$44\%$, but above the solver's bound on 5, and above $\max(\text{solver
+bound},\,\mathrm{tw}+1)$ on 3 of the 338 instances where that bound misses by
+two or more, by one stack each (measured, 9--134 customers).
+
 \paragraph{Constructions from above.}
 \begin{lemma}[layers]
 \label{lem:layer}

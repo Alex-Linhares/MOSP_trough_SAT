@@ -1,0 +1,62 @@
+[harness] 6376 certified rows, 0 done, 6376 to run
+[harness] validity 500/6376 in 14s
+[harness] validity 1000/6376 in 16s
+[harness] validity 1500/6376 in 16s
+[harness] validity 2000/6376 in 17s
+[harness] validity 2500/6376 in 17s
+[harness] validity 3000/6376 in 17s
+[harness] validity 3500/6376 in 17s
+[harness] validity 4000/6376 in 17s
+[harness] validity 4500/6376 in 17s
+[harness] validity 5000/6376 in 17s
+[harness] validity 5500/6376 in 17s
+[harness] validity 6000/6376 in 17s
+[harness] validity 6376/6376 in 17s
+/home/al/dev/MOSP/reports/scratch/pendant_cliques/score.py:65: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  t = frame.groupby(by).agg(instances=("pendant", "size"), tight=("tight", "sum"),
+rows scored: 6376 of 6376 corpus rows; 19 s wall; 0.03 core-hours; censored evaluations: 172
+violations (pendant > optimum): 0
+tight (pendant == optimum): 2809 (44.1%)
+above the clique floor ω: 554; above lb_best: 5; above max(lb_best, tw + 1): 5
+
+the 338 bound-gap instances (optimum − lb_best ≥ 2): above ω 89, above lb_best 3, above the reference 3, tight 0; max gain over the reference 1
+
+by collection, all corpus rows
+            instances  tight  above_omega  above_lb  above_ref  mean_gap  mean_pendant_gap  censored  median_s  max_s
+collection                                                                                                           
+benchmarks       6376   2809          554         5          5  0.430521          2.840652       172       0.0  3.885
+
+by size band, all corpus rows
+            instances  tight  above_omega  above_lb  above_ref   mean_gap  mean_pendant_gap  censored  median_s  max_s
+band                                                                                                                  
+(0, 20]          4122   2253          160         2          2   0.126638          1.069141         0     0.000  0.011
+(20, 30]         1816    471          296         0          0   0.450441          4.097467        61     0.001  0.555
+(30, 40]          197     56           26         2          2   0.817259          5.274112        24     0.000  0.672
+(40, 50]          120     21           28         1          1   1.658333          8.975000        30     0.001  3.885
+(50, 75]           31      0           15         0          0   4.322581         26.612903        15     0.013  2.540
+(75, 100]          63      8           18         0          0   8.777778         30.047619        27     0.013  1.819
+(100, 200]         27      0           11         0          0  13.259259         52.962963        15     0.131  1.692
+
+by collection, bound-gap instances
+            instances  tight  above_omega  above_lb  above_ref  mean_gap  mean_pendant_gap  censored  median_s  max_s
+collection                                                                                                           
+benchmarks        338      0           89         3          3  4.781065         13.801775        41     0.001  1.692
+
+bound-gap instances where Lemma P gains most over the reference
+                                     instance_name  n_customers  optimum  lb_best  tw1  reference  pendant  omega  pendant_cliques
+Warwick 871: balanced orders, 4 orders per product         20.0        6      4.0    4        4.0        5      4               13
+                                         p1540n9_0         40.0        7      5.0    5        5.0        6      5               16
+                                         p1550n8_0         50.0        8      6.0    6        6.0        7      6               16
+                                         p1540n5_0         40.0        8      6.0    6        6.0        6      6               21
+                                        p1540n10_0         40.0        8      6.0    6        6.0        6      6               18
+          HS problem 1121 size 30 10 density  0.20         30.0       13     11.0   11       11.0       11     11               19
+                                         p1540n3_0         40.0        7      5.0    5        5.0        5      5               20
+                                         p2050n1_0         50.0        7      5.0    5        5.0        5      5               23
+                                         p2050n7_0         50.0        8      6.0    6        6.0        6      6               23
+                                         p2050n4_0         50.0        8      6.0    6        6.0        6      6               20
+                                         p2050n3_0         50.0        8      6.0    6        6.0        6      6               22
+                                        p1550n10_0         50.0        8      6.0    6        6.0        6      6               16
+                                         p1540n1_0         40.0        8      6.0    6        6.0        6      6               20
+          HS problem 1131 size 30 10 density  0.20         30.0        9      7.0    7        7.0        7      7               13
+                               scoop-A_FA+AA-_13_0        134.0       17     11.0   11       11.0       11     11               55
+EXIT 0

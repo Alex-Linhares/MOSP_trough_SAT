@@ -137,8 +137,15 @@ FOREST_COVER_PROVED = (
     "isLayering_dist",
     "pathwidth_le_layerWidth_dist",
 )
+#: loop0010 item 13 (`PendantCliques.lean`): Lemma P, the two-sided pendant bound, §6.5 (L5).
+PENDANT_PROVED = (
+    "PathDecomposition.pendant_bound",
+    "pathwidth_ge_of_pendant_cliques",
+    "pathwidth_ge_of_clique_pendant_cliques",
+    "MOSPInstance.mospValue_ge_of_pendant_patterns",
+)
 #: Every proved name the axiom check asks for.
-ALL_PROVED = PROVED + FOREST_COVER_PROVED
+ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

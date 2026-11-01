@@ -1,0 +1,10 @@
+random graphs: 1905 checked, 0 violations, tight on 1474, above the clique floor on 15; 0.6 s
+n | graphs | tight | above clique floor
+2 | 151 | 151 | 0
+3 | 265 | 265 | 0
+4 | 292 | 271 | 0
+5 | 297 | 265 | 0
+6 | 300 | 209 | 0
+7 | 300 | 186 | 2
+8 | 300 | 127 | 13
+F2 family: 72 graphs (n ≤ 15), 0 mismatches; 3.0 s

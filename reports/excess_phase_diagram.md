@@ -207,10 +207,15 @@ statement is §4.2.
 Proposition 2), `isEmptyPair_coverGraph_of_subset`, `pathwidth_coverGraph_mono`,
 `pathwidth_le_layerWidth`, `vertexSeparation_le_layerWidth`,
 `pathwidth_le_layerWidth_dist`. Pinned to the record by
-`python -m learning.sandwich --stage forest` (4,419 rows, 0 violations). What
-stays on paper: every random-model statement, Lemma P and F2, the
-per-layout vertex separation of the layer order, the first moment's survival
-of the pads.
+`python -m learning.sandwich --stage forest` (4,419 rows, 0 violations).
+`PendantCliques.lean` (item 13, the reserve): Lemma P as
+`pathwidth_ge_of_pendant_cliques` (§6.5 L5), its per-decomposition form
+`PathDecomposition.pendant_bound`, the depth-one case
+`pathwidth_ge_of_clique_pendant_cliques` (`CT(s, 1, b) ≥ ⌈3s/2⌉ − 2`) and the
+MOSP form `MOSPInstance.mospValue_ge_of_pendant_patterns` (§16). What
+stays on paper: every random-model statement, F2's upper half (the explicit
+decomposition, §6.5 L6), the per-layout vertex separation of the layer order,
+the first moment's survival of the pads.
 
 ### 0.7 Contents
 
@@ -228,6 +233,7 @@ of the pads.
 | 10 | 10 | validity under the real generator | the `1 / P(accepted)` fallback is the result |
 | 11 | 11 | Lean | all three targets proved |
 | 12 | 12 | this write-up | — |
+| 16 | 13 | the reserve: Lemma P in Lean, and scored on the record | proved; **worth little on the corpus** (5 of 6,376 above the solver's bound) |
 
 Each section keeps its own "What this does not claim"; §13 collects them.
 
@@ -5929,14 +5935,11 @@ In rough order of value against cost:
    subset lattice, in the random model. The vectorised lattice of
    `learning/excess_ridge.py` (2.3 s at `n = 20`) is the instrument for the
    `n ≤ 25` end.
-3. **Lemma P on the bound-gap instances** (§6): a pathwidth argument that
-   is not degree-based, exact on 62 of 2,000 small random instances where
-   the clique floor is not; one `learning/bound_harness.py` run over the
-   338 gap instances says whether it is worth anything there. Outside this
-   loop's questions.
-4. **Lean: Lemma P and F2** (§6.5 L5–L6), the next targets after
-   `ForestCover.lean`; and the per-layout vertex separation of the layer
-   order (§11.6).
+3. ~~**Lemma P on the bound-gap instances** (§6)~~ — *done in §16 (item
+   13)*: above the reference `max(lb_best, tw + 1)` on 3 of the 338 gap
+   instances, by one stack each; not worth anything there.
+4. **Lean: F2's upper half** (§6.5 L6; Lemma P, L5, is proved in §16) and
+   the per-layout vertex separation of the layer order (§11.6).
 5. **A sharper tail than Chernoff on the size sum** (§10): the exact
    distribution is computable and would move the quenched floor toward
    the typical instance, up to 10 stacks at `(125, 125, 4)`.
@@ -5996,3 +5999,209 @@ In rough order of value against cost:
 > `paper1/latex/figures/excess_phase_diagram.py`; data
 > `learning/data/excess*.csv` (git-ignored, 10 s to rebuild) and the
 > committed `paper1/latex/data/excess_phase_diagram.csv`.
+
+---
+
+## 16. The reserve: Lemma P in Lean, and what it is worth on the record (item 13, 2026-11-01)
+
+**Why this one.** §14 lists eight gaps. The first two (a cluster-representative
+first moment; the ridge as a first-passage problem) are research questions
+with no bounded deliverable in one session, and the fifth to eighth are a
+tail bound, a citation hunt, an unanalysed mechanism and a run that needs the
+owner's word. The third and fourth are one object seen twice: Lemma P
+(§6.1), the two-sided pendant bound, is the next Lean target §6.5 names (L5),
+its statement was checked by brute force in item 06 before it was stated, and
+§14 (3) asks what it is worth on the 338 bound-gap instances, which is a
+free scoring run (nothing solved). It is also the one pathwidth argument on
+the table that is not degree-based, the kind `CLAUDE.md`'s bound section says
+the bound work needs. So the reserve is: Lemma P proved in Lean, in the
+exact form the paper can cite, and scored on every certified corpus instance
+through `learning/bound_harness.py`. F2's upper half (L6, the explicit
+decomposition) was priced at the rest of the session and left on paper.
+
+**Size range.** Lean: every finite simple graph. The pre-statement check:
+1,905 random graphs on 2–8 vertices and 72 depth-one block graphs on ≤ 15.
+The scoring: the 6,376 certified corpus instances, 9–134 customers.
+
+**Regenerate.**
+
+    python reports/scratch/pendant_cliques/check.py > reports/scratch/pendant_cliques/check.log
+    cd lean && lake build                      # PendantCliques.lean, ~1 s
+    nice -n 19 python reports/scratch/pendant_cliques/score.py --workers 8   # 19 s wall
+    python reports/scratch/pendant_cliques/agreement.py > reports/scratch/pendant_cliques/agreement.log
+    python -m pytest tests/test_pendant_cliques.py -q
+
+### 16.1 Checked before stated
+
+`reports/scratch/pendant_cliques/check.py` evaluates the statement in exactly
+the Lean form — every clique `R` of the graph, every choice of pendant cliques
+(dominated by the largest per attachment vertex), `t + ⌈q/2⌉ ≤ pw + 2` with
+the pathwidth by the exact subset DP — on 1,905 random `G(n, p)` graphs,
+`n = 2–8`, `p ∈ [0.2, 0.9]`:
+
+| n | graphs | tight | above the clique floor |
+|---|---|---|---|
+| 2 | 151 | 151 | 0 |
+| 3 | 265 | 265 | 0 |
+| 4 | 292 | 271 | 0 |
+| 5 | 297 | 265 | 0 |
+| 6 | 300 | 209 | 0 |
+| 7 | 300 | 186 | 2 |
+| 8 | 300 | 127 | 13 |
+
+**0 violations**, tight on 1,474, above `ω − 1` on 15. The depth-one family
+`K_s` with a pendant `K_t` at `q` of its vertices (`s, t ≤ 6`, `n ≤ 15`, 72
+graphs): `pw = max(s − 1, t + ⌈q/2⌉ − 2)` on every one (F2, both halves, by
+the DP). `check.log` beside the script.
+
+### 16.2 The Lean statements (`lean/MOSPFormalization/PendantCliques.lean`, 247 lines)
+
+No `sorry`, no `axiom`; every theorem on `propext`, `Classical.choice`,
+`Quot.sound` only (`make -C paper1/latex axioms`: 266 theorems checked, 0
+failures). Imported by `lean/MOSPFormalization.lean`; `make -C paper1/latex
+check`: 71 pages, no undefined references.
+
+- **`PathDecomposition.pendant_bound`** — for one decomposition `D` of `G`:
+  `1 ≤ q`, `R` a clique, `Q : Fin q → Finset V` cliques with `t ≤ |Q i|`,
+  `v : Fin q → V` injective, `Q i ∩ R = {v i}` ⊢ `t + (q + 1) / 2 ≤ D.width + 2`
+  (`⌈q/2⌉ = (q + 1) / 2` in `ℕ`). The proof is §6.2's: `R ⊆ bag a` and
+  `Q i ⊆ bag (b i)` by the Helly lemma `exists_bag_of_isClique`; if some
+  `b i = a` the bag holds `R ∪ Q i`, of size `|R| + |Q i| − 1 ≥ q + t − 1`
+  (`v` injective into `R`); otherwise `Finset.card_filter_add_card_filter_not`
+  splits the `q` pendants into those strictly left and strictly right of `a`,
+  one side has `≥ (q + 1) / 2`, and the one-sided lemmas
+  `exists_bag_of_pendant_left` / `_right` (the pendant nearest `a` on that side,
+  by `exists_max_image` / `exists_min_image`, holds `Q j ∪ v '' (S ∖ {j})`,
+  disjoint by `disjoint_pendant_image`, through `D.interval`) finish with
+  `omega`.
+- **`pathwidth_ge_of_pendant_cliques`** — **Lemma P (L5)**, the same
+  hypotheses on any `G : SimpleGraph V` ⊢ `t + (q + 1) / 2 ≤ pathwidth G + 2`,
+  through `exists_pathDecomposition_width_eq`.
+- **`pathwidth_ge_of_clique_pendant_cliques`** — the depth-one case `t = q =
+  |R|`: a clique `R` (`1 ≤ |R|`) with a clique of size `≥ |R|` pendant at
+  each of its vertices (`Q : R → Finset V`, `Q x ∩ R = {x}`) ⊢
+  `|R| + (|R| + 1) / 2 ≤ pathwidth G + 2`, i.e. `CT(s, 1, b) ≥ ⌈3s/2⌉ − 2`,
+  the lower half of item 03's measured `CT(s, 1, b) = ⌈3s/2⌉ − 2`.
+- **`MOSPInstance.mospValue_ge_of_pendant_patterns`** — in MOSP terms: a
+  pattern `p₀` and `q ≥ 1` patterns `p i` with `t ≤ |customers (p i)|`,
+  `customers (p i) ∩ customers p₀ = {v i}`, `v` injective ⊢
+  `t + (q + 1) / 2 ≤ mospValue M + 1`, through `customers_isClique` and
+  `pathwidth_add_one_le_mospValue` (the instance has a requirement, `v 0`).
+- Three one-line facts about `Q ∩ R = {x}` (`mem_left_of_inter_eq_singleton`,
+  `mem_right_…`, `not_mem_left_…`).
+
+The module compiled at the second attempt (two renamed Mathlib tactics /
+lemmas, `le_or_lt → le_or_gt` and `push_neg`); no proof in any other file was
+touched.
+
+### 16.3 What Lemma P is worth on the record
+
+`learning/forest_theorems.py::pendant_graph_bound` evaluates the theorem on a
+graph: `R` over the largest maximal cliques (≤ 500), the pendants over the
+largest maximal cliques `Q'` (≤ 5,000 of ≤ 50,000 enumerated), each cut to
+`Q' ∖ (R ∖ {v})` for every `v ∈ Q' ∩ R` — the largest sub-clique of `Q'`
+meeting `R` exactly in `v` — the best `t_q + ⌈q/2⌉ − 2` over the `q` largest
+per `R`, floored at `ω − 1`; any cap hit is reported as `censored` (the value
+is then over a subset of the cliques and still valid). `pendant_candidate`
+wraps it in optimum units for the harness. `reports/scratch/pendant_cliques/score.py`
+runs the harness's validity stage on the corpus with this one candidate
+(`harness_values.csv`, `scored.csv`, `score_tables.log`); the reference is
+the harness's `max(lb_best, tw + 1)` with `tw` the exact or interval
+treewidth of the invariants table, as §14 (3) asked.
+
+**6,376 of 6,376 scored, 19 s wall on 8 workers, 0.03 core-hours, 172
+censored evaluations (all caps, none a deadline): 0 violations** (no value
+above a certified optimum — the Python agrees with the theorem on every
+instance); **tight on 2,809 (44.1%); above the clique floor `ω − 1` on 554;
+above the solver's `lb_best` on 5; above `max(lb_best, tw + 1)` on 5**. On the
+**338 bound-gap instances**: above `ω − 1` on 89, above the reference on
+**3**, by **one stack each**, tight on 0:
+
+| instance | n | optimum | lb_best | tw + 1 | reference | Lemma P |
+|---|---|---|---|---|---|---|
+| Warwick 871: balanced orders, 4 orders per product | 20 | 6 | 4 | 4 | 4 | 5 |
+| p1540n9_0 (Faggioli–Bentivoglio) | 40 | 7 | 5 | 5 | 5 | 6 |
+| p1550n8_0 (Faggioli–Bentivoglio) | 50 | 8 | 6 | 6 | 6 | 7 |
+
+By collection (all corpus rows; `mean gap` is `optimum − lb_best`, `mean P
+gap` is `optimum − Lemma P`):
+
+| collection | instances | tight | above ω − 1 | above lb_best | above reference | mean gap | mean P gap | censored | median s | max s |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Harvey | 2,130 | 690 | 381 | 1 | 1 | 0.28 | 3.08 | 61 | 0.000 | 0.56 |
+| Challenge | 46 | 14 | 5 | 0 | 0 | 0.91 | 4.59 | 1 | 0.001 | 0.03 |
+| Chu & Stuckey | 200 | 0 | 77 | 0 | 0 | 5.43 | 26.3 | 97 | 0.039 | 3.89 |
+| Faggioli–Bentivoglio | 300 | 68 | 44 | 3 | 3 | 1.02 | 3.25 | 0 | 0.000 | 0.002 |
+| SCOOP | 24 | 5 | 1 | 1 | 1 | 1.04 | 1.25 | 0 | 0.000 | 0.001 |
+| Miller | 1 | 0 | 1 | 0 | 0 | 0.00 | 7.00 | 0 | 0.000 | 0.000 |
+| Shaw | 25 | 0 | 4 | 0 | 0 | 0.44 | 4.96 | 0 | 0.001 | 0.002 |
+| Simonis | 3,630 | 2,018 | 41 | 0 | 0 | 0.18 | 1.34 | 12 | 0.000 | 0.64 |
+| Wilson | 20 | 14 | 0 | 0 | 0 | 1.55 | 4.00 | 1 | 0.001 | 0.03 |
+
+By size band:
+
+| customers | instances | tight | above ω − 1 | above lb_best | above reference | mean gap | mean P gap | censored |
+|---|---|---|---|---|---|---|---|---|
+| ≤ 20 | 4,122 | 2,253 | 160 | 2 | 2 | 0.13 | 1.07 | 0 |
+| 21–30 | 1,816 | 471 | 296 | 0 | 0 | 0.45 | 4.10 | 61 |
+| 31–40 | 197 | 56 | 26 | 2 | 2 | 0.82 | 5.27 | 24 |
+| 41–50 | 120 | 21 | 28 | 1 | 1 | 1.66 | 8.98 | 30 |
+| 51–75 | 31 | 0 | 15 | 0 | 0 | 4.32 | 26.6 | 15 |
+| 76–100 | 63 | 8 | 18 | 0 | 0 | 8.78 | 30.0 | 27 |
+| 101–134 | 27 | 0 | 11 | 0 | 0 | 13.3 | 53.0 | 15 |
+
+The bound-gap instances by collection: Harvey 71 (above `ω − 1` 36, above the
+reference 1), Challenge 3 (0, 0), Chu & Stuckey 102 (34, 0), Faggioli–Bentivoglio
+83 (18, 2), SCOOP 3 (0, 0), Simonis 73 (1, 0), Wilson 3 (0, 0).
+
+### 16.4 Findings
+
+1. **Lemma P is a theorem for every graph, in Lean, in the form the paper
+   cites** (Lemma "pendant cliques" of Appendix E, row `pendant` of Appendix
+   A), with its MOSP form and the depth-one case that explains item 03's
+   `CT(s, 1, b) = ⌈3s/2⌉ − 2` from below. F2's upper half stays on paper.
+2. **It is worth little on the record.** It beats the clique floor on 8.7% of
+   the corpus and on 26% of the bound-gap instances, but the solver's bound
+   (contraction degeneracy, in the main) already sees what it sees: above
+   `lb_best` on 5 of 6,376, above `max(lb_best, tw + 1)` on 3 of the 338 gap
+   instances, by one stack, never on a Chu & Stuckey instance. §14 (3) is
+   answered: not worth anything there.
+3. **Where it bites is depth one.** On the three instances it helps, the
+   MOSP graph has a clique with large cliques hanging off several of its
+   vertices and little else; on the gap instances of `ml_nature.md` §6 —
+   trees of cliques *with branching below the first level* — the pendants
+   are themselves branched, and Lemma P sees only the first level. The
+   branch lemma family (§38) and F3's recursion see deeper and were closed
+   by the harness already; a bound for the gap instances needs an argument
+   that is neither the clique floor, nor degree, nor one level of pendants.
+4. **The evaluation's caps bind only on dense instances** (172 censored, 97
+   of them Chu & Stuckey, where the maximal-clique count exceeds 5,000);
+   lifting the caps could only raise those values, and on the dense
+   instances the bound is 26–53 stacks short, so the verdict does not depend
+   on them.
+
+### 16.5 Kill verdict
+
+The item carries none. For §14 (3), the natural criterion — Lemma P beats
+the reference on some bound-gap instance by two or more stacks, or on more
+than a handful — is **not met** (3 instances, one stack each): the bound
+idea is closed on this record, as the branching family was in §38.
+
+### 16.6 What this does not claim
+
+- **Not the exact optimum of Lemma P over all clique pairs.** The evaluation
+  takes `R` and the pendants among maximal cliques (and the cut-down
+  sub-cliques of the pendants); a sub-clique of a maximal clique as `R` can
+  do better in principle. On the 1,905 small graphs of 16.1, where every
+  clique was tried, the maximal-clique evaluation attains the exhaustive
+  value on 1,901 and is one below on 4 (`agreement.py`, `agreement.log`);
+  on the corpus it is a lower bound on the lemma's best value, hence still a
+  valid bound, and the verdict of 16.4 (2) is about this evaluation.
+- **Not a statement about generated instances or the ensembles**: the corpus
+  only, 9–134 customers.
+- **Not F2 in Lean.** The upper half (the three-part decomposition of §6.2)
+  is on paper and checked by the DP on 72 graphs; Lean has the lower half
+  only.
+- **Not a solver change.** `pendant_graph_bound` is not called by
+  `_lower_bound`, and on this record it would change 5 starting points by one
+  stack.

@@ -472,7 +472,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Size range.** As stated per claim.
   - **Does not claim.** Beyond what the items proved or measured.
 
-- [ ] **13 Reserve.** The best remaining gap from items 01–12, one session:
+- [x] **13 Reserve.** The best remaining gap from items 01–12, one session:
   a killed item's cheapest surviving variant, a Lean statement left as a
   named `Prop`, or the ridge-side cell the data lacked. Say in PROGRESS.md
   why this one.

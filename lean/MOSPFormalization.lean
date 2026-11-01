@@ -25,6 +25,7 @@ import MOSPFormalization.CliqueCoverMoment
 import MOSPFormalization.IndependenceBound
 import MOSPFormalization.TreeBound
 import MOSPFormalization.ForestCover
+import MOSPFormalization.PendantCliques
 import MOSPFormalization.Grid
 import MOSPFormalization.Hypercube.Order
 import MOSPFormalization.Hypercube.Harper

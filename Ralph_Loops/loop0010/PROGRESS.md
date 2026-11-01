@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 12/13 SOLVED
+Current: 13/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -1083,3 +1083,96 @@ at `n ≤ 25`); Lemma P on the 338 bound-gap instances through
 `learning/bound_harness.py` (a bound item, outside the loop's questions);
 Lean for Lemma P and F2 (§6.5 L5–L6). For the owner: §15 of the report is
 the `CLAUDE.md` paragraph, drafted and not applied.
+
+---
+
+## Iteration 13 — 2026-11-01 08:24
+
+Item 13, the reserve: Lemma P in Lean, and what it is worth on the record.
+
+### Completed
+
+- **Why this one.** Of §14's eight open gaps, the first two (a
+  cluster-representative first moment; the ridge as a first-passage problem)
+  have no bounded deliverable in one session, and (5)–(8) are a tail bound, a
+  citation hunt, an unanalysed mechanism and a run needing the owner's word.
+  (3) and (4) are one object seen twice: Lemma P, the two-sided pendant bound
+  (§6.1), is the next Lean target §6.5 names (L5), was checked by brute force
+  in item 06 before it was stated, and §14 (3) asks what it is worth on the
+  338 bound-gap instances, a free scoring run. It is also the one pathwidth
+  argument on the table that is not degree-based. F2's upper half (L6) was
+  priced at the rest of the session and left on paper.
+- **Checked before stated**: `reports/scratch/pendant_cliques/check.py`,
+  the statement in exactly the Lean form (every clique as `R`, every pendant
+  choice) on 1,905 random graphs at 2–8 vertices with exact pathwidth: **0
+  violations**, tight on 1,474, above the clique floor on 15; F2's formula
+  exact on 72 depth-one graphs (`check.log`).
+- **`lean/MOSPFormalization/PendantCliques.lean`** (247 lines, imported by
+  the root; no `sorry`, no `axiom`; `propext`, `Classical.choice`,
+  `Quot.sound` only): `PathDecomposition.pendant_bound` (one decomposition),
+  **`pathwidth_ge_of_pendant_cliques`** (L5: `1 ≤ q`, `R` a clique, `Q : Fin q
+  → Finset V` cliques with `t ≤ |Q i|`, `v` injective, `Q i ∩ R = {v i}` ⊢
+  `t + (q + 1) / 2 ≤ pathwidth G + 2`), `pathwidth_ge_of_clique_pendant_cliques`
+  (the depth-one case `t = q = |R|`, the lower half of item 03's
+  `CT(s, 1, b) = ⌈3s/2⌉ − 2`), `MOSPInstance.mospValue_ge_of_pendant_patterns`
+  (`t + (q + 1) / 2 ≤ mospValue M + 1`). Proof as §6.2: Helly, the case
+  `b i = a`, the left/right split by `card_filter_add_card_filter_not`, the
+  nearest pendant on the fuller side by `exists_max_image` / `exists_min_image`,
+  `D.interval`, `omega`. Compiled at the second attempt (two renamed Mathlib
+  names); no other Lean file touched.
+- **Inventory and paper.** `learning/sandwich.py`: `PENDANT_PROVED` (4
+  names) in `ALL_PROVED`; `paper1/axiom_check.lean`: 4 lines (`make -C
+  paper1/latex axioms`: **266 theorems checked, 0 failures**); Appendix A
+  row `pendant`; Appendix E: Lemma "pendant cliques" after the blow-up
+  paragraph with its proof sketch, the depth-one value and the measured
+  worth (`make check`: **71 pages**, up from 70, no undefined references;
+  no reference added). `tests/test_pendant_cliques.py`, 6 tests (names
+  declared and sorry-free, Lemma P against the exact DP on 150 random
+  graphs, the graph evaluation valid and never below `ω − 1` and attaining
+  F2's family, the MOSP form by brute force over orders on 80 instances,
+  censoring reported and still valid).
+- **What it is worth** (`learning/forest_theorems.py::pendant_graph_bound`,
+  `pendant_candidate` for the harness; `reports/scratch/pendant_cliques/score.py`
+  through `learning.bound_harness.run_validity` on the corpus, reference
+  `max(lb_best, tw + 1)` as §14 (3) asked): **6,376 of 6,376 scored, 19 s
+  wall on 8 workers at nice 19 (load 0.3–1.8), 0.03 core-hours, 0
+  violations, tight on 2,809 (44.1%), above `ω − 1` on 554, above `lb_best`
+  on 5, above the reference on 5; on the 338 bound-gap instances above the
+  reference on 3, by one stack each** (Warwick 871 at 20 customers,
+  `p1540n9_0`, `p1550n8_0`), never on a Chu & Stuckey instance; 172
+  evaluations hit the clique caps (97 Chu & Stuckey), where the bound is
+  26–53 stacks short regardless. The maximal-clique evaluation attains the
+  exhaustive value on 1,901 of the 1,905 small graphs (`agreement.log`).
+  Nothing solved; `solutions/` not written; the ledger untouched.
+- **`reports/excess_phase_diagram.md` §16** (every table), §0.6 and §0.7
+  updated, §14 (3) struck and (4) narrowed to F2's upper half.
+- **Kill verdict: none on the item; for §14 (3), not met** — Lemma P beats
+  the reference on 3 gap instances by one stack: the idea is closed on this
+  record, as the branching family was in §38. No certified value is wrong,
+  no theorem is false, no published claim of ours drifts.
+- **Gate: PASS** (one run, 2026-11-01 08:36–08:46 at load 0.5–2): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,656 passed (2 skipped,
+  1 xfailed; +6 new), pathwidth_solver 123 passed, paper check ok (71 pages,
+  no undefined references). Log: `Ralph_Loops/loop0010/gate_it13.log`. The
+  first `make axioms` after the new file failed (`lean exited 1`) because
+  only the new module had been built and the root `.olean` was stale; a full
+  `lake build` (1 s) fixed it; nothing else failed.
+
+### Blockers
+
+None.
+
+### Next
+
+The loop is complete (13 of 13). What is left, in §14's order after this
+item: the cluster-representative first moment (the one route that could
+lift `β*`); the ridge as a first-passage problem on the subset lattice; F2's
+upper half and the per-layout vertex separation of the layer order in Lean;
+a sharper tail on the size sum; the two-type component results in a held
+paper. For the owner: §15 of the report is the `CLAUDE.md` paragraph,
+drafted and not applied, and it should now also say that Lemma P
+(`PendantCliques.lean`) is proved and worth 5 instances on the corpus; the
+two largest SCOOP instances still have no node count on record (§14 (8)), a
+re-certification that needs the owner's word.
+
+LOOP_COMPLETE

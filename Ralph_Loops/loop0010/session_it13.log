@@ -1,0 +1,139 @@
+# session it13 started 2026-11-01 08:23:58
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's open list (§14), and the current state of the repository, then pick the reserve item.
+  > $ uptime && git status --short | head -20 && cat Ralph_Loops/loop0010/iterations.md
+  > $ grep -n "^## \|^### " reports/excess_phase_diagram.md | sed -n '1,200p'
+  > $ sed -n '5920,5998p' reports/excess_phase_diagram.md && echo ==== && sed -n '3156,3410p' reports/excess_phase_diagram.md
+  > $ sed -n '3557,3600p' reports/excess_phase_diagram.md; echo ====PD; cat lean/MOSPFormalization/PathDecomposition.lean | head -150; echo ====PW; grep -n "def pathw
+  > $ cat lean/MOSPFormalization/Pathwidth.lean; echo ====HELLY; grep -n -B3 -A12 "theorem exists_bag_of_isClique" lean/MOSPFormalization/MOSPGraph.lean; echo ====LB;
+  > $ sed -n '100,130p' lean/MOSPFormalization/MOSPGraph.lean; echo ====REV; grep -rn "reverse" lean/MOSPFormalization/*.lean | head; echo ====ROOT; cat lean/MOSPForm
+  > $ sed -n '140,150p' learning/sandwich.py; grep -n "def forest_cover_check\|def print_axioms\|def main\|--stage\|argparse\|stage ==" learning/sandwich.py | head -3
+  > $ sed -n '283,400p' tests/test_sandwich.py; echo ====TEX; grep -n "coupling\|blowup\|forest\b\|layer\|indep" paper1/latex/sec9a_appendix_lean.tex | head -20; echo
+  > $ sed -n '1,25p' tests/test_sandwich.py; grep -n "^def _tiny_instances\|^def _exact_pw\|^def _brute_mosp" -A12 tests/test_sandwich.py | head -60; echo ====PAPER; 
+  > $ mkdir -p reports/scratch/pendant_cliques && cat > reports/scratch/pendant_cliques/check.py <<'EOF'
+"""Brute-force check of Lemma P exactly as `PendantCliques.le
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; grep -n "theorem card_union_of_disjoint\|theorem card_union_add_card_inter\|theorem filter_card_a
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "card_union_of_disjoint\b" $M/Data/Finset/Card.lean | head -3; grep -rn "theorem filter_card_add_filter_neg_card_eq_c
+
+The brute-force check passed (1,905 random graphs, 0 violations; F2's formula exact on 72 family graphs). Now I'm writing the Lean file for Lemma P and compiling it.
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "filter_card_add_filter_neg_card_eq_card" $M/Data/Finset/Card.lean | head -2; grep -rn "theorem exists_min_image\|lem
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "filter_card_add_filter_neg_card_eq_card" $M --include=*.lean | head -3; grep -rn "exists_min_image" $M/Data/Finset/M
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "exists_min_image" $M/Data/Finset/*.lean | head -3; grep -rn "filter_neg_card\|card_filter_add_card_filter\|filter_ca
+  > $ M=.lake/packages/mathlib/Mathlib; sed -n '661,666p' $M/Data/Finset/Card.lean; sed -n '380,400p' $M/Data/Finset/Max.lean
+  > $ cat > MOSPFormalization/PendantCliques.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT license as described i
+  > $ python3 - <<'EOF'
+import re
+p='MOSPFormalization/PendantCliques.lean'
+s=open(p).read()
+s=s.replace("    push_neg at hex\n","    replace hex : ∀ i, b i ≠ a := fu
+  > $ cat > /tmp/ax_pendant.lean <<'EOF'
+import MOSPFormalization.PendantCliques
+#print axioms MOSPFormalization.pathwidth_ge_of_pendant_cliques
+#print axioms MOSPFor
+  > $ cd /home/al/dev/MOSP && sed -n '440,535p' learning/bound_harness.py; echo ====GAIN; sed -n '673,703p' learning/bound_harness.py; echo ====MAIN; sed -n '893,960p
+  > $ sed -n '535,586p' learning/bound_harness.py; echo ====CONJ; ls learning/data/conjecture/ 2>/dev/null | head; grep -n "def load_table\|def all_rows" learning/con
+  > $ grep -n "INVARIANTS_CSV\s*=" learning/conjecture.py; ls learning/data/conjecture/; ls learning/data/*.csv | head -30; head -1 learning/data/instances.csv | tr '
+  > $ ls -la learning/data/ensemble/conjecture_invariants.csv.gz 2>&1 | head -2; cat >> learning/forest_theorems.py <<'EOF'
+
+
+# --------------------------------------
+  > $ cat > reports/scratch/pendant_cliques/score.py <<'EOF'
+"""Lemma P scored on every certified corpus instance through `learning.bound_harness`
+(loop0010 item 13; 
+
+The scoring run finished already. I'll read its log, and meanwhile write the test module and the inventory updates, which don't depend on it.
+  > $ head -60 reports/scratch/pendant_cliques/score.log; wc -l reports/scratch/pendant_cliques/harness_values.csv
+  > $ python3 -c "
+import pandas as pd; f=pd.read_csv('reports/scratch/pendant_cliques/scored.csv'); print(f['source_file'].str.split('/').str[:3].astype(str).value_c
+  > $ python3 - <<'EOF'
+p='reports/scratch/pendant_cliques/score.py'
+s=open(p).read()
+s=s.replace('''    f["collection"] = f["source_file"].astype(str).str.split("/")
+  > $ cat > tests/test_pendant_cliques.py <<'EOF'
+"""Lemma P, the two-sided pendant bound (`lean/MOSPFormalization/PendantCliques.lean`,
+loop0010 item 13): the Lean s
+  > $ python3 - <<'EOF'
+p='learning/sandwich.py'
+s=open(p).read()
+old='''#: Every proved name the axiom check asks for.
+ALL_PROVED = PROVED + FOREST_COVER_PROVED'''
+n
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9a_appendix_lean.tex'
+s=open(p).read()
+anchor=r'''\leanentry{indep}{Lemma~\ref{lem:layer}, the independent-set bound $\pw\l
+
+Tests pass. Now I'm rebuilding the paper and running its checks, then the gate in the background while I write the report section.
+  > $ (nice -n 19 make -C paper1/latex > /tmp/paper_make.log 2>&1; echo "make exit $?"; tail -3 /tmp/paper_make.log | cut -c1-200; nice -n 19 make -C paper1/latex che
+  > $ nice -n 19 make -C paper1/latex axioms 2>&1 | grep -v "^make" | grep -i "fail\|error\|pendant\|missing\|not " | head -20; echo ====PYTEST; nice -n 19 python -m 
+  > $ cd /home/al/dev/MOSP/lean && nice -n 19 lake build 2>&1 | grep -v "^trace" | tail -2 && cd .. && nice -n 19 make -C paper1/latex axioms 2>&1 | grep -v "^make" |
+
+Everything passes: 266 theorems, 0 failures; the paper builds at 71 pages. Now I'll start the gate in the background and write the report section while it runs.
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it13.log 2>&1; echo "GATE EXIT $?" >> Ralph_Loops/loop0010/gate_it13.log)
+  > $ sed -n '201,235p' reports/excess_phase_diagram.md; grep -n "^## 12\|^## 13\|^## 14\|^## 15" reports/excess_phase_diagram.md; sed -n '5802,5812p' reports/excess_
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('reports/excess_phase_diagram.md'); s=p.read_text()
+
+# 0.6
+old='''`pathwidth_le_layerWidth_dist`. Pinned to th
+  > $ cat > reports/scratch/pendant_cliques/agreement.py <<'EOF'
+"""Does the maximal-clique evaluation (`pendant_graph_bound`) attain the exhaustive value of
+Lemma P 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('reports/excess_phase_diagram.md'); s=p.read_text()
+old='### 16.2 The Lean statements (`lean/MOSPFormalization
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The gate is running in the background; I'm arming a watcher for its exit line and, in parallel, drafting the PROGRESS.md entry so only the gate verdict needs filling in.
+  > $ until grep -q "GATE EXIT" Ralph_Loops/loop0010/gate_it13.log; do sleep 5; done; cat Ralph_Loops/loop0010/gate_it13.log | grep -v "^\s*$" | tail -15
+  > $ cat > /tmp/progress_it13.md <<'EOF'
+
+---
+
+## Iteration 13 — 2026-11-01 08:24
+
+Item 13, the reserve: Lemma P in Lean, and what it is worth on the record.
+
+### Co
+  > $ git status --short | grep -v "Ralph_Loops/loop0010/session_it13" ; du -sh reports/scratch/pendant_cliques/*
+  > $ python3 - <<'EOF'
+import pandas as pd
+for f in ("harness_values.csv","scored.csv"):
+    p=f"reports/scratch/pendant_cliques/{f}"; d=pd.read_csv(p)
+    d=d.drop(
+  > $ python3 - <<'EOF'
+p='reports/scratch/pendant_cliques/score.py'; s=open(p).read()
+old='    f.to_csv(HERE / "scored.csv", index=False)'
+new='''    keep = ["instan
+  > $ cat Ralph_Loops/loop0010/gate_it13.log | grep -v "^\s*$" | tail -8; date
+
+The gate's Python output is block-buffered to its log, so nothing shows until it exits; the background waiter will report the verdict. I'll poll it in the foreground with a bounded loop.
+  > $ for i in $(seq 1 100); do if grep -q "GATE EXIT" Ralph_Loops/loop0010/gate_it13.log; then break; fi; sleep 6; done; grep -v "^\s*$" Ralph_Loops/loop0010/gate_it
+  > $ cat >> /tmp/progress_it13.md <<'EOF'
+- **Gate: PASS** (one run, 2026-11-01 08:36–08:46 at load 0.5–2): lake build
+  ok, every file imported, sorry 0, MOSP pytes
+  > $ sed -i 's/  worth (`make check`: \*\*71 pages\*\*, up from 70, no undefined references;\n  `check_refs` unchanged)/X/' Ralph_Loops/loop0010/PROGRESS.md && pytho
+
+Item 13 is done, the loop is complete (13 of 13), and the gate passed.
+
+**What I chose and why.** The reserve went to Lemma P, the two-sided pendant bound of §6. It was the next Lean target the report named (§6.5 L5), it had been brute-force checked before being stated, and §14 asked separately what it is worth on the bound-gap instances. That made it one object answering two open items in one session, with no solving.
+
+**What was done.**
+- `lean/MOSPFormalization/PendantCliques.lean` proves Lemma P for every graph, with no `sorry` and standard axioms only. A clique with q cliques of size at least t pendant at distinct vertices forces pathwidth at least t + ⌈q/2⌉ − 2. The file also has the one-decomposition form, the depth-one case behind item 03's clique-tree value, and the MOSP form on patterns.
+- Before stating it, the exact Lean form was checked on 1,905 random graphs with zero violations. The maximal-clique evaluation then scored every certified corpus instance through the bound harness in 19 seconds.
+- The paper gained a lemma in Appendix E and a row in Appendix A. The axiom check covers 266 theorems with 0 failures. Six new tests pass.
+
+**The finding.** Lemma P is worth little on the record. It is above the clique floor on 554 of 6,376 instances but above the solver's bound on only 5, and above the reference on 3 of the 338 bound-gap instances, by one stack each. The bound idea is closed on this corpus, as the branching family was.
+
+**Bookkeeping.** PROGRESS.md carries the iteration entry, the 13/13 line and `LOOP_COMPLETE`; iterations.md marks item 13 done. Nothing was committed, nothing solved, and `solutions/` was not written. The gate log is `Ralph_Loops/loop0010/gate_it13.log`.
+
+**Left open.** F2's upper half stays on paper. Section 15 of the report, the draft `CLAUDE.md` paragraph, is for the owner to apply and should now mention Lemma P.
+
+# result: success in 1396s, 49 turns, cost $11.02

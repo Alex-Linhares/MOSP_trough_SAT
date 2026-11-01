@@ -1,0 +1,59 @@
+rows scored: 6376 of 6376 corpus rows; 0 s wall; 0.03 core-hours; censored evaluations: 172
+violations (pendant > optimum): 0
+tight (pendant == optimum): 2809 (44.1%)
+above the clique floor ω: 554; above lb_best: 5; above max(lb_best, tw + 1): 5
+
+the 338 bound-gap instances (optimum − lb_best ≥ 2): above ω 89, above lb_best 3, above the reference 3, tight 0; max gain over the reference 1
+
+by collection, all corpus rows
+                                     instances  tight  above_omega  above_lb  above_ref  mean_gap  mean_pendant_gap  censored  median_s  max_s
+collection                                                                                                                                    
+Harvey                                    2130    690          381         1          1  0.280751          3.077465        61    0.0000  0.555
+MOSP_Instances/Challenge                    46     14            5         0          0  0.913043          4.586957         1    0.0010  0.025
+MOSP_Instances/Chu_Stuckey                 200      0           77         0          0  5.425000         26.320000        97    0.0385  3.885
+MOSP_Instances/Faggioli_Bentivoglio        300     68           44         3          3  1.023333          3.246667         0    0.0000  0.002
+MOSP_Instances/SCOOP                        24      5            1         1          1  1.041667          1.250000         0    0.0000  0.001
+Miller                                       1      0            1         0          0  0.000000          7.000000         0    0.0000  0.000
+Shaw                                        25      0            4         0          0  0.440000          4.960000         0    0.0010  0.002
+Simonis                                   3630   2018           41         0          0  0.177961          1.340771        12    0.0000  0.635
+Wilson                                      20     14            0         0          0  1.550000          4.000000         1    0.0010  0.025
+
+by size band, all corpus rows
+            instances  tight  above_omega  above_lb  above_ref   mean_gap  mean_pendant_gap  censored  median_s  max_s
+band                                                                                                                  
+(0, 20]          4122   2253          160         2          2   0.126638          1.069141         0     0.000  0.011
+(20, 30]         1816    471          296         0          0   0.450441          4.097467        61     0.001  0.555
+(30, 40]          197     56           26         2          2   0.817259          5.274112        24     0.000  0.672
+(40, 50]          120     21           28         1          1   1.658333          8.975000        30     0.001  3.885
+(50, 75]           31      0           15         0          0   4.322581         26.612903        15     0.013  2.540
+(75, 100]          63      8           18         0          0   8.777778         30.047619        27     0.013  1.819
+(100, 200]         27      0           11         0          0  13.259259         52.962963        15     0.131  1.692
+
+by collection, bound-gap instances
+                                     instances  tight  above_omega  above_lb  above_ref   mean_gap  mean_pendant_gap  censored  median_s  max_s
+collection                                                                                                                                     
+Harvey                                      71      0           36         1          1   2.028169          6.000000         1    0.0000  0.137
+MOSP_Instances/Challenge                     3      0            0         0          0  10.000000         25.000000         1    0.0050  0.025
+MOSP_Instances/Chu_Stuckey                 102      0           34         0          0  10.196078         31.921569        37    0.0075  1.692
+MOSP_Instances/Faggioli_Bentivoglio         83      0           18         2          2   2.590361          5.240964         0    0.0000  0.001
+MOSP_Instances/SCOOP                         3      0            0         0          0   3.333333          3.666667         0    0.0010  0.001
+Simonis                                     73      0            1         0          0   2.013699          5.301370         1    0.0010  0.152
+Wilson                                       3      0            0         0          0  10.000000         25.000000         1    0.0050  0.025
+
+bound-gap instances where Lemma P gains most over the reference
+                                     instance_name  n_customers  optimum  lb_best  tw1  reference  pendant  omega  pendant_cliques
+Warwick 871: balanced orders, 4 orders per product         20.0        6      4.0    4        4.0        5      4               13
+                                         p1540n9_0         40.0        7      5.0    5        5.0        6      5               16
+                                         p1550n8_0         50.0        8      6.0    6        6.0        7      6               16
+                                         p1540n5_0         40.0        8      6.0    6        6.0        6      6               21
+                                        p1540n10_0         40.0        8      6.0    6        6.0        6      6               18
+          HS problem 1121 size 30 10 density  0.20         30.0       13     11.0   11       11.0       11     11               19
+                                         p1540n3_0         40.0        7      5.0    5        5.0        5      5               20
+                                         p2050n1_0         50.0        7      5.0    5        5.0        5      5               23
+                                         p2050n7_0         50.0        8      6.0    6        6.0        6      6               23
+                                         p2050n4_0         50.0        8      6.0    6        6.0        6      6               20
+                                         p2050n3_0         50.0        8      6.0    6        6.0        6      6               22
+                                        p1550n10_0         50.0        8      6.0    6        6.0        6      6               16
+                                         p1540n1_0         40.0        8      6.0    6        6.0        6      6               20
+          HS problem 1131 size 30 10 density  0.20         30.0        9      7.0    7        7.0        7      7               13
+                               scoop-A_FA+AA-_13_0        134.0       17     11.0   11       11.0       11     11               55

@@ -436,3 +436,82 @@ def run(workers: int | None = None, out_dir: Path = OUT_DIR, record_dir: Path = 
     text = "\n".join(lines)
     (out_dir / "forest_check.log").write_text(text + "\n")
     return text
+
+
+# ----------------------------------------------------------------------------
+# Lemma P on a graph (loop0010 item 13): the evaluation `PendantCliques.lean` licenses
+# ----------------------------------------------------------------------------
+
+def pendant_graph_bound(graph, max_r: int = 500, max_q: int = 5000, max_cliques: int = 50000,
+                        deadline: float | None = None) -> tuple[int, dict]:
+    """Lemma P evaluated on a graph: `R` over the largest maximal cliques (at most
+    `max_r`), the pendant cliques over the largest maximal cliques `Q'` (at most
+    `max_q`), each cut down to `Q' \\ (R \\ {v})` for every `v ∈ Q' ∩ R` — the largest
+    sub-clique of `Q'` meeting `R` exactly in `v` — the largest such per `v`, sorted;
+    the best `t_q + ceil(q / 2) - 2` over the `q` largest. Returns the bound in
+    **pathwidth units** (`optimum - 1`), floored at `ω - 1`, with a dict saying
+    whether any cap was hit (`censored`: the evaluation is then over a subset of the
+    cliques, still a valid bound by `pathwidth_ge_of_pendant_cliques`). No part of
+    this is used by the solver."""
+    import itertools
+    import time
+
+    import networkx as nx
+
+    nodes = list(graph.nodes())
+    index = {v: i for i, v in enumerate(nodes)}
+    cliques: list[int] = []
+    censored = False
+    for clique in itertools.islice(nx.find_cliques(graph), max_cliques + 1):
+        if len(cliques) >= max_cliques:
+            censored = True
+            break
+        mask = 0
+        for v in clique:
+            mask |= 1 << index[v]
+        cliques.append(mask)
+        if deadline is not None and time.monotonic() > deadline:
+            censored = True
+            break
+    cliques.sort(key=lambda m: -bin(m).count("1"))
+    sizes = {m: bin(m).count("1") for m in cliques}
+    omega = max(sizes.values(), default=1)
+    best = omega - 1
+    rs = cliques[:max_r]
+    qs = cliques[:max_q]
+    censored = censored or len(rs) < len(cliques) or len(qs) < len(cliques)
+    for R in rs:
+        per_vertex: dict[int, int] = {}
+        for Q in qs:
+            meet = Q & R
+            if meet == 0 or Q == R:
+                continue
+            size = sizes[Q] - bin(meet).count("1") + 1
+            if size < 2:
+                continue
+            while meet:
+                low = meet & -meet
+                if per_vertex.get(low, 0) < size:
+                    per_vertex[low] = size
+                meet ^= low
+        if not per_vertex:
+            continue
+        ordered = sorted(per_vertex.values(), reverse=True)
+        for q, t in enumerate(ordered, start=1):
+            val = t + (q + 1) // 2 - 2
+            if val > best:
+                best = val
+        if deadline is not None and time.monotonic() > deadline:
+            censored = True
+            break
+    return best, {"censored": censored, "cliques": len(cliques), "omega": omega}
+
+
+def pendant_candidate(graph, matrix, budget):
+    """`learning.bound_harness` candidate: Lemma P in optimum units (`pathwidth + 1`)."""
+    import time
+
+    value, info = pendant_graph_bound(graph, deadline=time.monotonic() + budget.seconds)
+    if info["censored"]:
+        budget.exhausted = True
+    return value + 1, {"censored_eval": info["censored"], "cliques": info["cliques"]}

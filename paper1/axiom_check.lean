@@ -332,3 +332,8 @@ open MOSPFormalization MOSPFormalization.Complex
 -- loop0010 item 12: the two bounds Appendix E's excess subsection cites beside the forest regime
 #print axioms MOSPFormalization.tree_pathwidth_le_treeBound
 #print axioms MOSPFormalization.pathwidth_le_card_sub_indepNum
+-- loop0010 item 13: Lemma P, the two-sided pendant bound (PendantCliques.lean)
+#print axioms MOSPFormalization.pathwidth_ge_of_pendant_cliques
+#print axioms MOSPFormalization.pathwidth_ge_of_clique_pendant_cliques
+#print axioms MOSPFormalization.MOSPInstance.mospValue_ge_of_pendant_patterns
+#print axioms MOSPFormalization.PathDecomposition.pendant_bound

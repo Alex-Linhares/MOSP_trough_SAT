@@ -58,3 +58,8 @@
 [2026-11-01 07:49:27] claude session it12 (cap 4.00 h) -> session_it12.log
 [2026-11-01 08:13:26] session it12: ok (exit 0, 97 tool calls)
 [2026-11-01 08:23:57] tests passed: GATE PASS
+[2026-11-01 08:23:58] committed 92ebc5019: 12 The write-up: the phase diagram and the paper's paragraphs.
+[2026-11-01 08:23:58] === iteration 13: 13 Reserve. The best remaining gap from items 01–12, one session:
+[2026-11-01 08:23:58] claude session it13 (cap 4.00 h) -> session_it13.log
+[2026-11-01 08:47:15] session it13: ok (exit 0, 48 tool calls)
+[2026-11-01 08:57:46] tests passed: GATE PASS
