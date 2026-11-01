@@ -1,0 +1,89 @@
+# session it06 started 2026-11-01 03:10:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, item 03's section of the report, the Lean headers, and item 03's code, then write the forest check, then the §6 proofs.
+  > $ uptime && cat reports/excess_phase_plan.md | head -200 && wc -l reports/excess_phase_plan.md reports/excess_phase_diagram.md
+  > $ sed -n 200,255p reports/excess_phase_plan.md && grep -n '^## \|^### ' reports/excess_phase_diagram.md
+  > $ sed -n 1282,1530p reports/excess_phase_diagram.md
+  > $ ls reports/scratch/forest_regime/ && head -3 reports/scratch/forest_regime/ct_values.csv reports/scratch/forest_regime/ct_ext_values.csv reports/scratch/forest_
+  > $ sed -n 1,140p learning/block_trees.py && grep -n '^def \|^class ' learning/block_trees.py
+  > $ sed -n 1,80p lean/MOSPFormalization/TreeBound.lean && grep -n '^theorem\|^lemma\|^def\|^noncomputable def' lean/MOSPFormalization/TreeBound.lean
+  > $ grep -n 'branch_lemma\|theorem branch\|separator' lean/MOSPFormalization/Sandwich.lean | head -30
+  > $ sed -n 1,120p reports/random_graph_first_moment.md
+  > $ grep -n 'stage\|^def \|argparse\|add_argument' learning/excess.py | head -80 && wc -l learning/excess.py learning/excess_constructions.py
+  > $ grep -n -i 'molloy\|configuration model\|giant' reports/ml_nature.md | head -30; ls literature/ | grep -i 'molloy\|reed\|janson\|bollob\|configuration\|frieze\|
+  > $ grep -n -A 30 '\*\*11 Lean' Ralph_Loops/loop0010/iterations.md | head -60; cat Ralph_Loops/loop0010/gate.py | head -60
+  > $ sed -n 60,90p lean/MOSPFormalization/Sandwich.lean && sed -n 740,800p lean/MOSPFormalization/Sandwich.lean
+  > $ sed -n 9600,9660p reports/ml_nature.md && sed -n 9690,9720p reports/ml_nature.md
+  > $ sed -n 234,340p learning/block_trees.py && sed -n 1001,1039p learning/excess.py && ls -la pathwidth_solver/cli/pathwidth && sed -n 1,60p reports/scratch/forest_
+  > $ grep -n '^## \|^### ' reports/random_graph_pathwidth_survey.md | head -40 && grep -n -i 'log log\|subcritical\|largest component\|O(log' reports/random_graph_pa
+  > $ sed -n 210,252p reports/random_graph_pathwidth_survey.md
+  > $ cat reports/scratch/forest_regime/score_record.py | head -80
+  > $ git status --short | head && ls tests/ | grep -i 'excess\|block\|chou' && grep -n 'def forest_regime_table' -A 26 learning/excess.py && head -2 learning/data/ex
+  > $ sed -n 140,235p learning/block_trees.py && cat reports/scratch/forest_regime/cross_check.py | head -50
+  > $ grep -n 'run_pathwidth\|import\|def test' tests/test_block_trees.py | head -30 && grep -n '^def ' fixed_parameter_algorithm/pathwidth.py | head && grep -n 'path
+  > $ grep -n 'theorem pathwidth_.*induce\|theorem pathwidth_mono\|theorem pathwidth_le_of\|theorem .*isSubgraph' lean/MOSPFormalization/*.lean | head -12; grep -n '^
+  > Write /home/al/dev/MOSP/learning/forest_theorems.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/forest_theorems.py"); s = p.read_text()
+s = s.replace('''        sl_txt = f"{sl[0]:.0f} / {sl[1]:.
+  > $ python3 -c "
+import sys; sys.path.insert(0,'.')
+from learning import forest_theorems as ft
+rec, summ = ft.check_record()
+print(rec[~rec.pwB_le_tb][['family','s'
+  > $ nice -n 19 python3 -m learning.excess --stage forest_check --workers 8 2>&1 | tail -60
+  > Write /home/al/dev/MOSP/tests/test_forest_theorems.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/forest_theorems.py"); s = p.read_text()
+s = s.replace('''def f2_grid_jobs(s_max: int = 6, t_max: i
+  > $ nice -n 19 python3 -m pytest tests/test_forest_theorems.py -q 2>&1 | tail -5
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+d = "reports/scratch/forest_check/"
+rec = pd.read_csv(d+"record_check.csv"); grid = pd.read_csv(d+"f2_grid.cs
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it06.log 2>&1; echo "GATE EXIT $?" >> Ralph_Loops/loop0010/gate_it06.log
+  > $ python3 - <<'EOF'
+import pandas as pd
+g = pd.read_csv("reports/scratch/forest_check/f2_grid.csv")
+print(g[(g.s==5)&(g.b==1)].pivot(index="t", columns="q", value
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 6. The forest regime, on paper (item 06, 2026-11-01)
+
+**Question.** A, second half: the theorem item 03's dat
+
+Section 6 is written and the item is marked. Now I'm correcting one sentence in the report (where the 62 instances sit), drafting the PROGRESS entry, and polling the gate that started at 03:23.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/excess_phase_diagram.md"); s = p.read_text()
+old = "floor on 343 and is exact where the clique floo
+  > $ ps -eo pid,ppid,etimes,pcpu,args | grep -E 'gate.py|lake|pytest|latexmk|pdflatex' | grep -v grep | head; wc -c Ralph_Loops/loop0010/gate_it06.log
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+s = s.replace("Current: 5/13 SOLVED", "Current: 6/13 
+  > $ pgrep -af 'python3 Ralph_Loops/loop0010/gate.py' | cut -c1-80; pgrep -af 'lake|pytest' | cut -c1-100 | head -5; for i in $(seq 1 17); do if grep -q 'GATE EXIT' 
+  > $ head -4 Ralph_Loops/loop0010/gate_it06.log && python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+s += ''
+  > $ grep -n 'import' Ralph_Loops/loop0010/gate.py | sed -n 1,12p
+
+Item 06 is complete. The gate's import check prints only on failure, so the `GATE PASS` line confirms it.
+
+**What this iteration did**
+
+- **Four statements proved on paper** in `reports/excess_phase_diagram.md` §6, every step a numbered lemma. F1, the blow-up bound, turned out to need no forest hypothesis: the proof is Helly plus the star property of a customer's nodes in the incidence graph, and it holds for every instance. The forest enters only through the tree bound, giving `MOSP ≤ ω (⌊log₃((6(n+m)+3)/5)⌋ + 1)`, with that integer identity proved as Lemma 5. Lemma P is the two-sided pendant bound for any graph. F2 closes depth one exactly: `max(s − 1, t + ⌈q/2⌉ − 2)`, with the multiplicity of pendants irrelevant, which explains why item 03's `CT(s, 1, b)` never depended on `b`. F3 gives the branch-lemma floor on `CT(s, h, 2)`; the truth sits between it and F1, nearer the floor. The random corollary is stated conditionally with its two hypotheses explicit and their citation status given: Perarnau and Serra 2014 held for the Erdős–Rényi analogue, Molloy and Reed 1995 not held and marked not verified.
+- **Brute force before any statement was called a theorem**, in `learning/forest_theorems.py` through `python -m learning.excess --stage forest_check`. Zero violations on item 03's full record, on 594 fresh depth-one graphs, and on 2,000 random small instances of which 1,799 are not forests. F2 equals the C program's value on all 639 cases it covers. The whole check runs in 4 seconds. Eight new tests repeat it through the exact subset DP, which shares no code with the C program.
+- **Kill verdict: not met.** No counterexample to F1; it stands strengthened. No certified value is wrong, no theorem is false, no published claim drifts.
+- **Gate: PASS** at load 1. Lake build ok, sorry 0, MOSP pytest 1,589 passed, pathwidth_solver 123 passed, paper check ok.
+
+**Bookkeeping done.** PROGRESS.md has the iteration 6 entry and reads `6/13 SOLVED`; item 06 is marked `[x]`; the Lean-ready statements for item 11 are listed in §6.5. New files are confined to the item's paths. Seven items remain, so no `LOOP_COMPLETE`.
+
+**One observation for later, outside this loop.** Lemma P is a pathwidth argument that is not degree-based and is exact beyond block graphs on 62 of the 2,000 small random instances where the clique floor is not. It is recorded as a bound candidate for the harness, not proposed for the solver.
+
+# result: success in 1427s, 39 turns, cost $8.05

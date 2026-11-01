@@ -2873,3 +2873,545 @@ Instances: 2024 accepted of 2043 rows; {'fixed': 1080, 'fitted': 944}; n = 100-5
 | fitted      | 5000 |  1   |   2 |      20 |          4.9   |
 | fitted      | 5000 |  1   |   3 |      20 |          4.01  |
 
+
+## 6. The forest regime, on paper (item 06, 2026-11-01)
+
+**Question.** A, second half: the theorem item 03's data supports. Item 03
+killed every additive candidate and found the blow-up bound
+`ω (pw(B) + 1) − 1` never violated and never exact; it asked item 06 to prove
+the blow-up bound, to cite Chou, Ko, Ho & Chen (2008) for exactness on block
+graphs, and, if a sharper statement was wanted, to prove the depth-one lower
+bound `⌈3ω/2⌉ − 2` by the bag argument.
+
+**What was done.** Four statements are proved below in the style of
+`reports/random_graph_first_moment.md` — every step a numbered lemma, every
+inequality named — and every one of them was checked by brute force *before*
+it was called anything (`learning/forest_theorems.py`,
+`python -m learning.excess --stage forest_check`, log and CSVs under
+`reports/scratch/forest_check/`): item 03's whole record (29 + 18 clique
+trees, 24 caterpillars of cliques, 900 random block trees, 3,448 forests on
+record), 594 fresh graphs of the depth-one family by the C program, and 2,000
+random small instances most of which are **not** forests, since the blow-up
+theorem turns out to need no forest hypothesis. **Zero violations in all; no
+statement is withdrawn.** `tests/test_forest_theorems.py` (8 tests) repeats
+the checks on tiny graphs through the exact subset DP of
+`fixed_parameter_algorithm.pathwidth`, which shares no code with the C
+program. Nothing went through the Python pathwidth solver; `solutions/` is
+untouched; no MOSP instance was solved.
+
+**Notation.** `M` an instance with customer set `C` (`|C| = n`) and pattern
+set `P` (`|P| = m`); `G_M` the MOSP graph on `C` (a clique per pattern); `B`
+the incidence graph on `C ⊔ P` (`c ∼ p` iff `M[c][p] = 1`), with `N_B(p) ⊆ C`
+the customers of `p` and `N_B(c) ⊆ P` the patterns of `c`; `ω = max_p |N_B(p)|`
+the largest pattern; `pw` pathwidth; `MOSP(M) = pw(G_M) + 1` whenever `M` has
+a requirement (`MOSPGraph.lean`). `tb(N)` is the least `k` with
+`N ≤ (5·3^k − 3)/2` (`TreeBound.lean`: `treeBound k = (5·3^k − 3)/2`), and
+`tb(N) = ⌊log₃((6N + 3)/5)⌋` for `N ≥ 1` (Lemma 5 below). A path decomposition
+is a sequence of bags `X_1, …, X_L` covering every vertex and every edge, each
+vertex's bags forming an interval; its width is `max |X_i| − 1`.
+
+**Size range.** The theorems are for every instance (F1, Lemma P), every
+instance with a forest incidence graph (F1′), every clique with pendant
+cliques (F2) and every `CT(s, h, 2)` (F3). The checks: clique trees
+`n = 4–936`, caterpillars `n = 4–201`, random block trees `n = 20–120`,
+forests on record `n = 10–75` (all from item 03); the fresh depth-one family
+`n = 2–133`, `ω = 2–7`; random instances `n = 6–12`, `m = 4–12`, `ω = 1–11`,
+`pw = 0–11`.
+
+**Regenerate** (4 s wall on 8 workers; the C program's solves take
+milliseconds each, 1,342 nodes at most):
+
+```
+nice -n 19 python3 -m learning.excess --stage forest_check --workers 8   # reports/scratch/forest_check/{forest_check.log,record_check.csv,f2_grid.csv,random_check.csv}
+python -m pytest tests/test_forest_theorems.py -q
+```
+
+### 6.1 Statements
+
+**Theorem F1 (blow-up).** For every instance `M` with at least one
+requirement,
+
+    pw(G_M) ≤ ω · (pw(B) + 1) − 1,      i.e.     MOSP(M) ≤ ω · (pw(B) + 1).
+
+*No hypothesis on `B`*: the item stated F1 for forest incidence graphs, and
+the proof never uses the forest property; the forest enters only in F1′.
+
+**Corollary F1′ (the forest form).** If `B` is a forest then
+`pw(B) ≤ tb(n + m)`, hence
+
+    MOSP(M) ≤ ω · (tb(n + m) + 1) = ω · (⌊log₃((6(n + m) + 3)/5)⌋ + 1),
+
+and, component by component, `MOSP(M) ≤ ω · (tb(N_max) + 1)` with `N_max` the
+largest number of vertices in a component of `B`.
+
+**Lemma P (the two-sided pendant bound).** Let `G` be any graph with a clique
+`R` and cliques `Q_1, …, Q_q` (`q ≥ 1`) such that `|Q_i| ≥ t` and
+`Q_i ∩ R = {v_i}` with `v_1, …, v_q` distinct. Then
+
+    pw(G) ≥ t + ⌈q/2⌉ − 2.
+
+In MOSP terms: a pattern `R` and `q` patterns meeting `R` in one customer
+each, at distinct customers, force `MOSP ≥ t + ⌈q/2⌉ − 1`.
+
+**Theorem F2 (depth one, exact).** Let `G` be `K_s` with, at `q` of its
+vertices (`1 ≤ q ≤ s`), one or more pendant copies of `K_t` (each sharing
+exactly its attachment vertex with `K_s`, pairwise sharing nothing else).
+Then
+
+    pw(G) = max(s − 1, t + ⌈q/2⌉ − 2).
+
+In particular `CT(s, 1, b) = ⌈3s/2⌉ − 2` for every `b ≥ 1` (`t = q = s`), item
+03's measured value, and the number of pendants per vertex is irrelevant.
+
+**Proposition F3 (the branch lemma on `CT(s, h, 2)`).** For `s ≥ 3`:
+`pw(CT(s, h, 2)) ≥ ⌈3s/2⌉ − 2` for `h ≥ 1`, and
+`pw(CT(s, h, 2)) ≥ s + ⌈(s − 1)/2⌉ + h − 3` for `h ≥ 2`. The truth lies between
+this floor and F1; the table in 6.3 gives both beside the exact value.
+
+**Corollary R (the random model, conditional).** Let `(M_n)` be random
+instances and suppose that, with probability `1 − o(1)`, (H1) every component
+of `B` is a tree, and (H2) the largest component of `B` has at most `L(n)`
+vertices. Then with probability `1 − o(1)`
+
+    MOSP(M_n) ≤ ω_n · (tb(L(n)) + 1) = ω_n · (⌊log₃((6 L(n) + 3)/5)⌋ + 1),
+
+with `ω_n` the largest pattern of `M_n`. If (H1) is weakened to "every
+component has at most `γ₀` independent cycles", the bound becomes
+`ω_n (tb(L(n)) + γ₀ + 1)`. With `L(n) = O(log n)` this is
+`MOSP(M_n) ≤ ω_n (log₃ log n + O(1))`. *Citation status for the hypotheses
+below `e_g(r)`*: see 6.2, after the proof.
+
+### 6.2 Proofs
+
+**Lemma 1 (Helly for cliques).** In every path decomposition of `G`, every
+clique `K` of `G` lies inside some bag. *Reference.* Standard; proved in Lean as
+`PathDecomposition.exists_bag_of_isClique` (`MOSPGraph.lean`), the key
+graph-level by-product of the MOSP–pathwidth equality. *Proof sketch.* For
+each `u ∈ K` let `I_u` be its interval of bags; two vertices of `K` are
+adjacent, so `I_u ∩ I_w ≠ ∅` for all `u, w ∈ K`; intervals of a line with
+pairwise non-empty intersections have a common point (the largest left end is
+at most the smallest right end). ∎
+
+**Lemma 2 (unions of intervals through a common one).** If `I` is a non-empty
+interval of integers and `J_1, …, J_r` are intervals each meeting `I`, then
+`I ∪ J_1 ∪ … ∪ J_r` is an interval. *Proof.* By induction on `r`: `I ∪ J_1` is
+an interval (two intervals with a common point), and `J_2` meets `I ⊆ I ∪ J_1`,
+so `(I ∪ J_1) ∪ J_2` is an interval, and so on. ∎
+
+**Lemma 3 (the blow-up decomposition).** Let `X_1, …, X_L` be a path
+decomposition of `B`. For each `i` put
+
+    Y_i = (X_i ∩ C) ∪ ⋃_{p ∈ X_i ∩ P} N_B(p).
+
+Then `Y_1, …, Y_L` is a path decomposition of `G_M`, and
+`|Y_i| ≤ |X_i ∩ C| + ω |X_i ∩ P| ≤ ω |X_i|` when `ω ≥ 1`.
+
+*Proof.* (Vertices.) A customer `c` lies in some `X_i`, hence in `Y_i`.
+(Edges.) An edge `cc'` of `G_M` lies in some pattern `p`, so `c, c' ∈ N_B(p)`;
+`p` lies in some `X_i`, so `c, c' ∈ Y_i`. (Intervals.) The set of indices `i`
+with `c ∈ Y_i` is
+
+    I_c ∪ ⋃_{p ∈ N_B(c)} I_p,
+
+where `I_c = {i : c ∈ X_i}` and `I_p = {i : p ∈ X_i}` are the intervals of `c`
+and `p` in the decomposition of `B`. `I_c` is non-empty, and for `p ∈ N_B(c)`
+the edge `cp` of `B` lies in some bag, so `I_p` meets `I_c`. By Lemma 2 the
+union is an interval. (Width.) `|Y_i| ≤ |X_i ∩ C| + Σ_{p ∈ X_i ∩ P} |N_B(p)| ≤
+|X_i ∩ C| + ω |X_i ∩ P| ≤ ω (|X_i ∩ C| + |X_i ∩ P|) = ω |X_i|`, the last step
+because `ω ≥ 1`. ∎
+
+*Proof of Theorem F1.* Take a decomposition of `B` of width `pw(B)`, so
+`|X_i| ≤ pw(B) + 1` for all `i`; `ω ≥ 1` since `M` has a requirement. By Lemma
+3, `G_M` has a decomposition of width `≤ ω (pw(B) + 1) − 1`. The MOSP form is
+`MOSP(M) = pw(G_M) + 1` (`MOSPGraph.lean`, both directions). ∎
+
+**Lemma 4 (components).** If `G` is the disjoint union of `G_1, …, G_κ` with no
+edges between them, `pw(G) = max_j pw(G_j)`. *Reference.* Lean,
+`pathwidth_induce_union_le_max` and `pathwidth_induce_le_of_forall_connected`
+(`TreeBound.lean`) for `≤`; `≥` is monotonicity under induced subgraphs,
+`pathwidth_induce_le` (`Minor.lean`). In MOSP terms this is the component
+decomposition of `mosp/preprocess.py`, which preserves the optimum. ∎
+
+**Lemma 5 (trees, and the two forms of the threshold).** A tree on
+`N ≤ treeBound k = (5·3^k − 3)/2` vertices has pathwidth `≤ k`
+(`tree_pathwidth_le_treeBound`, `TreeBound.lean`, sorry-free, sharp:
+`treeBound_sharp`). Hence a forest whose largest component has `N` vertices has
+pathwidth `≤ tb(N)` (Lemma 4), and `tb(N) ≤ tb(N')` for `N ≤ N'`. Moreover, for
+`N ≥ 1`, `tb(N) = ⌊log₃((6N + 3)/5)⌋`. *Proof of the identity.* `tb(N)` is the
+least `k` with `2N + 3 ≤ 5·3^k`. Let `k = tb(N) ≥ 1` (the case `k = 0`, `N = 1`,
+is direct: `(6 + 3)/5 < 3`). Then `5·3^{k−1} < 2N + 3 ≤ 5·3^k`; both `5·3^{k−1}`
+and `2N + 3` are odd, so `2N + 3 ≥ 5·3^{k−1} + 2`, and
+`6N + 3 = 3(2N + 3) − 6 ≥ 5·3^k`; also `6N + 3 ≤ 15·3^k − 6 < 5·3^{k+1}`. So
+`5·3^k ≤ 6N + 3 < 5·3^{k+1}`, i.e. `k = ⌊log₃((6N + 3)/5)⌋`. (Checked for every
+`N < 3000` in `tests/test_forest_theorems.py`, and on every row of the record.)
+∎
+
+*Proof of Corollary F1′.* `B` is a forest on `n + m` vertices, so
+`pw(B) ≤ tb(n + m)` by Lemma 5, and F1 gives the first form. For the second,
+apply F1 and Lemma 5 to each component of `M` (a component of `B` is a
+sub-instance; its MOSP graph is the corresponding component of `G_M`, and its
+largest pattern is at most `ω`), and take the maximum by Lemma 4. ∎
+
+*Proof of Lemma P.* Let `X_1, …, X_L` be a path decomposition of `G` of width
+`w`. By Lemma 1 choose `a` with `R ⊆ X_a` and `a_i` with `Q_i ⊆ X_{a_i}`.
+Note `q ≤ s := |R|`, the `v_i` being distinct vertices of `R`.
+
+*Case 1: `a_i = a` for some `i`.* Then `X_a ⊇ R ∪ Q_i`, and
+`|R ∪ Q_i| = s + |Q_i| − 1 ≥ s + t − 1 ≥ t + q − 1 ≥ t + ⌈q/2⌉ − 1`.
+
+*Case 2: `a_i ≠ a` for all `i`.* Let `Λ = {i : a_i < a}` and `Ρ = {i : a_i > a}`;
+one of them has at least `⌈q/2⌉` elements. Say it is `Λ` (the other case is
+the mirror image), `ℓ = |Λ| ≥ ⌈q/2⌉ ≥ 1`, and let `j ∈ Λ` maximise `a_j`. For
+`i ∈ Λ ∖ {j}`: `v_i ∈ Q_i ⊆ X_{a_i}` and `v_i ∈ R ⊆ X_a` with `a_i ≤ a_j < a`, so
+by the interval property `v_i ∈ X_{a_j}`; and `v_i ∉ Q_j`, because
+`Q_j ∩ R = {v_j}` and `v_i ≠ v_j`. Hence `X_{a_j} ⊇ Q_j ⊔ {v_i : i ∈ Λ ∖ {j}}` and
+`|X_{a_j}| ≥ t + ℓ − 1 ≥ t + ⌈q/2⌉ − 1`.
+
+In both cases some bag has at least `t + ⌈q/2⌉ − 1` vertices, so
+`w ≥ t + ⌈q/2⌉ − 2`. ∎
+
+*Proof of Theorem F2.* **Lower bound.** `pw ≥ s − 1` by the clique `K_s`
+(Lemma 1), and `pw ≥ t + ⌈q/2⌉ − 2` by Lemma P with `R = K_s` and one pendant
+`Q_i` per attachment vertex. **Upper bound.** Number the attachment vertices
+`v_1, …, v_q`, split them into a left set `v_1, …, v_⌊q/2⌋` and a right set
+`w_1, …, w_⌈q/2⌉`, and build the bags in this order:
+
+- for `k = 1, …, ⌊q/2⌋`, one bag `Q ∪ {v_1, …, v_{k−1}}` for each pendant `Q`
+  at `v_k` (so `v_k ∈ Q` and the bag has `t + k − 1` vertices);
+- the bag `K_s` (`s` vertices);
+- for `i = 1, …, ⌈q/2⌉`, one bag `Q ∪ {w_{i+1}, …, w_⌈q/2⌉}` for each pendant `Q`
+  at `w_i` (`t + ⌈q/2⌉ − i` vertices).
+
+Every edge of a pendant lies in its own bag, every edge of `K_s` in the middle
+bag. A pendant's private vertices occupy one bag. `v_k` occupies its own
+pendants' bags, then every bag of `v_{k+1}, …, v_⌊q/2⌋`, then the middle bag —
+consecutive; `w_i` the middle bag, then every bag of `w_1, …, w_{i−1}`, then its
+own — consecutive; a vertex of `K_s` without pendants occupies the middle bag
+only. The largest bag has `max(s, t + ⌈q/2⌉ − 1)` vertices (the left maximum
+is `t + ⌊q/2⌋ − 1`), so `pw ≤ max(s − 1, t + ⌈q/2⌉ − 2)`. ∎
+
+**Lemma 6 (the branch lemma).** If a graph has a vertex `v` and three pairwise
+disjoint connected vertex sets not containing `v`, each adjacent to `v` and
+each of pathwidth `≥ k`, then its pathwidth is `≥ k + 1`. *Reference.* Fellows
+& Langston 1987, Lemma 4.3; Kinnersley 1992, Corollary 4.2; Lean
+`branch_lemma` (`Sandwich.lean`, sorry-free, after the correction of
+2026-09-28 that added connectivity and attachment). ∎
+
+**Lemma 7 (monotonicity).** An induced subgraph has pathwidth at most that of
+the graph. *Reference.* Lean `pathwidth_induce_le` (`Minor.lean`). ∎
+
+*Proof of Proposition F3.* The first bound is Lemma P at the root: in
+`CT(s, h, b)` with `h ≥ 1`, each of the `s` root vertices is the hub of a block
+`K_s` meeting the root clique in that vertex only, so `R = K_s`, `q = s`,
+`t = s` give `pw ≥ s + ⌈s/2⌉ − 2 = ⌈3s/2⌉ − 2`.
+
+For the second, define the family `D(s, h)` recursively: `D(s, 0) = K_{s−1}`;
+`D(s, h)` is `K_{s−1}` on `u_1, …, u_{s−1}` where each `u_i` is joined to two
+disjoint copies of `D(s, h − 1)` by making `u_i` together with the top
+`K_{s−1}` of the copy a block `K_s`. Then `CT(s, h, 2)` is the root `K_s` with,
+at each root vertex, two copies of `D(s, h − 1)` attached the same way: this
+is `clique_tree(s, h, 2)` read level by level (depth-`d` customers are hubs of
+two blocks whose other `s − 1` customers sit at depth `d + 1`). Each `D(s, h)`
+is connected (its top clique is non-empty and every copy is attached to it).
+
+(i) *`pw(D(s, h)) ≥ pw(D(s, h − 1)) + 1` for `s ≥ 3`, `h ≥ 1`.* Apply Lemma 6
+at `u_1` with `A`, `B` its two copies of `D(s, h − 1)` (connected, adjacent to
+`u_1`, disjoint, not containing `u_1`) and `D' = {u_2, …, u_{s−1}}` together with
+all their copies (connected since `s − 1 ≥ 2`, adjacent to `u_1` through `u_2`,
+disjoint from `A`, `B`); `D'` contains a copy of `D(s, h − 1)` as an induced
+subgraph, so `pw(D') ≥ pw(D(s, h − 1))` by Lemma 7.
+
+(ii) *`pw(CT(s, h, 2)) ≥ pw(D(s, h − 1)) + 1` for `s ≥ 2`, `h ≥ 1`.* The same at
+a root vertex `v`: its two copies of `D(s, h − 1)`, and the rest (the root
+clique minus `v` with all other copies; connected, adjacent to `v`, containing
+a copy of `D(s, h − 1)`).
+
+(iii) *Base.* `D(s, 1)` is `K_{s−1}` with two pendant `K_s` at each of its
+`s − 1` vertices, so by Theorem F2 (`q = s − 1`, `t = s`)
+`pw(D(s, 1)) = max(s − 2, s + ⌈(s − 1)/2⌉ − 2) = s + ⌈(s − 1)/2⌉ − 2`.
+
+From (i) and (iii), `pw(D(s, h)) ≥ s + ⌈(s − 1)/2⌉ − 3 + h` for `s ≥ 3`, `h ≥ 1`;
+from (ii), for `h ≥ 2`, `pw(CT(s, h, 2)) ≥ s + ⌈(s − 1)/2⌉ − 3 + (h − 1) + 1 =
+s + ⌈(s − 1)/2⌉ + h − 3`. ∎
+
+*Proof of Corollary R.* On the event of (H1) and (H2), every component of `B`
+is a tree on at most `L(n)` vertices, so Corollary F1′'s component form gives
+`MOSP(M_n) ≤ ω_n (tb(L(n)) + 1)`. For the weakened (H1), deleting one vertex per
+independent cycle of a component leaves a forest and raises the pathwidth by
+at most one per deleted vertex (`pathwidth_le_pathwidth_erase_add_one`,
+`TreeBound.lean`), so `pw(B) ≤ tb(L(n)) + γ₀`, and F1 applies. The asymptotic
+form is `tb(L) = log₃ L + O(1)` with `L = O(log n)`. ∎
+
+**Citation status of (H1) and (H2) below `e_g(r)`.** The line `e_g(r)` of
+item 01 is the branching-factor-one point of the random bipartite incidence
+graph (`r c (c − 1) = 1` for patterns of fixed size `c`, item 01; §36 (a) of
+`reports/ml_nature.md`). That a subcritical random graph with a given degree
+sequence (the configuration model) has all components of size `O(log n)`
+under bounded degrees is Molloy & Reed, *A critical point for random graphs
+with a given degree sequence*, Random Structures & Algorithms 6 (1995), Theorem
+1 (b) — **not held, not verified**: `literature/` has no copy, and the exact
+hypotheses (the maximum degree allowed, the `ω(n)` factor in their bound) are
+quoted here from memory only. The bipartite two-type form our generators need
+(one side of fixed degree, the other Poisson, before the generators' repairs)
+is not stated in any held paper. What *is* held: Perarnau & Serra,
+*On the tree-depth of random graphs*, Discrete Applied Mathematics 168 (2014)
+(arXiv copy, `literature/2014-Perarnau-Serra-Tree-Depth-Random-Graphs-DAM-arXiv.pdf`),
+Theorem 1.2 (1) on p. 2 and its proof on p. 6, which for `G(n, c/n)`, `c < 1`,
+uses exactly (H1)-weakened with `γ₀ = 1` ("trees and unicycles", Erdős–Rényi)
+and (H2) with `L(n) = Θ(log n)` (itself cited onward to a standard text) and
+obtains `td = O(log log n)` by the same two steps as ours — their Lemma 4.1 is
+our Lemma 5 with tree-depth in place of pathwidth. That is the Erdős–Rényi
+analogue, not our model. **So Corollary R is proved as a conditional
+statement, and its hypotheses are supported for `G(n, c/n)` by a held paper and
+for the incidence graphs of our generators by an unheld one.** Item 01 found
+that no corpus instance and no SCOOP instance lies below `e_g(r)`, and that
+the only instances there are 3,127 Bernoulli ensemble instances at
+`n ≤ 100`, 74–92% of them forests; on those, F1′ is the bound the corollary
+gives at finite `n`, and 6.3 reports its slack.
+
+**Two remarks on F1′'s strength.** (a) The trivial bound `MOSP ≤ N_comp`
+(every customer of a component open at once) competes with F1′ on a component
+of `N` vertices: F1′ wins only when `ω (tb(N) + 1) < N`, i.e. when the largest
+pattern is small against `N / log₃ N`; at `L(n) = C log n` that is
+`ω ≪ log n / log log n`. (b) F1 is a factor `ω` loose on a chain of cliques
+(`pw(G_M) = ω − 1`, `pw(B) ≥ 1`, F1 `≥ 2ω − 1`), and on every instance checked
+below its slack is at least 1; whether `pw(G_M) ≤ ω (pw(B) + 1) − 2` always
+holds is **not claimed** (it is true on all 7,004 instances checked).
+
+### 6.3 The brute-force check
+
+`reports/scratch/forest_check/forest_check.log`. A censored C-program value is
+an interval `[lower, upper]`: an upper bound such as F1 is consistent with it
+iff `lower ≤ F1`, a lower bound such as F3 iff `F3 ≤ upper`, and an exact
+claim such as F2 iff `lower ≤ F2 ≤ upper`; a censored `pw(B)` (three incidence
+trees of item 03's extension) leaves F1 unchecked on that row. `tb = log₃ form`
+is Lemma 5's identity on the row's `n + m`.
+
+**Item 03's record.**
+
+| family | rows | pw exact | pw(B) exact | F1 checked | F1 violations | F1 exact | F1 slack min / mean / max | F1′ violations | pw(B) ≤ tb violations | tb = log₃ form | F2 rows | F2 violations | F3 rows | F3 violations |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| clique tree (grid) | 29 | 29 | 29 | 29 | 0 | 0 | 2 / 7.4 / 17 | 0 | 0 | yes | 12 | 0 | 10 | 0 |
+| clique tree (extension) | 18 | 11 | 15 | 15 | 0 | 0 | 10 / 13.9 / 21 | 0 | 0 | yes | 9 | 0 | 4 | 0 |
+| caterpillar of cliques | 24 | 24 | 24 | 24 | 0 | 0 | 2 / 5.5 / 8 | 0 | 0 | yes | 24 | 0 | 0 | 0 |
+| random block tree | 900 | 898 | 900 | 900 | 0 | 0 | 5 / 17.2 / 36 | 0 | 0 | yes | 0 | 0 | 0 | 0 |
+| forest on record | 3,448 | 3,448 | 3,448 | 3,448 | 0 | 0 | 1 / 5.5 / 30 | 0 | 0 | yes | 0 | 0 | 0 | 0 |
+
+The F2 rows are `CT(s, 1, b)` (`t = q = s`) and every caterpillar of cliques
+(every clique of a caterpillar — the chain neighbours count as pendants for
+Lemma P, meeting it in one customer each — has `q = s` one-point neighbours of
+size `s`, so F2's two bounds coincide there too): F2 equals the C program's
+value on all 45. The F3 rows are the `b = 2` clique trees:
+
+| s | h | n | F3 (floor) | pw (C program) | status | F1 = ω (pw(B) + 1) − 1 | pw(B) | F1′ |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 1 | 6 | 1 | 1 | bound | 5 | 2 | 5 |
+| 2 | 2 | 14 | 1 | 2 | refutation | 5 | 2 | 7 |
+| 2 | 3 | 30 | 1 | 2 | refutation | 7 | 3 | 7 |
+| 3 | 1 | 15 | 3 | 3 | refutation | 8 | 2 | 11 |
+| 3 | 2 | 63 | 3 | 4 | refutation | 11 | 3 | 14 |
+| 3 | 3 | 255 | 4 | 5 | refutation | 14 | 4 | 17 |
+| 4 | 1 | 28 | 4 | 4 | refutation | 11 | 2 | 15 |
+| 4 | 2 | 172 | 5 | 6 | refutation | 15 | 3 | 23 |
+| 5 | 1 | 45 | 6 | 6 | refutation | 14 | 2 | 19 |
+| 5 | 2 | 365 | 6 | 8 | refutation | 19 | 3 | 29 |
+| 6 | 1 | 66 | 7 | 7 | refutation | 17 | 2 | 29 |
+| 6 | 2 | 666 | 8 | [9, 10] | upper | 23 | 3 | 41 |
+| 7 | 1 | 91 | 9 | 9 | refutation | 20 | 2 | 34 |
+| 8 | 1 | 120 | 10 | 10 | refutation | 23 | 2 | 39 |
+
+(`s = 2` rows are trees, outside F3's `s ≥ 3`; the floor shown there is the
+clique bound.) At `h = 1` the floor is exact (it is F2). At `h = 2` it misses
+by 1–2 and F1 is 2.4–2.8× the truth; at `(3, 3)` the floor is 4 against 5 and
+F1 is 14. The truth is between, and nearer the floor.
+
+**F2's family afresh**: 594 graphs `K_s` with `b` pendant `K_t` at `q`
+vertices, `s, t ∈ 2..7`, `q ∈ 0..s`, `b ∈ {1, 2, 3}`, `n ≤ 133`, all exact in
+milliseconds (1,342 nodes at most). **F2 = pw on 594 of 594**; Lemma P
+(computed over the instance's patterns, `pendant_lower_bound`) equals `pw` on
+594 of 594; F1 and F1′ hold on all. The grid for `t = s`, `b = 1` (rows `s`,
+columns `q`) and two slices showing that the formula is `max` of two terms:
+
+|   s |   0 |   1 |   2 |   3 |   4 |   5 |   6 |   7 |
+|----:|----:|----:|----:|----:|----:|----:|----:|----:|
+|   2 |   1 |   1 |   1 |     |     |     |     |     |
+|   3 |   2 |   2 |   2 |   3 |     |     |     |     |
+|   4 |   3 |   3 |   3 |   4 |   4 |     |     |     |
+|   5 |   4 |   4 |   4 |   5 |   5 |   6 |     |     |
+|   6 |   5 |   5 |   5 |   6 |   6 |   7 |   7 |     |
+|   7 |   6 |   6 |   6 |   7 |   7 |   8 |   8 |   9 |
+
+`s = 5`, `b = 1`, rows `t` (the pendant size), columns `q`:
+
+|   t |   0 |   1 |   2 |   3 |   4 |   5 |
+|----:|----:|----:|----:|----:|----:|----:|
+|   2 |   4 |   4 |   4 |   4 |   4 |   4 |
+|   3 |   4 |   4 |   4 |   4 |   4 |   4 |
+|   4 |   4 |   4 |   4 |   4 |   4 |   5 |
+|   5 |   4 |   4 |   4 |   5 |   5 |   6 |
+|   6 |   4 |   5 |   5 |   6 |   6 |   7 |
+|   7 |   4 |   6 |   6 |   7 |   7 |   8 |
+
+`t = 4`, `b = 3`, rows `s`, columns `q` (three pendants per vertex change
+nothing):
+
+|   s |   0 |   1 |   2 |   3 |   4 |   5 |   6 |   7 |
+|----:|----:|----:|----:|----:|----:|----:|----:|----:|
+|   2 |   1 |   3 |   3 |     |     |     |     |     |
+|   3 |   2 |   3 |   3 |   4 |     |     |     |     |
+|   4 |   3 |   3 |   3 |   4 |   4 |     |     |     |
+|   5 |   4 |   4 |   4 |   4 |   4 |   5 |     |     |
+|   6 |   5 |   5 |   5 |   5 |   5 |   5 |   5 |     |
+|   7 |   6 |   6 |   6 |   6 |   6 |   6 |   6 |   6 |
+
+**Random small instances, not forests**: 2,000 instances at `n ∈ {6, 8, 10,
+12}`, `m ∈ {4, 6, 8, 10, 12}`, Bernoulli entries at `p = 0.3` and `0.5` and
+patterns of fixed size 2 and 3, 25 per cell, seeds `606000 + 100·cell + i`
+(`random_check.csv`); 201 are forests, 1,799 are not; both pathwidths exact on
+all 2,000 (`pw` 0–11, `pw(B)` 1–10, `ω` 1–11).
+
+| generator | instances | forests | pw median / max | ω max | F1 slack min / median | Lemma P exact | clique floor `ω − 1` exact |
+|---|---|---|---|---|---|---|---|
+| Bernoulli 0.3 | 500 | 55 | 4 / 9 | 9 | 1 / 12 | 338 | 335 |
+| Bernoulli 0.5 | 500 | 4 | 6 / 11 | 11 | 2 / 32 | 172 | 172 |
+| fixed size 2 | 500 | 133 | 2 / 3 | 2 | 2 / 3 | 203 | 203 |
+| fixed size 3 | 500 | 9 | 4 / 6 | 3 | 3 / 10 | 122 | 63 |
+
+F1 holds on all 2,000 with no forest hypothesis (slack 1–109, median 10;
+on the 201 forests 1–10, median 3, and F1′ holds there with slack 2–12);
+Lemma P never exceeds `pw`, is exact on 835 of 2,000, lies above the clique
+floor on 343 and is exact where the clique floor is not on 62 — 59 of them
+among the fixed-size-3 instances, the sparse clique-tree-like ones, and 3
+among the Bernoulli 0.3 ones.
+
+### 6.4 Findings
+
+1. **The blow-up theorem is general.** F1 needs nothing of `B`: the proof is
+   Helly plus the star property of a customer's nodes in `B`, and it holds on
+   1,799 non-forest instances as it holds on the 4,410 block graphs. The forest
+   hypothesis buys only Lemma 5, `pw(B) ≤ tb(n + m)`, i.e. the logarithm. An
+   instance with a cyclic `B` of small pathwidth (few patterns, or patterns
+   nested like a caterpillar) gets the same bound.
+2. **F1 is a factor 2–5.5 loose everywhere it was measured** (ratio to the
+   truth: 2.3–5 on the grid, 1–5.5 on the forests on record, 2.1–5.5 on the
+   random block trees; F1′ 2.7–9), and never exact on 7,004 instances. On the
+   forests on record the slack is at least 1 and the median ratio 3. The
+   reason is in Lemma 3's width step: a bag of `B` of `pw(B) + 1` nodes is
+   charged `ω` per pattern node and the truth is `pw = ω − 1` on 99.8% of
+   those instances (item 03, finding 5).
+3. **Depth one is closed exactly**, with the pendant size and the clique size
+   separately: `max(s − 1, t + ⌈q/2⌉ − 2)`, the two mechanisms of item 03's
+   finding 3 in their simplest form — the clique floor, and half the pendants
+   forced through the clique's bag. The multiplicity of pendants per vertex is
+   irrelevant, which is why `CT(s, 1, b)` did not depend on `b`.
+4. **Lemma P is a pathwidth argument that is not degree-based**, and it is
+   exact beyond block graphs on a minority of small random instances (62 of
+   2,000 where the clique floor is not). The bound work of `reports/ml_nature.md`
+   §6 named "trees of cliques with branching" as the family where every
+   degree and clique bound fails; Lemma P is the first-level bound of that
+   family. Whether it moves any of the 338 bound-gap corpus instances is a
+   `learning/bound_harness.py` run that this item did not make (it is a bound
+   item, outside this loop's questions); it is recorded as a candidate, not
+   proposed for `_lower_bound`.
+5. **The truth on `CT(s, h, 2)` is between F3 and F1, and nearer F3.** The
+   branch lemma adds one per level once the depth-one floor is in place;
+   item 03 measured `(ω − 2)/2` per level. The difference is the clique
+   condition `BC_k` of Chou et al. (2008), Theorem 4 (p. 5 of the held copy),
+   which no bag argument of ours captures yet; the exact polynomial theory is
+   theirs and no closed form is conjectured here either.
+6. **The random corollary is conditional and its domain is empty on the
+   benchmarks.** Below `e_g(r)` there is no corpus or SCOOP instance (item
+   01); the statement is about the random model, with (H1)–(H2) cited as
+   above. Where F1′ applies at finite `n` (the 3,448 record forests) its slack
+   is 2–60 stacks, median about 11, against optima of 2–15: the regime's
+   practical content remains item 03's finding 5, `pw = ω − 1` almost always,
+   which is a measurement.
+
+### 6.5 Lean-ready statements for item 11
+
+In order of reach; each has been checked above. The item's plan already names
+(a) F1's blow-up lemma; the exact forms are:
+
+- **(L1) `incidence M : SimpleGraph (C ⊕ P)`** — `Adj (inl c) (inr p) ↔ M.requires c p`,
+  symmetric, no other edges. **(L2) `pathwidth_mospGraph_le_blowup`**:
+  `pathwidth M.mospGraph + 1 ≤ ω * (pathwidth (incidence M) + 1)` with
+  `ω = Finset.univ.sup (fun p => (M.customers p).card)` and the hypothesis
+  `1 ≤ ω` (equivalently `∃ c p, M.requires c p`); through
+  `exists_maxOpenStacks_eq_mospValue` / the equality of `MOSPGraph.lean` this
+  is `M.mospValue ≤ ω * (pathwidth (incidence M) + 1)`. Proof: Lemma 3 as a
+  `PathDecomposition` built from one of `incidence M` with bags
+  `(X i).preimage inl ∪ (X i).preimage inr).biUnion M.customers`; the interval
+  step is Lemma 2 on `Finset ℕ` intervals; Lemma 1 is not needed for this
+  direction.
+- **(L3) `forest_pathwidth_le_treeBoundInv`**: for an acyclic `T` on `N`
+  vertices, `pathwidth T ≤ tb N` where `tb N = Nat.find (N ≤ treeBound k)`
+  (`tree_pathwidth_le_treeBound` per component via
+  `pathwidth_induce_le_of_forall_connected` and `isTree_induce_of_connected`,
+  both in `TreeBound.lean`), and `tb N = Nat.log 3 ((6 N + 3) / 5)` for
+  `1 ≤ N` (Lemma 5, an integer identity).
+- **(L4) the forest corollary**: `(incidence M).IsAcyclic → 1 ≤ ω →
+  M.mospValue ≤ ω * (tb (Fintype.card C + Fintype.card P) + 1)`.
+- **(L5) Lemma P**, `pathwidth_ge_of_pendant_cliques`: `G.IsClique R`,
+  `Q : Fin q → Finset V` with `G.IsClique (Q i)`, `t ≤ (Q i).card`,
+  `Q i ∩ R = {v i}`, `v` injective, `1 ≤ q` ⊢ `t + ⌈q/2⌉ ≤ pathwidth G + 2`.
+  Proof as above from `exists_bag_of_isClique` and the interval property;
+  the case split on the bag index of `R`. **(L6) F2's upper bound** by an
+  explicit `PathDecomposition` (the three-part bag list) and the equality.
+- **F3 is not proposed for Lean**: it is a family definition plus an
+  induction through `branch_lemma`, of less value than L5.
+
+### 6.6 Kill verdict
+
+**Not met: the brute-force check found no counterexample to F1** (0 violations
+on 4,410 record instances with both pathwidths exact, 594 depth-one graphs
+and 2,000 random instances), and none to F1′, F2, F3 or Lemma P. F1 stands,
+strengthened: no forest hypothesis.
+
+### 6.7 What this does not claim
+
+- **Tightness of F1.** It is a factor `ω` loose on a chain of cliques and a
+  factor 2–5.5 loose on every family measured; that its slack is always at
+  least 1 is observed on 7,004 instances and not proved.
+- **An exact theorem on block graphs.** That is Chou, Ko, Ho & Chen (2008);
+  F2 is its depth-one case in closed form, F3 a floor for one family, and no
+  closed form for `CT(s, h, b)` is conjectured (item 03's `C2` stands as a
+  description of 33 values and is known not to extend).
+- **Anything about random instances above `e_g(r)`**, and nothing
+  unconditional below it: Corollary R's hypotheses are cited (one held paper
+  for the Erdős–Rényi analogue, one unheld for the configuration model) and
+  not proved here; the bipartite two-type statement our generators would
+  need is in no held paper.
+- **That F1′ is informative at the sizes we have.** On the record forests it
+  is 3–9× the optimum; the trivial bound by component size can beat it when
+  `ω` is large against `N / log₃ N`.
+- **A solver change.** Lemma P is recorded as a bound candidate for
+  `learning/bound_harness.py`, not proposed for `_lower_bound`; the 62
+  instances it closes are at `n ≤ 12`.
+- **Lean.** Nothing here is in Lean yet; 6.5 is the list for item 11, and the
+  `sorry` inventory is unchanged at zero.
+
+### 6.8 Tables, in full
+
+Beyond the tables above, the per-row results are the three CSVs under
+`reports/scratch/forest_check/`: `record_check.csv` (4,419 rows: item 03's
+record with `F1`, `F1_log`, `tb`, `log3_form`, `F2`, `F3`, the checks and the
+slack), `f2_grid.csv` (594 rows: `s, t, q, b, n, m, ω, pw, status, nodes,
+seconds, pw_B, F2, lemmaP, F1, F1_log` and the checks), `random_check.csv`
+(2,000 rows: `n, m, kind, param, seed, n_ones, ω, forest, pw, pw_B, F1,
+F1_log, lemmaP` and the checks). Slack of F1 and F1′ on the exact record rows:
+
+| family | rows | pw max | pw(B) max | ω max | F1 slack min / mean / max | F1′ slack mean / max |
+|---|---|---|---|---|---|---|
+| caterpillar of cliques | 24 | 6 | 2 | 5 | 2 / 5.5 / 8 | 10.3 / 23 |
+| clique tree (extension) | 11 | 11 | 3 | 8 | 10 / 13.9 / 21 | 24.6 / 30 |
+| clique tree (grid) | 29 | 8 | 5 | 5 | 2 / 7.4 / 17 | 9.9 / 21 |
+| forest on record | 3,448 | 14 | 3 | 15 | 1 / 5.5 / 30 | 10.9 / 60 |
+| random block tree | 898 | 11 | 3 | 12 | 5 / 17.2 / 36 | 24.9 / 48 |
+
+Censored rows of the record, not counted above: seven clique trees of item
+03's extension with `pw` an interval (`CT(3,3,3) ∈ [4, 5]`, `CT(4,4,1) ∈ [6, 7]`,
+`CT(5,3,1) ∈ [7, 9]`, `CT(5,2,3) ∈ [7, 8]`, `CT(6,3,1) ∈ [5, 13]`,
+`CT(6,2,2) ∈ [9, 10]`, `CT(8,2,1) ∈ [11, 13]`), each consistent with F1 and F3
+(`F1` 23–191, `F3 = 8` for `CT(6,2,2)`), three of them with `pw(B)` censored
+too (`CT(3,3,3)`, `CT(4,4,1)`, `CT(6,3,1)`); and the two random block trees at
+`n = 120` of item 03 §3.5 (`pw ∈ [6, 7]` and `[7, 8]`, F1 27 and 31).

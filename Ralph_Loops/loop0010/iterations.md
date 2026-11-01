@@ -218,7 +218,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
     only `n − α` and the edge-count bound are proved upper bounds, and only
     at the `n` where they were computed.
 
-- [ ] **06 The forest regime, on paper.**
+- [x] **06 The forest regime, on paper.**
   - **Question.** A, second half: the theorem item 03's data supports.
   - **Method.** State and prove, in `reports/excess_phase_diagram.md` §6
     in the style of `reports/random_graph_first_moment.md` (every step a

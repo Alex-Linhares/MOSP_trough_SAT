@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 5/13 SOLVED
+Current: 6/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -426,3 +426,89 @@ generator's rejection is a finite-size object at `d ≤ 3` (finding 6), which
 the validity statement should say. For item 12: the rule's linear width on
 the many-component sparse cell against the BFS layout's sublinear one is a
 one-sentence caveat on the rule as a bound.
+
+---
+
+## Iteration 6 — 2026-11-01 03:12
+
+Item 06, the forest regime, on paper.
+
+### Completed
+
+- **`learning/forest_theorems.py`** (`python -m learning.excess --stage
+  forest_check`): the four statements of §6 as functions (`f1_bound`,
+  `f1_log_bound`, `log3_form`, `f2_value`, `clique_with_pendants`,
+  `pendant_lower_bound`, `branch_lower_bound_ct`) and three brute-force
+  checks — item 03's whole record (4,419 rows, read from its CSVs), 594
+  fresh graphs of the depth-one family `K_s` with `b` pendant `K_t` at `q`
+  vertices (`s, t ≤ 7`, `q ≤ s`, `b ≤ 3`, `n ≤ 133`) and 2,000 random small
+  instances (`n = 6–12`, `m = 4–12`, two generators; 1,799 of them **not**
+  forests) solved exactly by the C program, layouts re-checked. 4 s wall on
+  8 workers, milliseconds per solve, no MOSP instance solved, `solutions/`
+  untouched. Log and three CSVs under `reports/scratch/forest_check/`.
+  `tests/test_forest_theorems.py`, 8 tests, repeat the checks on tiny graphs
+  through the exact subset DP (no code shared with the C program).
+- **`reports/excess_phase_diagram.md` §6**: statements, proofs in numbered
+  lemmas (Helly, interval unions, the blow-up decomposition, components, the
+  tree bound with the integer identity `tb(N) = ⌊log₃((6N + 3)/5)⌋`, the
+  branch lemma, monotonicity), the check's tables, findings, the Lean-ready
+  list for item 11, kill verdict, what it does not claim.
+- **The theorems.** *F1 (blow-up)*: `pw(G_M) ≤ ω (pw(B) + 1) − 1` for **every
+  instance** — the proof (replace each pattern node of a path decomposition
+  of `B` by its customers; a customer's nodes in `B` form a star, so its bags
+  stay an interval by the union-of-intervals lemma) never uses the forest
+  hypothesis, which buys only `pw(B) ≤ tb(n + m)` and hence
+  `MOSP ≤ ω (⌊log₃((6(n + m) + 3)/5)⌋ + 1)` (*F1′*). *Lemma P (two-sided
+  pendant bound)*: a clique `R` with `q` cliques of size `≥ t` meeting it in
+  one vertex each, at distinct vertices, forces `pw ≥ t + ⌈q/2⌉ − 2` (the
+  bag argument item 03 sketched, for any graph). *F2 (depth one, exact)*:
+  `K_s` with pendant `K_t` at `q` of its vertices has
+  `pw = max(s − 1, t + ⌈q/2⌉ − 2)`, whatever the multiplicity; `CT(s, 1, b) =
+  ⌈3s/2⌉ − 2` is the case `t = q = s`. *F3*: the branch lemma down a
+  recursively defined family gives `pw(CT(s, h, 2)) ≥ s + ⌈(s − 1)/2⌉ + h − 3`
+  for `h ≥ 2`, exact at `h = 1`, 1–2 below the truth at `h = 2`; the truth is
+  between F3 and F1 and nearer F3. *Corollary R*: conditional on (H1) tree
+  components and (H2) largest component `≤ L(n)`, `MOSP ≤ ω (tb(L(n)) + 1) =
+  O(ω log log n)` at `L = O(log n)`; the hypotheses are supported by a held
+  paper for `G(n, c/n)` (Perarnau & Serra 2014, Theorem 1.2 (1) p. 2, proof
+  p. 6) and by Molloy & Reed (1995) Theorem 1 (b) for the configuration
+  model — **not held, not verified**; the two-type bipartite form our
+  generators need is in no held paper.
+- **Numbers.** Zero violations in all: F1 on 4,410 record rows with both
+  pathwidths exact, 594 depth-one graphs and 2,000 random instances; F1′ on
+  every forest; F2 = pw on 45 record rows and 594 of 594 fresh graphs; F3 on
+  14 `CT(s, h, 2)` rows; Lemma P ≤ pw everywhere, exact on 594 of 594 of its
+  family and 835 of 2,000 random instances (62 where the clique floor is
+  not). F1 is never exact (slack ≥ 1 on all 7,004; ratio to the truth 2–5.5
+  on the block-graph families, median 3 on the record forests; F1′ 2.7–9);
+  `tb = ⌊log₃((6N + 3)/5)⌋` on every row and every `N < 3000`.
+- **Kill verdict: not met** — no counterexample to F1; F1 stands with no
+  forest hypothesis. No certified value is wrong, no theorem is false, no
+  published claim of ours drifts.
+- **Lean-ready for item 11** (§6.5): `incidence M : SimpleGraph (C ⊕ P)`;
+  `mospValue ≤ ω * (pathwidth (incidence M) + 1)` given `1 ≤ ω`; the forest
+  form through `tree_pathwidth_le_treeBound` per component and the integer
+  identity; Lemma P as `pathwidth_ge_of_pendant_cliques`; F2's explicit
+  decomposition. F3 not proposed.
+- **Gate: PASS** (one run, 2026-11-01 03:23–03:34 at load 1): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,589 passed (2 skipped,
+  1 xfailed; +8 new), pathwidth_solver 123 passed, paper check ok (66 pages,
+  no undefined references). Log: `Ralph_Loops/loop0010/gate_it06.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 07, `β⁺` on paper. From this item: F1 needs no forest hypothesis, so
+item 11's Lean statement (L2) should be stated for every instance and the
+forest enter only in (L4); the integer identity `tb(N) = ⌊log₃((6N + 3)/5)⌋`
+is proved in §6.2 (Lemma 5) and is the form to use in Lean and the paper.
+For item 12: the random corollary is conditional, its domain on the
+benchmarks is empty (item 01), and the forest regime's practical content is
+item 03's `pw = ω − 1` (a measurement) — say so rather than quote F1′'s
+`O(ω log log n)`. For the bound work (outside this loop): Lemma P is a
+pathwidth argument that is not degree-based, exact beyond block graphs on a
+few small random instances; a `learning/bound_harness.py` run on the 338
+bound-gap corpus instances would say whether it is worth anything there.

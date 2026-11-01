@@ -1,0 +1,66 @@
+# forest_check -- 2026-11-01 03:20 -- workers 8, load 0.2
+
+## Item 03's record against F1, F1', F2, F3
+
+| family | rows | pw exact | pw(B) exact | F1 checked | F1 violations | F1 exact | F1 slack min / mean / max | F1' violations | pw(B) <= tb violations | tb = log3 form | F2 rows | F2 violations | F3 rows | F3 violations |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| clique tree (grid) | 29 | 29 | 29 | 29 | 0 | 0 | 2 / 7.4 / 17 | 0 | 0 | yes | 12 | 0 | 10 | 0 |
+| clique tree (extension) | 18 | 11 | 15 | 15 | 0 | 0 | 10 / 13.9 / 21 | 0 | 0 | yes | 9 | 0 | 4 | 0 |
+| caterpillar of cliques | 24 | 24 | 24 | 24 | 0 | 0 | 2 / 5.5 / 8 | 0 | 0 | yes | 24 | 0 | 0 | 0 |
+| random block tree | 900 | 898 | 900 | 900 | 0 | 0 | 5 / 17.2 / 36 | 0 | 0 | yes | 0 | 0 | 0 | 0 |
+| forest on record | 3448 | 3448 | 3448 | 3448 | 0 | 0 | 1 / 5.5 / 30 | 0 | 0 | yes | 0 | 0 | 0 | 0 |
+
+### F3 on CT(s, h, 2): the branch-lemma floor, the value, the blow-up bound
+
+| s | h | n | F3 (lower bound) | pw (C program) | status | F1 = omega (pw(B) + 1) - 1 | pw(B) | F1' |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 1 | 6 | 1 | 1 | bound | 5 | 2 | 5 |
+| 2 | 2 | 14 | 1 | 2 | refutation | 5 | 2 | 7 |
+| 2 | 3 | 30 | 1 | 2 | refutation | 7 | 3 | 7 |
+| 3 | 1 | 15 | 3 | 3 | refutation | 8 | 2 | 11 |
+| 3 | 2 | 63 | 3 | 4 | refutation | 11 | 3 | 14 |
+| 3 | 3 | 255 | 4 | 5 | refutation | 14 | 4 | 17 |
+| 4 | 1 | 28 | 4 | 4 | refutation | 11 | 2 | 15 |
+| 4 | 2 | 172 | 5 | 6 | refutation | 15 | 3 | 23 |
+| 5 | 1 | 45 | 6 | 6 | refutation | 14 | 2 | 19 |
+| 5 | 2 | 365 | 6 | 8 | refutation | 19 | 3 | 29 |
+| 6 | 1 | 66 | 7 | 7 | refutation | 17 | 2 | 29 |
+| 6 | 2 | 666 | 8 | [9, 10] | upper | 23 | 3 | 41 |
+| 7 | 1 | 91 | 9 | 9 | refutation | 20 | 2 | 34 |
+| 8 | 1 | 120 | 10 | 10 | refutation | 23 | 2 | 39 |
+
+### F2 on the record: 45 rows (CT(s, 1, b) and every caterpillar), 0 disagreements
+
+(record read and scored in 1.2 s)
+
+## F2's family by the C program: K_s with b pendant K_t at q vertices
+
+594 graphs (s, t = 2..7, q = 0..s, b = 1, 2, 3; n <= 133), 594 exact, 0 censored at 120 s; 1 s wall on 8 workers; 0.000 core-hours in the MOSP-graph solves.
+
+- F2 = pw on 594 of 594 exact graphs; disagreements 0 (censored rows count as consistent iff lower <= F2 <= upper).
+- Lemma P <= pw: violations 0; Lemma P = pw on 594 of 594.
+- F1 >= pw: violations 0; F1' >= pw: violations 0.
+
+### F2's grid, exact values (rows s, columns q; cells `pw` for t = s, b = 1)
+
+
+|   s |   0 |   1 |   2 |   3 |   4 |   5 |   6 |   7 |
+|----:|----:|----:|----:|----:|----:|----:|----:|----:|
+|   2 |   1 |   1 |   1 | nan | nan | nan | nan | nan |
+|   3 |   2 |   2 |   2 |   3 | nan | nan | nan | nan |
+|   4 |   3 |   3 |   3 |   4 |   4 | nan | nan | nan |
+|   5 |   4 |   4 |   4 |   5 |   5 |   6 | nan | nan |
+|   6 |   5 |   5 |   5 |   6 |   6 |   7 |   7 | nan |
+|   7 |   6 |   6 |   6 |   7 |   7 |   8 |   8 |   9 |
+
+## Random small instances (not forests, mostly): F1, F1' and Lemma P
+
+2000 instances, n = 6..12, m = 4..12, Bernoulli p = 0.3 / 0.5 and fixed size 2 / 3, 25 per cell (seeds in `random_check.csv`); 201 forests; 2000 with both pathwidths exact; 2 s wall.
+
+- F1 >= pw: violations 0; F1 = pw on 0; slack min / median / max 1 / 10.0 / 109.
+- F1' >= pw on the 201 forests: violations 0.
+- Lemma P <= pw: violations 0; Lemma P = pw on 835 of 2000 (the floor omega - 1 alone is exact on 773).
+
+## Verdict: 0 violations in all. No statement is withdrawn.
+
+(total 4 s wall)
