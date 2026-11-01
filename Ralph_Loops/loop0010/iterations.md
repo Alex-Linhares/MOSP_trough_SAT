@@ -146,7 +146,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** A theorem. These are exact values on a family; the
     proof is item 06.
 
-- [ ] **04 Industrial instances: the 24 SCOOP instances in the excess.**
+- [x] **04 Industrial instances: the 24 SCOOP instances in the excess.**
   - **Question.** F, measurement half. For each industrial instance: its
     excess, cyclomatic number, certified optimum, the deterministic lower
     bound, the first-moment floor it would have as a random cover of its

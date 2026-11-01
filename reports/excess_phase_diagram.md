@@ -1899,3 +1899,402 @@ four above its median; the search has no rule for the clique condition of
 Chou et al.'s Theorem 4, which is what decides these instances. Layouts in
 `RBT_*.layout_rerun`, closing orders in `RBT_*.closing`,
 `random_censored_rerun.csv` for the counts. 2 core-hours.
+
+## 4. Industrial instances: the 24 SCOOP instances in the excess (item 04, 2026-11-01)
+
+**Question.** F of the plan, the measurement half. For each industrial
+instance: its excess, cyclomatic number, certified optimum, the deterministic
+lower bound, the first-moment floor it would have as a random cover of its own
+size law, the two-key rule's value, and what the certification cost. Then the
+statement a planner could use, drafted.
+
+**What was done.** Nothing was solved and nothing re-run; `solutions/` was
+read by item 01's map and not touched here. `learning/excess_scoop.py` joins,
+for the 24 SCOOP instances and the 300 Faggioli–Bentivoglio instances, what is
+already on record:
+
+| column | source |
+|---|---|
+| `n`, `m`, `n_ones`, `e`, `r`, `e_g(r)`, `κ`, `γ`, forest, 2-core share | `learning/data/excess.csv` (item 01, from the matrix) |
+| optimum, provenance | item 01's map, read from the solution file (all 324 are `certified:refutation`) |
+| `lb_trivial`, `lb_contraction`, `lb_best`, `ub_mcn`, `ub_cs_dfs`, `ub_best`, `tw_min_fill`, degeneracy | `learning/data/instances.csv` (2026-09-25) |
+| the two-key rule's value, the pattern-size histogram | `learning/data/excess_rule.csv` (item 02) |
+| floor at bound < 1 and < 0.01, `β*`, `β* n` | `learning/first_moment.py` on the instance's own size histogram and `μ = m / n` |
+| SAT-path seconds | `benchmarks/results/sweep_full.csv` (2026-09-16, 60 s budget), `sweep_long.csv` (900 s), `overnight_20260917_0033_round1.csv`: the whole binary search through the SAT encoding, which was the default procedure until 2026-09-22. The first file whose row says `solved` is the certification; a later file's row for the same instance is a cache verification (0.1–0.3 s) and is not counted |
+| compute ledger | `benchmarks/results/compute_ledger.csv`: **no row for any of the 324** (it records `csearch` and `reheuristic` runs on the Chu & Stuckey classes only) |
+| nodes and seconds to refute `optimum − 1`, both configurations | `learning/data/node_counts.csv` (§3, n ≤ 40) where present, else the identity labelling of `learning/data/ensemble/differential_scale.csv` (§33, 50–100), with the min and max over its five labellings |
+| search certificate | `learning/data/ensemble/search_certificate.csv` (§32, ≤ 75 customers): nodes and the checker's verdict |
+| DRAT proof | `learning/data/proofs.csv` (§17, n ≤ 40): verdict, solve seconds, conflicts |
+| cost model | `learning.cost_model`'s chosen variant (`linear + drift + gbm [row]`), refitted per configuration on its training rows at n ≤ 75, predicting `log₁₀ nodes`; `in_training` says whether the instance's own count was among those rows |
+
+**The two collections, as their READMEs describe them.** SCOOP
+(`benchmarks/instances/MOSP_Instances/SCOOP/Dataset_Description - SCOOP.txt`):
+"The instances are collected by the industrial partners of SCOOP Project. This
+set, provided by the Sheet Cutting and Process Optimization for Furniture
+Industry (SCOOP) Consortium, contains 187 realworld MOSP instances from two
+European woodcutting companies. However, most of these instances are too
+small, implying trivial solutions. Therefore, 24 instances with significant
+dimensions, ranging from 10 pieces and patterns to 49 pieces and 134 patterns,
+were selected for the experiments." Faggioli–Bentivoglio
+(`.../Faggioli_Bentivoglio/Dataset_Description - Faggioli_Bentivoglio.txt`):
+"Set of 300 instances created by a pseudorandom instance generator with
+m = 10, 15, 20, 25, 30, 40 and n = 10, 20, 30, 40, 50. Each m x n combination
+has 10 instances." with "the matrix orientation changed to patterns x pieces
+and values changed to contain only 0s and 1s. Empty rows and columns removed"
+(so 40 of the 300 have fewer pieces than nominal: the `n = 10` cells have 9 or
+10, `20` has 18–20, `30` 29–30, `40` 38–40). Both descriptions say the file's
+first line is "number of patterns (m) and number of pieces (n)" and the matrix
+is `m × n`; `MOSPInstance.from_benchmark_file` transposes every
+`MOSP_Instances/` file, so our customers are the file's pieces and our patterns
+its patterns: `scoop-B_REVAL_145` (first line `49 60`) is 60 customers × 49
+patterns here, `scoop-A_FA+AA-_13` 134 × 37. The SCOOP prose ("49 pieces and
+134 patterns") has the two words the other way round from its own format line;
+Frinhani et al. (2018) report the SCOOP results as a figure (their Fig. 6),
+not a table, so there is no per-instance published optimum to settle which
+orientation their solver used. Every number below is for the instances as
+loaded, which is the orientation the whole corpus and the paper use; item 12
+should state it in the paper's instance paragraph.
+
+**Size range.** SCOOP: 13–134 customers, 10–49 patterns. Faggioli–Bentivoglio:
+9–50 customers, 10–40 patterns. Refutation counts on record: SCOOP at 13–99
+(22 of 24), Faggioli–Bentivoglio at 9–50 (300 of 300). The cost model is
+in-sample at n ≤ 40 where a `node_counts` row exists (15 SCOOP, 230
+Faggioli–Bentivoglio) and out of sample elsewhere.
+
+**Regenerate.**
+
+```
+python -m learning.excess_scoop                   # build + tables, 5 s (the cost model refits in < 2 s)
+python -m learning.excess_scoop --stage build     # -> learning/data/excess_scoop.csv (324 rows, git-ignored)
+python -m learning.excess_scoop --stage tables    # every table below
+python -m pytest tests/test_excess_scoop.py -q    # 8 tests
+```
+
+Prerequisites: `learning/data/excess.csv` (item 01) and `excess_rule.csv`
+(item 02), both regenerable in seconds. Tests: the regimes in order; the
+Faggioli–Bentivoglio cell parser; the floor flags against an exact-rational
+recomputation of the union bound written independently of
+`learning.first_moment` (REVAL's size law gives 9 at 0.01 and 11 at 1 both
+ways); the trivial floor below the threshold; the sweep join taking the first
+`solved` row and not the cache hit; the node-count join preferring
+`node_counts` over the differential harness, flagging a censored status and
+saying `not recorded`; the ledger, certificate and DRAT joins; the
+per-collection floor table on a synthetic frame.
+
+### 4.1 Findings
+
+1. **Where the 24 sit.** `e` from 0.97 to 2.50, median 1.35: 19 in `[1, 2)`,
+   3 on the ridge `[2, 2.4]` (`B_CARLET_137`, `B_39Q18_82`, `B_12M18_12`, all
+   at 13–28 customers), 1 above (`B_22X18_50`, `e = 2.5`, 14 customers), and 1
+   in `[e_g(r), 1)` (`A_AP-9.d_6`, `e = 0.97`, three components). None is an
+   incidence forest and none is below `e_g(r)` (0.39–0.61 for their product
+   ratios 0.25–0.95). Ten of the 24 decompose (`κ` up to 5), the median
+   cyclomatic number per customer is 0.37 and the median 2-core holds 47% of
+   the customers. The eight `A_FA+AA-` instances, which are all the SCOOP
+   instances above 40 customers, have `r = 0.25–0.35` (three to four customers
+   per pattern, 1.1–1.4 patterns per customer) and sit at `e = 1.13–1.37`: the
+   sparse flank, 0.6–1.3 below the ridge, where Chu & Stuckey's `d = 2` classes
+   also sit (§1). `opt / n` runs from 0.11 (`A_FA+AA-_11`) to 0.71
+   (`B_22X18_50`), median 0.20.
+
+2. **The bounds and the rule.** `lb_best` is tight on 6 of 24 and misses by
+   up to 6 (`A_FA+AA-_13`: 11 against 17); `tw_min_fill + 1` equals the optimum
+   on 6 and `degeneracy + 1` on 4. `ub_best` (the better of MCN and `cs-dfs`)
+   is tight on 12, off by up to 4. The bare two-key rule is exact on 12 of 24,
+   mean gap 1.21, worst +7 (`A_FA+AA-_13`: 24 against 17, `gap / n = 0.052`;
+   the largest `gap / n` is 0.061 on `A_FA+AA-_8`, 16 against 11 at 82
+   customers). Against `cs-dfs` alone the rule is better on 4, equal on 13 and
+   worse on 7. In the `[1, 2)` regime the rule is exact on 47% of the SCOOP
+   instances against 13% of the 143 Faggioli–Bentivoglio instances in the same
+   regime, and its `gap / n` never exceeds 0.061 on SCOOP against 0.10 there:
+   the industrial instances are easier for the rule than generated instances
+   of the same excess, which is the sign of structure the floor check below
+   also finds. This is within item 02's measured margin (gap/n 0.03–0.06 on
+   the ridge at 30–100 customers).
+
+3. **The floor check: one of 24 below its 0.01 floor, and it is reported.**
+   The item's check is that every optimum sit at or above the floor a random
+   clique cover with the same pattern sizes would have with probability 0.99.
+   `scoop-B_REVAL_145` (60 customers, 49 patterns of sizes 1–6, `e = 1.88`,
+   connected, optimum **7**) has floor **9** at 0.01 and 11 at 1: the union
+   bound on `P(pw ≤ 6)` for a random cover of its size law is 6.8 × 10⁻⁵, so
+   fewer than one random cover in ten thousand has an optimum of 7 or less
+   (recomputed with exact rationals in `tests/test_excess_scoop.py`,
+   independently of `learning.first_moment.floors`, and agreeing with it). Two more sit below the floor at bound < 1
+   but not at 0.01 (`B_CARLET_137`: 5 against 6; `B_12M18_12`: 6 against 7).
+   This is not a contradiction — the floor is a statement about the random
+   model — and it is the item's most useful measurement: **the floor measures
+   distance from random**, and REVAL is the one SCOOP instance whose
+   customers are visibly arranged (its optimum 7 is `0.12 n`, the lowest of
+   the collection at that size). The context table (§4.5) runs the same check
+   over every certified corpus instance: zero of 200 Chu & Stuckey, 300
+   Faggioli–Bentivoglio, 3,630 Simonis and 2,130 Harvey instances sit below
+   their 0.01 floor; the Challenge, Wilson and Shaw instances — the designed
+   "low / medium / high path width" GP and NWRS instances — sit below it by up
+   to **39 stacks** (GP5: optimum 95 against a floor of 99, and GP8: 60
+   against 99). Harper's bound cannot see designed structure, and the
+   industrial set has one instance with some. The floor is tight (equal to
+   the optimum) on exactly one SCOOP instance (`B_CUC28A_138`, 6) and sits a
+   median of 4 stacks below the optimum; `β* n` is 0.26 of the optimum at the
+   median, so at these sizes the asymptotic constant says much less than the
+   finite floor does.
+
+4. **What the certification cost.** Every SCOOP refutation on record is
+   small: the 22 counts at 13–99 customers total 44,379 nodes and 0.07 s
+   under `default` (max 22,433 nodes on `A_FA+AA-_8`, 82 customers; `csearch`
+   max 19,261), and the five relabellings of the differential harness spread
+   each count by at most 9%. The SAT path's binary search, which certified
+   them in September, took 1,662 s for the 24, of which 1,459 s is one
+   instance (`A_FA+AA-_13`, 134 customers, solved in the overnight round after
+   two timeouts at 60 and 900 s) and 116 s another (`A_FA+AA-_1`, 105
+   customers); the other 22 took 0.2–19 s each. **Those two largest instances
+   have no node count on record** — the compute ledger has no SCOOP row, the
+   differential harness stops at 100 and `node_counts` at 40 — and they are
+   not re-run here. 15 of the 24 have a checked DRAT refutation (every SCOOP
+   instance at n ≤ 40), 19 a verified search certificate (every one at ≤ 75,
+   both configurations). Faggioli–Bentivoglio: 300 of 300 counts on record,
+   max 39,230 nodes (`p4050n7`, 50 customers, `e = 1.98`), 0.75 s in all
+   under `default`; the SAT sweeps spent 58,560 s (16.3 h) on them, 224
+   solved at the 60 s budget, 35 at 900 s and 41 in the overnight round (max
+   2,565 s, `p4050n9`); 192 DRAT proofs verified, 48 over the conflict budget
+   at n ≤ 40, 300 certificates checked. The search's refutations cost three
+   to five orders of magnitude less than the SAT path's September seconds
+   on the same instances, in line with §3 of `reports/learned_search.md`.
+
+5. **The cost model, where it can be checked and where it is used.** On the
+   22 SCOOP counts the chosen `default` model is within a decade on all 22:
+   in-sample (15 at 13–31) MAE 0.11 decades; out of sample (7 at 60–99) MAE
+   0.33, bias +0.18, worst 0.47 (ratios predicted / actual from 0.41 to
+   2.9). `csearch`: 0.11 and 0.18, worst 0.45. On Faggioli–Bentivoglio, 300 of
+   300 within a decade, worst 0.41. For the two instances with no count it
+   predicts, under `default`, 10^5.6 nodes for `A_FA+AA-_1` (105 customers)
+   and 10^7.5 for `A_FA+AA-_13` (134), i.e. about 0.3 s and 20 s at 0.65 µs
+   per node (`csearch`: 10^5.2 and 10^6.9, 0.1 s and 5 s). These are
+   predictions with the model's stated error (§19: 88–89% of the 100–125
+   counts within a decade, biased upward ×2.5) and are labelled so; nothing
+   here says they are right.
+
+6. **Faggioli–Bentivoglio as the structured comparison.** The generator
+   spans `e` from 0.94 to 8.7 (median 1.98): 143 in `[1, 2)`, 27 on the
+   ridge, 121 above, 8 in `[e_g, 1)` and one incidence forest (`p1050n3`);
+   29 decompose. Its refutation cost peaks exactly where the excess map says
+   it should: the `40 × 50` cell (40 patterns, 50 pieces, `e = 1.92–2.08`,
+   on the ridge) has median 24,000 nodes against 1–3 in the `m ≥ 25, n = 10`
+   cells (`e ≥ 5`) and 28–130 in the `n = 20–30` cells of `[1, 2)`; the cost
+   model's median prediction follows the same order (10^4.2 against 10^0.3
+   and 10^1.4–10^2.2). The rule is exact on 44% overall and on 13% in
+   `[1, 2)`, `lb_best` tight on 42%, `ub_best` on 45%; four `40 × 10`
+   instances (`e = 8.1–8.7`, optimum 8 of 10 customers) sit below their
+   floor at bound < 1, none below 0.01.
+
+### 4.2 The planner's statement (a draft of the paper's paragraph)
+
+From an order book with `n` piece types, `m` cutting patterns and `n_ones`
+pattern–piece incidences, read the excess `e = (n_ones − m) / n`, the mean
+number of patterns per piece type minus one, and the ratio `r = m / n`. The
+open-stacks optimum is the pathwidth of the piece-type graph plus one
+(`MOSPGraph.lean`), and `e` says which tool applies.
+
+- **If the incidence graph has no cycle** (`γ = n_ones − n − m + κ = 0`; in a
+  random order book, the usual case below `e_g(r) = (√(r² + 4r) − r) / 2`,
+  0.62 at `r = 1` — item 01 finding 5), the optimum is at most
+  `ω (⌊log₃((6(n + m) + 3) / 5)⌋ + 1)` with `ω` the largest pattern (item 06,
+  from `TreeBound.lean`), and in practice `ω` or `ω − 1`: on 3,448 random
+  forests on record, `pw = ω − 1` on 99.8% (item 03). No SCOOP instance is in
+  this regime.
+- **Between `e_g(r)` and 1** the first moment says nothing (`β* = 0`) and the
+  deterministic bounds are what there is: `lb_best` (the best of the trivial,
+  clique and contraction-degeneracy bounds) from below, the two-key rule or
+  `rule+cs-dfs` from above. One SCOOP instance (`A_AP-9.d_6`, `e = 0.97`) is
+  here; its bounds bracket the optimum 5 as [4, 5] and the rule says 6.
+- **Above 1** the floor is positive: a random cover of the same size law has
+  optimum at least the 0.01 floor with probability 0.99, and the two-key rule
+  gives a value within the measured margin — exact on 12 of the 23 SCOOP
+  instances here, never more than 0.061 `n` above the optimum, and within
+  0.03–0.06 `n` on the ridge at 30–100 customers (item 02). The floor is
+  not a bound on *this* order book: the one SCOOP instance below it,
+  `B_REVAL_145`, is two stacks below, and designed instances sit 39 below;
+  a reading below the floor says the order book is structured, not that
+  the floor is wrong. Twenty-three of the 24 SCOOP instances are here, 19 of
+  them in `[1, 2)`, the sparse flank below the ridge at 2–2.4.
+- **The certification cost** comes from the cost model
+  (`learning.cost_model`, `log₁₀ nodes` from label-free graph features,
+  88–89% of counts within a decade at 100–125 customers, biased upward
+  ×2.5), at 0.65 µs per node. On the 22 SCOOP counts it is within a decade on
+  all, within 0.5 decades out of sample. For the SCOOP sizes (13–134
+  customers at `e = 1–2.5`) the predicted refutations are 10^0.5–10^7.5 nodes,
+  i.e. under a minute on one core at the largest, which the September SAT
+  path's 1,459 s on the largest instance is consistent with. The dense
+  benchmark classes that take thousands of core-hours are at 125 customers
+  and `e = 1.7–3.4` with no decomposition; no SCOOP instance is of that kind.
+
+Every number: `learning/data/excess_scoop.csv` and the tables below; the
+thresholds and lines from §0 of `reports/excess_phase_plan.md`.
+
+### 4.3 Kill verdict
+
+**None** (the item is descriptive). **The stated check — every optimum at or
+above its 0.01 floor — is not met on one of 24** (`scoop-B_REVAL_145_0`, 7
+against 9), reported in finding 3 with its exact-rational recomputation. The
+check is a random-model statement, so the violation is a finding about the
+instance, not about the floor; it is the only certified corpus instance
+outside the designed Challenge, Wilson and Shaw sets that sits below its 0.01
+floor, and the only one in the two collections of this item.
+
+### 4.4 What this does not claim
+
+- Not that 24 instances from one source are "industry": they are 24
+  instances from the SCOOP set, all under excess 2.5, from two woodcutting
+  companies, selected by the dataset's authors from 187 for being large
+  enough to be non-trivial.
+- No new certification: the two largest SCOOP instances keep "not recorded"
+  for their refutation count, and the cost model's numbers for them are
+  predictions, not measurements.
+- Not that the floor is a bound on an industrial instance: REVAL shows it is
+  not, and the Challenge instances show it can be off by 39.
+- Not that the rule's margin on SCOOP transfers: it is measured on 24
+  instances at 13–134 customers; item 02's margin is the one with a size
+  range.
+- The orientation of the SCOOP files (pieces as customers) is the loader's
+  convention, stated above; the certified values are for that orientation
+  and no published per-instance value exists to compare.
+- The `instances.csv` bounds are from 2026-09-25; `lb_best` there predates
+  nothing that changes it (the expansion bound is off by default and exact
+  treewidth is not applied).
+
+### 4.5 Tables, in full
+
+`python -m learning.excess_scoop --stage tables`. Instance names drop the
+`scoop-` prefix and `_0` suffix. `nodes` are to refute `optimum − 1`;
+`SAT sweep s` is the whole binary search's wall time in the first sweep file
+that solved the instance; `pred log₁₀ nodes` is the `default` cost model;
+`in-sample` says its own count was in the model's training rows.
+
+#### SCOOP, per instance
+
+| instance     |   n |   m |   ones |    e |   e_g(r) |   κ |   γ |   2-core | regime         |   opt |   lb |   ub |   rule |   floor<1 |   floor<.01 |   β*n | nodes (default)   | nodes (csearch)   | nodes from         |   SAT sweep s | DRAT     |   pred log₁₀ nodes | in-sample   |
+|:-------------|----:|----:|-------:|-----:|---------:|----:|----:|---------:|:---------------|------:|-----:|-----:|-------:|----------:|------------:|------:|:------------------|:------------------|:-------------------|--------------:|:---------|-------------------:|:------------|
+| B_CARLET_137 |  13 |  12 |     41 | 2.23 |     0.6  |   1 |  17 |     1    | ridge [2, 2.4] |     5 |    5 |    5 |      5 |         6 |           4 |   2.3 | 1                 | 1                 | node_counts        |      0.2      | verified |                0.5 | yes         |
+| B_18AB1_32   |  14 |  11 |     38 | 1.93 |     0.58 |   1 |  14 |     0.79 | [1, 2)         |     6 |    6 |    8 |      6 |         5 |           3 |   2   | 8                 | 6                 | node_counts        |      0.21     | verified |                1   | yes         |
+| B_22X18_50   |  14 |  10 |     45 | 2.5  |     0.56 |   1 |  22 |     1    | > 2.4          |    10 |    9 |   10 |     10 |         7 |           5 |   3.2 | 11                | 11                | node_counts        |      0.25     | verified |                1.1 | yes         |
+| B_39Q18_82   |  14 |  10 |     39 | 2.07 |     0.56 |   1 |  16 |     0.86 | ridge [2, 2.4] |     5 |    5 |    6 |      5 |         5 |           3 |   2.3 | 7                 | 7                 | node_counts        |      0.18     | verified |                0.7 | yes         |
+| B_42F22_93   |  17 |  10 |     31 | 1.24 |     0.53 |   2 |   6 |     0.53 | [1, 2)         |     5 |    4 |    5 |      5 |         2 |           2 |   0.5 | 22                | 16                | node_counts        |      0.18     | verified |                1.2 | yes         |
+| B_18CR1_33   |  19 |  18 |     39 | 1.11 |     0.61 |   5 |   7 |     0.42 | [1, 2)         |     4 |    3 |    4 |      4 |         2 |           2 |   0.2 | 25                | 18                | node_counts        |      1.03     | verified |                1.3 | yes         |
+| A_AP-9.d_10  |  20 |  13 |     38 | 1.25 |     0.54 |   1 |   6 |     0.45 | [1, 2)         |     6 |    5 |    6 |      6 |         3 |           1 |   0.6 | 82                | 61                | node_counts        |      0.23     | verified |                1.8 | yes         |
+| A_AP-9.d_3   |  20 |  16 |     44 | 1.4  |     0.58 |   1 |   9 |     0.7  | [1, 2)         |     6 |    5 |    6 |      6 |         3 |           3 |   1   | 44                | 34                | node_counts        |      0.96     | verified |                1.7 | yes         |
+| B_12F18_11   |  21 |  15 |     47 | 1.52 |     0.56 |   1 |  12 |     0.81 | [1, 2)         |     6 |    5 |    6 |      7 |         4 |           2 |   1.5 | 65                | 41                | node_counts        |      0.54     | verified |                1.8 | yes         |
+| B_GTM18A_139 |  24 |  20 |     54 | 1.42 |     0.59 |   2 |  12 |     0.71 | [1, 2)         |     5 |    4 |    5 |      5 |         3 |           3 |   1.3 | 47                | 42                | node_counts        |      1.67     | verified |                1.6 | yes         |
+| A_AP-9.d_11  |  27 |  21 |     55 | 1.26 |     0.57 |   1 |   8 |     0.44 | [1, 2)         |     6 |    5 |    6 |      6 |         4 |           2 |   0.9 | 126               | 73                | node_counts        |      1.99     | verified |                2.2 | yes         |
+| B_23B25_52   |  27 |  21 |     55 | 1.26 |     0.57 |   2 |   9 |     0.48 | [1, 2)         |     5 |    4 |    5 |      5 |         4 |           2 |   0.8 | 144               | 123               | node_counts        |      2.16     | verified |                1.9 | yes         |
+| B_12M18_12   |  28 |  22 |     78 | 2    |     0.58 |   1 |  29 |     0.68 | ridge [2, 2.4] |     6 |    6 |    9 |      7 |         7 |           5 |   4.1 | 35                | 25                | node_counts        |      2.28     | verified |                1.5 | yes         |
+| A_AP-9.d_6   |  31 |  20 |     50 | 0.97 |     0.54 |   3 |   2 |     0.29 | [e_g, 1)       |     5 |    4 |    5 |      6 |         2 |           1 |   0   | 160               | 105               | node_counts        |      2.13     | verified |                2.2 | yes         |
+| B_CUC28A_138 |  31 |  26 |     82 | 1.81 |     0.59 |   2 |  27 |     0.61 | [1, 2)         |     6 |    6 |    9 |      6 |         6 |           6 |   3.6 | 52                | 30                | node_counts        |      2.04     | verified |                1.9 | yes         |
+| B_REVAL_145  |  60 |  49 |    162 | 1.88 |     0.58 |   1 |  54 |     0.68 | [1, 2)         |     7 |    7 |    8 |     10 |        11 |           9 |   7.7 | 1,881             | 1,593             | differential_scale |     16.2      |          |                2.9 | no          |
+| A_FA+AA-_15  |  68 |  18 |     96 | 1.15 |     0.4  |   3 |  13 |     0.22 | [1, 2)         |     9 |    8 |   10 |     11 |         3 |           3 |   1.2 | 370               | 360               | differential_scale |      3.43     |          |                2.8 | no          |
+| A_FA+AA-_12  |  75 |  20 |    105 | 1.13 |     0.4  |   2 |  12 |     0.21 | [1, 2)         |     9 |    8 |   10 |     10 |         4 |           2 |   1.2 | 525               | 522               | differential_scale |      5.27     |          |                3.2 | no          |
+| A_FA+AA-_2   |  75 |  19 |    104 | 1.13 |     0.39 |   1 |  11 |     0.29 | [1, 2)         |    11 |   10 |   13 |     13 |         4 |           2 |   1.2 | 1,583             | 1,505             | differential_scale |      6.18     |          |                3.4 | no          |
+| A_FA+AA-_6   |  79 |  21 |    127 | 1.34 |     0.4  |   1 |  28 |     0.35 | [1, 2)         |    13 |   11 |   13 |     16 |         8 |           6 |   3.8 | 2,357             | 2,160             | differential_scale |      6.72     |          |                3.8 | no          |
+| A_FA+AA-_8   |  82 |  28 |    140 | 1.37 |     0.44 |   1 |  31 |     0.37 | [1, 2)         |    11 |   10 |   13 |     16 |         7 |           7 |   4.2 | 22,433            | 19,261            | differential_scale |     18.8      |          |                4.2 | no          |
+| A_FA+AA-_11  |  99 |  28 |    141 | 1.14 |     0.41 |   3 |  17 |     0.26 | [1, 2)         |    11 |   10 |   12 |     12 |         4 |           4 |   1.7 | 14,401            | 12,476            | differential_scale |     14.5      |          |                4.6 | no          |
+| A_FA+AA-_1   | 105 |  37 |    181 | 1.37 |     0.44 |   2 |  41 |     0.37 | [1, 2)         |    12 |   10 |   14 |     14 |         8 |           8 |   5.5 | not recorded      | not recorded      | not recorded       |    116        |          |                5.6 | no          |
+| A_FA+AA-_13  | 134 |  37 |    216 | 1.34 |     0.41 |   1 |  46 |     0.34 | [1, 2)         |    17 |   11 |   21 |     24 |         9 |           9 |   6.4 | not recorded      | not recorded      | not recorded       |      1.46e+03 |          |                7.5 | no          |
+
+#### Per regime and collection
+
+| collection           | regime         |   instances | n range   | e range   |   rule exact |   rule gap mean |   rule gap max |   lb tight |   lb gap max |   ub_best tight |   below floor<1 |   below floor<.01 |   floor<.01 = opt |
+|:---------------------|:---------------|------------:|:----------|:----------|-------------:|----------------:|---------------:|-----------:|-------------:|----------------:|----------------:|------------------:|------------------:|
+| SCOOP                | [e_g, 1)       |           1 | 31-31     | 0.97-0.97 |         0    |           1     |              1 |       0    |            1 |            1    |               0 |                 0 |                 0 |
+| SCOOP                | [1, 2)         |          19 | 14-134    | 1.11-1.93 |         0.47 |           1.42  |              7 |       0.16 |            6 |            0.47 |               1 |                 1 |                 1 |
+| SCOOP                | ridge [2, 2.4] |           3 | 13-28     | 2.00-2.23 |         0.67 |           0.333 |              1 |       1    |            0 |            0.33 |               2 |                 0 |                 0 |
+| SCOOP                | > 2.4          |           1 | 14-14     | 2.50-2.50 |         1    |           0     |              0 |       0    |            1 |            1    |               0 |                 0 |                 0 |
+| Faggioli-Bentivoglio | forest         |           1 | 50-50     | 0.94-0.94 |         0    |           1     |              1 |       1    |            0 |            0    |               0 |                 0 |                 0 |
+| Faggioli-Bentivoglio | [e_g, 1)       |           8 | 40-50     | 0.94-0.98 |         0.75 |           0.25  |              1 |       1    |            0 |            0.75 |               0 |                 0 |                 0 |
+| Faggioli-Bentivoglio | [1, 2)         |         143 | 20-50     | 1.00-1.98 |         0.13 |           1.59  |              4 |       0.2  |            5 |            0.22 |               0 |                 0 |                 0 |
+| Faggioli-Bentivoglio | ridge [2, 2.4] |          27 | 9-50      | 2.00-2.33 |         0.56 |           0.889 |              3 |       0.26 |            5 |            0.48 |               0 |                 0 |                 0 |
+| Faggioli-Bentivoglio | > 2.4          |         121 | 9-39      | 2.42-8.70 |         0.75 |           0.289 |              2 |       0.66 |            3 |            0.69 |               4 |                 0 |                 2 |
+
+#### Faggioli–Bentivoglio, per nominal cell (`m` patterns × `n` pieces)
+
+| m nominal | n nominal | instances |  n |  m | e_min | e_med | e_max | forests | decompose | opt_med | rule_exact | rule_gap_max | lb_tight | below_floor_1 | below_floor_001 | nodes_default_med | nodes_default_max | pred_log10_med | regimes |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|:--|
+| 10 | 10 | 10 |  9 | 10 | 2     | 2.22 | 2.44 | 0 | 0 |  5.5 | 1   | 0 | 0.8 | 0 | 0 |      3 |      6 | 0.607 | ridge [2, 2.4], > 2.4 |
+| 10 | 20 | 10 | 20 | 10 | 1.2   | 1.35 | 1.55 | 0 | 0 |  6   | 0.4 | 2 | 0.3 | 0 | 0 |   27.5 |     41 | 1.43  | [1, 2) |
+| 10 | 30 | 10 | 30 | 10 | 1     | 1.12 | 1.2  | 0 | 1 |  6   | 0.4 | 3 | 0.9 | 0 | 0 |   30.5 |    123 | 1.52  | [1, 2) |
+| 10 | 40 | 10 | 40 | 10 | 0.975 | 1.04 | 1.12 | 0 | 6 |  8   | 0.3 | 2 | 0.5 | 0 | 0 |   81.5 |    176 | 1.99  | [e_g, 1), [1, 2) |
+| 10 | 50 | 10 | 50 | 10 | 0.94  | 0.97 | 1.02 | 1 | 9 |  8   | 0.5 | 1 | 0.9 | 0 | 0 |   67.5 |    167 | 1.82  | forest, [e_g, 1), [1, 2) |
+| 15 | 10 | 10 | 10 | 15 | 2.7   | 3.15 | 3.3  | 0 | 0 |  7   | 1   | 0 | 0.9 | 0 | 0 |    2.5 |      5 | 0.577 | > 2.4 |
+| 15 | 20 | 10 | 20 | 15 | 1.7   | 1.85 | 1.95 | 0 | 0 |  7   | 0.3 | 2 | 0.3 | 0 | 0 |   28   |     57 | 1.52  | [1, 2) |
+| 15 | 30 | 10 | 30 | 15 | 1.33  | 1.4  | 1.47 | 0 | 0 |  8   | 0   | 3 | 0.2 | 0 | 0 |  130   |    399 | 2.17  | [1, 2) |
+| 15 | 40 | 10 | 40 | 15 | 1.12  | 1.17 | 1.3  | 0 | 2 |  7   | 0   | 2 | 0.1 | 0 | 0 |  202   |    685 | 2.24  | [1, 2) |
+| 15 | 50 | 10 | 50 | 15 | 0.98  | 1.08 | 1.14 | 0 | 5 |  7.5 | 0   | 3 | 0.3 | 0 | 0 |  322   |    605 | 2.38  | [e_g, 1), [1, 2) |
+| 20 | 10 | 10 | 10 | 20 | 3.8   | 4.15 | 4.4  | 0 | 0 |  7.5 | 0.9 | 1 | 1   | 0 | 0 |    2   |      3 | 0.42  | > 2.4 |
+| 20 | 20 | 10 | 18 | 20 | 2.32  | 2.49 | 2.65 | 0 | 0 |  9   | 0.6 | 2 | 0.6 | 0 | 0 |   33.5 |     55 | 1.46  | ridge [2, 2.4], > 2.4 |
+| 20 | 30 | 10 | 30 | 20 | 1.63  | 1.77 | 1.8  | 0 | 0 |  9   | 0.1 | 3 | 0.2 | 0 | 0 |  228   |    978 | 2.37  | [1, 2) |
+| 20 | 40 | 10 | 40 | 20 | 1.32  | 1.4  | 1.5  | 0 | 0 |  8.5 | 0   | 3 | 0   | 0 | 0 |  634   |    966 | 2.77  | [1, 2) |
+| 20 | 50 | 10 | 50 | 20 | 1.1   | 1.22 | 1.28 | 0 | 4 |  8   | 0   | 4 | 0.1 | 0 | 0 |  544   |  2,580 | 2.71  | [1, 2) |
+| 25 | 10 | 10 | 10 | 25 | 4.9   | 5.2  | 5.3  | 0 | 0 |  8   | 1   | 0 | 1   | 0 | 0 |    2   |      2 | 0.386 | > 2.4 |
+| 25 | 20 | 10 | 20 | 25 | 2.85  | 2.9  | 3    | 0 | 0 | 10   | 0.7 | 2 | 0.7 | 0 | 0 |   37   |     53 | 1.58  | > 2.4 |
+| 25 | 30 | 10 | 30 | 25 | 2.03  | 2.12 | 2.2  | 0 | 0 | 10.5 | 0.4 | 3 | 0   | 0 | 0 |  377   |    998 | 2.55  | ridge [2, 2.4] |
+| 25 | 40 | 10 | 40 | 25 | 1.57  | 1.66 | 1.8  | 0 | 0 | 10   | 0.1 | 4 | 0   | 0 | 0 | 1,430  |  1,760 | 3.15  | [1, 2) |
+| 25 | 50 | 10 | 50 | 25 | 1.32  | 1.43 | 1.52 | 0 | 2 | 10   | 0.1 | 4 | 0   | 0 | 0 | 2,030  |  9,290 | 3.33  | [1, 2) |
+| 30 | 10 | 10 | 10 | 30 | 5.8   | 6.25 | 6.8  | 0 | 0 |  8   | 1   | 0 | 1   | 0 | 0 |    1   |      2 | 0.342 | > 2.4 |
+| 30 | 20 | 10 | 20 | 30 | 3.3   | 3.48 | 3.65 | 0 | 0 | 11   | 0.6 | 2 | 0.5 | 0 | 0 |   33.5 |     47 | 1.5   | > 2.4 |
+| 30 | 30 | 10 | 29 | 30 | 2.52  | 2.59 | 2.69 | 0 | 0 | 12   | 0.4 | 1 | 0.2 | 0 | 0 |  370   |    654 | 2.47  | > 2.4 |
+| 30 | 40 | 10 | 40 | 30 | 1.88  | 1.9  | 2    | 0 | 0 | 12   | 0.1 | 2 | 0   | 0 | 0 | 2,790  |  4,690 | 3.42  | [1, 2), ridge [2, 2.4] |
+| 30 | 50 | 10 | 50 | 30 | 1.44  | 1.61 | 1.72 | 0 | 0 | 11.5 | 0.1 | 4 | 0   | 0 | 0 | 4,690  | 13,300 | 3.7   | [1, 2) |
+| 40 | 10 | 10 | 10 | 40 | 7.4   | 8.25 | 8.7  | 0 | 0 |  8   | 1   | 0 | 1   | 4 | 0 |    1   |      1 | 0.327 | > 2.4 |
+| 40 | 20 | 10 | 20 | 40 | 4.5   | 4.62 | 5.1  | 0 | 0 | 13   | 0.6 | 1 | 0.6 | 0 | 0 |   24   |     57 | 1.37  | > 2.4 |
+| 40 | 30 | 10 | 30 | 40 | 3.17  | 3.28 | 3.4  | 0 | 0 | 15   | 0.8 | 1 | 0.4 | 0 | 0 |  286   |    836 | 2.44  | > 2.4 |
+| 40 | 40 | 10 | 38 | 40 | 2.51  | 2.58 | 2.62 | 0 | 0 | 15   | 0.4 | 2 | 0   | 0 | 0 | 3,070  |  5,380 | 3.45  | > 2.4 |
+| 40 | 50 | 10 | 50 | 40 | 1.92  | 2.03 | 2.08 | 0 | 0 | 15   | 0.3 | 3 | 0   | 0 | 0 | 24,000 | 39,200 | 4.2   | [1, 2), ridge [2, 2.4] |
+
+#### The floor check (bound < 1 and < 0.01), the two collections
+
+| collection           | instance_name        |   n |   m |    e |   kappa |   optimum |   floor_lt1 |   floor_lt001 |   beta_star_n | below_floor_1   | below_floor_001   |
+|:---------------------|:---------------------|----:|----:|-----:|--------:|----------:|------------:|--------------:|--------------:|:----------------|:------------------|
+| Faggioli-Bentivoglio | p4010n1_0            |  10 |  40 | 8.1  |       1 |         8 |           9 |             7 |          5.85 | True            | False             |
+| Faggioli-Bentivoglio | p4010n4_0            |  10 |  40 | 8.3  |       1 |         8 |           9 |             7 |          5.93 | True            | False             |
+| Faggioli-Bentivoglio | p4010n6_0            |  10 |  40 | 8.7  |       1 |         8 |           9 |             7 |          6.09 | True            | False             |
+| Faggioli-Bentivoglio | p4010n8_0            |  10 |  40 | 8.7  |       1 |         8 |           9 |             7 |          6.11 | True            | False             |
+| SCOOP                | scoop-B_CARLET_137_0 |  13 |  12 | 2.23 |       1 |         5 |           6 |             4 |          2.32 | True            | False             |
+| SCOOP                | scoop-B_12M18_12_0   |  28 |  22 | 2    |       1 |         6 |           7 |             5 |          4.14 | True            | False             |
+| SCOOP                | scoop-B_REVAL_145_0  |  60 |  49 | 1.88 |       1 |         7 |          11 |             9 |          7.72 | True            | True              |
+
+#### The floor check over every certified corpus instance, per collection
+
+| collection           |   instances |   n_min |   n_max |   below_floor_1 |   below_floor_001 |   largest_shortfall_001 |
+|:---------------------|------------:|--------:|--------:|----------------:|------------------:|------------------------:|
+| Simonis              |        3630 |      10 |      40 |              16 |                 0 |                       0 |
+| Harvey               |        2130 |      10 |      30 |               3 |                 0 |                       0 |
+| Faggioli-Bentivoglio |         300 |       9 |      50 |               4 |                 0 |                       0 |
+| Chu & Stuckey        |         200 |      30 |     125 |               1 |                 0 |                       0 |
+| Challenge            |          46 |      10 |     100 |              37 |                16 |                      39 |
+| Shaw                 |          25 |      20 |      20 |              21 |                 2 |                       1 |
+| SCOOP                |          24 |      13 |     134 |               3 |                 1 |                       2 |
+| Wilson               |          20 |      10 |     100 |              16 |                14 |                      39 |
+| Miller               |           1 |      20 |      20 |               0 |                 0 |                       0 |
+
+The 16 Challenge instances below the 0.01 floor are the 14 Wilson instances
+under their second name (GP1–8, NWRS3–8) and two Shaw instances; the Wilson
+GP instances, built to a prescribed pathwidth, sit 39 stacks below a floor
+that is `n − 1` for their near-complete pattern sizes.
+
+#### The cost model against the counts on record
+
+| collection           | config   | rows          |   counts | n range   |   MAE (decades) |    bias |   max abs err |   within a decade |
+|:---------------------|:---------|:--------------|---------:|:----------|----------------:|--------:|--------------:|------------------:|
+| SCOOP                | default  | in-sample     |       15 | 13-31     |          0.105  | -0.0122 |         0.227 |                 1 |
+| SCOOP                | default  | out-of-sample |        7 | 60-99     |          0.33   |  0.179  |         0.467 |                 1 |
+| SCOOP                | csearch  | in-sample     |       15 | 13-31     |          0.114  |  0.012  |         0.29  |                 1 |
+| SCOOP                | csearch  | out-of-sample |        7 | 60-99     |          0.18   | -0.0598 |         0.45  |                 1 |
+| Faggioli-Bentivoglio | default  | in-sample     |      230 | 10-40     |          0.0787 | -0.0109 |         0.393 |                 1 |
+| Faggioli-Bentivoglio | default  | out-of-sample |        70 | 9-50      |          0.129  | -0.0209 |         0.412 |                 1 |
+| Faggioli-Bentivoglio | csearch  | in-sample     |      230 | 10-40     |          0.0921 | -0.0195 |         0.568 |                 1 |
+| Faggioli-Bentivoglio | csearch  | out-of-sample |        70 | 9-50      |          0.172  | -0.134  |         0.597 |                 1 |
+
+The seven out-of-sample SCOOP predictions under `default`, predicted / actual
+nodes: `B_REVAL_145` 771 / 1,881 (0.41), `A_FA+AA-_15` 576 / 370 (1.6),
+`A_FA+AA-_12` 1,492 / 525 (2.8), `A_FA+AA-_2` 2,641 / 1,583 (1.7),
+`A_FA+AA-_6` 6,619 / 2,357 (2.8), `A_FA+AA-_8` 16,220 / 22,433 (0.72),
+`A_FA+AA-_11` 42,246 / 14,401 (2.9). The two without a count: `A_FA+AA-_1`
+10^5.6 (`default`) / 10^5.2 (`csearch`), `A_FA+AA-_13` 10^7.5 / 10^6.9.

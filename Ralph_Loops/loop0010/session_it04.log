@@ -1,0 +1,143 @@
+# session it04 started 2026-11-01 01:54:40
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the existing report, and the code I'll reuse for item 04.
+  > $ uptime && cat reports/excess_phase_plan.md | head -400
+  > $ wc -l reports/excess_phase_diagram.md && grep -n '^## \|^### ' reports/excess_phase_diagram.md && sed -n 1,80p reports/excess_phase_diagram.md
+  > $ sed -n 1,120p learning/excess.py && grep -n '^def \|^class \|^    def ' learning/excess.py
+  > $ sed -n 125,335p learning/excess.py && sed -n 640,725p learning/excess.py
+  > $ ls -la learning/data/excess.csv learning/data/excess_rule.csv learning/data/instances.csv benchmarks/results/compute_ledger.csv 2>&1; echo ---; grep -n '^def \|
+  > $ sed -n 100,175p learning/first_moment.py
+  > $ grep -n '^def \|^class \|^    def \|^[A-Z_]* = ' learning/cost_model.py | head -60 && sed -n 1,50p learning/cost_model.py
+  > $ head -3 benchmarks/results/compute_ledger.csv && wc -l benchmarks/results/compute_ledger.csv && grep -ci 'scoop\|p[0-9]*n[0-9]_' benchmarks/results/compute_ledg
+  > $ head -1 learning/data/instances.csv | tr ',' '\n' | nl | head -80; echo ---; grep -c SCOOP learning/data/instances.csv; grep SCOOP learning/data/instances.csv |
+  > $ ls benchmarks/instances/MOSP_Instances/ && ls benchmarks/instances/MOSP_Instances/SCOOP/ && ls benchmarks/instances/MOSP_Instances/Faggioli_Bentivoglio/ | head;
+  > $ sed -n 998,1080p learning/excess.py; echo ---; sed -n 887,935p reports/excess_phase_diagram.md
+  > $ grep -n '04 Industrial' Ralph_Loops/loop0010/iterations.md; sed -n 1,40p tests/test_excess.py; grep -n '^def test' tests/test_excess.py; cat Ralph_Loops/loop001
+  > $ cat "benchmarks/instances/MOSP_Instances/SCOOP/Dataset_Description - SCOOP.txt"; echo ======; cat "benchmarks/instances/MOSP_Instances/Faggioli_Bentivoglio/Data
+  > $ for f in benchmarks/results/sweep_full.csv benchmarks/results/sweep_long.csv benchmarks/results/overnight_*.csv benchmarks/results/all_benchmarks.csv benchmarks
+  > $ sed -n 86,300p learning/cost_model.py
+  > $ sed -n 392,445p learning/cost_model.py; sed -n 700,820p learning/cost_model.py | grep -n 'def \|fit(\|predict(' ; ls -la learning/data/ensemble/cost_model_predi
+  > $ ls learning/data/*.csv learning/data/ensemble/*.csv 2>/dev/null; echo ---; for f in learning/data/node_counts.csv learning/data/ensemble/scale_nodes.csv; do [ -
+  > $ python3 - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/excess.csv", low_memory=False)
+s = f[f.collection=="SCOOP"]
+print(len(s)); print(s[["instan
+  > $ grep -n -i 'scoop\|industr\|planner' paper1/latex/*.tex | head -30; echo ---; grep -n 'SCOOP' reports/excess_phase_diagram.md | head -20; echo ---; grep -rn 'SC
+  > $ echo "== sweep_long"; grep -i scoop benchmarks/results/sweep_long.csv | cut -d, -f3,6,8,9; echo "== overnight round1"; grep -i scoop benchmarks/results/overnigh
+  > $ echo "== node_counts scoop"; grep -i scoop learning/data/node_counts.csv | cut -d, -f1,4,6,7,8,9,10; echo "== FB in node_counts"; grep -c Faggioli learning/data
+  > $ sed -n 700,790p learning/cost_model.py; echo ---; grep -n 'decade\|within' reports/cost_model_tables.md | head -20; grep -n 'bias\|×2.5\|2.5' reports/ml_nature.
+  > $ sed -n 50,70p paper1/latex/sec5_results.tex; echo ---; python3 - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/instances.csv")
+s = f[f.collection.e
+  > $ python3 - <<'EOF'
+import pandas as pd
+d = pd.read_csv("learning/data/ensemble/differential_scale.csv")
+s = d[d.base_name.str.startswith("scoop")]
+print(s.labell
+  > $ python3 - <<'EOF'
+import pandas as pd
+c = pd.read_csv("learning/data/ensemble/search_certificate.csv")
+s = c[c.instance_name.str.startswith("scoop")]
+print(s[["
+  > $ sed -n 40,50p reports/cost_model_tables.md; sed -n 86,95p reports/cost_model_tables.md; sed -n 160,166p reports/cost_model_tables.md; sed -n 203,210p reports/co
+  > $ python3 - <<'EOF'
+import pandas as pd
+f = pd.read_csv("learning/data/excess.csv", low_memory=False)
+fb = f[f.collection=="Faggioli-Bentivoglio"].copy()
+fb["cell
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | tail -40
+import time, numpy as np, pandas as pd
+from learning.first_moment import floors, beta_star
+from learning.excess imp
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | tail -45
+import time, numpy as np, pandas as pd
+from learning.cost_model import assemble, CostModel, training_mask, CONFIGS
+
+  > $ sed -n 52,85p learning/cost_model.py; echo ---; grep -n 'def load_campaign' -A 12 learning/*.py | head -30
+  > $ grep -ln 'time_seconds' benchmarks/*.py; sed -n 1,40p benchmarks/overnight.py | head -60; grep -n 'procedure\|solve_mosp_exact\|decide' benchmarks/run_benchmark
+  > $ nice -n 19 python3 - <<'EOF'
+# independent recomputation of the union bound for REVAL, with exact rationals
+from fractions import Fraction
+from math import comb
+  > $ nice -n 19 python3 - <<'EOF'
+import pandas as pd, numpy as np, time
+from learning.first_moment import floors
+from learning.excess import sizes_from_text
+r = pd.
+  > $ head -c 200 "benchmarks/instances/MOSP_Instances/SCOOP/scoop-B_REVAL_145.txt" | head -2 | cut -c1-80; echo; grep -n 'transpose\|\.T\b\|pieces\|MOSP_Instances' m
+  > $ grep -n 'def from_benchmark_file' -A 40 mosp/instance.py | head -70
+  > $ ls literature/ | grep -i 'frinhani\|2018' ; python3 - <<'EOF'
+import pandas as pd
+d = pd.read_csv("learning/data/ensemble/differential_scale.csv")
+fb = d[d.base
+  > $ which pdftotext && pdftotext -layout literature/plosone_2018_pagerank_mosp.pdf /tmp/frinhani.txt && grep -n -i 'REVAL\|CARLET\|CUC28A\|GTM18A\|12F18\|AP-9\|FA+A
+  > $ cat > learning/excess_scoop.py <<'EOF'
+"""Industrial instances in the excess: the 24 SCOOP instances, with the 300
+Faggioli-Bentivoglio instances as the structu
+  > $ grep -n -i 'scoop' /tmp/frinhani.txt | head -20; grep -n '134\b' /tmp/frinhani.txt | head; grep -n -i 'reval\|carlet\|gtm18' /tmp/frinhani.txt | head
+  > $ nice -n 19 python3 -m learning.excess_scoop 2>&1 | grep -v SettingWithCopy | tail -120
+  > $ cat > tests/test_excess_scoop.py <<'EOF'
+"""loop0010 item 04: the planner's regimes, the Faggioli-Bentivoglio cell parser,
+the floor flags against an exact-rati
+
+Tests pass and the build is clean. Now I'll pull the last aggregate numbers for the report and start the gate in the background while I write.
+  > $ nice -n 19 python3 - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/excess_scoop.csv", low_memory=False)
+s = f[f.collection=="SCOOP"]; 
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it04.log 2>&1; echo "GATE EXIT $?" >> Ralph_Loops/loop0010/gate_it04.log)
+  > $ nice -n 19 python3 - <<'EOF'
+import pandas as pd, numpy as np
+f = pd.read_csv("learning/data/excess_scoop.csv", low_memory=False)
+s = f[f.collection=="SCOOP"]; 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/excess_scoop.py"); s = p.read_text()
+s = s.replace('''def floor_violations(f: pd.DataFrame) -> pd.
+  > $ cat >> reports/excess_phase_diagram.md <<'EOF'
+
+## 4. Industrial instances: the 24 SCOOP instances in the excess (item 04, 2026-11-01)
+
+**Question.** F of the p
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/excess_phase_diagram.md"); s = p.read_text()
+old1 = """   (recomputed with exact rationals in `test
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+s = s.replace("Current: 3/13 SOLVED", "Current: 4/13 
+  > $ git status --porcelain | grep -v '^ M Ralph_Loops/loop0010/\(loop.log\|nohup.out\|status.json\)\|session_it04' ; echo "---ignored?"; git check-ignore learning/d
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The gate is running in the background (lake build first). I'm waiting on its exit line with a bounded watch, then I'll record its verdict in PROGRESS.md.
+  > $ until grep -q "GATE EXIT" Ralph_Loops/loop0010/gate_it04.log; do sleep 5; done; cat Ralph_Loops/loop0010/gate_it04.log
+  > $ grep -n '^## \|^### \|^#### ' reports/excess_phase_diagram.md | sed -n '/^[0-9]*:## 4/,$p'; cat Ralph_Loops/loop0010/gate_it04.log
+  > $ for i in $(seq 1 100); do grep -q "GATE EXIT" Ralph_Loops/loop0010/gate_it04.log && break; sleep 5; done; cat Ralph_Loops/loop0010/gate_it04.log; date
+
+The gate passed. I'll record it and finish the PROGRESS entry.
+  > $ cat >> Ralph_Loops/loop0010/PROGRESS.md <<'EOF'
+- **Gate: PASS** (one run, 2026-11-01 02:00–02:14 at load 1–2): lake build
+  ok, every file imported, sorry 0, M
+
+Item 04 is done. Nothing was solved or re-run, and nothing was committed.
+
+**What was built**
+
+- `learning/excess_scoop.py` joins, for the 24 SCOOP and 300 Faggioli–Bentivoglio instances, everything already on record: item 01's excess map, the bounds from the feature table, item 02's two-key rule, the finite first-moment floors from each instance's own size law, the three September SAT sweeps, the compute ledger, the refutation counts at n ≤ 40 and in the differential harness at 50–100, the search certificates, the DRAT proofs, and the cost model's prediction with an in-sample flag. Output is `learning/data/excess_scoop.csv` (324 rows, git-ignored). Eight tests in `tests/test_excess_scoop.py`, including an exact-rational recomputation of the union bound.
+- Section 4 of `reports/excess_phase_diagram.md` has every table in full and the planner's statement drafted as the paper's paragraph.
+
+**Main findings**
+
+- SCOOP sits on the sparse flank: excess 0.97–2.50, median 1.35, with 19 of 24 in [1, 2). None is a forest. The two-key rule is exact on 12 of 24 and never more than 0.061 n above the optimum.
+- The stated check fails on one instance and is reported. `scoop-B_REVAL_145_0` has optimum 7 against a 0.01 floor of 9. A random cover of its size law has an optimum of 7 or less with probability below 7 × 10⁻⁵. The floor is a random-model statement, so this measures structure, not an error. The same check gives zero violations on Chu & Stuckey, Faggioli–Bentivoglio, Simonis and Harvey, and up to 39 stacks on the designed Challenge instances.
+- Certification cost on record is small. The 22 recorded SCOOP refutations total 44,379 nodes and 0.07 s. The two largest instances have no node count and were not re-run. The cost model is within a decade on all 22 recorded counts and predicts 0.3 s and 20 s for those two.
+- One note for item 12: the SCOOP README's prose swaps pieces and patterns relative to its own format line. All certified values are for the instances as loaded, and the paper should state the orientation.
+
+**Gate: PASS** (lake build, 1,570 MOSP tests, 123 pathwidth tests, paper check). PROGRESS.md is updated to 4/13 and item 04 is marked done. Next is item 05, `β⁺` by simulation.
+
+# result: success in 1203s, 55 turns, cost $7.62

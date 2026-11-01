@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 3/13 SOLVED
+Current: 4/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -255,3 +255,89 @@ than prove exactness; prove the blow-up bound; the forest regime's
 practical content is `pw = ω − 1` almost surely under the random model
 (finding 5), which the random corollary should state. For item 11 the
 blow-up lemma is the Lean target as planned.
+
+---
+
+## Iteration 4 — 2026-11-01 01:55
+
+Item 04, industrial instances: the 24 SCOOP instances in the excess.
+
+### Completed
+
+- **`learning/excess_scoop.py`** (`python -m learning.excess_scoop`; stages
+  `build`, `tables`): for the 24 SCOOP and the 300 Faggioli–Bentivoglio
+  instances, one row joining what is on record and nothing else — item 01's
+  map (`e`, `γ`, `κ`, forest, 2-core, the certified optimum with its
+  provenance), `instances.csv`'s bounds, item 02's two-key rule value and
+  size histogram, the finite floors at bound < 1 and < 0.01 and `β*` from the
+  instance's own size law, the three September SAT-path sweeps (first
+  `solved` row = the certification; later rows are cache hits), the compute
+  ledger (no row for any of the 324), the refutation counts of
+  `node_counts.csv` (n ≤ 40) and the differential harness's identity
+  labelling (50–100), the search certificates, the DRAT proofs, and the
+  cost model's prediction (chosen variant refitted per configuration, with an
+  `in_training` flag). `learning/data/excess_scoop.csv`, 324 rows,
+  git-ignored; 5 s. Nothing solved, nothing re-run, `solutions/` untouched.
+  `tests/test_excess_scoop.py`, 8 tests, including an exact-rational
+  recomputation of the union bound independent of `learning.first_moment`.
+- **`reports/excess_phase_diagram.md` §4**: the per-instance table in full,
+  the regime table, the Faggioli–Bentivoglio cell table, the floor checks
+  (two collections, and every certified corpus instance per collection), the
+  cost model against every recorded count, and the planner's statement as a
+  draft of the paper's paragraph. Both dataset READMEs quoted.
+- **Numbers.** SCOOP: `e` 0.97–2.50, median 1.35; 19 of 24 in `[1, 2)`, 3
+  on the ridge, 1 above, 1 in `[e_g, 1)`; none a forest, none below
+  `e_g(r)`; 10 decompose. `lb_best` tight on 6 (worst gap 6), `ub_best` on
+  12, the rule exact on 12 (mean gap 1.21, worst +7, `gap / n ≤ 0.061`) and
+  exact on 47% of the `[1, 2)` instances against 13% of the 143
+  Faggioli–Bentivoglio instances in the same regime. Refutations on record
+  for 22 of 24: 44,379 nodes and 0.07 s in all (max 22,433), labelling
+  spread ≤ 9%; the SAT path took 1,662 s on the 24, 1,459 of them on
+  `A_FA+AA-_13` (134 customers). The two largest have no node count
+  ("not recorded", not re-run); the cost model predicts 10^5.6 and 10^7.5
+  nodes (`default`), 0.3 s and 20 s at 0.65 µs, and is within a decade on all
+  22 recorded SCOOP counts (out of sample at 60–99: MAE 0.33, worst 0.47) and
+  all 300 Faggioli–Bentivoglio counts. Faggioli–Bentivoglio spans `e`
+  0.94–8.7 and its cost peaks in the `40 × 50` cell on the ridge (median
+  24,000 nodes).
+- **The stated check is not met on one of 24, and is reported:**
+  `scoop-B_REVAL_145_0` (60 customers, 49 patterns, `e = 1.88`, optimum 7)
+  has a 0.01 floor of 9 — a random cover of its size law has optimum ≤ 7
+  with probability below 6.8 × 10⁻⁵, confirmed with exact rationals. Two
+  more sit below the floor at bound < 1. Not a contradiction (the floor is
+  a random-model statement); the context table shows zero violations on the
+  200 Chu & Stuckey, 300 Faggioli–Bentivoglio, 3,630 Simonis and 2,130
+  Harvey instances, and the designed Challenge / Wilson / Shaw instances up
+  to 39 stacks below: the floor measures distance from random, and REVAL is
+  the one SCOOP instance with visible structure.
+- **An orientation note for item 12.** The SCOOP README's prose ("49 pieces
+  and 134 patterns") has pieces and patterns the other way round from its
+  own format line; the loader transposes every `MOSP_Instances/` file, so
+  our customers are the file's pieces (`REVAL` = 60 × 49, `_13` = 134 × 37).
+  Frinhani et al. give SCOOP results as a figure, so no per-instance
+  published optimum exists to compare. All certified values are for the
+  instances as loaded; the paper should state the orientation.
+- **Kill verdict: none** (descriptive); the one check reported as above. No
+  certified value is wrong, no theorem is false, no published claim of ours
+  drifts.
+- **Gate: PASS** (one run, 2026-11-01 02:00–02:14 at load 1–2): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,570 passed (2 skipped,
+  1 xfailed; +8 new), pathwidth_solver 123 passed, paper check ok (66 pages,
+  no undefined references). Log: `Ralph_Loops/loop0010/gate_it04.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 05, `β⁺` by simulation. From this item: the rule's `gap / n` on the
+sparse flank is 0.03–0.06 at 30–134 customers on real and generated
+instances alike, so item 05's kill (0.03 between the rule at the largest `n`
+and the certified slope at `n ≤ 100`) is tight on the flank and should be
+checked per cell, not pooled. For item 12: the planner's paragraph is drafted
+in §4.2; state the SCOOP file orientation in the paper's instance paragraph;
+REVAL is the example that the floor is a random-model statement. For item 08:
+REVAL (optimum 7 against a 0.01 floor of 9) is a test case a structured count
+must not "fix" — a stronger random floor would move further from it, which is
+correct, and the paragraph should say so.
