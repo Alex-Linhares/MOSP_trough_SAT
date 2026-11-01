@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 9/13 SOLVED
+Current: 10/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -790,3 +790,114 @@ same ordering should hold for any cluster-representative count. The
 vectorised lattice (`lattice_weights`, 2.3 s at `n = 20`) is the tool for
 any further `n ≤ 25` lattice question; §36's reachable count could be
 re-derived on it in one pass.
+
+---
+
+## Iteration 10 — 2026-11-01 06:19
+
+Item 10, validity under the real generator, on paper.
+
+### Completed
+
+- **`learning/first_moment.py`, the section "validity under the real
+  generator"**: the exact pre-repair Bernoulli bound (`lq_bernoulli`,
+  `log_bound_bernoulli`), the truncated-size bound for the patterns-first
+  pad order (`lq_truncated`, `log_bound_truncated`), a Chernoff quenched
+  form on the i.i.d. sizes (`log_bound_quenched`, binned typical set) and
+  the best of both (`log_bound_best`, `floors_best`); the generator with
+  its auxiliary randomness explicit (`draw_aux`, `pad_customers_with_aux`,
+  `pad_patterns_with_aux`, `pad_with_aux` in both orders, the dominating
+  `unconditional_pad`, `no_repair_needed`, `generator_draw`,
+  `generator_event_rates`, `wilson`); the closed-form cut and repair
+  union bounds; `rejection_floors` with the five rigorous forms; a subset
+  DP for exact vertex separation for the checks. `tests/test_first_moment.py`:
+  13 new tests (44 in all) — the binomial-average identity exactly in
+  rationals, the pair probability and both union bounds against full
+  enumeration, the pads only add and are dominated, the truncated row law
+  by chi-square, empty-pair inclusion and pathwidth monotonicity on 60
+  draws against `compute_pathwidth`, the explicit non-monotone example,
+  the quenched bound against the exact `P(pw ≤ k)` over all `2^15` base
+  matrices at `3 × 5` and the Chernoff tail against the exact size-sum
+  distribution, the floors' ordering.
+- **`reports/scratch/validity/`**: `check.py` (stages `exact`, `law`,
+  `coupling`, `classes`, `table`), `check.log`, `classes.csv`,
+  `floors.csv`, `tables.md`, stdout logs. Every lemma checked before it
+  was stated: 205 rational identities; two full enumerations; the coupling
+  on 40,000 draws at `n = m = 8` (`M ≥ B`, `M ≤ M⁺`, every empty pair of
+  `G_M` empty in `G_B`, `pw(G_B) ≤ pw(G_M)` in every draw); the
+  non-monotonicity counted over 320,000 single-entry increases of the
+  base; the event rates on the 40 classes in both pad orders. About 0.1
+  core-hours at nice 19, load 0.2–1. Nothing solved; `solutions/` read
+  only; the ledger untouched.
+- **`reports/excess_phase_diagram.md` §10**: the generator with explicit
+  randomness, six statements with proofs (V1 exact bound; V2 coupling; V3
+  the first moment survives the pads, Bernoulli sizes in both orders and
+  truncated sizes patterns-first; V3′ quenched; V4 the repair map is not
+  monotone; V5 the rejection in five rigorous forms; V6 monotone in the
+  density), the checks, the numerical consequence, findings, the paper's
+  sentence, kill verdict, what it does not claim, every table in full.
+- **The paper**: the last paragraph of Appendix E's generator subsection
+  (`sec9e_appendix_random.tex`) now says what is proved (the pre-repair
+  bound by coupling, the truncated and quenched forms, the rejection at
+  `1 / P(accepted)` with the measured acceptances, the proved floors'
+  distance from the table and why) and what stays measured; the
+  "a proof would couple…" sentence is gone. PDF rebuilt.
+- **Numbers.** Acceptance (fitted order, measured): 0.87 → 0.56 on the
+  square `d = 2` classes from 30 to 125, 0.0049 at `(100, 50, 2)` (291 of
+  60,000 draws), 0.77 at `(100, 50, 4)`, ≥ 0.99 elsewhere; `P(M⁺
+  connected) = 1.000` everywhere, so the Harris form on the unconditional
+  pad is the trivial form; the no-repair event keeps a 0.01 floor on 2
+  classes of 40. The acceptance factor moves no 0.01 floor on any class.
+  Non-monotonicity at `n = 8`, `d = 2`: a pad vanishes on 40.5% of
+  single-entry additions, the acceptance is lost on 0.72%, the padded
+  pathwidth falls on 3.5%; `M⁺` and `G_B` are monotone on every one. The
+  proved 0.01 floors (best form, with the rejection) differ from the
+  measured-model floors by more than one stack on 35 of 40 classes
+  (Bernoulli sizes) and 34 (truncated): trivial at `d = 2` in the
+  Bernoulli form, 3–13 truncated; 2–13 stacks short at `d = 4–6`
+  (`(125, 125, 4)`: 30 / 32 against 42.4; `(125, 125, 6)`: 60 / 62 against
+  69.6); 0–5 at `d ≥ 8`. The decomposition (annealed → per-instance floor
+  at simulated binomial sizes → realised) puts the price at the pads at
+  `d = 2` (1 → 3.4 → 13.6 at 125 × 125; truncated 6 → 10.4) and at the
+  annealing at `d ≥ 4` (26 → 39.8 → 42.4); the quenched form recovers 2–4
+  stacks of the latter at 0.01 and 4–10 at the `< 1` level. At nominal
+  sizes `(100, 50, 2)` has excess 0.5, below the threshold: its measured
+  floor is entirely the pads' 74% extra ones. At `1.10 d / n` the floors
+  rise 2–6 stacks on the large classes, and V6 makes the quoted floors
+  valid for any density at or above `d / n`. 0 of 200 certified optima
+  below any rigorous floor (smallest margin one stack).
+- **Kill verdict: the fallback is the result.** Harris–FKG applies to the
+  unconditional pad, the no-repair event, the base graph and the paper's
+  own generator, and not to the fitted generator's acceptance (V4); the
+  item ends with the `1 / P(accepted)` form and the measured acceptance,
+  as the criterion allows. No certified value is wrong, no theorem is
+  false, no published claim of ours drifts (one sentence replaced by what
+  is proved, as item 12 planned).
+- **Gate: PASS** (one run, 2026-11-01 06:51–07:01 at load 0.5–2): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,641 passed (2 skipped,
+  1 xfailed; +13 new), pathwidth_solver 123 passed, paper check ok (67
+  pages, up from 66 with the rewritten paragraph; no undefined references).
+  Log: `Ralph_Loops/loop0010/gate_it10.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 11, Lean. From this item: the coupling inclusion the plan names as the
+first Lean target is Lemma V2 (ii) — a pattern that meets both sides of a
+pair in the base meets both in any superset matrix, so an empty pair of the
+superset's graph is one of the base's; stated over `coverInstance`-style
+matrices with `M ≤ M'` entrywise, it is two lines on top of
+`isEmptyPair_coverGraph_iff`, and `pathwidth` monotone under `SimpleGraph`
+subgraph inclusion is the other half (Mathlib may lack a direct lemma;
+`PathDecomposition` restricts trivially). The Bernoulli product formula
+(V1) is a probability statement and is not proposed for Lean. For item 12:
+Appendix E's paragraph is already replaced (§10.7); the paper should quote
+the proved floors as "pre-repair sizes, fitted generator at `p = d / n`",
+never the realised-size ones as theorems; the sentence on `(100, 50, 2)`
+(no first-moment floor at nominal sizes, the pads change its regime) is
+worth one line. For the bound work: a sharper tail than Chernoff on the
+size sum (the exact distribution is computable) would move the quenched
+floor toward the typical instance, up to 10 stacks at `(125, 125, 4)`.

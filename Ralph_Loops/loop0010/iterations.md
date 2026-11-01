@@ -365,7 +365,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
     evidence for one; the derivation of the reachable count in the random
     model is the open problem §36 named, and this item does not attempt it.
 
-- [ ] **10 Validity under the real generator, on paper.**
+- [x] **10 Validity under the real generator, on paper.**
   - **Question.** E. The first-moment inequality assumes patterns uniform
     given their sizes; the fitted Chu & Stuckey generator pads short
     patterns and empty customers and rejects disconnected instances

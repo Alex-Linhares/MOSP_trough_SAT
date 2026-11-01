@@ -266,3 +266,240 @@ def test_nested_floors_are_monotone_in_ell_direction_of_validity():
     f2 = nested_floors(2, n, sizes)
     assert f1[1] <= f1[0] and f2[1] <= f2[0]
     assert 0 <= f1[0] <= n and 0 <= f2[0] <= n
+
+
+# ----------------------------------------------------------------------------
+# loop0010 item 10: validity under the real generator
+# ----------------------------------------------------------------------------
+
+import itertools
+from fractions import Fraction
+
+from learning.first_moment import (customer_masks, draw_aux, floors_bernoulli, floors_truncated, lq_bernoulli,
+                                   lq_truncated, log_disconnected_bound, log_repair_bound, mosp_connected,
+                                   no_repair_needed, pad_customers_with_aux, pad_patterns_with_aux, pad_with_aux,
+                                   rejection_floors, unconditional_pad, vertex_separation_brute, wilson)
+
+
+def _avoid_count(n, t, s):
+    return math.comb(n - t, s) + math.comb(n - t + 1, s) - math.comb(n - 2 * t + 1, s)
+
+
+@pytest.mark.parametrize("n,p", [(5, Fraction(1, 3)), (8, Fraction(2, 7)), (11, Fraction(1, 5))])
+def test_bernoulli_avoid_probability_is_the_binomial_average_of_the_uniform_one(n, p):
+    # (a) of §10: a Bernoulli(p) row given its size s is a uniform s-set, so
+    # P(avoid A or avoid R) = sum_s Bin(n, p)(s) q(n, t, s) = (1-p)^t + (1-p)^(t-1) - (1-p)^(2t-1), exactly
+    for t in range(1, (n + 1) // 2 + 1):
+        lhs = sum(p ** s * (1 - p) ** (n - s) * _avoid_count(n, t, s) for s in range(n + 1))
+        rhs = (1 - p) ** t + (1 - p) ** (t - 1) - (1 - p) ** (2 * t - 1)
+        assert lhs == rhs
+        assert lq_bernoulli(float(p), t, t - 1) == pytest.approx(math.log(float(rhs)), abs=1e-12)
+        assert lq_truncated(n, float(p), t, kmin=0) == pytest.approx(math.log(float(rhs)), abs=1e-10)
+        # the truncated form: sizes below 2 lifted to 2
+        trunc = sum(math.comb(n, s) * p ** s * (1 - p) ** (n - s) * Fraction(_avoid_count(n, t, max(s, 2)), math.comb(n, max(s, 2)))
+                    for s in range(n + 1))
+        assert lq_truncated(n, float(p), t) == pytest.approx(math.log(float(trunc)), abs=1e-10)
+        assert trunc <= rhs
+
+
+def _enumerate_base(m, n, p):
+    """every base matrix with its exact Bernoulli(p) weight (rational)."""
+    for bits in itertools.product((0, 1), repeat=m * n):
+        B = np.array(bits, dtype=bool).reshape(m, n)
+        w = p ** sum(bits) * (1 - p) ** (m * n - sum(bits))
+        yield B, w
+
+
+def test_empty_pair_probability_and_cut_bound_by_enumeration():
+    m, n, p = 2, 5, Fraction(1, 3)
+    A, R = {0, 1}, {2}
+    t = 2
+    empty = Fraction(0)
+    disconnected = Fraction(0)
+    for B, w in _enumerate_base(m, n, p):
+        meets_both = any(B[i, list(A)].any() and B[i, list(R)].any() for i in range(m))
+        empty += w * (not meets_both)
+        disconnected += w * (not mosp_connected(B))
+    formula = ((1 - p) ** t + (1 - p) ** (t - 1) - (1 - p) ** (2 * t - 1)) ** m
+    assert empty == formula
+    # the closed-form cut bound is a bound on P(G_B disconnected) (a union bound, so above it)
+    assert float(disconnected) <= math.exp(log_disconnected_bound(n, m, float(p))) + 1e-12
+    # and the repair bound is a bound on P(some repair fires)
+    repair = sum(w for B, w in _enumerate_base(m, n, p) if not no_repair_needed(B))
+    assert float(repair) <= math.exp(log_repair_bound(n, m, float(p))) + 1e-12
+
+
+def _random_base(rng, m, n, p):
+    return rng.random((m, n)) < p
+
+
+def test_repairs_only_add_and_are_dominated_by_the_unconditional_pad():
+    rng = np.random.default_rng(10)
+    for _ in range(300):
+        m, n = int(rng.integers(2, 7)), int(rng.integers(2, 8))
+        B = _random_base(rng, m, n, rng.uniform(0.05, 0.5))
+        U, sigma = draw_aux(m, n, rng)
+        for first in (False, True):
+            M = pad_with_aux(B, U, sigma, patterns_first=first)
+            Mp = unconditional_pad(B, U, sigma)
+            assert np.all(M >= B) and np.all(Mp >= M)
+            assert M.any(axis=0).all() and (M.sum(axis=1) >= 2).all()
+            # the pads add exactly the deficiency, in the order applied
+            if not first:
+                M1 = pad_customers_with_aux(B, U)
+                assert (M1.sum() - B.sum()) == (~B.any(axis=0)).sum()
+                assert (M.sum() - M1.sum()) == np.clip(2 - M1.sum(axis=1), 0, None).sum()
+            # the unconditional pad is monotone in the base
+            extra = _random_base(rng, m, n, 0.2)
+            assert np.all(unconditional_pad(B | extra, U, sigma) >= Mp)
+            if no_repair_needed(B):
+                assert np.array_equal(M, B)
+
+
+def test_pattern_pad_rows_are_uniform_sets_of_the_truncated_size():
+    # the patterns-first lemma: given |B[i]| = s, the padded row is a uniform set of size max(s, 2)
+    rng = np.random.default_rng(11)
+    n, draws = 5, 20000
+    counts = {s: {} for s in (0, 1, 2)}
+    for _ in range(draws):
+        B = _random_base(rng, 1, n, 0.25)
+        s = int(B.sum())
+        if s > 2:
+            continue
+        _, sigma = draw_aux(1, n, rng)
+        row = tuple(np.flatnonzero(pad_patterns_with_aux(B, sigma)[0]))
+        counts[s][row] = counts[s].get(row, 0) + 1
+    for s in (0, 1, 2):
+        rows = counts[s]
+        assert len(rows) == math.comb(n, 2)
+        total = sum(rows.values())
+        expected = total / math.comb(n, 2)
+        chi2 = sum((c - expected) ** 2 / expected for c in rows.values())
+        assert chi2 < 40  # 9 degrees of freedom; 99.9% point is 27.9, with margin
+
+
+def test_empty_pairs_of_the_padded_graph_are_empty_in_the_base_and_pathwidth_is_monotone():
+    from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+    import networkx as nx
+
+    rng = np.random.default_rng(12)
+    for _ in range(60):
+        m, n = int(rng.integers(2, 7)), int(rng.integers(3, 8))
+        B = _random_base(rng, m, n, rng.uniform(0.05, 0.4))
+        U, sigma = draw_aux(m, n, rng)
+        M = pad_with_aux(B, U, sigma)
+        adjB, adjM = customer_masks(B), customer_masks(M)
+        assert all(a & b == a for a, b in zip(adjB, adjM))  # G_B is a subgraph of G_M
+        for A in range(1, 1 << n):
+            for R in range(1, 1 << n):
+                if A & R:
+                    continue
+                emptyM = all(not ((mask := sum(1 << int(c) for c in np.flatnonzero(M[i]))) & A and mask & R) for i in range(m))
+                emptyB = all(not ((mask := sum(1 << int(c) for c in np.flatnonzero(B[i]))) & A and mask & R) for i in range(m))
+                assert (not emptyM) or emptyB
+        pwB, pwM = vertex_separation_brute(adjB), vertex_separation_brute(adjM)
+        assert pwB <= pwM
+        G = nx.Graph()
+        G.add_nodes_from(range(n))
+        G.add_edges_from((u, v) for u in range(n) for v in range(u + 1, n) if (adjM[u] >> v) & 1)
+        assert compute_pathwidth(G)[0] == pwM
+
+
+def test_the_repair_map_is_not_monotone_in_the_base():
+    # B: patterns {3,4}, {}, {3,4}; customers 1, 2 empty. The pads make it connected.
+    # B' = B + two ones: pattern 2 = {1, 2}; no pad fires and the instance is disconnected.
+    B = np.zeros((3, 5), bool)
+    B[0, [3, 4]] = True
+    B[2, [3, 4]] = True
+    U = np.array([0, 0, 0, 0, 0])
+    sigma = np.array([[3, 4, 0, 1, 2]] * 3)
+    M = pad_with_aux(B, U, sigma)
+    Bp = B.copy()
+    Bp[1, [1, 2]] = True
+    Mp = pad_with_aux(Bp, U, sigma)
+    assert np.all(Bp >= B)
+    assert mosp_connected(M) and not mosp_connected(Mp)
+    assert not np.all(Mp >= M)
+    # and the pathwidth of the padded graph can fall when the base grows
+    assert vertex_separation_brute(customer_masks(Mp)) < vertex_separation_brute(customer_masks(M))
+    # while the unconditional pad is monotone and its connectivity increasing here
+    assert np.all(unconditional_pad(Bp, U, sigma) >= unconditional_pad(B, U, sigma))
+
+
+def test_rigorous_floors_are_monotone_and_ordered():
+    n, m = 40, 40
+    for d in (2, 4, 6, 10):
+        p = d / n
+        b, tr = floors_bernoulli(n, m, p), floors_truncated(n, m, p)
+        assert b[1] <= b[0] and tr[1] <= tr[0]
+        assert tr[0] >= b[0] and tr[1] >= b[1]
+        # monotone in p (the floor at p is valid for every density above p)
+        assert floors_bernoulli(n, m, 1.1 * p)[1] >= b[1]
+        # the rejection forms are ordered: closed/trivial <= harris_plus <= base, harris_E <= base
+        r = rejection_floors(n, m, p, p_acc=0.5, p_acc_plus=0.8)
+        assert r["trivial"][1] <= r["harris_plus"][1] <= r["base"][1]
+        assert r["harris_E"][1] <= r["base"][1]
+        assert r["closed"][1] <= r["base"][1]
+        # the trivial form at acceptance 1 is the base
+        assert rejection_floors(n, m, p, p_acc=1.0)["trivial"] == r["base"]
+    assert floors_bernoulli(125, 125, 10 / 125) == floors_truncated(125, 125, 10 / 125)
+
+
+def test_wilson_interval_contains_the_point_estimate():
+    lo, hi = wilson(3, 200)
+    assert lo < 3 / 200 < hi and 0 <= lo and hi <= 1
+    assert wilson(0, 0) == (0.0, 1.0)
+
+
+def test_quenched_bound_is_above_the_exact_probability_by_enumeration():
+    # m = 3 patterns, n = 5 customers, p = 1/3: P(pw(G_B) <= k) exactly over all 2^15 base matrices,
+    # against the annealed, the quenched and the best bound (all valid), for every k
+    from learning.first_moment import log_bound_best, log_bound_bernoulli, log_bound_quenched
+
+    m, n, p = 3, 5, Fraction(1, 3)
+    probs = {k: Fraction(0) for k in range(n)}
+    for B, w in _enumerate_base(m, n, p):
+        pw = vertex_separation_brute(customer_masks(B))
+        for k in range(n):
+            if pw <= k:
+                probs[k] += w
+    for k in range(n):
+        exact = float(probs[k])
+        for fn in (log_bound_bernoulli, log_bound_quenched, log_bound_best):
+            lb = fn(n, m, float(p), k)
+            assert exact <= (math.exp(lb) if lb < math.inf else math.inf) + 1e-12, (fn.__name__, k)
+        assert log_bound_best(n, m, float(p), k) <= log_bound_bernoulli(n, m, float(p), k) + 1e-12
+        assert log_bound_best(n, m, float(p), k) <= log_bound_quenched(n, m, float(p), k) + 1e-12
+
+
+def test_quenched_tail_is_a_chernoff_bound_on_the_size_sum():
+    # the tail factor used inside log_bound_quenched bounds P(sum_j X_j > m a) for i.i.d. X = log q(n, t, s):
+    # exact distribution of the sum by enumeration of size vectors at m = 3, n = 6
+    from learning.first_moment import lq, size_law
+
+    n, m, p, t = 6, 3, 0.3, 2
+    ss, pr = size_law(n, p, 0)
+    X = np.array([lq(n, t, int(s)) for s in ss])
+    fin = np.isfinite(X)
+    Xf, prf = X[fin], pr[fin]
+    lambdas = np.logspace(-2, 2.5, 120)
+    lmgf = np.log(np.array([float(np.sum(prf * np.exp(lam * Xf))) for lam in lambdas]))
+    for a in np.linspace(float(Xf.min()), 0.0, 7):
+        exact = 0.0
+        for combo in itertools.product(range(len(ss)), repeat=m):
+            w = float(np.prod(pr[list(combo)]))
+            if sum(X[list(combo)]) > m * a:
+                exact += w
+        chern = min(1.0, float(np.exp(np.min(-lambdas * m * a + m * lmgf))))
+        assert exact <= chern + 1e-12
+
+
+def test_floors_best_dominate_both_forms():
+    from learning.first_moment import floors_best, floors_quenched
+
+    for (n, m, d) in ((30, 30, 4), (50, 50, 6), (40, 40, 2)):
+        p = d / n
+        a, q, b = floors_bernoulli(n, m, p), floors_quenched(n, m, p), floors_best(n, m, p)
+        assert b[0] >= max(a[0], q[0]) and b[1] >= max(a[1], q[1])
+        a2, q2, b2 = floors_truncated(n, m, p), floors_quenched(n, m, p, 2), floors_best(n, m, p, 2)
+        assert b2[0] >= max(a2[0], q2[0]) and b2[1] >= max(a2[1], q2[1])

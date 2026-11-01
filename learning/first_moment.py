@@ -29,9 +29,14 @@ probability where `a*` is the point above which `g < 0`; `beta*(d, mu) = 1 - 2 a
 `beta* > 0` iff `mu (d - 1) > 1`, i.e. iff the excess `e > 1`
 (`reports/scratch/clique_cover_moment/REPORT_generator.md` section 3.1).
 
-Nothing here is a theorem about the generators we actually run: the fitted
-generator pads and rejects (Appendix E.3), and item 10 of loop0010 is where
-that is settled. A first moment is a lower bound, never the constant.
+The uniform-model bound is a theorem about the uniform model. For the fitted
+generator, which pads and rejects (Appendix E.3), the section "validity under
+the real generator" below proves the bound with the *pre-repair* sizes
+(Bernoulli, or `max(Bin, 2)` in the patterns-first order, and a Chernoff
+quenched form) by a monotone coupling, and the rejection costs at most
+`1 / P(accepted)`; the bound at the files' realised sizes stays measured
+(`reports/excess_phase_diagram.md` §10). A first moment is a lower bound,
+never the constant.
 
 The structured count (loop0010 item 08, `reports/excess_phase_diagram.md` §8):
 `ell` nested empty pairs at `ell` prefix sizes of one layout, counted exactly
@@ -808,3 +813,398 @@ def empty_pair_count_brute(masks: list[int], n: int, t: int) -> int:
         if len(free) >= t - 1:
             count += math.comb(len(free), t - 1)
     return count
+
+
+# ----------------------------------------------------------------------------
+# validity under the real generator(loop0010 item 10, excess_phase_diagram.md §10)
+# ----------------------------------------------------------------------------
+#
+# The fitted Chu & Stuckey generator (`reports/scratch/clique_cover_moment/
+# gen_candidates.py`, `bern_padC1_padP2_conn`): a base matrix `B` of i.i.d.
+# Bernoulli(p) entries (`B[i, j]`: pattern `i` contains customer `j`); then every
+# empty customer joins one uniformly random pattern; then every pattern with
+# fewer than two customers gains uniformly random customers it lacks until it
+# has two; then the instance is kept iff its MOSP graph is connected. The
+# variant `bern_padP2_padC1_conn` applies the two pads in the other order.
+#
+# (a) On `B` the empty-pair probability is exact and a product over patterns:
+#     `P((A, R) empty in G_B) = [(1-p)^a + (1-p)^r - (1-p)^(a+r)]^m`
+#     (`lq_bernoulli`), and it is the Binomial(n, p) average of the uniform
+#     model's `q(n, t, s)` (checked exactly in the tests).
+# (b) With the auxiliary randomness fixed (`draw_aux`: one uniform pattern per
+#     customer, one uniform customer order per pattern) the repairs are a
+#     deterministic map `pad_with_aux(B, U, sigma) >= B` entrywise, so an empty
+#     pair of the padded graph is an empty pair of the base graph and
+#     `pw(G_M) >= pw(G_B)`; hence `P(pw(G_M) <= k) <= ` the bound of (a).
+#     In the patterns-first order the rows after the pattern pad are
+#     independent uniform sets of size `max(s_i, 2)`, `s_i ~ Bin(n, p)`, so the
+#     bound holds with the truncated sizes (`lq_truncated`), which is much
+#     stronger at `d = 2`; the customer pad then only adds ones.
+# (c) The map is *not* monotone in `B` (a pad vanishes when the base grows), so
+#     "accepted" is not an increasing event of the base entries and Harris's
+#     inequality does not apply to it directly. It does apply to
+#     `unconditional_pad` (`M+`: every pad applied whether needed or not),
+#     which dominates `M` and is monotone in `B`; to the sub-event "no repair
+#     fires" (`log_repair_bound`); and to the generator as the paper states it
+#     (no pads), where acceptance is `G_B` connected. The rigorous forms with
+#     the rejection are in `rejection_floors`.
+
+
+def lq_bernoulli(p: float, a: int, r: int) -> float:
+    """`log P(a Bernoulli(p) pattern avoids A or avoids R)` for `|A| = a`,
+    `|R| = r`: `log[(1-p)^a + (1-p)^r - (1-p)^(a+r)]`."""
+    if a == 0 or r == 0:
+        return 0.0
+    if p >= 1:
+        return -math.inf
+    lp = math.log1p(-p)
+    x, y, z = a * lp, r * lp, (a + r) * lp
+    mx = max(x, y)
+    val = math.exp(x - mx) + math.exp(y - mx) - math.exp(z - mx)
+    return mx + math.log(val)
+
+
+def log_binomial_pmf(n: int, p: float, s: int) -> float:
+    if p <= 0:
+        return 0.0 if s == 0 else -math.inf
+    if p >= 1:
+        return 0.0 if s == n else -math.inf
+    return lchoose(n, s) + s * math.log(p) + (n - s) * math.log1p(-p)
+
+
+def lq_truncated(n: int, p: float, t: int, kmin: int = 2) -> float:
+    """`log E_s q(n, t, max(s, kmin))`, `s ~ Bin(n, p)`: the avoid probability
+    of a pattern after the pattern pad, when the pad is applied to the base
+    row alone (the patterns-first order). At `kmin = 0` this is `lq_bernoulli`."""
+    terms = [log_binomial_pmf(n, p, s) + lq(n, t, max(s, kmin)) for s in range(n + 1)]
+    terms = [x for x in terms if x > -math.inf]
+    mx = max(terms)
+    return mx + math.log(sum(math.exp(x - mx) for x in terms))
+
+
+def log_bound_bernoulli(n: int, m: int, p: float, k: int) -> float:
+    """log of the union bound on `P(pw(G_B) <= k)` for the pre-repair Bernoulli
+    matrix: `C(n, t) C(n - t, t - 1) [(1-p)^t + (1-p)^(t-1) - (1-p)^(2t-1)]^m`."""
+    t = (n - k + 1) // 2
+    if t < 1 or 2 * t - 1 > n:
+        return math.inf
+    return log_pairs(n, t) + m * lq_bernoulli(p, t, t - 1)
+
+
+def log_bound_truncated(n: int, m: int, p: float, k: int, kmin: int = 2) -> float:
+    """log of the union bound on `P(pw <= k)` for the pattern-padded base matrix
+    (patterns-first order): `C(n, t) C(n - t, t - 1) [E_s q(n, t, max(s, kmin))]^m`."""
+    t = (n - k + 1) // 2
+    if t < 1 or 2 * t - 1 > n:
+        return math.inf
+    return log_pairs(n, t) + m * lq_truncated(n, p, t, kmin)
+
+
+def floors_from(log_bounds: Iterable[float]) -> tuple[int, int]:
+    """(floor at bound < 1, floor at bound < 0.01) on the optimum `pw + 1`, from
+    log bounds on `P(pw <= k)` listed for `k = 0, 1, ...` (as `floors`)."""
+    lbs = list(log_bounds)
+    k1 = max((k for k, b in enumerate(lbs) if b < 0), default=-1)
+    k2 = max((k for k, b in enumerate(lbs) if b < math.log(0.01)), default=-1)
+    return k1 + 2, k2 + 2
+
+
+def floors_model(n: int, m: int, p: float, log_factor: float = 0.0, additive: float = 0.0,
+                 model: str = "bernoulli") -> tuple[int, int]:
+    """Floors from `bound(k) = exp(log_bound(k) + log_factor) + additive`, the
+    log bound being `log_bound_bernoulli` or `log_bound_truncated`:
+    `log_factor = -log P(accepted)` is the trivial rejection form,
+    `log_factor = log P(conn M+) - log P(accepted)` the Harris form on the
+    unconditional pad, and `additive = P(E^c) / P(accepted)` the Harris form
+    on the no-repair event."""
+    lb_fn = log_bound_bernoulli if model == "bernoulli" else log_bound_truncated
+    lbs = []
+    for k in range(n):
+        lb = lb_fn(n, m, p, k)
+        v = (math.exp(lb + log_factor) if lb < math.inf else math.inf) + additive
+        lbs.append(math.log(v) if v > 0 else -math.inf)
+    return floors_from(lbs)
+
+
+def floors_bernoulli(n: int, m: int, p: float, log_factor: float = 0.0, additive: float = 0.0) -> tuple[int, int]:
+    return floors_model(n, m, p, log_factor, additive, "bernoulli")
+
+
+def floors_truncated(n: int, m: int, p: float, log_factor: float = 0.0, additive: float = 0.0) -> tuple[int, int]:
+    return floors_model(n, m, p, log_factor, additive, "truncated")
+
+
+def log_disconnected_bound(n: int, m: int, p: float) -> float:
+    """log of the union bound on `P(G_B disconnected)`: a disconnected graph has
+    a component `S` with `1 <= |S| <= n/2`, and no pattern meets both `S` and
+    its complement, so `P <= sum_{s=1}^{n/2} C(n, s) [(1-p)^s + (1-p)^(n-s) - (1-p)^n]^m`."""
+    terms = [lchoose(n, s) + m * lq_bernoulli(p, s, n - s) for s in range(1, n // 2 + 1)]
+    mx = max(terms)
+    return mx + math.log(sum(math.exp(x - mx) for x in terms))
+
+
+def log_repair_bound(n: int, m: int, p: float) -> float:
+    """log of the union bound on `P(some repair fires)`, i.e. a customer of `B`
+    is empty or a pattern of `B` has fewer than two customers:
+    `n (1-p)^m + m [(1-p)^n + n p (1-p)^(n-1)]`."""
+    lp = math.log1p(-p)
+    terms = [math.log(n) + m * lp, math.log(m) + n * lp]
+    if p > 0:
+        terms.append(math.log(m) + math.log(n) + math.log(p) + (n - 1) * lp)
+    mx = max(terms)
+    return mx + math.log(sum(math.exp(x - mx) for x in terms))
+
+
+def rejection_floors(n: int, m: int, p: float, p_acc: float, p_acc_plus: float | None = None,
+                     model: str = "bernoulli") -> dict[str, tuple[int, int]]:
+    """The rigorous floors on the optimum of an *accepted* instance, given the
+    acceptance probability `p_acc` (and `P(conn M+)`, `p_acc_plus`): `base` (no
+    rejection; valid for the generator without the discard), `trivial`
+    (`/ p_acc`), `harris_plus` (`* p_acc_plus / p_acc`; Bernoulli model only,
+    since the decreasing event must be a function of the base alone),
+    `harris_E` (`+ P(E^c) / p_acc` with the closed-form union bound on `P(E^c)`)
+    and `closed` (`/ (1 - P(G_B disconnected))` with the closed-form cut bound,
+    no measured quantity at all; `(0, 0)` where that bound is vacuous)."""
+    out = {"base": floors_model(n, m, p, model=model)}
+    out["trivial"] = floors_model(n, m, p, log_factor=-math.log(p_acc), model=model)
+    if p_acc_plus is not None and model == "bernoulli":
+        out["harris_plus"] = floors_model(n, m, p, log_factor=math.log(p_acc_plus) - math.log(p_acc), model=model)
+    out["harris_E"] = floors_model(n, m, p, additive=math.exp(log_repair_bound(n, m, p)) / p_acc, model=model)
+    ld = log_disconnected_bound(n, m, p)
+    out["closed"] = floors_model(n, m, p, log_factor=-math.log1p(-math.exp(ld)), model=model) if ld < 0 else (0, 0)
+    return out
+
+
+# --- the generator with its auxiliary randomness made explicit ---------------
+
+
+def draw_aux(m: int, n: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+    """`omega = (U, sigma)`: `U[j]` a uniform pattern for customer `j`,
+    `sigma[i]` a uniform order of the customers for pattern `i`; independent of
+    the base matrix."""
+    U = rng.integers(0, m, size=n)
+    sigma = np.argsort(rng.random((m, n)), axis=1)
+    return U, sigma
+
+
+def pad_customers_with_aux(B: np.ndarray, U: np.ndarray) -> np.ndarray:
+    """Every empty customer `j` joins pattern `U[j]`. Same law as
+    `gen_candidates.pad_customers(B, 1)`."""
+    M = B.copy()
+    for j in np.flatnonzero(~M.any(axis=0)):
+        M[U[j], j] = True
+    return M
+
+
+def pad_patterns_with_aux(B: np.ndarray, sigma: np.ndarray, kmin_pattern: int = 2) -> np.ndarray:
+    """Every pattern `i` with fewer than `kmin_pattern` customers gains the
+    first ones it lacks in the order `sigma[i]`. Same law as
+    `gen_candidates.pad_patterns(B, kmin_pattern)`. Row `i` depends on
+    `(B[i], sigma[i])` only, so the rows stay independent, and given
+    `|B[i]| = s` the row is a uniform set of size `max(s, kmin_pattern)`."""
+    M = B.copy()
+    for i in np.flatnonzero(M.sum(axis=1) < kmin_pattern):
+        need = kmin_pattern - int(M[i].sum())
+        for c in sigma[i]:
+            if need == 0:
+                break
+            if not M[i, c]:
+                M[i, c] = True
+                need -= 1
+    return M
+
+
+def pad_with_aux(B: np.ndarray, U: np.ndarray, sigma: np.ndarray, kmin_pattern: int = 2,
+                 patterns_first: bool = False) -> np.ndarray:
+    """The fitted generator's repairs as a deterministic function of the base
+    matrix and `omega` (customers first, then patterns; `patterns_first` for
+    the variant). `M >= B` entrywise for every `(B, omega)`."""
+    if patterns_first:
+        return pad_customers_with_aux(pad_patterns_with_aux(B, sigma, kmin_pattern), U)
+    return pad_patterns_with_aux(pad_customers_with_aux(B, U), sigma, kmin_pattern)
+
+
+def unconditional_pad(B: np.ndarray, U: np.ndarray, sigma: np.ndarray, kmin_pattern: int = 2) -> np.ndarray:
+    """`M+ = B` with every pad applied whether needed or not: entry `(U[j], j)`
+    for every customer and the first `kmin_pattern` of `sigma[i]` for every
+    pattern. `pad_with_aux(B, U, sigma) <= M+` in both orders, and `M+` is
+    monotone in `B` at fixed `omega`, which `pad_with_aux` is not."""
+    M = B.copy()
+    m, n = M.shape
+    M[U, np.arange(n)] = True
+    for i in range(m):
+        M[i, sigma[i][:kmin_pattern]] = True
+    return M
+
+
+def mosp_connected(M: np.ndarray) -> bool:
+    """Is the MOSP graph of the `patterns x customers` matrix connected (customers
+    adjacent iff they share a pattern)? As `gen_candidates.mosp_connected`."""
+    m, n = M.shape
+    seen_c = np.zeros(n, bool)
+    seen_c[0] = True
+    while True:
+        seen_p = M[:, seen_c].any(axis=1)
+        new_c = M[seen_p].any(axis=0) | seen_c
+        if new_c.sum() == seen_c.sum():
+            return bool(seen_c.all())
+        seen_c = new_c
+
+
+def no_repair_needed(B: np.ndarray, kmin_pattern: int = 2) -> bool:
+    """The event `E`: every customer of `B` has a pattern and every pattern has
+    at least `kmin_pattern` customers, so the repairs do nothing."""
+    return bool(B.any(axis=0).all() and (B.sum(axis=1) >= kmin_pattern).all())
+
+
+def generator_draw(n: int, m: int, p: float, rng: np.random.Generator, patterns_first: bool = False) -> dict:
+    """One draw of the fitted generator with its coupling: the base `B`, the
+    padded `M`, the unconditional `M+`, and the events."""
+    B = rng.random((m, n)) < p
+    U, sigma = draw_aux(m, n, rng)
+    M = pad_with_aux(B, U, sigma, patterns_first=patterns_first)
+    Mp = unconditional_pad(B, U, sigma)
+    return {"B": B, "M": M, "Mp": Mp, "U": U, "sigma": sigma,
+            "accepted": mosp_connected(M), "accepted_plus": mosp_connected(Mp),
+            "base_connected": mosp_connected(B), "no_repair": no_repair_needed(B)}
+
+
+def generator_event_rates(n: int, m: int, p: float, draws: int, seed: int = 0,
+                          min_accepted: int = 0, max_draws: int | None = None,
+                          patterns_first: bool = False) -> dict:
+    """Counts over independent draws of `accepted`, `accepted_plus` (`M+`
+    connected), `base_connected`, `no_repair` and `repair_and_accepted`;
+    draws continue past `draws` until `min_accepted` acceptances or
+    `max_draws`."""
+    rng = np.random.default_rng(seed)
+    c = {"draws": 0, "accepted": 0, "accepted_plus": 0, "base_connected": 0, "no_repair": 0, "repair_and_accepted": 0}
+    cap = max_draws if max_draws is not None else draws
+    while c["draws"] < draws or (c["accepted"] < min_accepted and c["draws"] < cap):
+        d = generator_draw(n, m, p, rng, patterns_first)
+        c["draws"] += 1
+        c["accepted"] += d["accepted"]
+        c["accepted_plus"] += d["accepted_plus"]
+        c["base_connected"] += d["base_connected"]
+        c["no_repair"] += d["no_repair"]
+        c["repair_and_accepted"] += (not d["no_repair"]) and d["accepted"]
+    return c
+
+
+def wilson(successes: int, trials: int, z: float = 1.959964) -> tuple[float, float]:
+    """Wilson 95% interval for a binomial proportion."""
+    if trials == 0:
+        return 0.0, 1.0
+    ph = successes / trials
+    den = 1 + z * z / trials
+    centre = (ph + z * z / (2 * trials)) / den
+    half = z * math.sqrt(ph * (1 - ph) / trials + z * z / (4 * trials * trials)) / den
+    return max(0.0, centre - half), min(1.0, centre + half)
+
+
+# --- exact pathwidth of a tiny graph, for the checks -------------------------
+
+
+def customer_masks(M: np.ndarray) -> list[int]:
+    """Adjacency bit masks of the MOSP graph of a `patterns x customers` matrix."""
+    m, n = M.shape
+    adj = [0] * n
+    for i in range(m):
+        cols = np.flatnonzero(M[i])
+        mask = sum(1 << int(c) for c in cols)
+        for c in cols:
+            adj[int(c)] |= mask & ~(1 << int(c))
+    return adj
+
+
+def vertex_separation_brute(adj: list[int]) -> int:
+    """The vertex separation (= pathwidth) of a graph on `n <= 16` vertices given
+    as adjacency bit masks, by the subset DP `f(S) = max(cost(S), min_v f(S - v))`
+    with `cost(S)` the number of placed vertices with a neighbour outside."""
+    n = len(adj)
+    full = (1 << n) - 1
+    f = [0] * (1 << n)
+    for S in range(1, 1 << n):
+        cost = 0
+        rest = full & ~S
+        T = S
+        while T:
+            v = T & -T
+            T ^= v
+            if adj[v.bit_length() - 1] & rest:
+                cost += 1
+        best = min(f[S & ~(1 << v)] for v in range(n) if (S >> v) & 1)
+        f[S] = max(cost, best)
+    return f[full]
+
+
+# --- the quenched form: a Chernoff typical set on the i.i.d. sizes -------------
+
+
+def size_law(n: int, p: float, kmin: int = 0) -> tuple[np.ndarray, np.ndarray]:
+    """The pattern-size law before the customer pad: `s ~ Bin(n, p)`, lifted to
+    `max(s, kmin)` (`kmin = 2` is the patterns-first pattern pad). Returns the
+    distinct sizes and their probabilities."""
+    pmf = np.array([math.exp(log_binomial_pmf(n, p, s)) for s in range(n + 1)])
+    sizes = np.maximum(np.arange(n + 1), kmin)
+    out: dict[int, float] = {}
+    for s, w in zip(sizes, pmf):
+        out[int(s)] = out.get(int(s), 0.0) + float(w)
+    ss = np.array(sorted(out))
+    return ss, np.array([out[int(s)] for s in ss])
+
+
+def log_bound_quenched(n: int, m: int, p: float, k: int, kmin: int = 0,
+                       a_points: int = 4000, lambdas: np.ndarray | None = None) -> float:
+    """log of the rigorous *quenched* union bound on `P(pw <= k)` when the
+    patterns are independent uniform sets of i.i.d. sizes `s_j ~ max(Bin(n, p), kmin)`
+    (Theorem V3' of §10 of the report): with `X_j = log q(n, t, s_j)` and a grid
+    `a_0 < a_1 < ... < a_K` of values of the mean `(1/m) sum_j X_j`,
+
+        P(pw <= k) <= C e^{m a_0} + sum_{i >= 1} min(1, C e^{m a_i}) · min(1, min_{lambda > 0} e^{-lambda m a_{i-1}} (E e^{lambda X})^m),
+
+    `C = C(n,t) C(n-t,t-1)`: given sizes with `sum_j X_j <= m a_i` the uniform-model
+    union bound is at most `C e^{m a_i}`, and Chernoff bounds the probability that
+    the sizes fall in each bin. Sizes with `q = 0` (a pattern too large to miss
+    either side) are dropped from the moment generating function, which can only
+    enlarge the bound. `kmin = 0` is the Bernoulli base, `kmin = 2` the
+    patterns-first pad. Always take the smaller of this and the annealed bound:
+    both are valid, and this one wins at the `< 1` level and loses at `< 0.01`."""
+    t = (n - k + 1) // 2
+    if t < 1 or 2 * t - 1 > n:
+        return math.inf
+    ss, pr = size_law(n, p, kmin)
+    X = np.array([lq(n, t, int(s)) for s in ss])
+    finite = np.isfinite(X)
+    if not finite.any():
+        return -math.inf
+    Xf, prf = X[finite], pr[finite]
+    if lambdas is None:
+        lambdas = np.logspace(-2, 2.5, 120)
+    with np.errstate(divide="ignore"):
+        lmgf = np.log(np.array([float(np.sum(prf * np.exp(lam * Xf))) for lam in lambdas]))
+    lo, hi = float(Xf.min()), float(Xf.max())
+    a_grid = np.linspace(lo, hi, a_points)
+    lp = log_pairs(n, t)
+    terms = [lp + m * a_grid[0]]
+    for i in range(1, len(a_grid)):
+        first = min(0.0, lp + m * a_grid[i])
+        tail = min(0.0, float(np.min(-lambdas * m * a_grid[i - 1] + m * lmgf)))
+        terms.append(first + tail)
+    mx = max(terms)
+    return mx + math.log(sum(math.exp(x - mx) for x in terms))
+
+
+def log_bound_best(n: int, m: int, p: float, k: int, kmin: int = 0) -> float:
+    """The smaller of the annealed and the quenched bound (both valid)."""
+    annealed = log_bound_bernoulli(n, m, p, k) if kmin == 0 else log_bound_truncated(n, m, p, k, kmin)
+    return min(annealed, log_bound_quenched(n, m, p, k, kmin))
+
+
+def floors_quenched(n: int, m: int, p: float, kmin: int = 0, log_factor: float = 0.0) -> tuple[int, int]:
+    """Floors from `log_bound_quenched + log_factor` (`log_factor = -log P(accepted)` for the rejection)."""
+    return floors_from(log_bound_quenched(n, m, p, k, kmin) + log_factor for k in range(n))
+
+
+def floors_best(n: int, m: int, p: float, kmin: int = 0, log_factor: float = 0.0) -> tuple[int, int]:
+    """Floors from the smaller of the annealed and quenched bounds, plus `log_factor`."""
+    return floors_from(log_bound_best(n, m, p, k, kmin) + log_factor for k in range(n))

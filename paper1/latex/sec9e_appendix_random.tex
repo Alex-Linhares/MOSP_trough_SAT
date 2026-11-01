@@ -212,13 +212,36 @@ lies below its floor.}
 \end{table}
 
 The inequality assumes the patterns are uniform given their sizes, which the
-padding and the rejection break. Measured by simulation under the fitted
-generator, both make empty pairs rarer than the uniform model says, by a
-factor that falls from $1.0$ to $0.6$ as the sets grow, so the bound stays
-valid; and on 7{,}200 fresh instances at 30 and 40 customers solved exactly,
-none has an optimum below its $0.01$ floor. That is a measurement, not a
-proof; a proof would couple the padded instance to the unpadded one, which
-has only more edges.
+padding and the rejection break. What is proved is the inequality with the
+sizes the table has \emph{before} the repairs. On the Bernoulli table a given
+pair is empty with probability exactly
+$[(1-p)^t+(1-p)^{t-1}-(1-p)^{2t-1}]^m$, the binomial average of the fraction
+above; the repairs only add ones, so an empty pair of the padded table is an
+empty pair of the original and the bound with Bernoulli sizes holds for the
+padded instance; and if the patterns are padded before the customers, the
+rows after that pad are independent uniform sets of size $\max(s,2)$ with $s$
+binomial, and the bound holds with those sizes. The rejection is not an
+increasing event of the table entries: adding an entry can make a pad vanish,
+disconnect the instance and lower its pathwidth, so Harris's inequality does
+not apply to it, and conditioning on acceptance costs at most the factor
+$1/\Pr[\text{accepted}]$, which is measured: within $1\%$ of $1$ at
+$d\ge6$ and on the square classes at $d=4$, $0.77$ at the $100\times50$,
+$d=4$ class, $0.53$ to $0.87$ at $d=2$, and $0.005$ at the $100\times50$,
+$d=2$ class. A Chernoff bound on the pattern sizes gives a quenched form of
+the same floor, two to four stacks higher on the largest classes. These
+proved floors lie below the floors of Table~\ref{tab:cs-floor}, by zero to
+five stacks at $d\ge8$, by two to twelve at $d=4$ and $6$ on the square
+classes and by more on the $100\times50$ classes; at $d=2$ they are trivial,
+because $40\%$ of the Bernoulli patterns have at most one customer and the
+pads that make them count are exactly what the proof cannot use. What
+remains between the proved floors and the table is, at $d\ge4$, the
+difference between a bound on the average over size vectors and the typical
+size vector, and at $d=2$ the pads. With the sizes the files actually have
+the statement is measured, not proved: under the fitted generator the repairs and the
+rejection make empty pairs rarer than the uniform model says, by a factor
+that falls from $1.0$ to $0.6$ as the sets grow, and on 7{,}200 fresh
+instances at 30 and 40 customers solved exactly none has an optimum below its
+$0.01$ floor.
 
 The same first moment appears in \citet{Gao2012} for random intersection
 graphs, with treewidth in place of pathwidth. His proof drops the factor

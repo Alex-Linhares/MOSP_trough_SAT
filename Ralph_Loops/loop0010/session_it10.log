@@ -1,0 +1,179 @@
+# session it10 started 2026-11-01 06:19:16
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 10: validity of the first-moment floor under the real (padded, rejection-sampled) generator. Let me read the plan, the generator report and the existing report sections first.
+  > $ uptime && cat reports/excess_phase_plan.md | head -400
+  > $ ls reports/scratch/clique_cover_moment/ && echo ---- && cat reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ cat reports/scratch/clique_cover_moment/REPORT_generator.md | sed -n 1,200p
+  > $ sed -n 200,400p reports/scratch/clique_cover_moment/REPORT_generator.md
+  > $ cat reports/scratch/clique_cover_moment/gen_candidates.py
+  > $ cat reports/scratch/clique_cover_moment/finite_bound_cs.log; echo ======; cat reports/scratch/clique_cover_moment/bound_lib.py; echo ======; sed -n 1,80p report
+
+I've read the plan and the generator report. Now gathering the library interface, acceptance rates, the paper's sentence to replace, and the report's section style, all in one pass.
+  > $ grep -n "^def \|^class \|^    def " learning/first_moment.py | head -80; echo =====; sed -n 1,60p learning/first_moment.py
+
+Next I need the floor functions' bodies, the per-class acceptance rates, the paper's sentence to replace, the report's section style, and the Lean header. None depends on another, so one batch.
+  > $ sed -n 118,205p learning/first_moment.py; echo ===NESTED===; sed -n 528,595p learning/first_moment.py
+  > $ head -5 reports/scratch/clique_cover_moment/fit_generators.csv; echo; grep -n "bern_padC1_padP2_conn" reports/scratch/clique_cover_moment/fit_generators.csv | h
+  > $ grep -n -i "couple\|padded\|reject\|generator" paper1/latex/sec9e_appendix_random.tex | head -40; echo ====; grep -n "^## \|^### " reports/excess_phase_diagram.
+  > $ sed -n 1,80p lean/MOSPFormalization/CliqueCoverMoment.lean; echo ====; sed -n 1,40p tests/test_first_moment.py; ls reports/scratch/ | head -50
+  > $ sed -n 155,235p paper1/latex/sec9e_appendix_random.tex
+  > $ sed -n 1,8p reports/excess_phase_diagram.md; echo ....; sed -n 3981,4012p reports/excess_phase_diagram.md; echo ....; sed -n 442,470p reports/scratch/clique_cov
+  > $ grep -n "couple\|sec9e\|appendix_random\|def test" tests/test_paper1_latex.py | head -40; echo ....; grep -n "check:\|^check\|^all\|^axioms" paper1/latex/Makefi
+  > $ grep -n "^def " fixed_parameter_algorithm/pathwidth.py | head; echo ....; sed -n 60,75p learning/first_moment.py; grep -n "^import\|^from" learning/first_moment
+  > $ tail -40 learning/first_moment.py; grep -n "__main__" -A8 learning/first_moment.py | head -20
+  > $ cat >> learning/first_moment.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# validity under the real generator (lo
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("learning/first_moment.py"); s = f.read_text()
+marker = "# --------------------------------------------------
+  > $ cat >> tests/test_first_moment.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# loop0010 item 10: validity under th
+  > $ timeout 600 python -m pytest tests/test_first_moment.py -q -k "binomial_average" 2>&1 | grep -B5 "Error\|assert" | head -40
+
+The test's expected value was wrong (it forgot to divide the lifted count by `C(n, max(s,2))`); the library value is right. Fixing the test, then writing the check script.
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("tests/test_first_moment.py"); s = f.read_text()
+old = "        trunc = sum(p ** s * (1 - p) ** (n - s) * _av
+  > $ mkdir -p reports/scratch/validity && cat > reports/scratch/validity/check.py <<'EOF'
+"""loop0010 item 10: validity of the first-moment floor under the real gene
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("reports/scratch/validity/check.py"); s = f.read_text()
+old = "                        c[\"base_pw_fell\"] +=
+  > $ sleep 90; tail -5 reports/scratch/validity/run_stdout.log; uptime
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -qE "^DONE|Traceback" reports/scratch/validity/run_stdout.log; do sleep 5; done; tail -3 reports/scratch/validity/run_stdout.log
+  > $ tail -8 reports/scratch/validity/run_stdout.log; uptime
+
+While the run proceeds I'll draft the report's mathematical content; the numbers slot in once the table stage lands. Let me first check how far the coupling stage has got.
+  > $ tail -c 3000 reports/scratch/validity/run_stdout.log; echo; uptime
+
+The coupling lemmas hold on every draw of the first configuration, and the non-monotonicity shows up in the counts. I'll draft the section's statements and proofs now; the tables come from the run.
+  > Write /home/al/dev/MOSP/reports/scratch/validity/section_draft.md
+
+The run finished. Let me read the coupling counts for the other three configurations and the class table.
+  > $ grep -A4 "^-- d = " reports/scratch/validity/run_stdout.log | grep -v "^k |"; grep "Monte Carlo against\|== classes\|jobs in\|load " reports/scratch/validity/ru
+  > $ sed -n 7,60p reports/scratch/validity/tables.md; echo; grep -E "^(100,50,2|125,125,2|100,100,2|75,75,2|50,50,2|40,40,2|100,50,4)," reports/scratch/validity/clas
+  > $ sed -n 60,140p reports/scratch/validity/tables.md; wc -l reports/scratch/validity/check.log; ls -la reports/scratch/validity/
+
+Two things remain before the write-up and they are independent: a diagnostic column separating the annealed-versus-quenched part of the gap from the pads, and the paper's sentence. I'll do both now.
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("reports/scratch/validity/check.py"); s = f.read_text()
+# quenched diagnostic: typical-instance floors at bin
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("paper1/latex/sec9e_appendix_random.tex"); s = f.read_text()
+old = """The inequality assumes the patterns are
+  > $ grep -A42 "^| class | B rigorous (annealed" reports/scratch/validity/tables.md | grep -v "^|---"
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("paper1/latex/sec9e_appendix_random.tex"); s = f.read_text()
+old = """$1/\\Pr[\\text{accepted}]$, which is me
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("reports/scratch/validity/check.py"); s = f.read_text()
+old_start = s.index("        def quenched_floors(kmin
+  > $ until grep -q MAKE_EXIT /tmp/paper_make_it10.log; do sleep 3; done; tail -3 /tmp/paper_make_it10.log; ls -la paper1/latex/main.pdf
+  > $ cat >> learning/first_moment.py <<'EOF'
+
+
+# --- the quenched form: a Chernoff typical set on the i.i.d. sizes -------------
+
+
+def size_law(n: int, p: float, kmi
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("learning/first_moment.py"); s = f.read_text()
+start = s.index("def log_bound_quenched(")
+end = s.index("def 
+  > $ cat >> tests/test_first_moment.py <<'EOF'
+
+
+def test_quenched_bound_is_above_the_exact_probability_by_enumeration():
+    # m = 3 patterns, n = 5 customers, p = 
+  > $ timeout 900 python -m pytest tests/test_first_moment.py -q 2>&1 | tail -2
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("reports/scratch/validity/check.py"); s = f.read_text()
+old = "        row = dict(n=n, m=m, d=d, p=p, opt_mea
+  > $ python - <<'EOF'
+import csv
+rows = list(csv.DictReader(open("reports/scratch/validity/floors.csv")))
+v = 0
+for r in rows:
+    for c in ("bern_best_triv_f2","tru
+  > Write /home/al/dev/MOSP/reports/scratch/validity/section10.md
+  > $ python - <<'EOF'
+import csv
+rows = list(csv.DictReader(open("reports/scratch/validity/floors.csv")))
+diff = [(r["n"],r["m"],r["d"]) for r in rows if r["bern_bes
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("paper1/latex/sec9e_appendix_random.tex"); s = f.read_text()
+old = """count are exactly what
+the proof cannot
+
+The paper edit's anchor text didn't match (line breaks differ from what I assumed) and the docstring edit never ran. I'll look at the exact tex lines and apply the docstring edit now.
+  > $ grep -n "cannot use\|count are exactly\|With the sizes the files" paper1/latex/sec9e_appendix_random.tex; sed -n 230,236p paper1/latex/sec9e_appendix_random.tex
+  > $ python - <<'EOF'
+from pathlib import Path
+g = Path("learning/first_moment.py"); t = g.read_text()
+old2 = """Nothing here is a theorem about the generators we ac
+  > $ python - <<'EOF'
+from pathlib import Path
+f = Path("paper1/latex/sec9e_appendix_random.tex"); s = f.read_text()
+old = """$d=2$ class. These proved floors lie be
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0010/PROGRESS.md"); s = p.read_text()
+assert "Current: 9/13 SOLVED" in s
+s = s.replace("Curr
+  > $ until grep -q MAKE_EXIT /tmp/paper_make_it10c.log; do sleep 3; done; tail -1 /tmp/paper_make_it10c.log; nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_
+  > $ git status --short | grep -v "^ M Ralph_Loops/loop0010/\(loop.log\|nohup.out\|status.json\)\|session_it10" ; echo ---; sed -n 5180,5186p reports/excess_phase_di
+
+The tree holds only the item's paths. One cosmetic fix while the gate runs: the table's column description omits the "best" columns it now has, in both the scratch table and the report copy.
+  > $ python - <<'EOF'
+from pathlib import Path
+old = "Harris on `M+`, Harris on `E`, closed form; truncated (patterns-first) rigorous: base < 1 / < 0.01, trivial, Ha
+  > $ grep -n "closed form; \"" reports/scratch/validity/check.py; python - <<'EOF'
+from pathlib import Path
+p = Path("reports/scratch/validity/check.py"); s = p.read
+  > $ python - <<'EOF'
+from pathlib import Path
+p = Path("reports/scratch/validity/check.py"); s = p.read_text()
+old = 'Harris on `M+`, Harris on `E`, closed form; tr
+
+Only the gate result is outstanding. Meanwhile I'll confirm the final PDF build's page count and that no undefined references were introduced.
+  > $ tail -2 /tmp/paper_make_it10c.log; grep -c "undefined" paper1/latex/main.log 2>/dev/null; pdfinfo paper1/latex/main.pdf 2>/dev/null | grep Pages; grep -n "Chern
+
+The paper rebuilt at 67 pages with no undefined references. Nothing else is pending but the gate, so I'll wait for its notification.
+  > $ until grep -q GATE_EXIT Ralph_Loops/loop0010/gate_it10.log; do sleep 10; done; tail -12 Ralph_Loops/loop0010/gate_it10.log
+  > $ cat Ralph_Loops/loop0010/gate_it10.log | grep -v "^$" | tail -14; date
+
+Gate passed. Final step: record the gate line, blockers and next-item notes in PROGRESS.md.
+  > $ cat >> Ralph_Loops/loop0010/PROGRESS.md <<'EOF'
+- **Gate: PASS** (one run, 2026-11-01 06:51–07:01 at load 0.5–2): lake build
+  ok, every file imported, sorry 0,
+
+Item 10 is done, marked `[x]`, with the gate passed and nothing committed.
+
+**What is proved.** The first-moment floor holds for the padded generator with the sizes the table has before the repairs. The pads only add ones under a coupling with explicit auxiliary randomness, so an empty pair of the padded graph is one of the base graph and pathwidth can only rise. In the patterns-first pad order the rows after the pattern pad are exactly uniform sets of size `max(s, 2)`, so the truncated-size bound is a theorem there, and a Chernoff typical-set argument gives a quenched form of both. All six statements were brute-force checked before being stated: 205 rational identities, two full enumerations, 40,000 coupled draws at eight customers with every pair and every pathwidth compared.
+
+**What is not.** The rejection is not an increasing event of the base entries. One added entry makes a pad vanish on 40% of additions at `d = 2`, loses the acceptance on 0.7% and lowers the padded pathwidth on 3.5%, so Harris–FKG does not apply to it. The item ends, as its kill criterion allows, with the `1 / P(accepted)` form and the acceptance measured per class. The two Harris forms that are rigorous add nothing in practice. The realised-size inequality stays measured.
+
+**The numbers.** The proved 0.01 floors are more than one stack below the measured-model floors on 35 of 40 classes. At `d = 2` they are trivial in the Bernoulli form because 40% of base patterns have at most one customer. At `d ≥ 4` the gap is the annealing, not the pads, and the quenched form buys back 2 to 4 stacks on the largest classes. The acceptance factor moves no floor on any class. No certified optimum lies below any rigorous floor.
+
+**Deliverables.** Section 10 of `reports/excess_phase_diagram.md` with every table, the library section in `learning/first_moment.py` with 13 new tests, `reports/scratch/validity/` with the check script and logs, the replaced paragraph in Appendix E of the paper, and the PROGRESS.md entry with notes for items 11 and 12.
+
+# result: success in 2576s, 61 turns, cost $16.76
