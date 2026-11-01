@@ -22,6 +22,7 @@ import MOSPFormalization.EmptyPair
 import MOSPFormalization.FirstMoment
 import MOSPFormalization.FirstMomentAsymptotics
 import MOSPFormalization.CliqueCoverMoment
+import MOSPFormalization.SeparatorMoment
 import MOSPFormalization.IndependenceBound
 import MOSPFormalization.TreeBound
 import MOSPFormalization.ForestCover

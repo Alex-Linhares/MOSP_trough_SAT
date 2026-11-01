@@ -43,3 +43,8 @@
 [2026-11-01 20:14:00] claude session it09 (cap 4.00 h) -> session_it09.log
 [2026-11-01 20:41:26] session it09: ok (exit 0, 34 tool calls)
 [2026-11-01 20:52:25] tests passed: GATE PASS
+[2026-11-01 20:52:25] committed 6fe9db331: 09 The branch: the weighted count's lower tail — can any computable `Z
+[2026-11-01 20:52:25] === iteration 10: 10 Lean: the deterministic lemmas and the union bound over separators.
+[2026-11-01 20:52:25] claude session it10 (cap 4.00 h) -> session_it10.log
+[2026-11-01 21:25:25] session it10: ok (exit 0, 64 tool calls)
+[2026-11-01 21:36:27] tests passed: GATE PASS

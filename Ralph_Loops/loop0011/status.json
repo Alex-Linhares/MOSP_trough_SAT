@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-01 20:41:26",
+  "updated": "2026-11-01 21:25:25",
   "phase": "tests",
-  "started": "2026-11-01 20:14:00",
-  "item": "09 The branch: the weighted count's lower tail \u2014 can any computable `Z` merge the far pair"
+  "started": "2026-11-01 20:52:25",
+  "item": "10 Lean: the deterministic lemmas and the union bound over separators."
 }

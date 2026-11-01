@@ -3411,3 +3411,267 @@ gain is real in the constant and small in stacks at sixty vertices, where
   near-threshold `β_sep` values are more than the cited LDP rate and a fit
   make them (§6.4); the `n = 60` floors are exact and are the finite
   statement. Nothing re-solved; `solutions/` untouched.
+
+## 10. Lean: the deterministic lemmas and the union bound over separators (item 10, 2026-11-01)
+
+**Question (F of the brief, second half).** Which of item 08's statements
+are within a session in Lean, and prove them. **Answer: all of (a)–(d) of
+the item, and more than (d) asked.** The new file
+`lean/MOSPFormalization/SeparatorMoment.lean` (1,229 lines, 78 `theorem`
+declarations, 21 definitions, imported by `lean/MOSPFormalization.lean`,
+importing `EmptyPair`, `FirstMoment`, `CliqueCoverMoment`) proves L1 and its
+cover form, L1′ (a), (b) and (d), L2 in full, the characterisation step of
+Theorem Cl, Lemma W and its `G(n, p)` reading, the union bound over
+separators, the factorisation step, the relabelling that makes the inner
+count independent of `S` — so **Theorem S exactly as §8.1 states it**, with
+its `n.choose k` factor — the union bound of Theorem Cl, Lemma Fl and the
+sound part of Corollary W-flip. **No `sorry`, no `axiom`; every theorem
+depends on `propext`, `Classical.choice`, `Quot.sound` only** (`lake build`
+passes; `make -C paper1/latex axioms`: 296 theorems checked, 0 failures, 30
+new lines in `paper1/axiom_check.lean`). What is *not* in Lean, with the
+obstacle named: Lemmas P, G, F and Corollary S′ in component form (components
+of `G − S` as finsets with their sizes, §10.3), Theorem Cl's independence
+step (a product-over-blocks lemma for weighted sums over edge subsets), Lemma
+J and Theorem Cl-cover (inclusion–exclusion over pattern sets), the converse
+of L1′ (c). The paper may cite Theorem S as **proved in Lean** (finite form,
+inner probability as a weighted count), Theorem Cl as "union bound and
+characterisation in Lean, independence step on paper", Corollary W-flip as
+"sound part in Lean, evaluation on paper". Kill criterion: none ("blocked
+with the obstacle" was a deliverable; nothing is blocked that the item
+expected to be proved).
+
+### 10.1 What is proved, statement by statement
+
+All over `{V : Type*} [Fintype V] [DecidableEq V]`, `n = Fintype.card V`,
+`t = (n − k + 1) / 2`, `r = (n − k) / 2` in `ℕ` arithmetic (so `t + r = n − k`
+and `r = n − k − t`, the item's form); `IsEmptyPair`, `gnpWeight`,
+`graphsOfPathwidthLe`, `edges` from `FirstMoment.lean`, `closedNbhd` from
+`EmptyPair.lean`, `coverGraph`, `coverInstance` from `CliqueCoverMoment.lean`.
+
+| §8.4 / §2.6 target | Lean name | status | rests on |
+|---|---|---|---|
+| L1 | `exists_balanced_separator`: `pathwidth G ≤ k → k < n → ∃ A R S, Disjoint A R ∧ Disjoint A S ∧ Disjoint R S ∧ A ∪ R ∪ S = univ ∧ A.card = t ∧ R.card = r ∧ S.card = k ∧ IsEmptyPair G A R` | **proved** | `exists_layout_vertexSep_eq_pathwidth` (new: the infimum is attained), `exists_empty_pair_of_layout` at `i = t − 1`, `Finset.exists_subset_card_eq` |
+| L3 (b), the cover form | `exists_balanced_separator_cover`: a cover with `mospValue ≤ k + 1` and some requirement, `k < n`, has the same `A, R, T` with `∀ j, Disjoint (S j) A ∨ Disjoint (S j) R` | **proved** | `mospValue_eq_pathwidth_add_one`, `isEmptyPair_coverGraph_iff` |
+| `IsBalancedBip G S k` (pair form of `E_bip(S)`) | `∃ A R, Disjoint A R ∧ A ∪ R = univ \ S ∧ A.card = t ∧ R.card = r ∧ IsEmptyPair G A R` | defined | — |
+| L1′ (a) | `exists_isBalancedBip`: `∃ S, S.card = k ∧ IsBalancedBip G S k` | **proved** | L1 |
+| the connectivity step | `mem_side_of_walk`, `componentOff_subset_side`: with `A ∪ R = univ \ S` and `(A, R)` empty, every walk of `G` avoiding `S` that starts in `A` ends in `A`; `componentOff G S v ⊆ A` for `v ∈ A` | **proved** | induction on `SimpleGraph.Walk` |
+| L1′ (b) | `card_componentOff_le_of_isBalancedBip`: `IsBalancedBip G S k → v ∉ S → (componentOff G S v).card ≤ t` | **proved** | the row above; `componentOff G S v` is `univ.filter (ReachableOff G S v ·)`, `ReachableOff` = a walk whose support avoids `S` |
+| L1′ (d) | `not_isBalancedBip_threeK2` (`¬ IsBalancedBip threeK2 ∅ 0`) and `card_componentOff_threeK2_le` (every component of `3K₂ − ∅` has `≤ 3` vertices) | **proved** | `threeK2_no_balanced` by `decide +kernel` over the 64 subsets; `threeK2_walk_support` (a walk stays in `{u, partner u}`) |
+| L1′ (c), converse (component form ⇒ pair form) | — | **not formalised** | components as finsets, §10.3 |
+| the Galois step | `subset_compl_closedNbhd_iff`: `R ⊆ univ \ closedNbhd G A ↔ Disjoint A R ∧ IsEmptyPair G A R` | **proved** | `mem_closedNbhd_iff`, `G.adj_symm` |
+| the monotone step | `closedNbhd_mono` | **proved** | — |
+| `IsClosedPair G A R` | `A = univ \ closedNbhd G R ∧ R = univ \ closedNbhd G A` | defined | — |
+| `closeStep G (A, R)` | `(univ \ N[univ \ N[A]], univ \ N[A])`, one round, `A` first | defined | — |
+| L2 (i) | `subset_closeStep`: for an empty pair, `A ⊆ A*`, `R ⊆ R*` | **proved** | the Galois step twice (`subset_compl_closedNbhd_compl_closedNbhd`: `A ⊆ V ∖ N[V ∖ N[A]]` for *every* `A`) |
+| L2 (ii)–(iii) | `closeStep_isClosedPair`: `IsClosedPair G (closeStep G P).1 (closeStep G P).2` for **every** `P` | **proved** | Galois and monotone steps |
+| L2 (iii), the fixpoint | `closeStep_closeStep`: `closeStep G (closeStep G P) = closeStep G P` | **proved** | the row above; no iteration, no termination argument |
+| L2 (iv) | `sdiff_eq_inter_boundary_of_isClosedPair`: `univ \ (A ∪ R) = (N[A] \ A) ∩ (N[R] \ R)` | **proved** | `mem_closedNbhd_iff` |
+| L2 (v) | `card_closeStep`: `t ≤ \|A\|`, `r ≤ \|R\|`, `\|V ∖ (A ∪ R)\| ≤ k` carry to the closure | **proved** | (i), `card_le_card` |
+| L1 + L2 | `exists_closedPair_of_pathwidth_le`: `pathwidth G ≤ k → k < n → ∃ A R, IsClosedPair G A R ∧ IsEmptyPair G A R ∧ t ≤ A.card ∧ r ≤ R.card ∧ (univ \ (A ∪ R)).card ≤ k` | **proved** | L1, (ii), (v) |
+| characterisation step of Cl | `isClosedPair_iff_sees_both`: `IsClosedPair G A R ↔ Disjoint A R ∧ IsEmptyPair G A R ∧ ∀ v ∉ A, v ∉ R → (∃ a ∈ A, G.Adj a v) ∧ (∃ r ∈ R, G.Adj r v)` | **proved** | — |
+| Lemma W | `weightedCount_ge_indicator`: `(∀ P ∈ 𝓟, empty P → 1 ≤ Z P ∧ Z P ≤ (𝓟.filter empty).card) → (if ∃ P ∈ 𝓟, empty P then 1 else 0) ≤ ∑ P ∈ 𝓟, if empty P then 1 / Z P else 0` in `ℝ`; `one_le_weightedCount` | **proved** | `sum_le_sum`, `one_div_le_one_div_of_le`, `sum_filter` |
+| Lemma W, `G(n, p)` reading | `weightedSum_graphsOfPathwidthLe_le_weighted`: for any `Z : SimpleGraph V → pairs → ℕ` admissible on every graph's empty pairs of `pairIndices t r`, `∑_{pw G ≤ k} gnpWeight p G ≤ ∑_G gnpWeight p G · ∑_{q ∈ pairIndices t r} (if IsEmptyPair G q.1 q.2 then 1 / Z G q else 0)` | **proved** | Lemma W, L1 (`exists_mem_pairIndices_isEmptyPair`); `pairIndices t r` generalises `emptyPairIndices` to exact sizes `(t, r)`, `card_pairIndices = n.choose t · (n − t).choose r` |
+| the union bound over separators | `weightedSum_graphsOfPathwidthLe_le_sum_separators`: `∑_{pw G ≤ k} gnpWeight p G ≤ ∑_{S ∈ univ.powersetCard k} ∑_{G ∈ bipGraphs S k} gnpWeight p G` | **proved** | L1′ (a), `sum_biUnion_le_sum_of_nonneg` |
+| `isBalancedBip_induce` | `isBalancedBip_restrictOff`: `IsBalancedBip (restrictOff G S) S k ↔ IsBalancedBip G S k`, with `restrictOff G S` the graph of the edges of `G` off `S` (`Adj u v := G.Adj u v ∧ u ∉ S ∧ v ∉ S`) | **proved** | — |
+| `sum_gnpWeight_fiber` (the factorisation step) | for `H` with `restrictOff H S = H`: `∑_{G : restrictOff G S = H} gnpWeight p G = p^{\|E(H)\|} (1 − p)^{\|pairsOff S\| − \|E(H)\|}` | **proved** | the bijection `F ↦ fromEdgeSet (E(H) ∪ F)` from the subsets of `pairsMeeting S` onto the fibre (`sum_nbij'`), `edges_fromEdgeSet`, `sum_pow_mul_eq_add_pow` |
+| `card_pairsOff` | `\|pairsOff S\| = (n − \|S\|).choose 2` | **proved** | `pairsOff S` is the image of the edges of `⊤` on the subtype `↥(univ \ S)` under `Sym2.map Subtype.val` (`pairsOff_eq_image`), `Sym2.map.injective`, `card_edges_top` |
+| the inner probability as a count on `V ∖ S` | `sum_gnpWeight_bipGraphs`: `∑_{G ∈ bipGraphs S k} gnpWeight p G = ∑_{H ∈ offGraphs S, IsBalancedBip H S k} p^{\|E(H)\|} (1 − p)^{\|pairsOff S\| − \|E(H)\|}`; `innerBip p S k` is that sum with `(n − \|S\|).choose 2` written out; `sum_gnpWeight_bipGraphs_eq_innerBip` | **proved** | `sum_fiberwise_of_maps_to` over `restrictOff · S`, the two rows above |
+| Theorem S, separator-summed | `weightedSum_graphsOfPathwidthLe_le_separator`: `∑_{pw G ≤ k} gnpWeight p G ≤ ∑_{S ∈ univ.powersetCard k} innerBip p S k` | **proved** | — |
+| the relabelling (the "moreover" of Theorem S) | `innerBip_eq_of_card_eq`: `S₀.card = S.card → innerBip p S₀ k = innerBip p S k` | **proved** | `exists_equiv_mem_iff` (a permutation of `V` carrying `S₀` onto `S`, from `Fintype.card_eq` on the subtypes and their complements and `Equiv.Set.sumCompl`); `relabel e G := G.comap e.symm`; `edges_relabel`, `card_edges_relabel`, `restrictOff_relabel`, `isBalancedBip_relabel_iff`; `sum_nbij'` |
+| **Theorem S** | `weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`: for `0 ≤ p ≤ 1`, `k < n`, any `S₀` with `S₀.card = k`: `∑_{pw G ≤ k} gnpWeight p G ≤ (n.choose k : ℝ) · innerBip p S₀ k` | **proved** | the two rows above, `card_powersetCard` |
+| Theorem Cl, union bound | `weightedSum_graphsOfPathwidthLe_le_sum_closedPairs`: `∑_{pw G ≤ k} gnpWeight p G ≤ ∑_{q ∈ closedIndices t r} ∑_{G ∈ closedPairGraphs q.1 q.2} gnpWeight p G`, `closedIndices t r` the disjoint ordered pairs with `t ≤ \|A\|`, `r ≤ \|R\|` | **proved** | L1 + L2 |
+| Theorem Cl, independence step | `∑_{G : IsClosedPair G A R} gnpWeight p G = (1 − p)^{ar} ((1 − (1 − p)^a)(1 − (1 − p)^r))^s` | **not formalised** | the product-over-blocks lemma, §10.3 |
+| Lemma Fl | `isolatedIn G A`; `flipPair_isEmptyPair` (the four cases), `flipPair_disjoint`, `card_flipPair` (sizes preserved when `\|J\| = \|J′\|`), `flipPair_injOn` (`(J, J′) = (R* ∩ A, A* ∩ R)`), `flips G A R` (the image), `one_le_card_flips`, `card_flips_le` (the flips of an empty pair of `pairIndices t r` are distinct empty pairs of `pairIndices t r`, so `#flips ≤ X`) | **proved** | — |
+| Lemma Fl, the count `C(\|I_A\| + \|I_R\|, \|I_A\|)` | — | **not formalised** (not needed for admissibility; Vandermonde `Nat.add_choose_eq` would do it) | — |
+| Corollary W-flip, sound part | `weightedSum_graphsOfPathwidthLe_le_flipWeighted`: `∑_{pw G ≤ k} gnpWeight p G ≤ ∑_G gnpWeight p G · ∑_{q ∈ pairIndices t r} (if IsEmptyPair G q.1 q.2 then 1 / #flips G q.1 q.2 else 0)` | **proved** | Lemma W's reading, Lemma Fl |
+| Lemma J, Theorem Cl-cover, the evaluation of W-flip | — | **not formalised** | inclusion–exclusion over pattern sets, §10.3 |
+| Lemmas P, G, F; Corollary S′ | — | **not formalised** | components as finsets, §10.3 |
+| Propositions T, T-cover | — | not Lean targets | asymptotic and conditional on a cited LDP |
+
+The headline statement, verbatim from the file:
+
+```lean
+theorem weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip (p : ℝ) (hp0 : 0 ≤ p)
+    (hp1 : p ≤ 1) (k : ℕ) (hk : k < Fintype.card V) (S₀ : Finset V) (hS₀ : S₀.card = k) :
+    ∑ G ∈ graphsOfPathwidthLe (V := V) k, gnpWeight p G ≤
+      ((Fintype.card V).choose k : ℝ) * innerBip p S₀ k
+```
+
+with
+
+```lean
+noncomputable def innerBip (p : ℝ) (S : Finset V) (k : ℕ) : ℝ :=
+  ∑ H ∈ (offGraphs S).filter (fun H => IsBalancedBip H S k),
+    p ^ (edges H).card * (1 - p) ^ ((Fintype.card V - S.card).choose 2 - (edges H).card)
+```
+
+`offGraphs S` being the graphs on `V` with no edge meeting `S` — the graphs
+on `V ∖ S` kept on the vertex set `V`, as §8.4 recommended, which avoids a
+subtype vertex set everywhere except in the one count `card_pairsOff`. So
+`innerBip p S k` is literally `P_N(E_bip(t))` of Theorem S: the sum over
+the labelled graphs on `N = n − k` vertices in the pair-form event of
+`p^{|E|} (1 − p)^{C(N, 2) − |E|}`. Its value is what §5 computes by the
+partition formula (Lemma P), on paper; the Lean statement does not evaluate
+it, as the item's "does not claim" says.
+
+### 10.2 Beyond the brief
+
+The brief expected (a)–(c) and allowed (d) to be left as a named `Prop`.
+Everything in (d) was proved, and five further statements:
+
+1. **The relabelling.** §8.2 proves "the inner probability does not depend
+   on `S`" by the bijection graphs(V) ≅ graphs(V ∖ S) × 𝒫(pairs meeting S)
+   and a relabelling of `V`; the brief left it on paper. In Lean the
+   relabelling is `relabel e G := G.comap e.symm` for a permutation `e`
+   carrying `S₀` onto `S`, which exists whenever `|S₀| = |S|`
+   (`exists_equiv_mem_iff`, from `Fintype.card_eq` on `↥S₀ ≃ ↥S` and on the
+   complements, glued by `Equiv.Set.sumCompl`). Four invariances carry it:
+   `edges_relabel` (the edge set is mapped by `Sym2.map e`, so its size is
+   kept), `restrictOff_relabel` (restriction commutes with relabelling),
+   `isBalancedBip_relabel_iff` (the pair form is invariant, sides mapped by
+   `Finset.map`), and `sum_nbij'` with `relabel e.symm` as the inverse. This
+   turns the separator-summed form into Theorem S's `n.choose k · P_N(E_bip)`.
+2. **Theorem Cl's union bound** over `closedIndices t r`, from
+   `exists_closedPair_of_pathwidth_le`.
+3. **Lemma Fl** and the sound part of **Corollary W-flip**, so that the
+   weighted count with the flip weight is a theorem in Lean; what is on
+   paper is the *evaluation* of `E[Y]` by Lemma J.
+4. **L1′ (b)** as a theorem rather than a `Prop`, by defining the component
+   of `v` in `G − S` as the vertices reachable by a walk avoiding `S`
+   (`ReachableOff`, `componentOff`) instead of through Mathlib's
+   `ConnectedComponent` quotient; the connectivity step is an induction on
+   `SimpleGraph.Walk`.
+5. **L1′ (d)**, the `3K₂` example, both halves: `decide +kernel` over the
+   64 subsets for "no `3`-set is an empty pair with its complement"
+   (`threeK2_no_balanced`), and a walk lemma for the relaxed half.
+
+### 10.3 The obstacles, named
+
+* **Components as finsets** (Lemmas P, G, F; Corollary S′ in component
+  form; the converse of L1′ (c)). Lemma P sums over the integer partitions of
+  `N` and needs "the components of `H` have sizes `λ`" as a predicate on
+  graphs, with the count of set partitions of a given type and the
+  independence of the induced graphs on the blocks; Lemma G needs the fibre
+  "the component of `v` is exactly `B`" as `H[B]` connected ∧ no `B`–`Bᶜ`
+  edge; Lemma F needs both. None of this is in the development (Mathlib's
+  `ConnectedComponent.supp` is a `Set`, and connectedness of an induced
+  subgraph as a finset predicate is not there), and §8.4 priced it at more
+  than a session. **Not on Theorem S's path**, as §8.4 predicted: Theorem S
+  is proved with the inner probability defined as the weighted count of the
+  pair-form event. The converse of L1′ (c) (grouping components into two
+  sides of sizes `t`, `r`) is the same obstacle; the direction Theorem S
+  needs (pair form ⇒ every component inside one side) is proved.
+* **The product-over-blocks lemma** (Theorem Cl's independence step). The
+  closed-pair event is a conjunction of `1 + 2|S|` events on pairwise
+  disjoint blocks of pairs (no `A`–`R` edge; for each `v ∈ S`, some `A`–`v`
+  edge and some `R`–`v` edge), and its weighted count is the product of the
+  per-block counts times `1` for the free pairs. The general lemma — for a
+  family of disjoint blocks `B_i ⊆ edges ⊤` and predicates `P_i`,
+  `∑_{F ⊆ T, ∀ i, P_i (F ∩ B_i)} p^{|F|} (1 − p)^{|T| − |F|} = ∏_i ∑_{F_i ⊆ B_i, P_i F_i} p^{|F_i|} (1 − p)^{|B_i| − |F_i|}`
+  — is the fibre argument of `sum_gnpWeight_fiber` iterated over an index
+  type, with `Finset.prod_univ_sum` and a bijection `𝒫(T) ≅ piFinset (𝒫 ∘ B) × 𝒫(T ∖ ⋃ B)`;
+  estimated at a session on its own, and the only thing between Theorem Cl
+  and Lean. The characterisation step and the union bound are proved.
+* **Inclusion–exclusion over pattern sets** (Lemma J, Theorem Cl-cover):
+  `card_filter_avoid`'s pattern extended to the three cases of `allowed`
+  and the two-variable Möbius inversion; §8.4 said "not within a session",
+  and it was not attempted.
+
+### 10.4 The checks
+
+* **State before you prove.** Every statement above was checked before it
+  was written: L1, L1′, L2 on every graph to 9 vertices (§2.4), the
+  factorisation per `S`, Lemma W, Fl on every labelled graph to 6–7 vertices
+  in exact rationals (§8.3). Two statements are *stronger* than the checked
+  ones and were re-checked here: `closeStep_isClosedPair` and
+  `closeStep_closeStep` hold for **every** `A` (not only an empty pair), and
+  `isClosedPair_iff_sees_both` — both on every labelled graph to 5 vertices
+  and every `A` (and every disjoint `R`), `tests/test_separator_moment.py`
+  (`test_close_step_transcription_equals_close_pair`,
+  `test_sees_both_is_the_closed_pair_characterisation`).
+* **The numerical pin** (`python -m learning.sandwich --stage separator`,
+  1 s; `reports/scratch/separator_moment/10_lean/sandwich_separator.{md,log}`):
+  `learning/sandwich.py` transcribes `closeStep` (`close_step`) and the
+  right-hand side of `isClosedPair_iff_sees_both` (`sees_both`) literally,
+  and `separator_check` runs L1, L1′ (a)–(b), L2 (i)–(v), the
+  characterisation and the index-set memberships on **500 random
+  `G(n, p)` graphs at `n = 5–11` with exact pathwidth, at `k = pw` and
+  `k = pw + 1`: 1,000 rows, zero violations**, with `close_step` equal to
+  item 03's `close_pair(…, "A")` on every exact-size pair. `SEPARATOR_PROVED`
+  (30 names) joins `ALL_PROVED`, so `--stage lean` audits the new theorems
+  with the rest (`test_lean_theorems_are_sorry_free`).
+* **Axioms**: `make -C paper1/latex axioms` — 296 theorems checked, 0
+  failures (`10_lean/axiom_check.log`); the 30 new `#print axioms` lines are
+  under "loop0011 item 10" in `paper1/axiom_check.lean`. `lake build`:
+  `10_lean/lake_build.log`.
+* **Tests**: 5 new in `tests/test_separator_moment.py` (87 in the module):
+  the audited names are theorems of the file and the file has no `sorry`
+  and no `axiom`; the two transcriptions on every labelled graph to 5
+  vertices; `separator_check` on 60 graphs; the `3K₂` example.
+
+### 10.5 Where the record corrects the item
+
+* **No termination argument.** The item asked for the closure "iterated;
+  termination by `|V ∖ (A ∪ R)|` strictly decreasing until the fixpoint".
+  L2 (iii) says the closure is a fixpoint after one round, and the Lean
+  statement is stronger still: `closeStep` is idempotent on **every** pair,
+  empty or not (`closeStep_closeStep`), because `A ⊆ V ∖ N[V ∖ N[A]]` holds
+  for every `A` (`subset_compl_closedNbhd_compl_closedNbhd`). Emptiness is
+  needed only for monotonicity in `R` (`subset_closeStep`).
+* **The pair form suffices for Theorem S**, as §8.4 said; `IsBalancedBip` is
+  the pair form, and the component form appears only in L1′ (b).
+* **`|R| = n − k − t` is written `(n − k) / 2`**, equal in `ℕ` arithmetic
+  (`omega`); the item's expression is the same number.
+* **(d) fitted**, against the item's expectation, and so did the
+  relabelling the item did not ask for; the named `Prop`
+  `SeparatorFactorisation` was not needed.
+* **`decide` cannot do `IsBalancedBip` directly**: over `64 × 64` pairs of
+  subsets it hits the recursion limit; reducing to the 64 subsets `A`
+  (`R = univ \ A` is forced) and `decide +kernel` settles it in under a
+  second. `native_decide` was not used (it would add an axiom).
+* **`componentOff` is not Mathlib's `ConnectedComponent`**: it is the
+  reachable set through walks avoiding `S`, as a `Finset` under classical
+  decidability. The two agree (a walk in `G.induce (V ∖ S)` is a walk of `G`
+  avoiding `S`), but the equivalence is not proved here and nothing rests
+  on it.
+
+### 10.6 Appendix A rows, drafted for item 12 (not in the paper)
+
+```latex
+\leanentry{separator}{Appendix~\ref{app:random}, counting events: a layout of width $k<n$ forces pairwise disjoint $A,R,S$ covering $V$ with $|A|=\lceil(n-k)/2\rceil$, $|R|=\lfloor(n-k)/2\rfloor$, $|S|=k$ and no $A$--$R$ edge (on the MOSP graph: no pattern meets both $A$ and $R$); a walk avoiding $S$ that starts in $A$ stays in $A$, so every component of $G-S$ has at most $\lceil(n-k)/2\rceil$ vertices; $3K_2$ at $k=0$ satisfies the component condition and not the bipartition one} \leannames{exists_balanced_separator, exists_balanced_separator_cover, exists_isBalancedBip, card_componentOff_le_of_isBalancedBip, not_isBalancedBip_threeK2, card_componentOff_threeK2_le} \\
+\leanentry{closedpair}{The closed pair: $R\subseteq V\setminus N[A]$ iff $(A,R)$ is disjoint and empty (the Galois step); one round of the alternating closure $R^{*}=V\setminus N[A]$, $A^{*}=V\setminus N[R^{*}]$ is monotone on empty pairs, lands on a closed pair ($A^{*}=V\setminus N[R^{*}]$, $R^{*}=V\setminus N[A^{*}]$) from every $A$, is idempotent, has separator $N(A^{*})\cap N(R^{*})$ and keeps the sizes; a pair is closed iff it is empty and every outside vertex sees both sides; a layout of width $k<n$ forces a closed empty pair with sides of at least the forced sizes} \leannames{subset_compl_closedNbhd_iff, subset_closeStep, closeStep_isClosedPair, closeStep_closeStep, sdiff_eq_inter_boundary_of_isClosedPair, card_closeStep, isClosedPair_iff_sees_both, exists_closedPair_of_pathwidth_le} \\
+\leanentry{weightedcount}{Lemma~W: for any weight $1\le Z(P)\le\#\{\text{empty pairs}\}$ on the empty pairs, $\sum_P \mathbf 1[P\ \text{empty}]/Z(P)\ge\mathbf 1[\text{some pair is empty}]$, so $\Pr[\pw\le k]\le E[\sum_P \mathbf 1[P\ \text{empty}]/Z(G,P)]$ over the exact-size pairs; with $Z$ the number of flips of $P$ (exchanging equally many vertices isolated in $G[A]$ and $G[R]$ gives distinct empty pairs of the same sizes), the weighted count of Corollary~W-flip} \leannames{weightedCount_ge_indicator, weightedSum_graphsOfPathwidthLe_le_weighted, flipPair_isEmptyPair, flipPair_injOn, card_flipPair, card_flips_le, weightedSum_graphsOfPathwidthLe_le_flipWeighted} \\
+\leanentry{theoremS}{Theorem~S, the separator first moment in finite form: for $0\le p\le1$ and $k<n$, $\Pr[\pw(G(n,p))\le k]\le\binom nk\,P_N(E_{\mathrm{bip}})$, where $P_N(E_{\mathrm{bip}})$ is the $G(N,p)$-weighted count, $N=n-k$, of the graphs on $V\setminus S$ whose vertices split into an empty pair of sizes $\lceil N/2\rceil$, $\lfloor N/2\rfloor$; the union bound over the $\binom nk$ separators is the only inequality: the graphs on $V$ with a given restriction to $V\setminus S$ have total weight equal to the restriction's $G(N,p)$ weight (the pairs meeting $S$ carry weight $(p+(1-p))^{|\text{pairs meeting }S|}=1$), and the inner count is the same for every $S$ by a relabelling of $V$} \leannames{weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip, weightedSum_graphsOfPathwidthLe_le_separator, weightedSum_graphsOfPathwidthLe_le_sum_separators, sum_gnpWeight_fiber, sum_gnpWeight_bipGraphs, card_pairsOff, innerBip_eq_of_card_eq} \\
+\leanentry{theoremCl}{Theorem~Cl, the union bound: $\Pr[\pw\le k]\le\sum_{(A,R)}\Pr[(A,R)\ \text{is closed}]$ over the ordered disjoint pairs with $|A|\ge\lceil(n-k)/2\rceil$, $|R|\ge\lfloor(n-k)/2\rfloor$; the evaluation of each term as $(1-p)^{|A||R|}\bigl((1-(1-p)^{|A|})(1-(1-p)^{|R|})\bigr)^{|S|}$ is on paper} \leannames{weightedSum_graphsOfPathwidthLe_le_sum_closedPairs} \\
+```
+
+Item 12 should also add `SeparatorMoment.lean` to the file list in the
+comment at the head of `sec9e_appendix_random.tex`, and say in Appendix E
+that Theorem S is a Lean theorem and Theorem Cl's independence step is not.
+
+### 10.7 Regenerate, size range, kill verdict, what this does not claim
+
+* **Regenerate.** `cd lean && lake build` (the file builds in about 1.5 s
+  on a built library); `make -C paper1/latex axioms`;
+  `python -m learning.sandwich --stage separator` (1 s; add
+  `--out <path>` to keep `reports/sandwich_tables.md` as the full run
+  writes it) and `--stage lean` (the axiom audit through the sandwich
+  path); `python3 -m pytest tests/test_separator_moment.py -k "proved_names or close_step or sees_both or separator_check or three_k2"`.
+  Logs: `reports/scratch/separator_moment/10_lean/` (`lake_build.log`,
+  `axiom_check.log`, `sandwich_separator.{md,log}`, `gate.log`).
+* **Size range.** The theorems are for every finite `V`, every `k < n`,
+  every `0 ≤ p ≤ 1` (Lean, no size). The numerical pin: 500 random graphs at
+  `n = 5–11`; the transcription tests: every labelled graph to 5 vertices.
+* **Kill verdict: none** (the item had none). Nothing left as a `Prop`;
+  three groups of statements left on paper with their obstacles named in
+  §10.3.
+* **Does not claim.** Any value or rate of `P_N(E_bip)`: `innerBip` is a
+  finite weighted sum, evaluated on paper by Lemma P (§5) and never in Lean.
+  That Theorem Cl is in Lean: its union bound and characterisation step are,
+  its independence step is not. That Corollary W-flip's right-hand side is
+  evaluated: only `P ≤ E[Y]` with the flip weight is proved. That
+  `componentOff` equals Mathlib's connected component (not proved, not
+  used). That Lemma Fl's count is `C(|I_A| + |I_R|, |I_A|)`: only `1 ≤ #flips ≤ X`
+  is proved, which is all admissibility needs. Nothing probabilistic beyond
+  finite weighted counts; Propositions T and T-cover stay on paper with
+  their hypotheses. Nothing re-solved; `solutions/` untouched.

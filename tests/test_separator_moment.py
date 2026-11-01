@@ -15,6 +15,8 @@ graph to 9 vertices, 20,000 random at 10–12, 2,000 covers) is
 from __future__ import annotations
 
 import math
+import re
+from pathlib import Path
 import random
 from itertools import combinations
 
@@ -1142,3 +1144,82 @@ def test_z_hat_exponent_is_the_closed_corner_and_beta_W_is_beta_closed():
         assert corner - 1e-9 <= expo <= corner + 0.001
         assert lamA < 0.002 and lamR < 0.002
         assert abs(beta_weighted(c) - beta_closed(c)) < 5e-4
+
+
+# ---------------------------------------------------------------------------
+# loop0011 item 10: `lean/MOSPFormalization/SeparatorMoment.lean` against the Python
+# ---------------------------------------------------------------------------
+
+LEAN_FILE = Path(__file__).resolve().parents[1] / "lean" / "MOSPFormalization" / "SeparatorMoment.lean"
+
+
+def test_separator_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `SeparatorMoment.lean` is declared
+    there as a theorem, and the file has no `sorry` and no `axiom`."""
+    import learning.sandwich as sw
+    src = LEAN_FILE.read_text()
+    declared = set(re.findall(r"^theorem\s+([^\s:({\[]+)", src, re.M))
+    missing = [n for n in sw.SEPARATOR_PROVED if n.split(".")[-1] not in declared]
+    assert not missing, missing
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    assert "SeparatorMoment" in (LEAN_FILE.parents[1] / "MOSPFormalization.lean").read_text()
+
+
+def test_close_step_transcription_equals_close_pair():
+    """`closeStep` as Lean defines it (`A` first) is item 03's `close_pair(..., 'A')`,
+    is idempotent, and lands on a closed pair, on every labelled graph to 5 vertices
+    and every `A`."""
+    import learning.sandwich as sw
+    for n in range(1, 6):
+        for adj in all_labelled_graphs(n):
+            full = (1 << n) - 1
+            for A in range(1 << n):
+                As, Rs = sw.close_step(adj, A)
+                assert (As, Rs) == close_pair(adj, A, full & ~closed_nbhd(adj, A), "A")
+                assert sw.close_step(adj, As) == (As, Rs)
+                assert is_closed_pair(adj, As, Rs)
+                assert A & As == A
+
+
+def test_sees_both_is_the_closed_pair_characterisation():
+    """`isClosedPair_iff_sees_both`: closed iff disjoint, empty and every outside vertex
+    sees both sides, on every pair of disjoint sets of every labelled graph to 5 vertices."""
+    import learning.sandwich as sw
+    for n in range(1, 6):
+        for adj in all_labelled_graphs(n):
+            for A in range(1 << n):
+                R = 0
+                full = (1 << n) - 1
+                rest = full & ~A
+                sub = rest
+                while True:
+                    assert is_closed_pair(adj, A, sub) == sw.sees_both(adj, A, sub)
+                    if sub == 0:
+                        break
+                    sub = (sub - 1) & rest
+
+
+def test_separator_check_has_no_violations():
+    import learning.sandwich as sw
+    frame = sw.separator_check(n_graphs=60, seed=3)
+    assert len(frame) >= 60
+    assert frame.ok_L1.all() and frame.ok_L1prime.all() and frame.ok_L2.all()
+    assert frame.ok_sees_both.all()
+    summary = sw.separator_summary(frame)
+    assert (summary["L1"] == summary["rows"]).all()
+
+
+def test_three_k2_is_relaxed_and_not_bipartitioned_at_k_zero():
+    """`not_isBalancedBip_threeK2` and `card_componentOff_threeK2_le`: at `k = 0`,
+    `S = ∅`, `3K₂` is in `E_relax` and not in `E_bip`."""
+    adj = [0] * 6
+    for u, v in [(0, 3), (1, 4), (2, 5)]:
+        adj[u] |= 1 << v
+        adj[v] |= 1 << u
+    bip, relax = separator_events(adj, 0, 0)
+    assert relax and not bip
+    assert count_exact_pairs(adj, 0) == 0
+    assert all(popcount(c) <= 3 for c in components(adj, 63))

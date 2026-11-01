@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 9/13 SOLVED
+Current: 10/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -890,3 +890,111 @@ should say that the weighted count is closed (the lower tail is the closed
 pair), that the recombinations are half the cluster's logarithm on
 `G(n, c/n)` and all of it on covers, and carry §9.6's finer-`c` table and
 the gain's peak at `c = 4 ln 2` in the `β` figure's near-threshold region.
+
+---
+
+## Iteration 10 — 2026-11-01 21:20
+
+Item 10, Lean: the deterministic lemmas and the union bound over separators.
+**Done — all of (a)–(d), and the relabelling, Theorem Cl's union bound,
+Lemma Fl and Corollary W-flip's sound part beyond them.** Deliverable:
+`lean/MOSPFormalization/SeparatorMoment.lean` (new; 1,229 lines, 78 `theorem`
+declarations, 21 definitions; imported by `lean/MOSPFormalization.lean`;
+imports `EmptyPair`, `FirstMoment`, `CliqueCoverMoment`; **no `sorry`, no
+`axiom`**, every theorem on `propext`, `Classical.choice`, `Quot.sound` only);
+30 new `#print axioms` lines in `paper1/axiom_check.lean` (`make -C
+paper1/latex axioms`: 296 theorems checked, 0 failures); `learning/sandwich.py`
+(`SEPARATOR_PROVED`, 30 names, in `ALL_PROVED`; the `--stage separator`
+numerical pin with `close_step` and `sees_both` transcribed from Lean and
+`separator_check` / `separator_summary`); `tests/test_separator_moment.py`
+(5 new tests, 87 in the module); `reports/separator_moment.md` §10 (the
+statement-by-statement table with Lean names and status, the headline theorem
+verbatim, what went beyond the brief, the three obstacles named, the checks,
+the corrections to the item, the Appendix A rows drafted for item 12,
+regenerate / size range / kill verdict / non-claims);
+`reports/scratch/separator_moment/10_lean/` (`lake_build.log`,
+`axiom_check.log`, `sandwich_separator.{md,log}`, `gate.log`).
+
+### Completed
+
+- **Theorem S is a Lean theorem, exactly as §8.1 states it**:
+  `weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip` —
+  `∑_{pw G ≤ k} gnpWeight p G ≤ n.choose k · innerBip p S₀ k` for `0 ≤ p ≤ 1`,
+  `k < n` and any `k`-set `S₀`, with `innerBip` the `G(N, p)`-weighted count
+  of the pair-form event over the graphs on `V ∖ S₀` (kept as graphs on `V`
+  with no edge meeting `S₀`, as §8.4 recommended). The chain: L1′ (a) ⇒ the
+  union bound over separators (`…_le_sum_separators`); the factorisation
+  step `sum_gnpWeight_fiber` (the fibre over a graph `H` on `V ∖ S` is the
+  `2^{|pairsMeeting S|}` subsets of the pairs meeting `S`, total weight
+  `(p + (1 − p))^{…} = 1`, by `sum_nbij'` with `F ↦ fromEdgeSet (E(H) ∪ F)`);
+  `card_pairsOff` (`|pairsOff S| = (n − |S|).choose 2`, through the edges of
+  `⊤` on the subtype and `Sym2.map.injective`); and the relabelling
+  `innerBip_eq_of_card_eq` (a permutation of `V` carrying `S₀` onto `S`,
+  built from `Fintype.card_eq` on the subtypes and their complements and
+  `Equiv.Set.sumCompl`; `relabel e G := G.comap e.symm`, with the edge set
+  mapped by `Sym2.map e`, restriction and `E_bip` invariant). The named
+  `Prop` `SeparatorFactorisation` the item allowed was not needed.
+- **L1, its cover form, L1′ (a), (b), (d), L2 (i)–(v), L1 + L2, the
+  characterisation step of Cl, Lemma W and its `G(n, p)` reading**: all
+  proved (`exists_balanced_separator`, `exists_balanced_separator_cover`,
+  `exists_isBalancedBip`, `componentOff_subset_side`,
+  `card_componentOff_le_of_isBalancedBip`, `not_isBalancedBip_threeK2`,
+  `card_componentOff_threeK2_le`, `subset_compl_closedNbhd_iff`,
+  `subset_closeStep`, `closeStep_isClosedPair`, `closeStep_closeStep`,
+  `sdiff_eq_inter_boundary_of_isClosedPair`, `card_closeStep`,
+  `exists_closedPair_of_pathwidth_le`, `isClosedPair_iff_sees_both`,
+  `weightedCount_ge_indicator`, `weightedSum_graphsOfPathwidthLe_le_weighted`).
+  L1′ (b) uses a `componentOff` defined as the vertices reachable by a walk
+  avoiding `S` (induction on `SimpleGraph.Walk`), not Mathlib's
+  `ConnectedComponent` quotient; the `3K₂` half "no `3`-set is an empty pair
+  with its complement" is `decide +kernel` over the 64 subsets (a direct
+  `decide` over `64 × 64` pairs hits the recursion limit; `native_decide`
+  not used).
+- **Beyond the brief**: Theorem Cl's union bound over `closedIndices t r`
+  (`weightedSum_graphsOfPathwidthLe_le_sum_closedPairs`); Lemma Fl
+  (`flipPair_isEmptyPair` — the four cases —, `flipPair_disjoint`,
+  `card_flipPair`, `flipPair_injOn`, `card_flips_le`: `1 ≤ #flips ≤ X` on
+  the empty pairs); Corollary W-flip's sound part
+  (`weightedSum_graphsOfPathwidthLe_le_flipWeighted`).
+- **Obstacles named, not hit on Theorem S's path** (§10.3): components of
+  `G − S` as finsets with their sizes (Lemmas P, G, F, Corollary S′ in
+  component form, the converse of L1′ c); the product-over-blocks lemma for
+  weighted sums over edge subsets (Theorem Cl's independence step — the one
+  thing between Theorem Cl and Lean, a session on its own);
+  inclusion–exclusion over pattern sets (Lemma J, Theorem Cl-cover). The
+  paper may cite Theorem S as proved in Lean, Theorem Cl as "union bound and
+  characterisation in Lean, independence step on paper", W-flip as "sound
+  part in Lean".
+- **Checks**: every statement was brute-force checked before it was written
+  (§2.4, §8.3); the two statements stronger than the checked ones
+  (`closeStep` idempotent and closed for *every* `A`; the sees-both
+  characterisation) re-checked on every labelled graph to 5 vertices and
+  every `A` in the tests; the numerical pin `python -m learning.sandwich
+  --stage separator`: 500 random `G(n, p)` graphs at `n = 5–11` with exact
+  pathwidth, `k = pw` and `pw + 1`, **1,000 rows, zero violations**, the
+  Lean `closeStep` transcription equal to item 03's `close_pair` on every
+  exact-size pair, in 1 s.
+- **Corrections to the item**: no termination argument (the closure is
+  idempotent on every pair, `subset_compl_closedNbhd_compl_closedNbhd` for
+  every `A`); `|R| = n − k − t` written `(n − k) / 2`; (d) fitted and so did
+  the relabelling; `decide` needs the 64-subset reduction.
+- Compute: seconds (Lean builds the file in 1.5 s; the pin in 1 s; the gate
+  about 12 minutes). The one-minute load was below 2 throughout.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,743 passed / 2 skipped / 1 xfailed in 4:32, the 5 new tests among them; pathwidth_solver 123 passed in 6:23; paper 71 pages, no undefined references; the one-minute load was below 2). Log: `reports/scratch/separator_moment/10_lean/gate.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 11 (the slack ledger): per cell, in stacks, what each count buys —
+the separator and closed floors from `floors_cs.csv` (§7.5) and `finite.csv`
+(§6.5), the measured slacks of §4.6 and §9.2 — and what is left to the
+truth. Item 12 should quote Theorem S from Lean
+(`weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`), take the five
+Appendix A rows drafted in §10.6 (adding `SeparatorMoment.lean` to the file
+list at the head of `sec9e_appendix_random.tex`), and say that Theorem Cl's
+independence step and Lemma J are on paper. Item 13's reserve could be the
+product-over-blocks lemma (Theorem Cl into Lean) if nothing from 01–12 is
+more pressing.

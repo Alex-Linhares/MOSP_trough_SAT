@@ -549,7 +549,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
     written down here, with a Laplace transform in closed form, moves the
     constant by `0.02`.
 
-- [ ] **10 Lean: the deterministic lemmas and the union bound over separators.**
+- [x] **10 Lean: the deterministic lemmas and the union bound over separators.**
   - **Question.** F of the brief, second half. Which of item 08's
     statements are within a session in Lean, and prove them.
   - **Method.** New file `lean/MOSPFormalization/SeparatorMoment.lean`,

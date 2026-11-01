@@ -337,3 +337,41 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.pathwidth_ge_of_clique_pendant_cliques
 #print axioms MOSPFormalization.MOSPInstance.mospValue_ge_of_pendant_patterns
 #print axioms MOSPFormalization.PathDecomposition.pendant_bound
+
+-- loop0011 item 10: counting events, not witnesses (SeparatorMoment.lean)
+-- L1, its cover form, L1′ a–b, d
+#print axioms MOSPFormalization.exists_balanced_separator
+#print axioms MOSPFormalization.exists_balanced_separator_cover
+#print axioms MOSPFormalization.exists_isBalancedBip
+#print axioms MOSPFormalization.componentOff_subset_side
+#print axioms MOSPFormalization.card_componentOff_le_of_isBalancedBip
+#print axioms MOSPFormalization.not_isBalancedBip_threeK2
+#print axioms MOSPFormalization.card_componentOff_threeK2_le
+-- L2: the Galois step and the closure
+#print axioms MOSPFormalization.subset_compl_closedNbhd_iff
+#print axioms MOSPFormalization.subset_closeStep
+#print axioms MOSPFormalization.closeStep_isClosedPair
+#print axioms MOSPFormalization.closeStep_closeStep
+#print axioms MOSPFormalization.sdiff_eq_inter_boundary_of_isClosedPair
+#print axioms MOSPFormalization.card_closeStep
+#print axioms MOSPFormalization.exists_closedPair_of_pathwidth_le
+#print axioms MOSPFormalization.isClosedPair_iff_sees_both
+-- Lemma W and its G(n, p) reading
+#print axioms MOSPFormalization.weightedCount_ge_indicator
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_weighted
+-- Theorem S: the union bound over separators, the factorisation, the relabelling
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_sum_separators
+#print axioms MOSPFormalization.sum_gnpWeight_fiber
+#print axioms MOSPFormalization.sum_gnpWeight_bipGraphs
+#print axioms MOSPFormalization.card_pairsOff
+#print axioms MOSPFormalization.innerBip_eq_of_card_eq
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_separator
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip
+-- Theorem Cl: the union bound over closed pairs (the independence step is on paper)
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_sum_closedPairs
+-- Lemma Fl and Corollary W-flip (the sound part)
+#print axioms MOSPFormalization.flipPair_isEmptyPair
+#print axioms MOSPFormalization.flipPair_injOn
+#print axioms MOSPFormalization.card_flipPair
+#print axioms MOSPFormalization.card_flips_le
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_flipWeighted

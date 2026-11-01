@@ -1,0 +1,17 @@
+ n      k  rows  pairs (median)  L1  L1′  L2  sees both
+ 5 pw + 1    76            10.0  76   76  76         76
+ 5     pw    76             6.0  76   76  76         76
+ 6 pw + 1    55            20.0  55   55  55         55
+ 6     pw    55             8.0  55   55  55         55
+ 7 pw + 1    70            26.5  70   70  70         70
+ 7     pw    70            11.0  70   70  70         70
+ 8 pw + 1    68            37.0  68   68  68         68
+ 8     pw    68            10.0  68   68  68         68
+ 9 pw + 1    64            58.5  64   64  64         64
+ 9     pw    64            14.0  64   64  64         64
+10 pw + 1    78            87.5  78   78  78         78
+10     pw    78            20.0  78   78  78         78
+11 pw + 1    89            92.0  89   89  89         89
+11     pw    89            16.0  89   89  89         89
+separator: 1000 rows, 0 violations
+wrote reports/scratch/separator_moment/10_lean/sandwich_separator.md

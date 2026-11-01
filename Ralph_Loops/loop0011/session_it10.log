@@ -1,0 +1,208 @@
+# session it10 started 2026-11-01 20:52:25
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 10: the Lean item. I'll read the plan, the report's §8.4 Lean targets, and the Lean headers first, then write `SeparatorMoment.lean`.
+  > $ uptime && date && wc -l reports/separator_moment_plan.md reports/separator_moment.md && grep -n "^## \|^### " reports/separator_moment.md | head -80
+  > $ sed -n 1,52p reports/separator_moment.md && sed -n 364,460p reports/separator_moment.md && sed -n 606,672p reports/separator_moment.md
+  > $ sed -n 2559,2720p reports/separator_moment.md && sed -n 2959,3025p reports/separator_moment.md
+  > $ cat lean/MOSPFormalization/EmptyPair.lean
+  > $ cat lean/MOSPFormalization/FirstMoment.lean
+  > $ cat lean/MOSPFormalization/CliqueCoverMoment.lean && cat lean/MOSPFormalization.lean && cat paper1/axiom_check.lean && grep -n "stage\|def main\|argparse" learn
+  > $ grep -n "^theorem\|^def\|^noncomputable def\|^lemma\|^structure\|^abbrev\|^import\|^variable" lean/MOSPFormalization/CliqueCoverMoment.lean | head -80 && echo -
+  > $ sed -n 60,140p reports/separator_moment_plan.md && cat Ralph_Loops/loop0011/gate.py | head -60 && grep -n "lean\|Lean" paper1/latex/Makefile | head -20
+  > $ sed -n 459,520p reports/separator_moment.md && grep -n "def close_pair\|def closed_pairs\|def exact_pairs\|def closure_image\|def forced_sizes\|def is_empty_pai
+  > $ sed -n 1,60p learning/sandwich.py && sed -n 460,560p learning/sandwich.py && cat lean/lean-toolchain && cat lean/lakefile* 2>/dev/null | head -30 && sed -n 60,9
+  > $ cd /home/al/dev/MOSP/lean && (time lake build 2>&1 | tail -3) 2>&1; ls .lake/build/lib/lean/MOSPFormalization/ 2>/dev/null | head -5; grep -rn "ConnectedCompone
+  > $ cd /home/al/dev/MOSP && sed -n 100,160p learning/separator_moment.py && sed -n 225,260p learning/separator_moment.py && sed -n 1,40p tests/test_separator_moment
+  > $ grep -n "THEOREMS\|def print_axioms\|def axioms_verdict\|def lake_build\|def lake_available\|PROVED\|STATED" learning/sandwich.py | head -20 && sed -n "$(grep -
+  > $ cd /home/al/dev/MOSP/lean && cat > /tmp/probe.lean <<'EOF'
+import Mathlib
+open Finset
+#check @Sym2.map.injective
+#check @SimpleGraph.card_edgeFinset_top_eq_card
+  > $ grep -n "theorem vertexSeparation_eq_pathwidth\|def vertexSeparation\|def pathwidth " MOSPFormalization/*.lean | head && grep -n "instance.*Decidable\|Decidable
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/SeparatorMoment.lean
+  > $ time lake env lean MOSPFormalization/SeparatorMoment.lean 2>&1 | head -80
+  > $ python3 - <<'EOF'
+import re
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""  have hpw : pathwidth (coverGraph S) ≤ k := by
+    rw [(
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""        simp only [hex, ↓reduceIte] at hind""","""        rw [if_po
+  > $ cat > /tmp/probe2.lean <<'EOF'
+import Mathlib
+open Finset
+#check @Finset.sum_nbij'
+#check @Finset.filter_card_add_filter_neg_card_eq_card
+#check @Finset.disjoin
+
+First part compiles clean (L1, L2, L1′, Lemma W, the union bound over separators). Now looking up the three missing Mathlib names for the factorisation step, then writing it.
+  > $ cat > /tmp/probe3.lean <<'EOF'
+import Mathlib
+open Finset
+example {α} [DecidableEq α] (s : Finset α) (p : α → Prop) [DecidablePred p] : (s.filter p).card + (s.f
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+# corollary of Lemma W without the indicator, and use it
+s=s.replace("""/-- The or
+  > $ grep -rn -B2 -A6 "symm :=" MOSPFormalization/MOSPGraph.lean | head -30
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""  Adj u v := G.Adj u v ∧ u ∉ S ∧ v ∉ S
+  symm := fun _ _ ⟨h, hu, hv
+  > $ sed -i 's/    exact G.loopless v h/    exact G.irrefl h/' MOSPFormalization/SeparatorMoment.lean && time lake env lean MOSPFormalization/SeparatorMoment.lean 2>
+  > $ wc -l MOSPFormalization/SeparatorMoment.lean && cat > /tmp/ax.lean <<'EOF'
+import MOSPFormalization.SeparatorMoment
+open MOSPFormalization
+#print axioms exists_
+  > $ cat > /tmp/probe4.lean <<'EOF'
+import Mathlib
+open Finset
+#check @SimpleGraph.comap_adj
+#check @Equiv.Set.sumCompl
+#check @Equiv.Set.sumCompl_symm_apply_of_mem
+
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+relab = r'''
+/-! ### The relabelling: the inner count does not depend on `S` -/
+
+s
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""  ext y
+  rw [mem_map_equiv, mem_sdiff, mem_sdiff, ← hS, Equiv.appl
+  > $ cat > /tmp/probe5.lean <<'EOF'
+import Mathlib
+open Finset
+#check @Nat.add_choose_eq
+#check @Finset.card_sdiff_add_card_eq_card
+#check @Finset.card_union_of_disj
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+add = r'''
+/-! ### Theorem Cl: the union bound over closed pairs -/
+
+section Close
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""      ((pairIndices (V := V) t r).filter (fun q => IsEmptyPair G q.
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""/-- **Lemma Fl, admissibility**: every flip of an empty pair of `pa
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""  intro JJ hJJ
+  simp only [coe_filter, coe_product, Set.mem_setOf_
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+s=s.replace("""  rw [mem_coe, mem_filter, mem_pairIndices]
+  refine ⟨⟨by rw [flipP
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+add = r'''
+/-! ### Corollary W-flip, the sound part -/
+
+open scoped Classical in
+/
+  > $ python3 - <<'EOF'
+p='MOSPFormalization.lean'
+s=open(p).read()
+s=s.replace("import MOSPFormalization.CliqueCoverMoment\n","import MOSPFormalization.CliqueCoverMo
+  > $ cd /home/al/dev/MOSP && grep -c sorryAx <(cd lean && lake env lean ../paper1/axiom_check.lean 2>&1); sed -n 60,160p learning/sandwich.py; cat paper1/latex/check
+  > $ (make -C paper1/latex axioms 2>&1 | tail -5) ; sed -n 160,290p learning/sandwich.py
+  > $ grep -n "^def vertex_separation\|^def components\|^def separator_events\|^def gnp_masks\|^def popcount\|^def forced_sizes\|^def mosp_masks\|^def is_closed_pair\
+  > $ python3 - <<'EOF'
+p='learning/sandwich.py'
+s=open(p).read()
+s=s.replace("""#: Every proved name the axiom check asks for.
+ALL_PROVED = PROVED + FOREST_COVER_PRO
+  > $ mkdir -p reports/scratch/separator_moment/10_lean && git status --short reports/sandwich_tables.md && cat >> tests/test_separator_moment.py <<'EOF'
+
+
+# --------
+  > $ sed -n 170,182p tests/test_separator_moment.py && python3 - <<'EOF'
+p='tests/test_separator_moment.py'
+s=open(p).read()
+s=s.replace("import math\n","import math
+  > $ time nice -n 19 python3 -m pytest tests/test_separator_moment.py -q -x -k "proved_names or close_step or sees_both or separator_check or three_k2" 2>&1 | tail -
+  > $ D=reports/scratch/separator_moment/10_lean && nice -n 19 python3 -m learning.sandwich --stage separator --out $D/sandwich_separator.md > $D/sandwich_separator.l
+  > $ grep -n "loop0011\|SeparatorMoment\|EmptyPair.lean\|FirstMoment.lean" paper1/latex/sec9a_appendix_lean.tex | head -20; grep -n "CliqueCoverMoment" paper1/latex/
+  > $ ls paper1/latex/*.tex | head -30; grep -ln "FirstMoment\|EmptyPair" paper1/latex/*.tex; grep -n "FirstMoment\|EmptyPair" paper1/latex/*.tex | head -12
+  > $ sed -n 95,125p paper1/latex/sec9a_appendix_lean.tex && grep -n "leanentry\|leannames" paper1/latex/main.tex | head -5 && grep -n "Why the first moment is loose"
+  > $ sed -n 3382,3413p reports/separator_moment.md && grep -n "^- \[ \]\|^- \[x\]\|^- \[!\]" Ralph_Loops/loop0011/iterations.md | head -20 && grep -n "item 10\|Item 
+  > $ grep -c "^theorem" lean/MOSPFormalization/SeparatorMoment.lean; grep -c "^def\|^noncomputable def" lean/MOSPFormalization/SeparatorMoment.lean; wc -l lean/MOSPF
+  > $ nice -n 19 python3 Ralph_Loops/loop0011/gate.py > reports/scratch/separator_moment/10_lean/gate.log 2>&1; echo "GATE EXIT $?" >> reports/scratch/separator_momen
+  > $ cat >> reports/separator_moment.md <<'EOF'
+
+## 10. Lean: the deterministic lemmas and the union bound over separators (item 10, 2026-11-01)
+
+**Question (F of th
+  > $ sed -i 's/^- \[ \] \*\*10 Lean: the deterministic lemmas and the union bound over separators\.\*\*/- [x] **10 Lean: the deterministic lemmas and the union bound
+  > $ git status --short | grep -v "Ralph_Loops/loop0011/\(loop.log\|nohup.out\|status.json\|session_it10\)" ; echo ---; cat /tmp/claude-1000/-home-al-dev-MOSP/699379
+  > $ cat reports/scratch/separator_moment/10_lean/gate.log; uptime; date; ps -o pid,etime,cmd -p $(pgrep -f "pytest" | head -3) 2>/dev/null | head -5
+
+The gate's stdout is block-buffered, so its log fills only at exit. While it runs, I'll bring the file header in line with what was actually proved (comment-only edit) and rebuild afterwards.
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+old_start = s.index("## Main results")
+old_end = s.index("No `sorry`; axioms 
+  > $ cd /home/al/dev/MOSP/lean && time lake env lean MOSPFormalization/SeparatorMoment.lean 2>&1 | grep -v "deprecated\|^$" | head -5; echo "compile check done"
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'
+s=open(p).read()
+s=s.replace("Current: 9/13 SOLVED","Current: 10/13 SOLVED")
+entr
+  > $ cd /home/al/dev/MOSP/lean && lake build 2>&1 | tail -1 && cd .. && grep -c "^| " reports/separator_moment.md && awk 'NR>3413' reports/separator_moment.md | grep
+  > $ python3 - <<'EOF'
+p='reports/separator_moment.md'
+lines=open(p).read().split("\n")
+start = next(i for i,l in enumerate(lines) if l.startswith("## 10. Lean"))
+fi
+
+All table rows are at four cells now. The only outstanding item is the gate result, so I'll wait on its log file.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Only one thing is outstanding: the gate's exit line. Waiting for it with a single-shot watcher.
+  > $ until grep -q "GATE EXIT" reports/scratch/separator_moment/10_lean/gate.log 2>/dev/null; do sleep 5; done; tail -12 reports/scratch/separator_moment/10_lean/gat
+  > $ for i in $(seq 1 110); do grep -q "GATE EXIT" reports/scratch/separator_moment/10_lean/gate.log 2>/dev/null && break; sleep 5; done; date; tail -12 reports/scra
+
+Gate passed. Filling in the gate line in PROGRESS.md and doing a final stray-file check.
+  > $ grep -n "lake build: ok\|sorry\|axiom" reports/scratch/separator_moment/10_lean/gate.log | head -5; python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md'
+s=ope
+
+Item 10 is done, 33 minutes into the 4-hour cap, with the gate passing.
+
+**What was proved.** The new file `lean/MOSPFormalization/SeparatorMoment.lean` holds 78 theorem declarations and 21 definitions, with no `sorry` and no `axiom`. Every theorem depends on `propext`, `Classical.choice` and `Quot.sound` only. It covers all of (a) through (d) in the item, and more:
+
+- **L1** and its clique-cover form, L1′ (a), (b) and the `3K₂` example (d), L2 in full, and the closed-pair characterisation.
+- **Lemma W** and its `G(n, p)` reading over exact-size pairs.
+- **Theorem S exactly as §8.1 states it**, including the `n.choose k` factor. The chain is the union bound over separators, the fibre factorisation, the count of pairs off `S`, and a relabelling argument that the item had left on paper.
+- Beyond the brief: Theorem Cl's union bound, Lemma Fl (the flips), and the sound part of Corollary W-flip.
+
+**Left on paper, with the obstacle named** in the report's §10.3: Lemmas P, G, F and the component form of S′ (components of `G − S` as finsets with sizes), Theorem Cl's independence step (a product-over-blocks lemma for weighted edge-subset sums), and Lemma J with Theorem Cl-cover (inclusion–exclusion over pattern sets).
+
+**Checks.** The statements stronger than item 02's checked forms were re-verified on every labelled graph to 5 vertices. The new `python -m learning.sandwich --stage separator` pin ran 1,000 rows on 500 random graphs with zero violations. The paper's axiom audit checks 296 theorems with 0 failures. Gate: 1,743 tests passed, pathwidth_solver 123 passed, paper builds clean.
+
+**Deliverables written.** Report §10 with the statement-by-statement table and the Appendix A rows drafted for item 12; PROGRESS.md entry with the gate line; item 10 marked `[x]`; logs under `reports/scratch/separator_moment/10_lean/`. Nothing committed, nothing under `solutions/` touched, no stray files.
+
+**Next** is item 11, the slack ledger. Item 13's reserve could take the product-over-blocks lemma, which is the one step between Theorem Cl and Lean.
+
+# result: success in 1979s, 65 turns, cost $17.64

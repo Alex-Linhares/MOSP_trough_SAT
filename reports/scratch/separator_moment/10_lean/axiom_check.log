@@ -1,0 +1,448 @@
+'MOSPFormalization.Complex.cutwidth_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.edgeSearch_le_vertexSeparation_add_two' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.intervalSearch_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.intervalThickness_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.isPositiveVSG_triangleGraph_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.kirousisPapadimitriou_claim2_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.LogicArray.tracks_eq_intervalThickness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.LogicArray.tracks_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.modCutwidth_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.monotoneNodeSearch_eq_intervalThickness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.monotoneNodeSearch_eq_vertexSeparation_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.monotoneNodeSearch_ne_vertexSeparation_add_one_of_edgeless' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.MOSPInstance.mospValue_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.narrowness_eq_pathwidth_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.foldTracks_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.foldTracks_eq_tracks' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.tracks_eq_mospValue' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.tracks_eq_nodeSearch_of_monotonicity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.tracks_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_eq_intervalThickness_of_monotonicity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_eq_vertexSeparation_add_one_of_monotonicity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_le_vertexSeparation_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_ne_intervalThickness_of_edgeless' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pathwidth_le_splitBandwidth_le_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.plaTracks_idMatrix_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.plaTracks_idMatrix_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.plaTracks_pathMatrix_unbounded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.tracks_ne_monotoneNodeSearch_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.vertexSeparation_eq_pathwidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vertexSeparation_le_edgeSearch_of_monotonicity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.vertexSeparation_le_progressiveEdgeSearch_le_add_two' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.vertexSeparation_triangleGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vsg_eq_max' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.nodeSearchMonotonicity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_eq_vertexSeparation_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_eq_pathwidth_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_eq_intervalThickness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.NetGateMatrix.tracks_eq_nodeSearch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.exists_monotone_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vertexSeparation_le_edgeSearch_le_add_two' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pathwidth_le_edgeSearch_le_add_two' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_sub_one_le_edgeSearch_le_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.edgeSearch_le_progressiveEdgeSearch_le_add_two' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pebblesWithin_lengauerD_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.isPositiveVSG_iff_isPositivePBWP_lengauerD' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pbw_lengauerD_eq_pathwidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.pbw_lengauerD_of_edgeless' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.pebblesWithin_iff_lengauerU' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.isPositivePBWP_iff_isPositiveVSG_lengauerU' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.isPositivePBWP_one_not_isPositiveVSG_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pbw_eq_pathwidth_lengauerU_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.pbw_eq_vsg_lengauerU_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.pbw_eq_mospValue_pebbleMatrix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.mpb_eq_mpbw' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.mpb_eq_pathwidth_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.mpbw_eq_pathwidth_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.mpb_eq_nodeSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.mpb_ne_nodeSearch_of_edgeless' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_insert_of_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_insert_iff_of_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_iff_searchSol_cl' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.orderCost_ofFn_eq_outNarrowness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.orderCost_ofFn_eq_vertexSepOfLayout_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.searchSol_empty_iff_pathwidth_add_one_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.searchSol_mospGraph_iff_mospValue_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.openStacks_submodular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isDefinite_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_cl_insert_of_hereditarilyDefinite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.searchSol_cl_insert_of_hereditarilyDefinite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.isHereditarilyDefinite_of_openCount_le_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.isHereditarilyDefinite_of_matching' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.not_solvable_of_invariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.definiteMove_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.not_isHereditarilyDefinite_cex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.searchSol_cl_insert_of_newlyOpened_subset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.cl_insert_cl_insert_of_newlyOpened_subset' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.Dominates.trans' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exists_undominated' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.subsetKept_nonempty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.subsetFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.definiteThenSubset_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.repairedFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeFilter_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.noTieBreak_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isBetter_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.IsRepairedBetter.isBetter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isRepairedBetter_of_openCount_le_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.solvable_cl_insert_of_repairedBetter' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.searchSol_cl_insert_of_repairedBetter' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.betterFilterBy_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.fullFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.repairedFullFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.betterMove_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.betterMove_counterexample_node' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.bugA_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.bugB_counterexample' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.cl_insert_cl_insert_comm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.searchSol_reinsert' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.searchSol_reinsert_path' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.not_searchSol_of_oldMove' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_iff_of_cl_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Exec.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_root_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_fake_oldMove' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.reinsert_needs_test' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_repairedFullFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.filterSound_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Exec.execOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecOn.exec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecOn.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecOn.of_nodeSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecOn.sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.execOn_root_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.nodeSoundAt_of_covering' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.definite_link' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_repairedFullFilter_narrowness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_repairedFullFilter_pathwidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_repairedFullFilter_mospValue' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exec_repairedFullFilter_mospGraph_pathwidth' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.codeFullFilter_playable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.nodeSoundAt_codeFullFilter_of_repaired' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.codeExec_sound_of_runSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeExec_sound_of_codeFilterSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeExec_sound_of_repaired' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeExec_pathwidth_of_runSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeExec_mospValue_of_runSound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeExec_mospValue_of_repaired' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.codeFullFilter_cex' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.not_codeFilterSound_cexGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.card_opened_union_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.hall_of_isHereditarilyDefinite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exists_matching_of_isHereditarilyDefinite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.isHereditarilyDefinite_iff_hasDefiniteMatching' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.chuStuckey_theorem1_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuStuckey_theorem1_false_literal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuStuckey_theorem2_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuStuckey_theorem2_false_literal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuThesis_theorem636_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuThesis_theorem636_false_literal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuThesis_theorem638_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuThesis_theorem638_false_literal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.chuThesis_theorem638_literal_witness' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.fink_theorem1_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.opened_sdiff_eq_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.openStacks_eq_card_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.stepCost_eq_card_boundary_add_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.mem_cl_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.solvable_of_isCommittable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isHereditarilyDefinite_iff_isCommittable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.solvable_cl_insert_of_hereditarilyDefinite'' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.isDefinite_iff_endpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isCommittable_insert_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.isGreedyStep_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.cex_isDefinite_not_isCommittable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.exists_isCommittable_of_isDefinite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.cex_isCommittable_234' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.inDeg_submodular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.lemma1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.corollary1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.inDeg_symm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.stronglyKFeasible_symm_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Tamaki.isCommittableExt_symm_iff_hereditarilyDefinite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.Tamaki.stronglyKFeasible_child_of_hereditarilyDefinite' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.Tamaki.lemma1_symm_of_isCommittable' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.Tamaki.solvable_cl_insert_of_lemma1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.Tamaki.premise_gap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.Exec.union_memo' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecSplit.exec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.ExecSplit.exec_root' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.execSplit_repairedFullFilter_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.execSplit_repairedFullFilter_mospValue' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.PathDecomposition.exists_bag_of_isClique' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.star_mospValue' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.star_pathwidth_agreementGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.star_refutes_pattern_graph_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.cexFamily_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.closeCount_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.MOSPInstance.encodes_iff_mospValue_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.wavefront_eq_insert_activeSuffix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.card_wavefront' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.maxWavefront_eq_vertexSepOfLayout_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.minMaxWavefront_eq_vertexSeparation_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.minMaxWavefront_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.minMaxWavefront_of_isEmpty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.wavefront_eq_outShackBeforeMove' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.wavefront_eq_shackAfterPut_reverse' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.minMaxWavefront_eq_narrowness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.isNodeSearch_of_isSuccessfulVertexSearch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.nodeSearch_le_vertexSearchNumber' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.PathDecomposition.isMonotoneVertexSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.pathwidth_add_one_le_vertexSearchNumber' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.vertexSearchNumber_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.monotoneVertexSearchNumber_eq_pathwidth_add_one' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.vertexSearchNumber_eq_monotoneVertexSearchNumber' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Complex.vertexSearch_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vertexSearchNumber_eq_nodeSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vertexSearchNumber_of_edgeless' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Complex.vertexSearchNumber_of_isEmpty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Search.WrongOptimum.previousAlgorithm_wrong_optimum' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.WrongOptimum.not_filterSound_codeFilter' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.Search.BitSearch.run_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_contractEdge_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_contractEdge_induce_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_applySeq_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_minorOf_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_of_le_minorOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_gt_of_minorOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_gt_of_iso_minorOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_of_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_induce_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_eq_of_iso' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.MOSPInstance.lt_mospValue_of_minorOf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_grid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_grid_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.min_le_pathwidth_grid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_grid_one_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_grid_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.grid_adj_iff_manhattan' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.min_le_vertexSepOfLayout_grid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.one_le_pathwidth_of_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_hypercube' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_cubeGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Hypercube.harper' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Hypercube.card_nbhd_init_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.Hypercube.exists_init_profile' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_mycielskian_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_add_one_le_mycielskian' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.conjecture_sqrt_tw_f6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_empty_pair_of_layout' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_closedNbhd_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_empty_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.card_pathwidth_le_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_emptyPairGraphs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_simpleGraph' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.firstMoment_pathwidth_le_fin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.firstMoment_pathwidth_le_fin'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.tendsto_firstMoment_pathwidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.choose_mul_choose_le_exp_entropy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.prob_coversOfMospValueLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.prob_coversOfPathwidthLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_coversOfPathwidthLe_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_filter_avoid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.MOSPInstance.mospValue_le_maxPatternSize_mul' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.MOSPInstance.pathwidth_mospGraph_add_one_le' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.MOSPInstance.blowUp_width_add_one_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_treeBoundInv_of_isAcyclic' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.le_treeBound_treeBoundInv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.treeBound_lt_of_lt_treeBoundInv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.MOSPInstance.mospValue_le_of_incidence_isAcyclic' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.MOSPInstance.mospValue_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.isEmptyPair_coverGraph_of_subset' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_coverGraph_mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_layerWidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.vertexSeparation_le_layerWidth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_layerWidth_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.tree_pathwidth_le_treeBound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_le_card_sub_indepNum' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_ge_of_pendant_cliques' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.pathwidth_ge_of_clique_pendant_cliques' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.MOSPInstance.mospValue_ge_of_pendant_patterns' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.PathDecomposition.pendant_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_balanced_separator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_balanced_separator_cover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_isBalancedBip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.componentOff_subset_side' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_componentOff_le_of_isBalancedBip' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.not_isBalancedBip_threeK2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_componentOff_threeK2_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.subset_compl_closedNbhd_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.subset_closeStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.closeStep_isClosedPair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.closeStep_closeStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sdiff_eq_inter_boundary_of_isClosedPair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_closeStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.exists_closedPair_of_pathwidth_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.isClosedPair_iff_sees_both' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedCount_ge_indicator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_weighted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_sum_separators' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.sum_gnpWeight_fiber' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_gnpWeight_bipGraphs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_pairsOff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.innerBip_eq_of_card_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_separator' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_sum_closedPairs' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.flipPair_isEmptyPair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.flipPair_injOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_flipPair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.card_flips_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_flipWeighted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

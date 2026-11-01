@@ -144,8 +144,47 @@ PENDANT_PROVED = (
     "pathwidth_ge_of_clique_pendant_cliques",
     "MOSPInstance.mospValue_ge_of_pendant_patterns",
 )
+#: loop0011 item 10 (`SeparatorMoment.lean`): counting events, not witnesses —
+#: L1 (the balanced separator at exact sizes) and its cover form, L1′ (the pair
+#: form of `E_bip`, the connectivity step, the relaxed event, the `3K₂` example),
+#: L2 (the Galois step, the one-round closure, the closed pair), Lemma W (the
+#: weighted-count identity), the union bound over separators, the factorisation
+#: step, the relabelling, Theorem S with its `n.choose k` factor, the union bound
+#: of Theorem Cl, Lemma Fl (the flips) and Corollary W-flip's sound part.
+SEPARATOR_PROVED = (
+    "exists_balanced_separator",
+    "exists_balanced_separator_cover",
+    "exists_isBalancedBip",
+    "componentOff_subset_side",
+    "card_componentOff_le_of_isBalancedBip",
+    "not_isBalancedBip_threeK2",
+    "card_componentOff_threeK2_le",
+    "subset_compl_closedNbhd_iff",
+    "subset_closeStep",
+    "closeStep_isClosedPair",
+    "closeStep_closeStep",
+    "sdiff_eq_inter_boundary_of_isClosedPair",
+    "card_closeStep",
+    "exists_closedPair_of_pathwidth_le",
+    "isClosedPair_iff_sees_both",
+    "weightedCount_ge_indicator",
+    "weightedSum_graphsOfPathwidthLe_le_weighted",
+    "weightedSum_graphsOfPathwidthLe_le_sum_separators",
+    "sum_gnpWeight_fiber",
+    "sum_gnpWeight_bipGraphs",
+    "card_pairsOff",
+    "innerBip_eq_of_card_eq",
+    "weightedSum_graphsOfPathwidthLe_le_separator",
+    "weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip",
+    "weightedSum_graphsOfPathwidthLe_le_sum_closedPairs",
+    "flipPair_isEmptyPair",
+    "flipPair_injOn",
+    "card_flipPair",
+    "card_flips_le",
+    "weightedSum_graphsOfPathwidthLe_le_flipWeighted",
+)
 #: Every proved name the axiom check asks for.
-ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED
+ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 
@@ -463,13 +502,126 @@ def tree_bound_identity_check(max_n: int = 3000) -> int:
     return max_n + 1
 
 
+# ----------------------------------------------------------------------------
+# loop0011 item 10: `SeparatorMoment.lean` against `learning.separator_moment`
+# ----------------------------------------------------------------------------
+
+def close_step(adj: list[int], A: int) -> tuple[int, int]:
+    """`closeStep G (A, R)` transcribed: `(V ∖ N[V ∖ N[A]], V ∖ N[A])` — one round of
+    the alternating closure, `A` first; `R` is not read."""
+    from learning.separator_moment import closed_nbhd
+    full = (1 << len(adj)) - 1
+    r_star = full & ~closed_nbhd(adj, A)
+    return full & ~closed_nbhd(adj, r_star), r_star
+
+
+def sees_both(adj: list[int], A: int, R: int) -> bool:
+    """The right-hand side of `isClosedPair_iff_sees_both`: disjoint, empty, and every
+    vertex outside `A ∪ R` has a neighbour in `A` and one in `R`."""
+    from learning.separator_moment import is_empty_pair
+    n = len(adj)
+    if A & R or not is_empty_pair(adj, A, R):
+        return False
+    for v in range(n):
+        if (A | R) >> v & 1:
+            continue
+        if not (adj[v] & A) or not (adj[v] & R):
+            return False
+    return True
+
+
+def separator_check(n_graphs: int = 500, seed: int = 0, n_range: tuple[int, int] = (5, 11)
+                    ) -> pd.DataFrame:
+    """L1, L1′, L2, the closed-pair characterisation and the index-set memberships of
+    `SeparatorMoment.lean`, as Lean states them, on `n_graphs` random `G(n, p)` graphs
+    with exact pathwidth (`learning.separator_moment.vertex_separation`), at
+    `k = pw` and `k = pw + 1 < n`; the Lean `closeStep` transcription against item
+    03's `close_pair`. One row per `(graph, k)`; every `ok_*` column must be all
+    `True`."""
+    from learning.separator_moment import (
+        close_pair, closed_nbhd, components, count_exact_pairs, exact_pairs, forced_sizes,
+        gnp_masks, is_closed_pair, is_empty_pair, open_nbhd, popcount, separator_events,
+        vertex_separation,
+    )
+    rng = __import__("random").Random(seed)
+    rows = []
+    for g in range(n_graphs):
+        n = rng.randint(*n_range)
+        p = rng.choice([0.15, 0.3, 0.45, 0.6])
+        adj = gnp_masks(n, p, seed=seed * 100_003 + g)
+        full = (1 << n) - 1
+        pw = vertex_separation(adj)
+        for k in (pw, pw + 1):
+            if k >= n:
+                continue
+            N, t = forced_sizes(n, k)
+            r = N - t
+            pairs = list(exact_pairs(adj, k))
+            row = {"graph": g, "n": n, "p": p, "pw": pw, "k": k, "t": t, "r": r,
+                   "pairs": count_exact_pairs(adj, k)}
+            # L1 / exists_mem_pairIndices_isEmptyPair: an exact-size empty pair exists,
+            # and its complement is a k-set.
+            row["ok_L1"] = len(pairs) >= 1 and all(
+                popcount(A) == t and popcount(R) == r and not (A & R)
+                and popcount(full & ~(A | R)) == k and is_empty_pair(adj, A, R)
+                for A, R in pairs)
+            # L1′ a–b: the complement S is in E_bip, and every component of G − S has
+            # at most t vertices (card_componentOff_le_of_isBalancedBip).
+            ok_relax = True
+            for A, R in pairs:
+                S = full & ~(A | R)
+                bip, relax = separator_events(adj, S, k)
+                comps = components(adj, full & ~S)
+                ok_relax &= bip and relax and all(popcount(c) <= t for c in comps) and all(
+                    (c & A) == c or (c & R) == c for c in comps)
+            row["ok_L1prime"] = ok_relax
+            # L2: closeStep is monotone, lands on a closed pair, is a fixpoint after one
+            # round, has S* = N(A*) ∩ N(R*), keeps the sizes; and equals close_pair.
+            ok_L2 = True
+            for A, R in pairs:
+                As, Rs = close_step(adj, A)
+                As2, Rs2 = close_step(adj, As)
+                Ss = full & ~(As | Rs)
+                ok_L2 &= (A & As) == A and (R & Rs) == R                  # subset_closeStep
+                ok_L2 &= is_closed_pair(adj, As, Rs)                      # closeStep_isClosedPair
+                ok_L2 &= (As2, Rs2) == (As, Rs)                           # closeStep_closeStep
+                ok_L2 &= Ss == (open_nbhd(adj, As) & open_nbhd(adj, Rs))  # sdiff_eq_inter_boundary
+                ok_L2 &= popcount(As) >= t and popcount(Rs) >= r and popcount(Ss) <= k
+                ok_L2 &= (As, Rs) == close_pair(adj, A, R, "A")           # item 03's function
+                ok_L2 &= is_closed_pair(adj, As, Rs) == sees_both(adj, As, Rs)
+                ok_L2 &= As == (full & ~closed_nbhd(adj, Rs)) and Rs == (full & ~closed_nbhd(adj, As))
+            row["ok_L2"] = ok_L2
+            # isClosedPair_iff_sees_both on every subset pair of a small graph is in the
+            # tests; here on the closures and on 20 random pairs.
+            ok_iff = True
+            for _ in range(20):
+                A = rng.randrange(1 << n)
+                R = rng.randrange(1 << n) & ~A
+                ok_iff &= is_closed_pair(adj, A, R) == sees_both(adj, A, R)
+            row["ok_sees_both"] = ok_iff
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def separator_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    out = []
+    for (n, atk), part in frame.groupby(["n", frame.k == frame.pw]):
+        out.append({"n": int(n), "k": "pw" if atk else "pw + 1", "rows": len(part),
+                    "pairs (median)": float(part.pairs.median()),
+                    "L1": int(part.ok_L1.sum()), "L1′": int(part.ok_L1prime.sum()),
+                    "L2": int(part.ok_L2.sum()), "sees both": int(part.ok_sees_both.sum())})
+    return pd.DataFrame(out)
+
+
 def _md(frame: pd.DataFrame) -> str:
     return frame.to_markdown(index=False)
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus", "forest"], default="all")
+    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus", "forest", "separator"],
+                    default="all")
+    ap.add_argument("--n-graphs", type=int, default=500, help="graphs for --stage separator")
     ap.add_argument("--max-n", type=int, default=5)
     ap.add_argument("--out", type=Path, default=TABLES)
     args = ap.parse_args(argv)
@@ -524,6 +676,27 @@ def main(argv=None) -> int:
         print(forest.to_string(index=False))
         print(f"forest cover: {total['rows']} rows, {total['L2 violations']} L2 violations, "
               f"{total['L4 violations']} L4 violations; tb identity on {n_ident} values")
+
+    if args.stage in ("all", "separator"):
+        t0 = time.time()
+        frame = separator_check(args.n_graphs)
+        summary = separator_summary(frame)
+        bad = frame[~(frame.ok_L1 & frame.ok_L1prime & frame.ok_L2 & frame.ok_sees_both)]
+        ok &= bad.empty
+        sections += ["## `SeparatorMoment.lean` against `learning.separator_moment` "
+                     "(loop0011 item 10)", "",
+                     f"{frame.graph.nunique()} random `G(n, p)` graphs with exact pathwidth, "
+                     f"{len(frame)} `(graph, k)` rows at `k = pw` and `k = pw + 1`, "
+                     f"{time.time() - t0:.1f} s. L1: an exact-size empty pair exists and its "
+                     "complement is a `k`-set; L1′: the complement is in `E_bip` and every "
+                     "component of `G − S` has at most `t` vertices; L2: the one-round closure "
+                     "`closeStep` (transcribed from Lean) is monotone, closed, idempotent, has "
+                     "separator `N(A*) ∩ N(R*)`, keeps the sizes, and equals item 03's "
+                     "`close_pair`; `sees both` is `isClosedPair_iff_sees_both` on random "
+                     "pairs. Each count is the number of rows where the statement holds.", "",
+                     _md(summary), ""]
+        print(summary.to_string(index=False))
+        print(f"separator: {len(frame)} rows, {len(bad)} violations")
 
     if args.stage in ("all", "lean"):
         if not lake_available():

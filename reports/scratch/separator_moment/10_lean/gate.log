@@ -1,0 +1,15 @@
+lake build: ok
+sorry in code: 0 (limit 0): []
+  /home/al/dev/MOSP/learning/upward.py:528: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value '0.0002' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+    out.loc[i, f"seconds_{r.config}"] = r.seconds
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1743 passed, 2 skipped, 1 xfailed, 178 warnings in 271.73s (0:04:31)
+........................................................................ [ 58%]
+...................................................                      [100%]
+123 passed in 382.85s (0:06:22)
+Latexmk: All targets (main.pdf) are up-to-date
+
+no undefined references; Pages:           71
+GATE PASS
+GATE EXIT 0
