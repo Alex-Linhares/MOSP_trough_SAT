@@ -438,7 +438,7 @@ Phase 1 (01–04) measures; phase 2 (05–10) analyses; 11 is Lean; 12 writes;
   - **Does not claim.** Anything the Lean statement does not say; the
     random-model corollaries stay on paper.
 
-- [ ] **12 The write-up: the phase diagram and the paper's paragraphs.**
+- [x] **12 The write-up: the phase diagram and the paper's paragraphs.**
   - **Question.** H. One document a reader can follow, and the paper's
     text.
   - **Method.** (a) Assemble `reports/excess_phase_diagram.md`: a two-page

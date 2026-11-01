@@ -53,3 +53,6 @@
 [2026-11-01 07:12:44] claude session it11 (cap 4.00 h) -> session_it11.log
 [2026-11-01 07:38:57] session it11: ok (exit 0, 45 tool calls)
 [2026-11-01 07:49:26] tests passed: GATE PASS
+[2026-11-01 07:49:27] committed 53f56f681: 11 Lean: the forest regime.
+[2026-11-01 07:49:27] === iteration 12: 12 The write-up: the phase diagram and the paper's paragraphs.
+[2026-11-01 07:49:27] claude session it12 (cap 4.00 h) -> session_it12.log

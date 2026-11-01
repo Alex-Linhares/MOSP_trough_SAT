@@ -1,0 +1,203 @@
+# session it12 started 2026-11-01 07:49:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the current report, and the paper files, then assemble the write-up.
+  > $ uptime && wc -l reports/excess_phase_plan.md reports/excess_phase_diagram.md paper1/latex/sec9e_appendix_random.tex paper1/latex/sec9a_appendix_lean.tex paper1/
+  > $ cat reports/excess_phase_plan.md
+  > $ grep -n '^#' reports/excess_phase_diagram.md | head -200
+  > $ sed -n 1,8p reports/excess_phase_diagram.md && echo ---- && cat paper1/latex/sec9e_appendix_random.tex
+  > $ cat paper1/latex/sec9a_appendix_lean.tex && echo ---- && cat paper1/latex/main.tex
+  > $ cat paper1/latex/Makefile && echo ---- && cat paper1/latex/check_refs.py && echo ---- && cat paper1/latex/check_axioms.py && echo ---- && ls paper1/latex/data p
+  > $ cat tests/test_paper1_latex.py && echo ---- && sed -n 1,80p paper1/latex/make_tables.py && echo ---- && grep -n '^@' paper1/latex/refs.bib | wc -l && grep -n '^
+  > Skill {"skill": "dataviz"}
+  > $ sed -n 9,175p reports/excess_phase_diagram.md
+  > $ sed -n 887,1070p reports/excess_phase_diagram.md
+  > $ sed -n 1282,1380p reports/excess_phase_diagram.md && echo ..... && sed -n 1484,1530p reports/excess_phase_diagram.md
+  > $ sed -n 1378,1484p reports/excess_phase_diagram.md
+  > $ sed -n 1984,2165p reports/excess_phase_diagram.md
+  > $ sed -n 2382,2545p reports/excess_phase_diagram.md
+  > $ sed -n 2929,2984p reports/excess_phase_diagram.md && echo ..... && sed -n 3287,3393p reports/excess_phase_diagram.md
+  > $ sed -n 3713,3830p reports/excess_phase_diagram.md && echo ..... && sed -n 3938,3981p reports/excess_phase_diagram.md
+  > $ sed -n 4357,4427p reports/excess_phase_diagram.md && echo ..... && sed -n 4669,4719p reports/excess_phase_diagram.md
+  > $ sed -n 4818,4885p reports/excess_phase_diagram.md && echo ..... && sed -n 5093,5180p reports/excess_phase_diagram.md
+  > $ sed -n 5361,5572p reports/excess_phase_diagram.md
+  > $ ls paper1/figures/ | head -40; echo ----; grep -n "def \|palette\|color\|#[0-9a-fA-F]\{6\}" learning/excess.py | head -60; echo ----; sed -n 1,60p paper1/sectio
+  > $ cat /tmp/claude-1000/bundled-skills/2.1.314/f0bff2d7d5a161646091c7868c0ad3b8/dataviz/references/palette.md | head -120; echo ----; grep -n "Figure\|figure\|incl
+  > $ sed -n 1,90p learning/excess.py && echo ---- && sed -n 940,1010p learning/excess.py && echo ---- && head -3 learning/data/excess.csv && echo ---- && head -3 lea
+  > $ cat reports/scratch/beta_plus/beta_plus_table.csv && echo ---- && head -5 learning/data/excess_ridge_peaks.csv && echo ---- && head -3 learning/data/excess_cons
+  > $ python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/excess.csv')
+print(d.columns.tolist())
+print(d.source.value_counts())
+c=d[d.source=='corpus']
+prin
+  > $ grep -n "ChouKoHoChen\|Chou\|PerarnauSerra\|Kneis\|MolloyReed\|Gustedt\|Wormald\|Nikoletseas" paper1/latex/refs.bib | head; echo ----; sed -n 683,720p paper1/la
+  > $ cat paper1/latex/check_lean.py | head -60; echo ----; sed -n 1,80p learning/sandwich.py | head -100; grep -n "FOREST_COVER_PROVED" -A 30 learning/sandwich.py | 
+  > $ sed -n 60,140p Ralph_Loops/loop0010/gate.py; echo ----; cat Ralph_Loops/loop0010/iterations.md | grep -n "^- \[" 
+  > $ echo "tracked under learning/data:"; git ls-files learning/data | head -30; echo "tracked scratch beta_plus/structured/ridge/constructions:"; git ls-files repor
+  > $ python3 - <<'EOF' 2>/dev/null
+import pandas as pd, numpy as np
+d=pd.read_csv('learning/data/excess.csv', low_memory=False)
+c=d[d.source=='corpus']
+print(c.group
+  > $ python3 - <<'EOF' 2>&1 | tail -40
+import pandas as pd
+r=pd.read_csv('learning/data/excess_rule.csv', low_memory=False)
+from learning.excess import series_slopes
+  > $ timeout 40 curl -s -A "paper1-refcheck/0.1 (mailto:none@example.org)" "https://api.crossref.org/works/10.1016/j.dam.2007.08.007" | python3 -c "import json,sys; 
+  > $ grep -n "nodes_peak\|def peak\|def load_frames" learning/ridge_theory.py | head; echo ----; sed -n 1,40p reports/scratch/excess_constructions/tables.md; echo --
+  > $ grep -n "^theorem\|^lemma" lean/MOSPFormalization/TreeBound.lean lean/MOSPFormalization/IndependenceBound.lean | head -30; echo ----; grep -n "tree_pathwidth_le
+  > $ grep -n "^theorem tree_pathwidth_le_treeBound\|^theorem pathwidth_ternaryTree\|^theorem pathwidth_le_card_sub_indepNum\|^theorem pathwidth_induce_le_of_forall_c
+  > $ sed -n 170,235p learning/excess.py && grep -n "^namespace\|^end " lean/MOSPFormalization/TreeBound.lean lean/MOSPFormalization/IndependenceBound.lean | head -6 
+
+Now I'll write the figure script: an `extract` stage that pulls the numbers from the recorded CSVs into one small committed CSV, and a `draw` stage that renders the print vector from that CSV alone.
+  > Write /home/al/dev/MOSP/paper1/latex/figures/excess_phase_diagram.py
+  > $ time nice -n 19 python3 paper1/latex/figures/excess_phase_diagram.py 2>&1 | grep -v Warning | tail -5 && wc -l paper1/latex/data/excess_phase_diagram.csv && hea
+  > $ grep "^series\|^beta_plus\|^class" paper1/latex/data/excess_phase_diagram.csv | head -70
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/figures/excess_phase_diagram.py'); s=p.read_text()
+s=s.replace("    from learning.excess import 
+  > Read /home/al/dev/MOSP/reports/figures/excess_phase_diagram.png
+  > $ node /tmp/claude-1000/bundled-skills/2.1.314/f0bff2d7d5a161646091c7868c0ad3b8/dataviz/scripts/validate_palette.js "#2a78d6,#eb6834,#1baf7a" --mode light --pairs
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/figures/excess_phase_diagram.py'); s=p.read_text()
+old='''        bot.plot(g["e"], g["value"], c
+  > $ find benchmarks/instances -maxdepth 3 -type d | head -20; ls benchmarks/instances/MOSP_Instances/SCOOP 2>/dev/null | head -3; ls benchmarks/instances/ChallengeI
+  > Read /home/al/dev/MOSP/reports/figures/excess_phase_diagram.png
+  > $ grep -n "SCOOP\|two-key\|closing rule\|rule+cs" paper1/latex/sec5_results.tex paper1/latex/sec1_intro.tex paper1/latex/sec7_data.tex | head -12; echo ----; grep
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/figures/excess_phase_diagram.py'); s=p.read_text()
+old='''    for mu, ls, text in ((0.5, ":", "$
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/make_tables.py'); s=p.read_text()
+new_fn = '''
+
+# --- appendix E -------------------------------
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/refs.bib'); s=p.read_text()
+entry='''
+@article{ChouKoHoChen2008,
+  author  = {Chou, Hsin-Hung an
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/sec9a_appendix_lean.tex'); s=p.read_text()
+old=r"""\leanentry{clique-cover}{Appendix~\ref{app:ra
+  > Read /home/al/dev/MOSP/reports/figures/excess_phase_diagram.png
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p=Path('paper1/latex/sec9e_appendix_random.tex'); s=p.read_text()
+
+# 1. the ridge sentence of the generator subsect
+  > $ cat >> tests/test_paper1_latex.py <<'PYEOF'
+
+
+# --- Appendix E, the excess phase diagram (loop0010 item 12) -----------------
+
+def _phase_module():
+    import i
+  > $ timeout 300 python3 -m paper1.latex.check_refs 2>&1 | tail -4
+  > $ python3 -m paper1.latex.check_lean 2>&1 | grep -v "^ok " | tail -3; python3 -m paper1.latex.check_axioms --no-lean 2>&1 | tail -2; python3 -m paper1.latex.make_
+  > $ python3 -m pytest tests/test_paper1_latex.py -q 2>&1 | tail -3
+  > $ cd /home/al/dev/MOSP/paper1/latex && (make 2>&1 | tail -3) && make check 2>&1 | tail -2 && grep -n "Overfull\|Underfull" main.log | grep -i "sec9e\|excess" | he
+  > $ cd /home/al/dev/MOSP && git status --short paper1/latex/tables/ && git diff --stat paper1/latex/tables/ | tail -3
+  > $ python3 -m pytest tests/test_paper1_latex.py -q -k phase_diagram 2>&1 | grep -B5 "Error\|assert" | head -40
+  > $ cd /home/al/dev/MOSP/paper1/latex && grep -n "^!" -A 6 main.log | head -40
+  > $ cd /home/al/dev/MOSP && git diff paper1/latex/tables/ | head -60
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/sec9e_appendix_random.tex'); s=p.read_text()
+old=r"""$m=2n$, which differ from it at equal exces
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+from pathlib import Path
+p=Path('tests/test_paper1_latex.py'); s=p.read_text()
+old='''        for inst in instances:
+ 
+  > $ cd /home/al/dev/MOSP && git checkout -- paper1/latex/tables/dataset.tex paper1/latex/tables/split.tex && git status --short paper1/latex/tables/
+  > $ python3 -m pytest tests/test_paper1_latex.py -q -k phase_diagram 2>&1 | grep -E "^E|^>" | head -10
+  > $ cd /home/al/dev/MOSP/paper1/latex && sed -n 640,652p main.log; echo ----; for p in $(seq 60 71); do echo "== page $p"; pdftotext -f $p -l $p -layout main.pdf - 
+  > $ sed -i 's/        assert abs(scoop\[r\["label"\]\]\[2\] - r\["e"\]) < 1e-6, r\["label"\]/        assert abs(scoop[r["label"]][2] - r["e"]) < 1e-5, r["label"]   
+  > $ cd /home/al/dev/MOSP/paper1/latex && for p in 67 68 69 70; do echo "=========== page $p"; pdftotext -f $p -l $p -layout main.pdf - | head -80; done 2>/dev/null 
+  > $ grep -n "^(\./sec\|^ (\./sec\|(\./sec[0-9a-z_]*\.tex" main.log | awk -F: '$1<648' | tail -2; grep -n "Infinite glue" main.log | head -3; git stash -q && (latexm
+  > $ cd /home/al/dev/MOSP && git checkout -- paper1/latex/main.pdf && git stash pop && git status --short | grep -v Ralph_Loops
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p=Path('paper1/latex/sec9e_appendix_random.tex'); s=p.read_text()
+start = s.index(r"\subsection{The excess, and a p
+  > $ cd /home/al/dev/MOSP/paper1/latex && (make 2>&1 | grep -E "Output written|^!" | tail -2) && make check 2>&1 | tail -1 && for p in $(seq 64 70); do echo "== page
+  > Read /home/al/dev/MOSP/reports/figures/excess_phase_diagram.png
+  > $ date && for p in 68 69 70; do echo "== page $p"; pdftotext -f $p -l $p -layout main.pdf - 2>/dev/null | grep -E "E\.5|What is checked|Figure E\.1|Twenty-four|Ta
+  > $ cd /home/al/dev/MOSP && time nice -n 19 python3 -m paper1.latex.check_axioms 2>&1 | tail -3
+  > $ nice -n 19 python3 Ralph_Loops/loop0010/gate.py > Ralph_Loops/loop0010/gate_it12.log 2>&1; echo "exit $?" >> Ralph_Loops/loop0010/gate_it12.log
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path('reports/excess_phase_diagram.md'); s = p.read_text()
+marker = "## 1. The map: every instance on record pl
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path('reports/excess_phase_diagram.md'); s = p.read_text()
+old_head = """*Ralph loop0010, executing `reports/ex
+  > $ cat Ralph_Loops/loop0010/gate_it12.log 2>/dev/null | tail -5; echo "---"; pdfinfo paper1/figures/excess_phase_diagram.pdf | grep "Page size"
+  > $ grep -n "23 of the 24" paper1/latex/sec9e_appendix_random.tex reports/excess_phase_diagram.md | head; sed -i 's/(\$e=1.66\$--\$1.78\$) and 23 of the 24 industri
+  > $ sed -i 's/(490 × 361 pt, fonts/(484 × 322 pt, fonts/' reports/excess_phase_diagram.md && grep -c "484 × 322" reports/excess_phase_diagram.md
+  > $ cd /home/al/dev/MOSP/paper1/latex && (make 2>&1 | grep -E "Output written|^!" | tail -1) && make check 2>&1 | tail -1 && pdftotext -f 67 -l 67 main.pdf - | grep
+  > $ cat >> Ralph_Loops/loop0010/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 12 — 2026-11-01 07:49
+
+Item 12, the write-up: the phase diagram and the paper's paragraphs.
+
+
+  > $ cd /home/al/dev/MOSP/paper1/latex && pdftotext -f 67 -l 68 main.pdf - | tr '\n' ' ' | grep -o "22 of the 24 indus[a-z-]*" ; echo "---"; cat /home/al/dev/MOSP/Ra
+  > $ cd /home/al/dev/MOSP && sed -i 's/^- \[ \] \*\*12 The write-up: the phase diagram and the paper.s paragraphs\.\*\*/- [x] **12 The write-up: the phase diagram an
+  > $ grep -n "0.05\$--\$0.10\$ above\|0.05–0.10 above" paper1/latex/sec9e_appendix_random.tex reports/excess_phase_diagram.md | head; sed -i 's/customer sits \$0.05\
+  > $ cd /home/al/dev/MOSP && cat Ralph_Loops/loop0010/gate_it12.log 2>/dev/null; ls -la Ralph_Loops/loop0010/gate_it12.log; uptime
+
+The paper and report are written; I'm waiting on the gate and fixing one range in the paper's text that my pattern missed.
+  > $ grep -n "above \$\\\\beta^{\*}\$" paper1/latex/sec9e_appendix_random.tex | head -3; python3 - <<'EOF'
+from pathlib import Path
+p=Path('paper1/latex/sec9e_append
+  > $ cd /home/al/dev/MOSP && grep -n "0.05\|0.02" paper1/latex/sec9e_appendix_random.tex | grep -i "beta\|above" | head -5
+  > $ cat Ralph_Loops/loop0010/gate_it12.log; uptime | awk '{print $1, $(NF-2), $(NF-1), $NF}'
+  > $ pdftotext -f 67 -l 67 paper1/latex/main.pdf - | tr '\n' ' ' | grep -o "sits 0.0[0-9]–0.10 above"; git status --short | grep -v Ralph_Loops
+  > $ sed -n 9,40p reports/excess_phase_diagram.md
+
+Everything else is done; the only outstanding dependency is the gate. I'll watch its log until it finishes.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^exit " Ralph_Loops/loop0010/gate_it12.log 2>/dev/null; do sleep 5; done; tail -12 Ralph_Loops/loop0010/gate_it12.log
+  > Monitor {"command": "cd /home/al/dev/MOSP && until grep -q \"^exit \" Ralph_Loops/loop0010/gate_it12.log 2>/dev/null; do sleep 5
+  > $ sed -n 70,100p reports/excess_phase_diagram.md
+
+The report reads consistently. All deliverables are in place; the only outstanding item is the gate verdict, which the monitor will report when the run exits.
+
+# result: success in 1069s, 97 turns, cost $11.27
+  > $ cat Ralph_Loops/loop0010/gate_it12.log; date
+
+Gate passed. I'll record it in PROGRESS.md and the report, and confirm the working tree holds nothing stray.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('Ralph_Loops/loop0010/PROGRESS.md'); s=p.read_text()
+old="- **Gate:** GATE_PLACEHOLDER"
+new="""- **Gate: PASS*
+
+Item 12 is done; item 13 (the reserve) stays unchecked, so no `LOOP_COMPLETE` line. Nothing was committed, nothing solved, `solutions/` untouched.
+
+**What this iteration delivered**
+
+- **The report** `reports/excess_phase_diagram.md` now opens with §0, a two-page phase diagram: the parameter, the three lines, the four regimes, every claim labelled theorem (Lean name), on paper, measured, or conjectured. §§1–11 are kept as the items wrote them; new closing sections give this item's record, what the document is not, eight open items, and the `CLAUDE.md` paragraph (drafted in §15, not applied).
+- **The paper** gained an Appendix E subsection, "The excess, and a phase diagram": Theorem E.3 (blow-up and forest form), Lemma E.4 (layers and `n − α`), Table E.3, Figure E.1, the structured-count, one-parameter and ridge verdicts, and the 24 SCOOP instances named as 24 instances. The generator subsection's ridge sentence is corrected: the `d = 2` classes sit on the sparse flank, the ridge lies between them and `d = 4`. Page count 67 before, 70 after; the subsection's text and table take two pages, the figure a third.
+- **Appendix A** has six new rows (17 Lean names, all declared), two new axiom lines, and the audit prints 262 theorems with zero failures. One reference added, Chou, Ko, Ho & Chen (2008), DOI checked against Crossref.
+- **The figure** regenerates from a committed CSV under `paper1/latex/data/`; two new tests tie that CSV to the tracked `β⁺` table, to the excess recomputed from the benchmark files, and to the series slopes.
+- **Gate: PASS** (lake build, sorry 0, 1,650 MOSP tests, 123 pathwidth_solver tests, paper check). Two regenerated tables that read live data were reverted so the driver commits nothing unrelated.
+
+**Next:** item 13, the reserve. The report's §14 ranks the candidates, led by a cluster-representative first moment and the ridge as a first-passage problem on the subset lattice.
+
+# result: success in 27s, 3 turns, cost $15.72

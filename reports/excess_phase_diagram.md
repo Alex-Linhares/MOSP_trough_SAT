@@ -1,10 +1,237 @@
 # The excess phase diagram of MOSP
 
-*Ralph loop0010, executing `reports/excess_phase_plan.md`. One section per
-item; each states its size range, its regenerate command, its kill verdict
-and what it does not claim. The parameter throughout is the excess
-`e = (n_ones − m) / n`, the mean number of patterns per customer minus one,
-always realised from the matrix and never the generator's nominal value.*
+*Ralph loop0010, executing `reports/excess_phase_plan.md`, 2026-10-31 to
+2026-11-01. §0 is the phase diagram in two pages with every claim's status;
+§§1–11 are the items, in order, each stating its size range, its regenerate
+command, its kill verdict and what it does not claim, with its tables in
+full; §12 is the write-up's own record, §13 what this document is not, §14
+what is open, §15 the paragraph for `CLAUDE.md`. The parameter throughout is
+the excess `e = (n_ones − m) / n`, the mean number of patterns per customer
+minus one, always realised from the matrix and never the generator's nominal
+value. The paper's statement of it is `paper1/latex/sec9e_appendix_random.tex`,
+subsection "The excess, and a phase diagram".*
+
+## 0. The phase diagram in two pages (item 12, 2026-11-01)
+
+This section is the one a reader should be able to follow on its own. It
+states the parameter, the three lines, the four regimes, and the status of
+every claim: **theorem** (a Lean name, `lean/MOSPFormalization/`, no `sorry`,
+axioms `propext`, `Classical.choice`, `Quot.sound` only), **on paper** (a
+proof in a numbered section of this document, checked by brute force before
+it was stated), **measured** (a size range and a regenerate command), or
+**conjectured** (there is exactly one, and it is negative). Sections 1–11 are
+the items that produced the numbers, in order, each with its tables in full;
+sections 12–15 are this write-up, what the document is not, what is open,
+and the paragraph `CLAUDE.md` will need.
+
+### 0.1 The parameter
+
+For an instance with `n` customers, `m` patterns and `n_ones` ones,
+
+    e = (n_ones − m) / n = (mean patterns per customer) − 1 = r (c − 1),
+
+with `r = m / n` and `c = n_ones / m` the mean customers per pattern. The
+customer–pattern incidence graph `B` has `n + m` vertices, `n_ones` edges and
+`κ` components, so its cyclomatic number per customer is
+`γ / n = e − 1 + κ / n`: `B` is a forest iff `γ = 0`, which needs `e < 1`.
+`e` is always *realised* from the matrix. The generators' repairs (every
+customer given a pattern, every pattern two customers) lift the realised
+excess above the nominal `r (d − 1)` by 0.1–1.1 at `d ≤ 3` (§5, finding 6),
+and a Bernoulli series at fixed `p` is not a constant-excess series at all
+(§2, finding 1). Both identities hold to `10⁻¹⁴` on all 64,291 instances on
+record (§1).
+
+### 0.2 The three lines
+
+| line | value | what it separates | status |
+|---|---|---|---|
+| `e_g(r) = (√(r² + 4r) − r) / 2` | 0.62 at `r = 1`, 0.50 at `½`, 0.74 at `2` | the branching factor of the random incidence graph with fixed-size patterns is one; below it `B` is **mostly a forest** (forest share 0.74–0.92), above it a few cycles (0.23–0.40 in `[e_g, 1)`) | **measured**, `n = 10–75`, §1 finding 5. **Not a half-point**: the largest component reaches one half 0.21–0.43 above it on every observable series (§1 finding 6), so the line means "forests stop being the majority" and nothing finer |
+| `e = 1` | — | the first-moment constant `β*(d, μ)` is positive iff `μ (d − 1) > 1`, i.e. `e > 1`; the exponent of balanced empty pairs is `ln 2 · (1 + μ (1 − d))` | **on paper** from the Lean inequality `prob_coversOfMospValueLe_le` (`CliqueCoverMoment.lean`); `β*` itself is the root of a transcendental equation, two programs agree (§2) |
+| `e ≈ 2–2.4` | at every `m / n` from ⅛ to 2 | the **hardness ridge**: nodes to refute `optimum − 1` peak there and fall two orders of magnitude on either side; what peaks is the number of closed sets reachable by fitting steps (`reports/ml_nature.md` §25, §36) | **measured**, `n = 15–75`; its height needs `m` separately (§37). **Not** where the first moment is loosest (§9): the floor gap's maximum is at `e = 2.2–5.3`, on the dense shoulder, with the ridge on a plateau within one stack of it |
+
+The hardest benchmark classes are **not on the ridge**: Chu & Stuckey's
+`d = 2` classes sit at `e = 1.48–2.02` (125 × 125: 1.66–1.78), the sparse
+flank, and `d = 4` at `2.83–3.73`, the dense shoulder; the ridge lies between
+them (§1 finding 3). The paper's Appendix E now says so (§12).
+
+### 0.3 The four regimes
+
+**I. `e < e_g(r)` — forests.** Below the line the incidence graph is a forest
+on most random instances, and the MOSP graph a block graph whose blocks are
+the pattern cliques.
+
+- `MOSP(M) ≤ ω · (pw(B) + 1)` for **every** instance, `ω` the largest pattern
+  (the blow-up of a path decomposition of `B`; the forest hypothesis is not
+  used) — **theorem**, `MOSPInstance.mospValue_le_maxPatternSize_mul`
+  (`ForestCover.lean`, §6 Theorem F1, §11).
+- If `B` is a forest, `MOSP(M) ≤ ω · (⌊log₃((6(n + m) + 3)/5)⌋ + 1)` —
+  **theorem**, `MOSPInstance.mospValue_le_of_incidence_isAcyclic`, through
+  `tree_pathwidth_le_treeBound` (`TreeBound.lean`) and the integer identity
+  `tb(N) = ⌊log₃((6N + 3)/5)⌋` (`le_treeBound_treeBoundInv`,
+  `treeBound_lt_of_lt_treeBoundInv`; §6 Lemma 5).
+- `MOSP = O(ω log log n)` with high probability on random instances below
+  `e_g(r)` — **conditional, on paper** (§6 Corollary R): it needs the largest
+  component of `B` to be `O(log n)` and every component a tree, which we cite
+  (Perarnau & Serra 2014 for `G(n, c/n)`, held; Molloy & Reed 1995 for the
+  configuration model, not held) and do not prove for the bipartite model.
+- The bound is loose: never exact on 7,004 graphs with exact pathwidth,
+  2–5.5× the truth on the block-graph families — **measured**, `n ≤ 936`
+  (§3, §6.3). On the 3,448 random forests on record `pw = ω − 1` on 99.8% and
+  `ω` on the rest — **measured**, `n = 10–75` (§3 finding 5): the regime's
+  practical content is "the optimum is the largest pattern".
+- Depth one exactly: `K_s` with pendant `K_t` at `q` vertices has
+  `pw = max(s − 1, t + ⌈q/2⌉ − 2)` — **on paper** (§6 Theorem F2, Lemma P),
+  checked on 594 graphs; not in Lean (§6.5 L5–L6, open).
+- On clique trees `CT(s, h, b)` the exact pathwidth is multiplicative in `ω`
+  and the depth (about `(ω − 2)/2` per level), no additive form fits, and
+  **no closed form is conjectured**: the one fitted to 29 values failed on
+  the 30th — **measured**, `n ≤ 936` (§3). The exact theory on block graphs
+  is polynomial — **cited**, Chou, Ko, Ho & Chen (2008).
+- Where the instances are: **none** of the 6,376 corpus instances; 3,127
+  ensemble instances, all Bernoulli, 2,504 of them at `n ≤ 25` (§1).
+
+**II. `e_g(r) ≤ e ≤ 1` — the giant component, no floor.** `B` has a giant
+component with `Θ(n)` cycles and the first moment says nothing (`β* = 0`,
+**on paper**). What there is: the deterministic bounds of `_lower_bound`
+from below and the two-key rule or `rule+cs-dfs` from above (`CLAUDE.md`);
+and, where the MOSP graph has no giant component (`ρ = μ d (d − 1) ≤ 1`), the
+layer lemma gives `pw = o(n)` for free — **on paper** (§7 finding 1), the
+lemma itself a **theorem** (`pathwidth_le_layerWidth_dist`). The two-key
+rule's width is *linear* in `n` on the many-component cell `(2, ½)` where the
+BFS layout's is sublinear — **measured**, `n = 100–5000` (§5 finding 5), a
+caveat on the rule as a bound. 12 corpus instances are here (9
+Faggioli–Bentivoglio, 1 SCOOP, 2 Simonis); 2 of them are forests.
+
+**III. `1 < e ≲ 2.4` — the floor turns on; industry and the `d = 2`
+classes.** `β*(d, μ) > 0`, and:
+
+- The finite first-moment floor at confidence 0.01 is below every certified
+  optimum of a random cover: 0 violations on 200 Chu & Stuckey, 300
+  Faggioli–Bentivoglio, 3,630 Simonis, 2,130 Harvey, 9,497 certified random
+  covers at 50–75 and 7,200 generator simulations — **measured** (§4, §9);
+  the inequality for independent uniform patterns of given sizes is a
+  **theorem** (`prob_coversOfMospValueLe_le`); for the padded generator with
+  **pre-repair** sizes it is **on paper** (§10 Theorem V3, by the coupling
+  whose inclusion is the **theorem** `isEmptyPair_coverGraph_of_subset`),
+  trivial at `d = 2` in the Bernoulli form; with the realised sizes it stays
+  **measured**.
+- The certified `opt / n` sits 0.02–0.10 above `β*` — **measured**, `n = 30–125`
+  (§2: `b − β*` peaks on the ridge at 0.07–0.11); the slack is in the union
+  bound over clustered pairs, not in the empty-pair condition — **measured**
+  on 650 certified instances at 30–75 (§8.5).
+- The two-key rule is at its worst: exact on 22% of ensemble instances at
+  `e ∈ [1.5, 2)`, gap 0.03–0.04 per customer — **measured**, `n = 10–100`
+  (§2 finding 4); on the 24 SCOOP instances exact on 12, worst `+7`,
+  `gap / n ≤ 0.061` (§4).
+- Certification cost climbs to the ridge — **measured**: Faggioli–Bentivoglio's
+  `40 × 50` cell on the ridge has median 24,000 nodes against 1–3 at `e ≥ 5`
+  (§4 finding 6); the `d = 2` classes take a day on 25 cores at 125 × 125
+  (`CLAUDE.md`).
+- Where the instances are: 19 of 24 SCOOP in `[1, 2)` (median 1.35), 3 on
+  the ridge; 48% of Faggioli–Bentivoglio; 9.4% + 7.8% of the corpus; 41% of
+  the 338 bound-gap instances against 7.6% of the rest, which sit at the 7th
+  percentile of `e` in their `(n, m)` cell (§1 finding 7).
+
+**IV. `e > 2.4` — the dense shoulder and beyond.** Cost falls, `β*` is near
+the truth, and the bulk of the benchmark corpus lives here (Harvey median
+4.5, Simonis 5.15, Shaw 5, Challenge and Wilson 5–6.6; 80–100% of each above
+2.4). `b − β*` is 0.04–0.06 at `e ≥ 6` on `m = n` (§2) and `opt / n − β*`
+0.06–0.10 at 125 × 125 (`CLAUDE.md`); the analysed `β⁺` is within 0.12 of `β*`
+at `e ≥ 14` and 0.17 at `(10, 1)` (§7) — all **measured** against a **proved**
+lower end and an upper end **on paper** up to concentration. The `d = 4`
+classes (`e = 2.83–3.73`) are this regime's sparse edge and the ridge's dense
+shoulder.
+
+### 0.4 The constant, and the three negative results
+
+The provable sandwich on the uniform model is
+
+    β*(d, μ) ≤ lim inf opt / n ≤ lim sup opt / n ≤ β⁺(d, μ),
+
+the left end a **theorem** in finite form (first moment), the right end
+**on paper** with the concentration step cited (§7: the BFS layer recursion,
+the greedy independent set's differential equation, the smaller taken). Its
+width is 0.08 at `(10, 2)`, 0.17 at `(10, 1)`, 0.30–0.33 at `(6, 1)`, and
+0.40–0.49 for every cell with `1 ≤ e ≤ 3.5`: **both ends are at their worst
+on the ridge.** The measured envelope is tighter: the two-key rule's
+`width / n` at `n = 5000` is 0.01–0.06 above the certified slope at
+`n ≤ 100` and 0.06–0.36 below the analysed `β⁺` — **measured**, quotable on
+the 11 trusted cells only (§5.2).
+
+Three hypotheses were stated with a kill criterion and are dead:
+
+1. **`lim opt / n` is a function of `e` alone** (§2) — dead. At `e = 2` the
+   certified slope is 0.282, 0.232, 0.200, 0.167 for `μ = ¼, ½, 1, 2`
+   (se 0.002–0.006); 13 of 16 constant-`e` matched pairs differ by more than
+   twice their error. The parameter of the constant is `(d, μ)`, or to a
+   residual of 0.024 `β*(d, μ)` (`b = 0.057 + 0.984 β*` over 41 series);
+   `e` is the coordinate of the lines.
+2. **A richer first moment lifts `β*`** (§8) — dead. `ℓ` nested empty pairs
+   give `β*_ℓ < β*` on every cell (−0.051 at `ℓ = 2`, `(6, 1)`), at every
+   spacing: an extra cell of `ε n` vertices costs `Θ(ε log(1/ε))` of entropy
+   and buys `Θ(ε)` of constraint. The slack is the union bound over clustered
+   pairs (`E[X²]/E[X]² = e^{0.23 n}` at `β*`); a second moment bounds the
+   wrong side; a cluster-representative count is the open route.
+3. **The ridge is where the first-moment gap is largest** (§9) — dead on 22
+   and 23 of 25 series; the gap's maximum is on the dense shoulder, the ridge
+   on its plateau. The two coincidences on record (bound-gap instances
+   concentrated on the ridge; the ridge at excess 2) are not one fact.
+
+Two kill criteria were **not met**: no counterexample to the blow-up
+theorem (§6), and `β⁺ − β* > 0.5` on no cell (§7, largest 0.494). One
+criterion's fallback is the result: the fitted generator's rejection is not
+a monotone event, so Harris–FKG does not apply and the rejection costs at
+most `1 / P(accepted)`, measured per class, which moves no 0.01 floor (§10).
+
+### 0.5 Twenty-four industrial instances
+
+The 24 SCOOP instances (two sawmills; loaded with *pieces as customers*, the
+orientation of the files' format line and the opposite of the README's
+prose, §4) have `e = 0.97–2.50`, median 1.35; 19 in `[1, 2)`, none a forest,
+10 decomposing. Every refutation on record took at most 22,433 nodes (0.07 s
+in all for 22 instances; the two largest have no node count and were not
+re-run); the two-key rule is exact on 12. **One instance sits below its 0.01
+floor** (`B_REVAL_145`, optimum 7, floor 9): not a contradiction — the floor
+is a random-model statement — but the one SCOOP instance with visible
+structure; the designed Challenge instances sit up to 39 stacks below theirs.
+The floor measures distance from random. These are 24 instances from one
+source; nothing is claimed about industry beyond them. The planner's
+statement is §4.2.
+
+### 0.6 What is in Lean, in one list
+
+`ForestCover.lean` (item 11, 545 lines): `incidence`, `maxPatternSize`,
+`blowUp`, `mospValue_le_maxPatternSize_mul`, `pathwidth_mospGraph_add_one_le`,
+`treeBoundInv` with its two inequalities, `pathwidth_le_treeBoundInv_of_isAcyclic`,
+`mospValue_le_of_incidence_isAcyclic`, `mospValue_mono` (Yanasse 1997a
+Proposition 2), `isEmptyPair_coverGraph_of_subset`, `pathwidth_coverGraph_mono`,
+`pathwidth_le_layerWidth`, `vertexSeparation_le_layerWidth`,
+`pathwidth_le_layerWidth_dist`. Pinned to the record by
+`python -m learning.sandwich --stage forest` (4,419 rows, 0 violations). What
+stays on paper: every random-model statement, Lemma P and F2, the
+per-layout vertex separation of the layer order, the first moment's survival
+of the pads.
+
+### 0.7 Contents
+
+| § | item | question | verdict |
+|---|---|---|---|
+| 1 | 01 | the map: every instance by its excess | descriptive; the half-point check not met |
+| 2 | 02 | `opt / n` a function of `e` alone? | **dead**; `(d, μ)` or `β*` |
+| 3 | 03 | the forest regime by brute force | additive form **dead**; multiplicative, no closed form |
+| 4 | 04 | the 24 SCOOP instances | descriptive; one below its floor |
+| 5 | 05 | `β⁺` by simulation at `n ≤ 5000` | 11 trusted cells, 12 killed, 13 untested |
+| 6 | 06 | the forest regime on paper | F1 stands with no forest hypothesis; no counterexample |
+| 7 | 07 | `β⁺` on paper | not uninformative by the letter; useless on the ridge |
+| 8 | 08 | the structured count | **dead**; slack is the union bound |
+| 9 | 09 | the ridge hypothesis H1 | **dead** |
+| 10 | 10 | validity under the real generator | the `1 / P(accepted)` fallback is the result |
+| 11 | 11 | Lean | all three targets proved |
+| 12 | 12 | this write-up | — |
+
+Each section keeps its own "What this does not claim"; §13 collects them.
+
+---
 
 ## 1. The map: every instance on record placed by its excess (item 01, 2026-10-31)
 
@@ -5570,3 +5797,202 @@ published claim of ours drifts.
 - **`ω` is the largest pattern**, as §6 defined it, not the clique number of
   the MOSP graph (three patterns of size 2 can form a triangle); the bound
   with the largest pattern is the stronger one and is what is proved.
+
+
+## 12. The write-up (item 12, 2026-11-01)
+
+**What was done.** (a) §0 above, the two-page opening with every claim's
+status, and this closing; §§1–11 are kept as the items wrote them — they
+share one template (question, what was done, size range, regenerate,
+findings, kill verdict, what this does not claim, tables in full) and one
+voice already, and the only edits were the title paragraph and
+cross-references; no number in them changed. (b) The paper: a new subsection
+of Appendix E, `paper1/latex/sec9e_appendix_random.tex`, "The excess, and a
+phase diagram", after "The benchmark generator" — the excess defined, the
+three lines, the four regimes, Theorem (blow-up) with its forest form, the
+layer lemma and the independent-set bound as a lemma, the `β⁺` sandwich with
+Table E.3, the structured count's verdict, the one-parameter verdict and the
+ridge-hypothesis verdict, the 24 SCOOP instances named as 24 instances, and
+Figure E.1. Its text and table occupy two pages (67–68 of 70), the figure the
+next page. The generator subsection's ridge sentence is corrected (the
+`d = 2` classes at `e = 1.66–1.78` are on the sparse flank; the ridge at
+2–2.4 lies between them and the `d = 4` classes at 2.9–3.4; the subsection
+tests and rejects the hypothesis that the peak is where the bound is
+loosest), and its coupling sentence now cites the Lean name. Appendix A
+gained six rows (`coupling`, `blowup`, `forest`, `mono`, `layer`, `indep`;
+17 Lean names, every one declared, every one with an axiom line —
+`paper1/axiom_check.lean` gained `tree_pathwidth_le_treeBound` and
+`pathwidth_le_card_sub_indepNum`; the audit prints 262 theorems, 0
+failures). One reference added, Chou, Ko, Ho & Chen (2008), DOI checked
+against Crossref (`check_refs`: 72 entries, 60 with a DOI, 0 disagree).
+Page count **67 before, 70 after** (`make check`: no undefined references;
+the one overfull box and the "infinite glue" warnings of the longtable are
+the committed draft's, unchanged in count or fewer). (c) §15 below is the
+`CLAUDE.md` paragraph; `CLAUDE.md` itself is not edited.
+
+**The figure.** `paper1/latex/figures/excess_phase_diagram.py` (stages
+`extract`, `draw`): `extract` reads item 01's map, item 02's slopes through
+`learning.excess.series_slopes` and item 07's `beta_plus_table.csv` and
+writes one committed CSV, `paper1/latex/data/excess_phase_diagram.csv`
+(89 rows); `draw` reads that CSV and nothing else and writes the print
+vector `paper1/figures/excess_phase_diagram.pdf` (484 × 322 pt, fonts
+embedded, no title inside) and `reports/figures/excess_phase_diagram.png`.
+Two panels on one log axis: above, where the instances sit (SCOOP as 24
+points, the Chu & Stuckey `m = n` classes as per-`d` medians over all sizes,
+the other collections as median and quartiles, the three lines); below, on
+`m = n` random covers, `β*(d, 1)`, the certified slope `b` with its 2-se bar
+and the analysed `β⁺(d, 1)`, with `b` at `m = n/2` and `2n` in grey as the
+one-parameter verdict. Palette: the reference categorical slots 1–3,
+validated all-pairs (`validate_palette.js`: all checks pass; the aqua slot's
+contrast warning is relieved by direct labels). Table E.3 is
+`paper1/latex/tables/excess_beta.tex`, generated by
+`paper1.latex.make_tables.excess_table` from the same CSV.
+
+**Tests.** `tests/test_paper1_latex.py` gained two: the committed CSV's
+`β⁺` rows equal the tracked `beta_plus_table.csv` on all 18 cells, its 24
+SCOOP excesses and its five Chu & Stuckey class medians equal the values
+recomputed from the benchmark files, and its 39 series rows equal
+`series_slopes` when the git-ignored `excess_rule.csv` is present; and the
+table's cells equal the CSV's. 8 tests in the module, all passing.
+
+**Regenerate.**
+
+```
+python3 paper1/latex/figures/excess_phase_diagram.py            # extract + draw (1.3 s; needs learning/data/excess*.csv from items 01–02)
+python3 paper1/latex/figures/excess_phase_diagram.py draw       # from the committed CSV alone
+python3 -m paper1.latex.make_tables                              # tables/excess_beta.tex (and the others; two of them read live data, see below)
+python3 -m paper1.latex.check_refs && python3 -m paper1.latex.check_lean && python3 -m paper1.latex.check_axioms
+make -C paper1/latex && make -C paper1/latex check
+python3 -m pytest tests/test_paper1_latex.py -q
+```
+
+**A note for whoever runs `make tables`.** It regenerates every table, and
+two of them (`dataset.tex`, `split.tex`) read live data and drift by a row
+or a timestamp between runs; this item reverted those two to their committed
+state so that the write-up commits nothing it did not change.
+
+**Gate.** PASS, 2026-11-01 08:02–08:13: lake build ok, sorry 0, MOSP pytest 1,650 passed, pathwidth_solver 123 passed, paper check ok (`Ralph_Loops/loop0010/gate_it12.log`).
+
+**Kill verdict.** None (the item carries none).
+
+**What this does not claim.** Nothing beyond what §§1–11 proved or
+measured; the paper's subsection states each claim with the status the
+report gives it, and the figure draws only numbers that are in the
+committed CSV, which the test ties to the record. The subsection's two
+pages are text and table; the figure takes a third. No certified value is
+wrong, no theorem is false; one published sentence of ours (the ridge
+sentence of Appendix E) is corrected, with the reason recorded in §0.2 and
+in the plan's §0.
+
+## 13. What this is not
+
+- **Not a theory of the constant.** `lim opt / n` is bracketed, not
+  found: `β*` from below (theorem), `β⁺` from above (on paper up to
+  concentration), the bracket 0.08 wide at `e = 18` and 0.4–0.5 on the
+  ridge. The measured slopes are finite-range (`n ≤ 100`, 125 for the Chu &
+  Stuckey classes) and `opt / n` is still falling with `n` there (§2.3).
+- **Not a mechanism for the ridge.** The one hypothesis tested is dead
+  (§9); the reachable-set count of `reports/ml_nature.md` §36 is the open
+  problem and no item attempted it.
+- **Not a theorem above `e_g(r)`**, and nothing unconditional below it:
+  the random corollary of §6 is conditional on cited component-size
+  results that are not proved for the bipartite model.
+- **Not a statement about industry.** 24 SCOOP instances from two sawmills
+  are 24 instances; the file orientation is the loader's convention; no
+  per-instance published optimum exists to compare (§4.4).
+- **Not a bound.** Neither the two-key rule's `width / n`, nor the fitted
+  `E[opt]` forms, nor the first-moment floor on a *given* instance is a
+  bound on that instance (REVAL sits two stacks below its floor, the
+  designed Challenge instances 39).
+- **Not a solver change.** Nothing here changes a default; Lemma P (§6) is
+  recorded as a bound candidate for `learning/bound_harness.py` and not
+  proposed for `_lower_bound`.
+- **Not a certification.** Nothing was re-solved; the only exact solves
+  were graphs that are not MOSP instances (§3, §6), through the C program,
+  with their layouts kept.
+- **Not an asymptotic statement about the padded generators.** `β*` and
+  the floors are quenched statements at the instances' own sizes; the
+  padded generator's inequality with realised sizes is measured (§10.9).
+- **Not a claim of priority.** Where a statement is not in the held
+  literature we say "we found no prior statement" (§3, §7, §8) and nothing
+  more.
+
+## 14. Open
+
+In rough order of value against cost:
+
+1. **A cluster-representative first moment** (§8): one canonical pair per
+   connected family of empty pairs. It is the only route on the table that
+   could lift `β*`; the second moment cannot, and nested pairs lower it.
+2. **The ridge mechanism** (§9, `ml_nature.md` §36): the number of closed
+   sets reachable by fitting steps, as a first-passage problem on the
+   subset lattice, in the random model. The vectorised lattice of
+   `learning/excess_ridge.py` (2.3 s at `n = 20`) is the instrument for the
+   `n ≤ 25` end.
+3. **Lemma P on the bound-gap instances** (§6): a pathwidth argument that
+   is not degree-based, exact on 62 of 2,000 small random instances where
+   the clique floor is not; one `learning/bound_harness.py` run over the
+   338 gap instances says whether it is worth anything there. Outside this
+   loop's questions.
+4. **Lean: Lemma P and F2** (§6.5 L5–L6), the next targets after
+   `ForestCover.lean`; and the per-layout vertex separation of the layer
+   order (§11.6).
+5. **A sharper tail than Chernoff on the size sum** (§10): the exact
+   distribution is computable and would move the quenched floor toward
+   the typical instance, up to 10 stacks at `(125, 125, 4)`.
+6. **The bipartite two-type component-size results** (§6 Corollary R's
+   hypotheses) in a held paper, or proved.
+7. **The two-key rule on many-component sparse instances** (§5 finding 5):
+   its width is linear where a trivial layout's is sublinear; the mechanism
+   is not analysed.
+8. **The two largest SCOOP instances** have no node count on record (§4);
+   the cost model predicts `10^5.6` and `10^7.5` nodes. A run would be a
+   re-certification and needs the owner's word.
+
+## 15. For CLAUDE.md
+
+*Drafted here as the item asks; `CLAUDE.md` is not edited.*
+
+> **The excess phase diagram** *(loop0010, 2026-10-31 to 2026-11-01;
+> `reports/excess_phase_diagram.md`, §0 is the two-page summary; the
+> paper's Appendix E, subsection "The excess, and a phase diagram")*. The
+> **excess** `e = (n_ones − m) / n` — mean patterns per customer minus one,
+> `r (c − 1)`, cyclomatic number per customer of the incidence graph plus
+> `1 − κ / n` — always *realised* from the matrix, never the nominal
+> `r (d − 1)` (the generators' pads inflate it by 0.1–1.1 at `d ≤ 3`). Three
+> lines: `e_g(r) = (√(r² + 4r) − r)/2` (0.62 at `m = n`), below which the
+> incidence graph is mostly a forest (measured; **not** a half-point of the
+> giant component); `e = 1`, where the first-moment constant `β*(d, μ)`
+> turns positive (on paper from `CliqueCoverMoment.lean`); and the ridge at
+> `e ≈ 2–2.4`, where refutation cost peaks (§25). **The hardest Chu &
+> Stuckey classes are not on the ridge**: `d = 2` sits at `e = 1.66–1.78`
+> (sparse flank), `d = 4` at 2.9–3.4 (dense shoulder); the paper's Appendix
+> E says so since 2026-11-01. **Theorems** (`ForestCover.lean`, no `sorry`):
+> `MOSP ≤ ω (pw(B) + 1)` for every instance (`mospValue_le_maxPatternSize_mul`,
+> the blow-up of a path decomposition of the incidence graph `B`), hence
+> `MOSP ≤ ω (⌊log₃((6(n+m)+3)/5)⌋ + 1)` when `B` is a forest
+> (`mospValue_le_of_incidence_isAcyclic`); the layer lemma
+> `pw ≤ max_i (|L_i| + |L_{i+1}|) − 1` (`pathwidth_le_layerWidth_dist`); the
+> coupling inclusion (`isEmptyPair_coverGraph_of_subset`); subinstance
+> monotonicity `mospValue_mono` (Yanasse 1997a Prop. 2). The blow-up bound
+> is 2–5.5× loose and on random forests `pw = ω − 1` on 99.8% (measured);
+> the exact theory on block graphs is Chou, Ko, Ho & Chen (2008), and no
+> closed form on clique trees is conjectured. **Dead** (with kill criteria):
+> `lim opt / n` as a function of `e` alone (the slope falls with `μ` at
+> fixed `e`, twenty standard errors at `e = 2`; the coordinate is `(d, μ)`
+> or `β*`, `b = 0.057 + 0.984 β*` to 0.024); the structured (nested-pair)
+> first moment (lowers `β*` on every cell; the slack is the union bound over
+> clustered pairs, a second moment bounds the wrong side); the ridge as the
+> first-moment gap's maximum (the gap peaks on the dense shoulder). The
+> provable sandwich `β* ≤ lim inf opt/n ≤ lim sup opt/n ≤ β⁺` (§7, upper end
+> on paper up to concentration) is 0.08 wide at `e = 18` and 0.4–0.5 on the
+> ridge: both ends are worst where the search is slowest. The first moment
+> with pre-repair sizes is proved for the padded generator (§10); the
+> rejection is not a monotone event, so it costs `1 / P(accepted)`,
+> measured. **24 SCOOP instances** sit at `e = 0.97–2.50` (19 in `[1, 2)`),
+> none a forest, all refuted in ≤ 22,433 nodes; one (`B_REVAL_145`) is two
+> stacks below its 0.01 floor — the floor measures distance from random, not
+> a bound. Nothing re-solved; `solutions/` untouched. Figure:
+> `paper1/latex/figures/excess_phase_diagram.py`; data
+> `learning/data/excess*.csv` (git-ignored, 10 s to rebuild) and the
+> committed `paper1/latex/data/excess_phase_diagram.csv`.

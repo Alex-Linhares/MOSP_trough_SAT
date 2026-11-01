@@ -4,7 +4,7 @@ Plan: `reports/excess_phase_plan.md` — a one-parameter theory of MOSP in the
 excess `e = (n_ones − m) / n`; items in `iterations.md`; rules in `TASK.md`.
 Gate: `python3 Ralph_Loops/loop0010/gate.py`.
 
-Current: 11/13 SOLVED
+Current: 12/13 SOLVED
 
 ## Setup — 2026-10-31
 
@@ -993,3 +993,93 @@ paper: every random-model corollary, the per-layout vertex separation of the
 layer order, Lemma P and F2 (§6.5 L5–L6, not attempted). For item 13 (the
 reserve), L5 (Lemma P, `pathwidth_ge_of_pendant_cliques`) is the next Lean
 target of §6.5 and is a pathwidth argument that is not degree-based.
+
+---
+
+## Iteration 12 — 2026-11-01 07:49
+
+Item 12, the write-up: the phase diagram and the paper's paragraphs.
+
+### Completed
+
+- **`reports/excess_phase_diagram.md` assembled.** A new §0, "The phase
+  diagram in two pages": the parameter and its identities; the three lines
+  as a table with each one's status (`e_g(r)` measured and *not* a
+  half-point; `e = 1` on paper from `CliqueCoverMoment.lean`; the ridge
+  measured, not located by the first-moment gap); the four regimes with
+  every claim labelled theorem (Lean name) / on paper (section) / measured
+  (size range) / conjectured (one, negative: no closed form on clique
+  trees); the sandwich `β* ≤ lim inf ≤ lim sup ≤ β⁺` and the three dead
+  hypotheses with their kills; the 24 SCOOP instances as 24 instances; the
+  Lean list; a contents table of §§1–11 with verdicts. §§1–11 are kept as
+  the items wrote them (one template, one voice; only the title paragraph
+  and cross-references edited, no number changed). New closing sections:
+  §12 (this item's record), §13 "What this is not", §14 "Open" (eight
+  items, ordered), §15 "For CLAUDE.md" (the paragraph, drafted;
+  `CLAUDE.md` not edited). 5,998 lines.
+- **The paper.** New subsection of Appendix E
+  (`paper1/latex/sec9e_appendix_random.tex`), "The excess, and a phase
+  diagram", after "The benchmark generator": the excess, the three lines,
+  the regimes, Theorem E.3 (blow-up, with the forest form), Lemma E.4
+  (layers and `n − α`), the `β⁺` sandwich with Table E.3, the structured
+  count's verdict, the one-parameter and ridge verdicts, the 24 SCOOP
+  instances, Figure E.1. Text and table fill two pages (67–68), the figure
+  the next. The generator subsection's ridge sentence is corrected (plan
+  §0, correction 1: the `d = 2` classes at `e = 1.66–1.78` are on the
+  sparse flank, the ridge at 2–2.4 lies between them and the `d = 4`
+  classes at 2.9–3.4) and its coupling sentence cites the Lean name.
+  Appendix A: six new rows (`coupling`, `blowup`, `forest`, `mono`,
+  `layer`, `indep`, 17 names, all declared); `paper1/axiom_check.lean`
+  gained `tree_pathwidth_le_treeBound` and `pathwidth_le_card_sub_indepNum`
+  (no Lean proof touched); `check_axioms`: **262 theorems, 0 failures**.
+  One reference added, Chou, Ko, Ho & Chen (2008), DOI checked against
+  Crossref (`check_refs`: 72 entries, 60 with a DOI, 0 disagree). **Page
+  count 67 before, 70 after**; `make check`: no undefined references; the
+  one overfull box and the longtable's "infinite glue" notes are the
+  committed draft's (1 and 5 there; 1 and 3 now).
+- **The figure.** `paper1/latex/figures/excess_phase_diagram.py`, stages
+  `extract` (item 01's map, item 02's slopes via `series_slopes`, item 07's
+  `beta_plus_table.csv` → the committed
+  `paper1/latex/data/excess_phase_diagram.csv`, 89 rows) and `draw` (from
+  that CSV alone → `paper1/figures/excess_phase_diagram.pdf`, 484 × 322 pt,
+  fonts embedded, no title, and `reports/figures/excess_phase_diagram.png`).
+  Two panels on one log axis: where the instances sit (SCOOP points, Chu &
+  Stuckey `m = n` class medians, other collections' quartiles, the three
+  lines) and, on `m = n` covers, `β*`, the certified slope `b` ± 2 se, the
+  analysed `β⁺`, with `b` at `m = n/2` and `2n` in grey. Reference palette
+  slots 1–3, validator all checks pass. Table E.3 from
+  `paper1.latex.make_tables.excess_table` (same CSV). `make tables` also
+  regenerated `dataset.tex` and `split.tex` from live data; both reverted
+  so nothing unrelated is committed.
+- **Tests.** `tests/test_paper1_latex.py` +2 (8 in all, passing): the
+  CSV's `β⁺` rows equal the tracked table on 18 cells; its 24 SCOOP
+  excesses and five Chu & Stuckey class medians equal the values recomputed
+  from the benchmark files; its 39 series rows equal `series_slopes` where
+  `excess_rule.csv` exists; Table E.3's cells equal the CSV.
+- **Compute.** None: no solver run, nothing solved, `solutions/` untouched,
+  the ledger untouched. Figure extraction 1.3 s.
+- **Kill verdict: none** (the item carries none). No certified value is
+  wrong, no theorem is false; one published sentence of ours is corrected
+  as the plan said it would be.
+- **Gate: PASS** (one run, 2026-11-01 08:02–08:13 at load 1): lake build
+  ok, every file imported, sorry 0, MOSP pytest 1,650 passed (2 skipped,
+  1 xfailed; +2 new), pathwidth_solver 123 passed, paper check ok (70 pages,
+  no undefined references). Log: `Ralph_Loops/loop0010/gate_it12.log`. The
+  paper was rebuilt twice after the gate started (two wording corrections,
+  "22 of the 24" and the slack range "0.02–0.10"); `make check` re-run by
+  hand after each: 70 pages, no undefined references.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 13, the reserve. From §14 of the report, the best remaining gaps in
+order: a cluster-representative first moment (the one route that could lift
+`β*`); the ridge mechanism as a first-passage problem on the subset
+lattice (`learning/excess_ridge.py`'s vectorised lattice is the instrument
+at `n ≤ 25`); Lemma P on the 338 bound-gap instances through
+`learning/bound_harness.py` (a bound item, outside the loop's questions);
+Lean for Lemma P and F2 (§6.5 L5–L6). For the owner: §15 of the report is
+the `CLAUDE.md` paragraph, drafted and not applied.

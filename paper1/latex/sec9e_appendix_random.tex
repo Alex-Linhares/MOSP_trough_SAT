@@ -195,10 +195,12 @@ exactly when $\mu(d-1)>1$. That quantity is the mean number of patterns per
 customer minus one, the number of ones in the table minus the number of
 patterns, per customer; call it the excess. The classes of
 Section~\ref{sec:results} that took thousands of core-hours to certify, the
-sparsest ones, have excess between $1.66$ and $1.78$, just inside the region
-where this argument proves linear pathwidth; on generated random covers the
-cost of the exact search peaks at excess about $2.3$ to $2.5$. Whether the
-threshold and that peak are related is not known.
+sparsest ones ($d=2$), have excess between $1.66$ and $1.78$, just inside the
+region where this argument proves linear pathwidth; on generated random covers
+the cost of the exact search peaks at excess about $2$ to $2.4$, between the
+$d=2$ classes and the $d=4$ classes (excess $2.9$ to $3.4$ at 125 customers).
+Section~\ref{app:excess} places every instance on that axis and tests, and
+rejects, the hypothesis that the peak is where this bound is loosest.
 
 \begin{table}[htbp]
 \centering
@@ -217,8 +219,8 @@ sizes the table has \emph{before} the repairs. On the Bernoulli table a given
 pair is empty with probability exactly
 $[(1-p)^t+(1-p)^{t-1}-(1-p)^{2t-1}]^m$, the binomial average of the fraction
 above; the repairs only add ones, so an empty pair of the padded table is an
-empty pair of the original and the bound with Bernoulli sizes holds for the
-padded instance; and if the patterns are padded before the customers, the
+empty pair of the original~\leanref{coupling} and the bound with Bernoulli
+sizes holds for the padded instance; and if the patterns are padded before the customers, the
 rows after that pad are independent uniform sets of size $\max(s,2)$ with $s$
 binomial, and the bound holds with those sizes. The rejection is not an
 increasing event of the table entries: adding an entry can make a pad vanish,
@@ -249,6 +251,159 @@ corresponding to the product above between two lines, which is harmless when
 the number of patterns is sublinear in $n$ and changes the constant when it is
 linear; his threshold of two patterns per customer is the dropped factor's
 artefact, and with it restored the condition at $m=n$ is about $2.46$.
+
+% The excess subsection (loop0010 item 12, 2026-11-01). Source:
+% reports/excess_phase_diagram.md (the opening and sections 1-11); Lean:
+% ForestCover.lean, TreeBound.lean, IndependenceBound.lean. The figure is
+% paper1/figures/excess_phase_diagram.pdf from
+% paper1/latex/figures/excess_phase_diagram.py (its CSV is committed under
+% data/); the table is tables/excess_beta.tex from make_tables.py.
+\subsection{The excess, and a phase diagram}
+\label{app:excess}
+
+The quantity that ends the previous subsection deserves a name and an axis.
+For an instance with $n$ customers, $m$ patterns and $N$ ones in the table,
+the \emph{excess} is $e=(N-m)/n$, the mean number of patterns per customer
+minus one. With $r=m/n$ and $c=N/m$ the mean customers per pattern,
+$e=r(c-1)$; and if the customer--pattern incidence graph $B$, with a node per
+customer and per pattern and an edge per one in the table, has $\kappa$
+components, it has $n(e-1)+\kappa$ independent cycles, so $B$ can be a forest
+only when $e<1$. We read $e$ from the table, never from a generator's nominal
+parameters, whose repairs inflate it. Three values of $e$ carry a meaning.
+The constant $\beta^{*}(d,\mu)$ is positive exactly when $\mu(d-1)>1$, that
+is when $e>1$ (on paper, from the exponent of~\leanref{clique-cover}). On
+random covers of 15 to 75 customers at every ratio $m/n$ from $1/8$ to $2$,
+the nodes our search spends to refute $\mathrm{optimum}-1$ peak at $e=2$ to
+$2.4$, falling by two orders of magnitude on either side (measured). And at
+$e_g(r)=(\sqrt{r^{2}+4r}-r)/2$, $0.62$ for $m=n$, the branching factor of the
+random incidence graph is one: on generated covers of 10 to 75 customers the
+share of instances whose $B$ is a forest falls from $0.74$--$0.92$ below
+$e_g(r)$ to $0.23$--$0.40$ between $e_g(r)$ and $1$, and is zero above
+(measured). Figure~\ref{fig:excess} places every instance of
+Section~\ref{sec:results} against the three. Below $e_g(r)$ the open stacks
+are governed by the largest pattern (Theorem~\ref{thm:blowup}); between
+$e_g(r)$ and $1$ the first moment says nothing and the deterministic bounds
+are all there is; between $1$ and the ridge the certified optimum per
+customer sits $0.02$--$0.10$ above $\beta^{*}$ and the cost of certification
+climbs, and this is where the $d=2$ classes of Section~\ref{sec:results}
+($e=1.66$--$1.78$) and 22 of the 24 industrial instances sit; above the ridge
+the cost falls and $\beta^{*}$ comes within $0.04$--$0.06$ of the certified
+slope at $e\ge6$ ($m=n$, 30--100 customers), the $d=4$ classes
+($e=2.9$--$3.7$) being the dense shoulder. No benchmark instance we hold has
+$e<e_g(r)$, and 12 of $6{,}376$ have $e<1$.
+
+\paragraph{The forest regime.}
+Write $\omega$ for the size of the largest pattern.
+\begin{theorem}[blow-up]
+\label{thm:blowup}
+For every instance, $\mathrm{MOSP}\le\omega\,(\pw(B)+1)$. If $B$ is a forest,
+$\mathrm{MOSP}\le\omega\bigl(\lfloor\log_{3}\tfrac{6(n+m)+3}{5}\rfloor+1\bigr)$.
+\end{theorem}
+Replace each pattern node in each bag of a path decomposition of $B$ by the
+pattern's customers: a customer's nodes in $B$ form a star, so its bags stay
+an interval, and no bag grows by more than a factor $\omega$. Nothing about
+$B$ is used; the forest enters only through the pathwidth of a forest on $N$
+vertices, at most $\lfloor\log_{3}((6N+3)/5)\rfloor$, which is sharp. Both are
+Lean theorems~\leanref{blowup}~\leanref{forest}. The bound is loose: on 7,004
+graphs with exact pathwidth (clique trees to 936 vertices, random block trees,
+3,448 certified random covers whose $B$ is a forest, and 2,000 small random
+instances) it is never violated and never exact, 2 to 5.5 times the truth on
+the block-graph families; on the 3,448 random forests the pathwidth is
+$\omega-1$ on $99.8\%$, so below $e_g(r)$ the optimum is, in practice, the
+largest pattern (measured). The exact theory on block graphs is polynomial
+\citep{ChouKoHoChen2008}; on clique trees the exact values grow by about
+$(\omega-2)/2$ per level of depth, no formula linear in $\omega$ and the depth
+fits them, and we conjecture no closed form.
+
+\paragraph{Constructions from above.}
+\begin{lemma}[layers]
+\label{lem:layer}
+If $L_0,L_1,\dots$ are the distance layers from any vertex of a connected
+graph, $\pw\le\max_i(|L_i|+|L_{i+1}|)-1$; and $\pw\le n-\alpha$ for any
+independent set of $\alpha$ vertices.
+\end{lemma}
+The bags are $L_i\cup L_{i+1}$, and $(V\setminus I)\cup\{v\}$ for $v\in
+I$~\leanref{layer}~\leanref{indep}. On the uniform cover model with $m=\mu n$
+patterns of size $d$ the layer sizes follow a two-type exploration recursion
+and the greedy independent set that takes the customer with fewest patterns
+follows a differential equation; the smaller limit is a constant
+$\beta^{+}(d,\mu)$, derived on paper up to the concentration step, which we
+cite and do not re-prove. Table~\ref{tab:excess} gives it beside $\beta^{*}$
+and the slope $b$ of $\mathrm{opt}=a+bn$ on the certified instances at
+30--100 customers. The sandwich
+$\beta^{*}\le\liminf\mathrm{opt}/n\le\limsup\mathrm{opt}/n\le\beta^{+}$ has
+width below $0.12$ at $e\ge14$ and $0.42$--$0.49$ for $1\le e\le3.5$: it says
+least where the search works hardest. The greedy closing rule we use for
+upper bounds cannot be analysed this way; at 5,000 customers its width per
+customer is $0.06$--$0.36$ below $\beta^{+}$ (measured, no exact solve).
+
+\begin{table}[htbp]
+\centering
+\caption{Random covers with $m=n$ patterns of $d$ customers: the excess, the
+first-moment constant (a proved lower bound on $\liminf\mathrm{opt}/n$), the
+slope $b$ of $\mathrm{opt}=a+bn$ on 600--625 certified instances at 30--100
+customers (measured; one standard error in parentheses), and the constant of
+the analysed layouts (an upper bound on $\limsup\mathrm{opt}/n$, on paper up
+to concentration).}
+\label{tab:excess}
+\small
+\input{tables/excess_beta}
+\end{table}
+
+\paragraph{Why the first moment is loose.}
+A layout of width $k$ forces $\ell$ nested empty pairs, one per prefix size,
+but counting them gives a constant \emph{below} $\beta^{*}$ on every cell (by
+$0.051$ at $\ell=2$, $d=6$, $\mu=1$, and more for larger $\ell$, at every
+spacing): naming $\varepsilon n$ more vertices costs
+$\Theta(\varepsilon\log(1/\varepsilon))$ of entropy and buys
+$\Theta(\varepsilon)$ of constraint. The slack is in the union bound. The
+empty pairs cluster ($E[X^{2}]/E[X]^{2}=e^{0.23n}$ at $\beta^{*}$ for $d=6$,
+$\mu=1$), and on 650 certified instances at 30--75 customers the empty-pair
+condition is within a stack of the pathwidth while the floor sits one to
+three stacks lower. A second moment bounds $\Pr[X>0]$ from the wrong side; a
+count over one representative per cluster is the route not taken.
+
+\paragraph{One parameter, or two.}
+The excess sets the threshold, the ridge and the scale, not the value. At
+$e=2$ the certified slope is $0.282$, $0.232$, $0.200$, $0.167$ for
+$\mu=1/4,1/2,1,2$ (standard errors $0.002$--$0.006$), and 13 of 16 pairs of
+series matched in $e$ to $\pm0.05$ differ by more than twice their error;
+$\beta^{*}$ has the same dependence ($0.180$, $0.169$, $0.147$, $0.123$), and
+over 41 series $b=0.057+0.984\,\beta^{*}$ with residual $0.024$. Nor is the
+ridge where the first moment is loosest: on 25 series at 50--75 customers
+the gap between the certified optimum and the floor peaks at $e=2.2$--$5.3$,
+on the dense side, with the ridge on a plateau within one stack of the
+maximum. What peaks on the ridge is the number of closed sets the search can
+reach, not the slack of the bound.
+
+\paragraph{Twenty-four industrial instances.}
+The 24 SCOOP instances \citep{Frinhani2018} have excess $0.97$ to $2.50$,
+median $1.35$; 19 lie in $[1,2)$, none has a forest $B$, ten decompose. Every
+refutation on record for them took at most $22{,}433$ nodes, and the greedy
+closing rule is exact on 12 and at most $0.061n$ above the optimum. One, with
+60 customers, 49 patterns and optimum 7, sits two stacks below the floor a
+random cover with its pattern sizes has at confidence $0.01$: no
+contradiction, the floor being a random-model statement, but a measure of
+distance from random, on which the designed Challenge instances sit up to 39
+stacks below. These are 24 instances from one source, read with pieces as
+customers (the orientation of the files' format line, the opposite of their
+description's prose); we say nothing about industry beyond them.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.96\linewidth]{excess_phase_diagram.pdf}
+\caption{The excess phase diagram. Above, where the instances of
+Section~\ref{sec:results} sit: the 24 SCOOP instances; the Chu \& Stuckey
+classes with $m=n$ as the median of each density over all sizes; the median
+and quartiles of the other collections. Dashed, $e_g(1)=0.62$; solid, $e=1$;
+the band, the ridge $e=2$--$2.4$. Below, random covers with $m=n$ patterns of
+$d=2$ to $10$ customers: $\beta^{*}$ (a theorem), the certified slope $b$ at
+30--100 customers with its two-standard-error bar (measured), and $\beta^{+}$
+of the analysed layouts; in grey, $b$ at $m=n/2$ and $m=2n$, which differ from
+it at equal excess. Regenerate:
+\texttt{paper1/latex/figures/excess\_phase\_diagram.py}.}
+\label{fig:excess}
+\end{figure}
 
 \subsection{What is checked, and what is known}
 

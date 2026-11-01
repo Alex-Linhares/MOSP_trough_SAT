@@ -329,3 +329,6 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.pathwidth_le_layerWidth
 #print axioms MOSPFormalization.vertexSeparation_le_layerWidth
 #print axioms MOSPFormalization.pathwidth_le_layerWidth_dist
+-- loop0010 item 12: the two bounds Appendix E's excess subsection cites beside the forest regime
+#print axioms MOSPFormalization.tree_pathwidth_le_treeBound
+#print axioms MOSPFormalization.pathwidth_le_card_sub_indepNum

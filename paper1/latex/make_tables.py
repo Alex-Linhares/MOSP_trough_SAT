@@ -333,8 +333,35 @@ def dataset_table() -> str:
     return _write("dataset.tex", "paper1/data/dataset/{index,classes}.csv.gz", body)
 
 
+# --- appendix E ------------------------------------------------------------
+
+EXCESS_CSV = Path(__file__).resolve().parent / "data" / "excess_phase_diagram.csv"
+
+
+def excess_table() -> str:
+    """Appendix E, Table E.3: at `m = n` patterns of `d` customers, the excess
+    `e`, the first-moment constant `beta*`, the certified slope `b` of
+    `opt = a + b n` at 30-100 customers with its standard error, and the
+    constant `beta+` of the analysed constructions; from the figure's committed
+    CSV (`paper1/latex/figures/excess_phase_diagram.py extract`)."""
+    import pandas as pd
+    data = pd.read_csv(EXCESS_CSV, comment="#")
+    series = data[(data["kind"] == "series") & (data["mu"] == 1.0)].set_index("d")
+    plus = data[(data["kind"] == "beta_plus") & (data["mu"] == 1.0)].set_index("d")
+    body = [r"\begin{tabular}{@{}rrrrr@{}}", r"\toprule",
+            r"$d$ & $e$ & $\beta^{*}(d,1)$ & $b$ ($\pm$ se) & $\beta^{+}(d,1)$ \\", r"\midrule"]
+    for d in sorted(plus.index):
+        if d not in series.index:
+            continue
+        s, q = series.loc[d], plus.loc[d]
+        body.append(f"{int(d)} & {s['e']:.2f} & {q['value2']:.3f} & {s['value']:.3f} ({s['value_se']:.3f}) & {q['value']:.3f} \\\\")
+    body += [r"\bottomrule", r"\end{tabular}"]
+    return _write("excess_beta.tex", "paper1/latex/data/excess_phase_diagram.csv (series and beta_plus rows at mu = 1)", body)
+
+
 def main() -> None:
-    for f in (names_table, periods_table, communities_table, cost_table, split_table, certificates_table, dataset_table):
+    for f in (names_table, periods_table, communities_table, cost_table, split_table, certificates_table, dataset_table,
+              excess_table):
         text = f()
         print(text.splitlines()[0])
 
