@@ -1441,6 +1441,61 @@ Nothing re-solved; `solutions/` untouched; about 8.5 core-hours. Code
 `learning/separator_moment.py` (93 tests); data under
 `reports/scratch/separator_moment/`.
 
+**The Edwards–McDermid degree bound, verified and formalised** *(loop0012,
+2026-11-02; `reports/edwards_mcdermid.md`, §0 is the two-page summary;
+plan `reports/edwards_mcdermid_plan.md`; the paper's Appendix E, the
+paragraph "We did not take that bound on trust" in *What is checked*, two
+Appendix A rows, four references)*. Corollary 5.2 of Edwards & McDermid
+(2015), `pw(G) ≤ Σ_{v ∈ r(G)} g(d(v)) + τ(n) + O(log n)` with `g(3) = 1/6`,
+`d g(d) = (d − 2) g(d − 1) + g(d − 2) + 1` and `r(G)` the series-parallel
+reduction — the best published upper bound on `pw(G(n, c/n))` (0.183,
+0.458, 0.656 at `c = 3, 6, 10`) — was **evaluated on every graph on record
+with a proved pathwidth** (63,330: pilot 6,542, dataset 16,635, ensembles
+40,153 distinct; `n ≤ 2,916`): the main term alone is `≥ pw` on 61.8%, the
+histogram term on 72.0%; the deficit `pw − main` is at most **5** (the
+202-vertex VSPLIB trees, main term 0: the paper's `O(log n)`) and **4.333**
+where `r(G) ≠ ∅` (the Coxeter graph: the cubic base case); Fomin–Høie's
+explicit `τ_FH(n)` is 2.2–100× above every deficit, so the corollary with
+its own budget says nothing a graph could violate at these sizes, and the
+constant the record needs is *measured*, never "the constant". The cubic
+base case needs `c = 3.833` on every connected cubic graph to 16 vertices
+(exhaustive, Heawood) and `4.5` on the 42 certified to 120 (Coxeter); the
+record-holders are the cages. **Lean** (`DegreeBound/`, seven files, 270
+theorems, no `sorry`, no `axiom`, every one on the three standard axioms):
+the weights and Lemmas 8.1, 8.3–8.5; the cut lemma
+`pw ≤ max(pw G[V₁], pw G[V₂]) + min(|∂₁|, |∂₂|)` and its iterated form
+(independent; *not* how Fomin–Høie reach `n/6`); the potential `f⁻` per
+component with additivity; the reduction system with a local commutation
+lemma (deletion commutes with reduction) in place of Lemma 3.1's confluence
+appeal — **no confluence fact is used anywhere**; the step inequality
+`1 + f⁻(G*) ≤ f⁻(G)` in all four cases for the paper's two-key `w`
+(**the degree-only choice is false**: 350 graphs from 7 vertices, every one
+with all neighbours of `w` at the maximum degree in a non-regular graph;
+the tie-break is necessary); **Theorem 3.2 unconditional**
+(`exists_reduction_set`); and **Lemma 5.1 and Corollary 5.2 conditional on
+two named `Prop`s never asserted** — `CubicPathwidthBound τ` (Fomin & Høie
+2006 Thm 5) and `ReductionPathwidthBound ρ` (Kneis et al. 2009, not held)
+— plus `Monotone τ`, `0 ≤ τ`: `pw ≤ f⁻ + τ n + 2ρ n + 1` for reduced
+`G ≠ ⊥`, `pw ≤ Σ_v g(d_G(v)) + τ n + 3ρ n + 1` for every `G`
+(`pathwidth_le_histogram_of_hypotheses`); the paper's `τ + O(log n)` is
+this with `ρ = O(log n)`, and its displayed `=` is a `≤`. Every statement
+was brute-force checked before it was stated (every graph to 9 vertices:
+the cut lemma on all 71,967,757 partitions, R3 on all 3,115,987 (graph,
+step, `w`), T1 on all 89,972 reduced graphs; the Lean induction replayed);
+**no proved pathwidth on record was found wrong**. **Not formalised**:
+Theorem 5.3 (its Edwards–Farr averaging lemma holds on all 52,747 graphs
+where its hypothesis applies and fails on 1,431 disconnected ones where it
+does not — verified numerically only); Fomin–Høie's Lemma 4 and the sweep
+(stated in §4.3); R6 (`pw(H) ≤ pw(H') + 1` per step, measured to 9). (H3)'s
+shape to 9 vertices: `pw(G) − pw(r(G)) ≤ 3`, first at 6 (a subdivided
+triangle), not the expected 2. The only new solves: every graph to 9 and
+every connected cubic graph to 16 (subset DP); `solutions/` untouched;
+about 1 core-hour. Code `learning/edwards_mcdermid.py` (52 tests), sandwich
+stage `--stage degree_bound` (22 rows, 5,793 checks); checks and logs under
+`reports/scratch/edwards_mcdermid/<item>/`. One open instance surfaced: the
+dataset's 112-vertex cubic graph with a width-24 witness and unknown
+optimum.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,

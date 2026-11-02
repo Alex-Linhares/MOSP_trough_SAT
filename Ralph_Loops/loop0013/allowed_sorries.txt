@@ -1,0 +1,2 @@
+# loop0013 may add no sorry. Every certificate theorem is proved or not stated;
+# a cited result is a named Prop, never sorry or axiom. Format: file | theorem | reason.
