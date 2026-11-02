@@ -53,7 +53,7 @@ Current: 0/11 SOLVED
   45 min, 3 fix attempts, 16 iterations); `allowed_sorries.txt` empty (the
   cited results are named `Prop`s, never `sorry`).
 - **Before launch.** Wait for loop0011 to finish (`status.json` phase
-  `idle`, or `LOOP_COMPLETE` in its PROGRESS.md) and for its last commit.
+  `idle`, or the completion marker in its PROGRESS.md) and for its last commit.
   The driver refuses to start while `git status` shows changes under
   `learning reports tests benchmarks satisfiability mosp customer_inter`;
   commit or stash first. Check that the owner's `run_unlimited.py` is not
