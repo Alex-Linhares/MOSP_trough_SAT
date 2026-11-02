@@ -2,8 +2,8 @@
 
 *Ralph loop0012, 2026-11-02 onward. The plan is `reports/edwards_mcdermid_plan.md`
 (its §0.2 quotes every statement used, verbatim; §0.3 names the two hypotheses;
-§0.5 fixes the Lean design). One section per item; §0 (the summary) is written
-by item 10. Nothing here changes a solver default; nothing re-solves an
+§0.5 fixes the Lean design). §0 is the two-page summary (item 10); then one
+section per item. Nothing here changes a solver default; nothing re-solves an
 instance that is already proved.*
 
 ## What this document is about
@@ -59,6 +59,192 @@ removed vertices isolated (plan §0.5). The **main term** is
 over `G`'s own degrees; the **deficit** of a graph is `pw − main term`, the
 part of the bound the lower-order terms must cover. Code:
 `learning/edwards_mcdermid.py` (tests `tests/test_edwards_mcdermid.py`).
+
+---
+
+## 0. Summary (item 10, 2026-11-02)
+
+*Two pages for a reader who will not read §1–§9. Every number below has its
+section, its size range and its regenerate command there; nothing here is
+new relative to §1–§9.*
+
+### 0.1 The statement, and what was done with it
+
+**Corollary 5.2** of Edwards & McDermid (2015), manuscript p. 20, verbatim:
+
+> Let `G` be a graph, and `r(G)` be the reduced graph of `G`. Then
+> `pw(G) ≤ Σ_{v ∈ V(r(G))} g_{1/6}(d_{r(G)}(v)) + τ(|V(G)|) + O(log |V(G)|) = Σ_{d ≥ 3} g_{1/6}(d) n_d + o(|V(G)|)`.
+
+Here `g = g_{1/6}` (`g(d) = 0` for `d ≤ 2`, `g(3) = 1/6`,
+`d g(d) = (d − 2) g(d − 1) + g(d − 2) + 1`), `r(G)` is the series-parallel
+reduction of `G`, and `τ(n) = o(n)` is the error term of Fomin & Høie's
+cubic bound; the paper gives no constant for `τ` or for the `O(log n)`, and
+the displayed `=` is a `≤` (plan §0.4 (6)). This loop did two things with it:
+
+1. **Verified it on the record** (§1): the main term
+   `Σ_{v ∈ r(G)} g(d(v))` and the histogram term `Σ_{d ≥ 3} g(d) n_d(G)` were
+   evaluated on every graph whose pathwidth is proved — 63,330 graphs on
+   1–2,916 vertices — and the *deficit* `pw − main term`, the part the
+   lower-order terms must cover, was measured per source and per size. Every
+   intermediate lemma of the proof was then checked on every graph to 9
+   vertices (§2), before any of it was stated in Lean.
+2. **Formalised it in Lean** (§3–§9): Lemma 5.1 and Corollary 5.2 are
+   theorems of `lean/MOSPFormalization/DegreeBound/` (seven files, 270
+   theorems, no `sorry`, no `axiom`), **conditional on the two results of the
+   literature the proof rests on, each a named `Prop` that no theorem
+   asserts**, with the lower-order term explicit in their budgets:
+
+       pw(G) ≤ f⁻(G) + τ(n) + 2ρ(n) + 1                 (Lemma 5.1; every degree 0 or ≥ 3, G ≠ ⊥)
+       pw(G) ≤ Σ_v g(d_B(v)) + τ(n) + 3ρ(n) + 1         (Corollary 5.2; every G, every reduced reduct B)
+       pw(G) ≤ Σ_v g(d_G(v)) + τ(n) + 3ρ(n) + 1         (the displayed "=" as a "≤")
+
+   **Every theorem of `DegreeBound/` depends on the standard axioms only
+   (`propext`, `Classical.choice`, `Quot.sound`); the two results of the
+   literature enter as named hypotheses with budgets `τ` and `ρ`, and the
+   bound's lower-order term is `τ(n) + 3ρ(n) + 1`.** The paper's
+   `τ(n) + O(log n)` is this with `ρ = O(log n)`; the `+1` is the deleted
+   vertex of a basic component of the second kind, which the paper absorbs
+   into its `O(log n)`.
+
+This is a verification and a formalisation of a published theorem, conditional
+on two cited results (Fomin & Høie 2006, Theorem 5; Kneis, Mölle, Richter &
+Rossmanith 2009). The explicit budget accounting is a reading of the paper's
+proof, not a result. Nothing here is claimed as new.
+
+### 0.2 The verification, in one table (§1)
+
+| source | graphs | `n` | max deficit `pw − main` | attained by | share with deficit `≤ 0` | share `≤ 0` (histogram term) |
+|---|---|---|---|---|---|---|
+| dataset (`paper1/data/dataset/`) | 16,635 | 1–2,916 | **5.000** | VSPLIB `TREE_202_5` (pw 5, main term 0) | 38.1% | 63.6% |
+| ensembles (distinct within cell) | 40,153 | 10–100 | 4.000 | `f_n30_m30_d2` #23 (pw 4) | 74.1% | 77.7% |
+| pilot `G(n, c/n)` (proved rows) | 6,542 | 20–120 | 3.333 | `n60_c1.5` #54 (pw 4) | 46.3% | 58.5% |
+| **all** | **63,330** | 1–2,916 | **5.000** (4.333 where `r(G) ≠ ∅`, the Coxeter graph) | | **61.8%** | **72.0%** |
+
+| `n` | `B(n) = max{deficit : |V| ≤ n}` | `B(n)` over `r(G) ≠ ∅` | Fomin–Høie's explicit `τ_FH(n)` |
+|---|---|---|---|
+| 10 | 3.333 (Petersen) | 3.333 | 7.46 |
+| 100 | 4.333 (Coxeter) | 4.333 | 43.24 |
+| 2,916 | 5.000 (`TREE_202_5`) | 4.333 | 498.43 |
+
+- **No graph on record violates the corollary with Fomin–Høie's explicit
+  budget**, which exceeds every deficit by a factor of 2.2 at `n = 10` and
+  100 at `n = 2,916` — so at these sizes it says nothing a graph could
+  violate; `B(n)` is what the record needs, and both record-holders are
+  small famous graphs (an extremal tree, a cage), not large ones.
+- **The Poisson check** (`n = 120`, pilot): the histogram term per vertex is
+  0.1820, 0.2830, 0.4454, 0.5685, 0.6511 at `c = 3, 4, 6, 8, 10` against the
+  Poisson values 0.1826, 0.2853, 0.4575, 0.5761, 0.6558 — within 0.012 at
+  every cell (§1.5), which is the check behind the survey's `0.183, 0.458,
+  0.656`. The reduction's gain over the histogram term is 0.021–0.025 per
+  vertex at `c = 3` and 0 from `c = 8`; the bound is 1.1–1.2× the proved
+  `pw` at `c = 3` and 1.4–1.5× at `c = 6–10` (`n = 60`).
+- **The cubic base case measured** (§1.4): the smallest `c` with
+  `pw ≤ N/6 − 1/6 + c` is **3.833** on every connected cubic graph to 16
+  vertices (4,681 graphs, exhaustive; Heawood) and **4.5** on the 42
+  certified connected cubic graphs of the dataset to `N = 120` (Coxeter).
+  The record-holders are the small cages. The 13 dataset cubic graphs at
+  `N ≤ 16` agree with the sweep (a free audit; nothing re-solved).
+- **Theorem 5.3** (the average-degree form, §1.6): its Edwards–Farr averaging
+  lemma holds on all 52,747 graphs where its hypothesis (connected, or
+  `d̄ ≥ 5`) applies and fails on 1,431 of 5,487 disconnected graphs with
+  `d̄ < 5` — the hypothesis is needed. Verified numerically; not formalised.
+
+### 0.3 The Lean chain, in one table (§3–§9)
+
+| statement (paper) | Lean name(s) | file (`DegreeBound/`) | status |
+|---|---|---|---|
+| the weights `g`, `g'`; Lemmas 8.1, 8.3, 8.4, 8.5, property 6 | `g_recurrence`, `g_monotone`, `g'_antitone_of_three_le`, `one_sub_g_eq`, `g_closed_form`, `g_div_lt_g_div` | `Weights.lean` (44 thms) | **proved** |
+| the cut lemma `pw ≤ max(pw G[V₁], pw G[V₂]) + min(|∂₁|, |∂₂|)` and its iterated form | `pathwidth_le_max_add_min_boundary`, `pathwidth_le_cut`, `pathwidth_le_of_bisectionTree` | `CutLemma.lean` (20) | **proved**; independent of (H1), (H3); not how Fomin–Høie reach `n/6` |
+| `f`, `f⁻` per component; equations (2)–(5), additivity, `f⁻ = N/6 − 1/6` on cubic | `potential_isolate`, `potential_isolate_le_sub_one`, `potential_isolate_regular`, `potentialMinus_add`, `potentialMinus_cubic` | `Potential.lean` (54) | **proved** |
+| the four operations, `r(·)`, basic graphs; termination, degree monotonicity, deletion commutes with reduction (replaces Lemma 3.1's confluence appeal) | `SPStep`, `SPReduces`, `IsBasic`; `exists_reduced_reduct`, `SPReduces.degree_le`, `SPStep.isolate_comm`, `SPReduces.isolateSet_comm`, `SPReduces.sup_of_disjoint` | `SPReduction.lean` (69) | **proved** |
+| the step inequality `1 + f⁻(G*) ≤ f⁻(G)`, all four cases of pp. 11–12, for the two-key `w` | `one_add_F_le`, `one_add_potentialMinus_le`, `j_identity`, `j4_ge` | `Step.lean` (21) | **proved** (the degree-only choice of `w` is false, §2.4) |
+| Theorem 3.2, the reduction theorem | `exists_reduction_set` | `ReductionTheorem.lean` (41) | **proved, unconditional** |
+| `pw(G) ≤ pw(G − X) + |X|`; `pw(G) ≤ max_i pw(G_i)` | `pathwidth_le_pathwidth_isolateSet_add_card`, `pathwidth_le_rat_of_forall_connected` | `Pathwidth.lean` (21) | **proved** |
+| (H1) connected cubic `G` on `N` vertices: `pw ≤ N/6 − 1/6 + τ(N)` | `CubicPathwidthBound τ` | `Pathwidth.lean` | **cited, named `Prop`** (Fomin & Høie 2006, Theorem 5); budget *measured*: 3.833 to 16, 4.5 on 42 certified to 120 |
+| (H3) `SPReduces G H → pw G ≤ pw H + ρ(|V|)` | `ReductionPathwidthBound ρ` | `Pathwidth.lean` | **cited, named `Prop`** (Kneis et al. 2009, not held); shape *measured*: `pw(G) − pw(r(G)) ≤ 3` to 9 vertices |
+| basic `B`: `pw(B) ≤ f⁻(B) + τ n + ρ n + 1` | `pathwidth_basic_le` | `Pathwidth.lean` | **proved under (H1), (H3)**, `Monotone τ`, `0 ≤ τ` |
+| **Lemma 5.1**: `pw(G) ≤ f⁻(G) + τ n + 2ρ n + 1` | `pathwidth_le_potentialMinus_of_hypotheses`, `pathwidth_le_potential_of_hypotheses` | `Pathwidth.lean` | **proved under (H1), (H3)**, `Monotone τ`, `0 ≤ τ` |
+| **Corollary 5.2**: `pw(G) ≤ Σ_v g(d_B(v)) + τ n + 3ρ n + 1`, and with `G`'s own histogram | `pathwidth_le_degreeSum_of_hypotheses`, `pathwidth_le_histogram_of_hypotheses` | `Pathwidth.lean` | **proved under (H1), (H3)**, `Monotone τ`, `0 ≤ τ` |
+| Theorem 5.3 (average degree; the Edwards & Farr 2012 averaging lemma) | — | — | **verified numerically, not formalised** (§1.6) |
+| Fomin & Høie's Lemma 4 and the boundary sweep (the transfer lemma of §4.3) | — | — | **stated, not proved** (a candidate for item 11) |
+| one operation costs at most one: `pw(H) ≤ pw(H') + 1` (R6) | — | — | **measured** (drop 0 or 1 on all 393,156 steps to 9), not proved; not the reduction lemma |
+| the reduced graph is unique | — | — | **measured** to 9 vertices; the design does not use it |
+
+Records: `paper1/axiom_check.lean` prints the axioms of all 270 theorems
+(577 project-wide; `make -C paper1/latex axioms`: 0 failures);
+`python -m learning.sandwich --stage degree_bound` pins the Lean definitions
+to `learning/edwards_mcdermid.py` (22 rows, 5,793 checks, 0 violations) and
+`--stage lean` audits the 270 names; `tests/test_edwards_mcdermid.py` has 50
+tests (52 with item 10's); every statement's brute-force check and log is
+under `reports/scratch/edwards_mcdermid/<item>/`.
+
+### 0.4 Kill verdicts, in one table
+
+| item | kill criterion | verdict |
+|---|---|---|
+| 01 verify | a proved graph with `pw > main term + τ_FH(n)`; `main > histogram`; a degree raised by `reduce` | **not met** — 0 / 0 / 0 of 63,330 |
+| 02 lemmas | a deterministic statement of the chain false on a graph to 9 vertices | **not met** on W1–W5, C1–C2, P1–P2, R1–R6, S0–S1, SJ, T1, B1 (288,266 graphs); two *findings*: **S1′ is false** (the degree-only choice of `w` fails on 350 graphs from 7 vertices; the paper's tie-break never does) and the reduct is unique to 9 |
+| 03 weights | — | none (every statement checked to `n = 200` in exact rationals) |
+| 04 cut lemma | a counterexample to C1/C2 | **not met** (every partition of every graph to 8; 10,000 random bisection trees) |
+| 05 potential | — | none |
+| 06 reduction system | — | none |
+| 07 step inequality | — | none (the item's fallback, S1 as a hypothesis, not needed) |
+| 08 Theorem 3.2 | — | none (neither fallback needed; no confluence fact anywhere) |
+| 09 assembly | — | none |
+| 10 write-up | — | none |
+
+No item found a proved pathwidth on record wrong, a deterministic statement of
+the chain false, a theorem of ours false, or a published claim of ours drifting
+(the stop conditions of `TASK.md`). The two corrections to the project's own
+earlier reading are small and recorded: the corollary's displayed `=` is a
+`≤`, and the "simple kind" of basic graph has pathwidth `Θ(log n)`, not a
+constant (plan §0.4).
+
+### 0.5 What this is not
+
+- **Not a proof of (H1) or (H3).** Both are cited, named, never asserted, and
+  not provable here: (H3) contains "series-parallel graphs have pathwidth
+  `O(log n)`" and Mathlib has no series-parallel graphs; Fomin–Høie's Theorem
+  5 needs their Lemma 4, a Monien–Preis bisection and a boundary sweep (§4.3).
+- **Not constants.** `B(n) = 5`, `4.333`, `3.833`, `4.5`, `≤ 3` are
+  measurements on the record and on exhaustive sweeps at the stated sizes
+  (`n ≤ 2,916`; cubic to 16 exhaustively and 42 certified to 120; every graph
+  to 9), never the paper's `τ`, `ρ` or bounds on graphs not on record. Nothing
+  on the record says how the cubic excess grows with `N` beyond the cages at
+  28 and 54 vertices.
+- **Not tight.** The bound is 1.1–1.5× the proved pathwidth on the pilot; the
+  budgets `τ + 2ρ + 1`, `τ + 3ρ + 1` follow the proof's uses of the hypotheses
+  and are not lower bounds.
+- **Not Theorem 5.3**, whose averaging lemma is Edwards & Farr's and is
+  verified numerically only.
+- **Not new.** The cut lemma, `pathwidth_bot`, the deletion lemma and the max
+  over components are folklore; "we found no prior statement" is claimed of
+  nothing in this loop.
+- **Not a solver change**, and nothing on record was re-solved: the only new
+  exact solves are the 4,681 connected cubic graphs to 16 vertices and every
+  graph to 9, both allowed by the items.
+
+### 0.6 Open
+
+1. **Fomin & Høie's Lemma 4 in Lean** for maximum degree 3, with
+   `tree_pathwidth_le_log` as its tree case; with C1 and a *stated*
+   Monien–Preis bisection it would make (H1) itself conditional only on the
+   bisection theorem (item 11's option (2); §4.3 states the transfer lemma).
+2. **R6**, `pw(H) ≤ pw(H') + 1` per operation — unconditional and cheap, and
+   *not* the reduction lemma (item 11's option (3)).
+3. **The Edwards–Farr averaging lemma** fetched from EJC 19(2) #P25 and
+   checked on the record (item 11's option (4)).
+4. **(H3) itself**: the series-parallel pathwidth bound and the gluing into
+   `r(H)`, a loop of its own (plan §0.3).
+5. **The cubic excess above 54 vertices.** The record has no certified cubic
+   graph with `pw − N/6 > 3.5` above `N = 28`; the dataset's `solution` row
+   for a 112-vertex cubic graph (witness width 24, optimum unknown, excess
+   `≤ 5.5` as an upper bound) is an open instance in the owner's sense — the
+   one place in this loop's data where compute would go to something
+   unsolved.
+6. **The survey's §7(a) upper-bound column** now rests on a verified and
+   formalised bound at `2 ≤ c ≤ 20`; the entries below `c = 2` (cyclomatic)
+   and above (independence number) were not touched by this loop.
 
 ---
 
@@ -1982,12 +2168,12 @@ The final theorems have **exactly four hypotheses beyond the graph's own**:
   `python -m learning.sandwich --stage lean`; `python -m learning.sandwich --stage degree_bound`;
   `python -m pytest tests/test_edwards_mcdermid.py -q`.
 
-### 9.7 The Appendix A rows, drafted for item 10 (not yet in the paper)
+### 9.7 The Appendix A rows, drafted here and placed in the paper by item 10 (§10.1)
 
 For `paper1/latex/sec9a_appendix_lean.tex`, in the format of its existing rows
-(`\leanentry{label}{text} \leannames{names} \\`); item 10 places them and
-edits the two sentences around `\citet{EdwardsMcDermid2015}` in
-`sec9e_appendix_random.tex`:
+(`\leanentry{label}{text} \leannames{names} \\`); item 10 placed them (A.70,
+A.71) and wrote the paragraph around `\citet{EdwardsMcDermid2015}` in
+`sec9e_appendix_random.tex` (§10.1):
 
 ```latex
 \leanentry{reduction-theorem}{Theorem~3.2 of \citet{EdwardsMcDermid2015}, the reduction theorem
@@ -2005,9 +2191,10 @@ edits the two sentences around `\citet{EdwardsMcDermid2015}` in
 ```
 
 (`paper1/latex/refs.bib` has no entry for Fomin & Høie 2006 yet — its only Fomin
-entry is the 1998 helicopter-search paper, `LY2002ref12` — so item 10 adds the
-key `FominHoie2006` (IPL 97:191–196, DOI 10.1016/j.ipl.2005.10.012) or writes
-the citation out, and checks it with `make -C paper1/latex refs`.)
+entry is the 1998 helicopter-search paper, `LY2002ref12` — so item 10 added the
+key `FominHoie2006` (IPL 97:191–196, DOI 10.1016/j.ipl.2005.10.012) with
+`KneisMolleRichterRossmanith2009`, `EdwardsFarr2012` and `MonienPreis2006`,
+all checked with `make -C paper1/latex refs`.)
 
 ### 9.8 Kill verdict, and what this does not claim
 
@@ -2029,3 +2216,187 @@ that `pathwidth_bot` or the deletion lemma are new (they are folklore;
 Mathlib lacks them in this form, and "we found no prior statement" is not
 claimed either); that Fomin & Høie's Theorem 5 is formalised (item 04 §4.3
 states its one-level transfer and does not prove it).
+
+---
+
+## 10. The write-up: the paper's paragraph, the survey's sentences, the `CLAUDE.md` paragraph (item 10, 2026-11-02)
+
+**Regenerate.** `make -C paper1/latex && make -C paper1/latex check`
+(`make -C paper1/latex refs` for the DOIs, `make -C paper1/latex axioms` for
+the Lean names' axiom lines); `python -m pytest tests/test_edwards_mcdermid.py tests/test_paper1_latex.py -q`.
+
+### 10.1 The paper (`paper1/latex/`)
+
+- **`sec9e_appendix_random.tex`**, subsection *What is checked, and what is
+  known*: one paragraph after the sentence that quotes `0.183, 0.458, 0.656`
+  (21 typeset lines, under half a page) — Corollary 5.2 as stated with `g`,
+  `r(G)` and `τ` named; the evaluation on the 63,330 proved graphs with the
+  main-term slack (61.8%; deficits 5 and 4.34 with their graphs); Fomin–Høie's
+  explicit budget vacuous by 2.2–100× at these sizes; Lemma 5.1 and Corollary
+  5.2 as Lean theorems conditional on the two cited results as named
+  propositions never asserted, with `τ` monotone and non-negative; the
+  explicit form `pw(G) ≤ Σ_v g(d_G(v)) + τ(n) + 3ρ(n) + 1` and what each term
+  counts; "a formalisation of a published theorem with its lower-order term
+  made explicit, not a new result"; Theorem 5.3's averaging lemma checked and
+  not formalised. The closing sentence of the subsection gains the clause
+  "verified on every proved graph of the record and formalised conditional on
+  its two cited inputs as described above". The sentence in the excess
+  subsection (the cover degree law, `0.66, 0.86, 0.96`) is unchanged.
+- **`sec9a_appendix_lean.tex`**: the two rows of §9.7, placed after the
+  closed-pair rows — A.70 `reduction-theorem` (`exists_reduction_set`,
+  `one_add_potentialMinus_le`, `SPReduces.isolateSet_comm`, `potential_isolate`)
+  and A.71 `degree-bound` (`pathwidth_le_histogram_of_hypotheses`,
+  `pathwidth_le_degreeSum_of_hypotheses`, `pathwidth_le_potentialMinus_of_hypotheses`,
+  `pathwidth_basic_le`, `CubicPathwidthBound`, `ReductionPathwidthBound`);
+  `check_lean.py` finds every name, `check_axioms.py` finds an axiom line for
+  every theorem among them (the two `Prop`s are definitions and are skipped,
+  as its docstring says).
+- **`refs.bib`**: four entries, each checked against Crossref by
+  `check_refs.py` (`85 entries, 73 with a DOI, 0 disagree`):
+  `FominHoie2006` (IPL 97(5):191–196, 10.1016/j.ipl.2005.10.012),
+  `KneisMolleRichterRossmanith2009` (SIAM J. Discrete Math. 23(1):407–427,
+  10.1137/080715482), `EdwardsFarr2012` (Electron. J. Combin. 19(2) #P25,
+  10.37236/2378; Crossref's title is "… degree-bounded graphs", the
+  manuscript's reference list says "average degree bounded"), `MonienPreis2006`
+  (J. Discrete Algorithms 4(3):475–498, 10.1016/j.jda.2005.12.009).
+  `EdwardsMcDermid2015` was already present.
+- **Pages: 74 before, 77 after.** The paragraph itself is under half
+  a page; the rest of the growth is three spills of a few lines each — the
+  references (four entries push four lines onto a new page before Appendix A),
+  the Appendix A table (two rows push its last twelve lines onto a page of
+  their own) and the end of Appendix E — a layout matter for the final pass,
+  not text.
+- Wording kept throughout: "this is a formalisation of a published theorem";
+  "made explicit", never "first" or "new"; a measurement is never called a
+  theorem; every conditional statement names its hypotheses.
+
+### 10.2 For the survey (`reports/random_graph_pathwidth_survey.md`)
+
+The item said not to edit the survey if the branch `appendix-picture` had
+edits pending. **It has none**: `git log main..appendix-picture` is empty, the
+worktree `/home/al/dev/MOSP-wt` is clean, and both the survey's second-pass
+edits and `reports/random_graph_pathwidth_literature_2.md` are on `main`. The
+two sentences were therefore applied, and are recorded here as drafted:
+
+- **§1.4**, replacing "Its closed form was not read (UNVERIFIED)." after the
+  Edwards & McDermid citation: *"Verified and formalised 2026-11-02
+  (`reports/edwards_mcdermid.md`, §0): the bound's main term
+  `Σ_{v ∈ r(G)} g(d(v))` was evaluated on every graph of the record with a
+  proved pathwidth (63,330 graphs, `n ≤ 2,916`; it alone is `≥ pw` on 61.8%,
+  and `pw` exceeds it by at most 5), and Lemma 5.1 and Corollary 5.2 are Lean
+  theorems conditional on the cubic base case (Fomin & Høie 2006, Theorem 5)
+  and the reduction lemma (Kneis et al. 2009), each a named `Prop`, in the
+  explicit form `pw(G) ≤ Σ_v g(d_G(v)) + τ(n) + 3ρ(n) + 1`; the closed form
+  (their Lemma 8.1) is proved there too (`g_closed_form`)."*
+- **§7(a)**, appended to the table note on the UB column: *"on 2026-11-02 the
+  bound was verified on every proved graph of the record and formalised in
+  Lean conditional on its two cited inputs, `reports/edwards_mcdermid.md` §0 —
+  on the pilot the histogram term per vertex is within 0.012 of these Poisson
+  values at every cell `n = 60–120`, and the bound is 1.1–1.5× the proved `pw`
+  at `n = 60`."*
+- The "Not verified, or not read in full" line "Edwards–McDermid (2015):
+  closed form not read" is struck through with the pointer to §3.
+
+### 10.3 For `CLAUDE.md` (drafted; not applied — the owner places it)
+
+In the format of the "The excess phase diagram" paragraph (CLAUDE.md, Next
+Steps), after the "Counting events, not witnesses" paragraph:
+
+> **The Edwards–McDermid degree bound, verified and formalised** *(loop0012,
+> 2026-11-02; `reports/edwards_mcdermid.md`, §0 is the two-page summary;
+> plan `reports/edwards_mcdermid_plan.md`; the paper's Appendix E, the
+> paragraph "We did not take that bound on trust" in *What is checked*, two
+> Appendix A rows, four references)*. Corollary 5.2 of Edwards & McDermid
+> (2015), `pw(G) ≤ Σ_{v ∈ r(G)} g(d(v)) + τ(n) + O(log n)` with `g(3) = 1/6`,
+> `d g(d) = (d − 2) g(d − 1) + g(d − 2) + 1` and `r(G)` the series-parallel
+> reduction — the best published upper bound on `pw(G(n, c/n))` (0.183,
+> 0.458, 0.656 at `c = 3, 6, 10`) — was **evaluated on every graph on record
+> with a proved pathwidth** (63,330: pilot 6,542, dataset 16,635, ensembles
+> 40,153 distinct; `n ≤ 2,916`): the main term alone is `≥ pw` on 61.8%, the
+> histogram term on 72.0%; the deficit `pw − main` is at most **5** (the
+> 202-vertex VSPLIB trees, main term 0: the paper's `O(log n)`) and **4.333**
+> where `r(G) ≠ ∅` (the Coxeter graph: the cubic base case); Fomin–Høie's
+> explicit `τ_FH(n)` is 2.2–100× above every deficit, so the corollary with
+> its own budget says nothing a graph could violate at these sizes, and the
+> constant the record needs is *measured*, never "the constant". The cubic
+> base case needs `c = 3.833` on every connected cubic graph to 16 vertices
+> (exhaustive, Heawood) and `4.5` on the 42 certified to 120 (Coxeter); the
+> record-holders are the cages. **Lean** (`DegreeBound/`, seven files, 270
+> theorems, no `sorry`, no `axiom`, every one on the three standard axioms):
+> the weights and Lemmas 8.1, 8.3–8.5; the cut lemma
+> `pw ≤ max(pw G[V₁], pw G[V₂]) + min(|∂₁|, |∂₂|)` and its iterated form
+> (independent; *not* how Fomin–Høie reach `n/6`); the potential `f⁻` per
+> component with additivity; the reduction system with a local commutation
+> lemma (deletion commutes with reduction) in place of Lemma 3.1's confluence
+> appeal — **no confluence fact is used anywhere**; the step inequality
+> `1 + f⁻(G*) ≤ f⁻(G)` in all four cases for the paper's two-key `w`
+> (**the degree-only choice is false**: 350 graphs from 7 vertices, every one
+> with all neighbours of `w` at the maximum degree in a non-regular graph;
+> the tie-break is necessary); **Theorem 3.2 unconditional**
+> (`exists_reduction_set`); and **Lemma 5.1 and Corollary 5.2 conditional on
+> two named `Prop`s never asserted** — `CubicPathwidthBound τ` (Fomin & Høie
+> 2006 Thm 5) and `ReductionPathwidthBound ρ` (Kneis et al. 2009, not held)
+> — plus `Monotone τ`, `0 ≤ τ`: `pw ≤ f⁻ + τ n + 2ρ n + 1` for reduced
+> `G ≠ ⊥`, `pw ≤ Σ_v g(d_G(v)) + τ n + 3ρ n + 1` for every `G`
+> (`pathwidth_le_histogram_of_hypotheses`); the paper's `τ + O(log n)` is
+> this with `ρ = O(log n)`, and its displayed `=` is a `≤`. Every statement
+> was brute-force checked before it was stated (every graph to 9 vertices:
+> the cut lemma on all 71,967,757 partitions, R3 on all 3,115,987 (graph,
+> step, `w`), T1 on all 89,972 reduced graphs; the Lean induction replayed);
+> **no proved pathwidth on record was found wrong**. **Not formalised**:
+> Theorem 5.3 (its Edwards–Farr averaging lemma holds on all 52,747 graphs
+> where its hypothesis applies and fails on 1,431 disconnected ones where it
+> does not — verified numerically only); Fomin–Høie's Lemma 4 and the sweep
+> (stated in §4.3); R6 (`pw(H) ≤ pw(H') + 1` per step, measured to 9). (H3)'s
+> shape to 9 vertices: `pw(G) − pw(r(G)) ≤ 3`, first at 6 (a subdivided
+> triangle), not the expected 2. The only new solves: every graph to 9 and
+> every connected cubic graph to 16 (subset DP); `solutions/` untouched;
+> about 1 core-hour. Code `learning/edwards_mcdermid.py` (52 tests), sandwich
+> stage `--stage degree_bound` (22 rows, 5,793 checks); checks and logs under
+> `reports/scratch/edwards_mcdermid/<item>/`. One open instance surfaced: the
+> dataset's 112-vertex cubic graph with a width-24 witness and unknown
+> optimum.
+
+### 10.4 For `reports/random_graph_pathwidth_literature_2.md` (on `main`; nothing to carry over at a merge)
+
+The item expected this file on the branch `appendix-picture`; it is on `main`
+(commit `5b8f27139`), so there is no merge to carry anything across. Two of
+its "Not verified, or not read in full" entries (§6, lines 726–731) are
+superseded by this loop and are listed here for the owner, who may strike
+them or leave the pass as the dated record it is:
+
+- *"Edwards–McDermid Corollary 5.2's displayed equality `Σ_{r(G)} = Σ_{d ≥ 3} g n_d + o(n)`:
+  read as 'at most', justified in §3.3 by monotonicity of `g`; the paper's
+  own `n_d` is not defined on that line."* — Now a Lean theorem:
+  `pathwidth_le_histogram_of_hypotheses` derives the histogram form from the
+  reduct form by `SPReduces.potential_le` (reduction never raises a surviving
+  degree, R2) and `g_monotone`; and the gap between the two forms is measured
+  on the pilot (§1.5: 0.021–0.025 per vertex at `c = 3`, 0 from `c = 8`).
+- *"The Poisson evaluation of E–M and FGSS assumes the degree histogram of
+  `G(n, c/n)` converges in `L¹` to Poisson(`c`), standard; …"* — The
+  assumption is now checked on the pilot's own degree histograms: the
+  histogram term per vertex is within 0.012 of `poisson_value(c)` at every
+  cell `n = 60–120` (§1.5; the finite-`n` law is Binomial(`n − 1`, `c/n`)).
+  The cover-cell caveat (pattern overlaps ignored) is untouched by this loop.
+
+Also superseded, in the same file's §3.3: "closed form not read" — Lemma 8.1
+is `g_closed_form` in `Weights.lean` (§3).
+
+### 10.5 Edits to §1–§9 for one voice
+
+The header no longer says §0 "is written by item 10"; §9.7's title and its
+two forward references now say the rows are in the paper; otherwise §1–§9
+stand as their items wrote them — each already follows the same pattern
+(regenerate, size range, checks, statements, choices beyond the design, axiom
+record, kill verdict, what it does not claim), and rewriting them would put
+words in the record that no check produced.
+
+### 10.6 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion).
+
+**Does not claim.** Anything beyond what items 01–09 proved, measured or
+cited; that the paper's paragraph is final (the owner edits the paper); that
+the `CLAUDE.md` paragraph is applied (it is drafted here); that the page
+growth is the paragraph's (it is three few-line spills); that the survey's
+other upper-bound entries were checked.

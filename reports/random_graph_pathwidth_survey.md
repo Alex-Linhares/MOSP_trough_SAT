@@ -189,8 +189,15 @@ at n = 9.
   graph [pub, abstract]. On `G(n,c/n)` this is `pw/n ≤ c/11.54 + o(1)`, best for
   `2.2 ≲ c ≲ 8`. Edwards & McDermid (2015, *Algorithmica* 72(4):940–968,
   DOI 10.1007/s00453-014-9883-7) give a degree-sequence bound that matches
-  Fomin et al. up to degree 6 and is smaller beyond. Its closed form was not
-  read (UNVERIFIED).
+  Fomin et al. up to degree 6 and is smaller beyond. **Verified and
+  formalised 2026-11-02** (`reports/edwards_mcdermid.md`, §0): the bound's
+  main term `Σ_{v ∈ r(G)} g(d(v))` was evaluated on every graph of the record
+  with a proved pathwidth (63,330 graphs, `n ≤ 2,916`; it alone is `≥ pw` on
+  61.8%, and `pw` exceeds it by at most 5), and Lemma 5.1 and Corollary 5.2
+  are Lean theorems conditional on the cubic base case (Fomin & Høie 2006,
+  Theorem 5) and the reduction lemma (Kneis et al. 2009), each a named
+  `Prop`, in the explicit form `pw(G) ≤ Σ_v g(d_G(v)) + τ(n) + 3ρ(n) + 1`;
+  the closed form (their Lemma 8.1) is proved there too (`g_closed_form`).
 - **Fomin, Gaspers, Saurabh & Stepanov**, "On two techniques of combining
   branching and treewidth", *Algorithmica* 54:181–207 (2009),
   DOI 10.1007/s00453-007-9133-3: `pw ≤ n₃/6 + n₄/3 + 13n₅/30 + 23n₆/45 + n_{≥7} + εn` (coefficients corrected 2026-11-01 from the PDF)
@@ -450,7 +457,11 @@ No sharp constant is known at any `c`. Between `c = 1` and `c ≈ 2.8` there is
 upper/lower gap is a factor of about 2–20 throughout the interesting range `2 ≤ c ≤ 10`
 (the UB column is Edwards–McDermid's degree-sequence bound evaluated on Poisson(c)
 degrees, `reports/random_graph_pathwidth_literature_2.md`, 2026-11-01; it replaced the
-edge-count and cyclomatic values at `2 ≤ c ≤ 20`).
+edge-count and cyclomatic values at `2 ≤ c ≤ 20`; on 2026-11-02 the bound was verified on
+every proved graph of the record and formalised in Lean conditional on its two cited inputs,
+`reports/edwards_mcdermid.md` §0 — on the pilot the histogram term per vertex is within 0.012
+of these Poisson values at every cell `n = 60–120`, and the bound is 1.1–1.5× the proved `pw`
+at `n = 60`).
 Gogate–Dechter's finite-`n` treewidths sit inside every interval, and they fall
 with `n` (`c = 8`: 0.472 at `n = 25`, 0.407 at `n = 50`), which shows how large
 the finite-size effects are at these sizes.
@@ -753,7 +764,7 @@ Flajolet–Raoult–Vuillemin 1979, Shang 2022.
 - Gao (2006) COCOON constant 2.16: from restatements only.
 - Wang–Liu–Cui–Xu (2011): abstract only.
 - Kneis et al. (2009): abstract only (`m/5.769 + O(log n)`).
-- Edwards–McDermid (2015): closed form not read.
+- ~~Edwards–McDermid (2015): closed form not read.~~ Read, checked and proved in Lean 2026-11-02 (`reports/edwards_mcdermid.md` §3, `g_closed_form`).
 - FGSS coefficients: from a search snippet.
 - KSS (1999): gate-matrix content not read.
 - Devroye–Kruszewski (1995): content.

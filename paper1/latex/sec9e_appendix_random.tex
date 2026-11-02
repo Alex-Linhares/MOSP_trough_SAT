@@ -590,7 +590,36 @@ Three more things are known. The best published upper bound on the pathwidth
 of $G(n,c/n)$ is the degree-sequence bound of \citet{EdwardsMcDermid2015},
 which on Poisson degrees gives $0.183$, $0.458$ and $0.656$ at $c=3,6,10$,
 so the measured slopes sit near the middle of the sandwich between
-$\beta^{*}(c)$ and it. The prefix-at-$(1-\varepsilon)n$ variant of the
+$\beta^{*}(c)$ and it. We did not take that bound on trust. Their Corollary~5.2 states
+$\pw(G)\le\sum_{v}g(d_{r(G)}(v))+\tau(n)+O(\log n)$ for every graph on $n$
+vertices, with $g$ a weight function ($g(d)=0$ for $d\le2$, $g(3)=1/6$,
+$d\,g(d)=(d-2)g(d-1)+g(d-2)+1$), $r(G)$ the series-parallel reduction of
+$G$, and $\tau(n)=o(n)$ the error term of the cubic base case
+\citep[Theorem~5]{FominHoie2006}; the paper gives no constant for either
+lower-order term. On every graph of the record with a proved pathwidth,
+63,330 graphs on 1 to 2,916 vertices, the main term alone is at least the
+pathwidth on 61.8\%, and the pathwidth exceeds it by at most~5 (the
+202-vertex extremal trees), by at most~4.34 where the reduction is
+non-empty (the Coxeter graph). Fomin and H{\o}ie's explicit budget exceeds
+these deficits by a factor of 2.2 at ten vertices and 100 at 2,916: the
+corollary holds everywhere on record and, at these sizes, says nothing a
+graph could violate. Lemma~5.1 and Corollary~5.2 are also Lean
+theorems~\leanref{reduction-theorem}~\leanref{degree-bound}, conditional
+on the two cited results the proof rests on, each a named proposition that
+no theorem asserts: the cubic base case $\pw\le N/6-1/6+\tau(N)$ for
+connected cubic graphs with a budget~$\tau$ \citep[Theorem~5]{FominHoie2006},
+whose bisection step is \citet{MonienPreis2006}, and the reduction lemma
+$\pw(H)\le\pw(r(H))+\rho(|V(H)|)$ with a budget~$\rho$
+\citep{KneisMolleRichterRossmanith2009}; $\tau$ is taken monotone and
+non-negative. With the budgets explicit the bound reads
+$\pw(G)\le\sum_v g(d_G(v))+\tau(n)+3\rho(n)+1$, $\rho$ once per use of the
+reduction lemma and $1$ for the deleted vertex of a basic component of the
+second kind; the paper's $\tau(n)+O(\log n)$ is this with $\rho=O(\log n)$.
+This is a formalisation of a published theorem with its lower-order term
+made explicit, not a new result. Theorem~5.3, the average-degree form,
+rests on an averaging lemma of \citet{EdwardsFarr2012} that we checked on
+the record and did not formalise.
+The prefix-at-$(1-\varepsilon)n$ variant of the
 empty-pair argument is published by \citet{CheungGirardet2020}, who reach
 pathwidth $(1-o(1))n$ for every $p\ge n^{-1+\varepsilon}$, still nothing at
 $p=c/n$. And a sharp constant for vertex separation is known for one random
@@ -608,7 +637,9 @@ narrow layout forces instead of its witnesses, once per separator or once per
 closed pair (the paragraph \emph{Why the first moment is loose} in
 Appendix~\ref{app:excess}), closes a third of it at $c=3$ and a tenth at $c=6$
 and $10$; the best published upper bound, the degree-sequence bound of
-\citet[Corollary~5.2]{EdwardsMcDermid2015}, gives $0.183$, $0.458$ and $0.656$
+\citet[Corollary~5.2]{EdwardsMcDermid2015}, verified on every proved graph of
+the record and formalised conditional on its two cited inputs as described
+above, gives $0.183$, $0.458$ and $0.656$
 on Poisson degrees at $c=3$, $6$ and $10$, so the provable sandwich on
 $\pw/n$ is $[0.037,0.183]$, $[0.182,0.458]$ and $[0.345,0.656]$ there, against
 fitted slopes of $0.099$, $0.268$ and $0.415$.

@@ -517,7 +517,7 @@ statement checked on small graphs before it is stated.
     5.3 (the averaging lemma is Edwards & Farr's; verified in item 01
     only); any value of `τ` or `ρ`.
 
-- [ ] **10 The write-up: the report's summary, the paper's paragraph, the survey's sentence, the `CLAUDE.md` paragraph.**
+- [x] **10 The write-up: the report's summary, the paper's paragraph, the survey's sentence, the `CLAUDE.md` paragraph.**
   - **Question.** D of the brief. One document a reader can follow, and the
     texts the owner will place.
   - **Method.** (a) `reports/edwards_mcdermid.md` §0, a two-page opening:

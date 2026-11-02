@@ -1,0 +1,123 @@
+# session it10 started 2026-11-02 06:15:59
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 10: the write-up. I'll read the plan, the report so far, and the paper's two citation sites, then write §0 and the drafted texts.
+  > $ date -u && uptime && git status --short | head && wc -l reports/edwards_mcdermid.md reports/edwards_mcdermid_plan.md && grep -n '^## \|^### ' reports/edwards_mc
+  > $ sed -n 1,300p reports/edwards_mcdermid.md
+  > $ sed -n 1,120p reports/edwards_mcdermid_plan.md
+  > $ grep -n 'EdwardsMcDermid2015' paper1/latex/*.tex paper1/latex/*.bib | head; echo ---; grep -n -i 'fomin\|kneis\|EdwardsFarr\|MonienPreis\|Monien' paper1/latex/r
+  > $ sed -n 1980,2031p reports/edwards_mcdermid.md; echo ---SURVEY---; grep -n '^## \|^### ' reports/random_graph_pathwidth_survey.md | head -60; grep -n -i 'edwards
+  > $ git -C /home/al/dev/MOSP-wt show appendix-picture:reports/random_graph_pathwidth_literature_2.md | grep -n -i 'edwards\|not verified\|poisson\|3\.3' | head -40;
+  > $ grep -n 'The excess phase diagram' CLAUDE.md | head -3; echo ---; grep -n 'leanentry' paper1/latex/sec9a_appendix_lean.tex | tail -15; echo ---; grep -n -c lean
+  > $ sed -n 395,430p paper1/latex/sec9e_appendix_random.tex; echo ======; sed -n 580,625p paper1/latex/sec9e_appendix_random.tex
+  > $ sed -n 141,175p paper1/latex/sec9a_appendix_lean.tex; echo =====; sed -n 765,800p paper1/latex/refs.bib; echo =====; sed -n 1,60p paper1/latex/check_refs.py
+  > $ git -C /home/al/dev/MOSP-wt show appendix-picture:reports/random_graph_pathwidth_literature_2.md | sed -n 710,735p; echo ====SURVEY 1.4====; sed -n 180,212p rep
+  > $ sed -n 1340,1400p CLAUDE.md | head -80; echo ====PLAN 0.3-0.4====; grep -n '^### 0\.' reports/edwards_mcdermid_plan.md; 
+  > $ grep -n 'Kill verdict' reports/edwards_mcdermid.md; echo ====; sed -n 795,853p reports/edwards_mcdermid.md; echo ====9.4====; sed -n 1894,1916p reports/edwards_
+  > $ cat Ralph_Loops/loop0012/iterations.md | sed -n '/\*\*11 /,$p' | head -40; echo ====; cat Ralph_Loops/loop0012/gate.py | head -60; pdfinfo paper1/latex/main.pdf
+  > $ sed -n 270,420p reports/edwards_mcdermid_plan.md
+  > $ cat paper1/latex/check_axioms.py | head -80; echo =====LEAN=====; sed -n 1,60p paper1/latex/check_lean.py; echo =====TEST=====; grep -n 'def test' tests/test_pa
+  > $ for n in exists_reduction_set one_add_potentialMinus_le SPReduces.isolateSet_comm potential_isolate pathwidth_le_histogram_of_hypotheses pathwidth_le_degreeSum_
+  > $ grep -n -i 'Edwards, K\|Farr\|Fomin, F\|Kneis\|Monien\|Preis' reports/scratch/edwards_mcdermid/em2015.txt | head -20; echo ====; grep -n -A3 '^\[8\]\|^\[12\]\|^
+  > $ sed -n 1,80p lean/MOSPFormalization/DegreeBound/Pathwidth.lean; echo ====; grep -n '^theorem\|^lemma\|^def' lean/MOSPFormalization/DegreeBound/Pathwidth.lean
+  > $ sed -n 420,500p reports/edwards_mcdermid.md; echo ====2.4====; sed -n 437,466p reports/edwards_mcdermid.md
+  > $ sed -n 564,580p paper1/latex/sec9e_appendix_random.tex; echo ====; grep -n 'app:random\|app:excess' paper1/latex/sec9a_appendix_lean.tex; echo ====; sed -n 1500
+  > $ sed -n 12,35p tests/test_paper1_latex.py; echo ====; python3 -c "
+import json;d=json.load(open('paper1/latex/data/doi_check.json'));print(len(d)); k=list(d)[-1]
+  > $ cd /tmp && for q in "Edwards Farr Improved upper bounds for planarization and series-parallelization of degree-bounded graphs" "Monien Preis Upper bounds on the
+  > $ sed -n 119,126p paper1/latex/sec9a_appendix_lean.tex | cut -c1-200; echo ====; git diff main appendix-picture --stat -- reports/random_graph_pathwidth_survey.md
+
+Context gathered. Now writing: the bib entries first (so the DOI fetch runs while I write §0), then the paper edits, then the report's §0 and §10.
+  > $ git diff main appendix-picture --stat -- reports/random_graph_pathwidth_survey.md; echo "---lean theorem counts incl. indented/attr:"; for f in lean/MOSPFormali
+  > $ git log main..appendix-picture --oneline | head; echo "--- merged?"; git branch --contains e054b8375 | head; echo ---; grep -n '\\label{sec:' paper1/latex/sec7_
+  > $ ls reports/random_graph_pathwidth_literature_2.md 2>&1; git log --oneline -1 -- reports/random_graph_pathwidth_literature_2.md; sed -n 724,731p reports/random_g
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9e_appendix_random.tex'; s=open(p).read()
+
+old1 = r'''Three more things are known. The best published upper bound on the pa
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9e_appendix_random.tex'; s=open(p).read()
+i = s.index('We did not take that bound on trust.')
+j = s.index('The prefix-at-$(
+  > $ pdftotext -layout /tmp/em_main_head.pdf /tmp/em_head.txt && python3 - <<'EOF'
+import re
+for name in ['/tmp/em_head.txt','/tmp/em_main.txt']:
+    t=open(name).re
+
+Trimming the paper paragraph to half a page and rebuilding; in parallel, reading the test file's tail so the new tests match its style.
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9e_appendix_random.tex'; s=open(p).read()
+i = s.index('We did not take that bound on trust.')
+j = s.index('The prefix-at-$(
+  > $ sed -n 1,40p tests/test_edwards_mcdermid.py; echo ....; tail -60 tests/test_edwards_mcdermid.py
+  > $ python3 - <<'EOF'
+t=open('/tmp/em_main.txt').read()
+i=t.index('We did not take that bound'); j=t.index('variant of the', i)
+seg=t[i:j]; print('paragraph: lines'
+  > $ python3 - <<'EOF'
+t=open('/tmp/em_main.txt').read()
+i=t.index('We did not take that bound'); j=t.index('variant of the', i)
+print(t[i-200:j+40])
+pages=t.split('
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9e_appendix_random.tex'; s=open(p).read()
+i = s.index('We did not take that bound on trust.')
+j = s.index('The prefix-at-$(
+  > $ python3 - <<'EOF'
+p='reports/random_graph_pathwidth_survey.md'; s=open(p).read()
+old1 = '''  DOI 10.1007/s00453-014-9883-7) give a degree-sequence bound that ma
+  > $ cat > /tmp/em_sec0.md <<'EOF'
+## 0. Summary (item 10, 2026-11-02)
+
+*Two pages for a reader who will not read §1–§9. Every number below has its
+section, its size
+  > $ (nice -n 19 make -C paper1/latex axioms 2>&1 | tail -3); (python3 -m paper1.latex.check_lean 2>&1 | tail -2); grep -n 'A\.70\|A\.71' /tmp/em_main.txt | head -3
+  > $ cat >> tests/test_edwards_mcdermid.py <<'EOF'
+
+
+# --- item 10: the write-up --------------------------------------------------
+# (`reports/edwards_mcdermid.md` 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ sed -n 1186,1190p tests/test_edwards_mcdermid.py && python3 - <<'EOF'
+p='tests/test_edwards_mcdermid.py'; s=open(p).read()
+old='''    assert "we found no prior 
+  > Monitor {"command": "until grep -qE \"GATE (PASS|FAIL)\" /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/10_writeup_gate.log 
+
+Gate is running (about 12 minutes). Meanwhile I'll write the PROGRESS.md entry and mark the item, leaving the gate line to fill in when the result arrives.
+  > $ mkdir -p reports/scratch/edwards_mcdermid/10_writeup && cat >> Ralph_Loops/loop0012/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 10 — 2026-11-02 06:16–GATE_END UTC — 
+
+The gate is still running; all edits are in place. Waiting for the monitor's event before finalising the PROGRESS line and moving the gate log into the item folder.
+
+# result: success in 736s, 43 turns, cost $6.48
+  > $ tail -5 reports/scratch/edwards_mcdermid/10_writeup_gate.log; ps -p 1418047 -o pid,etime,cmd | tail -1; uptime
+
+The gate's output is buffered until it exits (empty log, process alive at 10 minutes). Re-arming the watch.
+  > Monitor {"command": "until ! kill -0 1418047 2>/dev/null; do sleep 5; done; echo \"gate process ended\"; tail -12 /home/al/dev/M
+
+Waiting on the gate process; everything else for the item is done.
+
+# result: success in 13s, 3 turns, cost $9.31
+
+Gate passed. Finalising the PROGRESS line and moving the log into the item folder.
+  > $ mv reports/scratch/edwards_mcdermid/10_writeup_gate.log reports/scratch/edwards_mcdermid/10_writeup/gate.log && grep -E 'lake build|sorry|axiom|passed|Pages|GAT
+  > $ sed -i 's/06:16–06:48 UTC/06:16–06:41 UTC/' Ralph_Loops/loop0012/PROGRESS.md && grep -n 'Iteration 10 —' Ralph_Loops/loop0012/PROGRESS.md && grep -n 'Current:' 
+
+Item 10 is done and the gate passed. Item 11 remains unchecked, so no `LOOP_COMPLETE` line.
+
+**What was done**
+
+- **Report §0** (`reports/edwards_mcdermid.md`): a two-page summary before §1. It has Corollary 5.2 verbatim, the verification in one table per source, the Poisson and cubic measurements, the Lean chain as a 17-row table with every status the item named, the one-sentence dependency statement, the kill verdicts table, "What this is not" and "Open". §10 records what was placed where; the header and §9.7's forward references were updated, and §1–§9 were otherwise left as their items wrote them.
+- **Paper**: one paragraph in Appendix E's closing subsection, 21 typeset lines, under half a page. It states the corollary, the evaluation on 63,330 proved graphs with its slack, the vacuous explicit budget, the conditional Lean theorems with both named hypotheses, and the explicit lower-order term. Two Appendix A rows were placed (A.70, A.71). Four references were added with Crossref-checked DOIs. Lean-name and axiom checks pass.
+- **Pages: 74 before, 77 after.** The paragraph itself is under half a page; the growth is three few-line spills (references, the Appendix A table, the end of Appendix E), recorded as a layout matter.
+- **Survey**: the item assumed the branch `appendix-picture` had pending edits. It does not (nothing in `main..appendix-picture`, worktree clean), so the two sentences were applied to the survey and also recorded as drafted in §10.2.
+- **`CLAUDE.md` paragraph** drafted in §10.3, not applied. The two superseded lines of the second literature pass are listed in §10.4; that file is on `main`, so there is nothing to carry at a merge.
+- **Tests**: two new tests, 52 in the module. **Gate: PASS** (lake build ok, sorry 0, axiom 0, MOSP pytest 1,801 passed, pathwidth_solver pytest 123 passed, paper check ok). Log at `reports/scratch/edwards_mcdermid/10_writeup/gate.log`.
+
+**Next**: item 11, the reserve. No Lean gap was left by items 06–09, so the candidates are Fomin–Høie's Lemma 4 in Lean, the per-step `pw(H) ≤ pw(H') + 1`, or the Edwards–Farr averaging lemma checked on the record.
+
+# result: success in 25s, 3 turns, cost $9.59

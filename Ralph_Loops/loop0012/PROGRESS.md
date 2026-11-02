@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 9/11 SOLVED
+Current: 10/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -833,3 +833,83 @@ is cited, what the record says), the paper's two sentences around `\citet{Edward
 in `sec9e_appendix_random.tex` and the two Appendix A rows of §9.7 in `sec9a_appendix_lean.tex`
 (with the bib key), the survey's §1.4 sentence, and the `CLAUDE.md` paragraph drafted (not
 applied).
+
+---
+
+## Iteration 10 — 2026-11-02 06:16–06:41 UTC — item 10: the write-up — the report's summary, the paper's paragraph, the survey's sentences, the `CLAUDE.md` paragraph
+
+### Completed
+- **Report §0** (`reports/edwards_mcdermid.md`, two pages, before §1): Corollary 5.2
+  verbatim (p. 20) with what was done with it; the verification in one table per
+  source (63,330 proved graphs; max deficit 5 / 4.333 where `r(G) ≠ ∅`; share with
+  deficit `≤ 0` 61.8% main / 72.0% histogram; `B(n)` = 3.333, 4.333, 5.000 at
+  `n = 10, 100, 2,916` against `τ_FH` = 7.46, 43.24, 498.43); the Poisson check at
+  `n = 120` (within 0.012 at every `c`); the cubic measurement (3.833 exhaustive to
+  16, 4.5 on 42 certified to 120); Theorem 5.3's averaging lemma; **the Lean chain
+  as a table** (17 rows: statement, Lean names, file, status — *proved* ×7,
+  *proved, unconditional* for Theorem 3.2, *proved under (H1), (H3)* ×3, *cited,
+  named `Prop`* ×2 with the measured budgets, *verified numerically, not
+  formalised* for Theorem 5.3, *stated, not proved* for Fomin–Høie's Lemma 4 and
+  the sweep, *measured* for R6 and the reduct's uniqueness); the one-sentence
+  dependency statement; the kill verdicts in one table (items 01–10); "What this
+  is not" (six points) and "Open" (six, including the dataset's 112-vertex cubic
+  `solution` row as the one unsolved instance the loop's data surfaced). §10
+  records what was placed where. Header and §9.7's forward references updated;
+  §1–§9 otherwise untouched (§10.5 says why).
+- **The paper** (`paper1/latex/`): in `sec9e_appendix_random.tex`, one paragraph
+  after the `0.183, 0.458, 0.656` sentence of *What is checked, and what is known*
+  (**21 typeset lines, under half a page**: the corollary with `g`, `r(G)`, `τ`
+  named; the evaluation on 63,330 proved graphs with the slack and its two
+  record-holders; Fomin–Høie's budget vacuous by 2.2–100×; Lemma 5.1 and
+  Corollary 5.2 as Lean theorems conditional on the two cited results as named
+  propositions never asserted; the explicit `pw(G) ≤ Σ_v g(d_G(v)) + τ(n) + 3ρ(n) + 1`
+  and what each term counts; "a formalisation of a published theorem with its
+  lower-order term made explicit, not a new result"; Theorem 5.3 checked, not
+  formalised), and a clause in the subsection's closing sentence; the cover-law
+  sentence in the excess subsection unchanged. `sec9a_appendix_lean.tex`: §9.7's
+  two rows placed as **A.70** (`reduction-theorem`) and **A.71** (`degree-bound`);
+  `check_lean.py` 208 names cited, 0 not found; `make axioms` 577 theorems, 0
+  failures (the two `Prop`s are definitions and skipped). `refs.bib`: `FominHoie2006`,
+  `KneisMolleRichterRossmanith2009`, `EdwardsFarr2012` (Crossref's title
+  "degree-bounded graphs"; the manuscript's list says "average degree bounded"),
+  `MonienPreis2006`, every DOI checked (`make refs`: 85 entries, 73 with a DOI, 0
+  disagree; cache `data/doi_check.json` updated). **Pages 74 → 77**: the paragraph
+  is under half a page; the growth is three few-line spills (the references onto a
+  new page before Appendix A, the Appendix A table's last twelve lines, the end of
+  Appendix E) — layout for the final pass, not text. `make` and `make check` pass.
+- **The survey** (`reports/random_graph_pathwidth_survey.md`): the item's premise
+  that `appendix-picture` has edits pending is **false** (`git log main..appendix-picture`
+  empty; the worktree clean; the second pass and `literature_2.md` are on `main`),
+  so the two sentences were **applied** (§1.4 replacing "closed form was not read
+  (UNVERIFIED)"; §7(a)'s table note) and the "Not verified" line struck; all three
+  are recorded as drafted in report §10.2.
+- **`CLAUDE.md` paragraph** drafted in report §10.3 in the format of "The excess
+  phase diagram" (not applied). **`literature_2.md`**: on `main`, nothing to carry
+  at a merge; its two superseded "Not verified" entries (the displayed `=`; the
+  Poisson `L¹` assumption) and the "closed form not read" line listed in §10.4.
+- **Tests**: 2 new in `tests/test_edwards_mcdermid.py` (52 in all): §0's tables
+  and statuses and §10's drafted texts present, the phrase "we found no prior
+  statement" used once and only to disclaim; the two Appendix A rows with their
+  names, the paragraph's four citations and the explicit budget, its length, the
+  four bib keys with DOIs in the checked cache. `tests/test_paper1_latex.py`
+  passes (citation keys, DOIs, Lean names, axiom lines).
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,801 passed, 2
+  skipped, 1 xfailed in 407 s, the 2 new tests included; pathwidth_solver pytest 123
+  passed in 389 s; `make -C paper1/latex check` ok, 77 pages). Log: `reports/scratch/edwards_mcdermid/10_writeup/gate.log`.
+
+### Blockers
+None. Observations: the item's "(it does; say so …)" about the survey branch was
+written before loop0011's merge and no longer held — checked by `git log
+main..appendix-picture` before editing; `\citep[pre][post]{a,b}` with two keys
+renders the post-note after the second key, so the Monien–Preis citation is a
+separate `\citet`; `pdftotext -layout` splits "prefix-at-" across a page break,
+so measure a paragraph to "variant of the", not to "The prefix-at-".
+
+### Next
+Item 11 (reserve): by the item's order of value, (1) no Lean gap was left by
+06–09 (R3–R4, the regular case of S1 and C2 are all proved), so the choice is
+(2) Fomin–Høie's Lemma 4 in Lean for maximum degree 3 (report §4.3 states the
+transfer lemma and quotes Lemma 4; `tree_pathwidth_le_log` is its tree case), or
+(3) R6 `pw(H) ≤ pw(H') + 1` per operation with `pw(H) − pw(r(H))` measured to 10
+(cheap, unconditional, not the reduction lemma), or (4) the Edwards–Farr averaging
+lemma fetched (EJC 19(2) #P25, DOI 10.37236/2378, open) and checked on the record.

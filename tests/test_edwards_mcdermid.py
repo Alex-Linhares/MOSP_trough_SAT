@@ -1157,3 +1157,71 @@ def test_pathwidth_assembly_proved_names_are_theorems_in_the_lean_file():
     assert src.count(hyp) == 7
     assert "+ τ (Fintype.card V) + 2 * ρ (Fintype.card V) + 1" in src
     assert "+ τ (Fintype.card V) + 3 * ρ (Fintype.card V) + 1" in src
+
+
+# --- item 10: the write-up --------------------------------------------------
+# (`reports/edwards_mcdermid.md` §0 and §10; the paper's Appendix A rows and
+# Appendix E paragraph; four references with DOIs checked by `check_refs`.)
+
+REPORT = ITEM09.parents[2] / "edwards_mcdermid.md"
+LATEX = ITEM09.parents[3] / "paper1" / "latex"
+
+
+def test_report_summary_has_the_tables_and_the_drafted_texts():
+    """§0 carries the statement, the verification table, the Lean chain with every status
+    the item names, the kill table, what it is not and what is open; §10 carries the paper's
+    changes, the survey sentences, the CLAUDE.md paragraph and the literature-pass lines."""
+    text = REPORT.read_text()
+    sec0 = text[text.index("## 0. Summary"):text.index("## 1. Corollary 5.2")]
+    for needle in ("Corollary 5.2", "| source | graphs |", "| statement (paper) | Lean name(s) |",
+                   "**proved**", "**proved, unconditional**", "**proved under (H1), (H3)**",
+                   "**cited, named `Prop`**", "**verified numerically, not formalised**",
+                   "**stated, not proved**", "| item | kill criterion | verdict |",
+                   "### 0.5 What this is not", "### 0.6 Open",
+                   "τ(n) + 3ρ(n) + 1", "63,330", "61.8%", "3.833", "4.5"):
+        assert needle in sec0, needle
+    sec10 = text[text.index("## 10. The write-up"):]
+    for needle in ("### 10.2 For the survey", "### 10.3 For `CLAUDE.md`",
+                   "### 10.4 For `reports/random_graph_pathwidth_literature_2.md`",
+                   "Pages: 74 before, 77 after", "FominHoie2006", "KneisMolleRichterRossmanith2009",
+                   "EdwardsFarr2012", "MonienPreis2006"):
+        assert needle in sec10, needle
+    # the phrase appears once, and only to say it is claimed of nothing
+    assert sec0.count("we found no prior statement") == 1
+    assert "is claimed of\n  nothing in this loop" in sec0
+
+
+def test_paper_carries_the_rows_the_paragraph_and_the_references():
+    """Appendix A has the two rows with the Lean names of the final theorems and the two
+    named `Prop`s; Appendix E's paragraph cites the four references and states the explicit
+    budget; every key is in `refs.bib` with a DOI in the checked cache."""
+    import json
+    lean_tex = (LATEX / "sec9a_appendix_lean.tex").read_text()
+    for row, names in (("reduction-theorem", ("exists_reduction_set", "one_add_potentialMinus_le",
+                                               "SPReduces.isolateSet_comm", "potential_isolate")),
+                       ("degree-bound", ("pathwidth_le_histogram_of_hypotheses",
+                                         "pathwidth_le_degreeSum_of_hypotheses",
+                                         "pathwidth_le_potentialMinus_of_hypotheses",
+                                         "pathwidth_basic_le", "CubicPathwidthBound",
+                                         "ReductionPathwidthBound"))):
+        start = lean_tex.index("\\leanentry{" + row + "}")
+        cell = lean_tex[start:lean_tex.index("\\\\\n", start)]
+        for n in names:
+            assert n in cell.split("\\leannames{")[1], (row, n)
+    random_tex = (LATEX / "sec9e_appendix_random.tex").read_text()
+    par = random_tex[random_tex.index("We did not take that bound on trust."):]
+    par = par[:par.index("The prefix-at-")]
+    for needle in ("FominHoie2006", "KneisMolleRichterRossmanith2009", "EdwardsFarr2012",
+                   "MonienPreis2006", r"\leanref{reduction-theorem}", r"\leanref{degree-bound}",
+                   r"\tau(n)+3\rho(n)+1", "formalisation of a published theorem",
+                   "63,330", "61.8"):
+        assert needle in par, needle
+    assert len(par.splitlines()) <= 32  # under half a page when typeset
+    bib = (LATEX / "refs.bib").read_text()
+    cache = json.loads((LATEX / "data" / "doi_check.json").read_text())
+    for key, doi in (("FominHoie2006", "10.1016/j.ipl.2005.10.012"),
+                     ("KneisMolleRichterRossmanith2009", "10.1137/080715482"),
+                     ("EdwardsFarr2012", "10.37236/2378"),
+                     ("MonienPreis2006", "10.1016/j.jda.2005.12.009")):
+        assert "@article{" + key + "," in bib and doi in bib, key
+        assert doi in cache and cache[doi]["fetched"] >= "2026-11-02", key

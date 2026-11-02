@@ -272,6 +272,20 @@
   "title": "Treewidth computations II. Lower bounds",
   "year": 2011
  },
+ "10.1016/j.ipl.2005.10.012": {
+  "fetched": "2026-11-02",
+  "first_author": "Fomin",
+  "registry": "crossref",
+  "title": "Pathwidth of cubic graphs and exact algorithms",
+  "year": 2006
+ },
+ "10.1016/j.jda.2005.12.009": {
+  "fetched": "2026-11-02",
+  "first_author": "Monien",
+  "registry": "crossref",
+  "title": "Upper bounds on the bisection width of 3- and 4-regular graphs",
+  "year": 2006
+ },
  "10.1016/j.jda.2018.11.012": {
   "fetched": "2026-10-03",
   "first_author": "Mallach",
@@ -398,6 +412,13 @@
   "title": "On the Probable Performance of Heuristics for Bandwidth Minimization",
   "year": 1986
  },
+ "10.1137/080715482": {
+  "fetched": "2026-11-02",
+  "first_author": "Kneis",
+  "registry": "crossref",
+  "title": "A Bound on the Pathwidth of Sparse Graphs with Applications to Exact Algorithms",
+  "year": 2009
+ },
  "10.1137/120891265": {
   "fetched": "2026-11-01",
   "first_author": "Kolesnik",
@@ -453,6 +474,13 @@
   "registry": "crossref",
   "title": "A PageRank-based heuristic for the minimization of open stacks problem",
   "year": 2018
+ },
+ "10.37236/2378": {
+  "fetched": "2026-11-02",
+  "first_author": "Edwards",
+  "registry": "crossref",
+  "title": "Improved Upper Bounds for Planarization and Series-Parallelization of Degree-Bounded Graphs",
+  "year": 2012
  },
  "10.4230/lipics.cp.2025.5": {
   "fetched": "2026-10-03",
