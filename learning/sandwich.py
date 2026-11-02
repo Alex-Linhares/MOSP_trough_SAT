@@ -249,8 +249,34 @@ DEGREE_BOUND_PROVED = (
     "DegreeBound.half_le_g",
     "DegreeBound.g_div_lt_g_div",
 )
+#: loop0012 item 04 (`DegreeBound/CutLemma.lean`, namespace `MOSPFormalization`): the cut lemma
+#: — monotonicity and the relative deletion lemma, C1s (`pw ≤ max(pw G[S], pw G[Sᶜ]) + min |∂S| |∂Sᶜ|`,
+#: relative and global), C1 (the three-term form) and the iterated C2s / C2 on `BisectionTree`.
+CUT_LEMMA_PROVED = (
+    "boundaryTo_subset",
+    "boundary_subset",
+    "mem_boundaryTo",
+    "mem_boundary",
+    "boundary_eq_boundaryTo_compl",
+    "not_adj_of_mem_sdiff_boundaryTo",
+    "pathwidth_induce_mono",
+    "pathwidth_induce_univ",
+    "pathwidth_induce_le_induce_add_card_sdiff",
+    "pathwidth_induce_union_le_max_add_boundaryTo",
+    "pathwidth_induce_union_le_max_add_min",
+    "pathwidth_le_max_add_min_boundary",
+    "pathwidth_le_cut",
+    "bisectionTree_nil",
+    "bisectionTree_cons",
+    "pathwidth_induce_le_of_bisectionTree",
+    "pathwidth_le_of_bisectionTree",
+    "bisectionTree_of_bisectionTreeMax",
+    "pathwidth_le_of_bisectionTreeMax",
+    "pathwidth_le_of_bisectionTreeMax_two_mul",
+)
 #: Every proved name the axiom check asks for.
-ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
+ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
+              + CUT_LEMMA_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

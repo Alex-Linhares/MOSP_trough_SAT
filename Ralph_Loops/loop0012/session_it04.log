@@ -1,0 +1,112 @@
+# session it04 started 2026-11-02 02:26:14
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the Lean tools this item builds on.
+  > $ date -u && uptime && wc -l reports/edwards_mcdermid_plan.md reports/edwards_mcdermid.md && sed -n 1,200p reports/edwards_mcdermid_plan.md
+  > $ sed -n 200,617p reports/edwards_mcdermid_plan.md
+  > $ grep -n "^## \|^### " reports/edwards_mcdermid.md | head -60 && grep -n "C1\|C2\|cut lemma\|Cut" reports/edwards_mcdermid.md | head -60
+  > $ sed -n 295,420p reports/edwards_mcdermid.md && sed -n 501,545p reports/edwards_mcdermid.md
+  > $ cd /home/al/dev/MOSP/lean && ls MOSPFormalization/DegreeBound/ && sed -n 1,80p MOSPFormalization/TreeBound.lean && grep -n "theorem pathwidth_le_pathwidth_induc
+  > $ sed -n 100,140p MOSPFormalization/Minor.lean && sed -n 1,60p MOSPFormalization/Pathwidth.lean && sed -n 150,260p MOSPFormalization/TreeBound.lean && sed -n 330,
+  > $ sed -n 1,60p MOSPFormalization/DegreeBound/Weights.lean && grep -n "induce" MOSPFormalization/TreeBound.lean | grep -i "iso\|induce_induce\|induceInduce\|comap\
+  > $ cd /home/al/dev/MOSP && sed -n 1,80p reports/scratch/edwards_mcdermid/02_lemmas/check.py && grep -n "def pathwidth_induced\|def vertex_separation_brute\|def par
+  > $ grep -n "def parse_g6\|def check_cut\|C1\|C2\|def worker\|Pool(\|def main\|geng" reports/scratch/edwards_mcdermid/02_lemmas/check.py | head -40; echo ---; grep 
+  > $ sed -n 87,100p reports/scratch/edwards_mcdermid/02_lemmas/check.py && sed -n 355,425p reports/scratch/edwards_mcdermid/02_lemmas/check.py && sed -n 465,530p rep
+  > $ ls reports/scratch/edwards_mcdermid/03_weights/ && head -5 reports/scratch/edwards_mcdermid/03_weights/axiom_check.log && grep -n "axioms:" -A6 paper1/latex/Mak
+  > $ grep -n "^def bits\|^def degrees\|^__all__\|^from\|^import" learning/edwards_mcdermid.py | head -20 && tail -30 learning/edwards_mcdermid.py && grep -n "pathwid
+
+Context gathered. Now I'm adding the two small helpers to the Python module and writing the brute-force check script, which must run before the Lean statements are written.
+  > $ sed -n 33,60p learning/edwards_mcdermid.py
+  > $ python3 - <<'EOF'
+import re
+p = "learning/edwards_mcdermid.py"
+s = open(p).read()
+s = s.replace('''    "paper_choice", "algorithm_x", "pathwidth_induced",
+]''',
+  > $ cat > reports/scratch/edwards_mcdermid/04_cut/check.py <<'EOF'
+#!/usr/bin/env python3
+"""Brute-force check of every statement `DegreeBound/CutLemma.lean` makes
+
+
+While the check runs, I'll write the Lean file.
+  > $ cat > lean/MOSPFormalization/DegreeBound/CutLemma.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT license as 
+
+The check passed in 5 s with zero violations on all 2,283,228 disjoint pairs at 7 vertices and all 30,000 bisection checks. Now building the Lean file.
+  > $ cd /home/al/dev/MOSP/lean && time lake build MOSPFormalization.DegreeBound.CutLemma 2>&1 | tail -60
+  > $ python3 - <<'EOF'
+p = "MOSPFormalization/DegreeBound/CutLemma.lean"
+s = open(p).read()
+s = s.replace("""    intro x y hxy
+    exact Subtype.ext (Subtype.ext (co
+  > $ python3 - <<'EOF'
+p = "MOSPFormalization/DegreeBound/CutLemma.lean"
+s = open(p).read()
+s = s.replace("""    intro x y hxy
+    have hv : x.val.val = y.val.val :=
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p = "lean/MOSPFormalization/DegreeBound/CutLemma.lean"
+s = open(p).read()
+s = s.replace("""/-- The relative deletion l
+  > $ grep -oP "^(?:@\[simp\] )?theorem\s+\K[^\s:({\[]+" lean/MOSPFormalization/DegreeBound/CutLemma.lean > /tmp/cut_names.txt; cat /tmp/cut_names.txt | tr '\n' ' '; 
+  > $ sed -n 200,260p learning/sandwich.py && grep -n "ALL_PROVED" learning/sandwich.py && grep -n "def lean_audit\|def audit\|stage == \"lean\"\|def lean_check" -A25
+  > $ sed -n 480,530p learning/sandwich.py && grep -n "lean_audit\|--stage\|choices=" learning/sandwich.py | head -20 && grep -n "^def test_" tests/test_edwards_mcder
+  > $ sed -n 370,397p tests/test_edwards_mcdermid.py && sed -n 430,445p tests/test_edwards_mcdermid.py && cat reports/scratch/edwards_mcdermid/04_cut/nohup.out | tail
+  > $ python3 - <<'EOF'
+names = open("/tmp/cut_names.txt").read().split()
+# axiom_check.lean
+p = "paper1/axiom_check.lean"
+s = open(p).read()
+block = ("-- loop0012 it
+
+Tests pass (36, 3 new). Now the full `lake build` with the import wired in, plus the n≤8 check log in parallel.
+  > $ cd /home/al/dev/MOSP/lean && (time lake build 2>&1 | grep -v "^warning\|^Note\|^Hint\|^  \[apply\]\|^$\|deprecated\|^trace" | tail -8) > /home/al/dev/MOSP/repor
+  > $ cd /home/al/dev/MOSP && (cd lean && lake env lean ../paper1/axiom_check.lean 2>&1 | grep -A2 "pathwidth_le_cut'\|BisectionTree\|boundaryTo\|boundary_\|pathwidth
+  > $ (nohup nice -n 19 python3 Ralph_Loops/loop0012/gate.py > reports/scratch/edwards_mcdermid/04_cut/gate.log 2>&1 & echo "gate pid $!"); uptime; grep -A2 "max_add_
+
+All 20 new theorems report only the three standard axioms, and the n ≤ 8 check finished with zero violations. While the gate runs, I'll write the report section.
+  > $ python3 - <<'EOF'
+import json
+s=json.load(open('reports/scratch/edwards_mcdermid/04_cut/summary.json'))
+tot={}
+for n,d in s['per_n'].items():
+    for k,v in d['
+  > $ cat >> reports/edwards_mcdermid.md <<'EOF'
+
+## 4. Lean (v): the cut lemma and its iterated form (item 04, 2026-11-02)
+
+**File.** `lean/MOSPFormalization/DegreeB
+  > $ ps -o pid,etime,stat,args -p 1192243 | tail -1; ps --ppid 1192243 -o pid,etime,args | head -5; uptime
+  > $ rm -f reports/scratch/edwards_mcdermid/04_cut/nohup.out && python3 - <<'EOF'
+p = "Ralph_Loops/loop0012/iterations.md"
+s = open(p).read()
+old = "- [ ] **04 Lean 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The gate is the only thing outstanding. I'll wait on its PID with a bounded foreground poll, then read its log.
+  > $ i=0; while kill -0 1192243 2>/dev/null && [ $i -lt 1100 ]; do sleep 1; i=$((i+1)); done; echo "waited ${i}s"; ps -p 1192243 -o pid= ; cat reports/scratch/edward
+
+Gate passed. Filling in the two placeholders in PROGRESS.md and confirming the working tree has no stray files.
+  > $ date -u +%H:%M && python3 - <<'EOF'
+import time
+p = "Ralph_Loops/loop0012/PROGRESS.md"
+s = open(p).read()
+s = s.replace("GATE_END", time.strftime("%H:%M", time.
+
+Item 04 is done; seven items remain unchecked, so no completion marker. Nothing was committed, and nothing touched `solutions/`, `literature/`, `CLAUDE.md`, or existing Lean proofs.
+
+**What was done**
+
+- **`lean/MOSPFormalization/DegreeBound/CutLemma.lean`**: 20 theorems, no `sorry`, no `axiom`, each resting only on the three standard axioms. The cut lemma is proved in its separator form C1s, both relative (`pw G[S₁ ∪ S₂] ≤ max(pw G[S₁], pw G[S₂]) + min |∂(S₁→S₂)| |∂(S₂→S₁)|`) and global, with the item's three-term C1 as a corollary. The iterated form is a `Prop`-valued `BisectionTree` by recursion on the budget list, giving `pw G ≤ k + Σ b`. The item's factor-2 version is proved too, with the factor shown to be slack. The file is imported by the root module and the full `lake build` passes.
+- **Checked before stated**: zero violations on every graph to 8 vertices for the one-cut statements (83.4 M disjoint pairs, 826.9 M arbitrary pairs for the deletion lemma, 1.65 M partitions) and on 10,000 random bisection trees over 2,000 graphs at 10 to 12 vertices. One statement changed between the first run and the file: Lean's linter found the inclusion `T ⊆ U` in the deletion lemma unused, so the hypothesis was dropped and the check rerun on every pair before the statement was kept.
+- **Bookkeeping**: 20 `#print axioms` lines in `paper1/axiom_check.lean` (371 theorems checked, 0 failures), `CUT_LEMMA_PROVED` in `learning/sandwich.py`, four bit-mask helpers in `learning/edwards_mcdermid.py` with 3 new tests (36 pass), report §4 with the Fomin–Høie Lemma 4 quoted and the transfer lemma stated but not proved as an item-11 candidate, PROGRESS.md entry, item marked `[x]`.
+- **Gate: PASS** (MOSP pytest 1,785 passed in 273 s; pathwidth_solver 123 passed in 383 s; paper check ok at 74 pages).
+
+**Kill verdict**: not met. No counterexample; C2 fitted in Lean, so the fallback was unnecessary.
+
+**Next**: item 05, `DegreeBound/Potential.lean`, the potential and its one-deletion degree accounting.
+
+# result: success in 1184s, 36 turns, cost $9.04

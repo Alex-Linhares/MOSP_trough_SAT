@@ -1,0 +1,10 @@
+⚠ [1026/1145] Replayed MOSPFormalization.Encoding
+⚠ [2318/3308] Replayed MOSPFormalization.TreeBound
+⚠ [2326/3308] Replayed MOSPFormalization.Hypercube.Order
+✔ [3306/3308] Built MOSPFormalization.DegreeBound.CutLemma (908ms)
+✔ [3307/3308] Built MOSPFormalization (959ms)
+Build completed successfully (3308 jobs).
+
+real	0m2.803s
+user	0m2.474s
+sys	0m0.884s

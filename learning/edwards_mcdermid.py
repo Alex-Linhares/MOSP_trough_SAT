@@ -42,6 +42,8 @@ __all__ = [
     "support", "isolate", "isolate_set", "restrict", "step_vertices", "sp_step",
     "reduce_random", "global_min_degree", "F_global", "is_basic_component", "is_basic",
     "paper_choice", "algorithm_x", "pathwidth_induced",
+    # item 04: the cut lemma (`CutLemma.lean`) on bit masks
+    "parse_g6", "boundary_to", "separator_cut_bound", "bisection_bound",
 ]
 
 ALPHA = Fraction(1, 6)
@@ -567,3 +569,80 @@ def pathwidth_induced(adj: list[int], S: int) -> int:
             break
         T = (T - S) & S
     return f[S]
+
+
+# ----------------------------------------------------------------------------
+# item 04: the cut lemma and its iterated form, as `DegreeBound/CutLemma.lean`
+# states them (`reports/edwards_mcdermid.md` §4)
+# ----------------------------------------------------------------------------
+
+
+def parse_g6(line: str) -> tuple[int, list[int]]:
+    """A graph6 line (`nauty-geng` output) as `(n, adjacency bit masks)`."""
+    b = line.strip().encode()
+    n = b[0] - 63
+    bitlist: list[int] = []
+    for ch in b[1:]:
+        v = ch - 63
+        bitlist += [(v >> i) & 1 for i in range(5, -1, -1)]
+    adj = [0] * n
+    k = 0
+    for j in range(1, n):
+        for i in range(j):
+            if bitlist[k]:
+                adj[i] |= 1 << j
+                adj[j] |= 1 << i
+            k += 1
+    return n, adj
+
+
+def boundary_to(adj: list[int], A: int, B: int) -> int:
+    """`boundaryTo G A B` of `CutLemma.lean`: the vertices of `A` with a neighbour
+    in `B`, as a mask. With `B` the complement of `A` it is the boundary `∂A`."""
+    out = 0
+    for a in bits(A):
+        if adj[a] & B:
+            out |= 1 << a
+    return out
+
+
+def separator_cut_bound(adj: list[int], S1: int, S2: int, pw_of) -> int:
+    """C1s in its relative form (`pathwidth_induce_union_le_max_add_min`):
+    `max(pw(G[S1]), pw(G[S2])) + min(|∂(S1 → S2)|, |∂(S2 → S1)|)`, an upper bound
+    on `pw(G[S1 ∪ S2])` for disjoint `S1`, `S2`; `pw_of(S)` returns `pw(G[S])`."""
+    b1 = boundary_to(adj, S1, S2).bit_count()
+    b2 = boundary_to(adj, S2, S1).bit_count()
+    return max(pw_of(S1), pw_of(S2)) + min(b1, b2)
+
+
+def bisection_bound(adj: list[int], tree, pw_of, use_max: bool = False) -> tuple[int, list[int]]:
+    """`BisectionTree G S bs k` of `CutLemma.lean` evaluated on a concrete tree:
+    `tree` is a mask (a leaf) or a pair `(left, right)` of trees on disjoint
+    masks; returns `(k, bs)` with `k` the largest leaf pathwidth and `bs[i]` the
+    largest `min(|∂₁|, |∂₂|)` (or `max`, with `use_max`) over the splits at depth
+    `i`; the theorem gives `pw(G[S]) ≤ k + sum(bs)` (and `≤ k + 2 sum(bs)` for the
+    max form, the item's C2)."""
+    levels: list[int] = []
+    leaves: list[int] = []
+
+    def mask_of(t) -> int:
+        return t if isinstance(t, int) else mask_of(t[0]) | mask_of(t[1])
+
+    def walk(t, depth: int) -> None:
+        if isinstance(t, int):
+            leaves.append(pw_of(t))
+            return
+        S1, S2 = mask_of(t[0]), mask_of(t[1])
+        if S1 & S2:
+            raise ValueError("the two sides of a split must be disjoint")
+        b1 = boundary_to(adj, S1, S2).bit_count()
+        b2 = boundary_to(adj, S2, S1).bit_count()
+        b = max(b1, b2) if use_max else min(b1, b2)
+        while len(levels) <= depth:
+            levels.append(0)
+        levels[depth] = max(levels[depth], b)
+        walk(t[0], depth + 1)
+        walk(t[1], depth + 1)
+
+    walk(tree, 0)
+    return max(leaves), levels

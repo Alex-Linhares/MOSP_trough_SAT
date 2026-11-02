@@ -436,3 +436,94 @@ def test_degree_bound_proved_names_are_theorems_in_the_lean_file():
     for n in ("g_recurrence", "g_monotone", "g'_antitone_of_three_le", "one_sub_g_eq",
               "g_closed_form", "g_div_lt_g_div"):
         assert f"DegreeBound.{n}" in sw.DEGREE_BOUND_PROVED
+
+
+# ---------------------------------------------------------------------------
+# item 04: the cut lemma helpers and `lean/MOSPFormalization/DegreeBound/CutLemma.lean`
+# ---------------------------------------------------------------------------
+
+from learning.edwards_mcdermid import (  # noqa: E402
+    bisection_bound, boundary_to, parse_g6, pathwidth_induced, separator_cut_bound,
+)
+
+CUT_LEMMA_LEAN = WEIGHTS_LEAN.parent / "CutLemma.lean"
+
+
+def test_parse_g6_and_boundary_to():
+    n, adj = parse_g6("F]~vo")           # the item-02 tie-break graph, 7 vertices
+    assert n == 7 and sum(a.bit_count() for a in adj) % 2 == 0
+    assert all(not (adj[v] >> v) & 1 for v in range(n))
+    assert all(((adj[u] >> v) & 1) == ((adj[v] >> u) & 1) for u in range(n) for v in range(n))
+    A, B = 0b0001111, 0b1110000
+    bd = boundary_to(adj, A, B)
+    assert bd & ~A == 0
+    assert all(bool(adj[a] & B) == bool((bd >> a) & 1) for a in range(4))
+    assert boundary_to(adj, A, 0) == 0
+
+
+def test_relative_cut_lemma_and_bisection_on_random_graphs():
+    """C1s in its relative form (disjoint `S1`, `S2` not covering `V`), the relative
+    deletion lemma for every pair `(T, U)`, and the `BisectionTree` bound at depth 2
+    and 3 — the forms `CutLemma.lean` proves — on random graphs to 9 vertices."""
+    rng = random.Random(11)
+    for _ in range(60):
+        n = rng.randint(2, 9)
+        adj = from_networkx(nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6)))
+        full = (1 << n) - 1
+        cache: dict[int, int] = {}
+
+        def pw_of(S: int) -> int:
+            if S not in cache:
+                cache[S] = pathwidth_induced(adj, S)
+            return cache[S]
+
+        for _ in range(12):
+            S1 = rng.randrange(0, 1 << n)
+            S2 = rng.randrange(0, 1 << n) & ~S1
+            assert pw_of(S1 | S2) <= separator_cut_bound(adj, S1, S2, pw_of)       # C1s relative
+            T, U = rng.randrange(0, 1 << n), rng.randrange(0, 1 << n)
+            assert pw_of(U) <= pw_of(T) + (U & ~T).bit_count()                     # deletion, any T, U
+            if T & ~U == 0:
+                assert pw_of(T) <= pw_of(U)                                         # monotonicity
+        verts = list(range(n))
+
+        def tree(vs: list[int], depth: int):
+            if depth == 0 or len(vs) <= 1:
+                m = 0
+                for v in vs:
+                    m |= 1 << v
+                return m
+            rng.shuffle(vs)
+            h = len(vs) // 2
+            return (tree(vs[:h], depth - 1), tree(vs[h:], depth - 1))
+
+        for depth in (2, 3):
+            t = tree(list(verts), depth)
+            k, bs = bisection_bound(adj, t, pw_of)
+            assert pw_of(full) <= k + sum(bs)                                       # C2s
+            km, bsm = bisection_bound(adj, t, pw_of, use_max=True)
+            assert k + sum(bs) <= km + sum(bsm) <= km + 2 * sum(bsm)
+            assert pw_of(full) <= km + 2 * sum(bsm)                                 # C2 (item's form)
+
+
+def test_cut_lemma_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `CutLemma.lean` is declared there; the
+    file has no `sorry` and no `axiom`; the root module imports it; and
+    `paper1/axiom_check.lean` prints the axioms of every one."""
+    import learning.sandwich as sw
+    src = CUT_LEMMA_LEAN.read_text()
+    declared = set(re.findall(r"^(?:@\[simp\] )?theorem\s+([^\s:({\[]+)", src, re.M))
+    assert set(sw.CUT_LEMMA_PROVED) == declared, set(sw.CUT_LEMMA_PROVED) ^ declared
+    assert set(sw.CUT_LEMMA_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (CUT_LEMMA_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.CutLemma\n" in root
+    axioms = (CUT_LEMMA_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.CUT_LEMMA_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("pathwidth_le_max_add_min_boundary", "pathwidth_le_cut",
+              "pathwidth_le_of_bisectionTree", "pathwidth_le_of_bisectionTreeMax_two_mul"):
+        assert n in sw.CUT_LEMMA_PROVED

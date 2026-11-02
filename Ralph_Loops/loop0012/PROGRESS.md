@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 3/11 SOLVED
+Current: 4/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -299,3 +299,78 @@ Item 04: `DegreeBound/CutLemma.lean` — `boundary G S`,
 and `pathwidth_le_of_injective`; `pathwidth_le_cut` (C1); `BisectionTree` with
 `pathwidth_le_of_bisectionTree` (C2s) and the factor-2 corollary (C2); checked
 on every partition of every graph to 9 in item 02 (71,967,757).
+
+---
+
+## Iteration 4 — 2026-11-02 02:26–02:45 UTC — item 04: Lean (v), the cut lemma and its iterated form
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/CutLemma.lean`** (namespace
+  `MOSPFormalization`; independent of (H1), (H3)): `boundaryTo G A B`,
+  `boundary G A`; **20 theorems, no `sorry`, no `axiom`**, every one
+  `[propext, Classical.choice, Quot.sound]`: `pathwidth_induce_mono`,
+  `pathwidth_induce_univ`, `pathwidth_induce_le_induce_add_card_sdiff`
+  (`pw G[U] ≤ pw G[T] + |U ∖ T|`, any `T, U`),
+  `pathwidth_induce_union_le_max_add_boundaryTo`,
+  `pathwidth_induce_union_le_max_add_min` (**C1s, relative**),
+  `pathwidth_le_max_add_min_boundary` (**C1s**), `pathwidth_le_cut` (**C1**,
+  the item's three-term form, `− 1` in `ℕ`), `BisectionTree` /
+  `BisectionTreeMax` (`Prop` by recursion on the budget list, the item's
+  "C1 applied `h` times" form), `pathwidth_induce_le_of_bisectionTree`,
+  `pathwidth_le_of_bisectionTree` (**C2s**, `≤ k + Σ b`),
+  `bisectionTree_of_bisectionTreeMax`, `pathwidth_le_of_bisectionTreeMax`
+  (`≤ k + Σ b` with the larger boundary budgeted),
+  `pathwidth_le_of_bisectionTreeMax_two_mul` (**C2**, the item's `k + 2 Σ b`;
+  the factor 2 is slack), and the membership lemmas. Imported by
+  `lean/MOSPFormalization.lean`; builds in 0.9 s; `lake build` passes
+  (`reports/scratch/edwards_mcdermid/04_cut/lake_build.log`).
+- **Checked before stated** (`04_cut/check.py`, `check.log`, `summary.json`;
+  33 s on 8 workers at load < 2): every graph on 1–8 vertices (13,598; the
+  item asked for 7) — monotonicity and C1r1/C1r (relative C1s) on all
+  83,408,340 ordered disjoint pairs, the deletion lemma on all 826,889,252
+  ordered pairs `(T, U)`, C1s and C1 on all 1,652,749 partitions — and the
+  three bisection forms on 10,000 random balanced trees (depth 2 and 3) over
+  2,000 random graphs at 10–12 vertices. **Kill checks: none fired**, 0
+  violations. C1s tight on 13.5% of partitions, slack ≤ 4 at `n ≤ 8`.
+- **Three choices beyond §2.6** (report §4.2): C1s proved in the relative
+  form so the iteration recurses on `Finset V` with no nested `induce`; the
+  deletion lemma's inclusion `T ⊆ U` dropped after Lean's linter found it
+  unused (the check was extended to every pair and rerun before the
+  statement was kept); `BisectionTreeMax` gives `k + Σ b`, the item's factor
+  2 is slack.
+- **Axiom check**: 20 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`04_cut/axiom_check.log`; `make -C paper1/latex axioms`: 371 theorems
+  checked, 0 failures). `CUT_LEMMA_PROVED` (20 names) folded into
+  `learning.sandwich.ALL_PROVED`.
+- **Code**: `parse_g6`, `boundary_to`, `separator_cut_bound`,
+  `bisection_bound` in `learning/edwards_mcdermid.py`; 3 new tests in
+  `tests/test_edwards_mcdermid.py` (36 in all: the helpers, the relative
+  forms and the bisection bound on random graphs to 9, the Lean names
+  declared / imported / audited, no `sorry`, no `axiom`).
+- **Report**: `reports/edwards_mcdermid.md` §4 (the check's counts, the 20
+  statements with their proofs, the Fomin–Høie paragraph with Lemma 4 quoted
+  and the transfer lemma stated and **not** proved — a candidate for item
+  11 — kill verdict, regenerate commands, what it does not claim).
+- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,785
+  passed, 2 skipped, 1 xfailed in 273 s, the 3 new tests included;
+  pathwidth_solver pytest 123 passed in 383 s; `make -C paper1/latex check` ok,
+  74 pages, the paper untouched). Log: `04_cut/gate.log`.
+
+### Blockers
+None. Notes for later items: `congrArg Subtype.val hxy` must be elaborated
+without an expected type (a `have := …` then `Subtype.ext`), or Lean unifies
+the expected `x.val.val = y.val.val` against the wrong level and reports
+"expected `↑x = ↑y`"; the lattice lemma is `disjoint_compl_right`, not
+`Finset.disjoint_compl_right`; `omega` handles `min`/`max` on `ℕ`
+directly, which closes C1, C1s and the C2 step from the one-sided bounds.
+For item 09, the relative C1s and `pathwidth_induce_univ` are the forms to
+use (`G[S₁ ∪ S₂]`, `boundaryTo`), and `pathwidth_induce_le_induce_add_card_sdiff`
+is the per-component deletion lemma it will need for `G − X`.
+
+### Next
+Item 05: `DegreeBound/Potential.lean` — `f`, `minDeg`, `fminus`, `F`;
+`degree_isolate`, `f_isolate` (P1), `f_isolate_le_sub_one` (P2),
+`f_isolate_regular` (P2r), `fminus_le_F`, `fminus_eq_F_of_connected`,
+`fminus_eq_sum_components`, `fminus_component_nonneg`, `fminus_cubic`
+(checked in item 02: P1 on 2,579,255 (graph, `w`), P2 on 163,265, P2r on
+501, B1 on 290,103 components).

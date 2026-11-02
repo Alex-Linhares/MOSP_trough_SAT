@@ -434,3 +434,26 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.DegreeBound.g_closed_form
 #print axioms MOSPFormalization.DegreeBound.half_le_g
 #print axioms MOSPFormalization.DegreeBound.g_div_lt_g_div
+-- loop0012 item 04: the cut lemma and its iterated form (`DegreeBound/CutLemma.lean`): the
+-- relative deletion and monotonicity lemmas, C1s (separator form, relative and global), C1 (the
+-- item's three-term form), and C2s / C2 (`BisectionTree`, `BisectionTreeMax`); no hypothesis used
+#print axioms MOSPFormalization.boundaryTo_subset
+#print axioms MOSPFormalization.boundary_subset
+#print axioms MOSPFormalization.mem_boundaryTo
+#print axioms MOSPFormalization.mem_boundary
+#print axioms MOSPFormalization.boundary_eq_boundaryTo_compl
+#print axioms MOSPFormalization.not_adj_of_mem_sdiff_boundaryTo
+#print axioms MOSPFormalization.pathwidth_induce_mono
+#print axioms MOSPFormalization.pathwidth_induce_univ
+#print axioms MOSPFormalization.pathwidth_induce_le_induce_add_card_sdiff
+#print axioms MOSPFormalization.pathwidth_induce_union_le_max_add_boundaryTo
+#print axioms MOSPFormalization.pathwidth_induce_union_le_max_add_min
+#print axioms MOSPFormalization.pathwidth_le_max_add_min_boundary
+#print axioms MOSPFormalization.pathwidth_le_cut
+#print axioms MOSPFormalization.bisectionTree_nil
+#print axioms MOSPFormalization.bisectionTree_cons
+#print axioms MOSPFormalization.pathwidth_induce_le_of_bisectionTree
+#print axioms MOSPFormalization.pathwidth_le_of_bisectionTree
+#print axioms MOSPFormalization.bisectionTree_of_bisectionTreeMax
+#print axioms MOSPFormalization.pathwidth_le_of_bisectionTreeMax
+#print axioms MOSPFormalization.pathwidth_le_of_bisectionTreeMax_two_mul

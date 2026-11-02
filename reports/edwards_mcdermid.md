@@ -695,3 +695,158 @@ real-interpolated `g` (Theorem 5.3's form is not formalised), or about graphs:
 this file is arithmetic in `ℚ` and nothing in it mentions a `SimpleGraph`.
 The axiom lines certify Lean's kernel check of these 44 statements; they say
 nothing about the two cited hypotheses (H1), (H3), which enter at item 09.
+
+## 4. Lean (v): the cut lemma and its iterated form (item 04, 2026-11-02)
+
+**File.** `lean/MOSPFormalization/DegreeBound/CutLemma.lean`, namespace
+`MOSPFormalization` (not `DegreeBound`: nothing in it is specific to the
+Edwards–McDermid chain), imported by `lean/MOSPFormalization.lean`; 2
+definitions (`boundaryTo`, `boundary`), 2 `Prop`-valued recursive
+definitions (`BisectionTree`, `BisectionTreeMax`), **20 theorems, no `sorry`,
+no `axiom`**, every one `[propext, Classical.choice, Quot.sound]`
+(`reports/scratch/edwards_mcdermid/04_cut/axiom_check.log`; `make -C
+paper1/latex axioms`: 371 theorems checked, 0 failures). Builds in 0.9 s;
+`lake build` passes (`04_cut/lake_build.log`). Independent of both named
+hypotheses (H1), (H3): these are tools for every finite graph.
+
+**Regenerate.** `cd lean && lake build`; `make -C paper1/latex axioms`;
+`nice -n 19 python3 reports/scratch/edwards_mcdermid/04_cut/check.py --max-n 8 --workers 8`
+(33 s on 8 workers at load < 2; `--max-n 7` is the item's range and takes 5 s).
+
+**Size range.** The brute-force check: every graph on 1–8 vertices from
+`nauty-geng` (13,598 graphs) for the one-cut statements — the item asked
+for 7, and 8 cost 28 s more — and 2,000 random `G(n, p)` graphs at
+`n = 10, 11, 12` (`p` uniform in `[0.15, 0.85]`, seed 4) with 10,000 random
+balanced bisection trees (four of depth 2 and one of depth 3 per graph) for
+the iterated statements. The lemmas are for every graph.
+
+### 4.1 Checked before stated (`04_cut/check.py`, `check.log`, `summary.json`)
+
+Every statement in the form Lean proves it, on bit masks with `pw(G[S])` by
+the subset DP memoised over all `2^n` subsets of each graph. **Kill checks:
+none fired** — 0 violations in all of:
+
+| statement | Lean name | checked on (every graph to 8) |
+|---|---|---|
+| M: `T ⊆ U ⇒ pw(G[T]) ≤ pw(G[U])` | `pathwidth_induce_mono` | 83,408,340 pairs `T ⊆ U` |
+| L1g: `pw(G[U]) ≤ pw(G[T]) + |U ∖ T|`, **any** `T, U` | `pathwidth_induce_le_induce_add_card_sdiff` | 826,889,252 ordered pairs (all `4^n`) |
+| C1r1: `pw(G[S₁ ∪ S₂]) ≤ max(pw G[S₁], pw G[S₂]) + |∂(S₁ → S₂)|`, `S₁ ∩ S₂ = ∅` | `pathwidth_induce_union_le_max_add_boundaryTo` | 83,408,340 ordered disjoint pairs (all `3^n`) |
+| C1r: the same with `min(|∂(S₁ → S₂)|, |∂(S₂ → S₁)|)` | `pathwidth_induce_union_le_max_add_min` | the same 83,408,340 |
+| C1s: `pw(G) ≤ max(pw G[S], pw G[Sᶜ]) + min(|∂S|, |∂Sᶜ|)` | `pathwidth_le_max_add_min_boundary` | 1,652,749 partitions (each once) |
+| C1: `pw(G) ≤ max(pw G[S] + |∂S|, pw G[Sᶜ] + |∂Sᶜ|, |∂S| + |∂Sᶜ| − 1)`, and C1s ≤ C1 | `pathwidth_le_cut` | the same 1,652,749 |
+| C2s: `BisectionTree G univ bs k ⇒ pw(G) ≤ k + Σ bs` | `pathwidth_le_of_bisectionTree` | 10,000 trees on 2,000 graphs at 10–12 |
+| C2m: `BisectionTreeMax G univ bs k ⇒ pw(G) ≤ k + Σ bs` | `pathwidth_le_of_bisectionTreeMax` | the same 10,000 |
+| C2: `… ⇒ pw(G) ≤ k + 2 Σ bs` (the item's form) | `pathwidth_le_of_bisectionTreeMax_two_mul` | the same 10,000 |
+
+Two measurements beside the checks. **C1s is tight** (`= pw`) on 222,486 of
+the 1,652,749 partitions (13.5%; 9.5% on the item-02 sweep to 9, where the
+denominators are dominated by the 9-vertex graphs); its slack is at most 4 at
+`n ≤ 8` (2,502 partitions at `n = 8`, none below 8). The **C2s slack**
+`k + Σ b − pw` on the 10,000 random trees runs 0–8 (median 4): a random
+balanced bisection of a random graph is a poor separator, which is the
+point of Monien–Preis cuts and not of this lemma.
+
+One statement changed between the first run and the file: the deletion lemma
+was checked for `T ⊆ U` (as §2.6 listed it) and Lean's linter reported the
+inclusion unused in the proof — `U ∩ T` embeds in `G[T]` and `U ∖ (U ∩ T) = U ∖ T`
+whatever `T` is — so the hypothesis was dropped, the check extended to every
+ordered pair (L1g, 826,889,252 pairs, 0 violations) and the file built again
+before the statement was kept. The rule "checked before stated" was honoured
+in that order.
+
+### 4.2 The statements and their proofs
+
+`G : SimpleGraph V` on a finite `V` with decidable equality and adjacency;
+`G[S]` is `G.induce ↑S` for `S : Finset V`.
+
+| Lean name | statement | proof |
+|---|---|---|
+| `boundaryTo G A B` | `A.filter (fun a => ∃ b ∈ B, G.Adj a b)` | definition; `boundaryTo_subset`, `mem_boundaryTo` |
+| `boundary G A` | `A.filter (fun a => ∃ b, b ∉ A ∧ G.Adj a b)` (the item's `∂A`) | definition; `boundary_subset`, `mem_boundary`; `boundary_eq_boundaryTo_compl`: `boundary G A = boundaryTo G A Aᶜ` |
+| `not_adj_of_mem_sdiff_boundaryTo` | `a ∈ A ∖ ∂(A → B)`, `b ∈ B` ⇒ `¬ G.Adj a b` | unfolding |
+| `pathwidth_induce_mono` | `T ⊆ U → pw G[T] ≤ pw G[U]` | `pathwidth_le_of_injective` on Mathlib's `induceHomOfLE` |
+| `pathwidth_induce_univ` | `pw G[univ] = pw G` | `pathwidth_eq_of_iso (induceUnivIso G)` |
+| `pathwidth_induce_le_induce_add_card_sdiff` | `pw G[U] ≤ pw G[T] + |U ∖ T|` for any `T, U` | `pathwidth_le_pathwidth_induce_add_card_compl` inside `G[U]` at `S = {x ∈ U : x ∈ T}`; `G[U][S]` embeds in `G[T]` by `x ↦ x.val.val`; `Sᶜ` injects into `U ∖ T` (`Finset.card_le_card_of_injOn`) |
+| `pathwidth_induce_union_le_max_add_boundaryTo` (C1r1) | disjoint `S₁, S₂`: `pw G[S₁ ∪ S₂] ≤ max (pw G[S₁]) (pw G[S₂]) + |∂(S₁ → S₂)|` | delete `B = ∂(S₁ → S₂)`: `T = (S₁ ∖ B) ∪ S₂`, `(S₁ ∪ S₂) ∖ T ⊆ B`; `pathwidth_induce_union_le_max` on `S₁ ∖ B`, `S₂` (no edge between: `not_adj_of_mem_sdiff_boundaryTo`); `pw G[S₁ ∖ B] ≤ pw G[S₁]`; `omega` |
+| `pathwidth_induce_union_le_max_add_min` (**C1s, relative**) | `… + min |∂(S₁ → S₂)| |∂(S₂ → S₁)|` | C1r1 both ways (`Finset.union_comm`), `omega` |
+| `pathwidth_le_max_add_min_boundary` (**C1s**) | `pw G ≤ max (pw G[S]) (pw G[Sᶜ]) + min |∂S| |∂Sᶜ|` | the relative form at `S, Sᶜ`; `Finset.union_compl`, `pathwidth_induce_univ`, `boundary_eq_boundaryTo_compl`, `compl_compl` |
+| `pathwidth_le_cut` (**C1**) | `pw G ≤ max (max (pw G[S] + |∂S|) (pw G[Sᶜ] + |∂Sᶜ|)) (|∂S| + |∂Sᶜ| − 1)` in `ℕ` | C1s and `omega` (`max a b + min c d ≤ max (a + c) (b + d)`); the third term never binds and is kept because Fomin–Høie's `P₁, P₂, P₃` shape has it |
+| `BisectionTree G S bs k` | `[]`: `pw G[S] ≤ k`; `b :: bs`: `∃ S₁ S₂, S₁ ∪ S₂ = S ∧ Disjoint S₁ S₂ ∧ min |∂(S₁ → S₂)| |∂(S₂ → S₁)| ≤ b ∧ BisectionTree S₁ bs k ∧ BisectionTree S₂ bs k` | `Prop` by recursion on the budget list (the "C1 applied `h` times" form the item allows); `bisectionTree_nil`, `bisectionTree_cons` |
+| `pathwidth_induce_le_of_bisectionTree` | `BisectionTree G S bs k → pw G[S] ≤ k + bs.sum` | induction on `bs` generalising `S`, the step by the relative C1s and `omega` — no nested `induce` anywhere |
+| `pathwidth_le_of_bisectionTree` (**C2s**) | `BisectionTree G univ bs k → pw G ≤ k + bs.sum` | the above at `univ` |
+| `BisectionTreeMax`, `bisectionTree_of_bisectionTreeMax` | the same with `max … ≤ b`; implies `BisectionTree` | `min_le_max` |
+| `pathwidth_le_of_bisectionTreeMax` | `BisectionTreeMax G univ bs k → pw G ≤ k + bs.sum` | composition |
+| `pathwidth_le_of_bisectionTreeMax_two_mul` (**C2**, the item's form) | `… → pw G ≤ k + 2 * bs.sum` | the factor 2 is slack |
+
+Three choices beyond §2.6, each the smaller thing. (i) **C1s is proved in
+the relative form** (`S₁ ∪ S₂` with `boundaryTo`, no complement), and the
+global form is its corollary at `(S, Sᶜ)`: the iterated form then recurses
+on `Finset V` with the one graph `G`, and the nested `G[S][S₁]` that §2.6
+anticipated ("`induce_induce` or `pathwidth_eq_of_iso`") never appears. The
+only nested `induce` in the file is inside the deletion lemma, where
+`pathwidth_le_of_injective` takes a hand-written injective homomorphism.
+(ii) **The deletion lemma needs no inclusion** (§4.1). (iii)
+**`BisectionTreeMax` gives `k + Σ b`, not `k + 2 Σ b`**: budgeting the larger
+boundary budgets the smaller, so the item's factor 2 is pure slack; both
+forms are in the file so that the item's text has its lemma. Mathlib
+supplied `induceHomOfLE` and `induceUnivIso`; the project's `TreeBound.lean`
+supplied the two lemmas C1s rests on, as §2.1 (2) said.
+
+### 4.3 What Fomin–Høie's one-level argument adds (stated, not proved)
+
+Iterating C2s with Monien–Preis cuts of `(1/6 + ε)` of each piece sums to
+`n/3`, not `n/6` (plan §0.4 (3)). Fomin & Høie (2006, Theorem 5) reach
+`(1/6 + ε) n` for maximum degree 3 with **one** level and two ingredients
+that are not in `CutLemma.lean`, quoted from the plan's §0.2 (their IPL
+paper is held):
+
+> **Lemma 4** (Fomin & Høie 2006). Let `G` be a graph on `n` vertices and with
+> maximum vertex degree at most 3. Then for any vertex subset `X ⊆ V(G)` there
+> is a path decomposition `P = (X₁, X₂, …, X_r)` of `G` of width at most
+> `max{|X|, n/3 + 1} + (2/3) log₃ n + 1` and such that `X = X_r`.
+
+With a bisection `V₁, V₂` of at most `(1/6 + ε/2) n` cut edges (Monien &
+Preis, their Theorem 2) they take Lemma 4 on `G[V₁]` with `X = ∂V₁` as the
+*last* bag and on `G[V₂]` with `X = ∂V₂` as the *first* bag — each of width
+at most `max{(1/6 + ε/2) n, n/6 + 1} + (2/3) log₃ n + 1 ≤ (1/6 + ε) n` — and
+join them through a **sweep** `P₂ = (B₁, …, B_r)` of `G[∂V₁ ∪ ∂V₂]` with
+`B₁ = ∂V₁`, `B_r = ∂V₂`: at an odd `j` pick `v ∈ B_j ∖ ∂V₂`, put
+`B_{j+1} = B_j ∪ (N(v) ∩ ∂V₂)` and `B_{j+2} = B_{j+1} ∖ {v}`; counting the
+vertices of `∂V₁` by their number `m` of neighbours in `∂V₂`
+(`|D₁| + 2|D₂| + 3|D₃| ≤ (1/6 + ε) n`), every bag stays within
+`|D₂| + 2|D₃| + 1` of `|B₁|`, so `|B_j| ≤ (1/6 + ε) n + 1`. In the vocabulary
+of this file, the sweep is a path decomposition of `G[∂V₁ ∪ ∂V₂]` whose bags
+are at most `|∂V₁| + 1`, i.e. the middle bag `∂V₁ ∪ ∂V₂` of C1's third term
+is replaced by a sequence of bags each of size about `|∂V₁|`, and Lemma 4
+makes the boundary the end bag of each side so that the three pieces
+concatenate. As a lemma in the file's terms:
+
+> **Lemma (Fomin–Høie transfer; stated, not proved).** For `G` of maximum
+> degree 3 and a partition `V = V₁ ⊔ V₂` with `c` cut edges,
+> `pw(G) ≤ max{c, n/6 + 1} + (2/3) log₃ n + 2`.
+
+Its proof needs Lemma 4 (a decomposition of a degree-3 graph with a
+prescribed end bag, whose `n/3 + 1` and `(2/3) log₃ n` come from Theorem 3,
+`pw(T) ≤ log₃ n` for trees — `tree_pathwidth_le_log` in `TreeBound.lean` is
+that tree case) and the sweep. Neither is attempted here; both are a
+candidate for item 11. C1 and C2 are what a general graph gives with no
+degree bound; they are not how Fomin–Høie reach `n/6`.
+
+### 4.4 Kill verdict, and what this does not claim
+
+**Kill verdict: not met.** No counterexample in the check (every graph to 8
+vertices for the one-cut statements, 10,000 random trees for the iterated
+ones); C2 fitted in Lean in the list-indexed form, so the fallback "C1 alone,
+C2 stated in the report" was not needed.
+
+**Does not claim.** Fomin–Høie's `n/6` (§4.3: Lemma 4 and the sweep, not
+C1–C2); anything about bisection *widths* of random graphs (the C2s slack of
+§4.1 is on random balanced partitions, which are not good separators, and
+says nothing about the best ones); that the cut lemma is new (it is the
+standard separator argument — "we found no prior statement" of the relative
+`min` form with `boundaryTo` is not claimed either, since it was not
+searched for); anything about the two hypotheses (H1), (H3), which enter at
+item 09. The axiom lines certify Lean's kernel check of these 20 statements
+on every finite graph; the brute-force counts are the record of what was
+checked before they were stated and are not evidence beyond 8 (one-cut) or
+12 (iterated) vertices.

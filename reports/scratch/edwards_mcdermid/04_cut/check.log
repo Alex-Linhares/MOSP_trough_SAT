@@ -1,0 +1,12 @@
+# item 04 brute-force check, 2026-11-02 02:33:21 UTC, n = 1..8, 8 workers, part B seed 4
+n=1: 1 graphs in 0.0s; C1=1; C1r=3; C1r1=3; C1s=1; C1s_tight=1; L1g=4; L1r=3; M=3; C1s slack 0:1
+n=2: 2 graphs in 0.0s; C1=4; C1r=18; C1r1=18; C1s=4; C1s_tight=4; L1g=32; L1r=18; M=18; C1s slack 0:4
+n=3: 4 graphs in 0.0s; C1=16; C1r=108; C1r1=108; C1s=16; C1s_tight=14; L1g=256; L1r=108; M=108; C1s slack 0:14, 1:2
+n=4: 11 graphs in 0.0s; C1=88; C1r=891; C1r1=891; C1s=88; C1s_tight=55; L1g=2816; L1r=891; M=891; C1s slack 0:55, 1:32, 2:1
+n=5: 34 graphs in 0.0s; C1=544; C1r=8262; C1r1=8262; C1s=544; C1s_tight=247; L1g=34816; L1r=8262; M=8262; C1s slack 0:247, 1:268, 2:29
+n=6: 156 graphs in 0.0s; C1=4992; C1r=113724; C1r1=113724; C1s=4992; C1s_tight=1503; L1g=638976; L1r=113724; M=113724; C1s slack 0:1503, 1:2590, 2:875, 3:24
+n=7: 1044 graphs in 0.7s; C1=66816; C1r=2283228; C1r1=2283228; C1s=66816; C1s_tight=13235; L1g=17104896; L1r=2283228; M=2283228; C1s slack 0:13235, 1:33417, 2:18868, 3:1296
+n=8: 12346 graphs in 27.9s; C1=1580288; C1r=81002106; C1r1=81002106; C1s=1580288; C1s_tight=207427; L1g=809107456; L1r=81002106; M=81002106; C1s slack 0:207427, 1:676258, 2:573811, 3:120290, 4:2502
+part B slack of C2s (k + Σ b − pw): 0:20, 1:178, 2:1545, 3:3078, 4:3102, 5:1642, 6:392, 7:42, 8:1
+part B: 2000 random graphs at n = 10, 11, 12 in 4.4s; C2=10000; C2m=10000; C2s=10000
+done in 33.2s; violations: 0

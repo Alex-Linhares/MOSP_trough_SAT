@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-02 02:13:33",
+  "updated": "2026-11-02 02:45:58",
   "phase": "tests",
-  "started": "2026-11-02 01:34:54",
-  "item": "03 Lean (i): the weights `g`, `g'` and their lemmas."
+  "started": "2026-11-02 02:26:14",
+  "item": "04 Lean (v): the cut lemma and its iterated form \u2014 independent of the hypotheses, reusable"
 }

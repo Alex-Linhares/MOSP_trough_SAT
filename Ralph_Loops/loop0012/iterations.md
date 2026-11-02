@@ -237,7 +237,7 @@ statement checked on small graphs before it is stated.
   - **Does not claim.** Anything about `g_α` for `α ≠ 1/6`, or about the
     real-interpolated `g` (Theorem 5.3's form is not formalised).
 
-- [ ] **04 Lean (v): the cut lemma and its iterated form — independent of the hypotheses, reusable.**
+- [x] **04 Lean (v): the cut lemma and its iterated form — independent of the hypotheses, reusable.**
   - **Question.** Can the one-cut transfer — a vertex partition with
     boundaries gives a path decomposition from decompositions of the two
     sides — and its recursive iteration be proved in Lean, as a tool that
