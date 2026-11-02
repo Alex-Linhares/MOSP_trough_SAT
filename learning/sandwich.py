@@ -505,10 +505,24 @@ PATHWIDTH_ASSEMBLY_PROVED = (
     "DegreeBound.pathwidth_le_degreeSum_of_hypotheses",
     "DegreeBound.pathwidth_le_histogram_of_hypotheses",
 )
+#: `lean/MOSPFormalization/DegreeBound/StepBound.lean` (loop0012 item 11): R6, the per-step
+#: pathwidth cost of a series-parallel operation, and the unconditional one-per-removed-vertex
+#: bound along a reduction (not the reduction lemma (H3)).
+STEP_BOUND_PROVED = (
+    "DegreeBound.SPStep.isolate_le",
+    "DegreeBound.SPStep.adj_of_adj",
+    "DegreeBound.SPStep.pathwidth_le",
+    "DegreeBound.SPStep.ndeg_eq_zero",
+    "DegreeBound.SPStep.supp_ssubset",
+    "DegreeBound.SPReduces.adj_of_adj_of_ndeg_pos",
+    "DegreeBound.SPReduces.isolateSet_sdiff_le",
+    "DegreeBound.SPReduces.pathwidth_le_add_card_sdiff",
+    "DegreeBound.SPReduces.pathwidth_add_card_supp_le",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
               + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED
-              + REDUCTION_THEOREM_PROVED + PATHWIDTH_ASSEMBLY_PROVED)
+              + REDUCTION_THEOREM_PROVED + PATHWIDTH_ASSEMBLY_PROVED + STEP_BOUND_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

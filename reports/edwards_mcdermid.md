@@ -166,8 +166,8 @@ proof, not a result. Nothing here is claimed as new.
 | **Lemma 5.1**: `pw(G) ≤ f⁻(G) + τ n + 2ρ n + 1` | `pathwidth_le_potentialMinus_of_hypotheses`, `pathwidth_le_potential_of_hypotheses` | `Pathwidth.lean` | **proved under (H1), (H3)**, `Monotone τ`, `0 ≤ τ` |
 | **Corollary 5.2**: `pw(G) ≤ Σ_v g(d_B(v)) + τ n + 3ρ n + 1`, and with `G`'s own histogram | `pathwidth_le_degreeSum_of_hypotheses`, `pathwidth_le_histogram_of_hypotheses` | `Pathwidth.lean` | **proved under (H1), (H3)**, `Monotone τ`, `0 ≤ τ` |
 | Theorem 5.3 (average degree; the Edwards & Farr 2012 averaging lemma) | — | — | **verified numerically, not formalised** (§1.6) |
-| Fomin & Høie's Lemma 4 and the boundary sweep (the transfer lemma of §4.3) | — | — | **stated, not proved** (a candidate for item 11) |
-| one operation costs at most one: `pw(H) ≤ pw(H') + 1` (R6) | — | — | **measured** (drop 0 or 1 on all 393,156 steps to 9), not proved; not the reduction lemma |
+| Fomin & Høie's Lemma 4 and the boundary sweep (the transfer lemma of §4.3) | — | — | **stated, not proved**; Lemma 4 **checked exactly** on every max-degree-3 graph to 12 vertices and every end bag, with a Lean-ready statement (§11.3); its printed proof gives `log₃ n`, not `(2/3) log₃ n` (§11.3) |
+| one operation costs at most one: `pw(H) ≤ pw(H') + 1` (R6) | `SPStep.pathwidth_le` | `StepBound.lean` | **proved, unconditional** (item 11, §11.4), with the one-per-removed-vertex bound along a reduction `SPReduces.pathwidth_le_add_card_sdiff`; not the reduction lemma |
 | the reduced graph is unique | — | — | **measured** to 9 vertices; the design does not use it |
 
 Records: `paper1/axiom_check.lean` prints the axioms of all 270 theorems
@@ -230,10 +230,17 @@ constant (plan §0.4).
    `tree_pathwidth_le_log` as its tree case; with C1 and a *stated*
    Monien–Preis bisection it would make (H1) itself conditional only on the
    bisection theorem (item 11's option (2); §4.3 states the transfer lemma).
-2. **R6**, `pw(H) ≤ pw(H') + 1` per operation — unconditional and cheap, and
-   *not* the reduction lemma (item 11's option (3)).
+   *Item 11 priced it above one session and did the part that does not need
+   Lean*: the exact end-bag pathwidth, the lemma checked on every max-degree-3
+   graph to 12 vertices and every `X`, the Lean-ready integer statement, and
+   the finding that its printed proof supports `log₃ n`, not `(2/3) log₃ n`
+   (§11.3). What a Lean proof still needs is listed in §11.0.
+2. ~~**R6**, `pw(H) ≤ pw(H') + 1` per operation~~ — **proved** (item 11,
+   `StepBound.lean`, §11.4), with the unconditional one-per-removed-vertex
+   bound along a reduction; *not* the reduction lemma.
 3. **The Edwards–Farr averaging lemma** fetched from EJC 19(2) #P25 and
-   checked on the record (item 11's option (4)).
+   checked on the record (item 11's option (4); not done — item 01 checked
+   the lemma's inequality on the record without the paper).
 4. **(H3) itself**: the series-parallel pathwidth bound and the gluing into
    `r(H)`, a loop of its own (plan §0.3).
 5. **The cubic excess above 54 vertices.** The record has no certified cubic
@@ -1017,6 +1024,16 @@ prescribed end bag, whose `n/3 + 1` and `(2/3) log₃ n` come from Theorem 3,
 that tree case) and the sweep. Neither is attempted here; both are a
 candidate for item 11. C1 and C2 are what a general graph gives with no
 degree bound; they are not how Fomin–Høie reach `n/6`.
+
+*Correction (item 11, §11.3).* The printed proof of Lemma 4 bounds the tree
+component `T` of `G − X` by `|V(T)| ≤ 2n/3` and then invokes Theorem 3, which
+gives `pw(T) ≤ log₃(2n/3) = log₃ n − 0.37`, **not** `(2/3) log₃ n`
+(`log₃(2n/3) ≤ (2/3) log₃ n` only for `n ≤ 3`). What the proof as printed
+establishes is the lemma with `log₃ n` in place of `(2/3) log₃ n`; the
+transfer lemma above should therefore read `+ log₃ n + 2`, and (H1) is
+unaffected (Theorem 5 needs only `o(n)`). The statement with `(2/3) log₃ n` is
+not contradicted on any max-degree-3 graph to 12 vertices (the term the record
+needs there is at most 1), and whether it holds in general is open.
 
 ### 4.4 Kill verdict, and what this does not claim
 
@@ -2400,3 +2417,242 @@ cited; that the paper's paragraph is final (the owner edits the paper); that
 the `CLAUDE.md` paragraph is applied (it is drafted here); that the page
 growth is the paragraph's (it is three few-line spills); that the survey's
 other upper-bound entries were checked.
+
+## 11. Reserve: R6 proved, the unconditional bound along a reduction, and Fomin–Høie's Lemma 4 checked exactly (item 11, 2026-11-02)
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/edwards_mcdermid/11_reserve/check.py --workers 4`
+(`check.log`, `summary.json`; 518 s on 4 workers at a machine load of 24–40 from
+the owner's other work: Part A 145 s, Part B 3 s, Part C 372 s; about 0.9
+core-hours in all, inside the item's one). Lean: `lake build` in `lean/`
+(`11_reserve/lake_build.log`); axioms `cd lean && lake env lean ../paper1/axiom_check.lean`
+(`11_reserve/axiom_check.log`, 586 lines, every one `[propext, Classical.choice, Quot.sound]`;
+`make -C paper1/latex axioms`: 586 theorems checked, 0 failures); names
+`python3 -m learning.sandwich --stage lean` (`sandwich_lean.log`). Sizes: Part A every
+graph of maximum degree at most 3 on 1–12 vertices (exhaustive, disconnected graphs
+included); Part B every graph on 1–8 vertices; Part C ten slices of `nauty-geng 10`
+(1,154,239 of the 12,005,168 graphs on 10 vertices, 9.6%, a deterministic choice of
+subtrees of geng's enumeration and **not** a uniform sample).
+
+### 11.0 The choice, and the reason
+
+The brief's order of value was (1) a Lean gap left by items 06–09, (2) Fomin & Høie's
+Lemma 4 in Lean, (3) the per-step `pw(H) ≤ pw(H') + 1` with the (H3) shape extended to
+10 vertices, (4) the Edwards–Farr averaging lemma fetched and checked.
+
+(1) does not exist: R3–R4, the regular case of S1 and C2 are all proved (§6, §7, §4).
+
+(2) was **priced above one sorry-free session**, after reading its proof
+(`literature/2006-Fomin-Hoie-Pathwidth-Cubic-Graphs-Exact-Algorithms-IPL.pdf`, pp. 193–194)
+against what the development and Mathlib offer. A Lean proof needs, beyond what exists:
+(a) path decompositions **with a prescribed last bag** — `PathDecomposition` has no such
+notion, and Cases 1 and 2 of the proof build one from another by editing or appending
+bags, two new constructions with the three axioms each; (b) in Case 3.A, that a graph
+with fewer edges than vertices has an **acyclic connected component** — Mathlib's
+`Acyclic.lean` has `IsTree.card_edgeFinset` and `isTree_iff_connected_and_card` and no
+per-component converse, so this is a sum of edge counts over components, a lemma of its
+own; (c) the maximum-degree-3 edge count `2|E(G − X)| ≤ 3(n − |X|) − 2|X|`; (d) the tree
+case transported to the component's induced subgraph (`tree_pathwidth_le_log` on a
+doubly induced type, through `pathwidth_eq_of_iso`); (e) the pasting
+`(Y₁, …, Y_t = X, X₁ ∪ X, …, X_r ∪ X, X)`; (f) Case 3.B's re-dispatch; (g) the induction
+on `n` with `ℕ` division and `Nat.log`. Items (a), (b), (d) and (e) are each the size of
+one of this loop's Lean items. So item 11 did the part of (2) that needs no Lean and that
+a future Lean item needs first: **the exact end-bag pathwidth** (§11.2), **Lemma 4 checked
+on every max-degree-3 graph to 12 vertices and every `X`**, in three forms, with the
+Lean-ready integer statement (§11.3), and one **finding in the printed proof** (§11.3).
+
+(3) is **done in Lean** (§11.4), unconditional, with a corollary for whole reductions, and
+the (H3) shape measured on a 9.6% slice of the 10-vertex graphs (§11.5). (4) was not
+touched (item 01 already checked the averaging inequality on the record, §1.6).
+
+### 11.1 Checked before stated (`11_reserve/check.py`, `check.log`, `summary.json`)
+
+| part | what | on | count | violations |
+|---|---|---|---|---|
+| A | Lemma 4 as printed, `pwX ≤ max(|X|, n/3 + 1) + (2/3) log₃ n + 1` | every max-degree-3 graph on 1–12 vertices, every `X ⊆ V` | 52,662 graphs, **175,574,074** `(G, X)` pairs | 0 |
+| A | Lemma 4 as its proof gives it, `… + log₃ n + 1` | the same | 175,574,074 | 0 |
+| A | the Lean-ready integer form, `pwX ≤ max(|X|, ⌊n/3⌋ + 1) + ⌊log₃(2n + 1)⌋ + 1` | the same | 175,574,074 | 0 |
+| A | `E(∅)` equals `vertex_separation_brute` | every graph of Part A | 52,662 | 0 |
+| A | `max(pw G, |X| − 1) ≤ pwX ≤ pw(G[V ∖ X]) + |X|` | every `(G, X)` to 8 vertices | 132,666 | 0 |
+| B | R6 `SPStep G v H ⇒ pw G ≤ pw H + 1`; `v` isolated in `H`; `supp H ⊂ supp G` | every graph on 1–8 vertices, every step vertex | 25,566 steps | 0 |
+| B | `G − (supp G ∖ supp H) ≤ H`; `pw G ≤ pw H + |supp G ∖ supp H|`; `pw G + |supp H| ≤ pw H + |supp G|` | one random maximal reduction per graph, every prefix | 31,565 prefixes | 0 |
+| C | `pw(G) − pw(r(G))` at 10 vertices (a measurement, no statement) | ten geng slices | 1,154,239 graphs | — |
+
+**Kill checks: none fired.** Item 02 had R6 on every step of every graph to 9 (393,156).
+
+### 11.2 The end-bag pathwidth, exactly
+
+For a graph `G` and `X ⊆ V`, let `pwX(G, X)` be the least width of a path decomposition
+of `G` whose **last** bag is exactly `X` (Lemma 4's "`X = X_r`"). Reverse the decomposition
+so that `X` is the first bag. Write `∂in P` for the set of vertices of `P` with a
+neighbour outside `P`, and
+
+```
+E(V) = 0,     E(P) = max(|∂in P|, min_{v ∉ P} E(P ∪ {v}))   for P ⊊ V.
+```
+
+**Claim.** `pwX(G, X) = max(|X| − 1, E(X))`.
+
+*Proof.* (≥) Let `(B₁ = X, …, B_r)` have width `w`, so `|X| − 1 ≤ w`. Order the vertices
+outside `X` by first appearance, `σ₁, σ₂, …`, and let `P_i = X ∪ {σ₁, …, σ_i}`. When
+`σ_{i+1}` first appears, in bag `B_j` say, every `v ∈ P_i` with a neighbour `u ∉ P_i` is
+in `B_j`: `v` started at or before `j`, `u` starts at or after `j`, and the edge `uv`
+needs a common bag, so `v`'s interval covers `j`. Hence `|∂in P_i| + 1 ≤ |B_j| ≤ w + 1`
+for every `i < n − |X|`, and the sequence `P_0 ⊂ P_1 ⊂ …` witnesses `E(X) ≤ w`.
+(≤) Given an order `σ` attaining `E(X)`, the bags
+`X, ∂in P_0 ∪ {σ₁}, ∂in P_1 ∪ {σ₂}, …, ∂in P_{m−1} ∪ {σ_m}` (`m = n − |X|`) form a path
+decomposition: every vertex is in a bag; an edge inside `X` is in the first bag, and an
+edge `u σ_i` with `u ∈ P_{i−1}` has `u ∈ ∂in P_{i−1}`; a vertex `v = σ_i` is in bag `i`
+and then in bag `j > i` exactly while `N(v) ⊄ P_{j−1}`, an initial segment, and a vertex
+of `X` likewise from the first bag on. Its width is `max(|X| − 1, max_i |∂in P_i|)`.
+Reversing gives the last bag `X`. ∎
+
+`E(∅)` is the vertex separation (Kinnersley 1992), which is the check's control: it
+equals `vertex_separation_brute` on all 52,662 graphs. One `2ⁿ` table gives `pwX` for every
+`X` at once (`learning.edwards_mcdermid.end_bag_table`, `end_bag_pathwidth`).
+
+### 11.3 Lemma 4 on every max-degree-3 graph to 12 vertices, and what its printed proof gives
+
+Per `n`, the **lower-order term the record needs**, `max_{G, X} pwX − max(|X|, n/3 + 1)`,
+beside the three terms (the integer column is `max_{G,X} pwX − max(|X|, ⌊n/3⌋ + 1)`):
+
+| `n` | graphs | `(G, X)` | needed (real) | needed (int) | printed `(2/3) log₃ n + 1` | proof `log₃ n + 1` | Lean `⌊log₃(2n+1)⌋ + 1` |
+|---|---|---|---|---|---|---|---|
+| 1 | 1 | 2 | −1.333 | −1 | 1.000 | 1.000 | 2 |
+| 2 | 2 | 8 | −0.667 | 0 | 1.421 | 1.631 | 2 |
+| 3 | 4 | 32 | 0.000 | 0 | 1.667 | 2.000 | 2 |
+| 4 | 11 | 176 | 0.667 | 1 | 1.841 | 2.262 | 3 |
+| 5 | 23 | 736 | 0.333 | 1 | 1.977 | 2.465 | 3 |
+| 6 | 62 | 3,968 | 0.000 | 0 | 2.087 | 2.631 | 3 |
+| 7 | 150 | 19,200 | 0.667 | 1 | 2.181 | 2.771 | 3 |
+| 8 | 424 | 108,544 | 1.000 | 1 | 2.262 | 2.893 | 3 |
+| 9 | 1,165 | 596,480 | 1.000 | 1 | 2.333 | 3.000 | 3 |
+| 10 | 3,547 | 3,632,128 | 0.667 | 1 | 2.397 | 3.096 | 3 |
+| 11 | 10,946 | 22,417,408 | 1.000 | 1 | 2.455 | 3.183 | 3 |
+| 12 | 36,327 | 148,795,392 | 1.000 | 1 | 2.508 | 3.262 | 3 |
+
+So to 12 vertices every max-degree-3 graph satisfies the **stronger**
+`pwX ≤ max(|X|, n/3 + 1) + 1` — no logarithmic term is needed yet, which is no surprise:
+the `log₃` comes from tree components, and a tree needs 7 vertices for pathwidth 2 and
+22 for pathwidth 3. The record-holders (needed = 1) are all of one shape: `X` is a set
+of four or five degree-2 vertices each subdividing an edge of a small cubic core, e.g.
+at `n = 8` the graph `G?q`qg` (`K₄` with four of its six edges subdivided, `X` the four
+subdivision vertices, `pwX = 5` against `pw = 3`). The three bounds are not approached:
+the largest ratio of needed to printed term is 0.44 (at `n = 8`).
+
+**What the printed proof establishes.** Case 3.A of the proof (p. 193) has
+"`|V(T)| ≤ (2n)/3`. By Theorem 3, there is a path decomposition `P¹` of `T` of width at
+most `(2/3) log₃ n`." Theorem 3 is `pw(T) ≤ log₃ |V(T)|`, so it gives
+`log₃(2n/3) = log₃ n − log₃(3/2) ≈ log₃ n − 0.37`, and `log₃(2n/3) ≤ (2/3) log₃ n`
+holds only for `n ≤ 3`. The argument as printed therefore proves Lemma 4 with
+**`log₃ n` in place of `(2/3) log₃ n`**; we found no other route in the paper to the
+`2/3`. Two smaller slips in the same proof are harmless: "a path decomposition `P²` …
+of `G ∖ V(T)` of width at most `|X| + 1`" (the induction hypothesis gives
+`|X| + (log term) + 1`; the pasted decomposition is within the bound either way, since
+`|X| ≥ n/3 + 1` makes the first term of the `max` win and the log term is monotone), and
+Case 3.B's "width `≤ n/3 + 2`" (again without the log term; `≤ n/3 + 1 + log₃ n + 1`
+is what the dispatch gives, which is the lemma's bound as `|X| ≤ n/3` there). One
+rounding is also worth recording for a Lean proof: Case 3.A needs only `|X| > n/3`
+(the edge count `2|E(G − X)| ≤ 3(n − |X|) − 2|X| < 2(n − |X|)` is `3|X| > n`), so
+Case 3.B may take `|X ∪ S| = ⌊n/3⌋ + 1 ≤ n/3 + 1` and the bound's `n/3 + 1` survives
+integer rounding. **Consequences:** none for Theorem 5 or (H1) — Theorem 5 only needs
+`o(n)`, and its `n_ε = (8/ε) ln(1/ε)(1 + 1/ε²)` leaves room for `log₃ n` at every `ε`
+(at `ε = 0.5`, `(ε/2) n_ε = 13.9` against `log₃ n_ε + 1 = 4.7`); for this file, the
+transfer lemma stated in §4.3 should read `+ log₃ n + 2`, corrected there in place; the
+paper's Appendix E cites Theorem 5 only and says nothing about Lemma 4, so nothing
+changes there. The *statement* with `(2/3) log₃ n` is not contradicted at any size
+checked, and whether it holds in general is open; "the printed proof does not give it"
+is the whole finding.
+
+**The Lean-ready statement** (checked above, 0 violations; the form a future item
+proves): for `G : SimpleGraph V` with `∀ v, G.degree v ≤ 3`, `n = Fintype.card V`
+(isolated vertices counted, as the paper's "graph on `n` vertices" allows) and
+`X : Finset V`, there is `P : PathDecomposition G` with `P.bag (Fin.last P.length) = X`
+and `P.width ≤ max X.card (n / 3 + 1) + Nat.log 3 (2 * n + 1) + 1`, with `ℕ` division
+and `tree_pathwidth_le_log`'s term for the tree component. The integer form is what the
+proof supports once the rounding above is used; it is weaker than the printed lemma by
+`log₃ n − (2/3) log₃ n + log₃ 2 + O(1/n)` and stronger than nothing by exactly the proof.
+
+### 11.4 R6 and the unconditional bound along a reduction (`DegreeBound/StepBound.lean`)
+
+Namespace `MOSPFormalization.DegreeBound`; imports `Pathwidth`; **9 theorems, no `sorry`,
+no `axiom`, no `def`**; built on the first attempt; every axiom line
+`[propext, Classical.choice, Quot.sound]`.
+
+| name | statement | proof |
+|---|---|---|
+| `SPStep.isolate_le` | `SPStep G v H → isolate G v ≤ H` | by cases: `le_rfl`, `le_sup_left`, `le_rfl` |
+| `SPStep.adj_of_adj` | `G.Adj a b → a ≠ v → b ≠ v → H.Adj a b` | `isolate_le` at `(isolate_adj).2` |
+| **`SPStep.pathwidth_le` (R6)** | `SPStep G v H → pathwidth G ≤ pathwidth H + 1` | `pathwidth_le_pathwidth_isolate_add_one` (§9) then `pathwidth_mono` on `isolate_le` |
+| `SPStep.ndeg_eq_zero` | `ndeg H v = 0` | `ndeg_isolate_self`; in the suppress case `v ≠ x, y` from `G.Adj v x`, `G.Adj v y` and `edge_adj` |
+| `SPStep.supp_ssubset` | `supp H ⊂ supp G` | `SPReduces.supp_subset` of the one-step reduction, and `v ∈ supp G ∖ supp H` |
+| `SPReduces.adj_of_adj_of_ndeg_pos` | `SPReduces G H → G.Adj a b → 0 < ndeg H a → 0 < ndeg H b → H.Adj a b` | head induction; at a step at `v`, `ndeg H v = 0` (`SPStep.ndeg_eq_zero`, `SPReduces.ndeg_eq_zero`) so `a, b ≠ v`, then `SPStep.adj_of_adj` |
+| `SPReduces.isolateSet_sdiff_le` | `SPReduces G H → isolateSet G (supp G \ supp H) ≤ H` | an edge off `supp G ∖ supp H` has both ends in `supp G`, hence in `supp H`; the previous lemma |
+| **`SPReduces.pathwidth_le_add_card_sdiff`** | `SPReduces G H → pathwidth G ≤ pathwidth H + (supp G \ supp H).card` | `pathwidth_le_pathwidth_isolateSet_add_card` (§9) then `pathwidth_mono` on the previous lemma |
+| `SPReduces.pathwidth_add_card_supp_le` | `pathwidth G + (supp H).card ≤ pathwidth H + (supp G).card` | the previous with `card_sdiff_of_subset` and `card_le_card`; `omega` |
+
+**Not the reduction lemma.** (H3), `ReductionPathwidthBound ρ` (§9.2), says
+`SPReduces G H → pw G ≤ pw H + ρ n` with the paper's `ρ = O(log n)`. The theorems here
+give it with `ρ n = |supp G ∖ supp H| ≤ n`: one stack per removed vertex, the budget the
+deletion lemma already gives (`pw G ≤ pw (G − X) + |X|`) once one knows `G − X ≤ H`,
+which is what `isolateSet_sdiff_le` adds. It is unconditional, it costs nothing, and it is
+useless for Corollary 5.2 — the whole point of (H3) is that a long series-parallel
+reduction costs `o(n)`, not `|X|`. R6 per step is the same budget stated one step at a
+time (a reduction of `k` steps costs at most `k`, and `k = |supp G ∖ supp H|` exactly,
+since every step isolates one support vertex and `supp` never grows: `supp_ssubset`).
+A note for whoever attacks (H3): the measurement of §11.5 and §2.5 says the real cost
+of a *maximal* reduction is at most 3 at 10 vertices while `|X|` runs to 10; what (H3)
+needs is the pathwidth of the removed series-parallel pieces *glued at their attachment
+vertices*, which no lemma here touches.
+
+Also a definitional by-product: `SPStep.isolate_le` says a step never deletes an edge
+away from its vertex, which is what makes `isolateSet_sdiff_le` true for *every* reduct
+and not only a canonical one — the reduct's uniqueness (measured in §2.4, unused since)
+is again not needed.
+
+### 11.5 The shape of (H3) at 10 vertices (a measurement)
+
+On the ten slices (1,154,239 graphs, 752,829 of them with a vertex of degree 1
+or 2), `pw(G) − pw(r(G))` is 0 on 1,138,400 (98.63%), 1 on 11,363 (0.98%), 2 on 3,665 (0.32%) and 3 on 811 (0.07%); the **maximum is 3**, as at 6–9
+vertices (§2.5: 3 first at `n = 6`). Beside item 02's exhaustive counts to 9
+(gap 3 on 1 / 8 / 114 / 1,258 graphs at `n = 6, 7, 8, 9`), the share of graphs at gap 3
+is 0.07% on the slice against 0.46% at `n = 9` (1,258 of the 274,668 graphs on 9
+vertices) — denser graphs reduce less, and the slice's 65% of reducible graphs is not
+the exhaustive share at 9 (`r(G) ≠ G` on 198,285 of 288,266 graphs to 9, 69%). The gap
+is never negative (`r(G)` is a minor of `G`, §2.5). **Not a statement**: a 9.6%
+deterministic slice at one size, consistent with `O(log n)` and with a constant 3
+alike; the first graph with gap 4, if it exists, is not in these slices.
+
+### 11.6 Axiom lines, the sandwich stage, tests, regenerate
+
+9 new `#print axioms` lines in `paper1/axiom_check.lean` (586 in all;
+`11_reserve/axiom_check.log`; `make -C paper1/latex axioms`: 586 theorems checked, 0
+failures). `STEP_BOUND_PROVED` (9 names) folded into `learning.sandwich.ALL_PROVED`
+(381 names); `--stage lean` audits them (`sandwich_lean.log`); `--stage degree_bound`
+re-run so `reports/sandwich_tables.md` is byte-identical to HEAD (nothing numerical was
+added to the stage). `learning/edwards_mcdermid.py` gains `end_bag_table` and
+`end_bag_pathwidth` (§11.2). Tests: 3 new in `tests/test_edwards_mcdermid.py` (55 in
+all): the `StepBound.lean` statements and the end-bag sanity bounds on 150 random graphs
+at 2–10 vertices; the brute-force summary's counts and zero violations (the needed term
+`≤ 1` at every size; Part C's maximum); the 9 names declared / imported / audited, no
+`sorry`, no `axiom`, the "not the reduction lemma" sentence in the header.
+
+### 11.7 Kill verdict, and what this does not claim
+
+**Kill verdict: none** for the Lean statements (checked, then proved); for Lemma 4 the
+kill ("a deterministic statement of the chain false on a small graph") is **not met** on
+175,574,074 `(G, X)` pairs to 12 vertices, in all three forms. The finding about its
+printed proof is a finding about a *proof*, not about a statement: nothing on record
+contradicts the lemma as printed.
+
+**Does not claim.** Lemma 4 in Lean (what remains is §11.0 (a)–(g)); that Lemma 4 as
+printed, with `(2/3) log₃ n`, is false (open; its proof gives `log₃ n`, and 12 vertices
+see no log term at all); anything about (H1) or Theorem 5, which are untouched by the
+slip; that the bounds of §11.4 are of any use for Corollary 5.2 (they are the trivial
+budget `ρ n = n`; (H3) is as open as before); that the 10-vertex slice is a sample
+(it is 9.6% of the graphs, chosen by geng's enumeration tree); a value of (H3)'s
+constant (3 is the maximum *seen*, to 9 exhaustively and on the slice at 10); that
+`end_bag_pathwidth` is new (the normal-form argument is Kinnersley's with a fixed first
+bag; "we found no prior statement" is not claimed since it was not searched for); any
+pathwidth solved outside the subset DP at `n ≤ 12` (nothing from `solutions/`, the
+pilot or the dataset was touched; the owner's rule on compute is respected: nothing
+proved was re-solved).

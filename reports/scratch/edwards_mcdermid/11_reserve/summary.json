@@ -1,0 +1,297 @@
+{
+ "parts": {
+  "A": {
+   "1": {
+    "graphs": 1,
+    "pairs": 2,
+    "need": -1.3333,
+    "need_arg": [
+     "@",
+     0,
+     0
+    ],
+    "need_int": -1,
+    "printed_term": 1.0,
+    "proof_term": 1.0,
+    "lean_term": 2,
+    "sanity_pairs": 2,
+    "e0_ok": 1,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "2": {
+    "graphs": 2,
+    "pairs": 8,
+    "need": -0.6667,
+    "need_arg": [
+     "A_",
+     0,
+     1
+    ],
+    "need_int": 0,
+    "printed_term": 1.4206,
+    "proof_term": 1.6309,
+    "lean_term": 2,
+    "sanity_pairs": 8,
+    "e0_ok": 2,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "3": {
+    "graphs": 4,
+    "pairs": 32,
+    "need": 0,
+    "need_arg": [
+     "BW",
+     3,
+     2
+    ],
+    "need_int": 0,
+    "printed_term": 1.6667,
+    "proof_term": 2.0,
+    "lean_term": 2,
+    "sanity_pairs": 32,
+    "e0_ok": 4,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "4": {
+    "graphs": 11,
+    "pairs": 176,
+    "need": 0.6667,
+    "need_arg": [
+     "C^",
+     3,
+     3
+    ],
+    "need_int": 1,
+    "printed_term": 1.8412,
+    "proof_term": 2.2619,
+    "lean_term": 3,
+    "sanity_pairs": 176,
+    "e0_ok": 11,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "5": {
+    "graphs": 23,
+    "pairs": 736,
+    "need": 0.3333,
+    "need_arg": [
+     "DEs",
+     3,
+     3
+    ],
+    "need_int": 1,
+    "printed_term": 1.9766,
+    "proof_term": 2.465,
+    "lean_term": 3,
+    "sanity_pairs": 736,
+    "e0_ok": 23,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "6": {
+    "graphs": 62,
+    "pairs": 3968,
+    "need": 0,
+    "need_arg": [
+     "E?B_",
+     7,
+     3
+    ],
+    "need_int": 0,
+    "printed_term": 2.0873,
+    "proof_term": 2.6309,
+    "lean_term": 3,
+    "sanity_pairs": 3968,
+    "e0_ok": 62,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "7": {
+    "graphs": 150,
+    "pairs": 19200,
+    "need": 0.6667,
+    "need_arg": [
+     "F?qr_",
+     28,
+     4
+    ],
+    "need_int": 1,
+    "printed_term": 2.1808,
+    "proof_term": 2.7712,
+    "lean_term": 3,
+    "sanity_pairs": 19200,
+    "e0_ok": 150,
+    "violations": 0,
+    "seconds": 0.1
+   },
+   "8": {
+    "graphs": 424,
+    "pairs": 108544,
+    "need": 1,
+    "need_arg": [
+     "G?q`qg",
+     15,
+     5
+    ],
+    "need_int": 1,
+    "printed_term": 2.2619,
+    "proof_term": 2.8928,
+    "lean_term": 3,
+    "sanity_pairs": 108544,
+    "e0_ok": 424,
+    "violations": 0,
+    "seconds": 0.3
+   },
+   "9": {
+    "graphs": 1165,
+    "pairs": 596480,
+    "need": 1,
+    "need_arg": [
+     "H?BD@hQ",
+     15,
+     5
+    ],
+    "need_int": 1,
+    "printed_term": 2.3333,
+    "proof_term": 3.0,
+    "lean_term": 3,
+    "sanity_pairs": 0,
+    "e0_ok": 1165,
+    "violations": 0,
+    "seconds": 0.3
+   },
+   "10": {
+    "graphs": 3547,
+    "pairs": 3632128,
+    "need": 0.6667,
+    "need_arg": [
+     "I??ED?qSO",
+     15,
+     5
+    ],
+    "need_int": 1,
+    "printed_term": 2.3973,
+    "proof_term": 3.0959,
+    "lean_term": 3,
+    "sanity_pairs": 0,
+    "e0_ok": 3547,
+    "violations": 0,
+    "seconds": 1.9
+   },
+   "11": {
+    "graphs": 10946,
+    "pairs": 22417408,
+    "need": 1,
+    "need_arg": [
+     "J??E@agT?[?",
+     179,
+     6
+    ],
+    "need_int": 1,
+    "printed_term": 2.4551,
+    "proof_term": 3.1827,
+    "lean_term": 3,
+    "sanity_pairs": 0,
+    "e0_ok": 10946,
+    "violations": 0,
+    "seconds": 12.2
+   },
+   "12": {
+    "graphs": 36327,
+    "pairs": 148795392,
+    "need": 1,
+    "need_arg": [
+     "K???E?oiAg@g",
+     307,
+     6
+    ],
+    "need_int": 1,
+    "printed_term": 2.5079,
+    "proof_term": 3.2619,
+    "lean_term": 3,
+    "sanity_pairs": 0,
+    "e0_ok": 36327,
+    "violations": 0,
+    "seconds": 128.6
+   }
+  },
+  "B": {
+   "1": {
+    "graphs": 1,
+    "steps": 0,
+    "sequence_prefixes": 0,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "2": {
+    "graphs": 2,
+    "steps": 2,
+    "sequence_prefixes": 1,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "3": {
+    "graphs": 4,
+    "steps": 8,
+    "sequence_prefixes": 5,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "4": {
+    "graphs": 11,
+    "steps": 28,
+    "sequence_prefixes": 22,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "5": {
+    "graphs": 34,
+    "steps": 94,
+    "sequence_prefixes": 91,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "6": {
+    "graphs": 156,
+    "steps": 415,
+    "sequence_prefixes": 466,
+    "violations": 0,
+    "seconds": 0.0
+   },
+   "7": {
+    "graphs": 1044,
+    "steps": 2419,
+    "sequence_prefixes": 2968,
+    "violations": 0,
+    "seconds": 0.1
+   },
+   "8": {
+    "graphs": 12346,
+    "steps": 22600,
+    "sequence_prefixes": 28012,
+    "violations": 0,
+    "seconds": 2.5
+   }
+  },
+  "C": {
+   "n": 10,
+   "slice": "0,12,24,36,48,60,72,84,96,108 / 120",
+   "graphs": 1154239,
+   "reducible": 752829,
+   "hist": {
+    "0": 1138400,
+    "1": 11363,
+    "2": 3665,
+    "3": 811
+   },
+   "max_gap": 3,
+   "max_arg": "I???EAx]O",
+   "seconds": 372.1
+  }
+ },
+ "violations": 0,
+ "seconds": 518.2
+}

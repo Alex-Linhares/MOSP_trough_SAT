@@ -568,7 +568,7 @@ statement checked on small graphs before it is stated.
   - **Size range.** As stated per claim.
   - **Does not claim.** Beyond what the items proved, measured or cited.
 
-- [ ] **11 Reserve.** The best remaining gap from items 01–10, one session,
+- [x] **11 Reserve.** The best remaining gap from items 01–10, one session,
   chosen in this order of value and stated in PROGRESS.md with the reason:
   (1) a Lean gap left by 06–09 (R3–R4, the regular case of S1, C2); (2)
   Fomin–Høie's Lemma 4 in Lean for maximum degree 3 — the statement with

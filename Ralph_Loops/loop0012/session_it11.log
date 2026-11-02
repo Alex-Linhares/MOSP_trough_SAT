@@ -1,0 +1,120 @@
+# session it11 started 2026-11-02 06:52:23
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan's Fomin–Høie quotations, the report's §4.3 (where the transfer lemma is stated), and the Lean tools, then choose the reserve item's option and say why.
+  > $ date -u && uptime && grep -n "Lemma 4" reports/edwards_mcdermid_plan.md | head -20 && grep -n "^## \|^### " reports/edwards_mcdermid.md | head -80
+  > $ sed -n 225,275p reports/edwards_mcdermid_plan.md && echo ======= && sed -n 981,1040p reports/edwards_mcdermid.md && echo ======= && sed -n 227,250p reports/edwa
+
+Let me read Fomin–Høie's Lemma 4 proof from the held PDF, the TreeBound header, and the existing Lean namespace layout, all independent reads.
+  > $ ls literature/ | grep -i fomin; pdftotext -layout "literature/2006-Fomin-Hoie-Pathwidth-Cubic-Graphs-Exact-Algorithms-IPL.pdf" /tmp/fh.txt && grep -n "Lemma 4" 
+  > $ pdftotext "literature/2006-Fomin-Hoie-Pathwidth-Cubic-Graphs-Exact-Algorithms-IPL.pdf" /tmp/fh_raw.txt && awk '/^Lemma 4\./,/^Theorem 5\./' /tmp/fh_raw.txt | tr
+  > $ ML=$(find lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph -name "*.lean" | head -200); grep -ln "card_edgeFinset" $ML | head; echo ---; grep -n "t
+  > $ grep -n "card_edgeFinset\|card_connectedComponent\|theorem.*edgeFinset.*card" lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Acyclic.lean | head 
+  > $ for n in 8 9 10; do echo -n "D3 n=$n: "; nauty-geng -D3 -u $n 2>&1 | grep -o "[0-9]* graphs generated"; done; echo -n "all n=10: "; nauty-geng -u 10 2>&1 | grep
+  > $ sed -n 228,250p lean/MOSPFormalization/TreeBound.lean; echo ---MINOR; grep -n "theorem isolate_le\|theorem le_isolate\|isolate_adj\|theorem isolate_" lean/MOSPF
+  > $ grep -n "theorem pathwidth_le_pathwidth_isolateSet_add_card" -A 3 lean/MOSPFormalization/DegreeBound/Pathwidth.lean; grep -n "def isolateSet\|theorem isolateSet
+  > $ sed -n 178,200p lean/MOSPFormalization/DegreeBound/SPReduction.lean; grep -n "theorem exists_adj\|theorem SPStep.exists_adj" -A 3 lean/MOSPFormalization/DegreeB
+  > $ mkdir -p reports/scratch/edwards_mcdermid/11_reserve && for n in 11 12 13; do echo -n "D3 n=$n: "; nauty-geng -D3 -u $n 2>&1 | grep -o "[0-9]* graphs generated"
+  > Write /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/11_reserve/check.py
+  > $ sed -n 409,438p learning/edwards_mcdermid.py && sed -n 543,560p learning/edwards_mcdermid.py && uptime && nice -n 19 python3 reports/scratch/edwards_mcdermid/11
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/scratch/edwards_mcdermid/11_reserve/check.py")
+s = p.read_text()
+s = s.replace('''Part C — the shap
+  > $ sed -n 40,70p lean/MOSPFormalization/DegreeBound/SPReduction.lean; echo ----; sed -n 430,466p lean/MOSPFormalization/DegreeBound/SPReduction.lean; echo ----; se
+  > $ grep -rn "theorem isolate_adj" lean/MOSPFormalization/ | head -3; grep -n "theorem head\|theorem refl\|theorem single\|theorem tail" lean/MOSPFormalization/Degr
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/DegreeBound/StepBound.lean
+  > $ cd /home/al/dev/MOSP/lean && sed -i 's/^import MOSPFormalization.DegreeBound.Pathwidth$/import MOSPFormalization.DegreeBound.Pathwidth\nimport MOSPFormalization
+
+The Lean file built on the first attempt (9 theorems). Now the bookkeeping in parallel: axiom lines, the sandwich name list, the library function for the end-bag DP, and a look at the run.
+  > $ cd /home/al/dev/MOSP && cat >> paper1/axiom_check.lean <<'EOF'
+#print axioms MOSPFormalization.DegreeBound.SPStep.isolate_le
+#print axioms MOSPFormalization.Deg
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/sandwich.py")
+s = p.read_text()
+old = '''#: Every proved name the axiom check asks for.
+ALL_PROVED
+  > $ cat reports/scratch/edwards_mcdermid/11_reserve/check.log; uptime
+  > $ (nohup nice -n 19 make -C paper1/latex axioms > reports/scratch/edwards_mcdermid/11_reserve/axiom_check.log 2>&1 &) ; sed -n 1,40p tests/test_edwards_mcdermid.p
+  > $ cat >> tests/test_edwards_mcdermid.py <<'EOF'
+
+
+# --- item 11 (reserve): R6 and the unconditional bound along a reduction; the
+# end-bag pathwidth behind Fomin 
+  > $ grep -v "propext, Classical.choice, Quot.sound\]$" reports/scratch/edwards_mcdermid/11_reserve/axiom_check.log | head -30; echo ----; sed -n 1,60p paper1/latex/
+  > $ (nohup sh -c 'cd lean && nice -n 19 lake build > ../reports/scratch/edwards_mcdermid/11_reserve/lake_build.log 2>&1; cd .. && nice -n 19 make -C paper1/latex ax
+  > $ python3 - <<'EOF'
+import json
+s = json.load(open("reports/scratch/edwards_mcdermid/02_lemmas/summary.json"))
+# find the H3 distribution keys
+def find(d, path=""
+  > $ sed -n 165,172p reports/edwards_mcdermid.md; echo ----; sed -n 227,240p reports/edwards_mcdermid.md; echo ----; sed -n 1010,1020p reports/edwards_mcdermid.md; e
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/edwards_mcdermid.md")
+s = p.read_text()
+old = "| Fomin & Høie's Lemma 4 and the boundary sweep (the
+  > $ cat reports/scratch/edwards_mcdermid/11_reserve/axiom_check.log | grep -c "StepBound\|SPStep\|SPReduces" ; grep "DegreeBound.SPStep.pathwidth_le\|SPReduces.path
+  > $ (nohup sh -c 'cd lean && nice -n 19 lake env lean ../paper1/axiom_check.lean > ../reports/scratch/edwards_mcdermid/11_reserve/axiom_check.log 2>&1' >/dev/null 2
+  > $ pgrep -f "11_reserve/check.py" | head -5 | xargs -r ps -o pid,etime,pcpu,rss --no-headers -p | head; tail -1 reports/scratch/edwards_mcdermid/11_reserve/run.out
+  > $ grep -n "stage lean\|def stage_lean\|\"lean\"" learning/sandwich.py | head -5; grep -n "add_argument(\"--stage\"" -A 3 learning/sandwich.py | head -6; (nohup sh
+  > $ cat > /tmp/sec11.md <<'EOF'
+
+## 11. Reserve: R6 proved, the unconditional bound along a reduction, and Fomin–Høie's Lemma 4 checked exactly (item 11, 2026-11-02
+  > $ python3 -c "
+import json; s=json.load(open('reports/scratch/edwards_mcdermid/11_reserve/summary.json')); C=s['parts']['C']; print(C); print('seconds', s['second
+  > $ python3 - <<'EOF'
+from pathlib import Path
+d = Path("/tmp/sec11.md").read_text()
+d = d.replace("{{TOTAL_SECONDS}}", "518").replace("{{C_SECONDS}}", "372")
+d = d
+  > $ nice -n 19 python3 -m learning.sandwich --stage degree_bound > reports/scratch/edwards_mcdermid/11_reserve/sandwich.log 2>&1; tail -3 reports/scratch/edwards_mc
+  > $ nice -n 19 python3 -m pytest tests/test_edwards_mcdermid.py -q -k "item11 or step_bound" -p no:cacheprovider 2>&1 | tail -5
+  > $ uptime && (nohup sh -c 'nice -n 19 python3 Ralph_Loops/loop0012/gate.py > reports/scratch/edwards_mcdermid/11_reserve/gate.log 2>&1; echo "exit $?" >> reports/s
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0012/PROGRESS.md")
+s = p.read_text()
+assert "Current: 10/11 SOLVED" in s
+s = s.replace("Cur
+  > $ python3 - <<'EOF'
+from pathlib import Path
+for f in ["reports/edwards_mcdermid.md", "Ralph_Loops/loop0012/PROGRESS.md"]:
+    p = Path(f); s = p.read_text()
+    
+  > $ nice -n 19 python3 -m pytest tests/test_edwards_mcdermid.py -q -k "report_summary or paper_carries" -p no:cacheprovider 2>&1 | tail -2
+  > $ sleep 150; date -u; tail -5 reports/scratch/edwards_mcdermid/11_reserve/gate.log
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^exit " reports/scratch/edwards_mcdermid/11_reserve/gate.log; do sleep 5; done; date -u; tail -8 reports/scratch/edwards_mcdermid/11_reserve/gate
+  > $ date -u; cat reports/scratch/edwards_mcdermid/11_reserve/gate.log | tail -6; cat Ralph_Loops/loop0012/gate.py | grep -n "def \|pytest\|lake" | head -20
+
+Nothing else is independent of the gate now. The gate captures each stage's output and prints only at stage end, so the log stays empty until `lake build` finishes; I'll wait for the completion notification.
+
+# result: success in 1363s, 46 turns, cost $10.27
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/729a31ea-6900-48bd-999c-66286e063162/tasks/b0q9oz06d.output; echo ----; grep -n "passed\|failed\|GATE\|ok\|pages\|exit" r
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0012/PROGRESS.md"); s = p.read_text()
+s = s.replace("{{END}}", "07:26")
+s = s.replace("{{GA
+
+Item 11 is done, the gate passes, and the loop is complete. Nothing is left to request.
+
+**What was chosen, and why.** The brief's first option (a Lean gap from items 06–09) does not exist. The second, Fomin–Høie's Lemma 4 in Lean, was priced above one sorry-free session after reading its proof: it needs path decompositions with a prescribed last bag, a "fewer edges than vertices ⇒ acyclic component" lemma that Mathlib lacks, the tree bound transported to a component, and a three-piece pasting. So the session did the non-Lean half of option 2 and all of option 3.
+
+**Done**
+- **Lean, option 3.** `lean/MOSPFormalization/DegreeBound/StepBound.lean`: 9 theorems, no `sorry`, no `axiom`, built on the first attempt. R6 (`SPStep.pathwidth_le`, one operation costs at most one stack) and the unconditional bound along a whole reduction, `pw G ≤ pw H + |supp G ∖ supp H|`, via the new subgraph fact `G − (supp G ∖ supp H) ≤ H`. The file, report and a test all say this is not the reduction lemma (H3): its budget is one per removed vertex.
+- **Lemma 4 checked exactly** on every max-degree-3 graph to 12 vertices and every end bag `X` (175,574,074 pairs), using an exact end-bag pathwidth DP whose derivation is in report §11.2. Zero violations of the lemma as printed, as its proof gives it, and of a Lean-ready integer form. The term the record needs is at most 1 at every size, against the printed `(2/3)·log₃ n + 1`.
+- **A finding about the printed proof.** Case 3.A applies Theorem 3 to a tree on at most `2n/3` vertices and writes `(2/3)·log₃ n`, but Theorem 3 gives `log₃(2n/3)`, which is below `(2/3)·log₃ n` only for `n ≤ 3`. The proof as printed establishes the lemma with `log₃ n`. No consequence for Theorem 5, (H1) or the paper; the stated transfer lemma in report §4.3 is corrected in place. Whether the statement with `(2/3)·log₃ n` holds in general is open.
+- **(H3)'s shape at 10 vertices**: on a 9.6% deterministic slice of the 10-vertex graphs (1,154,239 graphs, not a uniform sample), `pw(G) − pw(r(G))` is still at most 3.
+- Bookkeeping: 9 axiom lines (586 theorems, 0 failures), sandwich names folded in, three new tests (55 in all), report §11 plus §0.3, §0.6 and §4.3 updates, PROGRESS entry, item marked `[x]`, `LOOP_COMPLETE` appended.
+
+**Gate: PASS** (lake build ok; MOSP pytest 1,804 passed; pathwidth_solver pytest 123 passed; paper check ok, 77 pages, paper untouched). Compute: about 0.9 core-hours, nothing proved re-solved, nothing committed.
+
+**Left open** (report §0.6): Lemma 4 in Lean, with the work list in §11.0; (H3) itself; the Edwards–Farr averaging lemma from EJC; the dataset's 112-vertex cubic `solution` row.
+
+# result: success in 26s, 3 turns, cost $13.59

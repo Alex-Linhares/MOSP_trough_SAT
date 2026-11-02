@@ -646,3 +646,45 @@ def bisection_bound(adj: list[int], tree, pw_of, use_max: bool = False) -> tuple
 
     walk(tree, 0)
     return max(leaves), levels
+
+# --- item 11: the end-bag pathwidth (Fomin & Høie 2006, Lemma 4) ----------------
+
+
+def end_bag_table(adj: list[int]) -> list[int]:
+    """`E(P)` for every `P ⊆ V` (bit masks), the exact subset DP behind the
+    end-bag pathwidth: `E(V) = 0` and, for `P ⊊ V`,
+    `E(P) = max(|∂in P|, min_{v ∉ P} E(P ∪ {v}))`, where `∂in P` is the set of
+    vertices of `P` with a neighbour outside `P`. `E(∅)` is the vertex
+    separation (= pathwidth, Kinnersley 1992)."""
+    n = len(adj)
+    full = (1 << n) - 1
+    E = [0] * (1 << n)
+    for P in range(full - 1, -1, -1):
+        rest = full & ~P
+        cost = 0
+        T = P
+        while T:
+            v = T & -T
+            T ^= v
+            if adj[v.bit_length() - 1] & rest:
+                cost += 1
+        best = min(E[P | b] for b in (1 << v for v in range(n)) if not P & b)
+        E[P] = max(cost, best)
+    return E
+
+
+def end_bag_pathwidth(adj: list[int], X: int, table: list[int] | None = None) -> int:
+    """The least width of a path decomposition of `G` whose **last** bag is
+    exactly `X` (a bit mask): `max(|X| − 1, E(X))`.
+
+    Why (report §11.2): reverse the decomposition so `X` is the first bag. A
+    decomposition of width `w` starting with `X` yields an order `σ` of the
+    other vertices by first appearance; when `σ_{i+1}` first appears, every
+    earlier vertex with a neighbour not yet started is still present, so
+    `|∂in P_i| + 1 ≤ w + 1` for each prefix `P_i = X ∪ σ[:i]`. Conversely the
+    bags `X, ∂in P_0 ∪ {σ_1}, ∂in P_1 ∪ {σ_2}, …` form a path decomposition
+    (each vertex's bags are an initial segment of those after its start) of
+    width `max(|X| − 1, max_i |∂in P_i|)`. Minimising over `σ` is `E(X)`."""
+    if table is None:
+        table = end_bag_table(adj)
+    return max(X.bit_count() - 1, table[X])

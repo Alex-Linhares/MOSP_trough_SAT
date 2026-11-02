@@ -668,3 +668,12 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.DegreeBound.pathwidth_le_potential_of_hypotheses
 #print axioms MOSPFormalization.DegreeBound.pathwidth_le_degreeSum_of_hypotheses
 #print axioms MOSPFormalization.DegreeBound.pathwidth_le_histogram_of_hypotheses
+#print axioms MOSPFormalization.DegreeBound.SPStep.isolate_le
+#print axioms MOSPFormalization.DegreeBound.SPStep.adj_of_adj
+#print axioms MOSPFormalization.DegreeBound.SPStep.pathwidth_le
+#print axioms MOSPFormalization.DegreeBound.SPStep.ndeg_eq_zero
+#print axioms MOSPFormalization.DegreeBound.SPStep.supp_ssubset
+#print axioms MOSPFormalization.DegreeBound.SPReduces.adj_of_adj_of_ndeg_pos
+#print axioms MOSPFormalization.DegreeBound.SPReduces.isolateSet_sdiff_le
+#print axioms MOSPFormalization.DegreeBound.SPReduces.pathwidth_le_add_card_sdiff
+#print axioms MOSPFormalization.DegreeBound.SPReduces.pathwidth_add_card_supp_le

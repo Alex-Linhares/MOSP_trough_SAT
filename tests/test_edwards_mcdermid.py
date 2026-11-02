@@ -1225,3 +1225,130 @@ def test_paper_carries_the_rows_the_paragraph_and_the_references():
                      ("MonienPreis2006", "10.1016/j.jda.2005.12.009")):
         assert "@article{" + key + "," in bib and doi in bib, key
         assert doi in cache and cache[doi]["fetched"] >= "2026-11-02", key
+
+
+# --- item 11 (reserve): R6 and the unconditional bound along a reduction; the
+# end-bag pathwidth behind Fomin & Høie (2006) Lemma 4 -------------------------
+# (`lean/MOSPFormalization/DegreeBound/StepBound.lean`; `reports/edwards_mcdermid.md` §11;
+# brute force `reports/scratch/edwards_mcdermid/11_reserve/check.py`.)
+
+STEP_BOUND_LEAN = WEIGHTS_LEAN.parent / "StepBound.lean"
+ITEM11 = ITEM09.parent / "11_reserve"
+
+
+def test_step_bound_lemmas_in_the_lean_form_on_random_graphs():
+    """The statements of `StepBound.lean` in the form proved, on random graphs at 2–10
+    vertices: R6 `pw G ≤ pw H + 1` at every step vertex, the acted vertex isolated, the
+    support strictly smaller; along one random maximal reduction, `G − (supp G ∖ supp H) ≤ H`
+    and `pw G ≤ pw H + |supp G ∖ supp H|`. And the end-bag pathwidth: `E(∅)` is the vertex
+    separation, the last bag `V` costs `n − 1`, and
+    `max(pw G, |X| − 1) ≤ pwX(G, X) ≤ pw(G[V ∖ X]) + |X|` on random `X`."""
+    from learning.edwards_mcdermid import (
+        end_bag_pathwidth, end_bag_table, isolate_set, pathwidth_induced, sp_step,
+        step_vertices, support,
+    )
+    from learning.first_moment import vertex_separation_brute
+    rng = random.Random(11)
+    steps = prefixes = pairs = 0
+    for _ in range(150):
+        n = rng.randint(2, 10)
+        p = rng.choice([0.15, 0.3, 0.5])
+        adj = [0] * n
+        for i in range(n):
+            for j in range(i + 1, n):
+                if rng.random() < p:
+                    adj[i] |= 1 << j
+                    adj[j] |= 1 << i
+        full = (1 << n) - 1
+        pw = vertex_separation_brute(adj)
+        sG = support(adj)
+        for v in step_vertices(adj):
+            H = sp_step(adj, v)
+            steps += 1
+            assert pw <= vertex_separation_brute(H) + 1
+            assert H[v] == 0
+            sH = support(H)
+            assert sH & ~sG == 0 and sH != sG
+        cur = list(adj)
+        while step_vertices(cur):
+            cur = sp_step(cur, rng.choice(step_vertices(cur)))
+            prefixes += 1
+            sH = support(cur)
+            removed = sG & ~sH
+            assert all(a & ~b == 0 for a, b in zip(isolate_set(adj, removed), cur))
+            pwH = vertex_separation_brute(cur)
+            assert pw <= pwH + removed.bit_count()
+            assert pw + sH.bit_count() <= pwH + sG.bit_count()
+        table = end_bag_table(adj)
+        assert table[0] == pw
+        assert end_bag_pathwidth(adj, full, table) == n - 1
+        for _ in range(8):
+            X = rng.randrange(1 << n)
+            pairs += 1
+            pwx = end_bag_pathwidth(adj, X, table)
+            hi = (pathwidth_induced(adj, full & ~X) if X != full else 0) + X.bit_count()
+            assert max(pw, X.bit_count() - 1) <= pwx <= hi
+    assert steps > 200 and prefixes > 200 and pairs == 1200
+
+
+def test_item11_brute_force_log_has_no_violation():
+    """The brute force of item 11: Lemma 4's three forms on every graph of maximum degree
+    at most 3 on 1–12 vertices and every `X` (Part A), the `StepBound.lean` statements on
+    every graph on 1–8 vertices (Part B), `pw(G) − pw(r(G))` on ten geng slices of the
+    10-vertex graphs (Part C); zero violations; the lower-order term Lemma 4 needs is at
+    most 1 at every size checked, against the printed `(2/3) log₃ n + 1`."""
+    summary = json.loads((ITEM11 / "summary.json").read_text())
+    assert summary["violations"] == 0
+    A = summary["parts"]["A"]
+    assert A["12"]["graphs"] == 36327 and A["12"]["pairs"] == 148795392
+    assert A["10"]["graphs"] == 3547 and A["8"]["sanity_pairs"] == 108544
+    for n, row in A.items():
+        assert row["violations"] == 0 and row["e0_ok"] == row["graphs"]
+        assert row["need"] <= 1.0 and row["need_int"] <= 1
+        assert row["need"] <= row["printed_term"] <= row["proof_term"]
+    B = summary["parts"]["B"]
+    assert B["8"]["graphs"] == 12346 and B["8"]["steps"] == 22600
+    assert all(row["violations"] == 0 for row in B.values())
+    C = summary["parts"]["C"]
+    assert C["n"] == 10 and C["graphs"] == 1154239
+    assert C["max_gap"] == 3 and set(C["hist"]) <= {"0", "1", "2", "3"}
+    log = (ITEM11 / "check.log").read_text()
+    assert "done: 0 violations" in log
+
+
+def test_step_bound_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `StepBound.lean` is declared there as a
+    theorem (namespaces resolved); the file has no `sorry`, `axiom` or `def`; the root module
+    imports it; `paper1/axiom_check.lean` prints the axioms of every theorem; the header says
+    this is not the reduction lemma."""
+    import learning.sandwich as sw
+    src = STEP_BOUND_LEAN.read_text()
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    ns, declared = [], set()
+    for line in code.splitlines():
+        m = re.match(r"^namespace\s+(\S+)", line)
+        if m:
+            ns.append(m.group(1))
+            continue
+        m = re.match(r"^end\s+(\S+)", line)
+        if m and ns and ns[-1] == m.group(1):
+            ns.pop()
+            continue
+        m = re.match(r"^theorem\s+([^\s:({\[]+)", line)
+        if m:
+            declared.add(".".join(ns[1:] + [m.group(1)]))
+    assert set(sw.STEP_BOUND_PROVED) == {"DegreeBound." + n for n in declared}
+    assert len(sw.STEP_BOUND_PROVED) == len(declared) == 9
+    assert set(sw.STEP_BOUND_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*(axiom|def|instance)\b", code, re.M)
+    assert "not the reduction lemma (H3)" in src
+    root = (STEP_BOUND_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.StepBound\n" in root
+    axioms = (STEP_BOUND_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.STEP_BOUND_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("SPStep.pathwidth_le", "SPReduces.isolateSet_sdiff_le",
+              "SPReduces.pathwidth_le_add_card_sdiff"):
+        assert f"DegreeBound.{n}" in sw.STEP_BOUND_PROVED

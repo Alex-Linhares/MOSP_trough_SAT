@@ -1,0 +1,27 @@
+# item 11 brute force, 2026-11-02 07:03:18 UTC
+## Part A: Fomin–Høie Lemma 4 on every graph of maximum degree ≤ 3
+n= 1 graphs=     1 (G,X)=        2 need=-1.3333 (int -1) printed= 1.000 proof= 1.000 lean=2 sanity=2 E0ok=1/1 viol=0 [0.0s] argmax=('@', 0, 0)
+n= 2 graphs=     2 (G,X)=        8 need=-0.6667 (int 0) printed= 1.421 proof= 1.631 lean=2 sanity=8 E0ok=2/2 viol=0 [0.0s] argmax=('A_', 0, 1)
+n= 3 graphs=     4 (G,X)=       32 need= 0.0000 (int 0) printed= 1.667 proof= 2.000 lean=2 sanity=32 E0ok=4/4 viol=0 [0.0s] argmax=('BW', 3, 2)
+n= 4 graphs=    11 (G,X)=      176 need= 0.6667 (int 1) printed= 1.841 proof= 2.262 lean=3 sanity=176 E0ok=11/11 viol=0 [0.0s] argmax=('C^', 3, 3)
+n= 5 graphs=    23 (G,X)=      736 need= 0.3333 (int 1) printed= 1.977 proof= 2.465 lean=3 sanity=736 E0ok=23/23 viol=0 [0.0s] argmax=('DEs', 3, 3)
+n= 6 graphs=    62 (G,X)=     3968 need= 0.0000 (int 0) printed= 2.087 proof= 2.631 lean=3 sanity=3968 E0ok=62/62 viol=0 [0.0s] argmax=('E?B_', 7, 3)
+n= 7 graphs=   150 (G,X)=    19200 need= 0.6667 (int 1) printed= 2.181 proof= 2.771 lean=3 sanity=19200 E0ok=150/150 viol=0 [0.1s] argmax=('F?qr_', 28, 4)
+n= 8 graphs=   424 (G,X)=   108544 need= 1.0000 (int 1) printed= 2.262 proof= 2.893 lean=3 sanity=108544 E0ok=424/424 viol=0 [0.3s] argmax=('G?q`qg', 15, 5)
+n= 9 graphs=  1165 (G,X)=   596480 need= 1.0000 (int 1) printed= 2.333 proof= 3.000 lean=3 sanity=0 E0ok=1165/1165 viol=0 [0.3s] argmax=('H?BD@hQ', 15, 5)
+n=10 graphs=  3547 (G,X)=  3632128 need= 0.6667 (int 1) printed= 2.397 proof= 3.096 lean=3 sanity=0 E0ok=3547/3547 viol=0 [1.9s] argmax=('I??ED?qSO', 15, 5)
+n=11 graphs= 10946 (G,X)= 22417408 need= 1.0000 (int 1) printed= 2.455 proof= 3.183 lean=3 sanity=0 E0ok=10946/10946 viol=0 [12.2s] argmax=('J??E@agT?[?', 179, 6)
+n=12 graphs= 36327 (G,X)=148795392 need= 1.0000 (int 1) printed= 2.508 proof= 3.262 lean=3 sanity=0 E0ok=36327/36327 viol=0 [128.6s] argmax=('K???E?oiAg@g', 307, 6)
+## Part B: the StepBound.lean statements on every graph
+n= 1 graphs=     1 steps=       0 prefixes=       0 viol=0 [0.0s]
+n= 2 graphs=     2 steps=       2 prefixes=       1 viol=0 [0.0s]
+n= 3 graphs=     4 steps=       8 prefixes=       5 viol=0 [0.0s]
+n= 4 graphs=    11 steps=      28 prefixes=      22 viol=0 [0.0s]
+n= 5 graphs=    34 steps=      94 prefixes=      91 viol=0 [0.0s]
+n= 6 graphs=   156 steps=     415 prefixes=     466 viol=0 [0.0s]
+n= 7 graphs=  1044 steps=    2419 prefixes=    2968 viol=0 [0.1s]
+n= 8 graphs= 12346 steps=   22600 prefixes=   28012 viol=0 [2.5s]
+## Part C: pw(G) − pw(r(G)) on nauty-geng 10 r/120, r in 0,12,24,36,48,60,72,84,96,108
+slices have 1154239 graphs
+graphs=1154239 reducible=752829 hist={0: 1138400, 1: 11363, 2: 3665, 3: 811} max=(3, 'I???EAx]O') [372.1s]
+# done: 0 violations, 518 s

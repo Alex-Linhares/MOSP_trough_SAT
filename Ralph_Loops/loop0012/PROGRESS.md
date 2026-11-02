@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 10/11 SOLVED
+Current: 11/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -913,3 +913,109 @@ transfer lemma and quotes Lemma 4; `tree_pathwidth_le_log` is its tree case), or
 (3) R6 `pw(H) ≤ pw(H') + 1` per operation with `pw(H) − pw(r(H))` measured to 10
 (cheap, unconditional, not the reduction lemma), or (4) the Edwards–Farr averaging
 lemma fetched (EJC 19(2) #P25, DOI 10.37236/2378, open) and checked on the record.
+
+---
+
+## Iteration 11 — 2026-11-02 06:52–07:26 UTC — item 11 (reserve): R6 proved in Lean, the unconditional bound along a reduction, and Fomin–Høie's Lemma 4 checked exactly to 12 vertices
+
+### The choice, and the reason (the item's order of value)
+- **(1) a Lean gap left by 06–09**: none exists (R3–R4, the regular case of S1 and
+  C2 are all proved).
+- **(2) Fomin–Høie's Lemma 4 in Lean**: **priced above one sorry-free session** after
+  reading its proof (IPL 97, pp. 193–194) against the development and Mathlib. A
+  Lean proof needs path decompositions with a *prescribed last bag* (no such notion
+  exists; Cases 1–2 edit and append bags), the lemma "fewer edges than vertices ⇒ an
+  acyclic connected component" (Mathlib's `Acyclic.lean` has `IsTree.card_edgeFinset`
+  and no per-component converse), the degree-3 edge count, `tree_pathwidth_le_log`
+  transported to a component's induced subgraph, the three-piece pasting, Case 3.B's
+  re-dispatch and the induction with `ℕ` division and `Nat.log` — four of those are
+  each the size of one of this loop's Lean items. So the session did the part of
+  (2) that needs no Lean and that a Lean item needs first (below), and chose **(3)**
+  for the Lean work. (4) was not touched.
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/StepBound.lean`** (option (3); namespace
+  `MOSPFormalization.DegreeBound`, imports `Pathwidth`): **9 theorems, no `sorry`, no
+  `axiom`, no `def`**, built on the first attempt, every axiom line
+  `[propext, Classical.choice, Quot.sound]`: `SPStep.isolate_le` (`G − v ≤ H`),
+  `SPStep.adj_of_adj`, **R6 `SPStep.pathwidth_le`** (`pathwidth G ≤ pathwidth H + 1`,
+  from `pathwidth_le_pathwidth_isolate_add_one` and `pathwidth_mono`),
+  `SPStep.ndeg_eq_zero`, `SPStep.supp_ssubset`, `SPReduces.adj_of_adj_of_ndeg_pos`
+  (an edge between two vertices still of positive degree in the reduct survives),
+  `SPReduces.isolateSet_sdiff_le` (`G − (supp G ∖ supp H) ≤ H`),
+  **`SPReduces.pathwidth_le_add_card_sdiff`** (`pathwidth G ≤ pathwidth H + |supp G ∖ supp H|`)
+  and `SPReduces.pathwidth_add_card_supp_le`. **Not the reduction lemma (H3)**: the
+  budget is one per removed vertex (`ρ n = n`), useless for Corollary 5.2; said so in
+  the file header, the report and a test. Imported by `lean/MOSPFormalization.lean`;
+  `lake build` passes (`11_reserve/lake_build.log`).
+- **Lemma 4 checked exactly** (the non-Lean half of option (2)): the end-bag
+  pathwidth `pwX(G, X) = max(|X| − 1, E(X))` with `E` the reversed vertex-separation
+  DP (derivation in report §11.2; `E(∅)` = vertex separation on all 52,662 graphs as
+  the control), on **every graph of maximum degree ≤ 3 on 1–12 vertices and every
+  `X`** (`nauty-geng -D3`, 175,574,074 `(G, X)` pairs): zero violations of the lemma
+  as printed, of the lemma as its proof gives it, and of the Lean-ready integer form
+  `pwX ≤ max(|X|, n/3 + 1) + Nat.log 3 (2n + 1) + 1`. The lower-order term the record
+  needs is **at most 1** at every `n ≤ 12` against the printed `(2/3) log₃ n + 1`
+  (2.51 at 12); the record-holders are small cubic cores with four or five subdivided
+  edges and `X` the subdivision vertices.
+- **Finding in the printed proof of Lemma 4** (report §11.3; a finding about a proof,
+  not a counterexample): Case 3.A bounds the tree component by `|V(T)| ≤ 2n/3` and
+  invokes Theorem 3, which gives `log₃(2n/3) = log₃ n − 0.37`, **not** `(2/3) log₃ n`
+  (true only for `n ≤ 3`); the argument as printed proves the lemma with `log₃ n`.
+  Two smaller slips (the log term dropped from "`|X| + 1`" and "`n/3 + 2`") and one
+  rounding (Case 3.A needs only `|X| > n/3`) are recorded for a future Lean proof.
+  **No consequence for Theorem 5 or (H1)** (they need `o(n)`; `n_ε` leaves room at
+  every `ε`), none for the paper (Appendix E cites Theorem 5 only); the transfer
+  lemma stated in report §4.3 is corrected in place to `+ log₃ n + 2`. Whether the
+  statement with `(2/3) log₃ n` holds in general is open; nothing to 12 vertices
+  contradicts it.
+- **(H3)'s shape at 10 vertices**: on ten slices of `nauty-geng 10` (1,154,239 graphs,
+  9.6%, a deterministic choice of enumeration subtrees, **not** a uniform sample),
+  `pw(G) − pw(r(G))` is 0 / 1 / 2 / 3 on 1,138,400 / 11,363 / 3,665 / 811; the
+  **maximum is still 3**, as at 6–9 (item 02).
+- **Checked before stated** (`11_reserve/check.py`, `check.log`, `summary.json`; 518 s
+  on 4 workers at a load of 24–40 from the owner's work, about 0.9 core-hours): Part A
+  as above; Part B the `StepBound.lean` statements on every graph on 1–8 vertices
+  (25,566 steps; 31,565 prefixes of random maximal reductions); Part C as above.
+  **Zero violations; kill checks: none fired.**
+- **Axiom check**: 9 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`11_reserve/axiom_check.log`, 586 lines; `make -C paper1/latex axioms`: **586
+  theorems checked, 0 failures**). `STEP_BOUND_PROVED` (9 names) folded into
+  `learning.sandwich.ALL_PROVED` (390); `--stage lean` audits them
+  (`sandwich_lean.log`); `--stage degree_bound` re-run so `reports/sandwich_tables.md`
+  is byte-identical to HEAD (5,793 checks, 0 violations, `sandwich.log`).
+- **Code**: `end_bag_table`, `end_bag_pathwidth` in `learning/edwards_mcdermid.py`;
+  3 new tests in `tests/test_edwards_mcdermid.py` (55 in all): the Lean statements and
+  the end-bag sanity bounds on 150 random graphs at 2–10 vertices; the brute-force
+  summary's counts and zero violations; the 9 names declared / imported / audited.
+- **Report**: `reports/edwards_mcdermid.md` §11 (the choice and its pricing, the
+  check's table, the end-bag derivation, Lemma 4's table per `n` with the finding
+  and the Lean-ready statement, the 9 Lean statements with proofs and the "not (H3)"
+  paragraph, the 10-vertex measurement, the axiom/sandwich/test record, kill verdict,
+  what it does not claim); §0.3's two rows and §0.6's open items 1–3 updated; the
+  correction note appended under §4.3's stated transfer lemma. The paper is untouched
+  (`make check` passes as before; no Appendix A row was added — the owner places
+  one if wanted: `StepBound.lean`, R6 and the one-per-vertex bound, unconditional).
+- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,804 passed, 2
+  skipped, 1 xfailed in 276 s, the 3 new tests included; pathwidth_solver pytest 123 passed
+  in 425 s; `make -C paper1/latex check` ok, 77 pages, the paper untouched). Log:
+  `reports/scratch/edwards_mcdermid/11_reserve/gate.log`.
+
+### Blockers
+None. Notes: `make -C paper1/latex axioms` reads the *built* root module, so after
+adding an import to `MOSPFormalization.lean` run the full `lake build` before it (a
+per-file `lake build MOSPFormalization.DegreeBound.X` leaves the root stale and the
+check reports the new names missing); `python -m learning.sandwich --stage lean`
+overwrites `reports/sandwich_tables.md` — finish with `--stage degree_bound`; a single
+geng `res/mod` residue is one subtree of its enumeration (the smoke test's `0/3000`
+slice was 99.9% reducible graphs), so spread residues and still call it a slice, not a
+sample; `rcases` on a `(G ⊔ H).Adj` needs `rw [SimpleGraph.sup_adj]` first.
+
+### Next
+The loop is complete (11 of 11). Open after it, in the report's §0.6: Lemma 4 in Lean
+(its Lean-ready statement is now checked and its proof's slips mapped, §11.0 (a)–(g)
+is the work list); (H3) itself; the Edwards–Farr averaging lemma from EJC; the
+112-vertex cubic `solution` row of the dataset, the one unsolved instance this loop's
+data surfaced; the `CLAUDE.md` paragraph drafted in §10.3 (the owner places it).
+
+LOOP_COMPLETE
