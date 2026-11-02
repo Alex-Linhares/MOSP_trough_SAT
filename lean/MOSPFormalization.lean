@@ -64,3 +64,4 @@ import MOSPFormalization.Search.Layout
 import MOSPFormalization.Search.TamakiCommitment
 import MOSPFormalization.Search.WrongOptimum
 import MOSPFormalization.Search.WrongOptimumData
+import MOSPFormalization.DegreeBound.Weights

@@ -43,6 +43,7 @@ Run::
     python -m learning.sandwich --stage brute --max-n 5
     python -m learning.sandwich --stage lean
     python -m learning.sandwich --stage corpus
+    python -m learning.sandwich --stage degree_bound
 
 Writes `reports/sandwich_tables.md`. Nothing here is a bound, a solver change,
 or written to `solutions/`.
@@ -50,11 +51,14 @@ or written to `solutions/`.
 from __future__ import annotations
 
 import argparse
+import functools
 import itertools
+import math
 import re
 import subprocess
 import sys
 import time
+from fractions import Fraction
 from pathlib import Path
 
 import networkx as nx
@@ -195,8 +199,58 @@ SEPARATOR_PROVED = (
     "weightedSum_graphsOfPathwidthLe_le_closedPairCount",
     "weightedSum_graphsOfPathwidthLe_le_closedPairFormula",
 )
+#: loop0012 item 03 (`DegreeBound/Weights.lean`): the Edwards–McDermid weights `g = g_{1/6}`
+#: and `g'` — the recurrence (W1), the table to `d = 9`, Lemma 8.3 (`g` non-decreasing, W2),
+#: Lemma 8.4 (`g'` non-increasing from 3, W3), property 6 (W4), the bounds `0 ≤ g < 1`,
+#: `0 ≤ g' ≤ 1/6`, `g' ≤ g` (W5), Lemma 8.1 (the closed form) and Lemma 8.5.
+DEGREE_BOUND_PROVED = (
+    "DegreeBound.g_zero",
+    "DegreeBound.g_one",
+    "DegreeBound.g_two",
+    "DegreeBound.g_three",
+    "DegreeBound.g_add_four",
+    "DegreeBound.g_add_four_mul",
+    "DegreeBound.g_recurrence",
+    "DegreeBound.g_four",
+    "DegreeBound.g_five",
+    "DegreeBound.g_six",
+    "DegreeBound.g_seven",
+    "DegreeBound.g_eight",
+    "DegreeBound.g_nine",
+    "DegreeBound.g_table",
+    "DegreeBound.g_aux",
+    "DegreeBound.g_nonneg",
+    "DegreeBound.g_lt_one",
+    "DegreeBound.g_le_succ",
+    "DegreeBound.g_monotone",
+    "DegreeBound.g'_zero",
+    "DegreeBound.g'_one",
+    "DegreeBound.g'_two",
+    "DegreeBound.g'_succ",
+    "DegreeBound.g'_three",
+    "DegreeBound.g'_four",
+    "DegreeBound.g'_five",
+    "DegreeBound.g'_six",
+    "DegreeBound.g'_seven",
+    "DegreeBound.g'_eight",
+    "DegreeBound.g'_eq_zero_of_le_two",
+    "DegreeBound.g'_nonneg",
+    "DegreeBound.g'_le_g",
+    "DegreeBound.g'_add_five_mul",
+    "DegreeBound.g'_recurrence",
+    "DegreeBound.g'_aux",
+    "DegreeBound.g'_succ_le",
+    "DegreeBound.g'_antitone_of_three_le",
+    "DegreeBound.g'_le_sixth",
+    "DegreeBound.one_sub_g_eq",
+    "DegreeBound.altFactorial_zero",
+    "DegreeBound.altFactorial_succ",
+    "DegreeBound.g_closed_form",
+    "DegreeBound.half_le_g",
+    "DegreeBound.g_div_lt_g_div",
+)
 #: Every proved name the axiom check asks for.
-ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED
+ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 
@@ -329,6 +383,85 @@ def brute_summary(frame: pd.DataFrame) -> pd.DataFrame:
                                & (part.vertex_separation == part.bandwidth)).sum()),
         })
     return pd.DataFrame(out)
+
+
+# ----------------------------------------------------------------------------
+# `DegreeBound/Weights.lean`, transcribed (loop0012 item 03)
+# ----------------------------------------------------------------------------
+
+@functools.lru_cache(maxsize=None)
+def g_lean(n: int) -> Fraction:
+    """`g` exactly as `Weights.lean` defines it: the four cases `0, 1, 2, 3` and
+    `g (n + 4) = ((n + 2) g (n + 3) + g (n + 2) + 1) / (n + 4)`."""
+    if n in (0, 1, 2):
+        return Fraction(0)
+    if n == 3:
+        return Fraction(1, 6)
+    m = n - 4
+    return ((m + 2) * g_lean(m + 3) + g_lean(m + 2) + 1) / (m + 4)
+
+
+def g_prime_lean(n: int) -> Fraction:
+    """`g' n = g n − g (n − 1)` with Lean's truncated subtraction (`g' 0 = 0`)."""
+    return g_lean(n) - g_lean(max(n - 1, 0))
+
+
+def alt_factorial_lean(n: int) -> Fraction:
+    """`altFactorial`: `A 0 = 0`, `A (n + 1) = (n + 1)! − A n`."""
+    a = Fraction(0)
+    for k in range(1, n + 1):
+        a = math.factorial(k) - a
+    return a
+
+
+def degree_bound_check(max_n: int = 200) -> pd.DataFrame:
+    """The statements of `Weights.lean` on `0 ≤ n ≤ max_n` in exact rationals, against
+    `learning.edwards_mcdermid.g`: one row per statement, with the range it was checked
+    on and the number of `n` where it holds (every one, or the stage fails)."""
+    from learning.edwards_mcdermid import g as g_py, g_prime as gp_py, g_closed_form
+
+    rows = []
+
+    def row(name, lean_name, rng, pred):
+        ns = list(rng)
+        held = sum(1 for n in ns if pred(n))
+        rows.append({"statement": name, "Lean": lean_name,
+                     "n": f"{ns[0]}–{ns[-1]}", "checked": len(ns), "holds": held})
+
+    row("g (Lean recursion) = g (Python)", "g", range(max_n + 1), lambda n: g_lean(n) == g_py(n))
+    row("g' (Lean) = g' (Python)", "g'", range(max_n + 1), lambda n: g_prime_lean(n) == gp_py(n))
+    table = {3: Fraction(1, 6), 4: Fraction(1, 3), 5: Fraction(13, 30), 6: Fraction(23, 45),
+             7: Fraction(359, 630), 8: Fraction(1553, 2520), 9: Fraction(14827, 22680)}
+    row("the table", "g_table", range(3, 10), lambda n: g_lean(n) == table[n])
+    row("W1: n g(n) = (n − 2) g(n − 1) + g(n − 2) + 1", "g_recurrence", range(4, max_n + 1),
+        lambda n: n * g_lean(n) == (n - 2) * g_lean(n - 1) + g_lean(n - 2) + 1)
+    row("Lemma 8.3 invariant: 0 ≤ g(n) ≤ g(n+1) ≤ (1 + g(n))/2, g(n) < 1", "g_aux",
+        range(max_n), lambda n: 0 <= g_lean(n) <= g_lean(n + 1) <= (1 + g_lean(n)) / 2
+        and g_lean(n) < 1)
+    row("W2: g non-decreasing", "g_monotone", range(max_n),
+        lambda n: g_lean(n) <= g_lean(n + 1))
+    row("g'(n) = 0 for n ≤ 2", "g'_eq_zero_of_le_two", range(3), lambda n: g_prime_lean(n) == 0)
+    row("g' recurrence: n g'(n) = (n − 3) g'(n − 1) + g'(n − 2)", "g'_recurrence",
+        range(5, max_n + 1),
+        lambda n: n * g_prime_lean(n) == (n - 3) * g_prime_lean(n - 1) + g_prime_lean(n - 2))
+    row("Lemma 8.4 sandwich: g'(n)/3 ≤ g'(n+1) ≤ g'(n)", "g'_aux", range(3, max_n),
+        lambda n: g_prime_lean(n) / 3 <= g_prime_lean(n + 1) <= g_prime_lean(n))
+    row("W3: g' non-increasing from 3", "g'_antitone_of_three_le", range(3, max_n),
+        lambda n: g_prime_lean(n + 1) <= g_prime_lean(n))
+    row("W4: 1 − g(n) = (n − 1) g'(n) + g'(n − 1)", "one_sub_g_eq", range(4, max_n + 1),
+        lambda n: 1 - g_lean(n) == (n - 1) * g_prime_lean(n) + g_prime_lean(n - 1))
+    row("W5: 0 ≤ g(n) < 1", "g_nonneg, g_lt_one", range(max_n + 1),
+        lambda n: 0 <= g_lean(n) < 1)
+    row("W5: 0 ≤ g'(n) ≤ 1/6", "g'_nonneg, g'_le_sixth", range(max_n + 1),
+        lambda n: 0 <= g_prime_lean(n) <= Fraction(1, 6))
+    row("g'(n) ≤ g(n)", "g'_le_g", range(max_n + 1), lambda n: g_prime_lean(n) <= g_lean(n))
+    row("Lemma 8.1: g(n) = (7/2) A(n)/n! + (3/2)(−1)^n/n! − 5/2", "g_closed_form",
+        range(2, max_n + 1),
+        lambda n: g_lean(n) == Fraction(7, 2) * alt_factorial_lean(n) / math.factorial(n)
+        + Fraction(3, 2) * (-1) ** n / math.factorial(n) - Fraction(5, 2) == g_closed_form(n))
+    row("Lemma 8.5: g(n+1)/(n+1) < g(n)/n", "g_div_lt_g_div", range(5, max_n),
+        lambda n: g_lean(n + 1) / (n + 1) < g_lean(n) / n)
+    return pd.DataFrame(rows)
 
 
 # ----------------------------------------------------------------------------
@@ -631,10 +764,12 @@ def _md(frame: pd.DataFrame) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus", "forest", "separator"],
+    ap.add_argument("--stage", choices=["all", "brute", "lean", "corpus", "forest", "separator", "degree_bound"],
                     default="all")
     ap.add_argument("--n-graphs", type=int, default=500, help="graphs for --stage separator")
     ap.add_argument("--max-n", type=int, default=5)
+    ap.add_argument("--max-degree", type=int, default=200,
+                    help="largest n for --stage degree_bound")
     ap.add_argument("--out", type=Path, default=TABLES)
     args = ap.parse_args(argv)
 
@@ -709,6 +844,22 @@ def main(argv=None) -> int:
                      _md(summary), ""]
         print(summary.to_string(index=False))
         print(f"separator: {len(frame)} rows, {len(bad)} violations")
+
+    if args.stage in ("all", "degree_bound"):
+        t0 = time.time()
+        frame = degree_bound_check(args.max_degree)
+        bad = frame[frame.checked != frame.holds]
+        ok &= bad.empty
+        sections += ["## `DegreeBound/Weights.lean` against `learning.edwards_mcdermid` "
+                     "(loop0012 item 03)", "",
+                     f"`g` as Lean defines it (four cases and `g (n + 4)`), transcribed and compared "
+                     f"with the Python `g` in exact rationals to `n = {args.max_degree}`, and every "
+                     f"statement of the file on the range Lean states it, {time.time() - t0:.1f} s. "
+                     "`holds` must equal `checked` on every row.", "",
+                     _md(frame), ""]
+        print(frame.to_string(index=False))
+        print(f"degree bound: {int(frame.checked.sum())} checks, "
+              f"{int((frame.checked - frame.holds).sum())} violations")
 
     if args.stage in ("all", "lean"):
         if not lake_available():

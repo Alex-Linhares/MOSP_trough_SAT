@@ -11,3 +11,8 @@
 [2026-11-02 00:58:06] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-11-02 01:23:39] session it02: ok (exit 0, 43 tool calls)
 [2026-11-02 01:34:53] tests passed: GATE PASS
+[2026-11-02 01:34:54] committed 8700749f7: 02 The exact statement to formalise, every intermediate lemma brute-fo
+[2026-11-02 01:34:54] === iteration 3: 03 Lean (i): the weights `g`, `g'` and their lemmas.
+[2026-11-02 01:34:54] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-11-02 02:13:33] session it03: ok (exit 0, 32 tool calls)
+[2026-11-02 02:26:13] tests passed: GATE PASS

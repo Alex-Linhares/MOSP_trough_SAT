@@ -382,3 +382,57 @@ def test_cut_lemma_separator_form_on_random_graphs():
             p1, p2 = pathwidth_induced(adj, V1), pathwidth_induced(adj, V2)
             assert pw <= max(p1, p2) + min(b1, b2)                      # C1s
             assert pw <= max(p1 + b1, p2 + b2, b1 + b2 - 1)             # C1
+
+
+# ---------------------------------------------------------------------------
+# item 03: `lean/MOSPFormalization/DegreeBound/Weights.lean` against the Python
+# ---------------------------------------------------------------------------
+
+import re  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+WEIGHTS_LEAN = Path(__file__).resolve().parents[1] / "lean" / "MOSPFormalization" / \
+    "DegreeBound" / "Weights.lean"
+
+
+def test_weights_lean_transcription_agrees_to_200():
+    """`g` as `Weights.lean` defines it (transcribed in `learning.sandwich.g_lean`) equals
+    the Python `g` to `n = 200` in exact rationals, and so do `g'` and the closed form."""
+    import learning.sandwich as sw
+    for n in range(201):
+        assert sw.g_lean(n) == g(n), n
+        assert sw.g_prime_lean(n) == g_prime(n), n
+    for n in range(2, 60):
+        assert sw.alt_factorial_lean(n) == alternating_factorial(n), n
+
+
+def test_degree_bound_stage_has_no_violation():
+    import learning.sandwich as sw
+    frame = sw.degree_bound_check(60)
+    assert (frame.checked == frame.holds).all(), frame[frame.checked != frame.holds]
+    assert len(frame) == 16
+
+
+def test_degree_bound_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `Weights.lean` is declared there as a
+    theorem; the file has no `sorry` and no `axiom`; the root module imports it; and
+    `paper1/axiom_check.lean` prints the axioms of every one."""
+    import learning.sandwich as sw
+    src = WEIGHTS_LEAN.read_text()
+    declared = set(re.findall(r"^(?:@\[simp\] )?theorem\s+([^\s:({\[]+)", src, re.M))
+    missing = [n for n in sw.DEGREE_BOUND_PROVED if n.split(".")[-1] not in declared]
+    assert not missing, missing
+    assert all(n.startswith("DegreeBound.") for n in sw.DEGREE_BOUND_PROVED)
+    assert set(sw.DEGREE_BOUND_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (WEIGHTS_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.Weights\n" in root
+    axioms = (WEIGHTS_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.DEGREE_BOUND_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("g_recurrence", "g_monotone", "g'_antitone_of_three_le", "one_sub_g_eq",
+              "g_closed_form", "g_div_lt_g_div"):
+        assert f"DegreeBound.{n}" in sw.DEGREE_BOUND_PROVED

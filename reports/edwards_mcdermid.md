@@ -597,3 +597,101 @@ S1′ (every maximum-degree `w`) is **false** (§2.4) and must not be stated; it
 | `pathwidth_le_degreeSum_of_hypotheses` (A2) | … `→ ∀ G, (pathwidth G : ℚ) ≤ ∑ v, g (H.degree v) + τ n + 3 ρ n + 1` for every reduced reduct `H` of `G`, and `≤ ∑ v, g (G.degree v) + …` | `exists_reduced_reduct`, (H3) for `G →* H`, A1, `fminus ≤ f` (W5), R2 and W2 |
 
 `paper1/axiom_check.lean` gets a `#print axioms` line for every row; `learning/sandwich.py --stage degree_bound` pins `g` to the table and `fminus` to `learning.edwards_mcdermid.fminus` on 500 random graphs.
+
+---
+
+## 3. Lean (i): the weights `g`, `g'` and their lemmas (item 03, 2026-11-02)
+
+**Question.** Can `g_{1/6}` and the five properties the reduction theorem uses
+be proved in Lean in `ℚ`? **Yes**: `lean/MOSPFormalization/DegreeBound/Weights.lean`,
+two definitions (`g`, `g'`) and one helper (`altFactorial`), **44 theorems, no
+`sorry`, no `axiom`**, every one reporting exactly `propext, Classical.choice,
+Quot.sound` in `paper1/axiom_check.lean` (44 new lines; the audit is 351 lines,
+0 failures). The file compiles in 8.1 s; `lake build` passes
+(`reports/scratch/edwards_mcdermid/03_weights/lake_build.log`, `axiom_check.log`).
+The arithmetic is in `ℚ` throughout, as plan §0.5 decided. Only `α = 1/6`.
+
+**Checked before it was stated.** Item 02 checked W1–W5 to `n = 40`;
+`03_weights/check.py` re-checks every statement in the exact form Lean proves
+it — the four-case recursion against the Python `g`, the coupled invariant of
+Lemma 8.3, the `g'` recurrence and sandwich of Lemma 8.4, property 6, Lemma 8.1
+with `A 0 = 0, A (n+1) = (n+1)! − A n`, Lemma 8.5 and its auxiliary
+`g n ≥ 1/2 > n/(2n+1)` for `n ≥ 6` — in exact rationals to **`n = 200`**, zero
+failures (`check.log`). The same transcription is now the sandwich stage
+`python -m learning.sandwich --stage degree_bound` (`sandwich.log`: 16 rows,
+**2,793 checks, 0 violations**; `learning.sandwich.g_lean`, `g_prime_lean`,
+`alt_factorial_lean`, `degree_bound_check`, `DEGREE_BOUND_PROVED` ⊆ `ALL_PROVED`,
+so `--stage lean` prints the 44 axiom lines too). Three new tests in
+`tests/test_edwards_mcdermid.py` (the transcription to 200, the stage, the
+names declared / imported / audited).
+
+### 3.1 Definitions
+
+| Lean | statement | note |
+|---|---|---|
+| `g : ℕ → ℚ` | `g 0 = g 1 = g 2 = 0`, `g 3 = 1/6`, `g (n + 4) = ((n + 2) g (n + 3) + g (n + 2) + 1) / (n + 4)` | the paper's recurrence `n g n = (n − 2) g (n − 1) + g (n − 2) + 1` at `n = m + 4`; the item's `g (n + 2)` form is the same recurrence shifted |
+| `g' (n : ℕ) : ℚ := g n − g (n − 1)` | natural subtraction, so `g' 0 = 0` | the plan's literal form; `g'_succ : g' (n + 1) = g (n + 1) − g n` is the rewriting lemma |
+| `altFactorial : ℕ → ℚ` | `A 0 = 0`, `A (n + 1) = (n + 1)! − A n` | `A 1 = 1, A 2 = 1, A 3 = 5`; only for Lemma 8.1 |
+
+### 3.2 Theorems (namespace `MOSPFormalization.DegreeBound`)
+
+| # | Lean name | statement | proof |
+|---|---|---|---|
+| — | `g_zero, g_one, g_two, g_three` | `g 0 = 0, g 1 = 0, g 2 = 0, g 3 = 1/6` | `rfl` |
+| — | `g_add_four`, `g_add_four_mul` | the recurrence at `m + 4`, as a quotient and multiplied out | `rw [g]`, `mul_div_cancel₀` |
+| W1 | `g_recurrence` | `4 ≤ n → n * g n = (n − 2) * g (n − 1) + g (n − 2) + 1` | `g_add_four_mul`, `omega` on the subtractions, `linear_combination` |
+| — | `g_four … g_nine`, `g_table` | `1/3, 13/30, 23/45, 359/630, 1553/2520, 14827/22680` (the paper's table p. 7 to 8, and 9) | `norm_num [g_add_four]` |
+| 8.3 | `g_aux` | `0 ≤ g n ∧ g n ≤ g (n + 1) ∧ g (n + 1) ≤ (1 + g n) / 2 ∧ g n < 1`, every `n` | induction; the step at `n = m + 2` multiplies by `m + 4 > 0` and uses `g (m+3) < 1`, `g (m+2) < 1` |
+| W5 | `g_nonneg`, `g_lt_one`, `g_le_succ` | `0 ≤ g n`, `g n < 1`, `g n ≤ g (n + 1)` | from `g_aux` |
+| W2 | `g_monotone` | `Monotone g` | `monotone_nat_of_le_succ` |
+| — | `g'_succ`, `g'_zero, g'_one, g'_two`, `g'_three … g'_eight` | `g' (n+1) = g (n+1) − g n`; `0, 0, 0, 1/6, 1/6, 1/10, 7/90, 37/630, 13/280` | `simp`, the table |
+| — | `g'_eq_zero_of_le_two` | `n ≤ 2 → g' n = 0` | `interval_cases` |
+| W5 | `g'_nonneg` | `0 ≤ g' n` | `g_monotone (Nat.sub_le n 1)` |
+| — | `g'_le_g` | `g' n ≤ g n` | `g_nonneg (n − 1)` (the `j₄` lemma of item 07 uses it) |
+| — | `g'_add_five_mul`, `g'_recurrence` | `(m + 5) g' (m + 5) = (m + 2) g' (m + 4) + g' (m + 3)`; `5 ≤ n → n * g' n = (n − 3) * g' (n − 1) + g' (n − 2)` | W1 at `m + 5` minus W1 at `m + 4` |
+| 8.4 | `g'_aux` | `3 ≤ n → g' (n + 1) ≤ g' n ∧ g' n / 3 ≤ g' (n + 1)` | `Nat.le_induction` from the base `g' 4 = g' 3 = 1/6`; the step at `n = m + 3` multiplies by `m + 5 > 0`: `(m+5)(g'(m+4) − g'(m+5)) = 3 g'(m+4) − g'(m+3) ≥ 0` and `(m+5)(g'(m+5) − g'(m+4)/3) = (2m+1) g'(m+4)/3 + g'(m+3) ≥ 0` |
+| W3 | `g'_succ_le`, `g'_antitone_of_three_le` | `3 ≤ n → g' (n + 1) ≤ g' n`; `3 ≤ m → m ≤ n → g' n ≤ g' m` | `Nat.le_induction` |
+| W5 | `g'_le_sixth` | `g' n ≤ 1/6`, every `n` | `n ≤ 2` by `g'_eq_zero_of_le_two`, else `g' n ≤ g' 3` |
+| W4 | `one_sub_g_eq` | `4 ≤ n → 1 − g n = (n − 1) * g' n + g' (n − 1)` | W1 at `m + 4`, `linear_combination` |
+| 8.1 | `altFactorial_zero`, `altFactorial_succ`, `g_closed_form` | `2 ≤ n → g n = (7/2) A n / n! + (3/2) (−1)^n / n! − 5/2` | strong induction, bases 2 and 3 by `norm_num`, the step by `field_simp; ring` after `n! = n (n−1)(n−2)!` and `A n = (n−1)² (n−2)! + A (n−2)`; the identity holds with `A (n−2)`, `(n−2)!` and `(−1)^(n−2)` as free atoms |
+| — | `half_le_g` | `6 ≤ n → 1/2 ≤ g n` | `g_six`, `g_monotone` |
+| 8.5 | `g_div_lt_g_div` | `5 ≤ n → g (n + 1) / (n + 1) < g n / n` | `n = 5` by the table (`13/150 > 23/270`); `n ≥ 6`: `(n+1)(g(n+1) n) = n((n−1) g n + g(n−1) + 1)` and `g(n−1) ≤ g n`, `g n ≥ 1/2` give `(n)(g n + 1) ≤ (3n+1) g n`, strict since `n/(2n+1) < 1/2 ≤ g n`. **False at `n = 4`** (`g 4 / 4 = 1/12 < 13/150 = g 5 / 5`): the paper's "from 5" is exact |
+
+Names follow §2.6 (`g_monotone`, `g'_antitone_of_three_le`, `one_sub_g_eq`);
+the item's `g_mono` and `g'_antitone` are those two. `g_div_antitone` of the
+item is `g_div_lt_g_div` (strict, one step; the chain over `m ≤ n` follows by
+`Nat.le_induction` as for `g'`, not stated since nothing downstream uses it).
+
+**The axiom lines.** All 44 are `[propext, Classical.choice, Quot.sound]`,
+including the `rfl` table entries: `g` is compiled by Lean's recursion
+machinery and its unfolding lemma carries the standard axioms, as every
+theorem of this development does (`axiom_check.log`, lines
+`MOSPFormalization.DegreeBound.*`). No line reports `sorryAx`.
+
+### 3.3 What items 05–08 get from this file
+
+`g'_nonneg`, `g_nonneg` (P1, the component potential is non-negative);
+`g'_le_g` (S0, the `j₄` lemma); `g'_antitone_of_three_le` and `g'_le_sixth`
+(P2, S1 — the item's warning that 07 will not start without W3 is moot);
+`one_sub_g_eq` (P2, the `j`-accounting at the chosen vertex); `g_monotone`
+and `g_lt_one` (the `f(G') ≤ f(G) − 1` step of P2); `g'_eq_zero_of_le_two`
+(isolated and reduced-away vertices carry no marginal weight, plan §0.5);
+`g_three`, `g'_three`, `g_four` (`K₄`, the cubic case `f⁻ = N/6 − 1/6`:
+`g 3 = g' 3 = 1/6`). Lemma 8.1 and Lemma 8.5 are not used downstream and were
+proved because time remained.
+
+**Kill verdict.** None (the item had none; the two inductions are the paper's,
+checked in item 02 to 40 and here to 200).
+
+**Size range.** Not applicable (every `n`; the exact checks to `n = 200`).
+
+**Regenerate.** `python3 reports/scratch/edwards_mcdermid/03_weights/check.py`;
+`cd lean && lake build`; `cd lean && lake env lean ../paper1/axiom_check.lean`
+(or `make -C paper1/latex axioms`); `python -m learning.sandwich --stage degree_bound`;
+`python -m pytest tests/test_edwards_mcdermid.py -q`.
+
+**What this does not claim.** Anything about `g_α` for `α ≠ 1/6`, about the
+real-interpolated `g` (Theorem 5.3's form is not formalised), or about graphs:
+this file is arithmetic in `ℚ` and nothing in it mentions a `SimpleGraph`.
+The axiom lines certify Lean's kernel check of these 44 statements; they say
+nothing about the two cited hypotheses (H1), (H3), which enter at item 09.

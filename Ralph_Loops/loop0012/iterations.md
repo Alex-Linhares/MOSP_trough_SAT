@@ -201,7 +201,7 @@ statement checked on small graphs before it is stated.
   - **Does not claim.** Anything for `n > 9`; that (H1) or (H3) hold (they
     are cited, and only their shape is looked at here).
 
-- [ ] **03 Lean (i): the weights `g`, `g'` and their lemmas.**
+- [x] **03 Lean (i): the weights `g`, `g'` and their lemmas.**
   - **Question.** Can the function `g_{1/6}` and the five properties the
     reduction theorem uses be proved in Lean in `ℚ`?
   - **Method.** New file `lean/MOSPFormalization/DegreeBound/Weights.lean`,

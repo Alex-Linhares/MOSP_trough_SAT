@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 2/11 SOLVED
+Current: 3/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -241,3 +241,61 @@ the per-`n` counters and maxima for later items.
 Item 03: `DegreeBound/Weights.lean` — `g`, `g'` and W1–W5 as listed, with
 the two induction invariants named above (both checked to `n = 40` in exact
 rationals here), the sandwich pin in `learning/sandwich.py`.
+
+---
+
+## Iteration 3 — 2026-11-02 01:35–02:13 UTC — item 03: Lean (i), the weights `g`, `g'` and their lemmas
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/Weights.lean`**: `g : ℕ → ℚ` (four
+  cases and `g (n + 4) = ((n + 2) g (n + 3) + g (n + 2) + 1) / (n + 4)`),
+  `g' n = g n − g (n − 1)` (the plan's literal form, natural subtraction),
+  `altFactorial`; **44 theorems, no `sorry`, no `axiom`**, in `ℚ` throughout:
+  `g_recurrence` (W1), `g_four … g_nine` and `g_table` (to `d = 9`), `g_aux`
+  (the coupled invariant of Lemma 8.3 with `g n < 1`), `g_nonneg`, `g_lt_one`,
+  `g_monotone` (W2), `g'_succ`, `g'_zero … g'_eight`, `g'_eq_zero_of_le_two`,
+  `g'_nonneg`, `g'_le_g`, `g'_recurrence` (`n ≥ 5`), `g'_aux` (the sandwich of
+  Lemma 8.4), `g'_succ_le`, `g'_antitone_of_three_le` (W3), `g'_le_sixth`,
+  `one_sub_g_eq` (W4), and the two optional ones: `g_closed_form` (Lemma 8.1,
+  with `altFactorial_zero/succ`) and `g_div_lt_g_div` (Lemma 8.5, strict from
+  5; false at 4, as the paper says) with `half_le_g`. Imported by
+  `lean/MOSPFormalization.lean`; builds in 8.1 s; `lake build` passes
+  (`reports/scratch/edwards_mcdermid/03_weights/lake_build.log`).
+- **Checked before stated**: `03_weights/check.py` — every statement in the
+  exact form Lean proves it, in exact rationals to `n = 200`, zero failures
+  (`check.log`); item 02 had W1–W5 to 40.
+- **Axiom check**: 44 new `#print axioms` lines in `paper1/axiom_check.lean`;
+  every one `[propext, Classical.choice, Quot.sound]` (`axiom_check.log`;
+  `make -C paper1/latex axioms`: 351 theorems checked, 0 failures).
+- **Sandwich stage** `python -m learning.sandwich --stage degree_bound`:
+  `g_lean`, `g_prime_lean`, `alt_factorial_lean` transcribed from Lean,
+  `degree_bound_check` (16 rows, **2,793 checks, 0 violations**, `sandwich.log`),
+  `DEGREE_BOUND_PROVED` (44 names) folded into `ALL_PROVED` so `--stage lean`
+  audits them too.
+- **Tests**: 3 new in `tests/test_edwards_mcdermid.py` (33 in all): the
+  transcription to 200, the stage, the names declared / imported / audited.
+- **Report**: `reports/edwards_mcdermid.md` §3 (definitions, the 44 statements
+  with their proofs, the axiom lines, what items 05–08 get, kill verdict none,
+  regenerate commands, what it does not claim).
+- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,782
+  passed, 2 skipped, 1 xfailed in 896 s and pathwidth_solver pytest 123 passed
+  in 796 s — both 2–3× their usual time under a machine load of 50–58 from the
+  owner's other work; `make -C paper1/latex check` ok, 74 pages, the paper
+  untouched). Log: `03_weights/gate.log`.
+
+### Blockers
+None. Notes for later items: `g_zero … g_three` are `rfl` but their axiom lines
+still show the standard three (the compiled recursion's unfolding), so no
+theorem of the file is axiom-free — nothing to do, recorded so nobody chases it;
+in current Mathlib `le_or_lt` is `le_or_gt` (use `Nat.lt_or_ge`); `linear_combination`
+coefficients for the `(m + 4)`-multiplied recurrence are `±1`, not `±1/2`, when
+the target was already divided by 2; `field_simp; ring` closes Lemma 8.1's step
+only after `(m + 3)!` is also rewritten to `(m + 3)(m + 2)!`.
+
+### Next
+Item 04: `DegreeBound/CutLemma.lean` — `boundary G S`,
+`pathwidth_le_max_add_min_boundary` (C1s) from
+`pathwidth_le_pathwidth_induce_add_card_compl`, `pathwidth_induce_union_le_max`
+and `pathwidth_le_of_injective`; `pathwidth_le_cut` (C1); `BisectionTree` with
+`pathwidth_le_of_bisectionTree` (C2s) and the factor-2 corollary (C2); checked
+on every partition of every graph to 9 in item 02 (71,967,757).
