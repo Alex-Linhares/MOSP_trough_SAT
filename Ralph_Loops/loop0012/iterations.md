@@ -421,7 +421,7 @@ statement checked on small graphs before it is stated.
   - **Does not claim.** The existence of `X` (item 08); anything about
     pathwidth.
 
-- [ ] **08 Lean (iv-b): Theorem 3.2 — the reduction theorem by induction.**
+- [x] **08 Lean (iv-b): Theorem 3.2 — the reduction theorem by induction.**
   - **Question.** Does the induction on the support size assemble, from
     items 05–07, the statement: for every `G` with `IsSPReduced G` there
     are `X ⊆ support G` and `B` with `SPReduces (G.deleteVerts X) B`

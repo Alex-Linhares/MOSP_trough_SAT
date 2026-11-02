@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 7/11 SOLVED
+Current: 8/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -639,3 +639,108 @@ R5 `SPReduces.sup_of_disjoint`, `potentialMinus_add`); connected non-basic →
 `SPReduces.isolateSet_comm` with `X* ⊆ supp G*`, transitivity,
 `X = insert w X*`. Checked in item 02 on all 89,972 reduced non-empty graphs
 to 9 (T1), with `r(G − X) = B` on all.
+
+---
+
+## Iteration 8 — 2026-11-02 04:46–05:20 UTC — item 08: Lean (iv-b), Theorem 3.2, the reduction theorem by induction on the support
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean`** (namespace
+  `MOSPFormalization.DegreeBound`, imports `Step`): **41 theorems and one
+  structure, no `sorry`, no `axiom`**, every theorem
+  `[propext, Classical.choice, Quot.sound]`. **T1** `exists_reduction_set`:
+  `IsSPReduced G → G ≠ ⊥ → ∃ X B (_ : DecidableRel B.Adj), IsReductionSet G X B`
+  (the six clauses `X ⊆ supp G`, `SPReduces (G − X) B`, `B ≠ ⊥`, `IsSPReduced B`,
+  `IsBasic B`, `|X| + f⁻(B) ≤ f⁻(G)` as a `Prop` structure; the instance on `B` is
+  bound in the existential because `potentialMinus B` needs one), and
+  `exists_reduction_set_and` in §2.6's conjunction form. **Neither fallback of the
+  item is used**: S1 is item 07's lemma, R3–R4 are item 06's theorems, and no
+  confluence fact appears anywhere. The proof `exists_reduction_set_of_card` is a
+  strong induction on `|supp G|` quantifying over the graph *and its instance*,
+  with the paper's three cases: `isReductionSet_empty` (basic);
+  `exists_reduction_set_of_split` + `isReductionSet_sup` (support disconnected:
+  `C` the component of a support vertex `u` missing a support vertex `v`,
+  `G = G|C ⊔ G|Cᶜ`, both halves reduced, non-empty and smaller, the hypothesis on
+  each, R5 twice, `isSPReduced_sup`, `isBasic_sup`, `potentialMinus_add` on both
+  sides); `isReductionSet_insert` (connected non-basic: the two-key `w`, a reduced
+  reduct `G*` of `G − w` under a classical instance, `X = insert w X*`, R4 for
+  `(G − w) − X* →* G* − X*`, S1 for the inequality). Supporting lemmas: the
+  degrees of `G|S` for `S` closed under adjacency and `isSPReduced_restrict`;
+  `isolateSet_sup`, `isolateSet_union_of_forall_not_adj`; the transfer of "basic"
+  to a disjoint union through `isBasic_clause_of_agree` (for any `H ≥ G₁` agreeing
+  with `G₁` at the `G₁`-vertices, the `H`-component of such a vertex is its
+  `G₁`-component — `reachable_iff_of_agree`, `supp_eq_of_agree`); and the
+  per-component statements for item 09: `isBasic_component`,
+  `compPotential_cubic` (`= |C|/6 − 1/6`), `compPotential_ge_five_sixths` (for
+  components with a vertex of degree `≥ 4` — *not* "second kind", §2.1 (3)),
+  `five_le_card_compFinset`, `compPotential_cubic_or_ge_five_sixths`. Imported by
+  `lean/MOSPFormalization.lean`; compiled on the first attempt (one style warning,
+  `letI` → `let`); `lake build` passes (`08_reduction/lake_build.log`, 1.4 s).
+- **Checked before stated** (`08_reduction/check.py`, `check.log`, `summary.json`;
+  2.8 s on 8 workers at load 0.3): every graph on 1–9 vertices (288,266), the
+  **Lean induction replayed** on each of the 89,972 reduced non-empty ones
+  (item 02's T1 count to the graph; 214,768 recursion nodes: 89,973 basic, 1
+  disconnected, 124,794 connected; R4 decided by a search over step sequences on
+  all 124,794; `|X|` = 0–5 on 5,209 / 47,734 / 34,067 / 2,923 / 38 / 1), plus
+  20,000 random disjoint pairs on `≤ 5` vertices (9,203 both reduced, 14,201 both
+  basic; 8,212 unions through the induction, where the disconnected case fires
+  3,556 times with R5 by search 7,112 times); the per-component statements on
+  290,103 + 16,424 components; `restrict` degrees and the `isolateSet` identity
+  on every graph. **Zero violations; kill checks: none fired.**
+- **Axiom check**: 41 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`08_reduction/axiom_check.log`; `make -C paper1/latex axioms`: **556 theorems
+  checked, 0 failures**). `REDUCTION_THEOREM_PROVED` (41 names) folded into
+  `learning.sandwich.ALL_PROVED`; `--stage lean` audits them
+  (`sandwich_lean.log`), `--stage degree_bound` re-run so `reports/sandwich_tables.md`
+  is byte-identical to HEAD (4,293 checks, 0 violations).
+- **Tests**: 3 new in `tests/test_edwards_mcdermid.py` (47 in all): the induction
+  replayed on 300 random reduced graphs at 4–13 vertices, about half disjoint
+  unions, every clause of T1 with `SPReduces` by search and the three union
+  transfers; the brute-force summary's counts and zero violations; the 41 names
+  declared / imported / audited, no `sorry`, no `axiom`, T1 stated with
+  `IsSPReduced G` and `G ≠ ⊥`, no `Confluence` and no `hstep` in the code.
+- **Report**: `reports/edwards_mcdermid.md` §8 (the check's table, definitions,
+  the 41 statements with their proofs grouped as the Lean file is, seven choices
+  beyond §2.6 and the item's wording, the axiom record, kill verdict none,
+  regenerate commands, what it does not claim).
+- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,796
+  passed, 2 skipped, 1 xfailed in 326 s, the 3 new tests included;
+  pathwidth_solver pytest 123 passed in 390 s; `make -C paper1/latex check` ok,
+  74 pages, the paper untouched). Log: `08_reduction/gate.log`.
+
+### Blockers
+None. Notes for later items: a lemma named `IsSPReduced.restrict` or `IsBasic.sup`
+would have its own name shadow the def `restrict` / the `⊔` lemma inside its body
+(the declaration's namespace is open there), so the transfer lemmas are
+`isSPReduced_restrict`, `isSPReduced_sup`, `isBasic_sup`, `isBasic_component`; a
+component of `G₁ ⊔ G₂` is not a term of `(G₂ ⊔ G₁).ConnectedComponent`, so a
+symmetric argument by `sup_comm` does not typecheck per component — state the
+transfer for a general `H ≥ G₁` that agrees with `G₁` at the `G₁`-vertices and
+apply it on either side; `set C := … with h` makes `C` a let-variable whose body
+defeq is not reliably available to `exact`, so the split is a separate lemma with
+`C : Set V` abstract and closure under adjacency as a hypothesis; a strong
+induction over graphs must quantify over the `DecidableRel` instance too
+(`∀ G [DecidableRel G.Adj], …`) and the hypothesis is applied as
+`@ih m hm H instH rfl …`; `∃ (_ : DecidableRel B.Adj), …` binds a usable local
+instance (Mathlib's `∃ (_ : Fintype α), …` pattern); `Finset.card_union_of_disjoint`
+is a simp alias of `card_union_eq_card_add_card` and still works as a rewrite;
+`rw [sup_comm a b] at h` needs the *present* order of `a ⊔ b` in `h`, not the
+target order. For item 09: `exists_reduction_set G hG hne` gives
+`⟨X, B, instB, h⟩` with `h.subset_supp`, `h.reduces`, `h.ne_bot`, `h.reduced`,
+`h.basic`, `h.card_add_le`; the per-component bound adds `compPotential` over
+`potentialMinus_eq_sum_compPotential` using `isBasic_component`,
+`compPotential_cubic` and `compPotential_nonneg`; `pathwidth (G − X) + |X|` is the
+`pathwidth_le_pathwidth_induce_add_card_compl` route of §2.6, and the pathwidth of
+`restrict G C.supp` is the component's.
+
+### Next
+Item 09: `DegreeBound/Pathwidth.lean` — the named `Prop`s `CubicPathwidthBound τ`
+and `ReductionPathwidthBound ρ`; `pathwidth_le_pathwidth_isolateSet_add_card`,
+`pathwidth_eq_pathwidth_induce_supp`, `pathwidth_le_max_components`,
+`pathwidth_basic_le` (`≤ f⁻(B) + τ n + ρ n + 1`, per component: cubic by (H1)
+and `compPotential_cubic`; second kind by `pathwidth_le_pathwidth_erase_add_one`,
+(H3) to `⊥`, `compPotential_nonneg`), A1 `pathwidth_le_potential_of_hypotheses`
+(`+ τ n + 2 ρ n + 1`, from T1, the deletion lemma and (H3) for `G − X →* B`), A2
+`pathwidth_le_degreeSum_of_hypotheses` (`+ τ n + 3 ρ n + 1`); `#print axioms`
+rows; `learning/sandwich.py --stage degree_bound` extended. Checked in item 02 as
+A1/A2 on every graph to 9 (§2.3) with the budgets of §2.5.

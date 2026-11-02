@@ -433,9 +433,54 @@ STEP_PROVED = (
     "DegreeBound.StepData.one_add_F_le",
     "DegreeBound.StepData.one_add_potentialMinus_le",
 )
+#: `DegreeBound/ReductionTheorem.lean` (loop0012 item 08): Theorem 3.2 and its lemmas.
+REDUCTION_THEOREM_PROVED = (
+    "DegreeBound.exists_adj_of_ndeg_pos",
+    "DegreeBound.ne_bot_of_adj",
+    "DegreeBound.exists_adj_of_reachable_of_ne",
+    "DegreeBound.eq_of_reachable_of_forall_not_adj",
+    "DegreeBound.supp_subset_of_le",
+    "DegreeBound.potentialMinus_congr",
+    "DegreeBound.SPReduces.exists_adj_of_exists_adj",
+    "DegreeBound.neighborSet_restrict_of_mem",
+    "DegreeBound.ndeg_restrict_of_mem",
+    "DegreeBound.ndeg_restrict_of_not_mem",
+    "DegreeBound.isSPReduced_restrict",
+    "DegreeBound.adj_closed_compl",
+    "DegreeBound.adj_closed_supp_connectedComponent",
+    "DegreeBound.ndeg_sup_of_forall_not_adj_right",
+    "DegreeBound.ndeg_sup_of_forall_not_adj_left",
+    "DegreeBound.isSPReduced_sup",
+    "DegreeBound.disjoint_supp_of_forall_not_adj",
+    "DegreeBound.reachable_iff_of_agree",
+    "DegreeBound.supp_eq_of_agree",
+    "DegreeBound.adj_iff_of_mem_supp_of_agree",
+    "DegreeBound.isBasic_clause_of_agree",
+    "DegreeBound.isBasic_sup",
+    "DegreeBound.isolateSet_sup",
+    "DegreeBound.isolateSet_union_of_forall_not_adj",
+    "DegreeBound.isolateSet_union_of_forall_not_adj_left",
+    "DegreeBound.mem_compFinset_iff_mem_supp",
+    "DegreeBound.isBasic_component",
+    "DegreeBound.insert_neighborFinset_subset_compFinset",
+    "DegreeBound.five_le_card_compFinset",
+    "DegreeBound.compPotential_cubic",
+    "DegreeBound.compPotential_ge_five_sixths",
+    "DegreeBound.compPotential_cubic_or_ge_five_sixths",
+    "DegreeBound.IsReductionSet.card_le_potentialMinus",
+    "DegreeBound.IsReductionSet.congr_left",
+    "DegreeBound.isReductionSet_empty",
+    "DegreeBound.isReductionSet_insert",
+    "DegreeBound.isReductionSet_sup",
+    "DegreeBound.exists_reduction_set_of_split",
+    "DegreeBound.exists_reduction_set_of_card",
+    "DegreeBound.exists_reduction_set",
+    "DegreeBound.exists_reduction_set_and",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
-              + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED)
+              + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED
+              + REDUCTION_THEOREM_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

@@ -1491,3 +1491,261 @@ maximum-degree `w` (it does not, §2.4); that the brute-force counts are
 evidence beyond 9 vertices (the Lean theorem is the evidence for every
 finite graph); that the branch frequencies (315 / 125,252 / 7,478 / 10 at
 `n ≤ 9`) say anything about larger graphs.
+
+---
+
+## 8. Lean (iv-b): Theorem 3.2, the reduction theorem, by induction on the support (item 08, 2026-11-02)
+
+**Deliverable.** `lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean` (namespace
+`MOSPFormalization.DegreeBound`, imports `Step`): Theorem 3.2 of Edwards & McDermid
+(2015, p. 9) in the one-vertex-type design — for every `G` with every degree `0` or
+`≥ 3` and `G ≠ ⊥` there are `X ⊆ supp G` and a graph `B` with `SPReduces (G − X) B`,
+`B ≠ ⊥`, `B` reduced and basic, and `|X| + f⁻(B) ≤ f⁻(G)` (**T1**,
+`exists_reduction_set`) — and **41 theorems and one structure, no `sorry`, no
+`axiom`**, every theorem `[propext, Classical.choice, Quot.sound]`. S1 is a *lemma*
+(item 07 proved all four cases), so the item's fallback (`hstep` as a hypothesis,
+"proved modulo the regular-case lemma") is not used; R3–R4 are proved (item 06), so
+the named `Prop` `ReductionConfluence` is not needed, and **no confluence fact
+appears anywhere in the chain**. Imported by `lean/MOSPFormalization.lean`;
+`lake build` passes (`reports/scratch/edwards_mcdermid/08_reduction/lake_build.log`,
+the file built in 1.4 s); the file compiled on its first attempt with one style
+warning (`letI` where `let` is preferred in a proof) and no change to any statement.
+
+**Regenerate.** `cd lean && lake build`; `make -C paper1/latex axioms`;
+`nice -n 19 python3 reports/scratch/edwards_mcdermid/08_reduction/check.py --max-n 9 --workers 8 --pairs 20000`
+(2.8 s on 8 workers at load 0.3; `check.log`, `summary.json`);
+`python -m learning.sandwich --stage lean` (audits the 41 names), then
+`--stage degree_bound`.
+
+**Size range.** The Lean statements hold on every finite graph (kernel-checked).
+The brute-force check is every graph on 1–9 vertices from `nauty-geng`
+(288,266 graphs; the induction replayed on each of the 89,972 reduced non-empty
+ones), plus 20,000 random disjoint pairs of graphs on `≤ 5` vertices (unions on
+`≤ 10`), of which 8,212 have both halves reduced and non-empty and go through the
+induction too. Nothing beyond 10 vertices was checked.
+
+### 8.1 Checked before stated (`08_reduction/check.py`, `check.log`, `summary.json`)
+
+Item 02 checked T1 through Algorithm X on the same 89,972 graphs (§2.3). This item
+replays the **Lean induction** instead — which case fires at each node, and the
+statements that case combines — and checks the lemmas no earlier item stated: the
+transfers of "reduced" and "basic" to a disjoint union, the degrees of `G|S`, the
+`isolateSet` identities, and the per-component statements for item 09. `SPReduces`
+is decided by a search over step sequences (every step empties a vertex).
+
+| statement | Lean name | checked on | result |
+|---|---|---|---|
+| **T1**: `X ⊆ supp G`, `G − X →* B`, `B ≠ ⊥`, `B` reduced, `B` basic, `|X| + f⁻(B) ≤ f⁻(G)` | `exists_reduction_set` | 89,972 graphs + 8,212 unions | 0 failures |
+| the induction: basic → `(∅, G)`; disconnected → split, recurse twice, union; connected → `w`, `G*`, recurse, insert | `exists_reduction_set_of_card` | 214,768 + 19,377 recursion nodes (basic 89,973 + 11,768; disconnected 1 + 3,556; connected 124,794 + 4,053) | 0 |
+| connected step: `Δ ≥ 4`, `G* ≠ ⊥`, `G*` reduced, `supp G* ⊊ supp G`, `w ∉ supp G*`, `1 + f⁻(G*) ≤ f⁻(G)`, `w ∉ X*`, `X* ⊆ supp G*`, `G − ({w} ∪ X*) = (G − w) − X*`, **R4** `(G − w) − X* →* G* − X*` by search | `isReductionSet_insert` | 128,847 | 0 |
+| disconnected step: both halves reduced, non-empty, of smaller support; `G|C ⊔ G|Cᶜ = G`; `X₁ ⊆ C`, `X₂ ⊆ Cᶜ`; `G − (X₁ ∪ X₂) = (G|C − X₁) ⊔ (G|Cᶜ − X₂)`; **R5** twice by search; `B₁ ⊔ B₂` reduced and basic; `f⁻` additive on both sides | `exists_reduction_set_of_split`, `isReductionSet_sup`, `isolateSet_sup`, `isolateSet_union_of_forall_not_adj` | 3,557 | 0 |
+| a component of `B₁ ⊔ B₂` containing a `B₁`-vertex is a `B₁`-component | `supp_eq_of_agree` | 7,114 components | 0 |
+| `ndeg (G|S) x = ndeg G x` on `S`, `0` off it, `S` closed under adjacency; `G|S` reduced when `G` is | `ndeg_restrict_of_mem`, `_of_not_mem`, `isSPReduced_restrict` | 288,257 graphs (the component of the lowest support vertex) + 34,556 vertices in the splits | 0 |
+| `isolateSet G (X ∪ Y) = isolateSet G X` for `Y` off the support (random `X`, `Y`) | `isolateSet_union_of_forall_not_adj` | 288,266 + 8,212 | 0 |
+| reduced ∧ reduced ⇒ reduced; basic ∧ basic ⇒ basic; `f⁻` adds — on two graphs embedded on disjoint vertex sets | `isSPReduced_sup`, `isBasic_sup`, `potentialMinus_add` | 20,000 pairs (9,203 both reduced, 14,201 both basic) | 0 |
+| cubic component ⇒ `compPotential = |C|/6 − 1/6` | `compPotential_cubic` | 81 + 4,137 cubic components | 0 |
+| every degree `≥ 3` on `C` and some `≥ 4` ⇒ `compPotential ≥ 5/6` and `|C| ≥ 5`; every reduced component is one or the other; `compPotential ≥ 0` | `compPotential_ge_five_sixths`, `five_le_card_compFinset`, `compPotential_cubic_or_ge_five_sixths` | 290,103 + 16,424 components (90,203 + 12,287 reduced non-cubic) | 0 |
+
+Per `n`, T1 instances 1 / 4 / 23 / 173 / 2,763 / 87,008 at `n = 4 … 9` (item 02's
+column); `|X|` is 0 / 1 / 2 / 3 / 4 / 5 on 5,209 / 47,734 / 34,067 / 2,923 / 38 / 1 of
+the 89,972. **The disconnected case fires on exactly one graph to 9 vertices**
+(`K₄ ⊔ K₅`-type unions need 9 vertices and two reduced components), which is why
+the pair phase exists: on the 8,212 random unions it fires 3,556 times. **Kill
+checks: none fired.**
+
+### 8.2 Definitions
+
+- `structure IsReductionSet G X B : Prop` (instances on `G` and `B`) with the six
+  fields `subset_supp : X ⊆ supp G`, `reduces : SPReduces (isolateSet G X) B`,
+  `ne_bot : B ≠ ⊥`, `reduced : IsSPReduced B`, `basic : IsBasic B`,
+  `card_add_le : (X.card : ℚ) + potentialMinus B ≤ potentialMinus G`;
+  `IsReductionSet.card_le_potentialMinus` (`|X| ≤ f⁻(G)`),
+  `IsReductionSet.congr_left` (independence of the instance on `G`).
+- The theorem's existential carries the instance:
+  `∃ (X : Finset V) (B : SimpleGraph V) (_ : DecidableRel B.Adj), IsReductionSet G X B`
+  — `potentialMinus B` needs a `DecidableRel B.Adj` and `B` is bound by the
+  existential, so the instance is bound beside it (Mathlib's `∃ (_ : Fintype α), …`
+  pattern). `exists_reduction_set_and` is the same statement as a conjunction, in
+  the form of §2.6.
+- No new graph operation: `restrict`, `isolateSet`, `isolate` are item 06's and
+  `Minor.lean`'s; the "component of `u`" is `(G.connectedComponentMk u).supp : Set V`,
+  closed under adjacency (`adj_closed_supp_connectedComponent`), and the split is
+  `restrict G C ⊔ restrict G Cᶜ = G` (item 06's `restrict_sup_restrict_compl`).
+
+### 8.3 The statements and their proofs
+
+**Small facts (7).** `exists_adj_of_ndeg_pos`, `ne_bot_of_adj`,
+`exists_adj_of_reachable_of_ne`, `eq_of_reachable_of_forall_not_adj` (a vertex with
+no edge reaches only itself), `supp_subset_of_le` (`G ≤ G' ⇒ supp G ⊆ supp G'`),
+`potentialMinus_congr` (two instances, one value), and R2 in the vocabulary of
+edges, `SPReduces.exists_adj_of_exists_adj` (a vertex with an edge in the reduct
+had one before) — the form the disconnected step needs to place `B₁`'s edges in `C`.
+
+**`restrict` (6).** With `S` closed under adjacency
+(`∀ a b, G.Adj a b → (a ∈ S ↔ b ∈ S)`), `(G|S).neighborSet x = G.neighborSet x` for
+`x ∈ S` (`neighborSet_restrict_of_mem`), so `ndeg (G|S) x = ndeg G x`
+(`ndeg_restrict_of_mem`) and `= 0` off `S` (`ndeg_restrict_of_not_mem`); hence
+`isSPReduced_restrict`. `adj_closed_compl` passes closure to `Sᶜ`;
+`adj_closed_supp_connectedComponent` is closure for a component
+(`connectedComponentMk_eq_of_adj`).
+
+**Disjoint unions, "reduced" (4).** `ndeg_sup_of_forall_not_adj_right` /
+`_left` (the degree in `G₁ ⊔ G₂` at a vertex with no `G₂`-edge is its `G₁`-degree),
+`isSPReduced_sup` (by cases on whether `v` has a `G₁`-edge),
+`disjoint_supp_of_forall_not_adj` (the instance-free disjointness hypothesis
+`∀ a, (∃ z, G₁.Adj a z) → ∀ z, ¬ G₂.Adj a z` gives `Disjoint (supp G₁) (supp G₂)`,
+which `potentialMinus_add` wants).
+
+**Disjoint unions, "basic" (5).** The general lemma: if `H ≥ G₁` **agrees with
+`G₁` at every vertex that has a `G₁`-edge** (`∀ a, (∃ z, G₁.Adj a z) → ∀ z, H.Adj a z ↔ G₁.Adj a z`),
+then from such a vertex `v` reachability is the same in `H` and `G₁`
+(`reachable_iff_of_agree`: induction on an `H`-walk with the invariant "the current
+vertex has a `G₁`-edge"), so the `H`-component of `v` equals its `G₁`-component as a
+vertex set (`supp_eq_of_agree`), every vertex of it has `H`-edges = `G₁`-edges
+(`adj_iff_of_mem_supp_of_agree`), hence the same `ndeg` and the same `restrict`,
+and the clause of `IsBasic` — cubic, or `∃ x ∈ K.supp, SPReduces (isolate (restrict H K.supp) x) ⊥`
+— transfers from `IsBasic G₁` (`isBasic_clause_of_agree`). `isBasic_sup` applies it
+with `H = G₁ ⊔ G₂` twice (a vertex of positive degree in the union has a `G₁`-edge
+or a `G₂`-edge; `le_sup_left` / `le_sup_right`), which sidesteps the type mismatch
+between `(G₁ ⊔ G₂).ConnectedComponent` and `(G₂ ⊔ G₁).ConnectedComponent` that a
+`sup_comm` argument would run into.
+
+**`isolateSet` (3).** `isolateSet_sup` (distributes over `⊔`),
+`isolateSet_union_of_forall_not_adj` and `_left` (vertices with no edge may be
+added to the deleted set for free). Together:
+`(G|C ⊔ G|Cᶜ) − (X₁ ∪ X₂) = (G|C − X₁) ⊔ (G|Cᶜ − X₂)` since `X₂` has no `G|C`-edges
+and `X₁` no `G|Cᶜ`-edges.
+
+**Per component (7), for item 09.** `mem_compFinset_iff_mem_supp`;
+`isBasic_component` (the clause of `IsBasic` with `G.degree` and `compFinset`:
+a component with a vertex of positive degree is cubic or has `u` with
+`SPReduces (isolate (restrict G C.supp) u) ⊥`);
+`insert_neighborFinset_subset_compFinset`; `five_le_card_compFinset`;
+`compPotential_cubic` (`Σ_{v ∈ C} g 3 − g' 3 = |C|/6 − 1/6`, directly from the
+definition — no `restrict` needed); `compPotential_ge_five_sixths` (item 05's
+`potentialMinus_ge_five_sixths` argument run inside one component: `g 4 + 4 · g 3 − 1/6`);
+`compPotential_cubic_or_ge_five_sixths` (in a reduced graph every non-trivial
+component is cubic or has a vertex of degree `≥ 4`).
+
+**Theorem 3.2 (9).** `isReductionSet_empty` (basic: `X = ∅`, `B = G`;
+`isolateSet_empty`, `SPReduces.refl`). `isReductionSet_insert` — the connected
+non-basic step, the paper's p. 9: from `IsReductionSet G* X* B` with `G*` a
+reduced reduct of `G − w` and `w` the two-key choice, `IsReductionSet G (insert w X*) B`:
+`w ∈ supp G` (`Δ ≥ 4`), `w ∉ supp G*` (`supp G* ⊆ supp (G − w)`), so `w ∉ X*` and
+`|insert w X*| = |X*| + 1`; `G − insert w X* = (G − w) − X*` (`isolateSet_insert`,
+`isolateSet_comm_isolate`); `(G − w) − X* →* G* − X*` is **R4**
+(`SPReduces.isolateSet_comm` with `X* ⊆ supp G*`), then `G* − X* →* B`; and
+`|X*| + 1 + f⁻(B) ≤ 1 + f⁻(G*) ≤ f⁻(G)` is the hypothesis and **S1**
+(`one_add_potentialMinus_le`). `isReductionSet_sup` — the disconnected step
+assembled: reduction sets of `G₁`, `G₂` with disjoint supports union to one of
+`G₁ ⊔ G₂` (the `isolateSet` identity, **R5** `SPReduces.sup_of_disjoint` twice —
+first lifting `G₁ − X₁ →* B₁` beside `G₂ − X₂`, then `G₂ − X₂ →* B₂` beside `B₁`,
+whose edges lie in `C` by `exists_adj_of_exists_adj` — `isSPReduced_sup`,
+`isBasic_sup`, `B₁ ⊔ B₂ ≠ ⊥` from `B₁ ≠ ⊥`, `card_union_of_disjoint` and
+`potentialMinus_add` on both sides). `exists_reduction_set_of_split` — with `C`
+closed under adjacency, `u ∈ C` and `v ∉ C` in the support: `G|C` and `G|Cᶜ` are
+reduced (`isSPReduced_restrict`), non-empty (`u`'s and `v`'s edges), of smaller
+support (`v ∉ supp (G|C)`, `u ∉ supp (G|Cᶜ)`); the induction hypothesis on each,
+`isReductionSet_sup`, and `IsReductionSet.congr_left` across
+`restrict G C ⊔ restrict G Cᶜ = G`. `exists_reduction_set_of_card` — strong
+induction on `|supp G|`, quantifying over the graph *and its instance*, with the
+three cases: `IsBasic G`; the support connected (`exists_paper_choice`,
+`exists_reduced_reduct (isolate G w)`, a classical instance for `G*`,
+`nonbasic_reduct_ne_bot`, `supp G* ⊊ supp G`, the hypothesis, `isReductionSet_insert`);
+the support disconnected (`¬ ∀ u v ∈ supp G, Reachable u v` gives `u`, `v`;
+`C := (G.connectedComponentMk u).supp`; `exists_reduction_set_of_split`).
+`exists_reduction_set` (**T1**) instantiates it; `exists_reduction_set_and` is §2.6's
+conjunction.
+
+### 8.4 Choices beyond §2.6 and the item's wording
+
+1. **The paper's "if `n < 4` there is nothing to prove" is the hypothesis `G ≠ ⊥`**
+   (§2.1 (6)); the paper's "a component with at least 4 vertices" is never needed
+   as such — `Δ ≥ 4` in the connected non-basic case comes from item 07's
+   `four_le_degree_of_not_isBasic`, and a non-empty reduced graph has a support.
+2. **The instance on `B` is bound in the existential.** §2.6 wrote
+   `∃ X B, … fminus B ≤ fminus G`; `potentialMinus` takes `[DecidableRel B.Adj]`
+   and nothing supplies one for a bound `B`, so the statement is
+   `∃ X B (_ : DecidableRel B.Adj), IsReductionSet G X B`. Item 09 receives the
+   instance with `B`; `IsReductionSet.congr_left` and `potentialMinus_congr`
+   show the value does not depend on it.
+3. **The disconnected case is a general lemma on unions, not a component
+   bijection.** The item's "split off one component `C`, `G = G|_C ⊔ G|_{Cᶜ}`"
+   is done with `C` an arbitrary set closed under adjacency containing a support
+   vertex and missing another; the recursion is on `G|C` and `G|Cᶜ`, each of
+   smaller support, and `isReductionSet_sup` is stated for any two graphs with
+   disjoint supports. The "lemma: steps inside `C` commute with the other part"
+   the item asks for is item 06's R5, used twice.
+4. **"Basic" on a union goes through an agreement lemma, not through
+   `reachable_sup_iff`.** Item 05's `reachable_sup_iff` needs instances and
+   `Disjoint (supp G₁) (supp G₂)`, and a component of `G₁ ⊔ G₂` is not a term of
+   `(G₂ ⊔ G₁).ConnectedComponent`, so a symmetric argument by `sup_comm` does not
+   typecheck per component. `isBasic_clause_of_agree` is stated for any `H ≥ G₁`
+   that agrees with `G₁` at the `G₁`-vertices, and is applied to `G₁ ⊔ G₂` on
+   either side. The disjointness hypothesis is instance-free throughout
+   (`∀ a, (∃ z, G₁.Adj a z) → ∀ z, ¬ G₂.Adj a z`), converted to
+   `Disjoint (supp G₁) (supp G₂)` only where `potentialMinus_add` is called.
+5. **`potentialMinus_basic_component` is two statements with the hypothesis
+   corrected** (§2.1 (3)): `compPotential_cubic` for cubic components, and
+   `compPotential_ge_five_sixths` for components with a vertex of degree `≥ 4`
+   (*not* "second kind": `K₄` is cubic and of the second kind with `f⁻ = 1/2`).
+   Both are direct from the definition of `compPotential`, so no
+   `compPotential G C = potentialMinus (restrict G C.supp)` bridge was needed;
+   `compPotential_cubic_or_ge_five_sixths` covers every non-trivial component of a
+   reduced graph. Item 09's assembly needs only `compPotential_nonneg` (item 05)
+   and `compPotential_cubic`; the floor is on record because the item asked.
+6. **The induction quantifies over the instance.** `exists_reduction_set_of_card`
+   is `∀ n, ∀ G [DecidableRel G.Adj], |supp G| = n → …`, so that `G*` (from
+   `exists_reduced_reduct`, which carries none) can be given `Classical.decRel`
+   and the halves `G|C`, `G|Cᶜ` their classical instances, with the induction
+   hypothesis applied under the same instance that `one_add_potentialMinus_le`
+   and `nonbasic_reduct_ne_bot` see.
+7. **`SPReduces (G − X) B` is checked by search in the brute force** (`sp_reaches`,
+   a depth-first search over step sequences with a visited set), so R4 and R5 are
+   checked as reachability facts, not re-derived from the step sequence.
+
+### 8.5 Axiom lines, tests, regenerate
+
+- 41 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`08_reduction/axiom_check.log`); `make -C paper1/latex axioms`: **556 theorems
+  checked, 0 failures**, every line `[propext, Classical.choice, Quot.sound]`.
+  `REDUCTION_THEOREM_PROVED` (41 names) is folded into
+  `learning.sandwich.ALL_PROVED`; `python -m learning.sandwich --stage lean`
+  audits them (`08_reduction/sandwich_lean.log`; `--stage degree_bound` re-run
+  afterwards so `reports/sandwich_tables.md` is byte-identical to HEAD, 4,293
+  checks, 0 violations).
+- Tests: 3 new in `tests/test_edwards_mcdermid.py` (47 in all): the Lean induction
+  replayed on 300 random reduced graphs at 4–13 vertices, about half of them
+  disjoint unions (every clause of T1, `SPReduces` by search, the three union
+  transfers); the brute-force summary's counts (288,266 graphs, 89,972 T1
+  instances, 290,103 components, the three cases partitioning the recursion
+  nodes, `≥ 1,000` disconnected cases on the unions) and zero violations; the 41
+  names declared (namespaces resolved) / imported / audited, no `sorry`, no
+  `axiom`, the structure present, T1 stated with `IsSPReduced G` and `G ≠ ⊥`, and
+  neither `Confluence` nor `hstep` anywhere in the code.
+- No new sandwich stage: nothing numerical beyond item 05's `potentialMinus`.
+
+### 8.6 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion); neither fallback of the
+item's text is used — S1 is a lemma and R3–R4 are theorems — so Theorem 3.2 is
+proved outright over `SimpleGraph V`, with "the reduct `r(G − X)`" read as "some
+reduced reduct `B`".
+
+**What item 09 gets.** `exists_reduction_set` (`X`, `B`, its instance, the six
+clauses); `isBasic_component` to read `B`'s components; `compPotential_cubic`
+and `compPotential_nonneg` (item 05) for the two kinds; `potentialMinus_eq_sum_compPotential`
+(item 05) to add them; `IsReductionSet.card_le_potentialMinus` if a bound on `|X|`
+alone is wanted; `supp_subset_of_le`, `potentialMinus_congr`, `ne_bot_of_adj` as
+conveniences.
+
+**Does not claim.** Anything about pathwidth (item 09) or about the hypotheses
+(H1), (H3); uniqueness of `X` or of `B` (the induction makes choices — the vertex
+`u` whose component is split off, the tie among two-key vertices, the reduct —
+and any choice works); that the paper's Algorithm X and this induction produce the
+same `X` (item 02's Algorithm X reduces component by component; this induction
+splits first — both satisfy the theorem, and the check did not compare them);
+that `|X|`'s distribution at `n ≤ 9` (0–5) says anything about larger graphs;
+that the floor `5/6` is for the second kind (it is for non-cubic components); that
+`isBasic_sup`'s converse holds (it does — the brute force found no pair where the
+union is basic and a half is not — but it is not stated in Lean and not needed).

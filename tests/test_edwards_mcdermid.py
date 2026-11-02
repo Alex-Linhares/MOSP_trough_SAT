@@ -849,3 +849,144 @@ def test_step_proved_names_are_theorems_in_the_lean_file():
     assert "structure StepData" in src and "def minNbrDeg" in src
     # the two-key rule is a hypothesis of the theorem; S1′ (every maximum-degree w) is not stated
     assert "minNbrDeg G w ≤ minNbrDeg G u" in src
+
+
+# ----------------------------------------------------------------------------
+# item 08: Theorem 3.2, the reduction theorem (`DegreeBound/ReductionTheorem.lean`)
+# ----------------------------------------------------------------------------
+
+REDUCTION_THEOREM_LEAN = WEIGHTS_LEAN.parent / "ReductionTheorem.lean"
+
+
+def _sp_reaches(G, H):
+    """`SPReduces G H` decided by a search over step sequences (every step empties a vertex)."""
+    from learning.edwards_mcdermid import sp_step, step_vertices
+    target = tuple(H)
+    seen = {tuple(G)}
+    stack = [list(G)]
+    while stack:
+        cur = stack.pop()
+        if tuple(cur) == target:
+            return True
+        for v in step_vertices(cur):
+            nxt = sp_step(cur, v)
+            if tuple(nxt) not in seen:
+                seen.add(tuple(nxt))
+                stack.append(nxt)
+    return False
+
+
+def _lean_recursion(adj, rng):
+    """The induction of `exists_reduction_set_of_card`, replayed: basic → (∅, G); support
+    disconnected → split off the component of a random support vertex, recurse on both
+    halves, union; connected non-basic → the two-key `w`, a random reduct `G*` of `G − w`,
+    recurse, insert `w`. Returns `(X, B)`."""
+    from learning.edwards_mcdermid import (bits, components, is_basic, isolate, paper_choice,
+                                          reduce_random, restrict, support)
+    n = len(adj)
+    supp = support(adj)
+    if is_basic(adj):
+        return 0, adj
+    comps = components(adj)
+    if len(comps) >= 2:
+        u = rng.choice(list(bits(supp)))
+        C = next(c for c in comps if (c >> u) & 1)
+        X1, B1 = _lean_recursion(restrict(adj, C), rng)
+        X2, B2 = _lean_recursion(restrict(adj, ((1 << n) - 1) & ~C), rng)
+        return X1 | X2, [a | b for a, b in zip(B1, B2)]
+    _, chosen, _ = paper_choice(adj)
+    w = rng.choice(chosen)
+    Xs, B = _lean_recursion(reduce_random(isolate(adj, w), rng), rng)
+    return Xs | (1 << w), B
+
+
+def test_reduction_theorem_in_the_lean_form_on_random_graphs():
+    """T1 as `ReductionTheorem.lean` proves it, on random reduced graphs (including disjoint
+    unions, so that the disconnected case fires): `X ⊆ supp G`, `G − X →* B` (by search),
+    `B ≠ ⊥`, `B` reduced and basic, `|X| + f⁻(B) ≤ f⁻(G)`; and the two transfer lemmas, that
+    "reduced" and "basic" pass to a union with disjoint supports and that `f⁻` adds."""
+    import random
+    from learning.edwards_mcdermid import fminus, is_basic, is_reduced, isolate_set, support
+    rng = random.Random(808)
+    done = disconnected = 0
+    for _ in range(300):
+        n1 = rng.randint(4, 7)
+        a1 = _random_connected_min3(rng, n1)
+        adj = a1
+        if rng.random() < 0.5:
+            n2 = rng.randint(4, 6)
+            a2 = _random_connected_min3(rng, n2)
+            adj = a1 + [0] * n2
+            other = [0] * n1 + [a << n1 for a in a2]
+            # SUP: reduced and basic pass to the union; f⁻ adds
+            assert is_reduced([x | y for x, y in zip(adj, other)])
+            if is_basic(adj) and is_basic(other):
+                assert is_basic([x | y for x, y in zip(adj, other)])
+            assert fminus([x | y for x, y in zip(adj, other)]) == fminus(adj) + fminus(other)
+            adj = [x | y for x, y in zip(adj, other)]
+            disconnected += 1
+        assert is_reduced(adj) and any(adj)
+        X, B = _lean_recursion(adj, rng)
+        done += 1
+        assert X & ~support(adj) == 0
+        assert any(B) and is_reduced(B) and is_basic(B)
+        assert X.bit_count() + fminus(B) <= fminus(adj)
+        assert _sp_reaches(isolate_set(adj, X), B)
+    assert done == 300 and disconnected >= 100
+
+
+def test_item08_brute_force_log_has_no_violation():
+    """The exhaustive check to 9 vertices (`08_reduction/check.py`) was run and found nothing;
+    its T1 count is item 02's (89,972 reduced non-empty graphs), and the disconnected case of
+    the induction fired on the random disjoint unions."""
+    import json
+    p = REDUCTION_THEOREM_LEAN.parents[3] / "reports/scratch/edwards_mcdermid/08_reduction/summary.json"
+    if not p.exists():
+        pytest.skip("brute-force summary not present")
+    s = json.loads(p.read_text())
+    assert s["violations"] == 0
+    assert s["total"]["T1"] == 89972 and s["total"]["graphs"] == 288266
+    assert s["total"]["CP_components"] == 290103
+    assert s["pairs"]["union_case_disconnected"] >= 1000
+    assert s["total"]["rec_calls"] == s["total"]["case_basic"] + s["total"]["case_disconnected"] + s["total"]["case_connected"]
+
+
+def test_reduction_theorem_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `ReductionTheorem.lean` is declared there as a
+    theorem (namespaces resolved); the file has no `sorry` and no `axiom`; the root module
+    imports it; `paper1/axiom_check.lean` prints the axioms of every one; T1 is stated with
+    `IsSPReduced G` and `G ≠ ⊥` and no confluence hypothesis."""
+    import learning.sandwich as sw
+    src = REDUCTION_THEOREM_LEAN.read_text()
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    ns, declared = [], set()
+    for line in code.splitlines():
+        m = re.match(r"^namespace\s+(\S+)", line)
+        if m:
+            ns.append(m.group(1))
+            continue
+        m = re.match(r"^end\s+(\S+)", line)
+        if m and ns and ns[-1] == m.group(1):
+            ns.pop()
+            continue
+        m = re.match(r"^theorem\s+([^\s:({\[]+)", line)
+        if m:
+            declared.add(".".join(ns[1:] + [m.group(1)]))
+    assert set(sw.REDUCTION_THEOREM_PROVED) == {"DegreeBound." + n for n in declared}
+    assert len(sw.REDUCTION_THEOREM_PROVED) == len(declared) == 41
+    assert set(sw.REDUCTION_THEOREM_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (REDUCTION_THEOREM_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.ReductionTheorem\n" in root
+    axioms = (REDUCTION_THEOREM_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.REDUCTION_THEOREM_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("exists_reduction_set", "exists_reduction_set_and", "isReductionSet_insert",
+              "isReductionSet_sup", "isBasic_sup", "isSPReduced_sup", "compPotential_cubic",
+              "compPotential_ge_five_sixths", "isBasic_component"):
+        assert f"DegreeBound.{n}" in sw.REDUCTION_THEOREM_PROVED
+    assert "structure IsReductionSet" in src
+    assert "(hG : IsSPReduced G)\n    (hne : G ≠ ⊥)" in src
+    assert "Confluence" not in code and "hstep" not in code

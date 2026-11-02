@@ -1,0 +1,96 @@
+# session it08 started 2026-11-02 04:46:37
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 8: item 08, Theorem 3.2 (the reduction theorem) in Lean. First I'll read the existing Lean files for items 05–07 and the plan's relevant parts, then check the statement by brute force, then write the file.
+  > $ uptime && date -u && ls lean/MOSPFormalization/DegreeBound/ && wc -l lean/MOSPFormalization/DegreeBound/*.lean && cat Ralph_Loops/loop0012/iterations.md | head 
+  > $ cat lean/MOSPFormalization/DegreeBound/Potential.lean
+  > $ cat lean/MOSPFormalization/DegreeBound/SPReduction.lean
+  > $ sed -n 1,200p lean/MOSPFormalization/DegreeBound/SPReduction.lean
+  > $ sed -n 200,450p lean/MOSPFormalization/DegreeBound/SPReduction.lean
+  > $ sed -n 450,662p lean/MOSPFormalization/DegreeBound/SPReduction.lean
+
+Still reading the existing Lean (items 05–07) before writing anything. Next: Step.lean, the plan's §0.5 and the report's §2.6/§7, item 02's T1 check.
+  > $ cat lean/MOSPFormalization/DegreeBound/Step.lean
+  > $ grep -n "0.5\|^## \|^### " reports/edwards_mcdermid_plan.md | head -60; echo ----; grep -n "^## \|^### " reports/edwards_mcdermid.md
+  > $ sed -n 421,479p reports/edwards_mcdermid_plan.md; echo ======; sed -n 322,383p reports/edwards_mcdermid.md; echo ======; sed -n 501,603p reports/edwards_mcdermi
+  > $ sed -n 1285,1520p reports/edwards_mcdermid.md
+  > $ grep -n "T1\|algorithm_x\|def check_\|def worker\|def main" reports/scratch/edwards_mcdermid/02_lemmas/check.py | head -40; echo ====; grep -n "T1\|algorithm_x"
+  > $ sed -n 320,362p reports/scratch/edwards_mcdermid/02_lemmas/check.py; echo ====07; sed -n 80,223p reports/scratch/edwards_mcdermid/07_step/check.py
+  > $ echo "== axiom_check tail"; tail -30 paper1/axiom_check.lean; echo "== imports"; grep -n "DegreeBound" lean/MOSPFormalization.lean; echo "== isolate"; grep -n -
+
+Now I have the full picture of items 05–07. Next, in one pass: the Python helpers the brute-force check will reuse, and the Mathlib lemma names the Lean file will need.
+  > $ sed -n 145,200p learning/edwards_mcdermid.py; sed -n 294,315p learning/edwards_mcdermid.py; sed -n 405,545p learning/edwards_mcdermid.py
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; grep -rn "theorem card_union_of_disjoint\|theorem card_union_eq_card_add_card\|lemma card_union_o
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "card_union_of_disjoint" $M/Data/Finset/Card.lean | head -3; grep -rn "theorem ssubset_iff_of_subset\|lemma ssubset_i
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/08_reduction && cat > /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/08_reduction/check.py <<'EO
+  > $ python3 - <<'EOF'
+p = "reports/scratch/edwards_mcdermid/08_reduction/check.py"
+s = open(p).read()
+old = '''    cnt["both_reduced"] += int(r1 and r2)
+    cnt["bo
+
+The disconnected case now fires. Launching the full run to 9 vertices in the background, and in the same turn I'll check two Lean name facts I still need before writing the file.
+  > $ nohup nice -n 19 python3 reports/scratch/edwards_mcdermid/08_reduction/check.py --max-n 9 --workers 8 --pairs 20000 > reports/scratch/edwards_mcdermid/08_reduct
+  > $ cd /home/al/dev/MOSP/lean && sed -n 420,436p .lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Connectivity/Connected.lean; grep -n "theorem Reachable.mo
+  > $ cd /home/al/dev/MOSP && sed -n 272,280p lean/MOSPFormalization/DegreeBound/Weights.lean; grep -n "theorem g'_three\|theorem g_four\b\|theorem g_four " lean/MOSP
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean
+  > $ cd /home/al/dev/MOSP/lean && time lake env lean MOSPFormalization/DegreeBound/ReductionTheorem.lean 2>&1 | head -80
+  > $ cd /home/al/dev/MOSP && sed -i 's/    letI instGs : DecidableRel Gs.Adj := Classical.decRel _/    let instGs : DecidableRel Gs.Adj := Classical.decRel _/' lean/
+  > $ cd /home/al/dev/MOSP && grep -c "warning\|error" reports/scratch/edwards_mcdermid/08_reduction/lake_build.log; grep -n "ReductionTheorem" reports/scratch/edward
+  > $ echo "== log matches"; grep -n "error" reports/scratch/edwards_mcdermid/08_reduction/lake_build.log | head -5; grep -n "warning" reports/scratch/edwards_mcdermi
+  > $ cat >> paper1/axiom_check.lean <<'EOF'
+-- loop0012 item 08: Theorem 3.2, the reduction theorem (DegreeBound/ReductionTheorem.lean)
+#print axioms MOSPFormalizati
+  > $ cat >> tests/test_edwards_mcdermid.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# item 08: Theorem 3.2, the reduc
+  > $ sed -n 920,930p tests/test_edwards_mcdermid.py; nice -n 19 python3 -m pytest tests/test_edwards_mcdermid.py -q -p no:cacheprovider -k lean_form_on_random 2>&1 |
+  > $ python3 - <<'EOF'
+p = "tests/test_edwards_mcdermid.py"
+s = open(p).read()
+old = "        a1 = _random_connected_min3(rng, n1)\n        if rng.random() < 0.5:\n"
+
+Tests pass (47) and the gate is running in the background (PID recorded). While it runs, the report's §8.
+  > $ cat >> reports/edwards_mcdermid.md <<'EOF'
+
+---
+
+## 8. Lean (iv-b): Theorem 3.2, the reduction theorem, by induction on the support (item 08, 2026-11-02)
+
+**Del
+  > $ ps -p $(cat reports/scratch/edwards_mcdermid/08_reduction/gate.pid) -o pid,etime,cmd | tail -1; cat reports/scratch/edwards_mcdermid/07_step/gate.log | head -20
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ PID=$(cat reports/scratch/edwards_mcdermid/08_reduction/gate.pid); until ! kill -0 $PID 2>/dev/null; do sleep 5; done; tail -6 reports/scratch/edwards_mcdermid/
+  > $ python3 - <<'EOF'
+p = "Ralph_Loops/loop0012/PROGRESS.md"
+s = open(p).read()
+assert "Current: 7/11 SOLVED" in s
+s = s.replace("Current: 7/11 SOLVED", "Current: 8
+  > $ git status --short | grep -v "Ralph_Loops/loop0012/\(loop.log\|nohup.out\|status.json\|session_it08\)"; ps -p $(cat reports/scratch/edwards_mcdermid/08_reductio
+
+The tree holds only the item's files. The gate has about nine minutes left; I'll block on its process in the foreground rather than end the turn on a background wait.
+  > $ PID=$(cat reports/scratch/edwards_mcdermid/08_reduction/gate.pid); timeout 590 tail --pid=$PID -f /dev/null; echo "exit=$?"; date -u; cat reports/scratch/edward
+
+Gate passed. Last step: fill in the gate line and end time in PROGRESS.md.
+  > $ python3 - <<'EOF'
+p = "Ralph_Loops/loop0012/PROGRESS.md"
+s = open(p).read()
+assert s.count("GATE_LINE") == 1 and s.count("GATE_END") == 1
+s = s.replace("GATE_EN
+
+Item 08 is done, and the gate passed. The iteration ran 04:46 to 05:20 UTC.
+
+**What was proved.** `lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean` states Theorem 3.2 of Edwards & McDermid as `exists_reduction_set`: for every reduced non-empty graph there are `X ⊆ supp G` and a reduced basic `B ≠ ⊥` with `SPReduces (G − X) B` and `|X| + f⁻(B) ≤ f⁻(G)`. The file holds 41 theorems and one structure, no `sorry`, no `axiom`, every theorem on the standard three axioms. Neither fallback the item provided for is used: S1 is item 07's lemma and R3–R4 are item 06's theorems, so no confluence fact appears anywhere. The proof is a strong induction on the support size with the paper's three cases. The disconnected case needed two transfer lemmas the plan did not list, that "reduced" and "basic" pass to a union of graphs with disjoint supports. The basic one goes through a general agreement lemma rather than a symmetric `sup_comm` argument, because a component of `G₁ ⊔ G₂` is not a term of the other union's component type.
+
+**Checked before stated.** The Lean induction was replayed on every graph to 9 vertices, 288,266 graphs and 89,972 reduced non-empty ones, matching item 02's T1 count exactly, plus 20,000 random disjoint pairs so the disconnected case fires often. It fires on exactly one single graph to 9 vertices, and 3,556 times on the unions. Reachability under reduction was decided by search. Zero violations.
+
+**Records.** Axiom audit 556 theorems, 0 failures. Sandwich registry extended by the 41 names, tables byte-identical to HEAD. Three new tests, 47 in the module. Report §8 appended to `reports/edwards_mcdermid.md`. PROGRESS.md has the iteration 8 entry with notes for item 09, the item is marked `- [x]`, and the count reads 8/11.
+
+**One correction carried forward.** The item's "second kind ⇒ `f⁻ ≥ 5/6`" is stated with the hypothesis "a vertex of degree ≥ 4" instead, since `K₄` is cubic and of the second kind with `f⁻ = 1/2`. Item 09 needs only the cubic equality and non-negativity, both on record.
+
+**Next** is item 09, the pathwidth assembly under the two named hypotheses.
+
+# result: success in 2045s, 39 turns, cost $18.67
