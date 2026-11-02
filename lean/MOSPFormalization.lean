@@ -70,3 +70,4 @@ import MOSPFormalization.DegreeBound.Potential
 import MOSPFormalization.DegreeBound.SPReduction
 import MOSPFormalization.DegreeBound.Step
 import MOSPFormalization.DegreeBound.ReductionTheorem
+import MOSPFormalization.DegreeBound.Pathwidth

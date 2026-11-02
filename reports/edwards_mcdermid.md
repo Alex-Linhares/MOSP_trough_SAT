@@ -1749,3 +1749,283 @@ that `|X|`'s distribution at `n ≤ 9` (0–5) says anything about larger graphs
 that the floor `5/6` is for the second kind (it is for non-cubic components); that
 `isBasic_sup`'s converse holds (it does — the brute force found no pair where the
 union is basic and a half is not — but it is not stated in Lean and not needed).
+
+---
+
+## 9. Lean (iv-c, vi): the pathwidth assembly under the named hypotheses, Corollary 5.2's form, the axiom check (item 09, 2026-11-02)
+
+**What this is.** `lean/MOSPFormalization/DegreeBound/Pathwidth.lean` closes the
+development: Lemma 5.1 and Corollary 5.2 of Edwards & McDermid (2015) are
+theorems of Lean, **conditional on two cited results that are stated as named
+`Prop`s and never asserted** — (H1) the cubic base case (Fomin & Høie 2006,
+Theorem 5) and (H3) the reduction lemma (Kneis, Mölle, Richter & Rossmanith
+2009, not held). Every statement in the file is `[propext, Classical.choice,
+Quot.sound]`; there is no `sorry` and no `axiom` anywhere in the development.
+This is a formalisation of a published theorem, conditional on two cited
+results; nothing here is new mathematics, and the budgets `τ`, `ρ` are
+abstract — the paper gives no constants (plan §0.3), and this file asserts
+none.
+
+The theorems, with the budget each uses (`n = |V|`):
+
+| | statement | budget |
+|---|---|---|
+| **A1** `pathwidth_le_potentialMinus_of_hypotheses` (Lemma 5.1, the form its proof establishes) | every degree `0` or `≥ 3`, `G ≠ ⊥` ⇒ `pw(G) ≤ f⁻(G) + τ(n) + 2ρ(n) + 1` | `τ` once (the cubic component), `ρ` twice (`G − X →* B`; `C − v →* ⊥` inside a second-kind component), `+1` for that `v` |
+| `pathwidth_le_potential_of_hypotheses` (Lemma 5.1 as displayed) | the same with `Σ_v g(deg_G v)` for `f⁻(G)` | the same |
+| **A2** `pathwidth_le_degreeSum_of_hypotheses` (Corollary 5.2) | every `G`, every reduced reduct `B` of `G` ⇒ `pw(G) ≤ Σ_v g(deg_B v) + τ(n) + 3ρ(n) + 1` | one more `ρ` for `G →* B` |
+| `pathwidth_le_histogram_of_hypotheses` (Corollary 5.2, `G`'s own histogram) | every `G` ⇒ `pw(G) ≤ Σ_v g(deg_G v) + τ(n) + 3ρ(n) + 1` | the same; the paper's displayed `=` is this `≤` (plan §0.4 (6)) |
+
+The paper's `τ(n) + O(log n)` is this with `ρ = O(log n)`.
+
+### 9.1 Checked before stated (`09_assembly/check.py`, `check.log`, `summary.json`)
+
+Every graph on 1–8 vertices (`nauty-geng`, 13,598 graphs), pathwidth by the
+subset DP, every deterministic statement of the file in the form Lean proves
+it; 49 s on 8 workers at load 1. The hypotheses (H1), (H3) cannot be checked;
+what the assembly needs from them is *measured* (the last block).
+
+| statement | Lean name | instances to `n = 8` | result |
+|---|---|---|---|
+| PB `pw(⊥) = 0` | `pathwidth_bot` | 13,598 | 0 violations |
+| IX `pw(G) ≤ pw(G − X) + |X|`, **every** `X ⊆ V` | `pathwidth_le_pathwidth_isolateSet_add_card` | 3,305,498 | 0 |
+| IXc `pw(G[Xᶜ]) ≤ pw(G − X)`, every `X` | `pathwidth_induce_compl_le_isolateSet` | 3,305,498 | 0 |
+| I1 `pw(G) ≤ pw(G − v) + 1` | `pathwidth_le_pathwidth_isolate_add_one` | 107,243 | 0 |
+| CC `G[C₀]` connected, every component `C₀` | `connected_induce_compFinset` | 15,455 | 0 |
+| CR `pw(G[C₀]) ≤ pw(G|C₀)` | `pathwidth_induce_compFinset_le_restrict` | 15,455 | 0 |
+| ID `deg_{G[C₀]} v = deg_G v` | `degree_induce_compFinset` | 107,243 | 0 |
+| CM `C` connected, `v ∈ C` ⇒ `C ⊆ C₀(v)`, `pw(G[C]) ≤ pw(G[C₀])`, **every** connected `C` | `subset_compFinset_of_connected`, `pathwidth_induce_mono` | 2,047,623 | 0 |
+| EZ `C` connected with every degree `0` ⇒ `|C| = 1`, `pw(G[C]) = 0` | `induce_eq_bot_of_forall_degree_eq_zero` | 1,549 | 0 |
+| FC `pw(G) = max_{C connected} pw(G[C])` | `pathwidth_le_rat_of_forall_connected` | 13,598 | 0 |
+| BC reduced basic `B ≠ ⊥`, non-trivial component `C₀`: `compPotential ≤ f⁻`; cubic ⇒ `compPotential = |C₀|/6 − 1/6`; else some `u ∈ C₀` has `r(B|C₀ − u) = ∅` and `pw(B[C₀]) ≤ pw(B|C₀ − u) + 1` | `compPotential_le_potentialMinus`, `pathwidth_induce_compFinset_le` | 622 components (18 cubic, 604 second kind) of 621 graphs | 0 |
+| A1's chain, `X` from Algorithm X: `pw(G) ≤ pw(G − X) + |X|`, `|X| + f⁻(B) ≤ f⁻(G)`, `B` reduced basic non-empty | `pathwidth_le_of_isReductionSet` | 2,964 reduced non-empty graphs | 0 |
+| A2's `f(r(G)) ≤ f(G)` | `SPReduces.potential_le` (item 06) | 13,598 | 0 |
+| the pin: 500 random graphs at `1 ≤ n ≤ 12`, `pw ≤ Σ_{r(G)} g + B(n)` with `B = 3` (`n ≤ 9`, item 02 §2.5, exhaustive), `10/3` (`n = 10`), `4` (`n ≤ 20`) (item 01 §1.3, the record) | — (the budgets are abstract) | 500 | 500 hold; largest deficit 3 at `n = 11` (`pw 3`, main term 0) |
+
+**Kill checks: none fired; zero violations.** The same 500 random graphs also
+passed every deterministic check above (6,660 `(G, X)` pairs, 8,425 connected
+sets, 22 basic components).
+
+**What the budgets must reach at these sizes** (maxima to `n = 8`, exact
+rationals; the paper's unspecified `o(n)` and `O(log n)`, measured):
+`pw − f⁻` over reduced non-empty graphs **17/6** (item 02's value to 9);
+`pw(G) − f(r(G))` **3**, `pw(G) − f(G)` **8/3**; the cubic base case
+`pw(C₀) − (|C₀|/6 − 1/6)` over cubic components **17/6** (`n = 8`; `5/2` at
+`K₄`); the (H3) gap at `⊥` for second-kind components, `pw(B|C₀ − u)` with `u`
+chosen best, **3** (`n = 7–8`; so `ρ(8) ≥ 3` is what a second-kind component
+on 8 vertices needs); the (H3) gap `pw(G − X) − pw(B)` along A1's chain **1**;
+the (H3) gap `pw(G) − pw(r(G))` along A2's **3** (item 02's measurement).
+Measured on every graph to 8 vertices and nothing else; these are not
+constants of anything.
+
+### 9.2 The two named hypotheses, verbatim
+
+```lean
+/-- (H1) The cubic base case, a named `Prop` with budget `τ`. -/
+def CubicPathwidthBound (τ : ℕ → ℚ) : Prop :=
+  ∀ (W : Type u) [Fintype W] [DecidableEq W] (G : SimpleGraph W) [DecidableRel G.Adj],
+    G.Connected → (∀ v, G.degree v = 3) →
+      (pathwidth G : ℚ) ≤ (Fintype.card W : ℚ) / 6 - 1 / 6 + τ (Fintype.card W)
+
+/-- (H3) The reduction lemma, a named `Prop` with budget `ρ`. -/
+def ReductionPathwidthBound (ρ : ℕ → ℚ) : Prop :=
+  ∀ (W : Type u) [Fintype W] [DecidableEq W] (G H : SimpleGraph W),
+    SPReduces G H → (pathwidth G : ℚ) ≤ pathwidth H + ρ (Fintype.card W)
+```
+
+Their docstrings quote the sources (plan §0.2): for (H1), Edwards & McDermid
+p. 19 — "Fomin and Høie [12] showed that a 3-regular graph `G` with `m` edges
+has pathwidth at most `(1/9 + o(1)) m + O(log n) = (1/6 + o(1)) n + O(log n)`.
+Hence for 3-regular graphs, there is a function `τ`, with `τ(n) = o(n)`, such
+that `pw(G) ≤ n/6 − 1/6 + τ(n) + O(log n)` (the negative term is needed
+below). We can also assume that `τ` is an increasing function of `n`" — and
+Fomin & Høie's Theorem 5 — "For any `ε > 0`, there exists an integer `n_ε`
+such that for every graph `G` with maximum vertex degree at most three and
+with `|V(G)| > n_ε`, `pw(G) ≤ (1/6 + ε)|V(G)|`"; for (H3), p. 20 — "It follows
+from the results of [21] that `pw(G) ≤ |X_G| + pw(G − X_G)` and that
+`pw(G − X_G) = pw(r(G − X_G)) + O(log n)`" — and p. 5 — "series-parallel
+graphs have treewidth at most 2. The pathwidth of these graphs is
+`O(log n)`" (the case `H = ⊥`), with the note that [21] is not held
+(`literature/MISSING.md`). Neither is asserted anywhere: no `theorem`,
+`instance` or `axiom` has either as its conclusion
+(`test_pathwidth_assembly_proved_names_are_theorems_in_the_lean_file` checks
+this mechanically), exactly as `EdgeSearchMonotonicity` in
+`Complex/EdgeSearch.lean`. The `Prop`s are universe-polymorphic (`Type u`),
+so that a theorem about a graph on `V : Type u` can apply them to the induced
+subgraph on a component, whose vertex type lives in the same universe.
+
+**Side conditions on the budgets, beyond (H1) and (H3).** The final theorems
+take `Monotone τ` (the paper's "we can also assume that `τ` is an increasing
+function"; needed because (H1) is applied to a component on `|C| ≤ n`
+vertices) and `∀ n, 0 ≤ τ n` (needed because a graph may have no cubic
+component at all, and then the `τ` term is pure slack that must not be
+negative; the paper's `o(n)` is a non-negative error term, so this is a
+reading, not a strengthening). `∀ n, 0 ≤ ρ n` is **derived** from (H3)
+(`ReductionPathwidthBound.nonneg`: `G →* G` in zero steps on `ULift (Fin n)`),
+and `Monotone ρ` is not needed, because every use of (H3) is on the ambient
+vertex type `V` (removed vertices are isolated, plan §0.5) — the design's
+one-vertex-type convention pays here.
+
+### 9.3 The statements and their proofs (namespace `MOSPFormalization.DegreeBound`; 21 theorems, 2 definitions)
+
+| name | statement | proof |
+|---|---|---|
+| `ReductionPathwidthBound.nonneg` | `ReductionPathwidthBound ρ → ∀ n, 0 ≤ ρ n` | (H3) at `G = H = ⊥` on `ULift.{u} (Fin n)`, `SPReduces.refl`, `Fintype.card_ulift`, `card_fin` |
+| `pathwidth_bot` | `pathwidth (⊥ : SimpleGraph V) = 0` | the decomposition with bags `{v : e v = i}` for `e = Fintype.equivFin V`, `i ≤ |V|`; `width_le_of_forall_card_le` with `card_le_one` from `e.injective` |
+| `pathwidth_induce_compl_le_isolateSet` | `pathwidth G[Xᶜ] ≤ pathwidth (G − X)` | `pathwidth_le_of_injective` with the hom `Subtype.val : G[Xᶜ] →g G − X` |
+| `pathwidth_le_pathwidth_isolateSet_add_card` | `pathwidth G ≤ pathwidth (G − X) + |X|` | `pathwidth_le_pathwidth_induce_add_card_compl G Xᶜ` (`TreeBound`), `compl_compl`, the previous |
+| `pathwidth_le_pathwidth_isolate_add_one` | `pathwidth G ≤ pathwidth (G − w) + 1` | `X = {w}`, `isolateSet_singleton` |
+| `pathwidth_le_rat_of_forall_connected` | `0 ≤ b → (∀ C, G[C].Connected → (pathwidth G[C] : ℚ) ≤ b) → (pathwidth G : ℚ) ≤ b` | `pathwidth_induce_univ` (`CutLemma`), `pathwidth_induce_le_of_forall_connected` (`TreeBound`) at `k = ⌊b⌋₊`, `Nat.le_floor`, `Nat.floor_le` |
+| `coe_compFinset` | `↑(compFinset G C) = C.supp` | `mem_compFinset_iff_mem_supp` |
+| `connected_induce_compFinset` | `G[compFinset G C].Connected` | Mathlib's `ConnectedComponent.maximal_connected_induce_supp` |
+| `degree_induce_of_forall_adj_mem` | `[Fintype s]`, `(∀ u, G.Adj v u → u ∈ s) → (G.induce s).degree v = G.degree v` | `Finset.card_bij` with `a ↦ ↑a` on the neighbour finsets |
+| `degree_induce_compFinset` | `v ∈ C₀ ⇒ deg_{G[C₀]} v = deg_G v` | the previous with `insert_neighborFinset_subset_compFinset` (item 08) |
+| `subset_compFinset_of_connected` | `G[C].Connected → v ∈ C → C ⊆ compFinset G (mk v)` | `Connected.preconnected`, `Reachable.map` along `Embedding.induce`, `mem_compFinset_mk` |
+| `pathwidth_induce_compFinset_le_restrict` | `pathwidth G[C₀] ≤ pathwidth (G|C₀.supp)` | `pathwidth_le_of_injective` with `Subtype.val` |
+| `induce_eq_bot_of_forall_degree_eq_zero` | `(∀ v ∈ C, G.degree v = 0) → G[C] = ⊥` | `ext`; `degree_pos_iff_exists_adj` |
+| `compPotential_le_potentialMinus` | `compPotential G C ≤ f⁻(G)` | `potentialMinus_eq_sum_compPotential`, `single_le_sum`, `compPotential_nonneg` (item 05) |
+| `pathwidth_induce_compFinset_le` | (H1), (H3), `Monotone τ`, `0 ≤ τ`; `IsBasic G`; `v ∈ C₀`, `0 < deg v` ⇒ `(pathwidth G[C₀] : ℚ) ≤ compPotential G C₀ + τ n + ρ n + 1` | `isBasic_component` (item 08); **cubic**: (H1) on `G[C₀]` with `connected_induce_compFinset` and `degree_induce_compFinset`, `Finset.coe_sort_coe`/`Fintype.card_coe`, `compPotential_cubic` (item 08), `hτ (card_le_univ)`, `ρ ≥ 0`; **second kind**: `pathwidth_induce_compFinset_le_restrict`, `pathwidth_le_pathwidth_isolate_add_one`, (H3) on `(G|C₀) − u →* ⊥`, `pathwidth_bot`, `compPotential_nonneg`, `τ ≥ 0` |
+| `pathwidth_basic_le` | (H1), (H3), `Monotone τ`, `0 ≤ τ`; `IsBasic B` ⇒ `(pathwidth B : ℚ) ≤ f⁻(B) + τ n + ρ n + 1` | `pathwidth_le_rat_of_forall_connected` (`0 ≤ b` from `f⁻ ≥ 0`, `τ ≥ 0`, `ρ ≥ 0`); for a connected `C`: if every degree on `C` is `0`, `induce_eq_bot_of_forall_degree_eq_zero` and `pathwidth_bot`; else `subset_compFinset_of_connected`, `pathwidth_induce_mono` (`CutLemma`), the previous, `compPotential_le_potentialMinus` |
+| `pathwidth_le_of_isReductionSet` | (H1), (H3), `Monotone τ`, `0 ≤ τ`; `IsReductionSet G X B` ⇒ `(pathwidth G : ℚ) ≤ f⁻(G) + τ n + 2ρ n + 1` | `pathwidth_le_pathwidth_isolateSet_add_card`, (H3) on `h.reduces`, `pathwidth_basic_le` on `B`, `h.card_add_le`, `linarith` |
+| **A1** `pathwidth_le_potentialMinus_of_hypotheses` | … `IsSPReduced G → G ≠ ⊥ → (pathwidth G : ℚ) ≤ f⁻(G) + τ n + 2ρ n + 1` | `exists_reduction_set` (T1, item 08) and the previous |
+| `pathwidth_le_potential_of_hypotheses` | … `→ (pathwidth G : ℚ) ≤ Σ_v g (G.degree v) + τ n + 2ρ n + 1` | A1, `potentialMinus_le_potential` |
+| **A2** `pathwidth_le_degreeSum_of_hypotheses` | … `SPReduces G B → IsSPReduced B → (pathwidth G : ℚ) ≤ Σ_v g (B.degree v) + τ n + 3ρ n + 1` | (H3) on `G →* B`; `B = ⊥`: `pathwidth_bot` and the non-negativity of `f`, `τ`, `ρ`; `B ≠ ⊥`: A1 on `B`, `potentialMinus_le_potential` |
+| `pathwidth_le_histogram_of_hypotheses` | … `(pathwidth G : ℚ) ≤ Σ_v g (G.degree v) + τ n + 3ρ n + 1` for every `G` | `exists_reduced_reduct` (item 06) under `classical`, A2, `SPReduces.potential_le` (R2 with W2, item 06) |
+
+### 9.4 What is proved, what is cited
+
+| | status | where |
+|---|---|---|
+| the weights `g`, `g'` and Lemmas 8.1, 8.3–8.5, property 6 | **proved** | `Weights.lean` (item 03) |
+| the cut lemma and its iterated form (independent of everything else) | **proved** | `CutLemma.lean` (item 04) |
+| the potential `f`, `f⁻` per component, one-deletion accounting (equations (2)–(5)) | **proved** | `Potential.lean` (item 05) |
+| the reduction system, termination, degree monotonicity, deletion–reduction commutation (replaces Lemma 3.1's appeal to [21]'s confluence) | **proved** | `SPReduction.lean` (item 06) |
+| the step inequality `1 + f⁻(G*) ≤ f⁻(G)` in all four cases (pp. 11–12) | **proved** | `Step.lean` (item 07) |
+| Theorem 3.2, the reduction theorem | **proved**, unconditional | `ReductionTheorem.lean` (item 08) |
+| `pw(G) ≤ |X| + pw(G − X)` (the paper attributes it to [21]) | **proved** | `pathwidth_le_pathwidth_isolateSet_add_card` |
+| `pw(G) = max_i pw(G_i)` | **proved** (the `≤` direction, which is the one used) | `pathwidth_le_rat_of_forall_connected` |
+| (H1) the cubic base case, Fomin & Høie 2006 Theorem 5 | **cited**, named `Prop` `CubicPathwidthBound τ`; budget measured on the record (item 01 §1.4: `3.833` to 16 vertices exhaustively, `4.5` on the 42 certified cubic graphs to 120) | hypothesis of A1, A2 |
+| (H3) the reduction lemma, Kneis et al. 2009 | **cited**, named `Prop` `ReductionPathwidthBound ρ`; shape measured (item 02 §2.5: `pw(G) − pw(r(G)) ≤ 3` to 9 vertices) | hypothesis of A1, A2 |
+| `Monotone τ`, `0 ≤ τ n` | **assumed** (side conditions on the budget, §9.2) | hypotheses of A1, A2 |
+| `0 ≤ ρ n` | **derived** from (H3) | `ReductionPathwidthBound.nonneg` |
+| Lemma 5.1, Corollary 5.2 | **proved conditional on the two `Prop`s and the two side conditions** | this file |
+| Theorem 5.3 (the Edwards–Farr averaging lemma) | **not formalised**; verified numerically in item 01 §1.6 | — |
+
+The final theorems have **exactly four hypotheses beyond the graph's own**:
+`CubicPathwidthBound τ`, `ReductionPathwidthBound ρ`, `Monotone τ`,
+`∀ n, 0 ≤ τ n`. No upstream item left a gap, so nothing else is carried.
+
+### 9.5 Choices beyond §2.6 and the item's wording
+
+1. **The `Prop`s are universe-polymorphic** (`∀ (W : Type u)`), not over `Type`
+   as the item wrote: the theorems are stated for `V : Type u` like every
+   file of the development, and (H1) is applied to the induced subgraph on a
+   component, whose vertex type `↥(↑(compFinset G C) : Set V)` lives in `Type u`.
+   Statements write `CubicPathwidthBound.{u} τ` so that the level is fixed.
+2. **The side condition `0 ≤ τ n`** is not in the item or in §2.6, which had
+   `Monotone τ → Monotone ρ →`. It is needed (a second-kind component's bound
+   `ρ n + 1 ≤ compPotential + τ n + ρ n + 1` has `τ n` as slack), and `Monotone ρ`
+   is not (every use of (H3) is on `V`); `0 ≤ ρ n` is derived. §9.2.
+3. **The maximum over components is `pathwidth_le_rat_of_forall_connected`**,
+   stated for every connected vertex set and in `ℚ` (through `⌊b⌋₊`), not the
+   §2.6 pair `pathwidth_eq_pathwidth_induce_supp` / `pathwidth_le_max_components`
+   over `restrict`: `pathwidth_induce_le_of_forall_connected` already quantifies
+   over connected finsets, and a connected finset with an edge is pulled into
+   its component by `subset_compFinset_of_connected` and `pathwidth_induce_mono`.
+   `pathwidth_eq_pathwidth_induce_supp` is therefore not stated (not needed).
+4. **`CutLemma.lean` is used, not merely imported**: `pathwidth_induce_univ`
+   and `pathwidth_induce_mono` come from it, so the item's "not needed by the
+   proof" is corrected — its bisection theorems are what the assembly does not
+   use.
+5. **`pathwidth_basic_le` needs no `B ≠ ⊥`** and **A2 needs no `G ≠ ⊥`**
+   (both in the item's wording): for `B = ⊥` the bounds are the
+   non-negativity of `f`, `f⁻`, `τ`, `ρ`. A1 keeps `G ≠ ⊥` because T1 has it.
+6. **`degree_induce_of_forall_adj_mem` is proved by a bijection**, not from
+   Mathlib's `degree_induce_of_neighborSet_subset`: that lemma's `Fintype`
+   instance on the induced neighbour set is built from a `DecidablePred`, and
+   unifying it with the instance of a coerced finset made the elaborator
+   unfold `compFinset` (a classical filter) until the heartbeat limit. The
+   bijection keeps the goal's own instances; the general form takes
+   `[Fintype ↥s]` explicitly.
+7. **`pathwidth_le_of_isReductionSet`** is the assembly for any reduction set,
+   and A1 is its application to T1's — so the arithmetic of Lemma 5.1's last
+   display is one `linarith` over four facts.
+8. **`pathwidth_bot` on any `V`** (the development had it for `Fin 4` only,
+   `Sandwich.lean`): bags indexed by `Fintype.equivFin`.
+
+### 9.6 Axiom lines, the sandwich stage, tests, regenerate
+
+- 21 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`09_assembly/axiom_check.log`); `make -C paper1/latex axioms`: **577
+  theorems checked, 0 failures**, every line `[propext, Classical.choice,
+  Quot.sound]` — the hypotheses are arguments, not axioms, so the final
+  theorems rest on the standard three like everything else. `lake build`
+  passes (`09_assembly/lake_build.log`); the file builds in 1.3 s.
+- `PATHWIDTH_ASSEMBLY_PROVED` (21 names) is folded into
+  `learning.sandwich.ALL_PROVED` (371 names in all); `python -m learning.sandwich
+  --stage lean` audits them (`09_assembly/sandwich_lean.log`, every row
+  `proved / True / propext, Classical.choice, Quot.sound / False`).
+- `python -m learning.sandwich --stage degree_bound` has three new rows on the
+  stage's 500 random graphs at 1–12 vertices (`09_assembly/sandwich.log`; **22
+  rows, 5,793 checks, 0 violations**): the item's numerical pin
+  `pw ≤ Σ_{r(G)} g + B(n)` with item 02's `B(n)` (500 of 500), the deletion
+  lemma with one random `X` per graph, and `pw(G) = max_C pw(G[C])`.
+  `reports/sandwich_tables.md` is regenerated by it and now carries the 22 rows.
+- Tests: 3 new in `tests/test_edwards_mcdermid.py` (50 in all): the
+  deterministic statements in the Lean form on 200 random graphs at 1–11
+  vertices with isolated vertices; the brute-force summary's counts and zero
+  violations; the 21 names declared (namespaces resolved) / imported /
+  audited, no `sorry`, no `axiom`, no `instance`, the two `Prop`s present as
+  `def … : Prop` and **never concluded by any theorem**, the seven theorems
+  that take the four hypotheses, and the `2 ρ` / `3 ρ` budgets in the text.
+- Regenerate: `nice -n 19 python3 reports/scratch/edwards_mcdermid/09_assembly/check.py --max-n 8 --workers 8`
+  (49 s); `cd lean && lake build`; `make -C paper1/latex axioms`;
+  `python -m learning.sandwich --stage lean`; `python -m learning.sandwich --stage degree_bound`;
+  `python -m pytest tests/test_edwards_mcdermid.py -q`.
+
+### 9.7 The Appendix A rows, drafted for item 10 (not yet in the paper)
+
+For `paper1/latex/sec9a_appendix_lean.tex`, in the format of its existing rows
+(`\leanentry{label}{text} \leannames{names} \\`); item 10 places them and
+edits the two sentences around `\citet{EdwardsMcDermid2015}` in
+`sec9e_appendix_random.tex`:
+
+```latex
+\leanentry{reduction-theorem}{Theorem~3.2 of \citet{EdwardsMcDermid2015}, the reduction theorem
+  (Appendix~\ref{app:random}): every graph with every degree $0$ or $\ge 3$ has a vertex set $X$
+  with $G - X$ reducing to a non-empty basic graph $B$ and $|X| + f^-(B) \le f^-(G)$; unconditional,
+  with the step inequality in all four cases and a local commutation lemma in place of the
+  confluence appeal} \leannames{exists_reduction_set, one_add_potentialMinus_le, SPReduces.isolateSet_comm, potential_isolate} \\
+\leanentry{degree-bound}{Lemma~5.1 and Corollary~5.2 of \citet{EdwardsMcDermid2015}
+  (Appendix~\ref{app:random}): $\mathrm{pw}(G) \le \sum_v g(d_G(v)) + \tau(n) + 3\rho(n) + 1$ for
+  every $G$, conditional on the two cited results stated as named propositions and never
+  asserted --- the cubic base case \path{CubicPathwidthBound} with budget $\tau$
+  \citep[Theorem~5]{FominHoie2006} and the reduction lemma \path{ReductionPathwidthBound} with
+  budget $\rho$ (Kneis et al.\ 2009) --- and on $\tau$ monotone and non-negative; the paper gives
+  no constants} \leannames{pathwidth_le_histogram_of_hypotheses, pathwidth_le_degreeSum_of_hypotheses, pathwidth_le_potentialMinus_of_hypotheses, pathwidth_basic_le, CubicPathwidthBound, ReductionPathwidthBound} \\
+```
+
+(`paper1/latex/refs.bib` has no entry for Fomin & Høie 2006 yet — its only Fomin
+entry is the 1998 helicopter-search paper, `LY2002ref12` — so item 10 adds the
+key `FominHoie2006` (IPL 97:191–196, DOI 10.1016/j.ipl.2005.10.012) or writes
+the citation out, and checks it with `make -C paper1/latex refs`.)
+
+### 9.8 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion). No upstream item left
+a gap; the final theorems carry no hypothesis beyond (H1), (H3) and the two
+side conditions on `τ` of §9.2.
+
+**Does not claim.** (H1) or (H3) — cited, named, never asserted, and not
+provable here (plan §0.3: (H3) would need the series-parallel pathwidth bound
+and Mathlib has no series-parallel graphs); any value of `τ` or `ρ` (the
+maxima of §9.1 are measurements on every graph to 8 vertices and on the
+record, not constants); Theorem 5.3 (the averaging lemma is Edwards & Farr's;
+item 01 §1.6 verified it numerically); that the budgets `τ + 2ρ + 1` and
+`τ + 3ρ + 1` are tight — the `+1` is the deleted vertex of a second-kind
+component (the paper absorbs it into `O(log n)`), and the count of `ρ`s
+follows the proof's uses of (H3), not a lower bound; that the `≤` of
+`pathwidth_le_histogram_of_hypotheses` is ever strict beyond what R2 gives;
+that `pathwidth_bot` or the deletion lemma are new (they are folklore;
+Mathlib lacks them in this form, and "we found no prior statement" is not
+claimed either); that Fomin & Høie's Theorem 5 is formalised (item 04 §4.3
+states its one-level transfer and does not prove it).

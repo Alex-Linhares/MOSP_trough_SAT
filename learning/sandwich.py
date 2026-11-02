@@ -477,10 +477,38 @@ REDUCTION_THEOREM_PROVED = (
     "DegreeBound.exists_reduction_set",
     "DegreeBound.exists_reduction_set_and",
 )
+#: loop0012 item 09 (`DegreeBound/Pathwidth.lean`): the pathwidth assembly — Lemma 5.1 and
+#: Corollary 5.2 of Edwards & McDermid (2015) conditional on the two named `Prop`s
+#: `CubicPathwidthBound τ` (H1, Fomin & Høie 2006) and `ReductionPathwidthBound ρ` (H3, Kneis et
+#: al. 2009), with the graph lemmas the assembly rests on (`pathwidth ⊥ = 0`, deleting a vertex
+#: set, the maximum over components, the per-component bound).
+PATHWIDTH_ASSEMBLY_PROVED = (
+    "DegreeBound.ReductionPathwidthBound.nonneg",
+    "DegreeBound.pathwidth_bot",
+    "DegreeBound.pathwidth_induce_compl_le_isolateSet",
+    "DegreeBound.pathwidth_le_pathwidth_isolateSet_add_card",
+    "DegreeBound.pathwidth_le_pathwidth_isolate_add_one",
+    "DegreeBound.pathwidth_le_rat_of_forall_connected",
+    "DegreeBound.coe_compFinset",
+    "DegreeBound.connected_induce_compFinset",
+    "DegreeBound.degree_induce_of_forall_adj_mem",
+    "DegreeBound.degree_induce_compFinset",
+    "DegreeBound.subset_compFinset_of_connected",
+    "DegreeBound.pathwidth_induce_compFinset_le_restrict",
+    "DegreeBound.induce_eq_bot_of_forall_degree_eq_zero",
+    "DegreeBound.compPotential_le_potentialMinus",
+    "DegreeBound.pathwidth_induce_compFinset_le",
+    "DegreeBound.pathwidth_basic_le",
+    "DegreeBound.pathwidth_le_of_isReductionSet",
+    "DegreeBound.pathwidth_le_potentialMinus_of_hypotheses",
+    "DegreeBound.pathwidth_le_potential_of_hypotheses",
+    "DegreeBound.pathwidth_le_degreeSum_of_hypotheses",
+    "DegreeBound.pathwidth_le_histogram_of_hypotheses",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
               + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED
-              + REDUCTION_THEOREM_PROVED)
+              + REDUCTION_THEOREM_PROVED + PATHWIDTH_ASSEMBLY_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 
@@ -782,6 +810,49 @@ def degree_bound_check(max_n: int = 200) -> pd.DataFrame:
                  "holds": sum(1 for g1, g2 in unions
                               if potential_minus_lean([a | b for a, b in zip(g1, g2)])
                               == potential_minus_lean(g1) + potential_minus_lean(g2))})
+    # item 09: the pathwidth assembly's deterministic lemmas and the item's numerical pin on
+    # the same 500 random graphs (`pathwidth_induced` is the subset DP, exact at n ≤ 12):
+    # `pw ≤ Σ_{r(G)} g + B(n)` with the budget the record needs — item 02 §2.5 (3 to n = 9,
+    # exhaustive) and item 01 §1.3 (10/3 at n = 10, 4 to n = 20, the record) — a consistency
+    # check of the pipeline, not of the theorem, whose budgets τ, ρ are abstract.
+    from learning.edwards_mcdermid import main_term, isolate_set, pathwidth_induced, bits
+
+    def budget(n: int) -> Fraction:
+        return Fraction(3) if n <= 9 else Fraction(10, 3) if n == 10 else Fraction(4)
+
+    pins, dels, comps = 0, 0, 0
+    for a in graphs:
+        n = len(a)
+        full = (1 << n) - 1
+        pw = pathwidth_induced(a, full)
+        pins += Fraction(pw) <= main_term(a) + budget(n)
+        X = rng.randrange(full + 1)
+        dels += pw <= pathwidth_induced(isolate_set(a, X), full) + X.bit_count()
+        best = 0
+        seen = 0
+        for v in range(n):
+            if (seen >> v) & 1:
+                continue
+            comp, frontier = 1 << v, 1 << v
+            while frontier:
+                nxt = 0
+                for u in bits(frontier):
+                    nxt |= a[u]
+                nxt &= ~comp
+                comp |= nxt
+                frontier = nxt
+            seen |= comp
+            best = max(best, pathwidth_induced(a, comp))
+        comps += pw == best
+    rows.append({"statement": "pw(G) ≤ Σ_{r(G)} g + B(n), B = 3 (n ≤ 9), 10/3 (10), 4 (≤ 20): the pin",
+                 "Lean": "pathwidth_le_histogram_of_hypotheses (budgets abstract)",
+                 "n": "1–12 vertices", "checked": len(graphs), "holds": pins})
+    rows.append({"statement": "pw(G) ≤ pw(G − X) + |X|, one random X per graph",
+                 "Lean": "pathwidth_le_pathwidth_isolateSet_add_card", "n": "1–12 vertices",
+                 "checked": len(graphs), "holds": dels})
+    rows.append({"statement": "pw(G) = max over components C of pw(G[C])",
+                 "Lean": "pathwidth_le_rat_of_forall_connected", "n": "1–12 vertices",
+                 "checked": len(graphs), "holds": comps})
     return pd.DataFrame(rows)
 
 
@@ -1175,7 +1246,9 @@ def main(argv=None) -> int:
                      "(loop0012 item 03)", "",
                      f"`g` as Lean defines it (four cases and `g (n + 4)`), transcribed and compared "
                      f"with the Python `g` in exact rationals to `n = {args.max_degree}`, and every "
-                     f"statement of the file on the range Lean states it, {time.time() - t0:.1f} s. "
+                     f"statement of the file on the range Lean states it; `Potential.lean`'s `f⁻` and "
+                     f"`Pathwidth.lean`'s deterministic lemmas and pin on 500 random graphs (items 05, 09), "
+                     f"{time.time() - t0:.1f} s. "
                      "`holds` must equal `checked` on every row.", "",
                      _md(frame), ""]
         print(frame.to_string(index=False))

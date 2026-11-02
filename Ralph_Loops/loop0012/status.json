@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-02 05:20:42",
+  "updated": "2026-11-02 06:04:23",
   "phase": "tests",
-  "started": "2026-11-02 04:46:37",
-  "item": "08 Lean (iv-b): Theorem 3.2 \u2014 the reduction theorem by induction."
+  "started": "2026-11-02 05:33:28",
+  "item": "09 Lean (iv-c, vi): the pathwidth assembly under the named hypotheses, Corollary 5.2's for"
 }

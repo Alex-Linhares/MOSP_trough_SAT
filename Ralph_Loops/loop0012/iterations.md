@@ -460,7 +460,7 @@ statement checked on small graphs before it is stated.
   - **Size range.** Not applicable.
   - **Does not claim.** Anything about pathwidth; uniqueness of `X`.
 
-- [ ] **09 Lean (iv-c, vi): the pathwidth assembly under the named hypotheses, Corollary 5.2's form, the axiom check.**
+- [x] **09 Lean (iv-c, vi): the pathwidth assembly under the named hypotheses, Corollary 5.2's form, the axiom check.**
   - **Question.** With `CubicPathwidthBound τ` and `ReductionPathwidthBound ρ`
     as named `Prop`s, does Lemma 5.1's assembly go through, giving
     `pw(G) ≤ f⁻(G) + τ(n) + 2ρ(n) + 1` for reduced `G` and

@@ -410,7 +410,7 @@ def test_degree_bound_stage_has_no_violation():
     import learning.sandwich as sw
     frame = sw.degree_bound_check(60)
     assert (frame.checked == frame.holds).all(), frame[frame.checked != frame.holds]
-    assert len(frame) == 19
+    assert len(frame) == 22
     item05 = frame[frame.Lean.isin(["potentialMinus", "potentialMinus_eq_sum_vertexTerm",
                                     "potentialMinus_add"])]
     assert len(item05) == 3 and (item05.checked == 500).all()
@@ -990,3 +990,170 @@ def test_reduction_theorem_proved_names_are_theorems_in_the_lean_file():
     assert "structure IsReductionSet" in src
     assert "(hG : IsSPReduced G)\n    (hne : G ≠ ⊥)" in src
     assert "Confluence" not in code and "hstep" not in code
+
+
+# ---------------------------------------------------------------------------
+# item 09: the pathwidth assembly, `lean/MOSPFormalization/DegreeBound/Pathwidth.lean`
+# ---------------------------------------------------------------------------
+
+import json  # noqa: E402
+from fractions import Fraction  # noqa: E402
+
+from learning.edwards_mcdermid import bits  # noqa: E402
+
+PATHWIDTH_LEAN = WEIGHTS_LEAN.parent / "Pathwidth.lean"
+ITEM09 = Path(__file__).resolve().parents[1] / "reports" / "scratch" / "edwards_mcdermid" / "09_assembly"
+
+
+def _connected_in(adj, C):
+    v = (C & -C).bit_length() - 1
+    seen, frontier = 1 << v, 1 << v
+    while frontier:
+        nxt = 0
+        for u in bits(frontier):
+            nxt |= adj[u] & C
+        nxt &= ~seen
+        seen |= nxt
+        frontier = nxt
+    return seen == C
+
+
+def test_pathwidth_assembly_lemmas_in_the_lean_form_on_random_graphs():
+    """The deterministic statements of `Pathwidth.lean`, on 200 random graphs at 1–11
+    vertices with isolated vertices: `pathwidth ⊥ = 0`; `pw(G) ≤ pw(G − X) + |X|` and
+    `pw(G[Xᶜ]) ≤ pw(G − X)` for random `X`; `pw(G) ≤ pw(G − v) + 1`; a connected `C` lies in
+    the component of any of its vertices and `pw(G[C]) ≤ pw(G[C₀])`; `pw(G[C₀]) ≤ pw(G|C₀)`;
+    an edgeless `C` induces `⊥`; `pw(G) = max_C pw(G[C])`; for a reduced basic `B` and a
+    non-trivial component `C₀`: cubic ⇒ `compPotential = |C₀|/6 − 1/6`, else some `u ∈ C₀`
+    has `r(B|C₀ − u) = ∅` and `pw(B[C₀]) ≤ pw(B|C₀ − u) + 1`; and `compPotential ≤ f⁻`."""
+    from learning.edwards_mcdermid import (components, fminus, g, g_prime, is_basic, is_reduced,
+                                           isolate, isolate_set, min_degree, reduce, restrict,
+                                           support)
+    rng = random.Random(1109)
+    seen_basic = 0
+    for _ in range(200):
+        n = rng.randint(1, 11)
+        p = rng.choice([0.2, 0.4, 0.6, 0.9])
+        adj = [0] * n
+        for u in range(n):
+            for v in range(u + 1, n):
+                if rng.random() < p and rng.random() < 0.9:
+                    adj[u] |= 1 << v
+                    adj[v] |= 1 << u
+        full = (1 << n) - 1
+        assert pathwidth_induced([0] * n, full) == 0
+        pw = pathwidth_induced(adj, full)
+        X = rng.randrange(full + 1)
+        GX = isolate_set(adj, X)
+        assert pw <= pathwidth_induced(GX, full) + X.bit_count()
+        assert pathwidth_induced(adj, full & ~X) <= pathwidth_induced(GX, full)
+        v = rng.randrange(n)
+        assert pw <= pathwidth_induced(isolate(adj, v), full) + 1
+        comps = components(adj, support_only=False)
+        assert pw == max(pathwidth_induced(adj, C) for C in comps)
+        for C0 in comps:
+            assert _connected_in(adj, C0)
+            assert pathwidth_induced(adj, C0) <= pathwidth_induced(restrict(adj, C0), full)
+        C = rng.randrange(1, full + 1)
+        if _connected_in(adj, C):
+            v = (C & -C).bit_length() - 1
+            C0 = next(c for c in comps if (c >> v) & 1)
+            assert C & ~C0 == 0
+            assert pathwidth_induced(adj, C) <= pathwidth_induced(adj, C0)
+            if all(adj[u] == 0 for u in bits(C)):
+                assert C.bit_count() == 1 and pathwidth_induced(adj, C) == 0
+        if is_reduced(adj) and support(adj) and is_basic(adj):
+            seen_basic += 1
+            fm = fminus(adj)
+            for C0 in components(adj):
+                cp = sum((g(adj[u].bit_count()) for u in bits(C0)), Fraction(0)) \
+                    - g_prime(min_degree(adj, C0))
+                assert cp <= fm
+                sub = restrict(adj, C0)
+                if all(adj[u].bit_count() == 3 for u in bits(C0)):
+                    assert cp == Fraction(C0.bit_count(), 6) - Fraction(1, 6)
+                else:
+                    us = [u for u in bits(C0) if not any(reduce(isolate(sub, u))[0])]
+                    assert us
+                    assert all(pathwidth_induced(adj, C0) <= pathwidth_induced(isolate(sub, u), full) + 1
+                               for u in us)
+    assert seen_basic >= 3
+
+
+def test_item09_brute_force_log_has_no_violation():
+    """The exhaustive check of item 09 (`09_assembly/check.py`): every graph on 1–8 vertices,
+    every vertex set `X` (IX) and every connected vertex set (CM), the pin on 500 random
+    graphs at `n ≤ 12`, zero violations; the maxima measured (what the budgets must reach at
+    these sizes) as recorded."""
+    summary = json.loads((ITEM09 / "summary.json").read_text())
+    assert summary["violations"] == 0
+    tot = summary["total"]
+    assert tot["graphs"] == 13598 and tot["FC"] == 13598 and tot["PB"] == 13598
+    assert tot["IX"] == 3305498 and tot["CM"] == 2047623
+    assert tot["BC_components"] == 622 and tot["BC_cubic"] == 18 and tot["BC_second"] == 604
+    assert tot["A1"] == 2964
+    assert summary["pin"]["ok"] == summary["pin"]["graphs"] == 500
+    mx = summary["mx"]
+    assert Fraction(mx["A1_pw_minus_fminus"]) == Fraction(17, 6)
+    assert Fraction(mx["A2_pw_minus_fB"]) == 3 and Fraction(mx["rho_need_A2"]) == 3
+    assert Fraction(mx["tau_need_cubic"]) == Fraction(17, 6)
+    assert Fraction(mx["rho_need_second_min_u"]) == 3
+    log = (ITEM09 / "check.log").read_text()
+    assert log.rstrip().endswith("OK") and "violations: 0" in log
+
+
+def test_pathwidth_assembly_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `Pathwidth.lean` is declared there as a
+    theorem (namespaces resolved); the file has no `sorry` and no `axiom`; the two hypotheses
+    are `def … : Prop` and are never asserted (no `theorem` or `instance` proving them); the
+    root module imports the file; `paper1/axiom_check.lean` prints the axioms of every
+    theorem; the final theorems carry exactly the hypotheses the report's table lists."""
+    import learning.sandwich as sw
+    src = PATHWIDTH_LEAN.read_text()
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    ns, declared, defs = [], set(), set()
+    for line in code.splitlines():
+        m = re.match(r"^namespace\s+(\S+)", line)
+        if m:
+            ns.append(m.group(1))
+            continue
+        m = re.match(r"^end\s+(\S+)", line)
+        if m and ns and ns[-1] == m.group(1):
+            ns.pop()
+            continue
+        m = re.match(r"^theorem\s+([^\s:({\[]+)", line)
+        if m:
+            declared.add(".".join(ns[1:] + [m.group(1)]))
+        m = re.match(r"^def\s+([^\s:({\[]+)", line)
+        if m:
+            defs.add(m.group(1))
+    assert set(sw.PATHWIDTH_ASSEMBLY_PROVED) == {"DegreeBound." + n for n in declared}
+    assert len(sw.PATHWIDTH_ASSEMBLY_PROVED) == len(declared) == 21
+    assert set(sw.PATHWIDTH_ASSEMBLY_PROVED) <= set(sw.ALL_PROVED)
+    assert defs == {"CubicPathwidthBound", "ReductionPathwidthBound"}
+    assert "def CubicPathwidthBound (τ : ℕ → ℚ) : Prop :=" in src
+    assert "def ReductionPathwidthBound (ρ : ℕ → ℚ) : Prop :=" in src
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    assert not re.search(r"^\s*instance\b", code, re.M)
+    # the hypotheses are never concluded: no statement has them to the right of its last `:`
+    for thm in re.findall(r"^theorem\s[\s\S]*?:= by", code, re.M):
+        head = thm.split(":=")[0]
+        conclusion = head.split(" :\n")[-1] if " :\n" in head else head.rsplit(":", 1)[-1]
+        assert "CubicPathwidthBound" not in conclusion and \
+            "ReductionPathwidthBound" not in conclusion, thm[:80]
+    root = (PATHWIDTH_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.Pathwidth\n" in root
+    axioms = (PATHWIDTH_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.PATHWIDTH_ASSEMBLY_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("pathwidth_le_potentialMinus_of_hypotheses", "pathwidth_le_degreeSum_of_hypotheses",
+              "pathwidth_le_histogram_of_hypotheses", "pathwidth_basic_le", "pathwidth_bot",
+              "pathwidth_le_pathwidth_isolateSet_add_card"):
+        assert f"DegreeBound.{n}" in sw.PATHWIDTH_ASSEMBLY_PROVED
+    hyp = "(h1 : CubicPathwidthBound.{u} τ)\n    (h3 : ReductionPathwidthBound.{u} ρ) " \
+          "(hτ : Monotone τ) (hτ0 : ∀ n, 0 ≤ τ n)"
+    assert src.count(hyp) == 7
+    assert "+ τ (Fintype.card V) + 2 * ρ (Fintype.card V) + 1" in src
+    assert "+ τ (Fintype.card V) + 3 * ρ (Fintype.card V) + 1" in src

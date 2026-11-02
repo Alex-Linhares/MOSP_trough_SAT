@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 8/11 SOLVED
+Current: 9/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -744,3 +744,92 @@ and `compPotential_cubic`; second kind by `pathwidth_le_pathwidth_erase_add_one`
 `pathwidth_le_degreeSum_of_hypotheses` (`+ τ n + 3 ρ n + 1`); `#print axioms`
 rows; `learning/sandwich.py --stage degree_bound` extended. Checked in item 02 as
 A1/A2 on every graph to 9 (§2.3) with the budgets of §2.5.
+
+---
+
+## Iteration 9 — 2026-11-02 05:33–06:05 UTC — item 09: Lean (iv-c, vi), the pathwidth assembly under the named hypotheses, Corollary 5.2's form, the axiom check
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/Pathwidth.lean`** (namespace
+  `MOSPFormalization.DegreeBound`, imports `ReductionTheorem`, `CutLemma`, `TreeBound`,
+  `Minor`): the two named `Prop`s **`CubicPathwidthBound τ`** (H1, Fomin & Høie 2006
+  Theorem 5) and **`ReductionPathwidthBound ρ`** (H3, Kneis et al. 2009, not held), each
+  `def … : Prop` with the paper's sentences quoted in the docstring, universe-polymorphic,
+  **never asserted** (no theorem, instance or axiom concludes either; a test checks this);
+  **21 theorems, no `sorry`, no `axiom`**, every one `[propext, Classical.choice,
+  Quot.sound]`. The development is closed: **A1** `pathwidth_le_potentialMinus_of_hypotheses`
+  (Lemma 5.1: reduced `G ≠ ⊥` ⇒ `pw(G) ≤ f⁻(G) + τ n + 2ρ n + 1`),
+  `pathwidth_le_potential_of_hypotheses` (its displayed form), **A2**
+  `pathwidth_le_degreeSum_of_hypotheses` (Corollary 5.2: every `G`, every reduced reduct `B`
+  ⇒ `pw(G) ≤ Σ_v g(deg_B v) + τ n + 3ρ n + 1`, no `G ≠ ⊥` needed) and
+  `pathwidth_le_histogram_of_hypotheses` (the same with `G`'s own histogram, by R2) — each
+  with **exactly four hypotheses beyond the graph's**: (H1), (H3), `Monotone τ`, `∀ n, 0 ≤ τ n`
+  (`0 ≤ ρ n` is derived from (H3), `ReductionPathwidthBound.nonneg`; `Monotone ρ` is not
+  needed because every use of (H3) is on the ambient `V`). Supporting lemmas: `pathwidth_bot`
+  (any `V`), `pathwidth_le_pathwidth_isolateSet_add_card` (`pw G ≤ pw (G − X) + |X|`, the
+  step the paper attributes to [21]), `pathwidth_le_rat_of_forall_connected` (the maximum
+  over components, in `ℚ` through `⌊b⌋₊`), the component lemmas (`connected_induce_compFinset`
+  via Mathlib's `maximal_connected_induce_supp`, `degree_induce_of_forall_adj_mem` by a
+  bijection, `subset_compFinset_of_connected`, `pathwidth_induce_compFinset_le_restrict`,
+  `induce_eq_bot_of_forall_degree_eq_zero`, `compPotential_le_potentialMinus`),
+  `pathwidth_induce_compFinset_le` (the per-component bound: cubic by (H1) and
+  `compPotential_cubic`, second kind by one deletion and (H3) to `⊥`), `pathwidth_basic_le`,
+  `pathwidth_le_of_isReductionSet`. Imported by `lean/MOSPFormalization.lean`; builds in
+  1.3 s; `lake build` passes (`09_assembly/lake_build.log`). One elaboration slip on the
+  first attempt (Mathlib's `degree_induce_of_neighborSet_subset` carries a
+  `DecidablePred`-built `Fintype` that does not unify with a coerced finset's; the bijection
+  proof replaced it); no statement changed.
+- **Checked before stated** (`09_assembly/check.py`, `check.log`, `summary.json`; 49 s on 8
+  workers at load 1): every graph on 1–8 vertices (13,598), every deterministic statement in
+  the form proved — the deletion lemma on **every** `X ⊆ V` (3,305,498), the component
+  inclusion on **every** connected vertex set (2,047,623), `pw = max_C pw(G[C])` on all 13,598,
+  the per-component bound's deterministic parts on 622 basic components (18 cubic, 604 second
+  kind), A1's chain on all 2,964 reduced non-empty graphs; and the item's pin on 500 random
+  graphs at `n ≤ 12` (`pw ≤ Σ_{r(G)} g + B(n)`, 500 of 500). **Zero violations; kill checks:
+  none fired.** Measured budgets to `n = 8`: `pw − f⁻` 17/6, `pw − f(r(G))` 3, the cubic base
+  case needs 17/6, a second-kind component's (H3) gap at `⊥` is up to 3.
+- **Axiom check**: 21 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`09_assembly/axiom_check.log`; `make -C paper1/latex axioms`: **577 theorems checked, 0
+  failures**). `PATHWIDTH_ASSEMBLY_PROVED` (21 names) folded into `learning.sandwich.ALL_PROVED`
+  (371 names); `--stage lean` audits them (`sandwich_lean.log`); `--stage degree_bound` has
+  three new rows (the pin, the deletion lemma, the max over components; **22 rows, 5,793
+  checks, 0 violations**, `sandwich.log`) and regenerates `reports/sandwich_tables.md`, which
+  therefore changes in this commit (the three rows and a wider column).
+- **Tests**: 3 new in `tests/test_edwards_mcdermid.py` (50 in all): the statements in the
+  Lean form on 200 random graphs at 1–11 vertices; the brute-force summary's counts and zero
+  violations; the 21 names declared / imported / audited, no `sorry` / `axiom` / `instance`,
+  the two `Prop`s present and never concluded, the four-hypothesis signature on the seven
+  theorems that carry it, the `2ρ` / `3ρ` budgets in the text.
+- **Report**: `reports/edwards_mcdermid.md` §9 (the four theorems with their budgets, the
+  check's table and the measured maxima, the two `Prop`s verbatim with their quotations, the
+  21 statements with their proofs, **the table "what is proved / what is cited"**, eight
+  choices beyond §2.6 and the item's wording, the axiom/sandwich/test record, the two
+  Appendix A rows drafted for item 10 with the missing `FominHoie2006` bib key noted, kill
+  verdict none, what it does not claim).
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,799 passed, 2 skipped,
+  1 xfailed in 273 s, the 3 new tests included; pathwidth_solver pytest 123 passed in 449 s;
+  `make -C paper1/latex check` ok, 74 pages, the paper untouched). Log: `09_assembly/gate.log`.
+
+### Blockers
+None. Notes for item 10: the item's wording had three things the file corrects — `CutLemma`
+*is* used (`pathwidth_induce_univ`, `pathwidth_induce_mono`), the `Prop`s are over `Type u`
+not `Type`, and the side condition `0 ≤ τ n` replaces §2.6's unneeded `Monotone ρ`; say so in
+the write-up. `reports/sandwich_tables.md` is regenerated by the stage and now holds 22 rows
+(not byte-identical to the previous HEAD, on purpose). For the paper: `refs.bib` has no
+Fomin & Høie 2006 entry (only Fomin 1998, `LY2002ref12`); add `FominHoie2006` or write the
+citation out, and run `make -C paper1/latex refs`. Lean notes: a Mathlib lemma whose
+`Fintype` instance is `Subtype.fintype` over a `DecidablePred` will not unify with the
+instance of `↥(↑s : Set V)` for a finset `s` (and the failed unification unfolds
+`compFinset`'s classical filter to the heartbeat limit) — prove such degree facts by
+`Finset.card_bij` on the neighbour finsets instead; `Finset.coe_sort_coe` then
+`Fintype.card_coe` rewrites `Fintype.card ↥(↑s : Set V)` to `s.card`; a universe-polymorphic
+`Prop` must be written `P.{u}` in a statement that does not otherwise fix the level;
+`(SimpleGraph.ConnectedComponent.maximal_connected_induce_supp C).1` is the connectivity of
+`G.induce C.supp`; `push Not at h` is the current `push_neg`.
+
+### Next
+Item 10: the write-up — `reports/edwards_mcdermid.md` §0 (the summary: what is proved, what
+is cited, what the record says), the paper's two sentences around `\citet{EdwardsMcDermid2015}`
+in `sec9e_appendix_random.tex` and the two Appendix A rows of §9.7 in `sec9a_appendix_lean.tex`
+(with the bib key), the survey's §1.4 sentence, and the `CLAUDE.md` paragraph drafted (not
+applied).

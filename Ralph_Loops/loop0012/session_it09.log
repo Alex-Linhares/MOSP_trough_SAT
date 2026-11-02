@@ -1,0 +1,119 @@
+# session it09 started 2026-11-02 05:33:28
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's recent sections, and the existing Lean files that item 09 builds on.
+  > $ date -u; uptime; cd /home/al/dev/MOSP && git status --short | head; ls lean/MOSPFormalization/DegreeBound/; wc -l lean/MOSPFormalization/DegreeBound/*.lean repo
+  > $ sed -n 1,200p reports/edwards_mcdermid_plan.md
+  > $ sed -n 200,420p reports/edwards_mcdermid_plan.md
+  > $ sed -n 420,617p reports/edwards_mcdermid_plan.md
+  > $ grep -n "^theorem\|^lemma\|^def\|^structure\|^noncomputable def\|^abbrev\|^instance\|^namespace\|^end\|^open\|^variable\|^import\|^section" lean/MOSPFormalizati
+  > $ sed -n 1,60p lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean; sed -n 314,460p lean/MOSPFormalization/DegreeBound/ReductionTheorem.lean; sed -n 625,645p
+
+Reading the upstream Lean definitions now (potential, reduction system, isolate, pathwidth lemmas) before writing the assembly file.
+  > $ grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^abbrev\|^instance\|^structure\|^inductive" lean/MOSPFormalization/DegreeBound/Potential.lean lean/MOSPForm
+  > $ sed -n 50,130p lean/MOSPFormalization/DegreeBound/Potential.lean; sed -n 225,310p lean/MOSPFormalization/DegreeBound/Potential.lean
+  > $ sed -n 1,80p lean/MOSPFormalization/TreeBound.lean; grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^abbrev" lean/MOSPFormalization/TreeBound.lean
+  > $ sed -n 130,145p lean/MOSPFormalization/TreeBound.lean; sed -n 230,250p lean/MOSPFormalization/TreeBound.lean; sed -n 351,366p lean/MOSPFormalization/TreeBound.l
+  > $ sed -n 108,160p lean/MOSPFormalization/Minor.lean; echo ----PW; sed -n 15,60p lean/MOSPFormalization/Pathwidth.lean; echo ----SPR; sed -n 178,292p lean/MOSPForm
+  > $ grep -rn "pathwidth (⊥\|pathwidth_bot\|pathwidth ⊥\|width_zero\|pathwidth_eq_zero" lean/MOSPFormalization/*.lean lean/MOSPFormalization/*/*.lean | head; echo --
+  > $ sed -n 1180,1200p lean/MOSPFormalization/Sandwich.lean; echo ----PD; grep -n "structure PathDecomposition" -A 20 lean/MOSPFormalization/PathDecomposition.lean |
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; grep -rn "connected_induce_supp\|induce_supp\|theorem connected_induce\|Connected.induce\|induce_
+  > $ M=.lake/packages/mathlib/Mathlib; sed -n 685,710p $M/Combinatorics/SimpleGraph/Connectivity/Connected.lean; echo ----; sed -n 715,740p $M/Combinatorics/SimpleGr
+  > $ cd /home/al/dev/MOSP && grep -n "degree_bound\|DEGREE_BOUND\|REDUCTION_THEOREM_PROVED\|STEP_PROVED\|ALL_PROVED\|def _stage\|^def \|STAGES" learning/sandwich.py 
+  > $ python3 -c "
+import json;d=json.load(open('reports/scratch/edwards_mcdermid/02_lemmas/summary.json'));
+for n in d: print(n, {k:v for k,v in d[n].items() if 'max
+  > $ sed -n 467,500p reports/edwards_mcdermid.md; echo ----26-09; sed -n 575,602p reports/edwards_mcdermid.md; echo ----S8TAIL; sed -n 1707,1751p reports/edwards_mcd
+  > $ echo ----TESTS; grep -n "^def test_\|^def _\|^[A-Z_]* = " tests/test_edwards_mcdermid.py | tail -30; echo ----AX; tail -12 paper1/axiom_check.lean; grep -n "^ax
+
+I have the design settled. Next: look at the Python helper signatures for the brute-force check, confirm the Lean build is clean at HEAD, and check the load, all at once.
+  > $ uptime; grep -n "^def \|^    def " learning/edwards_mcdermid.py | head -60; sed -n 1,40p reports/scratch/edwards_mcdermid/08_reduction/check.py; ls reports/scra
+  > $ sed -n 153,200p learning/edwards_mcdermid.py; sed -n 294,315p learning/edwards_mcdermid.py; sed -n 409,510p learning/edwards_mcdermid.py; sed -n 543,580p learni
+  > $ sed -n 200,215p learning/sandwich.py; sed -n 437,490p learning/sandwich.py; sed -n 704,792p learning/sandwich.py; sed -n 1165,1185p learning/sandwich.py; echo -
+  > $ grep -n "geng\|Pool\|imap\|def main\|def worker\|def check_graph\|log\b\|summary.json\|json.dump" reports/scratch/edwards_mcdermid/08_reduction/check.py | head 
+
+Writing the brute-force check now (every graph to 8 vertices exhaustively, random graphs to 12 for the pin), then running it while I draft the Lean file.
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/09_assembly && cat > /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/09_assembly/check.py <<'EOF'
+  > $ cat reports/scratch/edwards_mcdermid/09_assembly/run.out | cut -c1-900
+
+Zero violations, 49 seconds. Now a few Mathlib name checks before writing the Lean file.
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; sed -n 58,70p MOSPFormalization/Minor.lean; echo ----INDUCE_DEC; grep -rn "DecidableRel (G.induce
+  > $ M=.lake/packages/mathlib/Mathlib; grep -rn "^def Maximal\|^structure Maximal\|lemma Maximal.prop\|theorem Maximal.prop" $M/Order/ | head -3; sed -n 1785,1792p M
+
+The names check out (comap decidability instance exists, `Finset.coe_sort_coe`/`Fintype.card_coe` is the card pattern, `Nat.le_floor`/`Nat.floor_le` are the floor lemmas). Writing the Lean file now.
+  > $ cat > /home/al/dev/MOSP/lean/MOSPFormalization/DegreeBound/Pathwidth.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under 
+
+Only one error, at line 205 (a heartbeat timeout). Let me see which declaration that is.
+  > $ sed -n 198,215p MOSPFormalization/DegreeBound/Pathwidth.lean
+  > $ cat > /tmp/probe09.lean <<'EOF'
+import MOSPFormalization.DegreeBound.ReductionTheorem
+import MOSPFormalization.TreeBound
+
+namespace MOSPFormalization.DegreeBoun
+  > $ cat > MOSPFormalization/Probe09.lean <<'EOF'
+import MOSPFormalization.DegreeBound.ReductionTheorem
+import MOSPFormalization.TreeBound
+
+namespace MOSPFormalizati
+
+Variant C (the bijection proof) compiles with the goal's own instances; Mathlib's lemma wants a `DecidablePred`-built `Fintype` that never unifies with ours. Patching the file and rebuilding.
+  > $ python3 - <<'EOF'
+import re
+p = "MOSPFormalization/DegreeBound/Pathwidth.lean"
+s = open(p).read()
+old = s[s.index("/-- Degrees inside a component are the degree
+
+Build succeeded. Now, in one pass: show any warnings in the new file, list its theorem names, add the root import, and run the full `lake build` into the item's log.
+  > $ lake env lean MOSPFormalization/DegreeBound/Pathwidth.lean 2>&1 | grep -v "^\s*$" | head -20; echo ----NAMES; grep -n "^theorem\|^def " MOSPFormalization/Degree
+
+The full build passed (no errors). Next, in parallel: append the 21 `#print axioms` lines and run the axiom audit, and draft the sandwich/test additions.
+  > $ cd /home/al/dev/MOSP && cat reports/scratch/edwards_mcdermid/09_assembly/lake_build.log | grep -v "TreeBound\|Hint\|Note:\|\[apply\]\|^\s*$\|linter" | tail -4; 
+  > $ grep -c "Build completed successfully" reports/scratch/edwards_mcdermid/09_assembly/lake_build.log; sed -n 1,30p reports/scratch/edwards_mcdermid/08_reduction/s
+  > $ python3 - <<'EOF'
+p = "learning/sandwich.py"
+s = open(p).read()
+anchor = '''    "DegreeBound.exists_reduction_set_and",
+)
+'''
+assert s.count(anchor) == 1
+new_na
+  > $ grep -n "json" tests/test_edwards_mcdermid.py | head -3; python3 - <<'EOF'
+p = "tests/test_edwards_mcdermid.py"
+t = open(p).read()
+old = '''PATHWIDTH_LEAN = WEI
+
+The new tests pass. Now the sandwich audit stages, sequentially (the `lean` stage runs lake, then `degree_bound` restores the tables file).
+  > $ D=reports/scratch/edwards_mcdermid/09_assembly; (nice -n 19 python3 -m learning.sandwich --stage lean > $D/sandwich_lean.log 2>&1; echo LEAN_EXIT $?); grep -c "
+  > $ uptime && (nice -n 19 python3 Ralph_Loops/loop0012/gate.py > reports/scratch/edwards_mcdermid/09_assembly/gate.log 2>&1; echo GATE_EXIT $?); tail -15 reports/sc
+  > $ git diff reports/sandwich_tables.md | grep "^[-+]" | grep -v "^+++\|^---" | cut -c1-160 | head -30; echo ----LABELS; grep -n "\\\\label{app:" paper1/latex/sec9e
+  > $ cat >> reports/edwards_mcdermid.md <<'EOF'
+
+---
+
+## 9. Lean (iv-c, vi): the pathwidth assembly under the named hypotheses, Corollary 5.2's form, the axiom check
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/6b8bb938-d2d7-4b06-928c-41c6584adc85/tasks/bt223heso.output | tail -12; echo ----; grep -n "Fomin" paper1/latex/refs.bib 
+  > $ grep -n "GATE PASS\|sorry\|axiom\|passed" reports/scratch/edwards_mcdermid/09_assembly/gate.log | head -8; echo ----; sed -n 104,114p paper1/latex/refs.bib; ech
+
+All verified. Three independent edits remain: the report's bibliography note, the PROGRESS entry, and the iterations checkbox.
+  > $ python3 - <<'EOF'
+p = "reports/edwards_mcdermid.md"
+s = open(p).read()
+old = "(`FominHoie2006` is a bibliography key to be checked by item 10's `make\nrefs`; if
+
+Item 09 is complete and the gate passed. Recap:
+
+**Delivered.** `lean/MOSPFormalization/DegreeBound/Pathwidth.lean` closes the development. The two cited results are named `Prop`s (`CubicPathwidthBound τ` for Fomin & Høie's cubic base case, `ReductionPathwidthBound ρ` for the Kneis et al. reduction lemma), quoted from the sources in their docstrings and never asserted. On top of them the file proves Lemma 5.1 and Corollary 5.2 of Edwards & McDermid: 21 theorems, no `sorry`, no `axiom`, every one on the standard three axioms. The final theorems carry exactly four hypotheses beyond the graph's own: the two `Prop`s, `Monotone τ` and `0 ≤ τ n`. Non-negativity of `ρ` is derived from (H3), and monotonicity of `ρ` turned out unnecessary because every reduction is on the ambient vertex type.
+
+**Checked before stated.** Every deterministic lemma of the file was brute-forced on all 13,598 graphs to 8 vertices in the form Lean proves it, including the deletion lemma on every vertex subset and the component inclusion on every connected subset, plus the item's numerical pin on 500 random graphs to 12 vertices. Zero violations.
+
+**Records.** 21 axiom lines added (577 checked, 0 failures), the sandwich audit extended (371 names; 22 rows, 5,793 checks, 0 violations), 3 new tests (50 in the module), report §9 with the proved/cited table and the two Appendix A rows drafted for item 10, PROGRESS.md and iterations.md updated. Gate: lake build ok, 1,799 and 123 tests passed, paper check ok at 74 pages.
+
+**Corrections to the item's wording**, recorded in the report: `CutLemma.lean` is used by the proof, not merely imported; the `Prop`s are over `Type u`, not `Type`; and `0 ≤ τ n` is needed where §2.6 had listed `Monotone ρ`. One side effect to know about: `reports/sandwich_tables.md` is regenerated with the three new rows, so it changes in this commit on purpose.
+
+**Next** is item 10, the write-up. One thing it must handle: `refs.bib` has no Fomin & Høie 2006 entry, so the drafted Appendix A row needs a new key or a written-out citation.
+
+# result: success in 1854s, 45 turns, cost $14.53
