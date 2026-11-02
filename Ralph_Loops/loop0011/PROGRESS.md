@@ -5,7 +5,7 @@ separators, closed pairs, the weighted count) instead of witnesses (empty
 pairs) in the first-moment lower bound on pathwidth; items in
 `iterations.md`; rules in `TASK.md`. Gate: `python3 Ralph_Loops/loop0011/gate.py`.
 
-Current: 12/13 SOLVED
+Current: 13/13 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -1189,3 +1189,92 @@ at nice 19, nothing re-solved) and the planted `E[1/X]` at `n = 48–64` —
 which would decide whether the union bound's slack grows with `n` or the
 ledger sees the `θ = 0.01` rounding. The owner's `CLAUDE.md` paragraph is
 §12 of the report, ready to paste.
+
+---
+
+## Iteration 13 — 2026-11-01 23:31
+
+Item 13, the reserve: **Theorem Cl's independence step, and Theorem Cl in
+full, in Lean** (open item 1 of `reports/separator_moment.md` §0.9; the
+"product-over-blocks lemma" §10.3 called "the only thing between Theorem Cl
+and Lean"). **Done.** Deliverable: `lean/MOSPFormalization/SeparatorMoment.lean`
+sections `ProductOverBlocks` and `ClosedProduct` (22 new theorems, 4
+definitions; the file now 100 theorems, 25 definitions, 1,683 lines; no
+`sorry`, no `axiom`; `propext`, `Classical.choice`, `Quot.sound` only);
+`paper1/axiom_check.lean` (eleven new lines); `learning/sandwich.py`
+(`SEPARATOR_PROVED` + 11 names); `tests/test_separator_moment.py` (2 new
+tests, 93 in the module); `paper1/latex/sec9e_appendix_random.tex` (two
+sentences: the independence step is in Lean) and `sec9a_appendix_lean.tex`
+(row A.69, `theoremClproduct`); `reports/separator_moment.md` §13, with §0.2,
+§0.7, §0.9, §0.10, §10.3 and the `CLAUDE.md` paragraph of §12 patched by a
+pointer; `reports/scratch/separator_moment/13_reserve/` (`check.py`,
+`check.log`, `lake_build.log`, `axiom_check.log`, `gate.log`).
+
+**Why this one.** The item offered three kinds of candidate. The
+near-threshold constants at finer `c` were done by item 09 (§9.6). The
+cover-model partition sum for `E_bip` has no component law to rest on (§7.4,
+(H_C)) and would end in a measurement without a theorem. The planted
+measurement at `n = 48–64` (the two unreconciled instruments, §0.9 item 3)
+costs 2–5 core-hours of Harper plus an enumeration with an unbounded tail
+(item 04 censored 7 instances at `n ≤ 32`) and would at best narrow a
+disagreement between statistics measured at different `k`. The Lean gap was
+listed first in §0.9 and pointed to by the "Next" of iterations 10 and 12,
+is deterministic, costs no compute, is checked by the gate, and turns a
+sentence in the paper from "on paper" to "in Lean".
+
+### Completed
+
+- **Checked before stated** (`check.log`, 6 s): the per-pair identity
+  `Σ_{G : (A, R) closed} w_p(G) = (1 − p)^{|A||R|} ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^{|S|}`
+  on every disjoint ordered pair of every labelled graph at `n = 1–5` (363
+  pairs) and 80 random pairs at `n = 6`, and the split and blocks lemmas on
+  300 random instances each with arbitrary (non-monotone) predicates, in
+  exact rationals at `p = 1/2, 1/3`: **zero violations**.
+- **Proved**: `sum_subsetWeight_split` (two disjoint blocks, `sum_nbij'`),
+  `sum_subsetWeight_blocks` (any finset of pairwise disjoint blocks, by
+  induction with the split lemma; the base case is the binomial identity,
+  which absorbs the free pairs — no `piFinset` bijection, which §10.3 had
+  priced at a session), the block weights, `starPairs`, `ClosedEdgeSet`,
+  `isClosedPair_iff_closedEdgeSet`, `image_edges_closedPairGraphs`,
+  **`sum_gnpWeight_closedPairGraphs`** (the independence step, exact for
+  every real `p`), **`weightedSum_graphsOfPathwidthLe_le_closedPairCount`**
+  (Theorem Cl pair-summed) and, via `closedIndices_eq_biUnion` and
+  `sum_closedIndices_eq`, **`weightedSum_graphsOfPathwidthLe_le_closedPairFormula`**
+  (Theorem Cl size-summed: `Σ_{a ≥ t, r' ≥ r} C(n, a) C(n − a, r') (1 − p)^{a r'} ((1 − (1 − p)^a)(1 − (1 − p)^{r'}))^{n − a − r'}`,
+  §8.1's multinomial as a binomial product).
+- **Cost against the estimate**: about twelve minutes of Lean after the
+  check (first build nine errors — two renamed Mathlib lemmas, the Finset
+  spelling of `Disjoint → ∩ = ∅`, an unneeded `and_assoc`, a hypothesis too
+  many, and a decidability-instance mismatch in `filter_congr` on a bounded
+  `∀` over a finset of a `Fintype`, settled by `ext` + `mem_filter`; second
+  build two; third none; the size form first time). The file builds in
+  1.5 s. Compute: none; the one-minute load was below 2.
+- **Checks on record**: `make -C paper1/latex axioms` 307 theorems, 0
+  failures; `check_axioms` 198 names cited, 0 without an axiom line; `make
+  check` no undefined references, 74 pages; `python -m learning.sandwich
+  --stage separator` 1,000 rows, 0 violations (run with `--out`, and
+  `reports/sandwich_tables.md` restored after a first run without it).
+- **Kill verdict: none** (the item had none). Stop condition of TASK.md:
+  did not fire.
+- **Does not claim**: anything about `β_closed` (still a numerically
+  computed root, §6.1 (b)); Theorem Cl-cover, Lemma J, Lemmas P, G, F,
+  Corollary S′ and the flip-weighted evaluation stay on paper with the
+  obstacles of §10.3; the two instruments of §0.9 item 3 are untouched.
+- Gate: `python3 Ralph_Loops/loop0011/gate.py` **PASS** (lake build ok, 0 sorry, 0 axiom; tests 1,749 passed / 2 skipped / 1 xfailed in 5:13, the 2 new tests among them; pathwidth_solver 123 passed in 6:59; paper 74 pages, no undefined references; the one-minute load was below 2). Log: `reports/scratch/separator_moment/13_reserve/gate.log`.
+
+### Blockers
+
+None.
+
+### Next
+
+The loop is complete. Of §0.9, what remains open: Lemmas P, G, F and
+Corollary S′ (components of `G − S` as finsets), Lemma J and Theorem
+Cl-cover (inclusion–exclusion over pattern sets), the hypotheses (H_G) and
+(H_C), the two slack instruments (a capless Harper run at `n = 60–75` and the
+planted `E[1/X]` at `n = 48–64`), a count merging both lobes, the near-
+threshold region, the sparse cover cells, and the half-giant line on the
+i.i.d. model. The `CLAUDE.md` paragraph is §12 of the report (patched for
+item 13), ready to paste.
+
+LOOP_COMPLETE

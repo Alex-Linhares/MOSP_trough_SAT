@@ -1,0 +1,25 @@
+'MOSPFormalization.exists_closedPair_of_pathwidth_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.isClosedPair_iff_sees_both' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedCount_ge_indicator' depends on axioms: [propext, Classical.choice, Quot.sound]
+--
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_sum_closedPairs' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+--
+'MOSPFormalization.sum_subsetWeight_split' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_subsetWeight_blocks' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_subsetWeight_eq_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_subsetWeight_nonempty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.isClosedPair_iff_closedEdgeSet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.image_edges_closedPairGraphs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_gnpWeight_closedPairGraphs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.closedIndices_eq_biUnion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.sum_closedIndices_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_closedPairCount' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_closedPairFormula' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+198 names cited, 0 theorems without an axiom line
+307 theorems checked, 0 failures

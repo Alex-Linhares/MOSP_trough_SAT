@@ -150,7 +150,8 @@ PENDANT_PROVED = (
 #: L2 (the Galois step, the one-round closure, the closed pair), Lemma W (the
 #: weighted-count identity), the union bound over separators, the factorisation
 #: step, the relabelling, Theorem S with its `n.choose k` factor, the union bound
-#: of Theorem Cl, Lemma Fl (the flips) and Corollary W-flip's sound part.
+#: of Theorem Cl, Lemma Fl (the flips) and Corollary W-flip's sound part; since
+#: item 13 the product over blocks and Theorem Cl's independence step too.
 SEPARATOR_PROVED = (
     "exists_balanced_separator",
     "exists_balanced_separator_cover",
@@ -182,6 +183,17 @@ SEPARATOR_PROVED = (
     "card_flipPair",
     "card_flips_le",
     "weightedSum_graphsOfPathwidthLe_le_flipWeighted",
+    "sum_subsetWeight_split",
+    "sum_subsetWeight_blocks",
+    "sum_subsetWeight_eq_empty",
+    "sum_subsetWeight_nonempty",
+    "isClosedPair_iff_closedEdgeSet",
+    "image_edges_closedPairGraphs",
+    "sum_gnpWeight_closedPairGraphs",
+    "closedIndices_eq_biUnion",
+    "sum_closedIndices_eq",
+    "weightedSum_graphsOfPathwidthLe_le_closedPairCount",
+    "weightedSum_graphsOfPathwidthLe_le_closedPairFormula",
 )
 #: Every proved name the axiom check asks for.
 ALL_PROVED = PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED

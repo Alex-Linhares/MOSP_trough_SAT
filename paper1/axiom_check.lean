@@ -375,3 +375,15 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.card_flipPair
 #print axioms MOSPFormalization.card_flips_le
 #print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_flipWeighted
+-- loop0011 item 13: Theorem Cl's independence step (the product over blocks)
+#print axioms MOSPFormalization.sum_subsetWeight_split
+#print axioms MOSPFormalization.sum_subsetWeight_blocks
+#print axioms MOSPFormalization.sum_subsetWeight_eq_empty
+#print axioms MOSPFormalization.sum_subsetWeight_nonempty
+#print axioms MOSPFormalization.isClosedPair_iff_closedEdgeSet
+#print axioms MOSPFormalization.image_edges_closedPairGraphs
+#print axioms MOSPFormalization.sum_gnpWeight_closedPairGraphs
+#print axioms MOSPFormalization.closedIndices_eq_biUnion
+#print axioms MOSPFormalization.sum_closedIndices_eq
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_closedPairCount
+#print axioms MOSPFormalization.weightedSum_graphsOfPathwidthLe_le_closedPairFormula

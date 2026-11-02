@@ -667,7 +667,7 @@ layout persisted under `reports/scratch/separator_moment/<item>/`.
   - **Size range.** As stated per claim.
   - **Does not claim.** Beyond what the items proved, measured or fitted.
 
-- [ ] **13 Reserve.** The best remaining gap from items 01–12, one session:
+- [x] **13 Reserve.** The best remaining gap from items 01–12, one session:
   a killed item's cheapest surviving variant (the near-threshold constants
   at finer `c`, or the cover-model partition sum for `E_bip` at small `N`),
   a Lean statement left as a named `Prop`, or the planted measurement at

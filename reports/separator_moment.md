@@ -109,7 +109,7 @@ a bounded planted statistic).
 | L1, L1′ (a, b, d), L2, L3: the structures a narrow layout forces | `exists_balanced_separator`, `exists_balanced_separator_cover`, `exists_isBalancedBip`, `card_componentOff_le_of_isBalancedBip`, `closeStep_isClosedPair`, `closeStep_closeStep`, `exists_closedPair_of_pathwidth_le`, `isClosedPair_iff_sees_both`, … (30 names, §10.1) | L1′ (c) converse, §2.2 | checked on every graph to 9 vertices, 20,000 random at 10–12, 2,000 covers: zero violations (§2.4) | — | — |
 | exact-size pair count | the `Z ≡ 1` instance of `weightedSum_graphsOfPathwidthLe_le_weighted` | §8.1 | floors on 200 Chu & Stuckey and 1,143 certified instances (§7.5, §11) | — | — |
 | **Theorem S** (separator count, finite form) | `weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip` (inner probability as a weighted count; relabelling `innerBip_eq_of_card_eq`) | the inner probability by the partition formula (Lemma P) and Gilbert's recursion (Lemmas G, F), §8.1–§8.2; exact to `N = 120` (`E_bip`), `N = 400` (`E_relax`), §5 | `n = 60, 120`, `c = 3–10` in stacks (§5.2, §6.5, §9.6) | the rate of `E_bip` beyond `N = 120`; `β_sep(fitted)` (§6.1) | `β_sep(cited)` rests on the LDP for the largest component (O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3)); `E_bip` and `E_relax` of equal rate beyond `N = 120` (§5.3) |
-| **Theorem Cl** (closed-pair count) | union bound `weightedSum_graphsOfPathwidthLe_le_sum_closedPairs`; characterisation `isClosedPair_iff_sees_both` | the independence step and the exact expectation, §8.1; `β_closed` the root of a closed-form exponent, §6.1 (b) | floors (§6.5, §7.5, §11) | — | the supremum at the corner at every `c` (numerical, ten `c`) |
+| **Theorem Cl** (closed-pair count) | union bound `weightedSum_graphsOfPathwidthLe_le_sum_closedPairs`; characterisation `isClosedPair_iff_sees_both`; *since item 13 (§13)*: the independence step `sum_gnpWeight_closedPairGraphs` by the product over blocks `sum_subsetWeight_blocks`, and Theorem Cl in full, `weightedSum_graphsOfPathwidthLe_le_closedPairCount` (pair-summed) and `…_closedPairFormula` (size-summed) | `β_closed` the root of a closed-form exponent, §6.1 (b) | floors (§6.5, §7.5, §11) | — | the supremum at the corner at every `c` (numerical, ten `c`) |
 | Theorem Cl-cover, the NA bound | — | the `(u, w)` inclusion–exclusion, §7.1 (a); the cancellation-free bound by negative association (Joag-Dev & Proschan 1983, cited), §7.1 (a′) | exact against enumeration at `n ≤ 8`; the NA bound's slack a constant `0.2` nats at `n = 8–26` (§7.3) | the NA bound's slope | — |
 | **Lemma W** (weighted count), Lemma Fl (flips), Corollary W-flip | `weightedCount_ge_indicator`, `weightedSum_graphsOfPathwidthLe_le_weighted`, `flipPair_*`, `card_flips_le`, `weightedSum_graphsOfPathwidthLe_le_flipWeighted` | Lemma J (joint binomial moments), the evaluation of `E[Y]`, §8.1 | `E[Y]` within 1.7 s.e. of 1,000 Monte Carlo covers (§8.3) | — | — |
 | Lemma Rc (recombinations), `Ẑ₀`, `β_W` | — | §9.1, §9.3 (the transform of `Ẑ₀` a binomial sum) | every labelled graph to 6 vertices; planted lower tail at `n ≤ 32` (§9.2) | — | — |
@@ -118,11 +118,11 @@ a bounded planted statistic).
 | Proposition T (threshold `2 ln 2`), T-cover (half-giant line) | — | §6.4, §7.4, §8.1 | `N ≤ 400` consistent at `c = 2, 2.5`, undecided at `1.5` (§6.4) | — | (H_G) cited, not verified by us; (H_C) stated in no held paper |
 
 Every Lean theorem of the loop is in `lean/MOSPFormalization/SeparatorMoment.lean`
-(78 theorems, 21 definitions; no `sorry`, no `axiom`; `propext`,
+(100 theorems, 25 definitions since item 13; no `sorry`, no `axiom`; `propext`,
 `Classical.choice`, `Quot.sound` only, `paper1/axiom_check.lean`); what is on
 paper and not in Lean is named with its obstacle in §10.3 (components of
-`G − S` as finsets; the product-over-blocks lemma; inclusion–exclusion over
-pattern sets).
+`G − S` as finsets; inclusion–exclusion over pattern sets; the
+product-over-blocks lemma was the third and is proved in §13).
 
 ### 0.3 The constants
 
@@ -269,6 +269,7 @@ and different quantities (a planted mean against a deterministic bound at
 | 10 Lean | none | everything of (a)–(d) proved; obstacles named |
 | 11 ledger | none; stop condition: a floor above a certified pathwidth | **did not fire** (1,143 instances) |
 | 12 write-up | none | — |
+| 13 reserve (Theorem Cl into Lean) | none; the statement checked before it was written | zero violations (every disjoint pair on `n ≤ 5`, 80 pairs at `n = 6`); 22 theorems, no `sorry` (§13) |
 
 ### 0.8 What this is not
 
@@ -295,10 +296,11 @@ and different quantities (a planted mean against a deterministic bound at
 
 ### 0.9 Open
 
-1. **Theorem Cl into Lean**: the product-over-blocks lemma for weighted sums
-   over edge subsets (a session; §10.3). Lemmas P, G, F and Corollary S′ need
-   components of `G − S` as finsets; Lemma J and Theorem Cl-cover need
-   inclusion–exclusion over pattern sets.
+1. ~~**Theorem Cl into Lean**: the product-over-blocks lemma for weighted sums
+   over edge subsets (a session; §10.3).~~ **Done by item 13 (§13)**:
+   `weightedSum_graphsOfPathwidthLe_le_closedPairFormula`. Still open: Lemmas
+   P, G, F and Corollary S′ need components of `G − S` as finsets; Lemma J and
+   Theorem Cl-cover need inclusion–exclusion over pattern sets.
 2. **The hypotheses.** (H_G): verify the quoted LDP statement against the
    held sources in full (O'Connell 1998 is not held). (H_C): an exponentially
    small lower tail for the giant of a random intersection graph, in no held
@@ -328,7 +330,7 @@ and different quantities (a planted mean against a deterministic bound at
 Sections 1–11 are the items in order, each with its question, its events,
 its size range, its regenerate command, its kill verdict and what it does not
 claim. Code: `learning/separator_moment.py` (tested by
-`tests/test_separator_moment.py`, 91 tests); scratch, logs and CSVs under
+`tests/test_separator_moment.py`, 93 tests since item 13); scratch, logs and CSVs under
 `reports/scratch/separator_moment/NN_*/`; Lean in
 `lean/MOSPFormalization/SeparatorMoment.lean`; five papers added to
 `literature/` and five recorded missing in `literature/MISSING.md`; the paper's
@@ -341,8 +343,8 @@ axioms`, logs in `reports/scratch/separator_moment/12_writeup/`). Compute:
 about 8.5 core-hours in all against 12 planned, 4.9 of them item 11's Harper
 pass. Sections 1–11 are kept as their items wrote them, each self-contained;
 this item edited the header and added §0 and §12 and did not rewrite them.
-The paragraph the owner will need for `CLAUDE.md` is §12, the last section
-of this document.
+The paragraph the owner will need for `CLAUDE.md` is §12; §13 (the reserve,
+Theorem Cl into Lean) follows it.
 
 ---
 
@@ -3869,6 +3871,9 @@ Everything in (d) was proved, and five further statements:
   type, with `Finset.prod_univ_sum` and a bijection `𝒫(T) ≅ piFinset (𝒫 ∘ B) × 𝒫(T ∖ ⋃ B)`;
   estimated at a session on its own, and the only thing between Theorem Cl
   and Lean. The characterisation step and the union bound are proved.
+  *(Superseded 2026-11-01 by item 13, §13: proved, by an induction over the
+  block index set with a two-block split lemma, no `piFinset` bijection
+  needed; Theorem Cl is in Lean in both forms.)*
 * **Inclusion–exclusion over pattern sets** (Lemma J, Theorem Cl-cover):
   `card_filter_avoid`'s pattern extended to the three cases of `allowed`
   and the two-variable Möbius inversion; §8.4 said "not within a session",
@@ -4301,13 +4306,16 @@ phase diagram" paragraph; `CLAUDE.md` is not edited.*
 > per **closed pair** (`S = N(A) ∩ N(R)`, the fixpoint of one round of
 > `R* = V ∖ N[A]`, `A* = V ∖ N[R*]`), and the **weighted count**
 > `Σ_P 1[P empty]/Z(P) ≥ 1[X > 0]` for any `1 ≤ Z ≤ X`. **Theorems**
-> (`SeparatorMoment.lean`, 78 theorems, no `sorry`, no `axiom`): Theorem S
+> (`SeparatorMoment.lean`, 100 theorems, no `sorry`, no `axiom`): Theorem S
 > in finite form with the inner probability as a weighted count
 > (`weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`; the union bound
 > over `S` is the only inequality), the deterministic lemmas L1 / L1′ / L2
-> and their cover forms, Lemma W, the flip lemma, Theorem Cl's union bound;
-> on paper: Theorem Cl's independence step, the partition formula (Lemmas P,
-> G, F) and the cover inclusion–exclusion (§10.3 names the obstacles).
+> and their cover forms, Lemma W, the flip lemma, and **Theorem Cl in full**
+> (`weightedSum_graphsOfPathwidthLe_le_closedPairFormula`: `P(pw ≤ k) ≤
+> Σ_{a ≥ t, r' ≥ r} C(n, a) C(n − a, r') (1 − p)^{a r'} ((1 − (1 − p)^a)(1 −
+> (1 − p)^{r'}))^{n − a − r'}`, the independence step a product over disjoint
+> blocks of pairs, item 13); on paper: the partition formula (Lemmas P, G, F)
+> and the cover inclusion–exclusion (§10.3 names the obstacles).
 > **Constants** (asymptotic; `β_sep` rests on the *cited* LDP for the
 > largest component, O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3),
 > reproduced by exact computation and *fitted* over `N = 100–400`):
@@ -4343,5 +4351,167 @@ phase diagram" paragraph; `CLAUDE.md` is not edited.*
 > counts in print bought 2–25% of a gap; five PDFs added to `literature/`,
 > five recorded missing; "we found no prior statement", never "first".
 > Nothing re-solved; `solutions/` untouched; about 8.5 core-hours. Code
-> `learning/separator_moment.py` (91 tests); data under
+> `learning/separator_moment.py` (93 tests); data under
 > `reports/scratch/separator_moment/`.
+
+---
+
+## 13. Reserve: Theorem Cl's independence step, and Theorem Cl in full, in Lean (item 13, 2026-11-01)
+
+**Question.** Of the gaps items 01–12 left (§0.9), which one closes in a
+session, and does it close? The item named three kinds of candidate: a
+killed item's cheapest surviving variant, a Lean statement left as a named
+`Prop`, the planted measurement at one larger `n`.
+
+**Why this one.** The near-threshold constants at finer `c` were already
+done by item 09's (d) branch (§9.6, eleven `c` from 2.0 to 4.0). The
+cover-model partition sum for `E_bip` needs the component law of a random
+intersection graph, which no held paper gives (§7.4, (H_C)), so it would be
+a measurement with no theorem at its end. The planted measurement at
+`n = 48–64` addresses the two unreconciled instruments (§0.9 item 3) but
+costs 2–5 core-hours of Harper plus an enumeration whose tail cost is
+unbounded (item 04 censored 7 instances at `n ≤ 32`), and at best narrows a
+disagreement between two statistics measured at different `k`. No statement
+was left as a named `Prop` (§10.7), but §10.3 named the product-over-blocks
+lemma as "the only thing between Theorem Cl and Lean", §0.9 listed it first,
+and iterations 10 and 12 both pointed the reserve at it. It is deterministic,
+needs no compute, is checked by the gate, and changes a sentence in the
+paper from "on paper" to "in Lean". That is the item.
+
+### 13.1 What is proved
+
+All in `lean/MOSPFormalization/SeparatorMoment.lean`, sections
+`ProductOverBlocks` and `ClosedProduct`; 22 new `theorem` declarations and 4
+definitions (the file: 100 theorems, 25 definitions, 1,683 lines); no
+`sorry`, no `axiom`; every new theorem on `propext`, `Classical.choice`,
+`Quot.sound` only (`paper1/axiom_check.lean`, eleven new lines; `make -C
+paper1/latex axioms`: 307 theorems checked, 0 failures).
+
+* **The split lemma** (`sum_subsetWeight_split`). For disjoint finsets `B`,
+  `T'` of any type and predicates `P`, `Q`,
+
+      Σ_{F ⊆ B ∪ T', P(F ∩ B) ∧ Q(F ∩ T')} p^|F| (1 − p)^{|B ∪ T'| − |F|}
+        = (Σ_{F ⊆ B, P F} p^|F| (1 − p)^{|B| − |F|}) · (Σ_{F ⊆ T', Q F} p^|F| (1 − p)^{|T'| − |F|}),
+
+  by the bijection `F ↦ (F ∩ B, F ∩ T')` with inverse `(F₁, F₂) ↦ F₁ ∪ F₂`
+  (`sum_nbij'`), the weight splitting as `subsetWeight_union`.
+* **The product over blocks** (`sum_subsetWeight_blocks`). For a finset `s`
+  of block indices, blocks `B i ⊆ T` pairwise disjoint on `s`, and predicates
+  `P i`,
+
+      Σ_{F ⊆ T, ∀ i ∈ s, P i (F ∩ B i)} p^|F| (1 − p)^{|T| − |F|}
+        = Π_{i ∈ s} Σ_{F ⊆ B i, P i F} p^|F| (1 − p)^{|B i| − |F|},
+
+  by induction on `s`: the split lemma peels one block off (`T = B i ∪ (T ∖ B i)`),
+  and the remaining blocks lie inside `T ∖ B i`; the base case is the
+  binomial identity `Σ_{F ⊆ T} p^|F| (1 − p)^{|T| − |F|} = 1`
+  (`sum_subsetWeight_powerset`). The free pairs are what this base case
+  absorbs: no `piFinset` bijection and no `prod_univ_sum`, which §10.3 had
+  priced at a session.
+* **The block weights** (`sum_subsetWeight_eq_empty`,
+  `sum_subsetWeight_nonempty`): "no pair chosen" weighs `(1 − p)^|B|`, "some
+  pair chosen" weighs `1 − (1 − p)^|B|`.
+* **The closed pair as an edge-set predicate**. `starPairs A v` is the set of
+  pairs `s(a, v)`, `a ∈ A` (`card_starPairs`: `|A|` of them;
+  `starPairs_subset_top` for `v ∉ A`); `ClosedEdgeSet A R F` is "`F` meets no
+  forbidden `A`–`R` pair, and for every `v ∉ A ∪ R` meets `starPairs A v` and
+  `starPairs R v`"; `isClosedPair_iff_closedEdgeSet`: a pair is closed iff
+  its sides are disjoint and the edge set is a closed edge set (through
+  `isClosedPair_iff_sees_both` of item 10, `isEmptyPair_iff_inter_forbidden`
+  and `exists_adj_iff_inter_starPairs_nonempty`);
+  `image_edges_closedPairGraphs`: `edges` maps the graphs in which `(A, R)` is
+  closed onto the closed edge sets. The disjointness of the blocks is three
+  small `Sym2.eq_iff` case splits (`disjoint_starPairs_forbidden`,
+  `disjoint_starPairs_starPairs`, `disjoint_starPairs_of_ne`).
+* **The independence step** (`sum_gnpWeight_closedPairGraphs`). For disjoint
+  `A`, `R` and `S = V ∖ (A ∪ R)`,
+
+      Σ_{G : (A, R) closed in G} gnpWeight p G
+        = (1 − p)^{|A||R|} · ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^{|S|},
+
+  exactly, for every real `p`: the forbidden pairs are one block with the
+  predicate "empty", and each `v ∈ S` contributes the block
+  `starPairs A v ∪ starPairs R v` with the predicate "meets both stars",
+  whose weight is the split lemma again (`sum_subsetWeight_starBlock`); the
+  pairs inside `A`, inside `R` and inside `S` are the free ones.
+* **Theorem Cl, pair-summed** (`weightedSum_graphsOfPathwidthLe_le_closedPairCount`):
+  for `0 ≤ p ≤ 1`, `k < n`,
+
+      Σ_{pw G ≤ k} gnpWeight p G ≤ Σ_{(A, R) ∈ closedIndices t r} (1 − p)^{|A||R|} ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^{|V ∖ (A ∪ R)|},
+
+  the union bound of item 10 with every term evaluated.
+* **Theorem Cl, size-summed** (`weightedSum_graphsOfPathwidthLe_le_closedPairFormula`):
+  the same with the right-hand side regrouped over the size pairs `(a, r')`,
+  `t ≤ a`, `r ≤ r'`, `a, r' ≤ n`:
+
+      Σ_{(a, r')} C(n, a) · C(n − a, r') · (1 − p)^{a r'} ((1 − (1 − p)^a)(1 − (1 − p)^{r'}))^{n − a − r'},
+
+  by `closedIndices_eq_biUnion` (the closed indices are the disjoint union
+  of the exact-size index sets `pairIndices a r'`) and `sum_closedIndices_eq`
+  (each fibre has `C(n, a) C(n − a, r')` elements, `card_pairIndices` of item
+  10). The binomial product is `n!/(a! r'! s!)`, `s = n − a − r'`, the
+  multinomial §8.1 writes; terms with `a + r' > n` are zero through
+  `C(n − a, r') = 0`. This is §8.1's Theorem Cl verbatim, up to that spelling
+  of the multinomial.
+
+### 13.2 Checked before it was stated
+
+`reports/scratch/separator_moment/13_reserve/check.py` (`check.log`, 6 s):
+in exact rationals at `p = 1/2` and `1/3`, (1) the per-pair identity on
+**every disjoint ordered pair of every labelled graph on `n = 1–5`** (363
+pairs, up to 1,024 graphs each) and 80 random pairs at `n = 6` (32,768
+graphs each); (2) the split lemma and the blocks lemma on 300 random
+instances each (random finsets of size `≤ 7–8`, random blocks, predicates
+given as random subsets of the powerset — not monotone, not symmetric). **Zero
+violations.** Theorem Cl's size-summed formula was already equal to the
+enumerated `E[X₃]` on every labelled graph at `n ≤ 7` (item 08, §8.3). The
+test `test_closed_pair_probability_is_the_product_over_blocks` keeps the
+per-pair identity at `n ≤ 4` in full and 40 pairs at `n = 5`, and the
+size-summed sum against `closed_count_exact`;
+`test_item13_names_are_audited_and_declared` pins the eleven names to
+`learning.sandwich.SEPARATOR_PROVED`, the Lean file and the axiom audit.
+
+### 13.3 What it cost, and what the record had estimated
+
+§10.3 priced the lemma at "a session on its own" and sketched it through
+`Finset.prod_univ_sum` and a bijection `𝒫(T) ≅ piFinset (𝒫 ∘ B) × 𝒫(T ∖ ⋃ B)`.
+The proof here is the induction above; the first build had nine errors (two
+renamed Mathlib lemmas, `eq_empty_iff_forall_notMem` and `notMem_empty`;
+`Disjoint.inter_eq` is not the Finset lemma, `disjoint_iff_inter_eq_empty`
+is; an unneeded `and_assoc`; a lemma stated with one hypothesis too many;
+and a decidability-instance mismatch — `Fintype.decidableForallFintype`
+against `decidableDforallFinset` — when `filter_congr` meets a bounded `∀`
+over a finset of a `Fintype`, settled by `ext` and `mem_filter`), the second
+two, the third none; the size-summed form built first time. About twelve
+minutes of Lean after the check; the file builds in 1.5 s. Compute: none.
+The paper: `sec9e_appendix_random.tex` now says the independence step is in
+Lean (two sentences), `sec9a_appendix_lean.tex` has a row A.69
+(`theoremClproduct`) with the five headline names; `make -C paper1/latex
+check`: no undefined references, 74 pages; `check_axioms`: 198 names cited,
+0 without an axiom line, 307 theorems, 0 failures. §0.2, §0.7, §0.9, §10.3
+and the `CLAUDE.md` paragraph of §12 are patched with a pointer here;
+§8.4 and §10.1 are kept as their items wrote them.
+
+### 13.4 Regenerate, size range, kill verdict, what this does not claim
+
+* **Regenerate.** `cd lean && lake build`;
+  `python3 reports/scratch/separator_moment/13_reserve/check.py`;
+  `python3 -m pytest tests/test_separator_moment.py -k "closed_pair_probability or item13 or proved_names"`;
+  `make -C paper1/latex && make -C paper1/latex check && make -C paper1/latex axioms`;
+  `python -m learning.sandwich --stage separator --out /tmp/sandwich.md`
+  (the `--out` keeps `reports/sandwich_tables.md` as the full run wrote it).
+  Logs: `reports/scratch/separator_moment/13_reserve/` (`check.log`,
+  `lake_build.log`, `axiom_check.log`, `gate.log`).
+* **Size range.** The theorems hold for every finite `V`, every `k < n`, and
+  every real `p` for the identity, `0 ≤ p ≤ 1` for the inequalities (Lean,
+  no size). The checks: `n ≤ 6`.
+* **Kill verdict: none** (the item had none; the deliverable is a proof). The
+  check that precedes the statement found nothing, as §8.3 had.
+* **Does not claim.** Anything about `β_closed`: it is still the root of a
+  closed-form exponent computed numerically (§6.1 (b)), and the passage from
+  the finite formula to the exponent (Stirling, the supremum at the corner)
+  is on paper. Theorem Cl-cover and Lemma J (inclusion–exclusion over pattern
+  sets), Lemmas P, G, F and Corollary S′ (components as finsets), and the
+  evaluation of the flip-weighted count stay on paper, with their obstacles
+  as §10.3 names them. The two unreconciled instruments of §0.9 item 3 are
+  untouched. Nothing re-solved; `solutions/` untouched; no compute.

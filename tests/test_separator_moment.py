@@ -1301,3 +1301,82 @@ def test_layout_vertex_separation_of_an_optimal_layout_is_the_vertex_separation(
         G.add_edges_from((u, v) for u in range(n) for v in range(u + 1, n) if (adj[u] >> v) & 1)
         pw, order = compute_pathwidth(G)
         assert layout_vertex_separation(adj, list(order)) == pw == vertex_separation(adj)
+
+
+# loop0011 item 13: Theorem Cl's independence step (`sum_gnpWeight_closedPairGraphs`)
+
+
+def _closed_pair_weight(n, A, R, p):
+    """`Σ_{G : (A, R) closed in G} p^|E| (1 − p)^(C(n,2) − |E|)` over every labelled
+    graph on `n` vertices, exactly; closed = empty ∧ every `v ∉ A ∪ R` sees both sides
+    (`isClosedPair_iff_sees_both`)."""
+    from learning.separator_moment import _labelled_graphs
+    q = 1 - p
+    Cn = n * (n - 1) // 2
+    S = [v for v in range(n) if v not in A and v not in R]
+    maskA = sum(1 << a for a in A)
+    maskR = sum(1 << r for r in R)
+    total = Fraction(0)
+    for adj, e in _labelled_graphs(n):
+        if any(adj[a] & maskR for a in A):
+            continue
+        if all((adj[v] & maskA) and (adj[v] & maskR) for v in S):
+            total += p ** e * q ** (Cn - e)
+    return total
+
+
+def test_closed_pair_probability_is_the_product_over_blocks():
+    """The Lean statement `sum_gnpWeight_closedPairGraphs`, numerically: for every
+    disjoint ordered pair `(A, R)` on `n ≤ 4` vertices and 40 random pairs at `n = 5`,
+    the `G(n, p)`-weighted count of the graphs in which `(A, R)` is closed equals
+    `(1 − p)^(|A||R|) ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^|S|` in exact rationals; and
+    the sum of these over the closed indices is Theorem Cl's size-summed formula
+    (`closed_count_exact`)."""
+    import itertools
+    import random
+    from learning.separator_moment import closed_count_exact, forced_sizes
+    rng = random.Random(13)
+    for p in (Fraction(1, 2), Fraction(1, 3)):
+        q = 1 - p
+        for n in range(1, 6):
+            pairs = []
+            for lab in itertools.product(range(3), repeat=n):
+                A = tuple(i for i in range(n) if lab[i] == 0)
+                R = tuple(i for i in range(n) if lab[i] == 1)
+                pairs.append((A, R))
+            if n == 5:
+                pairs = rng.sample(pairs, 40)
+            for A, R in pairs:
+                s = n - len(A) - len(R)
+                rhs = q ** (len(A) * len(R)) * ((1 - q ** len(A)) * (1 - q ** len(R))) ** s
+                assert _closed_pair_weight(n, A, R, p) == rhs, (n, A, R)
+        # the size-summed form against the record's `closed_count_exact`, n = 4
+        n = 4
+        for k in range(n):
+            N, t = forced_sizes(n, k)
+            r = N - t
+            total = Fraction(0)
+            for a in range(t, n + 1):
+                for rp in range(r, n - a + 1):
+                    total += (math.comb(n, a) * math.comb(n - a, rp)
+                              * q ** (a * rp) * ((1 - q ** a) * (1 - q ** rp)) ** (n - a - rp))
+            assert total == closed_count_exact(n, k, p)
+
+
+def test_item13_names_are_audited_and_declared():
+    """The eleven names of item 13 are in `SEPARATOR_PROVED`, declared as theorems in
+    the Lean file, and have `#print axioms` lines in `paper1/axiom_check.lean`."""
+    import learning.sandwich as sw
+    names = ["sum_subsetWeight_split", "sum_subsetWeight_blocks",
+             "sum_gnpWeight_closedPairGraphs", "isClosedPair_iff_closedEdgeSet",
+             "closedIndices_eq_biUnion", "sum_closedIndices_eq",
+             "weightedSum_graphsOfPathwidthLe_le_closedPairCount",
+             "weightedSum_graphsOfPathwidthLe_le_closedPairFormula"]
+    src = LEAN_FILE.read_text()
+    declared = set(re.findall(r"^theorem\s+([^\s:({\[]+)", src, re.M))
+    audit = (LEAN_FILE.parents[2] / "paper1" / "axiom_check.lean").read_text()
+    for n in names:
+        assert n in sw.SEPARATOR_PROVED, n
+        assert n in declared, n
+        assert f"MOSPFormalization.{n}" in audit, n
+

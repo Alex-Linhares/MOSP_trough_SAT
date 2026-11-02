@@ -74,6 +74,18 @@ is "no edge joins `A` to `R`"; `closedNbhd G A = N[A]` (`EmptyPair.lean`).
   and any `k`-set `S₀`, `P(pathwidth ≤ k) ≤ n.choose k · innerBip p S₀ k`.
 * `weightedSum_graphsOfPathwidthLe_le_sum_closedPairs` — **the union bound of
   Theorem Cl** over the disjoint ordered pairs with `|A| ≥ t`, `|R| ≥ r`.
+* `sum_subsetWeight_split`, `sum_subsetWeight_blocks` — **the product over blocks**
+  (loop0011 item 13): the `p`-weight of `{F ⊆ T : ∀ i, P i (F ∩ B i)}` over pairwise
+  disjoint blocks `B i ⊆ T` is the product of the per-block weights; `starPairs`,
+  `ClosedEdgeSet`, `isClosedPair_iff_closedEdgeSet`, `image_edges_closedPairGraphs`;
+  `sum_gnpWeight_closedPairGraphs` — **the independence step of Theorem Cl**: the
+  `G(n, p)` probability that `(A, R)` is closed is
+  `(1 − p)^(|A||R|) ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^|S|`, exactly;
+  `weightedSum_graphsOfPathwidthLe_le_closedPairCount` (pair-summed) and, through
+  `closedIndices_eq_biUnion` and `sum_closedIndices_eq`,
+  `weightedSum_graphsOfPathwidthLe_le_closedPairFormula` (summed over the size pairs
+  `(a, r')` with `n.choose a · (n − a).choose r'`) — **Theorem Cl** in full
+  (`reports/separator_moment.md` §8.1, §13).
 * `isolatedIn`, `flipPair`, `flipPair_isEmptyPair`, `flipPair_disjoint`,
   `card_flipPair`, `flipPair_injOn`, `flips`, `one_le_card_flips`, `card_flips_le`
   — **Lemma Fl**: exchanging equally many vertices isolated in `G[A]` and `G[R]`
@@ -81,13 +93,13 @@ is "no edge joins `A` to `R`"; `closedNbhd G A = N[A]` (`EmptyPair.lean`).
   pairs; `weightedSum_graphsOfPathwidthLe_le_flipWeighted` — **Corollary W-flip,
   the sound part**: `P(pathwidth ≤ k) ≤ E[Σ_P 1[P empty] / #flips(P)]`.
 
-What is on paper and not here (`reports/separator_moment.md` §10.3): the
+What is on paper and not here (`reports/separator_moment.md` §10.3, §13): the
 partition formula for `P_N(E_bip)` (Lemma P), Gilbert's recursion (Lemma G) and
 the first-vertex-component recursion (Lemma F), which need the components of
-`G − S` as finsets with their sizes; Theorem Cl's independence step (the
-weighted count of a closed pair as a product over blocks of pairs); Lemma J and
-Theorem Cl-cover (inclusion–exclusion over pattern sets); the evaluation of the
-flip-weighted count; and every rate and constant (§5–§7).
+`G − S` as finsets with their sizes; Lemma J and Theorem Cl-cover
+(inclusion–exclusion over pattern sets); the evaluation of the flip-weighted
+count; and every rate and constant (§5–§7). Theorem Cl's independence step was
+on that list until loop0011 item 13 (2026-11-01).
 
 No `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound` only.
 -/
@@ -1242,5 +1254,442 @@ theorem weightedSum_graphsOfPathwidthLe_le_flipWeighted (p : ℝ) (hp0 : 0 ≤ p
   have := card_flips_le G (t := (Fintype.card V - k + 1) / 2) (r := (Fintype.card V - k) / 2)
     (A := q.1) (R := q.2) hq hE
   convert this using 3
+
+/-! ### The independence step of Theorem Cl: a product over blocks of pairs
+
+The closed-pair event is a conjunction of `1 + 2|S|` events on pairwise disjoint blocks of
+pairs — no `A`–`R` edge; for each `v ∈ S`, some `A`–`v` edge and some `R`–`v` edge — and the
+`G(n, p)` weight of a conjunction over disjoint blocks is the product of the per-block weights
+(`sum_subsetWeight_split`, `sum_subsetWeight_blocks`: the fibre argument of
+`sum_gnpWeight_fiber`, iterated). `sum_gnpWeight_closedPairGraphs` is the evaluation
+`(1 − p)^(|A||R|) ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^|S|`, and
+`weightedSum_graphsOfPathwidthLe_le_closedPairCount` is **Theorem Cl** of
+`reports/separator_moment.md` §8.1 in its pair-summed form,
+`weightedSum_graphsOfPathwidthLe_le_closedPairFormula` in its size-summed form. Checked
+before it was stated: every disjoint pair of every labelled graph on `n ≤ 5` and 80 random
+pairs at `n = 6`, in exact rationals (`reports/scratch/separator_moment/13_reserve/check.log`). -/
+
+section ProductOverBlocks
+
+variable {α : Type*} [DecidableEq α]
+
+/-- The `p`-weight of a subset `F` of a finite set `T` of pairs: `p^|F| (1 − p)^(|T| − |F|)`. -/
+def subsetWeight (p : ℝ) (T F : Finset α) : ℝ := p ^ F.card * (1 - p) ^ (T.card - F.card)
+
+theorem sum_subsetWeight_powerset (p : ℝ) (T : Finset α) :
+    ∑ F ∈ T.powerset, subsetWeight p T F = 1 := by
+  unfold subsetWeight
+  rw [sum_pow_mul_eq_add_pow]
+  simp
+
+theorem subsetWeight_union {p : ℝ} {B T' F₁ F₂ : Finset α} (hd : Disjoint B T')
+    (h₁ : F₁ ⊆ B) (h₂ : F₂ ⊆ T') :
+    subsetWeight p (B ∪ T') (F₁ ∪ F₂) = subsetWeight p B F₁ * subsetWeight p T' F₂ := by
+  unfold subsetWeight
+  have hF : Disjoint F₁ F₂ := disjoint_of_subset_left h₁ (disjoint_of_subset_right h₂ hd)
+  rw [card_union_of_disjoint hd, card_union_of_disjoint hF]
+  have h1 := card_le_card h₁
+  have h2 := card_le_card h₂
+  have : B.card + T'.card - (F₁.card + F₂.card) =
+      (B.card - F₁.card) + (T'.card - F₂.card) := by omega
+  rw [this, pow_add, pow_add]
+  ring
+
+/-- **The split lemma.** For disjoint `B`, `T'` and predicates `P` on the subsets of `B`
+and `Q` on the subsets of `T'`, the weight of `{F ⊆ B ∪ T' : P (F ∩ B) ∧ Q (F ∩ T')}` is the
+product of the weights of `{F ⊆ B : P F}` and `{F ⊆ T' : Q F}`. -/
+theorem sum_subsetWeight_split (p : ℝ) {B T' : Finset α} (hd : Disjoint B T')
+    (P Q : Finset α → Prop) [DecidablePred P] [DecidablePred Q] :
+    ∑ F ∈ (B ∪ T').powerset.filter (fun F => P (F ∩ B) ∧ Q (F ∩ T')),
+        subsetWeight p (B ∪ T') F =
+      (∑ F ∈ B.powerset.filter P, subsetWeight p B F) *
+        (∑ F ∈ T'.powerset.filter Q, subsetWeight p T' F) := by
+  rw [sum_mul_sum, ← sum_product']
+  symm
+  have key : ∀ F₁ F₂ : Finset α, F₁ ⊆ B → F₂ ⊆ T' →
+      (F₁ ∪ F₂) ∩ B = F₁ ∧ (F₁ ∪ F₂) ∩ T' = F₂ := by
+    intro F₁ F₂ h₁ h₂
+    have e₂ : F₂ ∩ B = ∅ := disjoint_iff_inter_eq_empty.1 (disjoint_of_subset_left h₂ hd.symm)
+    have e₁ : F₁ ∩ T' = ∅ := disjoint_iff_inter_eq_empty.1 (disjoint_of_subset_left h₁ hd)
+    constructor
+    · rw [union_inter_distrib_right, inter_eq_left.2 h₁, e₂, union_empty]
+    · rw [union_inter_distrib_right, inter_eq_left.2 h₂, e₁, empty_union]
+  refine sum_nbij' (fun q => q.1 ∪ q.2) (fun F => (F ∩ B, F ∩ T')) ?_ ?_ ?_ ?_ ?_
+  · rintro ⟨F₁, F₂⟩ hq
+    simp only [mem_product, mem_filter, mem_powerset] at hq
+    obtain ⟨⟨h₁, hP⟩, ⟨h₂, hQ⟩⟩ := hq
+    obtain ⟨e1, e2⟩ := key F₁ F₂ h₁ h₂
+    simp only [mem_filter, mem_powerset]
+    exact ⟨union_subset_union h₁ h₂, by rw [e1, e2]; exact ⟨hP, hQ⟩⟩
+  · intro F hF
+    simp only [mem_filter, mem_powerset] at hF
+    simp only [mem_product, mem_filter, mem_powerset]
+    exact ⟨⟨inter_subset_right, hF.2.1⟩, ⟨inter_subset_right, hF.2.2⟩⟩
+  · rintro ⟨F₁, F₂⟩ hq
+    simp only [mem_product, mem_filter, mem_powerset] at hq
+    obtain ⟨e1, e2⟩ := key F₁ F₂ hq.1.1 hq.2.1
+    simp only [e1, e2]
+  · intro F hF
+    simp only [mem_filter, mem_powerset] at hF
+    simp only
+    rw [← inter_union_distrib_left, inter_eq_left.2 hF.1]
+  · rintro ⟨F₁, F₂⟩ hq
+    simp only [mem_product, mem_filter, mem_powerset] at hq
+    exact (subsetWeight_union hd hq.1.1 hq.2.1).symm
+
+/-- **The product over blocks.** For pairwise disjoint blocks `B i ⊆ T`, `i ∈ s`, and
+predicates `P i` on the subsets of `B i`, the weight of `{F ⊆ T : ∀ i ∈ s, P i (F ∩ B i)}` is
+the product over `i ∈ s` of the weights of `{F ⊆ B i : P i F}`; the pairs of `T` in no block
+are free and contribute the factor `(p + (1 − p))^… = 1`. -/
+theorem sum_subsetWeight_blocks (p : ℝ) {ι : Type*} [DecidableEq ι] (s : Finset ι)
+    (B : ι → Finset α) (P : ι → Finset α → Prop) [∀ i, DecidablePred (P i)] :
+    ∀ T : Finset α, (∀ i ∈ s, B i ⊆ T) →
+      (∀ i ∈ s, ∀ j ∈ s, i ≠ j → Disjoint (B i) (B j)) →
+      ∑ F ∈ T.powerset.filter (fun F => ∀ i ∈ s, P i (F ∩ B i)), subsetWeight p T F =
+        ∏ i ∈ s, ∑ F ∈ (B i).powerset.filter (P i), subsetWeight p (B i) F := by
+  induction s using Finset.induction_on with
+  | empty =>
+    intro T _ _
+    simp [sum_subsetWeight_powerset]
+  | insert i s hi ih =>
+    intro T hBT hdisj
+    have hiT : B i ⊆ T := hBT i (mem_insert_self i s)
+    have hT : B i ∪ (T \ B i) = T := union_sdiff_of_subset hiT
+    have hd : Disjoint (B i) (T \ B i) := disjoint_sdiff
+    have hsub : ∀ j ∈ s, B j ⊆ T \ B i := by
+      intro j hj
+      have hij : i ≠ j := fun h => hi (h ▸ hj)
+      exact subset_sdiff.2 ⟨hBT j (mem_insert_of_mem hj),
+        (hdisj i (mem_insert_self i s) j (mem_insert_of_mem hj) hij).symm⟩
+    rw [prod_insert hi, ← ih (T \ B i) hsub
+      (fun j hj j' hj' hne => hdisj j (mem_insert_of_mem hj) j' (mem_insert_of_mem hj') hne)]
+    have hsplit := sum_subsetWeight_split p hd (P i) (fun F => ∀ j ∈ s, P j (F ∩ B j))
+    rw [hT] at hsplit
+    rw [← hsplit]
+    refine sum_congr (filter_congr ?_) (fun _ _ => rfl)
+    intro F _
+    simp only [mem_insert, forall_eq_or_imp]
+    refine and_congr_right (fun _ => forall₂_congr (fun j hj => ?_))
+    rw [inter_assoc, inter_eq_right.2 (hsub j hj)]
+
+/-- The block weight of "no pair chosen": `(1 − p)^|B|`. -/
+theorem sum_subsetWeight_eq_empty (p : ℝ) (B : Finset α) :
+    ∑ F ∈ B.powerset.filter (fun F => F = ∅), subsetWeight p B F = (1 - p) ^ B.card := by
+  have : B.powerset.filter (fun F => F = ∅) = {∅} := by
+    ext F
+    simp only [mem_filter, mem_powerset, mem_singleton]
+    exact ⟨fun h => h.2, fun h => ⟨h ▸ empty_subset _, h⟩⟩
+  rw [this, sum_singleton]
+  simp [subsetWeight]
+
+/-- The block weight of "some pair chosen": `1 − (1 − p)^|B|`. -/
+theorem sum_subsetWeight_nonempty (p : ℝ) (B : Finset α) :
+    ∑ F ∈ B.powerset.filter (fun F => F.Nonempty), subsetWeight p B F =
+      1 - (1 - p) ^ B.card := by
+  have h := sum_filter_add_sum_filter_not B.powerset (fun F => F.Nonempty) (subsetWeight p B)
+  rw [sum_subsetWeight_powerset] at h
+  have : B.powerset.filter (fun F => ¬ F.Nonempty) = B.powerset.filter (fun F => F = ∅) :=
+    filter_congr (fun F _ => not_nonempty_iff_eq_empty)
+  rw [this, sum_subsetWeight_eq_empty] at h
+  linarith
+
+end ProductOverBlocks
+
+section ClosedProduct
+
+/-- The pairs `s(a, v)`, `a ∈ A`: the `A`–`v` edges a separator vertex `v` may carry. -/
+def starPairs (A : Finset V) (v : V) : Finset (Sym2 V) := A.image (fun a => s(a, v))
+
+theorem mem_starPairs {A : Finset V} {v : V} {e : Sym2 V} :
+    e ∈ starPairs A v ↔ ∃ a ∈ A, e = s(a, v) := by
+  simp only [starPairs, mem_image, eq_comm]
+
+theorem card_starPairs (A : Finset V) (v : V) : (starPairs A v).card = A.card := by
+  rw [starPairs, card_image_of_injOn]
+  intro a _ a' _ h
+  exact Sym2.congr_left.1 h
+
+theorem starPairs_subset_top {A : Finset V} {v : V} (hv : v ∉ A) :
+    starPairs A v ⊆ edges (⊤ : SimpleGraph V) := by
+  intro e he
+  obtain ⟨a, ha, rfl⟩ := mem_starPairs.1 he
+  rw [mem_edges_top, Sym2.mk_isDiag_iff]
+  exact fun h => hv (h ▸ ha)
+
+theorem disjoint_starPairs_forbidden (X : Finset V) {A R : Finset V} {v : V}
+    (hvA : v ∉ A) (hvR : v ∉ R) : Disjoint (starPairs X v) (forbidden A R) := by
+  rw [Finset.disjoint_left]
+  intro e he hf
+  obtain ⟨x, hx, rfl⟩ := mem_starPairs.1 he
+  obtain ⟨a', ha', r', hr', h⟩ := mem_forbidden.1 hf
+  rw [Sym2.eq_iff] at h
+  rcases h with ⟨_, rfl⟩ | ⟨rfl, rfl⟩
+  · exact hvR hr'
+  · exact hvA ha'
+
+theorem disjoint_starPairs_starPairs {A R : Finset V} {v : V} (hAR : Disjoint A R)
+    (hvA : v ∉ A) : Disjoint (starPairs A v) (starPairs R v) := by
+  rw [Finset.disjoint_left]
+  intro e he he'
+  obtain ⟨a, ha, rfl⟩ := mem_starPairs.1 he
+  obtain ⟨r, hr, h⟩ := mem_starPairs.1 he'
+  rw [Sym2.eq_iff] at h
+  rcases h with ⟨rfl, _⟩ | ⟨rfl, rfl⟩
+  · exact Finset.disjoint_left.1 hAR ha hr
+  · exact hvA ha
+
+theorem disjoint_starPairs_of_ne {A A' : Finset V} {v w : V} (hwA : w ∉ A)
+    (hvw : v ≠ w) : Disjoint (starPairs A v) (starPairs A' w) := by
+  rw [Finset.disjoint_left]
+  intro e he he'
+  obtain ⟨a, ha, rfl⟩ := mem_starPairs.1 he
+  obtain ⟨a', ha', h⟩ := mem_starPairs.1 he'
+  rw [Sym2.eq_iff] at h
+  rcases h with ⟨_, h⟩ | ⟨rfl, rfl⟩
+  · exact hvw h
+  · exact hwA ha
+
+/-- The two star blocks of a separator vertex `v`. -/
+def starBlock (A R : Finset V) (v : V) : Finset (Sym2 V) := starPairs A v ∪ starPairs R v
+
+/-- The closed-pair predicate on an edge set: no forbidden pair, and for every vertex off
+`A ∪ R` some `A`-pair and some `R`-pair. -/
+def ClosedEdgeSet (A R : Finset V) (F : Finset (Sym2 V)) : Prop :=
+  F ∩ forbidden A R = ∅ ∧
+    ∀ v ∈ univ \ (A ∪ R), (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty
+
+theorem isEmptyPair_iff_inter_forbidden (A R : Finset V) :
+    IsEmptyPair G A R ↔ edges G ∩ forbidden A R = ∅ := by
+  constructor
+  · intro h
+    rw [eq_empty_iff_forall_notMem]
+    intro e he
+    rw [mem_inter] at he
+    obtain ⟨a, ha, r, hr, rfl⟩ := mem_forbidden.1 he.2
+    exact h a ha r hr ((SimpleGraph.mem_edgeSet G).1 (mem_edges.1 he.1))
+  · intro h a ha r hr hadj
+    have : s(a, r) ∈ edges G ∩ forbidden A R :=
+      mem_inter.2 ⟨mem_edges.2 ((SimpleGraph.mem_edgeSet G).2 hadj),
+        mem_forbidden.2 ⟨a, ha, r, hr, rfl⟩⟩
+    rw [h] at this
+    exact notMem_empty _ this
+
+theorem exists_adj_iff_inter_starPairs_nonempty (A : Finset V) (v : V) :
+    (∃ a ∈ A, G.Adj a v) ↔ (edges G ∩ starPairs A v).Nonempty := by
+  constructor
+  · rintro ⟨a, ha, hadj⟩
+    exact ⟨s(a, v), mem_inter.2 ⟨mem_edges.2 ((SimpleGraph.mem_edgeSet G).2 hadj),
+      mem_starPairs.2 ⟨a, ha, rfl⟩⟩⟩
+  · rintro ⟨e, he⟩
+    rw [mem_inter] at he
+    obtain ⟨a, ha, rfl⟩ := mem_starPairs.1 he.2
+    exact ⟨a, ha, (SimpleGraph.mem_edgeSet G).1 (mem_edges.1 he.1)⟩
+
+/-- A pair is closed iff its sides are disjoint and the edge set satisfies `ClosedEdgeSet`. -/
+theorem isClosedPair_iff_closedEdgeSet (A R : Finset V) :
+    IsClosedPair G A R ↔ Disjoint A R ∧ ClosedEdgeSet A R (edges G) := by
+  rw [isClosedPair_iff_sees_both, ClosedEdgeSet, isEmptyPair_iff_inter_forbidden]
+  refine and_congr_right (fun _ => and_congr_right (fun _ => ?_))
+  constructor
+  · intro h v hv
+    rw [mem_sdiff, mem_union, not_or] at hv
+    obtain ⟨hA, hR⟩ := h v hv.2.1 hv.2.2
+    exact ⟨(exists_adj_iff_inter_starPairs_nonempty G A v).1 hA,
+      (exists_adj_iff_inter_starPairs_nonempty G R v).1 hR⟩
+  · intro h v hvA hvR
+    obtain ⟨hA, hR⟩ := h v (by rw [mem_sdiff, mem_union, not_or]; exact ⟨mem_univ v, hvA, hvR⟩)
+    exact ⟨(exists_adj_iff_inter_starPairs_nonempty G A v).2 hA,
+      (exists_adj_iff_inter_starPairs_nonempty G R v).2 hR⟩
+
+open scoped Classical in
+/-- `edges` maps the graphs in which `(A, R)` is closed onto the closed edge sets. -/
+theorem image_edges_closedPairGraphs {A R : Finset V} (hAR : Disjoint A R) :
+    (closedPairGraphs A R).image edges =
+      (edges (⊤ : SimpleGraph V)).powerset.filter (ClosedEdgeSet A R) := by
+  ext F
+  rw [mem_image, mem_filter, mem_powerset]
+  constructor
+  · rintro ⟨G, hG, rfl⟩
+    exact ⟨edges_subset_top G, ((isClosedPair_iff_closedEdgeSet G A R).1
+      (mem_closedPairGraphs.1 hG)).2⟩
+  · rintro ⟨hF, hcl⟩
+    refine ⟨SimpleGraph.fromEdgeSet (F : Set (Sym2 V)), ?_, edges_fromEdgeSet F hF⟩
+    rw [mem_closedPairGraphs, isClosedPair_iff_closedEdgeSet, edges_fromEdgeSet F hF]
+    exact ⟨hAR, hcl⟩
+
+/-- The weight of one star block: a separator vertex sees both sides with probability
+`(1 − (1 − p)^|A|)(1 − (1 − p)^|R|)`. -/
+theorem sum_subsetWeight_starBlock {A R : Finset V} (hAR : Disjoint A R) {v : V} (hvA : v ∉ A)
+    (p : ℝ) :
+    ∑ F ∈ (starBlock A R v).powerset.filter
+        (fun F => (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty),
+        subsetWeight p (starBlock A R v) F =
+      (1 - (1 - p) ^ A.card) * (1 - (1 - p) ^ R.card) := by
+  unfold starBlock
+  rw [sum_subsetWeight_split p (disjoint_starPairs_starPairs hAR hvA)
+    (fun F => F.Nonempty) (fun F => F.Nonempty), sum_subsetWeight_nonempty,
+    sum_subsetWeight_nonempty, card_starPairs, card_starPairs]
+
+open scoped Classical in
+/-- **The independence step of Theorem Cl.** The `G(n, p)` probability that `(A, R)` is a
+closed pair is `(1 − p)^(|A||R|) ((1 − (1 − p)^|A|)(1 − (1 − p)^|R|))^|S|`, `S = V ∖ (A ∪ R)`:
+the forbidden pairs, and the two star blocks of each `v ∈ S`, are pairwise disjoint blocks. -/
+theorem sum_gnpWeight_closedPairGraphs {A R : Finset V} (hAR : Disjoint A R) (p : ℝ) :
+    ∑ G ∈ closedPairGraphs A R, gnpWeight p G =
+      (1 - p) ^ (A.card * R.card) *
+        ((1 - (1 - p) ^ A.card) * (1 - (1 - p) ^ R.card)) ^ (univ \ (A ∪ R)).card := by
+  set S := univ \ (A ∪ R) with hS
+  have hSA : ∀ v ∈ S, v ∉ A := fun v hv => by
+    rw [hS, mem_sdiff, mem_union, not_or] at hv; exact hv.2.1
+  have hSR : ∀ v ∈ S, v ∉ R := fun v hv => by
+    rw [hS, mem_sdiff, mem_union, not_or] at hv; exact hv.2.2
+  have hforb := forbidden_subset_top (V := V) hAR
+  set T' := edges (⊤ : SimpleGraph V) \ forbidden A R with hT'
+  have hT : forbidden A R ∪ T' = edges (⊤ : SimpleGraph V) := union_sdiff_of_subset hforb
+  have hd : Disjoint (forbidden A R) T' := disjoint_sdiff
+  have hblock : ∀ v ∈ S, starBlock A R v ⊆ T' := by
+    intro v hv
+    rw [hT']
+    refine subset_sdiff.2 ⟨union_subset (starPairs_subset_top (hSA v hv))
+      (starPairs_subset_top (hSR v hv)), ?_⟩
+    exact Finset.disjoint_union_left.2 ⟨disjoint_starPairs_forbidden A (hSA v hv) (hSR v hv),
+      disjoint_starPairs_forbidden R (hSA v hv) (hSR v hv)⟩
+  have hbd : ∀ v ∈ S, ∀ w ∈ S, v ≠ w → Disjoint (starBlock A R v) (starBlock A R w) := by
+    intro v hv w hw hvw
+    unfold starBlock
+    rw [Finset.disjoint_union_left, Finset.disjoint_union_right, Finset.disjoint_union_right]
+    exact ⟨⟨disjoint_starPairs_of_ne (hSA w hw) hvw,
+      disjoint_starPairs_of_ne (hSA w hw) hvw⟩,
+      ⟨disjoint_starPairs_of_ne (hSR w hw) hvw,
+      disjoint_starPairs_of_ne (hSR w hw) hvw⟩⟩
+  calc ∑ G ∈ closedPairGraphs A R, gnpWeight p G
+      = ∑ F ∈ (closedPairGraphs A R).image edges,
+          subsetWeight p (edges (⊤ : SimpleGraph V)) F := by
+        rw [sum_image edges_injective.injOn]
+        refine sum_congr rfl (fun G _ => ?_)
+        unfold gnpWeight subsetWeight
+        rw [card_edges_top]
+    _ = ∑ F ∈ (forbidden A R ∪ T').powerset.filter
+          (fun F => (F ∩ forbidden A R = ∅) ∧
+            ∀ v ∈ S, ((F ∩ T') ∩ starPairs A v).Nonempty ∧ ((F ∩ T') ∩ starPairs R v).Nonempty),
+          subsetWeight p (forbidden A R ∪ T') F := by
+        rw [image_edges_closedPairGraphs hAR, hT]
+        refine sum_congr ?_ (fun _ _ => rfl)
+        ext F
+        simp only [mem_filter, mem_powerset, ClosedEdgeSet]
+        refine and_congr_right (fun _ => and_congr_right (fun _ => forall₂_congr (fun v hv => ?_)))
+        have h1 : starPairs A v ⊆ T' := (subset_union_left).trans (hblock v hv)
+        have h2 : starPairs R v ⊆ T' := (subset_union_right).trans (hblock v hv)
+        rw [inter_assoc, inter_eq_right.2 h1, inter_assoc, inter_eq_right.2 h2]
+    _ = (∑ F ∈ (forbidden A R).powerset.filter (fun F => F = ∅),
+            subsetWeight p (forbidden A R) F) *
+          ∑ F ∈ T'.powerset.filter
+            (fun F => ∀ v ∈ S, (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty),
+            subsetWeight p T' F :=
+        sum_subsetWeight_split p hd (fun F => F = ∅)
+          (fun F => ∀ v ∈ S, (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty)
+    _ = (1 - p) ^ (A.card * R.card) *
+          ∏ v ∈ S, ∑ F ∈ (starBlock A R v).powerset.filter
+            (fun F => (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty),
+            subsetWeight p (starBlock A R v) F := by
+        rw [sum_subsetWeight_eq_empty, card_forbidden hAR]
+        congr 1
+        have hb := sum_subsetWeight_blocks p S (starBlock A R)
+          (fun v F => (F ∩ starPairs A v).Nonempty ∧ (F ∩ starPairs R v).Nonempty) T' hblock hbd
+        refine Eq.trans ?_ hb
+        refine sum_congr ?_ (fun _ _ => rfl)
+        ext F
+        simp only [mem_filter, mem_powerset]
+        refine and_congr_right (fun _ => forall₂_congr (fun v hv => ?_))
+        have h1 : starPairs A v ⊆ starBlock A R v := subset_union_left
+        have h2 : starPairs R v ⊆ starBlock A R v := subset_union_right
+        rw [inter_assoc, inter_eq_right.2 h1, inter_assoc, inter_eq_right.2 h2]
+    _ = _ := by
+        rw [prod_congr rfl (fun v hv => sum_subsetWeight_starBlock hAR (hSA v hv) p), prod_const]
+
+open scoped Classical in
+/-- **Theorem Cl** (`reports/separator_moment.md` §8.1), pair-summed form: for `0 ≤ p ≤ 1` and
+`k < n`, `P(pathwidth ≤ k)` is at most the expected number of closed pairs with `|A| ≥ t`,
+`|R| ≥ r`, each term evaluated exactly. -/
+theorem weightedSum_graphsOfPathwidthLe_le_closedPairCount (p : ℝ) (hp0 : 0 ≤ p) (hp1 : p ≤ 1)
+    (k : ℕ) (hk : k < Fintype.card V) :
+    ∑ G ∈ graphsOfPathwidthLe (V := V) k, gnpWeight p G ≤
+      ∑ q ∈ closedIndices (V := V) ((Fintype.card V - k + 1) / 2) ((Fintype.card V - k) / 2),
+        (1 - p) ^ (q.1.card * q.2.card) *
+          ((1 - (1 - p) ^ q.1.card) * (1 - (1 - p) ^ q.2.card)) ^ (univ \ (q.1 ∪ q.2)).card := by
+  refine (weightedSum_graphsOfPathwidthLe_le_sum_closedPairs p hp0 hp1 k hk).trans
+    (le_of_eq (sum_congr rfl (fun q hq => ?_)))
+  have hAR : Disjoint q.1 q.2 := by
+    rw [Finset.disjoint_left]
+    intro a ha ha'
+    exact (mem_sdiff.1 ((mem_closedIndices.1 hq).2.1 ha')).2 ha
+  exact sum_gnpWeight_closedPairGraphs hAR p
+
+open scoped Classical in
+/-- The closed indices split by sizes: the disjoint union over `(a, r')` with `t ≤ a`, `r ≤ r'`
+of the exact-size index sets `pairIndices a r'`. -/
+theorem closedIndices_eq_biUnion (t r : ℕ) :
+    closedIndices (V := V) t r =
+      ((range (Fintype.card V + 1) ×ˢ range (Fintype.card V + 1)).filter
+        (fun x => t ≤ x.1 ∧ r ≤ x.2)).biUnion (fun x => pairIndices x.1 x.2) := by
+  ext q
+  simp only [mem_closedIndices, mem_biUnion, mem_filter, mem_product, mem_range, mem_pairIndices]
+  constructor
+  · rintro ⟨hA, hR, hr⟩
+    exact ⟨(q.1.card, q.2.card), ⟨⟨Nat.lt_succ_of_le (card_le_univ _),
+      Nat.lt_succ_of_le (card_le_univ _)⟩, hA, hr⟩, rfl, hR, rfl⟩
+  · rintro ⟨x, ⟨_, hA, hr⟩, h1, hR, h2⟩
+    exact ⟨h1 ▸ hA, hR, h2 ▸ hr⟩
+
+open scoped Classical in
+/-- A sum over the closed indices of a function of the two sizes, regrouped by sizes: the
+pairs with `|A| = a`, `|R| = r'` number `n.choose a · (n − a).choose r' = n! / (a! r'! (n − a − r')!)`. -/
+theorem sum_closedIndices_eq (t r : ℕ) (f : ℕ → ℕ → ℝ) :
+    ∑ q ∈ closedIndices (V := V) t r, f q.1.card q.2.card =
+      ∑ x ∈ (range (Fintype.card V + 1) ×ˢ range (Fintype.card V + 1)).filter
+          (fun x => t ≤ x.1 ∧ r ≤ x.2),
+        ((Fintype.card V).choose x.1 * (Fintype.card V - x.1).choose x.2 : ℝ) * f x.1 x.2 := by
+  rw [closedIndices_eq_biUnion, sum_biUnion]
+  · refine sum_congr rfl (fun x _ => ?_)
+    rw [sum_congr rfl (g := fun _ => f x.1 x.2) (fun q hq => by
+      rw [(mem_pairIndices.1 hq).1, (mem_pairIndices.1 hq).2.2]), sum_const, card_pairIndices,
+      nsmul_eq_mul]
+    push_cast
+    ring
+  · intro x _ y _ hxy
+    rw [Function.onFun, Finset.disjoint_left]
+    intro q hq hq'
+    apply hxy
+    rw [mem_pairIndices] at hq hq'
+    exact Prod.ext (hq.1.symm.trans hq'.1) (hq.2.2.symm.trans hq'.2.2)
+
+open scoped Classical in
+/-- **Theorem Cl** (`reports/separator_moment.md` §8.1), size-summed form: for `0 ≤ p ≤ 1` and
+`k < n`, with `t = ⌈(n − k)/2⌉`, `r = ⌊(n − k)/2⌋`,
+`P(pathwidth ≤ k) ≤ Σ_{a ≥ t, r' ≥ r, a + r' ≤ n} n.choose a · (n − a).choose r' ·
+  (1 − p)^(a r') ((1 − (1 − p)^a)(1 − (1 − p)^r'))^(n − a − r')`,
+the sum over the size pairs `(a, r')` (the binomial product is `n!/(a! r'! s!)`, `s = n − a − r'`;
+the terms with `a + r' > n` have an empty index set and are zero through `(n − a).choose r' = 0`
+when `r' > n − a`). The right-hand side is exactly the expected number of closed pairs with
+`|A| ≥ t`, `|R| ≥ r`. -/
+theorem weightedSum_graphsOfPathwidthLe_le_closedPairFormula (p : ℝ) (hp0 : 0 ≤ p)
+    (hp1 : p ≤ 1) (k : ℕ) (hk : k < Fintype.card V) :
+    ∑ G ∈ graphsOfPathwidthLe (V := V) k, gnpWeight p G ≤
+      ∑ x ∈ (range (Fintype.card V + 1) ×ˢ range (Fintype.card V + 1)).filter
+          (fun x => (Fintype.card V - k + 1) / 2 ≤ x.1 ∧ (Fintype.card V - k) / 2 ≤ x.2),
+        ((Fintype.card V).choose x.1 * (Fintype.card V - x.1).choose x.2 : ℝ) *
+          ((1 - p) ^ (x.1 * x.2) *
+            ((1 - (1 - p) ^ x.1) * (1 - (1 - p) ^ x.2)) ^ (Fintype.card V - x.1 - x.2)) := by
+  refine (weightedSum_graphsOfPathwidthLe_le_closedPairCount p hp0 hp1 k hk).trans (le_of_eq ?_)
+  rw [← sum_closedIndices_eq _ _ (fun a r' => (1 - p) ^ (a * r') *
+    ((1 - (1 - p) ^ a) * (1 - (1 - p) ^ r')) ^ (Fintype.card V - a - r'))]
+  refine sum_congr rfl (fun q hq => ?_)
+  have hAR : Disjoint q.1 q.2 := by
+    rw [Finset.disjoint_left]
+    intro a ha ha'
+    exact (mem_sdiff.1 ((mem_closedIndices.1 hq).2.1 ha')).2 ha
+  rw [card_univ_sdiff, card_union_of_disjoint hAR, Nat.sub_sub]
+
+end ClosedProduct
 
 end MOSPFormalization

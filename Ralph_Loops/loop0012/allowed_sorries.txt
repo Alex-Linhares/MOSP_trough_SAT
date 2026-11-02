@@ -1,0 +1,2 @@
+# loop0012 may add no sorry. The cited hypotheses (the cubic base case, the
+# reduction lemma) are named Props, never sorry or axiom. Format: file | theorem | reason.

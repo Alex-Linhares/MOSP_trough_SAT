@@ -440,7 +440,8 @@ The closed pair, in which every separator vertex is adjacent to both sides
 is the dense-side counterpart. Its expected number is exactly
 $\sum n!/(a!\,r!\,s!)\,(1-p)^{ar}\bigl((1-(1-p)^{a})(1-(1-p)^{r})\bigr)^{s}$ over
 the admissible size triples (the union bound and the characterisation in
-Lean~\leanref{theoremCl}, the independence step on paper), and its constant
+Lean~\leanref{theoremCl}, the independence step by a product over disjoint
+blocks of pairs, in Lean~\leanref{theoremClproduct}), and its constant
 exceeds $\beta^{*}$ by $0.007$--$0.010$ at $c=6$--$12$, and by $0.011$ on random
 covers with $d=4$ and $d=6$, $\mu=1$, where the separator count has no
 large-deviation rate to cite. A weighted count, each empty pair divided by the
@@ -522,9 +523,10 @@ $\delta(\beta,c)>0$. The entropy bound on trinomial coefficients is not in
 Mathlib and is proved there from the binomial theorem. Theorem~\ref{thm:betastar}
 is proved on paper, and the values in Table~\ref{tab:betastar} were computed
 by two programs written independently. Theorem~\ref{thm:separator} is a Lean
-theorem with its inner probability as a finite weighted count; of the
-closed-pair count, the union bound and the characterisation of a closed pair
-are in Lean and the independence step is on paper; the constants
+theorem with its inner probability as a finite weighted count; the
+closed-pair count is a Lean theorem in both its pair-summed and its
+size-summed form, with the independence step a product over disjoint blocks
+of pairs; the constants
 $\beta_{\mathrm{sep}}$ rest on a cited large-deviation rate, and every rate we
 fitted is called fitted.
 

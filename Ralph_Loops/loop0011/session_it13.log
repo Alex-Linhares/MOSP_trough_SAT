@@ -1,0 +1,95 @@
+# session it13 started 2026-11-01 23:31:39
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's open list and the Lean obstacles section, then pick the reserve item and say why.
+  > $ uptime && git status --short | head && wc -l reports/separator_moment.md reports/separator_moment_plan.md lean/MOSPFormalization/SeparatorMoment.lean && grep -n
+  > $ sed -n 296,348p reports/separator_moment.md && echo ======= && sed -n 3845,3876p reports/separator_moment.md && echo ======= && sed -n 2889,3012p reports/separa
+  > $ grep -n 'reserve\|Reserve\|item 13\|13\b' reports/separator_moment_plan.md | head -20; echo ====; grep -n 'theorem \|def \|lemma \|^/-\*\|^section\|^end\|^names
+  > $ sed -n 1,110p lean/MOSPFormalization/SeparatorMoment.lean
+  > $ sed -n 160,340p lean/MOSPFormalization/SeparatorMoment.lean
+  > $ sed -n 519,720p lean/MOSPFormalization/SeparatorMoment.lean
+  > $ sed -n 978,1025p lean/MOSPFormalization/SeparatorMoment.lean; echo =====FM; grep -n 'def gnpWeight\|def edges\|theorem edges_fromEdgeSet\|theorem mem_edges\|the
+  > $ sed -n 100,135p lean/MOSPFormalization/FirstMoment.lean; echo ....; sed -n 140,190p lean/MOSPFormalization/FirstMoment.lean; echo ....; sed -n 325,367p lean/MOS
+  > $ grep -n 'def _labelled_graphs' -A14 learning/separator_moment.py | head -24; echo ====; sed -n 150,190p learning/sandwich.py; echo ====; sed -n 117,123p paper1/
+  > $ mkdir -p reports/scratch/separator_moment/13_reserve && cat > reports/scratch/separator_moment/13_reserve/check.py <<'EOF'
+"""Brute-force check, before the Lean
+
+The check passed with zero violations, so the statement can be written. Now the Lean: I'll confirm the Mathlib lemma names I plan to use and time an incremental build of the module before editing.
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib && for nm in 'theorem congr_left' 'theorem congr_right' 'theorem sum_nbij'"'" 'theorem prod_produc
+  > $ M=.lake/packages/mathlib/Mathlib && grep -rn --include=*.lean -E 'theorem (prod_nbij'"'"'|prod_product'"'"'|sum_mul_sum|card_union_of_disjoint|card_univ_diff|ca
+  > $ tail -16 MOSPFormalization/SeparatorMoment.lean && grep -n 'open scoped Classical' MOSPFormalization/SeparatorMoment.lean | tail -3 && grep -n 'theorem card_uni
+  > $ cat > /tmp/closed_product.lean <<'EOF'
+
+/-! ### The independence step of Theorem Cl: a product over blocks of pairs
+
+The closed-pair event is a conjunction of `
+  > $ lake build MOSPFormalization.SeparatorMoment 2>&1 | grep -v '^⚠\|^✖\|^Build' | sed -n 1,200p | cut -c1-400 | head -150
+  > $ sed -n 1580,1590p MOSPFormalization/SeparatorMoment.lean; grep -rn 'theorem eq_empty_iff_forall_not\|theorem notMem_empty\|theorem not_mem_empty' .lake/packages
+
+Fixing the first build's nine errors (renamed Mathlib lemmas, two rewrite patterns, a decidability-instance mismatch on the blocks lemma).
+  > $ python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=open(p).read()
+def rep(a,b,cnt=1):
+    global s
+    assert s.count(a)==cnt, (a, s.count(a))
+    s
+  > $ sed -n 1584,1590p MOSPFormalization/SeparatorMoment.lean; grep -n 'disjoint_iff_inter_eq_empty' .lake/packages/mathlib/Mathlib/Data/Finset/Disjoint.lean | head 
+  > $ grep -rn 'disjoint_iff_inter_eq_empty' .lake/packages/mathlib/Mathlib/Data/Finset/ | head -2; python3 - <<'EOF'
+p='MOSPFormalization/SeparatorMoment.lean'
+s=ope
+  > $ date && grep -n 'theorem card_le_univ\|lemma card_le_univ' .lake/packages/mathlib/Mathlib/Data/Fintype/Card.lean | head -2 && grep -n 'theorem prod_biUnion' -A3
+
+The size-summed form built on the first try. Now the bookkeeping: axiom audit of the new theorems, the places in the report and paper that say "independence step on paper", and the Makefile targets.
+  > $ cd /home/al/dev/MOSP && grep -c 'sorry' lean/MOSPFormalization/SeparatorMoment.lean; grep -n '^axiom' lean/MOSPFormalization/SeparatorMoment.lean | wc -l; cat >
+  > $ sed -n 5,20p Ralph_Loops/loop0011/gate.py; echo ==== 0.2; sed -n 105,126p reports/separator_moment.md | cut -c1-600; echo ==== 0.7-0.9; sed -n 256,300p reports/
+  > $ grep -n '^def test_' tests/test_separator_moment.py | tail -12; grep -n 'proved_names' -A12 tests/test_separator_moment.py | head -30; echo ====; awk '/section 
+  > $ python3 - <<'EOF'
+import re
+def edit(path, pairs):
+    s=open(path).read()
+    for a,b in pairs:
+        assert s.count(a)==1, (path, a[:60], s.count(a))
+      
+  > $ grep -n '^LEAN_FILE\|from fractions\|^import fractions' tests/test_separator_moment.py | head; echo ====; (cd lean && lake build 2>&1 | tail -1); echo ====; nic
+  > $ git status --short | grep -v Ralph_Loops; echo ====; git diff --stat reports/sandwich_tables.md; git checkout -- reports/sandwich_tables.md 2>/dev/null; git sta
+
+The code, Lean, paper and tests are final. I'm launching the gate in the background now and writing the report section while it runs.
+  > $ nice -n 19 python3 Ralph_Loops/loop0011/gate.py > reports/scratch/separator_moment/13_reserve/gate.log 2>&1; echo "gate exit $?" >> reports/scratch/separator_mo
+  > $ grep -n '78 theorems\|78 `theorem`\|21 definitions' reports/separator_moment.md | cut -c1-120; sed -n 112p reports/separator_moment.md; echo; sed -n 298,301p re
+  > $ python3 - <<'EOF'
+p='reports/separator_moment.md'
+s=open(p).read()
+def rep(a,b):
+    global s
+    assert s.count(a)==1, (a[:70], s.count(a))
+    s=s.replace(a,b
+  > $ grep -n '91 tests' reports/separator_moment.md | cut -c1-80; sed -i 's/`learning\/separator_moment.py` (tested by\n`tests\/test_separator_moment.py`, 91 tests)/
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -q 'gate exit' /home/al/dev/MOSP/reports/scratch/separator_moment/13_reserve/gate.log 2>/dev/nul
+  > $ sed -i 's/^- \[ \] \*\*13 Reserve\.\*\*/- [x] **13 Reserve.**/' Ralph_Loops/loop0011/iterations.md && grep -c '^- \[x\]' Ralph_Loops/loop0011/iterations.md && g
+
+Only the gate result remains, and both remaining edits depend on it. I'll poll the gate in the foreground with a bounded wait.
+  > $ timeout 580 bash -c 'until grep -q "gate exit" reports/scratch/separator_moment/13_reserve/gate.log 2>/dev/null; do sleep 10; done'; date; tail -12 reports/scra
+
+Gate passed. Filling in the gate line, adding LOOP_COMPLETE, and doing a final check of the working tree.
+  > $ grep -n 'lake build\|sorry in code\|axiom' reports/scratch/separator_moment/13_reserve/gate.log | head -4; python3 - <<'EOF'
+p='Ralph_Loops/loop0011/PROGRESS.md
+
+Item 13 is done, the gate passed, and the loop is complete (`LOOP_COMPLETE` is at the end of `PROGRESS.md`; nothing was committed).
+
+**What the reserve went to, and why.** Theorem Cl's independence step, the one thing §10.3 named as standing between the closed-pair count and Lean. It was first on the report's open list and pointed to by the "Next" of iterations 10 and 12. The other candidates were weaker: the finer-`c` constants were already done by item 09, the cover partition sum has no component law to rest on, and the larger-`n` planted measurement needs several core-hours with an unbounded enumeration tail.
+
+**What is now proved in Lean** (`SeparatorMoment.lean`, 22 new theorems, no `sorry`, standard axioms only):
+- **The product over blocks.** The weight of the edge subsets satisfying one predicate on each of pairwise disjoint blocks is the product of the per-block weights. The proof is an induction over the block set with a two-block split lemma. No `piFinset` bijection was needed, so the "session on its own" estimate was too high.
+- **The independence step.** The probability that a given pair is closed is exactly the product form stated on paper in §8.1.
+- **Theorem Cl in both forms.** The pair-summed bound and the size-summed formula with the binomial product as the multinomial. The paper's two sentences saying "independence step on paper" now say it is in Lean, with a new Appendix A row.
+
+**Checks before stating.** The per-pair identity held on every disjoint pair of every labelled graph up to five vertices and 80 pairs at six, and both finset lemmas held on 300 random instances each with arbitrary predicates, all in exact rationals with zero violations. The log is in `reports/scratch/separator_moment/13_reserve/`.
+
+**Gate.** Lake build ok, 0 sorry, 0 axiom; 1,749 tests passed including the 2 new ones; pathwidth_solver 123 passed; paper builds at 74 pages with no undefined references and 307 theorems audited with 0 failures.
+
+**Left open**, as recorded in the report's §0.9: the component-based lemmas (P, G, F), the cover inclusion–exclusion (Lemma J, Theorem Cl-cover), the two cited hypotheses, and the two unreconciled slack instruments. The `CLAUDE.md` paragraph in §12 of the report is updated for this item and ready to paste.
+
+# result: success in 1605s, 36 turns, cost $11.97
