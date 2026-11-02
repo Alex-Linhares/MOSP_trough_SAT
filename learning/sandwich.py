@@ -274,9 +274,71 @@ CUT_LEMMA_PROVED = (
     "pathwidth_le_of_bisectionTreeMax",
     "pathwidth_le_of_bisectionTreeMax_two_mul",
 )
+#: loop0012 item 05 (`DegreeBound/Potential.lean`): the potential `f`, the component potential
+#: `f⁻` and one-deletion accounting — `degree_isolate`, P1 (`potential_isolate`), P2
+#: (`potential_isolate_le_sub_one`), P2r (`potential_isolate_regular`), the per-component and
+#: per-vertex forms of `f⁻`, `f⁻ ≤ f`, `f⁻ ≤ F` with equality on a connected support,
+#: additivity over disjoint supports (`potentialMinus_add`), B1 (`potentialMinus_cubic`,
+#: `potentialMinus_ge_five_sixths`).
+POTENTIAL_PROVED = (
+    "DegreeBound.mem_supp",
+    "DegreeBound.mem_supp_iff_exists_adj",
+    "DegreeBound.isolate_adj",
+    "DegreeBound.neighborFinset_isolate",
+    "DegreeBound.degree_isolate_self",
+    "DegreeBound.degree_isolate_of_adj",
+    "DegreeBound.degree_isolate_of_not_adj",
+    "DegreeBound.degree_isolate",
+    "DegreeBound.supp_isolate_subset",
+    "DegreeBound.potential_nonneg",
+    "DegreeBound.g_degree_isolate",
+    "DegreeBound.potential_isolate",
+    "DegreeBound.three_le_degree_of_adj",
+    "DegreeBound.potential_isolate_le_sub_one",
+    "DegreeBound.potential_isolate_regular",
+    "DegreeBound.potential_isolate_le_regular",
+    "DegreeBound.mem_compFinset",
+    "DegreeBound.mem_compFinset_mk",
+    "DegreeBound.self_mem_compFinset",
+    "DegreeBound.compFinset_nonempty",
+    "DegreeBound.sum_compFinset",
+    "DegreeBound.minDeg_le",
+    "DegreeBound.exists_degree_eq_minDeg",
+    "DegreeBound.le_minDeg_iff",
+    "DegreeBound.potentialMinus_le_potential",
+    "DegreeBound.potentialMinus_eq_sum_compPotential",
+    "DegreeBound.compPotential_nonneg",
+    "DegreeBound.potentialMinus_nonneg",
+    "DegreeBound.potentialMinus_eq_sum_vertexTerm",
+    "DegreeBound.pos_degree_of_reachable_of_ne",
+    "DegreeBound.eq_of_reachable_of_degree_eq_zero",
+    "DegreeBound.compFinset_eq_singleton_of_degree_eq_zero",
+    "DegreeBound.minDeg_eq_zero_of_degree_eq_zero",
+    "DegreeBound.vertexTerm_eq_zero_of_degree_eq_zero",
+    "DegreeBound.compFinset_subset_supp",
+    "DegreeBound.globalMinDeg_le",
+    "DegreeBound.exists_degree_eq_globalMinDeg",
+    "DegreeBound.minDeg_eq_globalMinDeg",
+    "DegreeBound.potentialMinus_le_F",
+    "DegreeBound.sum_g'_minDeg_of_connected",
+    "DegreeBound.potentialMinus_eq_F_of_connected",
+    "DegreeBound.potential_eq_sum_supp",
+    "DegreeBound.potentialMinus_cubic",
+    "DegreeBound.potentialMinus_ge_five_sixths",
+    "DegreeBound.reachable_sup_iff",
+    "DegreeBound.degree_sup_of_degree_eq_zero_right",
+    "DegreeBound.degree_eq_zero_of_disjoint_supp",
+    "DegreeBound.compFinset_sup_eq",
+    "DegreeBound.degree_sup_eq_of_mem_comp",
+    "DegreeBound.vertexTerm_sup_left",
+    "DegreeBound.vertexTerm_congr",
+    "DegreeBound.vertexTerm_sup_comm",
+    "DegreeBound.vertexTerm_sup",
+    "DegreeBound.potentialMinus_add",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
-              + CUT_LEMMA_PROVED)
+              + CUT_LEMMA_PROVED + POTENTIAL_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 
@@ -440,6 +502,63 @@ def alt_factorial_lean(n: int) -> Fraction:
     return a
 
 
+def _reach_mask(adj: list[int], v: int) -> int:
+    comp = 1 << v
+    frontier = comp
+    while frontier:
+        nxt = 0
+        f = frontier
+        while f:
+            u = (f & -f).bit_length() - 1
+            f &= f - 1
+            nxt |= adj[u]
+        nxt &= ~comp
+        comp |= nxt
+        frontier = nxt
+    return comp
+
+
+def potential_minus_lean(adj: list[int]) -> Fraction:
+    """`potentialMinus G = potential G − Σ_{C : G.ConnectedComponent} g' (minDeg G C)` as
+    `Potential.lean` defines it: `potential = Σ_v g (deg v)` over every vertex, the sum over
+    every component including the singletons of isolated vertices, `minDeg` the minimum
+    degree on the component; `g`, `g'` from the Lean transcription."""
+    n = len(adj)
+    total = sum((g_lean(a.bit_count()) for a in adj), Fraction(0))
+    seen = 0
+    for v in range(n):
+        if (seen >> v) & 1:
+            continue
+        comp = _reach_mask(adj, v)
+        seen |= comp
+        total -= g_prime_lean(min(adj[u].bit_count() for u in range(n) if (comp >> u) & 1))
+    return total
+
+
+def vertex_term_sum_lean(adj: list[int]) -> Fraction:
+    """`Σ_v vertexTerm G v`, `vertexTerm G v = g (deg v) − g' (minDeg C_v) / |C_v|`
+    (`potentialMinus_eq_sum_vertexTerm`)."""
+    n = len(adj)
+    total = Fraction(0)
+    for v in range(n):
+        comp = _reach_mask(adj, v)
+        md = min(adj[u].bit_count() for u in range(n) if (comp >> u) & 1)
+        total += g_lean(adj[v].bit_count()) - g_prime_lean(md) / comp.bit_count()
+    return total
+
+
+def _random_graph_with_isolated(rng, n: int) -> list[int]:
+    adj = [0] * n
+    live = [v for v in range(n) if rng.random() < 0.8]
+    p = rng.choice([0.2, 0.5, 0.8])
+    for i, u in enumerate(live):
+        for v in live[i + 1:]:
+            if rng.random() < p:
+                adj[u] |= 1 << v
+                adj[v] |= 1 << u
+    return adj
+
+
 def degree_bound_check(max_n: int = 200) -> pd.DataFrame:
     """The statements of `Weights.lean` on `0 ≤ n ≤ max_n` in exact rationals, against
     `learning.edwards_mcdermid.g`: one row per statement, with the range it was checked
@@ -487,6 +606,40 @@ def degree_bound_check(max_n: int = 200) -> pd.DataFrame:
         + Fraction(3, 2) * (-1) ** n / math.factorial(n) - Fraction(5, 2) == g_closed_form(n))
     row("Lemma 8.5: g(n+1)/(n+1) < g(n)/n", "g_div_lt_g_div", range(5, max_n),
         lambda n: g_lean(n + 1) / (n + 1) < g_lean(n) / n)
+    # item 05: `Potential.lean`'s `f⁻` against `learning.edwards_mcdermid.fminus` on 500
+    # random graphs (1–12 vertices, isolated vertices present), and its per-vertex form
+    from learning.edwards_mcdermid import fminus as fminus_py, support as support_py
+    import random as _random
+    rng = _random.Random(1105)
+    graphs = [_random_graph_with_isolated(rng, rng.randint(1, 12)) for _ in range(500)]
+    rows.append({"statement": "f⁻ (Lean definition, transcribed) = fminus (Python), 500 random graphs",
+                 "Lean": "potentialMinus", "n": "1–12 vertices", "checked": len(graphs),
+                 "holds": sum(1 for a in graphs if potential_minus_lean(a) == fminus_py(a))})
+    rows.append({"statement": "f⁻ = Σ_v vertexTerm (the per-vertex form), 500 random graphs",
+                 "Lean": "potentialMinus_eq_sum_vertexTerm", "n": "1–12 vertices",
+                 "checked": len(graphs),
+                 "holds": sum(1 for a in graphs if potential_minus_lean(a) == vertex_term_sum_lean(a))})
+    unions = []
+    for _ in range(500):
+        n = rng.randint(2, 12)
+        verts = list(range(n))
+        rng.shuffle(verts)
+        k = rng.randint(0, n)
+        g1, g2 = [0] * n, [0] * n
+        for part, adj in ((verts[:k], g1), (verts[k:], g2)):
+            p = rng.choice([0.3, 0.6, 0.9])
+            for i, u in enumerate(part):
+                for v in part[i + 1:]:
+                    if rng.random() < p:
+                        adj[u] |= 1 << v
+                        adj[v] |= 1 << u
+        assert support_py(g1) & support_py(g2) == 0
+        unions.append((g1, g2))
+    rows.append({"statement": "f⁻(G₁ ⊔ G₂) = f⁻(G₁) + f⁻(G₂), disjoint supports, 500 random unions",
+                 "Lean": "potentialMinus_add", "n": "2–12 vertices", "checked": len(unions),
+                 "holds": sum(1 for g1, g2 in unions
+                              if potential_minus_lean([a | b for a, b in zip(g1, g2)])
+                              == potential_minus_lean(g1) + potential_minus_lean(g2))})
     return pd.DataFrame(rows)
 
 

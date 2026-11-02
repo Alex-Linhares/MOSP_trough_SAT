@@ -850,3 +850,217 @@ item 09. The axiom lines certify Lean's kernel check of these 20 statements
 on every finite graph; the brute-force counts are the record of what was
 checked before they were stated and are not evidence beyond 8 (one-cut) or
 12 (iterated) vertices.
+
+## 5. Lean (ii): the potential, the component potential and one-deletion accounting (item 05, 2026-11-02)
+
+**Deliverable.** `lean/MOSPFormalization/DegreeBound/Potential.lean` (namespace
+`MOSPFormalization.DegreeBound`, importing `Weights` and `Minor`): the potential
+`f`, the component potential `f⁻` of plan §0.5, the one-deletion accounting P1,
+P2, P2r, the per-component and per-vertex forms of `f⁻`, its comparison with
+the global-minimum variant `F`, **additivity over disjoint supports**
+(`potentialMinus_add`, the statement the item names as the one that must fit),
+and B1 (connected cubic ⇒ `f⁻ = N/6 − 1/6`; the `5/6` floor). **54 theorems, no
+`sorry`, no `axiom`**, every one `[propext, Classical.choice, Quot.sound]`;
+imported by `lean/MOSPFormalization.lean`; `lake build` passes
+(`reports/scratch/edwards_mcdermid/05_potential/lake_build.log`, 1.4 s for the
+file). Size range: not applicable (theorems on every finite graph). Nothing
+here is about reductions (item 06) or pathwidth (item 09).
+
+### 5.1 Checked before stated (`05_potential/check.py`, `check.log`, `summary.json`)
+
+Every statement of the file, in the exact form Lean proves it, in exact
+rationals on 20,000 random graphs at `n ≤ 12` with up to three vertices left
+isolated (the design keeps removed vertices isolated, so every statement has
+to hold with them present), 10,000 random disjoint unions and 1,996 random
+connected cubic graphs on 4–12 vertices embedded among isolated vertices;
+2.5 s, seed 20261102. **Zero violations.**
+
+| tag | statement | (graph, …) checked |
+|---|---|---|
+| D1 | `degree_isolate` | 1,076,930 (graph, `w`, `v`) |
+| P1 | `potential_isolate` | 129,602 (graph, `w`) |
+| P2 | `potential_isolate_le_sub_one` | 13,723 |
+| P2n | `potential_isolate_regular` with **only the neighbours of `w`** at degree `Δ` | 4,806 |
+| V1 | `potentialMinus_eq_sum_vertexTerm` | 20,000 |
+| V2 | `potentialMinus_eq_sum_compPotential`; `compPotential_nonneg` | 20,000; 52,969 components |
+| M1, M2 | `potentialMinus_le_potential`, `potentialMinus_le_F` | 20,000 each |
+| M3 | `potentialMinus_eq_F_of_connected` | 14,418 connected supports |
+| A1 | `potentialMinus_add`; `reachable_sup_iff` | 10,000 unions; 70,283 (union, `u`) |
+| B1 | `potentialMinus_cubic` | 1,996 |
+| B2 | `potentialMinus_ge_five_sixths` | 5,228 |
+
+P2n is the one statement that goes beyond item 02's checks: item 02 had P2r
+for `Δ`-regular graphs (501 instances); the Lean statement constrains only the
+neighbours of `w`, which is what the proof uses, so it was re-checked in that
+form before it was stated. Item 02 had D1, P1 and P2 on every graph to 9
+vertices (2,579,255 (graph, `w`) for P1, 163,265 for P2; §2.3).
+
+### 5.2 Definitions
+
+| name | definition |
+|---|---|
+| `supp G` | `univ.filter (0 < G.degree ·)`, the non-removed vertices |
+| `potential G` (`f`) | `∑ v, g (G.degree v)` |
+| `compFinset G C` | the vertices with `G.connectedComponentMk v = C` (a classical filter; `C : G.ConnectedComponent`) |
+| `minDeg G C` (`δ(C)`) | `(compFinset G C).inf' _ (G.degree ·)`, nonempty by `compFinset_nonempty` |
+| `potentialMinus G` (`f⁻`) | `potential G − ∑ C : G.ConnectedComponent, g' (minDeg G C)` — the plan's definition, literally |
+| `compPotential G C` | `∑ v ∈ compFinset G C, g (G.degree v) − g' (minDeg G C)`, one component's summand |
+| `vertexTerm G v` | `g (G.degree v) − g' (minDeg G C_v) / |C_v|`, the summand spread over the vertices of `C_v` |
+| `globalMinDeg G` (`δ G`) | the minimum degree over `supp G`, `0` if the support is empty |
+| `F G` | `potential G − g' (globalMinDeg G)`, the global variant rejected for Theorem 3.2 (plan §0.5) |
+
+Isolated vertices are singleton components with `minDeg = 0`, so they
+contribute `g 0 = g' 0 = 0` to everything (`vertexTerm_eq_zero_of_degree_eq_zero`).
+The decidability instance for `isolate G w` is declared here
+(`instDecidableRelIsolateAdj`); `isolate` itself is `Minor.lean`'s.
+
+### 5.3 The statements and their proofs
+
+**Degrees after one deletion.** `neighborFinset_isolate` (`N_{G−w}(v) = ∅` if
+`v = w`, else `N_G(v) ∖ {w}`); `degree_isolate_self`, `degree_isolate_of_adj`
+(`deg − 1`), `degree_isolate_of_not_adj`; `degree_isolate` (the `if` form of
+§2.6); `supp_isolate_subset`.
+
+**P1** `potential_isolate`: `f (G − w) = f G − g (deg w) − ∑_{v ∈ N(w)} g' (deg v)`.
+By `g_degree_isolate` (pointwise: `g (deg_{G−w} v) = g (deg v) − [v = w] g (deg w)
+− [w ∼ v] g' (deg v)`, from `degree_isolate` and `g' n = g n − g (n − 1)`),
+`sum_sub_distrib`, the split of the indicator into two (`w ≁ w`), `sum_ite_eq'`
+and `neighborFinset_eq_filter` with `sum_filter`.
+
+**P2** `potential_isolate_le_sub_one`: hypotheses `∀ v, deg v = 0 ∨ 3 ≤ deg v`,
+`∀ v, deg v ≤ Δ`, `deg w = Δ`, `4 ≤ Δ`, `∃ v, w ∼ v ∧ deg v ≤ Δ − 1`; conclusion
+`f (G − w) ≤ f G − 1`. From P1 and W4 (`1 − g Δ = (Δ − 1) g' Δ + g' (Δ − 1)`):
+every neighbour has degree in `[3, Δ]` (`three_le_degree_of_adj`), so
+`g' (deg v) ≥ g' Δ` by W3; the low neighbour `v₀` has `g' (deg v₀) ≥ g' (Δ − 1)`;
+`add_sum_erase` peels `v₀` off, `card_nsmul_le_sum` bounds the other `Δ − 1`
+terms, `linarith` closes.
+
+**P2r** `potential_isolate_regular`: `deg w = Δ ≥ 4` and `∀ v, w ∼ v → deg v = Δ`
+⇒ `f (G − w) = f G − 1 + g' (Δ − 1) − g' Δ` (an equality; `sum_const` and W4 by
+`linear_combination`). `potential_isolate_le_regular` is its `≤` form, the
+item's wording. The hypothesis is weaker than regularity, so the `Δ`-regular
+case of §2.6 is a special case.
+
+**Components.** `mem_compFinset`, `mem_compFinset_mk` (`w ∈ C_v ↔ G.Reachable w v`),
+`self_mem_compFinset`, `compFinset_nonempty` (by `ConnectedComponent.ind`),
+`sum_compFinset` (`∑_C ∑_{v ∈ C} f v = ∑_v f v`, Mathlib's `sum_fiberwise`),
+`minDeg_le`, `exists_degree_eq_minDeg`, `le_minDeg_iff`.
+
+**The two forms of `f⁻`.** `potentialMinus_eq_sum_compPotential` (`f⁻ = ∑_C
+compPotential C`, from `sum_compFinset`), `compPotential_nonneg` (the sum over
+`C` is at least `g (deg v₀)` at a minimum-degree vertex `v₀`, and `g' ≤ g`,
+W5), hence `potentialMinus_nonneg`; `potentialMinus_le_potential` (each `g' ≥ 0`);
+`potentialMinus_eq_sum_vertexTerm` (`f⁻ = ∑_v vertexTerm v`: inside each fiber
+the term is the constant `g' (δ(C)) / |C|`, and `|C| > 0`).
+
+**Isolated vertices and the support.** `pos_degree_of_reachable_of_ne` (a walk
+between distinct vertices starts with an edge), `eq_of_reachable_of_degree_eq_zero`,
+`compFinset_eq_singleton_of_degree_eq_zero`, `minDeg_eq_zero_of_degree_eq_zero`,
+`vertexTerm_eq_zero_of_degree_eq_zero`, `compFinset_subset_supp` (the component
+of a support vertex lies in the support).
+
+**`F` and the connected case.** `globalMinDeg_le`, `exists_degree_eq_globalMinDeg`,
+`minDeg_eq_globalMinDeg` (a support vertex of global minimum degree has the
+global minimum as its component's minimum, because its component lies in the
+support), `potentialMinus_le_F` (`g' (δ G)` is one term of the sum over
+components, the rest `≥ 0`; empty support: `g' 0 = 0`),
+`sum_g'_minDeg_of_connected` (`∑_C g' (δ(C)) = g' (δ G)` when the support is
+connected: every other component contains a vertex of degree 0, by
+`sum_eq_single`), `potentialMinus_eq_F_of_connected`, `potential_eq_sum_supp`.
+
+**B1.** `potentialMinus_cubic`: support non-empty, connected (`∀ u v ∈ supp G,
+G.Reachable u v`) and cubic ⇒ `f⁻ = |supp G| / 6 − 1/6` (`δ G = 3`, `g 3 = g' 3
+= 1/6`). `potentialMinus_ge_five_sixths`: support connected, every degree `0` or
+`≥ 3`, some degree `≥ 4` ⇒ `5/6 ≤ f⁻` (`f ≥ g 4 + 4 g 3 = 1` over `v₁` and its
+neighbours by `sum_le_sum_of_subset_of_nonneg` and `card_nsmul_le_sum`;
+`g' (δ G) ≤ 1/6` by W5). The floor was optional in §2.6 and is proved; A1 (item
+09) needs only `compPotential_nonneg`.
+
+**Additivity.** `reachable_sup_iff`: for `Disjoint (supp G₁) (supp G₂)`,
+`(G₁ ⊔ G₂).Reachable u v ↔ G₁.Reachable u v ∨ G₂.Reachable u v` — by induction
+on the walk: an edge of `G₁` followed by a non-trivial `G₂`-reachability would
+put its middle vertex in both supports. `degree_sup_of_degree_eq_zero_right`,
+`degree_eq_zero_of_disjoint_supp`, `compFinset_sup_eq` (the component of a
+`G₁`-support vertex in `G₁ ⊔ G₂` is its `G₁`-component),
+`degree_sup_eq_of_mem_comp`, `vertexTerm_sup_left` (`inf'_congr` carries the
+minimum across), `vertexTerm_congr` (independence of the decidability
+instance, so that `sup_comm` can be used: `vertexTerm_sup_comm`),
+`vertexTerm_sup` (`vertexTerm (G₁ ⊔ G₂) v = vertexTerm G₁ v + vertexTerm G₂ v`,
+three cases on which support `v` is in), and
+**`potentialMinus_add`**: `f⁻ (G₁ ⊔ G₂) = f⁻ G₁ + f⁻ G₂`, by the per-vertex form
+three times and `sum_add_distrib`.
+
+### 5.4 Choices beyond §2.6
+
+1. **Additivity goes through the per-vertex form, not through a bijection of
+   component types.** `∑_C g' (δ(C))` over `(G₁ ⊔ G₂).ConnectedComponent`
+   against the two sums over `G₁.ConnectedComponent` and
+   `G₂.ConnectedComponent` would need a bijection between component types;
+   spreading each component's term over its vertices (`vertexTerm`) turns
+   additivity into a pointwise identity on `V`, where only the reachability
+   characterisation is needed. The plan's definition of `f⁻` is kept
+   literally; the per-vertex form is a theorem.
+2. **`compPotential` in place of `fminus (G.restrict C)`.** §2.6 listed
+   `fminus_eq_sum_components` as `f⁻ G = ∑_C f⁻ (G.restrict C)` and
+   `fminus_component_nonneg` as `0 ≤ f⁻ (G.restrict C)`. Both are proved for the
+   component summand `compPotential G C` directly, which is the quantity the
+   per-component pathwidth bound of item 09 adds up; no `restrict` is defined
+   here. If item 08's disconnected case wants `G = restrict C ⊔ restrict Cᶜ`,
+   it defines `restrict` and uses `potentialMinus_add` (the supports of the two
+   restrictions are disjoint by construction); item 08's PROGRESS entry
+   should say so if it does.
+3. **P2r needs only the neighbours of `w`** (checked in that form, P2n).
+4. **`minDeg` is `Finset.inf'` over a classical filter** (Mathlib has
+   `Fintype G.ConnectedComponent` under `DecidableRel G.Adj` but no
+   `DecidableEq`); `mem_compFinset` hides the instance, and `sum_compFinset`
+   is Mathlib's `sum_fiberwise` under `classical`. `vertexTerm_congr` is the
+   one place the instance had to be handled by hand (`sup_comm` changes the
+   instance term; `Subsingleton.elim` on `DecidableRel`).
+5. **Connectedness of the support is stated as `∀ u ∈ supp G, ∀ v ∈ supp G,
+   G.Reachable u v`**, with `(supp G).Nonempty` separately where the
+   conclusion needs it (`potentialMinus_cubic` would be false on `⊥`:
+   `0 ≠ −1/6`).
+
+### 5.5 Axiom lines, the sandwich pin, tests, regenerate
+
+- 54 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`05_potential/axiom_check.log`); `make -C paper1/latex axioms`: 425
+  theorems checked, 0 failures.
+- `python -m learning.sandwich --stage degree_bound`: `potential_minus_lean`
+  (the Lean definition transcribed: every vertex, every component including
+  singletons, `g_lean`, `g_prime_lean`) against `learning.edwards_mcdermid.fminus`
+  on 500 random graphs with isolated vertices at 1–12 vertices, the per-vertex
+  form on the same 500, additivity on 500 random disjoint unions: 19 rows,
+  **4,293 checks, 0 violations** (`05_potential/sandwich.log`).
+  `POTENTIAL_PROVED` (54 names) is folded into `ALL_PROVED`.
+- Tests: 2 new in `tests/test_edwards_mcdermid.py` (38 in all): the
+  transcription against `fminus`, the per-vertex form and additivity on 200
+  random graphs; the 54 names declared / imported / audited, no `sorry`, no
+  `axiom`, the stage's row count.
+- Regenerate: `cd lean && lake build`; `make -C paper1/latex axioms`;
+  `python -m learning.sandwich --stage degree_bound`;
+  `nice -n 19 python3 reports/scratch/edwards_mcdermid/05_potential/check.py`.
+
+### 5.6 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion); `potentialMinus_add`
+fitted, so item 08 does not inherit it.
+
+**What items 06–09 get.** `supp`, `potential`, `potentialMinus`,
+`compPotential`, `potential_isolate` (P1, the `j`-identity of item 07 is P1
+with W4), `potential_isolate_le_sub_one` (P2, the step inequality's regular
+and non-regular cases), `potential_isolate_regular` (P2r),
+`potentialMinus_le_F` and `potentialMinus_eq_F_of_connected` (the
+per-component form of S1 from its global-minimum form, item 07),
+`potentialMinus_add` (the disconnected case of Theorem 3.2, item 08),
+`compPotential_nonneg` and `potentialMinus_cubic` (the basic graphs, item 09),
+`reachable_sup_iff` (any argument about disjoint unions, item 06's R5).
+
+**Does not claim.** Anything about the reduction operations (item 06: the
+degree accounting of a suppression is not here), the step inequality (item
+07), Theorem 3.2 (item 08) or pathwidth (item 09); that `f⁻` is the right
+potential for anything other than the paper's argument; that
+`potentialMinus_ge_five_sixths` is used (it is not, by A1). The axiom lines
+certify Lean's kernel check of the 54 statements on every finite graph; the
+brute-force counts are the record of what was checked before they were
+stated and are not evidence beyond 12 vertices.

@@ -410,7 +410,10 @@ def test_degree_bound_stage_has_no_violation():
     import learning.sandwich as sw
     frame = sw.degree_bound_check(60)
     assert (frame.checked == frame.holds).all(), frame[frame.checked != frame.holds]
-    assert len(frame) == 16
+    assert len(frame) == 19
+    item05 = frame[frame.Lean.isin(["potentialMinus", "potentialMinus_eq_sum_vertexTerm",
+                                    "potentialMinus_add"])]
+    assert len(item05) == 3 and (item05.checked == 500).all()
 
 
 def test_degree_bound_proved_names_are_theorems_in_the_lean_file():
@@ -527,3 +530,65 @@ def test_cut_lemma_proved_names_are_theorems_in_the_lean_file():
     for n in ("pathwidth_le_max_add_min_boundary", "pathwidth_le_cut",
               "pathwidth_le_of_bisectionTree", "pathwidth_le_of_bisectionTreeMax_two_mul"):
         assert n in sw.CUT_LEMMA_PROVED
+
+
+# ----------------------------------------------------------------------------
+# item 05: `lean/MOSPFormalization/DegreeBound/Potential.lean`
+# ----------------------------------------------------------------------------
+
+POTENTIAL_LEAN = WEIGHTS_LEAN.parent / "Potential.lean"
+
+
+def test_potential_minus_lean_transcription_agrees_with_fminus():
+    """The Lean `potentialMinus` (transcribed) equals the Python `fminus` and its per-vertex
+    form on random graphs with isolated vertices; additivity holds on disjoint unions."""
+    import random
+    import learning.sandwich as sw
+    from learning.edwards_mcdermid import fminus, support
+    rng = random.Random(505)
+    for _ in range(200):
+        n = rng.randint(1, 11)
+        adj = sw._random_graph_with_isolated(rng, n)
+        assert sw.potential_minus_lean(adj) == fminus(adj)
+        assert sw.potential_minus_lean(adj) == sw.vertex_term_sum_lean(adj)
+        # a disjoint union with a second random graph on the complementary vertices
+        s = support(adj)
+        rest = [v for v in range(n) if not (s >> v) & 1]
+        g2 = [0] * n
+        for i, u in enumerate(rest):
+            for v in rest[i + 1:]:
+                if rng.random() < 0.6:
+                    g2[u] |= 1 << v
+                    g2[v] |= 1 << u
+        union = [a | b for a, b in zip(adj, g2)]
+        assert sw.potential_minus_lean(union) == sw.potential_minus_lean(adj) + sw.potential_minus_lean(g2)
+
+
+def test_potential_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `Potential.lean` is declared there as a
+    theorem; the file has no `sorry` and no `axiom`; the root module imports it; and
+    `paper1/axiom_check.lean` prints the axioms of every one."""
+    import learning.sandwich as sw
+    src = POTENTIAL_LEAN.read_text()
+    declared = set(re.findall(r"^(?:@\[simp\] )?theorem\s+([^\s:({\[]+)", src, re.M))
+    missing = [n for n in sw.POTENTIAL_PROVED if n.split(".")[-1] not in declared]
+    assert not missing, missing
+    assert all(n.startswith("DegreeBound.") for n in sw.POTENTIAL_PROVED)
+    assert set(sw.POTENTIAL_PROVED) <= set(sw.ALL_PROVED)
+    assert len(sw.POTENTIAL_PROVED) == len(declared) == 54
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (POTENTIAL_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.Potential\n" in root
+    axioms = (POTENTIAL_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.POTENTIAL_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("degree_isolate", "potential_isolate", "potential_isolate_le_sub_one",
+              "potential_isolate_regular", "potentialMinus_le_potential",
+              "potentialMinus_eq_sum_compPotential", "compPotential_nonneg",
+              "potentialMinus_eq_sum_vertexTerm", "potentialMinus_le_F",
+              "potentialMinus_eq_F_of_connected", "potentialMinus_add",
+              "potentialMinus_cubic", "potentialMinus_ge_five_sixths"):
+        assert f"DegreeBound.{n}" in sw.POTENTIAL_PROVED

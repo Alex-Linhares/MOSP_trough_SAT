@@ -1,0 +1,90 @@
+# session it05 started 2026-11-02 02:57:01
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the prior report sections, and the Lean files this item builds on, then write `Potential.lean`.
+  > $ date -u && uptime && cat Ralph_Loops/loop0012/iterations.md | head -80 && wc -l reports/edwards_mcdermid_plan.md reports/edwards_mcdermid.md
+  > $ sed -n '/^## 0.5/,/^## 1/p' reports/edwards_mcdermid_plan.md | head -200
+  > $ grep -n '^#' reports/edwards_mcdermid_plan.md | head -60
+  > $ sed -n '421,478p' reports/edwards_mcdermid_plan.md
+  > $ grep -n 'Potential\|P1\b\|P2\b\|P2r\|fminus\|minDeg\|B1\b' reports/edwards_mcdermid.md | sed -n '1,80p'
+  > $ sed -n '530,560p' reports/edwards_mcdermid.md; echo ======; grep -n 'isolate\|^theorem\|^lemma\|^def\|^noncomputable def\|^namespace\|^open\|^variable\|^import'
+  > $ sed -n '150,160p' lean/MOSPFormalization/Minor.lean; echo ===WEIGHTS; sed -n '1,60p' lean/MOSPFormalization/DegreeBound/Weights.lean; echo ===NAMES; grep -n '^t
+  > $ echo ===CUT_HEADER; sed -n '1,70p' lean/MOSPFormalization/DegreeBound/CutLemma.lean; echo ===COMPONENTS_IN_REPO; grep -rn 'ConnectedComponent\|\.support\b\|reac
+  > $ echo ===TREEBOUND_REACHSET; grep -n 'reachSet\|def support\|supp' lean/MOSPFormalization/TreeBound.lean | head -30; echo ===FORESTCOVER_COMP; grep -n 'Connected
+  > $ M=lean/.lake/packages/mathlib/Mathlib; echo ===MATHLIB_LEMMAS; grep -rn 'theorem sum_fiberwise\b\|theorem prod_fiberwise\b\|theorem inf'"'"'_congr\|theorem degr
+  > $ M=lean/.lake/packages/mathlib/Mathlib; echo ===LEMMAS; grep -rn -A2 'theorem sum_fiberwise \|theorem prod_fiberwise \|theorem inf'"'"'_congr\|theorem exists_mem
+  > $ M=lean/.lake/packages/mathlib/Mathlib; echo ===NAMES; grep -rn 'theorem prod_fiberwise\b\|theorem prod_fiberwise \|theorem inf'"'"'_congr\|theorem exists_mem_eq
+  > $ M=lean/.lake/packages/mathlib/Mathlib; echo ===FIBER; grep -n -B2 -A4 'theorem prod_fiberwise\b\|theorem prod_fiberwise ' $M/Algebra/BigOperators/Group/Finset/B
+  > $ M=lean/.lake/packages/mathlib/Mathlib; grep -rn -A3 'prod_fiberwise\b' $M/Algebra/BigOperators/Group/Finset/Basic.lean | head -24; echo ===INF; grep -rn -A3 "in
+  > $ M=lean/.lake/packages/mathlib/Mathlib; grep -rn -A2 "theorem inf'_congr\|theorem exists_mem_eq_inf'\|theorem inf'_le \|theorem inf'_le_of_le\|theorem inf'_const
+
+Two independent things now: a Lean scratch file to confirm the exact names of the Mathlib lemmas the proofs will rely on, and the brute-force check script for every statement the file will make.
+  > $ cd /home/al/dev/MOSP/lean && mkdir -p /tmp/l12 && cat > /tmp/l12/Scratch.lean <<'EOF'
+import Mathlib.Tactic
+import Mathlib.Combinatorics.SimpleGraph.Connectivit
+
+All names confirmed (one correction: use `ConnectedComponent.ind` instead of a nonexistent `exists_rep`). Now the brute-force check, written and run before any Lean statement is written down.
+  > $ cd /home/al/dev/MOSP && mkdir -p reports/scratch/edwards_mcdermid/05_potential && cat > reports/scratch/edwards_mcdermid/05_potential/check.py <<'EOF'
+#!/usr/bi
+
+The check passed with zero violations on 3,000 graphs and 2,000 disjoint unions, including the neighbours-only regular identity that item 02 had checked only for regular graphs. Now the Lean file.
+  > $ sed -n '244,250p;155,168p;230,242p' lean/MOSPFormalization/DegreeBound/Weights.lean; sed -n '50,62p' lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGra
+
+Now I write `Potential.lean` in full and build it.
+  > $ cat > lean/MOSPFormalization/DegreeBound/Potential.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT license as
+  > $ F=MOSPFormalization/DegreeBound/Potential.lean && python3 - <<'EOF'
+import re
+p='/home/al/dev/MOSP/lean/MOSPFormalization/DegreeBound/Potential.lean'
+s=open(p).
+  > $ F=MOSPFormalization/DegreeBound/Potential.lean && sed -i 's/rw \[← sum_compFinset\]/rw [← sum_compFinset G]/; s/\bif_pos\b/ite_eq_left/g; s/\bif_neg\b/ite_eq_ri
+  > $ cd /home/al/dev/MOSP && sed -i 's|^import MOSPFormalization.DegreeBound.CutLemma$|import MOSPFormalization.DegreeBound.CutLemma\nimport MOSPFormalization.Degree
+  > $ NAMES=$(grep -o '^theorem [A-Za-z_'"'"']*' lean/MOSPFormalization/DegreeBound/Potential.lean | awk '{print $2}') && { echo; echo "-- loop0012 item 05: the poten
+  > $ python3 - <<'EOF'
+import re
+p='learning/sandwich.py'; s=open(p).read()
+names=re.findall(r"^theorem ([A-Za-z_']+)", open('lean/MOSPFormalization/DegreeBound/Pote
+  > $ nice -n 19 python -m learning.sandwich --stage degree_bound 2>&1 | tail -30 | tee reports/scratch/edwards_mcdermid/05_potential/sandwich.log
+  > $ nice -n 19 python -m pytest tests/test_edwards_mcdermid.py -q -x 2>&1 | tail -4
+  > $ sed -i 's/for _ in range(3000):/for _ in range(20000):/; s/for _ in range(2000):\n        n = rng.randint(2, 12)/X/' reports/scratch/edwards_mcdermid/05_potenti
+  > $ sed -i 's/(`reports\/scratch\/edwards_mcdermid\/05_potential\/check.py`: 3,000 random graphs with/(`reports\/scratch\/edwards_mcdermid\/05_potential\/check.py`:
+  > $ cd /home/al/dev/MOSP && cat > /tmp/l12/Ax.lean <<'EOF'
+import MOSPFormalization
+#print axioms MOSPFormalization.DegreeBound.potentialMinus_add
+#print axioms MOS
+  > $ cd /home/al/dev/MOSP && (uptime; nice -n 19 python3 Ralph_Loops/loop0012/gate.py) > reports/scratch/edwards_mcdermid/05_potential/gate.log 2>&1; echo "GATE_EXIT
+  > $ cd /home/al/dev/MOSP && git status --short | grep -v 'Ralph_Loops/loop0012/\(loop.log\|nohup.out\|status.json\|session_it\)' ; echo ===REPORT_TAIL; sed -n '835,
+  > $ cat >> reports/edwards_mcdermid.md <<'EOF'
+
+## 5. Lean (ii): the potential, the component potential and one-deletion accounting (item 05, 2026-11-02)
+
+**Deliver
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+While the gate runs, I'll draft the PROGRESS.md entry with the gate line left to fill in.
+  > $ cat >> Ralph_Loops/loop0012/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 5 — 2026-11-02 02:57–GATE_END UTC — item 05: Lean (ii), the potential and the one-deletion de
+
+The only thing left is the gate result. I'll wait on it with a bounded poll.
+  > $ until grep -q GATE_EXIT reports/scratch/edwards_mcdermid/05_potential/gate.log; do sleep 15; done; date -u; tail -15 reports/scratch/edwards_mcdermid/05_potenti
+
+Gate passed. Filling in the gate line and the end time, then a final look at the working tree.
+  > $ sed -i 's/02:57–GATE_END UTC/02:57–03:24 UTC/; s/^- \*\*Gate\*\*: GATE_LINE$/- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,787\n  p
+
+Item 05 is done and the gate passed. Six items remain, so no completion marker.
+
+**What was done.** `lean/MOSPFormalization/DegreeBound/Potential.lean` defines the potential `f`, the per-component potential `f⁻` exactly as the plan states it, and proves 54 theorems with no `sorry` and no `axiom`, every one on the standard three axioms. They cover the one-deletion accounting (P1, P2, and P2r as an equality needing only the neighbours of the deleted vertex), the per-component and per-vertex forms of `f⁻`, its comparison with the global variant `F`, additivity over disjoint supports (`potentialMinus_add`, the statement the item flagged as the one that had to fit), and the cubic value and the `5/6` floor.
+
+**Checked before stated.** Every statement was first checked in exact rationals on 20,000 random graphs with isolated vertices at up to 12 vertices, 10,000 disjoint unions and 1,996 embedded cubic graphs, with zero violations. The one statement beyond item 02's checks is the neighbours-only P2r, re-checked in that form. The sandwich stage pins the transcribed Lean definition to the Python `fminus` on 500 graphs. The gate passed: 1,787 MOSP tests, 123 pathwidth-solver tests, 425 theorems in the axiom audit, paper untouched.
+
+**Two design notes for later items,** recorded in PROGRESS.md and report §5.4. Additivity is proved through a per-vertex spreading of each component's term, which avoids any bijection between component types. No `restrict` is defined. Item 08's disconnected case can define it and use `potentialMinus_add`, since the two halves have disjoint supports by construction.
+
+**Next** is item 06, the series-parallel reduction system.
+
+# result: success in 1615s, 37 turns, cost $11.77

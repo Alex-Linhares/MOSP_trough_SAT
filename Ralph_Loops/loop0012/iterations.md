@@ -283,7 +283,7 @@ statement checked on small graphs before it is stated.
   - **Does not claim.** Fomin–Høie's `n/6` (which needs Lemma 4 and the
     sweep, not C1–C2); anything about bisection *widths* of random graphs.
 
-- [ ] **05 Lean (ii): the potential and the one-deletion degree accounting.**
+- [x] **05 Lean (ii): the potential and the one-deletion degree accounting.**
   - **Question.** Can `f(G − w) = f(G) − g(d(w)) − Σ_{v ∈ N(w)} g'(d(v))` and
     its consequence `f(G − w) ≤ f(G) − 1` (for `w` of maximum degree `≥ 4`
     with a lower-degree neighbour, in a graph whose degrees are 0 or `≥ 3`)

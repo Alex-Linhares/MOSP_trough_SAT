@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 4/11 SOLVED
+Current: 5/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -374,3 +374,86 @@ Item 05: `DegreeBound/Potential.lean` — `f`, `minDeg`, `fminus`, `F`;
 `fminus_eq_sum_components`, `fminus_component_nonneg`, `fminus_cubic`
 (checked in item 02: P1 on 2,579,255 (graph, `w`), P2 on 163,265, P2r on
 501, B1 on 290,103 components).
+
+---
+
+## Iteration 5 — 2026-11-02 02:57–03:24 UTC — item 05: Lean (ii), the potential and the one-deletion degree accounting
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/Potential.lean`** (namespace
+  `MOSPFormalization.DegreeBound`, imports `Weights` and `Minor`): `supp`,
+  `potential` (`f`), `compFinset`, `minDeg`, `potentialMinus` (`f⁻`, the plan's
+  definition literally), `compPotential`, `vertexTerm`, `globalMinDeg`, `F`;
+  **54 theorems, no `sorry`, no `axiom`**, every one
+  `[propext, Classical.choice, Quot.sound]`: `degree_isolate` (and its three
+  cases), **P1** `potential_isolate`, **P2** `potential_isolate_le_sub_one`,
+  **P2r** `potential_isolate_regular` (an equality, constraining only the
+  neighbours of `w`) with `potential_isolate_le_regular`,
+  `potentialMinus_le_potential`, `potentialMinus_eq_sum_compPotential`,
+  `compPotential_nonneg`, `potentialMinus_nonneg`,
+  `potentialMinus_eq_sum_vertexTerm`, `potentialMinus_le_F`,
+  `potentialMinus_eq_F_of_connected`, **additivity** `potentialMinus_add`
+  (`Disjoint (supp G₁) (supp G₂) → f⁻ (G₁ ⊔ G₂) = f⁻ G₁ + f⁻ G₂`) through
+  `reachable_sup_iff` and `vertexTerm_sup`, **B1** `potentialMinus_cubic`
+  (`f⁻ = N/6 − 1/6`) and the optional floor `potentialMinus_ge_five_sixths`.
+  Imported by `lean/MOSPFormalization.lean`; builds in 1.4 s; `lake build`
+  passes (`reports/scratch/edwards_mcdermid/05_potential/lake_build.log`).
+- **Checked before stated** (`05_potential/check.py`, `check.log`,
+  `summary.json`; 2.5 s): every statement in the form Lean proves it, in exact
+  rationals, on 20,000 random graphs at `n ≤ 12` with isolated vertices,
+  10,000 random disjoint unions, 1,996 embedded connected cubic graphs —
+  1,076,930 (graph, `w`, `v`) for `degree_isolate`, 129,602 for P1, 13,723 for
+  P2, 4,806 for the neighbours-only P2r (the one statement beyond item 02's
+  checks), 10,000 unions for additivity, 70,283 for the reachability
+  characterisation, 52,969 components for non-negativity. **Zero violations.**
+- **Three choices beyond §2.6** (report §5.4): additivity goes through the
+  per-vertex form `vertexTerm` (a pointwise identity on `V`), not through a
+  bijection of component types; `compPotential G C` replaces
+  `fminus (G.restrict C)` — no `restrict` is defined here, and if item 08's
+  disconnected case wants `G = restrict C ⊔ restrict Cᶜ` it defines it and uses
+  `potentialMinus_add`; `vertexTerm_congr` handles the decidability instance
+  that `sup_comm` changes.
+- **Axiom check**: 54 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`05_potential/axiom_check.log`; `make -C paper1/latex axioms`: 425 theorems
+  checked, 0 failures). `POTENTIAL_PROVED` (54 names) folded into
+  `learning.sandwich.ALL_PROVED`.
+- **Sandwich stage** `python -m learning.sandwich --stage degree_bound`:
+  `potential_minus_lean` (the Lean definition transcribed) against
+  `learning.edwards_mcdermid.fminus` on 500 random graphs, the per-vertex form
+  on the same 500, additivity on 500 disjoint unions: 19 rows, **4,293 checks,
+  0 violations** (`05_potential/sandwich.log`).
+- **Tests**: 2 new in `tests/test_edwards_mcdermid.py` (38 in all; the stage's
+  row count updated to 19).
+- **Report**: `reports/edwards_mcdermid.md` §5 (the check's counts, the
+  definitions, the 54 statements with their proofs, the choices beyond §2.6,
+  the axiom and sandwich records, kill verdict none, regenerate commands, what
+  it does not claim).
+- **Gate**: **PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,787
+  passed, 2 skipped, 1 xfailed in 273 s, the 2 new tests included;
+  pathwidth_solver pytest 123 passed in 385 s; `make -C paper1/latex check` ok,
+  74 pages, the paper untouched). Log: `05_potential/gate.log`.
+
+### Blockers
+None. Notes for later items: `G.degree` cannot be passed as a bare function to
+`Finset.inf'` / `exists_mem_eq_inf'` (its `Fintype (neighborSet v)` instance
+argument sits between the explicit ones) — write `(fun v => G.degree v)`;
+`rw [← sum_compFinset]` needs `G` given explicitly (it is not in the right-hand
+side); in current Mathlib `if_pos` / `if_neg` / `dif_pos` / `dif_neg` are
+deprecated for `ite_eq_left` / `ite_eq_right` / `dite_eq_left` / `dite_eq_right`;
+`SimpleGraph.ConnectedComponent` has `Fintype` under `DecidableRel G.Adj` but
+no `DecidableEq`, so `compFinset` is a classical filter and `sum_compFinset` is
+`sum_fiberwise` under `classical`; `isolate` is `MOSPFormalization.isolate G w`
+(no dot notation), and its `DecidableRel` instance is declared in this file.
+For item 07, the `j`-identity is `potential_isolate` with `one_sub_g_eq`; for
+item 08, the disconnected case is `potentialMinus_add` plus a `restrict`
+whose two halves have disjoint supports; for item 09, the per-component bound
+adds `compPotential` over `potentialMinus_eq_sum_compPotential`.
+
+### Next
+Item 06: `DegreeBound/SPReduction.lean` — `SPStep G v H` (degrees 1 and 2
+only), `SPReduces`, `IsSPReduced`, `IsBasic`; R1 (`edgeFinset_card_lt`),
+`exists_reduced_reduct`, R2 (`degree_le`, `f_le`, `f_sub_ge_of_isolated`), R3
+(`isolate_comm`), R4 (`isolate_comm` for sequences and finsets), R5
+(`sup_of_disjoint`; `reachable_sup_iff` here is the reachability half of it),
+R6 optional; all checked in item 02 on every graph to 9 (R3 on every (graph,
+step, `w`), 3,115,987).

@@ -1,0 +1,22 @@
+                                                             statement                             Lean             n  checked  holds
+                                       g (Lean recursion) = g (Python)                                g         0–200      201    201
+                                               g' (Lean) = g' (Python)                               g'         0–200      201    201
+                                                             the table                          g_table           3–9        7      7
+                          W1: n g(n) = (n − 2) g(n − 1) + g(n − 2) + 1                     g_recurrence         4–200      197    197
+       Lemma 8.3 invariant: 0 ≤ g(n) ≤ g(n+1) ≤ (1 + g(n))/2, g(n) < 1                            g_aux         0–199      200    200
+                                                  W2: g non-decreasing                       g_monotone         0–199      200    200
+                                                   g'(n) = 0 for n ≤ 2             g'_eq_zero_of_le_two           0–2        3      3
+                g' recurrence: n g'(n) = (n − 3) g'(n − 1) + g'(n − 2)                    g'_recurrence         5–200      196    196
+                         Lemma 8.4 sandwich: g'(n)/3 ≤ g'(n+1) ≤ g'(n)                           g'_aux         3–199      197    197
+                                          W3: g' non-increasing from 3          g'_antitone_of_three_le         3–199      197    197
+                              W4: 1 − g(n) = (n − 1) g'(n) + g'(n − 1)                     one_sub_g_eq         4–200      197    197
+                                                      W5: 0 ≤ g(n) < 1               g_nonneg, g_lt_one         0–200      201    201
+                                                   W5: 0 ≤ g'(n) ≤ 1/6           g'_nonneg, g'_le_sixth         0–200      201    201
+                                                          g'(n) ≤ g(n)                          g'_le_g         0–200      201    201
+                Lemma 8.1: g(n) = (7/2) A(n)/n! + (3/2)(−1)^n/n! − 5/2                    g_closed_form         2–200      199    199
+                                      Lemma 8.5: g(n+1)/(n+1) < g(n)/n                   g_div_lt_g_div         5–199      195    195
+f⁻ (Lean definition, transcribed) = fminus (Python), 500 random graphs                   potentialMinus 1–12 vertices      500    500
+          f⁻ = Σ_v vertexTerm (the per-vertex form), 500 random graphs potentialMinus_eq_sum_vertexTerm 1–12 vertices      500    500
+   f⁻(G₁ ⊔ G₂) = f⁻(G₁) + f⁻(G₂), disjoint supports, 500 random unions               potentialMinus_add 2–12 vertices      500    500
+degree bound: 4293 checks, 0 violations
+wrote /home/al/dev/MOSP/reports/sandwich_tables.md
