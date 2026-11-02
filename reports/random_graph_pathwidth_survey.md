@@ -101,7 +101,10 @@ Kloks / Perarnau–Serra / Díaz–Petit–Serna–Trevisan. The last of these
 Lemma 3 (g5)) proves `VS ≥ (1/2 − ε)n − 1` on mixing graphs, which holds for
 `c ≥ 3(1+ln 3)(εγ)^{-2}`. Their own argument gives `(1 − 2ε)n` if the prefix
 position `(1−ε)n` is used instead of `n/2`. [pub for the lemma; the improvement
-is derived]
+is derived] Cheung & Girardet (arXiv 1710.10339; *Open J. Discrete Math.* 10 (2020) 13–30,
+Lemma 12) publish exactly that variant, with `ε = n^{−s}`, reaching `vs ≥ (1 − o(1)) n`
+for every `p ≥ n^{−1+ε}` — still nothing at `p = c/n`, no entropy count, no `β(c)`
+(read 2026-11-01, `reports/random_graph_pathwidth_literature_2.md`).
 
 *Deterministic core checked by brute force, 2026-10-30
 (`reports/scratch/empty_pair/check.py`, per the todo's "check before Lean").*
@@ -190,7 +193,7 @@ at n = 9.
   read (UNVERIFIED).
 - **Fomin, Gaspers, Saurabh & Stepanov**, "On two techniques of combining
   branching and treewidth", *Algorithmica* 54:181–207 (2009),
-  DOI 10.1007/s00453-007-9133-3: `pw ≤ n₃/6 + n₄/3 + 13n₅/30 + n_{≥6} + εn`
+  DOI 10.1007/s00453-007-9133-3: `pw ≤ n₃/6 + n₄/3 + 13n₅/30 + 23n₆/45 + n_{≥7} + εn` (coefficients corrected 2026-11-01 from the PDF)
   [pub, as quoted in search results; coefficient list not read in the PDF].
 - **Independence number** [derived, standard; **proved in Lean 2026-10-30**,
   `lean/MOSPFormalization/IndependenceBound.lean`,
@@ -426,17 +429,17 @@ is Gogate–Dechter's exact **tw**/n (a lower estimate of pw/n) at finite `n`.
 | `1+ε`, `ε → 0`, `ε³n → ∞` | `Θ(ε³n)` | `0.02 ε³` | DEK §5 (tw) | `≈ 0.67 ε³` (pw), `1.34 ε³` (tw, DEK) | derived / DEK | — |
 | 1.1 | linear, constant unknown | `r(c) > 0`, implicit | LLO, PS, DEK | 0.0006 | cyclomatic | — |
 | 1.5 | " | implicit | " | 0.037 | cyclomatic | — |
-| 2 | " | implicit | " | 0.162 | cyclomatic | 0.072 (n=50) |
-| 2.5 | " | implicit (Gao: linear for c > 2.146) | Gao 2012 | 0.217 | Kneis | — |
-| 3 | " | 0.009 | FM | 0.260 | Kneis | — |
-| 4 | " | 0.061 | FM | 0.347 | Kneis | 0.216 (n=50), 0.252 (n=25) |
-| 5 | " | 0.118 | FM (PS: 0.006) | 0.433 | Kneis | — |
-| 6 | " | 0.171 | FM (PS: 0.092) | 0.520 | Kneis | 0.346 (n=50) |
-| 8 | " | 0.263 | FM (PS: 0.214) | 0.693 | Kneis | 0.407 (n=50), 0.472 (n=25) |
-| 10 | " | 0.337 | FM (PS: 0.297) | 0.760 | `1 − α_greedy` | — |
-| 12 | " | 0.397 | FM (PS: 0.358) | 0.786 | " | 0.552 (n=50), 0.604 (n=25) |
-| 16 | " | 0.488 | FM (PS: 0.444) | 0.823 | " | 0.674 (n=50), 0.720 (n=25) |
-| 20 | " | 0.554 | FM (PS: 0.503) | 0.848 | " | — |
+| 2 | " | implicit | " | 0.085 | E–M Cor 5.2 | 0.072 (n=50) |
+| 2.5 | " | implicit (Gao: linear for c > 2.146) | Gao 2012 | 0.132 | E–M Cor 5.2 | — |
+| 3 | " | 0.009 | FM | 0.183 | E–M Cor 5.2 | — |
+| 4 | " | 0.061 | FM | 0.285 | E–M Cor 5.2 | 0.216 (n=50), 0.252 (n=25) |
+| 5 | " | 0.118 | FM (PS: 0.006) | 0.378 | E–M Cor 5.2 | — |
+| 6 | " | 0.171 | FM (PS: 0.092) | 0.458 | E–M Cor 5.2 | 0.346 (n=50) |
+| 8 | " | 0.263 | FM (PS: 0.214) | 0.576 | E–M Cor 5.2 | 0.407 (n=50), 0.472 (n=25) |
+| 10 | " | 0.337 | FM (PS: 0.297) | 0.656 | E–M Cor 5.2 | — |
+| 12 | " | 0.397 | FM (PS: 0.358) | 0.711 | E–M Cor 5.2 | 0.552 (n=50), 0.604 (n=25) |
+| 16 | " | 0.488 | FM (PS: 0.444) | 0.782 | E–M Cor 5.2 | 0.674 (n=50), 0.720 (n=25) |
+| 20 | " | 0.554 | FM (PS: 0.503) | 0.826 | E–M Cor 5.2 | — |
 | 50 | " | 0.761 | FM (PS: 0.686) | 0.921 | " | — |
 | 100 | " | 0.857 | FM (PS: 0.778) | 0.954 | " | — |
 | `c → ∞` | | `1 − (4+o(1)) ln c/c` | FM | `1 − (2−o(1)) ln c/c` | `α` (Frieze) | — |
@@ -444,7 +447,10 @@ is Gogate–Dechter's exact **tw**/n (a lower estimate of pw/n) at finite `n`.
 
 No sharp constant is known at any `c`. Between `c = 1` and `c ≈ 2.8` there is
 **no explicit numerical lower bound at all**, only existence of `r(c) > 0`. The
-upper/lower gap is a factor of 2–40 throughout the interesting range `2 ≤ c ≤ 10`.
+upper/lower gap is a factor of about 2–20 throughout the interesting range `2 ≤ c ≤ 10`
+(the UB column is Edwards–McDermid's degree-sequence bound evaluated on Poisson(c)
+degrees, `reports/random_graph_pathwidth_literature_2.md`, 2026-11-01; it replaced the
+edge-count and cyclomatic values at `2 ≤ c ≤ 20`).
 Gogate–Dechter's finite-`n` treewidths sit inside every interval, and they fall
 with `n` (`c = 8`: 0.472 at `n = 25`, 0.407 at `n = 50`), which shows how large
 the finite-size effects are at these sizes.
@@ -566,7 +572,8 @@ squares fit `pw ≈ β_∞ n + γ` gives:
 
 (`β*` recomputed here from the definition in §1.4 by a scan in steps of
 `10⁻⁴`; it agrees with §7(a).) The fitted slopes sit **above `β*(c)` at every
-`c ≥ 3`, by 0.08–0.10**, and below every upper bound by a factor of 1.8–2.6.
+`c ≥ 3`, by 0.08–0.10**, and below every upper bound by a factor of 1.6–1.85 once Edwards–McDermid's
+degree-sequence bound is the upper end (2026-11-01; 1.8–2.6 against the bounds first tabulated).
 Stronger than the mean: at `n = 60`, **no single graph** in any cell has
 `pw < β*(c)·n` (the minimum `pw/n` is 0.083, 0.133, 0.267, 0.333, 0.417 at
 `c = 3, 4, 6, 8, 10`, against `β*` of 0.009, 0.061, 0.171, 0.263, 0.337). So
@@ -575,8 +582,9 @@ measured falls below it, with a margin that leaves room for the asymptotic
 correction. This is consistency, not proof; the fitted `β_∞` are extrapolations
 from `n ≤ 70–120` and the §14 lesson of `reports/ml_nature.md` applies to them
 exactly (the intercept `γ ≈ 2–3` is the same order as the drift seen there).
-Kneis's `c/11.54` is the closer upper bound at `c ≤ 6` and the independence
-bound at `c ≥ 8`, but neither is within 0.2 of the fit.
+Edwards–McDermid's degree-sequence bound is the closer upper bound at every `c`,
+within 0.08 of the fit at `c = 3` and 0.24 at `c = 10`
+(`reports/random_graph_pathwidth_literature_2.md`).2 of the fit.
 
 One discrepancy, checked against the paper (2026-10-28): Gogate–Dechter's
 **treewidth** means at `n = 50` (§7(a)) are 0.216 at `c = 4` and 0.346 at

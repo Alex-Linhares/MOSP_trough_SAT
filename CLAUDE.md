@@ -1381,6 +1381,66 @@ a bound. Nothing re-solved; `solutions/` untouched. Figure:
 `learning/data/excess*.csv` (git-ignored, 10 s to rebuild) and the
 committed `paper1/latex/data/excess_phase_diagram.csv`.
 
+**Counting events, not witnesses** *(loop0011, 2026-11-01;
+`reports/separator_moment.md`, §0 is the summary; the paper's Appendix E,
+the paragraph "Why the first moment is loose" and the section's closing
+sentence, five Appendix A rows)*. The first-moment floor `β*` on
+`pw(G(n, c/n))` and on random MOSP covers counts *witnesses* (exact-size
+empty pairs `(A, R)`); this loop counted the *event* a narrow layout forces,
+three ways: once per **separator** `S` (`P(pw ≤ k) ≤ C(n, k) · P_N(E_bip)`,
+the inner probability from the component structure of `G − S = G(N, p)`,
+exact to `N = 120` by a partition sum, its relaxation to `N = 400`), once
+per **closed pair** (`S = N(A) ∩ N(R)`, the fixpoint of one round of
+`R* = V ∖ N[A]`, `A* = V ∖ N[R*]`), and the **weighted count**
+`Σ_P 1[P empty]/Z(P) ≥ 1[X > 0]` for any `1 ≤ Z ≤ X`. **Theorems**
+(`SeparatorMoment.lean`, 100 theorems, no `sorry`, no `axiom`): Theorem S
+in finite form with the inner probability as a weighted count
+(`weightedSum_graphsOfPathwidthLe_le_choose_mul_innerBip`; the union bound
+over `S` is the only inequality), the deterministic lemmas L1 / L1′ / L2
+and their cover forms, Lemma W, the flip lemma, and **Theorem Cl in full**
+(`weightedSum_graphsOfPathwidthLe_le_closedPairFormula`: `P(pw ≤ k) ≤
+Σ_{a ≥ t, r' ≥ r} C(n, a) C(n − a, r') (1 − p)^{a r'} ((1 − (1 − p)^a)(1 −
+(1 − p)^{r'}))^{n − a − r'}`, the independence step a product over disjoint
+blocks of pairs, item 13); on paper: the partition formula (Lemmas P, G, F)
+and the cover inclusion–exclusion (§10.3 names the obstacles).
+**Constants** (asymptotic; `β_sep` rests on the *cited* LDP for the
+largest component, O'Connell 1998 via Puhalskii 2005 Cor. 2.4(3),
+reproduced by exact computation and *fitted* over `N = 100–400`):
+`β_sep − β* = +0.029, +0.022, +0.011, +0.004` at `c = 3, 4, 6, 10`;
+`β_closed − β* = +0.001, +0.006, +0.010, +0.008`; on covers
+`β_closed − β* = +0.011` at `(4, 1)` and `(6, 1)`, the flips `+0.002–0.006`,
+`+0.021` at `(8, ½)` the one cell above `0.02`. **The brief's kill
+(`< 0.02` at `c = 6, 10` and at `(4, 1), (6, 1)`) is met: the route is
+closed for the headline constants**, as the plan's estimates said. What it
+bought: the near-threshold gain (a third of the gap at `c = 3`); the
+method's threshold `4 ln 2 → 2 ln 2`, **conditional** on the cited LDP
+(Proposition T; the truth is `1`); the half-giant line `e = 0.60–0.82` on
+covers (Proposition T-cover, conditional on a lower-tail hypothesis no held
+paper states); the published sandwich `[0.037, 0.183]`, `[0.182, 0.458]`,
+`[0.345, 0.656]` at `c = 3, 6, 10` with Edwards & McDermid 2015 Cor. 5.2 as
+the upper line (loose on covers); and the planted-cluster measurement
+(`n ≤ 32`, 200 per cell): the cluster is two lobes through the separator,
+loop0010's `e^{0.23 n}` at `(6, 1)` is a rare-instance artefact of `E[X²]`
+(the median planted instance has the reversed pair and nothing else), and
+the union bound's whole slack is `E[1/X]` under the planted law,
+`0.012–0.019` in `β`. **In stacks** (§11, 1,143 certified instances, zero
+floor violations at `< 0.01`): the counts buy 1–2 stacks at `n = 60–75`;
+of the 4–5 left, at least three quarters is the union bound by Harper's
+instrument where it reaches the forced prefix (level cap stated), and the
+two instruments (planted at `n ≤ 32`, Harper at 30–75) are **not
+reconciled** (§0.9). **Dead**: the combined count (a `2^κ` colouring bound
+gives the separator's gain back); every weighted count with a closed-form
+transform (`β_W = β_closed − 0.0002`: the lower tail is "the pair is
+closed"); the typical-instance instrument for the constant (no ratio grows
+at `k = pw`, `n ≤ 24`, while the constant is decided in the rare-instance
+regime). Literature: the separator object is in Do–Erde–Kang 2024 (a
+deterministic inner bound), the inner rate in O'Connell 1998; representative
+counts in print bought 2–25% of a gap; five PDFs added to `literature/`,
+five recorded missing; "we found no prior statement", never "first".
+Nothing re-solved; `solutions/` untouched; about 8.5 core-hours. Code
+`learning/separator_moment.py` (93 tests); data under
+`reports/scratch/separator_moment/`.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,

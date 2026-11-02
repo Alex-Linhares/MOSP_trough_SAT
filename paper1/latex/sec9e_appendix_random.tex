@@ -20,6 +20,53 @@ constant. The argument is a first moment, an old tool; what is new here is the
 exact form of its deterministic step, the constant it yields, and the
 machine check. We found no prior statement of the constant.
 
+\subsection{The picture}
+\label{app:random-picture}
+
+Everything in this appendix is one picture, so we draw it first, in the words
+of the factory and then in the words of Section~\ref{sec:equiv}.
+
+Take any instance and any production sequence, and freeze it at some moment.
+Every customer is then in one of three states. \emph{Done}: the stack has
+closed, every pattern the customer needs has been made. \emph{Open}: not done,
+but at least one of the customer's patterns has been made, so the stack is
+open. \emph{Untouched}: none of the customer's patterns has been made. The
+number of open stacks at that moment is the size of the open group, and a
+sequence of value $k+1$ never has more than $k$ customers open at once. A
+done customer and an untouched customer can share no pattern: a shared pattern
+would already have been made for the done customer and would have opened the
+untouched one. So at every moment the done group and the untouched group are
+\emph{strangers}, with no pattern in common, and only the open customers
+connect them.
+
+In the MOSP graph, where two customers are joined when they share a pattern,
+the same picture reads as follows. A production sequence is a line of
+customers in the order their stacks close. At a cut of the line, the done
+customers are the prefix and the open customers are the suffix vertices with a
+neighbour in the prefix; their number is what \emph{vertex separation} counts
+at that cut (Theorem~\ref{thm:vs}: the least over all lines of the largest
+such count is the pathwidth, which is the optimum minus one). Two things
+follow at every cut of a line of vertex separation $k$, and they are the two
+objects the proofs count.
+
+\begin{itemize}
+\item An \emph{empty pair}: two disjoint sets of vertices with no edge between
+  them, here the prefix and the untouched suffix. Since at most $k$ suffix
+  vertices are open, the two sets together hold at least $n-k$ vertices, and
+  at the cut nearest the middle each holds about $(n-k)/2$.
+\item A \emph{balanced separator}: a set $S$ of at most $k$ vertices, here the
+  open customers, whose removal leaves the rest in two sides of about
+  $(n-k)/2$ vertices each with no edge between the sides.
+\end{itemize}
+
+Both are \emph{necessary} for small pathwidth, not sufficient: a graph that
+has them may still need many stacks, because a line needs a small separator
+at every cut, not at one. That direction is exactly what a lower bound needs.
+If a random instance almost never contains an empty pair of the required
+sizes, it almost never has pathwidth $k$ or less. The appendix counts empty
+pairs; the balanced separator is the object a sharper count would use, and
+Appendix~\ref{app:excess} says why.
+
 \subsection{The statement}
 
 $G(n,p)$ is the random graph on $n$ labelled vertices in which each of the
@@ -97,7 +144,7 @@ made explicit.
 \subsection{The proof, in four steps}
 
 \paragraph{Step 1: a narrow layout leaves an empty pair.}
-Put the vertices in a line and look at any position $i$. The first $i+1$
+This is the picture of Appendix~\ref{app:random-picture}, made exact. Put the vertices in a line and look at any position $i$. The first $i+1$
 vertices are the prefix; the rest are the suffix. A suffix vertex is
 \emph{active} if it has a neighbour in the prefix. The vertex separation of
 the line is the largest number of active vertices at any position, and by
@@ -539,6 +586,16 @@ used it for vertex separation on mixing graphs, with a $3^{n}$ count and
 Chernoff slack at a single position, which gives no positive constant below
 $c\approx227$. Neither states the entropy form, a value of $\beta^{*}(c)$, the
 threshold $4\ln2$ or the asymptotics, and we found no later work that does.
+Three more things are known. The best published upper bound on the pathwidth
+of $G(n,c/n)$ is the degree-sequence bound of \citet{EdwardsMcDermid2015},
+which on Poisson degrees gives $0.183$, $0.458$ and $0.656$ at $c=3,6,10$,
+so the measured slopes sit near the middle of the sandwich between
+$\beta^{*}(c)$ and it. The prefix-at-$(1-\varepsilon)n$ variant of the
+empty-pair argument is published by \citet{CheungGirardet2020}, who reach
+pathwidth $(1-o(1))n$ for every $p\ge n^{-1+\varepsilon}$, still nothing at
+$p=c/n$. And a sharp constant for vertex separation is known for one random
+model only, dense random geometric graphs \citep{DiazPenrosePetitSerna2001},
+and for none of $G(n,c/n)$, random regular graphs or random clique covers.
 
 One computation says how far the finite inequality is from the truth. On
 133 random graphs with 60 vertices and $c=10$ whose pathwidth we computed
