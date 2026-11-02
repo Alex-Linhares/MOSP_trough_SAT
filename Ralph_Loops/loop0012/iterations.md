@@ -24,7 +24,7 @@ load in `uptime` is above 24), nothing solved twice, every brute-force check
 persisted under `reports/scratch/edwards_mcdermid/<item>/`, every Lean
 statement checked on small graphs before it is stated.
 
-- [ ] **01 Fetch the manuscript; evaluate Corollary 5.2 and Theorem 5.3 on every graph with a proved pathwidth.**
+- [x] **01 Fetch the manuscript; evaluate Corollary 5.2 and Theorem 5.3 on every graph with a proved pathwidth.**
   - **Question.** A of the brief. With the lower-order terms spelled out as
     the paper states them, does `pw(G) ≤ Σ_{v ∈ r(G)} g(d_{r(G)}(v)) + τ(n) + O(log n)`
     hold on every graph whose pathwidth is on record, what is the per-graph

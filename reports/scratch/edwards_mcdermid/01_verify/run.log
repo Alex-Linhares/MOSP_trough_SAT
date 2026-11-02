@@ -1,0 +1,29 @@
+[2026-11-02 00:31:45] start: stages=['pilot', 'dataset'] workers=8 load=(0.078125, 0.54296875, 3.4931640625)
+[2026-11-02 00:31:45] pilot: 6715 rows, 6542 proved
+[2026-11-02 00:31:45] pilot: written
+[2026-11-02 00:31:45] stage pilot: 0.3 s
+[2026-11-02 00:31:47] dataset: 16971 classes, 16635 certified
+[2026-11-02 00:31:48] dataset: written
+[2026-11-02 00:31:48] stage dataset: 3.0 s
+[2026-11-02 00:31:48] done in 3.3 s
+[2026-11-02 00:31:54] start: stages=['ensemble', 'cubic'] workers=8 load=(0.14013671875, 0.54150390625, 3.46044921875)
+[2026-11-02 00:31:54] ensemble: 50701 certified rows across 4 frames, 10548 isomorphic repeats within their cell
+[2026-11-02 00:32:01] ensemble: written
+[2026-11-02 00:32:01] stage ensemble: 7.4 s
+[2026-11-02 00:32:02] cubic: geng connected cubic counts {4: 1, 6: 2, 8: 5, 10: 19, 12: 85, 14: 509, 16: 4060} (4681 graphs), subset DP
+[2026-11-02 00:32:45] cubic: written (4728 rows)
+[2026-11-02 00:32:45] stage cubic: 43.3 s
+[2026-11-02 00:32:45] done in 50.8 s
+[2026-11-02 00:32:49] start: stages=['tables'] workers=8 load=(4.22265625, 1.666015625, 3.6806640625)
+[2026-11-02 00:32:53] tables: written tables.md
+[2026-11-02 00:32:54] tables: figure poisson_n120.png
+[2026-11-02 00:32:54] stage tables: 4.6 s
+[2026-11-02 00:32:54] done in 4.6 s
+[2026-11-02 00:34:15] start: stages=['cubic', 'tables'] workers=8 load=(18.462890625, 8.568359375, 6.033203125)
+[2026-11-02 00:34:16] cubic: geng connected cubic counts {4: 1, 6: 2, 8: 5, 10: 19, 12: 85, 14: 509, 16: 4060} (4681 graphs), subset DP
+[2026-11-02 00:35:13] cubic: written (4728 rows)
+[2026-11-02 00:35:13] stage cubic: 58.0 s
+[2026-11-02 00:35:15] tables: written tables.md
+[2026-11-02 00:35:15] tables: figure poisson_n120.png
+[2026-11-02 00:35:15] stage tables: 1.9 s
+[2026-11-02 00:35:15] done in 60.0 s

@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 0/11 SOLVED
+Current: 1/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -63,3 +63,73 @@ Current: 0/11 SOLVED
   folder.
 
 ---
+
+## Iteration 1 — 2026-11-02 00:26–00:50 UTC — item 01: fetch the manuscript; Corollary 5.2 and Theorem 5.3 on every graph with a proved pathwidth
+
+### Completed
+- **Baseline** (recorded before the item): Lean `sorry` in code 0, `axiom` 0
+  (gate); paper `paper1/latex/main.pdf` 74 pages; test counts from the gate
+  run are in the gate line below.
+- **Fetched** the accepted manuscript into
+  `reports/scratch/edwards_mcdermid/em2015.pdf` (31 pages: two portal cover
+  sheets plus the 29-page manuscript of April 29, 2014), text `em2015.txt` by
+  `pdftotext -layout`, `SHA256` beside them (`f94e8c08…8665`, 2026-11-02
+  00:26 UTC). Sections 1, 3, 5 and the Appendix read against plan §0.2:
+  **every quotation agrees word for word**; Corollary 5.2 and Theorem 5.3 are
+  on p. 20 (the section starts on p. 19). No discrepancy of substance.
+- **Code**: `learning/edwards_mcdermid.py` (`g` in `Fraction`, `g_real`,
+  `g_prime`, the closed form, `reduce` on bit masks with a low-degree stack
+  so it is linear in the steps, `main_term`, `histogram_term`,
+  `average_degree_term`, `fminus` per component, `poisson_value`,
+  `fomin_hoie_budget`, `evaluate`); 21 tests in
+  `tests/test_edwards_mcdermid.py` (the paper's table to `d = 8` exactly,
+  properties 3–6 and Lemma 8.1 to `n = 30`, the four named reductions, no
+  degree rises and `main ≤ histogram` on 200 random graphs, idempotence and
+  relabelling invariance of `reduce`).
+- **Run**: `reports/scratch/edwards_mcdermid/01_verify/run.py` (75 s on 8
+  workers at load 0.1): pilot 6,542 proved (+173 unproved carried apart),
+  dataset 16,635 certified non-empty classes (+336 `solution`), ensembles
+  50,701 certified rows of which 40,153 distinct within their cell by the
+  stored nauty certificate; 4,681 connected cubic graphs to 16 vertices by
+  the subset DP (the only new solves, allowed by the item).
+- **Kill checks: none fired.** 0 of 63,330 proved graphs with
+  `pw > main term + τ_FH(n)`; 0 with `main term > histogram term`; `reduce`
+  never raised a degree.
+- **Numbers** (`reports/edwards_mcdermid.md` §1): the main term alone bounds
+  61.8% of the record, the histogram term 72.0%; max deficit **5** (the
+  202-vertex VSPLIB trees at pw 5, main term 0: the paper's `O(log n)` term),
+  **4.333** over graphs whose reduction is non-empty (the Coxeter graph);
+  `B(n)` = 3.333, 4, 4.333, 4.333, 4.333, 4.333, 5, 5, 5 at
+  `n = 10, 20, 40, 60, 100, 200, 500, 1000, 2916` against `τ_FH(n)` = 7.5 …
+  498 (2.2× to 100× above, vacuous as the plan said). Cubic base case:
+  smallest `c` with `pw ≤ N/6 − 1/6 + c` is **3.833** exhaustively to 16
+  (Heawood) and **4.5** on the 42 certified connected cubic graphs to 120
+  (Coxeter); the record-holders are the small cages. The 13 dataset cubic
+  graphs at `N ≤ 16` matched the sweep by isomorphism and all 13 pathwidths
+  agree (a free audit; nothing re-solved). Poisson: histogram/n within 0.012
+  of `poisson_value(c)` at every cell `n = 60–120`; the reduction's gain is
+  0.021–0.025 per vertex at `c = 3`, 0.009 at 4, 0.001 at 6, 0 from 8; the
+  bound is 1.1–1.2× the proved `pw` at `c = 3`, 1.4–1.5× at `c = 6–10`.
+  Theorem 5.3: the Edwards–Farr averaging lemma holds on all 52,747 graphs
+  where it applies (0 with `main > g(d̄)n`) and fails on 1,431 of the 5,487
+  disconnected graphs with `d̄ < 5` — its hypothesis is needed.
+- Figure `01_verify/poisson_n120.png` (dataviz skill read first); the report
+  created with its header (statement, the two hypotheses, notation) and §1.
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,770
+  passed, 2 skipped, 1 xfailed in 274 s, the 21 new tests included;
+  pathwidth_solver pytest 123 passed in 386 s; `make -C paper1/latex check`
+  ok, the paper untouched).
+
+### Blockers
+None. Observations for later items: the dataset's certified classes are
+16,635 non-empty (the plan's 16,636 counts the empty graph); the ensembles'
+certified rows are 50,701 (not 50,716); `Cell.parse` takes `f:10:10:2`, not
+the frame's `cell` string — build `Cell(generator, n, m, param)` from the
+columns.
+
+### Next
+Item 02: the exact statement to formalise, every intermediate lemma checked
+on every graph to 9 vertices (`reduce` and `fminus` from
+`learning.edwards_mcdermid` are ready for it; the (H3) gap `pw(H) − pw(r(H))`
+is measured only in shape here: `pw ≤ log₃ n + 0.904` on the 6,785 graphs
+that reduce to empty).

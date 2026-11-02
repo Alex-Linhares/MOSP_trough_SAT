@@ -1,0 +1,124 @@
+# session it01 started 2026-11-02 00:25:42
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan in full, then the baseline checks, then the fetch.
+  > $ wc -l reports/edwards_mcdermid_plan.md && cat reports/edwards_mcdermid_plan.md
+  > $ sed -n 1,200p reports/edwards_mcdermid_plan.md
+  > $ sed -n 200,420p reports/edwards_mcdermid_plan.md
+  > $ sed -n 420,617p reports/edwards_mcdermid_plan.md
+  > $ uptime && ls Ralph_Loops/loop0012/ && cat Ralph_Loops/loop0012/gate.py | head -80 && ls reports/scratch/ | head -50 && ls /tmp/lit_random/ 2>/dev/null; which pd
+
+Load is low (0.2), so 8 workers are fine. Now the fetch, the data headers, and the code I'll reuse, all at once.
+  > $ mkdir -p reports/scratch/edwards_mcdermid/01_verify && cd reports/scratch/edwards_mcdermid && curl -L --max-time 120 -o em2015.pdf "https://discovery.dundee.ac.
+  > $ cd /home/al/dev/MOSP && head -3 reports/scratch/gnp_pilot/results.csv && wc -l reports/scratch/gnp_pilot/results.csv && python3 -c "
+import pandas as pd
+d=pd.re
+  > $ python3 -c "
+import gzip, json
+with gzip.open('paper1/data/dataset/pathwidth_dataset.jsonl.gz','rt') as f:
+    rows=[json.loads(l) for l in f]
+print(len(rows));
+  > $ ls learning/data/ensemble/ && head -2 learning/data/ensemble/results.csv && for f in learning/data/ensemble/results*.csv; do echo $f; wc -l $f; done && python3 
+  > $ grep -n "def vertex_separation_brute" -A 40 learning/first_moment.py | head -70; grep -n "^def \|^class " fixed_parameter_algorithm/pathwidth.py; grep -n "def c
+  > $ sed -n 1,80p reports/scratch/empty_pair/check.py; grep -n "^def \|^class \|^    def " learning/ensemble.py | head -40; grep -n "def build_customer_graph" -A 20 
+  > $ sed -n 1,60p learning/separator_moment.py; grep -n "^def \|^class " learning/separator_moment.py | head -30; grep -n "def \(canonical\|certificate\|wl\)" learni
+
+The download is only 10 pages, where the plan says the manuscript has 29. Let me check what came back, and compare to the temporary copy.
+  > $ cd /home/al/dev/MOSP/reports/scratch/edwards_mcdermid && pdfinfo em2015.pdf | head -12; pdftotext -layout em2015.pdf em2015.txt; head -60 em2015.txt; echo =====
+  > $ wc -l em2015.txt && grep -n "^\f" em2015.txt | head -40; grep -n -i "Definition of functions\|Lemma 3.1\|Theorem 3.2\|Lemma 5.1\|Corollary 5.2\|Theorem 5.3\|Lem
+  > $ awk 'NR>=60 && NR<=330' em2015.txt | grep -v "^\s*$" | head -220
+  > $ awk 'NR>=330 && NR<=720' em2015.txt | grep -v "^\s*$"
+  > $ awk 'NR>=1040 && NR<=1170' em2015.txt | grep -v "^\s*$"; echo =====APPENDIX; awk 'NR>=1300 && NR<=1480' em2015.txt | grep -v "^\s*$"
+  > $ cd /home/al/dev/MOSP && git -C /home/al/dev/MOSP-wt show appendix-picture:reports/random_graph_pathwidth_literature_2.md | grep -n "3.3" | head; git -C /home/al
+  > $ grep -n "7(e)\|### 7\|#### (e)\|tree bound against\|tree-bound" reports/random_graph_pathwidth_survey.md | head -20; awk '/^### 7/{p=1} p' reports/random_graph_
+  > $ ls tests/ | head -80 && sed -n 1,40p tests/test_separator_moment.py && grep -n "nauty-geng\|geng" reports/scratch/empty_pair/check.py | head -5 && nauty-geng -c
+  > $ sed -n 695,760p reports/random_graph_pathwidth_survey.md
+  > $ sed -n 100,165p learning/ensemble.py && grep -n "^from\|^import" learning/ensemble.py | head -20 && python3 - <<'EOF'
+import time
+t=time.time()
+from learning.en
+  > $ python3 - <<'EOF'
+import pandas as pd, networkx as nx, time
+d=pd.read_csv('reports/scratch/gnp_pilot/results.csv')
+t=time.time()
+bad=0
+for i,r in d.head(200).it
+
+The ensemble frame already carries a nauty certificate per row (`graph_cert`), so deduplication within a cell is free. Next I write the module and its tests, and time the subset DP at 16 vertices.
+  > $ cat > learning/edwards_mcdermid.py <<'EOF'
+"""The Edwards–McDermid degree-sequence bound on pathwidth, evaluated (loop0012
+item 01; `reports/edwards_mcdermid.md
+
+The DP at 16 vertices takes 0.07 s, so the cubic sweep is minutes. The table matches the paper's (`1/6, 1/3, 13/30, 23/45, 359/630, 1553/2520`). Now the tests, and the run script.
+  > $ cat > tests/test_edwards_mcdermid.py <<'EOF'
+"""loop0012 item 01: `learning.edwards_mcdermid` — the weights `g_{1/6}`, `g'`,
+the series-parallel reduction on bi
+  > $ python3 - <<'EOF'
+import re
+p='learning/edwards_mcdermid.py'; s=open(p).read()
+s=s.replace('''    "is_reduced", "is_cubic", "poisson_value", "fomin_hoie_n_eps",
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/445ad529796265e0b5968f0a81dffe66/dataviz && sed -n 1,80p references/palette.md; grep -n "Line\|line" references/marks
+  > $ cat > reports/scratch/edwards_mcdermid/01_verify/run.py <<'EOF'
+#!/usr/bin/env python3
+"""loop0012 item 01: Edwards & McDermid (2015) Corollary 5.2 and Theorem 
+
+Both fast stages done (the 16,636th certified class is the empty graph, excluded). Now the ensemble and cubic stages.
+  > $ nice -n 19 python3 reports/scratch/edwards_mcdermid/01_verify/run.py --workers 8 --stages ensemble,cubic 2>&1 | tail -8
+  > $ nice -n 19 python3 reports/scratch/edwards_mcdermid/01_verify/run.py --stages tables 2>&1 | tail -4 && cat reports/scratch/edwards_mcdermid/01_verify/tables.md
+  > $ python3 - <<'EOF'
+import gzip, json, networkx as nx
+want={'pwc-15950','pwc-16027','pwc-15984','pwc-16010','pwc-15976','pwc-04439','pwc-16021'}
+with gzip.open('p
+  > $ python3 - <<'EOF'
+p='reports/scratch/edwards_mcdermid/01_verify/run.py'; s=open(p).read()
+# 1. int-safe markdown
+s=s.replace('''    for _, r in df.iterrows():
+ 
+  > Read /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/01_verify/poisson_n120.png
+  > $ nice -n 19 python3 Ralph_Loops/loop0012/gate.py > /tmp/loop0012_gate_it01.log 2>&1; echo "exit $?" >> /tmp/loop0012_gate_it01.log
+  > $ cd /home/al/dev/MOSP/reports/scratch/edwards_mcdermid && { echo "# Edwards & McDermid 2015, accepted manuscript, fetched 2026-11-02 00:26 UTC from"; echo "# htt
+
+Now the report, and the item mark in `iterations.md`. PROGRESS.md waits for the gate's counts.
+  > $ cd /home/al/dev/MOSP && cat > reports/edwards_mcdermid.md <<'EOF'
+# The Edwards–McDermid degree-sequence bound on pathwidth: verified on the record, formalised 
+  > $ python3 - <<'EOF'
+p='reports/edwards_mcdermid.md'; s=open(p).read()
+old="""`c = 3` and 1.4–1.5× at `c = 6–10` (`n = 60`), where the survey's §7(d) slope
+fit put
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ git status --short | grep -v "Ralph_Loops/loop0012/\(loop.log\|nohup.out\|status.json\|session_it01\)" ; echo "---"; du -sh reports/scratch/edwards_mcdermid/01_
+  > $ cat >> Ralph_Loops/loop0012/PROGRESS.md <<'EOF'
+
+## Iteration 1 — 2026-11-02 00:26–00:50 UTC — item 01: fetch the manuscript; Corollary 5.2 and Theorem 5.3 on e
+
+Only the gate result is outstanding now. The working tree shows only the item's files. I'll wait on the gate log with a bounded poll.
+  > $ for i in $(seq 1 110); do if grep -q "^exit " /tmp/loop0012_gate_it01.log 2>/dev/null; then break; fi; sleep 5; done; cat /tmp/loop0012_gate_it01.log | grep -v 
+
+Gate passed. Now the gate line in PROGRESS.md and the status count, then done.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0012/PROGRESS.md'; s=open(p).read()
+old="""- Figure `01_verify/poisson_n120.png` (dataviz skill read first); the report
+  c
+
+Item 01 is done and marked `- [x]`; the gate passed; `Current: 1/11 SOLVED`. The `main.pdf` change is the gate's own `make check` rebuild, as in earlier loops.
+
+**What was done**
+
+- **The manuscript** is at `reports/scratch/edwards_mcdermid/em2015.pdf` with text and SHA-256 (fetched 2026-11-02 00:26 UTC). Sections 1, 3, 5 and the Appendix agree word for word with the plan's quotations. Corollary 5.2 and Theorem 5.3 are on page 20, not 19. No discrepancy of substance.
+- **Code**: `learning/edwards_mcdermid.py` (exact `g`, `g'`, the bit-mask reduction, the three terms, `fminus`, the Poisson value, the Fomin–Høie budget) with 21 tests.
+- **The evaluation** covered every graph with a proved pathwidth, 63,330 in all, plus 4,681 cubic graphs to 16 vertices by the subset DP. Runtime 75 s. Report at `reports/edwards_mcdermid.md` §1.
+
+**Findings**
+
+- **No kill fired.** Zero graphs with `pw > main term + τ_FH(n)`, zero with `main term > histogram term`, no degree raised by the reduction.
+- **The main term alone bounds the pathwidth on 61.8% of the record.** The deficit never exceeds 5. The largest deficits are the 202-vertex VSPLIB trees at pathwidth 5, where the main term is zero: that is the paper's `O(log n)` term. Over graphs whose reduction is non-empty the maximum is 4.333, the Coxeter graph.
+- **The cubic base case needs a budget of 3.833 exhaustively to 16 vertices and 4.5 on the 42 certified cubic graphs to 120.** The record-holders are the small cages. Fomin–Høie's explicit budget is 2 to 100 times larger, so the corollary with that budget is vacuous at these sizes, as the plan predicted.
+- **The Poisson evaluation matches the pilot within 0.012 per vertex** at `n = 60–120`. The reduction's gain is 0.02 per vertex at `c = 3` and nothing from `c = 8`.
+- **Theorem 5.3's averaging lemma holds on all 52,747 graphs where it applies** and fails on 1,431 disconnected graphs below average degree 5, so its hypothesis is needed.
+- **A free audit passed**: the 13 dataset cubic graphs at 16 or fewer vertices match the exhaustive sweep by isomorphism, with agreeing pathwidths.
+
+**Next** is item 02, the exact statement with every intermediate lemma brute-forced on every graph to 9 vertices. The reduction and the per-component potential are ready for it in the module.
+
+# result: success in 1282s, 45 turns, cost $9.22

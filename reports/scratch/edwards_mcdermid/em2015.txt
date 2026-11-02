@@ -1,0 +1,1601 @@
+University of Dundee
+
+
+
+
+A General Reduction Theorem with Applications to Pathwidth and the Complexity of
+MAX 2-CSP
+Edwards, Keith; McDermid, Eric
+
+Published in:
+Algorithmica
+
+DOI:
+10.1007/s00453-014-9883-7
+
+Publication date:
+2015
+
+
+
+
+Document Version
+Peer reviewed version
+
+Link to publication in Discovery Research Portal
+
+
+
+Citation for published version (APA):
+Edwards, K., & McDermid, E. (2015). A General Reduction Theorem with Applications to Pathwidth and the
+Complexity of MAX 2-CSP. Algorithmica, 72(4), 940-968. https://doi.org/10.1007/s00453-014-9883-7
+
+
+
+
+General rights
+Copyright and moral rights for the publications made accessible in Discovery Research Portal are retained by the authors and/or other
+copyright owners and it is a condition of accessing publications that users recognise and abide by the legal requirements associated with
+these rights.
+
+
+
+Take down policy
+If you believe that this document breaches copyright please contact us providing details, and we will remove access to the work immediately
+and investigate your claim.
+
+
+
+
+Download date: 02. Nov. 2026
+University of Dundee
+
+
+
+
+A General Reduction Theorem with Applications to Pathwidth and the Complexity of
+MAX 2-CSP
+Edwards, Keith; McDermid, Eric
+
+Published in:
+Algorithmica
+
+
+DOI:
+10.1007/s00453-014-9883-7
+
+
+Publication date:
+2014
+
+
+
+
+Link to publication in Discovery Research Portal
+
+
+
+
+Citation for published version (APA):
+Edwards, K., & McDermid, E. (2014). A General Reduction Theorem with Applications to Pathwidth and the
+Complexity of MAX 2-CSP. Algorithmica. 10.1007/s00453-014-9883-7
+
+
+
+
+General rights
+Copyright and moral rights for the publications made accessible in Discovery Research Portal are retained by the authors and/or other
+copyright owners and it is a condition of accessing publications that users recognise and abide by the legal requirements associated with
+these rights.
+
+    ? Users may download and print one copy of any publication from Discovery Research Portal for the purpose of private study or
+research.
+    ? You may not further distribute the material or use it for any profit-making activity or commercial gain.
+    ? You may freely distribute the URL identifying the publication in the public portal.
+The final publication is available at Springer via http://dx.doi.org/10.1007/
+s00453-014-9883-7
+
+
+A general reduction theorem with applications to
+ pathwidth and the complexity of MAX 2-CSP
+
+                              Keith Edwards
+                           School of Computing
+                           University of Dundee
+                            Dundee, DD1 4HN
+                                   U.K.
+                         kjedwards@dundee.ac.uk
+
+                                Eric McDermid
+                                 Austin, TX
+                                    U.S.A.
+                              em4617@gmail.com
+
+                                 April 29, 2014
+
+
+                                      Abstract
+
+    We prove a general reduction theorem which allows us to extend bounds for
+certain graph parameters on cubic graphs to bounds for general graphs taking into
+account the individual vertex degrees. As applications, we give an algorithm for Max
+2-CSP whose complexity matches the algorithm of Scott and Sorkin in the case of
+d-regular graphs, d ≤ 5, but is otherwise faster. It also improves on the previously
+fastest known algorithm in terms of the average degree, given by Golovnev and
+Kutzkov. Also from the general theorem, we derive a bound for the pathwidth of a
+general graph which equals that of Fomin et al. and Gaspers for graphs of degree
+at most 6, but is smaller otherwise, and use this to give an improved exponential-
+space algorithm for Max 2-CSP. Finally we use the general result to give a faster
+algorithm for Max 2-CSP on claw-free graphs.
+    Keywords: constraint satisfaction problems; Max 2-CSP; treewidth; pathwidth.
+
+
+
+
+                                          1
+1       Introduction
+
+For over 30 years, there has been interest in the design of faster exponential-time algo-
+rithms for NP-hard problems. On the one hand, there are a number of problems for which
+significant progress has been made. A good example of this is maximum independent set
+– the best1 algorithm solves this problem in O? (1.2002n ) time and polynomial space [33].
+Many other classical NP-hard combinatorial problems can also be solved much faster than
+O? (2n ); we refer the reader to the excellent surveys of Woeginger [31, 32] or the book by
+Fomin and Kratsch [13] for further examples.
+On the other hand, there are a number of cut, colouring, and partition problems, such as
+Max Cut, Max 2-Sat, and Max Bisection, for example, that have proven to be tougher nuts
+to crack. Currently there is no known polynomial-space algorithm with time complexity
+better than O? (2n ) for any of these problems. Hence, a recent line of research has been
+to instead design algorithms for sparse instances of such problems. In this setting, the
+algorithms are parameterized by m, the number of edges (or, in the case of Max 2-Sat,
+the number of clauses). The time complexities of such algorithms take the form O? (2m/c ),
+where c is a constant. Of course, such an algorithm makes an implicit assumption that the
+average degree of the graph (or average number of appearances of a variable) is bounded
+by 2c – otherwise the naive O? (2n )-time algorithm is faster.
+A standard technique in designing moderately exponential-time algorithms is the branch-
+and-reduce paradigm. A branch-and-reduce algorithm uses a set of reduction rules, which
+repeatedly transform the instance into a simpler, equivalent instance. Next, when no
+reduction rule applies, the algorithm uses a set of branching rules to generate a collection
+of instances which are then solved recursively. If one looks back over the history of
+exponential time algorithms designed for, say, Max 2-Sat or Max 2-CSP, the successive
+improvements in time complexity usually come at the cost of more and more sophisticated
+reduction rules, which often also require more and more sophisticated analysis techniques.
+Similar reductions are used by various authors [10, 14, 21, 28] to obtain bounds on the
+treewidth and pathwidth of a general graph.
+
+
+1.1     Known results
+
+There has been a long sequence of exponential time algorithms parameterized by m for
+problems contained in Max 2-CSP, particularly for the special case Max 2-Sat. Currently
+the best polynomial-space algorithm for Max 2-CSP parameterized by m is due to Scott
+and Sorkin [28] and Gaspers and Sorkin [15], who describe an algorithm (“Algorithm B”)
+with time complexity O? (r19m/100 ) = O? (rm/5.623 ) (where r is the domain size for each
+variable). (Algorithm A was a simpler algorithm which we do not consider here.)
+There have also been algorithms parameterized by the average degree d and number of
+vertices n. Scott and Sorkin [28] give an algorithm which for graphs of average degree d
+                                 2                                       3
+                            (1−     )n                              (1−     )n
+requires time at most O? (r     d+1    ). This is improved to O? (r     d+1    ) by Golovnev
+and Kutzkov [17] (we refer to this as Algorithm D). An earlier version of this paper [16]
+    1
+   There is also a technical report, due to Robson [26], which makes use of a detailed analysis done by
+computer to solve maximum independent set in O? (2.25n ) time and exponential space.
+
+
+                                                  2
+claimed bounds similar to ours, but these are not included in the journal paper [17].
+Golovnev and Kutzkov [17] also give an algorithm which for very large average degree d
+has a smaller exponent of the form (1 − O( lndd ))n.
+For treewidth, Scott and Sorkin [28] derive a general upper bound of (13/75 + o(1))m for
+a graph with m edges, and Kneis et al. use similar methods to obtain an upper bound of
+(13/75 + o(1))m + O(log n) on the pathwidth of a graph. Fomin et al. [10] show that
+
+                     pw(G) ≤ 61 n3 + 13 n4 + 30
+                                             13      23
+                                                n5 + 45 n6 + n≥7 + o(n)
+
+where ni is the number of vertices of degree i, and n≥7 is the number of vertices of degree
+at least 7. A similar bound with the sum extending to degree 17 is given by Gaspers [14],
+though in this case the coefficients of the numbers ni are found by computer search and
+are not given exactly.
+Scott and Sorkin use their bound to give an algorithm (Algorithm C) for Max 2-CSP
+requiring time O? (r(13/75+o(1))m ) and exponential space.
+For Max 2-Sat, the more specific nature of the problem allows additional types of reduction
+to be used, allowing somewhat faster algorithms. A series of papers have obtained running
+times of O? (rm/c ), with gradually increasing values of c, using increasingly sophisticated
+sets of reductions: c = 2.879 by Neidermeier and Rossmanith [24], c = 3.448 by Bansal
+and Raman [2], c = 4 by Hirsch [20], c = 5 by Gramm et al. [18], c = 5.263 by Scott and
+Sorkin [28], c = 5.5 by Kojevnikov and Kulikov [22], c = 5.88 by Kulikov and Kutzkov
+[23], c = 6.215 by Raible and Fernau [25], and finally c = 6.321 by Gaspers and Sorkin
+[15]. While the earlier algorithms are beaten by the current fastest algorithms for Max
+2-CSP, the most recent algorithms for Max 2-Sat have taken advantage of the special
+nature of Max 2-Sat to achieve faster running times that, so far at least, have not been
+matched for general Max 2-CSP.
+For the Max Cut problem, an O? (2(1−2/d)n ) algorithm is given by Della Croce, Kaminski
+and Paschos [6].
+
+
+1.2    Our contribution
+
+As mentioned above, a number of results have used increasingly complex reductions to
+obtain upper bounds. These reductions have mostly focussed on vertices of small degree
+(usually at most 5 or 6). Also, although this fact may often be obscured by the derivation
+of the reductions chosen, the best upper bounds have often used a vertex of maximum
+degree with, where possible, a neighbour of lower degree. This means that the case of
+regular graphs is a special case, which has been dealt with by various often rather complex
+means, or, in some cases, incorrectly.
+In this paper we do three key things: (1) Rather than using reduction to prove a bound
+for a particular parameter, we prove a general reduction result using a function gα which
+takes into account the degree of each vertex. Upper bounds for particular parameters
+can then be derived from this in a more or less standard way - we give three examples
+of this. We also fully analyse the behaviour of gα . (2) We do not focus on small vertex
+degrees, but treat all degrees ≥ 4 the same, using a vertex of maximum degree with (where
+possible) a neighbour of lower degree. The introduction (as in [8]) of a small negative
+
+                                             3
+term into the upper bound deals with the regular case and allows a fairly straightforward
+inductive proof. (3) Our algorithm for Max 2-CSP finds a set whose deletion from the
+graph leaves a graph of treewidth 3 rather than a series-parallel graph (treewidth 2). This
+allows the introduction of the small negative term in the cubic case, so that the general
+theorem can be applied. Our analysis of the function gα gives the improved exponent of
+(1 − 13/4
+     d+1
+          + O(1/d3 ))n.
+We also derive a similar but better bound in the case of claw-free graphs, allowing a faster
+algorithm in this case.
+Next we consider pathwidth, and use our general theorem to obtain an upper bound on
+the pathwidth of a graph in terms of the degrees of its vertices. This allows us to remove
+the error terms n≥7 or n≥18 in the upper bounds of Fomin et al. [10] and Gaspers [14] and
+give a sum over all d ≥ 3, with the coefficients explicitly defined.
+Scott and Sorkin use a bound on treewidth to give an algorithm for Max 2-CSP with
+lower exponential time complexity, but also requiring exponential space. Our improved
+bound thus gives faster bounds for the complexity of this algorithm.
+Finally we consider whether reducing the constraint graph to a graph of larger, but still
+bounded, treewidth, can give still faster polynomial space algorithms for Max 2-CSP.
+Using the concept of fragmentability, we are able to give a bound on how much might be
+gained by this technique.
+
+
+
+2        Preliminaries
+
+All graphs G = (V, E) are considered to be simple. We use standard graph terminology
+and notation, hence n = |V | and m = |E|, and the minimum degree of G is δ(G). We
+describe the efficiency of an exponential-time algorithm using the standard O? notation,
+which suppresses polynomial factors in any parameters.
+If X ⊆ V (G), we write G − X to mean the graph formed by deleting the vertices in X
+(and incident edges) from G. In the case that X = {v}, we will write G − v rather than
+G − {v}.
+
+
+Treewidth and pathwidth
+
+We first give the definition of treewidth and pathwidth (from [3]).
+A tree (resp. path) decomposition of a graph G = (V, E) is a pair ({Xi |i ∈ I}, T = (I, F ))
+where {Xi |i ∈ I} is a family of subsets of V , one for each node of T , and T is a tree (resp.
+path) such that
+
+         S
+    1.       i∈I Xi = V ;
+
+    2. for all edges vw ∈ E, there exists an i ∈ I with v, w ∈ Xi ;
+
+    3. for all i, j, k ∈ I, if j is on the path from i to k in T , then Xi ∩ Xk ⊆ Xj .
+
+
+                                                4
+The width of a tree (resp. path) decomposition is maxi∈I |Xi | − 1. The treewidth (resp.
+pathwidth) of a graph G is the minimum width over all possible tree (resp. path) decom-
+positions of G.
+It is well known that trees (with at least one edge) have treewidth 1, and series-parallel
+graphs have treewidth at most 2. The pathwidth of these graphs is O(log n).
+
+
+Max 2-CSP
+
+An instance of the maximum 2-constraint satisfaction problem (Max 2-CSP) consists of a
+simple graph G = (V, E), called the constraint graph, a set of colours [r] = {0, 1, . . . , r−1},
+for some r ≥ 2, and a constant S∅ . Additionally, for each edge and vertex of G a score
+function is supplied, where the score function of an edge uv takes the form Suv : [r]2 → R,
+and the score function of a vertex v is of the form Sv : [r] → R. Note that only one score
+is defined for a given colouring of each edge uv, so for colours c1 , c2 ∈ [r] we consider
+Suv (c1 , c2 ) and Svu (c2 , c1 ) to be equivalent names for the same score.
+Any colouring ψ of the vertices of G using the set of colours [r] induces a cost which is
+the sum of the vertex and edge functions plus S∅ :
+
+                                    X                   X
+                      S(ψ) = S∅ +         Sv (ψ(v)) +          Suv (ψ(u), ψ(v))
+                                    v∈V                 uv∈E
+
+
+A candidate solution, or more simply, a solution of a Max 2-CSP instance is any function
+ψ : V → [r] which assigns a colour to each vertex of G. An optimal solution is a solution
+which maximizes S(ψ), and the goal of the Max 2-CSP problem is to find an optimal
+solution.
+The set of problems that lie within Max 2-CSP is quite rich; the reader may be interested
+in verifying that Maximum Cut, Maximum Directed Cut, Maximum Independent Set,
+Minimum Vertex Cover, and Maximum 2-Sat are all examples of problems that can be
+modelled as a Max 2-CSP instance.
+
+
+
+3     A general reduction result
+
+We now prove a general reduction theorem. The idea is to reduce graphs until the com-
+ponents are of two types, either cubic, or such that deleting a single vertex gives a series-
+parallel graph. The theorem allows us to use upper bounds for certain graph parameters
+on these two types of graphs to give upper bounds for all graphs.
+Note that by a series-parallel graph we mean here a simple graph with no K4 -minor or,
+equivalently, a graph of treewidth at most 2.
+To state the theorem we need to define several functions.
+
+
+
+
+                                                5
+3.1    Definition and properties of function gα
+
+We first define the important function gα , (a generalisation of the function g defined in
+[8] and the same function in [16]). For α = 41 , 16 , the values of these functions, mostly
+for small arguments, have appeared in a number of papers [8, 10, 14, 15, 16, 17, 21, 28],
+however no attempt appears to have been made previously to analyse the behaviour of
+the function or to generalise the reduction techniques used. The function gα acts as a cost
+function applied to the degree of each vertex. The motivation for the definition is roughly
+as follows: In a reduction and branching algorithm, it appears that the best results often
+arise from deleting a vertex w of maximum degree ∆ with a neighbour v1 of lower degree.
+This results in a reduction in the total cost of the vertices of at least the sum of (i) gα (∆),
+the contribution from w itself, (ii) gα (∆ − 1) − gα (∆ − 2), the decrease in the contribution
+from v1 , and (iii) (∆ − 1)(gα (∆) − gα (∆ − 1)), the decrease in the contributions from the
+other neighbours of w. Thus the total reduction is ∆gα (∆)−(∆−2)gα (∆−1)−gα (∆−2).
+The function gα is defined precisely to make this sum 1, which is the cost of deleting a
+vertex.
+
+
+Definition of functions gα and gα0
+
+For any n ≥ 2, and α with 0 ≤ α ≤ 1, define the function gα (n) by setting gα (2) = 0,
+gα (3) = α, and for any n ≥ 4,
+                        ngα (n) = (n − 2)gα (n − 1) + gα (n − 2) + 1.
+We extend gα to all real numbers at least 2 by linear interpolation, i.e., if r = n + x, where
+n ≥ 2 is an integer, and 0 ≤ x ≤ 1, then we set gα (r) = (1 − x)gα (n) + xgα (n + 1).
+Also, for any n ≥ 3, define gα0 (n) = gα (n) − gα (n − 1).
+
+
+Properties of gα and gα0
+
+We now list the properties of gα and gα0 which we will use later. We defer proofs of these
+properties to the Appendix (Section 8); see Lemmas 8.1 to 8.5.
+
+   1. For any integer n ≥ 2,
+                                       A(n)              (−1)n
+                       gα (n) = (4 − 3α)     + (2 − 3α)        − (3 − 3α)
+                                         n!                n!
+      where A(n) is the alternating factorial function given by
+                                A(n) = n! − (n − 1)! + . . . − (−1)n · 1!.
+
+   2. For all real d ≥ 2,
+                                                   4 − 3α
+                                    gα (d) = 1 −          + O(1/d3 ).
+                                                    d+1
+   3. If α ≤ 1/2, then gα is non-decreasing, i.e.,
+                                           gα (n + 1) ≥ gα (n)
+      for all integers n ≥ 2.
+
+                                                   6
+  4. If 1/6 ≤ α ≤ 3/10, then gα0 is non-increasing, i.e.,
+
+                                             gα0 (n + 1) ≤ gα0 (n)
+
+     for all integers n ≥ 3.
+
+  5. If 1/6 ≤ α ≤ 3/10, gα (n)/n is strictly decreasing for n ≥ 5.
+
+  6. For all n ≥ 4,
+                                1 − gα (n) = (n − 1)gα0 (n) + gα0 (n − 1).
+     This is just a rearrangement of the defining recurrence.
+
+We list the first few values of g1/4 and g1/6 (which we will use later in the paper) below:
+
+
+                            d        2   3     4     5      6      7            8
+
+                                         1     3     19    131    1009          8651
+                          g1/4 (d) 0     4     8     40    240    1680         13440
+
+                                         1     1     13    23     359          1553
+                          g1/6 (d) 0     6     3     30    45     630          2520
+
+
+
+
+For α outside the range [1/6, 3/10], the function gα0 is not monotone, and the reduction
+method used below breaks down. It is possible that one could redefine gα in these cases
+and prove a similar reduction result, however since all the cases of interest have 1/6 ≤
+α ≤ 3/10, we do not pursue that here.
+
+
+Definitions of functions fα , fα−
+
+We now define the functions which will be used as upper bounds. For any graph G with
+minimum degree at least 2, define fα (G) by:
+                                         X
+                               fα (G) =      gα (dG (v)).
+                                               v∈V (G)
+
+
+Although fα (G) is the main upper bound of interest, the inductive proof relies crucially
+on a small negative term, which depends on the minimum degree of each component. If
+G has minimum degree at least 3, with connected components G1 , . . . , Gk , set
+                                             k
+                                             X                          k
+                                                                        X
+                      fα− (G) = fα (G) −           gα0 (δ(Gi ))   =            fα− (Gi ).
+                                             i=1                         i=1
+
+Note that despite the negative term, fα− (G) is always strictly positive.
+
+
+
+
+                                                    7
+3.2    Reduction
+
+We also need the concept of series-parallel reductions. Let G be a graph, and consider
+the following four operations on G:
+
+  1. Delete an isolated vertex of G.
+  2. Delete a vertex of degree 1 (and its incident edge).
+  3. Let v be a vertex of degree 2 with non-adjacent neighbours x and y; delete v (and
+     edges vx, vy) and add an edge between x and y.
+  4. Let v be a vertex of degree 2 with adjacent neighbours; delete v (and incident edges).
+
+Let r(G) be a graph obtained from G by applying operations 1, 2, 3, 4 above repeatedly
+until none is possible (because the graph has minimum degree at least 3 or is empty). It
+follows from the definition of the series-parallel property that G is series-parallel if and
+only if r(G) is empty. These reductions have been used by many authors, for example
+[5, 11, 14, 28]. (The resulting graph r(G) is in fact unique.)
+
+
+Definition of basic graph
+
+We will say a connected graph of minimum degree at least 3 is basic if either G is cubic
+or r(G − v) is empty for some v ∈ V . A graph is basic if every component is basic.
+
+
+Reduction-deletion order
+
+We will require the following lemma, which says that the order of deleting vertices and
+reducing does not change the graph that results.
+
+Lemma 3.1 Let G = (V, E) be a graph, w be a vertex of G, and X be a subset of
+V (r(G − w)). Then
+                   r(G − (X ∪ {w})) = r(r(G − w) − X).
+
+Proof. This follows from the results of Kneis et al. [21]. For a subset D of V , they
+define a valid reduction sequence to be a sequence of operations, each of which is either
+a series-parallel reduction of a vertex not in D, or removal of a vertex in D. They prove
+that any two maximal valid reduction sequences produce the same graph.
+Let D = X ∪ {w}. Then we have two maximal valid reduction sequences as follows:
+
+ (a) remove each element of X ∪ {w} in turn, then apply series-parallel reductions as
+     long as possible. This gives r(G − (X ∪ {w})).
+ (b) remove w, then apply the sequence of series-parallel reductions which produces
+     r(G − w). Since every vertex of X is present in r(G − w), none of these series-
+     parallel reductions involves a vertex in D, so the sequence is valid. Then remove
+     each element of X in turn, and apply series-parallel reductions as long as possible.
+     This gives r(r(G − w) − X).
+
+                                             8
+These two sequences must give the same graph, so r(G − (X ∪ {w})) = r(r(G − w) − X).
+
+
+
+3.3      The main theorem
+
+We now prove the main theorem which allows us to extend results on basic graphs to
+general graphs. The essential idea of the theorem is quite simple; we have some graph
+parameter p which is (more or less) invariant under series-parallel reduction and satisfies
+p(G) ≤ 1 + p(G − w) for any vertex w, and we have bounds of the form fα (G) for the
+parameter on basic graphs. We want a bound (also of the form fα (G)) on the parameter
+for general graphs.
+If the graph is connected and not regular, then we can delete a vertex w of maximum degree
+∆ with at least one neighbour v1 of lower degree, and then reduce G − w to obtain G∗ ,
+then the value of fα will decrease by at least the sum of (i) gα (∆), the contribution from w
+itself, (ii) gα0 (∆ − 1), the decrease in the contribution from v1 , and (iii) (∆ − 1)gα0 (∆), the
+decrease in the contributions from the other neighbours of w. The function gα is defined
+precisely to make this sum 1, and by induction p(G − w) = p(G∗ ) ≤ fα (G∗ ) ≤ fα (G) − 1,
+so p(G) ≤ p(G − w) + 1 ≤ fα (G).
+However we also have to deal with the case when the graph is regular. For cubic graphs
+this is covered by the bounds for basic graphs. Otherwise, this is addressed by using fα− (G)
+rather than fα (G) as the upper bound, giving a slightly stronger inductive hypothesis.
+However we then have to take care that the inductive step works in all cases, in particular
+when w is a cut-vertex or when the minimum degree changes, and much of the proof is
+devoted to this.
+
+Theorem 3.2 Let G = (V, E) be a graph with n vertices and minimum degree δ ≥ 3.
+Then there is a set XG ⊆ V such that (i) r(G − XG ) is non-empty and basic, and (ii)
+|XG | + fα− (r(G − XG )) ≤ fα− (G) for any α, 1/6 ≤ α ≤ 3/10.
+
+Proof. We use induction on n, the number of vertices of G. If n < 4, there is nothing to
+prove, so assume that n ≥ 4, and the theorem holds for all G with fewer than n vertices.
+If G is basic, then set XG = ∅. Since |XG | = 0 and r(G − XG ) = G, the result follows.
+So assume that G is not basic. If G is not connected, then suppose that G has connected
+components G1 , . . . , Gk , where k ≥ 2. By the inductive hypothesis, for each i there is a
+set XGi such that r(Gi − XGi ) is non-empty and basic and such that
+
+                          |XGi | + fα− (r(Gi − XGi )) ≤ fα− (Gi )
+
+Let XG = ki=1 XGi . Then it is clear that r(G − XG ) = ki=1 r(Gi − XGi ), so r(G − XG )
+         S                                                S
+                                                      Pk
+is non-empty and basic. Also fα− (r(G − XG )) =               −
+                                                        i=1 fα (r(Gi − XGi )). Thus since
+        Pk
+|XG | = i=1 |XGi |, we have
+                                   k
+                                   X                                       k
+                                                                           X
+      |XG | + fα− (r(G − XG )) =         |XGi | + fα− (r(Gi − XGi ))             fα− (Gi ) = fα− (G),
+                                                                   
+                                                                       ≤
+                                   i=1                                     i=1
+
+as required.
+
+                                                  9
+So we may assume that G is connected and not basic. Let ∆ be the maximum degree of
+G. Since G is not basic, we have ∆ > 3.
+Let w be a vertex of maximum degree in G, chosen so that the degree of its lowest
+degree neighbour is as small as possible. Let the neighbours of w be v1 , v2 , . . . , v∆ , where
+dG (v1 ) ≤ dG (v2 ) ≤ . . . ≤ dG (v∆ ). Since G is connected, dG (v1 ) < ∆ unless G is ∆-regular.
+Delete the vertex w to form the graph G0 = G − w, and let G∗ be the reduced graph
+r(G0 ). Since we are assuming that G is not basic, G∗ is not empty.
+By the inductive hypothesis, there is a set XG∗ such that r(G∗ − XG∗ ) is non-empty and
+basic and such that
+                         |XG∗ | + fα− (r(G∗ − XG∗ )) ≤ fα− (G∗ ).
+Set XG = XG∗ ∪ {w}. Now
+
+        r(G∗ − XG∗ ) = r(r(G − w) − XG∗ ) = r(G − (XG∗ ∪ {w})) = r(G − XG ),
+
+by Lemma 3.1. Thus r(G − XG ) is non-empty and basic. Also
+
+          |XG | + fα− (r(G − XG )) = 1 + |XG∗ | + fα− (r(G∗ − XG∗ )) ≤ 1 + fα− (G∗ ).
+
+Thus it suffices to show that
+
+                         1 + fα− (G∗ ) ≤ fα− (G) = fα (G) − gα0 (δ(G)).                                    (1)
+
+The rest of the proof is devoted to showing this. First note that
+
+               1 + fα− (G∗ ) ≤ 1 + fα (G∗ ) − gα0 (δ(G∗ ))
+                             = 1 + fα (G0 ) − (fα (G0 ) − fα (G∗ ) + gα0 (δ(G∗ ))).                        (2)
+
+Now
+                                X
+        1 + fα (G0 ) = 1 +                gα (dG0 (v))
+                              v∈V (G0 )
+
+                                      X                                  ∆
+                                                                         X
+                     = 1+                               gα (d (v)) +
+                                                             G0                  gα (dG0 (vi ))
+                              v∈V (G0 )\{v1 ,...,v∆ }                     i=1
+
+                                      X                                  ∆
+                                                                         X
+                     = 1+                               gα (dG (v)) +           gα (dG (vi ) − 1)
+                              v∈V (G0 )\{v1 ,...,v∆ }                    i=1
+
+                                X                            ∆
+                                                             X
+                     = 1+                 gα (dG (v)) +            (gα (dG (vi ) − 1) − gα (dG (vi )))
+                              v∈V (G0 )                      i=1
+
+                                X                                                ∆
+                                                                                 X
+                     = 1+               gα (dG (v)) − gα (dG (w)) −                    gα0 (dG (vi ))
+                              v∈V (G)                                            i=1
+                                                          ∆
+                                                          X
+                     = 1 + fα (G) − gα (∆) −                    gα0 (dG (vi ))
+                                                          i=1
+                                                                                   ∆
+                                                                                   X
+                     =   fα (G) + (∆ − 1)gα0 (∆) + gα0 (∆ − 1) −                          gα0 (dG (vi ))   (3)
+                                                                                    i=1
+
+
+                                                        10
+                     = fα (G) − (gα0 (dG (v1 )) − gα0 (∆ − 1)) − (gα0 (dG (v2 )) − gα0 (∆))
+                         X ∆
+                       −     (gα0 (dG (vi )) − gα0 (∆))                                       (4)
+                            i=3
+
+where to obtain (3) we use property 6 of gα , that 1 − gα (∆) = (∆ − 1)gα0 (∆) + gα0 (∆ − 1).
+Thus, substituting expression (4) for 1 + fα (G0 ) in (2), we have
+
+       1 + fα− (G∗ ) ≤ fα (G) − (gα0 (dG (v1 )) − gα0 (∆ − 1)) − (gα0 (dG (v2 )) − gα0 (∆))
+                         X ∆
+                       −     (gα0 (dG (vi )) − gα0 (∆))
+                             i=3
+                          −(fα (G0 ) − fα (G∗ ) + gα0 (δ(G∗ ))).                              (5)
+
+Let
+
+                          j1 (G) = gα0 (dG (v1 )) − gα0 (∆ − 1)
+                          j2 (G) = gα0 (dG (v2 )) − gα0 (∆)
+                                   X∆
+                          j3 (G) =      (gα0 (dG (vi )) − gα0 (∆))
+                                       i=3
+                          j4 (G) = fα (G0 ) − fα (G∗ ) + gα0 (δ(G∗ )).
+
+Note that only j1 (G) can be strictly negative, and then only in the case that dG (v1 ) = ∆.
+Now (5) becomes
+
+                  1 + fα− (G∗ ) ≤ fα (G) − j1 (G) − j2 (G) − j3 (G) − j4 (G).
+
+and recall, from (1), that we need to show that
+
+                              1 + fα− (G∗ ) ≤ fα (G) − gα0 (δ(G)).
+
+Thus it suffices to establish that, in all cases,
+
+                    j(G) = j1 (G) + j2 (G) + j3 (G) + j4 (G) ≥ gα0 (δ(G)).
+
+To prove this, we first note that if G0 contains a vertex v of degree d ≥ 3, then
+
+                       j4 (G) = fα (G0 ) − fα (G∗ ) + gα0 (δ(G∗ )) ≥ gα0 (d).
+
+For either (i) the vertex v is present (perhaps with reduced degree) in G∗ , so that δ(G∗ ) ≤ d
+and so, since gα0 is non-increasing, gα0 (δ(G∗ )) ≥ gα0 (d), or (ii) v is in G0 but not in G∗ ,
+which implies that fα (G0 ) − fα (G∗ ) ≥ gα (dG0 (v)) = gα (d) ≥ gα0 (d), as required.
+If G is ∆-regular, then dG (v1 ) = ∆, and G0 will contain a vertex of degree ∆ − 1, so that
+j4 (G) ≥ gα0 (∆ − 1) and j(G) ≥ j1 (G) + j4 (G) ≥ (gα0 (dG (v1 )) − gα0 (∆ − 1)) + gα0 (∆ − 1) =
+gα0 (∆) = gα0 (δ(G)), as required.
+Otherwise, we have dG (v1 ) ≤ ∆ − 1, so that j1 (G) ≥ 0. Hence from now on, ji (G) ≥ 0 in
+all cases. If G0 contains a vertex v with δ(G) ≥ dG0 (v) ≥ 3, then we have j(G) ≥ j4 (G) ≥
+gα0 (dG0 (v)) ≥ gα0 (δ(G)), as required.
+
+                                                11
+So suppose that G0 does not contain a vertex v with δ(G) ≥ dG0 (v) ≥ 3. Then we must
+have δ(G) = 3, for if δ(G) > 3, then we can choose a vertex v 6= w with dG (v) = δ(G),
+and then v will have degree δ(G) or δ(G) − 1 in G0 and in either case will satisfy δ(G) ≥
+dG0 (v) ≥ 3, a contradiction. Also, every vertex with dG (v) = 3 must be a neighbour of w,
+for otherwise such a vertex would satisfy δ(G) ≥ dG0 (v) ≥ 3.
+Thus we may assume that δ(G) = 3 and every vertex with dG (v) = 3 is a neighbour of w.
+If dG (v∆ ) > 3, then vertex v∆ satisfies ∆ − 1 ≥ dG0 (v∆ ) ≥ 3, so j4 (G) ≥ gα0 (dG0 (v∆ )) ≥
+gα0 (∆ − 1). Also dG (v1 ) = 3 so j1 (G) = gα0 (3) − gα0 (∆ − 1), so we have
+
+       j(G) ≥ j1 (G) + j4 (G) ≥ gα0 (3) − gα0 (∆ − 1) + gα0 (∆ − 1) = gα0 (3) = gα0 (δ(G))
+
+as required.
+The only other possibility is that dG (v1 ) = dG (v2 ) = . . . = dG (v∆ ) = 3. Hence all of
+v1 , . . . , v∆ have degree 2 in G0 and so are removed by the reduction to G∗ . Thus since we
+are assuming that G∗ is not empty, G0 must have some other vertex v not adjacent to w
+in G, so dG0 (v) ≥ 3. Then we have
+
+    j(G) ≥ j2 (G) + j4 (G) ≥ (gα0 (dG (v2 )) − gα0 (∆)) + gα0 (dG0 (v)) ≥ gα0 (3) = gα0 (δ(G)),
+
+and the result holds.
+
+
+Remarks
+
+(i) Note that the set XG is not necessarily unique.
+(ii) Although we have proved the existence of XG inductively, it is clear that XG can be
+found by the following algorithm:
+
+
+Algorithm X
+Input: Graph G with minimum degree at least 3.
+ 1: XG ← ∅
+ 2: while G is not basic do
+ 3:   Choose a component Gi which is not basic
+ 4:   Choose a vertex w of maximum degree in Gi ,
+      if possible with a neighbour of lower degree
+ 5:   G ← r(G − w)
+ 6:   XG ← XG ∪ {w}
+ 7: end while
+Output: XG .
+
+
+
+4     Faster exponential-time algorithms
+
+In this section we will show how the results of Theorems 4.1–4.3 below allow the con-
+struction of efficient algorithms to solve Max 2-CSP. The basic idea is to find a subset
+X of the vertices of the constraint graph whose deletion leaves a (large) graph on the
+
+                                                12
+remaining vertex set Y which has a simple structure, in this case bounded treewidth.
+Next, we enumerate all possible r-colourings of the set X. Each such colouring cX is a
+partial solution for G in the sense that only Y remains to be coloured. The next step
+involves finding an optimal extension for cX , i.e., an optimal colouring for Y subject to
+cX . We give details below.
+Consider an instance Π of Max 2-CSP with graph G = (V, E), set of colours [r], constant
+S∅ , and functions Sv for each v ∈ V and Suv for each edge uv ∈ E.
+Let X ⊆ V be a subset of the vertices of G, and let Y = V \ X. Let G(Y ) be the
+subgraph induced by the set Y of vertices. Also let c : X → [r] be a (not-necessarily
+proper) r-colouring of the vertices in X.
+We construct an instance Π(Y, c) of Max 2-CSP on the graph G(Y ) as follows:
+
+  1. The constant S∅Y,c is defined by
+                                        X                          X
+                        S∅Y,c = S∅ +             Sv (c(v)) +               Suv (c(u), c(v));
+                                        v∈X                      uv∈E(X)
+
+
+  2. for each v ∈ Y , and i ∈ [r]
+                                                               X
+                                SvY,c (i) = Sv (i) +                   Svw (i, c(w));
+                                                          w∈X:vw∈E
+
+
+  3. for each uv ∈ E(Y ), and i, j ∈ [r],
+                                                Y,c
+                                               Suv  (i, j) = Suv (i, j).
+
+Now it is easy to see that for a fixed set Y ⊆ V ,
+                            "                                        #
+                                   X               X
+  max SΠ (ψ) = max S∅ +                Sv (ψ(v)) +   Suv (ψ(u), ψ(v))
+ ψ:V →[r]            ψ:V →[r]
+                                       v∈V                      uv∈E
+                                           "                                                                    #
+                                                         X                         X
+                 =    max        max           S∅Y,c +         SvY,c (ψ Y (v)) +           Y,c
+                                                                                          Suv  (ψ Y (u), ψ Y (v))
+                     c:X→[r] ψ Y :Y →[r]
+                                                         v∈V                       uv∈E
+                                           Y
+                 =    max SΠ(Y,c) (ψ ).
+                     c:X→[r]
+
+
+
+Thus by trying every possible colouring c of X, and solving the corresponding instance
+Π(Y, c), we can solve Π in r|X| times the time taken to solve each sub-instance Π(Y, c). If
+we can choose Y so that these sub-instances can be solved in polynomial time, then the
+instance Π can be solved in total time O? (r|X| ), and polynomial space.
+Let W5 be the wheel on 5 vertices, and let w5 (G) be the smallest size of a set X ⊆ V (G)
+such that G − X has no W5 -minor. It is easy to see that for any graph G, we have
+w5 (G) = w5 (r(G)) where r(G) is the reduced graph defined above.
+Edwards and Farr [8] prove the following:
+
+
+                                                         13
+Theorem 4.1 ([8]) Let G = (V, E) be a connected graph with n vertices and minimum
+degree δ ≥ 3. Then
+                            X
+                                               0          −
+                   w5 (G) ≤     g1/4 (d(v)) − g1/4 (δ) = f1/4 (G).
+                                v∈V (G)
+
+
+
+
+We briefly show how this result can be derived from the general reduction theorem 3.2
+                                                                  −
+above. We first show that for any basic graph G, w5 (G) ≤ f1/4      (G). To see this, note that
+                                                                   Pk                 −
+if G has connected components G1 , . . . , Gk , then w5 (G) = i=1 w5 (Gi ) and f1/4      (G) =
+Pk      −
+   i=1 f1/4 (Gi ), so we may assume that G is connected. If G is cubic, then it was shown
+                                        −
+in [8] that w5 (G) ≤ (n − 1)/4 = f1/4     (G). Otherwise ∆(G) > 3 and r(G − v) is empty
+for some v. Then G − v is series-parallel and so certainly W5 -minor-free, and w5 (G) ≤ 1.
+       −                                0
+But f1/4  (G) ≥ g1/4 (4) + 4g1/4 (3) − g1/4 (3) > 1, as required.
+Next, by Theorem 3.2, there is a set XG such that
+                                     −                   −
+                            |XG | + f1/4 (r(G − XG )) ≤ f1/4 (G),
+
+and r(G − XG ) is basic and non-empty. Then it is clear that w5 (G) ≤ |XG | + w5 (G − XG ),
+and since w5 (G − XG ) = w5 (r(G − XG )), we have
+                            w5 (G) ≤ |XG | + w5 (G − XG )
+                                   = |XG | + w5 (r(G − XG ))
+                                              −
+                                   ≤ |XG | + f1/4 (r(G − XG ))
+                                        −
+                                     ≤ f1/4 (G),
+as required.
+As corollaries, we obtain the following.
+
+Theorem 4.2 ([8]) Let G be a graph, and r(G) the reduced graph of G. Then
+                                     X
+                         w5 (G) ≤         g1/4 (dr(G) (v)).
+                                          v∈V (r(G))
+
+
+
+
+Theorem 4.3 ([8]) Let G be a graph with n vertices, of average degree d ≥ 2. Then if
+G is connected, or d ≥ 5,
+                               w5 (G) ≤ g1/4 (d) n.
+
+
+
+We note that since W5 is planar, the W5 -minor-free induced subgraphs obtained above
+have bounded treewidth. In fact since W5 is a minor of each of the four graphs in the
+forbidden minor characterisation of treewidth 3 graphs given by Arnborg et al. [1], then
+the subgraphs found have treewidth at most 3. It is well-known that Max 2-CSP on graphs
+of bounded treewidth can be solved in polynomial time; see for example [29]. Then we
+have the following theorem.
+
+                                                14
+Theorem 4.4 Let G be a graph, and r(G) the reduced graph of G. Then an instance of
+Max 2-CSP on graph G can be solved in time
+                                                O? (rβ(G) )
+               P
+where β(G) =     v∈V (r(G)) g1/4 (dr(G) (v)).
+
+
+Proof. We use the following algorithm (Algorithm E). Let Π be an instance of Max 2-CSP,
+with constraint graph G. We first find the reduced graph r(G), then, using Algorithm X
+and the results of [8], it is easy to find a set X of size at most β(G) such that G − X has
+treewidth at most 3. Then as above, we try all possible colourings of X, and, for each
+colouring c, solve the instance Π(Y, c) in polynomial time. Then the algorithm uses time
+O? (r|X| ) and polynomial space.
+Although the analysis splits the finding of the set X into two distinct stages, we can
+combine these to produce the following:
+Algorithm E
+Input: Π = (G = (V, E), r, S∅ , {Sv |v ∈ V }, {Suv |uv ∈ E}).
+ 1: G ← r(G)
+ 2: X ← ∅
+ 3: while some component of Gi of G has at least 5 vertices do
+ 4:   Choose a vertex w of maximum degree in Gi ,
+      if possible with a neighbour of lower degree
+ 5:   G ← r(G − w)
+ 6:   X ← X ∪ {w}
+ 7: end while
+ 8: Y ← V \ X.
+ 9: for each colouring c : X → {1, . . . , r} do
+10:   Solve Π(Y, c)
+11: end for
+Output: Best solution found
+
+Note that G − X will not necessarily be series-parallel, for example when G = K4 (so
+X = ∅). However G − X will always have treewidth at most 3. We also observe that
+in practice better results will be achieved if (a) the algorithm solves the problem on
+components separately whenever the graph splits, and (b) reduction stops as soon as
+graph of treewidth 3 is obtained. However it is not clear that either of these will lead to
+an improvement in the time complexity below.
+
+Theorem 4.5 Let G be a connected graph with n vertices, of average degree d ≥ 2. Then
+an instance of Max 2-CSP on graph G can be solved in time
+                                                            13/4
+                                                      (1−        +O(1/d3 ))n
+                           O? (rg1/4 (d)n ) = O? (r         d+1              ).
+
+
+
+                                                     3
+This improves on the previous best exponent of (1 − d+1 )n obtained by Golovnev and
+Kutzkov [17] (Algorithm D).
+Re-expressing this bound in terms of the number m of edges, we have, since 2m = dn,
+
+                                                    15
+Theorem 4.6 Let G be a connected graph with m edges, of average degree d ≥ 2. Then
+an instance of Max 2-CSP on graph G can be solved in time
+
+                                      O? (r(2g1/4 (d)/d)m ).
+
+
+
+Since g1/4 (d)/d is strictly decreasing for d ≥ 5 (Section 3.1, property 5), it follows that the
+maximum value of the fraction 2g1/4 (d)/d occurs when d = 5, when g1/4 (d) = 19/40 and
+so 2g1/4 (d)/d = 19/100. Hence the exponent in this case is the same as that obtained by
+Scott and Sorkin [28], but for all other d, it is lower. For example, for a graph of average
+degree 10, Scott and Sorkin’s Algorithm B has time bound O? (r0.95n ) and Golovnev and
+Kutzkov’s Algorithm D is O? (r0.728n ), whereas our Algorithm E is O? (r0.708n ) approxi-
+mately.
+There are three main differences between our Algorithm E and the earlier Algorithms B
+and D: (i) Algorithm E treats all degrees at least 4 in a uniform way, unlike Algorithm B,
+(ii) Algorithm E always picks a vertex of maximum degree with a lower degree neighbour if
+possible, unlike algorithm D; (iii) Algorithms B and D essentially find an induced subgraph
+(of the constraint graph) which is series-parallel (treewidth 2), whereas Algorithm E finds
+an induced subgraph of treewidth at most 3. This allows a (very) slightly smaller number
+of deletions in one of the base cases (connected cubic graphs). This in turn allows a slight
+strengthening of the inductive hypothesis which enables the induction to proceed.
+Our Algorithm E achieves both the best bound in terms of the average degree and the
+best bound expressed in terms of edges. We will discuss in Section 5 how much further
+improvement might be possible.
+We have presented Algorithm E as a two-stage process in which we first find a vertex subset
+X whose deletion leaves a graph of treewidth at most 3, and then (for each colouring of
+this deleted set) determine the optimum extension to the low treewidth subgraph. It
+should be clear that it is also possible to implement essentially the same algorithm in the
+manner used by a number of earlier algorithms, in which we alternately delete one of the
+vertices in X and then reduce the resulting graph. Each deletion requires a branching of
+the algorithm (with one branch for each possible colour of the deleted vertex), while the
+reductions simply modify the CSP instance on the remaining graph.
+
+
+Extension to polynomial 2-CSP
+
+Scott and Sorkin [29] define a wider class of problems called polynomial 2-CSP, and show
+that several existing algorithms, including their Algorithm B, can be extended to deal
+with these problems. From the remarks above, it is clear that our Algorithm E can be
+extended in the same way.
+
+
+4.1    Max 2-CSP for claw-free graphs
+
+Cheng et al. [4] show that a cubic claw-free graph (i.e., one with no induced K1,3 subgraph)
+with n vertices can be made planar by deleting at most n/6 vertices. In fact it is easy to
+
+                                               16
+see that the resulting graph also has treewidth at most 3 (though the paper only claims
+treewidth at most 4). Furthermore, the bound of n/6 derives from an algorithm in which
+deletion of a vertex always results in the reduction of at least five further vertices. However
+the last of these deletions is unnecessary, as when n ≤ 6 the graph already has treewidth
+at most 3 (and is planar). It follows that a graph of treewidth at most 3 can be obtained
+from a connected cubic claw-free graph by deleting at most (n − 1)/6 of its vertices.
+Let t3 (G) be the smallest size of a set X ⊆ V (G) such that G−X has treewidth at most 3.
+Then we have the following theorem:
+
+Theorem 4.7 Let G = (V, E) be a claw-free graph with n vertices and minimum degree
+δ ≥ 3. Then
+                                          −
+                                t3 (G) ≤ f1/6 (G).
+
+                                                                            −
+Proof. We first show that for any basic claw-free graph G, t3 (G) ≤ f1/6      (G). To see
+                                                                               Pk
+this, note that if G has connected components G1 , . . . , Gk , then t3 (G) =    i=1 t3 (Gi )
+       −
+                 Pk     −
+and f1/6 (G) =     i=1 f1/6 (Gi ), so we may assume that G is connected. If G is cubic,
+                                                                                    −
+then it follows from the results of Cheng et al. above that t3 (G) ≤ (n − 1)/6 = f1/6   (G).
+Otherwise ∆(G) > 3 and r(G − v) is empty for some v. Then G − v is series-parallel and
+                                                    −
+tw(G − v) ≤ 2, so tw(G) ≤ 3. Hence t3 (G) = 0 ≤ f1/6  (G).
+Next, by Theorem 3.2, there is a set XG such that
+                                     −                   −
+                            |XG | + f1/6 (r(G − XG )) ≤ f1/6 (G),
+
+and r(G − XG ) is basic and non-empty. Also, since G is claw-free, it is easy to see that
+                                               −
+r(G − XG ) is also. Thus t3 (r(G − XG )) ≤ f1/6  (r(G − XG )) from above. Then it is clear
+that t3 (G) ≤ |XG | + t3 (G − XG ), and t3 (G − XG ) = t3 (r(G − XG )), so we have
+
+                            t3 (G) ≤ |XG | + t3 (G − XG )
+                                   = |XG | + t3 (r(G − XG ))
+                                               −
+                                   ≤ |XG | + f1/6 (r(G − XG ))
+                                       −
+                                    ≤ f1/6 (G),
+
+as required.
+
+
+Remark
+
+An almost identical proof shows that we can obtain a W6 -minor-free graph by deleting
+the same number of vertices. Let w6 (G) be the smallest size of a set X ⊆ V (G) such
+that G − X has no W6 -minor. Then the only change required in order to show that
+           −
+w6 (G) ≤ f1/6 (G) for any claw-free graph is the following: Whereas t3 (G) = 0 whenever
+r(G − v) is empty, this is not necessarily true for w6 (G). However we do have w6 (G) ≤ 1,
+                     −                                0
+and if n ≥ 6, then f1/6 (G) ≥ g1/6 (4) + 5g1/6 (3) − g1/6 (3) = 1, as required. If n ≤ 5, then
+                                                 −
+G cannot have a W6 -minor, so w6 (G) = 0 ≤ f1/6 (G).
+As before, we have the following corollaries:
+
+                                              17
+Theorem 4.8 Let G be a claw-free graph, and r(G) the reduced graph of G. Then
+                                    X
+                         t3 (G) ≤         g1/6 (dr(G) (v)).
+                                          v∈V (r(G))
+
+
+
+
+Theorem 4.9 Let G be a claw-free graph with n vertices, of average degree d ≥ 2. Then
+if G is connected, or d ≥ 5,
+                                t3 (G) ≤ g1/6 (d) n.
+
+
+Proof. As for g1/4 in [8], it can be shown that if G is a graph with n vertices and average
+degree at most d, where d ≥ 2, and if (i) G is connected or (ii) d ≥ 5, then we have
+                                        X
+                         fα (r(G)) =         gα (dr(G) (v)) ≤ gα (d)n
+                                        v∈V (r(G))
+
+
+provided 1/6 ≤ α ≤ 3/10, and the result follows.
+Since the subgraphs obtained have treewidth at most 3 then, as before, instances of Max
+2-CSP on these subgraphs can be solved in polynomial time. Thus we have
+
+
+Theorem 4.10 Let G be a claw-free graph, and r(G) the reduced graph of G. Then an
+instance of Max 2-CSP on graph G can be solved in time
+
+                                                O? (rβ(G) ),
+               P
+where β(G) =     v∈V (r(G)) g1/6 (dr(G) (v)).
+
+
+
+We also have
+
+
+Theorem 4.11 Let G be a connected claw-free graph of average degree d ≥ 2, with n
+vertices and m edges. Then an instance of Max 2-CSP on graph G can be solved in time
+                                                                         7/2
+                                                                   (1−       +O(1/d3 ))n
+                O? (rg1/6 (d)n ) = O? (r(2g1/6 (d)/d)m ) = O? (r         d+1             ).
+
+
+
+
+We know that g1/6 (d)/d is strictly decreasing for all d ≥ 5 (by property 5 of Section 3.1).
+By inspection of the values for small d we find that the maximum of 2g1/6 (d)/d again
+occurs when d = 5. We have g1/6 (5) = 13/30 so 2g1/6 (5)/5 = 13/75. Thus in the worst
+case, instances of Max 2-CSP on claw-free graphs can be solved in time O? (r(13/75)m ) and
+polynomial space.
+
+
+
+
+                                                    18
+5     Pathwidth
+
+Scott and Sorkin [28] derive a general upper bound of (13/75 + o(1))m on the treewidth
+of a graph with m edges and use this to give a further algorithm (C) for Max 2-CSP
+with improved time complexity of O? (r(13/75+o(1))m ), but also requiring exponential space.
+Kneis et al. use similar methods to obtain an upper bound of (13/75 + o(1))m + O(log n)
+on the pathwidth of a graph. Fomin et al. [10] show that
+
+     pw(G) ≤ 16 n3 + 13 n4 + 13 n + 23 n + n≥7 + o(n) = 6d=3 g1/6 (d)nd + n≥7 + o(n),
+                                                         P
+                             30 5   45 6
+
+where ni is the number of vertices of degree i, and n≥7 is the number of vertices of degree
+at least 7. Gaspers [14] states that this can be extended to a similar bound
+                                       17
+                                       X
+                             pw(G) ≤             βd nd + n≥18 + o(n),
+                                           d=3
+
+where the coefficients βd for d ∈ {7, . . . , 17} were found by a computer search. It is clear
+from the table of values given that each constant βd is an approximation to g1/6 (d).
+We remove the error terms n≥7 , n≥18 and show below that
+                                      X
+                           pw(G) ≤       g1/6 (d)nd + o(n).
+                                            d≥3
+
+
+
+We proceed as follows. Fomin and Høie [12] showed that a 3-regular graph G with
+m edges has pathwidth at most (1/9 + o(1))m + O(log n) = (1/6 + o(1))n + O(log n).
+Hence for 3-regular graphs, there is a function τ , with τ (n) = o(n), such that pw(G) ≤
+n/6 − 1/6 + τ (n) + O(log n) (the negative term is needed below). We can also assume that
+τ is an increasing function of n (otherwise replace τ with σ given by σ(n) = maxi≤n τ (i)).
+Then we have the following:
+
+Lemma 5.1 Let G = (V, E) be a graph with n vertices and minimum degree δ ≥ 3. Then
+                             X
+                 pw(G) ≤          g1/6 (d(v)) + τ (n) + O(log n).
+                                 v∈V (G)
+
+
+                                  −
+Proof. We will show that pw(G) ≤ f1/6 (G) + τ (n) + O(log n).
+The proof follows the same general pattern as that for Theorems 4.1 and 4.7 above, but
+there are some differences of detail.
+We first show that for any basic graph G, we have
+                                    −
+                           pw(G) ≤ f1/6 (G) + τ (n) + O(log n).
+
+                                                                         −
+For a connected cubic graph G, pw(G) ≤ n/6 − 1/6 + τ (n) + O(log n) = f1/6  (G) + τ (n) +
+O(log n) by the result of Fomin and Høie [12] above (this is where we use the negative
+                               −
+term, since for a cubic graph f1/6 (G) = n/6 − 1/6). If r(G − v) is empty, then G − v is
+
+                                                  19
+series-parallel and so has pathwidth O(log n), so pw(G) = O(log n) as required. If G is
+basic with connected components G1 , . . . , Gk , then
+
+               pw(G) = max pw(Gi )
+                        i
+                                                                       
+                             −
+                     ≤ max f1/6 (Gi ) + τ (|V (Gi )|) + O(log |V (Gi )|)
+                                 i
+                                −
+                           ≤   f1/6 (G) + τ (n) + O(log n)
+
+(Note that the fact that we have a maximum rather than a sum here is crucial.)
+Now for any graph G with minimum degree at least 3, there is a set XG such that
+                                        −                   −
+                               |XG | + f1/6 (r(G − XG )) ≤ f1/6 (G)
+
+and r(G − XG ) is basic and non-empty. It follows from the results of [21] that pw(G) ≤
+|XG | + pw(G − XG ) and that pw(G − XG ) = pw(r(G − XG )) + O(log n), so we have
+
+         pw(G) ≤ |XG | + pw(G − XG )
+               = |XG | + pw(r(G − XG )) + O(log n)
+                          −
+               ≤ |XG | + f1/6 (r(G − XG )) + τ (n) + O(log n) (from above)
+                         −
+                      ≤ f1/6 (G) + τ (n) + O(log n),
+
+as required.
+
+Corollary 5.2 Let G be a graph, and r(G) be the reduced graph of G. Then
+          X                                                      X
+pw(G) ≤        g1/6 (dr(G) (v)) + τ (|V (G)|) + O(log |V (G)|) =   g1/6 (d)nd + o(|V (G)|).
+         v∈V (r(G))                                                   d≥3
+
+
+
+
+For average degree, we obtain the following:
+
+Theorem 5.3 Let G be a graph of average degree d ≥ 2, with n vertices and m edges.
+Then if G is connected, or d ≥ 5,
+                                                                7/2
+      pw(G) ≤ (g1/6 (d) + o(1))n = (2g1/6 (d)/d + o(1))m = (1 − d+1 + O(1/d3 ))n.
+
+
+
+
+It follows easily from the results of Golovnev and Kutzkov [17] that for each constant
+                                                                              n
+0 < ε < 1 there exists a constant dε = O(exp(1/ε)) such that if dε ≤ d ≤ 1+ε    , then
+                ε ln d
+pw(G) ≤ (1 − 4 d )n for a graph G with n vertices and average degree d. For very large
+average degrees this gives a better bound.
+The bound for pathwidth from Theorem 5.3 leads immediately to improved upper bounds
+for the time complexity of Scott and Sorkin’s Algorithm C (for convenience of comparison
+we will call this Algorithm F, but it is really the same algorithm).
+
+                                               20
+Theorem 5.4 Let G be a graph, and r(G) the reduced graph of G. Then an instance of
+Max 2-CSP on graph G can be solved in time
+
+                                             O? (rβ(G) ),
+               P
+where β(G) =     v∈V (r(G)) g1/6 (dr(G) (v)) + τ (|V (r(G)|).
+
+
+
+We also have
+
+
+Theorem 5.5 Let G be a connected graph with n vertices and m edges, of average degree
+d ≥ 2. Then an instance of Max 2-CSP on graph G can be solved in time
+                                                                                7/2
+                                                                          (1−       +O(1/d3 ))n
+           O? (r(g1/6 (d)+o(1))n ) = O? (r(2g1/6 (d)/d+o(1))m ) = O? (r         d+1             ).
+
+
+
+
+6    Fragmentability and treewidth
+
+We have seen that one approach to obtaining faster algorithms for Max 2-CSP is to
+delete vertices from the graph in order to obtain a (preferably large) subgraph of bounded
+treewidth. We now show how the concept of fragmentability provides an upper bound on
+how much can be gained by this approach.
+The concept of fragmentability of a class of graphs was introduced in [7] and surveyed
+in [9]. It measures how small a proportion of vertices needs to be removed from graphs
+in a class in order to break them into components of bounded size. We begin by recalling
+the definition.
+Let ε ∈ [0, 1] and C ∈ N. A graph G is (C, ε)-fragmentable if there exists X ⊆ V (G) such
+that |X| ≤ ε |V (G)| and every component of G − X has at most C vertices. X is here
+called the fragmenting set. A class Γ of graphs is ε-fragmentable if there exists C ∈ N
+such that every G ∈ Γ is (C, ε)-fragmentable. The coefficient of fragmentability of Γ is
+
+                             cf (Γ) = inf{ε | Γ is ε-fragmentable}.
+
+Now consider the problem of removing vertices from a graph to make the treewidth
+bounded. We make the following (temporary) definition. Let Γ be a class of graphs.
+Define ctw (Γ) by
+
+     ctw (Γ) = inf{λ : ∃t, ∀G ∈ Γ, ∃X ⊆ V (G), |X| ≤ λ|V (G)| and tw(G − X) ≤ t}.
+
+Thus, informally, ctw (Γ) is the smallest proportion of the vertices (actually the infimum)
+whose removal from a graph in Γ is guaranteed to achieve (some fixed) bounded treewidth.
+However it is easy to see that ctw (Γ) = cf (Γ). For suppose first that λ > cf (Γ). Then by
+definition of cf , there is a constant C such that for any G ∈ Γ, there is a set X ⊆ V (G)
+with |X| ≤ λ|V (G)|, such that G − X has all components of size at most C vertices, and
+
+
+                                                  21
+hence is of treewidth at most C − 1. It follows immediately that ctw (Γ) ≤ λ, and since λ
+was an arbitrary number greater than cf (Γ), we have ctw (Γ) ≤ cf (Γ).
+Conversely, suppose that λ > ctw (Γ). Then for some fixed t, given any graph G in Γ,
+we can find a set X ⊆ V (G), with |X| ≤ λ|(V (G)|, such that G − X has treewidth
+at most t. But graphs of treewidth t have small separators and so have coefficient of
+fragmentability 0, and so it follows [7] that cf (Γ) ≤ λ. Again, since λ was arbitrary, we
+have cf (Γ) ≤ ctw (Γ).
+          c
+Now let Γd be the class of connected graphs with average degree at most d. It was shown
+by Haxell et al. [19] (using connected regular claw-free examples) that for integer d ≥ 4
+                                             4
+                                  
+                                  
+                                      1−         ,     if d is even;
+                            c
+                                  
+                                          d +  2
+                       cf (Γd ) ≥
+                                         4(d + 2)
+                                   1−
+                                  
+                                                     , if d is odd.
+                                       (d + 1)(d + 3)
+
+Thus from above we know that in order to obtain a graph of bounded treewidth from
+              c                                                                   4
+a graph in Γd , we have to delete (in the worst case) roughly a proportion (1 − d+2 ) of
+the vertices. This compares with the proportion achieved by the algorithms in Section 4,
+                                       7/2
+which is roughly (1 − 13/4
+                      d+1
+                           )n (or (1 − d+1 )n for claw-free graphs).
+Thus an algorithm which deleted a smaller proportion of the vertices to obtain a graph
+of bounded treewidth would give a faster algorithm for Max 2-CSP. This technique will
+not be able to do better than replace 134
+                                           by 4, nonetheless that would be a significant
+improvement given the difficulty of the problem.
+
+
+
+7    Comparisons
+
+We present here a brief comparison of our algorithms E and F with the earlier al-
+gorithms B,C of Scott and Sorkin, Algorithm D of Golovnev and Kutzkov and the
+exponential-space algorithm (W) of Williams [30], which solves constraint satisfaction
+problems in time O? (rωn/3 ), where ω is the matrix multiplication constant (ω ≈ 2.373),
+and remains the fastest exponential space algorithm for larger degrees.
+We compare each of the algorithms on graphs of average degree d, with n vertices, and
+give below the value of the exponent ε(d) such that the complexity of the algorithm is
+O? (rε(d)n ) (ignoring the o(1) term in the exponent for algorithms B and F). In each case we
+show the fastest polynomial-space algorithm(s) in bold and the fastest exponential-space
+algorithm in italic.
+
+
+
+
+                                             22
+                                    ε(d) for algorithm
+                  d        B     C      D        E     F             W
+                  3      0.250 0.167 0.250 0.250 0.167             0.791
+                  4      0.375 0.334 0.400 0.375 0.333             0.791
+                  5      0.475 0.434 0.500 0.475 0.434             0.791
+                  6      0.570 0.520 0.572 0.546 0.512             0.791
+                  7      0.665 0.607 0.625 0.601 0.570             0.791
+                  8      0.760 0.694 0.667 0.644 0.617             0.791
+                  9      0.855 0.780 0.700 0.679 0.654             0.791
+                  10     0.950 0.867 0.728 0.708 0.685             0.791
+                  11     1.045 0.954 0.750 0.732 0.711             0.791
+                  12     1.140 1.040 0.770 0.752 0.733             0.791
+                  13     1.235 1.127 0.786 0.770 0.752             0.791
+                  14     1.330 1.214 0.800 0.785 0.768             0.791
+                  15     1.425 1.300 0.813 0.798 0.783             0.791
+                  16     1.520 1.387 0.824 0.810 0.795             0.791
+
+Thus our Algorithm E is faster than all other polynomial-space algorithms for d > 5,
+and faster than all previous exponential-space algorithms when 6.810 ≤ d ≤ 14.496. The
+exponential-space Algorithm F is slightly faster, but still beaten by Williams’ exponential-
+space algorithm for d ≥ 15.694.
+Expressing the complexity in terms of the number of edges m, we give below, for graphs of
+average degree d, the value of the exponent η(d) such that the complexity of the algorithm
+is O? (rη(d)m ):
+
+                                       η(d) for algorithm
+                    d       B       C      D        E     F       W
+                    3     0.190   0.174 0.167 0.167 0.112        0.528
+                    4     0.190   0.174 0.200 0.188 0.167        0.396
+                    5     0.190   0.174 0.200 0.190 0.174        0.317
+                    6     0.190   0.174 0.191 0.182 0.171        0.264
+                    7     0.190   0.174 0.179 0.172 0.163        0.227
+                    8     0.190   0.174 0.167 0.161 0.155        0.198
+                    9     0.190   0.174 0.156 0.151 0.146        0.176
+                    10    0.190   0.174 0.146 0.142 0.137        0.159
+                    11    0.190   0.174 0.137 0.133 0.130        0.144
+                    12    0.190   0.174 0.129 0.126 0.123        0.132
+                    13    0.190   0.174 0.121 0.119 0.116        0.122
+                    14    0.190   0.174 0.115 0.113 0.110        0.114
+                    15    0.190   0.174 0.109 0.107 0.105        0.106
+                    16    0.190   0.174 0.103 0.102 0.100        0.099
+
+
+8    Appendix
+
+In this section we prove the properties of the functions gα and gα0 which are listed in
+Section 3.1. First recall the definition of the functions concerned:
+
+                                            23
+For any n ≥ 2, and α with 0 ≤ α ≤ 1, define the function gα (n) by setting gα (2) = 0,
+gα (3) = α, and for any n ≥ 4,
+
+                        ngα (n) = (n − 2)gα (n − 1) + gα (n − 2) + 1.                     (6)
+
+We extend gα to all real numbers at least 2 by linear interpolation, i.e., if r = n + x, where
+n ≥ 2 is an integer, and 0 ≤ x ≤ 1, then we set gα (r) = (1 − x)gα (n) + xgα (n + 1).
+Also, for any n ≥ 3, define gα0 (n) = gα (n) − gα (n − 1).
+
+Lemma 8.1 For any integer n ≥ 2,
+                                        A(n)            (−1)n
+                    gα (n) = (4 − 3α)        + (2 − 3α)       − (3 − 3α)
+                                         n!               n!
+where A(n) is the alternating factorial function given by
+
+                          A(n) = n! − (n − 1)! + . . . − (−1)n · 1!.
+
+Proof. Let h(n) = 1 − gα (n). Then from the recurrence (6) above we obtain, for n ≥ 4,
+
+                 n(1 − h(n)) = (n − 2)(1 − h(n − 1)) + 1 − h(n − 2) + 1
+
+or
+                            nh(n) = (n − 2)h(n − 1) + h(n − 2),
+from which
+                      nh(n) + h(n − 1) = (n − 1)h(n − 1) + h(n − 2)
+Thus nh(n) + h(n − 1) is a constant, K say, for all n ≥ 3. Multiplying through by (n − 1)!,
+we obtain
+                         n!h(n) + (n − 1)!h(n − 1) = K(n − 1)!
+or (replacing n by n + 1)
+
+                              (n + 1)!h(n + 1) + n!h(n) = Kn!
+
+for n ≥ 2. Setting j(n) = (n + 1)!h(n + 1)/K for n ≥ 1, we obtain
+
+                                    j(n) + j(n − 1) = n!
+
+for all n ≥ 2. The alternating factorial function A(n) satisfies
+
+                                   A(n) + A(n − 1) = n!
+
+so that
+                          j(n) − A(n) = −(j(n − 1) − A(n − 1)).
+Hence j(n) − A(n) = C(−1)n for some constant C. Thus
+
+               h(n) = (K/n!)j(n − 1) = (K/n!)A(n − 1) − (KC/n!)(−1)n
+
+or
+                     gα (n) = 1 − (K/n!)(n! − A(n)) + (KC/n!)(−1)n .
+
+                                              24
+Thus
+                    gα (n) = (K/n!)A(n) + (KC/n!)(−1)n − (K − 1).
+Recall that K = (n + 1)h(n + 1) + h(n), so setting n = 2 gives K = 3(1 − α) + 1 = 4 − 3α.
+Also C = A(1) − j(1) = 1 − 2h(2)/K, so KC = K − 2h(2) = 4 − 3α − 2 = 2 − 3α. So
+finally,
+                                    A(n)             (−1)n
+                  gα (n) = (4 − 3α)       + (2 − 3α)        − (3 − 3α)
+                                     n!                n!
+as required.
+
+
+
+Lemma 8.2 For all real d ≥ 2,
+                                             4 − 3α
+                              gα (d) = 1 −          + O(1/d3 ).
+                                              d+1
+
+Proof. We have, for n ≥ 2,
+                       A(n)             (−1)n
+  gα (n) = (4 − 3α)          + (2 − 3α)        − (3 − 3α)
+                        n!                n!
+                       n! − (n − 1)! + (n − 2)! − A(n − 3)             (−1)n
+          =   (4 − 3α)                                      + (2 − 3α)       − (3 − 3α)
+                                        n!                               n!
+                       n! − (n − 1)! + (n − 2)!
+          =   (4 − 3α)                          − (3 − 3α) + O(1/n3 )
+                                 n!        
+                             1        1
+          =   1 − (4 − 3α)     −              + O(1/n3 )
+                             n n(n − 1)
+                                                               
+                  (4 − 3α)                  1      1       1
+          =   1−            + (4 − 3α)          − +               + O(1/n3 )
+                    n+1                   n + 1 n n(n − 1)
+                                                         
+                  (4 − 3α)                       2
+          =   1−            + (4 − 3α)                      + O(1/n3 )
+                    n+1                   n(n − 1)(n + 1)
+                  (4 − 3α)
+          =   1−            + O(1/n3 ).
+                    n+1
+The extension to non-integer arguments is straightforward.
+
+Lemma 8.3 If α ≤ 1/2, then gα is non-decreasing, i.e.,
+
+                                     gα (n + 1) ≥ gα (n)
+
+for all integers n ≥ 2.
+
+Proof. This is proved by induction, exactly as for the function g = g1/4 in [8]. First a
+very easy induction shows that gα < 1 for all n. Then we show by induction that for all
+n ≥ 3,
+                        gα (n − 1) ≤ gα (n) ≤ (1 + gα (n − 1))/2
+This is true for n = 3, so suppose it is true for some n. Then firstly,
+
+(n + 1)gα (n + 1) = (n − 1)gα (n) + gα (n − 1) + 1 ≥ (n − 1)gα (n) + 2gα (n) = (n + 1)gα (n),
+
+                                              25
+and secondly
+
+               (n + 1)gα (n + 1) = (n − 1)gα (n) + gα (n − 1) + 1 ≤ ngα (n) + 1
+
+so that
+                                      n            1   1         1
+                      gα (n + 1) ≤       gα (n) +     ≤ gα (n) +
+                                     n+1          n+1  2         2
+since n ≥ 1 and gα (n) < 1.
+Note that if α > 1/2, gα is not non-decreasing, since gα (4) = (1 + 2α)/4 < α = gα (3).
+
+Lemma 8.4 If 1/6 ≤ α ≤ 3/10, then gα0 is non-increasing, i.e.,
+
+                                      gα0 (n + 1) ≤ gα0 (n)
+
+for all integers n ≥ 3.
+
+Proof. We have
+
+                            ngα (n) = (n − 2)gα (n − 1) + gα (n − 2) + 1,
+                  (n − 1)gα (n − 1) = (n − 3)gα (n − 2) + gα (n − 3) + 1
+
+from which we obtain
+
+                          ngα0 (n) = (n − 3)gα0 (n − 1) + gα0 (n − 2).
+
+for n ≥ 5. Then it is easily shown by an induction similar to the one above that
+
+                              gα0 (n − 1) ≥ gα0 (n) ≥ gα0 (n − 1)/3.
+
+for all n ≥ 4. The base case requires that gα0 (3) ≥ gα0 (4) ≥ gα0 (3)/3, or α ≥ (1 − 2α)/4 ≥
+α/3, which is true since 1/6 ≤ α ≤ 3/10.
+
+Lemma 8.5 If 1/6 ≤ α ≤ 3/10, gα (n)/n is strictly decreasing for n ≥ 5.
+
+Proof. First note that gα (6) = (50α + 53)/120 > 1/2. Now gα (n + 1)/(n + 1) < gα (n)/n
+if and only if ngα (n + 1) < (n + 1)gα (n). Since
+
+                     (n + 1)gα (n + 1) = (n − 1)gα (n) + gα (n − 1) + 1,
+
+we have
+                  ngα (n + 1) = (n − 1)gα (n) + gα (n − 1) − gα (n + 1) + 1,
+so ngα (n + 1) < (n + 1)gα (n) if and only if
+
+                            gα (n − 1) − gα (n + 1) + 1 < 2gα (n),
+
+or
+                            2gα (n + 1) − gα0 (n + 1) + gα0 (n) > 1,
+which is true since gα (n + 1) ≥ gα (6) > 1/2 and gα0 is non-increasing. In fact gα (n)/n
+attains its maximum at n = 5 for all α in this range.
+
+                                                26
+Acknowledgements
+
+We would like to thank David Wood for reminding us of the connection between pla-
+narization and Max 2-CSP, and the anonymous referees for their helpful comments and
+for drawing to our attention some recent work which we were unaware of.
+
+
+
+References
+ [1] S. Arnborg, A. Proskurowski and D. G. Corneil, Forbidden minors characterization
+     of partial 3-trees, Discrete Math. 80 (1990) 1–19.
+ [2] N. Bansal and V. Raman, Upper bounds for MAXSAT: further improved, in Algo-
+     rithms and computation (Chennai, 1999), Lecture Notes in Computer Science 1741,
+     Springer, Berlin, pp. 247–258.
+ [3] H. L. Bodlaender, A partial k-arboretum of graphs with bounded treewidth, Theo-
+     retical Computer Science 209 (1998) 1–45.
+ [4] C. Cheng, E. McDermid and I. Suzuki, Planarization and Acyclic Colorings of Sub-
+     cubic Claw-Free Graphs, in: P. Kolman and J. Kratochvı́l (eds.), Graph-Theoretic
+     Concepts in Computer Science, WG 2011 (Czech Republic, June 2011), Lecture
+     Notes in Computer Science 6986, Springer, Berlin, 2011, pp. 107–118.
+ [5] H. de Fraysseix and P. Ossona de Mendez, A characterization of DFS cotree critical
+     graphs, in: P. Mutzel, M. Jünger and S. Leipert (eds.), Graph Drawing 2001 (Vienna,
+     23–26 Sept. 2001), Lecture Notes in Computer Science 2265, Springer, Berlin, 2002,
+     pp. 84–95.
+ [6] F. Della Croce, M. J. Kaminski and V. Th. Paschos, An exact algorithm for MAX-
+     CUT in sparse graphs, Oper. Res. Lett. 35 (2007), 403–408.
+ [7] K. J. Edwards and G. E. Farr, Fragmentability of graphs, J. Combin. Theory (Ser.
+     B) 82 (2001) 30–37.
+ [8] K. J. Edwards and G. E. Farr, Improved upper bounds for planarization and series-
+     parallelization of average degree bounded graphs, Electronic Journal of Combina-
+     torics 19 (2) (2012) #P25.
+ [9] K. J. Edwards and G. E. Farr, Graph fragmentability, in: L. W. Beineke and R.
+     J. Wilson (eds.), Topics in Structural Graph Theory, Encyclopedia of Mathematics
+     and its Applications No. 147, Cambridge University Press, 2013, pp. 203–218. ISBN
+     978-0-521-80231-4.
+[10] F. V. Fomin, S. Gaspers, S. Saurabh and A. A. Stepanov, On Two Techniques of
+     Combining Branching and Treewidth, Algorithmica 54 (2009) 181–207.
+[11] F. V. Fomin, F. Grandoni and D. Kratsch, A measure & conquer approach for the
+     analysis of exact algorithms, J. ACM 56 (2009) 1–32.
+[12] F. V. Fomin and K. Høie, Pathwidth of cubic graphs and exact algorithms, Inf.
+     Process. Lett. 97 (2006) 191–196.
+
+                                           27
+[13] F. V. Fomin and D. Kratsch, Exact Exponential Algorithms. Texts in Theoretical
+     Computer Science. Springer, 2010. ISBN 978-3-642-16533-7
+
+[14] S. Gaspers, Exponential Time Algorithms: Structures, Measures, and Bounds. VDM
+     Verlag Dr. Mueller e.K., 2010. ISBN 978-3-639-21825-1
+     http://www.cse.unsw.edu.au/~sergeg/SergeBookETA2010_screen.pdf
+
+[15] S. Gaspers and G. B. Sorkin, A universally fastest algorithm for Max 2-Sat, Max
+     2-CSP, and everything in between, J. Comput. System Sci. 78 (2012), 305–335.
+
+[16] A. Golovnev, New upper bounds for MAX-2-SAT and MAX-2-CSP w.r.t. the av-
+     erage variable degree, in: Parameterized and exact computation, Lecture Notes in
+     Computer Science, 7112 Springer, Heidelberg, pp. 106–117.
+
+[17] A. Golovnev and K. Kutzkov, New exact algorithms for the 2-constraint satisfaction
+     problem, Theoret. Comput. Sci. 526 (2014), 18–27.
+
+[18] J. Gramm, E. A. Hirsch, R. Niedermeier and P. Rossmanith, Worst-case upper
+     bounds for MAX-2-SAT with an application to MAX-CUT, Discrete Appl. Math.
+     130 (2003) 139–155.
+
+[19] P. Haxell, O. Pikhurko and A. Thomason, Maximum acyclic and fragmented sets in
+     regular graphs, J. Graph Theory 57 (2008) 149–156.
+
+[20] E. A. Hirsch, A new algorithm for MAX-2-SAT, in: STACS 2000 (Lille), Lecture
+     Notes in Computer Science 1770, Springer, Berlin, 2000, pp. 65–73.
+
+[21] J. Kneis, D. Mölle, S. Richter and P. Rossmanith, A bound on the pathwidth of sparse
+     graphs with applications to exact algorithms, SIAM Journal on Discrete Mathematics
+     23 (2009) 407–427.
+
+[22] A. Kojevnikov and A. S. Kulikov, A new approach to proving upper bounds for
+     MAX-2-SAT, in: Proceedings of the Seventeenth Annual ACM-SIAM Symposium on
+     Discrete Algorithms 2006, ACM, New York, 2006, pp. 11–17.
+
+[23] A. S. Kulikov, K. Kutzkov, New bounds for MAX-SAT by clause learning, in: Pro-
+     ceedings of the 2nd International Symposium on Computer Science in Russia (CSR
+     2007), Lecture Notes in Computer Science 4649, Springer, 2007, pp. 194–204.
+
+[24] R. Niedermeier and P. Rossmanith, New upper bounds for maximum satisfiability,
+     J. Algorithms 36 (2000), 63–88.
+
+[25] D. Raible and H. Fernau, A new upper bound for Max-2-SAT: a graph-theoretic
+     approach, in: Mathematical foundations of computer science 2008, Lecture Notes in
+     Computer Science 5162, Springer, Berlin, 2008, pp. 551–562.
+
+[26] J. M. Robson. Finding a maximum independent set in time O(2n/4 ). Technical Report
+     1251-01, LaBRI, Université Bordeaux I, 2001.
+
+[27] A. D. Scott and G. B. Sorkin, Faster algorithms for MAX CUT and MAX CSP, with
+     polynomial expected time for sparse instances, in: Proc. 7th International Workshop
+     on Randomization and Approximation Techniques in Computer Science (RANDOM
+     2003), Lecture Notes in Computer Science 2764, Springer, 2003, pp. 382–395.
+
+                                           28
+[28] A. D. Scott and G. B. Sorkin, Linear-programming design and analysis of fast algo-
+     rithms for Max 2-CSP, Discrete Optimization 4 (2007) 260–287.
+
+[29] A. D. Scott and G. B. Sorkin. Polynomial constraint satisfaction problems, graph
+     bisection, and the Ising partition function, ACM Trans. Algorithms 5 (2009) Art.
+     45.
+
+[30] R. Williams, A new algorithm for optimal constraint satisfaction and its implications,
+     in: J. Dı́az et al. (eds.), Proc. 31st International Colloquium on Automata, Languages
+     and Programming (ICALP) (Turku, Finland, 2004), Lecture Notes in Computer
+     Science 3142, Springer, 2004, pp. 1227–1237.
+
+[31] G. J. Woeginger, Exact algorithms for NP-hard problems: a survey, in: Combina-
+     torial optimization—Eureka, you shrink!, Lecture Notes in Computer Science 2570,
+     Springer, 2003, pp 185–207.
+
+[32] G. J. Woeginger. Open problems around exact algorithms, Discrete Appl. Math. 156
+     (2008) 397–405.
+
+[33] Mingyu Xiao and Hiroshi Nagamochi, Exact Algorithms for Maximum Independent
+     Set, in: L. Cai, S.-W. Cheng, and T.-W. Lam (eds.), ISAAC2013, Lecture Notes in
+     Computer Science 8283, Springer, 2013, pp. 328–338.
+
+
+
+
+                                            29
+
