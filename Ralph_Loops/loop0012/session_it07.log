@@ -1,0 +1,88 @@
+# session it07 started 2026-11-02 04:09:55
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's §2 (the Lean-ready list and S1's cases), the existing `DegreeBound` Lean files, and the paper's proof of Theorem 3.2.
+  > $ date -u && uptime && git status --short | head && ls lean/MOSPFormalization/DegreeBound/ && wc -l lean/MOSPFormalization/DegreeBound/*.lean reports/edwards_mcde
+  > $ grep -n "^#" reports/edwards_mcdermid.md | head -80
+  > $ sed -n 295,602p reports/edwards_mcdermid.md
+
+Next I need the paper's proof text (pp. 9–12), and the Lean definitions and theorem signatures in `Weights`, `Potential` and `SPReduction`. All independent, so I'll fetch them together.
+  > $ grep -n "Theorem 3.2\|Lemma 3.1\|Algorithm X\|basic" reports/scratch/edwards_mcdermid/em2015.txt | head -40
+  > $ sed -n 545,690p reports/scratch/edwards_mcdermid/em2015.txt
+  > $ grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^structure\|^inductive\|^abbrev\|^instance\|^namespace\|^open\|^variable" lean/MOSPFormalization/DegreeBoun
+  > $ sed -n 240,260p lean/MOSPFormalization/DegreeBound/Weights.lean && echo ---- && cat lean/MOSPFormalization/DegreeBound/Potential.lean
+  > $ cat lean/MOSPFormalization/DegreeBound/SPReduction.lean
+  > $ sed -n 30,330p lean/MOSPFormalization/DegreeBound/SPReduction.lean
+  > $ sed -n 330,662p lean/MOSPFormalization/DegreeBound/SPReduction.lean | grep -n "^theorem\|^lemma\|^def\|^namespace\|^end\|^variable\|^    (h\|^    [(]" | head -1
+  > $ sed -n 448,495p lean/MOSPFormalization/DegreeBound/SPReduction.lean; echo ----MOSPF; grep -n "DegreeBound" lean/MOSPFormalization.lean; echo ----AX; grep -n "De
+  > $ sed -n 271,335p reports/scratch/edwards_mcdermid/02_lemmas/check.py; echo ----PY; sed -n 478,525p learning/edwards_mcdermid.py; echo ----TESTS; sed -n 391,520p 
+  > $ sed -n 520,700p tests/test_edwards_mcdermid.py; echo ----SW; sed -n 341,420p learning/sandwich.py; echo ----GATE; cat Ralph_Loops/loop0012/gate.py | head -80; e
+  > $ sed -n 87,135p reports/scratch/edwards_mcdermid/02_lemmas/check.py && sed -n 470,500p reports/scratch/edwards_mcdermid/02_lemmas/check.py && sed -n 140,200p lea
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/07_step && cat > /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/07_step/check.py <<'EOF'
+#!/usr/
+
+Smoke test agrees with item 02's S1 pair counts (5, 31, 242) and no violations. Now I'll launch the full run to 9 vertices in the background and write `Step.lean` while it runs.
+  > $ nohup nice -n 19 python3 reports/scratch/edwards_mcdermid/07_step/check.py --max-n 9 --workers 8 > reports/scratch/edwards_mcdermid/07_step/run.out 2>&1 &
+echo 
+  > $ cd /home/al/dev/MOSP/lean && M=$(find .lake/packages/mathlib/Mathlib -name "*.lean" | head -1 >/dev/null; echo .lake/packages/mathlib/Mathlib); grep -rn "theore
+  > $ sed -n 385,400p .lake/packages/mathlib/Mathlib/Data/Finset/Max.lean; grep -n "theorem exists_min_image" -A3 .lake/packages/mathlib/Mathlib/Data/Finset/Max.lean;
+  > $ cat /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/07_step/check.log | head -8; cat > /home/al/dev/MOSP/lean/MOSPFormalization/DegreeBound/Step.lean <<'EOF'
+  > $ python3 - <<'EOF'
+import re, pathlib
+p = pathlib.Path("MOSPFormalization/DegreeBound/Step.lean")
+s = p.read_text()
+s = s.replace("""  obtain ⟨z, hz⟩ := hne
+  ha
+  > $ sed -i 's/have hj := j4_ge G w hred hGs rfl$/have hj := j4_ge G w hred hGs (v := v) rfl/' MOSPFormalization/DegreeBound/Step.lean && time lake env lean MOSPForm
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import re
+src = open("lean/MOSPFormalization/DegreeBound/Step.lean").read()
+code = re.sub(r"/-.*?-/", "", src, flags=r
+  > $ sed -n 19,21p paper1/latex/Makefile && python3 - <<'EOF'
+import pathlib
+names = """minNbrDeg_le_of_adj
+le_minNbrDeg
+exists_adj_degree_eq_minNbrDeg
+exists_paper_
+  > $ cd /home/al/dev/MOSP/lean && lake build 2>&1 | grep -n -B4 "warning\|Note:" | head -30; lake build > ../reports/scratch/edwards_mcdermid/07_step/lake_build.log 
+  > $ cd /home/al/dev/MOSP && date -u && (make -C paper1/latex axioms > reports/scratch/edwards_mcdermid/07_step/axiom_check.log 2>&1; tail -2 reports/scratch/edwards
+  > $ git status --short | grep -v "Ralph_Loops/loop0012/\(loop.log\|nohup.out\|status.json\|session_it07\)" ; grep -n "07 Lean (iv-a)" Ralph_Loops/loop0012/iteration
+  > $ git diff --stat reports/sandwich_tables.md | tail -1 && cat >> reports/edwards_mcdermid.md <<'EOF'
+
+## 7. Lean (iv-a): the step inequality `1 + f⁻(G*) ≤ f⁻(G)` 
+  > $ sed -i '380s/^- \[ \] \*\*07 Lean (iv-a)/- [x] **07 Lean (iv-a)/' Ralph_Loops/loop0012/iterations.md && sed -n 380p Ralph_Loops/loop0012/iterations.md | cut -c1
+  > $ grep -n "stage" learning/sandwich.py | grep -n "add_argument\|choices\|STAGES\|def main\|if a.stage\|== \"" | head -20; grep -n "sandwich_tables" learning/sandw
+  > $ sed -n 1035,1100p learning/sandwich.py; git show HEAD:reports/sandwich_tables.md | grep -n "^## " | head -20
+  > $ nice -n 19 timeout 600 python3 -m learning.sandwich --stage degree_bound 2>&1 | tail -2 && git diff --stat reports/sandwich_tables.md | tail -1; git diff report
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Waiting for the gate process to exit, then I'll read its log and write the PROGRESS entry.
+  > $ while kill -0 1224120 2>/dev/null; do sleep 5; done; echo gate-exited; tail -12 /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/07_step/gate.log
+
+Nothing else is independent of the gate result now; the remaining deliverable is the PROGRESS entry, which quotes the gate's numbers. Waiting for the notification.
+
+# result: success in 844s, 34 turns, cost $8.13
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/a0876bac-7461-4cfb-84fd-1d355ecb73ab/tasks/bnfpk1tnz.output; date -u; cd /home/al/dev/MOSP && git status --short | grep -
+
+Gate passed. Last step: the PROGRESS entry and the `Current` line.
+  > $ sed -i 's/^Current: 6\/11 SOLVED$/Current: 7\/11 SOLVED/' Ralph_Loops/loop0012/PROGRESS.md && grep -n "^Current:" Ralph_Loops/loop0012/PROGRESS.md && cat >> Ral
+
+Item 07 is done, and four items remain unchecked, so no `LOOP_COMPLETE` line. Nothing is committed, as instructed.
+
+**Recap of iteration 7.** The step inequality of Edwards & McDermid's Theorem 3.2 is now proved in Lean in all four of the paper's cases. `lean/MOSPFormalization/DegreeBound/Step.lean` holds 21 theorems with no `sorry` and no `axiom`, every one resting on `propext`, `Classical.choice` and `Quot.sound` only. The main theorem `one_add_potentialMinus_le` gives `1 + f⁻(G*) ≤ f⁻(G)` for every reduced reduct `G*` of `G − w`, with `w` chosen by the paper's two-key rule. The item's fallback of leaving the regular case as a named gap was not needed.
+
+Points worth knowing for the next items:
+
+- **The tie-break is used in exactly one lemma**, `degree_eq_of_reachable`, which is where item 02 found the simpler rule failing. Everything else needs only maximum degree.
+- **Two hypotheses the item listed were derived instead.** `Δ ≥ 4` follows from "reduced and not basic", and `G* ≠ ⊥` follows from the definition of basic with no confluence fact. `StepData` has neither as a field.
+- **The hinge `j4_ge` holds for every degree**, not only `d ≥ 3`. Lean's linter flagged the hypothesis as unused and the brute-force test now covers every vertex.
+- **Brute force before stating**: 133,055 (graph, w, reduct) triples to 9 vertices, zero violations, with the branch frequencies 315 / 125,252 / 7,478 / 10. The rarest branch is the one that needs `G* ≠ ⊥`.
+
+Gate passed: `lake build` ok, 515 theorems through the axiom check with 0 failures, 1,793 MOSP tests and 123 pathwidth-solver tests passed, paper unchanged at 74 pages. Report §7 and the PROGRESS entry are written, `iterations.md` marks item 07 done, and the count reads 7 of 11.
+
+One trap I hit and recorded in PROGRESS: running `learning.sandwich --stage lean` overwrites `reports/sandwich_tables.md` with that stage's tables only. I re-ran the `degree_bound` stage so the file is byte-identical to HEAD.
+
+Next is item 08, Theorem 3.2 itself by strong induction on the support, for which `exists_paper_choice`, `one_add_potentialMinus_le` and `nonbasic_reduct_ne_bot` are the pieces this item supplies.
+
+# result: success in 55s, 3 turns, cost $11.52

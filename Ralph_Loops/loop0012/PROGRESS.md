@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 6/11 SOLVED
+Current: 7/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -548,3 +548,94 @@ of `w`, `j_identity` (SJ: P1 with W4), `j4_ge` (S0), `step_inequality` (S1,
 `1 + F G* ≤ F G` in its four cases; **not S1′**, which is false, §2.4),
 `step_inequality_fminus`, `nonbasic_reduct_ne_bot`; all checked in item 02
 (S0 on 1,093,524, SJ on 157,324, S1 on 137,573 pairs).
+
+---
+
+## Iteration 7 — 2026-11-02 04:10–04:35 UTC — item 07: Lean (iv-a), the step inequality `1 + f⁻(G*) ≤ f⁻(G)` for a connected non-basic graph
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/Step.lean`** (namespace
+  `MOSPFormalization.DegreeBound`, imports `SPReduction`): **21 theorems, no
+  `sorry`, no `axiom`**, every one `[propext, Classical.choice, Quot.sound]`.
+  **All four cases of the paper (pp. 11–12) are proved; the item's fallback
+  (the regular case as a named gap, S1 as a hypothesis `hstep` of item 08) is
+  not needed.** `minNbrDeg` and the two-key rule as hypotheses `hmax` / `htie`,
+  `exists_paper_choice` (the `w` item 08 constructs); `supp_nonempty_of_not_isBasic`,
+  `three_le_globalMinDeg`, `four_le_degree_of_not_isBasic` (derived, not
+  assumed), `isBasic_of_spReduces_bot` and `nonbasic_reduct_ne_bot` (`G* ≠ ⊥`
+  for *every* reduct, from the definition of `IsBasic` alone — no confluence),
+  `exists_pos_degree_of_ne_bot`; **SJ** `one_add_potential_isolate` (unsorted)
+  and `j_identity` (the paper's `j₁, j₂, j₃` for *any* two distinct
+  neighbours — sorting is presentational); **S0** `j4_ge` (without the paper's
+  `d ≥ 3`, which Lean's linter found unused) and `j4_nonneg`;
+  `sum_g'_neighbors_ge`, `sum_g'_neighbors_eq`; `degree_eq_of_reachable` (the
+  regular case: the tie-break's only use, exactly where item 02 found S1′
+  failing); **S1** `one_add_F_le` (`1 + F G* ≤ F G`, one theorem with the four
+  branches R / A / B1 / B2 of report §7.3's case table) and
+  `one_add_potentialMinus_le` (`1 + f⁻(G*) ≤ f⁻(G)`); `structure StepData`
+  with instance fields and `StepData.one_add_F_le`,
+  `StepData.one_add_potentialMinus_le`. Imported by `lean/MOSPFormalization.lean`;
+  compiled on the first full attempt up to two elaboration slips (an anonymous
+  `Finset.Nonempty` constructor; explicit instance arguments in the structure),
+  no statement changed; `lake build` passes (`07_step/lake_build.log`).
+- **Checked before stated** (`07_step/check.py`, `check.log`, `summary.json`;
+  2 s on 8 workers at load 0): every connected graph of minimum degree 3 on
+  4–9 vertices (`nauty-geng -c -d3`, 87,004 graphs, 82,419 not basic), every
+  two-key `w` (133,055 pairs — item 02's S1 count to the pair), canonical
+  reduct + 3 random ones (never different). Re-run **in the form the proof
+  produces**: which branch fires (R 315 / A 125,252 / B1 7,478 / B2 10) and
+  that branch's inequalities; the new statements (unsorted SJ, `j_identity`
+  for a random pair, `j₄ ≥ g'(d)` on 910,385 (triple, `v`), the neighbour-sum
+  bound on 822,729 (pair, `v₀`), regular-case propagation, `Δ ≥ 4`,
+  `G* ≠ ⊥`); S1 in both forms. **Zero violations; kill checks: none fired.**
+- **Axiom check**: 21 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`07_step/axiom_check.log`; `make -C paper1/latex axioms`: **515 theorems
+  checked, 0 failures**). `STEP_PROVED` (21 names) folded into
+  `learning.sandwich.ALL_PROVED`; `--stage lean` audits them (then
+  `--stage degree_bound` re-run so `reports/sandwich_tables.md` is byte-identical
+  to HEAD — the file holds the last stage run, a trap noted below).
+- **Tests**: 3 new in `tests/test_edwards_mcdermid.py` (44 in all): S1 in the
+  Lean form on 150 random connected min-degree-3 graphs at 5–10 vertices; the
+  brute-force summary's counts and zero violations; the 21 names declared /
+  imported / audited, no `sorry`, no `axiom`, the structure, `minNbrDeg` and the
+  tie-break hypothesis present.
+- **Report**: `reports/edwards_mcdermid.md` §7 (the check's table, definitions,
+  the statements with their proofs, **the case table mapping each paragraph of
+  pp. 11–12 to its branch and the lemmas it uses**, seven choices beyond §2.6,
+  the axiom record, kill verdict none, regenerate commands, what it does not
+  claim).
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,793
+  passed, 2 skipped, 1 xfailed in 275 s, the 3 new tests included;
+  pathwidth_solver pytest 123 passed in 422 s; `make -C paper1/latex check` ok,
+  74 pages, the paper untouched). Log: `07_step/gate.log`.
+
+### Blockers
+None. Notes for later items: an anonymous constructor `⟨v, hv⟩` for
+`(s : Finset _).Nonempty` elaborates as `Exists.intro` inside `dite_eq_left`
+and then `inf'`'s proof argument mismatches — name it with
+`have hne : s.Nonempty := ⟨v, hv⟩` first; `supp` takes only `[Fintype V]`
+before `G` (the `DecidableEq` variable is not included), so never spell
+`@supp V _ _ G inst` — in a structure, `[instG : DecidableRel G.Adj]` as a
+field makes `supp G` / `G.degree` elaborate in later fields with no explicit
+instances; `push_neg` is deprecated for `push Not at h`; `j4_ge` needs the
+vertex named (`(v := v) rfl`) when the degree is given by `rfl`;
+`python -m learning.sandwich --stage X` overwrites `reports/sandwich_tables.md`
+with stage `X`'s tables only, so finish with `--stage degree_bound` (what
+HEAD holds). For item 08: `exists_paper_choice` gives `w` from
+`(supp G).Nonempty`; `exists_reduced_reduct (isolate G w)` gives `G*` with no
+instance (use `classical`); `one_add_potentialMinus_le` is S1 in the
+per-component form; `nonbasic_reduct_ne_bot` for `G* ≠ ⊥`; connectivity of
+the support must be supplied by item 08's component split (`restrict` and
+`potentialMinus_add`); the regular branch's `linarith` and B2's `nlinarith`
+need the product `(Δ − 2)(g'(3) − g'(Δ)) ≥ 0` given explicitly.
+
+### Next
+Item 08: `DegreeBound/ReductionTheorem.lean` — `exists_reduction_set` (T1,
+Theorem 3.2) by strong induction on `|supp G|`: basic → `X = ∅`;
+disconnected → one component and the rest (`restrict_sup_restrict_compl`,
+R5 `SPReduces.sup_of_disjoint`, `potentialMinus_add`); connected non-basic →
+`exists_paper_choice`, `exists_reduced_reduct`, S1
+(`one_add_potentialMinus_le`), the induction hypothesis on `G*`, R4
+`SPReduces.isolateSet_comm` with `X* ⊆ supp G*`, transitivity,
+`X = insert w X*`. Checked in item 02 on all 89,972 reduced non-empty graphs
+to 9 (T1), with `r(G − X) = B` on all.

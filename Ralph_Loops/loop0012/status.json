@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-02 03:58:53",
+  "updated": "2026-11-02 04:34:17",
   "phase": "tests",
-  "started": "2026-11-02 03:34:54",
-  "item": "06 Lean (iii): the series-parallel reduction system, basic graphs, degree monotonicity, an"
+  "started": "2026-11-02 04:09:55",
+  "item": "07 Lean (iv-a): the step inequality `1 + f\u207b(G*) \u2264 f\u207b(G)` for a connected non-basic graph."
 }

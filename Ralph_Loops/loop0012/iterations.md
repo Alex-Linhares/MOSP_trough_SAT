@@ -377,7 +377,7 @@ statement checked on small graphs before it is stated.
     (the paper's "it follows from the definition" is not formalised and
     "series-parallel" does not appear in Lean).
 
-- [ ] **07 Lean (iv-a): the step inequality `1 + f⁻(G*) ≤ f⁻(G)` for a connected non-basic graph.**
+- [x] **07 Lean (iv-a): the step inequality `1 + f⁻(G*) ≤ f⁻(G)` for a connected non-basic graph.**
   - **Question.** The heart of Theorem 3.2's proof (pp. 10–12): with `w` a
     maximum-degree vertex whose lowest-degree neighbour is as low as
     possible, `G' = G − w`, `G*` a reduced reduct of `G'`, does

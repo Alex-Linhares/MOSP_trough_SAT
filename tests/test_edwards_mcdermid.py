@@ -733,3 +733,119 @@ def test_sp_reduction_proved_names_are_theorems_in_the_lean_file():
     for s in ("inductive SPStep", "| pendant", "| suppress", "| triangle", "def SPReduces",
               "def IsSPReduced", "def IsBasic"):
         assert s in src
+
+
+# ----------------------------------------------------------------------------
+# item 07: `lean/MOSPFormalization/DegreeBound/Step.lean` — the step inequality
+# ----------------------------------------------------------------------------
+
+STEP_LEAN = WEIGHTS_LEAN.parent / "Step.lean"
+
+
+def _random_connected_min3(rng, n):
+    """A random connected graph on `n` vertices with every degree ≥ 3 (rejection)."""
+    from learning.edwards_mcdermid import components, degrees
+    while True:
+        adj = [0] * n
+        p = rng.choice([0.45, 0.6, 0.75])
+        for a in range(n):
+            for b in range(a + 1, n):
+                if rng.random() < p:
+                    adj[a] |= 1 << b
+                    adj[b] |= 1 << a
+        if len(components(adj)) == 1 and min(degrees(adj)) >= 3:
+            return adj
+
+
+def test_step_inequality_in_the_lean_form_on_random_graphs():
+    """S1 as `Step.lean` proves it: for a connected non-basic graph of minimum degree 3 and
+    every two-key `w`, `Δ ≥ 4`, `G*` non-empty, the unsorted SJ identity, `j₄ ≥ g'(d)` for
+    every `d = deg_{G'} v` (no `d ≥ 3` needed), the neighbour-sum bound, the regular-case
+    propagation (`degree_eq_of_reachable`), and `1 + F(G*) ≤ F(G)`, `1 + f⁻(G*) ≤ f⁻(G)`.
+    Also `minNbrDeg`'s two-key choice is realised (`exists_paper_choice`)."""
+    import random
+    from fractions import Fraction
+    from learning.edwards_mcdermid import (F_global, bits, degrees, f_potential, fminus,
+                                          g_prime, global_min_degree, is_basic, isolate,
+                                          paper_choice, reduce)
+    rng = random.Random(707)
+    pairs = 0
+    for _ in range(150):
+        n = rng.randint(5, 10)
+        adj = _random_connected_min3(rng, n)
+        if is_basic(adj):
+            continue
+        deg = degrees(adj)
+        maxs, chosen, D = paper_choice(adj)
+        assert D >= 4 and chosen and set(chosen) <= set(maxs)
+        key = {v: min(deg[u] for u in bits(adj[v])) for v in maxs}
+        assert all(key[w] == min(key.values()) for w in chosen)
+        for w in chosen:
+            pairs += 1
+            Gp = isolate(adj, w)
+            dp = degrees(Gp)
+            Gs, _ = reduce(Gp)
+            assert any(Gs), "G* empty though G is not basic"
+            S = sum((g_prime(deg[v]) for v in bits(adj[w])), Fraction(0))
+            assert 1 + f_potential(Gp) == f_potential(adj) + (D - 1) * g_prime(D) + g_prime(D - 1) - S
+            j4 = f_potential(Gp) - f_potential(Gs) + g_prime(global_min_degree(Gs))
+            assert all(j4 >= g_prime(dp[v]) for v in range(n))
+            assert all(S >= g_prime(deg[v0]) + (D - 1) * g_prime(D) for v0 in bits(adj[w]))
+            if all(deg[v] == D for v in bits(adj[w])):
+                assert all(deg[v] == D for v in range(n) if adj[v])
+            assert 1 + f_potential(Gs) - g_prime(global_min_degree(Gs)) <= F_global(adj)
+            assert 1 + fminus(Gs) <= fminus(adj)
+    assert pairs >= 50
+
+
+def test_item07_brute_force_log_has_no_violation():
+    """The exhaustive check to 9 vertices (`07_step/check.py`) was run and found nothing;
+    its (G, w) count is item 02's S1 count."""
+    import json
+    p = STEP_LEAN.parents[3] / "reports/scratch/edwards_mcdermid/07_step/summary.json"
+    if not p.exists():
+        pytest.skip("brute-force summary not present")
+    s = json.loads(p.read_text())
+    assert s["violations"] == 0
+    assert s["total"]["pairs"] == 133055 and s["total"]["nonbasic"] == 82419
+    assert s["total"]["case_R"] + s["total"]["case_A"] + s["total"]["case_B1"] + s["total"]["case_B2"] == s["total"]["triples"]
+
+
+def test_step_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `Step.lean` is declared there as a theorem
+    (namespaces resolved); the file has no `sorry` and no `axiom`; the root module imports
+    it; `paper1/axiom_check.lean` prints the axioms of every one; S1′ is not stated."""
+    import learning.sandwich as sw
+    src = STEP_LEAN.read_text()
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    ns, declared = [], set()
+    for line in code.splitlines():
+        m = re.match(r"^namespace\s+(\S+)", line)
+        if m:
+            ns.append(m.group(1))
+            continue
+        m = re.match(r"^end\s+(\S+)", line)
+        if m and ns and ns[-1] == m.group(1):
+            ns.pop()
+            continue
+        m = re.match(r"^theorem\s+([^\s:({\[]+)", line)
+        if m:
+            declared.add(".".join(ns[1:] + [m.group(1)]))
+    assert set(sw.STEP_PROVED) == {"DegreeBound." + n for n in declared}
+    assert len(sw.STEP_PROVED) == len(declared) == 21
+    assert set(sw.STEP_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (STEP_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.Step\n" in root
+    axioms = (STEP_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.STEP_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("exists_paper_choice", "four_le_degree_of_not_isBasic", "nonbasic_reduct_ne_bot",
+              "one_add_potential_isolate", "j_identity", "j4_ge", "degree_eq_of_reachable",
+              "one_add_F_le", "one_add_potentialMinus_le", "StepData.one_add_potentialMinus_le"):
+        assert f"DegreeBound.{n}" in sw.STEP_PROVED
+    assert "structure StepData" in src and "def minNbrDeg" in src
+    # the two-key rule is a hypothesis of the theorem; S1′ (every maximum-degree w) is not stated
+    assert "minNbrDeg G w ≤ minNbrDeg G u" in src

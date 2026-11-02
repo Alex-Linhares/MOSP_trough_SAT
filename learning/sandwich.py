@@ -409,9 +409,33 @@ SP_REDUCTION_PROVED = (
     "DegreeBound.SPReduces.sup_of_disjoint",
     "DegreeBound.SPReduces.sup_of_disjoint_supp",
 )
+#: `DegreeBound/Step.lean` (loop0012 item 07): the step inequality and its lemmas.
+STEP_PROVED = (
+    "DegreeBound.minNbrDeg_le_of_adj",
+    "DegreeBound.le_minNbrDeg",
+    "DegreeBound.exists_adj_degree_eq_minNbrDeg",
+    "DegreeBound.exists_paper_choice",
+    "DegreeBound.supp_nonempty_of_not_isBasic",
+    "DegreeBound.three_le_globalMinDeg",
+    "DegreeBound.four_le_degree_of_not_isBasic",
+    "DegreeBound.isBasic_of_spReduces_bot",
+    "DegreeBound.nonbasic_reduct_ne_bot",
+    "DegreeBound.exists_pos_degree_of_ne_bot",
+    "DegreeBound.one_add_potential_isolate",
+    "DegreeBound.j_identity",
+    "DegreeBound.sum_g'_neighbors_ge",
+    "DegreeBound.sum_g'_neighbors_eq",
+    "DegreeBound.j4_ge",
+    "DegreeBound.j4_nonneg",
+    "DegreeBound.degree_eq_of_reachable",
+    "DegreeBound.one_add_F_le",
+    "DegreeBound.one_add_potentialMinus_le",
+    "DegreeBound.StepData.one_add_F_le",
+    "DegreeBound.StepData.one_add_potentialMinus_le",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
-              + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED)
+              + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

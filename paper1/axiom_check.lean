@@ -583,3 +583,25 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.DegreeBound.SPReduces.isolate_comm_of_isolated
 #print axioms MOSPFormalization.DegreeBound.SPReduces.sup_of_disjoint
 #print axioms MOSPFormalization.DegreeBound.SPReduces.sup_of_disjoint_supp
+-- loop0012 item 07: the step inequality `1 + f⁻(G*) ≤ f⁻(G)` (DegreeBound/Step.lean)
+#print axioms MOSPFormalization.DegreeBound.minNbrDeg_le_of_adj
+#print axioms MOSPFormalization.DegreeBound.le_minNbrDeg
+#print axioms MOSPFormalization.DegreeBound.exists_adj_degree_eq_minNbrDeg
+#print axioms MOSPFormalization.DegreeBound.exists_paper_choice
+#print axioms MOSPFormalization.DegreeBound.supp_nonempty_of_not_isBasic
+#print axioms MOSPFormalization.DegreeBound.three_le_globalMinDeg
+#print axioms MOSPFormalization.DegreeBound.four_le_degree_of_not_isBasic
+#print axioms MOSPFormalization.DegreeBound.isBasic_of_spReduces_bot
+#print axioms MOSPFormalization.DegreeBound.nonbasic_reduct_ne_bot
+#print axioms MOSPFormalization.DegreeBound.exists_pos_degree_of_ne_bot
+#print axioms MOSPFormalization.DegreeBound.one_add_potential_isolate
+#print axioms MOSPFormalization.DegreeBound.j_identity
+#print axioms MOSPFormalization.DegreeBound.sum_g'_neighbors_ge
+#print axioms MOSPFormalization.DegreeBound.sum_g'_neighbors_eq
+#print axioms MOSPFormalization.DegreeBound.j4_ge
+#print axioms MOSPFormalization.DegreeBound.j4_nonneg
+#print axioms MOSPFormalization.DegreeBound.degree_eq_of_reachable
+#print axioms MOSPFormalization.DegreeBound.one_add_F_le
+#print axioms MOSPFormalization.DegreeBound.one_add_potentialMinus_le
+#print axioms MOSPFormalization.DegreeBound.StepData.one_add_F_le
+#print axioms MOSPFormalization.DegreeBound.StepData.one_add_potentialMinus_le

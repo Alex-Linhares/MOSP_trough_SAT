@@ -1,0 +1,10 @@
+# item 07 brute-force check, 2026-11-02 04:16:27 UTC, connected graphs of minimum degree 3, n = 4..9, 8 workers, 3 random reducts beside the canonical one
+n=4: 1 graphs, 0 non-basic, 0 (G, w) pairs, 0 (G, w, G*) triples; cases R/A/B1/B2 = 0/0/0/0; S0 0, SL 0; violations so far 0; 0 s
+n=5: 3 graphs, 1 non-basic, 5 (G, w) pairs, 5 (G, w, G*) triples; cases R/A/B1/B2 = 5/0/0/0; S0 20, SL 20; violations so far 0; 0 s
+n=6: 19 graphs, 7 non-basic, 26 (G, w) pairs, 26 (G, w, G*) triples; cases R/A/B1/B2 = 12/14/0/0; S0 122, SL 120; violations so far 0; 0 s
+n=7: 150 graphs, 92 non-basic, 211 (G, w) pairs, 211 (G, w, G*) triples; cases R/A/B1/B2 = 21/181/9/0; S0 1096, SL 1091; violations so far 0; 0 s
+n=8: 2589 graphs, 2134 non-basic, 3998 (G, w) pairs, 3998 (G, w, G*) triples; cases R/A/B1/B2 = 88/3697/213/0; S0 23525, SL 22538; violations so far 0; 0 s
+n=9: 84242 graphs, 80185 non-basic, 128815 (G, w) pairs, 128815 (G, w, G*) triples; cases R/A/B1/B2 = 189/121360/7256/10; S0 885622, SL 798960; violations so far 0; 2 s
+TOTAL: {'graphs': 87004, 'basic': 4585, 'nonbasic': 82419, 'pairs': 133055, 'SJ': 133055, 'SJpair': 133055, 'SL': 822729, 'triples': 133055, 'S0': 910385, 'S1': 133055, 'case_R': 315, 'case_A': 125252, 'case_B': 7488, 'case_B1': 7478, 'case_B2': 10}
+violations: 0
+OK

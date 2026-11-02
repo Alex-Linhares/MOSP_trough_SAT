@@ -1281,3 +1281,213 @@ evidence beyond 9 vertices (the Lean theorems are the evidence for every
 finite graph). The constructor-kind refinement of R3 is a property of *this*
 proof's case analysis, recorded so a reader can match the check to the
 proof, not a claim that the kind is forced.
+
+## 7. Lean (iv-a): the step inequality `1 + f⁻(G*) ≤ f⁻(G)` for a connected non-basic graph (item 07, 2026-11-02)
+
+**Deliverable.** `lean/MOSPFormalization/DegreeBound/Step.lean` (namespace
+`MOSPFormalization.DegreeBound`, imports `SPReduction`): the heart of the
+proof of Theorem 3.2 of Edwards & McDermid (2015, pp. 9–12) — with `G`
+reduced, connected on its support and not basic, `w` the paper's two-key
+choice (maximum degree, then the smallest lowest-neighbour degree), and
+`G*` **any** reduced reduct of `G − w`, `1 + f⁻(G*) ≤ f⁻(G)` — and
+**21 theorems, no `sorry`, no `axiom`**, every one
+`[propext, Classical.choice, Quot.sound]`. **All four cases of the paper are
+proved; the item's fallback (the regular case as a named gap, S1 as a
+hypothesis of item 08) is not needed.** Imported by
+`lean/MOSPFormalization.lean`; `lake build` passes
+(`reports/scratch/edwards_mcdermid/07_step/lake_build.log`); the file
+compiled on its first full attempt with two elaboration slips (an anonymous
+`Finset.Nonempty` constructor; explicit instance arguments in the structure)
+and no change to any statement.
+
+**Regenerate.** `cd lean && lake build`; `make -C paper1/latex axioms`;
+`nice -n 19 python3 reports/scratch/edwards_mcdermid/07_step/check.py --max-n 9 --workers 8`
+(2 s on 8 workers at load 0; `check.log`, `summary.json`).
+
+**Size range.** The Lean statements hold on every finite graph
+(kernel-checked). The brute-force check is every connected graph of minimum
+degree 3 on 4–9 vertices from `nauty-geng -c -d3` (87,004 graphs, 82,419 of
+them not basic), exhaustive over the two-key `w` and over every vertex `v`
+of `G − w` for the hinge; the reduct is the canonical one plus 3 random
+maximal reductions per pair (which never differed, as item 02 measured).
+Nothing beyond 9 vertices was checked.
+
+### 7.1 Checked before stated (`07_step/check.py`, `check.log`, `summary.json`)
+
+Item 02 checked S0, SJ and S1 on every graph to 9 (§2.3: 1,093,524 /
+157,324 / 137,573); this item re-ran the step **in the form the Lean proof
+produces** — which of the four branches fires for each (G, `w`, `G*`) and
+the inequalities that branch combines — and checked the statements beyond
+§2.6 for the first time (the unsorted SJ, the `j`-identity for an arbitrary
+pair, the neighbour-sum bound for every neighbour, the regular-case
+propagation, `Δ ≥ 4`, `G* ≠ ⊥`).
+
+| statement | Lean name | checked on | result |
+|---|---|---|---|
+| `Δ = deg w ≥ 4`; `G*` non-empty | `four_le_degree_of_not_isBasic`, `nonbasic_reduct_ne_bot` | 133,055 (G, `w`, `G*`) | 0 failures |
+| SJ, unsorted: `1 + f(G') = f(G) + (Δ−1) g'(Δ) + g'(Δ−1) − S` | `one_add_potential_isolate` | 133,055 | 0 |
+| `1 + f(G') = f(G) − j₁ − j₂ − j₃` for a random ordered pair `v₁ ≠ v₂` of neighbours | `j_identity` | 133,055 | 0 |
+| `j₄ ≥ g'(deg_{G'} v)` for every `v` with `deg_{G'} v ≥ 3`; `j₄ ≥ 0` | `j4_ge`, `j4_nonneg` | 910,385 (triple, `v`) | 0 |
+| `S ≥ g'(deg v₀) + (Δ−1) g'(Δ)` for every neighbour `v₀` | `sum_g'_neighbors_ge` | 822,729 (pair, `v₀`) | 0 |
+| **R**: no neighbour below `Δ` ⇒ every support vertex has degree `Δ`, `δ = Δ`, `S = Δ g'(Δ)`, `j₄ ≥ g'(Δ−1)` | `degree_eq_of_reachable`, `sum_g'_neighbors_eq` | 315 triples | 0 |
+| **A**: some `v` with `3 ≤ deg_{G'} v ≤ δ(G)` ⇒ `j₄ ≥ g'(δ(G))` | branch of `one_add_F_le` | 125,252 | 0 |
+| **B**: otherwise `δ(G) = 3` and every degree-3 vertex is adjacent to `w` | branch | 7,488 | 0 |
+| **B1**: a neighbour of degree `≥ 4` ⇒ `j₄ ≥ g'(Δ−1)` | branch | 7,478 | 0 |
+| **B2**: all neighbours of degree 3 ⇒ `S = Δ g'(3)`; every support vertex `u` of `G*` is off `N[w]` with `deg_{G'} u = deg_G u ≥ 3`; `j₄ ≥ g'(Δ)` | branch | 10 | 0 |
+| **S1**: `1 + F(G*) ≤ F(G)` and `1 + f⁻(G*) ≤ f⁻(G)` | `one_add_F_le`, `one_add_potentialMinus_le` | 133,055 | 0 |
+
+Per `n`: pairs 5 / 26 / 211 / 3,998 / 128,815 at `n = 5 … 9` — item 02's
+S1 column to the pair (5 / 31 / 242 / 4,240 / 133,055 cumulative). The
+regular branch is rare and shrinking (5, 12, 21, 88, 189 per `n`), the
+low-survivor branch A carries 94% of the triples, and B2 — the branch that
+needs `G* ≠ ⊥` — fires on 10 triples, all at `n = 9`. **Kill checks: none
+fired.**
+
+### 7.2 Definitions
+
+- `minNbrDeg G u := if h : (G.neighborFinset u).Nonempty then (G.neighborFinset u).inf' h (G.degree ·) else 0`
+  — the degree of the lowest-degree neighbour (`0` if none);
+  `minNbrDeg_le_of_adj`, `le_minNbrDeg`, `exists_adj_degree_eq_minNbrDeg`.
+- The two-key rule is the pair of hypotheses `hmax : ∀ u, G.degree u ≤ G.degree w`
+  and `htie : ∀ u, G.degree u = G.degree w → minNbrDeg G w ≤ minNbrDeg G u`;
+  `exists_paper_choice : (supp G).Nonempty → ∃ w, hmax ∧ htie` realises it
+  (`Finset.exists_max_image` on the degree, then `exists_min_image` with
+  `minNbrDeg` over the maximum-degree vertices), which is what item 08
+  constructs.
+- `structure StepData V` bundles `G`, `Gs`, `w`, the two decidability
+  instances (as instance fields, registered with `attribute [instance]`),
+  `reduced`, `conn` (`∀ u ∈ supp G, ∀ v ∈ supp G, G.Reachable u v`),
+  `notBasic`, `maxDeg`, `tieBreak`, `reduces : SPReduces (isolate G w) Gs`,
+  `reducedGs`. Neither `Δ ≥ 4` nor `Gs ≠ ⊥` is a field: both are derived.
+
+### 7.3 The statements and their proofs, and the case table
+
+**Non-basic graphs (5).** `supp_nonempty_of_not_isBasic` (`⊥` is basic);
+`three_le_globalMinDeg` (reduced, non-empty support ⇒ `δ ≥ 3`);
+`four_le_degree_of_not_isBasic` — if the maximum degree were `≤ 3`, every
+non-trivial component would be cubic (its vertices are reachable from a
+positive-degree vertex, so lie in the support, so have degree `3`), and `G`
+basic; `isBasic_of_spReduces_bot` — on a connected support, `SPReduces (G − w) ⊥`
+makes the one component of the second kind, witnessed by `w` (the
+`restrict G C.supp = G` identity by `restrict_eq_self`); hence
+`nonbasic_reduct_ne_bot : SPReduces (isolate G w) Gs → Gs ≠ ⊥` for **every**
+reduct, from the definition of `IsBasic` alone (§2.1 (6)): no confluence.
+`exists_pos_degree_of_ne_bot` turns `≠ ⊥` into a vertex of positive degree.
+
+**The identity (2).** `one_add_potential_isolate` (SJ): P1 and W4 by
+`linarith`. `j_identity`: the paper's (4) for *any* two distinct
+neighbours `v₁ ≠ v₂` — `add_sum_erase` twice, `sum_sub_distrib`, the cast
+`|N(w) ∖ {v₁, v₂}| = Δ − 2`, `ring`. The paper sorts the neighbours by
+degree; the identity holds for every labelling, and the sorted `v₁` is
+used only through the *bounds* below, never through the identity.
+
+**The hinge and the sums (4).** `j4_ge` (S0): `g' d ≤ f(G') − f(G*) + g'(δ(G*))`
+whenever `deg_{G'} v = d`, by cases on `Gs.degree v = 0` — isolated:
+`potential_sub_ge_of_isolated` and `g'_le_g`; surviving: `v ∈ supp Gs`,
+`δ(G*) ≤ deg_{G*} v ≤ d` (R2), `3 ≤ δ(G*)` (reduced), W3, and
+`potential_le`. The paper's `d ≥ 3` is not needed and not taken (for
+`d ≤ 2` the statement is `0 ≤ j₄`). `j4_nonneg`. `sum_g'_neighbors_ge`:
+every neighbour's term is `≥ g'(Δ)` (W3), one term kept exact — the inside
+of P2's proof, stated so that each branch can choose its `v₀`.
+`sum_g'_neighbors_eq`: all neighbours of one degree `d` ⇒ `S = Δ g'(d)`.
+
+**The regular case (1).** `degree_eq_of_reachable`: if no neighbour of
+`w` is below `Δ`, then `minNbrDeg G w = Δ`, so by the tie-break every
+maximum-degree `x` has `minNbrDeg G x ≥ Δ`, i.e. all its neighbours have
+degree `Δ`; this propagates along any walk from `w` (induction on
+`G.Walk x y` with the invariant `deg x = Δ`). This is the paper's "`d(v₁) < Δ`
+unless `G` is `Δ`-regular" and **the only place the tie-break is used** —
+exactly where item 02 found S1′ failing (§2.4).
+
+**S1 (2 + 2).** `one_add_F_le`: after `unfold F` and SJ, it suffices that
+`g'(δ) + (Δ − 1) g'(Δ) + g'(Δ − 1) ≤ S + j₄`, and the four branches close it:
+
+| paper (pp. 11–12) | branch of `one_add_F_le` | what it uses | closes by |
+|---|---|---|---|
+| "If `G` is `Δ`-regular, then `d(v₁) = Δ`, and `G'` will contain a vertex of degree `Δ − 1`, so `j₄ ≥ g'(Δ − 1)`" | `hreg : ∀ v, G.Adj w v → deg v = Δ` | `degree_eq_of_reachable` (so `δ = Δ`), `sum_g'_neighbors_eq`, `j4_ge` at a neighbour (`deg_{G'} = Δ − 1`) | `linarith` |
+| "Otherwise `d(v₁) ≤ Δ − 1`, so `j₁ ≥ 0`. If `G'` contains `v` with `δ(G) ≥ d_{G'}(v) ≥ 3`, then `j ≥ j₄ ≥ g'(δ(G))`" | `¬ hreg`, `hA : ∃ v, 3 ≤ deg_{G'} v ≤ δ` | `sum_g'_neighbors_ge` at the low neighbour `v₀` (`g'(deg v₀) ≥ g'(Δ − 1)`), `j4_ge` at `v`, W3 | `linarith` |
+| "So suppose not. Then `δ(G) = 3` … every vertex with `d_G(v) = 3` must be a neighbour of `w`" | `¬ hA`: the minimum-degree vertex `v₁ ≠ w` has `deg_{G'} v₁ ∈ {δ, δ − 1}`, so `δ = 3` and `G.Adj w v₁` | `exists_degree_eq_globalMinDeg`, `degree_isolate_of_adj` / `_of_not_adj`, `omega` | — |
+| "If `d(v_Δ) > 3`, then `v_Δ` satisfies `Δ − 1 ≥ d_{G'}(v_Δ) ≥ 3`, so `j₄ ≥ g'(Δ − 1)`; also `d(v₁) = 3` so `j₁ = g'(3) − g'(Δ − 1)`" | `hB : ∃ v, G.Adj w v ∧ 4 ≤ deg v` | `j4_ge` at `v` (`deg_{G'} v = deg v − 1 ∈ [3, Δ − 1]`), `sum_g'_neighbors_ge` at `v₁` (`g'(3)` kept exact) | `linarith` |
+| "The only other possibility is `d(v₁) = … = d(v_Δ) = 3` … since `G*` is not empty, `G'` must have some other vertex `v` not adjacent to `w`, so `d_{G'}(v) ≥ 3`. Then `j ≥ j₂ + j₄ ≥ g'(3) − g'(Δ) + g'(d_{G'}(v)) ≥ g'(3)`" | `¬ hB`: every neighbour has degree 3 | `sum_g'_neighbors_eq` (`S = Δ g'(3)`), `nonbasic_reduct_ne_bot` → `u` with `deg_{G*} u ≥ 3`, so `¬ G.Adj w u` (a neighbour would have `deg_{G'} = 2` and be isolated in `G*`) and `u ≠ w`; `j4_ge` at `u` (`deg_{G'} u = deg_G u ≤ Δ`), `g'(Δ − 1) ≤ g'(3)`, `g'(Δ) ≤ g'(3)` | `nlinarith` with the product `(Δ − 2)(g'(3) − g'(Δ)) ≥ 0` |
+
+`one_add_potentialMinus_le`: `f⁻(G*) ≤ F(G*)` (`potentialMinus_le_F`) and
+`f⁻(G) = F(G)` on the connected support (`potentialMinus_eq_F_of_connected`).
+`StepData.one_add_F_le`, `StepData.one_add_potentialMinus_le`: the bundled
+forms.
+
+### 7.4 Choices beyond §2.6 and the item's wording
+
+1. **One theorem, four branches, not four lemmas.** The item's
+   `step_regular`, `step_low_survivor`, `step_delta_three` are the branches
+   of `one_add_F_le`, because each branch's conclusion is the same
+   inequality on the same six quantities and what differs is only which
+   `v` feeds `j4_ge` and which `v₀` feeds the neighbour-sum bound. The
+   reusable content is factored into `j4_ge`, `sum_g'_neighbors_ge`,
+   `sum_g'_neighbors_eq` and `degree_eq_of_reachable`; the case table above
+   is the map from the paper's paragraphs to the branches.
+2. **The sorted neighbours `v₁ ≤ … ≤ v_Δ` are never formed.** SJ is stated
+   with the whole neighbour sum `S`; `j_identity` shows the paper's
+   `j₁, j₂, j₃` decomposition holds for any ordered pair, so sorting is
+   presentational; the bounds use "a neighbour of degree `< Δ`", "the
+   minimum-degree vertex" and "a neighbour of degree `≥ 4`" directly.
+3. **`j4_ge` without `d ≥ 3`.** Dropped after Lean's linter found the
+   hypothesis unused; the statement is true for every `d` and the check
+   was extended (the test covers every `v`).
+4. **`Δ ≥ 4` and `G* ≠ ⊥` are derived, not assumed.** The item listed both
+   among the hypotheses; `four_le_degree_of_not_isBasic` needs only
+   "reduced and not basic" (not even connectivity), and
+   `nonbasic_reduct_ne_bot` needs the connected support. `StepData` has
+   neither as a field.
+5. **The tie-break is kept** (item 02's S1′ is false) and used in exactly
+   one lemma, `degree_eq_of_reachable`; everything else needs only
+   `hmax`. A reader wanting the simple rule gets the precise statement of
+   what it costs: without the tie-break, the regular branch's `δ = Δ`
+   fails on the 350 graphs of §2.4.
+6. **`exists_paper_choice`** is provided for item 08 (the item's "pick `w`
+   by `Finset.exists_max_image` … with `minNbrDeg` as the key").
+7. **The structure carries its instances as fields.** `[instG : DecidableRel G.Adj]`
+   and `[instGs : …]` registered with `attribute [instance]`, so `supp G`,
+   `G.degree` and `minNbrDeg` elaborate in the later fields; item 08, which
+   gets `Gs` from `exists_reduced_reduct` without an instance, builds the
+   bundle under `classical`.
+
+### 7.5 Axiom lines, tests, regenerate
+
+- 21 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`07_step/axiom_check.log`); `make -C paper1/latex axioms`: **515
+  theorems checked, 0 failures**, every line `[propext, Classical.choice, Quot.sound]`.
+  `STEP_PROVED` (21 names) is folded into `learning.sandwich.ALL_PROVED`;
+  `python -m learning.sandwich --stage lean` audits them
+  (`reports/sandwich_tables.md` regenerated).
+- Tests: 3 new in `tests/test_edwards_mcdermid.py` (44 in all): S1 in the
+  Lean form on 150 random connected graphs of minimum degree 3 at 5–10
+  vertices (`Δ ≥ 4`, `G* ≠ ⊥`, the unsorted SJ, `j₄ ≥ g'(d)` for every
+  `d`, the neighbour-sum bound, the regular-case propagation, both forms
+  of S1, and the two-key choice realised); the brute-force summary's counts
+  (133,055 pairs, 82,419 non-basic graphs, the four branches partitioning
+  the triples) and zero violations; the 21 names declared (namespaces
+  resolved) / imported / audited, no `sorry`, no `axiom`, the structure
+  and `minNbrDeg` present, the tie-break hypothesis present.
+- No new sandwich stage: nothing numerical beyond item 05's `potentialMinus`.
+
+### 7.6 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion); every case is
+proved, so item 08 states Theorem 3.2 with S1 as a *lemma*, not as the
+fallback hypothesis `hstep`.
+
+**What item 08 gets.** `exists_paper_choice` (the `w`),
+`exists_reduced_reduct` (item 06, the `G*`), `one_add_potentialMinus_le`
+(S1 in the per-component form, for the induction step
+`|X| + f⁻(B) ≤ 1 + f⁻(G*) ≤ f⁻(G)`), `nonbasic_reduct_ne_bot` and
+`supp_nonempty_of_not_isBasic`; and R4 `SPReduces.isolateSet_comm` with
+`X* ⊆ supp G*` for `SPReduces (G − w − X*) (G* − X*)`.
+
+**Does not claim.** The existence of `X` (item 08); anything about
+pathwidth (item 09) or about the hypotheses (H1), (H3); that the reduct is
+unique (the theorem quantifies over every reduced reduct, which is
+stronger than needed and sidesteps the question); that S1 holds for every
+maximum-degree `w` (it does not, §2.4); that the brute-force counts are
+evidence beyond 9 vertices (the Lean theorem is the evidence for every
+finite graph); that the branch frequencies (315 / 125,252 / 7,478 / 10 at
+`n ≤ 9`) say anything about larger graphs.

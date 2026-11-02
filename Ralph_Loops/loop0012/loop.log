@@ -31,3 +31,8 @@
 [2026-11-02 03:34:54] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-11-02 03:58:53] session it06: ok (exit 0, 30 tool calls)
 [2026-11-02 04:09:55] tests passed: GATE PASS
+[2026-11-02 04:09:55] committed e79c10a21: 06 Lean (iii): the series-parallel reduction system, basic graphs, deg
+[2026-11-02 04:09:55] === iteration 7: 07 Lean (iv-a): the step inequality `1 + f⁻(G*) ≤ f⁻(G)` for a connected non-basic graph.
+[2026-11-02 04:09:55] claude session it07 (cap 4.00 h) -> session_it07.log
+[2026-11-02 04:34:17] session it07: ok (exit 0, 35 tool calls)
+[2026-11-02 04:46:36] tests passed: GATE PASS

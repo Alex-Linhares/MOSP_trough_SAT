@@ -1,0 +1,5 @@
+make: Entering directory '/home/al/dev/MOSP/paper1/latex'
+cd ../.. && python3 -m paper1.latex.check_axioms
+198 names cited, 0 theorems without an axiom line
+515 theorems checked, 0 failures
+make: Leaving directory '/home/al/dev/MOSP/paper1/latex'
