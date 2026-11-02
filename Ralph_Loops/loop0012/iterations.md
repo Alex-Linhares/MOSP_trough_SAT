@@ -324,7 +324,7 @@ statement checked on small graphs before it is stated.
   - **Does not claim.** Anything about reductions (item 06) or pathwidth
     (item 09).
 
-- [ ] **06 Lean (iii): the series-parallel reduction system, basic graphs, degree monotonicity, and the commutation of deletion with reduction.**
+- [x] **06 Lean (iii): the series-parallel reduction system, basic graphs, degree monotonicity, and the commutation of deletion with reduction.**
   - **Question.** Can the four operations, their closure, "reduced",
     "basic", the facts the step inequality needs (R1, R2) and the local
     commutation lemma that replaces the paper's appeal to Kneis et al.'s

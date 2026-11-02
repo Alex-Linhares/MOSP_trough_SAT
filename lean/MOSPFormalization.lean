@@ -67,3 +67,4 @@ import MOSPFormalization.Search.WrongOptimumData
 import MOSPFormalization.DegreeBound.Weights
 import MOSPFormalization.DegreeBound.CutLemma
 import MOSPFormalization.DegreeBound.Potential
+import MOSPFormalization.DegreeBound.SPReduction

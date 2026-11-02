@@ -1064,3 +1064,220 @@ potential for anything other than the paper's argument; that
 certify Lean's kernel check of the 54 statements on every finite graph; the
 brute-force counts are the record of what was checked before they were
 stated and are not evidence beyond 12 vertices.
+
+## 6. Lean (iii): the series-parallel reduction system, basic graphs, degree monotonicity, and the commutation of deletion with reduction (item 06, 2026-11-02)
+
+**Deliverable.** `lean/MOSPFormalization/DegreeBound/SPReduction.lean`
+(namespace `MOSPFormalization.DegreeBound`, imports `Potential`): the four
+operations of Edwards & McDermid (2015, p. 8) as a step relation on
+`SimpleGraph V` with removed vertices isolated, its reflexive–transitive
+closure, "reduced", "basic", and **69 theorems, no `sorry`, no `axiom`**,
+every one `[propext, Classical.choice, Quot.sound]`. R1–R5 of §2.2 are all
+proved; R6 (optional, not needed by the assembly) is not. No confluence fact
+is stated or used: the paper's Lemma 3.1 (which cites Kneis et al. 2009) is
+replaced by the local commutation lemma R3 and its lifts R3X / R4, as plan
+§0.5 said. Imported by `lean/MOSPFormalization.lean`; `lake build` passes
+(`reports/scratch/edwards_mcdermid/06_reduction/lake_build.log`).
+
+**Regenerate.** `cd lean && lake build`; `make -C paper1/latex axioms`;
+`nice -n 19 python3 reports/scratch/edwards_mcdermid/06_reduction/check_r3.py --max-n 9 --workers 8`
+(3 s on 8 workers at load 0.3; `check_r3.log`, `summary.json`).
+
+**Size range.** The Lean statements hold on every finite graph (kernel-checked).
+The brute-force check is every graph on 1–9 vertices from `nauty-geng`
+(288,266), exhaustive for R1, R2, R3, EX, and random for the finset and
+sequence forms (R3X, R4, R5); nothing beyond 9 vertices was checked.
+
+### 6.1 Checked before stated (`06_reduction/check_r3.py`, `check_r3.log`, `summary.json`)
+
+Item 02 had R1–R5 on every graph to 9 (§2.3); the item asked for R3's stage
+to be re-run here. It was re-run **in the form the Lean proof produces**, which
+is stronger than item 02's: R3 records not only that `H − w = G − w` or that
+one step at `v` in `G − w` reaches `H − w`, but *which* case and *which
+constructor* — zero steps exactly when `v` is pendant at `w`; one step of the
+original kind when `w ∉ N(v)`, a pendant deletion when `w ∈ N(v)`. The
+statements beyond §2.6 (R3X, the hypothesis form of R4, R5 in the `⊔` form,
+the step-existence lemma) were checked for the first time.
+
+| statement | checked on | result |
+|---|---|---|
+| EX: a vertex of degree 1 or 2 admits a step (`exists_spStep_of_ndeg`) | 2,579,255 (graph, vertex) | 0 failures |
+| R1: `degSum H < degSum G` and `ndeg H v = 0 < ndeg G v` | 393,156 steps | 0 |
+| R2: no degree rises; `f H ≤ f G`; an isolated vertex costs `≥ g(deg)` | 393,156 steps, every vertex | 0 |
+| R3 with the constructor kind | 3,115,987 (graph, step, `w`): **95,300 zero-step, all pendant-at-`w`; 3,020,687 one-step, all of the predicted kind** | 0 |
+| R3X: `v ∉ X` random (3 per step) | 1,179,468 (257,776 zero, 921,692 one) | 0 |
+| R4: replay along a random maximal reduction with random `X ⊆ supp H` | 864,798 (graph, `X`) over 288,266 sequences; every acted vertex isolated in `H` | 0 |
+| R5: `SPStep (G ⊔ K) v (H ⊔ K)`, same kind, `K` random on `V ∖ supp G` | 25,566 | 0 |
+
+The R3 totals (3,115,987 / 95,300 / 3,020,687) are item 02's to the triple.
+**Kill checks: none fired.**
+
+### 6.2 Definitions
+
+- `ndeg G v := (G.neighborSet v).ncard` — the degree with no decidability
+  instance; `ndeg_eq_degree` pins it to `G.degree v` under any
+  `DecidableRel G.Adj`; `degSum G := ∑ v, ndeg G v`.
+- `isolateSet G X` (`G − X`, `X : Finset V`): `Adj a b := G.Adj a b ∧ a ∉ X ∧ b ∉ X`;
+  `restrict G S` (`G|S`, `S : Set V`): `Adj a b := G.Adj a b ∧ a ∈ S ∧ b ∈ S`.
+- `inductive SPStep (G : SimpleGraph V) (v : V) : SimpleGraph V → Prop` with
+  `pendant (hx : G.Adj v x) (hall : ∀ z, G.Adj v z → z = x) : SPStep G v (isolate G v)`
+  (operation 2), `suppress (hx) (hy) (hxy : x ≠ y) (hall : ∀ z, G.Adj v z → z = x ∨ z = y) (hnadj : ¬ G.Adj x y) : SPStep G v (isolate G v ⊔ edge x y)`
+  (operation 3), `triangle (…) (hadj : G.Adj x y) : SPStep G v (isolate G v)`
+  (operation 4). Operation 1 is the identity on `SimpleGraph V` (§2.1 (1)).
+- `SPReduces G H := Relation.ReflTransGen (fun G H => ∃ v, SPStep G v H) G H`;
+  `IsSPReduced G := ∀ v, ndeg G v = 0 ∨ 3 ≤ ndeg G v`;
+  `IsBasic G := ∀ C : G.ConnectedComponent, (∃ v ∈ C.supp, 0 < ndeg G v) → (∀ v ∈ C.supp, ndeg G v = 3) ∨ ∃ v ∈ C.supp, SPReduces (isolate (restrict G C.supp) v) ⊥`.
+
+### 6.3 The statements and their proofs
+
+The instance-free degree (7): `ndeg_eq_degree`, `ndeg_eq_zero_iff`
+(`↔ ∀ z, ¬ G.Adj v z`), `ndeg_pos_of_adj`, `ndeg_le_of_le`, `ndeg_bot`,
+`ndeg_eq_one_iff` (`↔ ∃ x, G.Adj v x ∧ ∀ z, G.Adj v z → z = x`, from
+`Set.ncard_eq_one`), `ndeg_eq_two_iff` (from `Set.ncard_eq_two`).
+
+Deletion and restriction (23): `isolate_comm`, `isolate_sup`,
+`isolate_edge_left` / `_right` (`isolate (edge x y) x = ⊥`),
+`isolate_edge_of_ne`, `isolate_eq_self_of_forall_not_adj`,
+`isolate_eq_self_of_ndeg_eq_zero`, `neighborSet_isolate`, `ndeg_isolate_le`,
+`ndeg_isolate_self`; `isolateSet_adj`, `isolateSet_le`, `isolateSet_empty`,
+`isolateSet_singleton`, `isolateSet_insert` (`= isolate (isolateSet G X) w`,
+the fold's step), `isolateSet_comm_isolate`, `ndeg_isolateSet_le`;
+`restrict_adj`, `restrict_le`, `restrict_eq_self` (when every edge lies inside
+`S`), `restrict_sup_restrict_compl` (`restrict G S ⊔ restrict G Sᶜ = G` when
+no edge crosses `S`), `isolate_restrict`, `restrict_adj_imp_not_adj_compl`.
+Every one is `ext` and `tauto`.
+
+Reduced and basic (3 + 5): `isSPReduced_iff` (the degree form under any
+instance), `isSPReduced_bot`, `isBasic_bot`; `SPReduces.refl` / `trans` /
+`single` / `head` / `tail`.
+
+**R1, R2 for one step** (`namespace SPStep`, 10): `not_adj` (`v` is isolated in
+`H`), `ndeg_self`, `exists_adj`, `ndeg_pos`, `ndeg_eq` (`ndeg G v = 1 ∨ = 2`),
+`ndeg_isolate_sup_edge_left` (the suppression's degree at `x`:
+`N_H(x) ⊆ (N_G(x) ∖ {v}) ∪ {y}`, so `ncard ≤ ncard (N ∖ {v}) + 1 = ncard N` by
+`Set.ncard_union_le` and `Set.ncard_sdiff_singleton_add_one`),
+`ndeg_isolate_sup_edge_of_ne` (`u ∉ {x, y}`: `N_H(u) ⊆ N_G(u)`), **`ndeg_le`
+(R2)**, **`degSum_lt` (R1)** — `Finset.sum_lt_sum` from R2 and the strict drop
+at `v`.
+
+**Termination and fixed points** (6): `not_isSPReduced_iff`,
+`exists_spStep_of_ndeg`, `exists_spStep_of_not_isSPReduced`,
+`IsSPReduced.not_spStep`, **`exists_reduced_reduct`** (strong induction on
+`degSum`), `IsSPReduced.eq_of_spReduces` (`SPReduces G H → H = G` for reduced
+`G`, by `ReflTransGen.cases_head`).
+
+**R2 along a reduction** (`namespace SPReduces`, 7): `ndeg_le` (induction on
+`ReflTransGen`), `degree_le` (any instances), `ndeg_eq_zero`,
+`not_adj_of_not_adj` (an isolated vertex stays isolated), `supp_subset`,
+**`potential_le`** (`f H ≤ f G`, by `g_monotone`),
+**`potential_sub_ge_of_isolated`** (`H.degree u = 0 → g (G.degree u) ≤ f G − f H`,
+by `Finset.single_le_sum` on the non-negative termwise differences).
+
+**R3, R3X, R5 for one step** (`namespace SPStep`, 3): **`isolate_comm`** — the
+case analysis of plan §3 risk 3 exactly as the check recorded it: pendant at
+`w` ⇒ `isolate H w = isolate G w` (`isolate_comm` and
+`isolate_eq_self_of_forall_not_adj`); pendant elsewhere ⇒ the same pendant
+step; triangle with `w ∈ {x, y}` ⇒ a pendant step at the other neighbour,
+else the same triangle; suppression with `w = x` ⇒ `isolate_sup`,
+`isolate_edge_left`, `sup_bot_eq`, then a pendant step at `y` (symmetric at
+`y`), else `isolate_edge_of_ne` and the same suppression; **`isolateSet_comm`**
+(R3X, `Finset.induction_on` with `isolateSet_insert`); **`sup_of_disjoint`**
+(R5: `isolate (G ⊔ K) v = isolate G v ⊔ K` since `K` has no edge at `v`, and
+`sup_right_comm` moves the added edge past `K`).
+
+**R4, R5 along a reduction** (`namespace SPReduces`, 6): `not_spStep_of_adj`
+(a vertex with a neighbour in `H` was acted on by no step),
+**`isolateSet_comm`** (R4: `head_induction_on`; the acted vertex `v` is not in
+`X`, so R3X applies — equality rewrites, a step prepends),
+**`isolate_comm`** (the singleton case), `isolate_comm_of_isolated` (the
+other half of §2.6's hypothesis `H.degree w ≠ 0 ∨ G.degree w = 0`, where both
+deletions are the identity), **`sup_of_disjoint`** (induction with
+`not_adj_of_not_adj` carrying the disjointness along), `sup_of_disjoint_supp`
+(the `Disjoint (supp K) (supp G)` form).
+
+### 6.4 Choices beyond §2.6
+
+1. **The step carries its vertex and states the neighbourhood by adjacency
+   facts, not degrees.** `SPStep G v H` (the item's "if R3's acted-on vertex
+   needs to be recorded, make `SPStep` carry it from the start": it does —
+   R3 is stated at `v`, and R4's induction needs `v ∉ X`). The constructors
+   take `G.Adj v x` and `∀ z, G.Adj v z → z = x` (or `z = x ∨ z = y` with
+   `x ≠ y`) rather than `G.degree v = 1` / `2`, so the relation needs no
+   decidability instance and the case analysis of R3 is propositional
+   (`tauto` closes every graph identity).
+2. **An instance-free degree.** `exists_reduced_reduct`'s `H` and the
+   intermediate graphs of every `ReflTransGen` induction carry no
+   `DecidableRel`; `ndeg` (`Set.ncard`) makes `IsSPReduced`, `IsBasic`, R1 and
+   R2 instance-free, and `ndeg_eq_degree` (any instance) converts at the
+   boundary. No `Subsingleton.elim` on instances was needed anywhere.
+3. **R1 on the degree sum, not the edge count.** §2.6 listed
+   `SPStep.edgeFinset_card_lt`; the degree sum drops by 2 (pendant,
+   suppression) or 4 (triangle), and its strict decrease is R2 plus the
+   strict drop at `v` — one `Finset.sum_lt_sum` instead of an edge-set case
+   analysis. `degSum` is the measure of the strong induction.
+4. **`isolateSet` is defined directly**, not as the fold of `isolate` (plan
+   §0.5); `isolateSet_insert` is the fold's step and `isolateSet_singleton`
+   the base, so the fold is recoverable as a theorem.
+5. **R4's hypothesis is `∀ w ∈ X, ∃ z, H.Adj w z`** (`X ⊆ supp H`), the
+   parenthetical option of §2.6, and the proof is by head induction on the
+   sequence rather than by induction on `X` first: an acted vertex ends
+   isolated and stays isolated, so `X ⊆ supp H` keeps `X` clear of every step,
+   and R3X (proved by `Finset` induction from R3) does one step at a time. A
+   Finset-first induction would need the hypothesis for `X ∖ {w}` on
+   `H − w`, where `w`'s removal can isolate other vertices of `X` — the form
+   §2.6 wrote does not go through directly; this one does, and it is the
+   form item 08 uses (`X* ⊆ supp G*`).
+6. **R5's disjointness is instance-free**, `∀ a b, K.Adj a b → ∀ z, ¬ G.Adj a z`,
+   with the `supp` form as a corollary; along a sequence it is preserved
+   because supports shrink.
+7. **`restrict` lives here** (item 05 left it to item 08), with
+   `restrict_sup_restrict_compl`, `isolate_restrict` and `restrict_eq_self`
+   for item 08's disconnected case and for item 07's `nonbasic_reduct_ne_bot`
+   (where the support is one component and `restrict G C.supp = G`).
+8. **R6 is not proved.** It is optional, not what A1 needs, and the budget
+   went to R3–R5.
+
+### 6.5 Axiom lines, tests, regenerate
+
+- 69 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`06_reduction/axiom_check.log`); `make -C paper1/latex axioms`: **494
+  theorems checked, 0 failures**, every line `[propext, Classical.choice, Quot.sound]`.
+  `SP_REDUCTION_PROVED` (69 names) is folded into `learning.sandwich.ALL_PROVED`.
+- Tests: 3 new in `tests/test_edwards_mcdermid.py` (41 in all): R3 in the
+  Lean form (constructor kinds), R3X, R4 along random maximal reductions, R5
+  and EX on 300 random graphs at 2–11 vertices; the brute-force summary's
+  counts and zero violations; the 69 names declared (namespaces resolved) /
+  imported / audited, no `sorry`, no `axiom`, the constructors and
+  definitions present.
+- No new sandwich stage: nothing here is numerical. The item's
+  `potential_le` and `potential_sub_ge_of_isolated` are the Lean forms of the
+  R2 rows item 02 checked (`R2f`, `R2iso`).
+
+### 6.6 Kill verdict, and what this does not claim
+
+**Kill verdict: none** (the item has no kill criterion); R3 and R4 fitted, so
+item 08 states Theorem 3.2 with `SPReduces (G − X) B` as the plan wrote it,
+not with the paper's `r(G − X) = B` and a `ReductionConfluence` Prop.
+
+**What items 07–09 get.** `SPStep`, `SPReduces`, `IsSPReduced`, `IsBasic`,
+`ndeg`, `isolateSet`, `restrict`; `exists_reduced_reduct` (the `G*` of the
+step); `SPReduces.ndeg_le` / `degree_le` / `potential_le` /
+`potential_sub_ge_of_isolated` (the hinge `j₄ ≥ g'(d)` of item 07: a vertex
+of degree `d ≥ 3` in `G − w` either survives into `G*` with degree `≤ d`, so
+`g'(δ(G*)) ≥ g'(d)` by W3, or is isolated, so `f(G − w) − f(G*) ≥ g(d) ≥ g'(d)`);
+`IsSPReduced.eq_of_spReduces` and `isSPReduced_iff`; R4
+`SPReduces.isolateSet_comm` with `X* ⊆ supp G*` (item 08's
+`SPReduces (G − w − X*) (G* − X*)`); R5 `SPReduces.sup_of_disjoint` with
+`restrict_sup_restrict_compl` and `potentialMinus_add` (item 08's
+disconnected case); `IsBasic`'s second clause is existential over reduction
+sequences, so `nonbasic_reduct_ne_bot` (item 07) needs no confluence.
+
+**Does not claim.** Uniqueness of the reduct (measured to 9 in item 02, not
+needed, not proved); that `SPReduces G ⊥` characterises series-parallel
+graphs (the paper's "it follows from the definition" is not formalised and
+"series-parallel" does not appear in Lean); R6; anything about pathwidth
+(item 09) or about the hypotheses (H1), (H3); that the brute-force counts are
+evidence beyond 9 vertices (the Lean theorems are the evidence for every
+finite graph). The constructor-kind refinement of R3 is a property of *this*
+proof's case analysis, recorded so a reader can match the check to the
+proof, not a claim that the kind is forced.

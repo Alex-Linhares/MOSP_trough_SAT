@@ -592,3 +592,144 @@ def test_potential_proved_names_are_theorems_in_the_lean_file():
               "potentialMinus_eq_F_of_connected", "potentialMinus_add",
               "potentialMinus_cubic", "potentialMinus_ge_five_sixths"):
         assert f"DegreeBound.{n}" in sw.POTENTIAL_PROVED
+
+
+# ----------------------------------------------------------------------------
+# item 06: `lean/MOSPFormalization/DegreeBound/SPReduction.lean` — the reduction system
+# ----------------------------------------------------------------------------
+
+SP_REDUCTION_LEAN = WEIGHTS_LEAN.parent / "SPReduction.lean"
+
+
+def _step_kind(adj, v):
+    nb = adj[v]
+    if nb.bit_count() == 1:
+        return "pendant"
+    x = (nb & -nb).bit_length() - 1
+    y = (nb ^ (nb & -nb)).bit_length() - 1
+    return "triangle" if (adj[x] >> y) & 1 else "suppress"
+
+
+def test_commutation_lemma_in_the_lean_form_on_random_graphs():
+    """R3 as `SPStep.isolate_comm` proves it: for a step at `v` and `w ≠ v`, either
+    `H − w = G − w` (then `v` was pendant at `w`) or one step at `v` in `G − w` reaches
+    `H − w`, pendant if `w ∈ N(v)` and of the original kind otherwise; R3X for a random
+    finset `X ∌ v`; R4 along a random maximal reduction with `X ⊆ supp H`; R5 with a
+    graph `K` supported away from `G`; a vertex of degree 1 or 2 admits a step (the
+    witness of `exists_spStep_of_ndeg`)."""
+    import random
+    from learning.edwards_mcdermid import (bits, isolate, isolate_set, sp_step, step_vertices,
+                                          support)
+    rng = random.Random(606)
+    triples = 0
+    for _ in range(300):
+        n = rng.randint(2, 11)
+        p = rng.choice([0.15, 0.3, 0.5])
+        adj = [0] * n
+        for a in range(n):
+            for b in range(a + 1, n):
+                if rng.random() < p:
+                    adj[a] |= 1 << b
+                    adj[b] |= 1 << a
+        for v in step_vertices(adj):
+            H = sp_step(adj, v)
+            kind = _step_kind(adj, v)
+            assert H[v] == 0 and sum(h.bit_count() for h in H) < sum(a.bit_count() for a in adj)
+            assert all(H[u].bit_count() <= adj[u].bit_count() for u in range(n))
+            for w in range(n):
+                if w == v:
+                    continue
+                triples += 1
+                Gw, Hw = isolate(adj, w), isolate(H, w)
+                if Hw == Gw:
+                    assert kind == "pendant" and (adj[v] >> w) & 1
+                    continue
+                assert 1 <= Gw[v].bit_count() <= 2 and sp_step(Gw, v) == Hw
+                assert _step_kind(Gw, v) == ("pendant" if (adj[v] >> w) & 1 else kind)
+            X = sum(1 << u for u in range(n) if u != v and rng.random() < 0.4)
+            GX, HX = isolate_set(adj, X), isolate_set(H, X)
+            assert HX == GX or (1 <= GX[v].bit_count() <= 2 and sp_step(GX, v) == HX)
+            s = support(adj)
+            rest = [u for u in range(n) if not (s >> u) & 1]
+            K = [0] * n
+            for i, a in enumerate(rest):
+                for b in rest[i + 1:]:
+                    if rng.random() < 0.6:
+                        K[a] |= 1 << b
+                        K[b] |= 1 << a
+            GK = [a | k for a, k in zip(adj, K)]
+            assert sp_step(GK, v) == [h | k for h, k in zip(H, K)]
+        # R4 along a random maximal reduction
+        seq, cur = [], list(adj)
+        while step_vertices(cur):
+            v = rng.choice(step_vertices(cur))
+            seq.append(v)
+            cur = sp_step(cur, v)
+        assert all(cur[v] == 0 for v in seq)
+        X = sum(1 << u for u in bits(support(cur)) if rng.random() < 0.5)
+        g_cur = isolate_set(adj, X)
+        for v in seq:
+            assert not (X >> v) & 1
+            if 1 <= g_cur[v].bit_count() <= 2:
+                g_cur = sp_step(g_cur, v)
+        assert g_cur == isolate_set(cur, X)
+    assert triples > 1000
+
+
+def test_item06_brute_force_log_has_no_violation():
+    """The exhaustive check to 9 vertices (`06_reduction/check_r3.py`) was run and found
+    nothing; its R3 counts are item 02's."""
+    import json
+    p = SP_REDUCTION_LEAN.parents[3] / "reports/scratch/edwards_mcdermid/06_reduction/summary.json"
+    if not p.exists():
+        pytest.skip("brute-force summary not present")
+    s = json.loads(p.read_text())
+    assert s["violations"] == 0
+    assert s["total"]["R3"] == 3115987 and s["total"]["R3_zero"] == 95300
+    assert s["total"]["R1"] == 393156
+
+
+def test_sp_reduction_proved_names_are_theorems_in_the_lean_file():
+    """Every name `learning.sandwich` audits for `SPReduction.lean` is declared there as a
+    theorem (namespaces resolved); the file has no `sorry` and no `axiom`; the root module
+    imports it; `paper1/axiom_check.lean` prints the axioms of every one; the statements
+    the later items need are present."""
+    import learning.sandwich as sw
+    src = SP_REDUCTION_LEAN.read_text()
+    code = re.sub(r"/-.*?-/", "", src, flags=re.S)
+    ns, declared = [], set()
+    for line in code.splitlines():
+        m = re.match(r"^namespace\s+(\S+)", line)
+        if m:
+            ns.append(m.group(1))
+            continue
+        m = re.match(r"^end\s+(\S+)", line)
+        if m:
+            assert ns and ns[-1] == m.group(1)
+            ns.pop()
+            continue
+        m = re.match(r"^theorem\s+([^\s:({\[]+)", line)
+        if m:
+            declared.add(".".join(ns[1:] + [m.group(1)]))
+    assert set(sw.SP_REDUCTION_PROVED) == {"DegreeBound." + n for n in declared}
+    assert len(sw.SP_REDUCTION_PROVED) == len(declared) == 69
+    assert set(sw.SP_REDUCTION_PROVED) <= set(sw.ALL_PROVED)
+    code = re.sub(r"--.*", "", code)
+    assert "sorry" not in code
+    assert not re.search(r"^\s*axiom\b", code, re.M)
+    root = (SP_REDUCTION_LEAN.parents[2] / "MOSPFormalization.lean").read_text()
+    assert "import MOSPFormalization.DegreeBound.SPReduction\n" in root
+    axioms = (SP_REDUCTION_LEAN.parents[3] / "paper1" / "axiom_check.lean").read_text()
+    for n in sw.SP_REDUCTION_PROVED:
+        assert f"#print axioms MOSPFormalization.{n}\n" in axioms, n
+    for n in ("SPStep.degSum_lt", "exists_reduced_reduct", "SPStep.ndeg_le",
+              "SPReduces.ndeg_le", "SPReduces.degree_le", "SPReduces.potential_le",
+              "SPReduces.potential_sub_ge_of_isolated", "SPStep.isolate_comm",
+              "SPStep.isolateSet_comm", "SPReduces.isolateSet_comm", "SPReduces.isolate_comm",
+              "SPStep.sup_of_disjoint", "SPReduces.sup_of_disjoint",
+              "IsSPReduced.eq_of_spReduces", "isSPReduced_iff"):
+        assert f"DegreeBound.{n}" in sw.SP_REDUCTION_PROVED
+    # the four constructors of the step and the three definitions
+    for s in ("inductive SPStep", "| pendant", "| suppress", "| triangle", "def SPReduces",
+              "def IsSPReduced", "def IsBasic"):
+        assert s in src

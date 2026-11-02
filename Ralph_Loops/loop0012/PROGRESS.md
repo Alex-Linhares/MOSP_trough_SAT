@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 5/11 SOLVED
+Current: 6/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -457,3 +457,94 @@ only), `SPReduces`, `IsSPReduced`, `IsBasic`; R1 (`edgeFinset_card_lt`),
 (`sup_of_disjoint`; `reachable_sup_iff` here is the reachability half of it),
 R6 optional; all checked in item 02 on every graph to 9 (R3 on every (graph,
 step, `w`), 3,115,987).
+
+---
+
+## Iteration 6 — 2026-11-02 03:35–03:58 UTC — item 06: Lean (iii), the series-parallel reduction system, basic graphs, degree monotonicity, and the commutation of deletion with reduction
+
+### Completed
+- **`lean/MOSPFormalization/DegreeBound/SPReduction.lean`** (namespace
+  `MOSPFormalization.DegreeBound`, imports `Potential`): `ndeg` (the degree as
+  `Set.ncard`, instance-free; `ndeg_eq_degree` pins it), `degSum`, `isolateSet`
+  (`G − X`), `restrict` (`G|S`), `inductive SPStep G v H` with the three
+  constructors `pendant` / `suppress` / `triangle` (operations 2–4; operation 1
+  is the identity, report §2.1 (1)), `SPReduces` (`ReflTransGen`),
+  `IsSPReduced`, `IsBasic`; **69 theorems, no `sorry`, no `axiom`**, every one
+  `[propext, Classical.choice, Quot.sound]`. **R1** `SPStep.degSum_lt` and
+  `exists_reduced_reduct` (strong induction on the degree sum),
+  `IsSPReduced.eq_of_spReduces`; **R2** `SPStep.ndeg_le`, `SPReduces.ndeg_le`,
+  `SPReduces.degree_le`, `SPReduces.potential_le`,
+  `SPReduces.potential_sub_ge_of_isolated`, `SPReduces.supp_subset`; **R3**
+  `SPStep.isolate_comm` (zero steps iff `v` pendant at `w`; else one step, pendant
+  when `w ∈ N(v)`, the same kind otherwise), `SPStep.isolateSet_comm` (finset
+  form, `v ∉ X`); **R4** `SPReduces.isolateSet_comm` (`X ⊆ supp H` ⇒
+  `SPReduces (G − X) (H − X)`, by head induction: an acted vertex ends isolated),
+  `SPReduces.isolate_comm`, `isolate_comm_of_isolated`; **R5**
+  `SPStep.sup_of_disjoint`, `SPReduces.sup_of_disjoint` (+ the `supp` form);
+  the `restrict` lemmas item 08's disconnected case needs
+  (`restrict_sup_restrict_compl`, `isolate_restrict`, `restrict_eq_self`). R6
+  (optional) not proved. Imported by `lean/MOSPFormalization.lean`; the file
+  compiled clean on its first full attempt; `lake build` passes
+  (`reports/scratch/edwards_mcdermid/06_reduction/lake_build.log`).
+- **Checked before stated** (`06_reduction/check_r3.py`, `check_r3.log`,
+  `summary.json`; 3 s on 8 workers at load 0.3): every graph on 1–9 vertices
+  (288,266). R3 re-run **in the form the proof produces** (which case, which
+  constructor): 3,115,987 (graph, step, `w`) triples — 95,300 zero-step, all
+  pendant-at-`w`; 3,020,687 one-step, all of the predicted kind — item 02's
+  totals to the triple; R3X on 1,179,468 random finsets; R4 replayed along
+  288,266 random maximal reductions with 864,798 random `X ⊆ supp H`; R5 on
+  25,566 steps with a random `K` off the support; R1/R2 on all 393,156 steps;
+  step existence on 2,579,255 (graph, vertex). **Zero violations; kill checks:
+  none fired.**
+- **Eight choices beyond §2.6** (report §6.4): the step carries its vertex and
+  states the neighbourhood by adjacency facts, not degrees (no decidability
+  instance in the relation); `ndeg` makes `IsSPReduced`, `IsBasic`, R1, R2
+  instance-free (no `Subsingleton.elim` anywhere); R1 on the degree sum, not
+  the edge count; `isolateSet` defined directly, the fold recovered as
+  `isolateSet_insert`; R4's hypothesis is `X ⊆ supp H` with the induction on
+  the *sequence* (a `Finset`-first induction does not go through as §2.6 wrote
+  it); R5's disjointness instance-free; `restrict` lives here; R6 skipped.
+- **Axiom check**: 69 new `#print axioms` lines in `paper1/axiom_check.lean`
+  (`06_reduction/axiom_check.log`; `make -C paper1/latex axioms`: **494
+  theorems checked, 0 failures**). `SP_REDUCTION_PROVED` (69 names) folded into
+  `learning.sandwich.ALL_PROVED`. No new sandwich stage (nothing numerical).
+- **Tests**: 3 new in `tests/test_edwards_mcdermid.py` (41 in all): R3 in the
+  Lean form, R3X, R4, R5, EX on 300 random graphs at 2–11 vertices; the
+  brute-force summary's counts and zero violations; the 69 names declared
+  (namespaces resolved) / imported / audited, no `sorry`, no `axiom`.
+- **Report**: `reports/edwards_mcdermid.md` §6 (the check's table, the
+  definitions, the 69 statements with their proofs, the choices beyond §2.6,
+  the axiom record, kill verdict none, regenerate commands, what it does not
+  claim).
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,790
+  passed, 2 skipped, 1 xfailed in 273 s, the 3 new tests included;
+  pathwidth_solver pytest 123 passed in 385 s; `make -C paper1/latex check` ok,
+  74 pages, the paper untouched). Log: `06_reduction/gate.log`.
+
+### Blockers
+None. Notes for later items: `SPStep` is stated with adjacency facts
+(`G.Adj v x`, `∀ z, G.Adj v z → z = x`), so a degree-1/2 hypothesis is
+converted by `ndeg_eq_one_iff` / `ndeg_eq_two_iff` (`exists_spStep_of_ndeg`
+does it); every intermediate graph of a `ReflTransGen` induction is
+instance-free, so state along-the-sequence facts with `ndeg` and convert with
+`ndeg_eq_degree` at the ends (`SPReduces.degree_le` is the pattern); in this
+Mathlib `symm` fields of a `SimpleGraph` structure literal are `Std.Symm` and
+need `⟨fun _ _ h => …⟩`; `Set.mem_diff` and `Set.ncard_diff_singleton_add_one`
+are deprecated for `Set.mem_sdiff` / `Set.ncard_sdiff_singleton_add_one`;
+`induction h using Relation.ReflTransGen.head_induction_on with | refl | @head a c h' h ih`
+needs `unfold SPReduces at h` first; the `rw [isolate_comm]` inside
+`SPStep.isolate_comm` must name `MOSPFormalization.DegreeBound.isolate_comm`
+(the namespace `SPStep` shadows it). For item 07: `nonbasic_reduct_ne_bot`
+is `IsBasic`'s second clause with `restrict_eq_self` (one component on the
+support); the hinge `j₄ ≥ g'(d)` is `SPReduces.ndeg_le` (survivor: W3) or
+`SPReduces.potential_sub_ge_of_isolated` with `g'_le_g` (reduced away). For
+item 08: `SPReduces.isolateSet_comm` with `X* ⊆ supp G*`,
+`SPReduces.sup_of_disjoint` with `restrict_sup_restrict_compl` and
+`potentialMinus_add`; `exists_reduced_reduct` for `G*`.
+
+### Next
+Item 07: `DegreeBound/Step.lean` — `minNbrDeg`, the paper's two-key choice
+of `w`, `j_identity` (SJ: P1 with W4), `j4_ge` (S0), `step_inequality` (S1,
+`1 + F G* ≤ F G` in its four cases; **not S1′**, which is false, §2.4),
+`step_inequality_fminus`, `nonbasic_reduct_ne_bot`; all checked in item 02
+(S0 on 1,093,524, SJ on 157,324, S1 on 137,573 pairs).
