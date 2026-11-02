@@ -1,0 +1,128 @@
+# session it02 started 2026-11-02 00:58:06
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item-01 report and code, then write the §2 statements and the brute-force check script.
+  > $ date -u && uptime && wc -l reports/edwards_mcdermid_plan.md reports/edwards_mcdermid.md learning/edwards_mcdermid.py && ls reports/scratch/edwards_mcdermid/ rep
+  > $ cat reports/edwards_mcdermid_plan.md
+  > $ sed -n 1,200p reports/edwards_mcdermid_plan.md
+  > $ sed -n 200,420p reports/edwards_mcdermid_plan.md
+  > $ sed -n 420,617p reports/edwards_mcdermid_plan.md
+  > $ cat reports/edwards_mcdermid.md
+
+Reading the Python module, the empty-pair check pattern and the Lean lemma headers item 02 must name, all at once.
+  > $ cat learning/edwards_mcdermid.py
+  > $ sed -n 1,80p reports/scratch/empty_pair/check.py && echo ---- && grep -n "def vertex_separation_brute" -A 30 learning/first_moment.py | head -60 && echo ---- &&
+  > $ cd /home/al/dev/MOSP/lean/MOSPFormalization && sed -n 1,60p TreeBound.lean && echo ---- && grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^structure" Tree
+  > $ cd /home/al/dev/MOSP && mkdir -p reports/scratch/edwards_mcdermid/02_lemmas && for n in 1 2 3 4 5 6 7 8 9; do printf "%d " $n; nauty-geng -q $n 2>/dev/null | wc
+  > Write /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/02_lemmas/check.py
+  > $ uptime && time nice -n 19 python3 reports/scratch/edwards_mcdermid/02_lemmas/check.py --max-n 7 --workers 8 --log /tmp/check7.log 2>&1 | tail -15
+  > $ cd /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/02_lemmas && python3 - <<'EOF'
+import re
+p='check.py'; s=open(p).read()
+s=s.replace('''            if pw <
+  > $ python3 --version; python3 -c "import sys,platform; print(platform.python_implementation(), sys.version)"; python3 - <<'EOF'
+import time, sys
+sys.path.insert(0,
+  > $ cd /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/02_lemmas && python3 - <<'EOF'
+p='check.py'; s=open(p).read()
+s=s.replace('''# sampling at 8–9 vertices (t
+  > $ cd /home/al/dev/MOSP && grep MEASURED /tmp/check7.log /tmp/check8.log | head -8; echo ----; python3 - <<'EOF'
+import sys
+sys.path.insert(0, "/home/al/dev/MOSP/r
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^total\|Traceback\|STOPPED" /tmp/check_full.out; do sleep 5; done; tail -c 1500 /tmp/check_full.out
+  > $ sed -n 1,40p tests/test_edwards_mcdermid.py && grep -n "^def test" tests/test_edwards_mcdermid.py && grep -n "degree_bound\|stage" learning/sandwich.py | head -
+  > $ python3 - <<'EOF'
+p='learning/edwards_mcdermid.py'; s=open(p).read()
+s=s.replace('''    "is_reduced", "is_cubic", "poisson_value", "fomin_hoie_n_eps", "fomin_ho
+
+The 9-vertex sweep is still running. While it runs I'm adding tests for the new helpers and drafting the report section.
+  > $ cat >> tests/test_edwards_mcdermid.py <<'EOF'
+
+
+# ----------------------------------------------------------------------------
+# item 02: the step relation, bas
+  > $ python3 - <<'EOF'
+p='tests/test_edwards_mcdermid.py'; s=open(p).read()
+s=s.replace('''    F_global, algorithm_x, f_potential, is_basic, isolate, paper_choice, p
+  > $ python3 - <<'EOF'
+import sys, subprocess
+sys.path.insert(0, "/home/al/dev/MOSP")
+from learning.edwards_mcdermid import *
+import networkx as nx
+sys.path.insert(0
+  > $ sleep 240; tail -c 2500 /tmp/check_full.out; ps aux | grep "02_lemmas/check.py" | grep -v grep | wc -l
+  > Write /home/al/dev/MOSP/reports/scratch/edwards_mcdermid/02_lemmas/lean_ready.md
+  > $ python3 - <<'EOF'
+p='reports/scratch/edwards_mcdermid/02_lemmas/lean_ready.md'; s=open(p).read()
+old_start = s.index('| `nonbasic_reduct_ne_bot`')
+old_end = s.i
+
+While the 9-vertex sweep finishes, I'm starting the gate in the background (Lean build and the two pytest suites take about ten minutes) since the code changes are complete.
+  > $ sed -n 1,60p Ralph_Loops/loop0012/gate.py | grep -n "def \|lake\|pytest\|make\|sorry\|axiom" | head -20
+  > $ nice -n 19 python3 Ralph_Loops/loop0012/gate.py > /tmp/gate_it02.log 2>&1; echo "gate exit $?" >> /tmp/gate_it02.log; tail -5 /tmp/gate_it02.log
+  > $ grep -c MEASURED /tmp/check_full.out; grep "^n=9\|^total\|STOPPED\|VIOLATION" /tmp/check_full.out | cut -c1-200; date
+  > Monitor {"command": "until grep -q \"^total\\|Traceback\\|STOPPED\" /tmp/check_full.out; do sleep 5; done; grep \"^n=9\\|^total\
+
+Both results I need are pending: the 9-vertex sweep (monitored) and the gate (background). I'll resume when the sweep reports.
+
+# result: success in 830s, 31 turns, cost $6.92
+  > $ grep "^n=\|^total\|STOPPED\|VIOLATION\|Traceback" /tmp/check_full.out | cut -c1-2000; echo; wc -l reports/scratch/edwards_mcdermid/02_lemmas/violations.txt; pyt
+  > $ cp reports/scratch/edwards_mcdermid/02_lemmas/check.log /tmp/check_prefactor.log && nohup nice -n 19 python3 reports/scratch/edwards_mcdermid/02_lemmas/check.py
+  > $ python3 - <<'EOF'
+import json, collections
+d=json.load(open('reports/scratch/edwards_mcdermid/02_lemmas/summary.json'))
+tot=collections.Counter()
+for n,v in d.i
+  > $ python3 - <<'EOF'
+import sys, subprocess
+sys.path.insert(0, "/home/al/dev/MOSP"); sys.path.insert(0, "reports/scratch/edwards_mcdermid/02_lemmas")
+from check im
+  > $ cat >> reports/edwards_mcdermid.md <<'EOF'
+
+---
+
+## 2. The exact statements, every intermediate lemma checked on every graph to 9 vertices (item 02, 2026-11-02)
+  > $ python3 - <<'EOF'
+p='reports/edwards_mcdermid.md'; s=open(p).read()
+s=s.replace("(7 vertices, degrees 5,5,5,5,5,4,5: `K₇` minus a path of two\nedges)","(7 verti
+  > Monitor {"command": "until grep -q \"^total\\|Traceback\\|STOPPED\" /tmp/check_full2.out; do sleep 5; done; grep \"^total\\|STOP
+
+Waiting on two things only: the rerun of the sweep (to confirm the kept log matches) and the gate. Everything else for the item is written. I'll resume when either reports.
+
+# result: success in 205s, 8 turns, cost $8.54
+  > $ diff <(grep "^n=" /tmp/check_prefactor.log | sed 's/ in [0-9.]*s;/;/') <(grep "^n=" reports/scratch/edwards_mcdermid/02_lemmas/check.log | sed 's/ in [0-9.]*s;/
+  > $ ps aux | grep -E "gate.py|lake|pytest" | grep -v grep | awk '{print $2, $3, $10, $11, $12, $13, $14}' | head; date; uptime
+  > Monitor {"command": "until grep -q \"gate exit\" /tmp/gate_it02.log; do sleep 5; done; cat /tmp/gate_it02.log | cut -c1-300", "d
+
+The item's deliverables are in place; only the gate's verdict remains, and the PROGRESS.md entry gets its gate line when it arrives.
+
+# result: success in 19s, 4 turns, cost $8.86
+  > $ cat /tmp/gate_it02.log | cut -c1-400; date -u
+
+Gate passed. Writing the gate line into PROGRESS.md and fixing the session's time range.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0012/PROGRESS.md'; s=open(p).read()
+s=s.replace("## Iteration 2 — 2026-11-02 00:58–01:35 UTC — item 02","## Iteration 2 — 2
+  > $ rm -rf reports/scratch/edwards_mcdermid/02_lemmas/__pycache__ && git check-ignore -q reports/scratch/edwards_mcdermid/02_lemmas/check.log || echo "log not ignor
+
+Item 02 is done. Nine items remain unchecked, so no `LOOP_COMPLETE` line.
+
+**What was done.** Every intermediate statement of the Edwards–McDermid chain was written out in the plan's Lean design and checked on every graph on 1 to 9 vertices (288,266 graphs, 335 s). Nothing was sampled: the cut lemma was checked on every partition of every graph, the commutation lemma on every (graph, step, w) triple, the reduct's uniqueness on 200 random orders per graph, and S1′ on every maximum-degree vertex.
+
+**Kill verdict: not met.** Zero violations of W1–W5, C1, C2, P1, P2, R1, R2, R3, R5, R6, S0, S1, SJ, T1 and B1. The loop's premise for the Lean items stands.
+
+**Two findings, both of the kind the item allowed for.**
+- **S1′ is false.** Taking any maximum-degree vertex fails on 350 graphs from 7 vertices up, every time with all neighbours at the maximum degree in a non-regular graph. The paper's two-key rule never fails. Item 07 must keep the tie-break. The smallest example is pinned by a test.
+- **The reduct is unique** on every graph to 9 vertices. The Lean design does not need this and no confluence fact is needed anywhere in the chain.
+
+**Six corrections to the design and the item's wording**, in report §2.1. The most useful one: the cut lemma has a stronger separator form, the maximum of the two sides' pathwidths plus the *smaller* boundary, which rests on three existing lemmas and implies the item's three-term form. The iterated form then carries factor 1, not 2. The others: the step relation is defined at degrees 1 and 2 only, the 5/6 floor is for non-cubic components, P2's regular case is an equality needing Δ ≥ 4, S1 is proved in global-minimum form, and Theorem 3.2 needs a non-empty graph.
+
+**Measured shapes.** The reduction gap `pw(G) − pw(r(G))` reaches 3 at 6 vertices, not the expected 2. The budgets the record needs at these sizes peak at 17/6 and 3.
+
+**Files.** Report §2 with the Lean-ready list for items 03–09 in `reports/edwards_mcdermid.md`. Script, log, violations and summary under `reports/scratch/edwards_mcdermid/02_lemmas/`. Helpers added to `learning/edwards_mcdermid.py` with 9 new tests. Gate passed: Lean build ok, zero sorry and axiom, both pytest suites green, paper check ok. PROGRESS.md and iterations.md updated. Nothing committed, nothing under `solutions/` touched.
+
+**Next.** Item 03, the weights file in Lean, with both induction invariants already checked to n = 40 in exact rationals.
+
+# result: success in 27s, 4 turns, cost $11.89

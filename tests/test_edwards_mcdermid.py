@@ -222,3 +222,163 @@ def test_fomin_hoie_budget_is_explicit_and_vacuous_at_our_sizes():
     for n in (16, 120, 2916):
         assert fomin_hoie_budget(n) > 0.17 * n  # exceeds n/6 itself
     assert fomin_hoie_budget(100000) < fomin_hoie_budget(2916) * 100000 / 2916
+
+
+# ----------------------------------------------------------------------------
+# item 02: the step relation, basic graphs, the paper's choice of w, Algorithm X
+# (`reports/edwards_mcdermid.md` §2; every statement below was checked on every
+# graph to 9 vertices by `reports/scratch/edwards_mcdermid/02_lemmas/check.py`)
+# ----------------------------------------------------------------------------
+
+from learning.edwards_mcdermid import (  # noqa: E402
+    F_global, algorithm_x, f_potential, is_basic, isolate, isolate_set, paper_choice,
+    pathwidth_induced, reduce_random, sp_step, step_vertices, support,
+)
+
+
+def _g6(line: str) -> list[int]:
+    return from_networkx(nx.from_graph6_bytes(line.encode()))
+
+
+def test_sp_step_four_operations():
+    # operation 2: pendant vertex 4 on K4
+    adj = from_edges(5, [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (3, 4)])
+    out = sp_step(adj, 4)
+    assert out[4] == 0 and out[3] == adj[3] & ~(1 << 4) and edge_count(out) == 6
+    # operation 3: suppress a degree-2 vertex with non-adjacent neighbours (path 0-1-2)
+    adj = from_edges(3, [(0, 1), (1, 2)])
+    out = sp_step(adj, 1)
+    assert out == from_edges(3, [(0, 2)])
+    # operation 4: degree-2 vertex on a triangle
+    adj = from_edges(3, [(0, 1), (1, 2), (0, 2)])
+    out = sp_step(adj, 1)
+    assert out == from_edges(3, [(0, 2)])
+    # no step at degree 0 or 3
+    with pytest.raises(ValueError):
+        sp_step(from_edges(2, []), 0)
+    with pytest.raises(ValueError):
+        sp_step(from_edges(4, [(0, 1), (0, 2), (0, 3)]), 0)
+    assert step_vertices(from_edges(4, [(0, 1), (0, 2), (0, 3)])) == [1, 2, 3]
+
+
+def test_every_step_removes_an_edge_and_raises_no_degree():
+    rng = random.Random(2)
+    for _ in range(300):
+        n = rng.randint(2, 9)
+        G = nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6))
+        adj = from_networkx(G)
+        for v in step_vertices(adj):
+            out = sp_step(adj, v)
+            assert edge_count(out) <= edge_count(adj) - 1
+            assert all(a.bit_count() <= b.bit_count() for a, b in zip(out, adj))
+            assert f_potential(out) <= f_potential(adj)
+            assert f_potential(adj) - f_potential(out) >= g(adj[v].bit_count())
+
+
+def test_commutation_of_deletion_with_a_step():
+    rng = random.Random(3)
+    zero = one = 0
+    for _ in range(300):
+        n = rng.randint(2, 9)
+        adj = from_networkx(nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6)))
+        for v in step_vertices(adj):
+            H2 = sp_step(adj, v)
+            for w in range(n):
+                if w == v:
+                    continue
+                Hw, H2w = isolate(adj, w), isolate(H2, w)
+                if H2w == Hw:
+                    zero += 1
+                else:
+                    assert 1 <= Hw[v].bit_count() <= 2 and sp_step(Hw, v) == H2w
+                    one += 1
+    assert zero > 0 and one > 0
+
+
+def test_reduct_is_order_independent_on_random_graphs():
+    rng = random.Random(4)
+    for _ in range(200):
+        n = rng.randint(2, 10)
+        adj = from_networkx(nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6)))
+        radj, _ = reduce(adj)
+        for _ in range(10):
+            assert reduce_random(adj, rng) == radj
+
+
+def test_basic_graphs():
+    k4 = from_edges(4, [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+    assert is_basic(k4)                       # cubic (and of the second kind)
+    wheel = from_edges(5, [(0, 1), (0, 2), (0, 3), (0, 4), (1, 2), (2, 3), (3, 4), (4, 1)])
+    assert is_basic(wheel)                    # W_4 − hub is C_4, reduces to empty
+    assert fminus(wheel) == F(5, 6)           # the floor on a non-cubic basic component
+    petersen = from_networkx(nx.petersen_graph())
+    assert is_basic(petersen) and fminus(petersen) == F(10, 6) - F(1, 6)
+    # K_6 is not basic: not cubic, and K_6 − v = K_5 is reduced
+    k6 = from_networkx(nx.complete_graph(6))
+    assert not is_basic(k6)
+    assert is_basic(from_edges(3, []))        # the empty graph
+
+
+def test_paper_choice_tie_break_is_needed():
+    # F]~vo (7 vertices): vertices 4 and 6 have maximum degree 5 with every
+    # neighbour of degree 5; the paper's rule picks a maximum-degree vertex
+    # with a degree-4 neighbour, and only those satisfy the step inequality.
+    adj = _g6("F]~vo")
+    maxs, chosen, Delta = paper_choice(adj)
+    assert Delta == 5 and maxs == [0, 1, 2, 3, 4, 6] and chosen == [0, 1, 2, 3]
+    assert not is_basic(adj)
+    FG = F_global(adj)
+    for w in maxs:
+        Gs, _ = reduce(isolate(adj, w))
+        holds = 1 + F_global(Gs) <= FG
+        assert holds == (w in chosen)
+        assert (1 + fminus(Gs) <= fminus(adj)) == (w in chosen)
+
+
+def test_algorithm_x_theorem_3_2_on_random_reduced_graphs():
+    rng = random.Random(5)
+    seen = 0
+    for _ in range(400):
+        n = rng.randint(4, 10)
+        adj = from_networkx(nx.gnp_random_graph(n, rng.uniform(0.5, 1.0), seed=rng.randint(0, 10 ** 6)))
+        adj, _ = reduce(adj)
+        if not any(adj):
+            continue
+        seen += 1
+        X, B = algorithm_x(adj, rng)
+        assert any(B) and is_reduced(B) and is_basic(B)
+        assert X & ~support(adj) == 0
+        assert X.bit_count() + fminus(B) <= fminus(adj)
+        direct, _ = reduce(isolate_set(adj, X))
+        assert direct == B
+    assert seen > 100
+
+
+def test_pathwidth_induced_agrees_with_the_project_solver():
+    from fixed_parameter_algorithm.pathwidth import compute_pathwidth
+    rng = random.Random(6)
+    for _ in range(60):
+        n = rng.randint(1, 9)
+        G = nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6))
+        adj = from_networkx(G)
+        assert pathwidth_induced(adj, (1 << n) - 1) == compute_pathwidth(G)[0]
+        S = rng.randrange(1, 1 << n)
+        sub = G.subgraph([v for v in range(n) if (S >> v) & 1])
+        assert pathwidth_induced(adj, S) == compute_pathwidth(nx.convert_node_labels_to_integers(sub))[0]
+
+
+def test_cut_lemma_separator_form_on_random_graphs():
+    rng = random.Random(7)
+    for _ in range(150):
+        n = rng.randint(2, 8)
+        adj = from_networkx(nx.gnp_random_graph(n, rng.random(), seed=rng.randint(0, 10 ** 6)))
+        full = (1 << n) - 1
+        pw = pathwidth_induced(adj, full)
+        for _ in range(8):
+            V1 = rng.randrange(0, 1 << n)
+            V2 = full & ~V1
+            b1 = sum(1 for v in range(n) if (V1 >> v) & 1 and adj[v] & V2)
+            b2 = sum(1 for v in range(n) if (V2 >> v) & 1 and adj[v] & V1)
+            p1, p2 = pathwidth_induced(adj, V1), pathwidth_induced(adj, V2)
+            assert pw <= max(p1, p2) + min(b1, b2)                      # C1s
+            assert pw <= max(p1 + b1, p2 + b2, b1 + b2 - 1)             # C1

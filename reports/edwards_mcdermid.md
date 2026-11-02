@@ -289,3 +289,311 @@ anywhere (it is 1.1–1.5× the truth on the pilot); anything about Theorem 5.3
 beyond the numerical check of its averaging lemma (not formalised); that
 `τ_FH` is the paper's `τ` (the paper leaves `τ` unspecified; `τ_FH` is read
 off Fomin & Høie's Theorem 5).
+
+---
+
+## 2. The exact statements, every intermediate lemma checked on every graph to 9 vertices (item 02, 2026-11-02)
+
+**Regenerate.** `nice -n 19 python3 reports/scratch/edwards_mcdermid/02_lemmas/check.py --max-n 9 --workers 8`
+(284–335 s on 8 workers at load < 7 on the owner's 9950X; outputs `check.log`,
+`violations.txt`, `summary.json`). The helpers the script uses (`sp_step`,
+`reduce_random`, `is_basic`, `paper_choice`, `algorithm_x`, `F_global`,
+`pathwidth_induced`) are in `learning/edwards_mcdermid.py`, tested in
+`tests/test_edwards_mcdermid.py` (30 tests, 9 new).
+
+**Size range.** Every graph on 1–9 vertices from `nauty-geng` (288,266 graphs;
+1, 2, 4, 11, 34, 156, 1,044, 12,346, 274,668), pathwidth by the subset DP;
+weights to `n = 40` in exact rationals. Nothing was sampled: the item allowed
+2,000 random partitions per graph at 8–9 and a sweep to 8 for S1′, but the
+machine computes `pw(G[S])` for every `S` of a 9-vertex graph in 20 ms, so the
+cut lemma was checked on **every partition of every graph** (71,967,757
+partitions), the commutation lemma on every (graph, step, `w`) to 9
+(3,115,987), the reduct's uniqueness on 200 random orders per graph
+(39,657,000 maximal reduction sequences), and S1′ on every maximum-degree
+vertex of every connected non-basic graph of minimum degree 3 to 9.
+
+**Kill checks: none fired.** 0 violations of W1–W5, C1, C2, P1, P2, R1, R2,
+R3, R5, R6, S0, S1, SJ, T1, B1 (the per-statement counts are in §2.3). The
+loop's premise for items 03–09 stands. Two measurements came out as the item
+said they might, and both are findings rather than kills: **S1′ is false**
+(§2.4; item 07 keeps the paper's tie-break), and the reduct is **unique on
+every graph to 9 vertices** (the Lean design does not need it).
+
+### 2.1 Where the check corrects the design (plan §0.5) and the item's wording
+
+Six points, each the smallest sound change; none touches the two hypotheses
+or the theorem's form.
+
+1. **The step relation is defined at degrees 1 and 2 only.** In the
+   one-vertex-type design a removed vertex is isolated, so operation 1
+   ("delete an isolated vertex") is `isolate` at a vertex of degree 0, which
+   is the identity on `SimpleGraph V`. A step relation including it would not
+   lower any measure (R1 would be false) and would make "no step applies"
+   unprovable. `SPStep G v H` is therefore operation 2 at degree 1 and
+   operations 3–4 at degree 2; operation 1 is absorbed by the reflexive
+   closure, and "`r(G)` is empty" is `SPReduces G ⊥`.
+2. **The cut lemma has a stronger and simpler form, and it rests on two
+   existing lemmas.** The item's C1,
+   `pw(G) ≤ max(pw(G[V₁]) + |∂₁|, pw(G[V₂]) + |∂₂|, |∂₁| + |∂₂| − 1)`, is
+   implied by the *separator form*
+   **C1s: `pw(G) ≤ max(pw(G[V₁]), pw(G[V₂])) + min(|∂₁|, |∂₂|)`**, because
+   `∂₁` separates `V₁ ∖ ∂₁` from `V₂` (and symmetrically): delete `∂₁`
+   (`pathwidth_le_pathwidth_induce_add_card_compl`), the rest is a disjoint
+   union with no edge between (`pathwidth_induce_union_le_max`), and
+   `pw(G[V₁ ∖ ∂₁]) ≤ pw(G[V₁])` (`pathwidth_le_of_injective`). The three-term
+   bound follows from `max(a, b) + min(c, d) ≤ max(a + c, b + d)`. Checked:
+   C1s holds on all 71,967,757 partitions and is never above C1; it is tight
+   (`= pw`) on 9.5% of them. The iterated form C2 then carries the factor 1,
+   not 2: **C2s: `pw(G) ≤ Σ_i b_i + max_leaf pw`** with `b_i` bounding the
+   *smaller* boundary of each level-`i` split (checked on 2,306,072 random
+   depth-2 trees, with the item's factor-2 form beside it). Item 04 proves
+   C1s and derives C1 and both C2 forms; the note that Fomin–Høie's `n/6`
+   comes from one level and their Lemma 4, not from iterating, stands.
+3. **The floor on a non-cubic basic component is `5/6`, not on "a
+   second-kind component".** `K₄` is cubic *and* of the second kind
+   (`K₄ − v = K₃` reduces to empty) with `f⁻ = 1/2 < 5/6`. The true
+   statement is B1: *connected, every degree ≥ 3, not cubic ⇒ `f⁻ ≥ 5/6`*
+   (a vertex of degree ≥ 4 has four neighbours of degree ≥ 3, so
+   `f ≥ g(4) + 4 g(3) = 1`, and `g'(δ) ≤ 1/6`), basic or not; checked on all
+   89,943 such graphs. The assembly A1 does not need it: it needs only
+   `f⁻(C) ≥ 0` per component (checked on all 290,103 components), since the
+   `+1` of the second kind is carried explicitly in the budget.
+4. **P2's regular case is an equality and needs `Δ ≥ 4`.** Property 6 is
+   stated for `n ≥ 4` and fails at `n = 3` (`1 − g(3) = 5/6` against
+   `2 g'(3) + g'(2) = 1/3`), so for a `Δ`-regular reduced graph with `Δ ≥ 4`,
+   `f(G − w) = f(G) − 1 + g'(Δ − 1) − g'(Δ)` exactly (checked on all 501
+   such (graph, `w`) pairs); cubic graphs never reach the step (they are
+   basic), and there `f(G − w) = f(G) − 2/3`.
+5. **The step inequality is proved in the global-minimum form and the
+   per-component form follows.** The paper's equation (1) writes
+   `f⁻(G*) = f(G*) − g'(δ(G*))` with one global `δ`; with the design's
+   per-component `f⁻`, that is an inequality in the favourable direction,
+   `f⁻(G*) ≤ f(G*) − g'(δ(G*)) =: F(G*)` (every component's `g'(δ(C)) ≥ 0`
+   and one of them is `g'(δ(G*))`), and `f⁻(G) = F(G)` for `G` connected on
+   its support. So item 07 proves **S1: `1 + F(G*) ≤ F(G)`** and gets
+   `1 + f⁻(G*) ≤ f⁻(G)` as a corollary. Both were checked (137,573 pairs).
+6. **Theorem 3.2 needs `G ≠ ⊥`** in the Lean form, since "every degree 0 or
+   ≥ 3" admits the edgeless graph, for which no non-empty basic reduct
+   exists. And **no confluence fact is needed anywhere**: "not basic" is
+   `∀ v, ¬ SPReduces (G − v) ⊥` (the second-kind clause is existential over
+   reduction sequences), so `G* ≠ ⊥` for *the* reduct the induction supplies
+   is immediate; the commutation lemma R3/R4 does the rest, as the plan
+   said.
+
+### 2.2 The statements
+
+Numbered as items 03–09 will prove them; `G − w` is `isolate`, `δ(H)` the
+minimum degree over the support (0 if empty), `F(H) = f(H) − g'(δ(H))`,
+`supp` the vertices of positive degree. The paper's location and the check
+count are given; the Lean name, file and the existing lemma each rests on are
+in §2.6.
+
+| # | statement | hypotheses | paper | checked on |
+|---|---|---|---|---|
+| W1 | `n g(n) = (n − 2) g(n − 1) + g(n − 2) + 1` | `n ≥ 4` | p. 6 | `n ≤ 40` exact |
+| W2 | `g(n) ≤ g(n + 1)` (`g` non-decreasing) | all `n` | Lemma 8.3 | `n ≤ 40` |
+| W3 | `g'(n + 1) ≤ g'(n)` | `n ≥ 3` | Lemma 8.4 | `n ≤ 40` |
+| W4 | `1 − g(n) = (n − 1) g'(n) + g'(n − 1)` | `n ≥ 4` | property 6 | `n ≤ 40` |
+| W5 | `0 ≤ g(n) < 1`; `0 ≤ g'(n) ≤ 1/6`; `g'(n) ≤ g(n)` | all `n` | p. 7 | `n ≤ 40` |
+| W5c | closed form `g(n) = (7/2) A(n)/n! + (3/2)(−1)ⁿ/n! − 5/2` (optional) | `n ≥ 2` | Lemma 8.1 | `n ≤ 40` |
+| C1s | `pw(G) ≤ max(pw(G[V₁]), pw(G[V₂])) + min(|∂₁|, |∂₂|)` | any partition | — (ours; §2.1 (2)) | 71,967,757 partitions, every graph to 9 |
+| C1 | `pw(G) ≤ max(pw(G[V₁]) + |∂₁|, pw(G[V₂]) + |∂₂|, |∂₁| + |∂₂| − 1)` | any partition | — (the item's form; Fomin–Høie's `P₁, P₂, P₃` shape) | the same |
+| C2s / C2 | depth-`h` bisection with per-level budgets `b_i` on the smaller (C2s) or larger (C2) boundary: `pw(G) ≤ Σ b_i + max_leaf pw`, resp. `≤ 2 Σ b_i + max_leaf pw` | — | — | 2,306,072 random depth-2 trees |
+| P1 | `f(G − w) = f(G) − g(d(w)) − Σ_{v ∈ N(w)} g'(d(v))` | none | (2)–(3) | 2,579,255 (graph, `w`) |
+| P2 | `f(G − w) ≤ f(G) − 1` | every degree 0 or ≥ 3; `d(w) = Δ ≥ 4`; some neighbour of degree `≤ Δ − 1` | p. 10 | 163,265 |
+| P2r | `f(G − w) = f(G) − 1 + g'(Δ − 1) − g'(Δ)` | `Δ`-regular on the support, `Δ ≥ 4` | p. 11 | 501 |
+| R1 | one step removes at least one edge (so `SPReduces` terminates and a reduced reduct exists) | step at degree 1 or 2 | p. 8 | 393,156 steps |
+| R2 | one step raises no degree: `d_{H'}(u) ≤ d_H(u)` for every `u`; hence `f(H') ≤ f(H)`, and a vertex of degree `d` isolated by the step costs `f(H) − f(H') ≥ g(d)` | — | p. 10 ("`v` is reduced away") | 393,156 |
+| R3 | `SPStep H H'` at `v`, `w ≠ v` ⇒ `H' − w = H − w`, or `SPStep (H − w) (H' − w)` at `v` | — | replaces Lemma 3.1 | 3,115,987 (graph, step, `w`): 95,300 zero-step, 3,020,687 one-step |
+| R4 | lift of R3 to `SPReduces` and to a finset `X` disjoint from the acted vertices | — | Lemma 3.1 | by induction from R3 (R3 is the whole content; not separately swept) |
+| R5 | a step at `v` acts inside the component of `v`: `step(G|C ⊔ G|Cᶜ, v) = step(G|C, v) ⊔ G|Cᶜ` | `v ∈ C` | p. 9 (disconnected case) | 8,350 |
+| R6 | `pw(H) ≤ pw(H') + 1` for one step (optional; not what A1 needs) | — | plan §0.3 | 393,156; the drop is 0 or 1 |
+| S0 | `G*` a reduced reduct of `G' = G − w`, `d_{G'}(v) = d ≥ 3` ⇒ `f(G') − f(G*) + g'(δ(G*)) ≥ g'(d)` | none beyond those | p. 10, the `j₄` lemma | 1,093,524 |
+| SJ | `1 + f(G') = f(G) − j₁ − j₂ − j₃` | every degree 0 or ≥ 3, `d(w) = Δ ≥ 4` | (2)–(4) | 157,324 |
+| S1 | `1 + F(G*) ≤ F(G)` (hence `1 + f⁻(G*) ≤ f⁻(G)`) | `G` connected on its support, every degree 0 or ≥ 3, not basic; `w` of maximum degree whose lowest-degree neighbour has the smallest degree; `G*` any reduced reduct of `G − w` | p. 9–12, equation (1) | 137,573 (graph, `w`, reduct), reducts canonical and random |
+| S1′ | the same for *every* maximum-degree `w` | — | — | **false**: 663 of 157,324 fail (§2.4) |
+| T1 | `∃ X ⊆ supp G, B`: `SPReduces (G − X) B`, `B ≠ ⊥`, `B` reduced and basic, `|X| + f⁻(B) ≤ f⁻(G)` | every degree 0 or ≥ 3, `G ≠ ⊥` | Theorem 3.2, Algorithm X | 89,972 reduced non-empty graphs; also `r(G − X) = B` on all |
+| B1 | `f⁻(C) ≥ 0` for every component; additivity `f⁻(G) = Σ_C f⁻(G|C)`; connected cubic ⇒ `f⁻ = N/6 − 1/6`; connected, every degree ≥ 3, not cubic ⇒ `f⁻ ≥ 5/6` | — | p. 7, p. 19 | 290,103 components; 288,266 graphs; 24 cubic; 89,943 non-cubic |
+| A1 | `pw(G) ≤ f⁻(G) + τ(n) + 2ρ(n) + 1` under `CubicPathwidthBound τ`, `ReductionPathwidthBound ρ`, `τ, ρ` monotone | every degree 0 or ≥ 3 | Lemma 5.1 | the budget it needs at `n ≤ 9`: §2.5 |
+| A2 | `pw(G) ≤ Σ_v g(d_{r(G)}(v)) + τ(n) + 3ρ(n) + 1 ≤ Σ_v g(d_G(v)) + …` | any `G` | Corollary 5.2 | §2.5 |
+
+### 2.3 The counts
+
+| `n` | graphs | C1/C1s partitions | C1s tight | R3 triples | reduction orders | S1 pairs | S1′ pairs (fail) | non-basic | T1 graphs | `pw − f⁻` max (reduced) | `pw − main` max | `pw(G) − pw(r(G))` max (count at max) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1–3 | 7 | 21 | 19 | 18 | 800 | 0 | 0 | 0 | 0 | 0 | 2 | 2 (1) |
+| 4 | 11 | 88 | 55 | 84 | 1,800 | 0 | 0 | 0 | 1 | 5/2 (`K₄`) | 7/3 | 2 (4) |
+| 5 | 34 | 544 | 247 | 376 | 5,800 | 5 | 5 (0) | 1 | 4 | 5/2 | 7/3 | 2 (17) |
+| 6 | 156 | 4,992 | 1,503 | 2,075 | 26,400 | 31 | 31 (0) | 8 | 23 | 5/2 | 3 | 3 (1) |
+| 7 | 1,044 | 66,816 | 13,235 | 14,514 | 174,000 | 242 | 261 (2) | 100 | 173 | 5/2 | 3 | 3 (8) |
+| 8 | 12,346 | 1,580,288 | 207,427 | 158,200 | 1,916,400 | 4,240 | 4,718 (42) | 2,234 | 2,763 | 17/6 (the two cubic graphs of pw 4) | 3 | 3 (114) |
+| 9 | 274,668 | 70,315,008 | 6,617,710 | 2,940,720 | 37,531,800 | 133,055 | 152,309 (619) | 82,419 | 87,008 | 17/6 | 3 | 3 (1,258) |
+| all | 288,266 | 71,967,757 | 6,840,196 | 3,115,987 | 39,657,000 | 137,573 | 157,324 (663) | 84,762 | 89,972 | 17/6 | 3 | 3 (1,381) |
+
+Every other statement's count is in §2.2; every check printed its count and
+no violation line was written (`violations.txt` holds only the 350 S1′
+measurement lines, one per failing graph).
+
+### 2.4 The two measurements
+
+**S1′ is false; the paper's tie-break is necessary.** Among the 157,324
+(connected non-basic graph, maximum-degree `w`, reduct) triples, 663 — on 350
+graphs, the first at 7 vertices — violate `1 + F(G*) ≤ F(G)`; none of the
+137,573 with the paper's `w` does. **Every one of the 350 has all neighbours
+of `w` at the maximum degree `Δ` while `G` is not regular** (`Δ = 5` on 298,
+6 on 50, 7 on 2), and the violation is exactly `g'(Δ − 1) − g'(Δ)`
+(`1/15`, `1/45`, `2/105`): the paper's term `j₁ = g'(d(v₁)) − g'(Δ − 1)` is
+negative for such a `w`, the regular-case rescue (`G'` has a vertex of degree
+`Δ − 1`, so `j₄ ≥ g'(Δ − 1)`) is what the proof uses when *every* vertex has
+degree `Δ`, and for a non-regular `G` the paper's rule picks a `w` with a
+lower-degree neighbour instead, which makes `j₁ ≥ 0`. The smallest example
+is `F]~vo` (7 vertices, degrees 5,5,5,5,5,4,5: `K₇` minus two disjoint edges
+and a path of two edges): vertices 4 and 6 have five neighbours of degree 5, and deleting
+either leaves a 4-regular graph with `1 + F(G*) = 17/6 > F(G) = 83/30`; the
+four vertices adjacent to the degree-4 vertex satisfy the inequality with
+equality. So **item 07 must choose `w` by the two-key rule** — maximum
+degree, then the smallest lowest-neighbour degree — and the simple
+`Finset.exists_max_image` over the degree alone does not suffice;
+`tests/test_edwards_mcdermid.py::test_paper_choice_tie_break_is_needed`
+pins the example.
+
+**The reduct is unique on every graph to 9 vertices.** 200 maximal
+reduction sequences in uniformly random order on each of the 198,285 graphs
+with a step (39,657,000 sequences) all reached the canonical reduct, and on
+all 89,972 Theorem 3.2 instances the direct `r(G − X)` equals the graph
+Algorithm X ends with. This is the paper's "(the resulting graph `r(G)` is in
+fact unique)" measured, not proved; the Lean design does not use it (§2.1 (6)).
+
+### 2.5 The budgets the record needs at `n ≤ 9`, and the shape of (H3)
+
+`pw − f⁻` over reduced graphs has maximum `5/2` at `n = 4–7` (`K₄`: pw 3,
+`f⁻ = 1/2`) and `17/6` at `n = 8–9` (the two cubic graphs on 8 vertices of
+pathwidth 4, `f⁻ = 7/6`); `pw − Σ_{r(G)} g` over all graphs has maximum 3
+from `n = 6` on, attained first by the series-parallel graph `EElw` (a
+triangle with each edge subdivided once, pathwidth 3, main term 0) and at
+`n = 8` by 114 graphs, all reducing to empty. These are the values
+`τ(n) + 2ρ(n) + 1` and `τ(n) + 3ρ(n) + 1` must reach at these sizes, nothing
+more; they match §1.3's `B(n)` (3.333 at `n ≤ 10`, the Petersen graph).
+
+`pw(G) − pw(r(G))` is 0 on 273,776 graphs, 1 on 3,210, 2 on 9,899 and
+**3 on 1,381** (first at `n = 6`, `EElw` again: series-parallel with
+pathwidth 3). The item expected at most 2; the shape of (H3) at these sizes
+is 3, consistent with `O(log n)` (the complete ternary tree of height 3 has 40
+vertices and pathwidth 3, but subdivided triangles get there at 6) and
+nothing about its constant. The gap is never negative (`r(G)` is a minor of
+`G`), and one step never costs more than one (R6, drop 0 or 1 on all 393,156
+steps).
+
+**Kill verdict: not met** for every deterministic statement (W1–W5, C1–C2,
+P1–P2, R1–R6, S0–S1, SJ, T1, B1); the two measurements are findings (S1′
+false; reduct unique to 9), as the item provided for.
+
+**What this does not claim.** Anything for `n > 9` (the checks are
+exhaustive to 9 and nothing else); that the reduct is unique in general
+(measured to 9; the design does not need it); that (H1) or (H3) hold or what
+their constants are (only the shape `pw(H) − pw(r(H)) ≤ 3` to 9 vertices is
+measured); that C1s is new (it is the standard separator argument; "we found
+no prior statement" of the item's three-term form is not claimed either,
+since Fomin–Høie's proof has that shape); that S1′ fails beyond the pattern
+seen (every failure to 9 has all neighbours at degree `Δ`; no other pattern
+was looked for).
+
+### 2.6 The Lean-ready list for items 03–09
+
+Every graph is a `SimpleGraph V` on one finite vertex type with decidable
+equality and adjacency; `G − w` is `G.isolate w` (`Minor.lean`), `G − X` the
+fold of `isolate` over `X : Finset V`; `supp G` is the finset of vertices of
+positive degree; "`G` is reduced" (`IsSPReduced G`) is `∀ v, G.degree v = 0 ∨ 3 ≤ G.degree v`.
+Hypotheses are written as they should appear in the Lean statement; the last
+column is the existing lemma or the earlier item each rests on.
+
+**`DegreeBound/Weights.lean` (item 03)** — `g : ℕ → ℚ`, `g' n = g n − g (n − 1)`.
+
+| name | statement | rests on |
+|---|---|---|
+| `g_zero, g_one, g_two, g_three` | `g 0 = g 1 = g 2 = 0`, `g 3 = 1/6` | definition |
+| `g_recurrence` (W1) | `4 ≤ n → n * g n = (n − 2) * g (n − 1) + g (n − 2) + 1` | definition (well-founded recursion) |
+| `g_table` | `g 4 = 1/3`, `g 5 = 13/30`, `g 6 = 23/45`, `g 7 = 359/630`, `g 8 = 1553/2520`; `g' 3 = g' 4 = 1/6`, `g' 5 = 1/10` | `norm_num` on the recurrence |
+| `g_monotone` (W2, Lemma 8.3) | `Monotone g` | the coupled invariant `g (n−1) ≤ g n ≤ (1 + g (n−1))/2` by induction |
+| `g'_recurrence` | `5 ≤ n → n * g' n = (n − 3) * g' (n − 1) + g' (n − 2)` | W1 twice |
+| `g'_antitone_of_three_le` (W3, Lemma 8.4) | `3 ≤ m → m ≤ n → g' n ≤ g' m` | the sandwich `g' (n−1) ≥ g' n ≥ g' (n−1)/3` by induction from `g'_recurrence` |
+| `one_sub_g_eq` (W4, property 6) | `4 ≤ n → 1 − g n = (n − 1) * g' n + g' (n − 1)` | W1 rearranged |
+| `g_nonneg, g_lt_one, g'_nonneg, g'_le_sixth` (W5) | `0 ≤ g n`, `g n < 1`, `0 ≤ g' n`, `g' n ≤ 1/6` | W2, W3, the coupled invariant |
+| `g'_le_g` | `g' n ≤ g n` | `g_nonneg` at `n − 1` (used by S0) |
+| `g_closed_form` (Lemma 8.1, optional) | `2 ≤ n → g n = (7/2) A n / n! + (3/2) (−1)^n / n! − 5/2` with `A` the alternating factorial | induction; not needed downstream |
+
+**`DegreeBound/CutLemma.lean` (item 04)** — `boundary G S := S.filter (fun v => ∃ u, u ∉ S ∧ G.Adj v u)`.
+
+| name | statement | rests on |
+|---|---|---|
+| `pathwidth_le_max_add_min_boundary` (C1s) | `pathwidth G ≤ max (pathwidth (G.induce ↑S)) (pathwidth (G.induce ↑Sᶜ)) + min |∂S| |∂Sᶜ|` | `pathwidth_le_pathwidth_induce_add_card_compl` with the complement `∂S`; `pathwidth_induce_union_le_max` on `S ∖ ∂S` and `Sᶜ` (no edge between them); `pathwidth_le_of_injective` for `G[S ∖ ∂S] ≤ G[S]` |
+| `pathwidth_le_cut` (C1) | `pathwidth G ≤ max (max (pathwidth G[S] + |∂S|) (pathwidth G[Sᶜ] + |∂Sᶜ|)) (|∂S| + |∂Sᶜ| − 1)` | C1s and `max a b + min c d ≤ max (a + c) (b + d)` |
+| `BisectionTree G S bs k` | `BisectionTree S [] k := pathwidth G[S] ≤ k`; `BisectionTree S (b :: bs) k := ∃ S₁ S₂, S₁ ∪ S₂ = S ∧ Disjoint S₁ S₂ ∧ min |∂_{G[S]} S₁| |∂_{G[S]} S₂| ≤ b ∧ BisectionTree S₁ bs k ∧ BisectionTree S₂ bs k` | definition (`Prop` by recursion on the list) |
+| `pathwidth_le_of_bisectionTree` (C2s) | `BisectionTree G univ bs k → pathwidth G ≤ k + bs.sum` | C1s by induction on `bs` (within `G[S]`; `induce_induce` or `pathwidth_eq_of_iso`) |
+| `pathwidth_le_of_bisectionTree_two_mul` (C2, the item's form) | with `max |∂S₁| |∂S₂| ≤ b` in place of the min: `pathwidth G ≤ k + 2 * bs.sum` | C2s and `min ≤ max ≤ 2 max`; stated so the item's text has its lemma, but C2s is what to use |
+
+A note the file should carry (plan §0.4 (3)): Fomin–Høie reach `n/6` with **one** level and their Lemma 4 (the boundary as the *last* bag of a degree-3 decomposition), not by iterating C2; iterating C2s with Monien–Preis cuts of `(1/6 + ε)` of each piece sums to `n/3`.
+
+**`DegreeBound/Potential.lean` (item 05)** — `f G := ∑ v, g (G.degree v)`; `minDeg G C := (C.supp.toFinset).inf' _ (G.degree ·)` for `C : G.ConnectedComponent`; `fminus G := f G − ∑ C, g' (minDeg G C)`; `F G := f G − g' (δ G)` with `δ G` the minimum degree over `supp G` (`0` if empty).
+
+| name | statement | rests on |
+|---|---|---|
+| `degree_isolate` | `(G.isolate w).degree v = if v = w then 0 else if G.Adj v w then G.degree v − 1 else G.degree v` | `Minor.lean` `isolate` |
+| `f_isolate` (P1) | `f (G.isolate w) = f G − g (G.degree w) − ∑ v ∈ G.neighborFinset w, g' (G.degree v)` | `degree_isolate`, `Finset.sum` split over `{w}`, `N(w)`, the rest |
+| `f_isolate_le_sub_one` (P2) | `IsSPReduced G → (∀ v, G.degree v ≤ Δ) → G.degree w = Δ → 4 ≤ Δ → (∃ v ∈ N(w), G.degree v ≤ Δ − 1) → f (G.isolate w) ≤ f G − 1` | P1, W3 (`g' (deg v) ≥ g' Δ` for `v ∈ N(w)` since `3 ≤ deg v ≤ Δ`; `g' (deg v₁) ≥ g' (Δ − 1)`), W4 |
+| `f_isolate_regular` (P2, regular) | `IsSPReduced G → (∀ v ∈ supp G, G.degree v = Δ) → 4 ≤ Δ → G.degree w = Δ → f (G.isolate w) = f G − 1 + g' (Δ − 1) − g' Δ` | P1, W4 (an equality; fails at `Δ = 3`, where W4 does not hold) |
+| `fminus_le_F` | `fminus G ≤ F G` | each `g' (minDeg C) ≥ 0` and one component attains `δ G` |
+| `fminus_eq_F_of_connected` | `supp G` connected (one component) → `fminus G = F G` | definition |
+| `fminus_eq_sum_components` (B1 additivity) | `fminus G = ∑ C, fminus (G.restrict C)` | `f` splits over components; `restrict C` has `C` as its only non-trivial component |
+| `fminus_component_nonneg` | `0 ≤ fminus (G.restrict C)` | `f ≥ g (δ) ≥ g' (δ)` (`g'_le_g`) |
+| `fminus_cubic` (B1) | `supp G` connected, `∀ v ∈ supp G, G.degree v = 3`, `|supp G| = N` → `fminus G = N/6 − 1/6` | `g 3 = g' 3 = 1/6` |
+| `fminus_ge_five_sixths_of_not_cubic` (B1 floor, optional) | `supp G` connected, every degree `0 ∨ ≥ 3`, some degree `≥ 4` → `5/6 ≤ fminus G` | `g 4 + 4 g 3 − 1/6`; not needed by A1 (which uses only `fminus_component_nonneg`) |
+
+**`DegreeBound/SPReduction.lean` (item 06)** — `SPStep G v H` ("one operation at `v`"): `G.degree v = 1 ∧ H = G.isolate v`, or `G.degree v = 2` with neighbours `x ≠ y` and `H = (G.isolate v) ⊔ edge x y` when `¬ G.Adj x y`, `H = G.isolate v` when `G.Adj x y`. `SPReduces := Relation.ReflTransGen (fun G H => ∃ v, SPStep G v H)`. `IsSPReduced G := ∀ v, G.degree v = 0 ∨ 3 ≤ G.degree v`. `IsBasic G := ∀ C : G.ConnectedComponent, C nontrivial → (∀ v ∈ C, G.degree v = 3) ∨ ∃ v ∈ C, SPReduces ((G.restrict C).isolate v) ⊥`.
+
+| name | statement | rests on |
+|---|---|---|
+| `SPStep.edgeFinset_card_lt` (R1) | `SPStep G v H → H.edgeFinset.card < G.edgeFinset.card` | case analysis; operation 3 removes two edges and adds one |
+| `exists_reduced_reduct` (R1′) | `∃ H, SPReduces G H ∧ IsSPReduced H` | well-founded induction on the edge count via R1 |
+| `SPStep.degree_le` (R2) | `SPStep G v H → ∀ u, H.degree u ≤ G.degree u` | case analysis (operation 3 keeps `x, y`; `v` drops to 0) |
+| `SPReduces.degree_le` (R2) | `SPReduces G H → ∀ u, H.degree u ≤ G.degree u` | `ReflTransGen` induction |
+| `SPReduces.f_le` (R2) | `SPReduces G H → f H ≤ f G` | R2 and W2 |
+| `SPReduces.f_sub_ge_of_isolated` (R2) | `SPReduces G H → H.degree u = 0 → g (G.degree u) ≤ f G − f H` | R2 termwise, W2, `g 0 = 0` |
+| `SPStep.isolate_comm` (R3) | `SPStep G v H → w ≠ v → H.isolate w = G.isolate w ∨ SPStep (G.isolate w) v (H.isolate w)` | case analysis on `w ∈ N(v)`, on `w ∈ {x, y}`, and on the operation; `isolate` commutes with `isolate` and absorbs the added edge `xy` when `w ∈ {x, y}` |
+| `SPReduces.isolate_comm` (R4, one vertex) | `SPReduces G H → w ∉ acted → SPReduces (G.isolate w) (H.isolate w)` | R3 along the sequence (`acted` = the vertices the steps act on; or the hypothesis `H.degree w ≠ 0 ∨ G.degree w = 0`, since an acted vertex ends isolated) |
+| `SPReduces.isolateSet_comm` (R4) | `SPReduces G H → (∀ w ∈ X, w ∉ acted) → SPReduces (G − X) (H − X)` | induction on `X` |
+| `SPStep.sup_of_disjoint` (R5, the lift) | `SPStep G v H → Disjoint (supp K) (supp G) → SPStep (G ⊔ K) v (H ⊔ K)`, hence `SPReduces G H → SPReduces (G ⊔ K) (H ⊔ K)` (a step at `v` acts inside the component of `v`; the check verifies the equivalent identity `step (G|C ⊔ G|Cᶜ) v = step (G|C) v ⊔ G|Cᶜ`) | case analysis; `x, y ∈ supp G`, so the added edge lies in `G`'s side |
+| `pathwidth_le_SPStep_add_one` (R6, optional) | `SPStep G v H → pathwidth G ≤ pathwidth H + 1` | add `v` to a bag containing `N_G(v)` (`PathDecomposition.exists_bag_of_isClique`-style for the edge `xy`, or `pathwidth_le_pathwidth_erase_add_one` after `pathwidth_mono`); not what A1 needs, which is (H3) |
+
+**`DegreeBound/Step.lean` (item 07)** — `w` is the paper's choice: `(∀ u, G.degree u ≤ G.degree w)` and `(∀ u, G.degree u = G.degree w → minNbrDeg G w ≤ minNbrDeg G u)` with `minNbrDeg G u := (G.neighborFinset u).inf' _ (G.degree ·)`.
+
+| name | statement | rests on |
+|---|---|---|
+| `j_identity` (SJ, paper (2)–(4)) | `IsSPReduced G → G.degree w = Δ → 4 ≤ Δ → neighbours `v₁, …` sorted by degree → `1 + f (G.isolate w) = f G − j₁ − j₂ − j₃` | P1, W4 |
+| `j4_ge` (S0, the hinge) | `SPReduces (G.isolate w) G* → IsSPReduced G* → (G.isolate w).degree v = d → 3 ≤ d → g' d ≤ f (G.isolate w) − f G* + g' (δ G*)` | R2 (`f G* ≤ f (G − w)`), W3 (`δ G* ≤ deg_{G*} v ≤ d` if `v` survives), R2 (`f (G − w) − f G* ≥ g d` if `v` is isolated), `g'_le_g` |
+| `step_inequality` (S1) | `supp G` connected, `IsSPReduced G`, `G ≠ ⊥`, `¬ IsBasic G`, `w` the paper's choice, `SPReduces (G.isolate w) G*`, `IsSPReduced G*` → `1 + f G* − g' (δ G*) ≤ f G − g' (δ G)` | SJ, S0, W3, W5, the paper's four cases (regular; a surviving vertex with `3 ≤ d ≤ δ G`; `δ G = 3` with every degree-3 vertex next to `w` and `d(v_Δ) > 3`; all neighbours of degree 3 and reduced away, `G* ≠ ⊥` gives a vertex not adjacent to `w` with `d_{G−w}(v) ≥ 3`) |
+| `step_inequality_fminus` (S1, per-component form) | same hypotheses → `1 + fminus G* ≤ fminus G` | S1, `fminus_le_F`, `fminus_eq_F_of_connected` |
+| `nonbasic_reduct_ne_bot` | `supp G` connected, `IsSPReduced G`, `¬ IsBasic G`, `SPReduces (G.isolate w) G*` → `G* ≠ ⊥` | the definition of `IsBasic` alone: its second-kind clause is `∃ v, SPReduces (G.isolate v) ⊥` (existential over reduction sequences), so `G* = ⊥` would make `G` basic. No confluence fact is needed anywhere in the chain (§2.1) |
+
+S1′ (every maximum-degree `w`) is **false** (§2.4) and must not be stated; item 07 picks `w` by `Finset.exists_max_image` over the maximum-degree vertices with `minNbrDeg` as the key.
+
+**`DegreeBound/ReductionTheorem.lean` (item 08)**
+
+| name | statement | rests on |
+|---|---|---|
+| `exists_reduction_set` (T1, Theorem 3.2) | `IsSPReduced G → G ≠ ⊥ → ∃ X B, X ⊆ supp G ∧ SPReduces (G − X) B ∧ B ≠ ⊥ ∧ IsSPReduced B ∧ IsBasic B ∧ (X.card : ℚ) + fminus B ≤ fminus G` | strong induction on `|supp G|`; basic: `X = ∅`; disconnected: the induction hypothesis on one component and on the rest, R5 to lift both reductions, B1 additivity; connected non-basic: `w` by the paper's choice, `exists_reduced_reduct` for `G*`, S1 (per-component form), the induction hypothesis on `G*` giving `X*, B`, R4 for `SPReduces (G − w − X*) (G* − X*)` (`X* ⊆ supp G*` is disjoint from the acted vertices), transitivity, `X = insert w X*` |
+
+**`DegreeBound/Pathwidth.lean` (item 09)**
+
+| name | statement | rests on |
+|---|---|---|
+| `CubicPathwidthBound τ` | `∀ (W) (G : SimpleGraph W), G.Connected → (∀ v, G.degree v = 3) → (pathwidth G : ℚ) ≤ |W|/6 − 1/6 + τ |W|` | named `Prop`, Fomin & Høie 2006 Theorem 5 |
+| `ReductionPathwidthBound ρ` | `∀ (W) (G H : SimpleGraph W), SPReduces G H → (pathwidth G : ℚ) ≤ pathwidth H + ρ |W|` | named `Prop`, Kneis et al. 2009 |
+| `pathwidth_le_pathwidth_isolateSet_add_card` | `pathwidth G ≤ pathwidth (G − X) + X.card` | `pathwidth_le_pathwidth_induce_add_card_compl` on `Xᶜ` and `pathwidth_le_of_injective` (`G[Xᶜ] → G − X`) |
+| `pathwidth_eq_pathwidth_induce_supp` | `pathwidth G = pathwidth (G.induce ↑(supp G))` | `pathwidth_le_of_injective` both ways (isolated vertices go in any bag) |
+| `pathwidth_le_max_components` | `(∀ C, pathwidth (G.restrict C) ≤ k) → pathwidth G ≤ k` | `pathwidth_induce_le_of_forall_connected` |
+| `pathwidth_basic_le` | `CubicPathwidthBound τ → ReductionPathwidthBound ρ → Monotone τ → Monotone ρ → IsBasic B → IsSPReduced B → (pathwidth B : ℚ) ≤ fminus B + τ n + ρ n + 1` | per component: cubic by (H1) and `fminus_cubic`; second kind by `pathwidth_le_pathwidth_erase_add_one`, (H3) to `⊥`, `fminus_component_nonneg`; then the max over components and additivity |
+| `pathwidth_le_potential_of_hypotheses` (A1) | … `→ IsSPReduced G → (pathwidth G : ℚ) ≤ fminus G + τ n + 2 ρ n + 1` | T1, `pathwidth_le_pathwidth_isolateSet_add_card`, (H3) for `G − X →* B`, `pathwidth_basic_le` |
+| `pathwidth_le_degreeSum_of_hypotheses` (A2) | … `→ ∀ G, (pathwidth G : ℚ) ≤ ∑ v, g (H.degree v) + τ n + 3 ρ n + 1` for every reduced reduct `H` of `G`, and `≤ ∑ v, g (G.degree v) + …` | `exists_reduced_reduct`, (H3) for `G →* H`, A1, `fminus ≤ f` (W5), R2 and W2 |
+
+`paper1/axiom_check.lean` gets a `#print axioms` line for every row; `learning/sandwich.py --stage degree_bound` pins `g` to the table and `fminus` to `learning.edwards_mcdermid.fminus` on 500 random graphs.

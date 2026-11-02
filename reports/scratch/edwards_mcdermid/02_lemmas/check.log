@@ -1,0 +1,55 @@
+# item 02 brute-force check, 2026-11-02 01:12:39 UTC, n = 1..9, 8 workers
+W1–W5 hold to n = 40 in exact rationals: recurrence (W1), g non-decreasing (W2), g' non-increasing from 3 (W3), property 6 (W4), 0 ≤ g < 1 and 0 ≤ g' ≤ 1/6 (W5), closed form (Lemma 8.1); also property 5, the g' recurrence n g'(n) = (n−3) g'(n−1) + g'(n−2) for n ≥ 5, the sandwich g'(n−1) ≥ g'(n) ≥ g'(n−1)/3 (n ≥ 4) and the coupled invariant g(n−1) ≤ g(n) ≤ (1 + g(n−1))/2 (n ≥ 3).
+g(3..9) = 1/6, 1/3, 13/30, 23/45, 359/630, 1553/2520, 14827/22680
+g'(3..9) = 1/6, 1/6, 1/10, 7/90, 37/630, 13/280, 85/2268
+A(1..6) = [1, 1, 5, 19, 101, 619]
+n=1: 1 graphs in 0.0s; B1_add=1; C1=1; C1s=1; C1s_tight=1; H3_gap_0=1; P1=1; graphs=1; reduced=1; maxima A1_pw_minus_fminus=0, A2_pw_minus_main=0, C1_slack=0, C1s_slack=0, H3_gap=0
+n=2: 2 graphs in 0.0s; B1_add=2; B1_nonneg=1; C1=4; C1s=4; C1s_tight=4; H3_gap_0=1; H3_gap_1=1; P1=4; R1=2; R2=2; R3=2; R3_zero=2; R6=2; RU_graphs=1; RU_orders=200; graphs=2; reduced=1; maxima A1_pw_minus_fminus=0, A2_pw_minus_main=1, C1_slack=0, C1s_slack=0, H3_gap=1, R6_drop=1
+n=3: 4 graphs in 0.0s; B1_add=4; B1_nonneg=3; C1=16; C1s=16; C1s_tight=14; H3_gap_0=1; H3_gap_1=2; H3_gap_2=1; P1=12; R1=8; R2=8; R3=16; R3_one=12; R3_zero=4; R6=8; RU_graphs=3; RU_orders=600; graphs=4; reduced=1; maxima A1_pw_minus_fminus=0, A2_pw_minus_main=2, C1_slack=1, C1s_slack=1, H3_gap=2, R6_drop=1
+n=4: 11 graphs in 0.0s; B1_add=11; B1_cubic=1; B1_nonneg=11; C1=88; C1s=88; C1s_tight=55; C2=88; C2s=88; H3_gap_0=2; H3_gap_1=5; H3_gap_2=4; P1=44; R1=28; R2=28; R3=84; R3_one=70; R3_zero=14; R5=4; R6=28; RU_graphs=9; RU_orders=1800; S_basic=1; S_conn_min3=1; T1=1; T1_direct=1; graphs=11; reduced=2; maxima A1_pw_minus_fminus=5/2, A2_pw_minus_main=7/3, C1_slack=2, C1s_slack=2, H3_gap=2, R6_drop=1, T1_X=0
+n=5: 34 graphs in 0.0s; B1_add=34; B1_cubic=1; B1_noncubic=3; B1_nonneg=36; C1=544; C1s=544; C1s_tight=247; C2=272; C2s=272; H3_gap_0=8; H3_gap_1=9; H3_gap_2=17; P1=170; P2=4; P2reg=5; R1=94; R2=94; R3=376; R3_one=338; R3_zero=38; R5=14; R6=94; RU_graphs=29; RU_orders=5800; S0=20; S1=5; S1p=5; SJ=5; S_basic=3; S_conn_min3=4; S_nonbasic=1; T1=4; T1_direct=4; graphs=34; reduced=5; maxima A1_pw_minus_fminus=5/2, A2_pw_minus_main=7/3, C1_slack=3, C1s_slack=2, H3_gap=2, R6_drop=1, T1_X=1
+n=6: 156 graphs in 0.1s; B1_add=156; B1_cubic=3; B1_noncubic=20; B1_nonneg=169; C1=4992; C1s=4992; C1s_tight=1503; C2=1248; C2s=1248; H3_gap_0=65; H3_gap_1=19; H3_gap_2=71; H3_gap_3=1; P1=936; P2=38; P2reg=17; R1=415; R2=415; R3=2075; R3_one=1922; R3_zero=153; R5=66; R6=415; RU_graphs=132; RU_orders=26400; S0=142; S1=31; S1p=31; SJ=31; S_basic=15; S_conn_min3=23; S_nonbasic=8; T1=23; T1_direct=23; graphs=156; reduced=24; maxima A1_pw_minus_fminus=5/2, A2_pw_minus_main=3, C1_slack=4, C1s_slack=3, H3_gap=3, R6_drop=1, T1_X=2
+MEASURED S1p-MEASURED	F]~vo	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=17/6 F(G)=83/30
+n=7: 1044 graphs in 0.2s; B1_add=1044; B1_cubic=3; B1_noncubic=170; B1_nonneg=1094; C1=66816; C1s=66816; C1s_tight=13235; C2=8352; C2s=8352; H3_gap_0=683; H3_gap_1=37; H3_gap_2=316; H3_gap_3=8; P1=7308; P2=338; P2reg=38; R1=2419; R2=2419; R3=14514; R3_one=13748; R3_zero=766; R5=246; R6=2419; RU_graphs=870; RU_orders=174000; S0=1352; S1=242; S1p=261; S1p_fail=2; S1p_fail_graphs=1; S1p_logged=1; S1pc_fail=2; SJ=261; S_basic=73; S_conn_min3=173; S_nonbasic=100; T1=173; T1_direct=173; graphs=1044; reduced=174; maxima A1_pw_minus_fminus=5/2, A2_pw_minus_main=3, C1_slack=5, C1s_slack=3, H3_gap=3, R6_drop=1, T1_X=3
+MEASURED S1p-MEASURED	GC~vc{	w=0 chosen=[4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GEr]uw	w=5 chosen=[0, 1, 3, 4] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GEzvek	w=3 chosen=[0, 1, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GEzne[	w=7 chosen=[0, 1, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GEnvS{	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GFzfvo	w=3 chosen=[0, 1, 2] 1+F(G*)=31/10 F(G)=91/30
+MEASURED S1p-MEASURED	GFzvVo	w=7 chosen=[0, 1, 2, 3, 4] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GFzvVg	w=3 chosen=[0, 1, 2] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GFzvUw	w=7 chosen=[0, 1, 3, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GFzvS{	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GQz^e[	w=7 chosen=[0, 1, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GQy~d[	w=0 chosen=[4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GUZuuk	w=3 chosen=[0, 1, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	GUZvvg	w=0 chosen=[1, 2, 6] 1+F(G*)=31/10 F(G)=91/30
+MEASURED S1p-MEASURED	GUxvvo	w=0 chosen=[1, 2, 3] 1+F(G*)=31/10 F(G)=91/30
+MEASURED S1p-MEASURED	GUzrvo	w=7 chosen=[0, 1, 2, 3, 4] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GUzrvg	w=5 chosen=[0, 1, 2, 3] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	GUzrvW	w=7 chosen=[0, 1, 2, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	G]~vvs	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=113/30 F(G)=337/90
+n=8: 12346 graphs in 4.3s; B1_add=12346; B1_cubic=8; B1_noncubic=2754; B1_nonneg=12592; C1=1580288; C1s=1580288; C1s_tight=207427; C2=98768; C2s=98768; H3_gap_0=10570; H3_gap_1=133; H3_gap_2=1529; H3_gap_3=114; P1=98768; P2=5340; P2reg=126; R1=22600; R2=22600; R3=158200; R3_one=151941; R3_zero=6259; R5=1161; R6=22600; RU_graphs=9582; RU_orders=1916400; S0=28090; S1=4240; S1p=4718; S1p_fail=42; S1p_fail_graphs=19; S1p_logged=19; S1pc_fail=42; SJ=4718; S_basic=528; S_conn_min3=2762; S_nonbasic=2234; T1=2763; T1_direct=2763; graphs=12346; reduced=2764; maxima A1_pw_minus_fminus=17/6, A2_pw_minus_main=3, C1_slack=6, C1s_slack=4, H3_gap=3, R6_drop=1, T1_X=4
+MEASURED S1p-MEASURED	H?bnVQN	w=0 chosen=[5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	H?rE]ZM	w=6 chosen=[0, 1, 4, 5] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	H?rfVRJ	w=4 chosen=[0, 1, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	H?rfNRF	w=8 chosen=[0, 1, 5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	H?qnVIN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+MEASURED S1p-MEASURED	H?zfFZk	w=4 chosen=[0, 1, 2] 1+F(G*)=31/10 F(G)=91/30
+MEASURED S1p-MEASURED	H?zfVJk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?zfVJi	w=4 chosen=[0, 1, 2] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?zfVJM	w=8 chosen=[0, 1, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?zfVIN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?zvfbe	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?zvfrk	w=4 chosen=[5, 7] 1+F(G*)=103/30 F(G)=101/30
+MEASURED S1p-MEASURED	H?zvfre	w=8 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+MEASURED S1p-MEASURED	H?zvfrM	w=0 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+MEASURED S1p-MEASURED	H?z^fbM	w=8 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?z^fbJ	w=8 chosen=[4, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?z^faN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+MEASURED S1p-MEASURED	H?~vfbw	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=7/2 F(G)=103/30
+MEASURED S1p-MEASURED	H?~vfbk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+MEASURED S1p-MEASURED	H?~vfrs	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+n=9: 274668 graphs in 279.3s; B1_add=274668; B1_cubic=8; B1_noncubic=86996; B1_nonneg=276197; C1=70315008; C1s=70315008; C1s_tight=6617710; C2=2197344; C2s=2197344; H3_gap_0=262445; H3_gap_1=3004; H3_gap_2=7961; H3_gap_3=1258; P1=2472012; P2=157545; P2reg=315; R1=367590; R2=367590; R3=2940720; R3_one=2852656; R3_zero=88064; R5=6859; R6=367590; RU_graphs=187659; RU_orders=37531800; S0=1063920; S1=133055; S1p=152309; S1p_fail=619; S1p_fail_graphs=330; S1p_logged=330; S1pc_fail=619; SJ=152309; S_basic=4585; S_conn_min3=87004; S_nonbasic=82419; T1=87008; T1_direct=87008; graphs=274668; reduced=87009; maxima A1_pw_minus_fminus=17/6, A2_pw_minus_main=3, C1_slack=7, C1s_slack=4, H3_gap=3, R6_drop=1, T1_X=5
+total 284.0s; violations (hard): 0; S1′ measured failures: 350

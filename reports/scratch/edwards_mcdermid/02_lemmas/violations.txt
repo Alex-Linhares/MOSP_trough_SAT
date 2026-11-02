@@ -1,0 +1,351 @@
+# statement	graph6	detail  (S1p-MEASURED lines are the S1′ measurement, not violations)
+S1p-MEASURED	F]~vo	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GC~vc{	w=0 chosen=[4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GEr]uw	w=5 chosen=[0, 1, 3, 4] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GEzvek	w=3 chosen=[0, 1, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GEzne[	w=7 chosen=[0, 1, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GEnvS{	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GFzfvo	w=3 chosen=[0, 1, 2] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	GFzvVo	w=7 chosen=[0, 1, 2, 3, 4] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GFzvVg	w=3 chosen=[0, 1, 2] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GFzvUw	w=7 chosen=[0, 1, 3, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GFzvS{	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GQz^e[	w=7 chosen=[0, 1, 4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GQy~d[	w=0 chosen=[4, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GUZuuk	w=3 chosen=[0, 1, 5, 6] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	GUZvvg	w=0 chosen=[1, 2, 6] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	GUxvvo	w=0 chosen=[1, 2, 3] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	GUzrvo	w=7 chosen=[0, 1, 2, 3, 4] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GUzrvg	w=5 chosen=[0, 1, 2, 3] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	GUzrvW	w=7 chosen=[0, 1, 2, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	G]~vvs	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	H?bnVQN	w=0 chosen=[5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	H?rE]ZM	w=6 chosen=[0, 1, 4, 5] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	H?rfVRJ	w=4 chosen=[0, 1, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	H?rfNRF	w=8 chosen=[0, 1, 5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	H?qnVIN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	H?zfFZk	w=4 chosen=[0, 1, 2] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	H?zfVJk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?zfVJi	w=4 chosen=[0, 1, 2] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?zfVJM	w=8 chosen=[0, 1, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?zfVIN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?zvfbe	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?zvfrk	w=4 chosen=[5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	H?zvfre	w=8 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	H?zvfrM	w=0 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	H?z^fbM	w=8 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?z^fbJ	w=8 chosen=[4, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?z^faN	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	H?~vfbw	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	H?~vfbk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	H?~vfrs	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCRU]rF	w=8 chosen=[0, 1, 5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	HCRS}qV	w=0 chosen=[5, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	HCpUuZJ	w=4 chosen=[0, 1, 6, 7] 1+F(G*)=17/6 F(G)=83/30
+S1p-MEASURED	HCpUuzY	w=0 chosen=[1, 3, 7] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	HCrQuz[	w=0 chosen=[1, 3, 4] 1+F(G*)=31/10 F(G)=91/30
+S1p-MEASURED	HCrUqz[	w=8 chosen=[0, 1, 3, 4, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrUqzY	w=6 chosen=[0, 1, 3, 4] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrUqzU	w=8 chosen=[0, 1, 3, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvbrU	w=8 chosen=[0, 1, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvbrT	w=8 chosen=[0, 1, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvbrF	w=8 chosen=[0, 1, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvbqV	w=3 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvbpV	w=8 chosen=[1, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRrM	w=8 chosen=[0, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRrL	w=8 chosen=[0, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRrJ	w=4 chosen=[0, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRrF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRqN	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrvRpN	w=1 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCrrvrU	w=3 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZvfRe	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZvfRd	w=8 chosen=[0, 1, 2, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZvvrw	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCZvvrs	w=0 chosen=[1, 2, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCZverU	w=8 chosen=[1, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZverT	w=8 chosen=[1, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZverF	w=8 chosen=[1, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZveqV	w=0 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZvfrs	w=5 chosen=[1, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZvfre	w=8 chosen=[1, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZvfrU	w=0 chosen=[1, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZnfri	w=8 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZnfre	w=8 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZnfrM	w=1 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZmvbM	w=8 chosen=[0, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZmvbL	w=8 chosen=[0, 4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZmvbJ	w=8 chosen=[0, 4, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZmvbF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZmvaN	w=8 chosen=[0, 4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZmv`N	w=1 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZjv`m	w=4 chosen=[5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZjv`l	w=8 chosen=[5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZjv`f	w=8 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZjv`N	w=1 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZ^fr[	w=5 chosen=[4, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZ^frY	w=8 chosen=[4, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZ^frU	w=0 chosen=[6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZ^frM	w=1 chosen=[4, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCZ\va]	w=8 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZ\va\	w=8 chosen=[4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZ\vaV	w=0 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCZ\vaN	w=8 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCfvRq]	w=0 chosen=[5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCfvRqV	w=8 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCf~vq^	w=0 chosen=[5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HCzfbzi	w=4 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCzbrhm	w=8 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCzbrhN	w=1 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCzbvji	w=4 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCzbvjM	w=1 chosen=[0, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCzbvhm	w=1 chosen=[6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfrq	w=6 chosen=[1, 2, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfri	w=4 chosen=[1, 2] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfrY	w=0 chosen=[1, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfpy	w=8 chosen=[1, 2, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfZk	w=4 chosen=[0, 5] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfZi	w=4 chosen=[0, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvfZe	w=8 chosen=[0, 5, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvez[	w=7 chosen=[4, 5] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvezY	w=0 chosen=[4, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvezM	w=1 chosen=[4, 5, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvey]	w=0 chosen=[4, 5, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvRhm	w=8 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCxvRhN	w=1 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCxvVjk	w=8 chosen=[0, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvVji	w=4 chosen=[0, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvVjM	w=1 chosen=[0, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvVhm	w=1 chosen=[5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCxvvjw	w=0 chosen=[1, 2, 3, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCzvbrw	w=8 chosen=[0, 1, 2, 3, 4] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbrs	w=5 chosen=[0, 1, 2, 3] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbrk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbr[	w=8 chosen=[0, 1, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbp{	w=8 chosen=[1, 2, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbre	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbrU	w=8 chosen=[0, 1, 3, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbq]	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCzvbrX	w=8 chosen=[0, 1, 3, 4, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HCx~frs	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCx~ffw	w=0 chosen=[1, 2, 3, 4] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HCvfRjM	w=8 chosen=[0, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfRjL	w=8 chosen=[0, 4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfRjJ	w=8 chosen=[0, 4, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfRjF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfRiN	w=8 chosen=[0, 4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfRhN	w=1 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdri]	w=0 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdri\	w=8 chosen=[4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdriN	w=8 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvbvjY	w=3 chosen=[6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvbvjU	w=8 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvbvjM	w=1 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvbvh]	w=1 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvfJrM	w=8 chosen=[0, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfJrL	w=8 chosen=[0, 4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfJrF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfJqN	w=8 chosen=[0, 4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvfJpN	w=1 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdjq]	w=0 chosen=[4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdjq\	w=8 chosen=[4, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvdjqN	w=8 chosen=[4, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HCvbnrU	w=8 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvbnrM	w=1 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvbnq]	w=0 chosen=[5, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HCvU}y^	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HCvt~q^	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HC~vvi^	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HErvnrV	w=3 chosen=[0, 1, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HEjfazU	w=8 chosen=[0, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjfazR	w=3 chosen=[0, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjfazF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjf`yu	w=8 chosen=[0, 2, 3, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjf`yr	w=8 chosen=[0, 2, 3, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjfbzs	w=5 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjfbzq	w=3 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjfbze	w=5 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjfbzU	w=1 chosen=[0, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjfbyu	w=8 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjfbxu	w=1 chosen=[2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjerjU	w=8 chosen=[0, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerjR	w=3 chosen=[0, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerjF	w=8 chosen=[0, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerZM	w=8 chosen=[0, 1, 4, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerZJ	w=8 chosen=[0, 1, 4, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerZF	w=8 chosen=[0, 1, 5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjerz[	w=8 chosen=[4, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjerzY	w=3 chosen=[4, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjerzU	w=1 chosen=[5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjerzM	w=8 chosen=[4, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjery]	w=0 chosen=[4, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjbvrw	w=7 chosen=[0, 1, 2] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjbvpy	w=6 chosen=[1, 2] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjbvjs	w=5 chosen=[0, 2] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjbviu	w=8 chosen=[0, 2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjbvhu	w=1 chosen=[2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEjejrU	w=6 chosen=[0, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjejrT	w=8 chosen=[0, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjejrR	w=3 chosen=[0, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjejrF	w=8 chosen=[0, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjdjqu	w=6 chosen=[0, 2, 3, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjdjqt	w=8 chosen=[0, 2, 3, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjdjqr	w=8 chosen=[0, 2, 3, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjdjqf	w=8 chosen=[0, 2, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEjfrzw	w=3 chosen=[0, 1, 2, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEirvY{	w=0 chosen=[3, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEirvYy	w=4 chosen=[3, 6, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVrw	w=7 chosen=[1, 2, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVrq	w=8 chosen=[1, 2, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVrY	w=0 chosen=[1, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVpy	w=8 chosen=[1, 2, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVjs	w=3 chosen=[0, 2] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvVjq	w=8 chosen=[0, 2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvViu	w=8 chosen=[0, 2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvUzY	w=0 chosen=[4, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvUzM	w=8 chosen=[4, 5, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvTy{	w=7 chosen=[3, 5] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhvTyu	w=8 chosen=[3, 5, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhuvZ[	w=8 chosen=[4, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhuvZY	w=0 chosen=[4, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhuvY]	w=0 chosen=[4, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhtvY{	w=8 chosen=[3, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhtvYu	w=8 chosen=[3, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhtvW}	w=2 chosen=[3, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhrvHu	w=8 chosen=[2, 3, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhrvHt	w=5 chosen=[2, 3, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhrvHr	w=8 chosen=[2, 3, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhrvXy	w=6 chosen=[3, 4, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhrvXu	w=1 chosen=[3, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhrvX]	w=1 chosen=[3, 4, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HEhtnQu	w=6 chosen=[0, 2, 3, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhtnQt	w=8 chosen=[0, 2, 3, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhtnQr	w=8 chosen=[0, 2, 3, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhtnQV	w=8 chosen=[0, 3, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HEhvvZw	w=0 chosen=[1, 2, 3, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEhvvZs	w=1 chosen=[0, 2, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEj\~q^	w=0 chosen=[3, 4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HEh~fZw	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEh~fZi	w=2 chosen=[0, 1, 5, 6] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEh~fXy	w=1 chosen=[3, 4, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEh~fVw	w=0 chosen=[1, 2, 3, 4] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEj~vq^	w=0 chosen=[3, 4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HEzf]zN	w=8 chosen=[0, 1, 4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HEzVnjV	w=3 chosen=[0, 1, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HEzvnrV	w=3 chosen=[0, 1, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HEznvjN	w=8 chosen=[0, 1, 4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HEnfbZw	w=8 chosen=[0, 1, 2, 3, 4] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZs	w=8 chosen=[0, 1, 2, 3, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZ[	w=8 chosen=[0, 1, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbY{	w=8 chosen=[0, 2, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbX{	w=8 chosen=[1, 2, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZq	w=6 chosen=[0, 1, 2, 3] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZY	w=3 chosen=[0, 1, 4, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbYy	w=8 chosen=[0, 2, 3, 4, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZe	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbYu	w=8 chosen=[0, 2, 3, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZp	w=8 chosen=[0, 1, 2, 3, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZX	w=8 chosen=[0, 1, 3, 4, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbYx	w=4 chosen=[0, 2, 3, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbZT	w=8 chosen=[0, 1, 3, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbYt	w=8 chosen=[0, 2, 3, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnfbXt	w=8 chosen=[1, 2, 3, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnffXm	w=2 chosen=[0, 1, 4, 6] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEnfbzk	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HEnbvJw	w=8 chosen=[0, 1, 2, 3, 4] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvJs	w=8 chosen=[0, 1, 2, 3, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvJ[	w=8 chosen=[0, 1, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvH{	w=8 chosen=[1, 2, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvJY	w=3 chosen=[0, 1, 4, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvI]	w=8 chosen=[0, 3, 4, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvJd	w=5 chosen=[0, 1, 2] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvJT	w=8 chosen=[0, 1, 3, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvIt	w=8 chosen=[0, 2, 3, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvI\	w=0 chosen=[3, 4, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvH\	w=8 chosen=[1, 3, 4, 5, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnbvG^	w=8 chosen=[3, 4, 5, 6, 7] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HEnv^q^	w=0 chosen=[3, 4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HFzfvry	w=6 chosen=[0, 1, 2] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HFzfvrZ	w=8 chosen=[0, 1] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HFzfuzZ	w=8 chosen=[0, 1, 3, 4, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HFzvVz{	w=3 chosen=[0, 1, 2, 4] 1+F(G*)=77/18 F(G)=383/90
+S1p-MEASURED	HFzvU~]	w=0 chosen=[3, 4, 5, 6] 1+F(G*)=77/18 F(G)=383/90
+S1p-MEASURED	HFzvvZ{	w=8 chosen=[0, 1, 2, 3, 4, 5] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HFzvvZy	w=6 chosen=[0, 1, 2, 3, 4] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HFzvvZ]	w=8 chosen=[0, 1, 3, 4, 5, 6] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HFzvvY^	w=0 chosen=[3, 4, 5, 6, 7] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HQjdqym	w=0 chosen=[5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjdqyl	w=8 chosen=[5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjdqyj	w=4 chosen=[6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjdqyf	w=8 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjdqyN	w=8 chosen=[5, 6, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVbzq	w=6 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjVbze	w=8 chosen=[0, 2, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjVRje	w=8 chosen=[0, 1, 2, 5, 6] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVRzk	w=8 chosen=[1, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjVRzi	w=2 chosen=[1, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjVRze	w=8 chosen=[1, 5, 7] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvrw	w=7 chosen=[0, 1, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvrq	w=8 chosen=[0, 1, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvpy	w=6 chosen=[1, 3] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvjq	w=8 chosen=[0, 2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvje	w=8 chosen=[0, 2, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjRvjU	w=1 chosen=[0, 6] 1+F(G*)=103/30 F(G)=101/30
+S1p-MEASURED	HQjVJre	w=6 chosen=[0, 1, 2, 5] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVJrd	w=8 chosen=[0, 1, 2, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVJrb	w=8 chosen=[0, 1, 2, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVJrF	w=8 chosen=[0, 1, 5, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjUjrU	w=5 chosen=[0] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjUjrT	w=8 chosen=[0, 7] 1+F(G*)=19/6 F(G)=31/10
+S1p-MEASURED	HQjVrzw	w=2 chosen=[0, 1, 3, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQjuvpu	w=1 chosen=[0, 2, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQjurzw	w=2 chosen=[0, 1, 3, 4] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQjurzq	w=1 chosen=[0, 2, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQjurzY	w=1 chosen=[0, 4, 5, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQjl~qn	w=0 chosen=[5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HQj~vqn	w=0 chosen=[5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HQzTrjw	w=8 chosen=[0, 1, 2, 3, 4] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQzTrjk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQzTrji	w=4 chosen=[0, 1, 2, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQzTvh{	w=1 chosen=[0, 2, 3, 4] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQzTvhy	w=2 chosen=[0, 1, 3, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQzV]zN	w=8 chosen=[0, 1, 4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HQyvex{	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyvexm	w=0 chosen=[1, 5, 6, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyvex]	w=1 chosen=[0, 4, 5, 6] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyurjw	w=8 chosen=[0, 1, 2, 3, 4] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQyurjk	w=8 chosen=[0, 1, 2, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQyurj[	w=8 chosen=[0, 1, 3, 4, 5] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQyurji	w=4 chosen=[0, 1, 2, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQyurjU	w=8 chosen=[0, 1, 3, 5, 6] 1+F(G*)=7/2 F(G)=103/30
+S1p-MEASURED	HQyuvh{	w=2 chosen=[0, 1, 3, 4] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyuvhu	w=3 chosen=[0, 1, 2, 6] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyurzU	w=1 chosen=[0, 4, 5, 7] 1+F(G*)=37/10 F(G)=109/30
+S1p-MEASURED	HQyv\yn	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=113/30 F(G)=337/90
+S1p-MEASURED	HQzvnrf	w=8 chosen=[0, 1, 2, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HQz^vjN	w=8 chosen=[0, 1, 4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HQy~vin	w=0 chosen=[4, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HQ~vvj{	w=8 chosen=[0, 1, 2, 3, 4, 5] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HQ~vvjy	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HQ~vvjm	w=8 chosen=[0, 1, 2, 4, 5, 6] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HUZvvju	w=8 chosen=[1, 2, 6] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUZvvjt	w=5 chosen=[1, 2] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUZvvjf	w=8 chosen=[1, 2, 6] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUZvvjV	w=3 chosen=[1, 6] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUZvvzu	w=0 chosen=[1, 2, 6, 7] 1+F(G*)=77/18 F(G)=383/90
+S1p-MEASURED	H]~vvvz	w=4 chosen=[0, 1, 2, 3] 1+F(G*)=427/90 F(G)=2977/630
+S1p-MEASURED	H]~v~z}	w=6 chosen=[0, 1, 2, 3, 4, 5] 1+F(G*)=451/90 F(G)=629/126
+S1p-MEASURED	HUZv^rf	w=8 chosen=[0, 1, 2, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HUZu~rV	w=3 chosen=[0, 1, 5, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HUxvvry	w=6 chosen=[1, 2, 3] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUxvvrr	w=8 chosen=[1, 2, 3] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUxvvrj	w=4 chosen=[1, 2] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUxvvrZ	w=8 chosen=[1, 3] 1+F(G*)=121/30 F(G)=361/90
+S1p-MEASURED	HUxvuzZ	w=8 chosen=[0, 1, 3, 4, 6, 7] 1+F(G*)=41/10 F(G)=367/90
+S1p-MEASURED	HUxvvzy	w=0 chosen=[1, 2, 3, 7] 1+F(G*)=77/18 F(G)=383/90
+S1p-MEASURED	HUzrvz{	w=0 chosen=[1, 2, 3, 4] 1+F(G*)=77/18 F(G)=383/90
+S1p-MEASURED	HUzvrz{	w=8 chosen=[0, 1, 2, 3, 4, 5] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HUzvrzy	w=6 chosen=[0, 1, 2, 3, 4] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HUzvrzu	w=8 chosen=[0, 1, 2, 3, 5, 6] 1+F(G*)=131/30 F(G)=391/90
+S1p-MEASURED	HUzvrzm	w=8 chosen=[0, 1, 2, 4, 5, 6] 1+F(G*)=131/30 F(G)=391/90

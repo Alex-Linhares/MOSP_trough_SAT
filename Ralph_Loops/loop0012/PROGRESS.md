@@ -7,7 +7,7 @@ proved pathwidth and formalised in Lean conditional on the cubic base case
 named `Prop`s; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0012/gate.py`.
 
-Current: 1/11 SOLVED
+Current: 2/11 SOLVED
 
 ## Setup — 2026-11-01
 
@@ -133,3 +133,111 @@ on every graph to 9 vertices (`reduce` and `fminus` from
 `learning.edwards_mcdermid` are ready for it; the (H3) gap `pw(H) − pw(r(H))`
 is measured only in shape here: `pw ≤ log₃ n + 0.904` on the 6,785 graphs
 that reduce to empty).
+
+---
+
+## Iteration 2 — 2026-11-02 00:58–01:24 UTC — item 02: the exact statements, every intermediate lemma checked on every graph to 9 vertices
+
+### Completed
+- **Script** `reports/scratch/edwards_mcdermid/02_lemmas/check.py` (every graph
+  on 1–9 vertices from `nauty-geng`, 288,266 graphs, pathwidth by the subset
+  DP; `check.log`, `violations.txt`, `summary.json`); 335 s on 8 workers.
+  Nothing sampled: the 9950X computes `pw(G[S])` for every `S` of a 9-vertex
+  graph in 20 ms, so the cut lemma was checked on **every partition of every
+  graph** (71,967,757), R3 on every (graph, step, `w`) (3,115,987), the
+  reduct's uniqueness on 200 random orders per graph (39,657,000), S1′ on
+  every maximum-degree vertex to 9.
+- **Kill checks: none fired.** 0 violations of W1–W5 (to `n = 40`, exact),
+  C1, C2, P1, P2, R1, R2, R3, R5, R6, S0, S1, SJ, T1, B1.
+- **Two measurements, both findings** (as the item provided for): **S1′ is
+  false** — 663 of 157,324 (graph, max-degree `w`, reduct) triples fail, on
+  350 graphs from 7 vertices, every one with all neighbours of `w` at the
+  maximum degree in a non-regular graph, by exactly `g'(Δ−1) − g'(Δ)`;
+  the paper's two-key rule (max degree, then smallest lowest-neighbour
+  degree) never fails (137,573 triples), so **item 07 keeps the tie-break**
+  (pinned by `test_paper_choice_tie_break_is_needed`, graph `F]~vo`).
+  **The reduct is unique** on every graph to 9 (and `r(G − X)` equals
+  Algorithm X's final graph on all 89,972 T1 instances); the design does not
+  use it.
+- **Six corrections to the design and the item's wording** (report §2.1):
+  the step relation is defined at degrees 1–2 only (operation 1 is the
+  identity on `SimpleGraph V`, so R1 would be false with it); the cut lemma
+  has the stronger **separator form C1s** `pw ≤ max(pw(G[V₁]), pw(G[V₂])) + min(|∂₁|, |∂₂|)`,
+  which rests on `pathwidth_le_pathwidth_induce_add_card_compl`,
+  `pathwidth_induce_union_le_max` and `pathwidth_le_of_injective` and implies
+  the item's three-term C1, and the iterated C2 then has factor 1 (C2s);
+  B1's floor `5/6` is for *non-cubic* components (`K₄` is cubic and of the
+  second kind with `f⁻ = 1/2`), and A1 needs only `f⁻(C) ≥ 0`; P2's regular
+  case is an equality and needs `Δ ≥ 4` (property 6 fails at 3); S1 is
+  proved in the global-minimum form `1 + F(G*) ≤ F(G)`, which implies the
+  per-component form; T1 needs `G ≠ ⊥`, and **no confluence fact is needed
+  anywhere** ("not basic" is `∀ v, ¬ SPReduces (G − v) ⊥`).
+- **Budgets at `n ≤ 9`** (§2.5): `pw − f⁻` over reduced graphs peaks at 5/2
+  (`K₄`) and 17/6 (the two cubic graphs on 8 vertices of pathwidth 4);
+  `pw − main term` at 3 from `n = 6`. **(H3)'s shape**: `pw(G) − pw(r(G))`
+  is 0 / 1 / 2 / 3 on 273,776 / 3,210 / 9,899 / 1,381 graphs — maximum 3,
+  not the expected 2, first at 6 vertices (a triangle with each edge
+  subdivided, series-parallel, pathwidth 3); never negative; one step never
+  costs more than one (R6).
+- **Lean-ready list** for items 03–09 in report §2.6 (names, statements,
+  hypotheses, file, the existing lemma each rests on), copied below.
+- **Code**: the helpers in `learning/edwards_mcdermid.py` (`support`,
+  `isolate`, `isolate_set`, `restrict`, `step_vertices`, `sp_step`,
+  `reduce_random`, `global_min_degree`, `F_global`, `is_basic_component`,
+  `is_basic`, `paper_choice`, `algorithm_x`, `pathwidth_induced`); 9 new
+  tests in `tests/test_edwards_mcdermid.py` (30 in all).
+- **Gate: PASS** (`lake build` ok; `sorry` 0, `axiom` 0; MOSP pytest 1,779
+  passed, 2 skipped, 1 xfailed in 304 s, the 9 new tests included;
+  pathwidth_solver pytest 123 passed in 392 s; `make -C paper1/latex check`
+  ok, 74 pages, the paper untouched). The refactored script's rerun gave
+  per-`n` counters identical to the first run (284 s).
+
+### The Lean-ready list (report §2.6, abridged; the full tables are there)
+- **03 `Weights.lean`**: `g`, `g'`; `g_recurrence` (W1), `g_table`,
+  `g_monotone` (W2, via `g(n−1) ≤ g(n) ≤ (1 + g(n−1))/2`), `g'_recurrence`
+  (`n g'(n) = (n−3) g'(n−1) + g'(n−2)`, `n ≥ 5`), `g'_antitone_of_three_le`
+  (W3, via `g'(n−1) ≥ g'(n) ≥ g'(n−1)/3`), `one_sub_g_eq` (W4),
+  `g_nonneg`, `g_lt_one`, `g'_nonneg`, `g'_le_sixth`, `g'_le_g` (W5);
+  `g_closed_form` optional.
+- **04 `CutLemma.lean`**: `boundary G S`; `pathwidth_le_max_add_min_boundary`
+  (C1s); `pathwidth_le_cut` (C1, corollary); `BisectionTree G S bs k` (a
+  `Prop` by recursion on the budget list) with `pathwidth_le_of_bisectionTree`
+  (C2s, `≤ k + bs.sum`) and the factor-2 corollary (C2); the Fomin–Høie note.
+- **05 `Potential.lean`**: `f`, `minDeg`, `fminus`, `F`; `degree_isolate`,
+  `f_isolate` (P1), `f_isolate_le_sub_one` (P2), `f_isolate_regular` (P2r),
+  `fminus_le_F`, `fminus_eq_F_of_connected`, `fminus_eq_sum_components`,
+  `fminus_component_nonneg`, `fminus_cubic`; `fminus_ge_five_sixths_of_not_cubic` optional.
+- **06 `SPReduction.lean`**: `SPStep G v H` (degrees 1 and 2 only),
+  `SPReduces`, `IsSPReduced`, `IsBasic` (second kind = `∃ v, SPReduces ((G.restrict C).isolate v) ⊥`);
+  `SPStep.edgeFinset_card_lt` (R1), `exists_reduced_reduct`,
+  `SPStep.degree_le` / `SPReduces.degree_le` / `SPReduces.f_le` /
+  `SPReduces.f_sub_ge_of_isolated` (R2), `SPStep.isolate_comm` (R3),
+  `SPReduces.isolate_comm` and `SPReduces.isolateSet_comm` (R4, `X` disjoint
+  from the acted vertices), `SPStep.sup_of_disjoint` (R5, the lift to a
+  disjoint union); `pathwidth_le_SPStep_add_one` (R6) optional.
+- **07 `Step.lean`**: `minNbrDeg`; `j_identity` (SJ), `j4_ge` (S0),
+  `step_inequality` (S1: `1 + f G* − g' (δ G*) ≤ f G − g' (δ G)` for the
+  two-key `w`), `step_inequality_fminus`, `nonbasic_reduct_ne_bot` (from the
+  definition of `IsBasic`, no confluence). **Not S1′.**
+- **08 `ReductionTheorem.lean`**: `exists_reduction_set` (T1) by strong
+  induction on `|supp G|`: basic → `X = ∅`; disconnected → one component and
+  the rest, R5 to lift, additivity; connected non-basic → the two-key `w`,
+  `exists_reduced_reduct`, S1, the induction hypothesis on `G*`, R4,
+  transitivity, `X = insert w X*`.
+- **09 `Pathwidth.lean`**: `CubicPathwidthBound τ`, `ReductionPathwidthBound ρ`
+  (named `Prop`s); `pathwidth_le_pathwidth_isolateSet_add_card`,
+  `pathwidth_eq_pathwidth_induce_supp`, `pathwidth_le_max_components`,
+  `pathwidth_basic_le` (`≤ fminus B + τ n + ρ n + 1`),
+  `pathwidth_le_potential_of_hypotheses` (A1, `+ τ n + 2ρ n + 1`),
+  `pathwidth_le_degreeSum_of_hypotheses` (A2, `+ τ n + 3ρ n + 1`);
+  `#print axioms` rows; `learning/sandwich.py --stage degree_bound`.
+
+### Blockers
+None. Observations: the item's "2,000 random partitions at 8–9" and "S1′ to
+8 if slow" were not needed (exhaustive to 9 in 335 s); `summary.json` keeps
+the per-`n` counters and maxima for later items.
+
+### Next
+Item 03: `DegreeBound/Weights.lean` — `g`, `g'` and W1–W5 as listed, with
+the two induction invariants named above (both checked to `n = 40` in exact
+rationals here), the sandwich pin in `learning/sandwich.py`.

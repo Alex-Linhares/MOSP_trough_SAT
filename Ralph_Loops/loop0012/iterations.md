@@ -124,7 +124,7 @@ statement checked on small graphs before it is stated.
     paper's bound is tight anywhere; that `B(n)` is a bound for graphs not
     on record.
 
-- [ ] **02 The exact statement to formalise, every intermediate lemma brute-force checked.**
+- [x] **02 The exact statement to formalise, every intermediate lemma brute-force checked.**
   - **Question.** B of the brief. Written out over `SimpleGraph V` in the
     plan's §0.5 design, what exactly are the statements items 03–09 will
     prove, and do they hold on every graph to 9 vertices?

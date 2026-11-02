@@ -37,6 +37,11 @@ __all__ = [
     "average_degree", "average_degree_term", "fminus", "f_potential",
     "is_reduced", "is_cubic", "poisson_value", "fomin_hoie_n_eps", "fomin_hoie_budget",
     "evaluate",
+    # item 02: the reduction system step by step, basic graphs, the paper's
+    # choice of `w`, Algorithm X, the one-component potential
+    "support", "isolate", "isolate_set", "restrict", "step_vertices", "sp_step",
+    "reduce_random", "global_min_degree", "F_global", "is_basic_component", "is_basic",
+    "paper_choice", "algorithm_x", "pathwidth_induced",
 ]
 
 ALPHA = Fraction(1, 6)
@@ -390,3 +395,175 @@ def evaluate(adj: list[int], pw: int | None = None) -> dict:
         out["deficit_hist"] = pw - out["histogram_term"]
         out["deficit_avg"] = None if avg_term is None else pw - out["avg_term"]
     return out
+
+
+# ----------------------------------------------------------------------------
+# item 02: the reduction system one step at a time, basic graphs, Algorithm X
+# (`reports/edwards_mcdermid.md` §2; checked on every graph to 9 vertices by
+# `reports/scratch/edwards_mcdermid/02_lemmas/check.py`)
+# ----------------------------------------------------------------------------
+
+
+def support(adj: list[int]) -> int:
+    """Mask of the vertices of positive degree."""
+    m = 0
+    for v, a in enumerate(adj):
+        if a:
+            m |= 1 << v
+    return m
+
+
+def isolate(adj: list[int], w: int) -> list[int]:
+    """`G − w` in the Lean design: every edge at `w` deleted, `w` kept isolated."""
+    out = list(adj)
+    for u in bits(adj[w]):
+        out[u] &= ~(1 << w)
+    out[w] = 0
+    return out
+
+
+def isolate_set(adj: list[int], X: int) -> list[int]:
+    out = list(adj)
+    for w in bits(X):
+        out = isolate(out, w)
+    return out
+
+
+def restrict(adj: list[int], C: int) -> list[int]:
+    """The edges inside `C`, every other vertex isolated (`G|C` on the same vertex set)."""
+    return [adj[v] & C if (C >> v) & 1 else 0 for v in range(len(adj))]
+
+
+def step_vertices(adj: list[int]) -> list[int]:
+    """The vertices at which an `SPStep` applies: degree 1 or 2. (A vertex of
+    degree 0 is already "deleted"; isolating it would be the identity, which is
+    why the Lean step relation is defined for degrees 1 and 2 only.)"""
+    return [v for v in range(len(adj)) if 1 <= adj[v].bit_count() <= 2]
+
+
+def sp_step(adj: list[int], v: int) -> list[int]:
+    """One series-parallel operation at `v` (degree 1 or 2): operation 2 deletes
+    a degree-1 vertex; operation 3 suppresses a degree-2 vertex with
+    non-adjacent neighbours `x, y` (adds `xy`); operation 4 deletes a degree-2
+    vertex with adjacent neighbours. The removed vertex is left isolated."""
+    d = adj[v].bit_count()
+    if d not in (1, 2):
+        raise ValueError(f"no series-parallel step at a vertex of degree {d}")
+    nb = adj[v]
+    out = isolate(adj, v)
+    if d == 2:
+        low = nb & -nb
+        x = low.bit_length() - 1
+        y = (nb ^ low).bit_length() - 1
+        if not (adj[x] >> y) & 1:
+            out[x] |= 1 << y
+            out[y] |= 1 << x
+    return out
+
+
+def reduce_random(adj: list[int], rng) -> list[int]:
+    """A maximal reduction sequence in a random order; the reduct on the same
+    vertex set. Used to measure whether the reduct depends on the order (it
+    does not, on every graph to 9 vertices and 200 orders each)."""
+    adj = list(adj)
+    while True:
+        cands = step_vertices(adj)
+        if not cands:
+            return adj
+        adj = sp_step(adj, rng.choice(cands))
+
+
+def global_min_degree(adj: list[int]) -> int:
+    """`δ` over the support; 0 for the empty graph."""
+    s = support(adj)
+    return min_degree(adj, s) if s else 0
+
+
+def F_global(adj: list[int]) -> Fraction:
+    """`f(H) − g'(δ(H))` with `δ` over the whole support: the paper's `f⁻` for a
+    connected graph, and an upper bound on the per-component `fminus` in
+    general (`fminus ≤ F_global`, since every component's `g'(δ(C))` is ≥ 0 and
+    one of them is `g'(δ(H))`)."""
+    return f_potential(adj) - g_prime(global_min_degree(adj))
+
+
+def is_basic_component(adj: list[int], C: int) -> bool:
+    """`adj` restricted to its component `C` (every degree ≥ 3 there) is basic:
+    cubic, or some `v ∈ C` has `r(G|C − v)` empty (paper p. 8)."""
+    sub = restrict(adj, C)
+    if is_cubic(sub, C):
+        return True
+    for v in bits(C):
+        radj, _ = reduce(isolate(sub, v))
+        if not any(radj):
+            return True
+    return False
+
+
+def is_basic(adj: list[int]) -> bool:
+    """Every component of the support is basic (the empty graph is basic)."""
+    return all(is_basic_component(adj, C) for C in components(adj))
+
+
+def paper_choice(adj: list[int], C: int | None = None) -> tuple[list[int], list[int], int]:
+    """The maximum-degree vertices (within the component mask `C` if given),
+    those among them whose lowest-degree neighbour has the smallest degree —
+    the proof of Theorem 3.2's rule for `w` — and `Δ`. The step inequality
+    holds for every vertex of the second list and fails for some of the first
+    (`reports/edwards_mcdermid.md` §2, S1 against S1′)."""
+    verts = list(bits(C)) if C is not None else [v for v in range(len(adj)) if adj[v]]
+    deg = degrees(adj)
+    Delta = max(deg[v] for v in verts)
+    maxs = [v for v in verts if deg[v] == Delta]
+    key = {v: min(deg[u] for u in bits(adj[v])) for v in maxs}
+    best = min(key.values())
+    return maxs, [v for v in maxs if key[v] == best], Delta
+
+
+def algorithm_x(adj: list[int], rng=None) -> tuple[int, list[int]]:
+    """Algorithm X of the paper (p. 12) on a graph with every degree 0 or ≥ 3:
+    while some component is not basic, take a maximum-degree vertex `w` of it
+    by the paper's rule (ties broken by `rng`, or the first), `G ← r(G − w)`,
+    `X ← X ∪ {w}`. Returns the mask `X` and the final basic graph `B`, with
+    `|X| + fminus(B) ≤ fminus(G)` (Theorem 3.2 (ii))."""
+    X = 0
+    cur = list(adj)
+    while True:
+        nonbasic = [C for C in components(cur) if not is_basic_component(cur, C)]
+        if not nonbasic:
+            return X, cur
+        _, chosen, _ = paper_choice(cur, nonbasic[0])
+        w = rng.choice(chosen) if rng is not None else chosen[0]
+        X |= 1 << w
+        cur, _ = reduce(isolate(cur, w))
+
+
+def pathwidth_induced(adj: list[int], S: int) -> int:
+    """Vertex separation (= pathwidth) of `G[S]` by the subset DP over the
+    submasks of `S` (`|S| ≤ 16` or so)."""
+    if S == 0:
+        return 0
+    f = {0: 0}
+    T = (0 - S) & S
+    while True:
+        rest = S & ~T
+        cost = 0
+        U = T
+        while U:
+            low = U & -U
+            U ^= low
+            if adj[low.bit_length() - 1] & rest:
+                cost += 1
+        best = None
+        U = T
+        while U:
+            low = U & -U
+            U ^= low
+            c = f[T ^ low]
+            if best is None or c < best:
+                best = c
+        f[T] = cost if cost > best else best
+        if T == S:
+            break
+        T = (T - S) & S
+    return f[S]
