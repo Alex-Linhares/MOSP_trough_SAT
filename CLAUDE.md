@@ -1496,6 +1496,66 @@ stage `--stage degree_bound` (22 rows, 5,793 checks); checks and logs under
 dataset's 112-vertex cubic graph with a width-24 witness and unknown
 optimum.
 
+**The duality gap of each lower-bound family, by search** *(loop0013,
+2026-11-02 to 2026-11-03; `reports/obstruction_search.md`, §0 is the
+two-page summary; the paper's Section 5, paragraph "Searched lower bounds,
+with certificates")*. The bounds that start the descent (trivial, clique,
+contraction degeneracy + 1, Harper at a cap, the greedy minor step) were
+only ever *computed*; this loop *searched* each family on instances already
+on record and measured its **duality gap**, `optimum − best certified
+value`. **The correction everything rests on**: Harper's bound
+`pw ≥ min_{|A|=t} |N[A]| − t` and the empty-pair bound are *universal*
+statements, so a set found by search gives a **ceiling** on what the
+expansion family could ever certify and is not a bound; the floor needs
+the inner minimum proved (branch and bound to cap 12; SAT with a DRAT
+proof, which settles every level at 30–60 customers and almost none at
+75 and beyond). Cliques, contraction minors and separator branches are
+maximisations and a found object is a certificate. **Numbers** (optimum
+units): on the 338 bound-gap instances (`optimum − lb_best ≥ 2`, 20–134
+customers) the best floor on record was tight on 81; **searched
+contraction minors are tight on 327**, every one of the 276 corpus floors
+that rose is theirs, and the corpus goes from 5,732 to 6,001 of 6,376
+tight (94.1%). The greedy ladder is never more than one short at `n ≤ 60`
+(251 of 251 for the search, 222 for the ladder) and costs a hundredth of
+the time; the search beats it on 45 of 338 (13.3%; the kill at 10% not
+met). **Harper's ceiling is below the optimum on 320 of the 338**: no
+computation of that bound can close them. Separator branches close
+nothing (0 of 338; "branching is closed", as §38 said of the seeded
+form). The 11 left are `Random-100-100-4` and `Random-125-125-4/6`, the
+dense shoulder, best floor 1–4 below the optimum. On the record's hard
+seven: `8-2_0` reaches 93 = optimum on a 118-vertex minor, `2-3_0` on a
+51-vertex one (145,355 nodes, 0.12 s, rule-free verified), and **`2-2_0`
+has no minor certificate at any size tried (to 110 vertices)**. **The 24
+open dataset classes**: two closed — `BalancedTree_3_5` by the branch
+lemma (a nested certificate, no C call; Ellis, Sudborough & Turner 1994)
+and `NY_13` (PACE 2017, 283 vertices) by an **85-vertex minor of pathwidth
+10** found in seconds where 236.7 core-hours on the whole graph had found
+nothing; Harper's ceiling is below the recorded width on all 24; M's floor
+is `width − 1` on 21 of the other 22. The evidence rows are written and
+the `OPEN_RUNS` line is proposed, not applied (a dataset rebuild). **Every
+certificate is checked by `paper1/obstruction_check.py`**, which shares no
+code with the searches (own CNF + `drat-trim`; own contraction replay, the
+C re-proof, rule-free `vsmemo` + `checkF` to 80 vertices; own BFS): 158 +
+251 + 190 + 156 + 47 verified, 0 rejected; every floor through the
+harness's validity stage, above optimum 0. **Lean**
+(`ObstructionCertificate.lean`, 22 theorems, no `sorry`, no `axiom`): a
+checked certificate implies the bound (`pathwidth_ge_of_unsat`, needing
+`t ≤ n`; `pathwidth_ge_of_minor_minDegree`; `checkSeq_sound`), two
+statements of the brief corrected before stating, each with a proved
+counterexample; `eight_le_mospValue_warwick` decides the record instance
+`Warwick 1729` (30 customers) from its own matrix in 7.6 s. **A finding
+about `bound` certificates**: the C program's `lower=` on a minor is its
+contraction degeneracy, not its minimum degree; emitting the MMD+
+contractions behind the status is proposed, not applied. **No solver
+change**: nothing reaches `_lower_bound`; the expansion bound's net loss
+inside the search (above) is about the clock and stands. Modules
+`learning/obstruction_{ledger,expansion,minor,branch,map}.py`; certificates
+and CSVs under `reports/scratch/obstruction_search/` (the 1.3 GB of DRAT
+proofs git-ignored, hashes committed). About 35 core-hours; nothing
+re-solved; `solutions/` untouched. "We found no prior report" of a
+searched contraction-minor or searched vertex-isoperimetric lower bound on
+benchmark instances.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,
