@@ -2878,3 +2878,139 @@ M column rests on 436 instances and its B column on 156. The excess
 deciles are over the corpus's realised excess, not the generators'
 nominal one (loop0010's warning). The cost ledger counts what the files
 carry; the harness, validation and smoke runs are listed, not summed.
+
+## 9. Lean: a checked certificate implies the bound — the contrapositive of Harper, the min-degree-minor certificate, one `decide`d instance each (item 09)
+
+*Regenerate: `python3 reports/scratch/obstruction_search/09_lean/check.py --max-n 8 --workers 8 --seqs 20 --seed 0`
+(2 s; log `09_lean/run.log`); `cd lean && lake build` (the new file builds in
+8 s); `make -C paper1/latex axioms`; `python -m learning.sandwich --stage lean`,
+then `--stage degree_bound`. Size range: every finite simple graph for the
+theorems; the brute-force check on every graph to 8 vertices; `decide` on 7, 8
+and 30 vertices. Compute: under a minute in all.*
+
+### 9.1 The question, and what was stated
+
+The theorems behind every certificate of §2–§7 were already in the development:
+Harper's bound `exists_closedNbhd_card_le` (`EmptyPair.lean`), minor
+monotonicity `pathwidth_gt_of_minorOf` (`Minor.lean`), `minDegreeIn_le_degeneracy`
+and `degeneracy_le_pathwidth` and the branch lemma (`Sandwich.lean`). What the
+checker's output cites (`paper1/obstruction_check.py`, the `theorems` field of
+every verdict) was a *reading* of them — "`exists_closedNbhd_card_le`,
+contrapositive" — not a statement. The new file
+`lean/MOSPFormalization/ObstructionCertificate.lean` (imported by
+`MOSPFormalization.lean`; 22 theorems, no `sorry`, no `axiom`, every one on
+`propext`, `Classical.choice`, `Quot.sound` by `paper1/axiom_check.lean`, 586 →
+608 lines, and by `learning/sandwich.py`'s `OBSTRUCTION_PROVED`) states those
+forms:
+
+| certificate | checker output | Lean statement | rests on |
+|---|---|---|---|
+| **E**, an UNSAT level `(t, b)` of `check-expansion` (§3) | "no set of `t` customers has a closed neighbourhood of at most `b`, so `pathwidth ≥ b + 1 − t` and MOSP `≥ b + 2 − t`" | `pathwidth_ge_of_unsat`: `t ≤ n → (∀ A, A.card = t → ¬ (closedNbhd G A).card ≤ b) → b + 1 ≤ t + pathwidth G`; `MOSPInstance.mospValue_ge_of_unsat`: `b + 2 ≤ t + mospValue` (with a requirement); `pathwidth_ge_of_forall_closedNbhd` is the item's form `j + k < |N[A]| → k + 1 ≤ pw` | `exists_closedNbhd_card_le`, `mospValue_eq_pathwidth_add_one` |
+| **M**, the C program's `bound` status on a minor (§4–§5, 39 certificates; `paper1/dataset.py`'s `minor_certificate`) | "`lower = d`" on the minor, `pathwidth ≥ d`, MOSP `≥ d + 1` | `pathwidth_ge_of_minor_minDegree`: `IsContractionSeq G seq → d ≤ minDegreeIn (applySeq G seq) S → d ≤ pathwidth G` for any `S`; `MOSPInstance.mospValue_ge_of_minor_minDegree`: `d + 1 ≤ mospValue`; `pathwidth_ge_of_minor_forall_degree` is the item's form with the degrees of `minorOf G seq` itself (`degree_minorOf_eq` ties the two) | `minDegreeIn_le_degeneracy`, `degeneracy_le_pathwidth`, `pathwidth_applySeq_le` |
+| the replay itself (`check-minor`'s "every pair is an edge of the current graph") | "replay ok" | `checkSeq : SimpleGraph V → List (V × Option V) → Bool`, `checkSeq_sound` (`= true → IsContractionSeq`), `checkSeq_complete`, `checkSeq_iff`; `pathwidth_ge_of_checkSeq`: `checkSeq G seq = true → d ≤ minDegreeOfMinor G seq → d ≤ pathwidth G` | the above |
+| **B** | — | `branch_lemma_separator` as it stands (no new statement; a decidable connectivity check is not attempted) | — |
+
+Decidability is supplied so that `decide` can run on a concrete graph:
+adjacency after `contractEdge`, `isolate`, `applyStep` and, by recursion,
+`applySeq` and `minorOf`; `StepValid` and `IsContractionSeq` themselves. The
+`Bool` checker is the item's (iii); on a concrete `SimpleGraph (Fin n)` either
+`checkSeq G seq = true` or `IsContractionSeq G seq` is decided.
+
+### 9.2 State before you prove: the brute-force check, and two statements corrected
+
+`09_lean/check.py` transcribes the Lean definitions on bit masks (`contractEdge`,
+`isolate`, `applySeq`, `closedNbhd`, `degreeIn`, `minDegreeIn`, the `Bool`
+checker) and runs them on **every graph on 1–8 vertices** (nauty-geng, 13,598
+graphs) with the subset-DP vertex separation as the pathwidth oracle:
+
+| statement | checked on | violations |
+|---|---|---|
+| (i) Harper's contrapositive at every level `0 ≤ j ≤ n` (`f(j) − j ≤ pw`) | 120,841 levels | **0** (tight on 8,115 graphs, 59.7%) |
+| (ii) `minDegreeIn (applySeq G seq) S ≤ pw` on random legal sequences, `S` the survivors and a random `S` | 271,960 sequences | **0** |
+| (iii) `checkSeq` agrees with `IsContractionSeq`, legal and illegal | 271,960 + 239,647 (one step retargeted to a non-neighbour) | **0** (no illegal sequence accepted) |
+| removed vertices are isolated in `applySeq`; the minor's pathwidth `≤ pw`; its min degree `≤` its pathwidth | 271,960 | **0** |
+| (v) the Lean minor equals the record's replay (`u` keeps its label, alive set, edges) | 271,960 | **0** |
+
+Two statements the item's text gives are false without a hypothesis, and were
+found so by the check before anything was stated; each is also *proved false*
+in Lean on the one-vertex graph, next to the corrected theorem:
+
+- **(i) needs `j ≤ n`.** For `j = n + 1` no set has size `j`, the premise is
+  vacuous for every `k`, and `k + 1 ≤ pw` fails at `k = pw`
+  (`pathwidth_ge_of_forall_closedNbhd_needs_le`). The SAT certificates of §3
+  always have `1 ≤ t ≤ n` (the checker rejects anything else, line 266 of
+  `obstruction_check.py`), so no certificate on record is affected.
+- **(ii) in the item's degree form needs a nonempty minor.** "`∀ v ∉ removed seq,
+  d ≤ degree v` in the minor `→ d ≤ pw`" is vacuous once every vertex is
+  removed — 30,785 of the 271,960 random sequences do — and then claims
+  `pw ≥ d` for any `d` (`pathwidth_ge_of_minor_forall_degree_needs_nonempty`).
+  The stated theorem carries `∃ v, v ∉ removed seq`; the `minDegreeIn` form
+  needs nothing, because `minDegreeIn` of the empty set is `0`.
+
+### 9.3 Three certificates closed by `decide`
+
+| instance | certificate | decided | result |
+|---|---|---|---|
+| `octGraph`, the 8-cycle (pathwidth 2) | contract `7, 6, 5, 4, 3` into `0`: the triangle `{0, 1, 2}` | `checkSeq … = true` and `minDegreeOfMinor … = 2` by `decide` | `two_le_pathwidth_octGraph`: `2 ≤ pathwidth`, tight |
+| `k34 = K_{3,4}` (pathwidth 3) | level `j = 1`: every singleton has `|N[A]| = 4 > 1 + 2` | `∀ A : Finset (Fin 7), A.card = 1 → 1 + 2 < |N[A]|` over all 128 subsets, by `decide` | `three_le_pathwidth_k34`: `3 ≤ pathwidth`, tight |
+| **`Warwick 1729: balanced orders, 3 orders per product`** (Harvey `wbo_30_30`, 30 customers, 81 edges; the one `gap338` instance whose family-M certificate on record has the `bound` status, §4: `ladder.json`, floor 8, optimum 9) | the record's 15 contractions **plus 7 least-c contractions** (below) to an 8-vertex `K₈`, min degree 7 | `checkSeq … = true` and `7 ≤ minDegreeOfMinor …` by `decide +kernel`, **directly on `warwickInstance.mospGraph`, the MOSP graph Lean builds from the instance's 90 requirements** | `seven_le_pathwidth_warwick`; `eight_le_mospValue_warwick`: **every pattern order of `Warwick 1729` opens at least 8 stacks** |
+
+The item expected `decide` to reach toy sizes only. It reaches the record: the
+kernel caches closed terms, so the nested `contractEdge`s cost nothing like the
+`3^k` adjacency queries a naive count predicts. Timings
+(`09_lean/warwick_timings.txt`, one core): the record's 15-step `checkSeq` on
+30 vertices, 1.3 s; the 22-step certificate from the edge list, 2.9 s; the same
+from the matrix through `mospGraph`, 7.8 s; the whole library file, 7.6 s in
+`lake build`. The 100–125-customer certificates of §5 were not tried (outside
+the item; the next size to measure).
+
+**A finding about the record's `bound` certificates.** The C program's `bound`
+status reports `lower = 7` on the 15-vertex minor, and that `lower` is the
+minor's **contraction degeneracy** (MMD+, the C's floor; `cli/README.md`), not
+its minimum degree: the minor's minimum degree is **5** and its degeneracy is
+5 too (`decide +kernel` answers "`minDegreeOfMinor … = 7` is false" in 7.3 s,
+and `check.py`'s transcription agrees). So the certificate as written does not
+exhibit the object the theorem needs; the C program found a further
+contraction, to a minor of minimum degree 7, and did not print it. The
+extension is recomputed here by the least-c rule (contract a minimum-degree
+vertex into the neighbour sharing fewest neighbours, `09_lean/warwick_extension.json`,
+7 steps, reaching `K₈`), appended to the record's sequence, and the **whole
+22-step sequence is what Lean checks** — the record's floor 8 is proved from
+the instance's own matrix. The same holds of every `c_status = bound`
+certificate of §4–§5 (39) and of `paper1/dataset.py`'s `minor_certificate`
+(whose `ops` list *is* the contraction sequence to the min-degree minor, so it
+is covered as it stands). **Proposed, not applied**: the C program's `-v` line,
+or the certificate writer, should emit the MMD+ contractions behind a `bound`
+status, so that the theorem applies to the file without recomputation; the
+checker's `theorems` strings now name the new theorems and say so
+(`paper1/obstruction_check.py`, `THEOREMS` and `MINOR_THEOREMS`).
+
+### 9.4 Kill verdict, and what this does not claim
+
+**Kill criterion — met.** "A statement false on a graph to 8 vertices is
+corrected before it is stated; nothing is stated that is not checked": two
+statements were corrected before being stated (§9.2), both with their
+counterexample proved in Lean; every stated theorem was checked on all 13,598
+graphs with zero violations; the three `decide`d instances were checked by the
+same script first (`check.py`'s `concrete()`). No stop condition fired: no
+bound above an optimum, no certificate rejected, no false statement committed.
+
+**Deliverables.** `lean/MOSPFormalization/ObstructionCertificate.lean` (22
+theorems); the import in `lean/MOSPFormalization.lean`; 22 `#print axioms`
+lines in `paper1/axiom_check.lean`; `OBSTRUCTION_PROVED` (22 names) in
+`learning/sandwich.py`'s `ALL_PROVED`, with `reports/sandwich_tables.md`
+regenerated (lean stage, then `degree_bound`); `tests/test_obstruction_lean.py`
+(7 tests); the paper's Lean appendix row `obstruction`
+(`paper1/latex/sec9a_appendix_lean.tex`, PDF rebuilt, 77 pages); scratch
+`09_lean/{check.py, run.log, warwick_extension.json, warwick_timings.txt,
+warwick_{check,mindeg,full,mosp}.lean}`.
+
+**Does not claim.** That a C-program *refutation* on a minor or a branch is
+checked in Lean: it rests on `Search/`'s soundness theorems and the binary's
+faithfulness, as before (so `Warwick 1729`'s optimum 9, certified by a
+refutation on a 17-vertex minor, is not a Lean theorem; its floor 8 is). That
+`decide` scales to the 125-customer certificates (not tried). That the
+branch certificate has a decidable form (its connectivity hypotheses are
+`SimpleGraph.Connected` on induced subgraphs; not attempted). That the
+transcription in `check.py` is the Lean definition: it is a transcription,
+checked against the record's replay and the DP, not a proof.

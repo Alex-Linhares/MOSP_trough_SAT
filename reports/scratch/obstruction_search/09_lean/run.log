@@ -1,0 +1,12 @@
+octGraph: n=8 edges=8 pw=2 seq=[(7, 0), (6, 0), (5, 0), (4, 0), (3, 0)] survivors=[0, 1, 2] minor_min_degree=2 minor_pw=2 degrees=[2, 2, 2]
+k34: pw=3 profile f(j)=[0, 4, 5, 6, 7, 7, 7, 7] harper max_j f(j)-j = 3 at j=1: f(1)=4 so forall |A|=1, 1+2 < |N[A]| holds: True
+n=1 graphs=1 levels=2 tight_i=1 seqs=20 false_without_j_le_n=1 empty_minor=11 illegal_tried=0 violations={}
+n=2 graphs=2 levels=6 tight_i=2 seqs=40 false_without_j_le_n=2 empty_minor=15 illegal_tried=18 violations={}
+n=3 graphs=4 levels=16 tight_i=3 seqs=80 false_without_j_le_n=4 empty_minor=14 illegal_tried=49 violations={}
+n=4 graphs=11 levels=55 tight_i=8 seqs=220 false_without_j_le_n=11 empty_minor=37 illegal_tried=163 violations={}
+n=5 graphs=34 levels=204 tight_i=22 seqs=680 false_without_j_le_n=34 empty_minor=110 illegal_tried=529 violations={}
+n=6 graphs=156 levels=1092 tight_i=96 seqs=3120 false_without_j_le_n=156 empty_minor=467 illegal_tried=2610 violations={}
+n=7 graphs=1044 levels=8352 tight_i=604 seqs=20880 false_without_j_le_n=1044 empty_minor=2575 illegal_tried=18062 violations={}
+n=8 graphs=12346 levels=111114 tight_i=7379 seqs=246920 false_without_j_le_n=12346 empty_minor=27556 illegal_tried=218216 violations={}
+TOTAL graphs=13598 levels=120841 tight_i=8115 seqs=271960 empty_minor=30785 illegal_tried=239647 violations={} (2 s)
+the item's phrasing of (ii) without a nonempty-minor hypothesis is vacuous on the 30785 sequences that remove every vertex: there it would claim pw >= d for any d, false; the Lean statement carries the hypothesis

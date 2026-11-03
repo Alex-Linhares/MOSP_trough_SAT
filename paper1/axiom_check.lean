@@ -677,3 +677,26 @@ open MOSPFormalization MOSPFormalization.Complex
 #print axioms MOSPFormalization.DegreeBound.SPReduces.isolateSet_sdiff_le
 #print axioms MOSPFormalization.DegreeBound.SPReduces.pathwidth_le_add_card_sdiff
 #print axioms MOSPFormalization.DegreeBound.SPReduces.pathwidth_add_card_supp_le
+-- loop0013 item 09: a checked certificate implies the bound (`ObstructionCertificate.lean`)
+#print axioms MOSPFormalization.pathwidth_ge_of_forall_closedNbhd
+#print axioms MOSPFormalization.pathwidth_ge_of_unsat
+#print axioms MOSPFormalization.pathwidth_ge_of_forall_closedNbhd_needs_le
+#print axioms MOSPFormalization.MOSPInstance.mospValue_ge_of_unsat
+#print axioms MOSPFormalization.checkSeq_sound
+#print axioms MOSPFormalization.checkSeq_complete
+#print axioms MOSPFormalization.checkSeq_iff
+#print axioms MOSPFormalization.pathwidth_ge_of_minor_minDegree
+#print axioms MOSPFormalization.pathwidth_ge_of_checkSeq
+#print axioms MOSPFormalization.degree_minorOf_eq
+#print axioms MOSPFormalization.pathwidth_ge_of_minor_forall_degree
+#print axioms MOSPFormalization.pathwidth_ge_of_minor_forall_degree_needs_nonempty
+#print axioms MOSPFormalization.MOSPInstance.mospValue_ge_of_minor_minDegree
+#print axioms MOSPFormalization.octSeq_checked
+#print axioms MOSPFormalization.octSeq_minDegree
+#print axioms MOSPFormalization.two_le_pathwidth_octGraph
+#print axioms MOSPFormalization.k34_level_one
+#print axioms MOSPFormalization.three_le_pathwidth_k34
+#print axioms MOSPFormalization.warwickSeq_checked
+#print axioms MOSPFormalization.warwickSeq_minDegree
+#print axioms MOSPFormalization.seven_le_pathwidth_warwick
+#print axioms MOSPFormalization.eight_le_mospValue_warwick

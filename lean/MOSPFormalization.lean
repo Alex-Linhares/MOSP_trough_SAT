@@ -10,6 +10,7 @@ import MOSPFormalization.OpenStacks
 import MOSPFormalization.Reduction
 import MOSPFormalization.MOSPGraph
 import MOSPFormalization.Minor
+import MOSPFormalization.ObstructionCertificate
 import MOSPFormalization.Examples
 import MOSPFormalization.MOSPGraphExamples
 import MOSPFormalization.ForMathlib.PathDecomposition

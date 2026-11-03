@@ -480,7 +480,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     that the uncovered instances share one structure (the description is
     what the data say).
 
-- [ ] **09 Lean: a checked certificate implies the bound — the contrapositive of Harper, the min-degree-minor certificate, one `decide`d instance each.**
+- [x] **09 Lean: a checked certificate implies the bound — the contrapositive of Harper, the min-degree-minor certificate, one `decide`d instance each.**
   - **Question.** H of the brief. The theorems behind every certificate are
     in `EmptyPair.lean`, `Minor.lean` and `Sandwich.lean`; what is missing is
     the statement that a *checked certificate* implies the bound, in the

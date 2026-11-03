@@ -519,10 +519,43 @@ STEP_BOUND_PROVED = (
     "DegreeBound.SPReduces.pathwidth_le_add_card_sdiff",
     "DegreeBound.SPReduces.pathwidth_add_card_supp_le",
 )
+#: loop0013 item 09, `lean/MOSPFormalization/ObstructionCertificate.lean`: a checked
+#: certificate implies the bound — Harper's bound in contrapositive form (what an UNSAT
+#: level of `check-expansion` certifies), the min-degree minor certificate (the C program's
+#: `bound` status, `paper1/dataset.py`'s `minor_certificate`), the `Bool` replay `checkSeq`
+#: with its soundness, the two small counterexamples to the statements without `j ≤ n` and
+#: without a nonempty minor, and the instances closed by `decide`.
+OBSTRUCTION_PROVED = (
+    "pathwidth_ge_of_forall_closedNbhd",
+    "pathwidth_ge_of_unsat",
+    "pathwidth_ge_of_forall_closedNbhd_needs_le",
+    "MOSPInstance.mospValue_ge_of_unsat",
+    "checkSeq_sound",
+    "checkSeq_complete",
+    "checkSeq_iff",
+    "pathwidth_ge_of_minor_minDegree",
+    "pathwidth_ge_of_checkSeq",
+    "degree_minorOf_eq",
+    "pathwidth_ge_of_minor_forall_degree",
+    "pathwidth_ge_of_minor_forall_degree_needs_nonempty",
+    "MOSPInstance.mospValue_ge_of_minor_minDegree",
+    "octSeq_checked",
+    "octSeq_minDegree",
+    "two_le_pathwidth_octGraph",
+    "k34_level_one",
+    "three_le_pathwidth_k34",
+    # the record instance `Warwick 1729` (30 customers): its family-M `bound` certificate,
+    # extended to a K₈ minor, decided on the MOSP graph built from the instance's matrix
+    "warwickSeq_checked",
+    "warwickSeq_minDegree",
+    "seven_le_pathwidth_warwick",
+    "eight_le_mospValue_warwick",
+)
 #: Every proved name the axiom check asks for.
 ALL_PROVED = (PROVED + FOREST_COVER_PROVED + PENDANT_PROVED + SEPARATOR_PROVED + DEGREE_BOUND_PROVED
               + CUT_LEMMA_PROVED + POTENTIAL_PROVED + SP_REDUCTION_PROVED + STEP_PROVED
-              + REDUCTION_THEOREM_PROVED + PATHWIDTH_ASSEMBLY_PROVED + STEP_BOUND_PROVED)
+              + REDUCTION_THEOREM_PROVED + PATHWIDTH_ASSEMBLY_PROVED + STEP_BOUND_PROVED
+              + OBSTRUCTION_PROVED)
 #: Statements committed with `sorry`: none since 2026-10-31.
 STATED: tuple[str, ...] = ()
 

@@ -115,7 +115,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DRAT_TRIM = ROOT / "tools" / "drat-trim" / "drat-trim"
-THEOREMS = ("exists_closedNbhd_card_le (lean/MOSPFormalization/EmptyPair.lean), contrapositive; "
+THEOREMS = ("exists_closedNbhd_card_le (lean/MOSPFormalization/EmptyPair.lean), contrapositive, stated as "
+            "pathwidth_ge_of_unsat / MOSPInstance.mospValue_ge_of_unsat "
+            "(lean/MOSPFormalization/ObstructionCertificate.lean); "
             "mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean)")
 
 
@@ -313,7 +315,11 @@ def check_expansion(instance_path: Path, certificate_path: Path, drat_trim: Path
 DEFAULT_C_BINARY = ROOT / "pathwidth_solver" / "cli" / "pathwidth"
 RULEFREE_DIR = ROOT / "reports" / "scratch" / "minor_certificates"
 MINOR_THEOREMS = ("pathwidth_gt_of_minorOf / pathwidth_minorOf_le (lean/MOSPFormalization/Minor.lean); "
-                  "mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean)")
+                  "mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean); a `bound` status "
+                  "(the minor's contraction degeneracy) rests on pathwidth_ge_of_minor_minDegree / "
+                  "MOSPInstance.mospValue_ge_of_minor_minDegree (lean/MOSPFormalization/ObstructionCertificate.lean) "
+                  "once the degeneracy's own contractions are appended to the sequence; the replay is checkSeq "
+                  "(checkSeq_sound) there")
 
 
 def read_edges(path: Path) -> tuple[str, int, list[tuple[int, int]]]:

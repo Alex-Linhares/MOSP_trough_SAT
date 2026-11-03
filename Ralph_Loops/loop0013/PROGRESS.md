@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 8/11 SOLVED
+Current: 9/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -731,3 +731,88 @@ Inputs for item 10's summary from this item: the headline table of §8.2,
 the dominance matrix of §8.4 (M above every family, below none), the 11
 uncovered of §8.5 with E closed out on every one, the verdicts of §8.6 and
 the regenerated cost of §8.7.
+
+---
+## Iteration 9 — 2026-11-03 10:09
+
+### Completed
+
+- **Item 09 — Lean: a checked certificate implies the bound.**
+  `lean/MOSPFormalization/ObstructionCertificate.lean` (22 theorems, no
+  `sorry`, no `axiom`, every one on the three standard axioms), imported by
+  `lean/MOSPFormalization.lean`; 22 `#print axioms` lines in
+  `paper1/axiom_check.lean` (586 → 608); `OBSTRUCTION_PROVED` in
+  `learning/sandwich.py`'s `ALL_PROVED` (lean stage: `lake build` ok, axioms
+  ok on all names; `degree_bound` stage re-run after it, 5,793 checks, 0
+  violations, `reports/sandwich_tables.md` restored byte for byte);
+  `tests/test_obstruction_lean.py` (7 passed); the paper's Lean appendix
+  row `obstruction` (`sec9a_appendix_lean.tex`, PDF rebuilt, 77 pages, 220
+  cited names all declared); the checker's `theorems` strings name the new
+  theorems (`paper1/obstruction_check.py`); scratch
+  `reports/scratch/obstruction_search/09_lean/{check.py, run.log,
+  warwick_extension.json, warwick_timings.txt, warwick_*.lean, gate_run.out}`;
+  `reports/obstruction_search.md` §9.
+- **The statements** (§9.1): family E's UNSAT level as
+  `pathwidth_ge_of_unsat` (`t ≤ n → (∀ A, |A| = t → ¬ |N[A]| ≤ b) → b + 1 ≤ t + pw`),
+  `pathwidth_ge_of_forall_closedNbhd` (the item's form) and
+  `MOSPInstance.mospValue_ge_of_unsat`; family M's `bound` status as
+  `pathwidth_ge_of_minor_minDegree` (`IsContractionSeq → d ≤ minDegreeIn (applySeq G seq) S → d ≤ pw`),
+  `pathwidth_ge_of_minor_forall_degree` (degrees in `minorOf`, via
+  `degree_minorOf_eq`) and `MOSPInstance.mospValue_ge_of_minor_minDegree`;
+  the `Bool` replay `checkSeq` with `checkSeq_sound` / `_complete` / `_iff`
+  and `pathwidth_ge_of_checkSeq`; decidable adjacency along `applySeq` and
+  decidable `IsContractionSeq`.
+- **State before you prove** (§9.2): `check.py` on every graph to 8 vertices
+  (13,598 graphs, 120,841 Harper levels, 271,960 random legal sequences,
+  239,647 illegal ones): **zero violations** on every statement, the Lean
+  minor equal to the record's replay on all. **Two statements of the item's
+  text are false without a hypothesis and were corrected before being
+  stated**, each with its counterexample proved in Lean: Harper's
+  contrapositive needs `j ≤ n` (vacuous above `n`), and the degree form of
+  the minor bound needs a nonempty minor (vacuous on the 30,785 sequences
+  that remove every vertex). No certificate on record is affected (the
+  checker already rejects `t > n`).
+- **Three certificates closed by `decide`** (§9.3): the 8-cycle with five
+  contractions to a triangle (`2 ≤ pw`, tight); `K_{3,4}` at level 1 over
+  all 128 subsets (`3 ≤ pw`, tight); and **the record instance
+  `Warwick 1729` (30 customers, the one `gap338` instance with a `bound`
+  family-M certificate)**: `eight_le_mospValue_warwick`, every pattern order
+  opens at least 8 stacks (optimum 9), decided by `decide +kernel` in 7.6 s
+  directly on the MOSP graph Lean builds from the instance's 90
+  requirements. The item expected toy sizes only; the kernel's caching of
+  closed terms takes it to the record.
+- **A finding about `bound` certificates**: the C program's `lower = 7` on
+  the record's 15-vertex minor is its *contraction degeneracy*, not its
+  minimum degree (which is 5; `decide` answers "`= 7` is false" in 7.3 s).
+  The certificate as filed does not exhibit the min-degree minor; 7 least-c
+  contractions (recomputed, `warwick_extension.json`) take it to a `K₈`, and
+  the 22-step sequence is what Lean checks. Holds of all 39 `c_status = bound`
+  certificates of items 04–05; `paper1/dataset.py`'s `minor_certificate` is
+  covered as it stands (its `ops` reach the min-degree minor). **Proposed,
+  not applied**: emit the MMD+ contractions behind a `bound` status.
+- **Kill verdict: met** (two statements corrected before stating; nothing
+  stated unchecked). No stop condition fired. Harness validity stage not
+  applicable (no floor produced; the Warwick floor 8 is the record's).
+  Compute: under a minute in all (check 2 s, builds seconds).
+- **Gate: PASS** (`reports/scratch/obstruction_search/09_lean/gate_run.out`,
+  10:25–10:36): lake build ok, 0 sorry, 0 axiom; `tests/` 1,890 passed, 2
+  skipped, 1 xfailed (4:33); `pathwidth_solver/` 123 passed (6:23); paper 77
+  pages, no undefined references. No existing Lean proof touched; nothing
+  under `solutions/`.
+
+### Blockers
+
+None. One correction to the item's text, recorded in §9.2: its statement (ii)
+in degree form needs a nonempty-minor hypothesis, and (i) needs `j ≤ n`; both
+are stated with the hypothesis and the counterexamples are proved. The
+item's expectation that `decide` stops at toy sizes was too pessimistic: the
+30-customer record certificate is decided in seconds.
+
+### Next
+
+Item 10 (the write-up: §0 of the report, the paper's appendix section). For
+its summary from this item: the checker's `theorems` strings now name
+statements, not readings; the `bound` certificates on record exhibit the
+contraction degeneracy's *value*, not its minor, and the MMD+ steps are the
+missing object (proposed emission, not applied); `eight_le_mospValue_warwick`
+is a record floor proved from an instance's own matrix. Item 11 is the reserve.

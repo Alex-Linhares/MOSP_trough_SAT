@@ -1,0 +1,138 @@
+# session it09 started 2026-11-03 10:08:45
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 9: item 09, the Lean certificate theorems. I'll start by reading the plan sections and the Lean files the item names.
+  > $ uptime && date && git status --short | head && wc -l reports/obstruction_search_plan.md && grep -n '^## \|^### ' reports/obstruction_search_plan.md | head -60
+  > $ sed -n 34,95p reports/obstruction_search_plan.md && sed -n 224,335p reports/obstruction_search_plan.md
+  > $ cat lean/MOSPFormalization/EmptyPair.lean
+  > $ cat lean/MOSPFormalization/Minor.lean
+  > $ grep -n 'theorem\|lemma\|^def\|^noncomputable def\|^structure\|^abbrev' lean/MOSPFormalization/Sandwich.lean | head -80 && grep -n 'minDegreeIn\|degeneracy' lea
+  > $ cat lean/MOSPFormalization.lean && cat paper1/axiom_check.lean | head -60 && grep -c 'print axioms' paper1/axiom_check.lean && cat lean/MOSPFormalization/Search
+  > $ grep -n 'STEP_BOUND_PROVED\|ALL_PROVED\|_PROVED =' learning/sandwich.py | head -30 && grep -n 'leanentry' paper1/latex/sec9a_appendix_lean.tex | tail -5 && grep
+  > $ sed -n 280,360p lean/MOSPFormalization/Sandwich.lean
+  > $ sed -n 300,340p lean/MOSPFormalization/Search/BetterMove.lean && grep -n 'cexGraph\b' lean/MOSPFormalization/Search/BetterMove.lean | head -5 && grep -n 'def ce
+  > $ sed -n 505,530p learning/sandwich.py && grep -n 'def main\|stage\b.*==\|add_argument' learning/sandwich.py | head -40 && tail -30 paper1/axiom_check.lean && sed
+  > $ sed -n 80,200p reports/scratch/empty_pair/check.py && ls reports/scratch/empty_pair/ && cat Ralph_Loops/loop0013/gate.py | head -80
+  > $ ls reports/scratch/obstruction_search/04_minor/certificates | head -5 && ls reports/scratch/obstruction_search/04_minor/certificates | wc -l && head -3 reports/
+  > $ d=reports/scratch/obstruction_search/04_minor/certificates; f=$(ls $d | head -1); ls $d/$f; python3 -c "
+import json,glob
+for p in sorted(glob.glob('$d/*/*.json
+  > $ grep -l '"c_status": "bound"' -r reports/scratch/obstruction_search/0{4,5,7}*/certificates 2>/dev/null | head; grep -rho '"c_status": "[a-z_]*"' reports/scratch
+  > $ grep -n 'theorem\|Lean\|lean/' paper1/obstruction_check.py | head -40
+  > $ sed -n 1120,1230p lean/MOSPFormalization/Sandwich.lean
+  > $ grep -n 'def stage_lean\|def _stage_lean\|"lean"' learning/sandwich.py | head && sed -n '/def stage_lean/,/^def /p' learning/sandwich.py | head -80 && grep -n '
+  > $ sed -n 355,400p lean/MOSPFormalization/Search/DefiniteMove.lean && grep -n 'neighborFinset\|degree' lean/MOSPFormalization/Search/Basic.lean | head -10 && cat l
+  > $ for f in $(grep -l '"c_status": "bound"' -r reports/scratch/obstruction_search/0{4,5}*/certificates); do python3 -c "
+import json,sys; c=json.load(open('$f')); 
+  > $ sed -n 100,135p paper1/obstruction_check.py && grep -n '"t"\|\bt >\|t <=\|t > n\|<= n' paper1/obstruction_check.py | head -20
+  > $ sed -n 880,960p learning/sandwich.py && sed -n 1265,1300p learning/sandwich.py && grep -n 'TABLES\b' learning/sandwich.py | head -5 && grep -rn 'ALL_PROVED\|san
+  > $ grep -n 'theorem mospValue_eq_pathwidth_add_one\|theorem pathwidth_mospGraph_eq_zero_of_forall_not\|theorem card_le_pathwidth_add_one_of_isClique\|def mospValue
+  > $ sed -n 80,140p Ralph_Loops/loop0013/gate.py && ls reports/scratch/obstruction_search/ && sed -n 1,40p reports/obstruction_search.md && grep -n '^## ' reports/ob
+  > $ grep -n 'degree\b\|neighborFinset\|induce' lean/MOSPFormalization/Sandwich.lean | sed -n 1,30p; grep -rn 'theorem.*degree_induce\|induce.*degree' lean/MOSPForma
+  > $ sed -n 700,730p lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Finite.lean && cat tests/test_lean_minor_statement.py | head -60 && grep -n 'leane
+  > $ python3 -c "
+import json; c=json.load(open('reports/scratch/obstruction_search/04_minor/certificates/Warwick_1729__balanced_orders__3_orders_per_product/ladder.
+  > $ sed -n 1,80p lean/MOSPFormalization/Search/Basic.lean | grep -n 'instance\|Decidable\|def ' | head -20 && grep -n 'instance.*Decidable' lean/MOSPFormalization/S
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean && cat > /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean/check.py <<'EOF'
+#!/
+  > $ grep -n 'instance.*Decidable\|DecidableRel' lean/MOSPFormalization/MOSPGraph.lean | head -8; grep -rn 'DecidableRel (G.comap\|instance.*comap.*Decidable\|Comap.
+  > $ cd /home/al/dev/MOSP/lean && time lake build 2>&1 | tail -3
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import re
+p='reports/scratch/obstruction_search/09_lean/check.py'; s=open(p).read()
+s=s.replace('''    # the j > n for
+  > $ cat > lean/MOSPFormalization/ObstructionCertificate.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT license a
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='lean/MOSPFormalization/ObstructionCertificate.lean'; s=open(p).read()
+s=s.replace('''/-- Adjacency after replaying 
+  > $ cd /home/al/dev/MOSP && sed -n 276,290p lean/MOSPFormalization/ObstructionCertificate.lean
+  > $ python3 - <<'EOF'
+p='lean/MOSPFormalization/ObstructionCertificate.lean'; s=open(p).read()
+s=s.replace('''  split_ifs with hS'
+  · apply Finset.le_inf'
+    intr
+  > $ cat > /tmp/obs_axioms.lean <<'EOF'
+import MOSPFormalization
+open MOSPFormalization
+#print axioms pathwidth_ge_of_forall_closedNbhd
+#print axioms pathwidth_ge_of
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import json
+c=json.load(open('reports/scratch/obstruction_search/04_minor/certificates/Warwick_1729__balanced_orders__
+  > $ (time timeout 900 lake env lean ../reports/scratch/obstruction_search/09_lean/warwick_mindeg.lean) 2>&1 | tail -5
+  > $ cd /home/al/dev/MOSP && sed -n 140,175p paper1/latex/sec9a_appendix_lean.tex && grep -n 'loop0012\|StepBound\|step_bound' paper1/latex/sec9a_appendix_lean.tex |
+  > $ python3 - <<'EOF'
+import json, itertools
+d='reports/scratch/obstruction_search/04_minor/certificates/Warwick_1729__balanced_orders__3_orders_per_product/'
+c=jso
+  > $ sed -n 105,135p tests/test_sandwich.py && sed -n 174,212p tests/test_sandwich.py
+  > $ cd /home/al/dev/MOSP && cat >> paper1/axiom_check.lean <<'EOF'
+-- loop0013 item 09: a checked certificate implies the bound (`ObstructionCertificate.lean`)
+#pri
+  > $ sed -n 105,135p /home/al/dev/MOSP/tests/test_sandwich.py && sed -n 174,212p /home/al/dev/MOSP/tests/test_sandwich.py
+  > $ grep -n 'structure MOSPInstance' -A8 lean/MOSPFormalization/MOSPInstance.lean && grep -n 'def shares\|def ofMatrix\|def fromList\|instance.*Decidable' -A4 lean/
+  > $ python3 - <<'EOF'
+import json
+d='reports/scratch/obstruction_search/04_minor/certificates/Warwick_1729__balanced_orders__3_orders_per_product/'
+rows=[l.split() 
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec9a_appendix_lean.tex'; s=open(p).read()
+old='''\\leanentry{encoding}{Appendix~\\ref{app:sat}, the SAT formulation is faithf
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='/home/al/dev/MOSP/paper1/latex/sec9a_appendix_lean.tex'; s=open(p).read()
+old='''\\leanentry{encoding}{Appendix~\\r
+  > $ python3 - <<'EOF'
+import json
+d='/home/al/dev/MOSP/reports/scratch/obstruction_search/04_minor/certificates/Warwick_1729__balanced_orders__3_orders_per_product/
+  > $ cat > /home/al/dev/MOSP/tests/test_obstruction_lean.py <<'EOF'
+"""loop0013 item 09: `lean/MOSPFormalization/ObstructionCertificate.lean` — a checked
+certificate
+  > $ cd /home/al/dev/MOSP && cat >> /home/al/dev/MOSP/paper1/axiom_check.lean <<'EOF'
+#print axioms MOSPFormalization.warwickSeq_checked
+#print axioms MOSPFormalizat
+  > $ cd /home/al/dev/MOSP && timeout 600 python3 -m pytest /home/al/dev/MOSP/tests/test_obstruction_lean.py -q 2>&1 | tail -8
+  > $ cd /home/al/dev/MOSP && timeout 900 make -C /home/al/dev/MOSP/paper1/latex 2>&1 | tail -3 && timeout 300 make -C /home/al/dev/MOSP/paper1/latex check 2>&1 | tai
+  > $ pdftotext /home/al/dev/MOSP/paper1/latex/main.pdf - 2>/dev/null | grep -c 'eight_le_mospValue_warwick\|checkSeq' ; grep -n '^main.pdf\|^all\|latexmk' /home/al/d
+  > $ (time timeout 1500 python3 -m learning.sandwich --stage lean) 2>&1 | tail -4 && (time timeout 1500 python3 -m learning.sandwich --stage degree_bound) 2>&1 | tai
+  > $ grep -rn 'contrapositive\|MINOR_THEOREMS\|THEOREMS' /home/al/dev/MOSP/tests/test_obstruction_*.py | head -5; grep -n 'rests on' /home/al/dev/MOSP/paper1/obstruc
+  > $ timeout 1500 python3 -m learning.sandwich --stage lean 2>&1 | tail -15; echo "exit=$?"
+  > $ sed -n 300,320p /home/al/dev/MOSP/paper1/obstruction_check.py && sed -n 610,622p /home/al/dev/MOSP/paper1/obstruction_check.py && grep -rn 'theorems' /home/al/d
+  > $ timeout 1500 python3 -m learning.sandwich --stage degree_bound 2>&1 | tail -6; echo "exit=$?"; grep -c '' /home/al/dev/MOSP/reports/sandwich_tables.md; git -C /
+  > $ python3 - <<'EOF'
+p='/home/al/dev/MOSP/paper1/obstruction_check.py'; s=open(p).read()
+old='''THEOREMS = ("exists_closedNbhd_card_le (lean/MOSPFormalization/Empt
+  > $ cat >> /home/al/dev/MOSP/reports/obstruction_search.md <<'EOF'
+
+## 9. Lean: a checked certificate implies the bound — the contrapositive of Harper, the min-degr
+  > $ sed -i 's/that this script has not found true on all 13,600 graphs (nauty-geng, 1..8 vertices), and/that this script has not found true on all 13,598 graphs (na
+  > $ uptime && (time python3 /home/al/dev/MOSP/Ralph_Loops/loop0013/gate.py) > /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean/gate_run.out 2>&1; tail -
+  > $ python3 - <<'EOF'
+p='/home/al/dev/MOSP/Ralph_Loops/loop0013/iterations.md'; s=open(p).read()
+old='- [ ] **09 Lean: a checked certificate implies the bound'
+asse
+
+The gate is running in the background (lake build, both pytest suites, the paper check). I'm waiting for it; nothing else depends on anything but its verdict. Let me check its interim output.
+  > $ sleep 240; tail -5 /tmp/claude-1000/-home-al-dev-MOSP/171ae345-0826-42fc-976d-fc244650ed98/tasks/brkdgogpl.output; echo; tail -3 /home/al/dev/MOSP/reports/scrat
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q 'GATE PASS\|GATE FAIL' /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean/gate_run.out; do sleep 5; done; tail -14 /home/al/dev/MOSP/rep
+  > $ timeout 590 bash -c 'until grep -q "GATE PASS\|GATE FAIL" /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean/gate_run.out; do sleep 5; done'; tail -12
+
+Gate passed. Appending the gate line and the Blockers/Next sections to PROGRESS.md.
+  > $ head -8 /home/al/dev/MOSP/reports/scratch/obstruction_search/09_lean/gate_run.out | grep -i 'lake\|sorry\|axiom' ; python3 - <<'EOF'
+p='/home/al/dev/MOSP/Ralph_
+
+Item 09 is done, marked `[x]`, with PROGRESS.md updated to 9/11 and the gate passing. Two items remain, so no `LOOP_COMPLETE` line.
+
+**What was done.** `lean/MOSPFormalization/ObstructionCertificate.lean` states, in the form the checker cites, that a checked certificate implies the bound: Harper's contrapositive for an UNSAT expansion level (`pathwidth_ge_of_unsat`, `mospValue_ge_of_unsat`), the min-degree minor certificate for the C program's `bound` status (`pathwidth_ge_of_minor_minDegree`, `mospValue_ge_of_minor_minDegree`), and a `Bool` replay `checkSeq` proved sound and complete, with decidable adjacency along a contraction sequence. 22 theorems, no `sorry`, no `axiom`, all on the three standard axioms; imported, axiom-check lines added, folded into `learning/sandwich.py`, a Lean appendix row in the paper, 7 new tests.
+
+**State before you prove paid off.** The brute-force check on all 13,598 graphs to 8 vertices found zero violations, but two of the item's own statements are false without a hypothesis: Harper's contrapositive needs `j ≤ n`, and the degree form of the minor bound needs a nonempty minor. Both were corrected before being stated, and both counterexamples are proved in Lean.
+
+**`decide` reached a record instance.** Beyond the two toy cases, the 30-customer bound-gap instance `Warwick 1729` is closed end to end: `eight_le_mospValue_warwick` proves every pattern order opens at least 8 stacks, decided by `decide +kernel` in 7.6 s on the MOSP graph Lean builds from the instance's own matrix. The item expected toy sizes only.
+
+**One finding about the record.** The C program's `bound` status reports the minor's contraction degeneracy, not its minimum degree (5 on the record's 15-vertex minor, against the reported 7). The filed certificate therefore does not exhibit the object the theorem needs; seven least-c contractions, recomputed, take it to a `K₈`, and that 22-step sequence is what Lean checks. Emitting those steps from the C program is proposed, not applied. Report §9 and PROGRESS.md carry the details, timings and the kill verdict (met).
+
+# result: success in 1645s, 69 turns, cost $11.99
