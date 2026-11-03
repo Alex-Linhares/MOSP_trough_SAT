@@ -1,0 +1,196 @@
+# session it04 started 2026-11-03 03:26:29
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan's relevant sections and the code this item reuses, then build the minor search module, the checker, validate, run, and write up.
+  > $ uptime && date && grep -n "^## \|^### " reports/obstruction_search_plan.md | head -60
+  > $ sed -n 224,335p reports/obstruction_search_plan.md && sed -n 400,420p reports/obstruction_search_plan.md
+  > $ cat pathwidth_solver/cli/README.md && ls -la pathwidth_solver/cli/ && sha256sum pathwidth_solver/cli/pathwidth
+  > $ grep -n "def \|^class \|^[A-Z_]* = " satisfiability/relaxation.py | head -80 && sed -n 1,80p satisfiability/relaxation.py
+  > $ ls reports/scratch/minor_certificates/ reports/scratch/minor_bound/ 2>/dev/null | head -60 && sed -n 1,80p reports/minor_bound_verification.md
+  > $ sed -n 1,120p paper1/obstruction_check.py && grep -n "^def \|^    def \|argparse\|add_parser\|subparsers" paper1/obstruction_check.py
+  > $ ls reports/scratch/obstruction_search/ reports/scratch/obstruction_search/01_ledger/ && python3 -c "
+import json; t=json.load(open('reports/scratch/obstruction_
+  > $ sed -n 1,60p learning/obstruction_expansion.py && grep -n "^def \|^class " learning/obstruction_expansion.py learning/obstruction_ledger.py learning/bound_harne
+  > $ sed -n 345,430p satisfiability/relaxation.py && sed -n 481,535p satisfiability/relaxation.py && grep -n "vertex_separation_brute" -r learning/*.py | head
+  > $ sed -n 1,80p pathwidth_solver/pathwidth/minor.py && grep -n "def " pathwidth_solver/pathwidth/minor.py
+  > $ ls reports/scratch/minor_certificates/ && sed -n 1,60p reports/scratch/minor_certificates/mc_graph.py && head -c 1500 reports/scratch/minor_bound/Random-125-125
+  > $ head -40 reports/scratch/minor_certificates/vsmemo.c && grep -n "argv\|usage\|Usage" reports/scratch/minor_certificates/vsmemo.c | head -20 && head -30 reports/
+  > $ sed -n 1,60p learning/bound_harness.py && grep -n "extra\|def main\|def validity\|def run_stage\|stage" learning/bound_harness.py | head -40 && cat reports/scra
+  > $ sed -n 266,285p learning/obstruction_expansion.py && sed -n 433,470p learning/obstruction_expansion.py && sed -n 193,245p learning/obstruction_expansion.py && g
+  > $ grep -n "class \|def \|TOOLS\|REGISTRY\|CANDIDATES" learning/bound_harness.py | head -60 && grep -n "^from\|^import" learning/obstruction_ledger.py | head -20 &
+  > $ sed -n 60,108p learning/obstruction_expansion.py && sed -n 342,360p learning/obstruction_ledger.py && sed -n 1119,1150p learning/first_moment.py && grep -n "def
+  > $ python3 - <<'EOF'
+import json, pandas as pd
+t=json.load(open('reports/scratch/obstruction_search/01_ledger/targets.json'))
+led=pd.read_csv('reports/scratch/obst
+  > $ sed -n 1,60p tests/test_obstruction_expansion.py && grep -n "^def test" tests/test_obstruction_expansion.py && sed -n 204,300p paper1/obstruction_check.py
+  > $ sed -n 60,140p reports/scratch/minor_certificates/mc_graph.py && grep -n "def replay" -A 40 reports/scratch/minor_certificates/mc_graph.py | head -60 && cat rep
+  > $ grep -n "replay\|checkF\|vsmemo\|mc_graph" reports/minor_bound_verification.md | sed -n 1,40p && sed -n 100,170p reports/minor_bound_verification.md && grep -n 
+  > $ grep -n "def adjacency_from_matrix" -A 14 learning/obstruction_ledger.py && grep -n "^INSTANCES_CSV\|^LEDGER_CORPUS\|^TARGETS_JSON\|^SOLUTIONS_DIR\|^BANDS\|^SCR
+
+Now I'll write the search module.
+  > Write /home/al/dev/MOSP/learning/obstruction_minor.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper1/obstruction_check.py")
+src = p.read_text()
+
+# 1. docstring: add check-minor usage
+src = src.replace(
+
+Now a smoke test of the whole pipeline on a couple of small instances before validating.
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | tail -40
+import time, json, random, numpy as np
+from learning import obstruction_minor as om
+from learning.obstruction_ledge
+  > $ rm -rf reports/scratch/obstruction_search/04_minor/smoke && uptime && nice -n 19 python3 -m learning.obstruction_minor --stage validate --workers 8 --count 50 -
+
+While that runs, I'll write the tests.
+  > Write /home/al/dev/MOSP/tests/test_obstruction_minor.py
+  > $ cat reports/scratch/obstruction_search/04_minor_validate.out | tail -20; ls reports/scratch/obstruction_search/04_minor/ 2>/dev/null; uptime
+  > $ timeout 900 nice -n 19 python3 -m pytest tests/test_obstruction_minor.py -x -q -p no:cacheprovider 2>&1 | tail -15
+  > $ sleep 60; cat reports/scratch/obstruction_search/04_minor/validation.log; ls reports/scratch/obstruction_search/04_minor/
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ cat reports/scratch/obstruction_search/04_minor/validation.log; ls reports/scratch/obstruction_search/04_minor/; uptime
+  > $ nice -n 19 python3 - <<'EOF' 2>&1 | tail -12
+import time, numpy as np
+from learning import obstruction_minor as om
+from learning.obstruction_ledger import adjac
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py"); s = p.read_text()
+s = s.replace('''    def done(self) -> bool:
+        ret
+
+Validation is passing so far: 1,485 minors agree with brute force, and the first two recorded certificates replay and re-prove. Waiting for the remaining four recorded ones, then I'll launch the run.
+  > $ until grep -q "^.*recorded: " reports/scratch/obstruction_search/04_minor/validation.log; do sleep 5; done; cat reports/scratch/obstruction_search/04_minor/vali
+
+Validation passed: 0 disagreements on 1,485 minors against brute force, and all 6 recorded certificates replay and re-prove. Launching the run on the 251 targets.
+  > $ uptime && nice -n 19 python3 -m learning.obstruction_minor --stage run --targets gap338 --max-n 60 --workers 8 --seconds 60,120 > reports/scratch/obstruction_se
+  > $ mkdir -p reports/scratch/obstruction_search/04_minor && cat > reports/scratch/obstruction_search/04_minor/run_harness.py <<'EOF'
+"""Item 04: the search's minor 
+  > $ until [ $(grep -c "done," reports/scratch/obstruction_search/04_minor_run.out) -ge 2 ]; do sleep 10; done; cat reports/scratch/obstruction_search/04_minor_run.o
+  > $ ps -eo pid,ni,pcpu,etime,comm,args --sort=-pcpu | head -25 | cut -c1-150; echo; pgrep -af run_unlimited | head -3; echo; uptime
+
+The load spike is the owner's chrome/puppeteer work, not ours; our workers are at nice 19 and yield to it. I'll keep the run going, note the load in the report, and drop to 4 workers if it persists.
+  > $ until [ $(grep -c "done," reports/scratch/obstruction_search/04_minor_run.out) -ge 8 ]; do sleep 15; done; tail -4 reports/scratch/obstruction_search/04_minor_r
+  > $ tail -4 reports/scratch/obstruction_search/04_minor_run.out; uptime; python3 -c "
+import pandas as pd; s=pd.read_csv('reports/scratch/obstruction_search/04_mino
+  > $ ps -o ppid= -p 3018008; ps -o pid,ni,etime,args -p $(ps -o ppid= -p 3018008) | cut -c1-120
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "b4cfdr6hb"}
+  > TaskStop {"task_id": "bbal7a8sf"}
+  > $ sleep 2; kill -TERM 3018006 2>/dev/null; sleep 3; ps -o pid,ppid,etime,args -p 3018006,3018008,3018012 2>/dev/null | cut -c1-100; pgrep -P 3018006 | head; echo 
+  > $ python3 -c "
+import pandas as pd; s=pd.read_csv('reports/scratch/obstruction_search/04_minor/search.csv'); print(len(s), s.instance_name.is_unique)" && ls repor
+  > $ python3 -c "
+import pandas as pd; pd.set_option('display.width',250)
+s=pd.read_csv('reports/scratch/obstruction_search/04_minor/search.csv')
+led=pd.read_csv('re
+
+The run is resuming at 4 workers (177 instances left, about 45 minutes). Meanwhile I'll re-run the item's tests against the updated module and wait on the run.
+  > $ timeout 900 nice -n 19 python3 -m pytest tests/test_obstruction_minor.py -q -p no:cacheprovider 2>&1 | tail -3
+  > $ until grep -q "run done" reports/scratch/obstruction_search/04_minor_run.out; do sleep 20; done; tail -3 reports/scratch/obstruction_search/04_minor_run.out
+  > $ until [ $(grep -c "done," reports/scratch/obstruction_search/04_minor_run.out) -ge 14 ] || grep -q "run done" reports/scratch/obstruction_search/04_minor_run.ou
+  > TaskStop {"task_id": "bldl110ij"}
+  > $ tail -3 reports/scratch/obstruction_search/04_minor_run.out; uptime; date
+
+Load is back down to 4, so I'll restart at 8 workers to halve the remaining time (the run resumes by instance name).
+  > $ P=$(ps -eo pid,args | awk '/python3 -m learning.obstruction_minor --stage run/ && !/awk/ {print $1}' | head -1); echo "parent $P"; ps -o pid,ppid,etime,args -p 
+  > TaskStop {"task_id": "bsx3qtquu"}
+  > TaskStop {"task_id": "b9o8nxw9r"}
+  > $ sleep 1; for p in $(pgrep -P 3253914); do echo child $p; done; MAIN=$(ps -eo pid,ppid,args | awk '$2==3253914 && /obstruction_minor/ {print $1}'); echo "main=$M
+  > $ ps -eo pid,ppid,ni,args | awk '/obstruction_minor/ && !/awk/' | cut -c1-80; uptime; echo "$(date '+%F %T') load back to 4; resumed at 8 workers after 114 instan
+  > $ until grep -q "run done" reports/scratch/obstruction_search/04_minor_run.out; do sleep 20; done; tail -3 reports/scratch/obstruction_search/04_minor_run.out; up
+  > $ tail -2 reports/scratch/obstruction_search/04_minor_run.out; uptime; date
+  > $ until grep -q "run done" reports/scratch/obstruction_search/04_minor_run.out; do sleep 20; done; tail -2 reports/scratch/obstruction_search/04_minor_run.out; up
+
+The run finished on all 251 targets. Now the checker sweep (replay, C, rule-free) and the harness validity stage, in parallel at 4 workers each.
+  > $ uptime && (nice -n 19 python3 -m learning.obstruction_minor --stage check --workers 4 > reports/scratch/obstruction_search/04_minor_check.out 2>&1; tail -2 repo
+  > $ nice -n 19 python3 reports/scratch/obstruction_search/04_minor/run_harness.py --workers 4 > reports/scratch/obstruction_search/04_minor/harness_run.out 2>&1; ta
+  > $ python3 -m learning.obstruction_minor --stage tables > /dev/null && cat reports/scratch/obstruction_search/04_minor/tables.md
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+from pathlib import Path
+pd.set_option('display.width',250)
+s=pd.read_csv('reports/scratch/obstruction_
+  > $ tail -3 reports/scratch/obstruction_search/04_minor_check.out; cat reports/scratch/obstruction_search/04_minor/harness_table.md; tail -3 reports/scratch/obstruc
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("paper1/obstruction_check.py"); s=p.read_text()
+s=s.replace('''def replay_minor(G: dict[int, set[int]], seq) -
+  > $ uptime && mv reports/scratch/obstruction_search/04_minor_check.out reports/scratch/obstruction_search/04_minor/check_attempt1_crash.out && (nice -n 19 python3 -
+  > $ timeout 900 nice -n 19 python3 -m pytest tests/test_obstruction_minor.py tests/test_obstruction_expansion.py -q -p no:cacheprovider 2>&1 | tail -3
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+from pathlib import Path
+pd.set_option('display.width',250)
+s=pd.read_csv('reports/scratch/obstruction_
+  > $ tail -2 reports/scratch/obstruction_search/04_minor_check.out | cut -c1-300 && python3 - <<'EOF'
+import pandas as pd, numpy as np
+pd.set_option('display.width',
+  > $ python3 - <<'EOF'
+import pandas as pd, json, sys
+sys.path.insert(0,'paper1'); import obstruction_check as oc
+from pathlib import Path
+c=pd.read_csv('reports/scr
+  > $ python3 - <<'EOF'
+import json, numpy as np
+from pathlib import Path
+from learning import obstruction_minor as om
+from learning.obstruction_ledger import adjacen
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("paper1/obstruction_check.py"); s=p.read_text()
+old='''            del H[v]
+            del branch[v]
+        
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("paper1/obstruction_check.py"); s=p.read_text()
+old="    if sorted(rep) + sorted(deleted) != sorted(G) or set(
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("tests/test_obstruction_minor.py"); s=p.read_text()
+old='''def test_quotient_equals_relaxation_minor_groups_on
+
+Now the report section. Everything I need is collected; writing §4.
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+
+## 4. Family M by search: the contraction-sequence search, its certificate and checker; the 338 at `n ≤ 60` agains
+  > $ uptime && (python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/04_minor/gate_run.out 2>&1; echo "exit $?" >> reports/scratch/obstruction_s
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("Ralph_Loops/loop0013/iterations.md"); s=p.read_text()
+old="- [ ] **04 Family M: the contraction-sequence sear
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path("reports/obstruction_search.md"); s=p.read_text()
+old="Validation 0.3, the checker\nsweeps 0.03, the harness 0
+
+The gate is running (about 15 minutes). I'll wait on it with a bounded poll and then fill its result into PROGRESS.
+  > $ until grep -q "^exit " reports/scratch/obstruction_search/04_minor/gate_run.out; do sleep 20; done; tail -12 reports/scratch/obstruction_search/04_minor/gate_ru
+  > $ cat reports/scratch/obstruction_search/04_minor/gate_run.out | tail -8; uptime; date
+  > $ until grep -q "^exit " reports/scratch/obstruction_search/04_minor/gate_run.out; do sleep 20; done; tail -12 reports/scratch/obstruction_search/04_minor/gate_ru
+  > $ grep -n "sorry\|axiom\|lake\|GATE" reports/scratch/obstruction_search/04_minor/gate_run.out | head -8; python3 - <<'EOF'
+from pathlib import Path
+p=Path("Ralph_
+
+Item 04 is done, the gate passed, and nothing is left running.
+
+**What was done.** Family M (contraction minors) now has a local search over contraction sequences (`learning/obstruction_minor.py`), a certificate format, and an independent `check-minor` in `paper1/obstruction_check.py` that replays with its own code, rebuilds the quotient from branch sets, re-runs the C program and runs the rule-free `vsmemo` + `checkF` refutation. Validation before the run: 1,485 minors on 50 small instances agree with brute force, and the six recorded certificates replay and re-prove at exactly their recorded widths.
+
+**Findings on the 251 bound-gap instances at 20–50 customers.**
+- The family's duality gap is zero: the search's floor equals the optimum on all 251. The greedy ladder is tight on 222 and one stack short on 29. The record before this item was tight on 70, family E on 8.
+- The search beats the ladder on 29 of 251 (11.6%), always by one and always to the optimum, by choosing a different contraction at a size the ladder already visits. The kill criterion ("greedy is enough" below 10%) is therefore not met, by a small margin, and the report says the ladder costs a hundredth of the search's time.
+- Minimal certifying minors have median m/n of 0.66 against the ladder's 0.80, shrinking with size and growing with the excess.
+- All 251 certificates verify on all three checks; the harness reports 0 floors above an optimum on the whole corpus.
+
+**Two bugs surfaced, both in the checker, none in a certificate.** Its partition check first crashed on isolated-vertex deletions, then wrongly rejected 5 certificates in which a whole component had been contracted to one vertex and then deleted. Both are fixed with a regression test, and the three attempts' logs are kept.
+
+**Compute:** about 5.6 core-hours of the item's 8. The run was paused and resumed twice to follow the load rule while the owner's chrome processes pushed the load to 59; this is recorded in the run log and the report.
+
+PROGRESS.md has the iteration entry (now 4/11 solved) and the item is marked done in iterations.md. Nothing was committed. Next is item 05, the same search on the 87 larger gap instances and the 200 Chu & Stuckey instances, where the rule-free check will stop fitting above roughly 90-vertex minors.
+
+# result: success in 4396s, 84 turns, cost $26.17

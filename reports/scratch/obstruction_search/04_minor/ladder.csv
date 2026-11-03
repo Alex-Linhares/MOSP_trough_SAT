@@ -1,0 +1,2156 @@
+instance_name,rule,fraction,size,m,floor,source,cached
+HS problem 1102 size 30 10 density  0.20,min-d,0.5,15,15,12,c_refutation,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.6,18,18,1,skipped,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.65,20,20,1,skipped,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.8,24,24,13,c_refutation,False
+HS problem 1102 size 30 10 density  0.20,min-d,0.85,26,26,14,c_refutation,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.5,15,15,13,c_bound,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.55,16,16,13,c_bound,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1105 size 30 10 density  0.20,min-d,0.8,24,24,16,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.5,15,15,12,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.6,18,18,12,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.7,21,21,12,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.75,22,22,12,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.8,24,24,13,c_refutation,False
+HS problem 1106 size 30 10 density  0.20,min-d,0.85,26,26,14,c_refutation,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.5,15,15,11,c_bound,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.55,16,16,11,c_bound,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.6,18,18,12,c_refutation,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.7,21,21,12,c_refutation,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.75,22,22,12,c_bound,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.8,24,24,13,c_refutation,False
+HS problem 1107 size 30 10 density  0.20,min-d,0.85,26,26,14,c_refutation,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.5,15,15,12,c_bound,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.55,16,16,13,c_refutation,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.6,18,18,1,skipped,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.65,20,20,1,skipped,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.8,24,24,14,c_refutation,False
+HS problem 1108 size 30 10 density  0.20,min-d,0.85,26,26,15,c_refutation,False
+HS problem 1109 size 30 10 density  0.20,min-d,0.5,15,15,11,c_refutation,False
+HS problem 1109 size 30 10 density  0.20,min-d,0.55,16,16,11,c_refutation,False
+HS problem 1109 size 30 10 density  0.20,min-d,0.6,18,18,11,c_refutation,False
+HS problem 1109 size 30 10 density  0.20,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.5,15,15,13,c_bound,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.6,18,18,1,skipped,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.65,20,20,1,skipped,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.7,21,21,13,c_bound,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.75,22,22,14,c_refutation,False
+HS problem 1113 size 30 10 density  0.20,min-d,0.8,24,24,15,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.5,15,15,13,c_bound,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.55,16,16,13,c_bound,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.75,22,22,16,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.8,24,24,1,skipped,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.9,27,27,16,c_refutation,False
+HS problem 1115 size 30 10 density  0.20,min-d,0.95,28,28,17,c_refutation,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.5,15,15,11,c_bound,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.6,18,18,11,c_bound,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.65,20,20,11,c_bound,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.7,21,21,12,c_refutation,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1121 size 30 10 density  0.20,min-d,0.8,24,24,13,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.5,15,15,13,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.55,16,16,14,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.8,24,24,15,c_refutation,False
+HS problem 1124 size 30 10 density  0.20,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1126 size 30 10 density  0.20,min-d,0.5,15,15,13,c_refutation,False
+HS problem 1126 size 30 10 density  0.20,min-d,0.55,16,16,13,c_refutation,False
+HS problem 1126 size 30 10 density  0.20,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1126 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.5,15,15,12,c_bound,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.55,16,16,12,c_bound,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.6,18,18,13,c_refutation,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.65,20,20,13,c_refutation,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.7,21,21,13,c_refutation,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.75,22,22,13,c_refutation,False
+HS problem 1127 size 30 10 density  0.20,min-d,0.8,24,24,14,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.5,15,15,14,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.55,16,16,14,c_bound,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.6,18,18,15,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.65,20,20,16,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.7,21,21,16,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.75,22,22,16,c_refutation,False
+HS problem 1128 size 30 10 density  0.20,min-d,0.8,24,24,17,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.5,15,15,13,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.55,16,16,13,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.6,18,18,13,c_bound,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.65,20,20,14,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.7,21,21,14,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.8,24,24,15,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.85,26,26,15,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.9,27,27,15,c_refutation,False
+HS problem 1129 size 30 10 density  0.20,min-d,0.95,28,28,16,c_refutation,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.5,15,15,13,c_refutation,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.6,18,18,1,skipped,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.65,20,20,14,c_refutation,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.8,24,24,1,skipped,False
+HS problem 1130 size 30 10 density  0.20,min-d,0.85,26,26,15,c_refutation,False
+HS problem 1131 size 30 10 density  0.20,min-d,0.5,15,15,7,c_bound,False
+HS problem 1131 size 30 10 density  0.20,min-d,0.55,16,16,7,c_bound,False
+HS problem 1131 size 30 10 density  0.20,min-d,0.6,18,18,7,c_bound,False
+HS problem 1131 size 30 10 density  0.20,min-d,0.65,20,20,8,c_refutation,False
+HS problem 1131 size 30 10 density  0.20,min-d,0.7,21,21,9,c_refutation,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.5,15,15,12,c_refutation,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.6,18,18,12,c_bound,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.65,20,20,12,c_bound,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.7,21,21,13,c_refutation,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.75,22,22,13,c_refutation,False
+HS problem 1133 size 30 10 density  0.20,min-d,0.8,24,24,14,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.5,15,15,14,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.55,16,16,14,c_bound,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.6,18,18,14,c_bound,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.8,24,24,16,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1135 size 30 10 density  0.20,min-d,0.9,27,27,17,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.5,15,15,11,c_bound,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.55,16,16,11,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.6,18,18,11,c_bound,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.8,24,24,12,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.85,26,26,12,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.9,27,27,12,c_refutation,False
+HS problem 1140 size 30 10 density  0.20,min-d,0.95,28,28,13,c_refutation,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.5,15,15,14,c_bound,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.55,16,16,1,skipped,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.6,18,18,14,c_bound,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1146 size 30 10 density  0.20,min-d,0.75,22,22,16,c_refutation,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.5,15,15,11,c_refutation,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.55,16,16,11,c_refutation,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.6,18,18,11,c_bound,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.8,24,24,1,skipped,False
+HS problem 1148 size 30 10 density  0.20,min-d,0.85,26,26,13,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.5,15,15,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.55,16,16,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.6,18,18,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.65,20,20,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.7,21,21,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.75,22,22,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.8,24,24,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.85,26,26,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.9,27,27,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,min-d,0.95,28,28,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.5,15,15,1,skipped,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.55,16,16,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.6,18,18,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.65,20,20,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.7,21,21,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.75,22,22,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.8,24,24,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.85,26,26,12,c_refutation,False
+HS problem 1159 size 30 10 density  0.25,least-c,0.9,27,27,12,c_refutation,True
+HS problem 1159 size 30 10 density  0.25,least-c,0.95,28,28,12,c_refutation,True
+HS problem 1160 size 30 10 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.6,18,18,17,c_refutation,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.65,20,20,18,c_refutation,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.7,21,21,18,c_refutation,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.75,22,22,19,c_refutation,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1160 size 30 10 density  0.25,min-d,0.85,26,26,20,c_refutation,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.55,16,16,15,c_bound,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.6,18,18,15,c_bound,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.65,20,20,16,c_bound,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.7,21,21,17,c_refutation,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.75,22,22,17,c_refutation,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.8,24,24,18,c_refutation,False
+HS problem 1161 size 30 10 density  0.25,min-d,0.85,26,26,19,c_refutation,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.5,15,15,14,c_bound,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.55,16,16,14,c_bound,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.6,18,18,16,c_refutation,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.65,20,20,1,skipped,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.7,21,21,17,c_refutation,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.75,22,22,1,skipped,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.8,24,24,1,skipped,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.85,26,26,1,skipped,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.9,27,27,17,c_refutation,False
+HS problem 1165 size 30 10 density  0.25,min-d,0.95,28,28,18,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.5,15,15,13,c_bound,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.55,16,16,13,c_bound,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.8,24,24,15,c_refutation,False
+HS problem 1166 size 30 10 density  0.25,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.6,18,18,15,c_bound,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.65,20,20,15,c_bound,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.7,21,21,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.75,22,22,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.8,24,24,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.9,27,27,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,min-d,0.95,28,28,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.5,15,15,15,c_bound,True
+HS problem 1168 size 30 10 density  0.25,least-c,0.55,16,16,1,skipped,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.6,18,18,15,c_bound,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.65,20,20,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.7,21,21,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.75,22,22,16,c_refutation,False
+HS problem 1168 size 30 10 density  0.25,least-c,0.8,24,24,16,c_refutation,True
+HS problem 1168 size 30 10 density  0.25,least-c,0.85,26,26,16,c_refutation,True
+HS problem 1168 size 30 10 density  0.25,least-c,0.9,27,27,16,c_refutation,True
+HS problem 1168 size 30 10 density  0.25,least-c,0.95,28,28,16,c_refutation,True
+HS problem 1169 size 30 10 density  0.25,min-d,0.5,15,15,13,c_bound,False
+HS problem 1169 size 30 10 density  0.25,min-d,0.55,16,16,13,c_bound,False
+HS problem 1169 size 30 10 density  0.25,min-d,0.6,18,18,14,c_refutation,False
+HS problem 1169 size 30 10 density  0.25,min-d,0.65,20,20,15,c_refutation,False
+HS problem 1169 size 30 10 density  0.25,min-d,0.7,21,21,15,c_refutation,False
+HS problem 1169 size 30 10 density  0.25,min-d,0.75,22,22,16,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.5,15,15,14,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.55,16,16,14,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.6,18,18,15,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.65,20,20,16,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.7,21,21,16,c_refutation,False
+HS problem 1171 size 30 10 density  0.25,min-d,0.75,22,22,17,c_refutation,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.6,18,18,17,c_bound,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.65,20,20,18,c_refutation,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.7,21,21,18,c_refutation,False
+HS problem 1176 size 30 10 density  0.25,min-d,0.75,22,22,19,c_refutation,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.5,15,15,14,c_bound,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.6,18,18,15,c_refutation,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.65,20,20,16,c_refutation,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.7,21,21,1,skipped,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.75,22,22,1,skipped,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.8,24,24,16,c_refutation,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.85,26,26,16,c_refutation,False
+HS problem 1179 size 30 10 density  0.25,min-d,0.9,27,27,17,c_refutation,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.5,15,15,12,c_bound,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.55,16,16,13,c_bound,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.6,18,18,1,skipped,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.65,20,20,1,skipped,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.7,21,21,14,c_refutation,False
+HS problem 1180 size 30 10 density  0.25,min-d,0.75,22,22,15,c_refutation,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.5,15,15,13,c_bound,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.6,18,18,13,c_bound,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.65,20,20,14,c_bound,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.7,21,21,1,skipped,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.75,22,22,1,skipped,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.8,24,24,1,skipped,False
+HS problem 1181 size 30 10 density  0.25,min-d,0.85,26,26,15,c_refutation,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.5,15,15,14,c_bound,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.6,18,18,15,c_bound,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.65,20,20,16,c_refutation,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.7,21,21,1,skipped,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.75,22,22,1,skipped,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.8,24,24,16,c_refutation,False
+HS problem 1182 size 30 10 density  0.25,min-d,0.85,26,26,17,c_refutation,False
+HS problem 1186 size 30 10 density  0.25,min-d,0.5,15,15,11,c_bound,False
+HS problem 1186 size 30 10 density  0.25,min-d,0.55,16,16,11,c_bound,False
+HS problem 1186 size 30 10 density  0.25,min-d,0.6,18,18,11,c_bound,False
+HS problem 1186 size 30 10 density  0.25,min-d,0.65,20,20,12,c_bound,False
+HS problem 1186 size 30 10 density  0.25,min-d,0.7,21,21,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.5,15,15,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.55,16,16,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.6,18,18,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.65,20,20,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.7,21,21,13,c_refutation,False
+HS problem 1187 size 30 10 density  0.25,min-d,0.75,22,22,14,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.6,18,18,17,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.65,20,20,17,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.7,21,21,17,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.85,26,26,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,min-d,0.95,28,28,19,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.5,15,15,15,c_bound,True
+HS problem 1193 size 30 10 density  0.25,least-c,0.55,16,16,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.6,18,18,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.65,20,20,17,c_bound,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.7,21,21,18,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.75,22,22,18,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.8,24,24,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.85,26,26,1,skipped,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.9,27,27,19,c_refutation,False
+HS problem 1193 size 30 10 density  0.25,least-c,0.95,28,28,19,c_refutation,False
+HS problem 1195 size 30 10 density  0.25,min-d,0.5,15,15,12,c_bound,False
+HS problem 1195 size 30 10 density  0.25,min-d,0.55,16,16,12,c_bound,False
+HS problem 1195 size 30 10 density  0.25,min-d,0.6,18,18,13,c_refutation,False
+HS problem 1195 size 30 10 density  0.25,min-d,0.65,20,20,14,c_refutation,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.6,18,18,17,c_bound,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.65,20,20,19,c_refutation,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.7,21,21,19,c_bound,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.75,22,22,19,c_bound,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.8,24,24,20,c_refutation,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.85,26,26,21,c_refutation,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.9,27,27,21,c_refutation,False
+HS problem 1206 size 30 10 density  0.30,min-d,0.95,28,28,22,c_refutation,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.6,18,18,18,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.65,20,20,19,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.7,21,21,20,c_refutation,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.75,22,22,20,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.8,24,24,20,c_bound,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.85,26,26,21,c_refutation,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.9,27,27,21,c_refutation,False
+HS problem 1207 size 30 10 density  0.30,min-d,0.95,28,28,22,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.55,16,16,1,skipped,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.6,18,18,16,c_bound,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.65,20,20,17,c_bound,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.7,21,21,17,c_bound,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.8,24,24,18,c_bound,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.85,26,26,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,min-d,0.95,28,28,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.5,15,15,15,c_bound,True
+HS problem 1215 size 30 10 density  0.30,least-c,0.55,16,16,1,skipped,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.6,18,18,1,skipped,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.65,20,20,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.7,21,21,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.75,22,22,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.8,24,24,19,c_refutation,False
+HS problem 1215 size 30 10 density  0.30,least-c,0.85,26,26,19,c_refutation,True
+HS problem 1215 size 30 10 density  0.30,least-c,0.9,27,27,19,c_refutation,True
+HS problem 1215 size 30 10 density  0.30,least-c,0.95,28,28,19,c_refutation,True
+HS problem 1216 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.6,18,18,18,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.65,20,20,19,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.7,21,21,19,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.75,22,22,20,c_bound,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.8,24,24,20,c_refutation,False
+HS problem 1216 size 30 10 density  0.30,min-d,0.85,26,26,22,c_refutation,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.55,16,16,1,skipped,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.6,18,18,16,c_bound,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.65,20,20,17,c_refutation,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.7,21,21,1,skipped,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.85,26,26,1,skipped,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1220 size 30 10 density  0.30,min-d,0.95,28,28,20,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.6,18,18,17,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.65,20,20,18,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.7,21,21,18,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.75,22,22,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.85,26,26,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,min-d,0.95,28,28,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.5,15,15,15,c_bound,True
+HS problem 1223 size 30 10 density  0.30,least-c,0.55,16,16,16,c_bound,True
+HS problem 1223 size 30 10 density  0.30,least-c,0.6,18,18,1,skipped,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.65,20,20,18,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.7,21,21,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.75,22,22,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.8,24,24,19,c_refutation,False
+HS problem 1223 size 30 10 density  0.30,least-c,0.85,26,26,19,c_refutation,True
+HS problem 1223 size 30 10 density  0.30,least-c,0.9,27,27,19,c_refutation,True
+HS problem 1223 size 30 10 density  0.30,least-c,0.95,28,28,19,c_refutation,True
+HS problem 1224 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.6,18,18,17,c_bound,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.65,20,20,17,c_bound,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.7,21,21,18,c_refutation,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1224 size 30 10 density  0.30,min-d,0.85,26,26,20,c_refutation,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.6,18,18,18,c_bound,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.65,20,20,1,skipped,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.7,21,21,19,c_refutation,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.75,22,22,1,skipped,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.85,26,26,19,c_refutation,False
+HS problem 1227 size 30 10 density  0.30,min-d,0.9,27,27,20,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.55,16,16,15,c_bound,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.6,18,18,16,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.65,20,20,17,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.7,21,21,17,c_bound,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.8,24,24,19,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.85,26,26,19,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1238 size 30 10 density  0.30,min-d,0.95,28,28,20,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.6,18,18,17,c_bound,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.65,20,20,18,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.7,21,21,1,skipped,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.75,22,22,18,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.8,24,24,18,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.85,26,26,18,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.9,27,27,19,c_refutation,False
+HS problem 1242 size 30 10 density  0.30,min-d,0.95,28,28,20,c_refutation,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.5,15,15,15,c_bound,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.55,16,16,16,c_bound,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.6,18,18,18,c_bound,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.65,20,20,20,c_bound,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.7,21,21,1,skipped,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.75,22,22,21,c_bound,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.8,24,24,22,c_refutation,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.85,26,26,23,c_refutation,False
+HS problem 1256 size 30 10 density  0.35,min-d,0.9,27,27,24,c_refutation,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.5,15,15,15,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.55,16,16,16,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.6,18,18,18,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.65,20,20,20,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.7,21,21,21,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.75,22,22,1,skipped,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.8,24,24,22,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.85,26,26,22,c_bound,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.9,27,27,23,c_refutation,False
+HS problem 1331 size 30 10 density  0.40,min-d,0.95,28,28,23,c_refutation,False
+HS problem 1331 size 30 10 density  0.40,least-c,0.5,15,15,15,c_bound,True
+HS problem 1331 size 30 10 density  0.40,least-c,0.55,16,16,16,c_bound,True
+HS problem 1331 size 30 10 density  0.40,least-c,0.6,18,18,18,c_bound,True
+HS problem 1331 size 30 10 density  0.40,least-c,0.65,20,20,20,c_bound,True
+HS problem 1331 size 30 10 density  0.40,least-c,0.7,21,21,21,c_bound,True
+HS problem 1331 size 30 10 density  0.40,least-c,0.75,22,22,1,skipped,False
+HS problem 1331 size 30 10 density  0.40,least-c,0.8,24,24,22,c_bound,False
+HS problem 1331 size 30 10 density  0.40,least-c,0.85,26,26,23,c_refutation,False
+HS problem 1331 size 30 10 density  0.40,least-c,0.9,27,27,1,skipped,False
+HS problem 1331 size 30 10 density  0.40,least-c,0.95,28,28,24,c_refutation,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.5,10,10,10,c_bound,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.55,11,11,10,c_bound,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.6,12,12,11,c_bound,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.65,13,13,11,c_bound,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.7,14,14,12,c_refutation,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.75,15,15,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.8,16,16,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.85,17,17,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.9,18,18,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,min-d,0.95,19,19,12,c_refutation,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.5,10,10,10,c_bound,True
+HS problem 2215 size 20 20 density  0.20,least-c,0.55,11,11,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.6,12,12,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.65,13,13,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.7,14,14,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.75,15,15,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.8,16,16,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.85,17,17,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.9,18,18,1,skipped,False
+HS problem 2215 size 20 20 density  0.20,least-c,0.95,19,19,12,c_refutation,True
+HS problem 2422 size 30 15 density  0.20,min-d,0.5,15,15,15,c_bound,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.55,16,16,16,c_bound,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.6,18,18,17,c_refutation,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.65,20,20,17,c_bound,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.7,21,21,18,c_refutation,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.75,22,22,19,c_refutation,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.8,24,24,19,c_refutation,False
+HS problem 2422 size 30 15 density  0.20,min-d,0.85,26,26,20,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.5,15,15,12,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.55,16,16,12,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.6,18,18,13,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.65,20,20,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.7,21,21,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.75,22,22,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.8,24,24,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.85,26,26,15,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.9,27,27,15,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,min-d,0.95,28,28,15,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.5,15,15,1,skipped,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.55,16,16,1,skipped,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.6,18,18,13,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.65,20,20,13,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.7,21,21,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.75,22,22,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.8,24,24,14,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.85,26,26,15,c_refutation,False
+HS problem 2428 size 30 15 density  0.20,least-c,0.9,27,27,15,c_refutation,True
+HS problem 2428 size 30 15 density  0.20,least-c,0.95,28,28,15,c_refutation,True
+HS problem 2430 size 30 15 density  0.20,min-d,0.5,15,15,11,c_bound,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.55,16,16,12,c_bound,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.6,18,18,13,c_refutation,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.65,20,20,13,c_refutation,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.7,21,21,13,c_refutation,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.75,22,22,13,c_refutation,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.8,24,24,13,c_refutation,False
+HS problem 2430 size 30 15 density  0.20,min-d,0.85,26,26,14,c_refutation,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.5,15,15,14,c_bound,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.55,16,16,14,c_bound,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.6,18,18,15,c_refutation,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.65,20,20,16,c_refutation,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.7,21,21,1,skipped,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.75,22,22,1,skipped,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.8,24,24,1,skipped,False
+HS problem 2432 size 30 15 density  0.20,min-d,0.85,26,26,17,c_refutation,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.5,15,15,14,c_bound,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.55,16,16,15,c_bound,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.6,18,18,16,c_bound,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.65,20,20,16,c_refutation,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.7,21,21,17,c_refutation,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.75,22,22,17,c_refutation,False
+HS problem 2435 size 30 15 density  0.20,min-d,0.8,24,24,19,c_refutation,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.6,18,18,17,c_bound,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.65,20,20,19,c_refutation,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.7,21,21,1,skipped,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.75,22,22,1,skipped,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.8,24,24,20,c_refutation,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.85,26,26,21,c_refutation,False
+HS problem 2444 size 30 15 density  0.25,min-d,0.9,27,27,22,c_refutation,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.6,18,18,18,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.65,20,20,19,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.7,21,21,20,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.75,22,22,20,c_bound,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.8,24,24,21,c_refutation,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.85,26,26,22,c_refutation,False
+HS problem 2451 size 30 15 density  0.25,min-d,0.9,27,27,23,c_refutation,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.6,18,18,1,skipped,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.65,20,20,1,skipped,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.7,21,21,17,c_bound,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.75,22,22,18,c_refutation,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.8,24,24,1,skipped,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.85,26,26,18,c_refutation,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.9,27,27,18,c_refutation,False
+HS problem 2452 size 30 15 density  0.25,min-d,0.95,28,28,19,c_refutation,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.55,16,16,1,skipped,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.6,18,18,16,c_bound,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.65,20,20,16,c_bound,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.7,21,21,16,c_bound,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.75,22,22,17,c_refutation,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.8,24,24,17,c_refutation,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.85,26,26,17,c_refutation,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.9,27,27,17,c_refutation,False
+HS problem 2454 size 30 15 density  0.25,min-d,0.95,28,28,18,c_refutation,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.5,15,15,15,c_bound,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.55,16,16,16,c_bound,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.6,18,18,17,c_bound,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.65,20,20,17,c_bound,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.7,21,21,18,c_refutation,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.75,22,22,18,c_refutation,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.8,24,24,18,c_refutation,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.85,26,26,18,c_refutation,False
+HS problem 2458 size 30 15 density  0.25,min-d,0.9,27,27,19,c_refutation,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.5,15,15,15,c_bound,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.55,16,16,16,c_bound,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.6,18,18,18,c_bound,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.65,20,20,19,c_bound,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.7,21,21,20,c_refutation,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.75,22,22,20,c_bound,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.8,24,24,22,c_refutation,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.85,26,26,22,c_refutation,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.9,27,27,22,c_refutation,False
+HS problem 2480 size 30 15 density  0.30,min-d,0.95,28,28,23,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.5,20,20,20,c_bound,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.55,22,22,22,c_bound,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.6,24,24,23,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.65,26,26,24,c_bound,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.7,28,28,25,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.75,30,30,27,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.8,32,32,1,skipped,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.85,34,34,29,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.9,36,36,29,c_refutation,False
+HS problem 3411 size 40 20 density  0.20,min-d,0.95,38,38,30,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.5,20,20,20,c_bound,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.55,22,22,21,c_bound,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.6,24,24,22,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.65,26,26,23,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.7,28,28,25,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.75,30,30,25,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.8,32,32,26,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.85,34,34,26,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.9,36,36,27,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,min-d,0.95,38,38,27,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.5,20,20,20,c_bound,True
+HS problem 3419 size 40 20 density  0.20,least-c,0.55,22,22,1,skipped,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.6,24,24,1,skipped,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.65,26,26,1,skipped,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.7,28,28,1,skipped,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.75,30,30,25,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.8,32,32,26,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.85,34,34,26,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.9,36,36,27,c_refutation,False
+HS problem 3419 size 40 20 density  0.20,least-c,0.95,38,38,27,c_refutation,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.5,20,20,20,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.55,22,22,22,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.6,24,24,24,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.65,26,26,26,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.7,28,28,28,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.75,30,30,30,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.8,32,32,30,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.85,34,34,32,c_bound,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.9,36,36,33,c_refutation,False
+HS problem 3443 size 40 20 density  0.35,min-d,0.95,38,38,34,c_refutation,False
+HS problem 551 size 20 10 density  0.20,min-d,0.5,10,10,7,c_bound,False
+HS problem 551 size 20 10 density  0.20,min-d,0.55,11,11,7,c_bound,False
+HS problem 551 size 20 10 density  0.20,min-d,0.6,12,12,7,c_bound,False
+HS problem 551 size 20 10 density  0.20,min-d,0.65,13,13,8,c_refutation,False
+HS problem 551 size 20 10 density  0.20,min-d,0.7,14,14,8,c_refutation,False
+HS problem 551 size 20 10 density  0.20,min-d,0.75,15,15,8,c_refutation,False
+HS problem 551 size 20 10 density  0.20,min-d,0.8,16,16,9,c_refutation,False
+HS problem 575 size 20 10 density  0.20,min-d,0.5,10,10,8,c_bound,False
+HS problem 575 size 20 10 density  0.20,min-d,0.55,11,11,8,c_bound,False
+HS problem 575 size 20 10 density  0.20,min-d,0.6,12,12,8,c_bound,False
+HS problem 575 size 20 10 density  0.20,min-d,0.65,13,13,8,c_bound,False
+HS problem 575 size 20 10 density  0.20,min-d,0.7,14,14,8,c_bound,False
+HS problem 575 size 20 10 density  0.20,min-d,0.75,15,15,9,c_refutation,False
+HS problem 575 size 20 10 density  0.20,min-d,0.8,16,16,9,c_refutation,False
+HS problem 575 size 20 10 density  0.20,min-d,0.85,17,17,10,c_refutation,False
+HS problem 590 size 20 10 density  0.20,min-d,0.5,10,10,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.55,11,11,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.6,12,12,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.65,13,13,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.7,14,14,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.75,15,15,8,c_bound,False
+HS problem 590 size 20 10 density  0.20,min-d,0.8,16,16,9,c_refutation,False
+HS problem 590 size 20 10 density  0.20,min-d,0.85,17,17,9,c_refutation,False
+HS problem 590 size 20 10 density  0.20,min-d,0.9,18,18,10,c_refutation,False
+HS problem 620 size 20 10 density  0.25,min-d,0.5,10,10,10,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.55,11,11,1,skipped,False
+HS problem 620 size 20 10 density  0.25,min-d,0.6,12,12,10,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.65,13,13,11,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.7,14,14,11,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.75,15,15,11,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.8,16,16,11,c_bound,False
+HS problem 620 size 20 10 density  0.25,min-d,0.85,17,17,12,c_refutation,False
+HS problem 620 size 20 10 density  0.25,min-d,0.9,18,18,12,c_refutation,False
+HS problem 620 size 20 10 density  0.25,min-d,0.95,19,19,13,c_refutation,False
+HS problem 640 size 20 10 density  0.25,min-d,0.5,10,10,9,c_bound,False
+HS problem 640 size 20 10 density  0.25,min-d,0.55,11,11,1,skipped,False
+HS problem 640 size 20 10 density  0.25,min-d,0.6,12,12,1,skipped,False
+HS problem 640 size 20 10 density  0.25,min-d,0.65,13,13,1,skipped,False
+HS problem 640 size 20 10 density  0.25,min-d,0.7,14,14,9,c_bound,False
+HS problem 640 size 20 10 density  0.25,min-d,0.75,15,15,9,c_bound,False
+HS problem 640 size 20 10 density  0.25,min-d,0.8,16,16,9,c_bound,False
+HS problem 640 size 20 10 density  0.25,min-d,0.85,17,17,10,c_refutation,False
+HS problem 640 size 20 10 density  0.25,min-d,0.9,18,18,11,c_refutation,False
+HS problem 678 size 20 10 density  0.30,min-d,0.5,10,10,9,c_bound,False
+HS problem 678 size 20 10 density  0.30,min-d,0.55,11,11,1,skipped,False
+HS problem 678 size 20 10 density  0.30,min-d,0.6,12,12,10,c_bound,False
+HS problem 678 size 20 10 density  0.30,min-d,0.65,13,13,10,c_bound,False
+HS problem 678 size 20 10 density  0.30,min-d,0.7,14,14,11,c_refutation,False
+HS problem 678 size 20 10 density  0.30,min-d,0.75,15,15,1,skipped,False
+HS problem 678 size 20 10 density  0.30,min-d,0.8,16,16,11,c_refutation,False
+HS problem 678 size 20 10 density  0.30,min-d,0.85,17,17,11,c_refutation,False
+HS problem 678 size 20 10 density  0.30,min-d,0.9,18,18,11,c_refutation,False
+HS problem 678 size 20 10 density  0.30,min-d,0.95,19,19,12,c_refutation,False
+HS problem 690 size 20 10 density  0.30,min-d,0.5,10,10,10,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.55,11,11,11,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.6,12,12,12,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.65,13,13,1,skipped,False
+HS problem 690 size 20 10 density  0.30,min-d,0.7,14,14,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.75,15,15,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.8,16,16,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.85,17,17,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.9,18,18,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,min-d,0.95,19,19,14,c_refutation,False
+HS problem 690 size 20 10 density  0.30,least-c,0.5,10,10,10,c_bound,True
+HS problem 690 size 20 10 density  0.30,least-c,0.55,11,11,11,c_bound,True
+HS problem 690 size 20 10 density  0.30,least-c,0.6,12,12,12,c_bound,True
+HS problem 690 size 20 10 density  0.30,least-c,0.65,13,13,1,skipped,False
+HS problem 690 size 20 10 density  0.30,least-c,0.7,14,14,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,least-c,0.75,15,15,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,least-c,0.8,16,16,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,least-c,0.85,17,17,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,least-c,0.9,18,18,13,c_bound,False
+HS problem 690 size 20 10 density  0.30,least-c,0.95,19,19,1,skipped,False
+HS problem 721 size 20 10 density  0.35,min-d,0.5,10,10,10,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.55,11,11,11,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.6,12,12,12,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.65,13,13,13,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.7,14,14,14,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.75,15,15,1,skipped,False
+HS problem 721 size 20 10 density  0.35,min-d,0.8,16,16,14,c_bound,False
+HS problem 721 size 20 10 density  0.35,min-d,0.85,17,17,15,c_refutation,False
+HS problem 721 size 20 10 density  0.35,min-d,0.9,18,18,15,c_refutation,False
+HS problem 721 size 20 10 density  0.35,min-d,0.95,19,19,15,c_refutation,False
+HS problem 721 size 20 10 density  0.35,least-c,0.5,10,10,10,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.55,11,11,11,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.6,12,12,12,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.65,13,13,13,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.7,14,14,14,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.75,15,15,1,skipped,True
+HS problem 721 size 20 10 density  0.35,least-c,0.8,16,16,14,c_bound,True
+HS problem 721 size 20 10 density  0.35,least-c,0.85,17,17,15,c_refutation,True
+HS problem 721 size 20 10 density  0.35,least-c,0.9,18,18,15,c_refutation,True
+HS problem 721 size 20 10 density  0.35,least-c,0.95,19,19,15,c_refutation,True
+Random-30-30-2-3_0,min-d,0.5,15,15,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.55,16,16,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.6,18,18,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.65,20,20,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.7,21,21,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.75,22,22,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.8,24,24,8,c_refutation,False
+Random-30-30-2-3_0,min-d,0.85,26,26,9,c_refutation,False
+Random-40-40-2-1_0,min-d,0.5,20,20,10,c_refutation,False
+Random-40-40-2-1_0,min-d,0.55,22,22,10,c_refutation,False
+Random-40-40-2-1_0,min-d,0.6,24,24,10,c_refutation,False
+Random-40-40-2-1_0,min-d,0.65,26,26,11,c_refutation,False
+Random-40-40-2-2_0,min-d,0.5,20,20,13,c_refutation,False
+Random-40-40-2-2_0,min-d,0.55,22,22,13,c_refutation,False
+Random-40-40-2-2_0,min-d,0.6,24,24,13,c_refutation,False
+Random-40-40-2-2_0,min-d,0.65,26,26,14,c_refutation,False
+Random-40-40-2-3_0,min-d,0.5,20,20,9,c_refutation,False
+Random-40-40-2-3_0,min-d,0.55,22,22,1,skipped,False
+Random-40-40-2-3_0,min-d,0.6,24,24,9,c_refutation,False
+Random-40-40-2-3_0,min-d,0.65,26,26,10,c_refutation,False
+Random-40-40-2-5_0,min-d,0.5,20,20,12,c_refutation,False
+Random-40-40-2-5_0,min-d,0.55,22,22,1,skipped,False
+Random-40-40-2-5_0,min-d,0.6,24,24,13,c_refutation,False
+Random-40-40-4-2_0,min-d,0.5,20,20,16,c_refutation,False
+Random-40-40-4-2_0,min-d,0.55,22,22,17,c_refutation,False
+Random-40-40-4-2_0,min-d,0.6,24,24,18,c_refutation,False
+Random-40-40-4-2_0,min-d,0.65,26,26,18,c_refutation,False
+Random-40-40-4-2_0,min-d,0.7,28,28,19,c_refutation,False
+Random-40-40-4-2_0,min-d,0.75,30,30,20,c_refutation,False
+Random-40-40-4-2_0,min-d,0.8,32,32,20,c_refutation,False
+Random-40-40-4-2_0,min-d,0.85,34,34,20,c_refutation,False
+Random-40-40-4-2_0,min-d,0.9,36,36,20,c_refutation,False
+Random-40-40-4-2_0,min-d,0.95,38,38,20,c_refutation,False
+Random-40-40-4-2_0,least-c,0.5,20,20,1,skipped,False
+Random-40-40-4-2_0,least-c,0.55,22,22,1,skipped,False
+Random-40-40-4-2_0,least-c,0.6,24,24,1,skipped,False
+Random-40-40-4-2_0,least-c,0.65,26,26,1,skipped,False
+Random-40-40-4-2_0,least-c,0.7,28,28,19,c_refutation,False
+Random-40-40-4-2_0,least-c,0.75,30,30,19,c_refutation,False
+Random-40-40-4-2_0,least-c,0.8,32,32,20,c_refutation,False
+Random-40-40-4-2_0,least-c,0.85,34,34,20,c_refutation,False
+Random-40-40-4-2_0,least-c,0.9,36,36,20,c_refutation,False
+Random-40-40-4-2_0,least-c,0.95,38,38,20,c_refutation,True
+Random-40-40-4-4_0,min-d,0.5,20,20,15,c_refutation,False
+Random-40-40-4-4_0,min-d,0.55,22,22,16,c_refutation,False
+Random-40-40-4-4_0,min-d,0.6,24,24,17,c_refutation,False
+Random-40-40-4-4_0,min-d,0.65,26,26,1,skipped,False
+Random-40-40-4-4_0,min-d,0.7,28,28,1,skipped,False
+Random-40-40-4-4_0,min-d,0.75,30,30,1,skipped,False
+Random-40-40-4-4_0,min-d,0.8,32,32,1,skipped,False
+Random-40-40-4-4_0,min-d,0.85,34,34,17,c_refutation,False
+Random-40-40-4-4_0,min-d,0.9,36,36,18,c_refutation,False
+Random-50-100-2-1_0,min-d,0.5,25,25,15,c_refutation,False
+Random-50-100-2-1_0,min-d,0.55,28,28,16,c_refutation,False
+Random-50-100-2-1_0,min-d,0.6,30,30,16,c_refutation,False
+Random-50-100-2-1_0,min-d,0.65,32,32,16,c_refutation,False
+Random-50-100-2-1_0,min-d,0.7,35,35,18,c_refutation,False
+Random-50-100-2-1_0,min-d,0.75,38,38,18,c_refutation,False
+Random-50-100-2-1_0,min-d,0.8,40,40,19,c_refutation,False
+Random-50-100-2-2_0,min-d,0.5,25,25,16,c_refutation,False
+Random-50-100-2-2_0,min-d,0.55,28,28,17,c_refutation,False
+Random-50-100-2-2_0,min-d,0.6,30,30,18,c_refutation,False
+Random-50-100-2-2_0,min-d,0.65,32,32,18,c_refutation,False
+Random-50-100-2-2_0,min-d,0.7,35,35,19,c_refutation,False
+Random-50-100-2-2_0,min-d,0.75,38,38,19,c_refutation,False
+Random-50-100-2-2_0,min-d,0.8,40,40,19,c_refutation,False
+Random-50-100-2-2_0,min-d,0.85,42,42,19,c_refutation,False
+Random-50-100-2-2_0,min-d,0.9,45,45,20,c_refutation,False
+Random-50-100-2-2_0,min-d,0.95,48,48,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.5,25,25,18,c_refutation,False
+Random-50-100-2-3_0,min-d,0.55,28,28,19,c_refutation,False
+Random-50-100-2-3_0,min-d,0.6,30,30,19,c_refutation,False
+Random-50-100-2-3_0,min-d,0.65,32,32,20,c_refutation,False
+Random-50-100-2-3_0,min-d,0.7,35,35,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.75,38,38,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.8,40,40,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.85,42,42,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.9,45,45,21,c_refutation,False
+Random-50-100-2-3_0,min-d,0.95,48,48,22,c_refutation,False
+Random-50-100-2-4_0,min-d,0.5,25,25,17,c_refutation,False
+Random-50-100-2-4_0,min-d,0.55,28,28,18,c_refutation,False
+Random-50-100-2-4_0,min-d,0.6,30,30,18,c_refutation,False
+Random-50-100-2-4_0,min-d,0.65,32,32,20,c_refutation,False
+Random-50-100-2-4_0,min-d,0.7,35,35,22,c_refutation,False
+Random-50-100-2-4_0,min-d,0.75,38,38,23,c_refutation,False
+Random-50-100-2-4_0,min-d,0.8,40,40,23,c_refutation,False
+Random-50-100-2-4_0,min-d,0.85,42,42,23,c_refutation,False
+Random-50-100-2-4_0,min-d,0.9,45,45,24,c_refutation,False
+Random-50-100-2-5_0,min-d,0.5,25,25,17,c_refutation,False
+Random-50-100-2-5_0,min-d,0.55,28,28,17,c_refutation,False
+Random-50-100-2-5_0,min-d,0.6,30,30,18,c_refutation,False
+Random-50-100-2-5_0,min-d,0.65,32,32,18,c_refutation,False
+Random-50-100-2-5_0,min-d,0.7,35,35,19,c_refutation,False
+Random-50-100-2-5_0,min-d,0.75,38,38,19,c_refutation,False
+Random-50-100-2-5_0,min-d,0.8,40,40,19,c_refutation,False
+Random-50-100-2-5_0,min-d,0.85,42,42,19,c_refutation,False
+Random-50-100-2-5_0,min-d,0.9,45,45,20,c_refutation,False
+Random-50-50-2-1_0,min-d,0.5,25,25,13,c_refutation,False
+Random-50-50-2-1_0,min-d,0.55,28,28,13,c_refutation,False
+Random-50-50-2-1_0,min-d,0.6,30,30,14,c_refutation,False
+Random-50-50-2-1_0,min-d,0.65,32,32,14,c_refutation,False
+Random-50-50-2-1_0,min-d,0.7,35,35,14,c_refutation,False
+Random-50-50-2-1_0,min-d,0.75,38,38,15,c_refutation,False
+Random-50-50-2-2_0,min-d,0.5,25,25,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.55,28,28,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.6,30,30,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.65,32,32,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.7,35,35,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.75,38,38,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.8,40,40,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.85,42,42,12,c_refutation,False
+Random-50-50-2-2_0,min-d,0.9,45,45,13,c_refutation,False
+Random-50-50-2-3_0,min-d,0.5,25,25,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.55,28,28,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.6,30,30,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.65,32,32,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.7,35,35,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.75,38,38,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.8,40,40,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.85,42,42,10,c_refutation,False
+Random-50-50-2-3_0,min-d,0.9,45,45,11,c_refutation,False
+Random-50-50-2-4_0,min-d,0.5,25,25,11,c_refutation,False
+Random-50-50-2-4_0,min-d,0.55,28,28,11,c_refutation,False
+Random-50-50-2-4_0,min-d,0.6,30,30,11,c_refutation,False
+Random-50-50-2-4_0,min-d,0.65,32,32,11,c_refutation,False
+Random-50-50-2-4_0,min-d,0.7,35,35,12,c_refutation,False
+Random-50-50-2-4_0,min-d,0.75,38,38,12,c_refutation,False
+Random-50-50-2-4_0,min-d,0.8,40,40,12,c_refutation,False
+Random-50-50-2-4_0,min-d,0.85,42,42,12,c_refutation,False
+Random-50-50-2-4_0,min-d,0.9,45,45,13,c_refutation,False
+Random-50-50-2-5_0,min-d,0.5,25,25,12,c_refutation,False
+Random-50-50-2-5_0,min-d,0.55,28,28,12,c_refutation,False
+Random-50-50-2-5_0,min-d,0.6,30,30,12,c_refutation,False
+Random-50-50-2-5_0,min-d,0.65,32,32,13,c_refutation,False
+Random-50-50-2-5_0,min-d,0.7,35,35,13,c_refutation,False
+Random-50-50-2-5_0,min-d,0.75,38,38,13,c_refutation,False
+Random-50-50-2-5_0,min-d,0.8,40,40,14,c_refutation,False
+Random-50-50-4-1_0,min-d,0.5,25,25,18,c_refutation,False
+Random-50-50-4-1_0,min-d,0.55,28,28,20,c_refutation,False
+Random-50-50-4-1_0,min-d,0.6,30,30,20,c_refutation,False
+Random-50-50-4-1_0,min-d,0.65,32,32,20,c_refutation,False
+Random-50-50-4-1_0,min-d,0.7,35,35,21,c_refutation,False
+Random-50-50-4-2_0,min-d,0.5,25,25,21,c_refutation,False
+Random-50-50-4-2_0,min-d,0.55,28,28,22,c_refutation,False
+Random-50-50-4-2_0,min-d,0.6,30,30,22,c_refutation,False
+Random-50-50-4-2_0,min-d,0.65,32,32,23,c_refutation,False
+Random-50-50-4-2_0,min-d,0.7,35,35,24,c_refutation,False
+Random-50-50-4-2_0,min-d,0.75,38,38,24,c_refutation,False
+Random-50-50-4-2_0,min-d,0.8,40,40,24,c_refutation,False
+Random-50-50-4-2_0,min-d,0.85,42,42,24,c_refutation,False
+Random-50-50-4-2_0,min-d,0.9,45,45,25,c_refutation,False
+Random-50-50-4-3_0,min-d,0.5,25,25,19,c_refutation,False
+Random-50-50-4-3_0,min-d,0.55,28,28,20,c_refutation,False
+Random-50-50-4-3_0,min-d,0.6,30,30,20,c_refutation,False
+Random-50-50-4-3_0,min-d,0.65,32,32,21,c_refutation,False
+Random-50-50-4-3_0,min-d,0.7,35,35,23,c_refutation,False
+Random-50-50-4-3_0,min-d,0.75,38,38,24,c_refutation,False
+Random-50-50-4-4_0,min-d,0.5,25,25,20,c_refutation,False
+Random-50-50-4-4_0,min-d,0.55,28,28,22,c_refutation,False
+Random-50-50-4-4_0,min-d,0.6,30,30,23,c_refutation,False
+Random-50-50-4-4_0,min-d,0.65,32,32,24,c_refutation,False
+Random-50-50-4-4_0,min-d,0.7,35,35,25,c_refutation,False
+Random-50-50-4-4_0,min-d,0.75,38,38,26,c_refutation,False
+Random-50-50-4-4_0,min-d,0.8,40,40,27,c_refutation,False
+Random-50-50-4-5_0,min-d,0.5,25,25,19,c_refutation,False
+Random-50-50-4-5_0,min-d,0.55,28,28,19,c_refutation,False
+Random-50-50-4-5_0,min-d,0.6,30,30,20,c_refutation,False
+Random-50-50-4-5_0,min-d,0.65,32,32,21,c_refutation,False
+Random-50-50-4-5_0,min-d,0.7,35,35,21,c_refutation,False
+Random-50-50-4-5_0,min-d,0.75,38,38,22,c_refutation,False
+SP2,min-d,0.5,25,25,16,c_refutation,False
+SP2,min-d,0.55,28,28,17,c_refutation,False
+SP2,min-d,0.6,30,30,17,c_refutation,False
+SP2,min-d,0.65,32,32,18,c_refutation,False
+SP2,min-d,0.7,35,35,18,c_refutation,False
+SP2,min-d,0.75,38,38,18,c_refutation,False
+SP2,min-d,0.8,40,40,18,c_refutation,False
+SP2,min-d,0.85,42,42,18,c_refutation,False
+SP2,min-d,0.9,45,45,19,c_refutation,False
+SP2_0,min-d,0.5,25,25,16,c_refutation,False
+SP2_0,min-d,0.55,28,28,17,c_refutation,False
+SP2_0,min-d,0.6,30,30,17,c_refutation,False
+SP2_0,min-d,0.65,32,32,18,c_refutation,False
+SP2_0,min-d,0.7,35,35,18,c_refutation,False
+SP2_0,min-d,0.75,38,38,18,c_refutation,False
+SP2_0,min-d,0.8,40,40,18,c_refutation,False
+SP2_0,min-d,0.85,42,42,18,c_refutation,False
+SP2_0,min-d,0.9,45,45,19,c_refutation,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.5,10,10,8,c_refutation,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.55,11,11,1,skipped,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.6,12,12,1,skipped,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.65,13,13,8,c_bound,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.7,14,14,8,c_bound,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.75,15,15,8,c_bound,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.8,16,16,9,c_refutation,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.85,17,17,9,c_refutation,False
+"Warwick 1124: balanced products, 3 products per order",min-d,0.9,18,18,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.5,10,10,9,c_bound,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.55,11,11,9,c_bound,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.6,12,12,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.65,13,13,1,skipped,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.7,14,14,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.75,15,15,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.8,16,16,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.85,17,17,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.9,18,18,10,c_refutation,False
+"Warwick 1128: balanced products, 3 products per order",min-d,0.95,19,19,11,c_refutation,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.5,10,10,10,c_bound,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.55,11,11,11,c_bound,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.6,12,12,1,skipped,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.65,13,13,12,c_bound,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.7,14,14,12,c_bound,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.75,15,15,13,c_bound,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.8,16,16,14,c_refutation,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.85,17,17,14,c_refutation,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.9,18,18,15,c_refutation,False
+"Warwick 1232: balanced orders and products, 5 products per order",min-d,0.95,19,19,16,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.5,15,15,10,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.55,16,16,10,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.6,18,18,10,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.65,20,20,10,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.7,21,21,11,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.75,22,22,11,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.8,24,24,11,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.85,26,26,11,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.9,27,27,11,c_refutation,False
+"Warwick 1295: balanced orders, 6 orders per product",min-d,0.95,28,28,12,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.5,15,15,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.55,16,16,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.6,18,18,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.65,20,20,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.7,21,21,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.75,22,22,10,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.8,24,24,11,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.85,26,26,11,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.9,27,27,11,c_refutation,False
+"Warwick 1296: balanced orders, 6 orders per product",min-d,0.95,28,28,12,c_refutation,False
+"Warwick 1298: balanced orders, 6 orders per product",min-d,0.5,15,15,10,c_refutation,False
+"Warwick 1298: balanced orders, 6 orders per product",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.6,18,18,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.65,20,20,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.7,21,21,11,c_refutation,False
+"Warwick 1299: balanced orders, 6 orders per product",min-d,0.75,22,22,12,c_refutation,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.5,15,15,11,c_bound,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.55,16,16,11,c_bound,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.6,18,18,12,c_refutation,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1302: balanced orders, 7 orders per product",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.5,15,15,11,c_bound,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.55,16,16,11,c_bound,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.6,18,18,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.8,24,24,13,c_refutation,False
+"Warwick 1304: balanced orders, 7 orders per product",min-d,0.85,26,26,14,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.55,16,16,12,c_bound,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.6,18,18,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.8,24,24,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.85,26,26,13,c_refutation,False
+"Warwick 1307: balanced orders, 7 orders per product",min-d,0.9,27,27,14,c_refutation,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.5,15,15,11,c_bound,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.6,18,18,12,c_refutation,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1308: balanced orders, 7 orders per product",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.55,16,16,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.6,18,18,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.75,22,22,14,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.8,24,24,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.85,26,26,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.9,27,27,14,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",min-d,0.95,28,28,14,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.5,15,15,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.55,16,16,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.6,18,18,1,skipped,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.65,20,20,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.7,21,21,13,c_refutation,False
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.75,22,22,14,c_refutation,True
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.8,24,24,1,skipped,True
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.85,26,26,1,skipped,True
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.9,27,27,14,c_refutation,True
+"Warwick 1309: balanced orders, 7 orders per product",least-c,0.95,28,28,14,c_refutation,True
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.55,16,16,1,skipped,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.6,18,18,1,skipped,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.75,22,22,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.8,24,24,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.85,26,26,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.9,27,27,12,c_refutation,False
+"Warwick 1310: balanced orders, 7 orders per product",min-d,0.95,28,28,13,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.5,15,15,14,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.55,16,16,14,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.65,20,20,15,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.7,21,21,15,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.75,22,22,15,c_refutation,False
+"Warwick 1314: balanced orders, 8 orders per product",min-d,0.8,24,24,16,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.5,15,15,13,c_bound,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.55,16,16,13,c_bound,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.65,20,20,16,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.7,21,21,16,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.75,22,22,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.8,24,24,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.85,26,26,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.9,27,27,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",min-d,0.95,28,28,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.5,15,15,1,skipped,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.55,16,16,1,skipped,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.6,18,18,15,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.65,20,20,16,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.7,21,21,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.75,22,22,17,c_refutation,False
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.8,24,24,17,c_refutation,True
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.85,26,26,17,c_refutation,True
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.9,27,27,17,c_refutation,True
+"Warwick 1315: balanced orders, 8 orders per product",least-c,0.95,28,28,17,c_refutation,True
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.5,15,15,14,c_bound,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.55,16,16,14,c_bound,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.65,20,20,15,c_refutation,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.7,21,21,15,c_refutation,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.75,22,22,16,c_refutation,False
+"Warwick 1316: balanced orders, 8 orders per product",min-d,0.8,24,24,17,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.5,15,15,14,c_bound,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.55,16,16,14,c_bound,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.6,18,18,16,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.7,21,21,17,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.75,22,22,17,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.8,24,24,18,c_refutation,False
+"Warwick 1322: balanced orders, 9 orders per product",min-d,0.85,26,26,19,c_refutation,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.5,15,15,14,c_bound,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.55,16,16,15,c_bound,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.6,18,18,16,c_refutation,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.7,21,21,17,c_refutation,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.75,22,22,17,c_refutation,False
+"Warwick 1324: balanced orders, 9 orders per product",min-d,0.8,24,24,18,c_refutation,False
+"Warwick 1325: balanced orders, 9 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1325: balanced orders, 9 orders per product",min-d,0.55,16,16,15,c_bound,False
+"Warwick 1325: balanced orders, 9 orders per product",min-d,0.6,18,18,16,c_refutation,False
+"Warwick 1325: balanced orders, 9 orders per product",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1325: balanced orders, 9 orders per product",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.6,18,18,17,c_bound,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.65,20,20,18,c_bound,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.7,21,21,19,c_refutation,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.75,22,22,1,skipped,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.8,24,24,19,c_refutation,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.85,26,26,19,c_refutation,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.9,27,27,19,c_refutation,False
+"Warwick 1343: balanced orders, 11 orders per product",min-d,0.95,28,28,20,c_refutation,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.65,20,20,19,c_bound,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.7,21,21,20,c_bound,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.75,22,22,1,skipped,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.8,24,24,21,c_refutation,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.85,26,26,1,skipped,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.9,27,27,21,c_refutation,False
+"Warwick 1345: balanced orders, 11 orders per product",min-d,0.95,28,28,22,c_refutation,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.65,20,20,20,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.7,21,21,21,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.75,22,22,22,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.8,24,24,22,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.85,26,26,23,c_refutation,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.9,27,27,23,c_refutation,False
+"Warwick 1356: balanced orders, 12 orders per product",min-d,0.95,28,28,23,c_refutation,False
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.55,16,16,16,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.6,18,18,18,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.65,20,20,20,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.7,21,21,21,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.75,22,22,22,c_bound,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.8,24,24,22,c_bound,False
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.85,26,26,1,skipped,False
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.9,27,27,23,c_refutation,True
+"Warwick 1356: balanced orders, 12 orders per product",least-c,0.95,28,28,23,c_refutation,True
+"Warwick 1391: balanced products, 2 products per order",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.6,18,18,13,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.7,21,21,14,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.75,22,22,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.8,24,24,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.85,26,26,14,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.9,27,27,14,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",min-d,0.95,28,28,14,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.5,15,15,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.55,16,16,13,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.6,18,18,13,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.65,20,20,14,c_refutation,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1391: balanced products, 2 products per order",least-c,0.8,24,24,1,skipped,True
+"Warwick 1391: balanced products, 2 products per order",least-c,0.85,26,26,14,c_refutation,True
+"Warwick 1391: balanced products, 2 products per order",least-c,0.9,27,27,14,c_refutation,True
+"Warwick 1391: balanced products, 2 products per order",least-c,0.95,28,28,14,c_refutation,True
+"Warwick 1393: balanced products, 2 products per order",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.55,16,16,13,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.6,18,18,1,skipped,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.75,22,22,14,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.8,24,24,14,c_refutation,False
+"Warwick 1393: balanced products, 2 products per order",min-d,0.85,26,26,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.55,16,16,11,c_bound,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.6,18,18,13,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.65,20,20,14,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.7,21,21,14,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.75,22,22,14,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.8,24,24,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.85,26,26,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.9,27,27,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",min-d,0.95,28,28,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.5,15,15,1,skipped,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.65,20,20,13,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.7,21,21,14,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.75,22,22,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.8,24,24,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.85,26,26,15,c_refutation,False
+"Warwick 1394: balanced products, 2 products per order",least-c,0.9,27,27,16,c_refutation,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.5,15,15,12,c_bound,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.6,18,18,1,skipped,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.65,20,20,1,skipped,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.7,21,21,1,skipped,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.75,22,22,1,skipped,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.8,24,24,13,c_refutation,False
+"Warwick 1395: balanced products, 2 products per order",min-d,0.85,26,26,14,c_refutation,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.5,15,15,11,c_bound,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.6,18,18,11,c_bound,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.65,20,20,11,c_bound,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.7,21,21,11,c_bound,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.75,22,22,12,c_refutation,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.8,24,24,13,c_refutation,False
+"Warwick 1396: balanced products, 2 products per order",min-d,0.85,26,26,14,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.6,18,18,12,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.8,24,24,14,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.85,26,26,14,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.9,27,27,15,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",min-d,0.95,28,28,15,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.5,15,15,1,skipped,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.65,20,20,14,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.7,21,21,14,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.75,22,22,15,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.8,24,24,15,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.85,26,26,15,c_refutation,False
+"Warwick 1398: balanced products, 2 products per order",least-c,0.9,27,27,16,c_refutation,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.5,15,15,11,c_bound,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.55,16,16,11,c_bound,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.6,18,18,12,c_bound,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.65,20,20,14,c_refutation,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.7,21,21,14,c_refutation,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.75,22,22,14,c_refutation,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.8,24,24,14,c_refutation,False
+"Warwick 1399: balanced products, 2 products per order",min-d,0.85,26,26,15,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.5,15,15,12,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.55,16,16,12,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.6,18,18,12,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.7,21,21,13,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1400: balanced products, 2 products per order",min-d,0.8,24,24,15,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.65,20,20,19,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.7,21,21,19,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.75,22,22,19,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.8,24,24,21,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.85,26,26,22,c_refutation,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.9,27,27,1,skipped,False
+"Warwick 1401: balanced products, 3 products per order",min-d,0.95,28,28,23,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.6,18,18,17,c_bound,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.65,20,20,18,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.7,21,21,19,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.75,22,22,1,skipped,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.8,24,24,20,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.85,26,26,21,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.9,27,27,22,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",min-d,0.95,28,28,22,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1405: balanced products, 3 products per order",least-c,0.55,16,16,16,c_bound,True
+"Warwick 1405: balanced products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.8,24,24,20,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.85,26,26,22,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.9,27,27,22,c_refutation,False
+"Warwick 1405: balanced products, 3 products per order",least-c,0.95,28,28,23,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.6,18,18,17,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.65,20,20,18,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.75,22,22,19,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.8,24,24,20,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.85,26,26,20,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.9,27,27,20,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",min-d,0.95,28,28,21,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1407: balanced products, 3 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.8,24,24,21,c_refutation,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.85,26,26,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.9,27,27,1,skipped,False
+"Warwick 1407: balanced products, 3 products per order",least-c,0.95,28,28,21,c_refutation,True
+"Warwick 1417: balanced products, 4 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.65,20,20,20,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.7,21,21,21,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.75,22,22,1,skipped,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.8,24,24,22,c_bound,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.85,26,26,23,c_refutation,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.9,27,27,24,c_refutation,False
+"Warwick 1417: balanced products, 4 products per order",min-d,0.95,28,28,25,c_refutation,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.6,18,18,16,c_bound,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.7,21,21,17,c_refutation,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.75,22,22,18,c_refutation,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.8,24,24,19,c_refutation,False
+"Warwick 1442: balanced orders and products, 3 products per order",min-d,0.85,26,26,20,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.55,16,16,15,c_bound,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.6,18,18,16,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.75,22,22,18,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.8,24,24,19,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.85,26,26,20,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.9,27,27,21,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",min-d,0.95,28,28,21,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.8,24,24,1,skipped,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.85,26,26,20,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.9,27,27,21,c_refutation,False
+"Warwick 1446: balanced orders and products, 3 products per order",least-c,0.95,28,28,22,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.5,15,15,14,c_bound,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.55,16,16,15,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.6,18,18,16,c_bound,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.75,22,22,18,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.8,24,24,20,c_refutation,False
+"Warwick 1447: balanced orders and products, 3 products per order",min-d,0.85,26,26,21,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.6,18,18,16,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.75,22,22,18,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.8,24,24,19,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.85,26,26,20,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.9,27,27,21,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",min-d,0.95,28,28,22,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.8,24,24,1,skipped,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.85,26,26,20,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.9,27,27,21,c_refutation,False
+"Warwick 1449: balanced orders and products, 3 products per order",least-c,0.95,28,28,22,c_refutation,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.65,20,20,20,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.7,21,21,21,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.75,22,22,21,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.8,24,24,22,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.85,26,26,24,c_bound,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.9,27,27,25,c_refutation,False
+"Warwick 1456: balanced orders and products, 4 products per order",min-d,0.95,28,28,26,c_refutation,False
+"Warwick 1473: balanced orders, 4 orders per product",min-d,0.5,15,15,8,c_refutation,False
+"Warwick 1481: balanced orders, 5 orders per product",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1481: balanced orders, 5 orders per product",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1481: balanced orders, 5 orders per product",min-d,0.6,18,18,12,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.5,15,15,10,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.6,18,18,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.65,20,20,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.7,21,21,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.75,22,22,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.8,24,24,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.85,26,26,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.9,27,27,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",min-d,0.95,28,28,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.5,15,15,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.55,16,16,11,c_refutation,False
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.6,18,18,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.65,20,20,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.7,21,21,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.75,22,22,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.8,24,24,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.85,26,26,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.9,27,27,11,c_refutation,True
+"Warwick 1488: balanced orders, 5 orders per product",least-c,0.95,28,28,11,c_refutation,True
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.55,16,16,1,skipped,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.6,18,18,1,skipped,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.75,22,22,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.8,24,24,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.85,26,26,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.9,27,27,12,c_refutation,False
+"Warwick 1489: balanced orders, 5 orders per product",min-d,0.95,28,28,13,c_refutation,False
+"Warwick 1490: balanced orders, 5 orders per product",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1496: balanced orders, 6 orders per product",min-d,0.5,15,15,13,c_refutation,False
+"Warwick 1496: balanced orders, 6 orders per product",min-d,0.55,16,16,1,skipped,False
+"Warwick 1496: balanced orders, 6 orders per product",min-d,0.6,18,18,13,c_refutation,False
+"Warwick 1496: balanced orders, 6 orders per product",min-d,0.65,20,20,13,c_refutation,False
+"Warwick 1496: balanced orders, 6 orders per product",min-d,0.7,21,21,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.5,15,15,13,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.55,16,16,13,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.6,18,18,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.65,20,20,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.7,21,21,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.75,22,22,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.8,24,24,14,c_refutation,False
+"Warwick 1498: balanced orders, 6 orders per product",min-d,0.85,26,26,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.5,15,15,14,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.55,16,16,14,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.65,20,20,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.7,21,21,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.75,22,22,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.8,24,24,15,c_refutation,False
+"Warwick 1501: balanced orders, 7 orders per product",min-d,0.85,26,26,16,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.5,15,15,14,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.55,16,16,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.65,20,20,16,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.7,21,21,17,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.75,22,22,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.8,24,24,18,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.85,26,26,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.9,27,27,19,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",min-d,0.95,28,28,19,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.5,15,15,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.55,16,16,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.6,18,18,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.65,20,20,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.7,21,21,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.75,22,22,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.8,24,24,19,c_refutation,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.85,26,26,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.9,27,27,1,skipped,False
+"Warwick 1509: balanced orders, 7 orders per product",least-c,0.95,28,28,19,c_refutation,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.65,20,20,19,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.7,21,21,20,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.75,22,22,20,c_bound,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.8,24,24,21,c_refutation,False
+"Warwick 1525: balanced orders, 9 orders per product",min-d,0.85,26,26,22,c_refutation,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.5,15,15,8,c_bound,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.55,16,16,9,c_refutation,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.6,18,18,9,c_refutation,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.65,20,20,9,c_refutation,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.7,21,21,9,c_refutation,False
+"Warwick 1591: balanced products, 2 products per order",min-d,0.75,22,22,10,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.5,15,15,8,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.55,16,16,8,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.6,18,18,8,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.65,20,20,8,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.7,21,21,8,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.75,22,22,8,c_bound,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.8,24,24,9,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.85,26,26,9,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.9,27,27,9,c_refutation,False
+"Warwick 1592: balanced products, 2 products per order",min-d,0.95,28,28,10,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.5,15,15,9,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.55,16,16,9,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.6,18,18,9,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.65,20,20,10,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.7,21,21,10,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.75,22,22,10,c_refutation,False
+"Warwick 1594: balanced products, 2 products per order",min-d,0.8,24,24,11,c_refutation,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.5,15,15,9,c_refutation,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.55,16,16,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.6,18,18,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.65,20,20,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.7,21,21,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.75,22,22,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.8,24,24,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.85,26,26,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.9,27,27,9,c_bound,False
+"Warwick 1595: balanced products, 2 products per order",min-d,0.95,28,28,10,c_refutation,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.5,15,15,8,c_bound,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.55,16,16,8,c_bound,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.6,18,18,9,c_refutation,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.65,20,20,11,c_refutation,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.7,21,21,1,skipped,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.75,22,22,1,skipped,False
+"Warwick 1598: balanced products, 2 products per order",min-d,0.8,24,24,12,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.5,15,15,14,c_bound,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.55,16,16,14,c_bound,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.6,18,18,15,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.65,20,20,17,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.7,21,21,17,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.75,22,22,17,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.8,24,24,18,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.85,26,26,18,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.9,27,27,19,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",min-d,0.95,28,28,19,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.5,15,15,1,skipped,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.75,22,22,18,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.8,24,24,18,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.85,26,26,19,c_refutation,False
+"Warwick 1609: balanced products, 3 products per order",least-c,0.9,27,27,20,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.6,18,18,17,c_bound,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.65,20,20,18,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.7,21,21,18,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.75,22,22,19,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.8,24,24,20,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.85,26,26,22,c_refutation,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.9,27,27,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",min-d,0.95,28,28,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1613: balanced products, 4 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.8,24,24,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.85,26,26,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.9,27,27,1,skipped,False
+"Warwick 1613: balanced products, 4 products per order",least-c,0.95,28,28,22,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.5,15,15,7,c_bound,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.55,16,16,8,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.6,18,18,8,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.65,20,20,8,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.7,21,21,8,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.75,22,22,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.8,24,24,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.85,26,26,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.9,27,27,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",min-d,0.95,28,28,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.5,15,15,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.55,16,16,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.6,18,18,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.65,20,20,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.7,21,21,9,c_refutation,False
+"Warwick 1652: balanced orders and products, 2 products per order",least-c,0.75,22,22,10,c_refutation,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.5,15,15,8,c_refutation,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.6,18,18,8,c_refutation,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.65,20,20,8,c_refutation,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.7,21,21,9,c_refutation,False
+"Warwick 1656: balanced orders and products, 2 products per order",min-d,0.75,22,22,10,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.55,16,16,15,c_bound,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.6,18,18,17,c_bound,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.65,20,20,18,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.7,21,21,18,c_bound,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.75,22,22,19,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.8,24,24,20,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.85,26,26,21,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.9,27,27,22,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",min-d,0.95,28,28,23,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.5,15,15,15,c_bound,True
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.8,24,24,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.85,26,26,1,skipped,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.9,27,27,22,c_refutation,False
+"Warwick 1676: balanced orders and products, 4 products per order",least-c,0.95,28,28,1,skipped,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.5,15,15,8,c_bound,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.55,16,16,9,c_refutation,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.6,18,18,9,c_refutation,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.65,20,20,9,c_refutation,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.7,21,21,9,c_refutation,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.75,22,22,9,c_refutation,False
+"Warwick 1728: balanced orders, 3 orders per product",min-d,0.8,24,24,10,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.5,15,15,8,c_bound,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.55,16,16,8,c_bound,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.6,18,18,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.65,20,20,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.7,21,21,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.75,22,22,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.8,24,24,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.85,26,26,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.9,27,27,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",min-d,0.95,28,28,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.5,15,15,1,skipped,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.55,16,16,1,skipped,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.6,18,18,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.65,20,20,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.7,21,21,8,c_refutation,False
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.75,22,22,8,c_refutation,True
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.8,24,24,8,c_refutation,True
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.85,26,26,8,c_refutation,True
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.9,27,27,8,c_refutation,True
+"Warwick 1729: balanced orders, 3 orders per product",least-c,0.95,28,28,8,c_refutation,True
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.5,15,15,15,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.55,16,16,16,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.6,18,18,18,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.65,20,20,20,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.7,21,21,21,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.75,22,22,22,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.8,24,24,23,c_bound,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.85,26,26,24,c_refutation,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.9,27,27,25,c_refutation,False
+"Warwick 1779: balanced orders, 8 orders per product",min-d,0.95,28,28,26,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.5,15,15,10,c_bound,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.55,16,16,10,c_bound,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.6,18,18,11,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.65,20,20,11,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.8,24,24,13,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.85,26,26,13,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.9,27,27,13,c_refutation,False
+"Warwick 1861: balanced products, 3 products per order",min-d,0.95,28,28,14,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.5,15,15,10,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.55,16,16,1,skipped,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.6,18,18,10,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.65,20,20,11,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.7,21,21,11,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.75,22,22,12,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.8,24,24,12,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.85,26,26,12,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.9,27,27,12,c_refutation,False
+"Warwick 1864: balanced products, 3 products per order",min-d,0.95,28,28,13,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.5,15,15,11,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.55,16,16,11,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.6,18,18,11,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.65,20,20,12,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.7,21,21,12,c_refutation,False
+"Warwick 1865: balanced products, 3 products per order",min-d,0.75,22,22,13,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.5,15,15,8,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.55,16,16,9,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.6,18,18,9,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.65,20,20,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.7,21,21,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.75,22,22,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.8,24,24,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.85,26,26,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.9,27,27,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",min-d,0.95,28,28,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.5,15,15,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.55,16,16,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.6,18,18,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.65,20,20,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.7,21,21,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.75,22,22,1,skipped,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.8,24,24,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.85,26,26,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.9,27,27,10,c_refutation,False
+"Warwick 2002: balanced orders and products, 3 products per order",least-c,0.95,28,28,11,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.5,10,10,4,c_bound,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.55,11,11,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.6,12,12,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.65,13,13,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.7,14,14,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.75,15,15,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.8,16,16,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.85,17,17,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.9,18,18,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",min-d,0.95,19,19,5,c_refutation,False
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.5,10,10,4,c_bound,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.55,11,11,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.6,12,12,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.65,13,13,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.7,14,14,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.75,15,15,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.8,16,16,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.85,17,17,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.9,18,18,5,c_refutation,True
+"Warwick 871: balanced orders, 4 orders per product",least-c,0.95,19,19,5,c_refutation,True
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.5,10,10,7,c_refutation,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.55,11,11,1,skipped,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.6,12,12,1,skipped,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.65,13,13,7,c_refutation,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.7,14,14,7,c_refutation,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.75,15,15,7,c_refutation,False
+"Warwick 877: balanced orders, 4 orders per product",min-d,0.8,16,16,8,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.5,10,10,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.55,11,11,1,skipped,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.6,12,12,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.65,13,13,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.7,14,14,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.75,15,15,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.8,16,16,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.85,17,17,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.9,18,18,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",min-d,0.95,19,19,7,c_refutation,False
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.5,10,10,1,skipped,False
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.55,11,11,6,c_bound,False
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.6,12,12,6,c_bound,False
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.65,13,13,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.7,14,14,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.75,15,15,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.8,16,16,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.85,17,17,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.9,18,18,7,c_refutation,True
+"Warwick 879: balanced orders, 4 orders per product",least-c,0.95,19,19,7,c_refutation,True
+"Warwick 955: balanced products, 3 products per order",min-d,0.5,10,10,10,c_bound,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.55,11,11,11,c_bound,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.6,12,12,12,c_bound,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.65,13,13,1,skipped,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.7,14,14,12,c_bound,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.75,15,15,13,c_refutation,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.8,16,16,13,c_refutation,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.85,17,17,14,c_refutation,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.9,18,18,14,c_refutation,False
+"Warwick 955: balanced products, 3 products per order",min-d,0.95,19,19,15,c_refutation,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.5,10,10,10,c_bound,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.55,11,11,10,c_bound,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.6,12,12,11,c_refutation,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.65,13,13,11,c_refutation,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.7,14,14,11,c_bound,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.75,15,15,12,c_refutation,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.8,16,16,13,c_refutation,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.85,17,17,1,skipped,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.9,18,18,1,skipped,False
+"Warwick 959: balanced products, 3 products per order",min-d,0.95,19,19,14,c_refutation,False
+p1530n1_0,min-d,0.5,15,15,7,c_refutation,False
+p1530n1_0,min-d,0.55,16,16,7,c_refutation,False
+p1530n1_0,min-d,0.6,18,18,7,c_refutation,False
+p1530n1_0,min-d,0.65,20,20,7,c_refutation,False
+p1530n1_0,min-d,0.7,21,21,7,c_refutation,False
+p1530n1_0,min-d,0.75,22,22,7,c_refutation,False
+p1530n1_0,min-d,0.8,24,24,7,c_refutation,False
+p1530n1_0,min-d,0.85,26,26,8,c_refutation,False
+p1530n4_0,min-d,0.5,15,15,6,c_refutation,False
+p1530n4_0,min-d,0.55,16,16,6,c_refutation,False
+p1530n4_0,min-d,0.6,18,18,7,c_refutation,False
+p1530n4_0,min-d,0.65,20,20,7,c_refutation,False
+p1530n4_0,min-d,0.7,21,21,7,c_refutation,False
+p1530n4_0,min-d,0.75,22,22,7,c_refutation,False
+p1530n4_0,min-d,0.8,24,24,7,c_refutation,False
+p1530n4_0,min-d,0.85,26,26,8,c_refutation,False
+p1530n8_0,min-d,0.5,15,15,7,c_refutation,False
+p1530n8_0,min-d,0.55,16,16,7,c_refutation,False
+p1530n8_0,min-d,0.6,18,18,7,c_refutation,False
+p1530n8_0,min-d,0.65,20,20,8,c_refutation,False
+p1530n9_0,min-d,0.5,15,15,7,c_refutation,False
+p1530n9_0,min-d,0.55,16,16,7,c_refutation,False
+p1530n9_0,min-d,0.6,18,18,7,c_refutation,False
+p1530n9_0,min-d,0.65,20,20,7,c_refutation,False
+p1530n9_0,min-d,0.7,21,21,7,c_refutation,False
+p1530n9_0,min-d,0.75,22,22,7,c_refutation,False
+p1530n9_0,min-d,0.8,24,24,8,c_refutation,False
+p1540n10_0,min-d,0.5,20,20,7,c_refutation,False
+p1540n10_0,min-d,0.55,22,22,8,c_refutation,False
+p1540n1_0,min-d,0.5,20,20,7,c_refutation,False
+p1540n1_0,min-d,0.55,22,22,7,c_refutation,False
+p1540n1_0,min-d,0.6,24,24,8,c_refutation,False
+p1540n3_0,min-d,0.5,20,20,6,c_refutation,False
+p1540n3_0,min-d,0.55,22,22,6,c_refutation,False
+p1540n3_0,min-d,0.6,24,24,7,c_refutation,False
+p1540n5_0,min-d,0.5,20,20,7,c_refutation,False
+p1540n5_0,min-d,0.55,22,22,7,c_refutation,False
+p1540n5_0,min-d,0.6,24,24,7,c_refutation,False
+p1540n5_0,min-d,0.65,26,26,7,c_refutation,False
+p1540n5_0,min-d,0.7,28,28,7,c_refutation,False
+p1540n5_0,min-d,0.75,30,30,7,c_refutation,False
+p1540n5_0,min-d,0.8,32,32,8,c_refutation,False
+p1540n9_0,min-d,0.5,20,20,6,c_refutation,False
+p1540n9_0,min-d,0.55,22,22,6,c_refutation,False
+p1540n9_0,min-d,0.6,24,24,7,c_refutation,False
+p1550n10_0,min-d,0.5,25,25,7,c_refutation,False
+p1550n10_0,min-d,0.55,28,28,7,c_refutation,False
+p1550n10_0,min-d,0.6,30,30,7,c_refutation,False
+p1550n10_0,min-d,0.65,32,32,7,c_refutation,False
+p1550n10_0,min-d,0.7,35,35,7,c_refutation,False
+p1550n10_0,min-d,0.75,38,38,7,c_refutation,False
+p1550n10_0,min-d,0.8,40,40,8,c_refutation,False
+p1550n8_0,min-d,0.5,25,25,8,c_refutation,False
+p2030n8_0,min-d,0.5,15,15,9,c_refutation,False
+p2030n8_0,min-d,0.55,16,16,1,skipped,False
+p2030n8_0,min-d,0.6,18,18,1,skipped,False
+p2030n8_0,min-d,0.65,20,20,9,c_refutation,False
+p2030n8_0,min-d,0.7,21,21,9,c_refutation,False
+p2030n8_0,min-d,0.75,22,22,9,c_refutation,False
+p2030n8_0,min-d,0.8,24,24,10,c_refutation,False
+p2040n10_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n1_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n1_0,min-d,0.55,22,22,1,skipped,False
+p2040n1_0,min-d,0.6,24,24,1,skipped,False
+p2040n1_0,min-d,0.65,26,26,1,skipped,False
+p2040n1_0,min-d,0.7,28,28,8,c_refutation,False
+p2040n1_0,min-d,0.75,30,30,8,c_refutation,False
+p2040n1_0,min-d,0.8,32,32,8,c_refutation,False
+p2040n1_0,min-d,0.85,34,34,8,c_refutation,False
+p2040n1_0,min-d,0.9,36,36,9,c_refutation,False
+p2040n2_0,min-d,0.5,20,20,7,c_refutation,False
+p2040n2_0,min-d,0.55,22,22,7,c_refutation,False
+p2040n2_0,min-d,0.6,24,24,7,c_refutation,False
+p2040n2_0,min-d,0.65,26,26,7,c_refutation,False
+p2040n2_0,min-d,0.7,28,28,7,c_refutation,False
+p2040n2_0,min-d,0.75,30,30,7,c_refutation,False
+p2040n2_0,min-d,0.8,32,32,8,c_refutation,False
+p2040n3_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n3_0,min-d,0.55,22,22,8,c_refutation,False
+p2040n3_0,min-d,0.6,24,24,8,c_refutation,False
+p2040n3_0,min-d,0.65,26,26,8,c_refutation,False
+p2040n3_0,min-d,0.7,28,28,8,c_refutation,False
+p2040n3_0,min-d,0.75,30,30,8,c_refutation,False
+p2040n3_0,min-d,0.8,32,32,9,c_refutation,False
+p2040n4_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n4_0,min-d,0.55,22,22,1,skipped,False
+p2040n4_0,min-d,0.6,24,24,8,c_refutation,False
+p2040n4_0,min-d,0.65,26,26,8,c_refutation,False
+p2040n4_0,min-d,0.7,28,28,8,c_refutation,False
+p2040n4_0,min-d,0.75,30,30,8,c_refutation,False
+p2040n4_0,min-d,0.8,32,32,8,c_refutation,False
+p2040n4_0,min-d,0.85,34,34,9,c_refutation,False
+p2040n5_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n8_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n8_0,min-d,0.55,22,22,8,c_refutation,False
+p2040n8_0,min-d,0.6,24,24,8,c_refutation,False
+p2040n8_0,min-d,0.65,26,26,8,c_refutation,False
+p2040n8_0,min-d,0.7,28,28,9,c_refutation,False
+p2040n9_0,min-d,0.5,20,20,8,c_refutation,False
+p2040n9_0,min-d,0.55,22,22,8,c_refutation,False
+p2040n9_0,min-d,0.6,24,24,8,c_refutation,False
+p2040n9_0,min-d,0.65,26,26,8,c_refutation,False
+p2040n9_0,min-d,0.7,28,28,8,c_refutation,False
+p2040n9_0,min-d,0.75,30,30,8,c_refutation,False
+p2040n9_0,min-d,0.8,32,32,8,c_refutation,False
+p2040n9_0,min-d,0.85,34,34,8,c_refutation,False
+p2040n9_0,min-d,0.9,36,36,8,c_refutation,False
+p2040n9_0,min-d,0.95,38,38,8,c_refutation,False
+p2040n9_0,least-c,0.5,20,20,8,c_refutation,False
+p2040n9_0,least-c,0.55,22,22,8,c_refutation,False
+p2040n9_0,least-c,0.6,24,24,8,c_refutation,False
+p2040n9_0,least-c,0.65,26,26,8,c_refutation,False
+p2040n9_0,least-c,0.7,28,28,8,c_refutation,True
+p2040n9_0,least-c,0.75,30,30,8,c_refutation,True
+p2040n9_0,least-c,0.8,32,32,8,c_refutation,True
+p2040n9_0,least-c,0.85,34,34,8,c_refutation,True
+p2040n9_0,least-c,0.9,36,36,8,c_refutation,True
+p2040n9_0,least-c,0.95,38,38,8,c_refutation,True
+p2050n10_0,min-d,0.5,25,25,9,c_refutation,False
+p2050n1_0,min-d,0.5,25,25,6,c_refutation,False
+p2050n1_0,min-d,0.55,28,28,6,c_refutation,False
+p2050n1_0,min-d,0.6,30,30,6,c_refutation,False
+p2050n1_0,min-d,0.65,32,32,6,c_refutation,False
+p2050n1_0,min-d,0.7,35,35,6,c_refutation,False
+p2050n1_0,min-d,0.75,38,38,7,c_refutation,False
+p2050n3_0,min-d,0.5,25,25,7,c_refutation,False
+p2050n3_0,min-d,0.55,28,28,7,c_refutation,False
+p2050n3_0,min-d,0.6,30,30,7,c_refutation,False
+p2050n3_0,min-d,0.65,32,32,7,c_refutation,False
+p2050n3_0,min-d,0.7,35,35,7,c_refutation,False
+p2050n3_0,min-d,0.75,38,38,8,c_refutation,False
+p2050n4_0,min-d,0.5,25,25,7,c_refutation,False
+p2050n4_0,min-d,0.55,28,28,7,c_refutation,False
+p2050n4_0,min-d,0.6,30,30,8,c_refutation,False
+p2050n7_0,min-d,0.5,25,25,7,c_refutation,False
+p2050n7_0,min-d,0.55,28,28,1,skipped,False
+p2050n7_0,min-d,0.6,30,30,8,c_refutation,False
+p2050n9_0,min-d,0.5,25,25,8,c_refutation,False
+p2050n9_0,min-d,0.55,28,28,8,c_refutation,False
+p2050n9_0,min-d,0.6,30,30,9,c_refutation,False
+p2050n9_0,min-d,0.65,32,32,9,c_refutation,False
+p2050n9_0,min-d,0.7,35,35,10,c_refutation,False
+p2530n2_0,min-d,0.5,15,15,10,c_refutation,False
+p2530n2_0,min-d,0.55,16,16,10,c_refutation,False
+p2530n2_0,min-d,0.6,18,18,11,c_refutation,False
+p2530n6_0,min-d,0.5,15,15,9,c_refutation,False
+p2530n6_0,min-d,0.55,16,16,10,c_refutation,False
+p2530n8_0,min-d,0.5,15,15,10,c_refutation,False
+p2530n8_0,min-d,0.55,16,16,1,skipped,False
+p2530n8_0,min-d,0.6,18,18,10,c_refutation,False
+p2530n8_0,min-d,0.65,20,20,10,c_refutation,False
+p2530n8_0,min-d,0.7,21,21,10,c_refutation,False
+p2530n8_0,min-d,0.75,22,22,10,c_refutation,False
+p2530n8_0,min-d,0.8,24,24,10,c_refutation,False
+p2530n8_0,min-d,0.85,26,26,10,c_refutation,False
+p2530n8_0,min-d,0.9,27,27,10,c_refutation,False
+p2530n8_0,min-d,0.95,28,28,11,c_refutation,False
+p2540n10_0,min-d,0.5,20,20,10,c_refutation,False
+p2540n1_0,min-d,0.5,20,20,10,c_refutation,False
+p2540n2_0,min-d,0.5,20,20,9,c_refutation,False
+p2540n2_0,min-d,0.55,22,22,10,c_refutation,False
+p2540n2_0,min-d,0.6,24,24,10,c_refutation,False
+p2540n2_0,min-d,0.65,26,26,10,c_refutation,False
+p2540n2_0,min-d,0.7,28,28,10,c_refutation,False
+p2540n2_0,min-d,0.75,30,30,10,c_refutation,False
+p2540n2_0,min-d,0.8,32,32,10,c_refutation,False
+p2540n2_0,min-d,0.85,34,34,10,c_refutation,False
+p2540n2_0,min-d,0.9,36,36,10,c_refutation,False
+p2540n2_0,min-d,0.95,38,38,11,c_refutation,False
+p2540n3_0,min-d,0.5,20,20,10,c_refutation,False
+p2540n4_0,min-d,0.5,20,20,9,c_refutation,False
+p2540n4_0,min-d,0.55,22,22,9,c_refutation,False
+p2540n4_0,min-d,0.6,24,24,9,c_refutation,False
+p2540n4_0,min-d,0.65,26,26,9,c_refutation,False
+p2540n4_0,min-d,0.7,28,28,9,c_refutation,False
+p2540n4_0,min-d,0.75,30,30,9,c_refutation,False
+p2540n4_0,min-d,0.8,32,32,10,c_refutation,False
+p2540n5_0,min-d,0.5,20,20,8,c_refutation,False
+p2540n5_0,min-d,0.55,22,22,9,c_refutation,False
+p2540n5_0,min-d,0.6,24,24,9,c_refutation,False
+p2540n5_0,min-d,0.65,26,26,9,c_refutation,False
+p2540n5_0,min-d,0.7,28,28,9,c_refutation,False
+p2540n5_0,min-d,0.75,30,30,9,c_refutation,False
+p2540n5_0,min-d,0.8,32,32,9,c_refutation,False
+p2540n5_0,min-d,0.85,34,34,10,c_refutation,False
+p2540n6_0,min-d,0.5,20,20,10,c_refutation,False
+p2540n6_0,min-d,0.55,22,22,10,c_refutation,False
+p2540n6_0,min-d,0.6,24,24,10,c_refutation,False
+p2540n6_0,min-d,0.65,26,26,10,c_refutation,False
+p2540n6_0,min-d,0.7,28,28,10,c_refutation,False
+p2540n6_0,min-d,0.75,30,30,10,c_refutation,False
+p2540n6_0,min-d,0.8,32,32,11,c_refutation,False
+p2540n7_0,min-d,0.5,20,20,9,c_refutation,False
+p2540n7_0,min-d,0.55,22,22,10,c_refutation,False
+p2540n8_0,min-d,0.5,20,20,10,c_refutation,False
+p2540n8_0,min-d,0.55,22,22,10,c_refutation,False
+p2540n8_0,min-d,0.6,24,24,10,c_refutation,False
+p2540n8_0,min-d,0.65,26,26,10,c_refutation,False
+p2540n8_0,min-d,0.7,28,28,10,c_refutation,False
+p2540n8_0,min-d,0.75,30,30,10,c_refutation,False
+p2540n8_0,min-d,0.8,32,32,11,c_refutation,False
+p2540n9_0,min-d,0.5,20,20,9,c_refutation,False
+p2540n9_0,min-d,0.55,22,22,9,c_refutation,False
+p2540n9_0,min-d,0.6,24,24,9,c_refutation,False
+p2540n9_0,min-d,0.65,26,26,9,c_refutation,False
+p2540n9_0,min-d,0.7,28,28,9,c_refutation,False
+p2540n9_0,min-d,0.75,30,30,9,c_refutation,False
+p2540n9_0,min-d,0.8,32,32,9,c_refutation,False
+p2540n9_0,min-d,0.85,34,34,9,c_refutation,False
+p2540n9_0,min-d,0.9,36,36,9,c_refutation,False
+p2540n9_0,min-d,0.95,38,38,9,c_refutation,False
+p2540n9_0,least-c,0.5,20,20,9,c_refutation,False
+p2540n9_0,least-c,0.55,22,22,9,c_refutation,False
+p2540n9_0,least-c,0.6,24,24,9,c_refutation,False
+p2540n9_0,least-c,0.65,26,26,9,c_refutation,False
+p2540n9_0,least-c,0.7,28,28,9,c_refutation,False
+p2540n9_0,least-c,0.75,30,30,9,c_refutation,False
+p2540n9_0,least-c,0.8,32,32,9,c_refutation,False
+p2540n9_0,least-c,0.85,34,34,9,c_refutation,False
+p2540n9_0,least-c,0.9,36,36,9,c_refutation,False
+p2540n9_0,least-c,0.95,38,38,9,c_refutation,False
+p2550n10_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n10_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n10_0,min-d,0.6,30,30,9,c_refutation,False
+p2550n10_0,min-d,0.65,32,32,9,c_refutation,False
+p2550n10_0,min-d,0.7,35,35,10,c_refutation,False
+p2550n10_0,min-d,0.75,38,38,10,c_refutation,False
+p2550n10_0,min-d,0.8,40,40,10,c_refutation,False
+p2550n10_0,min-d,0.85,42,42,10,c_refutation,False
+p2550n10_0,min-d,0.9,45,45,10,c_refutation,False
+p2550n10_0,min-d,0.95,48,48,10,c_refutation,False
+p2550n10_0,least-c,0.5,25,25,9,c_refutation,False
+p2550n10_0,least-c,0.55,28,28,9,c_refutation,False
+p2550n10_0,least-c,0.6,30,30,9,c_refutation,False
+p2550n10_0,least-c,0.65,32,32,9,c_refutation,False
+p2550n10_0,least-c,0.7,35,35,10,c_refutation,False
+p2550n10_0,least-c,0.75,38,38,10,c_refutation,True
+p2550n10_0,least-c,0.8,40,40,10,c_refutation,True
+p2550n10_0,least-c,0.85,42,42,10,c_refutation,True
+p2550n10_0,least-c,0.9,45,45,10,c_refutation,True
+p2550n10_0,least-c,0.95,48,48,10,c_refutation,True
+p2550n1_0,min-d,0.5,25,25,8,c_refutation,False
+p2550n1_0,min-d,0.55,28,28,8,c_refutation,False
+p2550n1_0,min-d,0.6,30,30,8,c_refutation,False
+p2550n1_0,min-d,0.65,32,32,9,c_refutation,False
+p2550n2_0,min-d,0.5,25,25,10,c_refutation,False
+p2550n2_0,min-d,0.55,28,28,10,c_refutation,False
+p2550n2_0,min-d,0.6,30,30,10,c_refutation,False
+p2550n2_0,min-d,0.65,32,32,10,c_refutation,False
+p2550n2_0,min-d,0.7,35,35,10,c_refutation,False
+p2550n2_0,min-d,0.75,38,38,11,c_refutation,False
+p2550n3_0,min-d,0.5,25,25,8,c_refutation,False
+p2550n3_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n4_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n4_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n4_0,min-d,0.6,30,30,9,c_refutation,False
+p2550n4_0,min-d,0.65,32,32,9,c_refutation,False
+p2550n4_0,min-d,0.7,35,35,10,c_refutation,False
+p2550n5_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n5_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n5_0,min-d,0.6,30,30,9,c_refutation,False
+p2550n5_0,min-d,0.65,32,32,9,c_refutation,False
+p2550n5_0,min-d,0.7,35,35,10,c_refutation,False
+p2550n6_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n7_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n7_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n7_0,min-d,0.6,30,30,10,c_refutation,False
+p2550n8_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n8_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n8_0,min-d,0.6,30,30,10,c_refutation,False
+p2550n8_0,min-d,0.65,32,32,10,c_refutation,False
+p2550n8_0,min-d,0.7,35,35,10,c_refutation,False
+p2550n8_0,min-d,0.75,38,38,10,c_refutation,False
+p2550n8_0,min-d,0.8,40,40,10,c_refutation,False
+p2550n8_0,min-d,0.85,42,42,10,c_refutation,False
+p2550n8_0,min-d,0.9,45,45,10,c_refutation,False
+p2550n8_0,min-d,0.95,48,48,11,c_refutation,False
+p2550n9_0,min-d,0.5,25,25,9,c_refutation,False
+p2550n9_0,min-d,0.55,28,28,9,c_refutation,False
+p2550n9_0,min-d,0.6,30,30,9,c_refutation,False
+p2550n9_0,min-d,0.65,32,32,9,c_refutation,False
+p2550n9_0,min-d,0.7,35,35,9,c_refutation,False
+p2550n9_0,min-d,0.75,38,38,9,c_refutation,False
+p2550n9_0,min-d,0.8,40,40,9,c_refutation,False
+p2550n9_0,min-d,0.85,42,42,10,c_refutation,False
+p3040n10_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n10_0,min-d,0.55,22,22,11,c_refutation,False
+p3040n10_0,min-d,0.6,24,24,11,c_refutation,False
+p3040n10_0,min-d,0.65,26,26,12,c_refutation,False
+p3040n1_0,min-d,0.5,20,20,12,c_refutation,False
+p3040n2_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n2_0,min-d,0.55,22,22,11,c_refutation,False
+p3040n2_0,min-d,0.6,24,24,11,c_refutation,False
+p3040n2_0,min-d,0.65,26,26,11,c_refutation,False
+p3040n2_0,min-d,0.7,28,28,11,c_refutation,False
+p3040n2_0,min-d,0.75,30,30,11,c_refutation,False
+p3040n2_0,min-d,0.8,32,32,11,c_refutation,False
+p3040n2_0,min-d,0.85,34,34,11,c_refutation,False
+p3040n2_0,min-d,0.9,36,36,11,c_refutation,False
+p3040n2_0,min-d,0.95,38,38,12,c_refutation,False
+p3040n3_0,min-d,0.5,20,20,10,c_refutation,False
+p3040n3_0,min-d,0.55,22,22,10,c_refutation,False
+p3040n3_0,min-d,0.6,24,24,10,c_refutation,False
+p3040n3_0,min-d,0.65,26,26,10,c_refutation,False
+p3040n3_0,min-d,0.7,28,28,10,c_refutation,False
+p3040n3_0,min-d,0.75,30,30,10,c_refutation,False
+p3040n3_0,min-d,0.8,32,32,11,c_refutation,False
+p3040n4_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n4_0,min-d,0.55,22,22,11,c_refutation,False
+p3040n4_0,min-d,0.6,24,24,11,c_refutation,False
+p3040n4_0,min-d,0.65,26,26,11,c_refutation,False
+p3040n4_0,min-d,0.7,28,28,11,c_refutation,False
+p3040n4_0,min-d,0.75,30,30,11,c_refutation,False
+p3040n4_0,min-d,0.8,32,32,11,c_refutation,False
+p3040n4_0,min-d,0.85,34,34,11,c_refutation,False
+p3040n4_0,min-d,0.9,36,36,11,c_refutation,False
+p3040n4_0,min-d,0.95,38,38,11,c_refutation,False
+p3040n4_0,least-c,0.5,20,20,11,c_refutation,False
+p3040n4_0,least-c,0.55,22,22,11,c_refutation,False
+p3040n4_0,least-c,0.6,24,24,11,c_refutation,False
+p3040n4_0,least-c,0.65,26,26,11,c_refutation,False
+p3040n4_0,least-c,0.7,28,28,11,c_refutation,False
+p3040n4_0,least-c,0.75,30,30,11,c_refutation,False
+p3040n4_0,least-c,0.8,32,32,11,c_refutation,False
+p3040n4_0,least-c,0.85,34,34,11,c_refutation,False
+p3040n4_0,least-c,0.9,36,36,11,c_refutation,True
+p3040n4_0,least-c,0.95,38,38,11,c_refutation,True
+p3040n5_0,min-d,0.5,20,20,12,c_refutation,False
+p3040n5_0,min-d,0.55,22,22,12,c_refutation,False
+p3040n5_0,min-d,0.6,24,24,13,c_refutation,False
+p3040n6_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n6_0,min-d,0.55,22,22,12,c_refutation,False
+p3040n7_0,min-d,0.5,20,20,12,c_refutation,False
+p3040n7_0,min-d,0.55,22,22,12,c_refutation,False
+p3040n7_0,min-d,0.6,24,24,12,c_refutation,False
+p3040n7_0,min-d,0.65,26,26,12,c_refutation,False
+p3040n7_0,min-d,0.7,28,28,12,c_refutation,False
+p3040n7_0,min-d,0.75,30,30,12,c_refutation,False
+p3040n7_0,min-d,0.8,32,32,12,c_refutation,False
+p3040n7_0,min-d,0.85,34,34,13,c_refutation,False
+p3040n8_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n8_0,min-d,0.55,22,22,11,c_refutation,False
+p3040n8_0,min-d,0.6,24,24,11,c_refutation,False
+p3040n8_0,min-d,0.65,26,26,11,c_refutation,False
+p3040n8_0,min-d,0.7,28,28,12,c_refutation,False
+p3040n9_0,min-d,0.5,20,20,11,c_refutation,False
+p3040n9_0,min-d,0.55,22,22,11,c_refutation,False
+p3040n9_0,min-d,0.6,24,24,11,c_refutation,False
+p3040n9_0,min-d,0.65,26,26,12,c_refutation,False
+p3050n10_0,min-d,0.5,25,25,11,c_refutation,False
+p3050n10_0,min-d,0.55,28,28,1,skipped,False
+p3050n10_0,min-d,0.6,30,30,11,c_refutation,False
+p3050n10_0,min-d,0.65,32,32,11,c_refutation,False
+p3050n10_0,min-d,0.7,35,35,11,c_refutation,False
+p3050n10_0,min-d,0.75,38,38,11,c_refutation,False
+p3050n10_0,min-d,0.8,40,40,12,c_refutation,False
+p3050n1_0,min-d,0.5,25,25,10,c_refutation,False
+p3050n1_0,min-d,0.55,28,28,10,c_refutation,False
+p3050n1_0,min-d,0.6,30,30,10,c_refutation,False
+p3050n1_0,min-d,0.65,32,32,10,c_refutation,False
+p3050n1_0,min-d,0.7,35,35,11,c_refutation,False
+p3050n2_0,min-d,0.5,25,25,10,c_refutation,False
+p3050n2_0,min-d,0.55,28,28,10,c_refutation,False
+p3050n2_0,min-d,0.6,30,30,10,c_refutation,False
+p3050n2_0,min-d,0.65,32,32,11,c_refutation,False
+p3050n4_0,min-d,0.5,25,25,11,c_refutation,False
+p3050n5_0,min-d,0.5,25,25,10,c_refutation,False
+p3050n5_0,min-d,0.55,28,28,11,c_refutation,False
+p3050n5_0,min-d,0.6,30,30,11,c_refutation,False
+p3050n5_0,min-d,0.65,32,32,11,c_refutation,False
+p3050n5_0,min-d,0.7,35,35,11,c_refutation,False
+p3050n5_0,min-d,0.75,38,38,11,c_refutation,False
+p3050n5_0,min-d,0.8,40,40,12,c_refutation,False
+p3050n6_0,min-d,0.5,25,25,12,c_refutation,False
+p3050n6_0,min-d,0.55,28,28,12,c_refutation,False
+p3050n6_0,min-d,0.6,30,30,12,c_refutation,False
+p3050n6_0,min-d,0.65,32,32,12,c_refutation,False
+p3050n6_0,min-d,0.7,35,35,12,c_refutation,False
+p3050n6_0,min-d,0.75,38,38,13,c_refutation,False
+p3050n7_0,min-d,0.5,25,25,11,c_refutation,False
+p3050n7_0,min-d,0.55,28,28,11,c_refutation,False
+p3050n7_0,min-d,0.6,30,30,11,c_refutation,False
+p3050n7_0,min-d,0.65,32,32,11,c_refutation,False
+p3050n7_0,min-d,0.7,35,35,11,c_refutation,False
+p3050n7_0,min-d,0.75,38,38,11,c_refutation,False
+p3050n7_0,min-d,0.8,40,40,12,c_refutation,False
+p3050n8_0,min-d,0.5,25,25,8,c_refutation,False
+p3050n8_0,min-d,0.55,28,28,9,c_refutation,False
+p3050n8_0,min-d,0.6,30,30,9,c_refutation,False
+p3050n8_0,min-d,0.65,32,32,9,c_refutation,False
+p3050n8_0,min-d,0.7,35,35,9,c_refutation,False
+p3050n8_0,min-d,0.75,38,38,9,c_refutation,False
+p3050n8_0,min-d,0.8,40,40,9,c_refutation,False
+p3050n8_0,min-d,0.85,42,42,9,c_refutation,False
+p3050n8_0,min-d,0.9,45,45,10,c_refutation,False
+p3050n9_0,min-d,0.5,25,25,11,c_refutation,False
+p3050n9_0,min-d,0.55,28,28,11,c_refutation,False
+p3050n9_0,min-d,0.6,30,30,11,c_refutation,False
+p3050n9_0,min-d,0.65,32,32,12,c_refutation,False
+p4040n1_0,min-d,0.5,19,19,13,c_refutation,False
+p4040n1_0,min-d,0.55,21,21,13,c_refutation,False
+p4040n1_0,min-d,0.6,23,23,14,c_refutation,False
+p4040n1_0,min-d,0.65,25,25,14,c_refutation,False
+p4040n1_0,min-d,0.7,27,27,15,c_refutation,False
+p4040n4_0,min-d,0.5,20,20,12,c_refutation,False
+p4040n4_0,min-d,0.55,21,21,12,c_refutation,False
+p4040n4_0,min-d,0.6,23,23,14,c_refutation,False
+p4040n5_0,min-d,0.5,20,20,14,c_refutation,False
+p4040n5_0,min-d,0.55,21,21,14,c_refutation,False
+p4040n5_0,min-d,0.6,23,23,15,c_refutation,False
+p4040n7_0,min-d,0.5,19,19,12,c_refutation,False
+p4040n7_0,min-d,0.55,21,21,12,c_refutation,False
+p4040n7_0,min-d,0.6,23,23,13,c_refutation,False
+p4040n7_0,min-d,0.65,25,25,14,c_refutation,False
+p4040n9_0,min-d,0.5,18,18,13,c_refutation,False
+p4040n9_0,min-d,0.55,20,20,14,c_refutation,False
+p4040n9_0,min-d,0.6,22,22,14,c_refutation,False
+p4040n9_0,min-d,0.65,24,24,15,c_refutation,False
+p4040n9_0,min-d,0.7,26,26,15,c_refutation,False
+p4040n9_0,min-d,0.75,28,28,16,c_refutation,False
+p4050n10_0,min-d,0.5,25,25,13,c_refutation,False
+p4050n10_0,min-d,0.55,28,28,14,c_refutation,False
+p4050n1_0,min-d,0.5,25,25,13,c_refutation,False
+p4050n1_0,min-d,0.55,28,28,13,c_refutation,False
+p4050n1_0,min-d,0.6,30,30,13,c_refutation,False
+p4050n1_0,min-d,0.65,32,32,13,c_refutation,False
+p4050n1_0,min-d,0.7,35,35,13,c_refutation,False
+p4050n1_0,min-d,0.75,38,38,14,c_refutation,False
+p4050n2_0,min-d,0.5,25,25,13,c_refutation,False
+p4050n2_0,min-d,0.55,28,28,13,c_refutation,False
+p4050n2_0,min-d,0.6,30,30,13,c_refutation,False
+p4050n2_0,min-d,0.65,32,32,13,c_refutation,False
+p4050n2_0,min-d,0.7,35,35,14,c_refutation,False
+p4050n2_0,min-d,0.75,38,38,14,c_refutation,False
+p4050n2_0,min-d,0.8,40,40,14,c_refutation,False
+p4050n2_0,min-d,0.85,42,42,14,c_refutation,False
+p4050n2_0,min-d,0.9,45,45,15,c_refutation,False
+p4050n3_0,min-d,0.5,25,25,14,c_refutation,False
+p4050n3_0,min-d,0.55,28,28,15,c_refutation,False
+p4050n4_0,min-d,0.5,25,25,13,c_refutation,False
+p4050n4_0,min-d,0.55,28,28,14,c_refutation,False
+p4050n5_0,min-d,0.5,25,25,14,c_refutation,False
+p4050n5_0,min-d,0.55,28,28,14,c_refutation,False
+p4050n5_0,min-d,0.6,30,30,15,c_refutation,False
+p4050n6_0,min-d,0.5,25,25,14,c_refutation,False
+p4050n6_0,min-d,0.55,28,28,15,c_refutation,False
+p4050n7_0,min-d,0.5,25,25,13,c_refutation,False
+p4050n7_0,min-d,0.55,28,28,14,c_refutation,False
+p4050n8_0,min-d,0.5,25,25,14,c_refutation,False
+p4050n8_0,min-d,0.55,28,28,1,skipped,False
+p4050n8_0,min-d,0.6,30,30,1,skipped,False
+p4050n8_0,min-d,0.65,32,32,15,c_refutation,False
+p4050n9_0,min-d,0.5,25,25,14,c_refutation,False
+p4050n9_0,min-d,0.55,28,28,14,c_refutation,False
+p4050n9_0,min-d,0.6,30,30,14,c_refutation,False
+p4050n9_0,min-d,0.65,32,32,14,c_refutation,False
+p4050n9_0,min-d,0.7,35,35,14,c_refutation,False
+p4050n9_0,min-d,0.75,38,38,14,c_refutation,False
+p4050n9_0,min-d,0.8,40,40,14,c_refutation,False
+p4050n9_0,min-d,0.85,42,42,15,c_refutation,False

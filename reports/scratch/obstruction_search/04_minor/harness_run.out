@@ -1,0 +1,20 @@
+[harness] 6376 certified rows, 0 done, 6376 to run
+[harness] validity 500/6376 in 2s
+[harness] validity 1000/6376 in 3s
+[harness] validity 1500/6376 in 3s
+[harness] validity 2000/6376 in 3s
+[harness] validity 2500/6376 in 3s
+[harness] validity 3000/6376 in 3s
+[harness] validity 3500/6376 in 3s
+[harness] validity 4000/6376 in 3s
+[harness] validity 4500/6376 in 3s
+[harness] validity 5000/6376 in 3s
+[harness] validity 5500/6376 in 3s
+[harness] validity 6000/6376 in 3s
+[harness] validity 6376/6376 in 3s
+                                          bound  rows  above optimum (must be 0)  tight, all  > lb_best, all  > reference, all  tight, gap  > lb_best, gap  > reference, gap  beats reference, gap (count)  mean shortfall, gap
+0                                tw + 1 (tw_lo)  6376                          0    0.886606        0.146330          0.000000    0.198225        0.588757          0.000000                             0             8.881657
+1                                       lb_best  6376                          0    0.769918        0.000000          0.000000    0.000000        0.000000          0.000000                             0             4.781065
+2                reference max(lb_best, tw + 1)  6376                          0    0.895546        0.146330          0.000000    0.198225        0.588757          0.000000                             0             3.920118
+3  branch lemma + 1 (§24, one level, tw-seeded)  6376                          0    0.002666        0.000627          0.000627    0.000000        0.000000          0.000000                             0            22.298817
+4                                   minor-floor  6376                          0    0.039366        0.039366          0.028858    0.742604        0.742604          0.544379                           184            12.233728

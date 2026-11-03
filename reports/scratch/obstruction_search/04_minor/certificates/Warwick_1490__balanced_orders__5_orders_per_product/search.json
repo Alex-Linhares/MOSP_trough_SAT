@@ -1,0 +1,371 @@
+{
+ "format": "obstruction-minor-1",
+ "instance_name": "Warwick 1490: balanced orders, 5 orders per product",
+ "n": 30,
+ "matrix_sha256": "d6a3f41967d619db4315e8fe8495b5efbdc0ee753d2b93a2170f6b690a5baef0",
+ "graph_sha256": "2839318a116e16d0bbe8b4ef4db542ef5ae0846ca6cf5ca2bf65e4e817809335",
+ "graph_edges": 132,
+ "sequence": [
+  [
+   0,
+   4
+  ],
+  [
+   11,
+   26
+  ],
+  [
+   1,
+   26
+  ],
+  [
+   29,
+   25
+  ],
+  [
+   26,
+   8
+  ],
+  [
+   14,
+   8
+  ],
+  [
+   8,
+   21
+  ],
+  [
+   17,
+   18
+  ],
+  [
+   20,
+   18
+  ],
+  [
+   27,
+   12
+  ],
+  [
+   12,
+   6
+  ],
+  [
+   15,
+   23
+  ],
+  [
+   18,
+   19
+  ],
+  [
+   19,
+   23
+  ],
+  [
+   25,
+   13
+  ],
+  [
+   13,
+   5
+  ]
+ ],
+ "sequence_note": "pairs [v, u] in the instance's customer labels (0-based rows): contract v into u, u keeps its label; [v, -1] deletes an isolated v; every pair is an edge of the current graph",
+ "m": 14,
+ "minor_labels": [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  9,
+  10,
+  16,
+  21,
+  22,
+  23,
+  24,
+  28
+ ],
+ "minor_edges": [
+  [
+   0,
+   1
+  ],
+  [
+   0,
+   2
+  ],
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   7
+  ],
+  [
+   0,
+   8
+  ],
+  [
+   0,
+   12
+  ],
+  [
+   0,
+   13
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   5
+  ],
+  [
+   1,
+   6
+  ],
+  [
+   1,
+   7
+  ],
+  [
+   1,
+   10
+  ],
+  [
+   1,
+   11
+  ],
+  [
+   1,
+   12
+  ],
+  [
+   1,
+   13
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   2,
+   5
+  ],
+  [
+   2,
+   8
+  ],
+  [
+   2,
+   9
+  ],
+  [
+   2,
+   10
+  ],
+  [
+   2,
+   12
+  ],
+  [
+   2,
+   13
+  ],
+  [
+   3,
+   4
+  ],
+  [
+   3,
+   5
+  ],
+  [
+   3,
+   6
+  ],
+  [
+   3,
+   7
+  ],
+  [
+   3,
+   8
+  ],
+  [
+   3,
+   9
+  ],
+  [
+   3,
+   11
+  ],
+  [
+   3,
+   12
+  ],
+  [
+   3,
+   13
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   4,
+   6
+  ],
+  [
+   4,
+   7
+  ],
+  [
+   4,
+   8
+  ],
+  [
+   4,
+   9
+  ],
+  [
+   4,
+   10
+  ],
+  [
+   4,
+   13
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   7
+  ],
+  [
+   5,
+   8
+  ],
+  [
+   5,
+   9
+  ],
+  [
+   5,
+   10
+  ],
+  [
+   5,
+   12
+  ],
+  [
+   6,
+   9
+  ],
+  [
+   6,
+   10
+  ],
+  [
+   6,
+   11
+  ],
+  [
+   6,
+   12
+  ],
+  [
+   6,
+   13
+  ],
+  [
+   7,
+   8
+  ],
+  [
+   7,
+   11
+  ],
+  [
+   7,
+   12
+  ],
+  [
+   8,
+   9
+  ],
+  [
+   8,
+   10
+  ],
+  [
+   8,
+   13
+  ],
+  [
+   9,
+   11
+  ],
+  [
+   10,
+   12
+  ],
+  [
+   10,
+   13
+  ],
+  [
+   11,
+   12
+  ],
+  [
+   11,
+   13
+  ],
+  [
+   12,
+   13
+  ]
+ ],
+ "minor_sha256": "207e6f0f6350b0195379d7424e9f53cd7d4f446775f8b236d6b7a3ecf447e947",
+ "minor_sha256_note": "SHA-256 of \"m e\\n\" then \"a b\\n\" per edge, sorted, a < b, labels 0..m-1 in increasing order of the surviving representative",
+ "c_width": 10,
+ "c_status": "refutation",
+ "c_lower": 8,
+ "pathwidth_proved": 10,
+ "refuted_width": 9,
+ "floor_source": "c_refutation",
+ "floor": 11,
+ "floor_units": "optimum units: pathwidth(minor) + 1 <= pathwidth(G) + 1 = MOSP",
+ "optimum_on_record": 11,
+ "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 2 -l -v -m min_vertices=1000000",
+ "c_cap_seconds": 2.0,
+ "c_stdout": [
+  "pathwidth 10 refutation",
+  "layout 13 12 11 10 7 6 5 3 2 1 0 8 4 9"
+ ],
+ "c_stderr": [
+  "line 1: n=14 width=10 status=refutation lower=8 upper_start=10 nodes=13 minor_nodes=0 upper_bound_nodes=16 engine_calls=2 seconds=0.000"
+ ],
+ "c_seconds": 0.001099857036024332,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "method": "search",
+ "search_seconds": 60.00004988303408,
+ "theorems": "pathwidth_gt_of_minorOf / pathwidth_minorOf_le (lean/MOSPFormalization/Minor.lean); mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean); the C program's refutation rests on the corrected search rules (lean/MOSPFormalization/Search/), its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean)"
+}

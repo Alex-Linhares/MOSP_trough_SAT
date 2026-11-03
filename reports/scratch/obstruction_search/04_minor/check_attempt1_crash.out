@@ -1,0 +1,33 @@
+2026-11-03 04:23:20 check: 251 certificates, 4 workers, rule-free True (cap 300.0 s)
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/al/anaconda3/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/al/dev/MOSP/learning/obstruction_minor.py", line 900, in _check_job
+    res = oc.check_minor(d / "instance.mosp", d / "search.json", c_cap=cap * 5, c_binary=C_BINARY,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/dev/MOSP/paper1/obstruction_check.py", line 525, in check_minor
+    Q = quotient_by_branch_sets(G, branch)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/dev/MOSP/paper1/obstruction_check.py", line 371, in quotient_by_branch_sets
+    raise ValueError("branch sets do not partition the vertex set")
+ValueError: branch sets do not partition the vertex set
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/al/dev/MOSP/learning/obstruction_minor.py", line 1084, in <module>
+    main()
+  File "/home/al/dev/MOSP/learning/obstruction_minor.py", line 1078, in main
+    check_all(args.workers, not args.no_rulefree, args.rulefree_cap)
+  File "/home/al/dev/MOSP/learning/obstruction_minor.py", line 913, in check_all
+    rows = list(pool.imap_unordered(_check_job, [(str(d), C_CAP_SECONDS, rulefree, rulefree_cap) for d in dirs]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/multiprocessing/pool.py", line 873, in next
+    raise value
+ValueError: branch sets do not partition the vertex set

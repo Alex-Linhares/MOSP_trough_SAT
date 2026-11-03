@@ -1,0 +1,51 @@
+instance_name,n,optimum,minors_checked,minors_proposed,disagreements,detail,c_calls
+HS problem 105 size 10 10 density  0.30,10,8,8,8,0,[],8
+HS problem 112 size 10 10 density  0.30,10,6,10,10,0,[],10
+HS problem 12 size 10 10 density  0.20,10,3,8,8,0,[],8
+HS problem 14 size 10 10 density  0.20,10,5,8,8,0,[],8
+HS problem 154 size 10 10 density  0.35,10,6,9,9,0,[],9
+HS problem 1656 size 15 15 density  0.20,15,5,10,10,0,[],10
+HS problem 1669 size 15 15 density  0.20,15,8,23,23,0,[],23
+HS problem 1687 size 15 15 density  0.20,15,7,8,8,0,[],8
+HS problem 1772 size 15 15 density  0.30,15,12,62,62,0,[],62
+HS problem 1788 size 15 15 density  0.30,15,10,16,16,0,[],16
+HS problem 1809 size 15 15 density  0.35,15,13,18,18,0,[],18
+HS problem 1899 size 15 15 density  0.40,15,13,16,16,0,[],16
+HS problem 2020 size 15 15 density  0.55,15,13,10,10,0,[],10
+HS problem 2025 size 15 15 density  0.55,15,14,10,10,0,[],10
+HS problem 255 size 10 10 density  0.45,10,7,42,42,0,[],42
+HS problem 2652 size 10 20 density  0.20,10,7,10,10,0,[],10
+HS problem 2675 size 10 20 density  0.20,10,6,12,12,0,[],12
+HS problem 2736 size 10 20 density  0.25,10,7,18,18,0,[],18
+HS problem 2747 size 10 20 density  0.30,10,7,10,10,0,[],10
+HS problem 297 size 10 10 density  0.45,10,8,9,9,0,[],9
+HS problem 2999 size 10 20 density  0.55,10,10,7,7,0,[],7
+HS problem 3046 size 10 20 density  0.60,10,10,7,7,0,[],7
+HS problem 3193 size 15 30 density  0.20,15,9,12,12,0,[],12
+HS problem 3238 size 15 30 density  0.30,15,14,12,12,0,[],12
+HS problem 3252 size 15 30 density  0.35,15,13,11,11,0,[],11
+HS problem 3309 size 15 30 density  0.45,15,15,8,8,0,[],8
+HS problem 3340 size 15 30 density  0.55,15,15,8,8,0,[],8
+HS problem 3344 size 15 30 density  0.55,15,15,8,8,0,[],8
+HS problem 3371 size 15 30 density  0.65,15,15,8,8,0,[],8
+HS problem 3382 size 15 30 density  0.65,15,15,8,8,0,[],8
+HS problem 427 size 10 10 density  0.60,10,10,7,7,0,[],7
+HS problem 469 size 10 10 density  0.65,10,9,8,8,0,[],8
+HS problem 493 size 10 10 density  0.65,10,9,8,8,0,[],8
+HS problem 496 size 10 10 density  0.65,10,10,7,7,0,[],7
+HS problem 531 size 10 10 density  0.70,10,10,7,7,0,[],7
+HS problem 548 size 10 10 density  0.70,10,10,7,7,0,[],7
+HS problem 98 size 10 10 density  0.25,10,4,10,10,0,[],10
+"Warwick 105: balanced orders and products, 4 products per order",10,9,11,11,0,[],11
+"Warwick 234: balanced orders and products, 4 products per order",10,4,10,10,0,[],10
+"Warwick 244: balanced orders and products, 6 products per order",10,8,20,20,0,[],20
+"Warwick 331: balanced products, 8 products per order",10,9,8,8,0,[],8
+"Warwick 43: balanced products, 2 products per order",10,3,11,11,0,[],11
+"Warwick 455: balanced orders, 2 orders per product",15,3,14,14,0,[],14
+"Warwick 526: balanced products, 3 products per order",15,8,115,115,0,[],115
+"Warwick 539: balanced products, 4 products per order",15,12,55,55,0,[],55
+"Warwick 562: balanced products, 7 products per order",15,15,8,8,0,[],8
+"Warwick 583: balanced orders and products, 3 products per order",15,8,647,647,0,[],647
+"Warwick 68: balanced products, 4 products per order",10,9,10,10,0,[],10
+"Warwick 752: balanced products, 10 products per order",15,15,8,8,0,[],8
+"Warwick 837: balanced orders and products, 8 products per order",15,13,108,108,0,[],108

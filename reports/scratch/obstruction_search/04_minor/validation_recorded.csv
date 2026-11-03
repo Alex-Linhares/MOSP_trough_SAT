@@ -1,0 +1,7 @@
+label,m,expected_pw,replay,hash,c_width,c_status,c_lower,c_reproduces,rulefree,verdict,seconds
+Random-125-125-2-3_0_m70,70,20,True,True,20,refutation,12,True,skipped,verified,0.4506263160146773
+Random-125-125-2-1_0_m87,87,23,True,True,23,refutation,12,True,skipped,verified,27.831402543000877
+Random-125-125-6-1_0_m120,120,80,True,True,80,refutation,39,True,skipped,verified,16.73503713705577
+SP4_m96,96,52,True,True,52,refutation,27,True,skipped,verified,5.434908938128501
+myciel6_m58,58,38,True,True,38,refutation,25,True,skipped,verified,0.03058937401510775
+myciel7_m110,110,71,True,True,71,refutation,43,True,skipped,verified,1.6276085630524904

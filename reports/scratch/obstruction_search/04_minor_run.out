@@ -1,0 +1,29 @@
+2026-11-03 03:36:52 run: 251 targets (gap338, n <= 60), 251 to do, 8 workers, seconds (60, 120), binary 6560b8093c3e51b9
+2026-11-03 03:40:53   10/251 done, 241 s wall; last 'Random-50-50-4-1_0': ladder 21 search 21 opt 21
+2026-11-03 03:42:54   20/251 done, 362 s wall; last 'p2050n1_0': ladder 7 search 7 opt 7
+2026-11-03 03:44:55   30/251 done, 483 s wall; last 'p2550n4_0': ladder 10 search 10 opt 10
+2026-11-03 03:46:55   40/251 done, 604 s wall; last 'p2550n9_0': ladder 10 search 10 opt 10
+2026-11-03 03:49:57   50/251 done, 785 s wall; last 'HS problem 3419 size 40 20 density  0.20': ladder 27 search 28 opt 28
+2026-11-03 03:51:56   60/251 done, 904 s wall; last 'Random-40-40-2-3_0': ladder 10 search 10 opt 10
+2026-11-03 03:52:57   70/251 done, 965 s wall; last 'p2040n1_0': ladder 9 search 9 opt 9
+2026-11-03 03:54:08 run: 251 targets (gap338, n <= 60), 177 to do, 4 workers, seconds (60, 120), binary 6560b8093c3e51b9
+2026-11-03 03:57:10   10/177 done, 181 s wall; last 'p2540n6_0': ladder 11 search 11 opt 11
+2026-11-03 03:59:11   20/177 done, 303 s wall; last 'p3040n7_0': ladder 13 search 13 opt 13
+2026-11-03 04:02:11   30/177 done, 482 s wall; last 'HS problem 1106 size 30 10 density  0.20': ladder 14 search 14 opt 14
+2026-11-03 04:04:12   40/177 done, 604 s wall; last 'HS problem 1128 size 30 10 density  0.20': ladder 17 search 17 opt 17
+2026-11-03 04:05:08 run: 251 targets (gap338, n <= 60), 137 to do, 8 workers, seconds (60, 120), binary 6560b8093c3e51b9
+2026-11-03 04:07:08   10/137 done, 121 s wall; last 'HS problem 1165 size 30 10 density  0.25': ladder 18 search 18 opt 18
+2026-11-03 04:08:09   20/137 done, 181 s wall; last 'HS problem 1187 size 30 10 density  0.25': ladder 14 search 14 opt 14
+2026-11-03 04:09:09   30/137 done, 241 s wall; last 'HS problem 1216 size 30 10 density  0.30': ladder 22 search 22 opt 22
+2026-11-03 04:10:09   40/137 done, 301 s wall; last 'HS problem 2430 size 30 15 density  0.20': ladder 14 search 14 opt 14
+2026-11-03 04:12:09   50/137 done, 422 s wall; last 'Warwick 1295: balanced orders, 6 orders per product': ladder 12 search 12 opt 12
+2026-11-03 04:13:10   60/137 done, 482 s wall; last 'Warwick 1314: balanced orders, 8 orders per product': ladder 16 search 16 opt 16
+2026-11-03 04:14:10   70/137 done, 542 s wall; last 'Warwick 1393: balanced products, 2 products per order': ladder 15 search 15 opt 15
+2026-11-03 04:15:10   80/137 done, 603 s wall; last 'Warwick 1417: balanced products, 4 products per order': ladder 25 search 25 opt 25
+2026-11-03 04:17:10   90/137 done, 723 s wall; last 'Warwick 1490: balanced orders, 5 orders per product': ladder 11 search 11 opt 11
+2026-11-03 04:18:11   100/137 done, 783 s wall; last 'Warwick 1598: balanced products, 2 products per order': ladder 12 search 12 opt 12
+2026-11-03 04:19:11   110/137 done, 844 s wall; last 'Warwick 1861: balanced products, 3 products per order': ladder 14 search 14 opt 14
+2026-11-03 04:20:12   120/137 done, 904 s wall; last 'p2530n6_0': ladder 10 search 10 opt 10
+2026-11-03 04:22:11   130/137 done, 1024 s wall; last 'Warwick 1124: balanced products, 3 products per order': ladder 10 search 10 opt 10
+2026-11-03 04:23:11   137/137 done, 1083 s wall; last 'Warwick 959: balanced products, 3 products per order': ladder 14 search 14 opt 14
+2026-11-03 04:23:11 run done: 251 rows, 1084 s wall

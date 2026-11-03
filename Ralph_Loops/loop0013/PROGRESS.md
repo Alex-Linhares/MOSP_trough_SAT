@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 3/11 SOLVED
+Current: 4/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -325,3 +325,83 @@ for the map (item 08) are `03_sat/instances.csv::floor_after` on the 144
 reached instances and `02_expansion` / item 01's `harper12` elsewhere; the
 six 338-instances still open with an E bracket are the dense 100–125 ones,
 where M and B are the remaining families.
+
+---
+## Iteration 4 — 2026-11-03 03:26
+
+### Completed
+
+- **Item 04 — family M by search: the contraction-sequence search, its
+  certificate and checker; the 338 at `n ≤ 60` against the greedy ladder.**
+  `learning/obstruction_minor.py` (replay on masks mirroring
+  `relaxation.minor_groups`'s checks, `repair`, the two greedy rules, the
+  lifted-witness and greedy upper bounds, the C-program evaluator with the
+  C's minor step off, the tabu search, the ladder, the certificate format
+  `obstruction-minor-1`, stages `validate`, `run`, `check`, `tables`);
+  `paper1/obstruction_check.py check-minor` (own readers, own replay, the
+  quotient from branch sets, own graph6 encoder, the C re-proof at cap ×5,
+  `vsmemo` + `checkF` compiled into a temp dir for the rule-free check);
+  `tests/test_obstruction_minor.py` (11 passed);
+  `reports/scratch/obstruction_search/04_minor/{search.csv, ladder.csv,
+  certificates/<instance>/, checker_verdicts.csv, validation.log,
+  validation_small.csv, validation_recorded.csv, harness_values.csv,
+  harness_table.md, tables.md, joined.csv, run.log, run_harness.py}` and
+  `../04_minor_{validate,run,check}.out`; `reports/obstruction_search.md` §4.
+- **Validation**: 1,485 minors on 50 corpus instances at `n ≤ 16`, the C's
+  proved width against `vertex_separation_brute`: **0 disagreements**; the
+  six recorded certificates of `reports/minor_bound_verification.md`
+  replay, hash-match and are re-proved by the C at exactly the recorded
+  widths (6 of 6; 0.03–28 s).
+- **Numbers** (251 instances of `gap338` at `n ≤ 60`, in fact 20–50): the
+  family's duality gap is **zero — the search's floor equals the optimum on
+  251 of 251**; the ladder's on 222 (88.4%), one short on 29. The record
+  (`floor0`) was tight on 70, family E on 8. The search beats the ladder on
+  **29 of 251 (11.6%)**, always by one and always to the optimum, by a
+  different contraction at a size the ladder already visits (never by a
+  larger minor than +9 vertices); never below it. Minimal certifying minor:
+  `m / n` median 0.66 (ladder 0.80), falling with `n` (0.75 → 0.51 across
+  the bands) and rising with the excess (0.55 → 0.80 across terciles);
+  all 251 floors are C refutations on 12–40-vertex minors. **Checker: 251
+  of 251 verified on all three checks** (replay + hash, C re-proof,
+  rule-free `vsmemo` + `checkF` at ≤ 0.15 s each). **Harness**: above
+  optimum **0** on all 6,376; beats the reference on 184 of the 251.
+- **Two bugs found in the checker, none in a certificate** (§4.1): its
+  partition check first ignored isolated deletions (crash), then missed
+  that a deleted "isolated" vertex may carry a whole contracted component
+  (5 certificates wrongly rejected), then a sort slip; the regression test
+  is `test_checker_accepts_deletion_of_a_contracted_component`. The three
+  attempts' outputs are kept (`check_attempt{1,2,3}.out`).
+- **Kill verdict: not met** (11.6% ≥ 10%), by a small margin; the honest
+  reading in §4.3 (the ladder is never more than one short at these sizes
+  and costs a hundredth of the time). Stop conditions did not fire.
+- **Compute ≈ 5.6 core-hours** against the item's 8 (search 5.08, of which
+  1.02 in the C; ladder 0.007; validation 0.3; checker and harness < 0.05;
+  about 0.2 redone after two restarts). The run was stopped and resumed
+  twice: at 4 workers when the one-minute load rose to 48–59 from the
+  owner's chrome/puppeteer processes after 74 instances, at 8 again when it
+  fell to 4 after 114 (`run.log`); the search's wall-clock budgets mean
+  the instances under load got fewer moves, nothing else.
+- **Gate**: **PASS** (`reports/scratch/obstruction_search/04_minor/gate_run.out`):
+  lake build ok, 0 sorry, 0 axiom; `tests/` 1,842 passed, 2 skipped, 1 xfailed
+  (4:27); `pathwidth_solver/` 123 passed (6:23); paper 77 pages, no undefined
+  references. No Lean and no paper file touched by this item.
+
+### Blockers
+
+None. The 251 are 20–50 customers (the 338 has nothing at 51–60); one
+correction to the item's text: the ladder cannot use "the same total
+seconds" because it has only 20 points and reaches the optimum in 0.1 s —
+the budgets are equal caps, the spent time is not.
+
+### Next
+
+Item 05 (family M at scale: the 87 instances of the 338 above 60 and the
+200 Chu & Stuckey, the two ridge instances). Inputs from this item: the
+module's `search`, `ladder`, `certificate` and the `check` stage; caps per
+plan §0.5 (e) (5 s at 61–100, 10 s at 101–134, 20 s on the ridge pair);
+the checker's rule-free half will stop fitting above about 90 vertices
+(the record's 87-vertex minor took 255 s and 19.7 GB), so the verdict
+there will be replay + C, said so. The C-call overhead (≈ 45 ms per call,
+a process start) is the search's bottleneck at small sizes; at 100+
+customers the 5–10 s caps dominate instead, so expect a few hundred calls
+per instance, not thousands.

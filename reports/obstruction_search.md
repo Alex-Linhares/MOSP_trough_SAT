@@ -985,3 +985,338 @@ format. "We found no prior report" of DRAT-certified vertex-isoperimetric
 profiles on MOSP instances; the bound is Harper (1966), the totalizer
 Bailleux & Boufkhad (2003), the checker drat-trim (Wetzler, Heule & Hunt
 2014).
+
+## 4. Family M by search: the contraction-sequence search, its certificate and checker; the 338 at `n ≤ 60` against the greedy ladder (item 04)
+
+*Size range: the 251 instances of `gap338` with at most 60 customers (in
+fact 20–50: the set has nothing at 51–60); validation on 50 corpus instances
+at `n ≤ 16` and on the six certificates of
+`reports/minor_bound_verification.md` (58–120-vertex minors). Regenerate:
+`nice -n 19 python3 -m learning.obstruction_minor --stage validate`;
+`nice -n 19 python3 -m learning.obstruction_minor --stage run --targets
+gap338 --max-n 60 --workers 8 --seconds 60,120`; `--stage check --workers 8`
+(every certificate through the independent checker, rule-free included);
+`python3 reports/scratch/obstruction_search/04_minor/run_harness.py
+--workers 8` (the validity stage); `--stage tables`; `python3
+paper1/obstruction_check.py check-minor <instance.mosp> <certificate.json>`
+on any one certificate. Outputs under
+`reports/scratch/obstruction_search/04_minor/`: `search.csv` (251 rows, the
+ladder's and the search's result per instance), `ladder.csv` (2,155 ladder
+points), `joined.csv`, `certificates/<instance>/{instance.mosp, search.json,
+ladder.json, ladder_points.json}`, `checker_verdicts.csv`, `validation.log`,
+`validation_small.csv`, `validation_recorded.csv`, `validation_recorded/`,
+`harness_values.csv`, `harness_table.md`, `tables.md`, `run.log`, the three
+`check_attempt*.out` of §4.1, and `../04_minor_{validate,run,check}.out`.
+Tests: `tests/test_obstruction_minor.py` (11).*
+
+### 4.1 What was done
+
+**The question.** Family M is the one obstruction family on record that
+reaches the ridge instances (item 01: minors close 4 of the 5
+`Random-125-125-2` instances) and the one that is a genuine maximisation
+(plan §0.2): any contraction minor `H` of the MOSP graph with a proved
+pathwidth `p` certifies `MOSP ≥ p + 1`, by minor monotonicity
+(`pathwidth_gt_of_minorOf`, `lean/MOSPFormalization/Minor.lean`) and
+`mospValue_eq_pathwidth_add_one`. What is on record is the *greedy ladder*
+(`satisfiability/relaxation.py::minor_sequence`, the C program's own minor
+step): two contraction rules (`min-d`, `least-c`), fixed sizes, a refutation
+attempted on each. This item asks whether a local search over contraction
+*sequences* finds minors the ladder misses, at equal caps and equal total
+time; what the family's duality gap is on the 338 at `n ≤ 60`; and what a
+minimal certifying minor looks like.
+
+**The search** (`learning/obstruction_minor.py`, plan §0.5 (e)). The state
+is a sequence of `(v, u)` pairs in the instance's customer labels (contract
+`v` into `u`; `(v, −1)` deletes an isolated `v`), replayed by `replay`, which
+mirrors `relaxation.minor_groups`'s checks on masks (every pair an edge of
+the current graph, a deletion only of an isolated vertex) and raises on any
+violation. Moves: delete a pair (the minor grows by a vertex), insert a pair
+(an edge of the current minor), retarget a pair to another current
+neighbour of `v`, move a pair earlier; the result goes through `repair`
+(a dead `v` drops the pair, a `u` no longer adjacent is retargeted to `v`'s
+current neighbour of least degree, a `v` left with no neighbour becomes a
+deletion). Tabu tenure 10 on the absorbed vertex, with aspiration; restarts
+cycle through the two greedy rules at 50, 60, 70, 80, 90 and 95% and the
+incumbent, 25 moves each; plateau moves are accepted (equal floor, at most
+one vertex larger). **Evaluation** of a candidate minor `H`: the certified
+witness's opening layout lifted to `H` (each branch set at its first
+member's position; a proof that the lifted layout's vertex separation never
+exceeds the original's is in `lifted_layout`'s docstring and the inequality
+is asserted on 300 random graphs by a test) and a greedy layout give an
+upper bound on `pw(H)`; a candidate whose upper bound cannot improve the
+best floor so far is not sent to the C program (a cache by edge hash
+removes repeats); otherwise one call
+`printf '%s\n' "$g6" | nice -n 19 pathwidth_solver/cli/pathwidth -t 2 -l -v -m min_vertices=1000000`
+(graph6 by networkx, labels `0..m−1` in increasing order of the surviving
+representative; the C's own minor step disabled, so the certificate is
+ours), parsed for `pathwidth <w> <status>` and stderr's `lower=`: the floor
+certified is `w + 1` on `refutation` or `bound`, `lower + 1` on `upper`.
+The objective is the certified floor in optimum units, ties by fewer
+vertices. **The baseline** is the ladder — both rules, 50–85% in 5% steps
+then 90 and 95% — through the same evaluator at the same cap; it stops
+when its floor reaches the optimum (its points come in increasing size, so
+the first is its smallest certifying point). Both get the same budget per
+instance, 60 s at `n ≤ 40` and 120 s at 41–60; the search runs its whole
+budget, minimising the vertex count once at the optimum. The C binary's
+SHA-256 (`6560b809…`) is in every certificate.
+
+**The certificate** (`certificates/<instance>/search.json`, format
+`obstruction-minor-1`): instance name, `n`, the SHA-256 of the rows and of
+`G`'s edge list, the sequence, `m`, the minor's labels, edges and edge hash
+(the contract: SHA-256 of `"m e\n"` then one `"a b\n"` per sorted edge),
+the C's width, status and `lower`, the pathwidth proved and the width
+refuted, the C's stdout and stderr verbatim, its binary's SHA-256, the cap,
+the seconds, and the theorems. The ladder's best point is written beside it
+as `ladder.json`, with every ladder point in `ladder_points.json`.
+
+**The checker** (`paper1/obstruction_check.py check-minor`; imports nothing
+from `learning/`, `satisfiability/`, `pathwidth_solver/`, `mosp/` or
+networkx — a test pins this): its own `.mosp` and edge-list readers, its own
+MOSP graph, its own contraction replay (dict-of-sets, as `mc_graph.py`),
+the quotient rebuilt from the branch sets and compared with the replayed
+minor, the edge hash compared with the certificate's, its own graph6
+encoder (equal to networkx's on 300 random graphs, by a test), the C program
+re-run on the minor at the cap ×5 and accepted only if it proves at least
+the claimed pathwidth, and, where `m ≤ 80`, `vsmemo.c` and `checkF.c` from
+`reports/scratch/minor_certificates/` compiled into a temporary directory
+and run for a rule-free refutation of `claim − 1` (`vsmemo -o -w F`, cap
+300 s, 10⁸ states, an 8 GB address-space limit) with `checkF` on the family
+of sets. The verdict is `verified` when replay, hash and C agree; the
+rule-free outcome (`verified` / `unknown` / `skipped` / `failed` / `sat`)
+is recorded beside it, and a `sat` or `failed` rejects.
+
+**Validation before the 338** (`validation.log`). (i) 50 corpus instances
+at `n ≤ 16` (seed 0 from `targets.small`): every ladder point with the skip
+disabled and every minor the search proposed in 10 s — **1,485 distinct
+minors, 1,485 C calls** — compared with
+`learning.first_moment.vertex_separation_brute`: **0 disagreements**. (ii)
+The six recorded certificates (`Random-125-125-2-3_0` m70, `2-1_0` m87,
+`6-1_0` m120, `SP4` m96, `myciel6` m58, `myciel7` m110), converted from
+`mc_graph.py`'s `[keep, absorbed]` convention to this item's `[absorbed,
+keep]` and run through the checker with the C at 60 s: **6 of 6 replay,
+6 of 6 hash-match, 6 of 6 re-proved by the C at exactly the recorded
+width** (statuses all `refutation`; 0.03–28 s, the 87-vertex minor the
+slowest). The rule-free check was not repeated on them (they are
+rule-free certified on record).
+
+**The run** (`run.log`). 251 instances, started at 8 workers under a
+one-minute load of 2.4; after 74 instances the load rose to 48–59 from the
+owner's chrome/puppeteer processes and the run was stopped and resumed at 4
+workers (the stage resumes by instance name; the in-progress instances were
+redone), then at 8 again when the load fell to 4 after 114. The search's
+budgets are wall-clock, so the instances run under load got fewer moves per
+second; nothing else changes. Wall 1,084 + 604 + 1,015 s in the three
+segments.
+
+**Three checker attempts, two bugs in the checker, none in a certificate**
+(`check_attempt{1,2,3}.out`). The first sweep crashed with "branch sets do
+not partition the vertex set": the checker's partition check ignored
+isolated-vertex deletions. The second, counting the deleted vertex, still
+rejected 5 certificates (`p1540n3_0`, `p1550n8_0`, `p2050n4_0`, `p2550n4_0`,
+`p2550n5_0`): in each, a whole component (a 4-customer pattern clique, e.g.
+`{9, 14, 23, 37}` of `p1540n3_0`) had been contracted to one vertex and
+*then* deleted as isolated — a valid minor operation that deletes the whole
+branch set, which the check now counts. The third found a sort slip in the
+new check itself. The sequence of fixes is in
+`tests/test_obstruction_minor.py::test_checker_accepts_deletion_of_a_contracted_component`.
+The search module's own quotient code had none of these: its branch sets
+are keyed by surviving representatives and the deleted ones simply leave.
+
+### 4.2 Numbers
+
+**The family closes every one of the 251** (`tables.md` (a), (c)). The
+search's floor equals the optimum on **251 of 251**; the ladder's on 222
+(88.4%), one below on the other 29. The record before this item (`floor0`,
+the best of `lb_best`, `tw + 1`, Harper at cap 12, Lemma P and the file-backed
+minors) was tight on 70 of the 251 and family E's exact floor after item 03
+on 8; `tw + 1` alone on 67, `lb_best` and the clique bound on 0. On the 55
+instances where `floor0` is 2 or more below the optimum (46 by 2, 8 by 3, 1
+by 4), the ladder alone closes 53 and the search the other 2. The search's
+floor is above `floor0` on 181 of the 251 and above the harness's reference
+`max(lb_best, tw + 1)` on 184; through the harness's validity stage on all
+6,376 corpus instances it is **above the optimum on 0** (`harness_table.md`;
+the candidate is a lookup of the run's certificates, 1 elsewhere, as item
+03's was).
+
+| band | instances | ladder tight | search tight | search > ladder | `floor0` tight | family E tight |
+|---|---|---|---|---|---|---|
+| 9–20 | 17 | 12 | 17 | 5 | 4 | — |
+| 21–30 | 133 | 115 | 133 | 18 | 47 | — |
+| 31–40 | 47 | 42 | 47 | 5 | 13 | — |
+| 41–60 | 54 | 53 | 54 | 1 | 6 | — |
+| all | 251 | 222 | 251 | 29 | 70 | 8 |
+
+**Where the search beats the ladder** ((b)): 29 of 251 (11.6%), always by
+exactly one stack and always to the optimum; 14 Harvey, 10 Simonis, 4
+Faggioli–Bentivoglio, 1 Chu & Stuckey (`Random-40-40-4-2_0`); 5 at 20
+customers, 18 at 30, 5 at 40, 1 at 50. In every case the ladder's 95% point
+(at 20 customers, one contraction) fails to prove `optimum − 1` on the
+minor while the search's minor, of the same size or up to 9 vertices larger
+(median 2), does — the greedy choice of *which* edge to contract is what
+the ladder gets wrong, not the size. **Never the other way**: the search's
+floor is below the ladder's on 0 instances (its restarts contain the
+ladder's 50–95% points).
+
+**The minimal certifying minor** ((d)). Over the 251 the search's smallest
+minor at the optimum has `m / n` median 0.66 (IQR 0.52–0.77), against the
+ladder's first certifying point at 0.80 (0.70–0.90; the ladder reaches the
+optimum first at 95% on 43 instances, 85% on 37, 80% on 32, 50% on 12).
+By band the median falls with `n`: 0.75, 0.70, 0.55, 0.51 at 9–20, 21–30,
+31–40, 41–60; it rises with the excess (0.55, 0.62, 0.80 across excess
+terciles; Pearson 0.68 with the realised excess, 0.82 with the graph
+density, 0.88 with `optimum / n`, −0.53 with `n`). The minor is never
+smaller than the optimum plus 2 vertices (median `m − optimum` 7,
+`m / optimum` 1.48), as it cannot be: a graph on `m` vertices has pathwidth
+at most `m − 1`. Every one of the 251 floors is a C `refutation` on the
+minor (0 by the C's `bound`, 0 by its printed `lower`); of the 2,155 ladder
+points 1,523 were refutations, 378 met the C's degeneracy bound and 254 were
+skipped by the lifted-witness rule. The ladder's best point came from
+`min-d` on 235 instances and `least-c` on 16.
+
+**Checker verdicts** ((e)): **251 of 251 verified, all three checks**
+(replay and hash, the C re-proof, and the rule-free `vsmemo` + `checkF`
+refutation of `optimum − 2` on the minor: median 0.14 s, maximum 0.15 s;
+the minors have 12–40 vertices). So every floor this item reports rests on
+minor monotonicity and an 80-line checker, not on the search rules.
+
+**Cost** ((f)): the ladder used **0.007 core-hours** on the 251 (median 5–9
+C calls per instance, 0.0–0.1 s); the search used its whole budget, **5.08
+core-hours**, of which 1.02 in the C program (951,248 calls, median 21.5
+per second, each a process start on a 12–40-vertex graph) and the rest in
+the Python moves (median 6,900 per second, 608 skipped candidates per
+second). The budgets are "the same total seconds" in the sense the item
+asks; the ladder needs a hundredth of them. Validation 0.3, the checker
+sweeps 0.03, the harness under 0.01 (a lookup, 3 s), the two restarts'
+redone instances about 0.2: **≈ 5.6 core-hours** against the item's 8.
+
+### 4.3 Kill verdict and what this does not claim
+
+**Kill criterion (plan §0.9 M): not met**, by a small margin. The search
+beats the ladder on 29 of 251, 11.6%, against the 10% that would have
+recorded "greedy is enough at `n ≤ 60`". The honest reading is narrower
+than the number: the ladder closes 222 and is never more than one stack
+short, and where the search wins it wins by one, at the minor sizes the
+ladder already visits, by choosing a different contraction. The family's
+duality gap on the 338 at `n ≤ 60` is **zero**: exact on all 251, with the
+certificates on disk. The stop conditions did not fire: no minor's C-proved
+width exceeded brute force (1,485 of 1,485), and no certificate was
+rejected by a correct checker (the 5 rejections of the second sweep were
+the checker's, §4.1). Item 05 runs the search on the 87 larger instances
+of the 338 and the 200 Chu & Stuckey, where the ladder is known to miss.
+
+**What this does not claim.** That the search is optimal among contraction
+minors, or that the minimal minor it reports is the smallest certifying
+minor (a search's failure to shrink further is not a proof); that a C
+`refutation` on a minor is independent of the search rules (it rests on
+the corrected rules proved sound in Lean; the rule-free `vsmemo` + `checkF`
+check is the independent one, and here it ran on all 251 because the
+minors are small — it does not scale to the 87-vertex minors of the record,
+which took 255 s and 19.7 GB there); that the 11.6% would hold at larger
+sizes or other budgets (the search spent its whole 60–120 s and the ladder
+0.1 s, so at equal *spent* time the ladder is the better use of a second;
+a search given the ladder's time would evaluate a few dozen candidates);
+that the `m / n` figures describe anything but this search's minima under
+this evaluator (ties by fewer vertices; cap 2 s); any solver change (the C
+program's minor step and `relaxation.py` are untouched). The comparison with
+family E uses item 03's `floor_after` where it exists and item 02's / item
+01's cap-12 floor elsewhere; family E's ceiling is below the optimum on
+most of these instances (item 02), so its 8 tight instances are a property
+of the family, not of its search. "We found no prior report" of a local
+search over contraction sequences for pathwidth lower bounds on MOSP
+instances; the ladder is Chu & Stuckey's contraction relaxation
+(2009, §3.5) as the record implements it, minor monotonicity is Fellows &
+Langston (1987, Lemma 4.2), and the rule-free checker is the one of
+`reports/minor_bound_verification.md`.
+
+### 4.4 Tables (generated; `tables.md`)
+
+## (a) Per band: the ladder's floor gap and the search's (optimum units)
+
+| band   |   instances |   ladder gap mean |   ladder tight |   search gap mean |   search tight |   search > ladder |   tie, fewer vertices |   search < ladder |   floor0 gap mean |   search > floor0 |   best gap mean |   best tight |
+|:-------|------------:|------------------:|---------------:|------------------:|---------------:|------------------:|----------------------:|------------------:|------------------:|------------------:|----------------:|-------------:|
+| 9–20   |          17 |              0.29 |             12 |                 0 |             17 |                 5 |                    11 |                 0 |              0.76 |                12 |               0 |           17 |
+| 21–30  |         133 |              0.14 |            115 |                 0 |            133 |                18 |                   107 |                 0 |              0.65 |                77 |               0 |          133 |
+| 31–40  |          47 |              0.11 |             42 |                 0 |             47 |                 5 |                    41 |                 0 |              0.98 |                38 |               0 |           47 |
+| 41–60  |          54 |              0.02 |             53 |                 0 |             54 |                 1 |                    53 |                 0 |              1.85 |                54 |               0 |           54 |
+| all    |         251 |              0.12 |            222 |                 0 |            251 |                29 |                   212 |                 0 |              0.98 |               181 |               0 |          251 |
+## (b) Where the search beats the ladder's floor
+
+| instance_name                                                    |   n |   optimum |   ladder_floor |   ladder_m |   search_floor |   search_m | search_source   |   by |   search_calls |   search_seconds |
+|:-----------------------------------------------------------------|----:|----------:|---------------:|-----------:|---------------:|-----------:|:----------------|-----:|---------------:|-----------------:|
+| HS problem 2215 size 20 20 density  0.20                         |  20 |        13 |             12 |         14 |             13 |         18 | c_refutation    |    1 |           6101 |          60      |
+| HS problem 690 size 20 10 density  0.30                          |  20 |        15 |             14 |         19 |             15 |         19 | c_refutation    |    1 |           1203 |          60      |
+| HS problem 721 size 20 10 density  0.35                          |  20 |        16 |             15 |         17 |             16 |         19 | c_refutation    |    1 |            631 |          60      |
+| Warwick 871: balanced orders, 4 orders per product               |  20 |         6 |              5 |         11 |              6 |         13 | c_refutation    |    1 |          11736 |          60      |
+| Warwick 879: balanced orders, 4 orders per product               |  20 |         8 |              7 |         10 |              8 |         13 | c_refutation    |    1 |           9891 |          60      |
+| HS problem 1159 size 30 10 density  0.25                         |  30 |        13 |             12 |         15 |             13 |         19 | c_refutation    |    1 |           7532 |          60      |
+| HS problem 1168 size 30 10 density  0.25                         |  30 |        17 |             16 |         20 |             17 |         23 | c_refutation    |    1 |          10321 |          60.0001 |
+| HS problem 1193 size 30 10 density  0.25                         |  30 |        20 |             19 |         24 |             20 |         28 | c_refutation    |    1 |           9999 |          60.0001 |
+| HS problem 1215 size 30 10 density  0.30                         |  30 |        20 |             19 |         20 |             20 |         24 | c_refutation    |    1 |           2737 |          60.0001 |
+| HS problem 1223 size 30 10 density  0.30                         |  30 |        20 |             19 |         21 |             20 |         27 | c_refutation    |    1 |           8665 |          60      |
+| HS problem 2428 size 30 15 density  0.20                         |  30 |        16 |             15 |         26 |             16 |         27 | c_refutation    |    1 |          19048 |          60.0009 |
+| Warwick 1309: balanced orders, 7 orders per product              |  30 |        15 |             14 |         22 |             15 |         24 | c_refutation    |    1 |            934 |          60.0001 |
+| Warwick 1315: balanced orders, 8 orders per product              |  30 |        18 |             17 |         21 |             18 |         26 | c_refutation    |    1 |          13566 |          60      |
+| Warwick 1356: balanced orders, 12 orders per product             |  30 |        24 |             23 |         26 |             24 |         28 | c_refutation    |    1 |           1617 |          60      |
+| Warwick 1391: balanced products, 2 products per order            |  30 |        15 |             14 |         20 |             15 |         21 | c_refutation    |    1 |            769 |          60      |
+| Warwick 1407: balanced products, 3 products per order            |  30 |        22 |             21 |         24 |             22 |         26 | c_refutation    |    1 |            413 |          60      |
+| Warwick 1405: balanced products, 3 products per order            |  30 |        24 |             23 |         28 |             24 |         30 | c_refutation    |    1 |           3923 |          60.0003 |
+| Warwick 1449: balanced orders and products, 3 products per order |  30 |        23 |             22 |         28 |             23 |         29 | c_refutation    |    1 |           4661 |          60      |
+| Warwick 1488: balanced orders, 5 orders per product              |  30 |        12 |             11 |         15 |             12 |         24 | c_refutation    |    1 |          22054 |          60      |
+| Warwick 1509: balanced orders, 7 orders per product              |  30 |        20 |             19 |         24 |             20 |         27 | c_refutation    |    1 |           1225 |          60      |
+| Warwick 1613: balanced products, 4 products per order            |  30 |        23 |             22 |         26 |             23 |         27 | c_refutation    |    1 |            676 |          60      |
+| Warwick 1676: balanced orders and products, 4 products per order |  30 |        24 |             23 |         28 |             24 |         30 | c_refutation    |    1 |           2973 |          60      |
+| Warwick 1729: balanced orders, 3 orders per product              |  30 |         9 |              8 |         15 |              9 |         17 | c_refutation    |    1 |          15013 |          60.0009 |
+| HS problem 3419 size 40 20 density  0.20                         |  40 |        28 |             27 |         36 |             28 |         39 | c_refutation    |    1 |            747 |          60.1304 |
+| Random-40-40-4-2_0                                               |  40 |        21 |             20 |         30 |             21 |         31 | c_refutation    |    1 |            785 |          60.0002 |
+| p2040n9_0                                                        |  40 |         9 |              8 |         20 |              9 |         22 | c_refutation    |    1 |           2295 |          60.0002 |
+| p2540n9_0                                                        |  40 |        10 |              9 |         20 |             10 |         22 | c_refutation    |    1 |           4044 |          60.0075 |
+| p3040n4_0                                                        |  40 |        12 |             11 |         20 |             12 |         27 | c_refutation    |    1 |          10679 |          60.0028 |
+| p2550n10_0                                                       |  50 |        11 |             10 |         35 |             11 |         37 | c_refutation    |    1 |           1478 |         120.09   |
+
+By how much: {1: 29}; reaching the optimum: 29 of 29.
+
+## (c) Reaching the optimum
+
+|   ladder reaches optimum |   search reaches optimum |   either |   search beats floor0 |   search beats max(lb_best, tw+1) |   best floor tight (floor0 or search) |   instances |
+|-------------------------:|-------------------------:|---------:|----------------------:|----------------------------------:|--------------------------------------:|------------:|
+|                      222 |                      251 |      251 |                   181 |                               184 |                                   251 |         251 |
+## (d) The minimal certifying minor: `m / n` by band and by the ladder's rule
+
+| band   |   instances |   search m/n median | search m/n IQR   |   ladder m/n median |   excess median |   corr(m/n, excess) |   source refutation |   source bound |   source lower |
+|:-------|------------:|--------------------:|:-----------------|--------------------:|----------------:|--------------------:|--------------------:|---------------:|---------------:|
+| 9–20   |          17 |                0.75 | 0.70–0.90        |               0.9   |             2   |               0.855 |                  17 |              0 |              0 |
+| 21–30  |         133 |                0.7  | 0.60–0.80        |               0.867 |             2.1 |               0.631 |                 133 |              0 |              0 |
+| 31–40  |          47 |                0.55 | 0.45–0.59        |               0.65  |             1.8 |               0.777 |                  47 |              0 |              0 |
+| 41–60  |          54 |                0.51 | 0.45–0.61        |               0.76  |             1.7 |               0.71  |                  54 |              0 |              0 |
+
+Ladder rule of the best ladder point: {'min-d': 235, 'least-c': 16}.
+
+## (e) Checker verdicts
+
+| verdict   | checks             |   certificates |
+|:----------|:-------------------|---------------:|
+| verified  | replay+C+rule-free |            251 |
+
+Rule-free outcomes: {'verified': 251}; rule-free seconds median 0.14, max 0.2; checker seconds median 0.1.
+
+## (f) C calls per instance and seconds
+
+| band   |   instances |   budget s |   ladder calls median |   ladder skipped median |   ladder seconds median |   search calls median |   search skipped median |   search seconds median |   search moves median |   search restarts median |   ladder core-h |   search core-h |
+|:-------|------------:|-----------:|----------------------:|------------------------:|------------------------:|----------------------:|------------------------:|------------------------:|----------------------:|-------------------------:|----------------:|----------------:|
+| 9–20   |          17 |         60 |                     9 |                       1 |                     0   |                  4570 |                   75990 |                      60 |           1.19991e+06 |                    47997 |               0 |            0.28 |
+| 21–30  |         133 |         60 |                     8 |                       0 |                     0   |                  2371 |                   55165 |                      60 |      504450           |                    20178 |               0 |            2.22 |
+| 31–40  |          47 |         60 |                     5 |                       0 |                     0   |                   744 |                   16757 |                      60 |      125610           |                     5025 |               0 |            0.78 |
+| 41–60  |          54 |        120 |                     6 |                       0 |                     0.1 |                  1168 |                   20425 |                     120 |      137144           |                     5486 |               0 |            1.8  |
+
+Total: ladder 0.01 core-hours, search 5.08; C calls 1792 and 951248.
+
+## (g) By collection
+
+| collection           |   instances |   ladder gap mean |   search gap mean |   search > ladder |   search tight |   floor0 gap mean |   search > floor0 |
+|:---------------------|------------:|------------------:|------------------:|------------------:|---------------:|------------------:|------------------:|
+| Challenge            |           1 |              0    |                 0 |                 0 |              1 |              3    |                 1 |
+| Chu & Stuckey        |          22 |              0.05 |                 0 |                 1 |             22 |              1.41 |                19 |
+| Faggioli-Bentivoglio |          83 |              0.05 |                 0 |                 4 |             83 |              1.41 |                77 |
+| Harvey               |          71 |              0.2  |                 0 |                14 |             71 |              0.48 |                32 |
+| Simonis              |          73 |              0.14 |                 0 |                10 |             73 |              0.79 |                51 |
+| Wilson               |           1 |              0    |                 0 |                 0 |              1 |              3    |                 1 |

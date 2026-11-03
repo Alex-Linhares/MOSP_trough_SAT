@@ -225,7 +225,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     measures; that a level censored by the conflict budget says anything;
     any solver change.
 
-- [ ] **04 Family M: the contraction-sequence search, its certificate and checker; the 338 at `n ≤ 60` against the greedy ladder.**
+- [x] **04 Family M: the contraction-sequence search, its certificate and checker; the 338 at `n ≤ 60` against the greedy ladder.**
   - **Question.** D of the brief, first half. Over contraction sequences of
     the MOSP graph, does a local search find minors whose proved pathwidth
     exceeds what the greedy ladder (both rules, 50–95%) proves at the same

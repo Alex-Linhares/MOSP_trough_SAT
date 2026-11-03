@@ -1,0 +1,369 @@
+{
+ "format": "obstruction-minor-1",
+ "instance_name": "p2050n1_0",
+ "n": 50,
+ "matrix_sha256": "16efe37ef0725a0afe7a7b164509691a97657babc327ed7812a51cb20a563bc5",
+ "graph_sha256": "fe8bee6ef912effa0c70e8314a9da5c1b5f7b1e675e0d70674f5e33be1a7f82d",
+ "graph_edges": 117,
+ "sequence": [
+  [
+   1,
+   12
+  ],
+  [
+   16,
+   13
+  ],
+  [
+   13,
+   4
+  ],
+  [
+   39,
+   0
+  ],
+  [
+   10,
+   31
+  ],
+  [
+   0,
+   23
+  ],
+  [
+   15,
+   35
+  ],
+  [
+   46,
+   45
+  ],
+  [
+   21,
+   5
+  ],
+  [
+   4,
+   23
+  ],
+  [
+   33,
+   6
+  ],
+  [
+   18,
+   32
+  ],
+  [
+   30,
+   47
+  ],
+  [
+   44,
+   48
+  ],
+  [
+   7,
+   3
+  ],
+  [
+   43,
+   6
+  ],
+  [
+   31,
+   3
+  ],
+  [
+   20,
+   27
+  ],
+  [
+   2,
+   47
+  ],
+  [
+   26,
+   32
+  ],
+  [
+   9,
+   6
+  ],
+  [
+   17,
+   14
+  ],
+  [
+   22,
+   6
+  ],
+  [
+   36,
+   25
+  ],
+  [
+   6,
+   14
+  ],
+  [
+   34,
+   23
+  ],
+  [
+   29,
+   23
+  ],
+  [
+   8,
+   47
+  ],
+  [
+   48,
+   27
+  ],
+  [
+   23,
+   11
+  ]
+ ],
+ "sequence_note": "pairs [v, u] in the instance's customer labels (0-based rows): contract v into u, u keeps its label; [v, -1] deletes an isolated v; every pair is an edge of the current graph",
+ "m": 20,
+ "minor_labels": [
+  3,
+  5,
+  11,
+  12,
+  14,
+  19,
+  24,
+  25,
+  27,
+  28,
+  32,
+  35,
+  37,
+  38,
+  40,
+  41,
+  42,
+  45,
+  47,
+  49
+ ],
+ "minor_edges": [
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   11
+  ],
+  [
+   0,
+   14
+  ],
+  [
+   0,
+   18
+  ],
+  [
+   0,
+   19
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   9
+  ],
+  [
+   1,
+   12
+  ],
+  [
+   1,
+   13
+  ],
+  [
+   2,
+   7
+  ],
+  [
+   2,
+   16
+  ],
+  [
+   2,
+   17
+  ],
+  [
+   3,
+   4
+  ],
+  [
+   3,
+   6
+  ],
+  [
+   3,
+   8
+  ],
+  [
+   3,
+   13
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   4,
+   10
+  ],
+  [
+   4,
+   14
+  ],
+  [
+   4,
+   15
+  ],
+  [
+   4,
+   18
+  ],
+  [
+   5,
+   10
+  ],
+  [
+   5,
+   14
+  ],
+  [
+   5,
+   15
+  ],
+  [
+   6,
+   8
+  ],
+  [
+   6,
+   13
+  ],
+  [
+   7,
+   16
+  ],
+  [
+   7,
+   17
+  ],
+  [
+   8,
+   10
+  ],
+  [
+   8,
+   12
+  ],
+  [
+   8,
+   13
+  ],
+  [
+   8,
+   17
+  ],
+  [
+   8,
+   18
+  ],
+  [
+   9,
+   12
+  ],
+  [
+   9,
+   13
+  ],
+  [
+   10,
+   14
+  ],
+  [
+   10,
+   15
+  ],
+  [
+   10,
+   17
+  ],
+  [
+   10,
+   18
+  ],
+  [
+   11,
+   14
+  ],
+  [
+   11,
+   19
+  ],
+  [
+   12,
+   13
+  ],
+  [
+   12,
+   18
+  ],
+  [
+   14,
+   15
+  ],
+  [
+   14,
+   19
+  ],
+  [
+   16,
+   17
+  ]
+ ],
+ "minor_sha256": "7abc6d01cb842208cbf42f3fa99be6a0a8b94cb5bd7e0abab3885dcb62f1d7f0",
+ "minor_sha256_note": "SHA-256 of \"m e\\n\" then \"a b\\n\" per edge, sorted, a < b, labels 0..m-1 in increasing order of the surviving representative",
+ "c_width": 6,
+ "c_status": "refutation",
+ "c_lower": 4,
+ "pathwidth_proved": 6,
+ "refuted_width": 5,
+ "floor_source": "c_refutation",
+ "floor": 7,
+ "floor_units": "optimum units: pathwidth(minor) + 1 <= pathwidth(G) + 1 = MOSP",
+ "optimum_on_record": 7,
+ "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 2 -l -v -m min_vertices=1000000",
+ "c_cap_seconds": 2.0,
+ "c_stdout": [
+  "pathwidth 6 refutation",
+  "layout 15 14 10 5 4 19 11 0 18 12 8 13 9 1 3 6 17 16 7 2"
+ ],
+ "c_stderr": [
+  "line 1: n=20 width=6 status=refutation lower=4 upper_start=6 nodes=58 minor_nodes=0 upper_bound_nodes=33 engine_calls=2 seconds=0.000"
+ ],
+ "c_seconds": 0.0017250569071620703,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "method": "search",
+ "search_seconds": 120.01231056894176,
+ "theorems": "pathwidth_gt_of_minorOf / pathwidth_minorOf_le (lean/MOSPFormalization/Minor.lean); mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean); the C program's refutation rests on the corrected search rules (lean/MOSPFormalization/Search/), its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean)"
+}

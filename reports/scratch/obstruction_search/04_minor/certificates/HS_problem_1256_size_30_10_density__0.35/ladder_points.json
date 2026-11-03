@@ -1,0 +1,83 @@
+[
+ {
+  "rule": "min-d",
+  "fraction": 0.5,
+  "size": 15,
+  "m": 15,
+  "floor": 15,
+  "source": "c_bound",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.55,
+  "size": 16,
+  "m": 16,
+  "floor": 16,
+  "source": "c_bound",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.6,
+  "size": 18,
+  "m": 18,
+  "floor": 18,
+  "source": "c_bound",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.65,
+  "size": 20,
+  "m": 20,
+  "floor": 20,
+  "source": "c_bound",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.7,
+  "size": 21,
+  "m": 21,
+  "floor": 1,
+  "source": "skipped",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.75,
+  "size": 22,
+  "m": 22,
+  "floor": 21,
+  "source": "c_bound",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.8,
+  "size": 24,
+  "m": 24,
+  "floor": 22,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.85,
+  "size": 26,
+  "m": 26,
+  "floor": 23,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.9,
+  "size": 27,
+  "m": 27,
+  "floor": 24,
+  "source": "c_refutation",
+  "cached": false
+ }
+]

@@ -1,0 +1,2 @@
+2026-11-03 04:26:22 check: 251 certificates, 8 workers, rule-free True (cap 300.0 s)
+2026-11-03 04:26:27 check done: verdicts {'verified': 251}, rule-free {'verified': 251}

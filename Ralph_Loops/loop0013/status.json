@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-03 03:14:58",
+  "updated": "2026-11-03 04:39:47",
   "phase": "tests",
-  "started": "2026-11-03 01:56:34",
-  "item": "03 Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket close"
+  "started": "2026-11-03 03:26:29",
+  "item": "04 Family M: the contraction-sequence search, its certificate and checker; the 338 at `n \u2264"
 }
