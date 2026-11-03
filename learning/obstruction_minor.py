@@ -439,6 +439,10 @@ class Evaluator:
     best_m: int = 10 ** 9
     best: dict | None = None
     proposals: list = field(default_factory=list)   # (masks, proved) for validation
+    min_m: int = MIN_MINOR                  # item 07: minors outside [min_m, max_m] are never sent to the C program
+    max_m: int = 10 ** 9
+    greedy_upper_max_m: int = 10 ** 9       # the greedy layout (cubic) is computed only up to this size
+    out_of_range: int = 0
 
     def time_left(self) -> float:
         return self.deadline - time.monotonic()
@@ -455,11 +459,18 @@ class Evaluator:
             res["cached"] = True
             return res
         madj = minor_masks(m, edges)
-        upper = vertex_separation(madj, greedy_layout(madj)) if m else 0
+        upper = m - 1 if m else 0
+        if m and m <= self.greedy_upper_max_m:
+            upper = min(upper, vertex_separation(madj, greedy_layout(madj)))
         if self.position is not None and m:
             upper = min(upper, vertex_separation(madj, lifted_layout(labels, branch, self.position)))
         res = {"m": m, "edges": edges, "labels": labels, "hash": key, "upper_pw": upper, "seq": list(seq),
                "floor": None, "source": "skipped", "c": None, "cached": False}
+        if m < self.min_m or m > self.max_m:
+            self.out_of_range += 1
+            res["floor"], res["source"] = 1, "out_of_range"
+            self.cache[key] = res
+            return res
         # upper + 1 is an upper bound on the floor this minor could certify
         if m < MIN_MINOR or upper + 1 < self.best_floor or (upper + 1 == self.best_floor and m >= self.best_m):
             self.skipped += 1
@@ -1478,9 +1489,317 @@ def write_tables_scale(s: pd.DataFrame, led: pd.DataFrame, order: list[str]) -> 
 # ----------------------------------------------------------------------------
 
 
+# ----------------------------------------------------------------------------
+# item 07: the 24 open classes (a lower-bound search only)
+# ----------------------------------------------------------------------------
+
+OPEN_OUT = ROOT / "reports" / "scratch" / "obstruction_search" / "07_open"
+OPEN_MINOR_CSV = OPEN_OUT / "minor.csv"
+OPEN_LADDER_CSV = OPEN_OUT / "minor_ladder_points.csv"
+OPEN_CERT_DIR = OPEN_OUT / "certificates"
+OPEN_C_CAP = 20.0
+OPEN_SECONDS = 900.0
+OPEN_FRACTIONS = (0.30, 0.85)          # minors at 30-85% of n only (the item's rule; never above 90%)
+OPEN_LADDER_FRACTIONS = (0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85)
+OPEN_RESTART_FRACTIONS = (0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.85)
+
+
+def _open_job(args) -> dict:
+    rec, seconds, cap, rng_seed = args
+    adj = rec["adj"]
+    n = len(adj)
+    position = None
+    if rec.get("layout"):
+        position = [0] * n
+        for i, v in enumerate(rec["layout"]):
+            position[v] = i
+    target = int(rec["width"]) + 1              # optimum units: a floor meeting it closes the class
+    lo_m, hi_m = int(round(OPEN_FRACTIONS[0] * n)), int(OPEN_FRACTIONS[1] * n)
+    out = {"id": rec["id"], "names": rec["names"], "n": n, "m_edges": rec["m"], "width": rec["width"],
+           "lower": rec["lower"], "target": target, "min_m": lo_m, "max_m": hi_m, "seconds_budget": seconds, "c_cap": cap}
+    t0 = time.monotonic()
+    deadline = t0 + seconds
+    ev = Evaluator(adj, target, cap, position, deadline=deadline, min_m=lo_m, max_m=hi_m, greedy_upper_max_m=150)
+    rows = ladder(ev, OPEN_LADDER_FRACTIONS)
+    lad_seconds = time.monotonic() - t0
+    lad_floor, lad_m, lad_best = ev.best_floor, ev.best_m if ev.best else None, ev.best
+    out.update({"ladder_floor": lad_floor, "ladder_m": lad_m, "ladder_source": lad_best["source"] if lad_best else "none",
+                "ladder_calls": ev.calls, "ladder_skipped": ev.skipped, "ladder_seconds": round(lad_seconds, 1),
+                "ladder_c_seconds": round(ev.seconds_c, 1), "ladder_points": len(rows)})
+    # the search continues from the ladder's evaluator (same cache, same best) for the rest of the budget
+    t1 = time.monotonic()
+    calls0, skipped0, c0 = ev.calls, ev.skipped, ev.seconds_c
+    trace = search(ev, rng_seed, OPEN_RESTART_FRACTIONS) if not ev.done() and not ev.at_optimum() else \
+        {"restarts": 0, "moves": 0, "improvements": 0, "accepted": 0, "move_kinds": {}}
+    out.update({"search_floor": ev.best_floor, "search_m": ev.best_m if ev.best else None,
+                "search_source": ev.best["source"] if ev.best else "none",
+                "search_calls": ev.calls - calls0, "search_skipped": ev.skipped - skipped0,
+                "search_seconds": round(time.monotonic() - t1, 1), "search_c_seconds": round(ev.seconds_c - c0, 1),
+                "search_restarts": trace["restarts"], "search_moves": trace["moves"],
+                "search_accepted": trace["accepted"], "search_improvements": trace["improvements"],
+                "out_of_range": ev.out_of_range, "seconds": round(time.monotonic() - t0, 1)})
+    out["m_pathwidth"] = ev.best_floor - 1 if ev.best else None      # pathwidth units: the proved width of the minor
+    out["meets_width"] = ev.best is not None and ev.best_floor >= target
+    out["above_width"] = ev.best is not None and ev.best_floor > target
+    out["above_floor"] = ev.best is not None and rec["lower"] is not None and ev.best_floor - 1 > int(rec["lower"])
+    if ev.best is not None:
+        d = OPEN_CERT_DIR / rec["id"]
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "instance.txt").write_text(f"{n} {rec['m']}\n" + "".join(f"{a} {b}\n" for a, b in rec["edges"]))
+        cert = certificate(rec["id"], np.zeros((0, 0), dtype=int), adj, ev.best, out["seconds"],
+                           "ladder" if ev.best is lad_best else "search", None, cap)
+        cert.pop("matrix_sha256", None)
+        cert.update({"names": rec["names"], "recorded_width": rec["width"], "recorded_floor": rec["lower"],
+                     "minor_fraction_window": list(OPEN_FRACTIONS),
+                     "units_note": "a dataset class: pathwidth_proved is the minor's proved pathwidth, a lower bound "
+                                   "on the class's pathwidth; floor = pathwidth_proved + 1 is in optimum units"})
+        (d / "minor.json").write_text(json.dumps(cert, indent=1))
+        (d / "ladder_points.json").write_text(json.dumps(rows, indent=1))
+        out["certificate"] = str((d / "minor.json").relative_to(ROOT))
+    return out
+
+
+def run_open(workers: int, seconds: float = OPEN_SECONDS, cap: float = OPEN_C_CAP, rng_seed: int = 1,
+             ids: list[str] | None = None, core_hours: float | None = None) -> pd.DataFrame:
+    """Family M on the 24 open classes (the tree aside): the greedy ladder at
+    30-85% then the tabu search for the rest of `seconds`, every minor in
+    the 30-85% window, C cap `cap` per call; a floor meeting the recorded
+    width closes the class, nothing refutes anything. Instances are not
+    started once the budgets committed exceed `core_hours`."""
+    from learning.obstruction_ledger import open_class_graphs
+
+    OPEN_OUT.mkdir(parents=True, exist_ok=True)
+    recs = open_class_graphs(ids, check_representative=False)
+    done = set(pd.read_csv(OPEN_MINOR_CSV)["id"]) if OPEN_MINOR_CSV.exists() else set()
+    jobs = [(r, seconds, cap, rng_seed) for r in recs if r["id"] not in done and r["names"] != "BalancedTree_3_5"]
+    jobs.sort(key=lambda j: -j[0]["n"])
+    if core_hours is not None:
+        keep = int(core_hours * 3600 // seconds)
+        if keep < len(jobs):
+            (OPEN_OUT / "minor_not_reached.txt").write_text("".join(j[0]["id"] + "\n" for j in jobs[keep:]))
+            jobs = jobs[:keep]
+    log(f"open: {len(recs)} classes, {len(jobs)} to run, {workers} workers, {seconds:g} s each (ladder then search), "
+        f"C cap {cap:g} s, minors at {OPEN_FRACTIONS[0]:.0%}-{OPEN_FRACTIONS[1]:.0%} of n, core-hours cap {core_hours}, "
+        f"binary {binary_sha256()[:16]}", OPEN_OUT / "run.log")
+    t0 = time.monotonic()
+    with Pool(workers) as pool:
+        for k, row in enumerate(pool.imap_unordered(_open_job, jobs, chunksize=1), 1):
+            pd.DataFrame([row]).to_csv(OPEN_MINOR_CSV, mode="a", header=not OPEN_MINOR_CSV.exists(), index=False)
+            log(f"  {k}/{len(jobs)} {row['id']} n={row['n']} width {row['width']} floor {row['lower']}: ladder "
+                f"{row['ladder_floor'] - 1} search {row['m_pathwidth']} (m {row['search_m']}, {row['search_source']}), "
+                f"{row['ladder_calls'] + row['search_calls']} C calls, {row['seconds']} s", OPEN_OUT / "run.log")
+    frame = pd.read_csv(OPEN_MINOR_CSV).drop_duplicates("id", keep="last")
+    frame.to_csv(OPEN_MINOR_CSV, index=False)
+    log(f"open done: {len(frame)} rows, {time.monotonic() - t0:.0f} s wall", OPEN_OUT / "run.log")
+    return frame
+
+
+OPEN_FIELDS = ["id", "collections", "names", "n", "m", "recorded", "started_from_layout", "width", "proof",
+               "lower", "nodes", "seconds", "finished", "status", "order", "minor"]   # run_unlimited.py's FIELDS
+
+
+def open_joined() -> pd.DataFrame:
+    """One row per open class: the record, E's ceiling, M's floor, B's floor,
+    the tree's theorem, the best new floor (pathwidth units throughout; the
+    `*_floor` columns of the run files are optimum units and are converted)."""
+    from learning.obstruction_ledger import open_class_graphs
+
+    recs = open_class_graphs(check_representative=True)
+    base = pd.DataFrame([{"id": r["id"], "names": r["names"], "collections": r["collections"], "n": r["n"], "m": r["m"],
+                          "width": r["width"], "lower": r["lower"], "layout_vs": r["layout_vs"],
+                          "representative_matches_record": r["representative_matches_record"]} for r in recs])
+    ceil = OPEN_OUT / "ceiling.csv"
+    if ceil.exists():
+        c = pd.read_csv(ceil).rename(columns={"instance_name": "id"})
+        c["e_ceiling_pw"] = c["ceiling"] - 1
+        base = base.merge(c[["id", "e_ceiling_pw", "t_star", "levels_below_witness", "seconds"]].rename(
+            columns={"seconds": "e_seconds"}), on="id", how="left")
+    else:
+        base["e_ceiling_pw"] = np.nan
+    if OPEN_MINOR_CSV.exists():
+        m = pd.read_csv(OPEN_MINOR_CSV)
+        m["m_ladder_pw"] = m["ladder_floor"] - 1
+        base = base.merge(m[["id", "m_pathwidth", "m_ladder_pw", "search_m", "search_source", "ladder_calls",
+                             "search_calls", "seconds", "certificate"]].rename(
+            columns={"m_pathwidth": "m_floor_pw", "search_m": "m_minor_vertices", "search_source": "m_source",
+                     "seconds": "m_seconds", "certificate": "m_certificate"}), on="id", how="left")
+    else:
+        base["m_floor_pw"] = np.nan
+    bcsv = OPEN_OUT / "branch.csv"
+    if bcsv.exists():
+        b = pd.read_csv(bcsv)
+        base = base.merge(b[["id", "b_pathwidth", "b_potential", "S", "branch_sizes", "c_calls", "seconds", "certificate"]]
+                          .rename(columns={"b_pathwidth": "b_floor_pw", "S": "b_S", "c_calls": "b_c_calls",
+                                           "seconds": "b_seconds", "certificate": "b_certificate"}), on="id", how="left")
+    else:
+        base["b_floor_pw"] = np.nan
+    tree = OPEN_OUT / "tree_certificate.json"
+    base["theorem_pw"] = np.nan
+    if tree.exists():
+        t = json.loads(tree.read_text())
+        base.loc[base["id"] == t.get("id"), "theorem_pw"] = int(t["pathwidth_proved"])
+    for col in ("m_floor_pw", "b_floor_pw", "theorem_pw", "e_ceiling_pw"):
+        base[col] = pd.to_numeric(base[col], errors="coerce")
+    base["best_new_floor_pw"] = base[["m_floor_pw", "b_floor_pw", "theorem_pw"]].max(axis=1)
+    base["best_family"] = base.apply(lambda r: "theorem" if r["theorem_pw"] == r["best_new_floor_pw"] and pd.notna(r["theorem_pw"])
+                                     else ("M" if r["m_floor_pw"] == r["best_new_floor_pw"] and pd.notna(r["m_floor_pw"])
+                                           else ("B" if pd.notna(r["b_floor_pw"]) and r["b_floor_pw"] == r["best_new_floor_pw"] else "none")), axis=1)
+    base["above_record"] = base["best_new_floor_pw"] > base["lower"]
+    base["closed"] = base["best_new_floor_pw"] >= base["width"]
+    base["above_width"] = base["best_new_floor_pw"] > base["width"]
+    base["e_ceiling_below_width"] = base["e_ceiling_pw"] < base["width"]
+    return base
+
+
+def write_open_rows(joined: pd.DataFrame, checker: pd.DataFrame | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(c) of the item: `results_obstruction.csv` in `run_unlimited.py`'s
+    format, one row per class whose new floor meets the recorded width
+    (`proof=minor` with the obstruction-minor-1 certificate JSON in `minor`,
+    or `proof=theorem` with the B certificate, which `fold` does not read),
+    the `order` the stored witness in the representative's labels in the
+    dataset's orientation (reversed from the prefix orientation the loop
+    uses); and `lower_bounds.csv` for every class with a new floor that does
+    not close it. A floor above the recorded width stops the item."""
+    from learning.obstruction_ledger import open_class_graphs
+
+    recs = {r["id"]: r for r in open_class_graphs(check_representative=True)}
+    verdict = {}
+    if checker is not None and not checker.empty:
+        verdict = dict(zip(checker["id"], checker["verdict"]))
+    rows, lows = [], []
+    for _, r in joined.iterrows():
+        rec = recs[r["id"]]
+        assert rec["representative_matches_record"], r["id"]
+        if r["above_width"]:
+            raise SystemExit(f"STOP: {r['id']} floor {r['best_new_floor_pw']} above the recorded width {r['width']}")
+        if r["closed"]:
+            fam = r["best_family"]
+            if fam == "theorem":
+                proof, cert_path = "theorem", OPEN_OUT / "tree_certificate.json"
+                cert = json.loads(cert_path.read_text())
+                minor = json.dumps({"format": cert["format"], "theorem": "branch_lemma_separator (Sandwich.lean)",
+                                    "pathwidth_proved": cert["pathwidth_proved"], "certificate": str(cert_path.relative_to(ROOT)),
+                                    "note": "a family B certificate; paper1.dataset.fold reads proof=minor only"})
+                nodes, secs = 0, 0.0
+            else:
+                cert_path = ROOT / str(r["m_certificate"] if fam == "M" else r["b_certificate"])
+                cert = json.loads(cert_path.read_text())
+                if fam == "M":
+                    proof = "minor"
+                    minor = json.dumps({"refuted": int(cert["refuted_width"]), "size": int(cert["m"]),
+                                        "rule": "search" if cert["method"] == "search" else "ladder",
+                                        "contractions": [[v, None if u < 0 else u] for v, u in cert["sequence"]],
+                                        "nodes": int(cert.get("c_nodes") or 0), "certificate": str(cert_path.relative_to(ROOT))})
+                    nodes, secs = int(cert.get("c_nodes") or 0), float(cert.get("c_seconds") or 0)
+                else:
+                    proof = "theorem"
+                    minor = json.dumps({"format": cert["format"], "theorem": "branch_lemma_separator (Sandwich.lean)",
+                                        "pathwidth_proved": cert["pathwidth_proved"], "certificate": str(cert_path.relative_to(ROOT)),
+                                        "note": "a family B certificate; paper1.dataset.fold reads proof=minor only"})
+                    nodes, secs = 0, float(cert.get("seconds") or 0)
+            order = rec["layout"][::-1]      # the dataset's orientation: prefix boundary |N(T) \ T|
+            rows.append({"id": r["id"], "collections": r["collections"].replace("; ", "|"), "names": r["names"],
+                         "n": r["n"], "m": r["m"], "recorded": r["width"], "started_from_layout": False,
+                         "width": int(r["width"]), "proof": proof, "lower": int(r["best_new_floor_pw"]), "nodes": nodes,
+                         "seconds": secs, "finished": time.strftime("%Y-%m-%dT%H:%M:%S"), "status": "ok",
+                         "order": json.dumps(order), "minor": minor})
+        elif r["above_record"]:
+            fam = r["best_family"]
+            cert_rel = r["m_certificate"] if fam == "M" else (r["b_certificate"] if fam == "B" else "")
+            lows.append({"id": r["id"], "names": r["names"], "n": r["n"], "m": r["m"], "recorded_width": r["width"],
+                         "recorded_floor": r["lower"], "new_floor": int(r["best_new_floor_pw"]), "family": fam,
+                         "certificate": cert_rel, "checker_verdict": verdict.get(r["id"], "not checked")})
+    out = pd.DataFrame(rows, columns=OPEN_FIELDS)
+    out.to_csv(OPEN_OUT / "results_obstruction.csv", index=False)
+    low = pd.DataFrame(lows, columns=["id", "names", "n", "m", "recorded_width", "recorded_floor", "new_floor", "family",
+                                      "certificate", "checker_verdict"])
+    low.to_csv(OPEN_OUT / "lower_bounds.csv", index=False)
+    return out, low
+
+
+def _open_check_job(args) -> dict:
+    cid, inst, cert, kind = args
+    sys.path.insert(0, str(ROOT / "paper1"))
+    import obstruction_check as oc
+
+    t0 = time.monotonic()
+    if kind == "minor":
+        res = oc.check_minor(Path(inst), Path(cert), c_cap=OPEN_C_CAP * 5, rulefree=True, rulefree_cap=120.0)
+    else:
+        res = oc.check_branch(Path(inst), Path(cert), c_cap=OPEN_C_CAP * 5)
+    bad = [c["check"] for c in res["checks"] if not c["ok"]]
+    return {"id": cid, "kind": kind, "certificate": str(Path(cert).relative_to(ROOT)), "verdict": res["verdict"],
+            "pathwidth_proved": (res.get("proves") or {}).get("pathwidth_at_least"),
+            "c_status": res.get("c_status"), "c_width": res.get("c_width"), "rulefree": res.get("rulefree"),
+            "nodes_checked": res.get("nodes_checked"), "c_reruns": res.get("c_reruns"),
+            "contradiction": bool(res.get("contradiction")), "failed_checks": "; ".join(bad),
+            "seconds": round(time.monotonic() - t0, 1)}
+
+
+def open_check_all(workers: int = 4) -> pd.DataFrame:
+    """Every certificate of the item through the independent checker: the
+    tree (`check-branch`, no C), every M certificate (`check-minor`, the C
+    re-proof at cap x5, rule-free where the minor has at most 80 vertices)
+    and every B certificate with a value (`check-branch`)."""
+    jobs = []
+    tree = OPEN_OUT / "tree_certificate.json"
+    if tree.exists():
+        jobs.append(("pwc-15933", OPEN_OUT / "tree_instance.txt", tree, "branch"))
+    for d in sorted(OPEN_CERT_DIR.glob("pwc-*")):
+        if (d / "minor.json").exists():
+            jobs.append((d.name, d / "instance.txt", d / "minor.json", "minor"))
+        if (d / "branch.json").exists():
+            jobs.append((d.name, d / "instance.txt", d / "branch.json", "branch"))
+    log(f"open check: {len(jobs)} certificates, {workers} workers", OPEN_OUT / "run.log")
+    with Pool(workers) as pool:
+        rows = list(pool.imap_unordered(_open_check_job, jobs))
+    frame = pd.DataFrame(rows).sort_values(["id", "kind"])
+    frame.to_csv(OPEN_OUT / "checker_verdicts.csv", index=False)
+    log(f"open check: {int((frame['verdict'] == 'verified').sum())} of {len(frame)} verified", OPEN_OUT / "run.log")
+    return frame
+
+
+def write_open_tables() -> str:
+    j = open_joined()
+    checker = pd.read_csv(OPEN_OUT / "checker_verdicts.csv") if (OPEN_OUT / "checker_verdicts.csv").exists() else None
+    if checker is not None:
+        cv = checker[checker["kind"] == "minor"].set_index("id")["verdict"] if "kind" in checker else pd.Series(dtype=str)
+        j["m_checker"] = j["id"].map(cv)
+        bv = checker[checker["kind"] == "branch"].set_index("id")["verdict"]
+        j["b_checker"] = j["id"].map(bv)
+    j.to_csv(OPEN_OUT / "joined.csv", index=False)
+    rows, low = write_open_rows(j, checker)
+    cols = ["id", "names", "n", "m", "width", "lower", "e_ceiling_pw", "m_floor_pw", "m_ladder_pw", "m_minor_vertices",
+            "b_floor_pw", "b_potential", "theorem_pw", "best_new_floor_pw", "best_family", "above_record", "closed"]
+    cols = [c for c in cols if c in j.columns]
+    tab = j[cols].copy()
+    for c in ("e_ceiling_pw", "m_floor_pw", "m_ladder_pw", "b_floor_pw", "b_potential", "theorem_pw", "best_new_floor_pw",
+              "m_minor_vertices"):
+        if c in tab:
+            tab[c] = tab[c].map(lambda x: "" if pd.isna(x) else str(int(x)))
+    md = ["## Item 07 tables (pathwidth units: a dataset class's width is a pathwidth)", "",
+          "### (a) The 24 open classes: record, E ceiling, M floor, B floor, theorem, best new floor", "",
+          _md(tab), "",
+          "### (b) Counts", "",
+          f"- classes: {len(j)}; closed by this item: {int(j['closed'].sum())} ({', '.join(j.loc[j['closed'], 'id'])})",
+          f"- new floor above the recorded floor: {int(j['above_record'].sum())}; above the recorded width: {int(j['above_width'].sum())} (must be 0)",
+          f"- E ceiling below the recorded width (Harper cannot close the class under any computation): "
+          f"{int(j['e_ceiling_below_width'].sum())} of {int(j['e_ceiling_pw'].notna().sum())} with a ceiling",
+          f"- M floor = width − 1: {int((j['m_floor_pw'] == j['width'] - 1).sum())}; M floor above the recorded floor: "
+          f"{int((j['m_floor_pw'] > j['lower']).sum())}; search above the ladder: {int((j['m_floor_pw'] > j['m_ladder_pw']).sum())}",
+          f"- B with a linked triple: {int(j['b_floor_pw'].notna().sum())}; B above the recorded floor: "
+          f"{int((j['b_floor_pw'] > j['lower']).sum())}",
+          f"- evidence rows written: {len(rows)} (results_obstruction.csv); non-closing floors: {len(low)} (lower_bounds.csv)", ""]
+    if checker is not None:
+        md += ["### (c) Checker", "", _md(checker[["id", "kind", "verdict", "pathwidth_proved", "c_status", "rulefree",
+                                                   "nodes_checked", "c_reruns", "seconds"]]), ""]
+    (OPEN_OUT / "tables.md").write_text("\n".join(md))
+    return "\n".join(md)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--stage", choices=("validate", "run", "ridge", "check", "tables"), required=True)
+    ap.add_argument("--stage", choices=("validate", "run", "ridge", "check", "tables", "open", "open-check", "open-tables"), required=True)
     ap.add_argument("--out", default="04_minor", help="output directory under reports/scratch/obstruction_search/")
     ap.add_argument("--targets", default="gap338", help="comma-separated target sets (their union)")
     ap.add_argument("--max-n", type=int, default=60)
@@ -1499,9 +1818,21 @@ def main() -> None:
     ap.add_argument("--cap", type=float, default=60.0, help="validate: C cap on the recorded minors")
     ap.add_argument("--no-rulefree", action="store_true")
     ap.add_argument("--rulefree-cap", type=float, default=300.0)
+    ap.add_argument("--ids", default=None, help="open: comma-separated class ids (default all 24)")
+    ap.add_argument("--open-seconds", type=float, default=OPEN_SECONDS, help="open: seconds per class")
     args = ap.parse_args()
     set_out(args.out)
     OUT.mkdir(parents=True, exist_ok=True)
+    if args.stage == "open":
+        run_open(args.workers, args.open_seconds, args.cap if args.cap != 60.0 else OPEN_C_CAP, args.seed,
+                 args.ids.split(",") if args.ids else None, args.core_hours)
+        return
+    if args.stage == "open-check":
+        print(open_check_all(args.workers).to_string())
+        return
+    if args.stage == "open-tables":
+        print(write_open_tables())
+        return
     if args.stage == "validate":
         validate(args.workers, args.count, args.validate_seconds, args.cap)
     elif args.stage == "run":

@@ -1,0 +1,46 @@
+# Proposed, not applied unless the report's §7.4 says so (loop0013 item 07, 2026-11-03).
+# Two changes to paper1/dataset.py so that the dataset's open-run channel can carry
+# (1) this item's evidence rows and (2) a certified lower bound on a `solution` row.
+
+--- a/paper1/dataset.py
++++ b/paper1/dataset.py
+@@ OPEN_RUNS @@
+ OPEN_RUNS = [SCRATCH / "dataset_open" / f for f in
+              ("results.csv", "results_quick.csv", "results_quick_rescued.csv",
+-             "results_unlimited.csv")]   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
++             "results_unlimited.csv")] + [   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
++    SCRATCH / "obstruction_search" / "07_open" / "results_obstruction.csv"]   # loop0013 item 07: floors by search that
++                                                                                # meet the recorded width (proof=minor with
++                                                                                # the certificate; proof=theorem for the
++                                                                                # branch-lemma tree, which fold reads as a
++                                                                                # `solution` row until it learns `theorem`)
+@@ PROOF_PROV @@
+-PROOF_PROV = {"refutation": "certified:refutation", "minor": "certified:minor", "bound": "certified:bound"}
++PROOF_PROV = {"refutation": "certified:refutation", "minor": "certified:minor", "bound": "certified:bound",
++              "theorem": "certified:theorem"}   # a theorem row must name a theorem dataset_check.py knows (its `minor`
++                                                # column carries the certificate path and the Lean name); the checker's
++                                                # item 7 would need the branch-lemma case (a nested separator-branch
++                                                # certificate, obstruction-branch-1) beside the grid case
+@@ row() in fold @@
+-    def row(m, width, prov, evidence, layout, certificate=None):
++    def row(m, width, prov, evidence, layout, certificate=None, lower=None):
+         """`layout=None`: a proved value with no witness of its width on record."""
+         ...
+         return dict(source=m["source"], name=m["name"], width=width, provenance=prov, evidence=evidence,
+                     layout="" if layout is None else " ".join(map(str, layout)),
+-                    certificate=json.dumps(certificate, separators=(",", ":")) if certificate else "")
++                    certificate=json.dumps(certificate, separators=(",", ":")) if certificate else "",
++                    lower="" if lower is None else int(lower))   # a certified floor below the width on a `solution`
++                                                                 # row (the open-run files' `lower` column, today
++                                                                 # written by every run and consumed by none)
+@@ the open-run loop in fold @@
+-            if r["provenance"] == "solution" and int(r["width"]) >= int(r["recorded"]):
+-                continue                       # neither proved nor better
++            if r["provenance"] == "solution" and int(r["width"]) >= int(r["recorded"]) and not r.get("lower"):
++                continue                       # neither proved nor better, and no floor to record
+         ...
+-        cand.append(row(m, int(r["width"]), r["provenance"], ev, json.loads(r["order"]), cert))
++        cand.append(row(m, int(r["width"]), r["provenance"], ev, json.loads(r["order"]), cert,
++                        lower=r.get("lower") or None))
+# and `lower` added to the values CSV's fields and to the jsonl record (`write`), with dataset_check.py
+# checking `lower <= width` and, where the row carries a minor certificate, replaying it as its item 6 does.

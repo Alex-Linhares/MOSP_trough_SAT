@@ -1,0 +1,23 @@
+2026-11-03 07:40:02 ceiling: targets open24: 24 names, 3 on file, 21 to run; 2 workers; budget 0.005 n² s in [2, 90] × 1.0; rng seed 1; open24: 'optimum' is the recorded width + 1, an upper bound
+2026-11-03 07:40:34 ceiling: 1/21 done, 31 s wall; last pwc-17306 n=249 ceiling 9 vs 12
+2026-11-03 07:40:48 ceiling: 2/21 done, 46 s wall; last pwc-17398 n=260 ceiling 8 vs 12
+2026-11-03 07:41:31 ceiling: 3/21 done, 89 s wall; last pwc-17617 n=266 ceiling 6 vs 11
+2026-11-03 07:42:18 ceiling: 4/21 done, 136 s wall; last pwc-17357 n=268 ceiling 10 vs 12
+2026-11-03 07:42:21 ceiling: 5/21 done, 139 s wall; last pwc-17288 n=278 ceiling 9 vs 12
+2026-11-03 07:43:19 ceiling: 6/21 done, 197 s wall; last pwc-17286 n=285 ceiling 9 vs 11
+2026-11-03 07:43:20 ceiling: 7/21 done, 198 s wall; last pwc-17632 n=283 ceiling 9 vs 11
+2026-11-03 07:44:49 ceiling: 8/21 done, 287 s wall; last pwc-17427 n=316 ceiling 10 vs 12
+2026-11-03 07:44:50 ceiling: 9/21 done, 288 s wall; last pwc-17264 n=330 ceiling 10 vs 12
+2026-11-03 07:46:19 ceiling: 10/21 done, 377 s wall; last pwc-17381 n=334 ceiling 8 vs 11
+2026-11-03 07:46:20 ceiling: 11/21 done, 378 s wall; last pwc-17342 n=342 ceiling 8 vs 11
+2026-11-03 07:47:49 ceiling: 12/21 done, 466 s wall; last pwc-15933 n=364 ceiling 5 vs 6
+2026-11-03 07:47:50 ceiling: 13/21 done, 468 s wall; last pwc-04526 n=443 ceiling 9 vs 11
+2026-11-03 07:49:19 ceiling: 14/21 done, 556 s wall; last pwc-17359 n=453 ceiling 9 vs 11
+2026-11-03 07:49:20 ceiling: 15/21 done, 558 s wall; last pwc-17337 n=454 ceiling 8 vs 11
+2026-11-03 07:50:49 ceiling: 16/21 done, 646 s wall; last pwc-17257 n=466 ceiling 8 vs 10
+2026-11-03 07:50:51 ceiling: 17/21 done, 648 s wall; last pwc-04517 n=494 ceiling 8 vs 11
+2026-11-03 07:52:19 ceiling: 18/21 done, 736 s wall; last pwc-17043 n=587 ceiling 7 vs 9
+2026-11-03 07:52:21 ceiling: 19/21 done, 738 s wall; last pwc-17343 n=616 ceiling 8 vs 11
+2026-11-03 07:53:49 ceiling: 20/21 done, 827 s wall; last pwc-16471 n=666 ceiling 6 vs 8
+2026-11-03 07:53:51 ceiling: 21/21 done, 828 s wall; last pwc-17317 n=712 ceiling 9 vs 11
+2026-11-03 07:53:51 ceiling: 24 rows on file; ceiling = optimum on 0, below on 24, above (BUG) on 0; 0.50 core-hours

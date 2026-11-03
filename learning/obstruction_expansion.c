@@ -19,7 +19,7 @@
 #include <string.h>
 #include <time.h>
 
-#define MAXW 4          /* up to 256 vertices */
+#define MAXW 12         /* up to 768 vertices (raised from 4 = 256 for item 07; the open classes have up to 712) */
 #define TOPK 6          /* candidate shortlist per side of a swap */
 
 static double now_sec(void) {
@@ -74,7 +74,7 @@ typedef struct {
     int n, W, t;
     const uint64_t *nbr;        /* n * W closed neighbourhoods */
     uint64_t C[MAXW];           /* the current set */
-    int cnt[256];               /* cover multiplicity per vertex */
+    int cnt[64 * MAXW];         /* cover multiplicity per vertex */
     uint64_t Z[MAXW], O[MAXW];  /* cnt == 0, cnt == 1 */
     int size, value;            /* |C|, |N[C]| */
 } State;

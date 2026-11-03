@@ -391,7 +391,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
   - **Does not claim.** That depth 2 is enough; that the separator family
     plus a 6-vertex local search sees every separator; any solver change.
 
-- [ ] **07 The 24 open classes: family E's ceiling, M and B as lower-bound searches only; `BalancedTree_3_5` by the branch lemma; the evidence rows.**
+- [x] **07 The 24 open classes: family E's ceiling, M and B as lower-bound searches only; `BalancedTree_3_5` by the branch lemma; the evidence rows.**
   - **Question.** F of the brief. On the 24 dataset classes with no proof
     after 76–237 core-hours of the C program each (216–712 vertices,
     recorded widths 5–11, recorded floors below), does any family certify a

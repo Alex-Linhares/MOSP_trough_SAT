@@ -1,0 +1,15 @@
+2026-11-03 08:24:32 open check (M, batch a): 12 certificates, 2 workers
+           id   kind                                                                   certificate   verdict  pathwidth_proved    c_status  c_width rulefree nodes_checked c_reruns  contradiction failed_checks  seconds
+2   pwc-04517  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-04517/minor.json  verified                 8  refutation        8  skipped          None     None          False                    1.0
+0   pwc-04526  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-04526/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.3
+1   pwc-16471  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-16471/minor.json  verified                 6  refutation        6  skipped          None     None          False                    0.1
+4   pwc-17043  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17043/minor.json  verified                 7  refutation        7  skipped          None     None          False                    0.6
+3   pwc-17257  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17257/minor.json  verified                 8  refutation        8  skipped          None     None          False                    0.0
+5   pwc-17264  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17264/minor.json  verified                10  refutation       10  skipped          None     None          False                    0.1
+6   pwc-17317  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17317/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.5
+8   pwc-17337  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17337/minor.json  verified                 9  refutation        9  skipped          None     None          False                    1.2
+7   pwc-17342  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17342/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.0
+9   pwc-17343  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17343/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.8
+11  pwc-17359  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17359/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.2
+10  pwc-17381  minor  reports/scratch/obstruction_search/07_open/certificates/pwc-17381/minor.json  verified                 9  refutation        9  skipped          None     None          False                    0.0
+2026-11-03 08:24:34 open check (M, batch a): 12 of 12 verified, 2 s wall

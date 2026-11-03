@@ -1,0 +1,474 @@
+# session it07 started 2026-11-03 07:26:49
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll read the plan, the open-class data and the existing modules first, then build the tree certificate, run the three family searches on the 23, and write the evidence rows and §7.
+  > $ uptime && date && cat Ralph_Loops/loop0013/status.json && wc -l reports/obstruction_search_plan.md reports/obstruction_search.md && ls reports/scratch/obstructi
+  > $ cat reports/obstruction_search_plan.md
+  > $ sed -n 1,200p /home/al/.claude/projects/-home-al-dev-MOSP/d1591906-103f-4e8b-927d-a1cad21e52cc/tool-results/b6lqxyp17.txt
+  > $ sed -n 200,437p /home/al/.claude/projects/-home-al-dev-MOSP/d1591906-103f-4e8b-927d-a1cad21e52cc/tool-results/b6lqxyp17.txt
+  > $ cat reports/scratch/dataset_open/unsolved_unlimited.csv && echo ---- && head -3 reports/scratch/dataset_open/results_unlimited.csv && echo ---- && head -3 repor
+  > $ wc -l learning/obstruction_minor.py learning/obstruction_branch.py learning/obstruction_expansion.py paper1/obstruction_check.py reports/scratch/dataset_open/ru
+  > $ sed -n 1,135p learning/obstruction_minor.py
+  > $ sed -n 160,520p learning/obstruction_minor.py
+  > $ sed -n 520,800p learning/obstruction_minor.py
+  > $ sed -n 1481,1520p learning/obstruction_minor.py && echo ===== && grep -n "^def \|^class \|^[A-Z_]* = \|^    def " learning/obstruction_branch.py && echo ===== &
+  > $ sed -n 279,400p learning/obstruction_branch.py && echo ===== && sed -n 561,660p learning/obstruction_branch.py
+  > $ sed -n 401,560p learning/obstruction_branch.py
+  > $ sed -n 226,278p learning/obstruction_branch.py
+  > $ sed -n 319,330p paper1/obstruction_check.py && echo ===== && sed -n 613,875p paper1/obstruction_check.py
+  > $ sed -n 343,545p learning/obstruction_expansion.py
+  > $ sed -n 155,245p learning/obstruction_expansion.py && echo ===== && sed -n 286,342p learning/obstruction_expansion.py
+  > $ cat reports/scratch/dataset_open/run_unlimited.py
+  > $ grep -n "OPEN_RUNS\|^def representative\|^def load\|^def layout_width\|^def fold\|^def class_order\|^INDEX\|^VALUES_CSV\|^OUT\b\|^OUT =\|^ENGINE_MAX\|^PRIORITY\
+  > $ sed -n 285,300p paper1/dataset.py && echo ==== && sed -n 424,440p paper1/dataset.py && echo ==== && sed -n 505,530p paper1/dataset.py && echo ==== && sed -n 593
+  > $ grep -n "^def \|jsonl\|open24" learning/obstruction_ledger.py | head -60
+  > $ sed -n 526,576p learning/obstruction_ledger.py && echo ==== && sed -n 648,712p learning/obstruction_ledger.py
+  > $ sed -n 509,612p paper1/obstruction_check.py
+  > $ sed -n 1,40p reports/obstruction_search.md && echo ==== && grep -n "^## \|^### " reports/obstruction_search.md | tail -40 && echo ==== && tail -150 reports/obst
+  > $ ls -la pathwidth_solver/cli/pathwidth && make -n -C pathwidth_solver/cli 2>&1 | head -5 && ls paper1/dataset_check.py Ralph_Loops/loop0013/gate.py && sed -n 1,6
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+ids=[r['id'] for r in json.load(open('reports/scratch/obstruction_search/01_ledger/targets.json'))['open24']]
+for f 
+  > $ python3 - <<'EOF'
+import gzip, json
+ids={r['id'] for r in json.load(open('reports/scratch/obstruction_search/01_ledger/targets.json'))['open24']}
+for line in gz
+  > $ sed -n 1,80p pathwidth_solver/cli/README.md && grep -n "theorem branch_lemma\|theorem branch_lemma_separator\|theorem branch_lemma_linked" lean/MOSPFormalizatio
+  > $ grep -n "^## 6" reports/obstruction_search.md && awk '/^## 6/{f=1} f' reports/obstruction_search.md | head -80 && echo ==== && sed -n 919,935p lean/MOSPFormaliz
+  > $ grep -n "^OPEN_CSV\|^OPEN_FLOOR_CSVS\|^LEDGER_DATASET\|^TARGETS_JSON\|^DATASET_MAX_COMPONENT\|^import\|^from" learning/obstruction_ledger.py | head -30 && sed -
+
+Now I'll write the shared loader for the 24 open classes into the ledger module, including the representative computed as `fold` does, and test it.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_ledger.py")
+s = p.read_text()
+marker = "def build_targets() -> dict:"
+add = '''def ope
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_branch.py")
+s = p.read_text()
+
+# 1. LeafOracle: a recorded layout as the upper bound, 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_branch.py")
+s = p.read_text()
+old = '''    ap.add_argument("--stage", required=True, c
+  > $ uptime && time nice -n 19 python3 -m learning.obstruction_branch --stage open --workers 1 --ids pwc-17436 --seconds 60 2>&1 | tail -5
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_expansion.py")
+s = p.read_text()
+
+old = '''    if which not in targets or which == "op
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+
+# Evaluator: size window and the greedy-layout threshold
+  > $ time nice -n 19 python3 -m learning.obstruction_minor --stage open --workers 1 --ids pwc-17317 --open-seconds 150 --out 07_smoke 2>&1 | tail -4 && cat reports/s
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_expansion.py")
+s = p.read_text()
+old = '''def log(msg: str) -> None:
+    OUT.mkdir(par
+  > $ rmdir reports/scratch/obstruction_search/07_smoke && rm -f reports/scratch/obstruction_search/07_open/minor.csv reports/scratch/obstruction_search/07_open/run.l
+  > $ sleep 5 && nohup nice -n 19 python3 -m learning.obstruction_expansion --stage ceiling --targets open24 --workers 2 > reports/scratch/obstruction_search/07_open_
+  > $ sleep 5 && rm -f reports/scratch/obstruction_search/07_open/branch.csv && rm -rf reports/scratch/obstruction_search/07_open/certificates/pwc-17436 && nohup nice
+  > $ sleep 60 && uptime && tail -2 reports/scratch/obstruction_search/07_open_minor_run.out reports/scratch/obstruction_search/07_open_ceiling_run.out reports/scratc
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+old = '''def main() -> None:
+    ap = argparse.ArgumentPa
+  > $ uptime && tail -3 reports/scratch/obstruction_search/07_open_minor_run.out reports/scratch/obstruction_search/07_open_ceiling_run.out reports/scratch/obstructio
+  > $ cat > tests/test_obstruction_open.py <<'EOF'
+"""loop0013 item 07: the 24 open classes. The complete ternary tree's nested B
+certificate (`ternary_tree_certifica
+  > $ cat reports/scratch/obstruction_search/07_open_ceiling_run.out | tail -n 30; echo ====; tail -n 4 reports/scratch/obstruction_search/07_open_minor_run.out; echo
+  > $ grep -n "return -1\|MAXW\|MAX_W\|MAXN\|define " learning/obstruction_expansion.c | head -20
+  > $ sed -n 18,30p learning/obstruction_expansion.c && sed -n 60,110p learning/obstruction_expansion.c && sed -n 255,300p learning/obstruction_expansion.c && grep -n
+  > $ grep -n "256" learning/obstruction_expansion.c && sed -i 's|#define MAXW 4          /\* up to 256 vertices \*/|#define MAXW 12         /* up to 768 vertices (ra
+  > $ ls reports/scratch/obstruction_search/07_open/ && rm -f reports/scratch/obstruction_search/07_open_ceiling_run.out && nohup nice -n 19 python3 -m learning.obstr
+  > $ uptime && tail -n 5 reports/scratch/obstruction_search/07_open_minor_run.out && echo ==== && tail -n 5 reports/scratch/obstruction_search/07_open_branch_run.out
+  > $ sed -n 1,40p paper1/dataset_check.py && grep -n "^def \|OPEN_RUNS\|fold(" paper1/dataset_check.py | head -30
+  > $ grep -n "^def _rank\|^def _consistent" paper1/dataset.py && sed -n "$(grep -n '^def _rank' paper1/dataset.py | cut -d: -f1),+12p" paper1/dataset.py && sed -n "$
+  > $ grep -rn "OPEN_RUNS\|dataset.fold\|from paper1.dataset import\|from paper1 import dataset" tests/*.py | head && ls -la reports/scratch/obstruction_search/07_ope
+  > $ grep -n "fold(\|OPEN_RUNS\|def test" tests/test_dataset.py | head -40
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out reports/scratch/obstruction_search/07
+
+While the runs proceed, I'm preparing the exact diff the item asks me to propose for the dataset's open-run channel and a `lower` field on solution rows, so I need to see how `fold` builds its rows.
+  > $ sed -n 611,640p paper1/dataset.py && grep -n "def row\|\"lower\"\|lower=" paper1/dataset.py | head -20 && grep -n "def write\|def build_records\|\"provenance\":
+  > $ cat > reports/scratch/obstruction_search/07_open/open_runs_proposal.diff <<'EOF'
+# Proposed, not applied unless the report's §7.4 says so (loop0013 item 07, 202
+
+Waiting on the monitor for the three runs' progress lines; nothing else to request until results arrive.
+
+# result: success in 870s, 59 turns, cost $8.13
+
+Noted. Still waiting for the M run's first batch (due around 07:52) and the B and E runs.
+
+# result: success in 2s, 1 turns, cost $8.21
+
+Still waiting; B is at 5 of 23, E at 3 of 21, M's first four classes finish around 07:52.
+
+# result: success in 2s, 1 turns, cost $8.28
+
+Waiting for more results.
+
+# result: success in 1s, 1 turns, cost $8.35
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.42
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.49
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.56
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.63
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.70
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $8.78
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $8.85
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.92
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $8.99
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.06
+
+Waiting.
+
+# result: success in 3s, 1 turns, cost $9.13
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.20
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.27
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.34
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.42
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.49
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.56
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.63
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.70
+
+Noted: on the tree, Harper's ceiling is pathwidth 4 against the proved 5, so the expansion family cannot close the tree either way. Waiting for the rest.
+
+# result: success in 2s, 1 turns, cost $9.78
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.85
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $9.92
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $9.99
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.07
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.14
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.21
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.28
+
+Family B is done on all 23. Let me look at its table while M and E continue.
+  > $ python3 -c "
+import pandas as pd; d=pd.read_csv('reports/scratch/obstruction_search/07_open/branch.csv')
+print(d[['id','n','width','lower','b_pathwidth','b_pote
+  > $ nice -n 19 python3 - > reports/scratch/obstruction_search/07_open_check_branch.out 2>&1 <<'EOF'
+import pandas as pd, time
+from multiprocessing import Pool
+from 
+
+Nothing more to request until the runs report; waiting for the M run's first batch, the E run's last six classes and the B checker.
+
+# result: success in 30s, 3 turns, cost $10.64
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out reports/scratch/obstruction_search/07
+
+Monitor re-armed on the M and E runs; waiting for their next lines.
+
+# result: success in 4s, 2 turns, cost $10.80
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.87
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $10.95
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $11.02
+
+M's first batch: on all four largest classes the search proves width − 1 (two of them far above the record: floors 2 → 7 and 3 → 9), none closes. Waiting for the rest.
+
+# result: success in 6s, 1 turns, cost $11.12
+
+Waiting.
+
+# result: success in 2s, 1 turns, cost $11.19
+  > $ python3 -c "
+import pandas as pd; d=pd.read_csv('reports/scratch/obstruction_search/07_open/ceiling.csv')
+d['width']=d['optimum']-1; d['ceiling_pw']=d['ceiling'
+
+The expansion family's ceiling is below the recorded width on all 24 classes (by 1 to 5), so Harper's bound cannot close any of them under any computation. Waiting for M and the B checker.
+
+# result: success in 15s, 2 turns, cost $11.41
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out reports/scratch/obstruction_search/07
+
+Monitor re-armed; the only pending inputs are the M run and the B checker, both running.
+
+# result: success in 11s, 2 turns, cost $14.89
+  > $ python3 -c "
+import pandas as pd; d=pd.read_csv('reports/scratch/obstruction_search/07_open/checker_verdicts_branch.csv')
+print(d[['id','verdict','pathwidth_pro
+
+The B checker verified all 23 certificates. Only the M run remains (due around 09:07); re-arming the monitor on it.
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+
+Waiting on the M run; nothing else to request.
+
+# result: success in 22s, 3 turns, cost $15.21
+
+Second batch: again width − 1 on all four (one from a recorded floor of 2 to 8). Waiting for the remaining 15.
+
+# result: success in 6s, 1 turns, cost $15.30
+
+Same event from the second monitor; waiting.
+
+# result: success in 2s, 1 turns, cost $15.38
+
+The other monitor is still armed on the M run; waiting.
+
+# result: success in 2s, 1 turns, cost $15.46
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+
+Only the M run's results are outstanding; waiting on the monitor.
+
+# result: success in 5s, 2 turns, cost $15.62
+
+Third batch: width − 1 on all four again (pwc-04526 from a recorded floor of 3 to 9). Eleven left, about 45 minutes.
+
+# result: success in 6s, 1 turns, cost $19.10
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+  > $ ls reports/scratch/obstruction_search/07_open/certificates/*/minor.json | wc -l && nice -n 19 python3 - > reports/scratch/obstruction_search/07_open_check_minor
+
+The M certificates written so far are being checked in the background alongside the run. Nothing else to request until those two finish.
+
+# result: success in 38s, 3 turns, cost $19.49
+  > $ python3 -c "
+import pandas as pd; d=pd.read_csv('reports/scratch/obstruction_search/07_open/checker_verdicts_minor_a.csv')
+print(d[['id','verdict','pathwidth_pr
+
+All 12 M certificates so far are verified, each minor's width re-proved exactly by the C program within about a second. Waiting for the last 11 classes of the M run.
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+
+Only the M run remains outstanding; waiting on the monitor.
+
+# result: success in 12s, 3 turns, cost $19.77
+
+That was the earlier duplicate monitor expiring; the current one is still armed. Waiting.
+
+# result: success in 13s, 1 turns, cost $23.32
+  > $ date && tail -n 3 reports/scratch/obstruction_search/07_open_minor_run.out && uptime
+
+Batch four is due at 08:37; re-arming the monitor.
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+
+Only the M run's next batch is needed; nothing else is independent of it. Waiting.
+
+# result: success in 7s, 3 turns, cost $23.57
+
+Batch four: width − 1 again on all three (the fourth of the batch is still running). Eight left, about 30 minutes.
+
+# result: success in 2s, 1 turns, cost $23.65
+
+One class closed: on NY_13 (pwc-17632, 283 vertices, recorded width 10) the search found an 85-vertex minor whose pathwidth the C program proves to be 10, which the greedy ladder had missed. Waiting for the last seven.
+
+# result: success in 9s, 1 turns, cost $23.76
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+  > $ python3 -c "
+import json; c=json.load(open('reports/scratch/obstruction_search/07_open/certificates/pwc-17632/minor.json'))
+print({k:c[k] for k in ['instance_na
+  > $ nice -n 19 python3 - > reports/scratch/obstruction_search/07_open_rulefree_17632.out 2>&1 <<'EOF'
+import json, sys, time
+from pathlib import Path
+sys.path.inser
+
+The closing minor for NY_13 refutes width 9 in 67,455 nodes and 0.07 s, against 237 core-hours spent on the whole graph. Waiting on the last seven M classes and the rule-free check.
+
+# result: success in 22s, 4 turns, cost $27.58
+  > $ cat reports/scratch/obstruction_search/07_open_rulefree_17632.out | head -40
+
+The closing certificate for NY_13 also passes the rule-free check (1.2 M refuted prefixes replayed, 1.9 s), so it rests on no search rule. Re-arming the monitor for the last seven M classes.
+  > Monitor {"command": "tail -n 0 -f reports/scratch/obstruction_search/07_open_minor_run.out 2>&1 | grep -E --line-buffered \"/23 
+
+Only the M run's remaining seven classes are needed; waiting on the monitor.
+
+# result: success in 9s, 3 turns, cost $27.86
+
+Batch five: width − 1 on all three. Four left, due around 09:07.
+
+# result: success in 5s, 1 turns, cost $31.50
+
+Duplicate from the older monitor; waiting for the last four.
+
+# result: success in 1s, 1 turns, cost $31.58
+
+Three left (the three smallest, 216 to 243 vertices), due around 09:07. Waiting.
+
+# result: success in 1s, 1 turns, cost $31.66
+
+Waiting.
+
+# result: success in 1s, 1 turns, cost $31.74
+
+The newer monitor is still armed; waiting for the final three.
+
+# result: success in 2s, 1 turns, cost $31.82
+  > $ date && until grep -q "open done" reports/scratch/obstruction_search/07_open_minor_run.out; do sleep 10; done; tail -n 5 reports/scratch/obstruction_search/07_o
+
+The wait moved to the background and will notify me when the M run finishes (due within two minutes).
+
+# result: success in 615s, 2 turns, cost $35.58
+
+The M run is complete. Now, in parallel: the checker on the 11 M certificates not yet checked, and the summary of the M run.
+  > $ tail -n 4 reports/scratch/obstruction_search/07_open_minor_run.out && python3 -c "
+import pandas as pd; d=pd.read_csv('reports/scratch/obstruction_search/07_ope
+  > $ nice -n 19 python3 - > reports/scratch/obstruction_search/07_open_check_minor_b.out 2>&1 <<'EOF'
+import pandas as pd, time
+from multiprocessing import Pool
+from
+  > $ python3 - <<'EOF'
+import pandas as pd
+from pathlib import Path
+O = Path("reports/scratch/obstruction_search/07_open")
+a = pd.read_csv(O / "checker_verdicts_mino
+  > $ python3 - <<'EOF'
+import json, sys, pandas as pd
+sys.path.insert(0, ".")
+from paper1.dataset import layout_width, PROOF_PROV
+sys.path.insert(0, "paper1")
+import
+  > $ timeout 900 python3 -m pytest tests/test_obstruction_open.py tests/test_obstruction_branch.py tests/test_obstruction_minor.py -q -x 2>&1 | tail -n 4
+  > $ git status --short | grep -v "^ M Ralph_Loops/loop0013/\|^?? Ralph_Loops/loop0013/session_it07" && git check-ignore -v learning/_obstruction_expansion.so; du -s
+  > $ git checkout -- reports/scratch/obstruction_search/02_expansion/run.log && git status --short reports/scratch/obstruction_search/02_expansion/ && uptime && nice
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+O = "reports/scratch/obstruction_search/07_open/"
+j = pd.read_csv(O + "joined.csv"); m = pd.read_csv(O + "minor.csv"
+  > $ python3 - <<'EOF'
+import pandas as pd
+O = "reports/scratch/obstruction_search/07_open/"
+j = pd.read_csv(O + "joined.csv").sort_values(["width", "n"])
+def cell(x
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/iterations.md")
+s = p.read_text()
+old = "- [ ] **07 The 24 open classes: family E's ce
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/PROGRESS.md")
+s = p.read_text()
+s = s.replace("Current: 6/11 SOLVED", "Current: 7/11 S
+  > $ grep -n "TBD\|«" reports/obstruction_search.md | head; sed -n '/^### 7.2/,/^Columns/p' reports/obstruction_search.md | head -8 | cut -c1-160; grep -c "^| pwc-" 
+  > $ sed -i 's/^| pwc-15933 | BalancedTree_3_5 | 364 | 5 | 4 | 4 |  () |  | 5 | \*\*5\*\* (theorem) | \*\*yes\*\* |$/| pwc-15933 | BalancedTree_3_5 | 364 | 5 | 4 | 4
+
+All deliverables are written; the only remaining input is the gate's result, which is running in the background and will notify me.
+
+# result: success in 258s, 14 turns, cost $37.66
+  > $ grep -n "GATE\|lake build\|passed\|pages\|undefined\|sorry\|axiom\|ok$" reports/scratch/obstruction_search/07_open/gate_run.out | head -20; tail -n 3 reports/sc
+
+The gate passed. Final steps, all independent: fill the gate line in PROGRESS.md, confirm the axiom count line, and take a last look at the working tree for stray files.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/PROGRESS.md")
+s = p.read_text()
+assert "GATE_LINE" in s
+s = s.replace("- **Gate**: GAT
+  > $ git status --short | grep -v "^ M Ralph_Loops/loop0013/\|^?? Ralph_Loops/loop0013/session_it07" ; grep -n "Current:" Ralph_Loops/loop0013/PROGRESS.md; grep -c "
+
+One last confirmation of the gate's axiom count line, which the earlier grep did not show.
+  > $ grep -n -i "axiom" reports/scratch/obstruction_search/07_open/gate_run.out | head -3
+  > $ grep -n "axiom" Ralph_Loops/loop0013/gate.py | head -5; grep -rn "^axiom \|^ *axiom " lean/MOSPFormalization --include=*.lean | grep -v "^\s*--" | wc -l
+
+The gate checks for `axiom` declarations and fails if any exist; it found none and passed, and a direct count over the Lean sources is 0, so the PROGRESS line is accurate. Nothing else is pending. Item 07 is complete.
+
+**Recap of iteration 7 (item 07, the 24 open dataset classes)**
+
+Two of the 24 open classes are now closed, with certificates verified by the independent checker:
+
+- **BalancedTree_3_5** (364 vertices): the branch lemma down the complete ternary tree, written as a nested separator-branch certificate (121 branch nodes, 243 trivial leaves), proves pathwidth at least 5, equal to the stored layout. The checker verifies all 364 nodes with no C re-run. The value is classical (Ellis, Sudborough and Turner 1994); the certificate is what is new. The C program had spent 237 core-hours on this class.
+- **NY_13** (PACE 2017 bonus, 283 vertices, recorded width 10, floor 9): family M's search found an 85-vertex contraction minor whose pathwidth the C program proves to be 10 by refuting 9 in 67,455 nodes and 0.07 s. It passes the replay, the C re-proof and the rule-free check (1.17 M refuted prefixes, 1.9 s). This is the one class where the search beat the greedy ladder.
+
+On the other 22, family M's floor is width − 1 on 21 and width − 2 on one, every one a C refutation on a minor at about 30% of the vertices whose width the C re-proves exactly. So on 21 classes the pathwidth is width − 1 or width, and five floors rose above the record (from 2 or 3 up to 7, 8 and 9). Harper's ceiling is below the recorded width on all 24 (by 1 to 5), so the expansion family cannot close any of them under any computation. Family B gives 2 to 5 and sees only fringes. All 47 certificates verified.
+
+Deliverables: the three modules extended with open-class stages, `open_class_graphs` in the ledger, the C helper's cap raised from 256 to 768 vertices, 11 new tests, the evidence rows in `run_unlimited.py`'s format plus `lower_bounds.csv`, the `OPEN_RUNS` diff proposed but not applied (it would trigger a dataset rebuild), report §7, the PROGRESS entry and the item ticked. Compute about 7.1 core-hours of 10. Gate: PASS (1,875 tests, 123 in the pathwidth solver, 0 sorry, 0 axiom, paper 77 pages). Kill verdict: not met, by one class. Nothing committed; nothing under `solutions/` touched.
+
+Next is item 08, the duality-gap map.
+
+# result: success in 42s, 6 turns, cost $42.21

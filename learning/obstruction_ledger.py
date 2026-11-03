@@ -659,6 +659,82 @@ def open_floors() -> dict[str, float]:
     return floors
 
 
+def open_class_graphs(ids: list[str] | None = None, check_representative: bool = True) -> list[dict]:
+    """Item 07: the 24 open dataset classes of `targets.json` as graphs. Each
+    record carries the jsonl's `edges` (the representative's labels), its
+    recorded `width` (an upper bound: the stored layout achieves it) and
+    `layout` (the stored witness, in the orientation whose *prefix* vertex
+    separation — placed vertices with a neighbour outside — equals the
+    width; the dataset's own convention is the reversal), the recorded
+    floor `lower` from `targets.json`, and, when `check_representative`, the
+    representative member computed as `paper1.dataset.fold` does (from the
+    values on record before the fold, as `run_unlimited.py` does) with the
+    check that its graph is the record's graph edge for edge. Nothing here
+    runs a solver."""
+    targets = json.loads(TARGETS_JSON.read_text())
+    wanted = {r["id"]: r for r in targets["open24"]}
+    if ids is not None:
+        wanted = {k: v for k, v in wanted.items() if k in set(ids)}
+    recs = {}
+    for rec in dataset_records(certified_only=False):
+        if rec["id"] in wanted:
+            recs[rec["id"]] = rec
+    rep_of = {}
+    if check_representative:
+        sys.path.insert(0, str(ROOT))
+        from collections import defaultdict
+        from paper1.dataset import INDEX, VALUES_CSV, PRIORITY, class_order, representative, load, read_csv
+        idx = [r for r in read_csv(INDEX) if not r["error"]]
+        by = defaultdict(list)
+        for r in idx:
+            by[r["cls"]].append(r)
+        for members in by.values():
+            members.sort(key=lambda r: (PRIORITY[r["collection"]], r["source"], r["name"]))
+        cls_of_id = {f"pwc-{i + 1:05d}": c for i, c in enumerate(class_order(by))}
+        base = {(v["source"], v["name"]): v for v in read_csv(VALUES_CSV)
+                if not v["evidence"].startswith("reports/scratch/")}
+        for cid in wanted:
+            rep, _ = representative(by[cls_of_id[cid]], base)
+            n_rep, e_rep = load(rep)
+            rep_of[cid] = (rep, n_rep, {(min(a, b), max(a, b)) for a, b in e_rep})
+    out = []
+    for cid, t in wanted.items():
+        rec = recs[cid]
+        n = int(rec["n"])
+        edges = [(int(a), int(b)) for a, b in rec["edges"]]
+        adj = adjacency_from_edges(n, edges)
+        lay = [int(v) for v in (rec.get("layout") or [])]
+        layout, vs = None, None
+        if sorted(lay) == list(range(n)):
+            for cand in (lay[::-1], lay):
+                v = _prefix_vs(adj, cand)
+                if v == int(rec["width"]):
+                    layout, vs = cand, v
+                    break
+        row = {"id": cid, "names": t["names"], "collections": t["collections"], "n": n, "m": len(edges),
+               "width": int(rec["width"]), "lower": t.get("lower"), "lower_source": t.get("lower_source"),
+               "provenance": rec.get("provenance"), "edges": edges, "adj": adj, "layout": layout,
+               "layout_vs": vs, "record_layout_len": len(lay)}
+        if check_representative:
+            rep, n_rep, e_rep = rep_of[cid]
+            row["representative"] = {"collection": rep["collection"], "source": rep["source"], "name": rep["name"]}
+            row["representative_matches_record"] = (n_rep == n and e_rep == {(min(a, b), max(a, b)) for a, b in edges})
+        out.append(row)
+    return out
+
+
+def _prefix_vs(adj: list[int], order: list[int]) -> int:
+    """Vertex separation under the prefix definition: the largest number of
+    placed vertices with a neighbour outside the prefix."""
+    placed, best = 0, 0
+    full = (1 << len(adj)) - 1
+    for v in order:
+        placed |= 1 << v
+        rest = full & ~placed
+        best = max(best, sum(1 for u in range(len(adj)) if (placed >> u) & 1 and adj[u] & rest))
+    return best
+
+
 def build_targets() -> dict:
     f = pd.read_csv(LEDGER_CORPUS)
     gap338 = sorted(f.loc[f["is_gap338"], "instance_name"])

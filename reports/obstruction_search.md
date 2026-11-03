@@ -2302,3 +2302,268 @@ Where exact branch widths add over the seeded form:
 | verdict   |   certificates |   nodes |   c_reruns |   seconds |
 |:----------|---------------:|--------:|-----------:|----------:|
 | verified  |            156 |     624 |        187 |    247.89 |
+
+
+## 7. The 24 open classes: family E's ceiling, M and B as lower-bound searches only; `BalancedTree_3_5` by the branch lemma; the evidence rows (item 07)
+
+*Size range: the 24 open classes of the pathwidth dataset frozen in
+`01_ledger/targets.json` (`open24`): 216–712 vertices, 363–1,085 edges,
+recorded widths 5–11 (every one an upper bound achieved by a stored
+layout), recorded floors 2–10, each with 76–237 core-hours of the C program
+and no result (`reports/scratch/dataset_open/unsolved_unlimited.csv`). Every
+value in this section is in **pathwidth units** (a dataset class's width is
+a pathwidth; the run files' `*_floor` columns are optimum units, `+ 1`).
+Regenerate: `python3 -m learning.obstruction_branch --stage open-tree`;
+`python3 paper1/obstruction_check.py check-branch
+reports/scratch/obstruction_search/07_open/tree_instance.txt
+reports/scratch/obstruction_search/07_open/tree_certificate.json`; `nice -n
+19 python3 -m learning.obstruction_expansion --stage ceiling --targets open24
+--workers 2`; `nice -n 19 python3 -m learning.obstruction_minor --stage open
+--workers 4 --open-seconds 900 --core-hours 7`; `nice -n 19 python3 -m
+learning.obstruction_branch --stage open --workers 2 --seconds 240`;
+`python3 -m learning.obstruction_minor --stage open-check --workers 4`;
+`--stage open-tables`. Outputs under `reports/scratch/obstruction_search/07_open/`:
+`tree_certificate.json` and `tree_instance.txt`, `ceiling.csv` (24) with
+`sets/`, `minor.csv` (23), `branch.csv` (23), `certificates/<id>/{instance.txt,
+minor.json, ladder_points.json, branch.json}` (23 classes), `checker_verdicts.csv`
+(47), `joined.csv`, `tables.md`, `results_obstruction.csv` (2 rows),
+`lower_bounds.csv` (4 rows), `open_runs_proposal.diff`, `run.log`, and
+`../07_open_{minor_run,ceiling_run,branch_run,check_branch,check_minor_a,
+check_minor_b,rulefree_17632}.out`. Tests: `tests/test_obstruction_open.py`
+(11). Nothing here refutes anything: the C program ran on contraction
+minors of 30–85% of the vertices and on branches below 90%, under caps of
+20 s, never on a whole open graph.*
+
+### 7.1 What was done
+
+**The tree, on paper first** (plan §0.3, §0.4 (7)). `pwc-15933`
+(`BalancedTree_3_5`, 364 vertices, 363 edges, recorded width 5, recorded
+floor 4) is the complete ternary tree of height 5: own code checks that the
+record's edge list is a tree (connected, `m = n − 1`), that the unique vertex
+of degree 3 is the root (internal vertices have degree 4, leaves 1), that
+every internal vertex has three children and every leaf is at depth 5
+(`learning.obstruction_branch.ternary_tree_certificate`, which refuses a
+cycle, a disconnected graph and a tree with a leaf removed — the test). The
+branch lemma down the tree: at an internal vertex `v`, `S = {v}`, the three
+child subtrees are connected, pairwise disjoint and disjoint from `S`, and
+`Q = {v}` links every pair, so `pw ≥ k + 1` where `k` is a floor on every
+subtree (`branch_lemma_separator`, `lean/MOSPFormalization/Sandwich.lean`);
+the induction starts at height 1 with three single-vertex `trivial` leaves
+(`pw ≥ 0`), hence the claw `K_{1,3}` has `pw ≥ 1`, and height `h` has
+`pw ≥ h`. Written as a nested B certificate in item 06's format
+(`obstruction-branch-1`: 121 `branch` nodes, 243 `trivial` leaves, one node
+per vertex), it claims `pw ≥ 5`; the independent checker verifies it (364
+nodes checked, own BFS for every branch and connector, **0 C re-runs**,
+0.03 s). With the stored layout of width 5, **the class is closed: `pw = 5`**.
+The *value* is classical — Ellis, Sudborough & Turner (1994) compute the
+pathwidth of a tree in linear time, and the `cut-branch` recursion their
+algorithm rests on is exactly this lemma applied down the tree — so what is
+new to the record is the certificate, not the number. The C program had
+spent 236.7 core-hours on this class without a result: its search never
+sees the branch structure, and a tree of pathwidth 5 has far too many
+layouts of width 5 to refute width 4 by enumeration.
+
+**Family E on the 24** (item 02's search, `--targets open24`). The graph is
+the record's edge list; the "witness" is the stored layout in its *prefix*
+orientation (the dataset's own convention is the reversal; `open_class_graphs`
+checks that the prefix vertex separation equals the recorded width on all
+24, so the layout's finished sets seed `f̂(t) ≤ t + width` and the ceiling
+starts at the width); the "optimum" column of `ceiling.csv` is the recorded
+**width + 1**, an upper bound in optimum units, and the file says so.
+Budget `0.005 n²` s clamped to 90 s, which binds on 14 of 24 (every class
+above 266 vertices; a longer run can only lower a ceiling). The C helper
+`obstruction_expansion.c` was capped at 256 vertices (`MAXW 4`, a 256-entry
+counter) and refused these graphs; its cap is now 768 vertices (`MAXW 12`),
+checked against the exact profile on a 12-vertex graph and on the
+712-vertex class before the rerun (the first launch's three completed rows,
+at ≤ 256 vertices, were kept).
+
+**Family M on the 23** (item 04's search, `--stage open`). Every minor in a
+window of **30–85% of the vertices** (the item's rule; the evaluator skips
+anything outside it before any C call, 9,383 candidates skipped that way,
+and never a minor above 90%); the greedy ladder, both rules at 30–85% in 5%
+steps (24 points), then the tabu search from the ladder's evaluator for the
+rest of **one shared 900 s budget per class** (the item's "20 minutes" with
+the ladder and the search sharing it, not 20 minutes each: the ladder
+alone costs up to 24 × 20 s); the C program at **20 s per call** with its
+minor step off; the "optimum" the search aims at is the recorded width (a
+floor meeting it closes the class; the search cannot exceed it, since the
+stored layout bounds the pathwidth above). The upper bound that decides
+whether a candidate is sent to the C program is the recorded layout lifted
+to the minor (the cubic greedy layout is off above 150 vertices). 4 workers
+for 5,400 s wall, with the E and B runs beside it (8 processes in all; the
+one-minute load stayed at 4–7).
+
+**Family B on the 23** (item 06's search, `--stage open`). 240 s per class,
+the C program at 20 s per branch, **no branch above 90% of the vertices**
+(the leaf oracle returns a `trivial` node for one: 2,567 such skips), the
+recorded layout restricted to a branch as its upper bound, the greedy
+layout only to 120 vertices, no minor leaves (the item asks for branch
+widths by C calls; family M runs separately above). 126,467 separators
+evaluated, 113,389 with three or more components, 275 C calls, 896 s of C
+time; the local search was censored by the budget on 2 classes.
+
+**The checker** (`paper1/obstruction_check.py`, no import from the four
+project packages): `check-branch` on the tree and on every B certificate
+(the C re-run on `c` leaves at cap 100 s), `check-minor` on every M
+certificate (replay, quotient hash, the C re-proof at cap 100 s, and the
+rule-free `vsmemo` + `checkF` where the minor has at most 80 vertices).
+`checker_verdicts.csv`: **47 of 47 verified** (24 branch, 23 minor), no
+contradiction; the C re-proves every M minor's width *exactly* (status
+`refutation`, width = claim) in 0.0–1.2 s; rule-free on 7 (the six minors
+of 65–80 vertices, and the 85-vertex closing minor of `NY_13`, run
+separately with the size cap raised to 90: 1,174,685 refuted prefixes,
+5,252,307 admissible extensions replayed, 1.9 s, `07_open_rulefree_17632.out`).
+
+### 7.2 The table of the 24
+
+| class | name | n | recorded width | recorded floor | E ceiling | M floor (minor vertices) | B floor | theorem | best new floor (family) | closed? |
+|---|---|---:|---:|---:|---:|---|---:|---:|---|---|
+| pwc-15933 | BalancedTree_3_5 | 364 | 5 | 4 | 4 | — (not run: the theorem) | — | 5 | **5** (theorem) | **yes** |
+| pwc-16471 | contiki_shell-netper… | 666 | 7 | 6 | 5 | 6 (200) | 3 |  | **6** (M) | no |
+| pwc-17043 | fuzix_vfscanf_vfscanf | 587 | 8 | 2 | 6 | 7 (176) | 3 |  | **7** (M) | no |
+| pwc-17257 | ex009.gr.xz | 466 | 9 | 8 | 7 | 8 (140) | 3 |  | **8** (M) | no |
+| pwc-17617 | FLA_14.gr.xz | 266 | 10 | 9 | 5 | 9 (101) | 5 |  | **9** (M) | no |
+| pwc-17632 | NY_13.gr.xz | 283 | 10 | 9 | 8 | 10 (85) | 2 |  | **10** (M) | **yes** |
+| pwc-17286 | ex040.gr.xz | 285 | 10 | 9 | 8 | 9 (86) | 2 |  | **9** (M) | no |
+| pwc-17381 | ex139.gr.xz | 334 | 10 | 9 | 7 | 9 (100) | 4 |  | **9** (M) | no |
+| pwc-17342 | ex098.gr.xz | 342 | 10 | 9 | 7 | 9 (103) | 3 |  | **9** (M) | no |
+| pwc-04526 | bcspwr05 | 443 | 10 | 3 | 8 | 9 (133) | 3 |  | **9** (M) | no |
+| pwc-17359 | ex116.gr.xz | 453 | 10 | 9 | 8 | 9 (136) | 2 |  | **9** (M) | no |
+| pwc-17337 | ex093.gr.xz | 454 | 10 | 9 | 7 | 9 (168) | 3 |  | **9** (M) | no |
+| pwc-04517 | 494_bus | 494 | 10 | 2 | 7 | 8 (148) | 3 |  | **8** (M) | no |
+| pwc-17343 | ex099.gr.xz | 616 | 10 | 9 | 7 | 9 (240) | 3 |  | **9** (M) | no |
+| pwc-17317 | ex073.gr.xz | 712 | 10 | 3 | 8 | 9 (214) | 3 |  | **9** (M) | no |
+| pwc-17436 | ex195.gr.xz | 216 | 11 | 10 | 9 | 10 (65) | 3 |  | **10** (M) | no |
+| pwc-17321 | ex077.gr.xz | 237 | 11 | 10 | 8 | 10 (71) | 3 |  | **10** (M) | no |
+| pwc-17300 | ex054.gr.xz | 243 | 11 | 10 | 9 | 10 (73) | 3 |  | **10** (M) | no |
+| pwc-17306 | ex060.gr.xz | 249 | 11 | 10 | 8 | 10 (75) | 3 |  | **10** (M) | no |
+| pwc-17398 | ex157.gr.xz | 260 | 11 | 10 | 7 | 10 (78) | 3 |  | **10** (M) | no |
+| pwc-17357 | ex114.gr.xz | 268 | 11 | 10 | 9 | 10 (80) | 3 |  | **10** (M) | no |
+| pwc-17288 | ex042.gr.xz | 278 | 11 | 10 | 8 | 10 (83) | 3 |  | **10** (M) | no |
+| pwc-17427 | ex186.gr.xz | 316 | 11 | 10 | 9 | 10 (95) | 4 |  | **10** (M) | no |
+| pwc-17264 | ex017.gr.xz | 330 | 11 | 10 | 9 | 10 (99) | 3 |  | **10** (M) | no |
+
+Columns: the recorded width (an upper bound, the stored layout's), the
+recorded floor (`results_quick*.csv` `lower`), family E's **ceiling** (what
+Harper's bound could ever certify; not a bound), family M's floor (the proved
+pathwidth of a contraction minor, with the minor's vertex count), family B's
+floor (third-largest certified branch width + 1 at the best separator), the
+theorem (the branch lemma on the tree), the best new floor and its family.
+`tables.md` carries the full table with the ladder's floor, the potential
+of B, and the checker column; `joined.csv` every column.
+
+### 7.3 What the numbers say
+
+- **Two classes are closed.** `pwc-15933` (`BalancedTree_3_5`) by the
+  branch lemma, `pw = 5`. **`pwc-17632` (`NY_13`, PACE 2017 bonus, 283
+  vertices, 448 edges, recorded width 10, recorded floor 9) by family M**:
+  the search found an **85-vertex contraction minor** (173 edges, 198
+  contractions, `minor_sha256 fd5a9a10…`) that the C program proves to have
+  pathwidth 10 by refuting width 9 in **67,455 nodes and 0.07 s**, against
+  the C program's 236.7 core-hours on the whole graph with no result; the
+  stored layout has width 10, so **`pw(NY_13) = 10`**. The certificate is
+  verified by the checker on all three checks, including the rule-free one,
+  so it rests on no search rule: `pathwidth_gt_of_minorOf` (`Minor.lean`)
+  and the `checkF` family. This is the one class on which the **search beat
+  the greedy ladder** (the ladder's best, 9, is the record's floor): at the
+  same 30% rung the ladder's two rules build minors of pathwidth 9, and the
+  search's moves (1,589 C calls, 341,209 moves, 9 improvements) reached one
+  of pathwidth 10. The item's kill criterion ("zero new floors on the 23 is
+  a verdict") is therefore **not met**, by one class.
+- **On the other 22 the three families agree with each other and stop one
+  below the width.** Family M's floor is `width − 1` on **21 of 22** (and
+  `width − 2` on `494_bus`), always a `refutation` on a minor at the 30%
+  rung (20 of 23) or at 37–39% (3: `ex099`, `ex093`, `FLA_14`); the C
+  re-proof gives each minor's pathwidth *exactly* `width − 1`, so those
+  minors cannot certify more, and no minor in the window reached `width`
+  within the budget. So on 21 classes **the pathwidth is `width − 1` or
+  `width`**: the recorded width is at most one above the truth, and the
+  duality gap of family M is at most 1 there. The gap is not zero on the
+  evidence: the search found no closing minor, and a search's failure is
+  not a proof of absence (the budget binds on every class: 900.0 s).
+- **Five floors rise above the record, four without closing**
+  (`lower_bounds.csv`): `fuzix_vfscanf` 2 → 7 (width 8), `bcspwr05` 3 → 9
+  (10), `494_bus` 2 → 8 (10), `ex073` 3 → 9 (10) — the four classes whose
+  recorded floor was the C program's own cheap bound on a graph with a
+  low-degree fringe — and `NY_13` 9 → 10. On the other 18 the record
+  already stood at `width − 1` (MMD+ on the whole graph), and M reproduces
+  it on a minor a third of the size.
+- **Harper cannot close any of the 24, under any computation**: the ceiling
+  is **below the recorded width on all 24** (by 1 on the tree, 2 on 13, 3 on
+  8, 4 on `ex157`, 5 on `FLA_14`); only on the tree does the ceiling reach
+  `width − 1` (4, while `pw = 5`). On the tree this is the structural
+  verdict of the bounds section in `CLAUDE.md` made exact: the expansion
+  family provably misses the pathwidth of a tree with branching, and the
+  branch lemma is what sees it. The empty-pair ceiling is lower still (4–9).
+  The search found a set below the witness's prefix at 89.8% of the levels;
+  `t*` sits at 0.12–0.57 `n`. A ceiling is valid whatever the search's
+  quality (a found set only proves `f(t) ≤ b`), so this statement does not
+  depend on the budget.
+- **Family B sees only fringes.** Values 2–5 (3 on 17 classes; 5 on
+  `FLA_14`, branches `[194, 38, 30]` of widths `[10, 4, 4]`) against widths
+  7–11; above the recorded floor on 2 (`fuzix_vfscanf` and `494_bus`, both
+  2 → 3), never above M; the potential (a ceiling at the separators tried)
+  is 3–6, so the leaves are essentially exact and the shortfall is the
+  third-largest branch: every best separator isolates one large component
+  (0.86 `n` on `contiki_shell`) with two small ones, or three small
+  components once the large one is barred. Item 06's verdict ("branching is
+  closed") holds here, with the tree as the one structure where it is the
+  whole answer.
+- **Compute** ≈ **7.1 core-hours** of the item's 10: M 5.75 (23 × 900 s; of
+  which 5.59 in 7,839 C calls — the ladder's 366 calls 0.59, the search's
+  7,473 calls 5.0), E 0.50, B 0.39, checks 0.42 (the B leaves' re-runs at
+  100 s) + 0.002 (M) + 0.001 (rule-free), smoke runs 0.06.
+
+### 7.4 The evidence rows, and the proposal (plan §0.4 (3))
+
+`results_obstruction.csv` has the two closing rows in
+`run_unlimited.py`'s `FIELDS`, in the representative's labels (the
+representative computed as `paper1.dataset.fold` does, from the values on
+record before the fold; its graph matches the record edge for edge on all
+24, checked by `open_class_graphs`), `order` the stored witness in the
+dataset's orientation (`layout_width` = width, checked): `pwc-17632` with
+`proof=minor` and the certificate JSON in `minor` (`refuted 9, size 85,
+rule search`, the contractions, the C's node count; `dataset_check.py`'s
+own `replay_contractions` replays it to 85 vertices), and `pwc-15933` with
+`proof=theorem` and the B certificate's path, theorem and value in `minor`
+— **which `fold` does not read**: `PROOF_PROV` knows `refutation`, `minor`
+and `bound`, so a `theorem` row folds as a `solution` of the recorded width
+and is skipped. `lower_bounds.csv` has the four non-closing floors with
+their certificates and verdicts.
+
+The exact diff is `open_runs_proposal.diff`: the `OPEN_RUNS` line adding
+this file, `theorem` in `PROOF_PROV` (with the checker's item 7 extended to
+the branch-lemma case), and a `lower` field on `solution` rows carried from
+the run files' `lower` column, which every run writes and nothing consumes.
+**The `OPEN_RUNS` line is not applied**: with the `NY_13` row in the list,
+`fold` would produce a new `certified:minor` record, which is a dataset
+rebuild, and the item forbids one (`paper1.dataset run`/`write` were not
+run; `paper1/dataset.py` is untouched). Applying it is one line once the
+owner decides to rebuild.
+
+### 7.5 Kill verdict, and what this does not claim
+
+**Kill verdict: not met.** One of the 23 (`NY_13`) has a new floor that
+meets its recorded width; the planner's expectation that the 24 are "open
+for a reason the families can see" holds on the other 22, where all three
+families stop at `width − 1` or below and the expansion family's ceiling is
+below the width on every one. No stop condition fired: no floor is above a
+recorded width (the test asserts it), no certificate was rejected.
+
+Harness: the open classes have no certified optimum, so
+`learning/bound_harness.py`'s validity stage ("above optimum" must be 0)
+cannot be run on them; its stand-ins are the stored layouts (every floor
+is at most the width, checked) and the checker's 47 verdicts.
+
+**Does not claim**: that any class other than the tree and `NY_13` is
+closed; that a floor of `width − 1` makes the recorded width likely (the
+width is an upper bound and nothing here refutes anything; on 21 classes
+the truth is `width − 1` or `width` and this item cannot say which); that
+the tree's value is new (it is not; the certificate is); that no closing
+minor exists in the window on the 22 (the search ran 900 s per class and
+its moves are local); that the M floor is attainable only by search (on 22
+of 23 the greedy ladder reaches the same floor in a tenth of the time);
+that the E ceilings are the family's exact values (they are upper bounds on
+`max_t (f(t) − t)`, and the budget bound on 14 classes); that the 85-vertex
+minor of `NY_13` is minimal.

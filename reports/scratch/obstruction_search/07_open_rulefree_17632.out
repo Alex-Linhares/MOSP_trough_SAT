@@ -1,0 +1,40 @@
+{
+ "instance": "reports/scratch/obstruction_search/07_open/certificates/pwc-17632/instance.txt",
+ "certificate": "reports/scratch/obstruction_search/07_open/certificates/pwc-17632/minor.json",
+ "verdict": "verified",
+ "replay_ok": true,
+ "hash_ok": true,
+ "c_ok": true,
+ "rulefree": "verified",
+ "instance_name": "instance",
+ "n": 283,
+ "m": 85,
+ "minor_edges": 173,
+ "minor_sha256": "fd5a9a102e7e3bb58efc4be7d2b82189332a3980bffa5719687aecbdc8802b59",
+ "floor_claimed": 11,
+ "c_width": 10,
+ "c_status": "refutation",
+ "c_lower": 4,
+ "c_seconds": 0.06920018792152405,
+ "reason": "VERIFIED: n=85 w=9 |F|=1174685, 5252307 admissible extensions checked",
+ "rulefree_sets": 1174685,
+ "rulefree_seconds": 1.8538511299993843,
+ "proves": {
+  "pathwidth_at_least": 10,
+  "mosp_at_least": 11,
+  "statement": "the 85-vertex contraction minor has pathwidth >= 10, so pathwidth(G) >= 10 and MOSP >= 11",
+  "theorems": "pathwidth_gt_of_minorOf / pathwidth_minorOf_le (lean/MOSPFormalization/Minor.lean); mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean)"
+ }
+}
+[ok] instance is an edge list: 283 vertices, 448 edges
+[ok] format is obstruction-minor-1: obstruction-minor-1
+[ok] instance size matches: file n=283, certificate n=283
+[ok] graph edge-list SHA-256 matches: 4b18af0f08304212… vs 4b18af0f08304212…
+[ok] every pair is an edge of the current graph at its step: 198 steps, 0 isolated deletions
+[ok] quotient by branch sets equals the replayed minor: 
+[ok] minor size matches: replayed m=85, certificate m=85
+[ok] minor edge hash matches the certificate: fd5a9a102e7e3bb5… vs fd5a9a102e7e3bb5…
+[ok] the claim is a pathwidth: pathwidth >= 10, floor 11
+[ok] the C program re-proves pathwidth(minor) >= 10 within 100 s: width 10 status refutation lower 4 (0.07 s)
+[ok] rule-free refutation of pathwidth <= 9 (vsmemo + checkF): verified: VERIFIED: n=85 w=9 |F|=1174685, 5252307 admissible extensions checked (1.9 s)
+seconds 1.9

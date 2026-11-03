@@ -106,11 +106,11 @@ FLOOR_BUDGET_LOW_CAP = 600.0   # item 01's cap <= 10: room for several levels
 FLOOR_BUDGET_HIGH_CAP = 300.0  # item 01's cap 11: only f(13) is missing
 
 
-def log(msg: str) -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+def log(msg: str, path: Path | None = None) -> None:
+    (path or RUN_LOG).parent.mkdir(parents=True, exist_ok=True)
     line = f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}"
     print(line, flush=True)
-    with open(RUN_LOG, "a") as handle:
+    with open(path or RUN_LOG, "a") as handle:
         handle.write(line + "\n")
 
 
@@ -445,7 +445,9 @@ def target_names(which: str, targets: dict | None = None) -> list[str]:
                     seen.add(nm)
                     names.append(nm)
         return names
-    if which not in targets or which == "open24":
+    if which == "open24":
+        return [r["id"] for r in targets["open24"]]
+    if which not in targets:
         raise SystemExit(f"unknown or unsupported target set {which!r}")
     return list(targets[which])
 
@@ -459,19 +461,34 @@ def ledger() -> pd.DataFrame:
 # ----------------------------------------------------------------------------
 
 
+OPEN_OUT = ROOT / "reports" / "scratch" / "obstruction_search" / "07_open"
+
+
 def _ceiling_job(args) -> dict:
-    name, matrix, ordering, optimum, budget, rng_seed = args
-    matrix = np.asarray(matrix, dtype=int)
-    n = matrix.shape[0]
-    adj = adjacency_from_matrix(matrix)
-    closed = closed_masks(adj)
+    name, matrix, ordering, optimum, budget, rng_seed = args[:6]
+    graph = args[6] if len(args) > 6 else None     # item 07: (n, edges, layout) for a dataset class
     t0 = time.monotonic()
     seeds, wsets, vs_open, vs_close = [], [], -1, -1
-    if ordering is not None:
-        opening, closing = witness_layouts(matrix, ordering)
-        vs_open, vs_close = vertex_separation_of(adj, opening), vertex_separation_of(adj, closing)
-        wsets = finished_sets(closed, opening) + finished_sets(closed, closing)
-        seeds += wsets
+    if graph is not None:
+        n, edges, layout = graph
+        from learning.obstruction_ledger import adjacency_from_edges
+
+        adj = adjacency_from_edges(n, edges)
+        closed = closed_masks(adj)
+        if layout is not None:
+            vs_open = vertex_separation_of(adj, layout)
+            wsets = finished_sets(closed, layout)
+            seeds += wsets
+    else:
+        matrix = np.asarray(matrix, dtype=int)
+        n = matrix.shape[0]
+        adj = adjacency_from_matrix(matrix)
+        closed = closed_masks(adj)
+        if ordering is not None:
+            opening, closing = witness_layouts(matrix, ordering)
+            vs_open, vs_close = vertex_separation_of(adj, opening), vertex_separation_of(adj, closing)
+            wsets = finished_sets(closed, opening) + finished_sets(closed, closing)
+            seeds += wsets
     cliques = maximal_clique_seeds(adj)
     seeds += cliques
     fw = witness_profile(closed, wsets) if wsets else [n + 1] * (n + 1)
@@ -481,15 +498,15 @@ def _ceiling_job(args) -> dict:
     wprof = Profile(n, fw, [0] * (n + 1), False)
     w_ceiling, _ = wprof.harper() if wsets else (n + 1, 0)
     below_witness = sum(1 for t in range(1, n) if prof.values[t] < fw[t])
-    OUT.mkdir(parents=True, exist_ok=True)
-    SETS_DIR.mkdir(parents=True, exist_ok=True)
+    sets_dir = (OPEN_OUT / "sets") if graph is not None else SETS_DIR
+    sets_dir.mkdir(parents=True, exist_ok=True)
     rec = {"instance_name": name, "n": n, "optimum": int(optimum), "ceiling": int(ceiling), "t_star": int(t_star),
            "fhat": prof.values, "witness_profile": fw,
            "sets": {str(t): mask_to_list(prof.sets[t]) for t in range(1, n + 1)},
            "witness_vs_opening": vs_open, "witness_vs_closing": vs_close, "budget_seconds": budget,
            "rng_seed": rng_seed, "seeds": {"witness_sets": len(wsets), "cliques": len(cliques)},
            "note": "a set C of size t proves f(t) <= |N[C]| only; the ceiling is not a bound"}
-    (SETS_DIR / f"{safe_name(name)}.json").write_text(json.dumps(rec))
+    (sets_dir / f"{safe_name(name)}.json").write_text(json.dumps(rec))
     return {"instance_name": name, "n": n, "optimum": int(optimum), "ceiling": int(ceiling), "t_star": int(t_star),
             "s_hat": int(s_hat), "empty_ceiling": int(prof.empty_pair()), "witness_ceiling": int(w_ceiling),
             "witness_vs_opening": vs_open, "witness_vs_closing": vs_close,
@@ -500,42 +517,61 @@ def _ceiling_job(args) -> dict:
 
 def run_ceiling(which: str, workers: int, wall: float | None, rng_seed: int = 1,
                 budget_scale: float = 1.0, limit: int | None = None) -> pd.DataFrame:
-    led = ledger().set_index("instance_name")
+    """The ceiling on a target set. For `open24` (item 07) the targets are
+    dataset classes: the graph is the record's edge list, the "witness" the
+    stored layout in its prefix orientation (vertex separation = recorded
+    width, so its finished sets give `fhat(t) <= t + width`), the "optimum"
+    column is the recorded **width + 1** (an upper bound in optimum units,
+    not an optimum), and the output goes to `07_open/ceiling.csv`."""
     names = target_names(which)
     if limit:
         names = names[:limit]
-    done = set(pd.read_csv(CEILING_CSV)["instance_name"]) if CEILING_CSV.exists() else set()
+    ceiling_csv = (OPEN_OUT / "ceiling.csv") if which == "open24" else CEILING_CSV
+    done = set(pd.read_csv(ceiling_csv)["instance_name"]) if ceiling_csv.exists() else set()
     todo = [nm for nm in names if nm not in done]
-    inst = corpus_instances()
     jobs = []
-    for nm in sorted(todo, key=lambda x: int(led.loc[x, "n"])):
-        matrix = inst[nm][1].matrix.tolist()
-        sol = solution_record(nm)
-        ordering = sol.get("ordering") if sol else None
-        n = int(led.loc[nm, "n"])
-        jobs.append((nm, matrix, ordering, int(led.loc[nm, "optimum"]), ceiling_budget(n) * budget_scale, rng_seed))
+    if which == "open24":
+        from learning.obstruction_ledger import open_class_graphs
+
+        OPEN_OUT.mkdir(parents=True, exist_ok=True)
+        for rec in sorted(open_class_graphs(todo, check_representative=False), key=lambda r: r["n"]):
+            jobs.append((rec["id"], None, None, int(rec["width"]) + 1, ceiling_budget(rec["n"]) * budget_scale, rng_seed,
+                         (rec["n"], rec["edges"], rec["layout"])))
+    else:
+        led = ledger().set_index("instance_name")
+        inst = corpus_instances()
+        for nm in sorted(todo, key=lambda x: int(led.loc[x, "n"])):
+            matrix = inst[nm][1].matrix.tolist()
+            sol = solution_record(nm)
+            ordering = sol.get("ordering") if sol else None
+            n = int(led.loc[nm, "n"])
+            jobs.append((nm, matrix, ordering, int(led.loc[nm, "optimum"]), ceiling_budget(n) * budget_scale, rng_seed))
+    olog = (OPEN_OUT / "run.log") if which == "open24" else None
     log(f"ceiling: targets {which}: {len(names)} names, {len(done)} on file, {len(jobs)} to run; "
-        f"{workers} workers; budget 0.005 n² s in [2, 90] × {budget_scale}; rng seed {rng_seed}")
+        f"{workers} workers; budget 0.005 n² s in [2, 90] × {budget_scale}; rng seed {rng_seed}"
+        + ("; open24: 'optimum' is the recorded width + 1, an upper bound" if which == "open24" else ""), olog)
     t0 = time.monotonic()
     rows: list[dict] = []
     with Pool(workers) as pool:
         for k, row in enumerate(pool.imap_unordered(_ceiling_job, jobs, chunksize=1), 1):
             rows.append(row)
-            if k % 250 == 0 or k == len(jobs):
-                pd.DataFrame(rows).to_csv(CEILING_CSV, mode="a", header=not CEILING_CSV.exists(), index=False)
+            if k % 250 == 0 or k == len(jobs) or which == "open24":
+                pd.DataFrame(rows).to_csv(ceiling_csv, mode="a", header=not ceiling_csv.exists(), index=False)
                 rows = []
-                log(f"ceiling: {k}/{len(jobs)} done, {time.monotonic() - t0:.0f} s wall")
+                log(f"ceiling: {k}/{len(jobs)} done, {time.monotonic() - t0:.0f} s wall"
+                    + (f"; last {row['instance_name']} n={row['n']} ceiling {row['ceiling']} vs {row['optimum']}"
+                       if which == "open24" else ""), olog)
             if wall is not None and time.monotonic() - t0 > wall:
-                log("ceiling: wall reached; stopping (the rest is not in the file)")
+                log("ceiling: wall reached; stopping (the rest is not in the file)", olog)
                 pool.terminate()
                 break
     if rows:
-        pd.DataFrame(rows).to_csv(CEILING_CSV, mode="a", header=not CEILING_CSV.exists(), index=False)
-    out = pd.read_csv(CEILING_CSV).drop_duplicates("instance_name", keep="last")
-    out.to_csv(CEILING_CSV, index=False)
+        pd.DataFrame(rows).to_csv(ceiling_csv, mode="a", header=not ceiling_csv.exists(), index=False)
+    out = pd.read_csv(ceiling_csv).drop_duplicates("instance_name", keep="last")
+    out.to_csv(ceiling_csv, index=False)
     bad = out[out["ceiling"] > out["optimum"]]
     if not bad.empty:
-        log(f"BUG: ceiling above the optimum on {len(bad)} instances: {bad['instance_name'].tolist()[:5]}")
+        log(f"BUG: ceiling above the optimum on {len(bad)} instances: {bad['instance_name'].tolist()[:5]}", olog)
     return out
 
 

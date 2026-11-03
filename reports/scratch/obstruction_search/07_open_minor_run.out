@@ -1,0 +1,25 @@
+2026-11-03 07:37:29 open: 24 classes, 23 to run, 4 workers, 900 s each (ladder then search), C cap 20 s, minors at 30%-85% of n, core-hours cap 7.0, binary 6560b8093c3e51b9
+2026-11-03 07:52:29   1/23 pwc-17343 n=616 width 10 floor 9: ladder 9 search 9 (m 240, c_refutation), 174 C calls, 900.0 s
+2026-11-03 07:52:29   2/23 pwc-17043 n=587 width 8 floor 2: ladder 7 search 7 (m 176, c_refutation), 111 C calls, 900.1 s
+2026-11-03 07:52:29   3/23 pwc-17317 n=712 width 10 floor 3: ladder 9 search 9 (m 214, c_refutation), 110 C calls, 900.1 s
+2026-11-03 07:52:29   4/23 pwc-16471 n=666 width 7 floor 6: ladder 6 search 6 (m 200, c_refutation), 152 C calls, 900.1 s
+2026-11-03 08:07:29   5/23 pwc-04517 n=494 width 10 floor 2: ladder 8 search 8 (m 148, c_refutation), 85 C calls, 900.0 s
+2026-11-03 08:07:29   6/23 pwc-17257 n=466 width 9 floor 8: ladder 8 search 8 (m 140, c_refutation), 359 C calls, 900.1 s
+2026-11-03 08:07:29   7/23 pwc-17359 n=453 width 10 floor 9: ladder 9 search 9 (m 136, c_refutation), 128 C calls, 900.1 s
+2026-11-03 08:07:29   8/23 pwc-17337 n=454 width 10 floor 9: ladder 9 search 9 (m 168, c_refutation), 196 C calls, 900.1 s
+2026-11-03 08:22:29   9/23 pwc-04526 n=443 width 10 floor 3: ladder 9 search 9 (m 133, c_refutation), 98 C calls, 900.0 s
+2026-11-03 08:22:29   10/23 pwc-17342 n=342 width 10 floor 9: ladder 9 search 9 (m 103, c_refutation), 305 C calls, 900.1 s
+2026-11-03 08:22:29   11/23 pwc-17264 n=330 width 11 floor 10: ladder 10 search 10 (m 99, c_refutation), 154 C calls, 900.1 s
+2026-11-03 08:22:29   12/23 pwc-17381 n=334 width 10 floor 9: ladder 9 search 9 (m 100, c_refutation), 316 C calls, 900.1 s
+2026-11-03 08:37:29   13/23 pwc-17427 n=316 width 11 floor 10: ladder 10 search 10 (m 95, c_refutation), 299 C calls, 900.0 s
+2026-11-03 08:37:29   14/23 pwc-17288 n=278 width 11 floor 10: ladder 10 search 10 (m 83, c_refutation), 332 C calls, 900.0 s
+2026-11-03 08:37:29   15/23 pwc-17286 n=285 width 10 floor 9: ladder 9 search 9 (m 86, c_refutation), 1063 C calls, 900.1 s
+2026-11-03 08:37:30   16/23 pwc-17632 n=283 width 10 floor 9: ladder 9 search 10 (m 85, c_refutation), 1611 C calls, 900.0 s
+2026-11-03 08:52:29   17/23 pwc-17357 n=268 width 11 floor 10: ladder 10 search 10 (m 80, c_refutation), 161 C calls, 900.0 s
+2026-11-03 08:52:29   18/23 pwc-17617 n=266 width 10 floor 9: ladder 9 search 9 (m 101, c_refutation), 661 C calls, 900.0 s
+2026-11-03 08:52:29   19/23 pwc-17398 n=260 width 11 floor 10: ladder 10 search 10 (m 78, c_refutation), 198 C calls, 900.0 s
+2026-11-03 08:52:30   20/23 pwc-17306 n=249 width 11 floor 10: ladder 10 search 10 (m 75, c_refutation), 243 C calls, 900.0 s
+2026-11-03 09:07:29   21/23 pwc-17300 n=243 width 11 floor 10: ladder 10 search 10 (m 73, c_refutation), 318 C calls, 900.0 s
+2026-11-03 09:07:29   22/23 pwc-17321 n=237 width 11 floor 10: ladder 10 search 10 (m 71, c_refutation), 276 C calls, 900.0 s
+2026-11-03 09:07:29   23/23 pwc-17436 n=216 width 11 floor 10: ladder 10 search 10 (m 65, c_refutation), 489 C calls, 900.0 s
+2026-11-03 09:07:29 open done: 23 rows, 5400 s wall

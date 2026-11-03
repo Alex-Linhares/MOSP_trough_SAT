@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 6/11 SOLVED
+Current: 7/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -567,3 +567,88 @@ a certificate built from `branch` and `trivial` nodes alone is checked
 without the C program. Family B's floors for the map (item 08) are
 `06_branch/joined.csv::b_value` (NaN where no triple) with `b_floor =
 max(b_value, ω)` beside it.
+
+---
+## Iteration 7 — 2026-11-03 07:27
+
+### Completed
+
+- **Item 07 — the 24 open classes: family E's ceiling, M and B as
+  lower-bound searches only; `BalancedTree_3_5` by the branch lemma; the
+  evidence rows.** `learning/obstruction_ledger.py::open_class_graphs` (the
+  24 as graphs with the stored layout in its prefix orientation — vertex
+  separation = recorded width on all 24 — and the representative computed
+  as `fold` does, matching the record edge for edge on all 24);
+  `learning/obstruction_branch.py` (`ternary_tree_certificate`, stages
+  `open-tree` and `open`; the leaf oracle takes a recorded layout as its
+  upper bound and a size cap above which no C call is made);
+  `learning/obstruction_minor.py` (stage `open` with the 30–85% window
+  enforced in the evaluator before any C call, `open-check`, `open-tables`,
+  the evidence rows); `learning/obstruction_expansion.py` (`--targets
+  open24`; the C helper's cap raised from 256 to 768 vertices, `MAXW 12`);
+  `tests/test_obstruction_open.py` (11 passed);
+  `reports/scratch/obstruction_search/07_open/{tree_certificate.json,
+  tree_instance.txt, ceiling.csv, sets/, minor.csv, branch.csv, certificates/
+  (23), checker_verdicts.csv (47), joined.csv, tables.md,
+  results_obstruction.csv, lower_bounds.csv, open_runs_proposal.diff,
+  run.log, gate_run.out}` and `../07_open_*.out`; `reports/obstruction_search.md` §7.
+- **Two classes closed.** `pwc-15933` (`BalancedTree_3_5`, 364 vertices):
+  the branch lemma down the tree as a nested B certificate (121 `branch`
+  nodes, 243 `trivial` leaves), `pw ≥ 5` = the stored layout's width,
+  verified by the checker with 0 C re-runs (the C program had spent 236.7
+  core-hours on it); the value is Ellis, Sudborough & Turner (1994)'s, the
+  certificate is new to the record. **`pwc-17632` (`NY_13`, PACE 2017
+  bonus, 283 vertices, recorded width 10, floor 9): family M's search found
+  an 85-vertex contraction minor of pathwidth 10** (refutes 9 in 67,455
+  nodes, 0.07 s; 236.7 core-hours on the whole graph had found nothing),
+  verified on all three checks including the rule-free one (1.17 M refuted
+  prefixes, 1.9 s) — `pw(NY_13) = 10`. The one class where the search beat
+  the greedy ladder.
+- **The other 22**: family M's floor is `width − 1` on 21 (and `width − 2` on
+  `494_bus`), each a C refutation on a minor at the 30% rung (37–39% on 3)
+  whose pathwidth the C re-proves exactly, so on 21 classes the truth is
+  `width − 1` or `width`; five floors rise above the record (2 → 7, 3 → 9,
+  2 → 8, 3 → 9, 9 → 10). **Harper's ceiling is below the recorded width on
+  all 24** (by 1–5; on the tree 4 against the proved 5): the expansion
+  family cannot close any of them under any computation. Family B: values
+  2–5, above the record on 2, never above M (fringes only). Checker: 47 of
+  47 verified, no contradiction.
+- **Evidence rows**: `results_obstruction.csv` (2 rows in
+  `run_unlimited.py`'s `FIELDS`, representative's labels, `order` checked
+  with `layout_width`; `NY_13` as `proof=minor` with the certificate,
+  replayed by `dataset_check.py`'s own code; the tree as `proof=theorem`,
+  which `fold` does not read) and `lower_bounds.csv` (4). The `OPEN_RUNS`
+  line is **proposed, not applied** (`open_runs_proposal.diff`): with the
+  `NY_13` row, `fold` would emit a new `certified:minor` record, i.e. a
+  dataset rebuild, which the item forbids; `paper1/dataset.py` untouched.
+- **Kill verdict: not met** (one new floor meets its width); no stop
+  condition fired (no floor above a width, no rejected certificate).
+  Harness validity stage not applicable (no certified optimum on an open
+  class): the stored layouts and the checker stand in.
+- **Deviations from the item's text**, recorded in §7.1: the ladder and
+  the search share one 900 s budget per class (the ladder alone costs up to
+  24 × 20 s); B ran 240 s per class with no minor leaves; the E, M and B
+  runs ran beside each other (4 + 2 + 2 processes, load 4–7).
+- **Compute ≈ 7.1 core-hours** of the item's 10 (M 5.75, E 0.50, B 0.39,
+  checks 0.42, smoke 0.06). The first E launch failed on the 256-vertex cap
+  and appended its lines to `02_expansion/run.log`, restored from git.
+- **Gate: PASS** (`reports/scratch/obstruction_search/07_open/gate_run.out`,
+  09:08–09:20): lake build ok, 0 sorry, 0 axiom; `tests/` 1,875 passed, 2
+  skipped, 1 xfailed (4:34); `pathwidth_solver/` 123 passed (6:23); paper 77
+  pages, no undefined references. No Lean and no paper file touched by this
+  item.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 08 (the duality-gap map). Family floors for the map: E
+`03_sat/instances.csv::floor_after` on the 144 reached, `harper12` elsewhere,
+ceilings in `02_expansion/ceiling.csv`; M `05_minor_scale/joined.csv::best`
+and `04_minor/search.csv::search_floor`; B `06_branch/joined.csv::b_value`;
+the open classes in `07_open/joined.csv` (pathwidth units). Two findings
+for item 10's summary: on the 24 open classes Harper's ceiling is below the
+width everywhere, and a searched 85-vertex minor closed `NY_13` where
+236.7 core-hours of whole-graph search had not.

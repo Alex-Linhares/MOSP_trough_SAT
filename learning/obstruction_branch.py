@@ -291,6 +291,10 @@ class LeafOracle:
     minor_calls: int = 0
     cache: dict = field(default_factory=dict)
     upper_cache: dict = field(default_factory=dict)
+    position: list[int] | None = None   # item 07: a recorded layout (positions) restricted to the set is an upper bound
+    max_m: int = 10 ** 9                # item 07: a set above this size is never sent to the C program (trivial node)
+    greedy_max_m: int = 400             # the greedy layout is computed only up to this size
+    skipped_large: int = 0
 
     def time_left(self) -> float:
         return self.deadline - time.monotonic()
@@ -315,11 +319,17 @@ class LeafOracle:
             return self.upper_cache[mask]
         m = popcount(mask)
         ub = m - 1
-        if m >= 3 and m <= 400:
+        if m >= 3 and (m <= self.greedy_max_m or self.position is not None):
             from learning.obstruction_minor import greedy_layout, vertex_separation
 
             labels, sub, edges = induced(self.adj, mask)
-            ub = min(ub, vertex_separation(sub, greedy_layout(sub)))
+            if m <= self.greedy_max_m:
+                ub = min(ub, vertex_separation(sub, greedy_layout(sub)))
+            if self.position is not None:
+                # the recorded layout restricted to the set: the vertex separation of an induced
+                # subgraph under the restricted order never exceeds the whole layout's
+                order = sorted(range(m), key=lambda i: self.position[labels[i]])
+                ub = min(ub, vertex_separation(sub, order))
         self.upper_cache[mask] = ub
         return ub
 
@@ -335,6 +345,12 @@ class LeafOracle:
             return self.trivial(mask)
         if is_clique(self.adj, mask):
             return {"kind": "clique", "vertices": verts, "clique": verts, "pathwidth_at_least": m - 1, "source": "clique"}
+        if m > self.max_m:
+            # item 07: a branch above the cap is a run on (most of) an open instance, which this loop does not do
+            self.skipped_large += 1
+            node = self.trivial(mask)
+            node["source"] = "skipped_large"
+            return node
         labels, sub, edges = induced(self.adj, mask)
         if self.kind == "brute":
             from learning.first_moment import vertex_separation_brute
@@ -559,7 +575,8 @@ def local_search(ctx: Context, top: int, starts: list[int], best_value: int) -> 
 
 
 def branch_search(adj: list[int], seconds: float = INSTANCE_SECONDS, cap: float = C_CAP_SECONDS, depth: int = DEPTH,
-                  rng_seed: int = 1, kind: str = "c", local: bool = True, minor_leaves: bool = True) -> dict:
+                  rng_seed: int = 1, kind: str = "c", local: bool = True, minor_leaves: bool = True,
+                  position: list[int] | None = None, max_m: int = 10 ** 9, greedy_max_m: int = 400) -> dict:
     """Family B on one graph: the separator family at full depth, the local
     search at depth 0 with its best re-evaluated at full depth, the minor
     ladder on the limiting branches of the best triple. Returns the value
@@ -568,7 +585,8 @@ def branch_search(adj: list[int], seconds: float = INSTANCE_SECONDS, cap: float 
     n = len(adj)
     top = (1 << n) - 1
     deadline = time.monotonic() + seconds
-    oracle = LeafOracle(adj, cap, deadline, kind, minor_leaves)
+    oracle = LeafOracle(adj, cap, deadline, kind, minor_leaves, position=position, max_m=max_m,
+                        greedy_max_m=greedy_max_m)
     ctx = Context(adj, oracle, deadline, random.Random(rng_seed), top=top)
     t0 = time.monotonic()
     best_value, best_node, best_S = 0, None, None
@@ -610,7 +628,7 @@ def branch_search(adj: list[int], seconds: float = INSTANCE_SECONDS, cap: float 
     stats = dict(ctx.stats)
     stats.update({"seconds": time.monotonic() - t0, "c_calls": oracle.calls, "c_seconds": oracle.seconds_c,
                   "minor_calls": oracle.minor_calls, "leaves_cached": len(oracle.cache),
-                  "memo": len(ctx.memo)})
+                  "memo": len(ctx.memo), "skipped_large": oracle.skipped_large})
     return {"value": best_value if best_node is not None else -1, "node": best_node,
             "S": bits(best_S) if best_S is not None else None, "stats": stats}
 
@@ -1058,10 +1076,162 @@ def write_tables() -> str:
 # ----------------------------------------------------------------------------
 
 
+# ----------------------------------------------------------------------------
+# item 07: the complete ternary tree by the branch lemma, and the 24 open classes
+# ----------------------------------------------------------------------------
+
+OPEN_OUT = SCRATCH / "07_open"
+OPEN_CSV = OPEN_OUT / "branch.csv"
+OPEN_CERT_DIR = OPEN_OUT / "certificates"
+OPEN_C_CAP = 20.0
+OPEN_SECONDS = 240.0
+OPEN_MAX_FRACTION = 0.90      # never a C call on a branch above this fraction of the open graph
+
+
+def ternary_tree_certificate(n: int, edges: list[tuple[int, int]], name: str = "BalancedTree_3_5") -> dict:
+    """The nested B certificate of a complete ternary tree, by the branch
+    lemma down the tree: at every internal vertex `v`, `S = {v}`, the three
+    child subtrees are the branches (connected, disjoint, each adjacent to
+    `v`), the three connectors are `Q = {v}`; a vertex whose children are
+    leaves certifies `k + 1 = 1` from three `trivial` leaves (claim 0), and
+    a vertex at height `h` certifies `h`. Own code: checks that the edge
+    list is a tree (connected, `m = n − 1`), finds the root as the unique
+    vertex of degree 3 (internal vertices have degree 4, leaves 1), and
+    checks that every internal vertex has exactly three children and that
+    every leaf is at the same depth. Raises `ValueError` otherwise. The
+    value is classical (Ellis, Sudborough & Turner 1994 compute the pathwidth
+    of a tree in linear time); the certificate is what is new to the record."""
+    adj = [set() for _ in range(n)]
+    for a, b in edges:
+        adj[a].add(b)
+        adj[b].add(a)
+    if len(edges) != n - 1:
+        raise ValueError(f"not a tree: {len(edges)} edges on {n} vertices")
+    seen, stack = {0}, [0]
+    while stack:
+        v = stack.pop()
+        for u in adj[v]:
+            if u not in seen:
+                seen.add(u)
+                stack.append(u)
+    if len(seen) != n:
+        raise ValueError("not a tree: disconnected")
+    roots = [v for v in range(n) if len(adj[v]) == 3]
+    if len(roots) != 1:
+        raise ValueError(f"expected one vertex of degree 3 (the root), found {len(roots)}")
+    root = roots[0]
+    depth_of_leaves = set()
+
+    def build(v: int, parent: int | None, depth: int) -> tuple[dict, int]:
+        children = sorted(adj[v] - ({parent} if parent is not None else set()))
+        if not children:
+            depth_of_leaves.add(depth)
+            return {"kind": "trivial", "vertices": [v], "pathwidth_at_least": 0, "source": "trivial"}, 0
+        if len(children) != 3:
+            raise ValueError(f"vertex {v} has {len(children)} children, not 3")
+        subs = [build(c, v, depth + 1) for c in children]
+        k = min(h for _, h in subs)
+        if any(h != k for _, h in subs):
+            raise ValueError(f"vertex {v}: subtrees of unequal height")
+        verts = sorted({v} | {x for nd, _ in subs for x in nd["vertices"]})
+        links = []
+        for i, j in ((0, 1), (0, 2), (1, 2)):
+            links.append({"Q": [v], "edge_first": [v, children[i]], "edge_second": [v, children[j]], "pair": [i, j]})
+        node = {"kind": "branch", "vertices": verts, "pathwidth_at_least": k + 1, "k": k, "S": [v],
+                "branches": [nd for nd, _ in subs], "links": links, "source": "branch", "n_comps": 3}
+        return node, k + 1
+
+    node, height = build(root, None, 0)
+    if len(depth_of_leaves) != 1:
+        raise ValueError(f"leaves at depths {sorted(depth_of_leaves)}: not complete")
+    adj_masks = [0] * n
+    for a, b in edges:
+        adj_masks[a] |= 1 << b
+        adj_masks[b] |= 1 << a
+    cert = certificate_dict(name, None, adj_masks, {"node": node, "stats": {"seconds": 0.0, "method": "theorem"}},
+                            None, 0.0)
+    cert.update({"height": height, "root": root,
+                 "method": "branch_lemma down the complete ternary tree (S = {v}, three child subtrees, Q = {v}); "
+                           "pw(T_h) >= h by induction, h = 1 the claw K_{1,3}",
+                 "classical": "Ellis, Sudborough & Turner (1994) compute the pathwidth of a tree in linear time; "
+                              "the value is classical and only the certificate is new to the record"})
+    return cert
+
+
+def _open_job(args) -> dict:
+    rec, seconds, cap, rng_seed = args
+    adj = rec["adj"]
+    n = len(adj)
+    position = None
+    if rec.get("layout"):
+        position = [0] * n
+        for i, v in enumerate(rec["layout"]):
+            position[v] = i
+    max_m = int(OPEN_MAX_FRACTION * n)
+    t0 = time.monotonic()
+    res = branch_search(adj, seconds, cap, DEPTH, rng_seed, "c", True, False, position=position, max_m=max_m,
+                        greedy_max_m=120)
+    out = {"id": rec["id"], "names": rec["names"], "n": n, "m": rec["m"], "width": rec["width"],
+           "lower": rec["lower"], "b_pathwidth": res["value"] if res["value"] >= 0 else None,
+           "b_floor": res["value"] + 1 if res["value"] >= 0 else None,
+           "b_potential": res["stats"].get("best_potential", 0),
+           "S": json.dumps(res["S"]) if res["S"] is not None else None,
+           "branch_sizes": json.dumps([len(b["vertices"]) for b in res["node"]["branches"]]) if res["node"] else None,
+           "branch_widths": json.dumps(branch_widths(res["node"])) if res["node"] else None,
+           "max_m": max_m, "seconds_budget": seconds, "c_cap": cap, "seconds": round(time.monotonic() - t0, 1)}
+    for k in ("separators_family", "separators_evaluated", "separators_with_3_comps", "local_moves", "local_starts",
+              "censored", "c_calls", "c_seconds", "skipped_large", "leaves_cached"):
+        out[k] = res["stats"].get(k)
+    out["above_width"] = out["b_pathwidth"] is not None and out["b_pathwidth"] > rec["width"]
+    out["meets_width"] = out["b_pathwidth"] is not None and out["b_pathwidth"] >= rec["width"]
+    out["above_floor"] = out["b_pathwidth"] is not None and rec["lower"] is not None and out["b_pathwidth"] > rec["lower"]
+    if res["node"] is not None:
+        d = OPEN_CERT_DIR / rec["id"]
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "instance.txt").write_text(f"{n} {rec['m']}\n" + "".join(f"{a} {b}\n" for a, b in rec["edges"]))
+        cert = certificate_dict(rec["id"], None, adj, res, None, cap)
+        cert.update({"names": rec["names"], "recorded_width": rec["width"], "recorded_floor": rec["lower"],
+                     "max_branch_vertices": max_m, "units_note": "a dataset class: the width is a pathwidth; "
+                     "floor = pathwidth_proved + 1 is in optimum units as everywhere in this loop"})
+        (d / "branch.json").write_text(json.dumps(cert, indent=1))
+        out["certificate"] = str((d / "branch.json").relative_to(ROOT))
+    return out
+
+
+def run_open(workers: int, seconds: float = OPEN_SECONDS, cap: float = OPEN_C_CAP, rng_seed: int = 1,
+             ids: list[str] | None = None) -> pd.DataFrame:
+    """Family B on the 24 open classes: a lower-bound search only. The leaf
+    oracle never calls the C program on a branch above 90% of the vertices
+    (the item's rule), uses the recorded layout restricted to a branch as its
+    upper bound, and runs no minor leaves; the complete ternary tree is done
+    on paper by `ternary_tree_certificate` and is skipped here."""
+    from learning.obstruction_ledger import open_class_graphs
+
+    OPEN_OUT.mkdir(parents=True, exist_ok=True)
+    recs = open_class_graphs(ids, check_representative=False)
+    done = set(pd.read_csv(OPEN_CSV)["id"]) if OPEN_CSV.exists() else set()
+    jobs = [(r, seconds, cap, rng_seed) for r in recs if r["id"] not in done and r["names"] != "BalancedTree_3_5"]
+    jobs.sort(key=lambda j: -j[0]["n"])
+    log(f"open: {len(recs)} classes, {len(jobs)} to run, {workers} workers, {seconds:g} s each, C cap {cap:g} s, "
+        f"no branch above {OPEN_MAX_FRACTION:.0%} of n, binary {binary_sha256()[:16]}", OPEN_OUT / "run.log")
+    t0 = time.monotonic()
+    with Pool(workers) as pool:
+        for k, row in enumerate(pool.imap_unordered(_open_job, jobs, chunksize=1), 1):
+            pd.DataFrame([row]).to_csv(OPEN_CSV, mode="a", header=not OPEN_CSV.exists(), index=False)
+            log(f"  {k}/{len(jobs)} {row['id']} n={row['n']} width {row['width']} floor {row['lower']}: "
+                f"B {row['b_pathwidth']} (potential {row['b_potential']}), {row['c_calls']} C calls, "
+                f"{row['seconds']} s", OPEN_OUT / "run.log")
+    frame = pd.read_csv(OPEN_CSV).drop_duplicates("id", keep="last")
+    frame.to_csv(OPEN_CSV, index=False)
+    log(f"open done: {len(frame)} rows, {time.monotonic() - t0:.0f} s wall", OPEN_OUT / "run.log")
+    return frame
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--stage", required=True, choices=("hand", "run", "check", "connectivity", "tables"))
+    ap.add_argument("--stage", required=True, choices=("hand", "run", "check", "connectivity", "tables", "open", "open-tree"))
     ap.add_argument("--targets", default="residual")
+    ap.add_argument("--ids", default=None, help="open: comma-separated class ids (default all 24)")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--seconds", type=float, default=INSTANCE_SECONDS)
     ap.add_argument("--cap", type=float, default=C_CAP_SECONDS)
@@ -1081,6 +1251,22 @@ def main() -> None:
         run_connectivity(args.targets, args.workers)
     elif args.stage == "tables":
         print(write_tables())
+    elif args.stage == "open":
+        run_open(args.workers, args.seconds if args.seconds != INSTANCE_SECONDS else OPEN_SECONDS,
+                 args.cap if args.cap != C_CAP_SECONDS else OPEN_C_CAP, args.seed,
+                 args.ids.split(",") if args.ids else None)
+    elif args.stage == "open-tree":
+        from learning.obstruction_ledger import open_class_graphs
+
+        rec = next(r for r in open_class_graphs(check_representative=False) if r["names"] == "BalancedTree_3_5")
+        OPEN_OUT.mkdir(parents=True, exist_ok=True)
+        cert = ternary_tree_certificate(rec["n"], rec["edges"], rec["names"])
+        cert.update({"id": rec["id"], "recorded_width": rec["width"], "recorded_floor": rec["lower"]})
+        (OPEN_OUT / "tree_instance.txt").write_text(f"{rec['n']} {rec['m']}\n" + "".join(f"{a} {b}\n" for a, b in rec["edges"]))
+        (OPEN_OUT / "tree_certificate.json").write_text(json.dumps(cert, indent=1))
+        print(f"{rec['id']} {rec['names']}: n={rec['n']} m={rec['m']} height {cert['height']} root {cert['root']} "
+              f"pathwidth >= {cert['pathwidth_proved']} (recorded width {rec['width']}, floor {rec['lower']}); "
+              f"written {OPEN_OUT / 'tree_certificate.json'}")
 
 
 if __name__ == "__main__":
