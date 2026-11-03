@@ -518,7 +518,13 @@ ROME_E2E = SCRATCH / "minor_bound" / "rome_open_e2e.csv"
 ROME_UNLIMITED = SCRATCH / "rome_unlimited" / "results.csv"
 OPEN_RUNS = [SCRATCH / "dataset_open" / f for f in
              ("results.csv", "results_quick.csv", "results_quick_rescued.csv",
-              "results_unlimited.csv")]   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
+              "results_unlimited.csv")] + [   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
+    SCRATCH / "obstruction_search" / "07_open" / "results_obstruction.csv",       # loop0013 item 07: NY_13 = 10 by an
+    SCRATCH / "obstruction_search" / "12_tenmin" / "open" / "results_obstruction.csv",   # 85-vertex minor; ex139 = 10 (12_tenmin);
+    SCRATCH / "obstruction_search" / "13_pass1" / "results_pass1.csv"]           # four more by pass 1 (2026-11-03). Each row's
+    # `minor` column carries the contraction certificate (proof=minor, checker-verified). The BalancedTree_3_5 rows
+    # (proof=theorem, the branch lemma) fold as `solution` at the recorded width and are therefore skipped: a
+    # `certified:theorem` row needs dataset_check.py to know the branch-lemma case (07_open/open_runs_proposal.diff).
 GRIDS = SCRATCH / "grids_theorem" / "grids.csv"
 BENCH_ON = sorted((SCRATCH / "minor_bound").glob("bench_*_on.csv"))   # the minor-step benchmark runs
 ROME_WITNESS = SCRATCH / "rome_witness" / "results.csv"   # witnesses for minor-proved widths kept by no run

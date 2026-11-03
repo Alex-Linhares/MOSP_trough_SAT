@@ -66,3 +66,7 @@ paper1/latex/main.toc
 # 158 files, up to 39 MB each) stay on disk, regenerable by the stage's command;
 # each certificate JSON beside them keeps the proof's SHA-256 and size.
 reports/scratch/obstruction_search/**/*.drat.gz
+
+# pass 1b (2026-11-03): the 96 Frinhani floor certificates, 279 MB of edge lists for minors that closed no class;
+# their SHA-256 hashes and the checker verdicts are committed in 13_pass1/check_pass1.jsonl (the DRAT-proof precedent above)
+reports/scratch/obstruction_search/13_pass1/certificates_1b/

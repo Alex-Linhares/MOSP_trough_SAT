@@ -17,16 +17,16 @@ Regenerate: `python -m paper1.dataset price`. Core-hours are one core's wall tim
 | VLSI gate matrix circuits | 11 | 10 | 1 | 0 |  | 0.01 |
 | VSPLIB trees | 28 | 28 | 0 | 0 | 0.0 | 0.00 |
 | VSPLIB grids | 50 | 50 | 0 | 0 | 6.9 | 0.00 |
-| VSPLIB Harwell-Boeing | 72 | 40 | 32 | 0 | 5.7 | 0.03 |
+| VSPLIB Harwell-Boeing | 72 | 44 | 28 | 0 | 5.7 | 0.03 |
 | Small (Marti et al. 2008) | 84 | 84 | 0 | 0 |  | 0.00 |
 | Rome graphs | 11,199 | 11,199 | 0 | 0 | 110.9 | 0.69 |
-| TreewidthLIB colouring | 58 | 31 | 27 | 0 | 4.7 | 0.05 |
-| freetdi named graphs | 143 | 125 | 17 | 1 | 2.6 | 0.01 |
+| TreewidthLIB colouring | 58 | 33 | 25 | 0 | 4.7 | 0.05 |
+| freetdi named graphs | 143 | 126 | 16 | 1 | 2.6 | 0.01 |
 | freetdi control-flow graphs | 1,064 | 1,061 | 2 | 1 |  | 0.05 |
-| PACE 2016 | 112 | 69 | 37 | 6 |  | 0.44 |
-| PACE 2017 exact | 193 | 129 | 54 | 10 |  | 1.00 |
+| PACE 2016 | 112 | 70 | 36 | 6 |  | 0.44 |
+| PACE 2017 exact | 193 | 132 | 51 | 10 |  | 1.00 |
 | PACE 2017 heuristic | 173 | 19 | 40 | 114 |  | 0.39 |
-| PACE 2017 bonus | 100 | 78 | 22 | 0 |  | 0.68 |
+| PACE 2017 bonus | 100 | 82 | 18 | 0 |  | 0.68 |
 
 ## The next step for the graph collections, priced
 
@@ -36,15 +36,15 @@ Each open class within the engine, run once more at the next budget. The Rome gr
 |---|---:|---:|---:|
 | MOSP: Carvalho & Soma 2015 | 112 | 600 s (had 30 s) | 19 |
 | VLSI gate matrix circuits | 1 | 600 s (had 30 s) | 0 |
-| VSPLIB Harwell-Boeing | 32 | 3,600 s (had 600 s) | 32 |
-| TreewidthLIB colouring | 27 | 3,600 s (had 600 s) | 27 |
-| freetdi named graphs | 17 | 3,600 s (had 600 s) | 17 |
+| VSPLIB Harwell-Boeing | 28 | 3,600 s (had 600 s) | 28 |
+| TreewidthLIB colouring | 25 | 3,600 s (had 600 s) | 25 |
+| freetdi named graphs | 16 | 3,600 s (had 600 s) | 16 |
 | freetdi control-flow graphs | 2 | 600 s (had 30 s) | 0 |
-| PACE 2016 | 37 | 600 s (had 30 s) | 6 |
-| PACE 2017 exact | 54 | 600 s (had 30 s) | 9 |
+| PACE 2016 | 36 | 600 s (had 30 s) | 6 |
+| PACE 2017 exact | 51 | 600 s (had 30 s) | 8 |
 | PACE 2017 heuristic | 40 | 600 s (had 30 s) | 7 |
-| PACE 2017 bonus | 22 | 600 s (had 30 s) | 4 |
-| **all** |  |  | 121 |
+| PACE 2017 bonus | 18 | 600 s (had 30 s) | 3 |
+| **all** |  |  | 112 |
 
 ## The Rome graphs: what each budget closed (repaired rules, 2026-10-02)
 
