@@ -24,7 +24,7 @@ Regenerate: `python -m paper1.dataset price`. Core-hours are one core's wall tim
 | freetdi named graphs | 143 | 126 | 16 | 1 | 2.6 | 0.01 |
 | freetdi control-flow graphs | 1,064 | 1,061 | 2 | 1 |  | 0.05 |
 | PACE 2016 | 112 | 70 | 36 | 6 |  | 0.44 |
-| PACE 2017 exact | 193 | 132 | 51 | 10 |  | 1.00 |
+| PACE 2017 exact | 193 | 134 | 49 | 10 |  | 1.00 |
 | PACE 2017 heuristic | 173 | 19 | 40 | 114 |  | 0.39 |
 | PACE 2017 bonus | 100 | 83 | 17 | 0 |  | 0.68 |
 
@@ -41,7 +41,7 @@ Each open class within the engine, run once more at the next budget. The Rome gr
 | freetdi named graphs | 16 | 3,600 s (had 600 s) | 16 |
 | freetdi control-flow graphs | 2 | 600 s (had 30 s) | 0 |
 | PACE 2016 | 36 | 600 s (had 30 s) | 6 |
-| PACE 2017 exact | 51 | 600 s (had 30 s) | 8 |
+| PACE 2017 exact | 49 | 600 s (had 30 s) | 8 |
 | PACE 2017 heuristic | 40 | 600 s (had 30 s) | 7 |
 | PACE 2017 bonus | 17 | 600 s (had 30 s) | 3 |
 | **all** |  |  | 112 |

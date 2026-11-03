@@ -72,10 +72,10 @@ Classes, not files. A class's value is its best-established member's.
 | freetdi named graphs | 103 | 1 | 22 | 0 | 16 | 0 | 0 | 0 | 0 | 1 |
 | freetdi control-flow graphs | 398 | 2 | 661 | 0 | 2 | 0 | 0 | 0 | 0 | 1 |
 | PACE 2016 | 38 | 14 | 18 | 0 | 36 | 0 | 0 | 0 | 0 | 6 |
-| PACE 2017 exact | 61 | 64 | 7 | 0 | 51 | 0 | 0 | 0 | 0 | 10 |
+| PACE 2017 exact | 61 | 66 | 7 | 0 | 49 | 0 | 0 | 0 | 0 | 10 |
 | PACE 2017 heuristic | 11 | 5 | 3 | 0 | 40 | 0 | 0 | 0 | 0 | 114 |
 | PACE 2017 bonus | 25 | 58 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |
-| **all** | 12,631 | 437 | 3,535 | 41 | 328 | 0 | 0 | 0 | 0 | 742 |
+| **all** | 12,631 | 439 | 3,535 | 41 | 326 | 0 | 0 | 0 | 0 | 742 |
 
 ## Against published values
 
