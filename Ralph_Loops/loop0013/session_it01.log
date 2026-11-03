@@ -1,0 +1,217 @@
+# session it01 started 2026-11-02 21:42:24
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the loop files, and the code the ledger will reuse, then build the ledger module stage by stage.
+  > $ uptime && cat Ralph_Loops/loop0013/iterations.md | head -80 && wc -l reports/obstruction_search_plan.md
+  > $ sed -n 1,220p reports/obstruction_search_plan.md
+  > $ sed -n 220,437p reports/obstruction_search_plan.md
+  > $ ls learning/data/ | head -50; ls learning/data/ensemble/ | head; ls reports/scratch/minor_certificates/ reports/scratch/minor_bound/ 2>&1 | head -60; ls reports
+  > $ sed -n 1,140p satisfiability/expansion_bound.py
+  > $ cat Ralph_Loops/loop0013/gate.py | head -120; cat Ralph_Loops/loop0013/knobs.json; ls Ralph_Loops/loop0013/
+  > $ grep -n "def \|^class \|argparse\|add_argument" learning/bound_harness.py | head -80; grep -n "def \|^SIZE\|BANDS\|bands" learning/bound_harness.py | grep -i ba
+  > $ head -c 1500 learning/data/instances.csv 2>/dev/null | head -3; echo; python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/instances.csv'); print(d.sha
+  > $ sed -n 140,260p satisfiability/expansion_bound.py
+  > $ find reports learning -name "harness_values*" 2>/dev/null; find reports -path "*excess*" -maxdepth 3 -type d 2>/dev/null | head; grep -rn "harness_values\|penda
+  > $ ls -la reports/scratch/minor_certificates/ | head -40; python3 -c "
+import json
+d=json.load(open('reports/scratch/minor_certificates/Random-125-125-2-1_0_m87.js
+  > $ python3 -c "
+import gzip,json,collections
+c=collections.Counter(); hdr=0; big=0; n=0; sizes=[]
+with gzip.open('paper1/data/dataset/pathwidth_dataset.jsonl.gz','
+  > $ grep -n "def collection\|def generator\|Harvey\|Shaw\|Wilson\|def source_collection\|COLLECTION" learning/fingerprint.py learning/bound_gap.py learning/dataset.
+  > $ sed -n 1,60p reports/edwards_mcdermid.md; echo ----; sed -n 1,40p tests/test_edwards_mcdermid.py; echo ----; grep -n "def main\|add_argument\|SCRATCH\|OUT =" le
+  > $ grep -n "^## \|^### " reports/pathwidth_lower_bounds_survey.md | head -30; grep -n "def \|^class " paper1/dataset.py | grep -i "degen\|mmd\|contract\|clique\|mi
+  > $ sed -n 411,470p reports/pathwidth_lower_bounds_survey.md
+  > $ sed -n 8,70p reports/minor_bound_verification.md; sed -n 232,250p reports/minor_bound_verification.md
+  > $ head -3 reports/scratch/pendant_cliques/harness_values.csv; wc -l reports/scratch/pendant_cliques/harness_values.csv; sed -n 440,520p learning/forest_theorems.p
+  > $ python3 -c "
+import json
+for f in ['reports/scratch/minor_bound/Random-125-125-4-1_0_default_recorded_certificate.json','reports/scratch/minor_bound/Random-125-
+  > $ grep -n "least-c\|min-d\|least_common\|def " pathwidth_solver/pathwidth/minor.py | head -40; sed -n 1,80p pathwidth_solver/pathwidth/minor.py
+  > $ grep -n "def degeneracy\|def contraction_degeneracy\|def mmd\|def _mmd\|def clique\|least\|min_d\|def lower_bound" paper1/dataset.py satisfiability/mosp_solver.
+  > $ python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/instances.csv')
+print((d.optimum-d.lb_best>=2).sum(), (d.n_customers<=22).sum())
+print(d[d.optimum
+  > $ cat tests/test_paper1_latex.py | head -40; grep -n "obstruction" paper1/latex/*.tex tests/*.py 2>/dev/null | head; ls reports/scratch/obstruction_search 2>&1; g
+  > $ cat reports/scratch/minor_bound/mosp_large_recorded.out; for f in reports/scratch/minor_bound/*_recorded_certificate.json; do python3 -c "
+import json; d=json.l
+  > $ python3 -c "
+import gzip,json,collections
+hdr=0; big=0; coll=collections.Counter(); minor_sizes=[]; cert=0; nmax=0; nocomp=0
+with gzip.open('paper1/data/dataset
+  > $ python3 -c "
+import pandas as pd
+u=pd.read_csv('reports/scratch/dataset_open/unsolved_unlimited.csv'); r=pd.read_csv('reports/scratch/dataset_open/results.csv')
+  > $ sed -n 495,535p learning/bound_harness.py; sed -n 100,125p learning/bound_harness.py; grep -n "def load_instances\|def instances_by_name\|def corpus_instances\|
+  > $ sed -n 50,135p pathwidth_solver/pathwidth/bounds.py; sed -n 1015,1050p paper1/dataset.py
+  > $ python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/instances.csv').set_index('instance_name')
+c=pd.read_csv('learning/data/ensemble/conjecture_invari
+  > $ sed -n 1,60p reports/scratch/pendant_cliques/score.py | head -60; grep -n "stratif\|default_rng\|rest500\|band" reports/scratch/pendant_cliques/*.py | head
+  > $ sed -n 40,95p learning/dataset.py; grep -n "def _solution_path" -A 12 satisfiability/mosp_solver.py | head -20
+  > $ python3 -c "
+import gzip,json,collections
+hdr=0; big=0; nocert=0; cert=0; keysets=collections.Counter(); bigcomp=0
+with gzip.open('paper1/data/dataset/pathwidth
+  > $ for f in reports/scratch/dataset_open/results_unlimited.csv reports/scratch/dataset_open/results_pass2.csv reports/scratch/dataset_open/results_quick.csv report
+  > $ ls reports/scratch/pw_lower_bounds/ | head -40; grep -rl "4-1_0\|8-2_0" reports/scratch/pw_lower_bounds/ 2>/dev/null | head; grep -h "4-1_0\|8-2_0" reports/scra
+  > $ nice -n 19 python3 -c "
+import time
+from learning.dataset import enumerate_instances
+from satisfiability.expansion_bound import expansion_bound
+want={'Random-30
+  > $ grep -n "4-1_0\|8-2_0" reports/scratch/pw_lower_bounds/corpus_minor_hi.out reports/scratch/pw_lower_bounds/corpus_minor.out reports/scratch/pw_lower_bounds/open
+  > $ python3 -c "
+import gzip,json,collections
+z=0; small=collections.Counter(); comp_big=0
+with gzip.open('paper1/data/dataset/pathwidth_dataset.jsonl.gz','rt') as 
+  > $ sed -n 1,30p Ralph_Loops/Ralph_Loop_Guide.md 2>/dev/null | head -5; ls tests/ | grep -c test_; sed -n 1,25p tests/test_forest_theorems.py 2>/dev/null | head -25
+  > $ mkdir -p reports/scratch/obstruction_search/01_ledger && python3 -c "
+import pandas as pd
+d=pd.read_csv('learning/data/instances.csv'); print('dup names',d.inst
+
+Now the module itself.
+  > Write /home/al/dev/MOSP/learning/obstruction_ledger.py
+
+Smoke-testing the record join and the guard before launching the hour-long Harper run.
+  > $ uptime && nice -n 19 python3 -m learning.obstruction_ledger --stage corpus --no-harper 2>&1 | tail -8 && python3 -c "
+import pandas as pd
+f=pd.read_csv('reports
+  > $ nice -n 19 python3 -m learning.obstruction_ledger --stage corpus --workers 8 --wall 4800 > reports/scratch/obstruction_search/01_ledger/harper_run.out 2>&1; tai
+  > $ grep -n "^def " learning/treewidth.py | head; sed -n 120,135p satisfiability/mosp_solver.py; grep -n "^def \|^    def " satisfiability/mosp_solver.py | sed -n 1
+  > $ sleep 45; cat /home/al/dev/MOSP/reports/scratch/obstruction_search/01_ledger/harper_run.out; uptime
+  > $ cat /home/al/dev/MOSP/reports/scratch/obstruction_search/01_ledger/harper_run.out; uptime
+  > $ sed -n 138,160p learning/treewidth.py; sed -n 100,125p learning/treewidth.py
+
+The Harper run is already at 6,200 of 6,376 after 16 s; the remaining 176 are the large instances at up to 60 s each. Writing the tests and the report header now.
+  > Write /home/al/dev/MOSP/tests/test_obstruction_ledger.py
+  > $ sed -n 136,166p satisfiability/mosp_solver.py; tail -3 reports/scratch/obstruction_search/01_ledger/harper_run.out; wc -l reports/scratch/obstruction_search/01_
+  > $ nice -n 19 timeout 600 python3 -m pytest tests/test_obstruction_ledger.py -q -x -p no:cacheprovider 2>&1 | tail -15
+  > Write /home/al/dev/MOSP/reports/obstruction_search.md
+  > $ tail -2 reports/scratch/obstruction_search/01_ledger/harper_run.out; wc -l < reports/scratch/obstruction_search/01_ledger/harper12.csv; uptime; date
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "cd /home/al/dev/MOSP && until grep -qE \"guard passed|VIOLATION|Traceback|wall reached|Error\" reports/scra
+  > $ python3 -c "
+from learning import obstruction_ledger as ol
+import pandas as pd
+fl=ol.open_floors(); u=pd.read_csv(ol.OPEN_CSV)
+print(len(fl), sum(i in fl for i 
+
+All 24 open classes have a recorded floor. While Harper finishes, I'll calibrate the dataset stage on its largest eligible classes with a single process.
+  > $ nice -n 19 timeout 500 python3 -c "
+import time
+from learning import obstruction_ledger as ol
+recs=[r for r in ol.dataset_records()]
+recs.sort(key=lambda r:-r['
+
+Dataset floors cost under 4 s even on the largest eligible class, so that stage will take minutes. Waiting on the Harper monitor now; the corpus guard verdict comes with it.
+
+# result: success in 935s, 56 turns, cost $6.23
+  > $ tail -4 reports/scratch/obstruction_search/01_ledger/harper_run.out; python3 -c "
+import pandas as pd
+f=pd.read_csv('reports/scratch/obstruction_search/01_ledge
+
+Corpus stage done in 8 minutes (1.01 core-hours), guard passed, Harper at cap 12 never below the recorded value. Now the dataset stage, then targets and tables.
+  > $ nice -n 19 python3 -m learning.obstruction_ledger --stage dataset --workers 8 2>&1 | tail -6
+  > $ nice -n 19 python3 -m learning.obstruction_ledger --stage targets 2>&1 | tail -2 && nice -n 19 python3 -m learning.obstruction_ledger --stage tables 2>&1 | tail
+  > $ python3 - <<'EOF'
+import re
+p='learning/obstruction_ledger.py'; s=open(p).read()
+s=s.replace('''    return pd.DataFrame(rows).sort_values(["n", "m", "d"])
+
+
+def
+  > $ nice -n 19 timeout 600 python3 -m pytest tests/test_obstruction_ledger.py -q -p no:cacheprovider 2>&1 | tail -3
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+f=pd.read_csv('reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv')
+g=f[f.is_gap338]
+f['ref
+  > $ grep -n 'astype(int)' learning/obstruction_ledger.py | head; grep -n 'def cs_class_table' -A 16 learning/obstruction_ledger.py | tail -6
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+f=pd.read_csv('reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv')
+f['reference']=np.maxim
+  > $ python3 - <<'EOF'
+p='learning/obstruction_ledger.py'; s=open(p).read()
+s=s.replace('''def _md(table: pd.DataFrame, floatfmt: str = ".2f") -> str:
+    return tab
+  > $ nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/01_ledger/gate_run.out 2>&1; tail -3 reports/scratch/obstruction_search/01_
+
+Now the report section. I'll write the narrative, then append the generated tables verbatim from `tables.md`.
+  > $ cat > /tmp/sec1.md <<'EOF'
+
+## 1. The baseline ledger and the frozen targets (item 01)
+
+*2026-11-02. Code `learning/obstruction_ledger.py`; tests
+`tests/test_ob
+  > Edit /home/al/dev/MOSP/reports/obstruction_search.md
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/iterations.md'; s=open(p).read()
+old='- [ ] **01 Baseline ledger and the frozen targets'
+assert s.count(old)==1
+open(p
+
+Working tree holds only the item's paths. Remaining: the gate's verdict and the PROGRESS entry. I'll write the entry now, check the scratch sizes, and arm a monitor on the gate.
+  > $ du -sh reports/scratch/obstruction_search/01_ledger/* | sort -h | tail -4 && cat >> Ralph_Loops/loop0013/PROGRESS.md <<'EOF'
+## Iteration 1 — 2026-11-02 22:10
+
+
+  > Monitor {"command": "cd /home/al/dev/MOSP && until grep -qE \"GATE PASS|GATE FAIL\" reports/scratch/obstruction_search/01_ledger
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/PROGRESS.md'; s=open(p).read()
+assert s.count('Current: 0/11 SOLVED')==1
+s=s.replace('Current: 0/11 SOLVED','Current: 
+  > Edit /home/al/dev/MOSP/reports/obstruction_search.md
+
+The only thing outstanding is the gate verdict, which the armed monitor will deliver. A quick look at where it stands:
+  > $ cat reports/scratch/obstruction_search/01_ledger/gate_run.out; date
+
+The gate is still inside `lake build`, which prints nothing until it finishes; the armed monitor will report PASS or FAIL. Everything else for item 01 is in place: the module and its 12 tests, the four ledger files and the frozen targets, the report header with §1, the PROGRESS entry and the tick in `iterations.md`.
+
+# result: success in 283s, 19 turns, cost $8.46
+  > $ cat reports/scratch/obstruction_search/01_ledger/gate_run.out; date; uptime; ps -o pid,etime,args -p $(pgrep -d, -u al -x lake 2>/dev/null || echo 1) 2>/dev/nul
+  > $ ps -u al -o pid,ppid,etime,pcpu,args --sort=-pcpu | head -15
+  > Monitor {"command": "cd /home/al/dev/MOSP && until grep -qE \"GATE PASS|GATE FAIL\" reports/scratch/obstruction_search/01_ledger
+
+The gate is in its last pytest stage (the `pathwidth_solver` suite, 7.6 minutes in); its output is block-buffered, so the file fills at the end. The load spike is the owner's browser test job, not ours. Nothing is left to do for item 01 but record the gate's verdict when the monitor reports it.
+
+# result: success in 20s, 4 turns, cost $11.69
+  > $ cat reports/scratch/obstruction_search/01_ledger/gate_run.out
+
+The gate passed. The last step is to record that line in PROGRESS.md.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/PROGRESS.md'; s=open(p).read()
+old="- Gate: see the line below.\n"
+assert s.count(old)==1
+s=s.replace(old,"- **Gate: P
+
+Item 01 is done and the gate passed. Nothing was committed, nothing was written under `solutions/`, and the working tree holds only the item's paths plus the driver's own log files.
+
+**What was built**
+
+- `learning/obstruction_ledger.py` with four stages (corpus, dataset, targets, tables) and `tests/test_obstruction_ledger.py` (12 tests, all passing).
+- `reports/scratch/obstruction_search/01_ledger/`: `ledger_corpus.csv`, `harper12.csv`, `ledger_dataset.csv.gz`, `targets.json`, `tables.md`, `run.log`, and the run and gate outputs.
+- `reports/obstruction_search.md`, created with the document header (families, directions, units, targets) and §1.
+- PROGRESS.md entry, counter at 1/11, and item 01 ticked in `iterations.md`.
+
+**What the record says**
+
+- The guard passed: no bound on record sits above a certified optimum, and no dataset floor sits above a certified width. The optimum in `instances.csv` matches every solution file.
+- The one new computation, Harper at cap 12 under 60 s on all 6,376 instances, took 1.01 core-hours. It is never below the recorded value and improves it on 442 instances. 35 instances were censored at the limit, still as valid floors.
+- The best floor on record is tight on 89.9% of the corpus, against 77.0% for the solver's own bound. The 338 gap instances fall to 122 at gap 2 or more. The record closes 81 of the 338: 67 by exact treewidth, 7 by Harper at cap 12, 7 by minor certificates, none by Lemma P.
+- Twelve corpus instances have a file-backed minor certificate, not the seven the survey lists; loop0010's `large` run left five more. The two file-less survey values are carried beside the floor, not inside it.
+- On the dataset, the cheap floors are tight on 31.4% of the 16,636 classes. MMD+ with the least-c rule is the strongest. No minor-certified class is tight, which is expected: a class gets a minor certificate exactly where the cheap floors failed.
+
+**Two corrections to the plan**, recorded in the report and PROGRESS: the open classes' floors live in `results_quick.csv` and `results_quick_rescued.csv`, not `results.csv`, and the brief's 78 header-only dataset rows do not exist in the jsonl.
+
+**Next** is item 02, family E by search, which reads `targets.json` and the Harper levels in the corpus ledger.
+
+# result: success in 19s, 3 turns, cost $11.98

@@ -27,7 +27,7 @@ program only on minors and branches under caps, every certificate checked by
 `reports/scratch/obstruction_search/<item>/`, every bound in optimum units
 with its Lean theorem named, every non-bound called an estimate or a ceiling.
 
-- [ ] **01 Baseline ledger and the frozen targets: every bound on record against the optimum, on the corpus and the dataset.**
+- [x] **01 Baseline ledger and the frozen targets: every bound on record against the optimum, on the corpus and the dataset.**
   - **Question.** A of the brief. Before any search: for every certified
     corpus instance, what are the bounds already on record — `lb_trivial`,
     `lb_contraction`, `lb_best`, Harper at the recorded cap and at cap 12,

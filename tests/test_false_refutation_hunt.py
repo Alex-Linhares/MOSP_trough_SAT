@@ -8,6 +8,7 @@ its instrumented walk is the production search, node for node, and (f) it
 resumes after being stopped.
 """
 import json
+import signal
 import random
 import time
 
@@ -163,7 +164,11 @@ def test_moves_keep_graphs_valid():
 
 def test_stop_and_resume(tmp_path):
     out = tmp_path / "hunt"
+    before = (signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGINT))
     H.run(1, time.time() + 8, out)
+    # `run` installs its own SIGTERM/SIGINT handlers and must take them away again:
+    # left behind, they made every later forked pool worker immune to SIGTERM
+    assert (signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGINT)) == before
     ck1 = json.loads((out / "checkpoint.json").read_text())
     assert ck1["epoch"] == 1 and ck1["counters"]["tested"] > 0
     arch1 = (out / "archive.jsonl").read_text().splitlines() if (out / "archive.jsonl").exists() else []

@@ -1,0 +1,12 @@
+[2026-11-02 21:42:24] loop start: up to 16 iterations, cap 4.0 h each, model default
+[2026-11-02 21:42:24] === iteration 1: 01 Baseline ledger and the frozen targets: every bound on record against the optimum, on t
+[2026-11-02 21:42:24] claude session it01 (cap 4.00 h) -> session_it01.log
+[2026-11-02 22:17:51] session it01: ok (exit 0, 78 tool calls)
+[2026-11-02 22:57:52] tests FAILED: GATE FAIL: timeout in ['/home/al/anaconda3/bin/python3', '-m', 'pytest', 'tests/', '-q', '-x']
+[2026-11-02 22:57:52] claude session it01_fix1 (cap 0.75 h) -> session_it01_fix1.log
+[2026-11-02 23:42:54] session it01_fix1 hit the 0.75 h cap; killing it
+[2026-11-02 23:42:56] session it01_fix1: timeout (exit 143, 49 tool calls)
+[2026-11-03 00:23:00] tests FAILED:   File "<frozen runpy>", line 198 in _run_module_as_main
+[2026-11-03 00:23:00] claude session it01_fix2 (cap 0.75 h) -> session_it01_fix2.log
+[2026-11-03 00:41:43] session it01_fix2: ok (exit 0, 20 tool calls)
+[2026-11-03 00:52:32] tests passed: GATE PASS

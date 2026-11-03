@@ -1,0 +1,56 @@
+2026-11-02 21:54:21 corpus stage: reading the record (learning/data/instances.csv, invariants, Lemma P, minors, solutions/)
+2026-11-02 21:54:21 corpus stage: 6376 instances; provenance in solutions/: {'certified:refutation': 6374, 'certified:bound': 2}
+2026-11-02 21:54:22 corpus stage: wrote reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv (6376 rows, sha256 5010d4d5360c5e8f)
+2026-11-02 21:54:22 corpus stage: guard passed: no bound on record above a certified optimum
+2026-11-02 21:54:36 corpus stage: reading the record (learning/data/instances.csv, invariants, Lemma P, minors, solutions/)
+2026-11-02 21:54:37 corpus stage: 6376 instances; provenance in solutions/: {'certified:refutation': 6374, 'certified:bound': 2}
+2026-11-02 21:54:37 harper: 6376 instances to run, 0 on file; cap 12, budget 60.0 s, 8 workers, wall 4800.0
+2026-11-02 21:54:37 harper: 200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 4000/6376 done, 0 s wall
+2026-11-02 21:54:38 harper: 4200/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4400/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4600/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4800/6376 done, 2 s wall
+2026-11-02 21:54:39 harper: 5000/6376 done, 2 s wall
+2026-11-02 21:54:39 harper: 5200/6376 done, 2 s wall
+2026-11-02 21:54:40 harper: 5400/6376 done, 3 s wall
+2026-11-02 21:54:41 harper: 5600/6376 done, 4 s wall
+2026-11-02 21:54:42 harper: 5800/6376 done, 5 s wall
+2026-11-02 21:54:44 harper: 6000/6376 done, 7 s wall
+2026-11-02 21:54:53 harper: 6200/6376 done, 16 s wall
+2026-11-02 22:02:36 harper: 6376/6376 done, 479 s wall
+2026-11-02 22:02:36 corpus stage: wrote reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv (6376 rows, sha256 e5918a4c4fc94a97)
+2026-11-02 22:02:36 corpus stage: guard passed: no bound on record above a certified optimum
+2026-11-02 22:02:54 dataset stage: 16636 certified classes from paper1/data/dataset/pathwidth_dataset.jsonl.gz; 8 workers
+2026-11-02 22:02:59 dataset: 2000/16636, 5 s
+2026-11-02 22:03:00 dataset: 4000/16636, 5 s
+2026-11-02 22:03:00 dataset: 6000/16636, 6 s
+2026-11-02 22:03:00 dataset: 8000/16636, 6 s
+2026-11-02 22:03:00 dataset: 10000/16636, 6 s
+2026-11-02 22:03:00 dataset: 12000/16636, 6 s
+2026-11-02 22:03:01 dataset: 14000/16636, 6 s
+2026-11-02 22:03:01 dataset: 16000/16636, 6 s
+2026-11-02 22:03:01 dataset stage: wrote reports/scratch/obstruction_search/01_ledger/ledger_dataset.csv.gz (16636 rows) in 6 s; skipped components > 1024: 22 rows; omega censored: 17
+2026-11-02 22:03:01 dataset stage: guard passed: no cheap floor above a certified width
+2026-11-02 22:03:05 targets: {'gap338': 338, 'cs200': 200, 'open24': 24, 'rest500': 500, 'small': 4123, 'pool_for_rest500': 5940, 'pool_by_band': {'9–20': 4105, '21–30': 1659, '31–40': 131, '41–60': 32, '61–75': 3, '76–100': 10, '101–134': 0}, 'rest500_by_band': {'9–20': 345, '21–30': 140, '31–40': 11, '41–60': 3, '76–100': 1}, 'gap338_and_cs200': 102, 'small_and_gap338': 17}
+2026-11-02 22:03:05 tables: wrote reports/scratch/obstruction_search/01_ledger/tables.md
+2026-11-02 22:03:40 tables: wrote reports/scratch/obstruction_search/01_ledger/tables.md
+2026-11-02 22:04:42 tables: wrote reports/scratch/obstruction_search/01_ledger/tables.md

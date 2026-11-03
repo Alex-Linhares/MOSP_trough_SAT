@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 0/11 SOLVED
+Current: 1/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -59,3 +59,126 @@ Current: 0/11 SOLVED
   then.
 
 ---
+## Iteration 1 — 2026-11-02 22:10
+
+**Baseline recorded before the item** (TASK/PROGRESS setup): Lean `sorry` and
+`axiom` in code: 0 (the gate's count); test suites as of loop0012's last
+gate: 1,804 in `tests/`, 123 in `pathwidth_solver/`; `paper1/latex/main.pdf`
+77 pages. This item adds 12 tests and no Lean.
+
+### Completed
+
+- **Item 01 — the baseline ledger and the frozen targets.**
+  `learning/obstruction_ledger.py` (stages `corpus`, `dataset`, `targets`,
+  `tables`), `tests/test_obstruction_ledger.py` (12 passed),
+  `reports/scratch/obstruction_search/01_ledger/{ledger_corpus.csv,
+  harper12.csv, ledger_dataset.csv.gz, targets.json, tables.md, run.log}`,
+  `reports/obstruction_search.md` created with the document header and §1.
+- **The guard passed**: no bound on record above a certified optimum (6,376
+  instances × 9 bound columns), no dataset floor above a certified width
+  (16,636 classes × 4 floors); `instances.csv`'s optimum equals the
+  `solutions/` value on all 6,376 (provenance read from the files: 6,374
+  refutation, 2 bound).
+- **The only new computation**: Harper at cap 12 under 60 s on every corpus
+  instance, 8 workers, 479 s wall, **1.01 core-hours**; 35 censored at the
+  limit (13 at 76–100 customers, 22 at 101–134), still valid floors; never
+  below the recorded `exp`, above it on 442 instances (max +21).
+- **Numbers**: `floor0 = max(lb_best, tw + 1, harper12, lemmaP, minor)` is
+  tight on 5,732 of 6,376 (89.9%; `lb_best` 4,909, 77.0%); gap ≥ 2 falls
+  from 338 to 122, max gap 30 → 23. Of the 338 the record closes 81: 67 by
+  exact treewidth alone, 7 by Harper at cap 12 alone, 7 by a minor
+  certificate alone, 0 by Lemma P (above `lb_best` on 3, by one). `floor0`
+  is above the harness's reference `max(lb_best, tw + 1)` on 104 instances
+  and closes 14 of the 338 the reference does not. **Twelve** corpus
+  instances have a file-backed minor certificate (the survey lists seven;
+  loop0010's `large@recorded` run left five more), 7 of them tight; the
+  survey's file-less 54 (`4-1_0`) and 92 (`8-2_0`) are carried as
+  `minor_survey`, outside `floor0`. Chu & Stuckey by class: mean `floor0` gap
+  0.2 / 0.2 / 0.64 / 2.72 / 6.64 / 4.96 at 30–125 customers; Harper carries
+  the dense classes (`125-125-10` gap 0.2), minors the ridge (`125-125-2`
+  4 of 5 closed), and nothing on record reaches the sparse 100s
+  (`100-100-2` gap 7.8). `optimum > tw_hi + 1` on 564 instances, 156 of the
+  338. Dataset: cheap floors tight on 5,231 of 16,636 (31.4%); MMD+
+  least-c the best (5,059 tight); 0 of 430 `certified:minor` classes tight
+  (gap 4.6); 22 VSPLIB grids with a component above 1,024 vertices skipped
+  for those components; 17 clique enumerations censored; no "header-only"
+  rows exist in the jsonl (the brief's 78 is not reproduced); 5 of 430 minor
+  rows carry no certificate; all 425 certificates refute `width − 1`.
+- **Targets frozen** (`targets.json`, seed 0): `gap338` 338, `cs200` 200,
+  `open24` 24 (floors from `results_quick.csv` and
+  `results_quick_rescued.csv`, not `results.csv` as plan §0.3 says),
+  `rest500` 500 (stratified 345 / 140 / 11 / 3 / 0 / 1 / 0 over the bands:
+  the pool has nothing above 100 customers outside `gap338 ∪ cs200`),
+  `small` 4,123. The test re-derives `rest500` from the ledger and the seed.
+- **Kill verdict**: none for the item; guard passed. The harness's validity
+  stage ("above optimum" must be 0) was not re-run: the ledger's guard is
+  that check, applied to every bound column on every corpus instance.
+- **Gate: PASS** (`reports/scratch/obstruction_search/01_ledger/gate_run.out`):
+  lake build ok, 0 sorry, 0 axiom; `tests/` 1,816 passed, 2 skipped, 1 xfailed
+  (4:43); `pathwidth_solver/` 123 passed (8:01, under the owner's load of
+  27); paper 77 pages, no undefined references.
+
+### Blockers
+
+None. One correction to the plan recorded in the report: the open classes'
+floors live in `results_quick*.csv`, and the file-backed minor certificates
+number twelve, not seven.
+
+### Next
+
+Item 02 (family E by search: the ceiling on every target, exact `f` and `s*`
+at `n ≤ 22`, the floor by branch and bound). It reads `targets.json` and
+`ledger_corpus.csv` (`harper12`, its levels and caps are the family's floor on
+record; the 35 censored instances are where the SAT half of item 03 is
+needed). Compute used by item 01: 1.01 core-hours of its 1.5.
+
+### Gate fixes after iteration 1 — 2026-11-02 22:57 to 2026-11-03
+
+The item's own gate run passed (above); the driver's two reruns hung in
+`pytest` and timed out at 2,400 s. Two fix sessions; nothing in Lean was
+touched, no test or theorem was removed or weakened.
+
+**Fix attempt 1 (session it01_fix1, 22:57–23:42, hit its 0.75 h cap).**
+Chased the fork-from-a-threaded-parent hazard: added `tests/conftest.py`
+(`OMP/OPENBLAS/MKL/NUMEXPR_NUM_THREADS=1`, `JE_ARROW_MALLOC_CONF=
+background_thread:false`, so the test process has one thread at every fork;
+measured, with the docstring's numbers) and gave `gate.py` a `_run` that
+kills the whole process group on timeout and prints the tail, plus
+`-o faulthandler_timeout=900` so a stuck test dumps its stack. Both stand.
+The gate rerun under them still hung, in
+`tests/test_pebbling_check.py::test_gu_quick_run_has_no_failures`, at
+`Pool.__exit__ → terminate → _terminate_pool → p.join()` (the dump the
+faulthandler flag bought).
+
+**Fix attempt 2 (session it01_fix2, this one). Cause found and fixed.**
+`paper1/false_refutation_hunt.py::run` installs SIGTERM and SIGINT handlers
+(`on_term`, which only sets a flag) and never restores them.
+`tests/test_false_refutation_hunt.py::test_stop_and_resume` calls `run`
+twice, so every test after it — 774 of them, measured with a plugin that
+records `signal.getsignal(SIGTERM)` after each test — runs in a process with
+a Python-level SIGTERM handler, and every `fork`-started `multiprocessing.Pool`
+worker inherits it. `Pool.terminate()` ends workers with SIGTERM (its
+`_help_stuff_finish` takes the task queue's reader lock and keeps it, so the
+`None` sentinel cannot reach a worker still waiting for that lock); a worker
+with the inherited handler absorbs the signal, returns to its semaphore wait,
+and `p.join()` blocks forever. Intermittent because the worker only needs the
+SIGTERM when it is the one still waiting on the reader lock at exit (or
+deadlocked after a fork from a threaded parent, the hazard attempt 1 removed);
+the handler turns that race into a hang. Evidence: the orphaned worker
+PID 2442642 that attempt 1's diagnostic run left behind (forked 23:14:34,
+`cmd` = pytest, one thread, asleep on a futex) had SIGTERM in `SigCgt`, survived
+`kill` (SIGTERM) and died on SIGKILL. The fix: `run` records the previous
+handlers and restores them in a `finally`; `test_stop_and_resume` asserts the
+handlers are what they were. After the fix the plugin records no test with a
+non-default SIGTERM handler. Also killed the leftover orphan.
+
+Seen once and not addressed: in attempt 1's run of 23:14:59, under its own
+parallel pytest runs plus the owner's load, `test_stop_and_resume` failed with
+`KeyError: 'tested'` — the spawned hunt worker had not reported stats within
+the test's 8 s deadline, so the checkpoint's counters held only the base
+keys. A load-dependent flake of the test's budget, recorded here.
+
+**Gate after fix 2: PASS** (`python3 Ralph_Loops/loop0013/gate.py`, 2026-11-03
+00:30–00:43): lake build ok, 0 sorry, 0 axiom; `tests/` 1,816 passed, 2 skipped,
+1 xfailed (4:24); `pathwidth_solver/` 123 passed (6:23); paper 77 pages, no
+undefined references. Not committed (the driver commits).

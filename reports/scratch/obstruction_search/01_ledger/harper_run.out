@@ -1,0 +1,37 @@
+2026-11-02 21:54:36 corpus stage: reading the record (learning/data/instances.csv, invariants, Lemma P, minors, solutions/)
+2026-11-02 21:54:37 corpus stage: 6376 instances; provenance in solutions/: {'certified:refutation': 6374, 'certified:bound': 2}
+2026-11-02 21:54:37 harper: 6376 instances to run, 0 on file; cap 12, budget 60.0 s, 8 workers, wall 4800.0
+2026-11-02 21:54:37 harper: 200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 1800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 2800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3000/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3200/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3400/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3600/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 3800/6376 done, 0 s wall
+2026-11-02 21:54:37 harper: 4000/6376 done, 0 s wall
+2026-11-02 21:54:38 harper: 4200/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4400/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4600/6376 done, 1 s wall
+2026-11-02 21:54:38 harper: 4800/6376 done, 2 s wall
+2026-11-02 21:54:39 harper: 5000/6376 done, 2 s wall
+2026-11-02 21:54:39 harper: 5200/6376 done, 2 s wall
+2026-11-02 21:54:40 harper: 5400/6376 done, 3 s wall
+2026-11-02 21:54:41 harper: 5600/6376 done, 4 s wall
+2026-11-02 21:54:42 harper: 5800/6376 done, 5 s wall
+2026-11-02 21:54:44 harper: 6000/6376 done, 7 s wall
+2026-11-02 21:54:53 harper: 6200/6376 done, 16 s wall
+2026-11-02 22:02:36 harper: 6376/6376 done, 479 s wall
+2026-11-02 22:02:36 corpus stage: wrote reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv (6376 rows, sha256 e5918a4c4fc94a97)
+2026-11-02 22:02:36 corpus stage: guard passed: no bound on record above a certified optimum

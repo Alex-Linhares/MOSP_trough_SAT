@@ -17,7 +17,9 @@ Passes only if all five hold:
 """
 from __future__ import annotations
 
+import os
 import re
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -50,6 +52,31 @@ def strip_comments(src: str) -> str:
     return "".join(out)
 
 
+def _run(cmd: list[str], cwd: Path, timeout: float) -> subprocess.CompletedProcess:
+    """`subprocess.run(cmd, capture_output=True, timeout=timeout)` with two
+    differences, both from the loop0013 item 01 gate hang (2026-11-02): the
+    command runs in its own session, so that on timeout its whole process group
+    is killed (`subprocess.run` kills only the direct child, and the forked
+    pytest worker that had hung outlived the gate by an hour), and the output
+    produced before the timeout travels with the exception, so that `main` can
+    print which test was running."""
+    proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            text=True, errors="replace", start_new_session=True)
+    try:
+        out, _ = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGKILL)
+        out, _ = proc.communicate()
+        raise subprocess.TimeoutExpired(cmd, timeout, output=out)
+    return subprocess.CompletedProcess(cmd, proc.returncode, out, "")
+
+
+# A test that runs this long has every thread's stack dumped to stderr (pytest's
+# faulthandler plugin); the test goes on, and the dump names it if the gate
+# then times out. The suite takes about 5 min in all.
+FAULTHANDLER = "faulthandler_timeout=900"
+
+
 def _main() -> int:
     ok = True
     b = subprocess.run(["lake", "build"], cwd=LEAN, capture_output=True, text=True, errors="replace")
@@ -80,13 +107,12 @@ def _main() -> int:
     if axioms:
         print(f"GATE FAIL: axiom declarations: {axioms}"); ok = False
 
-    t = subprocess.run([sys.executable, "-m", "pytest", "tests/", "-q", "-x"], cwd=REPO, timeout=2400,
-                       capture_output=True, text=True, errors="replace")
+    t = _run([sys.executable, "-m", "pytest", "tests/", "-q", "-x", "-o", FAULTHANDLER], REPO, 2400)
     print("\n".join((t.stdout + t.stderr).splitlines()[-5:]))
     if t.returncode != 0:
         print("GATE FAIL: pytest"); ok = False
-    w = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"], timeout=2400,
-                       cwd=REPO / "pathwidth_solver", capture_output=True, text=True, errors="replace")
+    w = _run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-o", FAULTHANDLER],
+             REPO / "pathwidth_solver", 2400)
     print("\n".join((w.stdout + w.stderr).splitlines()[-3:]))
     if w.returncode != 0:
         print("GATE FAIL: pathwidth_solver pytest"); ok = False
@@ -105,7 +131,8 @@ def main() -> int:  # added 2026-11-02: a hung pytest (libgomp fork deadlock) he
     try:
         return _main()
     except subprocess.TimeoutExpired as e:
-        print(f"GATE FAIL: timeout in {e.cmd}")
+        tail = "\n".join((e.output or "").splitlines()[-40:])
+        print(f"GATE FAIL: timeout in {e.cmd}\n{tail}")
         return 1
 
 

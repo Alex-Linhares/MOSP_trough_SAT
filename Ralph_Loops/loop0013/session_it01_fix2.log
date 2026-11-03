@@ -1,0 +1,70 @@
+# session it01_fix2 started 2026-11-03 00:23:00
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll look at the gate, the failing test, and `run_pebbling_gu` first, then run the gate.
+  > $ cat Ralph_Loops/loop0013/gate.py && sed -n 200,270p tests/test_pebbling_check.py && cat tests/conftest.py && git diff Ralph_Loops/loop0013/gate.py
+  > $ sed -n 2240,2345p paper1/complex_check.py; echo ----; grep -n "Pool\|get_context\|set_start_method\|faulthandler\|fork" paper1/complex_check.py | head -40; echo
+  > $ ps -eo pid,ppid,stat,etime,wchan:20,cmd | grep -E "pytest|complex_check|python" | grep -v grep | head -30; echo ----; sed -n 700,740p /home/al/anaconda3/lib/pyt
+  > $ echo "== stuck pytest 2442642 tree"; ps -o pid,ppid,stat,etime,time,wchan:20,nlwp,cmd --ppid 2442642 | cut -c1-150; echo "== its own threads/signals"; grep -E "
+  > $ date; echo "== orphan fds"; ls -l /proc/2442642/fd 2>/dev/null | awk '{print $NF}' | sort | uniq -c | sort -rn | head; echo "== orphan start/env"; ps -o lstart 
+  > $ echo "== frh 775-790"; sed -n 775,790p paper1/false_refutation_hunt.py; echo "== frh 1015-1040"; sed -n 1015,1040p paper1/false_refutation_hunt.py; echo "== tes
+  > $ echo "== test_stop_and_resume"; sed -n 160,200p tests/test_false_refutation_hunt.py; echo "== frh run loop 985-1014"; sed -n 985,1014p paper1/false_refutation_h
+  > $ mkdir -p /tmp/gatefix2 && cat > /tmp/gatefix2/sigwatch.py <<'EOF'
+import signal, pytest
+_seen = set()
+def pytest_runtest_teardown(item):
+    h = signal.getsigna
+  > $ cat > /tmp/gatefix2/race.py <<'EOF'
+import os, signal, sys, time
+from multiprocessing import Pool
+def f(x): return x
+def trial(handler, n=40):
+    if handler:
+ 
+  > $ for f in runA runB runC; do echo "== $f"; tail -n 3 /tmp/gatefix2/$f.log | cut -c1-160; done; echo "== sigwatch"; cat /tmp/gatefix2/sigwatch.log 2>/dev/null | a
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper1/false_refutation_hunt.py"); s = p.read_text()
+old = "    signal.signal(signal.SIGTERM, on_term)\n   
+  > $ kill -9 2442642 2>/dev/null; sleep 0.5; ps -p 2442642 >/dev/null && echo "orphan still alive" || echo "orphan gone after SIGKILL (SIGTERM was absorbed, as the m
+  > $ echo "== sigwatch lines by test file (runC still appending under the old code)"; cut -f1 /tmp/gatefix2/sigwatch.log | cut -d: -f1 | sort | uniq -c | sort -rn | 
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "^exit " /tmp/gatefix2/gate_run.out; do sleep 5; done; cat /tmp/gatefix2/gate_run.out
+  > $ cat >> Ralph_Loops/loop0013/PROGRESS.md <<'EOF'
+
+### Gate fixes after iteration 1 — 2026-11-02 22:57 to 2026-11-03
+
+The item's own gate run passed (above); the 
+  > $ tail -n 2 /tmp/gatefix2/runC.log | cut -c1-150; echo "== first leak line in runC (old code)"; head -n 1 /tmp/gatefix2/sigwatch.log 2>/dev/null | cut -f1
+  > Monitor {"command": "until grep -q \"^exit \" /tmp/gatefix2/gate_run.out; do sleep 10; done; grep -E \"lake build|sorry in code|
+
+I need only the gate's result now, and it is being watched. I'll wait for the notification.
+
+# result: success in 546s, 19 turns, cost $4.08
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/47b4f29b-53e3-4075-922d-abd3a15e6ae7/tasks/bw15th0we.output
+  > $ cat >> Ralph_Loops/loop0013/PROGRESS.md <<'EOF'
+
+**Gate after fix 2: PASS** (`python3 Ralph_Loops/loop0013/gate.py`, 2026-11-03
+00:30–00:43): lake build ok, 0 s
+
+The gate passes now. Nothing was committed.
+
+**Cause.** The hang was not a Lean failure and not the fork-from-threads hazard fix attempt 1 chased. `paper1/false_refutation_hunt.py`'s `run` installs SIGTERM and SIGINT handlers that only set a flag, and never restores them. `test_stop_and_resume` calls `run` twice, so every later test in the suite runs with that handler in place, and every forked `multiprocessing.Pool` worker inherits it. `Pool.terminate()` ends its workers with SIGTERM, because its `_help_stuff_finish` keeps the task queue's reader lock and the exit sentinel cannot reach a worker still waiting for that lock. A worker with the inherited Python-level handler absorbs the signal and goes back to waiting, so `Pool.__exit__` joins it forever. That is exactly the stack in the failing run, inside `run_pebbling_gu`.
+
+**Evidence.**
+- A pytest plugin recording the SIGTERM handler after each test shows the first non-default handler at `test_stop_and_resume` and the same `run.<locals>.on_term` on all 774 tests after it. After the fix, none.
+- The orphaned worker from fix attempt 1's diagnostic run was still alive on the machine: one thread, asleep on a futex, SIGTERM in its caught-signal mask. It survived a plain `kill` and died on SIGKILL. I killed it.
+- The hang is intermittent because the SIGTERM only matters for a worker that is still waiting on the reader lock at exit. The handler turns that race into a permanent wait.
+
+**Fix, in two files.**
+- `paper1/false_refutation_hunt.py`: `run` records the previous handlers and restores them in a `finally` around the rest of the function. The diff looks large because of the re-indent; no logic changed.
+- `tests/test_false_refutation_hunt.py`: `test_stop_and_resume` now asserts the SIGTERM and SIGINT handlers are unchanged after `run`.
+
+Fix attempt 1's `tests/conftest.py` and the `gate.py` changes stand. They are what produced the stack dump that pointed at the pool exit.
+
+**Gate result.** lake build ok, 0 sorry, 0 axiom. The main suite passed in 4:24 with 1,816 tests, the pathwidth solver suite in 6:23, and the paper builds at 77 pages with no undefined references. PROGRESS.md has an entry for both fix attempts, the cause, and the gate line.
+
+**One thing recorded but not fixed.** Fix attempt 1's log shows `test_stop_and_resume` failing once with `KeyError: 'tested'` under heavy machine load. The spawned hunt worker had not reported stats within the test's 8-second deadline. It is a load-dependent flake of that test's budget, noted in PROGRESS.md for the owner.
+
+# result: success in 23s, 3 turns, cost $5.93

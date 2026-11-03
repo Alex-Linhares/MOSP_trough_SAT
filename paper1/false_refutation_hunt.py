@@ -1026,110 +1026,122 @@ def run(workers, until, out=OUT, archive_keep=500):
     def on_term(signum, frame):
         stop["why"] = "signal"
 
+    # Process-wide state: restore the previous handlers on the way out, whatever
+    # the way out. Left in place, `on_term` outlived the call in every process
+    # that imported this module and ran `run` -- the test suite -- and a forked
+    # `multiprocessing.Pool` worker that inherited it could no longer be ended
+    # by `Pool.terminate()`'s SIGTERM: the handler set a flag in a dead call and
+    # the worker went back to waiting on the task queue, so `Pool.__exit__`
+    # joined it forever (the loop0012 and loop0013 gate hangs, 2026-11-02).
+    prev_term, prev_int = signal.getsignal(signal.SIGTERM), signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGTERM, on_term)
     signal.signal(signal.SIGINT, on_term)
-
-    def totals():
-        t = {k_: v for k_, v in base.items() if k_ not in ("best", "max_eval_seconds")}
-        sizes = dict(base_sizes)
-        for s in per.values():
-            for k_, v in s.items():
-                if k_ in ("best", "max_eval_seconds", "sizes"):
-                    continue
-                t[k_] = t.get(k_, 0) + v
-            for b, v in s["sizes"].items():
-                sizes[b] = sizes.get(b, 0) + v
-        t["best"] = max([base.get("best", -1e9)] + [s["best"] for s in per.values()])
-        t["max_eval_seconds"] = max([base.get("max_eval_seconds", 0)] +
-                                    [s["max_eval_seconds"] for s in per.values()])
-        return t, sizes
-
-    def checkpoint():
-        t, sizes = totals()
-        atomic_write(ck_path, json.dumps({"saved": dt.datetime.now().isoformat(timespec="seconds"),
-                                          "epoch": epoch, "counters": t, "sizes": sizes,
-                                          "frontiers": front}, indent=1))
-
-    def progress():
-        t, sizes = totals()
-        run_tested = sum(s["tested"] for s in per.values())
-        rate = run_tested / max(1e-9, time.time() - started)
-        hist = " ".join(f"{b}:{sizes[b]}" for b in sorted(
-            sizes, key=lambda x: int(x.split("-")[0]) if x[0].isdigit() else 999))
-        W.log(f"tested {t.get('tested', 0)} ({rate:.1f}/s) best_fitness {t['best']:.3f}"
-              f" node_losses {t.get('filter_loss', 0)} (definite {t.get('def_loss', 0)})"
-              f" lossy_graphs {t.get('lossy', 0)} false_ref_nodes {t.get('false_ref', 0)}"
-              f" memo_poison {t.get('memo_poison', 0)} seen_loss {t.get('seen_loss', 0)}"
-              f" root>=80% {t.get('root_near', 0)} aborted {t.get('aborted', 0)}"
-              f" oracle_checks {t.get('oracle_checks', 0)} max_eval {t['max_eval_seconds']:.2f}s"
-              f" sizes {hist} alive {sum(p.is_alive() for p in procs)}")
-        checkpoint()
-
-    while len(done) < workers and not stop["why"]:
-        try:
-            msg = q.get(timeout=5)
-        except queue.Empty:
-            msg = None
-            if not any(p.is_alive() for p in procs):
-                break
-        if msg:
-            kind = msg[0]
-            if kind == "stats":
-                per[msg[1]] = msg[2]
-                if msg[3].get("cur"):
-                    front[str(msg[1])] = msg[3]
-            elif kind == "done":
-                done.add(msg[1])
-            elif kind == "log":
-                W.log(msg[1])
-            elif kind == "archive":
-                e = msg[1]
-                k_ = key(e["masks"])
-                if k_ not in archive or archive[k_]["fitness"] < e["fitness"]:
-                    floor = (sorted(x["fitness"] for x in archive.values())[-archive_keep]
-                             if len(archive) >= archive_keep else -1e9)
-                    if e["fitness"] > floor:
-                        archive[k_] = e
-                        W.append("archive.jsonl", e)
-            elif kind == "mismatch":
-                W.append("mismatch.jsonl", msg[1])
-                W.log(f"a hit not confirmed by decide_native (helper mismatch): {msg[1]['reproduce']}")
-            elif kind == "hit":
-                e = msg[1]
-                W.append("hits.jsonl", e)
-                atomic_write(out / "FOUND.md", found_md(e))
-                m = e.get("minimised") or e
-                W.log(f"HIT FOUND n={e['n']} k={e['k']} minimised to n={m['n']} k={m['k']}"
-                      f" configs={[c for c, _ in m['configs']][:3]} -- {m['reproduce']}")
-                stop["why"] = "hit"
-            elif kind == "repaired_bug":
-                W.append("REPAIRED_BUG.jsonl", msg[1])
-                W.log(f"!!!!!!!! BUG IN THE REPAIRED SEARCH ({msg[1]['kind']}): "
-                      f"{msg[1]['reproduce']} -- stopping the hunt")
-                stop["why"] = "repaired bug"
-        if time.time() - last_log > CHECKPOINT_SECONDS:
-            progress()
-            last_log = time.time()
-        if time.time() - last_compact > 3600:            # keep archive.jsonl small
-            keep = sorted(archive.values(), key=lambda x: -x["fitness"])[:archive_keep]
-            archive = {key(e["masks"]): e for e in keep}
-            atomic_write(out / "archive.jsonl", "".join(json.dumps(e) + "\n" for e in keep))
-            last_compact = time.time()
-    for p in procs:
-        if p.is_alive():
-            p.terminate()
-    for p in procs:
-        p.join(timeout=10)
     try:
-        while True:
-            msg = q.get_nowait()
-            if msg[0] == "stats":
-                per[msg[1]] = msg[2]
-    except (queue.Empty, OSError, EOFError, ValueError):
-        pass
-    progress()
-    W.log(f"stopped ({stop['why'] or 'deadline'})")
-    return 0
+
+        def totals():
+            t = {k_: v for k_, v in base.items() if k_ not in ("best", "max_eval_seconds")}
+            sizes = dict(base_sizes)
+            for s in per.values():
+                for k_, v in s.items():
+                    if k_ in ("best", "max_eval_seconds", "sizes"):
+                        continue
+                    t[k_] = t.get(k_, 0) + v
+                for b, v in s["sizes"].items():
+                    sizes[b] = sizes.get(b, 0) + v
+            t["best"] = max([base.get("best", -1e9)] + [s["best"] for s in per.values()])
+            t["max_eval_seconds"] = max([base.get("max_eval_seconds", 0)] +
+                                        [s["max_eval_seconds"] for s in per.values()])
+            return t, sizes
+
+        def checkpoint():
+            t, sizes = totals()
+            atomic_write(ck_path, json.dumps({"saved": dt.datetime.now().isoformat(timespec="seconds"),
+                                              "epoch": epoch, "counters": t, "sizes": sizes,
+                                              "frontiers": front}, indent=1))
+
+        def progress():
+            t, sizes = totals()
+            run_tested = sum(s["tested"] for s in per.values())
+            rate = run_tested / max(1e-9, time.time() - started)
+            hist = " ".join(f"{b}:{sizes[b]}" for b in sorted(
+                sizes, key=lambda x: int(x.split("-")[0]) if x[0].isdigit() else 999))
+            W.log(f"tested {t.get('tested', 0)} ({rate:.1f}/s) best_fitness {t['best']:.3f}"
+                  f" node_losses {t.get('filter_loss', 0)} (definite {t.get('def_loss', 0)})"
+                  f" lossy_graphs {t.get('lossy', 0)} false_ref_nodes {t.get('false_ref', 0)}"
+                  f" memo_poison {t.get('memo_poison', 0)} seen_loss {t.get('seen_loss', 0)}"
+                  f" root>=80% {t.get('root_near', 0)} aborted {t.get('aborted', 0)}"
+                  f" oracle_checks {t.get('oracle_checks', 0)} max_eval {t['max_eval_seconds']:.2f}s"
+                  f" sizes {hist} alive {sum(p.is_alive() for p in procs)}")
+            checkpoint()
+
+        while len(done) < workers and not stop["why"]:
+            try:
+                msg = q.get(timeout=5)
+            except queue.Empty:
+                msg = None
+                if not any(p.is_alive() for p in procs):
+                    break
+            if msg:
+                kind = msg[0]
+                if kind == "stats":
+                    per[msg[1]] = msg[2]
+                    if msg[3].get("cur"):
+                        front[str(msg[1])] = msg[3]
+                elif kind == "done":
+                    done.add(msg[1])
+                elif kind == "log":
+                    W.log(msg[1])
+                elif kind == "archive":
+                    e = msg[1]
+                    k_ = key(e["masks"])
+                    if k_ not in archive or archive[k_]["fitness"] < e["fitness"]:
+                        floor = (sorted(x["fitness"] for x in archive.values())[-archive_keep]
+                                 if len(archive) >= archive_keep else -1e9)
+                        if e["fitness"] > floor:
+                            archive[k_] = e
+                            W.append("archive.jsonl", e)
+                elif kind == "mismatch":
+                    W.append("mismatch.jsonl", msg[1])
+                    W.log(f"a hit not confirmed by decide_native (helper mismatch): {msg[1]['reproduce']}")
+                elif kind == "hit":
+                    e = msg[1]
+                    W.append("hits.jsonl", e)
+                    atomic_write(out / "FOUND.md", found_md(e))
+                    m = e.get("minimised") or e
+                    W.log(f"HIT FOUND n={e['n']} k={e['k']} minimised to n={m['n']} k={m['k']}"
+                          f" configs={[c for c, _ in m['configs']][:3]} -- {m['reproduce']}")
+                    stop["why"] = "hit"
+                elif kind == "repaired_bug":
+                    W.append("REPAIRED_BUG.jsonl", msg[1])
+                    W.log(f"!!!!!!!! BUG IN THE REPAIRED SEARCH ({msg[1]['kind']}): "
+                          f"{msg[1]['reproduce']} -- stopping the hunt")
+                    stop["why"] = "repaired bug"
+            if time.time() - last_log > CHECKPOINT_SECONDS:
+                progress()
+                last_log = time.time()
+            if time.time() - last_compact > 3600:            # keep archive.jsonl small
+                keep = sorted(archive.values(), key=lambda x: -x["fitness"])[:archive_keep]
+                archive = {key(e["masks"]): e for e in keep}
+                atomic_write(out / "archive.jsonl", "".join(json.dumps(e) + "\n" for e in keep))
+                last_compact = time.time()
+        for p in procs:
+            if p.is_alive():
+                p.terminate()
+        for p in procs:
+            p.join(timeout=10)
+        try:
+            while True:
+                msg = q.get_nowait()
+                if msg[0] == "stats":
+                    per[msg[1]] = msg[2]
+        except (queue.Empty, OSError, EOFError, ValueError):
+            pass
+        progress()
+        W.log(f"stopped ({stop['why'] or 'deadline'})")
+        return 0
+    finally:
+        signal.signal(signal.SIGTERM, prev_term)
+        signal.signal(signal.SIGINT, prev_int)
 
 
 def main(argv=None):
