@@ -1,0 +1,11 @@
+[
+ {
+  "rule": "min-d",
+  "fraction": 0.5,
+  "size": 50,
+  "m": 50,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ }
+]

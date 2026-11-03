@@ -105,6 +105,50 @@ TABLES_MD = OUT / "tables.md"
 CHECKER_CSV = OUT / "checker_verdicts.csv"
 C_BINARY = ROOT / "pathwidth_solver" / "cli" / "pathwidth"
 
+def set_out(item: str) -> Path:
+    """Point every output path at `reports/scratch/obstruction_search/<item>/`
+    (`04_minor` for item 04, `05_minor_scale` for item 05). Called before any
+    worker pool is created, so forked workers see the same paths."""
+    global OUT, SEARCH_CSV, LADDER_CSV, CERT_DIR, VALIDATION_LOG, RUN_LOG, TABLES_MD, CHECKER_CSV, RIDGE_CSV, RIDGE_DIR
+    OUT = ROOT / "reports" / "scratch" / "obstruction_search" / item
+    SEARCH_CSV = OUT / "search.csv"
+    LADDER_CSV = OUT / "ladder.csv"
+    CERT_DIR = OUT / "certificates"
+    VALIDATION_LOG = OUT / "validation.log"
+    RUN_LOG = OUT / "run.log"
+    TABLES_MD = OUT / "tables.md"
+    CHECKER_CSV = OUT / "checker_verdicts.csv"
+    RIDGE_CSV = OUT / "ridge.csv"
+    RIDGE_DIR = OUT / "ridge"
+    return OUT
+
+
+RIDGE_CSV = OUT / "ridge.csv"
+RIDGE_DIR = OUT / "ridge"
+
+# plan §0.5 (e): the C cap per call by the instance's size, and the item's
+# per-instance budgets by band (item 04: 60 s at n <= 40, 120 s at 41-60;
+# item 05: 180 s at 61-100, 300 s at 101-134)
+CAP_BY_SIZE = ((60, 2.0), (100, 5.0), (134, 10.0))
+BUDGET_BANDS = (40, 60, 100)
+
+
+def cap_for(n: int) -> float:
+    for hi, cap in CAP_BY_SIZE:
+        if n <= hi:
+            return cap
+    return CAP_BY_SIZE[-1][1]
+
+
+def budget_for(n: int, seconds: tuple[int, ...]) -> int:
+    """`seconds` lists the budget per band (n <= 40, 41-60, 61-100, 101+);
+    a shorter tuple repeats its last entry."""
+    for i, hi in enumerate(BUDGET_BANDS):
+        if n <= hi:
+            return int(seconds[min(i, len(seconds) - 1)])
+    return int(seconds[-1])
+
+
 RULES = ("min-d", "least-c")
 LADDER_FRACTIONS = (0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95)
 RESTART_FRACTIONS = (0.50, 0.60, 0.70, 0.80, 0.90, 0.95)
@@ -114,11 +158,12 @@ C_CAP_SECONDS = 2.0      # per C call at n <= 60 (plan §0.5 (e))
 MIN_MINOR = 3
 
 
-def log(msg: str, path: Path = RUN_LOG) -> None:
+def log(msg: str, path: Path | None = None) -> None:
+    """Append to `RUN_LOG` (resolved at call time, so `set_out` redirects it)."""
     OUT.mkdir(parents=True, exist_ok=True)
     line = f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}"
     print(line, flush=True)
-    with open(path, "a") as fh:
+    with open(path or RUN_LOG, "a") as fh:
         fh.write(line + "\n")
 
 
@@ -349,7 +394,7 @@ def run_c(g6: str, cap: float, binary: Path = C_BINARY, nice: bool = True) -> di
     seconds = time.monotonic() - t0
     out = {"stdout": proc.stdout.strip().splitlines(), "stderr": proc.stderr.strip().splitlines(),
            "returncode": proc.returncode, "seconds": seconds, "width": None, "status": None, "lower": None,
-           "layout": None}
+           "layout": None, "nodes": None}
     for line in out["stdout"]:
         parts = line.split()
         if parts and parts[0] == "pathwidth" and len(parts) >= 3:
@@ -360,6 +405,8 @@ def run_c(g6: str, cap: float, binary: Path = C_BINARY, nice: bool = True) -> di
         for tok in line.split():
             if tok.startswith("lower="):
                 out["lower"] = int(tok[6:])
+            elif tok.startswith("nodes="):
+                out["nodes"] = int(tok[6:])
     return out
 
 
@@ -420,6 +467,7 @@ class Evaluator:
             self.cache[key] = res
             return res
         cap = min(self.cap, max(0.05, self.time_left()))
+        res["cap"] = cap
         c = run_c(graph6(m, edges), cap)
         self.calls += 1
         self.seconds_c += c["seconds"]
@@ -508,16 +556,20 @@ def _moves(adj: list[int], seq: list[tuple[int, int]], rng: random.Random) -> tu
 
 
 def search(ev: Evaluator, rng_seed: int = 1, restart_fractions=RESTART_FRACTIONS,
-           moves_per_restart: int = MOVES_PER_RESTART) -> dict:
-    """Tabu local search over contraction sequences; returns the trace."""
+           moves_per_restart: int = MOVES_PER_RESTART, starts: list | None = None) -> dict:
+    """Tabu local search over contraction sequences; returns the trace.
+    `starts` (label, sequence) overrides the greedy restart points (the
+    ridge stage restarts from its own ladder points or a recorded certificate)."""
     rng = random.Random(rng_seed)
     n = len(ev.adj)
-    starts = []
-    for rule in RULES:
-        full = greedy_sequence(ev.adj, 0, rule)
-        for frac in restart_fractions:
-            size = max(MIN_MINOR, int(round(frac * n)))
-            starts.append((f"{rule}@{frac:.2f}", full[:max(0, n - size)]))
+    if starts is None:
+        starts = []
+        for rule in RULES:
+            full = greedy_sequence(ev.adj, 0, rule)
+            for frac in restart_fractions:
+                size = max(MIN_MINOR, int(round(frac * n)))
+                starts.append((f"{rule}@{frac:.2f}", full[:max(0, n - size)]))
+    starts = [(label, list(seq)) for label, seq in starts]
     trace = {"restarts": 0, "moves": 0, "improvements": 0, "accepted": 0, "move_kinds": {}}
     # evaluate every start first (the ladder's own points are among them)
     for label, seq in starts:
@@ -562,7 +614,7 @@ def search(ev: Evaluator, rng_seed: int = 1, restart_fractions=RESTART_FRACTIONS
 
 
 def certificate(name: str, matrix, adj: list[int], best: dict, seconds: float, method: str,
-                optimum: int | None) -> dict:
+                optimum: int | None, cap: float = C_CAP_SECONDS) -> dict:
     c = best["c"]
     pw, source = proved_pathwidth(c)
     return {
@@ -586,9 +638,9 @@ def certificate(name: str, matrix, adj: list[int], best: dict, seconds: float, m
         "floor_source": source,
         "floor": best["floor"], "floor_units": "optimum units: pathwidth(minor) + 1 <= pathwidth(G) + 1 = MOSP",
         "optimum_on_record": optimum,
-        "c_command": f"printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t {C_CAP_SECONDS:g} -l -v -m min_vertices=1000000",
-        "c_cap_seconds": C_CAP_SECONDS,
-        "c_stdout": c["stdout"], "c_stderr": c["stderr"], "c_seconds": c["seconds"],
+        "c_command": f"printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t {cap:g} -l -v -m min_vertices=1000000",
+        "c_cap_seconds": cap,
+        "c_stdout": c["stdout"], "c_stderr": c["stderr"], "c_seconds": c["seconds"], "c_nodes": c.get("nodes"),
         "c_binary_sha256": binary_sha256(),
         "method": method,
         "search_seconds": seconds,
@@ -605,7 +657,8 @@ def certificate(name: str, matrix, adj: list[int], best: dict, seconds: float, m
 
 
 def _job(args) -> dict:
-    name, matrix, ordering, optimum, seconds, rng_seed, write = args
+    name, matrix, ordering, optimum, seconds, rng_seed, write = args[:7]
+    cap = float(args[7]) if len(args) > 7 else C_CAP_SECONDS
     matrix = np.asarray(matrix, dtype=int)
     adj = adjacency_from_matrix(matrix)
     n = len(adj)
@@ -615,10 +668,10 @@ def _job(args) -> dict:
         position = [0] * n
         for i, v in enumerate(opening):
             position[v] = i
-    out = {"instance_name": name, "n": n, "optimum": optimum, "seconds_budget": seconds}
+    out = {"instance_name": name, "n": n, "optimum": optimum, "seconds_budget": seconds, "c_cap": cap}
     # the ladder
     t0 = time.monotonic()
-    ev_l = Evaluator(adj, optimum, C_CAP_SECONDS, position, deadline=t0 + seconds)
+    ev_l = Evaluator(adj, optimum, cap, position, deadline=t0 + seconds)
     rows = ladder(ev_l)
     lad_seconds = time.monotonic() - t0
     out.update({"ladder_floor": ev_l.best_floor, "ladder_m": ev_l.best_m if ev_l.best else None,
@@ -629,7 +682,7 @@ def _job(args) -> dict:
                 "ladder_reached_optimum": optimum is not None and ev_l.best_floor >= optimum})
     # the search
     t1 = time.monotonic()
-    ev_s = Evaluator(adj, optimum, C_CAP_SECONDS, position, deadline=t1 + seconds)
+    ev_s = Evaluator(adj, optimum, cap, position, deadline=t1 + seconds)
     trace = search(ev_s, rng_seed)
     s_seconds = time.monotonic() - t1
     out.update({"search_floor": ev_s.best_floor, "search_m": ev_s.best_m if ev_s.best else None,
@@ -648,54 +701,102 @@ def _job(args) -> dict:
         d = CERT_DIR / safe_name(name)
         d.mkdir(parents=True, exist_ok=True)
         write_standard_instance(d / "instance.mosp", name, matrix)
-        cert = certificate(name, matrix, adj, ev_s.best, s_seconds, "search", optimum)
+        cert = certificate(name, matrix, adj, ev_s.best, s_seconds, "search", optimum, cap)
         (d / "search.json").write_text(json.dumps(cert, indent=1))
         if ev_l.best is not None:
-            certl = certificate(name, matrix, adj, ev_l.best, lad_seconds, "ladder", optimum)
+            certl = certificate(name, matrix, adj, ev_l.best, lad_seconds, "ladder", optimum, cap)
             (d / "ladder.json").write_text(json.dumps(certl, indent=1))
         (d / "ladder_points.json").write_text(json.dumps(rows, indent=1))
         out["certificate"] = str((d / "search.json").relative_to(ROOT))
     return out
 
 
-def run(which: str, max_n: int, workers: int, seconds: tuple[int, int], rng_seed: int = 1,
-        limit: int | None = None, wall: float | None = None) -> pd.DataFrame:
+def run(which: str, max_n: int, workers: int, seconds: tuple[int, ...], rng_seed: int = 1,
+        limit: int | None = None, wall: float | None = None, min_n: int = 0, core_hours: float | None = None,
+        order: str = "large-first") -> pd.DataFrame:
+    """The ladder and the search on every target with `min_n <= n <= max_n`
+    not yet in `search.csv`; `which` is a comma-separated list of target
+    sets (their union). At most `workers` instances run at once; a new one
+    is started only while the core-hours spent (completed instances' ladder
+    + search seconds, plus the budgets of the running ones) are below
+    `core_hours`, and the instances not reached are listed in
+    `not_reached.txt` (the item's hard stop)."""
     led = ledger().set_index("instance_name")
-    names = [nm for nm in target_names(which) if int(led.loc[nm, "n"]) <= max_n]
+    names = []
+    for w in which.split(","):
+        for nm in target_names(w):
+            if min_n <= int(led.loc[nm, "n"]) <= max_n and nm not in names:
+                names.append(nm)
     if limit:
         names = names[:limit]
     inst = corpus_instances()
     done = set()
     if SEARCH_CSV.exists():
         done = set(pd.read_csv(SEARCH_CSV)["instance_name"])
+    if (OUT / "carried_item04.csv").exists():
+        done |= set(pd.read_csv(OUT / "carried_item04.csv")["instance_name"])
     jobs = []
     for nm in names:
         if nm in done:
             continue
         n = int(led.loc[nm, "n"])
         sol = solution_record(nm)
-        budget = seconds[0] if n <= 40 else seconds[1]
+        budget = budget_for(n, seconds)
         jobs.append((nm, np.asarray(inst[nm][1].matrix, dtype=int), sol["ordering"] if sol else None,
-                     int(led.loc[nm, "optimum"]), budget, rng_seed, True))
-    jobs.sort(key=lambda j: -len(j[1]))
-    log(f"run: {len(names)} targets ({which}, n <= {max_n}), {len(jobs)} to do, {workers} workers, "
-        f"seconds {seconds}, binary {binary_sha256()[:16]}")
+                     int(led.loc[nm, "optimum"]), budget, rng_seed, True, cap_for(n)))
+    jobs.sort(key=lambda j: (len(j[1]) if order == "small-first" else -len(j[1]), j[0]))
+    log(f"run: {len(names)} targets ({which}, {min_n} <= n <= {max_n}), {len(jobs)} to do, {workers} workers, "
+        f"seconds {seconds}, caps by size {CAP_BY_SIZE}, core-hours cap {core_hours}, order {order}, "
+        f"binary {binary_sha256()[:16]}")
     t0 = time.monotonic()
     rows = []
+    spent = 0.0            # seconds of completed instances (ladder + search)
+    committed = 0.0        # budgets of the running instances (2 x budget each)
+    cap_seconds = core_hours * 3600 if core_hours else float("inf")
+    pending = list(jobs)
+    running: dict = {}
+    stopped_early = False
     with Pool(workers) as pool:
-        for k, row in enumerate(pool.imap_unordered(_job, jobs), 1):
-            rows.append(row)
-            part = pd.DataFrame([row])
-            part.to_csv(SEARCH_CSV, mode="a", header=not SEARCH_CSV.exists(), index=False)
-            if k % 10 == 0 or k == len(jobs):
-                log(f"  {k}/{len(jobs)} done, {time.monotonic() - t0:.0f} s wall; last {row['instance_name']!r}: "
-                    f"ladder {row['ladder_floor']} search {row['search_floor']} opt {row['optimum']}")
-            if wall and time.monotonic() - t0 > wall:
-                log("  wall budget reached; stopping")
-                pool.terminate()
+        while pending or running:
+            while pending and len(running) < workers and not stopped_early:
+                if spent + committed + 2 * pending[0][4] > cap_seconds:
+                    stopped_early = True
+                    break
+                job = pending.pop(0)
+                running[job[0]] = (pool.apply_async(_job, (job,)), 2 * job[4])
+                committed += 2 * job[4]
+            if wall and time.monotonic() - t0 > wall and not stopped_early:
+                log("  wall budget reached; no more instances started")
+                stopped_early = True
+            if not running:
                 break
+            finished = [nm for nm, (res, _) in running.items() if res.ready()]
+            if not finished:
+                time.sleep(0.5)
+                continue
+            for nm in finished:
+                res, budget2 = running.pop(nm)
+                committed -= budget2
+                row = res.get()
+                rows.append(row)
+                spent += float(row["ladder_seconds"]) + float(row["search_seconds"])
+                pd.DataFrame([row]).to_csv(SEARCH_CSV, mode="a", header=not SEARCH_CSV.exists(), index=False)
+                k = len(rows)
+                if k % 10 == 0 or k == len(jobs) or row["n"] > 100:
+                    log(f"  {k}/{len(jobs)} done, {time.monotonic() - t0:.0f} s wall, {spent / 3600:.2f} core-h spent; "
+                        f"last {row['instance_name']!r} (n={row['n']}): ladder {row['ladder_floor']} search "
+                        f"{row['search_floor']} opt {row['optimum']}")
+        if stopped_early and pending:
+            (OUT / "not_reached.txt").write_text("".join(j[0] + "\n" for j in pending))
+            log(f"  core-hour cap {core_hours} reached at {spent / 3600:.2f} core-h: {len(pending)} instances not "
+                f"reached (not_reached.txt)")
     frame = pd.read_csv(SEARCH_CSV) if SEARCH_CSV.exists() else pd.DataFrame(rows)
-    # the ladder's per-point table
+    write_ladder_csv()
+    log(f"run done: {len(frame)} rows, {time.monotonic() - t0:.0f} s wall, {spent / 3600:.2f} core-h this run")
+    return frame
+
+
+def write_ladder_csv() -> None:
     lad = []
     for d in sorted(CERT_DIR.iterdir()) if CERT_DIR.exists() else []:
         p = d / "ladder_points.json"
@@ -704,8 +805,138 @@ def run(which: str, max_n: int, workers: int, seconds: tuple[int, int], rng_seed
             for r in json.loads(p.read_text()):
                 lad.append({"instance_name": nm, **r})
     pd.DataFrame(lad).to_csv(LADDER_CSV, index=False)
-    log(f"run done: {len(frame)} rows, {time.monotonic() - t0:.0f} s wall")
-    return frame
+
+
+# ----------------------------------------------------------------------------
+# stage: ridge (item 05: the two 125-customer ridge instances)
+# ----------------------------------------------------------------------------
+
+RIDGE_SIZES = (100, 102, 105, 108, 110)
+RIDGE_LADDER_CAP = 120.0
+RIDGE_SEARCH_CAP = 60.0
+RECORDED_M70 = ROOT / "reports" / "scratch" / "minor_certificates" / "Random-125-125-2-3_0_m70.json"
+
+
+def recorded_sequence(path: Path = RECORDED_M70) -> list[tuple[int, int]]:
+    """`mc_graph.py`'s `[keep, absorbed]` pairs as this module's `(absorbed, keep)`."""
+    rec = json.loads(Path(path).read_text())
+    return [(int(b), int(a)) for a, b in rec["contraction_sequence"]]
+
+
+def _ridge_job(args) -> dict:
+    """One ridge instance: the two greedy rules at `RIDGE_SIZES` under the
+    ladder cap, then the search from the best of them (or, with
+    `from_recorded`, from the recorded 70-vertex certificate downward) under
+    the search cap, within `seconds` in all. Every C call is a row."""
+    name, matrix, ordering, optimum, seconds, rng_seed, from_recorded = args
+    matrix = np.asarray(matrix, dtype=int)
+    adj = adjacency_from_matrix(matrix)
+    n = len(adj)
+    opening, _ = witness_layouts(matrix, ordering)
+    position = [0] * n
+    for i, v in enumerate(opening):
+        position[v] = i
+    t0 = time.monotonic()
+    ev = Evaluator(adj, optimum, RIDGE_LADDER_CAP, position, deadline=t0 + seconds)
+    rows = []
+
+    def row(phase, label, res, m_target=None):
+        c = res.get("c") or {}
+        return {"instance_name": name, "n": n, "optimum": optimum, "phase": phase, "label": label,
+                "size_target": m_target, "m": res["m"], "cap": ev.cap, "upper_pw": res["upper_pw"],
+                "floor": res["floor"], "source": res["source"], "c_width": c.get("width"), "c_status": c.get("status"),
+                "c_lower": c.get("lower"), "c_nodes": c.get("nodes"), "c_seconds": c.get("seconds"),
+                "cached": res["cached"], "elapsed": time.monotonic() - t0, "best_floor": ev.best_floor, "best_m": ev.best_m}
+
+    starts = []
+    for size in RIDGE_SIZES:
+        for rule in RULES:
+            if ev.done():
+                break
+            seq = greedy_sequence(adj, size, rule)
+            # the ladder points all go to the C program (no skip): the item asks for every size, rule, status
+            saved = (ev.best_floor, ev.best_m)
+            ev.best_floor, ev.best_m = 1, 10 ** 9
+            res = ev.evaluate(seq)
+            if res["floor"] < saved[0] or (res["floor"] == saved[0] and res["m"] >= saved[1]):
+                ev.best_floor, ev.best_m = saved
+            rows.append(row("ladder", f"{rule}@{size}", res, size))
+            starts.append((f"{rule}@{size}", seq))
+            log(f"ridge {name} ladder {rule}@{size}: m={res['m']} floor={res['floor']} ({res['source']}) "
+                f"status={rows[-1]['c_status']} width={rows[-1]['c_width']} nodes={rows[-1]['c_nodes']} "
+                f"{(rows[-1]['c_seconds'] or 0):.1f} s", RUN_LOG)
+    ladder_best = (ev.best_floor, ev.best_m, ev.best["seq"] if ev.best else None)
+    # the search
+    ev.cap = RIDGE_SEARCH_CAP
+    if from_recorded:
+        rec = recorded_sequence()
+        starts = [("recorded_m70", rec)]
+        res = ev.evaluate(rec)
+        rows.append(row("recorded", "least-c@70 (record)", res, 70))
+        log(f"ridge {name} recorded m70: floor={res['floor']} ({res['source']}) status={rows[-1]['c_status']} "
+            f"nodes={rows[-1]['c_nodes']} {(rows[-1]['c_seconds'] or 0):.1f} s", RUN_LOG)
+    else:
+        def start_key(ls):
+            cur, alive, _ = replay(adj, ls[1])
+            labels, edges = minor_graph(cur, alive)
+            hit = ev.cache.get(edges_sha256(len(labels), edges), {})
+            return (-(hit.get("floor") or 1), len(labels))
+        starts.sort(key=start_key)   # best floor first, smaller minor first
+    before = ev.calls
+    calls_seen = {k for k in ev.cache}
+    _orig = ev.evaluate
+
+    def evaluate_logged(seq, record_proposals=False):
+        res = _orig(seq, record_proposals)
+        if not res["cached"] and res["source"] != "skipped":
+            rows.append(row("search", "move", res))
+            if res["floor"] >= ev.best_floor:
+                log(f"ridge {name} search: m={res['m']} floor={res['floor']} ({res['source']}) best {ev.best_floor}@{ev.best_m}", RUN_LOG)
+        return res
+
+    ev.evaluate = evaluate_logged  # type: ignore[method-assign]
+    trace = search(ev, rng_seed, starts=starts, moves_per_restart=10)
+    ev.evaluate = _orig  # type: ignore[method-assign]
+    total = time.monotonic() - t0
+    out = {"instance_name": name, "n": n, "optimum": optimum, "seconds_budget": seconds, "seconds": total,
+           "ladder_floor": ladder_best[0], "ladder_m": ladder_best[1] if ladder_best[2] is not None else None,
+           "search_floor": ev.best_floor, "search_m": ev.best_m if ev.best else None,
+           "search_source": ev.best["source"] if ev.best else "none", "calls": ev.calls, "search_calls": ev.calls - before,
+           "skipped": ev.skipped, "c_seconds": ev.seconds_c, "restarts": trace["restarts"], "moves": trace["moves"],
+           "reached_optimum": ev.best_floor >= optimum, "from_recorded": from_recorded}
+    d = RIDGE_DIR / safe_name(name)
+    d.mkdir(parents=True, exist_ok=True)
+    write_standard_instance(d / "instance.mosp", name, matrix)
+    if ev.best is not None and ev.best.get("c") is not None:
+        cert = certificate(name, matrix, adj, ev.best, total, "ridge-search" if not from_recorded else "ridge-from-recorded",
+                           optimum, ev.best.get("cap", RIDGE_SEARCH_CAP))
+        (d / "search.json").write_text(json.dumps(cert, indent=1))
+        out["certificate"] = str((d / "search.json").relative_to(ROOT))
+    pd.DataFrame(rows).to_csv(d / "calls.csv", index=False)
+    out["rows"] = rows
+    return out
+
+
+def ridge(names: list[str], core_hours: float, workers: int = 2, rng_seed: int = 1) -> pd.DataFrame:
+    led = ledger().set_index("instance_name")
+    inst = corpus_instances()
+    per = core_hours * 3600 / max(1, len(names))
+    jobs = []
+    for nm in names:
+        sol = solution_record(nm)
+        jobs.append((nm, np.asarray(inst[nm][1].matrix, dtype=int), sol["ordering"], int(led.loc[nm, "optimum"]), per,
+                     rng_seed, nm == "Random-125-125-2-3_0"))
+    log(f"ridge: {names}, {per:.0f} s each, ladder cap {RIDGE_LADDER_CAP} s at sizes {RIDGE_SIZES}, search cap "
+        f"{RIDGE_SEARCH_CAP} s, binary {binary_sha256()[:16]}")
+    with Pool(min(workers, len(jobs))) as pool:
+        outs = list(pool.imap_unordered(_ridge_job, jobs))
+    calls = [r for o in outs for r in o.pop("rows")]
+    pd.DataFrame(calls).to_csv(RIDGE_CSV, index=False)
+    pd.DataFrame(outs).to_csv(OUT / "ridge_summary.csv", index=False)
+    for o in outs:
+        log(f"ridge done {o['instance_name']}: ladder {o['ladder_floor']}@{o['ladder_m']}, search {o['search_floor']}@"
+            f"{o['search_m']} ({o['search_source']}), opt {o['optimum']}, {o['calls']} C calls, {o['seconds']:.0f} s")
+    return pd.DataFrame(calls)
 
 
 # ----------------------------------------------------------------------------
@@ -891,27 +1122,45 @@ def validate(workers: int, count: int, seconds: float, cap: float) -> None:
 
 
 def _check_job(args) -> dict:
-    d, cap, rulefree, rulefree_cap = args
+    d, cap, rulefree, rulefree_cap = args[:4]
+    which = args[4] if len(args) > 4 else "search.json"
     sys.path.insert(0, str(ROOT / "paper1"))
     import obstruction_check as oc
 
     d = Path(d)
     t0 = time.monotonic()
-    res = oc.check_minor(d / "instance.mosp", d / "search.json", c_cap=cap * 5, c_binary=C_BINARY,
+    cert = json.loads((d / which).read_text())
+    cap = float(cert.get("c_cap_seconds") or cap)
+    res = oc.check_minor(d / "instance.mosp", d / which, c_cap=cap * 5, c_binary=C_BINARY,
                          rulefree=rulefree, rulefree_cap=rulefree_cap)
     return {"instance_name": res.get("instance_name"), "m": res.get("m"), "floor": res.get("floor_claimed"),
             "replay": res.get("replay_ok"), "hash": res.get("hash_ok"), "c": res.get("c_ok"),
             "c_status": res.get("c_status"), "c_width": res.get("c_width"),
             "rulefree": res.get("rulefree"), "rulefree_seconds": res.get("rulefree_seconds"),
-            "verdict": res.get("verdict"), "seconds": time.monotonic() - t0, "certificate": str(d / "search.json")}
+            "verdict": res.get("verdict"), "seconds": time.monotonic() - t0, "certificate": str(d / which)}
 
 
 def check_all(workers: int, rulefree: bool = True, rulefree_cap: float = 300.0) -> pd.DataFrame:
-    dirs = [d for d in sorted(CERT_DIR.iterdir()) if (d / "search.json").exists()]
-    log(f"check: {len(dirs)} certificates, {workers} workers, rule-free {rulefree} (cap {rulefree_cap} s)")
+    """Every `search.json` under `certificates/`, every `ladder.json` whose
+    floor is above its search's (the ladder is then the family's certificate
+    on that instance), and every `ridge/<instance>/search.json`; the C cap is
+    the certificate's own times five."""
+    jobs = []
+    for d in sorted(CERT_DIR.iterdir()) if CERT_DIR.exists() else []:
+        if (d / "search.json").exists():
+            jobs.append((str(d), C_CAP_SECONDS, rulefree, rulefree_cap, "search.json"))
+            if (d / "ladder.json").exists():
+                fs = json.loads((d / "search.json").read_text()).get("floor", 0)
+                fl = json.loads((d / "ladder.json").read_text()).get("floor", 0)
+                if fl > fs:
+                    jobs.append((str(d), C_CAP_SECONDS, rulefree, rulefree_cap, "ladder.json"))
+    for d in sorted(RIDGE_DIR.iterdir()) if RIDGE_DIR.exists() else []:
+        if (d / "search.json").exists():
+            jobs.append((str(d), C_CAP_SECONDS, rulefree, rulefree_cap, "search.json"))
+    log(f"check: {len(jobs)} certificates, {workers} workers, rule-free {rulefree} (cap {rulefree_cap} s)")
     with Pool(workers) as pool:
-        rows = list(pool.imap_unordered(_check_job, [(str(d), C_CAP_SECONDS, rulefree, rulefree_cap) for d in dirs]))
-    frame = pd.DataFrame(rows).sort_values("instance_name")
+        rows = list(pool.imap_unordered(_check_job, jobs))
+    frame = pd.DataFrame(rows).sort_values(["instance_name", "certificate"])
     frame.to_csv(CHECKER_CSV, index=False)
     log(f"check done: verdicts {frame.verdict.value_counts().to_dict()}, rule-free {frame.rulefree.value_counts().to_dict()}")
     return frame
@@ -933,9 +1182,13 @@ def band_of(n: int) -> str:
     return "?"
 
 
-def write_tables() -> str:
-    led = ledger().set_index("instance_name")
+def _joined(led: pd.DataFrame) -> pd.DataFrame:
     s = pd.read_csv(SEARCH_CSV)
+    s["carried"] = False
+    if (OUT / "carried_item04.csv").exists():   # item 05: the 22 Chu & Stuckey gap instances at n <= 60 run by item 04
+        c = pd.read_csv(OUT / "carried_item04.csv")
+        c["carried"] = True
+        s = pd.concat([s, c[~c.instance_name.isin(s.instance_name)]], ignore_index=True)
     s["band"] = s["n"].map(band_of)
     s["gap_ladder"] = s["optimum"] - s["ladder_floor"]
     s["gap_search"] = s["optimum"] - s["search_floor"]
@@ -948,7 +1201,15 @@ def write_tables() -> str:
     s["ladder_m_over_n"] = s["ladder_m"] / s["n"]
     s["beats_floor0"] = s["search_floor"] > s["floor0"]
     s["beats_ref"] = s["search_floor"] > s[["lb_best", "tw1"]].max(axis=1)
+    return s
+
+
+def write_tables(item: str = "04") -> str:
+    led = ledger().set_index("instance_name")
+    s = _joined(led)
     order = [f"{lo}–{hi}" for lo, hi in BANDS]
+    if item == "05":
+        return write_tables_scale(s, led, order)
     parts = [f"# Family M by search: tables (item 04)\n\n*Generated by `python3 -m learning.obstruction_minor --stage tables` "
              f"on {time.strftime('%Y-%m-%d %H:%M')}; {len(s)} instances of `gap338` at n ≤ {int(s.n.max())}.*\n"]
 
@@ -1049,16 +1310,187 @@ def write_tables() -> str:
     return text
 
 
+def family_e_floor(led: pd.DataFrame) -> pd.Series:
+    """Family E's floor on record per instance, in optimum units: the best of
+    item 01's Harper at cap 12, item 02's rerun floor and item 03's exact
+    floor where a verified certificate proves it."""
+    e = led["harper12"].astype(float).copy()
+    base = ROOT / "reports" / "scratch" / "obstruction_search"
+    for path, col in ((base / "02_expansion" / "floor.csv", "floor"), (base / "03_sat" / "instances.csv", "floor_after")):
+        if path.exists():
+            f = pd.read_csv(path).set_index("instance_name")[col]
+            common = e.index.intersection(f.index)
+            e.loc[common] = np.maximum(e.loc[common].values, f.loc[common].astype(float).values)
+    return e
+
+
+RECORD_SEVEN = (   # reports/pathwidth_lower_bounds_survey.md §5: instance, the survey's minor bound (optimum units), at m (rule)
+    ("Random-125-125-2-1_0", 24, "87 (min-d)"), ("Random-125-125-2-3_0", 21, "70 (least-c)"),
+    ("Random-125-125-2-2_0", None, "none ≤ 95; 100–105 out of budget"), ("Random-125-125-4-1_0", 54, "100 (min-d)"),
+    ("Random-125-125-6-1_0", 81, "120 (both)"), ("Random-125-125-8-2_0", 92, "115–120"), ("SP4", 53, "96 (both)"))
+
+
+def write_tables_scale(s: pd.DataFrame, led: pd.DataFrame, order: list[str]) -> str:
+    """Item 05's tables: by Chu & Stuckey class, by band on the gap instances,
+    the search against the ladder, the record's seven and family E, the
+    minimal certifying minor, the ridge instances, calls, the checker."""
+    s["e_floor"] = s["instance_name"].map(family_e_floor(led))
+    s["gap_e"] = s["optimum"] - s["e_floor"]
+    s["m_tighter"] = np.where(s.search_floor > s.e_floor, "M", np.where(s.search_floor < s.e_floor, "E", "tie"))
+    s["is_gap338"] = s["instance_name"].map(led["is_gap338"]).astype(bool)
+    s["is_cs200"] = s["instance_name"].map(led["is_cs200"]).astype(bool)
+    for col in ("cs_n", "cs_m", "cs_d", "cls"):
+        s[col] = s["instance_name"].map(led[col])
+    parts = [f"# Family M at scale: tables (item 05)\n\n*Generated by `python3 -m learning.obstruction_minor --stage tables "
+             f"--out 05_minor_scale` on {time.strftime('%Y-%m-%d %H:%M')}; {len(s)} instances "
+             f"(`cs200` ∪ `gap338` at n > 60; n = {int(s.n.min())}–{int(s.n.max())}).*\n"]
+
+    def agg(g: pd.DataFrame, key: str, val) -> dict:
+        return {key: val, "instances": len(g),
+                "ladder gap mean": round(g.gap_ladder.mean(), 2), "ladder tight": int((g.gap_ladder == 0).sum()),
+                "search gap mean": round(g.gap_search.mean(), 2), "search tight": int((g.gap_search == 0).sum()),
+                "search > ladder": int(g.beats_ladder_floor.sum()), "search < ladder": int(g.below_ladder.sum()),
+                "floor0 gap mean": round(g.gap_floor0.mean(), 2), "search > floor0": int(g.beats_floor0.sum()),
+                "E gap mean": round(g.gap_e.mean(), 2), "M tighter": int((g.m_tighter == "M").sum()),
+                "E tighter": int((g.m_tighter == "E").sum()),
+                "best gap mean": round((g.optimum - g[["floor0", "search_floor", "e_floor"]].max(axis=1)).mean(), 2),
+                "best tight": int((g.optimum == g[["floor0", "search_floor", "e_floor"]].max(axis=1)).sum())}
+
+    cs = s[s.is_cs200].copy()
+    rows = [agg(g, "class", cls) for cls, g in cs.groupby("cls", sort=False)]
+    rows.sort(key=lambda r: (int(r["class"].split("-")[1]), int(r["class"].split("-")[2]), int(r["class"].split("-")[3])))
+    rows.append(agg(cs, "class", "all Chu & Stuckey"))
+    parts.append("## (a) By Chu & Stuckey class `(n, m, d)` (the instances this item ran; item 04 covered the 22 "
+                 "gap instances at n ≤ 60 separately)\n\n" + _md(pd.DataFrame(rows)))
+    gp = s[s.is_gap338]
+    rows = [agg(gp[gp.band == b], "band", b) for b in order if len(gp[gp.band == b])] + [agg(gp, "band", "all")]
+    parts.append("## (b) The gap instances (`gap338` at n > 60) by band\n\n" + _md(pd.DataFrame(rows)))
+    beat = s[s.beats_ladder_floor].copy()
+    parts.append("## (c) Where the search beats the ladder's floor\n\n")
+    if len(beat):
+        beat["by"] = beat.search_floor - beat.ladder_floor
+        parts.append(_md(beat[["instance_name", "n", "optimum", "ladder_floor", "ladder_m", "search_floor", "search_m",
+                               "search_source", "by", "search_calls", "search_seconds"]].sort_values(["by", "n"], ascending=[False, True])))
+        parts.append(f"\nBy how much: {beat.by.value_counts().sort_index().to_dict()}; reaching the optimum: "
+                     f"{int(beat.search_reached_optimum.sum())} of {len(beat)}; below the ladder: {int(s.below_ladder.sum())}.\n\n")
+    else:
+        parts.append("None.\n\n")
+    parts.append("## (d) Against the record's seven (survey §5) and the file-backed minors of item 01\n\n")
+    rows = []
+    rs = pd.read_csv(OUT / "ridge_summary.csv").set_index("instance_name") if (OUT / "ridge_summary.csv").exists() else None
+    for nm, survey, at in RECORD_SEVEN:
+        r = s[s.instance_name == nm]
+        ridge_txt = (f"{int(rs.loc[nm, 'search_floor'])} @ {int(rs.loc[nm, 'search_m'])}" if rs is not None and nm in rs.index
+                     and pd.notna(rs.loc[nm, "search_m"]) else None)
+        rows.append({"instance": nm, "optimum": int(led.loc[nm, "optimum"]), "survey minor": survey, "at m (rule)": at,
+                     "ridge stage": ridge_txt,
+                     "file-backed (item 01)": led.loc[nm, "minor"], "ladder": int(r.ladder_floor.iloc[0]) if len(r) else None,
+                     "ladder m": int(r.ladder_m.iloc[0]) if len(r) and pd.notna(r.ladder_m.iloc[0]) else None,
+                     "search": int(r.search_floor.iloc[0]) if len(r) else None,
+                     "search m": int(r.search_m.iloc[0]) if len(r) and pd.notna(r.search_m.iloc[0]) else None,
+                     "E floor": r.e_floor.iloc[0] if len(r) else None})
+    parts.append(_md(pd.DataFrame(rows)))
+    parts.append("## (e) Family M against family E, by class and band: which is tighter where\n\n")
+    rows = []
+    for cls, g in cs.groupby("cls", sort=False):
+        rows.append({"class": cls, "instances": len(g), "M floor gap mean": round(g.gap_search.mean(), 2),
+                     "E floor gap mean": round(g.gap_e.mean(), 2), "M tighter": int((g.m_tighter == "M").sum()),
+                     "E tighter": int((g.m_tighter == "E").sum()), "tie": int((g.m_tighter == "tie").sum()),
+                     "excess median": round(g.excess.median(), 2)})
+    rows.sort(key=lambda r: (int(r["class"].split("-")[1]), int(r["class"].split("-")[2]), int(r["class"].split("-")[3])))
+    parts.append(_md(pd.DataFrame(rows)))
+    rows = []
+    for b in order:
+        g = s[s.band == b]
+        if len(g):
+            rows.append({"band": b, "instances": len(g), "M floor gap mean": round(g.gap_search.mean(), 2),
+                         "E floor gap mean": round(g.gap_e.mean(), 2), "M tighter": int((g.m_tighter == "M").sum()),
+                         "E tighter": int((g.m_tighter == "E").sum()), "tie": int((g.m_tighter == "tie").sum())})
+    parts.append("\n" + _md(pd.DataFrame(rows)))
+    parts.append("## (f) The minimal certifying minor: `m / n` where the search reaches the optimum\n\n")
+    rows = []
+    for b in order:
+        g = s[(s.band == b) & s.search_reached_optimum]
+        if len(g):
+            rows.append({"band": b, "at optimum": len(g), "search m/n median": round(g.m_over_n.median(), 3),
+                         "search m/n IQR": f"{g.m_over_n.quantile(0.25):.2f}–{g.m_over_n.quantile(0.75):.2f}",
+                         "ladder m/n median": round(g[g.ladder_reached_optimum].ladder_m_over_n.median(), 3) if g.ladder_reached_optimum.any() else None,
+                         "excess median": round(g.excess.median(), 2)})
+    parts.append(_md(pd.DataFrame(rows)))
+    parts.append(f"\nSources of the search's floor: {s.search_source.value_counts().to_dict()}; of the ladder's: "
+                 f"{s.ladder_source.value_counts().to_dict()}; ladder rule: {s.ladder_rule.value_counts(dropna=False).to_dict()}.\n\n")
+    parts.append("## (g) The two ridge instances: every C call of the ridge stage\n\n")
+    if RIDGE_CSV.exists():
+        r = pd.read_csv(RIDGE_CSV)
+        cols = ["instance_name", "phase", "label", "m", "cap", "upper_pw", "floor", "source", "c_width", "c_status", "c_lower",
+                "c_nodes", "c_seconds", "cached"]
+        parts.append("The ladder points and the recorded certificate (every call; the search's calls are summarised "
+                     "below and listed in full in `ridge.csv` and `ridge/<instance>/calls.csv`):\n\n")
+        parts.append(_md(r[r.phase != "search"][cols]))
+        rows = []
+        for nm, g in r[r.phase == "search"].groupby("instance_name"):
+            rows.append({"instance": nm, "search calls": len(g), "m range": f"{int(g.m.min())}–{int(g.m.max())}",
+                         "cap s": g.cap.iloc[0], "refutations": int((g.c_status == "refutation").sum()),
+                         "upper (undecided)": int((g.c_status == "upper").sum()),
+                         "widths found (status upper)": g[g.c_status == "upper"].c_width.value_counts().sort_index().to_dict(),
+                         "best floor": int(g.floor.max()), "smallest m at best floor": int(g[g.floor == g.floor.max()].m.min()),
+                         "nodes median": int(g.c_nodes.median()) if g.c_nodes.notna().any() else None,
+                         "C seconds": round(g.c_seconds.sum(), 1)})
+        parts.append("\n" + _md(pd.DataFrame(rows)))
+        if (OUT / "ridge_summary.csv").exists():
+            rs = pd.read_csv(OUT / "ridge_summary.csv").drop(columns=["certificate"], errors="ignore")
+            parts.append("\n" + _md(rs))
+    else:
+        parts.append("(not run)\n\n")
+    parts.append("## (h) Checker verdicts\n\n")
+    if CHECKER_CSV.exists():
+        c = pd.read_csv(CHECKER_CSV)
+        c["checks"] = c.apply(lambda r: "replay+C+rule-free" if r.replay and r.hash and r.c and r.rulefree == "verified"
+                              else ("replay+C" if r.replay and r.hash and r.c else ("replay only" if r.replay and r.hash else "rejected")), axis=1)
+        parts.append(_md(c.groupby(["verdict", "checks"]).size().reset_index(name="certificates")))
+        parts.append(f"\nRule-free outcomes: {c.rulefree.value_counts(dropna=False).to_dict()}; rule-free seconds median "
+                     f"{c.rulefree_seconds.median():.2f}, max {c.rulefree_seconds.max():.1f}; checker seconds median {c.seconds.median():.1f}, "
+                     f"max {c.seconds.max():.1f}; minors m = {int(c.m.min())}–{int(c.m.max())}.\n\n")
+    else:
+        parts.append("(not run)\n\n")
+    parts.append("## (i) C calls per instance and seconds\n\n")
+    rows = []
+    for b in order:
+        g = s[s.band == b]
+        if len(g):
+            rows.append({"band": b, "instances": len(g), "budget s": int(g.seconds_budget.iloc[0]), "C cap s": g.c_cap.iloc[0],
+                         "ladder calls median": g.ladder_calls.median(), "ladder seconds median": round(g.ladder_seconds.median(), 1),
+                         "search calls median": g.search_calls.median(), "search skipped median": g.search_skipped.median(),
+                         "search seconds median": round(g.search_seconds.median(), 1), "search moves median": g.search_moves.median(),
+                         "ladder core-h": round(g.ladder_seconds.sum() / 3600, 2), "search core-h": round(g.search_seconds.sum() / 3600, 2)})
+    parts.append(_md(pd.DataFrame(rows)))
+    parts.append(f"\nTotal: ladder {s.ladder_seconds.sum() / 3600:.2f} core-hours, search {s.search_seconds.sum() / 3600:.2f}; "
+                 f"C calls {int(s.ladder_calls.sum())} and {int(s.search_calls.sum())}; C seconds {s.ladder_c_seconds.sum() / 3600:.2f} "
+                 f"and {s.search_c_seconds.sum() / 3600:.2f} core-hours.\n\n")
+    nr = OUT / "not_reached.txt"
+    parts.append(f"Not reached under the core-hour cap: {nr.read_text().split() if nr.exists() else 'none'}.\n\n")
+    s.to_csv(OUT / "joined.csv", index=False)
+    text = "".join(parts)
+    TABLES_MD.write_text(text)
+    return text
+
+
 # ----------------------------------------------------------------------------
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--stage", choices=("validate", "run", "check", "tables"), required=True)
-    ap.add_argument("--targets", default="gap338")
+    ap.add_argument("--stage", choices=("validate", "run", "ridge", "check", "tables"), required=True)
+    ap.add_argument("--out", default="04_minor", help="output directory under reports/scratch/obstruction_search/")
+    ap.add_argument("--targets", default="gap338", help="comma-separated target sets (their union)")
     ap.add_argument("--max-n", type=int, default=60)
+    ap.add_argument("--min-n", type=int, default=0)
     ap.add_argument("--workers", type=int, default=8)
-    ap.add_argument("--seconds", default="60,120", help="per instance at n <= 40, at 41-60")
+    ap.add_argument("--seconds", default="60,120", help="per instance at n <= 40, 41-60, 61-100, 101+ (last repeats)")
+    ap.add_argument("--core-hours", type=float, default=None, help="run: stop starting instances at this many core-hours")
+    ap.add_argument("--order", choices=("large-first", "small-first"), default="large-first")
+    ap.add_argument("--instances", default="Random-125-125-2-2_0,Random-125-125-2-3_0", help="ridge: instance names")
+    ap.add_argument("--item", default=None, help="tables: 04 or 05 (default from --out)")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--wall", type=float, default=None)
@@ -1068,16 +1500,20 @@ def main() -> None:
     ap.add_argument("--no-rulefree", action="store_true")
     ap.add_argument("--rulefree-cap", type=float, default=300.0)
     args = ap.parse_args()
+    set_out(args.out)
     OUT.mkdir(parents=True, exist_ok=True)
     if args.stage == "validate":
         validate(args.workers, args.count, args.validate_seconds, args.cap)
     elif args.stage == "run":
         seconds = tuple(int(x) for x in args.seconds.split(","))
-        run(args.targets, args.max_n, args.workers, seconds, args.seed, args.limit, args.wall)
+        run(args.targets, args.max_n, args.workers, seconds, args.seed, args.limit, args.wall, args.min_n,
+            args.core_hours, args.order)
+    elif args.stage == "ridge":
+        ridge([x for x in args.instances.split(",") if x], args.core_hours or 2.0, args.workers, args.seed)
     elif args.stage == "check":
         check_all(args.workers, not args.no_rulefree, args.rulefree_cap)
     else:
-        print(write_tables())
+        print(write_tables(args.item or args.out.split("_")[0]))
 
 
 if __name__ == "__main__":

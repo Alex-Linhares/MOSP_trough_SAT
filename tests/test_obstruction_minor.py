@@ -311,3 +311,88 @@ def test_committed_run_files():
     if (SCRATCH / "validation_small.csv").exists():
         v = pd.read_csv(SCRATCH / "validation_small.csv")
         assert v["disagreements"].sum() == 0
+
+
+# ----------------------------------------------------------------------------
+# item 05: caps and budgets by size, the C's node count, start overrides,
+# the output-directory switch, the recorded 70-vertex sequence, the run files
+# ----------------------------------------------------------------------------
+
+SCRATCH05 = ROOT / "reports" / "scratch" / "obstruction_search" / "05_minor_scale"
+
+
+def test_cap_and_budget_by_size_follow_the_plan():
+    # plan §0.5 (e): 2 s at n <= 60, 5 s at 61-100, 10 s at 101-134; the item's budgets per band
+    assert [om.cap_for(n) for n in (20, 60, 61, 100, 101, 134, 200)] == [2.0, 2.0, 5.0, 5.0, 10.0, 10.0, 10.0]
+    sec = (60, 120, 180, 300)
+    assert [om.budget_for(n, sec) for n in (30, 40, 41, 60, 75, 100, 125)] == [60, 60, 120, 120, 180, 180, 300]
+    assert om.budget_for(125, (60, 120)) == 120     # a short tuple repeats its last entry (item 04's call)
+
+
+@pytest.mark.skipif(not om.C_BINARY.exists(), reason="the C program is not built")
+def test_run_c_reports_the_node_count_and_the_certificate_carries_it(tmp_path):
+    rng = random.Random(5)
+    adj = _random_adj(rng, 9, 0.5)
+    c = om.run_c(om.graph6(9, om.edge_list(adj)), 2.0)
+    assert c["nodes"] is not None and c["nodes"] >= 0 and c["status"] in ("refutation", "bound")
+    ev = om.Evaluator(adj, None, 2.0, None, deadline=time.monotonic() + 10)
+    res = ev.evaluate([])
+    assert res["cap"] == 2.0 and res["c"]["nodes"] == c["nodes"]
+    matrix = np.eye(9, dtype=int)
+    cert = om.certificate("t", matrix, adj, res, 0.0, "test", None, cap=7.0)
+    assert cert["c_cap_seconds"] == 7.0 and "-t 7 " in cert["c_command"] and cert["c_nodes"] == c["nodes"]
+
+
+@pytest.mark.skipif(not om.C_BINARY.exists(), reason="the C program is not built")
+def test_search_restarts_from_the_given_starts():
+    rng = random.Random(11)
+    adj = _random_adj(rng, 14, 0.4)
+    seq = om.greedy_sequence(adj, 10, "min-d")
+    ev = om.Evaluator(adj, None, 1.0, None, deadline=time.monotonic() + 1.5)
+    trace = om.search(ev, 1, starts=[("given", seq)], moves_per_restart=3)
+    assert trace["restarts"] >= 1 and ev.best is not None
+    # the given start was evaluated: its minor is in the cache
+    cur, alive, _ = om.replay(adj, seq)
+    labels, edges = om.minor_graph(cur, alive)
+    assert om.edges_sha256(len(labels), edges) in ev.cache
+
+
+def test_set_out_redirects_every_output_path():
+    before = om.OUT
+    try:
+        out = om.set_out("05_minor_scale")
+        assert out == SCRATCH05 and om.SEARCH_CSV == out / "search.csv" and om.CERT_DIR == out / "certificates"
+        assert om.RIDGE_CSV == out / "ridge.csv" and om.RUN_LOG == out / "run.log" and om.CHECKER_CSV == out / "checker_verdicts.csv"
+    finally:
+        om.set_out(before.name)
+    assert om.OUT == before
+
+
+def test_recorded_sequence_replays_to_the_70_vertex_minor():
+    if not om.RECORDED_M70.exists() or not om.LEDGER_CORPUS.exists():
+        pytest.skip("the recorded certificate or the ledger is not on disk")
+    inst = om.corpus_instances()["Random-125-125-2-3_0"][1]
+    adj = adjacency_from_matrix(np.asarray(inst.matrix, dtype=int))
+    seq = om.recorded_sequence()
+    cur, alive, _ = om.replay(adj, seq)
+    labels, edges = om.minor_graph(cur, alive)
+    rec = json.loads(om.RECORDED_M70.read_text())
+    assert len(labels) == 70 == rec["m"]
+    # the record hashes the minor in G's labels (`mc_graph.py`); this module relabels 0..m-1, so compare the
+    # surviving representatives and the edge count, not the hash (item 04's `recorded_to_certificate` keeps both)
+    assert sorted(labels) == sorted(int(x) for x in rec["minor_labels"]) and len(edges) == len(rec["minor_edges"])
+
+
+def test_committed_run_files_item_05():
+    if not (SCRATCH05 / "search.csv").exists():
+        pytest.skip("item 05's run is not on disk")
+    s = pd.read_csv(SCRATCH05 / "search.csv")
+    assert len(s) >= 1 and s["n"].max() <= 134
+    assert (s["search_floor"] <= s["optimum"]).all() and (s["ladder_floor"] <= s["optimum"]).all()
+    assert set(s["c_cap"].unique()) <= {2.0, 5.0, 10.0}
+    if (SCRATCH05 / "checker_verdicts.csv").exists():
+        c = pd.read_csv(SCRATCH05 / "checker_verdicts.csv")
+        assert (c["verdict"] == "verified").all()
+    if (SCRATCH05 / "ridge.csv").exists():
+        r = pd.read_csv(SCRATCH05 / "ridge.csv")
+        assert (r["floor"] <= r["optimum"]).all() and (r["best_floor"] <= r["optimum"]).all()

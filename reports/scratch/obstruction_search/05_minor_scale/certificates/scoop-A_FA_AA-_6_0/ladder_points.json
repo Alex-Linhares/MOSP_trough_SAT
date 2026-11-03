@@ -1,0 +1,56 @@
+[
+ {
+  "rule": "min-d",
+  "fraction": 0.5,
+  "size": 40,
+  "m": 40,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.55,
+  "size": 43,
+  "m": 43,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.6,
+  "size": 47,
+  "m": 47,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.65,
+  "size": 51,
+  "m": 51,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.7,
+  "size": 55,
+  "m": 55,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.75,
+  "size": 59,
+  "m": 59,
+  "floor": 13,
+  "source": "c_refutation",
+  "cached": false
+ }
+]

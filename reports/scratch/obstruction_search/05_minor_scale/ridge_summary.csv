@@ -1,0 +1,3 @@
+instance_name,n,optimum,seconds_budget,seconds,ladder_floor,ladder_m,search_floor,search_m,search_source,calls,search_calls,skipped,c_seconds,restarts,moves,reached_optimum,from_recorded,certificate
+Random-125-125-2-3_0,125,21,3600.0,3600.000028134091,13,100,21,51,c_refutation,580,574,2420,657.0785030110274,1406774,14067735,True,True,reports/scratch/obstruction_search/05_minor_scale/ridge/Random-125-125-2-3_0/search.json
+Random-125-125-2-2_0,125,25,3600.0,3600.0115114671644,13,100,14,97,c_lower,55,50,0,3598.6679254129995,9,88,False,False,reports/scratch/obstruction_search/05_minor_scale/ridge/Random-125-125-2-2_0/search.json

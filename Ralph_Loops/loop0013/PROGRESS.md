@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 4/11 SOLVED
+Current: 5/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -405,3 +405,89 @@ there will be replay + C, said so. The C-call overhead (≈ 45 ms per call,
 a process start) is the search's bottleneck at small sizes; at 100+
 customers the 5–10 s caps dominate instead, so expect a few hundred calls
 per instance, not thousands.
+
+---
+## Iteration 5 — 2026-11-03 04:50
+
+### Completed
+
+- **Item 05 — family M at scale: the 87 gap instances above 60 customers
+  and the 200 Chu & Stuckey; the two ridge instances.** Additions to
+  `learning/obstruction_minor.py`: `set_out` (paths under
+  `05_minor_scale/`), `cap_for` / `budget_for` (C cap 2 / 5 / 10 s and
+  budgets 60 / 120 / 180 / 300 s by band, plan §0.5 (e)), a scheduler in
+  `run` that stops starting instances at `--core-hours` (`not_reached.txt`),
+  `search(starts=…)`, the `ridge` stage (greedy rules at 100–110 under 120 s,
+  then the search at 60 s per call; for `2-3_0` from the recorded 70-vertex
+  certificate downward), the C's `nodes=` parsed into every certificate,
+  `check` also on `ladder.json` where the ladder is the better certificate
+  and on the ridge certificates, the item's tables (`write_tables_scale`),
+  carried rows (`carried_item04.csv`) for the 22 Chu & Stuckey gap
+  instances at 30–50 that item 04 ran; `tests/test_obstruction_minor.py`
+  +6 (17 pass); `reports/scratch/obstruction_search/05_minor_scale/{search.csv,
+  ladder.csv, ridge.csv, ridge_summary.csv, certificates/, ridge/,
+  carried_item04*, checker_verdicts.csv, harness_values.csv,
+  harness_table.md, tables.md, joined.csv, run.log, run_harness.py,
+  gate_run.out}` and `../05_minor_scale_{run,small_run,ridge,check}.out`;
+  `reports/obstruction_search.md` §5.
+- **Numbers.** Family M's floor (ladder or search) is tight on **73 of the
+  87** gap instances above 60 (17/17 at 61–75, 43/45 at 76–100, 13/25 at
+  101–134; `floor0` was tight on 11, family E on 4) and on **186 of the 200**
+  Chu & Stuckey (all 125 at 30–75, 48/50 at 100, 13/25 at 125); with the
+  record, **327 of the 338 are closed (324 by family M, 3 by the record) and 11 open**, all `Random-100-100-4`
+  and `Random-125-125-4/6` — the dense shoulder, where item 03's six E
+  brackets are. M is at least as tight as E on every one of the 200 (tighter
+  on 142, tied on 58): the record's expectation "expansion on the dense
+  classes" holds only at density 10, where the two tie. The search beats
+  the ladder on 60 of the 185 run (by 1 / 2 / 3 on 44 / 14 / 2), on 41 of
+  them with a minor above 95% of the vertices (the ladder's grid stops at
+  95%: a grid artefact, a 97–99% rung proposed, not applied), and finishes
+  below it on 3 (the budget binds at 5–10 s per call; the ladder's
+  certificate is the family's there, checked). The record's seven:
+  `8-2_0` **93 = optimum** at 118 (survey 92); `SP4` 53 at 90 (record 96);
+  `2-3_0` 21 at 53 and **51** (record 70); `2-2_0` 24 at 70; `2-1_0`,
+  `4-1_0`, `6-1_0` one below the record's 87–120-vertex minors, whose
+  refutations took 28–80 s against this item's 10 s cap. Ridge: `2-2_0`
+  — five distinct greedy minors at 100–110 all `upper` after 120 s (width
+  23 found at 100: that minor cannot certify 25), 50 search calls at
+  97–107 all `upper` (22 proved useless, 28 undecided), **no certificate
+  for 25 within one core-hour**, a recorded negative; `2-3_0` — the greedy
+  minors at 100–110 do not refute 20 in 120 s while the recorded 70-vertex
+  one does in 757,009 nodes (the record's count exactly), and the search
+  shrank it to a **51-vertex minor refuting 19 in 145,355 nodes, 0.12 s**,
+  rule-free verified (367 candidates at 50 all have pathwidth 19).
+- **Checker: 190 of 190 verified** (185 search, 3 ladder, 2 ridge; C
+  re-proof on all; rule-free on the 137 with m ≤ 80). **Harness**: above
+  optimum **0** on all 6,376; beats the reference on 87 of the 338.
+- **Kill verdict (the 338 as a whole): not met** — the search beats the
+  ladder on 45 of 338 (29 + 16), 13.3% ≥ 10%; the honest reading as in §4.3.
+  No stop condition fired. The 18-core-hour driver stop was not reached.
+- **Compute ≈ 10.6 core-hours** of the item's 22: main run 6.56 (107 at
+  61–134, 3,111 s wall at 8 workers, load 8–10) + 1.88 (78 at 30–50) —
+  ladder 0.31, search 8.13 of which 3.35 in the C (278,571 calls); ridge
+  2.0; checker 0.15; harness 0.01.
+- **One slip, repaired**: the module's `log` bound its default path at
+  import time, so the main run's progress lines went to
+  `04_minor/run.log`; the default is now resolved at call time, 05's
+  `run.log` was rebuilt from the stdout captures (130 lines) and 04's
+  restored from git.
+- **Gate: PASS** (`reports/scratch/obstruction_search/05_minor_scale/gate_run.out`):
+  lake build ok, 0 sorry, 0 axiom; `tests/` 1,848 passed, 2 skipped, 1 xfailed
+  (4:30); `pathwidth_solver/` 123 passed (6:22); paper 77 pages, no undefined
+  references. No Lean and no paper file touched by this item.
+
+### Blockers
+
+None. The item's count of "262 distinct" is the planner's: the union is
+207 (87 + 200 − 80 shared above 60). The rule-free check was capped at
+120 s (item 04: 300 s) and skipped above 80 vertices, as the item says.
+
+### Next
+
+Item 06 (family B: separators with certified branches on the residual gap
+instances). The residual after items 03–05 is 11 instances of the 338
+(`Random-100-100-4-1_0`, `-4-3_0`, `Random-125-125-4-{1..4}_0`,
+`Random-125-125-6-{2..5}_0`; `tables.md` of this item and `joined.csv`'s
+`gb` column), plus the family-E and family-M floors for the map: M's are
+`05_minor_scale/joined.csv::best` (ladder or search, in optimum units) on
+the 207 and `04_minor/search.csv::search_floor` on the 251.

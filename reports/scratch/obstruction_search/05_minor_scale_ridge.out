@@ -1,0 +1,81 @@
+2026-11-03 04:57:12 ridge: ['Random-125-125-2-2_0', 'Random-125-125-2-3_0'], 3600 s each, ladder cap 120.0 s at sizes (100, 102, 105, 108, 110), search cap 60.0 s, binary 6560b8093c3e51b9
+2026-11-03 04:59:12 ridge Random-125-125-2-2_0 ladder min-d@100: m=100 floor=13 (c_lower) status=upper width=23 nodes=214891493 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-3_0 ladder min-d@100: m=100 floor=13 (c_lower) status=upper width=20 nodes=269869056 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-2_0 ladder least-c@100: m=100 floor=13 (c_lower) status=upper width=23 nodes=214891493 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-3_0 ladder least-c@100: m=100 floor=13 (c_lower) status=upper width=20 nodes=269869056 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-2_0 ladder min-d@102: m=102 floor=13 (c_lower) status=upper width=24 nodes=231133184 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-2_0 ladder least-c@102: m=102 floor=13 (c_lower) status=upper width=24 nodes=231133184 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-3_0 ladder min-d@102: m=102 floor=13 (c_lower) status=upper width=20 nodes=312639488 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-3_0 ladder least-c@102: m=102 floor=13 (c_lower) status=upper width=20 nodes=312639488 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-2_0 ladder min-d@105: m=105 floor=13 (c_lower) status=upper width=24 nodes=219222016 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-2_0 ladder least-c@105: m=105 floor=13 (c_lower) status=upper width=24 nodes=219222016 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-3_0 ladder min-d@105: m=105 floor=13 (c_lower) status=upper width=20 nodes=287139266 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-3_0 ladder least-c@105: m=105 floor=13 (c_lower) status=upper width=20 nodes=287139266 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-2_0 ladder min-d@108: m=108 floor=13 (c_lower) status=upper width=24 nodes=223170560 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-2_0 ladder least-c@108: m=108 floor=13 (c_lower) status=upper width=24 nodes=223170560 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-3_0 ladder min-d@108: m=108 floor=13 (c_lower) status=upper width=21 nodes=259338240 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-3_0 ladder least-c@108: m=108 floor=13 (c_lower) status=upper width=21 nodes=259338240 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-2_0 ladder min-d@110: m=110 floor=13 (c_lower) status=upper width=24 nodes=228847616 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-2_0 ladder least-c@110: m=110 floor=13 (c_lower) status=upper width=24 nodes=228847616 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 ladder min-d@110: m=110 floor=13 (c_lower) status=upper width=20 nodes=259735552 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 ladder least-c@110: m=110 floor=13 (c_lower) status=upper width=20 nodes=259735552 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 recorded m70: floor=21 (c_refutation) status=refutation nodes=757009 0.5 s
+2026-11-03 05:07:13 ridge Random-125-125-2-3_0 search: m=69 floor=21 (c_refutation) best 21@69
+2026-11-03 05:07:14 ridge Random-125-125-2-3_0 search: m=68 floor=21 (c_refutation) best 21@68
+2026-11-03 05:07:14 ridge Random-125-125-2-3_0 search: m=67 floor=21 (c_refutation) best 21@67
+2026-11-03 05:07:15 ridge Random-125-125-2-3_0 search: m=66 floor=21 (c_refutation) best 21@66
+2026-11-03 05:07:16 ridge Random-125-125-2-3_0 search: m=65 floor=21 (c_refutation) best 21@65
+2026-11-03 05:07:16 ridge Random-125-125-2-3_0 search: m=64 floor=21 (c_refutation) best 21@64
+2026-11-03 05:07:19 ridge Random-125-125-2-3_0 search: m=63 floor=21 (c_refutation) best 21@63
+2026-11-03 05:07:20 ridge Random-125-125-2-3_0 search: m=62 floor=21 (c_refutation) best 21@62
+2026-11-03 05:07:20 ridge Random-125-125-2-3_0 search: m=61 floor=21 (c_refutation) best 21@61
+2026-11-03 05:07:22 ridge Random-125-125-2-3_0 search: m=60 floor=21 (c_refutation) best 21@60
+2026-11-03 05:07:22 ridge Random-125-125-2-3_0 search: m=59 floor=21 (c_refutation) best 21@59
+2026-11-03 05:07:23 ridge Random-125-125-2-3_0 search: m=58 floor=21 (c_refutation) best 21@58
+2026-11-03 05:07:23 ridge Random-125-125-2-3_0 search: m=57 floor=21 (c_refutation) best 21@57
+2026-11-03 05:07:27 ridge Random-125-125-2-3_0 search: m=56 floor=21 (c_refutation) best 21@56
+2026-11-03 05:07:28 ridge Random-125-125-2-3_0 search: m=55 floor=21 (c_refutation) best 21@55
+2026-11-03 05:07:31 ridge Random-125-125-2-3_0 search: m=54 floor=21 (c_refutation) best 21@54
+2026-11-03 05:07:35 ridge Random-125-125-2-3_0 search: m=53 floor=21 (c_refutation) best 21@53
+2026-11-03 05:07:39 ridge Random-125-125-2-3_0 search: m=52 floor=21 (c_refutation) best 21@52
+2026-11-03 05:07:44 ridge Random-125-125-2-3_0 search: m=51 floor=21 (c_refutation) best 21@51
+2026-11-03 05:08:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:09:12 ridge Random-125-125-2-2_0 search: m=102 floor=13 (c_lower) best 13@100
+2026-11-03 05:10:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:11:12 ridge Random-125-125-2-2_0 search: m=102 floor=13 (c_lower) best 13@100
+2026-11-03 05:12:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:13:12 ridge Random-125-125-2-2_0 search: m=100 floor=14 (c_lower) best 14@100
+2026-11-03 05:14:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:17:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:22:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:23:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:24:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:25:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:26:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:27:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@100
+2026-11-03 05:29:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@100
+2026-11-03 05:30:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@100
+2026-11-03 05:34:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@100
+2026-11-03 05:37:13 ridge Random-125-125-2-2_0 search: m=99 floor=14 (c_lower) best 14@99
+2026-11-03 05:38:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@98
+2026-11-03 05:39:13 ridge Random-125-125-2-2_0 search: m=97 floor=14 (c_lower) best 14@97
+2026-11-03 05:40:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:41:13 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@97
+2026-11-03 05:42:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:43:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:44:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:45:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:46:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:47:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:48:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:49:13 ridge Random-125-125-2-2_0 search: m=99 floor=14 (c_lower) best 14@97
+2026-11-03 05:50:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:51:13 ridge Random-125-125-2-2_0 search: m=97 floor=14 (c_lower) best 14@97
+2026-11-03 05:52:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@97
+2026-11-03 05:53:13 ridge Random-125-125-2-2_0 search: m=105 floor=14 (c_lower) best 14@97
+2026-11-03 05:54:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@97
+2026-11-03 05:55:13 ridge Random-125-125-2-2_0 search: m=105 floor=14 (c_lower) best 14@97
+2026-11-03 05:56:14 ridge Random-125-125-2-2_0 search: m=106 floor=14 (c_lower) best 14@97
+2026-11-03 05:57:12 ridge Random-125-125-2-2_0 search: m=107 floor=14 (c_lower) best 14@97
+2026-11-03 05:57:12 ridge done Random-125-125-2-3_0: ladder 13@100, search 21@51 (c_refutation), opt 21, 580 C calls, 3600 s
+2026-11-03 05:57:12 ridge done Random-125-125-2-2_0: ladder 13@100, search 14@97 (c_lower), opt 25, 55 C calls, 3600 s

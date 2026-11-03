@@ -1,0 +1,10 @@
+2026-11-03 05:49:26 run: 100 targets (cs200, 0 <= n <= 60), 78 to do, 8 workers, seconds (60, 120, 180, 300), caps by size ((60, 2.0), (100, 5.0), (134, 10.0)), core-hours cap 18.0, order small-first, binary 6560b8093c3e51b9
+2026-11-03 05:51:28   10/78 done, 121 s wall, 0.17 core-h spent; last 'Random-30-30-4-1_0' (n=30): ladder 17 search 17 opt 17
+2026-11-03 05:52:28   20/78 done, 182 s wall, 0.33 core-h spent; last 'Random-30-30-8-1_0' (n=30): ladder 24 search 25 opt 25
+2026-11-03 05:53:29   30/78 done, 242 s wall, 0.50 core-h spent; last 'Random-40-40-2-4_0' (n=40): ladder 7 search 7 opt 7
+2026-11-03 05:54:29   40/78 done, 303 s wall, 0.67 core-h spent; last 'Random-40-40-8-2_0' (n=40): ladder 32 search 32 opt 32
+2026-11-03 05:57:30   50/78 done, 484 s wall, 0.95 core-h spent; last 'Random-50-100-4-2_0' (n=50): ladder 34 search 34 opt 34
+2026-11-03 06:00:31   60/78 done, 664 s wall, 1.28 core-h spent; last 'Random-50-100-8-2_0' (n=50): ladder 45 search 47 opt 47
+2026-11-03 06:02:31   70/78 done, 785 s wall, 1.62 core-h spent; last 'Random-50-50-6-2_0' (n=50): ladder 34 search 35 opt 35
+2026-11-03 06:04:32   78/78 done, 905 s wall, 1.88 core-h spent; last 'Random-50-50-8-5_0' (n=50): ladder 42 search 42 opt 42
+2026-11-03 06:04:32 run done: 185 rows, 905 s wall, 1.88 core-h this run

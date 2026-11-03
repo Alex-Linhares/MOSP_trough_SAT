@@ -1,0 +1,37 @@
+2026-11-03 04:57:11 run: 107 targets (cs200,gap338, 61 <= n <= 134), 107 to do, 8 workers, seconds (60, 120, 180, 300), caps by size ((60, 2.0), (100, 5.0), (134, 10.0)), core-hours cap 18.0, order small-first, binary 6560b8093c3e51b9
+2026-11-03 05:03:12   10/107 done, 361 s wall, 0.50 core-h spent; last 'Random-75-75-2-5_0' (n=75): ladder 16 search 16 opt 16
+2026-11-03 05:06:13   20/107 done, 543 s wall, 1.00 core-h spent; last 'Random-75-75-6-5_0' (n=75): ladder 50 search 51 opt 51
+2026-11-03 05:09:15   30/107 done, 724 s wall, 1.50 core-h spent; last 'Random-100-100-10-2_0' (n=100): ladder 83 search 85 opt 85
+2026-11-03 05:12:42   40/107 done, 932 s wall, 2.01 core-h spent; last 'Random-100-100-4-1_0' (n=100): ladder 45 search 43 opt 46
+2026-11-03 05:18:18   50/107 done, 1268 s wall, 2.52 core-h spent; last 'Random-100-100-8-2_0' (n=100): ladder 76 search 76 opt 76
+2026-11-03 05:21:19   60/107 done, 1449 s wall, 3.02 core-h spent; last 'Random-100-50-2-2_0' (n=100): ladder 11 search 11 opt 11
+2026-11-03 05:24:24   70/107 done, 1633 s wall, 3.53 core-h spent; last 'Random-100-50-6-2_0' (n=100): ladder 43 search 43 opt 43
+2026-11-03 05:27:55   80/107 done, 1845 s wall, 4.03 core-h spent; last 'SP4_0' (n=100): ladder 53 search 53 opt 53
+2026-11-03 05:32:22   81/107 done, 2111 s wall, 4.12 core-h spent; last 'scoop-A_FA+AA-_1_0' (n=105): ladder 12 search 12 opt 12
+2026-11-03 05:32:23   82/107 done, 2112 s wall, 4.20 core-h spent; last 'Random-125-125-10-1_0' (n=125): ladder 102 search 105 opt 105
+2026-11-03 05:32:25   83/107 done, 2114 s wall, 4.28 core-h spent; last 'Random-125-125-10-2_0' (n=125): ladder 102 search 104 opt 104
+2026-11-03 05:32:26   84/107 done, 2115 s wall, 4.37 core-h spent; last 'Random-125-125-10-3_0' (n=125): ladder 102 search 103 opt 103
+2026-11-03 05:32:26   85/107 done, 2115 s wall, 4.45 core-h spent; last 'Random-125-125-10-4_0' (n=125): ladder 103 search 105 opt 105
+2026-11-03 05:32:27   86/107 done, 2116 s wall, 4.53 core-h spent; last 'Random-125-125-10-5_0' (n=125): ladder 98 search 99 opt 99
+2026-11-03 05:34:16   87/107 done, 2225 s wall, 4.64 core-h spent; last 'Random-125-125-2-1_0' (n=125): ladder 23 search 23 opt 24
+2026-11-03 05:34:43   88/107 done, 2252 s wall, 4.75 core-h spent; last 'Random-125-125-2-2_0' (n=125): ladder 24 search 24 opt 25
+2026-11-03 05:37:24   89/107 done, 2413 s wall, 4.84 core-h spent; last 'Random-125-125-2-4_0' (n=125): ladder 24 search 24 opt 24
+2026-11-03 05:37:24   90/107 done, 2413 s wall, 4.92 core-h spent; last 'Random-125-125-2-3_0' (n=125): ladder 21 search 21 opt 21
+2026-11-03 05:38:22   91/107 done, 2471 s wall, 5.02 core-h spent; last 'Random-125-125-2-5_0' (n=125): ladder 20 search 20 opt 20
+2026-11-03 05:39:03   92/107 done, 2512 s wall, 5.13 core-h spent; last 'Random-125-125-4-1_0' (n=125): ladder 53 search 53 opt 57
+2026-11-03 05:39:06   93/107 done, 2515 s wall, 5.24 core-h spent; last 'Random-125-125-4-2_0' (n=125): ladder 54 search 53 opt 57
+2026-11-03 05:39:07   94/107 done, 2516 s wall, 5.35 core-h spent; last 'Random-125-125-4-3_0' (n=125): ladder 52 search 52 opt 54
+2026-11-03 05:41:10   95/107 done, 2639 s wall, 5.47 core-h spent; last 'Random-125-125-4-4_0' (n=125): ladder 49 search 49 opt 51
+2026-11-03 05:41:29   96/107 done, 2659 s wall, 5.58 core-h spent; last 'Random-125-125-4-5_0' (n=125): ladder 45 search 45 opt 46
+2026-11-03 05:42:52   97/107 done, 2741 s wall, 5.67 core-h spent; last 'Random-125-125-6-1_0' (n=125): ladder 80 search 80 opt 81
+2026-11-03 05:43:02   98/107 done, 2751 s wall, 5.76 core-h spent; last 'Random-125-125-6-2_0' (n=125): ladder 76 search 76 opt 77
+2026-11-03 05:44:01   99/107 done, 2810 s wall, 5.86 core-h spent; last 'Random-125-125-6-3_0' (n=125): ladder 79 search 79 opt 80
+2026-11-03 05:44:09   100/107 done, 2818 s wall, 5.94 core-h spent; last 'Random-125-125-8-1_0' (n=125): ladder 93 search 95 opt 95
+2026-11-03 05:44:48   101/107 done, 2858 s wall, 6.04 core-h spent; last 'Random-125-125-6-4_0' (n=125): ladder 78 search 78 opt 80
+2026-11-03 05:45:00   102/107 done, 2869 s wall, 6.14 core-h spent; last 'Random-125-125-6-5_0' (n=125): ladder 71 search 71 opt 74
+2026-11-03 05:46:12   103/107 done, 2942 s wall, 6.22 core-h spent; last 'Random-125-125-8-2_0' (n=125): ladder 92 search 93 opt 93
+2026-11-03 05:46:33   104/107 done, 2962 s wall, 6.31 core-h spent; last 'Random-125-125-8-3_0' (n=125): ladder 94 search 95 opt 95
+2026-11-03 05:47:53   105/107 done, 3043 s wall, 6.39 core-h spent; last 'Random-125-125-8-4_0' (n=125): ladder 94 search 94 opt 94
+2026-11-03 05:48:10   106/107 done, 3059 s wall, 6.47 core-h spent; last 'Random-125-125-8-5_0' (n=125): ladder 90 search 91 opt 91
+2026-11-03 05:49:01   107/107 done, 3111 s wall, 6.56 core-h spent; last 'scoop-A_FA+AA-_13_0' (n=134): ladder 17 search 17 opt 17
+2026-11-03 05:49:01 run done: 107 rows, 3111 s wall, 6.56 core-h this run

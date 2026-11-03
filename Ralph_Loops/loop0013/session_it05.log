@@ -1,0 +1,181 @@
+# session it05 started 2026-11-03 04:50:39
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan sections, item 04's module and report section, then set up item 05's run.
+  > $ date && uptime && wc -l reports/obstruction_search_plan.md learning/obstruction_minor.py paper1/obstruction_check.py reports/obstruction_search.md && ls reports
+  > $ grep -n "^#" reports/obstruction_search_plan.md | head -60 && sed -n 1,140p reports/obstruction_search_plan.md
+  > $ sed -n 140,170p reports/obstruction_search_plan.md && sed -n 224,335p reports/obstruction_search_plan.md && sed -n 400,420p reports/obstruction_search_plan.md
+  > $ sed -n 1,260p learning/obstruction_minor.py
+  > $ sed -n 260,620p learning/obstruction_minor.py
+  > $ sed -n 620,1084p learning/obstruction_minor.py
+
+I've read the item 04 module. Now I'm gathering the remaining inputs: the report's §4, the checker's interface, the targets' sizes, and the record's minor survey.
+  > $ grep -n "^## \|^### " reports/obstruction_search.md | tail -30 && grep -n "^## 4" reports/obstruction_search.md
+  > $ sed -n 989,1231p reports/obstruction_search.md
+  > $ uptime && sha256sum pathwidth_solver/cli/pathwidth && ls -la pathwidth_solver/cli/pathwidth && ps -eo pid,ni,etime,args --sort=-%cpu | grep -v grep | grep -i "r
+  > $ ps -eo pid,ni,etime,comm,%cpu --sort=-%cpu | head -8; echo "---targets---"; python3 - <<'EOF' 2>&1 | tail -60
+import json, pandas as pd
+t = json.load(open("repo
+  > $ python3 - <<'EOF' 2>&1 | tail -40
+import json, pandas as pd
+t = json.load(open("reports/scratch/obstruction_search/01_ledger/targets.json"))
+print({k: (len(v) i
+  > $ sed -n 411,470p reports/pathwidth_lower_bounds_survey.md; echo "=== verification 2-2 ==="; grep -n "2-2_0" reports/minor_bound_verification.md | head -20; echo 
+  > $ printf 'H?AedQ\n' | nice -n 19 pathwidth_solver/cli/pathwidth -t 2 -l -v -m min_vertices=1000000; echo "=== check_minor ==="; sed -n 493,592p paper1/obstruction
+  > $ python3 -c "
+import networkx as nx
+G=nx.circular_ladder_graph(8); print(nx.to_graph6_bytes(G,header=False).decode().strip())" | nice -n 19 pathwidth_solver/cli/
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+
+# A. output directory switch + size-dependent caps and b
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+start = s.index("def run(which: str, max_n: int, workers:
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+old = '''    else:
+        starts.sort(key=lambda ls: (-(
+  > $ (nice -n 19 python3 -m learning.obstruction_minor --stage run --out 05_smoke --targets cs200,gap338 --min-n 61 --max-n 75 --workers 2 --seconds 5,5,6,6 --core-h
+  > $ rm -rf reports/scratch/obstruction_search/05_smoke && uptime && mkdir -p reports/scratch/obstruction_search/05_minor_scale && nohup nice -n 19 python3 -m learni
+
+The runs are started. While they run, I'll write the item's tables, the harness script and the tests. First, the columns needed for the family E comparison.
+  > $ head -1 reports/scratch/obstruction_search/02_expansion/floor.csv; head -1 reports/scratch/obstruction_search/02_expansion/ceiling.csv; python3 - <<'EOF'
+import
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+
+# 1. write_tables takes an item; header text generalised
+  > $ python3 -m learning.obstruction_minor --stage tables --out 04_minor > /tmp/t04.md 2>&1; echo rc=$?; git diff --stat reports/scratch/obstruction_search/04_minor/
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+old = '''def log(msg: str, path: Path = RUN_LOG) -> None:
+  > $ sed -n 1,58p tests/test_obstruction_minor.py && sed -n 209,228p tests/test_obstruction_minor.py && tail -3 reports/scratch/obstruction_search/05_minor_scale_run
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/scratch/obstruction_search/05_minor_scale/run_harness.py")
+s = p.read_text()
+old = '''        for d
+
+The tests mostly pass; one assertion compared hashes across two labelling conventions. I'm fixing that test, then checking the run's progress.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_obstruction_minor.py")
+s = p.read_text()
+old = '''    assert len(labels) == 70 == rec["m"]
+    a
+  > $ for i in $(seq 1 20); do sleep 30; if [ -f reports/scratch/obstruction_search/05_minor_scale/search.csv ]; then break; fi; done; python3 - <<'EOF'
+import pandas
+  > $ cat > /tmp/sec5_method.md <<'EOF'
+### 5.1 What was done
+
+**The question.** Item 04 showed the family closing every one of the 251
+gap instances at 20–50 custome
+  > $ cat > /tmp/rebuild_runlog.sh <<'EOF'
+#!/bin/bash
+# item 05: the main run's log lines went to 04_minor/run.log (the `log` default was bound at import time;
+# fix
+  > $ for i in $(seq 1 18); do sleep 30; done; grep -c . reports/scratch/obstruction_search/05_minor_scale/search.csv; tail -1 reports/scratch/obstruction_search/05_m
+  > $ python3 - <<'EOF'
+import pandas as pd
+s = pd.read_csv("reports/scratch/obstruction_search/05_minor_scale/search.csv")
+s["gl"] = s.optimum - s.ladder_floor; s["g
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+
+# checker: also ladder.json where the ladder's floor is 
+  > $ python3 -m learning.obstruction_minor --stage tables --out 05_minor_scale > /tmp/t05.out 2>&1; echo rc=$?; tail -5 /tmp/t05.out; grep -n "^## " reports/scratch/
+
+The tables generate correctly on partial data. One addition to table (d): the ridge stage's own result beside the main run's. Then I'll keep polling the run.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py")
+s = p.read_text()
+old = '''    rows = []
+    for nm, survey, at in RECORD_S
+  > $ grep "2-3_0" reports/scratch/obstruction_search/05_minor_scale_ridge.out | tail -8; for i in $(seq 1 18); do sleep 30; done; grep -c . reports/scratch/obstructi
+  > $ grep "2-3_0" reports/scratch/obstruction_search/05_minor_scale_ridge.out | tail -3; for i in $(seq 1 18); do sleep 30; done; grep -c . reports/scratch/obstructi
+  > $ for i in $(seq 1 24); do n=$(grep -c . reports/scratch/obstruction_search/05_minor_scale/search.csv); if [ "$n" -ge 108 ] && grep -q "run done" reports/scratch/
+
+Main run done: 107 of 107 reached in 6.56 core-hours, none cut by the cap. The 78 smaller Chu & Stuckey instances are running now. Meanwhile I'll analyse the 107 and wait for the ridge stage to end.
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+s = pd.read_csv("reports/scratch/obstruction_search/05_minor_scale/search.csv")
+led = pd.read_csv("reports/scratch/o
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+r = pd.read_csv("reports/scratch/obstruction_search/05_minor_scale/ridge.csv")
+print(pd.read_csv("reports/scratch/ob
+  > $ for i in $(seq 1 30); do if grep -q "run done" reports/scratch/obstruction_search/05_minor_scale_small_run.out; then break; fi; sleep 20; done; tail -2 reports/
+  > $ python3 -m learning.obstruction_minor --stage tables --out 05_minor_scale > /dev/null 2>&1; echo rc=$?; python3 - <<'EOF'
+import pandas as pd, json, numpy as np
+
+I have the numbers for the section. Next I'll draft the report's §5 text now with the checker line left to fill, and poll the checker in the same step.
+  > $ tail -2 reports/scratch/obstruction_search/05_minor_scale_check.out; ls reports/scratch/obstruction_search/05_minor_scale/; cat > /tmp/sec5_body.md <<'EOF'
+### 
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+from learning.obstruction_ledger import adjacency_from_matrix
+from learning.obstruction_expansion import ledg
+  > $ sed -i 's/(by one stack on 10, two on 5, three on 1)/(by one stack on 13, two on 3)/; s/at `Random-100-100-10`, 96–99/at `Random-100-100-10`, 97–99/; s/The two 
+  > $ python3 -m learning.obstruction_minor --stage tables --out 05_minor_scale > /dev/null 2>&1; echo tables rc=$?; /tmp/rebuild_runlog.sh; git status --short | grep
+  > $ nice -n 19 timeout 900 python3 -m pytest tests/test_obstruction_minor.py -q 2>&1 | tail -2; (nohup python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstru
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_minor.py"); s = p.read_text()
+old = '''    if RIDGE_CSV.exists():
+        r = pd.read_
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/iterations.md"); s = p.read_text()
+old = "- [ ] **05 Family M at scale: the 338 above 
+  > $ python3 - <<'EOF'
+import pandas as pd
+from pathlib import Path
+led = pd.read_csv("reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv").set_index("in
+  > $ python3 - <<'EOF'
+from pathlib import Path
+rep = Path("reports/obstruction_search.md"); s = rep.read_text()
+old = "| `Random-125-125-4-5_0` | 46 | 45 | 45 | 46 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/PROGRESS.md"); t = p.read_text()
+old = "- **Gate**: GATE_RESULT"
+new = ("- **Gate: PAS
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "b9is53gu3"}
+
+Item 05 is done and marked `[x]`; the gate passed; nothing is left running.
+
+**What was done.** The contraction-minor search of item 04 was taken to scale in `learning/obstruction_minor.py`: an output-directory switch, C caps and budgets by size, a core-hour scheduler, a `ridge` stage, node counts in every certificate, and the checker extended to the ladder's certificate where it is the better one. 185 instances were run (107 at 61–134 customers, 78 Chu & Stuckey at 30–50) and the 22 Chu & Stuckey gap instances item 04 ran were carried in, giving the 207 distinct targets. Six tests were added. The report has §5; PROGRESS has the iteration entry.
+
+**Findings.**
+- Family M's floor is tight on 73 of the 87 gap instances above 60 customers and on 186 of the 200 Chu & Stuckey instances. With the record, 327 of the 338 are closed and 11 open, all dense 100- and 125-customer instances on the ridge's dense shoulder.
+- M is at least as tight as family E on every one of the 200, tighter on 142. The record's expectation that expansion wins on dense classes holds only at density 10, where the two tie.
+- The search beats the ladder on 60 of 185, on 41 of them with a minor above 95% of the vertices. The ladder's grid stops at 95%, so most of its shortfall on dense instances is a grid artefact. A 97–99% rung is proposed, not applied.
+- `Random-125-125-2-3_0` now has a 51-vertex certificate refuting 19 in 145,355 nodes and 0.12 s, rule-free verified, against the record's 70 vertices.
+- `Random-125-125-2-2_0`: no certificate for 25 under one core-hour. 55 C calls at 97–110 vertices, all undecided or proved useless. A recorded negative, not a kill.
+- Checker: 190 of 190 verified. Harness: above optimum 0 on all 6,376.
+
+**Kill verdict.** Not met: the search beats the ladder on 45 of the 338 (13.3%).
+
+**Compute.** About 10.6 core-hours of the item's 22; no instance was cut by the 18-core-hour stop.
+
+**One slip, repaired.** The module's log path was bound at import time, so the main run logged into item 04's log. The default is now resolved at call time, item 05's log was rebuilt from the stdout captures, and item 04's was restored from git.
+
+**Next.** Item 06, family B on the 11 residual gap instances.
+
+# result: success in 5582s, 54 turns, cost $28.43

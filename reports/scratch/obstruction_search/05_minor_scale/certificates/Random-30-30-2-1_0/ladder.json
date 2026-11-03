@@ -1,0 +1,359 @@
+{
+ "format": "obstruction-minor-1",
+ "instance_name": "Random-30-30-2-1_0",
+ "n": 30,
+ "matrix_sha256": "a22cec77d8073b911ec930b57a4e42d53f5f0c2369a1b16c89ccf3947b3a77f1",
+ "graph_sha256": "6c8c37476d4432ddd065d8d7da06cd047043c2f086250e14321e15871c2295d8",
+ "graph_edges": 80,
+ "sequence": [
+  [
+   12,
+   9
+  ],
+  [
+   28,
+   29
+  ],
+  [
+   29,
+   23
+  ],
+  [
+   2,
+   25
+  ],
+  [
+   6,
+   11
+  ],
+  [
+   14,
+   22
+  ],
+  [
+   26,
+   13
+  ],
+  [
+   4,
+   27
+  ],
+  [
+   9,
+   10
+  ]
+ ],
+ "sequence_note": "pairs [v, u] in the instance's customer labels (0-based rows): contract v into u, u keeps its label; [v, -1] deletes an isolated v; every pair is an edge of the current graph",
+ "m": 21,
+ "minor_labels": [
+  0,
+  1,
+  3,
+  5,
+  7,
+  8,
+  10,
+  11,
+  13,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  27
+ ],
+ "minor_edges": [
+  [
+   0,
+   3
+  ],
+  [
+   0,
+   4
+  ],
+  [
+   0,
+   10
+  ],
+  [
+   0,
+   11
+  ],
+  [
+   0,
+   13
+  ],
+  [
+   0,
+   20
+  ],
+  [
+   1,
+   2
+  ],
+  [
+   1,
+   3
+  ],
+  [
+   1,
+   4
+  ],
+  [
+   1,
+   7
+  ],
+  [
+   1,
+   9
+  ],
+  [
+   1,
+   10
+  ],
+  [
+   1,
+   11
+  ],
+  [
+   1,
+   13
+  ],
+  [
+   1,
+   14
+  ],
+  [
+   1,
+   15
+  ],
+  [
+   1,
+   18
+  ],
+  [
+   2,
+   4
+  ],
+  [
+   2,
+   7
+  ],
+  [
+   2,
+   9
+  ],
+  [
+   2,
+   11
+  ],
+  [
+   3,
+   10
+  ],
+  [
+   3,
+   11
+  ],
+  [
+   3,
+   13
+  ],
+  [
+   3,
+   15
+  ],
+  [
+   3,
+   20
+  ],
+  [
+   4,
+   7
+  ],
+  [
+   4,
+   10
+  ],
+  [
+   4,
+   11
+  ],
+  [
+   4,
+   12
+  ],
+  [
+   4,
+   13
+  ],
+  [
+   4,
+   14
+  ],
+  [
+   4,
+   18
+  ],
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   10
+  ],
+  [
+   5,
+   11
+  ],
+  [
+   5,
+   12
+  ],
+  [
+   5,
+   17
+  ],
+  [
+   5,
+   20
+  ],
+  [
+   6,
+   12
+  ],
+  [
+   7,
+   8
+  ],
+  [
+   7,
+   9
+  ],
+  [
+   7,
+   11
+  ],
+  [
+   8,
+   11
+  ],
+  [
+   8,
+   16
+  ],
+  [
+   9,
+   17
+  ],
+  [
+   9,
+   18
+  ],
+  [
+   10,
+   11
+  ],
+  [
+   10,
+   12
+  ],
+  [
+   10,
+   13
+  ],
+  [
+   10,
+   14
+  ],
+  [
+   10,
+   15
+  ],
+  [
+   10,
+   19
+  ],
+  [
+   10,
+   20
+  ],
+  [
+   11,
+   12
+  ],
+  [
+   11,
+   16
+  ],
+  [
+   11,
+   20
+  ],
+  [
+   12,
+   13
+  ],
+  [
+   12,
+   14
+  ],
+  [
+   13,
+   14
+  ],
+  [
+   13,
+   15
+  ],
+  [
+   13,
+   19
+  ],
+  [
+   14,
+   18
+  ],
+  [
+   15,
+   17
+  ],
+  [
+   16,
+   19
+  ]
+ ],
+ "minor_sha256": "8172de91c19793e512f35a795ec413ff6c5d2f05d084a396ac6a8a1b7d683f8e",
+ "minor_sha256_note": "SHA-256 of \"m e\\n\" then \"a b\\n\" per edge, sorted, a < b, labels 0..m-1 in increasing order of the surviving representative",
+ "c_width": 8,
+ "c_status": "refutation",
+ "c_lower": 7,
+ "pathwidth_proved": 8,
+ "refuted_width": 7,
+ "floor_source": "c_refutation",
+ "floor": 9,
+ "floor_units": "optimum units: pathwidth(minor) + 1 <= pathwidth(G) + 1 = MOSP",
+ "optimum_on_record": 9,
+ "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 2 -l -v -m min_vertices=1000000",
+ "c_cap_seconds": 2.0,
+ "c_stdout": [
+  "pathwidth 8 refutation",
+  "layout 11 9 7 4 2 1 8 16 19 18 14 13 10 12 15 3 0 20 5 17 6"
+ ],
+ "c_stderr": [
+  "line 1: n=21 width=8 status=refutation lower=7 upper_start=8 nodes=141 minor_nodes=0 upper_bound_nodes=81 engine_calls=2 seconds=0.000"
+ ],
+ "c_seconds": 0.0014740489423274994,
+ "c_nodes": 141,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "method": "ladder",
+ "search_seconds": 0.013021221850067377,
+ "theorems": "pathwidth_gt_of_minorOf / pathwidth_minorOf_le (lean/MOSPFormalization/Minor.lean); mospValue_eq_pathwidth_add_one (lean/MOSPFormalization/MOSPGraph.lean); the C program's refutation rests on the corrected search rules (lean/MOSPFormalization/Search/), its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean)"
+}

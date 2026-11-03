@@ -1,0 +1,29 @@
+[
+ {
+  "rule": "min-d",
+  "fraction": 0.5,
+  "size": 52,
+  "m": 52,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.55,
+  "size": 58,
+  "m": 58,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.6,
+  "size": 63,
+  "m": 63,
+  "floor": 12,
+  "source": "c_refutation",
+  "cached": false
+ }
+]

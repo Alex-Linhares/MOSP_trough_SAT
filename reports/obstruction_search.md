@@ -1320,3 +1320,515 @@ Total: ladder 0.01 core-hours, search 5.08; C calls 1792 and 951248.
 | Harvey               |          71 |              0.2  |                 0 |                14 |             71 |              0.48 |                32 |
 | Simonis              |          73 |              0.14 |                 0 |                10 |             73 |              0.79 |                51 |
 | Wilson               |           1 |              0    |                 0 |                 0 |              1 |              3    |                 1 |
+
+## 5. Family M at scale: the 87 gap instances above 60 customers and the 200 Chu & Stuckey; `Random-125-125-2-2_0` and `2-3_0` (item 05)
+
+*Size range: 207 distinct instances — the 87 of `gap338` above 60
+customers (75–134) and the 200 of `cs200` (30–125), of which 185 were run
+here (107 at 61–134, 78 at 30–50) and 22 (the Chu & Stuckey gap instances
+at 30–50) are carried from item 04's run unchanged (`carried_item04.csv`,
+their certificates and verdicts under `carried_item04/`); the two ridge
+instances at 125. Regenerate: `nice -n 19 python3 -m learning.obstruction_minor
+--stage run --out 05_minor_scale --targets cs200,gap338 --min-n 61 --max-n 134
+--workers 8 --seconds 60,120,180,300 --core-hours 18 --order small-first`;
+the same with `--targets cs200 --min-n 0 --max-n 60` (the 78); `--stage
+ridge --out 05_minor_scale --core-hours 2 --workers 2`; `--stage check
+--out 05_minor_scale --workers 8 --rulefree-cap 120`; `python3
+reports/scratch/obstruction_search/05_minor_scale/run_harness.py --workers 4`;
+`--stage tables --out 05_minor_scale`. Outputs under
+`reports/scratch/obstruction_search/05_minor_scale/`: `search.csv` (185
+rows), `ladder.csv` (every ladder point), `carried_item04.csv` (22),
+`joined.csv` (207), `certificates/<instance>/{instance.mosp, search.json,
+ladder.json, ladder_points.json}`, `ridge.csv` (every C call of the ridge
+stage), `ridge_summary.csv`, `ridge/<instance>/{instance.mosp, search.json,
+calls.csv}`, `checker_verdicts.csv`, `harness_values.csv`,
+`harness_table.md`, `tables.md`, `run.log`, `gate_run.out`, and
+`../05_minor_scale_{run,small_run,ridge,check}.out`. Tests:
+`tests/test_obstruction_minor.py` (17, six new).*
+
+### 5.1 What was done
+
+**The question.** Item 04 showed the family closing every one of the 251
+gap instances at 20–50 customers, with the search beating the ladder on
+11.6% of them. This item takes the search to the sizes where the ladder is
+known to miss: the 87 instances of the 338 above 60 customers and the 200
+Chu & Stuckey instances (`targets.cs200`; 207 distinct in all, of which the
+22 at 30–50 that are also in `gap338` were run by item 04 and are carried
+from there), and to the two 125-customer ridge instances with the budget
+the survey's unfinished sizes never had.
+
+**The code** is item 04's `learning/obstruction_minor.py` with four
+additions: `set_out` (every path under
+`reports/scratch/obstruction_search/05_minor_scale/`), the C cap and the
+per-instance budget by size (`cap_for`: 2 s at `n ≤ 60`, 5 s at 61–100,
+10 s at 101–134, plan §0.5 (e); `budget_for`: 60, 120, 180 and 300 s per
+band for the ladder and the same for the search), a scheduler in `run`
+that starts an instance only while the core-hours spent plus the budgets
+of the running ones stay below `--core-hours` and lists the rest in
+`not_reached.txt`, and a `ridge` stage. The C's `nodes=` is now parsed
+from its stderr and written into every certificate (`c_nodes`). The
+search, the ladder, the evaluator (the lifted-witness skip, the cache by
+edge hash), the certificate format and the checker are item 04's,
+unchanged; `search` takes an optional list of start sequences, which only
+the ridge stage uses.
+
+**The ridge stage** (`--stage ridge`, 2 core-hours, one worker per
+instance, 3,600 s each). First the two greedy rules at 100, 102, 105, 108
+and 110 vertices with a 120 s cap per C call, every point sent to the C
+program whatever its upper bound (the item asks for every size, rule,
+status, node count and seconds); then, for `Random-125-125-2-2_0`, the
+tabu search restarting from those ten points, best floor first, with a
+60 s cap per call and 10 moves per restart; for `Random-125-125-2-3_0`,
+the search restarting from the recorded 70-vertex least-c certificate
+(`reports/scratch/minor_certificates/Random-125-125-2-3_0_m70.json`,
+converted from `mc_graph.py`'s `[keep, absorbed]` to this module's
+`(absorbed, keep)`; its replay gives the record's 70 representatives, by a
+test), the objective minimising the vertex count at floor 21 — does a
+smaller minor refute 20? Every C call is a row of `ridge.csv`; the
+per-instance summary is `ridge_summary.csv`; the best minor's certificate
+is `ridge/<instance>/search.json`.
+
+### 5.2 Numbers
+
+**The 87 gap instances above 60 customers** (`tables.md` (b)). Family M's
+floor — the better of the ladder's and the search's certificate — equals
+the optimum on **73 of the 87**: 17 of 17 at 61–75, 43 of 45 at 76–100,
+13 of 25 at 101–134. The record before this loop (`floor0`) was tight on
+11 of the 87 and family E's floor after item 03 on 4. The search alone is
+tight on 72, the ladder alone on 58; the search beats the ladder on 16
+(by one stack on 13, two on 3) and finishes below it on 3. The 14
+the family leaves open, all Chu & Stuckey at 100 and 125
+customers, by one to four stacks:
+
+| instance | optimum | ladder | search | `floor0` | E floor | gap left |
+|---|---|---|---|---|---|---|
+| `Random-100-100-4-1_0` | 46 | 45 | 43 | 33 | 34 | 1 |
+| `Random-100-100-4-3_0` | 43 | 41 | 42 | 26 | 26 | 1 |
+| `Random-125-125-2-1_0` | 24 | 23 | 23 | 24 (record's 87-vertex minor) | 9 | 1 |
+| `Random-125-125-2-2_0` | 25 | 24 | 24 | 24 | 8 | 1 |
+| `Random-125-125-4-1_0` | 57 | 53 | 53 | 53 | 37 | 4 |
+| `Random-125-125-4-2_0` | 57 | 54 | 53 | 55 | 35 | 3 |
+| `Random-125-125-4-3_0` | 54 | 52 | 52 | 31 | 34 | 2 |
+| `Random-125-125-4-4_0` | 51 | 49 | 49 | 50 | 24 | 2 |
+| `Random-125-125-4-5_0` | 46 | 45 | 45 | 46 (loop0010's file-backed minor) | 24 | 1 |
+| `Random-125-125-6-1_0` | 81 | 80 | 80 | 81 (record's 120-vertex minor) | 73 | 1 |
+| `Random-125-125-6-2_0` | 77 | 76 | 76 | 60 | 61 | 1 |
+| `Random-125-125-6-3_0` | 80 | 79 | 79 | 64 | 70 | 1 |
+| `Random-125-125-6-4_0` | 80 | 78 | 78 | 63 | 69 | 2 |
+| `Random-125-125-6-5_0` | 74 | 71 | 71 | 56 | 59 | 3 |
+
+Three of the fourteen are closed by a floor already on record (`2-1_0`
+and `6-1_0` by the survey's minors at 87 and 120 vertices, found with
+40–80 s refutations where this item's cap is 10 s; `4-5_0` by loop0010's
+file-backed minor certificate, item 01's `minor` column),
+so **the 338 as a whole stand at 324 closed by family M (251 in item 04,
+73 here), 3 more by the record, and 11 open after this item**, all `Random-100-100-4` and `Random-125-125-4/6`:
+the dense shoulder of the ridge, exactly where item 03 left the six E
+brackets open.
+
+**The 200 Chu & Stuckey instances** ((a)). The family's floor is tight on
+**186 of 200**: all 125 at 30–75 customers, 48 of 50 at 100, 13 of 25 at
+125. `floor0` was tight on 88, family E on 58. By density at 125: density
+2, 3 of 5 (the two above, each one stack short); density 4, 0 of 5 (one to
+four short); density 6, 0 of 5 (one to three); densities 8 and 10, 5 of 5
+each. **The expectation from the record — minors on the sparse ridge,
+expansion on the dense classes — is half right**: family M is at least as
+tight as family E on every one of the 200 (tighter on 142, tied on 58,
+never looser), and at density 10 the two tie at the optimum (E exact there,
+item 03); where E is 12–22 stacks short at 125 (densities 2–6), M is 0.4–2.6
+short. What M misses is the dense shoulder, not the ridge.
+
+**Where the search beats the ladder, and why** ((c)). On the 185 instances
+this item ran, 60 (32%): by one on 44, two on 14, three on 2; on 41 of the
+60 the certifying minor has **more than 95% of the vertices** (at
+`Random-125-125-10` and `-8`, 116–122 of 125; at `Random-100-100-10`, 97–99
+of 100), and on 49 of the 60 the ladder's best point was its last, the 95%
+point. The ladder's size grid stops where the dense instances' certifying
+minors start: on them the family's duality gap is zero and the ladder's
+one to three stacks is a grid artefact (a 97, 98, 99% rung would close it,
+a change to `relaxation.py`'s ladder proposed and not applied). On the
+sparse classes the two agree, and the search's gain is a smaller minor.
+The search finishes **below the ladder on 3** (`Random-100-100-4-1_0` and
+`-4-4_0` by two and one, `Random-125-125-4-2_0` by one): at 5–10 s per
+call its 180–300 s buy 67–146 C calls, fewer than the moves from its
+50–95% restarts need to reach the ladder's 85–95% rungs, so the family's
+certificate on those three is the ladder's (`ladder.json`, checked). The
+item's "same total seconds" is again a cap and not a spend: the ladder
+used 0.31 core-hours on the 185, the search 8.13.
+
+**The record's seven** ((d)). `Random-125-125-8-2_0`: **93 = optimum** at
+118 vertices (the survey had 92 at 115–120, item 01 carried 87 file-backed
+and 92 as `minor_survey`); `SP4`: 53 = optimum at 90 (record 96);
+`Random-125-125-2-3_0`: 21 = optimum at 53 in the main run and **51 in the
+ridge stage** (record 70); `2-2_0`: 24 at 70 (the file-backed 24;
+optimum 25); `2-1_0`: 23 at 61–62 against the record's 24 at 87; `4-1_0`:
+53 at 88 against the survey's 54 at 100; `6-1_0`: 80 at 117 against the
+record's 81 at 120. On the last three the record's refutations took 28–80 s
+on minors of 87–120 vertices, above this item's 10 s cap; the caps are the
+item's and the comparison is at unequal budgets, said so.
+
+**The minimal certifying minor** ((f)). Where the search reaches the
+optimum, `m / n` has median 0.83–0.94 by band at 61–134 against item 04's
+0.51–0.75 at 20–60: at these sizes the certifying minors are large, and the
+figure tracks density (Pearson 0.93 with `optimum / n`, 0.73 with the
+excess, −0.16 with `n`). The sparse classes keep small certificates
+(`Random-125-125-2`: 46–70 of 125; `Random-100-100-2`: 51 of 100 at the
+median; the SCOOP instances 37–52 of 79–134), the dense ones need nearly
+the whole graph. Every floor of the 185 is a C `refutation` on the minor,
+for the ladder and for the search alike (0 by the C's `bound`, 0 by its
+printed `lower`).
+
+**The two ridge instances** ((g), `ridge.csv`, 645 C calls in all).
+
+- *`Random-125-125-2-2_0`* (optimum 25; needs a minor refuting 23 in
+  pathwidth units). The two greedy rules reach the same minor at each of 100,
+  102, 105, 108 and 110 (different sequences, the same quotient, caught by
+  the evaluator's cache), so five distinct 120 s calls: all `upper`, 2.1–2.3 × 10⁸ nodes each; at 100
+  vertices the C finds a **layout of width 23**, so that minor cannot
+  certify 25 (it is one the survey's "every minor ≤ 95 admits 24" extends
+  to 100); at 102–110 it finds width 24 and decides nothing. The search
+  from those points, 60 s per call, made 50 calls at 97–107 vertices, all
+  `upper`: on 22 of them the C found a layout of width 23 or 22 (the
+  minor is useless), on 28 width 24 (undecided), median 1.1 × 10⁸ nodes
+  per call. Floor at the end: 14, the C's printed degeneracy bound. **No
+  certificate for 25 was found within one core-hour** — a recorded
+  negative, as the item says, and not a kill: it says nothing about
+  whether one exists.
+- *`Random-125-125-2-3_0`* (optimum 21). The greedy minors at 100–110 do
+  **not** refute 20 in 120 s (all `upper`, 2.6–3.1 × 10⁸ nodes; the C
+  finds width 20 or 21) while the recorded 70-vertex least-c minor
+  refutes it in **757,009 nodes and 0.5 s** — the record's count to the
+  node. From that certificate the search shrank the minor one vertex at a
+  time: a refuting minor at every size from 69 down to **51** (574 calls,
+  19 refutations, the rest exact widths of 19 on the candidates), the
+  51-vertex one refuting 19 in **145,355 nodes and 0.12 s**; 367 candidates
+  at 50 vertices all have pathwidth exactly 19. So a 51-vertex contraction
+  minor certifies `Random-125-125-2-3_0 ≥ 21`, 19 vertices below the record
+  and 5.2× fewer nodes; whether a 50-vertex one exists the search cannot
+  say.
+
+**Checker** ((h)): **190 of 190 verified** (`checker_verdicts.csv`: the 185 search
+certificates, the 3 `ladder.json` where the ladder is the family's
+certificate, the 2 ridge ones): replay and edge hash on all; the C
+re-proof at the certificate's own cap × 5 on all (186 `refutation`, 3
+`bound`, and 1 `upper` whose printed lower bound meets the claim — the
+`2-2_0` ridge floor of 14); and the rule-free `vsmemo` + `checkF`
+refutation on the **137 with at most 80 vertices** (8–80; median 0.14 s,
+maximum 51.5 s), skipped on the 53 larger ones (81–122 vertices, the 87-vertex
+scale the item excludes). The 51-vertex certificate of `2-3_0` is among
+the rule-free verified (0.45 s), so that floor rests on minor monotonicity
+and the 80-line checker alone, as the record's 70-vertex one does.
+
+**Harness** (`harness_table.md`): the item's floor (a lookup of the 185
+search certificates and the two ridge ones; 1 elsewhere) through the
+validity stage on all 6,376 corpus instances: **above the optimum on 0**,
+beats the reference `max(lb_best, tw + 1)` on 87 of the 338.
+
+**Cost** ((i)): the main run 6.56 core-hours on the 107 at 61–134 (3,111 s
+wall at 8 workers, load 8–10, no instance cut by the 18-core-hour cap) and
+1.88 on the 78 at 30–50 (905 s wall): ladder 0.31 core-hours in all (1,783
+C calls), search 8.13 (278,571 C calls, 3.35 core-hours inside the C);
+the ridge stage 2.0 (645 C calls, 1.18 core-hours inside the C); the
+checker 0.15 (seconds summed over the 190 checks); the harness 0.01. **≈ 10.6 core-hours** against the
+item's 20 + 2.
+
+### 5.3 Kill verdict and what this does not claim
+
+**Kill criterion (plan §0.9 M, the 338 as a whole): not met.** The search
+beats the ladder on 29 of the 251 at `n ≤ 60` (item 04) and 16 of the 87
+above, **45 of 338, 13.3%**, against the 10% that would record "greedy is
+enough". The reading stays the one of §4.3: the ladder is never more than
+three stacks short, the search wins by one to three, and above 60
+customers most of its wins are the 95% rung of the ladder's grid, which a
+longer ladder would take at a hundredth of the search's time. For
+`Random-125-125-2-2_0`, no certificate within the budget is a recorded
+negative, not a kill. The budget was the kill on nothing: the 18-core-hour
+driver stop was not reached. The stop conditions did not fire: no floor
+above an optimum (harness and ledger), no certificate rejected by the
+checker.
+
+**What this does not claim.** That `Random-125-125-2-2_0` has no minor
+certificate (55 C calls at 97–110 vertices under one core-hour found
+none; the record's certificates for `2-1_0` and `6-1_0` needed calls this
+item's caps do not allow); that the 51-vertex minor of `2-3_0` is the
+smallest (367 failures at 50 are a search's failures); that the family's
+floor on the 11 open instances is its best (the search spent 180–300 s
+at 5–10 s per call; the three "below the ladder" show the budget binding);
+that the `m / n` figures describe anything but this search's minima under
+this evaluator; that a C `refutation` on a minor is independent of the
+search rules where the rule-free check did not run (the 53 certificates with 81–122 vertices rest on the corrected rules proved sound in Lean, as the record's 87- and 120-vertex ones do); any
+solver change (the 97–99% rungs are a proposal; `relaxation.py` and the
+C's minor step are untouched); nothing about the C program's speed (plan
+§0.4 (9)). The comparison with family E uses item 03's `floor_after` where
+it exists, item 02's rerun floor and item 01's cap-12 floor elsewhere.
+Yanasse (1997a) Proposition 2 and Fellows & Langston (1987) Lemma 4.2 are
+the monotonicity behind every floor here; the ladder is Chu & Stuckey's
+contraction relaxation (2009, §3.5) as the record implements it. "We found
+no prior report" of the 51-vertex certificate or of a search over
+contraction sequences at these sizes.
+
+### 5.4 Tables (generated; `tables.md`)
+
+*Generated by `python3 -m learning.obstruction_minor --stage tables --out 05_minor_scale` on 2026-11-03 06:11; 207 instances (`cs200` ∪ `gap338` at n > 60; n = 30–134).*
+## (a) By Chu & Stuckey class `(n, m, d)` (the instances this item ran; item 04 covered the 22 gap instances at n ≤ 60 separately)
+
+| class             |   instances |   ladder gap mean |   ladder tight |   search gap mean |   search tight |   search > ladder |   search < ladder |   floor0 gap mean |   search > floor0 |   E gap mean |   M tighter |   E tighter |   best gap mean |   best tight |
+|:------------------|------------:|------------------:|---------------:|------------------:|---------------:|------------------:|------------------:|------------------:|------------------:|-------------:|------------:|------------:|----------------:|-------------:|
+| Random-30-30-2    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              0.8  |                 3 |         1.4  |           5 |           0 |            0    |            5 |
+| Random-30-30-4    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              0    |                 0 |         1    |           5 |           0 |            0    |            5 |
+| Random-30-30-6    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              0.2  |                 1 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-30-30-8    |           5 |              0.4  |              3 |              0    |              5 |                 2 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-30-30-10   |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              0    |                 0 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-40-40-2    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              0.2  |                 1 |         1.2  |           5 |           0 |            0    |            5 |
+| Random-40-40-4    |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              0.8  |                 4 |         1    |           5 |           0 |            0    |            5 |
+| Random-40-40-6    |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              0    |                 0 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-40-40-8    |           5 |              0.4  |              3 |              0    |              5 |                 2 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-40-40-10   |           5 |              1    |              0 |              0    |              5 |                 5 |                 0 |              0    |                 0 |         0    |           0 |           0 |            0    |            5 |
+| Random-50-50-2    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              2    |                 5 |         1.2  |           4 |           0 |            0    |            5 |
+| Random-50-50-4    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              1.2  |                 5 |         1    |           5 |           0 |            0    |            5 |
+| Random-50-50-6    |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              0.8  |                 4 |         0.8  |           4 |           0 |            0    |            5 |
+| Random-50-50-8    |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-50-50-10   |           5 |              0.6  |              2 |              0    |              5 |                 3 |                 0 |              0    |                 0 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-50-100-2   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              2    |                 5 |         1    |           5 |           0 |            0    |            5 |
+| Random-50-100-4   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              0.4  |                 2 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-50-100-6   |           5 |              1    |              1 |              0    |              5 |                 4 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-50-100-8   |           5 |              1.2  |              1 |              0    |              5 |                 4 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-50-100-10  |           5 |              1    |              0 |              0    |              5 |                 5 |                 0 |              0    |                 0 |         0.2  |           1 |           0 |            0    |            5 |
+| Random-75-75-2    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              4.8  |                 5 |         4.6  |           5 |           0 |            0    |            5 |
+| Random-75-75-4    |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              6.8  |                 5 |         4.6  |           5 |           0 |            0    |            5 |
+| Random-75-75-6    |           5 |              0.4  |              3 |              0    |              5 |                 2 |                 0 |              1    |                 4 |         0.8  |           4 |           0 |            0    |            5 |
+| Random-75-75-8    |           5 |              0.4  |              3 |              0    |              5 |                 2 |                 0 |              0.6  |                 3 |         0.6  |           3 |           0 |            0    |            5 |
+| Random-75-75-10   |           5 |              1.8  |              0 |              0    |              5 |                 5 |                 0 |              0.4  |                 2 |         0.4  |           2 |           0 |            0    |            5 |
+| Random-100-50-2   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              2.8  |                 5 |         6.6  |           5 |           0 |            0    |            5 |
+| Random-100-50-4   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |             10.4  |                 5 |        12.4  |           5 |           0 |            0    |            5 |
+| Random-100-50-6   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |             11.8  |                 5 |        11.8  |           5 |           0 |            0    |            5 |
+| Random-100-50-8   |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              7.6  |                 5 |         7.4  |           5 |           0 |            0    |            5 |
+| Random-100-50-10  |           5 |              0.2  |              4 |              0    |              5 |                 1 |                 0 |              4    |                 5 |         3.8  |           5 |           0 |            0    |            5 |
+| Random-100-100-2  |           5 |              0    |              5 |              0    |              5 |                 0 |                 0 |              7.8  |                 5 |        11.2  |           5 |           0 |            0    |            5 |
+| Random-100-100-4  |           5 |              0.6  |              3 |              1    |              2 |                 1 |                 2 |             13.8  |                 5 |        12.4  |           5 |           0 |            1    |            2 |
+| Random-100-100-6  |           5 |              0.4  |              3 |              0    |              5 |                 2 |                 0 |              6.6  |                 5 |         6.2  |           5 |           0 |            0    |            5 |
+| Random-100-100-8  |           5 |              1    |              1 |              0    |              5 |                 4 |                 0 |              0.8  |                 4 |         0.8  |           4 |           0 |            0    |            5 |
+| Random-100-100-10 |           5 |              2    |              0 |              0    |              5 |                 5 |                 0 |              0.8  |                 4 |         0.8  |           4 |           0 |            0    |            5 |
+| Random-125-125-2  |           5 |              0.4  |              3 |              0.4  |              3 |                 0 |                 0 |              0.2  |                 0 |        14.6  |           5 |           0 |            0.2  |            4 |
+| Random-125-125-4  |           5 |              2.4  |              0 |              2.6  |              0 |                 0 |                 1 |              6    |                 1 |        22.2  |           5 |           0 |            1.8  |            1 |
+| Random-125-125-6  |           5 |              1.6  |              0 |              1.6  |              0 |                 0 |                 0 |             13.6  |                 4 |        12    |           5 |           0 |            1.4  |            1 |
+| Random-125-125-8  |           5 |              1    |              1 |              0    |              5 |                 4 |                 0 |              4.8  |                 5 |         2    |           5 |           0 |            0    |            5 |
+| Random-125-125-10 |           5 |              1.8  |              0 |              0    |              5 |                 5 |                 0 |              0.2  |                 1 |         0.2  |           1 |           0 |            0    |            5 |
+| all Chu & Stuckey |         200 |              0.52 |            126 |              0.14 |            185 |                61 |                 3 |              2.83 |               108 |         3.68 |         142 |           0 |            0.11 |          188 |
+## (b) The gap instances (`gap338` at n > 60) by band
+
+| band    |   instances |   ladder gap mean |   ladder tight |   search gap mean |   search tight |   search > ladder |   search < ladder |   floor0 gap mean |   search > floor0 |   E gap mean |   M tighter |   E tighter |   best gap mean |   best tight |
+|:--------|------------:|------------------:|---------------:|------------------:|---------------:|------------------:|------------------:|------------------:|------------------:|-------------:|------------:|------------:|----------------:|-------------:|
+| 21–30   |           1 |              0    |              1 |              0    |              1 |                 0 |                 0 |              2    |                 1 |         2    |           1 |           0 |            0    |            1 |
+| 31–40   |           6 |              0.17 |              5 |              0    |              6 |                 1 |                 0 |              0.5  |                 3 |         1.17 |           6 |           0 |            0    |            6 |
+| 41–60   |          15 |              0    |             15 |              0    |             15 |                 0 |                 0 |              1.73 |                15 |         1.07 |          14 |           0 |            0    |           15 |
+| 61–75   |          17 |              0.12 |             15 |              0    |             17 |                 2 |                 0 |              4.41 |                16 |         3.65 |          16 |           0 |            0    |           17 |
+| 76–100  |          45 |              0.22 |             37 |              0.11 |             42 |                 7 |                 2 |              7.47 |                43 |         8.29 |          44 |           0 |            0.11 |           42 |
+| 101–134 |          25 |              1.24 |              6 |              0.92 |             13 |                 7 |                 1 |              5.28 |                13 |        10.84 |          23 |           0 |            0.68 |           16 |
+| all     |         109 |              0.4  |             79 |              0.26 |             94 |                17 |                 3 |              5.27 |                91 |         6.71 |         104 |           0 |            0.2  |           97 |
+## (c) Where the search beats the ladder's floor
+
+| instance_name         |   n |   optimum |   ladder_floor |   ladder_m |   search_floor |   search_m | search_source   |   by |   search_calls |   search_seconds |
+|:----------------------|----:|----------:|---------------:|-----------:|---------------:|-----------:|:----------------|-----:|---------------:|-----------------:|
+| Random-100-100-10-1_0 | 100 |        87 |             84 |         95 |             87 |         99 | c_refutation    |    3 |           1238 |         180.003  |
+| Random-125-125-10-1_0 | 125 |       105 |            102 |        119 |            105 |        122 | c_refutation    |    3 |            829 |         300      |
+| Random-50-100-6-2_0   |  50 |        44 |             42 |         48 |             44 |         50 | c_refutation    |    2 |           2660 |         120.001  |
+| Random-50-100-8-1_0   |  50 |        47 |             45 |         48 |             47 |         50 | c_refutation    |    2 |            262 |         120      |
+| Random-50-100-8-2_0   |  50 |        47 |             45 |         48 |             47 |         49 | c_refutation    |    2 |            267 |         120      |
+| Random-75-75-10-1_0   |  75 |        66 |             64 |         71 |             66 |         74 | c_refutation    |    2 |           2156 |         180      |
+| Random-75-75-10-3_0   |  75 |        65 |             63 |         71 |             65 |         74 | c_refutation    |    2 |           3259 |         180      |
+| Random-75-75-10-4_0   |  75 |        65 |             63 |         71 |             65 |         73 | c_refutation    |    2 |           2551 |         180.005  |
+| Random-75-75-10-2_0   |  75 |        65 |             63 |         71 |             65 |         73 | c_refutation    |    2 |           3352 |         180.353  |
+| Random-100-100-10-2_0 | 100 |        85 |             83 |         95 |             85 |         99 | c_refutation    |    2 |            536 |         180.001  |
+| Random-100-100-10-3_0 | 100 |        83 |             81 |         95 |             83 |         99 | c_refutation    |    2 |            856 |         180.012  |
+| Random-100-100-10-5_0 | 100 |        84 |             82 |         95 |             84 |         97 | c_refutation    |    2 |           1356 |         180.004  |
+| Random-100-100-8-4_0  | 100 |        77 |             75 |         95 |             77 |         97 | c_refutation    |    2 |           1124 |         180.03   |
+| Random-125-125-10-2_0 | 125 |       104 |            102 |        119 |            104 |        122 | c_refutation    |    2 |            943 |         300.015  |
+| Random-125-125-10-4_0 | 125 |       105 |            103 |        119 |            105 |        121 | c_refutation    |    2 |            862 |         300      |
+| Random-125-125-8-1_0  | 125 |        95 |             93 |        119 |             95 |        118 | c_refutation    |    2 |            331 |         300.018  |
+| Random-30-30-10-5_0   |  30 |        28 |             27 |         27 |             28 |         30 | c_refutation    |    1 |             59 |          60      |
+| Random-30-30-8-1_0    |  30 |        25 |             24 |         26 |             25 |         28 | c_refutation    |    1 |           1382 |          60.0001 |
+| Random-30-30-8-5_0    |  30 |        25 |             24 |         26 |             25 |         28 | c_refutation    |    1 |           1601 |          60.0001 |
+| Random-40-40-10-1_0   |  40 |        36 |             35 |         38 |             36 |         39 | c_refutation    |    1 |            351 |          60.0001 |
+| Random-40-40-10-2_0   |  40 |        36 |             35 |         38 |             36 |         39 | c_refutation    |    1 |            822 |          60.0003 |
+| Random-40-40-10-3_0   |  40 |        34 |             33 |         36 |             34 |         37 | c_refutation    |    1 |           1360 |          60.0001 |
+| Random-40-40-10-4_0   |  40 |        36 |             35 |         38 |             36 |         39 | c_refutation    |    1 |            769 |          60.0001 |
+| Random-40-40-10-5_0   |  40 |        35 |             34 |         36 |             35 |         37 | c_refutation    |    1 |            811 |          60      |
+| Random-40-40-6-2_0    |  40 |        30 |             29 |         36 |             30 |         37 | c_refutation    |    1 |           4611 |          60      |
+| Random-40-40-8-1_0    |  40 |        34 |             33 |         38 |             34 |         39 | c_refutation    |    1 |           2004 |          60.0003 |
+| Random-40-40-8-5_0    |  40 |        34 |             33 |         36 |             34 |         38 | c_refutation    |    1 |           1155 |          60.0002 |
+| Random-40-40-4-2_0    |  40 |        21 |             20 |         30 |             21 |         31 | c_refutation    |    1 |            785 |          60.0002 |
+| Random-50-100-10-1_0  |  50 |        48 |             47 |         48 |             48 |         49 | c_refutation    |    1 |             93 |         120      |
+| Random-50-100-10-2_0  |  50 |        48 |             47 |         48 |             48 |         49 | c_refutation    |    1 |             10 |         120      |
+| Random-50-100-10-3_0  |  50 |        48 |             47 |         48 |             48 |         49 | c_refutation    |    1 |             22 |         120      |
+| Random-50-100-10-4_0  |  50 |        48 |             47 |         48 |             48 |         49 | c_refutation    |    1 |             70 |         120      |
+| Random-50-100-10-5_0  |  50 |        47 |             46 |         48 |             47 |         49 | c_refutation    |    1 |            148 |         120      |
+| Random-50-100-6-1_0   |  50 |        44 |             43 |         48 |             44 |         49 | c_refutation    |    1 |           1969 |         120.002  |
+| Random-50-100-6-3_0   |  50 |        42 |             41 |         48 |             42 |         47 | c_refutation    |    1 |            646 |         120      |
+| Random-50-100-6-4_0   |  50 |        42 |             41 |         48 |             42 |         47 | c_refutation    |    1 |           4389 |         120      |
+| Random-50-100-8-3_0   |  50 |        46 |             45 |         48 |             46 |         49 | c_refutation    |    1 |            428 |         120      |
+| Random-50-100-8-4_0   |  50 |        46 |             45 |         48 |             46 |         49 | c_refutation    |    1 |            878 |         120      |
+| Random-50-50-10-3_0   |  50 |        44 |             43 |         48 |             44 |         48 | c_refutation    |    1 |           1884 |         120      |
+| Random-50-50-10-4_0   |  50 |        45 |             44 |         48 |             45 |         49 | c_refutation    |    1 |            975 |         120      |
+| Random-50-50-10-5_0   |  50 |        46 |             45 |         48 |             46 |         49 | c_refutation    |    1 |            816 |         120.002  |
+| Random-50-50-6-2_0    |  50 |        35 |             34 |         45 |             35 |         46 | c_refutation    |    1 |           3125 |         120      |
+| Random-50-50-8-4_0    |  50 |        42 |             41 |         48 |             42 |         48 | c_refutation    |    1 |           3707 |         120      |
+| Random-75-75-10-5_0   |  75 |        63 |             62 |         71 |             63 |         72 | c_refutation    |    1 |           2124 |         180      |
+| Random-75-75-6-2_0    |  75 |        52 |             51 |         71 |             52 |         70 | c_refutation    |    1 |           2794 |         180.006  |
+| Random-75-75-6-5_0    |  75 |        51 |             50 |         68 |             51 |         68 | c_refutation    |    1 |           3735 |         180.025  |
+| Random-75-75-8-4_0    |  75 |        59 |             58 |         71 |             59 |         72 | c_refutation    |    1 |           3981 |         180.002  |
+| Random-75-75-8-5_0    |  75 |        59 |             58 |         71 |             59 |         71 | c_refutation    |    1 |           2395 |         180.006  |
+| Random-100-100-10-4_0 | 100 |        84 |             83 |         95 |             84 |         97 | c_refutation    |    1 |           1665 |         180.005  |
+| Random-100-100-6-1_0  | 100 |        68 |             67 |         95 |             68 |         96 | c_refutation    |    1 |            242 |         180.012  |
+| Random-100-100-6-4_0  | 100 |        65 |             64 |         95 |             65 |         95 | c_refutation    |    1 |            240 |         180.015  |
+| Random-100-100-4-3_0  | 100 |        43 |             41 |         70 |             42 |         80 | c_refutation    |    1 |            134 |         180.016  |
+| Random-100-100-8-1_0  | 100 |        79 |             78 |         95 |             79 |         96 | c_refutation    |    1 |            984 |         180.013  |
+| Random-100-100-8-3_0  | 100 |        76 |             75 |         95 |             76 |         97 | c_refutation    |    1 |           1012 |         180.012  |
+| Random-100-100-8-5_0  | 100 |        75 |             74 |         95 |             75 |         93 | c_refutation    |    1 |           1164 |         180.008  |
+| Random-100-50-10-3_0  | 100 |        68 |             67 |         90 |             68 |         92 | c_refutation    |    1 |            995 |         180.009  |
+| Random-125-125-10-3_0 | 125 |       103 |            102 |        119 |            103 |        120 | c_refutation    |    1 |           1008 |         300.009  |
+| Random-125-125-10-5_0 | 125 |        99 |             98 |        119 |             99 |        118 | c_refutation    |    1 |            654 |         300.003  |
+| Random-125-125-8-2_0  | 125 |        93 |             92 |        119 |             93 |        118 | c_refutation    |    1 |            327 |         300.018  |
+| Random-125-125-8-3_0  | 125 |        95 |             94 |        119 |             95 |        121 | c_refutation    |    1 |            245 |         300.014  |
+| Random-125-125-8-5_0  | 125 |        91 |             90 |        119 |             91 |        121 | c_refutation    |    1 |             66 |         300.018  |
+
+By how much: {1: 45, 2: 14, 3: 2}; reaching the optimum: 60 of 61; below the ladder: 3.
+
+## (d) Against the record's seven (survey §5) and the file-backed minors of item 01
+
+| instance             |   optimum |   survey minor | at m (rule)                      | ridge stage   |   file-backed (item 01) |   ladder |   ladder m |   search |   search m |   E floor |
+|:---------------------|----------:|---------------:|:---------------------------------|:--------------|------------------------:|---------:|-----------:|---------:|-----------:|----------:|
+| Random-125-125-2-1_0 |        24 |             24 | 87 (min-d)                       |               |                      24 |       23 |         62 |       23 |         61 |         9 |
+| Random-125-125-2-3_0 |        21 |             21 | 70 (least-c)                     | 21 @ 51       |                      21 |       21 |         75 |       21 |         53 |         8 |
+| Random-125-125-2-2_0 |        25 |            nan | none ≤ 95; 100–105 out of budget | 14 @ 97       |                      24 |       24 |         75 |       24 |         70 |         8 |
+| Random-125-125-4-1_0 |        57 |             54 | 100 (min-d)                      |               |                      53 |       53 |         88 |       53 |         88 |        37 |
+| Random-125-125-6-1_0 |        81 |             81 | 120 (both)                       |               |                      81 |       80 |        119 |       80 |        117 |        73 |
+| Random-125-125-8-2_0 |        93 |             92 | 115–120                          |               |                      87 |       92 |        119 |       93 |        118 |        91 |
+| SP4                  |        53 |             53 | 96 (both)                        |               |                      53 |       53 |         95 |       53 |         90 |        45 |
+## (e) Family M against family E, by class and band: which is tighter where
+
+| class             |   instances |   M floor gap mean |   E floor gap mean |   M tighter |   E tighter |   tie |   excess median |
+|:------------------|------------:|-------------------:|-------------------:|------------:|------------:|------:|----------------:|
+| Random-30-30-2    |           5 |                0   |                1.4 |           5 |           0 |     0 |            1.7  |
+| Random-30-30-4    |           5 |                0   |                1   |           5 |           0 |     0 |            3.2  |
+| Random-30-30-6    |           5 |                0   |                0.4 |           2 |           0 |     3 |            4.97 |
+| Random-30-30-8    |           5 |                0   |                0.2 |           1 |           0 |     4 |            6.83 |
+| Random-30-30-10   |           5 |                0   |                0.4 |           2 |           0 |     3 |            8.93 |
+| Random-40-40-2    |           5 |                0   |                1.2 |           5 |           0 |     0 |            1.8  |
+| Random-40-40-4    |           5 |                0   |                1   |           5 |           0 |     0 |            3.25 |
+| Random-40-40-6    |           5 |                0   |                0.4 |           2 |           0 |     3 |            4.92 |
+| Random-40-40-8    |           5 |                0   |                0.2 |           1 |           0 |     4 |            6.97 |
+| Random-40-40-10   |           5 |                0   |                0   |           0 |           0 |     5 |            8.9  |
+| Random-50-50-2    |           5 |                0   |                1.2 |           4 |           0 |     1 |            1.78 |
+| Random-50-50-4    |           5 |                0   |                1   |           5 |           0 |     0 |            3.28 |
+| Random-50-50-6    |           5 |                0   |                0.8 |           4 |           0 |     1 |            5.34 |
+| Random-50-50-8    |           5 |                0   |                0.2 |           1 |           0 |     4 |            7.2  |
+| Random-50-50-10   |           5 |                0   |                0.4 |           2 |           0 |     3 |            9.08 |
+| Random-50-100-2   |           5 |                0   |                1   |           5 |           0 |     0 |            3.14 |
+| Random-50-100-4   |           5 |                0   |                0.4 |           2 |           0 |     3 |            6.36 |
+| Random-50-100-6   |           5 |                0   |                0.2 |           1 |           0 |     4 |           10.32 |
+| Random-50-100-8   |           5 |                0   |                0.2 |           1 |           0 |     4 |           13.84 |
+| Random-50-100-10  |           5 |                0   |                0.2 |           1 |           0 |     4 |           18.02 |
+| Random-75-75-2    |           5 |                0   |                4.6 |           5 |           0 |     0 |            1.87 |
+| Random-75-75-4    |           5 |                0   |                4.6 |           5 |           0 |     0 |            3.24 |
+| Random-75-75-6    |           5 |                0   |                0.8 |           4 |           0 |     1 |            5.12 |
+| Random-75-75-8    |           5 |                0   |                0.6 |           3 |           0 |     2 |            7.24 |
+| Random-75-75-10   |           5 |                0   |                0.4 |           2 |           0 |     3 |            9.08 |
+| Random-100-50-2   |           5 |                0   |                6.6 |           5 |           0 |     0 |            1.22 |
+| Random-100-50-4   |           5 |                0   |               12.4 |           5 |           0 |     0 |            1.85 |
+| Random-100-50-6   |           5 |                0   |               11.8 |           5 |           0 |     0 |            2.82 |
+| Random-100-50-8   |           5 |                0   |                7.4 |           5 |           0 |     0 |            3.67 |
+| Random-100-50-10  |           5 |                0   |                3.8 |           5 |           0 |     0 |            4.68 |
+| Random-100-100-2  |           5 |                0   |               11.2 |           5 |           0 |     0 |            1.75 |
+| Random-100-100-4  |           5 |                1   |               12.4 |           5 |           0 |     0 |            3.18 |
+| Random-100-100-6  |           5 |                0   |                6.2 |           5 |           0 |     0 |            5.17 |
+| Random-100-100-8  |           5 |                0   |                0.8 |           4 |           0 |     1 |            7.13 |
+| Random-100-100-10 |           5 |                0   |                0.8 |           4 |           0 |     1 |            9.18 |
+| Random-125-125-2  |           5 |                0.4 |               14.6 |           5 |           0 |     0 |            1.73 |
+| Random-125-125-4  |           5 |                2.6 |               22.2 |           5 |           0 |     0 |            3.29 |
+| Random-125-125-6  |           5 |                1.6 |               12   |           5 |           0 |     0 |            5.13 |
+| Random-125-125-8  |           5 |                0   |                2   |           5 |           0 |     0 |            7.18 |
+| Random-125-125-10 |           5 |                0   |                0.2 |           1 |           0 |     4 |            9.18 |
+
+| band    |   instances |   M floor gap mean |   E floor gap mean |   M tighter |   E tighter |   tie |
+|:--------|------------:|-------------------:|-------------------:|------------:|------------:|------:|
+| 21–30   |          25 |               0    |               0.68 |          15 |           0 |    10 |
+| 31–40   |          25 |               0    |               0.56 |          13 |           0 |    12 |
+| 41–60   |          50 |               0    |               0.56 |          26 |           0 |    24 |
+| 61–75   |          27 |               0    |               2.48 |          21 |           0 |     6 |
+| 76–100  |          53 |               0.09 |               7.34 |          51 |           0 |     2 |
+| 101–134 |          27 |               0.85 |              10.04 |          23 |           0 |     4 |
+## (f) The minimal certifying minor: `m / n` where the search reaches the optimum
+
+| band    |   at optimum |   search m/n median | search m/n IQR   |   ladder m/n median |   excess median |
+|:--------|-------------:|--------------------:|:-----------------|--------------------:|----------------:|
+| 21–30   |           25 |               0.8   | 0.63–0.90        |               0.867 |            4.97 |
+| 31–40   |           25 |               0.85  | 0.75–0.93        |               0.875 |            4.92 |
+| 41–60   |           50 |               0.92  | 0.78–0.97        |               0.93  |            6.72 |
+| 61–75   |           27 |               0.88  | 0.71–0.95        |               0.907 |            5.07 |
+| 76–100  |           50 |               0.83  | 0.58–0.92        |               0.9   |            3.63 |
+| 101–134 |           15 |               0.944 | 0.42–0.97        |               0.576 |            7.18 |
+
+Sources of the search's floor: {'c_refutation': 204, 'c_bound': 3}; of the ladder's: {'c_refutation': 202, 'c_bound': 5}; ladder rule: {'min-d': 197, 'least-c': 10}.
+
+## (g) The two ridge instances: every C call of the ridge stage
+
+The ladder points and the recorded certificate (every call; the search's calls are summarised below and listed in full in `ridge.csv` and `ridge/<instance>/calls.csv`):
+
+| instance_name        | phase    | label               |   m |   cap |   upper_pw |   floor | source       |   c_width | c_status   |   c_lower |   c_nodes |   c_seconds | cached   |
+|:---------------------|:---------|:--------------------|----:|------:|-----------:|--------:|:-------------|----------:|:-----------|----------:|----------:|------------:|:---------|
+| Random-125-125-2-3_0 | ladder   | min-d@100           | 100 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 269869056 |  120.01     | False    |
+| Random-125-125-2-3_0 | ladder   | least-c@100         | 100 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 269869056 |  120.01     | True     |
+| Random-125-125-2-3_0 | ladder   | min-d@102           | 102 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 312639488 |  120.011    | False    |
+| Random-125-125-2-3_0 | ladder   | least-c@102         | 102 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 312639488 |  120.011    | True     |
+| Random-125-125-2-3_0 | ladder   | min-d@105           | 105 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 287139266 |  120.015    | False    |
+| Random-125-125-2-3_0 | ladder   | least-c@105         | 105 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 287139266 |  120.015    | True     |
+| Random-125-125-2-3_0 | ladder   | min-d@108           | 108 |   120 |         20 |      13 | c_lower      |        21 | upper      |        12 | 259338240 |  120.011    | False    |
+| Random-125-125-2-3_0 | ladder   | least-c@108         | 108 |   120 |         20 |      13 | c_lower      |        21 | upper      |        12 | 259338240 |  120.011    | True     |
+| Random-125-125-2-3_0 | ladder   | min-d@110           | 110 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 259735552 |  120.013    | False    |
+| Random-125-125-2-3_0 | ladder   | least-c@110         | 110 |   120 |         20 |      13 | c_lower      |        20 | upper      |        12 | 259735552 |  120.013    | True     |
+| Random-125-125-2-3_0 | recorded | least-c@70 (record) |  70 |    60 |         20 |      21 | c_refutation |        20 | refutation |        12 |    757009 |    0.500904 | False    |
+| Random-125-125-2-2_0 | ladder   | min-d@100           | 100 |   120 |         24 |      13 | c_lower      |        23 | upper      |        12 | 214891493 |  120.01     | False    |
+| Random-125-125-2-2_0 | ladder   | least-c@100         | 100 |   120 |         24 |      13 | c_lower      |        23 | upper      |        12 | 214891493 |  120.01     | True     |
+| Random-125-125-2-2_0 | ladder   | min-d@102           | 102 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 231133184 |  120.013    | False    |
+| Random-125-125-2-2_0 | ladder   | least-c@102         | 102 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 231133184 |  120.013    | True     |
+| Random-125-125-2-2_0 | ladder   | min-d@105           | 105 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 219222016 |  120.014    | False    |
+| Random-125-125-2-2_0 | ladder   | least-c@105         | 105 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 219222016 |  120.014    | True     |
+| Random-125-125-2-2_0 | ladder   | min-d@108           | 108 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 223170560 |  120.011    | False    |
+| Random-125-125-2-2_0 | ladder   | least-c@108         | 108 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 223170560 |  120.011    | True     |
+| Random-125-125-2-2_0 | ladder   | min-d@110           | 110 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 228847616 |  120.011    | False    |
+| Random-125-125-2-2_0 | ladder   | least-c@110         | 110 |   120 |         24 |      13 | c_lower      |        24 | upper      |        12 | 228847616 |  120.011    | True     |
+
+| instance             |   search calls | m range   |   cap s |   refutations |   upper (undecided) | widths found (status upper)   |   best floor |   smallest m at best floor |   nodes median |   C seconds |
+|:---------------------|---------------:|:----------|--------:|--------------:|--------------------:|:------------------------------|-------------:|---------------------------:|---------------:|------------:|
+| Random-125-125-2-2_0 |             50 | 97–107    |      60 |             0 |                  50 | {22: 1, 23: 21, 24: 28}       |           14 |                         97 |      110618624 |      2998.6 |
+| Random-125-125-2-3_0 |            574 | 50–69     |      60 |           574 |                   0 | {}                            |           21 |                         51 |          74901 |        56.5 |
+
+| instance_name        |   n |   optimum |   seconds_budget |   seconds |   ladder_floor |   ladder_m |   search_floor |   search_m | search_source   |   calls |   search_calls |   skipped |   c_seconds |   restarts |    moves | reached_optimum   | from_recorded   |
+|:---------------------|----:|----------:|-----------------:|----------:|---------------:|-----------:|---------------:|-----------:|:----------------|--------:|---------------:|----------:|------------:|-----------:|---------:|:------------------|:----------------|
+| Random-125-125-2-3_0 | 125 |        21 |             3600 |   3600    |             13 |        100 |             21 |         51 | c_refutation    |     580 |            574 |      2420 |     657.079 |    1406774 | 14067735 | True              | True            |
+| Random-125-125-2-2_0 | 125 |        25 |             3600 |   3600.01 |             13 |        100 |             14 |         97 | c_lower         |      55 |             50 |         0 |    3598.67  |          9 |       88 | False             | False           |
+## (h) Checker verdicts
+
+| verdict   | checks             |   certificates |
+|:----------|:-------------------|---------------:|
+| verified  | replay+C           |             53 |
+| verified  | replay+C+rule-free |            137 |
+
+Rule-free outcomes: {'verified': 137, 'skipped': 53}; rule-free seconds median 0.14, max 51.5; checker seconds median 0.1, max 300.0; minors m = 8–122.
+
+## (i) C calls per instance and seconds
+
+| band    |   instances |   budget s |   C cap s |   ladder calls median |   ladder seconds median |   search calls median |   search skipped median |   search seconds median |   search moves median |   ladder core-h |   search core-h |
+|:--------|------------:|-----------:|----------:|----------------------:|------------------------:|----------------------:|------------------------:|------------------------:|----------------------:|----------------:|----------------:|
+| 21–30   |          25 |         60 |         2 |                     8 |                     0   |                 483   |                 47431   |                      60 |                447033 |            0    |            0.42 |
+| 31–40   |          25 |         60 |         2 |                    10 |                     0   |                 822   |                 21885   |                      60 |                161873 |            0    |            0.42 |
+| 41–60   |          50 |        120 |         2 |                    10 |                     0   |                2496.5 |                 28792.5 |                     120 |                208994 |            0    |            1.67 |
+| 61–75   |          27 |        180 |         5 |                    10 |                     0.2 |                2551   |                 19116   |                     180 |                 82358 |            0    |            1.35 |
+| 76–100  |          53 |        180 |         5 |                    10 |                     0.6 |                 846   |                  5273   |                     180 |                 15279 |            0.03 |            2.65 |
+| 101–134 |          27 |        300 |        10 |                    12 |                     8   |                 245   |                   789   |                     300 |                  2021 |            0.27 |            2.25 |
+
+Total: ladder 0.31 core-hours, search 8.75; C calls 1942 and 375526; C seconds 0.30 and 3.53 core-hours.
+
+Not reached under the core-hour cap: none.
+

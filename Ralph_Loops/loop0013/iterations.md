@@ -295,7 +295,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     rests on the corrected rules proved sound in Lean; the rule-free check
     is the independent one where it fits); any solver change.
 
-- [ ] **05 Family M at scale: the 338 above 60 and the 200 Chu & Stuckey; `Random-125-125-2-2_0` and `2-3_0`.**
+- [x] **05 Family M at scale: the 338 above 60 and the 200 Chu & Stuckey; `Random-125-125-2-2_0` and `2-3_0`.**
   - **Question.** D of the brief, second half. On the 87 gap instances above
     60 customers and the 200 Chu & Stuckey instances (262 distinct), what
     floor does the minor search certify against the ladder; on the two

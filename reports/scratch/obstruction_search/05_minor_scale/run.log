@@ -1,0 +1,130 @@
+2026-11-03 04:57:11 run: 107 targets (cs200,gap338, 61 <= n <= 134), 107 to do, 8 workers, seconds (60, 120, 180, 300), caps by size ((60, 2.0), (100, 5.0), (134, 10.0)), core-hours cap 18.0, order small-first, binary 6560b8093c3e51b9
+2026-11-03 04:57:12 ridge: ['Random-125-125-2-2_0', 'Random-125-125-2-3_0'], 3600 s each, ladder cap 120.0 s at sizes (100, 102, 105, 108, 110), search cap 60.0 s, binary 6560b8093c3e51b9
+2026-11-03 04:59:12 ridge Random-125-125-2-2_0 ladder least-c@100: m=100 floor=13 (c_lower) status=upper width=23 nodes=214891493 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-2_0 ladder min-d@100: m=100 floor=13 (c_lower) status=upper width=23 nodes=214891493 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-3_0 ladder least-c@100: m=100 floor=13 (c_lower) status=upper width=20 nodes=269869056 120.0 s
+2026-11-03 04:59:12 ridge Random-125-125-2-3_0 ladder min-d@100: m=100 floor=13 (c_lower) status=upper width=20 nodes=269869056 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-2_0 ladder least-c@102: m=102 floor=13 (c_lower) status=upper width=24 nodes=231133184 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-2_0 ladder min-d@102: m=102 floor=13 (c_lower) status=upper width=24 nodes=231133184 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-3_0 ladder least-c@102: m=102 floor=13 (c_lower) status=upper width=20 nodes=312639488 120.0 s
+2026-11-03 05:01:12 ridge Random-125-125-2-3_0 ladder min-d@102: m=102 floor=13 (c_lower) status=upper width=20 nodes=312639488 120.0 s
+2026-11-03 05:03:12   10/107 done, 361 s wall, 0.50 core-h spent; last 'Random-75-75-2-5_0' (n=75): ladder 16 search 16 opt 16
+2026-11-03 05:03:12 ridge Random-125-125-2-2_0 ladder least-c@105: m=105 floor=13 (c_lower) status=upper width=24 nodes=219222016 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-2_0 ladder min-d@105: m=105 floor=13 (c_lower) status=upper width=24 nodes=219222016 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-3_0 ladder least-c@105: m=105 floor=13 (c_lower) status=upper width=20 nodes=287139266 120.0 s
+2026-11-03 05:03:12 ridge Random-125-125-2-3_0 ladder min-d@105: m=105 floor=13 (c_lower) status=upper width=20 nodes=287139266 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-2_0 ladder least-c@108: m=108 floor=13 (c_lower) status=upper width=24 nodes=223170560 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-2_0 ladder min-d@108: m=108 floor=13 (c_lower) status=upper width=24 nodes=223170560 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-3_0 ladder least-c@108: m=108 floor=13 (c_lower) status=upper width=21 nodes=259338240 120.0 s
+2026-11-03 05:05:12 ridge Random-125-125-2-3_0 ladder min-d@108: m=108 floor=13 (c_lower) status=upper width=21 nodes=259338240 120.0 s
+2026-11-03 05:06:13   20/107 done, 543 s wall, 1.00 core-h spent; last 'Random-75-75-6-5_0' (n=75): ladder 50 search 51 opt 51
+2026-11-03 05:07:12 ridge Random-125-125-2-2_0 ladder least-c@110: m=110 floor=13 (c_lower) status=upper width=24 nodes=228847616 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-2_0 ladder min-d@110: m=110 floor=13 (c_lower) status=upper width=24 nodes=228847616 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 ladder least-c@110: m=110 floor=13 (c_lower) status=upper width=20 nodes=259735552 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 ladder min-d@110: m=110 floor=13 (c_lower) status=upper width=20 nodes=259735552 120.0 s
+2026-11-03 05:07:12 ridge Random-125-125-2-3_0 recorded m70: floor=21 (c_refutation) status=refutation nodes=757009 0.5 s
+2026-11-03 05:07:13 ridge Random-125-125-2-3_0 search: m=69 floor=21 (c_refutation) best 21@69
+2026-11-03 05:07:14 ridge Random-125-125-2-3_0 search: m=67 floor=21 (c_refutation) best 21@67
+2026-11-03 05:07:14 ridge Random-125-125-2-3_0 search: m=68 floor=21 (c_refutation) best 21@68
+2026-11-03 05:07:15 ridge Random-125-125-2-3_0 search: m=66 floor=21 (c_refutation) best 21@66
+2026-11-03 05:07:16 ridge Random-125-125-2-3_0 search: m=64 floor=21 (c_refutation) best 21@64
+2026-11-03 05:07:16 ridge Random-125-125-2-3_0 search: m=65 floor=21 (c_refutation) best 21@65
+2026-11-03 05:07:19 ridge Random-125-125-2-3_0 search: m=63 floor=21 (c_refutation) best 21@63
+2026-11-03 05:07:20 ridge Random-125-125-2-3_0 search: m=61 floor=21 (c_refutation) best 21@61
+2026-11-03 05:07:20 ridge Random-125-125-2-3_0 search: m=62 floor=21 (c_refutation) best 21@62
+2026-11-03 05:07:22 ridge Random-125-125-2-3_0 search: m=59 floor=21 (c_refutation) best 21@59
+2026-11-03 05:07:22 ridge Random-125-125-2-3_0 search: m=60 floor=21 (c_refutation) best 21@60
+2026-11-03 05:07:23 ridge Random-125-125-2-3_0 search: m=57 floor=21 (c_refutation) best 21@57
+2026-11-03 05:07:23 ridge Random-125-125-2-3_0 search: m=58 floor=21 (c_refutation) best 21@58
+2026-11-03 05:07:27 ridge Random-125-125-2-3_0 search: m=56 floor=21 (c_refutation) best 21@56
+2026-11-03 05:07:28 ridge Random-125-125-2-3_0 search: m=55 floor=21 (c_refutation) best 21@55
+2026-11-03 05:07:31 ridge Random-125-125-2-3_0 search: m=54 floor=21 (c_refutation) best 21@54
+2026-11-03 05:07:35 ridge Random-125-125-2-3_0 search: m=53 floor=21 (c_refutation) best 21@53
+2026-11-03 05:07:39 ridge Random-125-125-2-3_0 search: m=52 floor=21 (c_refutation) best 21@52
+2026-11-03 05:07:44 ridge Random-125-125-2-3_0 search: m=51 floor=21 (c_refutation) best 21@51
+2026-11-03 05:08:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:09:12 ridge Random-125-125-2-2_0 search: m=102 floor=13 (c_lower) best 13@100
+2026-11-03 05:09:15   30/107 done, 724 s wall, 1.50 core-h spent; last 'Random-100-100-10-2_0' (n=100): ladder 83 search 85 opt 85
+2026-11-03 05:10:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:11:12 ridge Random-125-125-2-2_0 search: m=102 floor=13 (c_lower) best 13@100
+2026-11-03 05:12:12 ridge Random-125-125-2-2_0 search: m=101 floor=13 (c_lower) best 13@100
+2026-11-03 05:12:42   40/107 done, 932 s wall, 2.01 core-h spent; last 'Random-100-100-4-1_0' (n=100): ladder 45 search 43 opt 46
+2026-11-03 05:13:12 ridge Random-125-125-2-2_0 search: m=100 floor=14 (c_lower) best 14@100
+2026-11-03 05:14:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:17:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:18:18   50/107 done, 1268 s wall, 2.52 core-h spent; last 'Random-100-100-8-2_0' (n=100): ladder 76 search 76 opt 76
+2026-11-03 05:21:19   60/107 done, 1449 s wall, 3.02 core-h spent; last 'Random-100-50-2-2_0' (n=100): ladder 11 search 11 opt 11
+2026-11-03 05:22:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:23:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:24:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:24:24   70/107 done, 1633 s wall, 3.53 core-h spent; last 'Random-100-50-6-2_0' (n=100): ladder 43 search 43 opt 43
+2026-11-03 05:25:12 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@100
+2026-11-03 05:26:12 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@100
+2026-11-03 05:27:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@100
+2026-11-03 05:27:55   80/107 done, 1845 s wall, 4.03 core-h spent; last 'SP4_0' (n=100): ladder 53 search 53 opt 53
+2026-11-03 05:29:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@100
+2026-11-03 05:30:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@100
+2026-11-03 05:32:22   81/107 done, 2111 s wall, 4.12 core-h spent; last 'scoop-A_FA+AA-_1_0' (n=105): ladder 12 search 12 opt 12
+2026-11-03 05:32:23   82/107 done, 2112 s wall, 4.20 core-h spent; last 'Random-125-125-10-1_0' (n=125): ladder 102 search 105 opt 105
+2026-11-03 05:32:25   83/107 done, 2114 s wall, 4.28 core-h spent; last 'Random-125-125-10-2_0' (n=125): ladder 102 search 104 opt 104
+2026-11-03 05:32:26   84/107 done, 2115 s wall, 4.37 core-h spent; last 'Random-125-125-10-3_0' (n=125): ladder 102 search 103 opt 103
+2026-11-03 05:32:26   85/107 done, 2115 s wall, 4.45 core-h spent; last 'Random-125-125-10-4_0' (n=125): ladder 103 search 105 opt 105
+2026-11-03 05:32:27   86/107 done, 2116 s wall, 4.53 core-h spent; last 'Random-125-125-10-5_0' (n=125): ladder 98 search 99 opt 99
+2026-11-03 05:34:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@100
+2026-11-03 05:34:16   87/107 done, 2225 s wall, 4.64 core-h spent; last 'Random-125-125-2-1_0' (n=125): ladder 23 search 23 opt 24
+2026-11-03 05:34:43   88/107 done, 2252 s wall, 4.75 core-h spent; last 'Random-125-125-2-2_0' (n=125): ladder 24 search 24 opt 25
+2026-11-03 05:37:13 ridge Random-125-125-2-2_0 search: m=99 floor=14 (c_lower) best 14@99
+2026-11-03 05:37:24   89/107 done, 2413 s wall, 4.84 core-h spent; last 'Random-125-125-2-4_0' (n=125): ladder 24 search 24 opt 24
+2026-11-03 05:37:24   90/107 done, 2413 s wall, 4.92 core-h spent; last 'Random-125-125-2-3_0' (n=125): ladder 21 search 21 opt 21
+2026-11-03 05:38:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@98
+2026-11-03 05:38:22   91/107 done, 2471 s wall, 5.02 core-h spent; last 'Random-125-125-2-5_0' (n=125): ladder 20 search 20 opt 20
+2026-11-03 05:39:03   92/107 done, 2512 s wall, 5.13 core-h spent; last 'Random-125-125-4-1_0' (n=125): ladder 53 search 53 opt 57
+2026-11-03 05:39:06   93/107 done, 2515 s wall, 5.24 core-h spent; last 'Random-125-125-4-2_0' (n=125): ladder 54 search 53 opt 57
+2026-11-03 05:39:07   94/107 done, 2516 s wall, 5.35 core-h spent; last 'Random-125-125-4-3_0' (n=125): ladder 52 search 52 opt 54
+2026-11-03 05:39:13 ridge Random-125-125-2-2_0 search: m=97 floor=14 (c_lower) best 14@97
+2026-11-03 05:40:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:41:10   95/107 done, 2639 s wall, 5.47 core-h spent; last 'Random-125-125-4-4_0' (n=125): ladder 49 search 49 opt 51
+2026-11-03 05:41:13 ridge Random-125-125-2-2_0 search: m=101 floor=14 (c_lower) best 14@97
+2026-11-03 05:41:29   96/107 done, 2659 s wall, 5.58 core-h spent; last 'Random-125-125-4-5_0' (n=125): ladder 45 search 45 opt 46
+2026-11-03 05:42:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:42:52   97/107 done, 2741 s wall, 5.67 core-h spent; last 'Random-125-125-6-1_0' (n=125): ladder 80 search 80 opt 81
+2026-11-03 05:43:02   98/107 done, 2751 s wall, 5.76 core-h spent; last 'Random-125-125-6-2_0' (n=125): ladder 76 search 76 opt 77
+2026-11-03 05:43:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:44:01   99/107 done, 2810 s wall, 5.86 core-h spent; last 'Random-125-125-6-3_0' (n=125): ladder 79 search 79 opt 80
+2026-11-03 05:44:09   100/107 done, 2818 s wall, 5.94 core-h spent; last 'Random-125-125-8-1_0' (n=125): ladder 93 search 95 opt 95
+2026-11-03 05:44:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:44:48   101/107 done, 2858 s wall, 6.04 core-h spent; last 'Random-125-125-6-4_0' (n=125): ladder 78 search 78 opt 80
+2026-11-03 05:45:00   102/107 done, 2869 s wall, 6.14 core-h spent; last 'Random-125-125-6-5_0' (n=125): ladder 71 search 71 opt 74
+2026-11-03 05:45:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:46:12   103/107 done, 2942 s wall, 6.22 core-h spent; last 'Random-125-125-8-2_0' (n=125): ladder 92 search 93 opt 93
+2026-11-03 05:46:13 ridge Random-125-125-2-2_0 search: m=102 floor=14 (c_lower) best 14@97
+2026-11-03 05:46:33   104/107 done, 2962 s wall, 6.31 core-h spent; last 'Random-125-125-8-3_0' (n=125): ladder 94 search 95 opt 95
+2026-11-03 05:47:13 ridge Random-125-125-2-2_0 search: m=103 floor=14 (c_lower) best 14@97
+2026-11-03 05:47:53   105/107 done, 3043 s wall, 6.39 core-h spent; last 'Random-125-125-8-4_0' (n=125): ladder 94 search 94 opt 94
+2026-11-03 05:48:10   106/107 done, 3059 s wall, 6.47 core-h spent; last 'Random-125-125-8-5_0' (n=125): ladder 90 search 91 opt 91
+2026-11-03 05:48:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:49:01   107/107 done, 3111 s wall, 6.56 core-h spent; last 'scoop-A_FA+AA-_13_0' (n=134): ladder 17 search 17 opt 17
+2026-11-03 05:49:01 run done: 107 rows, 3111 s wall, 6.56 core-h this run
+2026-11-03 05:49:13 ridge Random-125-125-2-2_0 search: m=99 floor=14 (c_lower) best 14@97
+2026-11-03 05:49:26 run: 100 targets (cs200, 0 <= n <= 60), 78 to do, 8 workers, seconds (60, 120, 180, 300), caps by size ((60, 2.0), (100, 5.0), (134, 10.0)), core-hours cap 18.0, order small-first, binary 6560b8093c3e51b9
+2026-11-03 05:50:13 ridge Random-125-125-2-2_0 search: m=98 floor=14 (c_lower) best 14@97
+2026-11-03 05:51:13 ridge Random-125-125-2-2_0 search: m=97 floor=14 (c_lower) best 14@97
+2026-11-03 05:51:28   10/78 done, 121 s wall, 0.17 core-h spent; last 'Random-30-30-4-1_0' (n=30): ladder 17 search 17 opt 17
+2026-11-03 05:52:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@97
+2026-11-03 05:52:28   20/78 done, 182 s wall, 0.33 core-h spent; last 'Random-30-30-8-1_0' (n=30): ladder 24 search 25 opt 25
+2026-11-03 05:53:13 ridge Random-125-125-2-2_0 search: m=105 floor=14 (c_lower) best 14@97
+2026-11-03 05:53:29   30/78 done, 242 s wall, 0.50 core-h spent; last 'Random-40-40-2-4_0' (n=40): ladder 7 search 7 opt 7
+2026-11-03 05:54:13 ridge Random-125-125-2-2_0 search: m=104 floor=14 (c_lower) best 14@97
+2026-11-03 05:54:29   40/78 done, 303 s wall, 0.67 core-h spent; last 'Random-40-40-8-2_0' (n=40): ladder 32 search 32 opt 32
+2026-11-03 05:55:13 ridge Random-125-125-2-2_0 search: m=105 floor=14 (c_lower) best 14@97
+2026-11-03 05:56:14 ridge Random-125-125-2-2_0 search: m=106 floor=14 (c_lower) best 14@97
+2026-11-03 05:57:12 ridge done Random-125-125-2-2_0: ladder 13@100, search 14@97 (c_lower), opt 25, 55 C calls, 3600 s
+2026-11-03 05:57:12 ridge done Random-125-125-2-3_0: ladder 13@100, search 21@51 (c_refutation), opt 21, 580 C calls, 3600 s
+2026-11-03 05:57:12 ridge Random-125-125-2-2_0 search: m=107 floor=14 (c_lower) best 14@97
+2026-11-03 05:57:30   50/78 done, 484 s wall, 0.95 core-h spent; last 'Random-50-100-4-2_0' (n=50): ladder 34 search 34 opt 34
+2026-11-03 06:00:31   60/78 done, 664 s wall, 1.28 core-h spent; last 'Random-50-100-8-2_0' (n=50): ladder 45 search 47 opt 47
+2026-11-03 06:02:31   70/78 done, 785 s wall, 1.62 core-h spent; last 'Random-50-50-6-2_0' (n=50): ladder 34 search 35 opt 35
+2026-11-03 06:04:32   78/78 done, 905 s wall, 1.88 core-h spent; last 'Random-50-50-8-5_0' (n=50): ladder 42 search 42 opt 42
+2026-11-03 06:04:32 run done: 185 rows, 905 s wall, 1.88 core-h this run
+2026-11-03 06:04:51 check: 190 certificates, 8 workers, rule-free True (cap 120.0 s)
+2026-11-03 06:10:15 check done: verdicts {'verified': 190}, rule-free {'verified': 137, 'skipped': 53}
