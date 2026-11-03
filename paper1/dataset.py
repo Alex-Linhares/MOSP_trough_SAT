@@ -521,7 +521,8 @@ OPEN_RUNS = [SCRATCH / "dataset_open" / f for f in
               "results_unlimited.csv")] + [   # results_unlimited: the C program, no time limit (run_unlimited.py, 2026-10-21)
     SCRATCH / "obstruction_search" / "07_open" / "results_obstruction.csv",       # loop0013 item 07: NY_13 = 10 by an
     SCRATCH / "obstruction_search" / "12_tenmin" / "open" / "results_obstruction.csv",   # 85-vertex minor; ex139 = 10 (12_tenmin);
-    SCRATCH / "obstruction_search" / "13_pass1" / "results_pass1.csv"]           # four more by pass 1 (2026-11-03). Each row's
+    SCRATCH / "obstruction_search" / "13_pass1" / "results_pass1.csv",           # four more by pass 1 (2026-11-03);
+    SCRATCH / "obstruction_search" / "13_pass1" / "results_pass2.csv"]           # pass 2 (one hour each, 2026-11-03). Each row's
     # `minor` column carries the contraction certificate (proof=minor, checker-verified). The BalancedTree_3_5 rows
     # (proof=theorem, the branch lemma) fold as `solution` at the recorded width and are therefore skipped: a
     # `certified:theorem` row needs dataset_check.py to know the branch-lemma case (07_open/open_runs_proposal.diff).

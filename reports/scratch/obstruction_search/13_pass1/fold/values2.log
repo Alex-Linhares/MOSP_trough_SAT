@@ -1,0 +1,2 @@
+fold: 1106 candidate rows; changed {'solution -> certified:minor': 296, 'witness supplied': 157, 'solution -> certified:refutation': 46, 'certified:refutation -> certified:refutation': 318, 'none -> solution': 52, 'none -> certified:refutation': 30, 'solution -> solution': 6, 'none -> certified:minor': 143, 'certified:minor -> certified:theorem': 1, 'solution -> certified:theorem': 40}
+values: 18515 rows (Counter({'certified:refutation': 14967, 'certified:bound': 2946, 'certified:minor': 438, 'solution': 123, 'certified:theorem': 41}))

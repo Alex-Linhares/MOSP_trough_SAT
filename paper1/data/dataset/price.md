@@ -26,7 +26,7 @@ Regenerate: `python -m paper1.dataset price`. Core-hours are one core's wall tim
 | PACE 2016 | 112 | 70 | 36 | 6 |  | 0.44 |
 | PACE 2017 exact | 193 | 132 | 51 | 10 |  | 1.00 |
 | PACE 2017 heuristic | 173 | 19 | 40 | 114 |  | 0.39 |
-| PACE 2017 bonus | 100 | 82 | 18 | 0 |  | 0.68 |
+| PACE 2017 bonus | 100 | 83 | 17 | 0 |  | 0.68 |
 
 ## The next step for the graph collections, priced
 
@@ -43,7 +43,7 @@ Each open class within the engine, run once more at the next budget. The Rome gr
 | PACE 2016 | 36 | 600 s (had 30 s) | 6 |
 | PACE 2017 exact | 51 | 600 s (had 30 s) | 8 |
 | PACE 2017 heuristic | 40 | 600 s (had 30 s) | 7 |
-| PACE 2017 bonus | 18 | 600 s (had 30 s) | 3 |
+| PACE 2017 bonus | 17 | 600 s (had 30 s) | 3 |
 | **all** |  |  | 112 |
 
 ## The Rome graphs: what each budget closed (repaired rules, 2026-10-02)
