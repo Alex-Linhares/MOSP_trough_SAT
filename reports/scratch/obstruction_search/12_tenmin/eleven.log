@@ -1,0 +1,11 @@
+[   625s] Random-100-100-4-3_0: opt 43 ladder 41@70 search 42@75 (c_refutation) calls 294
+[   627s] Random-100-100-4-1_0: opt 46 ladder 45@85 search 44@83 (c_refutation) calls 297
+[   696s] Random-125-125-4-1_0: opt 57 ladder 53@88 search 53@88 (c_refutation) calls 133
+[   699s] Random-125-125-4-3_0: opt 54 ladder 52@94 search 51@87 (c_refutation) calls 129
+[   700s] Random-125-125-4-2_0: opt 57 ladder 54@94 search 55@90 (c_refutation) calls 117
+[   707s] Random-125-125-2-2_0: opt 25 ladder 24@75 search 24@69 (c_refutation) calls 112
+[  1264s] Random-125-125-6-2_0: opt 77 ladder 76@112 search 76@111 (c_refutation) calls 102
+[  1335s] Random-125-125-6-3_0: opt 80 ladder 79@112 search 79@111 (c_refutation) calls 91
+[  1338s] Random-125-125-4-4_0: opt 51 ladder 49@88 search 49@87 (c_refutation) calls 110
+[  1344s] Random-125-125-6-4_0: opt 80 ladder 78@112 search 78@110 (c_refutation) calls 90
+[  1354s] Random-125-125-6-5_0: opt 74 ladder 71@106 search 71@104 (c_refutation) calls 118

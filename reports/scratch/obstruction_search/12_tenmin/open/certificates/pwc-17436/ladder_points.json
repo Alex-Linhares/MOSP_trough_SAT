@@ -1,0 +1,200 @@
+[
+ {
+  "rule": "min-d",
+  "fraction": 0.4,
+  "size": 86,
+  "m": 86,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.45,
+  "size": 97,
+  "m": 97,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.5,
+  "size": 108,
+  "m": 108,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.55,
+  "size": 119,
+  "m": 119,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.6,
+  "size": 130,
+  "m": 130,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.65,
+  "size": 140,
+  "m": 140,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.7,
+  "size": 151,
+  "m": 151,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.75,
+  "size": 162,
+  "m": 162,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.8,
+  "size": 173,
+  "m": 173,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.85,
+  "size": 184,
+  "m": 184,
+  "floor": 7,
+  "source": "c_lower",
+  "cached": false
+ },
+ {
+  "rule": "min-d",
+  "fraction": 0.9,
+  "size": 194,
+  "m": 194,
+  "floor": 7,
+  "source": "c_lower",
+  "cached": false
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.4,
+  "size": 86,
+  "m": 86,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.45,
+  "size": 97,
+  "m": 97,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.5,
+  "size": 108,
+  "m": 108,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": false
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.55,
+  "size": 119,
+  "m": 119,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.6,
+  "size": 130,
+  "m": 130,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.65,
+  "size": 140,
+  "m": 140,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.7,
+  "size": 151,
+  "m": 151,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.75,
+  "size": 162,
+  "m": 162,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.8,
+  "size": 173,
+  "m": 173,
+  "floor": 11,
+  "source": "c_refutation",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.85,
+  "size": 184,
+  "m": 184,
+  "floor": 7,
+  "source": "c_lower",
+  "cached": true
+ },
+ {
+  "rule": "least-c",
+  "fraction": 0.9,
+  "size": 194,
+  "m": 194,
+  "floor": 7,
+  "source": "c_lower",
+  "cached": true
+ }
+]

@@ -1,0 +1,5 @@
+id,names,n,m,recorded_width,recorded_floor,new_floor,family,certificate,checker_verdict
+pwc-17043,fuzix_vfscanf_vfscanf,587,668,8,2,7,M,reports/scratch/obstruction_search/12_tenmin/open/certificates/pwc-17043/minor.json,not checked
+pwc-04526,bcspwr05,443,590,10,3,9,M,reports/scratch/obstruction_search/12_tenmin/open/certificates/pwc-04526/minor.json,not checked
+pwc-04517,494_bus,494,586,10,2,8,M,reports/scratch/obstruction_search/12_tenmin/open/certificates/pwc-04517/minor.json,not checked
+pwc-17317,ex073.gr.xz,712,1085,10,3,9,M,reports/scratch/obstruction_search/12_tenmin/open/certificates/pwc-17317/minor.json,not checked
