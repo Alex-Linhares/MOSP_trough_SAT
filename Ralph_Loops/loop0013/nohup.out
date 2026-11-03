@@ -15,3 +15,8 @@
 [2026-11-03 00:52:32] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-11-03 01:43:26] session it02: ok (exit 0, 52 tool calls)
 [2026-11-03 01:56:33] tests passed: GATE PASS
+[2026-11-03 01:56:34] committed b2824298b: 02 Family E by search: the ceiling on every target; exact `f` and `s*`
+[2026-11-03 01:56:34] === iteration 3: 03 Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket close
+[2026-11-03 01:56:34] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-11-03 03:14:58] session it03: ok (exit 0, 63 tool calls)
+[2026-11-03 03:26:29] tests passed: GATE PASS

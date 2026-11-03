@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-03 01:43:26",
+  "updated": "2026-11-03 03:14:58",
   "phase": "tests",
-  "started": "2026-11-03 00:52:32",
-  "item": "02 Family E by search: the ceiling on every target; exact `f` and `s*` at `n \u2264 22`; the fl"
+  "started": "2026-11-03 01:56:34",
+  "item": "03 Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket close"
 }

@@ -1,0 +1,180 @@
+# session it03 started 2026-11-03 01:56:34
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 3 of loop0013, doing item 03: family E exact at full depth by SAT with DRAT. I'll read the plan, the item 02 code and outputs first, then build `exact_sat`, the `--stage sat` driver, the independent checker, tests, and run the stage within budget.
+  > $ date && uptime && sed -n 1,200p reports/obstruction_search_plan.md
+  > $ sed -n 200,420p reports/obstruction_search_plan.md
+  > $ wc -l learning/obstruction_expansion.py learning/obstruction_expansion.c learning/proofs.py tests/test_obstruction_expansion.py paper1/obstruction_check.py 2>&1
+  > $ cat learning/obstruction_expansion.py
+  > $ sed -n 1,260p learning/obstruction_expansion.py
+  > $ sed -n 260,560p learning/obstruction_expansion.py
+  > $ sed -n 560,809p learning/obstruction_expansion.py
+  > $ grep -n "def \|drat\|with_proof\|DRAT_TRIM\|tools/drat" learning/proofs.py | head -80
+  > $ sed -n 1,130p learning/proofs.py && echo ---------- && sed -n 180,340p learning/proofs.py
+  > $ cat reports/scratch/obstruction_search/02_expansion/tables.md | sed -n 1,80p; echo -----; head -c 600 reports/scratch/obstruction_search/02_expansion/floor.csv;
+  > $ grep -n "^## \|^### " reports/obstruction_search.md; echo ----; tail -60 reports/obstruction_search.md; echo ----; head -1 reports/scratch/obstruction_search/01
+  > $ sed -n 1,80p satisfiability/expansion_bound.py; grep -n "levels\|class ExpansionBound\|def expansion_bound" satisfiability/expansion_bound.py | head -30
+  > $ sed -n 1,80p tests/test_obstruction_expansion.py; echo ----; grep -n "exists_closedNbhd_card_le" -A 12 lean/MOSPFormalization/EmptyPair.lean | head -40; echo --
+  > $ grep -n "def corpus_instances\|def adjacency_from_matrix\|^LEDGER_CORPUS\|^TARGETS_JSON\|^SOLUTIONS_DIR\|^BANDS\|^OUT\b\|^OUT =" -A 14 learning/obstruction_ledg
+  > $ sed -n 130,200p satisfiability/expansion_bound.py; echo ------; sed -n 455,510p learning/proofs.py; echo -----; grep -n "def to_file\|def write\|def save\|def f
+  > $ sed -n 80,217p tests/test_obstruction_expansion.py; echo -----; sed -n 1,60p Ralph_Loops/loop0013/gate.py | grep -n "pytest\|timeout\|make\|lake" 
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+from pathlib import Path
+O=Path('reports/scratch/obstruction_search/02_expansion')
+led=pd.read_csv('rep
+  > $ python3 -c "
+import pandas as pd
+led=pd.read_csv('reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv')
+r=led[led.instance_name=='Random-100-100-2-2_
+  > $ python3 - <<'EOF'
+import time, ctypes, subprocess, tempfile, os
+from pysat.solvers import Solver
+# pigeonhole 4 into 3
+n,m=4,3
+v=lambda i,j: i*m+j+1
+cl=[[v(i,j)
+  > $ cat learning/__init__.py | head -20; grep -n "def check_timeout_for" -A 6 learning/proofs.py; grep -n "def check_certificate" -A 28 learning/proofs.py | sed -n 
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/obstruction_expansion.py")
+src = p.read_text()
+
+# 1. thread limits before numpy loads (the sat s
+  > $ timeout 300 python3 - <<'EOF'
+import random, time, json
+from pathlib import Path
+import learning.obstruction_expansion as oe
+rng = random.Random(3)
+t0=time.time
+  > Write /home/al/dev/MOSP/paper1/obstruction_check.py
+  > $ rm -rf reports/scratch/obstruction_search/03_sat && nice -n 19 timeout 900 python3 -m learning.obstruction_expansion --stage sat --targets gap338 --workers 3 --
+  > $ nice -n 19 timeout 600 python3 - <<'EOF'
+import json, time
+import pandas as pd
+import learning.obstruction_expansion as oe
+led = oe.ledger().set_index("instance
+  > $ uptime && python3 - <<'EOF'
+import re, learning.obstruction_expansion as oe
+doc = open("paper1/obstruction_check.py").read()
+spec = oe.ENCODING_SPEC.strip()
+i =
+  > $ rm -rf reports/scratch/obstruction_search/03_sat && ls paper1/__init__.py 2>&1; uptime; nohup nice -n 19 python3 -m learning.obstruction_expansion --stage sat -
+  > $ cat >> tests/test_obstruction_expansion.py <<'PYEOF'
+
+
+# ----------------------------------------------------------------------------
+# item 03: the exact inner
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_obstruction_expansion.py"); s = p.read_text()
+s = s.replace("""    # proved to level 3, floor 3 
+  > $ cat reports/scratch/obstruction_search/02_expansion/run_harness.py; grep -n "def extra_candidates\|--extra\|def validity\|def _candidate_from_spec\|def load_ext
+  > $ tail -4 reports/scratch/obstruction_search/03_sat_run.out; grep -c "sat: [0-9]*/147" reports/scratch/obstruction_search/03_sat_run.out; uptime
+  > Write /home/al/dev/MOSP/reports/scratch/obstruction_search/03_sat/run_harness.py
+  > Write /home/al/dev/MOSP/reports/scratch/obstruction_search/03_sat/recheck_certificates.py
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "instances on file" reports/scratch/obstruction_search/03_sat_run.out || ! kill -0 2805547 2>/dev/null; do sleep 15; done; tail -3 reports/scratch
+  > $ grep -c "sat: [0-9]*/147" reports/scratch/obstruction_search/03_sat_run.out; tail -4 reports/scratch/obstruction_search/03_sat_run.out | cut -c1-230; python3 - 
+  > $ cat > /tmp/sec3_draft.md <<'EOF'
+### 3.1 What was done
+
+**The question.** Item 02 left family E bracketed on 148 of the 436 targets
+in `gap338 ∪ cs200` (145 of 
+  > $ nice -n 19 timeout 1500 python3 -m pytest tests/ -q -x -p no:cacheprovider 2>&1 | tail -5
+
+Both background jobs are running. The only thing left that doesn't depend on their results is a progress check on the run, to estimate when it finishes.
+  > $ grep -c "sat: [0-9]*/147" reports/scratch/obstruction_search/03_sat_run.out; tail -3 reports/scratch/obstruction_search/03_sat_run.out | cut -c1-240; uptime
+
+Nothing else can proceed until the run finishes (about 40 minutes more at the per-instance budget). I'll wait in the foreground in bounded polls rather than end the turn on a background wait.
+  > $ for i in $(seq 1 38); do if grep -q "instances on file" reports/scratch/obstruction_search/03_sat_run.out || ! kill -0 2805547 2>/dev/null; then break; fi; slee
+  > $ tail -3 /tmp/claude-1000/-home-al-dev-MOSP/016f94eb-fb83-436d-85e8-020ffffecefd/tasks/b4ipyl70v.output; cd /home/al/dev/MOSP && for i in $(seq 1 38); do if grep
+
+Test suite passes (1,831). The run is at 103 of 147 with about 25 minutes left before its hard stop. Continuing to poll in the foreground.
+  > $ for i in $(seq 1 39); do if grep -q "instances on file" reports/scratch/obstruction_search/03_sat_run.out || ! kill -0 2805547 2>/dev/null; then break; fi; slee
+
+Only the run's completion is pending; one more poll should reach its hard stop.
+  > $ for i in $(seq 1 39); do if grep -q "instances on file" reports/scratch/obstruction_search/03_sat_run.out || ! kill -0 2805547 2>/dev/null; then break; fi; slee
+
+The run is at 136 of 147 and will reach its wall cap in about three minutes. One stray PID matched the stage's text; I'll inspect it by PID (not kill by text) while polling for the end.
+  > $ ps -o pid,ppid,etime,stat,cmd -p 2789119 | cut -c1-200; for i in $(seq 1 36); do if grep -q "instances on file" reports/scratch/obstruction_search/03_sat_run.ou
+  > $ nice -n 19 python3 -m learning.obstruction_expansion --stage sat-tables > /dev/null 2>&1; echo "tables rc $?"; sed -n 1,30p reports/scratch/obstruction_search/0
+  > $ nice -n 19 timeout 1800 python3 reports/scratch/obstruction_search/03_sat/recheck_certificates.py --workers 8 2>&1 | tail -6
+  > $ nice -n 19 timeout 1800 python3 reports/scratch/obstruction_search/03_sat/run_harness.py --workers 8 2>&1 | tail -8
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+from pathlib import Path
+O=Path('reports/scratch/obstruction_search/03_sat')
+i=pd.read_csv(O/'instances.csv'); c=pd.
+  > $ nice -n 19 python3 -m learning.obstruction_expansion --stage sat-tables 2>&1 | tail -12 | cut -c1-300; echo; ps -eo pid,ppid,etime,stat,cmd | grep "[o]bstructio
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('learning/obstruction_expansion.py'); s=p.read_text()
+s=s.replace('''    keep = ["instance_name", "ceiling_aft
+  > $ python3 - <<'EOF'
+import re
+t=open('reports/scratch/obstruction_search/03_sat/tables.md').read()
+# print sections a-e compactly (skip the long f table)
+end=t.fi
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+from pathlib import Path
+O=Path('reports/scratch/obstruction_search/03_sat')
+j=pd.read_csv(O/'joined.csv'); i=pd.rea
+  > $ { cat <<'EOF'
+
+## 3. Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket closed where it settles (item 03)
+
+*Size range: the 338 b
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p=Path('Ralph_Loops/loop0013/PROGRESS.md'); s=p.read_text()
+s=s.replace("Current: 2/11 SOLVED","Current: 3/11 SOLVED"
+  > $ nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/03_sat/gate_run.out 2>&1; echo "gate exit $?"; tail -15 reports/scratch/obs
+  > $ git status --short | grep -v "^?? Ralph_Loops/loop0013/session_it03\|loop.log\|nohup.out\|status.json" | cut -c1-120; echo ---; du -sh reports/scratch/obstructi
+  > $ python3 - <<'EOF'
+import pandas as pd
+c=pd.read_csv('reports/scratch/obstruction_search/03_sat/levels.csv'); u=c[c.status=='unsat']
+print(u.groupby('n').proof_g
+  > $ cat >> .gitignore <<'EOF'
+
+# loop0013 item 03: the DRAT proofs of the expansion certificates (1.3 GB over
+# 158 files, up to 39 MB each) stay on disk, regenerab
+
+Without the proofs the directory is 13 MB, which is committable. The only remaining item is the gate, which started a few minutes ago and takes about fifteen; I'll wait for it in the foreground.
+  > $ for i in $(seq 1 39); do if grep -q "gate exit" /tmp/claude-1000/-home-al-dev-MOSP/016f94eb-fb83-436d-85e8-020ffffecefd/tasks/b4gmjs0u6.output 2>/dev/null; then
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/016f94eb-fb83-436d-95e8-020ffffecefd/tasks/b4gmjs0u6.output 2>/dev/null | head; echo ---; cat /tmp/claude-1000/-home-al-d
+
+The gate is still running (its stdout is written at the end): pytest is six minutes in, with the pathwidth solver suite and the paper check still to come. Polling again.
+  > $ for i in $(seq 1 38); do if ! kill -0 2987357 2>/dev/null; then break; fi; sleep 15; done; date; kill -0 2987357 2>/dev/null && echo "gate still running" || { e
+  > $ grep -n "axiom" reports/scratch/obstruction_search/03_sat/gate_run.out | head -3; python3 - <<'EOF'
+from pathlib import Path
+q=Path('Ralph_Loops/loop0013/PROGRE
+  > $ grep -n -i "axiom\|sorry" reports/scratch/obstruction_search/03_sat/gate_run.out Ralph_Loops/loop0013/gate.py | head -8
+
+The gate checks the axiom count as part of the same stage and prints only the sorry line; GATE PASS covers both, so the PROGRESS entry is accurate. Everything the item asked for is in place.
+
+**Item 03 is done and marked `[x]`; the gate passes.** The expansion family's exact half now runs by SAT with checked DRAT proofs, and the record says where that works and where it does not.
+
+**What was built**
+- `exact_sat` and `expansion_cnf` in `learning/obstruction_expansion.py`: the "no `t`-set has `|N[C]| ≤ b`" decision as a canonical CNF with my own full totalizer under a written contract, CaDiCaL through pysat with proof logging, a conflict budget and a wall deadline enforced by a forked child, drat-trim on every UNSAT, a certificate JSON per proved level. Stages `sat` and `sat-tables`.
+- `paper1/obstruction_check.py check-expansion`: an independent checker with its own reader, graph, totalizer from the contract, hash comparison and drat-trim on the regenerated CNF. It imports nothing from the four project packages. A test pins its docstring to the contract text.
+- Six new tests (encoding agrees with enumeration on 100 graphs at every `(t, b)`; a genuine certificate verifies and three kinds of damage are rejected; checker and search hashes agree on 20 instances; committed-file guards).
+
+**What the run found** (6 core-hour cap, 144 of 148 bracketed targets reached)
+- The bracket closed on 72 targets. Family E's duality gap is now exact on 264 of the 338, up from 193.
+- Every bracket at 30 to 60 customers closed in seconds. At 75 it closed on 2 of 13, at 76 to 100 on 1 of 41, at 101 to 134 on none.
+- The exact floor closes 12 of the 338 (7 before) and beats the harness reference on 98 (87 before). Six of the 338 stay open with a bracket, all dense 100 to 125 customer instances.
+- On the SCOOP instance with 79 customers, SAT answers lowered the ceiling to 7, equal to the floor, against an optimum of 13: the family's gap there is exactly 6.
+- All 158 certificates on disk verify through the independent checker. The harness validity stage reports the SAT floor above no optimum on all 6,376 corpus instances.
+
+**Kill verdict: met.** SAT settled the argmax level on 70 of the 145 bracketed instances of the 338 (48.3%, below the 50% criterion). The record states that Harper exact is out of reach by SAT above cap 12 at 75 customers and beyond on the Chu & Stuckey graphs, with the boundary at `n ≈ 60–75` at the argmax levels, and fully in reach to 60.
+
+**Two things to know**
+- The gzipped proofs total 1.3 GB, so I added one `.gitignore` rule for `*.drat.gz` under the obstruction scratch tree. They stay on disk and regenerate from the stage's command; every certificate JSON keeps the proof's hash and size. Said so in the report and PROGRESS.
+- One deviation from the item's text, recorded in the report: levels whose value equals the floor are not asked, since they can move neither half of the bracket.
+
+Compute was about 6.2 core-hours against the item's 6, the overrun being the independent re-check of every certificate. Nothing was committed; the driver commits. Next is item 04, family M.
+
+# result: success in 4703s, 64 turns, cost $23.45

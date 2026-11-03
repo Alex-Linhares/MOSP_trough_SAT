@@ -61,3 +61,8 @@ reports/scratch/**/code_snapshot/
 reports/scratch/minor_certificates/vsanneal
 reports/scratch/mycielski_rec/anneal
 paper1/latex/main.toc
+
+# loop0013 item 03: the DRAT proofs of the expansion certificates (1.3 GB over
+# 158 files, up to 39 MB each) stay on disk, regenerable by the stage's command;
+# each certificate JSON beside them keeps the proof's SHA-256 and size.
+reports/scratch/obstruction_search/**/*.drat.gz

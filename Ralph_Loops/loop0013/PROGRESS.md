@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 2/11 SOLVED
+Current: 3/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -254,3 +254,74 @@ at `n ≤ 22`) as incumbents; the bracket is 0 on 4,547 of 4,697 targets, so
 the SAT half matters only on the 150 with a bracket, almost all at
 61–134 customers (`gap338`: 145 with a bracket). Its kill criterion's
 boundary `(n, t)` is what to record.
+
+---
+## Iteration 3 — 2026-11-03 01:56
+
+### Completed
+
+- **Item 03 — family E exact at full depth: the inner minimum by SAT with
+  DRAT; the bracket closed where it settles.** `exact_sat`, `expansion_cnf`
+  (own full totalizer, the contract `ENCODING_SPEC`), `mark_levels`,
+  `profile_floor`, stages `sat` and `sat-tables` in
+  `learning/obstruction_expansion.py`; `paper1/obstruction_check.py`
+  (`check-expansion`: own reader, own graph, own CNF from the contract,
+  hash comparison, drat-trim on the regenerated CNF, the bound and its
+  theorems; imports nothing from the four project packages);
+  `tests/test_obstruction_expansion.py` +6 (24 total, all pass);
+  `reports/scratch/obstruction_search/03_sat/{levels.csv, instances.csv,
+  boundary.csv, tables.md, joined.csv, checker_verdicts.csv, harness_values.csv,
+  harness_table.md, run_harness.py, recheck_certificates.py, certificates/,
+  run.log}` and `03_sat_run.out`; `reports/obstruction_search.md` §3.
+- **Numbers.** 148 targets had a bracket after item 02 (145 of the 338);
+  144 reached in the 6-core-hour cap; the bracket **closed on 72** (the
+  family's duality gap now exact on 264 of 338, 193 before), the floor rose
+  on 85 (by 1–4), the ceiling fell on 3. Every bracket at 30–60 customers
+  closed (68 of 68, in seconds), 2 of 13 at 75, 1 of 41 at 76–100, 0 of 22
+  at 101–134. On the 338 the exact floor closes 12 (7 before) and beats
+  `max(lb_best, tw + 1)` on 98 (87); 6 stay open with a bracket, all dense
+  100–125-customer instances. `scoop-A_FA+AA-_6_0` (79): the SAT answers
+  lowered the ceiling to 7 = floor against an optimum of 13 — the family's
+  gap on that industrial instance is exactly 6. 344 calls: 155 UNSAT (all
+  drat-trim verified), 18 SAT, 79 budget, 92 timeout. **Boundary**:
+  `n ≈ 60–75` on the Chu & Stuckey graphs at the argmax levels
+  (`t* ≈ 0.2–0.35 n`); all calls at `n ≤ 50` finish, 28 of 52 at 75, 22 of
+  108 at 100 (none at the `Random` instances' argmax), 3 of 62 at 125;
+  sparse SCOOP instances settle to `t = 52` at `n = 79`.
+- **Certificates**: 158 on disk, **158 of 158 verified** by the independent
+  checker (`checker_verdicts.csv`), the largest proof 38.7 MB gzipped. The
+  proofs total 1.3 GB and are **git-ignored** (`.gitignore`, one rule added:
+  `reports/scratch/obstruction_search/**/*.drat.gz`), kept on disk and
+  regenerable; the certificate JSONs with the proof hashes are committed.
+  **Harness** validity on all 6,376: above optimum **0**, beats the
+  reference on 74 of the 338 (the 144 reached instances only).
+- **Kill verdict: met** (argmax settled by SAT on 70 of the 145 with a
+  bracket, 48.3% < 50%; 20.7% of the 338): "Harper exact is out of reach by
+  SAT above cap 12 at 75 customers and beyond; fully in reach to 60". The
+  bug condition (UNSAT where the enumeration has a set) occurred on 0 calls.
+  Floors downstream: the exact floor where a verified certificate proves it,
+  the cap-12 floor elsewhere.
+- **One deviation from the item's text**, recorded in §3.1: levels with
+  `f̂(t) − t + 1 = floor` are not asked (they can move neither half); the
+  item's `≥ floor − 1` includes them.
+- **Compute ≈ 6.2 core-hours** (instance time 5.76, checker sweep 0.31,
+  harness < 0.01, smoke and probes ≈ 0.1) against the item's 6; load 2–8.
+- **Gate: PASS** (`reports/scratch/obstruction_search/03_sat/gate_run.out`):
+  lake build ok, 0 sorry, 0 axiom; `tests/` 1,831 passed, 2 skipped, 1 xfailed
+  (4:27); `pathwidth_solver/` 123 passed (6:22); paper 77 pages, no undefined
+  references. No Lean touched by this item.
+
+### Blockers
+
+None. Three instances not reached at the cap (`Random-125-125-8-5_0` of the
+338, `Random-100-50-2-2_0` and `-2-4_0` of `cs200`); their partial
+certificates are on disk and verified but outside the tables.
+
+### Next
+
+Item 04 (family M: the contraction-sequence search, its certificate and
+checker, the 338 at `n ≤ 60` against the greedy ladder). Family E's floors
+for the map (item 08) are `03_sat/instances.csv::floor_after` on the 144
+reached instances and `02_expansion` / item 01's `harper12` elsewhere; the
+six 338-instances still open with an E bracket are the dense 100–125 ones,
+where M and B are the remaining families.

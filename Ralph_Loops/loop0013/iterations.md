@@ -166,7 +166,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     that the floor is the family's best (the exact half is item 03); any
     solver change.
 
-- [ ] **03 Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket closed where it settles.**
+- [x] **03 Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket closed where it settles.**
   - **Question.** The second half of C of the brief. Where the branch and
     bound cannot prove `f(t)` (above `t = 12`), can a SAT decision — "no
     `t`-set has `|N[C]| ≤ b`" — with a DRAT proof checked by `drat-trim`

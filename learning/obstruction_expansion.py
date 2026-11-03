@@ -29,6 +29,19 @@ a `learning.bound_harness --extra` candidate; and the four stages:
     nice -n 19 python3 -m learning.obstruction_expansion --stage exact --targets small --workers 8
     nice -n 19 python3 -m learning.obstruction_expansion --stage floor --targets gap338 --workers 8
     nice -n 19 python3 -m learning.obstruction_expansion --stage tables
+    nice -n 19 python3 -m learning.obstruction_expansion --stage sat --targets gap338,cs200 --workers 8 --core-hours 6
+    python3 -m learning.obstruction_expansion --stage sat-tables
+
+**Item 03, the exact half above cap 12** (`exact_sat`, stage `sat`): the
+decision "no `t`-set has `|N[C]| <= b`" as a CNF (`expansion_cnf`, the
+contract in `ENCODING_SPEC`, shared with `paper1/obstruction_check.py` and
+with nothing else), CaDiCaL 1.9.5 through pysat with proof logging under a
+conflict budget and a wall deadline, drat-trim on every UNSAT; an UNSAT at
+`(t, b)` proves `f(t) >= b + 1` (the contrapositive of
+`exists_closedNbhd_card_le`) and a SAT answer is a set that lowers the
+ceiling. The certificate per proved level is the CNF's SHA-256, `(t, b)`,
+the gzipped DRAT proof and the checker's verdict, under
+`reports/scratch/obstruction_search/03_sat/certificates/<instance>/`.
 
 Nothing here solves an instance: every optimum is read from the record
 (`reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv`), the
@@ -38,10 +51,22 @@ bound on the 35 instances item 01 censored at 60 s.
 """
 from __future__ import annotations
 
+import os
+
+# The `sat` stage forks one child per SAT call from a pool worker (a deadline
+# pysat cannot enforce); a fork from a process with BLAS thread pools is the
+# hazard `tests/conftest.py` documents, so the limits are set before numpy loads.
+for _var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_var, "1")
+
 import argparse
 import ctypes
+import gzip
+import hashlib
 import json
-import os
+import signal
+import sys
+import tempfile
 import subprocess
 import threading
 import time
@@ -769,13 +794,639 @@ def write_tables() -> str:
 
 
 # ----------------------------------------------------------------------------
+# item 03: the exact inner minimum by SAT with DRAT
+# ----------------------------------------------------------------------------
+
+ENCODING_SPEC = """expansion-cnf-1 — the decision "some C with |C| >= t has |N[C]| <= b".
+
+Vertices 0..n-1 (customers in file order); N[u] is the closed neighbourhood in
+the MOSP graph (a clique per pattern, plus u itself). Variables, 1-based:
+  x_v = v + 1          (v in C)
+  y_v = n + v + 1      (v in N[C])
+  auxiliaries from 2n + 1 upward, in the order the totalizers allocate them.
+Clauses:
+  (1) for every u, for every v in N[u] (including v = u): [-x_u, y_v];
+  (2) a full totalizer over [x_0, ..., x_{n-1}] (allocated first), with the unit
+      clause [o_t] on its root outputs (o_1..o_n; 1 <= t <= n);
+  (3) a full totalizer over [y_0, ..., y_{n-1}] (allocated second), with the unit
+      clause [-o_{b+1}] on its root outputs (0 <= b <= n - 1).
+The totalizer of a list L of literals: one literal is its own output (no
+clauses, no variables); otherwise split A = L[:len(L)//2], B = L[len(L)//2:],
+build A's totalizer, then B's, then allocate the node's outputs o_1..o_{p+q}
+(p = |A|, q = |B|) as fresh consecutive variables; with a_0 = b_0 = true and
+a_{p+1} = b_{q+1} = false (omitted literals), add for every i in 0..p and
+j in 0..q:  [-a_i, -b_j, o_{i+j}] when i + j >= 1, and
+            [a_{i+1}, b_{j+1}, -o_{i+j+1}] when i + j + 1 <= p + q.
+Canonical form: literals within a clause sorted by integer value, duplicate
+clauses removed, clauses sorted lexicographically; the DIMACS text is
+"p cnf <nv> <m>" then one clause per line ending in " 0", "\\n" line ends; the
+CNF's SHA-256 is of that text. UNSAT proves f(t) = min_{|C| = t} |N[C]| >= b + 1,
+hence pathwidth >= b + 1 - t and MOSP >= b + 2 - t
+(`exists_closedNbhd_card_le`, contrapositive).
+"""
+
+SAT_OUT = ROOT / "reports" / "scratch" / "obstruction_search" / "03_sat"
+SAT_LEVELS_CSV = SAT_OUT / "levels.csv"
+SAT_INSTANCES_CSV = SAT_OUT / "instances.csv"
+SAT_BOUNDARY_CSV = SAT_OUT / "boundary.csv"
+SAT_CERT_DIR = SAT_OUT / "certificates"
+SAT_TABLES_MD = SAT_OUT / "tables.md"
+SAT_RUN_LOG = SAT_OUT / "run.log"
+SAT_CONFLICTS = 2_000_000
+SAT_DEADLINE = 120.0
+SAT_MAX_LEVELS = 8
+SAT_INSTANCE_BUDGET = 240.0
+PROOF_KEEP_BYTES = 50 * 2 ** 20
+SAT_BACKEND = "cadical195"
+ENCODING_NAME = "expansion-cnf-1"
+THEOREM = "MOSPFormalization.EmptyPair.exists_closedNbhd_card_le (contrapositive)"
+
+
+def slog(msg: str) -> None:
+    SAT_OUT.mkdir(parents=True, exist_ok=True)
+    line = f"{time.strftime('%Y-%m-%d %H:%M:%S')} {msg}"
+    print(line, flush=True)
+    with open(SAT_RUN_LOG, "a") as handle:
+        handle.write(line + "\n")
+
+
+def _totalizer(lits: list[int], next_var: int, clauses: list[list[int]]) -> tuple[list[int], int]:
+    """Full totalizer (Bailleux & Boufkhad 2003) as `ENCODING_SPEC` fixes it;
+    returns the root outputs `o_1..o_m` and the next free variable."""
+    if len(lits) == 1:
+        return [lits[0]], next_var
+    half = len(lits) // 2
+    a, next_var = _totalizer(lits[:half], next_var, clauses)
+    b, next_var = _totalizer(lits[half:], next_var, clauses)
+    p, q = len(a), len(b)
+    out = list(range(next_var, next_var + p + q))
+    next_var += p + q
+    for i in range(p + 1):
+        for j in range(q + 1):
+            if i + j >= 1:
+                cl = []
+                if i >= 1:
+                    cl.append(-a[i - 1])
+                if j >= 1:
+                    cl.append(-b[j - 1])
+                cl.append(out[i + j - 1])
+                clauses.append(cl)
+            if i + j + 1 <= p + q:
+                cl = []
+                if i + 1 <= p:
+                    cl.append(a[i])
+                if j + 1 <= q:
+                    cl.append(b[j])
+                cl.append(-out[i + j])
+                clauses.append(cl)
+    return out, next_var
+
+
+def expansion_cnf(closed: list[int], t: int, b: int) -> tuple[list[list[int]], int]:
+    """The canonical CNF of `ENCODING_SPEC` for "some |C| >= t has |N[C]| <= b"."""
+    n = len(closed)
+    if not 1 <= t <= n or not 0 <= b <= n - 1:
+        raise ValueError(f"need 1 <= t <= n and 0 <= b <= n - 1, got n={n}, t={t}, b={b}")
+    x = [v + 1 for v in range(n)]
+    y = [n + v + 1 for v in range(n)]
+    clauses: list[list[int]] = []
+    for u in range(n):
+        for v in mask_to_list(closed[u]):
+            clauses.append([-x[u], y[v]])
+    next_var = 2 * n + 1
+    ox, next_var = _totalizer(x, next_var, clauses)
+    clauses.append([ox[t - 1]])
+    oy, next_var = _totalizer(y, next_var, clauses)
+    clauses.append([-oy[b]])
+    canon = sorted({tuple(sorted(cl)) for cl in clauses})
+    return [list(cl) for cl in canon], next_var - 1
+
+
+def cnf_dimacs_bytes(clauses: list[list[int]], nv: int) -> bytes:
+    lines = [f"p cnf {nv} {len(clauses)}"]
+    lines.extend(" ".join(map(str, cl)) + " 0" for cl in clauses)
+    return ("\n".join(lines) + "\n").encode()
+
+
+def cnf_sha256(clauses: list[list[int]], nv: int) -> str:
+    return hashlib.sha256(cnf_dimacs_bytes(clauses, nv)).hexdigest()
+
+
+def matrix_sha256(matrix) -> str:
+    """SHA-256 of the 0/1 rows as the standard `.mosp` format writes them."""
+    matrix = np.asarray(matrix, dtype=int)
+    text = "".join(" ".join(str(int(v)) for v in row) + "\n" for row in matrix)
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def write_standard_instance(path: Path, name: str, matrix) -> None:
+    matrix = np.asarray(matrix, dtype=int)
+    lines = [name, f"{matrix.shape[0]} {matrix.shape[1]}"]
+    lines += [" ".join(str(int(v)) for v in row) for row in matrix]
+    path.write_text("\n".join(lines) + "\n")
+
+
+def _drat_trim_path() -> Path:
+    from learning.proofs import DRAT_TRIM
+    return (ROOT / DRAT_TRIM) if not DRAT_TRIM.is_absolute() else DRAT_TRIM
+
+
+def _file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _solve_cnf(clauses: list[list[int]], conflicts: int | None, want_proof: bool) -> dict:
+    """One CaDiCaL call in this process: answer, model, proof bytes, stats."""
+    from pysat.solvers import Solver
+    from learning.proofs import _read_proof
+
+    solver = Solver(name=SAT_BACKEND, bootstrap_with=clauses, with_proof=want_proof)
+    t0 = time.monotonic()
+    try:
+        if conflicts is not None:
+            solver.conf_budget(int(conflicts))
+            answer = solver.solve_limited()
+        else:
+            answer = solver.solve()
+        seconds = time.monotonic() - t0
+        stats = solver.accum_stats() or {}
+        model = solver.get_model() if answer is True else None
+        proof = _read_proof(solver) if (answer is False and want_proof) else b""
+    finally:
+        solver.delete()
+    return {"answer": answer, "model": model, "proof": proof, "seconds": seconds,
+            "conflicts": int(stats.get("conflicts", 0)), "decisions": int(stats.get("decisions", 0))}
+
+
+def _sat_set_from_model(closed: list[int], model: list[int], t: int, b: int) -> tuple[list[int], int]:
+    """The `t`-set a model gives: the first `t` vertices with `x_v` true (a
+    subset of `C` has a closed neighbourhood inside `N[C]`); its `|N[·]|` is
+    recomputed from the masks and never read from the `y` variables."""
+    n = len(closed)
+    C = [v for v in range(n) if model[v] > 0]
+    if len(C) < t:
+        raise RuntimeError(f"model has {len(C)} < t = {t} members: encoding bug")
+    full = 0
+    for v in C:
+        full |= 1 << v
+    if neighbourhood_size(closed, full) > b:
+        raise RuntimeError("model's |N[C]| exceeds b: encoding bug")
+    sub = 0
+    for v in C[:t]:
+        sub |= 1 << v
+    return C[:t], neighbourhood_size(closed, sub)
+
+
+def _exact_sat_inprocess(closed, t, b, proof_dir, conflicts, instance_name, matrix_sha, source_file) -> dict:
+    clauses, nv = expansion_cnf(closed, t, b)
+    digest = cnf_sha256(clauses, nv)
+    res = _solve_cnf(clauses, conflicts, want_proof=proof_dir is not None)
+    out = {"instance_name": instance_name, "n": len(closed), "t": t, "b": b, "cnf_variables": nv,
+           "cnf_clauses": len(clauses), "cnf_sha256": digest, "solve_seconds": round(res["seconds"], 3),
+           "conflicts": res["conflicts"], "decisions": res["decisions"], "conflict_budget": conflicts,
+           "status": "budget" if res["answer"] is None else ("unsat" if res["answer"] is False else "sat"),
+           "set": None, "nbhd": None, "proof_sha256": "", "proof_bytes": 0, "proof_gz_bytes": 0,
+           "proof_kept": False, "proof_lemmas": 0, "verdict": "", "check_seconds": 0.0, "certificate": ""}
+    if res["answer"] is True:
+        out["set"], out["nbhd"] = _sat_set_from_model(closed, res["model"], t, b)
+    elif res["answer"] is False and proof_dir is not None:
+        from learning.proofs import check_proof, check_timeout_for, count_lemmas
+        proof = res["proof"]
+        proof_dir = Path(proof_dir)
+        proof_dir.mkdir(parents=True, exist_ok=True)
+        stem = f"t{t}_b{b}"
+        out["proof_sha256"] = hashlib.sha256(proof).hexdigest()
+        out["proof_bytes"] = len(proof)
+        out["proof_lemmas"] = count_lemmas(proof)
+        gz_path = proof_dir / f"{stem}.drat.gz"
+        with gzip.open(gz_path, "wb", compresslevel=6) as fh:
+            fh.write(proof)
+        out["proof_gz_bytes"] = gz_path.stat().st_size
+        with tempfile.TemporaryDirectory() as tmp:
+            cnf_path, proof_path = Path(tmp) / "f.cnf", Path(tmp) / "p.drat"
+            cnf_path.write_bytes(cnf_dimacs_bytes(clauses, nv))
+            proof_path.write_bytes(proof)
+            verdict, secs, _tail = check_proof(cnf_path, proof_path, _drat_trim_path(),
+                                               check_timeout_for(res["seconds"]))
+        out["verdict"], out["check_seconds"] = verdict, secs
+        out["proof_kept"] = out["proof_gz_bytes"] <= PROOF_KEEP_BYTES
+        if not out["proof_kept"]:
+            gz_path.unlink(missing_ok=True)
+        import pysat
+        cert = {"format": "obstruction-expansion-certificate-1", "encoding": ENCODING_NAME,
+                "instance_name": instance_name, "source_file": source_file, "n": len(closed),
+                "matrix_sha256": matrix_sha, "instance_file": "instance.mosp", "t": t, "b": b,
+                "claim": f"f({t}) = min over |C| = {t} of |N[C]| >= {b + 1}",
+                "bound_pathwidth": b + 1 - t, "bound_mosp": b + 2 - t, "theorem": THEOREM,
+                "cnf_variables": nv, "cnf_clauses": len(clauses), "cnf_sha256": digest,
+                "proof_file": gz_path.name if out["proof_kept"] else None, "proof_sha256": out["proof_sha256"],
+                "proof_bytes": len(proof), "proof_gz_bytes": out["proof_gz_bytes"], "proof_lemmas": out["proof_lemmas"],
+                "solver": f"{SAT_BACKEND} via pysat {pysat.__version__}", "conflict_budget": conflicts,
+                "conflicts": res["conflicts"], "solve_seconds": out["solve_seconds"],
+                "checker": "drat-trim", "checker_sha256": _file_sha256(_drat_trim_path()),
+                "verdict": verdict, "check_seconds": secs}
+        cert_path = proof_dir / f"{stem}.json"
+        cert_path.write_text(json.dumps(cert, indent=1, sort_keys=True))
+        out["certificate"] = str(cert_path.relative_to(ROOT)) if cert_path.is_relative_to(ROOT) else str(cert_path)
+    return out
+
+
+def exact_sat(closed: list[int], t: int, b: int, proof_dir: Path | str | None = None,
+              conflicts: int | None = SAT_CONFLICTS, deadline: float | None = SAT_DEADLINE,
+              instance_name: str = "", matrix_sha: str = "", source_file: str = "") -> dict:
+    """Decide "some |C| >= t has |N[C]| <= b" (plan §0.5 (d)).
+
+    `closed` are closed-neighbourhood masks. Returns a dict with `status` in
+    `unsat` (then `f(t) >= b + 1`; with `proof_dir` the DRAT proof is written,
+    checked by drat-trim and a certificate JSON `t<t>_b<b>.json` is left
+    there), `sat` (`set`: a `t`-set with `|N[set]| = nbhd <= b`), `budget`
+    (the conflict budget ran out) or `timeout` (the wall deadline). pysat's
+    CaDiCaL cannot be interrupted, so with a deadline the call runs in a
+    forked child that is killed at the deadline; the child dies with its
+    parent (`PR_SET_PDEATHSIG`) and has an alarm of its own."""
+    if deadline is None:
+        return _exact_sat_inprocess(closed, t, b, proof_dir, conflicts, instance_name, matrix_sha, source_file)
+    with tempfile.TemporaryDirectory() as tmp:
+        result_path = Path(tmp) / "result.json"
+        sys.stdout.flush()
+        sys.stderr.flush()
+        pid = os.fork()
+        if pid == 0:  # the child
+            try:
+                ctypes.CDLL(None).prctl(1, signal.SIGKILL)  # PR_SET_PDEATHSIG
+                signal.alarm(int(deadline) + 10)
+                out = _exact_sat_inprocess(closed, t, b, proof_dir, conflicts, instance_name, matrix_sha, source_file)
+                result_path.write_text(json.dumps(out))
+            except BaseException as exc:  # noqa: BLE001
+                try:
+                    result_path.write_text(json.dumps({"status": "error", "error": f"{type(exc).__name__}: {exc}"[:300]}))
+                except Exception:  # noqa: BLE001
+                    pass
+            finally:
+                os._exit(0)
+        t0 = time.monotonic()
+        killed = False
+        while True:
+            done, _ = os.waitpid(pid, os.WNOHANG)
+            if done:
+                break
+            if time.monotonic() - t0 > deadline:
+                os.kill(pid, signal.SIGKILL)
+                os.waitpid(pid, 0)
+                killed = True
+                break
+            time.sleep(0.02)
+        seconds = time.monotonic() - t0
+        if killed or not result_path.exists():
+            if proof_dir is not None:
+                for suffix in (".drat.gz", ".json"):
+                    (Path(proof_dir) / f"t{t}_b{b}{suffix}").unlink(missing_ok=True)
+            return {"instance_name": instance_name, "n": len(closed), "t": t, "b": b, "status": "timeout",
+                    "solve_seconds": round(seconds, 3), "conflicts": 0, "conflict_budget": conflicts,
+                    "set": None, "nbhd": None, "verdict": "", "certificate": "", "cnf_sha256": "",
+                    "deadline": deadline}
+        out = json.loads(result_path.read_text())
+        out["deadline"] = deadline
+        return out
+
+
+def profile_floor(levels: list[int]) -> int:
+    """`max_t (f(t) - t) + 1` over the proved levels `f(1..L)`, optimum units; 0 if none."""
+    return max((f - t for t, f in enumerate(levels, 1)), default=-1) + 1
+
+
+def mark_levels(n: int, fhat: list[int], proved: int, floor: int, t_star: int, visited: set[int],
+                max_levels: int = SAT_MAX_LEVELS) -> list[int]:
+    """The levels the ceiling marks relevant: `t > proved` (below is exact
+    already), `t <= n - 1`, not yet visited, and `fhat(t) - t + 1 > floor` —
+    a level at or below the floor can neither raise it nor move the bracket
+    (the item's `>= floor - 1` in pathwidth units includes equality; equality
+    is left out here, as it cannot change either half). Nearest `t*` first."""
+    cand = [t for t in range(proved + 1, n) if t not in visited and fhat[t] - t + 1 > floor]
+    cand.sort(key=lambda t: (abs(t - t_star), t))
+    return cand[:max_levels]
+
+
+def _sat_job(args) -> dict:
+    (name, matrix, source_file, optimum, fhat, incumbents, levels, floor_record, t_star, ceiling_record,
+     budget, conflicts, deadline, max_levels) = args
+    matrix = np.asarray(matrix, dtype=int)
+    n = matrix.shape[0]
+    closed = closed_masks(adjacency_from_matrix(matrix))
+    msha = matrix_sha256(matrix)
+    cert_dir = SAT_CERT_DIR / safe_name(name)
+    cert_dir.mkdir(parents=True, exist_ok=True)
+    write_standard_instance(cert_dir / "instance.mosp", name, matrix)
+    fhat = list(fhat)
+    proved = len(levels)
+    # the proved levels are exact: the incumbents there are f itself
+    for t in range(1, proved + 1):
+        fhat[t] = levels[t - 1]
+    floor = max(profile_floor(levels), floor_record)
+    floor0 = floor
+    # f(t) >= b + 1 proved by SAT, per level (the largest b refuted)
+    sat_lower: dict[int, int] = {}
+    settled: list[int] = []
+    partial: list[int] = []
+    censored: list[int] = []
+    calls: list[dict] = []
+    new_sets: dict[str, list[int]] = {}
+    t0 = time.monotonic()
+    visited: set[int] = set()
+    stop_reason = "levels exhausted"
+    while True:
+        if time.monotonic() - t0 > budget:
+            stop_reason = "instance budget"
+            break
+        marks = mark_levels(n, fhat, proved, floor, t_star, visited, max_levels)
+        if not marks or len(visited) >= max_levels:
+            break
+        t = marks[0]
+        visited.add(t)
+        lo = max(t, levels[-1] if levels else 1)   # f is monotone: f(t) >= f(L) for t > L
+        hi = fhat[t]
+        hic = hi
+        first = True
+        best_cert, best_b = "", -1
+        while lo < hi and lo <= hic - 1:
+            if time.monotonic() - t0 > budget:
+                stop_reason = "instance budget"
+                break
+            b = hi - 1 if first else (lo + min(hi, hic) - 1) // 2
+            first = False
+            res = exact_sat(closed, t, b, cert_dir, conflicts, deadline, name, msha, source_file)
+            res["instance_name"], res["n"], res["optimum"] = name, n, optimum
+            res["lo_before"], res["hi_before"] = lo, hi
+            calls.append(res)
+            with open(cert_dir / "calls.jsonl", "a") as handle:
+                handle.write(json.dumps(res) + "\n")
+            if res["status"] == "unsat":
+                if res.get("verdict") != "verified":
+                    res["note"] = "drat-trim did not verify: the answer is not used"
+                    hic = b   # treat as censored at this b
+                    continue
+                lo = b + 1
+                sat_lower[t] = lo
+                best_cert, best_b = res["certificate"], b
+                floor = max(floor, lo - t + 1)
+            elif res["status"] == "sat":
+                v = int(res["nbhd"])
+                assert v <= b, (name, t, b, v)
+                hi = v
+                hic = min(hic, hi)
+                fhat[t] = v
+                new_sets[str(t)] = res["set"]
+            else:
+                hic = b
+        if lo >= hi:
+            settled.append(t)
+        elif t in sat_lower:
+            partial.append(t)
+        else:
+            censored.append(t)
+        if stop_reason == "instance budget":
+            break
+    seconds = time.monotonic() - t0
+    # the ceiling after the run: proved levels are exact, incumbents elsewhere
+    prof = Profile(n, fhat, [0] * (n + 1), False)
+    ceiling, t_star_after = prof.harper()
+    # the family's exact floor: proved levels, SAT-settled levels (f = fhat) and partial UNSATs
+    floor_after = floor
+    for t in settled:
+        floor_after = max(floor_after, fhat[t] - t + 1)
+    rec = {"instance_name": name, "n": n, "optimum": optimum, "floor_record": floor_record, "floor_before": floor0,
+           "ceiling_record": ceiling_record, "ceiling_after": ceiling, "floor_after": floor_after,
+           "bracket_before": ceiling_record - floor0, "bracket_after": ceiling - floor_after,
+           "t_star_record": t_star, "t_star_after": t_star_after, "proved_levels_bb": proved,
+           "levels_visited": len(visited), "levels_settled": len(settled), "levels_partial": len(partial),
+           "levels_censored": len(censored), "settled": ",".join(map(str, sorted(settled))),
+           "partial": ",".join(map(str, sorted(partial))), "censored": ",".join(map(str, sorted(censored))),
+           "argmax_settled": (t_star_after <= proved) or (t_star_after in settled),
+           "calls": len(calls), "calls_unsat": sum(1 for c in calls if c["status"] == "unsat"),
+           "calls_sat": sum(1 for c in calls if c["status"] == "sat"),
+           "calls_budget": sum(1 for c in calls if c["status"] == "budget"),
+           "calls_timeout": sum(1 for c in calls if c["status"] == "timeout"),
+           "calls_error": sum(1 for c in calls if c["status"] == "error"),
+           "new_incumbents": len(new_sets), "seconds": round(seconds, 3), "budget": budget, "stop_reason": stop_reason}
+    (cert_dir / "summary.json").write_text(json.dumps({**rec, "fhat_after": fhat, "sat_lower": sat_lower,
+                                                       "new_sets": new_sets}, indent=1))
+    return {"instance": rec, "calls": calls}
+
+
+def _sat_inputs(name: str, led: pd.DataFrame, floors: pd.DataFrame | None) -> dict | None:
+    path = SETS_DIR / f"{safe_name(name)}.json"
+    if not path.exists():
+        return None
+    srec = json.loads(path.read_text())
+    row = led.loc[name]
+    levels_rec = [int(x) for x in str(row["harper12_levels"]).split(",") if x not in ("", "nan")]
+    levels = levels_rec
+    if floors is not None and name in floors.index:
+        fl = [int(x) for x in str(floors.loc[name, "floor_levels"]).split(",") if x not in ("", "nan")]
+        if len(fl) > len(levels):
+            if fl[:len(levels)] != levels:
+                raise RuntimeError(f"{name}: item 01's and item 02's proved levels disagree: {levels} vs {fl}")
+            levels = fl
+    harper_floor = int(row["harper12"])
+    if floors is not None and name in floors.index:
+        harper_floor = max(harper_floor, int(floors.loc[name, "floor"]))
+    return {"fhat": srec["fhat"], "sets": srec["sets"], "levels": levels, "floor_record": harper_floor,
+            "t_star": int(srec["t_star"]), "ceiling_record": int(srec["ceiling"])}
+
+
+def run_sat(which: str, workers: int, core_hours: float, conflicts: int = SAT_CONFLICTS,
+            deadline: float = SAT_DEADLINE, instance_budget: float = SAT_INSTANCE_BUDGET,
+            max_levels: int = SAT_MAX_LEVELS, limit: int | None = None) -> pd.DataFrame:
+    led = ledger().set_index("instance_name")
+    floors = pd.read_csv(FLOOR_CSV).drop_duplicates("instance_name", keep="last").set_index("instance_name") \
+        if FLOOR_CSV.exists() else None
+    names: list[str] = []
+    for key in which.split(","):
+        for nm in sorted(target_names(key.strip()), key=lambda x: (int(led.loc[x, "n"]), x)):
+            if nm not in names:
+                names.append(nm)
+    done = set(pd.read_csv(SAT_INSTANCES_CSV)["instance_name"]) if SAT_INSTANCES_CSV.exists() else set()
+    inst = corpus_instances()
+    jobs, skipped = [], []
+    for nm in names:
+        if nm in done:
+            continue
+        inp = _sat_inputs(nm, led, floors)
+        if inp is None:
+            skipped.append(nm)
+            continue
+        n = int(led.loc[nm, "n"])
+        fhat = list(inp["fhat"])
+        for t in range(1, len(inp["levels"]) + 1):
+            fhat[t] = inp["levels"][t - 1]
+        floor = max(profile_floor(inp["levels"]), inp["floor_record"])
+        if not mark_levels(n, fhat, len(inp["levels"]), floor, inp["t_star"], set(), max_levels):
+            skipped.append(nm)   # bracket 0: nothing a SAT call could change
+            continue
+        path, instance = inst[nm]
+        jobs.append((nm, instance.matrix.tolist(), str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
+                     int(led.loc[nm, "optimum"]), fhat, inp["sets"], inp["levels"], inp["floor_record"],
+                     inp["t_star"], inp["ceiling_record"], instance_budget, conflicts, deadline, max_levels))
+    if limit:
+        jobs = jobs[:limit]
+    slog(f"sat: targets {which}: {len(names)} names, {len(done)} on file, {len(skipped)} with no level to ask "
+         f"(bracket 0 or no item 02 record), {len(jobs)} to run; {workers} workers; {core_hours} core-hours; "
+         f"conflicts {conflicts}, deadline {deadline} s, {instance_budget} s per instance, {max_levels} levels")
+    SAT_CERT_DIR.mkdir(parents=True, exist_ok=True)
+    t0 = time.monotonic()
+    wall_cap = core_hours * 3600.0 / max(1, workers)
+    k = 0
+    with Pool(workers) as pool:
+        for out in pool.imap_unordered(_sat_job, jobs, chunksize=1):
+            k += 1
+            rec, calls = out["instance"], out["calls"]
+            pd.DataFrame([rec]).to_csv(SAT_INSTANCES_CSV, mode="a", header=not SAT_INSTANCES_CSV.exists(), index=False)
+            if calls:
+                cols = ["instance_name", "n", "optimum", "t", "b", "lo_before", "hi_before", "status", "nbhd",
+                        "cnf_variables", "cnf_clauses", "cnf_sha256", "solve_seconds", "conflicts", "conflict_budget",
+                        "deadline", "proof_bytes", "proof_gz_bytes", "proof_kept", "proof_lemmas", "verdict",
+                        "check_seconds", "certificate"]
+                df = pd.DataFrame(calls)
+                for c in cols:
+                    if c not in df.columns:
+                        df[c] = None
+                df[cols].to_csv(SAT_LEVELS_CSV, mode="a", header=not SAT_LEVELS_CSV.exists(), index=False)
+            slog(f"sat: {k}/{len(jobs)} {rec['instance_name']} (n={rec['n']}): floor {rec['floor_before']} -> "
+                 f"{rec['floor_after']}, ceiling {rec['ceiling_record']} -> {rec['ceiling_after']}, bracket "
+                 f"{rec['bracket_before']} -> {rec['bracket_after']}, settled {rec['levels_settled']} partial "
+                 f"{rec['levels_partial']} censored {rec['levels_censored']} of {rec['levels_visited']}, "
+                 f"{rec['calls']} calls, {rec['seconds']:.0f} s [{rec['stop_reason']}] "
+                 f"({time.monotonic() - t0:.0f} s wall)")
+            if time.monotonic() - t0 > wall_cap:
+                slog(f"sat: core-hour cap reached ({core_hours} core-hours = {wall_cap:.0f} s wall at {workers} workers); "
+                     f"stopping with {len(jobs) - k} instances not reached")
+                pool.terminate()
+                break
+    out = pd.read_csv(SAT_INSTANCES_CSV).drop_duplicates("instance_name", keep="last")
+    out.to_csv(SAT_INSTANCES_CSV, index=False)
+    bad = out[out["floor_after"] > out["optimum"]]
+    if not bad.empty:
+        slog(f"VIOLATION: SAT floor above the optimum on {len(bad)}: {bad['instance_name'].tolist()}")
+    bad = out[out["floor_after"] > out["ceiling_after"]]
+    if not bad.empty:
+        slog(f"BUG: floor above the ceiling on {len(bad)}: {bad['instance_name'].tolist()}")
+    return out
+
+
+def write_sat_tables() -> str:
+    inst = pd.read_csv(SAT_INSTANCES_CSV).drop_duplicates("instance_name", keep="last")
+    calls = pd.read_csv(SAT_LEVELS_CSV) if SAT_LEVELS_CSV.exists() else pd.DataFrame()
+    led = ledger()
+    f = joined()  # item 02's per-instance view (ceiling, harper_floor, bracket, flags)
+    tg = load_targets()
+    inst = inst.rename(columns={"seconds": "sat_seconds"})
+    keep = ["instance_name", "ceiling_after", "floor_after", "bracket_after", "levels_settled", "levels_partial",
+            "levels_censored", "argmax_settled", "calls", "sat_seconds", "stop_reason", "new_incumbents"]
+    m = f.merge(inst[keep], on="instance_name", how="left")
+    m["reached"] = m["ceiling_after"].notna()
+    m["floor_exact"] = np.where(m["reached"], m["floor_after"], m["harper_floor"]).astype(int)
+    m["ceiling_exact"] = np.where(m["reached"], m["ceiling_after"], m["ceiling"]).astype(int)
+    m["bracket_exact"] = m["ceiling_exact"] - m["floor_exact"]
+    m["gap_floor_exact"] = m["optimum"] - m["floor_exact"]
+    m["gap_ceiling_exact"] = m["optimum"] - m["ceiling_exact"]
+    m["closed_by_floor"] = m["floor_exact"] == m["optimum"]
+    m["ruled_out"] = m["ceiling_exact"] < m["optimum"]
+    m["open_bracket"] = (~m["closed_by_floor"]) & (~m["ruled_out"])
+    lines = ["# Item 03 tables (generated by `python3 -m learning.obstruction_expansion --stage sat-tables`)", "",
+             "Units: optimum units; gap = optimum − value; the ceiling is not a bound; `floor_exact` = the "
+             "cap-12 floor raised by every SAT-proved level; `bracket_exact` = ceiling − floor after the run.", ""]
+
+    def summ(g):
+        return {"instances": len(g), "had bracket": int((g["bracket"] > 0).sum()), "reached": int(g["reached"].sum()),
+                "bracket closed": int(((g["bracket"] > 0) & (g["bracket_exact"] == 0)).sum()),
+                "bracket open": int((g["bracket_exact"] > 0).sum()),
+                "argmax settled (of had bracket)": int(((g["bracket"] > 0) & (g["argmax_settled"] == True)).sum()),  # noqa: E712
+                "floor raised": int((g["floor_exact"] > g["harper_floor"]).sum()),
+                "ceiling lowered": int((g["ceiling_exact"] < g["ceiling"]).sum()),
+                "floor gap mean before": g["gap_floor"].mean(), "floor gap mean after": g["gap_floor_exact"].mean(),
+                "bracket mean before": g["bracket"].mean(), "bracket mean after": g["bracket_exact"].mean(),
+                "closed by floor": int(g["closed_by_floor"].sum()), "ruled out by ceiling": int(g["ruled_out"].sum()),
+                "open with bracket": int(g["open_bracket"].sum()),
+                "floor > lb_best": int((g["floor_exact"] > g["lb_best"]).sum()),
+                "floor > max(lb_best, tw+1)": int((g["floor_exact"] > np.maximum(g["lb_best"], g["tw1"])).sum()),
+                "seconds": g["sat_seconds"].fillna(0).sum()}
+    rows = []
+    for nm, msk in (("gap338", m["is_gap338"]), ("cs200", m["is_cs200"]), ("gap338 ∪ cs200", m["is_gap338"] | m["is_cs200"])):
+        rows.append({"target": nm, **summ(m[msk])})
+    lines += ["## (a) per target set", "", _md(pd.DataFrame(rows)), ""]
+    g = m[m["is_gap338"]]
+    rows = [{"band": f"{lo}–{hi}", **summ(g[(g["n"] >= lo) & (g["n"] <= hi)])} for lo, hi in BANDS
+            if len(g[(g["n"] >= lo) & (g["n"] <= hi)])]
+    lines += ["## (b) the 338 per band", "", _md(pd.DataFrame(rows)), ""]
+    cs = m[m["is_cs200"]].copy()
+    cs["class"] = [f"{int(a)}-{int(b)}-{int(c)}" for a, b, c in zip(cs["cs_n"], cs["cs_m"], cs["cs_d"])]
+    rows = [{"class": cls, **summ(h)} for cls, h in cs.groupby("class", sort=False)]
+    rows.sort(key=lambda r: (int(r["class"].split("-")[0]), int(r["class"].split("-")[2])))
+    lines += ["## (c) the 200 Chu & Stuckey by class", "", _md(pd.DataFrame(rows)), ""]
+    had = m[(m["bracket"] > 0) & (m["is_gap338"] | m["is_cs200"])]
+    lines += [f"Of the {len(had)} targets with a bracket after item 02, {int(had['reached'].sum())} were reached, "
+              f"the bracket closed on {int((had['bracket_exact'] == 0).sum())} (floor = ceiling: the family's duality "
+              f"gap is exact there), the floor rose on {int((had['floor_exact'] > had['harper_floor']).sum())} and "
+              f"the ceiling fell on {int((had['ceiling_exact'] < had['ceiling']).sum())}; on the 338 the argmax level "
+              f"settled on {int(((m['is_gap338']) & (m['bracket'] > 0) & (m['argmax_settled'] == True)).sum())} of "  # noqa: E712
+              f"{int(((m['is_gap338']) & (m['bracket'] > 0)).sum())} with a bracket, and the bracket is 0 on "
+              f"{int((m['is_gap338'] & (m['bracket_exact'] == 0)).sum())} of 338 after the run "
+              f"({int((m['is_gap338'] & (m['bracket'] == 0)).sum())} before).", ""]
+    if len(calls):
+        calls["n_band"] = pd.cut(calls["n"], [0, 30, 40, 60, 75, 100, 134], labels=["≤30", "31–40", "41–60", "61–75", "76–100", "101–134"])
+        calls["t_band"] = pd.cut(calls["t"], [0, 15, 20, 25, 30, 40, 200], labels=["13–15", "16–20", "21–25", "26–30", "31–40", "41+"])
+        rows = []
+        for (nb, tb), h in calls.groupby(["n_band", "t_band"], observed=True):
+            fin = h[h["status"].isin(["unsat", "sat"])]
+            rows.append({"n": nb, "t": tb, "calls": len(h), "unsat": int((h["status"] == "unsat").sum()),
+                         "sat": int((h["status"] == "sat").sum()), "budget": int((h["status"] == "budget").sum()),
+                         "timeout": int((h["status"] == "timeout").sum()), "finished share": len(fin) / len(h),
+                         "median s finished": fin["solve_seconds"].median() if len(fin) else np.nan,
+                         "max s finished": fin["solve_seconds"].max() if len(fin) else np.nan,
+                         "median clauses": h["cnf_clauses"].median(), "verified": int((h["verdict"] == "verified").sum()),
+                         "median check s": h.loc[h["status"] == "unsat", "check_seconds"].median()})
+        lines += ["## (d) calls by (n, t): finished against censored", "", _md(pd.DataFrame(rows)), ""]
+        rows = []
+        for n, h in calls.groupby("n"):
+            fin = h[h["status"].isin(["unsat", "sat"])]
+            cen = h[~h["status"].isin(["unsat", "sat"])]
+            rows.append({"n": n, "instances": h["instance_name"].nunique(), "calls": len(h), "finished": len(fin),
+                         "censored": len(cen), "max t finished": fin["t"].max() if len(fin) else np.nan,
+                         "min t censored": cen["t"].min() if len(cen) else np.nan,
+                         "max b finished (unsat)": fin.loc[fin["status"] == "unsat", "b"].max() if len(fin) else np.nan,
+                         "median s finished": fin["solve_seconds"].median() if len(fin) else np.nan,
+                         "max conflicts finished": fin["conflicts"].max() if len(fin) else np.nan})
+        bd = pd.DataFrame(rows)
+        bd.to_csv(SAT_BOUNDARY_CSV, index=False)
+        lines += ["## (e) the boundary by n (`boundary.csv`)", "", _md(bd), ""]
+        u = calls[calls["status"] == "unsat"]
+        lines += [f"Calls: {len(calls)}; unsat {int((calls['status'] == 'unsat').sum())} (drat-trim verified "
+                  f"{int((u['verdict'] == 'verified').sum())}, not verified {int((u['verdict'] != 'verified').sum())}), "
+                  f"sat {int((calls['status'] == 'sat').sum())}, budget {int((calls['status'] == 'budget').sum())}, "
+                  f"timeout {int((calls['status'] == 'timeout').sum())}, error {int((calls['status'] == 'error').sum())}; "
+                  f"solve {calls['solve_seconds'].sum() / 3600:.2f} core-hours, check "
+                  f"{calls['check_seconds'].fillna(0).sum() / 3600:.2f}; proofs kept "
+                  f"{int(u['proof_kept'].fillna(False).astype(bool).sum())}, largest gz "
+                  f"{u['proof_gz_bytes'].max() / 2 ** 20 if len(u) else 0:.1f} MB.", ""]
+    cols = ["instance_name", "n", "optimum", "lb_best", "harper_floor", "ceiling", "floor_exact", "ceiling_exact",
+            "bracket_exact", "levels_settled", "levels_partial", "levels_censored", "argmax_settled", "calls", "sat_seconds",
+            "stop_reason"]
+    lines += ["## (f) every target with a bracket after item 02", "",
+              had.sort_values(["n", "instance_name"])[cols].to_markdown(index=False), ""]
+    text = "\n".join(lines)
+    SAT_TABLES_MD.write_text(text)
+    m.to_csv(SAT_OUT / "joined.csv", index=False)
+    return text
+
+
+# ----------------------------------------------------------------------------
 # main
 # ----------------------------------------------------------------------------
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--stage", choices=("ceiling", "exact", "floor", "tables"), required=True)
+    ap.add_argument("--stage", choices=("ceiling", "exact", "floor", "tables", "sat", "sat-tables"), required=True)
     ap.add_argument("--targets", default="all")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--wall", type=float, default=None)
@@ -783,6 +1434,11 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--budget-scale", type=float, default=1.0)
     ap.add_argument("--tag", default="", help="write ceiling_<tag>.csv and sets_<tag>/ (a second search pass)")
+    ap.add_argument("--core-hours", type=float, default=6.0, help="sat: hard stop, workers × wall")
+    ap.add_argument("--conflicts", type=int, default=SAT_CONFLICTS)
+    ap.add_argument("--deadline", type=float, default=SAT_DEADLINE)
+    ap.add_argument("--instance-budget", type=float, default=SAT_INSTANCE_BUDGET)
+    ap.add_argument("--max-levels", type=int, default=SAT_MAX_LEVELS)
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     if args.tag:
@@ -801,6 +1457,14 @@ def main() -> None:
     elif args.stage == "floor":
         out = run_floor(args.targets, args.workers, args.wall)
         log(f"floor: {len(out)} rows; {out['floor_seconds'].sum() / 3600:.2f} core-hours")
+    elif args.stage == "sat":
+        out = run_sat(args.targets, args.workers, args.core_hours, args.conflicts, args.deadline,
+                      args.instance_budget, args.max_levels, args.limit)
+        slog(f"sat: {len(out)} instances on file; bracket closed on {int((out['bracket_after'] == 0).sum())}; "
+             f"floor raised on {int((out['floor_after'] > out['floor_before']).sum())}; "
+             f"{out['seconds'].sum() / 3600:.2f} core-hours of instance time")
+    elif args.stage == "sat-tables":
+        print(write_sat_tables())
     else:
         print(write_tables())
 

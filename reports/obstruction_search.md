@@ -713,3 +713,275 @@ bound given more time. The closing-layout correction is a statement about
 our construction of seeds, not about Yanasse's equivalence. "We found no
 prior report" of a searched vertex-isoperimetric ceiling on benchmark
 instances; the bound itself is Harper (1966).
+
+## 3. Family E exact at full depth: the inner minimum by SAT with DRAT; the gap bracket closed where it settles (item 03)
+
+*Size range: the 338 bound-gap instances (20–134 customers) and the 200
+Chu & Stuckey instances (30–125); the encoding's self-test at `n ≤ 12`.
+Regenerate: `nice -n 19 python3 -m learning.obstruction_expansion --stage sat
+--targets gap338,cs200 --workers 8 --core-hours 6`, then `--stage sat-tables`;
+`python3 reports/scratch/obstruction_search/03_sat/recheck_certificates.py
+--workers 8` (every certificate through the checker);
+`python3 reports/scratch/obstruction_search/03_sat/run_harness.py --workers 8`
+(the validity stage); `python3 paper1/obstruction_check.py check-expansion
+<instance.mosp> <certificate.json>` on any one certificate. Outputs under
+`reports/scratch/obstruction_search/03_sat/`: `levels.csv` (344 calls),
+`instances.csv` (144 instances), `boundary.csv`, `tables.md`, `joined.csv`,
+`checker_verdicts.csv`, `harness_values.csv`, `harness_table.md`,
+`certificates/<instance>/`, `run.log`, `../03_sat_run.out`. Tests:
+`tests/test_obstruction_expansion.py` (24, of which 6 are this item's).*
+
+### 3.1 What was done
+
+**The question.** Item 02 left family E bracketed on 148 of the 436 targets
+in `gap338 ∪ cs200` (145 of the 338, 3 more Chu & Stuckey): the ceiling
+(the search's `max_t (f̂(t) − t) + 1`) above the floor (Harper's bound with
+`f` proved by branch and bound to cap 12). Above cap 12 the branch and bound
+does not finish, so this item asks the inner minimum of a SAT solver: for a
+level `t` and a target `b`, "is there a set `C` of at least `t` customers
+with `|N[C]| ≤ b`?" UNSAT proves `f(t) ≥ b + 1`, hence `pw ≥ b + 1 − t` and
+`MOSP ≥ b + 2 − t` by the contrapositive of `exists_closedNbhd_card_le`
+(`lean/MOSPFormalization/EmptyPair.lean`) and `mospValue_eq_pathwidth_add_one`;
+SAT returns a set that lowers `f̂(t)`, so the ceiling drops. Either answer
+moves one half of the bracket, and the level is settled when the two meet.
+
+**The encoding** (`learning/obstruction_expansion.py::expansion_cnf`, the
+contract `ENCODING_SPEC`, plan §0.5 (d)): `x_v` (`v ∈ C`), `y_v`
+(`v ∈ N[C]`), the clauses `x_u → y_v` for every `v ∈ N[u]` including `u`, a
+full totalizer over the `x` with the unit `o_t` (`Σ x ≥ t`) and one over the
+`y` with the unit `¬o_{b+1}` (`Σ y ≤ b`), the auxiliaries of the two
+totalizers in disjoint ranges allocated in a fixed order (the
+`mosp_encoding.py` discipline). The totalizer is ours, not pysat's
+`CardEnc`: the contract has to fix every variable number so that the
+checker can regenerate the clause set, and a library's allocation order is
+not a contract. The clause set is canonical (sorted literals, sorted
+distinct clauses) and the certificate carries the SHA-256 of its DIMACS
+text. `exact_sat(closed, t, b, proof_dir)` solves it with CaDiCaL 1.9.5
+through pysat with proof logging, under a conflict budget (2 × 10⁶) and a
+wall deadline (120 s) — pysat's CaDiCaL cannot be interrupted, so with a
+deadline the call runs in a forked child that is killed at the deadline
+and dies with its parent (`PR_SET_PDEATHSIG`); the proof is read after a
+C-side flush, as `learning/proofs.py` learnt to; every UNSAT is checked by
+`drat-trim` at once and the certificate JSON (`(t, b)`, the CNF's hash
+and size, the gzipped proof and its hash, the solver, the conflicts, the
+checker's binary hash and verdict) is written beside it. A SAT model's set
+is re-evaluated from the masks and never read from the `y` variables; a
+model with more than `t` members is cut to `t` (a subset's closed
+neighbourhood is smaller).
+
+**The driver** (`--stage sat`): for each instance of `gap338` then `cs200`,
+smallest `n` first, the levels the ceiling marks relevant — `t` above the
+proved cap with `f̂(t) − t + 1 > floor` (the item's `≥ floor − 1` in
+pathwidth units includes equality; a level at the floor can neither raise
+it nor move the bracket, so equality is left out), nearest the argmax `t*`
+first, at most 8 per instance — and at each level a descent in `b` from
+`f̂(t) − 1`: the first probe asks whether the incumbent is the minimum
+(UNSAT settles the level in one call, which is the common case: item 02's
+search attains `f` at 99.2% of levels at `n ≤ 22`); after a SAT answer
+(a new incumbent, `f̂(t)` falls) or a censored call the next probe is the
+midpoint of what is unresolved, so a censored boundary still leaves the
+cheaper, lower `b` to try; an UNSAT at any `b` raises the floor to
+`b + 2 − t` even when the level is not settled ("partial"). 240 s per
+instance, a hard stop at 6 core-hours (wall × workers), 8 workers at
+`nice 19`, the machine's load 2–6 during the run. The exact floor after the
+run is the cap-12 floor raised by every SAT-proved level; the ceiling after
+the run is `max_t (f̂(t) − t) + 1` over the incumbents with the proved levels
+exact. Outputs: `levels.csv` (one row per call), `instances.csv` (one row
+per instance), `certificates/<instance>/` (`instance.mosp` in the standard
+format, `calls.jsonl`, `summary.json`, and per proved level
+`t<t>_b<b>.json` with `t<t>_b<b>.drat.gz`), `boundary.csv`, `tables.md`.
+
+**The checker** (`paper1/obstruction_check.py check-expansion <instance.mosp>
+<certificate.json>`): its own reader of the standard format, its own MOSP
+graph (a clique per pattern), its own totalizer from the contract, which it
+carries verbatim in its docstring (the test pins the two texts equal; the
+checker imports nothing from `learning/`, `satisfiability/`,
+`pathwidth_solver/` or `mosp/`), regenerates the CNF, compares its hash and
+size with the certificate's, compares the SHA-256 of the instance's rows,
+decompresses the proof, runs `drat-trim` on the regenerated CNF and prints
+the bound with the theorems it rests on; exit status 0 only when every
+check passes. The instance file the checker reads is the one the run wrote
+beside the certificate; the certificate records the benchmark file it came
+from (`source_file`), and the rows' hash ties the two.
+
+### 3.2 Numbers
+
+**The headline.** Of the 148 targets with a bracket after item 02 (145 of
+the 338, 3 more in `cs200`), 144 were reached within the budget and the
+bracket closed on **72**: the family's duality gap is now exact on 264 of
+the 338 (193 after item 02), the floor rose on 85 targets and the ceiling
+fell on 3. **Where it closes is a question of size, not of level**: every
+bracket at 30–60 customers closed (1 + 19 + 48 of 68, all argmax levels
+settled, every one in a single UNSAT call at the incumbent or after one SAT
+answer), 2 of 13 at 75, 1 of 41 at 76–100 (a SCOOP instance), 0 of 22 at
+101–134. The run used **5.76 core-hours** of instance time and stopped at
+its 6-core-hour cap with 3 instances not reached (`Random-125-125-8-5_0` of
+the 338; `Random-100-50-2-2_0` and `Random-100-50-2-4_0` of `cs200` only).
+
+| target | had bracket | reached | bracket closed | argmax settled | floor raised | ceiling lowered | floor gap before → after | bracket before → after | closed by floor | ruled out by ceiling | open with bracket | floor > reference |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `gap338` | 145 | 143 | 71 | 70 | 84 | 3 | 3.79 → 3.41 | 2.13 → 1.74 | 7 → **12** | 320 | 11 → **6** | 87 → **98** |
+| `cs200` | 84 | 81 | 15 | 15 | 27 | 0 | 3.90 → 3.68 | 3.00 → 2.79 | 57 → 58 | 136 | 7 → 6 | 70 → 74 |
+
+(`tables.md` (a); "reference" is the harness's `max(lb_best, tw + 1)`.)
+The five instances the exact floor newly closes on the 338 are `p2540n3_0`
+(8 → 10 = optimum), `Random-50-50-2-1_0` (13 → 15), `p4050n10_0` (11 → 14),
+`p4050n4_0` and `p4050n7_0` (12 → 14); on all five the cap-12 branch and
+bound had the right argmax level in sight and the SAT call proved its
+incumbent in under 6 s. The six of the 338 still open with a bracket are
+all dense and large — `Random-100-100-4-2_0` (floor 40, ceiling = optimum
+50), `100-100-6-3_0` (55 / 61), `100-50-10-1_0` (64 / 68), `125-125-8-1_0`
+(94 / 95), `8-3_0` (92 / 95), `8-4_0` (93 / 94) — the instances where Harper
+*could* be tight and the inner minimum at `t ≈ 15–25` on a 100–125-vertex
+graph is what no call finishes (below).
+
+**The floor, by band of the 338** (`tables.md` (b); mean gap `optimum −
+floor`, optimum units): 9–20: 2.06 → 2.06 (no bracket to close; the family
+is ruled out by its ceiling on all 17); 21–30: 1.98 → 1.98; 31–40: 1.96 →
+**1.49**; 41–60: 2.78 → **1.43**; 61–75: 4.88 → 3.65; 76–100: 8.51 → 8.29;
+101–134: 11.00 → 10.84. Where the floor rose, it rose by 1.15 at 31–40
+(max 2), 1.52 at 41–60 (max 3), 2.33 at 61–75 (max 4), 1.67 at 76–100 and
+2.0 at 101–134 (max 3): the SAT half adds one to four stacks to the cap-12
+floor, and at 41–60 it removes half of the family's remaining gap. Thirteen
+instances had their floor raised by a *partial* level alone (an UNSAT at a
+`b` below the incumbent, the level itself unsettled) — the midpoint probe
+after a censored call is what bought these.
+
+**The ceiling fell on three instances**, all by one and all through the SAT
+answers' sets: `Warwick 1299` (11 → 10 = floor: duality gap exactly 2
+against an optimum of 12), `p2550n8_0` (9 → 8 = floor; optimum 11) and
+**`scoop-A_FA+AA-_6_0`** (79 customers; 8 → 7 = floor; optimum **13**),
+where nine SAT answers at `t = 30–52` each found a `t`-set one below the
+search's incumbent (the sets' values are in `levels.csv`, column `nbhd`),
+so the family's exact value on that SCOOP instance is **7, six stacks
+below the optimum**, settled on both sides: the exact duality gap of the
+expansion family on an industrial instance. Item 02's second pass had
+already moved the ceiling by ±1 on 1% of the instances at 30–100; the 18
+SAT answers (3 at `n ≤ 40`, 3 at 50, 9 on the 79-vertex SCOOP instance,
+2 at 105, 1 at 134) are the exact-half view of the same ±1 artefact: on
+sparse SCOOP graphs the tabu search's incumbents are off by one at several
+levels at once.
+
+**The boundary in `(n, t)`** (`tables.md` (d), (e); `boundary.csv`). Of 344
+calls, 155 UNSAT (every one verified by drat-trim), 18 SAT, 79 out of
+conflicts (2 × 10⁶), 92 killed at the 120 s deadline, 0 errors. Finished
+share by band of `n` and `t`:
+
+| `n` | `t` 13–15 | 16–20 | 21–25 | 26–30 | 31–40 | 41+ | median s (finished) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ≤ 60 | 36/36 | 49/49 | — | — | — | — | 0.1–0.8 |
+| 61–75 | 2/2 | 8/17 | 11/19 | 5/10 | 2/4 | — | 15 |
+| 76–100 | 2/6 | 2/23 | 6/31 | 9/19 | 8/28 | 23/29 | 0.8–48 |
+| 101–134 | 0/8 | 0/12 | 0/15 | 0/3 | 3/18 | 7/15 | 15–44 |
+
+Every call at `n ≤ 50` finished (max `t` settled 20 at `n = 50`, in 0.58 s
+at the median, 281 k conflicts at most); at `n = 75` the finished share is
+28 of 52 and the deepest settled level is 15 (`Random-75-75-6-4_0`), the
+shallowest censored 19; at `n = 100` 22 of 108 finished and no level at
+all settled on the `Random` instances (max `t` settled: none), while the
+two SCOOP instances at 79 and 105 settled levels at `t = 52` and `t = 46`
+(28 of 28 and 4 of 5 calls finished: their graphs are sparse, `optimum / n
+≈ 0.1–0.16`, and the CNF a third the size); at `n = 125` 3 of 62 finished,
+all at `t ≥ 33` and `b ≤ 49`, levels the ceiling marks but far from the
+argmax. **The boundary is `n ≈ 60–75` on the Chu & Stuckey graphs at the
+levels that matter (`t* ≈ 0.2–0.35 n`), and it is a boundary in `n` at a
+given density rather than in `t`**: the finished share at 76–100 *rises*
+with `t` (0.09 at 16–20 to 0.79 at 41+) because the deep levels are the
+sparse instances' and `b` is close to `n` there (the `Σ y ≤ b` totalizer is
+nearly free), while at 101–134 nothing below `t = 31` finishes. Clause
+counts are 4–6 k at `n ≤ 50`, 14 k at 75, 24–26 k at 100 and 36–41 k at 125;
+the finished calls' conflicts reach 1.3 M at 75 and 1.1 M at 100, so the
+2 × 10⁶ budget is binding at the boundary rather than generous: a 10× budget
+would move it by one band at most, on the exponential the `t`-profile
+shows, and is not what the plan's §0.8 (1) risk asked (the risk is
+realised as stated). The analogue of §17's `m² · k ≈ 10⁴` is **`n ≈ 75` at
+`optimum / n ≈ 0.2–0.5`**, i.e. the dense half of the Chu & Stuckey corpus
+above 60 customers is out of the exact half's reach at 2 × 10⁶ conflicts
+and 120 s per call; drat-trim's check costs 0.3–3× the solve (median 15–45 s
+at 75–125, 1,127 s in total for the 158 certificates on disk, the largest
+proof 38.7 MB gzipped, every one under the 50 MB per-file limit). **The
+proofs are kept on disk and not in the repository**: 1.3 GB over 158 files
+is not a committable artifact, so `.gitignore` carries
+`reports/scratch/obstruction_search/**/*.drat.gz` (as `learning/data/proofs/`
+is ignored for `learning.proofs`); every certificate JSON beside them records
+the proof's SHA-256, size and lemma count, and the stage's command regenerates
+them. A checkout without the proofs has the hashes and the CNF contract, and
+the checker reports "proof present: False" rather than a verdict.
+
+**The certificates.** 158 certificate files on disk (155 from the 144
+reached instances, with their rows in `levels.csv`; 3 on the two `cs200`
+instances the cap interrupted, valid but outside the tables — they prove
+`f(43) ≥ 46` on `Random-100-50-2-2_0` and `f(45) ≥ 48` on `-2-4_0`, both
+below those instances' floors), **158 of 158 verified** by
+`paper1/obstruction_check.py` (`checker_verdicts.csv`): the regenerated CNF's
+hash and size equal the certificate's on every one, the rows' hash ties the
+instance, drat-trim verifies the proof on the regenerated CNF, max 45 s.
+Every bound the item claims is read off a certificate in that file and
+rests on `exists_closedNbhd_card_le` (contrapositive) and
+`mospValue_eq_pathwidth_add_one`, both `sorry`-free in the development; the
+checker trusts drat-trim and those two theorems and nothing of ours.
+
+### 3.3 Through the harness
+
+`run_harness.py --workers 8`: the exact floor as a lookup candidate
+(`sat_floor`: the run's `floor_after` by the SHA-256 of the instance's rows,
+1 where the run has no record) through `learning.bound_harness`'s validity
+stage on all 6,376 corpus instances (`harness_table.md`): **above optimum
+0**; beats the reference `max(lb_best, tw + 1)` on **74 of the 338** (item
+02's cap-12 floor at 10 s: 73; at item 01's 60 s and item 02's 600 s, the
+cap-12 floor already stood above the reference on 87 of the 338, and the
+exact floor on 98, `tables.md` (a) — the harness's 74 counts the 144
+instances the run reached and nothing else). The ledger's guard (item 01)
+and the run's own guard (`floor_after ≤ optimum`, `floor_after ≤
+ceiling_after`, asserted in `tests/test_obstruction_expansion.py::test_committed_sat_files`)
+hold on every row.
+
+### 3.4 Kill verdict and compute
+
+**Kill criterion (plan §0.9, E-exact): met, narrowly on the sensible
+reading and clearly on the literal one.** SAT settled the argmax level on
+70 of the 145 instances of the 338 that had a bracket (48.3%, against the
+criterion's 50%); counted over the 338, the argmax level is settled on 264
+(78.1%) after the run, 70 of them by SAT (20.7%). The record therefore
+says: **Harper exact is out of reach by SAT above cap 12 at 75 customers and
+beyond on the Chu & Stuckey graphs** (boundary `n ≈ 60–75` at the argmax
+levels, 2 × 10⁶ conflicts, 120 s per call) **and fully in reach to 60**,
+where every bracket closed in seconds. The family's floor downstream is the
+exact floor where a verified certificate proves it (144 instances,
+`instances.csv::floor_after`) and the cap-12 floor elsewhere; nothing in
+the floor rests on the search's quality or on a censored level. The second
+kill condition — an UNSAT at a `(t, b)` where item 02's enumeration has a
+set — occurred on **0** calls (the self-test at `n ≤ 12` agrees with the
+enumeration on 3,000+ `(t, b)` pairs over 100 graphs, and the run's SAT
+answers all have `|N[set]| ≤ b` re-evaluated from the masks).
+
+**Compute.** Instance time 5.76 core-hours (solve 5.24, in-run drat-trim
+0.45, the rest the forks and the writes), the checker sweep 0.31, the
+harness run under 0.01 (a lookup), the smoke run and four timing probes
+≈ 0.1: **≈ 6.2 core-hours** against the item's 6; the overrun is the
+independent re-check the acceptance criteria require. 8 workers at
+`nice 19`; the machine's one-minute load was 2–8 during the run (the
+owner's `run_unlimited.py` was not running). Wall 45 min.
+
+### 3.5 What this does not claim
+
+That the SAT route scales beyond the boundary it measures (a call censored
+by its conflict budget or its deadline says nothing about `f(t)`, and no
+censored call contributes to any floor); that a larger budget would not
+move the boundary (not measured; the conflict counts of the finished calls
+at 75–100 say a 10× budget would at most reach one more band); that the
+exact floor on the 144 reached instances is the family's best (levels the
+ceiling did not mark, and the three unreached instances, were not asked;
+at most 8 levels per instance and 240 s, which at `n ≥ 75` meant one or
+two levels); that the ceiling after the run is the family's value (it is an
+upper estimate still, exact only where it meets the floor: 72 targets); any
+solver change (no candidate reaches `_lower_bound`; the family's bound as a
+bound inside the search was a net loss, `reports/expansion_bound.md`, which
+this item does not revisit). The certificate for an instance is a proof
+about *that instance file*: the checker reads the `.mosp` file the run
+wrote beside it and ties it to the benchmark source by the rows' hash
+recorded in the certificate, not by re-reading the benchmark file's own
+format. "We found no prior report" of DRAT-certified vertex-isoperimetric
+profiles on MOSP instances; the bound is Harper (1966), the totalizer
+Bailleux & Boufkhad (2003), the checker drat-trim (Wetzler, Heule & Hunt
+2014).
