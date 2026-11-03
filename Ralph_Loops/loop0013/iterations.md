@@ -560,7 +560,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
   - **Size range.** As the items state, repeated beside every number.
   - **Does not claim.** More than items 01–09 measured.
 
-- [ ] **11 Reserve.** The best remaining gap from items 01–10, one session,
+- [x] **11 Reserve.** The best remaining gap from items 01–10, one session,
   chosen and priced at the start of the session and written down first, in
   this order of preference unless the record says otherwise: (a) **F5,
   combinations** — an M search whose objective is the exact E floor of the

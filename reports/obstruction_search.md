@@ -224,6 +224,7 @@ observation on ten matrices, not a claim about the 375.
 | B | no B certificate exceeds `max(lb_best, tw + 1, M)` on any residual gap instance | 0 of 11; 0 of 338 | **met**: branching is closed (§6) |
 | open classes | zero floors above the recorded ones (the tree aside) is a verdict | 5 of 23 floors above the record; 2 of 24 closed | **not met** (§7) |
 | Lean | a statement false to 8 vertices is corrected before it is stated | 2 corrected, 0 stated unchecked | **met** (§9) |
+| combinations (F5, the reserve) | no combination of E or B on a minor raises the floor above the record on any of the ten residual instances | 0 of 10 above the record; Harper at cap 12 above the C's degeneracy on 50 of 58 undecided minors, never above the refutation on the smaller minor | **met**: combinations are closed on the residual (§11) |
 
 No stop condition fired in any item: no bound on record above a certified
 optimum (6,376 × 9 columns, §1), no dataset floor above a certified width
@@ -297,8 +298,10 @@ whole proved graph was re-solved.
    dataset (§7.4); a 97–99% rung for the ladder (§5).
 6. `decide` on the 100–125-customer certificates, and a decidable form of
    the branch certificate (§9.4): not tried.
-7. The reserve (item 11): F5, combinations of families, or the best
-   remaining gap above.
+7. The reserve (item 11): F5, combinations of families — **done, §11**:
+   on the ten residual instances the combination raises no floor above
+   the record (0 of 10); Harper at cap 12 beats the C's degeneracy on 50 of
+   58 undecided minors but never the refutation on the smaller minor.
 
 ### 0.9 What this does not claim
 
@@ -3390,3 +3393,270 @@ measured; the dollar figure covers the ten sessions whose logs carry a cost
 line (the capped fix session has none, this session is excluded); the paper
 paragraph's placement is a proposal the owner can move (§10.2); the
 `CLAUDE.md` paragraph is a draft.
+
+---
+
+## 11. Reserve — F5, combinations of families on the ten residual instances (item 11)
+
+*Written 2026-11-03 11:40, at the start of the session, before any run; the
+choice and the price first, as the item requires. Regenerate:*
+
+```
+nice -n 19 python3 -m learning.obstruction_combo --stage scan --workers 8      # stage A, the ladder scan
+nice -n 19 python3 -m learning.obstruction_combo --stage search --workers 8    # stage B, the search with E's floor as objective
+nice -n 19 python3 -m learning.obstruction_combo --stage check --workers 4
+python3 -m learning.obstruction_combo --stage tables
+```
+
+### 11.1 The choice, and the price
+
+**Chosen: (a) F5, combinations**, the item's first preference; the record
+does not say otherwise (nothing on record combines two families on one
+instance). **The ten targets** are the eleven uncovered instances of §8.5
+less the one with the largest gap (`Random-125-125-4-1_0`, gap 4): six at
+gap 1 (`Random-100-100-4-1_0`, `-4-3_0`, `Random-125-125-2-2_0`, `-4-4_0`,
+`-6-2_0`, `-6-3_0`), three at gap 2 (`Random-125-125-4-2_0`, `-4-3_0`,
+`-6-4_0`) and one at gap 3 (`Random-125-125-6-5_0`); 100–125 customers,
+optima 25–80, the best floor on record from family M on every one (§8.5).
+
+**What a combination can and cannot do here.** On every one of the ten the
+family-M certificate on record is a C-program *refutation* on a minor of
+70–112 vertices (`05_minor_scale/certificates/<name>/{search,ladder}.json`,
+`c_status = refutation`), so that minor's pathwidth is known exactly and
+neither E nor B on it can exceed it. The combination can only act on a minor
+the C program left **undecided** (status `upper`, floor from its printed
+`lower`, the minor's contraction degeneracy): item 05's ladder points show the
+C deciding nothing above 75–90% of the vertices at its 10 s cap on these
+instances. On such a minor `H`, family E's floor is at most `pw(H) + 1 ≤
+optimum`, its ceiling (seeded with the certified witness's layout lifted to
+`H`, `lifted_layout`) is at most the optimum too, and family B's value is a
+floor by the branch lemma on `H` and `pathwidth_minorOf_le`. Harper's exact
+floor at full depth is out of reach by SAT at these sizes (§3's boundary,
+`n ≈ 60–75` at the argmax levels), so **the item's "exact E floor of the
+minor" is replaced by the cap-12 branch-and-bound floor** on the minor, with
+a SAT + DRAT certificate attempted at its argmax level only (`t ≤ 12`, where
+item 03's calls finished at every size tried); recorded as a correction to
+the item's text.
+
+**Stage A, the ladder scan.** For each instance: the least-c greedy sequence
+at 85, 90, 95, 97 and 99% of the vertices, the min-d one at 90 and 97%, the
+whole graph (100%, nothing new computed but E's values re-read from §2–§3 and
+B's from §6), and the certifying minor of item 05's search (a control: E's
+ceiling on it must not exceed its proved width + 1 when seeded with the C's
+own layout). Per minor `H` (`m` vertices): the C's floor (item 05's ladder
+point where the same minor was run, else one call at cap 10 s), **E's
+ceiling** on `H` (`search_profile`, 20 s, seeds the lifted witness's finished
+sets and `H`'s maximal cliques), **E's cap-12 floor** on `H`
+(`satisfiability.expansion_bound` on the one-pattern-per-edge instance of
+`H`, 30 s; a censored level discarded), **B** on `H` (`branch_search`, 40 s,
+C cap 5 s, the lifted layout as the upper bound). The combination's floor on
+`H` is the maximum of the three floors; the instance's is the maximum over
+`H`, beside item 08's `best`. Price: 9 minors × about 100 s × 10 instances
+≈ **2.5 core-hours**.
+
+**Stage B, the search.** Item 04's tabu search over contraction sequences
+(`obstruction_minor.search`) with the objective replaced by **E's cap-12
+floor of the minor** (15 s per evaluation; `vertex count` as the tie-break),
+restarted from stage A's best E point and the two greedy rules at 90–99%,
+300 s per instance: about 20 evaluations each, **0.8 core-hours**. The
+question is whether a non-greedy minor raises Harper's floor above what the
+greedy ladder's minors give.
+
+**Certificates.** Where E-on-minor or B-on-minor gives the best combination
+value on an instance, a composite certificate `obstruction-combo-1`: the
+contraction sequence and the minor's edge hash (as `obstruction-minor-1`),
+and inside it a family-B certificate on the minor (`obstruction-branch-1`
+over the minor's edge list) or a family-E level certificate
+(`obstruction-expansion-certificate-1` over the minor written as a
+one-pattern-per-edge `.mosp` instance, with its DRAT proof). The checker
+gains `check-combo`: its own replay of the sequence, the quotient's hash,
+then `check-branch` or `check-expansion` on the minor; the floor lifts to
+`G` by `pathwidth_minorOf_le`. One composite per instance for the best
+E-on-minor level (SAT attempted at its argmax `(t, f(t) − 1)`, 120 s) and one
+for the best B-on-minor value: at most 20. Checker and harness lookup:
+**≤ 0.3 core-hours**. Total **≈ 3.6 core-hours** of the item's 4; the
+one-minute load at the start is 0.85, so 8 workers.
+
+**Kill criterion (stated now).** If no combination raises the floor above
+item 08's `best` on any of the ten, record "combinations are closed on the
+residual": a combination certifies no more than its strongest member on
+these instances. A combination that *equals* the record by a different
+route is noted, not counted.
+
+**Not chosen, and why.** (b) The `2-2_0` minor search for two more
+core-hours: item 05 spent one core-hour at 97–107 vertices with every call
+undecided at 60 s, and the greedy minors at 100–110 undecided at 120 s; two
+more hours at the same caps would most likely add undecided calls, and the
+honest route (minutes per call) does not fit the reserve. (c) Item 09 (v)
+was reached (`three_le_pathwidth_k34`). (d) The adversary against the M
+search's floor: item 04's validation (1,485 minors at `n ≤ 16` against brute
+force, 0 disagreements) and the 441 checker verdicts already cover the
+search's soundness at the sizes the adversary reaches.
+
+### 11.2 What was done
+
+`learning/obstruction_combo.py` (stages `scan`, `search`, `check`,
+`tables`; `edge_instance_matrix`, the one-pattern-per-edge instance whose
+MOSP graph is a given graph; `harper_floor_on`, `ceiling_on`, `branch_on` on
+a graph given as masks; `HarperEvaluator`, item 04's evaluator with E's
+cap-12 floor in place of the C program; `composite_dict`, the format
+`obstruction-combo-1`); `paper1/obstruction_check.py check-combo`
+(`check_combo`, `edge_pattern_rows`: own replay, own quotient hash, the
+inner certificate checked on a minor the checker writes itself, never on
+the certificate's own copy); `tests/test_obstruction_combo.py` (7 tests, one
+skipped where item 08's map is absent); scratch
+`reports/scratch/obstruction_search/11_combo/{scan.csv, scan_meta.csv,
+search.csv, certificates/ (3 composite certificates, 10 instance files),
+checker_verdicts.csv, harness_values.csv, harness_table.md, run_harness.py,
+tables.md, run.log}` and `../11_combo_{scan,search,check}.out`. Budgets as
+§11.1 states; run 2026-11-03 11:30–11:55 at a one-minute load of 1–4, 8
+workers, `nice -n 19`.
+
+**One slip, repaired before the run**: a test asserted that the theta graph
+of item 06's hand instances has pathwidth 2 (its family-B value is 3 in
+optimum units); the DRAT-verified Harper level on it says 4, and
+`vertex_separation_brute` agrees: **the theta graph has pathwidth 3**, and
+Harper is tight on it where the branch lemma is one short. The test now
+asserts that. Nothing on record is affected (item 06 never claimed the
+theta graph's pathwidth, only a floor).
+
+### 11.3 Numbers
+
+*Every number: the ten residual instances of §8.5 less `Random-125-125-4-1_0`,
+100–125 customers, optima 25–80; optimum units; regenerate with the commands
+under §11's header; `tables.md` (a)–(f).*
+
+**The combination closes nothing and raises nothing** (`tables.md` (a)). Over
+the 80 minors scanned (8 per instance: the least-c ladder at 85–99%, min-d at
+90 and 97%, item 05's certifying minor) the best combination value equals the
+record on 7 instances and is below it on 3 (`Random-100-100-4-1_0` 44 against
+45, `-4-2_0` 53 against 55, `-4-4_0` 49 against 50), **above it on 0 of 10**;
+and on every one of the ten the best value is the C program's refutation on
+item 05's minor — family M alone. E on a minor and B on a minor are the best
+member on none.
+
+| instance | optimum | record | C best on a minor | E cap-12 floor, best minor | E ceiling, max over minors | B best | combination | gap |
+|---|---|---|---|---|---|---|---|---|
+| `Random-100-100-4-3_0` | 43 | 42 | 42 | 39 | 42 | — | 42 | 1 |
+| `Random-100-100-4-1_0` | 46 | 45 | 44 | 39 | 44 | — | 44 | 2 |
+| `Random-125-125-6-2_0` | 77 | 76 | 76 | 70 | 76 | — | 76 | 1 |
+| `Random-125-125-6-3_0` | 80 | 79 | 79 | 73 | 79 | — | 79 | 1 |
+| `Random-125-125-4-2_0` | 57 | 55 | 53 | 47 | 56 | — | 53 | 4 |
+| `Random-125-125-4-3_0` | 54 | 52 | 52 | 46 | 53 | — | 52 | 2 |
+| `Random-125-125-4-4_0` | 51 | 50 | 49 | 42 | 50 | 2 | 49 | 2 |
+| `Random-125-125-2-2_0` | 25 | 24 | 24 | 18 | 23 | 3 | 24 | 1 |
+| `Random-125-125-6-4_0` | 80 | 78 | 78 | 71 | 79 | — | 78 | 2 |
+| `Random-125-125-6-5_0` | 74 | 71 | 71 | 65 | 73 | — | 71 | 3 |
+
+**On the undecided minors — the only place a combination could act** (58 of
+the 80: the C program's status `upper`, its floor the minor's contraction
+degeneracy, 13–40): Harper's cap-12 floor on the minor is **above the C's
+floor on 50 of 58**, by 11.2 on average and up to 28 (`Random-125-125-6-3_0`
+at 95%: 68 against 40), below it on 8 (all on `2-2_0`, where Harper at cap
+≤ 10 gives 7–11 against a degeneracy of 13). So where the C program cannot
+decide a minor, Harper at a cap is the better floor *on that minor* — and
+still **below the refutation on the smaller minor on every instance**, by
+4–14 (`tables.md` (a), `E_floor12_on_undecided` against `C_best`). B on an
+undecided minor finds a linked triple on 10 of 58 (`2-2_0` and `4-4_0` only),
+values 2–3, branch sizes `[97–120, 1–3, 1–2]`: the fringe separators of §6,
+contracted or not.
+
+**Harper's low-level floor rises under contraction.** E's cap-12 floor on the
+best minor is above its value on the whole graph on **10 of 10**, by 2–18
+(`Random-125-125-4-4_0`: 24 on the graph, 42 on the 87-vertex minor;
+`-4-2_0`: 35 → 47; `2-2_0`: 8 → 18); along the least-c ladder it falls
+monotonically with the minor's size (means over the ten: 48.0, 45.7, 42.3,
+41.5, 39.2 at 85, 90, 95, 97, 99%; `tables.md` (c)). This is the small-set
+expansion growing as vertices merge (at the limit, Harper on a clique minor
+`K_w` is `w`, the contraction-degeneracy argument); it does not reach the
+refutation, because the cap stays at 7–11 levels on 100–124-vertex minors
+under 30 s (median 9 on the 125-customer instances) while the ceiling's argmax
+sits at `t* = 15–46`.
+
+**E's ceiling on a minor never rises above the whole graph's but once**
+(`Random-125-125-6-2_0`: 75 on the graph, 76 on the 95–99% minors — a
+search-budget artefact of the kind §2.2's second pass measured, ±1 on about
+1% of instances; both are below the optimum 77). On the undecided minors the
+ceiling is at or above the record on 8 of 10 and strictly above it on 4
+(`-4-2_0` 56, `-4-3_0` 53, `-6-4_0` 79, `-6-5_0` 73, each the whole graph's
+ceiling too), so on those four Harper's *exact* bound on a large minor could
+in principle exceed the record by one or two; it is at or below the record on
+the other six, where no computation of the inner minimum on these minors
+could. **The control held**: on each of item 05's ten certifying minors
+(pathwidth proved by refutation) the ceiling seeded with the C's own layout is
+*strictly below* the proved width + 1 (10 of 10, `tables.md` (b), rows
+`search@m`): Harper is not tight on any of the certifying minors either.
+
+**The exact half, where tried.** SAT with DRAT at the argmax level of the
+cap-12 profile on the best E minor per instance (`t = 10–13`, `m = 70–121`,
+120 s, 2 × 10⁶ conflicts): **settled on 1 of 10** — `Random-125-125-2-2_0`'s
+70-vertex minor, `f(12) ≥ 29`, pathwidth ≥ 17, floor 18, which is the cap-12
+value — and ran out of conflicts after 48–55 s on the other nine
+(`tables.md` (f)). Item 03's boundary (`n ≈ 60–75` at the argmax levels)
+stands at `t ≈ 10–13` on 78–121-vertex minors too.
+
+**Stage B, the search with E's floor as the objective** (`tables.md` (d);
+300 s per instance, 15 s per evaluation at cap 12, minors in `[0.6 n, n]`,
+starts from stage A's best greedy point and three ladder points): 20
+evaluations per instance (the budget), one accepted improvement in all
+(`-6-4_0`, 68 → 69, from its min-d start), the final value equal to the best
+start on 9 of 10, below stage A's best E point on 9 of 10 (that point is item
+05's searched minor, not a start here, and stage A's 30 s evaluation reached
+one cap deeper), **above the record on 0 of 10**, 6–14 below it. A
+non-greedy minor did not raise Harper's floor in this budget.
+
+**Certificates and checker** (`tables.md` (e)): three composite certificates,
+**3 of 3 verified** by `check-combo` — `2-2_0`'s expansion certificate on the
+70-vertex minor (floor 18; the DRAT proof re-checked by `drat-trim` on the
+CNF the checker regenerates from the minor it rebuilds, 49 s) and the two
+branch certificates on 112- and 121-vertex undecided minors (floors 3 and 2;
+the C program re-run on the branches). None of the three is above the record
+(they certify the best E-on-minor level and the best B-on-minor value, as
+§11.1 said they would, record or not). **Harness**
+(`harness_table.md`, `run_harness.py`, a lookup candidate as item 06's): the
+combination's best floor per instance through the validity stage on all
+6,376 — **above optimum 0**; beats the reference on 10 of the 338 (the ten,
+where the record already did).
+
+**Compute**: scan 3,384 core-seconds, the SAT calls 513, the search 3,000,
+checker 74, harness and smoke tests about 150 — **about 2.0 core-hours** of the
+item's 4 (the scan was priced at 2.5 and cost 0.94, because the ceiling search
+stalls out in 2–12 s and B's separator family is empty or tiny on the dense
+minors, 0.1–0.3 s; on `2-2_0` B used its 40 s).
+
+### 11.4 Kill verdict, and what this does not claim
+
+**Kill criterion — met: "combinations are closed on the residual".** No
+combination raises the floor above item 08's `best` on any of the ten; a
+combination certifies no more than its strongest member here, and that
+member is family M's refutation on a 70–112-vertex minor on every instance.
+What the combination *does* say, as a measurement: on a minor the C program
+cannot decide, Harper at cap 12 is a better floor than the C's degeneracy on
+50 of 58 such minors, by 11 on average; Harper's low-level floor rises under
+contraction on 10 of 10 instances; and E's ceiling on a large minor is at or
+below the record on 6 of the 10, so for those six no exact computation of
+Harper's bound on these minors could close the instance. No stop condition
+fired: no floor above an optimum (the harness and the test on the committed
+files), no certificate rejected, no statement of ours false on a small graph
+(the theta slip was a test's assumption, corrected before it was committed).
+
+**Not done, and why.** (b) The `2-2_0` minor search for two core-hours: not
+chosen (§11.1); the one new fact about `2-2_0` here is that its 70-vertex
+certifying minor has Harper exact at level 12 equal to 18 against a proved
+width + 1 of 24, and that Harper's ceiling on every larger minor scanned
+(85–99%) is 23 < 24. (c) Reached by item 09. (d) The adversary: not run;
+item 04's validation and the 441 checker verdicts stand in.
+
+**Does not claim.** That no combination of families can close the ten (eight
+minors per instance and twenty searched sequences were tried, at the budgets
+stated); that Harper's exact bound on a large minor does not exceed the record
+on the four instances where its ceiling does (the inner minimum there is out
+of reach by SAT, §3 and §11.3); that the search over sequences with E's
+objective is well tuned (20 evaluations per instance is a sample); that
+Harper's floor rises under *every* contraction (it rose under the greedy
+rules and the searched sequences tried, on these ten); that a branch
+certificate exists on these minors above the fringe values found (B's
+separator family is the harness's plus a local search of 40 s). "We found no
+prior report" of lower bounds for pathwidth combined across a contraction
+minor on benchmark instances; never "first". The theta graph's pathwidth 3 is
+by brute force, not a theorem.

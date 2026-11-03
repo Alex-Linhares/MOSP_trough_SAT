@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 10/11 SOLVED
+Current: 11/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -889,3 +889,87 @@ classes at `width − 1`; `decide` on the 100–125-customer certificates. Two
 proposals await the owner (the MMD+ contractions behind a `bound` status;
 the `OPEN_RUNS` line for `NY_13`). After item 11, the last session writes
 the completion marker.
+
+---
+## Iteration 11 — 2026-11-03 11:17
+
+### Completed
+
+- **Item 11 — the reserve: (a) F5, combinations of families, chosen and
+  priced first** (`reports/obstruction_search.md` §11.1, written at 11:40
+  before any run: the ten residual instances of §8.5 less
+  `Random-125-125-4-1_0`; the combination can act only on minors the C
+  program leaves undecided, since every residual's family-M certificate is a
+  refutation on a 70–112-vertex minor whose width is therefore exact; the
+  item's "exact E floor of the minor" replaced by the cap-12 branch-and-bound
+  floor with SAT + DRAT attempted at its argmax level, because item 03's
+  boundary puts the exact floor out of reach at these sizes; price ≈ 3.6
+  core-hours; kill criterion stated before the run).
+  `learning/obstruction_combo.py` (stages `scan`, `search`, `check`,
+  `tables`; `edge_instance_matrix`, `harper_floor_on`, `ceiling_on`,
+  `branch_on`, `HarperEvaluator`, the format `obstruction-combo-1`);
+  `paper1/obstruction_check.py check-combo` (own replay and quotient hash,
+  the inner certificate checked on a minor the checker writes itself);
+  `tests/test_obstruction_combo.py` (7 tests, 6 pass + 1 skipped-by-design
+  where applicable; all 7 run in the gate); `learning/README.md` one line;
+  scratch `reports/scratch/obstruction_search/11_combo/{scan.csv,
+  scan_meta.csv, search.csv, certificates/ (3 composites), checker_verdicts.csv,
+  harness_values.csv, harness_table.md, run_harness.py, tables.md, run.log,
+  gate_run.out}` and `../11_combo_{scan,search,check}.out`; the report's
+  §11 (§11.1–§11.4), a row in §0.5's verdict table and the pointer in §0.8.
+- **Numbers** (ten instances, 100–125 customers, optima 25–80, 80 minors
+  scanned, 8 per instance): the best combination value equals the record on
+  7, is below it on 3, **above it on 0 of 10**, and is the C refutation on
+  item 05's minor (family M alone) on every one. On the 58 undecided minors
+  Harper's cap-12 floor is above the C's degeneracy floor on 50 (mean +11.2,
+  max +28) and below the refutation on the smaller minor on every instance
+  (by 4–14); B finds fringe triples only (values 2–3, on `2-2_0` and
+  `4-4_0`). Harper's cap-12 floor on the best minor is above its value on the
+  whole graph on 10 of 10 (by 2–18) and falls monotonically along the
+  ladder (48.0 → 39.2 from 85% to 99%): small-set expansion rises under
+  contraction, at caps of 7–11 levels. E's ceiling on an undecided minor is
+  at or below the record on 6 of 10 (no exact computation on those minors
+  could close them) and above it on 4, the same four where the whole graph's
+  ceiling is; the control held on all ten certifying minors (ceiling seeded
+  with the C's layout strictly below the proved width + 1). SAT at the
+  argmax level settled 1 of 10 (`2-2_0`'s 70-vertex minor, floor 18 = the
+  cap-12 value), the conflict budget bound the other nine at 48–55 s. Stage
+  B (20 evaluations per instance at 15 s): one accepted improvement in all,
+  equal to its best start on 9 of 10, above the record on 0.
+- **Certificates: 3 of 3 verified** by `check-combo` (an expansion composite
+  on a 70-vertex minor, the DRAT proof 47 MB gzipped and git-ignored under
+  the existing rule as item 03's; two branch composites on 112- and
+  121-vertex minors). **Harness** validity on all 6,376: above optimum **0**;
+  the combination beats the reference on 10 of the 338 (the ten).
+- **Kill verdict: met** — "combinations are closed on the residual". No
+  stop condition fired. **One slip, corrected before commit**: a test of
+  mine assumed the theta graph of item 06's hand instances has pathwidth 2;
+  the DRAT-verified Harper level says 3 and brute force agrees (its B value
+  3 is one short, Harper is tight); the test asserts that now, nothing on
+  record is affected.
+- **Compute ≈ 2.0 core-hours** of the item's 4 (scan 0.94, SAT calls 0.14,
+  search 0.83, checker 0.02, harness and smoke ≈ 0.04); load 1–4 throughout.
+- **Gate: PASS** (`reports/scratch/obstruction_search/11_combo/gate_run.out`,
+  11:55–12:13): lake build ok, 0 sorry, 0 axiom; `tests/` 1,897 passed, 2
+  skipped, 1 xfailed (4:32); `pathwidth_solver/` 123 passed (6:22); paper 78
+  pages, no undefined references. No Lean file and no paper file touched.
+
+### Blockers
+
+None. Not done, with the reason in §11.4: (b) the `2-2_0` minor search for
+two more core-hours (item 05's hour at 97–107 was all undecided calls at
+60–120 s; what this item adds is that Harper's ceiling on every larger
+minor scanned is 23 < 24); (c) was reached by item 09; (d) the adversary,
+covered by item 04's validation and 441 checker verdicts.
+
+### Next
+
+Nothing in this loop: all eleven items are checked. Open for a later plan,
+from §0.8 and §11.4: Harper's exact bound on a large minor of the four
+instances where its ceiling exceeds the record (`-4-2_0`, `-4-3_0`, `-6-4_0`,
+`-6-5_0`), out of reach by SAT at `t ≈ 10–13` on 78–121 vertices; the two
+proposals awaiting the owner (the MMD+ contractions behind a `bound` status;
+the `OPEN_RUNS` line for `NY_13`); `Random-125-125-2-2_0`'s missing minor
+certificate at any size.
+
+LOOP_COMPLETE

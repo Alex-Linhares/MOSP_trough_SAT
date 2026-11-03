@@ -1,0 +1,175 @@
+# session it11 started 2026-11-03 11:17:04
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report's §0 and §8, and the state of the residual instances, then choose and price the reserve item before running anything.
+  > $ uptime && cat Ralph_Loops/loop0013/iterations.md | tail -30 && wc -l reports/obstruction_search_plan.md reports/obstruction_search.md
+  > $ sed -n 1,200p reports/obstruction_search_plan.md
+  > $ sed -n 200,437p reports/obstruction_search_plan.md
+  > $ grep -n '^## \|^### ' reports/obstruction_search.md | head -120
+  > $ ls reports/scratch/obstruction_search/ reports/scratch/obstruction_search/08_map reports/scratch/obstruction_search/05_minor_scale | head -60 && cat reports/scr
+  > $ sed -n 283,320p reports/obstruction_search.md && sed -n 3006,3060p reports/obstruction_search.md
+  > $ python3 -c "
+import pandas as pd
+m=pd.read_csv('reports/scratch/obstruction_search/08_map/map.csv')
+g=m[m.is_gap338 & (m.gap_best>0)]
+cols=['instance_name','n',
+  > $ sed -n 2007,2044p reports/obstruction_search.md && cat reports/scratch/obstruction_search/05_minor_scale/ridge_summary.csv && ls reports/scratch/obstruction_sea
+  > $ grep -n "^def \|^class \|^    def " learning/obstruction_minor.py | head -80 && wc -l learning/obstruction_minor.py learning/obstruction_expansion.py learning/o
+  > $ sed -n 3184,3252p reports/obstruction_search.md
+
+Now let me look at the ten residual instances' family-M certificates, the module APIs I'd reuse for a combination search, and the checker's interface.
+  > $ for i in Random-100-100-4-1_0 Random-100-100-4-3_0 Random-125-125-2-2_0 Random-125-125-4-4_0 Random-125-125-6-2_0 Random-125-125-6-3_0 Random-125-125-4-2_0 Rand
+  > $ sed -n 1,135p learning/obstruction_minor.py
+  > $ grep -n "^def \|^class \|^    def \|^[A-Z_]* = " learning/obstruction_expansion.py | head -90
+  > $ grep -n "^def \|^class \|^    def \|^[A-Z_]* = " learning/obstruction_branch.py | head -80 && grep -n "^def \|^class \|add_parser\|add_argument" paper1/obstruct
+  > $ python3 - <<'EOF'
+import json
+for i in ['Random-100-100-4-1_0','Random-125-125-6-5_0','Random-125-125-4-1_0']:
+    d=json.load(open(f'reports/scratch/obstructio
+  > $ sed -n 383,530p learning/obstruction_minor.py
+  > $ sed -n 569,670p learning/obstruction_minor.py
+  > $ sed -n 286,465p learning/obstruction_expansion.py
+  > $ sed -n 279,420p learning/obstruction_branch.py && sed -n 577,670p learning/obstruction_branch.py
+  > $ sed -n 100,130p paper1/obstruction_check.py && sed -n 249,335p paper1/obstruction_check.py && sed -n 515,560p paper1/obstruction_check.py && sed -n 652,700p pap
+  > $ grep -n "^def \|^    def \|^class " satisfiability/expansion_bound.py | head -40 && sed -n 1,60p satisfiability/expansion_bound.py
+  > $ python3 - <<'EOF'
+import json
+d=json.load(open('reports/scratch/obstruction_search/05_minor_scale/certificates/Random-125-125-4-2_0/ladder_points.json'))
+print(
+  > $ sed -n 193,246p learning/obstruction_expansion.py && sed -n 467,520p learning/obstruction_expansion.py && sed -n 1070,1135p learning/obstruction_expansion.py
+  > $ sed -n 1016,1070p learning/obstruction_expansion.py && sed -n 342,383p learning/obstruction_minor.py && sed -n 798,830p learning/obstruction_branch.py
+  > $ sed -n 670,725p learning/obstruction_minor.py && grep -n "def run_harness\|validity\|def main" learning/bound_harness.py | head && cat reports/scratch/obstructi
+  > $ sed -n 700,808p paper1/obstruction_check.py && sed -n 808,881p paper1/obstruction_check.py
+  > $ sed -n 136,160p learning/obstruction_minor.py && grep -n "^LADDER_FRACTIONS\|^RESTART_FRACTIONS\|^RULES\|^MIN_MINOR\|^MOVES_PER_RESTART\|^TENURE\|^C_CAP_SECONDS
+  > $ sed -n 3384,3392p reports/obstruction_search.md && sed -n 1,80p reports/obstruction_search.md | head -80 && head -30 tests/test_obstruction_branch.py && grep -n
+
+I now have the design. Writing it down first, as the item requires, before any code or run.
+  > $ mkdir -p reports/scratch/obstruction_search/11_combo && cat >> reports/obstruction_search.md <<'EOF'
+
+---
+
+## 11. Reserve — F5, combinations of families on the 
+  > $ sed -n 249,275p learning/obstruction_minor.py && sed -n 155,165p learning/obstruction_expansion.py && grep -n "def from_matrix" -A 6 mosp/instance.py | head -12
+  > Write /home/al/dev/MOSP/learning/obstruction_combo.py
+
+Now the checker's `check-combo`, a cleanup of the search job's start-value bookkeeping, and the tests. These are independent, so I'll do them together.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_combo.py")
+s = p.read_text()
+old = s[s.index('           "start_values": json.dumps({l
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper1/obstruction_check.py")
+s = p.read_text()
+marker = "def main(argv: list[str] | None = None) -> int:"
+
+  > $ sed -n 30,80p tests/test_obstruction_branch.py && grep -n "theta\|def test_certificate_round" tests/test_obstruction_branch.py | head && grep -n "pysat\|drat" t
+  > $ sed -n 140,175p tests/test_obstruction_branch.py && sed -n 275,300p tests/test_obstruction_expansion.py && sed -n 687,700p learning/obstruction_branch.py
+  > Write /home/al/dev/MOSP/tests/test_obstruction_combo.py
+  > $ uptime && nice -n 19 timeout 900 python3 -m pytest tests/test_obstruction_combo.py -q -x 2>&1 | tail -20
+  > $ python3 -c "
+from learning import obstruction_branch as ob
+from learning.obstruction_ledger import adjacency_from_matrix
+from learning.first_moment import verte
+  > $ mkdir -p /tmp/combo_smoke && nice -n 19 timeout 600 python3 - <<'EOF' 2>&1 | tail -30
+import time, json, numpy as np
+from pathlib import Path
+from learning impo
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_combo.py")
+s = p.read_text()
+s = s.replace('''def log(msg: str, path: Path | None = No
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ uptime && rm -rf /tmp/combo_smoke && mkdir -p reports/scratch/obstruction_search/11_combo && nohup nice -n 19 python3 -m learning.obstruction_combo --stage scan
+
+While the scan runs I'll write the harness lookup script (modelled on item 06's) and arm a monitor on the scan log for progress and failure lines.
+  > $ sed -n 60,140p reports/scratch/obstruction_search/06_branch/run_harness.py
+  > Monitor {"command": "tail -n +1 -f /home/al/dev/MOSP/reports/scratch/obstruction_search/11_combo_scan.out | grep -E --line-buffe
+  > $ cat > reports/scratch/obstruction_search/11_combo/run_harness.py <<'EOF'
+"""Item 11: the combination's floors through `learning.bound_harness`'s
+validity stage 
+  > $ timeout 580 tail --pid=348093 -f /dev/null; tail -4 reports/scratch/obstruction_search/11_combo_scan.out; uptime
+  > $ timeout 580 tail --pid=348093 -f /dev/null; tail -4 reports/scratch/obstruction_search/11_combo_scan.out; ls reports/scratch/obstruction_search/11_combo/; cat r
+
+Stage A is done in 12 minutes wall. I'll launch stage B now (300 s per instance, 8 workers) and, while it runs, read the scan's numbers.
+  > $ uptime && nohup nice -n 19 python3 -m learning.obstruction_combo --stage search --workers 8 > reports/scratch/obstruction_search/11_combo_search.out 2>&1 &
+echo
+  > $ python3 - <<'EOF'
+import pandas as pd
+pd.set_option('display.width', 250)
+s = pd.read_csv('reports/scratch/obstruction_search/11_combo/scan.csv')
+cols=['instanc
+  > $ find reports/scratch/obstruction_search/11_combo/certificates -type f | sort && nohup nice -n 19 python3 -m learning.obstruction_combo --stage check --workers 2
+  > Monitor {"command": "tail -n +1 -f /home/al/dev/MOSP/reports/scratch/obstruction_search/11_combo_search.out | grep -E --line-buf
+  > $ for i in $(seq 1 60); do grep -q "check reports.*combo_expansion\|check reports.*combo_branch" reports/scratch/obstruction_search/11_combo_check.out 2>/dev/null
+  > $ for d in reports/scratch/obstruction_search/11_combo/certificates/*/e_*; do if ! ls "$d"/*.json >/dev/null 2>&1; then echo "removing $d (no certificate: the SAT
+  > $ python3 - <<'EOF'
+import pandas as pd
+pd.set_option('display.width', 250)
+se = pd.read_csv('reports/scratch/obstruction_search/11_combo/search.csv')
+print(se[['
+  > $ python3 -m learning.obstruction_combo --stage tables > /dev/null && head -30 reports/scratch/obstruction_search/11_combo/tables.md && nice -n 19 python3 reports
+  > $ rm -f reports/scratch/obstruction_search/11_combo/scan.pid reports/scratch/obstruction_search/11_combo/search.pid && sed -n '/## (c)/,$p' reports/scratch/obstru
+  > $ python3 - <<'EOF'
+import pandas as pd
+s = pd.read_csv('reports/scratch/obstruction_search/11_combo/scan.csv')
+for name, g in s.groupby('instance_name'):
+    w =
+
+Now the report's §11 findings, kill verdict and does-not-claim, plus the README line and the §0 pointers. These edits are independent, so I'll do them together.
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+### 11.2 What was done
+
+`learning/obstruction_combo.py` (stages `scan`, `search`, `check`,
+`tables`; `edge_instance
+  > $ sed -n 217,236p reports/obstruction_search.md && git status --short | head -30
+  > $ python3 - <<'EOF'
+from pathlib import Path
+r = Path("reports/obstruction_search.md"); t = r.read_text()
+t = t.replace("""- **Combinations (F5, item 11): met** —
+  > $ uptime && nohup python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/11_combo/gate_run.out 2>&1 &
+echo "gate pid $!"; sleep 3; head -5 repo
+  > $ find reports/scratch/obstruction_search/11_combo -type f -size +1M -exec ls -la {} \; ; du -sh --exclude='*.drat.gz' reports/scratch/obstruction_search/11_combo
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/iterations.md"); s = p.read_text()
+old = "- [ ] **11 Reserve.**"
+assert s.count(old) =
+
+All eleven items are marked done. The composite's DRAT proof is 47 MB gzipped, under the keep limit and git-ignored by the existing rule, like item 03's. Now a bounded wait on the gate.
+  > $ timeout 590 tail --pid=350097 -f /dev/null; tail -15 reports/scratch/obstruction_search/11_combo/gate_run.out
+  > $ ls -la reports/scratch/obstruction_search/11_combo/gate_run.out; cat reports/scratch/obstruction_search/11_combo/gate_run.out | tail -20; ps -p 350097 -o pid,et
+  > $ pgrep -af "gate.py" | grep -v pgrep; pgrep -af "pytest|lake" | grep -v pgrep | cut -c1-150 | head
+  > $ cat reports/scratch/obstruction_search/10_writeup/gate_run.out | head -20; grep -n "flush\|print(" Ralph_Loops/loop0013/gate.py | head
+
+The gate buffers its output until it finishes; it has been running ten minutes. I'll find its own PID by an anchored match and wait on it, bounded.
+  > $ gp=$(pgrep -f "^python3 Ralph_Loops/loop0013/gate.py$"); echo "gate.py pid: $gp"; [ -n "$gp" ] && timeout 590 tail --pid=$gp -f /dev/null; tail -12 reports/scra
+  > $ head -3 reports/scratch/obstruction_search/11_combo/gate_run.out && python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/PROGRESS.md"); s =
+
+Item 11 is done and the loop is complete. Nothing is committed, as the driver does that.
+
+**What I chose and why.** Option (a), F5 combinations, the item's first preference; the design, price and kill criterion were written into the report's §11.1 before any run. The key observation shaping the design: every residual instance's family-M certificate is a C refutation on a 70–112-vertex minor, so its width is exact and no family evaluated on that minor can exceed it. A combination can only act on minors the C leaves undecided.
+
+**Result: combinations are closed on the residual (kill criterion met).** On the ten instances, 80 minors scanned:
+
+- The best combination value equals the record on 7, is below it on 3, above it on 0. On every instance it is family M's refutation alone.
+- On the 58 undecided minors, Harper's cap-12 floor beats the C's degeneracy floor on 50 (mean +11, max +28) but never the refutation on the smaller minor.
+- Harper's low-level floor rises under contraction on all 10 instances, by 2 to 18 stacks, and falls monotonically as the minor grows toward the whole graph.
+- E's ceiling on a large minor sits at or below the record on 6 of 10, so no exact computation there could close them. It is above on 4, the same four as on the whole graph.
+- B finds only fringe triples. The search with E's floor as objective adds nothing in 20 evaluations per instance.
+- SAT with DRAT settled the argmax level on 1 of 10 (the 70-vertex minor of `2-2_0`).
+
+**Certificates and checks.** Three composite certificates, all verified by the new `check-combo` in `paper1/obstruction_check.py`. Harness validity on all 6,376 instances: above optimum 0.
+
+**One correction before commit.** My test assumed the theta graph (item 06's hand instance) has pathwidth 2. The DRAT-verified Harper level says 3, and brute force agrees. The test now asserts that. Nothing on record is affected.
+
+**Compute** was about 2.0 core-hours of the item's 4. **Gate: PASS** (1,897 tests, 0 sorry, 0 axiom, paper 78 pages). PROGRESS.md has the iteration 11 entry, `Current: 11/11 SOLVED`, and the `LOOP_COMPLETE` marker; `iterations.md` marks item 11 done.
+
+Open for a later plan: Harper's exact bound on a large minor of the four instances where its ceiling exceeds the record, out of reach by SAT at these sizes; the two proposals awaiting the owner; and `2-2_0`'s missing minor certificate.
+
+# result: success in 2981s, 70 turns, cost $19.86

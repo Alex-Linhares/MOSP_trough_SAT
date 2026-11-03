@@ -1,0 +1,11 @@
+instance_name,e_cert,e_sat_status,b_cert,e_sat_seconds,e_sat_level,e_sat_label
+Random-100-100-4-3_0,,budget,,53.53,"[12, 49]",search@80
+Random-100-100-4-1_0,,budget,,55.083,"[13, 50]",search@78
+Random-125-125-6-2_0,,budget,,54.047,"[11, 79]",least-c@0.85
+Random-125-125-6-3_0,,budget,,52.98,"[10, 81]",least-c@0.85
+Random-125-125-4-2_0,,budget,,52.704,"[12, 57]",search@87
+Random-125-125-4-3_0,,budget,,53.199,"[11, 55]",search@89
+Random-125-125-4-4_0,,budget,reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-4-4_0/combo_branch.json,53.948,"[11, 51]",search@87
+Random-125-125-2-2_0,reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-2-2_0/combo_expansion.json,unsat,reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-2-2_0/combo_branch.json,39.974,"[12, 28]",search@70
+Random-125-125-6-4_0,,budget,,50.177,"[10, 79]",min-d@0.90
+Random-125-125-6-5_0,,budget,,47.598,"[10, 73]",search@101

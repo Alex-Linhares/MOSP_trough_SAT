@@ -1,0 +1,12 @@
+[2026-11-03 11:30:42] scan: 10 instances, 8 workers, C cap 10.0 s, E ceiling 20.0 s, E floor 30.0 s at cap 12, B 40.0 s at cap 5.0 s, SAT 120.0 s
+[2026-11-03 11:36:21] scan 1/10 Random-100-100-4-3_0: combo best on minors 42 vs record 42 (optimum 43); E SAT budget; 338 s
+[2026-11-03 11:36:26] scan 2/10 Random-100-100-4-1_0: combo best on minors 44 vs record 45 (optimum 46); E SAT budget; 343 s
+[2026-11-03 11:36:43] scan 3/10 Random-125-125-6-2_0: combo best on minors 76 vs record 76 (optimum 77); E SAT budget; 360 s
+[2026-11-03 11:36:44] scan 4/10 Random-125-125-6-3_0: combo best on minors 79 vs record 79 (optimum 80); E SAT budget; 361 s
+[2026-11-03 11:36:57] scan 5/10 Random-125-125-4-2_0: combo best on minors 53 vs record 55 (optimum 57); E SAT budget; 375 s
+[2026-11-03 11:37:07] scan 6/10 Random-125-125-4-3_0: combo best on minors 52 vs record 52 (optimum 54); E SAT budget; 384 s
+[2026-11-03 11:37:10] scan 7/10 Random-125-125-4-4_0: combo best on minors 49 vs record 50 (optimum 51); E SAT budget; 387 s
+[2026-11-03 11:41:54] scan 8/10 Random-125-125-2-2_0: combo best on minors 24 vs record 24 (optimum 25); E SAT unsat; 672 s
+[2026-11-03 11:42:21] scan 9/10 Random-125-125-6-4_0: combo best on minors 78 vs record 78 (optimum 80); E SAT budget; 699 s
+[2026-11-03 11:42:32] scan 10/10 Random-125-125-6-5_0: combo best on minors 71 vs record 71 (optimum 74); E SAT budget; 709 s
+[2026-11-03 11:42:32] scan done in 709 s wall; /home/al/dev/MOSP/reports/scratch/obstruction_search/11_combo/scan.csv

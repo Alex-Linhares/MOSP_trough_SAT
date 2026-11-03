@@ -805,6 +805,132 @@ def check_branch(instance_path: Path, certificate_path: Path, c_cap: float = 25.
     return result
 
 
+# ----------------------------------------------------------------------------
+# F5: a family-E or family-B certificate on a contraction minor (item 11)
+# ----------------------------------------------------------------------------
+
+COMBO_THEOREMS = ("pathwidth_minorOf_le / pathwidth_gt_of_minorOf (lean/MOSPFormalization/Minor.lean) lift the "
+                  "inner certificate's bound on the minor to G; mospValue_eq_pathwidth_add_one (MOSPGraph.lean); "
+                  "the inner certificate rests on its own theorems")
+
+
+def edge_pattern_rows(m: int, edges: list[tuple[int, int]]) -> list[list[int]]:
+    """The one-pattern-per-edge instance of a graph: row `v`, column `j`
+    is 1 when `v` is an end of edge `j`; edges sorted `(a, b)`, `a < b`."""
+    es = sorted((min(a, b), max(a, b)) for a, b in edges)
+    cols = max(1, len(es))
+    rows = [[0] * cols for _ in range(m)]
+    for j, (a, b) in enumerate(es):
+        rows[a][j] = 1
+        rows[b][j] = 1
+    return rows
+
+
+def check_combo(instance_path: Path, certificate_path: Path, c_cap: float = 25.0, c_binary: Path = DEFAULT_C_BINARY,
+                drat_trim: Path = DEFAULT_DRAT_TRIM, timeout: float | None = None) -> dict:
+    """Check an `obstruction-combo-1` certificate: the instance and its
+    hashes, the contraction sequence replayed with this file's own code, the
+    quotient's hash against the certificate's minor, then the inner
+    certificate on the minor — `obstruction-branch-1` over the minor's edge
+    list written here (never read from the certificate's own copy), through
+    `check_branch`; or `obstruction-expansion-certificate-1` over the minor
+    as a one-pattern-per-edge instance written here, through
+    `check_expansion` — and the claim: the inner certificate must prove at
+    least the pathwidth claimed, and the floor is that pathwidth + 1. The
+    lift from the minor to `G` is `pathwidth_minorOf_le`."""
+    result: dict = {"instance": str(instance_path), "certificate": str(certificate_path), "checks": [], "verdict": "",
+                    "inner_kind": None, "m": None}
+    cert = json.loads(Path(certificate_path).read_text())
+
+    def check(label: str, ok: bool, detail: str = "") -> bool:
+        result["checks"].append({"check": label, "ok": bool(ok), "detail": detail})
+        return bool(ok)
+
+    name, rows = read_mosp(Path(instance_path))
+    n = len(rows)
+    G = graph_from_rows(rows)
+    result.update({"instance_name": name, "n": n, "floor_claimed": cert.get("floor"),
+                   "inner_kind": cert.get("inner_kind")})
+    digest_rows = rows_sha256(rows)
+    ok = check("format is obstruction-combo-1", cert.get("format") == "obstruction-combo-1", str(cert.get("format")))
+    ok &= check("instance size matches", n == int(cert.get("n", -1)), f"file n={n}, certificate n={cert.get('n')}")
+    ok &= check("instance rows SHA-256 matches", digest_rows == cert.get("matrix_sha256"),
+                f"{digest_rows[:16]}… vs {str(cert.get('matrix_sha256'))[:16]}…")
+    g_hash = edges_sha256(n, graph_edges(G))
+    ok &= check("graph edge-list SHA-256 matches", g_hash == cert.get("graph_sha256"),
+                f"{g_hash[:16]}… vs {str(cert.get('graph_sha256'))[:16]}…")
+    claim = cert.get("pathwidth_proved")
+    ok &= check("the claim is a pathwidth and the floor is claim + 1",
+                claim is not None and int(claim) >= 0 and int(cert.get("floor", -1)) == int(claim) + 1,
+                f"pathwidth >= {claim}, floor {cert.get('floor')}")
+    if not ok:
+        result["verdict"] = "rejected"
+        return result
+    claim = int(claim)
+    deleted: set[int] = set()
+    try:
+        H, branch = replay_minor(G, cert["sequence"], deleted)
+        ok &= check("every pair is an edge of the current graph at its step", True,
+                    f"{len(cert['sequence'])} steps, {len(deleted)} isolated deletions")
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        ok &= check("every pair is an edge of the current graph at its step", False, str(exc))
+        result["verdict"] = "rejected"
+        return result
+    try:
+        Q = quotient_by_branch_sets(G, branch, deleted)
+        ok &= check("quotient by branch sets equals the replayed minor", Q == H)
+    except ValueError as exc:
+        ok &= check("quotient by branch sets equals the replayed minor", False, str(exc))
+    labels, edges = relabel(H)
+    m = len(labels)
+    result["m"] = m
+    h = edges_sha256(m, edges)
+    ok &= check("minor size matches", m == int(cert.get("m", -1)), f"replayed m={m}, certificate m={cert.get('m')}")
+    ok &= check("minor labels match", labels == [int(x) for x in cert.get("minor_labels", [])])
+    ok &= check("minor edge-list SHA-256 matches", h == cert.get("minor_sha256"),
+                f"{h[:16]}… vs {str(cert.get('minor_sha256'))[:16]}…")
+    if not ok:
+        result["verdict"] = "rejected"
+        return result
+    kind = cert.get("inner_kind")
+    inner_path = Path(certificate_path).parent / str(cert.get("inner_certificate"))
+    ok &= check("inner certificate present", inner_path.exists(), str(inner_path))
+    if not ok:
+        result["verdict"] = "rejected"
+        return result
+    proved = -1
+    with tempfile.TemporaryDirectory() as td:
+        if kind == "branch":
+            ep = Path(td) / "minor.txt"
+            ep.write_text(f"{m} {len(edges)}\n" + "".join(f"{a} {b}\n" for a, b in edges))
+            inner = check_branch(ep, inner_path, c_cap=c_cap, c_binary=c_binary)
+            ok &= check("inner branch certificate verified on the minor written here", inner["verdict"] == "verified",
+                        f"check-branch {inner['verdict']}; first failure: "
+                        f"{next((c['check'] for c in inner['checks'] if not c['ok']), '')}")
+            proved = int((inner.get("proves") or {}).get("pathwidth_at_least", -1))
+        elif kind == "expansion":
+            mp = Path(td) / "minor.mosp"
+            erows = edge_pattern_rows(m, edges)
+            mp.write_text(f"minor[{m}]\n{m} {len(erows[0])}\n" + "".join(" ".join(map(str, r)) + "\n" for r in erows))
+            inner = check_expansion(mp, inner_path, drat_trim=drat_trim, timeout=timeout)
+            ok &= check("inner expansion certificate verified on the minor written here", inner["verdict"] == "verified",
+                        f"check-expansion {inner['verdict']}; first failure: "
+                        f"{next((c['check'] for c in inner['checks'] if not c['ok']), '')}")
+            proved = int((inner.get("proves") or {}).get("pathwidth_at_least", -1))
+        else:
+            ok &= check("known inner kind", False, str(kind))
+            inner = None
+    result["inner"] = {"verdict": inner["verdict"], "checks": len(inner["checks"])} if inner else None
+    ok &= check(f"the inner certificate proves pathwidth(minor) >= {claim}", proved >= claim, f"proves {proved}")
+    result["verdict"] = "verified" if ok else "rejected"
+    if ok:
+        result["proves"] = {"pathwidth_at_least": claim, "mosp_at_least": claim + 1,
+                            "statement": f"the {kind} certificate proves pathwidth(minor) >= {claim} on a contraction "
+                                         f"minor of G, so pathwidth(G) >= {claim} and MOSP >= {claim + 1}",
+                            "theorems": COMBO_THEOREMS}
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="command", required=True)
@@ -829,7 +955,30 @@ def main(argv: list[str] | None = None) -> int:
     cb.add_argument("--c-cap", type=float, default=25.0)
     cb.add_argument("--rulefree", action="store_true", help="rule-free check of minor leaves (vsmemo + checkF)")
     cb.add_argument("--json", action="store_true")
+    cc = sub.add_parser("check-combo", help="check an F5 certificate: a family E or B certificate on a contraction minor")
+    cc.add_argument("instance")
+    cc.add_argument("certificate")
+    cc.add_argument("--c-binary", default=str(DEFAULT_C_BINARY))
+    cc.add_argument("--c-cap", type=float, default=25.0)
+    cc.add_argument("--drat-trim", default=str(DEFAULT_DRAT_TRIM))
+    cc.add_argument("--timeout", type=float, default=None)
+    cc.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
+    if args.command == "check-combo":
+        res = check_combo(Path(args.instance), Path(args.certificate), args.c_cap, Path(args.c_binary),
+                          Path(args.drat_trim), args.timeout)
+        if args.json:
+            print(json.dumps(res, indent=1))
+        else:
+            print(f"instance {res.get('instance_name')!r} (n = {res.get('n')}), minor m = {res.get('m')}, "
+                  f"inner {res.get('inner_kind')}, claimed floor {res.get('floor_claimed')}")
+            for c in res["checks"]:
+                print(f"  [{'ok' if c['ok'] else 'FAIL'}] {c['check']}: {c['detail']}")
+            print(f"verdict: {res['verdict']}")
+            if res["verdict"] == "verified":
+                print(f"proves: {res['proves']['statement']}")
+                print(f"rests on: {res['proves']['theorems']}")
+        return 0 if res["verdict"] == "verified" else 1
     if args.command == "check-branch":
         res = check_branch(Path(args.instance), Path(args.certificate), args.c_cap, Path(args.c_binary), args.rulefree)
         if args.json:

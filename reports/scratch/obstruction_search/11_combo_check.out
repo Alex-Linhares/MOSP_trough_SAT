@@ -1,0 +1,4 @@
+[2026-11-03 11:43:18] check: 3 composite certificates, 2 workers
+[2026-11-03 11:43:43] check reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-2-2_0/combo_branch.json: verified (floor 3, proved 3)
+[2026-11-03 11:43:43] check reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-4-4_0/combo_branch.json: verified (floor 2, proved 2)
+[2026-11-03 11:44:07] check reports/scratch/obstruction_search/11_combo/certificates/Random-125-125-2-2_0/combo_expansion.json: verified (floor 18, proved 18)

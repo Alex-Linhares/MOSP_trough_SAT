@@ -328,6 +328,7 @@ obstruction_minor.py     contraction minors by search against the greedy ladder;
 obstruction_branch.py    separators with certified branches; the ternary tree by the
                          branch lemma                                                     §6, §7
 obstruction_map.py       the duality-gap map: who closes what, by family                   §8
+obstruction_combo.py     F5: Harper and branches on contraction minors of the residual ten    §11
 ```
 
 **Hardness**

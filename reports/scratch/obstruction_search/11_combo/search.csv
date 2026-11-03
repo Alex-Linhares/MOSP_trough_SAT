@@ -1,0 +1,11 @@
+instance_name,n,optimum,record_best,seconds_budget,seconds,evaluations,e_seconds,out_of_range,restarts,moves,accepted,improvements,search_e_floor,search_m,search_cap,search_t_star,start_values,beats_record
+Random-100-100-4-1_0,100,46,45,300.0,300.002,20,299.98,0,1,19,9,0,37,84,harper_cap10,11,"{""scanbest:least-c@0.85"": 37, ""least-c@0.90"": 36, ""least-c@0.97"": 33, ""min-d@0.90"": 36}",False
+Random-125-125-2-2_0,125,25,24,300.0,300.001,20,299.986,0,2,27,21,0,10,100,harper_cap9,10,"{""scanbest:least-c@0.85"": 10, ""least-c@0.90"": 9, ""least-c@0.97"": 7, ""min-d@0.90"": 9}",False
+Random-100-100-4-3_0,100,43,42,300.0,300.003,20,299.982,0,1,20,10,0,34,85,harper_cap10,11,"{""scanbest:least-c@0.85"": 34, ""least-c@0.90"": 32, ""least-c@0.97"": 26, ""min-d@0.90"": 32}",False
+Random-125-125-4-4_0,125,51,50,300.0,300.003,20,299.98,0,1,20,13,0,34,102,harper_cap9,10,"{""scanbest:least-c@0.85"": 34, ""least-c@0.90"": 31, ""least-c@0.97"": 24, ""min-d@0.90"": 31}",False
+Random-125-125-4-3_0,125,54,52,300.0,300.002,20,299.977,0,1,21,10,0,40,104,harper_cap9,10,"{""scanbest:least-c@0.85"": 40, ""least-c@0.90"": 36, ""least-c@0.97"": 31, ""min-d@0.90"": 36}",False
+Random-125-125-4-2_0,125,57,55,300.0,300.003,20,299.976,0,1,19,9,0,42,100,harper_cap9,10,"{""scanbest:least-c@0.85"": 42, ""least-c@0.90"": 38, ""least-c@0.97"": 32, ""min-d@0.90"": 37}",False
+Random-125-125-6-2_0,125,77,76,300.0,300.004,20,299.944,0,1,20,8,0,68,105,harper_cap10,11,"{""scanbest:least-c@0.85"": 68, ""least-c@0.90"": 65, ""least-c@0.97"": 59, ""min-d@0.90"": 67}",False
+Random-125-125-6-3_0,125,80,79,300.0,300.004,20,299.937,0,1,20,6,0,73,106,harper_cap9,10,"{""scanbest:least-c@0.85"": 73, ""least-c@0.90"": 70, ""least-c@0.97"": 66, ""min-d@0.90"": 70}",False
+Random-125-125-6-4_0,125,80,78,300.0,300.005,20,299.945,0,1,20,8,1,69,112,harper_cap8,9,"{""scanbest:min-d@0.90"": 68, ""least-c@0.90"": 67, ""least-c@0.97"": 62, ""min-d@0.90"": 68}",False
+Random-125-125-6-5_0,125,74,71,300.0,300.004,20,299.954,0,1,18,8,0,64,105,harper_cap8,9,"{""scanbest:least-c@0.85"": 64, ""least-c@0.90"": 60, ""least-c@0.97"": 56, ""min-d@0.90"": 61}",False

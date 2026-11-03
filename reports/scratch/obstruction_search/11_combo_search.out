@@ -1,0 +1,12 @@
+[2026-11-03 11:42:38] search: 10 instances, 8 workers, 300 s each, 15 s per evaluation at cap 12, minors in [0.60 n, n]
+[2026-11-03 11:47:38] search 1/10 Random-100-100-4-1_0: E floor 37 at m = 84 (20 evaluations) vs record 45; 300 s
+[2026-11-03 11:47:38] search 2/10 Random-125-125-2-2_0: E floor 10 at m = 100 (20 evaluations) vs record 24; 300 s
+[2026-11-03 11:47:38] search 3/10 Random-100-100-4-3_0: E floor 34 at m = 85 (20 evaluations) vs record 42; 300 s
+[2026-11-03 11:47:38] search 4/10 Random-125-125-4-4_0: E floor 34 at m = 102 (20 evaluations) vs record 50; 300 s
+[2026-11-03 11:47:38] search 5/10 Random-125-125-4-3_0: E floor 40 at m = 104 (20 evaluations) vs record 52; 300 s
+[2026-11-03 11:47:38] search 6/10 Random-125-125-4-2_0: E floor 42 at m = 100 (20 evaluations) vs record 55; 300 s
+[2026-11-03 11:47:38] search 7/10 Random-125-125-6-2_0: E floor 68 at m = 105 (20 evaluations) vs record 76; 300 s
+[2026-11-03 11:47:38] search 8/10 Random-125-125-6-3_0: E floor 73 at m = 106 (20 evaluations) vs record 79; 300 s
+[2026-11-03 11:52:38] search 9/10 Random-125-125-6-4_0: E floor 69 at m = 112 (20 evaluations) vs record 78; 600 s
+[2026-11-03 11:52:38] search 10/10 Random-125-125-6-5_0: E floor 64 at m = 105 (20 evaluations) vs record 71; 600 s
+[2026-11-03 11:52:38] search done in 600 s wall; /home/al/dev/MOSP/reports/scratch/obstruction_search/11_combo/search.csv
