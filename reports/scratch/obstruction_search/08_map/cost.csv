@@ -1,0 +1,10 @@
+item,what,instance core-hours,checker core-hours,not counted,run.log says (core-hours)
+01,Harper at cap 12 on every corpus instance,1.01,0.0,the dataset's cheap floors (no seconds column),
+02,"E ceiling (two passes), exact at n ≤ 22, floor rerun",3.09,0.0,the harness run (0.32 core-hours by its log),0.14; 2.83; 0.11; 0.13
+03,E exact by SAT with DRAT,5.76,0.31,the three instances not reached (partial certificates),5.76
+04,M search and ladder at n ≤ 60,5.09,0.01,"the validation runs (0.3 core-hours by the log), the two restarts' redone work",
+05,"M at scale, the ridge pair",10.44,0.15,the 22 carried rows are counted under 04,6.56; 1.88
+06,B separators with certified branches,0.47,0.07,"pass 1 (0.48 core-hours by the log), connectivity",0.47
+07,"the 24 open classes (E, M, B)",6.65,0.42,the rule-free check of NY_13 (1.9 s),
+08,this map (reads files),0.0,0.0,—,
+total,,32.51,0.96,,

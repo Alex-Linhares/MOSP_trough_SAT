@@ -1,0 +1,37 @@
+[
+  {
+    "family": "E, the search",
+    "criterion": "searched f̂(t) = exact f(t) at every t on < 90% of instances at n ≤ 22",
+    "number": "4090 of 4123 (99.2%)",
+    "verdict": "not met",
+    "source": "02_expansion/exact_small.csv"
+  },
+  {
+    "family": "E, the exact half",
+    "criterion": "SAT settles the argmax level on < 50% of the 338 within budget",
+    "number": "70 of 338 (20.7%); 70 of the 145 with a bracket (48.3%), 143 of them reached",
+    "verdict": "met",
+    "source": "03_sat/instances.csv, 02_expansion/ceiling.csv"
+  },
+  {
+    "family": "M",
+    "criterion": "the search beats the greedy ladder on < 10% of the 338",
+    "number": "45 of 338 (13.3%); 338 of the 338 run",
+    "verdict": "not met",
+    "source": "04_minor/search.csv, 05_minor_scale/search.csv"
+  },
+  {
+    "family": "B",
+    "criterion": "no B certificate exceeds max(lb_best, tw + 1, M's floor) on any residual gap instance",
+    "number": "0 of 11 residual instances; 0 of the 338",
+    "verdict": "met",
+    "source": "06_branch/search.csv"
+  },
+  {
+    "family": "open classes",
+    "criterion": "zero floors above the recorded ones (the tree aside) is a verdict, not a failure",
+    "number": "5 of 23 floors above the record (tree aside); 2 of 24 classes closed",
+    "verdict": "not met (floors rose; two classes closed)",
+    "source": "07_open/joined.csv"
+  }
+]

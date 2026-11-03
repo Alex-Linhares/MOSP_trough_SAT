@@ -448,7 +448,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     recorded width is an upper bound and nothing here refutes anything);
     that the tree's value is new (it is not).
 
-- [ ] **08 The duality-gap map: gap by family against excess, size and density; what no family closes; kill verdicts.**
+- [x] **08 The duality-gap map: gap by family against excess, size and density; what no family closes; kill verdicts.**
   - **Question.** G of the brief. Over the corpus targets, with every
     family's floor and E's ceiling on record from items 01–07: which family
     is tight where, in the excess `e`, the size and the density; which

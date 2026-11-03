@@ -1,0 +1,376 @@
+instance_name,n,m,n_ones,excess,collection,cls,band,cluster,is_gap338,is_cs200,is_rest500,is_small,optimum,lb_best,tw1,omega,lemmaP,floor0,e_floor,e_ceiling,e_closed_out,e_bracket,m_floor,m_record,m_ladder,m_search,m_ran,b_value,b_ran,best,best_family,gap_best,searched
+Random-125-125-4-1_0,125,125,548,3.384,Chu & Stuckey,Random-125-125-4,101–134,sparse,True,True,False,False,57,27,12,10,10,53,37.0,55.0,True,18.0,53.0,53.0,53.0,53.0,True,,True,53,M,4,True
+Random-125-125-6-5_0,125,125,712,4.696,Chu & Stuckey,Random-125-125-6,101–134,sparse,True,True,False,False,74,49,21,12,12,56,59.0,73.0,True,14.0,71.0,,71.0,71.0,True,,True,71,M,3,True
+Random-125-125-4-2_0,125,125,536,3.288,Chu & Stuckey,Random-125-125-4,101–134,sparse,True,True,False,False,57,27,12,11,11,55,35.0,56.0,True,21.0,55.0,55.0,54.0,53.0,True,,True,55,M,2,True
+Random-125-125-4-3_0,125,125,540,3.32,Chu & Stuckey,Random-125-125-4,101–134,sparse,True,True,False,False,54,27,12,12,12,31,34.0,53.0,True,19.0,52.0,,52.0,52.0,True,,True,52,M,2,True
+Random-125-125-6-4_0,125,125,766,5.128,Chu & Stuckey,Random-125-125-6,101–134,sparse,True,True,False,False,80,60,22,11,13,63,69.0,79.0,True,10.0,78.0,,78.0,78.0,True,,True,78,M,2,True
+p1010n2_0,9,10,30,2.2222222222222223,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 131 size 10 10 density  0.30,10,10,30,2.0,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 139 size 10 10 density  0.30,10,10,28,1.8,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,4.0,4.0,True,0.0,,,,,False,,False,5,C|D|T|P,1,True
+HS problem 147 size 10 10 density  0.30,10,10,32,2.2,Simonis,Simonis,9–20,,False,False,True,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 184 size 10 10 density  0.35,10,10,37,2.7,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 19 size 10 10 density  0.20,10,10,20,1.0,Simonis,Simonis,9–20,,False,False,False,True,4,3,3,3,3,3,3.0,3.0,True,0.0,,,,,False,,False,3,C|D|T|P|E,1,True
+HS problem 21 size 10 10 density  0.20,10,10,29,1.9,Simonis,Simonis,9–20,,False,False,True,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 210 size 10 10 density  0.40,10,10,38,2.8,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+HS problem 255 size 10 10 density  0.45,10,10,34,2.4,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+HS problem 2641 size 10 20 density  0.20,10,20,47,2.7,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+HS problem 2678 size 10 20 density  0.20,10,20,51,3.1,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 2681 size 10 20 density  0.20,10,20,49,2.9,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+HS problem 2686 size 10 20 density  0.20,10,20,37,1.7,Simonis,Simonis,9–20,,False,False,False,True,5,4,4,4,4,4,4.0,4.0,True,0.0,,,,,False,,False,4,C|D|T|P|E,1,True
+HS problem 2689 size 10 20 density  0.20,10,20,41,2.1,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 2692 size 10 20 density  0.25,10,20,50,3.0,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 2694 size 10 20 density  0.25,10,20,48,2.8,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 2695 size 10 20 density  0.25,10,20,46,2.6,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 2712 size 10 20 density  0.25,10,20,42,2.2,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 2720 size 10 20 density  0.25,10,20,50,3.0,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 50 size 10 10 density  0.20,10,10,27,1.7,Simonis,Simonis,9–20,,False,False,False,True,5,4,4,4,4,4,4.0,4.0,True,0.0,,,,,False,,False,4,C|D|T|P|E,1,True
+HS problem 59 size 10 10 density  0.25,10,10,33,2.3,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 88 size 10 10 density  0.25,10,10,29,1.9,Simonis,Simonis,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+HS problem 91 size 10 10 density  0.25,10,10,35,2.5,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+"Warwick 133: balanced orders, 3 orders per product",10,20,60,4.0,Harvey,wbo_10_20,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 164: balanced products, 4 products per order",10,20,40,2.0,Harvey,wbp_10_20,9–20,,False,False,False,True,6,5,5,3,3,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|E,1,True
+"Warwick 165: balanced products, 4 products per order",10,20,40,2.0,Harvey,wbp_10_20,9–20,,False,False,False,True,5,4,4,4,4,4,4.0,4.0,True,0.0,,,,,False,,False,4,C|D|T|P|E,1,True
+"Warwick 238: balanced orders and products, 4 products per order",10,20,40,2.0,Harvey,wbop_10_20,9–20,,False,False,False,True,6,5,5,3,3,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|E,1,True
+"Warwick 2: balanced orders, 2 orders per product",10,10,20,1.0,Harvey,wbo_10_10,9–20,,False,False,True,True,3,2,2,2,2,2,2.0,2.0,True,0.0,,,,,False,,False,2,C|D|T|P|E,1,True
+"Warwick 46: balanced products, 2 products per order",10,10,20,1.0,Harvey,wbp_10_10,9–20,,False,False,False,True,4,3,3,3,3,3,3.0,3.0,True,0.0,,,,,False,,False,3,C|D|T|P|E,1,True
+scoop-B_22X18_50_0,14,10,45,2.5,SCOOP,SCOOP,9–20,,False,False,False,True,10,9,9,7,7,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+HS problem 1657 size 15 15 density  0.20,15,15,48,2.2,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,6,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+HS problem 1658 size 15 15 density  0.20,15,15,42,1.8,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,5.0,5.0,True,0.0,,,,,False,,False,6,C|D|T|P,1,True
+HS problem 1663 size 15 15 density  0.20,15,15,49,2.2666666666666666,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,5,5,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+HS problem 1664 size 15 15 density  0.20,15,15,50,2.333333333333333,Simonis,Simonis,9–20,,False,False,True,True,8,7,7,6,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+HS problem 1665 size 15 15 density  0.20,15,15,45,2.0,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,6,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+HS problem 1671 size 15 15 density  0.20,15,15,56,2.7333333333333334,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,9,9,10,9.0,9.0,True,0.0,,,,,False,,False,10,D|T,1,True
+HS problem 1674 size 15 15 density  0.20,15,15,47,2.1333333333333333,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,6,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+HS problem 1680 size 15 15 density  0.20,15,15,46,2.066666666666667,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,5,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+HS problem 1700 size 15 15 density  0.20,15,15,46,2.066666666666667,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+HS problem 1704 size 15 15 density  0.25,15,15,50,2.333333333333333,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,7.0,7.0,True,0.0,,,,,False,,False,8,C|D|T|P,1,True
+HS problem 1722 size 15 15 density  0.25,15,15,60,3.0,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,7,7,7,7.0,7.0,True,0.0,,,,,False,,False,7,C|D|T|P|E,1,True
+HS problem 1739 size 15 15 density  0.25,15,15,57,2.8,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,7,7,7,7.0,7.0,True,0.0,,,,,False,,False,7,C|D|T|P|E,1,True
+HS problem 1741 size 15 15 density  0.25,15,15,55,2.6666666666666665,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,7,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+HS problem 1750 size 15 15 density  0.25,15,15,63,3.2,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 1751 size 15 15 density  0.30,15,15,64,3.2666666666666666,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 1772 size 15 15 density  0.30,15,15,78,4.2,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,10,10,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 1794 size 15 15 density  0.30,15,15,63,3.2,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,8,8,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+HS problem 1801 size 15 15 density  0.35,15,15,79,4.266666666666667,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 1840 size 15 15 density  0.35,15,15,76,4.066666666666666,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,10,10,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 1865 size 15 15 density  0.40,15,15,80,4.333333333333333,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,11,11,11,11.0,11.0,True,0.0,,,,,False,,False,11,C|D|T|P|E,1,True
+HS problem 3204 size 15 30 density  0.20,15,30,99,4.6,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 3207 size 15 30 density  0.20,15,30,96,4.4,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 3214 size 15 30 density  0.25,15,30,115,5.666666666666667,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,11,11,11,11.0,11.0,True,0.0,,,,,False,,False,11,C|D|T|P|E,1,True
+"Warwick 453: balanced orders, 2 orders per product",15,15,30,1.0,Harvey,wbo_15_15,9–20,,False,False,False,True,3,2,2,2,2,2,2.0,2.0,True,0.0,,,,,False,,False,2,C|D|T|P|E,1,True
+"Warwick 464: balanced orders, 3 orders per product",15,15,45,2.0,Harvey,wbo_15_15,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 468: balanced orders, 3 orders per product",15,15,45,2.0,Harvey,wbo_15_15,9–20,,False,False,False,True,7,6,6,4,4,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 480: balanced orders, 4 orders per product",15,15,60,3.0,Harvey,wbo_15_15,9–20,,False,False,False,True,10,9,9,6,6,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+"Warwick 632: balanced orders, 2 orders per product",15,30,60,2.0,Harvey,wbo_15_30,9–20,,False,False,False,True,6,5,5,4,4,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|E,1,True
+"Warwick 634: balanced orders, 2 orders per product",15,30,60,2.0,Harvey,wbo_15_30,9–20,,False,False,False,True,6,5,5,3,3,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|E,1,True
+"Warwick 640: balanced orders, 2 orders per product",15,30,60,2.0,Harvey,wbo_15_30,9–20,,False,False,False,True,6,5,5,4,4,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|E,1,True
+"Warwick 649: balanced orders, 3 orders per product",15,30,90,4.0,Harvey,wbo_15_30,9–20,,False,False,False,True,10,9,9,6,6,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+"Warwick 650: balanced orders, 3 orders per product",15,30,90,4.0,Harvey,wbo_15_30,9–20,,False,False,False,True,10,9,9,5,6,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+"Warwick 660: balanced orders, 4 orders per product",15,30,120,6.0,Harvey,wbo_15_30,9–20,,False,False,False,True,12,11,11,8,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 695: balanced products, 4 products per order",15,30,60,2.0,Harvey,wbp_15_30,9–20,,False,False,False,True,7,6,6,4,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 715: balanced products, 6 products per order",15,30,90,4.0,Harvey,wbp_15_30,9–20,,False,False,False,True,12,11,11,7,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+scoop-B_42F22_93_0,17,10,31,1.2352941176470589,SCOOP,SCOOP,9–20,,False,False,False,True,5,4,4,4,4,4,3.0,3.0,True,0.0,,,,,False,,False,4,C|D|T|P,1,True
+p2020n10_0,18,20,65,2.5,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+p2020n1_0,19,20,66,2.421052631578948,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,9,8,7,5,5,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|E,1,True
+HS problem 2203 size 20 20 density  0.20,20,20,88,3.4,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,7,8,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 2205 size 20 20 density  0.20,20,20,86,3.3,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,8,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 2206 size 20 20 density  0.20,20,20,75,2.75,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,7,7,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 2207 size 20 20 density  0.20,20,20,78,2.9,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,7,7,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 2212 size 20 20 density  0.20,20,20,75,2.75,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,7,7,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 2226 size 20 20 density  0.25,20,20,95,3.75,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,11,11,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 2240 size 20 20 density  0.25,20,20,98,3.9,Simonis,Simonis,9–20,,False,False,False,True,15,14,14,10,10,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+HS problem 552 size 20 10 density  0.20,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+HS problem 553 size 20 10 density  0.20,20,10,41,1.55,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,8.0,8.0,True,0.0,,,,,False,,False,8,C|D|T|P|E,1,True
+HS problem 555 size 20 10 density  0.20,20,10,43,1.65,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+HS problem 560 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+HS problem 562 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,7,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+HS problem 564 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,8.0,8.0,True,0.0,,,,,False,,False,8,C|D|T|P|E,1,True
+HS problem 565 size 20 10 density  0.20,20,10,37,1.35,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,5.0,5.0,True,0.0,,,,,False,,False,6,C|D|T|P,1,True
+HS problem 566 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,9,9,9,9.0,9.0,True,0.0,,,,,False,,False,9,C|D|T|P|E,1,True
+HS problem 569 size 20 10 density  0.20,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,11,11,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 571 size 20 10 density  0.20,20,10,51,2.05,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,7,7,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+HS problem 576 size 20 10 density  0.20,20,10,42,1.6,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,6,6,7,6.0,6.0,True,0.0,,,,,False,,False,7,D|T,1,True
+HS problem 577 size 20 10 density  0.20,20,10,51,2.05,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,8,8,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+HS problem 580 size 20 10 density  0.20,20,10,54,2.2,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 581 size 20 10 density  0.20,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,9,9,9,8.0,8.0,True,0.0,,,,,False,,False,9,C|D|T|P,1,True
+HS problem 584 size 20 10 density  0.20,20,10,42,1.6,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,7,7,7,7.0,7.0,True,0.0,,,,,False,,False,7,C|D|T|P|E,1,True
+HS problem 585 size 20 10 density  0.20,20,10,44,1.7,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,6,6,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+HS problem 588 size 20 10 density  0.20,20,10,39,1.45,Simonis,Simonis,9–20,,False,False,False,True,7,6,6,6,6,6,6.0,6.0,True,0.0,,,,,False,,False,6,C|D|T|P|E,1,True
+HS problem 589 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,7,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+HS problem 591 size 20 10 density  0.20,20,10,45,1.75,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,8.0,8.0,True,0.0,,,,,False,,False,8,C|D|T|P|E,1,True
+HS problem 592 size 20 10 density  0.20,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,9,9,9,9.0,9.0,True,0.0,,,,,False,,False,9,C|D|T|P|E,1,True
+HS problem 593 size 20 10 density  0.20,20,10,44,1.7,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,6.0,6.0,True,0.0,,,,,False,,False,8,C|D|T|P,1,True
+HS problem 594 size 20 10 density  0.20,20,10,46,1.8,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,8,8,8,8.0,8.0,True,0.0,,,,,False,,False,8,C|D|T|P|E,1,True
+HS problem 597 size 20 10 density  0.20,20,10,39,1.45,Simonis,Simonis,9–20,,False,False,False,True,8,7,7,6,6,7,6.0,6.0,True,0.0,,,,,False,,False,7,D|T,1,True
+HS problem 601 size 20 10 density  0.25,20,10,48,1.9,Simonis,Simonis,9–20,,False,False,True,True,10,9,9,8,8,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+HS problem 603 size 20 10 density  0.25,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,9,9,9,8.0,8.0,True,0.0,,,,,False,,False,9,C|D|T|P,1,True
+HS problem 607 size 20 10 density  0.25,20,10,52,2.1,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,9,9,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 608 size 20 10 density  0.25,20,10,53,2.15,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 612 size 20 10 density  0.25,20,10,54,2.2,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,9,9,10,9.0,9.0,True,0.0,,,,,False,,False,10,D|T,1,True
+HS problem 613 size 20 10 density  0.25,20,10,50,2.0,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+HS problem 617 size 20 10 density  0.25,20,10,63,2.65,Simonis,Simonis,9–20,,False,False,True,True,13,12,12,10,10,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 622 size 20 10 density  0.25,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,12,12,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 625 size 20 10 density  0.25,20,10,55,2.25,Simonis,Simonis,9–20,,False,False,True,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 628 size 20 10 density  0.25,20,10,54,2.2,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 636 size 20 10 density  0.25,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+HS problem 638 size 20 10 density  0.25,20,10,55,2.25,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,10,10,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 641 size 20 10 density  0.25,20,10,57,2.35,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,10,10,11,10.0,10.0,True,0.0,,,,,False,,False,11,D|T,1,True
+HS problem 642 size 20 10 density  0.25,20,10,54,2.2,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,11,11,11,11.0,11.0,True,0.0,,,,,False,,False,11,C|D|T|P|E,1,True
+HS problem 643 size 20 10 density  0.25,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 645 size 20 10 density  0.25,20,10,47,1.85,Simonis,Simonis,9–20,,False,False,False,True,9,8,8,7,7,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+HS problem 646 size 20 10 density  0.25,20,10,59,2.45,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 647 size 20 10 density  0.25,20,10,52,2.1,Simonis,Simonis,9–20,,False,False,False,True,10,9,9,7,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+HS problem 655 size 20 10 density  0.30,20,10,61,2.55,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,11,11,11,10.0,10.0,True,0.0,,,,,False,,False,11,C|D|T|P,1,True
+HS problem 657 size 20 10 density  0.30,20,10,55,2.25,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,8,8,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 659 size 20 10 density  0.30,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,True,True,11,10,10,9,9,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 661 size 20 10 density  0.30,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,8,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 667 size 20 10 density  0.30,20,10,57,2.35,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,9,9,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 668 size 20 10 density  0.30,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,8,9,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 672 size 20 10 density  0.30,20,10,61,2.55,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,11,11,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 673 size 20 10 density  0.30,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,8,8,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 674 size 20 10 density  0.30,20,10,57,2.35,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,9,9,11,10.0,10.0,True,0.0,,,,,False,,False,11,D|T,1,True
+HS problem 676 size 20 10 density  0.30,20,10,70,3.0,Simonis,Simonis,9–20,,False,False,False,True,13,12,12,9,9,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 682 size 20 10 density  0.30,20,10,67,2.85,Simonis,Simonis,9–20,,False,False,False,True,15,14,14,10,10,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+HS problem 686 size 20 10 density  0.30,20,10,55,2.25,Simonis,Simonis,9–20,,False,False,True,True,12,11,11,10,10,11,10.0,10.0,True,0.0,,,,,False,,False,11,D|T,1,True
+HS problem 692 size 20 10 density  0.30,20,10,54,2.2,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,10,10,11,10.0,10.0,True,0.0,,,,,False,,False,11,D|T,1,True
+HS problem 696 size 20 10 density  0.30,20,10,72,3.1,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,12,12,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 713 size 20 10 density  0.35,20,10,55,2.25,Simonis,Simonis,9–20,,False,False,False,True,11,10,10,7,7,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+HS problem 719 size 20 10 density  0.35,20,10,68,2.9,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,9,9,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 724 size 20 10 density  0.35,20,10,75,3.25,Simonis,Simonis,9–20,,False,False,False,True,15,14,14,12,12,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+HS problem 725 size 20 10 density  0.35,20,10,58,2.4,Simonis,Simonis,9–20,,False,False,False,True,12,11,11,8,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+HS problem 729 size 20 10 density  0.35,20,10,63,2.65,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,12,12,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 736 size 20 10 density  0.35,20,10,66,2.8,Simonis,Simonis,9–20,,False,False,False,True,14,13,13,9,9,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+HS problem 752 size 20 10 density  0.40,20,10,80,3.5,Simonis,Simonis,9–20,,False,False,True,True,16,15,15,14,14,15,14.0,14.0,True,0.0,,,,,False,,False,15,D|T,1,True
+HS problem 767 size 20 10 density  0.40,20,10,77,3.35,Simonis,Simonis,9–20,,False,False,False,True,15,14,14,12,12,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+HS problem 773 size 20 10 density  0.40,20,10,74,3.2,Simonis,Simonis,9–20,,False,False,False,True,15,14,14,13,13,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+HS problem 786 size 20 10 density  0.40,20,10,83,3.65,Simonis,Simonis,9–20,,False,False,False,True,17,16,16,13,13,16,16.0,16.0,True,0.0,,,,,False,,False,16,D|T|E,1,True
+HS problem 821 size 20 10 density  0.45,20,10,92,4.1,Simonis,Simonis,9–20,,False,False,False,True,17,16,16,16,16,16,16.0,16.0,True,0.0,,,,,False,,False,16,C|D|T|P|E,1,True
+HS problem 850 size 20 10 density  0.45,20,10,87,3.85,Simonis,Simonis,9–20,,False,False,False,True,17,16,16,15,15,16,16.0,16.0,True,0.0,,,,,False,,False,16,D|T|E,1,True
+Shaw13_0,20,20,120,5.0,Challenge,Challenge,9–20,,False,False,False,True,13,12,12,8,8,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+Shaw15_0,20,20,120,5.0,Challenge,Challenge,9–20,,False,False,False,True,14,13,13,8,8,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+Shaw16_0,20,20,120,5.0,Challenge,Challenge,9–20,,False,False,False,True,14,13,13,8,8,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+Shaw17_0,20,20,120,5.0,Challenge,Challenge,9–20,,False,False,False,True,15,14,14,8,9,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+Shaw21_0,20,20,120,5.0,Challenge,Challenge,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+ShawInstances_12,20,20,120,5.0,Shaw,Shaw,9–20,,False,False,False,True,13,12,12,8,8,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+ShawInstances_14,20,20,120,5.0,Shaw,Shaw,9–20,,False,False,False,True,14,13,13,8,8,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+ShawInstances_15,20,20,120,5.0,Shaw,Shaw,9–20,,False,False,False,True,14,13,13,8,8,13,13.0,13.0,True,0.0,,,,,False,,False,13,D|T|E,1,True
+ShawInstances_16,20,20,120,5.0,Shaw,Shaw,9–20,,False,False,False,True,15,14,14,8,9,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+ShawInstances_20,20,20,120,5.0,Shaw,Shaw,9–20,,False,False,False,True,12,11,11,9,9,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 1022: balanced orders, 2 orders per product",20,20,40,1.0,Harvey,wbo_20_20,9–20,,False,False,False,True,3,2,2,2,2,2,2.0,2.0,True,0.0,,,,,False,,False,2,C|D|T|P|E,1,True
+"Warwick 1030: balanced orders, 2 orders per product",20,20,40,1.0,Harvey,wbo_20_20,9–20,,False,False,False,True,3,2,2,2,2,2,2.0,2.0,True,0.0,,,,,False,,False,2,C|D|T|P|E,1,True
+"Warwick 1039: balanced orders, 3 orders per product",20,20,60,2.0,Harvey,wbo_20_20,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 1040: balanced orders, 3 orders per product",20,20,60,2.0,Harvey,wbo_20_20,9–20,,False,False,False,True,7,6,6,4,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 1048: balanced orders, 4 orders per product",20,20,80,3.0,Harvey,wbo_20_20,9–20,,False,False,False,True,11,10,10,6,7,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+"Warwick 1070: balanced orders, 6 orders per product",20,20,120,5.0,Harvey,wbo_20_20,9–20,,False,False,False,True,16,15,15,11,11,15,15.0,15.0,True,0.0,,,,,False,,False,15,D|T|E,1,True
+"Warwick 1120: balanced products, 2 products per order",20,20,40,1.0,Harvey,wbp_20_20,9–20,,False,False,False,True,5,4,4,4,4,4,2.0,2.0,True,0.0,,,,,False,,False,4,C|D|T|P,1,True
+"Warwick 1129: balanced products, 3 products per order",20,20,60,2.0,Harvey,wbp_20_20,9–20,,False,False,False,True,9,8,8,5,5,8,7.0,7.0,True,0.0,,,,,False,,False,8,D|T,1,True
+"Warwick 1214: balanced orders and products, 3 products per order",20,20,60,2.0,Harvey,wbop_20_20,9–20,,False,False,False,True,9,8,8,4,4,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 1220: balanced orders and products, 3 products per order",20,20,60,2.0,Harvey,wbop_20_20,9–20,,False,False,False,True,9,8,8,3,4,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 872: balanced orders, 4 orders per product",20,10,40,1.5,Harvey,wbo_20_10,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+"Warwick 873: balanced orders, 4 orders per product",20,10,40,1.5,Harvey,wbo_20_10,9–20,,False,False,False,True,6,5,5,4,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,D|T|P|E,1,True
+"Warwick 881: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 884: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,10,9,9,7,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+"Warwick 885: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,10,9,9,6,7,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+"Warwick 886: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 888: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,True,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 889: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 890: balanced orders, 5 orders per product",20,10,50,2.0,Harvey,wbo_20_10,9–20,,False,False,False,True,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+"Warwick 891: balanced orders, 6 orders per product",20,10,60,2.5,Harvey,wbo_20_10,9–20,,False,False,False,True,12,11,11,7,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 896: balanced orders, 6 orders per product",20,10,60,2.5,Harvey,wbo_20_10,9–20,,False,False,False,True,12,11,11,8,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 897: balanced orders, 6 orders per product",20,10,60,2.5,Harvey,wbo_20_10,9–20,,False,False,False,True,12,11,11,8,8,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 898: balanced orders, 6 orders per product",20,10,60,2.5,Harvey,wbo_20_10,9–20,,False,False,False,True,12,11,11,7,7,11,11.0,11.0,True,0.0,,,,,False,,False,11,D|T|E,1,True
+"Warwick 900: balanced orders, 6 orders per product",20,10,60,2.5,Harvey,wbo_20_10,9–20,,False,False,False,True,11,10,10,7,7,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+"Warwick 907: balanced orders, 7 orders per product",20,10,70,3.0,Harvey,wbo_20_10,9–20,,False,False,True,True,15,14,14,11,11,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+"Warwick 912: balanced orders, 8 orders per product",20,10,80,3.5,Harvey,wbo_20_10,9–20,,False,False,False,True,15,14,14,12,12,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+"Warwick 914: balanced orders, 8 orders per product",20,10,80,3.5,Harvey,wbo_20_10,9–20,,False,False,False,True,15,14,14,12,12,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+"Warwick 946: balanced products, 2 products per order",20,10,40,1.5,Harvey,wbp_20_10,9–20,,False,False,False,True,10,9,9,7,7,9,8.0,8.0,True,0.0,,,,,False,,False,9,D|T,1,True
+"Warwick 949: balanced products, 2 products per order",20,10,40,1.5,Harvey,wbp_20_10,9–20,,False,False,False,True,10,9,9,8,8,9,7.0,7.0,True,0.0,,,,,False,,False,9,D|T,1,True
+"Warwick 956: balanced products, 3 products per order",20,10,60,2.5,Harvey,wbp_20_10,9–20,,False,False,True,True,15,14,14,9,9,14,14.0,14.0,True,0.0,,,,,False,,False,14,D|T|E,1,True
+p1020n2_0,20,10,41,1.55,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,8,7,7,6,6,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+p1020n4_0,20,10,38,1.4,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,True,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+p1020n5_0,20,10,35,1.25,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+p1020n6_0,20,10,37,1.35,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+p1020n8_0,20,10,37,1.35,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,7,6,6,6,6,6,5.0,5.0,True,0.0,,,,,False,,False,6,C|D|T|P,1,True
+p1020n9_0,20,10,39,1.45,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+p1520n3_0,20,15,50,1.75,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+p1520n5_0,20,15,50,1.75,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,8,7,7,5,5,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+p1520n6_0,20,15,52,1.85,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,7,6,6,5,5,6,6.0,6.0,True,0.0,,,,,False,,False,6,D|T|E,1,True
+p1520n8_0,20,15,53,1.9,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,8,7,7,5,5,7,7.0,7.0,True,0.0,,,,,False,,False,7,D|T|E,1,True
+p2520n2_0,20,25,83,2.9,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,10,9,9,5,5,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+p2520n8_0,20,25,83,2.9,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,11,10,10,5,5,10,10.0,10.0,True,0.0,,,,,False,,False,10,D|T|E,1,True
+p4020n3_0,20,40,132,4.6,Faggioli-Bentivoglio,Faggioli-Bentivoglio,9–20,,False,False,False,True,13,12,12,7,7,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+scoop-A_AP-9.d_10_0,20,13,38,1.25,SCOOP,SCOOP,9–20,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+scoop-A_AP-9.d_3_0,20,16,44,1.4,SCOOP,SCOOP,9–20,,False,False,False,True,6,5,5,4,4,5,3.0,3.0,True,0.0,,,,,False,,False,5,D|T,1,True
+scoop-B_12F18_11_0,21,15,47,1.5238095238095235,SCOOP,SCOOP,21–30,,False,False,False,True,6,5,5,5,5,5,5.0,5.0,True,0.0,,,,,False,,False,5,C|D|T|P|E,1,True
+scoop-B_GTM18A_139_0,24,20,54,1.4166666666666667,SCOOP,SCOOP,21–30,,False,False,False,False,5,4,4,4,4,4,3.0,,False,,,,,,False,,False,4,C|D|T|P,1,False
+SP1,25,25,65,1.6,Wilson,Wilson,21–30,,False,False,False,False,9,8,8,8,8,8,7.0,,False,,,,,,False,,False,8,C|D|T|P,1,False
+SP1_0,25,25,65,1.6,Challenge,Challenge,21–30,,False,False,False,False,9,8,8,8,8,8,7.0,,False,,,,,,False,,False,8,C|D|T|P,1,False
+p3030n9_0,26,30,100,2.6923076923076925,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,12,11,11,5,6,11,11.0,,False,,,,,,False,,False,11,D|T|E,1,False
+scoop-A_AP-9.d_11_0,27,21,55,1.2592592592592593,SCOOP,SCOOP,21–30,,False,False,False,False,6,5,5,5,5,5,4.0,,False,,,,,,False,,False,5,C|D|T|P,1,False
+scoop-B_23B25_52_0,27,21,55,1.2592592592592593,SCOOP,SCOOP,21–30,,False,False,False,False,5,4,4,4,4,4,2.0,,False,,,,,,False,,False,4,C|D|T|P,1,False
+p3030n6_0,28,30,104,2.642857142857143,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,12,11,11,5,6,11,11.0,,False,,,,,,False,,False,11,D|T|E,1,False
+p3030n2_0,29,30,105,2.586206896551724,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,13,12,12,5,5,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+p3030n3_0,29,30,103,2.5172413793103448,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,13,12,12,5,5,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+p3030n5_0,29,30,105,2.586206896551724,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,True,False,13,12,12,6,6,12,12.0,12.0,True,0.0,,,,,False,,False,12,D|T|E,1,True
+HS problem 1103 size 30 10 density  0.20,30,10,65,1.8333333333333333,Simonis,Simonis,21–30,,False,False,False,False,13,12,12,10,10,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+HS problem 1104 size 30 10 density  0.20,30,10,74,2.1333333333333333,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,13,13,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+HS problem 1110 size 30 10 density  0.20,30,10,80,2.333333333333333,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,13,13,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1119 size 30 10 density  0.20,30,10,64,1.8,Simonis,Simonis,21–30,,False,False,False,False,13,12,12,9,9,12,11.0,,False,,,,,,False,,False,12,D|T,1,False
+HS problem 1122 size 30 10 density  0.20,30,10,66,1.8666666666666667,Simonis,Simonis,21–30,,False,False,False,False,14,13,13,13,13,13,12.0,,False,,,,,,False,,False,13,C|D|T|P,1,False
+HS problem 1123 size 30 10 density  0.20,30,10,56,1.5333333333333334,Simonis,Simonis,21–30,,False,False,True,False,11,10,10,10,10,10,8.0,8.0,True,0.0,,,,,False,,False,10,C|D|T|P,1,True
+HS problem 1132 size 30 10 density  0.20,30,10,67,1.9,Simonis,Simonis,21–30,,False,False,False,False,13,12,12,10,10,12,11.0,,False,,,,,,False,,False,12,D|T,1,False
+HS problem 1134 size 30 10 density  0.20,30,10,66,1.8666666666666667,Simonis,Simonis,21–30,,False,False,False,False,13,12,12,8,9,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+HS problem 1137 size 30 10 density  0.20,30,10,73,2.1,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,14,14,14,14.0,,False,,,,,,False,,False,14,C|D|T|P|E,1,False
+HS problem 1138 size 30 10 density  0.20,30,10,70,2.0,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,10,10,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+HS problem 1144 size 30 10 density  0.20,30,10,63,1.7666666666666666,Simonis,Simonis,21–30,,False,False,False,False,13,12,11,10,10,12,12.0,,False,,,,,,False,,False,12,D|E,1,False
+HS problem 1147 size 30 10 density  0.20,30,10,69,1.9666666666666663,Simonis,Simonis,21–30,,False,False,False,False,14,13,13,9,10,13,13.0,,False,,,,,,False,,False,13,D|T|E,1,False
+HS problem 1152 size 30 10 density  0.25,30,10,81,2.3666666666666667,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1154 size 30 10 density  0.25,30,10,77,2.2333333333333334,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1155 size 30 10 density  0.25,30,10,73,2.1,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,11,11,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+HS problem 1156 size 30 10 density  0.25,30,10,79,2.3,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,11,11,15,14.0,,False,,,,,,False,,False,15,D|T,1,False
+HS problem 1157 size 30 10 density  0.25,30,10,70,2.0,Simonis,Simonis,21–30,,False,False,False,False,13,12,12,9,10,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+HS problem 1162 size 30 10 density  0.25,30,10,75,2.1666666666666665,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,13,13,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+HS problem 1163 size 30 10 density  0.25,30,10,79,2.3,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,16,16,16,15.0,,False,,,,,,False,,False,16,C|D|T|P,1,False
+HS problem 1164 size 30 10 density  0.25,30,10,72,2.066666666666667,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1174 size 30 10 density  0.25,30,10,77,2.2333333333333334,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,13,13,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+HS problem 1178 size 30 10 density  0.25,30,10,69,1.9666666666666663,Simonis,Simonis,21–30,,False,False,False,False,14,13,13,9,9,13,13.0,,False,,,,,,False,,False,13,D|T|E,1,False
+HS problem 1185 size 30 10 density  0.25,30,10,76,2.2,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,10,10,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+HS problem 1188 size 30 10 density  0.25,30,10,92,2.7333333333333334,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,13,13,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1191 size 30 10 density  0.25,30,10,86,2.533333333333333,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,15,15,17,15.0,,False,,,,,,False,,False,17,D|T,1,False
+HS problem 1192 size 30 10 density  0.25,30,10,74,2.1333333333333333,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,10,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1194 size 30 10 density  0.25,30,10,82,2.4,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,11,11,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+HS problem 1196 size 30 10 density  0.25,30,10,80,2.333333333333333,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,11,11,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1201 size 30 10 density  0.30,30,10,86,2.533333333333333,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,11,12,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1204 size 30 10 density  0.30,30,10,85,2.5,Simonis,Simonis,21–30,,False,False,False,False,19,18,18,12,12,18,18.0,,False,,,,,,False,,False,18,D|T|E,1,False
+HS problem 1208 size 30 10 density  0.30,30,10,100,3.0,Simonis,Simonis,21–30,,False,False,False,False,20,19,19,14,14,19,19.0,,False,,,,,,False,,False,19,D|T|E,1,False
+HS problem 1210 size 30 10 density  0.30,30,10,78,2.2666666666666666,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,10,11,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+HS problem 1214 size 30 10 density  0.30,30,10,88,2.6,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,13,13,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1219 size 30 10 density  0.30,30,10,88,2.6,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,14,14,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1240 size 30 10 density  0.30,30,10,81,2.3666666666666667,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,12,12,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1241 size 30 10 density  0.30,30,10,84,2.466666666666667,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,14,14,17,16.0,,False,,,,,,False,,False,17,D|T,1,False
+HS problem 1244 size 30 10 density  0.30,30,10,86,2.533333333333333,Simonis,Simonis,21–30,,False,False,False,False,19,18,18,12,12,18,18.0,,False,,,,,,False,,False,18,D|T|E,1,False
+HS problem 1245 size 30 10 density  0.30,30,10,96,2.8666666666666667,Simonis,Simonis,21–30,,False,False,False,False,21,20,20,14,14,20,20.0,,False,,,,,,False,,False,20,D|T|E,1,False
+HS problem 1248 size 30 10 density  0.30,30,10,82,2.4,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 1250 size 30 10 density  0.30,30,10,84,2.466666666666667,Simonis,Simonis,21–30,,False,False,False,False,18,17,17,13,13,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+HS problem 1258 size 30 10 density  0.35,30,10,112,3.4,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,16,16,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1267 size 30 10 density  0.35,30,10,113,3.433333333333333,Simonis,Simonis,21–30,,False,False,False,False,21,20,20,16,16,20,20.0,,False,,,,,,False,,False,20,D|T|E,1,False
+HS problem 1276 size 30 10 density  0.35,30,10,114,3.466666666666667,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,17,17,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1288 size 30 10 density  0.35,30,10,113,3.433333333333333,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,17,17,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1314 size 30 10 density  0.40,30,10,111,3.3666666666666667,Simonis,Simonis,21–30,,False,False,False,False,22,21,21,17,17,21,21.0,,False,,,,,,False,,False,21,D|T|E,1,False
+HS problem 1317 size 30 10 density  0.40,30,10,129,3.966666666666667,Simonis,Simonis,21–30,,False,False,False,False,24,23,23,19,19,23,23.0,,False,,,,,,False,,False,23,D|T|E,1,False
+HS problem 1321 size 30 10 density  0.40,30,10,118,3.6,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,18,18,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1322 size 30 10 density  0.40,30,10,119,3.633333333333333,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,18,18,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1326 size 30 10 density  0.40,30,10,121,3.7,Simonis,Simonis,21–30,,False,False,False,False,25,24,24,22,22,24,24.0,,False,,,,,,False,,False,24,D|T|E,1,False
+HS problem 1327 size 30 10 density  0.40,30,10,107,3.2333333333333334,Simonis,Simonis,21–30,,False,False,False,False,22,21,21,16,16,21,21.0,,False,,,,,,False,,False,21,D|T|E,1,False
+HS problem 1336 size 30 10 density  0.40,30,10,113,3.433333333333333,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,17,17,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 1338 size 30 10 density  0.40,30,10,124,3.8,Simonis,Simonis,21–30,,False,False,True,False,25,24,24,18,18,24,24.0,24.0,True,0.0,,,,,False,,False,24,D|T|E,1,True
+HS problem 1340 size 30 10 density  0.40,30,10,125,3.8333333333333335,Simonis,Simonis,21–30,,False,False,False,False,24,23,23,19,19,23,23.0,,False,,,,,,False,,False,23,D|T|E,1,False
+HS problem 1342 size 30 10 density  0.40,30,10,111,3.3666666666666667,Simonis,Simonis,21–30,,False,False,False,False,21,20,20,17,17,20,19.0,,False,,,,,,False,,False,20,D|T,1,False
+HS problem 1369 size 30 10 density  0.45,30,10,128,3.933333333333333,Simonis,Simonis,21–30,,False,False,False,False,24,23,23,20,20,23,23.0,,False,,,,,,False,,False,23,D|T|E,1,False
+HS problem 1384 size 30 10 density  0.45,30,10,119,3.633333333333333,Simonis,Simonis,21–30,,False,False,True,False,25,24,24,19,19,24,24.0,24.0,True,0.0,,,,,False,,False,24,D|T|E,1,True
+HS problem 2424 size 30 15 density  0.20,30,15,99,2.8,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 2426 size 30 15 density  0.20,30,15,97,2.7333333333333334,Simonis,Simonis,21–30,,False,False,False,False,15,14,14,9,9,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+HS problem 2438 size 30 15 density  0.20,30,15,89,2.466666666666667,Simonis,Simonis,21–30,,False,False,False,False,17,16,16,9,10,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+HS problem 2440 size 30 15 density  0.20,30,15,92,2.566666666666667,Simonis,Simonis,21–30,,False,False,False,False,16,15,15,11,11,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+HS problem 2448 size 30 15 density  0.25,30,15,112,3.2333333333333334,Simonis,Simonis,21–30,,False,False,False,False,21,20,20,11,12,20,20.0,,False,,,,,,False,,False,20,D|T|E,1,False
+HS problem 2476 size 30 15 density  0.30,30,15,135,4.0,Simonis,Simonis,21–30,,False,False,False,False,23,22,22,13,13,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+HS problem 2485 size 30 15 density  0.35,30,15,157,4.733333333333333,Simonis,Simonis,21–30,,False,False,False,False,24,23,23,17,17,23,23.0,,False,,,,,,False,,False,23,D|T|E,1,False
+HS problem 3531 size 30 30 density  0.25,30,30,232,6.733333333333333,Simonis,Simonis,21–30,,False,False,False,False,27,26,26,18,18,26,26.0,,False,,,,,,False,,False,26,D|T|E,1,False
+HS problem 3545 size 30 30 density  0.30,30,30,268,7.933333333333334,Simonis,Simonis,21–30,,False,False,False,False,27,26,26,22,22,26,26.0,,False,,,,,,False,,False,26,D|T|E,1,False
+"Warwick 1291: balanced orders, 6 orders per product",30,10,60,1.6666666666666667,Harvey,wbo_30_10,21–30,,False,False,True,False,10,9,9,6,7,9,9.0,9.0,True,0.0,,,,,False,,False,9,D|T|E,1,True
+"Warwick 1292: balanced orders, 6 orders per product",30,10,60,1.6666666666666667,Harvey,wbo_30_10,21–30,,False,False,False,False,11,10,10,7,8,10,8.0,,False,,,,,,False,,False,10,D|T,1,False
+"Warwick 1293: balanced orders, 6 orders per product",30,10,60,1.6666666666666667,Harvey,wbo_30_10,21–30,,False,False,False,False,11,10,10,7,8,10,10.0,,False,,,,,,False,,False,10,D|T|E,1,False
+"Warwick 1297: balanced orders, 6 orders per product",30,10,60,1.6666666666666667,Harvey,wbo_30_10,21–30,,False,False,False,False,10,9,9,7,8,9,9.0,,False,,,,,,False,,False,9,D|T|E,1,False
+"Warwick 1300: balanced orders, 6 orders per product",30,10,60,1.6666666666666667,Harvey,wbo_30_10,21–30,,False,False,False,False,12,11,10,6,7,11,11.0,,False,,,,,,False,,False,11,D|E,1,False
+"Warwick 1301: balanced orders, 7 orders per product",30,10,70,2.0,Harvey,wbo_30_10,21–30,,False,False,False,False,12,11,11,8,8,11,11.0,,False,,,,,,False,,False,11,D|T|E,1,False
+"Warwick 1312: balanced orders, 8 orders per product",30,10,80,2.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,17,16,16,9,10,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+"Warwick 1317: balanced orders, 8 orders per product",30,10,80,2.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,15,14,14,10,10,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+"Warwick 1319: balanced orders, 8 orders per product",30,10,80,2.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,16,15,15,9,10,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+"Warwick 1326: balanced orders, 9 orders per product",30,10,90,2.6666666666666665,Harvey,wbo_30_10,21–30,,False,False,False,False,18,17,17,11,11,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1328: balanced orders, 9 orders per product",30,10,90,2.6666666666666665,Harvey,wbo_30_10,21–30,,False,False,False,False,18,17,17,12,12,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1332: balanced orders, 10 orders per product",30,10,100,3.0,Harvey,wbo_30_10,21–30,,False,False,False,False,20,19,19,13,13,19,19.0,,False,,,,,,False,,False,19,D|T|E,1,False
+"Warwick 1333: balanced orders, 10 orders per product",30,10,100,3.0,Harvey,wbo_30_10,21–30,,False,False,False,False,21,20,20,13,13,20,20.0,,False,,,,,,False,,False,20,D|T|E,1,False
+"Warwick 1334: balanced orders, 10 orders per product",30,10,100,3.0,Harvey,wbo_30_10,21–30,,False,False,False,False,20,19,19,12,12,19,19.0,,False,,,,,,False,,False,19,D|T|E,1,False
+"Warwick 1336: balanced orders, 10 orders per product",30,10,100,3.0,Harvey,wbo_30_10,21–30,,False,False,False,False,18,17,17,13,13,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1348: balanced orders, 11 orders per product",30,10,110,3.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,20,19,19,14,14,19,19.0,,False,,,,,,False,,False,19,D|T|E,1,False
+"Warwick 1350: balanced orders, 11 orders per product",30,10,110,3.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,23,22,22,16,16,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+"Warwick 1360: balanced orders, 12 orders per product",30,10,120,3.6666666666666665,Harvey,wbo_30_10,21–30,,False,False,False,False,24,23,23,16,16,23,23.0,,False,,,,,,False,,False,23,D|T|E,1,False
+"Warwick 1375: balanced orders, 14 orders per product",30,10,140,4.333333333333333,Harvey,wbo_30_10,21–30,,False,False,False,False,27,26,26,24,24,26,26.0,,False,,,,,,False,,False,26,D|T|E,1,False
+"Warwick 1378: balanced orders, 14 orders per product",30,10,140,4.333333333333333,Harvey,wbo_30_10,21–30,,False,False,True,False,25,24,24,22,22,24,24.0,24.0,True,0.0,,,,,False,,False,24,D|T|E,1,True
+"Warwick 1436: balanced orders and products, 2 products per order",30,10,60,1.6666666666666667,Harvey,wbop_30_10,21–30,,False,False,False,False,13,12,12,6,8,12,12.0,,False,,,,,,False,,False,12,D|T|E,1,False
+"Warwick 1475: balanced orders, 4 orders per product",30,15,60,1.5,Harvey,wbo_30_15,21–30,,False,False,False,False,7,6,6,4,5,6,6.0,,False,,,,,,False,,False,6,D|T|E,1,False
+"Warwick 1477: balanced orders, 4 orders per product",30,15,60,1.5,Harvey,wbo_30_15,21–30,,False,False,False,False,8,7,7,4,5,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+"Warwick 1478: balanced orders, 4 orders per product",30,15,60,1.5,Harvey,wbo_30_15,21–30,,False,False,False,False,8,7,7,5,5,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+"Warwick 1486: balanced orders, 5 orders per product",30,15,75,2.0,Harvey,wbo_30_15,21–30,,False,False,False,False,11,10,10,7,7,10,9.0,,False,,,,,,False,,False,10,D|T,1,False
+"Warwick 1487: balanced orders, 5 orders per product",30,15,75,2.0,Harvey,wbo_30_15,21–30,,False,False,False,False,10,9,9,6,7,9,9.0,,False,,,,,,False,,False,9,D|T|E,1,False
+"Warwick 1491: balanced orders, 6 orders per product",30,15,90,2.5,Harvey,wbo_30_15,21–30,,False,False,False,False,15,14,14,8,8,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+"Warwick 1493: balanced orders, 6 orders per product",30,15,90,2.5,Harvey,wbo_30_15,21–30,,False,False,False,False,15,14,14,7,8,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+"Warwick 1500: balanced orders, 6 orders per product",30,15,90,2.5,Harvey,wbo_30_15,21–30,,False,False,False,False,16,15,15,7,8,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+"Warwick 1504: balanced orders, 7 orders per product",30,15,105,3.0,Harvey,wbo_30_15,21–30,,False,False,False,False,17,16,16,9,10,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+"Warwick 1506: balanced orders, 7 orders per product",30,15,105,3.0,Harvey,wbo_30_15,21–30,,False,False,False,False,17,16,16,11,11,16,16.0,,False,,,,,,False,,False,16,D|T|E,1,False
+"Warwick 1513: balanced orders, 8 orders per product",30,15,120,3.5,Harvey,wbo_30_15,21–30,,False,False,False,False,18,17,17,11,12,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1535: balanced orders, 10 orders per product",30,15,150,4.5,Harvey,wbo_30_15,21–30,,False,False,True,False,23,22,22,16,16,22,22.0,22.0,True,0.0,,,,,False,,False,22,D|T|E,1,True
+"Warwick 1596: balanced products, 2 products per order",30,15,60,1.5,Harvey,wbp_30_15,21–30,,False,False,False,False,11,10,10,8,8,10,9.0,,False,,,,,,False,,False,10,D|T,1,False
+"Warwick 1653: balanced orders and products, 2 products per order",30,15,60,1.5,Harvey,wbop_30_15,21–30,,False,False,False,False,9,8,8,4,5,8,8.0,,False,,,,,,False,,False,8,D|T|E,1,False
+"Warwick 1658: balanced orders and products, 2 products per order",30,15,60,1.5,Harvey,wbop_30_15,21–30,,False,False,False,False,9,8,8,4,5,8,8.0,,False,,,,,,False,,False,8,D|T|E,1,False
+"Warwick 1711: balanced orders, 2 orders per product",30,30,60,1.0,Harvey,wbo_30_30,21–30,,False,False,False,False,4,3,3,3,3,3,2.0,,False,,,,,,False,,False,3,C|D|T|P,1,False
+"Warwick 1716: balanced orders, 2 orders per product",30,30,60,1.0,Harvey,wbo_30_30,21–30,,False,False,False,False,4,3,3,3,3,3,2.0,,False,,,,,,False,,False,3,C|D|T|P,1,False
+"Warwick 1719: balanced orders, 2 orders per product",30,30,60,1.0,Harvey,wbo_30_30,21–30,,False,False,False,False,4,3,3,2,2,3,3.0,,False,,,,,,False,,False,3,D|T|E,1,False
+"Warwick 1725: balanced orders, 3 orders per product",30,30,90,2.0,Harvey,wbo_30_30,21–30,,False,False,False,False,9,8,8,4,4,8,8.0,,False,,,,,,False,,False,8,D|T|E,1,False
+"Warwick 1726: balanced orders, 3 orders per product",30,30,90,2.0,Harvey,wbo_30_30,21–30,,False,False,False,False,9,8,8,4,4,8,8.0,,False,,,,,,False,,False,8,D|T|E,1,False
+"Warwick 1731: balanced orders, 4 orders per product",30,30,120,3.0,Harvey,wbo_30_30,21–30,,False,False,False,False,15,14,14,6,6,14,14.0,,False,,,,,,False,,False,14,D|T|E,1,False
+"Warwick 1743: balanced orders, 5 orders per product",30,30,150,4.0,Harvey,wbo_30_30,21–30,,False,False,False,False,18,17,17,8,8,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1745: balanced orders, 5 orders per product",30,30,150,4.0,Harvey,wbo_30_30,21–30,,False,False,False,False,19,18,18,8,8,18,18.0,,False,,,,,,False,,False,18,D|T|E,1,False
+"Warwick 1750: balanced orders, 5 orders per product",30,30,150,4.0,Harvey,wbo_30_30,21–30,,False,False,False,False,18,17,17,7,9,17,17.0,,False,,,,,,False,,False,17,D|T|E,1,False
+"Warwick 1753: balanced orders, 6 orders per product",30,30,180,5.0,Harvey,wbo_30_30,21–30,,False,False,False,False,23,22,22,12,12,22,22.0,,False,,,,,,False,,False,22,D|T|E,1,False
+"Warwick 1760: balanced orders, 6 orders per product",30,30,180,5.0,Harvey,wbo_30_30,21–30,,False,False,False,False,21,20,20,11,12,20,20.0,,False,,,,,,False,,False,20,D|T|E,1,False
+"Warwick 1857: balanced products, 2 products per order",30,30,60,1.0,Harvey,wbp_30_30,21–30,,False,False,True,False,5,4,4,4,4,4,3.0,3.0,True,0.0,,,,,False,,False,4,C|D|T|P,1,True
+"Warwick 1908: balanced products, 7 products per order",30,30,210,6.0,Harvey,wbp_30_30,21–30,,False,False,True,False,27,26,26,17,17,26,26.0,26.0,True,0.0,,,,,False,,False,26,D|T|E,1,True
+"Warwick 2001: balanced orders and products, 3 products per order",30,30,90,2.0,Harvey,wbop_30_30,21–30,,False,False,False,False,11,10,10,4,4,10,10.0,,False,,,,,,False,,False,10,D|T|E,1,False
+p1030n5_0,30,10,45,1.1666666666666667,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p1530n10_0,30,15,58,1.4333333333333331,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,6,5,5,5,5,5,5.0,,False,,,,,,False,,False,5,C|D|T|P|E,1,False
+p1530n2_0,30,15,57,1.4,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,8,7,7,5,5,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+p1530n7_0,30,15,57,1.4,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,8,7,7,5,5,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+p2030n2_0,30,20,71,1.7,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,8,7,7,5,6,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+p2030n6_0,30,20,70,1.6666666666666667,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,9,8,8,5,5,8,8.0,,False,,,,,,False,,False,8,D|T|E,1,False
+p2030n9_0,30,20,73,1.7666666666666666,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,True,False,9,8,8,6,6,8,8.0,8.0,True,0.0,,,,,False,,False,8,D|T|E,1,True
+p2530n1_0,30,25,89,2.1333333333333333,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,12,11,11,5,6,11,11.0,,False,,,,,,False,,False,11,D|T|E,1,False
+p2530n4_0,30,25,91,2.2,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,12,11,11,5,6,11,11.0,,False,,,,,,False,,False,11,D|T|E,1,False
+p2530n5_0,30,25,88,2.1,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,11,10,10,5,5,10,10.0,,False,,,,,,False,,False,10,D|T|E,1,False
+p2530n9_0,30,25,86,2.033333333333333,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,10,9,9,5,5,9,9.0,,False,,,,,,False,,False,9,D|T|E,1,False
+p4030n6_0,30,40,139,3.3,Faggioli-Bentivoglio,Faggioli-Bentivoglio,21–30,,False,False,False,False,16,15,15,6,6,15,15.0,,False,,,,,,False,,False,15,D|T|E,1,False
+scoop-A_AP-9.d_6_0,31,20,50,0.967741935483871,SCOOP,SCOOP,31–40,,False,False,False,False,5,4,4,4,4,4,2.0,,False,,,,,,False,,False,4,C|D|T|P,1,False
+p4040n3_0,37,40,137,2.621621621621621,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,15,14,13,5,6,14,14.0,,False,,,,,,False,,False,14,D|E,1,False
+p4040n10_0,38,40,138,2.5789473684210527,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,True,False,16,15,12,5,6,15,15.0,15.0,True,0.0,,,,,False,,False,15,D|E,1,True
+HS problem 3430 size 40 20 density  0.25,40,20,207,4.675,Simonis,Simonis,31–40,,False,False,False,False,32,31,31,19,19,31,31.0,,False,,,,,,False,,False,31,D|T|E,1,False
+p1040n2_0,40,10,55,1.125,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,7,7,7,5.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1040n3_0,40,10,53,1.075,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1040n5_0,40,10,51,1.025,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1040n8_0,40,10,53,1.075,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1540n4_0,40,15,64,1.225,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,7,6,6,6,6,6,5.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p1540n6_0,40,15,61,1.15,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p1540n7_0,40,15,61,1.15,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p1540n8_0,40,15,63,1.2,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,7,6,6,6,6,6,5.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p2040n6_0,40,20,75,1.375,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,5,5,7,6.0,,False,,,,,,False,,False,7,D|T,1,False
+p2040n7_0,40,20,77,1.425,Faggioli-Bentivoglio,Faggioli-Bentivoglio,31–40,,False,False,False,False,8,7,7,5,5,7,7.0,,False,,,,,,False,,False,7,D|T|E,1,False
+p1050n10_0,50,10,60,1.0,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1550n1_0,50,15,72,1.14,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,True,False,8,7,7,7,7,7,4.0,4.0,True,0.0,,,,,False,,False,7,C|D|T|P,1,True
+p1550n2_0,50,15,70,1.1,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1550n3_0,50,15,70,1.1,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,8,7,7,7,7,7,4.0,,False,,,,,,False,,False,7,C|D|T|P,1,False
+p1550n4_0,50,15,68,1.06,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p1550n5_0,50,15,69,1.08,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p2050n5_0,50,20,75,1.1,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,True,False,7,6,6,6,6,6,3.0,6.0,True,3.0,,,,,False,,False,6,C|D|T|P,1,True
+p2050n6_0,50,20,84,1.28,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,8,7,7,6,6,7,4.0,,False,,,,,,False,,False,7,D|T,1,False
+p2050n8_0,50,20,77,1.14,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,7,6,6,6,6,6,4.0,,False,,,,,,False,,False,6,C|D|T|P,1,False
+p3050n3_0,50,30,102,1.44,Faggioli-Bentivoglio,Faggioli-Bentivoglio,41–60,,False,False,False,False,8,7,7,5,5,7,6.0,,False,,,,,,False,,False,7,D|T,1,False
+scoop-A_FA+AA-_15_0,68,18,96,1.1470588235294117,SCOOP,SCOOP,61–75,,False,False,False,False,9,8,8,8,8,8,3.0,,False,,,,,,False,,False,8,C|D|T|P,1,False
+scoop-A_FA+AA-_12_0,75,20,105,1.1333333333333333,SCOOP,SCOOP,61–75,,False,False,False,False,9,8,8,8,8,8,4.0,,False,,,,,,False,,False,8,C|D|T|P,1,False
+scoop-A_FA+AA-_2_0,75,19,104,1.1333333333333333,SCOOP,SCOOP,61–75,,False,False,False,False,11,10,10,10,10,10,4.0,,False,,,,,,False,,False,10,C|D|T|P,1,False
+scoop-A_FA+AA-_8_0,82,28,140,1.3658536585365857,SCOOP,SCOOP,76–100,,False,False,False,False,11,10,10,10,10,10,3.0,,False,,,,,,False,,False,10,C|D|T|P,1,False
+scoop-A_FA+AA-_11_0,99,28,141,1.1414141414141414,SCOOP,SCOOP,76–100,,False,False,False,False,11,10,10,10,10,10,2.0,,False,,,,,,False,,False,10,C|D|T|P,1,False
+Random-100-100-4-1_0,100,100,418,3.18,Chu & Stuckey,Random-100-100-4,76–100,sparse,True,True,False,False,46,28,12,11,11,33,34.0,44.0,True,10.0,45.0,,45.0,43.0,True,,True,45,M,1,True
+Random-100-100-4-3_0,100,100,409,3.09,Chu & Stuckey,Random-100-100-4,76–100,sparse,True,True,False,False,43,23,12,10,10,26,26.0,42.0,True,16.0,42.0,,41.0,42.0,True,2.0,True,42,M,1,True
+Random-125-125-2-2_0,125,125,346,1.768,Chu & Stuckey,Random-125-125-2,101–134,sparse,True,True,False,False,25,13,6,6,6,24,8.0,23.0,True,15.0,24.0,24.0,24.0,24.0,True,3.0,True,24,M,1,True
+Random-125-125-4-4_0,125,125,511,3.088,Chu & Stuckey,Random-125-125-4,101–134,sparse,True,True,False,False,51,24,11,9,9,50,24.0,50.0,True,26.0,50.0,50.0,49.0,49.0,True,2.0,True,50,M,1,True
+Random-125-125-6-2_0,125,125,761,5.088,Chu & Stuckey,Random-125-125-6,101–134,sparse,True,True,False,False,77,51,23,13,13,60,61.0,75.0,True,14.0,76.0,,76.0,76.0,True,,True,76,M,1,True
+Random-125-125-6-3_0,125,125,782,5.256,Chu & Stuckey,Random-125-125-6,101–134,sparse,True,True,False,False,80,58,24,15,15,64,70.0,79.0,True,9.0,79.0,,79.0,79.0,True,,True,79,M,1,True

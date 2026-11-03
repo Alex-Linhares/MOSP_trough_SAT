@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 7/11 SOLVED
+Current: 8/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -652,3 +652,82 @@ the open classes in `07_open/joined.csv` (pathwidth units). Two findings
 for item 10's summary: on the 24 open classes Harper's ceiling is below the
 width everywhere, and a searched 85-vertex minor closed `NY_13` where
 236.7 core-hours of whole-graph search had not.
+
+---
+## Iteration 8 — 2026-11-03 09:31
+
+### Completed
+
+- **Item 08 — the duality-gap map: gap by family against excess, size and
+  density; what no family closes; the kill verdicts.**
+  `learning/obstruction_map.py` (stages `map`, `tables`, `figure`, `all`;
+  reads items 01–07's CSVs and computes nothing afresh: one row per corpus
+  instance with every family's floor and its source, E's ceiling, `best`
+  and `best_family`, the gaps, the §6 cluster; the by-band / collection /
+  Chu & Stuckey class / excess-decile tables; the dominance matrices; the
+  uncovered set with the ten smallest drawn through `learning.extremal.draw`;
+  the five kill verdicts with their deciding numbers; the cost ledger from
+  the items' seconds columns), `tests/test_obstruction_map.py` (8 passed),
+  `reports/scratch/obstruction_search/08_map/{map.csv, uncovered.csv,
+  dominance.csv, cost.csv, verdicts.json, tables.md, families.png, run.log,
+  gate_run.out}`, `reports/obstruction_search.md` §8.
+- **Numbers.** Best floor tight on **6,001 of 6,376** (94.1%; `floor0`
+  5,732, 89.9%) and on **327 of the 338** (`floor0` 81); every one of the
+  276 floors that rose is family M's (alone on 272, tied with E on 4).
+  M is tight on every instance it ran on to 75 customers, 51 of 53 at
+  76–100, 18 of 27 at 101–134; above every other family on some instance
+  and below none (above E on 371 of 436, above T on 306; E, T, D above M
+  on 0). E's floor is tight on 71% of the 9–20 band and 15% at 101–134; its
+  *ceiling's* mean gap is ≈ 1 everywhere above 20 customers; it is tight
+  on no density-2 or density-4 Chu & Stuckey class at any size. B tight on
+  0 of 156. Tightness rises with the excess for every family (E 30% → 98%
+  across deciles); **302 of the 375 uncovered lie at `e ≤ 3.30`** (30% of
+  the corpus); on the 338 the uncovered sit at `e = 2.6–5.6`, the dense
+  shoulder, with `2-2_0` (1.77) the exception. **Uncovered: 375** — 370 at
+  gap 1, 5 at gap ≥ 2 (all `125-125-4/6`); 153 never searched, 211 with
+  only E's ceiling run, 11 with every family run; **E's ceiling is below
+  the optimum on all 222 searched ones**, so the expansion family can close
+  none of them under any computation; M ran on 11 of the 375. The 11 of
+  the 338 are all §6-sparse, 100–125 customers, best floor from M (gap 1
+  on 6, 2 on 3, 3 and 4 on one each). Chu & Stuckey: every class at 30–75
+  and every 100-50 class closed; 100-100-4 3/5, 125-125-2 4/5, 125-125-4
+  and -6 1/5 each. `rest500` unchanged (473 → 473): no floor-producing
+  search ran there.
+- **Kill verdicts** (`verdicts.json`): E search **not met** (4,090 of 4,123,
+  99.2%); E exact **met** (70 of 338, 20.7%; 70 of the 145 with a bracket,
+  48.3%); M **not met** by a small margin (45 of 338, 13.3%); B **met**
+  (0 of 11 residual, 0 of 338); open classes **not met** (5 of 23 floors
+  above the record, 2 of 24 classed closed).
+- **Cost ledger regenerated**: 32.51 instance core-hours + 0.96 checker
+  from the files, ≈ 1.4 more in the logs' uncounted runs: **about 35
+  core-hours** against the plan's 56; the PROGRESS entries' hand figures
+  sum to 34.9. This item: 0 (reads files; ≈ 20 s to regenerate).
+- **Two slips recorded in §8.1**: item 05's `joined.csv::best_floor` was
+  `max(floor0, search_floor)` and left the ladder out (43 against the
+  ladder's 45 and 44 on `Random-100-100-4-1_0` / `-4-4_0`; the prose and
+  tables counted the ladder separately and stand; with the record's own
+  minor certificates in, M is tight on 76 of 87 above 60 and 189 of 200,
+  which is item 05's "73 + 3" and "186 + 3"); the ledger's `harper12` is 0
+  on `scoop-B_18CR1_33_0` (five components; the exact value is 1; harmless,
+  `floor0 = optimum` there).
+- **Figure** `families.png` (dataviz skill read first; two hues, no title
+  inside): the gap of the best floor and of E's ceiling against the excess
+  in four size bands, and the 200 Chu & Stuckey by class.
+- No stop condition fired: no floor above an optimum (asserted by the
+  test on every family column), no certificate rejected (none re-checked
+  here; the items' verdict files are cited). Harness validity stage not
+  re-run: the map's floors are the items' floors, each already through it.
+- **Gate**: **PASS** (`reports/scratch/obstruction_search/08_map/gate_run.out`, 09:46–09:58): lake build ok, 0 sorry, 0 axiom; `tests/` 1,883 passed, 2 skipped, 1 xfailed (4:33); `pathwidth_solver/` 123 passed (6:22); paper 77 pages, no undefined references. No Lean and no paper file touched by this item.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 09 (Lean: a checked certificate implies the bound — the contrapositive
+of Harper, the min-degree-minor certificate, one `decide`d instance each).
+Inputs for item 10's summary from this item: the headline table of §8.2,
+the dominance matrix of §8.4 (M above every family, below none), the 11
+uncovered of §8.5 with E closed out on every one, the verdicts of §8.6 and
+the regenerated cost of §8.7.

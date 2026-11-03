@@ -2567,3 +2567,314 @@ of 23 the greedy ladder reaches the same floor in a tenth of the time);
 that the E ceilings are the family's exact values (they are upper bounds on
 `max_t (f(t) − t)`, and the budget bound on 14 classes); that the 85-vertex
 minor of `NY_13` is minimal.
+
+---
+
+## 8. The duality-gap map: gap by family against excess, size and density; what no family closes; the kill verdicts (item 08)
+
+*Size range: all 6,376 certified corpus instances (9–134 customers) for
+the families on record (C the clique number, D the solver's `lb_best`, T
+`tw + 1`, P Lemma P, and Harper at cap 12 as family E's floor on record);
+the searched families on the frozen targets of item 01 — family E's
+ceiling on the 4,697 targets (`gap338 ∪ cs200 ∪ rest500 ∪ small`), its
+exact floor on the 144 instances item 03 reached, family M on the 436
+instances items 04–05 ran (`gap338 ∪ cs200`, 20–134 customers), family B on
+the 338. Every value in optimum units; gap = optimum − value. Nothing in
+this section was computed afresh: the module reads the items' CSVs and
+joins them. Regenerate: `python3 -m learning.obstruction_map --stage all`
+(about 20 s). Outputs under `reports/scratch/obstruction_search/08_map/`:
+`map.csv` (6,376 rows, one per instance: every family's floor with its
+source, E's ceiling, `best`, `best_family`, the gaps, the §6 cluster),
+`uncovered.csv` (375), `dominance.csv`, `cost.csv`, `verdicts.json`,
+`tables.md` (the tables in full, with the ten smallest uncovered instances
+drawn), `families.png`, `run.log`, `gate_run.out`. Tests:
+`tests/test_obstruction_map.py` (8). Kill verdict: none of the item's own;
+the families' are in §8.6.*
+
+### 8.1 What was done
+
+`learning/obstruction_map.py` builds one row per corpus instance from
+item 01's ledger and the items' files, with these definitions (the
+module's docstring is the contract):
+
+- **E, floor**: `max(harper12, item 02's floor rerun, item 02's exact
+  enumeration at n ≤ 22, item 03's floor_after)` — every term a proved
+  Harper level (branch and bound to its cap, exact enumeration, or an
+  UNSAT level with a verified DRAT certificate). **E, ceiling**: item 02's
+  searched ceiling, replaced by the exact value at n ≤ 22 and by item 03's
+  `ceiling_after` where SAT found a better set; NaN on the 1,679 instances
+  outside every target set. The ceiling is an upper bound on what the
+  family can ever prove, never a bound on the optimum; `e_closed_out`
+  marks the instances where it is below the optimum.
+- **M**: `max(record minor, ladder, search)` over items 04, 05 and the
+  ridge stage. This is the same definition item 06's `record_floors` used
+  for its residual, plus the record's own minor certificates (item 01's
+  `minor` column), which are family M certificates too; it differs from
+  item 05's `joined.csv::best_floor`, which was `max(floor0, search_floor)`
+  and so **left the ladder out** — on `Random-100-100-4-1_0` and `-4-4_0`
+  item 05's column reads 43 where the ladder had certified 45 and 44. Item
+  05's prose and tables counted the ladder separately and are unaffected;
+  the column is the slip, recorded here. With the record's certificates
+  in, M is tight on **76 of the 87** gap instances above 60 and on **189
+  of the 200** Chu & Stuckey, which is item 05's "73 + 3 by the record" and
+  "186 + 3".
+- **B**: item 06's `b_value` (NaN where no linked triple exists; 156 of
+  the 338 have one). **C, D, T, P**: the ledger's `omega`, `lb_best`,
+  `tw1`, `lemmaP`; `omega ≤ lb_best` on every instance, so C never attains
+  the best alone.
+- `best = max` over the seven; `best_family` lists every family attaining
+  it. Where no search ran, `best = floor0` on all 1,679 instances (the
+  test pins it); where only the ceiling ran (`small ∪ rest500` outside
+  `gap338 ∪ cs200`), the floor side is item 01's and the exact enumeration
+  can add at most one.
+- The §6 cluster labels (`sparse` 201, `dense` 137) are read from
+  `learning/data/bound_gap.csv` (git-ignored) and stored in `map.csv`.
+- The cost ledger sums the seconds columns of the items' own CSVs; the
+  run logs' `core-hours` lines are quoted beside, and what the files do not
+  carry (the harness runs, item 04's validation, item 06's first pass, the
+  restarts' redone work) is listed, not estimated.
+
+One quirk met on the way, not this item's and harmless: the ledger's
+`harper12` is **0** on `scoop-B_18CR1_33_0` (19 customers, five
+components, cap recorded 0), where the exact enumeration gives 1 and the
+bound's value is at least 1 by definition; `floor0 = optimum = 4` there by
+`lb_best` and `tw1`, so nothing depends on it.
+
+### 8.2 The headline: who closes what
+
+| set | instances | `floor0` tight | reference tight | best tight | best tight % | best gap mean | max | gap ≥ 2 | best > `floor0` | E closed out |
+|---|---|---|---|---|---|---|---|---|---|---|
+| all 6,376 | 6,376 | 5,732 | 5,710 | **6,001** | 94.1 | 0.06 | 4 | 5 | 276 | 1,598 |
+| searched targets | 4,697 | 4,206 | 4,188 | 4,475 | 95.3 | 0.05 | 4 | 5 | 276 | 1,598 |
+| `gap338` | 338 | 81 | 67 | **327** | 96.7 | 0.06 | 4 | 5 | 253 | 320 |
+| `cs200` | 200 | 88 | 76 | 189 | 94.5 | 0.10 | 4 | 5 | 108 | 136 |
+| `rest500` | 500 | 473 | 472 | 473 | 94.6 | 0.05 | 1 | 0 | 0 | 159 |
+| `small` (n ≤ 22) | 4,123 | 3,913 | 3,912 | 3,925 | 95.2 | 0.05 | 1 | 0 | 12 | 1,190 |
+
+The reference is the harness's `max(lb_best, tw + 1)`. The loop moved
+the corpus from 5,732 to 6,001 tight (89.9% → 94.1%) and the 338 from 81
+to 327; every one of the 276 instances whose floor rose owes it to family
+M (alone on 272, tied with E on 4). `rest500` did not move because no
+floor-producing search ran on it: only E's ceiling did, which closes
+nothing by construction and closes *out* 159 of the 500 (the ceiling
+below the optimum on 159: the expansion family cannot close them under
+any computation).
+
+**By size band** (all 6,376; each searched family over the instances it
+ran on):
+
+| band | instances | `floor0` tight | `floor0` gap | best tight % | best gap | E tight % (of all) | E gap | M ran | M tight | B ran | B tight | E ceiling gap | E closed out |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 9–20 | 4,122 | 3,913 | 0.05 | 95.2 | 0.05 | 71.2 | 0.32 | 17 | 17 | 6 | 0 | 0.32 | 1,189 |
+| 21–30 | 1,816 | 1,598 | 0.13 | 92.4 | 0.08 | 54.5 | 0.57 | 157 | 157 | 21 | 0 | 1.16 | 201 |
+| 31–40 | 197 | 143 | 0.31 | 92.9 | 0.07 | 47.2 | 0.87 | 66 | 66 | 42 | 0 | 1.03 | 54 |
+| 41–60 | 121 | 51 | 0.96 | 91.7 | 0.08 | 28.9 | 1.49 | 89 | 89 | 51 | 0 | 1.05 | 65 |
+| 61–75 | 30 | 6 | 2.77 | 90.0 | 0.10 | 20.0 | 2.83 | 27 | 27 | 9 | 0 | 0.93 | 21 |
+| 76–100 | 63 | 11 | 5.48 | 93.7 | 0.06 | 15.9 | 6.44 | 53 | 51 | 18 | 0 | 1.48 | 48 |
+| 101–134 | 27 | 10 | 4.89 | 66.7 | 0.63 | 14.8 | 10.04 | 27 | 18 | 9 | 0 | 1.11 | 20 |
+
+Family M is tight on every instance it ran on to 75 customers, on 51 of
+53 at 76–100 and on 18 of 27 at 101–134. Family E's floor is tight on 71%
+of the smallest band and on 15% of the largest; its *ceiling's* mean gap is
+0.3 at 9–20 and about 1 everywhere above 20, so the family's exact value
+would miss the optimum by one on a typical instance above 20 customers
+even if the inner minimum were computed in full. Family B is tight nowhere
+(0 of 156). The record families (`tables.md` (b2)): T is tight on 94% at
+9–20 and on 0% at 61–75 and 101–134; D on 88% → 0%; C on 54% → 0% with a
+mean gap of 53.6 at 101–134.
+
+**By collection**: best tight on 95.4% of Harvey, 94.9% of Simonis, 94.5%
+of Chu & Stuckey, 95% of Wilson, 87% of Challenge, 81.7% of
+Faggioli–Bentivoglio, 80% of Shaw and **41.7% of SCOOP** (10 of 24, `floor0`
+7) — but family M ran on only 3 SCOOP and 83 Faggioli–Bentivoglio
+instances (those in the 338), and was tight on every one; the uncovered
+SCOOP and Faggioli–Bentivoglio instances (14 and 55) are gap-1 instances
+on which no floor-producing search was run.
+
+### 8.3 The 200 Chu & Stuckey by class, and the excess
+
+Every class at 30–75 customers and every 100-50 class is closed (5 of 5);
+100-100-4 is 3 of 5, 125-125-2 4 of 5, **125-125-4 and 125-125-6 1 of 5
+each** (mean gap 1.8 and 1.4, max 4 and 3), 125-125-8 and -10 5 of 5.
+`floor0`'s mean gap on the classes the loop closed was as high as 13.8
+(100-100-4), 13.6 (125-125-6), 11.8 (100-50-6) and 10.4 (100-50-4). Family
+E's floor is tight on **no** density-2 or density-4 class at any size and
+on 60–100% of the density 8–10 classes to 50 customers; at 125 it is tight
+on 4 of 5 at density 10 (gap 0.2) and on none below (gaps 2.0, 12.0, 22.2,
+14.6 at densities 8, 6, 4, 2). Its ceiling's mean gap is 2.0 at 125-125-2
+and 1.2 at 125-125-4/6: the family is closed out on all five of each. The
+figure's lower panel is this table: the blue line (best floor) sits at
+zero across every class but 100-100-4 and the three 125×125 classes at
+densities 2–6, while the orange (E ceiling) rises wherever the density is
+2 or 4.
+
+![gap of the best floor and of E's ceiling against the excess, by size band, and the 200 Chu & Stuckey by class](scratch/obstruction_search/08_map/families.png)
+
+**By excess decile** (deciles over all 6,376):
+
+| decile | excess | instances | `floor0` tight % | best tight % | E tight % | M ran / tight | uncovered |
+|---|---|---|---|---|---|---|---|
+| 1 | 0.70–2.00 | 851 | 66.5 | 82.4 | 30.0 | 170 / 169 | 150 |
+| 2 | 2.02–2.60 | 437 | 68.4 | 78.3 | 31.1 | 55 / 55 | 95 |
+| 3 | 2.61–3.30 | 641 | 86.4 | 91.1 | 44.6 | 58 / 54 | 57 |
+| 4 | 3.32–4.00 | 714 | 91.9 | 94.7 | 52.0 | 36 / 34 | 38 |
+| 5 | 4.03–4.87 | 554 | 96.6 | 97.5 | 63.7 | 10 / 9 | 14 |
+| 6 | 4.88–5.60 | 632 | 95.3 | 97.5 | 66.9 | 24 / 21 | 16 |
+| 7 | 5.63–6.50 | 653 | 99.1 | 99.5 | 81.5 | 7 / 7 | 3 |
+| 8 | 6.52–8.05 | 620 | 97.7 | 99.7 | 81.6 | 31 / 31 | 2 |
+| 9 | 8.07–10.43 | 637 | 98.9 | 100.0 | 91.7 | 34 / 34 | 0 |
+| 10 | 10.45–84.73 | 637 | 100.0 | 100.0 | 98.0 | 11 / 11 | 0 |
+
+Tightness rises with the excess for every family: E's floor from 30% to
+98%, `floor0` from 66% to 100%. **302 of the 375 uncovered instances
+(80.5%) lie in the three lowest deciles, `e ≤ 3.30`, which hold 30% of the
+corpus.** On the 338 (`tables.md` (f2)) the picture inverts at the top:
+the lowest two deciles are closed (162 of 163 at `e ≤ 2.00`, 55 of 55 at
+2.02–2.60: the ridge and its sparse flank, where family M's minors are
+small), and the uncovered sit at `e = 2.61–5.60` (4 of 53, 2 of 33, 1 of
+6, 3 of 14): the dense shoulder of loop0010's phase diagram, where
+`d = 4` (`e` 2.9–3.4) and `d = 6` (4.7–5.3) live. The exception is
+`Random-125-125-2-2_0` at `e = 1.77`.
+
+### 8.4 Dominance, and which family attains the best
+
+On how many instances the row family is strictly above the column family,
+where both ran (denominators: 6,376 among C, D, T, P, E; 436 against M;
+156 against B):
+
+| A ∖ B | C | D | T | P | E | M | B |
+|---|---|---|---|---|---|---|---|
+| C | — | 0 | 0 | 0 | 525 | 0 | 147 |
+| D | 3,444 | — | 185 | 3,438 | 1,022 | 0 | 150 |
+| T | 3,427 | 933 | — | 3,421 | 1,845 | 0 | 150 |
+| P | 554 | 5 | 7 | — | 528 | 0 | 151 |
+| E | 3,137 | 172 | 202 | 3,125 | — | 0 | 144 |
+| M | 436 | 383 | 306 | 436 | 371 | — | 156 |
+| B | 1 | 1 | 1 | 1 | 4 | 0 | — |
+
+**Family M is above every other family on some instance and below none
+on any**: above E on 371 of the 436 (85%), above T on 306, above D on
+383; E, T, D are above M on 0. On the 338 (`tables.md` (g), third
+matrix) M is above E on 326, above T on 271, above D on 338. Between the
+record families, T is above D on 933 and D above T on 185 (the 185 are
+where exact treewidth is not on record and `tw1` is the proved lower end);
+T above E on 1,845 and E above T on 202 overall, but on the 338 E above T
+on 116 against 169, so Harper and treewidth are complementary there. C is
+above E's floor on 525 instances (14 of the 338): where cap 12 is far from
+the clique number, which is why `floor0` keeps `lb_best` beside Harper.
+Family B is above another family on 1 instance (`p2050n1_0`, above C, D,
+T, P) and above E on 4; every other family is above it on 144–156 of 156.
+
+Which family attains the best floor: T alone on 702 (all tight), M alone
+on 283 (272 tight), E alone on 4, P alone on 2; D and C never alone. On
+the 338 M attains the best on all 338 (alone and tight on 249, tied with T
+on 67 and with E on 12); on `cs200` M alone and tight on 106.
+
+### 8.5 The uncovered: what no family closes
+
+**375 of 6,376 (5.9%)**: 370 at gap 1 and **5 at gap ≥ 2**, the five all
+`Random-125-125-4/6` instances. Of the 375, 153 were never searched
+(outside every target set), 211 had only E's ceiling run (the `small` and
+`rest500` instances where `lb_best` is one short), and 11 — the 338's
+residual, also `cs200`'s — had every family run. On every one of the 222
+searched uncovered instances the ceiling is below the optimum: **the
+expansion family can close none of them under any computation.** Family M
+ran on 11 of the 375.
+
+The 364 outside the 338 are gap-1 instances at 9–99 customers (Simonis
+185, Harvey 98, Faggioli–Bentivoglio 55, SCOOP 14, Challenge 6, Shaw 5,
+Wilson 1; mean excess 2.5). The 11 of the 338, in full:
+
+| instance | n | e | §6 cluster | optimum | `floor0` | E floor | E ceiling | M | B | best | gap |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| `Random-125-125-4-1_0` | 125 | 3.38 | sparse | 57 | 53 | 37 | 55 | 53 | — | 53 | **4** |
+| `Random-125-125-6-5_0` | 125 | 4.70 | sparse | 74 | 56 | 59 | 73 | 71 | — | 71 | **3** |
+| `Random-125-125-4-2_0` | 125 | 3.29 | sparse | 57 | 55 | 35 | 56 | 55 | — | 55 | 2 |
+| `Random-125-125-4-3_0` | 125 | 3.32 | sparse | 54 | 31 | 34 | 53 | 52 | — | 52 | 2 |
+| `Random-125-125-6-4_0` | 125 | 5.13 | sparse | 80 | 63 | 69 | 79 | 78 | — | 78 | 2 |
+| `Random-100-100-4-1_0` | 100 | 3.18 | sparse | 46 | 33 | 34 | 44 | 45 | — | 45 | 1 |
+| `Random-100-100-4-3_0` | 100 | 3.09 | sparse | 43 | 26 | 26 | 42 | 42 | 2 | 42 | 1 |
+| `Random-125-125-2-2_0` | 125 | 1.77 | sparse | 25 | 24 | 8 | 23 | 24 | 3 | 24 | 1 |
+| `Random-125-125-4-4_0` | 125 | 3.09 | sparse | 51 | 50 | 24 | 50 | 50 | 2 | 50 | 1 |
+| `Random-125-125-6-2_0` | 125 | 5.09 | sparse | 77 | 60 | 61 | 75 | 76 | — | 76 | 1 |
+| `Random-125-125-6-3_0` | 125 | 5.26 | sparse | 80 | 64 | 70 | 79 | 79 | — | 79 | 1 |
+
+All eleven are in §6's sparse cluster, at 100–125 customers, excess
+3.1–5.3 but for `2-2_0`; family M gives the best floor on every one; E's
+ceiling is below the optimum on every one (by one on nine, by two on
+two), so no computation of the inner minimum can close them; B's three
+values are fringe separators (branches of one to three customers). What
+they have in common is what §38 and loop0010 said of the dense shoulder:
+the obstruction families that certify by a *substructure* (a clique, a
+minor, a branch) or by a *prefix count* (Harper) all stop one to four
+stacks short of an optimum that the search proves only by exhausting
+10¹¹ nodes.
+
+**The ten smallest uncovered** (`tables.md` (j), drawn in full) are nine
+and ten-customer instances of Faggioli–Bentivoglio and Simonis at matrix
+density 0.20–0.40 and excess 1.0–2.8, optimum 4–7, best floor one short
+(`lb_best`, `tw + 1`, Harper exact and Lemma P all tie on nine of them),
+E's exact ceiling at the best floor on nine and below it on one (`HS
+problem 139`, ceiling 4 against a floor of 5). Their degree sequences run
+from one or two vertices of degree 8–9 down to vertices of degree 0–2:
+hubs with a fringe, as the bounds section of `CLAUDE.md` describes the
+bound-defeating family — an observation on ten drawn matrices, not a
+claim that the 375 share a structure. Family M was not run on them (they
+are not in the 338); at these sizes item 04 found M tight on 251 of 251,
+so the honest statement is that they are uncovered *on record*, not that
+they resist the families.
+
+### 8.6 The kill verdicts (plan §0.9), each with the number that decides it
+
+| family | criterion | the number | verdict |
+|---|---|---|---|
+| E, the search | searched `f̂(t) = f(t)` at every `t` on < 90% of instances at n ≤ 22 | 4,090 of 4,123 (99.2%) | **not met** |
+| E, the exact half | SAT settles the argmax level on < 50% of the 338 within budget | 70 of 338 (20.7%); 70 of the 145 with a bracket (48.3%), 143 of them reached | **met**: Harper exact is out of reach by SAT above cap 12 at 75 customers and beyond, fully in reach to 60 (item 03's boundary) |
+| M | the search beats the greedy ladder on < 10% of the 338 | 45 of 338 (13.3%); all 338 run | **not met**, by a small margin: never by more than one at n ≤ 60, never below the ladder's floor as a family |
+| B | no B certificate exceeds `max(lb_best, tw + 1, M)` on any residual gap instance | 0 of 11 residual; 0 of the 338 | **met**: branching is closed |
+| open classes | zero floors above the recorded ones (the tree aside) is a verdict, not a failure | 5 of 23 floors above the record; 2 of 24 classes closed (`BalancedTree_3_5` by the branch lemma, `NY_13` by an 85-vertex minor) | **not met**: floors rose and two classes closed; E's ceiling is below the recorded width on all 24 |
+
+`verdicts.json` carries the same five rows with their source files.
+
+### 8.7 The cost ledger, regenerated
+
+Core-hours per item, summed from the seconds columns of the items' own
+CSVs (`cost.csv`; instance time, the C program's seconds inside the
+search's; the checker's where its verdict file records them):
+
+| item | what | instance core-h | checker core-h | not counted (from the logs) |
+|---|---|---|---|---|
+| 01 | Harper at cap 12 on every corpus instance | 1.01 | — | the dataset's cheap floors |
+| 02 | E ceiling (two passes), exact at n ≤ 22, floor rerun | 3.09 | — | the harness run (0.32) |
+| 03 | E exact by SAT with DRAT | 5.76 | 0.31 | the three instances not reached |
+| 04 | M search and ladder at n ≤ 60 | 5.09 | 0.01 | validation (0.3), the restarts' redone work (≈ 0.2) |
+| 05 | M at scale, the ridge pair | 10.44 | 0.15 | (the 22 carried rows are under 04) |
+| 06 | B separators with certified branches | 0.47 | 0.07 | pass 1 (0.48), connectivity |
+| 07 | the 24 open classes (E, M, B) | 6.65 | 0.42 | the rule-free check of `NY_13` (1.9 s) |
+| 08 | this map | 0 | 0 | — |
+| **total** | | **32.51** | **0.96** | ≈ 1.4 more by the logs |
+
+The loop's compute is therefore about **35 core-hours** (33.5 in the
+files, about 1.4 more in the logs' uncounted runs) against the plan's 56
+(E 9, M 28, B 4, open classes 10, the rest under 5): E took 9.7 (02, 03
+and 07's 0.50), M 15.7 (04, 05) and 5.75 (07), B 0.54 and 0.39, the open
+classes 6.65 + 0.42 in all. The
+PROGRESS entries' hand-carried figures sum to 34.9; the two agree to
+within the uncounted runs, which is what the regenerated ledger is for.
+
+### 8.8 What this does not claim
+
+Nothing in this section is a bound: every number is a reading of the
+items' files, and the families' floors are theirs (E rests on
+`exists_closedNbhd_card_le`, M on `pathwidth_gt_of_minorOf` and
+`lt_mospValue_of_minorOf`, B on `branch_lemma_separator`, each certificate
+verified by `paper1/obstruction_check.py` in its item). No solver change
+is proposed. The uncovered instances are described by their numbers; the
+hub-and-fringe reading of the ten drawn matrices is an observation on
+ten instances. "Uncovered" means uncovered *on record*: family M was run
+on 11 of the 375, and at 9–60 customers it was tight on every instance it
+was run on. The dominance table compares families where both ran, so its
+M column rests on 436 instances and its B column on 156. The excess
+deciles are over the corpus's realised excess, not the generators'
+nominal one (loop0010's warning). The cost ledger counts what the files
+carry; the harness, validation and smoke runs are listed, not summed.

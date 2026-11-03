@@ -40,3 +40,8 @@
 [2026-11-03 07:26:49] claude session it07 (cap 4.00 h) -> session_it07.log
 [2026-11-03 09:20:41] session it07: ok (exit 0, 96 tool calls)
 [2026-11-03 09:31:38] tests passed: GATE PASS
+[2026-11-03 09:31:38] committed 288a539d4: 07 The 24 open classes: family E's ceiling, M and B as lower-bound sea
+[2026-11-03 09:31:38] === iteration 8: 08 The duality-gap map: gap by family against excess, size and density; what no family clo
+[2026-11-03 09:31:38] claude session it08 (cap 4.00 h) -> session_it08.log
+[2026-11-03 09:57:44] session it08: ok (exit 0, 54 tool calls)
+[2026-11-03 10:08:45] tests passed: GATE PASS

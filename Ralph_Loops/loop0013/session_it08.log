@@ -1,0 +1,155 @@
+# session it08 started 2026-11-03 09:31:38
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan's §0.5 and §0.9, the report so far, and the item CSVs from items 01–07, then build `learning/obstruction_map.py`.
+  > $ date && uptime && wc -l reports/obstruction_search_plan.md reports/obstruction_search.md && grep -n "^## \|^### " reports/obstruction_search_plan.md | head -80
+  > $ sed -n 224,437p reports/obstruction_search_plan.md
+  > $ grep -n "^## \|^### " reports/obstruction_search.md | head -120; ls reports/scratch/obstruction_search/; for d in 01_ledger 02_expansion 03_sat 04_minor 05_mino
+  > $ cd /home/al/dev/MOSP/reports/scratch/obstruction_search && for f in 01_ledger/ledger_corpus.csv 01_ledger/harper12.csv 02_expansion/ceiling.csv 02_expansion/flo
+  > $ head -1 01_ledger/ledger_corpus.csv | tr ',' '\n' | nl | sed -n 55,120p; echo ====; head -1 06_branch/joined.csv | tr ',' '\n' | nl | tail -40; echo ====; head 
+  > $ cd /home/al/dev/MOSP && wc -l learning/obstruction_ledger.py learning/obstruction_expansion.py learning/obstruction_minor.py learning/obstruction_branch.py && g
+  > $ sed -n 1350,1375p reports/ml_nature.md; echo ====; ls learning/data/bound_gap* learning/data/bound_harness | head; head -3 learning/data/bound_gap.csv 2>/dev/nu
+  > $ head -1 learning/data/bound_gap.csv | tr ',' '\n' | grep -n "cluster\|gap" ; echo ====; grep -n "def smallest_ten" -A 12 learning/obstruction_branch.py; echo ==
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.314/c65ac4a289fa3bcbd6b3030d953ff0dc/dataviz && sed -n 1,80p references/palette.md; grep -n "scatter\|dot plot\|strip\|sm
+  > $ python3 - <<'EOF'
+import pandas as pd
+b=pd.read_csv("learning/data/bound_gap.csv")
+print(len(b), b["cluster"].value_counts(dropna=False).to_dict())
+print(b.grou
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+S="reports/scratch/obstruction_search/"
+j5=pd.read_csv(S+"05_minor_scale/joined.csv"); j4=pd.read_csv(S+"04_minor/jo
+  > $ python3 - <<'EOF'
+import pandas as pd
+S="reports/scratch/obstruction_search/"
+j5=pd.read_csv(S+"05_minor_scale/joined.csv")
+d=j5[j5.best_floor!=j5[["ladder_floo
+  > $ grep -n "best_floor\"\] = \|\"best_floor\"\|best_floor =" learning/obstruction_minor.py | head; grep -n "def write_tables_scale" -A 60 learning/obstruction_mino
+  > $ git ls-files learning/data/bound_gap.csv learning/data/instances.csv reports/scratch/obstruction_search/06_branch/joined.csv | cat; sed -n 1,60p learning/extrem
+
+Now I'll write `learning/obstruction_map.py`.
+  > Write /home/al/dev/MOSP/learning/obstruction_map.py
+
+Two spots in that draft are messy (a dead `bracket` computation in the verdicts and a convoluted "M ran" expression). I'll clean them, then run the map stage.
+  > $ python3 - <<'EOF'
+import re
+p="learning/obstruction_map.py"; s=open(p).read()
+old_start=s.index("        bracket = f[f.is_gap338 &"); old_end=s.index("        g
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+S="reports/scratch/obstruction_search/08_map/"
+f=pd.read_csv(S+"map.csv"); u=pd.read_csv(S+"uncovered.c
+  > $ python3 - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np, json
+S="reports/scratch/obstruction_search/08_map/"
+f=pd.read_csv(S+"map.csv")
+u=f[f.
+  > $ python3 - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd, numpy as np
+S="reports/scratch/obstruction_search/"
+f=pd.read_csv(S+"08_map/map.csv").set_index("i
+  > $ python3 - <<'EOF'
+p="learning/obstruction_map.py"; s=open(p).read()
+old=s[s.index("    i3 = _read(SCRATCH / \"03_sat\" / \"instances.csv\")\n    if i3 is not No
+
+My regex edit matched the wrong `i3` block (the one in `family_e`) and cut out a large section. I'll rewrite the file in full with all three corrections applied properly.
+  > Write /home/al/dev/MOSP/learning/obstruction_map.py
+  > $ rm -f learning/obstruction_map.py reports/scratch/obstruction_search/08_map/run.log && ls learning/obstruction_map.py 2>&1 | head -1
+  > Write /home/al/dev/MOSP/learning/obstruction_map.py
+  > $ python3 -m pyflakes learning/obstruction_map.py; nice -n 19 python3 -m learning.obstruction_map --stage all 2>&1 | grep -v Warning | tail -4; ls -la reports/scr
+  > $ nice -n 19 python3 -m learning.obstruction_map --stage figure 2>&1 | grep -v Warning | grep -B 12 "Error" | head -30
+
+Tuple keys in `.loc` are being read as multi-index. I'll switch the class key to a string label and rerun the figure.
+  > $ python3 - <<'EOF'
+p="learning/obstruction_map.py"; s=open(p).read()
+old='''    cs["cls_key"] = list(zip(cs.cs_n.astype(int), cs.cs_m.astype(int), cs.cs_d.astype
+  > Read /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
+  > $ python3 - <<'EOF'
+p="learning/obstruction_map.py"; s=open(p).read()
+old='''        ax.scatter(g.excess, jit(g.gap_best.values), s=14, color=PALETTE["blue"], alp
+  > $ python3 - <<'EOF'
+import pandas as pd
+f=pd.read_csv("reports/scratch/obstruction_search/08_map/map.csv")
+x=f[(f.best>f.floor0)&f.is_small]; print(x[["instance_n
+  > Write /home/al/dev/MOSP/tests/test_obstruction_map.py
+  > $ nice -n 19 python3 -m pytest tests/test_obstruction_map.py -q 2>&1 | tail -5; echo =====; sed -n '/## (b) By/,/## (c)/p' reports/scratch/obstruction_search/08_m
+  > $ T=reports/scratch/obstruction_search/08_map/tables.md; sed -n '/## (d)/,/## (f2)/p' $T | cut -c1-330; echo; sed -n '/## (g)/,/## (j)/p' $T | cut -c1-600
+  > $ T=reports/scratch/obstruction_search/08_map/tables.md; sed -n '/## (f2)/,/## (g)/p' $T | cut -c1-250; sed -n '/## (j)/,/## (m)/p' $T | cut -c1-400 | head -120; 
+  > Read /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
+
+The third and fourth panel titles collide. I'll put the counts on a second line and rerun the figure.
+  > $ python3 - <<'EOF'
+p="learning/obstruction_map.py"; s=open(p).read()
+old='''        ax.set_title(f"{label} customers, {len(g):,} instances" + (f" ({off} beyond e
+  > Read /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
+
+The figure reads cleanly now. I'll launch the gate in the background (it takes about 13 minutes) and write the report section while it runs.
+  > $ nohup nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/08_map/gate_run.out 2>&1 &
+echo "gate pid $!"; sleep 2; head -5 repor
+  > $ grep "scoop-B_18CR1_33_0" reports/scratch/obstruction_search/01_ledger/harper12.csv; python3 - <<'EOF' 2>&1 | grep -v Warning
+import pandas as pd
+l=pd.read_csv(
+
+The report section is next; the gate is still on `lake build`. I'll append §8 now.
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+
+---
+
+## 8. The duality-gap map: gap by family against excess, size and density; what no family closes; the kill ve
+  > $ ps -p 313568 -o pid,etime,cmd | tail -1; ps -eo pid,etime,cmd | grep -E "lake|pytest" | grep -v grep | head -3; cat reports/scratch/obstruction_search/08_map/ga
+  > $ ps -p 313568 -o pid,etime | tail -1; ps -eo pid,etime,comm | grep -E "^ *[0-9]+ +[0-9:]+ +(lake|lean|pytest|python3)$" | head -5; wc -c reports/scratch/obstruct
+  > $ python3 - <<'EOF'
+p="reports/obstruction_search.md"; s=open(p).read()
+old="(E 9, M 28, B 4, open classes 10, the rest under 5): E took 9.9 (02 + 03\n+ 07's shar
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until ! kill -0 313568 2>/dev/null; do sleep 5; done; echo "gate exited"; tail -30 reports/scratch/obstruction_search/08_map/gate_run.out
+
+The gate is running in the background with a waiter attached. While it runs I'll mark the item in `iterations.md` and prepare the PROGRESS entry.
+  > $ grep -n "^- \[ \] \*\*08" Ralph_Loops/loop0013/iterations.md && sed -i 's/^- \[ \] \*\*08 The duality-gap map/- [x] **08 The duality-gap map/' Ralph_Loops/loop0
+
+The only remaining dependency is the gate result; everything else is written. Checking the gate's interim output.
+  > $ ps -p 313568 -o etime | tail -1; wc -c reports/scratch/obstruction_search/08_map/gate_run.out; ps -eo pid,etime,args | grep -E "pytest|lake" | grep -v grep | cu
+  > Monitor {"command": "while kill -0 313568 2>/dev/null; do sleep 5; done; echo \"gate process exited\"; tail -5 /home/al/dev/MOSP
+
+While waiting on the gate I'll write the PROGRESS entry, leaving the gate line to fill in when the result arrives.
+  > $ sed -i 's/^Current: 7\/11 SOLVED/Current: 8\/11 SOLVED/' Ralph_Loops/loop0013/PROGRESS.md && cat >> Ralph_Loops/loop0013/PROGRESS.md <<'EOF'
+
+---
+## Iteration 8
+
+Only the gate result remains; the PROGRESS gate line depends on it. Checking the gate's progress once more.
+  > $ ps -p 313568 -o etime | tail -1; ps -eo pid,etime,args | grep -E "pytest" | grep -v grep | cut -c1-100 | head -2; wc -c reports/scratch/obstruction_search/08_ma
+
+The `tests/` suite passed its stage (the gate moved on to the `pathwidth_solver` suite, which takes about 6.5 minutes). Both a background waiter and a monitor are armed on the gate's PID; I'll fill in the PROGRESS gate line when it exits.
+
+# result: success in 1152s, 52 turns, cost $10.82
+  > $ grep -E "sorry|axiom|passed|Pages|GATE|lake" reports/scratch/obstruction_search/08_map/gate_run.out | head -12
+  > $ grep -n "axiom" reports/scratch/obstruction_search/08_map/gate_run.out | head -2; python3 - <<'EOF'
+p="Ralph_Loops/loop0013/PROGRESS.md"; s=open(p).read()
+new=(
+  > $ grep -in "axiom\|sorry" reports/scratch/obstruction_search/08_map/gate_run.out | head -5
+  > $ grep -n "axiom" Ralph_Loops/loop0013/gate.py | head -5
+
+The gate folds the axiom scan into the same check (it would have failed on any `axiom` declaration), so the PROGRESS line is accurate. Item 08 is complete; items 09–11 remain, so no `LOOP_COMPLETE` marker.
+
+**Item 08 done: the duality-gap map.** The gate passed (lake build ok, 0 sorry, 0 axiom; 1,883 tests in `tests/`, 123 in `pathwidth_solver/`; paper 77 pages).
+
+What was built:
+- `learning/obstruction_map.py` joins items 01–07's files into one row per corpus instance, with every family's floor and source, E's ceiling, the best floor and its family, then the tables by band, collection, Chu & Stuckey class and excess decile, the dominance matrices, the uncovered set with the ten smallest drawn, the five kill verdicts, and a cost ledger regenerated from the items' seconds columns. Nothing is recomputed; regenerate with `python3 -m learning.obstruction_map --stage all`.
+- `tests/test_obstruction_map.py` (8 tests) pins that the map reproduces item 01's `floor0` on the 1,679 unsearched instances, that no family's floor exceeds an optimum, that E's floor never exceeds its ceiling, that M's floor is the max of the record, ladder and search, and that the committed files match a rebuild.
+- `reports/obstruction_search.md` §8, with `families.png` and the tables under `08_map/`.
+
+The findings, in brief:
+- Best floor tight on 6,001 of 6,376 instances and 327 of the 338; every one of the 276 floors that rose is family M's. M is above every other family on some instance and below none.
+- The expansion family's ceiling is below the optimum on all 222 searched uncovered instances, so no computation of the inner minimum can close them. Its floor is tight on no density-2 or density-4 Chu & Stuckey class at any size.
+- The 375 uncovered instances concentrate at low excess (302 at e ≤ 3.30); the 11 residual gap instances sit on the dense shoulder at 100–125 customers, all closed out for E, with M giving the best floor on every one.
+- Verdicts: E search not met, E exact met, M not met by a small margin, B met, open classes not met. Loop compute regenerated at about 35 core-hours against the plan's 56.
+
+Two slips recorded in §8.1: item 05's `best_floor` column left the ladder out on two instances (its prose stands), and the ledger's Harper value is 0 on one 19-customer SCOOP instance where the true value is 1 (harmless).
+
+Next is item 09 (Lean: a checked certificate implies the bound). Nothing was committed; the driver commits.
+
+# result: success in 36s, 5 turns, cost $14.50

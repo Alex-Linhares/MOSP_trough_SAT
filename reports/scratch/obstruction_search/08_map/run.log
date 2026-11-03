@@ -1,0 +1,5 @@
+2026-11-03 09:43:59 map: 6376 instances; best tight on 6001; floor0 tight on 5732; uncovered 375 (11 of the 338, 11 of cs200); best above optimum on 0 (must be 0); wrote map.csv, uncovered.csv, dominance.csv, cost.csv, verdicts.json
+2026-11-03 09:43:59 tables: wrote /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/tables.md
+2026-11-03 09:44:11 figure: wrote /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
+2026-11-03 09:44:39 figure: wrote /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
+2026-11-03 09:45:54 figure: wrote /home/al/dev/MOSP/reports/scratch/obstruction_search/08_map/families.png
