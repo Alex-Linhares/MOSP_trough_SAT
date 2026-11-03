@@ -1,0 +1,294 @@
+{
+ "format": "obstruction-branch-1",
+ "instance_name": "p3050n4_0",
+ "n": 50,
+ "matrix_sha256": "b0479a6bd374cb3a32640d9d7fca887babddc986fb74c40c21c70f340f782394",
+ "graph_sha256": "056710497cc7df516229adc46f30c5aa0c4236a8ff2bcb9edeb2767ad7165c61",
+ "graph_edges": 161,
+ "pathwidth_proved": 4,
+ "floor": 5,
+ "floor_units": "optimum units: pathwidth(G) + 1 = MOSP",
+ "S": [
+  1,
+  6,
+  13,
+  16,
+  31,
+  40
+ ],
+ "k": 3,
+ "branch_widths": [
+  8,
+  3,
+  3
+ ],
+ "branch_sizes": [
+  31,
+  8,
+  4
+ ],
+ "branch_kinds": [
+  "c",
+  "c",
+  "clique"
+ ],
+ "node": {
+  "kind": "branch",
+  "vertices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32,
+   33,
+   34,
+   35,
+   36,
+   37,
+   38,
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49
+  ],
+  "pathwidth_at_least": 4,
+  "k": 3,
+  "S": [
+   1,
+   6,
+   13,
+   16,
+   31,
+   40
+  ],
+  "branches": [
+   {
+    "kind": "c",
+    "vertices": [
+     0,
+     2,
+     3,
+     5,
+     7,
+     8,
+     9,
+     10,
+     12,
+     14,
+     15,
+     17,
+     19,
+     21,
+     23,
+     25,
+     26,
+     27,
+     32,
+     33,
+     34,
+     35,
+     36,
+     39,
+     41,
+     43,
+     44,
+     46,
+     47,
+     48,
+     49
+    ],
+    "m": 31,
+    "edges": 92,
+    "edges_sha256": "3ad601685b365b82dc1b500375531e75eee3e6231980094bcf6c25e9d159857a",
+    "pathwidth_at_least": 8,
+    "source": "c_refutation",
+    "c_width": 8,
+    "c_status": "refutation",
+    "c_lower": 7,
+    "c_nodes": 461,
+    "c_stdout": [
+     "pathwidth 8 refutation",
+     "layout 12 17 29 14 23 4 18 8 25 21 5 27 11 2 15 10 13 7 1 3 9 6 28 0 30 26 19 24 16 22 20"
+    ],
+    "c_stderr": [
+     "line 1: n=31 width=8 status=refutation lower=7 upper_start=8 nodes=461 minor_nodes=0 upper_bound_nodes=179 engine_calls=3 seconds=0.001"
+    ],
+    "c_seconds": 0.001740537118166685,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   },
+   {
+    "kind": "c",
+    "vertices": [
+     4,
+     11,
+     18,
+     22,
+     24,
+     28,
+     29,
+     42
+    ],
+    "m": 8,
+    "edges": 13,
+    "edges_sha256": "1efb073194da76fc18f2cb83a59662cdd7af2f09aa970ae87708a14f62038c1e",
+    "pathwidth_at_least": 3,
+    "source": "c_bound",
+    "c_width": 3,
+    "c_status": "bound",
+    "c_lower": 3,
+    "c_nodes": 0,
+    "c_stdout": [
+     "pathwidth 3 bound",
+     "layout 7 4 3 2 6 5 0 1"
+    ],
+    "c_stderr": [
+     "line 1: n=8 width=3 status=bound lower=3 upper_start=3 nodes=0 minor_nodes=0 upper_bound_nodes=1 engine_calls=1 seconds=0.000"
+    ],
+    "c_seconds": 0.004383021034300327,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   },
+   {
+    "kind": "clique",
+    "vertices": [
+     20,
+     30,
+     38,
+     45
+    ],
+    "clique": [
+     20,
+     30,
+     38,
+     45
+    ],
+    "pathwidth_at_least": 3,
+    "source": "clique"
+   }
+  ],
+  "links": [
+   {
+    "Q": [
+     1,
+     6,
+     13,
+     16,
+     31
+    ],
+    "edge_first": [
+     1,
+     21
+    ],
+    "edge_second": [
+     6,
+     11
+    ],
+    "pair": [
+     0,
+     1
+    ]
+   },
+   {
+    "Q": [
+     1,
+     6,
+     13,
+     16,
+     31
+    ],
+    "edge_first": [
+     1,
+     21
+    ],
+    "edge_second": [
+     1,
+     45
+    ],
+    "pair": [
+     0,
+     2
+    ]
+   },
+   {
+    "Q": [
+     1,
+     6,
+     13,
+     16,
+     31
+    ],
+    "edge_first": [
+     6,
+     11
+    ],
+    "edge_second": [
+     1,
+     45
+    ],
+    "pair": [
+     1,
+     2
+    ]
+   }
+  ],
+  "source": "branch",
+  "n_comps": 4
+ },
+ "node_note": "every node names the vertex set it certifies a pathwidth for (vertices are the instance's 0-based customer labels); a `branch` node is S, three branches (nodes), three connectors Q \u2286 S with one edge to each branch, and certifies k + 1 where every branch certifies \u2265 k; a `c` node is the C program's output on the induced subgraph relabelled 0..m-1 in increasing label order (edges_sha256 as obstruction-minor-1); a `clique` node is a clique of the induced subgraph (pathwidth \u2265 size \u2212 1); a `trivial` node is one vertex; a `minor` node carries an obstruction-minor-1 certificate of the induced subgraph",
+ "optimum_on_record": 11,
+ "c_cap_seconds": 5.0,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "seconds": 1.5655017630197108,
+ "stats": {
+  "separators_family": 98,
+  "separators_evaluated": 6901,
+  "separators_with_3_comps": 1953,
+  "local_moves": 6803,
+  "local_starts": 12,
+  "censored": false,
+  "best_potential": 4,
+  "seconds": 1.5655017630197108,
+  "c_calls": 4,
+  "c_seconds": 0.009502690052613616,
+  "minor_calls": 0,
+  "leaves_cached": 6,
+  "memo": 6
+ },
+ "theorems": "branch_lemma_separator / branch_lemma_linked (lean/MOSPFormalization/Sandwich.lean) for every branch node; card_le_pathwidth_add_one_of_isClique (MOSPGraph.lean) for a clique leaf; the C program's refutation on a branch rests on the corrected search rules (Search/) and its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean); pathwidth_gt_of_minorOf (Minor.lean) for a minor leaf; mospValue_eq_pathwidth_add_one (MOSPGraph.lean) for the optimum units"
+}

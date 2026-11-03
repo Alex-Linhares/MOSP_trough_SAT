@@ -1,0 +1,171 @@
+# session it06 started 2026-11-03 06:34:37
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the harness code this item reuses, and the state items 04–05 left, then build family B.
+  > $ date && uptime && git status --short | head && wc -l reports/obstruction_search_plan.md learning/bound_harness.py learning/obstruction_minor.py paper1/obstructi
+  > $ cat reports/obstruction_search_plan.md
+  > $ grep -n "^#" reports/obstruction_search_plan.md | head -60
+  > $ sed -n 34,95p reports/obstruction_search_plan.md && sed -n 224,335p reports/obstruction_search_plan.md && sed -n 400,437p reports/obstruction_search_plan.md
+  > $ grep -n "def \|^class \|^[A-Z_]* = " learning/bound_harness.py | head -80
+  > $ sed -n 1,100p learning/bound_harness.py && sed -n 150,350p learning/bound_harness.py && sed -n 440,495p learning/bound_harness.py
+  > $ grep -n "^def \|^class \|^[A-Z_]* = \|^    def " learning/obstruction_minor.py | head -120
+  > $ sed -n 161,275p learning/obstruction_minor.py && sed -n 383,430p learning/obstruction_minor.py && sed -n 616,660p learning/obstruction_minor.py
+  > $ sed -n 659,800p learning/obstruction_minor.py && sed -n 1124,1215p learning/obstruction_minor.py && sed -n 1313,1332p learning/obstruction_minor.py
+  > $ sed -n 60,96p learning/obstruction_minor.py; echo ----; grep -n "^def \|^class \|^[A-Z_]* = \|argparse\|add_parser\|sub.add\|elif args\|if args.cmd\|def main" p
+  > $ sed -n 1,130p tests/test_bound_harness.py; echo ----LEAN; sed -n 60,90p lean/MOSPFormalization/Sandwich.lean; sed -n 805,900p lean/MOSPFormalization/Sandwich.le
+  > $ sed -n 900,990p lean/MOSPFormalization/Sandwich.lean | grep -n "theorem branch_lemma_separator" -A 22 | head -60; echo ----CHECKER; sed -n 1,100p paper1/obstruc
+
+Reading the residual set from item 05, the report's tail for style, the helper signatures I'll import, and the C binary's output on a small graph, all at once.
+  > $ head -1 reports/scratch/obstruction_search/05_minor_scale/joined.csv; echo; head -1 reports/scratch/obstruction_search/04_minor/joined.csv; echo; head -1 report
+  > $ grep -n "^def " learning/obstruction_expansion.py | head -50; echo ----; grep -n "def vertex_separation_brute" -A 12 learning/first_moment.py | head -30; echo -
+  > $ sed -n 193,216p learning/obstruction_expansion.py; sed -n 266,285p learning/obstruction_expansion.py; sed -n 433,462p learning/obstruction_expansion.py; sed -n 
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+v = pd.read_csv("learning/data/ensemble/bound_harness_values.csv.gz")
+t = json.load(open("reports/scratch/obstructio
+  > $ cat reports/scratch/obstruction_search/05_minor_scale/run_harness.py; echo ----; sed -n 30,80p tests/test_obstruction_minor.py; echo ----; grep -n "def ladder" 
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np, json
+from learning.obstruction_minor import family_e_floor
+base="reports/scratch/obstruction_search/"
+led = 
+
+Residual confirmed from the record: 11 instances, all dense 100–125-vertex Chu & Stuckey graphs. Now writing the module, the checker's `check-branch`, and the tests.
+  > Write /home/al/dev/MOSP/learning/obstruction_branch.py
+  > $ sed -n 111,125p paper1/obstruction_check.py; sed -n 303,340p paper1/obstruction_check.py; sed -n 389,435p paper1/obstruction_check.py; sed -n 520,560p paper1/ob
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("paper1/obstruction_check.py")
+src = p.read_text()
+
+new_block = r'''
+# -----------------------------------
+
+Fixing the memo invalidation slip in `branch_search`, then smoke-testing on the hand instances and running the checker on one of them.
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/obstruction_branch.py")
+s = p.read_text()
+old = '''        changed = False
+        for br in bes
+
+All seven hand instances reproduce the seeded form's values. Now the checker round trip on a hand certificate, and in the same step the residual run and the connectivity statistic.
+  > $ mkdir -p /tmp/ob06 && python3 - <<'PYEOF'
+import json, sys, numpy as np
+from pathlib import Path
+from learning import obstruction_branch as ob
+from learning.obs
+
+Both checks pass and the damaged link is rejected. Launching the residual run and the connectivity statistic now, in parallel.
+  > $ uptime && nice -n 19 python3 -m learning.obstruction_branch --stage run --targets residual --workers 8 --core-hours 4 > reports/scratch/obstruction_search/06_br
+  > $ head -40 reports/scratch/obstruction_search/06_branch_run_residual.out | grep -v "^  File\|^    " ; echo ---; head -3 reports/scratch/obstruction_search/06_bran
+  > $ python3 - <<'PYEOF'
+from pathlib import Path
+p = Path("learning/obstruction_branch.py")
+s = p.read_text()
+
+# 1. LeafOracle: an upper bound per set, a "known" lo
+
+Rerunning the residual (foreground), the connectivity statistic (foreground, in parallel), and writing the tests at the same time.
+  > $ nice -n 19 python3 -m learning.obstruction_branch --stage run --targets residual --workers 8 --core-hours 4 > reports/scratch/obstruction_search/06_branch_run_r
+  > $ nice -n 19 python3 -m learning.obstruction_branch --stage connectivity --targets residual --workers 8 > reports/scratch/obstruction_search/06_branch_connectivit
+  > $ uptime && nice -n 19 python3 -m learning.obstruction_branch --stage run --targets gap338 --workers 8 --core-hours 3.5 --order small-first > reports/scratch/obst
+  > Write /home/al/dev/MOSP/tests/test_obstruction_branch.py
+  > $ nice -n 19 python3 -m pytest tests/test_obstruction_branch.py -q -x 2>&1 | tail -25
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("tests/test_obstruction_branch.py"); s = p.read_text()
+old = '''    assert r["verdict"] == "rejected" and an
+  > $ nice -n 19 python3 -m pytest tests/test_obstruction_branch.py -q -k "trivial_nodes or lazy_evaluation" 2>&1 | grep -E "^E|assert|Error" | head -20; echo ----; p
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper1/obstruction_check.py"); s = p.read_text()
+old = '''        if kind == "trivial":
+            return 
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+s = pd.read_csv("reports/scratch/obstruction_search/06_branch/search.csv")
+print(len(s), "rows; has_triple", 
+  > $ cat > reports/scratch/obstruction_search/06_branch/run_harness.py <<'EOF'
+"""Item 06: family B's floor through `learning.bound_harness`'s validity
+stage on the 
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("learning/obstruction_branch.py"); s = p.read_text()
+old = '''        k_hi = t_hi[0]
+        diag["potential
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ for i in $(seq 1 60); do grep -q "run done" reports/scratch/obstruction_search/06_branch_run_gap338.out && break; sleep 5; done; grep -v "^  File\|^    " report
+
+First pass done at 0.42 core-hours for all 338. Now the final pass with the potential column (same seed, same budgets), from a clean slate.
+  > $ mkdir -p reports/scratch/obstruction_search/06_branch/pass1 && mv reports/scratch/obstruction_search/06_branch/search.csv reports/scratch/obstruction_search/06_
+
+Now the checker over every certificate and the harness validity stage, in parallel.
+  > $ nice -n 19 python3 -m learning.obstruction_branch --stage check --workers 8 > reports/scratch/obstruction_search/06_branch_check.out 2>&1; tail -2 reports/scrat
+  > $ nice -n 19 python3 reports/scratch/obstruction_search/06_branch/run_harness.py --workers 8 > reports/scratch/obstruction_search/06_branch_harness.out 2>&1; tail
+
+Harness: zero above the optimum; the B floor beats the reference on exactly one gap instance. Tables next, and I'll identify that instance.
+  > $ python3 -m learning.obstruction_branch --stage tables > /dev/null && python3 - <<'EOF'
+import pandas as pd, json
+s = pd.read_csv("reports/scratch/obstruction_se
+  > $ python3 - <<'EOF'
+import pandas as pd, json
+s = pd.read_csv("reports/scratch/obstruction_search/06_branch/joined.csv")
+print(s[s.minor_calls>0][["instance_name"
+  > $ cat reports/scratch/obstruction_search/06_branch/tables.md | sed -n 1,120p | cut -c1-260
+
+I have every number. Writing the report section, then PROGRESS and the item mark, then the gate.
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+
+## 6. Family B by search: separators with certified branches on the residual gap instances; the trees-of-cliques f
+  > $ python3 - <<'EOF'
+import pandas as pd
+s = pd.read_csv("reports/scratch/obstruction_search/06_branch/joined.csv")
+print(s[s.b_potential >= s.optimum][["instance_
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/obstruction_search.md"); s = p.read_text()
+fixes = [
+("""the potential reaches the optimum on 2 of
+
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/06_branch/gate_run.out 2>&1; echo "gate exit $?"; tail -12 report
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/iterations.md"); s = p.read_text()
+old = "- [ ] **06 Family B: separators with certifi
+
+Working tree holds only the item's files. While the gate runs, I'll check the scratch folder's size against the 50 MB rule.
+  > $ du -sh reports/scratch/obstruction_search/06_branch reports/scratch/obstruction_search/06_branch/certificates && ls reports/scratch/obstruction_search/06_branch
+  > $ for i in $(seq 1 110); do grep -q "gate exit" /tmp/claude-1000/-home-al-dev-MOSP/956185ca-8a00-4975-8790-7e1c8e2a4b5f/tasks/buxe1i2xx.output 2>/dev/null && brea
+  > $ tail -c 1500 reports/scratch/obstruction_search/06_branch/gate_run.out; echo; date
+  > $ for i in $(seq 1 56); do grep -qE "GATE (PASS|FAIL)|gate exit" reports/scratch/obstruction_search/06_branch/gate_run.out /tmp/claude-1000/-home-al-dev-MOSP/9561
+
+Gate passed. Recording the result in PROGRESS and making sure no background pollers are left.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0013/PROGRESS.md"); s = p.read_text()
+old = """- **Gate**: see `reports/scratch/obstruction
+  > $ ps -o pid,etime,cmd -p 270611,280389,2196274 2>/dev/null | cut -c1-150
+
+Those are this session itself and the driver's shell, not leftover work. Nothing of mine is still running, and all deliverables are in place.
+
+**Item 06 is done, with the kill criterion met: branching is closed.**
+
+What was built:
+- `learning/obstruction_branch.py`: the separator-branch search with the branches' widths proved by the C program (or a clique, a trivial node, or family M's ladder on the branch), a tabu local search over `S` up to size 6, depth 2, and a lazy evaluation with upper bounds so a branch is sent to the C program only when it could raise the value. That also yields a per-instance potential, a ceiling on what the rule can give at the separators tried.
+- `paper1/obstruction_check.py check-branch`: independent checker with its own BFS, relabelling and graph6, re-running the C program on every leaf and recursing through nested nodes. It rejects a damaged link, a damaged branch, an inflated claim and a trivial node claiming more than zero.
+- 16 tests, all passing; the gate passed (1,864 + 123 tests, Lean unchanged, 77-page paper).
+
+What the search found:
+- On the 11 residual instances, B changes nothing. No linked triple exists on 8 of them. On the other 3 the value is 2 or 3 against optima of 25 to 80. Vertex connectivity is 1 to 3 on seven of them, so small separators exist, but every one found peels off one to three fringe customers from a core that stays connected.
+- Over all 338 gap instances a linked triple exists on 156, B closes none, exceeds the record on none, and beats the reference on exactly one (`p2050n1_0`, value 6 against optimum 7, which family M had already closed). The potential's mean gap equals the value's, so the leaves are essentially exact and the shortfall is the third-largest branch itself.
+- The seeded form of ml_nature §38 never exceeded its seed on these 338; exact branch widths moved one value by one.
+- 156 of 156 certificates verified by the checker; harness validity on all 6,376 instances shows zero values above the optimum.
+- Compute was about one core-hour of the item's four.
+
+Two deviations are recorded in the report: the recorded item-04/05 minor certificates cannot restrict to an induced subgraph, so the minor leaf runs the ladder on the branch instead (it fired on 8 instances and improved none), and the link condition is reimplemented on bit masks, pinned equal to the harness's by a test.
+
+PROGRESS.md has the iteration 6 entry, `iterations.md` marks item 06 done, nothing is committed, and `solutions/` is untouched. Item 07 is next, and this item's checker already accepts the nested, C-free tree certificate it needs.
+
+# result: success in 2476s, 57 turns, cost $14.23

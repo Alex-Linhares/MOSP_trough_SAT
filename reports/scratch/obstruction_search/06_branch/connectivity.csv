@@ -1,0 +1,12 @@
+instance_name,n,optimum,edges,min_degree,vertex_connectivity,small_separator_possible,seconds
+Random-100-100-4-1_0,100,46,788,3,3,True,0.03
+Random-100-100-4-3_0,100,43,754,2,2,True,0.03
+Random-125-125-2-2_0,125,25,364,1,1,True,0.02
+Random-125-125-4-1_0,125,57,1063,2,2,True,0.05
+Random-125-125-4-2_0,125,57,1059,2,2,True,0.05
+Random-125-125-4-3_0,125,54,1050,3,3,True,0.05
+Random-125-125-4-4_0,125,51,896,1,1,True,0.04
+Random-125-125-6-2_0,125,77,2000,3,3,True,0.08
+Random-125-125-6-3_0,125,80,2094,6,6,True,0.12
+Random-125-125-6-4_0,125,80,2024,12,12,False,0.17
+Random-125-125-6-5_0,125,74,1744,7,7,False,0.11

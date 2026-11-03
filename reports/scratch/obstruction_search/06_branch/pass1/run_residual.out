@@ -1,0 +1,13 @@
+2026-11-03 06:50:01 run: 11 targets (residual), 11 to do, 8 workers, 120 s per instance, C cap 5 s, core-hours cap 4.0, order small-first, binary 6560b8093c3e51b9
+2026-11-03 06:50:01   1/11 done, 0 s wall, 0.00 core-h; last 'Random-100-100-4-1_0' (n=100): B None opt 46 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:01   2/11 done, 0 s wall, 0.00 core-h; last 'Random-125-125-4-1_0' (n=125): B None opt 57 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:01   3/11 done, 0 s wall, 0.00 core-h; last 'Random-125-125-4-2_0' (n=125): B None opt 57 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:01   4/11 done, 0 s wall, 0.00 core-h; last 'Random-125-125-4-3_0' (n=125): B None opt 54 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:01   5/11 done, 0 s wall, 0.00 core-h; last 'Random-125-125-6-2_0' (n=125): B None opt 77 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:02   6/11 done, 1 s wall, 0.00 core-h; last 'Random-125-125-6-3_0' (n=125): B None opt 80 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:02   7/11 done, 1 s wall, 0.00 core-h; last 'Random-125-125-6-4_0' (n=125): B None opt 80 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:02   8/11 done, 1 s wall, 0.00 core-h; last 'Random-125-125-6-5_0' (n=125): B None opt 74 S None widths None (0 C calls, 0 s)
+2026-11-03 06:50:02   9/11 done, 1 s wall, 0.00 core-h; last 'Random-100-100-4-3_0' (n=100): B 2 opt 43 S [2, 5, 64, 93] widths [0, 0, 0] (0 C calls, 1 s)
+2026-11-03 06:51:20   10/11 done, 79 s wall, 0.02 core-h; last 'Random-125-125-4-4_0' (n=125): B 2 opt 51 S [19, 21, 27, 102, 123] widths [0, 0, 0] (0 C calls, 79 s)
+2026-11-03 06:52:01   11/11 done, 120 s wall, 0.06 core-h; last 'Random-125-125-2-2_0' (n=125): B 3 opt 25 S [0, 5, 8, 46, 64, 123] widths [12, 1, 1] (2 C calls, 120 s)
+2026-11-03 06:52:01 run done: 11 rows, 120 s wall, 0.06 core-h this run

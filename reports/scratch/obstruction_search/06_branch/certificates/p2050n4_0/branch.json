@@ -1,0 +1,293 @@
+{
+ "format": "obstruction-branch-1",
+ "instance_name": "p2050n4_0",
+ "n": 50,
+ "matrix_sha256": "2cb0cae1b35bc774771c93d995326265f4bc9e7a9bcfa4920de98c037f48598e",
+ "graph_sha256": "ded2437b6b4c01f1917c4d663b57c628ab62c962bd5873a3c641f280db1a17fe",
+ "graph_edges": 126,
+ "pathwidth_proved": 4,
+ "floor": 5,
+ "floor_units": "optimum units: pathwidth(G) + 1 = MOSP",
+ "S": [
+  0,
+  34,
+  37,
+  42,
+  47
+ ],
+ "k": 3,
+ "branch_widths": [
+  4,
+  3,
+  3
+ ],
+ "branch_sizes": [
+  27,
+  6,
+  6
+ ],
+ "branch_kinds": [
+  "c",
+  "c",
+  "c"
+ ],
+ "node": {
+  "kind": "branch",
+  "vertices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32,
+   33,
+   34,
+   35,
+   36,
+   37,
+   38,
+   39,
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49
+  ],
+  "pathwidth_at_least": 4,
+  "k": 3,
+  "S": [
+   0,
+   34,
+   37,
+   42,
+   47
+  ],
+  "branches": [
+   {
+    "kind": "c",
+    "vertices": [
+     3,
+     4,
+     5,
+     6,
+     11,
+     12,
+     13,
+     14,
+     15,
+     17,
+     18,
+     19,
+     21,
+     23,
+     24,
+     26,
+     27,
+     28,
+     31,
+     32,
+     36,
+     38,
+     40,
+     41,
+     43,
+     44,
+     45
+    ],
+    "m": 27,
+    "edges": 52,
+    "edges_sha256": "d1666e4c18cb2986783e70d15599267f0d7e44bc4efd02d524a855410ac962f7",
+    "pathwidth_at_least": 4,
+    "source": "c_bound",
+    "c_width": 4,
+    "c_status": "bound",
+    "c_lower": 4,
+    "c_nodes": 0,
+    "c_stdout": [
+     "pathwidth 4 bound",
+     "layout 14 24 7 6 2 12 15 10 3 20 25 16 5 4 17 13 8 9 22 19 21 11 1 23 0 18 26"
+    ],
+    "c_stderr": [
+     "line 1: n=27 width=4 status=bound lower=4 upper_start=4 nodes=0 minor_nodes=0 upper_bound_nodes=56 engine_calls=3 seconds=0.000"
+    ],
+    "c_seconds": 0.0023673991672694683,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   },
+   {
+    "kind": "c",
+    "vertices": [
+     1,
+     7,
+     16,
+     29,
+     33,
+     39
+    ],
+    "m": 6,
+    "edges": 9,
+    "edges_sha256": "8656c40d5cdbf3a5fd4662558b5508597ddce86c49f9c18019e0b178bc96ed18",
+    "pathwidth_at_least": 3,
+    "source": "c_bound",
+    "c_width": 3,
+    "c_status": "bound",
+    "c_lower": 3,
+    "c_nodes": 0,
+    "c_stdout": [
+     "pathwidth 3 bound",
+     "layout 5 4 3 0 2 1"
+    ],
+    "c_stderr": [
+     "line 1: n=6 width=3 status=bound lower=3 upper_start=3 nodes=0 minor_nodes=0 upper_bound_nodes=1 engine_calls=1 seconds=0.000"
+    ],
+    "c_seconds": 0.0028840459417551756,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   },
+   {
+    "kind": "c",
+    "vertices": [
+     2,
+     8,
+     9,
+     10,
+     35,
+     46
+    ],
+    "m": 6,
+    "edges": 9,
+    "edges_sha256": "474fa10d7c0218a10b0264958db8a481cfa7173d1d6cac835679238d965cf94b",
+    "pathwidth_at_least": 3,
+    "source": "c_bound",
+    "c_width": 3,
+    "c_status": "bound",
+    "c_lower": 3,
+    "c_nodes": 0,
+    "c_stdout": [
+     "pathwidth 3 bound",
+     "layout 5 4 3 2 1 0"
+    ],
+    "c_stderr": [
+     "line 1: n=6 width=3 status=bound lower=3 upper_start=3 nodes=0 minor_nodes=0 upper_bound_nodes=1 engine_calls=1 seconds=0.000"
+    ],
+    "c_seconds": 0.001131386961787939,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   }
+  ],
+  "links": [
+   {
+    "Q": [
+     34,
+     37,
+     42
+    ],
+    "edge_first": [
+     34,
+     40
+    ],
+    "edge_second": [
+     37,
+     39
+    ],
+    "pair": [
+     0,
+     1
+    ]
+   },
+   {
+    "Q": [
+     34,
+     37,
+     42
+    ],
+    "edge_first": [
+     34,
+     40
+    ],
+    "edge_second": [
+     42,
+     46
+    ],
+    "pair": [
+     0,
+     2
+    ]
+   },
+   {
+    "Q": [
+     34,
+     37,
+     42
+    ],
+    "edge_first": [
+     37,
+     39
+    ],
+    "edge_second": [
+     42,
+     46
+    ],
+    "pair": [
+     1,
+     2
+    ]
+   }
+  ],
+  "source": "branch",
+  "n_comps": 5
+ },
+ "node_note": "every node names the vertex set it certifies a pathwidth for (vertices are the instance's 0-based customer labels); a `branch` node is S, three branches (nodes), three connectors Q \u2286 S with one edge to each branch, and certifies k + 1 where every branch certifies \u2265 k; a `c` node is the C program's output on the induced subgraph relabelled 0..m-1 in increasing label order (edges_sha256 as obstruction-minor-1); a `clique` node is a clique of the induced subgraph (pathwidth \u2265 size \u2212 1); a `trivial` node is one vertex; a `minor` node carries an obstruction-minor-1 certificate of the induced subgraph",
+ "optimum_on_record": 8,
+ "c_cap_seconds": 5.0,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "seconds": 2.01369362603873,
+ "stats": {
+  "separators_family": 44,
+  "separators_evaluated": 5917,
+  "separators_with_3_comps": 5786,
+  "local_moves": 5783,
+  "local_starts": 12,
+  "censored": false,
+  "best_potential": 4,
+  "seconds": 2.01369362603873,
+  "c_calls": 7,
+  "c_seconds": 0.01164918439462781,
+  "minor_calls": 0,
+  "leaves_cached": 10,
+  "memo": 10
+ },
+ "theorems": "branch_lemma_separator / branch_lemma_linked (lean/MOSPFormalization/Sandwich.lean) for every branch node; card_le_pathwidth_add_one_of_isClique (MOSPGraph.lean) for a clique leaf; the C program's refutation on a branch rests on the corrected search rules (Search/) and its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean); pathwidth_gt_of_minorOf (Minor.lean) for a minor leaf; mospValue_eq_pathwidth_add_one (MOSPGraph.lean) for the optimum units"
+}

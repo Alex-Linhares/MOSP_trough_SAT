@@ -1,0 +1,210 @@
+{
+ "format": "obstruction-branch-1",
+ "instance_name": "Warwick 1728: balanced orders, 3 orders per product",
+ "n": 30,
+ "matrix_sha256": "41f10d612e9a55e73c47828b828b88c6638874ecd3488278e596969b8944824f",
+ "graph_sha256": "4e9424b4ba07e56cad6298daedff185292552d9a6ee07ce6a71547266ed9252e",
+ "graph_edges": 84,
+ "pathwidth_proved": 1,
+ "floor": 2,
+ "floor_units": "optimum units: pathwidth(G) + 1 = MOSP",
+ "S": [
+  5,
+  6,
+  17,
+  18
+ ],
+ "k": 0,
+ "branch_widths": [
+  0,
+  0,
+  0
+ ],
+ "branch_sizes": [
+  24,
+  1,
+  1
+ ],
+ "branch_kinds": [
+  "trivial",
+  "trivial",
+  "trivial"
+ ],
+ "node": {
+  "kind": "branch",
+  "vertices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29
+  ],
+  "pathwidth_at_least": 1,
+  "k": 0,
+  "S": [
+   5,
+   6,
+   17,
+   18
+  ],
+  "branches": [
+   {
+    "kind": "trivial",
+    "vertices": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     14,
+     15,
+     16,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29
+    ],
+    "pathwidth_at_least": 0,
+    "source": "trivial"
+   },
+   {
+    "kind": "trivial",
+    "vertices": [
+     13
+    ],
+    "pathwidth_at_least": 0,
+    "source": "trivial"
+   },
+   {
+    "kind": "trivial",
+    "vertices": [
+     19
+    ],
+    "pathwidth_at_least": 0,
+    "source": "trivial"
+   }
+  ],
+  "links": [
+   {
+    "Q": [
+     5,
+     6,
+     17,
+     18
+    ],
+    "edge_first": [
+     5,
+     27
+    ],
+    "edge_second": [
+     5,
+     13
+    ],
+    "pair": [
+     0,
+     1
+    ]
+   },
+   {
+    "Q": [
+     5,
+     6,
+     17,
+     18
+    ],
+    "edge_first": [
+     5,
+     27
+    ],
+    "edge_second": [
+     5,
+     19
+    ],
+    "pair": [
+     0,
+     2
+    ]
+   },
+   {
+    "Q": [
+     5,
+     6,
+     17,
+     18
+    ],
+    "edge_first": [
+     5,
+     13
+    ],
+    "edge_second": [
+     5,
+     19
+    ],
+    "pair": [
+     1,
+     2
+    ]
+   }
+  ],
+  "source": "branch",
+  "n_comps": 3
+ },
+ "node_note": "every node names the vertex set it certifies a pathwidth for (vertices are the instance's 0-based customer labels); a `branch` node is S, three branches (nodes), three connectors Q \u2286 S with one edge to each branch, and certifies k + 1 where every branch certifies \u2265 k; a `c` node is the C program's output on the induced subgraph relabelled 0..m-1 in increasing label order (edges_sha256 as obstruction-minor-1); a `clique` node is a clique of the induced subgraph (pathwidth \u2265 size \u2212 1); a `trivial` node is one vertex; a `minor` node carries an obstruction-minor-1 certificate of the induced subgraph",
+ "optimum_on_record": 10,
+ "c_cap_seconds": 5.0,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "seconds": 0.3871299549937248,
+ "stats": {
+  "separators_family": 110,
+  "separators_evaluated": 6462,
+  "separators_with_3_comps": 2499,
+  "local_moves": 6352,
+  "local_starts": 12,
+  "censored": false,
+  "best_potential": 1,
+  "seconds": 0.3871299549937248,
+  "c_calls": 0,
+  "c_seconds": 0.0,
+  "minor_calls": 0,
+  "leaves_cached": 0,
+  "memo": 0
+ },
+ "theorems": "branch_lemma_separator / branch_lemma_linked (lean/MOSPFormalization/Sandwich.lean) for every branch node; card_le_pathwidth_add_one_of_isClique (MOSPGraph.lean) for a clique leaf; the C program's refutation on a branch rests on the corrected search rules (Search/) and its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean); pathwidth_gt_of_minorOf (Minor.lean) for a minor leaf; mospValue_eq_pathwidth_add_one (MOSPGraph.lean) for the optimum units"
+}

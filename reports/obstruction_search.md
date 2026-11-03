@@ -1832,3 +1832,473 @@ Total: ladder 0.31 core-hours, search 8.75; C calls 1942 and 375526; C seconds 0
 
 Not reached under the core-hour cap: none.
 
+
+## 6. Family B by search: separators with certified branches on the residual gap instances; the trees-of-cliques family (item 06)
+
+*Size range: the 338 bound-gap instances (`gap338`, 20–134 customers), all
+run; the 11 of them that items 03–05 left with `floor < optimum` (the
+residual, 100–125 customers) are the item's question, the other 327 a
+scoring run under the same budgets; validation on 100 random instances at
+`n ≤ 14` with brute-force leaves (the test) and on the seven hand instances
+of `learning.bound_harness`'s tests (`hand.csv`). Regenerate: `nice -n 19
+python3 -m learning.obstruction_branch --stage hand`; `--stage run --targets
+residual,gap338 --workers 8 --core-hours 4 --order small-first`; `--stage
+connectivity --targets residual --workers 8`; `--stage check --workers 8`;
+`python3 reports/scratch/obstruction_search/06_branch/run_harness.py
+--workers 8`; `--stage tables`. Outputs under
+`reports/scratch/obstruction_search/06_branch/`: `search.csv` (338 rows),
+`joined.csv`, `certificates/<instance>/{instance.mosp, branch.json}` (156),
+`checker_verdicts.csv`, `connectivity.csv`, `hand.csv`, `harness_values.csv`,
+`harness_table.md`, `tables.md`, `run.log`, `run_harness.py`, `pass1/` (a
+first pass without the potential column: `search.csv`, `run.log`, the two
+`.out` files), and `../06_branch_{run,check,harness,connectivity}.out`.
+Tests: `tests/test_obstruction_branch.py` (16).*
+
+### 6.1 What was done
+
+**The object** (plan §0.2, §0.5 (f)). A B certificate is a set `S`, three
+connected branches `A, B, D` disjoint from `S` and from each other, three
+connectors `Q ⊆ S` (a component of `G[S]`, with one edge to each branch of
+its pair), and a certificate of each branch's pathwidth `≥ k`; it proves
+`pathwidth(G) ≥ k + 1` by `branch_lemma_separator`
+(`lean/MOSPFormalization/Sandwich.lean`, Lemma A of `ml_nature.md` §38).
+The branches' widths are **proved, not seeded**: a branch is a `c` node (the
+C program on the branch's induced subgraph, cap 5 s, `-m
+min_vertices=1000000`; exact on `refutation` / `bound`, its printed `lower`
+otherwise), a `clique` node (by inspection), a `trivial` node (`pathwidth ≥
+0`, any nonempty set), a `minor` node (family M's greedy ladder run on the
+branch, an `obstruction-minor-1` certificate of the induced subgraph), or,
+recursively, a `branch` node (depth 2 at the top). Values in optimum units
+(`k + 2`), as everywhere in this document.
+
+**The search** (`learning/obstruction_branch.py`). Candidate `S` from
+`bound_harness.family_separators` on the whole graph (cut vertices, pairwise
+intersections of maximal cliques, clique-tree adhesions of the MCS-M
+completion, every edge at `n ≤ 40`; mean 185 per instance), then a tabu
+local search over `S` at the top level (add / drop one vertex, `|S| ≤ 6`,
+tenure 5, 24 sampled add-neighbours per move, 30 moves from each of the 12
+best family separators), scored by the certified value, the *potential*
+(below), the non-trivial components, the components and `−|S|`; the local
+search's best `S` is re-evaluated at full depth. The evaluation at an `S`
+is **lazy with bounds**: each component of `G − S` starts with the floor it
+already has (0 for a set never looked at) and an upper bound (`size − 1`,
+the greedy layout's vertex separation, the C's upper bound once it has
+run); the best linked triple by upper bounds gives the *potential* at `S`,
+and a branch is sent to the C program only while the potential could still
+beat the best value so far, cheapest unproved branch first. So a separator
+that isolates two single vertices costs no C call (k = 0 is decided by
+the bounds), the dense residual instances cost nothing beyond the component
+BFS (2.39 M separators evaluated in all, 514 k with three or more
+components, **347 C calls, 168 s of C time**), and `b_potential`, the
+largest potential over every `S` tried, is a **ceiling on what the rule can
+give at those separators under any leaf proof** (not a bound: it can exceed
+the optimum, and does on `p2050n1_0`). **No C call on the whole graph**: the
+top node has no leaf oracle, so family B's value is the branch value alone
+(`none` when no `S` yields a linked triple) and the tables carry ω beside
+it. Components, connectivity and the link condition are on bit masks; the
+mask-level triple is pinned equal to the harness's `linked_third` on 60
+random graphs by the test (one deviation from the item's text, which named
+the harness function: it needs a networkx graph per call, which a search
+evaluating thousands of separators per second cannot afford).
+
+**The checker** (`paper1/obstruction_check.py check-branch`, no import from
+the four project packages): own instance reader, own graph, own BFS for the
+connectivity of every branch and connector, disjointness, `Q ⊆ S`, the two
+named edges per connector, every pair linked, each branch node recursively
+for `≥ k` (`c`: own relabelling, own graph6, the C re-run at cap 25 s with
+the claim compared, an exact width below the claim flagged as a
+contradiction; `clique`: by inspection; `trivial`: claim 0; `minor`:
+`check-minor` on the induced subgraph written as an edge list), the top
+node covering every vertex, and `k + 1`. The test damages a link (`Q`
+outside `S`), a branch (a vertex of one branch added to another) and the
+claim (`k + 1` raised by one), and each is rejected; a trivial node
+claiming 1 is rejected.
+
+**Two deviations from the item's text.** (i) The item's "M certificate from
+item 04/05 when the component is the whole graph minus little" cannot be
+used as written: a contraction minor of `G` is not a minor of `G[A]` (a
+vertex outside `A` contracted into one inside adds edges `G[A]` lacks), so
+the `minor` leaf runs family M's ladder *on the branch* instead, for at
+most 40 s, on the limiting branches of the best triple when their width is
+only the C's `lower`. It fired on 8 instances (106 C calls, the five
+`Random-100-100-2` / `100-50-4-4` and three `Random-125-125-2` ridge
+instances) and improved no leaf: the ladder's minors of a 94–118-vertex
+branch do not beat the C's own degeneracy floor in 40 s at cap 5 s. (ii)
+The hand instance "the spider of spiders 3" of the item's deliverable is 4
+in optimum units (pathwidth 3, `test_branch_rule_recursive_spider` of
+`tests/test_bound_harness.py`); the test asserts 4.
+
+**Validation.** The seven hand instances reproduce the seeded form's values
+exactly (`hand.csv`: `K_{1,3}` 2, `K_{1,4}` 2, spider(3,2) 3, the path
+none, three `K4` at a hub 4, theta 3 at `S = {0, 1}` with three `P3`
+branches of width 1, the spider of spiders 4). On 100 random instances at
+6–14 customers with brute-force leaves (`vertex_separation_brute`) the
+value is never above the brute-force optimum and every branch's claim is at
+most its true width. Two passes of the run (`pass1/search.csv` and
+`search.csv`, same seed, the second with the potential column) agree on the
+value on 338 of 338.
+
+### 6.2 Numbers
+
+**The residual: unchanged, 11 of 11** (table (a)). Family B gives no linked
+triple at all on 8 of the 11 (`Random-100-100-4-1_0`, `125-125-4-{1,2,3}_0`,
+`125-125-6-{2,3,4,5}_0`) and a value of **2 or 3** on the other three
+(`100-100-4-3_0` 2, `125-125-4-4_0` 2, `125-125-2-2_0` 3) against optima
+of 25–80 and records one to four short. The separators that exist only
+peel the fringe: the certificates' branch sizes are `[94, 1, 1]`,
+`[118, 1, 1]` and `[112, 3, 2]`. Vertex connectivity (table (a′), exact
+by networkx) is 1–3 on seven of the 11, 6 on one and 7–12 on three: small
+separators exist on nine, but every one of size ≤ 6 isolates one or two
+customers of degree ≤ 3 from a core that stays connected, and the lemma's
+third branch is then a single vertex. Closed by B: 0; raised above the
+record: 0.
+
+**The 338** (table (b)). A linked triple exists under the separators tried
+on **156 of 338** (6 of 17 at 9–20 customers, 21 of 133 at 21–30, 42 of
+47 at 31–40, 51 of 54 at 41–60, 9 of 17 at 61–75, 18 of 45 at 76–100, 9 of
+25 at 101–134). **B closes none, exceeds the record on none, and exceeds
+the reference `max(lb_best, tw + 1)` on exactly one**: `p2050n1_0` (50
+customers, optimum 7, reference 5): `S = {8, 9, 26, 45}` with three
+branches of 18, 15 and 13 vertices, each of pathwidth 4 proved by the C
+program, so pathwidth ≥ 5 and the value is **6** — one short of the
+optimum, which family M certifies (item 04). Where a triple exists the
+value is below ω on 147 of 156, equal on 8, above on that one; its mean
+gap to the optimum is 11.7 (7.5–10.0 at 21–60 customers, 21–23 above 60),
+against 0.06 for the record. The **potential** — the ceiling at the
+separators tried, every branch at its upper bound — has mean gap 11.6, so
+the leaves are essentially exact and the family's gap is the *third-largest
+branch*, not a proof deficit; the potential reaches the optimum on 2 of
+338 (`p2050n1_0` and `p1550n10_0`, both by greedy upper bounds that sit one
+or two above the optimum).
+Depth 2 was never the certificate (0 of 156 branch nodes nested), and
+`|S|` is 1 / 2 / 3 / 4 / 5 / 6 on 2 / 4 / 12 / 25 / 41 / 72 certificates —
+the local search runs to its cap, and a larger `|S|` would be the next
+knob (not tried: plan §0.5 (f) fixes 6).
+
+**Against §38's seeded form** (table (f); `sep_branch` of
+`learning.bound_harness`, seed `max(ω − 1, tw)`, from
+`bound_harness_values.csv.gz`). The seeded candidate was **above its seed
+on 0 of 338** — on these instances §38's branching never fired. With exact
+branch widths the B value exceeds `sep_branch` on **1 of 338**
+(`p2050n1_0`, 6 against 5), equals it on 8 and is below it on 147 of the
+156 with a triple (the seeded form carries ω and tw; the branch value alone
+does not); `max(B, ω)` is above `sep_branch` on 1, equal on 322 and below
+on 15 (where the seeded form's tw exceeds ω − 1). So exact branch widths changed exactly one
+value, by one, on an instance already closed.
+
+**By excess and collection** (tables (c), (d)). Triples live in the sparse
+third: 93 of 116 at excess ≈ 1.55 (mean gap 8.0), 47 of 115 at 2.2 (12.5),
+16 of 107 at 4.2 (30.9). Faggioli–Bentivoglio has a triple on all 83 of its
+gap instances (mean gap 7.3; three of the four values of 6 in the whole
+run, against optima 7–8, are theirs, the fourth `HS problem 1131` of
+Simonis against 9), Chu & Stuckey on 50 of 102 (20.5), Harvey
+on 10 of 71, Simonis on 8 of 73.
+
+**The trees-of-cliques family** (table (g): §6's ten smallest gap
+instances, all 20 × 10 Harvey and Warwick). A triple on 5 of the 10, values
+2–4 against optima 6–16 and a record that is tight on all ten; the best
+is `Warwick 871` (optimum 6, reference 4): `S = {0, 7, 17}`, branches of
+5, 9 and 3 vertices of widths 3, 2, 2, value 4 = the reference. The family
+§6 named as bound-defeating is not branch-certifiable either: its hubs
+carry one wide branch and a fringe, and the lemma wants three.
+
+**Checker: 156 of 156 verified** (624 nodes, 187 C re-runs, 248 s in
+total; `checker_verdicts.csv`). **Harness**: `branch_floor` (the lookup
+candidate of `run_harness.py`) through the validity stage on all 6,376
+corpus instances: above optimum **0**, beats the reference on 1 of the 338
+(`harness_table.md`). Censored at the 120 s cap: 1 (`Random-125-125-2-4_0`).
+
+### 6.3 Kill verdict and what this does not claim
+
+**Kill criterion (plan §0.9 B): met — branching is closed.** No B
+certificate exceeds `max(lb_best, tw + 1, M floor, E floor)` on any
+residual instance (none exceeds the record on any of the 338), as §38
+recorded for the seeded form. **Exact branch widths changed one value**:
+`p2050n1_0`, +1 over `max(lb_best, tw + 1)`, still one short of an
+optimum family M certifies; nothing else moved. The stop conditions did
+not fire: no floor above an optimum (harness and the test's brute-force
+check), no certificate rejected.
+
+**What this does not claim.** That depth 2, or any depth, is enough (no
+certificate used it, and the potential says the leaves are not what is
+short); that the separator family plus a 6-vertex local search sees every
+separator (2.39 M were evaluated, and `|S| = 6` binds on 72 of 156
+certificates: a wider `S` is untried, by design); that no B certificate
+exists on the residual (vertex connectivity 1–3 on seven of them says
+small separators exist, and the search says the ones it found isolate
+fringe vertices — a search's failure, recorded with its budget); that the
+`minor` leaf is useless (it ran on 8 instances for 40 s each); any solver
+change. The lemma is Fellows & Langston (1987) Lemma 4.3 and Kinnersley
+(1992) Corollary 4.2 in its cut-vertex form and §38's Lemma A in the
+separator form proved in `Sandwich.lean`; the C program's refutations on
+the branches rest on the corrected search rules; the clique leaves on
+`card_le_pathwidth_add_one_of_isClique`. "We found no prior report" of a
+searched separator-branch bound with certified branches on these
+instances.
+
+### 6.4 Tables (generated; `tables.md`)
+
+##### Family B by search: tables (item 06)
+
+*Generated by `python3 -m learning.obstruction_branch --stage tables` on 2026-11-03 07:02; 338 instances run (n = 20–134).*
+#### (a) The residual instances (`floor < optimum` after items 03–05): closed / raised / unchanged by B
+| instance_name        |   n |   optimum |   record |   e_floor |   m_floor |   b_value |   b_potential | has_triple   |   S_size |   separators_family |   separators_evaluated |   separators_with_3_comps |   c_calls |    seconds |
+|:---------------------|----:|----------:|---------:|----------:|----------:|----------:|--------------:|:-------------|---------:|--------------------:|-----------------------:|--------------------------:|----------:|-----------:|
+| Random-100-100-4-1_0 | 100 |        46 |       45 |        34 |        45 |       nan |           nan | False        |      nan |                   8 |                   5520 |                         0 |         0 |   0.137027 |
+| Random-100-100-4-3_0 | 100 |        43 |       42 |        26 |        42 |         2 |             2 | True         |        4 |                  12 |                   8258 |                        72 |         0 |   1.10153  |
+| Random-125-125-2-2_0 | 125 |        25 |       24 |         8 |        24 |         3 |             3 | True         |        6 |                  45 |                   6078 |                      5673 |         2 | 115.303    |
+| Random-125-125-4-1_0 | 125 |        57 |       53 |        37 |        53 |       nan |           nan | False        |      nan |                   6 |                   4189 |                         0 |         0 |   0.199107 |
+| Random-125-125-4-2_0 | 125 |        57 |       55 |        35 |        54 |       nan |           nan | False        |      nan |                   6 |                   4148 |                         0 |         0 |   0.194081 |
+| Random-125-125-4-3_0 | 125 |        54 |       52 |        34 |        52 |       nan |           nan | False        |      nan |                  11 |                   7686 |                         0 |         0 |   0.228534 |
+| Random-125-125-4-4_0 | 125 |        51 |       50 |        24 |        49 |         2 |             2 | True         |        5 |                  14 |                   7327 |                      3535 |         0 |  82.1629   |
+| Random-125-125-6-2_0 | 125 |        77 |       76 |        61 |        76 |       nan |           nan | False        |      nan |                   1 |                    703 |                         0 |         0 |   0.17527  |
+| Random-125-125-6-3_0 | 125 |        80 |       79 |        70 |        79 |       nan |           nan | False        |      nan |                   1 |                    705 |                         0 |         0 |   0.166001 |
+| Random-125-125-6-4_0 | 125 |        80 |       78 |        69 |        78 |       nan |           nan | False        |      nan |                   0 |                   8622 |                         0 |         0 |   0.273374 |
+| Random-125-125-6-5_0 | 125 |        74 |       71 |        59 |        71 |       nan |           nan | False        |      nan |                   0 |                   8609 |                         0 |         0 |   0.276244 |
+
+Closed by B: 0; raised above the record: 0; unchanged: 11 of 11.
+
+#### (a′) Vertex connectivity of the residual instances (networkx `node_connectivity`, exact)
+| instance_name        |   n |   optimum |   edges |   min_degree |   vertex_connectivity | small_separator_possible   |   seconds |
+|:---------------------|----:|----------:|--------:|-------------:|----------------------:|:---------------------------|----------:|
+| Random-100-100-4-1_0 | 100 |        46 |     788 |            3 |                     3 | True                       |      0.03 |
+| Random-100-100-4-3_0 | 100 |        43 |     754 |            2 |                     2 | True                       |      0.03 |
+| Random-125-125-2-2_0 | 125 |        25 |     364 |            1 |                     1 | True                       |      0.02 |
+| Random-125-125-4-1_0 | 125 |        57 |    1063 |            2 |                     2 | True                       |      0.05 |
+| Random-125-125-4-2_0 | 125 |        57 |    1059 |            2 |                     2 | True                       |      0.05 |
+| Random-125-125-4-3_0 | 125 |        54 |    1050 |            3 |                     3 | True                       |      0.05 |
+| Random-125-125-4-4_0 | 125 |        51 |     896 |            1 |                     1 | True                       |      0.04 |
+| Random-125-125-6-2_0 | 125 |        77 |    2000 |            3 |                     3 | True                       |      0.08 |
+| Random-125-125-6-3_0 | 125 |        80 |    2094 |            6 |                     6 | True                       |      0.12 |
+| Random-125-125-6-4_0 | 125 |        80 |    2024 |           12 |                    12 | False                      |      0.17 |
+| Random-125-125-6-5_0 | 125 |        74 |    1744 |            7 |                     7 | False                      |      0.11 |
+
+#### (b) Every run instance by band
+| band    |   instances |   with a linked triple |   B closes |   B > record |   B > reference |   B > floor0 |   B > seeded §38 |   mean gap, B value (where a triple) |   mean gap, max(B, ω) |   mean gap, record |   potential reaches optimum |   mean gap, potential (where a triple) |   censored |   C calls (mean) |   seconds (mean) |
+|:--------|------------:|-----------------------:|-----------:|-------------:|----------------:|-------------:|-----------------:|-------------------------------------:|----------------------:|-------------------:|----------------------------:|---------------------------------------:|-----------:|-----------------:|-----------------:|
+| 9–20    |          17 |                      6 |          0 |            0 |               0 |            0 |                0 |                                 5.83 |                  4.06 |               0    |                           0 |                                   5.83 |          0 |              0.5 |              0   |
+| 21–30   |         133 |                     21 |          0 |            0 |               0 |            0 |                0 |                                 7.52 |                  6.01 |               0    |                           0 |                                   7.52 |          0 |              0.2 |              0.1 |
+| 31–40   |          47 |                     42 |          0 |            0 |               0 |            0 |                0 |                                 7.5  |                  5.96 |               0    |                           0 |                                   7.43 |          0 |              2.1 |              1   |
+| 41–60   |          54 |                     51 |          0 |            0 |               1 |            1 |                1 |                                10.02 |                  7.74 |               0    |                           2 |                                   9.82 |          0 |              2.9 |              2.3 |
+| 61–75   |          17 |                      9 |          0 |            0 |               0 |            0 |                0 |                                21.44 |                 24.24 |               0    |                           0 |                                  21.44 |          0 |              0.4 |              6.2 |
+| 76–100  |          45 |                     18 |          0 |            0 |               0 |            0 |                0 |                                22.44 |                 33.96 |               0.04 |                           0 |                                  22.44 |          0 |              0.6 |             13.2 |
+| 101–134 |          25 |                      9 |          0 |            0 |               0 |            0 |                0 |                                23.44 |                 51.04 |               0.68 |                           0 |                                  23.33 |          1 |              0.9 |             33.1 |
+| all     |         338 |                    156 |          0 |            0 |               1 |            1 |                1 |                                11.71 |                 14.15 |               0.06 |                           2 |                                  11.62 |          1 |              1   |              5   |
+
+#### (c) By excess tercile (realised `(n_ones − m) / n`)
+| excess   |   instances |   with a linked triple |   B closes |   B > record |   B > reference |   B > floor0 |   B > seeded §38 |   mean gap, B value (where a triple) |   mean gap, max(B, ω) |   mean gap, record |   potential reaches optimum |   mean gap, potential (where a triple) |   censored |   C calls (mean) |   seconds (mean) |
+|:---------|------------:|-----------------------:|-----------:|-------------:|----------------:|-------------:|-----------------:|-------------------------------------:|----------------------:|-------------------:|----------------------------:|---------------------------------------:|-----------:|-----------------:|-----------------:|
+| low      |         116 |                     93 |          0 |            0 |               1 |            1 |                1 |                                 8.01 |                  5.34 |               0.01 |                           2 |                                   7.86 |          1 |              2.8 |             11.8 |
+| mid      |         115 |                     47 |          0 |            0 |               0 |            0 |                0 |                                12.49 |                  7.43 |               0    |                           0 |                                  12.49 |          0 |              0.2 |              1.7 |
+| high     |         107 |                     16 |          0 |            0 |               0 |            0 |                0 |                                30.94 |                 30.93 |               0.17 |                           0 |                                  30.94 |          0 |              0   |              1.3 |
+
+#### (d) By collection
+| collection           |   instances |   with a linked triple |   B closes |   B > record |   B > reference |   B > floor0 |   B > seeded §38 |   mean gap, B value (where a triple) |   mean gap, max(B, ω) |   mean gap, record |   potential reaches optimum |   mean gap, potential (where a triple) |   censored |   C calls (mean) |   seconds (mean) |
+|:---------------------|------------:|-----------------------:|-----------:|-------------:|----------------:|-------------:|-----------------:|-------------------------------------:|----------------------:|-------------------:|----------------------------:|---------------------------------------:|-----------:|-----------------:|-----------------:|
+| Challenge            |           3 |                      1 |          0 |            0 |               0 |            0 |                0 |                                17    |                 25    |               0    |                           0 |                                  17    |          0 |              0   |              0.2 |
+| Chu & Stuckey        |         102 |                     50 |          0 |            0 |               0 |            0 |                0 |                                20.46 |                 32.36 |               0.19 |                           0 |                                  20.46 |          1 |              0.5 |             13.9 |
+| Faggioli-Bentivoglio |          83 |                     83 |          0 |            0 |               1 |            1 |                1 |                                 7.28 |                  5.45 |               0    |                           2 |                                   7.12 |          0 |              3.2 |              1.7 |
+| Harvey               |          71 |                     10 |          0 |            0 |               0 |            0 |                0 |                                 6.7  |                  6.76 |               0    |                           0 |                                   6.7  |          0 |              0.2 |              0   |
+| SCOOP                |           3 |                      3 |          0 |            0 |               0 |            0 |                0 |                                 9    |                  3.67 |               0    |                           0 |                                   8.67 |          0 |              5.3 |             46.6 |
+| Simonis              |          73 |                      8 |          0 |            0 |               0 |            0 |                0 |                                 9    |                  5.32 |               0    |                           0 |                                   9    |          0 |              0.1 |              0   |
+| Wilson               |           3 |                      1 |          0 |            0 |               0 |            0 |                0 |                                17    |                 25    |               0    |                           0 |                                  17    |          0 |              0   |              0.2 |
+
+#### (e) The certificates: `|S|`, the branch widths (pathwidth units) and sizes, the kinds
+| instance_name                                       |   n |   optimum |   omega |   reference |   record |   b_value |   b_potential |   S_size | S                           | branch_widths   | branch_sizes   | branch_kinds                      | branch_depth2   |   c_calls | censored   |
+|:----------------------------------------------------|----:|----------:|--------:|------------:|---------:|----------:|--------------:|---------:|:----------------------------|:----------------|:---------------|:----------------------------------|:----------------|----------:|:-----------|
+| HS problem 551 size 20 10 density  0.20             |  20 |         9 |       7 |           7 |        9 |         3 |             3 |        5 | [2, 3, 5, 9, 11]            | [4, 1, 1]       | [10, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| HS problem 575 size 20 10 density  0.20             |  20 |        10 |       8 |           9 |       10 |         2 |             2 |        6 | [2, 3, 4, 6, 14, 19]        | [0, 0, 0]       | [12, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| HS problem 640 size 20 10 density  0.25             |  20 |        11 |       8 |          10 |       11 |         2 |             2 |        6 | [2, 4, 6, 7, 9, 16]         | [0, 0, 0]       | [11, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Warwick 871: balanced orders, 4 orders per product  |  20 |         6 |       4 |           4 |        6 |         4 |             4 |        3 | [0, 7, 17]                  | [3, 2, 2]       | [5, 9, 3]      | ["c", "c", "clique"]              | False           |         4 | False      |
+| Warwick 877: balanced orders, 4 orders per product  |  20 |         8 |       4 |           7 |        8 |         3 |             3 |        2 | [4, 16]                     | [5, 2, 1]       | [13, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Warwick 879: balanced orders, 4 orders per product  |  20 |         8 |       4 |           7 |        8 |         3 |             3 |        6 | [1, 3, 10, 11, 15, 18]      | [3, 2, 1]       | [8, 4, 2]      | ["c", "c", "clique"]              | False           |         2 | False      |
+| HS problem 1102 size 30 10 density  0.20            |  30 |        14 |      11 |          13 |       14 |         2 |             2 |        6 | [0, 3, 7, 12, 13, 26]       | [0, 0, 0]       | [22, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| HS problem 1109 size 30 10 density  0.20            |  30 |        12 |      10 |          11 |       12 |         3 |             3 |        6 | [5, 8, 11, 14, 19, 26]      | [8, 1, 1]       | [20, 2, 2]     | ["c", "clique", "clique"]         | False           |         3 | False      |
+| HS problem 1127 size 30 10 density  0.20            |  30 |        14 |      11 |          14 |       14 |         3 |             3 |        5 | [9, 15, 17, 18, 19]         | [10, 1, 1]      | [21, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| HS problem 1131 size 30 10 density  0.20            |  30 |         9 |       7 |           7 |        9 |         6 |             6 |        5 | [0, 2, 11, 16, 21]          | [5, 4, 4]       | [11, 6, 6]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| HS problem 1169 size 30 10 density  0.25            |  30 |        16 |      11 |          16 |       16 |         2 |             2 |        5 | [5, 7, 12, 16, 27]          | [0, 0, 0]       | [22, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-30-30-2-3_0                                  |  30 |         9 |       6 |           7 |        9 |         3 |             3 |        4 | [8, 15, 16, 23]             | [5, 1, 1]       | [21, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Warwick 1298: balanced orders, 6 orders per product |  30 |        11 |       6 |          11 |       11 |         3 |             3 |        6 | [15, 18, 23, 24, 25, 26]    | [8, 2, 1]       | [19, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Warwick 1473: balanced orders, 4 orders per product |  30 |         8 |       4 |           7 |        8 |         3 |             3 |        6 | [4, 7, 8, 10, 18, 22]       | [5, 2, 1]       | [17, 4, 3]     | ["c", "c", "c"]                   | False           |         3 | False      |
+| Warwick 1481: balanced orders, 5 orders per product |  30 |        12 |       6 |          12 |       12 |         2 |             2 |        5 | [6, 10, 15, 16, 23]         | [0, 0, 0]       | [22, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Warwick 1488: balanced orders, 5 orders per product |  30 |        12 |       6 |          11 |       12 |         3 |             3 |        6 | [0, 4, 8, 24, 25, 28]       | [7, 1, 1]       | [20, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Warwick 1490: balanced orders, 5 orders per product |  30 |        11 |       6 |          11 |       11 |         2 |             2 |        6 | [5, 6, 8, 12, 16, 21]       | [0, 0, 0]       | [20, 3, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Warwick 1728: balanced orders, 3 orders per product |  30 |        10 |       5 |          10 |       10 |         2 |             2 |        4 | [5, 6, 17, 18]              | [0, 0, 0]       | [24, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Warwick 1729: balanced orders, 3 orders per product |  30 |         9 |       4 |           8 |        9 |         3 |             3 |        6 | [2, 13, 22, 24, 25, 29]     | [4, 1, 1]       | [19, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p1530n1_0                                           |  30 |         8 |       6 |           7 |        8 |         4 |             4 |        5 | [7, 14, 19, 25, 27]         | [4, 3, 2]       | [14, 8, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p1530n4_0                                           |  30 |         8 |       5 |           6 |        8 |         4 |             4 |        5 | [6, 11, 16, 20, 21]         | [4, 2, 2]       | [17, 4, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p1530n8_0                                           |  30 |         8 |       6 |           7 |        8 |         4 |             4 |        5 | [10, 18, 21, 24, 26]        | [4, 2, 2]       | [12, 5, 5]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| p1530n9_0                                           |  30 |         8 |       5 |           7 |        8 |         3 |             3 |        6 | [0, 5, 6, 17, 26, 28]       | [4, 1, 1]       | [18, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p2030n8_0                                           |  30 |        10 |       5 |           9 |       10 |         3 |             3 |        6 | [4, 6, 14, 16, 19, 21]      | [5, 1, 1]       | [19, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2530n2_0                                           |  30 |        11 |       5 |          11 |       11 |         3 |             3 |        6 | [6, 7, 8, 15, 18, 27]       | [6, 1, 1]       | [20, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2530n6_0                                           |  30 |        10 |       6 |           9 |       10 |         3 |             3 |        3 | [16, 23, 26]                | [7, 1, 1]       | [23, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2530n8_0                                           |  30 |        11 |       6 |          10 |       11 |         2 |             2 |        6 | [8, 9, 11, 17, 19, 28]      | [0, 0, 0]       | [20, 3, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4040n9_0                                           |  37 |        16 |       4 |          14 |       16 |         2 |             2 |        5 | [0, 4, 27, 30, 33]          | [0, 0, 0]       | [30, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4040n1_0                                           |  38 |        15 |       5 |          14 |       15 |         2 |             2 |        6 | [1, 22, 27, 28, 29, 36]     | [0, 0, 0]       | [28, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4040n7_0                                           |  38 |        14 |       5 |          12 |       14 |         2 |             2 |        6 | [1, 17, 20, 27, 29, 36]     | [0, 0, 0]       | [29, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4040n4_0                                           |  39 |        14 |       5 |          12 |       14 |         2 |             2 |        4 | [0, 10, 33, 38]             | [0, 0, 0]       | [33, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4040n5_0                                           |  39 |        15 |       5 |          14 |       15 |         3 |             3 |        6 | [13, 16, 25, 26, 33, 34]    | [10, 2, 1]      | [28, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-40-40-2-1_0                                  |  40 |        11 |       7 |          11 |       11 |         2 |             2 |        2 | [18, 32]                    | [0, 0, 0]       | [35, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-40-40-2-2_0                                  |  40 |        14 |       6 |          13 |       14 |         2 |             2 |        1 | [25]                        | [0, 0, 0]       | [37, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-40-40-2-3_0                                  |  40 |        10 |       5 |          10 |       10 |         3 |             3 |        3 | [1, 2, 9]                   | [7, 1, 1]       | [30, 5, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-40-40-2-5_0                                  |  40 |        13 |      10 |          13 |       13 |         2 |             2 |        2 | [16, 22]                    | [0, 0, 0]       | [36, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p1540n10_0                                          |  40 |         8 |       6 |           6 |        8 |         5 |             5 |        6 | [4, 11, 13, 16, 19, 37]     | [4, 3, 3]       | [14, 8, 7]     | ["c", "c", "c"]                   | False           |         5 | False      |
+| p1540n1_0                                           |  40 |         8 |       6 |           6 |        8 |         4 |             5 |        4 | [10, 11, 25, 29]            | [5, 3, 2]       | [27, 4, 3]     | ["c", "clique", "clique"]         | False           |         6 | False      |
+| p1540n3_0                                           |  40 |         7 |       5 |           5 |        7 |         5 |             6 |        6 | [1, 11, 15, 16, 17, 25]     | [4, 3, 3]       | [9, 12, 5]     | ["c", "c", "c"]                   | False           |         8 | False      |
+| p1540n5_0                                           |  40 |         8 |       6 |           6 |        8 |         5 |             6 |        5 | [0, 5, 6, 24, 36]           | [5, 3, 3]       | [20, 10, 4]    | ["c", "c", "clique"]              | False           |        10 | False      |
+| p1540n9_0                                           |  40 |         7 |       5 |           5 |        7 |         5 |             5 |        3 | [20, 28, 32]                | [5, 3, 3]       | [22, 10, 5]    | ["c", "c", "c"]                   | False           |         6 | False      |
+| p2040n10_0                                          |  40 |         8 |       5 |           7 |        8 |         4 |             4 |        6 | [6, 13, 16, 19, 25, 37]     | [4, 2, 2]       | [22, 7, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p2040n1_0                                           |  40 |         9 |       5 |           8 |        9 |         4 |             4 |        5 | [3, 6, 9, 15, 35]           | [5, 2, 2]       | [28, 4, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p2040n2_0                                           |  40 |         8 |       5 |           6 |        8 |         5 |             5 |        6 | [1, 5, 17, 26, 29, 30]      | [4, 3, 3]       | [21, 8, 4]     | ["c", "c", "clique"]              | False           |         5 | False      |
+| p2040n3_0                                           |  40 |         9 |       6 |           8 |        9 |         3 |             3 |        3 | [19, 24, 38]                | [7, 2, 1]       | [32, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2040n4_0                                           |  40 |         9 |       5 |           8 |        9 |         4 |             4 |        6 | [1, 8, 9, 14, 32, 37]       | [5, 4, 2]       | [17, 11, 4]    | ["c", "c", "c"]                   | False           |         4 | False      |
+| p2040n5_0                                           |  40 |         8 |       5 |           8 |        8 |         4 |             4 |        6 | [7, 9, 13, 22, 30, 36]      | [5, 2, 2]       | [19, 6, 5]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| p2040n8_0                                           |  40 |         9 |       6 |           8 |        9 |         3 |             3 |        6 | [1, 19, 24, 27, 33, 37]     | [6, 1, 1]       | [28, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p2040n9_0                                           |  40 |         9 |       6 |           8 |        9 |         5 |             5 |        6 | [1, 2, 5, 8, 14, 33]        | [4, 3, 3]       | [19, 5, 5]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| p2540n10_0                                          |  40 |        10 |       5 |           9 |       10 |         4 |             4 |        6 | [11, 13, 19, 27, 29, 38]    | [6, 2, 2]       | [24, 5, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p2540n1_0                                           |  40 |        10 |       5 |           9 |       10 |         4 |             4 |        4 | [5, 11, 17, 28]             | [7, 2, 2]       | [27, 5, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p2540n2_0                                           |  40 |        11 |       5 |           9 |       11 |         3 |             3 |        6 | [1, 7, 15, 16, 26, 30]      | [6, 2, 1]       | [29, 3, 2]     | ["c", "clique", "clique"]         | False           |         2 | False      |
+| p2540n3_0                                           |  40 |        10 |       6 |          10 |       10 |         3 |             3 |        4 | [1, 18, 32, 37]             | [7, 1, 1]       | [32, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2540n4_0                                           |  40 |        10 |       5 |           9 |       10 |         3 |             3 |        3 | [7, 9, 13]                  | [7, 1, 1]       | [31, 4, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p2540n5_0                                           |  40 |        10 |       6 |           8 |       10 |         4 |             4 |        5 | [17, 22, 27, 31, 32]        | [6, 2, 2]       | [27, 5, 3]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| p2540n6_0                                           |  40 |        11 |       5 |          10 |       11 |         3 |             3 |        3 | [0, 10, 26]                 | [8, 1, 1]       | [33, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2540n7_0                                           |  40 |        10 |       6 |           9 |       10 |         4 |             4 |        6 | [3, 8, 14, 18, 26, 34]      | [5, 3, 2]       | [21, 5, 5]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| p2540n8_0                                           |  40 |        11 |       6 |          10 |       11 |         3 |             3 |        2 | [11, 16]                    | [9, 1, 1]       | [34, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2540n9_0                                           |  40 |        10 |       5 |           9 |       10 |         3 |             3 |        6 | [2, 11, 14, 18, 26, 35]     | [6, 1, 1]       | [29, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3040n10_0                                          |  40 |        12 |       5 |          11 |       12 |         3 |             3 |        6 | [1, 23, 24, 25, 34, 38]     | [8, 1, 1]       | [29, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p3040n1_0                                           |  40 |        12 |       5 |          12 |       12 |         3 |             3 |        6 | [0, 1, 4, 11, 15, 17]       | [8, 1, 1]       | [30, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3040n2_0                                           |  40 |        12 |       5 |          11 |       12 |         2 |             2 |        1 | [38]                        | [0, 0, 0]       | [37, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p3040n3_0                                           |  40 |        11 |       5 |          10 |       11 |         4 |             4 |        5 | [4, 7, 13, 18, 38]          | [7, 2, 2]       | [27, 5, 3]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p3040n4_0                                           |  40 |        12 |       5 |          10 |       12 |         2 |             2 |        5 | [12, 18, 20, 22, 34]        | [0, 0, 0]       | [33, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p3040n5_0                                           |  40 |        13 |       5 |          11 |       13 |         3 |             3 |        6 | [0, 10, 23, 24, 26, 38]     | [8, 1, 1]       | [29, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3040n6_0                                           |  40 |        12 |       5 |          11 |       12 |         3 |             3 |        5 | [1, 2, 8, 19, 33]           | [7, 1, 1]       | [30, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p3040n7_0                                           |  40 |        13 |       5 |          12 |       13 |         3 |             3 |        6 | [5, 11, 19, 30, 33, 34]     | [7, 2, 1]       | [28, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3040n8_0                                           |  40 |        12 |       5 |          11 |       12 |         3 |             3 |        6 | [8, 15, 18, 25, 30, 31]     | [8, 1, 1]       | [28, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p3040n9_0                                           |  40 |        12 |       5 |          12 |       12 |         2 |             2 |        6 | [4, 8, 11, 15, 25, 36]      | [0, 0, 0]       | [32, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-100-2-1_0                                 |  50 |        19 |       6 |          14 |       19 |         2 |             2 |        5 | [2, 7, 25, 31, 40]          | [0, 0, 0]       | [43, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-100-2-2_0                                 |  50 |        21 |       6 |          16 |       21 |         2 |             2 |        4 | [22, 23, 27, 44]            | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-100-2-4_0                                 |  50 |        24 |       7 |          19 |       24 |         2 |             2 |        6 | [18, 33, 40, 44, 45, 47]    | [0, 0, 0]       | [42, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-100-2-5_0                                 |  50 |        20 |       7 |          15 |       20 |         2 |             2 |        5 | [12, 18, 38, 39, 45]        | [0, 0, 0]       | [43, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-2-1_0                                  |  50 |        15 |       8 |          13 |       15 |         2 |             2 |        6 | [2, 10, 14, 22, 35, 46]     | [0, 0, 0]       | [40, 3, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-2-2_0                                  |  50 |        13 |       5 |          11 |       13 |         3 |             3 |        3 | [0, 4, 42]                  | [11, 1, 1]      | [43, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-50-50-2-3_0                                  |  50 |        11 |       6 |          10 |       11 |         3 |             3 |        6 | [20, 23, 26, 37, 40, 47]    | [8, 1, 1]       | [36, 2, 2]     | ["c", "clique", "clique"]         | False           |         2 | False      |
+| Random-50-50-2-4_0                                  |  50 |        13 |       7 |          11 |       13 |         2 |             2 |        6 | [0, 2, 3, 12, 38, 48]       | [0, 0, 0]       | [42, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-2-5_0                                  |  50 |        14 |       6 |          10 |       14 |         2 |             2 |        4 | [5, 12, 14, 35]             | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-4-1_0                                  |  50 |        21 |       9 |          17 |       21 |         2 |             2 |        4 | [8, 9, 25, 35]              | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-4-2_0                                  |  50 |        25 |      10 |          20 |       25 |         2 |             2 |        6 | [7, 8, 19, 20, 31, 36]      | [0, 0, 0]       | [42, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-50-50-4-4_0                                  |  50 |        27 |       9 |          25 |       27 |         2 |             2 |        6 | [21, 25, 32, 37, 38, 46]    | [0, 0, 0]       | [42, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| SP2                                                 |  50 |        19 |       9 |          14 |       19 |         2 |             2 |        4 | [4, 6, 21, 46]              | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| SP2_0                                               |  50 |        19 |       9 |          14 |       19 |         2 |             2 |        4 | [4, 6, 21, 46]              | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p1550n10_0                                          |  50 |         8 |       6 |           6 |        8 |         6 |             9 |        6 | [12, 13, 20, 21, 41, 43]    | [5, 4, 4]       | [21, 9, 6]     | ["c", "c", "c"]                   | False           |        31 | False      |
+| p1550n8_0                                           |  50 |         8 |       6 |           6 |        8 |         6 |             6 |        5 | [9, 25, 32, 35, 43]         | [4, 4, 4]       | [15, 7, 5]     | ["c", "c", "clique"]              | False           |        11 | False      |
+| p2050n10_0                                          |  50 |         9 |       6 |           8 |        9 |         4 |             4 |        6 | [16, 19, 21, 30, 31, 43]    | [6, 3, 2]       | [33, 6, 4]     | ["c", "c", "c"]                   | False           |         5 | False      |
+| p2050n1_0                                           |  50 |         7 |       5 |           5 |        7 |         6 |             8 |        4 | [8, 9, 26, 45]              | [4, 4, 4]       | [18, 15, 13]   | ["c", "c", "c"]                   | False           |        14 | False      |
+| p2050n3_0                                           |  50 |         8 |       6 |           6 |        8 |         5 |             7 |        4 | [6, 8, 13, 23]              | [6, 3, 3]       | [35, 4, 4]     | ["c", "clique", "clique"]         | False           |         5 | False      |
+| p2050n4_0                                           |  50 |         8 |       6 |           6 |        8 |         5 |             5 |        5 | [0, 34, 37, 42, 47]         | [4, 3, 3]       | [27, 6, 6]     | ["c", "c", "c"]                   | False           |         7 | False      |
+| p2050n7_0                                           |  50 |         8 |       6 |           6 |        8 |         5 |             7 |        6 | [1, 6, 10, 12, 33, 36]      | [5, 3, 3]       | [17, 13, 12]   | ["c", "c", "c"]                   | False           |        13 | False      |
+| p2050n9_0                                           |  50 |        10 |       6 |           7 |       10 |         5 |             5 |        5 | [11, 20, 26, 39, 43]        | [7, 3, 3]       | [31, 9, 5]     | ["c", "c", "c"]                   | False           |         6 | False      |
+| p2550n10_0                                          |  50 |        11 |       6 |           9 |       11 |         4 |             4 |        6 | [13, 16, 21, 23, 32, 45]    | [6, 2, 2]       | [36, 3, 3]     | ["c", "clique", "clique"]         | False           |         2 | False      |
+| p2550n1_0                                           |  50 |         9 |       5 |           7 |        9 |         5 |             6 |        6 | [8, 11, 15, 37, 47, 48]     | [4, 4, 3]       | [31, 6, 7]     | ["c", "c", "c"]                   | False           |         9 | False      |
+| p2550n2_0                                           |  50 |        11 |       6 |           9 |       11 |         5 |             5 |        5 | [0, 7, 23, 31, 47]          | [8, 3, 3]       | [34, 6, 4]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| p2550n3_0                                           |  50 |         9 |       6 |           8 |        9 |         4 |             4 |        5 | [13, 14, 34, 44, 47]        | [7, 2, 2]       | [36, 5, 4]     | ["c", "c", "c"]                   | False           |         5 | False      |
+| p2550n4_0                                           |  50 |        10 |       5 |           9 |       10 |         3 |             3 |        5 | [0, 3, 12, 22, 42]          | [7, 1, 1]       | [36, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2550n5_0                                           |  50 |        10 |       5 |           9 |       10 |         3 |             3 |        6 | [6, 7, 12, 16, 40, 47]      | [7, 2, 1]       | [36, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p2550n6_0                                           |  50 |         9 |       6 |           8 |        9 |         4 |             4 |        6 | [2, 16, 27, 40, 41, 48]     | [6, 2, 2]       | [33, 5, 4]     | ["c", "c", "c"]                   | False           |         4 | False      |
+| p2550n7_0                                           |  50 |        10 |       6 |           8 |       10 |         4 |             4 |        6 | [5, 11, 12, 26, 39, 43]     | [6, 3, 2]       | [32, 6, 4]     | ["c", "c", "c"]                   | False           |         5 | False      |
+| p2550n8_0                                           |  50 |        11 |       5 |           9 |       11 |         4 |             4 |        6 | [2, 8, 19, 31, 34, 41]      | [7, 2, 2]       | [32, 4, 3]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| p2550n9_0                                           |  50 |        10 |       5 |           9 |       10 |         4 |             4 |        6 | [6, 7, 16, 24, 33, 47]      | [6, 2, 2]       | [34, 7, 3]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| p3050n10_0                                          |  50 |        12 |       5 |          10 |       12 |         3 |             3 |        6 | [6, 14, 21, 30, 31, 48]     | [8, 1, 1]       | [39, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p3050n1_0                                           |  50 |        11 |       5 |          10 |       11 |         4 |             4 |        6 | [8, 9, 11, 15, 31, 46]      | [7, 3, 2]       | [37, 4, 3]     | ["c", "clique", "clique"]         | False           |         2 | False      |
+| p3050n2_0                                           |  50 |        11 |       6 |          10 |       11 |         3 |             3 |        5 | [8, 23, 34, 43, 47]         | [8, 1, 1]       | [39, 4, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| p3050n4_0                                           |  50 |        11 |       5 |          10 |       11 |         5 |             5 |        6 | [1, 6, 13, 16, 31, 40]      | [8, 3, 3]       | [31, 8, 4]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| p3050n5_0                                           |  50 |        12 |       5 |          11 |       12 |         3 |             3 |        3 | [4, 12, 27]                 | [9, 1, 1]       | [43, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3050n6_0                                           |  50 |        13 |       5 |          10 |       13 |         3 |             3 |        5 | [12, 22, 24, 26, 39]        | [9, 2, 1]       | [40, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3050n7_0                                           |  50 |        12 |       6 |          11 |       12 |         4 |             4 |        6 | [8, 9, 10, 29, 37, 44]      | [9, 2, 2]       | [36, 4, 3]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| p3050n8_0                                           |  50 |        10 |       5 |           9 |       10 |         3 |             3 |        3 | [12, 14, 24]                | [8, 1, 1]       | [43, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p3050n9_0                                           |  50 |        12 |       5 |          10 |       12 |         3 |             3 |        6 | [0, 12, 39, 40, 43, 46]     | [7, 2, 1]       | [38, 3, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p4050n10_0                                          |  50 |        14 |       5 |          11 |       14 |         3 |             3 |        6 | [3, 12, 14, 32, 40, 41]     | [11, 1, 1]      | [40, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p4050n1_0                                           |  50 |        14 |       5 |          11 |       14 |         2 |             2 |        6 | [4, 7, 10, 37, 41, 45]      | [0, 0, 0]       | [42, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n2_0                                           |  50 |        15 |       5 |          10 |       15 |         2 |             2 |        6 | [2, 9, 32, 33, 37, 42]      | [0, 0, 0]       | [41, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n3_0                                           |  50 |        15 |       5 |          12 |       15 |         2 |             2 |        4 | [6, 12, 13, 32]             | [0, 0, 0]       | [43, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n4_0                                           |  50 |        14 |       5 |          11 |       14 |         2 |             2 |        5 | [5, 11, 21, 26, 43]         | [0, 0, 0]       | [41, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n5_0                                           |  50 |        15 |       5 |          11 |       15 |         2 |             2 |        4 | [4, 12, 15, 18]             | [0, 0, 0]       | [44, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n6_0                                           |  50 |        15 |       5 |          11 |       15 |         3 |             3 |        6 | [14, 18, 28, 31, 39, 44]    | [11, 1, 1]      | [40, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| p4050n7_0                                           |  50 |        14 |       5 |          11 |       14 |         2 |             2 |        5 | [21, 32, 34, 42, 48]        | [0, 0, 0]       | [42, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n8_0                                           |  50 |        15 |       5 |          12 |       15 |         2 |             2 |        5 | [5, 29, 36, 44, 48]         | [0, 0, 0]       | [43, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| p4050n9_0                                           |  50 |        15 |       5 |          11 |       15 |         3 |             3 |        5 | [21, 35, 36, 38, 41]        | [9, 1, 1]       | [41, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-75-75-2-1_0                                  |  75 |        16 |       7 |          11 |       16 |         3 |             3 |        6 | [22, 40, 55, 57, 61, 66]    | [12, 1, 1]      | [65, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-75-75-2-2_0                                  |  75 |        17 |       6 |          12 |       17 |         3 |             3 |        6 | [18, 23, 30, 36, 48, 59]    | [13, 2, 1]      | [62, 4, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-75-75-2-3_0                                  |  75 |        17 |       7 |          12 |       17 |         2 |             2 |        3 | [12, 42, 43]                | [0, 0, 0]       | [70, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-75-75-2-4_0                                  |  75 |        13 |       6 |           9 |       13 |         3 |             3 |        6 | [0, 29, 42, 48, 57, 60]     | [8, 1, 1]       | [62, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-75-75-2-5_0                                  |  75 |        16 |       6 |          11 |       16 |         3 |             3 |        5 | [9, 23, 29, 66, 69]         | [14, 1, 1]      | [64, 3, 3]     | ["c", "c", "c"]                   | False           |         3 | False      |
+| Random-75-75-4-1_0                                  |  75 |        35 |      10 |          22 |       35 |         2 |             2 |        6 | [12, 36, 38, 62, 63, 73]    | [0, 0, 0]       | [67, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-75-75-4-3_0                                  |  75 |        37 |       8 |          21 |       37 |         2 |             2 |        4 | [34, 40, 44, 59]            | [0, 0, 0]       | [69, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-75-75-4-4_0                                  |  75 |        32 |       9 |          19 |       32 |         2 |             2 |        4 | [5, 17, 63, 65]             | [0, 0, 0]       | [69, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-75-75-4-5_0                                  |  75 |        32 |       9 |          19 |       32 |         2 |             2 |        6 | [3, 21, 30, 36, 40, 62]     | [0, 0, 0]       | [67, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| scoop-A_FA+AA-_6_0                                  |  79 |        13 |      11 |          11 |       13 |         5 |             5 |        4 | [19, 30, 34, 35]            | [10, 4, 3]      | [66, 5, 4]     | ["c", "clique", "clique"]         | False           |         2 | False      |
+| Random-100-100-2-1_0                                | 100 |        24 |       9 |          15 |       24 |         3 |             3 |        5 | [13, 14, 32, 34, 70]        | [13, 1, 1]      | [90, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-100-2-2_0                                | 100 |        20 |      10 |          12 |       20 |         3 |             3 |        5 | [16, 42, 70, 86, 97]        | [11, 1, 1]      | [90, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-100-2-3_0                                | 100 |        23 |       7 |          13 |       23 |         3 |             3 |        5 | [44, 45, 53, 57, 86]        | [11, 1, 1]      | [91, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-100-2-4_0                                | 100 |        15 |       6 |          10 |       15 |         4 |             4 |        5 | [13, 24, 63, 73, 96]        | [12, 2, 2]      | [81, 9, 3]     | ["c", "c", "clique"]              | False           |         5 | False      |
+| Random-100-100-2-5_0                                | 100 |        19 |      10 |          12 |       19 |         3 |             3 |        4 | [19, 29, 79, 90]            | [10, 1, 1]      | [91, 3, 2]     | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-100-100-4-2_0                                | 100 |        50 |      10 |          30 |       50 |         2 |             2 |        4 | [46, 59, 72, 89]            | [0, 0, 0]       | [94, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-100-100-4-3_0                                | 100 |        43 |      10 |          23 |       42 |         2 |             2 |        4 | [2, 5, 64, 93]              | [0, 0, 0]       | [94, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-100-100-4-4_0                                | 100 |        44 |      11 |          24 |       44 |         2 |             2 |        5 | [19, 61, 63, 68, 99]        | [0, 0, 0]       | [93, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-100-50-2-1_0                                 | 100 |        12 |       7 |           9 |       12 |         5 |             5 |        5 | [1, 31, 72, 95, 98]         | [8, 3, 3]       | [81, 5, 4]     | ["c", "c", "clique"]              | False           |         3 | False      |
+| Random-100-50-2-3_0                                 | 100 |        15 |       8 |          10 |       15 |         5 |             5 |        4 | [4, 15, 21, 55]             | [13, 3, 3]      | [85, 5, 4]     | ["c", "c", "clique"]              | False           |         4 | False      |
+| Random-100-50-2-5_0                                 | 100 |        12 |       7 |           8 |       12 |         5 |             5 |        6 | [1, 23, 35, 76, 81, 98]     | [9, 3, 3]       | [76, 6, 4]     | ["c", "c", "clique"]              | False           |         5 | False      |
+| Random-100-50-4-1_0                                 | 100 |        26 |       8 |          16 |       26 |         2 |             2 |        6 | [7, 12, 31, 55, 75, 85]     | [0, 0, 0]       | [92, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-100-50-4-2_0                                 | 100 |        29 |      10 |          17 |       29 |         3 |             3 |        5 | [11, 25, 43, 83, 84]        | [24, 1, 1]      | [91, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-50-4-3_0                                 | 100 |        29 |      10 |          17 |       29 |         2 |             2 |        4 | [53, 57, 60, 82]            | [0, 0, 0]       | [94, 1, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-100-50-4-4_0                                 | 100 |        24 |      10 |          15 |       24 |         3 |             3 |        4 | [3, 40, 70, 77]             | [14, 1, 1]      | [92, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-50-4-5_0                                 | 100 |        24 |       9 |          15 |       24 |         3 |             3 |        5 | [51, 71, 77, 89, 95]        | [20, 1, 1]      | [91, 2, 2]     | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-100-50-6-5_0                                 | 100 |        39 |      10 |          22 |       39 |         2 |             2 |        5 | [11, 33, 41, 55, 98]        | [0, 0, 0]       | [92, 2, 1]     | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| scoop-A_FA+AA-_1_0                                  | 105 |        12 |       9 |          10 |       12 |         5 |             6 |        4 | [40, 42, 49, 64]            | [9, 4, 3]       | [72, 22, 4]    | ["c", "c", "clique"]              | False           |         5 | False      |
+| Random-125-125-2-1_0                                | 125 |        24 |       8 |          13 |       24 |         3 |             3 |        6 | [1, 57, 66, 73, 109, 120]   | [12, 2, 1]      | [113, 4, 2]    | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-125-125-2-2_0                                | 125 |        25 |       6 |          13 |       24 |         3 |             3 |        6 | [0, 5, 8, 46, 64, 123]      | [12, 1, 1]      | [112, 3, 2]    | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-125-125-2-3_0                                | 125 |        21 |       7 |          12 |       21 |         3 |             3 |        6 | [5, 36, 56, 68, 81, 84]     | [12, 1, 1]      | [112, 3, 2]    | ["c", "c", "clique"]              | False           |         2 | False      |
+| Random-125-125-2-4_0                                | 125 |        24 |       8 |          15 |       24 |         3 |             3 |        3 | [3, 44, 62]                 | [12, 1, 1]      | [118, 2, 2]    | ["c", "clique", "clique"]         | False           |         1 | True       |
+| Random-125-125-2-5_0                                | 125 |        20 |       6 |          12 |       20 |         3 |             3 |        6 | [3, 8, 34, 47, 86, 124]     | [10, 1, 1]      | [112, 2, 2]    | ["c", "clique", "clique"]         | False           |         1 | False      |
+| Random-125-125-4-4_0                                | 125 |        51 |       9 |          24 |       50 |         2 |             2 |        5 | [19, 21, 27, 102, 123]      | [0, 0, 0]       | [118, 1, 1]    | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| Random-125-125-4-5_0                                | 125 |        46 |       8 |          23 |       46 |         2 |             2 |        5 | [17, 23, 62, 73, 123]       | [0, 0, 0]       | [117, 2, 1]    | ["trivial", "trivial", "trivial"] | False           |         0 | False      |
+| scoop-A_FA+AA-_13_0                                 | 134 |        17 |      11 |          11 |       17 |         5 |             5 |        6 | [14, 35, 47, 100, 103, 127] | [14, 4, 3]      | [111, 8, 4]    | ["c", "c", "clique"]              | False           |         9 | False      |
+
+#### (f) Against §38's seeded form (`sep_branch` of `learning.bound_harness`, seed `max(ω − 1, tw)`)
+|   instances with §38 values |   §38 sep_branch above its seed |   B value above §38 sep_branch |   B value below §38 sep_branch (where a triple) |   B value equal to §38 (where a triple) |   max(B, ω) above §38 sep_branch |   max(B, ω) equal to §38 |   max(B, ω) below §38 |
+|----------------------------:|--------------------------------:|-------------------------------:|------------------------------------------------:|----------------------------------------:|---------------------------------:|-------------------------:|----------------------:|
+|                         338 |                               0 |                              1 |                                             147 |                                       8 |                                1 |                      322 |                    15 |
+
+Where exact branch widths add over the seeded form:
+
+| instance_name   |   n |   optimum |   sep_branch |   sep_branch_seed |   b_value | branch_widths   |   record |
+|:----------------|----:|----------:|-------------:|------------------:|----------:|:----------------|---------:|
+| p2050n1_0       |  50 |         7 |            5 |                 5 |         6 | [4, 4, 4]       |        7 |
+
+#### (g) The ten smallest gap instances (§6's family) and the hand instances
+| instance_name                                      |   n |   m |   optimum |   omega |   lb_best |   tw1 |   record |   b_value |   b_potential | S                    | branch_widths   | branch_sizes   |   separators_with_3_comps |
+|:---------------------------------------------------|----:|----:|----------:|--------:|----------:|------:|---------:|----------:|--------------:|:---------------------|:----------------|:---------------|--------------------------:|
+| HS problem 551 size 20 10 density  0.20            |  20 |  10 |         9 |       7 |         7 |     7 |        9 |         3 |             3 | [2, 3, 5, 9, 11]     | [4, 1, 1]       | [10, 3, 2]     |                       223 |
+| HS problem 575 size 20 10 density  0.20            |  20 |  10 |        10 |       8 |         8 |     9 |       10 |         2 |             2 | [2, 3, 4, 6, 14, 19] | [0, 0, 0]       | [12, 1, 1]     |                         3 |
+| HS problem 590 size 20 10 density  0.20            |  20 |  10 |        10 |       8 |         8 |    10 |       10 |       nan |           nan | nan                  | nan             | nan            |                         0 |
+| HS problem 620 size 20 10 density  0.25            |  20 |  10 |        13 |       9 |        11 |    12 |       13 |       nan |           nan | nan                  | nan             | nan            |                         0 |
+| HS problem 640 size 20 10 density  0.25            |  20 |  10 |        11 |       8 |         9 |    10 |       11 |         2 |             2 | [2, 4, 6, 7, 9, 16]  | [0, 0, 0]       | [11, 2, 1]     |                        17 |
+| HS problem 678 size 20 10 density  0.30            |  20 |  10 |        12 |       7 |        10 |    11 |       12 |       nan |           nan | nan                  | nan             | nan            |                         0 |
+| HS problem 690 size 20 10 density  0.30            |  20 |  10 |        15 |      11 |        13 |    15 |       15 |       nan |           nan | nan                  | nan             | nan            |                         0 |
+| HS problem 721 size 20 10 density  0.35            |  20 |  10 |        16 |      12 |        14 |    15 |       16 |       nan |           nan | nan                  | nan             | nan            |                         0 |
+| Warwick 871: balanced orders, 4 orders per product |  20 |  10 |         6 |       4 |         4 |     4 |        6 |         4 |             4 | [0, 7, 17]           | [3, 2, 2]       | [5, 9, 3]      |                      3333 |
+| Warwick 877: balanced orders, 4 orders per product |  20 |  10 |         8 |       4 |         6 |     7 |        8 |         3 |             3 | [4, 16]              | [5, 2, 1]       | [13, 3, 2]     |                      3439 |
+
+| instance          |   n |   value_optimum_units |   seeded_form_38 |   optimum | S      | branch_widths   | agrees   |   c_calls |   seconds |
+|:------------------|----:|----------------------:|-----------------:|----------:|:-------|:----------------|:---------|----------:|----------:|
+| K_{1,3}           |   4 |                     2 |                2 |         2 | [0]    | [0, 0, 0]       | True     |         0 |      0.05 |
+| K_{1,4}           |   5 |                     2 |                2 |         2 | [0]    | [0, 0, 0]       | True     |         0 |      0    |
+| spider(3,2)       |   7 |                     3 |                3 |         3 | [0]    | [1, 1, 1]       | True     |         0 |      0.01 |
+| path(9)           |   9 |                   nan |              nan |         2 | nan    | []              | True     |         0 |      0.01 |
+| three K4 at a hub |  10 |                     4 |                4 |         4 | [0]    | [2, 2, 2]       | True     |         0 |      0.03 |
+| theta             |  11 |                     3 |                3 |         4 | [0, 1] | [1, 1, 1]       | True     |         3 |      0.04 |
+| spider of spiders |  22 |                     4 |                4 |         4 | [0]    | [2, 2, 2]       | True     |         3 |      0.19 |
+
+#### (h) Checker verdicts
+| verdict   |   certificates |   nodes |   c_reruns |   seconds |
+|:----------|---------------:|--------:|-----------:|----------:|
+| verified  |            156 |     624 |        187 |    247.89 |

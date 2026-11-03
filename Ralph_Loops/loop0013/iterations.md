@@ -341,7 +341,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     anything about the optimum (all are certified already); any solver
     change; nothing about the C program's speed (plan §0.4 (9)).
 
-- [ ] **06 Family B: separators with certified branches on the residual gap instances; the trees-of-cliques family.**
+- [x] **06 Family B: separators with certified branches on the residual gap instances; the trees-of-cliques family.**
   - **Question.** E of the brief. On the gap instances where families E and
     M leave `floor < optimum` after items 03–05, does a separator-branch
     certificate (`branch_lemma_separator`: three connected branches of

@@ -1,0 +1,208 @@
+{
+ "format": "obstruction-branch-1",
+ "instance_name": "Warwick 877: balanced orders, 4 orders per product",
+ "n": 20,
+ "matrix_sha256": "40b13013ed180ba0fa47de7371fac790f4e93a49d1badd75f9f5c412dc3b9ce4",
+ "graph_sha256": "3cab5eb59cc41af85b1c675b5267f7e25e7831916e1e535c3a0f8f17ef2bd7bb",
+ "graph_edges": 56,
+ "pathwidth_proved": 2,
+ "floor": 3,
+ "floor_units": "optimum units: pathwidth(G) + 1 = MOSP",
+ "S": [
+  4,
+  16
+ ],
+ "k": 1,
+ "branch_widths": [
+  5,
+  2,
+  1
+ ],
+ "branch_sizes": [
+  13,
+  3,
+  2
+ ],
+ "branch_kinds": [
+  "c",
+  "clique",
+  "clique"
+ ],
+ "node": {
+  "kind": "branch",
+  "vertices": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19
+  ],
+  "pathwidth_at_least": 2,
+  "k": 1,
+  "S": [
+   4,
+   16
+  ],
+  "branches": [
+   {
+    "kind": "c",
+    "vertices": [
+     2,
+     3,
+     6,
+     7,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     18,
+     19
+    ],
+    "m": 13,
+    "edges": 31,
+    "edges_sha256": "685a7a48577c45d2026ac84ec2f1c3fa735dc6b526a9a10c9c4949c524ae2fa4",
+    "pathwidth_at_least": 5,
+    "source": "c_bound",
+    "c_width": 5,
+    "c_status": "bound",
+    "c_lower": 5,
+    "c_nodes": 0,
+    "c_stdout": [
+     "pathwidth 5 bound",
+     "layout 12 10 8 6 5 0 9 4 3 1 11 7 2"
+    ],
+    "c_stderr": [
+     "line 1: n=13 width=5 status=bound lower=5 upper_start=5 nodes=0 minor_nodes=0 upper_bound_nodes=11 engine_calls=1 seconds=0.000"
+    ],
+    "c_seconds": 0.001506107859313488,
+    "c_cap_seconds": 5.0,
+    "c_command": "printf '%s\\n' \"$g6\" | nice -n 19 pathwidth_solver/cli/pathwidth -t 5 -l -v -m min_vertices=1000000"
+   },
+   {
+    "kind": "clique",
+    "vertices": [
+     0,
+     8,
+     17
+    ],
+    "clique": [
+     0,
+     8,
+     17
+    ],
+    "pathwidth_at_least": 2,
+    "source": "clique"
+   },
+   {
+    "kind": "clique",
+    "vertices": [
+     1,
+     5
+    ],
+    "clique": [
+     1,
+     5
+    ],
+    "pathwidth_at_least": 1,
+    "source": "clique"
+   }
+  ],
+  "links": [
+   {
+    "Q": [
+     4,
+     16
+    ],
+    "edge_first": [
+     4,
+     18
+    ],
+    "edge_second": [
+     4,
+     17
+    ],
+    "pair": [
+     0,
+     1
+    ]
+   },
+   {
+    "Q": [
+     4,
+     16
+    ],
+    "edge_first": [
+     4,
+     18
+    ],
+    "edge_second": [
+     4,
+     5
+    ],
+    "pair": [
+     0,
+     2
+    ]
+   },
+   {
+    "Q": [
+     4,
+     16
+    ],
+    "edge_first": [
+     4,
+     17
+    ],
+    "edge_second": [
+     4,
+     5
+    ],
+    "pair": [
+     1,
+     2
+    ]
+   }
+  ],
+  "source": "branch",
+  "n_comps": 3
+ },
+ "node_note": "every node names the vertex set it certifies a pathwidth for (vertices are the instance's 0-based customer labels); a `branch` node is S, three branches (nodes), three connectors Q \u2286 S with one edge to each branch, and certifies k + 1 where every branch certifies \u2265 k; a `c` node is the C program's output on the induced subgraph relabelled 0..m-1 in increasing label order (edges_sha256 as obstruction-minor-1); a `clique` node is a clique of the induced subgraph (pathwidth \u2265 size \u2212 1); a `trivial` node is one vertex; a `minor` node carries an obstruction-minor-1 certificate of the induced subgraph",
+ "optimum_on_record": 8,
+ "c_cap_seconds": 5.0,
+ "c_binary_sha256": "6560b8093c3e51b961614381e5f9c508d39f712783b57b64cdf241607b4bc5bb",
+ "seconds": 0.1100258301012218,
+ "stats": {
+  "separators_family": 87,
+  "separators_evaluated": 5071,
+  "separators_with_3_comps": 3439,
+  "local_moves": 4937,
+  "local_starts": 12,
+  "censored": false,
+  "best_potential": 2,
+  "seconds": 0.1100258301012218,
+  "c_calls": 1,
+  "c_seconds": 0.001506107859313488,
+  "minor_calls": 0,
+  "leaves_cached": 3,
+  "memo": 3
+ },
+ "theorems": "branch_lemma_separator / branch_lemma_linked (lean/MOSPFormalization/Sandwich.lean) for every branch node; card_le_pathwidth_add_one_of_isClique (MOSPGraph.lean) for a clique leaf; the C program's refutation on a branch rests on the corrected search rules (Search/) and its bound on degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean); pathwidth_gt_of_minorOf (Minor.lean) for a minor leaf; mospValue_eq_pathwidth_add_one (MOSPGraph.lean) for the optimum units"
+}

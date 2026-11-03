@@ -1,0 +1,157 @@
+instance_name,floor,k,nodes_checked,c_reruns,verdict,failed,seconds,certificate
+HS problem 1102 size 30 10 density  0.20,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_1102_size_30_10_density__0.20/branch.json
+HS problem 1109 size 30 10 density  0.20,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_1109_size_30_10_density__0.20/branch.json
+HS problem 1127 size 30 10 density  0.20,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_1127_size_30_10_density__0.20/branch.json
+HS problem 1131 size 30 10 density  0.20,6,4,4,3,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_1131_size_30_10_density__0.20/branch.json
+HS problem 1169 size 30 10 density  0.25,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_1169_size_30_10_density__0.25/branch.json
+HS problem 551 size 20 10 density  0.20,3,1,4,2,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_551_size_20_10_density__0.20/branch.json
+HS problem 575 size 20 10 density  0.20,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_575_size_20_10_density__0.20/branch.json
+HS problem 640 size 20 10 density  0.25,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/HS_problem_640_size_20_10_density__0.25/branch.json
+Random-100-100-2-1_0,3,1,4,1,verified,,25.02,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-2-1_0/branch.json
+Random-100-100-2-2_0,3,1,4,1,verified,,25.02,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-2-2_0/branch.json
+Random-100-100-2-3_0,3,1,4,1,verified,,25.02,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-2-3_0/branch.json
+Random-100-100-2-4_0,4,2,4,2,verified,,1.75,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-2-4_0/branch.json
+Random-100-100-2-5_0,3,1,4,2,verified,,25.02,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-2-5_0/branch.json
+Random-100-100-4-2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-4-2_0/branch.json
+Random-100-100-4-3_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-4-3_0/branch.json
+Random-100-100-4-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-100-4-4_0/branch.json
+Random-100-50-2-1_0,5,3,4,2,verified,,0.16,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-2-1_0/branch.json
+Random-100-50-2-3_0,5,3,4,2,verified,,0.15,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-2-3_0/branch.json
+Random-100-50-2-5_0,5,3,4,2,verified,,0.08,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-2-5_0/branch.json
+Random-100-50-4-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-4-1_0/branch.json
+Random-100-50-4-2_0,3,1,4,1,verified,,1.58,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-4-2_0/branch.json
+Random-100-50-4-3_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-4-3_0/branch.json
+Random-100-50-4-4_0,3,1,4,1,verified,,17.1,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-4-4_0/branch.json
+Random-100-50-4-5_0,3,1,4,1,verified,,0.55,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-4-5_0/branch.json
+Random-100-50-6-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-100-50-6-5_0/branch.json
+Random-125-125-2-1_0,3,1,4,2,verified,,25.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-2-1_0/branch.json
+Random-125-125-2-2_0,3,1,4,2,verified,,25.02,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-2-2_0/branch.json
+Random-125-125-2-3_0,3,1,4,2,verified,,25.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-2-3_0/branch.json
+Random-125-125-2-4_0,3,1,4,1,verified,,25.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-2-4_0/branch.json
+Random-125-125-2-5_0,3,1,4,1,verified,,25.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-2-5_0/branch.json
+Random-125-125-4-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-4-4_0/branch.json
+Random-125-125-4-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-125-125-4-5_0/branch.json
+Random-30-30-2-3_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-30-30-2-3_0/branch.json
+Random-40-40-2-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-40-40-2-1_0/branch.json
+Random-40-40-2-2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-40-40-2-2_0/branch.json
+Random-40-40-2-3_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-40-40-2-3_0/branch.json
+Random-40-40-2-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-40-40-2-5_0/branch.json
+Random-50-100-2-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-100-2-1_0/branch.json
+Random-50-100-2-2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-100-2-2_0/branch.json
+Random-50-100-2-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-100-2-4_0/branch.json
+Random-50-100-2-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-100-2-5_0/branch.json
+Random-50-50-2-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-2-1_0/branch.json
+Random-50-50-2-2_0,3,1,4,1,verified,,0.03,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-2-2_0/branch.json
+Random-50-50-2-3_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-2-3_0/branch.json
+Random-50-50-2-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-2-4_0/branch.json
+Random-50-50-2-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-2-5_0/branch.json
+Random-50-50-4-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-4-1_0/branch.json
+Random-50-50-4-2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-4-2_0/branch.json
+Random-50-50-4-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-50-50-4-4_0/branch.json
+Random-75-75-2-1_0,3,1,4,1,verified,,0.06,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-2-1_0/branch.json
+Random-75-75-2-2_0,3,1,4,2,verified,,0.36,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-2-2_0/branch.json
+Random-75-75-2-3_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-2-3_0/branch.json
+Random-75-75-2-4_0,3,1,4,1,verified,,0.1,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-2-4_0/branch.json
+Random-75-75-2-5_0,3,1,4,3,verified,,0.6,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-2-5_0/branch.json
+Random-75-75-4-1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-4-1_0/branch.json
+Random-75-75-4-3_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-4-3_0/branch.json
+Random-75-75-4-4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-4-4_0/branch.json
+Random-75-75-4-5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Random-75-75-4-5_0/branch.json
+SP2,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/SP2/branch.json
+SP2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/SP2_0/branch.json
+"Warwick 1298: balanced orders, 6 orders per product",3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1298__balanced_orders__6_orders_per_product/branch.json
+"Warwick 1473: balanced orders, 4 orders per product",3,1,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1473__balanced_orders__4_orders_per_product/branch.json
+"Warwick 1481: balanced orders, 5 orders per product",2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1481__balanced_orders__5_orders_per_product/branch.json
+"Warwick 1488: balanced orders, 5 orders per product",3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1488__balanced_orders__5_orders_per_product/branch.json
+"Warwick 1490: balanced orders, 5 orders per product",2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1490__balanced_orders__5_orders_per_product/branch.json
+"Warwick 1728: balanced orders, 3 orders per product",2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1728__balanced_orders__3_orders_per_product/branch.json
+"Warwick 1729: balanced orders, 3 orders per product",3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_1729__balanced_orders__3_orders_per_product/branch.json
+"Warwick 871: balanced orders, 4 orders per product",4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_871__balanced_orders__4_orders_per_product/branch.json
+"Warwick 877: balanced orders, 4 orders per product",3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_877__balanced_orders__4_orders_per_product/branch.json
+"Warwick 879: balanced orders, 4 orders per product",3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/Warwick_879__balanced_orders__4_orders_per_product/branch.json
+p1530n1_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1530n1_0/branch.json
+p1530n4_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1530n4_0/branch.json
+p1530n8_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1530n8_0/branch.json
+p1530n9_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1530n9_0/branch.json
+p1540n10_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1540n10_0/branch.json
+p1540n1_0,4,2,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1540n1_0/branch.json
+p1540n3_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1540n3_0/branch.json
+p1540n5_0,5,3,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1540n5_0/branch.json
+p1540n9_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1540n9_0/branch.json
+p1550n10_0,6,4,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1550n10_0/branch.json
+p1550n8_0,6,4,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p1550n8_0/branch.json
+p2030n8_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2030n8_0/branch.json
+p2040n10_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n10_0/branch.json
+p2040n1_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n1_0/branch.json
+p2040n2_0,5,3,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n2_0/branch.json
+p2040n3_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n3_0/branch.json
+p2040n4_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n4_0/branch.json
+p2040n5_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n5_0/branch.json
+p2040n8_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n8_0/branch.json
+p2040n9_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2040n9_0/branch.json
+p2050n10_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n10_0/branch.json
+p2050n1_0,6,4,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n1_0/branch.json
+p2050n3_0,5,3,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n3_0/branch.json
+p2050n4_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n4_0/branch.json
+p2050n7_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n7_0/branch.json
+p2050n9_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2050n9_0/branch.json
+p2530n2_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2530n2_0/branch.json
+p2530n6_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2530n6_0/branch.json
+p2530n8_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2530n8_0/branch.json
+p2540n10_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n10_0/branch.json
+p2540n1_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n1_0/branch.json
+p2540n2_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n2_0/branch.json
+p2540n3_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n3_0/branch.json
+p2540n4_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n4_0/branch.json
+p2540n5_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n5_0/branch.json
+p2540n6_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n6_0/branch.json
+p2540n7_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n7_0/branch.json
+p2540n8_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n8_0/branch.json
+p2540n9_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2540n9_0/branch.json
+p2550n10_0,4,2,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n10_0/branch.json
+p2550n1_0,5,3,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n1_0/branch.json
+p2550n2_0,5,3,4,2,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n2_0/branch.json
+p2550n3_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n3_0/branch.json
+p2550n4_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n4_0/branch.json
+p2550n5_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n5_0/branch.json
+p2550n6_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n6_0/branch.json
+p2550n7_0,4,2,4,3,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n7_0/branch.json
+p2550n8_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n8_0/branch.json
+p2550n9_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p2550n9_0/branch.json
+p3040n10_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n10_0/branch.json
+p3040n1_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n1_0/branch.json
+p3040n2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n2_0/branch.json
+p3040n3_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n3_0/branch.json
+p3040n4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n4_0/branch.json
+p3040n5_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n5_0/branch.json
+p3040n6_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n6_0/branch.json
+p3040n7_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n7_0/branch.json
+p3040n8_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n8_0/branch.json
+p3040n9_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3040n9_0/branch.json
+p3050n10_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n10_0/branch.json
+p3050n1_0,4,2,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n1_0/branch.json
+p3050n2_0,3,1,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n2_0/branch.json
+p3050n4_0,5,3,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n4_0/branch.json
+p3050n5_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n5_0/branch.json
+p3050n6_0,3,1,4,1,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n6_0/branch.json
+p3050n7_0,4,2,4,2,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n7_0/branch.json
+p3050n8_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n8_0/branch.json
+p3050n9_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p3050n9_0/branch.json
+p4040n1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4040n1_0/branch.json
+p4040n4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4040n4_0/branch.json
+p4040n5_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4040n5_0/branch.json
+p4040n7_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4040n7_0/branch.json
+p4040n9_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4040n9_0/branch.json
+p4050n10_0,3,1,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n10_0/branch.json
+p4050n1_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n1_0/branch.json
+p4050n2_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n2_0/branch.json
+p4050n3_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n3_0/branch.json
+p4050n4_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n4_0/branch.json
+p4050n5_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n5_0/branch.json
+p4050n6_0,3,1,4,1,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n6_0/branch.json
+p4050n7_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n7_0/branch.json
+p4050n8_0,2,0,4,0,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n8_0/branch.json
+p4050n9_0,3,1,4,1,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/p4050n9_0/branch.json
+scoop-A_FA+AA-_13_0,5,3,4,2,verified,,0.16,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/scoop-A_FA_AA-_13_0/branch.json
+scoop-A_FA+AA-_1_0,5,3,4,2,verified,,0.01,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/scoop-A_FA_AA-_1_0/branch.json
+scoop-A_FA+AA-_6_0,5,3,4,1,verified,,0.0,/home/al/dev/MOSP/reports/scratch/obstruction_search/06_branch/certificates/scoop-A_FA_AA-_6_0/branch.json

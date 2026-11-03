@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 5/11 SOLVED
+Current: 6/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -491,3 +491,79 @@ instances). The residual after items 03–05 is 11 instances of the 338
 `gb` column), plus the family-E and family-M floors for the map: M's are
 `05_minor_scale/joined.csv::best` (ladder or search, in optimum units) on
 the 207 and `04_minor/search.csv::search_floor` on the 251.
+
+---
+## Iteration 6 — 2026-11-03 07:15
+
+### Completed
+
+- **Item 06 — family B: separators with certified branches on the residual
+  gap instances; the trees-of-cliques family.**
+  `learning/obstruction_branch.py` (components, connectivity and the link
+  condition on bit masks; a leaf oracle with the C program at cap 5 s, the
+  clique and trivial nodes, family M's ladder on a branch as the `minor`
+  leaf; the branch rule at depth 2 memoised by vertex set; the separator
+  family plus a tabu local search over `S`, `|S| ≤ 6`, tenure 5; a **lazy
+  evaluation with upper bounds** so a branch goes to the C program only
+  while it could raise the value, which also yields `b_potential`, a
+  ceiling at the separators tried; the certificate format
+  `obstruction-branch-1`; stages `hand`, `run`, `check`, `connectivity`,
+  `tables`); `paper1/obstruction_check.py check-branch` (own BFS, own
+  relabelling and graph6, the C re-run per `c` leaf, `check-minor` per
+  `minor` leaf, recursion over nested nodes); `tests/test_obstruction_branch.py`
+  (16 passed); `reports/scratch/obstruction_search/06_branch/{search.csv,
+  joined.csv, certificates/ (156), checker_verdicts.csv, connectivity.csv,
+  hand.csv, harness_values.csv, harness_table.md, tables.md, run.log,
+  run_harness.py, pass1/, gate_run.out}` and `../06_branch_{run,check,
+  harness,connectivity}.out`; `reports/obstruction_search.md` §6.
+- **Numbers.** Residual (11, all dense 100–125 Chu & Stuckey): **unchanged,
+  11 of 11** — no linked triple on 8, values 2–3 on 3 against optima
+  25–80 (the separators found isolate one to three fringe customers:
+  branch sizes `[94, 1, 1]`, `[118, 1, 1]`, `[112, 3, 2]`); vertex
+  connectivity 1–3 on seven, 6 on one, 7–12 on three. All 338: a linked
+  triple on 156, **B closes 0, exceeds the record on 0, exceeds the
+  reference on 1** (`p2050n1_0`: three branches of pathwidth 4 at a
+  4-separator, value 6 against optimum 7); the value is below ω on 147 of
+  156; mean gap 11.7 where a triple exists, and the potential's mean gap
+  is 11.6, so the leaves are essentially exact and the shortfall is the
+  third-largest branch. §38's seeded `sep_branch` was above its seed on 0
+  of 338; exact widths beat it on 1. Depth 2 used on 0 certificates; the
+  `minor` leaf fired on 8 instances and improved none; `|S| = 6` on 72 of
+  156. Hand instances 7 of 7 agree with the seeded form. Checker **156 of
+  156 verified** (624 nodes, 187 C re-runs). Harness on all 6,376: above
+  optimum **0**, beats the reference on 1 of the 338.
+- **Kill verdict: met — "branching is closed"**; exact branch widths
+  changed exactly one value, by one, on an instance family M had closed.
+  No stop condition fired.
+- **Two deviations recorded in §6.1**: the item's "M certificate from item
+  04/05" cannot restrict to an induced subgraph, so the `minor` leaf runs
+  the ladder on the branch; the mask-level link condition replaces the
+  harness's `linked_third` inside the search and is pinned equal to it by
+  a test. The item's "spider of spiders 3" is 4 in optimum units.
+- **Compute ≈ 1.0 core-hour** of the item's 4 (final pass 0.47, of which
+  168 s in 347 C calls; a first pass 0.48 whose values agree on 338 of
+  338; connectivity, checker 0.07, harness < 0.01). Load 0.2–4 throughout.
+- **Gate: PASS** (`reports/scratch/obstruction_search/06_branch/gate_run.out`,
+  07:05–07:15): lake build ok, 0 sorry, 0 axiom; `tests/` 1,864 passed, 2
+  skipped, 1 xfailed (4:31); `pathwidth_solver/` 123 passed (6:21); paper 77
+  pages, no undefined references. No Lean and no paper file touched by this
+  item.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 07 (the 24 open classes: family E's ceiling, M and B as lower-bound
+searches only; `BalancedTree_3_5` by the branch lemma as a nested B
+certificate). Inputs from this item: `branch_search(adj, …)` takes any
+graph as masks (a dataset class's edge list through `minor_masks`);
+`certificate_dict` with `matrix=None` for an edge-list instance; the
+checker accepts an edge-list instance (`.txt`) and nested `branch` nodes of
+any depth, with `trivial` leaves of claim 0 (the tree's height-1 stars give
+`k = 0` at the leaves); `check-branch` re-runs the C only on `c` nodes, so
+a certificate built from `branch` and `trivial` nodes alone is checked
+without the C program. Family B's floors for the map (item 08) are
+`06_branch/joined.csv::b_value` (NaN where no triple) with `b_floor =
+max(b_value, ω)` beside it.

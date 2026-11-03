@@ -30,3 +30,8 @@
 [2026-11-03 04:50:39] claude session it05 (cap 4.00 h) -> session_it05.log
 [2026-11-03 06:23:43] session it05: ok (exit 0, 53 tool calls)
 [2026-11-03 06:34:37] tests passed: GATE PASS
+[2026-11-03 06:34:37] committed 1e73c5d5f: 05 Family M at scale: the 338 above 60 and the 200 Chu & Stuckey; `Ran
+[2026-11-03 06:34:37] === iteration 6: 06 Family B: separators with certified branches on the residual gap instances; the trees-o
+[2026-11-03 06:34:37] claude session it06 (cap 4.00 h) -> session_it06.log
+[2026-11-03 07:15:55] session it06: ok (exit 0, 56 tool calls)
+[2026-11-03 07:26:49] tests passed: GATE PASS

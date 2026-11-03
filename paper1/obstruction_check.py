@@ -13,6 +13,22 @@ pins the two texts equal).
         [--drat-trim tools/drat-trim/drat-trim] [--timeout S] [--json]
     python3 paper1/obstruction_check.py check-minor <instance.mosp | edges.txt> <certificate.json>
         [--c-binary pathwidth_solver/cli/pathwidth] [--c-cap S] [--no-rulefree] [--rulefree-cap S] [--json]
+    python3 paper1/obstruction_check.py check-branch <instance.mosp | edges.txt> <certificate.json>
+        [--c-binary pathwidth_solver/cli/pathwidth] [--c-cap S] [--rulefree] [--json]
+
+`check-branch` (item 06, family B) reads the instance the same way and
+checks a nested `obstruction-branch-1` certificate: the top node covers
+every vertex; a `branch` node's `S` and three branches lie inside the node's
+set, pairwise disjoint and disjoint from `S`, each branch connected by the
+checker's own BFS, each of the three connectors `Q ⊆ S` connected and
+adjacent to both its branches by the edges named, each branch's node
+checked recursively for pathwidth `>= k`, and the node certifies `k + 1`
+(`branch_lemma_separator`, `lean/MOSPFormalization/Sandwich.lean`); a `c`
+node re-runs the C program on the branch's induced subgraph (own
+relabelling, own graph6, hash compared) and needs the claim proved; a
+`clique` node is a clique by inspection; a `trivial` node is one vertex; a
+`minor` node goes through `check-minor` on the induced subgraph written as
+an edge list. What it certifies: `pw(G) >= p` and `MOSP >= p + 1`.
 
 `check-minor` (item 04, family M) reads the instance (or an edge list: "n e"
 then one "u v" per line, 0-based), builds the MOSP graph, replays the
@@ -590,6 +606,199 @@ def check_minor(instance_path: Path, certificate_path: Path, c_cap: float = 10.0
     return result
 
 
+# ----------------------------------------------------------------------------
+# family B (item 06): separator-branch certificates
+# ----------------------------------------------------------------------------
+
+BRANCH_THEOREMS = ("branch_lemma_separator / branch_lemma_linked (lean/MOSPFormalization/Sandwich.lean): three pairwise "
+                   "disjoint connected branches of pathwidth >= k, disjoint from S, every two joined through a connected "
+                   "Q ⊆ S adjacent to both, force pathwidth >= k + 1; card_le_pathwidth_add_one_of_isClique "
+                   "(MOSPGraph.lean) for a clique leaf; pathwidth_gt_of_minorOf (Minor.lean) for a minor leaf; the C "
+                   "program's refutation on a branch rests on the corrected search rules (Search/), its bound on "
+                   "degeneracy_le_pathwidth / minDegreeIn_le_degeneracy (Sandwich.lean); mospValue_eq_pathwidth_add_one "
+                   "(MOSPGraph.lean) for the optimum units")
+
+
+def bfs_component(G: dict[int, set[int]], inside: set[int], start: int) -> set[int]:
+    seen = {start}
+    stack = [start]
+    while stack:
+        v = stack.pop()
+        for u in G[v]:
+            if u in inside and u not in seen:
+                seen.add(u)
+                stack.append(u)
+    return seen
+
+
+def connected_in(G: dict[int, set[int]], S: set[int]) -> bool:
+    if not S:
+        return False
+    return bfs_component(G, S, next(iter(S))) == S
+
+
+def induced_relabelled(G: dict[int, set[int]], H: set[int]) -> tuple[list[int], list[tuple[int, int]]]:
+    labels = sorted(H)
+    index = {v: i for i, v in enumerate(labels)}
+    return labels, sorted((index[a], index[b]) for a in H for b in G[a] if b in H and a < b)
+
+
+def check_branch(instance_path: Path, certificate_path: Path, c_cap: float = 25.0, c_binary: Path = DEFAULT_C_BINARY,
+                 rulefree: bool = False, rulefree_cap: float = 120.0) -> dict:
+    """Check an `obstruction-branch-1` certificate: the instance, then the
+    nested node — a `branch` node's S and three branches are subsets of the
+    node's vertex set, pairwise disjoint, the branches connected (own BFS),
+    each connector `Q ⊆ S` connected and adjacent to both its branches by
+    the edges named, each branch's node checked recursively for `>= k`, and
+    the node certifies `k + 1`; a `c` node re-runs the C program on the
+    induced subgraph (own relabelling, own graph6) under `c_cap` and needs
+    at least the claim proved; a `clique` node is a clique by inspection; a
+    `trivial` node is one vertex; a `minor` node goes through `check_minor`
+    on the induced subgraph written as an edge list. The top node must cover
+    every vertex. Verdict `verified` when every check passes."""
+    result: dict = {"instance": str(instance_path), "certificate": str(certificate_path), "checks": [], "verdict": "",
+                    "nodes_checked": 0, "c_reruns": 0}
+    cert = json.loads(Path(certificate_path).read_text())
+
+    def check(label: str, ok: bool, detail: str = "") -> bool:
+        result["checks"].append({"check": label, "ok": bool(ok), "detail": detail})
+        return bool(ok)
+
+    instance_path = Path(instance_path)
+    if instance_path.suffix == ".txt":
+        name, n, edges = read_edges(instance_path)
+        G = graph_from_edges(n, edges)
+        ok = check("instance is an edge list", True, f"{n} vertices, {len(edges)} edges")
+    else:
+        name, rows = read_mosp(instance_path)
+        n = len(rows)
+        G = graph_from_rows(rows)
+        digest_rows = rows_sha256(rows)
+        ok = check("instance rows SHA-256 matches", cert.get("matrix_sha256") in (None, digest_rows),
+                   f"{digest_rows[:16]}… vs {str(cert.get('matrix_sha256'))[:16]}…")
+    result.update({"instance_name": name, "n": n})
+    ok &= check("format is obstruction-branch-1", cert.get("format") == "obstruction-branch-1", str(cert.get("format")))
+    ok &= check("instance size matches", n == int(cert["n"]), f"file n={n}, certificate n={cert['n']}")
+    g_hash = edges_sha256(n, graph_edges(G))
+    ok &= check("graph edge-list SHA-256 matches", cert.get("graph_sha256") in (None, g_hash),
+                f"{g_hash[:16]}… vs {str(cert.get('graph_sha256'))[:16]}…")
+    node = cert.get("node")
+    claim = cert.get("pathwidth_proved")
+    result["floor_claimed"] = cert.get("floor")
+    ok &= check("the claim is a pathwidth and the floor is claim + 1",
+                isinstance(node, dict) and claim is not None and int(claim) >= 0
+                and int(cert.get("floor", -1)) == int(claim) + 1, f"pathwidth >= {claim}, floor {cert.get('floor')}")
+    if not ok:
+        result["verdict"] = "rejected"
+        return result
+    claim = int(claim)
+    result["k"] = node.get("k")
+    ok &= check("the top node covers every vertex", set(node.get("vertices", [])) == set(range(n)),
+                f"{len(node.get('vertices', []))} of {n}")
+
+    def check_node(nd: dict, H: set[int], need: int, path: str) -> bool:
+        result["nodes_checked"] += 1
+        kind = nd.get("kind")
+        verts = set(int(v) for v in nd.get("vertices", []))
+        good = check(f"{path}: node vertices are the set certified", verts == H and len(H) > 0,
+                     f"{len(verts)} vertices, kind {kind}")
+        if not good:
+            return False
+        claimed = int(nd.get("pathwidth_at_least", -1))
+        good &= check(f"{path}: node claims >= {need}", claimed >= need, f"claims {claimed}")
+        if kind == "trivial":
+            return good & check(f"{path}: trivial node (pathwidth >= 0 of a nonempty set) claims 0", len(H) >= 1 and claimed == 0)
+        if kind == "clique":
+            Q = set(int(v) for v in nd.get("clique", []))
+            is_cl = Q <= H and len(Q) >= 1 and all(b in G[a] for a in Q for b in Q if a != b)
+            return good & check(f"{path}: clique of size {len(Q)} inside the set, claim <= size - 1",
+                                is_cl and claimed <= len(Q) - 1)
+        if kind in ("c", "minor"):
+            labels, edges = induced_relabelled(G, H)
+            m = len(labels)
+            h = edges_sha256(m, edges)
+            good &= check(f"{path}: induced subgraph hash matches ({m} vertices, {len(edges)} edges)",
+                          nd.get("edges_sha256") in (None, h), f"{h[:16]}… vs {str(nd.get('edges_sha256'))[:16]}…")
+            if kind == "minor":
+                sub = nd.get("certificate")
+                if not isinstance(sub, dict):
+                    return check(f"{path}: minor node carries a certificate", False)
+                with tempfile.TemporaryDirectory() as td:
+                    ep = Path(td) / "branch.txt"
+                    ep.write_text(f"{m} {len(edges)}\n" + "".join(f"{a} {b}\n" for a, b in edges))
+                    cp = Path(td) / "minor.json"
+                    cp.write_text(json.dumps(sub))
+                    res = check_minor(ep, cp, c_cap=c_cap, c_binary=c_binary, rulefree=rulefree, rulefree_cap=rulefree_cap)
+                result["c_reruns"] += 1
+                proved = int(sub.get("pathwidth_proved", -1))
+                return good & check(f"{path}: minor certificate verified and proves >= {claimed}",
+                                    res["verdict"] == "verified" and proved >= claimed,
+                                    f"check-minor {res['verdict']}, proves pathwidth >= {proved}")
+            if not Path(c_binary).exists():
+                return check(f"{path}: C program present", False, str(c_binary))
+            c = run_pathwidth_c(graph6_encode(m, edges), c_cap, Path(c_binary))
+            result["c_reruns"] += 1
+            if c["status"] in ("refutation", "bound", "minor") and c["width"] is not None:
+                proved = c["width"]
+            else:
+                proved = c["lower"] if c["lower"] is not None else -1
+            good &= check(f"{path}: the C program re-proves pathwidth >= {claimed} within {c_cap:g} s", proved >= claimed,
+                          f"width {c['width']} status {c['status']} lower {c['lower']} ({c['seconds']:.2f} s)")
+            if c["status"] in ("refutation", "bound") and c["width"] is not None and c["width"] < claimed:
+                check(f"{path}: the C program's exact width contradicts the claim", False,
+                      f"exact {c['width']} < claim {claimed}")
+                result["contradiction"] = True
+            return good
+        if kind == "branch":
+            k = int(nd.get("k", -1))
+            S = set(int(v) for v in nd.get("S", []))
+            branches = nd.get("branches") or []
+            links = nd.get("links") or []
+            good &= check(f"{path}: certifies k + 1", k >= 0 and claimed == k + 1, f"k = {k}, claims {claimed}")
+            good &= check(f"{path}: three branches and three links", len(branches) == 3 and len(links) == 3)
+            if not good:
+                return False
+            sets = [set(int(v) for v in b.get("vertices", [])) for b in branches]
+            good &= check(f"{path}: S inside the set, nonempty", S and S <= H, f"|S| = {len(S)}")
+            good &= check(f"{path}: branches inside the set and disjoint from S",
+                          all(b and b <= H and not (b & S) for b in sets))
+            good &= check(f"{path}: branches pairwise disjoint",
+                          not (sets[0] & sets[1]) and not (sets[0] & sets[2]) and not (sets[1] & sets[2]))
+            good &= check(f"{path}: branches connected (own BFS)", all(connected_in(G, b) for b in sets),
+                          f"sizes {[len(b) for b in sets]}")
+            pairs_seen = set()
+            for li, link in enumerate(links):
+                pair = tuple(int(x) for x in link.get("pair", []))
+                Q = set(int(v) for v in link.get("Q", []))
+                e1, e2 = link.get("edge_first"), link.get("edge_second")
+                lp = f"{path}/link{li}"
+                good &= check(f"{lp}: pair is two distinct branches", len(pair) == 2 and pair[0] != pair[1]
+                              and all(0 <= x < 3 for x in pair))
+                if len(pair) != 2 or pair[0] == pair[1] or not all(0 <= x < 3 for x in pair):
+                    continue
+                pairs_seen.add(tuple(sorted(pair)))
+                A, B = sets[pair[0]], sets[pair[1]]
+                good &= check(f"{lp}: Q ⊆ S, connected", Q <= S and connected_in(G, Q), f"|Q| = {len(Q)}")
+                good &= check(f"{lp}: Q adjacent to branch {pair[0]} by the edge named",
+                              bool(e1) and int(e1[0]) in Q and int(e1[1]) in A and int(e1[1]) in G[int(e1[0])], str(e1))
+                good &= check(f"{lp}: Q adjacent to branch {pair[1]} by the edge named",
+                              bool(e2) and int(e2[0]) in Q and int(e2[1]) in B and int(e2[1]) in G[int(e2[0])], str(e2))
+            good &= check(f"{path}: every pair of branches is linked", pairs_seen == {(0, 1), (0, 2), (1, 2)},
+                          str(sorted(pairs_seen)))
+            for bi, (b, bset) in enumerate(zip(branches, sets)):
+                good &= check_node(b, bset, k, f"{path}/branch{bi}")
+            return good
+        return check(f"{path}: known node kind", False, str(kind))
+
+    ok &= check_node(node, set(range(n)), claim, "top")
+    result["verdict"] = "verified" if ok else "rejected"
+    if ok:
+        result["proves"] = {"pathwidth_at_least": claim, "mosp_at_least": claim + 1,
+                            "statement": f"the separator-branch certificate proves pathwidth(G) >= {claim}, so MOSP >= {claim + 1}",
+                            "theorems": BRANCH_THEOREMS}
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="command", required=True)
@@ -607,7 +816,29 @@ def main(argv: list[str] | None = None) -> int:
     cm.add_argument("--no-rulefree", action="store_true")
     cm.add_argument("--rulefree-cap", type=float, default=300.0)
     cm.add_argument("--json", action="store_true")
+    cb = sub.add_parser("check-branch", help="check a family B certificate: S, branches, connectors, leaves, k + 1")
+    cb.add_argument("instance")
+    cb.add_argument("certificate")
+    cb.add_argument("--c-binary", default=str(DEFAULT_C_BINARY))
+    cb.add_argument("--c-cap", type=float, default=25.0)
+    cb.add_argument("--rulefree", action="store_true", help="rule-free check of minor leaves (vsmemo + checkF)")
+    cb.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
+    if args.command == "check-branch":
+        res = check_branch(Path(args.instance), Path(args.certificate), args.c_cap, Path(args.c_binary), args.rulefree)
+        if args.json:
+            print(json.dumps(res, indent=1))
+        else:
+            print(f"instance {res.get('instance_name')!r} (n = {res.get('n')}), claimed floor {res.get('floor_claimed')}, "
+                  f"k = {res.get('k')}, nodes checked {res.get('nodes_checked')}, C re-runs {res.get('c_reruns')}")
+            for c in res["checks"]:
+                if not c["ok"] or args.json or len(res["checks"]) <= 40:
+                    print(f"  [{'ok' if c['ok'] else 'FAIL'}] {c['check']}: {c['detail']}")
+            print(f"verdict: {res['verdict']}")
+            if res["verdict"] == "verified":
+                print(f"proves: {res['proves']['statement']}")
+                print(f"rests on: {res['proves']['theorems']}")
+        return 0 if res["verdict"] == "verified" else 1
     if args.command == "check-minor":
         res = check_minor(Path(args.instance), Path(args.certificate), args.c_cap, Path(args.c_binary),
                           not args.no_rulefree, args.rulefree_cap)
