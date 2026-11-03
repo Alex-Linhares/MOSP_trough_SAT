@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 9/11 SOLVED
+Current: 10/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -816,3 +816,76 @@ statements, not readings; the `bound` certificates on record exhibit the
 contraction degeneracy's *value*, not its minor, and the MMD+ steps are the
 missing object (proposed emission, not applied); `eight_le_mospValue_warwick`
 is a record floor proved from an instance's own matrix. Item 11 is the reserve.
+
+---
+## Iteration 10 — 2026-11-03 10:47
+
+### Completed
+
+- **Item 10 — the write-up.** `reports/obstruction_search.md` **§0** ("The
+  loop in two pages", nine subsections in the style of
+  `excess_phase_diagram.md` §0: the question and the correction, the
+  families with the direction of each and the headline on the 338, the 200
+  and the 24, what no family closes, the six kill verdicts, the
+  certificates / checker / Lean theorems, the cost ledger, what is open,
+  what is not claimed; every number with the section whose header carries
+  its regenerate command; the planner's figures quoted nowhere) and **§10**
+  (what was done, the paper paragraph and where else it could go, the
+  `CLAUDE.md` paragraph drafted in §10.3 as a blockquote, kill verdict and
+  does-not-claim). `CLAUDE.md` not edited.
+- **The paper**: `\paragraph{Searched lower bounds, with certificates.}` at
+  the end of `sec5_results.tex`'s "A checkable proof of a refutation" (the
+  searched lower bounds as the counterpart of the searched upper bounds;
+  the ceiling / floor distinction; the three certificate formats and the
+  checker; the Lean step by `\leanref{obstruction}`; the numbers on the
+  338, the record's hard seven, the two closed dataset classes with the
+  dataset's records unchanged, the certificate counts, about 35
+  core-hours; "we found no prior report"; cites `Harper1966` and
+  `EllisSudboroughTurner1994`, both already in `refs.bib`). The Lean
+  appendix row item 09 wrote is split into `obstruction` (13 names, the
+  statements with their necessary hypotheses) and `obstruction-decided` (4
+  names, the three `decide`d instances); all 22 theorems' names are now
+  cited or covered. `make -C paper1/latex && make check`: **78 pages** (77
+  before), no undefined references; `check_lean` 226 names cited, 0 not
+  found; `tests/test_paper1_latex.py` 8 passed. §10.2 names two other
+  places the paragraph could go (the dataset subsection's provenance
+  paragraph; a new subsection of `sec9b_appendix_machinery.tex`).
+- **`learning/README.md`**: the file lists modules in its "map of the
+  folder", so a group "Lower bounds by search" was added with one line per
+  new module (`obstruction_{ledger,expansion,minor,branch,map}.py`) and a
+  pointer to the checker.
+- **One drift found and corrected** (§10.1): `make -C paper1/latex axioms`
+  (not in the gate) failed on `octSeq_checked`, a `decide` proof that
+  depends on `propext` and `Quot.sound` only — *fewer* than the three
+  standard axioms, which the audit's equality test counted as a failure.
+  `paper1/latex/check_axioms.py` now accepts a subset (one line, with the
+  reason); 608 theorems checked, 0 failures. §9.1's "every one on the three
+  standard axioms" now reads "at most", with a note.
+- **Cost figures in §0.7**: about 35 core-hours (item 08's regenerated
+  ledger); **$193.18** over the ten sessions whose logs carry a cost line
+  (it01 $11.98, it01_fix2 $5.93, it02 $14.29, it03 $23.45, it04 $26.17,
+  it05 $28.43, it06 $14.23, it07 $42.21, it08 $14.50, it09 $11.99; the
+  capped it01_fix1 has no cost line; this session excluded); items 01–09
+  from 2026-11-02 21:42 to 2026-11-03 10:47, 13.1 h wall, twelve sessions.
+- **Kill verdict: none** (the item has none; "a number without a
+  regenerate command does not go in" applied). No stop condition fired;
+  no computation run; nothing under `solutions/`.
+- **Gate: PASS** (`reports/scratch/obstruction_search/10_writeup/gate_run.out`,
+  10:53–11:12): lake build ok, 0 sorry, 0 axiom; `tests/` 1,890 passed, 2
+  skipped, 1 xfailed (4:37); `pathwidth_solver/` 123 passed (6:24); paper 78
+  pages, no undefined references. No Lean file touched by this item.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 11, the reserve: F5 (combinations of families) or the best remaining
+gap of §0.8 — the eleven dense 100–125-customer instances of the 338 where
+every family stops 1–4 short; `Random-125-125-2-2_0` with no minor
+certificate at any size tried; Harper's exact floor above 75; the 22 open
+classes at `width − 1`; `decide` on the 100–125-customer certificates. Two
+proposals await the owner (the MMD+ contractions behind a `bound` status;
+the `OPEN_RUNS` line for `NY_13`). After item 11, the last session writes
+the completion marker.

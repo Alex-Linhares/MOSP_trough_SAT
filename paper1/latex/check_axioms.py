@@ -65,7 +65,7 @@ def run_lean() -> tuple[int, list[str]]:
     records += [(n, "") for n in re.findall(r"'(\S+)' does not depend on any axioms", text)]
     for name, axioms in records:
         found = {a.strip() for a in axioms.split(",") if a.strip()}
-        if found != EXPECTED:
+        if not found <= EXPECTED:   # a theorem on fewer axioms (a `decide` proof) is not a failure
             failures.append(f"{name}: {sorted(found)}")
     expected = sum(line.startswith("#print axioms")
                    for line in AXIOM_CHECK.read_text().splitlines())

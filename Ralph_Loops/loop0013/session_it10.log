@@ -1,0 +1,106 @@
+# session it10 started 2026-11-03 10:47:12
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 10: the write-up. I'll read the plan, the report so far, and the paper files, then write §0 and §10, the paper paragraph, the Lean rows, and the drafted CLAUDE.md paragraph.
+  > $ uptime && wc -l reports/obstruction_search_plan.md reports/obstruction_search.md && grep -n '^## \|^### ' reports/obstruction_search.md | head -120
+  > $ sed -n 1,120p reports/obstruction_search_plan.md
+  > $ sed -n 120,437p reports/obstruction_search_plan.md
+  > $ sed -n 1,100p reports/obstruction_search.md
+  > $ sed -n 2573,2882p reports/obstruction_search.md
+  > $ sed -n 2882,3016p reports/obstruction_search.md
+  > $ sed -n '/^## 0/,/^## 1/p' reports/excess_phase_diagram.md | head -150
+  > $ grep -n 'checkable proof of a refutation\|\\subsection\|\\section' paper1/latex/sec5_results.tex | head -40; echo ---; grep -n 'obstruction\|leanentry' paper1/l
+  > $ wc -l tests/test_paper1_latex.py && grep -n 'def test_\|obstruction\|leanentry' tests/test_paper1_latex.py | head -60; echo ---; ls learning/README.md && grep -
+  > $ ls Ralph_Loops/loop0013/ && cat Ralph_Loops/loop0013/status.json && grep -h -o '"total_cost_usd":[0-9.]*\|cost.*\$[0-9.]*\|Total cost:.*' Ralph_Loops/loop0013/s
+  > $ for f in Ralph_Loops/loop0013/session_it*.log; do echo "$f: $(grep -o 'cost \$[0-9.]*' $f | tail -1) $(grep -c '' $f) lines"; done; echo ---; grep -n 'session i
+  > $ sed -n 263,308p paper1/latex/sec5_results.tex
+  > $ grep -n '\\section\|\\subsection\|\\paragraph' paper1/latex/sec9b_appendix_machinery.tex | head -40; echo ---; sed -n 1,70p tests/test_paper1_latex.py; echo ---
+  > $ for s in 2 3 4 5 6 7; do grep -n "^## $s\. " reports/obstruction_search.md | head -1; done; awk '/^## 2\. /{p=1} p&&/^### 2.1/{exit} p' reports/obstruction_sear
+  > $ grep -n 'Bounds: No Longer\|^\*\*A fourth bound\|^\*\*The Edwards' CLAUDE.md | head; echo ---; grep -n 'obstruction\|loop0013' paper1/latex/*.tex CLAUDE.md lear
+  > $ python3 - <<'EOF'
+import json
+for s in ['it01_fix1','it10']:
+    p=f'Ralph_Loops/loop0013/session_{s}.jsonl'
+    cost=None
+    for line in open(p):
+        try:
+  > $ grep -n -i '^@.*{\(harper\|ellis\|edwards\|kinnersley\|fellows\|chu\|bodlaender\|coudert\|yanasse\)' paper1/latex/refs.bib | head -20; echo ---; grep -n 'ref{le
+  > $ sed -n 1,60p paper1/latex/check_lean.py; echo ---; tail -40 learning/README.md; echo ---; grep -n 'open\|minor' paper1/latex/sec9b_appendix_machinery.tex | head
+  > $ grep -n '^\*\*.*\*\*$\|^## \|^```' learning/README.md | sed -n 1,80p; echo ---; grep -n 'obstruction\|edwards\|separator_moment\|first_moment\|excess' learning/
+  > $ sed -n 40,70p paper1/latex/main.tex; echo ---; grep -n 'Harper\|emptypair\|EmptyPair\|exists_closedNbhd\|pathwidth_gt_of_minorOf\|branch_lemma\|minorOf' paper1/
+  > $ grep -o '"[a-z_]*cost[a-z_]*":[0-9.]*' Ralph_Loops/loop0013/session_it01_fix1.jsonl | tail -3; grep -c '' Ralph_Loops/loop0013/session_it01_fix1.jsonl; grep -o 
+  > $ sed -n '/^## 1[2-5]\./,$p' reports/excess_phase_diagram.md | grep -n '^## \|^### ' | head; echo ---; awk '/^## 15\./{p=1} p' reports/excess_phase_diagram.md | h
+  > $ sed -n 285,356p learning/README.md; echo ---; sed -n 95,160p paper1/latex/sec9a_appendix_lean.tex | cut -c1-260; echo ---; grep -n '^theorem\|^lemma\|^def\|^ins
+  > $ sed -n 125,150p paper1/latex/sec5_results.tex; grep -n 'label{thm:minor}\|label{thm:main}\|label{app:lean}\|label{app:machinery-all}' paper1/latex/*.tex
+
+I have everything needed. Writing now: the report's §0 and §10, the paper paragraph and Lean rows, the README group, then building and testing.
+  > $ cat > /tmp/sec0.md <<'EOF'
+## 0. The loop in two pages (item 10, 2026-11-03)
+
+This section is the one a reader should be able to follow on its own. Every
+number
+  > $ python3 - <<'EOF'
+p='reports/obstruction_search.md'
+s=open(p).read()
+old="| **C, D, T, P** (on record) | cliques; `lb_best`; `tw + 1`; pendant cliques | — | 0 /
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec5_results.tex'
+s=open(p).read()
+anchor="trees are too large to ship as certificates.\n\n\\subsection{A dataset with certifi
+  > $ python3 - <<'EOF'
+p='learning/README.md'
+s=open(p).read()
+anchor="**Hardness**\n```\n"
+assert s.count(anchor)==1
+block='''**Lower bounds by search** — the secti
+  > $ python3 - <<'EOF'
+p='paper1/latex/sec5_results.tex'
+s=open(p).read()
+for old,new in [
+ ("70 customers to 51, refuting 20 in 145,355 nodes; no minor of up to 110
+  > $ cd /home/al/dev/MOSP && python3 -m paper1.latex.check_lean 2>&1 | tail -3; python3 -m paper1.latex.check_axioms 2>&1 | tail -3
+  > $ sed -n 1,80p paper1/latex/check_axioms.py | grep -n 'FAIL\|STANDARD\|def \|axiom' | head -30; grep -n 'octSeq_checked' paper1/axiom_check.lean; git log --onelin
+  > $ sed -n 58,76p paper1/latex/check_axioms.py
+  > $ python3 - <<'EOF'
+p='paper1/latex/check_axioms.py'
+s=open(p).read()
+old="        if found != EXPECTED:\n"
+new="        if not found <= EXPECTED:   # a theorem o
+  > $ nice -n 19 python3 -m pytest tests/test_paper1_latex.py -q 2>&1 | tail -3
+  > $ mkdir -p reports/scratch/obstruction_search/10_writeup && uptime && (nohup nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+
+## 10. The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph (item 10)
+
+*2026-11-03
+  > $ python3 - <<'EOF'
+p='reports/obstruction_search.md'
+s=open(p).read()
+old="`MOSPFormalization.lean`; 22 theorems, no `sorry`, no `axiom`, every one on\n`propext`
+  > $ for i in $(seq 1 19); do if ! kill -0 337201 2>/dev/null; then echo "gate finished"; break; fi; sleep 30; done; tail -5 reports/scratch/obstruction_search/10_wr
+  > $ ps -o pid,etime,stat,cmd -p 337201 | tail -1 | cut -c1-100; wc -c reports/scratch/obstruction_search/10_writeup/gate_run.out; cat reports/scratch/obstruction_se
+
+The gate passed. Now I'll record the iteration in PROGRESS.md and mark the item done.
+  > $ head -12 reports/scratch/obstruction_search/10_writeup/gate_run.out | cut -c1-120; grep -n 'sorry\|axiom\|lake' reports/scratch/obstruction_search/10_writeup/ga
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/iterations.md'
+s=open(p).read()
+old="- [ ] **10 The write-up: the report's summary, the paper's paragraph, the `CLAUDE
+  > $ grep -n -i 'axiom' reports/scratch/obstruction_search/10_writeup/gate_run.out | head -3; grep -n 'axiom' Ralph_Loops/loop0013/gate.py | head -3
+  > $ sed -n 100,125p Ralph_Loops/loop0013/gate.py; grep -rn '^\s*\(private \)\?axiom\b' lean/MOSPFormalization/ | wc -l
+
+The gate prints an axiom line only on failure, and a direct count finds zero `axiom` declarations, so the PROGRESS entry's "0 axiom" is backed. Item 10 is complete; item 11 (the reserve) stays open, so no completion marker is written.
+
+**Item 10 done: the write-up.** All deliverables are in place and the gate passes.
+
+- **Report**: `reports/obstruction_search.md` now opens with §0, a two-page summary in the style of the excess report's §0. It covers the question and the correction, each family's direction and headline on the 338, the 200 Chu & Stuckey and the 24 open classes, what no family closes, six kill verdicts, the certificate and checker counts with the Lean theorems, the cost ledger, what is open, and what is not claimed. Every number names the section whose header carries its regenerate command. §10 records the deliverables, the paragraph's placement with two alternatives, and the drafted `CLAUDE.md` paragraph as a blockquote. `CLAUDE.md` was not edited.
+- **Paper**: a paragraph "Searched lower bounds, with certificates" closes the subsection "A checkable proof of a refutation" in `paper1/latex/sec5_results.tex`. The Lean appendix row from item 09 was split into two rows so all 22 theorem names are cited. The PDF builds at 78 pages with no undefined references, and the paper test module passes.
+- **README**: `learning/README.md` lists modules in its folder map, so a "Lower bounds by search" group was added with one line per new module.
+- **One drift corrected**: the paper's axiom audit, which the gate does not run, rejected a `decide` proof for depending on fewer than the three standard axioms. The audit now accepts a subset, with the reason in a comment, and passes on all 608 lines. §9's claim was softened to "at most the three".
+- **Cost figures recorded**: about 35 core-hours for the loop, and $193.18 over the ten sessions whose logs carry a cost line, 13.1 hours of wall clock for items 01 to 09.
+- **Gate**: PASS (lake build ok, 0 sorry, 0 axiom declarations; 1,890 tests passed in `tests/`, 123 in `pathwidth_solver/`; paper check clean). Log at `reports/scratch/obstruction_search/10_writeup/gate_run.out`.
+
+PROGRESS.md has the iteration entry and reads 10/11 solved. Item 11, the reserve, is next. Nothing was committed and nothing under `solutions/` was touched.
+
+# result: success in 1132s, 44 turns, cost $7.76

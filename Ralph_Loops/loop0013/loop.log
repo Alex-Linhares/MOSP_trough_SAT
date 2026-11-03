@@ -50,3 +50,8 @@
 [2026-11-03 10:08:45] claude session it09 (cap 4.00 h) -> session_it09.log
 [2026-11-03 10:36:12] session it09: ok (exit 0, 68 tool calls)
 [2026-11-03 10:47:11] tests passed: GATE PASS
+[2026-11-03 10:47:12] committed 6836df019: 09 Lean: a checked certificate implies the bound — the contrapositive 
+[2026-11-03 10:47:12] === iteration 10: 10 The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph (d
+[2026-11-03 10:47:12] claude session it10 (cap 4.00 h) -> session_it10.log
+[2026-11-03 11:06:05] session it10: ok (exit 0, 43 tool calls)
+[2026-11-03 11:17:03] tests passed: GATE PASS

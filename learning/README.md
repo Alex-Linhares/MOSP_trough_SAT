@@ -317,6 +317,19 @@ extremal.py          adversarial search for the worst small instances           
 conjecture.py        mining and attacking candidate lower bounds                  §24
 ```
 
+**Lower bounds by search** — the section is in `reports/obstruction_search.md`
+(§0 is the summary); the independent checker is `paper1/obstruction_check.py`
+```
+obstruction_ledger.py    every bound on record against the optimum; the frozen targets     §1
+obstruction_expansion.py / .c  Harper's bound: the ceiling by search, the floor by branch
+                         and bound and by SAT with DRAT                                   §2, §3
+obstruction_minor.py     contraction minors by search against the greedy ladder; the
+                         certificate; the 24 open classes                                §4, §5, §7
+obstruction_branch.py    separators with certified branches; the ternary tree by the
+                         branch lemma                                                     §6, §7
+obstruction_map.py       the duality-gap map: who closes what, by family                   §8
+```
+
 **Hardness**
 ```
 hardness_map.py      nodes against density per size: the ridge                   §11

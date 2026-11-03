@@ -78,9 +78,242 @@ Sudborough & Turner (1994) are cited where the loop meets them.
 
 ---
 
-## 0. Summary
+## 0. The loop in two pages (item 10, 2026-11-03)
 
-*(written by item 10)*
+This section is the one a reader should be able to follow on its own. Every
+number carries its size range and the section whose regenerate command
+produces it; the status of every claim is **theorem** (a Lean name under
+`lean/MOSPFormalization/`, no `sorry`, axioms `propext`, `Classical.choice`,
+`Quot.sound` only), **certified** (a file under
+`reports/scratch/obstruction_search/`, verified by `paper1/obstruction_check.py`,
+which shares no code with the searches), or **measured** (a size range, a
+budget and a command). Sections 1–9 are the items, in order, each with its
+tables in full; §10 is this write-up, the paper's paragraph and the paragraph
+drafted for `CLAUDE.md`.
+
+### 0.1 The question, and the correction it rests on
+
+Every certified optimum in this project is a sandwich: a witness layout above,
+found by a tuned search over orderings, and a refutation below. The lower
+bounds that start the descent — the trivial bound, the clique bound,
+contraction degeneracy + 1, Harper's expansion bound at a cap, the greedy
+contraction-minor step — were only ever *computed*: one formula, one greedy
+rule, one budget each. This loop ran a real search over each family of
+lower-bound obstruction on instances whose optimum is already on record, so
+that nothing is solved twice and every answer is a measurement, and reports
+each family's **duality gap**, `optimum − best certified value`, in optimum
+units (`pathwidth + 1`) throughout.
+
+The correction (plan §0.2) is that two of the brief's five families are
+*universal* statements, not maximisations. Harper's bound is
+`pw ≥ min_{|A|=t} |N[A]| − t` for every `t` (Harper 1966;
+`exists_closedNbhd_card_le`, **theorem**), a minimum over **all** `t`-sets; the
+empty-pair bound `n − 2s* − 2 ≤ pw` is its weakening at one `t`
+(`card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth`, **theorem**). A set
+found by search proves only `f(t) ≤ |N[C]|`, so its value is a **ceiling** on
+what the family could ever certify and is not a bound at all; the valid
+**floor** needs the inner minimum proved, by branch and bound to a cap or by a
+SAT refutation with a DRAT proof. Cliques, contraction minors and separator
+branches are genuine maximisations, and a found object is a certificate.
+Measured before anything was stated: on the 4,123 corpus instances at
+`n ≤ 22`, where the profile `f` is enumerated exactly, the search's ceiling
+equals the exact bound on 4,123 of 4,123 and the exact bound equals the
+optimum on 2,933 (71.1%) (§2).
+
+### 0.2 The families, the direction of each, and the headline on the 338
+
+The 338 bound-gap instances are those where the solver's own `lb_best` misses
+the optimum by two or more (20–134 customers; 102 Chu & Stuckey). The best
+floor **on record** before the loop (`floor0`: `lb_best`, exact treewidth + 1,
+Harper at cap 12, Lemma P, the minor certificates on file) was tight on 81 of
+them; the harness's reference `max(lb_best, tw + 1)` on 67 (§1).
+
+| family | object | a search gives | floor on the 338 (tight / 338) | ceiling on the 338 | certificate, checker | theorem |
+|---|---|---|---|---|---|---|
+| **E** (expansion: Harper, the empty pair) | `f(t) = min_{|C|=t} |N[C]|` | a **ceiling**; incumbents for the exact half | 12 (cap-12 branch and bound, exact enumeration, SAT with DRAT; §2–§3) | **below the optimum on 320 of 338**: the family cannot close them under any computation (§2) | the CNF's hash and a DRAT proof per level; the checker regenerates the CNF, compares the hash, runs `drat-trim`; 158 of 158 verified (§3) | `exists_closedNbhd_card_le`; `pathwidth_ge_of_unsat` (§9) |
+| **M** (contraction minors) | a contraction sequence | a **floor**: the minor's proved width | **327** (324 by the search or the greedy ladder, 3 by the record's certificates; §4–§5, §8) | the optimum, trivially | the sequence, the minor's edge hash, the C program's output and binary hash; the checker replays with its own code, re-proves with the C program, and to 80 vertices re-refutes rule-free (`vsmemo` + `checkF`); 251 of 251 and 190 of 190 verified (§4, §5) | `pathwidth_gt_of_minorOf`, `lt_mospValue_of_minorOf`; `pathwidth_ge_of_minor_minDegree`, `checkSeq_sound` (§9) |
+| **B** (separator branches) | a separator `S`, three linked branches | a **floor**: third-largest certified branch width + 1 | 0 (a linked triple exists on 156; above the reference on 1, `p2050n1_0`; §6) | the optimum, trivially | `S`, the branches, the links, the leaves' certificates; the checker's own BFS, the C program per `c` leaf; 156 of 156 verified (§6) | `branch_lemma_separator`, `branch_lemma` |
+| **C, D, T, P** (on record) | cliques; `lb_best`; `tw + 1`; pendant cliques | — | 0 / 0 (by the definition of the 338) / 67 / 0 (P is above `lb_best` on 3, by one) (§1, §8) | — | — | `card_le_pathwidth_add_one_of_isClique`, `degeneracy_le_pathwidth`, `treewidth_le_pathwidth`, `pathwidth_ge_of_pendant_cliques` |
+
+**The best floor over every family is tight on 327 of the 338 and on 6,001
+of the 6,376 corpus instances (94.1%; `floor0` 5,732, 89.9%), and every one
+of the 276 corpus instances whose floor rose owes it to family M** (alone on
+272, tied with E on 4; §8.2). M is above every other family on some instance
+and below none on any (above E on 371 of the 436 instances both ran on, above
+`tw + 1` on 306; §8.4); on the 338 it attains the best floor on all 338.
+Family E's exact floor closes 12 of the 338 and beats the reference on 98
+(§3); its ceiling's mean gap is about one stack everywhere above 20 customers
+(§8.2). Family B changes one value, by one, on an instance M had closed
+(§6). The 11 of the 338 still open are all `Random-100-100-4` and
+`Random-125-125-4/6`, 100–125 customers, the dense shoulder of the phase
+diagram (excess 3.1–5.3; `2-2_0` at 1.77 the exception), best floor from M
+at gap 1 on six, 2 on three, 3 and 4 on one each (§8.5).
+
+**The greedy ladder against the search** (family M): at 20–50 customers the
+search's floor is the optimum on 251 of 251 (ladder 222), beating the ladder
+on 29 (11.6%), always by one and always to the optimum, by a different
+contraction at a size the ladder already visits (§4); above 60 it beats the
+ladder on 60 of 185 (by 1 / 2 / 3 on 44 / 14 / 2), 41 of them with a minor
+above the ladder's 95% rung, and finishes below it on 3 where the 5–10 s cap
+per C call binds (§5). The minimal certifying minor has `m / n` median 0.66
+(ladder 0.80), falling with `n` and rising with the excess (§4). On the
+record's seven hard instances (`reports/minor_bound_verification.md`):
+`Random-125-125-8-2_0` reaches **93 = optimum** on a 118-vertex minor (survey
+92); `2-3_0` reaches 21 on a **51-vertex** minor refuting 19 in 145,355 nodes
+and 0.12 s (record 70 vertices, 757,009 nodes), rule-free verified;
+**`2-2_0` has no certificate for 25 within one core-hour** — five greedy and
+50 searched minors at 97–110 vertices all `upper` after 60–120 s, a recorded
+negative (§5).
+
+### 0.3 The 200 Chu & Stuckey, and the 24 open classes
+
+**The 200** (30–125 customers): the best floor is tight on 189 of 200
+(`floor0` 88); every class at 30–75 and every 100-50 class 5 of 5; 100-100-4
+3 of 5, 125-125-2 4 of 5, **125-125-4 and -6 1 of 5 each**, 125-125-8 and -10
+5 of 5 (§8.3). M is at least as tight as E on every one of the 200 (tighter
+on 142, tied on 58); E's floor is tight on no density-2 or density-4 class
+at any size and carries only the density-10 class at 125 (gap 0.2); its
+ceiling closes the family out on all five of 125-125-2, -4 and -6 (§5, §8.3).
+`floor0`'s mean gap on the classes the loop closed was as high as 13.8
+(100-100-4) and 13.6 (125-125-6).
+
+**The 24 open classes** of the pathwidth dataset (216–712 vertices, recorded
+widths 5–11 from stored layouts, 76–237 core-hours of whole-graph search
+each with no result; pathwidth units here): **two are closed**.
+`BalancedTree_3_5` (364 vertices): the branch lemma down the tree as a nested
+B certificate (121 `branch` nodes, 243 `trivial` leaves), `pw ≥ 5` = the
+layout's width, verified with no C call — the value is Ellis, Sudborough &
+Turner (1994)'s, the certificate is new to the record. `NY_13` (PACE 2017,
+283 vertices, width 10, floor 9): the minor search found an **85-vertex
+contraction minor of pathwidth 10** (refutes 9 in 67,455 nodes, 0.07 s;
+236.7 core-hours on the whole graph had found nothing), verified on all three
+checks including the rule-free one — `pw(NY_13) = 10`. On 21 of the other 22
+family M's floor is `width − 1` (`width − 2` on `494_bus`), each a C
+refutation on a minor at 30–39% of the vertices; five floors rose above the
+record (2 → 7, 3 → 9, 2 → 8, 3 → 9, 9 → 10). **Harper's ceiling is below the
+recorded width on all 24** (by 1–5): the expansion family cannot close any of
+them. 47 of 47 certificates verified. The evidence rows are written in
+`paper1.dataset`'s run format and the `OPEN_RUNS` addition is **proposed, not
+applied** (`07_open/open_runs_proposal.diff`): with the `NY_13` row, `fold`
+would emit a new `certified:minor` record, i.e. a dataset rebuild, which the
+loop forbids (§7).
+
+### 0.4 What no family closes
+
+**375 of 6,376 (5.9%)**: 370 at gap 1 and **5 at gap ≥ 2**, the five all
+`Random-125-125-4/6`. 302 of the 375 lie at excess `e ≤ 3.30`, three deciles
+holding 30% of the corpus; tightness rises with the excess for every family
+(E's floor from 30% to 98% across deciles, `floor0` from 66% to 100%). On
+every one of the 222 searched uncovered instances E's ceiling is below the
+optimum, so the expansion family can close none of them under any
+computation; family M ran on 11 of the 375 (the 338's residual), and
+"uncovered" means uncovered *on record*: at 9–60 customers M was tight on
+every instance it ran on, and the 364 gap-1 instances outside the 338 were
+never given a floor-producing search (§8.5). The ten smallest uncovered
+(9–10 customers, drawn in `08_map/tables.md`) are hubs with a fringe, the
+bound-defeating family `CLAUDE.md`'s bounds section describes — an
+observation on ten matrices, not a claim about the 375.
+
+### 0.5 The kill verdicts (plan §0.9)
+
+| family | criterion | the number | verdict |
+|---|---|---|---|
+| E, the search | `f̂(t) = f(t)` at every `t` on < 90% at `n ≤ 22` | 4,090 of 4,123 (99.2%) | **not met** (§2) |
+| E, the exact half | SAT settles the argmax level on < 50% of the 338 within 6 core-hours | 70 of 338 (20.7%); 70 of the 145 with a bracket (48.3%) | **met**: Harper exact is out of reach by SAT above cap 12 at 75 customers and beyond, fully in reach to 60; the boundary is `n ≈ 60–75` at `t* ≈ 0.2–0.35 n` on the Chu & Stuckey graphs (§3) |
+| M | the search beats the greedy ladder on < 10% of the 338 | 45 of 338 (13.3%) | **not met**, by a small margin: never by more than one at `n ≤ 60`, and the ladder costs a hundredth of the time (§4.3, §5) |
+| B | no B certificate exceeds `max(lb_best, tw + 1, M)` on any residual gap instance | 0 of 11; 0 of 338 | **met**: branching is closed (§6) |
+| open classes | zero floors above the recorded ones (the tree aside) is a verdict | 5 of 23 floors above the record; 2 of 24 closed | **not met** (§7) |
+| Lean | a statement false to 8 vertices is corrected before it is stated | 2 corrected, 0 stated unchecked | **met** (§9) |
+
+No stop condition fired in any item: no bound on record above a certified
+optimum (6,376 × 9 columns, §1), no dataset floor above a certified width
+(16,636 × 4), no certificate the checker rejects that the record relies on
+(the three rejections of §4.1 were bugs in the checker, fixed and tested),
+no floor above an open class's width, no statement false on a small graph
+committed.
+
+### 0.6 The certificates, their checkers and the Lean theorems
+
+Five certificate kinds, one checker (`paper1/obstruction_check.py`,
+sub-commands `check-expansion`, `check-minor`, `check-branch`; own readers,
+own graph, own CNF generator, own contraction replay, own BFS; no import
+from `learning/`, `satisfiability/`, `pathwidth_solver/` or `mosp/`). Every
+certificate the report cites went through it, and the verdict is in the
+item's `checker_verdicts.csv`: 158 of 158 (E, §3), 251 of 251 (M at
+`n ≤ 60`, §4), 190 of 190 (M at scale and the ridge, §5), 156 of 156 (B, §6),
+47 of 47 (the open classes, §7). The DRAT proofs (1.3 GB) are git-ignored
+and regenerable; their hashes are committed. Every floor went through
+`learning/bound_harness.py`'s validity stage on all 6,376: "above optimum"
+**0** for each of `harper_floor`, the SAT floor, the M floor and the B floor.
+
+What the checker's verdict rests on, now stated in Lean
+(`ObstructionCertificate.lean`, 22 theorems, no `sorry`, no `axiom`; §9):
+an UNSAT level `(t, b)` gives `b + 1 ≤ t + pw` (`pathwidth_ge_of_unsat`,
+needing `t ≤ n`; its omission is a proved counterexample); a contraction
+sequence whose minor has minimum degree `d` gives `d ≤ pw`
+(`pathwidth_ge_of_minor_minDegree`; the degree form needs a nonempty minor,
+likewise); the `Bool` replay `checkSeq` is sound and complete; and three
+certificates are closed by `decide`, among them the record instance
+`Warwick 1729` (30 customers): **every pattern order opens at least 8
+stacks** (`eight_le_mospValue_warwick`, 7.6 s in `lake build`, directly on
+the MOSP graph Lean builds from the matrix). A finding on the way: the C
+program's `bound` status reports the minor's *contraction degeneracy*, not
+its minimum degree, so the 39 `bound` certificates of §4–§5 do not exhibit
+the object the theorem needs without the MMD+ contractions behind the
+status; emitting them is **proposed, not applied** (§9.3). A C-program
+*refutation* on a minor or a branch rests, as before, on `Search/`'s
+soundness theorems and the binary's faithfulness.
+
+### 0.7 The cost ledger
+
+Regenerated from the items' own seconds columns (`08_map/cost.csv`, §8.7):
+**about 35 core-hours** (32.51 instance + 0.96 checker in the files, about
+1.4 more in the logs' uncounted harness, validation and smoke runs) against
+the plan's 56 — E 9.7 (§1–§3, and §7's 0.5), M 15.7 (§4–§5) and 5.75 (§7),
+B 0.5 and 0.4, the open classes 7.1 in all; every process at `nice -n 19`,
+at most 8 workers, under the owner's load of 1–59. Sessions (`loop.log`,
+`session_it*.log`): items 01–09 in twelve sessions including two gate-fix
+sessions, 2026-11-02 21:42 to 2026-11-03 10:47 (13.1 h wall), **$193.18**
+over the ten sessions whose logs carry a cost line (the capped fix session
+and this session excluded). The gate's test count rose from 1,804 to 1,890
+in `tests/` (seven new test modules), 123 in `pathwidth_solver/` unchanged;
+the paper stays at 77 pages. Nothing under `solutions/` was touched and no
+whole proved graph was re-solved.
+
+### 0.8 What is open
+
+1. The 11 of the 338, and the 5 at gap ≥ 2: dense 100–125-customer Chu &
+   Stuckey instances where every family stops one to four stacks short of
+   an optimum the search proves only by exhausting `10¹¹` nodes.
+2. `Random-125-125-2-2_0`: no minor certificate for 25 at any size tried
+   (greedy to 95 on record, 97–110 here); whether one exists is open.
+3. Harper's exact floor above 75 customers at the argmax levels (§3's
+   boundary); the SAT route is closed there, and no other exact route was
+   tried.
+4. Twenty-two open classes with family M's floor at `width − 1`: either a
+   larger minor refutes `width − 1` or the stored layout is one too high.
+5. Two proposals for the owner: the MMD+ contractions behind a `bound`
+   status (§9.3), and the `OPEN_RUNS` line that would fold `NY_13` into the
+   dataset (§7.4); a 97–99% rung for the ladder (§5).
+6. `decide` on the 100–125-customer certificates, and a decidable form of
+   the branch certificate (§9.4): not tried.
+7. The reserve (item 11): F5, combinations of families, or the best
+   remaining gap above.
+
+### 0.9 What this does not claim
+
+That any family closes the 11; that family E's ceiling is attained by any
+computation (it is an upper bound on the family's reach, measured by a
+search of stated budget); that a searched minor for `2-2_0` does not exist;
+that the greedy ladder is near-optimal among minors (it is one short on 29
+of 251 at `n ≤ 60`); that anything here changes the solver (no candidate
+reaches `_lower_bound` or any path that decides `k`; the expansion bound's
+net loss *inside the search* is about the solver's clock and untouched);
+that the dataset is rebuilt (it is not; two closed classes are filed as
+evidence rows and certificates). "We found no prior report" of a searched
+contraction-minor or searched vertex-isoperimetric lower bound for pathwidth
+on benchmark instances; never "first". The pathwidth of trees is Ellis,
+Sudborough & Turner (1994); Harper's bound is Harper (1966).
 
 ---
 
@@ -2899,8 +3132,9 @@ every verdict) was a *reading* of them — "`exists_closedNbhd_card_le`,
 contrapositive" — not a statement. The new file
 `lean/MOSPFormalization/ObstructionCertificate.lean` (imported by
 `MOSPFormalization.lean`; 22 theorems, no `sorry`, no `axiom`, every one on
-`propext`, `Classical.choice`, `Quot.sound` by `paper1/axiom_check.lean`, 586 →
-608 lines, and by `learning/sandwich.py`'s `OBSTRUCTION_PROVED`) states those
+at most `propext`, `Classical.choice`, `Quot.sound` by `paper1/axiom_check.lean`, 586 →
+608 lines, and by `learning/sandwich.py`'s `OBSTRUCTION_PROVED`; *"at most" added by
+item 10: `octSeq_checked`, a `decide` proof, uses two of the three, §10.1*) states those
 forms:
 
 | certificate | checker output | Lean statement | rests on |
@@ -3014,3 +3248,145 @@ branch certificate has a decidable form (its connectivity hypotheses are
 `SimpleGraph.Connected` on induced subgraphs; not attempted). That the
 transcription in `check.py` is the Lean definition: it is a transcription,
 checked against the record's replay and the DP, not a proof.
+
+## 10. The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph (item 10)
+
+*2026-11-03. Deliverables: §0 above; the paper's paragraph "Searched lower
+bounds, with certificates" at the end of `paper1/latex/sec5_results.tex`'s
+subsection "A checkable proof of a refutation"; the two Lean appendix rows
+`obstruction` and `obstruction-decided` in `paper1/latex/sec9a_appendix_lean.tex`
+(the single row item 09 wrote, split, with the 22 theorems' names now all
+cited: the two "needs" counterexamples, `checkSeq_complete`, `checkSeq_iff`,
+`degree_minorOf_eq` and `seven_le_pathwidth_warwick` were missing); the
+group "Lower bounds by search" in `learning/README.md`'s map of the folder
+(one line per new module, as that file lists modules); the `CLAUDE.md`
+paragraph drafted in §10.3 (`CLAUDE.md` is not edited). Regenerate:
+`make -C paper1/latex && make -C paper1/latex check` (78 pages, no undefined
+references; 77 before this paragraph), `make -C paper1/latex axioms` (608
+theorems checked, 0 failures), `python -m pytest tests/test_paper1_latex.py -q`
+(8 passed), `python3 -m paper1.latex.check_lean` (226 names cited, 0 not
+found). Scratch: `reports/scratch/obstruction_search/10_writeup/gate_run.out`.
+Size range: as the items state, repeated beside every number in §0. Kill
+criterion: none; the rule applied is that a number without a regenerate
+command does not go in. Compute: none (builds and tests, under two minutes).*
+
+### 10.1 What was done
+
+§0 is the summary in the style of `reports/excess_phase_diagram.md` §0: the
+question and the correction (plan §0.2) in §0.1; the families, the direction
+of each and the headline on the 338 in §0.2; the 200 Chu & Stuckey and the 24
+open classes in §0.3; what no family closes in §0.4; the six kill verdicts
+in §0.5; the certificates, the checker and the Lean theorems in §0.6; the
+cost ledger in §0.7 (core-hours regenerated by item 08, dollars and wall
+clock read from `Ralph_Loops/loop0013/loop.log` and the sessions' logs);
+what is open in §0.8; what the loop does not claim in §0.9. Every number in
+§0 is one of items 01–09's, with the section that regenerates it beside it;
+the planner's figures of plan §0 are quoted nowhere.
+
+**One drift found and corrected on the way.** §9 says every new theorem is
+"on the three standard axioms". `make -C paper1/latex axioms`, which the
+gate does not run, reported one failure: `octSeq_checked`, a `decide` proof,
+depends on `propext` and `Quot.sound` only — **fewer** axioms, which the
+audit's equality test `found != EXPECTED` counted as a failure. The test is
+now `not found <= EXPECTED` (`paper1/latex/check_axioms.py`, one line, with
+the reason in a comment); the audit passes on all 608 lines. §9's sentence
+should read "on at most the three standard axioms"; nothing else in §9
+changes. Item 09's `learning/sandwich.py` stage accepted the file because it
+tests the subset, which is why the two audits disagreed.
+
+### 10.2 The paper's paragraph, and where else it could go
+
+The paragraph is placed in Section 5, at the end of "A checkable proof of a
+refutation" (`sec5_results.tex`, `\paragraph{Searched lower bounds, with
+certificates.}`), because that subsection is where the paper says what a
+third party can check without trusting our code, and the searched lower
+bounds are the counterpart of that subsection's certificates: the refutation
+certificate checks the lower half of a sandwich produced by the search, the
+obstruction certificates check lower halves produced by a bound. It states
+the ceiling / floor distinction, the three certificate formats and their
+checker, the Lean step (`\leanref{obstruction}`), the numbers on the 338, the
+two closed dataset classes (with the dataset's records unchanged), the
+certificate counts and the cost, and the "we found no prior report" sentence.
+Two other places it could go, if the owner prefers Section 5 shorter: the
+provenance paragraph of "A dataset with certified pathwidth" (the sentence on
+the two closed classes belongs there in any case, beside "the eleventh, W4
+... is open at 28 against 27"), or a new subsection of
+`sec9b_appendix_machinery.tex` after "The split re-certification", with a
+one-sentence pointer left in Section 5. The paragraph cites `Harper1966` and
+`EllisSudboroughTurner1994`, both already in `refs.bib` with checked DOIs;
+`tests/test_paper1_latex.py` passes (8).
+
+### 10.3 For `CLAUDE.md`
+
+*Drafted here as the item asks, in the style of the bounds section and of
+the loop paragraphs at the end of "Next Steps"; `CLAUDE.md` is not edited.*
+
+> **The duality gap of each lower-bound family, by search** *(loop0013,
+> 2026-11-02 to 2026-11-03; `reports/obstruction_search.md`, §0 is the
+> two-page summary; the paper's Section 5, paragraph "Searched lower bounds,
+> with certificates")*. The bounds that start the descent (trivial, clique,
+> contraction degeneracy + 1, Harper at a cap, the greedy minor step) were
+> only ever *computed*; this loop *searched* each family on instances already
+> on record and measured its **duality gap**, `optimum − best certified
+> value`. **The correction everything rests on**: Harper's bound
+> `pw ≥ min_{|A|=t} |N[A]| − t` and the empty-pair bound are *universal*
+> statements, so a set found by search gives a **ceiling** on what the
+> expansion family could ever certify and is not a bound; the floor needs
+> the inner minimum proved (branch and bound to cap 12; SAT with a DRAT
+> proof, which settles every level at 30–60 customers and almost none at
+> 75 and beyond). Cliques, contraction minors and separator branches are
+> maximisations and a found object is a certificate. **Numbers** (optimum
+> units): on the 338 bound-gap instances (`optimum − lb_best ≥ 2`, 20–134
+> customers) the best floor on record was tight on 81; **searched
+> contraction minors are tight on 327**, every one of the 276 corpus floors
+> that rose is theirs, and the corpus goes from 5,732 to 6,001 of 6,376
+> tight (94.1%). The greedy ladder is never more than one short at `n ≤ 60`
+> (251 of 251 for the search, 222 for the ladder) and costs a hundredth of
+> the time; the search beats it on 45 of 338 (13.3%; the kill at 10% not
+> met). **Harper's ceiling is below the optimum on 320 of the 338**: no
+> computation of that bound can close them. Separator branches close
+> nothing (0 of 338; "branching is closed", as §38 said of the seeded
+> form). The 11 left are `Random-100-100-4` and `Random-125-125-4/6`, the
+> dense shoulder, best floor 1–4 below the optimum. On the record's hard
+> seven: `8-2_0` reaches 93 = optimum on a 118-vertex minor, `2-3_0` on a
+> 51-vertex one (145,355 nodes, 0.12 s, rule-free verified), and **`2-2_0`
+> has no minor certificate at any size tried (to 110 vertices)**. **The 24
+> open dataset classes**: two closed — `BalancedTree_3_5` by the branch
+> lemma (a nested certificate, no C call; Ellis, Sudborough & Turner 1994)
+> and `NY_13` (PACE 2017, 283 vertices) by an **85-vertex minor of pathwidth
+> 10** found in seconds where 236.7 core-hours on the whole graph had found
+> nothing; Harper's ceiling is below the recorded width on all 24; M's floor
+> is `width − 1` on 21 of the other 22. The evidence rows are written and
+> the `OPEN_RUNS` line is proposed, not applied (a dataset rebuild). **Every
+> certificate is checked by `paper1/obstruction_check.py`**, which shares no
+> code with the searches (own CNF + `drat-trim`; own contraction replay, the
+> C re-proof, rule-free `vsmemo` + `checkF` to 80 vertices; own BFS): 158 +
+> 251 + 190 + 156 + 47 verified, 0 rejected; every floor through the
+> harness's validity stage, above optimum 0. **Lean**
+> (`ObstructionCertificate.lean`, 22 theorems, no `sorry`, no `axiom`): a
+> checked certificate implies the bound (`pathwidth_ge_of_unsat`, needing
+> `t ≤ n`; `pathwidth_ge_of_minor_minDegree`; `checkSeq_sound`), two
+> statements of the brief corrected before stating, each with a proved
+> counterexample; `eight_le_mospValue_warwick` decides the record instance
+> `Warwick 1729` (30 customers) from its own matrix in 7.6 s. **A finding
+> about `bound` certificates**: the C program's `lower=` on a minor is its
+> contraction degeneracy, not its minimum degree; emitting the MMD+
+> contractions behind the status is proposed, not applied. **No solver
+> change**: nothing reaches `_lower_bound`; the expansion bound's net loss
+> inside the search (above) is about the clock and stands. Modules
+> `learning/obstruction_{ledger,expansion,minor,branch,map}.py`; certificates
+> and CSVs under `reports/scratch/obstruction_search/` (the 1.3 GB of DRAT
+> proofs git-ignored, hashes committed). About 35 core-hours; nothing
+> re-solved; `solutions/` untouched. "We found no prior report" of a
+> searched contraction-minor or searched vertex-isoperimetric lower bound on
+> benchmark instances.
+
+### 10.4 Kill verdict, and what this does not claim
+
+**Kill criterion**: none. The rule that a number without a regenerate
+command does not go in was applied to §0: every figure names the section
+whose header carries the command. **Does not claim** more than items 01–09
+measured; the dollar figure covers the ten sessions whose logs carry a cost
+line (the capped fix session has none, this session is excluded); the paper
+paragraph's placement is a proposal the owner can move (§10.2); the
+`CLAUDE.md` paragraph is a draft.

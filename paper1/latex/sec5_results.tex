@@ -305,6 +305,59 @@ premises accepts it. Ours rejects it, even with a largest matching attached,
 because the matching has one edge where two are needed. At 125 customers the
 trees are too large to ship as certificates.
 
+\paragraph{Searched lower bounds, with certificates.} The witness half of
+every certified value is found by a tuned search over orderings. The lower
+bounds that start the descent, the clique, contraction degeneracy, Harper's
+vertex-isoperimetric bound at a cap \citep{Harper1966} and the greedy minor
+step of Section~\ref{sec:minor}, were only ever computed, one formula or one
+greedy rule each. We ran a search over each family of obstruction on
+instances whose optimum is known, so that every answer is a measurement, and
+report the family's duality gap, the optimum minus the best value it
+certifies. Two kinds of family must be told apart. Harper's bound is
+universal, $\pw\ge\min_{|A|=t}|N[A]|-t$ for every $t$, so a set found by
+search proves only that the minimum is at most its value: it gives a
+\emph{ceiling} on what the family could ever certify and no bound at all, and
+the floor needs the minimum proved, by branch and bound to a cap or by a SAT
+refutation with a DRAT proof. Cliques, contraction minors and separator
+branches are maximisations, and a found object is a certificate. Each
+certificate has a format and an independent checker sharing no code with the
+search: it regenerates the CNF of an expansion level and runs
+\texttt{drat-trim}; replays a contraction sequence with its own code, rebuilds
+the minor, re-runs our search on it and, to 80 vertices, a rule-free
+enumeration of refuted prefixes; checks a separator's branches by its own
+breadth-first search. That a verified certificate implies the bound is proved
+in Lean, and \texttt{decide} closes a 30-customer record instance from its
+own matrix~\leanref{obstruction}.
+
+On the 338 instances of the MOSP corpus where the solver's own bound misses
+the optimum by two or more (20 to 134 customers), the best floor on record was
+tight on 81. Searched contraction minors, each refuted on the minor by our
+corrected search under a cap of 2 to 10\,s per call, are tight on 327: at 20
+to 50 customers on 251 of 251, beating the greedy ladder of
+Section~\ref{sec:minor} on 29, always by one; above 60 customers on 76 of 87.
+They reach 93 on \texttt{Random-125-125-8-2\_0}, its optimum, on a 118-customer
+minor, and shrink the minor that certifies \texttt{Random-125-125-2-3\_0} from
+about 70 customers to 51, refuting 20 in 145,355 nodes; none of the minors
+of up to 110 customers we tried certifies \texttt{Random-125-125-2-2\_0}.
+Harper's ceiling is below the optimum on 320 of the 338, so no computation of
+that bound could close them; its exact floor, by SAT with a checked DRAT
+proof, settles every bracket at 30 to 60 customers and almost none at 75 and
+beyond, and closes 12. Separator branches close none. The 11 instances left
+are dense Chu and Stuckey instances at 100 to 125 customers with the best
+floor one to four stacks below the optimum. Of the dataset's 24 open classes
+(Section~\ref{sec:dataset}), two are closed by certificates filed with the
+code (the dataset's records are unchanged): the complete ternary tree of
+height 5 by the branch lemma, at the pathwidth that \citet{EllisSudboroughTurner1994}
+compute for trees, and the PACE instance \texttt{NY\_13} (283 vertices, width
+10) by an 85-vertex contraction minor of pathwidth 10, refuted in 0.07\,s
+where 236.7 core-hours on the whole graph had found nothing. Harper's ceiling
+is below the recorded width on all 24. Every certificate verifies: 158
+expansion levels, 441 minors, 156 separators and 47 on the open classes, at
+about 35 core-hours in all. We found no prior report of a searched
+contraction-minor or searched vertex-isoperimetric lower bound on benchmark
+instances. The searches, the checker and the certificates are in the
+repository (Section~\ref{sec:data}).
+
 \subsection{A dataset with certified pathwidth}
 \label{sec:dataset}
 

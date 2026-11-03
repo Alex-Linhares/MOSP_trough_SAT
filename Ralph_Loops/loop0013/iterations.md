@@ -529,7 +529,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     checked in Lean (it rests on `Search/`'s soundness theorems and the
     binary's faithfulness, as before); that `decide` scales past toy sizes.
 
-- [ ] **10 The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph (drafted, not applied).**
+- [x] **10 The write-up: the report's summary, the paper's paragraph, the `CLAUDE.md` paragraph (drafted, not applied).**
   - **Question.** I of the brief. What did the loop establish, in one page,
     with every number carrying its size range and regenerate command?
   - **Method.** (a) `reports/obstruction_search.md` §0, the two-page summary

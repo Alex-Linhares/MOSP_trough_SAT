@@ -1,0 +1,12 @@
+# item 10 — the write-up (2026-11-03)
+# edits: reports/obstruction_search.md (§0 written in place of the placeholder; §10 appended; one "at most" in §9.1),
+#        paper1/latex/sec5_results.tex (paragraph "Searched lower bounds, with certificates" at the end of sec:certs),
+#        paper1/latex/sec9a_appendix_lean.tex (row `obstruction` split into `obstruction` and `obstruction-decided`, 17 names),
+#        paper1/latex/check_axioms.py (a theorem on a subset of the standard axioms is not a failure: `octSeq_checked`),
+#        learning/README.md (group "Lower bounds by search", five modules).
+# commands and results:
+#   make -C paper1/latex && make -C paper1/latex check   -> no undefined references; Pages: 78 (77 before)
+#   python3 -m paper1.latex.check_lean                   -> 226 names cited, 0 not found
+#   python3 -m paper1.latex.check_axioms                 -> 1 failure before the one-line fix (octSeq_checked: ['Quot.sound', 'propext']); 608 checked, 0 failures after
+#   python3 -m pytest tests/test_paper1_latex.py -q      -> 8 passed
+#   python3 Ralph_Loops/loop0013/gate.py                 -> gate_run.out
