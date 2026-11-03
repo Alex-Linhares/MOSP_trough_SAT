@@ -105,7 +105,7 @@ with its Lean theorem named, every non-bound called an estimate or a ceiling.
     `floor0` is the best bound obtainable from the record (the minor
     certificates on record are those of seven instances only).
 
-- [ ] **02 Family E by search: the ceiling on every target; exact `f` and `s*` at `n ≤ 22`; the floor by branch and bound.**
+- [x] **02 Family E by search: the ceiling on every target; exact `f` and `s*` at `n ≤ 22`; the floor by branch and bound.**
   - **Question.** B and the first half of C of the brief, corrected by plan
     §0.2. On every target, how far below the optimum is the **ceiling**
     `max_t (f̂(t) − t) + 1` that a search for small-neighbourhood sets

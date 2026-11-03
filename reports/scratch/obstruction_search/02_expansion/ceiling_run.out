@@ -1,0 +1,21 @@
+2026-11-03 01:02:23 ceiling: targets all: 4697 names, 0 on file, 4697 to run; 8 workers; budget 0.005 n² s in [2, 90] × 1.0; rng seed 1
+2026-11-03 01:02:23 ceiling: 250/4697 done, 0 s wall
+2026-11-03 01:02:23 ceiling: 500/4697 done, 0 s wall
+2026-11-03 01:02:24 ceiling: 750/4697 done, 0 s wall
+2026-11-03 01:02:24 ceiling: 1000/4697 done, 0 s wall
+2026-11-03 01:02:24 ceiling: 1250/4697 done, 0 s wall
+2026-11-03 01:02:24 ceiling: 1500/4697 done, 0 s wall
+2026-11-03 01:02:24 ceiling: 1750/4697 done, 1 s wall
+2026-11-03 01:02:24 ceiling: 2000/4697 done, 1 s wall
+2026-11-03 01:02:24 ceiling: 2250/4697 done, 1 s wall
+2026-11-03 01:02:24 ceiling: 2500/4697 done, 1 s wall
+2026-11-03 01:02:25 ceiling: 2750/4697 done, 1 s wall
+2026-11-03 01:02:25 ceiling: 3000/4697 done, 2 s wall
+2026-11-03 01:02:25 ceiling: 3250/4697 done, 2 s wall
+2026-11-03 01:02:26 ceiling: 3500/4697 done, 3 s wall
+2026-11-03 01:02:27 ceiling: 3750/4697 done, 3 s wall
+2026-11-03 01:02:27 ceiling: 4000/4697 done, 4 s wall
+2026-11-03 01:02:29 ceiling: 4250/4697 done, 6 s wall
+2026-11-03 01:02:33 ceiling: 4500/4697 done, 10 s wall
+2026-11-03 01:03:28 ceiling: 4697/4697 done, 65 s wall
+2026-11-03 01:03:28 ceiling: 4697 rows on file; ceiling = optimum on 3099, below on 1598, above (BUG) on 0; 0.14 core-hours

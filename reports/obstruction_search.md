@@ -466,3 +466,250 @@ Rows with a component above 1024 vertices (floors over the rest): 22; omega cens
  "small_and_gap338": 17
 }
 ```
+
+---
+
+## 2. Family E by search: the ceiling on every target, the exact profile at `n ≤ 22`, the floor by branch and bound (item 02)
+
+*2026-11-03. Code `learning/obstruction_expansion.py` and its C helper
+`learning/obstruction_expansion.c` (compiled on the fly, as `treewidth.c` is);
+tests `tests/test_obstruction_expansion.py` (9); files under
+`reports/scratch/obstruction_search/02_expansion/`: `ceiling.csv` (4,697
+rows: the search's ceiling on every target), `ceiling_s2x3.csv` (a second
+search pass, seed 2, triple budget, on `gap338 ∪ cs200`), `exact_small.csv`
+(4,123 rows, the exact profile), `floor.csv` (35 rows, the cap-12 branch and
+bound rerun where item 01 censored it), `sets/` (one JSON per target: `fhat`,
+the best set per `t`, the witness profile, and on the small set the exact
+`f` and its minimisers; 10.7 MB) and `sets_s2x3/`, `tables.md` (every table
+below, generated), `harness_values.csv` and `harness_table.md` (the floor
+through `learning/bound_harness.py`), `run_harness.py`, `run.log`,
+`*_run.out`. Regenerate: `nice -n 19 python3 -m learning.obstruction_expansion
+--stage ceiling --targets all --workers 8` (65 s wall), `--stage exact
+--targets small --workers 4` (1 s), `--stage floor --targets gap338 --workers
+8` (22 min wall), `--stage ceiling --targets gap338 --seed 2 --budget-scale 3
+--tag s2x3` then the same with `--targets cs200`, `--stage tables`;
+`nice -n 19 python3 reports/scratch/obstruction_search/02_expansion/run_harness.py --workers 8`.
+Size range: ceiling 9–134 customers (every corpus target; `open24` is item
+07's); exact `n ≤ 22`; floor the 35 instances of the 338 item 01 censored
+(100–125 customers). Units: optimum units throughout; the ceiling is not a
+bound.*
+
+### 2.1 What was done
+
+**The object and the direction.** For the MOSP graph of an instance,
+`f(t) = min_{|C| = t} |N[C]|`. Harper's bound is `pw ≥ f(t) − t` at every `t`
+(`exists_closedNbhd_card_le`), so family E's bound in optimum units is
+`max_t (f(t) − t) + 1`; the empty-pair bound `n − 2 s* − 2 ≤ pw`
+(`card_sub_two_mul_emptyPairIndex_sub_two_le_pathwidth`) is the same profile
+read through `s* = max_t min(t − 1, n − f(t))`. `satisfiability/expansion_bound.py`'s
+`max_i (i − M(i))` with `M(i) = max{t : f(t) ≤ i}` is the same number as
+`max_t (f(t) − t)` (take `i = f(t) − 1` one way and `t = M(i) + 1` the
+other), so item 01's `harper12` *is* this family's floor at cap 12. A set
+`C` of size `t` found by any search proves `f(t) ≤ |N[C]|` and nothing else;
+the search's value `max_t (f̂(t) − t) + 1`, `f̂ ≥ f`, is a **ceiling**: if it
+is below the optimum, no computation of this family can close the instance.
+
+**The search** (plan §0.5 (c)). Per level `t = 1 … n − 1`, tabu search on
+swaps minimising `|N[C]|` over `|C| = t`, on bit masks in C: cover
+multiplicities per vertex, a shortlist of six entering vertices by gain and
+six leaving by loss, the best of the 36 exact swap deltas applied (tenure
+7 ± 2 on both moved vertices, aspiration on the global best), at most
+2,000 swaps and a stall limit per restart (40 non-improving swaps in the
+sweep, 150 in the focus rounds). Restarts from: every maximal clique
+(`networkx.find_cliques` under `islice(200)`), the certified witness's
+prefix sets, BFS balls of radius 1 and 2 around every vertex, and the best
+set at `t − 1` (ascending sweep) and `t + 1` (descending sweep); then
+*focus rounds* on the levels attaining the current `max_t (f̂(t) − t)` —
+the ceiling drops only when every argmax level drops — until a round
+improves nothing or the wall budget (`0.005 n²` s in `[2, 90]`) runs out.
+Every incumbent is re-evaluated in Python from its set before it is
+recorded. **The witness's prefixes**: the pattern ordering in
+`solutions/<name>.json` induces the customer layout by *opening* time
+(first pattern needed); a placed vertex with a neighbour outside the prefix
+is open at the next opening position, and so is the vertex opening there,
+so this layout's vertex separation is at most `optimum − 1`, and on all
+4,697 targets it is exactly `optimum − 1` (`witness_vs_opening` in
+`ceiling.csv`; `tests/test_obstruction_expansion.py` asserts it). Its
+finished sets `C_i = {v ∈ V_i : N[v] ⊆ V_i}` give `f̂(t) ≤ t + pw` at every
+`t`, which is why the ceiling starts at the optimum. **A correction to the
+item's text**: the layout by *closing* time (what "a customer closing order
+by the instance's simulation" suggests) carries no such guarantee under the
+prefix definition — the cost of a layout is not reversal-invariant — and on
+`Random-125-125-2-2_0` it has vertex separation 56 against the optimum's 24.
+Its finished sets are used as seeds like any other; the guarantee rests on
+the opening layout.
+
+**Exact at `n ≤ 22`.** Every subset, by the recurrence
+`cover(S) = cover(S ∖ low(S)) ∪ N[low(S)]` over `2^n` masks (16 MB at
+`n = 22`, 0.4 ms median): `f(t)` and one minimiser per `t`, the exact Harper
+value, `s*` and `n − 2s* − 1`. Checked against a pure-Python enumeration on
+150 random graphs and against `expansion_bound`'s levels on 50 corpus
+instances (the tests), and on every small instance the ceiling is at least
+the exact value.
+
+**The floor.** `expansion_bound(max_t = 12)` rerun on the 35 instances of
+the 338 that item 01 censored at 60 s (33 Chu & Stuckey at 100–125, SP4
+twice), under 600 s where item 01's cap was at most 10 and 300 s at cap 11
+(the item's 10-minute cap halved where only `f(13)` was missing, to fit the
+budget; said so here). 26 of 35 completed cap 12; **2.83 core-hours**.
+
+**Through the harness.** `harper_floor` is registered as an `--extra`
+candidate (`learning.obstruction_expansion:harper_floor`: the cap-12 branch
+and bound under the harness's budget, 10 s) and run through the validity
+stage on the whole corpus; the table is `harness_table.md` (§2.3).
+
+### 2.2 Numbers
+
+**The ceiling, 4,697 targets** (`gap338 ∪ cs200 ∪ rest500 ∪ small`; 65 s
+wall, **0.14 core-hours**; the search ended on a non-improving focus round
+on 4,640, never on the budget). Ceiling above the optimum: **0**; below the
+exact bound (small set): **0**; below `harper12`: **0**.
+
+| target | instances | ceiling = optimum | ceiling < optimum | ceiling gap mean / max | floor gap mean / max | floor tight | bracket 0 | bracket mean |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `gap338` | 338 | 18 | **320** | 1.66 / 5 | 3.79 / 27 | 7 | 193 | 2.13 |
+| `cs200` | 200 | 64 | 136 | 0.90 / 3 | 3.90 / 27 | 57 | 116 | 3.00 |
+| `rest500` | 500 | 341 | 159 | 0.37 / 4 | 0.37 / 4 | 341 | 499 | 0.01 |
+| `small` | 4,123 | 2,933 | 1,190 | 0.32 / 4 | 0.32 / 4 | 2,933 | 4,122 | 0.00 |
+| all | 4,697 | 3,099 | 1,598 | 0.42 / 5 | 0.58 / 27 | 3,088 | 4,547 | 0.16 |
+
+(The floor here is `max(harper12, floor rerun)`; "bracket" is
+`ceiling − floor`; "bracket 0" means the family's duality gap is exact.)
+The ceiling's gap is 1 on 1,259 instances, 2 on 295, 3 on 37, 4 on 6 and 5
+on 1 (`scoop-A_FA+AA-_6_0`, 79 customers, optimum 13, ceiling 8; the four
+at 4 are two Harvey instances at 30, `p1550n8_0` and `p1550n1_0`); on the
+338 it is 0 / 1 / 2 / 3 / 4 / 5 on 18 / 112 / 181 / 22 / 4 / 1.
+
+**What the ceiling says about the 338.** On **320 of 338 the ceiling is
+below the optimum: the expansion family cannot close them under any
+computation**, however deep the cap. The 18 where it could — the ceiling
+sits at the optimum — are two Harvey (`n = 30`), five Faggioli–Bentivoglio
+(39–50) and eleven Chu & Stuckey (`50-50-2-1`, `75-75-6-3`, `100-100-4-2`,
+`100-100-6-3`, `100-100-8-2`, `100-50-10-1`, `125-125-10-3`, `125-125-10-5`,
+`125-125-8-1`, `125-125-8-3`, `125-125-8-4`); the floor already closes 7 of
+them (`floor_tight` on `gap338`), and 11 are open between floor and
+ceiling — item 03's list. Against the record: the ceiling is at or below
+`floor0` on **249 of the 338** (family E can never beat what the other
+families already proved there) and above it on 89, all Chu & Stuckey,
+Faggioli–Bentivoglio at 40–50 and the SP instances. Over all 4,697 targets
+the ceiling equals `floor0` on 3,352, is below it on 1,256 and above it on
+the same 89.
+
+**By size and class.** The ceiling's gap is about one stack everywhere
+(band means 0.32 at 9–20, 0.9–1.5 above) and does not grow with `n`; the
+*floor's* gap does (0.32, 1.16, 1.32, 1.88, 3.26, 7.39, 10.19 across the
+seven bands), so the bracket opens from 0 at `n ≤ 30` to 9.1 at 101–134: on
+the large instances almost all of the family's duality gap is *unknown
+side*, the part item 03's exact half must settle. On the 200 Chu & Stuckey
+by class (`tables.md` (d)): the ceiling is at the optimum on 0 of 5 in
+every density-2 and density-4 class from 30 to 125 customers and on 3–5 of
+5 at density 8–10; the gap is 2.0 on `125-125-2` and 0.2 on `125-125-10`.
+The argmax level `t*` sits at a fraction of `n` that falls with density:
+median `t*/n` 0.37 on `125-125-2`, 0.25 on `125-125-4`, 0.09 on
+`125-125-10`; 0.10 over all targets.
+
+**The search against the witness.** The witness's own prefixes give a
+ceiling at the optimum on 4,577 of 4,697 and below it on 120; the search
+lowers the witness's value at 79% of the levels at 101–134 customers (14% at
+9–20) and lowers the *ceiling* below the witness's on 1,519 instances. So
+the planner's third risk (§0.8: "the ceiling is the optimum almost
+everywhere") did not materialise: the search finds sets the witness does
+not, and the ceiling is strictly informative on a third of the targets and
+on 95% of the 338.
+
+**The second pass** (`s2x3`: seed 2, budget ×3, 436 instances of
+`gap338 ∪ cs200`, 0.13 core-hours): the ceiling is equal on 432, lower on 1
+(`HS problem 1195`, 13 → 12) and higher on 3 (`HS problem 1181`,
+`Random-100-50-10-4_0`, `Random-100-50-6-3_0`, each by one). The ceiling is
+therefore a search artefact at the ±1 level on about 1% of the instances at
+30–100 customers; the minimum of the two passes is below the optimum on 365
+of the 436 (pass 1 alone: 364). Both passes are valid ceilings; the tables
+quote pass 1.
+
+**Exact at `n ≤ 22`** (4,123 instances, 0.4 ms median each). The search
+attains `f(t)` at every `t` on **4,090 of 4,123 (99.2%)**; the 33 misses
+are one level each, by exactly one vertex, 31 of them at `n = 20` and 2 at
+`n = 15`, and none at an argmax level: the ceiling equals the exact bound
+on **4,123 of 4,123**. Harper exact equals the optimum on **2,933 (71.1%)**:
+78% at `n = 10`, 75% at 15, 59% at 20; the empty-pair value equals the
+optimum on 748 (18.1%) and is never above the Harper value (it is a
+weakening of the same profile: strictly below on 3,473 of the 4,697
+targets, equal on 1,224). Against the record: the exact bound exceeds
+`harper12` on one instance (`scoop-B_18CR1_33_0`, `n = 19`, optimum 4,
+where `expansion_bound` reports 0 for "no level improves" and the exact
+value is 1 — a convention, not a bound) and exceeds `lb_best` and `floor0`
+on **none**: at these sizes the full-depth expansion family adds nothing to
+what is on record.
+
+**The floor rerun** (35 instances, `tables.md` (e)). The floor rose on 32 of
+35, by 1.9 stacks on average and by up to **6** (`Random-125-125-6-4_0`
+63 → 69, `6-3_0` 64 → 70, `8-5_0` 83 → 88 — all still 5–11 below the
+optimum); it is **above `floor0`, the best floor on record, on 17 of the
+35** (every density-6 and density-8 125 × 125 instance, `4-1_0`, `4-3_0`,
+`100-100-4-2_0`, …): the cap-12 branch and bound at ten minutes is a new
+record floor there. The bracket closes on 2 (`125-125-10-2_0`, floor =
+ceiling = 103 against 104: the family's duality gap is exactly 1 and it can
+never close the instance; `125-125-10-5_0`, floor = ceiling = optimum = 99)
+and the floor equals the optimum on 1. On the ridge classes it buys one
+stack from a floor of 6–8 against optima of 20–25 (`125-125-2`), and there
+the minor certificates on record (`floor0` 20–24) are the whole story.
+Nine of the 35 did not complete cap 12 in 600 s (every `125-125-2` but
+`2-1_0`, `4-3_0`, `6-1_0`, `6-4_0`, `6-5_0`, `8-5_0`); their values are
+valid at the cap reached.
+
+### 2.3 Through the harness
+
+`python3 reports/scratch/obstruction_search/02_expansion/run_harness.py
+--workers 8` (the CLI form `python -m learning.bound_harness --stage validity
+--workers 8 --sources corpus --candidates "" --extra
+learning.obstruction_expansion:harper_floor`, written to the item's
+directory so that loop0004's values file is left alone): 6,376 corpus
+instances, 10 s per instance, 144 s wall, **0.32 core-hours**, no
+candidate censored, no error. `harness_table.md`:
+
+| bound | rows | above optimum (must be 0) | tight, all | > `lb_best`, all | tight, gap | > `lb_best`, gap | > reference, gap | beats reference, gap (count) | mean shortfall, gap |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `tw + 1` (`tw_lo`) | 6,376 | 0 | 0.887 | 0.146 | 0.198 | 0.589 | 0 | 0 | 8.88 |
+| `lb_best` | 6,376 | 0 | 0.770 | 0 | 0 | 0 | 0 | 0 | 4.78 |
+| reference `max(lb_best, tw + 1)` | 6,376 | 0 | 0.896 | 0.146 | 0.198 | 0.589 | 0 | 0 | 3.92 |
+| **`harper-floor`** (cap 12, 10 s) | 6,376 | **0** | 0.637 | 0.021 | 0.012 | 0.337 | 0.216 | **73** | 4.49 |
+
+"Above optimum" is 0, which is the check the acceptance criteria ask for.
+At 10 s the floor is tight on 63.7% of the corpus (item 01's 60 s run:
+`harper12` tight on more, the dense instances needing the time) and beats
+the harness's reference on 73 of the 338 gap instances — the same family
+that §38 of `ml_nature.md` found no branching candidate could beat. It is a
+floor of a different kind from the reference's two (degree and treewidth),
+which is why it passes the treewidth ceiling the bounds section of
+`CLAUDE.md` describes.
+
+### 2.4 Kill verdict and compute
+
+**Kill criterion (plan §0.9, E-search): not met.** The search attains
+`f(t)` at every `t` on 99.2% of the instances at `n ≤ 22`, against the
+criterion's 90%; the ceiling is not search-limited there and equals the
+exact bound on every one. Above 22 the second pass moves it by ±1 on 1% of
+the instances. Item 03 can seed its SAT calls from the search's sets and,
+where they exist, from the exact minimisers (`sets/<name>.json`, keys
+`sets` and `exact_sets`). The two bug conditions — a ceiling below the
+floor, a floor above the optimum — occurred on **0** instances.
+
+**Compute.** Ceiling 0.14, exact 0.00, floor 2.83, second pass 0.13,
+harness 0.32: **3.4 core-hours** against the item's 3. The floor's
+ten-minute cap was halved where only one level was missing; the overrun is
+the second pass (a robustness check the item did not ask for) and the
+harness run the acceptance criteria require.
+
+### 2.5 What this does not claim
+
+That the ceiling is attained by any computation (a ceiling is an upper
+estimate of what the family can prove; the family's true value sits in
+`[floor, ceiling]`); that the floor is the family's best (the exact half
+above cap 12 is item 03); that the search's `f̂` equals `f` above 22
+customers (measured only to 22; the second pass's ±1 says it does not
+always); that any of this changes a solver (no candidate reaches
+`_lower_bound`); that the 17 new record floors are anything but the cap-12
+bound given more time. The closing-layout correction is a statement about
+our construction of seeds, not about Yanasse's equivalence. "We found no
+prior report" of a searched vertex-isoperimetric ceiling on benchmark
+instances; the bound itself is Harper (1966).

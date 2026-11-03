@@ -1,0 +1,255 @@
+# session it02 started 2026-11-03 00:52:32
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item 01 outputs, and the code this item reuses, then build `learning/obstruction_expansion.py`.
+  > $ date && uptime && wc -l reports/obstruction_search_plan.md && sed -n 1,200p reports/obstruction_search_plan.md
+  > $ sed -n 200,437p reports/obstruction_search_plan.md
+  > $ cat satisfiability/expansion_bound.py
+  > $ wc -l learning/obstruction_ledger.py && sed -n 1,140p learning/obstruction_ledger.py
+  > $ sed -n 140,420p learning/obstruction_ledger.py
+  > $ grep -n "treewidth.c\|cc \|gcc\|ctypes\|CDLL\|_compile\|def _lib\|subprocess" learning/treewidth.py | head -30 && ls learning/*.c && grep -n "extra\|def _load_c
+  > $ cd reports/scratch/obstruction_search/01_ledger && ls -la && head -3 ledger_corpus.csv && head -3 harper12.csv && python3 -c "
+import json,pandas as pd
+t=json.l
+  > $ cd /home/al/dev/MOSP && tail -60 reports/obstruction_search.md && sed -n 1,60p tests/test_obstruction_ledger.py && grep -n "def vertex_separation_brute" -A 30 l
+  > $ sed -n 420,560p learning/obstruction_ledger.py
+  > $ sed -n 40,80p learning/treewidth.py && sed -n 110,176p learning/bound_harness.py && sed -n 448,500p learning/bound_harness.py
+  > $ python3 - <<'EOF'
+import pandas as pd
+l=pd.read_csv('reports/scratch/obstruction_search/01_ledger/ledger_corpus.csv')
+c=l[~l.harper12_complete]
+print(len(c), c.
+  > $ sed -n 500,600p learning/bound_harness.py && sed -n 880,960p learning/bound_harness.py
+  > $ grep -n "def from_matrix\|def pattern_customers\|def customer_patterns\|self.matrix\b\|def n_customers\|def n_patterns\|def from_benchmark_file" mosp/instance.p
+
+Now I'll write the C helper (exact profile by subset enumeration at `n ≤ 22`, and the tabu search per level with the restart schedule), then the Python module around it.
+  > Write /home/al/dev/MOSP/learning/obstruction_expansion.c
+  > $ python3 - <<'EOF'
+import re
+p='learning/obstruction_expansion.c'; s=open(p).read()
+s=s.replace("""    for (int i = 0; i < W; i++) sets_out[(size_t)n * W + i] = 
+  > Write /home/al/dev/MOSP/learning/obstruction_expansion.py
+  > $ sed -i 's/^from learning.obstruction_ledger import (OUT as LEDGER_OUT, LEDGER_CORPUS, TARGETS_JSON, SOLUTIONS_DIR,$/from learning.obstruction_ledger import (LED
+  > $ python3 - <<'EOF'
+p='learning/obstruction_expansion.py'; s=open(p).read()
+old='''    """The two customer layouts a pattern ordering induces: by opening time
+   
+  > Write /home/al/dev/MOSP/tests/test_obstruction_expansion.py
+  > $ tail -4 reports/scratch/obstruction_search/02_expansion/ceiling_run.out; uptime
+  > $ timeout 1500 nice -n 19 python3 -m pytest tests/test_obstruction_expansion.py -x -q 2>&1 | tail -15
+  > $ nohup nice -n 19 python3 -m learning.obstruction_expansion --stage floor --targets gap338 --workers 8 > reports/scratch/obstruction_search/02_expansion/floor_ru
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+c=pd.read_csv('reports/scratch/obstruction_search/02_expansion/ceiling.csv')
+led=pd.read_csv('reports/scratch
+  > $ grep -n "^VALUES_CSV\|^ATTACK_CSV\|^BUDGET_SECONDS\|^BUDGET_SUBPROBLEMS\|^CANDIDATES\|def validity_table" -A3 learning/bound_harness.py | head -40; tail -3 repo
+  > $ python3 - <<'EOF'
+p='learning/obstruction_expansion.py'; s=open(p).read()
+old='''    ap.add_argument("--budget-scale", type=float, default=1.0)
+    args = ap.pa
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+c=pd.read_csv('reports/scratch/obstruction_search/02_expansion/ceiling.csv')
+led=pd.read_csv('reports/scratch
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ until grep -q "floor: .* rows; .* core-hours" reports/scratch/obstruction_search/02_expansion/floor_run.out || grep -q "Traceback" reports/scratch/obstruction_s
+  > $ sed -n 607,660p learning/bound_harness.py
+  > Write /home/al/dev/MOSP/reports/scratch/obstruction_search/02_expansion/run_harness.py
+  > $ grep -n "def candidate_columns" -A8 learning/bound_harness.py; tail -4 reports/scratch/obstruction_search/02_expansion/floor_run.out; uptime
+  > Monitor {"command": "tail -n0 -f /home/al/dev/MOSP/reports/scratch/obstruction_search/02_expansion/floor_run.out | grep -E --lin
+
+The only pending dependency is the floor run; everything else (second pass, harness, tables, report) follows it. Waiting for the monitor's events.
+
+# result: success in 876s, 33 turns, cost $6.67
+
+Progress: `Random-125-125-4-1_0` rose from 33 (cap 10 at 60 s) to 37 with cap 12 completed in 303 s. Still waiting for the rest.
+
+# result: success in 3s, 1 turns, cost $6.74
+
+Noted. Waiting for the remaining 32.
+
+# result: success in 1s, 1 turns, cost $6.79
+
+Nine of 35 done; the remaining 26 run at 300–600 s each on 8 workers, about 20 more minutes. Waiting.
+
+# result: success in 2s, 1 turns, cost $6.86
+  > Monitor {"command": "tail -n0 -f /home/al/dev/MOSP/reports/scratch/obstruction_search/02_expansion/floor_run.out | grep -E --lin
+
+Re-armed the watch. Everything else queued depends on the floor finishing, so I'm waiting.
+
+# result: success in 6s, 2 turns, cost $6.98
+
+Ten of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.04
+
+Eleven of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.10
+
+Twelve of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.16
+
+Thirteen of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.22
+
+Fourteen of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $7.27
+
+Fifteen of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.33
+
+Sixteen of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $7.39
+
+Seventeen of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.45
+
+Eighteen of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $7.50
+
+Nineteen of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.56
+
+Twenty of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.62
+
+Twenty-one of 35. Waiting.
+
+# result: success in 3s, 1 turns, cost $7.69
+
+Twenty-two of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.75
+
+Twenty-three of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $7.81
+
+Twenty-four of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.86
+
+Twenty-five of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $7.92
+
+Twenty-six of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $7.98
+
+Twenty-seven of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $8.04
+
+Twenty-eight of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $8.10
+
+Twenty-nine of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $8.16
+
+Thirty of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $8.22
+
+Thirty-one of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $8.28
+
+Thirty-two of 35. Waiting.
+
+# result: success in 2s, 1 turns, cost $8.34
+
+Thirty-three of 35. Waiting.
+
+# result: success in 1s, 1 turns, cost $8.40
+
+Thirty-four of 35. One left.
+
+# result: success in 2s, 1 turns, cost $8.45
+
+The floor rerun is done (35 rows, 2.83 core-hours). Now the second search pass (seed 2, triple budget) on `gap338` and `cs200`, then the harness validity run.
+  > $ nice -n 19 python3 -m learning.obstruction_expansion --stage ceiling --targets gap338 --workers 8 --seed 2 --budget-scale 3 --tag s2x3 2>&1 | tail -2 && nice -n
+  > $ nohup nice -n 19 python3 reports/scratch/obstruction_search/02_expansion/run_harness.py --workers 8 > reports/scratch/obstruction_search/02_expansion/harness_ru
+  > $ sed -n 1,60p reports/scratch/obstruction_search/02_expansion/tables.md | cut -c1-400
+  > $ sed -n 60,200p reports/scratch/obstruction_search/02_expansion/tables.md | cut -c1-330
+  > $ python3 - <<'EOF'
+import pandas as pd, numpy as np
+d='reports/scratch/obstruction_search/02_expansion/'
+f=pd.read_csv(d+'floor.csv')
+f['gain']=f.floor-f.harper1
+  > $ python3 - <<'EOF'
+p='learning/obstruction_expansion.py'; s=open(p).read()
+old='''    f["harper_floor"] = f["harper12"]
+    f["harper_floor_cap"] = f["harper12_c
+
+Now writing the report's §2 while the harness run proceeds (6,376 instances, largest first).
+  > $ cat >> reports/obstruction_search.md <<'EOF'
+
+---
+
+## 2. Family E by search: the ceiling on every target, the exact profile at `n ≤ 22`, the floor by branch and
+  > $ cat reports/scratch/obstruction_search/02_expansion/harness_table.md | cut -c1-400; python3 - <<'EOF'
+import pandas as pd
+d='reports/scratch/obstruction_search/
+  > $ python3 - <<'EOF'
+p='reports/obstruction_search.md'; s=open(p).read()
+old="""The ceiling's gap is 1 on 1,259 instances, 2 on 295, 3 on 37, 4 on 6, 5 on
+1 (`Rand
+  > $ uptime && (nohup nice -n 19 python3 Ralph_Loops/loop0013/gate.py > reports/scratch/obstruction_search/02_expansion/gate_run.out 2>&1; echo "GATE_EXIT $?" >> rep
+  > $ git status --short | grep -v "Ralph_Loops/loop0013/\(loop.log\|nohup.out\|status.json\|session_it02\)" ; grep -n "\.so\|__pycache__" .gitignore | head; du -sh r
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/iterations.md'; s=open(p).read()
+old="- [ ] **02 Family E by search: the ceiling on every target; exact `f` and `s*` a
+  > $ until grep -q "GATE_EXIT" reports/scratch/obstruction_search/02_expansion/gate_run.out; do sleep 30; done; tail -25 reports/scratch/obstruction_search/02_expans
+  > $ awk '/^## 2\. Family E/,0' reports/obstruction_search.md | grep -n "^|" | awk -F'|' '{print NF}' | sort | uniq -c; cat reports/scratch/obstruction_search/02_exp
+  > Monitor {"command": "tail -n0 -f /home/al/dev/MOSP/reports/scratch/obstruction_search/02_expansion/gate_run.out | grep -E --line
+
+Nothing else is pending besides the gate's verdict, which the two watchers will deliver. Waiting.
+
+# result: success in 318s, 16 turns, cost $10.60
+  > $ cat reports/scratch/obstruction_search/02_expansion/gate_run.out | tail -8; ps -o pid,etime,cmd -p $(pgrep -f "loop0013/gate.py" | head -1) 2>/dev/null | tail -
+  > $ ps -eo pid,etime,args | grep -E "python3 Ralph_Loops/loop0013/gate.py|pytest" | grep -v grep | cut -c1-120; ls -la reports/scratch/obstruction_search/02_expansi
+
+The gate is running (11 minutes in, the second pytest suite under way; its output is block-buffered until exit). The background waiter will report when it finishes.
+
+# result: success in 17s, 3 turns, cost $13.98
+  > $ cat reports/scratch/obstruction_search/02_expansion/gate_run.out | tail -30
+
+Gate passed. Filling in the gate line in PROGRESS.md and doing a final check of the working tree.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0013/PROGRESS.md'; s=open(p).read()
+old="- **Gate**: GATE_LINE"
+new="""- **Gate: PASS** (`reports/scratch/obstruction_searc
+
+Item 02 is done and the gate passed. Nothing further is pending; not every item is checked, so no completion marker.
+
+**What was built.** `learning/obstruction_expansion.py` with a C helper `learning/obstruction_expansion.c`: a tabu search per level `t` for small closed neighbourhoods (restarts from maximal cliques, the witness's prefix sets, BFS balls, and the neighbouring levels, then focus rounds on the argmax levels), an exact profile over all `2^n` subsets at `n ≤ 22`, the cap-12 branch-and-bound floor as a harness candidate, and stages `ceiling`, `exact`, `floor`, `tables`. Nine tests in `tests/test_obstruction_expansion.py`. Report §2 in `reports/obstruction_search.md`; files under `reports/scratch/obstruction_search/02_expansion/`.
+
+**Headline finding.** On 320 of the 338 bound-gap instances the search's ceiling sits below the optimum, so Harper's expansion family cannot close them under any computation, however deep the cap. On 249 of the 338 the ceiling is at or below the best floor already on record. Only 18 remain possible for the family; the floor closes 7 and 11 go to item 03. Over all 4,697 targets the ceiling is never above the optimum, and the family's duality gap is exact (floor = ceiling) on 4,547.
+
+**Other numbers.**
+- Exact at `n ≤ 22`: the search attains the exact profile at every level on 99.2% of 4,123 instances, the ceiling equals the exact bound on all of them, and Harper exact is tight on 71% (kill criterion not met).
+- Floor rerun on the 35 instances item 01 censored: up on 32, by up to 6 stacks, and above the best floor on record on 17 (the dense 125 × 125 classes).
+- Harness validity run on all 6,376: above optimum 0; beats the reference `max(lb_best, tw + 1)` on 73 of the 338.
+- A second search pass (seed 2, triple budget) changes the ceiling by ±1 on 4 of 436 instances.
+
+**One correction recorded.** The item's text suggested seeding from a customer *closing* order; that layout has no vertex-separation guarantee (56 against 24 on `Random-125-125-2-2_0`). The *opening*-time layout has vertex separation exactly `optimum − 1` on every target and is what the `ceiling ≤ optimum` guarantee rests on; a test asserts it.
+
+**Compute.** 3.4 core-hours against the item's 3 (floor 2.83, harness 0.32, ceiling 0.14, second pass 0.13); the floor's 10-minute cap was halved where only one level was missing, stated in the report.
+
+**Gate.** PASS: lake build ok, 0 sorry, 0 axiom; 1,825 tests passed in `tests/`, 123 in `pathwidth_solver/`; paper 77 pages. PROGRESS.md has the iteration 2 entry (2/11 solved) and item 02 is marked done; nothing committed, nothing under `solutions/` touched.
+
+# result: success in 23s, 3 turns, cost $14.29

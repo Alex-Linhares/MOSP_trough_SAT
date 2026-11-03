@@ -7,7 +7,7 @@ corpus, the 338 bound-gap instances, the 200 Chu & Stuckey instances and the
 24 open dataset classes; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0013/gate.py`.
 
-Current: 1/11 SOLVED
+Current: 2/11 SOLVED
 
 ## Setup — 2026-11-02
 
@@ -182,3 +182,75 @@ keys. A load-dependent flake of the test's budget, recorded here.
 00:30–00:43): lake build ok, 0 sorry, 0 axiom; `tests/` 1,816 passed, 2 skipped,
 1 xfailed (4:24); `pathwidth_solver/` 123 passed (6:23); paper 77 pages, no
 undefined references. Not committed (the driver commits).
+
+---
+## Iteration 2 — 2026-11-03 00:52
+
+### Completed
+
+- **Item 02 — family E by search: the ceiling on every target, the exact
+  profile at `n ≤ 22`, the floor by branch and bound.**
+  `learning/obstruction_expansion.py` + `learning/obstruction_expansion.c`
+  (tabu search on swaps per level, restarts from cliques, the witness's
+  prefix sets, BFS balls and the neighbouring levels, focus rounds on the
+  argmax levels; the exact profile over `2^n` subsets; `harper_floor` as a
+  harness `--extra` candidate; stages `ceiling`, `exact`, `floor`,
+  `tables`, a `--tag` for a second pass), `tests/test_obstruction_expansion.py`
+  (9 passed), `reports/scratch/obstruction_search/02_expansion/{ceiling.csv,
+  ceiling_s2x3.csv, exact_small.csv, floor.csv, sets/, sets_s2x3/, tables.md,
+  harness_values.csv, harness_table.md, run_harness.py, run.log, *_run.out}`,
+  `reports/obstruction_search.md` §2.
+- **The headline**: on **320 of the 338** bound-gap instances the ceiling
+  is below the optimum, so the expansion family cannot close them under
+  any computation; on 249 of the 338 it is at or below the best floor on
+  record. Ceiling at the optimum on 18 of the 338 (11 Chu & Stuckey), of
+  which the floor closes 7 and 11 stay open for item 03. Over all 4,697
+  targets: ceiling = optimum on 3,099, below on 1,598, above on **0**;
+  the bracket `ceiling − floor` is 0 on 4,547 (the family's duality gap is
+  exact there) and opens with size to 9.1 at 101–134.
+- **Exact at `n ≤ 22`** (4,123): the search attains `f(t)` at every `t`
+  on 4,090 (99.2%; 33 misses, one level each, by one, none at an argmax
+  level), the ceiling equals the exact bound on 4,123 of 4,123, Harper
+  exact equals the optimum on 2,933 (71.1%: 78% at `n = 10`, 59% at 20),
+  the empty-pair value on 748 (18.1%); the exact bound beats `lb_best` and
+  `floor0` on none.
+- **The floor rerun** (35 instances item 01 censored; 600 s where cap ≤ 10,
+  300 s at cap 11; 26 completed cap 12; 2.83 core-hours): up on 32 of 35,
+  mean +1.9, max +6; **above the best floor on record on 17** (all the
+  density-6 and density-8 125 × 125 instances among them); the bracket
+  closes on `125-125-10-2_0` (103 = 103 < 104: duality gap exactly 1) and
+  `125-125-10-5_0` (= optimum).
+- **Harness**: `harper_floor` through the validity stage on all 6,376:
+  above optimum **0**, tight 63.7% at 10 s, beats the reference
+  `max(lb_best, tw + 1)` on 73 of the 338.
+- **Second pass** (seed 2, budget ×3, 436 instances): equal on 432, lower
+  on 1, higher on 3 — the ceiling is a ±1 search artefact on about 1% at
+  30–100 customers.
+- **A correction to the item's text**: the witness's layout by *closing*
+  time has no vertex-separation guarantee under the prefix definition
+  (56 against 24 on `Random-125-125-2-2_0`); the layout by *opening* time
+  has vertex separation exactly `optimum − 1` on all 4,697 targets and is
+  what the `ceiling ≤ optimum` guarantee rests on (asserted by a test).
+- **Kill verdict**: not met (99.2% ≥ 90%); no ceiling below the floor, no
+  floor above the optimum. Compute **3.4 core-hours** (ceiling 0.14, floor
+  2.83, second pass 0.13, harness 0.32) against the item's 3; the floor's
+  cap was halved where only `f(13)` was missing, said so in the report.
+- **Gate: PASS** (`reports/scratch/obstruction_search/02_expansion/gate_run.out`,
+  01:31–01:45): lake build ok, 0 sorry, 0 axiom; `tests/` 1,825 passed, 2
+  skipped, 1 xfailed (5:08); `pathwidth_solver/` 123 passed (6:26); paper 77
+  pages, no undefined references.
+
+### Blockers
+
+None.
+
+### Next
+
+Item 03 (family E exact at full depth by SAT with DRAT). Its inputs: the 11
+instances of the 338 with the ceiling at the optimum and the floor below it
+(`tables.md` (c); `ceiling.csv` joined with `floor.csv`), the argmax levels
+`t*` and the sets per `t` in `sets/<name>.json` (`sets`, and `exact_sets`
+at `n ≤ 22`) as incumbents; the bracket is 0 on 4,547 of 4,697 targets, so
+the SAT half matters only on the 150 with a bracket, almost all at
+61–134 customers (`gap338`: 145 with a bracket). Its kill criterion's
+boundary `(n, t)` is what to record.
