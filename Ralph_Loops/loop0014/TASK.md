@@ -83,7 +83,7 @@
 - **Nothing is solved twice and nothing is downloaded** beyond what is
   already cloned. `solutions/` is never written. No run on any instance
   under `MOSP_Instances/` or the pathwidth dataset.
-- **Budget: $1,500 for the whole loop** (owner, 2026-11-04), tracked by the
+- **Budget: $2,500 for the whole loop** (owner, 2026-11-04, raised from $1,500 the same evening), tracked by the
   coordinator from the session logs. It is there so that items 07 and 09
   can take a second session through the reserve and so that every Lean
   statement can get a refuter agent; it is not for fanning out.

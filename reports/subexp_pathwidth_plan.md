@@ -126,7 +126,7 @@ a run, and no item spends compute on an open instance.
 Twelve items; Lean items at loop0012's rate (6–20 min each) and reading
 items at the cap; **estimate 12–20 hours wall, $300–450** at loop0012–13's
 cost per item with the subagent cap honoured. **The owner's budget is
-$1,500 (set 2026-11-04 after launch)**: the difference over the estimate is
+$2,500 (set 2026-11-04 after launch, raised from $1,500)**: the difference over the estimate is
 for the two hard-mathematics items (07, the linear construction; 09, the
 positive attempt) to take a second session each through the reserve, and
 for a refuter agent on every Lean statement, not for more fan-out.
@@ -147,9 +147,9 @@ for a refuter agent on every Lean statement, not for more fan-out.
 - **Item 03 lowers item 07's ambition** if every known reduction into
   pathwidth is superlinear: the theorem becomes the absence statement plus
   one attempted construction, not a transfer theorem.
-- **Budget**: **$1,500 total** (owner, 2026-11-04). The coordinator sums the
+- **Budget**: **$2,500 total** (owner, 2026-11-04; first $1,500, raised the same evening with the re-plan to algorithms with proofs). The coordinator sums the
   `# result` lines of the session logs after each iteration and sets
-  `knobs.json` `stop` when the sum passes $1,500 or any session exceeds
+  `knobs.json` `stop` when the sum passes $2,500 or any session exceeds
   its cap; the driver re-reads the knobs before each session.
 
 ### 0.7 The three biggest risks
