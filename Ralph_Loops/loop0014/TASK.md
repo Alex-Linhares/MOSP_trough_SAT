@@ -162,6 +162,15 @@ See `iterations.md`. The dependency order is 01 → 02 → {03, 04, 05, 06} →
   a linear-size graph): with both directions, the `1.89ⁿ` pathwidth base
   would transfer to cutwidth on subcubic graphs, where no base below 2 is
   on record (Bentert et al. 2025).
+- **The question is about linear width** (owner, 2026-11-04): pathwidth is
+  FPT (`2^{O(k²)} n`, Bodlaender & Kloks 1996; `2^{O(k³)} n`, Bodlaender
+  1996; cite the held or missing source), so `pw ≤ k` is already
+  `2^{o(n)}` whenever `k = o(n^{1/2})` or so, and the only regime the
+  `2^{o(n)}` question concerns is `k = Θ(n)`, where every FPT dependence is
+  `2^{Ω(n)}` because the problem is NP-hard. Every transfer theorem, the
+  positive attempt and the hypothesis map are to be stated for `k = Θ(n)`
+  (hard instances on record: `pw/n` from 0.19 to 0.82 at `n = 125`), and
+  item 10 records that the sublinear-width regime is settled by FPT.
 - The driver commits with `git add -A` after each iteration; keep scratch
   under `reports/scratch/subexp_pathwidth/` and large files out of git.
 - Never end a turn on a background wait; long jobs run in the foreground
