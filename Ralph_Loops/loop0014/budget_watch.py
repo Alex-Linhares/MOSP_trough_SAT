@@ -7,7 +7,13 @@ LOG, KNOBS, PIDFILE = HERE / "loop.log", HERE / "knobs.json", HERE / "driver.pid
 BUDGET = 1500.0
 driver = int(PIDFILE.read_text()) if PIDFILE.exists() else int(sys.argv[1])
 while True:
-    total = sum(float(m) for m in re.findall(r"cost \$([0-9.]+)", LOG.read_text())) if LOG.exists() else 0.0
+    # `total_cost_usd` is cumulative within a session (one session_id, re-woken after each
+    # background task), so a session's cost is the LAST `# result` line of its log, not the sum.
+    total = 0.0
+    for f in sorted(HERE.glob("session_*.log")):
+        c = re.findall(r"cost \$([0-9.]+)", f.read_text())
+        if c:
+            total += float(c[-1])
     (HERE / "budget.txt").write_text(f"{time.strftime('%F %T')} summed cost ${total:.2f} of ${BUDGET:.0f}\n")
     if total > BUDGET:
         k = json.loads(KNOBS.read_text()); k["stop"] = True

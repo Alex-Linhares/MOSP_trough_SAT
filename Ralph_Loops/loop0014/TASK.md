@@ -61,7 +61,9 @@
   can take a second session through the reserve and so that every Lean
   statement can get a refuter agent; it is not for fanning out.
 - **Subagents: at most 4 per session, total.** loop0013's item 07 spent
-  $947 by fanning out per target. Reading items use one subagent at most,
+  far more than any other session by fanning out per target (its true
+  cost was $38 once the cumulative `# result` lines were read correctly,
+  2026-11-04, but the cap stands). Reading items use one subagent at most,
   for a second opinion on a proof, never for parallel reading.
 
 ## Compute, and the machine

@@ -94,7 +94,8 @@ a run, and no item spends compute on an open instance.
 4. **No compute on open instances; measurement on generated graphs only**
    (item 06, random cubic and random `G(n, c/n)` at `n ≤ 60`, seconds each).
 5. **Subagents: at most 4 per session**, stated in `TASK.md` (loop0013's
-   item 07 cost $947 by fanning out per class).
+   item 07 fanned out per class; its cost was first recorded as $947 and
+   is $38 by the corrected reading of the session logs, 2026-11-04).
 6. **Every mathematical claim gets a small-instance check before it is
    stated** (the loop0004 lesson): a reduction is tested on every graph to
    7 vertices against brute-force vertex separation before Lean sees it.
