@@ -59,7 +59,7 @@ def main():
         d["names"] = str(m0.get("name", d["id"])); d["collections"] = "; ".join(sorted({m.get("collection", "") for m in mem if isinstance(m, dict)}))
         d["gap"] = want[d["id"]]; recs.append(d)
     recs.sort(key=lambda d: (d["gap"], int(d["n"])))
-    done = set(pd.read_csv(HERE / "pass2.csv")["id"]) if (HERE / "pass2.csv").exists() else set()
+    done = {r[0] for r in list(csv.reader(open(HERE / "pass2.csv")))[1:]} if (HERE / "pass2.csv").exists() else set()  # csv, not pandas: closed rows carry an extra minor column
     recs = [d for d in recs if d["id"] not in done]
     from collections import Counter
     print(f"{time.strftime('%F %T')} pass 2: {len(recs)} classes (gaps {dict(sorted(Counter(d['gap'] for d in recs).items()))}), "

@@ -1,0 +1,123 @@
+2026-11-03 19:00:29 pass 2: 95 classes (gaps {1: 66, 2: 15, 3: 14}), 12 workers, 3600 s search each, seed 13, C cap 20.0 s, 10 GB per worker
+20:00:29 1/95 pwc-03682 Random-150-150-2-4           n=  150 width 27 floor 26 (72 v)  3600.0s ok  closed so far 0
+20:00:29 2/95 pwc-03679 Random-150-150-2-10          n=  150 width 25 floor 24 (60 v)  3600.0s ok  closed so far 0
+20:00:29 3/95 pwc-03686 Random-150-150-2-8           n=  150 width 21 floor 20 (65 v)  3600.0s ok  closed so far 0
+20:00:29 4/95 pwc-17693 SAT_dat.k80-24_1_rule_1.gaif n=  130 width 23 floor 22 (56 v)  3600.0s ok  closed so far 0
+20:00:29 5/95 pwc-17705 jgiraldezlevy.2200.9086.08.4 n=  100 width 37 floor 36 (56 v)  3600.0s ok  closed so far 0
+20:00:29 6/95 pwc-03678 Random-150-150-2-1           n=  150 width 22 floor 21 (75 v)  3600.1s ok  closed so far 0
+20:00:29 7/95 pwc-17622 GTFS_VBB_EndeApr_Dez2016.zip n=  190 width 15 floor 14 (76 v)  3600.1s ok  closed so far 0
+20:00:29 8/95 pwc-17620 GTFS_VBB_EndeApr_Dez2016.zip n=  192 width 15 floor 14 (77 v)  3600.1s ok  closed so far 0
+20:00:29 9/95 pwc-15911 coloring/myciel7.dgf         n=  191 width 72 floor 71 (102 v)  3600.0s ok  closed so far 0
+20:00:29 10/95 pwc-17363 ex121.gr.xz                  n=  204 width 35 floor 34 (90 v)  3600.1s ok  closed so far 0
+20:00:29 11/95 pwc-04432 W4                           n=  202 width 27 floor 26 (81 v)  3600.1s ok  closed so far 0
+20:00:30 12/95 pwc-17668 Promedas_59_10.gr.xz         n=  209 width 12 floor 12 (84 v) CLOSED minor 3600.0s ok  closed so far 1
+21:00:29 13/95 pwc-17436 ex195.gr.xz                  n=  216 width 11 floor 10 (86 v)  3600.0s ok  closed so far 1
+21:00:29 14/95 pwc-17665 Promedas_55_9.gr.xz          n=  221 width 14 floor 13 (88 v)  3600.0s ok  closed so far 1
+21:00:29 15/95 pwc-17369 ex127.gr.xz                  n=  228 width 12 floor 11 (91 v)  3600.0s ok  closed so far 1
+21:00:29 16/95 pwc-17321 ex077.gr.xz                  n=  237 width 11 floor 10 (95 v)  3600.0s ok  closed so far 1
+21:00:29 17/95 pwc-17426 ex185.gr.xz                  n=  237 width 17 floor 16 (95 v)  3600.0s ok  closed so far 1
+21:00:29 18/95 pwc-17437 ex196.gr.xz                  n=  242 width 12 floor 11 (97 v)  3600.0s ok  closed so far 1
+21:00:29 19/95 pwc-17298 ex052.gr.xz                  n=  244 width 12 floor 11 (98 v)  3600.0s ok  closed so far 1
+21:00:29 20/95 pwc-17306 ex060.gr.xz                  n=  249 width 11 floor 10 (100 v)  3600.0s ok  closed so far 1
+21:00:29 21/95 pwc-17300 ex054.gr.xz                  n=  243 width 11 floor 10 (97 v)  3600.1s ok  closed so far 1
+21:00:29 22/95 pwc-04557 vsplib/hb/dwt__245.mtx.rnd   n=  245 width 12 floor 11 (98 v)  3600.0s ok  closed so far 1
+21:00:30 23/95 pwc-17631 NY_11.gr.xz                  n=  226 width 11 floor 11 (90 v) CLOSED minor 3600.0s ok  closed so far 2
+21:00:30 24/95 pwc-17615 6s151.gaifman_3.gr.xz        n=  253 width 16 floor 15 (101 v)  3600.0s ok  closed so far 2
+22:00:29 25/95 pwc-17424 ex183.gr.xz                  n=  265 width 13 floor 12 (106 v)  3600.0s ok  closed so far 2
+22:00:29 26/95 pwc-17642 Promedas_21_9.gr.xz          n=  253 width 12 floor 11 (101 v)  3600.0s ok  closed so far 2
+22:00:29 27/95 pwc-17398 ex157.gr.xz                  n=  260 width 11 floor 10 (104 v)  3600.0s ok  closed so far 2
+22:00:29 28/95 pwc-17645 Promedas_23_6.gr.xz          n=  253 width 13 floor 12 (101 v)  3600.0s ok  closed so far 2
+22:00:29 29/95 pwc-17357 ex114.gr.xz                  n=  268 width 11 floor 10 (107 v)  3600.0s ok  closed so far 2
+22:00:29 30/95 pwc-17617 FLA_14.gr.xz                 n=  266 width 10 floor 9 (106 v)  3600.0s ok  closed so far 2
+22:00:29 31/95 pwc-17288 ex042.gr.xz                  n=  278 width 11 floor 10 (111 v)  3600.0s ok  closed so far 2
+22:00:29 32/95 pwc-17286 ex040.gr.xz                  n=  285 width 10 floor 9 (114 v)  3600.0s ok  closed so far 2
+22:00:29 33/95 pwc-04542 vsplib/hb/can__292.mtx.rnd   n=  292 width 23 floor 22 (120 v)  3600.0s ok  closed so far 2
+22:00:29 34/95 pwc-17431 ex190.gr.xz                  n=  296 width 18 floor 17 (118 v)  3600.0s ok  closed so far 2
+22:00:30 35/95 pwc-17438 ex197.gr.xz                  n=  303 width 18 floor 17 (121 v)  3600.0s ok  closed so far 2
+22:00:30 36/95 pwc-17427 ex186.gr.xz                  n=  316 width 11 floor 10 (126 v)  3600.0s ok  closed so far 2
+23:00:29 37/95 pwc-17411 ex170.gr.xz                  n=  361 width 11 floor 10 (144 v)  3600.1s ok  closed so far 2
+23:00:29 38/95 pwc-17401 ex160.gr.xz                  n=  320 width 14 floor 13 (128 v)  3600.1s ok  closed so far 2
+23:00:29 39/95 pwc-17378 ex136.gr.xz                  n=  338 width 35 floor 34 (148 v)  3600.1s ok  closed so far 2
+23:00:30 40/95 pwc-17649 Promedas_28_10.gr.xz         n=  333 width 12 floor 11 (133 v)  3600.1s ok  closed so far 2
+23:00:30 41/95 pwc-17342 ex098.gr.xz                  n=  342 width 10 floor 9 (137 v)  3600.1s ok  closed so far 2
+23:00:30 42/95 pwc-04560 vsplib/hb/dwt__346.mtx.rnd   n=  346 width 23 floor 22 (170 v)  3600.1s ok  closed so far 2
+23:00:30 43/95 pwc-17264 ex017.gr.xz                  n=  330 width 11 floor 11 (132 v) CLOSED minor 3600.0s ok  closed so far 3
+23:00:30 44/95 pwc-17423 ex182.gr.xz                  n=  394 width 11 floor 10 (158 v)  3600.1s ok  closed so far 3
+23:00:30 45/95 pwc-04562 vsplib/hb/dwt__419.mtx.rnd   n=  419 width 20 floor 19 (168 v)  3600.1s ok  closed so far 3
+23:00:30 46/95 pwc-17384 ex142.gr.xz                  n=  392 width 11 floor 11 (157 v) CLOSED minor 3600.0s ok  closed so far 4
+23:00:30 47/95 pwc-04532 vsplib/hb/bcsstk06.mtx.rnd   n=  420 width 42 floor 41 (297 v)  3600.1s ok  closed so far 4
+23:00:30 48/95 pwc-17368 ex126.gr.xz                  n=  440 width 11 floor 9 (176 v)  3600.1s ok  closed so far 4
+00:00:30 49/95 pwc-04526 vsplib/hb/bcspwr05.mtx.rnd   n=  443 width 10 floor 9 (177 v)  3600.0s ok  closed so far 4
+00:00:30 50/95 pwc-17337 ex093.gr.xz                  n=  454 width 10 floor 9 (182 v)  3600.1s ok  closed so far 4
+00:00:30 51/95 pwc-17359 ex116.gr.xz                  n=  453 width 10 floor 9 (181 v)  3600.1s ok  closed so far 4
+00:00:30 52/95 pwc-17043 fuzix_vfscanf_vfscanf.gr     n=  587 width 8 floor 7 (235 v)  3600.1s ok  closed so far 4
+00:00:30 53/95 pwc-17257 ex009.gr.xz                  n=  466 width 9 floor 8 (186 v)  3600.1s ok  closed so far 4
+00:00:30 54/95 pwc-04564 vsplib/hb/dwt__503.mtx.rnd   n=  503 width 30 floor 29 (217 v)  3600.1s ok  closed so far 4
+00:00:30 55/95 pwc-17409 ex168.gr.xz                  n=  572 width 16 floor 15 (229 v)  3600.1s ok  closed so far 4
+00:00:30 56/95 pwc-04566 vsplib/hb/dwt__592.mtx.rnd   n=  592 width 25 floor 24 (237 v)  3600.1s ok  closed so far 4
+00:00:30 57/95 pwc-17343 ex099.gr.xz                  n=  616 width 10 floor 9 (246 v)  3600.1s ok  closed so far 4
+00:00:30 58/95 pwc-17412 ex171.gr.xz                  n=  647 width 16 floor 15 (259 v)  3600.1s ok  closed so far 4
+00:00:30 59/95 pwc-16471 contiki_shell-netperf_proces n=  666 width 7 floor 6 (266 v)  3600.1s ok  closed so far 4
+00:00:30 60/95 pwc-17270 ex023.gr.xz                  n=  690 width 12 floor 11 (276 v)  3600.1s ok  closed so far 4
+01:00:30 61/95 pwc-03683 Random-150-150-2-5           n=  150 width 28 floor 26 (68 v)  3600.0s ok  closed so far 4
+01:00:30 62/95 pwc-17390 ex149.gr.xz                  n=  698 width 15 floor 14 (279 v)  3600.1s ok  closed so far 4
+01:00:30 63/95 pwc-03735 Random-175-175-2-7           n=  175 width 27 floor 25 (73 v)  3600.0s ok  closed so far 4
+01:00:30 64/95 pwc-17389 ex148.gr.xz                  n=  746 width 16 floor 15 (298 v)  3600.1s ok  closed so far 4
+01:00:30 65/95 pwc-17317 ex073.gr.xz                  n=  712 width 10 floor 9 (285 v)  3600.2s ok  closed so far 4
+01:00:30 66/95 pwc-17492 he052.gr.xz                  n=  193 width 25 floor 24 (96 v)  3600.0s ok  closed so far 4
+01:00:30 67/95 pwc-04570 vsplib/hb/dwt__878.mtx.rnd   n=  878 width 23 floor 22 (351 v)  3600.1s ok  closed so far 4
+01:00:30 68/95 pwc-15880 coloring/inithx.i.1.dgf      n=  864 width 57 floor 56 (346 v)  3600.1s ok  closed so far 4
+01:00:30 69/95 pwc-04568 vsplib/hb/dwt__758.mtx.rnd   n=  758 width 20 floor 19 (303 v)  3600.2s ok  closed so far 4
+01:00:30 70/95 pwc-17407 ex166.gr.xz                  n=  217 width 12 floor 10 (87 v)  3600.0s ok  closed so far 4
+01:00:30 71/95 pwc-17168 dimacs_inithx.i.3-pp.gr      n=  196 width 30 floor 28 (78 v)  3600.0s ok  closed so far 4
+01:00:30 72/95 pwc-04525 vsplib/hb/bcspwr04.mtx.rnd   n=  274 width 14 floor 12 (110 v)  3600.0s ok  closed so far 4
+02:00:30 73/95 pwc-17188 RKT_300_75_30_0.gr           n=  300 width 31 floor 29 (120 v)  3600.0s ok  closed so far 4
+02:00:30 74/95 pwc-17415 ex174.gr.xz                  n=  350 width 26 floor 24 (140 v)  3600.0s ok  closed so far 4
+02:00:30 75/95 pwc-04517 vsplib/hb/494_bus.mtx.rnd    n=  494 width 10 floor 8 (198 v)  3600.1s ok  closed so far 4
+02:00:30 76/95 pwc-17204 RKT_500_80_30_0.gr           n=  500 width 31 floor 29 (200 v)  3600.1s ok  closed so far 4
+02:00:30 77/95 pwc-17408 ex167.gr.xz                  n=  509 width 12 floor 10 (204 v)  3600.1s ok  closed so far 4
+02:00:30 78/95 pwc-17400 ex159.gr.xz                  n=  582 width 24 floor 22 (410 v)  3600.1s ok  closed so far 4
+02:00:30 79/95 pwc-17399 ex158.gr.xz                  n=  596 width 13 floor 11 (238 v)  3600.1s ok  closed so far 4
+02:00:30 80/95 pwc-17371 ex129.gr.xz                  n=  737 width 17 floor 16 (295 v)  3600.1s ok  closed so far 4
+02:00:30 81/95 pwc-15936 named/gr/BiggsSmithGraph.gr  n=  102 width 19 floor 16 (50 v)  3600.0s ok  closed so far 4
+02:00:30 82/95 pwc-03681 Random-150-150-2-3           n=  150 width 26 floor 23 (74 v)  3600.0s ok  closed so far 4
+02:00:30 83/95 pwc-17435 ex194.gr.xz                  n=  782 width 13 floor 11 (313 v)  3600.2s ok  closed so far 4
+02:00:30 84/95 pwc-03684 Random-150-150-2-6           n=  150 width 27 floor 24 (69 v)  3600.0s ok  closed so far 4
+Traceback (most recent call last):
+  File "/home/al/dev/MOSP/reports/scratch/obstruction_search/13_pass1/pass2.py", line 88, in <module>
+    main()
+  File "/home/al/dev/MOSP/reports/scratch/obstruction_search/13_pass1/pass2.py", line 62, in main
+    done = set(pd.read_csv(HERE / "pass2.csv")["id"]) if (HERE / "pass2.csv").exists() else set()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "pandas/_libs/parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "pandas/_libs/parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "pandas/_libs/parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "pandas/_libs/parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 20 fields in line 13, saw 21
+
+2026-11-04 07:40:30 pass 2: 11 classes (gaps {3: 11}), 12 workers, 3600 s search each, seed 13, C cap 20.0 s, 10 GB per worker
+08:40:30 1/11 pwc-03737 Random-175-175-2-9           n=  175 width 31 floor 28 (72 v)  3600.0s ok  closed so far 0
+08:40:30 2/11 pwc-03685 Random-150-150-2-7           n=  150 width 26 floor 23 (67 v)  3600.0s ok  closed so far 0
+08:40:30 3/11 pwc-03687 Random-150-150-2-9           n=  150 width 27 floor 24 (69 v)  3600.0s ok  closed so far 0
+08:40:30 4/11 pwc-03736 Random-175-175-2-8           n=  175 width 34 floor 31 (81 v)  3600.0s ok  closed so far 0
+08:40:30 5/11 pwc-03730 Random-175-175-2-2           n=  175 width 27 floor 24 (70 v)  3600.0s ok  closed so far 0
+08:40:30 6/11 pwc-03728 Random-175-175-2-1           n=  175 width 27 floor 25 (70 v)  3600.0s ok  closed so far 0
+08:40:30 7/11 pwc-17655 Promedas_44_11.gr.xz         n=  362 width 18 floor 16 (145 v)  3600.0s ok  closed so far 0
+08:40:30 8/11 pwc-17366 ex124.gr.xz                  n=  496 width 13 floor 10 (198 v)  3600.1s ok  closed so far 0
+08:40:30 9/11 pwc-17414 ex173.gr.xz                  n=  536 width 13 floor 10 (214 v)  3600.1s ok  closed so far 0
+08:40:30 10/11 pwc-17425 ex184.gr.xz                  n=  749 width 13 floor 10 (300 v)  3600.1s ok  closed so far 0
+08:40:30 11/11 pwc-17403 ex162.gr.xz                  n=  755 width 12 floor 9 (302 v)  3600.1s ok  closed so far 0
+2026-11-04 08:40:30 pass 2 done: 11 classes, 0 closed
