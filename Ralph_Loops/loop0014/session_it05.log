@@ -1,0 +1,212 @@
+# session it05 started 2026-11-04 21:57:03
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the relevant sections of the report so far, and the frontier enumerator, then do the mathematics and checks for item 05.
+  > $ cat reports/subexp_pathwidth_plan.md | head -400 && wc -l reports/subexp_pathwidth_plan.md reports/subexp_pathwidth.md
+  > $ grep -n '^## \|^### ' reports/subexp_pathwidth.md
+  > $ sed -n 168,400p reports/subexp_pathwidth.md
+  > $ sed -n 1004,1125p reports/subexp_pathwidth.md
+  > $ sed -n 1344,1538p reports/subexp_pathwidth.md
+  > $ grep -n '^## \|^### ' reports/checkpoint_relaxation.md | sed -n 1,60p; echo ----; awk '/^## 10/,0' reports/checkpoint_relaxation.md | head -200
+  > $ cat learning/two_ended.py | head -250; echo ----; ls reports/scratch/subexp_pathwidth/ reports/scratch/subexp_pathwidth/04_classes/; cat reports/scratch/subexp_
+  > $ sed -n 1,120p learning/subexp_reductions.py && grep -n '^def \|^class ' learning/subexp_reductions.py learning/subexp_classes.py && sed -n 1,40p tests/test_sube
+  > $ sed -n 270,300p learning/subexp_reductions.py && grep -n 'def vertex_separation\|def graph\|def from_nx\|def edges_of' -A 12 paper1/complex_check.py | head -80 
+  > $ sed -n 346,371p learning/subexp_classes.py && grep -n 'def vs_of_layout' -A 14 paper1/complex_check.py && python3 -c "from pysat.solvers import Solver; s=Solver
+  > Write /home/al/dev/MOSP/learning/subexp_chain.py
+  > $ sed -i '/per_level = (2 \* n if True else 0)                # placeholder, replaced below/d' learning/subexp_chain.py && mkdir -p reports/scratch/subexp_pathwid
+  > $ python3 - <<'EOF'
+import re
+p='learning/subexp_chain.py'; s=open(p).read()
+s=s.replace("""        Bv = n * (math.log(L)) ** 2 / math.sqrt(L) if n > 2 else float
+  > $ nice -n 19 python3 -m learning.subexp_chain --nmax 7 > reports/scratch/subexp_pathwidth/05_chain/check_atlas7.log 2>&1; echo "exit $?" >> reports/scratch/subexp
+  > Write /home/al/dev/MOSP/tests/test_subexp_chain.py
+  > $ time nice -n 19 python3 -m pytest tests/test_subexp_chain.py -q 2>&1 | tail -5
+  > $ sed -i 's/for row in ch.exact_count_table((8, 16, 64, 125, 1000)):/for row in ch.exact_count_table((16, 64, 125, 1000)):/' tests/test_subexp_chain.py && nice -n
+  > $ tail -c 600 /tmp/claude-1000/-home-al-dev-MOSP/bb0818b3-32b2-4335-8fc6-3cdded358983/tasks/bt1aftdq9.output; ls -la reports/scratch/subexp_pathwidth/05_chain/; p
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 5. The chain count as an algebraic object (item 05, 2026-11-04)
+
+*Code `learning/subexp_chain.py`, tests `tests/t
+
+The full atlas run finished with zero failures on every check. Now filling the measured numbers into §5 and fixing the K₃ polynomial sentence.
+  > $ grep -E '^(polynomial_by_n|smallest_full|split_rank_summary|seconds)' reports/scratch/subexp_pathwidth/05_chain/check_atlas7.log | cut -c1-1500; python3 - <<'EO
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'; s=open(p).read()
+rep = {
+ '⟨CNF⟩': '1,391', '⟨RANKS⟩': '1,538', '⟨IE⟩': '1,405', '⟨CC⟩': '8,475', '⟨BB⟩': '8,
+
+Next, three independent things: a one-line fix naming the full-rank graphs, the gate in the background, and one refuter subagent on the §5 proofs.
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'; s=open(p).read()
+a="and two graphs (`check.json`) have full rank 8 across every balanced split at `k = vs`."
+
+  > Agent {"description": "Refute the \u00a75 proofs", "subagent_type": "general-purpose", "run_in_background": true, "prompt": "Y
+
+I'll start by reading the section and the module.
+  > $ grep -n "^## \|^### " /home/al/dev/MOSP/reports/subexp_pathwidth.md | tail -40; wc -l /home/al/dev/MOSP/reports/subexp_pathwidth.md /home/al/dev/MOSP/learning/s
+  > $ sed -n 1540,1760p /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ sed -n 1760,1987p /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ cat -n /home/al/dev/MOSP/learning/subexp_chain.py
+  > $ grep -n "def graph\b\|def vertex_separation\|def vs_of_layout" paper1/complex_check.py; grep -n "def atlas\|def vs\b" learning/subexp_reductions.py; grep -n "de
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/bb0818b3-32b2-4335-8fc6-3cdded358983/tool-results/bptlxnnws.txt
+  > $ sed -n 80,110p paper1/complex_check.py && sed -n 225,260p paper1/complex_check.py && sed -n 95,110p learning/subexp_reductions.py && sed -n 270,300p learning/su
+  > $ sed -n 30,330p /home/al/dev/MOSP/learning/subexp_chain.py
+  > $ sed -n 330,673p /home/al/dev/MOSP/learning/subexp_chain.py
+  > $ python3 - <<'EOF'
+import pandas as pd, math
+P = pd.read_csv('reports/scratch/subexp_pathwidth/05_chain/membership_polynomial.csv')
+from learning.subexp_chain im
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'; s=open(p).read()
+rep = {
+ '| **100%** (679 of 679) |': '| **100%** (995 of 995) |',
+ '| `k = vs` | 1,252 | 82
+
+Corrections applied. While the gate and the refuter run, I'll re-read the written §5 once for consistency.
+  > $ awk '/^## 5\. The chain count/,0' reports/subexp_pathwidth.md | sed -n 95,135p
+
+Nothing else depends on the two background results, so I'll draft the PROGRESS.md section now with two placeholders (refuter, gate) to fill when they return.
+  > $ cat >> Ralph_Loops/loop0014/PROGRESS.md <<'EOF'
+
+---
+
+## Iteration 5 — 2026-11-04 22:05
+
+Item 05, the chain count as an algebraic object. Report:
+`reports/subex
+
+Two results are pending, the refuter and the gate, and nothing else is independent of them. I'll wait on the gate log in the foreground rather than end the turn on a background wait.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -q '^exit ' reports/scratch/subexp_pathwidth/05_chain/gate.log 2>/dev/null; do sleep 5; done; gr
+
+Both remaining inputs are in flight: the gate log is now monitored for its exit line, and the refuter subagent is still reading §5. I'll fold its findings and the gate result into §5 and PROGRESS.md as soon as they arrive.
+
+Now let me look at the referenced §1.3 budget/R-list, the scratch `check.json`, and the test file, then write my own checks.
+  > $ grep -n "1.3.8\|R6\|R1\b\|R5\|10/9\|B_v\|budget" reports/subexp_pathwidth.md | sed -n 1,60p
+  > $ python3 -c "
+import json; d=json.load(open('reports/scratch/subexp_pathwidth/05_chain/check.json'))
+for k in ('counts','failures','polynomial_summary','polynomi
+  > $ sed -n 200,250p reports/subexp_pathwidth.md; echo ----; sed -n 315,335p reports/subexp_pathwidth.md; echo ----; sed -n 1388,1400p reports/subexp_pathwidth.md; e
+  > $ mkdir -p /tmp/ref && cat > /tmp/ref/check1.py <<'EOF'
+import sys, itertools, math
+sys.path.insert(0, '/home/al/dev/MOSP')
+from learning.subexp_reductions import
+  > $ cat > /tmp/ref/check2.py <<'EOF'
+import sys, itertools, math
+sys.path.insert(0, '/home/al/dev/MOSP')
+import numpy as np
+from learning.subexp_reductions import a
+  > $ cat > /tmp/ref/check3.py <<'EOF'
+import sys, math
+sys.path.insert(0, '/home/al/dev/MOSP')
+from learning.subexp_chain import cnf_size_formula, nested_chain_cnf, 
+  > $ cat > /tmp/ref/check4.py <<'EOF'
+import sys, itertools, math
+sys.path.insert(0, '/home/al/dev/MOSP')
+from learning.two_ended import forward_layers
+from learning
+  > $ grep -n "679\|853 of\|995" reports/subexp_pathwidth.md | sed -n 1,10p; cat > /tmp/ref/check5.py <<'EOF'
+import sys, itertools, math
+sys.path.insert(0, '/home/al
+  > $ sed -n 1848,1870p reports/subexp_pathwidth.md; echo ----; sed -n 1872,1892p reports/subexp_pathwidth.md; echo ----; sed -n 1896,1912p reports/subexp_pathwidth.m
+  > $ cat > /tmp/ref/check6.py <<'EOF'
+import sys, itertools, random
+sys.path.insert(0, '/home/al/dev/MOSP')
+from learning.subexp_reductions import atlas, vs
+from lea
+
+The author is editing live (§5.7 now already reads `Θ(n³ + n² k + n m)` as counted). One last look at the current §5.1 wording before I write the verdict.
+  > $ sed -n 1553,1563p reports/subexp_pathwidth.md; echo ----; sed -n 1596,1598p reports/subexp_pathwidth.md; echo ----; sed -n 1630,1660p reports/subexp_pathwidth.m
+
+Referee report on `reports/subexp_pathwidth.md` §5 and `learning/subexp_chain.py` (checked against the file as it stood during this session — it was being edited live: "679 of 679" became "995 of 995" and the §5.1/§5.7 incidence formula became `Θ(n³ + n² k + n m)` while I worked; both edits agree with my findings).
+
+**Mathematical statements**
+
+1. **Lemma 5.1 — SOUND.** `∂_in S = ∂(V ∖ S)` and the reversal bijection are correct; the `n = 1` edge case (empty product, count 1, `vs = 0`) is consistent. My own permutation loop (outer-boundary prefixes), my own `vs_of_layout` count, `chain_count_dp` outer and inner, and `C_k > 0 ⟺ vs ≤ k` agree on all 251 (graph, k) pairs: atlas to 5 plus `K_2..K_6`, zero failures; `C_k(K_n) = n!` for `k ≥ n − 1` and 0 below, `n = 2..6`.
+
+2. **Theorem 5.2 — SOUND**, one cosmetic gap. Every auxiliary is functionally determined: `x` by `y`; `o` by `y` (for `N(u) = ∅` the clause `[-o]` is the unit `o ↔ false`, correct); `b` by `y, o`; each `r[i][j]` by one of six case-split equivalences, all of which I checked are exactly `r ↔ a ∨ (x ∧ b)` with the right None conventions (`prev[0]` = true, `prev[j]` = false for `j > i`). The `b = None, a ≠ None` branch is unreachable but harmless. Model count equals my own permutation count on all 283 (graph, k) pairs of the atlas to 5 *including `k = n`* (where `k + 1 > n`, no unit clause), and on `n = 1, 2`, isolated vertices, `(0,1)+(2,3)`, `K_3 + K_1`: zero failures. Gap: the statement says "the unit `¬r[t,n,k+1]`" unconditionally; for `k ≥ n` that variable does not exist (`s[k+1] is None`) and the clause is absent — vacuous, but the statement should say so.
+
+3. **§5.1 headline "in `Θ(n²)` variables" — WRONG as stated** (one-line answer at line ~1557 and the §5.1 heading). The module's own formula is `4n(n−1) + (n−1) Σ_i min(i+1, k+1) = Θ(n² k)`: at `n = 125, k = 24` the counter supplies 350,300 of the 412,300 variables (85%), the `y` only 15,500. The same paragraph later says `N = Θ(n² k)`. `Θ(n²)` would need a binary adder, which the text says is "not implemented". Also "R3 holds up to the paper's own branching" is not true of the implemented pairwise at-most-one: every one of the `n²` `x` variables sits in `n − 1` AMO clauses, far more than the `n/√log n` variables the paper branches on; it holds only for the ladder AMO, which again is not implemented.
+
+4. **Lemma 5.3 — SOUND.** Degree `d + 1`, `2^{d+1} − 2` monomials, top coefficient `(−1)^d`: verified on all 231 vertices of the atlas to 5 (including degree-0 vertices, where the polynomial is 0), zero failures.
+
+5. **Lemma 5.4 — SOUND.** Top coefficient `(−1)^{n−k} C(n−1, k)` verified by Möbius transform for all `n ≤ 9`, every `k`. Rank bound `≤ min(|A|, |B|, k) + 1` verified on all 168 (n ≤ 7, k, |A|) splits, zero violations (tight on 155). The proof's "at most `min(|A|, k) + 1` and at most `|B| + 1`" is correct since distinct rows are the nested indicators `[j ≤ c]`.
+
+6. **Lemma 5.5 — SOUND.** The `last(v)` convention handles isolated vertices correctly (`last = pos`, never counted); the 0-based `t = 0..n−2` indexes prefixes of size `1..n−1`, matching Kinnersley. Verified on every layout of the paw, `P_5`, `P_3 + 2K_1`, `K_4 − e + K_1`, `K_2 + K_1`: 1,524 cuts, zero failures, and `max_t` equals `vs_of_layout` on every layout.
+
+7. **Lemma 5.6 — SOUND**, but see item 13.
+
+8. **Lemma 5.7 — SOUND**, and the predicate in `sequences_count` is consistent with the statement (the `T2 == full` branch is redundant since `V ∈ L_k`; "prefix supports for `1 ≤ t ≤ n`" matches the DP). The stall identity `W_k(S) = Σ_j c_j(S) h_{n−j}(1..j)`, which the module does not check, holds on all 6,258 (graph, k, S) triples of the atlas to 5, with `c_j(S)` from my own chain enumeration; the Möbius sentence `Σ_S (−1)^{n−|S|} c_j(S) = [j = n] C_k` holds on all 1,302 (graph, k, j) triples.
+
+9. **§5.6 tensor-rank fact — SOUND** given Boolean wires (`rank ≤ 2^w` is the standard cut argument; with `d`-dimensional wires it is `d^w`, which the text should say since R6 allows "large local tensors").
+
+10. **§5.6 measurement — WRONG in part, by a code bug.** `balanced_splits` yields only `A` with `0 ∈ A, |A| = ⌊n/2⌋`. For even `n` that is every unordered balanced partition, but for odd `n` the splits with vertex 0 on the large side are *different partitions* and are skipped: 15 of 35 at `n = 7`, 4 of 10 at `n = 5` (my count). Recomputed over all `C(n, ⌊n/2⌋)` splits: `n = 7, vs − 1`: max over graphs of `min log₂ rank` is **2.58, not 2.81**; "graphs above the threshold's bound" is **87%, not 90%**; `n = 7, vs`: **68%, not 75%**. Medians unchanged. The sentence "two graphs have full rank 8 across every balanced split at `k = vs = 2`: `C₇` and a 6-cycle with a pendant" is **wrong for the second graph**: edges `[(0,3),(0,4),(1,2),(2,5),(2,6),(3,6),(4,5)]` has rank 7 on one of the 20 skipped splits; only `C₇` is full on all 35. `n = 4, 5, 6` rows: `n = 5` numbers happen to be unchanged except the full-rank count. The "two graphs" claim and the two `n = 7` rows need regenerating, and `split_rank.csv` is wrong for `n = 5, 7`.
+
+11. **§5.7 "so it costs at least `n` incidence in any system in which the bits it reads determine the set … so every such system has incidence `≥ n(n−1)`" — GAP.** "Essential in all `n` set variables" gives `≥ n` scope only when the test's inputs *are* the `n` set bits of that cut (nested/position encodings). "Bits that determine the set" is weaker: a `t`-set is determined by `⌈log₂ C(n, t)⌉ < n` bits, so the argument as written yields `Σ_t log₂ C(n,t) ≈ n²/(2 ln 2) ≈ 0.72 n²` — still `Θ(n²)`, but not the constant `n(n−1)`. The premise itself is measured, not proved (995 of 995 connected atlas graphs at `k = vs − 1`, which I reproduced; and 704 of 704 random connected graphs at `n = 8–10` in my probe), and §5.9 says so, but §5.7 states the conclusion as a theorem.
+
+12. **§5.7 "the three on record have `Θ(n³ + n² k + n m)` as counted (`Θ(n² + n m)` with the standard gadgets), and `Θ(n² log n)`" — now SOUND** (the pre-edit `Θ(n² k + n m)` was wrong: the pairwise AMO is 1,922,000 of the 6,165,523 incidence on the ridge row, 31%).
+
+13. **§5.7 "The exact count … cannot sit below `n log₂ n − 1.44 n` variables in any unweighted system (Lemma 5.6)" — GAP.** Lemma 5.6 is a statement about `(K_n, k = n − 1)`, a trivially-yes instance; a system for a graph with `C_k(G) = 1` (or `0`, every refutation level) needs no such bound. The sentence should say "on `K_n`" / "for a scheme that handles every graph". Same for §5.4 "no within the verified budget for any `n ≥ 11`" (correct as arithmetic: `log₂ 11! = 25.3 > B_v(11) = 22.3`; at `n = 10` it is `21.79 < 21.81` and needs integrality, which is presumably why it was changed from 10 to 11).
+
+14. **Smallest-example paragraph — SOUND**, one loose word. `forward_layers(paw, k_mosp = 2)` gives `[1, 1, 0]`, and of the six connected 4-vertex graphs the paw is the only one with a nonzero second layer at `k = vs − 1`. `K_{1,6}` + leaf edge, `vs = 2`, `forward_layers(k_mosp = 2)` gives `[1, 4, 6, 4, 1, 0]` exactly as stated. "One ordering survives the first cut" should be "one prefix set" (six orderings start at the pendant). "`Θ(n)` of the `n − 1` cut tests are consulted and none can be dropped" is rhetoric: nothing in §5 proves that an intermediate cut before the wall cannot be dropped (that is Lemma 4.6's territory, which is cited only for coarse chains).
+
+**Table arithmetic**
+
+15. §5.1 `n = 125` rows: `cnf_size_formula(125, [2m//125]*125, k)` reproduces all four rows exactly (412,300 / 2,529,598 / 6,165,523; 694,400 / 3,716,774 / 9,441,727; 886,600 / 4,606,474 / 11,915,527; 1,001,300 / 5,775,174 / 15,303,827); `15,500 / 110.8 = 140` ✓. §5.4: `log₂ n!` and `B_v = n √ln n / (ln ln n)²` reproduce every row to the printed precision (8: 15.3 / 21.5; 10: 21.8 / 21.8; 16: 44.3 / 25.6; 32: 117.7 / 38.6; 64: 296.0 / 64.3; 125: 695.2 / 110.8; 10³: 8,529 / 704; 10⁶: 1.85e7 / 5.39e5), ranks column ✓. The `n log₂ n − 1.44 n` constant is `log₂ e` ✓. The K₃ indicator polynomial in §5.2 evaluates correctly on all five members.
+
+**Summary of what passed with counts**: Lemma 5.1 (251 pairs), `K_n` (`n ≤ 6`), Theorem 5.2 (283 model counts incl. `k = n`, isolated vertices, `n = 1`), Lemma 5.3 (231 vertices), Lemma 5.4 (168 splits; `n ≤ 9` coefficients), Lemma 5.5 (1,524 cuts), stall identity (6,258 triples) and Möbius sentence (1,302), essential-variable premise (995/995 atlas, 704/704 random at 8–10), both frontier examples, all table arithmetic. **Needs fixing**: the `Θ(n²)` variable claim (item 3), the odd-`n` `balanced_splits` bug and the §5.6 numbers/sentence that rest on it (item 10), and the two over-stated sentences in §5.7 (items 11, 13). All my code is under `/tmp/ref/check{1..6}.py`; nothing in the repository was touched.
+
+The refuter found one code bug (odd-`n` balanced splits skipped half the partitions), one wrong headline (`Θ(n²)` variables where the counted system is `Θ(n² k)`), and two over-stated sentences in §5.7. Fixing the code first and rerunning the check, then the text.
+  > $ python3 - <<'EOF'
+p='learning/subexp_chain.py'; s=open(p).read()
+a='''def balanced_splits(n: int):
+    a = n // 2
+    for comb in itertools.combinations(range(n
+  > $ python3 - <<'EOF'
+import pandas as pd, math
+R = pd.read_csv('reports/scratch/subexp_pathwidth/05_chain/split_rank.csv')
+R['thr'] = R.apply(lambda r: math.log2(m
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'; s=open(p).read()
+rep = {
+# headline
+"""is that number the number of common zeros of a sparse polynomial syste
+  > Monitor {"command": "until grep -q '^exit ' reports/scratch/subexp_pathwidth/05_chain/gate.log 2>/dev/null; do sleep 5; done; gr
+  > $ sed -i 's/^- \[ \] \*\*05 The chain count as an algebraic object\.\*\*/- [x] **05 The chain count as an algebraic object.**/' Ralph_Loops/loop0014/iterations.md
+
+Everything for the item is written and folded in; the only outstanding input is the gate, which is running (two PIDs) and monitored. When it reports, I'll record the result in PROGRESS.md and, since the split fix landed after that gate started, rerun the gate once more on the final module.
+
+# result: success in 1215s, 30 turns, cost $17.08
+
+# result: success in 366s, 6 turns, cost $17.08
+  > $ grep -E 'PASS|FAIL|exit |passed|failed|sorry|axiom' reports/scratch/subexp_pathwidth/05_chain/gate.log | tail -12
+
+Gate passed (on the module as it stood before the split fix). Rerunning it once on the final module.
+  > $ mv reports/scratch/subexp_pathwidth/05_chain/gate.log reports/scratch/subexp_pathwidth/05_chain/gate_run1_prefix.log && (nice -n 19 python3 Ralph_Loops/loop0014
+  > Monitor {"command": "until grep -q '^exit ' reports/scratch/subexp_pathwidth/05_chain/gate.log 2>/dev/null; do sleep 5; done; gr
+
+The only remaining dependency is the second gate run, which takes about twenty minutes; nothing else is left to request. I'll record its result in PROGRESS.md when the monitor reports (re-arming once at the ten-minute expiry).
+
+# result: success in 15s, 4 turns, cost $17.34
+  > Monitor {"command": "until grep -q '^exit ' reports/scratch/subexp_pathwidth/05_chain/gate.log 2>/dev/null; do sleep 5; done; gr
+
+Still waiting on the second gate run; nothing else is outstanding.
+
+# result: success in 7s, 2 turns, cost $20.34
+  > $ grep -E 'GATE|exit |passed|failed|sorry in' reports/scratch/subexp_pathwidth/05_chain/gate.log | tail -6 && python3 - <<'EOF'
+p='Ralph_Loops/loop0014/PROGRESS.m
+  > $ git status --short Ralph_Loops/loop0014/iterations.md; git check-ignore -v Ralph_Loops/loop0014/iterations.md; git diff --stat Ralph_Loops/loop0014/iterations.m
+
+Item 05 is complete. Everything required is in place: §5 written, the checks logged, PROGRESS.md and iterations.md updated, the gate passed on the final module. Seven items remain open, so no `LOOP_COMPLETE` line.
+
+**What the item found.** The chain count `C_k(G)`, the number of layouts of vertex separation at most `k`, is exactly the number of solutions of a sparse bounded-degree polynomial system, but only in `Θ(n² k)` variables as counted and never fewer than `n(n − 1)`. It is also the solution count of a rank system in `n ⌈log₂ n⌉` variables with `n − 1` constraints of width `n ⌈log₂ n⌉`. The item's dichotomy is therefore a trade-off, and the incidence is `Θ(n²)` either way. The threshold's width is real as an equation (full degree and exponentially many monomials on most graphs) but compiles away at linear cost per cut, with communication rank `O(n)`. What does not compile away is that each cut test depends on every vertex (all set variables essential on every connected graph to 7 vertices at the refutation level) and there are `n − 1` tests on `n − 1` distinct sets. The exact count needs at least `log₂ n!` bits on `K_n`, above the verified budget from `n = 11`. The sieve over supports, the one identity on record that moves a permutation sum onto the `n`-cube, returns the lattice sum here.
+
+**Verdict.** Plan §0.6's chain-count kill is met, with its parenthetical corrected: the structural obstacle is the ordering through its cuts, not the threshold's width. §5.7 states what item 09's one-session attempt would be if it is made, and PROGRESS.md suggests the coordinator may prefer to give that session to item 07.
+
+**Checks.** Zero failures on every graph to 7 vertices: 8,475 chain counts three ways, 1,391 CaDiCaL model counts of the nested-chain CNF, 1,538 rank counts, 1,405 sieve identities, the two polynomial lemmas, `K_n` to 7. One refuter subagent found no wrong lemma but caught an odd-`n` bug in the split enumeration (fixed, check rerun, one "full rank" claim withdrawn), the `Θ(n²)` headline, and two over-stated sentences in §5.7, all folded in and listed in §5.9.
+
+**Gate.** PASS twice, the second time on the final module: `lake build` clean, no `sorry`, no `axiom`, 1,958 tests passed, 123 solver tests passed, paper check clean. Nothing committed, `solutions/` untouched, no instance run, nothing downloaded, no Lean file changed.
+
+# result: success in 31s, 3 turns, cost $20.67

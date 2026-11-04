@@ -1536,3 +1536,480 @@ vertices (patterns to 6, random split graphs on 10) in the gate.
     nice -n 19 python3 -m learning.subexp_classes --nmax 7 --patterns-max 8 > $D/check_atlas7.log
     python3 -m pytest tests/test_subexp_classes.py -q
     python3 -c "from learning.subexp_classes import gap_table; [print(r) for r in gap_table()]"
+
+## 5. The chain count as an algebraic object (item 05, 2026-11-04)
+
+*Code `learning/subexp_chain.py`, tests `tests/test_subexp_chain.py`
+(9); scratch `reports/scratch/subexp_pathwidth/05_chain/` (README,
+`check_atlas7.log`, `check.json`, `membership_polynomial.csv`,
+`split_rank.csv`). Every statement below was checked on every graph of
+the atlas to 7 vertices before it was written; §5.8 tabulates the
+checks, §5.9 says what is not claimed. One refuter agent read the proofs
+and the tables blind to the verdict with its own brute force to 5
+vertices; what it found is folded in and listed in §5.9.*
+
+Item 04 ended at one object on every NP-hard class: a chain through the
+lattice `L_k = {S ⊆ V : |N(S) ∖ S| ≤ k}` (§4.7). This item takes the
+**number** of such chains as the object — the sum over orderings of a
+product of cut tests — and asks the item's question in §1.3's currency:
+is that number the number of common zeros of a sparse polynomial system
+in `o(n²)` variables, and if the system does not fit §1.3.8's budget,
+which half of it is the obstacle, the width of the threshold constraint
+or the ordering variables. The answer, in one line: **the chain count is
+exactly the number of solutions of a sparse bounded-degree system — in
+`Θ(n² k)` variables as counted, `Θ(n²)` with a binary adder, and never
+fewer than `n (n − 1)`; it is also the number of solutions of a system in
+`n ⌈log₂ n⌉` variables with `n` constraints of width `n ⌈log₂ n⌉`; the
+threshold's width is not the obstacle (it compiles away at linear cost
+per cut, as §1.3.5 said), the ordering is — through the `n − 1` cuts,
+each of which reads every vertex.** Plan §0.6's kill is met, with the
+parenthetical corrected (§5.7).
+
+### 5.0 Conventions and the object
+
+`G = (V, E)`, `n = |V|`, `m = |E|`. For `S ⊆ V`, `∂S = N(S) ∖ S` is the
+outer boundary and `∂_in S = {v ∈ S : N(v) ⊄ S}` the inner one —
+Kinnersley's cut of a layout at the prefix `S`. `L_k = {S : |∂S| ≤ k}`;
+`∅, V ∈ L_k` for every `k ≥ 0` since both have empty boundary. A layout
+`σ = (v_1, …, v_n)` has prefix sets `S_t(σ) = {v_1, …, v_t}` and
+`vs(σ) = max_{1 ≤ t ≤ n−1} |∂_in S_t(σ)|`. The **chain count** is
+
+    C_k(G) = Σ_σ Π_{t=1}^{n−1} [S_t(σ) ∈ L_k] = #{maximal chains ∅ ⊂ S_1 ⊂ … ⊂ S_{n−1} ⊂ V in L_k}.
+
+In MOSP vocabulary `L_k` is `F_{k+1}` of `reports/checkpoint_relaxation.md`
+§10 (there the bound is `MOSP − 1 = vs`).
+
+**Lemma 5.1 (three equal counts).** For every `G` and `k ≥ 0`,
+`C_k(G) = #{σ : vs(σ) ≤ k} = #{σ : |∂_in S_t(σ)| ≤ k, 1 ≤ t ≤ n−1}`, and
+in particular `vs(G) ≤ k ⟺ C_k(G) > 0`.
+
+*Proof.* `∂_in S = ∂(V ∖ S)`: a vertex of `S` with a neighbour outside
+`S` is a neighbour of `V ∖ S` not in `V ∖ S`, and conversely. So
+`vs(σ) ≤ k` iff every suffix set `V ∖ S_t(σ)` lies in `L_k`, and the
+suffix sets of `σ` are the prefix sets of the reversed layout `σ^R`.
+Reversal is a bijection on layouts. ∎
+
+*Checked* (§5.8): the three counts agree with the literal sums over
+`itertools.permutations` (outer-boundary prefixes; Kinnersley's
+`vs_of_layout`) on every atlas graph to 7 vertices at every `k`, and
+`C_k > 0 ⟺ vs ≤ k` against the item-03 evaluator; `C_k(K_n) = n!` for
+`k ≥ n − 1` and `0` below.
+
+### 5.1 The chain count is a `#SAT` — in `Θ(n² k)` variables as counted, never fewer than `n (n − 1)`
+
+**Theorem 5.2.** Let `Φ_{G,k}` be the CNF on the variables `y[v,t]`
+(`v ∈ S_t`, `1 ≤ t ≤ n−1`), `x[v,t]`, `o[u,t]`, `b[u,t]` and counter
+variables `r[t,i,j]` with the clauses
+
+- (N) `y[v,t−1] → y[v,t]` (nested);
+- (X) `x[v,t] ↔ y[v,t] ∧ ¬y[v,t−1]`, with `y[v,0] := false` (the vertex
+  new at step `t`);
+- (E) exactly one of `x[·,t]` (one new vertex per step);
+- (O) `o[u,t] ↔ ∨_{w ∈ N(u)} y[w,t]`; (B) `b[u,t] ↔ ¬y[u,t] ∧ o[u,t]`
+  (the boundary bit `[u ∈ ∂S_t]`);
+- (C) `r[t,i,j] ↔ (at least j of b[1..i,t])` for `1 ≤ j ≤ k+1`
+  (a bidirectional sequential counter) and the unit `¬r[t,n,k+1]` when
+  `k + 1 ≤ n` (for `k ≥ n` no cut can exceed `k` and the clause is
+  absent).
+
+Then the models of `Φ_{G,k}` are in bijection with the layouts all of
+whose prefix sets lie in `L_k`, so **`#models(Φ_{G,k}) = C_k(G)`**.
+
+*Proof.* In a model, (N) makes `S_t := {v : y[v,t]}` nested; (X) and (E)
+make `|S_t ∖ S_{t−1}| = 1` for every `t ≥ 1` (with `S_0 = ∅`), so
+`|S_t| = t` and the `S_t` are the prefix sets of the layout whose `t`-th
+vertex is the one with `x[v,t]`; (O) and (B) force `b[u,t] = [u ∈ ∂S_t]`;
+(C) forces `r[t,n,k+1] = [|∂S_t| ≥ k+1]`, which the unit clause makes
+false. Conversely every such layout determines the `y`, and every other
+variable is defined from earlier ones by an equivalence, so the
+assignment extends uniquely. ∎
+
+*Checked* (§5.8): the model count of `Φ_{G,k}` — enumerated by CaDiCaL
+with a blocking clause over **all** variables, which also checks that the
+auxiliaries are determined — equals `C_k(G)` on every atlas graph to 6
+vertices at every `k` and on a sample of 7-vertex graphs: 1,391
+counts, zero failures. The clause and variable counts agree with the
+closed forms of `cnf_size_formula` on every one.
+
+**As a polynomial system.** Over any field, a clause `l_1 ∨ … ∨ l_w`
+is the equation `Π_i (1 − ℓ_i) = 0` with `ℓ_i = x` or `1 − x`, and
+`x² − x = 0` keeps the variables Boolean; the common zeros are exactly
+the models. Every clause of `Φ_{G,k}` has width `≤ 3` except the
+at-least-one clause of (E) (width `n`) and the one of (O) (width
+`deg(u) + 1`), which split into width-3 clauses with a linear number of
+auxiliaries in the standard way. So **`C_k(G)` is the number of common
+zeros in the Boolean cube of a system of equations of degree `≤ 3`,
+each with `≤ 8` monomials** — R1, R2 and R5 of §1.3.3 hold; R3 (polylog
+occurrences per variable) holds with a ladder at-most-one in (E) and up
+to the paper's branching on the high-degree vertices, not with the
+pairwise at-most-one as counted, where every `x[v,t]` occurs `n − 1`
+times. What fails is the budget alone. Counted as implemented (`cnf_size`, checked against the
+formula on every atlas graph):
+
+    variables = 4 n (n − 1) + (n − 1) Σ_{i=0}^{n−1} min(i + 1, k + 1)   ( ≥ n (n − 1) from the `y` alone)
+    incidence = Θ(n³ + n² k + n m)   as counted (the pairwise at-most-one of (E) contributes `n²` per level and the counter `n k`; a ladder at-most-one and a binary adder would make it `Θ(n² + n m)`, standard, not implemented, not needed for the verdict, which is a lower-bound statement)
+
+| `n = 125` | `m` | `k` | variables | clauses | incidence | budget `B_v` (§1.3.8, constant 1) |
+|---|---|---|---|---|---|---|
+| ridge, `pw/n ≈ 0.19` | 250 | 24 | 412,300 | 2,529,598 | 6,165,523 | 111 |
+| `pw/n = 0.4` | 500 | 50 | 694,400 | 3,716,774 | 9,441,727 | 111 |
+| `pw/n = 0.6` | 1,000 | 75 | 886,600 | 4,606,474 | 11,915,527 | 111 |
+| dense, `pw/n = 0.8` | 3,875 | 100 | 1,001,300 | 5,775,174 | 15,303,827 | 111 |
+
+(`m` is realised by regular degrees `2m/n` in the formula; `B_v` is
+`n √log n / (log log n)²`, whose unknown constant §1.3.8 carries.) The
+`y` variables alone are `n (n − 1) = 15,500`, 140 times the budget's
+nominal value. Under the hypothesis `SubexpCount 3`, this system decides
+`vs ≤ k` in `2^{O(N (log log N)² / √log N)}` with `N = Θ(n² k)`, i.e.
+worse than the `O*(2ⁿ)` subset DP; so the chain count *is* the algebraic
+object the item asks about, and the item's "`o(n²)` variables" is the
+whole difficulty, as §1.3.8 said of the position encoding.
+
+### 5.2 The threshold constraint as a polynomial, without auxiliaries
+
+The item asks for the cut test written as a polynomial over a field in
+the set variables `s_v = [v ∈ S]`, with its degree and sparsity. It is
+the composition of the **bare threshold** `T_k(b) = [Σ_u b_u ≤ k]` with
+the **boundary bits** `b_u(S) = [u ∉ S ∧ N(u) ∩ S ≠ ∅]`.
+
+**Lemma 5.3 (boundary bit).** For `deg(u) = d ≥ 1`,
+`b_u = (1 − s_u) (1 − Π_{w ∈ N(u)} (1 − s_w))` is multilinear of degree
+`d + 1` with exactly `2^{d+1} − 2` monomials, the top one
+`s_u Π_{w ∈ N(u)} s_w` with coefficient `(−1)^d`.
+
+*Proof.* `(1 − s_u) Π_{w}(1 − s_w)` expands to one monomial `±s_T` for
+each `T ⊆ N[u]`, `2^{d+1}` of them, coefficient `(−1)^{|T|}`;
+subtracting it from `1 − s_u` cancels exactly the monomials `1` and
+`s_u` (coefficients `1 − 1` and `−1 + 1`) and negates the rest. ∎
+
+**Lemma 5.4 (bare threshold).** For `0 ≤ k ≤ n − 1` the multilinear
+polynomial of `T_k` on `{0,1}ⁿ` contains `x_1 ⋯ x_n` with coefficient
+`(−1)^{n−k} C(n−1, k) ≠ 0`; its degree is `n`. Across any split
+`A | B` of the inputs, its communication matrix `[|S_A| + |S_B| ≤ k]`
+depends only on `(|S_A|, |S_B|)` and has rank `≤ min(|A|, |B|, k) + 1`.
+
+*Proof.* By Möbius inversion the top coefficient is
+`Σ_{S ⊆ [n]} (−1)^{n−|S|} T_k(S) = Σ_{i ≤ k} (−1)^{n−i} C(n, i) =
+(−1)^{n−k} C(n−1, k)`, the alternating partial sum
+`Σ_{i ≤ k} (−1)^i C(n, i) = (−1)^k C(n−1, k)`. The rank: rows with
+equal `|S_A|` are equal, so the rank is that of the
+`(|A|+1) × (|B|+1)` staircase `[i + j ≤ k]`, at most `min(|A|, k) + 1`
+and at most `|B| + 1`. ∎
+
+So the threshold alone is a **full-degree, exponentially dense**
+polynomial in its `n` inputs (R1 fails for it as an equation), yet
+across any split it has rank `O(n)` — `O(log n)` crossing wires in a
+tensor network, which is the counter circuit §1.3.5 describes: the
+width compiles away. The composite `[S ∈ L_k] = T_k(b_1(S), …, b_n(S))`
+has no closed form; it is measured.
+
+**Measured** (`membership_polynomial`; all 1,252 atlas graphs, every
+`0 ≤ k < n`; the refutation level `k = vs − 1` and the witness level
+`k = vs` separately; `essential` = the number of set variables the
+indicator depends on; `members = |L_k|`):
+
+| level | rows | degree `= n` over `Q` | over `GF(2)` | mean degree `/ n` | median monomials `/ 2ⁿ` (`Q`) | all `n` variables essential (connected graphs) |
+|---|---|---|---|---|---|---|
+| `k = vs − 1` | 1,245 | 81.8% | 30.9% | 0.962 | 0.625 | **100%** (995 of 995) |
+| `k = vs` | 1,252 | 82.1% | 30.3% | 0.938 | 0.594 | 98.5% (981 of 996) |
+| all `k` | 8,475 | 50.0% | 24.5% | 0.664 | 0.508 | 73.1% (4,954 of 6,781) |
+
+By `n` at `k = vs − 1` (degree `= n` over `Q`; median monomials `/ 2ⁿ`; median `|L_k| / 2ⁿ`): `n = 4`: 70%, 0.75, 0.375; `n = 5`: 58%, 0.69, 0.28; `n = 6`: 77%, 0.61, 0.28; `n = 7`: 84%, 0.63, 0.28. At the witness level `|L_k| / 2ⁿ` falls from 0.94 at `n = 4` to 0.66 at `n = 7`; at seven vertices the sparsest refutation-level indicator still has 4 of 128 monomials and the median 80. Over `GF(2)` the degree is full less often (31%) and the median degree is `0.86 n` at `n = 7`.
+
+So the cut test, as one equation in the set variables, has unbounded
+degree and exponentially many monomials on most graphs (R1 fails), and
+**at the refutation level it depends on every vertex of every connected
+graph** to 7 vertices. The first fact is the width, which compiles away
+(Theorem 5.2 spends `O(n + Σ deg)` incidence per cut on it, and the
+paper does the same for its own thresholds, §1.3.5). The second fact is
+what does not: a test that reads `n` bits costs `n` incidence however it
+is compiled, and there are `n − 1` of them on `n − 1` distinct sets.
+
+The smallest connected graph on which the refutation-level test has full
+degree, every monomial and every variable essential is `K₃` at
+`k = 1 = vs − 1`: `L_1 = {∅, V} ∪ {pairs}`, the indicator is
+`1 − (s_1 + s_2 + s_3) + 2 (s_1 s_2 + s_1 s_3 + s_2 s_3) − 3 s_1 s_2 s_3`
+(degree 3, all 8 monomials, top coefficient `−3`; `check.json`,
+`smallest_full`); every chain dies at its first set, since every
+singleton has boundary 2.
+
+### 5.3 Fewer variables, wider constraints: ranks and the interval form
+
+The other way to write the sum over orderings is with one integer per
+vertex. Let `pos : V → {0, …, n−1}` be a bijection and
+`last(v) = max_{w ∈ N[v]} pos(w)`.
+
+**Lemma 5.5 (interval form of the cut).** For `0 ≤ t ≤ n − 2` and
+`S_t = {v : pos(v) ≤ t}`, `|∂_in S_t| = #{v : pos(v) ≤ t < last(v)}`.
+
+*Proof.* `v ∈ ∂_in S_t` iff `pos(v) ≤ t` and some neighbour has position
+`> t`, iff `pos(v) ≤ t < max_{w ∈ N(v)} pos(w)`; and when that maximum
+exceeds `t ≥ pos(v)` it equals `last(v)`, while if `N(v) = ∅` then
+`last(v) = pos(v) ≤ t` and `v` is correctly not counted. ∎
+
+This is the interval-thickness form of the complex
+(`Complex/IntervalThickness.lean`): every vertex owns the interval
+`[pos(v), last(v))`, and the cut at `t` is the number of intervals
+containing `t`. As a constraint system: `n ⌈log₂ n⌉` Boolean variables
+(the bits of `pos`); `C(n, 2)` all-different constraints of width
+`2 ⌈log₂ n⌉`; and **`n − 1` cut constraints each reading every rank**
+(`last(v)` reads `N[v]`, the count ranges over all `v`): width
+`n ⌈log₂ n⌉`, incidence `Θ(n² log n)`. *Checked*: the count of rank
+tuples that are permutations with every interval count `≤ k` equals
+`C_k(G)` on every atlas graph to 6 vertices and a sample at 7 (1,538
+counts, zero failures).
+
+So the item's dichotomy is a trade-off, not a choice: **positions give
+`Θ(n²)` variables under bounded-width constraints; ranks give
+`n ⌈log₂ n⌉` variables under `n` constraints of width `n ⌈log₂ n⌉`;
+the incidence is `≥ n (n − 1)` either way.** Compiling a rank
+constraint into bounded-width factors (comparators `pos(v) ≤ t`, the
+maxima `last(v)`, a counter) returns to `Θ(n (n + m) log n)`; in the
+tensor form (R6) a single factor of width `n ⌈log₂ n⌉` needs
+`s ≥ (n log n)^{10/9}`, which is not `o(n √log n)`.
+
+### 5.4 The exact count needs `n log₂ n` bits
+
+**Lemma 5.6.** If a system of `0/1`-valued factors on `N` Boolean
+variables has exactly `C_k(G)` solutions, then `N ≥ log₂ C_k(G)`. For
+`K_n` and `k = n − 1`, `C_{n−1}(K_n) = n!`, so `N ≥ log₂ n! ≥ n log₂(n/e)`.
+
+*Proof.* A `0/1` system has at most `2^N` solutions; every layout of
+`K_n` has `vs = n − 1`. ∎
+
+| `n` | `log₂ n!` | `/ n` | `B_v` (constant 1) | `/ n` | ranks `n ⌈log₂ n⌉` |
+|---|---|---|---|---|---|
+| 8 | 15.3 | 1.91 | 21.5 | 2.69 | 24 |
+| 10 | 21.8 | 2.18 | 21.8 | 2.18 | 40 |
+| 16 | 44.3 | 2.77 | 25.6 | 1.60 | 64 |
+| 32 | 117.7 | 3.68 | 38.6 | 1.21 | 160 |
+| 64 | 296.0 | 4.62 | 64.3 | 1.00 | 384 |
+| 125 | 695.2 | 5.56 | 110.8 | 0.89 | 875 |
+| 10³ | 8,529 | 8.53 | 704 | 0.70 | 10,000 |
+| 10⁶ | 1.85 × 10⁷ | 18.5 | 5.39 × 10⁵ | 0.54 | 2 × 10⁷ |
+
+(`exact_count_table`.) So, read literally — the chain count *as* the
+number of common zeros of an unweighted system — the item's question has
+a clean answer: **yes in `o(n²)` variables** (the rank system,
+`n ⌈log₂ n⌉`, within a factor `1 + o(1)` of the lower bound), **no
+within the verified budget for any `n ≥ 11`**, and the gap grows like
+`log n (log log n)² / √log n`. What the lemma does not touch is what the
+paper's method also allows (§1.3.6): factors with values in a
+`Q`-algebra, where a sum can be large with few variables, and systems
+that only *decide* — `Z ≠ 0 ⟺ C_k > 0` without `Z = C_k`. Those are
+the only kinds left to item 09, and the lemma says that is where any
+attempt must start.
+
+### 5.5 An identity not organised by cuts: the sieve over supports returns the lattice
+
+The one route to an `n`-variable sum that permutation problems are known
+to have is inclusion–exclusion over the vertices missed: for Hamiltonian
+paths, `Σ_S (−1)^{n−|S|} walks(S)` with `walks(S)` a matrix power on
+`|S|` states, `O*(2ⁿ)` in all. The same sieve applies here, and the point
+is what it leaves inside.
+
+**Lemma 5.7.** Let `W_k(S)` be the number of sequences `(u_1, …, u_n) ∈ Sⁿ`
+(repetition allowed) every one of whose prefix supports
+`supp(u_1, …, u_t)`, `1 ≤ t ≤ n`, lies in `L_k`. Then
+`C_k(G) = Σ_{S ⊆ V} (−1)^{n−|S|} W_k(S)`.
+
+*Proof.* A sequence of length `n` with support `V` is a permutation, and
+its prefix supports are its prefix sets; so `C_k = Σ_{u ∈ Vⁿ} P(u)
+[supp(u) = V]` with `P(u)` the prefix condition (`V ∈ L_k` always). Write
+`[supp(u) = V] = Σ_{S ⊇ supp(u)} (−1)^{n−|S|}` and exchange the sums. ∎
+
+*Checked* on every atlas graph to 6 vertices and a sample at 7, every
+`k` (1,405 identities, zero failures).
+
+**Why it does not reduce the cube.** `W_k(S)` is itself a sum over the
+lattice below `S`: a sequence is determined by its strict support chain
+`∅ ⊂ T_1 ⊂ … ⊂ T_j ⊆ S` (single additions, all in `L_k`) and by where
+its `n − j` stalls fall, a stall at support size `i` having `i` choices,
+so
+
+    W_k(S) = Σ_j c_j(S) · h_{n−j}(1, 2, …, j),
+
+`c_j(S)` the number of such chains of length `j` and `h` the complete
+homogeneous symmetric polynomial. Möbius inversion over `S` gives
+`Σ_S (−1)^{n−|S|} c_j(S) = #{chains of length j with T_j = V} = [j = n] C_k(G)`,
+and `h_0 = 1`: the sieve returns `C_k(G) = C_k(G)`. The walk count that
+makes the Hamiltonian sieve run is a condition on **consecutive pairs**
+(state: the current vertex, `|S|` states); the cut condition is a
+condition on the **whole prefix support** (state: the support, `2^{|S|}`
+states, `3ⁿ` in all). We found no smaller state and claim none is
+impossible; what is shown is that the sieve, the one identity on record
+that moves a permutation sum onto the `n`-cube, leaves the lattice sum
+intact here.
+
+### 5.6 One cut in the tensor form: the composite is not the threshold
+
+In the tensor form (R6) the currency is wires. For a tensor network
+computing the indicator `[S ∈ L_k]` from the `n` set bits, and any
+bipartition `A | B` of `V`, the matrix `M_{A|B}[S_A, S_B] = [S_A ∪ S_B ∈ L_k]`
+satisfies `rank M_{A|B} ≤ 2^w` with `w` the number of wires crossing any
+cut of the network that separates the `A` legs from the `B` legs (the
+network is a sum over the `2^w` values on the crossing wires of a
+product of an `A`-side and a `B`-side term, so `M` is a sum of `2^w`
+rank-one matrices; with `d`-valued wires, as R6 allows, `d^w`). Lemma 5.4 gives `log₂ rank ≤ log₂(n/2 + 1)` for
+the bare threshold. Measured for the composite on every connected atlas
+graph with `4 ≤ n ≤ 7`, at `k = vs − 1` and `k = vs`, over every
+balanced split (`|A| = ⌊n/2⌋`), the minimum over splits of `log₂ rank`
+(`split_rank_profile`; `check.json`, `split_rank_summary`):
+
+| `n` | graphs | level | median `min_A log₂ rank` | max over graphs | trivial `⌊n/2⌋` | bare threshold `log₂(min(⌊n/2⌋, k) + 1)` | graphs above the threshold's bound |
+|---|---|---|---|---|---|---|---|
+| 4 | 6 | `vs − 1` | 1.58 | 1.58 | 2 | ≤ 1.58 | 83% |
+| 5 | 21 | `vs − 1` | 1.58 | 2.00 | 2 | ≤ 1.58 | 71% |
+| 6 | 112 | `vs − 1` | 2.00 | 2.58 | 3 | ≤ 2.00 | 91% |
+| 7 | 853 | `vs − 1` | 2.00 | 2.58 | 3 | ≤ 2.00 | 87% |
+| 7 | 853 | `vs` | 2.32 | 3.00 | 3 | ≤ 2.00 | 68% |
+
+The trivial maximum is `⌊n/2⌋`. At `n = 7` and the refutation level the median graph needs 2 wires across its best balanced split against a trivial 3 and the threshold's own 2; 87% of the graphs exceed the bare threshold's rank bound at their best split, and one graph has full rank 8 across every one of the 35 balanced splits at `k = vs = 2`: the 7-cycle `C₇` (`split_rank.csv`). (The first run of this table enumerated only the splits with vertex 0 on the smaller side — 20 of the 35 at `n = 7` — and credited a second graph with full rank; the refuter agent found the bug, and the table is from the corrected enumeration.) At seven vertices
+nothing separates `Θ(n)` from `Θ(log n)`, and no asymptotic claim is
+made; what the table records is that the composite's crossing cost is
+not the threshold's `O(log n)` on these graphs and tracks the boundary
+structure instead. The per-cut cost in wires is therefore between
+`log₂ rank` (measured) and `O(n + Σ deg)` (the circuit of Theorem 5.2),
+and it is paid `n − 1` times.
+
+### 5.7 The obstacle, named; the verdict on plan §0.6's chain-count kill
+
+**The obstacle is the ordering, through its cuts — not the threshold's
+width.** The chain count is a sum over orderings of a product of `n − 1`
+cut tests. Each test, at the refutation level, is a function of **every**
+vertex's side of the cut — a measured premise, not a theorem: all `n`
+set variables essential on every connected graph to 7 vertices (§5.2;
+the refuter agent's probe adds 704 of 704 random connected graphs at
+8–10 vertices). Granting it, a test whose inputs are the `n` set bits of
+its cut (positions, nested sets) reads all `n` of them, and one whose
+inputs merely determine the `t`-set reads at least `log₂ C(n, t)`
+of them, however the threshold inside is compiled; the `n − 1` tests
+are on `n − 1` distinct sets; so such systems have incidence
+`≥ n (n − 1)` in the first form and `≥ Σ_t log₂ C(n, t) ≈ 0.72 n²` in
+the second — `Θ(n²)` either way — and the three on record have `Θ(n³ + n² k + n m)` as counted (`Θ(n² + n m)` with the standard gadgets),
+and `Θ(n² log n)` (§5.1, §5.3). The threshold's own width
+is real as an equation (full degree and `2^{Θ(n)}` monomials, Lemmas
+5.3–5.4 and the table of §5.2) and immaterial as a cost: it compiles to
+`O(n + Σ deg)` incidence per cut, and its communication rank is `O(n)`
+(Lemma 5.4). Plan §0.6's parenthetical — "threshold constraints of
+unbounded width are inherent" — names the half that is **not** the
+obstacle; the half that is, is the number of cuts times their support.
+
+The two ways below `n²` are both closed as far as this loop looked:
+fewer cuts (a coarse chain) is Lemma 4.6, excluded on the verified route
+at every `n` and on the paper route asymptotically; and an identity not
+organised by cuts has one instance on record for permutation sums, the
+sieve over supports, which returns the lattice sum (Lemma 5.7). The
+exact count, moreover, cannot sit below `n log₂ n − 1.44 n` variables in
+any unweighted scheme that handles every graph, since it must handle
+`K_n` (Lemma 5.6) — above the verified budget from `n = 11`.
+
+**The smallest example.** On `K₃` at `k = vs − 1 = 1` the cut test is
+already a full-degree polynomial in all three set variables with all
+eight monomials, and every chain dies at its first set. The smallest
+connected graph whose refutation needs more than the first cut is the
+paw (a triangle with a pendant vertex, `n = 4`, `vs = 2`) at `k = 1`:
+one prefix set survives the first cut (the six orderings that start at
+the pendant) and dies at the second. At `n = 7` the star `K_{1,6}` with one edge between two
+leaves (`vs = 2`) at `k = 1` has forward frontier `1, 4, 6, 4, 1, 0`: the
+four free leaves can be placed in any order, every one of those 24
+beginnings survives four cuts, and all die at the fifth, where the centre
+or an attached leaf must come. The refutation is a statement about the
+fifth cut of a seven-vertex layout, and the frontier it has to clear is
+binomial in the free vertices — §10's `R_b(n − j) = C(n, j)` seen from
+the front. On the record's hard instances the wall sits at `0.46 n`
+closed vertices (`reports/checkpoint_relaxation.md` §10), so `Θ(n)` of
+the `n − 1` cut tests are consulted before the refutation; which of them
+could be dropped is the coarse-chain question, Lemma 4.6's.
+
+**Verdict: plan §0.6's chain-count kill is met**, with the obstacle
+restated as above. Items 04 and 05 together leave the positive track
+with one object, the lattice chain, and two excluded ways of carrying
+it. **What item 09 should attempt**, since the plan gives it the
+chain-count attempt: a *weighted* or *decision-only* system
+(§5.4's two escapes from Lemma 5.6) that witnesses `C_k > 0` without
+testing cuts — concretely, a sum over a cube of `o(n log n)` bits with
+factors in a `Q`-algebra whose value is nonzero iff a chain exists — with
+the stated kill that if the only identities found are organised by cuts
+(positions, nested sets, ranks, coarse chains) or reduce to the sieve,
+the attempt is recorded as absent and item 09 closes in one session.
+
+### 5.8 The checks
+
+`nice -n 19 python3 -m learning.subexp_chain` (atlas to 7 vertices,
+1,252 graphs; 265.6 s on one core under the owner's load; log `05_chain/check_atlas7.log`,
+results `check.json`). `vs` is item 03's subset DP, itself checked
+against the permutation minimum on every atlas graph.
+
+| check | what is compared | instances | failures |
+|---|---|---|---|
+| Lemma 5.1 | `chain_count_dp` (outer) against the literal sum over permutations, against the inner-boundary count, and against the number of layouts with `vs_of_layout ≤ k` | every atlas graph to 7, every `0 ≤ k < n`: 8,475 counts | **0** |
+| Lemma 5.1, decision | `C_k > 0` against `vs ≤ k` | the same | **0** |
+| `K_n` | `C_k(K_n) = n!` for `k ≥ n − 1`, `0` below | `n ≤ 7` | **0** |
+| Theorem 5.2 | CaDiCaL model count of `Φ_{G,k}` (blocking over all variables) against `C_k` | every atlas graph to 6 and a sample at 7, every `k`: 1,391 counts | **0** |
+| Theorem 5.2, sizes | `cnf_size` against `cnf_size_formula` | the same | **0** |
+| Lemma 5.3 | degree `deg(u) + 1`, `2^{deg(u)+1} − 2` monomials | every vertex of every atlas graph: 8,475 | **0** |
+| Lemma 5.4 | the top coefficient against `(−1)^{n−k} C(n−1, k)` | `n ≤ 7`, every `k`: 28 | **0** |
+| Lemma 5.5 | the rank/interval count against `C_k` | every atlas graph to 6 and a sample at 7, every `k`: 1,538 | **0** |
+| Lemma 5.7 | the sieve against `C_k` | every atlas graph to 6 and a sample at 7, every `k`: 1,405 | **0** |
+| §5.2 | degree, monomials, essential variables of `[S ∈ L_k]` | every atlas graph, every `k`: 8,475 rows | measurement |
+| §5.6 | `rank M_{A|B}` over every balanced split | connected atlas graphs, `4 ≤ n ≤ 7`, two levels | measurement |
+
+`tests/test_subexp_chain.py` (9 tests) runs the same checks to 4–5
+vertices in the gate.
+
+### 5.9 What this does not claim
+
+- That no system within §1.3.8's budget decides `vs ≤ k`: Lemma 5.6
+  excludes unweighted exact counts, Lemma 4.6 excludes chain-carrying
+  certificates, Lemma 5.7 shows the one sieve on record returns the
+  lattice; weighted and decision-only systems are untouched, and "we
+  found no identity not organised by cuts" is a statement about this
+  session's search, not about existence.
+- That the cut test's dependence on every vertex is a theorem: it is
+  measured to 7 vertices on connected graphs at `k = vs − 1`; the
+  `n (n − 1)` incidence bound of §5.7 holds for systems in which each
+  cut is tested on bits that determine its set, and the measured fact is
+  its premise at small `n`.
+- That the split ranks of §5.6 say anything asymptotic.
+- That Theorem 5.2's system is new: it is the nested-chain encoding of
+  `reports/checkpoint_relaxation.md` §8 and the position encoding of
+  `satisfiability/mosp_encoding.py` with determined auxiliaries, written
+  down so that its model count is the chain count; the interval form of
+  Lemma 5.5 is the complex's interval thickness (§3.1 row 8); the sieve
+  of Lemma 5.7 is the Hamiltonian-path sieve applied to a different
+  predicate. "We found no prior statement" of Lemma 5.4's rank bound or
+  of the stall reorganisation in §5.5, and no novelty is claimed for
+  either.
+- That the hypothesis `SubexpCount k` is true, or that anything here
+  depends on it: §5.1's conditional runtime is what it would give.
+- That the checks prove anything: they precede the proofs, as TASK.md
+  requires. One refuter subagent (the only one used) checked every lemma
+  with its own code to 5 vertices (Lemma 5.1 on 251 pairs; Theorem 5.2
+  on 283 model counts including `k = n`, isolated vertices and `n = 1`;
+  Lemma 5.3 on 231 vertices; Lemma 5.4 on 168 splits and all `n ≤ 9`;
+  Lemma 5.5 on 1,524 cuts; the stall identity of §5.5, which the module
+  does not check, on 6,258 triples and its Möbius sentence on 1,302; the
+  table arithmetic of §5.1 and §5.4 exactly). It found: the §5.1
+  headline wrong (`Θ(n²)` for a counted `Θ(n² k)`; fixed, with the R3
+  sentence); the odd-`n` split enumeration bug of §5.6 (fixed, table
+  regenerated, one of the two "full rank" graphs withdrawn); the
+  incidence sentence of §5.7 stated as a theorem on a measured premise
+  and with a constant the weaker hypothesis does not give (restated);
+  the exact-count sentence of §5.7 missing "on `K_n`" (fixed); the unit
+  clause of Theorem 5.2 for `k ≥ n` (stated); "one ordering" for "one
+  prefix set" (fixed). No lemma was wrong.
+- That anything is in Lean: the item is mathematics; Lemma 5.1 is a
+  one-line statement against `VertexSeparation.lean` and could be taken
+  by item 08 or the reserve if needed.
+- That anything was solved, run on an instance, or downloaded:
+  `solutions/` is untouched, no instance under `MOSP_Instances/` or the
+  pathwidth dataset was touched, and the only compute is the atlas
+  check.
+
+### 5.10 Regenerate
+
+    D=reports/scratch/subexp_pathwidth/05_chain
+    nice -n 19 python3 -m learning.subexp_chain --nmax 7 > $D/check_atlas7.log
+    python3 -m pytest tests/test_subexp_chain.py -q
+    python3 -c "from learning.subexp_chain import exact_count_table; [print(r) for r in exact_count_table()]"

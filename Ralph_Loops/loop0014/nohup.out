@@ -18,3 +18,8 @@
 [2026-11-04 21:06:27] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-11-04 21:37:31] session it04: ok (exit 0, 42 tool calls)
 [2026-11-04 21:57:02] tests passed: GATE PASS
+[2026-11-04 21:57:03] committed 4bfbab16a: 04 Classes with `O(n)`-bit layouts: cobipartite, split, bounded-degree
+[2026-11-04 21:57:03] === iteration 5: 05 The chain count as an algebraic object.
+[2026-11-04 21:57:03] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-11-04 22:45:39] session it05: ok (exit 0, 60 tool calls)
+[2026-11-04 22:56:57] tests passed: GATE PASS

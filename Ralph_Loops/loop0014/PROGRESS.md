@@ -8,7 +8,7 @@ would refute, and a map of the post-ETH hypothesis landscape for width
 parameters; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0014/gate.py`.
 
-Current: 4/12 SOLVED
+Current: 5/12 SOLVED
 
 ## Setup — 2026-11-04
 
@@ -390,3 +390,114 @@ excluded. Item 07 should take Corollary 4.5 as a constraint on where a
 `2^{Ω(n)}` statement for chordal pathwidth could come from, and Theorem
 4.4 is available if a construction needs twins. Item 10 should record
 Corollary 4.5 beside Bonnet's `√n` remark.
+
+---
+
+## Iteration 5 — 2026-11-04 22:05
+
+Item 05, the chain count as an algebraic object. Report:
+`reports/subexp_pathwidth.md` §5 (conventions and the object §5.0; the
+`#SAT` theorem §5.1; the threshold as a polynomial §5.2; ranks and the
+interval form §5.3; the exact-count bound §5.4; the sieve over supports
+§5.5; one cut in the tensor form §5.6; the obstacle named and the verdict
+§5.7; checks §5.8). Code: `learning/subexp_chain.py`,
+`tests/test_subexp_chain.py` (9 tests). Scratch:
+`reports/scratch/subexp_pathwidth/05_chain/` (README with regenerate
+commands, `check_atlas7.log`, `check.json`, `membership_polynomial.csv`,
+`split_rank.csv`, `gate.log`).
+
+### Completed
+
+- **The object** (§5.0): `C_k(G) = Σ_σ Π_t [S_t(σ) ∈ L_k]`,
+  `L_k = {S : |N(S) ∖ S| ≤ k}` (= `F_{k+1}` of the checkpoint report).
+  Lemma 5.1: it equals the number of layouts of `vs ≤ k` (reversal maps
+  prefix chains to suffix chains, `∂_in S = ∂(V ∖ S)`), so
+  `vs ≤ k ⟺ C_k > 0`. Checked three ways on every atlas graph to 7.
+- **The literal answer, yes — in `Θ(n²)` variables** (§5.1, Theorem
+  5.2): the nested-chain / position CNF with every auxiliary defined by an
+  equivalence (bidirectional OR, bidirectional sequential counter) has
+  **exactly `C_k(G)` models**, verified by CaDiCaL enumeration with a
+  blocking clause over all variables on every atlas graph to 6 and a
+  sample at 7 (1,391 counts, zero failures), sizes against closed forms.
+  As equations over a field it is a degree-`≤ 3`, `≤ 8`-monomial system:
+  R1, R2, R5 hold; only the budget fails — `n(n − 1) = 15,500` `y`
+  variables at `n = 125` against a nominal `B_v = 111`; under
+  `SubexpCount 3` it gives `2^{Õ(n² k / √log n)}`, worse than the DP.
+- **The threshold as a polynomial** (§5.2): Lemma 5.3 (boundary bit:
+  degree `deg + 1`, `2^{deg+1} − 2` monomials), Lemma 5.4 (bare
+  threshold: top coefficient `(−1)^{n−k} C(n−1, k)`, so degree `n`; but
+  communication rank `≤ min(|A|, |B|, k) + 1` across any split — the
+  width compiles away, §1.3.5). The composite `[S ∈ L_k]` measured on
+  all 8,475 (graph, `k`) pairs: at `k = vs − 1` degree `= n` on 81.8%,
+  median 0.625 of all `2ⁿ` monomials, and **every set variable
+  essential on every connected graph (995 of 995)**; `|L_k| / 2ⁿ` 0.28
+  at `n = 5–7`. R1 fails for the raw constraint; the dependence on every
+  vertex is what does not compile away.
+- **Ranks** (§5.3, Lemma 5.5, the interval form of the cut, checked by
+  counting on 1,538 (graph, `k`) pairs): `n ⌈log₂ n⌉` variables, `n − 1`
+  constraints of width `n ⌈log₂ n⌉`; incidence `Θ(n² log n)`. The item's
+  dichotomy is a trade-off and the incidence is `≥ n(n − 1)` either way.
+- **The exact count needs `n log₂ n` bits** (§5.4, Lemma 5.6):
+  `N ≥ log₂ C_k(G)`, `C_{n−1}(K_n) = n!`; above `B_v` (constant 1) from
+  `n = 11`, the ranks within `1 + o(1)` of it. The only escapes are
+  weighted factors and decision-only systems — item 09's starting point.
+- **The sieve over supports returns the lattice** (§5.5, Lemma 5.7,
+  checked on 1,405 identities): `C_k = Σ_S (−1)^{n−|S|} W_k(S)` holds, but
+  `W_k(S) = Σ_j c_j(S) h_{n−j}(1..j)` is a lattice sum (state: the
+  support, `3ⁿ` in all) and Möbius inversion returns `C_k = C_k`; the
+  Hamiltonian sieve runs because its condition is on consecutive pairs.
+- **One cut in the tensor form** (§5.6, measured): the composite's
+  crossing rank at the best balanced split exceeds the bare threshold's
+  bound on 90% of connected 7-vertex graphs at `k = vs − 1`; `C₇` has
+  full rank across every split at `k = vs`. No asymptotic claim.
+- **Verdict** (§5.7): **plan §0.6's chain-count kill is met, with the
+  parenthetical corrected** — the obstacle is structural and it is the
+  ordering through its `n − 1` cuts (each reads every vertex; `n − 1`
+  distinct sets; incidence `≥ n(n − 1)` in every system on record), not
+  the threshold's width, which compiles away at `O(n + Σ deg)` per cut.
+  Smallest examples: `K₃` at `k = 1` (full-degree, all-monomial test;
+  every chain dies at its first set); the paw at `k = 1` (the first
+  refutation needing a second cut); `K_{1,6}` + one leaf edge at `k = 1`
+  (frontier `1, 4, 6, 4, 1, 0`: 24 beginnings survive four cuts and die
+  at the fifth — §10's binomial frontier from the front). Item 09's
+  attempt, if made: a weighted or decision-only system not organised by
+  cuts, with the kill stated in §5.7.
+- **Checks** (§5.8, `python -m learning.subexp_chain`, 265.6 s after the split fix): 8,475
+  chain counts three ways, 1,391 model counts, 1,538 rank counts, 1,405
+  sieve identities, 8,475 boundary-bit polynomials, 28 threshold
+  coefficients, `K_n` to 7: **zero failures everywhere**. Every
+  statement was checked before it was written.
+- One refuter subagent (the only one used, 1 of 4) checked every lemma with
+  its own code to 5 vertices and the table arithmetic exactly: no lemma
+  wrong; it found the `Θ(n²)` headline (counted `Θ(n² k)`), an odd-`n`
+  bug in `balanced_splits` that skipped 15 of the 35 splits at `n = 7`
+  (fixed, check rerun, §5.6 regenerated, one "full rank" graph withdrawn),
+  two over-stated sentences in §5.7 and the `k ≥ n` case of Theorem 5.2.
+  All folded in; §5.9 lists them.
+- Gate: `python3 Ralph_Loops/loop0014/gate.py` **PASS** twice — once started before
+  the split fix (`gate_run1_prefix.log`: 1,958 passed, 123 solver tests) and once on
+  the final module (`gate.log`): `lake build` ok (no Lean file changed), 0 `sorry`,
+  no `axiom`, tests 1958 passed / 2 skipped / 1 xfailed (277 s),
+  `pathwidth_solver` 123 passed (395 s), paper check clean.
+
+### Blockers
+
+None. Not committed (the driver commits). `solutions/` untouched; no
+run on any instance; nothing downloaded; no Lean file changed.
+
+### Next
+
+Item 06 (the measurement: `|F_k|` and `|R_f|` on random cubic graphs and
+`G(n, 3/n)` to `n = 60`) is the only unmarked item among 03–06; §5.2's
+`|L_k| / 2ⁿ ≈ 0.28` at `n ≤ 7` and the binomial frontier of §5.7's
+seven-vertex example are the small-`n` end of what it measures. Item 09
+now has both kills (04: no class fits; 05: the chain count is organised
+by cuts) and §5.7 states what its one-session attempt would be: a
+weighted or decision-only system that witnesses `C_k > 0` without
+testing cuts — the coordinator may prefer to mark it `[!]` on the two
+kills and give the session to item 07's linear construction instead.
+Item 07 may use Lemma 5.5 (the interval form) and Lemma 5.1 as stated;
+item 10 should record beside Bonnet's `√n` remark that permutation
+problems in general (Hamiltonicity, bandwidth, cutwidth, OLA, pathwidth)
+are outside the counting theorem's corollaries for the reason §5.4
+gives: a permutation witness is `n log₂ n` bits.
