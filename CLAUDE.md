@@ -1582,10 +1582,18 @@ dense one in 3–41 min, no ridge one; a DRAT proof object for 41–75 that
 `learning.proofs` lacks. The anatomy of the search's refutation (the §32
 certificate tabulated by prefix size `|N[S]|`): states peak at `0.42 n`, half
 within a window 12% of `n` wide, *before* the band the certificate needs —
-the forward search enumerates everything reachable before the wall; a
-search from the other end or a meet-in-the-band is the one untested solver
-change with a measured reason, proposed. Nothing re-solved; `solutions/`
-untouched; about 10 core-hours; data under `reports/scratch/checkpoint/`.
+the forward search enumerates everything reachable before the wall. **A
+search from the other end, and a meet in the band, are dead** (§10, same
+day, `learning/two_ended.py`): `|N(S) ∖ S| ≤ |V ∖ S|`, so every set
+missing at most `k − 1` vertices is feasible and the backward frontier is
+`C(n, j)` for `j ≤ k − 1` before any constraint bites (`10²⁶` at 125,
+`k = 24`), while the forward rule-free reachable lattice is only 2.3× the
+search's node count (free-closed states 1.6× its distinct sets): the
+search already visits about as many states as the lattice holds, the wall
+is at `0.46 n` closed customers with 90% of the states in the first half
+of the climb, and the `10¹¹` nodes at 125 are the lattice's size, not an
+inefficiency. Nothing re-solved; `solutions/` untouched; about 11
+core-hours; data under `reports/scratch/checkpoint/`.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.

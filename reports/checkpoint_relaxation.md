@@ -297,6 +297,73 @@ patterns among them, because its size is `m² · k`; the chain's size is in
 customers the chain is the encoding that returns; neither reaches 75 at 10⁶
 (§6).
 
+## 10. The search from the other end, and the meet in the band: dead, by asymmetry
+
+*(2026-11-04, same day; `learning/two_ended.py`, 14 tests in
+`tests/test_two_ended.py`; `reports/scratch/checkpoint/two_ended/`.)*
+
+§9 proposed a search from the other end, or a meet in the band with the two
+frontiers stored, because the search's states peak before the band its
+certificate needs. Measured rule-free on the 64 instances at 30–50, the
+idea dies on a one-line fact about the state lattice.
+
+**The lattice.** A closing order is feasible for "MOSP ≤ k" exactly when
+every prefix `S` has `|N(S) ∖ S| ≤ k − 1` (closing `c` from `S` costs
+`|N[S ∪ c] ∖ S| = |N(S ∪ c) ∖ (S ∪ c)| + 1`, `satisfiability/customer_search.py`).
+So the decision is reachability from `∅` to `V` inside
+`F_k = {S : |N(S) ∖ S| ≤ k − 1}` by single additions. Reversing the
+production sequence maps closing orders to closing orders of the same graph
+(the opening order, reversed), so the "reversed" search is the same search.
+The genuinely different direction builds the order from its **end**: start
+at `S = V`, remove the customer closed last, and require the prefix that
+remains to be in `F_k`. Forward frontier `R_f(i)`: the sets of size `i`
+reachable from `∅`; backward frontier `R_b(i)`: those from which `V` is
+reachable. Both enumerated exactly (bitmask layers; the backward one keeps
+a per-vertex count of neighbours still inside, updated for all candidates
+at once), verified against a subset DP on 485 (graph, k) cases.
+
+**The asymmetry.** `|N(S) ∖ S| ≤ |V ∖ S|`: a set missing at most `k − 1`
+vertices is feasible whatever it is, and so is every set between it and
+`V`. Hence `R_b(n − j) = C(n, j)` for every `j ≤ k − 1`, before any
+constraint bites: the last `k − 1` customers closed are unconstrained, and
+the backward search must choose them blind. At 30 customers and `k = 11`
+the sixth backward layer has 2,035,800 states; the enumeration hit its
+3-million cap on 61 of 64 instances a median of five levels below `V`. At
+125 customers and `k = 24` the first constrained backward layer is
+`C(125, 23) ≈ 10²⁶` states. The forward direction is constrained from the
+first move: closing a customer opens all its neighbours. No decision
+diagram stores a binomial frontier, and a meet in the band needs the
+backward frontier at the band, which is larger still.
+
+**The forward frontier, calibrated.** Forward profiles on all 64 (none
+censored), with the search's own counts from §7 beside them:
+
+| n | instances | wall `i_f / n` | peak layer `/ n` | rule-free states, median (max) | free-closed states | search nodes | rule-free states / search nodes | free-closed / search's distinct sets | states in the 2nd half of the climb |
+|---|---|---|---|---|---|---|---|---|---|
+| 30 | 1 | 0.37 | 0.07 | 251 | 66 | 80 | 3.14 | 1.02 | 22% |
+| 40 | 19 | 0.48 | 0.12 | 5,537 (80,815) | 1,503 | 1,979 | 2.54 | 1.66 | 13% |
+| 50 | 44 | 0.46 | 0.12 | 42,346 (281,270) | 11,022 | 15,443 | 1.86 | 1.58 | 8% |
+
+(Sizes here are closed-customer counts `|S|`; §7's `0.42 n` peak is in
+prefix units `|N[S]|`, and the band of §5 is in those units too.) Three
+things follow. The wall sits at `0.46 n` closed customers (IQR 0.40–0.54),
+the frontier peaks at `0.12 n`, and 90% of the reachable states lie in the
+first half of the climb: the search's cost is the breadth of *beginnings*,
+not the approach to the wall. The rule-free reachable lattice is only
+2.3× the search's node count (IQR 1.4–3.2), and its free-closed part 1.6×
+the search's distinct sets: **the search already visits about as many
+states as the lattice holds**, so no traversal order, store or diagram over
+the same lattice can save more than a small factor. And the lattice is what
+it is: at 125 on the ridge, `10¹¹` nodes is its size, not the search's
+inefficiency. The only way past it is a certificate that does not enumerate
+prefixes, which is the SAT route of §3–§6, and that returns at 75 on the
+dense side and not on the ridge.
+
+The proposal in §9 is withdrawn. Its measured reason stood — the states do
+sit before the band — but the conclusion drawn from it was wrong: those
+states are not wasted work before the obstruction, they *are* the
+obstruction's size as a reachability problem.
+
 ## 9. Verdict and what follows
 
 - **As a bound family: closed.** A relaxation with few *fixed* checkpoints
@@ -314,12 +381,12 @@ customers the chain is the encoding that returns; neither reaches 75 at 10⁶
   hour (§6, §8). A Lean statement of its soundness is one lemma (a layout's
   prefixes are nested and bounded) and is proposed if it is adopted for
   `learning.proofs`.
-- **One solver idea with a measured reason** (§5, §7): the search's states
-  peak at `0.42 n` and the certificate's checkpoints sit at `0.5–0.7 n`, so
-  the forward search enumerates everything reachable before the wall and
-  only then meets it. A search from the other end, or a meet-in-the-band
-  with the two frontiers, is cheap to test in nodes at 50–75 and is the one
-  untested change with a chance of moving the cost of the 125 refutations.
+- **The solver idea this suggested is dead** (§10, tested the same day):
+  a search from the other end must choose the last `k − 1` customers blind
+  (`R_b(n − j) = C(n, j)`), a meet in the band needs that frontier, and the
+  forward search already visits about as many states as the reachable
+  lattice holds (rule-free states 2.3× its nodes). The `10¹¹` nodes at 125
+  are the lattice's size.
 - **Not done**: 100–125 customers, where nothing here reaches; the
   general CEGAR loop of §4 is sound and general (vertex separation with
   exact segment checks) but loses to one whole-chain call at 75.
