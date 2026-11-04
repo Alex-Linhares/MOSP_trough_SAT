@@ -72,7 +72,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   every graph (or source instance) to 7 vertices against brute-force
   vertex separation; log under `reports/scratch/subexp_pathwidth/03_reductions/`.
 
-- [ ] **04 Classes with `O(n)`-bit layouts: cobipartite, split, bounded-degree, co-comparability, the paper-2 MOSP cover classes.**
+- [x] **04 Classes with `O(n)`-bit layouts: cobipartite, split, bounded-degree, co-comparability, the paper-2 MOSP cover classes.**
   For each class where pathwidth (or treewidth = pathwidth) is NP-hard:
   is a layout, or the decision "`vs ≤ k`", determined by `O(n)` Boolean
   variables under constraints of bounded width in the sense of item 01's

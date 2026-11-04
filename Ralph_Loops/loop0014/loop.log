@@ -13,3 +13,8 @@
 [2026-11-04 19:22:34] claude session it03 (cap 4.00 h) -> session_it03.log
 [2026-11-04 20:55:06] session it03: ok (exit 0, 62 tool calls)
 [2026-11-04 21:06:27] tests passed: GATE PASS
+[2026-11-04 21:06:27] committed 11f27c48e: 03 The reduction catalogue: every reduction into pathwidth or vertex s
+[2026-11-04 21:06:27] === iteration 4: 04 Classes with `O(n)`-bit layouts: cobipartite, split, bounded-degree, co-comparability, 
+[2026-11-04 21:06:27] claude session it04 (cap 4.00 h) -> session_it04.log
+[2026-11-04 21:37:31] session it04: ok (exit 0, 42 tool calls)
+[2026-11-04 21:57:02] tests passed: GATE PASS

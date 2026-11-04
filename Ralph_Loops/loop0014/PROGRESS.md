@@ -8,7 +8,7 @@ would refute, and a map of the post-ETH hypothesis landscape for width
 parameters; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0014/gate.py`.
 
-Current: 3/12 SOLVED
+Current: 4/12 SOLVED
 
 ## Setup — 2026-11-04
 
@@ -283,3 +283,110 @@ and should state `CutwidthSubexpOn subcubic` in the style of
 `PathwidthSubexpOn`; item 08 formalises `vs(G°) = cw(G)` for `Δ ≤ 3`
 and `vs(H) = vs(G) + n` against `VertexSeparation.lean`, the two proofs
 of §3.4 being written to be taken as they stand.
+
+---
+
+## Iteration 4 — 2026-11-04 21:24
+
+Item 04, classes with `O(n)`-bit layouts. Report:
+`reports/subexp_pathwidth.md` §4 (what "fits" means §4.0; cobipartite
+§4.1; split §4.2; maximum degree 3 §4.3; cocomparability and AT-free
+§4.4; chordal, starlike and the clique-tree covers §4.5; the gap lemma
+§4.6; the verdict §4.7; checks §4.8). Code: `learning/subexp_classes.py`,
+`tests/test_subexp_classes.py` (9 tests). Scratch:
+`reports/scratch/subexp_pathwidth/04_classes/` (README with regenerate
+commands, `check_atlas7.log`, `check.json`, `gate.log`).
+
+### Completed
+
+- **Cobipartite** (§4.1): Theorem 4.1, some optimal layout places one
+  clique entirely first, and with `X` first the value is
+  `max(|X| − 1, max_t (t + |N_X(Y_{>t})|))`; Corollary 4.2, the decision
+  is a one-sided cut condition — a chain through
+  `{S ⊆ Y : |N_X(S)| − |S| ≤ k − |Y|}`. On the doubles of §3.4.1 that
+  lattice is `F_k` of `reports/checkpoint_relaxation.md` §10 verbatim, so
+  the cobipartite decision *is* item 05's lattice problem with no
+  translation. Does not fit. Side remark: exact `vs` on cobipartite
+  graphs in `O*(2^{max(a, b)})` (base `1.415` balanced, against `1.89`
+  in general); nothing gained on the doubles, as it must be.
+- **Split** (§4.2): polynomial, so moot — Gustedt (1993, **held**)
+  Lemma 2.8 gives `pw ∈ {ω − 1, ω}` and paper 2 (`polynomial_cases.md`
+  §2.2) already has the deciding criterion; here the layout-side proof
+  (Theorem 4.3: `vs = κ − 1` iff some clique vertex's independent
+  neighbours have a common clique non-neighbour) and the exhaustive
+  check. Fits vacuously; contributes no class.
+- **Maximum degree 3** (§4.3): the one `O(n)`-bit object, the acyclic
+  orientation a layout induces, does not determine the value: on the
+  252 subcubic atlas graphs, 11,486 of 20,820 orientations have
+  disagreeing linear extensions and 6,791 of 10,607 optimal ones are not
+  forced; its residual is a down-set chain, `F_k` again. Does not fit.
+- **Cocomparability, AT-free** (§4.4): contain the doubles at blow-up 2,
+  so they fit iff all graphs fit. Does not fit, by §4.1.
+- **Chordal, starlike, clique-tree covers** (§4.5): Theorem 4.4, the
+  twin lemma (true or false twins consecutive in some optimal layout),
+  hence `vs` in `O*(2^u)` over twin classes — on MOSP the
+  equivalent-customers reduction with a proof. Gustedt's hardness
+  instances have `u = O(√n)`, and his Theorem 6.4 (`O(4^{α₀} r + n)`,
+  `α₀` the centre) gives **Corollary 4.5: starlike chordal graphs with
+  centre `≤ √n` are an NP-hard class on which pathwidth is `2^{O(√n)}`
+  unconditionally** — plan §0.2's positive answer in letter and not in
+  spirit (the quadratic blow-up of §3.3 seen from the algorithm's side;
+  no certificate; nothing of the counting theorem); recorded for items
+  07 (no `2^{Ω(n)}` for chordal pathwidth can come from Gustedt's
+  construction) and 10. Does not fit: the hard object is a chain over
+  the centre or the tree nodes.
+- **The gap lemma** (§4.6): a certificate determining the layout's
+  prefix sets at every multiple of `g` has `N ≥ n log₂(n/(eg))` bits
+  (Lemma 4.6); with the segment encodings on record no `g` fits the
+  verified route at any `n`, and on the paper route (R6) the family is
+  excluded asymptotically only — the segment width passes `s^{9/10}`
+  near `n = 10⁹`, with Theorem D.1's constants unknown. Said as such.
+- **Verdict** (§4.7): **item 04's kill is met** — no NP-hard class among
+  the five has `O(n)`-bit layouts under bounded-width constraints, and
+  each presents the lattice chain in a class-specific form; **item 09 is
+  the chain-count attempt only** (plan §0.6), and item 05 may work on
+  `F_k` for general graphs without loss.
+- **Checks** (§4.8, `python -m learning.subexp_classes`, 36.5 s): the
+  normal form on every cobipartition of every atlas graph (149 graphs,
+  496 pairs, formula and layouts) and on all 108,622 `A × B` edge sets
+  with `a + b ≤ 8`; the split dichotomy and criterion on every split
+  partition (257 graphs, 670 pairs) and 300 random split graphs on 11
+  vertices; the twin lemma (layouts) and the unit DP on all 1,252 atlas
+  graphs: **zero failures everywhere**. Every statement was checked
+  before it was written.
+- One refuter subagent (the only one used, 1 of 4) read the four proofs
+  and Corollary 4.5's arithmetic blind to the rest of §4 with its own
+  brute force to 6 vertices. It found **two wrong sentences and two
+  gaps, no wrong verdict**: Corollary 4.2's index range (`s < |Y|` for
+  `1 ≤ s ≤ |Y|`; 42 brute-force failures as first written — the
+  corrected statement is now checked on all 3,653 `(partition, k)`
+  decisions to 7 vertices, zero failures, `cobipartite_decision`); the
+  twin-class induction order (reverse layout order, else a member is
+  stranded); Lemma 4.6's unstated uniformity hypothesis (added, with the
+  path-graph argument and a `− 1`); the verified route's constant (now
+  `1`, from the `g²` nested-chain variables); and the paper-route table
+  mixing the two budgets — recomputed per route, the crossover moves
+  from "near `10⁹`" to **beyond `10²⁴`**, so the paper route excludes
+  the family asymptotically only, said as such. All folded in; the
+  lesson of loop0004 again: a statement checked only in its formula
+  form can be wrong in its stated form.
+- Gate: `python3 Ralph_Loops/loop0014/gate.py` **PASS** — `lake build` ok
+  (no Lean file changed), 0 `sorry`, no `axiom`, tests 1,948 passed /
+  2 skipped / 1 xfailed (278 s), `pathwidth_solver` 123 passed (496 s),
+  paper check clean; log `04_classes/gate.log`.
+
+### Blockers
+
+None. Not committed (the driver commits). `solutions/` untouched; no
+run on any instance; nothing downloaded; no Lean file changed.
+
+### Next
+
+Items 05 and 06 in either order. Item 05 starts from §4.1's identity
+(the cobipartite one-sided chain is `F_k` verbatim) and §4.6's last
+paragraph: the object it needs must witness reachability in `F_k`
+without naming a chain, since every chain-carrying certificate is
+excluded. Item 07 should take Corollary 4.5 as a constraint on where a
+`2^{Ω(n)}` statement for chordal pathwidth could come from, and Theorem
+4.4 is available if a construction needs twins. Item 10 should record
+Corollary 4.5 beside Bonnet's `√n` remark.

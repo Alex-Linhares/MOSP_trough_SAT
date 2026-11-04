@@ -984,3 +984,555 @@ vertices in the gate.
     nice -n 19 python3 -m learning.subexp_reductions --nmax 7 > $D/check_atlas7.log
     python3 -m pytest tests/test_subexp_reductions.py -q
     python3 $D/explore.py 6     # the exploration that preceded §3.4 (not the deliverable)
+
+## 4. Classes with `O(n)`-bit layouts? Cobipartite, split, maximum degree 3, cocomparability, the clique-tree covers (item 04, 2026-11-04)
+
+*Plan §0.4.3 and §0.5 item 04; the account of what the counting method
+needs is §1.3, and the budget it leaves for pathwidth is §1.3.8: an
+encoding of "`vs(G) ≤ k`" as a fixed-width CNF on
+`N = o(n √log n / (log log n)²)` variables (the verified route) or as a
+tensor network with `s = o(n √log n)` wires and constraints of any width
+(the paper route). Item 03's finding (§3.2) that no class containing the
+cobipartite graphs can be easier than the general case is the starting
+point. Code: `learning/subexp_classes.py`; tests
+`tests/test_subexp_classes.py` (10); scratch
+`reports/scratch/subexp_pathwidth/04_classes/` (`check_atlas7.log`,
+`check.json`, README). Every statement below was checked on every graph
+of the atlas to 7 vertices — on every cobipartition and every split
+partition, not one per graph — before it was written (§4.8).*
+
+### 4.0 What "fits" means here
+
+A class `C` **fits** if, for every `G ∈ C` on `n` vertices and every `k`,
+a polynomial-time computable constraint system in the sense of §1.3
+(Boolean variables, local factors of bounded degree, R1–R5, or a tensor
+network under R6) has a satisfying assignment iff `vs(G) ≤ k`, with
+total incidence `o(n √log n)` — the plan's "`O(n)` Boolean variables
+under bounded-width constraints" being the stricter form of the same
+requirement. The class must be one on which pathwidth is NP-hard,
+otherwise the question is moot: a polynomial algorithm *is* `2^{o(n)}`.
+Two reference objects set the scale. A layout is an ordering, `n log₂ n`
+bits, and the only encodings on record carry it in `Θ(n²)` variables
+(§1.3.8). The decision itself is reachability in the lattice
+`F_k = {S ⊆ V : |N(S) ∖ S| ≤ k − 1}` by single additions
+(`reports/checkpoint_relaxation.md` §10, with the MOSP offset: "`vs ≤ k`"
+is "`MOSP ≤ k + 1`"), and the witness of that reachability is a
+*chain* `∅ ⊂ S_1 ⊂ … ⊂ S_n = V` — the object every subsection below
+finds again, in a class-specific disguise.
+
+So each subsection asks three things: what an optimal layout looks like
+on the class (a normal form, proved and checked); whether the decision
+is a condition on a smaller object than the layout; and whether that
+object, or anything else we could find, fits. The answers are collected
+in §4.7. Conventions: `log` in the budgets of §1.3.8 is natural, as in
+the paper; bit counts are `log₂`; the numbers below mix the two as
+their formulas do.
+
+### 4.1 Cobipartite graphs: one clique first, then a chain on the other side
+
+Let `H` have vertex set `A ∪ B` with `A` and `B` cliques (`|A| = a`,
+`|B| = b`, `a + b = n`); write `N_X(S)` for the neighbours of `S ⊆ Y` in
+`X`, `{X, Y} = {A, B}`. Pathwidth is NP-hard here and equals treewidth
+(Arnborg, Corneil & Proskurowski 1987, not held; Möhring 1996, cited;
+§3.1 rows 13–14).
+
+**Theorem 4.1 (normal form).** Some optimal layout of `H` places one of
+the two cliques entirely before the other. With `X` first (in any
+order) and `Y` laid out by `τ`, the value is
+
+    max( |X| − 1,  max_{0 ≤ t < |Y|} ( t + |N_X(Y^τ_{>t})| ) ),
+
+where `Y^τ_{>t}` is the set of the last `|Y| − t` vertices of `τ`. Hence
+
+    vs(H) = min_{X ∈ {A, B}} max( |X| − 1, chain_X ),
+    chain_X = min_τ max_{0 ≤ t < |Y|} ( t + |N_X(Y^τ_{>t})| ).
+
+*Proof.* (The value of an `X`-first layout.) A cut after `i < |X|`
+vertices of `X` counts exactly those `i` vertices (each has an unplaced
+clique-mate; nothing of `Y` is placed), so at most `|X| − 1`. A cut
+after all of `X` and the first `t < |Y|` vertices of `τ` counts the `t`
+placed vertices of `Y` (each has an unplaced clique-mate) and those
+vertices of `X` with an unplaced neighbour, which are exactly
+`N_X(Y^τ_{>t})`: `t + |N_X(Y^τ_{>t})|`. The last cut is empty.
+
+(Every layout is at least as large as some `X`-first layout.) Take a
+layout `σ` of value `v`. One clique finishes before the other; call it
+`X`, let it finish at position `p`, and let `j` vertices of `Y` precede
+`p`; `j < |Y|` because `Y` finishes after `p`. Let `τ` be the order of
+`Y` in `σ`. The cut just before `p` has `|X| − 1` placed vertices of `X`
+and `j` of `Y`, each with an unplaced clique-mate, so `v ≥ |X| − 1 + j`.
+For `t = j` take the cut just after `p` (placed: `X` and the first `j`
+vertices of `τ`), and for `j < t < |Y|` the cut after the `t`-th vertex
+of `Y`, which lies after `p`; in both all of `X` is placed, and the cut
+counts exactly `t + |N_X(Y^τ_{>t})| =: g(t)`; so `v ≥ g(t)` for `t ≥ j`. For `t < j`,
+`g(t) ≤ t + |X| ≤ |X| − 1 + j ≤ v`. Hence `v ≥ max(|X| − 1, max_t g(t))`,
+which is the value of the layout "`X` in any order, then `τ`". ∎
+
+**Corollary 4.2 (the decision is a one-sided cut condition).** With
+`c = k − |Y|`: `vs(H) ≤ k` iff for `X = A` or `X = B`, `|X| − 1 ≤ k` and
+there is a chain `∅ = S_0 ⊂ S_1 ⊂ … ⊂ S_{|Y|} = Y`, `|S_s| = s`, with
+`|N_X(S_s)| − s ≤ c` for every `1 ≤ s ≤ |Y|` (`S_s` being the suffix set
+`Y^τ_{>|Y|−s}`, `s = |Y| − t`; `S_0 = ∅` is unconstrained — the first
+draft wrote `s < |Y|`, which the refuter's brute force rejected on 42
+cases, e.g. `K₃` with `|A| = 1`, `k = 1`; the corrected range is checked
+on every `(partition, k)` to 7 vertices, §4.8). The ordering of `X` is free; the whole decision is a
+chain through the one-sided lattice
+`L_c(X, Y) = {S ⊆ Y : |N_X(S)| − |S| ≤ c}`.
+
+This answers the item's question about cobipartite graphs: yes, the
+decision is a cut condition on one side, and the object it is a
+condition on is a chain of subsets of that side.
+
+**The one-sided chain is the general lattice, verbatim.** On the double
+`H` of §3.4.1 (`A = B = V(G)`, `a_u ~ b_v` iff `u ∈ N_G[v]`), `N_A(S) =
+N_G[S]`, so `|N_A(S)| − |S| = |N_G(S) ∖ S|`, and with `k_H = k + n`,
+`c = k`: Corollary 4.2 says `vs(G) ≤ k` iff there is a chain through
+`{S ⊆ V(G) : |N(S) ∖ S| ≤ k}`, which is `F_{k+1}` of
+`reports/checkpoint_relaxation.md` §10. So the cobipartite decision is
+the lattice problem of item 05 with no translation at all, and §3.2's
+finding (no class containing the cobipartite graphs is easier than the
+general case) is seen from the other side: the general case *is* a
+cobipartite one-sided chain.
+
+**Does it fit?** The certificate Corollary 4.2 offers is the chain on
+`Y`, i.e. an ordering of `Y`: `|Y| log₂ |Y|` bits, `Θ(n log n)` when the
+sides are balanced; its constraints are the `|Y|` cut conditions, each
+reading `|N_X(S_s)|` — a threshold of width `Θ(n)` on `Θ(n)` variables,
+`Θ(n²)` incidence in any encoding that carries the chain. The cut
+widths are not small here: `k ≥ max(a, b) − 1 ≥ n/2 − 1`. The only
+freedom the normal form adds over the general case — the order of `X`
+costs nothing — saves `|X| log |X|` bits, which is at most the half of
+the layout one did not need anyway. §4.6 shows that no certificate that
+carries the chain up to local permutations fits either route. **Does
+not fit, because** the one-sided decision is `F_k`-reachability
+verbatim (through the double), and the only certificate we have for it
+is the chain.
+
+**What the normal form buys instead** (a solver remark, not applied
+anywhere): the subset DP over prefix sets of `Y` alone computes
+`chain_X` in `O*(2^{|Y|})`, so `vs` of a cobipartite graph is exact in
+`O*(2^{max(a, b)})` — `O*(2^{n/2})`, base `1.415`, on balanced
+cobipartite graphs, against `1.89` in general (§1.1). On the doubles
+`max(a, b) = n = |V(G)|`, so nothing is gained on the general problem,
+as it must be. We found no statement of this bound in the held papers
+and claim no novelty: the treewidth literature on cobipartite graphs
+(ACP 1987) is not held.
+
+*Checked* (§4.8): the formula and the "one clique first" claim about
+layouts on every cobipartition of every atlas graph (149 graphs, 496
+pairs), and the formula on every `A × B` edge set with `a ≤ b`,
+`a + b ≤ 8` (108,622 graphs): zero failures.
+
+### 4.2 Split graphs: polynomial, so the question is moot — and a two-vertex certificate
+
+A split graph has a clique `K` (`κ = |K| ≥ 1`) and an independent set
+`I = V ∖ K`. Pathwidth is **polynomial** here: Gustedt (1993, held)
+Lemma 2.8 gives `pw ∈ {ω − 1, ω}` and Theorem 7.1 with `k = 1` an
+`O(n³)` algorithm (split graphs are the 1-starlike graphs); Möhring
+(1990, held) p. 46 says the same. The criterion deciding which of the
+two is `paper2/polynomial_cases.md` §2.2 (ours, 2026-10-09, proved by
+bags): `vs = κ − 1` iff some `x, y ∈ K` (`x = y` allowed) have every
+`p ∈ I` non-adjacent to `x` or to `y`. Nothing is new in this
+subsection; what it adds is the layout-side proof, in the vocabulary of
+§4.1, and the exhaustive check.
+
+**Theorem 4.3 (Gustedt Lemma 2.8, with paper 2's criterion).** For any
+split partition `(K, I)` with `κ ≥ 1`: `vs(G) ∈ {κ − 1, κ}`, and
+`vs(G) = κ − 1` iff there is `v ∈ K` such that the independent
+neighbours of `v` have a common non-neighbour `u ∈ K` (vacuously true
+when `v` has none).
+
+*Proof.* `vs ≥ κ − 1` because `K` is a clique. `vs ≤ κ`: lay out `K`
+then `I`; cuts inside `K` count at most `κ − 1`; a cut after `K` counts
+the clique vertices with an unplaced independent neighbour, at most
+`κ`. For the criterion, let `v` be the last vertex of `K` in a layout of
+value `κ − 1`. At the cut just before `v`, the other `κ − 1` clique
+vertices count, so no independent neighbour of `v` is placed before
+`v` (it would count too). At the cut just after `v`, the counted
+vertices include every clique vertex adjacent to an unplaced
+independent neighbour of `v`, i.e. all of `N(N_I(v)) ∩ K`; so that set
+is not all of `K`, and `u` exists (if `v` is the last vertex overall,
+`N_I(v) = ∅`). Conversely, given `v, u`: order `K` with `v` last; place
+each `p ∈ I ∖ N(v)` immediately after its last clique neighbour (or
+first, if it has none), and each `p ∈ N_I(v)` after `v`. Before `v` a
+cut counts the placed clique vertices only (every placed independent
+vertex has all its neighbours placed), at most `κ − 1`; after `v` it
+counts the clique vertices with an unplaced independent neighbour,
+which all lie in `N(N_I(v))`, a set missing `u`. ∎
+
+The two criteria are the same statement: `(x, y)` of paper 2 is
+`(v, u)` here. The smallest split graph with `vs = ω` is the 3-sun
+(`tests/test_subexp_classes.py`).
+
+**Does it fit?** Vacuously, and literally: the certificate is two vertex
+names, `2 log₂ n` bits, and the decision is polynomial. But the class
+is not NP-hard, so it gives the positive track nothing; and it marks
+where the hard object appears, since split graphs are the starlike
+graphs with private cliques of size one (§4.5). **Fits, because** the
+problem is polynomial; it contributes no class to item 09.
+
+*Checked* (§4.8): the dichotomy and the criterion on every split
+partition of every atlas graph (257 graphs, 670 pairs) and on 300
+random split graphs on 11 vertices: zero failures.
+
+### 4.3 Graphs of maximum degree 3: the orientation is not a certificate
+
+Pathwidth is NP-hard on planar graphs of maximum degree 3 (Monien &
+Sudborough 1988, not held; Díaz, Petit & Serna 2002 Table III, held),
+and by §3.4.3 `vs(G°) = cw(G)` on this class, so a fit for subcubic
+pathwidth would be a fit for subcubic cutwidth, Bentert et al.'s open
+problem. The widths are not small: Fomin & Høie (2006, held) give
+`pw ≤ n/6 + εn` on cubic graphs, and cubic expanders have `pw = Θ(n)`
+by Harper's bound in its layout form (`EmptyPair.lean`: for every `j`
+some `|A| = j` has `|N[A]| ≤ j + pw`, so a graph with `|N[A]| ≥
+(1 + δ)|A|` for `|A| ≤ n/2` has `pw ≥ δn/2`).
+
+The class has one natural `O(n)`-bit object: a layout orients every
+edge from its earlier endpoint, an **acyclic orientation** of `m ≤ 3n/2`
+bits, and conversely every acyclic orientation is induced by its
+linear extensions. If the value were a function of the orientation,
+"`vs ≤ k`" would be "some orientation of value `≤ k` exists" with `3n/2`
+variables. It is not:
+
+| subcubic atlas graphs, 2–7 vertices | count |
+|---|---|
+| graphs | 252 |
+| acyclic orientations (over all graphs) | 20,820 |
+| orientations whose linear extensions disagree on the value | 11,486 (55%) |
+| orientations attaining `vs` (some extension optimal) | 10,607 |
+| … of which not forced (some extension is worse) | 6,791 (64%) |
+| graphs with a disagreeing orientation | 199 of 252; largest spread 2 at 7 vertices |
+
+(`learning.subexp_classes.orientation_spread`; the smallest case is two
+disjoint edges, whose interleaved and block-wise extensions have values
+2 and 1.) What the orientation leaves open is exactly which down-sets of
+the induced poset the layout passes through — a chain through the
+down-set lattice restricted to `F_k` — so the orientation is a
+*relaxation* of the layout, not a certificate, and its residual problem
+is the lattice problem again. Nothing else of size `O(n)` presented
+itself: a path decomposition of width `k` has `n` bags of `k + 1` names;
+an interval supergraph has `2n` endpoints to order; the Fomin–Høie
+construction is an upper bound, not a decision. **Does not fit, because**
+the one `O(n)`-bit object the class has does not determine the value,
+measurably, and its residual is `F_k`-reachability; and §4.6 applies to
+every chain-carrying certificate.
+
+### 4.4 Cocomparability and AT-free graphs: the same question as the general case
+
+Both classes contain the cobipartite graphs, have `pw = tw` (Möhring
+1996, cited through Bodlaender 1998 Thm 99 and BKKM 1995, as in
+`paper2/survey_intersection_classes.md`), and are NP-hard for that
+reason. The double of §3.4.1 maps every graph into them at blow-up 2,
+and the incidence budget is linear in the vertex count
+(`o(2n √log 2n) = o(n √log n)`), so **a class containing the cobipartite
+graphs fits iff all graphs fit**: nothing class-specific can help, and
+nothing class-specific is needed. The cocomparability ordering
+(umbrella-free, computable in polynomial time) is not a layout and
+cannot be made one by a polynomial rule, since pathwidth is NP-hard on
+the class; the minimal triangulations being interval graphs (Möhring)
+says that a *treewidth* certificate — an elimination ordering — is a
+layout here, which is `n log₂ n` bits again. **Does not fit, because**
+§4.1 does not, and these classes contain it at blow-up 2.
+
+### 4.5 Chordal graphs, starlike graphs and the clique-tree covers of paper 2: twins, units and a `2^{O(√n)}` subclass
+
+The clique-tree covers of paper 2 (`paper2/survey_trees_sparse.md`
+§2.2, `paper2/polynomial_cases.md` §1) are the MOSP instances whose
+patterns are the maximal cliques of a chordal graph: block graphs
+(polynomial, Chou, Ko, Ho & Chen 2008), octopus graphs and weighted
+trees (NP-hard, Mihai & Todinca 2009, held; pseudo-polynomial blow-up,
+§3.1 row 8), starlike graphs (NP-hard, Gustedt 1993 Cor. 4.3, held;
+the "central pattern" row of paper 2's matrix table, 5 corpus
+instances) and chordal dominoes (NP-hard, Kloks, Kratsch & Müller 1995,
+not held). Chordal graphs in general are NP-hard by Gustedt's
+Theorem 4.1, whose construction is the one §3.3 read: the central
+clique is `V(G)`, one peripheral clique per edge of `G` with
+`|V(G)|` private vertices each.
+
+Every hard construction in this family makes a clique stand for a
+weight, and the private vertices of one clique are **twins**. That
+observation is a theorem about layouts:
+
+**Theorem 4.4 (twin lemma).** If `N(x) ∖ {y} = N(y) ∖ {x}` (true or
+false twins), some optimal layout places `x` immediately before `y`;
+hence every twin class (the classes of this equivalence relation; each
+is a clique or an independent set and a module) is consecutive in some
+optimal layout.
+
+*Proof.* Take an optimal layout with `x` before `y` and move `x` to the
+position immediately before `y`. Cuts before the old position of `x` and
+at or after the new one see the same placed sets. At a cut strictly
+between, `x` was placed and is now not; every other placed `z` is
+counted after the move iff it was before, because an unplaced neighbour
+`z` lost by the move is `x`, and `z ~ x` implies `z ~ y` with `y`
+unplaced at that cut. So each such cut loses the contribution of `x`
+(1 if `x` was counted) and gains nothing. The layout stays optimal.
+For a class `x_1, …, x_w` in layout order, move `x_{w−1}` to just
+before `x_w`, then `x_{w−2}` to just before `x_{w−1}`, and so on down to
+`x_1` (in *reverse* layout order: moving `x_1` first and then `x_2`
+would strand `x_1`, as the refuter's brute force showed on 4,260
+cases); the class becomes consecutive, and no other class is separated,
+since each insertion is next to a vertex outside that class. ∎
+
+Twins are interchangeable by an automorphism, so the internal order of a
+class is irrelevant, and `vs` is a DP over subsets of classes:
+`f(S) = min_{Q ∈ S} max(f(S ∖ Q), cost(∪(S ∖ Q), Q))`, with `cost(P, Q)`
+the largest cut while `Q` is placed after `P`. **`vs` is exact in
+`O*(2^u)`, `u` the number of twin classes** (`twin_unit_dp`; checked
+against `vs` on all 1,252 atlas graphs, where 884 have `u < n`). On the
+MOSP side the twin classes of the MOSP graph are the customers with
+equal pattern sets, so this is the layout-side justification of the
+"equivalent nodes" reduction of Yanasse & Senne (2010), one of the six
+pre-processing operations (unimplemented, CLAUDE.md); the lemma is
+elementary and we found no prior statement of it in the held papers in
+this form, claiming nothing.
+
+**What it says about the hard constructions.** Gustedt's Theorem 4.1
+instances from a graph `G` with `n_G` vertices and `m_G` edges have
+`n' = n_G + m_G n_G` vertices and `u = n_G + m_G` twin classes; from a
+3-regular `G` (VSP stays NP-hard there, as Gustedt notes, p. 239),
+`n' = n_G + 3n_G²/2` and `u = 5n_G/2 = O(√n')`. The unit DP solves
+them in `2^{O(√n')}`. Gustedt's own Theorem 6.4 is sharper and does
+not need the twins: **starlike pathwidth in `O(4^{α₀} r + n)`**, `α₀`
+the size of the central clique, `r` the number of peripheral cliques;
+on the hardness instances `α₀ = n_G ≤ √(2n'/3)`.
+
+**Corollary 4.5 (an NP-hard class in `2^{O(√n)}`, unconditionally).**
+On the class of starlike chordal graphs whose central clique has at
+most `√n` vertices, pathwidth is NP-hard (Gustedt Cor. 4.3's instances
+from 3-regular graphs lie in it) and computable in `2^{O(√n)} · poly(n)`
+(Gustedt Thm 6.4). The same holds for its MOSP form, the central-pattern
+instances of paper 2 whose central pattern has at most `√n` customers.
+
+This is plan §0.2's "positive answer on a class where pathwidth is
+NP-hard" in letter, and we say plainly why it is not one in spirit. The
+class is cut by a size parameter so that the hard core — the centre,
+over whose subsets Theorem 6.4's algorithm enumerates — has `√n`
+vertices; it is §3.3's quadratic blow-up seen from the algorithm's side
+(and the matching upper side of Bonnet's `2^{Ω(√n)}` remark, §1.2); it
+uses nothing of the counting theorem; it is not an `O(n)`-bit layout
+result; and it is not closed under the maps that make hardness
+transfer (the double of a starlike graph is not starlike). It does
+settle one thing for item 07: **on chordal and starlike graphs, no
+`2^{Ω(n)}` lower bound can come from Gustedt's construction**, since the
+instances it produces are solved in `2^{O(√n)}`; a `2^{Ω(n)}` statement
+for chordal pathwidth would need private cliques of bounded size — but
+that is `k`-starlike, polynomial by Theorem 7.1 — or a construction of
+a different kind.
+
+**The object, and whether it fits.** Theorem 6.4's algorithm
+enumerates subsets of the centre: the hard object on starlike graphs is
+a chain through the subsets of the central clique, `α₀ log₂ α₀` bits,
+and the peripheral cliques attach to it by thresholds (the partition
+problem GPP of Gustedt §5 in the primitive case). With the `α₀ ≤ √n`
+restriction lifted, `α₀ = Θ(n)` is possible with `r = Θ(n)` singleton
+private cliques — the split end — or with heavy ones, and then the
+chain is `Θ(n log n)` bits again. Block graphs are polynomial (fit
+vacuously, like split). Octopus graphs and weighted trees: the weights
+are twin cliques, the unit DP runs in `2^{O(u)}` with `u` the number of
+weighted-tree nodes, which is `o(n)` on Mihai & Todinca's instances
+(their blow-up is pseudo-polynomial, §3.1), and the chain over the
+nodes is the hard object. **Does not fit, because** the hard object on
+every clique-tree class is a chain over the units (the centre, or the
+tree nodes), and where the units are few the problem is `2^{O(u)}`
+already, with no certificate smaller than the chain in sight.
+
+*Checked* (§4.8): the twin lemma as a statement about layouts (minimum
+over layouts with every class consecutive equals `vs`) and the unit DP,
+on every atlas graph to 7 vertices: zero failures.
+
+### 4.6 The gap lemma: no certificate that carries the chain up to local permutations fits
+
+Every subsection ends at the same object. This subsection says, for the
+family of certificates that carry it, that no spacing helps — the
+checkpoint idea of `reports/checkpoint_relaxation.md` (nested sets at
+a few sizes, segments verified between them) seen through §1.3.8's
+budget.
+
+**Definition.** A *`g`-coarse chain certificate* for "`vs(G) ≤ k`" is
+an assignment to `N` Boolean variables that determines the prefix sets
+`S_g ⊂ S_{2g} ⊂ …` (at every multiple of `g`) of some layout of value
+`≤ k`, together with a constraint system of §1.3's kind that is
+satisfiable iff such a layout exists. (`g = 1` is the layout; `g = n`
+is the empty certificate, "a layout exists", which is not a certificate
+of anything.)
+
+**Lemma 4.6 (bits).** If the decoding of checkpoints from assignments
+is the same for every graph on `n` vertices (a certificate *scheme*,
+not one per graph), then `N ≥ log₂ ( n! / (g!)^{n/g} ) − 1 ≥
+n log₂ ( n / (e g) ) − 1`.
+
+*Proof.* Distinct checkpoint sequences number the multinomial
+`n!/(g!)^{n/g}` (choose which `g` vertices fill each segment). On the
+path graph `P_n` with `k = 1` every layout is one of the two monotone
+orders, so a scheme that decodes the same way for every graph must
+have, for each sequence, an assignment decoding to it or to its
+reversal — otherwise some relabelling of `P_n` has no certificate — so
+`2^N ≥ ½ · n!/(g!)^{n/g}`; and `n! ≥ (n/e)^n`, `g! ≤ g^g`. (Without
+uniformity the lemma fails: a fixed graph may need no bits at all.) ∎
+
+**The verified route.** The CNF must verify each segment: that the `g`
+vertices of `S_{(i+1)g} ∖ S_{ig}` admit an order with every cut `≤ k`
+given the boundary state. That is "`vs ≤ k` with `S_{ig}` pre-placed"
+on `g` vertices, an instance of the same problem, and the only
+encodings on record for it (position, nested chain; §1.3.8) cost
+`g²` variables per segment (the nested chain's `y[v, t]` on the
+segment's `g` vertices and `g` steps), `ng` in all. So
+`N ≥ max( n log₂(n/(eg)) − 1, ng )`, and no `g` fits: for
+`g ≥ √log n` the second term is `≥ n √log n`, above the budget
+`n √log n / (log log n)²` for every `n ≥ 16` (where `(log log n)² ≥ 1`);
+for `g < √log n` the first is `≥ n (log₂ n − ½ log₂ log n − 1.45) − 1`,
+which at `n = 125` is already `4.4 n` against a budget of `0.89 n` and
+grows like `n log n`.
+What this does not exclude is a segment encoding smaller than `g²`:
+the segment is the same problem with a boundary, so the question is
+self-similar, and a fit for the segment would be a fit for the problem.
+
+**The paper route (R6).** A tensor per segment may have width up to
+`s^{9/10}` and a brute-force entry. Its ports must determine
+`S_{(i+1)g}` given `S_{ig}`, at least `log₂ C(n − ig, g) ≥ g log₂(n/g) −
+O(g)` of them on the first segments; and Lemma 4.6 bounds the wire count
+`s ≥ N`. This route has its own budget, `s ≤ B_p = n √log n`
+(§1.3.8), not the verified one. Taking the smallest `g` whose bit count
+meets it, `g = n / (e · 2^{√log n})`, the segment width
+`g log₂(n/g) ≈ 1.44 · n √log n · 2^{−√log n}` must be at most
+`s^{9/10} ≤ B_p^{9/10}`, i.e. `2^{−√log n} ≤ n^{−1/10} (log n)^{−0.05}`
+up to constants, which fails for large `n` since `√log n = o(log n)`
+— but only for very large `n`. The arithmetic (`gap_table`; the ratio
+is the segment width over `B_p^{9/10}` at the smallest fitting `g`,
+with the verified route's `g` beside it for comparison):
+
+| `n` | verified `B_v/n` | its `g/n` | paper `B_p/n` | its `g/n` | segment width | `B_p^{9/10}` | ratio |
+|---|---|---|---|---|---|---|---|
+| 125 | 0.89 | 0.20 | 2.20 | 0.080 | 36.5 | 157 | 0.23 |
+| 10³ | 0.70 | 0.23 | 2.63 | 0.060 | 242 | 1,200 | 0.20 |
+| 10⁶ | 0.54 | 0.25 | 3.72 | 0.028 | 1.44 × 10⁵ | 8.19 × 10⁵ | 0.18 |
+| 10⁹ | 0.50 | 0.26 | 4.55 | 0.016 | 9.4 × 10⁷ | 4.92 × 10⁸ | 0.19 |
+| 10¹⁵ | 0.47 | 0.27 | 5.88 | 0.006 | 4.6 × 10¹³ | 1.56 × 10¹⁴ | 0.29 |
+| 10²¹ | 0.46 | 0.27 | 6.95 | 0.003 | 2.5 × 10¹⁹ | 4.6 × 10¹⁹ | 0.55 |
+| 10²⁴ | 0.46 | 0.27 | 7.43 | 0.002 | 1.9 × 10²² | 2.4 × 10²² | 0.78 |
+
+So the paper route is excluded for this family **asymptotically only**:
+the ratio is below 1 at every `n` up to `10²⁴` and passes it beyond,
+so at any size one could write down the arithmetic alone does not
+exclude a coarse chain on the paper route — with the caveat that
+Theorem D.1's constants are unknown (§1.3.8), so nothing is claimed at
+any finite `n` in either direction. (The first draft mixed the routes,
+taking `g` from the verified budget and the width against `s = B_p`,
+and put the crossover near `10⁹`; the refuter caught the mix.) The
+verified budget `B_v` is itself below `n` at every `n` in the table,
+which is the same fact: the verified exponent is `o(n)` only in the
+limit.
+
+**What the lemma does not cover.** A certificate that is not a coarse
+chain at all — one whose satisfying assignments do not determine any
+checkpoint of any layout — is untouched. That is the only kind item 05
+can look for: an algebraic object (the number of chains as a sum over
+orderings, or the common zeros of a sparse system) that witnesses
+reachability in `F_k` without naming a path through it.
+
+### 4.7 Verdict: no NP-hard class fits; the positive track is the chain-count attempt only
+
+| class | pathwidth | the object in an optimal layout (proved here or cited) | fits? |
+|---|---|---|---|
+| cobipartite | NP-hard, `= tw` | one clique first, then a chain through `L_c(X, Y)`; on the doubles it is `F_k` verbatim (Thm 4.1, Cor. 4.2) | **no**: the object is the general lattice chain |
+| split | polynomial (Gustedt L. 2.8) | two clique vertices `v, u` (Thm 4.3; paper 2's criterion) | fits vacuously: not NP-hard |
+| maximum degree 3 | NP-hard (MS 1988, not held) | the acyclic orientation is a relaxation, not a certificate (55% of orientations disagree, 64% of optimal ones unforced, to 7 vertices); the residual is `F_k` | **no** |
+| cocomparability, AT-free | NP-hard, `= tw` | contain the doubles at blow-up 2: fit iff all graphs fit | **no**, by §4.1 |
+| chordal, starlike, clique-tree covers | NP-hard (Gustedt 4.1, 4.3); block graphs polynomial | twins consecutive (Thm 4.4), `O*(2^u)`; a chain over the centre; `α₀ ≤ √n` is NP-hard and `2^{O(√n)}` by Gustedt 6.4 (Cor. 4.5) | **no**: the chain over the units; the `√n` subclass is the blow-up, not a certificate |
+| any chain-carrying certificate at spacing `g` | — | `N ≥ n log₂(n/(eg)) − 1` (Lemma 4.6) | **no** on the verified route at every `n ≥ 16`; on the paper route asymptotically (crossover beyond `10²⁴`) |
+
+**Plan §0.6, item 04's kill: met.** No class on which pathwidth is
+NP-hard has `O(n)`-bit layouts under bounded-width constraints, nor a
+certificate within §1.3.8's budget, among the five the item names; and
+the one object each class has in place of the layout is a chain through
+a lattice — `F_k` itself on cobipartite doubles, a down-set chain on
+bounded-degree graphs, a chain over the centre on starlike graphs.
+**Item 09 is the chain-count attempt only** (item 05's route), and it
+may work on `F_k` for general graphs without loss, since every NP-hard
+class examined presents that very object. The one unconditional
+positive statement found, Corollary 4.5, is Gustedt's and is the
+quadratic blow-up seen from the algorithm's side; it is recorded for
+item 07 (no `2^{Ω(n)}` for chordal pathwidth can come from Gustedt's
+construction) and for item 10, not as an answer to Q.
+
+Two solver remarks, neither applied: exact pathwidth of a cobipartite
+graph in `O*(2^{max(a, b)})` (§4.1); exact vertex separation in
+`O*(2^u)` over twin classes (§4.5), which on MOSP instances is the
+equivalent-customers reduction with a proof.
+
+### 4.8 The checks
+
+`nice -n 19 python3 -m learning.subexp_classes` (atlas to 7 vertices,
+1,252 graphs; 36.5 s on one core under a one-minute load of 32; log
+`04_classes/check_atlas7.log`, results `check.json`). `vs` is the
+prefix-set DP of §3.5, itself checked against the permutation minimum on
+every atlas graph there; claims about *layouts* are checked by
+`itertools.permutations` directly.
+
+| check | what is compared | instances | failures |
+|---|---|---|---|
+| Thm 4.1, the formula | `min_X max(|X| − 1, chain_X)` against `vs` | every cobipartition of every atlas graph: 149 graphs, 496 pairs | **0** |
+| Thm 4.1, the layouts | the minimum over layouts with one clique entirely first (all orders of both sides) against `vs` | the same 496 pairs | **0** |
+| Cor. 4.2, the decision | the chain condition with the corrected range `1 ≤ s ≤ |Y|` against `vs ≤ k` | the same 496 pairs, every `0 ≤ k ≤ n`: 3,653 decisions | **0** (42 failures with the first draft's range) |
+| Thm 4.1 on all patterns | the formula against `vs` on every `A × B` edge set, `a ≤ b`, `a + b ≤ 8` | 108,622 graphs | **0** |
+| Thm 4.3, dichotomy | `vs ∈ {κ − 1, κ}` | every split partition of every atlas graph: 257 graphs, 670 pairs | **0** |
+| Thm 4.3, criterion | the `(v, u)` criterion against `vs` | the same 670 pairs; 300 random split graphs on 11 vertices | **0** |
+| Thm 4.4, layouts | minimum over layouts with every twin class consecutive against `vs` | every atlas graph | **0** |
+| Thm 4.4, unit DP | `twin_unit_dp` against `vs` | every atlas graph (884 of 1,252 have `u < n`) | **0** |
+| §4.3, orientations | per acyclic orientation, min and max over linear extensions | 252 subcubic atlas graphs, 20,820 orientations | measurement (table in §4.3) |
+| Lemma 4.6 | the arithmetic of `gap_table` | five values of `n` | table in §4.6 |
+
+`tests/test_subexp_classes.py` (10 tests) runs the same checks to 5
+vertices (patterns to 6, random split graphs on 10) in the gate.
+
+### 4.9 What this does not claim
+
+- That no `O(n)`-bit certificate exists on any of these classes: "we
+  found none", with the one `O(n)`-bit object each class offers shown
+  not to be one (§4.3) or shown to be the general lattice (§4.1, §4.4,
+  §4.5). Lemma 4.6 excludes a *family* (certificates that determine
+  checkpoints of a layout), on the verified route at every `n` under
+  the segment encodings on record, on the paper route asymptotically
+  with unknown constants; it says nothing about certificates of another
+  kind, which are item 05's business.
+- That Corollary 4.5 answers Q: it is Gustedt's two theorems on a class
+  cut to the size of his construction's centre, the blow-up of §3.3 seen
+  from above. It is not a layout certificate, not conditional on
+  anything, and not new as mathematics.
+- That the split criterion, the cobipartite `O*(2^{max(a,b)})` bound or
+  the twin lemma are new: the first is on record (Gustedt Lemma 2.8;
+  paper 2 §2.2, where the criterion was first stated and proved by bags);
+  for the other two "we found no prior statement in the held papers",
+  and the cobipartite treewidth literature (ACP 1987) is not held.
+- That Monien & Sudborough's hardness for subcubic graphs is as we
+  describe it (not held; cited through Díaz et al. 2002), or that
+  Kloks–Kratsch–Müller's domino result is (not held).
+- That the checks prove anything: they precede the proofs, as TASK.md
+  requires; the proofs are the claims. One refuter subagent read the
+  four proofs and Corollary 4.5's arithmetic blind to the rest of this
+  section, with its own brute force to 6 vertices: Theorems 4.1, 4.3 and
+  the single move of 4.4 sound and agreeing with its brute force;
+  Corollary 4.2's index range wrong as first written (fixed and now
+  checked); the induction of 4.4 wrong in its order (fixed); Lemma 4.6
+  needing the uniformity hypothesis (added, with the path-graph
+  argument); the constant of the verified route unstated (now `1`); and
+  the paper-route table mixing the two budgets (recomputed per route).
+  Every point is folded in above. What it did not verify: Gustedt's
+  construction and the 3-regular remark, which are read from the held
+  paper (pp. 239–241).
+- That any of this is in Lean: the item is mathematics; the twin lemma
+  and the cobipartite normal form are stated against layouts exactly as
+  `VertexSeparation.lean` defines them, so item 08 or the reserve could
+  take them as written if a theorem of item 07 needs them.
+- That anything was solved, run on an instance, or downloaded:
+  `solutions/` is untouched, no instance under `MOSP_Instances/` or the
+  pathwidth dataset was touched, and the only compute is the 36.5 s
+  check.
+
+### 4.10 Regenerate
+
+    D=reports/scratch/subexp_pathwidth/04_classes
+    nice -n 19 python3 -m learning.subexp_classes --nmax 7 --patterns-max 8 > $D/check_atlas7.log
+    python3 -m pytest tests/test_subexp_classes.py -q
+    python3 -c "from learning.subexp_classes import gap_table; [print(r) for r in gap_table()]"

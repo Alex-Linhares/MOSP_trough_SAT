@@ -1,0 +1,137 @@
+# session it04 started 2026-11-04 21:06:27
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far (§1.3 and §3 especially), and the existing scratch layout, then work item 04.
+  > $ wc -l reports/subexp_pathwidth_plan.md reports/subexp_pathwidth.md && sed -n 1,200p reports/subexp_pathwidth_plan.md
+  > $ grep -n '^#' reports/subexp_pathwidth.md
+  > $ sed -n 168,400p reports/subexp_pathwidth.md
+  > $ sed -n 748,830p reports/subexp_pathwidth.md && sed -n 955,986p reports/subexp_pathwidth.md
+  > $ sed -n 830,955p reports/subexp_pathwidth.md
+  > $ sed -n 1,80p learning/subexp_reductions.py && grep -n '^def \|^class ' learning/subexp_reductions.py && ls reports/scratch/subexp_pathwidth/ reports/scratch/sub
+  > $ grep -n '04 Classes' -A 14 Ralph_Loops/loop0014/iterations.md | head -20; ls paper2/ ; grep -il 'cobipartite\|split graph\|co-comparability\|cocomparability' pa
+  > $ grep -n -i 'cobipartite\|split\|co-comparability\|cocomparability\|AT-free\|degree 3\|cubic\|chordal' paper2/survey_intersection_classes.md | head -60; echo ---
+  > $ sed -n 70,110p learning/subexp_reductions.py && sed -n 165,200p learning/subexp_reductions.py && sed -n 277,300p learning/subexp_reductions.py && grep -n '^def 
+  > $ grep -n '^def vs_of_layout' -A 14 paper1/complex_check.py && sed -n 1,40p tests/test_subexp_reductions.py && cat Ralph_Loops/loop0014/gate.py | head -80 && sed 
+
+Now I'll write the checking module: the cobipartite normal form, the split dichotomy, the twin-class DP, the orientation measurement on subcubic graphs, and the gap-lemma arithmetic.
+  > Write /home/al/dev/MOSP/learning/subexp_classes.py
+  > $ mkdir -p reports/scratch/subexp_pathwidth/04_classes && uptime && time nice -n 19 python3 -m learning.subexp_classes --nmax 5 --patterns-max 6 --out /tmp/subexp
+  > $ nice -n 19 python3 -m learning.subexp_classes --nmax 7 --patterns-max 8 > reports/scratch/subexp_pathwidth/04_classes/check_atlas7.log 2>&1; echo "exit $?" >> r
+  > Write /home/al/dev/MOSP/tests/test_subexp_classes.py
+  > $ nice -n 19 python3 -m pytest tests/test_subexp_classes.py -q 2>&1 | tail -5
+  > $ python3 - <<'EOF'
+import re
+p='tests/test_subexp_classes.py'
+s=open(p).read()
+s=s.replace("""    # K_3 plus an independent vertex adjacent to two clique vertice
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/28999536-73fd-4001-9759-0375517393ee/tasks/b4g2375i4.output; echo ======; sed -n 153,174p paper2/survey_trees_sparse.md; 
+  > $ cat reports/scratch/subexp_pathwidth/04_classes/check_atlas7.log; echo =====; F=reports/scratch/subexp_pathwidth/03_reductions/1993-Gustedt-Pathwidth-Chordal-Gr
+  > $ F=reports/scratch/subexp_pathwidth/03_reductions/1993-Gustedt-Pathwidth-Chordal-Graphs-DAM.txt; sed -n 300,330p $F; echo ....; sed -n 395,425p $F; echo ....; se
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 4. Classes with `O(n)`-bit layouts? Cobipartite, split, maximum degree 3, cocomparability, the clique-tree covers
+  > Agent {"description": "Refute the \u00a74 proofs", "prompt": "You are a refuter. Read ONLY these parts of /home/al/dev/MOSP/re
+  > $ grep -n "^### 4\.\|^## " /home/al/dev/MOSP/reports/subexp_pathwidth.md | head -60
+  > $ sed -n '1029,1171p' /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ sed -n '1231,1407p' /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ cat > reports/scratch/subexp_pathwidth/04_classes/README.md <<'EOF'
+# loop0014 item 04 — classes with `O(n)`-bit layouts? (2026-11-04)
+
+Report section: `reports
+  > $ sed -i 's/(VSP stays NP-hard there, as Gustedt notes, p. 240)/(VSP stays NP-hard there, as Gustedt notes, p. 239)/' reports/subexp_pathwidth.md && grep -c 'p. 2
+  > $ pgrep -x lake >/dev/null && echo "lake running" || echo "no lake"; uptime
+  > $ nice -n 19 python3 Ralph_Loops/loop0014/gate.py > reports/scratch/subexp_pathwidth/04_classes/gate.log 2>&1; echo "exit $?" >> reports/scratch/subexp_pathwidth/
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0014/iterations.md'
+s=open(p).read()
+old="- [ ] **04 Classes with `O(n)`-bit layouts"
+assert s.count(old)==1
+s=s.replace(ol
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0014/PROGRESS.md'
+s=open(p).read()
+assert 'Current: 3/12 SOLVED' in s
+s=s.replace('Current: 3/12 SOLVED','Current: 4/12 SOL
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/28999536-73fd-4001-9759-0375517393ee/tasks/bv2bcs8ig.output 2>/dev/null | tail -5; echo ====; grep -n '^### 4\.' reports/
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "cd /home/al/dev/MOSP; L=reports/scratch/subexp_pathwidth/04_classes/gate.log; while true; do if grep -q '^e
+
+Both remaining inputs are in flight: the refuter's verdict on the four proofs and the gate's result. Nothing else is independent of them, so I'm waiting on those two notifications; when they arrive I'll fold the refuter's points into §4 and PROGRESS.md and record the gate outcome.
+  > $ mkdir -p /tmp/refute && cat > /tmp/refute/bf.py <<'EOF'
+import itertools, networkx as nx
+from networkx.generators.atlas import graph_atlas_g
+from math import co
+  > $ cat > /tmp/refute/bf2.py <<'EOF'
+import itertools, networkx as nx
+from networkx.generators.atlas import graph_atlas_g
+from math import comb, log2, e, sqrt, log,
+
+**1. Theorem 4.1 (cobipartite normal form) — VERDICT: sound, with one wrong sentence; Corollary 4.2 as stated is FALSE.**
+Brute force (all cobipartitions of all graphs on 2–6 vertices, 188 pairs): formula and "one clique first" claim hold on every pair.
+- Objection (wording in the converse): "For `j ≤ t < |Y|` the cut after the `t`-th vertex of `Y` lies at or after `p`" — false for `t = j ≥ 1` (the `j`-th vertex of `Y` precedes `p` by definition) and undefined for `j = 0`. Fix: "for `t = j` use the cut just after `p`, whose placed set is `X` plus the first `j` of `Y`; for `t > j` the cut after the `t`-th vertex of `Y`."
+- Corollary 4.2: "`|N_X(S_s)| − s ≤ c` for every `s < |Y|`" is the wrong index range. `t ∈ [0, |Y|)` maps to `s = |Y| − t ∈ [1, |Y|]`; the stated range adds a spurious `s = 0` condition (`k ≥ |Y|`) and drops `s = |Y|` (`|N_X(Y)| ≤ k`). Brute force: 42 failures in both directions (e.g. `K₃` with `A = {0}`, `k = 1`: corollary says `vs ≤ 1`, `vs = 2`; two disjoint `K₃`, `k = 2`: corollary says no, `vs = 2`). With `1 ≤ s ≤ |Y|` (`S_0 = ∅` unconstrained): zero failures. The "general lattice verbatim" paragraph survives the fix (`∅` is in `F_{k+1}` anyway).
+
+**2. Theorem 4.3 (split dichotomy and criterion) — VERDICT: sound.** Both directions check; brute force on all 272 split partitions of graphs to 6 vertices: 0 dichotomy failures, 0 criterion failures. The identification with paper 2's `(x, y)` is correct (`N_I(x) ∩ N_I(y) = ∅` in both).
+
+**3. Theorem 4.4 (twin lemma) — VERDICT: single-move lemma sound; the induction sentence is wrong as written (gap).**
+Brute force on 207 atlas graphs: an optimal layout with every class consecutive exists on all; the single move never raises the value (0 of all optimal-layout × twin-pair cases). But the procedure "Repeating for the members of a class in layout order, each moved to just before the next" fails on 4,260 (optimal layout, graph) cases: moving `x₁` before `x₂` and then `x₂` before `x₃` strands `x₁`. Fix: process the pairs in reverse layout order (`x_{m−1}` before `x_m`, then `x_{m−2}` before `x_{m−1}`, …) — 0 failures. The "equivalence relation, each class a clique or independent set" parenthetical is correct (a vertex cannot be a true twin of one vertex and a false twin of another).
+
+**4. Corollary 4.5 arithmetic — VERDICT: sound** (`n' = n_G + 3n_G²/2`, `u = 5n_G/2`, `n_G ≤ √(2n'/3)` all check). Not verified by me: that Gustedt's Thm 4.1 construction is literally "one clique per edge with `n_G` private vertices" and that his NP-hardness holds on 3-regular `G`; the corollary rests on both.
+
+**5. Lemma 4.6 and the routes — VERDICT: lemma sound under an unstated hypothesis; route arithmetic has a gap and an internal inconsistency.**
+- Lemma 4.6: the inequality checks numerically, but "each assignment determines at most one [sequence]" gives `2^N ≥ #sequences` only if the decoding map is the same for every graph on `n` vertices (for a fixed `G` the certificate may use 0 bits — empty graph). Fix: state uniformity; then the path graph forces each sequence up to reversal, so `N ≥ log₂(multinomial) − 1`.
+- Verified route: "above the budget … for every `n ≥ 16`" with "some `c > 0`" does not follow; it needs `c ≥ 1/(log log n)²` (`0.96` at `n = 16`, `0.40` at `125`). Fix: "for `n` large enough", or cite `c ≥ 1` from the `g²` position variables.
+- Paper route table: the `s^{9/10}` column uses `s = n√log n` (natural log), but the paper's own budget column is `nβ = n√log n/(log log n)²`. If `s` is bounded by that budget (as the "budget, bits" column implies), then `s^{9/10} ≤ (nβ)^{9/10}` and the ratio is 0.84 at 125, **1.33 at 10³**, 1.92 at 10⁴, 7.6 at 10⁹ — so "excluded asymptotically only … passes 1 near `n = 10⁹`" understates the exclusion by six decades. Not a false step in the exclusion direction (the loose column is conservative), but the finite-`n` conclusion drawn from it is wrong unless `s` is not budget-bounded, which §1.3.8 must settle.
+
+**Editorial.** The `√log n` in the budget is natural log and the bit terms are `log₂`; say so once, since "4.4 n" and "0.89 n" only reproduce with that mix. The 4.1 "Checked" paragraph covers the theorem but not Corollary 4.2, which is where the error is. Scratch scripts: `/tmp/refute/bf.py`, `/tmp/refute/bf2.py`; nothing in the repository was touched.
+
+The refuter found two real errors in wording (Corollary 4.2's index range, and the twin-class induction order), one unstated hypothesis in Lemma 4.6, and a route mix-up in the gap table. All are fixable without changing any verdict. Fixing the code first (adding a direct check of the corrected Corollary 4.2 and a per-route gap table), then the text.
+  > $ python3 - <<'EOF'
+p='learning/subexp_classes.py'
+s=open(p).read()
+
+# 1. corollary 4.2 decision
+s=s.replace('''def one_side_first_layout_value(g, X: int, Y: int)
+  > $ (nice -n 19 python3 -m learning.subexp_classes --nmax 7 --patterns-max 8 > reports/scratch/subexp_pathwidth/04_classes/check_atlas7.log 2>&1; echo "exit $?" >> 
+  > $ sed -i 's/every `0 ≤ k ≤ n`: 3,848 decisions/every `0 ≤ k ≤ n`: 3,653 decisions/' reports/subexp_pathwidth.md && grep -c '3,653' reports/subexp_pathwidth.md && 
+
+Everything for the item is written and checked; the only open input is the gate, which is still running (its log is written at the end) with the monitor armed on it. I'll record the result in PROGRESS.md when it lands.
+
+# result: success in 1118s, 31 turns, cost $12.50
+
+# result: success in 168s, 4 turns, cost $12.50
+  > $ cat reports/scratch/subexp_pathwidth/04_classes/gate.log | tail -5; uptime; pgrep -x lake >/dev/null && echo lake-running; pgrep -f 'pytest' | head -3
+  > Monitor {"command": "cd /home/al/dev/MOSP; L=reports/scratch/subexp_pathwidth/04_classes/gate.log; while true; do if grep -q '^e
+
+The gate is in its pytest stage (about 12 minutes in, of roughly 25). The monitor is re-armed on its log; the only thing left is to record its outcome in PROGRESS.md.
+
+# result: success in 23s, 3 turns, cost $12.72
+  > $ grep -E 'PASS|FAIL|passed|exit |sorry|axiom|pages' reports/scratch/subexp_pathwidth/04_classes/gate.log | tail -12
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0014/PROGRESS.md'
+s=open(p).read()
+assert s.count('- Gate: GATE_RESULT.')==1
+s=s.replace('- Gate: GATE_RESULT.','''- Gate: 
+
+Item 04 is done; nothing further is pending. Eight items remain unchecked, so no `LOOP_COMPLETE` line was added, and nothing was committed, per the driver's rules.
+
+**Outcome.** No NP-hard class among the five has `O(n)`-bit layouts under bounded-width constraints, so item 04's kill criterion is met and item 09 becomes the chain-count attempt only. Each class presents the same object in disguise: a chain through the lattice `F_k`.
+
+**What §4 of `reports/subexp_pathwidth.md` establishes, each proved and checked on every graph to 7 vertices with zero failures:**
+- **Cobipartite.** Some optimal layout places one clique entirely first, and the decision is then a one-sided cut condition on a chain of subsets of the other side. On the doubles from item 03 that lattice is `F_k` verbatim, so cobipartite pathwidth is item 05's lattice problem with no translation. Side remark: exact `vs` in `O*(2^{max(a,b)})`.
+- **Split.** Polynomial, so moot. Gustedt's Lemma 2.8 and paper 2's criterion are on record; I added the layout-side proof and an exhaustive check on every split partition.
+- **Maximum degree 3.** The one `O(n)`-bit object, the acyclic orientation, does not determine the value: 55% of orientations on subcubic atlas graphs have disagreeing linear extensions.
+- **Cocomparability and AT-free.** Contain the cobipartite doubles at blow-up 2, so they fit iff all graphs fit.
+- **Chordal, starlike, clique-tree covers.** A twin lemma gives `vs` in `O*(2^u)` over twin classes. Combined with Gustedt's Theorem 6.4, starlike graphs with centre at most `√n` form an NP-hard class on which pathwidth is `2^{O(√n)}` unconditionally. The report says plainly this is the quadratic blow-up seen from the algorithm's side, not an answer to Q.
+- **Gap lemma.** Any certificate carrying the layout's prefix sets at spacing `g` needs `n log₂(n/(eg)) − 1` bits. This excludes the family on the verified route at every `n ≥ 16`, and on the paper route only asymptotically, with the crossover beyond `10²⁴`.
+
+**The refuter subagent** (1 of 4 used) found two wrong sentences and two gaps, no wrong verdict: Corollary 4.2's index range, the twin induction order, Lemma 4.6's missing uniformity hypothesis, and a mix of the two budgets in the gap table. All are fixed, and the corrected corollary is now checked directly on all 3,653 (partition, k) decisions.
+
+**Bookkeeping.** Gate PASS (1,948 tests, pathwidth_solver 123, 0 sorry, no axiom). PROGRESS.md has the iteration 4 section and reads 4/12; item 04 is marked `[x]`. New files: `learning/subexp_classes.py`, `tests/test_subexp_classes.py` (10 tests), `reports/scratch/subexp_pathwidth/04_classes/`. No instance was run and `solutions/` is untouched.
+
+# result: success in 24s, 3 turns, cost $13.00
+
+The monitor's final event confirms the same gate result already recorded: GATE PASS, exit 0. Nothing remains open for this iteration.
+
+# result: success in 2s, 1 turns, cost $13.08
