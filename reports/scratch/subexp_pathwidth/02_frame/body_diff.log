@@ -1,0 +1,5 @@
+# Textual check: the body of 'def SubexpCount (k : ℕ) : Prop' (Frame.lean) against the body of
+# 'theorem exact_count_and_sat (k : ℕ) (hk : 2 ≤ k)' (comparator lines 195-217, SHA-256 of the file
+# 4183b2057cff350d66848215ff7167196dfc20e1891b598fdddea59077a76685). Normalised: leading
+# whitespace stripped and the theorem's trailing ':= by' removed. Expected: no output from diff.
+IDENTICAL: 23 lines, no difference

@@ -1,0 +1,25 @@
+'MOSPFormalization.SubexpPathwidth.SubexpCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.ExactCountAndSat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.PathwidthSubexpOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.PathwidthSubexp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.SubexpCount.anti' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.ExactCountAndSat.subexpCount' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.runtimeBound_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.tendsto_log_sq_div_sqrt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.runtimeScale_isLittleO' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.isSubexpExponent_runtimeScale' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.LocatedCfg.monitor_config' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.Trace.config_of_locatedStep' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.encodeGraph_length' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.PathwidthSubexpOn.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.pathwidthSubexp_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.decide_pathwidth_le_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.pathwidthSubexpOn_iff_vertexSeparation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

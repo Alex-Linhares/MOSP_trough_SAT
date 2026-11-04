@@ -567,3 +567,30 @@ Two corrections to the loop's brief recorded here so they are not repeated:
 Kolesnik & Wormald 2014 is arXiv 1311.6555 (1109.0689 is a paper on payment
 systems); Díaz–Diner–Serna–Serra's vertex bisection paper is published as
 *J. Comput. System Sci.* 2024, doi:10.1016/j.jcss.2024.103550.
+
+## The OpenAI mathematics collection (loop0014 item 02, 2026-11-04)
+
+Not missing — held locally, read-only, and recorded here because one file
+of it is now copied into this development.
+
+- **OpenAI** (2026). *The Exponential Time Hypothesis is False*, family 378
+  of the OpenAI mathematics collection (`github.com/openai/math`,
+  Apache-2.0), manuscript of 17 October 2026 revised 25 October 2026, 64
+  pages; the Lean comparator statement
+  `lean/ComparatorChallenges/SubexponentialSAT.lean` (theorem
+  `exact_count_and_sat`, proved in `lean/OAI/Algorithms/SubexponentialSAT/`).
+  Cloned read-only at `~/dev/untrusted/openai-math` (commit `4eaee875`,
+  2026-10-29); the paper is read as a `pdftotext` extract
+  (`reports/scratch/subexp_pathwidth/01_audit/eth.txt`, git-ignored) and
+  the Lean files with `cat`; nothing in the clone is built or run, and
+  nothing is imported from it. **Copied verbatim**, under its Apache-2.0
+  header: lines 1–190 and 220 of the comparator file (the definitions —
+  the CNF syntax, canonical encoding, `PrimitiveMachine` model, `Trace`,
+  located configurations, `runtimeScale`, `runtimeBound`; file SHA-256
+  `4183b2057cff350d66848215ff7167196dfc20e1891b598fdddea59077a76685`) into
+  `lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean`. The
+  theorem itself is **not** copied: it is restated as the named `Prop`
+  `SubexpCount` in `SubexpPathwidth/Frame.lean` and never asserted
+  (`reports/subexp_pathwidth.md` §2). The verified exponent is
+  `n (log log n)² / √log n`; the paper's sharper exponents are paper-only
+  (§1.0).

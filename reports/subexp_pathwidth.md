@@ -395,3 +395,272 @@ same question (is the chain object ever `2^{o(n)}` on such a class).
     for f in <held PDFs listed in 01_audit/README.md>; do pdftotext -layout literature/$f.pdf reports/scratch/subexp_pathwidth/01_audit/$f.txt; done
     grep -n -i -E 'exponential time hypothesis|\bETH\b|SETH|subexponential|2\^\{o\(n\)' reports/scratch/subexp_pathwidth/01_audit/*.txt
     cat ~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean
+
+## 2. The formal frame: `SubexpCount`, `PathwidthSubexp`, `PathwidthSubexpOn` (item 02, 2026-11-04)
+
+Two files under `lean/MOSPFormalization/SubexpPathwidth/`, both imported by
+`lean/MOSPFormalization.lean`, `lake build` clean, no `sorry`, no `axiom`,
+every declaration on `[propext, Classical.choice, Quot.sound]`
+(`reports/scratch/subexp_pathwidth/02_frame/axiom_check.log`). Every
+later item of the loop states its theorems against the three `Prop`s
+defined here.
+
+### 2.1 The decision: the machine model is copied verbatim
+
+The item asked whether to copy OpenAI's `PrimitiveMachine` model or to use
+an abstract "decidable predicate with a time function". **Copied, verbatim,
+into its own file.** `PrimitiveMachine.lean` is lines 1–190 and 220 of
+`lean/ComparatorChallenges/SubexponentialSAT.lean` in the clone
+(commit `4eaee875`, 2026-10-29; file SHA-256 `4183b205…76685`), i.e. every
+definition of the comparator file — the CNF syntax and `count`, the
+canonical encoding `encodeCNF` and `formulaBitLength`, `PrimitiveMachine`
+(a multi-tape machine over Mathlib's `Turing.TM0.Stmt` and `Turing.Tape`,
+one scanned tape per state, halting into a `Bool`), `Trace`, the located
+configuration that monitors visited cells, `runtimeScale` and
+`runtimeBound` — with the namespaces unchanged, under an Apache-2.0 header
+naming the origin, and **without** lines 191–219, the theorem
+`exact_count_and_sat` and its `sorry`. The copy was checked byte for byte
+when made (`02_frame/README.md`); it compiles unchanged on our Mathlib
+(`1192d624`, toolchain `v4.34.0-rc2` against their `v4.34.1`). The clone
+itself was read with `cat` only and nothing in it was built or run.
+
+Why copy and not abstract:
+
+1. **Fidelity.** With the model copied, `SubexpCount k` is the comparator's
+   statement *character for character* (`02_frame/body_diff.log`: the 23
+   lines of the body are identical after stripping indentation and the
+   theorem's `:= by`). An abstract notion would be our translation of the
+   theorem into another model, and the translation — "their machine is
+   polynomially equivalent to this notion" — would be one more thing to
+   trust, with nothing in Lean to check it against.
+2. **Non-vacuity.** Without a cost model, "`∃ f` computing the count and
+   `∃ T` subexponential with `time ≤ T`" is provable outright (take the
+   mathematical `count` and any `T`): the hypothesis would be a theorem and
+   every conditional result empty. An abstract notion that is not vacuous
+   must carry its own cost axioms — more assumptions, not fewer.
+3. **No proof is copied.** The copied file contains definitions only. A
+   definition cannot be false, only inapposite, and whether
+   `PrimitiveMachine` is the right notion of "algorithm" is visible on the
+   page (it is an ordinary multi-tape Turing machine with a unary-framed
+   input; `TASK.md`'s "never import it into our `lean/`" is honoured, the
+   text is ours now under the licence).
+4. **The price**, recorded so that items 07–09 budget for it: a transfer
+   theorem `SubexpCount k → PathwidthSubexpOn C` is a statement about one
+   machine model, so it needs no translation between models, but it does
+   need a **composition fact** — a polynomial-time primitive machine that
+   writes `encodeCNF F` from `encodeGraph G k`, run before the counting
+   machine, with the time bounds adding — which the comparator does not
+   state and the collection proves, if at all, inside its own library. In
+   this development it would be a further named `Prop` (`MachineCompose`
+   or the like), in the pattern of `CubicPathwidthBound τ`. The same fact
+   is needed on the negative side (`PathwidthSubexp → X ∈ 2^{o(N)}`). So
+   every transfer theorem of this loop will read
+   `SubexpCount k → ⟨composition⟩ → ⟨the encoding's correctness and size⟩ → …`,
+   and the encoding's correctness is the only part that is *about
+   pathwidth*; it is the part items 08 and 09 prove.
+
+Licensing: Apache-2.0 permits the copy with attribution and notice; the
+header carries both, `literature/MISSING.md` records the origin, and the
+rest of the development stays MIT.
+
+### 2.2 The hypothesis, exactly
+
+```lean
+def SubexpCount (k : ℕ) : Prop :=
+  ∃ (machine : Computation.PrimitiveMachine)
+    (countTape answerTape : Fin machine.tapeCount) (C A S : ℝ) (d e : ℕ),
+    0 < C ∧ 0 < A ∧ 0 < S ∧ 0 < d ∧ 0 < e ∧
+    ∀ (n : ℕ) (F : SAT.CNF (Fin n)), SAT.WidthAtMost k F →
+      ∃ (time : ℕ) (final : LocatedCfg machine),
+        Trace (locatedStep machine) time (locatedInit machine (encodeCNF F)) final ∧
+        ⟨count tape = countWord (count F)⟩ ∧ ⟨answer tape = decide (0 < count F)⟩ ∧
+        final.config.state = Sum.inl (decide (0 < SAT.count F)) ∧ … ∧
+        (time : ℝ) ≤ runtimeBound C A d (formulaBitLength F) n ∧
+        ⟨every prefix visits ≤ S (L + 1)^e cells⟩
+
+def ExactCountAndSat : Prop := ∀ k : ℕ, 2 ≤ k → SubexpCount k
+```
+
+`runtimeBound C A d L n = C (L + 1)^d · 2^(A · ρ(n))` with
+`ρ(n) = n (log log(n + 16))² / √log(n + 16)` (`runtimeBound_eq`, by `rfl`).
+This is the **verified** statement and its weaker exponent (§1.0); the
+paper's `n log log n / √log n` and the fixed-density `n / √log n` are not
+in the collection's Lean library and are not restated. Neither `Prop` is
+proved, and `allowed_sorries.txt` is still empty: the gate counts `sorry`
+and `axiom` and finds none.
+
+Proved: `SubexpCount.anti` (`SubexpCount k → k' ≤ k → SubexpCount k'`, the
+same machine, since a width-`≤ k'` formula has width `≤ k`) and
+`ExactCountAndSat.subexpCount`. So a theorem that needs `SubexpCount 3`
+may assume `SubexpCount k` for any `k ≥ 3`, and the comparator gives all
+of them.
+
+### 2.3 The target, in the same model
+
+```lean
+abbrev GraphClass := ∀ n : ℕ, SimpleGraph (Fin n) → Prop
+
+noncomputable def encodeGraph (G : SimpleGraph (Fin n)) (k : ℕ) : List Bool :=
+  encodeNat n ++ encodeNat k ++ ⟨the n² adjacency bits, row by row⟩
+-- encodeGraph_length : (encodeGraph G k).length = (n + 1) + (k + 1) + n * n
+
+def IsSubexpExponent (f : ℕ → ℝ) : Prop := f =o[atTop] (fun n : ℕ => (n : ℝ))
+
+def PathwidthSubexpOn (C : GraphClass) : Prop :=
+  ∃ (machine : PrimitiveMachine) (c : ℝ) (d : ℕ) (f : ℕ → ℝ),
+    0 < c ∧ IsSubexpExponent f ∧
+    ∀ (n : ℕ) (G : SimpleGraph (Fin n)) (k : ℕ), C n G →
+      ∃ (time : ℕ) (final : machine.Cfg),
+        Trace machine.step time (machine.init (encodeGraph G k)) final ∧
+        final.state = Sum.inl (decide (pathwidth G ≤ k)) ∧
+        (time : ℝ) ≤ c * ((encodeGraph G k).length + 1) ^ d * 2 ^ (f n)
+
+def PathwidthSubexp : Prop := ⟨the same, over every G⟩
+```
+
+The choices, each deliberate:
+
+- **The parameter is `n`, the number of vertices.** `f = o(n)` is
+  `Asymptotics.IsLittleO` against `n`, so `2^(f n)` is `2^{o(n)}` in the
+  standard sense (quasi-polynomial time qualifies, `2^{εn}` for a fixed
+  `ε > 0` does not; `O*(2ⁿ)` and the `1.89ⁿ` of §1.1 do not). The
+  polynomial factor is in the input length `L = n² + n + k + 2`, never the
+  exponent, which is what `TASK.md`'s "every statement names its
+  parameter" asks: on dense graphs `L = Θ(n²)` and `2^{o(L)}` would be
+  trivial.
+- **The input is canonical and the model is the comparator's.** `n` and
+  `k` in the collection's unary code (`encodeNat`), then the adjacency
+  matrix; the decision is read off the halting state, as the comparator
+  reads its answer bit; the step is the plain `machine.step` (no space
+  monitoring, no space bound: this is a time statement).
+- **`pathwidth` is `Pathwidth.lean`'s**, the minimum width of a
+  `PathDecomposition`; by Kinnersley (`vertexSeparation_eq_pathwidth`) the
+  decision bit equals `decide (vertexSeparation G ≤ k)`
+  (`decide_pathwidth_le_eq`), and `pathwidthSubexpOn_iff_vertexSeparation`
+  restates the `Prop` with `vertexSeparation`, for item 08, whose
+  statements are made against `VertexSeparation.lean`. Decidability of the
+  comparisons is classical (`Classical.propDecidable`), as a `Prop` may be.
+- **A class is `∀ n, SimpleGraph (Fin n) → Prop`.** The item's
+  `C : SimpleGraph → Prop` is not a type (`SimpleGraph` takes a vertex
+  type). Nothing requires a class to be closed under isomorphism; a
+  theorem about an isomorphism-closed class (cobipartite, cubic, …) states
+  the closure itself if it needs it.
+- **`k` is unrestricted.** For `k ≥ n − 1` the answer is always `true`; a
+  machine may use that or not. Since `L` contains `k`, the polynomial
+  factor is `poly(n² + k)`, not `poly(n)`; harmless (a machine answers
+  `true` once it has read `n + 1` ones of `k`'s code), and a theorem that
+  prefers `poly(n)` may restrict to `k < n`.
+- **Single-machine form.** One machine and one `f = o(n)` for every
+  input, as in the comparator; Impagliazzo & Paturi's negation of ETH is
+  the weaker `∀ ε > 0 ∃ machine in 2^{εn}`. The source hypothesis is
+  single-machine, so a transfer from it lands in the single-machine form,
+  which implies the `∀ ε ∃` form; a theorem that starts from the `∀ ε ∃`
+  form would need the predicate restated.
+
+Proved: `PathwidthSubexpOn.mono` (a machine for `C` is a machine for every
+subclass) and `pathwidthSubexp_iff` (`PathwidthSubexp ↔
+PathwidthSubexpOn (fun _ _ => True)`), the two lemmas the item asked for,
+each by unpacking the existential.
+
+### 2.4 Glue between the two: the verified bound has the target's shape
+
+Two further lemmas, so that a transfer theorem can move from the
+comparator's bound to the target's without analysis of its own:
+
+- `Trace.config_of_locatedStep`: a trace of the located step projects to a
+  trace of the plain step on the underlying configurations
+  (`LocatedCfg.monitor_config : (c.monitor x).config = x`, then induction
+  on the trace). So `SubexpCount`'s `time` is a bound on `machine.step`,
+  the step `PathwidthSubexpOn` uses.
+- `runtimeScale_isLittleO`: `ρ(n) = o(n)`; hence
+  `isSubexpExponent_runtimeScale A : IsSubexpExponent (fun n => A * ρ n)`
+  for every `A`. The analytic content is `tendsto_log_sq_div_sqrt`,
+  `(log y)² / √y → 0`, from Mathlib's `isLittleO_log_rpow_rpow_atTop`
+  (`(log y)^2 = o(y^{1/2})`), composed with `log(n + 16) → ∞`.
+
+With these, `SubexpCount k` already has the form "a primitive machine
+counts, on canonical CNF input, in time `c (L + 1)^d 2^(f n)` with
+`f = o(n)`" — the same form as `PathwidthSubexpOn`, with the CNF's
+variable count in place of the vertex count. **That substitution is the
+whole question of the loop**: a transfer needs an encoding whose variable
+count is `o(n √log n / (log log n)²)` (§1.3.8), and §1.3.8's reason that
+no encoding on record comes close stands.
+
+### 2.5 What a transfer theorem will look like, given this frame
+
+For the record, the shape items 08–09 would prove, so that the frame is
+seen to be sufficient. Positive direction (item 09), on a class `C`:
+
+    SubexpCount k →
+    MachineCompose →                                   -- the named composition Prop of §2.1
+    (∃ enc : (n : ℕ) → (G : SimpleGraph (Fin n)) → ℕ → CNF (Fin (N n G)),
+       (∀ n G k, C n G → WidthAtMost k (enc n G k) ∧ (0 < count (enc n G k) ↔ pathwidth G ≤ k)) ∧
+       (fun n => A · ρ (N n)) = o(n) ∧ ⟨enc computable in polynomial time by a primitive machine⟩) →
+    PathwidthSubexpOn C
+
+The middle hypothesis is the one about pathwidth — the encoding's
+correctness (`sat ↔ pw ≤ k`, checked to 7 vertices before it is stated,
+proved against `VertexSeparation.lean`) and its size — and is where all of
+the loop's mathematics sits. Negative direction (items 07–08), for a
+problem `X` with instances of size `N` and a reduction `red` to pathwidth:
+
+    PathwidthSubexp →
+    MachineCompose →
+    (∀ I, X I ↔ pathwidth (red I) ≤ k I) ∧ (vertices of red I ≤ a · N(I) + b) ∧ ⟨red polynomial-time⟩ →
+    XSubexp
+
+with `XSubexp` defined for `X` in the style of `PathwidthSubexp` when item
+07 fixes `X`. The linearity condition "vertices `≤ a N + b`" is what makes
+`f(a N + b) = o(N)` from `f = o(n)`; a quadratic reduction gives
+`f(N²) = o(N²)`, which is nothing (plan §0.4.2).
+
+### 2.6 Checks
+
+- `lake build`: clean, both files imported by `MOSPFormalization.lean`
+  (the gate's import check).
+- Axiom audit: 17 declarations, all `[propext, Classical.choice, Quot.sound]`
+  (`02_frame/axiom_check.lean`, `.log`).
+- Textual fidelity of the hypothesis: `02_frame/body_diff.log` (identical).
+- One refuter subagent read both files blind to this section, looking
+  for a vacuous or trivially refutable `PathwidthSubexp` (a zero-step
+  trace, a degenerate machine, a loophole in the bound, the `k`
+  parameter, the decidability instances): none found. It confirmed in
+  Lean that `machine.init` never sits in a halting state, so `Trace.refl`
+  closes no loophole, and that `#print SubexpCount` with full names
+  resolves every constant to the copied `OAI.*` namespaces; the only
+  provable instances of `PathwidthSubexpOn` it could build are the
+  expected degenerate ones (the empty class; finite classes by lookup).
+  Its two referee points are folded into §2.3 (the `k` in `L`; the
+  single-machine form).
+- Verbatim copy: `diff` empty when made; regenerate per `02_frame/README.md`.
+- No reduction or encoding of pathwidth is stated here, so the brute-force
+  check to 7 vertices has nothing to apply to; `encodeGraph_length` is the
+  one computation and is proved.
+- `python3 Ralph_Loops/loop0014/gate.py`: see PROGRESS.md for the run.
+
+### 2.7 What this does not claim
+
+- That `SubexpCount k` holds for any `k`, or that `ExactCountAndSat` holds:
+  both are `def`s of `Prop`s with no proof and no axiom behind them. That
+  the collection's proof of `exact_count_and_sat` is correct is not
+  examined and not relied on.
+- That `PathwidthSubexp` or any `PathwidthSubexpOn C` holds; nothing here
+  is an algorithm.
+- That the `PrimitiveMachine` model is robust (that it simulates a RAM or
+  a standard multi-tape machine with polynomial overhead): plausible for
+  an ordinary multi-tape Turing machine, not proved, not needed by any
+  statement of this item.
+- That `SubexpCount` restates the *paper's* Theorem 1.1: it restates the
+  verified comparator, whose exponent is weaker (§1.0).
+- That the composition fact of §2.1 holds: it is not yet even stated; item
+  07 or 09 states it as a named `Prop` when first needed.
+- That `encodeGraph` is the input format any later encoding must use; it
+  is the canonical input of the *decision*, and a transfer theorem may
+  compute any other input from it under the composition fact.
+
+### 2.8 Regenerate
+
+    cd lean && lake build
+    lake env lean ../reports/scratch/subexp_pathwidth/02_frame/axiom_check.lean
+    cd .. && cat reports/scratch/subexp_pathwidth/02_frame/README.md   # the two diffs
+    python3 Ralph_Loops/loop0014/gate.py

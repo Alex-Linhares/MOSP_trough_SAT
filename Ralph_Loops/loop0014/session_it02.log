@@ -1,0 +1,116 @@
+# session it02 started 2026-11-04 18:42:35
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the existing report, and the Lean definitions this item is made against, then decide on the machine model and write `Frame.lean`.
+  > $ sed -n 1,200p reports/subexp_pathwidth_plan.md
+  > $ grep -n "^## \|^### " reports/subexp_pathwidth.md | head -60; echo ----; sed -n '/1.3.8/,/^### 1.4/p' reports/subexp_pathwidth.md | head -120
+  > $ cat ~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean
+  > $ cd /home/al/dev/MOSP/lean && ls MOSPFormalization/ | head -80; echo ----; cat MOSPFormalization.lean | head -80; echo ----; sed -n 1,80p MOSPFormalization/Verte
+  > $ cd /home/al/dev/MOSP && ls lean/MOSPFormalization/DegreeBound/; grep -n "CubicPathwidthBound\|ReductionPathwidthBound" -r lean/MOSPFormalization/DegreeBound/*.l
+  > $ cd /home/al/dev/MOSP/lean && sed -n 1,130p MOSPFormalization/DegreeBound/Pathwidth.lean; echo ----; sed -n 1,40p MOSPFormalization/Pathwidth.lean; echo ----; se
+  > $ cd /home/al/dev/MOSP && sed -n '/^### 1.3.8/,/^### 1.4/p' reports/subexp_pathwidth.md; echo ----; sed -n '/^### 1.4/,/^### 1.5/p' reports/subexp_pathwidth.md | 
+  > $ ls ~/dev/untrusted/openai-math/ | head; cat ~/dev/untrusted/openai-math/LICENSE 2>/dev/null | head -5; ls ~/dev/untrusted/openai-math/lean/ | head; sed -n 1,80p
+  > $ cd /home/al/dev/MOSP && head -40 literature/MISSING.md; grep -n "openai\|OpenAI\|Apache" literature/MISSING.md | head; echo ----; cat reports/scratch/subexp_pat
+  > $ cd /home/al/dev/MOSP/lean && ls -la .lake/build/lib/lean/MOSPFormalization.olean 2>/dev/null; git -C .. log -1 --format=%cd; (time lake build 2>&1 | tail -3) 2>
+  > $ cat ~/dev/untrusted/openai-math/lean/lean-toolchain; grep -A3 '"mathlib"' ~/dev/untrusted/openai-math/lean/lake-manifest.json | head -8; grep -A3 '"mathlib"' la
+  > $ cd /home/al/dev/MOSP && grep -n "^## \|^# " literature/MISSING.md; echo ----; tail -30 literature/MISSING.md; echo ----; sed -n 1,14p reports/subexp_pathwidth.m
+  > $ cd /home/al/dev/MOSP/lean && M=.lake/packages/mathlib/Mathlib; ls $M/Computability/TuringMachine/; grep -rn "^inductive Stmt\|^structure Tape\|^def Tape.mk₁\|^d
+  > $ cd /home/al/dev/MOSP && F=~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean; wc -l $F; sha256sum $F; grep -n "One fixed primitive mac
+  > $ cd /home/al/dev/MOSP/lean && mkdir -p MOSPFormalization/SubexpPathwidth && F=~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean && OUT
+  > $ (time lake build MOSPFormalization.SubexpPathwidth.PrimitiveMachine 2>&1 | tail -15) 2>&1
+  > $ cat > MOSPFormalization/SubexpPathwidth/Frame.lean <<'EOF'
+/-
+Copyright (c) 2026 Alexandre Linhares. All rights reserved.
+Released under the MIT license as desc
+  > $ M=.lake/packages/mathlib/Mathlib; grep -n "theorem isLittleO_log_rpow\|theorem isLittleO_pow_log\|theorem isLittleO_log_pow" $M/Analysis/SpecialFunctions/Pow/As
+  > $ M=.lake/packages/mathlib/Mathlib; sed -n 360,380p $M/Analysis/SpecialFunctions/Pow/Asymptotics.lean; sed -n 88,95p $M/Analysis/Asymptotics/Lemmas.lean
+  > $ F=MOSPFormalization/SubexpPathwidth/Frame.lean && python3 - <<'EOF'
+import re,io
+p='MOSPFormalization/SubexpPathwidth/Frame.lean'
+s=open(p).read()
+s=s.replace("
+  > $ F=MOSPFormalization/SubexpPathwidth/Frame.lean && python3 - <<'EOF'
+p='MOSPFormalization/SubexpPathwidth/Frame.lean'
+s=open(p).read()
+s=s.replace("""/-- The dec
+  > $ sed -i 's|^import MOSPFormalization.DegreeBound.StepBound$|import MOSPFormalization.DegreeBound.StepBound\nimport MOSPFormalization.SubexpPathwidth.PrimitiveMac
+  > $ cd /home/al/dev/MOSP && D=reports/scratch/subexp_pathwidth/02_frame && mkdir -p $D && cat > $D/axiom_check.lean <<'EOF'
+/-
+Axiom audit of loop0014 item 02 (`lea
+  > $ D=reports/scratch/subexp_pathwidth/02_frame && F=~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean && { echo "# textual check: the bo
+  > $ nice -n 19 python3 Ralph_Loops/loop0014/gate.py > /tmp/gate02.log 2>&1; echo "GATE_EXIT=$?" >> /tmp/gate02.log
+  > $ sed -n '/^## Obtained since/,/^## Also missing/p' literature/MISSING.md | head -20; echo ----; sed -n '/^## The separator first moment/,$p' literature/MISSING.m
+  > $ D=reports/scratch/subexp_pathwidth/02_frame && F=~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean && { echo "# Textual check: the bo
+
+Both checks pass: the hypothesis body is identical to the comparator's, and every declaration rests on the three standard axioms. Writing the report section now while the gate runs.
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 2. The formal frame: `SubexpCount`, `PathwidthSubexp`, `PathwidthSubexpOn` (item 02, 2026-11-04)
+
+Two files under
+  > $ cat >> literature/MISSING.md <<'EOF'
+
+## The OpenAI mathematics collection (loop0014 item 02, 2026-11-04)
+
+Not missing — held locally, read-only, and recorded h
+  > Agent {"description": "Refuter read of Frame.lean", "prompt": "You are a refuter. Read /home/al/dev/MOSP/lean/MOSPFormalizatio
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Read /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Frame.lean
+  > Read /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean
+
+Next I need two results that are both in flight: the gate's exit and the refuter's findings. Neither depends on me, so I'll draft the PROGRESS.md section now and fill in the gate line when it lands.
+  > $ date '+%Y-%m-%d %H:%M' && sed -i 's/^Current: 1\/12 SOLVED$/Current: 2\/12 SOLVED/' Ralph_Loops/loop0014/PROGRESS.md && grep -n "^Current:" Ralph_Loops/loop0014
+  > $ sed -i 's/^## Iteration 2 — 2026-11-04 19:35$/## Iteration 2 — 2026-11-04 18:52/' Ralph_Loops/loop0014/PROGRESS.md && grep -n "^## Iteration 2" Ralph_Loops/loop
+
+Both remaining inputs are background results. I'll poll the gate log in a bounded foreground wait.
+  > $ for i in $(seq 1 110); do grep -q GATE_EXIT /tmp/gate02.log 2>/dev/null && break; sleep 5; done; cat /tmp/gate02.log
+  > $ grep -rn "exact_count_and_sat" --include=*.md --include=*.lean --include=*.txt . 2>/dev/null | grep -v "^./Ralph_Loops/loop0014/session" | head -30; echo ---; g
+  > $ cat reports/scratch/subexp_pathwidth/02_frame/README.md; echo ---; sed -n 410,440p reports/subexp_pathwidth.md; echo ---; sed -n 15,30p lean/MOSPFormalization/P
+  > $ cat reports/scratch/subexp_pathwidth/02_frame/body_diff.log | head -40; echo ---; ls reports/scratch/subexp_pathwidth/02_frame/
+  > $ cat > /tmp/refute_frame.lean <<'EOF'
+import MOSPFormalization.SubexpPathwidth.Frame
+open MOSPFormalization.SubexpPathwidth
+set_option pp.fullNames true
+#print S
+
+Findings (lines refer to `Frame.lean`; checks run in a scratch file against the built library, nothing edited).
+
+1. **Not vacuous, not trivially refutable** (ll. 214–231). Zero-step loophole closed: `Trace.refl` forces `final = machine.init …`, whose state is `.inr machine.start` (PrimitiveMachine.lean l. 152), never `Sum.inl _` — I proved `¬ (m.init inp).state = Sum.inl b` in Lean. Negative `f`, `d = 0`, tiny `c` only tighten the bound (the Prop is existential, so they help neither a proof nor a refutation); `f` is quantified before `n, G, k`, so it is uniform. `init` places the input on `inputTape` via `Tape.mk₁`, head on the first bit, other tapes blank (`none`); readable. The `k` parameter is unbounded, but the machine may answer `true` once it has read `n + 1` ones of `k`, so no obstacle. `Classical.propDecidable` is harmless: any two `Decidable` instances give the same `decide` (checked). Expected degeneracies only: `PathwidthSubexpOn (fun _ _ => False)` is provable (I built the one-state machine), and finite classes are provable by lookup — correct behaviour, not a flaw.
+
+2. **`IsSubexpExponent` is the standard `2^{o(n)}`** (l. 125). Mathlib's `IsLittleO` on `ℕ → ℝ` says `∀ ε > 0, eventually |f n| ≤ ε n`: `(log n)^c` allowed, `εn` excluded, constants allowed (so P-time is included, as it should be). One referee remark: this is the *single-machine* form; Impagliazzo–Paturi's `¬ETH` is `∀ ε ∃ machine in 2^{εn}`. Since the source hypothesis is also single-machine, the transfer direction is consistent — say so once in the report.
+
+3. **`SubexpCount` matches** (ll. 84–107). `#print SubexpCount` with `pp.fullNames` resolves every name to `OAI.Algorithms.SubexponentialSAT.*`, none to Mathlib's root `Computation` or `Encoding` (no root `Encoding.encodeNat` exists). I could not diff against the untrusted clone myself; `02_frame/body_diff.log` records 23 identical lines, and the printed term is consistent with it.
+
+4. **`encodeGraph` is well-formed** (ll. 196–204): `encodeNat n ++ encodeNat k ++ n²` row-major bits, each unary block self-delimiting, so decodable. Length `(n+1)+(k+1)+n·n` is right. Redundancy (symmetric, zero diagonal) is harmless.
+
+5. **Minor referee points, statements only.** (a) `L` contains `k`, so the polynomial factor is `poly(n² + k)`, not `poly(n)`; harmless (trivial for `k ≥ n`), but a sentence saying so, or restricting to `k < n`, would pre-empt the objection. (b) `0 < d` in `SubexpCount` vs unconstrained `d` in `PathwidthSubexpOn`: harmless, `d = 0 ⊂ d = 1`. (c) The graph is labelled (`SimpleGraph (Fin n)`), so the machine is required to be correct on every labelling — stronger than isomorphism-invariant, fine as a hypothesis target. (d) No space bound in `PathwidthSubexpOn`, which is the right (weaker) conclusion form.
+
+No concrete problem found.
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'
+s=open(p).read()
+old="""- **`k` is unrestricted.** For `k ≥ n − 1` the answer is always `true`; a
+  machine ma
+
+Gate passes. Finishing PROGRESS.md with the gate result, blockers and next steps, and a final build check since the report edit touched nothing in Lean.
+  > $ cat >> Ralph_Loops/loop0014/PROGRESS.md <<'EOF'
+- One refuter subagent (the only one used, 1 of 4) read both files blind
+  to §2 looking for a vacuous or trivia
+
+Item 02 is done: the formal frame builds, the gate passes, and nothing is committed (the driver commits).
+
+**What was decided.** OpenAI's `PrimitiveMachine` model is copied verbatim, not abstracted. The copy is lines 1 to 190 and 220 of the comparator file, definitions only, under an Apache-2.0 header with the commit and file hash, checked byte for byte, and it compiles unchanged on our Mathlib. The reasons are in the report's §2.1. With the model copied, `SubexpCount k` is the comparator theorem's body character for character, which a line-by-line diff confirms. An abstract "function plus time function" would be provable outright without a cost model, so the hypothesis would have been vacuous.
+
+**What is in Lean**, under `lean/MOSPFormalization/SubexpPathwidth/`, both files imported by the root module:
+- `SubexpCount k` and `ExactCountAndSat` as `def`s of `Prop`s, never proved, never axioms. They restate the verified exponent, not the paper's sharper one. `SubexpCount.anti` lowers `k`.
+- `PathwidthSubexpOn C` and `PathwidthSubexp`: a primitive machine decides `pathwidth G ≤ k` on a canonical input within `c (L+1)^d 2^(f n)` with `f = o(n)` in the vertex count. The two requested lemmas are proved, plus a vertex-separation form for item 08.
+- Glue for later transfer theorems: a located trace projects to a plain-step trace, and the verified runtime scale is `o(n)`, so the hypothesis already has the target's shape with the CNF variable count in place of `n`.
+
+**Checks.** Axiom audit on all 17 declarations shows only the three standard axioms. One refuter subagent, blind to the report, searched for a vacuous or trivially refutable predicate and found none. Its two referee points are folded into the report. The gate passed in full: build, zero `sorry`, no `axiom`, both test suites, paper check.
+
+**Files touched.** The two Lean files, the root import list, report §2, a `literature/MISSING.md` entry recording the copy's origin, scratch logs under `02_frame/`, PROGRESS.md, and item 02 marked done in `iterations.md`.
+
+**For the next items.** Any transfer theorem will need a machine-composition fact that the comparator does not state. The report's §2.1 says it is to be carried as a further named `Prop`, and §2.5 writes out the exact shape of both the positive and negative transfer theorems in this frame.
+
+# result: success in 1720s, 37 turns, cost $11.51

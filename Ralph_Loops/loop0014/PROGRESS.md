@@ -8,7 +8,7 @@ would refute, and a map of the post-ETH hypothesis landscape for width
 parameters; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0014/gate.py`.
 
-Current: 1/12 SOLVED
+Current: 2/12 SOLVED
 
 ## Setup — 2026-11-04
 
@@ -103,3 +103,80 @@ items 04/05 should look for a certificate of "`vs ≤ k`" with total
 incidence `o(n √log n)` and constraints of any width, not for
 bounded-width clauses. Missing papers for item 11's `MISSING.md`: listed at
 the end of §1.2.
+
+---
+
+## Iteration 2 — 2026-11-04 18:52
+
+Item 02, the formal frame. Report: `reports/subexp_pathwidth.md` §2.
+Lean: `lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean`
+(verbatim copy) and `SubexpPathwidth/Frame.lean` (ours), both imported by
+`lean/MOSPFormalization.lean`. Scratch:
+`reports/scratch/subexp_pathwidth/02_frame/` (README with regenerate
+commands, axiom audit, the textual diff of the hypothesis against the
+comparator).
+
+### Completed
+
+- **Decision (§2.1): OpenAI's `PrimitiveMachine` model is copied
+  verbatim**, lines 1–190 and 220 of the comparator file (definitions
+  only; the theorem and its `sorry` are not copied), under an Apache-2.0
+  header naming the origin and commit, byte-for-byte checked, compiling
+  unchanged on our Mathlib; origin recorded in `literature/MISSING.md`.
+  Reasons: `SubexpCount k` is then the comparator's body character for
+  character (`02_frame/body_diff.log`, 23 lines identical); an abstract
+  "function with a time function" is provable outright without a cost
+  model, so the hypothesis would be vacuous; no proof is copied. The
+  price: any transfer theorem will need a machine-composition fact as a
+  further named `Prop` (the comparator does not state one).
+- `SubexpCount (k : ℕ) : Prop` and `ExactCountAndSat : Prop`
+  (`∀ k ≥ 2, SubexpCount k`): `def`s, never proved, never axioms; the
+  **verified** exponent `n (log log(n + 16))² / √log(n + 16)`, not Theorem
+  1.1's. `SubexpCount.anti` (`k' ≤ k`) proved.
+- `PathwidthSubexpOn (C : GraphClass)` and `PathwidthSubexp`: a primitive
+  machine decides `pathwidth G ≤ k` on the canonical input `encodeGraph G k`
+  (`n`, `k` in the collection's unary code, then the `n²` adjacency bits;
+  `encodeGraph_length` proved) within `c (L + 1)^d 2^(f n)`,
+  `IsSubexpExponent f := f =o[atTop] n` — the parameter is the vertex
+  count, the polynomial factor is in the input length. `GraphClass :=
+  ∀ n, SimpleGraph (Fin n) → Prop` (the item's `SimpleGraph → Prop` is not
+  a type). The two asked-for lemmas proved: `PathwidthSubexpOn.mono`,
+  `pathwidthSubexp_iff`; plus `pathwidthSubexpOn_iff_vertexSeparation`
+  (Kinnersley) for item 08.
+- Glue (§2.4): `Trace.config_of_locatedStep` (a located trace projects to
+  a plain-step trace, so the comparator's time is a bound on
+  `machine.step`) and `runtimeScale_isLittleO` /
+  `isSubexpExponent_runtimeScale` (the verified exponent is `o(n)`, via
+  `(log y)² / √y → 0`), so the hypothesis already has the target's shape
+  with the CNF variable count in place of `n` — which is the loop's
+  question, §1.3.8 unchanged.
+- §2.5 records the exact shape a transfer theorem takes in this frame, in
+  both directions, so items 07–09 can see the frame is sufficient.
+- Axiom audit: 17 declarations, all on `[propext, Classical.choice,
+  Quot.sound]`. `lake build` clean; no `sorry`, no `axiom`;
+  `allowed_sorries.txt` still empty.
+- No reduction or encoding of pathwidth is stated, so TASK.md's
+  brute-force check to 7 vertices has nothing to apply to (README says so).
+- One refuter subagent (the only one used, 1 of 4) read both files blind
+  to §2 looking for a vacuous or trivially refutable `PathwidthSubexp`:
+  none found; its two referee points (the `k` inside `L`; the
+  single-machine form against Impagliazzo–Paturi's `∀ ε ∃ machine`) are
+  folded into §2.3 and §2.6.
+- Gate: `python3 Ralph_Loops/loop0014/gate.py` **PASS** — `lake build` ok,
+  0 `sorry`, no `axiom`, tests 1,931 passed / 2 skipped / 1 xfailed
+  (535 s), `pathwidth_solver` 123 passed (725 s, under a one-minute load
+  of 24), paper check clean.
+
+### Blockers
+
+None. Not committed (the driver commits). `solutions/` untouched; no run
+on any instance; nothing downloaded.
+
+### Next
+
+Items 03–06 can run in any order. Item 03 (the reduction catalogue) should
+start from Bonnet's 3-SAT → treewidth reduction and the `pw = tw` question
+(iteration 1's finding), and define `XSubexp` for its chosen `X` in the
+style of `PathwidthSubexp` (§2.5 gives the shape). Whichever of 07 and 09
+first needs the machine-composition fact states it as a named `Prop`
+(§2.1, item 4), never proves it from the clone.

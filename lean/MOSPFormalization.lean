@@ -73,3 +73,5 @@ import MOSPFormalization.DegreeBound.Step
 import MOSPFormalization.DegreeBound.ReductionTheorem
 import MOSPFormalization.DegreeBound.Pathwidth
 import MOSPFormalization.DegreeBound.StepBound
+import MOSPFormalization.SubexpPathwidth.PrimitiveMachine
+import MOSPFormalization.SubexpPathwidth.Frame

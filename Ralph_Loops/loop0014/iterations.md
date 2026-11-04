@@ -41,7 +41,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   NP-hard width problem. One subagent at most. Ends with "what this does
   not claim".
 
-- [ ] **02 The formal frame: `SubexpCount`, an algorithm-with-time-bound notion, and `PathwidthSubexp`.**
+- [x] **02 The formal frame: `SubexpCount`, an algorithm-with-time-bound notion, and `PathwidthSubexp`.**
   In `lean/MOSPFormalization/SubexpPathwidth/Frame.lean`: decide, and
   record in the report, whether to copy OpenAI's `PrimitiveMachine` model
   (`lean/ComparatorChallenges/SubexponentialSAT.lean`, 220 lines over

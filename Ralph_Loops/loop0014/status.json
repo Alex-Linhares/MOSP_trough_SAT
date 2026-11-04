@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-04 18:31:21",
+  "updated": "2026-11-04 19:11:16",
   "phase": "tests",
-  "started": "2026-11-04 18:07:39",
-  "item": "01 The audit and the kill check: exact bases, ETH-conditional lower bounds, and what the c"
+  "started": "2026-11-04 18:42:35",
+  "item": "02 The formal frame: `SubexpCount`, an algorithm-with-time-bound notion, and `PathwidthSub"
 }
