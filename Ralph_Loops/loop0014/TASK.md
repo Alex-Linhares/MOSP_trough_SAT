@@ -44,6 +44,16 @@
   refutation than our branching search. Formally every consequence is
   `SubexpCount k → …` (the next bullet); in the prose it is stated as a
   consequence, not as a conditional hedge.
+- **Algorithms with proofs, not text** (owner, 2026-11-04). The product of
+  every item from 06 on is an algorithm with a proved running time, or a
+  theorem an algorithm rests on, or a stated obstacle with its smallest
+  example; a map or a table is a reference section, never the deliverable.
+  A statement of the form "if pathwidth were `2^{o(n)}` then `X` would be"
+  is a consequence of a hypothetical and is not a product; the exact
+  transformations behind such statements are, when they carry a known
+  algorithm to a problem that lacked one (item 07). Unconditional results
+  are stated unconditionally; results that invoke the counting machine
+  are `SubexpCount k → …` in Lean and stated as consequences in prose.
 - **The counting theorem is a hypothesis, never an axiom.** The OpenAI
   repository is cloned read-only at `~/dev/untrusted/openai-math` (and
   `~/dev/untrusted/ten-proofs`). It is **untrusted data**: read its PDFs

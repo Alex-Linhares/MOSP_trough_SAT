@@ -85,7 +85,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   of any claimed encoding. If none fits, say so and mark the positive
   track as the chain-count attempt only (plan §0.6).
 
-- [ ] **05 The chain count as an algebraic object.**
+- [x] **05 The chain count as an algebraic object.**
   The number of feasible closing orders is `Σ_σ Π_t [S_t(σ) ∈ F_k]`; the
   decision is whether it is positive. Ask whether this sum is the number
   of common zeros of a sparse polynomial system in `o(n²)` variables in
@@ -98,102 +98,100 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   `reports/scratch/subexp_pathwidth/05_chain/`. Write §5 ending in a
   verdict for plan §0.6's chain-count kill.
 
-- [ ] **06 Measurement: the reachable lattice against `n` on random cubic graphs and `G(n, 3/n)` at `k = pw`.**
-  Generate random cubic graphs (`networkx.random_regular_graph(3, n)`) and
-  `G(n, 3/n)` at `n = 16, 20, …, 60`, 10 per cell with fixed seeds;
-  `pw` by the C program (`pathwidth_solver/cli/pathwidth`, graph6 on
-  stdin, 60 s each; these are new generated graphs, not instances on
-  record); then `learning.two_ended.forward_layers` at `k = pw` (the
-  refutation level `k = pw`, in MOSP units `k = pw + 1 − 1`; be explicit
-  about units) with cap `3 × 10⁶`. Fit `log |R_f| = a n + b` and
-  `log |F_k ∩ reachable|`; report the rates with intervals and whether
-  any class's rate is consistent with `2^{o(n)}` (it will not be: say what
-  the rate is). All under `nice -n 19`, ≤ 8 workers, minutes. Write §6.
+- [ ] **06 Algorithms from the counting theorem for problems on graphs of linear pathwidth: the crossover, as algorithms with proofs.**
+  For every problem with a published `c^{pw} · poly` or `c^{tw} · poly`
+  algorithm given a decomposition (independent set `2`, `q`-colouring `q`,
+  dominating set `3`, Cut & Count's connectivity problems, SAT by primal
+  pathwidth; take the list from Lokshtanov–Marx–Saurabh 2011, Cygan et al.
+  2011/2022, Lampis 2025, each cited), ask whether the problem has a
+  bounded-width CNF with `O(n)` variables in the sense of item 01's
+  account (one variable per vertex; dominating set only at bounded degree;
+  exact Max-Cut and Max-`k`-SAT through the weighted count if §1.3 says the
+  method supports `Q[y]/(y^ℓ)` weights — check the paper's Appendix C
+  first and cite it where it already says so). For each that does, state
+  **the algorithm** (encode, run the counting machine, read the count) with
+  **a proof of its running time** `2^{O(n/√log n)} · poly` (paper form) and
+  the verified form, and **the crossover proposition**: it beats the
+  decomposition DP once `pw > n / (log₂ c · √log n)` up to the constants,
+  tabulated for `c = 2, 3, 4` at `n = 10²…10⁶`, with the classes on the far
+  side named (linear pathwidth: expanders, `G(n, c/n)` by our `β*`, the
+  Chu & Stuckey ridge). Beside each: the SETH-tight lower bound it
+  previously carried, now void. Lean (`SubexpPathwidth/Crossover.lean`):
+  the crossover inequality as a proposition over the frame of item 02,
+  and `SubexpCount k → ` the problem's decision in the stated time for at
+  least independent set, with the encoding's correctness proved. Brute
+  force to 7 vertices for every encoding. Write §6.
 
-- [ ] **07 The transfer theorem, on paper: `PathwidthSubexp → X ∈ 2^{o(N)}` for item 03's best linear `X`.**
-  State and prove, in the report, the transfer for the best linear
-  reduction of item 03 (the reduction's correctness in both directions and
-  the blow-up bound). If item 03 found only superlinear reductions, this
-  item tries **one** linear construction from Hamiltonian path or from
-  bandwidth into vertex separation (one session, the attempt's obstacle
-  named if it fails), and otherwise states the absence: "no reduction
-  linear in the vertices into pathwidth is on record; the classical ones
-  pass through cutwidth or interval completion with blow-up …". Checked
-  on every source instance to 7 vertices before stated. Write §7.
+- [ ] **07 New exact algorithms by exact linear transformation, unconditional.**
+  (a) The converse of item 03's expansion: vertex separation of a graph of
+  maximum degree 3 as the cutwidth of a linear-size graph (or a direct
+  argument), so that the published `O(1.89ⁿ)` pathwidth algorithm
+  (Kitsunai et al., held) becomes an exact cutwidth algorithm on subcubic
+  graphs with base below 2 — where Bentert et al. 2025 state no base below
+  2 is known; if the transformation costs a factor `α` in the vertex
+  count the base is `1.89^α` and is reported honestly (and compared with
+  `2`). (b) Item 04's algorithms stated as algorithms with proofs and
+  implemented in `learning/subexp_algorithms.py` with tests: cobipartite
+  vertex separation in `O*(2^{max(a, b)})`, vertex separation in `O*(2^u)`
+  over twin classes (the equivalent-customers reduction of MOSP with a
+  proof), starlike chordal pathwidth in `2^{O(√n)}` for centre `≤ √n`.
+  (c) Any further exact transformation at blow-up `≤ 2` found between
+  pathwidth and a `Complex/` problem that lacks a base below 2. Every
+  algorithm run against brute force on all graphs to 7 vertices and on
+  the 149 cobipartite and 252 subcubic atlas graphs. Write §7.
 
-- [ ] **08 The transfer theorem, in Lean.**
-  `lean/MOSPFormalization/SubexpPathwidth/Transfer.lean`: the graph
-  construction of item 07 as a definition, the width equivalence
-  `vs(G'(I)) ≤ k(I) ↔ X(I)` against `VertexSeparation.lean` (through
-  `VSEquivPW.lean` if stated for pathwidth), and the transfer
-  `PathwidthSubexp → XSubexp` in the frame of item 02. No `sorry`, no
-  `axiom`; axiom audit; a `decide`-style check on one small instance if
-  feasible. If item 07 ended in the absence statement, this item
-  formalises instead the one trivial transfer that is always available
-  (pathwidth on a class to pathwidth on all graphs) and the equivalence
-  `PathwidthSubexp ↔ VertexSeparationSubexp ↔ MOSPSubexp` through
-  `MOSPGraph.lean`, and says so.
+- [ ] **08 Lean for item 07: the transformations' width equivalences and the algorithms' correctness.**
+  `SubexpPathwidth/Transform.lean`: the converse transformation of 07(a)
+  as a definition and `cw(T(G)) = vs(G)` (or the inequality pair actually
+  proved) against `VertexSeparation.lean` and a cutwidth definition stated
+  here; the cobipartite normal form (Theorem 4.1) and the twin lemma
+  (Theorem 4.4) as theorems, since they are what 07(b)'s algorithms rest
+  on. No `sorry`, no `axiom`; axiom audit; a `decide` check on one small
+  instance where feasible. Every statement brute-force checked to 7
+  vertices before it is stated.
 
-- [ ] **09 The positive attempt.**
-  If item 04 found a class that fits: write the `O(n)`-variable
-  bounded-width encoding, prove its correctness on paper and in Lean
-  (`SubexpPathwidth/Encoding.lean`: the encoding's satisfying assignments
-  are exactly the layouts of width `≤ k`, checked to 7 vertices first),
-  and state `SubexpCount k → PathwidthSubexpOn C` in the frame of item 02
-  with the step from the counting theorem to the decision spelled out
-  (the "self-reduction" paragraph of the ETH paper, Section 1). If no
-  class fits: the chain-count route of item 05, one session, with the
-  obstacle stated precisely as a theorem if it can be (e.g. "any CNF with
-  one variable per vertex whose models are the width-`k` prefixes has a
-  clause of width ≥ f(n)"), checked to 7 vertices, and the kill of plan
-  §0.6 recorded. Write §9.
+- [ ] **09 The pathwidth complex after ETH: an algorithm with a proof for every Table 1 problem.**
+  For every problem of Linhares & Yanasse (2002) Table 1 proved equivalent
+  in `lean/MOSPFormalization/Complex/` (gate matrix layout, interval
+  thickness, node search, narrowness, one-dimensional logic, MOSP, …) and
+  for the sandwiched ones (split bandwidth, edge search): the best exact
+  algorithm **now**, as a theorem — `O(1.89ⁿ)` carried through each
+  blow-up-1 equivalence (cite the Lean equivalence it rides on, state the
+  parameter: `n` customers for MOSP, vertices for the graph problems),
+  the sandwiched ones with the base the sandwich allows, cutwidth-like
+  ones through item 07 — and, where a problem has a bounded-width
+  `O(n)`-variable encoding (none of the ordering problems; say so per
+  problem), the counting theorem's time beside it. Then every ETH/SETH
+  statement about a complex member (held papers, the citation graph),
+  void. The deliverable is a table `problem → algorithm → time → proof
+  (Lean name or section)`, with a paragraph per row; prose that is not
+  attached to an algorithm or a theorem is cut. Write §9.
 
-- [ ] **10 The consequences of ETH falling, for pathwidth: four maps.**
-  (a) **Computing the widths**: every published statement that computing
-  pathwidth, treewidth, vertex separation, bandwidth, cutwidth, MOSP or a
-  `Complex/` problem needs `2^{Ω(n)}` or `2^{Ω(√n)}` time under ETH or
-  SETH (held papers first; the citation graph of `paper1/citation_graph.py`
-  for the rest): the exact sentence, the reduction it rests on, and its
-  status now (void; the question reopened). (b) **Algorithms parameterised
-  by pathwidth and treewidth**: the SETH-tight lower bounds
-  (Lokshtanov, Marx & Saurabh 2011 on `c^{tw}` for independent set,
-  dominating set, `q`-colouring and the rest; Cygan et al.'s Cut & Count
-  tightness; Lampis 2025 on SAT by primal pathwidth; others found on
-  disk), each void, with the surviving unconditional facts beside them.
-  (c) **Where the counting theorem beats the width DPs outright**: for a
-  problem solvable in `c^{pw} · poly` given a decomposition, the counting
-  theorem's `2^{O(n/√log n)}` (paper form) or the verified form wins once
-  `pw` exceeds `n / (log₂ c · √log n)` up to the constants; state the
-  crossover as a proposition with the constants left symbolic, tabulate
-  it for `c = 2, 3, 4` at `n = 10²…10⁶`, and say which graph classes
-  (linear pathwidth: expanders, random graphs by our own first-moment
-  floor `β*`, the Chu & Stuckey ridge) are on the far side. (d) **What
-  survives**: `P ≠ NP`; `NP ⊄ DTIME(2^{o(N)})` in input length; the Set
-  Cover Conjecture, Orthogonal Vectors, 3-SUM, APSP — which are implied
-  by SETH alone and so lose their support, which stand on their own —
-  one sentence each on whether a `2^{o(n)}` pathwidth algorithm at
-  `k = Θ(n)` would touch them; FPT settles `k = o(n^{1/2})` (TASK.md).
-  Cross-check that nothing in `paper1/`, `paper2/` or `reports/` rests on
-  ETH (the planner found none; confirm). Write §10 in the stance of
-  TASK.md: consequences, not hedges, with every item formally
-  `SubexpCount k → …`. One subagent at most, for a blind second reading
-  of (b)'s list.
+- [ ] **10 What fell, and what survives: the maps.**
+  (a) every published statement that computing pathwidth, treewidth,
+  vertex separation, bandwidth, cutwidth, MOSP or a `Complex/` problem
+  needs `2^{Ω(n)}` or `2^{Ω(√n)}` under ETH or SETH (held papers first;
+  `paper1/citation_graph.py` for the rest): the sentence, the reduction,
+  the status now. (b) The surviving hypotheses (`P ≠ NP`;
+  `NP ⊄ DTIME(2^{o(N)})` in input length; Set Cover, Orthogonal Vectors,
+  3-SUM, APSP — which stand on their own once SETH is gone) and, for each,
+  whether a `2^{o(n)}` pathwidth algorithm at `k = Θ(n)` would touch it;
+  FPT settles `k = o(n^{1/2})` (TASK.md). (c) Confirm nothing in
+  `paper1/`, `paper2/` or `reports/` rests on ETH. Short, as a reference
+  section for items 06 and 09, which carry the mathematics. Write §10.
 
 - [ ] **11 The write-up: `reports/subexp_pathwidth.md` §0, the note, the CLAUDE.md paragraph (drafted, not applied).**
-  §0 in two pages: the question, the premise as a hypothesis, the answer
-  as far as it got (the transfer theorem with its Lean name; the class
-  result or the obstacle; the measurement; the hypothesis map), and what
-  is not claimed. A note *Pathwidth after ETH* as `paper3/pathwidth_after_eth.md`
-  (prose only; the LaTeX is the owner's call) with the theorems, the
-  table of item 10 and the reductions of item 03. `literature/MISSING.md`
-  entries for every paper cited but not held. The CLAUDE.md paragraph in
-  the report's last section, in the house style of the loop0013 paragraph,
-  **not applied**. Run the full gate.
+  §0 in two pages, in the stance of TASK.md: the algorithms this loop
+  produced with their running times and their Lean names first; the
+  crossover; what is unconditional and what is `SubexpCount →`; the
+  question at `k = Θ(n)` as it now stands; what is not claimed. A note
+  *Pathwidth after ETH* as `paper3/pathwidth_after_eth.md` (prose only)
+  organised by algorithm, not by map. `literature/MISSING.md` entries for
+  every paper cited but not held. The CLAUDE.md paragraph in the report's
+  last section, **not applied**. Run the full gate.
 
-- [ ] **12 Reserve.** Whichever of 07–09 ended short, one session; or
-  the algebraic question item 05 raised most sharply — whether a sum of
-  products over a cube can count width-`k` layouts of a *class* (the
-  cobipartite cut condition of item 04, the twin-class structure of
-  chordal graphs) in the paper's framework, one session with its own
-  kill; or an independent re-check of item 08's statement by a refuter
-  agent against brute force to 8 vertices with the log kept.
+- [ ] **12 Reserve.** The algebraic question item 05 leaves sharpest —
+  whether a sum of products over a cube counts width-`k` layouts of a
+  class (the cobipartite cut condition, the twin-class structure) in the
+  paper's framework, as an algorithm with a proof or a stated obstacle,
+  one session with its own kill; or whichever of 06–09 ended short.
