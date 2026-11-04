@@ -148,18 +148,36 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   clause of width ≥ f(n)"), checked to 7 vertices, and the kill of plan
   §0.6 recorded. Write §9.
 
-- [ ] **10 The hypothesis map: what fell with ETH, and what survives, for width parameters.**
-  A table: every published statement about pathwidth, treewidth, vertex
-  separation, bandwidth, cutwidth, MOSP or the `Complex/` problems that
-  rests on ETH or SETH (held papers first; the citation graph of
-  `paper1/citation_graph.py` for the rest), the exact sentence, and its
-  status if the counting theorem stands; then the hypotheses that survive
-  (`P ≠ NP`; `NP ⊄ DTIME(2^{o(N)})` in input length; the Set Cover
-  Conjecture, Orthogonal Vectors, 3-SUM, APSP — which of these are
-  implied by SETH alone and so lose their support, which stand on their
-  own) with one sentence each on whether a `2^{o(n)}` pathwidth algorithm
-  would touch them. Cross-check that nothing in `paper1/`, `paper2/` or
-  `reports/` rests on ETH (the planner found none; confirm). Write §10.
+- [ ] **10 The consequences of ETH falling, for pathwidth: four maps.**
+  (a) **Computing the widths**: every published statement that computing
+  pathwidth, treewidth, vertex separation, bandwidth, cutwidth, MOSP or a
+  `Complex/` problem needs `2^{Ω(n)}` or `2^{Ω(√n)}` time under ETH or
+  SETH (held papers first; the citation graph of `paper1/citation_graph.py`
+  for the rest): the exact sentence, the reduction it rests on, and its
+  status now (void; the question reopened). (b) **Algorithms parameterised
+  by pathwidth and treewidth**: the SETH-tight lower bounds
+  (Lokshtanov, Marx & Saurabh 2011 on `c^{tw}` for independent set,
+  dominating set, `q`-colouring and the rest; Cygan et al.'s Cut & Count
+  tightness; Lampis 2025 on SAT by primal pathwidth; others found on
+  disk), each void, with the surviving unconditional facts beside them.
+  (c) **Where the counting theorem beats the width DPs outright**: for a
+  problem solvable in `c^{pw} · poly` given a decomposition, the counting
+  theorem's `2^{O(n/√log n)}` (paper form) or the verified form wins once
+  `pw` exceeds `n / (log₂ c · √log n)` up to the constants; state the
+  crossover as a proposition with the constants left symbolic, tabulate
+  it for `c = 2, 3, 4` at `n = 10²…10⁶`, and say which graph classes
+  (linear pathwidth: expanders, random graphs by our own first-moment
+  floor `β*`, the Chu & Stuckey ridge) are on the far side. (d) **What
+  survives**: `P ≠ NP`; `NP ⊄ DTIME(2^{o(N)})` in input length; the Set
+  Cover Conjecture, Orthogonal Vectors, 3-SUM, APSP — which are implied
+  by SETH alone and so lose their support, which stand on their own —
+  one sentence each on whether a `2^{o(n)}` pathwidth algorithm at
+  `k = Θ(n)` would touch them; FPT settles `k = o(n^{1/2})` (TASK.md).
+  Cross-check that nothing in `paper1/`, `paper2/` or `reports/` rests on
+  ETH (the planner found none; confirm). Write §10 in the stance of
+  TASK.md: consequences, not hedges, with every item formally
+  `SubexpCount k → …`. One subagent at most, for a blind second reading
+  of (b)'s list.
 
 - [ ] **11 The write-up: `reports/subexp_pathwidth.md` §0, the note, the CLAUDE.md paragraph (drafted, not applied).**
   §0 in two pages: the question, the premise as a hypothesis, the answer
@@ -172,8 +190,10 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   the report's last section, in the house style of the loop0013 paragraph,
   **not applied**. Run the full gate.
 
-- [ ] **12 Reserve.** Whichever of 07–09 ended short, one session; or an
-  independent re-check of item 08's statement by a refuter agent against
-  brute force to 8 vertices with the log kept; or, if everything landed,
-  the question item 01's account raised most sharply, one session, with
-  its own kill.
+- [ ] **12 Reserve.** Whichever of 07–09 ended short, one session; or
+  the algebraic question item 05 raised most sharply — whether a sum of
+  products over a cube can count width-`k` layouts of a *class* (the
+  cobipartite cut condition of item 04, the twin-class structure of
+  chordal graphs) in the paper's framework, one session with its own
+  kill; or an independent re-check of item 08's statement by a refuter
+  agent against brute force to 8 vertices with the log kept.
