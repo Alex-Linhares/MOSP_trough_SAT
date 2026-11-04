@@ -1,0 +1,15 @@
+lake build: ok
+sorry in code: 0 (limit 0): []
+  /home/al/dev/MOSP/learning/sat_story.py:167: DeprecationWarning: This process (pid=1823991) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1939 passed, 2 skipped, 1 xfailed, 178 warnings in 525.50s (0:08:45)
+........................................................................ [ 58%]
+...................................................                      [100%]
+123 passed in 729.84s (0:12:09)
+Latexmk: All targets (main.pdf) are up-to-date
+
+no undefined references; Pages:           78
+GATE PASS
+GATE EXIT 0

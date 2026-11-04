@@ -1,0 +1,42 @@
+{
+  "nmax": 7,
+  "graphs": 1252,
+  "mosp_dp_vs_permutations_failures": 0,
+  "counts": {
+    "dp_vs_permutations": 1252,
+    "cobipartite_double": 1252,
+    "moehring_double": 1252,
+    "moehring_atlas": 149,
+    "blowup2": 1252,
+    "blowup3": 52,
+    "expansion_lower": 696,
+    "expansion_subcubic": 253,
+    "mosp_graph_to_instance": 1169,
+    "lengauer": 18,
+    "mosp_instance_to_graph": 4095
+  },
+  "failures": {
+    "dp_vs_permutations": 0,
+    "cobipartite_double": 0,
+    "moehring_double": 0,
+    "moehring_atlas": 0,
+    "blowup2": 0,
+    "blowup3": 0,
+    "expansion_lower": 0,
+    "expansion_subcubic": 0,
+    "mosp_graph_to_instance": 0,
+    "mosp_instance_to_graph": 0,
+    "lengauer": 0
+  },
+  "examples": {},
+  "expansion_excess_by_max_degree": {
+    "4:0": 118,
+    "4:1": 193,
+    "5:0": 42,
+    "5:1": 72,
+    "6:0": 2,
+    "6:1": 10,
+    "6:2": 6
+  },
+  "seconds": 38.6
+}

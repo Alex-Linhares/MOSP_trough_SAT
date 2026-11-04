@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-04 19:11:16",
+  "updated": "2026-11-04 20:55:06",
   "phase": "tests",
-  "started": "2026-11-04 18:42:35",
-  "item": "02 The formal frame: `SubexpCount`, an algorithm-with-time-bound notion, and `PathwidthSub"
+  "started": "2026-11-04 19:22:34",
+  "item": "03 The reduction catalogue: every reduction into pathwidth or vertex separation on record,"
 }

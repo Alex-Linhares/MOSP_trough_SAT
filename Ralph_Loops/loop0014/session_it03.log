@@ -1,0 +1,165 @@
+# session it03 started 2026-11-04 19:22:34
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the existing report, and the context files for item 03.
+  > $ cat reports/subexp_pathwidth_plan.md | head -400 && wc -l reports/subexp_pathwidth_plan.md reports/subexp_pathwidth.md
+  > $ cat reports/subexp_pathwidth.md
+  > $ sed -n 1,200p reports/subexp_pathwidth.md
+  > $ sed -n 200,420p reports/subexp_pathwidth.md
+
+Now the rest of §2 and the literature directory, plus the tooling I'll reuse (two_ended, brute-force VS, test patterns).
+  > $ sed -n 420,666p reports/subexp_pathwidth.md
+  > $ ls literature/ | head -200 && echo ---- && ls literature | wc -l && echo ---- && ls reports/scratch/subexp_pathwidth/ reports/scratch/subexp_pathwidth/01_audit/
+  > $ cat Ralph_Loops/loop0014/gate.py | head -120 && echo ---- && sed -n 1,80p learning/two_ended.py && grep -n "^def \|^class " learning/two_ended.py learning/pwtw_
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && mkdir -p $D && for f in lengauer_1981_black_white_pebbles_graph_separation 1988-Megiddo-Hakimi-Garey-Johnson
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && echo 'reports/scratch/subexp_pathwidth/03_reductions/*.txt' >> .gitignore && which tesseract ocrmypdf 2>/dev
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && sed -n 415,500p $D/lengauer_1981*.txt; echo "=== MEGIDDO 125-260 ==="; sed -n 125,262p $D/1988-Megiddo*.txt;
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && echo "=== GUSTEDT VSP def ==="; sed -n 70,100p $D/1993-Gustedt*.txt; echo "=== OHTSUKI ==="; grep -n -i "NP-
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && echo "=== MT 236-262 ==="; sed -n 236,262p $D/2009-Mihai*.txt; echo "=== MT 440-460 ==="; sed -n 440,460p $D
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && echo "=== DIAZ 170-200 ==="; sed -n 170,200p $D/diaz_petit*.txt; echo "=== DIAZ 268-312 ==="; sed -n 268,312
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && echo "=== KINNERSLEY 95-175 ==="; sed -n 95,175p $D/kinnersley*.txt; echo "=== complex_check defs ==="; grep
+  > $ sed -n 1,30p paper1/complex_check.py; echo ...; sed -n 86,131p paper1/complex_check.py; echo ...; sed -n 221,310p paper1/complex_check.py; echo ...; sed -n 700,
+  > $ mkdir -p reports/scratch/subexp_pathwidth/03_reductions && cat > reports/scratch/subexp_pathwidth/03_reductions/explore.py <<'EOF'
+"""Exploration (not the deliv
+  > $ D=reports/scratch/subexp_pathwidth/03_reductions && pdftotext -layout literature/1997-Kloks-Kratsch-Spinrad-Treewidth-Fill-in-AT-Free-Graphs-TCS.pdf $D/kks1997.
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/8d527e6a-db35-43d6-976e-698f424f9f86/tasks/bxj4upo5a.output; cd /home/al/dev/MOSP && sed -n 170,182p reports/scratch/sube
+  > $ sed -n 93,160p learning/treewidth.py && grep -n "def width_of_layout\|def adjacency_from" learning/obstruction_ledger.py learning/dataset.py 2>/dev/null | head;
+  > $ cat > learning/subexp_reductions.py <<'EOF'
+"""Reductions into pathwidth / vertex separation with their vertex blow-up
+(loop0014 item 03, `reports/subexp_pathwi
+  > $ (nice -n 19 python3 -m learning.subexp_reductions --nmax 7 > reports/scratch/subexp_pathwidth/03_reductions/check_atlas7.log 2>&1 &) ; sleep 1; grep -n -i "subd
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 3. The reduction catalogue: every reduction into pathwidth or vertex separation on record, with its blow-up (item
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/check_atlas7.log; python3 -c "
+import json; r=json.load(open('reports/scratch/subexp_pathwidth/03_reductions/
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/subexp_pathwidth.md")
+s = p.read_text()
+table = """| check | what is compared | instances | failure
+  > Agent {"description": "Refute the three \u00a73.4 proofs", "prompt": "You are a refuter. Read ONLY section \u00a73.4 (\"The th
+
+I'll locate §3.4 and read it.
+  > $ grep -n "### 3.4\|### 3.5" /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ nice -n 19 python3 Ralph_Loops/loop0014/gate.py > reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>&1; echo "GATE EXIT $?" >> reports/scratch/subexp_pa
+  > $ sed -n '822,911p' /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ grep -n "^- \[ \] \*\*03\|^- \[x\] \*\*02\|^Current" Ralph_Loops/loop0014/iterations.md Ralph_Loops/loop0014/PROGRESS.md | head; sed -i 's/^- \[ \] \*\*03 The r
+
+All six directions analysed. Let me run one quick brute-force confirmation of the three statements (and the Δ-excess bound) on small graphs using the repo's own DP functions.
+  > $ grep -n "^def " learning/subexp_reductions.py | head -40; grep -n "def cutwidth_dp" paper1/complex_check.py
+  > $ timeout 55 python3 -c "
+import sys; sys.path.insert(0,'.')
+from learning.subexp_reductions import vs, cobipartite_double, clique_blowup, degree_clique_expansion
+  > $ sed -n '277,282p' learning/subexp_reductions.py
+  > $ sed -n '20,70p' learning/subexp_reductions.py | grep -n "def from_nx\|return\|def " ; sed -n '193,245p' learning/subexp_reductions.py
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/subexp_pathwidth.md"); s = p.read_text()
+old1 = """clique-mate, so `k ≥ n − 1 + j`. At the cut afte
+  > $ grep -n "^def cutwidth_dp" -A 12 paper1/complex_check.py | head -20; grep -n "^def graph\|^def edges_of\|^def to_nx\|^def from_nx" learning/subexp_reductions.py
+
+Same `(n, adj)` format. Re-running the check.
+  > $ timeout 58 python3 -c "
+import sys; sys.path.insert(0,'.')
+from learning.subexp_reductions import vs, cobipartite_double, clique_blowup, degree_clique_expansion
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/subexp_pathwidth.md"); s = p.read_text()
+old = """maximum degree `Δ(G°) ≤ max(Δ(G), 3)` (a port has
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log; uptime
+
+**3.4.1 (≤): sound.** Cuts inside `A` give `s ≤ n − 1`; after `A` plus `t` b's the count is `t + |N[S_{>t}]| = n + vs_σ(t)`; `t = 0` and `t = n` are covered (counts `n` and `0`). `n = 1` (`H = K₂`, `vs = 1 = 0 + 1`) fine.
+
+**3.4.1 (≥): sound in substance, one wording gap at `t = j`.** `j < n` is justified (A finishes first, so B's last vertex sits after `p`, hence at most `n − 1` b's precede it); the A/B swap is an automorphism; the "cut just before `p`" is the empty cut when `p = 1` and the inequality `k ≥ n − 1 + j` then reads `k ≥ 0`, harmless. The gap: the text says "at the cut after the `t`-th b for `t ≥ j` (so after `p`)", but for `t = j` the cut immediately after the `j`-th b lies *before* `p` (`A` incomplete there), and the "cut just before `p`" gives only `n − 1 + j`, which does not yield `n + vs_τ(j)` when `vs_τ(j) = j`. The needed cut is the one immediately *after* position `p`: all `n` a's and exactly `j` b's placed, count `j + (n − j) + vs_τ(j) = n + vs_τ(j)`. One clause fixes it ("the cut after `p` at which `t` b's are placed"). For `t = n` the claimed `k ≥ n + 0` follows from `t = n − 1 ≥ j`. `t < j` case correct.
+
+**3.4.2 (≤): sound.** Inside block `v = σ(t)` the counted copies of earlier vertices are exactly those of `u ∈ S_{<t}` with a neighbour in `S_{≥t}`, i.e. `c · vs_σ(t−1)`; the `i ≤ c − 1` placed copies of `v` count because their unplaced copies are neighbours. Block boundaries give `c · vs_σ(t)`.
+
+**3.4.2 (≥): sound.** At the cut before the last copy of `v_t`, every `u = v_s`, `s < t`, has all `c` copies placed (positions distinct), each adjacent to the unplaced last copy of its neighbour `w ⪰ v_t`; the `c − 1` other copies of `v_t` are disjoint from these; the set is `vs_τ(t − 1)` for `t − 1 = 1..n − 1`; `t − 1 = 0, n` are trivial. `n = 1` stated.
+
+**3.4.3 (cw ≤ vs(G°)): sound.** At the `G°`-cut just after the last port of `v_i`, all ports of `v_1..v_i` are placed; for a crossing edge `uw` either `(u,uw)` is counted (its edge-mate unplaced) or `(w,uw)` is placed and has an unplaced clique-mate (w's last port is after the cut, and it cannot be `(w,uw)` itself). Ports are per (vertex, edge), so charged ports are distinct per edge. Only blemish: "last port" is undefined for isolated vertices (they have none in `G°`); they contribute nothing to either side, so put them anywhere.
+
+**3.4.3 (vs(G°) ≤ cw + excess): sound.** Case check of `max(c + a, c + a + j (j < b), c + b)` over `a, b ∈ {0, 1, ≥2}` gives exactly `c + max(a,b) + max(0, min(a,b) − 1)`; `c + max(a,b) ≤ k` from the two gap cuts beside `v`; `min(a,b) ≤ ⌊(a+b)/2⌋ ≤ ⌊Δ/2⌋`; inter-clique cuts equal `G`-cuts ≤ `k`.
+
+Brute force (atlas to 6 vertices, `vs_subset_dp` / `cutwidth_dp`): 52 doubles, 18 graphs × `c ∈ {2,3}`, 126 expansions, zero violations; max excess by `Δ`: 0,0,0,0 at `Δ ≤ 3`, 1 at `Δ = 4, 5`.
+
+Both background jobs (the refuter agent and the gate) are still running; the gate is in its lake build stage. I'll wait on the gate's log with a bounded monitor.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/subexp_pathwidth.md"); s = p.read_text()
+old = "by the position of the last port of each vertex (`τ
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>/de
+
+Waiting on the gate; nothing else is outstanding until it reports.
+
+# result: success in 1321s, 34 turns, cost $11.09
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log; uptime; ps -o pid,etime,cmd -p $(pgrep -f "loop0014/gate.py" | head -1) 2>/dev/null | tail -1
+  > $ ps -eo pid,etime,pcpu,cmd | grep -E "lake|[l]ean |pytest|gate.py" | grep -v grep | head; cat reports/scratch/subexp_pathwidth/03_reductions/gate.log
+
+The gate has passed its lake build and main test stages and is now in the pathwidth_solver test suite (its output is block-buffered, so the log fills at the end). Re-arming the watch.
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>/de
+
+Only the gate's result remains, and the watch for it is armed; nothing else is outstanding.
+
+# result: success in 30s, 4 turns, cost $14.93
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log; ps -eo pid,etime,pcpu,cmd | grep -E "[p]ytest|[g]ate.py|make" | head -5; uptime
+
+The pathwidth_solver suite is at 12 minutes (it took 725 s last time) and the machine's load has dropped, so the gate should finish shortly. Re-arming the watch.
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>/de
+
+Only the gate's exit line is still needed, and the watch for it is armed; everything else for this item is written.
+
+# result: success in 13s, 3 turns, cost $18.83
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log; ps -eo pid,etime,pcpu,cmd | grep -E "[p]ytest|[g]ate.py|[m]ake " | cut -c1-120; uptime; ls -la /tmp
+  > $ ps -eo pid,ppid,etime,pcpu,cmd --ppid 1719043 | cut -c1-150; ls -lt /home/al/dev/MOSP/pathwidth_solver/tests/ | head -5; cat /proc/1719043/wchan 2>/dev/null; ec
+  > $ ps -o pid,etime,pcpu,cmd --ppid 1719043 | cut -c1-150; cd /home/al/dev/MOSP/pathwidth_solver && ls tests/ | head; grep -rn "timeout\|budget\|seconds" tests/*.py
+  > $ cd /home/al/dev/MOSP && pwd
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>/de
+
+I'm waiting for the gate's pathwidth_solver test stage to finish; the watch is armed and there is nothing else to request until it reports.
+
+# result: success in 29s, 6 turns, cost $23.05
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log; ps -o pid,etime,pcpu,cmd -p 1719043 1649859 | cut -c1-100; uptime
+  > $ which py-spy; grep -n "timeout\|budget\|\"-t\"\|'-t'\|seconds" pathwidth_solver/tests/*.py | head -20; ls -lt pathwidth_solver/ | head -5; ls -lt /tmp | head -5
+  > $ timeout 30 py-spy dump --pid 1719043 2>&1 | head -40
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/03_reductions/gate.log 2>/de
+
+Only the gate's exit line is still needed; the watch is armed for it, and everything else for the item is complete.
+
+# result: success in 27s, 5 turns, cost $27.24
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log
+  > $ cat pathwidth_solver/tests/test_bench_run.py; sed -n 40,90p pathwidth_solver/bench/run.py; git log --oneline -3 -- pathwidth_solver/tests/test_bench_run.py path
+  > $ cd /home/al/dev/MOSP/pathwidth_solver && timeout 500 nice -n 19 python3 -m pytest -q -p no:cacheprovider tests/test_bench_run.py -x --durations=5 2>&1 | tail -1
+
+The timed-out test passes in half a second on its own, so the hang was transient (it occurred while the machine was at load 50 with the gate at nice 19). I'm re-running the full gate now.
+  > $ cd /home/al/dev/MOSP && mv reports/scratch/subexp_pathwidth/03_reductions/gate.log reports/scratch/subexp_pathwidth/03_reductions/gate_attempt1_timeout.log && n
+  > $ cd /home/al/dev/MOSP && pwd
+
+The second gate run is in progress in the background and will notify me when it exits; nothing else is outstanding until then.
+
+# result: success in 41s, 6 turns, cost $31.65
+  > $ cat reports/scratch/subexp_pathwidth/03_reductions/gate.log | grep -v "^  File\|Warning\|^    \|^--\|^$" | tail -12; uptime
+
+The gate passes on the second run. Recording that in PROGRESS.md and finishing.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+q = Path("Ralph_Loops/loop0014/PROGRESS.md"); t = q.read_text()
+new = """`python3 Ralph_Loops/loop0014/gate.py` **PAS
+
+Item 03 is complete. Nothing further is needed: the report section, code, checks, PROGRESS entry and iteration mark are written, the gate passes, and the driver does the commit.
+
+**What this iteration produced**
+
+The reduction catalogue is `reports/subexp_pathwidth.md` §3, with sixteen rows: every reduction into pathwidth or vertex separation found in the held papers, each with source problem, construction, target vertex count, exact relation and the source problem's standing after ETH. The classical NP-completeness reductions are all superlinear by the same mechanism, since each uses clique size to simulate a weight or an offset. Lengauer's is quadratic, Gustedt's quadratic on 3-regular graphs, Megiddo et al.'s cubic, and Mihai and Todinca's pseudo-polynomial. Three papers that might carry a linear chain from a hypothesis (Bonnet, Arnborg–Corneil–Proskurowski, Monien–Sudborough) are not held and are marked unknown rather than superlinear. Kashiwabara and Fujisawa 1979 is recorded as missing.
+
+**Three linear constructions, ours, proved and checked.** A closed-neighbourhood cobipartite double with `vs(H) = vs(G) + n`, so pathwidth on cobipartite graphs is exactly as hard as in general at blow-up 2. A clique blow-up multiplying `pw + 1` by `c`. A degree-clique expansion with `cw(G) = vs(G°)` for maximum degree 3, planarity preserved, at most `3n` vertices. All were found by brute force on graphs to 6 vertices before being stated, then proved, then checked on all 1,252 atlas graphs to 7 vertices with zero failures (`learning/subexp_reductions.py`, log under the scratch directory). A refuter subagent read the six proof directions blind and found all sound, with two editorial points folded in.
+
+**The best linear X** is cutwidth on subcubic graphs. A `2^{o(n)}` pathwidth algorithm would settle Bentert et al.'s explicit open problem for cutwidth on that class. No linear reduction from a problem with a surviving post-ETH lower bound is on record, so item 07's theorem transfers to cutwidth and to cobipartite pathwidth, not to a hypothesis.
+
+**Gate.** The first run timed out in a pathwidth_solver test under a machine load of 36 to 51 (the owner's other work, with the gate at nice 19). That test passes in half a second alone and the second full gate run passed cleanly. Nothing under `pathwidth_solver/` was touched; the first log is kept in case it recurs.
+
+**Next** is items 04 to 06 in any order. Item 04 should start from the finding that no class containing the cobipartite graphs can be an easier class for the positive track.
+
+# result: success in 30s, 3 turns, cost $35.84

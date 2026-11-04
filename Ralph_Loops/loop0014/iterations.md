@@ -57,7 +57,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   PathwidthSubexpOn (fun _ => True)`). `lake build`; axiom audit; no
   `sorry`.
 
-- [ ] **03 The reduction catalogue: every reduction into pathwidth or vertex separation on record, with its blow-up; the best linear `X`.**
+- [x] **03 The reduction catalogue: every reduction into pathwidth or vertex separation on record, with its blow-up; the best linear `X`.**
   From held papers and the citation graph: Lengauer 1981, Kashiwabara &
   Fujisawa 1979 (missing: say so), Arnborg–Corneil–Proskurowski 1987
   (treewidth via cobipartite graphs), Monien & Sudborough (cutwidth,

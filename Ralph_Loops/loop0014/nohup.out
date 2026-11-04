@@ -8,3 +8,8 @@
 [2026-11-04 18:42:35] claude session it02 (cap 4.00 h) -> session_it02.log
 [2026-11-04 19:11:16] session it02: ok (exit 0, 42 tool calls)
 [2026-11-04 19:22:34] tests passed: GATE PASS
+[2026-11-04 19:22:34] committed d258d63ce: 02 The formal frame: `SubexpCount`, an algorithm-with-time-bound notio
+[2026-11-04 19:22:34] === iteration 3: 03 The reduction catalogue: every reduction into pathwidth or vertex separation on record,
+[2026-11-04 19:22:34] claude session it03 (cap 4.00 h) -> session_it03.log
+[2026-11-04 20:55:06] session it03: ok (exit 0, 62 tool calls)
+[2026-11-04 21:06:27] tests passed: GATE PASS

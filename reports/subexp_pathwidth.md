@@ -664,3 +664,323 @@ with `XSubexp` defined for `X` in the style of `PathwidthSubexp` when item
     lake env lean ../reports/scratch/subexp_pathwidth/02_frame/axiom_check.lean
     cd .. && cat reports/scratch/subexp_pathwidth/02_frame/README.md   # the two diffs
     python3 Ralph_Loops/loop0014/gate.py
+
+## 3. The reduction catalogue: every reduction into pathwidth or vertex separation on record, with its blow-up (item 03, 2026-11-04)
+
+The question of this section is plan §0.4.2: which problems `X` reduce to
+pathwidth (equivalently vertex separation, Kinnersley 1992) with a target
+graph whose vertex count is **linear in the size of the source instance**,
+so that a `2^{o(n)}` algorithm for pathwidth would give `2^{o(N)}` for `X`.
+Every reduction found in the held papers is listed with its source problem,
+its target, its blow-up and the status of the source after ETH; every one
+claimed linear is implemented in `learning/subexp_reductions.py` and checked
+against brute-force vertex separation on every graph to 7 vertices (§3.5).
+Three of the linear ones are ours, found while checking what the literature
+supplies; each comes with a proof (§3.4) and was checked before it was
+stated.
+
+### 3.0 What was read, and how
+
+- The held papers, extracted with `pdftotext -layout` to
+  `reports/scratch/subexp_pathwidth/03_reductions/` (git-ignored, regenerate
+  per `README.md` there) and read at the reduction: Lengauer 1981 (§3,
+  Theorem 7, pp. 473–474); Megiddo, Hakimi, Garey, Johnson & Papadimitriou
+  1988 (Theorem 1, pp. 20–22); Gustedt 1993 (§4, Theorem 4.1, Lemma 4.2,
+  Corollary 4.3; Definition 2.6); Mihai & Todinca 2009 (§3, Theorems 3–4);
+  Kinnersley 1992 (Theorem 3.1, Corollary 3.2); Linhares & Yanasse 2002
+  (Propositions 1–2, Table 1); Fellows & Langston 1987 (Lemma 4.1); Ohtsuki
+  et al. 1979 (§III); Möhring 1990 (§4, Theorems 4.1–4.4); Díaz, Petit &
+  Serna 2002 (§4, Table III; Lemma 2.4); Bodlaender 1997 (p. 2), 1998;
+  Bodlaender & Kloks 1996 (§1, §7); Kloks, Kratsch & Spinrad 1997 (§1);
+  Bodlaender, Kloks, Kratsch & Müller 1995 (§1); Bodlaender 2024 (Theorem
+  7 and its proof, p. 13); Groenland, Joret, Nadara & Walczak 2021 (§1);
+  Bansal & Katzelnick 2023 (§1); Petit 2011.
+- **Scanned and unreadable** (no text layer, no OCR tool on the machine):
+  Ellis, Sudborough & Turner 1994; Bodlaender, Gilbert, Hafsteinsson & Kloks
+  1991 (WG); Kloks & Bodlaender 1992 (TR); Bodlaender & Möhring 1990; Kloks
+  & Kratsch 1992. For these the catalogue uses what the repository recorded
+  when they were read on paper (`paper1/equivalences.md` §7 for EST Theorem
+  2.2) or what a held secondary source states.
+- **Not held**: Kashiwabara & Fujisawa 1979 (`literature/MISSING.md` says
+  so: 1979 IEEE ISCAS proceedings, never digitised); Arnborg, Corneil &
+  Proskurowski 1987; Monien & Sudborough 1988; Makedon, Papadimitriou &
+  Sudborough 1985; Möhring 1996; Bonnet 2024/2025; Goldberg, Golumbic,
+  Kaplan & Shamir 1995; Kloks, Bodlaender, Müller & Kratsch 1993; Müller &
+  Wagner 1989; Bodlaender & Thilikos 1995. Each is cited here only as a
+  held paper cites it, and its blow-up is marked unknown.
+- The repository's own chain: `lean/MOSPFormalization/Complex/`
+  (loop0005), `MOSPGraph.lean`, `VSEquivPW.lean`, and `paper1/equivalences.md`,
+  which records every Table 1 equivalence with the graph it is stated on.
+
+### 3.1 The catalogue
+
+`N` is the size parameter of the source instance named in the row (vertices
+of the source graph, customers of the MOSP instance, nets of the matrix);
+`n`, `m`, `Δ` are the source graph's vertices, edges and maximum degree. A
+reduction is **linear** when the target has `O(N)` vertices. "Status after
+ETH" is whether any hypothesis *on record in a held paper* supports a
+`2^{Ω(N)}` lower bound for the source once ETH is voided (plan §0.1).
+
+| # | source problem `X` (size `N`) | target | construction | target vertices | linear? | exact relation | source of the reduction | held? | status of `X` after ETH |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | vertex separation (`n`) | pathwidth | the same graph | `n` | **1** | `vs = pw` | Kinnersley 1992 Thm 3.1 | yes; Lean `VSEquivPW.lean` | the same problem |
+| 2 | gate matrix layout cost, interval thickness, narrowness, one-dimensional logic tracks, monotone/full node search, multiple PLA folding (`N` nets or vertices) | pathwidth | the same graph or matrix (the net graph) | `N` | **1** | each `= pw + 1` | Fellows & Langston 1987 Lemma 4.1; Kinnersley 1992 Cor. 3.2; Kirousis & Papadimitriou 1986; Möhring 1990; Linhares & Yanasse 2002 Table 1 | yes; Lean `Complex/*` (loop0005) | the same problem under another name |
+| 3 | MOSP (`N` customers) | pathwidth of the MOSP graph | customers as vertices, a clique per pattern | `N` | **1** | `mosp = pw + 1` | Yanasse 1997a Prop. 5; Linhares & Yanasse 2002 Prop. 2 | yes; Lean `MOSPGraph.lean` | the same problem (converse, pathwidth → MOSP: `n` customers, `m` patterns, §3.5 row 7) |
+| 4 | edge search number (`n`) | vertex separation | the 2-expansion, every edge subdivided twice | `n + 2m` | linear in `n + m`; in `n` at bounded degree | `es(G) = vs(G'')` | Ellis, Sudborough & Turner 1994 Thm 2.2 | held, scanned; recorded in `equivalences.md` §7, checked there on 181 graphs | `es` is within `+2` of `vs` on the same graph (Lean `Complex/EdgeSearch*.lean`): no independent hardness |
+| 5 | modified min-cut linear arrangement MMCLA (`N` vertices) | vertex separation (VSG) | each vertex an `(N+1)`-clique; edge `v_i v_j` becomes `v_i(j) v_j(i)` | `N (N + 1)` | **quadratic** | `vs(G') = mcw(G) + N` | Lengauer 1981 Thm 7 | yes; checked here to `N = 4` | MMCLA ← Simple Max Cut (Garey & Johnson [3]), blow-up not stated there; no post-ETH support |
+| 6 | minimum cut into equal-sized subsets (bisection; `n`, degree `d`) | edge search number | `n + 1` cliques of size `M = 6 n (n + 2)(d + K)`, `nN` edges between every pair, `+N` to the special clique, `+3` per edge of `G` | `(n + 1) · 6n(n+2)(d+K) = Θ(n³ (d + K))` | **cubic** | `s(H) ≤ s ⟺` bisection `≤ K` | Megiddo et al. 1988 Thm 1, p. 20 | yes | bisection has no `2^{Ω(n)}` support on record after ETH; target is edge search, not `vs` exactly |
+| 7 | vertex separator problem VSP = balanced complete bipartite subgraph of the complement (`n`, `m`; NP-hard on 3-regular graphs, Müller & Wagner 1989) | pathwidth of starlike chordal graphs | central clique `V`, a peripheral clique `{u, w} ∪ n` private vertices per edge | `n + n m` | **quadratic** on 3-regular (`Θ(n²)`), cubic in general | `pw(φ(G)) = n + opt_VSP − 1` (Lemma 4.2) | Gustedt 1993 Thm 4.1 | yes | VSP has no `2^{Ω(n)}` support on record after ETH |
+| 8 | balanced system of 0,1-linear equations (matrix `A`, integers polynomially bounded) | pathwidth of octopus graphs / node-weighted trees | cliques of size given by the integers | the sum of the integers: polynomial, **not linear** in the matrix | pseudo-polynomial | yes/no preserved | Mihai & Todinca 2009 Thms 3–4, from Monien & Sudborough's problem | yes | strongly NP-hard; no `2^{Ω(N)}` support on record |
+| 9 | cutwidth, modified cutwidth on planar graphs of maximum degree 3 (`n`) | vertex separation on planar graphs of maximum degree 3 | not held | unknown | unknown | — | Monien & Sudborough 1988, via Díaz et al. 2002 Table III | no | the cutwidth chain is where Bonnet locates the `√n` loss (§1.2) |
+| 10 | 3-SAT (`N` variables) | treewidth | "simple, self-contained" | linear in the formula size by the statement `2^{Ω(n)}` | linear (claimed) | — | Bonnet 2024/2025, abstract | no | ETH: voided if the counting theorem stands; whether the graphs have `pw = tw` is unknown to us |
+| 11 | minimum cut into equal-sized subsets (as the literature recalls it) | treewidth of cobipartite graphs | not held | unknown | unknown | — | Arnborg, Corneil & Proskurowski 1987, via Kloks, Kratsch & Spinrad 1997 §1, BKKM 1995 §1, Möhring 1990 §4, Bodlaender 1997 p. 2 | no | bisection: see row 6 |
+| 12 | interval graph augmentation with minimum clique number (`n`) | pathwidth | the same graph | `n` | **1** | `θ = pw + 1` | Kashiwabara & Fujisawa 1979 (the original NP-completeness), cited by Ohtsuki et al. 1979 §III and Gustedt 1993 | **missing** | the same problem |
+| 13 | treewidth on cobipartite (or any AT-free) graphs (`n`) | pathwidth on the same class | the same graph | `n` | **1** | `pw = tw` | Möhring 1996; stated in BKKM 1995 Thm 2.2, Bodlaender 1998 Thm 99 | no (secondary held); checked here on every cobipartite graph to 7 vertices and on every double of §3.4 | treewidth on cobipartite graphs: NP-complete (row 11); no `2^{Ω(n)}` support on record after ETH |
+| 14 | pathwidth on all graphs (`n`) | pathwidth = treewidth on **cobipartite** graphs | the **closed-neighbourhood double** `H`: cliques `A = B = V`, `a_u ~ b_v` iff `u = v` or `uv ∈ E` | `2n` | **linear** | `vs(H) = vs(G) + n` | **ours** (§3.4.1); we found no prior statement in the held papers | proved, checked | the same problem: so pathwidth on cobipartite graphs is exactly as hard as in general, at blow-up 2 |
+| 15 | pathwidth on all graphs (`n`), additive gap `c` | pathwidth | the lexicographic product `G[K_c]` | `c n` | **linear** at fixed `c` | `pw(G[K_c]) + 1 = c (pw(G) + 1)` | **ours** for pathwidth (§3.4.2); the treewidth form is Bodlaender, Gilbert, Hafsteinsson & Kloks (Bodlaender 2024 Thm 7) | proved, checked | amplification: `2^{o(n)}` for pathwidth within additive `c − 1` gives `2^{o(n)}` exact |
+| 16 | **cutwidth on graphs of maximum degree 3** (`n`), planar or not | vertex separation on graphs of maximum degree 3, planarity preserved | the **degree-clique expansion** `G°`: a port per (vertex, incident edge), the ports of a vertex a clique, the two ports of an edge joined | `2m + #isolated ≤ 3n` | **linear** | `vs(G°) = cw(G)` when `Δ ≤ 3`; `cw(G) ≤ vs(G°) ≤ cw(G) + ⌊Δ/2⌋ − 1` in general | **ours** (§3.4.3); the natural reading of row 9, which we cannot confirm | proved, checked | cutwidth: `O*(2ⁿ)` is the best algorithm and beating it "an explicit open problem for a long time" (Bentert et al. 2025, §1.1); NP-complete on planar max-degree-3 graphs (row 9, not held); no `2^{Ω(n)}` support on record after ETH |
+
+Rows 1–3, 12–13 are blow-up 1 (the same object under another name or on a
+subclass); rows 14–16 are the linear reductions with a genuine
+construction; rows 5–8 are the classical NP-completeness reductions, all
+superlinear; rows 9–11 are the reductions we could not read.
+
+### 3.2 The best `X` with a linear reduction
+
+**Three candidates, in order of what a transfer theorem would say.**
+
+1. **`X = cutwidth on graphs of maximum degree 3`** (row 16). The
+   reduction `G ↦ G°` is linear (`≤ 3n` vertices), exact (`cw(G) = vs(G°)`
+   for `Δ ≤ 3`), preserves planarity and maximum degree 3, and is proved
+   below. A `2^{o(n)}` pathwidth algorithm — even one for subcubic planar
+   graphs — would give a `2^{o(n)}` algorithm for cutwidth on subcubic
+   planar graphs, the class on which cutwidth is NP-complete (Monien &
+   Sudborough 1988, not held; Díaz et al. 2002 Table III). This is the `X`
+   for item 07: it is the only row whose source is a *different* problem
+   with its own open exponential-time question (Bentert et al. 2025 call
+   beating `O*(2ⁿ)` for cutwidth a long-standing explicit open problem;
+   their §1.1 says the `O*(2ⁿ)` DP remains the best known even for
+   constant-factor approximation). What it does not do: name a surviving
+   *hypothesis*. No held paper supports `2^{Ω(n)}` for cutwidth on subcubic
+   graphs by anything other than ETH, and the chain from 3-SAT to cutwidth
+   on degree-3 graphs is not held and, by Bonnet's account (§1.2), loses a
+   square root somewhere.
+2. **`X = treewidth on cobipartite (hence AT-free, co-comparability)
+   graphs`** (rows 13–14). Blow-up 1 by Möhring's `pw = tw` on AT-free
+   graphs (not held; checked here on every cobipartite graph to 7 vertices
+   and on every double). The converse, row 14, is the finding that matters
+   for item 04: **pathwidth on cobipartite graphs is as hard as pathwidth on
+   all graphs at blow-up 2**, so no class containing the cobipartite graphs
+   (AT-free, co-comparability, the "`pw = tw`" classes of
+   `paper2/survey_intersection_classes.md`) can be an easier class for the
+   positive track, and a positive result on cobipartite graphs would be a
+   positive result in general. In the frame of §2:
+   `PathwidthSubexpOn cobipartite → PathwidthSubexp` is a consequence of
+   `vs(H) = vs(G) + n` and the composition `Prop` of §2.1, with `f(2n) =
+   o(n)` from `f = o(n)`.
+3. **`X = MOSP` and the rest of the complex** (rows 1–3, 12): blow-up 1,
+   already in Lean; they say nothing new (the same problem).
+
+**What is not on record.** We found no linear reduction *from a problem
+with a surviving post-ETH lower bound* into pathwidth: no reduction from
+`k`-SAT, Orthogonal Vectors, Set Cover, Hamiltonian Path or Max Cut into
+pathwidth or vertex separation appears in any held paper, and the two that
+the literature attributes to such sources (Bonnet from 3-SAT into
+treewidth, row 10; ACP from bisection into cobipartite treewidth, row 11)
+are not held. The bisection chain of §1.2 (3-SAT → Max Cut → bisection →
+cobipartite treewidth = pathwidth) therefore stays a candidate with one
+unverified step, row 11. Item 07's theorem is accordingly a transfer to
+cutwidth on subcubic graphs (and to cobipartite pathwidth), not to a
+hypothesis; plan §0.6's "item 03 lowers item 07's ambition" applies in
+this form: **the transfer theorem exists and is linear, but its `X` carries
+no hypothesis of its own.**
+
+### 3.3 What the superlinear reductions lose, and where
+
+- **Lengauer** (row 5) needs the offset `N` to make every clique's `N`
+  pebble-free vertices dominate the count while one clique is entered,
+  so that an edge contributing to `width(v_i)` contributes a vertex to the
+  cut; the clique size is the vertex count, hence `N(N + 1)`. Checked here
+  to `N = 4` (§3.5).
+- **Megiddo et al.** (row 6) need `M = 6n(n+2)(d+K)` so that the special
+  clique's `M − 1` searchers (Lemma 1) dominate every other term; the
+  `nN` edges between every pair of cliques force the balanced split, and
+  the three edges per edge of `G` carry the cut. Cubic in `n` at best.
+- **Gustedt** (row 7) adds `|V(G)|` private vertices to every peripheral
+  clique so that every normalized path decomposition has the central
+  clique in one bag and the peripheral cliques on two sides; `n · m`.
+- **Mihai & Todinca** (row 8) build cliques whose sizes are the integers of
+  a strongly NP-hard equation system, so the vertex count is the sum of
+  the (polynomially bounded) integers: polynomial, not linear in the matrix.
+
+So every classical NP-completeness reduction into pathwidth or its
+equivalents is superlinear in the vertices, by construction and not by
+accident: each uses clique size to simulate a weight or an offset. That is
+the mechanism behind Bonnet's `2^{Ω(√n)}` remark (§1.2): a quadratic step
+in the chain costs exactly a square root in the exponent.
+
+### 3.4 The three linear constructions, with proofs
+
+Throughout, a layout is an ordering `σ` of `V`; `vs_σ(t)` is the number of
+vertices among the first `t` with a neighbour among the rest; `vs(G) = min_σ
+max_t vs_σ(t)`. Every statement here was checked on every graph to 7
+vertices (§3.5) before it was written, and one refuter subagent read the
+six proof directions blind to the rest of the section: all six sound; it
+asked for the cut at position `p` to be named explicitly in 3.4.1 (done)
+and for the isolated vertices to be placed in 3.4.3 (done).
+
+**3.4.1 The closed-neighbourhood cobipartite double.** For `G = (V, E)`
+with `|V| = n`, let `H` have vertex set `A ∪ B`, `A = {a_v}`, `B = {b_v}`,
+`A` and `B` cliques, and `a_u b_v ∈ E(H)` iff `u = v` or `uv ∈ E`.
+
+*Theorem.* `vs(H) = vs(G) + n`.
+
+*Proof.* (`≤`) Take `σ` optimal for `G` and lay out `H` as `a_{σ(1)}, …,
+a_{σ(n)}, b_{σ(1)}, …, b_{σ(n)}`. A cut inside `A` counts at most `n − 1`.
+After all of `A` and the first `t < n` vertices of `B`: the `t` placed
+`b`'s count (they have unplaced clique-mates), and `a_u` counts iff `u` has
+an unplaced closed neighbour, i.e. `u ∈ N_G[S_{>t}]` where `S_{>t}` is the
+suffix of `σ`; `|N[S_{>t}]| = (n − t) + vs_σ(t)`. So the cut is `n +
+vs_σ(t) ≤ n + vs(G)`.
+(`≥`) Take a layout of `H` of value `k`. One of the two cliques finishes
+first; by the symmetry of `H` assume it is `A`, at position `p`, with `j`
+vertices of `B` before `p` (`j < n`). Let `τ` be the order of `V` in which
+the `b`'s appear. At the cut just before position `p`, `n − 1` vertices of
+`A` and `j` of `B` are placed and every one of them has an unplaced
+clique-mate, so `k ≥ n − 1 + j`. At the cut at position `p` (all of `A`
+and the first `j` of `B` placed) and at the cut after the `t`-th `b` for
+every `t > j` (all after `p`), the placed `b`'s count — there are `t ≥ j`
+of them, each with an unplaced clique-mate while `t < n` — and `a_u`
+counts iff `u ∈ N[S^τ_{>t}]`, so `k ≥ t + (n − t) + vs_τ(t) = n + vs_τ(t)`
+for every `t ≥ j`. For `t < j`, `vs_τ(t) ≤ t ≤ j − 1 ≤ k − n`. Hence `k ≥
+n + max_t vs_τ(t) ≥ n + vs(G)`. ∎
+
+`H` is cobipartite, so by Möhring (1996) `tw(H) = pw(H)`; checked on every
+double to 7 source vertices (§3.5). The map is computable in `O(n²)` time
+and has `2n` vertices.
+
+**3.4.2 The clique blow-up.** `G[K_c]` replaces every vertex by a `c`-clique
+and every edge by a complete join.
+
+*Theorem.* `vs(G[K_c]) + 1 = c (vs(G) + 1)`.
+
+*Proof.* (`≤`) Lay out the blocks in an optimal order `σ` of `G`, each
+block consecutively. At a block boundary after `t` blocks the count is
+`c · vs_σ(t)`. Inside block `v` with `i < c` copies placed, the vertices
+counted are the copies of earlier vertices with a neighbour at or after
+`v`, at most `c · vs_σ(t − 1)` of them (`v` itself is a later neighbour of
+such a vertex), plus the `i ≤ c − 1` placed copies of `v`; so at most `c ·
+vs(G) + c − 1`.
+(`≥`) Take a layout of `G[K_c]` of value `k` and let `τ` order `V` by the
+position of the *last* copy. For `2 ≤ t ≤ n`, at the cut just before the
+last copy of `v_t`: every `u` earlier in `τ` with a neighbour `w` at or
+after `v_t` in `τ` has all `c` copies counted (`w` has an unplaced copy,
+adjacent to every copy of `u`), and the `c − 1` placed copies of `v_t`
+count; the first set contains the `vs_τ(t − 1)` vertices with a neighbour
+after `v_{t−1}`, so `k ≥ c · vs_τ(t − 1) + c − 1` for every cut of `τ`,
+i.e. `k + 1 ≥ c (vs(G) + 1)`. (`n = 1`: `vs(K_c) = c − 1`.) ∎
+
+**3.4.3 The degree-clique expansion.** `G°` has a port `(v, e)` for every
+vertex `v` and incident edge `e`; the ports of `v` form a clique `K_v`; the
+two ports of an edge are joined; isolated vertices are kept. `|V(G°)| = 2m
++ #isolated`, maximum degree `Δ(G°) ≤ Δ(G)` (a port of `v` has `deg(v) − 1`
+clique-mates and one matching edge), and for `Δ(G) ≤ 3` the
+expansion of a planar graph is planar (each vertex is blown into a
+point, an edge or a triangle in the rotation order; for `Δ ≥ 4` the
+clique `K_Δ` on the ports is not a face boundary and planarity is not
+claimed).
+
+*Theorem.* `cw(G) ≤ vs(G°)` for every graph, and `vs(G°) ≤ cw(G) +
+max(0, ⌊Δ/2⌋ − 1)`; in particular **`vs(G°) = cw(G)` when `Δ(G) ≤ 3`**.
+
+*Proof.* (`cw ≤ vs(G°)`) Take a layout of `G°` of value `k` and order `V`
+by the position of the last port of each vertex (`τ`; isolated vertices
+have no port and go anywhere, contributing to neither side). For a cut of `τ`
+after `v_i`, every crossing edge `uw` (`u` complete before `w`) contributes
+a distinct counted port at the `G°`-cut at the last port of `v_i`: if the
+port `(w, uw)` is unplaced, the placed port `(u, uw)` has it as an
+unplaced neighbour; if it is placed, it has an unplaced clique-mate since
+`K_w` is incomplete. So `cw_τ ≤ k`.
+(`vs(G°) ≤ cw + …`) Take a cutwidth layout of `G` of value `k`, lay out the
+cliques in that order, and within `K_v` place first the `a` ports whose
+edges go left, then the `b` ports whose edges go right. Let `c` be the
+edges passing over `v`; `c + a ≤ k` and `c + b ≤ k`. While the left ports
+are placed the count is `c + a` (a left endpoint leaves the cut exactly
+when its port enters it); while the `j`-th right port is placed the count
+is `c + a + j` for `j < b` (the left ports still have an unplaced
+clique-mate) and `c + b` at `j = b`. So the maximum is `c + max(a, b) +
+max(0, min(a, b) − 1) ≤ k + max(0, ⌊Δ/2⌋ − 1)`, and for `a + b ≤ 3` the
+excess is zero. ∎
+
+The excess is real: for `K_{1,4}`, `vs(G°) = cw + 1` (the test
+`test_degree_clique_expansion_exceeds_cutwidth_at_degree_four`), and §3.5
+records the measured excess by `Δ`. Degree 3 is therefore the boundary of
+this construction, which is where the literature's hardness for vertex
+separation sits (planar, maximum degree 3: row 9); we take this as the
+likely shape of Monien & Sudborough's reduction without being able to
+confirm it.
+
+### 3.5 The checks
+
+`python -m learning.subexp_reductions` (every graph of the networkx atlas,
+1 to 7 vertices, 1,252 graphs; `nice -n 19`; log
+`reports/scratch/subexp_pathwidth/03_reductions/check_atlas7.log`, results
+`check.json`). Two exact evaluators of vertex separation are used — the
+literal minimum over permutations and a prefix-set DP (`vs_subset_dp`,
+numpy, to about 20 vertices) — and the DP is checked against the
+permutations on every atlas graph first. MOSP values come from a DP over
+*pattern* subsets that shares no code with the layout evaluators.
+
+| check | what is compared | instances | failures |
+|---|---|---|---|
+| the DP evaluator | `vs_subset_dp` against the minimum over all permutations | every atlas graph, 1,252 | **0** |
+| row 14, the double | `vs(H) = vs(G) + n`, `H` on `2n ≤ 14` vertices by the DP | 1,252 | **0** |
+| row 13 on the doubles | `tw(H) = vs(H)` (`learning.treewidth.treewidth_exact`, the C subset DP) | 1,252 | **0** |
+| row 13 on the atlas | `tw(G) = vs(G)` on every cobipartite atlas graph | 149 | **0** |
+| row 15, `c = 2` | `vs(G[K_2]) + 1 = 2 (vs(G) + 1)`, 14 vertices | 1,252 | **0** |
+| row 15, `c = 3` | `vs(G[K_3]) + 1 = 3 (vs(G) + 1)`, 15 vertices | all graphs to 5 vertices, 52 | **0** |
+| row 16, lower bound | `cw(G) ≤ vs(G°)` (`cutwidth_dp` of `paper1/complex_check.py`) | every atlas graph with `2m + #isolated ≤ 20`, 696 | **0** |
+| row 16, `Δ ≤ 3` | `cw(G) = vs(G°)` | every atlas graph of maximum degree ≤ 3 (all have ≤ 20 ports), 253 | **0** |
+| row 16, `Δ ≥ 4` | the excess `vs(G°) − cw(G)` against the proved `⌊Δ/2⌋ − 1` | 443: `Δ = 4`: 0 on 118, 1 on 193; `Δ = 5`: 0 on 42, 1 on 72; `Δ = 6`: 0 on 2, 1 on 10, 2 on 6 | within the bound on all; the bound is attained at every `Δ` |
+| row 3, graph → instance | `mosp(instance(G)) = vs(G) + 1` by the pattern DP | every atlas graph with ≤ 14 patterns, 1,169 | **0** |
+| row 3, instance → graph | `mosp(M) = vs(M Mᵀ-graph) + 1` | every nonzero 3 × 4 0/1 matrix, 4,095 | **0** |
+| the pattern DP | `mosp_subset_dp` against the literal minimum over pattern orders | 300 random 4 × 6 matrices | **0** |
+| row 5, Lengauer | `vs(G') = mcw(G) + N`, `G'` on `N(N+1) ≤ 20` vertices | every graph to 4 vertices, 18 | **0** |
+
+38.6 s on one core under a one-minute load of 25.
+
+`tests/test_subexp_reductions.py` (8 tests) runs the same checks to 5
+vertices in the gate.
+
+### 3.6 What this does not claim
+
+- That rows 9–11 are what their papers say: Monien & Sudborough 1988,
+  Arnborg, Corneil & Proskurowski 1987 and Bonnet 2025 are not held; their
+  constructions and blow-ups are "unknown", not "superlinear". If ACP's
+  construction is linear, the bisection chain of §1.2 is a linear
+  ETH-chain into cobipartite pathwidth, and §3.2 changes only in that the
+  hypothesis at its top is ETH, the one already voided.
+- That `X = cutwidth on subcubic graphs` carries a surviving hypothesis.
+  It carries an open problem (Bentert et al. 2025) and an NP-completeness
+  we have not read.
+- That the three constructions of §3.4 are new: "we found no prior
+  statement in the held papers" (the treewidth form of 3.4.2 is on record;
+  3.4.3 is the natural reading of row 9; 3.4.1 may well be how ACP or
+  Möhring's readers argued). Nothing is claimed "first".
+- That Möhring's `pw = tw` on AT-free graphs is verified: it is checked on
+  cobipartite graphs to 7 vertices and on the doubles to 14, and cited
+  from secondary sources.
+- That any reduction here is in Lean: that is item 08's work. The
+  statements of §3.4 are stated against layouts exactly as
+  `VertexSeparation.lean` defines them so that item 08 can take them as
+  written.
+- That the checks to 7 vertices prove anything: they precede the proofs, as
+  TASK.md requires, and the proofs are the claim.
+
+### 3.7 Regenerate
+
+    D=reports/scratch/subexp_pathwidth/03_reductions
+    # the extracts (git-ignored): see $D/README.md for the full list
+    nice -n 19 python3 -m learning.subexp_reductions --nmax 7 > $D/check_atlas7.log
+    python3 -m pytest tests/test_subexp_reductions.py -q
+    python3 $D/explore.py 6     # the exploration that preceded §3.4 (not the deliverable)

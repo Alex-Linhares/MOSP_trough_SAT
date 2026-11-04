@@ -1,0 +1,15 @@
+vs DP against permutations on 1252 graphs: 0 failures
+dp_vs_permutations           checked   1252  failures 0
+cobipartite_double           checked   1252  failures 0
+moehring_double              checked   1252  failures 0
+moehring_atlas               checked    149  failures 0
+blowup2                      checked   1252  failures 0
+blowup3                      checked     52  failures 0
+expansion_lower              checked    696  failures 0
+expansion_subcubic           checked    253  failures 0
+mosp_graph_to_instance       checked   1169  failures 0
+lengauer                     checked     18  failures 0
+mosp_instance_to_graph       checked   4095  failures 0
+mosp pattern DP vs permutations: 0 failures of 300
+expansion excess vs(G°) − cw(G) by (Δ, excess): {'4:0': 118, '4:1': 193, '5:0': 42, '5:1': 72, '6:0': 2, '6:1': 10, '6:2': 6}
+38.6 s; written reports/scratch/subexp_pathwidth/03_reductions/check.json
