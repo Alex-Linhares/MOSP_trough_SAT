@@ -1,0 +1,14 @@
+15:14:40 {'instance_name': 'Random-75-75-4-1_0', 'n': 75, 'optimum': 35, 'harper_ref': 34, 'b': 33, 'answer': False, 'closes': True, 'conflicts': 4709178, 'seconds': 565.7, 'n_vars': 65380, 'n_clauses': 855407}
+15:21:58 {'instance_name': 'Random-75-75-4-2_0', 'n': 75, 'optimum': 35, 'harper_ref': 33, 'b': 33, 'answer': False, 'closes': True, 'conflicts': 2628697, 'seconds': 437.1, 'n_vars': 65380, 'n_clauses': 859551}
+15:35:52 {'instance_name': 'Random-75-75-2-2_0', 'n': 75, 'optimum': 17, 'harper_ref': 15, 'b': 15, 'answer': None, 'closes': False, 'conflicts': 10000000, 'seconds': 1837.3, 'n_vars': 73876, 'n_clauses': 916225}
+15:37:25 {'instance_name': 'Random-75-75-2-3_0', 'n': 75, 'optimum': 17, 'harper_ref': 16, 'b': 15, 'answer': None, 'closes': False, 'conflicts': 10000000, 'seconds': 1930.1, 'n_vars': 73876, 'n_clauses': 916225}
+15:38:32 {'instance_name': 'Random-75-75-2-1_0', 'n': 75, 'optimum': 16, 'harper_ref': 14, 'b': 14, 'answer': None, 'closes': False, 'conflicts': 10000000, 'seconds': 1997.8, 'n_vars': 74348, 'n_clauses': 923312}
+15:41:49 {'instance_name': 'Random-75-75-6-4_0', 'n': 75, 'optimum': 47, 'harper_ref': 46, 'b': 45, 'answer': False, 'closes': True, 'conflicts': 1078954, 'seconds': 195.8, 'n_vars': 59716, 'n_clauses': 841403}
+15:41:57 {'instance_name': 'Random-75-75-2-4_0', 'n': 75, 'optimum': 13, 'harper_ref': 11, 'b': 11, 'answer': None, 'closes': False, 'conflicts': 10000001, 'seconds': 2202.5, 'n_vars': 75764, 'n_clauses': 932733}
+15:42:57 {'instance_name': 'Random-75-75-2-5_0', 'n': 75, 'optimum': 16, 'harper_ref': 15, 'b': 14, 'answer': None, 'closes': False, 'conflicts': 10000000, 'seconds': 2262.2, 'n_vars': 74348, 'n_clauses': 919612}
+15:48:10 {'instance_name': 'Random-75-75-4-3_0', 'n': 75, 'optimum': 37, 'harper_ref': 36, 'b': 35, 'answer': None, 'closes': False, 'conflicts': 10000001, 'seconds': 1571.6, 'n_vars': 64436, 'n_clauses': 836201}
+16:14:11 {'instance_name': 'Random-75-75-4-5_0', 'n': 75, 'optimum': 32, 'harper_ref': 31, 'b': 30, 'answer': False, 'closes': True, 'conflicts': 7800016, 'seconds': 2205.2, 'n_vars': 66796, 'n_clauses': 860240}
+16:16:39 {'instance_name': 'Random-75-75-4-4_0', 'n': 75, 'optimum': 32, 'harper_ref': 31, 'b': 30, 'answer': False, 'closes': True, 'conflicts': 8597029, 'seconds': 2446.0, 'n_vars': 66796, 'n_clauses': 858464}
+16:20:06 {'instance_name': 'SP3_0', 'n': 75, 'optimum': 34, 'harper_ref': 33, 'b': 32, 'answer': False, 'closes': True, 'conflicts': 8937919, 'seconds': 2287.9, 'n_vars': 65852, 'n_clauses': 850654}
+16:20:07 {'instance_name': 'SP3', 'n': 75, 'optimum': 34, 'harper_ref': 33, 'b': 32, 'answer': False, 'closes': True, 'conflicts': 8937919, 'seconds': 2296.9, 'n_vars': 65852, 'n_clauses': 850654}
+full75 done

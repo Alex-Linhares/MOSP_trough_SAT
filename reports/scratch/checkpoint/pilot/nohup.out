@@ -1,0 +1,2 @@
+2026-11-04 14:33:48 checkpoint pilot: 77 instances (n <= 75), 6660 configurations (0 already done), 11 workers, conflicts 1000000, full encoding to n <= 75
+2026-11-04 15:01:46 pilot done: 6660 rows in 1678 s
