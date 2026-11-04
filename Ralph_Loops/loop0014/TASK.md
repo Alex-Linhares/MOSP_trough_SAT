@@ -146,6 +146,22 @@ See `iterations.md`. The dependency order is 01 → 02 → {03, 04, 05, 06} →
 - A `2^{o(n)}` statement about pathwidth is about `n` vertices, not input
   length: on dense graphs the input is `Θ(n²)` bits, and `O*(2^n)` is
   already `2^{o(input)}`. Every statement names its parameter.
+- **Pathwidth and cutwidth are classically tied, and the write-up must say
+  so where item 03's expansion meets them** (owner, 2026-11-04):
+  `pw(G) ≤ cw(G)` for every graph and `cw(G) ≤ Δ(G) · pw(G)` (Chung &
+  Seymour 1989, *Graphs with small bandwidth and cutwidth*; Korach & Solel
+  1993, *Tree-width, path-width, and cutwidth*; Makedon & Sudborough 1989,
+  *On minimizing width in linear layouts*, for degree-3 graphs; none held —
+  record them in `literature/MISSING.md` and attribute, "we found no prior
+  statement" only after checking those). The degree-clique expansion's
+  equality `cw(G) = vs(G°)` for `Δ ≤ 3` is the exact form of that tie and
+  may well be in Makedon & Sudborough or Monien & Sudborough; the
+  excess `⌊Δ/2⌋ − 1` for larger `Δ` is what to compare against their bound.
+  Item 07 should also look for the **converse** exact linear
+  transformation (vertex separation of a subcubic graph as the cutwidth of
+  a linear-size graph): with both directions, the `1.89ⁿ` pathwidth base
+  would transfer to cutwidth on subcubic graphs, where no base below 2 is
+  on record (Bentert et al. 2025).
 - The driver commits with `git add -A` after each iteration; keep scratch
   under `reports/scratch/subexp_pathwidth/` and large files out of git.
 - Never end a turn on a background wait; long jobs run in the foreground
