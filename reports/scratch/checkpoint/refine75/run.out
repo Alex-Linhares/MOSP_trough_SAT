@@ -1,0 +1,40 @@
+2026-11-04 15:27:46 refine: 13 instances (n <= 75), 2 workers, conflicts 5000000
+15:41:43 Random-75-75-2-1_0           n= 75 opt  16 harper  14 b= 14 censored checkpoints  13 rounds   6 377.011s sizes 18 27 32 34 37 39 41 43 46 48 49 51 56
+15:41:43 Random-75-75-2-1_0           n= 75 opt  16 harper  14 b= 13 censored checkpoints   7 rounds   4 307.071s sizes 18 37 41 46 51 56 65
+15:41:43 Random-75-75-2-1_0           n= 75 opt  16 harper  14 b= 12 unsat    checkpoints   1 rounds   1 153.037s sizes 37
+16:03:16 Random-75-75-2-3_0           n= 75 opt  17 harper  16 b= 15 censored checkpoints   4 rounds   4 374.072s sizes 37 46 51 56
+16:03:16 Random-75-75-2-3_0           n= 75 opt  17 harper  16 b= 14 censored checkpoints   4 rounds   3 919.612s sizes 18 37 46 56
+16:06:57 Random-75-75-2-2_0           n= 75 opt  17 harper  15 b= 15 censored checkpoints  33 rounds  12 1305.855s sizes 18 22 27 28 29 30 32 33 34 35 36 37 38 39 41 42 43 44 45 46 47 48 49 50 51 53 54 55 56 57 58 60 65
+16:06:57 Random-75-75-2-2_0           n= 75 opt  17 harper  15 b= 14 censored checkpoints   3 rounds   3 586.164s sizes 37 46 56
+16:06:57 Random-75-75-2-2_0           n= 75 opt  17 harper  15 b= 13 unsat    checkpoints   1 rounds   1 459.482s sizes 37
+16:23:59 Random-75-75-2-5_0           n= 75 opt  16 harper  15 b= 14 censored checkpoints  21 rounds   8 854.05s sizes 18 27 28 29 32 34 35 37 39 40 41 43 44 46 48 49 51 52 53 56 65
+16:23:59 Random-75-75-2-5_0           n= 75 opt  16 harper  15 b= 13 censored checkpoints   2 rounds   2 168.328s sizes 37 56
+16:28:01 Random-75-75-4-1_0           n= 75 opt  35 harper  34 b= 33 unsat    checkpoints  13 rounds   6 241.511s sizes 37 41 43 46 48 51 53 54 56 58 60 62 65
+16:30:15 Random-75-75-4-2_0           n= 75 opt  35 harper  33 b= 33 unsat    checkpoints   8 rounds   5 133.533s sizes 37 41 46 48 51 56 60 65116:31:45 Random-75-75-2-4_0           n= 75 opt  13 harper  11 b= 11 censored checkpoints  38 rounds  14 1386.714s sizes 18 19 20 22 24 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 46 47 48 49 50 51 52 53 54 55 56 57 58 60 61 62 63 65
+16:31:45 Random-75-75-2-4_0           n= 75 opt  13 harper  11 b= 10 censored checkpoints   5 rounds   3 220.63s sizes 18 27 37 46 56
+16:31:45 Random-75-75-2-4_0           n= 75 opt  13 harper  11 b=  9 unsat    checkpoints   1 rounds   1 101.745s sizes 37
+16:41:45 Random-75-75-4-4_0           n= 75 opt  32 harper  31 b= 30 censored checkpoints  15 rounds   9 409.147s sizes 37 41 43 46 47 48 49 50 51 53 54 56 58 60 65
+16:41:45 Random-75-75-4-4_0           n= 75 opt  32 harper  31 b= 29 censored checkpoints   3 rounds   3 190.349s sizes 37 46 56
+16:42:57 Random-75-75-4-3_0           n= 75 opt  37 harper  36 b= 35 censored checkpoints  25 rounds  12 596.702s sizes 37 38 39 41 43 44 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 65
+16:42:57 Random-75-75-4-3_0           n= 75 opt  37 harper  36 b= 34 censored checkpoints   2 rounds   2 165.924s sizes 37 56
+16:43:24 Random-75-75-6-4_0           n= 75 opt  47 harper  46 b= 45 unsat    checkpoints   3 rounds   3 26.685s sizes 37 56 65
+16:47:07 Random-75-75-4-5_0           n= 75 opt  32 harper  31 b= 30 censored checkpoints   4 rounds   4 172.239s sizes 37 46 51 56
+16:47:07 Random-75-75-4-5_0           n= 75 opt  32 harper  31 b= 29 censored checkpoints   3 rounds   3 149.806s sizes 37 46 56
+16:51:51 SP3                          n= 75 opt  34 harper  33 b= 32 censored checkpoints   6 rounds   6 258.652s sizes 37 46 51 53 54 56
+16:51:51 SP3                          n= 75 opt  34 harper  33 b= 31 unsat    checkpoints   3 rounds   3 248.259s sizes 37 46 56
+16:57:22 SP3_0                        n= 75 opt  34 harper  33 b= 32 censored checkpoints   6 rounds   6 377.769s sizes 37 46 51 53 54 56
+16:57:22 SP3_0                        n= 75 opt  34 harper  33 b= 31 unsat    checkpoints   3 rounds   3 237.399s sizes 37 46 56
+2026-11-04 16:57:22 refine done: 26 rows -> reports/scratch/checkpoint/refine75/refine.csv
+-50-100-2-3_0          n= 50 opt  22 harper  21 b= 20 unsat    checkpoints  14 rounds   9 79.662s sizes 25 26 28 31 32 33 34 35 36 37 38 40 41 43
+16:55:06 Random-50-100-2-4_0          n= 50 opt  24 harper  23 b= 22 unsat    checkpoints  13 rounds   9 49.815s sizes 25 26 28 29 31 32 34 35 36 37 38 40 43
+16:55:38 Random-50-100-2-5_0          n= 50 opt  20 harper  19 b= 18 unsat    checkpoints   8 rounds   5 31.89s sizes 25 28 31 34 35 37 40 43
+16:56:46 Random-50-50-2-2_0           n= 50 opt  13 harper  11 b= 11 unsat    checkpoints  26 rounds  13 67.408s sizes 12 15 16 18 19 20 21 22 23 25 26 27 28 29 30 31 32 34 35 37 38 39 40 41 42 43
+16:57:08 SP3_0                        n= 75 opt  34 harper  33 b= 32 censored checkpoints   6 rounds   6 360.564s sizes 37 46 51 53 54 56
+16:57:08 SP3_0                        n= 75 opt  34 harper  33 b= 31 unsat    checkpoints   3 rounds   3 252.293s sizes 37 46 56
+16:57:21 Random-50-50-2-4_0           n= 50 opt  13 harper  12 b= 11 unsat    checkpoints  13 rounds   9 12.871s sizes 25 26 27 28 29 31 32 33 34 37 40 41 43
+16:57:27 Random-50-50-2-3_0           n= 50 opt  11 harper  10 b=  9 unsat    checkpoints  22 rounds   9 41.355s sizes 12 13 15 16 18 21 22 23 24 25 26 27 28 29 30 31 32 34 35 37 40 43
+16:57:28 Random-50-50-4-5_0           n= 50 opt  22 harper  21 b= 20 unsat    checkpoints   3 rounds   3 0.957s sizes 25 31 37
+16:57:33 SP2                          n= 50 opt  19 harper  18 b= 17 unsat    checkpoints   5 rounds   4 5.092s sizes 25 28 31 34 37
+16:57:42 SP2_0                        n= 50 opt  19 harper  18 b= 17 unsat    checkpoints   5 rounds   4 9.271s sizes 25 28 31 34 37
+16:58:05 Random-50-50-2-5_0           n= 50 opt  14 harper  12 b= 12 unsat    checkpoints  17 rounds   9 44.869s sizes 12 15 18 21 25 26 27 28 29 30 31 32 33 34 35 36 37
+16:58:42 p1550n10_0                   n= 50 opt   8 harper   5 b=  6 unsat    checkpoints  28 rounds   7 59.265s sizes 12 13 15 16 17 18 19 21 23 24 25 26 27 28 29 30 31 32 34 35 36 37 38 40 41 42 43 46

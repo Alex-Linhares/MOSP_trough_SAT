@@ -177,6 +177,18 @@ three at 25, 31, 37; five instances at 50 with five, all at 25, 28, 31, 34,
 instances where Harper is one short and a short chain through the middle
 already forbids the last stack.
 
+**At 75** (`reports/scratch/checkpoint/refine75/refine.csv`, 5 × 10⁶
+conflicts per call, 2 workers, 2.4 hours): the refinement certifies the
+optimum on **3 of 13** — `Random-75-75-6-4_0` with three checkpoints at
+37, 56, 65 in 27 s, `Random-75-75-4-2_0` with eight, `Random-75-75-4-1_0`
+with thirteen — and censors on the other ten, usually in a call with two to
+four checkpoints (`37 46 56` recurs: the bisection's first rounds). On the
+five ridge instances the single-checkpoint call at two below the optimum
+already takes 100–460 s. The full chain of §6, one call with 10⁷ conflicts,
+refuted seven of the same thirteen: at this size the relaxation's SAT calls
+are the cost, and splitting the budget over rounds and segment checks loses
+to spending it once on the whole chain.
+
 ## 5. Locally minimal certificates
 
 Greedy shrink of each §4 certificate: drop one checkpoint, farthest from
@@ -287,14 +299,27 @@ customers the chain is the encoding that returns; neither reaches 75 at 10⁶
 
 ## 9. Verdict and what follows
 
-- **As a bound family: closed.** A relaxation with few checkpoints gains a
-  quarter of a stack on the residual; the certificate needs a third of the
-  sizes at gap 1 and half at gap 3, in a fixed band. There is no compact
-  nested-prefix certificate to find, and this was the last argument that
-  attacked the property that killed the single-prefix bounds.
-- **Reusable**: the encoding, as an exact method with a proof object (§8),
-  and the refinement loop, which is a general CEGAR for vertex separation
-  with exact segment checks.
-- **Not done**: 100–125 customers, where nothing here reaches; a Lean
-  statement of the relaxation's soundness (one lemma: a layout's prefixes
-  are nested and bounded), proposed if the encoding is kept.
+- **As a bound family: closed.** A relaxation with few *fixed* checkpoints
+  gains a quarter of a stack on the residual. Compact certificates exist at
+  gap 1 (five consecutive sizes at `0.5–0.7 n`, §5), but finding them took
+  exact segment checks, and at 75 the relaxation's own SAT calls censor on
+  the ridge before the number of checkpoints matters (§4, §6). The
+  obstruction is a band of consecutive nested levels: the exact problem,
+  localised. This was the last argument aimed at the property that killed
+  the single-prefix bounds, and it does not give a floor.
+- **Reusable, and the result worth keeping**: the nested chain as an exact
+  encoding with a DRAT proof object. At 41–50 customers it refutes twice
+  what the position encoding does in the same budget and every instance
+  with many patterns; at 75 it refutes every dense instance in under an
+  hour (§6, §8). A Lean statement of its soundness is one lemma (a layout's
+  prefixes are nested and bounded) and is proposed if it is adopted for
+  `learning.proofs`.
+- **One solver idea with a measured reason** (§5, §7): the search's states
+  peak at `0.42 n` and the certificate's checkpoints sit at `0.5–0.7 n`, so
+  the forward search enumerates everything reachable before the wall and
+  only then meets it. A search from the other end, or a meet-in-the-band
+  with the two frontiers, is cheap to test in nodes at 50–75 and is the one
+  untested change with a chance of moving the cost of the 125 refutations.
+- **Not done**: 100–125 customers, where nothing here reaches; the
+  general CEGAR loop of §4 is sound and general (vertex separation with
+  exact segment checks) but loses to one whole-chain call at 75.

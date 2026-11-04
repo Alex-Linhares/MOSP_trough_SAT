@@ -1556,6 +1556,37 @@ re-solved; `solutions/` untouched. "We found no prior report" of a
 searched contraction-minor or searched vertex-isoperimetric lower bound on
 benchmark instances.
 
+**The checkpoint relaxation: nested prefixes at a few sizes** *(2026-11-04,
+one session outside the loops; `reports/checkpoint_relaxation.md`, §0 is the
+summary; `learning/checkpoint_{bound,refine,anatomy,report}.py`, 20 tests)*.
+Every bound on record reads one prefix of the layout; Harper is the best
+such bound and its exact value is below the optimum on the residual, so the
+missing ingredient had to be nesting. CHK(sizes, b): nested sets
+`S_1 ⊂ … ⊂ S_c` of given sizes, each with inner boundary `≤ b`; UNSAT
+proves `vs ≥ b + 1`; one checkpoint is Harper (reproduced on 66 of 66), all
+`n − 1` is the exact problem. On the 77 corpus instances at 30–75 with
+Harper's ceiling below the optimum: **fixed grids of 2–6 checkpoints gain a
+quarter of a stack** and close at most 3 of 66; 16 close 18; adaptive
+(counterexample-guided, exact segment checks) checkpoints certify all 64 at
+30–50 with a median of a third of the sizes, **shrunk to locally minimal
+sets a median of 6, and at Harper gap 1 five consecutive sizes at
+`0.5–0.7 n`**; at 75 the relaxation's own SAT calls censor on the ridge
+before the count matters (3 of 13 certified). **Closed as a bound family**:
+the obstruction is a band of consecutive nested levels, the exact problem
+localised, and no cheap relaxation reproduces it. **Kept as an exact
+encoding**: the full chain (`2n²` variables, graph only, no positions) refutes
+`optimum − 1` on 62 of 64 at 30–50 in seconds, 42 of 44 at 50 against 20 for
+the direct position encoding in the same 10⁶ conflicts (which censors on
+every instance with `m > 60`), and at 75 with 10⁷ conflicts 7 of 13 — every
+dense one in 3–41 min, no ridge one; a DRAT proof object for 41–75 that
+`learning.proofs` lacks. The anatomy of the search's refutation (the §32
+certificate tabulated by prefix size `|N[S]|`): states peak at `0.42 n`, half
+within a window 12% of `n` wide, *before* the band the certificate needs —
+the forward search enumerates everything reachable before the wall; a
+search from the other end or a meet-in-the-band is the one untested solver
+change with a measured reason, proposed. Nothing re-solved; `solutions/`
+untouched; about 10 core-hours; data under `reports/scratch/checkpoint/`.
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,
