@@ -18,7 +18,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
 `lean/MOSPFormalization/SubexpPathwidth/` (imported by
 `lean/MOSPFormalization.lean`).
 
-- [ ] **01 The audit and the kill check: exact bases, ETH-conditional lower bounds, and what the counting method needs from a problem.**
+- [x] **01 The audit and the kill check: exact bases, ETH-conditional lower bounds, and what the counting method needs from a problem.**
   `pdftotext` the ETH paper once; read Sections 1, 2 (technique overview),
   6 (the reduction of `#k`-SAT to counting common zeros) and Appendix D
   (tensor contraction), and skim 3–5 for the objects (shared linear

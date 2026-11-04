@@ -1,0 +1,144 @@
+# session it01 started 2026-11-04 18:07:39
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the checkpoint relaxation §10, and the two-ended enumerator, then extract the ETH paper.
+  > $ cat reports/subexp_pathwidth_plan.md
+  > $ sed -n '/^## 10/,$p' reports/checkpoint_relaxation.md | head -200; echo ======; sed -n '1,80p' learning/two_ended.py; echo =====; cat Ralph_Loops/loop0014/itera
+
+Now the ETH paper: extract it once into scratch, and look at its structure.
+  > $ mkdir -p reports/scratch/subexp_pathwidth/01_audit && P=~/dev/untrusted/openai-math/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf
+  > $ sed -n '1,400p' reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ grep -n -E '^\s*([0-9]+\.[0-9]*\.?\s+[A-Z]|Appendix [A-D]\.|Theorem [0-9]|Lemma [0-9]|Proposition [0-9]|Corollary [0-9]|Definition [0-9])' reports/scratch/subex
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ ls literature/ | head -150; echo ====; grep -n -i -E 'ETH|SETH|exponential time hypothesis|2\^\{o\(n\)|subexponential|1\.89|1\.9|Suchan|Kitsunai|Villanger|Bodla
+  > $ ls literature/ | grep -i -E 'suchan|villanger|kitsunai|fomin|cygan|pilipczuk|feige|bodlaender.*(2006|2012|2011)|kratsch|thilikos|bandwidth|cutwidth|exact|expone
+  > $ grep -rn -i -l -E '\bETH\b|SETH|exponential time hypothesis|2\^\{o\(n\)\}|1\.89\^n|1\.9\^n|O\*\(2\^n\)|Suchan|Kitsunai|Villanger|Cygan|Pilipczuk' --include='*.m
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ F=~/dev/untrusted/openai-math/lean/ComparatorChallenges/SubexponentialSAT.lean; wc -l $F; cat $F | grep -v '^\s*$' | sed -n '1,260p'
+  > $ S=reports/scratch/subexp_pathwidth/01_audit && for f in 2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC 2016-Kitsunai-Kobayashi-Komuro-Tamaki-Tan
+  > $ grep -n -i -E 'ETH|exponential|subexp|1\.89|1\.96|2\^n|O\*' literature/pathwidth_solvers_README.md | head -40; echo ====SURVEY; grep -n -i -E 'ETH|exponential t
+  > $ git diff --stat reports/subexp_pathwidth_plan.md; git diff reports/subexp_pathwidth_plan.md | head -80; echo ====OAI-PROOF; grep -rl 'exact_count_and_sat' ~/dev
+  > $ S=reports/scratch/subexp_pathwidth/01_audit; echo "=== SUCHAN-VILLANGER"; sed -n '1,60p' $S/2009-Suchan-Villanger-Computing-Pathwidth-Faster-Than-2n-IWPEC.txt; 
+  > $ S=reports/scratch/subexp_pathwidth/01_audit; echo "=== BFKKT 2006"; sed -n '1,80p' $S/2006-Bodlaender-Fomin-Koster-Kratsch-Thilikos-Exact-Algorithms-Treewidth-T
+  > $ S=reports/scratch/subexp_pathwidth/01_audit; echo "=== ITCS 2025"; sed -n '1,130p' $S/2025-Exponential-Time-Approximation-Schemes-Vertex-Ordering-ITCS.txt; echo
+  > $ S=reports/scratch/subexp_pathwidth/01_audit; echo "=== ITCS 820-840"; sed -n '822,840p' $S/2025-Exponential-Time-Approximation-Schemes-Vertex-Ordering-ITCS.txt;
+  > $ echo "=== Möhring/AT-free/cobipartite in paper2 and reports"; grep -rn -i -E 'hring \(1996\)|asteroidal|cobipartite|co-bipartite' paper2/*.md reports/pathwidth_
+  > Agent {"description": "Second opinion on counting method", "subagent_type": "general-purpose", "prompt": "You are giving an in
+
+I'll read the file sections in the order requested.
+  > Read /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '350,760p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '760,1150p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '1393,1450p;1921,1992p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '1993,2250p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '2250,2520p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '3001,3330p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ echo "=== openalex ETH titles"; python3 -I -c "
+import json
+d=json.load(open('paper1/data/openalex_candidates.json'))
+items = d if isinstance(d,list) else (d.ge
+  > $ sed -n '1150,1260p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ sed -n '80,200p' learning/two_ended.py; echo ====; cat Ralph_Loops/loop0014/knobs.json; ls reports/subexp_pathwidth.md 2>&1; ls lean/MOSPFormalization/SubexpPat
+  > $ grep -n "Lemma 4.7\|Lemma 4.5\|scope\|incidence" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt | sed -n '1,80p'; echo ----; sed -n '1860,1
+  > $ grep -n "∆\|entry can be computed\|2As\|9/10\|Darr ∆\|maximum degree" /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt | sed -n '1,60p'
+
+One last read, the leaf cost and where the entry budget enters (lines 3580–3630), then I'll write the answer.
+  > $ sed -n '1464,1478p;3580,3632p' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ python3 -I -c "
+import json
+d=json.load(open('paper1/data/openalex_candidates.json'))
+seen=set()
+def walk(x):
+    if isinstance(x,dict):
+        t=str(x.get('ti
+  > $ python3 -I -c "
+import json
+d=json.load(open('paper1/data/openalex_candidates.json'))
+seen=set()
+def walk(x):
+    if isinstance(x,dict):
+        t=str(x.get('ti
+
+## 1. The quantity the exponent is measured in
+
+- **Theorem 1.1** (ll. 56–62): both bounds are in `n`, the number of *declared variables*; `m` (clauses) appears only in the polynomial factor `(n+m)^{O_k(1)}`. The fixed-density bound `2^{O_{k,D}(n/√log n)}` requires `m ≤ Dn` (l. 60–61). Appendix D explains why: "The two running times reflect the number of wires in the networks. A formula with m ≤ Dn clauses gives a network with O_{k,D}(n) wires" (ll. 3003–3005); in general the clause network has `s = n+m` wires (l. 3052) and the exponent is `O_k(s/√log s)` (l. 3058).
+- **Theorem 2.2** (ll. 1137–1143): `n`, the number of Boolean variables of the polynomial system; the system has `m_test ≤ cn` equations of at most `(log n)^c` monomials each.
+- **Theorem D.1** (ll. 3016–3028): `s`, a size parameter with the network having at most `Cs` edges; "We measure the size of the network by its number of edges" (l. 3014). A *wire* is an edge of the bipartite multigraph, carrying "a single bit" (ll. 3008–3009); each vertex has a tensor indexed by Boolean assignments to its incident edges.
+- **Lemma D.2** (ll. 3069–3072): `n`, the declared variables of the polynomial system (`a ≤ cn` equations); internally it applies D.1 with `s = nν = n⌈log₂ log₂ n⌉` wires (ll. 3203, 3163–3165), which is where the extra `log log n` comes from.
+
+## 2. What the method needs
+
+**(a)** The sum is always over the full Boolean cube `{0,1}^n` of the *variables* (ll. 1157–1159, (3.1)); in D.1 it is over `{0,1}^{E(G)}`, one bit per wire (ll. 3010–3012). Restrictions `x_i = 1` on a prefix set are allowed and local (ll. 1232–1234).
+
+**(b)** Summand: a product of factors `Φ_f`, each "any rational polynomial" (l. 1152) or with coefficients in any commutative Q-algebra (ll. 1161–1163), reading a scope `I_f ⊆ [n]`. Hypotheses:
+- degree bound (3.2) (ll. 1166–1170): the product, with each incidence `(f,v)` given its own indeterminate, has total degree `≤ d`, and "Our application will have d = O(n)" (ll. 1180–1181); the Taylor cost is `q = ⌊dR/Q⌋` (l. 1446), so `d` super-linear in `n` breaks the bound.
+- scope width `w` and incidence `b` (Lemma 4.7, ll. 1897–1900; (4.1), ll. 1467–1472): `|I_f| ≤ w`, each variable in at most `b` factors, `n ≤ M ≤ bn`; the parameter choice of Lemma 4.8 needs `b, w ≤ λ^β`, i.e. a fixed power of `log n` (ll. 1921–1923, 1934). "The scope bound w need not bound the degree of the factor polynomial" (l. 1472). Section 5 branches on the `≤ n/√λ` variables of incidence above `b₀` (ll. 2177–2186) to make `b` polylogarithmic.
+- factor evaluation must be polynomial in bit cost (ll. 2140–2145) and must not enumerate the whole scope (l. 2151).
+
+**(c)** Theorem D.1 (ll. 3016–3028), verbatim hypotheses: "Fix positive constants C, A, b. Let s ≥ 2 be an integer ... bipartite tensor network with at most Cs edges and maximum degree at most ⌈s^{9/10}⌉. Suppose that the number of vertices is bounded by a fixed polynomial in s, and that the entries belong to B_{P₀,ℓ} = (Z/2^{P₀}Z)[V]/(V^ℓ), 1 ≤ P₀, ℓ ≤ Cs. Suppose, uniformly for every vertex and Boolean choice of its ports, that its entry can be computed from the description in time (s+L)^b 2^{As^{9/10}} and space (s+L)^b." The ring is a truncated polynomial ring over integers modulo a power of two; `ℓ = 1` is permitted (l. 3029). Counts are recovered as residues mod `2^{n+1}` (ll. 3052–3056).
+
+## 3. Where `2^{n/√log n}` comes from
+
+Three costs ((2.11), ll. 663–669; (3.16), ll. 1430–1437; l. 1923–1931): Taylor data `O(n (R/Q) log(2Q/R))`, measurement tuples `τ log(2D+1) · n`, and one-group enumeration `2^{2n/r}`. Under (2.10)/(4.17) with `r = ⌊√λ/ν²⌋`, `Q = ⌊λ/(128ν)⌋`, `R = Θ(√λ)`, `τ = 1/(rλ)`: Taylor is `O(n ν²/√λ)`, measurements `O(n/r) = O(nν²/√λ)`, one group `O(nν²/√λ)` (ll. 693–705, 1967–1969). All three are of the same order; none dominates, and the `(log log n)²` is from `r` being `√λ/ν²`, because `D = r^{2Q}` must stay `≤ (2n)^{1/128}` (ll. 968–973). The cleaner `n/√log n` of Theorem 1.1 is obtained only via the tensor recursion of Appendix D, where exponents "sum geometrically to O(s/√log s)" (ll. 3041–3043).
+
+## 4. `k` growing with `n`
+
+`k` enters: sparsification `B = O_k((σ⁻¹ log(2/σ))^{k−1})` (ll. 1072–1073, 2473–2474), so with `σ = 1/s`, `B = (log n)^{O_k(1)}` only for fixed `k` (l. 2500); the degree bound `d = k(m_test + 2(ℓ−1))` (l. 2127, (D.1) l. 3113); the monomial count `2^k max(D₀, P)` (ll. 2436–2438) and the "single fixed c = c(k)" of Theorem 2.2 (ll. 2452–2455, 3231–3233); test-side entry cost `2^{|S_i|} ≤ 2^{kλ^c}` (ll. 3194–3196) which must fit `2^{As^{9/10}}`; the clause network's degree `max{k,3}` and "local tables have bounded size for fixed k" (ll. 3047, 3054). Section 1 says explicitly: "Theorem 1.1 gives a running-time guarantee for each fixed clause width k, while this hypothesis allows the width to grow with n" (ll. 235–236). No bound uniform in `k` is stated.
+
+## 5. One constraint reading many bits in D.1
+
+D.1 permits a vertex of degree up to `⌈s^{9/10}⌉` with entry computation `2^{As^{9/10}}` (ll. 3019, 3022–3024), so a vertex whose entry is a threshold "at most t of its d ports" is formally within scope for `d ≤ s^{9/10}` (its entry is computable in polynomial time). The text does not discuss threshold or other non-local constraints explicitly; the hypotheses are the only statement. Internally the degree cap is used in (D.6) `M ≥ 2D_arr ∆`, `2L ≤ ∆` (ll. 3313–3316, 3586) and the entry budget in the leaf cost `exp(O_C(H) + O_{C,A}(s^{9/10}))` (l. 3627).
+
+## 6. Counting vs. decision, witnesses, weights
+
+Counting is primary; "Testing #F > 0 also decides satisfiability" (l. 48). Witnesses by self-reduction, "fixing one variable at a time and checking that the remaining count is positive", and uniform sampling with `poly_k(n,m)` overhead (ll. 68–71). Weighted sums: Section 3.1 allows factors "any rational polynomials" with coefficients in any commutative Q-algebra `A` (ll. 1152, 1161–1163), subject to the degree, scope and incidence bounds above; D.1 works over `(Z/2^{P₀}Z)[V]/(V^ℓ)`.
+
+## 7. Encodings with more variables than the natural parameter
+
+Lines 95–99: "runtime bounds of the form 2^{o(n)} do not transfer under general polynomial-time reductions (2^{n^{o(1)}} would be needed for this), so our result does not imply that general NP problems admit subexponential time algorithms." Lines 237–243: "we need a reduction in the other direction, from that problem to fixed-width SAT, that controls the number of variables", with Set Splitting as the example having one variable per element. Corollary 1.3 (ll. 100–120) gives `2^{o(v)}` for colourings only via `qv` variables with `q` fixed, and perfect matchings only `2^{o(v+e)}`, one variable per edge. Nothing is said about permutation problems or `Θ(n²)`-variable encodings beyond these.
+  > Write /home/al/dev/MOSP/reports/subexp_pathwidth.md
+  > $ D=reports/scratch/subexp_pathwidth/01_audit && cat > $D/second_reading.md <<'EOF'
+# Second reading of the ETH paper (one subagent, blind to §1.3 of the report)
+
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0014/iterations.md'
+s=open(p).read()
+old="- [ ] **01 The audit and the kill check"
+assert s.count(old)==1
+s=s.replace(old,"
+  > $ uptime && nice -n 19 python3 Ralph_Loops/loop0014/gate.py 2>&1 | tail -30
+  > $ cat /tmp/claude-1000/-home-al-dev-MOSP/9be64548-7b53-4f99-81aa-4ed97f3b0de3/tasks/bfq8a7h2b.output 2>/dev/null | tail -15; echo ---; pgrep -af 'gate.py|pytest|l
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Only one thing remains: the gate's result. I'll wait on its PID with a bounded poll and print its output when it exits.
+  > $ while kill -0 1393472 2>/dev/null; do sleep 5; done; echo "gate exited"; tail -25 /tmp/claude-1000/-home-al-dev-MOSP/9be64548-7b53-4f99-81aa-4ed97f3b0de3/tasks/
+
+Item 01 is done and the gate passes. Nothing was committed, nothing written under `solutions/`, and nothing in the untrusted clone was built or run.
+
+**What was found**
+
+- **No subexponential exact pathwidth algorithm is on record.** The best bases are 1.89 (Kitsunai et al. 2016, held) and 1.9657 (Suchan & Villanger 2009, held). Cutwidth, linear arrangement and feedback arc set are still at `O*(2^n)` with no base below 2, which Bentert et al. (ITCS 2025, held) state explicitly. Treewidth and bandwidth bases are recorded, two of them flagged "from memory, not held".
+- **One ETH-conditional bound on computing a width exists, and it is linear.** Bonnet (JACM 2025, abstract on disk, paper not held) proves exact treewidth needs `2^{Ω(n)}` under ETH by a self-contained reduction from 3-SAT, and says the older chains through cutwidth or pathwidth on bounded-degree graphs gave only `2^{Ω(√n)}`. No sentence "no `2^{o(n)}` for pathwidth unless ETH fails" was found in any held paper or on-disk title, and no SETH bound on computing any width.
+- **The counting method's real budget is total incidence, not clause width.** The paper computes a sum over a Boolean cube of a product of local factors. In the tensor form the exponent is in the number of wires, which is the total variable–constraint incidence, and a wide threshold constraint is allowed as one vertex of degree up to `s^{9/10}`. Fixed `k` is needed only for sparsification and the replacement-row degree. For pathwidth, a certificate of width at most `k` needs `o(n√log n)` wires, or `o(n√log n/(log log n)²)` CNF variables on the verified route. The position and nested-chain encodings are `Θ(n²)`, and any witness that determines the layout is at least `n log n` bits, so items 04, 05 and 09 must look for a different certificate object.
+- **The formally verified statement carries the weaker exponent** `n(log log n)²/√log n`. The sharper bounds of Theorem 1.1 are paper-only. Item 02 must restate the verified form.
+- **Kill check: not killed** on either criterion. The second criterion asks for a demonstration that the method cannot apply to any NP-hard width problem, and none exists in either direction.
+
+**What was written**
+
+- `reports/subexp_pathwidth.md` §1, with §0 reserved for item 11. The section ends with "what this does not claim" and regenerate commands.
+- `reports/scratch/subexp_pathwidth/01_audit/`: README with regenerate commands, the subagent's blind second reading (which agreed on every point), and the text extracts, which are git-ignored.
+- PROGRESS.md iteration section with the two findings that redirect items 03 and 04/05, and the missing papers for item 11. `iterations.md` marks item 01 done. Current count is 1 of 12.
+
+**Gate**: lake build ok, zero sorries, 1,931 tests passed plus 123 in the pathwidth solver, paper builds with no undefined references.
+
+One subagent of the allowed four was used.
+
+# result: success in 1421s, 39 turns, cost $12.12
