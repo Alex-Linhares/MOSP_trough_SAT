@@ -19,6 +19,22 @@ reduction or width material enters it.
   commit body). A question about its wording or about a claim it makes
   goes to `paper3/ETH_AMBIGUOUS.MD`, never into the title. The gate checks
   the `\title` against the string above.
+- **The paper is written in plain English** (owner, 2026-11-05, 05:30).
+  A reader who has never seen complexity theory must be able to follow
+  the thesis from the abstract to the conclusion. Concretely: short
+  sentences, one idea each; every symbol defined in words the first time
+  it appears and paraphrased in words wherever it carries the argument
+  (`ρ(n)`, `2^n`, "the exponent", "the bound"); no term of art without a
+  one-clause gloss on first use (ETH, SETH, k-CNF, kernel, comparator,
+  nanoda, model counter, CDCL); the abstract and the introduction carry
+  no formula at all beyond `2^n`; tables and figures have captions a
+  layperson can read; the technical detail lives in the appendix and in
+  the companion files, cited from the plain text. Precision is kept, not
+  dropped: "the verified guarantee", never "the algorithm", where that is
+  the fact. Every section already drafted is rewritten to this rule by
+  the plain-English item; every section drafted after this rule follows
+  it from the first line. The gate does not check prose; the refuter
+  item (10) does, and files every sentence a layperson could not follow.
 - **No stopping midway; ambiguity is decided, recorded, and passed.**
   Every item makes its own choice on anything it finds ambiguous, writes
   one entry per question in `paper3/ETH_AMBIGUOUS.MD` — what was ambiguous,
