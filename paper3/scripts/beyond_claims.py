@@ -293,6 +293,35 @@ def main():
     if not eth_files:
         print('  none')
 
+    # 4b. Where the word ETH occurs inside the family (item 10, after the refuter):
+    #     comments only, plus the theorem name exact_count_eth; SETH nowhere.
+    fam_eth_lines, fam_eth_files, fam_seth = [], set(), 0
+    for dirpath, _, files in os.walk(os.path.join(CLONE, FAMILY_DIR)):
+        for fn in files:
+            if not fn.endswith('.lean'):
+                continue
+            p = os.path.join(dirpath, fn)
+            rel = os.path.relpath(p, CLONE)
+            for i, line in enumerate(open(p, encoding='utf-8'), 1):
+                if re.search(r'\bSETH\b', line):
+                    fam_seth += 1
+                if re.search(r'\bETH\b', line):
+                    fam_eth_lines.append((rel, i, line.rstrip()))
+                    fam_eth_files.add(rel)
+    print(f'\n== lines inside the family whose text contains the word ETH ==')
+    for rel, i, line in sorted(fam_eth_lines):
+        print(f'  {rel}:{i}: {line[:90]}')
+    decl = re.compile(r'^\s*(theorem|lemma|def|abbrev|structure|inductive|instance)\b')
+    all_comments = all(not decl.match(line) for _, _, line in fam_eth_lines)
+    final_rel = FAMILY_DIR + '/SqrtLogSpace/Final.lean'
+    has_eth_name = 'exact_count_eth' in open(os.path.join(CLONE, final_rel), encoding='utf-8').read()
+    if (len(fam_eth_lines) == 6 and len(fam_eth_files) == 5 and all_comments
+            and fam_seth == 0 and (final_rel, 6) in [(r, i) for r, i, _ in fam_eth_lines] and has_eth_name):
+        print('  ok   six comment lines in five files (Final.lean line 6 among them), SETH nowhere, exact_count_eth present')
+    else:
+        print(f'  FAIL lines={len(fam_eth_lines)} files={len(fam_eth_files)} comments={all_comments} seth={fam_seth} name={has_eth_name}')
+        failures += 1
+
     # 5. The three exponents relative to n, at constant 1.
     def r_ver(n):
         y = math.log(n + 16.0)

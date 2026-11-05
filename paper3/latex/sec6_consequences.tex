@@ -43,12 +43,12 @@ theorems exist in the literature.
 
 Every refutation below rests on the same parts of the verified theorem
 (comparator file lines 194--217, Section~\ref{sec:statement}). For each
-fixed width $k \ge 2$ there is one deterministic machine which, given
-any formula of width at most $k$ on $n$ variables, halts with the number
-of satisfying assignments on its count tape (lines 203--204), the
-answer ``is that number positive'' on its answer tape and in its
-halting state (lines 205--207), within the bound $C\,(L+1)^d\,2^{A\rhon}$
-(lines 210--211). Four features of that property do the work.
+fixed width $k \ge 2$ there is one deterministic machine with three
+properties, given any formula of width at most $k$ on $n$ variables. It
+halts with the number of satisfying assignments on its count tape (lines
+203--204). It has the answer ``is that number positive'' on its answer
+tape and in its halting state (lines 205--207). And it does so within the
+bound $C\,(L+1)^d\,2^{A\rhon}$ (lines 210--211). Four features of that property do the work.
 
 \begin{enumerate}
 \item \textbf{It is deterministic.} The step rule is a function; there
@@ -235,10 +235,10 @@ checked against the extract and the clone, by
 \end{table}
 
 \paragraph{What the manuscript places beside the list.}
-Two sentences follow the refutation paragraph (p.~4, lines 191--194):
-the result ``does not conflict with unconditional exponential lower
-bounds for restricted proof systems such as regular resolution [BI13],''
-and ``In 2016, Ryan Williams refuted the Merlin--Arthur version of SETH
+Two sentences follow the refutation paragraph (p.~4, lines 191--194).
+The first: the result ``does not conflict with unconditional exponential
+lower bounds for restricted proof systems such as regular resolution
+[BI13]''. The second: ``In 2016, Ryan Williams refuted the Merlin--Arthur version of SETH
 (MA-SETH) by giving a protocol that certifies $k$-CNF unsatisfiability
 in $2^{n/2}\,\mathrm{poly}(n,m)$ time [Wil16, Theorem 3.3]''
 \citep{Williams2016}. Both are context. The first says that a lower bound proved outright for one restricted way of writing proofs of unsatisfiability (``regular resolution'' is one such way) is not a statement about algorithms in general and is not touched. The second says that one member of the family, the version in which the proof of unsatisfiability may be checked with the help of randomness (a Merlin--Arthur protocol), was already false before this result. Neither is used below.
@@ -299,7 +299,9 @@ subexponential time algorithms.''
 So for shape (E): a subexponential algorithm for $X$ follows only from a
 reduction of $X$ to fixed-width SAT in which the number of SAT variables
 is proportional to $X$'s own size measure, and the manuscript gives one
-such transfer (below). For shape (S): an algorithm for $Y$ with base below $c$ would need the SAT instance to be solved with an exponent a fixed fraction below $k \log_2 c$; the verified exponent is $A$ times $\rho$ of the SAT instance's variable count, $A$ is unknown with no value below $257$ on record, and nothing of the kind follows (Appendix~\ref{app:tech-hypotheses}). No
+such transfer (below). For shape (S): an algorithm for $Y$ with base below $c$ would need the SAT instance to be solved with an exponent a fixed fraction below $k \log_2 c$. The verified exponent is $A$ times $\rho$ of the SAT
+instance's variable count, and $A$ is unknown with no value below $257$
+on record. Nothing of the kind follows (Appendix~\ref{app:tech-hypotheses}). No
 statement of shape ``no $(c-\varepsilon)^k$ algorithm'' is refuted by
 anything in this paper or, so far as we can read, in the manuscript.
 
@@ -341,15 +343,18 @@ all widths at once. So the unrestricted-width hypothesis, and every
 lower bound that follows from it, is exactly where it was.
 
 \paragraph{What a transferred algorithm inherits.}
-The manuscript's one positive transfer is Set Splitting with sets of size at most $k$ (given small sets over a universe of elements, colour the elements with two colours so that no set is all one colour; p.~5, lines 239--243): one variable per element and
-two clauses per set give a $k$-CNF with ``one variable per universe
+The manuscript's one positive transfer is Set Splitting with sets of
+size at most $k$ (p.~5, lines 239--243). The problem: given small sets
+over a universe of elements, colour the elements with two colours so that
+no set is all one colour. One variable per element and two clauses per
+set give a $k$-CNF with ``one variable per universe
 element, so for fixed $k$ Theorem 1.1 gives subexponential time in the
 universe size, up to a polynomial input-size factor,'' citing
 \citet{Cygan2016}'s Observation~3.6. Section~\ref{sec:beyond} tags this
 supported: the encoding is on paper, the counter is the verified one.
 What such a transfer inherits is the verified guarantee on the SAT
 instance it builds, $C(L+1)^d\,2^{A\rho(n')}$ with $n'$ the number of
-SAT variables, and therefore the title's limitation with it: at $A = 1$
+SAT variables. It inherits the title's limitation with it: at $A = 1$
 the exponential factor is above $2^{n'}$ for every
 $50 \le n' < e^{5504}$ (Table~\ref{tab:runtime-scale}), with $C, A, d$
 unknown. In general terms: an algorithm obtained from the verified

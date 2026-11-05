@@ -61,8 +61,10 @@ commit \texttt{4eaee875}. The log is \repofile{paper3/lean/rediff.log}.
 
 So the copy holds the theorem's \emph{vocabulary} and not the theorem.
 The \texttt{sorry} at line 218 is outside the copied range, and our file
-has no \texttt{sorry} and no axiom declaration anywhere (the same script
-counts them: zero and zero in each of our two files). Everything in the
+has no \texttt{sorry} and no axiom declaration outside its comments (the
+same script counts them: zero and zero in each of our two files; the two
+words do occur in comments, \texttt{PrimitiveMachine.lean} line 10 and
+\texttt{Frame.lean} lines 13 and 83, saying that nothing is one). Everything in the
 copy is a definition. A definition can be badly chosen, but it cannot be
 false; what the definitions mean is Section~\ref{sec:statement}'s
 subject, and the copy adds nothing to it.
@@ -88,9 +90,9 @@ from $\runtimeScale$, and visits only polynomially many cells.
 
 The same script checks that the body is the comparator's. It takes the
 23 lines after \texttt{def SubexpCount (k : }$\mathbb{N}$\texttt{) : Prop :=}
-in our file (lines 85--107) and the 23 lines after the theorem's leading
-parts in the clone (lines 195--217, with the closing \texttt{:= by}
-removed), and compares them in two ways: with every run of white space
+in our file (lines 85--107). It takes the 23 lines after the theorem's
+leading parts in the clone (lines 195--217, with the closing \texttt{:= by}
+removed). Then it compares them in two ways: with every run of white space
 collapsed to one space, and line by line with the indentation stripped.
 Both comparisons find the two texts identical, 1,073 characters. The
 only difference is that each of our lines starts two spaces further

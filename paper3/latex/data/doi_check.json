@@ -1,0 +1,209 @@
+{
+ "10.1002/rsa.20090": {
+  "fetched": "2026-11-05",
+  "first_author": "Mertens",
+  "registry": "crossref",
+  "title": "Threshold values of random <i>K</i>\u2010SAT from the cavity method",
+  "year": 2005
+ },
+ "10.1006/jcss.2000.1727": {
+  "fetched": "2026-11-05",
+  "first_author": "Impagliazzo",
+  "registry": "crossref",
+  "title": "On the Complexity of k-SAT",
+  "year": 2001
+ },
+ "10.1006/jcss.2001.1774": {
+  "fetched": "2026-11-05",
+  "first_author": "Impagliazzo",
+  "registry": "crossref",
+  "title": "Which Problems Have Strongly Exponential Complexity?",
+  "year": 2001
+ },
+ "10.1007/978-3-031-65627-9_7": {
+  "fetched": "2026-11-05",
+  "first_author": "Biere",
+  "registry": "crossref",
+  "title": "CaDiCaL 2.0",
+  "year": 2024
+ },
+ "10.1007/978-3-319-94144-8_26": {
+  "fetched": "2026-11-05",
+  "first_author": "Ignatiev",
+  "registry": "crossref",
+  "title": "PySAT: A Python Toolkit for Prototyping with SAT Oracles",
+  "year": 2018
+ },
+ "10.1007/978-3-642-40627-0_18": {
+  "fetched": "2026-11-05",
+  "first_author": "Chakraborty",
+  "registry": "crossref",
+  "title": "A Scalable Approximate Model Counter",
+  "year": 2013
+ },
+ "10.1016/0004-3702(95)00045-3": {
+  "fetched": "2026-11-05",
+  "first_author": "Selman",
+  "registry": "crossref",
+  "title": "Generating hard satisfiability problems",
+  "year": 1996
+ },
+ "10.1137/18m1166869": {
+  "fetched": "2026-11-05",
+  "first_author": "Chalermsook",
+  "registry": "crossref",
+  "title": "From Gap-Exponential Time Hypothesis to Fixed Parameter Tractable Inapproximability: Clique, Dominating Set, and More",
+  "year": 2020
+ },
+ "10.1145/2635812": {
+  "fetched": "2026-11-05",
+  "first_author": "Dell",
+  "registry": "crossref",
+  "title": "Exponential Time Complexity of the Permanent and the Tutte Polynomial",
+  "year": 2014
+ },
+ "10.1145/2840728.2840746": {
+  "fetched": "2026-11-05",
+  "first_author": "Carmosino",
+  "registry": "crossref",
+  "title": "Nondeterministic Extensions of the Strong Exponential Time Hypothesis and Consequences for Non-reducibility",
+  "year": 2016
+ },
+ "10.1145/2925416": {
+  "fetched": "2026-11-05",
+  "first_author": "Cygan",
+  "registry": "crossref",
+  "title": "On Problems as Hard as CNF-SAT",
+  "year": 2016
+ },
+ "10.1609/aaai.v33i01.33011592": {
+  "fetched": "2026-11-05",
+  "first_author": "Soos",
+  "registry": "crossref",
+  "title": "BIRD: Engineering an Efficient CNF-XOR SAT Solver and Its Applications to Approximate Model Counting",
+  "year": 2019
+ },
+ "10.24963/ijcai.2019/163": {
+  "fetched": "2026-11-05",
+  "first_author": "Sharma",
+  "registry": "crossref",
+  "title": "GANAK: A Scalable Probabilistic Exact Model Counter",
+  "year": 2019
+ },
+ "10.4230/lipics.ccc.2016.2": {
+  "fetched": "2026-11-05",
+  "first_author": "Williams",
+  "registry": "datacite",
+  "title": "Strong ETH Breaks With Merlin and Arthur: Short Non-Interactive Proofs of Batch Evaluation",
+  "year": 2016
+ },
+ "10.4230/lipics.icalp.2017.78": {
+  "fetched": "2026-11-05",
+  "first_author": "Manurangsi",
+  "registry": "datacite",
+  "title": "A Birthday Repetition Theorem and Complexity of Approximating Dense CSPs",
+  "year": 2017
+ },
+ "lookup:Biere2024CaDiCaL": {
+  "container": "Lecture Notes in Computer Science",
+  "doi": "10.1007/978-3-031-65627-9_7",
+  "fetched": "2026-11-05",
+  "first_author": "Biere",
+  "title": "CaDiCaL 2.0",
+  "type": "book-chapter",
+  "year": 2024
+ },
+ "lookup:Carmosino2016": {
+  "container": "Proceedings of the 2016 ACM Conference on Innovations in Theoretical Computer Science",
+  "doi": "10.1145/2840728.2840746",
+  "fetched": "2026-11-05",
+  "first_author": "Carmosino",
+  "title": "Nondeterministic Extensions of the Strong Exponential Time Hypothesis and Consequences for Non-reducibility",
+  "type": "proceedings-article",
+  "year": 2016
+ },
+ "lookup:Chakraborty2013ApproxMC": {
+  "container": "Lecture Notes in Computer Science",
+  "doi": "10.1007/978-3-642-40627-0_18",
+  "fetched": "2026-11-05",
+  "first_author": "Chakraborty",
+  "title": "A Scalable Approximate Model Counter",
+  "type": "book-chapter",
+  "year": 2013
+ },
+ "lookup:Chalermsook2020": {
+  "container": "SIAM Journal on Computing",
+  "doi": "10.1137/18m1166869",
+  "fetched": "2026-11-05",
+  "first_author": "Chalermsook",
+  "title": "From Gap-Exponential Time Hypothesis to Fixed Parameter Tractable Inapproximability: Clique, Dominating Set, and More",
+  "type": "journal-article",
+  "year": 2020
+ },
+ "lookup:Cygan2016": {
+  "container": "ACM Transactions on Algorithms",
+  "doi": "10.1145/2925416",
+  "fetched": "2026-11-05",
+  "first_author": "Cygan",
+  "title": "On Problems as Hard as CNF-SAT",
+  "type": "journal-article",
+  "year": 2016
+ },
+ "lookup:Dell2014": {
+  "container": "ACM Transactions on Algorithms",
+  "doi": "10.1145/2635812",
+  "fetched": "2026-11-05",
+  "first_author": "Dell",
+  "title": "Exponential Time Complexity of the Permanent and the Tutte Polynomial",
+  "type": "journal-article",
+  "year": 2014
+ },
+ "lookup:Dinur2016": {
+  "fetched": "2026-11-05"
+ },
+ "lookup:Ignatiev2018PySAT": {
+  "container": "Lecture Notes in Computer Science",
+  "doi": "10.1007/978-3-319-94144-8_26",
+  "fetched": "2026-11-05",
+  "first_author": "Ignatiev",
+  "title": "PySAT: A Python Toolkit for Prototyping with SAT Oracles",
+  "type": "book-chapter",
+  "year": 2018
+ },
+ "lookup:ManurangsiRaghavendra2017": {
+  "fetched": "2026-11-05"
+ },
+ "lookup:Mertens2006Threshold": {
+  "fetched": "2026-11-05"
+ },
+ "lookup:Selman1996Hard": {
+  "container": "Artificial Intelligence",
+  "doi": "10.1016/0004-3702(95)00045-3",
+  "fetched": "2026-11-05",
+  "first_author": "Selman",
+  "title": "Generating hard satisfiability problems",
+  "type": "journal-article",
+  "year": 1996
+ },
+ "lookup:Sharma2019Ganak": {
+  "container": "Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intelligence",
+  "doi": "10.24963/ijcai.2019/163",
+  "fetched": "2026-11-05",
+  "first_author": "Sharma",
+  "title": "GANAK: A Scalable Probabilistic Exact Model Counter",
+  "type": "proceedings-article",
+  "year": 2019
+ },
+ "lookup:Soos2019BIRD": {
+  "container": "Proceedings of the AAAI Conference on Artificial Intelligence",
+  "doi": "10.1609/aaai.v33i01.33011592",
+  "fetched": "2026-11-05",
+  "first_author": "Soos",
+  "title": "BIRD: Engineering an Efficient CNF-XOR SAT Solver and Its Applications to Approximate Model Counting",
+  "type": "journal-article",
+  "year": 2019
+ },
+ "lookup:Williams2016": {
+  "fetched": "2026-11-05"
+ }
+}

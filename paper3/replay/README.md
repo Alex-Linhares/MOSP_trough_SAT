@@ -10,7 +10,7 @@ replay builds a **fresh copy** of it at `~/dev/untrusted/replay/openai-math/`.
 
 `lake build OAI.Algorithms.SubexponentialSAT.Main` — the 3,091-module
 import closure of the family's solution (never the default target, which
-builds all 721 families) — followed by
+builds the whole collection: its `README.md` line 16 counts 721 manuscripts in 373 families) — followed by
 `#print axioms OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat`,
 the one theorem the comparator JSON names
 (`lean/ComparatorChallenges/SubexponentialSAT.json`, `theorem_names`),
@@ -37,7 +37,7 @@ from `lean-toolchain`.
 | when (host clock, WET) | what |
 |---|---|
 | 2026-11-05 01:03:36 | **run 1** started by the coordinator (`sandbox.out` first line); `elan` installed; toolchain `v4.34.1` downloaded (01:03:40–01:05:39) |
-| 01:05:39–01:13:40 | `lake exe cache get`: the lakefile's dependency clones (41 packages under `.lake/packages`), then 8,908 Mathlib cache files downloaded and decompressed (`Decompressed 8908 file(s)`) |
+| 01:05:39–01:13:40 | `lake exe cache get`: the lakefile's dependency clones (42 packages under `.lake/packages`, Mathlib included (item 10 recounted: an earlier count said 41)), then 8,908 Mathlib cache files downloaded and decompressed (`Decompressed 8908 file(s)`) |
 | 01:13:40 | `lake build OAI.Algorithms.SubexponentialSAT.Main -j 8` **failed at once**: `error: unknown short option '-j'` (the whole of `build_main.log`, run 1); Lake `v4.34.1` has no `-j`/`--jobs` option (`lake --help`, `lake help build`) |
 | 01:13:47 | `#print axioms` failed for want of a build (`unknown module prefix 'OAI'`); `DONE` = `1` |
 | 01:16:17 | **run 2** (the one relaunch item 01 is allowed): `replay.sh` edited to drop `-j 8` and to read the Mathlib `rev` from the manifest correctly (`grep -B3`; the run-1 line was empty because `"rev"` precedes `"name"` in `lake-manifest.json`); `run_sandbox.sh` edited to prefix `taskset -c 0-7`, which is the core cap `-j 8` was meant to be; both run-1 originals kept under `logs/run1/` |
@@ -182,7 +182,7 @@ output in `logs/run2/counts.txt`):
 | lines containing `error` | **0** |
 | lines containing `sorry` | **0** |
 | lines containing `warning` | 11, all `<package>: repository '…' has local changes` — the lakefile's own compatibility patches to eleven dependencies (`lean/lakefile.lean` lines 188–191, applied by its `run_cmd` hook; none of them is Mathlib) |
-| `depends on axioms` lines inside the build | 19, from the 17 source files of the closure that contain a `#print axioms` command, every one `[propext, Classical.choice, Quot.sound]` (`logs/run2/axioms_in_build.txt`); among them `SqrtLogSpace/Final.lean` lines 197–201 print the axioms of `compiled_exact_count_and_sat`, `exact_count_and_sat`, `exact_count_eth`, `sat_polynomial_space` and `original_sat_main` |
+| `depends on axioms` lines inside the build | 19, from the 8 source files of the closure that contain a `#print axioms` command (17 files of the family directory carry one, 9 of them outside the closure; item 04 counted, item 10 corrected this cell), every one `[propext, Classical.choice, Quot.sound]` (`logs/run2/axioms_in_build.txt`); among them `SqrtLogSpace/Final.lean` lines 197–201 print the axioms of `compiled_exact_count_and_sat`, `exact_count_and_sat`, `exact_count_eth`, `sat_polynomial_space` and `original_sat_main` |
 | wall clock of the build | 01:16:25 → 01:49:31, **33 min 6 s**, eight cores, `nice -n 19`, ~30 `lean` processes sharing them |
 | `#print axioms OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat` (a separate `lake env lean` run after the build) | `[propext, Classical.choice, Quot.sound]` (`logs/run2/axioms.txt`) |
 | Lean | `Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)`; `Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)` |

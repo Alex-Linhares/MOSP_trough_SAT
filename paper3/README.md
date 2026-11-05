@@ -59,7 +59,7 @@ statement_audit.md` and `proof_audit.md` (2026-11-05). The plan is
 | `replay/` | the sandboxed replay: `README.md` with the exact commands, `logs/` (full logs git-ignored, hashes committed) |
 | `lean/` | `README.md` pointing at the companion Lean (`lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`, left in place by the owner's decision S3), `axiom_check.lean` with its committed `axiom_check.log`, and `rediff.log` (the byte-level re-diff of the copy, written by `scripts/lean_rediff.py`) |
 | `related/` | the four texts Section 9 quotes, fetched on 2026-11-05 (`fetched/`, with their API records), and a `README.md` of files, URLs and what was not fetched |
-| `refuter/` | item 10's refuter report |
+| `refuter/` | item 10's refuter pass: `README.md` (the blind reading of the whole PDF against the clone, the extract, the audits and the replay logs, every finding with what was done about it) |
 | `ETH_AMBIGUOUS.MD` | every question the loop could not settle, one entry each, for the owner |
 
 ## How to build
@@ -240,6 +240,25 @@ clone.)*
   sorts every `ETH_AMBIGUOUS.MD` entry written before it (48, including
   item 09's four): 7 resolved by the owner, 8 procedural or already
   carried by the text, 33 open and affecting the text, by entry number.
+
+- **The bibliography** (item 10): `python3 paper3/scripts/check_refs.py`
+  (from the repository root; it imports paper 1's checker) fetches the
+  Crossref or DataCite record of every `refs.bib` entry that carries a
+  DOI and compares title, year and first author; `--lookup` also
+  searches Crossref for the entries that have none; `--refresh` ignores
+  the cache `paper3/latex/data/doi_check.json`. The run of record is
+  `paper3/latex/doi_check.log`: 22 entries, 15 with a DOI, 0 disagree
+  (Mertens 2006 accepted as `known`, see the script). Thirteen DOIs were
+  found and added by item 10 (`ETH_AMBIGUOUS.MD` 10a); Dinur 2016 is an
+  ECCC report with none; the manuscript, the arXiv record and the four
+  repository READMEs carry none by nature.
+- **Item 10, the refuter pass**: no number of its own. `paper3/refuter/README.md`
+  is the report of the one blind refuter subagent (it read the built PDF
+  against the clone, the extract, the audits, the replay logs, the fetched
+  texts, the companion Lean and the measurement's data files, and edited
+  nothing), every finding with what was done about it; the family-side
+  "ETH" count it prompted is now a check in `paper3/scripts/beyond_claims.py`
+  and the page of extract line 153 a check in `related_work.py`.
 
 ## The replay
 

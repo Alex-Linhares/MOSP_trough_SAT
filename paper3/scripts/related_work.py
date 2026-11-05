@@ -302,6 +302,7 @@ def main(argv):
     for n, l in hits:
         print(f"  {n}: {l[:110]}")
     check([n for n, _ in hits] == [153], "the manuscript's only such line is 153 ('practical value of')")
+    check(sum(1 for l in pt[:152] if "\f" in l) + 1 == 3, "line 153 is on page 3 (form feeds before it)")
     exh = [i + 1 for i, l in enumerate(pt) if re.search(r"exhaustive", l, re.I)]
     print("manuscript lines with 'exhaustive':", exh)
     check(170 in exh and 2480 in exh and 2487 in exh, "'exhaustive' at lines 170, 2480, 2487")

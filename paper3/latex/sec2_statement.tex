@@ -68,7 +68,7 @@ collapses into one; the empty clause is allowed and can never be
 satisfied; and a clause holding both a variable and its negation is
 allowed and counts as two members. The manuscript says the same thing in
 its own words: ``Repeating a literal permits clauses with fewer than
-\(k\) literals'' (p.~1, line~44).
+\(k\) literals'' (p.~1, lines~44--45).
 
 \paragraph{The input encoding (lines 53--81).}
 The machine does not read a formula; it reads a string of bits. The
@@ -82,11 +82,13 @@ clause still counts. Second, the string is not long: its length is a polynomial 
   L \;\le\; n + 2 + m\,\bigl(2k(4n+1) + 4\bigr) \;=\; O(k\,n\,m),
 \]
 where $O(k\,n\,m)$ is read ``at most a fixed multiple of $k\,n\,m$''.
-A formula with 125 variables, 500 clauses and width 4 becomes
+One random formula with 125 variables, 500 clauses and width 4 becomes
 $1{,}006{,}223$ bits; one with 1,000 variables, 4,000 clauses and width
 3 becomes 47.9 million bits. Both numbers are from a script that
-imitates the definitions,
-\repofile{reports/scratch/eth_audit/check_encoding.py}. Nothing in the
+imitates the definitions on formulas it draws with its random seed fixed
+at 1, \repofile{reports/scratch/eth_audit/check_encoding.py}; the length
+depends on which literals a formula holds, so another formula of the same
+size gives a nearby number, always under the bound. Nothing in the
 encoding grows exponentially.
 
 \paragraph{The machine (lines 83--128).}
@@ -180,7 +182,8 @@ comparator exhibits adds one more
 (Section~\ref{sec:proof}, $A \ge 258$). No closed value of any of the
 five constants exists anywhere. The machine is explicit in one respect:
 it is produced mechanically (``compiled'') from a program that uses 80 one-bit memory cells (``registers'') and 1,220 tapes
-(\clonefile{SqrtLogSpace/Final.lean}, lines 98--101). How many states it
+(\clonefile{SqrtLogSpace/Final.lean}, line 11; the machine is built from
+that program at lines 98--101). How many states it
 has is never computed.
 
 \subsection{The exponent, in numbers}

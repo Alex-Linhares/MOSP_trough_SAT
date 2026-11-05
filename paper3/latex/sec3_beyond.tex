@@ -101,12 +101,18 @@ own exponent, called \texttt{rho}
 (\clonefile{SqrtLogSpace/Asymptotics.lean}, lines 10--11), is the same
 function with base-2 logarithms, and a lemma,
 \path{runtimeScale_le_four_rho} (lines 190--191), bounds the
-comparator's exponent by four times it for $n \ge 20$. The proof is built around the parameters of the manuscript's Section~6.4, the three numbers that set how the proof thins the formula before counting (its ``sparsification''), to the letter: the manuscript selects $\lambda_n = \lceil\log_2 n\rceil$,
+comparator's exponent by four times it for $n \ge 20$. The proof is built around the parameters of the manuscript's
+Section~6.4 to the letter. Those are the three numbers that set how the
+proof thins the formula before counting (its ``sparsification''). The
+manuscript selects $\lambda_n = \lceil\log_2 n\rceil$,
 $\nu_n = \lceil\log_2\lambda_n\rceil$ and
 $s = \lfloor\sqrt{\lambda_n}/\nu_n^2\rfloor$, ``the largest nonnegative
-integer satisfying $s^2\nu_n^4 \le \lambda_n$'' (p.~43, lines 2480--2486; $\lceil x\rceil$ is the smallest whole number at least $x$ and $\lfloor x\rfloor$ the largest at most $x$), and \path{Asymptotics.lean} lines 14--20 define
-\texttt{sparsifyLambda}, \texttt{sparsifyNu} and
-\texttt{sparsifySchedule} as exactly those three quantities. What
+integer satisfying $s^2\nu_n^4 \le \lambda_n$'' (p.~43, lines
+2480--2486). Here $\lceil x\rceil$ is the smallest whole number at least
+$x$ and $\lfloor x\rfloor$ the largest at most $x$. And
+\path{Asymptotics.lean} lines 14--20 define \texttt{sparsifyLambda},
+\texttt{sparsifyNu} and \texttt{sparsifySchedule} as exactly those three
+quantities. What
 Appendix~D of the manuscript proves is not in the library in any form we
 could find (Section~\ref{sec:beyond-lean}). So the general exponent
 $n\log\log n/\sqrt{\log n}$ and the fixed-density exponent
@@ -136,7 +142,7 @@ manuscript's exponents would make a different sentence, and they are
 not what the kernel checked. Two cautions apply to the table equally.
 The constants in front of every exponent are not computed anywhere, in
 the manuscript or in the Lean. And the manuscript's exponents are
-undefined below $n = e$ and are stated for $n \ge 20$, while the
+negative below $n = e$ (and undefined at $n \le 1$) and are stated for $n \ge 20$, while the
 verified one is stated for all $n$. Figure~\ref{fig:central} draws the
 same three curves.
 
@@ -200,14 +206,21 @@ $O(n)$ variables; the sampling, the circuit and the reduction are on
 paper. Its randomness is in the reduction, not in the counter.
 
 \paragraph{Corollary 1.3, independent sets, colourings, perfect matchings (p.~2--3, lines 100--120).}
-For a graph on $v$ vertices and $e$ edges: the number of independent sets (sets of vertices no two of which are joined by an edge) and, for fixed $q$, of proper $q$-colourings (colourings with $q$ colours such that no edge joins two vertices of the same colour), in time $2^{o(v)}$, and the number of perfect matchings (sets of edges touching every vertex exactly once) in time $2^{o(v+e)}$, all in polynomial space. The encodings are explicit: one variable per
-vertex and a clause of two literals per edge (lines 107--112); $q$
-variables per vertex with ``exactly one colour'' and ``no equal
-colours'' clauses, a $q$-CNF on $qv$ variables (lines 112--115); one
-variable per edge and a linear-size circuit for ``exactly one selected
-edge meets each vertex'', reduced to 3-CNF with $O(v+e)$ variables, with
-the extra variables fixed by the edge bits so that the count is
-preserved (lines 116--119). \textbf{Supported}: the conclusion is
+For a graph on $v$ vertices and $e$ edges, three counts. The number of
+independent sets (sets of vertices no two of which are joined by an
+edge), in time $2^{o(v)}$. For fixed $q$, the number of proper
+$q$-colourings (colourings with $q$ colours such that no edge joins two
+vertices of the same colour), in time $2^{o(v)}$. And the number of
+perfect matchings (sets of edges touching every vertex exactly once), in
+time $2^{o(v+e)}$. All three in polynomial space. The encodings are
+explicit. For independent sets: one variable per vertex and a clause of
+two literals per edge (lines 107--112). For colourings: $q$ variables per
+vertex with ``exactly one colour'' and ``no equal colours'' clauses, a
+$q$-CNF on $qv$ variables (lines 112--115). For matchings: one variable
+per edge and a linear-size circuit for ``exactly one selected edge meets
+each vertex'', reduced to 3-CNF with $O(v+e)$ variables, with the extra
+variables fixed by the edge bits so that the count is preserved (lines
+116--119). \textbf{Supported}: the conclusion is
 $2^{o(\cdot)}$, which needs only that $\rhon$ grows more slowly than $n$
 \leanref{rho-little-o}, and each encoding preserves the count into a
 fixed-width CNF on $O(v)$ or $O(v+e)$ variables. None of the three
@@ -215,12 +228,12 @@ encodings is in the library.
 
 \paragraph{Corollary 1.4, a circuit lower bound for $\mathrm{E}^{\mathrm{NP}}$ (p.~3, lines 121--127).}
 ``The fixed-density case of Theorem 1.1 gives a circuit lower bound for
-$\mathrm{E}^{\mathrm{NP}}$'' (line 121). A circuit lower bound is a proof that some problem needs large circuits; $\mathrm{E}^{\mathrm{NP}}$ is a class of problems whose definition is not needed here. The claim: there is a problem $L$ in that class and a constant $c > 0$ such that $L$ needs circuits of more than $c\,n\sqrt{\log n}$ gates for infinitely many $n$ (lines 123--127). The proof is Appendix~C.1 (p.~51--52, lines 2925--2967), an argument of Williams's,
-and it invokes the paper-only exponent in so many words: ``Put
+$\mathrm{E}^{\mathrm{NP}}$'' (line 121). A circuit lower bound is a proof that some problem needs large circuits; $\mathrm{E}^{\mathrm{NP}}$ is a class of problems whose definition is not needed here. The claim: there is a problem $L$ in that class and a constant $c > 0$ such that $L$ needs circuits of more than $c\,n\sqrt{\log n}$ gates for infinitely many $n$ (lines 123--127). The proof is Appendix~C.1 (p.~51--52, lines 2925--2967), an argument of
+Williams's. It invokes the paper-only exponent in so many words: ``Put
 $a(t) = \sqrt{\log_2 t}$. Testing whether the count in the
 constant-density part of Theorem 1.1 is positive decides 3-SAT with $V$
 variables and at most $5V$ clauses in time $V^b\,2^{AV/a(V)}$ for fixed
-$A, b > 0$'' (p.~52, lines 2949--2950); the threshold
+$A, b > 0$'' (p.~52, lines 2949--2950). The threshold
 $s_n = \lfloor\eta n\lfloor a(n)\rfloor\rfloor$ is chosen against that
 $a$ (line 2953), and the constant $c$ comes out as
 $\sqrt{\eta/(d\log 2)}$ (line 2967). \textbf{Paper-only}: the
@@ -262,7 +275,7 @@ entries in $(\mathbb{Z}/2^{P_0}\mathbb{Z})[V]/(V^\ell)$ is contracted in
 $(s+L)^{O(1)}\,2^{O(s/\sqrt{\log s})}$ bit operations and polynomial
 space. The fixed-density proof (p.~54, lines 3045--3064) encodes a
 formula as a network with $O_k(n+m)$ edges and applies Theorem~D.1 with
-$s = n + m$; the arbitrary-density proof (p.~57, lines 3222--3246)
+$s = n + m$. The arbitrary-density proof (p.~57, lines 3222--3246)
 combines the sparsification of Section~6 with Lemma~D.2 (p.~54, line
 3069) and reaches the exponent $O_k(n\log\log n/\sqrt{\log n})$ at line
 3243. Section~D.4 changes the logarithm convention for its own proof,
@@ -293,10 +306,15 @@ verified statement is a deterministic machine whose answer tape says
 whether the count is positive and whose count tape carries the count,
 within a subexponential bound, for each fixed $k \ge 2$; each hypothesis
 is the denial of that. The hypotheses themselves are not defined in the
-library (the strings ``ETH'' and ``SETH'' occur in the collection's Lean
-only in two files of a different family,
+library. The word ``SETH'' occurs nowhere in the collection's Lean. The
+word ``ETH'' occurs in this family only in comments (six lines of five
+files under \clonefile{SqrtLogSpace/}, \clonefile{Final.lean} line 6
+among them) and in the name of the theorem \path{exact_count_eth}; outside
+the family it occurs only in two files of a different family,
 \clonefile{lean/OAI/Combinatorics/ParityLifts/}, which take an ETH-like
-proposition as a hypothesis and are not among the files the proof depends on, its closure, Section~\ref{sec:proof}).
+proposition as a hypothesis and are not among the files the proof depends
+on, its closure (Section~\ref{sec:proof}; counted by
+\repofile{paper3/scripts/beyond_claims.py}).
 Section~\ref{sec:consequences} says exactly how the verified statement
 negates each one. The two sentences the manuscript adds at lines
 191--194, on unconditional lower bounds for restricted proof systems and

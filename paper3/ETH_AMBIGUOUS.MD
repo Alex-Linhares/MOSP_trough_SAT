@@ -812,3 +812,100 @@ an answer).
 - **Owner may change**: "a careful reading by someone who checked"; or
   a co-author line for the assistant, which item 09 was to apply only
   on the owner's word.
+
+### 10a — thirteen DOIs found on Crossref and added; Crossref queried although the download list does not name it (item 10, 2026-11-05)
+- **Ambiguous**: the item says "every DOI checked by hand against
+  Crossref and the check logged", but only two entries carried a DOI;
+  items 05, 06 and 08 had left fourteen entries with "no DOI checked"
+  because `TASK.md`'s download list does not name Crossref (05c, 06c,
+  08c), and 08c offered the one-command check to the owner. Checking
+  "every DOI" of a bibliography that has two is not what the item
+  means; finding the missing ones is a few more API calls of the same
+  kind.
+- **Chosen**: the item's own wording names Crossref, so it was queried
+  (metadata records only, nothing executed, each response cached under
+  `paper3/latex/data/doi_check.json`): `paper3/scripts/check_refs.py`
+  reuses paper 1's checker, checks the two existing DOIs (both agree),
+  and with `--lookup` searches Crossref by title and first author for
+  the entries without one — thirteen matched on title and first author
+  (two of them LIPIcs, registered with DataCite) and were added to
+  `refs.bib` with their `note` changed from "no DOI checked" to the
+  registry and date; Dinur 2016 is an ECCC report with no DOI and its
+  note says so. The run of record is `paper3/latex/doi_check.log`: 22
+  entries, 15 with a DOI, 0 disagree; Mertens 2006 is accepted as
+  `known` (Crossref's title carries HTML italic tags around *K*; its
+  year 2005 is the online-first year, the volume's is 2006). The
+  "Venue from memory" phrase of item 06's seven entries is kept, since
+  the venue strings themselves were typed from memory; the DOI now
+  pins each. The header of `refs.bib` says all this.
+- **Owner may change**: strike "Venue from memory" now that each entry
+  has a checked DOI; or remove the thirteen DOIs if the download rule
+  was meant to exclude registry queries (then 08c's state is restored
+  by `git checkout` of `refs.bib`).
+
+### 10b — the title's "is slower" against the paper's own non-claim of any running time (item 10, 2026-11-05; the refuter's R11)
+- **Ambiguous**: the refuter read the title literally ("the verified
+  algorithm is slower than trying all `2^n` assignments") as a claim
+  about a running time, and set it beside Section 1.3's first non-claim
+  ("No running time of the verified machine, in either direction … the
+  title compares two guarantees") and Section 7.1 ("nothing says it is
+  slow"). The body makes the title true only through Section 2.5's
+  gloss (four things, nothing more) and Section 7.4.
+- **Chosen**: the title is the owner's and is not touched (TASK.md).
+  Nothing was added to the text either: Section 2.5 already states in
+  four numbered points what the title's "slower" means (a guarantee
+  against a guarantee, with the constants set to one), the introduction's
+  first paragraph says "a guarantee, not a running time", and the
+  non-claim lists of Sections 1, 7 and 10 repeat it. The finding is
+  recorded here and in `paper3/refuter/README.md` so that the owner
+  sees that the reconciliation rests on those passages and on nothing
+  in the title itself.
+- **Owner may change**: add one clause to the abstract or to the first
+  paragraph of Section 1 ("'slower' in the title compares the two
+  guarantees, Section 2.5"); or leave it.
+
+### 10c — long sentences: the twenty-one the refuter listed were split, about forty of 46–58 words were not (item 10, 2026-11-05; R16)
+- **Ambiguous**: the plain-English rule says short sentences, one idea
+  each; the refuter listed every sentence over 45 words (twenty-one of
+  59–151 words by name, "about forty more between 46 and 58"). Splitting
+  every one of them is a second rewrite of the kind item 08x did, which
+  a four-hour item that also has to verify twenty other findings cannot
+  finish with care.
+- **Chosen**: the twenty-one named sentences were split (the 151-word
+  tools paragraph of Section 7.2 into five sentences; the 98-word
+  parameters sentence of Section 3.2 into five; the sandbox description,
+  the four trust items, the six "known ways", the three Corollary 1.3
+  counts and their three encodings, and so on, each into one idea per
+  sentence; quotations kept intact). A crude whole-PDF count (sentences
+  split on `.!?` followed by a capital, which also cuts table rows, list
+  items and quotations) goes from 180 to 163 pieces over 45 words and
+  from 90 to 71 over 59; the mean falls from 28.9 to 27.6 words. The
+  remaining long ones are concentrated where the refuter said (Sections
+  3.3, 4.3–4.7, 5, 6.2–6.3, 7.2–7.4, 9 and the entry lists of 10.2),
+  and many of them are the manuscript's quotations or the ledger's
+  one-clause entries, which the rule does not reach.
+- **Owner may change**: ask for a second plain-English pass over those
+  sections (item 12, the reserve, could do it); or accept the current
+  state.
+
+### 10d — findings recorded and not fixed: the placeholders of item 11, and the audits' superseded counts (item 10, 2026-11-05; R17, R19)
+- **Ambiguous**: the refuter flagged (R17) the "Placeholder" boxes for
+  the data statement and the acknowledgements, and (R19) that the two
+  audits under `reports/scratch/eth_audit/` and `paper3/replay/README.md`
+  carry counts the paper has since corrected (41 → 42 manifest packages;
+  33 → 35 compared / 33 identical definitions; the theorem at line 181 →
+  194; `enable_nanoda: false` on 416 → 413 of 418; "17 source files of
+  the closure" → 8 in the closure, 17 in the family directory). A reader
+  who opens a cited audit finds different numbers.
+- **Chosen**: the placeholders are item 11's by the brief and are left
+  (Section 10.2's entry 09d refers to acknowledgements that item 11
+  writes). `paper3/replay/README.md` is the loop's own file and was
+  corrected (42 packages; "721 manuscripts in 373 families" in place of
+  "721 families", the collection's README line 16; the "17 source
+  files" sentence was already corrected by item 04 in Section 5 and is
+  now corrected in the README too). The two audits are dated scratch
+  records written before the loop and are left as item 04 left them;
+  item 11 adds a one-line "superseded counts" note at the top of each
+  (its brief already carries 04a / 04b / 04e for that).
+- **Owner may change**: have the audits edited in place instead of
+  annotated.

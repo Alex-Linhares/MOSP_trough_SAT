@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 10/13 SOLVED (item 08x added to the list on 2026-11-05)
+Current: 11/13 SOLVED (item 08x added to the list on 2026-11-05)
 
 ## Setup — 2026-11-05
 
@@ -924,3 +924,107 @@ Current: 10/13 SOLVED (item 08x added to the list on 2026-11-05)
   the second run (two `lake build`s of `lean/` briefly overlapped) and
   was killed by PID; the pass above is a third, clean run on the final
   files.
+
+
+---
+
+## Iteration 11 — 2026-11-05 07:46 (item 10, full build and refuter pass) `[x]`
+
+### Completed
+- **Full build**: `make -C paper3/latex check` clean at the start (62
+  pages; no undefined reference or citation; the two overfull boxes of
+  Appendix A, 08xb) and at the end (62 pages, **zero overfull boxes**:
+  `\leangroup`'s non-wrapping `l` cell replaced by a wrapping `p{}` cell
+  in `main.tex`).
+- **The DOI check**: `paper3/scripts/check_refs.py` (reuses paper 1's
+  checker; `--lookup` searches Crossref for entries without a DOI;
+  cache `paper3/latex/data/doi_check.json`; run of record
+  `paper3/latex/doi_check.log`). The two DOIs on file agree; **thirteen
+  DOIs found and added** for the entries items 05, 06 and 08 had left
+  "no DOI checked" (two LIPIcs ones through DataCite); Dinur 2016 is an
+  ECCC report with none; Mertens 2006 accepted as `known` (HTML italic
+  tags in Crossref's title; year 2005 online-first vs 2006 volume). 22
+  entries, 15 with a DOI, 0 disagree. The item names Crossref, so it was
+  queried although the download list does not list it (10a).
+- **One refuter subagent**, blind to the LaTeX, the scripts and the
+  loop's notes, read the whole 62-page PDF against the clone (read-only),
+  the extract, the two audits, the replay logs, the fetched texts, the
+  companion Lean and the measurement's data files, and its own
+  arithmetic (49 tool calls, 16.5 min). Report verbatim in
+  `paper3/refuter/REPORT.md`; the item's account, every finding with
+  what was checked and done, in `paper3/refuter/README.md`. **21
+  findings: A 6, B 4, C 1, D 0, E 0, F 5, G 5; 17 fixed, 4 recorded.**
+  Every central number agreed (every `ρ(n)/n`, the peak, the crossing,
+  the 2,391 digits, every comparator line number, every replay and
+  nanoda number, every related-work quotation, all of Table 7.1); no
+  scope or title finding.
+- **Fixed, each verified against the source first** (sections in
+  `paper3/latex/`): R1 §3.5's "ETH/SETH occur only in two ParityLifts
+  files" was false — "ETH" also occurs in six comment lines of five
+  family files and in the name `exact_count_eth` (rewritten; the count
+  is now check 4b of `beyond_claims.py`); R2 "practical" at line 153 is
+  on page 3, not 4 (fixed; the page is now a check in
+  `related_work.py`); R3 the line counts 550,551 / 2,873 are
+  `split('\n')` counts, one more per file than `wc -l` (547,460 /
+  2,872) — convention stated with both figures; R4 §5.1's "41
+  dependencies" → 42 (manifest and `.lake/packages` both 42; replay
+  README corrected); R5 `Final.lean` lines 98–101 do not hold the "80
+  registers", line 11 does (both places); R6 `primitive_execution` is at
+  160–162, not 158–162; R7 the encoding lengths are one seed-1 random
+  formula's (`check_encoding.py` line 20), said so in §2.2 and B.1; R8
+  "721 families" → "721 manuscripts in 373 families" (the collection's
+  README line 16; replay README corrected); R9 the three no-entry-point
+  patterns stated as whole words; R10 "14,034 lines with decide"
+  attributed to `closure.py`'s stripping; R12 B.6's ρ(50) = 50.13 →
+  50.14, "equal to 1 up to rounding" → "just above 1, ratio 1.10"; R13
+  Table 7.1's "sat" caption matched to its cells; R14 §8.1's "no sorry
+  and no axiom anywhere" → "outside its comments", the three comment
+  lines named; R15 `lean4export`, `tmpfs`, SHA-256 and `⌊4.26 n⌉`
+  glossed at first use; R16 the 21 named long sentences (59–151 words)
+  split one idea per sentence, quotations intact (crude whole-PDF count
+  of pieces over 59 words 90 → 71, mean 28.9 → 27.6); R18 "undefined
+  below n = e" → "negative below n = e (undefined at n ≤ 1)"; R20
+  Figure 7.1's "The same data" → "Table 7.1's data"; R21 "line 44" →
+  "lines 44–45". Also, outside the list: Section 7's sentence pairing
+  `A ≥ 257` with `C ≥ 28,701` now gives both readings with their
+  sections (item 09's reader had flagged the same pairing elsewhere).
+- **Recorded, not fixed**: R11 the title's "is slower" read literally
+  against the paper's own non-claim of any running time — the title is
+  the owner's; the reconciliation rests on §2.5 and §7.4 (10b); R16's
+  remaining ~40 sentences of 46–58 words (10c); R17 item 11's
+  placeholders and R19 the audits' superseded counts, left as dated
+  scratch records for item 11's note, the loop's own replay README
+  corrected in three cells (10d).
+- **Every check script re-run and passing** on the final text:
+  `beyond_claims.py --check` (with the new 4b), `proof_inspection.py
+  --check`, `consequences.py --check`, `lean_rediff.py --check`,
+  `related_work.py --check` (with the new page check),
+  `practitioner.py --check`, `runtime_scale.py`, `check_refs.py`.
+  `paper3/README.md`: a bibliography paragraph and an item-10 paragraph
+  under "How to regenerate", the `refuter/` layout row; `ETH_AMBIGUOUS.MD`
+  entries 10a–10d.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (read with `grep`, `sed`, `ls`, `python3 -I`
+  and the scripts' `open()` only); the only network access was
+  Crossref/DataCite metadata for the DOI check; one subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 11 (the write-up around the paper): the placeholders of the data
+  statement and the acknowledgements (R17); the one-line "superseded
+  counts" note at the top of each audit (R19, 10d; 04a / 04b / 04e);
+  `paper3/README.md`'s "Open questions" section listing every entry,
+  now 52 (S1–S8, 01a–09d, 10a–10d); the CLAUDE.md paragraph; the plan's
+  §0 (67 pages, 03b; the Lean left in place, 07a; Crossref queried,
+  10a). The conclusion's §10.2 sorts 48 entries and says the refuter's
+  are not in it; item 11 may add 10a–10d to the README list only, or
+  to §10.2 as four more open entries (10a bibliographic, 10b–10d
+  affecting the text).
+- Item 12 (reserve): a second plain-English pass over the sections 10c
+  names, if the owner wants the 46–58-word sentences split too.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 08:24
+  (exit 0; `lake build` ok, 0 sorry; pytest 1,978 passed, 2 skipped,
+  1 xfailed in 4:36; pathwidth_solver 123 passed in 6:33; paper 1 builds
+  at 78 pages, paper 3 at 62; title verbatim; `solutions/` untouched).

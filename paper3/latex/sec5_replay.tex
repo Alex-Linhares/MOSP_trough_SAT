@@ -21,12 +21,15 @@ run, where, and what came out. The scripts are quoted verbatim in
 
 A fresh copy of the clone (commit \texttt{4eaee875}) was built inside a
 sandbox on the project's machine. The sandbox tool is \texttt{bwrap}
-(bubblewrap). Inside it, the system directories are read-only; the home
-directory is a private, empty one (a \texttt{tmpfs}), so nothing of the real home or of
-this repository is visible; processes, inter-process communication and host names are kept apart from the host's (separate ``namespaces''); the whole sandbox is confined to
-eight cores (\texttt{taskset -c 0-7}) at the lowest scheduling
-priority; and the network is on, because the repository's build file
-(its \texttt{lakefile}) clones its 41 dependencies at build time and the compiled Mathlib comes
+(bubblewrap). Inside it, the system directories are read-only. The home
+directory is a private, empty one (a \texttt{tmpfs}, a scratch file
+system held in memory and gone when the sandbox ends), so nothing of the
+real home or of this repository is visible. Processes, inter-process
+communication and host names are kept apart from the host's (separate
+``namespaces''). The whole sandbox is confined to eight cores
+(\texttt{taskset -c 0-7}) at the lowest scheduling priority. And the
+network is on, because the repository's build file
+(its \texttt{lakefile}) clones its 42 dependencies (the packages of its manifest, Section~\ref{sec:proof}) at build time and the compiled Mathlib comes
 from a download cache. Inside the sandbox, the Lean installer
 \texttt{elan} was installed into the private home and fetched the
 pinned Lean version from the repository's own \texttt{lean-toolchain}
@@ -34,7 +37,7 @@ file. Then, in the clone's \texttt{lean/} directory, three commands
 ran: \texttt{lake exe cache get}, which downloads the compiled Mathlib;
 \texttt{lake build OAI.Algorithms.SubexponentialSAT.Main}, which builds
 the solution's 3,091 files and not the collection's default target,
-which would build all 721 families; and \texttt{\#print axioms} of the
+which would build the whole collection (its \clonefile{README.md}, line 16, counts 721 manuscripts in 373 families); and \texttt{\#print axioms} of the
 one theorem the comparator names,
 \path{OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat},
 through \texttt{lake env lean}. Only text left the sandbox; nothing
@@ -87,7 +90,7 @@ from the clone's own manifest, with its compiled files from the Mathlib cache (8
 The replay copy is at commit \texttt{4eaee875}, the same as the pristine
 clone, and the comparator file and the solution's files have the same
 hashes in both (\repofile{paper3/replay/logs/run2/hashes.txt}; the
-comparator statement's SHA-256 begins \texttt{4183b205}). The full build
+comparator statement's SHA-256, a fingerprint of a file's bytes that two different files do not share in practice, begins \texttt{4183b205}). The full build
 log is kept out of the repository by size; its SHA-256
 (\texttt{d313f594…}) and its last 200 lines are committed.
 

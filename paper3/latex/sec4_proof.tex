@@ -21,11 +21,11 @@ mathematics is right. The kernel decides that, and
 Section~\ref{sec:replay} reports what the kernel said when we ran it.
 The question is whether anything in the source could make the kernel's
 acceptance mean less than it appears to mean. There are known ways for
-that to happen: an added axiom; a \texttt{sorry}, which is Lean's word
-for a proof left out; a step proved by trusting a compiled program
-rather than the kernel; a patched copy of the mathematics library; a
+that to happen. An added axiom. A \texttt{sorry}, which is Lean's word
+for a proof left out. A step proved by trusting a compiled program
+rather than the kernel. A patched copy of the mathematics library. A
 statement in the solution that differs from the statement in the
-challenge; or a running-time bound proved against a cost model of the
+challenge. Or a running-time bound proved against a cost model of the
 proof's own choosing. We found none of these. What we did find is that
 the repository offers no recorded evidence that the proof type-checks at all, that is, that Lean accepts it: no saved output of the axiom check, no automated build, and no
 second checker for this family. That is why Section~\ref{sec:replay}
@@ -61,7 +61,10 @@ sixteen-line file that imports \path{SqrtLog.ExecutionNativeFinal} and
 \path{SqrtLogSpace.Final} and declares nothing (\clonefile{Main.lean}). Its closure inside the repository is
 \textbf{3,091 modules}, every one in the family's own directory,
 totalling \textbf{550,551} lines; the largest file is 2,873 lines
-(\clonefile{SqrtLogSpace/DisjointReuse/SparsePriorityProgram.lean}).
+(\clonefile{SqrtLogSpace/DisjointReuse/SparsePriorityProgram.lean}). Both
+counts are the audit script's, which counts the newline-separated pieces
+of each file, one more than the Unix \texttt{wc -l} for a file that ends
+in a newline: by \texttt{wc -l} they are 547,460 and 2,872.
 Outside the family, the closure reaches \textbf{50} modules of Mathlib
 and one module of Lean's own library, \path{Lean.Elab.Tactic.Omega},
 imported by \clonefile{SqrtLogSpace/FiniteFallback.lean} (line~14) and
@@ -191,10 +194,10 @@ A proof of a running-time bound for a machine that is compiled from a
 higher-level program could, in principle, prove the bound against a cost
 function of its own and leave the kernel to check only that function's
 arithmetic. That is not what happens here. The lemmas that connect the
-program to the machine conclude in the challenge's own words: a source
+program to the machine conclude in the challenge's own words. A source
 run of $n$ steps becomes a run of the compiled machine of $7n$ steps,
 with the overhead $7$ proved as a theorem
-(\clonefile{SqrtLogSpace/GuardedCompiler.lean}, lines 152--162), and the
+(\clonefile{SqrtLogSpace/GuardedCompiler.lean}, lines 152--162). And the
 space lemma (\clonefile{SqrtLogSpace/CompileSpace.lean}, lines 125--143)
 produces a trace of the challenge's own step function with its visited
 space bounded on every prefix. The \texttt{time} in the final theorem is
@@ -304,17 +307,19 @@ item & status after the replay \\
 (i) the build & \textbf{moved}: the 3,091-module closure built from source in our sandbox at the pinned toolchain, exit~0, no \texttt{error}, no \texttt{sorry}. \\
 (ii) the axiom output & \textbf{moved}: \texttt{\#print axioms} of the comparator's theorem printed \texttt{[propext, Classical.choice, Quot.sound]}, and the nineteen in-build axiom lines say the same; the output is on record. \\
 (iii) kernel and Mathlib & \textbf{moved in part}: Mathlib was fetched from upstream at the pinned revision and not patched, so ``as upstream'' is now observed rather than assumed; the Lean kernel of \texttt{v4.34.1} is still trusted as upstream, now beside a second checker (v). \\
-(iv) the comparator run & \textbf{not moved}: the statement-level match through \texttt{lean4export} was not performed; the match this paper relies on is the textual one of Section~\ref{sec:proof-match}. \\
+(iv) the comparator run & \textbf{not moved}: the statement-level match through \texttt{lean4export} (the tool that writes every checked declaration out in a plain form, Section~\ref{sec:replay}) was not performed; the match this paper relies on is the textual one of Section~\ref{sec:proof-match}. \\
 (v) a second checker & \textbf{moved}: \texttt{nanoda\_lib} checked the exported dependencies of the theorem, 95,176 declarations, with no errors and the three axioms; what this adds and what it does not is stated in Section~\ref{sec:replay}. \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-After the replay, then, the proof's trust rests on four things: the
+After the replay, then, the proof's trust rests on four things. The
 Lean kernel of \texttt{v4.34.1} \emph{and} nanoda agreeing on the
-exported dependencies of the theorem; the export tool \texttt{lean4export} writing out what the built environment (the set of all checked declarations) holds; upstream
-Mathlib at the pinned revision; and the textual, not export-level, match
-between the solution's statement and the challenge's. Everything the
+exported dependencies of the theorem. The export tool
+\texttt{lean4export} writing out what the built environment (the set of
+all checked declarations) holds. Upstream Mathlib at the pinned revision.
+And the textual, not export-level, match between the solution's statement
+and the challenge's. Everything the
 inspection could find by reading, the build and the two checkers
 confirmed. Nothing the inspection could not settle by reading has been
 settled by anything else.

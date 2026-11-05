@@ -51,7 +51,7 @@
 \newcounter{leanentry}
 \renewcommand{\theleanentry}{A.\arabic{leanentry}}
 \newcommand{\leanentry}[2]{\leavevmode\refstepcounter{leanentry}\label{lean:#1}\theleanentry & #2 &}
-\newcommand{\leangroup}[1]{\multicolumn{3}{@{}l}{\emph{#1}}\\}
+\newcommand{\leangroup}[1]{\multicolumn{3}{@{}p{\dimexpr\linewidth-2\tabcolsep\relax}@{}}{\emph{#1}}\\}
 \newcommand{\leanref}[1]{(Appendix~\ref{app:lean}, \ref{lean:#1})}
 
 \theoremstyle{plain}

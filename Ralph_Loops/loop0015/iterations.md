@@ -314,7 +314,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   `sec10_conclusion.tex`, the abstract in `main.tex`. Abstract under 200
   words; no number in it without a section that regenerates it.
 
-- [ ] **10 Full build and refuter pass.**
+- [x] **10 Full build and refuter pass.**
   `make -C paper3/latex check` clean (no undefined reference or citation;
   `python3 -m paper1.latex.check_refs`-style DOI check adapted or run on
   `paper3/latex/refs.bib` if the script generalises; else every DOI

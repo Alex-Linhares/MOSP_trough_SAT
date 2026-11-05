@@ -1,10 +1,15 @@
 % Paper 3: references. Only works the paper cites; no width-parameter
-% references (owner's scope, 2026-11-05; ETH_AMBIGUOUS.MD entry S4). DOIs
-% checked against Crossref on 2026-11-05 where given; entries without a DOI
-% name the file or URL they were checked against. Item 08 completed the
-% entries it fetched (comparator, nanoda, the human-audit paper's version) and
-% added lean4export and landrun by URL; it fetched no Crossref record, so the
-% DOIs of items 05 and 06 stay unchecked (ETH_AMBIGUOUS.MD 08c).
+% references (owner's scope, 2026-11-05; ETH_AMBIGUOUS.MD entry S4). Every
+% DOI is checked against its registry (Crossref, or DataCite for LIPIcs) by
+% python3 paper3/scripts/check_refs.py (item 10, 2026-11-05; log of record
+% paper3/latex/doi_check.log, cache paper3/latex/data/doi_check.json): title,
+% year and first author agree on all 15 entries that carry one (Mertens:
+% Crossref gives the online-first year 2005, the volume is 2006). Item 10 also
+% found the DOIs of the thirteen entries items 05 and 06 had left unchecked
+% (ETH_AMBIGUOUS.MD 08c, 10a) by a Crossref search on title and first author,
+% and added them; Dinur 2016 is an ECCC report with no DOI. Entries without a
+% DOI (the manuscript, the arXiv record, the repository READMEs) name the file
+% or URL they were checked against.
 
 % The manuscript's own BibTeX block, copied verbatim from
 % ~/dev/untrusted/openai-math/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/README.md
@@ -120,7 +125,7 @@
   institution = {Electronic Colloquium on Computational Complexity},
   number      = {TR16-128},
   year        = {2016},
-  note        = {Entry copied from the manuscript's reference list, extract lines 3711--3712; no DOI checked}
+  note        = {Entry copied from the manuscript's reference list, extract lines 3711--3712; an ECCC report, no DOI registered (Crossref search by title and first author, item 10, 2026-11-05, found none)}
 }
 
 % Gap-ETH, second source. Extract lines 3759-3761 ([MR17]).
@@ -132,7 +137,8 @@
   volume    = {80},
   pages     = {78:1--78:15},
   year      = {2017},
-  note      = {Entry copied from the manuscript's reference list, extract lines 3759--3761; no DOI checked}
+  note      = {Entry copied from the manuscript's reference list, extract lines 3759--3761; DOI checked against DataCite on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.4230/LIPIcs.ICALP.2017.78}
 }
 
 % The randomised Gap-ETH (the manuscript's "[CCK+20, Conjecture 2.5]"). Extract lines 3689-3691.
@@ -141,7 +147,8 @@
   title   = {From {Gap-Exponential} {Time} {Hypothesis} to fixed parameter tractable inapproximability: {Clique}, {Dominating} {Set}, and more},
   journal = {SIAM Journal on Computing},
   volume  = {49}, number = {4}, pages = {772--810}, year = {2020},
-  note    = {Entry copied from the manuscript's reference list, extract lines 3689--3691; no DOI checked}
+  note    = {Entry copied from the manuscript's reference list, extract lines 3689--3691; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.1137/18M1166869}
 }
 
 % NSETH. Extract lines 3686-3688 ([CGI+16]).
@@ -151,7 +158,8 @@
   booktitle = {7th Innovations in Theoretical Computer Science Conference (ITCS 2016)},
   pages     = {261--270},
   year      = {2016},
-  note      = {Entry copied from the manuscript's reference list, extract lines 3686--3688; no DOI checked}
+  note      = {Entry copied from the manuscript's reference list, extract lines 3686--3688; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.1145/2840728.2840746}
 }
 
 % #ETH and the bounded-error randomised ETH (the manuscript's "[DHM+14, Section 1]"). Extract lines 3708-3710.
@@ -160,7 +168,8 @@
   title   = {Exponential time complexity of the permanent and the {Tutte} polynomial},
   journal = {ACM Transactions on Algorithms},
   volume  = {10}, number = {4}, pages = {21:1--21:32}, year = {2014},
-  note    = {Entry copied from the manuscript's reference list, extract lines 3708--3710; no DOI checked}
+  note    = {Entry copied from the manuscript's reference list, extract lines 3708--3710; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.1145/2635812}
 }
 
 % The bounded-error randomised SETH (the manuscript's "[CDL+16, Definition 2.1]") and the
@@ -170,7 +179,8 @@
   title   = {On problems as hard as {CNF-SAT}},
   journal = {ACM Transactions on Algorithms},
   volume  = {12}, number = {3}, pages = {41:1--41:24}, year = {2016},
-  note    = {Entry copied from the manuscript's reference list, extract lines 3705--3707; no DOI checked}
+  note    = {Entry copied from the manuscript's reference list, extract lines 3705--3707; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.1145/2925416}
 }
 
 % MA-SETH refuted in 2016; context only (the manuscript's "[Wil16, Theorem 3.3]"). Extract lines 3810-3811.
@@ -182,16 +192,18 @@
   volume    = {50},
   pages     = {2:1--2:17},
   year      = {2016},
-  note      = {Entry copied from the manuscript's reference list, extract lines 3810--3811; no DOI checked}
+  note      = {Entry copied from the manuscript's reference list, extract lines 3810--3811; DOI checked against DataCite on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.4230/LIPIcs.CCC.2016.2}
 }
 
 % ---------------------------------------------------------------------------
 % Item 06 (Section 7): the tools and the instance distribution of the
 % practitioner's measurement. Written from the tools' own metadata (pip show,
 % the package names in paper3/latex/tables/practitioner_meta.json) and from
-% memory for the venues; NO DOI was checked (item 06 may download nothing but
-% pip packages). Item 08 or the owner may check each against Crossref
-% (ETH_AMBIGUOUS.MD entry 06c).
+% memory for the venues; item 06 checked no DOI (it may download nothing but
+% pip packages); item 10 found each on Crossref by title and first author,
+% added the DOI and checked title, year and first author against the record
+% (ETH_AMBIGUOUS.MD entries 06c, 10a).
 % ---------------------------------------------------------------------------
 
 % CaDiCaL, the CDCL solver used (version 1.9.5 through python-sat's "cadical195").
@@ -204,7 +216,8 @@
   pages     = {133--152},
   publisher = {Springer},
   year      = {2024},
-  note      = {Venue from memory; no DOI checked. The version run is 1.9.5, the one python-sat 1.9.dev15 bundles as \texttt{cadical195}}
+  note      = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). The version run is 1.9.5, the one python-sat 1.9.dev15 bundles as \texttt{cadical195}},
+  doi       = {10.1007/978-3-031-65627-9_7}
 }
 
 % python-sat, the binding through which CaDiCaL is called.
@@ -217,7 +230,8 @@
   pages     = {428--437},
   publisher = {Springer},
   year      = {2018},
-  note      = {Venue from memory; no DOI checked. Package python-sat 1.9.dev15, \url{https://github.com/pysathq/pysat}}
+  note      = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). Package python-sat 1.9.dev15, \url{https://github.com/pysathq/pysat}},
+  doi       = {10.1007/978-3-319-94144-8_26}
 }
 
 % Ganak, the exact model counter (pyganak 2.8.0, which runs Arjun preprocessing then Ganak).
@@ -227,7 +241,8 @@
   booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence (IJCAI 2019)},
   pages     = {1169--1176},
   year      = {2019},
-  note      = {Venue from memory; no DOI checked. Package pyganak 2.8.0 (Mate Soos), \url{https://github.com/meelgroup/ganak}}
+  note      = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). Package pyganak 2.8.0 (Mate Soos), \url{https://github.com/meelgroup/ganak}},
+  doi       = {10.24963/ijcai.2019/163}
 }
 
 % ApproxMC, the approximate model counter (pyapproxmc 4.4.0).
@@ -240,7 +255,8 @@
   pages     = {200--216},
   publisher = {Springer},
   year      = {2013},
-  note      = {Venue from memory; no DOI checked. Package pyapproxmc 4.4.0 (Mate Soos), \url{https://github.com/meelgroup/approxmc}}
+  note      = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). Package pyapproxmc 4.4.0 (Mate Soos), \url{https://github.com/meelgroup/approxmc}},
+  doi       = {10.1007/978-3-642-40627-0_18}
 }
 
 @inproceedings{Soos2019BIRD,
@@ -249,7 +265,8 @@
   booktitle = {Proceedings of the 33rd AAAI Conference on Artificial Intelligence (AAAI 2019)},
   pages     = {1592--1599},
   year      = {2019},
-  note      = {Venue from memory; no DOI checked. The ApproxMC version run descends from this one}
+  note      = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). The ApproxMC version run descends from this one},
+  doi       = {10.1609/aaai.v33i01.33011592}
 }
 
 % The clause ratio 4.26: the empirical threshold of random 3-SAT.
@@ -261,7 +278,8 @@
   number  = {1--2},
   pages   = {17--29},
   year    = {1996},
-  note    = {Venue from memory; no DOI checked}
+  note    = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py})},
+  doi       = {10.1016/0004-3702(95)00045-3}
 }
 
 @article{Mertens2006Threshold,
@@ -272,5 +290,6 @@
   number  = {3},
   pages   = {340--373},
   year    = {2006},
-  note    = {Venue from memory; no DOI checked. Puts the 3-SAT threshold at $4.2667$}
+  note    = {Venue from memory; DOI checked against Crossref on 2026-11-05 (item 10, \texttt{paper3/scripts/check\_refs.py}). Puts the 3-SAT threshold at $4.2667$},
+  doi       = {10.1002/rsa.20090}
 }
