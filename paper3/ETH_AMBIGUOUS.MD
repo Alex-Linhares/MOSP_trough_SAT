@@ -112,3 +112,99 @@ an answer).
   into the private home — which is what the coordinator's `replay.sh`
   (started 01:03) does; the paper names the version it ran.
 - **Owner may change**: nothing; the download has happened.
+
+### 01a — the coordinator's `lake build … -j 8` was not accepted; the core cap is now `taskset` (item 01, 2026-11-05)
+- **Ambiguous**: run 1 of the replay (01:03) failed at once with
+  `error: unknown short option '-j'`: Lake `v4.34.1` has no `-j`/`--jobs`
+  option (`lake --help`, `lake help build`), and Lake sizes its worker
+  pool from the hardware concurrency (32) with no way to lower it. The
+  owner's rule is "at most 8 workers (`lake build -j 8`)".
+- **Chosen**: the one relaunch item 01 is allowed (run 2, 01:16:17):
+  `-j 8` dropped from `replay.sh`, and `taskset -c 0-7` prefixed to the
+  `bwrap` line in `run_sandbox.sh`, confining the whole sandbox to eight
+  cores; `lake` then runs ~30 `lean` processes on those eight cores, so
+  the one-minute load average sits above 24 while the CPU in use is
+  eight cores. Not treated as the "load above 24 → 4 workers" case,
+  since the load is our own confined processes. Also fixed in the same
+  edit: the `mathlib rev` log line (`grep -B3`, since `"rev"` precedes
+  `"name"` in the manifest). Both run-1 originals are kept under
+  `paper3/replay/logs/run1/`; the README's timeline records the error.
+- **Owner may change**: a stricter cap (`taskset -c 0-3`) on any future
+  sandbox run; or accept `LEAN_NUM_THREADS`-style control if a later
+  Lake offers one.
+
+### 01b — nanoda is named nowhere in the clone except `enable_nanoda: false` (item 01, 2026-11-05)
+- **Ambiguous**: the brief says "the independent Rust kernel the
+  comparator README names"; a grep of the clone at `4eaee875` finds
+  `nanoda` only in the comparator JSON field `enable_nanoda` (every
+  challenge JSON; `false` for family 378) — no README, no document,
+  no URL.
+- **Chosen**: the second kernel used is `ammkrn/nanoda_lib` (the
+  external Lean 4 checker of the "Type checking in Lean 4" book), at
+  `master` commit `8de7e0c4ed3052745a7f8725164efd9e76d84c56`
+  (2026-10-29), which consumes `lean4export`'s NDJSON format; the
+  exporter is `leanprover/lean4export` at tag `v4.34.0` (commit
+  `076e8e57…`), there being no `v4.34.1` tag, with its `lean-toolchain`
+  overridden to `v4.34.1` inside the sandbox so that it is built with
+  the Lean that produced the oleans. The paper says "the comparator
+  JSON's `enable_nanoda` field", never "the comparator README".
+- **Owner may change**: the checker (another external kernel) or the
+  exact `lean4export` revision (`bump-to-v4.34.0-rc2` branch exists; no
+  `v4.34.1` tag on 2026-11-05).
+
+### 01c — the nanoda check permits the three axioms and ignores unused ones (item 01, 2026-11-05)
+- **Ambiguous**: nanoda's config has `unpermitted_axiom_hard_error`;
+  with `true` an axiom *declared* in the export but never used aborts
+  the run. The export is selective (`-- exact_count_and_sat`), so only
+  the theorem's transitive dependencies are exported, but a stray
+  declaration would waste the one attempt.
+- **Chosen**: `permitted_axioms = [propext, Classical.choice, Quot.sound]`,
+  `unpermitted_axiom_hard_error = false` (an unlisted axiom is skipped
+  and errors only if used, which is the same soundness guarantee for the
+  checked theorem), `nat_extension` and `string_extension` on (the Lean
+  kernel's own literal extensions), 8 threads, 1 GB stack per worker.
+  The config is committed (`paper3/replay/logs/nanoda/nanoda_config.json`)
+  with the output.
+- **Owner may change**: rerun with `unpermitted_axiom_hard_error: true`
+  if a stricter log is wanted.
+
+### 01d — what "replayed" covers (item 01, 2026-11-05)
+- **Ambiguous**: the comparator run itself (OpenAI's statement-level
+  check through `lean4export`, `enable_nanoda: false`) is not
+  reproduced; what the sandbox replays is the build of the solution's
+  closure and `#print axioms` of the named theorem, plus, if it ran, an
+  external-kernel check of that theorem's dependencies.
+- **Chosen**: the paper's sentence is "replayed: the closure builds at
+  the pinned toolchain with upstream Mathlib, the main theorem's axioms
+  are the three standard ones, [and nanoda checked its export /
+  single-kernel only]"; the textual match of the statement is item 04's,
+  from `defdiff.py`, not a `lean4export`-level comparison.
+- **Owner may change**: nothing unless the comparator's own tooling
+  becomes available.
+
+## Owner resolutions (2026-11-05, relayed by the coordinator)
+
+- **S1 resolved**: author line is *Alex Linhares*, Argo Lab AGI, on leave
+  from the Getulio Vargas Foundation, `alex@argolab.org`, ORCID
+  0000-0002-4227-6879 (applied in `latex/main.tex`); the owner added
+  "keep yours if possible", read as: keep the AI contribution disclosed in
+  paper 1's form in the acknowledgements — if a co-author credit for the
+  AI was meant instead, the owner says so and item 09 applies it.
+- **S2**: no answer; the chosen typesetting stands.
+- **S3 resolved**: **leave the Lean where it is** and cite the existing
+  path `lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`;
+  item 07 does not move anything (item 07's brief amended).
+- **S4 resolved**: cite the OpenAI manuscript first; for our side nothing,
+  unless a width reference is wanted back.
+- **S5**: the owner asked for the question in plain words. It was only
+  this: the driver originally gave every item the same time limit of
+  four hours, and the replay needs eight; the agent changed the driver so
+  one item can carry its own limit. Nothing for the owner to decide; the
+  change stands.
+- **S6 resolved**: model counters are to be installed on the host before
+  item 06 runs (the coordinator is doing it); item 06 uses what is
+  installed and names it.
+- **S7 resolved**: the text says exactly "for every 50 ≤ n < e^5504".
+- **S8 resolved**: ok.
+- **Compute**: the owner allows as many `nice -n 19` cores as needed
+  (TASK.md amended: no worker cap at nice 19).

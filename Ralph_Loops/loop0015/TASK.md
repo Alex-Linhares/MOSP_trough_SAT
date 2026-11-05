@@ -107,9 +107,10 @@ reduction or width material enters it.
 
 ## Compute, and the machine
 - 32 cores shared with the owner's other work; everything under
-  `nice -n 19`; at most 8 workers (`lake build -j 8`, item 06's pool
-  `≤ 8`), 4 if the one-minute load in `uptime` is above 24. Find processes
-  by PID, never by command-line text; never a bare `pkill -f <word>`.
+  `nice -n 19`; **the owner allows as many cores as needed at `nice -n 19`**
+  (2026-11-05), so no worker cap (note: `lake build -j N` is not a flag of
+  this Lake; Lake uses the cores it finds). Find processes by PID, never by
+  command-line text; never a bare `pkill -f <word>`.
 - 121 GB RAM, 863 GB free disk; `/usr/bin/bwrap` available; no docker or
   podman. Host `elan` toolchains: `v4.29.0`, `v4.34.0-rc2`; the clone
   pins `leanprover/lean4:v4.34.1` and Mathlib `d13f23b723b8a846827a245b89c10fc7d3f11612`

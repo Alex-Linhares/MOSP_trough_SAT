@@ -239,6 +239,12 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   `Prop`, never proved here; the copy is definitions only; no `#eval`
   can evaluate the exponent.
 
+  **Owner resolution (2026-11-05, ETH_AMBIGUOUS S3): do NOT move the
+  Lean. Leave `PrimitiveMachine.lean` and `Frame.lean` under
+  `lean/MOSPFormalization/SubexpPathwidth/` and cite that path; the paper's
+  appendix names the declarations by their existing full names. The
+  axiom audit, the README and everything else in this item stand.**
+
 - [ ] **08 Related work and context.**
   The human-audit paper arXiv 2608.14673 (Sienicki & Sienicki, *A Human
   Audit of OpenAI's AI-Generated Mathematical Proofs*, v3 2026-09-09 —
