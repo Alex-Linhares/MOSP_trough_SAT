@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 3/12 SOLVED
+Current: 4/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -253,3 +253,103 @@ Current: 3/12 SOLVED
   4:38, pathwidth_solver 123 passed in 6:34; paper 1 builds at 78 pages,
   paper 3 at 20; title verbatim; `solutions/` untouched).
 
+
+---
+
+## Iteration 4 — 2026-11-05 03:25 (item 04, the proof inspection joined with the replay) `[x]`
+
+### Completed
+- **Re-ran both audit scripts** read-only on the clone at `4eaee875`
+  (`python3 -I reports/scratch/eth_audit/closure.py …`, 14 s;
+  `defdiff.py`): the fresh run reproduces the audit's numbers exactly and
+  leaves the committed `closure_modules.json` / `hits.json` byte-identical
+  (`git status` clean there). Closure 3,091 modules / 550,551 raw lines /
+  50 Mathlib modules + `Lean.Elab.Tactic.Omega` (imported at
+  `FiniteFallback.lean:14`, `SparseCharging.lean:5`); 3,977 family files,
+  886 outside the closure (no `sorry`/`axiom`/`native_decide`/`admit`,
+  raw or stripped; `OAI.lean:49` the only family import; default target
+  `lakefile.lean:89`); zero `axiom`, `sorry`, `admit`, `native_decide`,
+  `ofReduceBool`, `implemented_by`, `extern`, `unsafe`, `partial`,
+  `elab`, `macro`, `syntax`, `simproc`; two `set_option quotPrecheck
+  false` (lines 15 / 14 of the two recovery files); nine `opaque`s all
+  with bodies; 1,048 `noncomputable`; 4 / 4 / 8 explicit
+  `Classical.choice` / `propext` / `open Classical`; 148 / 40 instances;
+  9 / 5 termination clauses.
+- **Statement match, counted afresh**: `defdiff.py` prints 32 `SAME` and
+  4 it cannot match by itself; by hand, `countWord` is identical
+  (challenge 147 = `EncodingBounds.lean` 17), `runtimeScale` /
+  `runtimeBound` identical up to `noncomputable def` vs `noncomputable
+  section` (`StatementScale.lean:15`), the theorem statement identical
+  raw and normalised (1,353 / 1,124 characters; challenge line 194 =
+  `Final.lean` 74; the challenge's `sorry` at 218). So **35 compared, 33
+  identical, 2 up to the keyword** — the audit's "33" is explained (04a).
+- **The spine, every line re-cited** (about 60 citations, each checked by
+  the script): the machine (`Final.lean` 100, 40, 11; `BitProgram.lean`
+  10–26; `GuardedCompiler.lean` 131–132, 14–17, 30–47), the time bound
+  and constants (`NativeLargeEntry.lean` 11–33, 12, 27, 39, 46, 48, 50,
+  51; `NativeLeafContract.lean` 793; `NativeOuter.lean` 53–56;
+  `NativeEntry.lean` 81–100, 92; `NativeOuterBudgets.lean` 297, 317;
+  `Final.lean` 41), the compile lemmas concluding in the comparator's own
+  `Trace`/`locatedStep`/`visitedSpace` (`GuardedCompiler.lean` 158–162,
+  152–153, 600; `CompileSpace.lean` 125–143; challenge 87–90, 149–189,
+  201), the count (`NativeOuter.lean` 50–51, 73). **02c confirmed and
+  sharpened** (04c): the comparator theorem's witnesses are
+  `C + 28700, A + 1, S + 5022741, d + 2, e + 2` (`Final.lean:41`) with
+  `A = 256 + At`, `1 ≤ At`, so the exhibited exponent constant is ≥ 258
+  and the leading constant ≥ 28,701; `cutoff = max 20 (max Nleaf Ns)`
+  confirmed at line 50.
+- **What the repository does not record**: `#print axioms` in **8
+  closure files / 19 commands** (17 files / 35 commands over the family
+  directory, 9 of them dead) with no recorded output anywhere in the
+  clone (`grep -rIl 'depends on axioms'` empty); CI = `lock-prs.yml`
+  only; `enable_nanoda: false` on **413 of 418** challenge JSONs, `true`
+  on 2, key absent on 3 (the item text's "416 of 418" corrected, 04b);
+  manifest 42 packages (audit said 41, 04e), 23 patches none for
+  Mathlib, toolchain `v4.34.1`, Mathlib `d13f23b7` upstream; the
+  `run_cmd` (290–304) and `post_update` (306–) hooks.
+- **Joined with item 01**: Table 4.2 — (i) the build **moved**, (ii) the
+  axiom output **moved**, (iii) kernel + Mathlib **moved in part**
+  (Mathlib observed upstream and unpatched; the kernel still trusted,
+  now beside nanoda), (iv) the comparator run **not moved** (the match
+  is textual), (v) the second kernel **moved** (95,176 declarations).
+- Written: `paper3/scripts/proof_inspection.py` (python3 -I; re-runs
+  the two audit scripts as subprocesses, 141 checks, writes
+  `tables/proof_inspection.{tex,json}`, `--check`; `ALL CHECKS PASSED`);
+  `paper3/latex/sec4_proof.tex` (9 subsections, pages 16–21: method,
+  closure, keyword sweep with Table 4.1, the statement match, the spine
+  in four paragraphs, toolchain and hooks, what the repository does not
+  record, the trust boundary with Table 4.2, "what this does not claim");
+  `make -C paper3/latex check` passes, 26 pages, **no overfull box in
+  this section** (the long identifiers made breakable with `\path`, the
+  section under `\sloppy`); `paper3/README.md` Section 4 regenerate
+  paragraph; `ETH_AMBIGUOUS.MD` entries 04a–04e.
+- **Two one-number fixes left by earlier items**: Section 2's
+  `runtimeScale_le_four_rho` citation "189–190" → "190–191"
+  (`sec2_statement.tex:329`); Section 5's "Seventeen source files of the
+  closure" → "Eight … nineteen commands (seventeen files of the family's
+  directory, nine never built)" and "the 33 definitions" → "the 35 …,
+  two of them up to the `noncomputable` keyword" (04d, 04a).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (read with `open()`, `sed -n`, `grep`, `wc`,
+  `git rev-parse` only; the two audit scripts read it the same way).
+
+### Blockers
+- None.
+
+### Next
+- Item 05 (the hypotheses and what a derived lower bound loses):
+  Section 3 holds the quotes it needs (§1.1.1 187–191, §1.1.3 226–236,
+  the transfer caveat 95–99, with pages).
+- Item 08 (related work) should fetch and quote the comparator README
+  and the nanoda README; Section 4 cites `\citep{LeanComparator}` and
+  `\citep{Nanoda}` and says "Section 9 records the versions" — the
+  `refs.bib` notes still say "recorded by item 08".
+- Item 10 (refuter) may align Section 2's 02c sentence (`A ≥ 257`, the
+  `run` constant) with Section 4's `A ≥ 258` (the comparator witness).
+- Item 11: `TASK.md` line ~"416 of 418" and `proof_audit.md`'s 33 / 41
+  are superseded by 04a / 04b / 04e; the audit is left as a dated
+  scratch record.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 03:50
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed;
+  pathwidth_solver 123 passed in 6:32; paper 1 builds at 78 pages,
+  paper 3 at 26; title verbatim; `solutions/` untouched).

@@ -1,5 +1,418 @@
-% The proof, inspected -- drafted by loop0015 item 04.
+% The proof, inspected -- drafted by loop0015 item 04 (2026-11-05). Every
+% number of this section is printed, and every line citation re-checked
+% against the read-only clone at commit 4eaee875, by
+%   python3 -I paper3/scripts/proof_inspection.py
+% which re-runs the two audit scripts of reports/scratch/eth_audit/
+% (closure.py, defdiff.py) as subprocesses, performs the remaining checks
+% itself, writes latex/tables/proof_inspection.tex, and exits non-zero if
+% anything has moved. Unqualified Lean paths below are relative to
+% lean/OAI/Algorithms/SubexponentialSAT/ in the clone; the challenge file is
+% lean/ComparatorChallenges/SubexponentialSAT.lean. Nothing in the clone was
+% built, imported or run for this section; the build is Section 5's.
 \section{The proof, inspected}
 \label{sec:proof}
+\begingroup\sloppy
 
-\placeholder{Item 04 drafts this section: the closure size, the zero counts, the 33 identical definitions, the compile lemmas concluding in the comparator's own \texttt{Trace}, the unpatched Mathlib, the absence of a recorded axiom audit, of CI and of a second kernel; joined with the replay of Section~\ref{sec:replay}. Ends with what this does not claim''.}
+Section~\ref{sec:statement} read the theorem; this section reads the
+proof, as far as reading can go. The question is not whether the
+mathematics is right---the kernel decides that, and Section~\ref{sec:replay}
+reports what the kernel said when we ran it---but whether anything in the
+source could make the kernel's acceptance mean less than it appears to
+mean: an axiom, a \texttt{sorry}, a trusted evaluation, an unsound
+instance, a patched Mathlib, a statement that differs from the challenge's,
+or a cost model of the proof's own that leaks into the theorem. We found
+none of these. What we did find is that the repository offers no recorded
+evidence that the closure type-checks at all---no \texttt{\#print axioms}
+output, no continuous integration, no second kernel for this family---which
+is why Section~\ref{sec:replay} exists. The last subsection joins the two.
+
+\subsection{Method}
+\label{sec:proof-method}
+
+The clone of \texttt{openai/math} at commit \texttt{4eaee875} is treated as
+untrusted data: every file was read with \texttt{cat}, \texttt{sed},
+\texttt{grep} and \texttt{python3 -I}, and nothing in it was built,
+imported or executed for this section. Two scripts from the audit of
+2026-11-05 do the mechanical part: \texttt{closure.py} follows
+\texttt{import} lines from the solution module, strips comments (nested
+block comments included) and counts keyword occurrences in what remains;
+\texttt{defdiff.py} normalises whitespace and compares each declaration of
+the challenge file with the library's declaration of the same name. Both
+were re-run for this section, and every number below is from that fresh
+run; \repofile{paper3/scripts/proof_inspection.py} re-runs them, performs
+the remaining checks, and regenerates Table~\ref{tab:proof-inspection}.
+The inspection is of the spine of the proof---the final file, the
+compiler, the entry lemmas, the constants---and of the whole closure by
+keyword. The arithmetic beneath the spine was not read
+(Section~\ref{sec:proof-not}).
+
+\subsection{The closure}
+\label{sec:proof-closure}
+
+The comparator's JSON names one solution module,
+\path{OAI.Algorithms.SubexponentialSAT.Main}, a sixteen-line aggregator
+that imports \texttt{SqrtLog.ExecutionNativeFinal} and
+\texttt{SqrtLogSpace.Final} and declares nothing
+(\clonefile{Main.lean}). Its import closure inside the repository is
+\textbf{3,091 modules}, every one with the prefix
+\path{OAI.Algorithms.SubexponentialSAT}, totalling \textbf{550,551} raw
+lines; the largest file is 2,873 lines
+(\clonefile{SqrtLogSpace/DisjointReuse/SparsePriorityProgram.lean}). The
+closure stops at \textbf{50} Mathlib modules and one module of Lean's own
+library, \path{Lean.Elab.Tactic.Omega}, imported by
+\clonefile{SqrtLogSpace/FiniteFallback.lean} (line~14) and
+\clonefile{SqrtLogSpace/DisjointReuse/SparseCharging.lean} (line~5); it
+is a tactic module, and the closure defines no tactic, macro or syntax of
+its own (Section~\ref{sec:proof-keywords}). Nothing is imported from any
+other family of the collection or from any of the repository's other
+dependencies.
+
+The family's directory holds \textbf{3,977} \texttt{.lean} files, so
+\textbf{886} are outside the closure. They are not reachable from the
+collection's root module either: \clonefile{lean/OAI.lean} imports the
+family only at its line~49, \texttt{import} \path{OAI.Algorithms.SubexponentialSAT.Main}, and the lakefile's default target
+is that root (\clonefile{lean/lakefile.lean}, line~89,
+\texttt{@[default\_target] lean\_lib OAI}). They are therefore never built
+by the default target and bear on nothing: dead files, not a hole. For
+completeness, a raw search of the 886 for \texttt{sorry}, \texttt{axiom},
+\texttt{native\_decide} and \texttt{admit} finds nothing, with or without
+comments.
+
+\subsection{The keyword sweep}
+\label{sec:proof-keywords}
+
+Table~\ref{tab:proof-inspection} gives the counts over the 3,091 files
+with comments stripped. The ones that matter are the zeros. There is no
+\texttt{axiom}, no \texttt{sorry}, no \texttt{admit}; no
+\texttt{native\_decide} and no \texttt{ofReduceBool}, so nothing is
+proved by trusting the compiled evaluator; no \texttt{implemented\_by},
+\texttt{extern}, \texttt{unsafe} or \texttt{partial}, so no definition
+has a hidden implementation and every recursion is one the kernel checks
+(nine \texttt{termination\_by} and five \texttt{decreasing\_by} clauses);
+no \texttt{elab}, \texttt{macro}, \texttt{syntax} or \texttt{simproc}, so
+there is no metaprogramming that could rewrite goals outside the kernel's
+view. The only \texttt{set\_option}s are two
+\texttt{set\_option quotPrecheck false}
+(\clonefile{SqrtLog/LeafProgramPreparedRecoveryQuery.lean}, line~15, and
+\clonefile{SqrtLog/LeafProgramPreparedRecoveryWitness.lean}, line~14),
+which switch off a pre-check on local notation and have no bearing on
+soundness; there is no \texttt{maxHeartbeats}, \texttt{maxRecDepth} or
+\texttt{autoImplicit} option anywhere in the closure, and the lakefile
+sets \texttt{autoImplicit} to \texttt{false} for the whole package
+(\clonefile{lean/lakefile.lean}, line~9).
+
+Nine declarations are \texttt{opaque}, and every one carries a body:
+\begin{itemize}
+\item three recovery functions: \texttt{queryRecovery} at line~59 of
+  \clonefile{SqrtLog/LeafProgramPreparedRecoveryQuery.lean}, with its
+  \texttt{:= by} at line~86; \texttt{rawRecovery} and
+  \texttt{fixedRecovery} at lines 178 and 198 of
+  \clonefile{SqrtLog/LeafProgramPreparedRecoveryWitness.lean};
+\item six \texttt{private opaque} constants of a subtype
+  \texttt{\{ports // ports = \ldots\}}, each with an explicit value:
+  line~22 of \clonefile{SqrtLog/LeafProgramQueryCleanup.lean} and five
+  others.
+\end{itemize}
+An \texttt{opaque} with a body is a definition whose unfolding
+is hidden from elaboration; the kernel still checks the body against the
+type, so nothing is assumed. The 1,048 \texttt{noncomputable}
+declarations, the eight \texttt{open Classical}, and the four explicit
+uses each of \texttt{Classical.choice} and \texttt{propext} are the
+classical reasoning the comparator permits. The 148 \texttt{instance}s
+and 40 \texttt{local instance}s are \texttt{Fintype},
+\texttt{Decidable} and algebraic instances; an instance cannot be
+``inconsistent'' without an axiom, and there is none. The 14,034 lines
+with \texttt{decide} are kernel-evaluated decision procedures, not the
+native evaluator.
+
+\begin{table}[t]
+\centering\small
+\caption{The inspection in numbers. Comments stripped where a keyword is
+counted. Regenerate: \texttt{python3 -I paper3/scripts/proof\_inspection.py}.}
+\label{tab:proof-inspection}
+\input{tables/proof_inspection}
+\end{table}
+
+\subsection{The statement is the challenge's}
+\label{sec:proof-match}
+
+The solution file does not import the challenge file:
+\clonefile{SqrtLogSpace/Final.lean} begins (lines 1--3) with
+\texttt{NativeLargeEntry}, \texttt{SqrtLogSpace.Statement} and
+\texttt{SqrtLog.StatementCanonical}. The library re-declares every
+definition the statement uses under the same fully qualified names,
+spread over seven files: the SAT vocabulary in \clonefile{SAT.lean}, the
+bit arithmetic in \clonefile{BinaryArithmetic.lean}, the nine encoding
+functions in \clonefile{Encoding.lean}, the machine in
+\clonefile{Computation.lean}, \texttt{runtimeScale} and
+\texttt{runtimeBound} in \clonefile{SqrtLog/StatementScale.lean}, the
+space instrumentation in \clonefile{SqrtLogSpace/VisitedTape.lean} and
+\texttt{countWord} in \clonefile{SqrtLogSpace/EncodingBounds.lean}
+(line~17, the challenge's line~147). The definition diff compares
+\textbf{35} declarations: \textbf{33} are identical character for
+character after whitespace normalisation, and the remaining two,
+\texttt{runtimeScale} and \texttt{runtimeBound}, differ only in that the
+challenge writes \texttt{noncomputable def} where the library opens a
+\texttt{noncomputable section} (\clonefile{SqrtLog/StatementScale.lean},
+line~15)---a difference the kernel does not see. The theorem statement
+itself, from \texttt{theorem exact\_count\_and\_sat} to \texttt{:= by},
+is \textbf{identical} in the two files, 1,353 characters raw and 1,124
+after normalisation, at line~194 of the challenge and line~74 of
+\clonefile{SqrtLogSpace/Final.lean}; the challenge's proof is the single
+word \texttt{sorry} at its line~218.
+
+This textual match is a sanity check and not the guarantee. The
+comparator \citep{LeanComparator} compares the two statements at the
+level of exported constants, with every declaration the statement
+mentions matched, so a library definition that differed from the
+challenge's under the same name would make the comparator fail rather
+than pass silently. What the text confirms is that there is no such
+difference to find, and that the shape Section~\ref{sec:statement} read
+is the shape the library proves.
+
+\subsection{The spine of the proof}
+\label{sec:proof-spine}
+
+\paragraph{The machine.} The theorem's machine is
+\texttt{GuardedCompiler.primitive program} with the count tape
+\texttt{256} and the answer tape \texttt{1216} (both \texttt{: Fin 1220};
+\clonefile{SqrtLogSpace/Final.lean}, line~100), where \texttt{program}
+is \texttt{Native.countingProgram cutoff k} \texttt{(NativeLeafProgram.command k)}
+(line~40), a \texttt{BitProgram.Program 80 1220 labels} (line~11): a
+first-order program over 80 one-bit registers, 1,220 Boolean stacks and
+a finite label set, with twelve instruction kinds
+(\clonefile{BitProgram.lean}, lines 10--26). \texttt{primitive}
+(\clonefile{SqrtLogSpace/GuardedCompiler.lean}, line~131) is a
+\texttt{noncomputable abbrev}: it takes the transition table
+\texttt{transition p} (lines 30--47, one case per instruction) and the
+stack selector \texttt{selected p} (lines 14--17), feeds them to the
+stack compiler's controller, and renames the finite state type to
+\texttt{Fin stateCount} through \texttt{Fintype.equivFin} (line~132).
+The machine is thus a concrete table defined by pattern matching on the
+program, composed with a classical renaming of states; the theorem is
+existential, so the noncomputability costs it nothing, and it is the
+reason no running time can be read off the statement
+(Section~\ref{sec:statement}).
+
+\paragraph{The time bound, and the constants.} For \texttt{cutoff < n},
+\path{NativeLargeEntry.run} (\clonefile{SqrtLogSpace/NativeLargeEntry.lean},
+lines 11--33) supplies a trace of length at most
+\texttt{runtimeBound C A d L n} (line~27) with $1 \le C \wedge 1 \le A$
+(line~12). Its exponent constant is \texttt{256 + At} (line~51), where
+\texttt{At} comes from the leaf program's uniform contract
+(\path{NativeLeafContract.uniform_contract}, line~39; the contract
+gives $1 \le \mathtt{At}$, \clonefile{SqrtLogSpace/NativeLeafContract.lean},
+line~793), and its cutoff is \texttt{max 20 (max Nleaf Ns)} (line~50),
+with \texttt{Ns} obtained non-constructively from an eventual inequality
+(\path{Filter.eventually_atTop}, line~48). The $2^{A\cdot\mathtt{runtimeScale}\,n}$
+factor is assembled by \path{runtime_of_tree_and_leaf} (line~46)
+from the DFS visit bound of \path{Native.outer_from_setup}
+(\clonefile{SqrtLogSpace/NativeOuter.lean}, lines 53--56: visits at most
+a square polynomial in $n$ times $2^{n/\mathtt{sparsifySchedule}\,n}$)
+and the leaf time. For $n \le \mathtt{cutoff}$,
+\path{Native.entry_small_primitive}
+(\clonefile{SqrtLogSpace/NativeEntry.lean}, lines 81--100) gives
+$\mathtt{time} \le 28700\,(L+1)^2$ (line~92) through the finite scanner
+of \clonefile{SqrtLogSpace/FiniteFallback.lean}. The two branches are
+folded by \texttt{runtime\_with\_fallback} and
+\texttt{space\_with\_fallback}
+(\clonefile{SqrtLogSpace/NativeOuterBudgets.lean}, lines 297 and 317)
+into one triple, and the witnesses the final theorem exhibits are
+\texttt{C + 28700, A + 1, S + 5022741, d + 2, e + 2}
+(\clonefile{SqrtLogSpace/Final.lean}, line~41). So the proof as written
+has an exponent constant of at least $258$ in front of $\rhon$, a
+polynomial degree \texttt{d} that depends on $k$ (line~51: $\mathtt{db} + (4(k-2)+2) + \mathtt{df} + 2$) and a leading constant of at least
+$28{,}701$; none of these is in the statement, which asserts only that
+they are positive, and none of \texttt{At}, \texttt{db}, \texttt{df} is
+computed anywhere. This confirms, from the proof side, what
+Section~\ref{sec:statement} said from the statement side: the constants
+are unknown, and the \emph{smallest} they could be is already far from
+$1$.
+
+\paragraph{Where a hidden cost model would live, and why it cannot.}
+A proof of a running-time bound for a machine it compiles from a
+higher-level program could, in principle, prove the bound against a cost
+function of its own and leave the kernel to check only that function's
+arithmetic. That is not what happens here. The compile lemmas conclude in
+the comparator's own vocabulary: \path{GuardedCompiler.primitive_execution}
+(\clonefile{SqrtLogSpace/GuardedCompiler.lean}, lines 158--162) turns a
+source run of \texttt{n} steps into \texttt{RunsIn (primitive p).step
+(7 * n)}, with the overhead \texttt{7} proved as a theorem
+(\texttt{compiler\_overhead}, lines 152--153), and
+\path{CompileSpace.compile_word_answer_space}
+(\clonefile{SqrtLogSpace/CompileSpace.lean}, lines 125--143) produces a
+\texttt{Computation.Trace (locatedStep (primitive p)) time \ldots} with
+$\mathtt{time} \le 7\cdot\mathtt{sourceSteps}$ and
+$\mathtt{visitedSpace}\ \mathtt{intermediate} \le s\,(\mathtt{bound} + \mathtt{input.length} + 15)$ on
+every prefix (lines 134, 135 and 143); \path{primitive_located_step}
+(\clonefile{SqrtLogSpace/GuardedCompiler.lean}, line~600) is the per-step
+form. \texttt{Trace}, \texttt{locatedStep} and \texttt{visitedSpace} are
+the challenge's definitions (its lines 87--90 and 149--189), and
+\texttt{time} in the final theorem is literally the length of a
+\texttt{Computation.Trace} of \texttt{PrimitiveMachine.step} (its
+line~201). No cost function of the compiler's appears in the statement;
+a wrong cost model would make these lemmas unprovable, not the theorem
+false. This is the structural point on which the rest of the paper
+leans: whatever the proof's internal accounting, the number the theorem
+bounds is the number of steps of the comparator's machine.
+
+\paragraph{Correctness of the count.} \path{Native.outer_from_setup}
+(\clonefile{SqrtLogSpace/NativeOuter.lean}, lines 50--51) yields
+\texttt{final.stacks ABI.countStack = countWord (SAT.count F)} and
+\texttt{final.stacks ABI.answerStack = [decide (0 < SAT.count F)]} from
+the canonical DFS execution, and
+\path{Native.counting_primitive_from_entry} (line~73) transports
+both to the primitive machine's tapes; \texttt{countWord\_toNat} and
+\texttt{countWord\_count\_length} supply the decoding and length clauses
+of the statement. These are theorems about the concrete step function.
+The arithmetic that makes them true---sparsification, the ring and
+moment computations, the DFS---is the content of the other three
+thousand files, and the only claim made about it here is the one the
+kernel makes: it elaborates (Section~\ref{sec:replay}).
+
+\subsection{Toolchain, Mathlib, and the build hooks}
+\label{sec:proof-build}
+
+The toolchain is fixed (\clonefile{lean/lean-toolchain}:
+\texttt{leanprover/lean4:v4.34.1}; \clonefile{lean/lakefile.lean}
+line~8: \texttt{fixedToolchain := true}). The manifest lists 42
+packages; Mathlib is pinned to upstream revision
+\texttt{d13f23b723b8a846827a245b89c10fc7d3f11612} at
+\path{leanprover-community/mathlib4}, and the audit of 2026-11-05
+confirmed that revision on GitHub as the upstream commit that bumps the
+toolchain to \texttt{v4.34.1}. The repository carries 23 compatibility
+patches under \clonefile{lean/patches/}, \textbf{none for Mathlib};
+every one is for a third-party package (\texttt{AINTLIB},
+\texttt{PrimeNumberTheoremAnd}, \texttt{carleson}, \texttt{iut}, \ldots) that
+this closure does not import. The lakefile has two hooks that run
+arbitrary IO when Lake configures or updates the package: a
+\texttt{run\_cmd} block (lines 290--304) that evaluates dependency
+declarations with \texttt{unsafe env.evalConstCheck} and calls
+\path{preparePatchedDependencies}, which clones and patches eleven
+dependencies, and a \texttt{post\_update} hook (line~306 onward) that
+verifies or applies the patches for the rest. They touch only
+\texttt{.lake/packages}, and only non-Mathlib packages; they are one
+reason the inspection did not build, and the reason the replay of
+Section~\ref{sec:replay} runs inside a sandbox with the network on.
+
+\subsection{What the repository does not record}
+\label{sec:proof-missing}
+
+Three things one would expect beside a verified refutation of a
+forty-year-old hypothesis are absent, and their absence is a fact about
+evidence rather than about the proof.
+
+\begin{itemize}
+\item \textbf{No axiom audit.} \clonefile{SqrtLogSpace/Final.lean} ends
+  with five \texttt{\#print axioms} commands (lines 197--201), and seven
+  other files of the closure carry fourteen more (nineteen commands in
+  eight files; the family's directory holds seventeen such files, but
+  nine of them are among the 886 never built). Their output exists only
+  while the build runs and is recorded nowhere: a search of the whole
+  clone for the string \texttt{depends on axioms} finds nothing.
+\item \textbf{No continuous integration.} \clonefile{.github/workflows/}
+  holds one file, \texttt{lock-prs.yml}, which locks pull-request
+  conversations. Nothing builds or checks the Lean.
+\item \textbf{No second kernel for this family.} The comparator's JSON
+  (\clonefile{lean/ComparatorChallenges/SubexponentialSAT.json}) names the
+  one theorem, an empty \texttt{definition\_names}, the three permitted
+  axioms \texttt{propext}, \texttt{Quot.sound}, \texttt{Classical.choice},
+  and \texttt{enable\_nanoda: false}; the registry
+  \clonefile{lean/formalization.yaml} (lines 1683--1685) points at the
+  same declaration and file. Of the collection's 418 challenge JSONs,
+  413 set \texttt{enable\_nanoda} to \texttt{false}, two to
+  \texttt{true}, and three omit the key. With it off, the collection's own
+  check of this family rests on one kernel implementation. The
+  comparator's README, as fetched by the audit, describes the check as:
+  build challenge and solution in a sandbox, export both with
+  \texttt{lean4export}, match each named theorem's statement with every
+  declaration it uses, confine the proof to the permitted axioms, and
+  have the Lean kernel accept it; with nanoda on, the exported
+  environment is replayed through an independent kernel in Rust as well
+  \citep{Nanoda}. Section~\ref{sec:related} records the versions.
+\end{itemize}
+
+Two smaller consistency facts, for the record. The manuscript's source is
+dated ``17 October 2026, revised 25 October 2026''
+(\clonefile{preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/build/main_full_version.tex}, line~25); the
+collection's history file mentions the family once, in the sentence that
+names the working group at whose request the materials were released
+(\clonefile{history.md}, line~18), and its only ``Formalization Fix''
+entry (line~7) concerns another family. And the scope note
+\clonefile{lean/docs/378.md} states the verified exponent as
+$n(\log\log n)^2/\sqrt{\log n}$ (line~9), which is what the library
+proves and what Section~\ref{sec:beyond} compares with the manuscript's.
+
+\subsection{The trust boundary, joined with the replay}
+\label{sec:proof-trust}
+
+The audit's verdict listed what the proof's trust rested on before
+anything was run: (i) OpenAI's unpublished build, since nothing showed
+the closure type-checks; (ii) the absence of any recorded axiom output;
+(iii) the Lean kernel of \texttt{v4.34.1} and Mathlib \texttt{d13f23b7}
+as upstream; (iv) the comparator run, not reproduced; (v) no second
+kernel for this family. Table~\ref{tab:proof-trust} says which of the
+five Section~\ref{sec:replay} moved.
+
+\begin{table}[t]
+\centering\small
+\caption{The trust boundary before and after the replay of
+Section~\ref{sec:replay}.}
+\label{tab:proof-trust}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.64\linewidth}@{}}
+\toprule
+item & status after the replay \\
+\midrule
+(i) the build & \textbf{moved}: the 3,091-module closure built from source in our sandbox at the pinned toolchain, exit~0, no \texttt{error}, no \texttt{sorry}. \\
+(ii) the axiom output & \textbf{moved}: \texttt{\#print axioms} of the comparator's theorem printed \texttt{[propext, Classical.choice, Quot.sound]}, and the nineteen in-build axiom lines say the same; the output is on record. \\
+(iii) kernel and Mathlib & \textbf{moved in part}: Mathlib was fetched from upstream at the pinned revision and not patched, so ``as upstream'' is now observed rather than assumed; the Lean kernel of \texttt{v4.34.1} is still trusted as upstream, now beside a second kernel (v). \\
+(iv) the comparator run & \textbf{not moved}: the statement-level match through \texttt{lean4export} was not performed; the match this paper relies on is the textual one of Section~\ref{sec:proof-match}. \\
+(v) a second kernel & \textbf{moved}: \texttt{nanoda\_lib} checked the exported dependencies of the theorem, 95,176 declarations, with no errors and the three axioms; what this adds and what it does not is stated in Section~\ref{sec:replay}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+After the replay, then, the proof's trust rests on: the Lean kernel of
+\texttt{v4.34.1} \emph{and} nanoda agreeing on the exported dependencies
+of the theorem; \texttt{lean4export} exporting what the environment
+holds; upstream Mathlib at the pinned revision; and the textual, not
+export-level, match between the solution's statement and the
+challenge's. Everything the inspection could find by reading, the build
+and the two kernels confirmed; nothing the inspection could not settle
+by reading has been settled by anything else.
+
+\subsection{What this does not claim}
+\label{sec:proof-not}
+
+\begin{itemize}
+\item \textbf{The arithmetic was not read.} The inspection followed the
+  spine from \clonefile{SqrtLogSpace/Final.lean} down to the compile
+  lemmas and swept the whole closure by keyword; the sparsification, ring
+  and DFS content of the other three thousand files was not read. The
+  argument above is that its correctness is kernel-enforced, not that we
+  verified it.
+\item \textbf{Grep is necessary, not sufficient.} Zero \texttt{sorry}
+  and zero \texttt{axiom} by text search cannot show that a file
+  elaborates; only the build does (Section~\ref{sec:replay}). Conversely
+  a keyword count is over source text at one commit, and a declaration
+  can be unsound only through the mechanisms searched for; we searched
+  for the ones we know.
+\item \textbf{The textual statement match is not the comparator's.} The
+  comparator matches exported constants; we matched source text after
+  whitespace normalisation and found it identical. A difference the
+  normalisation hides would have to be invisible to the kernel as well,
+  but that is an argument, not a run.
+\item \textbf{Nothing about the constants' values.} The bounds
+  $A \ge 258$ and $C \ge 28{,}701$ are what the proof's witnesses are
+  built from; they are lower bounds on what this proof exhibits, not
+  statements about any machine's running time, and a different proof of
+  the same statement could exhibit different ones.
+\item \textbf{Nothing about the Lean kernel, Mathlib or the toolchain.}
+  All three are trusted as upstream at the pinned versions; the second
+  kernel of Section~\ref{sec:replay} is evidence about the first, not a
+  proof of either.
+\item \textbf{Nothing about what the theorem says.} That is
+  Section~\ref{sec:statement}; a sound proof of a weak bound is a sound
+  proof of a weak bound.
+\end{itemize}
+\par\endgroup

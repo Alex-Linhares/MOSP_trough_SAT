@@ -59,9 +59,10 @@ which was compiled). The log has no line containing \texttt{error} and
 none containing \texttt{sorry}; its eleven \texttt{warning} lines are
 Lake noting that the lakefile's compatibility patches leave eleven
 dependencies with ``local changes'', and none of the eleven is Mathlib.
-Seventeen source files of the closure themselves carry
-\texttt{\#print axioms} commands, so the build log records nineteen
-axiom lines as it goes, every one
+Eight source files of the closure themselves carry nineteen
+\texttt{\#print axioms} commands (seventeen files of the family's
+directory do, but nine of those are never built), so the build log
+records nineteen axiom lines as it goes, every one
 \texttt{[propext, Classical.choice, Quot.sound]}; among them
 \clonefile{SqrtLogSpace/Final.lean}, lines 197--201, prints the axioms of
 \texttt{compiled\_exact\_count\_and\_sat}, \texttt{exact\_count\_and\_sat},
@@ -140,8 +141,9 @@ checker's output are committed.
   solution's exported statement matches the challenge's by
   \texttt{lean4export}; we did not run that tool chain, and the
   statement-level match the paper relies on is the textual one of
-  Section~\ref{sec:proof} (the 33 definitions and the theorem statement,
-  identical character for character after whitespace normalisation).
+  Section~\ref{sec:proof} (the 35 definitions and the theorem statement,
+  identical character for character after whitespace normalisation, two
+  of them up to the \texttt{noncomputable} keyword).
 \item The counts above are counts of lines in one build's log on one
   machine with the named versions; a different Lake would print different
   job totals (the 12,014 includes the cached Mathlib modules), and a

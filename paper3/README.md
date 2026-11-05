@@ -114,6 +114,35 @@ clone.)*
   falls), and writes `latex/tables/beyond_claims.tex` (Table 3.2) and
   `latex/tables/beyond_exponents.tex` (Table 3.1). Exit status non-zero if
   anything has moved; `--check` verifies without writing.
+- **Section 4, the proof inspected** (item 04): `python3 -I
+  paper3/scripts/proof_inspection.py` re-runs the two audit scripts
+  `reports/scratch/eth_audit/closure.py` (the import closure of
+  `OAI.Algorithms.SubexponentialSAT.Main`: 3,091 modules, 550,551 raw
+  lines, 50 Mathlib modules + `Lean.Elab.Tactic.Omega`, the keyword
+  counts with comments stripped) and `defdiff.py` (32 declarations
+  `SAME`), both under `python3 -I` as subprocesses and read-only on the
+  clone, and then checks what they do not: the four declarations the
+  diff cannot match by itself (`countWord` identical, `runtimeScale` and
+  `runtimeBound` identical up to `noncomputable def` / `noncomputable
+  section`, the theorem statement identical, 1,124 characters normalised
+  and 1,353 raw, challenge line 194 = `Final.lean` line 74), the 3,977
+  family files and 886 outside the closure (no `sorry`/`axiom`/
+  `native_decide`/`admit`, raw or stripped), the nine `opaque`s with
+  bodies, the two `quotPrecheck false`, the `#print axioms` placement
+  (8 closure files / 19 commands; 17 / 35 over the family directory;
+  the replay's 19 in-build axiom lines all three axioms), the absence of
+  any recorded `depends on axioms` output in the clone, the challenge
+  JSONs (418; `enable_nanoda` false 413, true 2, absent 3), the single
+  CI workflow, the toolchain, the Mathlib pin, the 42 manifest packages
+  and 23 patches (none for Mathlib), the lakefile hooks, and about 60
+  line citations of the proof's spine (`Final.lean`, `GuardedCompiler`,
+  `CompileSpace`, `NativeOuter`, `NativeLargeEntry`, `NativeEntry`,
+  `NativeOuterBudgets`, `NativeLeafContract`, `BitProgram`, the
+  challenge file, `docs/378.md`, the preprint's date line, `history.md`).
+  Writes `latex/tables/proof_inspection.tex` (Table 4.1) and
+  `latex/tables/proof_inspection.json`; exit status non-zero if anything
+  has moved; `--check` verifies without writing. Table 4.2 (the trust
+  boundary) is prose from Sections 4 and 5, not generated.
 
 ## The replay
 

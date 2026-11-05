@@ -330,3 +330,78 @@ an answer).
 - **Owner may change**: a fourth tag ("verified exponent, paper
   reduction") for these two rows.
 
+
+### 04a — the audit's "33 identical definitions" are 35 compared, 33 identical, 2 up to `noncomputable` (item 04, 2026-11-05)
+- **Ambiguous**: `proof_audit.md` §4, `TASK.md` and item 01's §5.4 say
+  "the 33 definitions". The fresh `defdiff.py` run reports 32 `SAME` and
+  4 it cannot match by itself (`countWord`, whose library file it does
+  not read; `runtimeScale` and `runtimeBound`, which differ only by
+  `noncomputable def` against `noncomputable section`; and the theorem,
+  whose block includes the proof). Checked by hand: `countWord` is
+  identical (challenge 147 = `EncodingBounds.lean` 17), the two scale
+  definitions are identical up to the keyword, the statement is
+  identical. So 35 declarations are compared, 33 are identical character
+  for character, 2 up to a keyword the kernel does not see.
+- **Chosen**: Section 4 says "35 / 33 / 2" and Table 4.1 carries the
+  three numbers; §5.4's "33 definitions" is changed to "35 … two of them
+  up to the `noncomputable` keyword". `proof_audit.md` is left as it is
+  (a dated scratch record).
+- **Owner may change**: keep "33" everywhere with the two scale
+  definitions counted separately in a footnote.
+
+### 04b — `enable_nanoda: false` on 413 of 418 challenge JSONs, not 416 (item 04, 2026-11-05)
+- **Ambiguous**: the item text says "as on 416 of 418 challenge JSONs".
+  The fresh count (`proof_inspection.py`): 418 JSONs; 413 carry
+  `"enable_nanoda": false`, 2 carry `true`
+  (`ArtinParabolicIntersections`, `TraceIdealTransportSupport`), 3 have
+  no `enable_nanoda` key at all (`KadisonRingrose`, `LocalSmoothing`,
+  `UniversalTensorSquares`). The three without the key may use the
+  newer `external_kernels` form or the comparator's default; not
+  examined.
+- **Chosen**: Section 4 states 413 / 2 / 3; the three keyless files are
+  reported as "omit the key", with no claim about the comparator's
+  default.
+- **Owner may change**: nothing; or ask item 08 to say what the
+  comparator does when the key is absent.
+
+### 04c — the exponent constant the proof exhibits is `A + 1 = 257 + At ≥ 258`, sharpening 02c (item 04, 2026-11-05)
+- **Ambiguous**: 02c recorded `A = 256 + At`, `1 ≤ At`, "so the proof as
+  written has `A ≥ 257`". That is the constant of `NativeLargeEntry.run`
+  (line 51); the comparator theorem's witness is `A + 1` after the
+  fallback fold (`Final.lean` line 41: `C + 28700, A + 1, S + 5022741,
+  d + 2, e + 2`), so the exhibited exponent constant is at least 258,
+  the leading constant at least 28,701, and the polynomial degree is
+  `db + (4 · (k − 2) + 2) + df + 2` with `db`, `df` uncomputed.
+- **Chosen**: Section 4 states `A ≥ 258` and `C ≥ 28,701` as lower
+  bounds on what this proof exhibits, with the line citations, and says
+  in "what this does not claim" that they are not running-time
+  statements. Section 2's 02c sentence (which quotes `256 + At` for the
+  value only) is left as it is; the refuter (item 10) may align the two.
+- **Owner may change**: drop the constants from the paper altogether
+  (they are proof-side facts in a paper about the statement), or state
+  only "at least 257" for `run`'s constant as 02c did.
+
+### 04d — `#print axioms`: 8 closure files / 19 commands, not "seventeen files of the closure" (item 04, 2026-11-05)
+- **Ambiguous**: §5.2 (item 01) said "Seventeen source files of the
+  closure themselves carry `#print axioms` commands, so the build log
+  records nineteen axiom lines". Seventeen is the count over the
+  family's whole directory (35 commands); within the 3,091-module
+  closure it is 8 files and 19 commands, which is why the build log has
+  19 in-build axiom lines. The nine other files are among the 886 never
+  built.
+- **Chosen**: §5.2 corrected to "Eight source files of the closure …
+  nineteen commands (seventeen files of the family's directory do, but
+  nine of those are never built)"; Section 4 and Table 4.1 carry both
+  counts.
+- **Owner may change**: nothing.
+
+### 04e — manifest package count 42, not 41; lakefile line numbers (item 04, 2026-11-05)
+- **Ambiguous**: `proof_audit.md` §6 says "41 manifest packages" and
+  cites `lakefile.lean:7-8` for `fixedToolchain` / `autoImplicit` and
+  `:9` for the global option. `lake-manifest.json` has 42 entries in
+  `packages` (Mathlib included); the lakefile lines are 8 and 9, and the
+  default target is at 89 (as the audit says), the `run_cmd` hook at
+  290 and `post_update` at 306 (as the audit says).
+- **Chosen**: Section 4 states 42 and lines 8–9; the audit is left as a
+  dated scratch record.
+- **Owner may change**: nothing.

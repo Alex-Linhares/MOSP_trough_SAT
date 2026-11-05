@@ -155,7 +155,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   "paper-only" means not in the Lean library at commit `4eaee875`, not
   "wrong".
 
-- [ ] **04 The proof inspection, joined with the replay.**
+- [x] **04 The proof inspection, joined with the replay.**
   From `reports/scratch/eth_audit/proof_audit.md`, re-verified by
   re-running `closure.py` and `defdiff.py` (`python3 -I`, read-only on
   the clone) and quoting the numbers from the fresh run: the closure
