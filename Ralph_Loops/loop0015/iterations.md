@@ -300,7 +300,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   passage where plainness and precision pulled apart. Ends with "what this
   does not claim".
 
-- [ ] **09 The abstract, introduction and conclusion.**
+- [x] **09 The abstract, introduction and conclusion.**
   The title's sentence made precise in the first paragraph of the
   introduction (the four clauses: a guarantee, not a running time;
   existential constants never computed; `ρ(n) > n` for every `50 ≤ n <

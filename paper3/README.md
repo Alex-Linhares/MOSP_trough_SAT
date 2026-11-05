@@ -231,6 +231,16 @@ clone.)*
   SHA-256 of every fetched file and writes `latex/tables/related_sources.tex`
   (Table 9.1). `paper3/related/README.md` lists the files and URLs.
 
+- **Sections 1 and 10, the abstract, introduction and conclusion** (item
+  09): no number of their own. The abstract's two numbers (the crossing
+  at 50 variables; the 2,391 digits of `e^5504`) and the introduction's
+  (257, 2.17 near a 24-digit `n`, 3,091 files, 33 minutes, 95,176
+  declarations, 500 variables) are Sections 2, 4, 5 and 7's, each cited
+  with its section; the abstract is 197 words. The conclusion's §10.2
+  sorts every `ETH_AMBIGUOUS.MD` entry written before it (48, including
+  item 09's four): 7 resolved by the owner, 8 procedural or already
+  carried by the text, 33 open and affecting the text, by entry number.
+
 ## The replay
 
 Done (item 01, 2026-11-05): `replay/README.md` has the exact scripts,
@@ -258,7 +268,9 @@ stay in `~/dev/untrusted/replay/logs/` (hashes committed under
 
 ## Open questions for the owner
 
-See `ETH_AMBIGUOUS.MD`; item 11 lists the entries here by number.
+See `ETH_AMBIGUOUS.MD`; the paper's Section 10.2 sorts the entries to
+date (resolved / procedural / open, by number); item 11 lists all of
+them here.
 
 ## The CLAUDE.md paragraph
 

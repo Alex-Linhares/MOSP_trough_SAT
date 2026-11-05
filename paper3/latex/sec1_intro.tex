@@ -1,5 +1,222 @@
-% Introduction -- drafted by loop0015 item 09.
+% Introduction -- drafted by loop0015 item 09 (2026-11-05), under the owner's
+% plain-English rule of 2026-11-05 05:30: no formula beyond 2^n in this
+% section, every term of art glossed in one clause on first use, every
+% number with the section that regenerates it. The title's four clauses are
+% made precise in the first paragraph; the symbols (the exponent, the
+% constants) are introduced in Section 2 and used from there on. A blind
+% reader's pass (one subagent, 2026-11-05) moved the glossary ahead of the
+% summary and shortened the long sentences.
 \section{Introduction}
 \label{sec:intro}
 
-\placeholder{Item 09 drafts this section: the title's sentence made precise in the first paragraph (a guarantee, not a running time; existential constants never computed; $\rhon > n$ for every $50 \le n < e^{5504}$; the sharper exponents unverified); the one-paragraph summary; what is claimed and what is not; the stance (a careful reading by people who checked; no flaw found). Ends with what this does not claim''.}
+In late October 2026, OpenAI's collection of machine-checked mathematics
+added a result dated 25 October 2026 that it calls family 378,
+\emph{The Exponential Time Hypothesis is False}
+\citep{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026}.
+The Exponential Time Hypothesis, ETH, is a conjecture from 2001
+\citep{ImpagliazzoPaturi2001}. It says that deciding whether a formula
+with three variables per clause can be satisfied needs time that grows
+exponentially in the number of variables. The result comes with a
+67-page manuscript and a proof checked by the Lean proof assistant, a
+program that verifies every step of a proof and rejects a proof with a
+gap. The verified theorem does refute the hypothesis. The title of this
+paper says what else is true of it. Its sentence has four clauses.
+First, what is verified is a \emph{guarantee}, not a running time. The
+theorem says that a machine halts within a stated bound; it says
+nothing about how long the machine actually takes on any input. Second,
+the bound contains constants that the theorem only says \emph{exist}.
+No value of any of them is computed anywhere. Where the proof does
+write a value down, the constant in the exponent is at least 257
+(Section~\ref{sec:statement}). Third, the \emph{exponent}, the quantity
+that two is raised to in the bound, is a fixed function of the number
+of variables. With every constant set to one, it is larger than the
+number of variables at every size from 50 variables up to a number with
+2,391 digits (Section~\ref{sec:statement}, Figure~\ref{fig:central}).
+Over that whole range the verified bound is above $2^n$, the cost of
+trying every one of the $2^n$ assignments of $n$ variables. So the
+verified guarantee is weaker, at every practical size, than the
+guarantee of the method everyone already has. Fourth, the manuscript
+states two sharper exponents, which would make a different sentence.
+Neither is in the Lean library, and the manuscript itself calls the
+verified one ``the weaker exponent'' (Section~\ref{sec:beyond}).
+
+This paper is a careful reading by people who checked, not a debunking.
+We read the verified statement line by line. We inspected the proof's
+source. We rebuilt the proof from source in isolation and re-checked it
+with a second proof checker that shares no code with Lean's own. We
+found no flaw: the statement means what the manuscript's verified form
+says, and the proof rests on the three standard axioms, the assumptions
+every ordinary Lean proof makes, and nothing else. Every sentence that
+could read as ``wrong'' or ``overclaimed'' is replaced by what the Lean
+statement and the manuscript actually say, with the file and line, or
+the page and line, beside it. Nothing is quoted from memory. Every
+number has a script that regenerates it, named where the number
+appears.
+
+\subsection{The words we use}
+\label{sec:intro-words}
+
+Each section glosses its own terms where they first appear, so that a
+reader may enter anywhere. The ones the whole paper needs are these,
+each in a sentence or two.
+A \emph{formula} is a list of clauses, each clause an ``or'' of a few
+variables or negated variables. A choice of true or false for every
+variable \emph{satisfies} the formula when it makes every clause true.
+A \emph{$k$-CNF} is a formula with at most $k$ variables per clause,
+and $k$ is called the \emph{clause width}; 3-SAT is the problem of
+deciding whether a 3-CNF can be satisfied.
+\emph{Trying all $2^n$ assignments} is the method of checking every one
+of the $2^n$ ways to set $n$ variables; its cost is the yardstick in the
+title.
+\emph{ETH} is the conjecture that 3-SAT needs time exponential in $n$.
+\emph{SETH}, its strong form, says that as $k$ grows no algorithm for
+$k$-SAT does much better than trying all assignments. Several variants
+exist, and Section~\ref{sec:consequences} names each.
+A \emph{guarantee} is a bound a theorem promises; a \emph{running time}
+is what a clock measures; the two are compared only with their own
+kind.
+\emph{Lean} is the proof assistant. Its \emph{kernel} is the small core
+that does the final checking, and ``verified'' in this paper always
+means ``accepted by the kernel''. \emph{Mathlib} is Lean's community
+library of mathematics.
+The \emph{comparator} is OpenAI's checking tool. It takes a
+\emph{challenge file}, which states a theorem with the proof left
+blank, and a \emph{solution}, which proves it. It checks that both
+state the same theorem and that the proof uses only the three standard
+axioms.
+\emph{nanoda} is a second, independent checker for Lean proofs, written
+in another language. A \emph{replay} is a rebuild of a proof from
+source on our own machine, inside a \emph{sandbox}, an isolated
+environment that sees nothing else on the machine, at the \emph{pinned}
+Lean version, the exact version the repository names.
+A \emph{SAT solver} is the program a practitioner runs to decide a
+formula, and a \emph{model counter} the one that counts its satisfying
+assignments.
+
+\subsection{What this paper does}
+\label{sec:intro-summary}
+
+In one paragraph. The verified statement (Section~\ref{sec:statement})
+says that for each fixed clause width there exist a finite machine of
+the textbook kind, a Turing machine with several tapes, and five
+positive constants. On every formula of that width the machine halts
+with the exact number of satisfying assignments written on a tape. It
+does so within a bound: a constant, times a power of the input length,
+times two raised to a constant times the exponent. The exponent is
+written out in Section~\ref{sec:statement}. Its ratio to the number of
+variables rises above one at 50, peaks at about 2.17 near a number with
+24 digits, and falls back below one only past a number with 2,391
+digits. The manuscript claims more than the statement
+(Section~\ref{sec:beyond}): two sharper exponents; a bound on the size
+of logic circuits that depends on one of them; and a chapter of proofs
+by a technique of its own, tensor contraction. We tag every claim
+verified, supported on paper by the verified statement, or paper-only.
+We inspected the proof (Section~\ref{sec:proof}): all 3,091 source
+files it depends on. They contain no axiom, no omitted proof, no step
+that trusts a compiled program, and no patch to Mathlib, and the
+statement they prove is the one the comparator posed. We replayed it
+(Section~\ref{sec:replay}). The 3,091 files built from source in a
+sandbox at the pinned Lean version in 33 minutes; the kernel reported
+the three standard axioms; and nanoda re-checked 95,176 declarations,
+the theorem and everything it depends on, with no error. We say what
+follows (Section~\ref{sec:consequences}). The statement alone refutes
+ETH, SETH, the gap form, the form for guessing (nondeterministic)
+machines, the counting form, and the randomised forms of ETH, SETH and
+the gap form. A lower bound that was proved \emph{from} one of them is
+an ``if \ldots{} then'' whose ``if'' is now false: it derives nothing,
+and the statement it concluded is not itself refuted. We say what it
+changes for a practitioner (Section~\ref{sec:practitioner}): nothing on
+any machine. We show that by timing an ordinary SAT solver and two model
+counters on random formulas of up to 500 variables and drawing the two
+guarantees beside the measurements. We restate the verified sentence in
+our own Lean library under one name, with its axioms audited
+(Section~\ref{sec:lean}). And we place the paper beside what the
+collection, the hypotheses' authors, a published human audit, and the
+two checking tools say about themselves (Section~\ref{sec:related}).
+
+\subsection{What is claimed, and what is not}
+\label{sec:intro-claims}
+
+Claimed, each with the section that establishes it:
+\begin{enumerate}
+\item The verified statement is a running-time \emph{guarantee} with
+  constants that exist and are never computed, for each fixed clause
+  width, with no lower limit on the number of variables
+  (Section~\ref{sec:statement}).
+\item With every constant set to one, the verified exponent exceeds the
+  number of variables at every size from 50 up to a number with 2,391
+  digits, so the verified bound is above $2^n$ there. The true constants
+  are unknown and at least 257 in the proof on record, so with them the
+  bound is higher still (Section~\ref{sec:statement}).
+\item The manuscript's two sharper exponents, and the circuit bound that
+  rests on one of them, are not in the Lean library
+  (Section~\ref{sec:beyond}).
+\item The proof's source shows none of the known ways of weakening a
+  verified proof, and its statement is the challenge's
+  (Section~\ref{sec:proof}). It builds from source at the pinned
+  version with the three standard axioms, and a second checker agrees
+  (Section~\ref{sec:replay}).
+\item The verified statement refutes ETH, SETH, their gap, guessing and
+  counting forms, and the randomised forms of ETH, SETH and the gap
+  form, by the parts of the statement named in each case. A lower bound
+  derived from any of them loses its premise and nothing more
+  (Section~\ref{sec:consequences}).
+\item On random formulas, the solvers a practitioner has are many
+  orders of magnitude below $2^n$ at every size measured, and the
+  verified guarantee is above $2^n$ from 50 variables on. The verified
+  result changes nothing that runs (Section~\ref{sec:practitioner}).
+\end{enumerate}
+Not claimed:
+\begin{enumerate}
+\item No running time of the verified machine, in either direction. No
+  implementation of it exists; the title compares two guarantees.
+\item No flaw in the statement, the proof, the Lean kernel, Mathlib, or
+  the collection's checking tool. We found none and assert none.
+\item No value of any constant beyond what the proof writes down, and
+  nothing about what a different proof of the same statement could
+  achieve.
+\item No judgement on the manuscript's paper-only proofs, which were
+  located and quoted, not read for correctness.
+\item No refutation of any lower bound's conclusion, for any problem,
+  and nothing about any specific problem's complexity beyond what the
+  manuscript's own remarks state.
+\item Nothing about any problem outside satisfiability. This paper is
+  about the limitation of the ETH refutation and nothing else.
+\end{enumerate}
+
+\subsection{How the paper is organised}
+\label{sec:intro-organisation}
+
+Section~\ref{sec:statement} reads the statement.
+Section~\ref{sec:beyond} draws the line between it and the manuscript.
+Sections~\ref{sec:proof} and \ref{sec:replay} inspect and replay the
+proof. Section~\ref{sec:consequences} says what follows.
+Section~\ref{sec:practitioner} is for the practitioner.
+Section~\ref{sec:lean} is our own Lean. Section~\ref{sec:related} is
+related work. Section~\ref{sec:conclusion} concludes and lists the
+questions this reading left for its author to decide. Every section
+ends with a list headed ``what this does not claim''.
+Appendix~\ref{app:lean} lists every Lean name the paper cites.
+Appendix~\ref{app:tech} holds the technical detail behind the plain
+text of the body: the definitions with their line numbers, the theorem
+with its quantifiers, the spine of the proof. The OpenAI repository is
+read throughout at one commit, \texttt{4eaee875}, as untrusted data:
+with text tools only, never built or run in place. The one build is the
+sandboxed replay.
+
+\subsection{What this does not claim}
+\label{sec:intro-not}
+
+\begin{itemize}
+\item \textbf{Nothing beyond the sections it summarises.} Every
+  sentence of this introduction is a sentence of a later section said
+  shorter; where the two differ, the later section, with its file and
+  line, is the one that counts.
+\item \textbf{Nothing about the result's importance.} Whether the
+  refutation matters is not a question this paper asks; what the
+  verified statement says, and at what sizes, is.
+\item \textbf{No prior-art claim.} ``We found no earlier statement'' of
+  the title's observation is bounded to the six texts
+  Section~\ref{sec:related} names; the literature at large was not
+  searched.
+\end{itemize}

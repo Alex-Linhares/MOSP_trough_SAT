@@ -1,0 +1,192 @@
+# session it10 started 2026-11-05 07:09:17
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'm iteration 10, item 09: the abstract, introduction and conclusion. I'll read the current paper state first.
+  > $ cd /home/al/dev/MOSP/paper3 && ls -la latex/ && cat latex/main.tex && echo ---- && cat latex/sec1_intro.tex && echo ---- && cat latex/sec10_conclusion.tex && ec
+  > $ cat ETH_AMBIGUOUS.MD
+  > $ grep -n '^### \|^## ' ETH_AMBIGUOUS.MD
+  > $ sed -n 19,215p ETH_AMBIGUOUS.MD
+  > $ sed -n 216,480p ETH_AMBIGUOUS.MD
+  > $ sed -n 481,760p ETH_AMBIGUOUS.MD
+  > $ cat latex/sec2_statement.tex
+  > $ cat latex/sec3_beyond.tex
+  > $ cat latex/sec4_proof.tex latex/sec5_replay.tex
+  > $ cat latex/sec6_consequences.tex
+  > $ cat latex/sec7_practitioner.tex latex/sec8_lean.tex
+  > $ cat latex/sec9_related.tex latex/sec11_data.tex latex/sec12_ack.tex latex/secA_appendix_lean.tex
+  > $ cat README.md && echo ---- && sed -n 1,120p ../reports/paper3_plan.md
+  > $ cat /home/al/.claude/projects/-home-al-dev-MOSP/1cad2094-11ee-40b3-a86f-8ba4c86457ea/tool-results/b47njbft8.txt
+  > $ cd /home/al/dev/MOSP && cat Ralph_Loops/loop0015/iterations.md | sed -n 1,400p | grep -n "09\|10 \|11 \|12 " | head -40; echo ----; grep -n '\\label' paper3/lat
+  > $ sed -n 1,400p /home/al/.claude/projects/-home-al-dev-MOSP/1cad2094-11ee-40b3-a86f-8ba4c86457ea/tool-results/bzlyqrgn0.txt
+  > $ sed -n 303,350p Ralph_Loops/loop0015/iterations.md; echo ----; grep -n "sec1_intro\|sec10\|abstract\|Section 1\|Section 10\|intro" paper3/README.md Ralph_Loops/
+
+I've read the ledger and Sections 2–4, 6–9. Reading the rest of the replay section now, then I'll write the abstract, introduction and conclusion.
+  > $ sed -n 400,560p /home/al/.claude/projects/-home-al-dev-MOSP/1cad2094-11ee-40b3-a86f-8ba4c86457ea/tool-results/bzlyqrgn0.txt
+  > $ grep -n "does not claim\|sec1\|sec10\|abstract\|placeholder" Ralph_Loops/loop0015/gate.py | head; echo ----; sed -n 1,12p paper3/latex/refs.bib; echo ----; grep
+
+Now writing the abstract into main.tex, and the introduction and conclusion files.
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+abstract = r"""
+In October 2026 OpenAI's collection of machine-checked mathematics added
+a theo
+  > $ python3 - <<'EOF'
+import re
+abstract = r"""
+In October 2026 OpenAI's collection of machine-checked mathematics added
+a theorem, proved in the Lean proof assista
+  > $ python3 - <<'EOF'
+import re
+abstract = r"""In October 2026 OpenAI published a theorem, checked by the Lean proof
+assistant, that refutes the Exponential Time Hy
+  > $ cat > sec1_intro.tex <<'EOF'
+% Introduction -- drafted by loop0015 item 09 (2026-11-05), under the owner's
+% plain-English rule of 2026-11-05 05:30: no formula 
+  > $ sed -i 's/comes with a\n64-page manuscript/X/' sec1_intro.tex && python3 - <<'EOF'
+p='sec1_intro.tex'; s=open(p).read()
+s=s.replace("The result comes with a\n64
+  > $ cat > sec10_conclusion.tex <<'EOF'
+% Conclusion -- drafted by loop0015 item 09 (2026-11-05), in plain English
+% (owner's rule of 2026-11-05 05:30). The second s
+
+Build passes (62 pages, no undefined references). Fixing the entry counts in the conclusion, checking for overfull boxes in my sections, and writing the ledger entries next.
+  > $ python3 - <<'EOF'
+p='sec10_conclusion.tex'; s=open(p).read()
+s=s.replace("sort them here. Fourteen need no decision: six were resolved by the\nauthor in writing
+  > $ cd /home/al/dev/MOSP/paper3 && cat >> ETH_AMBIGUOUS.MD <<'EOF'
+
+### 09a — the title's third clause in the introduction and abstract is in words, with no formula
+  > $ cd /home/al/dev/MOSP/paper3/latex && pdftoppm -f 1 -l 2 -r 70 -png main.pdf /tmp/p3page && ls /tmp/p3page*; pdftotext -f 1 -l 1 main.pdf - | head -60
+  > $ cd /home/al/dev/MOSP && (nohup nice -n 19 python3 Ralph_Loops/loop0015/gate.py > /tmp/gate_it10.log 2>&1; echo "EXIT $?" >> /tmp/gate_it10.log) & echo started $
+  > Read /tmp/p3page-01.png
+  > Agent {"description": "Blind read of intro and conclusion", "prompt": "You are a careful reader checking two freshly drafted s
+
+I'll read the three target texts first, then the later sections and the ledger to verify claims.
+  > $ ls && echo ---- && sed -n '/\\begin{abstract}/,/\\end{abstract}/p' main.tex
+  > $ cat sec1_intro.tex
+  > $ cat sec10_conclusion.tex
+  > $ cd /home/al/dev/MOSP/paper3 && python3 - <<'EOF'
+p='README.md'; s=open(p).read()
+old = "## The replay"
+new = """- **Sections 1 and 10, the abstract, introductio
+  > $ cd /home/al/dev/MOSP/paper3 && grep -n '^### ' ETH_AMBIGUOUS.MD
+
+Page 1 renders cleanly. The gate and a blind reader are running; I'll poll the gate with bounded waits.
+  > $ timeout 290 bash -c 'while ! grep -q "^EXIT" /tmp/gate_it10.log; do sleep 15; done'; tail -5 /tmp/gate_it10.log
+
+Next I need to verify the numbers against the later sections. Let me grep for each.
+  > $ grep -n -E '2,391|2{,}391|2391|e\^\{5504\}|5504' sec2_statement.tex sec3_beyond.tex sec4_proof.tex sec5_replay.tex sec6_consequences.tex sec7_practitioner.tex s
+  > $ grep -n -E '257|258|28,701|28{,}701|28701' sec2_statement.tex sec3_beyond.tex sec4_proof.tex sec5_replay.tex sec8_lean.tex secB_appendix_technical.tex | head -4
+  > $ grep -n -E '3,091|3{,}091|3091|33 minutes|thirty-three minutes|95,176|95{,}176|95176|4eaee875|67-page|67 pages|sixty-seven' sec*.tex secA_appendix_lean.tex secB
+  > $ grep -n -i -E 'Gap-ETH|NSETH|#ETH|\\#ETH|randomi[sz]ed|rETH|BPP' sec6_consequences.tex | head -30; echo ====; grep -n -E '500|two model counters|model counter|o
+  > $ grep -n -i -E 'graph|pathwidth|treewidth|MOSP|width param|tree-?width|path-?width' sec1_intro.tex sec10_conclusion.tex; sed -n '/\\begin{abstract}/,/\\end{abstr
+
+The grep tool rejects `{,}`; I'll use fixed-string searches, and read the sec2 passage around lines 190–300, since it says "2,390 digits" where the intro says 2,391.
+  > $ sed -n 170,330p sec2_statement.tex
+  > $ for p in '2,391' '2{,}391' '2,390' '2{,}390' '257' '258' '28,701' '28{,}701' '3,091' '3{,}091' '33 min' '95,176' '95{,}176' '4eaee875' '67-page' '67 pages' 'fiv
+  > $ sed -n 1,60p sec6_consequences.tex; echo ======; sed -n 200,260p sec6_consequences.tex
+  > $ sed -n 1,60p sec4_proof.tex; echo ======; sed -n 60,130p sec5_replay.tex; echo =====; sed -n 1,40p sec9_related.tex; sed -n 110,130p sec9_related.tex; sed -n 26
+  > $ sed -n 1,30p sec3_beyond.tex; grep -n -i -E 'sharper|tensor|circuit' sec3_beyond.tex | head -20; echo =====; sed -n 20,35p sec7_practitioner.tex; sed -n 55,70p 
+  > $ sed -n 60,120p sec4_proof.tex; echo ======; sed -n 130,200p sec4_proof.tex
+  > $ sed -n 18,60p sec5_replay.tex
+  > $ sed -n 240,268p sec9_related.tex; echo =====; grep -n -i -E 'six|five things' sec9_related.tex | head; echo =====; sed -n 70,80p sec7_practitioner.tex; grep -n 
+  > $ grep -n -i -E 'forty|2001|1999|twenty-five' main.tex sec2_statement.tex sec9_related.tex secB_appendix_technical.tex | head; echo ====; sed -n 1,20p main.tex | 
+
+One last check: the conclusion refers to the ledger's "Owner resolutions" heading, and I want the word counts of the long sentences to be exact rather than estimated.
+  > $ cd /home/al/dev/MOSP/paper3 && grep -n -i 'owner resolution' ETH_AMBIGUOUS.MD | head -3; cd latex && python3 -I - <<'EOF'
+import re
+t=open('sec1_intro.tex').rea
+
+Report on the abstract (`/home/al/dev/MOSP/paper3/latex/main.tex`), `sec1_intro.tex` and `sec10_conclusion.tex`.
+
+**1. Claims not stated the same way in the section cited**
+
+- Abstract: "the **forty-year-old** conjecture". Section 1 and Section 2 (line 324, citing ImpagliazzoPaturi2001): "a conjecture from 2001" — 25 years, not forty.
+- Section 1: "**On 25 October 2026**, OpenAI's collection ... added a result". Section 9, line 120: "dated 17 October 2026, revised 25 October, and **entered the collection on 26 October**" (history.md heading "October 26, 2026").
+- Abstract, Section 1, Section 10: "a number with **2,391 digits**". Section 2 is internally split: line 201 "10^{2390}, a number with 2,391 digits", but line 213 "from 50 to a number with **2,390 digits**" and item 3 "up to about 10^{2390}". (e^5504 ≈ 10^2390.3 has 2,391 digits, so line 213 is the odd one.)
+- Section 10: "the proof writes down **at least 257** for the exponent's constant and **at least 28,701** for the leading one (Sections 2 and 4)". Section 4, lines 180–182: "an exponent constant of **at least 258** ... a leading constant of at least 28,701" — both from the same Final.lean line 41 sum. Section 2 says 257 for the construction and 258 for the exhibited theorem; Section 2 never mentions 28,701. The pairing 257/28,701 mixes the two readings (entry 08xd).
+- Section 1: "**the one place** the proof writes a value down gives the exponent's constant as at least 257". Section 2 cites two files (NativeLargeEntry line 51; NativeLeafContract lines 792–793) and Section 4 a third (Final.lean line 41).
+- Section 1, claim 5 and the summary: refutes "ETH, SETH, Gap-ETH, NSETH, #ETH **and their randomised forms**". Section 6 states randomised forms only for ETH, SETH and Gap-ETH (the manuscript's list); no randomised NSETH or #ETH is stated.
+- Section 1: nanoda "shares no code with **Lean**". Sections 5 and 9: "shares no code with the **Lean kernel**" (its input is produced by lean4export, a Lean tool).
+- Section 1: "re-checked the theorem's 95,176 exported **dependencies**". Section 5: "Checked 95176 declarations" (the file includes the theorem and the three axiom declarations).
+
+**2. Readability (abstract and Section 1)**
+
+- Abstract: "Lean proof assistant", "exponent", "SAT solver", "lower bounds derived from them" are used unglossed; the opening sentence is 44 words.
+- Section 1, para 1: "exponent" is used unglossed throughout the section (first gloss is Section 2); the "Second, the bound contains constants..." sentence is 48 words; "Over that whole range..." is 42.
+- Para 2: "three standard axioms" before the gloss in 1.2; 57-word sentence.
+- 1.1 (before the glossary in 1.2): "multitape Turing machine", "kernel", "nanoda", "sandbox", "pinned Lean version", "circuit lower bound", "tensor contraction", "nondeterministic", "SETH", "loses its premise" — kernel/nanoda/SETH are glossed only later in 1.2, the rest never in Section 1. Sentences of 73, 49, 43, 42, 42, 48, 42, 42 words.
+- 1.2: symbol $k$ ("$k$-CNF", "$k$-SAT") beyond $2^n$ and $n$; the formula gloss is 63 words, the comparator gloss 53.
+- 1.3: "Gap-ETH, NSETH, #ETH", "quantitative circuit bound", "clause width", "Mathlib" (named only here; earlier "mathematics library") unglossed; claim 2 is 55 words.
+- 1.4: the organisation sentence is 53 words.
+
+**3. Ledger arithmetic**
+
+The ledger has 48 entries. Resolved (S1, S3+07a, S4, S6, S7, S8) = 7; procedural (S5, 01a, 03b, 04b, 04d, 04e, 06b, 08xb) = 8; open list names 33 distinct entries. 7 + 8 + 33 = 48; every ledger entry appears exactly once in the section and no number in the section is absent from the ledger. "Thirteen of the thirty-three": S2, 02b, 02d, 05c, 06c, 08a, 08b, 08c (8) + 02a, 03a, 03d, 04a, 08xa (5) = 13, all from the open list. Correct. "Owner resolutions" exists (ledger line 188).
+
+**4. Debunking / overclaim**
+
+None. (Weakest point: the pairing "257 ... 28,701" in Section 10 attributes to the proof a lower exponent constant than Section 4's own reading, which understates rather than overclaims.)
+
+**5. Graphs / pathwidth / treewidth / MOSP / width parameters**
+
+None. (Section 10's "S4, no width references" names the ledger entry, not a parameter.)
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+# ---- abstract
+m='main.tex'; t=open(m).read()
+start=t.index('\\begin{abstract}'); end=t.index(
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+m='main.tex'; t=open(m).read()
+start=t.index('\\begin{abstract}'); end=t.index('\\end{abstract}
+  > $ python3 - <<'EOF'
+import re
+m='main.tex'; t=open(m).read()
+start=t.index('\\begin{abstract}'); end=t.index('\\end{abstract}')+len('\\end{abstract}')
+abstract = 
+  > $ cat > sec1_intro.tex <<'EOF'
+% Introduction -- drafted by loop0015 item 09 (2026-11-05), under the owner's
+% plain-English rule of 2026-11-05 05:30: no formula 
+  > $ cd /home/al/dev/MOSP && pkill -P 2796694 2>/dev/null; kill 2796694 2>/dev/null; sleep 2; pgrep -af "gate.py" | grep -v pgrep; (nohup nice -n 19 python3 Ralph_Lo
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0015/iterations.md'; s=open(p).read()
+old="- [ ] **09 The abstract, introduction and conclusion.**"
+assert old in s
+s=s.rep
+  > $ tail -c 300 /home/al/.claude/projects/-home-al-dev-MOSP/1cad2094-11ee-40b3-a86f-8ba4c86457ea/tool-results/b19fynndw.txt; echo; echo ----; head -5 /tmp/gate_it10
+
+Two gate processes are running at once (the old python survived its shell), which also breaks the one-lake-build rule. Killing both by PID and restarting a single clean run.
+  > $ for p in $(pgrep -f "^python3 Ralph_Loops/loop0015/gate.py"); do pkill -P $p; kill $p; done; sleep 3; pgrep -af "^python3 Ralph_Loops/loop0015/gate.py"; pgrep -
+  > $ timeout 290 bash -c 'while ! grep -q "^EXIT" /tmp/gate_it10b.log; do sleep 15; done'; tail -3 /tmp/gate_it10b.log
+  > $ timeout 290 bash -c 'while ! grep -q "^EXIT" /tmp/gate_it10b.log; do sleep 15; done'; tail -3 /tmp/gate_it10b.log; grep -n "passed\|GATE\|Pages" /tmp/gate_it10b
+  > $ timeout 290 bash -c 'while ! grep -q "^EXIT" /tmp/gate_it10b.log; do sleep 15; done'; tail -3 /tmp/gate_it10b.log; grep -n "passed\|GATE\|Pages" /tmp/gate_it10b
+
+Gate passed. Recording its tail in PROGRESS.md and confirming the working tree state.
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0015/PROGRESS.md'; s=open(p).read()
+old="""  already points at it.
+"""
+assert s.endswith(old)
+s = s[:-len(old)] + """  alre
+
+Item 09 is done and marked `[x]`; the gate passes on the final files. Not committed, by the rules.
+
+**What was written**
+
+- **Abstract** in `paper3/latex/main.tex`: 198 words, no formula beyond 2^n, two numbers only (the crossing at 50 variables and the 2,391 digits of e^5504), both from Section 2's script.
+- **Introduction** (`sec1_intro.tex`, 4 pages): the title's four clauses made precise in words in the first paragraph, the stance paragraph, a glossary placed before any term is used, the one-paragraph summary of Sections 2 to 9 with each number cited to its section, the claimed and not-claimed lists, the organisation paragraph, and "what this does not claim".
+- **Conclusion** (`sec10_conclusion.tex`, 3 pages): the findings in one paragraph, the claims in one sentence each, and the review of all 48 ledger entries to date. Seven are resolved by the owner, eight are procedural or already carried by the text, and 33 are open and affect the text, listed by entry number in groups by section.
+- **Ledger entries 09a to 09d**: the third clause in words rather than the brief's formula, which numbers the abstract carries, how the conclusion sorts the entries, and "people who checked" with one author line.
+
+**Checks**
+
+- One blind-reader subagent found eight consistency slips, all fixed. Two were one-word edits outside this item's files, listed in PROGRESS.md for the refuter: Section 4's "forty-year-old hypothesis" became "twenty-five-year-old" (ETH is from 2001), and Section 2's lone "2,390 digits" became "2,391" to match its own other lines.
+- The paper builds at 62 pages with no undefined references. The only overfull boxes are the two pre-existing ones in Appendix A.
+- Gate: PASS at 07:38, with the usual test counts. A first gate run started before the fixes was stopped by PID, and its surviving python child was killed by PID; the pass is a clean third run.
+- Nothing under `solutions/` touched, nothing of the clone read or run.
+
+**Next**: items 10 (refuter pass), 11 (write-up around the paper) and 12 (reserve) remain, so no LOOP_COMPLETE line was added.
+
+# result: success in 1562s, 46 turns, cost $9.16

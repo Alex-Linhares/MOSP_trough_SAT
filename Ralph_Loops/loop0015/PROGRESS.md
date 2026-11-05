@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 9/13 SOLVED (item 08x added to the list on 2026-11-05)
+Current: 10/13 SOLVED (item 08x added to the list on 2026-11-05)
 
 ## Setup — 2026-11-05
 
@@ -811,3 +811,116 @@ Current: 9/13 SOLVED (item 08x added to the list on 2026-11-05)
   (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed in
   4:36; pathwidth_solver 123 passed in 6:33; paper 1 builds at 78 pages,
   paper 3 at 55; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 10 — 2026-11-05 07:05 (item 09, the abstract, introduction and conclusion) `[x]`
+
+### Completed
+- **The abstract** (`paper3/latex/main.tex`): 198 words (counted with
+  `\emph` stripped and `$2^n$` as one word), no formula beyond `2^n`,
+  two numbers only — the crossing at 50 variables and the 2,391 digits
+  of `e^5504`, both Section 2's (`paper3/scripts/runtime_scale.py`);
+  the result's month, "the 2001 conjecture", the no-flaw sentence, the
+  four clauses in words, and "nothing changes on any machine".
+- **The introduction** (`sec1_intro.tex`, five subsections): the
+  title's four clauses made precise in the first paragraph (a
+  guarantee, not a running time; constants that exist and are never
+  computed, at least 257 where the proof writes one down; the exponent
+  above the number of variables from 50 variables to a number with
+  2,391 digits, so the verified bound is above `2^n` there; the sharper
+  exponents not in the library), every number with its section; the
+  stance paragraph ("a careful reading by people who checked, not a
+  debunking … found no flaw"); a glossary of the words the whole paper
+  needs (formula, satisfies, k-CNF, clause width, trying all `2^n`
+  assignments, ETH, SETH, guarantee vs running time, Lean, kernel,
+  Mathlib, comparator, challenge file, solution, nanoda, replay,
+  sandbox, pinned, SAT solver, model counter), placed before the
+  summary so that nothing is used before its gloss; the one-paragraph
+  summary (statement, beyond, inspection, replay, consequences,
+  practitioner, our Lean, related work) with its numbers (257; 2.17
+  near a 24-digit `n`; 3,091 files; 33 minutes; 95,176 declarations;
+  500 variables) each cited to its section; "what is claimed" (six
+  points) and "not claimed" (six points) as lists; the organisation
+  paragraph; "what this does not claim".
+- **The conclusion** (`sec10_conclusion.tex`, three subsections): the
+  paper's findings in one paragraph with the two facts that are true
+  at once (the limit theorem in our Lean; the practical range); the
+  claims and non-claims in one sentence each; and **the review of every
+  `ETH_AMBIGUOUS.MD` entry to date** — 48 (S1–S8, 01a–08xd, and this
+  item's 09a–09d) — sorted into resolved by the owner in writing (7:
+  S1, S3 with 07a, S4, S6, S7, S8), procedural or corrections already
+  carried by the text (8: S5, 01a, 03b, 04b, 04d, 04e, 06b, 08xb), and
+  **open and affecting the text (33)**, listed by entry number in
+  groups by the section each touches with one clause each, and a
+  closing count of the thirteen that are bibliographic or typographic;
+  "what this does not claim" (entries added by the refuter are not in
+  it).
+- **One blind-reader subagent** (the item's one) read the abstract,
+  Section 1 and Section 10 against Sections 2–9 and the ledger. Its
+  arithmetic check of §10.2 passed (7 + 8 + 33 = 48, every entry once,
+  the thirteen correct). It found eight slips, **all fixed**: "the
+  forty-year-old conjecture" (ETH is from 2001 → "the 2001 conjecture";
+  the same phrase in Section 4's "a verified refutation of a
+  forty-year-old hypothesis" → "twenty-five-year-old", one word in item
+  04's text); "On 25 October 2026 … added" (Section 9: entered the
+  collection on 26 October → "In late October 2026 … a result dated 25
+  October 2026"); Section 2's own "a number with 2,390 digits" at one
+  place against its "2,391 digits" elsewhere (→ 2,391, one number in
+  item 02's text; `e^5504 ≈ 10^2390.3` has 2,391 digits); the
+  conclusion's pairing "257 … 28,701" (Section 4 pairs 258 with 28,701
+  → both readings stated, 08xd); "the one place the proof writes a value
+  down" (three lines are cited → "where the proof does write a value
+  down"); "ETH, SETH, Gap-ETH, NSETH, #ETH and their randomised forms"
+  (Section 6 states randomised forms for ETH, SETH and Gap-ETH only →
+  so worded, in the summary and in claim 5); nanoda "shares no code
+  with Lean" (→ "with Lean's own [checker]"); "95,176 exported
+  dependencies" (→ "95,176 declarations, the theorem and everything it
+  depends on"). Its readability stalls (the glossary after its first
+  uses; sentences of 40–73 words; "sandbox", "pinned", "circuit lower
+  bound", "tensor contraction", "nondeterministic", "Mathlib", "clause
+  width" unglossed) were addressed by moving the glossary ahead of the
+  summary, adding the seven glosses, and splitting every sentence it
+  named. No debunking sentence, no out-of-scope word (its items 4 and
+  5: none).
+- `make -C paper3/latex check` passes, **62 pages** (55 before; the
+  introduction is 4 pages, the conclusion 3); the only overfull boxes
+  are the two pre-existing ones in Appendix A's `longtable` (08xb, item
+  10's). Page 1 rendered and looked at: title verbatim with `2^n`
+  typeset, author line, abstract.
+- `paper3/README.md`: a "Sections 1 and 10" regenerate paragraph (no
+  number of their own; which sections each number belongs to; the
+  abstract's word count; what §10.2 sorts) and the "Open questions"
+  section pointing at §10.2; `ETH_AMBIGUOUS.MD` entries 09a–09d (the
+  third clause in words, by the plain-English rule over the brief;
+  which numbers the abstract carries; how the conclusion sorts the
+  entries; "people who checked" with one author line and no co-author
+  credit applied).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone read or executed (every fact is from Sections 2–9 and
+  the ledger); one subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 10 (refuter): Section 4's "twenty-five-year-old hypothesis" and
+  Section 2's "2,391 digits" are the two one-word edits outside this
+  item's files, made for consistency and listed here; the two Appendix
+  A overfull boxes; the per-section glosses now duplicated by §1.1
+  (08xc, the owner's call); the README's older "ETH, SETH, Gap-ETH,
+  #ETH and their randomised forms" sentence (item 11's text) could be
+  aligned with claim 5's wording.
+- Item 11: §10.2's sorting is the list the README's "Open questions"
+  section needs, plus the refuter's entries; `paper3/README.md`
+  already points at it.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 07:38
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed
+  in 4:36; pathwidth_solver 123 passed in 6:32; paper 1 builds at 78
+  pages, paper 3 at 62; title verbatim; `solutions/` untouched). A
+  first gate run was started before the reader's fixes and stopped by
+  PID; its python child survived the shell for eight minutes beside
+  the second run (two `lake build`s of `lean/` briefly overlapped) and
+  was killed by PID; the pass above is a third, clean run on the final
+  files.

@@ -1,5 +1,170 @@
-% Conclusion -- drafted by loop0015 item 09.
+% Conclusion -- drafted by loop0015 item 09 (2026-11-05), in plain English
+% (owner's rule of 2026-11-05 05:30). The second subsection reviews every
+% entry of paper3/ETH_AMBIGUOUS.MD written up to this section (S1-S8,
+% 01a-08xd, and 09a-09d of this item) and lists the ones that affect the
+% text as open, by entry number; the owner resolves an entry by editing the
+% paper and striking it. Nothing here is a new number: every figure quoted
+% is a later section's, with its section named.
 \section{Conclusion}
 \label{sec:conclusion}
+\begingroup\sloppy
 
-\placeholder{Item 09 drafts this section: what is claimed and what is not; every entry of \repofile{paper3/ETH_AMBIGUOUS.MD} that affects the text, listed as open by number. Ends with what this does not claim''.}
+OpenAI's family 378 holds a theorem the Lean kernel accepts, and the
+theorem refutes the Exponential Time Hypothesis as stated. We read it,
+inspected its proof, rebuilt the proof from source and re-checked it
+with a second checker, and found no flaw. That is the first thing this
+paper says, and it is said without qualification. The second thing is
+what the title says, and it is a reading of the statement, not of the
+proof. The statement is a guarantee: a machine exists and halts within
+a bound. The bound's constants exist and are never computed; where the proof
+writes values down, its construction has at least 257 for the
+exponent's constant, and the theorem it exhibits has at least 258
+there and at least 28,701 in front (Sections~\ref{sec:statement} and
+\ref{sec:proof}). The exponent is the manuscript's weaker one, and with
+its constant set to one it exceeds the number of variables at every
+size from 50 up to a number with 2,391 digits
+(Section~\ref{sec:statement}). So at every practical size the verified
+guarantee is weaker than the guarantee of trying every assignment. The
+manuscript's sharper exponents, which would change that sentence, are
+not in the Lean library (Section~\ref{sec:beyond}). What follows from
+the verified statement is exactly what the manuscript says follows: the
+hypotheses fall, the lower bounds derived from them lose their premise,
+and the conclusions of those lower bounds are untouched
+(Section~\ref{sec:consequences}). For anyone who runs a solver, nothing
+changes (Section~\ref{sec:practitioner}). The two facts are true at
+once, and neither diminishes the other: in the limit the exponent is
+smaller than the number of variables by any factor one names, which is
+a theorem in our own Lean (Section~\ref{sec:lean}); on every size anyone
+will write down, it is larger.
+
+\subsection{What is claimed, and what is not}
+\label{sec:conclusion-claims}
+
+The introduction's two lists (Section~\ref{sec:intro-claims}) are the
+paper's claims and non-claims, and each later section repeats its own
+under ``what this does not claim''. In one sentence each: the verified
+statement is a guarantee with uncomputed constants, above $2^n$ at every
+practical size with the constants set to one, and refuting ETH and its
+relatives nonetheless; the proof shows no flaw by inspection, builds
+from source, and passes two checkers; the sharper exponents are
+paper-only; and no running time of any machine, no flaw in anything,
+no value of any constant beyond the proof's own, and no refutation of
+any derived lower bound's conclusion is asserted. Every number in the
+paper has a script under \repofile{paper3/scripts/} that regenerates
+it, every quotation has a page and line or a file and line, and the
+replay's logs and hashes are under \repofile{paper3/replay/}.
+
+\subsection{The questions this reading left open, by entry}
+\label{sec:conclusion-open}
+
+The paper was written under a rule that no question stops the work: a
+choice between two sound ways of saying or doing a thing is made,
+recorded in \repofile{paper3/ETH_AMBIGUOUS.MD} as one numbered entry
+with what was ambiguous, what was chosen and what the author may want
+to change, and the writing goes on. Forty-four entries were written
+before this section and four by it. We reviewed all forty-eight and
+sort them here. Fifteen need no decision: seven were resolved by the
+author in writing (S1, the author line; S3, where the companion Lean
+lives, with 07a following it; S4, no width references; S6, the model
+counters; S7, the phrase ``for every $50 \le n < e^{5504}$''; S8, the
+replay's Lean version) and eight are procedural or are corrections
+already carried by the text (S5, the per-item time cap of the writing
+driver; 01a, the sandbox's core cap; 03b, the manuscript has 67 pages;
+04b, 04d and 04e, three counts corrected from an earlier audit; 06b, a
+counter installed for Section~\ref{sec:practitioner}; 08xb, which
+sections the plain-English rewrite covered). The thirty-three below
+affect the text and are open: in each case the text stands as chosen,
+and the entry says what would change.
+
+\begin{description}\setlength{\itemsep}{1pt}
+\item[The title and its figures.] S2: $2^n$ is typeset with a
+  superscript and the ellipsis as three dots; the plain text is in the
+  PDF's metadata. 02a: Section~\ref{sec:statement} carries both the
+  two-panel Figure~\ref{fig:central} and Figure~\ref{fig:runtime-scale},
+  three drawings of one function. 02b: the central figure's peak is
+  placed analytically and its legend carries the $+16$.
+\item[The statement (Section~\ref{sec:statement}).] 02c: a proof-side
+  fact, the constant $256 + A_t$, is quoted in the statement section
+  for its value. 02d: the Lean theorem is transcribed as a display, not
+  shown verbatim, because the house build cannot typeset its symbols.
+  08xd: Section~\ref{sec:statement} says the proof's constant is at
+  least 257 and the exhibited theorem's at least 258, two readings of
+  two lines, both kept.
+\item[Beyond the statement (Section~\ref{sec:beyond}).] 03a: a third
+  tag, ``supported'', between verified and paper-only. 03c: what the
+  verified exponent would give through Corollary~1.4's argument is not
+  worked out. 03d: Corollary~1.2 is stated with the verified exponent
+  and tagged supported, not verified.
+\item[The proof and the replay (Sections~\ref{sec:proof} and
+  \ref{sec:replay}).] 01b: the second checker is \texttt{nanoda\_lib}
+  at the commit named, with \texttt{lean4export} at the nearest tag.
+  01c: that checker was run with the three axioms permitted and unused
+  axioms ignored. 01d: ``replayed'' means the build, the axiom output
+  and the second checker, not the comparator run. 04a: thirty-five
+  definitions compared, thirty-three identical, two up to a keyword;
+  the audit's ``33'' is explained, not kept. 04c: the exhibited
+  constants, $A \ge 258$ and $C \ge 28{,}701$, are stated with their
+  lines.
+\item[What follows (Section~\ref{sec:consequences}).] 05a: the
+  manuscript's list of problems is elided from one quotation, by the
+  paper's scope. 05b: SETH is refuted by reading the statement at each
+  width, and ``SETH implies ETH'' is cited for the record. 05c: the
+  hypotheses' sources are copied from the manuscript's reference list
+  and not re-read. 05d: two paragraphs are ours and not the
+  manuscript's, and say so.
+\item[For the practitioner (Section~\ref{sec:practitioner}).] 06a: the
+  two guarantee curves share one scale factor, so that they cross where
+  the statement puts the crossing. 06c: seven references for the tools
+  and the threshold are from memory, with no DOI checked. 06d: the
+  counters are reported at their defaults, including a plateau that
+  looks like a preprocessing budget.
+\item[Our Lean (Section~\ref{sec:lean}).] 07b: the axiom audit prints
+  two lines with fewer than the three axioms, and ``every line on the
+  three'' is read as ``nothing beyond the three''. 07c: the re-diff also
+  matches the restatement's body to the theorem's, beyond what was
+  asked.
+\item[Related work (Section~\ref{sec:related}).] 08a: the audit paper's
+  title is typeset with an apostrophe the arXiv record lacks. 08b: four
+  small public records were fetched beside the three allowed pages, for
+  their dates and commits. 08c: fourteen references carry no checked
+  DOI. 08d: ``we found no earlier statement'' is bounded to six texts.
+\item[Plain English, and this section.] 08xa: the dense passages were
+  moved into Appendix~\ref{app:tech}, not cut. 08xc: the glosses are
+  repeated in each section and now also in the introduction. 09a: the
+  introduction and abstract state the title's third clause in words,
+  with no formula beyond $2^n$, by the plain-English rule rather than
+  by the item's brief. 09b: the abstract carries two numbers, both from
+  Section~\ref{sec:statement}'s script, and no count from the replay.
+  09c: this sorting of the entries into resolved, procedural and open
+  is the author's to redo. 09d: ``people who checked'' in the stance
+  sentence is read as the author and the assistant the acknowledgements
+  disclose.
+\end{description}
+
+Thirteen of the thirty-three are bibliographic or typographic (S2, 02b,
+02d, 05c, 06c, 08a, 08b, 08c and the five spelling, placement and
+tagging choices of 02a, 03a, 03d, 04a, 08xa); the rest are choices
+about what the text says, and each is a sentence that can be struck
+without touching any number.
+
+\subsection{What this does not claim}
+\label{sec:conclusion-not}
+
+\begin{itemize}
+\item \textbf{Nothing new.} This section states no fact that a
+  previous section does not state with its source; the numbers in it
+  are Sections~\ref{sec:statement}, \ref{sec:proof} and
+  \ref{sec:replay}'s.
+\item \textbf{The list of open questions is complete to the day it was
+  written.} Entries added after it, by the reading of the whole paper
+  that follows this draft, are in the file and not here.
+\item \textbf{No question is answered here.} Each entry records a
+  choice and what would change; the author's answer, where there is
+  one, is in the file's ``Owner resolutions'' and in the text.
+\item \textbf{No claim about the working group.} The collection says a
+  group of computer scientists will examine the proof
+  (Section~\ref{sec:related}); nothing of theirs is on record here, and
+  their reading of the proof will carry more weight on the proof than
+  our inspection does.
+\end{itemize}
+\par\endgroup

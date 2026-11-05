@@ -88,15 +88,27 @@
 
 \begin{abstract}
 \noindent
-\placeholder{Item 09 writes the abstract (under 200 words; no number without a
-section that regenerates it). The title's sentence made precise: what is
-verified is a guarantee with existential constants and the exponent
-$n(\log\log n)^2/\sqrt{\log n}$, whose factor exceeds $1$ for every
-$50 \le n < e^{5504}$, so the verified guarantee is weaker than the trivial
-$2^n \cdot \mathrm{poly}$ guarantee at every practical size; the machine's
-running time is unknown because the constants are never computed; the
-manuscript's sharper exponents are unverified; the statement does refute
-ETH; the audit found no flaw.}
+% Item 09 (2026-11-05). Under 200 words; the only numbers are 50 and
+% the 2,391 digits of e^5504, both printed by paper3/scripts/runtime_scale.py
+% (Section 2); the only formula is 2^n (owner's rule of 2026-11-05 05:30).
+In October 2026 OpenAI published a theorem, checked by the Lean proof
+assistant, that refutes the Exponential Time Hypothesis: the 2001
+conjecture that deciding whether a formula with three variables per
+clause can be satisfied needs time exponential in the number of
+variables. We read the verified statement exactly, rebuilt its proof in
+isolation, re-checked it with a second, independent checker, and found
+no flaw. It does refute the hypothesis. What we add is exactness about
+\emph{what} is verified. The theorem is a guarantee, not a running time:
+it says that a machine and some constants exist, and never computes
+them. Its exponent, the power of two in the bound, is the one the
+manuscript itself calls weaker; the manuscript's sharper exponents are
+not in the Lean library. With every constant set to one, that exponent
+exceeds the number of variables from 50 variables up to a number with
+2,391 digits. So at every practical size the verified guarantee is
+weaker than the guarantee of trying all $2^n$ assignments. We say what
+follows for the hypotheses, for the lower bounds proved from them, and
+for anyone who runs a program on such formulas: nothing changes on any
+machine.
 \end{abstract}
 
 \input{sec1_intro}

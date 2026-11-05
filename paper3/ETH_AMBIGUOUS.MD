@@ -738,3 +738,77 @@ an answer).
   where it speaks of the exhibited witnesses. Both are correct readings
   of different lines.
 - **Owner may change**: quote only one of the two throughout.
+
+### 09a — the title's third clause in the introduction and abstract is in words, with no formula beyond `2^n` (item 09, 2026-11-05)
+- **Ambiguous**: the item's brief asks the introduction's first paragraph
+  to make the title precise with "`ρ(n) > n` for every `50 ≤ n <
+  e^{5504}`"; the owner's plain-English rule of the same day (05:30)
+  says the abstract and the introduction carry no formula at all beyond
+  `2^n`. Both cannot be done.
+- **Chosen**: the later rule. The first paragraph of Section 1 states
+  the clause as "with every constant set to one, the exponent in that
+  bound is larger than the number of variables at every size from 50
+  variables up to a number with 2,391 digits", with Section 2 and
+  Figure 2.1 cited; the symbols `ρ(n)`, `A`, `C`, `d` and `e^{5504}`
+  first appear in Section 2 and are used from there on. The abstract
+  does the same ("from 50 variables up to a number with 2,391 digits").
+  "2,391 digits" is Section 2's own count for `e^{5504} ≈ 10^{2390}`
+  (`runtime_scale.py`); the `≈ 10^{2390}` is not in Sections 1 or 10.
+- **Owner may change**: allow the one formula `50 ≤ n < e^{5504}` in the
+  first paragraph (and `ρ(n)` beside "the exponent"), as the brief has
+  it; or keep words only.
+
+### 09b — which numbers the abstract carries (item 09, 2026-11-05)
+- **Ambiguous**: "no number in the abstract without a section that
+  regenerates it" permits any of the paper's regenerated numbers (3,091
+  files, 33 minutes, 95,176 declarations, 257, 2.17); an abstract under
+  200 words cannot carry them all and still be plain.
+- **Chosen**: two numbers only, both from Section 2's script
+  (`paper3/scripts/runtime_scale.py`): the crossing at 50 variables and
+  the 2,391 digits of the return below 1. The replay's and inspection's
+  counts are in the introduction's summary paragraph (Section 1.1) with
+  their sections, not in the abstract. The abstract is 197 words
+  (counted with `\emph` stripped and `$2^n$` as one word); it names
+  the year and month of the result, "forty-year-old" for a 2001
+  conjecture (Section 1 cites it), and nothing else numerical.
+- **Owner may change**: add the replay's headline (3,091 files, two
+  checkers) to the abstract, or drop "forty-year-old".
+
+### 09c — how the conclusion sorts the ledger's entries (item 09, 2026-11-05)
+- **Ambiguous**: the brief says the conclusion "reviews every entry to
+  date and lists the ones that affect the text as open, by entry
+  number". Which entries "affect the text" is a judgement: a resolved
+  entry (S1, S3) affected the text and is closed; a procedural entry
+  (S5, 01a) never touched a sentence; a corrected count (03b, 04b, 04d,
+  04e) is in the text but has nothing left to decide; 07a follows the
+  owner's S3 resolution and is closed by it.
+- **Chosen**: three groups in Section 10.2 — resolved by the owner in
+  writing (S1, S3 with 07a, S4, S6, S7, S8: seven entries), procedural
+  or corrections already carried by the text (S5, 01a, 03b, 04b, 04d,
+  04e, 06b, 08xb: eight), and open and affecting the text (the other
+  thirty-three, including this item's four), the open ones grouped by
+  the section they touch with one clause each; and a closing count of
+  which open ones are bibliographic or typographic (thirteen). Entries
+  written after Section 10 (the refuter's, item 10's) are not in it, and
+  its "what this does not claim" says so; item 11 lists every entry in
+  `README.md`.
+- **Owner may change**: the grouping (for instance, 06b's `pip
+  uninstall` as open; 03b as open if "64 pages" was meant); or list
+  every entry flat.
+
+### 09d — "people who checked" with one author line (item 09, 2026-11-05)
+- **Ambiguous**: the stance sentence fixed by the brief is "a careful
+  reading by people who checked"; the paper has one author
+  (`\author`, S1) and uses "we" throughout, and the checking was done by
+  the author with an AI assistant, to be disclosed in the
+  acknowledgements in paper 1's form (item 11; the owner's "keep yours if
+  possible" of S1).
+- **Chosen**: the sentence is kept as the brief words it ("This paper is
+  a careful reading by people who checked, not a debunking", Section 1,
+  second paragraph), "we" is used as in every other section, and
+  "people" is read as the author and the assistant the acknowledgements
+  will disclose; no co-author credit is applied, since the owner has not
+  said that one was meant (S1's resolution left that to the owner).
+- **Owner may change**: "a careful reading by someone who checked"; or
+  a co-author line for the assistant, which item 09 was to apply only
+  on the owner's word.
